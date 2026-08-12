@@ -1,0 +1,435 @@
+/* NA EX! — jednoduchý tmavý vzhľad. Karty sú DOM prvky, pohyb cez transform. */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: #1c1a17;
+  color: #e8e2d6;
+}
+
+button {
+  font: inherit;
+  background: #3a3630;
+  color: #e8e2d6;
+  border: 1px solid #575046;
+  border-radius: 6px;
+  padding: 0.3rem 0.7rem;
+  margin: 0 0.2rem;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background: #4a453d;
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+input {
+  font: inherit;
+  background: #26231f;
+  color: inherit;
+  border: 1px solid #575046;
+  border-radius: 6px;
+  padding: 0.3rem 0.5rem;
+  width: 6ch;
+  text-transform: uppercase;
+}
+
+/* ---- lobby ---- */
+
+.lobby {
+  max-width: 32rem;
+  margin: 12vh auto;
+  text-align: center;
+  line-height: 1.7;
+}
+
+.kod-velky {
+  font-size: 2rem;
+  letter-spacing: 0.3em;
+  color: #ffd97a;
+}
+
+.chyba {
+  background: #5c2323;
+  border: 1px solid #8a3a3a;
+  border-radius: 6px;
+  padding: 0.4rem 0.8rem;
+  margin: 0.5rem 0;
+}
+
+/* ---- rozloženie hry ---- */
+
+.hra {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 0.4rem 0.8rem;
+  background: #26231f;
+  border-bottom: 1px solid #3a3630;
+  flex-wrap: wrap;
+}
+
+header .kod {
+  font-weight: bold;
+  letter-spacing: 0.2em;
+  color: #ffd97a;
+}
+
+header .na-tahu {
+  color: #9fd97a;
+}
+
+header .online {
+  color: #9fd97a;
+}
+
+header .offline {
+  color: #e2705e;
+}
+
+header .opustit {
+  margin-left: auto;
+}
+
+.plocha {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.stred {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+aside {
+  width: 24rem;
+  overflow-y: auto;
+  border-left: 1px solid #3a3630;
+  padding: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+aside h3 {
+  margin: 0 0 0.4rem;
+  font-size: 0.9rem;
+  color: #b9b0a0;
+}
+
+.popis {
+  color: #8f8677;
+  font-size: 0.8rem;
+  margin-right: 0.5rem;
+}
+
+.prazdna {
+  color: #575046;
+}
+
+/* ---- partie a ruka ---- */
+
+.partia,
+.ruka,
+.lokalita-riadok {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 3rem;
+  flex-wrap: wrap;
+}
+
+.partia.superova {
+  background: #221f24;
+  border-radius: 8px;
+  padding: 0.4rem;
+}
+
+.partia.moja {
+  background: #1f241f;
+  border-radius: 8px;
+  padding: 0.4rem;
+}
+
+.lokalita-riadok {
+  background: #242017;
+  border-radius: 8px;
+  padding: 0.4rem;
+}
+
+.ruka {
+  border-top: 1px dashed #3a3630;
+  padding-top: 0.5rem;
+}
+
+/* ---- karta ---- */
+
+.karta {
+  display: flex;
+  width: 13rem;
+  min-height: 8.6rem;
+  background: #efe7d4;
+  color: #241f18;
+  border-radius: 8px;
+  border: 2px solid #b9ab8d;
+  overflow: hidden;
+  transition: transform 0.15s ease;
+  flex-shrink: 0;
+}
+
+.karta.mala {
+  width: 9rem;
+  min-height: 6rem;
+  font-size: 0.75rem;
+}
+
+.karta.klikatelna {
+  cursor: pointer;
+}
+
+.karta.klikatelna:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgb(0 0 0 / 0.5);
+}
+
+.karta.vybrana {
+  outline: 3px solid #ffd97a;
+  transform: translateY(-3px);
+}
+
+.karta.vzbura {
+  border-color: #c0392b;
+  box-shadow: 0 0 8px #c0392b;
+}
+
+.karta .telo {
+  flex: 1;
+  padding: 0.3rem 0.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.karta .nazov {
+  font-weight: bold;
+  font-size: 0.85rem;
+  line-height: 1.15;
+}
+
+.karta.mala .nazov {
+  font-size: 0.75rem;
+}
+
+.karta .otocena {
+  color: #8e44ad;
+}
+
+.karta .tagy {
+  font-size: 0.62rem;
+  color: #6d6250;
+}
+
+.karta .efekt {
+  font-size: 0.66rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.karta .strana {
+  display: flex;
+  flex-direction: column;
+  width: 1.9rem;
+  flex-shrink: 0;
+}
+
+.karta .strana.lava {
+  border-right: 1px solid #d6c9ac;
+}
+
+.karta .strana.prava {
+  border-left: 1px solid #d6c9ac;
+}
+
+.slot {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.68rem;
+  font-weight: bold;
+  border-bottom: 1px solid #d6c9ac;
+  background: #e4d9c0;
+  min-height: 1.4rem;
+}
+
+.slot:last-child {
+  border-bottom: none;
+}
+
+.slot.prazdny {
+  background: #efe7d4;
+}
+
+.slot.aktivna {
+  background: #7cb769;
+  color: #10230c;
+}
+
+.slot.zrusena {
+  background: #d98d80;
+  color: #3d0f08;
+  text-decoration: line-through;
+}
+
+/* ---- stav hráča ---- */
+
+.stav-hraca {
+  display: flex;
+  gap: 0.9rem;
+  font-size: 0.85rem;
+  color: #c9bfae;
+  flex-wrap: wrap;
+}
+
+/* ---- akcie ---- */
+
+.akcie {
+  background: #26231f;
+  border: 1px solid #3a3630;
+  border-radius: 8px;
+  padding: 0.5rem 0.7rem;
+  line-height: 2;
+  position: sticky;
+  bottom: 0;
+}
+
+.akcie.cakanie {
+  color: #8f8677;
+}
+
+.akcie.koniec {
+  border-color: #ffd97a;
+}
+
+.volba-lokality {
+  margin-left: 0.8rem;
+  white-space: nowrap;
+}
+
+/* ---- starší ---- */
+
+.starsi {
+  padding: 0.3rem 0.4rem;
+  border-radius: 6px;
+  margin-bottom: 0.2rem;
+}
+
+.starsi.klikatelny {
+  cursor: pointer;
+  outline: 1px dashed #ffd97a;
+}
+
+.starsi.klikatelny:hover {
+  background: #3a3630;
+}
+
+.starsi .meno {
+  font-size: 0.8rem;
+  margin-bottom: 0.15rem;
+}
+
+.stupnica {
+  display: flex;
+  gap: 2px;
+}
+
+.pozicia {
+  width: 1.35rem;
+  height: 1.05rem;
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  color: #100e0c;
+}
+
+.pozicia.siva {
+  background: #6f6a61;
+}
+
+.pozicia.zlta {
+  background: #d8c150;
+}
+
+.pozicia.oranzova {
+  background: #d88c3c;
+}
+
+.pozicia.cervena {
+  background: #c0392b;
+}
+
+.pozicia.marker {
+  outline: 2px solid #fff;
+}
+
+/* ---- šenok a log ---- */
+
+.senok {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.log {
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: #b9b0a0;
+  max-height: 16rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.log .manual {
+  color: #ffd97a;
+}
+
+/* ---- menšie obrazovky ---- */
+
+@media (max-width: 900px) {
+  .plocha {
+    flex-direction: column;
+  }
+
+  aside {
+    width: auto;
+    border-left: none;
+    border-top: 1px solid #3a3630;
+  }
+
+  .karta {
+    width: 11rem;
+  }
+}
