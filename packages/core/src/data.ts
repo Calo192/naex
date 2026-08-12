@@ -11,17 +11,21 @@ import type {
   Favour,
   ScoringPos,
   SideDef,
+  SideLayout,
   SlotIndex,
   Tag,
   Trigger,
   Zone,
 } from "./types.ts";
 import { ALL_ACTIONS, ALL_FAVOURS, ALL_TAGS, ALL_TRIGGERS } from "./types.ts";
+import type { CardVariants } from "./variants.ts";
 import { cardVariants } from "./variants.ts";
 
 export interface GameData {
   readonly cards: ReadonlyMap<string, CardDef>;
   readonly elders: ReadonlyMap<string, ElderDef>;
+  /** Predpočítané rozloženia strán — počítať ich pri každom vyhodnotení je zbytočné. */
+  readonly variants: ReadonlyMap<string, CardVariants>;
   /** Pomocné zoznamy — poradie podľa `index` v cards.json (stabilné). */
   readonly lokality: readonly CardDef[];
   readonly nastroje: readonly CardDef[];
@@ -133,10 +137,15 @@ export function parseElders(json: unknown, cards: ReadonlyMap<string, CardDef>):
   return elders;
 }
 
-export function loadGameData(cardsJson: unknown, eldersJson: unknown): GameData {
-  const cards = parseCards(cardsJson);
-  const elders = parseElders(eldersJson, cards);
-
+/**
+ * Poskladá GameData z už zvalidovaných definícií. Oddelené od loadGameData,
+ * aby testy mohli stavať syntetické karty bez JSON-u.
+ */
+export function buildGameData(
+  cards: ReadonlyMap<string, CardDef>,
+  elders: ReadonlyMap<string, ElderDef>,
+): GameData {
+  const variants = new Map<string, CardVariants>();
   // Kontrolné súčty generátora variantov — nesúlad znamená, že sa rozišiel
   // generátor s exportom KartyAI, a to má spadnúť hneď pri štarte.
   for (const def of cards.values()) {
@@ -153,14 +162,44 @@ export function loadGameData(cardsJson: unknown, eldersJson: unknown): GameData 
           `očakávané ${def.permutations.left}×${def.permutations.right}=${def.permutations.total}`,
       );
     }
+    variants.set(def.id, v);
   }
 
   const byIndex = [...cards.values()].sort((a, b) => a.index - b.index);
   return {
     cards,
     elders,
+    variants,
     lokality: byIndex.filter((c) => c.tags.includes("Lokalita")),
     nastroje: byIndex.filter((c) => c.tags.includes("Nástroj")),
     staresinovia: byIndex.filter((c) => c.tags.includes("Starešina")),
   };
+}
+
+export function loadGameData(cardsJson: unknown, eldersJson: unknown): GameData {
+  const cards = parseCards(cardsJson);
+  const elders = parseElders(eldersJson, cards);
+  return buildGameData(cards, elders);
+}
+
+/** Definícia karty pre inštanciu — chýbajúca definícia je chyba dát, nie hry. */
+export function defOf(data: GameData, inst: { readonly defId: string }): CardDef {
+  const def = data.cards.get(inst.defId);
+  if (def === undefined) fail(`karta ${inst.defId}`, "inštancia bez definície");
+  return def;
+}
+
+/** Vytlačené strany konkrétnej inštancie (variant vybraný pri vzniku karty). */
+export function printedSides(
+  data: GameData,
+  inst: { readonly defId: string; readonly leftLayout: number; readonly rightLayout: number },
+): { readonly left: SideLayout; readonly right: SideLayout } {
+  const v = data.variants.get(inst.defId);
+  if (v === undefined) fail(`karta ${inst.defId}`, "chýbajú varianty");
+  const left = v.left[inst.leftLayout];
+  const right = v.right[inst.rightLayout];
+  if (left === undefined || right === undefined) {
+    fail(`karta ${inst.defId}`, `variant ${inst.leftLayout}/${inst.rightLayout} neexistuje`);
+  }
+  return { left, right };
 }

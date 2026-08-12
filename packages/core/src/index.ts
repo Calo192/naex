@@ -8,3 +8,4 @@ export * from "./types.ts";
 export * from "./variants.ts";
 export * from "./data.ts";
 export * from "./rng.ts";
+export * from "./partia.ts";
