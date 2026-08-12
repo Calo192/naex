@@ -18,6 +18,8 @@ export interface BattleSide {
    * otázke č. 5).
    */
   readonly cirhozaBonus: number;
+  /** Dodatočné tuhé poškodenie z efektov kariet (recidivista, pes, …). */
+  readonly tuheBonus: number;
   /** Počet mojich Absťákov — znižujú MOJE tuhé poškodenie (PRAVIDLA §12). */
   readonly abstaky: number;
   /** Moje priznané Dlhy — strop pre súperove mäkké poškodenie. */
@@ -40,19 +42,28 @@ function n(v: number | undefined): number {
   return v ?? 0;
 }
 
-export function computeDamage(sides: readonly [BattleSide, BattleSide]): DamageResult {
+export interface DamageOptions {
+  /**
+   * poveraVieraSaNerusia[p]: Povery hráča p a Viera súpera sa navzájom
+   * nerušia (efekt Novín v Dedičstve hráča p).
+   */
+  readonly poveraVieraSaNerusia?: readonly [boolean, boolean];
+}
+
+export function computeDamage(
+  sides: readonly [BattleSide, BattleSide],
+  opts?: DamageOptions,
+): DamageResult {
   // 1. Viera a Povera sa vyrušia 1:1 — moja Viera ruší súperove Povery,
   //    moje Povery rušia súperovu Vieru. Zrušená Povera neudelí nič.
+  const nerusia = opts?.poveraVieraSaNerusia ?? [false, false];
   const viera = [n(sides[0].sums.Viera), n(sides[1].sums.Viera)] as const;
   const povera = [n(sides[0].sums.Povera), n(sides[1].sums.Povera)] as const;
-  const zvysnaViera = [
-    Math.max(0, viera[0] - povera[1]),
-    Math.max(0, viera[1] - povera[0]),
-  ] as const;
-  const zvysnaPovera = [
-    Math.max(0, povera[0] - viera[1]),
-    Math.max(0, povera[1] - viera[0]),
-  ] as const;
+  // Vyrušenie páru (povera hráča p, viera súpera) sa dá vypnúť Novinami.
+  const cancel0 = nerusia[0] ? 0 : Math.min(povera[0], viera[1]);
+  const cancel1 = nerusia[1] ? 0 : Math.min(povera[1], viera[0]);
+  const zvysnaViera = [viera[0] - cancel1, viera[1] - cancel0] as const;
+  const zvysnaPovera = [povera[0] - cancel0, povera[1] - cancel1] as const;
 
   const tuhe = ([0, 1] as const).map((p) => {
     const me = sides[p];
@@ -63,6 +74,7 @@ export function computeDamage(sides: readonly [BattleSide, BattleSide]): DamageR
       n(me.sums.Pecka) * 2 +
       n(me.sums.Petelica) * 3 +
       me.cirhozaBonus +
+      me.tuheBonus +
       me.priazenBitkara;
     return Math.max(0, base - oppViera * opp.hodnotaViery - me.abstaky);
   }) as [number, number];

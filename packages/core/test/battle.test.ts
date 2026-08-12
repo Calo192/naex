@@ -13,6 +13,7 @@ function side(overrides: Partial<BattleSide> = {}): BattleSide {
   return {
     sums: {},
     cirhozaBonus: 0,
+    tuheBonus: 0,
     abstaky: 0,
     priznaneDlhy: 0,
     priazenBitkara: 0,
