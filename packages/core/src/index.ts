@@ -12,3 +12,4 @@ export * from "./partia.ts";
 export * from "./constants.ts";
 export * from "./player.ts";
 export * from "./battle.ts";
+export * from "./elders.ts";
