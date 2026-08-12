@@ -6,6 +6,7 @@
 // počty. Skryť kartu v rozhraní je bezcenné — filtruje sa TU a testuje sa to.
 
 import type { CardInstance, Phase, PlayerId } from "./types.ts";
+import type { GameData } from "./data.ts";
 import type { PlacedCard } from "./partia.ts";
 import type { ElderState } from "./elders.ts";
 import type {
@@ -13,11 +14,12 @@ import type {
   CielKola,
   DraftStav,
   GameState,
+  KartaVolba,
   KoniecHry,
   PitkaStav,
   ZhromazdenieStav,
 } from "./engine.ts";
-import { naTahu } from "./engine.ts";
+import { najdiNahradnikov, najdiNastroje, naTahu } from "./engine.ts";
 import type { DamageResult } from "./battle.ts";
 
 export interface HracVerejne {
@@ -41,6 +43,7 @@ export interface BitkaVerejne {
   readonly prebytokDrzi: PlayerId | null;
   readonly prebytokZostava: number;
   readonly pohorsenieZostava: readonly [number, number];
+  readonly pohnuteMarkery: readonly string[];
 }
 
 export interface ClientState {
@@ -66,10 +69,17 @@ export interface ClientState {
   readonly zhromazdenieStav: ZhromazdenieStav | null;
   readonly pitkaStav: PitkaStav | null;
   readonly bitkaStav: BitkaVerejne | null;
+  /**
+   * Voľby čakajúceho rozhodnutia, ktoré siahajú do vlastného balíčka
+   * (Exekútor, náhrada staršieho) — len defId + zóna, nikdy uid.
+   * Naplnené len vtedy, keď rozhodnutie patrí hráčovi `ja`.
+   */
+  readonly volbyExekutor: readonly KartaVolba[] | null;
+  readonly volbyNahrada: readonly KartaVolba[] | null;
   readonly koniec: KoniecHry | null;
 }
 
-export function viewFor(state: GameState, ja: PlayerId): ClientState {
+export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientState {
   const publicPlayer = (p: PlayerId): HracVerejne => {
     const hrac = state.hraci[p];
     return {
@@ -86,6 +96,7 @@ export function viewFor(state: GameState, ja: PlayerId): ClientState {
   };
 
   const bitka = state.bitkaStav;
+  const mojaBitkovaVolba = bitka !== null && bitka.caka === ja;
   return {
     ja,
     faza: state.faza,
@@ -118,7 +129,12 @@ export function viewFor(state: GameState, ja: PlayerId): ClientState {
             prebytokDrzi: bitka.prebytokDrzi,
             prebytokZostava: bitka.prebytokZostava,
             pohorsenieZostava: bitka.pohorsenieZostava,
+            pohnuteMarkery: bitka.pohnuteMarkery,
           },
+    volbyExekutor:
+      mojaBitkovaVolba && bitka.krok === "exekutor" ? najdiNastroje(state, data, ja) : null,
+    volbyNahrada:
+      mojaBitkovaVolba && bitka.krok === "nahrada" ? najdiNahradnikov(state, data, ja) : null,
     koniec: state.koniec,
   };
 }

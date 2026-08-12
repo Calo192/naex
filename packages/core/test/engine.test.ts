@@ -33,7 +33,7 @@ function tajneUids(state: GameState, ja: PlayerId): number[] {
 }
 
 function expectZiadenUnik(state: GameState, ja: PlayerId): void {
-  const json = JSON.stringify(viewFor(state, ja));
+  const json = JSON.stringify(viewFor(data, state, ja));
   for (const uid of tajneUids(state, ja)) {
     // uid sa serializuje ako "uid":N nasledované čiarkou alebo }.
     expect(json.includes(`"uid":${uid},`) || json.includes(`"uid":${uid}}`)).toBe(false);

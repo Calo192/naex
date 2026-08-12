@@ -147,7 +147,9 @@ export type Command =
   | { readonly type: "smoke"; readonly pocet: number }
   | { readonly type: "barter" }
   | { readonly type: "refillPoldeci" }
-  | { readonly type: "exekutorTool"; readonly uid: number }
+  // Rozhodnutia siahajúce do vlastného balíčka sa zadávajú cez defId + kde,
+  // nie cez uid: klient uid kariet v doberacom balíčku nikdy nevidí.
+  | { readonly type: "exekutorTool"; readonly defId: string; readonly kde: KartaZdroj }
   | { readonly type: "pohorsenie"; readonly elderId: string }
   | { readonly type: "prebytok"; readonly elderId: string }
   | {
@@ -158,7 +160,14 @@ export type Command =
     }
   | { readonly type: "pohreb"; readonly cirhozaUid: number; readonly kartaUid: number }
   | { readonly type: "skipLiecba" }
-  | { readonly type: "nahrada"; readonly uid: number; readonly marker: MarkerPos };
+  | {
+      readonly type: "nahrada";
+      readonly defId: string;
+      readonly kde: KartaZdroj;
+      readonly marker: MarkerPos;
+    };
+
+export type KartaZdroj = "ruka" | "doberaci" | "odhadzovaci" | "dedicstvo";
 
 export type Event =
   | { readonly type: "log"; readonly text: string; readonly pre?: PlayerId }
@@ -1013,14 +1022,24 @@ function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
   }
 }
 
-function najdiNastroje(s: GameState, data: GameData, p: PlayerId): CardInstance[] {
-  const vsade = [
-    ...s.hraci[p].ruka,
-    ...s.hraci[p].doberaci,
-    ...s.hraci[p].odhadzovaci,
-    ...s.hraci[p].dedicstvo,
-  ] as CardInstance[];
-  return vsade.filter((k) => defOf(data, k).tags.includes("Nástroj"));
+export interface KartaVolba {
+  readonly defId: string;
+  readonly kde: KartaZdroj;
+}
+
+/** Nástroje hráča naprieč zónami — bez uid, aby sa dali poslať klientovi. */
+export function najdiNastroje(s: GameState, data: GameData, p: PlayerId): KartaVolba[] {
+  const out: KartaVolba[] = [];
+  for (const kde of ["ruka", "odhadzovaci", "doberaci", "dedicstvo"] as const) {
+    const videne = new Set<string>();
+    for (const k of s.hraci[p][kde]) {
+      if (!defOf(data, k).tags.includes("Nástroj")) continue;
+      if (videne.has(k.defId)) continue;
+      videne.add(k.defId);
+      out.push({ defId: k.defId, kde });
+    }
+  }
+  return out;
 }
 
 function existujeLegalnePohorsenie(s: MutState, p: PlayerId, pohnute: readonly string[]): boolean {
@@ -1042,38 +1061,43 @@ function existujeLegalnyPrebytok(s: MutState, drzi: PlayerId): boolean {
   );
 }
 
-function najdiNahradnikov(s: GameState, data: GameData, p: PlayerId): CardInstance[] {
-  // Občan alebo Zviera (nie Nástroj, nie Kliatba) z ruky alebo balíčka.
-  const vsade = [...s.hraci[p].ruka, ...s.hraci[p].doberaci, ...s.hraci[p].odhadzovaci] as CardInstance[];
-  return vsade.filter((k) => {
-    const tags = defOf(data, k).tags;
+/** Kandidáti na náhradu staršieho: Občan/Zviera (nie Nástroj, nie Kliatba). */
+export function najdiNahradnikov(s: GameState, data: GameData, p: PlayerId): KartaVolba[] {
+  const vyhovuje = (defId: string): boolean => {
+    const def = data.cards.get(defId);
+    if (def === undefined) return false;
     return (
-      (tags.includes("Občan") || tags.includes("Zviera")) &&
-      !tags.includes("Nástroj") &&
-      !tags.includes("Kliatba")
+      (def.tags.includes("Občan") || def.tags.includes("Zviera")) &&
+      !def.tags.includes("Nástroj") &&
+      !def.tags.includes("Kliatba")
     );
-  });
+  };
+  const out: KartaVolba[] = [];
+  for (const kde of ["ruka", "odhadzovaci", "doberaci"] as const) {
+    const videne = new Set<string>();
+    for (const k of s.hraci[p][kde]) {
+      if (!vyhovuje(k.defId) || videne.has(k.defId)) continue;
+      videne.add(k.defId);
+      out.push({ defId: k.defId, kde });
+    }
+  }
+  return out;
 }
 
 function cmdExekutorTool(
   s: MutState,
   data: GameData,
-  cmd: { uid: number },
+  cmd: { defId: string; kde: KartaZdroj },
   p: PlayerId,
   events: Event[],
 ): void {
   const b = s.bitkaStav;
   need(s.faza === "bitka" && b !== null && b.krok === "exekutor" && b.caka === p, "Nečaká sa na Nástroj.");
-  const nastroje = najdiNastroje(s as GameState, data, p);
-  const karta = nastroje.find((k) => k.uid === cmd.uid);
-  need(karta !== undefined, "Taký Nástroj nemáš.");
-  for (const kde of ["ruka", "doberaci", "odhadzovaci", "dedicstvo"] as const) {
-    const idx = s.hraci[p][kde].findIndex((k) => k.uid === cmd.uid);
-    if (idx !== -1) {
-      hrac(s, p)[kde].splice(idx, 1);
-      break;
-    }
-  }
+  const idx = s.hraci[p][cmd.kde].findIndex((k) => k.defId === cmd.defId);
+  need(idx !== -1, "Taký Nástroj tam nemáš.");
+  const karta = s.hraci[p][cmd.kde][idx] as CardInstance;
+  need(defOf(data, karta).tags.includes("Nástroj"), "Karta nie je Nástroj.");
+  hrac(s, p)[cmd.kde].splice(idx, 1);
   // Polovica priznaných dlhov zhorí (nadol).
   const dlhy = s.hraci[p].priznane.filter((k) => k.defId === "dlh");
   const ostane = dlhyPoExekucii(dlhy.length);
@@ -1181,27 +1205,29 @@ function cmdPrebytok(
 function cmdNahrada(
   s: MutState,
   data: GameData,
-  cmd: { uid: number; marker: MarkerPos },
+  cmd: { defId: string; kde: KartaZdroj; marker: MarkerPos },
   p: PlayerId,
   events: Event[],
 ): void {
   const b = s.bitkaStav;
   need(s.faza === "bitka" && b !== null && b.krok === "nahrada" && b.caka === p, "Nečaká sa na náhradu.");
   need(cmd.marker >= 3 && cmd.marker <= 5, "Marker musí skončiť v sivej zóne.");
+  need(cmd.kde !== "dedicstvo", "Náhrada nejde z Dedičstva.");
   const elderId = s.ciel?.elderId ?? null;
   need(elderId !== null, "Nie je bitka o staršieho.");
   const elder = s.starsi.find((e) => e.elderId === elderId);
   need(elder !== undefined, "Starší sa stratil.");
-  const kandidat = najdiNahradnikov(s as GameState, data, p).find((k) => k.uid === cmd.uid);
-  need(kandidat !== undefined, "Náhradou smie byť len Občan alebo Zviera z tvojho balíčka.");
+  need(
+    najdiNahradnikov(s as GameState, data, p).some(
+      (k) => k.defId === cmd.defId && k.kde === cmd.kde,
+    ),
+    "Náhradou smie byť len Občan alebo Zviera z tvojho balíčka.",
+  );
+  const idx = s.hraci[p][cmd.kde].findIndex((k) => k.defId === cmd.defId);
+  need(idx !== -1, "Karta sa nenašla.");
+  const kandidat = s.hraci[p][cmd.kde][idx] as CardInstance;
+  hrac(s, p)[cmd.kde].splice(idx, 1);
 
-  for (const kde of ["ruka", "doberaci", "odhadzovaci"] as const) {
-    const idx = s.hraci[p][kde].findIndex((k) => k.uid === cmd.uid);
-    if (idx !== -1) {
-      hrac(s, p)[kde].splice(idx, 1);
-      break;
-    }
-  }
   // Karta staršieho ide do balíčka víťaza, náhrada na ukazovateľ.
   hrac(s, p).odhadzovaci.push(elder.karta as DeepMutable<CardInstance>);
   elder.karta = kandidat as DeepMutable<CardInstance>;
@@ -1520,7 +1546,7 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
       if (b === null || b.caka !== p) break;
       if (b.krok === "exekutor") {
         for (const nastroj of najdiNastroje(state, data, p)) {
-          out.push({ type: "exekutorTool", uid: nastroj.uid });
+          out.push({ type: "exekutorTool", defId: nastroj.defId, kde: nastroj.kde });
         }
       } else if (b.krok === "pohorsenie") {
         for (const elder of state.starsi) {
@@ -1540,7 +1566,7 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
       } else if (b.krok === "nahrada") {
         for (const kandidat of najdiNahradnikov(state, data, p)) {
           for (const marker of [3, 4, 5] as const) {
-            out.push({ type: "nahrada", uid: kandidat.uid, marker });
+            out.push({ type: "nahrada", defId: kandidat.defId, kde: kandidat.kde, marker });
           }
         }
       } else if (b.krok === "liecba") {
