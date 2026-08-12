@@ -9,6 +9,7 @@
     "noImplicitOverride": true,
     "exactOptionalPropertyTypes": true,
     "resolveJsonModule": true,
+    "verbatimModuleSyntax": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "declaration": true,

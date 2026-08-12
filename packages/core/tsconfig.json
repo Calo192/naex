@@ -1,5 +1,12 @@
 {
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": { "outDir": "dist", "rootDir": "." },
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": ".",
+    // Server púšťa jadro priamo ako .ts (node --experimental-strip-types),
+    // ktorý nevie prepísať prípony — relatívne importy musia mať ".ts".
+    "allowImportingTsExtensions": true,
+    "emitDeclarationOnly": true
+  },
   "include": ["src/**/*.ts", "test/**/*.ts", "data/*.json"]
 }
