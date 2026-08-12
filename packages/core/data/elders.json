@@ -1,0 +1,107 @@
+{
+ "_comment": [
+  "Konfigurácia ôsmich starších.",
+  "",
+  "POZOR: hodnoty 'favour' a 'scoring' NIE SÚ v pravidlách v11 vypísané —",
+  "sú vytlačené priamo na fyzických ukazovateľoch. Nižšie sú len rozumné",
+  "východiskové hodnoty, aby sa hra dala hrať. Oprav ich podľa komponentov;",
+  "kód sa meniť nemusí.",
+  "",
+  "favour: OCUMOVATEL | LAKOMEC | NEPRAJNIK | BITKAR | VERIACI | FAJCIAR | ALKOHOLIK | EXEKUTOR",
+  "scoring: 8 pozícií — indexy 0..3 = strana hráča 0 (páruje sa s ľavou stranou",
+  "         karty staršieho), indexy 4..7 = strana hráča 1 (pravá strana karty).",
+  "         Bočnú pozíciu aktivuje NEPRÁZDNA akcia staršieho na danom indexe.",
+  "zone: 1 = Znepokojenie (žltá), 2 = Strach (oranžová), 3 = Vydesenie (červená).",
+  "      Podmienka je splnená prahovo — marker musí byť v tejto zóne alebo ďalej."
+ ],
+ "elders": [
+  {
+   "id": "farar",
+   "favour": "VERIACI",
+   "note": "Farár drží Vieru — priazeň zvyšuje hodnotu Viery.",
+   "scoring": [
+    {"zone": 3, "points": 4}, {"zone": 2, "points": 3},
+    {"zone": 1, "points": 2}, {"zone": 3, "points": 3},
+    {"zone": 3, "points": 4}, {"zone": 2, "points": 3},
+    {"zone": 1, "points": 2}, {"zone": 3, "points": 3}
+   ]
+  },
+  {
+   "id": "krcmarka",
+   "favour": "ALKOHOLIK",
+   "note": "Krčmárka posúva prah Cirhózy — vie, koľko kto znesie.",
+   "scoring": [
+    {"zone": 3, "points": 5}, {"zone": 2, "points": 2},
+    {"zone": 1, "points": 1}, {"zone": 2, "points": 3},
+    {"zone": 3, "points": 5}, {"zone": 2, "points": 2},
+    {"zone": 1, "points": 1}, {"zone": 2, "points": 3}
+   ]
+  },
+  {
+   "id": "starosta",
+   "favour": "EXEKUTOR",
+   "note": "Starosta rozhoduje o prahu Exekútora.",
+   "scoring": [
+    {"zone": 3, "points": 4}, {"zone": 3, "points": 4},
+    {"zone": 2, "points": 2}, {"zone": 1, "points": 1},
+    {"zone": 3, "points": 4}, {"zone": 3, "points": 4},
+    {"zone": 2, "points": 2}, {"zone": 1, "points": 1}
+   ]
+  },
+  {
+   "id": "postarka",
+   "favour": "OCUMOVATEL",
+   "note": "Poštárka vidí do každej obálky — priazeň zvyšuje Preskúmanie.",
+   "scoring": [
+    {"zone": 2, "points": 3}, {"zone": 1, "points": 2},
+    {"zone": 3, "points": 4}, {"zone": 2, "points": 2},
+    {"zone": 2, "points": 3}, {"zone": 1, "points": 2},
+    {"zone": 3, "points": 4}, {"zone": 2, "points": 2}
+   ]
+  },
+  {
+   "id": "hrobar",
+   "favour": "BITKAR",
+   "note": "Hrobár má z bitiek úžitok — tuhé poškodenie navyše.",
+   "scoring": [
+    {"zone": 3, "points": 5}, {"zone": 2, "points": 3},
+    {"zone": 2, "points": 2}, {"zone": 1, "points": 1},
+    {"zone": 3, "points": 5}, {"zone": 2, "points": 3},
+    {"zone": 2, "points": 2}, {"zone": 1, "points": 1}
+   ]
+  },
+  {
+   "id": "autobusar",
+   "favour": "FAJCIAR",
+   "note": "Autobusár prefajčí celú zmenu — cigaretky navyše.",
+   "scoring": [
+    {"zone": 1, "points": 2}, {"zone": 2, "points": 3},
+    {"zone": 3, "points": 4}, {"zone": 2, "points": 2},
+    {"zone": 1, "points": 2}, {"zone": 2, "points": 3},
+    {"zone": 3, "points": 4}, {"zone": 2, "points": 2}
+   ]
+  },
+  {
+   "id": "veterinar",
+   "favour": "LAKOMEC",
+   "note": "Veterinár nedá nič zadarmo — Trocha zvýšená o priazeň.",
+   "scoring": [
+    {"zone": 2, "points": 3}, {"zone": 3, "points": 4},
+    {"zone": 1, "points": 1}, {"zone": 2, "points": 2},
+    {"zone": 2, "points": 3}, {"zone": 3, "points": 4},
+    {"zone": 1, "points": 1}, {"zone": 2, "points": 2}
+   ]
+  },
+  {
+   "id": "vychovavatelka",
+   "favour": "NEPRAJNIK",
+   "note": "Vychovávateľka rozdáva po troche — Zopár zvýšené o priazeň.",
+   "scoring": [
+    {"zone": 1, "points": 1}, {"zone": 2, "points": 2},
+    {"zone": 2, "points": 3}, {"zone": 3, "points": 5},
+    {"zone": 1, "points": 1}, {"zone": 2, "points": 2},
+    {"zone": 2, "points": 3}, {"zone": 3, "points": 5}
+   ]
+  }
+ ]
+}

@@ -1,0 +1,22 @@
+{
+  "name": "naex",
+  "private": true,
+  "version": "0.1.0",
+  "description": "NA EX! — kartová hra pre dvoch, v prehliadači, cez internet.",
+  "type": "module",
+  "workspaces": ["packages/*", "apps/*"],
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "dev:web": "npm run dev --workspace=@naex/web",
+    "dev:server": "npm run dev --workspace=@naex/server",
+    "build": "npm run build --workspaces --if-present",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --build --force"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.0"
+  },
+  "engines": { "node": ">=20" }
+}
