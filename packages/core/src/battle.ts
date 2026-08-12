@@ -1,0 +1,115 @@
+// Vyhodnotenie bitky — presné poradie z PRAVIDLA.md §8 (M4).
+//
+// Tu sú len ČISTÉ funkcie (Exekútor / poškodenie / výsledok). Kroky, ktoré
+// vyžadujú rozhodnutie hráča (Pohoršenie, rozdelenie prebytku, Liečba či
+// Pohreb), motor v M6 len pripraví ako čakajúce rozhodnutia.
+
+import type { ActionSums } from "./partia.ts";
+import type { PlayerId } from "./types.ts";
+import { prahExekutora } from "./player.ts";
+
+/** Vstup jedného hráča do výpočtu poškodenia. */
+export interface BattleSide {
+  /** Súčty aktívnych akcií hráča z evaluateLine. */
+  readonly sums: ActionSums;
+  /**
+   * Cirhózy ležiace v SÚPEROVEJ partii — ich efekt „Obdržíš od súpera
+   * dodatočnú ranu“ pridáva +1 tuhé tomuto hráčovi (rozhodnutie k otvorenej
+   * otázke č. 5).
+   */
+  readonly cirhozaBonus: number;
+  /** Počet mojich Absťákov — znižujú MOJE tuhé poškodenie (PRAVIDLA §12). */
+  readonly abstaky: number;
+  /** Moje priznané Dlhy — strop pre súperove mäkké poškodenie. */
+  readonly priznaneDlhy: number;
+  /** Priazeň Bitkára, ak ju mám (inak 0) — tuhé poškodenie navyše. */
+  readonly priazenBitkara: number;
+  /** Hodnota MOJEJ Viery = 1 + priazeň Veriaceho, ak ju mám. */
+  readonly hodnotaViery: number;
+}
+
+export interface DamageResult {
+  readonly tuhe: readonly [number, number];
+  readonly makke: readonly [number, number];
+  readonly celkove: readonly [number, number];
+  readonly zvysnaViera: readonly [number, number];
+  readonly zvysnaPovera: readonly [number, number];
+}
+
+function n(v: number | undefined): number {
+  return v ?? 0;
+}
+
+export function computeDamage(sides: readonly [BattleSide, BattleSide]): DamageResult {
+  // 1. Viera a Povera sa vyrušia 1:1 — moja Viera ruší súperove Povery,
+  //    moje Povery rušia súperovu Vieru. Zrušená Povera neudelí nič.
+  const viera = [n(sides[0].sums.Viera), n(sides[1].sums.Viera)] as const;
+  const povera = [n(sides[0].sums.Povera), n(sides[1].sums.Povera)] as const;
+  const zvysnaViera = [
+    Math.max(0, viera[0] - povera[1]),
+    Math.max(0, viera[1] - povera[0]),
+  ] as const;
+  const zvysnaPovera = [
+    Math.max(0, povera[0] - viera[1]),
+    Math.max(0, povera[1] - viera[0]),
+  ] as const;
+
+  const tuhe = ([0, 1] as const).map((p) => {
+    const me = sides[p];
+    const opp = sides[p === 0 ? 1 : 0];
+    const oppViera = zvysnaViera[p === 0 ? 1 : 0];
+    const base =
+      n(me.sums.Rana) * 1 +
+      n(me.sums.Pecka) * 2 +
+      n(me.sums.Petelica) * 3 +
+      me.cirhozaBonus +
+      me.priazenBitkara;
+    return Math.max(0, base - oppViera * opp.hodnotaViery - me.abstaky);
+  }) as [number, number];
+
+  // 3. Mäkké poškodenie je zastropené súperovým PRIZNANÝM dlhom.
+  const makke = ([0, 1] as const).map((p) => {
+    const oppDlhy = sides[p === 0 ? 1 : 0].priznaneDlhy;
+    return Math.min(zvysnaPovera[p], oppDlhy);
+  }) as [number, number];
+
+  const celkove = [tuhe[0] + makke[0], tuhe[1] + makke[1]] as [number, number];
+  return {
+    tuhe,
+    makke,
+    celkove,
+    zvysnaViera: [...zvysnaViera] as [number, number],
+    zvysnaPovera: [...zvysnaPovera] as [number, number],
+  };
+}
+
+export interface BattleOutcome {
+  /** Vyššie TUHÉ poškodenie; pri remíze víťazí útočník. */
+  readonly vitaz: PlayerId;
+  /** Vyššie CELKOVÉ poškodenie; pri remíze prebytok nikto nezíska. */
+  readonly prebytokDrzi: PlayerId | null;
+  readonly prebytok: number;
+}
+
+export function battleOutcome(damage: DamageResult, utocnik: PlayerId): BattleOutcome {
+  const vitaz: PlayerId =
+    damage.tuhe[0] === damage.tuhe[1] ? utocnik : damage.tuhe[0] > damage.tuhe[1] ? 0 : 1;
+  const prebytok = Math.abs(damage.celkove[0] - damage.celkove[1]);
+  const prebytokDrzi: PlayerId | null =
+    damage.celkove[0] === damage.celkove[1] ? null : damage.celkove[0] > damage.celkove[1] ? 0 : 1;
+  return { vitaz, prebytokDrzi, prebytok };
+}
+
+/** Krok Exekútora pre jedného hráča (PRAVIDLA §8.1). */
+export type ExekutorVysledok = "mimoOhrozenia" | "musiOdovzdatNastroj";
+
+export function exekutorCheck(priznaneDlhy: number, priazenExekutora: number): ExekutorVysledok {
+  return priznaneDlhy >= prahExekutora(priazenExekutora)
+    ? "musiOdovzdatNastroj"
+    : "mimoOhrozenia";
+}
+
+/** Po odovzdaní Nástroja zhorí polovica priznaných dlhov (zaokrúhlené nadol). */
+export function dlhyPoExekucii(priznaneDlhy: number): number {
+  return priznaneDlhy - Math.floor(priznaneDlhy / 2);
+}

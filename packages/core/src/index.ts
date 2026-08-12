@@ -11,3 +11,4 @@ export * from "./rng.ts";
 export * from "./partia.ts";
 export * from "./constants.ts";
 export * from "./player.ts";
+export * from "./battle.ts";
