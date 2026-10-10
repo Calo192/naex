@@ -7,7 +7,8 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { WebSocket } from "ws";
 import type { ClientState, Command } from "@naex/core";
 import { posunMarker } from "@naex/core";
-import { createGameServer, type GameServer } from "../src/server.ts";
+import type { GameServer } from "../src/server.ts";
+import { registruj, testovaciServer } from "./pomocnik.ts";
 
 interface StavMsg {
   type: "state";
@@ -21,8 +22,8 @@ class Robot {
   privitanie: { code?: string; token?: string; seat?: number } = {};
   chyby: string[] = [];
 
-  constructor(port: number) {
-    this.ws = new WebSocket(`ws://127.0.0.1:${port}/ws`);
+  constructor(port: number, cookie: string) {
+    this.ws = new WebSocket(`ws://127.0.0.1:${port}/ws`, { headers: { cookie } });
     this.ws.on("message", (raw) => {
       const text = String(raw);
       const msg = JSON.parse(text) as { type: string; [k: string]: unknown };
@@ -147,18 +148,19 @@ class Robot {
 }
 
 let server: GameServer;
+let zmaz: () => Promise<void>;
 
 beforeAll(async () => {
-  server = await createGameServer({ port: 0 });
+  ({ server, zmaz } = await testovaciServer());
 });
 
 afterAll(async () => {
-  await server.close();
+  await zmaz();
 });
 
 describe("E2E — celá partia cez server", () => {
   it("dvaja klienti dohrajú hru len z klientskeho pohľadu", async () => {
-    const a = new Robot(server.port);
+    const a = new Robot(server.port, (await registruj(server.port)).cookie);
     await a.otvorene();
     a.posli({ type: "create" });
     for (let i = 0; i < 50 && a.privitanie.code === undefined; i++) {
@@ -167,7 +169,7 @@ describe("E2E — celá partia cez server", () => {
     const kod = a.privitanie.code;
     expect(kod).toBeDefined();
 
-    const b = new Robot(server.port);
+    const b = new Robot(server.port, (await registruj(server.port)).cookie);
     await b.otvorene();
     const cakajA = a.novyStav();
     const cakajB = b.novyStav();

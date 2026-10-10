@@ -17,7 +17,7 @@ import type {
   Trigger,
   Zone,
 } from "./types.ts";
-import { ALL_ACTIONS, ALL_FAVOURS, ALL_TAGS, ALL_TRIGGERS } from "./types.ts";
+import { ALL_ACTIONS, ALL_FAVOURS } from "./types.ts";
 import type { CardVariants } from "./variants.ts";
 import { cardVariants } from "./variants.ts";
 
@@ -93,14 +93,13 @@ export function parseCards(json: unknown): ReadonlyMap<string, CardDef> {
     const id = asString(raw.id, "card.id");
     const path = `karta ${id}`;
     const tags = asArray(raw.tags, `${path}.tags`).map((t, i) => {
-      const s = asString(t, `${path}.tags[${i}]`);
-      if (!(ALL_TAGS as readonly string[]).includes(s)) fail(path, `neznámy tag „${s}“`);
-      return s as Tag;
+      // Tagy nemajú vlastné pravidlá (PRAVIDLA §2) — tvorca smie zaviesť nový;
+      // motor reaguje len na tie, ktoré pozná.
+      return asString(t, `${path}.tags[${i}]`) as Tag;
     });
     const triggers = asArray(raw.triggers, `${path}.triggers`).map((t, i) => {
-      const s = asString(t, `${path}.triggers[${i}]`);
-      if (!(ALL_TRIGGERS as readonly string[]).includes(s)) fail(path, `neznámy spúšťač „${s}“`);
-      return s as Trigger;
+      // Neznámy spúšťač nevadí — taký efekt beží v režime MANUAL.
+      return asString(t, `${path}.triggers[${i}]`) as Trigger;
     });
     if (!isRecord(raw.permutations)) fail(path, "chýba permutations");
     const def: CardDef = {

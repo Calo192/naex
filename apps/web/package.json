@@ -8,7 +8,12 @@
     "build": "tsc --build && vite build",
     "preview": "vite preview"
   },
-  "dependencies": { "@naex/core": "*", "react": "^19.0.0", "react-dom": "^19.0.0" },
+  "dependencies": {
+    "@naex/core": "*",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "@naex/tvorba": "*"
+  },
   "devDependencies": {
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",

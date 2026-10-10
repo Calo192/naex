@@ -1,8 +1,17 @@
 {
   "files": [],
   "references": [
-    { "path": "./packages/core" },
-    { "path": "./packages/server" },
-    { "path": "./apps/web" }
+    {
+      "path": "./packages/core"
+    },
+    {
+      "path": "./packages/tvorba"
+    },
+    {
+      "path": "./packages/server"
+    },
+    {
+      "path": "./apps/web"
+    }
   ]
 }

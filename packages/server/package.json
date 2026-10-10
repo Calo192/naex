@@ -9,6 +9,13 @@
     "start": "node --experimental-strip-types src/index.ts",
     "build": "tsc --build"
   },
-  "dependencies": { "@naex/core": "*", "ws": "^8.18.0" },
-  "devDependencies": { "@types/ws": "^8.5.12", "@types/node": "^22.0.0" }
+  "dependencies": {
+    "@naex/core": "*",
+    "ws": "^8.18.0",
+    "@naex/tvorba": "*"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.5.12",
+    "@types/node": "^22.0.0"
+  }
 }
