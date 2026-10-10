@@ -5,7 +5,12 @@ podoby, ktorá sa dá priamo implementovať a otestovať. Toto **nie sú** pravi
 pre hráčov — je to špecifikácia.
 
 Originál: `C:\Users\Michal\Documents\Claude\naex_pravidla_v11_tlac.docx`
-Karty: `data/cards.json` (vygenerované z `kartyai_cards_20260713_rozsirene.txt`)
+Karty: `data/cards.json` (vygenerované nástrojom `tools/import_print_pdf.py` z tlačového
+súboru `docs/KartyAI_PrintFile_20260716_131925.pdf`)
+
+Aktualizované podľa `docs/naex_pravidla_v2_celostranova_robota.pdf` (pravidlá v2):
+akcia **Robota**, spúšťač **Exekúcia**, Absťák sa rovno priznáva, Poldecko pridáva
+poškodenie pečene.
 
 > Miesta označené **[?]** sú nejednoznačné alebo v pravidlách chýbajú.
 > Neimplementuj ich potichu — pozri `docs/BRIEF.md`, sekcia „Otvorené otázky".
@@ -81,6 +86,7 @@ Tagy nemajú vlastné pravidlá, pokiaľ sa na ne neodkazuje efekt.
 | Poldecko | `Poldeci` | otočí jeden vypitý poldeci späť na plný (**až pri bitke**) |
 | Posilnenie | `Posilnenie` | zdvojnásobí prepojenú akciu (priaznivú aj nepriaznivú) |
 | Odpor | `Odpor` | zruší prepojenú akciu; Odpor + Odpor = Vzbura |
+| Robota | `Robota` | v kroku Exekútora, **pred** kontrolou prahu, odhodí 1 priznaný Dlh (do odhadzovacieho balíčka); funguje aj bez exekúcie |
 
 Pozor na tri názvy, ktoré sa v pravidlách a v exporte líšia:
 `Dlh`→Hazard, `PoškodeniePečene`→Pečeň, `Poldeci`→Poldecko.
@@ -252,7 +258,8 @@ Končí, keď obaja odohrajú svoj limit alebo obaja pasujú.
 
 ### 1. Exekútor
 
-Spočítajú sa **priznané** Dlhy (nepriznané sa nerátajú).
+Najprv **Robota**: za každú aktívnu Robotu hráč odhodí 1 priznaný Dlh.
+Potom sa spočítajú **priznané** Dlhy (nepriznané sa nerátajú).
 
 ```
 prah = 10 + 2 × priazeň Exekútora
@@ -444,7 +451,7 @@ komponentoch, v pravidlách nie sú. Provizórne hodnoty v `data/elders.json`.
 |---|---|---|
 | **Dlh** | akciou Hazard | bez akcií; ráta sa k prahu Exekútora (keď je priznaný); nepriznaný uberá body |
 | **Cirhóza** | pri dosiahnutí prahu poškodenia pečene | v bitke pridáva tuhé poškodenie |
-| **Absťák** | keď hráč v kole skonzumuje **menej nerestí** než v predošlom | znižuje **tvoje** tuhé poškodenie (o 1 za kus) |
+| **Absťák** | keď hráč v kole skonzumuje **menej nerestí** než v predošlom; vykladá sa **rovno priznaný**. Viac nerestí → jeden Absťák späť do zásoby; prvé kolo len nastaví základ | znižuje **tvoje** tuhé poškodenie (o 1 za kus) |
 
 **[?]** „Nerestí" — čo presne sa počíta? Poldeci? Cigarety? Oboje?
 

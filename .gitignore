@@ -4,3 +4,11 @@ dist-types/
 *.tsbuildinfo
 .env
 .DS_Store
+
+# Veľké podklady — nepatria do gitu
+docs/*.zip
+docs/*.pdf
+docs/NA EX/
+# Dáta bežiaceho servera (SQLite, nahrané súbory)
+/data/
+__pycache__/

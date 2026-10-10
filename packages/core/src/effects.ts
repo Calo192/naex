@@ -20,6 +20,8 @@ import { prebudenyPre } from "./elders.ts";
 export type EfektStatus = "native" | "impl" | "manual";
 
 export const REGISTER: Readonly<Record<string, EfektStatus>> = {
+  // Texty podľa tlačovej sady (docs/KartyAI_PrintFile_20260716). Zmenený text
+  // karty v tvorcovi → skontroluj, či implementácia ešte sedí.
   autobusar: "impl", // Bitka: ignoruj trocha absťákov
   benzinka: "manual", // Bitka: súčet Cigaretiek > 7 → zahodenie občanov
   cigorky: "impl", // Dedičstvo: žiadny refill; pred bitkou cigareta za aktívnu Cigaretku
@@ -32,22 +34,22 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   hasic: "impl", // Nástup: Pracujúci občan z odhadzovacieho do ruky
   hrobar: "manual", // Furt: cigareta, keď súper zahodí kartu
   ihrisko: "impl", // Furt: prah Cirhózy +1
-  krcma: "manual", // Pitka: povinný NA EX; Bitka: poldeci sa otočia
+  krcma: "manual", // Pitka: povinný NA EX
   krcmarka: "manual", // Bitka: voliteľné otočenie poldecáka
   lesna_cesta: "impl", // Pitka: NA EX zahodí absťák
-  liberal: "manual", // Bitka: 2× akcie pri rovnosti pohlaví; nevie NA EX
+  liberal: "manual", // Furt: 2× akcie pri rovnosti pohlaví; Furt: nevie NA EX
   milujuca_manzelka: "manual", // Furt: o cigaretu menej
   ministrant: "impl", // Výhra: posun markera stojí +1 prebytku
   nealko: "impl", // Dedičstvo: Poldeci/NA EX bez pečene; Poldeci nedopĺňa
-  niekoho_stryna: "impl", // Nástup: zahoď trocha Cirhóz
+  niekoho_stryna: "impl", // Nástup: zahoď trocha Cirhóz z ruky
   noviny: "impl", // Dedičstvo: tvoje povery a súperova viera sa nerušia
   pasca: "manual", // Dedičstvo: obmedzenie dáva súperovi pecku
-  pijan: "manual", // Bitka: rana do vlastnej partie pri žene v okolí
-  policajtka: "impl", // Nástup: kriminálnik v súperovej ruke → súper berie dlh
+  pijan: "manual", // Bitka: rana do vlastnej partie pri žene s aktívnym poldeci
+  policajtka: "manual", // Nástup: preskúmaj a rozdeľ doberací balíček (voľba hráča)
   postarka: "manual", // Pitka: voliteľné doberanie s dlhmi
   praudovravec: "impl", // Furt: Autority v tvojej partii neuplatňujú efekt
   puska: "impl", // Dedičstvo: pohoršenia proti tebe neplatia; tvoje povery nič
-  recidivista: "impl", // Bitka: +1 za zahraničného v súperovej partii
+  recidivista: "impl", // Bitka: rana za zahraničného v súperovej partii
   silna_nezavisla_zena: "manual", // Furt: akcie len s podporou dvoch chlapov
   starosta: "manual", // Pitka: výmena karty za cigaretu
   svaty_text: "manual", // Dedičstvo: Viera chráni pred mäkkým
@@ -60,16 +62,16 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   vyherny_automat: "impl", // Dedičstvo: výhra páli dlhy, prehra dlh dáva
   zastavka: "impl", // Zhromaždenie: hrajú sa 2 karty bez ohľadu na poldeci
   zberny_dvor: "impl", // Pitka: o trocha menej dlhov
-  zamocnik: "manual", // Furt: nástroje v okolí posilnené
+  zamocnik: "manual", // Furt: akcie nástrojov v okolí posilnené
   zivnostnik: "impl", // Nástup: zahoď súperovo dedičstvo
-  abstak: "manual", // native −1 tuhé; texty navyše sa pripomínajú
-  pes: "impl", // Nástup: len vedľa občana; Bitka: rana pri chlapovi
+  abstak: "native", // Bitka: o ranu menej (−1 tuhé za kus)
+  pes: "impl", // Furt: nikdy v partii s iným zvieraťom
   kostol: "impl", // Zhromaždenie: karta za aktívnu Vieru; Bitka: povery neplatia
-  polovnik: "manual", // Furt: Petelica +1 v okolí; ignoruje zvieratá
-  svokra: "manual", // Furt: pohoršenia 2× pri mužovi
-  sarlatan: "manual", // Bitka: absťák za pečeň; Vízie ako Viera
-  podvodnik: "impl", // Výhra: zahoď 2 dlhy; Prehra: ukradni cigaretu
-  cierna_macka: "impl", // Furt: súperove Vízie neplatia; Bitka: rana za prah
+  zahradkar: "impl", // Exekúcia: smie ísť namiesto náradia
+  svokra: "manual", // Nástup: vráť súperovi jedno NA EX
+  sarlatan: "manual", // Furt: Viera v okolí platí ako Vízia
+  podvodnik: "impl", // Prehra: ukradni trocha cigariet
+  cierna_macka: "impl", // Pitka: súperove Vízie neplatia
 };
 
 export function jeEfektManual(defId: string): boolean {
@@ -206,7 +208,7 @@ export function cenaPrebytku(state: GameState, p: PlayerId): number {
 
 /** Bitkové modifikátory závislé od kariet v hre. */
 export interface BitkaMody {
-  /** Dodatočné tuhé poškodenie hráča (recidivista, pes, cierna_macka). */
+  /** Dodatočné tuhé poškodenie hráča (recidivista). */
   readonly tuheBonus: number;
   /** autobusar: ignoruj trocha absťákov. */
   readonly abstakyZlava: number;
@@ -226,22 +228,11 @@ export function bitkaMody(
   const opp = opponentOf(p);
   let tuheBonus = 0;
 
-  // recidivista: za každého Zahraničného v súperovej partii dodatočné poškodenie
+  // recidivista: za každého zahraničného v súperovej partii dodatočná rana
   if (vPartii(state, p, "recidivista")) {
     tuheBonus += state.partie[opp].filter((pl) =>
       defOf(data, pl.card).tags.includes("Zahraničný"),
     ).length;
-  }
-  // pes: ak je v tvojej partii chlap, udelí súperovi Ranu
-  if (vPartii(state, p, "pes")) {
-    const maChlapa = state.partie[p].some(
-      (pl) => pl.card.defId !== "pes" && defOf(data, pl.card).tags.includes("Chlap"),
-    );
-    if (maChlapa) tuheBonus += 1;
-  }
-  // cierna_macka: ak súper v tomto kole prekročil prah cirhózy, dodatočná Rana
-  if (vPartii(state, p, "cierna_macka")) {
-    tuheBonus += state.cirhozyVKole[opp];
   }
 
   return {

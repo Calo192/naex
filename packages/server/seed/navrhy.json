@@ -1,0 +1,502 @@
+[
+ {
+  "id": "veterinar",
+  "farba": "#6a6ab8",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "veterinar.jpg"
+ },
+ {
+  "id": "autobusar",
+  "farba": "#6a6ab8",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "autobusar.jpg"
+ },
+ {
+  "id": "noviny",
+  "farba": "#6ab891",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "noviny.jpg"
+ },
+ {
+  "id": "cigorky",
+  "farba": "#6ab891",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "cigorky.jpg"
+ },
+ {
+  "id": "vinko",
+  "farba": "#6ab891",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "vinko.jpg"
+ },
+ {
+  "id": "pasca",
+  "farba": "#6ab891",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "pasca.jpg"
+ },
+ {
+  "id": "puska",
+  "farba": "#6ab891",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "puska.jpg"
+ },
+ {
+  "id": "svaty_text",
+  "farba": "#6ab891",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "svaty_text.jpg"
+ },
+ {
+  "id": "nealko",
+  "farba": "#6ab891",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "nealko.jpg"
+ },
+ {
+  "id": "vyherny_automat",
+  "farba": "#6ab891",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "vyherny_automat.jpg"
+ },
+ {
+  "id": "dlh",
+  "farba": "#b8b86a",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 15,
+  "obrazok": "dlh.jpg"
+ },
+ {
+  "id": "cirhoza",
+  "farba": "#b8b86a",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 15,
+  "obrazok": "cirhoza.jpg"
+ },
+ {
+  "id": "lesna_cesta",
+  "farba": "#6ab86a",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "lesna_cesta.jpg"
+ },
+ {
+  "id": "ihrisko",
+  "farba": "#6ab86a",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "ihrisko.jpg"
+ },
+ {
+  "id": "pijan",
+  "farba": "#b86a91",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "pijan.jpg"
+ },
+ {
+  "id": "milujuca_manzelka",
+  "farba": "#6ab8b8",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "milujuca_manzelka.jpg"
+ },
+ {
+  "id": "ministrant",
+  "farba": "#b86a91",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "ministrant.jpg"
+ },
+ {
+  "id": "financna_poradkyna",
+  "farba": "#6a91b8",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "financna_poradkyna.jpg"
+ },
+ {
+  "id": "velmi_smutiaca_vdova",
+  "farba": "#91b86a",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "velmi_smutiaca_vdova.jpg"
+ },
+ {
+  "id": "vestica",
+  "farba": "#916ab8",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "vestica.jpg"
+ },
+ {
+  "id": "silna_nezavisla_zena",
+  "farba": "#b8916a",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "silna_nezavisla_zena.jpg"
+ },
+ {
+  "id": "policajtka",
+  "farba": "#b86a6a",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "policajtka.jpg"
+ },
+ {
+  "id": "hasic",
+  "farba": "#b86a6a",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "hasic.jpg"
+ },
+ {
+  "id": "praudovravec",
+  "farba": "#b8916a",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "praudovravec.jpg"
+ },
+ {
+  "id": "zamocnik",
+  "farba": "#6a91b8",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "zamocnik.jpg"
+ },
+ {
+  "id": "niekoho_stryna",
+  "farba": "#6ab8b8",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "niekoho_stryna.jpg"
+ },
+ {
+  "id": "veteran",
+  "farba": "#6ab8b8",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "veteran.jpg"
+ },
+ {
+  "id": "recidivista",
+  "farba": "#91b86a",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "recidivista.jpg"
+ },
+ {
+  "id": "starosta",
+  "farba": "#6a6ab8",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "starosta.jpg"
+ },
+ {
+  "id": "farar",
+  "farba": "#6a6ab8",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "farar.jpg"
+ },
+ {
+  "id": "postarka",
+  "farba": "#6a6ab8",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "postarka.jpg"
+ },
+ {
+  "id": "hrobar",
+  "farba": "#6a6ab8",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "hrobar.jpg"
+ },
+ {
+  "id": "vychovavatelka",
+  "farba": "#6a6ab8",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "vychovavatelka.jpg"
+ },
+ {
+  "id": "liberal",
+  "farba": "#916ab8",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "liberal.jpg"
+ },
+ {
+  "id": "dievcina_na_vydaj",
+  "farba": "#b86a91",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "dievcina_na_vydaj.jpg"
+ },
+ {
+  "id": "zivnostnik",
+  "farba": "#6a91b8",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "zivnostnik.jpg"
+ },
+ {
+  "id": "krcmarka",
+  "farba": "#6a6ab8",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "krcmarka.jpg"
+ },
+ {
+  "id": "zberny_dvor",
+  "farba": "#6ab86a",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "zberny_dvor.jpg"
+ },
+ {
+  "id": "benzinka",
+  "farba": "#6ab86a",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "benzinka.jpg"
+ },
+ {
+  "id": "zastavka",
+  "farba": "#6ab86a",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "zastavka.jpg"
+ },
+ {
+  "id": "krcma",
+  "farba": "#6ab86a",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "krcma.jpg"
+ },
+ {
+  "id": "abstak",
+  "farba": "#b8b86a",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 10,
+  "obrazok": "abstak.jpg"
+ },
+ {
+  "id": "cierna_macka",
+  "farba": "#b86ab8",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "cierna_macka.jpg"
+ },
+ {
+  "id": "kocovnik",
+  "farba": "#916ab8",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "kocovnik.jpg"
+ },
+ {
+  "id": "pes",
+  "farba": "#b86ab8",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "pes.jpg"
+ },
+ {
+  "id": "kostol",
+  "farba": "#6ab86a",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "kostol.jpg"
+ },
+ {
+  "id": "svokra",
+  "farba": "#b86a6a",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "svokra.jpg"
+ },
+ {
+  "id": "sarlatan",
+  "farba": "#b8916a",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "sarlatan.jpg"
+ },
+ {
+  "id": "podvodnik",
+  "farba": "#91b86a",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "podvodnik.jpg"
+ },
+ {
+  "id": "zahradkar",
+  "farba": "#6a91b8",
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "zahradkar.jpg"
+ }
+]

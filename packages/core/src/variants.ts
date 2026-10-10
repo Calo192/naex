@@ -39,6 +39,14 @@ export function sideLayouts(side: SideDef): readonly SideLayout[] {
 
   const recurse = (): void => {
     if (current.length === free.length) {
+      // Obmedzenie pozícií: akcia smie stáť len tam, kde je povolená.
+      const zakazane = free.some((slotIndex, k) => {
+        const sym = current[k];
+        const povolene = side.allowed?.[slotIndex];
+        return sym !== "" && sym !== undefined && povolene !== undefined && povolene.length > 0 &&
+          !povolene.includes(sym as Action);
+      });
+      if (zakazane) return;
       const layout: Slot[] = [null, null, null, null];
       free.forEach((slotIndex, k) => {
         const sym = current[k];

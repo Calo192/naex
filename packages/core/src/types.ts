@@ -22,7 +22,8 @@ export type Action =
   | "Vízia"
   | "Poldeci"
   | "Posilnenie"
-  | "Odpor";
+  | "Odpor"
+  | "Robota";
 
 export const ALL_ACTIONS: readonly Action[] = [
   "Rana",
@@ -39,6 +40,7 @@ export const ALL_ACTIONS: readonly Action[] = [
   "Poldeci",
   "Posilnenie",
   "Odpor",
+  "Robota",
 ];
 
 export type Tag =
@@ -87,7 +89,8 @@ export type Trigger =
   | "Výhra"
   | "Prehra"
   | "Prestávka"
-  | "Podpora";
+  | "Podpora"
+  | "Exekúcia";
 
 export const ALL_TRIGGERS: readonly Trigger[] = [
   "Nástup",
@@ -100,6 +103,7 @@ export const ALL_TRIGGERS: readonly Trigger[] = [
   "Prehra",
   "Prestávka",
   "Podpora",
+  "Exekúcia",
 ];
 
 /** Fázy kola — stavový automat motora (M6). */
@@ -118,6 +122,12 @@ export const SLOT_INDEXES: readonly SlotIndex[] = [0, 1, 2, 3];
 export interface SideDef {
   readonly blocked: readonly SlotIndex[];
   readonly actions: Readonly<Partial<Record<Action, number>>>;
+  /**
+   * Obmedzenie pozícií (tvorca kariet KartyAI): pozícia uvedená tu smie
+   * držať len vymenované akcie (alebo ostať prázdna). Chýbajúca pozícia
+   * povoľuje všetko.
+   */
+  readonly allowed?: Readonly<Partial<Record<SlotIndex, readonly Action[]>>>;
 }
 
 export interface CardDef {

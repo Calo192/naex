@@ -50,21 +50,28 @@ describe("M1 — generovanie variantov", () => {
     }
   });
 
-  it("ihrisko má vpravo 1 rozloženie (Poldeci ×3 v 3 slotoch)", () => {
-    const ihrisko = data.cards.get("ihrisko");
-    expect(ihrisko).toBeDefined();
-    if (ihrisko === undefined) return;
-    const layouts = sideLayouts(ihrisko.right);
+  it("zhodné akcie sa nepočítajú viackrát (Poldeci ×3 v 3 slotoch = 1)", () => {
+    const layouts = sideLayouts({ blocked: [3], actions: { Poldeci: 3 } });
     expect(layouts.length).toBe(1);
     expect(layouts[0]).toEqual(["Poldeci", "Poldeci", "Poldeci", null]);
   });
 
+  it("obmedzenie pozícií vyradí rozloženia so zakázanou akciou", () => {
+    // Veterinár vpravo: Cigaretka + Poldeci na pozíciách 1–2, Poldeci len na 1.
+    const volne = sideLayouts({ blocked: [0, 3], actions: { Cigaretka: 1, Poldeci: 1 } });
+    expect(volne.length).toBe(2);
+    const obmedzene = sideLayouts({
+      blocked: [0, 3],
+      actions: { Cigaretka: 1, Poldeci: 1 },
+      allowed: { 1: ["Poldeci"] },
+    });
+    expect(obmedzene).toEqual([[null, "Poldeci", "Cigaretka", null]]);
+  });
+
   it("rozloženia sú deterministické a v stabilnom poradí", () => {
-    const pijan = data.cards.get("pijan");
-    expect(pijan).toBeDefined();
-    if (pijan === undefined) return;
-    const a = sideLayouts(pijan.left);
-    const b = sideLayouts(pijan.left);
+    const strana = { blocked: [0] as const, actions: { PoškodeniePečene: 1, Poldeci: 1 } };
+    const a = sideLayouts(strana);
+    const b = sideLayouts(strana);
     expect(a).toEqual(b);
     // blocked [0], akcie PoškodeniePečene + Poldeci + 1 prázdne:
     // prázdno ("") radí pred akcie, Poldeci pred PoškodeniePečene.

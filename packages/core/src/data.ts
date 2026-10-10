@@ -70,7 +70,19 @@ function parseSide(v: unknown, path: string): SideDef {
     }
     actions[key as Action] = asNumber(count, `${path}.actions.${key}`);
   }
-  return { blocked, actions };
+  if (v.allowed === undefined) return { blocked, actions };
+  if (!isRecord(v.allowed)) fail(`${path}.allowed`, "očakávam objekt");
+  const allowed: Partial<Record<SlotIndex, readonly Action[]>> = {};
+  for (const [pos, list] of Object.entries(v.allowed)) {
+    const n = Number(pos);
+    if (n !== 0 && n !== 1 && n !== 2 && n !== 3) fail(`${path}.allowed`, `pozícia ${pos} mimo 0..3`);
+    allowed[n as SlotIndex] = asArray(list, `${path}.allowed.${pos}`).map((a) => {
+      const s = asString(a, `${path}.allowed.${pos}`);
+      if (!(ALL_ACTIONS as readonly string[]).includes(s)) fail(`${path}.allowed`, `neznáma akcia „${s}“`);
+      return s as Action;
+    });
+  }
+  return { blocked, actions, allowed };
 }
 
 export function parseCards(json: unknown): ReadonlyMap<string, CardDef> {

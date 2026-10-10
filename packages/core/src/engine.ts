@@ -758,13 +758,8 @@ function cmdPlace(
         "Nástroj nesmie susediť s Nástrojom.",
       );
     }
-    // pes: nesmie nastúpiť samostatne, iba vedľa občana.
-    if (def.id === "pes") {
-      need(
-        sused != null && defOf(data, sused.card as CardInstance).tags.includes("Občan"),
-        "Pes smie nastúpiť len vedľa občana.",
-      );
-    }
+    // pes: nikdy nesmie byť v partii s iným zvieraťom.
+    need(!zvieraKonflikt(data, partia as readonly PlacedCard[], def), "Pes nesmie byť v partii s iným zvieraťom.");
     const karta = vezmiZRuky(s, p, cmd.uid);
     partia.push({ card: karta, playedBy: p } as DeepMutable<PlacedCard>);
     events.push({
@@ -823,21 +818,10 @@ function nastupEfekt(
       }
       break;
     }
-    case "policajtka": {
-      // Ak má súper kriminálnika na ruke, musí si zobrať dlh.
-      const maKriminalnika = s.hraci[opp].ruka.some((k) =>
-        defOf(data, k as CardInstance).tags.includes("Kriminál"),
-      );
-      if (maKriminalnika) {
-        pridajKliatbu(s, data, opp, "dlh", events);
-        events.push({ type: "log", text: `Policajtka: hráč ${opp + 1} má kriminálnika — berie Dlh.` });
-      }
-      break;
-    }
     case "niekoho_stryna": {
-      // Zahoď trocha kariet cirhózy z ruky alebo hracej oblasti.
+      // Zahoď trocha kariet cirhózy z ruky.
       let zostava = hodnotaTrocha(priazen(data, s as GameState, "LAKOMEC", p));
-      for (const kde of ["ruka", "priznane"] as const) {
+      for (const kde of ["ruka"] as const) {
         while (zostava > 0) {
           const idx = s.hraci[p][kde].findIndex((k) => k.defId === "cirhoza");
           if (idx === -1) break;
@@ -1140,6 +1124,15 @@ function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
   if (b.krok === "exekutor") {
     for (const p of [obranca(s), s.utocnik]) {
       if (b.exekutorHotovy[p]) continue;
+      // Robota (pravidlá v2): ešte pred kontrolou prahu odhodí za každú
+      // aktívnu Robotu 1 priznaný Dlh — do odhadzovacieho balíčka.
+      for (let r = b.sums[p].Robota ?? 0; r > 0; r--) {
+        const idx = s.hraci[p].priznane.findIndex((k) => k.defId === "dlh");
+        if (idx === -1) break;
+        const [dlh] = hrac(s, p).priznane.splice(idx, 1);
+        if (dlh !== undefined) hrac(s, p).odhadzovaci.push(dlh);
+        events.push({ type: "log", text: `Robota: hráč ${p + 1} odhadzuje 1 priznaný Dlh.` });
+      }
       const dlhy = pocetKariet(s.hraci[p] as PlayerState, "dlh", "priznane");
       const vysledok = exekutorCheck(dlhy, priazen(data, s as GameState, "EXEKUTOR", p));
       if (vysledok === "mimoOhrozenia") {
@@ -1235,13 +1228,23 @@ export interface KartaVolba {
   readonly kde: KartaZdroj;
 }
 
+/** pes: nikdy nesmie byť v partii s iným zvieraťom (platí v oboch smeroch). */
+function zvieraKonflikt(data: GameData, partia: readonly PlacedCard[], def: CardDef): boolean {
+  if (!def.tags.includes("Zviera")) return false;
+  return partia.some((pl) => {
+    if (!defOf(data, pl.card).tags.includes("Zviera")) return false;
+    return def.id === "pes" || pl.card.defId === "pes";
+  });
+}
+
 /** Nástroje hráča naprieč zónami — bez uid, aby sa dali poslať klientovi. */
 export function najdiNastroje(s: GameState, data: GameData, p: PlayerId): KartaVolba[] {
   const out: KartaVolba[] = [];
   for (const kde of ["ruka", "odhadzovaci", "doberaci", "dedicstvo"] as const) {
     const videne = new Set<string>();
     for (const k of s.hraci[p][kde]) {
-      if (!defOf(data, k).tags.includes("Nástroj")) continue;
+      // zahradkar: pri Exekúcii ho smieš zahodiť namiesto náradia.
+      if (!defOf(data, k).tags.includes("Nástroj") && k.defId !== "zahradkar") continue;
       if (videne.has(k.defId)) continue;
       videne.add(k.defId);
       out.push({ defId: k.defId, kde });
@@ -1304,7 +1307,10 @@ function cmdExekutorTool(
   const idx = s.hraci[p][cmd.kde].findIndex((k) => k.defId === cmd.defId);
   need(idx !== -1, "Taký Nástroj tam nemáš.");
   const karta = s.hraci[p][cmd.kde][idx] as CardInstance;
-  need(defOf(data, karta).tags.includes("Nástroj"), "Karta nie je Nástroj.");
+  need(
+    defOf(data, karta).tags.includes("Nástroj") || karta.defId === "zahradkar",
+    "Karta nie je Nástroj.",
+  );
   hrac(s, p)[cmd.kde].splice(idx, 1);
   // Polovica priznaných dlhov zhorí (nadol).
   const dlhy = s.hraci[p].priznane.filter((k) => k.defId === "dlh");
@@ -1602,14 +1608,17 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
   if (vDedicstve(s as GameState, porazeny, "vyherny_automat")) {
     pridajKliatbu(s, data, porazeny, "dlh", events);
   }
-  // podvodnik: pri Výhre zahoď 2 Dlhy; pri Prehre ukradni súperovi cigaretu.
-  if (vPartii(s as GameState, vitaz, "podvodnik")) {
-    spalDlhy(vitaz, 2, "Podvodník");
-  }
-  if (vPartii(s as GameState, porazeny, "podvodnik") && s.hraci[vitaz].cigarety > 0) {
-    hrac(s, vitaz).cigarety -= 1;
-    hrac(s, porazeny).cigarety += 1;
-    events.push({ type: "log", text: `Podvodník: hráč ${porazeny + 1} ukradol cigaretu.` });
+  // podvodnik: pri Prehre ukradni súperovi trocha cigariet.
+  if (vPartii(s as GameState, porazeny, "podvodnik")) {
+    const ukradne = Math.min(
+      s.hraci[vitaz].cigarety,
+      hodnotaTrocha(priazen(data, s as GameState, "LAKOMEC", porazeny)),
+    );
+    if (ukradne > 0) {
+      hrac(s, vitaz).cigarety -= ukradne;
+      hrac(s, porazeny).cigarety += ukradne;
+      events.push({ type: "log", text: `Podvodník: hráč ${porazeny + 1} ukradol ${ukradne} cigariet.` });
+    }
   }
 
   // 7. Návrat kariet — do odhadzovacieho balíčka hráča, ktorý ich zahral.
@@ -1627,10 +1636,21 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
     events.push({ type: "log", text: `Hráč ${vitaz + 1} ovládol lokalitu ${defOf(data, lokalita).name}.` });
   }
 
-  // Absťák: menej nerestí než v predošlom kole → nová kliatba (PRAVIDLA §12).
+  // Absťák (pravidlá v2): menej nerestí než minulé kolo → Absťák rovno do
+  // hracej oblasti (priznaný); viac → jeden Absťák späť do zásoby. Prvé kolo
+  // len nastaví základ.
   for (const p of [0, 1] as const) {
-    if (s.hraci[p].nerestiTotoKolo < s.hraci[p].nerestiMinuleKolo) {
-      pridajKliatbu(s, data, p, "abstak", events);
+    const teraz = s.hraci[p].nerestiTotoKolo;
+    const minule = s.hraci[p].nerestiMinuleKolo;
+    if (s.kolo > 1 && teraz < minule) {
+      hrac(s, p).priznane.push(novaInstancia(s, data, "abstak") as DeepMutable<CardInstance>);
+      events.push({ type: "log", text: `Hráč ${p + 1} získava Absťák.` });
+    } else if (s.kolo > 1 && teraz > minule) {
+      const idx = s.hraci[p].priznane.findIndex((k) => k.defId === "abstak");
+      if (idx !== -1) {
+        hrac(s, p).priznane.splice(idx, 1);
+        events.push({ type: "log", text: `Hráč ${p + 1} odhadzuje Absťák.` });
+      }
     }
     hrac(s, p).nerestiMinuleKolo = s.hraci[p].nerestiTotoKolo;
     hrac(s, p).nerestiTotoKolo = 0;
@@ -1771,12 +1791,10 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
         const koniec = partia.length > 0 ? partia[partia.length - 1] : null;
         const koniecJeNastroj =
           koniec != null && defOf(data, koniec.card).tags.includes("Nástroj");
-        const koniecJeObcan =
-          koniec != null && defOf(data, koniec.card).tags.includes("Občan");
         const smieVlastna =
           (jeNastroj || z.zostavaLimit[p] > 0) &&
           !(jeNastroj && koniecJeNastroj) &&
-          !(def.id === "pes" && !koniecJeObcan);
+          !zvieraKonflikt(data, partia, def);
         if (smieVlastna) {
           out.push({ type: "place", uid: karta.uid, target: "vlastna" });
         }
@@ -1785,9 +1803,7 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
           const supKoniec = sup.length > 0 ? sup[sup.length - 1] : null;
           const supNastroj =
             supKoniec != null && defOf(data, supKoniec.card).tags.includes("Nástroj");
-          const supObcan =
-            supKoniec != null && defOf(data, supKoniec.card).tags.includes("Občan");
-          if (!(jeNastroj && supNastroj) && !(def.id === "pes" && !supObcan)) {
+          if (!(jeNastroj && supNastroj) && !zvieraKonflikt(data, sup, def)) {
             out.push({ type: "place", uid: karta.uid, target: "superova" });
           }
         }

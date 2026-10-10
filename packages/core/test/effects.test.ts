@@ -12,6 +12,8 @@ import {
   bitkaMody,
   computeDamage,
   jeEfektManual,
+  legalCommands,
+  najdiNastroje,
   limitBonus,
   limitOverride,
   loadGameData,
@@ -87,25 +89,24 @@ describe("M10 — vzorové efekty (háčiky)", () => {
     ).toBe(2);
   });
 
-  it("čierna mačka: dodatočná Rana za súperov prah cirhózy v tomto kole", () => {
+  it("čierna mačka už nepridáva ranu (nový text: len Vízie)", () => {
     const s = fakeState({
       partie: [[placed("cierna_macka", 0)], []],
       cirhozyVKole: [0, 2],
     });
-    expect(bitkaMody(data, s, 0, 1, 2).tuheBonus).toBe(2);
-    expect(bitkaMody(data, s, 1, 1, 2).tuheBonus).toBe(0);
+    expect(bitkaMody(data, s, 0, 1, 2).tuheBonus).toBe(0);
   });
 
-  it("recidivista a pes pridávajú tuhé; farár a veterinár uberajú", () => {
+  it("recidivista pridáva tuhé; farár a veterinár uberajú", () => {
     const s = fakeState({
       partie: [
-        [placed("recidivista", 0), placed("pes", 0), placed("pijan", 0), placed("farar", 0)],
+        [placed("recidivista", 0), placed("pijan", 0), placed("farar", 0)],
         [placed("kocovnik", 1), placed("veterinar", 1)],
       ],
     });
     const mody0 = bitkaMody(data, s, 0, 1, 2);
-    // kocovnik je Zahraničný → recidivista +1; pijan je Chlap → pes +1.
-    expect(mody0.tuheBonus).toBe(2);
+    // kocovnik je Zahraničný → recidivista +1.
+    expect(mody0.tuheBonus).toBe(1);
     // farár v partii 0: ignoruj trocha (1) povier súpera.
     expect(mody0.superovePoveryZlava).toBe(1);
     // veterinár v partii 1: cirhózy hráča 1 pridávajú hráčovi 0 o zopár menej.
@@ -166,5 +167,43 @@ describe("M10 — MANUAL režim", () => {
       (e) => e.type === "manualEfekt" && e.defId === "pijan",
     );
     expect(pripomienky.length).toBeGreaterThan(0);
+  });
+});
+
+/** Stav v Zhromaždení, hráč 0 na ťahu s voľným limitom. */
+function zhrom(s: GameState): GameState {
+  return {
+    ...s,
+    faza: "zhromazdenie",
+    zhromazdenieStav: { naTahu: 0, zostavaLimit: [2, 2], pasoval: [false, false] },
+  } as GameState;
+}
+
+describe("pravidlá v2 a nová tlačová sada", () => {
+  it("Robota je akcia a Záhradkár má spúšťač Exekúcia", () => {
+    expect(data.cards.get("autobusar")?.right.actions.Robota).toBe(1);
+    expect(data.cards.get("zahradkar")?.triggers).toContain("Exekúcia");
+  });
+
+  it("záhradkár sa ráta ako náhrada náradia pri exekúcii", () => {
+    const s = fakeState({});
+    const ja = s.hraci[0];
+    const so = { ...s, hraci: [{ ...ja, ruka: [inst("zahradkar")] }, s.hraci[1]] as unknown as GameState["hraci"] };
+    expect(najdiNastroje(so, data, 0).some((n) => n.defId === "zahradkar")).toBe(true);
+  });
+
+  it("pes sa nesmie vyložiť do partie s iným zvieraťom (a naopak)", () => {
+    const base = fakeState({});
+    const sPsom = {
+      ...base,
+      hraci: [{ ...base.hraci[0], ruka: [inst("cierna_macka")] }, base.hraci[1]],
+      partie: [[placed("pes", 0)], []],
+    } as unknown as GameState;
+    const tahy = legalCommands(data, zhrom(sPsom), 0);
+    expect(tahy.some((t) => t.type === "place" && t.target === "vlastna")).toBe(false);
+    // Kontrola, že test nie je prázdny: občan sa k psovi vyložiť smie.
+    const sObcanom = { ...sPsom, hraci: [{ ...base.hraci[0], ruka: [inst("pijan")] }, base.hraci[1]] } as unknown as GameState;
+    const tahy2 = legalCommands(data, zhrom(sObcanom), 0);
+    expect(tahy2.some((t) => t.type === "place" && t.target === "vlastna")).toBe(true);
   });
 });
