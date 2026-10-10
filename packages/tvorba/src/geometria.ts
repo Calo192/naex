@@ -101,3 +101,60 @@ export function geometriaKarty(k: {
     obrysSlotu: 0.4 * MM_NA_PT,
   };
 }
+
+/** Rozloženie bodovacej karty (MAUI DashboardScoringCardPdfService.ComputeLayout). */
+export interface GeometriaBodovacej {
+  readonly sirka: number;
+  readonly vyska: number;
+  /** Miesto, kam sa vkladá karta staršieho. */
+  readonly odtlacok: Obdlznik;
+  readonly slotyLave: readonly Obdlznik[];
+  readonly slotyPrave: readonly Obdlznik[];
+  readonly polomer: number;
+  /** 9 krúžkov stupnice strachu (zľava doprava). */
+  readonly kruzky: readonly Obdlznik[];
+  readonly nazov: Obdlznik;
+  readonly velkostNazvu: number;
+}
+
+export const FARBY_STUPNICE = ["#dc2626", "#f97316", "#facc15", "#e5e7eb", "#e5e7eb", "#e5e7eb", "#facc15", "#f97316", "#dc2626"] as const;
+
+export function geometriaBodovacej(b: { readonly sirkaMm: number; readonly vyskaMm: number; readonly mierkaIkon: number }): GeometriaBodovacej {
+  const kartaW = b.sirkaMm * MM_NA_PT;
+  const kartaH = b.vyskaMm * MM_NA_PT;
+  const karta = geometriaKarty({ sirkaMm: b.sirkaMm, vyskaMm: b.vyskaMm, mierkaTextu: 1, mierkaIkon: b.mierkaIkon, maTagy: true });
+  const cip = karta.slotyLave[0]?.w ?? 6 * MM_NA_PT;
+  const odsadenie = 2 * MM_NA_PT;
+  const ziabok = cip + 2 * odsadenie;
+  const blokW = kartaW + 2 * ziabok;
+  const kruhD = (kartaW / 9) * 0.7 * 2;
+  const kruhMedzera = kruhD * 0.35;
+  const radW = 9 * kruhD + 8 * kruhMedzera;
+  const pad = 6 * MM_NA_PT;
+  const obsahW = Math.max(blokW, radW);
+  const odtlacok = { x: pad + (obsahW - blokW) / 2 + ziabok, y: pad, w: kartaW, h: kartaH };
+  const sloty = (lava: boolean): Obdlznik[] =>
+    karta.slotyLave.map((s) => ({
+      x: lava ? odtlacok.x - odsadenie - cip : odtlacok.x + kartaW + odsadenie,
+      y: odtlacok.y + s.y,
+      w: cip,
+      h: cip,
+    }));
+  const kruhY = odtlacok.y + kartaH + 5 * MM_NA_PT;
+  const radX = pad + (obsahW - radW) / 2;
+  const kruzky = Array.from({ length: 9 }, (_, i) => ({ x: radX + i * (kruhD + kruhMedzera), y: kruhY, w: kruhD, h: kruhD }));
+  const velkostNazvu = 4.2 * MM_NA_PT;
+  const nazovY = kruhY + kruhD + 5 * MM_NA_PT;
+  const nazov = { x: pad, y: nazovY, w: obsahW, h: velkostNazvu * 1.4 };
+  return {
+    sirka: obsahW + 2 * pad,
+    vyska: nazovY + nazov.h + pad,
+    odtlacok,
+    slotyLave: sloty(true),
+    slotyPrave: sloty(false),
+    polomer: karta.polomerSlotu,
+    kruzky,
+    nazov,
+    velkostNazvu,
+  };
+}

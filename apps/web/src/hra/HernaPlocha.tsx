@@ -1,21 +1,26 @@
 // Herná obrazovka (M8): partia súpera hore, lokalita v strede, vlastná
-// partia a ruka dole, starší a šenok bokom, stav hráčov a log.
+// partia a ruka dole, starší a šenok bokom, stav hráčov a log. Karty sú
+// v tlačovom vzhľade; ich sloty svietia podľa živého vyhodnotenia línie.
 //
 // Živé zvýraznenie: evaluateLine z @naex/core sa volá na klientskom pohľade
 // pri každom prekreslení — hráč okamžite vidí, čo mu na spoji chytilo.
 
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type {
   ClientState,
   Command,
   ElderState,
+  GameData,
   KartaZdroj,
   LineEval,
   PlayerId,
 } from "@naex/core";
 import { STUPNICA_ZONY, evaluateLine, prebudenyPre, priazenHraca } from "@naex/core";
-import { DATA } from "./data.ts";
-import { Karta } from "./Karta.tsx";
+import type { Sada } from "@naex/tvorba";
+import { Avatar } from "../komponenty.tsx";
+import { HernaKarta, type HernaKartaProps } from "./HernaKarta.tsx";
+import type { HracInfo } from "./useHra.ts";
+import "./hra.css";
 
 type Mode =
   | { typ: "ziadny" }
@@ -36,12 +41,18 @@ const FAZY: Record<string, string> = {
   koniec: "Koniec hry",
 };
 
+// Hra beží na sade svojej miestnosti; pomocné funkcie nižšie ju čítajú odtiaľto.
+let DATA: GameData;
+
 function menoKarty(defId: string): string {
   return DATA.cards.get(defId)?.name ?? defId;
 }
 
-export interface GameViewProps {
+export interface HernaPlochaProps {
   readonly view: ClientState;
+  readonly data: GameData;
+  readonly sada: Sada;
+  readonly hraci: readonly [HracInfo | null, HracInfo | null];
   readonly log: readonly string[];
   readonly chyba: string | null;
   readonly superPripojeny: boolean;
@@ -50,20 +61,36 @@ export interface GameViewProps {
   readonly opustit: () => void;
 }
 
-export function GameView({ view, log, chyba, superPripojeny, kod, cmd, opustit }: GameViewProps) {
+export function HernaPlocha({ view, data, sada, hraci, log, chyba, superPripojeny, kod, cmd, opustit }: HernaPlochaProps) {
+  DATA = data;
   const ja = view.ja;
+  const menoHraca = (p: PlayerId): string => hraci[p]?.meno ?? `Hráč ${p + 1}`;
+  const karta = (props: Omit<HernaKartaProps, "sada" | "data"> & { readonly key?: number }) => {
+    const { key, ...rest } = props;
+    return <HernaKarta key={key} sada={sada} data={data} {...rest} />;
+  };
   const super_ = (ja === 0 ? 1 : 0) as PlayerId;
   const [mode, setMode] = useState<Mode>({ typ: "ziadny" });
   const somNaTahu = view.naTahu === ja;
+  const liniaRef = useRef<HTMLDivElement>(null);
+  const lokalitaRef = useRef<HTMLDivElement>(null);
+  // Línia môže byť dlhá — lokalitu drž v strede pohľadu.
+  const pocetVLinii = view.partie[0].length + view.partie[1].length;
+  useEffect(() => {
+    const l = liniaRef.current;
+    const lok = lokalitaRef.current;
+    if (l === null || lok === null) return;
+    l.scrollTo({ left: lok.offsetLeft + lok.offsetWidth / 2 - l.clientWidth / 2, behavior: "smooth" });
+  }, [pocetVLinii, view.ciel]);
 
   const lineEval: LineEval = useMemo(
     () =>
-      evaluateLine(DATA, {
+      evaluateLine(data, {
         lokalita: view.ciel?.typ === "lokalita" ? view.ciel.lokalita : null,
         lokalitaOtocena: view.lokalitaOtocena,
         partie: view.partie,
       }),
-    [view.ciel, view.lokalitaOtocena, view.partie],
+    [data, view.ciel, view.lokalitaOtocena, view.partie],
   );
 
   const posli = (c: Command): void => {
@@ -107,22 +134,26 @@ export function GameView({ view, log, chyba, superPripojeny, kod, cmd, opustit }
     return undefined;
   };
 
-  const partiaRow = (p: PlayerId): ReactNode => (
-    <div className={`partia ${p === ja ? "moja" : "superova"}`}>
-      <span className="popis">{p === ja ? "tvoja partia" : "partia súpera"}</span>
-      {view.partie[p].length === 0 && <span className="prazdna">— prázdna —</span>}
-      {view.partie[p].map((placed) => (
-        <Karta
-          key={placed.card.uid}
-          card={placed.card}
-          rotated={placed.playedBy !== p}
-          evalInfo={lineEval.cards.get(placed.card.uid) ?? null}
-          naexBy={placed.naexBy}
-          onClick={klikPartia(p, placed.card.uid)}
-        />
-      ))}
-    </div>
-  );
+  // Línia z pohľadu hráča (PRAVIDLA §4): tvoja partia vedie od lokality
+  // doľava, súperova doprava — karty sa dotýkajú presne tak, ako sa
+  // vyhodnocujú spoje. Karta je otočená, ak ju zahral ten druhý z vás
+  // (súperove vlastné karty sú voči tebe nohami hore).
+  const SIRKA_V_LINII = 132;
+  const partiaKarty = (p: PlayerId): ReactNode[] => {
+    const poradie = p === ja ? [...view.partie[p]].reverse() : view.partie[p];
+    return poradie.map((placed) =>
+      karta({
+        key: placed.card.uid,
+        karta: placed.card,
+        sirka: SIRKA_V_LINII,
+        otocena: placed.playedBy !== ja,
+        eval: lineEval.cards.get(placed.card.uid) ?? null,
+        naex: placed.naexBy === undefined ? undefined : menoHraca(placed.naexBy),
+        onClick: klikPartia(p, placed.card.uid),
+      }),
+    );
+  };
+  const lokalita = view.ciel?.typ === "lokalita" ? view.ciel.lokalita : null;
 
   // ---- akčný panel podľa fázy ---------------------------------------------
   const akcie: ReactNode = (() => {
@@ -138,7 +169,7 @@ export function GameView({ view, log, chyba, superPripojeny, kod, cmd, opustit }
           </strong>{" "}
           {view.koniec.dovod}
           {view.koniec.body !== null && ` Body ${view.koniec.body[0]}:${view.koniec.body[1]}.`}
-          <button onClick={opustit}>Nová hra</button>
+          <button className="tlacidlo-hlavne" onClick={opustit}>Späť do lobby</button>
         </div>
       );
     }
@@ -425,12 +456,11 @@ export function GameView({ view, log, chyba, superPripojeny, kod, cmd, opustit }
             : ""}
         </span>
         <span>
-          si hráč {ja + 1}
-          {view.utocnik === ja ? " (útočník)" : " (obranca)"} ·{" "}
-          {somNaTahu ? <strong className="na-tahu">si na ťahu</strong> : "na ťahu je súper"}
+          {view.utocnik === ja ? "útočíš" : "brániš sa"} ·{" "}
+          {somNaTahu ? <strong className="na-tahu">si na ťahu</strong> : `na ťahu je ${menoHraca(super_)}`}
         </span>
         <span className={superPripojeny ? "online" : "offline"}>
-          {superPripojeny ? "● súper pripojený" : "○ súper odpojený"}
+          {superPripojeny ? `● ${menoHraca(super_)} je pripojený` : `○ ${menoHraca(super_)} je odpojený`}
         </span>
         <button className="opustit" onClick={opustit}>
           opustiť hru
@@ -441,45 +471,58 @@ export function GameView({ view, log, chyba, superPripojeny, kod, cmd, opustit }
 
       <div className="plocha">
         <div className="stred">
-          <StavHraca view={view} p={super_} ja={ja} />
-          {partiaRow(super_)}
+          <StavHraca view={view} p={super_} ja={ja} info={hraci[super_]} />
 
-          <div className="lokalita-riadok">
-            {view.ciel?.typ === "lokalita" && view.ciel.lokalita !== null ? (
-              <>
-                <Karta
-                  card={view.ciel.lokalita}
-                  rotated={view.lokalitaOtocena}
-                  evalInfo={lineEval.cards.get(view.ciel.lokalita.uid) ?? null}
-                />
-                <span className="popis">
-                  lokalita — ľavý stĺpec hráč 1, pravý hráč 2
-                </span>
-              </>
-            ) : view.ciel?.typ === "starsi" ? (
-              <span className="popis">bitka o staršieho: {view.ciel.elderId}</span>
-            ) : (
-              <span className="popis">— cieľ kola sa ešte len vyberá —</span>
-            )}
+          <div className="linia" ref={liniaRef}>
+            <div className="linia-skupina moja">
+              <span className="partia-popis">← tvoja partia</span>
+              <div className="partia-rad">
+                {view.partie[ja].length === 0 ? <span className="prazdna">prázdna</span> : partiaKarty(ja)}
+              </div>
+            </div>
+            <div className="linia-skupina lokalita" ref={lokalitaRef}>
+              <span className="partia-popis">
+                {lokalita !== null ? "lokalita" : view.ciel?.typ === "starsi" ? "bitka o staršieho" : "cieľ kola"}
+              </span>
+              <div className="partia-rad">
+                {lokalita !== null ? (
+                  karta({
+                    karta: lokalita,
+                    sirka: SIRKA_V_LINII,
+                    // Natočenie lokality je v ráme hráča 1 opačné.
+                    otocena: view.lokalitaOtocena !== (ja === 1),
+                    eval: lineEval.cards.get(lokalita.uid) ?? null,
+                  })
+                ) : (
+                  <span className="prazdna lokalita-miesto">
+                    {view.ciel?.typ === "starsi"
+                      ? menoKarty(view.starsi.find((e) => e.elderId === view.ciel?.elderId)?.karta.defId ?? "")
+                      : "vyberá sa…"}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="linia-skupina superova">
+              <span className="partia-popis">partia — {menoHraca(super_)} →</span>
+              <div className="partia-rad">
+                {view.partie[super_].length === 0 ? <span className="prazdna">prázdna</span> : partiaKarty(super_)}
+              </div>
+            </div>
           </div>
 
-          {partiaRow(ja)}
-          <StavHraca view={view} p={ja} ja={ja} />
+          <StavHraca view={view} p={ja} ja={ja} info={hraci[ja]} />
 
           <div className="ruka">
             <span className="popis">tvoja ruka ({view.ruka.length})</span>
-            {view.ruka.map((karta) => (
-              <Karta
-                key={karta.uid}
-                card={karta}
-                onClick={
-                  somNaTahu && view.faza === "zhromazdenie"
-                    ? () => setMode({ typ: "ruka", uid: karta.uid })
-                    : undefined
-                }
-                selected={mode.typ === "ruka" && mode.uid === karta.uid}
-              />
-            ))}
+            {view.ruka.map((k) =>
+              karta({
+                key: k.uid,
+                karta: k,
+                sirka: 140,
+                onClick: somNaTahu && view.faza === "zhromazdenie" ? () => setMode({ typ: "ruka", uid: k.uid }) : undefined,
+                vybrana: mode.typ === "ruka" && mode.uid === k.uid,
+              }),
+            )}
           </div>
 
           {akcie}
@@ -489,7 +532,7 @@ export function GameView({ view, log, chyba, superPripojeny, kod, cmd, opustit }
           <section className="starsi-panel">
             <h3>Starší</h3>
             {view.starsi.map((elder) => (
-              <StarsiRiadok key={elder.elderId} elder={elder} onClick={klikStarsi(elder)} />
+              <StarsiRiadok key={elder.elderId} elder={elder} onClick={klikStarsi(elder)} mena={[menoHraca(0), menoHraca(1)]} />
             ))}
           </section>
 
@@ -498,15 +541,15 @@ export function GameView({ view, log, chyba, superPripojeny, kod, cmd, opustit }
               Šenok ({view.senok.length}) · spoločný balíček {view.spolocnyBalicekPocet}
             </h3>
             <div className="senok">
-              {view.senok.map((karta) => (
-                <Karta
-                  key={karta.uid}
-                  card={karta}
-                  mala
-                  onClick={klikSenok(karta.uid)}
-                  selected={mode.typ === "draft" && mode.vybrane.includes(karta.uid)}
-                />
-              ))}
+              {view.senok.map((k) =>
+                karta({
+                  key: k.uid,
+                  karta: k,
+                  sirka: 104,
+                  onClick: klikSenok(k.uid),
+                  vybrana: mode.typ === "draft" && mode.vybrane.includes(k.uid),
+                }),
+              )}
             </div>
           </section>
 
@@ -526,11 +569,16 @@ export function GameView({ view, log, chyba, superPripojeny, kod, cmd, opustit }
   );
 }
 
-function StavHraca({ view, p, ja }: { view: ClientState; p: PlayerId; ja: PlayerId }) {
+function StavHraca({ view, p, ja, info }: { view: ClientState; p: PlayerId; ja: PlayerId; info: HracInfo | null }) {
   const hrac = view.hraci[p];
+  const meno = info?.meno ?? `Hráč ${p + 1}`;
   return (
-    <div className="stav-hraca">
-      <span className="popis">{p === ja ? "ty" : "súper"}:</span>
+    <div className={`stav-hraca ${view.naTahu === p ? "na-rade" : ""}`}>
+      <span className="stav-hraca-meno">
+        <Avatar meno={meno} avatar={info?.avatar ?? null} velkost={30} />
+        <strong>{meno}</strong>
+        {p === ja && <span className="tlmene">(ty)</span>}
+      </span>
       <span title="plné / vypité poldeci">🥃 {hrac.poldeciPlne}/{hrac.poldeciVypite}</span>
       <span title="fyzické cigarety">🚬 {hrac.cigarety}</span>
       <span title="poškodenie pečene">🫀 {hrac.pecen}</span>
@@ -552,7 +600,7 @@ function StavHraca({ view, p, ja }: { view: ClientState; p: PlayerId; ja: Player
 
 const ZONA_TRIEDY = ["cervena", "oranzova", "zlta", "siva", "siva", "siva", "zlta", "oranzova", "cervena"];
 
-function StarsiRiadok({ elder, onClick }: { elder: ElderState; onClick?: (() => void) | undefined }) {
+function StarsiRiadok({ elder, onClick, mena }: { elder: ElderState; onClick?: (() => void) | undefined; mena: readonly string[] }) {
   const priazen = priazenHraca(elder);
   const prebudeny = prebudenyPre(elder);
   return (
@@ -560,8 +608,8 @@ function StarsiRiadok({ elder, onClick }: { elder: ElderState; onClick?: (() => 
       <div className="meno">
         {menoKarty(elder.karta.defId)}
         {elder.nahradeny && " (náhrada)"}
-        {priazen !== null && ` · priazeň H${priazen + 1}`}
-        {prebudeny !== null && ` · PREBUDENÝ pre H${prebudeny + 1}`}
+        {priazen !== null && ` · priazeň: ${mena[priazen]}`}
+        {prebudeny !== null && ` · PREBUDENÝ pre ${mena[prebudeny]}`}
       </div>
       <div className="stupnica">
         {ZONA_TRIEDY.map((zona, i) => (

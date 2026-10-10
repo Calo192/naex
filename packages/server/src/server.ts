@@ -15,6 +15,7 @@ import { fileURLToPath } from "node:url";
 import { join, normalize, extname, resolve } from "node:path";
 import { WebSocketServer, WebSocket } from "ws";
 import type { Command, Event, GameData, GameState, PlayerId } from "@naex/core";
+import type { Sada } from "@naex/tvorba";
 import { IllegalCommandError, apply, eventsFor, loadGameData, setupGame, viewFor } from "@naex/core";
 import { otvorDb } from "./db.ts";
 import type { Pouzivatel } from "./auth.ts";
@@ -47,7 +48,8 @@ interface Room {
   readonly code: string;
   /** Sada, s ktorou miestnosť vznikla — zverejnenie novej ju nezmení. */
   readonly data: GameData;
-  readonly sada: { readonly verzia: number; readonly cardsJson: unknown };
+  /** Celá sada vrátane vzhľadu kariet — klient z nej kreslí aj počíta. */
+  readonly sada: Sada;
   readonly verejna: boolean;
   readonly vytvorena: number;
   state: GameState | null;
@@ -202,7 +204,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       seat,
       started: room.state !== null,
       verejna: room.verejna,
-      sada: { verzia: room.sada.verzia, cardsJson: room.sada.cardsJson },
+      sada: room.sada,
     });
     posliHracov(room);
     if (room.state !== null) {
@@ -238,7 +240,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         const room: Room = {
           code: novyKod(rooms),
           data,
-          sada: { verzia: sada.verzia, cardsJson: sada.cardsJson },
+          sada,
           verejna: msg.verejna === true,
           vytvorena: teraz(),
           state: null,

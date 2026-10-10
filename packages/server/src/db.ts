@@ -91,12 +91,17 @@ export function transakcia<T>(db: Db, fn: () => T): T {
 
 /** Jednoduché úložisko JSON dokumentov v tabuľke (kľúč, data). */
 export class JsonTabulka<T> {
-  constructor(
-    private readonly db: Db,
-    private readonly tabulka: string,
-    private readonly kluc: string,
-    private readonly poradie = "rowid",
-  ) {}
+  private readonly db: Db;
+  private readonly tabulka: string;
+  private readonly kluc: string;
+  private readonly poradie: string;
+
+  constructor(db: Db, tabulka: string, kluc: string, poradie = "rowid") {
+    this.db = db;
+    this.tabulka = tabulka;
+    this.kluc = kluc;
+    this.poradie = poradie;
+  }
 
   vsetky(): T[] {
     const rows = this.db.prepare(`SELECT data FROM ${this.tabulka} ORDER BY ${this.poradie}`).all() as { data: string }[];

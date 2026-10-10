@@ -10,6 +10,8 @@
     "exactOptionalPropertyTypes": true,
     "resolveJsonModule": true,
     "verbatimModuleSyntax": true,
+    // Server púšťa .ts priamo (strip-types) — len syntax, ktorú stačí vymazať.
+    "erasableSyntaxOnly": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "declaration": true,

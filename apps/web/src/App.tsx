@@ -1,67 +1,62 @@
-// Lobby a prepínanie na hernú obrazovku.
+// Smerovanie stránok. Verejné: domov, pravidlá, karty. Hra a profil pre
+// prihlásených, tvorba kariet len pre admina (overuje aj server).
 
-import { useState } from "react";
-import { GameView } from "./GameView.tsx";
-import { useServer } from "./useServer.ts";
+import type { ReactNode } from "react";
+import { Layout } from "./Layout.tsx";
+import { Nacitavanie } from "./komponenty.tsx";
+import { Odkaz, useCesta } from "./lib/router.tsx";
+import { useUcet } from "./lib/ucet.tsx";
+import { Domov } from "./stranky/Domov.tsx";
+import { Glosar } from "./stranky/Glosar.tsx";
+import { Pravidla } from "./stranky/Pravidla.tsx";
+import { Prihlasenie, Profil, Registracia } from "./stranky/Ucet.tsx";
+import { Hra } from "./hra/Hra.tsx";
+import { Admin } from "./admin/Admin.tsx";
+
+function Neprihlaseny() {
+  return (
+    <div className="formular-stred panel" style={{ textAlign: "center" }}>
+      <h1>Najprv sa prihlás</h1>
+      <Odkaz href={`/prihlasenie?spat=${encodeURIComponent(location.pathname)}`} className="tlacidlo tlacidlo-hlavne">
+        Prihlásiť sa
+      </Odkaz>
+    </div>
+  );
+}
+
+function Nenajdene() {
+  return (
+    <div className="formular-stred" style={{ textAlign: "center" }}>
+      <h1>Tu nič nie je</h1>
+      <p className="tlmene">Táto stránka v dedine neexistuje.</p>
+      <Odkaz href="/" className="tlacidlo">
+        Domov
+      </Odkaz>
+    </div>
+  );
+}
 
 export function App() {
-  const server = useServer();
-  const [kodVstup, setKodVstup] = useState("");
+  const cesta = useCesta();
+  const { ja, nacitane } = useUcet();
 
-  if (server.view !== null && server.session !== null) {
-    return (
-      <GameView
-        view={server.view}
-        log={server.log}
-        chyba={server.chyba}
-        superPripojeny={server.superPripojeny}
-        kod={server.session.code}
-        cmd={server.cmd}
-        opustit={server.opustit}
-      />
-    );
-  }
+  const chranene = (obsah: ReactNode, admin = false): ReactNode => {
+    if (!nacitane) return <Nacitavanie />;
+    if (ja === null) return <Neprihlaseny />;
+    if (admin && ja.rola !== "admin") return <Nenajdene />;
+    return obsah;
+  };
 
-  // V miestnosti, ale hra ešte nezačala → čakáme na súpera.
-  if (server.session !== null) {
-    return (
-      <main className="lobby">
-        <h1>NA EX!</h1>
-        <p>
-          Kód miestnosti: <strong className="kod-velky">{server.session.code}</strong>
-        </p>
-        <p>Pošli kód súperovi. Hra začne, keď sa pripojí.</p>
-        {!server.pripojene && <p className="chyba">Spojenie so serverom sa obnovuje…</p>}
-        {server.chyba !== null && <p className="chyba">{server.chyba}</p>}
-        <button onClick={server.opustit}>Zrušiť</button>
-      </main>
-    );
-  }
+  if (cesta.startsWith("/admin")) return <Layout siroky>{chranene(<Admin cesta={cesta} />, true)}</Layout>;
+  if (cesta === "/hra") return <Layout siroky><Hra /></Layout>;
 
-  return (
-    <main className="lobby">
-      <h1>NA EX!</h1>
-      <p>Kartová hra pre dvoch — pošli kód miestnosti a hráte.</p>
-      {!server.pripojene && <p className="chyba">Pripájam sa na server…</p>}
-      {server.chyba !== null && <p className="chyba">{server.chyba}</p>}
-      <div className="lobby-akcie">
-        <button disabled={!server.pripojene} onClick={server.create}>
-          Založiť miestnosť
-        </button>
-        <span> alebo </span>
-        <input
-          placeholder="KÓD"
-          maxLength={4}
-          value={kodVstup}
-          onChange={(e) => setKodVstup(e.target.value.toUpperCase())}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && kodVstup.length === 4) server.join(kodVstup);
-          }}
-        />
-        <button disabled={!server.pripojene || kodVstup.length !== 4} onClick={() => server.join(kodVstup)}>
-          Pripojiť sa
-        </button>
-      </div>
-    </main>
-  );
+  const stranka: ReactNode =
+    cesta === "/" ? <Domov />
+    : cesta === "/pravidla" ? <Pravidla />
+    : cesta === "/karty" ? <Glosar />
+    : cesta === "/prihlasenie" ? <Prihlasenie />
+    : cesta === "/registracia" ? <Registracia />
+    : cesta === "/profil" ? chranene(<Profil />)
+    : <Nenajdene />;
+  return <Layout>{stranka}</Layout>;
 }

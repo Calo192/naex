@@ -1,0 +1,359 @@
+/* Líce karty. Rozmery prichádzajú v bodoch (--x, --y, --h…) a prepočítava
+   ich --pt = šírka karty / šírka v bodoch. */
+
+.kl {
+  container-type: inline-size;
+  position: relative;
+  flex: none;
+  background: #fff;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.4),
+    0 10px 26px rgba(0, 0, 0, 0.38);
+  font-family: Roboto, "Segoe UI", system-ui, sans-serif;
+  user-select: none;
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+.kl-plocha {
+  --pt: calc(100cqw / var(--w));
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.kl-ilustracia {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: calc(var(--h) * var(--pt));
+  background: #2a2420;
+  overflow: hidden;
+}
+
+.kl-ilustracia img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.kl-bez-obrazka {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: calc(70 * var(--pt));
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.16);
+  background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--farba) 60%, #000), #1d1916 78%);
+}
+
+.kl-pas {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--y) * var(--pt));
+  height: calc(var(--h) * var(--pt));
+  background: var(--farba);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(1.8 * var(--pt));
+  padding: 0 calc(5.7 * var(--pt));
+  text-align: center;
+}
+
+.kl-nazov,
+.kl-tagy {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.12;
+}
+
+.kl-nazov {
+  font-weight: 700;
+  font-size: calc(var(--f) * var(--pt));
+}
+
+.kl-tagy {
+  font-size: calc(var(--f) * var(--pt));
+}
+
+.kl-efekt {
+  --m: 1;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--y) * var(--pt));
+  height: calc(var(--h) * var(--pt));
+  padding: calc(2 * var(--pt)) calc(var(--o) * var(--pt));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #fff;
+  /* Tlač má text vo farbe pásu; na obrazovke mierne tmavší kvôli čitateľnosti. */
+  color: color-mix(in srgb, var(--farba) 74%, #000);
+}
+
+.kl-efekt-text {
+  font-size: calc(var(--f) * var(--pt) * var(--m));
+  line-height: 1.2;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.kl-pojem {
+  cursor: help;
+  border-radius: calc(1 * var(--pt));
+}
+
+.kl-pojem:hover {
+  background: color-mix(in srgb, var(--farba) 20%, transparent);
+}
+
+/* Slot akcie: farebný zaoblený rám, biely obrys 0.4 mm (napoly mimo rámu),
+   tieň ako posunutá čierna kópia; ikona s 10 % odsadením. */
+.kl-slot {
+  position: absolute;
+  left: calc(var(--x) * var(--pt));
+  top: calc(var(--y) * var(--pt));
+  width: calc(var(--s) * var(--pt));
+  height: calc(var(--s) * var(--pt));
+  padding: calc(var(--s) * 0.1 * var(--pt));
+  border-radius: calc(var(--r) * var(--pt));
+  background: var(--farba);
+  box-shadow:
+    0 0 0 calc(0.57 * var(--pt)) #fff,
+    calc(0.5 * var(--pt)) calc(0.9 * var(--pt)) 0 calc(0.57 * var(--pt)) rgba(0, 0, 0, 0.45);
+  cursor: help;
+  outline: none;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    opacity 0.15s ease,
+    filter 0.15s ease;
+}
+
+.kl-slot .ikona-akcie {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: calc(var(--r) * 0.7 * var(--pt));
+}
+
+.kl-slot:hover,
+.kl-slot:focus-visible {
+  transform: scale(1.14);
+  z-index: 2;
+  box-shadow:
+    0 0 0 calc(0.57 * var(--pt)) #fff,
+    calc(0.5 * var(--pt)) calc(0.9 * var(--pt)) 0 calc(0.57 * var(--pt)) rgba(0, 0, 0, 0.45),
+    0 0 calc(8 * var(--pt)) calc(2 * var(--pt)) rgba(255, 255, 255, 0.7);
+}
+
+/* Živé vyhodnotenie v hre */
+.kl-slot.kl-aktivna {
+  box-shadow:
+    0 0 0 calc(0.8 * var(--pt)) #ffe08a,
+    0 0 calc(9 * var(--pt)) calc(3 * var(--pt)) rgba(255, 196, 64, 0.85);
+  animation: kl-pulz 1.6s ease-in-out infinite;
+}
+
+.kl-slot.kl-zrusena {
+  opacity: 0.55;
+  filter: grayscale(1);
+}
+
+.kl-slot.kl-zrusena::after {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 50%;
+  height: calc(1.6 * var(--pt));
+  background: #e5484d;
+  transform: rotate(-45deg);
+  border-radius: 99px;
+}
+
+.kl-slot.kl-neaktivna {
+  opacity: 0.62;
+}
+
+@keyframes kl-pulz {
+  50% {
+    box-shadow:
+      0 0 0 calc(0.8 * var(--pt)) #ffe08a,
+      0 0 calc(14 * var(--pt)) calc(4 * var(--pt)) rgba(255, 196, 64, 0.95);
+  }
+}
+
+.kl-nasobok {
+  position: absolute;
+  right: calc(-4 * var(--pt));
+  top: calc(-4 * var(--pt));
+  padding: calc(0.6 * var(--pt)) calc(2 * var(--pt));
+  border-radius: 99px;
+  background: #ffcf4d;
+  color: #2a1d00;
+  font-size: calc(6.5 * var(--pt));
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.kl-odznaky {
+  position: absolute;
+  top: calc(3 * var(--pt));
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: calc(2 * var(--pt));
+}
+
+.kl-odznaky > * {
+  padding: calc(1 * var(--pt)) calc(3.5 * var(--pt));
+  border-radius: 99px;
+  background: rgba(15, 12, 10, 0.82);
+  color: #fff;
+  font-size: calc(7 * var(--pt));
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.kl-klik {
+  cursor: pointer;
+}
+
+.kl-klik:hover {
+  transform: translateY(-3px);
+}
+
+.kl-vybrana {
+  transform: translateY(-6px);
+  box-shadow:
+    0 0 0 3px #f2b84b,
+    0 14px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Ikona mimo karty (legenda, tooltip) */
+.ikona-akcie {
+  fill: #fff;
+  background: #000;
+}
+
+.ikona-svg {
+  object-fit: contain;
+  background: transparent;
+}
+
+/* Tooltip */
+.tip {
+  position: fixed;
+  z-index: 1000;
+  transform: translate(-50%, calc(-100% - 10px));
+  width: max-content;
+  max-width: min(300px, calc(100vw - 24px));
+  padding: 10px 12px 11px;
+  background: #fffaf0;
+  color: #2a2420;
+  border-radius: 10px;
+  border-top: 4px solid var(--farba, #c9973f);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  font: 14px/1.42 Roboto, "Segoe UI", system-ui, sans-serif;
+  pointer-events: none;
+  animation: tip-in 0.12s ease-out;
+}
+
+.tip-pod {
+  transform: translate(-50%, 10px);
+}
+
+@keyframes tip-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.tip-hlava {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 3px;
+  font-weight: 700;
+  font-size: 15px;
+  color: color-mix(in srgb, var(--farba, #c9973f) 58%, #000);
+}
+
+.tip-ikona,
+.tip-ikona-ram {
+  display: inline-flex;
+  width: 26px;
+  height: 26px;
+  flex: none;
+}
+
+.tip-ikona-ram {
+  padding: 2px;
+  border-radius: 6px;
+  background: var(--farba, #888);
+}
+
+.tip-ikona-ram .ikona-akcie {
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+}
+
+.tip-stav {
+  display: block;
+  margin-top: 6px;
+  font-weight: 700;
+  font-size: 13px;
+  color: #8a5a00;
+}
+
+/* Tlač s presahom (--b v bodoch): plochy pokračujú za orez, ako v MAUI
+   Print File — obrázok sa roztiahne cez presah, pás a text do strán. */
+.kl-tlac {
+  box-shadow: none;
+  --b: 0;
+}
+
+.kl-tlac .kl-plocha {
+  overflow: visible;
+  border-radius: 0;
+}
+
+.kl-tlac .kl-ilustracia {
+  left: calc(var(--b) * -1 * var(--pt));
+  right: calc(var(--b) * -1 * var(--pt));
+  top: calc(var(--b) * -1 * var(--pt));
+  height: calc((var(--h) + var(--b)) * var(--pt));
+}
+
+.kl-tlac .kl-pas {
+  left: calc(var(--b) * -1 * var(--pt));
+  right: calc(var(--b) * -1 * var(--pt));
+  padding-left: calc((5.7 + var(--b)) * var(--pt));
+  padding-right: calc((5.7 + var(--b)) * var(--pt));
+}
+
+.kl-tlac .kl-efekt {
+  left: calc(var(--b) * -1 * var(--pt));
+  right: calc(var(--b) * -1 * var(--pt));
+  height: calc((var(--h) + var(--b)) * var(--pt));
+  padding: calc(2 * var(--pt)) calc((var(--o) + var(--b)) * var(--pt)) calc((2 + var(--b)) * var(--pt));
+}
+
+.kl-tlac .kl-slot {
+  box-shadow:
+    0 0 0 calc(0.57 * var(--pt)) #fff,
+    calc(0.5 * var(--pt)) calc(0.9 * var(--pt)) 0 calc(0.57 * var(--pt)) rgba(0, 0, 0, 0.27);
+}

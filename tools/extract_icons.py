@@ -3,7 +3,7 @@
 Použitie:
     py tools/extract_icons.py docs/KartyAI_PrintFile_*.pdf
 
-Výstup: apps/web/src/ikony.ts (generovaný, neupravuj ručne).
+Výstup: apps/web/src/karta/ikony.ts (generovaný, neupravuj ručne).
 
 Piktogram je v PDF biela výplň (jedna alebo viac ciest) vnútri čierneho
 štvorca slotu. PDF nemá názvy akcií, tvary sa rozlišujú podľa počtu segmentov
@@ -21,7 +21,7 @@ import pymupdf
 
 ROOT = Path(__file__).resolve().parent.parent
 CARDS = ROOT / "packages/core/data/cards.json"
-OUT = ROOT / "apps/web/src/ikony.ts"
+OUT = ROOT / "apps/web/src/karta/ikony.ts"
 
 # Geometria tlačového hárku (pt): orez 17.0079 od okraja, slot 0 je
 # 22.93 pt pod horným orezom, krok slotov 10 mm.

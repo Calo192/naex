@@ -73,10 +73,12 @@ export class Obsah {
   private readonly elders: unknown;
   private cache: { sada: Sada; data: GameData } | null = null;
 
-  constructor(
-    private readonly db: Db,
-    private readonly media: Media,
-  ) {
+  private readonly db: Db;
+  private readonly media: Media;
+
+  constructor(db: Db, media: Media) {
+    this.db = db;
+    this.media = media;
     this.karty = new JsonTabulka(db, "karty", "id", "poradie, id");
     this.akcie = new JsonTabulka(db, "akcie", "kluc");
     this.klucoveSlova = new JsonTabulka(db, "klucove_slova", "slovo");

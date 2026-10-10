@@ -53,11 +53,10 @@ export function cookieOdhlasenia(bezpecne: boolean): string {
 
 export class Ucty {
   private readonly admini: Set<string>;
+  private readonly db: Db;
 
-  constructor(
-    private readonly db: Db,
-    admini: readonly string[],
-  ) {
+  constructor(db: Db, admini: readonly string[]) {
+    this.db = db;
     this.admini = new Set(admini.map((a) => a.trim().toLowerCase()).filter((a) => a !== ""));
   }
 
@@ -160,11 +159,11 @@ export class Ucty {
 
 /** Chyba spôsobená vstupom používateľa — správa ide priamo do UI. */
 export class ChybaVstupu extends Error {
-  constructor(
-    message: string,
-    readonly status = 400,
-  ) {
+  readonly status: number;
+
+  constructor(message: string, status = 400) {
     super(message);
+    this.status = status;
   }
 }
 

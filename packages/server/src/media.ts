@@ -51,11 +51,10 @@ function overSvg(buf: Buffer): void {
 
 export class Media {
   private readonly adresar: string;
+  private readonly db: Db;
 
-  constructor(
-    private readonly db: Db,
-    dataDir: string,
-  ) {
+  constructor(db: Db, dataDir: string) {
+    this.db = db;
     this.adresar = join(dataDir, "media");
     mkdirSync(this.adresar, { recursive: true });
   }
