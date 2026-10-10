@@ -1,0 +1,10 @@
+# Caddy sám vybaví HTTPS certifikát pre doménu z premennej DOMENA
+# a presmeruje HTTP → HTTPS. WebSocket (/ws) prechádza bez ďalšieho nastavenia.
+{$DOMENA} {
+	encode zstd gzip
+	header Strict-Transport-Security "max-age=31536000"
+	request_body {
+		max_size 16MB
+	}
+	reverse_proxy naex:8787
+}

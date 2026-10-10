@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "node --experimental-strip-types --watch src/index.ts",
     "start": "node --experimental-strip-types src/index.ts",
-    "build": "tsc --build"
+    "build": "tsc --build",
+    "kniznica": "node --experimental-strip-types src/kniznica.ts"
   },
   "dependencies": {
     "@naex/core": "*",

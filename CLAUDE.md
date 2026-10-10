@@ -1,10 +1,13 @@
 # NA EX! — kontext projektu
 
 Webová verzia kartovej hry **NA EX!** (autor Michal Calík).
-Dvaja hráči, dva prehliadače, cez internet.
+Dvaja hráči, dva prehliadače, cez internet. Web má tri časti: **pravidlá**
+(vzdelávanie), **tvorba kariet** pre admina (port MAUI aplikácie KartyAI)
+a **hra**; k tomu účty s rolami admin / hráč a profil (herné meno, avatar).
 
 **Prečítaj najprv `docs/BRIEF.md`** — je to zadanie s míľnikmi a akceptačnými
-kritériami. `docs/PRAVIDLA.md` je špecifikácia pravidiel.
+kritériami (M0–M10). Rozšírenie o platformu (M11–M14) popisuje `README.md`.
+`docs/PRAVIDLA.md` je špecifikácia pravidiel (v11 + zmeny z pravidiel v2).
 
 ## Rozsah
 
@@ -13,7 +16,7 @@ dvaja ľudia na dvoch zariadeniach, nie viac hráčov naraz.
 
 ## Nemenné pravidlá
 
-1. **`packages/core` neobsahuje žiadne I/O.** Žiadne DOM, `fetch`,
+1. **`packages/core` a `packages/tvorba` neobsahujú žiadne I/O.** Žiadne DOM, `fetch`,
    `WebSocket`, `Date.now()`, `Math.random()`. Ten istý kód beží v prehliadači
    aj na serveri.
 2. **Server nikdy nepošle klientovi nič, čo hráč nemá vidieť.** Skryť kartu
@@ -21,13 +24,19 @@ dvaja ľudia na dvoch zariadeniach, nie viac hráčov naraz.
    `viewFor()` a musí byť otestované.
 3. **Klient posiela zámery, nikdy výsledky.** Server počíta, klient kreslí.
 4. **Náhoda je deterministická.** Jeden seedovaný generátor v `GameState`.
-5. **Dáta v `packages/core/data/*.json`, nie v kóde.**
+5. **Dáta, nie kód.** Karty upravuje admin v tvorcovi (SQLite); hra beží na
+   zverejnenej sade. `packages/core/data/cards.json` je východisková sada
+   pre prvé spustenie a testy (generuje ju `tools/import_print_pdf.py`).
+6. **Server púšťa `.ts` priamo (strip-types)** — len vymazateľná syntax
+   (`erasableSyntaxOnly`): žiadne parametrické vlastnosti, enumy, namespaces.
 
 ## Príkazy
 
 ```bash
 npm install
-npm run dev          # server :8787 + klient :5173
+NAEX_ADMINS=michal npm run dev   # server :8787 + klient :5173
+npm start            # produkcia: server + zbuildovaný klient :8787
+npm run kniznica -- "docs/NA EX/NA EX"   # obrázky do knižnice tvorcu
 npm test             # vitest
 npm run typecheck    # tsc --build
 npm run build
@@ -40,12 +49,13 @@ npm run build
 - Programátorské názvy (`apply`, `resolve`, `state`) anglicky.
 - Komentáre po slovensky a len tam, kde vysvetľujú **prečo**.
 - `strict` TypeScript, žiadne `any`, nemenný stav.
-- Bez ďalších závislostí — čo treba, je v `package.json`.
+- Bez ďalších závislostí — čo treba, je v `package.json`. Databáza je
+  vstavané `node:sqlite` (rozhodnutie Michala 2026-10-10), heslá `node:crypto`.
 
 ## Čo nerobiť
 
-- Žiadny klient pred míľnikom M8, žiadne AI, žiadne DSL na efekty.
-- Žiadna databáza, ORM, Redux ani UI kit.
+- Žiadne AI, žiadne DSL na efekty.
+- Žiadne ORM, Redux, router ani UI kit — router je `apps/web/src/lib/router.tsx`.
 - Nevymýšľaj si chýbajúce herné hodnoty potichu — daj ich do `data/` s `TODO`
   a spýtaj sa. Zoznam otvorených otázok je v `docs/BRIEF.md`.
 
@@ -53,11 +63,15 @@ npm run build
 
 ```
 packages/core/       jadro pravidiel — čistý TS, bez I/O
-  data/cards.json      50 kariet (generované, neupravuj ručne — viď tools/)
+  data/cards.json      50 kariet tlačovej sady (generované, neupravuj ručne)
   data/elders.json     8 starších; hodnoty sú PROVIZÓRNE, viď TODO
-packages/server/     autoritatívny server (Node + ws)
-apps/web/            klient (React + Vite)
-docs/BRIEF.md        zadanie: míľniky, akceptačné kritériá, otvorené otázky
-docs/PRAVIDLA.md     špecifikácia pravidiel v11
-tools/parse_cards.py regenerácia cards.json z exportu KartyAI
+packages/tvorba/     model tvorcu kariet — čistý TS (varianty, geometria karty,
+                     farby, formát textu, export/import TXT, štatistiky)
+packages/server/     server: hra (ws), REST API (/api), SQLite, médiá (/media)
+  seed/                ilustrácie a vzhľad kariet pre prvé spustenie
+apps/web/            klient (React + Vite): stranky/, hra/, admin/, karta/
+deploy/, Dockerfile  nasadenie (docs/NASADENIE.md)
+docs/BRIEF.md        zadanie M0–M10
+docs/PRAVIDLA.md     špecifikácia pravidiel
+tools/               import z tlačového PDF, piktogramy akcií
 ```

@@ -1,0 +1,34 @@
+# Produkčné nasadenie: aplikácia + Caddy (automatické HTTPS cez Let's Encrypt).
+#   cd deploy && cp .env.example .env && (uprav .env) && docker compose up -d --build
+
+services:
+  naex:
+    build: ..
+    restart: unless-stopped
+    environment:
+      NAEX_ADMINS: ${NAEX_ADMINS}
+      NAEX_SECURE_COOKIE: "1"
+    volumes:
+      - naex-data:/data
+    expose:
+      - "8787"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMENA: ${DOMENA}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - naex
+
+volumes:
+  naex-data:
+  caddy-data:
+  caddy-config:

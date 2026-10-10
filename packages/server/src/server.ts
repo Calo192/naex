@@ -441,6 +441,20 @@ function serveStatic(dir: string, req: IncomingMessage, res: ServerResponse): vo
       "x-content-type-options": "nosniff",
       "referrer-policy": "same-origin",
     };
+    if (extname(subor) === ".html") {
+      // Stránka smie načítať len seba, písma Google a WebSocket na rovnakom pôvode.
+      hlavicky["content-security-policy"] = [
+        "default-src 'self'",
+        "script-src 'self'",
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+        "font-src 'self' https://fonts.gstatic.com",
+        "img-src 'self' data: blob:",
+        "connect-src 'self' ws: wss:",
+        "frame-ancestors 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+      ].join("; ");
+    }
     // Vite pridáva do názvov hash — tie sa môžu cachovať natrvalo.
     hlavicky["cache-control"] = subor.includes(`${join("assets", "")}`) ? "public, max-age=31536000, immutable" : "no-cache";
     res.writeHead(200, hlavicky);
