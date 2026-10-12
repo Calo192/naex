@@ -2,8 +2,9 @@
 // Validáciu robí samotné jadro (loadGameData) — tu len skladáme JSON
 // a zachytíme to, čo jadro nevie povedať zrozumiteľne (vlastné akcie).
 
-import { ALL_ACTIONS, ALL_TRIGGERS } from "@naex/core";
-import type { KartaNavrh, StranaNavrhu } from "./typy.ts";
+import type { Favour, Podmienka } from "@naex/core";
+import { ALL_ACTIONS, ALL_FAVOURS, ALL_TRIGGERS, priazenZKluca } from "@naex/core";
+import type { BodovaciaKarta, IkonaBodovania, KartaNavrh, StranaNavrhu } from "./typy.ts";
 import { POZICIE } from "./typy.ts";
 import { rozlozeniaStrany } from "./varianty.ts";
 import { spustaceVTexte } from "./text.ts";
@@ -59,4 +60,39 @@ export function doCardsJson(karty: readonly KartaNavrh[], zdroj: string): unknow
     tags: [...new Set(cards.flatMap((c) => c.tags))].sort(),
     cards,
   };
+}
+
+/**
+ * Bodovacie karty → scorecardy pre hru (formát packages/core/data/scorecards.json).
+ * Priazeň sa číta z názvu karty (Zberateľ → ZBERATEL), význam pozície
+ * z ikony. Body za podmienky sú herné hodnoty z jadra (`body`).
+ */
+export function doScorecardsJson(
+  bodovacie: readonly BodovaciaKarta[],
+  ikony: readonly IkonaBodovania[],
+  body: Readonly<Record<Podmienka, number>>,
+): { readonly json: unknown; readonly problemy: readonly string[] } {
+  const problemy: string[] = [];
+  const podmienka = (id: string | null, kde: string): Podmienka | null => {
+    if (id === null) return null;
+    const ik = ikony.find((i) => i.id === id);
+    if (ik === undefined) {
+      problemy.push(`${kde}: ikona ${id} neexistuje.`);
+      return null;
+    }
+    if (ik.podmienka === undefined || ik.podmienka === null) {
+      problemy.push(`${kde}: ikona „${ik.nazov}“ nemá určený význam v hre.`);
+      return null;
+    }
+    return ik.podmienka;
+  };
+  const scorecards = bodovacie.map((b) => {
+    const kluc = slug(b.nazov).toUpperCase();
+    const favour: Favour = priazenZKluca(kluc) ?? (kluc as Favour);
+    if (priazenZKluca(kluc) === null) problemy.push(`Bodovacia karta „${b.nazov}“: názov nie je žiadna priazeň (${ALL_FAVOURS.join(", ")}).`);
+    const strana = (s: readonly (string | null)[], nazov: string) =>
+      [0, 1, 2, 3].map((i) => podmienka(s[i] ?? null, `Bodovacia karta „${b.nazov}“ ${nazov} ${i + 1}`));
+    return { id: b.id, nazov: b.nazov, favour, lava: strana(b.lava, "vľavo"), prava: strana(b.prava, "vpravo") };
+  });
+  return { json: { body, scorecards }, problemy };
 }

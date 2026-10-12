@@ -4,6 +4,7 @@
 import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
+import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, Command, GameState, PlacedCard, PlayerId } from "../src/index.ts";
 import {
   REGISTER,
@@ -23,7 +24,7 @@ import {
   setupGame,
 } from "../src/index.ts";
 
-const data = loadGameData(cardsJson, eldersJson);
+const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
 let uidSeq = 9000;
 
@@ -91,7 +92,7 @@ describe("M10 — vzorové efekty (háčiky)", () => {
 
   it("čierna mačka už nepridáva ranu (nový text: len Vízie)", () => {
     const s = fakeState({
-      partie: [[placed("cierna_macka", 0)], []],
+      strany: [[placed("cierna_macka", 0)], []],
       cirhozyVKole: [0, 2],
     });
     expect(bitkaMody(data, s, 0, 1, 2).tuheBonus).toBe(0);
@@ -99,7 +100,7 @@ describe("M10 — vzorové efekty (háčiky)", () => {
 
   it("recidivista pridáva tuhé; farár a veterinár uberajú", () => {
     const s = fakeState({
-      partie: [
+      strany: [
         [placed("recidivista", 0), placed("pijan", 0), placed("farar", 0)],
         [placed("kocovnik", 1), placed("veterinar", 1)],
       ],
@@ -132,41 +133,8 @@ describe("M10 — vzorové efekty (háčiky)", () => {
 });
 
 describe("M10 — MANUAL režim", () => {
-  it("neimplementovaný efekt sa pri bitke spoľahlivo pripomenie v logu", () => {
-    // Odohráme začiatok kola: voľba lokality, draft bez kariet (3 cigarety),
-    // obranca vyloží Pijana (MANUAL, spúšťač Bitka), obaja pasujú a preskočia
-    // NA EX → bitka. V udalostiach musí byť manualEfekt pre Pijana.
-    let state = setupGame(data, 7);
-    const utocnik = state.utocnik;
-    const obranca = utocnik === 0 ? 1 : 0;
-    const lok = state.lokalityVHre[0];
-    expect(lok).toBeDefined();
-    if (lok === undefined) return;
-
-    const krok = (cmd: Command, hrac: PlayerId) => {
-      const result = apply(data, state, cmd, hrac);
-      state = result.state;
-      return result.events;
-    };
-
-    krok({ type: "chooseLocation", uid: lok.uid, otocena: false }, utocnik);
-    krok({ type: "draft", cigarety: 3, karty: [] }, obranca);
-    krok({ type: "draft", cigarety: 3, karty: [] }, utocnik);
-
-    const pijan = state.hraci[obranca].ruka.find((k) => k.defId === "pijan");
-    expect(pijan).toBeDefined();
-    if (pijan === undefined) return;
-    krok({ type: "place", uid: pijan.uid, target: "vlastna" }, obranca);
-    krok({ type: "pass" }, naTahu(state) as PlayerId);
-    krok({ type: "pass" }, naTahu(state) as PlayerId);
-    const eventsObranca = krok({ type: "skipNaex" }, obranca);
-    const eventsUtocnik =
-      state.faza === "pitka" ? krok({ type: "skipNaex" }, utocnik) : eventsObranca;
-
-    const pripomienky = eventsUtocnik.filter(
-      (e) => e.type === "manualEfekt" && e.defId === "pijan",
-    );
-    expect(pripomienky.length).toBeGreaterThan(0);
+  it("tlačová sada už nemá žiadny neimplementovaný efekt (playtest 20261012-055944)", () => {
+    expect(Object.entries(REGISTER).filter(([, st]) => st === "manual")).toEqual([]);
   });
 });
 
@@ -175,7 +143,7 @@ function zhrom(s: GameState): GameState {
   return {
     ...s,
     faza: "zhromazdenie",
-    zhromazdenieStav: { naTahu: 0, zostavaLimit: [2, 2], pasoval: [false, false] },
+    zhromazdenieStav: { naTahu: 0, zostavaLimit: [2, 2], pasoval: [false, false], navyse: [0, 0] },
   } as GameState;
 }
 
@@ -197,7 +165,7 @@ describe("pravidlá v2 a nová tlačová sada", () => {
     const sPsom = {
       ...base,
       hraci: [{ ...base.hraci[0], ruka: [inst("cierna_macka")] }, base.hraci[1]],
-      partie: [[placed("pes", 0)], []],
+      strany: [[placed("pes", 0)], []],
     } as unknown as GameState;
     const tahy = legalCommands(data, zhrom(sPsom), 0);
     expect(tahy.some((t) => t.type === "place" && t.target === "vlastna")).toBe(false);

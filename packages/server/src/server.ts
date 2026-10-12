@@ -14,16 +14,33 @@ import { randomInt } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { join, normalize, extname, resolve } from "node:path";
 import { WebSocketServer, WebSocket } from "ws";
-import type { Command, Event, GameData, GameState, PlayerId } from "@naex/core";
+import type { Command, DlzkaHry, DvojicaStatistik, Event, GameData, GameState, PlayerId } from "@naex/core";
 import type { Sada } from "@naex/tvorba";
-import { IllegalCommandError, apply, eventsFor, loadGameData, setupGame, viewFor } from "@naex/core";
+import {
+  DLZKY_HRY,
+  IllegalCommandError,
+  PREDVOLENA_DLZKA,
+  apply,
+  dostupneDlzky,
+  eventsFor,
+  loadGameData,
+  noveStatistiky,
+  setupGame,
+  uzavriStatistiky,
+  viewFor,
+  zapisTah,
+} from "@naex/core";
 import { otvorDb } from "./db.ts";
 import type { Pouzivatel } from "./auth.ts";
 import { Ucty } from "./auth.ts";
 import { Media } from "./media.ts";
-import { Obsah, nacitajElders } from "./obsah.ts";
+import { Obsah, nacitajElders, nacitajScorecards } from "./obsah.ts";
 import type { OtvorenaHra } from "./api.ts";
 import { spracujApi } from "./api.ts";
+import type { ZmenaFrajeriny } from "./archiv.ts";
+import { Archiv } from "./archiv.ts";
+import { Nazory } from "./nazory.ts";
+import { titul } from "./frajerina.ts";
 
 // ---------------------------------------------------------------------------
 // Dáta z repozitára (testy jadra a nástroje ich používajú priamo)
@@ -32,7 +49,7 @@ export function loadDataFromDisk(): GameData {
   const cards = JSON.parse(
     readFileSync(fileURLToPath(new URL("../../core/data/cards.json", import.meta.url)), "utf8"),
   ) as unknown;
-  return loadGameData(cards, nacitajElders());
+  return loadGameData(cards, nacitajElders(), nacitajScorecards());
 }
 
 // ---------------------------------------------------------------------------
@@ -42,7 +59,11 @@ interface HracVMiestnosti {
   readonly id: number;
   meno: string;
   avatar: string | null;
+  frajerina: number;
 }
+
+/** Ako dlho musí byť súper odpojený, kým si hráč môže vyžiadať kontumačnú výhru. */
+export const KONTUMACIA_PO_MS = 3 * 60 * 1000;
 
 interface Room {
   readonly code: string;
@@ -51,8 +72,18 @@ interface Room {
   /** Celá sada vrátane vzhľadu kariet — klient z nej kreslí aj počíta. */
   readonly sada: Sada;
   readonly verejna: boolean;
+  /** Dĺžka hry — počet lokalít, o ktoré sa bude hrať. */
+  readonly dlzka: DlzkaHry;
   readonly vytvorena: number;
   state: GameState | null;
+  /** Čas začiatku partie (pre archív). */
+  zaciatok: number;
+  /** Štatistiky rozohranej partie — zapisujú sa po každom ťahu. */
+  statistiky: DvojicaStatistik | null;
+  /** Zmena Frajeriny po dohraní (partia je už v archíve). */
+  vysledok: readonly [ZmenaFrajeriny, ZmenaFrajeriny] | null;
+  /** Odkedy je hráč na danom mieste odpojený (null = pripojený). */
+  readonly odpojenyOd: [number | null, number | null];
   readonly hraci: [HracVMiestnosti | null, HracVMiestnosti | null];
   readonly sockets: [WebSocket | null, WebSocket | null];
   lastActivity: number;
@@ -70,10 +101,11 @@ function novyKod(rooms: Map<string, Room>): string {
 }
 
 type ClientMsg =
-  | { type: "create"; verejna?: boolean }
+  | { type: "create"; verejna?: boolean; dlzka?: DlzkaHry }
   | { type: "join"; code: string }
   | { type: "rejoin"; code: string }
   | { type: "leave" }
+  | { type: "kontumacia" }
   | { type: "cmd"; cmd: Command };
 
 interface SocketInfo {
@@ -94,8 +126,8 @@ export interface ServerOpts {
   readonly staticDir?: string;
   /** Adresár s databázou a nahranými súbormi (predvolene ./data). */
   readonly dataDir?: string;
-  /** Prihlasovacie mená administrátorov (NAEX_ADMINS). */
-  readonly admini?: readonly string[];
+  /** Jediný admin (NAEX_ADMIN_LOGIN, NAEX_ADMIN_HESLO); bez hesla sa účet nezakladá. */
+  readonly admin?: { readonly login: string; readonly heslo: string | null };
   /** Cookie s príznakom Secure (za HTTPS proxy). */
   readonly bezpecneCookie?: boolean;
 }
@@ -105,10 +137,14 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   const dataDir = resolve(opts.dataDir ?? "data");
   mkdirSync(dataDir, { recursive: true });
   const db = otvorDb(join(dataDir, "naex.sqlite"));
-  const ucty = new Ucty(db, opts.admini ?? []);
+  const ucty = new Ucty(db, opts.admin ?? { login: "Admin", heslo: null });
   const media = new Media(db, dataDir);
   const obsah = new Obsah(db, media);
+  const archiv = new Archiv(db);
+  const nazory = new Nazory(db);
   obsah.naplnAkTreba(teraz());
+  obsah.naplnBodovanieAkTreba(teraz());
+  obsah.premenujZrusenePriazne(teraz());
 
   const rooms = new Map<string, Room>();
   const infos = new WeakMap<WebSocket, SocketInfo>();
@@ -118,7 +154,12 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   const otvoreneHry = (): OtvorenaHra[] =>
     [...rooms.values()]
       .filter((r) => r.verejna && r.state === null && r.hraci[0] !== null && r.sockets[0] !== null && r.hraci[1] === null)
-      .map((r) => ({ kod: r.code, hostitel: { meno: r.hraci[0]?.meno ?? "?", avatar: r.hraci[0]?.avatar ?? null }, vytvorena: r.vytvorena }))
+      .map((r) => ({
+        kod: r.code,
+        hostitel: { meno: r.hraci[0]?.meno ?? "?", avatar: r.hraci[0]?.avatar ?? null, frajerina: r.hraci[0]?.frajerina ?? null },
+        dlzka: r.dlzka,
+        vytvorena: r.vytvorena,
+      }))
       .sort((a, b) => b.vytvorena - a.vytvorena);
 
   const http = createServer((req, res) => {
@@ -129,6 +170,8 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           ucty,
           obsah,
           media,
+          archiv,
+          nazory,
           teraz,
           bezpecneCookie: opts.bezpecneCookie ?? false,
           otvoreneHry,
@@ -168,7 +211,9 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   };
 
   const posliHracov = (room: Room): void => {
-    const hraci = room.hraci.map((h) => (h === null ? null : { meno: h.meno, avatar: h.avatar }));
+    const hraci = room.hraci.map((h) =>
+      h === null ? null : { id: h.id, meno: h.meno, avatar: h.avatar, frajerina: h.frajerina, titul: titul(h.frajerina) },
+    );
     for (const ws of room.sockets) if (ws !== null) send(ws, { type: "hraci", hraci });
   };
 
@@ -193,8 +238,9 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       stary.close();
     }
     const p = info.pouzivatel;
-    room.hraci[seat] = { id: p.id, meno: p.meno, avatar: p.avatar };
+    room.hraci[seat] = { id: p.id, meno: p.meno, avatar: p.avatar, frajerina: archiv.frajerina(p.id).hodnota };
     room.sockets[seat] = ws;
+    room.odpojenyOd[seat] = null;
     info.room = room;
     info.seat = seat;
     room.lastActivity = teraz();
@@ -204,6 +250,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       seat,
       started: room.state !== null,
       verejna: room.verejna,
+      dlzka: room.dlzka,
       sada: room.sada,
     });
     posliHracov(room);
@@ -211,6 +258,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       send(ws, { type: "state", view: viewFor(room.data, room.state, seat), events: [] });
       send(ws, { type: "superPripojeny", connected: room.sockets[seat === 0 ? 1 : 0] !== null });
     }
+    if (room.vysledok !== null) send(ws, { type: "frajerina", zmeny: room.vysledok });
     oznamPripojenie(room, seat, true);
   };
 
@@ -219,7 +267,10 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     const info = infos.get(ws);
     if (info === undefined || info.room === null || info.seat === null) return;
     const { room, seat } = info;
-    if (room.sockets[seat] === ws) room.sockets[seat] = null;
+    if (room.sockets[seat] === ws) {
+      room.sockets[seat] = null;
+      room.odpojenyOd[seat] = teraz();
+    }
     if (room.state === null) {
       room.hraci[seat] = null;
       if (room.hraci[0] === null && room.hraci[1] === null) rooms.delete(room.code);
@@ -237,13 +288,23 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     switch (msg.type) {
       case "create": {
         const { sada, data } = obsah.aktualnaSada();
+        const dlzka = msg.dlzka ?? PREDVOLENA_DLZKA;
+        if (!dostupneDlzky(data).includes(dlzka)) {
+          sendError(ws, `Na túto dĺžku hry nemá sada dosť lokalít (má ${data.lokality.length}).`);
+          return;
+        }
         const room: Room = {
           code: novyKod(rooms),
           data,
           sada,
           verejna: msg.verejna === true,
+          dlzka,
           vytvorena: teraz(),
           state: null,
+          zaciatok: 0,
+          statistiky: null,
+          vysledok: null,
+          odpojenyOd: [null, null],
           hraci: [null, null],
           sockets: [null, null],
           lastActivity: teraz(),
@@ -275,7 +336,9 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         // (usadit práve zmenil room.hraci — TS si pamätá starý stav)
         const [h0, h1] = room.hraci as readonly (HracVMiestnosti | null)[];
         if (h0 != null && h1 != null && room.state === null) {
-          room.state = setupGame(room.data, randomInt(2 ** 31));
+          room.state = setupGame(room.data, randomInt(2 ** 31), { lokalit: DLZKY_HRY[room.dlzka] });
+          room.zaciatok = teraz();
+          room.statistiky = noveStatistiky();
           broadcast(room, [{ type: "log", text: `Hra začína: ${h0.meno} proti ${h1.meno}.` }]);
         }
         break;
@@ -296,10 +359,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         }
         try {
           // Autorizácia: príkaz sa vyhodnocuje VÝHRADNE za usadeného hráča.
-          const result = apply(room.data, room.state, msg.cmd, seat);
-          room.state = result.state;
-          room.lastActivity = teraz();
-          broadcast(room, result.events);
+          vykonaj(room, msg.cmd, seat);
         } catch (err) {
           if (err instanceof IllegalCommandError) {
             sendError(ws, err.message);
@@ -310,8 +370,69 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         }
         break;
       }
+      case "kontumacia": {
+        const { room, seat } = info;
+        if (room === null || seat === null || room.state === null || room.state.koniec !== null) {
+          sendError(ws, "Nie je čo kontumovať.");
+          return;
+        }
+        const super_: PlayerId = seat === 0 ? 1 : 0;
+        const od = room.odpojenyOd[super_];
+        if (room.sockets[super_] !== null || od === null) {
+          sendError(ws, "Súper je pripojený.");
+          return;
+        }
+        const zostava = KONTUMACIA_PO_MS - (teraz() - od);
+        if (zostava > 0) {
+          sendError(ws, `Súper je odpojený len chvíľu. Kontumačnú výhru si môžeš vyžiadať o ${Math.ceil(zostava / 1000)} s.`);
+          return;
+        }
+        vykonaj(room, { type: "vzdat", kontumacia: true }, super_);
+        break;
+      }
       default:
         sendError(ws, "Neznáma správa.");
+    }
+  };
+
+  /** Príkaz za hráča `seat`: nový stav, štatistiky, rozoslanie a pri konci zápis do archívu. */
+  const vykonaj = (room: Room, cmd: Command, seat: PlayerId): void => {
+    const pred = room.state;
+    if (pred === null) return;
+    const result = apply(room.data, pred, cmd, seat);
+    room.state = result.state;
+    room.lastActivity = teraz();
+    if (room.statistiky !== null) room.statistiky = zapisTah(room.statistiky, pred, cmd, seat, result.state, result.events);
+    broadcast(room, result.events);
+    if (pred.koniec === null && result.state.koniec !== null) zapisDoArchivu(room, result.state, cmd.type !== "vzdat");
+  };
+
+  const zapisDoArchivu = (room: Room, koniec: GameState, dohrata: boolean): void => {
+    const [h0, h1] = room.hraci;
+    if (h0 === null || h1 === null || room.statistiky === null || koniec.koniec === null) return;
+    try {
+      const { zmeny } = archiv.zapis({
+        kod: room.code,
+        zaciatok: room.zaciatok,
+        koniec: teraz(),
+        vitaz: koniec.koniec.vitaz,
+        dovod: koniec.koniec.dovod.replace(/Hráč ([12])/g, (_, n: string) => (n === "1" ? h0.meno : h1.meno)),
+        kola: koniec.kolo,
+        verziaSady: room.sada.verzia,
+        dohrata,
+        hraci: [h0.id, h1.id],
+        body: koniec.koniec.body,
+        statistiky: uzavriStatistiky(room.data, room.statistiky, koniec),
+      });
+      room.vysledok = zmeny;
+      // Návštevník sa po 3 dohratých partiách stáva hráčom.
+      for (const h of [h0, h1]) ucty.povysPoPartii(h.id);
+      h0.frajerina = zmeny[0].po;
+      h1.frajerina = zmeny[1].po;
+      for (const ws of room.sockets) if (ws !== null) send(ws, { type: "frajerina", zmeny });
+    } catch (err) {
+      // Výsledok partie sa nesmie stratiť potichu, ale ani zhodiť server.
+      console.error("Partiu sa nepodarilo zapísať do archívu:", err);
     }
   };
 
@@ -348,6 +469,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       const { room, seat } = info;
       if (room !== null && seat !== null && room.sockets[seat] === ws) {
         room.sockets[seat] = null;
+        room.odpojenyOd[seat] = teraz();
         oznamPripojenie(room, seat, false);
       }
       infos.delete(ws);

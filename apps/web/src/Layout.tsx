@@ -2,13 +2,15 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Odkaz, chod, useCesta } from "./lib/router.tsx";
-import { useUcet } from "./lib/ucet.tsx";
+import { NAZOV_UROVNE, jeSpravca, useUcet } from "./lib/ucet.tsx";
 import { Avatar } from "./komponenty.tsx";
 
 const NAVIGACIA: readonly { readonly href: string; readonly text: string; readonly admin?: boolean }[] = [
   { href: "/pravidla", text: "Pravidlá" },
   { href: "/karty", text: "Karty" },
   { href: "/hra", text: "Hrať" },
+  { href: "/rebricek", text: "Rebríček" },
+  { href: "/spatna-vazba", text: "Spätná väzba" },
   { href: "/admin", text: "Tvorba", admin: true },
 ];
 
@@ -47,7 +49,7 @@ export function Layout({ children, siroky = false }: { readonly children: ReactN
             <span />
           </button>
           <nav className={mobilne ? "navigacia otvorena" : "navigacia"}>
-            {NAVIGACIA.filter((n) => n.admin !== true || ja?.rola === "admin").map((n) => (
+            {NAVIGACIA.filter((n) => n.admin !== true || (ja !== null && jeSpravca(ja.rola))).map((n) => (
               <Odkaz key={n.href} href={n.href} className={cesta.startsWith(n.href) ? "aktivna" : undefined}>
                 {n.text}
               </Odkaz>
@@ -73,18 +75,26 @@ export function Layout({ children, siroky = false }: { readonly children: ReactN
                   <div className="ucet-menu" role="menu">
                     <div className="ucet-menu-hlava">
                       <strong>{ja.meno}</strong>
-                      <span>@{ja.login}{ja.rola === "admin" ? " · admin" : ""}</span>
+                      <span>@{ja.login} · {NAZOV_UROVNE[ja.rola]}</span>
                     </div>
                     <Odkaz href="/profil" role="menuitem">
                       Môj profil
                     </Odkaz>
+                    <Odkaz href={`/hrac/${ja.id}`} role="menuitem">
+                      Moje štatistiky
+                    </Odkaz>
                     <Odkaz href="/hra" role="menuitem">
                       Hrať
                     </Odkaz>
-                    {ja.rola === "admin" && (
-                      <Odkaz href="/admin" role="menuitem">
-                        Tvorba kariet
-                      </Odkaz>
+                    {jeSpravca(ja.rola) && (
+                      <>
+                        <Odkaz href="/admin" role="menuitem">
+                          Tvorba kariet
+                        </Odkaz>
+                        <Odkaz href="/admin/pouzivatelia" role="menuitem">
+                          Hráči
+                        </Odkaz>
+                      </>
                     )}
                     <button
                       role="menuitem"

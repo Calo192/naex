@@ -2,7 +2,8 @@
 //
 //   PORT                 port (predvolene 8787)
 //   NAEX_DATA            adresár s databázou a nahranými súbormi (predvolene <repo>/data)
-//   NAEX_ADMINS          prihlasovacie mená administrátorov, oddelené čiarkou
+//   NAEX_ADMIN_HESLO     heslo jediného admina; účet sa pri štarte založí/aktualizuje
+//   NAEX_ADMIN_LOGIN     jeho prihlasovacie meno (predvolene Admin)
 //   NAEX_SECURE_COOKIE   1 = cookie len cez HTTPS (nastav za reverse proxy)
 
 import { fileURLToPath } from "node:url";
@@ -13,7 +14,7 @@ const PORT = Number(process.env.PORT ?? 8787);
 createGameServer({
   port: PORT,
   dataDir: process.env.NAEX_DATA ?? fileURLToPath(new URL("../../../data", import.meta.url)),
-  admini: (process.env.NAEX_ADMINS ?? "").split(","),
+  admin: { login: process.env.NAEX_ADMIN_LOGIN ?? "Admin", heslo: process.env.NAEX_ADMIN_HESLO || null },
   bezpecneCookie: process.env.NAEX_SECURE_COOKIE === "1",
 })
   .then((server) => {

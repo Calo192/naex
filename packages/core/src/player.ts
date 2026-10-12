@@ -18,6 +18,8 @@ export interface PlayerState {
   readonly cigarety: number;
   /** Kumulatívne poškodenie pečene (pri prahu vzniká Cirhóza a počítadlo klesne). */
   readonly pecen: number;
+  /** Kumulatívne zadĺženie z akcií Dlh (pri prahu vzniká Dlh a počítadlo klesne). */
+  readonly zadlzenie: number;
   /** Spotrebované neresti v predošlom kole — porovnanie dáva Absťák. */
   readonly nerestiMinuleKolo: number;
   readonly nerestiTotoKolo: number;
@@ -34,6 +36,7 @@ export function freshPlayer(): PlayerState {
     poldeciVypite: 0,
     cigarety: KONSTANTY.START_CIGARETY,
     pecen: 0,
+    zadlzenie: 0,
     nerestiMinuleKolo: 0,
     nerestiTotoKolo: 0,
   };
@@ -54,12 +57,12 @@ export function velkostBalicka(player: PlayerState): number {
  */
 export function limitVykladania(
   player: PlayerState,
-  partie: readonly [readonly PlacedCard[], readonly PlacedCard[]],
+  strany: readonly [readonly PlacedCard[], readonly PlacedCard[]],
   p: PlayerId,
 ): number {
   let naexPoldeci = 0;
-  for (const partia of partie) {
-    for (const placed of partia) {
+  for (const strana of strany) {
+    for (const placed of strana) {
       if (placed.naexBy === p) naexPoldeci++;
     }
   }
@@ -70,6 +73,10 @@ export function prahCirhozy(priazenAlkoholika: number): number {
   return KONSTANTY.PRAH_CIRHOZY_ZAKLAD + priazenAlkoholika;
 }
 
+export function prahDlhu(): number {
+  return KONSTANTY.PRAH_DLHU;
+}
+
 export function prahExekutora(priazenExekutora: number): number {
   return KONSTANTY.PRAH_EXEKUTORA_ZAKLAD + 2 * priazenExekutora;
 }
@@ -78,8 +85,8 @@ export function hodnotaViery(priazenVeriaceho: number): number {
   return KONSTANTY.HODNOTA_VIERY_ZAKLAD + priazenVeriaceho;
 }
 
-export function hodnotaPreskumania(priazenOcumovatela: number): number {
-  return KONSTANTY.PRESKUMANIE_ZAKLAD + priazenOcumovatela;
+export function limitRuky(priazenZberatela: number): number {
+  return KONSTANTY.LIMIT_RUKY_ZAKLAD + priazenZberatela;
 }
 
 export function hodnotaTrocha(priazenLakomca: number): number {

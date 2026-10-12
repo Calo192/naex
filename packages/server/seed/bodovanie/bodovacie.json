@@ -1,0 +1,175 @@
+{
+ "_comment": "Scorecardy z KartyAI (telefón, scorecardDrafts 2026-07-13) pre prvé spustenie. Ikony sú pomenované podľa podmienky.",
+ "nazvyIkon": {
+  "znepokojenie": "Znepokojenie",
+  "strach": "Strach",
+  "vydesenie": "Vydesenie",
+  "lokality": "Ovládnuté lokality",
+  "starsi": "Získaný starší",
+  "cigarety": "Zvyšné cigarety",
+  "cirhoza": "Nepriznaná cirhóza",
+  "dlh": "Nepriznaný dlh"
+ },
+ "bodovacie": [
+  {
+   "id": "ocumovatel",
+   "nazov": "Zberateľ",
+   "sirkaMm": 54,
+   "vyskaMm": 80,
+   "mierkaIkon": 1.249,
+   "lava": [
+    "dlh",
+    "znepokojenie",
+    "vydesenie",
+    "starsi"
+   ],
+   "prava": [
+    "strach",
+    "lokality",
+    "znepokojenie",
+    "cirhoza"
+   ],
+   "pozadie": "ocumovatel.jpg"
+  },
+  {
+   "id": "veriaci",
+   "nazov": "Veriaci",
+   "sirkaMm": 54,
+   "vyskaMm": 80,
+   "mierkaIkon": 1.249,
+   "lava": [
+    "cirhoza",
+    "lokality",
+    "strach",
+    "znepokojenie"
+   ],
+   "prava": [
+    "vydesenie",
+    "starsi",
+    "lokality",
+    "dlh"
+   ],
+   "pozadie": "veriaci.jpg"
+  },
+  {
+   "id": "alkoholik",
+   "nazov": "Alkoholik",
+   "sirkaMm": 54,
+   "vyskaMm": 80,
+   "mierkaIkon": 1.249,
+   "lava": [
+    "starsi",
+    "strach",
+    "starsi",
+    "cigarety"
+   ],
+   "prava": [
+    "strach",
+    "lokality",
+    "vydesenie",
+    "lokality"
+   ],
+   "pozadie": "alkoholik.jpg"
+  },
+  {
+   "id": "bitkar",
+   "nazov": "Bitkár",
+   "sirkaMm": 54,
+   "vyskaMm": 80,
+   "mierkaIkon": 1.249,
+   "lava": [
+    "vydesenie",
+    "lokality",
+    "strach",
+    "lokality"
+   ],
+   "prava": [
+    "strach",
+    "lokality",
+    "lokality",
+    "cigarety"
+   ],
+   "pozadie": "bitkar.jpg"
+  },
+  {
+   "id": "fajciar",
+   "nazov": "Fajčiar",
+   "sirkaMm": 54,
+   "vyskaMm": 80,
+   "mierkaIkon": 1.249,
+   "lava": [
+    "strach",
+    "cigarety",
+    "lokality",
+    "dlh"
+   ],
+   "prava": [
+    "cigarety",
+    "znepokojenie",
+    "starsi",
+    "znepokojenie"
+   ],
+   "pozadie": "fajciar.jpg"
+  },
+  {
+   "id": "lakomec",
+   "nazov": "Lakomec",
+   "sirkaMm": 54,
+   "vyskaMm": 80,
+   "mierkaIkon": 1.249,
+   "lava": [
+    "dlh",
+    "znepokojenie",
+    "strach",
+    "cirhoza"
+   ],
+   "prava": [
+    "dlh",
+    "lokality",
+    "dlh",
+    "vydesenie"
+   ],
+   "pozadie": "lakomec.jpg"
+  },
+  {
+   "id": "neprajnik",
+   "nazov": "Neprajník",
+   "sirkaMm": 54,
+   "vyskaMm": 80,
+   "mierkaIkon": 1.249,
+   "lava": [
+    "znepokojenie",
+    "vydesenie",
+    "znepokojenie",
+    "strach"
+   ],
+   "prava": [
+    "starsi",
+    "cigarety",
+    "cirhoza",
+    "strach"
+   ],
+   "pozadie": "neprajnik.jpg"
+  },
+  {
+   "id": "exekutor",
+   "nazov": "Exekútor",
+   "sirkaMm": 54,
+   "vyskaMm": 80,
+   "mierkaIkon": 1.249,
+   "lava": [
+    "lokality",
+    "dlh",
+    "cigarety",
+    "vydesenie"
+   ],
+   "prava": [
+    "znepokojenie",
+    "cirhoza",
+    "dlh",
+    "starsi"
+   ],
+   "pozadie": "exekutor.jpg"
+  }
+ ]
+}

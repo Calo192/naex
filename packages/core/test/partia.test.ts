@@ -11,7 +11,7 @@ import { EMPTY, instanceFor, makeDef, syntheticData, type Layout4 } from "./help
 
 /** Zostaví líniu len z partie hráča 0, bez lokality. */
 function lineP0(...cards: PlacedCard[]): LineState {
-  return { lokalita: null, lokalitaOtocena: false, partie: [cards, []] };
+  return { lokalita: null, lokalitaOtocena: false, strany: [cards, []] };
 }
 
 function own(card: CardInstance): PlacedCard {
@@ -80,8 +80,10 @@ describe("M2 — otočenie o 180°", () => {
     const a = instanceFor(data, "a", [null, null, null, "Rana"], EMPTY);
     const line = lineP0({ card: a, playedBy: 0 }, { card: c, playedBy: 1 });
     const evaluated = evaluateLine(data, line);
-    // Obe akcie aktívne — spoj vznikol na obrátenom indexe.
-    expect(evaluated.sums[0]).toEqual({ Pecka: 1, Rana: 1 });
+    // Obe akcie aktívne — spoj vznikol na obrátenom indexe. Každá akcia patrí
+    // majiteľovi svojej karty, nie partii, v ktorej karta leží (pravidlá v3).
+    expect(evaluated.sums[0]).toEqual({ Rana: 1 });
+    expect(evaluated.sums[1]).toEqual({ Pecka: 1 });
     expect(evaluated.cards.get(c.uid)?.left[0]?.stav).toBe("aktivna");
     expect(evaluated.cards.get(a.uid)?.left[3]?.stav).toBe("aktivna");
   });
@@ -95,6 +97,25 @@ describe("M2 — otočenie o 180°", () => {
     // Rovnaké karty, ale C zahral vlastník partie — bez otočenia spoj nevznikne.
     const line = lineP0({ card: a, playedBy: 0 }, { card: c, playedBy: 0 });
     expect(evaluateLine(data, line).sums[0]).toEqual({});
+  });
+});
+
+describe("pravidlá v3 — karta v súperovej partii (sabotér)", () => {
+  it("Odpor podstrčenej karty ruší súperovu akciu a vlastné akcie boduje majiteľovi", () => {
+    // Hráč 1 podstrčí do partie hráča 0 kartu S. Otočením sa jej vytlačené
+    // left[0]=Odpor ocitne na right[3] proti A left[3] a left[1]=Rana na right[2].
+    const sDef = makeDef("s", ["Odpor", "Rana", null, null], EMPTY);
+    const aDef = makeDef("a", [null, null, "Pecka", "Petelica"], EMPTY);
+    const data = syntheticData([sDef, aDef]);
+    const s = instanceFor(data, "s", ["Odpor", "Rana", null, null], EMPTY);
+    const a = instanceFor(data, "a", [null, null, "Pecka", "Petelica"], EMPTY);
+    // Línia zľava: [S (hráč 1, otočená)] [A (hráč 0)] — A je bližšie k lokalite.
+    const line = lineP0({ card: a, playedBy: 0 }, { card: s, playedBy: 1 });
+    const ev = evaluateLine(data, line);
+    expect(ev.cards.get(a.uid)?.left[3]?.stav).toBe("zrusena");
+    // A aktivovala Ranu sabotéra — tá patrí hráčovi 1, Pecka hráčovi 0.
+    expect(ev.sums[0]).toEqual({ Pecka: 1 });
+    expect(ev.sums[1]).toEqual({ Rana: 1 });
   });
 });
 
@@ -185,7 +206,7 @@ describe("M2 — NA EX", () => {
     const line: LineState = {
       lokalita: null,
       lokalitaOtocena: false,
-      partie: [[{ card: cardA, playedBy: 0, naexBy: 0 }, own(cardB)], []],
+      strany: [[{ card: cardA, playedBy: 0, naexBy: 0 }, own(cardB)], []],
     };
     const evaluated = evaluateLine(data, line);
     // Aktívna Pecka zrušená, neaktívna Rana ×2, susedova Petelica ostáva aktívna.
@@ -212,7 +233,7 @@ describe("M2 — lokalita v línii", () => {
       lokalitaOtocena: false,
       // Hráč 0: karta pravou stranou k lokalite. Hráč 1: otočená karta,
       // jej vytlačené right[0] sa efektívne ocitne na left[3]… tu right[3-0].
-      partie: [[own(cardA)], [{ card: cardC, playedBy: 1 }]],
+      strany: [[own(cardA)], [{ card: cardC, playedBy: 1 }]],
     };
     const evaluated = evaluateLine(data, line);
     // Spoj hráča 0: A.right[1] (Rana) ↔ lokalita.left[1] (Cigaretka).
@@ -233,7 +254,7 @@ describe("M2 — lokalita v línii", () => {
     const line: LineState = {
       lokalita: lokCard,
       lokalitaOtocena: true,
-      partie: [[own(cardA)], []],
+      strany: [[own(cardA)], []],
     };
     const evaluated = evaluateLine(data, line);
     // Otočená lokalita: hráčovi 0 patrí printed right čítaná odzadu:
@@ -247,7 +268,7 @@ describe("M2 — lokalita v línii", () => {
     const line2: LineState = {
       lokalita: lokCard2,
       lokalitaOtocena: true,
-      partie: [[own(cardA2)], []],
+      strany: [[own(cardA2)], []],
     };
     expect(evaluateLine(data2, line2).sums[0]).toEqual({ Rana: 1, Pecka: 1 });
     expect(evaluated.cards.get(lokCard.uid)).toBeDefined();
@@ -264,7 +285,7 @@ describe("M2 — lokalita v línii", () => {
     const line: LineState = {
       lokalita: lokCard,
       lokalitaOtocena: false,
-      partie: [[own(cardA)], []],
+      strany: [[own(cardA)], []],
     };
     const evaluated = evaluateLine(data, line);
     // Vzbura: lokalita aktivuje neprepojenú Poveru na SVOJEJ ľavej strane

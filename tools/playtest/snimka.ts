@@ -1,0 +1,154 @@
+// Snímky obrazovky partie tak, ako ju vidí hráč v prehliadači (pre sledovateľa).
+// Headless Chrome cez DevTools protokol: prihlási sa za hráča, otvorí /hra
+// a odfotí vrch stránky (stôl) a spodok (starší, ruka). Voliteľne prejde
+// myšou na bod (mouseover) a odfotí aj to.
+//
+//   node --experimental-strip-types --no-warnings tools/playtest/snimka.ts <relacia> <1|2> [nazov] [--sirka 1600] [--vyska 1000] [--hover x,y] [--cesta pravidla] [--klik selektor]
+//
+// --cesta odfotí inú stránku webu (pravidla, karty, profil…; lomka na začiatku nie je
+// potrebná — Git Bash ju aj tak prepisuje) namiesto partie.
+// --klik klikne na prvok (CSS selektor, napr. ".tlacidlo-naex") a odfotí výsledok;
+// --klik sa dá zopakovať — kliky idú postupne, po každom snímka.
+//
+// Chrome: CHROME=<cesta>, inak štandardná inštalácia Chrome/Edge na Windows.
+// Pozn.: prehliadač na pár sekúnd prevezme hráčovo spojenie so serverom;
+// konzolový klient playtestera sa pripojí znova sám.
+
+import { spawn } from "node:child_process";
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { createServer } from "node:net";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import WebSocket from "ws";
+
+const args = process.argv.slice(2);
+const volba = (k: string): string | undefined => {
+  const i = args.indexOf(k);
+  return i < 0 ? undefined : args[i + 1];
+};
+const [relacia, hracArg, nazovArg] = args.filter((a, i) => !a.startsWith("--") && !args[i - 1]?.startsWith("--"));
+if (relacia === undefined || (hracArg !== "1" && hracArg !== "2")) {
+  console.error("Použitie: snimka.ts <relacia> <1|2> [nazov] [--sirka N] [--vyska N] [--hover x,y] [--cesta stranka] [--klik selektor]");
+  process.exit(1);
+}
+const sirka = Number(volba("--sirka") ?? "1600");
+const vyska = Number(volba("--vyska") ?? "1000");
+const hover = volba("--hover")?.split(",").map(Number);
+// Git Bash (MSYS) na Windows prepíše argument „/pravidla" na „C:/Program Files/Git/pravidla" —
+// vrátime pôvodnú cestu; bez lomky na začiatku ju doplníme.
+let cesta = volba("--cesta") ?? "/hra";
+const msys = /^[A-Za-z]:[\\/].*?[\\/]Git([\\/].*)$/.exec(cesta);
+if (msys?.[1] !== undefined) cesta = msys[1].replace(/\\/g, "/");
+if (!cesta.startsWith("/")) cesta = `/${cesta}`;
+/** CSS selektory prvkov, na ktoré sa postupne klikne (--klik sa dá zopakovať); po každom snímka. */
+const kliky = args.flatMap((a, i) => (args[i - 1] === "--klik" ? [a] : []));
+const nazov = (nazovArg ?? "stav").replace(/[^a-z0-9_-]/gi, "_");
+
+const hra = JSON.parse(readFileSync(join(relacia, "hra.json"), "utf8")) as {
+  port: number;
+  kod: string;
+  hraci: { login: string; heslo: string }[];
+};
+const ucet = hra.hraci[Number(hracArg) - 1];
+if (ucet === undefined) throw new Error("Neznámy hráč.");
+
+const kandidati = [
+  process.env.CHROME,
+  "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe",
+  "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
+].filter((x): x is string => x !== undefined);
+const chrome = kandidati.find((c) => existsSync(c));
+if (chrome === undefined) throw new Error("Nenašiel som Chrome ani Edge — nastav CHROME=<cesta>.");
+
+function volnyPort(): Promise<number> {
+  return new Promise((ok) => {
+    const s = createServer();
+    s.listen(0, () => {
+      const a = s.address();
+      s.close(() => ok(typeof a === "object" && a !== null ? a.port : 9333));
+    });
+  });
+}
+
+const cdpPort = await volnyPort();
+const profil = mkdtempSync(join(tmpdir(), "naex-snimka-"));
+const proc = spawn(chrome, [`--headless=new`, `--remote-debugging-port=${cdpPort}`, `--user-data-dir=${profil}`, `--window-size=${sirka},${vyska}`, "--hide-scrollbars", "about:blank"], {
+  stdio: "ignore",
+});
+const pockaj = (ms: number) => new Promise((ok) => setTimeout(ok, ms));
+
+try {
+  let ciel: { type: string; webSocketDebuggerUrl: string } | undefined;
+  for (let i = 0; i < 40 && ciel === undefined; i++) {
+    await pockaj(250);
+    try {
+      const zoznam = (await (await fetch(`http://127.0.0.1:${cdpPort}/json`)).json()) as { type: string; webSocketDebuggerUrl: string }[];
+      ciel = zoznam.find((t) => t.type === "page");
+    } catch {
+      // Chrome ešte štartuje
+    }
+  }
+  if (ciel === undefined) throw new Error("Chrome sa nespustil.");
+  const ws = new WebSocket(ciel.webSocketDebuggerUrl);
+  await new Promise((ok) => ws.on("open", ok));
+  let id = 0;
+  const cakajuce = new Map<number, (v: Record<string, unknown>) => void>();
+  ws.on("message", (d) => {
+    const m = JSON.parse(String(d)) as { id?: number; result?: Record<string, unknown> };
+    if (m.id !== undefined) cakajuce.get(m.id)?.(m.result ?? {});
+  });
+  const posli = (method: string, params: Record<string, unknown> = {}) =>
+    new Promise<Record<string, unknown>>((ok) => {
+      id += 1;
+      cakajuce.set(id, ok);
+      ws.send(JSON.stringify({ id, method, params }));
+    });
+  const js = (expression: string) => posli("Runtime.evaluate", { expression, awaitPromise: true, returnByValue: true });
+
+  await posli("Emulation.setDeviceMetricsOverride", { width: sirka, height: vyska, deviceScaleFactor: 1, mobile: false });
+  const zaklad = `http://localhost:${hra.port}`;
+  await posli("Page.navigate", { url: `${zaklad}/` });
+  await pockaj(1500);
+  await js(
+    `fetch('/api/prihlasenie',{method:'POST',headers:{'content-type':'application/json','x-naex':'1'},body:JSON.stringify(${JSON.stringify({ login: ucet.login, heslo: ucet.heslo })})}).then(r=>r.status).then(s=>{localStorage.setItem('naex.miestnost',${JSON.stringify(hra.kod)});return s})`,
+  );
+  await posli("Page.navigate", { url: `${zaklad}${cesta}` });
+  await pockaj(3500);
+
+  const cas = new Date().toISOString().slice(11, 19).replace(/:/g, "");
+  const subory: string[] = [];
+  const foto = async (cast: string): Promise<void> => {
+    const r = await posli("Page.captureScreenshot", { format: "png" });
+    const cesta = join(relacia, "sledovatel", "snimky", `${cas}-hrac${hracArg}-${nazov}-${cast}.png`);
+    writeFileSync(cesta, Buffer.from(String(r.data), "base64"));
+    subory.push(cesta);
+  };
+  await foto("hore");
+  for (const [i, klik] of kliky.entries()) {
+    const r = await js(`(() => { const el = document.querySelector(${JSON.stringify(klik)}); if (!el) return "nenájdený"; el.click(); return "ok"; })()`);
+    const vysledok = (r.result as { value?: string } | undefined)?.value;
+    if (vysledok !== "ok") console.error(`--klik: prvok ${klik} sa nenašiel`);
+    await pockaj(900);
+    await foto(kliky.length === 1 ? "klik" : `klik${i + 1}`);
+  }
+  if (hover !== undefined && hover.length === 2) {
+    await posli("Input.dispatchMouseEvent", { type: "mouseMoved", x: hover[0], y: hover[1] });
+    await pockaj(700);
+    await foto("hover");
+    await posli("Input.dispatchMouseEvent", { type: "mouseMoved", x: 2, y: 2 });
+  }
+  await js("window.scrollTo(0, document.documentElement.scrollHeight)");
+  await pockaj(700);
+  await foto("dole");
+  ws.close();
+  console.log(subory.join("\n"));
+} finally {
+  proc.kill();
+  await pockaj(500);
+  try {
+    rmSync(profil, { recursive: true, force: true });
+  } catch {
+    // Chrome ešte drží súbory — dočasný priečinok upratá systém
+  }
+}

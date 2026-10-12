@@ -4,8 +4,9 @@ import { useRef, useState, type FormEvent } from "react";
 import { api } from "../lib/api.ts";
 import { nacitajObrazok, stvorec } from "../lib/obrazky.ts";
 import { Odkaz, chod, useTitulok } from "../lib/router.tsx";
-import { useUcet, type Pouzivatel } from "../lib/ucet.tsx";
+import { NAZOV_UROVNE, PARTII_NA_HRACA, jeSpravca, useUcet, type Pouzivatel } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Pole } from "../komponenty.tsx";
+import { MojeStatistiky } from "./Statistiky.tsx";
 
 /** Kam sa vrátiť po prihlásení (?spat=/hra). */
 function navrat(): string {
@@ -188,7 +189,7 @@ export function Profil() {
   };
 
   return (
-    <div className="profil">
+    <div className="profil profil-siroky">
       <h1>Môj profil</h1>
       {novy && <Hlaska druh="ok">Účet je pripravený. Nastav si herné meno a fotku — uvidí ich tvoj súper.</Hlaska>}
       {sprava !== null && <Hlaska druh={sprava.druh}>{sprava.text}</Hlaska>}
@@ -200,8 +201,16 @@ export function Profil() {
         <div>
           <h2 style={{ marginBottom: 4 }}>{ja.meno}</h2>
           <div className="riadok-tlacidiel" style={{ color: "var(--slaby)" }}>
-            @{ja.login} <span className={ja.rola === "admin" ? "odznak odznak-admin" : "odznak"}>{ja.rola === "admin" ? "admin" : "hráč"}</span>
+            @{ja.login} <span className={jeSpravca(ja.rola) ? "odznak odznak-admin" : "odznak"}>{NAZOV_UROVNE[ja.rola]}</span>
           </div>
+          {ja.rola === "navstevnik" && (
+            <p className="tlmene" style={{ margin: "6px 0 0" }}>
+              Hráčom sa staneš po {PARTII_NA_HRACA} dohratých partiách — máš {ja.dohrate ?? 0}. Hráč môže písať spätnú väzbu.
+            </p>
+          )}
+          <p style={{ margin: "6px 0 0" }}>
+            <Odkaz href={`/hrac/${ja.id}`}>Ako ma vidia ostatní</Odkaz>
+          </p>
           <div className="profil-avatar-akcie">
             <input
               ref={subor}
@@ -226,6 +235,10 @@ export function Profil() {
         </div>
       </section>
 
+      <MojeStatistiky id={ja.id} />
+
+      <h2 className="profil-nastavenia-nadpis">Nastavenia účtu</h2>
+      <div className="profil-nastavenia">
       <form className="panel" onSubmit={(e) => void ulozMeno(e)}>
         <h3>Herné meno</h3>
         <Pole label="Ako ťa uvidí súper" pomoc="2 – 24 znakov.">
@@ -246,6 +259,7 @@ export function Profil() {
         </Pole>
         <button type="submit">Zmeniť heslo</button>
       </form>
+      </div>
     </div>
   );
 }

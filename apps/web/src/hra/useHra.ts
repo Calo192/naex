@@ -4,29 +4,38 @@
 // pošle rejoin s kódom z localStorage a hráč pokračuje, kde prestal.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { ClientState, Command, Event, GameData } from "@naex/core";
+import type { ClientState, Command, DlzkaHry, Event, GameData } from "@naex/core";
 import { loadGameData } from "@naex/core";
 import eldersJson from "@naex/core/data/elders.json";
+import scorecardsJson from "@naex/core/data/scorecards.json";
 import type { Sada } from "@naex/tvorba";
 
 export interface HracInfo {
+  readonly id?: number;
   readonly meno: string;
   readonly avatar: string | null;
+  readonly frajerina?: number;
+  readonly titul?: string;
 }
+
+/** Zmena Frajeriny po dohraní partie (index = miesto hráča). */
+export type ZmenyFrajeriny = readonly [{ readonly pred: number; readonly po: number }, { readonly pred: number; readonly po: number }];
 
 export interface Miestnost {
   readonly code: string;
   readonly seat: 0 | 1;
   readonly started: boolean;
   readonly verejna: boolean;
+  readonly dlzka: DlzkaHry;
   readonly sada: Sada;
 }
 
 type ServerMsg =
-  | { type: "privitanie"; code: string; seat: 0 | 1; started: boolean; verejna: boolean; sada: Sada }
+  | { type: "privitanie"; code: string; seat: 0 | 1; started: boolean; verejna: boolean; dlzka: DlzkaHry; sada: Sada }
   | { type: "hraci"; hraci: [HracInfo | null, HracInfo | null] }
   | { type: "state"; view: ClientState; events: Event[] }
   | { type: "superPripojeny"; connected: boolean }
+  | { type: "frajerina"; zmeny: ZmenyFrajeriny }
   | { type: "error"; text: string };
 
 export interface HraHook {
@@ -38,9 +47,12 @@ export interface HraHook {
   readonly log: readonly string[];
   readonly chyba: string | null;
   readonly superPripojeny: boolean;
-  zaloz(verejna: boolean): void;
+  readonly frajerina: ZmenyFrajeriny | null;
+  zaloz(verejna: boolean, dlzka: DlzkaHry): void;
   pripoj(code: string): void;
   cmd(command: Command): void;
+  /** Kontumačná výhra, keď je súper dlho odpojený (server overí čas). */
+  kontumacia(): void;
   odid(): void;
   zrusChybu(): void;
 }
@@ -73,6 +85,7 @@ export function useHra(aktivne: boolean): HraHook {
   const [log, setLog] = useState<readonly string[]>([]);
   const [chyba, setChyba] = useState<string | null>(null);
   const [superPripojeny, setSuperPripojeny] = useState(true);
+  const [frajerina, setFrajerina] = useState<ZmenyFrajeriny | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const menaRef = useRef<string[]>([]);
   menaRef.current = hraci.map((h, i) => h?.meno ?? `Hráč ${i + 1}`);
@@ -92,7 +105,8 @@ export function useHra(aktivne: boolean): HraHook {
       const msg = JSON.parse(String(raw.data)) as ServerMsg;
       switch (msg.type) {
         case "privitanie":
-          setMiestnost({ code: msg.code, seat: msg.seat, started: msg.started, verejna: msg.verejna, sada: msg.sada });
+          setMiestnost({ code: msg.code, seat: msg.seat, started: msg.started, verejna: msg.verejna, dlzka: msg.dlzka, sada: msg.sada });
+          setFrajerina(null);
           localStorage.setItem(KLUC, msg.code);
           setChyba(null);
           break;
@@ -110,8 +124,23 @@ export function useHra(aktivne: boolean): HraHook {
         case "superPripojeny":
           setSuperPripojeny(msg.connected);
           break;
+        case "frajerina":
+          setFrajerina(msg.zmeny);
+          break;
         case "error":
-          // Zaniknutá alebo cudzia miestnosť → zabudni ju.
+          // Rozohraná partia zanikla (napr. reštart servera — miestnosti žijú
+          // v pamäti). Inak by plocha ukazovala starý stav a každý ťah by
+          // padal do prázdna; radšej späť do lobby s vysvetlením.
+          if (miestnostRef.current !== null && /neexistuje|Nie si v miestnosti/.test(msg.text)) {
+            localStorage.removeItem(KLUC);
+            setMiestnost(null);
+            setView(null);
+            setLog([]);
+            setHraci([null, null]);
+            setChyba("Partia sa stratila — server sa medzitým reštartoval. Založ novú hru.");
+            break;
+          }
+          // Zaniknutá alebo cudzia miestnosť pred vstupom → zabudni ju.
           if (/neexistuje|nehráš|plná/.test(msg.text) && localStorage.getItem(KLUC) !== null && miestnostRef.current === null) {
             localStorage.removeItem(KLUC);
           }
@@ -147,7 +176,7 @@ export function useHra(aktivne: boolean): HraHook {
     if (ws !== null && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(msg));
   }, []);
 
-  const data = useMemo(() => (miestnost === null ? null : loadGameData(miestnost.sada.cardsJson, eldersJson)), [miestnost?.sada]);
+  const data = useMemo(() => (miestnost === null ? null : loadGameData(miestnost.sada.cardsJson, eldersJson, miestnost.sada.scorecardsJson ?? scorecardsJson)), [miestnost?.sada]);
 
   return {
     pripojene,
@@ -158,9 +187,11 @@ export function useHra(aktivne: boolean): HraHook {
     log,
     chyba,
     superPripojeny,
-    zaloz: useCallback((verejna: boolean) => posli({ type: "create", verejna }), [posli]),
+    frajerina,
+    zaloz: useCallback((verejna: boolean, dlzka: DlzkaHry) => posli({ type: "create", verejna, dlzka }), [posli]),
     pripoj: useCallback((code: string) => posli({ type: "join", code: code.trim().toUpperCase() }), [posli]),
     cmd: useCallback((command: Command) => posli({ type: "cmd", cmd: command }), [posli]),
+    kontumacia: useCallback(() => posli({ type: "kontumacia" }), [posli]),
     odid: useCallback(() => {
       posli({ type: "leave" });
       localStorage.removeItem(KLUC);
@@ -168,6 +199,7 @@ export function useHra(aktivne: boolean): HraHook {
       setView(null);
       setLog([]);
       setHraci([null, null]);
+      setFrajerina(null);
     }, [posli]),
     zrusChybu: useCallback(() => setChyba(null), []),
   };

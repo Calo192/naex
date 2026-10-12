@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import cardsJson from "../../core/data/cards.json";
 import eldersJson from "../../core/data/elders.json";
+import scorecardsJson from "../../core/data/scorecards.json";
 import { loadGameData } from "@naex/core";
 import type { KartaNavrh, StranaNavrhu } from "../src/index.ts";
 import {
@@ -50,7 +51,7 @@ const navrhy: KartaNavrh[] = (cardsJson as unknown as { cards: Raw[] }).cards.ma
 
 describe("tvorba — varianty a zverejnenie", () => {
   it("počty variantov tvorcu sedia s jadrom pre všetky karty", () => {
-    const data = loadGameData(cardsJson, eldersJson);
+    const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
     for (const k of navrhy) {
       expect(variantyKarty(k).pocet, k.id).toBe(data.variants.get(k.id)?.total);
     }
@@ -58,7 +59,7 @@ describe("tvorba — varianty a zverejnenie", () => {
 
   it("zverejnená sada prejde validáciou jadra a zachová permutácie", () => {
     const json = doCardsJson(navrhy, "test");
-    const data = loadGameData(json, eldersJson);
+    const data = loadGameData(json, eldersJson, scorecardsJson);
     expect(data.cards.size).toBe(navrhy.length);
     expect(data.cards.get("zahradkar")?.triggers).toEqual(["Exekúcia"]);
   });

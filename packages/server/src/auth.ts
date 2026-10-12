@@ -1,12 +1,34 @@
 // Účty a relácie: meno + heslo (scrypt z node:crypto), relácia v HttpOnly
 // cookie. V databáze je len hash tokenu — únik databázy neprezradí relácie.
-// Admin je účet uvedený v NAEX_ADMINS (alebo povýšený iným adminom).
+//
+// Úroveň účtu (Michal 2026-10-12): admin (jediný, z NAEX_ADMIN_HESLO),
+// subadmin (povýši ho admin), hráč, návštevník. Nový účet je návštevník
+// a hráčom sa stane po PARTII_NA_HRACA dohratých partiách.
 
 import { createHash, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 import type { IncomingMessage } from "node:http";
 import type { Db } from "./db.ts";
 
-export type Rola = "admin" | "pouzivatel";
+export type Rola = "admin" | "subadmin" | "hrac" | "navstevnik";
+
+export const UROVNE: readonly Rola[] = ["admin", "subadmin", "hrac", "navstevnik"];
+
+/** Koľko dohratých partií treba, aby sa návštevník stal hráčom. */
+export const PARTII_NA_HRACA = 3;
+
+/** Admin a subadmin: správa hráčov, tvorba kariet, mazanie cudzích príspevkov. */
+export function jeSpravca(rola: Rola): boolean {
+  return rola === "admin" || rola === "subadmin";
+}
+
+/** Spätnú väzbu (názory, komentáre, cigarety) píšu hráči a správcovia, návštevník len číta. */
+export function smiePisat(ja: { readonly rola: Rola }): void {
+  if (ja.rola === "navstevnik") {
+    throw new ChybaVstupu(`Návštevník spätnú väzbu len číta — písať môžeš po ${PARTII_NA_HRACA} dohratých partiách.`, 403);
+  }
+}
+
+const rolaZDb = (v: unknown): Rola => (UROVNE.includes(v as Rola) ? (v as Rola) : "navstevnik");
 
 export interface Pouzivatel {
   readonly id: number;
@@ -15,6 +37,10 @@ export interface Pouzivatel {
   readonly avatar: string | null;
   readonly rola: Rola;
 }
+
+/** Dohraté partie používateľa — poddotaz nad riadkom `pouzivatelia` (stĺpec id). */
+const DOHRATE_SQL = `SELECT COUNT(*) FROM partie_hraci ph JOIN partie pa ON pa.id = ph.partia
+  WHERE ph.pouzivatel = pouzivatelia.id AND pa.dohrata = 1`;
 
 const COOKIE = "naex_sid";
 const PLATNOST_MS = 30 * 24 * 60 * 60 * 1000;
@@ -52,12 +78,53 @@ export function cookieOdhlasenia(bezpecne: boolean): string {
 }
 
 export class Ucty {
-  private readonly admini: Set<string>;
   private readonly db: Db;
+  private readonly adminLogin: string;
 
-  constructor(db: Db, admini: readonly string[]) {
+  constructor(db: Db, admin: { readonly login: string; readonly heslo: string | null }) {
     this.db = db;
-    this.admini = new Set(admini.map((a) => a.trim().toLowerCase()).filter((a) => a !== ""));
+    this.adminLogin = admin.login;
+    this.pripravUrovne(admin);
+  }
+
+  /**
+   * Pri štarte: účty zo starej schémy (rola „pouzivatel“) dostanú úroveň podľa
+   * dohratých partií, admin je len jeden (ostatní bývalí admini sú hráči)
+   * a jeho heslo sa nastaví z konfigurácie.
+   */
+  private pripravUrovne(admin: { readonly login: string; readonly heslo: string | null }): void {
+    this.db
+      .prepare(
+        `UPDATE pouzivatelia SET rola = CASE WHEN (${DOHRATE_SQL}) >= ? THEN 'hrac' ELSE 'navstevnik' END
+         WHERE rola NOT IN ('admin', 'subadmin', 'hrac', 'navstevnik')`,
+      )
+      .run(PARTII_NA_HRACA);
+    this.db.prepare("UPDATE pouzivatelia SET rola = 'hrac' WHERE rola = 'admin' AND login <> ?").run(admin.login);
+    if (admin.heslo === null) return;
+    const r = this.db.prepare("SELECT id, heslo FROM pouzivatelia WHERE login = ?").get(admin.login) as
+      | { id: number; heslo: string }
+      | undefined;
+    if (r === undefined) {
+      this.db
+        .prepare("INSERT INTO pouzivatelia (login, heslo, meno, rola, vytvoreny) VALUES (?, ?, ?, 'admin', ?)")
+        .run(admin.login, hashHesla(admin.heslo), admin.login, Date.now());
+      return;
+    }
+    // Heslo z konfigurácie platí — zmena NAEX_ADMIN_HESLO sa prejaví pri ďalšom štarte.
+    if (!overHeslo(admin.heslo, r.heslo)) this.db.prepare("UPDATE pouzivatelia SET heslo = ? WHERE id = ?").run(hashHesla(admin.heslo), r.id);
+    this.db.prepare("UPDATE pouzivatelia SET rola = 'admin' WHERE id = ?").run(r.id);
+  }
+
+  /** Počet partií, ktoré hráč dohral podľa pravidiel (bez vzdaných a kontumovaných). */
+  dohrate(id: number): number {
+    return (this.db.prepare(`SELECT (${DOHRATE_SQL}) AS n FROM pouzivatelia WHERE id = ?`).get(id) as { n: number } | undefined)?.n ?? 0;
+  }
+
+  /** Po zápise partie: návštevník s dosť dohratými partiami sa stáva hráčom. */
+  povysPoPartii(id: number): void {
+    this.db
+      .prepare(`UPDATE pouzivatelia SET rola = 'hrac' WHERE id = ? AND rola = 'navstevnik' AND (${DOHRATE_SQL}) >= ?`)
+      .run(id, PARTII_NA_HRACA);
   }
 
   private riadok(r: Record<string, unknown> | undefined): Pouzivatel | null {
@@ -67,7 +134,7 @@ export class Ucty {
       login: String(r.login),
       meno: String(r.meno),
       avatar: r.avatar === null ? null : String(r.avatar),
-      rola: r.rola === "admin" ? "admin" : "pouzivatel",
+      rola: rolaZDb(r.rola),
     };
   }
 
@@ -79,24 +146,18 @@ export class Ucty {
     );
   }
 
-  /** Účet z konfigurácie NAEX_ADMINS dostane rolu admin pri každom prihlásení. */
-  private povysAkTreba(p: Pouzivatel): Pouzivatel {
-    if (p.rola !== "admin" && this.admini.has(p.login.toLowerCase())) {
-      this.db.prepare("UPDATE pouzivatelia SET rola = 'admin' WHERE id = ?").run(p.id);
-      return { ...p, rola: "admin" };
-    }
-    return p;
-  }
-
   registruj(login: string, heslo: string, meno: string, teraz: number): Pouzivatel {
     const existuje = this.db.prepare("SELECT 1 FROM pouzivatelia WHERE login = ?").get(login);
-    if (existuje !== undefined) throw new ChybaVstupu("Toto prihlasovacie meno je obsadené.");
+    // Meno admina je rezervované, aj kým ho konfigurácia nezaložila.
+    if (existuje !== undefined || login.toLowerCase() === this.adminLogin.toLowerCase()) {
+      throw new ChybaVstupu("Toto prihlasovacie meno je obsadené.");
+    }
     const r = this.db
-      .prepare("INSERT INTO pouzivatelia (login, heslo, meno, rola, vytvoreny) VALUES (?, ?, ?, 'pouzivatel', ?)")
+      .prepare("INSERT INTO pouzivatelia (login, heslo, meno, rola, vytvoreny) VALUES (?, ?, ?, 'navstevnik', ?)")
       .run(login, hashHesla(heslo), meno, teraz);
     const p = this.podlaId(Number(r.lastInsertRowid));
     if (p === null) throw new Error("Účet sa nepodarilo vytvoriť.");
-    return this.povysAkTreba(p);
+    return p;
   }
 
   prihlas(login: string, heslo: string): Pouzivatel | null {
@@ -106,8 +167,7 @@ export class Ucty {
     // Pri neznámom mene sa heslo aj tak „overí“, aby čas odpovede neprezradil účty.
     const ok = overHeslo(heslo, r?.heslo ?? hashHesla("x"));
     if (r === undefined || !ok) return null;
-    const p = this.podlaId(r.id);
-    return p === null ? null : this.povysAkTreba(p);
+    return this.podlaId(r.id);
   }
 
   zmenHeslo(id: number, stare: string, nove: string): void {
@@ -143,17 +203,15 @@ export class Ucty {
     return this.podlaId(id);
   }
 
-  zoznam(): (Pouzivatel & { vytvoreny: number })[] {
-    const rows = this.db.prepare("SELECT id, login, meno, avatar, rola, vytvoreny FROM pouzivatelia ORDER BY id").all() as Record<string, unknown>[];
-    return rows.map((r) => ({ ...(this.riadok(r) as Pouzivatel), vytvoreny: Number(r.vytvoreny) }));
+  zoznam(): (Pouzivatel & { vytvoreny: number; dohrate: number })[] {
+    const rows = this.db
+      .prepare(`SELECT id, login, meno, avatar, rola, vytvoreny, (${DOHRATE_SQL}) AS dohrate FROM pouzivatelia ORDER BY id`)
+      .all() as Record<string, unknown>[];
+    return rows.map((r) => ({ ...(this.riadok(r) as Pouzivatel), vytvoreny: Number(r.vytvoreny), dohrate: Number(r.dohrate) }));
   }
 
   nastavRolu(id: number, rola: Rola): void {
     this.db.prepare("UPDATE pouzivatelia SET rola = ? WHERE id = ?").run(rola, id);
-  }
-
-  pocetAdminov(): number {
-    return (this.db.prepare("SELECT COUNT(*) AS n FROM pouzivatelia WHERE rola = 'admin'").get() as { n: number }).n;
   }
 }
 

@@ -312,7 +312,17 @@ do commitu a do README**, nech sa to dá ľahko prepnúť.
    pre súpera za každú Cirhózu v mojej línii?
 6. **Absťák** — čo presne sa počíta ako „nerest"? Poldeci, cigarety, oboje?
 7. **Štartovacia ruka** — ako sa 10 kariet delí medzi 4 typy štartoviek?
-8. **Lokality** — v `cards.json` je len **7**, pravidlá chcú až 9 na dlhú hru.
+8. **Lokality** — v `cards.json` je len **7**. Pravidlá v3 (2026-10-11): krátka 5,
+   stredná 7, dlhá 11 lokalít; dlhá hra sa dá zvoliť, až keď sada bude mať
+   aspoň 11 lokalít (pridať v tvorcovi).
+10. **Kočovník** (pravidlá v3) — do súperovej partie smie každá karta, pôvodný
+   efekt stratil zmysel. **Navrhnutý efekt:** „Nástup: Keď nastúpi do súperovej
+   partie, nemíňa limit vykladania." Implementované v jadre; text karty treba
+   upraviť v tvorcovi, alebo efekt zmeniť.
+11. **Svokra** (pravidlá v3) — NA EX smie len na vlastné karty, pôvodný efekt
+   („vráť súperovi jedno NA EX z tvojej karty“) stratil zmysel. **Nový efekt
+   (rozhodnutie Michala 2026-10-11):** „Nástup: Súper v najbližšej Pitke nesmie
+   dať NA EX.“ Implementované; text karty treba upraviť v tvorcovi.
 9. **Šenok** — čo sa stane, keď sa minie spoločný doberací balíček?
 
 ---

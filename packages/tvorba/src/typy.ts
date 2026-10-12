@@ -5,6 +5,8 @@
 // (obrázok, farbu, mierky, rozmer) a tlač (počet kópií). Hra dostane len
 // zverejnenú sadu prevedenú do formátu cards.json (zverejnenie.ts).
 
+import type { Podmienka } from "@naex/core";
+
 /** Pozície 0..3 zhora nadol, ako v pravidlách. */
 export type Pozicia = 0 | 1 | 2 | 3;
 export const POZICIE: readonly Pozicia[] = [0, 1, 2, 3];
@@ -85,6 +87,8 @@ export interface IkonaBodovania {
   readonly id: string;
   readonly nazov: string;
   readonly media: string;
+  /** Čo ikona v hre znamená; bez významu sa scorecard s ňou nedá zverejniť. */
+  readonly podmienka?: Podmienka | null;
 }
 
 /** Bodovacia karta — podložka, do ktorej sa vkladá karta staršieho. */
@@ -131,6 +135,11 @@ export interface Sada extends Vzhlad {
   readonly karty: readonly KartaNavrh[];
   /** Herné dáta vo formáte packages/core/data/cards.json. */
   readonly cardsJson: unknown;
+  /** Scorecardy vo formáte packages/core/data/scorecards.json (staršie sady ich nemajú). */
+  readonly scorecardsJson?: unknown;
+  /** Vzhľad scorecardov pre hru (ilustrácia, ikony). */
+  readonly bodovacie?: readonly BodovaciaKarta[];
+  readonly ikonyBodovania?: readonly IkonaBodovania[];
 }
 
 export function prazdnaStrana(): StranaNavrhu {

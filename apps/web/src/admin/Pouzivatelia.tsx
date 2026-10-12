@@ -1,19 +1,24 @@
-// Používatelia a roly (admin / hráč).
+// Hráči a úrovne účtov (admin / subadmin / hráč / návštevník). Zoznam vidí
+// admin aj subadmin; úroveň mení len admin a admin je len jeden.
 
 import { useEffect, useState } from "react";
 import { api } from "../lib/api.ts";
 import { useTitulok } from "../lib/router.tsx";
-import { useUcet, type Pouzivatel } from "../lib/ucet.tsx";
+import { NAZOV_UROVNE, PARTII_NA_HRACA, useUcet, type Pouzivatel, type Rola } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
 
-type Riadok = Pouzivatel & { readonly vytvoreny: number };
+type Riadok = Pouzivatel & { readonly vytvoreny: number; readonly dohrate: number };
+
+/** Úrovne, ktoré smie admin nastaviť (admina nikto ďalší nedostane). */
+const NASTAVITELNE: readonly Rola[] = ["subadmin", "hrac", "navstevnik"];
 
 export function Pouzivatelia() {
-  useTitulok("Používatelia — tvorba");
+  useTitulok("Hráči — správa");
   const { ja } = useUcet();
   const [zoznam, setZoznam] = useState<readonly Riadok[] | null>(null);
   const [chyba, setChyba] = useState<string | null>(null);
   const [hladat, setHladat] = useState("");
+  const somAdmin = ja?.rola === "admin";
 
   const nacitaj = () =>
     void api
@@ -22,7 +27,7 @@ export function Pouzivatelia() {
       .catch((e: unknown) => setChyba(e instanceof Error ? e.message : String(e)));
   useEffect(nacitaj, []);
 
-  const nastavRolu = async (p: Riadok, rola: "admin" | "pouzivatel") => {
+  const nastavUroven = async (p: Riadok, rola: Rola) => {
     try {
       await api.patch(`/admin/pouzivatelia/${p.id}`, { rola });
       nacitaj();
@@ -34,13 +39,15 @@ export function Pouzivatelia() {
   if (zoznam === null) return chyba !== null ? <Hlaska>{chyba}</Hlaska> : <Nacitavanie />;
   const f = hladat.trim().toLowerCase();
   const viditelni = zoznam.filter((p) => f === "" || p.login.toLowerCase().includes(f) || p.meno.toLowerCase().includes(f));
+  const pocet = (r: Rola) => zoznam.filter((p) => p.rola === r).length;
 
   return (
     <div className="admin-stranka">
-      <h1>Používatelia</h1>
+      <h1>Hráči</h1>
       <p className="tlmene">
-        {zoznam.length} účtov. Admin vidí tvorbu kariet; hráč vidí pravidlá, karty a hrá. Účty z premennej NAEX_ADMINS dostanú
-        rolu admin pri každom prihlásení.
+        {zoznam.length} účtov — {pocet("subadmin")} subadmin, {pocet("hrac")} hráčov, {pocet("navstevnik")} návštevníkov. Nový účet je
+        návštevník (hrá a číta spätnú väzbu); po {PARTII_NA_HRACA} dohratých partiách sa sám stane hráčom. Subadmin smie to isté čo admin
+        okrem zmeny úrovní. {somAdmin ? "Úroveň meníš v poslednom stĺpci." : "Úrovne mení len admin."}
       </p>
       {chyba !== null && <Hlaska>{chyba}</Hlaska>}
       <input type="search" placeholder="Hľadať…" value={hladat} onChange={(e) => setHladat(e.target.value)} style={{ maxWidth: 280, marginBottom: 14 }} />
@@ -50,7 +57,8 @@ export function Pouzivatelia() {
             <th>Hráč</th>
             <th>Prihlasovacie meno</th>
             <th>Registrácia</th>
-            <th>Rola</th>
+            <th>Dohraté partie</th>
+            <th>Úroveň</th>
           </tr>
         </thead>
         <tbody>
@@ -63,16 +71,19 @@ export function Pouzivatelia() {
               </td>
               <td>@{p.login}</td>
               <td>{new Date(p.vytvoreny).toLocaleDateString("sk")}</td>
+              <td>{p.dohrate}</td>
               <td>
-                <select
-                  value={p.rola}
-                  disabled={p.id === ja?.id}
-                  onChange={(e) => void nastavRolu(p, e.target.value === "admin" ? "admin" : "pouzivatel")}
-                  style={{ maxWidth: 140 }}
-                >
-                  <option value="pouzivatel">hráč</option>
-                  <option value="admin">admin</option>
-                </select>
+                {somAdmin && p.rola !== "admin" ? (
+                  <select value={p.rola} onChange={(e) => void nastavUroven(p, e.target.value as Rola)} style={{ maxWidth: 150 }} aria-label={`Úroveň ${p.meno}`}>
+                    {NASTAVITELNE.map((r) => (
+                      <option key={r} value={r}>
+                        {NAZOV_UROVNE[r]}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <span className={p.rola === "admin" || p.rola === "subadmin" ? "odznak odznak-admin" : "odznak"}>{NAZOV_UROVNE[p.rola]}</span>
+                )}
               </td>
             </tr>
           ))}

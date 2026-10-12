@@ -12,3 +12,6 @@ docs/NA EX/
 # Dáta bežiaceho servera (SQLite, nahrané súbory)
 /data/
 __pycache__/
+
+# Relácie playtestov (dočasné servery, záznamy agentov)
+/playtest/

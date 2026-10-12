@@ -1,0 +1,87 @@
+{
+ "_comment": [
+  "Scorecardy (bodovacie karty starších) — východisková sada pre prvé spustenie",
+  "a testy. V hre platí sada zverejnená v tvorcovi (Tvorba → Bodovacie karty).",
+  "Rozloženie podmienok je prepísané z KartyAI (scorecardDrafts, 2026-07-13).",
+  "",
+  "lava/prava: 4 pozície zhora nadol; ľavá strana patrí hráčovi 0, pravá hráčovi 1.",
+  "Podmienku aktivuje NEPRÁZDNA akcia karty na ukazovateli na tej istej strane a indexe.",
+  "Na konci hry boduje len obávaný hráč a len aktivované podmienky na svojej strane.",
+  "",
+  "body: znepokojenie/strach/vydesenie = body, ak je marker aspoň v tej zóne;",
+  "      ostatné = body za každý kus obávaného hráča (ovládnutá lokalita, starší",
+  "      získaný náhradou, zvyšná cigareta, nepriznaná cirhóza, nepriznaný dlh).",
+  "      Lokality, starší a cigarety bodujú len od oranžovej zóny (prahPodmienky",
+  "      v elders.ts, rozhodnutie Michala 2026-10-12). Lokality a starší dávajú",
+  "      2 za kus (predtým 3) — Michal 2026-10-12 po playteste 20261012-055944.",
+  "      TODO: overiť podľa komponentov — jediné, čo pravidlá udávajú, je −1 za dlh."
+ ],
+ "body": {
+  "znepokojenie": 1,
+  "strach": 2,
+  "vydesenie": 3,
+  "lokality": 2,
+  "starsi": 2,
+  "cigarety": 1,
+  "cirhoza": -2,
+  "dlh": -1
+ },
+ "scorecards": [
+  {
+   "id": "zberatel",
+   "nazov": "Zberateľ",
+   "favour": "ZBERATEL",
+   "lava": ["dlh", "znepokojenie", "vydesenie", "starsi"],
+   "prava": ["strach", "lokality", "znepokojenie", "cirhoza"]
+  },
+  {
+   "id": "veriaci",
+   "nazov": "Veriaci",
+   "favour": "VERIACI",
+   "lava": ["cirhoza", "lokality", "strach", "znepokojenie"],
+   "prava": ["vydesenie", "starsi", "lokality", "dlh"]
+  },
+  {
+   "id": "alkoholik",
+   "nazov": "Alkoholik",
+   "favour": "ALKOHOLIK",
+   "lava": ["starsi", "strach", "starsi", "cigarety"],
+   "prava": ["strach", "lokality", "vydesenie", "lokality"]
+  },
+  {
+   "id": "bitkar",
+   "nazov": "Bitkár",
+   "favour": "BITKAR",
+   "lava": ["vydesenie", "lokality", "strach", "lokality"],
+   "prava": ["strach", "lokality", "lokality", "cigarety"]
+  },
+  {
+   "id": "fajciar",
+   "nazov": "Fajčiar",
+   "favour": "FAJCIAR",
+   "lava": ["strach", "cigarety", "lokality", "dlh"],
+   "prava": ["cigarety", "znepokojenie", "starsi", "znepokojenie"]
+  },
+  {
+   "id": "lakomec",
+   "nazov": "Lakomec",
+   "favour": "LAKOMEC",
+   "lava": ["dlh", "znepokojenie", "strach", "cirhoza"],
+   "prava": ["dlh", "lokality", "dlh", "vydesenie"]
+  },
+  {
+   "id": "neprajnik",
+   "nazov": "Neprajník",
+   "favour": "NEPRAJNIK",
+   "lava": ["znepokojenie", "vydesenie", "znepokojenie", "strach"],
+   "prava": ["starsi", "cigarety", "cirhoza", "strach"]
+  },
+  {
+   "id": "exekutor",
+   "nazov": "Exekútor",
+   "favour": "EXEKUTOR",
+   "lava": ["lokality", "dlh", "cigarety", "vydesenie"],
+   "prava": ["znepokojenie", "cirhoza", "dlh", "starsi"]
+  }
+ ]
+}

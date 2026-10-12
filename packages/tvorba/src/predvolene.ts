@@ -62,7 +62,7 @@ export const PREDVOLENE_KLUCOVE_SLOVA: readonly KlucoveSlovo[] = [
   P("zopár", [], "Zopár — základná hodnota 2, upraviteľná priazňou Neprajníka."),
   P("zahoď", ["zahodiť", "zahodí", "zahodia"], "Zahodenie — kartu odstrániš z hry (spáliš)."),
   P("odhoď", ["odhodiť", "odhodí", "odhodia"], "Odhodenie — karta ide do odhadzovacieho balíčka hráča, ktorý ju zahral."),
-  P("preskúmaj", ["preskúmať", "preskúma"], "Preskúmanie — zober a prezri si 5 kariet (+ priazeň Očumovateľa), potom ich vráť."),
+  P("preskúmaj", ["preskúmať", "preskúma"], "Preskúmanie — zober a prezri si 5 kariet, potom ich vráť."),
 ];
 
 /** Odtiene odmerané z tlačového PDF; Občan a pohlavia farbu nedávajú. */

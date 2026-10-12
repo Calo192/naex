@@ -3,12 +3,30 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { api } from "./api.ts";
 
+/** Úroveň účtu (Michal 2026-10-12) — práva overuje server, tu len podľa nej kreslíme. */
+export type Rola = "admin" | "subadmin" | "hrac" | "navstevnik";
+
+export const NAZOV_UROVNE: Readonly<Record<Rola, string>> = {
+  admin: "admin",
+  subadmin: "subadmin",
+  hrac: "hráč",
+  navstevnik: "návštevník",
+};
+
+/** Koľko dohratých partií treba na úroveň hráč (zhodne so serverom). */
+export const PARTII_NA_HRACA = 3;
+
+/** Admin a subadmin: správa hráčov, tvorba kariet, mazanie cudzích príspevkov. */
+export const jeSpravca = (rola: Rola): boolean => rola === "admin" || rola === "subadmin";
+
 export interface Pouzivatel {
   readonly id: number;
   readonly login: string;
   readonly meno: string;
   readonly avatar: string | null;
-  readonly rola: "admin" | "pouzivatel";
+  readonly rola: Rola;
+  /** Dohraté partie — posiela ho len /api/ja. */
+  readonly dohrate?: number;
 }
 
 interface UcetKontext {

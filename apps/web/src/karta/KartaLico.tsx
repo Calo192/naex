@@ -38,6 +38,8 @@ export interface KartaLicoProps {
   readonly odznaky?: ReactNode;
   readonly onClick?: (() => void) | undefined;
   readonly vybrana?: boolean;
+  /** Karta leží voči divákovi nohami hore (zahral ju ten druhý hráč). */
+  readonly otocena?: boolean;
   /** Bez tooltipov a efektu — malá karta v zozname. */
   readonly bezPopisov?: boolean;
   readonly className?: string;
@@ -107,6 +109,7 @@ export function KartaLico(props: KartaLicoProps) {
   const triedy = ["kl"];
   if (onClick !== undefined) triedy.push("kl-klik");
   if (vybrana === true) triedy.push("kl-vybrana");
+  if (props.otocena === true) triedy.push("kl-otocena");
   if (props.className !== undefined) triedy.push(props.className);
   if (tlac) triedy.push("kl-tlac");
 
@@ -219,13 +222,15 @@ function Efekt({
         {riadky.map((riadok, i) => (
           <div key={i}>
             {riadok.map((u, j) => {
-              if (u.pravidlo === null || (!u.tucne && !u.kurziva)) return <span key={j}>{u.text}</span>;
-              const Tag = u.tucne ? "b" : "i";
+              const maPopis = u.pravidlo !== null && u.pravidlo.popis !== "";
+              if (u.pravidlo === null || (!u.tucne && !u.kurziva && !maPopis)) return <span key={j}>{u.text}</span>;
+              // Popis má aj slovo bez zvýraznenia — tooltip nesmie závisieť od štýlu.
+              const Tag = u.tucne ? "b" : u.kurziva ? "i" : "span";
               return (
                 <Tag
                   key={j}
-                  className={u.pravidlo.popis !== "" ? "kl-pojem" : undefined}
-                  {...(u.pravidlo.popis !== "" ? hover({ nadpis: u.pravidlo.slovo, text: u.pravidlo.popis }) : {})}
+                  className={maPopis ? "kl-pojem" : undefined}
+                  {...(maPopis ? hover({ nadpis: u.pravidlo.slovo, text: u.pravidlo.popis }) : {})}
                 >
                   {u.kurziva && u.tucne ? <i>{u.text}</i> : u.text}
                 </Tag>

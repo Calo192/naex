@@ -1,13 +1,15 @@
 // Karta v hre: inštancia zo stavu hry → líce karty so živým vyhodnotením.
 //
-// Otočená karta (nohami hore voči partii) sa nekreslí hore nohami — text by
-// bol nečitateľný. Zobrazia sa jej EFEKTÍVNE strany (vymenené a s obráteným
-// poradím indexov) + odznak ⟳. Funkčne je to presne to, čo leží na stole.
+// Hráči sedia oproti sebe: kartu, ktorú zahral súper, vidíš otočenú o 180°,
+// takže sa na spoji stretávajú akcie otočené proti sebe ako na stole.
+// Kreslí sa vždy vytlačené rozloženie (v ňom je aj vyhodnotenie línie)
+// a otočenie robí CSS — ľavá strana sa tak sama stane pravou s obráteným
+// poradím slotov. Na čítanie ju narovná lupa (Lupa.tsx).
 
 import type { CardInstance, CardLineEval, GameData } from "@naex/core";
 import { printedSides } from "@naex/core";
 import type { KartaNavrh, RozlozenieStrany, Sada } from "@naex/tvorba";
-import { PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
+import { PREDVOLENE_NASTAVENIA, geometriaKarty } from "@naex/tvorba";
 import { KartaLico, type SlotStav } from "../karta/KartaLico.tsx";
 import { vzhladSady } from "../lib/sada.tsx";
 
@@ -30,6 +32,26 @@ export function vzhladKarty(sada: Sada, data: GameData, defId: string): KartaNav
   };
 }
 
+/**
+ * O koľko px nižšie leží v línii karta, ktorá je voči divákovi vzpriamená.
+ * Otočená karta má ilustráciu (a sloty) dole, vzpriamená hore — aby sa na
+ * spoji stretli priľahlé akcie, ilustrácie musia byť v jednej výške a názov
+ * s popisom vytŕčajú: otočenej hore, vzpriamenej dole.
+ */
+export function posunVzpriamenej(sada: Sada, data: GameData, defId: string, sirka: number): number {
+  const k = vzhladKarty(sada, data, defId);
+  const g = geometriaKarty({ ...k, maTagy: k.tagy.length > 0 });
+  const prvy = g.slotyLave[0];
+  const posledny = g.slotyLave[g.slotyLave.length - 1];
+  // Sloty sú symetrické okolo stredu ilustrácie: otočením sa slot s hornou
+  // hranou y dostane na výšku H − (y_posledny + s) a posun to vyrovná.
+  const posun =
+    prvy === undefined || posledny === undefined
+      ? g.vyska - g.obrazok.h
+      : g.vyska - (prvy.y + posledny.y + posledny.h);
+  return (posun * sirka) / g.sirka;
+}
+
 export interface HernaKartaProps {
   readonly karta: CardInstance;
   readonly sada: Sada;
@@ -45,24 +67,22 @@ export interface HernaKartaProps {
 
 export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev, naex, onClick, vybrana, bezPopisov }: HernaKartaProps) {
   const vytlacene = printedSides(data, karta);
-  const strana = (s: "lava" | "prava"): { roz: RozlozenieStrany; sloty: (SlotStav | null)[] | null } => {
-    const ps = (otocena ? (s === "lava" ? "right" : "left") : s === "lava" ? "left" : "right") as "left" | "right";
-    const roz = [0, 1, 2, 3].map((k) => vytlacene[ps][otocena ? 3 - k : k] ?? null) as unknown as RozlozenieStrany;
+  const strana = (ps: "left" | "right"): { roz: RozlozenieStrany; sloty: (SlotStav | null)[] | null } => {
+    const roz = [0, 1, 2, 3].map((k) => vytlacene[ps][k] ?? null) as unknown as RozlozenieStrany;
     const sloty =
       ev === undefined || ev === null
         ? null
         : [0, 1, 2, 3].map((k) => {
-            const se = ev[ps][otocena ? 3 - k : k];
+            const se = ev[ps][k];
             return se === null || se === undefined ? null : { stav: se.stav, nasobok: se.nasobok };
           });
     return { roz, sloty };
   };
-  const l = strana("lava");
-  const p = strana("prava");
+  const l = strana("left");
+  const p = strana("right");
   const odznaky =
-    otocena || naex !== undefined || ev?.vzbura === true ? (
+    naex !== undefined || ev?.vzbura === true ? (
       <>
-        {otocena && <span title="Otočená o 180° — zahral ju súper">⟳ otočená</span>}
         {naex !== undefined && <span title={`NA EX — poldeci hráča ${naex}`}>🥃 {naex}</span>}
         {ev?.vzbura === true && <span>Vzbura!</span>}
       </>
@@ -79,6 +99,7 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
       odznaky={odznaky}
       onClick={onClick}
       vybrana={vybrana ?? false}
+      otocena={otocena}
       bezPopisov={bezPopisov ?? false}
     />
   );

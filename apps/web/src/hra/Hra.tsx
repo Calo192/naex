@@ -1,6 +1,8 @@
 // Herná časť (/hra): lobby → čakáreň → partia. Len pre prihlásených.
 
 import { useEffect, useState } from "react";
+import type { DlzkaHry } from "@naex/core";
+import { ALL_DLZKY, DLZKY_HRY, NAZOV_DLZKY, PREDVOLENA_DLZKA } from "@naex/core";
 import { api } from "../lib/api.ts";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { useUcet } from "../lib/ucet.tsx";
@@ -11,20 +13,40 @@ import "./hra.css";
 
 interface OtvorenaHra {
   readonly kod: string;
-  readonly hostitel: { readonly meno: string; readonly avatar: string | null };
+  readonly hostitel: { readonly meno: string; readonly avatar: string | null; readonly frajerina: number | null };
+  readonly dlzka: DlzkaHry;
   readonly vytvorena: number;
 }
 
-function Lobby({ zaloz, pripoj, chyba }: { readonly zaloz: (verejna: boolean) => void; readonly pripoj: (kod: string) => void; readonly chyba: string | null }) {
+/** Popis dĺžky hry: „Stredná · 7 lokalít“. */
+export function popisDlzky(d: DlzkaHry): string {
+  return `${NAZOV_DLZKY[d]} · ${DLZKY_HRY[d]} lokalít`;
+}
+
+function Lobby({
+  zaloz,
+  pripoj,
+  chyba,
+}: {
+  readonly zaloz: (verejna: boolean, dlzka: DlzkaHry) => void;
+  readonly pripoj: (kod: string) => void;
+  readonly chyba: string | null;
+}) {
   const [kod, setKod] = useState("");
   const [hry, setHry] = useState<readonly OtvorenaHra[] | null>(null);
+  const [dostupne, setDostupne] = useState<readonly DlzkaHry[]>([PREDVOLENA_DLZKA]);
+  const [dlzka, setDlzka] = useState<DlzkaHry>(PREDVOLENA_DLZKA);
 
   useEffect(() => {
     let zive = true;
     const nacitaj = () =>
       api
-        .get<{ hry: OtvorenaHra[] }>("/hry/otvorene")
-        .then((r) => zive && setHry(r.hry))
+        .get<{ hry: OtvorenaHra[]; dlzky: DlzkaHry[] }>("/hry/otvorene")
+        .then((r) => {
+          if (!zive) return;
+          setHry(r.hry);
+          setDostupne(r.dlzky);
+        })
         .catch(() => zive && setHry([]));
     void nacitaj();
     const t = setInterval(() => void nacitaj(), 4000);
@@ -45,11 +67,31 @@ function Lobby({ zaloz, pripoj, chyba }: { readonly zaloz: (verejna: boolean) =>
         <section className="panel">
           <h2>Nová hra</h2>
           <p className="tlmene">Súkromná hra je len pre toho, komu pošleš kód. Verejná sa ukáže v zozname vpravo.</p>
+          <div className="dlzka-hry" role="radiogroup" aria-label="Dĺžka hry">
+            {ALL_DLZKY.map((d) => {
+              const ide = dostupne.includes(d);
+              return (
+                <button
+                  key={d}
+                  type="button"
+                  role="radio"
+                  aria-checked={dlzka === d}
+                  className={`dlzka-volba ${dlzka === d ? "aktivna" : ""}`}
+                  disabled={!ide}
+                  onClick={() => setDlzka(d)}
+                  title={ide ? undefined : `Sada zatiaľ nemá ${DLZKY_HRY[d]} lokalít — pribudnú v tvorbe kariet.`}
+                >
+                  <strong>{NAZOV_DLZKY[d]}</strong>
+                  <span>{DLZKY_HRY[d]} lokalít</span>
+                </button>
+              );
+            })}
+          </div>
           <div className="riadok-tlacidiel">
-            <button className="tlacidlo-hlavne" onClick={() => zaloz(false)}>
+            <button className="tlacidlo-hlavne" onClick={() => zaloz(false, dlzka)}>
               Súkromná hra s kódom
             </button>
-            <button onClick={() => zaloz(true)}>Verejná hra</button>
+            <button onClick={() => zaloz(true, dlzka)}>Verejná hra</button>
           </div>
           <h2 style={{ marginTop: 28 }}>Mám kód</h2>
           <form
@@ -78,7 +120,10 @@ function Lobby({ zaloz, pripoj, chyba }: { readonly zaloz: (verejna: boolean) =>
                   <Avatar meno={h.hostitel.meno} avatar={h.hostitel.avatar} velkost={36} />
                   <div>
                     <strong>{h.hostitel.meno}</strong>
-                    <div className="tlmene">čaká {Math.max(1, Math.round((Date.now() - h.vytvorena) / 60000))} min</div>
+                    {h.hostitel.frajerina !== null && <span className="frajerina-cislo" title="Frajerina"> {h.hostitel.frajerina}</span>}
+                    <div className="tlmene">
+                      {popisDlzky(h.dlzka)} · čaká {Math.max(1, Math.round((Date.now() - h.vytvorena) / 60000))} min
+                    </div>
                   </div>
                   <button className="tlacidlo-hlavne tlacidlo-male" onClick={() => pripoj(h.kod)}>
                     Hrať
@@ -141,6 +186,7 @@ export function Hra() {
           <p className="tlmene">Pošli súperovi tento kód. Hra začne, keď sa pripojí.</p>
         )}
         <div className="cakaren-kod">{m.code}</div>
+        <p className="tlmene" style={{ margin: 0 }}>{popisDlzky(m.dlzka)}</p>
         <button
           className="tlacidlo-male"
           onClick={() => void navigator.clipboard?.writeText(`${location.origin}/hra?kod=${m.code}`)}
@@ -158,6 +204,11 @@ export function Hra() {
               <div key={i} className="cakaren-hrac">
                 <Avatar meno={h.meno} avatar={h.avatar} velkost={72} />
                 <strong>{h.meno}</strong>
+                {h.frajerina !== undefined && (
+                  <span className="tlmene">
+                    Frajerina <span className="frajerina-cislo">{h.frajerina}</span> · {h.titul}
+                  </span>
+                )}
               </div>
             ),
           )}
@@ -182,6 +233,8 @@ export function Hra() {
       kod={m.code}
       cmd={hra.cmd}
       opustit={hra.odid}
+      frajerina={hra.frajerina}
+      kontumacia={hra.kontumacia}
     />
   );
 }

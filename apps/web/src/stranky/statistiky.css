@@ -1,0 +1,1018 @@
+/* Profil so štatistikami, rebríček a spätná väzba. */
+
+.plus {
+  color: var(--zelena);
+}
+
+.minus {
+  color: var(--cervena);
+}
+
+/* ---- profil ---------------------------------------------------------------- */
+
+.profil.profil-siroky {
+  max-width: 1180px;
+}
+
+.profil-nastavenia-nadpis {
+  margin: 20px 0 -8px;
+}
+
+.profil-nastavenia {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+
+.statistiky {
+  display: grid;
+  gap: 24px;
+}
+
+/* Položky mriežok sa smú zúžiť pod šírku obsahu (graf, tabuľky) — inak na mobile pretečú. */
+.profil-siroky > *,
+.statistiky > *,
+.stat-dva > *,
+.stat-mriezka > * {
+  min-width: 0;
+}
+
+/* ---- Frajerina ------------------------------------------------------------- */
+
+.frajerina-cislo {
+  font-weight: 700;
+  color: var(--akcent);
+  font-variant-numeric: tabular-nums;
+}
+
+.frajerina-mala {
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.frajerina-otaznik {
+  opacity: 0.6;
+  margin-left: 1px;
+}
+
+.frajerina-hero {
+  display: grid;
+  grid-template-columns: minmax(220px, 300px) 1fr;
+  gap: 32px;
+  align-items: center;
+}
+
+.frajerina-hero.prazdny p {
+  max-width: 62ch;
+}
+
+.frajerina-hlavna,
+.frajerina-hero.prazdny > div:first-child {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.frajerina-nazov {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tlmeny);
+}
+
+.frajerina-velka {
+  font: 800 clamp(3.2rem, 7vw, 4.4rem) / 1 var(--nadpis);
+  color: var(--akcent);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 28px rgba(233, 173, 69, 0.28);
+}
+
+.frajerina-titul {
+  font: 700 1.2rem/1.3 var(--nadpis);
+}
+
+.frajerina-doplnok {
+  font-size: 0.9rem;
+  margin-top: 4px;
+}
+
+.frajerina-bilancia {
+  display: grid;
+  gap: 14px;
+}
+
+.bilancia-cisla {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.bilancia-pruh {
+  display: flex;
+  gap: 2px;
+  height: 10px;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.bilancia-pruh span {
+  min-width: 6px;
+}
+
+.bilancia-pruh .vyhry {
+  background: var(--zelena);
+}
+
+.bilancia-pruh .remizy {
+  background: var(--slaby);
+}
+
+.bilancia-pruh .prehry {
+  background: var(--cervena);
+}
+
+/* ---- graf vývoja ---------------------------------------------------------- */
+
+.graf-frajeriny {
+  position: relative;
+  width: 100%;
+}
+
+.graf-frajeriny svg {
+  display: block;
+  touch-action: pan-y;
+}
+
+.graf-mriezka line {
+  stroke: var(--okraj);
+  stroke-width: 1;
+}
+
+.graf-mriezka text,
+.graf-os-x {
+  fill: var(--slaby);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.graf-ciara {
+  fill: none;
+  stroke: var(--akcent);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.graf-bod {
+  fill: var(--akcent);
+  stroke: var(--plocha);
+  stroke-width: 2;
+}
+
+.graf-kriz line {
+  stroke: var(--tlmeny);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+.graf-kriz circle {
+  fill: var(--akcent);
+  stroke: var(--text);
+  stroke-width: 2;
+}
+
+.graf-tooltip {
+  position: absolute;
+  transform: translate(-50%, calc(-100% - 14px));
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--plocha-3);
+  border: 1px solid var(--okraj-svetly);
+  box-shadow: var(--tien);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.graf-tooltip strong {
+  font-size: 1.05rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- dlaždice a sekcie ------------------------------------------------------ */
+
+.stat-mriezka {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+
+.stat-sekcia h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stat-popis {
+  font-size: 0.88rem;
+  margin-top: -4px;
+}
+
+.stat-ikona {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 3px;
+  border-radius: 8px;
+  background: #8a7a62;
+  box-shadow: 0 0 0 1.5px #fff;
+}
+
+.stat-ikona .ikona-akcie {
+  width: 100%;
+  height: 100%;
+  border-radius: 5px;
+}
+
+.stat-ikona-text {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: #3b2a10;
+  color: var(--akcent);
+  box-shadow: 0 0 0 1.5px #6b4c1a;
+}
+
+.udaje {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px 12px;
+}
+
+.udaj {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.udaj[title] {
+  cursor: help;
+}
+
+.udaj-hodnota {
+  font: 700 1.35rem/1.15 var(--nadpis);
+  font-variant-numeric: tabular-nums;
+}
+
+.udaj.vyrazny .udaj-hodnota {
+  color: var(--akcent);
+}
+
+.udaj-nazov {
+  font-size: 0.8rem;
+  color: var(--tlmeny);
+  line-height: 1.3;
+}
+
+.udaj-siroky {
+  grid-column: 1 / -1;
+  margin-top: 6px;
+}
+
+/* Bodovanie: dlaždice vľavo, pruhy podmienok vpravo v dvoch stĺpcoch. */
+.stat-sekcia.siroka .udaje {
+  grid-template-columns: repeat(3, minmax(90px, 130px)) 1fr;
+  align-items: start;
+}
+
+.stat-sekcia.siroka .udaj-siroky {
+  grid-column: 4;
+  grid-row: 1 / span 2;
+  margin-top: 0;
+}
+
+.stat-sekcia.siroka .body-podla {
+  grid-template-columns: 1fr 1fr;
+  column-gap: 32px;
+}
+
+/* body podľa podmienok: diverging pruhy okolo nuly */
+.body-podla {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.body-podla li {
+  display: grid;
+  grid-template-columns: minmax(0, 11rem) 1fr 2.6rem;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.86rem;
+}
+
+.body-podla-nazov {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.body-podla-nazov .ikona-podmienky,
+.body-podla-nazov .ikona-podmienky-text {
+  flex: none;
+  width: 20px;
+  height: 20px;
+}
+
+.body-podla-nazov .ikona-podmienky-text {
+  display: inline-grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--plocha-3);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.body-podla-os {
+  position: relative;
+  height: 12px;
+  background: linear-gradient(90deg, transparent calc(var(--nula) - 0.5px), var(--okraj-svetly) calc(var(--nula) - 0.5px), var(--okraj-svetly) calc(var(--nula) + 0.5px), transparent calc(var(--nula) + 0.5px));
+}
+
+.body-podla-pruh {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  min-width: 3px;
+  background: var(--akcent);
+  border-radius: 0 4px 4px 0;
+}
+
+.body-podla-pruh.zaporny {
+  background: var(--cervena);
+  border-radius: 4px 0 0 4px;
+}
+
+.body-podla-hodnota {
+  text-align: right;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* aktívne akcie v bitkách */
+.akcie-v-bitkach {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px 18px;
+}
+
+.akcie-v-bitkach li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 10px;
+  align-items: center;
+  cursor: help;
+}
+
+.akcie-v-bitkach .stat-ikona {
+  grid-row: 1 / 3;
+  width: 38px;
+  height: 38px;
+}
+
+.akcie-v-bitkach strong {
+  font: 700 1.15rem/1.1 var(--nadpis);
+  font-variant-numeric: tabular-nums;
+}
+
+.akcie-v-bitkach .tlmene {
+  font-size: 0.8rem;
+}
+
+/* partie a súperi */
+.stat-dva {
+  display: grid;
+  grid-template-columns: minmax(0, 2.2fr) minmax(260px, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.tabulka-obal {
+  overflow-x: auto;
+}
+
+.tabulka-partii,
+.tabulka-rebricka {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.tabulka-partii th,
+.tabulka-rebricka th {
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--slaby);
+  padding: 0 10px 8px;
+  border-bottom: 1px solid var(--okraj);
+}
+
+.tabulka-partii td,
+.tabulka-rebricka td {
+  padding: 10px;
+  border-bottom: 1px solid rgba(61, 50, 41, 0.6);
+  vertical-align: middle;
+}
+
+.tabulka-partii tr:last-child td,
+.tabulka-rebricka tr:last-child td {
+  border-bottom: none;
+}
+
+th.cislo,
+td.cislo {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.vysledok {
+  display: inline-block;
+  min-width: 4.4em;
+  text-align: center;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.vysledok.vyhra {
+  background: rgba(124, 191, 116, 0.16);
+  color: var(--zelena);
+}
+
+.vysledok.prehra {
+  background: rgba(208, 86, 63, 0.16);
+  color: #ec8a75;
+}
+
+.vysledok.remiza {
+  background: var(--plocha-3);
+  color: var(--tlmeny);
+}
+
+.super-bunka {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dovod {
+  display: block;
+  margin-top: 3px;
+  font-size: 0.78rem;
+  color: var(--slaby);
+}
+
+.zmena {
+  font-size: 0.82rem;
+  color: var(--tlmeny);
+}
+
+.zmena.plus {
+  color: var(--zelena);
+}
+
+.zmena.minus {
+  color: var(--cervena);
+}
+
+.superi {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.superi li {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.superi li > div {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+  min-width: 0;
+}
+
+.superi li > div .tlmene {
+  font-size: 0.8rem;
+}
+
+.superi-skore {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ---- rebríček ------------------------------------------------------------------ */
+
+.rebricek {
+  display: grid;
+  gap: 24px;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.rebricek .stranka-hlava {
+  margin-bottom: 0;
+}
+
+.tabulka-rebricka tr.ja td {
+  background: rgba(233, 173, 69, 0.07);
+}
+
+.tabulka-rebricka .poradie {
+  font: 700 1.05rem var(--nadpis);
+  color: var(--tlmeny);
+  width: 3em;
+}
+
+.tabulka-rebricka .medaila-1 {
+  color: #f2c85b;
+}
+
+.tabulka-rebricka .medaila-2 {
+  color: #d6d0c4;
+}
+
+.tabulka-rebricka .medaila-3 {
+  color: #d39a62;
+}
+
+.rebricek-hrac {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.rebricek-hrac > span {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.rebricek-hrac:hover strong {
+  color: var(--akcent);
+}
+
+.rebricek-hrac .tlmene {
+  font-size: 0.8rem;
+}
+
+.tabulka-rebricka .frajerina-cislo {
+  font-size: 1.05rem;
+}
+
+.hodnosti ul {
+  list-style: none;
+  margin: 0 0 14px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 8px 18px;
+}
+
+.hodnosti li {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--okraj);
+  font-size: 0.92rem;
+}
+
+/* ---- spätná väzba ------------------------------------------------------------- */
+
+.spatna-vazba {
+  max-width: 860px;
+  margin: 0 auto;
+  display: grid;
+  gap: 22px;
+}
+
+.spatna-vazba .stranka-hlava {
+  margin-bottom: 0;
+}
+
+.novy-nazor {
+  display: grid;
+  gap: 14px;
+}
+
+.novy-nazor h2 {
+  margin: 0;
+}
+
+.novy-nazor textarea,
+.nazor-uprava textarea {
+  resize: vertical;
+  min-height: 96px;
+}
+
+.novy-nazor-spodok {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.nazory-ovladanie {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nazory-triedenie {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.nazory-triedenie select {
+  width: auto;
+}
+
+.nazory {
+  display: grid;
+  gap: 16px;
+}
+
+.nazory-prazdne {
+  text-align: center;
+  padding: 32px 0;
+}
+
+.nazor {
+  display: grid;
+  gap: 12px;
+  padding: 1.2rem 1.4rem;
+}
+
+.nazor.stav-hotove {
+  border-color: rgba(124, 191, 116, 0.4);
+}
+
+.nazor-hlava {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.nazor-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  font-size: 0.88rem;
+}
+
+.nazor-autor {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.nazor-autor a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.nazor-autor a:hover {
+  color: var(--akcent);
+}
+
+.nazor-znacky {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.nazor-kategoria,
+.nazor-stav {
+  font-size: 0.75rem;
+  line-height: 1.5;
+  padding: 1px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--okraj-svetly);
+  background: var(--plocha-2);
+  color: var(--tlmeny);
+}
+
+.nazor-stav {
+  font-weight: 700;
+}
+
+.nazor-stav.prijate {
+  color: var(--tlmeny);
+}
+
+.nazor-stav.planovane {
+  color: var(--akcent);
+  border-color: #6b4c1a;
+  background: #3b2a10;
+}
+
+.nazor-stav.hotove {
+  color: var(--zelena);
+  border-color: rgba(124, 191, 116, 0.45);
+  background: rgba(124, 191, 116, 0.12);
+}
+
+.nazor-stav.zamietnute {
+  color: var(--slaby);
+  text-decoration: line-through;
+}
+
+.nazor-stav-vyber {
+  width: auto;
+  font-size: 0.85rem;
+  padding: 0.3rem 0.5rem;
+}
+
+.nazor-text {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.nazor-uprava {
+  display: grid;
+  gap: 10px;
+}
+
+.nazor-akcie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+/* cigareta = páči sa mi */
+.cigareta-tlacidlo,
+button.cigareta-tlacidlo {
+  gap: 6px;
+  padding: 0.3rem 0.7rem 0.3rem 0.5rem;
+  border-radius: 999px;
+  background: var(--plocha-2);
+  border-color: var(--okraj);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.88rem;
+}
+
+.cigareta-tlacidlo svg {
+  width: 38px;
+  height: 19px;
+  overflow: visible;
+}
+
+.cigareta-tlacidlo .tabak {
+  fill: #cfc6b6;
+}
+
+.cigareta-tlacidlo .filter {
+  fill: #a2713f;
+}
+
+.cigareta-tlacidlo .ohen {
+  fill: #6d6257;
+}
+
+.cigareta-tlacidlo .dym path {
+  fill: none;
+  stroke: #d8d2c8;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  opacity: 0;
+}
+
+.cigareta-tlacidlo:hover:not(:disabled) .ohen {
+  fill: #c96a3a;
+}
+
+.cigareta-tlacidlo.zapalena {
+  border-color: #6b4c1a;
+  background: #3b2a10;
+  color: var(--akcent);
+}
+
+.cigareta-tlacidlo.zapalena .tabak {
+  fill: #f1ece2;
+}
+
+.cigareta-tlacidlo.zapalena .filter {
+  fill: #d58a3e;
+}
+
+.cigareta-tlacidlo.zapalena .ohen {
+  fill: #ff5a2b;
+  filter: drop-shadow(0 0 3px #ff7b3b);
+}
+
+.cigareta-tlacidlo.zapalena .dym path {
+  opacity: 0.7;
+  animation: dym 2.6s ease-in-out infinite;
+}
+
+.cigareta-tlacidlo:disabled {
+  opacity: 0.75;
+}
+
+@keyframes dym {
+  0% {
+    transform: translateY(1px);
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 0.75;
+  }
+  100% {
+    transform: translateY(-3px);
+    opacity: 0.1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cigareta-tlacidlo.zapalena .dym path {
+    animation: none;
+  }
+}
+
+/* komentáre */
+.komentare {
+  display: grid;
+  gap: 12px;
+  border-top: 1px solid var(--okraj);
+  padding-top: 12px;
+}
+
+.komentare ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.komentar {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+}
+
+.komentar-telo {
+  display: grid;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.komentar-telo .nazor-akcie {
+  margin-top: 2px;
+}
+
+.komentar-telo .cigareta-tlacidlo {
+  font-size: 0.8rem;
+  padding: 0.15rem 0.55rem 0.15rem 0.4rem;
+}
+
+.komentar-telo .cigareta-tlacidlo svg {
+  width: 32px;
+  height: 16px;
+}
+
+.komentar-novy {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 10px;
+  align-items: start;
+}
+
+.komentar-novy textarea {
+  resize: vertical;
+  min-height: 38px;
+}
+
+/* ---- úzke obrazovky ------------------------------------------------------------ */
+
+@media (max-width: 1000px) {
+  .stat-sekcia.siroka .udaje {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .stat-sekcia.siroka .udaj-siroky {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    margin-top: 6px;
+  }
+}
+
+@media (max-width: 900px) {
+  .frajerina-hero {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .stat-dva {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .stat-mriezka {
+    grid-template-columns: 1fr;
+  }
+
+  .bilancia-cisla {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .udaje {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .stat-sekcia.siroka .body-podla {
+    grid-template-columns: 1fr;
+  }
+
+  .body-podla li {
+    grid-template-columns: minmax(0, 8.5rem) 1fr 2.2rem;
+  }
+
+  .nazor-hlava {
+    grid-template-columns: auto 1fr;
+  }
+
+  .nazor-stav-vyber {
+    grid-column: 1 / -1;
+  }
+
+  .komentar-novy {
+    grid-template-columns: 1fr auto;
+  }
+
+  .komentar-novy .avatar {
+    display: none;
+  }
+
+  .tabulka-partii td,
+  .tabulka-rebricka td,
+  .tabulka-partii th,
+  .tabulka-rebricka th {
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+
+  .rebricek-hrac {
+    gap: 8px;
+  }
+}

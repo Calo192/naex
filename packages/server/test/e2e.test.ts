@@ -6,9 +6,13 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { WebSocket } from "ws";
 import type { ClientState, Command } from "@naex/core";
-import { posunMarker } from "@naex/core";
+import { cieleVykladania, posunMarker } from "@naex/core";
 import type { GameServer } from "../src/server.ts";
+import { loadDataFromDisk } from "../src/server.ts";
 import { registruj, testovaciServer } from "./pomocnik.ts";
+
+/** Dáta sady pre pravidlá vykladania — robot ich pozná ako hráč (verejné karty). */
+const DATA = loadDataFromDisk();
 
 interface StavMsg {
   type: "state";
@@ -44,6 +48,9 @@ class Robot {
         this.privitanie = msg as typeof this.privitanie;
       } else if (msg.type === "error") {
         this.chyby.push(String(msg.text));
+        // Odmietnutý ťah: stav nepríde — čakanie ukončíme hneď, test vypíše dôvod.
+        this.cakajuci?.();
+        this.cakajuci = null;
       }
     });
   }
@@ -62,7 +69,7 @@ class Robot {
 
   async novyStav(): Promise<void> {
     await new Promise<void>((rieš, zamietni) => {
-      const t = setTimeout(() => zamietni(new Error("nedošiel stav")), 5000);
+      const t = setTimeout(() => zamietni(new Error("nedošiel stav")), 15_000);
       this.cakajuci = () => {
         clearTimeout(t);
         rieš();
@@ -79,6 +86,7 @@ class Robot {
     const view = this.view;
     if (view === null) throw new Error("bez stavu");
     const ja = view.ja;
+    if (view.volba?.hrac === ja) return { type: "policajtka", hore: [] };
 
     switch (view.faza) {
       case "volbaCiela": {
@@ -87,9 +95,14 @@ class Robot {
         return { type: "chooseLocation", uid: lok.uid, otocena: lok.uid % 2 === 0 };
       }
       case "draft": {
-        const cigarety = 1;
-        const karty = view.senok.slice(0, Math.min(3 - cigarety, view.senok.length));
-        return { type: "draft", cigarety, karty: karty.map((k) => k.uid) };
+        const d = view.draftStav;
+        const [prva, druha] = d?.mojBalicek ?? [];
+        if (d?.krok === "stavba" && prva !== undefined && druha !== undefined) {
+          return { type: "stavbaSenku", doSenku: prva.uid, odhod: druha.uid };
+        }
+        // Dve karty zo šenku, tretiu v cigarete.
+        const karta = view.senok[0];
+        return (d?.noveKarty[ja] ?? 0) < 2 && karta !== undefined ? { type: "draftBer", uid: karta.uid } : { type: "draftStop" };
       }
       case "zhromazdenie": {
         const zostava = view.zhromazdenieStav?.zostavaLimit[ja] ?? 0;
@@ -104,16 +117,43 @@ class Robot {
           const nastroje = new Set(
             ["cigorky", "nealko", "noviny", "pasca", "puska", "svaty_text", "vinko", "vyherny_automat"],
           );
-          const karta = view.ruka.find((k) => !nastroje.has(k.defId));
+          // Ako UI: len karta, ktorú pravidlá na tvoju stranu pustia (napr. Pes k zvieraťu nie).
+          const karta = view.ruka.find(
+            (k) => !nastroje.has(k.defId) && cieleVykladania(DATA, view.strany, ja, k, zostava).includes("vlastna"),
+          );
           if (karta !== undefined) return { type: "place", uid: karta.uid, target: "vlastna" };
         }
         return { type: "pass" };
       }
-      case "pitka":
+      case "pitka": {
+        const p = view.pitkaStav;
+        if (p?.reakcia === ja) return { type: "bezReakcie" };
+        // Krčma: s plným poldeci treba dať NA EX na vlastného Občana.
+        if (view.ciel?.lokalita?.defId === "krcma" && p !== null && !p.naexPouzity[ja] && !p.zakazNaex[ja] && view.hraci[ja].poldeciPlne > 0) {
+          const ciel = [...view.strany[0], ...view.strany[1]].find(
+            (pl) =>
+              pl.playedBy === ja &&
+              pl.naexBy === undefined &&
+              pl.card.defId !== "liberal" &&
+              ["Občan", "Starešina"].some((t) => (DATA.cards.get(pl.card.defId)?.tags ?? []).includes(t as never)),
+          );
+          if (ciel !== undefined) return { type: "naex", uid: ciel.card.uid };
+        }
         return { type: "skipNaex" };
+      }
       case "bitka": {
         const b = view.bitkaStav;
         if (b === null) throw new Error("bitka bez stavu");
+        if (b.krok === "benzinka") {
+          const obcania = [...view.strany[0], ...view.strany[1]].filter(
+            (pl) => pl.playedBy === ja && !b.spalit.includes(pl.card.uid) && (DATA.cards.get(pl.card.defId)?.tags ?? []).includes("Občan"),
+          );
+          return { type: "benzinka", uids: obcania.slice(0, b.benzinkaZostava[ja]).map((pl) => pl.card.uid) };
+        }
+        if (b.krok === "vestica") return { type: "vestica", moja: 0, jeho: 0 };
+        if (b.krok === "limitRuky") {
+          return { type: "odhod", uids: view.ruka.slice(0, view.ruka.length - view.limitRuky[ja]).map((k) => k.uid) };
+        }
         if (b.krok === "exekutor") {
           const volba = view.volbyExekutor?.[0];
           if (volba === undefined) throw new Error("exekútor bez volieb");
@@ -124,7 +164,6 @@ class Robot {
           const smerK = ja === 0 ? 1 : 0;
           const elder = view.starsi.find(
             (e) =>
-              !e.nahradeny &&
               e.elderId !== (b.krok === "prebytok" ? vyluceny : null) &&
               !(b.krok === "pohorsenie" && b.pohnuteMarkery.includes(e.elderId)) &&
               posunMarker(e, smerK, b.krok === "pohorsenie") !== null,
@@ -186,10 +225,13 @@ describe("E2E — celá partia cez server", () => {
       const seatA = a.privitanie.seat as number;
       const robot = roboti[naTahu === seatA ? 0 : 1] as Robot;
       const cmd = robot.vyberTah();
-      const cakania = [a.novyStav(), b.novyStav()];
+      const druhy = robot === a ? b : a;
+      const cakaRobot = robot.novyStav();
+      const cakaDruhy = druhy.novyStav();
       robot.posli({ type: "cmd", cmd });
-      await Promise.all(cakania);
-      expect(robot.chyby, `server odmietol ${JSON.stringify(cmd)}`).toEqual([]);
+      await cakaRobot;
+      expect(robot.chyby, `server odmietol ${JSON.stringify(cmd)} vo fáze ${a.view?.faza}`).toEqual([]);
+      await cakaDruhy;
     }
 
     expect(a.view?.koniec).not.toBeNull();

@@ -56,7 +56,7 @@ ufw allow OpenSSH && ufw allow 80 && ufw allow 443 && ufw --force enable
 git clone <adresa tvojho git repozitára> /opt/naex
 cd /opt/naex/deploy
 cp .env.example .env
-nano .env        # DOMENA=tvoja-domena.sk, NAEX_ADMINS=tvoje-prihlasovacie-meno
+nano .env        # DOMENA=tvoja-domena.sk, NAEX_ADMIN_HESLO=heslo-admina
 docker compose up -d --build
 ```
 
@@ -65,9 +65,12 @@ HTTPS certifikát.
 
 ### 4. Prvý admin
 
-Na stránke sa **zaregistruj** s prihlasovacím menom, ktoré si zapísal do
-`NAEX_ADMINS`. Účet dostane rolu admin automaticky a v menu sa objaví
-**Tvorba**. Ďalších adminov môžeš pridať v sekcii *Tvorba → Používatelia*.
+Admin je len jeden: server ho pri štarte založí s prihlasovacím menom
+**Admin** a heslom z `NAEX_ADMIN_HESLO` (zmena hesla v `.env` sa prejaví po
+reštarte). Prihlás sa ním — v menu sa objaví **Tvorba** a **Hráči**. V sekcii
+*Tvorba → Hráči* môžeš ľubovoľného hráča povýšiť na **subadmina** (smie to isté
+čo admin okrem zmeny úrovní). Nové účty sú návštevníci; hráčmi sa stanú samy po
+3 dohratých partiách.
 
 ### 5. Knižnica obrázkov (voliteľné)
 
@@ -112,7 +115,7 @@ keď nikto nehrá. Účty, karty a obrázky ostávajú v databáze.
 ```bash
 npm install
 npm run build
-NAEX_ADMINS=michal npm start      # http://localhost:8787
+npm start      # http://localhost:8787 (heslo admina v .env: NAEX_ADMIN_HESLO=…)
 ```
 
 Dáta sú v priečinku `data/` (databáza `naex.sqlite` a `media/`).
@@ -123,5 +126,6 @@ Dáta sú v priečinku `data/` (databáza `naex.sqlite` a `media/`).
 |---|---|---|
 | `PORT` | port servera | `8787` |
 | `NAEX_DATA` | priečinok s databázou a obrázkami | `<repo>/data` |
-| `NAEX_ADMINS` | prihlasovacie mená adminov (čiarkou) | — |
+| `NAEX_ADMIN_HESLO` | heslo jediného admina; bez neho sa účet nezakladá | — |
+| `NAEX_ADMIN_LOGIN` | prihlasovacie meno admina | `Admin` |
 | `NAEX_SECURE_COOKIE` | `1` = prihlásenie len cez HTTPS (za Caddy vždy) | — |

@@ -3,9 +3,10 @@
 import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
+import scorecardsJson from "../data/scorecards.json";
 import { cardVariants, loadGameData, sideLayouts } from "../src/index.ts";
 
-const data = loadGameData(cardsJson, eldersJson);
+const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
 describe("M1 — načítanie dát", () => {
   it("načíta 50 kariet, 8 starších, 7 lokalít, 8 nástrojov", () => {

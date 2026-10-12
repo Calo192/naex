@@ -165,7 +165,7 @@ export interface CardInstance {
 
 /** Priazne starších (kľúče z elders.json). */
 export type Favour =
-  | "OCUMOVATEL"
+  | "ZBERATEL"
   | "LAKOMEC"
   | "NEPRAJNIK"
   | "BITKAR"
@@ -175,7 +175,7 @@ export type Favour =
   | "EXEKUTOR";
 
 export const ALL_FAVOURS: readonly Favour[] = [
-  "OCUMOVATEL",
+  "ZBERATEL",
   "LAKOMEC",
   "NEPRAJNIK",
   "BITKAR",
@@ -185,20 +185,62 @@ export const ALL_FAVOURS: readonly Favour[] = [
   "EXEKUTOR",
 ];
 
+/**
+ * Zrušené priazne a ich náhrady — staré zverejnené sady a databázy ich ešte
+ * nesú. Očumovateľ (Preskúmanie) v hre nič nerobil; nahradil ho Zberateľ
+ * s limitom ruky (Michal 2026-10-12, playtest 20261012-055944).
+ */
+const PRIAZNE_ALIAS: Readonly<Record<string, Favour>> = { OCUMOVATEL: "ZBERATEL" };
+
+/** Priazeň z kľúča (aj zrušeného), alebo null, ak taká nie je. */
+export function priazenZKluca(kluc: string): Favour | null {
+  if ((ALL_FAVOURS as readonly string[]).includes(kluc)) return kluc as Favour;
+  return PRIAZNE_ALIAS[kluc] ?? null;
+}
+
 /** Zóny stupnice strachu: 1 = Znepokojenie, 2 = Strach, 3 = Vydesenie. */
 export type Zone = 1 | 2 | 3;
 
-export interface ScoringPos {
-  readonly zone: Zone;
-  readonly points: number;
-}
-
 export interface ElderDef {
   readonly id: string;
+}
+
+/**
+ * Podmienka na scorecarde (bodovacej karte staršieho). Zóny sú prahové —
+ * marker aspoň v danej zóne; ostatné bodujú za každý kus obávaného hráča,
+ * kladné z nich až od oranžovej zóny (`prahPodmienky`).
+ */
+export type Podmienka =
+  | "znepokojenie"
+  | "strach"
+  | "vydesenie"
+  | "lokality"
+  | "starsi"
+  | "cigarety"
+  | "cirhoza"
+  | "dlh";
+
+export const ALL_PODMIENKY: readonly Podmienka[] = [
+  "znepokojenie",
+  "strach",
+  "vydesenie",
+  "lokality",
+  "starsi",
+  "cigarety",
+  "cirhoza",
+  "dlh",
+];
+
+/**
+ * Scorecard — podložka, na ktorej leží karta staršieho. Rozdáva sa starším
+ * náhodne pri príprave a určuje priazeň staršieho. Podmienka na indexe i
+ * sa aktivuje, keď má karta na ukazovateli na tej istej strane a indexe
+ * neprázdnu akciu. Ľavá strana patrí hráčovi 0, pravá hráčovi 1.
+ */
+export interface ScorecardDef {
+  readonly id: string;
+  readonly nazov: string;
   readonly favour: Favour;
-  /**
-   * 8 bočných bodovacích pozícií: indexy 0..3 = strana hráča 0 (páruje sa
-   * s ľavou stranou karty staršieho), 4..7 = strana hráča 1 (pravá strana).
-   */
-  readonly scoring: readonly ScoringPos[];
+  readonly lava: readonly (Podmienka | null)[];
+  readonly prava: readonly (Podmienka | null)[];
 }

@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zmeny z playtestov — NA EX!</title>
+<style>
+  :root {
+    --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --okraj: #3d3229;
+    --text: #f1e8d8; --tlmeny: #b6a790; --slaby: #8b7d6a;
+    --akcent: #e9ad45; --cervena: #d0563f; --zelena: #7cbf74; --modra: #5cc0cf;
+    color-scheme: dark;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #dccdb3;
+      --text: #2a2016; --tlmeny: #6b5b45; --slaby: #8a7a62;
+      --akcent: #a8680f; --cervena: #b0402c; --zelena: #3f7f38; --modra: #2a7f8c;
+      color-scheme: light;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 system-ui, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 980px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1, h2, h3 { font-family: Georgia, "Bitter", serif; line-height: 1.2; }
+  h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); margin: 0 0 8px; }
+  .podnadpis { color: var(--tlmeny); margin: 0 0 20px; max-width: 70ch; }
+  .upozornenie { border: 1px solid color-mix(in srgb, var(--akcent) 50%, transparent); background: color-mix(in srgb, var(--akcent) 10%, transparent);
+    border-radius: 12px; padding: 12px 16px; margin-bottom: 24px; }
+  .upozornenie strong { color: var(--akcent); }
+  .ovladanie { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 18px; position: sticky; top: 0; padding: 10px 0;
+    background: var(--pozadie); z-index: 2; border-bottom: 1px solid var(--okraj); }
+  .cip { border: 1px solid var(--okraj); background: var(--plocha-2); color: var(--text); border-radius: 999px; padding: 6px 14px;
+    font: inherit; font-size: 0.9rem; cursor: pointer; }
+  .cip[aria-pressed="true"] { background: var(--text); color: var(--pozadie); border-color: var(--text); }
+  .ovladanie input { flex: 1 1 200px; min-width: 0; padding: 7px 12px; border-radius: 999px; border: 1px solid var(--okraj);
+    background: var(--plocha); color: var(--text); font: inherit; font-size: 0.9rem; }
+  .ovladanie .vpravo { margin-left: auto; }
+  .zmena { border: 1px solid var(--okraj); border-radius: 14px; background: var(--plocha); margin-bottom: 12px; overflow: hidden; }
+  .zmena summary { list-style: none; cursor: pointer; padding: 14px 16px; display: grid; grid-template-columns: auto 1fr auto; gap: 4px 12px; align-items: baseline; }
+  .zmena summary::-webkit-details-marker { display: none; }
+  .zmena summary::before { content: "▸"; color: var(--slaby); transition: transform 0.15s; grid-row: span 2; }
+  .zmena[open] summary::before { transform: rotate(90deg); }
+  .zmena h3 { margin: 0; font-size: 1.1rem; }
+  .meta { grid-column: 2; display: flex; flex-wrap: wrap; gap: 6px; font-size: 0.78rem; }
+  .stitok { padding: 1px 9px; border-radius: 999px; border: 1px solid var(--okraj); color: var(--tlmeny); }
+  .stitok.pravidla { color: var(--akcent); border-color: color-mix(in srgb, var(--akcent) 50%, transparent); }
+  .stitok.rozhranie { color: var(--modra); border-color: color-mix(in srgb, var(--modra) 50%, transparent); }
+  .stitok.nastroje { color: var(--zelena); border-color: color-mix(in srgb, var(--zelena) 50%, transparent); }
+  .stav { grid-row: 1; grid-column: 3; font-size: 0.75rem; font-weight: 700; padding: 2px 10px; border-radius: 999px;
+    background: color-mix(in srgb, var(--akcent) 16%, transparent); color: var(--akcent); white-space: nowrap; }
+  .telo { padding: 0 16px 16px 42px; display: grid; gap: 12px; }
+  .blok h4 { margin: 0 0 4px; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--slaby); }
+  .blok p, .blok ul { margin: 0; }
+  .blok ul { padding-left: 20px; }
+  .sledovat { border-left: 3px solid var(--akcent); padding-left: 12px; }
+  .citat { border-left: 3px solid var(--okraj); padding-left: 12px; color: var(--tlmeny); font-style: italic; }
+  a { color: var(--akcent); }
+  .prazdne { color: var(--tlmeny); text-align: center; padding: 30px 0; display: none; }
+  .zdroje { margin-top: 36px; color: var(--tlmeny); font-size: 0.92rem; }
+  .zdroje li { margin-bottom: 4px; }
+  @media (max-width: 560px) {
+    .zmena summary { grid-template-columns: auto 1fr; }
+    .stav { grid-row: auto; grid-column: 2; justify-self: start; }
+    .telo { padding-left: 16px; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Zmeny z playtestov</h1>
+  <p class="podnadpis">Záznam krokov, ktoré sme urobili na základe spätnej väzby AI playtesterov a rozhodnutí autora hry (Michal Calík).
+    Ku každej zmene: prečo vznikla, čo presne sa zmenilo a čo treba sledovať v ďalšom playteste.</p>
+  <div class="upozornenie"><strong>Nič tu nie je konečné.</strong> Všetky zmeny sú skúšobné a otvorené ďalším úpravám —
+    tento dokument len zaznamenáva, že takéto kroky prebehli a z akého dôvodu.</div>
+
+  <div class="ovladanie" role="toolbar" aria-label="Filter zmien">
+    <button class="cip" data-filter="vsetko" aria-pressed="true">Všetko</button>
+    <button class="cip" data-filter="pravidla" aria-pressed="false">Pravidlá</button>
+    <button class="cip" data-filter="rozhranie" aria-pressed="false">Rozhranie</button>
+    <button class="cip" data-filter="nastroje" aria-pressed="false">Playtest a nástroje</button>
+    <input type="search" id="hladaj" placeholder="Hľadať (napr. NA EX, ruka, lokalita)…" aria-label="Hľadať v zmenách">
+    <button class="cip vpravo" id="rozbal" aria-pressed="false">Rozbaliť všetko</button>
+  </div>
+
+  <div id="zmeny">
+
+    <details class="zmena" data-oblast="pravidla">
+      <summary><h3>Draft so stavbou šenku</h3><span class="stav">skúšobné</span>
+        <span class="meta"><span class="stitok pravidla">pravidlá</span><span class="stitok rozhranie">rozhranie</span><span class="stitok">2026-10-12</span><span class="stitok">playtest 20261012-101447</span></span></summary>
+      <div class="telo">
+        <div class="blok"><h4>Prečo</h4><p>Hráči sa sťažovali na slabé karty v neskorších kolách: šenok sa vykladal naslepo a podľa Evy ponúkal „samé Dlhy a Nástroje bez útoku“. Útočník si navyše vybral všetky tri karty naraz ako prvý a vyhral 8 z 11 bitiek.</p></div>
+        <div class="citat">„Šenok však v neskorších kolách ponúkal len Nástroje a kliatby, takže draft bol často bez voľby.“ — Jano Bitkár, feedback</div>
+        <div class="blok"><h4>Čo sa zmenilo</h4><ul>
+          <li><strong>Stavba šenku:</strong> nevzaté karty zo starého šenku idú naspodok spoločného balíčka. Každý hráč si vezme N kariet (N = nenahradení starší, nadol na párne, na začiatku 8). Obaja naraz a tajne dajú jednu kartu do šenku a jednu naspodok balíčka (súper ju nevidí) a zvyšok si vymenia, kým sa balíčky neminú. Šenok má potom N kariet.</li>
+          <li><strong>Branie:</strong> striedavo po jednej karte, začína obranca, každý najviac 3. Kto prestane, dostane za každú nevzatú kartu cigaretu a druhý berie ďalej sám. Pitiek je |rozdiel kariet|, aspoň 1, ako doteraz.</li>
+          <li>Šenok sa pri rozdaní nevykladá. Bitka o staršieho draft nemá a Starosta s Liečbou berú zo šenku ako doteraz.</li>
+          <li>Web má vrstvu „Tvoj balíček“ so štítkami „do šenku“ a „naspodok“ a pri braní tlačidlá „vziať“ a „prestať brať“. Klient agentov má príkazy <code>stavbaSenku</code>, <code>draftBer</code> a <code>draftStop</code>.</li>
+        </ul></div>
+        <div class="blok sledovat"><h4>Čo sledovať</h4><ul>
+          <li>Tempo: dĺžku draftu a príkazy na kolo (minule 15,5). Stavba pridáva 4 kroky na hráča.</li>
+          <li>Či sa zmenší sťažnosť na slabé karty a či hráči do šenku dávajú, čo chcú sami, alebo čo škodí súperovi.</li>
+          <li>Pomer výhier útočník : obranca, keď obranca berie prvý.</li>
+          <li>Hráč si vie domyslieť, čo súper odhodil z balíčka, ktorý mu sám podal. Tajné je len úplne prvé odhodenie, ostatné sa dajú odvodiť. Sledovať, či to hráči využívajú.</li>
+        </ul></div>
+      </div>
+    </details>
+
+    <details class="zmena" data-oblast="rozhranie">
+      <summary><h3>Slabé karty v ruke: priznanie Dlhu a Cirhózy, Liečba a Pohreb</h3><span class="stav">skúšobné</span>
+        <span class="meta"><span class="stitok rozhranie">rozhranie</span><span class="stitok nastroje">playtest</span><span class="stitok">2026-10-12</span><span class="stitok">playtest 20261012-101447</span></span></summary>
+      <div class="telo">
+        <div class="blok"><h4>Prečo</h4><p>Obaja hráči sa sťažovali na „mŕtve“ Dlhy v ruke v neskorších kolách, no za celú partiu nepriznal Dlh nikto, hoci Exekútor stál na 0/10. Eva radšej odhodila nad limit ruky 12 kariet, takže sa Dlhy vracali do balíčka. Pravidlo (PRAVIDLÁ §6: za priznaný Dlh hneď dobereš kartu) hra vykonáva, len ho web nespomínal. Jano navyše držal v ruke Cirhózy a ani jednu nepriznal, takže mu hra Liečbu ani Pohreb, ktoré slabé karty spália, nikdy neponúkla. Inštrukcie agentov ich vôbec nespomínali.</p></div>
+        <div class="blok"><h4>Čo sa zmenilo</h4><ul>
+          <li>Web pri mieste na priznanie píše „Dlh: hneď dobereš kartu, ráta ho Exekútor · Cirhóza: po bitke odomkne Liečbu a Pohreb“.</li>
+          <li>Inštrukcie playtestera aj AI protihráča vysvetľujú, ako sa zbaviť slabých kariet: Pohreb spáli kartu vyloženú do línie, Liečba vymení Závislého za kartu zo šenku, ďalej priznanie, Vízia, Niekoho stryná a Výherný automat.</li>
+          <li>Klient agentov pripomenie priznať Cirhózu, keď ju hráč má v ruke.</li>
+          <li>Klient agentov v Zhromaždení pripomenie, keď má hráč Dlh v ruke a od Exekútora je ďaleko, že priznanie dá kartu, vyčistí balíček a ušetrí bod na konci.</li>
+          <li>Pri odhadzovaní nad limit ruky upozorní, že odhodený Dlh sa vráti do balíčka.</li>
+        </ul></div>
+        <div class="blok sledovat"><h4>Čo sledovať</h4><ul>
+          <li>Koľko Dlhov a Cirhóz sa prizná za partiu, koľkokrát padne Liečba a Pohreb a či sa sťažnosti na kvalitu ruky zmenšia.</li>
+          <li>Či hráči po priznávaní nepribližujú Exekútora príliš rýchlo a či Povera začne niečo robiť.</li>
+        </ul></div>
+      </div>
+    </details>
+
+    <details class="zmena" data-oblast="pravidla">
+      <summary><h3>Odpoveď na NA EX</h3><span class="stav">skúšobné</span>
+        <span class="meta"><span class="stitok pravidla">pravidlá</span><span class="stitok rozhranie">rozhranie</span><span class="stitok">2026-10-12</span><span class="stitok">playtest 20261012-055944</span></span></summary>
+      <div class="telo">
+        <div class="blok"><h4>Prečo</h4><p>NA EX bol tretí playtest za sebou hlavnou témou kritiky. Víťaz bitky ho dal v 5 z 8 bitiek. Odpovedať sa dalo len v kole s viacerými pitkami, takže kto pasoval posledný, mal poslednú reč.</p></div>
+        <div class="citat">„Hráč, ktorý pasuje posledný, vidí všetko a NA EX má poslednú reč.“ — Jano Bitkár, názor #17</div>
+        <div class="blok"><h4>Čo sa zmenilo</h4><ul>
+          <li>Hneď po súperovom NA EX smie druhý hráč vyložiť <strong>jednu kartu z ruky</strong> na koniec svojej alebo súperovej strany. Limit vykladania to nemíňa a kto nemá kartu, neodpovedá.</li>
+          <li>Striedavo: keď potom NA EX dá aj druhý hráč, prvý má tiež jednu odpoveď.</li>
+          <li>Na Liberála NA EX dať nemožno a Krčma ho vynúti.</li>
+          <li>Web pri NA EX ukazuje, na ktoré karty sa dá dať (značka „NA EX“), prečo je tlačidlo stlmené a čo to stojí: pečeň +1 a poldeci sa vypije, takže v ďalšom kole je limit o 1 nižší.</li>
+        </ul></div>
+        <div class="blok"><h4>Výsledok playtestu 20261012-101447</h4><p>Odpoveď prišla len raz zo 7 NA EX: Eva v 7. kole podstrčila Miňištranta s Odporom a zrušila Rany, Jano aj tak vyhral 4 : 1. Víťaz bitky dal NA EX v 5 z 11 bitiek. Rozhodujúce NA EX na karty s neprepojenými veľkými akciami (Podvodník 5 : 1, Recidivista 7 : 3) ostali bez protihry, lebo súper nemal kartu, ktorá by sedela na spoj.</p></div>
+        <div class="blok sledovat"><h4>Čo sledovať</h4><ul>
+          <li>Ako často víťaz bitky dá NA EX (minule 5 z 8) a koľko odpovedí NA EX naozaj zruší.</li>
+          <li>Či odpoveď nepredĺži Pitku a či nezvýhodní hráča s veľkou rukou.</li>
+        </ul></div>
+      </div>
+    </details>
+
+    <details class="zmena" data-oblast="pravidla">
+      <summary><h3>Nahradený starší ostáva v hre</h3><span class="stav">skúšobné</span>
+        <span class="meta"><span class="stitok pravidla">pravidlá</span><span class="stitok">2026-10-12</span><span class="stitok">playtest 20261012-055944</span></span></summary>
+      <div class="telo">
+        <div class="blok"><h4>Prečo</h4><p>Chyba: web aj klient agentov ponúkali posun markera nahradeného Veterinára, ale engine ho odmietol („Taký starší nie je“). Eva tak v poslednom kole prišla o štyri ťahy a vyhrala len 9 : 8. PRAVIDLÁ §9 pritom rátali s tým, že scorecard s náhradou hrá ďalej.</p></div>
+        <div class="blok"><h4>Čo sa zmenilo</h4><ul>
+          <li>Nahradený starší hrá ďalej celý: marker sa hýbe Pohoršením aj prebytkom, dáva priazeň, môže byť prebudený, boduje a ráta sa do vydesenia. Podmienky aktivuje karta náhrady.</li>
+          <li>Bojovať sa o neho nedá. Bitka o staršieho ide len o pôvodného staršieho.</li>
+          <li>Web aj klient agentov ponúkajú len markery, ktoré sa naozaj dajú posunúť (zamknuté nie).</li>
+        </ul></div>
+        <div class="blok"><h4>Výsledok playtestu 20261012-101447</h4><p>Oprava funguje. Markery nahradených starších sa hýbali Pohoršením aj prebytkom a náhrady bodovali naplno (Poštárka s Dievčinou dala Janovi 10 bodov). Za náhradu hráči dávali slabé karty z ruky, nie podľa strán karty.</p></div>
+        <div class="blok sledovat"><h4>Čo sledovať</h4><ul><li>Či náhrada (napr. Koza) nedáva príliš silné podmienky a či hráči náhradu vyberajú podľa jej strán.</li></ul></div>
+      </div>
+    </details>
+
+    <details class="zmena" data-oblast="pravidla">
+      <summary><h3>Bitka o staršieho: karta v strede a náhľad bodov</h3><span class="stav">skúšobné</span>
+        <span class="meta"><span class="stitok pravidla">pravidlá</span><span class="stitok rozhranie">rozhranie</span><span class="stitok">2026-10-12</span><span class="stitok">playtest 20261012-055944</span></span></summary>
+      <div class="telo">
+        <div class="blok"><h4>Prečo</h4><p>Párovanie línie bez lokality nechápali hráči tri playtesty za sebou. Bitka o staršieho navyše fungovala ako reset súperových bodov: Jano ju prehral 2 : 12, a predsa Eve zmazal 24 bodov.</p></div>
+        <div class="blok"><h4>Čo sa zmenilo</h4><ul>
+          <li>V strede línie leží <strong>karta staršieho</strong> a správa sa ako lokalita. Útočník ju natočí, strany sa cez ňu spájajú a jej akcie dostane majiteľ susednej karty. Jej efekt sa neuplatní.</li>
+          <li>Víťaz dáva marker do sivej ako doteraz (Michal sa rozhodol pravidlo nemeniť).</li>
+          <li>Pred bitkou web aj klient agentov ukážu body oboch hráčov teraz, pri výhre a pri prehre.</li>
+        </ul></div>
+        <div class="blok"><h4>Výsledok playtestu 20261012-101447</h4><p>Všetky 4 bitky o staršieho mierili na staršieho, ktorý bodoval súperovi. V 10. kole Jano ako obranca vyhral, a predsa prišiel o vlastné 4 body, lebo víťaz dáva marker do sivej. Náhľad bodov vidí len útočník. Párovanie cez kartu staršieho v strede už nikto nekritizoval.</p></div>
+        <div class="blok sledovat"><h4>Čo sledovať</h4><ul>
+          <li>Či hráči bitku o staršieho stále používajú hlavne na zmazanie súperových bodov.</li>
+          <li>Či karta staršieho v strede nie je pre niektorú stranu príliš výhodná.</li>
+        </ul></div>
+      </div>
+    </details>
+
+    <details class="zmena" data-oblast="pravidla">
+      <summary><h3>Limit ruky a priazeň Zberateľ</h3><span class="stav">skúšobné</span>
+        <span class="meta"><span class="stitok pravidla">pravidlá</span><span class="stitok">2026-10-12</span><span class="stitok">playtest 20261012-055944</span></span></summary>
+      <div class="telo">
+        <div class="blok"><h4>Prečo</h4><p>Ruky sa znova nafúkli: Eva mala 10 až 16 kariet a v 12 zo 14 draftov si hráč vzal 3 karty. Priazeň Očumovateľa (Preskúmanie) v hre nič nerobila, lebo Preskúmanie používali len dve karty, ktoré engine nevyhodnocoval.</p></div>
+        <div class="blok"><h4>Čo sa zmenilo</h4><ul>
+          <li>Na konci kola, po Liečbe a Pohrebe, smie mať hráč v ruke najviac <strong>6 + priazeň Zberateľa</strong>. Nadbytok odhodí do odhadzovacieho balíčka podľa vlastného výberu (aj kliatby).</li>
+          <li>Zberateľ nahradil Očumovateľa. Preskúmanie je pevne 5. Staré sady a databázy sa premenujú samy.</li>
+          <li>Ilustrácia scorecardu ostala (ďalekohľad pri dverách), dá sa vymeniť v tvorcovi.</li>
+        </ul></div>
+        <div class="blok"><h4>Výsledok playtestu 20261012-101447</h4><p>Ruky sa vrátili na 4–11 kariet (minule Eva 10–16) a draft 3 kariet klesol na 6 zo 14 draftov (minule 12). Eva odhodila nad limit 12 kariet. Priazeň Zberateľa mal väčšinu partie Jano a výhodu z nej nik nepozoroval.</p></div>
+        <div class="blok sledovat"><h4>Čo sledovať</h4><ul><li>Veľkosť rúk počas partie a či limit nedáva veľkú výhodu tomu, kto má priazeň Zberateľa.</li></ul></div>
+      </div>
+    </details>
+
+    <details class="zmena" data-oblast="pravidla">
+      <summary><h3>Útočník draftuje prvý, pitiek je |rozdiel|</h3><span class="stav">nahradené</span>
+        <span class="meta"><span class="stitok pravidla">pravidlá</span><span class="stitok">2026-10-12</span><span class="stitok">playtest 20261012-055944</span></span></summary>
+      <div class="telo">
+        <div class="blok"><h4>Nahradené</h4><p>Od 12. 10. (playtest 20261012-101447) berie zo šenku prvý obranca, striedavo po jednej karte — viď „Draft so stavbou šenku“. Počet pitiek ostal.</p></div>
+        <div class="blok"><h4>Prečo</h4><p>Obranca vyhral 7 z 8 bitiek a Jano ako útočník prehral päťkrát za sebou. Kolo so 4 pitkami hráči druhý playtest za sebou označili za zdĺhavé.</p></div>
+        <div class="blok"><h4>Čo sa zmenilo</h4><ul>
+          <li>V drafte vyberá prvý <strong>útočník</strong>, vykladá prvý ďalej obranca.</li>
+          <li>Pitiek je <strong>|rozdiel kariet z draftu|, aspoň 1</strong>, teda 1 až 3 (predtým 1 + |rozdiel|, 1 až 4).</li>
+          <li>Reporty playtestov uvádzajú výhry bitiek podľa roly a veľkosť rúk.</li>
+        </ul></div>
+        <div class="blok"><h4>Výsledok playtestu 20261012-101447</h4><p>Výhoda roly sa otočila: útočník vyhral 8 z 11 bitiek, o lokalitu 6 zo 7 (minule obranca 7 z 8). Obe remízy išli útočníkovi a Absťáky robili z bitiek 0 : 0 a 1 : 1. Každé kolo malo jednu pitku a trvalo v priemere 2,7 minúty (minule 3,4).</p></div>
+        <div class="blok sledovat"><h4>Čo sledovať</h4><ul><li>Pomer výhier útočník : obranca naprieč partiami (jedna partia nestačí) a dĺžku kôl.</li></ul></div>
+      </div>
+    </details>
+
+    <details class="zmena" data-oblast="pravidla">
+      <summary><h3>Body za kus: lokalita a starší po 2</h3><span class="stav">skúšobné</span>
+        <span class="meta"><span class="stitok pravidla">pravidlá</span><span class="stitok">2026-10-12</span><span class="stitok">playtest 20261012-055944</span></span></summary>
+      <div class="telo">
+        <div class="blok"><h4>Prečo</h4><p>Jeden starší rozhodoval všetko: Veterinár s bodmi za ovládnuté lokality dal Eve 24 bodov a stav skákal 15 : 0, 6 : 27 a 8 : 9.</p></div>
+        <div class="blok"><h4>Čo sa zmenilo</h4><p>Ovládnutá lokalita a získaný starší dávajú za kus 2 body namiesto 3, cigareta ostáva 1. Hra berie body z jadra aj pri starších zverejnených sadách.</p></div>
+        <div class="blok sledovat"><h4>Čo sledovať</h4><ul><li>Či jeden starší ešte rozhoduje partiu, alebo treba strop podľa zóny.</li></ul></div>
+      </div>
+    </details>
+
+    <details class="zmena" data-oblast="pravidla">
+      <summary><h3>Všetky efekty kariet vyhodnocuje hra</h3><span class="stav">skúšobné</span>
+        <span class="meta"><span class="stitok pravidla">pravidlá</span><span class="stitok rozhranie">rozhranie</span><span class="stitok">2026-10-12</span><span class="stitok">playtest 20261012-055944</span></span></summary>
+      <div class="telo">
+        <div class="blok"><h4>Prečo</h4><p>19 efektov bolo len pripomienkou v logu („⚠ EFEKT, ktorý hra nevyhodnocuje“). Krčma, Benzínka a Milujúca manželka pritom padli na rozhodujúce kolá.</p></div>
+        <div class="blok"><h4>Čo sa zmenilo</h4><ul>
+          <li>Hra vyhodnocuje všetkých 19: Benzínka, Dievčina na vydaj, Hrobár, Krčma, Krčmárka, Liberál, Milujúca manželka, Pasca, Pijan, Policajtka, Poštárka, Silná nezávislá žena, Starosta, Svätý text, Šarlatán, Veterán, Veštica, Vychovávateľka, Zámočník.</li>
+          <li>Výklad schválil Michal, je v PRAVIDLÁCH §14. Napríklad Benzínka: každý spáli 3 svojich Občanov z línie a lokalita prepadne. Manželka: priznaná uberie cigaretu z draftu. Dievčina: spáli priznané Dlhy a aj seba.</li>
+          <li>Voľby (Policajtka, Veštica, Benzínka, Poštárka, Starosta, limit ruky) majú vlastné okná vo webe aj príkazy v klientovi agentov. Balíčky odhalí server len hráčovi, ktorý vyberá.</li>
+        </ul></div>
+        <div class="blok sledovat"><h4>Čo sledovať</h4><ul>
+          <li>Dievčina na vydaj sa spáli pri každej bitke a je v štartovacom balíčku — či balíčky neklesnú pod 5 kariet.</li>
+          <li>Svätý text je podľa výkladu skoro len nevýhoda (Viera už neznižuje tuhé). Treba ho prepracovať v tvorcovi.</li>
+          <li>Slabé karty (Noviny, Cigorky, Výherný automat, Finančná poradkyňa) sú odložené na neskôr.</li>
+        </ul></div>
+      </div>
+    </details>
+
+    <details class="zmena" data-oblast="rozhranie">
+      <summary><h3>Rozloženie, mobil, koniec hry, náhľady</h3><span class="stav">skúšobné</span>
+        <span class="meta"><span class="stitok rozhranie">rozhranie</span><span class="stitok">2026-10-12</span><span class="stitok">playtest 20261012-055944</span></span></summary>
+      <div class="telo">
+        <div class="blok"><h4>Prečo</h4><p>Rozloženie dostalo 5 a mobil 4 štvrtý playtest za sebou. Koniec hry bol len riadok v páse. Hráči nevedeli, koľko stojí posun s Miňištrantom ani čo spoja pri vyložení.</p></div>
+        <div class="blok"><h4>Čo sa zmenilo</h4><ul>
+          <li>Stôl je hneď pod staršími, dosky hráčov pod ním. Pás pokynov sa zalomí a ruka aj okraj stola sa podľa neho posunú. Dlhá línia sa zmenší na šírku stola.</li>
+          <li>Mobil: hlavička v jednom riadku, menšia ruka a zbalení starší, z ktorých sa ukazujú len tí mimo neutrálu.</li>
+          <li>Obrazovka konca hry: víťaz, skóre, body po starších, zmena Frajeriny a návrat do lobby.</li>
+          <li>Pri vyložení sa ukáže náhľad spojov („ty: Rana +1 · súper: Viera −1“). Prebytok ukazuje cenu posunu (Miňištrant) a že súper dostane priazeň a ty body. Otáznik pri súperových bodoch má vysvetlenie.</li>
+        </ul></div>
+        <div class="blok sledovat"><h4>Čo sledovať</h4><ul><li>Známky V2, V5, V7 a V10 od sledovateľa. Ruka sa zatiaľ nezoskupuje, s limitom ruky by to nemalo byť treba.</li></ul></div>
+      </div>
+    </details>
+
+    <details class="zmena" data-oblast="pravidla">
+      <summary><h3>Tempo: nevyhnutné ťahy, priznanie bez ťahu, prahy Cirhózy a Dlhu</h3><span class="stav">skúšobné</span>
+        <span class="meta"><span class="stitok pravidla">pravidlá</span><span class="stitok rozhranie">rozhranie</span><span class="stitok">2026-10-12</span><span class="stitok">playtest 20261011-183315</span></span></summary>
+      <div class="telo">
+        <div class="blok"><h4>Prečo</h4><p>Tempo dostalo 5 (Jano) a 6 (Eva), minule 7,0. Partia mala 204 príkazov (minule 164) a 18 pitiek (minule 11). Z príkazov bolo 69 len potvrdení: 32 pasov, 31 „bez NA EX“ a 6 „bez Pohrebu“, často bez inej možnosti. Priznaní bolo 19 (minule 8) a každé odovzdalo ťah, takže sa kliatby priznávali na striedačku. Jano v 7. kole priznal 6 kariet po jednej a Eva medzitým čakala.</p></div>
+        <div class="citat">„Súper opakovane ‚čakal‘ priznávaním kariet; 4 pitky s 3 zhromaždeniami sú dlhé.“ — Eva Stratégová</div>
+        <div class="blok"><h4>Čo sa zmenilo</h4><ul>
+          <li><strong>Nevyhnutné ťahy robí hra sama:</strong> pas, keď hráč nemá čo vyložiť; „bez NA EX“, keď v Pitke nemá žiadnu možnosť; vynechanie Pohrebu, keď nemá kartu na pochovanie.</li>
+          <li><strong>Vypiť</strong> sa neponúka, keď hráč nemá čo vyložiť do línie (tlačidlo „do dna!“ je pri limite 0 neaktívne).</li>
+          <li><strong>Priznanie neodovzdá ťah.</strong> Hráč prizná všetky kliatby za sebou a potom ešte vykladá alebo pasuje. Limit vykladania naďalej nemíňa.</li>
+          <li><strong>Prah Cirhózy 3</strong> + priazeň Alkoholika (predtým 2).</li>
+          <li><strong>Prah Dlhu 2:</strong> akcie Hazard plnia nové počítadlo <em>zadĺženie</em>. Kartu Dlh hráč dostane až pri prahu, ako pri pečeni a Cirhóze. Dlhy, ktoré dávajú efekty kariet priamo (Liečba, Výherný automat), idú rovno. Ďalšie pravidlá k zadĺženiu pribudnú.</li>
+          <li>V hre pribudol ukazovateľ <strong>Zadĺženie x/2</strong> vedľa Pečene.</li>
+        </ul></div>
+        <div class="blok"><h4>Výsledok playtestu 20261012-055944</h4><p>Príkazov bolo 179 (minule 204), potvrdení 42 (minule 69), pitiek 11 (minule 18). Tempo dostalo 6,5. Teraz príkazy míňa hlavne prebytok: každý posun markera je samostatný príkaz, spolu 48. Exekútor nehrozil, na konci mali obaja 0/10 priznaných Dlhov.</p></div>
+        <div class="blok"><h4>Výsledok playtestu 20261012-101447</h4><p>Príkazov bolo 171 (minule 179), na kolo 15,5 (minule 22,4), posunov pri prebytku 26 (minule 48). Tempo dostalo 7 a 7. Dlh ani Cirhózu nepriznal nikto a Exekútor nehrozil (0/10).</p></div>
+        <div class="blok sledovat"><h4>Čo sledovať</h4><ul>
+          <li>Počet príkazov a priznaní za partiu (cieľ: menej ako 164 a 8 z playtestu 125943) a známku tempa.</li>
+          <li>Či vyšší prah Cirhózy a prah Dlhu nespravia kliatby bezvýznamnými. Exekútor (10 priznaných Dlhov) môže prestať hroziť, preto sa k zadĺženiu chystajú ďalšie pravidlá.</li>
+          <li>Či priznávanie bez ťahu nezvýhodní obrancu alebo útočníka v poradí vykladania.</li>
+          <li>Počet pitiek (1 + |rozdiel kariet z draftu|) zatiaľ ostáva. Ak budú kolá so 4 pitkami naďalej dlhé, zvážiť strop.</li>
+        </ul></div>
+      </div>
+    </details>
+
+    <details class="zmena" data-oblast="pravidla">
+      <summary><h3>Body za kus až od oranžovej zóny</h3><span class="stav">skúšobné</span>
+        <span class="meta"><span class="stitok pravidla">pravidlá</span><span class="stitok">2026-10-12</span><span class="stitok">playtest 20261011-183315</span></span></summary>
+      <div class="telo">
+        <div class="blok"><h4>Prečo</h4><p>Najväčšia sťažnosť playtestu 20261011-183315 (rovnováha 4,5). Riadky scorecardov „za kus“ nemali strop ani prah. Eva mala oboch starších len v žltej zóne a z ovládnutých lokalít a 15 cigariet získala 51 bodov proti 1. Riadky zón dajú najviac 3 body, takže strach starších, okolo ktorého sa hra točí, takmer nerozhodoval.</p></div>
+        <div class="citat">„Body za cigarety a lokality zatienili všetko ostatné; 48:1 pri bitkách 8:7 je nevyvážené.“ — Eva Stratégová, playtest 20261011-183315</div>
+        <div class="blok"><h4>Čo sa zmenilo</h4><ul>
+          <li>Kladné podmienky za kus (<strong>ovládnuté lokality, získaní starší, zvyšné cigarety</strong>) bodujú, len keď je marker aspoň v <strong>oranžovej</strong> zóne (Strach). V žltej dajú 0.</li>
+          <li>Tresty za nepriznané Dlhy a Cirhózy platia ako doteraz už od žltej, aby sa im nedalo vyhnúť slabším strachom.</li>
+          <li>Hodnoty za kus sa nemenili (lokalita 3, starší 3, cigareta 1). Scorecard v hre pri takom riadku ukáže „boduje, keď bude marker aspoň v oranžovej zóne“.</li>
+          <li>Prepočet partie 20261011-183315: Eva 0 : Jano 1, teda opačný extrém. Lokality vyhrala Eva 4:2, no markery nedotlačila.</li>
+        </ul></div>
+        <div class="blok"><h4>Výsledok playtestu 20261012-055944</h4><p>Výsledky typu 48 : 1 zmizli, partia skončila 9 : 8 a hráči sa sústredili na markery. Jeden starší však rozhodoval všetko: Veterinár dal Eve 24 bodov a stav šiel 15 : 0, potom 6 : 27 a 8 : 9. Prebytok posúva 5 až 10 markerov naraz.</p></div>
+        <div class="blok"><h4>Výsledok playtestu 20261012-101447</h4><p>Prah je príliš ostrý. Posun Poštárky zo 7 na 6 v poslednej bitke zobral Janovi 10 bodov a skóre sa prevrátilo z 13 : −2 na 3 : 12. Obaja hráči to nezávisle označili za najväčší problém (názory #18 a #20).</p></div>
+        <div class="blok sledovat"><h4>Čo sledovať</h4><ul>
+          <li>Či hráči začnú tlačiť markery do oranžovej (Pohoršenie, prebytok) a či vyhrávanie lokalít neprestane mať zmysel.</li>
+          <li>Či partie nekončia s veľmi nízkym skóre (0–3 body) a remízami. Ak áno, zvážiť strop podľa zóny (žltá max 3 na riadok).</li>
+          <li>Či bitka o staršieho (možná práve od oranžovej) nezosilnie natoľko, že rozhodne každú partiu.</li>
+        </ul></div>
+      </div>
+    </details>
+
+    <details class="zmena" data-oblast="pravidla">
+      <summary><h3>NA EX len na vlastné karty</h3><span class="stav">skúšobné</span>
+        <span class="meta"><span class="stitok pravidla">pravidlá</span><span class="stitok">2026-10-11</span><span class="stitok">playtest 101224, 125943</span></span></summary>
+      <div class="telo">
+        <div class="blok"><h4>Prečo</h4><p>Najčastejšia sťažnosť oboch playtestov — NA EX spomínali všetci štyria playtesteri (16–17-krát v každom feedbacku).
+          Účinok bol nepredvídateľný a súper ním dokázal zdvojiť tvoje Dlhy a pečeň: dve NA EX na Evinu Dievčinu na vydaj jej dali 12 Dlhov,
+          v prvej partii NA EX otočil poslednú bitku zo 4:1 na 4:7.</p></div>
+        <div class="citat">„NA EX je najsilnejší a najmenej vysvetlený prvok.“ — Jano Bitkár, playtest 101224</div>
+        <div class="blok"><h4>Čo sa zmenilo</h4><ul>
+          <li>NA EX sa dá dať <strong>len na vlastnú kartu</strong> (natočenú k hráčovi — aj podstrčenú na súperovej strane). Na súperovu kartu nie.</li>
+          <li>Účinok ostáva rovnaký (zruší aktívne akcie, zdvojí neaktívne), kontrolu má hráč, ktorý NA EX zahral. Pečeň +1 je jeho.</li>
+          <li>Hra pred potvrdením ukáže <strong>náhľad</strong>: bitka pred → po a zmeny akcií (napr. „Rana +1, Hazard +2“).</li>
+          <li>Svokra dostala nový efekt: „Nástup: súper v najbližšej Pitke nesmie dať NA EX.“ (pôvodný efekt stratil zmysel; text treba upraviť v tvorcovi).</li>
+        </ul></div>
+        <div class="blok"><h4>Výsledok playtestu 20261011-183315</h4><p>NA EX už nie je nepredvídateľný, ale stal sa „bezpečnou výhrou“. NA EX na vlastnú kartu s neprepojenými akciami (často podstrčenú a zatknutú prázdnou kartou) rozhodol 4 zo 7 bitiek (13:5, 11:0). Súper nemá protiťah, najmä v bitke o staršieho. Jano si vlastnými NA EX spôsobil 26 kliatob, súper druhému hráčovi už takmer žiadne.</p></div>
+        <div class="blok"><h4>Výsledok playtestu 20261012-055944</h4><p>Stále je to „bezpečná výhra“. Víťaz bitky dal NA EX v 5 z 8 bitiek, napríklad Eva na Recidivistu s neprepojenými akciami v bitke o staršieho (12 : 2). Protiťah kartou bol možný len v kole so 4 pitkami. Klient nevysvetľuje, že NA EX ide len na Občana alebo Starešinu, a Krčma („musíš dať NA EX“) sa nevynucuje.</p></div>
+        <div class="blok"><h4>Výsledok playtestu 20261012-101447</h4><p>NA EX padlo 7-krát a karty s neprepojenými akciami (Podvodník, Recidivista) rozhodli tri bitky vrátane poslednej. NA EX zdvojuje aj kliatby: Jano za NA EX na Živnostníka dostal Dlh a väčšina jeho 6 Cirhóz a 4 Dlhov prišla z NA EX, Pijanov a Vypitia.</p></div>
+        <div class="blok sledovat"><h4>Čo sledovať</h4><ul>
+          <li>Či NA EX teraz nie je príliš slabý, alebo naopak „bezpečná výhra“ bez protihry.</li>
+          <li>Či hráči NA EX používajú aj na zrušenie vlastných kliatob (Dlh, Pečeň).</li>
+          <li>Či ubudla záplava kliatob (Dlhy, Cirhózy) oproti playtestu 125943.</li>
+        </ul></div>
+      </div>
+    </details>
+
+    <details class="zmena" data-oblast="pravidla">
+      <summary><h3>Vypiť (do dna)</h3><span class="stav">skúšobné</span>
+        <span class="meta"><span class="stitok pravidla">pravidlá</span><span class="stitok">2026-10-11</span><span class="stitok">návrh Michala</span></span></summary>
+      <div class="telo">
+        <div class="blok"><h4>Prečo</h4><p>Nový zdroj tempa. Vykladanie sa strieda, takže dve karty za sebou dovolia dokončiť kombináciu skôr, ako súper podstrčí sabotéra.</p></div>
+        <div class="blok"><h4>Čo sa zmenilo</h4><ul>
+          <li>V Zhromaždení hráč na ťahu smie otočiť plný poldeci na vypitý; jeho ďalšie vyloženie neukončí ťah.</li>
+          <li>Cena: zostávajúci limit vykladania hneď −1, pečeň +1, ráta sa ako nerest. Dá sa opakovať, kým má plné poldeci.</li>
+          <li>V hre tlačidlo „do dna!“ a animácia vyprázdnenia pohára.</li>
+        </ul></div>
+        <div class="blok"><h4>Výsledok playtestu 20261011-183315</h4><p>Vypiť sa použilo raz (Jano v 8. kole), bez úžitku. Klient ponúka „do dna!“ aj pri zostávajúcom limite 0, keď už nič nepridá.</p></div>
+        <div class="blok"><h4>Výsledok playtestu 20261012-055944</h4><p>Vypiť nepoužil nikto. Eva pravidlo pochopila ako nevýhodné („ak limit 1, získam len jednu kartu, nie dve“).</p></div>
+        <div class="blok"><h4>Výsledok playtestu 20261012-101447</h4><p>Jano vypil raz, v 3. kole pri vyčerpanom limite. Nič nezískal, dostal pečeň +1 a Cirhózu a nazval to „pascou“. Klient agentov ponúka Vypiť aj pri limite 0 a engine ho prijme, web má vtedy tlačidlo neaktívne.</p></div>
+        <div class="blok sledovat"><h4>Čo sledovať</h4><ul>
+          <li>Ako často sa Vypiť používa a či opakované pitie nedovolí odohrať celé Zhromaždenie naraz.</li>
+          <li>Či cena (limit, pečeň) nie je privysoká — ak sa nepoužíva vôbec, zľaviť.</li>
+        </ul></div>
+      </div>
+    </details>
+
+    <details class="zmena" data-oblast="pravidla">
+      <summary><h3>Strany línie a partia = tvoje karty</h3><span class="stav">skúšobné</span>
+        <span class="meta"><span class="stitok pravidla">pravidlá</span><span class="stitok">2026-10-11</span><span class="stitok">návrh Michala, playtest 125943</span></span></summary>
+      <div class="telo">
+        <div class="blok"><h4>Prečo</h4><p>Michal chcel viac interakcie (podstrčiť súperovi „sabotéra“). Po zavedení prestal mať pojem „partia“ jednoznačný význam, preto nové názvoslovie.</p></div>
+        <div class="blok"><h4>Čo sa zmenilo</h4><ul>
+          <li>Každú kartu možno vyložiť na koniec <strong>tvojej aj súperovej strany</strong> línie.</li>
+          <li>Karta patrí tomu, kto ju zahral (je natočená k nemu). <strong>Partia</strong> hráča = všetky jeho karty, nech ležia kdekoľvek. Akcie aj efekty idú majiteľovi.</li>
+          <li>Akcie <strong>lokality</strong> na spoji dostane majiteľ susednej karty — podstrčená karta „ukradne“ súperovu stranu lokality.</li>
+          <li>Kočovník: na súperovu stranu nemíňa limit vykladania (navrhnutý efekt; text treba upraviť v tvorcovi).</li>
+        </ul></div>
+        <div class="blok"><h4>Výsledok doterajšieho playtestu</h4><p>V playteste 125943 obaja hráči nezávisle označili podstrčenie za najlepšiu vec v hre, interakcia stúpla na 9/9. Chýbal náhľad spojov pred vyložením.</p></div>
+        <div class="blok"><h4>Výsledok playtestu 20261011-183315</h4><p>Podstrkovanie bolo hlavnou činnosťou: Jano 16 z 27 vyložení, Eva 11 z 29. Obaja ho opäť označili za najlepšiu vec v hre (interakcia 8,5). Zrozumiteľnosť klesla na 4. Hráčov mýlilo natočenie podstrčenej karty, otočenie lokality a to, že v bitke o staršieho sa strany v strede nespájajú.</p></div>
+        <div class="blok"><h4>Výsledok playtestu 20261012-101447</h4><p>Podstrčilo sa 9 zo 41 kariet (22 %), podobne ako minule. Obaja hráči podstrkovanie znova chvália (interakcia 9 a 9), no ktorý okraj sa na súperovej strane spáruje, zisťovali skúškou. Eva si to dvakrát pomýlila a raz omylom aktivovala súperovi Ranu.</p></div>
+        <div class="blok sledovat"><h4>Čo sledovať</h4><ul>
+          <li>Či „kradnutie“ strany lokality podstrčenou kartou nie je prisilné.</li>
+          <li>Či hráči rozumejú rozdielu strana / partia.</li>
+        </ul></div>
+      </div>
+    </details>
+
+    <details class="zmena" data-oblast="pravidla">
+      <summary><h3>Ruka 5 kariet a kliatby do balíčka</h3><span class="stav">skúšobné</span>
+        <span class="meta"><span class="stitok pravidla">pravidlá</span><span class="stitok">2026-10-11</span><span class="stitok">playtest 101224</span></span></summary>
+      <div class="telo">
+        <div class="blok"><h4>Prečo</h4><p>Hráči mali na ruke 15–18 kariet (všetkých 10 štartovacích išlo do ruky, doberací balíček bol prázdny, kliatby prichádzali rovno do ruky).</p></div>
+        <div class="blok"><h4>Čo sa zmenilo</h4><ul>
+          <li>Štartovacie karty sa zamiešajú do doberacieho balíčka, do ruky 5; na začiatku každého kola sa ruka doplní na 5.</li>
+          <li>Nové kliatby (Dlh, Cirhóza) idú do odhadzovacieho balíčka, nie do ruky.</li>
+        </ul></div>
+        <div class="blok"><h4>Výsledok doterajšieho playtestu</h4><p>Simulácia: priemerná ruka z 12–15 na ~7. V playteste 125943 však ruky narástli na 7–12 kvôli záplave kliatob (hlavne z NA EX a Cirhóz) — preto nasledovali zmeny NA EX a objasnenie priznávania.</p></div>
+        <div class="blok"><h4>Výsledok playtestu 20261011-183315</h4><p>Ruka s 5 kartami funguje, karty nedošli ani v kolách so 4 pitkami.</p></div>
+        <div class="blok"><h4>Výsledok playtestu 20261012-055944</h4><p>Ruky sa znova nafúkli: Eva mala 10 až 16 kariet a v 12 zo 14 draftov si hráč vzal 3 karty. Obranca vyhral 7 z 8 bitiek.</p></div>
+        <div class="blok"><h4>Výsledok playtestu 20261012-101447</h4><p>Karty nedošli, balíčky neklesli pod 5. Kliatby mal takmer všetky Jano (6 Cirhóz, 4 Dlhy, 5 Absťákov), priznal len dve Manželky. Hráči sa sťažovali skôr na kvalitu ruky (Dievčiny, Manželky, Dlhy) než na jej veľkosť.</p></div>
+        <div class="blok sledovat"><h4>Čo sledovať</h4><ul><li>Veľkosť ruky počas partie; či karty niekedy dôjdu (najmä v kolách so 4 pitkami).</li></ul></div>
+      </div>
+    </details>
+
+    <details class="zmena" data-oblast="pravidla">
+      <summary><h3>Priznávanie kliatob — objasnené pravidlo</h3><span class="stav">skúšobné</span>
+        <span class="meta"><span class="stitok pravidla">pravidlá</span><span class="stitok">2026-10-11</span><span class="stitok">playtest 125943</span></span></summary>
+      <div class="telo">
+        <div class="blok"><h4>Prečo</h4><p>Agenti priznávali málo (4 a 7 kliatob pri 16 Cirhózach a 12 Dlhoch); Jano sa mylne domnieval, že priznanie Cirhózy stojí limit vykladania.</p></div>
+        <div class="blok"><h4>Čo sa zmenilo</h4><ul>
+          <li>Pravidlá výslovne: priznaná kliatba je <strong>natrvalo mimo balíčka</strong>, priznanie nemíňa limit (je to však ťah).</li>
+          <li>V hre aj v klientovi agentov nápoveda pri priznaní; agenti majú pokyn priznávať pred pasovaním.</li>
+        </ul></div>
+        <div class="blok"><h4>Výsledok playtestu 20261011-183315</h4><p>Priznávanie funguje: spolu 19 priznaných kariet (predtým 11). Jano mal napriek tomu balíček plný Dlhov a Cirhóz, tie si však spôsobil vlastnými NA EX.</p></div>
+        <div class="blok sledovat"><h4>Čo sledovať</h4><ul><li>Počet priznaných kliatob a či sa balíčky čistia. Otvorená otázka: najviac jedna Cirhóza za Pitku?</li></ul></div>
+      </div>
+    </details>
+
+    <details class="zmena" data-oblast="pravidla">
+      <summary><h3>Dĺžka hry 5 / 7 / 11 lokalít</h3><span class="stav">skúšobné</span>
+        <span class="meta"><span class="stitok pravidla">pravidlá</span><span class="stitok">2026-10-11</span><span class="stitok">playtest 101224</span></span></summary>
+      <div class="telo">
+        <div class="blok"><h4>Prečo</h4><p>Krátka hra s 3 lokalitami skončila skôr, než sa uplatnili starší, scorecardy, Dlhy a Exekútor.</p></div>
+        <div class="blok"><h4>Čo sa zmenilo</h4><p>Dĺžka sa volí v lobby: krátka 5, stredná 7 (predvolená, playtesty na nej bežia), dlhá 11 (až keď sada bude mať 11 lokalít).</p></div>
+        <div class="blok"><h4>Výsledok doterajšieho playtestu</h4><p>Stredná hra (playtest 125943) zapojila starších, bitku o staršieho, Pohreb aj barter; partia mala zvrat.</p></div>
+        <div class="blok"><h4>Výsledok playtestu 20261012-101447</h4><p>Stredná hra (7 lokalít) mala 11 kôl, z toho 4 bitky o staršieho, a trvala 29,5 minúty.</p></div>
+      </div>
+    </details>
+
+    <details class="zmena" data-oblast="rozhranie">
+      <summary><h3>Starší hore, priazeň ♥ a body ★</h3><span class="stav">skúšobné</span>
+        <span class="meta"><span class="stitok rozhranie">rozhranie</span><span class="stitok">2026-10-11</span><span class="stitok">Michal</span></span></summary>
+      <div class="telo">
+        <div class="blok"><h4>Prečo</h4><p>Lupa starších sa bila s lupou kariet v ruke a nebolo jasné, kto má priazeň a za čo sa dostávajú body.</p></div>
+        <div class="blok"><h4>Čo sa zmenilo</h4><ul>
+          <li>Rad starších nad stolom (dá sa zmenšiť).</li>
+          <li>Pri každom staršom ♥ priazeň (komu, s akým účinkom) a ★ koho sa bojí a koľko bodov by dal teraz; „body teraz“ pri hráčoch.</li>
+          <li>V pravidlách výslovne: priazeň a strach nikdy nepatria tomu istému hráčovi.</li>
+        </ul></div>
+      </div>
+    </details>
+
+    <details class="zmena" data-oblast="rozhranie">
+      <summary><h3>Výber lokality a šenku kliknutím</h3><span class="stav">skúšobné</span>
+        <span class="meta"><span class="stitok rozhranie">rozhranie</span><span class="stitok">2026-10-11</span><span class="stitok">Michal</span></span></summary>
+      <div class="telo">
+        <div class="blok"><h4>Čo sa zmenilo</h4><ul>
+          <li>Keď hráč vyberá lokalitu alebo karty zo šenku, okno sa otvorí samo (žiadny klik navyše); ruka ostáva viditeľná.</li>
+          <li>Výber kliknutím, tlačidlo „umiestniť na stôl“ / „vziať do ruky“; na stole sa lokalita dá otočiť, „← späť na výber“ vráti do okna. Ťahanie ostáva ako alternatíva.</li>
+        </ul></div>
+      </div>
+    </details>
+
+    <details class="zmena" data-oblast="nastroje">
+      <summary><h3>Playtest: spätná väzba na web, HTML reporty, opravy nástrojov</h3><span class="stav">v prevádzke</span>
+        <span class="meta"><span class="stitok nastroje">playtest</span><span class="stitok">2026-10-11</span></span></summary>
+      <div class="telo">
+        <div class="blok"><h4>Čo sa zmenilo</h4><ul>
+          <li>Playtesteri zverejňujú názory na stránke Spätná väzba (účty „meno (AI)“); nový agent hrá proti človeku (/protihrac).</li>
+          <li>Reporty sú interaktívne HTML.</li>
+          <li>Únik informácie cez spoločný /tmp (playtest 125943) — agenti smú ukladať pomocné súbory len do svojho priečinka.</li>
+          <li>Snímky stránok Pravidlá a Karty boli totožné s úvodnou (Git Bash prepisoval cestu) — opravené; snímky vedia klikať (--klik).</li>
+        </ul></div>
+      </div>
+    </details>
+
+  </div>
+  <p class="prazdne" id="prazdne">Žiadna zmena nezodpovedá filtru.</p>
+
+  <section class="zdroje">
+    <h2>Podklady</h2>
+    <ul>
+      <li><a href="20261011-101224.md">Playtest 20261011-101224</a> — krátka hra, pôvodné pravidlá</li>
+      <li><a href="20261011-125943.html">Playtest 20261011-125943</a> — stredná hra, pravidlá v3 (ruka 5, vykladanie na obe strany)</li>
+      <li><a href="20261011-183315.html">Playtest 20261011-183315</a> — stredná hra, NA EX len na vlastné karty (nedohraná)</li>
+      <li><a href="20261012-055944.html">Playtest 20261012-055944</a> — stredná hra, Eva 9 : 8; podklad pre zmeny z 12. 10. (odpoveď na NA EX, limit ruky, efekty kariet)</li>
+      <li>Pravidlá: <code>docs/PRAVIDLA.md</code>, otvorené otázky: <code>docs/BRIEF.md</code></li>
+    </ul>
+  </section>
+</main>
+<script>
+  (() => {
+    const zmeny = [...document.querySelectorAll(".zmena")];
+    const filtre = [...document.querySelectorAll("[data-filter]")];
+    const hladaj = document.getElementById("hladaj");
+    const rozbal = document.getElementById("rozbal");
+    const prazdne = document.getElementById("prazdne");
+    let oblast = "vsetko";
+    const obnov = () => {
+      const q = hladaj.value.trim().toLocaleLowerCase("sk");
+      let viditelnych = 0;
+      for (const z of zmeny) {
+        const ok = (oblast === "vsetko" || z.dataset.oblast === oblast) && (q === "" || z.textContent.toLocaleLowerCase("sk").includes(q));
+        z.hidden = !ok;
+        if (ok) viditelnych++;
+        if (ok && q !== "") z.open = true;
+      }
+      prazdne.style.display = viditelnych === 0 ? "block" : "none";
+    };
+    for (const f of filtre) f.addEventListener("click", () => {
+      oblast = f.dataset.filter;
+      for (const g of filtre) g.setAttribute("aria-pressed", String(g === f));
+      obnov();
+    });
+    hladaj.addEventListener("input", obnov);
+    rozbal.addEventListener("click", () => {
+      const otvorit = rozbal.getAttribute("aria-pressed") !== "true";
+      for (const z of zmeny) z.open = otvorit;
+      rozbal.setAttribute("aria-pressed", String(otvorit));
+      rozbal.textContent = otvorit ? "Zbaliť všetko" : "Rozbaliť všetko";
+    });
+  })();
+</script>
+</body>
+</html>

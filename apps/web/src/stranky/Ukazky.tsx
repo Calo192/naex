@@ -5,13 +5,14 @@ import { useMemo, useState } from "react";
 import type { CardInstance, GameData, LineEval, PlayerId } from "@naex/core";
 import { STUPNICA_ZONY, battleOutcome, computeDamage, evaluateLine, loadGameData } from "@naex/core";
 import eldersJson from "@naex/core/data/elders.json";
+import scorecardsJson from "@naex/core/data/scorecards.json";
 import type { KartaNavrh, RozlozenieStrany, Sada, Vzhlad } from "@naex/tvorba";
 import { variant, variantyKarty } from "@naex/tvorba";
 import { KartaLico, type SlotStav } from "../karta/KartaLico.tsx";
 import { vzhladSady } from "../lib/sada.tsx";
 
 export function useHerneData(sada: Sada): GameData {
-  return useMemo(() => loadGameData(sada.cardsJson, eldersJson), [sada]);
+  return useMemo(() => loadGameData(sada.cardsJson, eldersJson, sada.scorecardsJson ?? scorecardsJson), [sada]);
 }
 
 /** Vyhodnotenie zo slotov jadra → stav slotov na karte. */
@@ -91,7 +92,7 @@ export function UkazkaSpajania({ sada }: { readonly sada: Sada }) {
     lokalitaOtocena: false,
     // Partia hráča 0 vedie od lokality doľava: poradie [B, A] znamená,
     // že pravá strana A sa dotýka ľavej strany B.
-    partie: [[{ card: b.inst, playedBy: 0 }, { card: a.inst, playedBy: 0 }], []],
+    strany: [[{ card: b.inst, playedBy: 0 }, { card: a.inst, playedBy: 0 }], []],
   });
   const sumy = Object.entries(ev.sums[0]).filter(([, n]) => (n ?? 0) > 0);
   const sirka = Math.min(230, (window.innerWidth - 80) / 2);

@@ -6,6 +6,7 @@
 import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
+import scorecardsJson from "../data/scorecards.json";
 import type { Command, GameState, PlayerId } from "../src/index.ts";
 import {
   apply,
@@ -19,7 +20,7 @@ import {
   viewFor,
 } from "../src/index.ts";
 
-const data = loadGameData(cardsJson, eldersJson);
+const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
 /** Zoznam uid, ktoré hráč `ja` NIKDY nesmie dostať. */
 function tajneUids(state: GameState, ja: PlayerId): number[] {
@@ -29,6 +30,8 @@ function tajneUids(state: GameState, ja: PlayerId): number[] {
     ...state.hraci[0].doberaci.map((k) => k.uid),
     ...state.hraci[1].doberaci.map((k) => k.uid),
     ...state.spolocnyBalicek.map((k) => k.uid),
+    // Súperov balíček stavby šenku (jeho výber v kroku je jeho súčasťou).
+    ...(state.draftStav?.balicky[super_] ?? []).map((k) => k.uid),
   ];
 }
 
@@ -61,7 +64,7 @@ function smoke(seed: number, kontrolaFiltrovania: boolean): { state: GameState; 
     const result = apply(data, state, cmd, hrac);
     state = result.state;
 
-    if (kontrolaFiltrovania && kroky % 25 === 0) {
+    if (kontrolaFiltrovania && (kroky % 25 === 0 || state.faza === "draft")) {
       expectZiadenUnik(state, 0);
       expectZiadenUnik(state, 1);
     }
@@ -70,13 +73,16 @@ function smoke(seed: number, kontrolaFiltrovania: boolean): { state: GameState; 
 }
 
 describe("M6 — setup", () => {
-  it("hra sa rozdá: ruky po 10, šenok 8, poldeci 2, cigareta 1", () => {
+  it("hra sa rozdá: 10 štartovacích kariet, z toho 5 na ruke, šenok prázdny, poldeci 2, cigareta 1", () => {
     const state = setupGame(data, 42);
-    expect(state.hraci[0].ruka.length).toBe(10);
-    expect(state.hraci[1].ruka.length).toBe(10);
-    expect(state.senok.length).toBe(8);
+    for (const p of [0, 1] as const) {
+      expect(state.hraci[p].ruka.length).toBe(5);
+      expect(state.hraci[p].doberaci.length).toBe(5);
+    }
+    expect(state.senok.length).toBe(0);
     expect(state.starsi.length).toBe(8);
-    expect(state.lokalityVHre.length).toBe(3);
+    expect(state.lokalityVHre.length).toBe(7);
+    expect(state.lokalitCelkom).toBe(7);
     expect(state.hraci[0].poldeciPlne).toBe(2);
     expect(state.hraci[0].cigarety).toBe(1);
     expect(state.faza).toBe("volbaCiela");
@@ -107,6 +113,44 @@ describe("M6 — smoke test", () => {
       expect(kroky).toBeGreaterThan(10);
     });
   }
+
+  it("na začiatku každého kola si hráč doplní ruku na 5 a kliatby idú do odhadzovacieho balíčka", () => {
+    let state = setupGame(data, 2024);
+    let testRng = rngSeed(77);
+    let kolo = state.kolo;
+    let overenych = 0;
+    for (let i = 0; i < 20000 && state.koniec === null; i++) {
+      const hrac = naTahu(state);
+      if (hrac === null) break;
+      const cmds = legalCommands(data, state, hrac);
+      const [idx, rng] = rngInt(testRng, cmds.length);
+      testRng = rng;
+      const pred = state;
+      const { state: novy, events } = apply(data, state, cmds[idx] as Command, hrac);
+      state = novy;
+      // Nová kliatba nepríde rovno do ruky — len ak si ju hráč v tom istom
+      // ťahu dobral (napr. Hazard ju dá do odhadzovacieho a ťahanie ho zamieša).
+      const dobrane = new Set(events.flatMap((e) => (e.type === "kartyTahane" ? e.karty.map((k) => k.uid) : [])));
+      for (const p of [0, 1] as const) {
+        const noveVRuke = state.hraci[p].ruka.filter(
+          (k) => k.uid >= pred.nextUid && (k.defId === "dlh" || k.defId === "cirhoza") && !dobrane.has(k.uid),
+        );
+        expect(noveVRuke).toEqual([]);
+      }
+      if (state.kolo !== kolo && state.koniec === null) {
+        kolo = state.kolo;
+        for (const p of [0, 1] as const) {
+          const h = state.hraci[p];
+          const dostupne = h.doberaci.length + h.odhadzovaci.length;
+          // Ruka má aspoň 5, ak bolo z čoho ťahať; väčšia ruka sa nezahadzuje.
+          expect(h.ruka.length).toBeGreaterThanOrEqual(Math.min(5, pred.hraci[p].ruka.length + dostupne));
+        }
+        expect(events.some((e) => e.type === "kartyTahane" || e.type === "log")).toBe(true);
+        overenych++;
+      }
+    }
+    expect(overenych).toBeGreaterThan(0);
+  });
 
   it("hráč nemôže hrať mimo poradia", () => {
     const state = setupGame(data, 5);

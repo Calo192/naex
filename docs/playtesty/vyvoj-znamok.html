@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vývoj známok — NA EX!</title>
+<style>
+  :root {
+    --bg: #14110e; --plocha: #1e1914; --plocha2: #262019; --text: #f1e8d8; --tlmeny: #b6a790;
+    --ciara: #3a3128; --jantar: #e9ad45; --tehla: #d0563f; --zelena: #7cbf74;
+    --seq-0: #2a231b; --seq-1: #4a3a22; --seq-2: #745727; --seq-3: #a8792d; --seq-4: #e9ad45;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f6f1e7; --plocha: #fffaf1; --plocha2: #f1e8d8; --text: #2a2118; --tlmeny: #6e604d;
+      --ciara: #ddd0bb; --jantar: #a96d10; --tehla: #b23f2a; --zelena: #3f7d39;
+      --seq-0: #f7efe0; --seq-1: #f1dcb1; --seq-2: #e6be74; --seq-3: #c98f2c; --seq-4: #925e0c;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 1040px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1, h2 { font-family: Georgia, "Times New Roman", serif; font-weight: 700; line-height: 1.2; }
+  h1 { font-size: 1.9rem; margin: 0 0 4px; }
+  h2 { font-size: 1.3rem; margin: 36px 0 12px; }
+  .pod { color: var(--tlmeny); margin: 0 0 20px; }
+  a { color: var(--jantar); }
+  .karta { background: var(--plocha); border: 1px solid var(--ciara); border-radius: 12px; padding: 16px; }
+  .dlazdice { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .dlazdica .stitok { font-size: 0.8rem; color: var(--tlmeny); text-transform: uppercase; letter-spacing: 0.04em; }
+  .dlazdica .hodnota { font-size: 1.9rem; font-family: Georgia, serif; font-weight: 700; }
+  .dlazdica .pozn { font-size: 0.85rem; color: var(--tlmeny); }
+  .ovladanie { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+  label { color: var(--tlmeny); font-size: 0.9rem; }
+  select { background: var(--plocha2); color: var(--text); border: 1px solid var(--ciara); border-radius: 8px; padding: 6px 10px; font: inherit; }
+  .graf-obal { position: relative; }
+  svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .os text { fill: var(--tlmeny); font-size: 12px; }
+  .mriezka line { stroke: var(--ciara); stroke-width: 1; }
+  .ciara-serie { fill: none; stroke: var(--jantar); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .bod { fill: var(--jantar); stroke: var(--plocha); stroke-width: 2; }
+  .bod-cieľ { fill: transparent; cursor: pointer; }
+  .zmena-znacka { fill: var(--plocha2); stroke: var(--tlmeny); stroke-width: 1; cursor: pointer; }
+  .zmena-text { fill: var(--text); font-size: 11px; font-weight: 700; pointer-events: none; }
+  .hodnota-text { fill: var(--text); font-size: 12px; font-weight: 600; }
+  .tip { position: absolute; pointer-events: none; background: var(--plocha2); border: 1px solid var(--ciara); border-radius: 8px;
+    padding: 8px 10px; font-size: 0.85rem; max-width: 300px; box-shadow: 0 6px 20px rgba(0,0,0,.35); display: none; z-index: 2; }
+  .tip strong { display: block; margin-bottom: 2px; }
+  .tip ul { margin: 4px 0 0; padding-left: 18px; }
+  .legenda-pozn { color: var(--tlmeny); font-size: 0.85rem; margin-top: 8px; }
+  .tabulka-obal { overflow-x: auto; }
+  table { border-collapse: separate; border-spacing: 2px; width: 100%; font-size: 0.9rem; }
+  th, td { padding: 6px 8px; text-align: center; }
+  th { color: var(--tlmeny); font-weight: 600; font-size: 0.8rem; }
+  th.kriterium, td.kriterium { text-align: left; white-space: nowrap; color: var(--text); font-size: 0.9rem; }
+  td.bunka { border-radius: 4px; font-variant-numeric: tabular-nums; font-weight: 600; }
+  td.bunka small { display: block; font-weight: 400; font-size: 0.72rem; }
+  .hore { color: var(--zelena); }
+  .dole { color: var(--tehla); }
+  tr.priemer td { border-top: 2px solid var(--ciara); font-weight: 700; }
+  .partie { display: grid; gap: 12px; }
+  details.partia { background: var(--plocha); border: 1px solid var(--ciara); border-radius: 12px; }
+  details.partia summary { cursor: pointer; padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: baseline; list-style: none; }
+  details.partia summary::-webkit-details-marker { display: none; }
+  details.partia summary::before { content: "▸"; color: var(--tlmeny); }
+  details.partia[open] summary::before { content: "▾"; }
+  .partia-id { font-family: Georgia, serif; font-weight: 700; }
+  .partia-meta { color: var(--tlmeny); font-size: 0.9rem; }
+  .partia-znamka { margin-left: auto; font-weight: 700; color: var(--jantar); }
+  .partia-telo { padding: 0 16px 14px 34px; }
+  .partia-telo ul { margin: 6px 0; padding-left: 18px; }
+  .ziadne { color: var(--tlmeny); font-style: italic; }
+  .upozornenie { color: var(--tlmeny); font-size: 0.85rem; }
+  footer { margin-top: 36px; color: var(--tlmeny); font-size: 0.85rem; }
+  :focus-visible { outline: 2px solid var(--jantar); outline-offset: 2px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Vývoj známok playtestov</h1>
+  <p class="pod">Ako AI playtesteri (Jano Bitkár, Eva Stratégová) hodnotili hru podľa 12 kritérií naprieč partiami a ktoré zmeny pravidiel medzi partiami prišli. Zmeny: <a href="zmeny-pravidiel.html">zmeny-pravidiel.html</a>.</p>
+
+  <div class="dlazdice" id="dlazdice"></div>
+
+  <section aria-labelledby="h-graf">
+    <h2 id="h-graf">Graf</h2>
+    <div class="karta">
+      <div class="ovladanie">
+        <label for="vyber">Zobraziť:</label>
+        <select id="vyber"></select>
+      </div>
+      <div class="graf-obal" id="graf-obal">
+        <svg id="graf" viewBox="0 0 900 340" role="img" aria-labelledby="graf-popis"><title id="graf-popis">Priemerná známka playtesterov po partiách</title></svg>
+        <div class="tip" id="tip" role="status"></div>
+      </div>
+      <p class="legenda-pozn">Bod = priemer oboch playtesterov. Kosoštvorec medzi partiami = počet zmien pravidiel, ktoré prišli pred ďalšou partiou (prejdi myšou alebo klávesnicou pre zoznam).</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-tab">
+    <h2 id="h-tab">Kritériá po partiách</h2>
+    <div class="karta tabulka-obal">
+      <table id="tabulka">
+        <caption class="upozornenie" style="caption-side: bottom; text-align: left; padding-top: 8px;">Priemer oboch hráčov; pod číslom posun oproti predošlej partii. Farba bunky = výška známky.</caption>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-partie">
+    <h2 id="h-partie">Partie a zmeny pred nimi</h2>
+    <div class="partie" id="partie"></div>
+  </section>
+
+  <footer>Jedna partia je jeden údaj a hrajú ju dve AI postavy — trend je zaujímavejší než jednotlivé čísla. Prvá partia (20261011-101224) bola krátka hra s 3 lokalitami a partia 20261011-183315 sa nedohrala, s ostatnými sa porovnávajú len orientačne.</footer>
+</main>
+
+<script>
+const KRITERIA = ["Zábava", "Zmysluplné rozhodnutia", "Rovnováha a férovosť", "Náhoda vs. zručnosť", "Interakcia hráčov",
+  "Tempo a prestoje", "Zrozumiteľnosť pravidiel", "Hĺbka vs. zložitosť", "Znovuhrateľnosť", "Téma a prepojenie",
+  "Napätie a priebeh", "Originalita"];
+
+// Známky z R/hrac*/feedback.md; zmeny zo zmeny-pravidiel.html (len pravidlá).
+const PARTIE = [
+  { id: "20261011-101224", report: "20261011-101224.md", dlzka: "krátka (3 lokality)", vysledok: "Jano 5 : 0",
+    jano: [7, 7, 5, 6, 8, 8, 5, 6, 7, 7, 6, 9], eva: [7, 7, 5, 7, 8, 7, 4, 7, 7, 8, 8, 9],
+    zmenyPred: [] },
+  { id: "20261011-125943", report: "20261011-125943.html", dlzka: "stredná (7)", vysledok: "Jano 3 : 0",
+    jano: [7, 8, 5, 6, 9, 7, 5, 7, 7, 8, 7, 9], eva: [6, 7, 4, 6, 9, 7, 5, 7, 7, 8, 4, 9],
+    zmenyPred: ["Ruka 5 kariet a kliatby do balíčka", "Dĺžka hry 5 / 7 / 11 lokalít", "Strany línie a partia = tvoje karty"] },
+  { id: "20261011-183315", report: "20261011-183315.html", dlzka: "stredná (7)", vysledok: "nedohraná",
+    jano: [6, 7, 4, 6, 8, 5, 4, 6, 7, 7, 4, 8], eva: [7, 7, 5, 6, 9, 6, 4, 7, 7, 7, 6, 8],
+    zmenyPred: ["NA EX len na vlastné karty", "Vypiť (do dna)", "Priznávanie kliatob — objasnené pravidlo"] },
+  { id: "20261012-055944", report: "20261012-055944.html", dlzka: "stredná (7)", vysledok: "Eva 9 : 8",
+    jano: [8, 8, 5, 6, 9, 7, 5, 7, 8, 7, 9, 9], eva: [8, 8, 6, 7, 9, 6, 5, 8, 8, 7, 8, 9],
+    zmenyPred: ["Tempo: nevyhnutné ťahy, priznanie bez ťahu, prahy Cirhózy a Dlhu", "Body za kus až od oranžovej zóny"] },
+  { id: "20261012-101447", report: "20261012-101447.html", dlzka: "stredná (7)", vysledok: "Eva 12 : 3",
+    jano: [7, 7, 5, 6, 9, 7, 5, 7, 7, 8, 7, 9], eva: [8, 8, 5, 6, 9, 7, 5, 8, 8, 7, 8, 9],
+    zmenyPred: ["Odpoveď na NA EX", "Nahradený starší ostáva v hre", "Bitka o staršieho: karta v strede a náhľad bodov",
+      "Limit ruky a priazeň Zberateľ", "Útočník draftuje prvý, pitiek je |rozdiel|", "Body za kus: lokalita a starší po 2",
+      "Všetky efekty kariet vyhodnocuje hra"] },
+];
+// Zmeny, ktoré ešte žiadna partia neoverila.
+const CAKAJUCE = ["Draft so stavbou šenku", "Slabé karty v ruke: priznanie Dlhu a Cirhózy, Liečba a Pohreb"];
+
+const priemer = (a) => a.reduce((x, y) => x + y, 0) / a.length;
+const f1 = (x) => x.toFixed(1).replace(".", ",");
+const kratke = (id) => Number(id.slice(6, 8)) + ". " + Number(id.slice(4, 6)) + ". " + id.slice(9, 11) + ":" + id.slice(11, 13);
+const hodnota = (p, k) => (k < 0 ? priemer([...p.jano, ...p.eva]) : (p.jano[k] + p.eva[k]) / 2);
+const hracov = (p, k) => (k < 0 ? [priemer(p.jano), priemer(p.eva)] : [p.jano[k], p.eva[k]]);
+const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+
+// ---- dlaždice
+(() => {
+  const posledna = PARTIE[PARTIE.length - 1];
+  const predosla = PARTIE[PARTIE.length - 2];
+  const teraz = hodnota(posledna, -1);
+  const rozdiel = teraz - hodnota(predosla, -1);
+  const najlepsie = KRITERIA.map((n, k) => [n, hodnota(posledna, k)]).sort((a, b) => b[1] - a[1]);
+  const dl = [
+    ["Posledná partia", f1(teraz), `${kratke(posledna.id)} · ${rozdiel >= 0 ? "+" : "−"}${f1(Math.abs(rozdiel))} oproti predošlej`],
+    ["Najvyšší priemer", f1(Math.max(...PARTIE.map((p) => hodnota(p, -1)))), "naprieč " + PARTIE.length + " partiami"],
+    ["Najsilnejšie teraz", f1(najlepsie[0][1]), najlepsie[0][0]],
+    ["Najslabšie teraz", f1(najlepsie[najlepsie.length - 1][1]), najlepsie.filter((x) => x[1] === najlepsie[najlepsie.length - 1][1]).map((x) => x[0]).join(", ")],
+  ];
+  document.getElementById("dlazdice").innerHTML = dl
+    .map(([s, h, p]) => `<div class="karta dlazdica"><div class="stitok">${s}</div><div class="hodnota">${h}</div><div class="pozn">${esc(p)}</div></div>`)
+    .join("");
+})();
+
+// ---- graf
+const vyber = document.getElementById("vyber");
+vyber.innerHTML = `<option value="-1">Priemer všetkých kritérií</option>` + KRITERIA.map((n, k) => `<option value="${k}">${n}</option>`).join("");
+const svg = document.getElementById("graf");
+const tip = document.getElementById("tip");
+const NS = "http://www.w3.org/2000/svg";
+const el = (n, a, rodic) => { const e = document.createElementNS(NS, n); for (const [k, v] of Object.entries(a)) e.setAttribute(k, v); rodic.appendChild(e); return e; };
+
+function ukazTip(html, x, y) {
+  const obal = document.getElementById("graf-obal").getBoundingClientRect();
+  tip.innerHTML = html;
+  tip.style.display = "block";
+  const sirka = tip.offsetWidth;
+  tip.style.left = Math.max(0, Math.min(obal.width - sirka, x - sirka / 2)) + "px";
+  tip.style.top = Math.max(0, y - tip.offsetHeight - 14) + "px";
+}
+const skryTip = () => { tip.style.display = "none"; };
+
+function kresli() {
+  const k = Number(vyber.value);
+  while (svg.lastChild && svg.lastChild.nodeName !== "title") svg.removeChild(svg.lastChild);
+  const W = 900, H = 340, L = 44, R = 70, T = 24, B = 48;
+  const yMin = 3, yMax = 10;
+  const x = (i) => L + (i * (W - L - R)) / (PARTIE.length - 1);
+  const y = (v) => T + ((yMax - v) * (H - T - B)) / (yMax - yMin);
+  const mriezka = el("g", { class: "mriezka" }, svg);
+  const os = el("g", { class: "os" }, svg);
+  for (let v = yMin; v <= yMax; v++) {
+    el("line", { x1: L, x2: W - R + 30, y1: y(v), y2: y(v) }, mriezka);
+    const t = el("text", { x: L - 10, y: y(v) + 4, "text-anchor": "end" }, os);
+    t.textContent = v;
+  }
+  PARTIE.forEach((p, i) => {
+    const t = el("text", { x: x(i), y: H - B + 20, "text-anchor": "middle" }, os);
+    t.textContent = kratke(p.id);
+    const t2 = el("text", { x: x(i), y: H - B + 36, "text-anchor": "middle" }, os);
+    t2.textContent = p.vysledok;
+  });
+  // značky zmien medzi partiami (a čakajúce za poslednou)
+  const znacka = (cx, zoznam, nadpis) => {
+    if (zoznam.length === 0) return;
+    const cy = T + 4;
+    const g = el("g", { tabindex: 0, role: "button", "aria-label": `${nadpis}: ${zoznam.join("; ")}` }, svg);
+    el("rect", { x: cx - 11, y: cy - 11, width: 22, height: 22, rx: 3, transform: `rotate(45 ${cx} ${cy})`, class: "zmena-znacka" }, g);
+    const t = el("text", { x: cx, y: cy + 4, "text-anchor": "middle", class: "zmena-text" }, g);
+    t.textContent = zoznam.length;
+    el("line", { x1: cx, x2: cx, y1: cy + 16, y2: H - B, stroke: "var(--ciara)", "stroke-dasharray": "3 4" }, svg);
+    const html = `<strong>${esc(nadpis)}</strong><ul>${zoznam.map((z) => `<li>${esc(z)}</li>`).join("")}</ul>`;
+    const ukaz = () => { const r = svg.getBoundingClientRect(); ukazTip(html, (cx / W) * r.width, (cy / H) * r.height); };
+    g.addEventListener("mouseenter", ukaz); g.addEventListener("focus", ukaz);
+    g.addEventListener("mouseleave", skryTip); g.addEventListener("blur", skryTip);
+  };
+  PARTIE.forEach((p, i) => { if (i > 0) znacka((x(i - 1) + x(i)) / 2, p.zmenyPred, `Zmeny pred ${kratke(p.id)}`); });
+  znacka(W - R + 30, CAKAJUCE, "Čakajú na ďalšiu partiu");
+
+  const body = PARTIE.map((p, i) => [x(i), y(hodnota(p, k))]);
+  el("path", { d: body.map(([a, b], i) => `${i ? "L" : "M"}${a},${b}`).join(" "), class: "ciara-serie" }, svg);
+  // popisky len prvej, poslednej, najvyššej a najnižšej hodnoty
+  const hodnoty = PARTIE.map((p) => hodnota(p, k));
+  const oznac = new Set([0, PARTIE.length - 1, hodnoty.indexOf(Math.max(...hodnoty)), hodnoty.indexOf(Math.min(...hodnoty))]);
+  PARTIE.forEach((p, i) => {
+    const [cx, cy] = body[i];
+    el("circle", { cx, cy, r: 5, class: "bod" }, svg);
+    if (oznac.has(i)) {
+      const t = el("text", { x: cx, y: cy - 12, "text-anchor": "middle", class: "hodnota-text" }, svg);
+      t.textContent = f1(hodnoty[i]);
+    }
+    const [j, e] = hracov(p, k);
+    const html = `<strong>${kratke(p.id)} · ${esc(p.vysledok)}</strong>${k < 0 ? "Priemer" : esc(KRITERIA[k])}: ${f1(hodnoty[i])}<br>Jano ${f1(j)} · Eva ${f1(e)}<br><span class="upozornenie">${esc(p.dlzka)}</span>`;
+    const ciel = el("circle", { cx, cy, r: 16, class: "bod-cieľ", tabindex: 0, "aria-label": `${p.id}: ${f1(hodnoty[i])}` }, svg);
+    const ukaz = () => { const r = svg.getBoundingClientRect(); ukazTip(html, (cx / W) * r.width, (cy / H) * r.height); };
+    ciel.addEventListener("mouseenter", ukaz); ciel.addEventListener("focus", ukaz);
+    ciel.addEventListener("mouseleave", skryTip); ciel.addEventListener("blur", skryTip);
+  });
+  svg.querySelector("title").textContent = `${k < 0 ? "Priemerná známka" : KRITERIA[k]} playtesterov po partiách`;
+}
+vyber.addEventListener("change", kresli);
+kresli();
+
+// ---- tabuľka
+(() => {
+  const tab = document.getElementById("tabulka");
+  const farba = (v) => (v >= 8.5 ? 4 : v >= 7.5 ? 3 : v >= 6.5 ? 2 : v >= 5.5 ? 1 : 0);
+  const textFarba = (v) => (farba(v) >= 3 ? "color: var(--bg)" : "");
+  const bunka = (p, i, k) => {
+    const v = hodnota(p, k);
+    const d = i === 0 ? null : v - hodnota(PARTIE[i - 1], k);
+    // Smer nesie šípka; farba textu ostáva farbou bunky (čitateľnosť na každom odtieni).
+    const posun = d === null || Math.abs(d) < 0.05 ? "" : `<small>${d > 0 ? "▲" : "▼"} ${f1(Math.abs(d))}</small>`;
+    return `<td class="bunka" style="background: var(--seq-${farba(v)}); ${textFarba(v)}">${f1(v)}${posun}</td>`;
+  };
+  let html = `<thead><tr><th class="kriterium" scope="col">Kritérium</th>${PARTIE.map((p) => `<th scope="col">${kratke(p.id)}</th>`).join("")}</tr></thead><tbody>`;
+  KRITERIA.forEach((n, k) => { html += `<tr><th class="kriterium" scope="row">${n}</th>${PARTIE.map((p, i) => bunka(p, i, k)).join("")}</tr>`; });
+  html += `<tr class="priemer"><th class="kriterium" scope="row">Priemer</th>${PARTIE.map((p, i) => bunka(p, i, -1)).join("")}</tr></tbody>`;
+  tab.insertAdjacentHTML("beforeend", html);
+})();
+
+// ---- partie
+(() => {
+  const zoznam = (z) => (z.length === 0 ? `<p class="ziadne">Žiadne — východisková partia.</p>` : `<ul>${z.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`);
+  const html = [...PARTIE].reverse().map((p, ri) => `
+    <details class="partia"${ri === 0 ? " open" : ""}>
+      <summary><span class="partia-id">${kratke(p.id)}</span><span class="partia-meta">${esc(p.vysledok)} · ${esc(p.dlzka)}</span><span class="partia-znamka">${f1(hodnota(p, -1))}</span></summary>
+      <div class="partia-telo">
+        <strong>Zmeny pred touto partiou:</strong>${zoznam(p.zmenyPred)}
+        <a href="${p.report}">Report ${p.id}</a>
+      </div>
+    </details>`).join("");
+  const cakajuce = `
+    <details class="partia" open>
+      <summary><span class="partia-id">Ďalšia partia</span><span class="partia-meta">ešte neodohraná</span></summary>
+      <div class="partia-telo"><strong>Zmeny, ktoré overí:</strong>${zoznam(CAKAJUCE)}</div>
+    </details>`;
+  document.getElementById("partie").innerHTML = cakajuce + html;
+})();
+</script>
+</body>
+</html>

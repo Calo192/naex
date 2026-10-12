@@ -112,6 +112,9 @@
 .kl-pojem {
   cursor: help;
   border-radius: calc(1 * var(--pt));
+  text-decoration: underline dotted color-mix(in srgb, currentColor 45%, transparent);
+  text-decoration-thickness: max(1px, calc(0.5 * var(--pt)));
+  text-underline-offset: calc(1 * var(--pt));
 }
 
 .kl-pojem:hover {
@@ -217,6 +220,18 @@
   gap: calc(2 * var(--pt));
 }
 
+/* Otáča sa plocha, nie .kl — transform na .kl patrí hoveru a ťahaniu. */
+.kl-otocena > .kl-plocha {
+  transform: rotate(180deg);
+}
+
+/* Odznaky ostanú hore a čitateľné aj na otočenej karte. */
+.kl-otocena .kl-odznaky {
+  top: auto;
+  bottom: calc(3 * var(--pt));
+  transform: translateX(-50%) rotate(180deg);
+}
+
 .kl-odznaky > * {
   padding: calc(1 * var(--pt)) calc(3.5 * var(--pt));
   border-radius: 99px;
@@ -309,6 +324,13 @@
   width: 100%;
   height: 100%;
   border-radius: 4px;
+}
+
+.tip-riadok {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  color: #5c5148;
 }
 
 .tip-stav {

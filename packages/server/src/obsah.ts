@@ -5,8 +5,8 @@
 import { readFileSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { join } from "node:path";
-import type { GameData } from "@naex/core";
-import { loadGameData } from "@naex/core";
+import type { GameData, Podmienka } from "@naex/core";
+import { loadGameData, parseScorecards } from "@naex/core";
 import type {
   AkciaDef,
   BodovaciaKarta,
@@ -26,6 +26,7 @@ import {
   PREDVOLENE_NASTAVENIA,
   chybyNavrhu,
   doCardsJson,
+  doScorecardsJson,
   neznameAkcie,
 } from "@naex/tvorba";
 import type { Db } from "./db.ts";
@@ -38,6 +39,25 @@ const SEED = fileURLToPath(new URL("../seed/", import.meta.url));
 
 export function nacitajElders(): unknown {
   return JSON.parse(readFileSync(join(CORE_DATA, "elders.json"), "utf8")) as unknown;
+}
+
+/** Východiskové scorecardy z repozitára — pre sady zverejnené pred ich zavedením. */
+export function nacitajScorecards(): unknown {
+  return JSON.parse(readFileSync(join(CORE_DATA, "scorecards.json"), "utf8")) as unknown;
+}
+
+interface SeedBodovanie {
+  readonly nazvyIkon: Readonly<Record<Podmienka, string>>;
+  readonly bodovacie: readonly {
+    readonly id: string;
+    readonly nazov: string;
+    readonly sirkaMm: number;
+    readonly vyskaMm: number;
+    readonly mierkaIkon: number;
+    readonly lava: readonly (Podmienka | null)[];
+    readonly prava: readonly (Podmienka | null)[];
+    readonly pozadie: string;
+  }[];
 }
 
 interface SeedNavrh {
@@ -71,6 +91,7 @@ export class Obsah {
   readonly ikonyBodovania: JsonTabulka<IkonaBodovania>;
   private readonly nastaveniaT: JsonTabulka<unknown>;
   private readonly elders: unknown;
+  private readonly scorecardsPredvolene: unknown;
   private cache: { sada: Sada; data: GameData } | null = null;
 
   private readonly db: Db;
@@ -87,6 +108,7 @@ export class Obsah {
     this.ikonyBodovania = new JsonTabulka(db, "ikony_bodovania", "id");
     this.nastaveniaT = new JsonTabulka(db, "nastavenia", "kluc");
     this.elders = nacitajElders();
+    this.scorecardsPredvolene = nacitajScorecards();
   }
 
   // -------------------------------------------------------------------------
@@ -127,7 +149,82 @@ export class Obsah {
       for (const k of PREDVOLENE_KATEGORIE) this.kategorie.uloz(k.nazov, k);
       this.nastaveniaT.uloz("predvolene", PREDVOLENE_NASTAVENIA);
     });
+    // Ešte pred prvou sadou — zverejní sa jedna verzia so všetkým.
+    this.naplnBodovanieAkTreba(teraz);
     this.zverejni(null, teraz);
+  }
+
+  /**
+   * Scorecardy z KartyAI (seed/bodovanie) do databázy, ktorá ich ešte nemá.
+   * Do sady sa doplnia novou verziou s rovnakými kartami — rozpracované
+   * návrhy admina sa tým nezverejnia.
+   */
+  naplnBodovanieAkTreba(teraz: number): void {
+    if (this.bodovacie.pocet() > 0 || this.ikonyBodovania.pocet() > 0) return;
+    const dir = join(SEED, "bodovanie");
+    const seedPath = join(dir, "bodovacie.json");
+    if (!existsSync(seedPath)) return;
+    const seed = JSON.parse(readFileSync(seedPath, "utf8")) as SeedBodovanie;
+    transakcia(this.db, () => {
+      for (const [podmienka, nazov] of Object.entries(seed.nazvyIkon) as [Podmienka, string][]) {
+        const subor = join(dir, "ikony", `${podmienka}.svg`);
+        if (!existsSync(subor)) continue;
+        const m = this.media.uloz(readFileSync(subor), "ikona", `${podmienka}.svg`, teraz, ["image/svg+xml"]);
+        this.ikonyBodovania.uloz(`ikona_${podmienka}`, { id: `ikona_${podmienka}`, nazov, media: m.id, podmienka });
+      }
+      for (const b of seed.bodovacie) {
+        const subor = join(dir, "pozadia", b.pozadie);
+        const pozadie = existsSync(subor) ? this.media.uloz(readFileSync(subor), "pozadie", b.pozadie, teraz, ["image/jpeg"]).id : null;
+        const ikona = (p: Podmienka | null): string | null => (p === null ? null : `ikona_${p}`);
+        this.bodovacie.uloz(b.id, {
+          id: b.id,
+          nazov: b.nazov,
+          sirkaMm: b.sirkaMm,
+          vyskaMm: b.vyskaMm,
+          mierkaIkon: b.mierkaIkon,
+          farba: null,
+          pozadie,
+          lava: b.lava.map(ikona),
+          prava: b.prava.map(ikona),
+          upravene: teraz,
+        });
+      }
+    });
+    this.prezverejniBodovanie(teraz);
+  }
+
+  /**
+   * Očumovateľa nahradil Zberateľ (Michal 2026-10-12): bodovacia karta sa
+   * v databáze premenuje a scorecardy sa zverejnia nanovo s rovnakými kartami.
+   */
+  premenujZrusenePriazne(teraz: number): void {
+    const stare = this.bodovacie.vsetky().filter((b) => b.nazov === "Očumovateľ");
+    if (stare.length === 0) return;
+    transakcia(this.db, () => {
+      for (const b of stare) this.bodovacie.uloz(b.id, { ...b, nazov: "Zberateľ", upravene: teraz });
+    });
+    this.prezverejniBodovanie(teraz);
+  }
+
+  /** Nová verzia sady s rovnakými kartami a aktuálnymi scorecardmi z tvorcu. */
+  private prezverejniBodovanie(teraz: number): void {
+    const posledna = this.db.prepare("SELECT data FROM sady ORDER BY verzia DESC LIMIT 1").get() as { data: string } | undefined;
+    if (posledna === undefined) return;
+    const stara = JSON.parse(posledna.data) as Omit<Sada, "verzia">;
+    const obsah = { ...stara, cas: teraz, ...this.bodovanieSady() };
+    loadGameData(obsah.cardsJson, this.elders, obsah.scorecardsJson);
+    this.db.prepare("INSERT INTO sady (cas, autor, data) VALUES (?, ?, ?)").run(teraz, null, JSON.stringify(obsah));
+    this.cache = null;
+  }
+
+  /** Scorecardy pre sadu z bodovacích kariet tvorcu (prázdny tvorca → východiskové z repozitára). */
+  private bodovanieSady(): { scorecardsJson: unknown; bodovacie: BodovaciaKarta[]; ikonyBodovania: IkonaBodovania[]; problemy: string[] } {
+    const bodovacie = this.bodovacie.vsetky();
+    const ikonyBodovania = this.ikonyBodovania.vsetky();
+    if (bodovacie.length === 0) return { scorecardsJson: this.scorecardsPredvolene, bodovacie, ikonyBodovania, problemy: [] };
+    const body = parseScorecards(this.scorecardsPredvolene).body;
+    const { json, problemy } = doScorecardsJson(bodovacie, ikonyBodovania, body);
+    return { scorecardsJson: json, bodovacie, ikonyBodovania, problemy: [...problemy] };
   }
 
   private seedObrazok(subor: string, teraz: number): KartaNavrh["obrazok"] {
@@ -184,16 +281,18 @@ export class Obsah {
       }
     }
     const cardsJson = doCardsJson(karty, `tvorca kariet ${new Date(teraz).toISOString()}`);
+    const { problemy: problemyBodovania, ...bodovanie } = this.bodovanieSady();
+    problemy.push(...problemyBodovania);
     if (problemy.length === 0) {
       try {
-        loadGameData(cardsJson, this.elders);
+        loadGameData(cardsJson, this.elders, bodovanie.scorecardsJson);
       } catch (err) {
         problemy.push(err instanceof Error ? err.message : String(err));
       }
     }
     if (problemy.length > 0) throw new ChybaVstupu(`Sadu nemožno zverejniť:\n${problemy.join("\n")}`, 422);
 
-    const obsah = { cas: teraz, karty, cardsJson, ...this.vzhlad() };
+    const obsah = { cas: teraz, karty, cardsJson, ...bodovanie, ...this.vzhlad() };
     const r = this.db.prepare("INSERT INTO sady (cas, autor, data) VALUES (?, ?, ?)").run(teraz, autor, JSON.stringify(obsah));
     this.cache = null;
     return { verzia: Number(r.lastInsertRowid), ...obsah };
@@ -205,8 +304,13 @@ export class Obsah {
       | { verzia: number; data: string }
       | undefined;
     if (r === undefined) throw new Error("Žiadna zverejnená sada — server sa nenaplnil.");
-    const sada = { verzia: r.verzia, ...(JSON.parse(r.data) as Omit<Sada, "verzia">) };
-    this.cache = { sada, data: loadGameData(sada.cardsJson, this.elders) };
+    const ulozena = { verzia: r.verzia, ...(JSON.parse(r.data) as Omit<Sada, "verzia">) };
+    // Sady spred scorecardov hrajú s východiskovými z repozitára. Body za
+    // podmienky sú herné hodnoty jadra — platia aj pre staršie sady.
+    const scorecards = (ulozena.scorecardsJson ?? this.scorecardsPredvolene) as Record<string, unknown>;
+    const body = (this.scorecardsPredvolene as { body: unknown }).body;
+    const sada: Sada = { ...ulozena, scorecardsJson: { ...scorecards, body } };
+    this.cache = { sada, data: loadGameData(sada.cardsJson, this.elders, sada.scorecardsJson) };
     return this.cache;
   }
 

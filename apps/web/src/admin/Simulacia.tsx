@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import type { CardInstance, GameData } from "@naex/core";
 import { evaluateLine, loadGameData } from "@naex/core";
 import eldersJson from "@naex/core/data/elders.json";
+import scorecardsJson from "@naex/core/data/scorecards.json";
 import type { KartaNavrh } from "@naex/tvorba";
 import { doCardsJson, neznameAkcie, variantyKarty } from "@naex/tvorba";
 import { useTitulok } from "../lib/router.tsx";
@@ -34,10 +35,10 @@ export function Simulacia() {
     const hratelne = obsah.karty.filter((k) => neznameAkcie(k).length === 0 && variantyKarty(k).pocet > 0);
     const vynechane = obsah.karty.filter((k) => !hratelne.includes(k));
     try {
-      return { data: loadGameData(doCardsJson(hratelne, "simulácia"), eldersJson), vynechane };
+      return { data: loadGameData(doCardsJson(hratelne, "simulácia"), eldersJson, scorecardsJson), vynechane };
     } catch {
       // Chýbajúci starší v návrhoch → simulácia starších nepotrebuje.
-      return { data: loadGameData(doCardsJson(hratelne, "simulácia"), { elders: [] }), vynechane };
+      return { data: loadGameData(doCardsJson(hratelne, "simulácia"), { elders: [] }, scorecardsJson), vynechane };
     }
   }, [obsah]);
 
@@ -59,9 +60,11 @@ export function Simulacia() {
     lokalita: null,
     lokalitaOtocena: false,
     // Partia hráča 0 vedie od lokality doľava — línia zľava doprava je jej obrátené poradie.
-    partie: [instancie.map((c, i) => ({ card: c, playedBy: linia[i]?.otocena === true ? (1 as const) : (0 as const) })).reverse(), []],
+    strany: [instancie.map((c, i) => ({ card: c, playedBy: linia[i]?.otocena === true ? (1 as const) : (0 as const) })).reverse(), []],
   });
-  const sumy = Object.entries(ev.sums[0]).filter(([, x]) => (x ?? 0) > 0);
+  // Akcie patria majiteľovi karty — otočené karty (súperove) majú vlastný súčet.
+  const sumyHraca = (p: 0 | 1) => Object.entries(ev.sums[p]).filter(([, x]) => (x ?? 0) > 0);
+  const sumy = [sumyHraca(0), sumyHraca(1)] as const;
 
   const zmen = (i: number, z: Partial<Slot>) => setLinia(linia.map((s, j) => (j === i ? { ...s, ...z } : s)));
   const posun = (i: number, d: number) => {
@@ -82,8 +85,8 @@ export function Simulacia() {
         </label>
       </div>
       <p className="tlmene">
-        Pravá strana každej karty sa páruje s ľavou stranou nasledujúcej. Otočená karta je položená nohami hore (do súperovej
-        partie). Pracuje s rozpracovanými návrhmi — netreba zverejniť.
+        Pravá strana každej karty sa páruje s ľavou stranou nasledujúcej. Otočená karta je položená nohami hore — zahral ju súper a jej
+        akcie patria jemu. Pracuje s rozpracovanými návrhmi — netreba zverejniť.
       </p>
       {vynechane.length > 0 && (
         <Hlaska druh="info">Bez simulácie (vlastná akcia bez pravidiel alebo chybné rozloženie): {vynechane.map((k) => k.nazov).join(", ")}.</Hlaska>
@@ -139,16 +142,25 @@ export function Simulacia() {
 
       <section className="panel" style={{ marginTop: 20 }}>
         <h3>Aktívne akcie v línii</h3>
-        {sumy.length === 0 ? (
+        {sumy[0].length + sumy[1].length === 0 ? (
           <p className="tlmene">Nič sa neaktivovalo.</p>
         ) : (
-          <div className="cipy">
-            {sumy.map(([k, x]) => (
-              <span key={k} className="cip aktivny">
-                {vzhlad.akcie.find((a) => a.kluc === k)?.nazov ?? k} ×{x}
-              </span>
-            ))}
-          </div>
+          ([0, 1] as const).map((p) =>
+            sumy[p].length === 0 ? null : (
+              <div key={p} style={{ marginBottom: 10 }}>
+                <p className="tlmene" style={{ margin: "0 0 6px" }}>
+                  {p === 0 ? "Neotočené karty (hráč)" : "Otočené karty (súper — akcie patria jemu)"}
+                </p>
+                <div className="cipy">
+                  {sumy[p].map(([k, x]) => (
+                    <span key={k} className="cip aktivny">
+                      {vzhlad.akcie.find((a) => a.kluc === k)?.nazov ?? k} ×{x}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ),
+          )
         )}
       </section>
     </div>

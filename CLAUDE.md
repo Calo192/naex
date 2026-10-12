@@ -3,7 +3,8 @@
 Webová verzia kartovej hry **NA EX!** (autor Michal Calík).
 Dvaja hráči, dva prehliadače, cez internet. Web má tri časti: **pravidlá**
 (vzdelávanie), **tvorba kariet** pre admina (port MAUI aplikácie KartyAI)
-a **hra**; k tomu účty s rolami admin / hráč a profil (herné meno, avatar).
+a **hra**; k tomu účty s úrovňami admin / subadmin / hráč / návštevník a profil
+(herné meno, avatar).
 
 **Prečítaj najprv `docs/BRIEF.md`** — je to zadanie s míľnikmi a akceptačnými
 kritériami (M0–M10). Rozšírenie o platformu (M11–M14) popisuje `README.md`.
@@ -34,7 +35,7 @@ dvaja ľudia na dvoch zariadeniach, nie viac hráčov naraz.
 
 ```bash
 npm install
-NAEX_ADMINS=michal npm run dev   # server :8787 + klient :5173
+npm run dev          # server :8787 + klient :5173 (heslo admina: .env, NAEX_ADMIN_HESLO)
 npm start            # produkcia: server + zbuildovaný klient :8787
 npm run kniznica -- "docs/NA EX/NA EX"   # obrázky do knižnice tvorcu
 npm test             # vitest

@@ -2,70 +2,8 @@
 // reconnect (M9). Dva ws klienty proti skutočnému serveru na náhodnom porte.
 
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { WebSocket } from "ws";
 import type { GameServer } from "../src/server.ts";
-import { registruj, testovaciServer } from "./pomocnik.ts";
-
-interface Msg {
-  type: string;
-  [k: string]: unknown;
-}
-
-/** Testovací klient: fronta správ + čakanie na konkrétny typ. */
-class Klient {
-  private readonly ws: WebSocket;
-  private readonly fronta: Msg[] = [];
-  private cakajuci: { rieš: (m: Msg) => void; typ: string } | null = null;
-
-  constructor(port: number, cookie: string) {
-    this.ws = new WebSocket(`ws://127.0.0.1:${port}/ws`, { headers: { cookie } });
-    this.ws.on("message", (raw) => {
-      const msg = JSON.parse(String(raw)) as Msg;
-      if (this.cakajuci !== null && msg.type === this.cakajuci.typ) {
-        const { rieš } = this.cakajuci;
-        this.cakajuci = null;
-        rieš(msg);
-      } else {
-        this.fronta.push(msg);
-      }
-    });
-  }
-
-  async otvorene(): Promise<void> {
-    if (this.ws.readyState === WebSocket.OPEN) return;
-    await new Promise<void>((rieš, zamietni) => {
-      this.ws.once("open", rieš);
-      this.ws.once("error", zamietni);
-    });
-  }
-
-  posli(msg: unknown): void {
-    this.ws.send(JSON.stringify(msg));
-  }
-
-  /** Vráti najbližšiu správu daného typu (z fronty alebo počká, max 5 s). */
-  async cakaj(typ: string): Promise<Msg> {
-    const vFronte = this.fronta.findIndex((m) => m.type === typ);
-    if (vFronte !== -1) return this.fronta.splice(vFronte, 1)[0] as Msg;
-    return await new Promise<Msg>((rieš, zamietni) => {
-      const timeout = setTimeout(() => {
-        this.cakajuci = null;
-        zamietni(new Error(`Nedošla správa typu ${typ}`));
-      }, 5000);
-      this.cakajuci = {
-        typ,
-        rieš: (m) => {
-          clearTimeout(timeout);
-          rieš(m);
-        },
-      };
-    });
-  }
-
-  zavri(): void {
-    this.ws.close();
-  }
-}
+import { Klient, prihlas, registruj, testovaciServer } from "./pomocnik.ts";
 
 let server: GameServer;
 let zmaz: () => Promise<void>;
@@ -220,7 +158,7 @@ describe("M12 — účty, profil a admin API", () => {
     const { cookie, login } = await registruj(server.port);
     const ja = await api("/ja", { cookie });
     expect((ja.telo?.pouzivatel as { login: string }).login).toBe(login);
-    expect((ja.telo?.pouzivatel as { rola: string }).rola).toBe("pouzivatel");
+    expect((ja.telo?.pouzivatel as { rola: string }).rola).toBe("navstevnik");
 
     const zle = await api("/prihlasenie", { method: "POST", body: JSON.stringify({ login, heslo: "zle-heslo" }) });
     expect(zle.status).toBe(401);
@@ -258,14 +196,18 @@ describe("M12 — účty, profil a admin API", () => {
     const sada = await api("/sada");
     expect((sada.telo?.karty as unknown[]).length).toBe(50);
     expect(sada.telo?.verzia).toBe(1);
+    // Scorecardy z KartyAI sú v sade od prvého spustenia, ikony s významom v hre.
+    expect((sada.telo?.bodovacie as unknown[]).length).toBe(8);
+    expect((sada.telo?.ikonyBodovania as { podmienka: string }[]).every((i) => i.podmienka !== null)).toBe(true);
+    expect(((sada.telo?.scorecardsJson as { scorecards: unknown[] }).scorecards).length).toBe(8);
   });
 });
 
 describe("M12 — admin: úprava karty a zverejnenie", () => {
-  it("admin z NAEX_ADMINS upraví kartu, zverejní a nová hra beží na novej sade", async () => {
-    const { server: s2, zmaz: z2 } = await testovaciServer(["sef"]);
+  it("admin z konfigurácie upraví kartu, zverejní a nová hra beží na novej sade", async () => {
+    const { server: s2, zmaz: z2 } = await testovaciServer({ login: "Sef", heslo: "sefovo-testovacie" });
     try {
-      const { cookie } = await registruj(s2.port, "sef");
+      const cookie = await prihlas(s2.port, "Sef", "sefovo-testovacie");
       const api = (cesta: string, init: RequestInit = {}) =>
         fetch(`http://127.0.0.1:${s2.port}/api${cesta}`, {
           ...init,

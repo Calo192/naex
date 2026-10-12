@@ -1,6 +1,6 @@
 # NA EX! — server + webový klient v jednom kontajneri.
 #   docker build -t naex .
-#   docker run -p 8787:8787 -v naex-data:/data -e NAEX_ADMINS=michal naex
+#   docker run -p 8787:8787 -v naex-data:/data -e NAEX_ADMIN_HESLO=<heslo> naex
 
 FROM node:24-alpine AS build
 WORKDIR /app

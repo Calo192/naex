@@ -5,12 +5,15 @@ import type { ReactNode } from "react";
 import { Layout } from "./Layout.tsx";
 import { Nacitavanie } from "./komponenty.tsx";
 import { Odkaz, useCesta } from "./lib/router.tsx";
-import { useUcet } from "./lib/ucet.tsx";
+import { jeSpravca, useUcet } from "./lib/ucet.tsx";
 import { Domov } from "./stranky/Domov.tsx";
 import { Glosar } from "./stranky/Glosar.tsx";
 import { Pravidla } from "./stranky/Pravidla.tsx";
 import { Prihlasenie, Profil, Registracia } from "./stranky/Ucet.tsx";
 import { Hra } from "./hra/Hra.tsx";
+import { HracProfil } from "./stranky/Statistiky.tsx";
+import { Rebricek } from "./stranky/Rebricek.tsx";
+import { SpatnaVazba } from "./stranky/SpatnaVazba.tsx";
 import { Admin } from "./admin/Admin.tsx";
 
 function Neprihlaseny() {
@@ -43,20 +46,24 @@ export function App() {
   const chranene = (obsah: ReactNode, admin = false): ReactNode => {
     if (!nacitane) return <Nacitavanie />;
     if (ja === null) return <Neprihlaseny />;
-    if (admin && ja.rola !== "admin") return <Nenajdene />;
+    if (admin && !jeSpravca(ja.rola)) return <Nenajdene />;
     return obsah;
   };
 
   if (cesta.startsWith("/admin")) return <Layout siroky>{chranene(<Admin cesta={cesta} />, true)}</Layout>;
   if (cesta === "/hra") return <Layout siroky><Hra /></Layout>;
+  if (cesta === "/pravidla") return <Layout siroky><Pravidla /></Layout>;
+  const hrac = /^\/hrac\/(\d+)$/.exec(cesta);
+  if (hrac !== null) return <Layout siroky>{chranene(<HracProfil id={Number(hrac[1])} />)}</Layout>;
+  if (cesta === "/profil") return <Layout siroky>{chranene(<Profil />)}</Layout>;
 
   const stranka: ReactNode =
     cesta === "/" ? <Domov />
-    : cesta === "/pravidla" ? <Pravidla />
     : cesta === "/karty" ? <Glosar />
     : cesta === "/prihlasenie" ? <Prihlasenie />
     : cesta === "/registracia" ? <Registracia />
-    : cesta === "/profil" ? chranene(<Profil />)
+    : cesta === "/rebricek" ? chranene(<Rebricek />)
+    : cesta === "/spatna-vazba" ? chranene(<SpatnaVazba />)
     : <Nenajdene />;
   return <Layout>{stranka}</Layout>;
 }

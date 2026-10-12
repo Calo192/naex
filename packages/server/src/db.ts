@@ -16,7 +16,8 @@ CREATE TABLE IF NOT EXISTS pouzivatelia (
   heslo TEXT NOT NULL,
   meno TEXT NOT NULL,
   avatar TEXT,
-  rola TEXT NOT NULL DEFAULT 'pouzivatel',
+  -- Úroveň účtu: admin | subadmin | hrac | navstevnik (Michal 2026-10-12).
+  rola TEXT NOT NULL DEFAULT 'navstevnik',
   vytvoreny INTEGER NOT NULL
 );
 CREATE TABLE IF NOT EXISTS relacie (
@@ -67,13 +68,88 @@ CREATE TABLE IF NOT EXISTS sady (
   autor INTEGER,
   data TEXT NOT NULL
 );
+
+-- Frajerina (hodnotenie hráča, Elo) a archív dohraných partií.
+CREATE TABLE IF NOT EXISTS frajerina (
+  pouzivatel INTEGER PRIMARY KEY REFERENCES pouzivatelia(id) ON DELETE CASCADE,
+  hodnota INTEGER NOT NULL,
+  najvyssia INTEGER NOT NULL,
+  partie INTEGER NOT NULL DEFAULT 0,
+  vyhry INTEGER NOT NULL DEFAULT 0,
+  prehry INTEGER NOT NULL DEFAULT 0,
+  remizy INTEGER NOT NULL DEFAULT 0
+);
+CREATE TABLE IF NOT EXISTS partie (
+  id INTEGER PRIMARY KEY,
+  kod TEXT NOT NULL,
+  zaciatok INTEGER NOT NULL,
+  koniec INTEGER NOT NULL,
+  vitaz INTEGER,
+  dovod TEXT NOT NULL,
+  kola INTEGER NOT NULL,
+  verzia_sady INTEGER,
+  -- 0 = vzdaná alebo kontumovaná; do povýšenia na hráča sa ráta len dohratá.
+  dohrata INTEGER NOT NULL DEFAULT 1
+);
+CREATE TABLE IF NOT EXISTS partie_hraci (
+  partia INTEGER NOT NULL REFERENCES partie(id) ON DELETE CASCADE,
+  miesto INTEGER NOT NULL,
+  pouzivatel INTEGER REFERENCES pouzivatelia(id) ON DELETE SET NULL,
+  vysledok TEXT NOT NULL,
+  body INTEGER,
+  frajerina_pred INTEGER NOT NULL,
+  frajerina_po INTEGER NOT NULL,
+  statistiky TEXT NOT NULL,
+  PRIMARY KEY (partia, miesto)
+);
+CREATE INDEX IF NOT EXISTS partie_hraci_pouzivatel ON partie_hraci(pouzivatel, partia);
+
+-- Spätná väzba hráčov: názory, komentáre a cigarety (obdoba „páči sa mi“).
+CREATE TABLE IF NOT EXISTS nazory (
+  id INTEGER PRIMARY KEY,
+  autor INTEGER NOT NULL REFERENCES pouzivatelia(id) ON DELETE CASCADE,
+  kategoria TEXT NOT NULL,
+  text TEXT NOT NULL,
+  stav TEXT NOT NULL DEFAULT 'nove',
+  vytvoreny INTEGER NOT NULL,
+  upraveny INTEGER
+);
+CREATE TABLE IF NOT EXISTS nazory_komentare (
+  id INTEGER PRIMARY KEY,
+  nazor INTEGER NOT NULL REFERENCES nazory(id) ON DELETE CASCADE,
+  autor INTEGER NOT NULL REFERENCES pouzivatelia(id) ON DELETE CASCADE,
+  text TEXT NOT NULL,
+  vytvoreny INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS nazory_komentare_nazor ON nazory_komentare(nazor);
+CREATE TABLE IF NOT EXISTS cigarety_nazorov (
+  nazor INTEGER NOT NULL REFERENCES nazory(id) ON DELETE CASCADE,
+  pouzivatel INTEGER NOT NULL REFERENCES pouzivatelia(id) ON DELETE CASCADE,
+  PRIMARY KEY (nazor, pouzivatel)
+);
+CREATE TABLE IF NOT EXISTS cigarety_komentarov (
+  komentar INTEGER NOT NULL REFERENCES nazory_komentare(id) ON DELETE CASCADE,
+  pouzivatel INTEGER NOT NULL REFERENCES pouzivatelia(id) ON DELETE CASCADE,
+  PRIMARY KEY (komentar, pouzivatel)
+);
 `;
 
 export function otvorDb(cesta: string): Db {
   const db = new DatabaseSync(cesta);
   db.exec("PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000;");
   db.exec(SCHEMA);
+  migruj(db);
   return db;
+}
+
+/** Úpravy databáz vytvorených staršou schémou. */
+function migruj(db: Db): void {
+  const stlpce = db.prepare("PRAGMA table_info(partie)").all() as { name: string }[];
+  if (!stlpce.some((c) => c.name === "dohrata")) {
+    db.exec("ALTER TABLE partie ADD COLUMN dohrata INTEGER NOT NULL DEFAULT 1");
+    // Staré partie: vzdanie a kontumáciu prezradí len text dôvodu.
+    db.exec("UPDATE partie SET dohrata = 0 WHERE dovod LIKE 'Partiu vzdáva%' OR dovod LIKE 'Kontumácia%'");
+  }
 }
 
 /** Transakcia — pri výnimke sa všetko vráti. */

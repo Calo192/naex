@@ -29,7 +29,7 @@ const SEKCIE: readonly { readonly href: string; readonly text: string; readonly 
   { href: "/admin/bodovacie", text: "Bodovacie karty", znak: "◫" },
   { href: "/admin/tlac", text: "Tlač", znak: "⎙" },
   { href: "/admin/import-export", text: "Import / export", znak: "⇅" },
-  { href: "/admin/pouzivatelia", text: "Používatelia", znak: "☺" },
+  { href: "/admin/pouzivatelia", text: "Hráči", znak: "☺" },
 ];
 
 function Obsah({ cesta }: { readonly cesta: string }) {

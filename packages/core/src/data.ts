@@ -8,22 +8,25 @@ import type {
   Action,
   CardDef,
   ElderDef,
-  Favour,
-  ScoringPos,
+  Podmienka,
+  ScorecardDef,
   SideDef,
   SideLayout,
   SlotIndex,
   Tag,
   Trigger,
-  Zone,
 } from "./types.ts";
-import { ALL_ACTIONS, ALL_FAVOURS } from "./types.ts";
+import { ALL_ACTIONS, ALL_PODMIENKY, priazenZKluca } from "./types.ts";
 import type { CardVariants } from "./variants.ts";
 import { cardVariants } from "./variants.ts";
 
 export interface GameData {
   readonly cards: ReadonlyMap<string, CardDef>;
   readonly elders: ReadonlyMap<string, ElderDef>;
+  /** Scorecardy, ktoré sa rozdávajú starším pri príprave (aspoň toľko ako starších). */
+  readonly scorecards: readonly ScorecardDef[];
+  /** Body za splnenú podmienku (zóna) alebo za kus (ostatné). */
+  readonly bodyPodmienok: Readonly<Record<Podmienka, number>>;
   /** Predpočítané rozloženia strán — počítať ich pri každom vyhodnotení je zbytočné. */
   readonly variants: ReadonlyMap<string, CardVariants>;
   /** Pomocné zoznamy — poradie podľa `index` v cards.json (stabilné). */
@@ -133,19 +136,58 @@ export function parseElders(json: unknown, cards: ReadonlyMap<string, CardDef>):
     const card = cards.get(id);
     if (card === undefined) fail(path, "nemá kartu v cards.json");
     if (!card.tags.includes("Starešina")) fail(path, "karta nemá tag Starešina");
-    const favour = asString(raw.favour, `${path}.favour`);
-    if (!(ALL_FAVOURS as readonly string[]).includes(favour)) fail(path, `neznáma priazeň „${favour}“`);
-    const scoring = asArray(raw.scoring, `${path}.scoring`).map((s, i): ScoringPos => {
-      if (!isRecord(s)) fail(`${path}.scoring[${i}]`, "očakávam objekt");
-      const zone = asNumber(s.zone, `${path}.scoring[${i}].zone`);
-      if (zone !== 1 && zone !== 2 && zone !== 3) fail(path, `zóna ${zone} mimo 1..3`);
-      return { zone: zone as Zone, points: asNumber(s.points, `${path}.scoring[${i}].points`) };
-    });
-    if (scoring.length !== 8) fail(path, `scoring má ${scoring.length} pozícií, treba 8`);
     if (elders.has(id)) fail(path, "duplicitné id");
-    elders.set(id, { id, favour: favour as Favour, scoring });
+    elders.set(id, { id });
   }
   return elders;
+}
+
+export interface ScorecardsData {
+  readonly scorecards: readonly ScorecardDef[];
+  readonly body: Readonly<Record<Podmienka, number>>;
+}
+
+export const NULOVE_BODY: Readonly<Record<Podmienka, number>> = Object.fromEntries(
+  ALL_PODMIENKY.map((p) => [p, 0]),
+) as Record<Podmienka, number>;
+
+function parsePodmienky(v: unknown, path: string): (Podmienka | null)[] {
+  const out = asArray(v, path).map((x, i): Podmienka | null => {
+    if (x === null) return null;
+    const p = asString(x, `${path}[${i}]`);
+    if (!(ALL_PODMIENKY as readonly string[]).includes(p)) fail(path, `neznáma podmienka „${p}“`);
+    return p as Podmienka;
+  });
+  if (out.length !== 4) fail(path, `má ${out.length} pozícií, treba 4`);
+  return out;
+}
+
+export function parseScorecards(json: unknown): ScorecardsData {
+  if (!isRecord(json)) fail("scorecards.json", "očakávam objekt");
+  if (!isRecord(json.body)) fail("scorecards.json.body", "očakávam objekt");
+  const rawBody = json.body;
+  const body = Object.fromEntries(
+    ALL_PODMIENKY.map((p) => [p, asNumber(rawBody[p], `scorecards.json.body.${p}`)]),
+  ) as Record<Podmienka, number>;
+  const ids = new Set<string>();
+  const scorecards = asArray(json.scorecards, "scorecards.json.scorecards").map((raw): ScorecardDef => {
+    if (!isRecord(raw)) fail("scorecards.json.scorecards[]", "očakávam objekt");
+    const id = asString(raw.id, "scorecard.id");
+    const path = `scorecard ${id}`;
+    if (ids.has(id)) fail(path, "duplicitné id");
+    ids.add(id);
+    const kluc = asString(raw.favour, `${path}.favour`);
+    const favour = priazenZKluca(kluc);
+    if (favour === null) fail(path, `neznáma priazeň „${kluc}“`);
+    return {
+      id,
+      nazov: asString(raw.nazov, `${path}.nazov`),
+      favour,
+      lava: parsePodmienky(raw.lava, `${path}.lava`),
+      prava: parsePodmienky(raw.prava, `${path}.prava`),
+    };
+  });
+  return { scorecards, body };
 }
 
 /**
@@ -155,7 +197,13 @@ export function parseElders(json: unknown, cards: ReadonlyMap<string, CardDef>):
 export function buildGameData(
   cards: ReadonlyMap<string, CardDef>,
   elders: ReadonlyMap<string, ElderDef>,
+  bodovanie: ScorecardsData = { scorecards: [], body: NULOVE_BODY },
 ): GameData {
+  // Každý starší musí dostať vlastný scorecard (testy so syntetickými dátami
+  // starších nemajú, a tak scorecardy nepotrebujú).
+  if (bodovanie.scorecards.length < elders.size) {
+    fail("scorecards.json", `${bodovanie.scorecards.length} scorecardov na ${elders.size} starších`);
+  }
   const variants = new Map<string, CardVariants>();
   // Kontrolné súčty generátora variantov — nesúlad znamená, že sa rozišiel
   // generátor s exportom KartyAI, a to má spadnúť hneď pri štarte.
@@ -180,6 +228,8 @@ export function buildGameData(
   return {
     cards,
     elders,
+    scorecards: bodovanie.scorecards,
+    bodyPodmienok: bodovanie.body,
     variants,
     lokality: byIndex.filter((c) => c.tags.includes("Lokalita")),
     nastroje: byIndex.filter((c) => c.tags.includes("Nástroj")),
@@ -187,10 +237,10 @@ export function buildGameData(
   };
 }
 
-export function loadGameData(cardsJson: unknown, eldersJson: unknown): GameData {
+export function loadGameData(cardsJson: unknown, eldersJson: unknown, scorecardsJson: unknown): GameData {
   const cards = parseCards(cardsJson);
   const elders = parseElders(eldersJson, cards);
-  return buildGameData(cards, elders);
+  return buildGameData(cards, elders, parseScorecards(scorecardsJson));
 }
 
 /** Definícia karty pre inštanciu — chýbajúca definícia je chyba dát, nie hry. */

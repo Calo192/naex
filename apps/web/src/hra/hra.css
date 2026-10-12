@@ -1,34 +1,81 @@
-/* Herná plocha a lobby. */
+/* Herná plocha a lobby.
+ *
+ * Farby hráčov sú rovnaké všade (doska, bitka, starší, ovládnuté lokality):
+ * ty = tyrkysová, súper = hrdzavá. Zdroje majú veľké čísla a pevné miesto. */
 
 .hra {
+  /* Ruka: šírka karty (= SIRKA_V_RUKE), jej výška pri pomere 54 × 80 mm,
+     koľko z nej je schované pod okrajom okna a výška pásu nad okrajom. */
+  --ruka-w: 120px;
+  --ruka-kh: calc(var(--ruka-w) * 80 / 54);
+  --ruka-skryte: calc(var(--ruka-kh) * 0.3);
+  --pokyn-h: 46px;
+  --ruka-h: calc(var(--ruka-kh) - var(--ruka-skryte) + 14px + var(--pokyn-h) + 10px);
+  --ja: #5cc0cf;
+  --ja-tmava: #1d3b40;
+  --su: #e0805f;
+  --su-tmava: #43261d;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  /* Pod pripnutou rukou sa dá doscrollovať až na koniec stránky. */
+  padding-bottom: var(--ruka-h);
 }
 
-.hra > header {
+/* ---- hlavička: kód, priebeh kola, spojenie ---- */
+
+.hra-hlava {
   display: flex;
   align-items: center;
-  gap: 8px 20px;
+  gap: 10px 18px;
   flex-wrap: wrap;
   padding: 10px 14px;
-  border-radius: 12px;
+  border-radius: 14px;
   background: var(--plocha-2);
   border: 1px solid var(--okraj);
-  font-size: 0.92rem;
 }
 
-.hra > header .kod {
+.hra-hlava .kod {
   font: 800 1.05rem/1 var(--nadpis);
   letter-spacing: 0.22em;
   color: var(--akcent);
-  padding: 6px 10px;
+  padding: 7px 10px;
   border-radius: 8px;
   background: #2d2312;
 }
 
-.na-tahu {
+/* Tlačidlá vpravo: prvé z nich odtlačí zvyšok hlavičky doľava. */
+.hra-hlava > button:first-of-type {
+  margin-left: auto;
+}
+
+.hra-hlava .opustit.potvrdit {
+  background: var(--cervena);
+  border-color: #e7735e;
+  color: #fff;
+}
+
+.doska-frajerina {
+  margin-left: 8px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: rgba(233, 173, 69, 0.14);
+  color: var(--akcent);
+  font: 600 0.78rem/1.4 var(--pismo);
+  font-variant-numeric: tabular-nums;
+  vertical-align: 2px;
+}
+
+.zmena-frajeriny.plus strong {
   color: var(--zelena);
+}
+
+.zmena-frajeriny.minus strong {
+  color: var(--cervena);
+}
+
+.spojenie {
+  font-size: 0.85rem;
 }
 
 .online {
@@ -39,8 +86,41 @@
   color: var(--cervena);
 }
 
-.hra > header .opustit {
-  margin-left: auto;
+.priebeh-kola {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.priebeh-kola li {
+  position: relative;
+  padding: 6px 12px 6px 18px;
+  font-size: 0.85rem;
+  color: var(--slaby);
+  background: var(--plocha);
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%, 8px 50%);
+}
+
+.priebeh-kola li.priebeh-kolo {
+  padding-left: 12px;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%);
+  color: var(--text);
+  font-weight: 700;
+  background: var(--plocha-3);
+}
+
+.priebeh-kola li.hotovy {
+  color: var(--tlmeny);
+}
+
+.priebeh-kola li.aktualny {
+  color: #1b1408;
+  font-weight: 700;
+  background: var(--akcent);
 }
 
 .hra > .chyba {
@@ -51,11 +131,16 @@
   color: #ffc2b4;
 }
 
+/* Hra na celú šírku okna: hore partia ako stredobod, pod ňou starší.
+   Šenok, lokality a log sú vo vrstvách (pás pokynov nad rukou). */
+.obsah:has(> .hra) {
+  max-width: none;
+}
+
 .plocha {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 340px;
+  display: flex;
+  flex-direction: column;
   gap: 14px;
-  align-items: start;
 }
 
 .stred {
@@ -65,29 +150,31 @@
   min-width: 0;
 }
 
-.plocha > aside {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  position: sticky;
-  top: 80px;
-  max-height: calc(100vh - 96px);
-  overflow-y: auto;
-}
-
-.plocha > aside section {
+.plocha > section {
   padding: 12px;
   border-radius: 12px;
   background: var(--plocha);
   border: 1px solid var(--okraj);
 }
 
-.plocha > aside h3 {
-  font: 600 0.82rem/1.3 var(--pismo);
-  letter-spacing: 0.08em;
+.plocha > section h3 {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font: 700 0.9rem/1.3 var(--pismo);
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--tlmeny);
+  color: var(--text);
   margin-bottom: 10px;
+}
+
+.h3-pozn {
+  font-weight: 400;
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--slaby);
 }
 
 .popis {
@@ -101,21 +188,583 @@
   padding: 24px 12px;
 }
 
+.dobry {
+  color: var(--zelena);
+}
+
+.zly {
+  color: var(--cervena);
+}
+
+.tlmeny {
+  color: var(--slaby);
+}
+
+/* ---- doska hráča: zdroje veľkými číslami ---- */
+
+/* Obe dosky v jednom rade: tvoja vľavo, súperova vpravo a zrkadlovo —
+   avatar pri vonkajšom okraji, zdroje smerom k stredu stola. */
+.dosky {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+}
+
+.doska {
+  --farba: var(--ja);
+  --farba-tmava: var(--ja-tmava);
+  display: grid;
+  /* Meno a značky majú pevný strop — radšej sa zalomia značky, než by sa
+     zdroje rozpadli do dvoch radov a doska narástla do výšky. */
+  grid-template-columns: minmax(150px, 230px) minmax(0, 1fr);
+  grid-template-areas: "hrac zdroje" "oblast oblast";
+  align-items: center;
+  gap: 10px 16px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: linear-gradient(90deg, var(--farba-tmava), var(--plocha) 45%);
+  border: 1px solid color-mix(in srgb, var(--farba) 35%, var(--okraj));
+  border-left: 5px solid var(--farba);
+}
+
+.doska.superova {
+  --farba: var(--su);
+  --farba-tmava: var(--su-tmava);
+  grid-template-columns: minmax(0, 1fr) minmax(150px, 230px);
+  grid-template-areas: "zdroje hrac" "oblast oblast";
+  background: linear-gradient(270deg, var(--farba-tmava), var(--plocha) 45%);
+  border-left-width: 1px;
+  border-right: 5px solid var(--farba);
+}
+
+.doska.superova .doska-hrac {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+
+.doska.superova .doska-znacky {
+  justify-content: flex-end;
+}
+
+.doska.superova .doska-zdroje {
+  justify-content: flex-start;
+}
+
+.doska.superova .doska-oblast {
+  justify-content: flex-end;
+}
+
+.doska.na-tahu {
+  box-shadow:
+    0 0 0 1px var(--farba),
+    0 0 26px color-mix(in srgb, var(--farba) 30%, transparent);
+}
+
+.doska-hrac {
+  grid-area: hrac;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.doska-meno {
+  display: block;
+  font: 700 1.15rem/1.2 var(--nadpis);
+  color: var(--text);
+}
+
+.doska-znacky {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 5px;
+}
+
+.znacka {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  background: var(--plocha-3);
+  color: var(--tlmeny);
+}
+
+.znacka.utocnik {
+  background: #4a2219;
+  color: #ffb8a3;
+}
+
+.znacka.obranca {
+  background: #1f3247;
+  color: #a9cdf2;
+}
+
+.znacka.na-tahu {
+  background: var(--farba, var(--akcent));
+  color: #0e1414;
+}
+
+.znacka.dobry {
+  background: #1f3520;
+  color: var(--zelena);
+}
+
+.znacka.zly {
+  background: #3e1d17;
+  color: #ff9d88;
+}
+
+.doska-zdroje {
+  grid-area: zdroje;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.zdroj {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 84px;
+  padding: 6px 10px 7px;
+  cursor: help;
+  outline: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.zdroj-nazov {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tlmeny);
+}
+
+.zdroj-hodnota {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+}
+
+.zdroj-pod {
+  font-size: 0.74rem;
+  color: var(--slaby);
+}
+
+.velke-cislo {
+  font: 800 1.9rem/1 var(--nadpis);
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.velke-cislo small {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--slaby);
+  margin-left: 1px;
+}
+
+.zdroj.varovanie {
+  border-color: #8a3a2b;
+  background: rgba(120, 30, 20, 0.28);
+}
+
+.zdroj.varovanie .velke-cislo {
+  color: #ff9d88;
+}
+
+.poldeci-rad {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.ikona-poldeci {
+  width: 17px;
+  height: 23px;
+  overflow: visible;
+}
+
+.ikona-poldeci .pohar {
+  fill: rgba(255, 255, 255, 0.07);
+  stroke: #e6dccb;
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+}
+
+.ikona-poldeci .palenka {
+  fill: #e9ad45;
+}
+
+.ikona-poldeci .odlesk {
+  stroke: rgba(255, 255, 255, 0.5);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+}
+
+.ikona-poldeci.vypity .pohar {
+  stroke: #7d7062;
+  stroke-dasharray: 2.5 2;
+}
+
+.ikona-poldeci.vypity .odlesk {
+  display: none;
+}
+
+.ikona-cigareta {
+  width: 40px;
+  height: 11px;
+}
+
+.ikona-cigareta .tabak {
+  fill: #f1ece2;
+}
+
+.ikona-cigareta .filter {
+  fill: #d58a3e;
+}
+
+.ikona-cigareta .ohen {
+  fill: #ff5a2b;
+  filter: drop-shadow(0 0 3px #ff7b3b);
+}
+
+.pruh {
+  display: flex;
+  gap: 2px;
+  margin-top: 3px;
+}
+
+.pruh span {
+  flex: 1;
+  min-width: 8px;
+  height: 6px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.pruh span.plny {
+  background: #d9a03f;
+}
+
+.pruh.blizko span.plny {
+  background: #e0573f;
+}
+
+.karty-pocty {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.8rem;
+  line-height: 1.25;
+  color: var(--tlmeny);
+}
+
+.karty-pocty b {
+  display: inline-block;
+  min-width: 1.6em;
+  color: var(--text);
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.zdroj:hover,
+.zdroj:focus-visible {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: color-mix(in srgb, var(--farba) 45%, transparent);
+}
+
+.doska-znacky .znacka {
+  cursor: help;
+}
+
+.doska-oblast {
+  grid-area: oblast;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+}
+
+.oblast-skupina,
+.ovladnute {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+}
+
+.ovladnute {
+  margin-top: 10px;
+}
+
+.oblast-nazov {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--slaby);
+  margin-right: 2px;
+}
+
+.cip {
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  background: var(--plocha-3);
+  border: 1px solid var(--okraj-svetly);
+  cursor: help;
+}
+
+.cip.kliatba {
+  background: #3b1c26;
+  border-color: #7b3a50;
+  color: #ffc4d4;
+}
+
+.cip.nastroj {
+  background: #1d2f3b;
+  border-color: #3b6079;
+  color: #c3e2f7;
+}
+
+.cip.moja {
+  border-color: var(--ja);
+  color: var(--ja);
+  background: var(--ja-tmava);
+}
+
+.cip.superova {
+  border-color: var(--su);
+  color: var(--su);
+  background: var(--su-tmava);
+}
+
+/* ---- bitka: tuhé poškodenie oboch strán a kto vyhráva ---- */
+
+.bitka-panel {
+  display: grid;
+  grid-template-columns: 1fr minmax(180px, auto) 1fr;
+  align-items: stretch;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--okraj-svetly);
+  background: var(--plocha);
+}
+
+.bitka-strana {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 18px;
+}
+
+.bitka-strana.vlavo {
+  align-items: flex-start;
+  background: linear-gradient(90deg, var(--ja-tmava), transparent);
+  border-left: 5px solid var(--ja);
+}
+
+.bitka-strana.vpravo {
+  align-items: flex-end;
+  text-align: right;
+  background: linear-gradient(270deg, var(--su-tmava), transparent);
+  border-right: 5px solid var(--su);
+}
+
+.bitka-meno {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tlmeny);
+}
+
+.bitka-tuhe {
+  font: 800 3.2rem/1 var(--nadpis);
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+.bitka-strana.vitaz .bitka-tuhe {
+  color: var(--akcent);
+  text-shadow: 0 0 22px rgba(233, 173, 69, 0.45);
+}
+
+.bitka-popis {
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--slaby);
+}
+
+.bitka-doplnok {
+  font-size: 0.9rem;
+  color: var(--tlmeny);
+}
+
+.bitka-rozpis {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin-top: 4px;
+  font-size: 0.85rem;
+}
+
+.bitka-rozpis > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.bitka-ikona {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+}
+
+.bitka-ikona .ikona-akcie {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 5px;
+}
+
+.bitka-stred {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 12px 14px;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.bitka-nadpis {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--akcent);
+}
+
+.bitka-verdikt {
+  font: 800 1.3rem/1.2 var(--nadpis);
+}
+
+.vyhravam .bitka-verdikt {
+  color: var(--zelena);
+}
+
+.prehravam .bitka-verdikt {
+  color: #ff8f78;
+}
+
+.bitka-pozn {
+  font-size: 0.78rem;
+  color: var(--tlmeny);
+}
+
+.bitka-pozn.tlmene {
+  font-size: 0.7rem;
+  color: var(--slaby);
+}
+
 /* ---- línia: tvoja partia ← lokalita → súperova; karty sa dotýkajú stranami ---- */
+
+/* Stôl je stredobod hry a jeho farba hovorí, čí je ťah:
+   zelený = hráš ty, sivý = čakáš na súpera. */
+.linia-obal {
+  --stol: #262626;
+  --stol-okraj: #444;
+  --stol-svetlo: rgba(255, 255, 255, 0.05);
+  --stol-stav: #9a9a9a;
+  position: relative;
+  padding-top: 14px;
+}
+
+.linia-obal.moj-tah {
+  --stol: #173320;
+  --stol-okraj: #4fae66;
+  --stol-svetlo: rgba(120, 230, 150, 0.14);
+  --stol-stav: #7fe39a;
+}
+
+.linia-obal.koniec {
+  --stol: #2a2316;
+  --stol-okraj: var(--akcent);
+  --stol-svetlo: rgba(233, 173, 69, 0.1);
+  --stol-stav: var(--akcent);
+}
+
+.linia-stav {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 1;
+  transform: translateX(-50%);
+  padding: 5px 16px;
+  border-radius: 99px;
+  font: 800 0.85rem/1.2 var(--pismo);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--stol-stav);
+  background: var(--stol);
+  border: 1px solid var(--stol-okraj);
+  transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+}
 
 .linia {
   display: flex;
   align-items: stretch;
   gap: 0;
   overflow-x: auto;
-  padding: 10px 10px 14px;
-  border-radius: 16px;
+  padding: 22px 14px 18px;
+  border-radius: 18px;
   background:
-    radial-gradient(ellipse at center, rgba(233, 173, 69, 0.08), transparent 65%),
-    #1a2219;
-  border: 1px solid #2f4231;
-  box-shadow: inset 0 2px 20px rgba(0, 0, 0, 0.45);
+    radial-gradient(ellipse at center, var(--stol-svetlo), transparent 70%),
+    var(--stol);
+  border: 2px solid var(--stol-okraj);
+  box-shadow: inset 0 2px 24px rgba(0, 0, 0, 0.45);
   scroll-snap-type: x proximity;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.moj-tah .linia {
+  box-shadow:
+    inset 0 2px 24px rgba(0, 0, 0, 0.45),
+    0 0 30px color-mix(in srgb, var(--stol-okraj) 30%, transparent);
+}
+
+.v-linii {
+  display: flex;
+  flex: none;
+}
+
+/* Lupa (Lupa.tsx) — portál do <body>, nad rukou, pod tooltipom a duchom. */
+.lupa {
+  position: fixed;
+  z-index: 900;
+  filter: drop-shadow(0 24px 50px rgba(0, 0, 0, 0.7));
+  animation: lupa-in 0.14s ease-out;
+}
+
+.lupa > .kl {
+  box-shadow: 0 0 0 2px var(--akcent, #e9ad45);
+}
+
+@keyframes lupa-in {
+  from {
+    transform: scale(0.5);
+    opacity: 0.4;
+  }
 }
 
 .linia-skupina {
@@ -158,8 +807,8 @@
 .linia .prazdna {
   display: grid;
   place-items: center;
-  width: 132px;
-  min-height: 195px;
+  width: 198px;
+  min-height: calc(198px * 80 / 54);
   padding: 12px;
   border: 2px dashed rgba(255, 255, 255, 0.12);
   border-radius: 10px;
@@ -173,33 +822,160 @@
   font-style: normal !important;
 }
 
-/* ---- staré riadky partií (ponechané pre úzke rozloženie) ---- */
 
-.partia,
-.lokalita-riadok {
-  border-radius: 14px;
-  padding: 10px 12px 14px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.15)),
-    #1d2a1f;
-  border: 1px solid #2f4231;
-  box-shadow: inset 0 2px 16px rgba(0, 0, 0, 0.4);
+/* ---- ťahanie kariet a návrh ťahu ---- */
+
+.tahatelna {
+  position: relative;
+  flex: none;
 }
 
-.partia.superova {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.15)),
-    #2a1f22;
-  border-color: #47323a;
+.tahatelna.chytitelna {
+  cursor: grab;
+  /* Dotyk: prst kartu ťahá, neposúva stránku. */
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-.partia-popis {
-  display: block;
+body.tahanie-aktivne,
+body.tahanie-aktivne * {
+  cursor: grabbing !important;
+  user-select: none;
+}
+
+.tahatelna.tahana {
+  opacity: 0.3;
+}
+
+.tahatelna.navrh > .kl {
+  outline: 2px dashed var(--akcent);
+  outline-offset: 3px;
+  box-shadow: 0 0 22px rgba(233, 173, 69, 0.35);
+}
+
+.tahatelna.nahraditelna > .kl {
+  outline: 2px dashed var(--zelena);
+  outline-offset: 3px;
+}
+
+.tahatelna.nahraditelna.nad-cielom > .kl {
+  outline-style: solid;
+  filter: brightness(0.55);
+}
+
+.nahradit-stitok {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(20, 28, 20, 0.92);
+  border: 1px solid var(--zelena);
+  color: var(--zelena);
+  font-size: 0.8rem;
+  font-weight: 600;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.ciel-miesto {
+  flex: none;
+  display: grid;
+  place-items: center;
+  padding: 10px;
+  border: 2px dashed color-mix(in srgb, var(--zelena) 65%, transparent);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--zelena) 8%, transparent);
+  color: var(--zelena);
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+.ciel-miesto.nad-cielom {
+  border-style: solid;
+  background: color-mix(in srgb, var(--zelena) 24%, transparent);
+}
+
+.ciel-zona {
+  outline: 2px dashed color-mix(in srgb, var(--zelena) 65%, transparent);
+  outline-offset: 2px;
+}
+
+.ciel-zona.nad-cielom {
+  outline-style: solid;
+  background: color-mix(in srgb, var(--zelena) 10%, var(--plocha));
+}
+
+.tahanie-duch {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  pointer-events: none;
+  filter: drop-shadow(0 18px 26px rgba(0, 0, 0, 0.55));
+}
+
+.tahanie-duch > .kl {
+  transform: rotate(-3deg) scale(1.04);
+  /* Pod duchom musí byť vidno zvýraznené miesto a štítok „nahradiť". */
+  opacity: 0.85;
+}
+
+.linia-skupina.lokalita {
+  position: relative;
+}
+
+.otocit-tip {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -14px;
+  text-align: center;
+  font-size: 0.74rem;
+  color: var(--akcent);
+}
+
+.odkladanie {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.odkladanie-zona {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--plocha);
+  border: 1px solid var(--okraj);
+}
+
+.odkladanie-zona .popis {
   font-size: 0.78rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+
+
+.partia-popis {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--tlmeny);
   margin-bottom: 8px;
+}
+
+.linia-skupina.moja .partia-popis {
+  color: var(--ja);
+}
+
+.linia-skupina.superova .partia-popis {
+  color: var(--su);
 }
 
 .partia-rad {
@@ -211,171 +987,498 @@
   padding: 6px 4px 4px;
 }
 
-.lokalita-riadok {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  background:
-    radial-gradient(ellipse at center, rgba(233, 173, 69, 0.12), transparent 70%),
-    #241d14;
-  border-color: #4a3a22;
-  min-height: 80px;
-}
+/* ---- ruka ----
+ * Pripnutá k spodku okna, centrovaná, vždy v JEDNOM rade. Obaly kariet sa
+ * smú zúžiť (flex-shrink + min-width: 0) a karta z obalu vyčnieva — pri
+ * veľa kartách sa tak prekrývajú ako vejár, namiesto zalomenia. Spodok
+ * kariet je schovaný pod okrajom okna; karta pod myšou sa vysunie a zväčší
+ * na 200 % a susedia jej uhnú do strán, aby sa dalo prejsť myšou na jej
+ * akcie aj na vedľajšiu kartu. */
 
 .ruka {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 25;
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: flex-start;
-  padding: 14px 12px;
-  border-radius: 14px;
-  background: var(--plocha);
-  border: 1px solid var(--okraj);
+  flex-direction: column;
+  height: var(--ruka-h);
+  /* Bočný okraj = o koľko zväčšená krajná karta presahuje svoje miesto. */
+  padding: 14px calc(var(--ruka-w) / 2 + 16px) 0;
+  /* Mimo kariet klik prepadne na stránku pod rukou. */
+  pointer-events: none;
+  background: linear-gradient(to top, rgba(14, 11, 8, 0.94), rgba(14, 11, 8, 0.6) 70%, transparent);
 }
 
-.ruka > .popis {
-  width: 100%;
-  font-size: 0.78rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+.ruka.ciel-zona {
+  pointer-events: auto;
+  outline: none;
+  background: linear-gradient(to top, color-mix(in srgb, var(--zelena) 28%, rgba(14, 11, 8, 0.94)), transparent);
+  box-shadow: inset 0 2px 0 color-mix(in srgb, var(--zelena) 55%, transparent);
 }
 
-.ruka .kl {
-  transition: transform 0.18s ease;
+.ruka.ciel-zona.nad-cielom {
+  background: linear-gradient(to top, color-mix(in srgb, var(--zelena) 50%, rgba(14, 11, 8, 0.94)), transparent);
 }
 
-.ruka .kl:hover {
-  transform: translateY(-10px) scale(1.06);
-  z-index: 3;
-}
-
-.akcie {
-  position: sticky;
+.ruka-nadpis {
+  position: absolute;
+  left: 12px;
   bottom: 12px;
-  z-index: 20;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   align-items: center;
-  gap: 8px 10px;
-  padding: 12px 14px;
-  border-radius: 14px;
-  background: rgba(40, 33, 26, 0.96);
-  border: 1px solid var(--akcent-tmavy);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(6px);
+  font: 700 0.7rem/1.2 var(--pismo);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--slaby);
 }
 
-.akcie.cakanie {
-  border-color: var(--okraj);
+.ruka-nadpis b {
+  font: 800 1.5rem/1.1 var(--nadpis);
+  letter-spacing: 0;
+  color: var(--text);
+}
+
+.ruka-rad {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 8px;
+  flex: 1;
+  min-height: 0;
+}
+
+.ruka-rad > .tahatelna {
+  flex: 0 1 auto;
+  min-width: 0;
+  pointer-events: auto;
+  transition: transform 0.15s ease;
+}
+
+/* Posledná karta je vidno celá — prekrýva sa len zľava. */
+.ruka-rad > .tahatelna:last-child {
+  flex-shrink: 0;
+}
+
+.ruka-rad .kl {
+  transform-origin: 50% 100%;
+}
+
+/* Mostík pod vysunutou kartou — myš pri spodnom okraji okna ju nestratí. */
+.ruka-rad .kl::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 40px;
+}
+
+body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:hover {
+  z-index: 10;
+}
+
+body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:hover > .kl {
+  transform: translateY(calc(-1 * var(--ruka-skryte) - 6px)) scale(2);
+  box-shadow:
+    0 0 0 1.5px var(--akcent),
+    0 24px 50px rgba(0, 0, 0, 0.7);
+}
+
+/* Susedia uhnú o polovicu prírastku šírky zväčšenej karty. */
+body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:has(~ .tahatelna:hover) {
+  transform: translateX(calc(var(--ruka-w) / -2 - 6px));
+}
+
+body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:hover ~ .tahatelna {
+  transform: translateX(calc(var(--ruka-w) / 2 + 6px));
+}
+
+/* ---- pás pokynov nad rukou: vrstvy · čo robiť · tlačidlá ťahu ----
+ * Súčasť ruky, nie stola — je vždy po ruke. Akcent je rovnaký ako stôl:
+ * zelený, keď si na ťahu. */
+
+.pokyn {
+  --pokyn-akcent: #6b6b6b;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  /* Šírka podľa obsahu, ale nie menej než min-width — medzi fázami neskáče. */
+  align-self: center;
+  min-width: min(820px, 100%);
+  max-width: min(1280px, 100%);
+  min-height: 46px;
+  margin-bottom: 10px;
+  padding: 0 6px 0 6px;
+  border-radius: 12px;
+  background: rgba(24, 20, 16, 0.92);
+  border: 1px solid var(--okraj);
+  border-left: 3px solid var(--pokyn-akcent);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
+  pointer-events: auto;
+  transition: border-color 0.3s ease;
+}
+
+.pokyn.moj-tah {
+  --pokyn-akcent: #4fae66;
+}
+
+.pokyn.koniec {
+  --pokyn-akcent: var(--akcent);
+}
+
+.pokyn button {
+  padding: 0.38rem 0.8rem;
+  font-size: 0.88rem;
+  border-radius: 8px;
+}
+
+.pokyn-vrstvy {
+  display: flex;
+  gap: 2px;
+  padding-right: 10px;
+  border-right: 1px solid var(--okraj);
+}
+
+.pokyn button.pokyn-vrstva {
+  background: transparent;
+  border-color: transparent;
   color: var(--tlmeny);
 }
 
-.akcie.koniec {
-  border-color: var(--akcent);
-  font-size: 1.05rem;
-}
-
-.volba-lokality {
-  display: inline-flex;
-  gap: 6px;
-  align-items: center;
-  padding: 4px 4px 4px 10px;
-  border-radius: 10px;
+.pokyn button.pokyn-vrstva:hover:not(:disabled) {
   background: var(--plocha-3);
+  color: var(--text);
 }
 
-/* ---- stav hráča ---- */
+.pokyn button.pokyn-vrstva.otvorena {
+  background: var(--plocha-3);
+  border-color: var(--okraj-svetly);
+  color: var(--text);
+}
 
-.stav-hraca {
+/* Tu treba siahnuť (Draft, Liečba, výber lokality). */
+.pokyn button.pokyn-vrstva.treba {
+  color: var(--akcent);
+  animation: treba 1.6s ease-in-out infinite;
+}
+
+@keyframes treba {
+  50% {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--akcent) 35%, transparent);
+  }
+}
+
+/* Karta zo šenku / lokalita sa vracia pustením na tlačidlo. */
+.pokyn button.pokyn-vrstva.ciel-zona {
+  outline: 2px dashed color-mix(in srgb, var(--zelena) 70%, transparent);
+  outline-offset: 1px;
+  color: var(--text);
+}
+
+.pokyn button.pokyn-vrstva.nad-cielom {
+  outline-style: solid;
+  background: color-mix(in srgb, var(--zelena) 25%, transparent);
+}
+
+.pocet {
+  min-width: 1.5em;
+  padding: 0 0.4em;
+  border-radius: 99px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  line-height: 1.5;
+  text-align: center;
+  background: var(--plocha);
+  color: var(--slaby);
+}
+
+.pocet.nove {
+  background: var(--akcent);
+  color: #2b1b03;
+}
+
+.pokyn-text {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  min-width: 0;
+  font-size: 0.92rem;
+  color: var(--tlmeny);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.pokyn-text > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pokyn-text strong {
+  color: var(--text);
+}
+
+.pokyn-nadpis {
+  flex: none;
+  font: 800 0.8rem/1.2 var(--pismo);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--pokyn-akcent) !important;
+}
+
+.pokyn-nadpis small {
+  margin-left: 4px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--slaby);
+}
+
+.pokyn-tlacidla {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cena {
+  font-size: 0.78rem;
+  color: var(--slaby);
+}
+
+button:disabled .cena {
+  color: inherit;
+}
+
+/* ---- vrstva: šenok, lokality, log cez celú obrazovku ----
+ * Pod rukou (ruka s pásom ostáva navrchu), nad stolom. */
+
+.vrstva {
+  position: fixed;
+  inset: 0;
+  z-index: 22;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 72px 24px calc(var(--ruka-h) + 16px);
+  background: rgba(10, 8, 6, 0.72);
+  backdrop-filter: blur(4px);
+  animation: vrstva-in 0.16s ease-out;
+  transition: opacity 0.15s ease;
+}
+
+/* Počas ťahania karty zo šenku či lokalít musí byť vidno stôl pod ňou. */
+.vrstva.skryta {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes vrstva-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.vrstva-panel {
+  display: flex;
+  flex-direction: column;
+  width: min(1180px, 100%);
+  max-height: 100%;
+  border-radius: 16px;
+  background: rgba(30, 25, 20, 0.88);
+  border: 1px solid var(--okraj-svetly);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+}
+
+.vrstva-hlava {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 14px 14px 12px 20px;
+  border-bottom: 1px solid var(--okraj);
+}
+
+.vrstva-hlava h2 {
+  margin: 0;
+  font: 800 1rem/1.2 var(--pismo);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.vrstva-pozn {
+  font-size: 0.82rem;
+  color: var(--slaby);
+}
+
+.vrstva-hlava button.vrstva-zavriet {
+  margin-left: auto;
+  padding: 0.3rem 0.6rem;
+  background: transparent;
+  border-color: transparent;
+  color: var(--tlmeny);
+}
+
+.vrstva-obsah {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px 20px 20px;
+  overflow-y: auto;
+}
+
+.vrstva-karty {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 6px 16px;
-  padding: 8px 12px;
-  border-radius: 12px;
-  background: var(--plocha);
-  border: 1px solid var(--okraj);
+  gap: 14px;
+}
+
+.s-lupou {
+  display: flex;
+  flex: none;
+}
+
+.lupa.chytitelna {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.vrstva .log {
+  max-height: none;
   font-size: 0.9rem;
+  line-height: 1.6;
 }
 
-.stav-hraca.na-rade {
-  border-color: var(--akcent-tmavy);
-  box-shadow: 0 0 0 1px rgba(233, 173, 69, 0.25);
+.tlacidlo-naex {
+  font: 800 1rem/1.2 var(--nadpis);
+  letter-spacing: 0.04em;
+  background: #7a2a1c;
+  border-color: #b7462f;
+  color: #ffe4c7;
 }
 
-.stav-hraca-meno {
-  display: inline-flex;
+.tlacidlo-naex:hover:not(:disabled) {
+  background: #943521;
+}
+
+.cakanie-text {
+  color: var(--tlmeny);
+}
+
+.bodky::after {
+  content: "…";
+  display: inline-block;
+  width: 1.2em;
+  animation: bodky 1.4s steps(4) infinite;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+
+@keyframes bodky {
+  from {
+    width: 0;
+  }
+  to {
+    width: 1.2em;
+  }
+}
+
+/* ---- starší na scorecardoch (Scorecard.tsx) ----
+ * Pre oboch hráčov rovnako, nohami nadol. */
+
+/* Celá šírka riadku; šírku jedného scorecardu ráta HernaPlocha (ResizeObserver). */
+.scorecardy {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.scorecard-obal {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 8px;
-  margin-right: 6px;
+  gap: 6px;
 }
 
-/* ---- starší ---- */
-
-.starsi {
-  padding: 8px 10px;
-  border-radius: 10px;
-  margin-bottom: 6px;
-  background: var(--plocha-2);
-  border: 1px solid transparent;
+.scorecard {
+  position: relative;
+  flex: none;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+  transition: box-shadow 0.15s ease;
 }
 
-.starsi.klikatelny {
+.scorecard > .bodovacia-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.scorecard.klikatelny {
   cursor: pointer;
-  border-color: var(--akcent-tmavy);
+  box-shadow:
+    0 0 0 2px var(--akcent),
+    0 0 18px rgba(233, 173, 69, 0.35);
 }
 
-.starsi.klikatelny:hover {
-  background: var(--plocha-3);
+.scorecard-karta {
+  position: absolute;
+  display: flex;
 }
 
-.starsi .meno {
-  font-size: 0.86rem;
-  margin-bottom: 6px;
+.scorecard-slot {
+  position: absolute;
+  cursor: help;
 }
 
-.stupnica {
-  display: grid;
-  grid-template-columns: repeat(9, 1fr);
-  gap: 3px;
+.lupa > .scorecard {
+  box-shadow: 0 0 0 2px var(--akcent, #e9ad45);
 }
 
-.stupnica .pozicia {
-  height: 16px;
+.scorecard-stav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  gap: 2px 8px;
+  max-width: 100%;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.scorecard-stav strong {
+  font-size: 0.88rem;
+}
+
+.scorecard-priazen {
+  color: var(--slaby);
+}
+
+.starsi-akcia {
+  font-weight: 700;
+  color: var(--akcent);
+}
+
+.ikona-podmienky {
+  display: block;
+  width: 100%;
+  height: 100%;
   border-radius: 4px;
+}
+
+.ikona-podmienky-text {
   display: grid;
   place-items: center;
-  font-size: 0.7rem;
-  color: #000;
+  width: 100%;
+  height: 100%;
+  font-weight: 800;
 }
-
-.stupnica .siva {
-  background: #6f6f6f;
-}
-
-.stupnica .zlta {
-  background: #d8bf45;
-}
-
-.stupnica .oranzova {
-  background: #df8536;
-}
-
-.stupnica .cervena {
-  background: #c84636;
-}
-
-.stupnica .marker {
-  outline: 2px solid #fff;
-}
-
-/* ---- šenok a log ---- */
-
-.senok {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
+/* ---- log (vo vrstve) ---- */
 
 .log {
   font-size: 0.8rem;
@@ -391,14 +1494,31 @@
   color: #ffd97a;
 }
 
-@media (max-width: 1100px) {
-  .plocha {
+@media (max-width: 1250px) {
+  .dosky {
     grid-template-columns: 1fr;
   }
+}
 
-  .plocha > aside {
-    position: static;
-    max-height: none;
+@media (max-width: 760px) {
+  .doska,
+  .doska.superova {
+    grid-template-columns: 1fr;
+    grid-template-areas: "hrac" "zdroje" "oblast";
+  }
+
+  .doska-zdroje,
+  .doska.superova .doska-zdroje {
+    justify-content: flex-start;
+  }
+
+  .bitka-panel {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .bitka-stred {
+    grid-column: 1 / -1;
+    grid-row: 1;
   }
 }
 
@@ -501,4 +1621,497 @@
   .lobby {
     grid-template-columns: 1fr;
   }
+}
+
+/* ---- lobby: dĺžka hry -------------------------------------------------------- */
+
+.dlzka-hry {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 0 14px;
+}
+
+.dlzka-volba,
+button.dlzka-volba {
+  flex-direction: column;
+  gap: 2px;
+  padding: 0.6rem 0.5rem;
+}
+
+.dlzka-volba span {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--tlmeny);
+}
+
+.dlzka-volba.aktivna,
+button.dlzka-volba.aktivna {
+  border-color: var(--akcent);
+  background: #3b2a10;
+  color: var(--akcent);
+}
+
+/* ---- starší: priazeň (♥, počas hry) vs. strach a body (★, koniec hry) ---- */
+
+.starsi-riadok {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* V zmenšenom rade sa text skráti — celý je v tooltipe. */
+  padding: 0 6px;
+  border-radius: 999px;
+  border: 1px solid var(--okraj);
+  color: var(--tlmeny);
+  white-space: nowrap;
+  cursor: help;
+}
+
+.starsi-riadok.priazen.moja {
+  border-color: color-mix(in srgb, var(--ja) 55%, transparent);
+  color: var(--ja);
+}
+
+.starsi-riadok.priazen.superova {
+  border-color: color-mix(in srgb, var(--su) 55%, transparent);
+  color: var(--su);
+}
+
+.starsi-riadok.strach.moja {
+  background: color-mix(in srgb, var(--ja) 22%, transparent);
+  border-color: var(--ja);
+  color: var(--text);
+  font-weight: 700;
+}
+
+.starsi-riadok.strach.superova {
+  background: color-mix(in srgb, var(--su) 22%, transparent);
+  border-color: var(--su);
+  color: var(--text);
+  font-weight: 700;
+}
+
+.body-teraz {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 400;
+  font-size: 0.78rem;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--tlmeny);
+}
+
+.body-teraz b.moje {
+  color: var(--ja);
+}
+
+.body-teraz b.superove {
+  color: var(--su);
+}
+
+.ako-bodovanie {
+  display: grid;
+  gap: 6px;
+  margin: -2px 0 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.22);
+  font-size: 0.85rem;
+  color: var(--tlmeny);
+}
+
+.ako-bodovanie p {
+  margin: 0;
+}
+
+.ako-bodovanie b {
+  color: var(--text);
+}
+
+.znacka.body {
+  background: color-mix(in srgb, var(--akcent) 18%, transparent);
+  border-color: color-mix(in srgb, var(--akcent) 55%, transparent);
+  color: var(--akcent);
+  font-weight: 700;
+}
+
+.odkladanie-pozn {
+  max-width: 120px;
+  font-size: 0.68rem;
+  line-height: 1.3;
+  text-align: center;
+  color: var(--slaby);
+}
+
+/* ---- NA EX: náhľad účinku nad pásom pokynov ---------------------------------- */
+
+.pokyn {
+  position: relative;
+}
+
+.naex-nahlad {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  max-width: calc(100vw - 32px);
+  overflow-x: auto;
+  padding: 8px;
+  border-radius: 12px;
+  background: rgba(20, 17, 14, 0.96);
+  border: 1px solid var(--okraj-svetly);
+  box-shadow: var(--tien);
+  pointer-events: auto;
+}
+
+.pokyn .naex-moznost {
+  display: grid;
+  gap: 2px;
+  justify-items: start;
+  min-width: 150px;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.naex-moznost b {
+  font-variant-numeric: tabular-nums;
+}
+
+.naex-moznost.lepsie {
+  border-color: color-mix(in srgb, var(--zelena) 60%, transparent);
+}
+
+.naex-moznost.lepsie b {
+  color: var(--zelena);
+}
+
+.naex-moznost.horsie {
+  border-color: color-mix(in srgb, var(--cervena) 60%, transparent);
+}
+
+.naex-moznost.horsie b {
+  color: var(--cervena);
+}
+
+/* ---- Vypiť do dna --------------------------------------------------------------- */
+
+.pokyn button.tlacidlo-dodna {
+  background: linear-gradient(180deg, #5a3a12, #3b2508);
+  border-color: #8a5a1c;
+  color: #ffd08a;
+  font-weight: 700;
+}
+
+.pokyn button.tlacidlo-dodna:hover:not(:disabled) {
+  background: linear-gradient(180deg, #6e4716, #4a2f0a) !important;
+}
+
+.dodna-text strong {
+  color: var(--akcent);
+}
+
+.dodna-text {
+  animation: treba 1.6s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+/* Práve vypitý pohár sa pri objavení prevráti a vyprázdni. */
+.ikona-poldeci.vypity {
+  animation: do-dna 0.7s ease-out;
+  transform-origin: 50% 90%;
+}
+
+@keyframes do-dna {
+  0% {
+    transform: rotate(0deg);
+  }
+  40% {
+    transform: rotate(-55deg) translateY(-2px);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ikona-poldeci.vypity,
+  .dodna-text {
+    animation: none;
+  }
+}
+
+/* ---- vrstva: výber kliknutím (lokality, šenok) ------------------------------- */
+
+.vrstva-paticka {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--okraj);
+}
+
+.vrstva-paticka-text {
+  margin-right: auto;
+  font-size: 0.9rem;
+  color: var(--tlmeny);
+}
+
+.vrstva-paticka-text strong {
+  color: var(--text);
+}
+
+.vrstva-karty .kl-vybrana {
+  transform: translateY(-6px);
+  transition: transform 0.15s ease;
+}
+
+/* ---- playtest 20261012-055944: čitateľnejší pás, NA EX, koniec hry, mobil ---- */
+
+/* Pás pokynov sa pri dlhšom texte zalomí; jeho výšku meria HernaPlocha
+   a cez --pokyn-h podľa nej posúva ruku aj spodný okraj stola. */
+.pokyn {
+  padding-block: 4px;
+}
+
+.pokyn-text {
+  white-space: normal;
+}
+
+.pokyn-tlacidla {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.nahlad-spojov {
+  color: var(--tlmeny);
+}
+
+/* Karty, na ktoré sa dá dať NA EX — hráč ich vidí ešte pred kliknutím. */
+.s-lupou.naex-mozny {
+  position: relative;
+}
+
+.s-lupou.naex-mozny > .kl,
+.s-lupou.naex-mozny > div > .kl {
+  outline: 2px dashed var(--akcent);
+  outline-offset: 2px;
+}
+
+.s-lupou.naex-mozny::before {
+  content: "NA EX";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  z-index: 2;
+  transform: translateX(-50%);
+  padding: 1px 7px;
+  border-radius: 99px;
+  font: 800 0.66rem/1.4 var(--pismo);
+  letter-spacing: 0.08em;
+  background: var(--akcent);
+  color: #2b1b03;
+  pointer-events: none;
+}
+
+/* Policajtka: poradie kariet, ktoré idú navrch. */
+.poradie-obal {
+  position: relative;
+}
+
+.poradie {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  z-index: 3;
+  min-width: 1.8em;
+  padding: 2px 6px;
+  border-radius: 99px;
+  font: 800 0.9rem/1.2 var(--pismo);
+  text-align: center;
+  background: var(--akcent);
+  color: #2b1b03;
+  pointer-events: none;
+}
+
+/* Obrazovka konca hry. */
+.koniec-vrstva {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(10, 8, 6, 0.78);
+  backdrop-filter: blur(4px);
+  animation: vrstva-in 0.2s ease-out;
+}
+
+.koniec-okno {
+  width: min(640px, 100%);
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  padding: 22px 24px;
+  border-radius: 16px;
+  background: var(--plocha-2);
+  border: 1px solid var(--okraj);
+  border-top: 4px solid var(--slaby);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+.koniec-okno.vyhra {
+  border-top-color: var(--zelena);
+}
+
+.koniec-okno.prehra {
+  border-top-color: var(--su);
+}
+
+.koniec-okno h2 {
+  margin: 0 0 6px;
+  font-size: 2rem;
+}
+
+.koniec-dovod {
+  margin: 0 0 12px;
+  color: var(--tlmeny);
+}
+
+.koniec-skore {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 14px;
+  margin: 8px 0 16px;
+  font-size: 1.1rem;
+}
+
+.koniec-skore b {
+  font: 800 2.4rem/1 var(--nadpis);
+}
+
+.koniec-skore .moje b {
+  color: var(--ja);
+}
+
+.koniec-skore .superove b {
+  color: var(--su);
+}
+
+.koniec-rozpis {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.koniec-rozpis caption {
+  text-align: left;
+  padding-bottom: 6px;
+  color: var(--slaby);
+  font-size: 0.8rem;
+}
+
+.koniec-rozpis th,
+.koniec-rozpis td {
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--okraj);
+  text-align: left;
+}
+
+.koniec-rozpis td.cislo {
+  text-align: right;
+  font-weight: 700;
+}
+
+.koniec-rozpis tr.moja td:first-child {
+  box-shadow: inset 3px 0 0 var(--ja);
+}
+
+.koniec-rozpis tr.superova td:first-child {
+  box-shadow: inset 3px 0 0 var(--su);
+}
+
+.koniec-frajerina {
+  margin: 14px 0 0;
+}
+
+.koniec-tlacidla {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+/* Mobil: hlavička v jednom riadku (posúva sa vodorovne), menší pás. */
+@media (max-width: 760px) {
+  .hra-hlava {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 8px;
+    padding: 6px 8px;
+    scrollbar-width: none;
+  }
+
+  .hra-hlava > * {
+    flex: none;
+  }
+
+  .hra-hlava .kod {
+    padding: 4px 6px;
+    font-size: 0.85rem;
+  }
+
+  .pokyn {
+    grid-template-columns: minmax(0, 1fr);
+    min-width: 0;
+    gap: 6px;
+  }
+
+  .pokyn-vrstvy {
+    flex-wrap: wrap;
+  }
+
+  .pokyn-tlacidla {
+    justify-content: flex-start;
+  }
+}
+
+.starsi-mobil {
+  margin: 0 0 8px;
+  font-size: 0.85rem;
+  color: var(--tlmeny);
+}
+
+/* ---- stavba šenku (Michal 2026-10-12): štítok, kam karta z balíčka ide ---- */
+.stavba-karta {
+  position: relative;
+}
+
+.stavba-rola {
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  transform: translateX(-50%);
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+  color: #1b1408;
+}
+
+.stavba-rola.do-senku {
+  background: var(--akcent);
+}
+
+.stavba-rola.naspodok {
+  background: var(--tlmeny);
 }

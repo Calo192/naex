@@ -11,21 +11,24 @@ Web má tri časti a prihlásenie:
 | **Karty** (`/karty`) | ktokoľvek | glosár kariet v tlačovom vzhľade, tooltipy akcií a pojmov, varianty |
 | **Hrať** (`/hra`) | prihlásený hráč | súkromná hra s kódom alebo verejná hra zo zoznamu, mená a avatary |
 | **Tvorba** (`/admin`) | admin | webová verzia MAUI aplikácie KartyAI — návrhy kariet, tvorca, akcie, kľúčové slová, farby, štatistiky, simulácia, bodovacie karty, tlač, import/export, používatelia, zverejnenie sady |
-| **Profil** (`/profil`) | prihlásený | herné meno, avatar, heslo |
+| **Profil** (`/profil`, `/hrac/:id`) | prihlásený | herné meno, avatar, heslo; **Frajerina** a podrobné štatistiky z dohraných partií |
+| **Rebríček** (`/rebricek`) | prihlásený | poradie hráčov podľa Frajeriny, hodnosti |
+| **Spätná väzba** (`/spatna-vazba`) | prihlásený | názory na hru, komentáre, cigarety (obdoba „páči sa mi“); admin mení stav názoru |
 
-**Stav:** míľniky M0–M14 hotové; `npm run typecheck` a `npm test` končia
-s kódom 0 (88 testov vrátane celej partie cez server, filtrovania pohľadu,
-účtov, rolí a zverejnenia sady).
+**Stav:** míľniky M0–M14 hotové, k tomu Frajerina, štatistiky hráča a spätná
+väzba; `npm run typecheck` a `npm test` končia s kódom 0 (130 testov vrátane
+celej partie cez server, filtrovania pohľadu, účtov, rolí, zverejnenia sady,
+Frajeriny, spätnej väzby a dĺžky hry).
 
 ## Spustenie
 
 ```bash
 npm install
-NAEX_ADMINS=michal npm run dev   # server :8787 + klient http://localhost:5173
+npm run dev   # server :8787 + klient http://localhost:5173
 ```
 
-Zaregistruj sa s prihlasovacím menom z `NAEX_ADMINS` — účet dostane rolu
-admin. Pri prvom štarte sa databáza (`data/naex.sqlite`) naplní tlačovou
+Heslo admina daj do `.env` v koreni repozitára (`NAEX_ADMIN_HESLO=…`, súbor
+je mimo gitu) — server pri štarte založí účet **Admin**. Pri prvom štarte sa databáza (`data/naex.sqlite`) naplní tlačovou
 sadou kariet a zverejní ako verzia 1. Obrázky z `docs/NA EX` pridáš do
 knižnice tvorcu: `npm run kniznica -- "docs/NA EX/NA EX"`.
 
@@ -40,13 +43,17 @@ Caddy s HTTPS, ~6 € mesačne).
 ```
 packages/core/     jadro pravidiel — čistý TS, bez I/O, deterministické
   data/cards.json    východisková sada (z tlačového PDF, tools/import_print_pdf.py)
-  data/elders.json   8 starších — hodnoty PROVIZÓRNE (viď nižšie)
+  data/elders.json   8 starších (len zoznam)
+  data/scorecards.json  8 scorecardov z KartyAI — podmienky; body PROVIZÓRNE
 packages/tvorba/   model tvorcu kariet — čistý TS (varianty, farby, geometria
                    karty, formát textu, export/import TXT, štatistiky)
 packages/server/   autoritatívny server: hra (ws), REST API, SQLite, médiá
   seed/              ilustrácie a vzhľad kariet pre prvé spustenie
 apps/web/          klient (React + Vite)
 tools/             import z tlačového PDF, piktogramy akcií
+  playtest/          AI playtest: konzolový klient (hrac.ts), založenie partie agentov
+                     (zaloz.ts) aj agent proti človeku (zaloz-clovek.ts), spätná väzba
+                     agentov na webe (web.ts) — skilly /playtest a /protihrac
 ```
 
 - **Server nikdy nepošle klientovi nič, čo hráč nemá vidieť.**
@@ -58,6 +65,34 @@ tools/             import z tlačového PDF, piktogramy akcií
   vidia len poslednú **zverejnenú** sadu. Rozohraná partia dohrá na sade,
   s ktorou začala. Zverejnenie overí návrhy cez `loadGameData` jadra;
   karta s vlastnou akciou bez pravidiel v jadre sa zverejniť nedá.
+- **Pravidlá v3** (2026-10-11): dĺžka hry sa volí v lobby — krátka 5, stredná 7
+  (predvolená), dlhá 11 lokalít; dlhá sa dá zvoliť, až keď má sada 11 lokalít.
+  Každú kartu možno vyložiť do vlastnej aj súperovej partie a **patrí tomu,
+  kto ju zahral** — akcie aj efekty sa rátajú majiteľovi (`evaluateLine`
+  pripisuje súčty podľa `playedBy`, efekty cez `kartyHraca`/`maKartu`).
+  Kočovník na súperovu stranu nemíňa limit (navrhnutý efekt, BRIEF otázka 10).
+  **Názvoslovie:** polovice línie sú **strany** (`state.strany`), **partia** hráča
+  = jeho karty na ktorejkoľvek strane (`partiaHraca`, `vPartii`). **NA EX** len na
+  vlastnú kartu, s náhľadom bitky v hre; **Vypiť** (`{ type: "vypit" }`) v
+  Zhromaždení: limit −1, pečeň +1, ďalšie vyloženie bez odovzdania ťahu. Akcie
+  lokality dostane majiteľ susednej karty. Svokra zakáže súperovi NA EX (BRIEF 11).
+  **Ruka 5 kariet:** štartovacie karty idú do doberacieho balíčka, do ruky 5,
+  na začiatku kola sa ruka dopĺňa na 5 (`KONSTANTY.VELKOST_RUKY`); nové
+  kliatby idú do odhadzovacieho balíčka. V simulácii klesla priemerná ruka
+  z 12–15 na ~7 kariet.
+- **Starší a body počas hry:** rad starších je nad stolom (lupa sa nebije s rukou,
+  dá sa zmenšiť). Pri každom staršom je ♥ priazeň (komu, s akým účinkom) a ★
+  koho sa bojí a koľko bodov by dal teraz; súčet „body teraz" je pri hráčoch.
+  Počíta to `bodyTeraz` v jadre z pohľadu hráča — vlastné skryté kliatby pozná
+  cez `mojeKliatbyVBalicku`, súperove nevidí (odhad je potom označený „?").
+- **Frajerina** je hodnotenie hráča podľa šachového Elo (`packages/server/src/frajerina.ts`):
+  štart 1200, K = 32, súčet zmien je nulový. Rovný proti rovnému ±16, favorit
+  s náskokom 400 nad slabším ±3, prekvapenie ±29. Prvých 5 partií je hodnotenie
+  provizórne („1200?“). Vzdaná partia (`{ type: "vzdat" }`) je prehra; keď je
+  súper odpojený 3 minúty, hráč si vyžiada kontumačnú výhru.
+- **Štatistiky** počíta čistý modul jadra `statistiky.ts`: server po každom
+  ťahu zavolá `zapisTah()` a po konci partie uloží súčty oboch hráčov do
+  `partie` / `partie_hraci` (SQLite). Profil je súčet riadkov hráča.
 - **Účty:** heslá scrypt, relácia v HttpOnly cookie (v databáze len hash
   tokenu), každá zmena nesie hlavičku `X-Naex` (CSRF), admin cesty
   overujú rolu na serveri. Nahraté súbory sa overujú podľa obsahu.
@@ -68,18 +103,14 @@ Register `packages/core/src/effects.ts` pokrýva všetkých 50 id tlačovej sady
 Nová karta z tvorcu (neznáme id) beží automaticky v režime MANUAL.
 
 - **Natívne v motore:** `dlh`, `cirhoza`, `kocovnik`, `abstak`.
-- **Implementované:** `ihrisko`, `cigorky`, `cierna_macka`, `nealko`,
-  `vinko`, `zastavka`, `zberny_dvor`, `kostol`, `lesna_cesta`, `puska`,
-  `noviny`, `vyherny_automat`, `podvodnik`, `recidivista`, `pes`,
-  `autobusar`, `farar`, `veterinar`, `ministrant`, `financna_poradkyna`,
-  `praudovravec`, `hasic`, `niekoho_stryna`, `zivnostnik`,
-  `velmi_smutiaca_vdova`, `zahradkar`.
-- **Režim MANUAL** (hra ich v správnej fáze vypíše do logu so ⚠ a hráči
-  ich vyhodnotia sami): `benzinka`, `dievcina_na_vydaj`, `hrobar`,
-  `krcma`, `krcmarka`, `liberal`, `milujuca_manzelka`, `pasca`, `pijan`,
-  `policajtka`, `postarka`, `silna_nezavisla_zena`, `starosta`,
-  `svaty_text`, `veteran`, `vestica`, `vychovavatelka`, `zamocnik`,
-  `svokra`, `sarlatan`.
+- **Implementované:** všetky ostatné. Od 2026-10-12 (playtest
+  20261012-055944) aj bývalé MANUAL efekty — výklad ich textov je
+  v `docs/PRAVIDLA.md` §14. Efekty závislé od polohy v línii (Liberál,
+  Silná nezávislá žena, Veterán, Zámočník, Šarlatán, Pijan) sú v
+  `partia.ts` (`kartoveEfekty`), voľby hráča (Policajtka, Veštica,
+  Benzínka, Poštárka, Starosta) sú príkazy motora.
+- **Režim MANUAL** ostáva len pre nové karty z tvorcu, kým nedostanú
+  implementáciu (hra ich v správnej fáze vypíše do logu so ⚠).
 
 ## Rozhodnuté nejasnosti (otvorené otázky z BRIEF-u)
 
@@ -105,7 +136,8 @@ na jednom mieste v kóde (odkazy v zátvorkách).
 10. **Robota** odhadzuje priznaný Dlh do odhadzovacieho balíčka hráča
    („odhodenie“ podľa pojmov), pred kontrolou prahu Exekútora.
 11. **Prah Cirhózy** — pravidlá v2 uvádzajú raz „základ 3“, inde
-   „Alkoholik: 2 + priazeň“; ponechané 2 + priazeň (`constants.ts`).
+   „Alkoholik: 2 + priazeň“. Michal 2026-10-12 rozhodol 3 + priazeň
+   (`constants.ts`); zároveň pribudol prah Dlhu 2 (zadĺženie z akcií Hazard).
 7. **Štartovacia ruka** — 3× Pijan, 3× Miňištrant, 2× Milujúca
    manželka, 2× Dievčina na vydaj (`constants.ts`, TODO overiť).
 8. **Lokality** — v hre sú 3 náhodné zo 7 (krátka hra;
@@ -121,15 +153,61 @@ vyhodnocuje automaticky (zahodí kliatby z práve dobraných); Liečba
 berie kartu zo šenku priamo (zjednodušené Preskúmanie); barter berie
 len fyzické cigarety.
 
+## Zmeny pravidiel po playteste 20261012-055944 (2026-10-12)
+
+Rozhodnutia Michala z rozhovoru o odporúčaniach, skúšobné (podrobne
+v `docs/playtesty/zmeny-pravidiel.html`, znenie v `docs/PRAVIDLA.md`):
+
+- **Odpoveď na NA EX** — po súperovom NA EX jedna karta z ruky mimo limitu,
+  striedavo (`engine.ts`, `PitkaStav.reakcia`, príkazy `place`/`bezReakcie`).
+- **Nahradený starší ostáva v hre** (marker, priazeň, body, vydesenie);
+  bitka len o pôvodného staršieho.
+- **Bitka o staršieho** — karta staršieho v strede línie, útočník ju natočí
+  (`chooseElder.otocena`); náhľad bodov `nahladBitkyOStarsieho` (`view.ts`).
+- **Limit ruky** 6 + priazeň **Zberateľa** (nahradil Očumovateľa; alias
+  `OCUMOVATEL → ZBERATEL`, server premenuje bodovaciu kartu v databáze).
+- **Útočník draftuje prvý**, pitiek `max(1, |rozdiel|)`.
+- **Body za kus** lokalita a starší 2; server berie body vždy z jadra.
+- **Všetky efekty** tlačovej sady vyhodnocuje motor.
+- Web: obrazovka konca hry, mobil, náhľad spojov, cena prebytku, značky NA EX.
+
+## Zmeny pravidiel po playteste 20261011-183315 (2026-10-12)
+
+Rozhodnutia Michala, skúšobné. Prečo a čo sledovať je v
+`docs/playtesty/zmeny-pravidiel.html`, znenie pravidiel v `docs/PRAVIDLA.md`.
+
+1. **Body za kus až od oranžovej zóny** — podmienky scorecardov za
+   ovládnuté lokality, získaných starších a zvyšné cigarety bodujú, len keď
+   je marker aspoň v oranžovej zóne (Strach); tresty za Dlhy a Cirhózy
+   platia od žltej. V playteste dali riadky za kus v žltej zóne 51:1
+   (`elders.ts`, `PRAH_PODMIENKY` / `prahPodmienky`).
+2. **Nevyhnutné ťahy robí hra sama** — pas, keď hráč nemá čo vyložiť;
+   „bez NA EX“, keď v Pitke nemá inú možnosť; vynechanie Pohrebu. Vypiť sa
+   neponúka, keď sa nedá nič vyložiť do línie (`engine.ts`,
+   `dohrajNevyhnutne`, `legalCommands`). Tretina príkazov playtestu boli
+   takéto potvrdenia.
+3. **Priznanie neodovzdá ťah** — kliatby sa priznávajú za sebou, nie na
+   striedačku (`engine.ts`, `cmdPlace`).
+4. **Prah Cirhózy 3** + priazeň Alkoholika (predtým 2;
+   `KONSTANTY.PRAH_CIRHOZY_ZAKLAD`).
+5. **Prah Dlhu 2** — akcie Hazard plnia počítadlo `zadlzenie` hráča
+   (verejné, v hre ukazovateľ „Zadĺženie“); kartu Dlh hráč dostane až pri
+   prahu. Dlhy, ktoré dávajú efekty kariet priamo (Liečba, Výherný
+   automat), idú rovno (`engine.ts`, `pridajZadlzenie`;
+   `KONSTANTY.PRAH_DLHU`). Ďalšie pravidlá k zadĺženiu pribudnú.
+
+Testy: `packages/core/test/tempo.test.ts`, `elders.test.ts`.
+
 ## Hodnoty, ktoré treba doladiť podľa komponentov
 
 Všetko na jednom mieste: `packages/core/src/constants.ts` (s TODO
-komentármi) a `packages/core/data/elders.json`:
+komentármi) a `packages/core/data/scorecards.json`:
 
-- priradenie **priazní** starším a **bočné bodovacie pozície**
-  (zóna + body) — teraz tematický odhad,
-- body za **lokalitu**, **staršieho**, **cigaretu**, pokuta za
-  **nepriznanú cirhózu** (pravidlá udávajú len −1 za nepriznaný dlh),
+- **body za podmienky scorecardov** — za zóny strachu (1/2/3) a za kus
+  lokality, získaného staršieho, cigarety, nepriznanej cirhózy (pravidlá
+  udávajú len −1 za nepriznaný dlh); kladné za kus platia až od oranžovej
+  zóny. Rozloženie podmienok je z KartyAI,
+  scorecardy sa starším rozdávajú náhodne (rozhodnutie Michala 2026-10-11),
 - rozdelenie **štartovacej ruky** a počet **kópií kariet** v spoločnom
   balíčku.
 

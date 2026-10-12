@@ -16,3 +16,4 @@ export * from "./elders.ts";
 export * from "./effects.ts";
 export * from "./engine.ts";
 export * from "./view.ts";
+export * from "./statistiky.ts";

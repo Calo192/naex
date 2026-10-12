@@ -7,16 +7,22 @@
 // * admin cesty overujú rolu na serveri pri každej požiadavke.
 
 import type { IncomingMessage, ServerResponse } from "node:http";
+import type { DlzkaHry, Podmienka } from "@naex/core";
+import { ALL_PODMIENKY, dostupneDlzky } from "@naex/core";
 import type { KartaNavrh, Pozicia, StranaNavrhu, AkciaDef, KlucoveSlovo, Kategoria, BodovaciaKarta, IkonaBodovania, Nastavenia } from "@naex/tvorba";
 import { exportTxt, importTxt, slug, PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
 import type { Pouzivatel, Ucty } from "./auth.ts";
-import { ChybaVstupu, cookieOdhlasenia, cookieRelacie, overHesloVstup, overLogin, overMeno, citajCookie } from "./auth.ts";
+import { ChybaVstupu, cookieOdhlasenia, cookieRelacie, overHesloVstup, overLogin, overMeno, citajCookie, jeSpravca } from "./auth.ts";
 import type { DruhMedia, Media } from "./media.ts";
 import type { Obsah } from "./obsah.ts";
+import type { Archiv } from "./archiv.ts";
+import type { KategoriaNazoru, Nazory, Triedenie } from "./nazory.ts";
+import { overKategoriu as overKategoriuNazoru } from "./nazory.ts";
 
 export interface OtvorenaHra {
   readonly kod: string;
-  readonly hostitel: { readonly meno: string; readonly avatar: string | null };
+  readonly hostitel: { readonly meno: string; readonly avatar: string | null; readonly frajerina: number | null };
+  readonly dlzka: DlzkaHry;
   readonly vytvorena: number;
 }
 
@@ -24,6 +30,8 @@ export interface ApiKontext {
   readonly ucty: Ucty;
   readonly obsah: Obsah;
   readonly media: Media;
+  readonly archiv: Archiv;
+  readonly nazory: Nazory;
   readonly teraz: () => number;
   readonly bezpecneCookie: boolean;
   /** Verejné hry čakajúce na súpera (z herného servera). */
@@ -234,9 +242,10 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     if (ja === null) throw new ChybaVstupu("Musíš sa prihlásiť.", 401);
     return ja;
   };
-  const admin = (): Pouzivatel => {
+  // Správa (tvorba kariet, hráči) patrí adminovi aj subadminom (Michal 2026-10-12).
+  const spravca = (): Pouzivatel => {
     const p = prihlaseny();
-    if (p.rola !== "admin") throw new ChybaVstupu("Len pre administrátora.", 403);
+    if (!jeSpravca(p.rola)) throw new ChybaVstupu("Len pre admina a subadminov.", 403);
     return p;
   };
   const ok = (telo: unknown, status = 200, hlavicky: Record<string, string> = {}) => odpoved(res, status, telo, hlavicky);
@@ -245,7 +254,8 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
 
   try {
     // ----- účet ----------------------------------------------------------
-    if (r === "GET /ja") return ok({ pouzivatel: ja });
+    // Počet dohratých partií — návštevník vidí, koľko mu chýba do úrovne hráč.
+    if (r === "GET /ja") return ok({ pouzivatel: ja === null ? null : { ...ja, dohrate: ctx.ucty.dohrate(ja.id) } });
 
     if (r === "POST /registracia") {
       const b = await citajJson(req);
@@ -302,12 +312,72 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
 
     if (r === "GET /hry/otvorene") {
       prihlaseny();
-      return ok({ hry: ctx.otvoreneHry() });
+      return ok({ hry: ctx.otvoreneHry(), dlzky: dostupneDlzky(ctx.obsah.aktualnaSada().data) });
+    }
+
+    // ----- profily hráčov a rebríček (pre prihlásených) -----------------
+    if (metoda === "GET" && casti[1] === "hraci" && casti.length === 3) {
+      prihlaseny();
+      const id = Number(casti[2]);
+      const profil = Number.isInteger(id) ? ctx.archiv.profil(id) : null;
+      if (profil === null) throw new ChybaVstupu("Taký hráč neexistuje.", 404);
+      return ok(profil);
+    }
+
+    if (r === "GET /rebricek") {
+      prihlaseny();
+      return ok({ hraci: ctx.archiv.rebricek() });
+    }
+
+    // ----- spätná väzba --------------------------------------------------
+    if (casti[1] === "nazory") {
+      const p = prihlaseny();
+      const id = Number(casti[2]);
+      const kom = casti[2] === "komentare" ? Number(casti[3]) : Number.NaN;
+
+      if (r === "GET /nazory") {
+        const t = query.get("triedenie");
+        const triedenie: Triedenie = t === "cigarety" || t === "diskusia" ? t : "nove";
+        const k = query.get("kategoria");
+        const kategoria: KategoriaNazoru | null = k === null || k === "" ? null : overKategoriuNazoru(k);
+        return ok({ nazory: ctx.nazory.zoznam(p, triedenie, kategoria) });
+      }
+      if (r === "POST /nazory") {
+        const b = await citajJson(req);
+        return ok({ id: ctx.nazory.pridaj(p, b.kategoria, b.text, teraz) }, 201);
+      }
+      if (Number.isInteger(kom)) {
+        if (metoda === "DELETE" && casti.length === 4) {
+          ctx.nazory.zmazKomentar(p, kom);
+          return ok({ ok: true });
+        }
+        if (casti[4] === "cigareta" && casti.length === 5 && (metoda === "PUT" || metoda === "DELETE")) {
+          return ok({ cigarety: ctx.nazory.cigareta(p, "komentar", kom, metoda === "PUT") });
+        }
+      }
+      if (Number.isInteger(id)) {
+        if (metoda === "PATCH" && casti.length === 3) {
+          ctx.nazory.uprav(p, id, await citajJson(req), teraz);
+          return ok({ ok: true });
+        }
+        if (metoda === "DELETE" && casti.length === 3) {
+          ctx.nazory.zmaz(p, id);
+          return ok({ ok: true });
+        }
+        if (metoda === "POST" && casti[3] === "komentare" && casti.length === 4) {
+          const b = await citajJson(req);
+          return ok({ id: ctx.nazory.komentuj(p, id, b.text, teraz) }, 201);
+        }
+        if (casti[3] === "cigareta" && casti.length === 4 && (metoda === "PUT" || metoda === "DELETE")) {
+          return ok({ cigarety: ctx.nazory.cigareta(p, "nazor", id, metoda === "PUT") });
+        }
+      }
+      throw new ChybaVstupu("Neznáma cesta.", 404);
     }
 
     // ----- admin ---------------------------------------------------------
     if (casti[1] !== "admin") throw new ChybaVstupu("Neznáma cesta.", 404);
-    const ja2 = admin();
+    const ja2 = spravca();
     const sub = `${metoda} /${casti.slice(2).join("/")}`;
     const id = casti[3] ?? "";
 
@@ -398,7 +468,14 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     if (metoda === "PUT" && casti[2] === "ikony-bodovania" && casti.length === 4) {
       if (!ID_RE.test(id)) throw new ChybaVstupu("Neplatné id.");
       const b = await citajJson(req);
-      const ikona: IkonaBodovania = { id, nazov: str(b.nazov, 40, "Názov").trim(), media: mediaId(b.media, "Ikona") };
+      const podmienka = b.podmienka === null || b.podmienka === undefined ? null : str(b.podmienka, 20, "Význam");
+      if (podmienka !== null && !(ALL_PODMIENKY as readonly string[]).includes(podmienka)) throw new ChybaVstupu("Neznámy význam ikony.");
+      const ikona: IkonaBodovania = {
+        id,
+        nazov: str(b.nazov, 40, "Názov").trim(),
+        media: mediaId(b.media, "Ikona"),
+        podmienka: podmienka as Podmienka | null,
+      };
       ctx.obsah.ikonyBodovania.uloz(id, ikona);
       return ok(ikona);
     }
@@ -473,11 +550,14 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
 
     if (sub === "GET /pouzivatelia") return ok({ pouzivatelia: ctx.ucty.zoznam() });
     if (metoda === "PATCH" && casti[2] === "pouzivatelia" && casti.length === 4) {
+      if (ja2.rola !== "admin") throw new ChybaVstupu("Úroveň účtu mení len admin.", 403);
       const b = await citajJson(req);
-      const rola = b.rola === "admin" ? "admin" : "pouzivatel";
-      const cielId = Number(id);
-      if (cielId === ja2.id && rola !== "admin") throw new ChybaVstupu("Sám sebe rolu admin odobrať nemôžeš.");
-      ctx.ucty.nastavRolu(cielId, rola);
+      // Admin je len jeden — nikoho ďalšieho na admina povýšiť nemožno.
+      if (b.rola !== "subadmin" && b.rola !== "hrac" && b.rola !== "navstevnik") throw new ChybaVstupu("Neznáma úroveň účtu.");
+      const ciel = ctx.ucty.podlaId(Number(id));
+      if (ciel === null) throw new ChybaVstupu("Taký účet neexistuje.", 404);
+      if (ciel.rola === "admin") throw new ChybaVstupu("Úroveň admina sa nemení.");
+      ctx.ucty.nastavRolu(ciel.id, b.rola);
       return ok({ ok: true });
     }
 

@@ -48,6 +48,11 @@ export interface DamageOptions {
    * nerušia (efekt Novín v Dedičstve hráča p).
    */
   readonly poveraVieraSaNerusia?: readonly [boolean, boolean];
+  /**
+   * vieraProtiMakkemu[p]: zvyšná Viera hráča p nechráni pred súperovým
+   * tuhým, ale ruší jeho mäkké poškodenie 1:1 (Svätý text v Dedičstve p).
+   */
+  readonly vieraProtiMakkemu?: readonly [boolean, boolean];
 }
 
 export function computeDamage(
@@ -65,10 +70,11 @@ export function computeDamage(
   const zvysnaViera = [viera[0] - cancel1, viera[1] - cancel0] as const;
   const zvysnaPovera = [povera[0] - cancel0, povera[1] - cancel1] as const;
 
+  const protiMakkemu = opts?.vieraProtiMakkemu ?? [false, false];
   const tuhe = ([0, 1] as const).map((p) => {
     const me = sides[p];
     const opp = sides[p === 0 ? 1 : 0];
-    const oppViera = zvysnaViera[p === 0 ? 1 : 0];
+    const oppViera = protiMakkemu[p === 0 ? 1 : 0] ? 0 : zvysnaViera[p === 0 ? 1 : 0];
     const base =
       n(me.sums.Rana) * 1 +
       n(me.sums.Pecka) * 2 +
@@ -81,8 +87,10 @@ export function computeDamage(
 
   // 3. Mäkké poškodenie je zastropené súperovým PRIZNANÝM dlhom.
   const makke = ([0, 1] as const).map((p) => {
-    const oppDlhy = sides[p === 0 ? 1 : 0].priznaneDlhy;
-    return Math.min(zvysnaPovera[p], oppDlhy);
+    const q = p === 0 ? 1 : 0;
+    const oppDlhy = sides[q].priznaneDlhy;
+    const ochrana = protiMakkemu[q] ? zvysnaViera[q] : 0;
+    return Math.max(0, Math.min(zvysnaPovera[p], oppDlhy) - ochrana);
   }) as [number, number];
 
   const celkove = [tuhe[0] + makke[0], tuhe[1] + makke[1]] as [number, number];

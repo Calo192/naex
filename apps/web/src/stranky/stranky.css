@@ -276,43 +276,71 @@ button.cip.aktivny {
   border-left-color: var(--akcent);
 }
 
-.kapitola {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 240px;
-  gap: 32px;
-  padding: 36px 0 44px;
-  border-bottom: 1px solid var(--okraj);
-  scroll-margin-top: 80px;
+/* Kapitola = jedna strana: ilustrácia na výšku obrazovky, vedľa text.
+   Strana má výšku obrazovky aj pri krátkom texte, ďalšia kapitola sa
+   nikdy neukáže pod ňou. */
+
+.pravidla-strana {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: calc(100vh - 150px);
 }
 
-.kapitola:not(:has(.kapitola-obrazok)) {
+.kapitola {
+  flex: 1;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 48px;
+  padding: 4px 0 28px;
+  animation: listovanie 0.25s ease;
+}
+
+.kapitola.bez-obrazka {
   grid-template-columns: minmax(0, 1fr);
 }
 
+@keyframes listovanie {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
 .kapitola-obrazok {
-  order: 2;
-  width: 100%;
-  border-radius: 14px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
   position: sticky;
-  top: 90px;
+  top: 88px;
+  display: block;
+  height: clamp(420px, calc(100vh - 190px), 980px);
+  width: auto;
+  max-width: 100%;
+  aspect-ratio: 760 / 1075;
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.6);
 }
 
 .kapitola-telo {
   min-width: 0;
+  max-width: 48rem;
+  padding-top: 10px;
+  font-size: 1.06rem;
 }
 
 .kapitola-cislo {
   display: block;
-  font-size: 0.78rem;
+  font-size: 0.8rem;
+  font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--akcent);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .kapitola h2 {
-  font-size: 1.9rem;
+  font-size: clamp(1.9rem, 3vw, 2.6rem);
+  margin-bottom: 0.7em;
 }
 
 .kapitola li {
@@ -320,7 +348,48 @@ button.cip.aktivny {
 }
 
 .kapitola .uvod {
-  font-size: 1.15rem;
+  font-size: 1.2rem;
+}
+
+.listovanie {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: auto;
+  padding-top: 18px;
+  border-top: 1px solid var(--okraj);
+}
+
+.listovanie a {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 48%;
+  padding: 10px 18px;
+  border-radius: 12px;
+  background: var(--plocha-2);
+  border: 1px solid var(--okraj);
+  color: var(--text);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.listovanie a:hover {
+  border-color: var(--akcent-tmavy);
+  background: var(--plocha-3);
+}
+
+.listovanie-dalej {
+  margin-left: auto;
+  text-align: right;
+}
+
+.listovanie-smer {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--akcent);
 }
 
 .zvyraznene {
@@ -662,14 +731,20 @@ button.cip.aktivny {
     gap: 4px;
   }
 
+  .pravidla-strana {
+    min-height: 0;
+  }
+
   .kapitola {
     grid-template-columns: 1fr;
+    gap: 20px;
   }
 
   .kapitola-obrazok {
-    order: 0;
     position: static;
-    max-width: 320px;
+    height: auto;
+    width: min(100%, 420px);
+    margin: 0 auto;
   }
 }
 

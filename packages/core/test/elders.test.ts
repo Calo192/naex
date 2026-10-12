@@ -1,11 +1,19 @@
 // M5 — starší, ukazovatele, bodovanie.
 
 import { describe, expect, it } from "vitest";
-import type { ElderDef, ElderState, MarkerPos } from "../src/index.ts";
+import cardsJson from "../data/cards.json";
+import eldersJson from "../data/elders.json";
+import scorecardsJson from "../data/scorecards.json";
+import type { CardInstance, ElderState, MarkerPos, ScorecardDef, StavBodovania } from "../src/index.ts";
 import {
   bitkaOStarsiehoMozna,
+  buildGameData,
   elderScore,
+  favourStarsieho,
   freshElder,
+  loadGameData,
+  podmienkyStarsieho,
+  setupGame,
   obavanyHrac,
   posunMarker,
   prebudenyPre,
@@ -23,7 +31,7 @@ const data = syntheticData([
 
 function elderAt(marker: MarkerPos, zaciatok?: MarkerPos): ElderState {
   return {
-    ...freshElder("starsi", instanceFor(data, "starsi", starsiLayoutLeft, starsiLayoutRight)),
+    ...freshElder("starsi", instanceFor(data, "starsi", starsiLayoutLeft, starsiLayoutRight), "sc"),
     marker,
     markerZaciatokKola: zaciatok ?? marker,
   };
@@ -95,29 +103,87 @@ describe("M5 — bitka o staršieho a bodovanie", () => {
     expect(bitkaOStarsiehoMozna(elderAt(8))).toBe(true);
   });
 
-  it("bodovanie: neprázdne akcie aktivujú bočné pozície, prahovo podľa zóny", () => {
-    const def: ElderDef = {
-      id: "starsi",
+  it("bodovanie: obávaný hráč boduje aktivované podmienky na svojej strane scorecardu", () => {
+    // Karta: vľavo Viera (0) a Povera (2), vpravo Pecka (1).
+    const sc: ScorecardDef = {
+      id: "sc",
+      nazov: "Test",
       favour: "VERIACI",
-      scoring: [
-        { zone: 1, points: 2 }, // left[0] = Viera → aktívna
-        { zone: 2, points: 3 }, // left[1] = prázdne → nikdy
-        { zone: 3, points: 5 }, // left[2] = Povera → aktívna, len červená
-        { zone: 1, points: 1 }, // left[3] = prázdne
-        { zone: 1, points: 2 }, // right[0] = prázdne
-        { zone: 2, points: 3 }, // right[1] = Pecka → aktívna od oranžovej
-        { zone: 1, points: 1 }, // right[2] = prázdne
-        { zone: 3, points: 4 }, // right[3] = prázdne
-      ],
+      lava: ["znepokojenie", "strach", "vydesenie", "cigarety"], // aktívne: 0, 2
+      prava: ["strach", "dlh", null, "lokality"], // aktívna: 1
     };
-    // Marker na 7 (oranžová, polovica hráča 1) → obávaný hráč 0;
-    // splnené pozície so zónou ≤ 2: left[0] (2) + right[1] (3) = 5 bodov.
-    expect(elderScore(data, def, elderAt(7))).toEqual({ hrac: 0, body: 5 });
-    // Marker na 8 (červená) → aj zóna 3: + left[2] (5) = 10 bodov.
-    expect(elderScore(data, def, elderAt(8))).toEqual({ hrac: 0, body: 10 });
+    const d = buildGameData(data.cards, new Map(), { scorecards: [sc], body: BODY });
+    const stav = stavBodovania({ cigarety: [9, 9], dlhy: [0, 2] });
+
+    // Marker na 7 (oranžová, polovica hráča 1) → obávaný hráč 0, jeho strana je ľavá:
+    // znepokojenie (1) áno, vydesenie len v červenej, cigarety neaktívne → 1 bod.
+    expect(elderScore(d, stav, elderAt(7))).toMatchObject({ hrac: 0, body: 1 });
+    // Marker na 8 (červená) → aj vydesenie (3) → 4 body.
+    expect(elderScore(d, stav, elderAt(8))).toMatchObject({ hrac: 0, body: 4 });
+    // Marker na 1 → obávaný hráč 1, jeho strana je pravá: dlh × 2 nepriznané = −2.
+    // Strach vpravo neboduje — karta tam akciu nemá.
+    expect(elderScore(d, stav, elderAt(1))).toMatchObject({ hrac: 1, body: -2 });
     // Marker v sivej → nikto neboduje.
-    expect(elderScore(data, def, elderAt(4))).toBeNull();
-    // Marker na polovici hráča 0 → boduje hráč 1.
-    expect(elderScore(data, def, elderAt(2))?.hrac).toBe(1);
+    expect(elderScore(d, stav, elderAt(4))).toBeNull();
+  });
+
+  it("kladné podmienky za kus bodujú až od oranžovej zóny, tresty už od žltej", () => {
+    const sc: ScorecardDef = {
+      id: "sc",
+      nazov: "Test",
+      favour: "FAJCIAR",
+      lava: ["cigarety", null, "znepokojenie", null], // aktívne: 0, 2
+      prava: [null, "dlh", null, null], // aktívna: 1
+    };
+    const d = buildGameData(data.cards, new Map(), { scorecards: [sc], body: BODY });
+    const stav = stavBodovania({ cigarety: [9, 9], dlhy: [0, 2] });
+
+    // Žltá (6) → bojí sa hráča 0: cigarety ešte nie, len znepokojenie.
+    expect(elderScore(d, stav, elderAt(6))).toMatchObject({ hrac: 0, body: 1 });
+    // Oranžová (7) → 9 cigariet × 1 + znepokojenie.
+    expect(elderScore(d, stav, elderAt(7))).toMatchObject({ hrac: 0, body: 10 });
+    // Žltá (2) → bojí sa hráča 1: 2 nepriznané dlhy platia aj v žltej.
+    expect(elderScore(d, stav, elderAt(2))).toMatchObject({ hrac: 1, body: -2 });
+  });
+
+  it("podmienky staršieho: aktívna je tá, pri ktorej má karta akciu", () => {
+    const sc: ScorecardDef = { id: "sc", nazov: "Test", favour: "LAKOMEC", lava: ["dlh", "dlh", null, "dlh"], prava: ["starsi", "starsi", null, null] };
+    const d = buildGameData(data.cards, new Map(), { scorecards: [sc], body: BODY });
+    const aktivne = podmienkyStarsieho(d, elderAt(4)).filter((p) => p.aktivna).map((p) => `${p.strana}${p.index}`);
+    expect(aktivne).toEqual(["lava0", "prava1"]);
+    expect(favourStarsieho(d, elderAt(4))).toBe("LAKOMEC");
   });
 });
+
+describe("scorecardy pri príprave hry", () => {
+  const plne = loadGameData(cardsJson, eldersJson, scorecardsJson);
+
+  it("každý starší dostane iný scorecard, rozdanie je deterministické zo seedu", () => {
+    const a = setupGame(plne, 11);
+    const ids = a.starsi.map((e) => e.scorecard);
+    expect(new Set(ids).size).toBe(a.starsi.length);
+    expect(setupGame(plne, 11).starsi.map((e) => e.scorecard)).toEqual(ids);
+    // Rôzne seedy → (aspoň pri jednom z nich) iné rozdanie.
+    const ine = [12, 13, 14].some((seed) => setupGame(plne, seed).starsi.some((e, i) => e.scorecard !== ids[i]));
+    expect(ine).toBe(true);
+  });
+
+  it("priazeň staršieho určuje jeho scorecard", () => {
+    const s = setupGame(plne, 5);
+    for (const e of s.starsi) {
+      expect(favourStarsieho(plne, e)).toBe(plne.scorecards.find((x) => x.id === e.scorecard)?.favour);
+    }
+  });
+});
+
+const BODY = { znepokojenie: 1, strach: 2, vydesenie: 3, lokality: 3, starsi: 3, cigarety: 1, cirhoza: -2, dlh: -1 };
+
+function stavBodovania(o: { cigarety: [number, number]; dlhy: [number, number] }): StavBodovania {
+  const hrac = (p: 0 | 1) => ({
+    cigarety: o.cigarety[p],
+    ruka: Array.from({ length: o.dlhy[p] }, (_, i): CardInstance => ({ uid: 900 + 10 * p + i, defId: "dlh", leftLayout: 0, rightLayout: 0 })),
+    doberaci: [],
+    odhadzovaci: [],
+  });
+  return { ovladnute: [], starsi: [], hraci: [hrac(0), hrac(1)] };
+}

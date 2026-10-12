@@ -5,6 +5,7 @@ import { SadaProvider } from "./lib/sada.tsx";
 import { UcetProvider } from "./lib/ucet.tsx";
 import "./styles.css";
 import "./stranky/stranky.css";
+import "./stranky/statistiky.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
