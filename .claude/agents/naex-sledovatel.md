@@ -92,7 +92,7 @@ ako by to malo vyzerať, prečo. Odlíš rýchle úpravy od väčších zmien.
 - Ruka má teraz typicky 5–8 kariet (predtým 15+); over, či sa ruka a počty
   v balíčkoch dobre čítajú a či rozloženie s menšou rukou nepôsobí prázdne.
 - Starší sú teraz **hore nad stolom** (lupa sa už nemá biť s rukou). Pri
-  každom je riadok ♥ (priazeň a jej účinok) a ★ (koho sa bojí a body teraz),
+  každom je riadok ♥ (priazeň a jej účinok) a ★ (body teraz pre teba aj súpera),
   pri hráčoch značka „★ X b.“. Over, či je jednoznačné, kto má priazeň a kto
   za čo dostane body.
 - **NA EX** ukazuje nad pásom pokynov náhľad bitky pre každú tvoju kartu

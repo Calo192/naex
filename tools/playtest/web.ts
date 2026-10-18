@@ -47,6 +47,15 @@ function loginAgenta(meno: string): string {
   return `ai-${slug || "agent"}`;
 }
 
+/**
+ * Kľúč účtov v ucty.json. Všetky lokálne servery (vývojový :8787 aj server
+ * partie proti človeku) bežia nad tou istou databázou data/, teda aj nad
+ * tými istými účtami.
+ */
+function klucWebu(url: string): string {
+  return /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(url) ? "http://localhost:8787" : url;
+}
+
 function nacitajUcty(): Record<string, Record<string, WebUcet>> {
   if (!existsSync(SUBOR_UCTOV)) return {};
   return JSON.parse(readFileSync(SUBOR_UCTOV, "utf8")) as Record<string, Record<string, WebUcet>>;
@@ -66,10 +75,11 @@ async function volaj(url: string, metoda: string, cesta: string, cookie: string,
  */
 export async function prihlasAgenta(url: string, meno: string): Promise<WebUcet & { cookie: string }> {
   const ucty = nacitajUcty();
+  const kluc = klucWebu(url);
   const zaklad = loginAgenta(meno);
   // Uložený účet nájde podľa mena; ak je login na webe obsadený (napr. stratené
   // heslá), skúsi zaklad-2, zaklad-3…
-  let ucet = Object.values(ucty[url] ?? {}).find((u) => u.login === zaklad || u.login.startsWith(`${zaklad}-`));
+  let ucet = Object.values(ucty[kluc] ?? {}).find((u) => u.login === zaklad || u.login.startsWith(`${zaklad}-`));
   for (let n = 1; ucet === undefined && n <= 9; n++) {
     const novy = { login: n === 1 ? zaklad : `${zaklad}-${n}`, heslo: randomBytes(12).toString("base64url"), meno: menoAgenta(meno) };
     const r = await volaj(url, "POST", "/registracia", "", novy);
@@ -77,7 +87,7 @@ export async function prihlasAgenta(url: string, meno: string): Promise<WebUcet 
       ucet = novy;
       const aktualne = nacitajUcty();
       mkdirSync("playtest", { recursive: true });
-      writeFileSync(SUBOR_UCTOV, JSON.stringify({ ...aktualne, [url]: { ...aktualne[url], [novy.login]: novy } }, null, 2));
+      writeFileSync(SUBOR_UCTOV, JSON.stringify({ ...aktualne, [kluc]: { ...aktualne[kluc], [novy.login]: novy } }, null, 2));
     } else if (!(await r.text()).includes("obsadené")) {
       throw new Error(`Registrácia ${novy.login} na ${url} zlyhala.`);
     }

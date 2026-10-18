@@ -314,6 +314,33 @@ export class Obsah {
     return this.cache;
   }
 
+  /**
+   * Návrat na staršiu sadu: jej obsah sa zverejní znova ako nová verzia
+   * (história sa neprepisuje). S `navrhy` sa do tvorcu vrátia aj návrhy
+   * kariet tej sady; návrhy, ktoré v nej neboli, ostanú nedotknuté.
+   */
+  obnovSadu(verzia: number, autor: number, teraz: number, navrhy: boolean): { verzia: number; kariet: number; mimoSady: string[] } {
+    const r = this.db.prepare("SELECT data FROM sady WHERE verzia = ?").get(verzia) as { data: string } | undefined;
+    if (r === undefined) throw new ChybaVstupu(`Sada v${verzia} neexistuje.`, 404);
+    const stara = JSON.parse(r.data) as Omit<Sada, "verzia">;
+    const body = (this.scorecardsPredvolene as { body: unknown }).body;
+    const scorecards = { ...((stara.scorecardsJson ?? this.scorecardsPredvolene) as Record<string, unknown>), body };
+    try {
+      loadGameData(stara.cardsJson, this.elders, scorecards);
+    } catch (err) {
+      throw new ChybaVstupu(`Sadu v${verzia} súčasná hra nevie načítať: ${err instanceof Error ? err.message : String(err)}`, 422);
+    }
+    const nova = this.db.prepare("INSERT INTO sady (cas, autor, data) VALUES (?, ?, ?)").run(teraz, autor, JSON.stringify({ ...stara, cas: teraz }));
+    this.cache = null;
+    const ids = new Set(stara.karty.map((k) => k.id));
+    if (navrhy) {
+      transakcia(this.db, () => {
+        stara.karty.forEach((k, i) => this.ulozKartu({ ...k, upravene: teraz }, i));
+      });
+    }
+    return { verzia: Number(nova.lastInsertRowid), kariet: stara.karty.length, mimoSady: this.karty.vsetky().filter((k) => !ids.has(k.id)).map((k) => k.id) };
+  }
+
   historiaSad(): { verzia: number; cas: number; autor: number | null; kariet: number }[] {
     const rows = this.db.prepare("SELECT verzia, cas, autor, data FROM sady ORDER BY verzia DESC LIMIT 50").all() as {
       verzia: number;

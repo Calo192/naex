@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Snehová guľa — NA EX!</title>
+<style>
+  :root {
+    --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --okraj: #3d3229;
+    --text: #f1e8d8; --tlmeny: #b6a790; --slaby: #8b7d6a;
+    --akcent: #e9ad45; --cervena: #d0563f; --zelena: #7cbf74; --modra: #5cc0cf;
+    color-scheme: dark;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #dccdb3;
+      --text: #2a2016; --tlmeny: #6b5b45; --slaby: #8a7a62;
+      --akcent: #a8680f; --cervena: #b0402c; --zelena: #3f7f38; --modra: #2a7f8c;
+      color-scheme: light;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 system-ui, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 980px; margin: 0 auto; padding: 32px 16px 120px; }
+  h1, h2, h3 { font-family: Georgia, "Bitter", serif; line-height: 1.2; }
+  h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); margin: 0 0 8px; }
+  h2 { font-size: 1.35rem; margin: 40px 0 12px; }
+  .podnadpis { color: var(--tlmeny); margin: 0 0 24px; max-width: 70ch; }
+  a { color: var(--akcent); }
+  .cisla { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; margin: 16px 0; }
+  .cislo { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; }
+  .cislo b { display: block; font: 700 1.7rem/1.1 Georgia, serif; color: var(--akcent); }
+  .cislo span { color: var(--tlmeny); font-size: 0.88rem; }
+  .slucka { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 12px; overflow-x: auto; }
+  .slucka svg { display: block; width: 100%; min-width: 620px; height: auto; }
+  .slucka text { font: 13px system-ui, sans-serif; fill: var(--text); }
+  .slucka .t { fill: var(--tlmeny); font-size: 12px; }
+  .pricina { margin: 0; padding-left: 22px; }
+  .pricina li { margin-bottom: 8px; }
+  .pricina strong { color: var(--akcent); }
+  .skupina { margin: 26px 0 8px; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--slaby); }
+  .navrh { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; background: var(--plocha); border: 1px solid var(--okraj);
+    border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; }
+  .navrh.vybrany { border-color: var(--akcent); box-shadow: 0 0 0 1px var(--akcent); }
+  .navrh input { width: 20px; height: 20px; margin-top: 3px; accent-color: var(--akcent); cursor: pointer; }
+  .navrh h3 { margin: 0; font-size: 1.08rem; }
+  .navrh h3 label { cursor: pointer; }
+  .navrh .id { color: var(--akcent); font-family: ui-monospace, monospace; font-size: 0.9rem; margin-right: 6px; }
+  .navrh .odporucane { font: 700 0.72rem/1 system-ui, sans-serif; color: var(--pozadie); background: var(--akcent); border-radius: 999px;
+    padding: 3px 9px; margin-left: 8px; vertical-align: 2px; }
+  .navrh .obsah { grid-column: 2; display: grid; gap: 6px; }
+  .navrh p { margin: 0; }
+  .riadky { display: grid; grid-template-columns: 9.5em 1fr; gap: 3px 10px; font-size: 0.93rem; }
+  .riadky dt { color: var(--slaby); }
+  .riadky dd { margin: 0; }
+  .znamky { display: inline-flex; gap: 6px; flex-wrap: wrap; }
+  .znamky span { font-size: 0.75rem; padding: 1px 9px; border-radius: 999px; border: 1px solid var(--okraj); color: var(--tlmeny); }
+  .znamky .velky { color: var(--zelena); border-color: color-mix(in srgb, var(--zelena) 50%, transparent); }
+  .znamky .stredny { color: var(--akcent); border-color: color-mix(in srgb, var(--akcent) 50%, transparent); }
+  .balik { border: 1px solid color-mix(in srgb, var(--akcent) 50%, transparent); background: color-mix(in srgb, var(--akcent) 9%, transparent);
+    border-radius: 14px; padding: 14px 18px; }
+  .balik ol { margin: 6px 0 0; padding-left: 22px; }
+  .balik li { margin-bottom: 6px; }
+  .balik button { margin-top: 8px; }
+  button { font: inherit; font-size: 0.92rem; border-radius: 999px; padding: 7px 16px; border: 1px solid var(--okraj);
+    background: var(--plocha-2); color: var(--text); cursor: pointer; }
+  button.hlavne { background: var(--akcent); color: var(--pozadie); border-color: var(--akcent); font-weight: 700; }
+  .meranie { padding-left: 22px; }
+  .meranie li { margin-bottom: 4px; }
+  .volba { position: fixed; left: 0; right: 0; bottom: 0; background: var(--plocha-2); border-top: 1px solid var(--okraj); z-index: 3; }
+  .volba-in { max-width: 980px; margin: 0 auto; padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+  .volba-text { flex: 1 1 300px; font-size: 0.92rem; color: var(--tlmeny); }
+  .volba-text b { color: var(--text); }
+  .skryte { position: absolute; left: -9999px; }
+  @media (max-width: 560px) {
+    .riadky { grid-template-columns: 1fr; }
+    .riadky dt { margin-top: 4px; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Snehová guľa: víťaz bitky vyhrá všetko</h1>
+  <p class="podnadpis">Návrh riešení po playteste 20261016-134912 a otázke, či priazeň starších vyvažuje prehrávanie.
+    Zaškrtni riešenia, ktoré chceš skúsiť — dole sa poskladá voľba, ktorú mi pošleš. Nič z toho ešte nie je v hre.</p>
+
+  <h2>Čo ukázali posledné partie</h2>
+  <div class="cisla">
+    <div class="cislo"><b>2 z 2</b><span>posledné partie skončili okamžitým vydesením 4 starších — v 5. a 6. kole, pred poslednou lokalitou</span></div>
+    <div class="cislo"><b>27 + 27</b><span>posunov markerov z prebytku za partiu (prebytky 1, 4, 6, 11, 5 a 3, 7, 1, 3, 7, 6)</span></div>
+    <div class="cislo"><b>0 z 5</b><span>bitiek vyhrala Eva, hoci mala priazeň 6 z 8 starších, väčšinou na maxime</span></div>
+    <div class="cislo"><b>1 : 4</b><span>útočník : obranca. Útočník je porazený z minulej bitky — vyberá cieľ, ale zo šenku berie druhý</span></div>
+    <div class="cislo"><b>72</b><span>bodov dal Janovi strach starších (lokality 40). Eve priazeň nedala nič</span></div>
+    <div class="cislo"><b>4 a 4,5</b><span>známky za rovnováhu a napätie — najnižšie zo všetkých kritérií</span></div>
+  </div>
+
+  <h2>Prečo to tak je</h2>
+  <div class="slucka" role="img" aria-label="Schéma: výhra bitky živí víťaza tromi cestami, porazený dostane len slabú priazeň">
+    <svg viewBox="0 0 760 250">
+      <defs>
+        <marker id="sip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M0 0 L10 5 L0 10z" fill="#e9ad45"/>
+        </marker>
+        <marker id="sip2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M0 0 L10 5 L0 10z" fill="#8b7d6a"/>
+        </marker>
+      </defs>
+      <rect x="20" y="95" width="150" height="56" rx="10" fill="none" stroke="#e9ad45" stroke-width="2"/>
+      <text x="95" y="119" text-anchor="middle">Výhra bitky</text>
+      <text x="95" y="138" text-anchor="middle" class="t">prebytok = rozdiel</text>
+
+      <rect x="290" y="14" width="200" height="50" rx="10" fill="none" stroke="#7cbf74" stroke-width="1.5"/>
+      <text x="390" y="36" text-anchor="middle">Lokalita</text>
+      <text x="390" y="54" text-anchor="middle" class="t">body za kus na scorecardoch</text>
+
+      <rect x="290" y="98" width="200" height="50" rx="10" fill="none" stroke="#7cbf74" stroke-width="1.5"/>
+      <text x="390" y="120" text-anchor="middle">Strach starších</text>
+      <text x="390" y="138" text-anchor="middle" class="t">zónové body · okamžitá výhra 4/8</text>
+
+      <rect x="290" y="182" width="200" height="50" rx="10" fill="none" stroke="#7cbf74" stroke-width="1.5"/>
+      <text x="390" y="204" text-anchor="middle">Prebudenie</text>
+      <text x="390" y="222" text-anchor="middle" class="t">efekt staršieho pre víťaza</text>
+
+      <rect x="590" y="98" width="150" height="50" rx="10" fill="none" stroke="#8b7d6a" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <text x="665" y="120" text-anchor="middle">Porazený</text>
+      <text x="665" y="138" text-anchor="middle" class="t">priazeň (pasívna, malá)</text>
+
+      <path d="M170 110 C 220 60, 240 40, 288 39" fill="none" stroke="#e9ad45" stroke-width="2" marker-end="url(#sip)"/>
+      <path d="M170 123 L 288 123" fill="none" stroke="#e9ad45" stroke-width="2" marker-end="url(#sip)"/>
+      <path d="M170 136 C 220 190, 240 207, 288 207" fill="none" stroke="#e9ad45" stroke-width="2" marker-end="url(#sip)"/>
+      <path d="M490 123 L 588 123" fill="none" stroke="#8b7d6a" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#sip2)"/>
+      <path d="M390 232 C 390 248, 95 252, 95 153" fill="none" stroke="#e9ad45" stroke-width="1.5" stroke-dasharray="2 4" marker-end="url(#sip)"/>
+      <text x="230" y="246" class="t">silnejší víťaz → väčší rozdiel v ďalšej bitke</text>
+    </svg>
+  </div>
+  <ol class="pricina">
+    <li><strong>Jedna výhra kŕmi víťaza tromi cestami</strong> — lokalita, strach (body aj cesta k okamžitej výhre) a prebudenie (efekt staršieho hrá zaňho).
+      Porazený dostane jedinú vec: priazeň.</li>
+    <li><strong>Prebytok nemá strop.</strong> Rozdiel 11 : 0 je 11 posunov. Čím je víťaz silnejší, tým väčší rozdiel, tým viac posunov — slučka sa zrýchľuje.</li>
+    <li><strong>Priazeň je pasívna.</strong> Väčšina posúva prahy (Cirhóza, Exekútor, limit ruky) alebo hodnotu „trocha“ a „zopár“.
+      Bitku priamo ovplyvní len Bitkár. Eva mala 6 priazní a ani jednu, ktorou by vyhrala ďalšiu bitku.</li>
+    <li><strong>Krajná pozícia je definitívna.</strong> Z nej marker nepohne nikto (okrem náhrady staršieho), takže porazený vydesených starších nevráti.</li>
+    <li><strong>Okamžitá výhra nemá varovanie ani odpoveď.</strong> Štvrté vydesenie príde uprostred bitky z prebytku a hra skončí.</li>
+    <li><strong>Porazený nemá ani výhodu v drafte.</strong> Pravidlá 2026-10-12 hovoria „útočník draftuje prvý“, no pri braní zo šenku začína obranca
+      (víťaz minulej bitky). PRAVIDLÁ §7 si v tom odporujú.</li>
+    <li><strong>Nové bodovanie (2026-10-16) zvýšilo cenu strachu</strong> — zónové podmienky sa rátajú za všetkých starších na mnohých scorecardoch.</li>
+  </ol>
+
+  <h2>Riešenia</h2>
+  <p class="podnadpis">Zoradené podľa toho, kde slučku prerušia. Riešenia z rôznych skupín sa dopĺňajú; v rámci skupiny často stačí jedno.</p>
+
+  <div id="navrhy"></div>
+
+  <h2>Odporúčaný balík</h2>
+  <div class="balik">
+    <p>Päť zmien, z ktorých každá rieši inú príčinu a žiadna nie je zložitá:</p>
+    <ol>
+      <li><b>A1 Strop prebytku 3</b> — slučka prestane zrýchľovať. V partii 134912 by bolo 13 posunov namiesto 27, vydesenie 4 starších (aspoň 16 posunov) by do 5. kola nebolo možné.</li>
+      <li><b>B1 Ochranca</b> — porazený dostane silu v bitke úmerne tomu, ako veľmi prehráva. Priazeň prestane byť len pasívna.</li>
+      <li><b>C2 Ohlásené vydesenie</b> — okamžitá výhra dostane jedno kolo na odpoveď a rozhranie hrozbu ukáže vopred.</li>
+      <li><b>D1 Útočník berie prvý</b> — oprava rozporu v pravidlách, ktorý dnes pomáha víťazovi.</li>
+      <li><b>E1 Vysvetliť priazeň pri posune</b> — Eva celý mechanizmus nepochopila („prehrám, mám priazeň, ale súper má body“).</li>
+    </ol>
+    <p>B2, C1 a C3 sú dobré ďalšie kroky, ak balík nebude stačiť. A2 a B3 samy veľa nezmenia.</p>
+    <button type="button" class="hlavne" id="vyberBalik">zaškrtnúť odporúčaný balík</button>
+  </div>
+
+  <h2>Ako to overíme</h2>
+  <ul class="meranie">
+    <li>2–3 playtesty s rovnakými štýlmi (Jano agresívny, Eva opatrná), aby sa dali porovnať s 20261012-173832 a 20261016-134912.</li>
+    <li>Sledovať: koľkokrát porazený vyhrá nasledujúcu bitku, najdlhšiu sériu výhier jedného hráča, súčet prebytkov a posunov,
+      v ktorom kole a ako partia skončila (vydesenie, body), pomer útočník : obranca.</li>
+    <li>Známky rovnováhy a napätia (dnes 4 a 4,5) a či sa porazený vo feedbacku ešte sťažuje, že nemal šancu.</li>
+    <li>Pozor na opačný extrém: či sa neoplatí prehrávať naschvál (B1, B2). Prehra stále stojí lokalitu a strach, takže by nemala.</li>
+  </ul>
+</main>
+
+<div class="volba" role="region" aria-label="Tvoja voľba">
+  <div class="volba-in">
+    <span class="volba-text" id="volbaText">Zatiaľ nič nie je zaškrtnuté.</span>
+    <button type="button" id="kopiruj">skopírovať voľbu</button>
+  </div>
+</div>
+<textarea class="skryte" id="schranka" aria-hidden="true" tabindex="-1"></textarea>
+
+<script>
+const NAVRHY = [
+  { skupina: "A — Menej prebytku (brzda na vstupe)" },
+  { id: "A1", odp: true, nazov: "Strop prebytku: najviac 3 posuny za bitku",
+    co: "Víťaz posunie markery najviac o 3, nech je rozdiel akýkoľvek. Lokalitu a výhru má aj tak.",
+    data: "134912: prebytky 1, 4, 6, 11, 5 → 1, 3, 3, 3, 3 (27 → 13 posunov). 173832: 27 → 16. Na vydesenie 4 starších z neutrálu treba aspoň 16 posunov a dve kolá na každú krajnú pozíciu.",
+    riziko: "Drvivá výhra sa menej oplatí — rozdiel 11 a 3 dá rovnaký strach. Strop sa dá ladiť (2–4).",
+    dopad: "velky", zlozitost: "malá — jedna konštanta" },
+  { id: "A2", nazov: "Jeden posun na staršieho za bitku (návrh Jana)",
+    co: "Prebytok sa nesmie dať tomu istému staršiemu dvakrát v jednej bitke.",
+    data: "Jano v 4. bitke posúval tých istých starších viackrát a za dve kolá mal dvoch v červenej.",
+    riziko: "S 8 staršími málo brzdí celkový objem — víťaz rozloží 11 posunov na 8 starších. Samostatne slabšie než A1.",
+    dopad: "stredny", zlozitost: "malá" },
+
+  { skupina: "B — Silnejšia priazeň (protiváha pre porazeného)" },
+  { id: "B1", odp: true, nazov: "Ochranca: priazeň silou 2 pridá v bitke tuhé poškodenie",
+    co: "Každý starší, ktorý ti dáva priazeň silou 2 (oranžová a červená na tvojej polovici), ti v bitke pridá 1 tuhé poškodenie, spolu najviac +3. Starší, ktorý sa bojí súpera, sa drží teba.",
+    data: "Eva mala v 4. a 5. bitke štyroch starších na 7–8 → +3. Bitky 11 : 0 a 9 : 4 by boli 11 : 3 a 9 : 7 — prebytok 8 a 2 namiesto 11 a 5; s A1 by sa porazený dostal na dosah.",
+    riziko: "Bitkár prestane byť jediná bojová priazeň. Treba ho ukázať v odhade bitky. Prehrávanie naschvál sa neoplatí — stojí lokalitu aj strach.",
+    dopad: "velky", zlozitost: "stredná — výpočet bitky a zobrazenie" },
+  { id: "B2", nazov: "Prebudený starší pomáha tomu, kto má jeho priazeň",
+    co: "Na krajnej pozícii sa efekt karty staršieho uplatní pre hráča s priazňou (porazeného), nie pre toho, kto ho vydesil. Vydesený starší sa utieka k druhému.",
+    data: "Dnes mal Jano efekty 4 prebudených starších (Farár: ignoruj povery, Autobusár: absťáky, Veterinár: cirhóza menej), Eva žiadny.",
+    riziko: "Efekty starších sú malé, samo to nestačí. Mení sa pravidlo prebudenia (§9).",
+    dopad: "stredny", zlozitost: "malá" },
+  { id: "B3", nazov: "Sila priazne 1 / 2 / 3",
+    co: "Červená zóna dá priazeň sily 3 namiesto 2.",
+    data: "Pomôže až na konci, keď je väčšinou rozhodnuté.",
+    riziko: "Malý vplyv; niektoré priazne pri sile 3 (Alkoholik, Zberateľ) skoro nič nemenia.",
+    dopad: "maly", zlozitost: "malá" },
+
+  { skupina: "C — Protihra proti okamžitej výhre" },
+  { id: "C1", nazov: "Upokojenie: hráč s priazňou smie vrátiť marker z krajnej pozície",
+    co: "Pohoršením hráča, ktorý má priazeň, sa marker z krajnej pozície posunie späť a prebudenie skončí. Víťaz Pohoršením na krajnú stále nesmie.",
+    data: "Eva stiahla Pohoršením Krčmárku a Poštárku, na zamknutých staršie nezmohla nič.",
+    riziko: "Vydesenie bude menej isté a partie dlhšie. Pohoršenie porazeného dostane novú váhu.",
+    dopad: "stredny", zlozitost: "malá" },
+  { id: "C2", odp: true, nazov: "Ohlásené vydesenie: výhra až po kole na odpoveď",
+    co: "Kto vydesí 4 z 8 starších, vyhrá, ak ich bude mať vydesených aj na konci nasledujúceho kola. Súper má kolo na odpoveď (Pohoršenie, bitka o staršieho, C1). Rozhranie stále ukazuje „Jano: vydesení 3 / 4“.",
+    data: "Obe posledné partie skončili vydesením uprostred bitky, bez varovania; Eva vo feedbacku: „klient nevaruje, že súper je blízko 4 z 8“.",
+    riziko: "Bez C1 alebo C3 má porazený málo nástrojov, ako v jednom kole vydesenie zvrátiť — kolo navyše by bolo len odklad.",
+    dopad: "velky", zlozitost: "stredná — koniec hry a zobrazenie hrozby" },
+  { id: "C3", nazov: "Bitka o staršieho pre porazeného: priazeň pridá tuhé poškodenie",
+    co: "V bitke o staršieho dostane hráč s jeho priazňou + silu priazne tuhého poškodenia. Výhra vráti marker do sivej a získa kartu staršieho.",
+    data: "Bitka o staršieho, navrhnutá ako cesta späť, padla v posledných dvoch partiách 1-krát a 0-krát.",
+    riziko: "Útočník v nej nemá draft — aj s bonusom ju slabá ruka nemusí vyhrať.",
+    dopad: "stredny", zlozitost: "malá" },
+
+  { skupina: "D — Výhoda pre porazeného v kole" },
+  { id: "D1", odp: true, nazov: "Útočník berie zo šenku prvý",
+    co: "Porazený (útočník) začína brať zo šenku. Zodpovedá to rozhodnutiu z 2026-10-12 „útočník draftuje prvý“, ktoré stavba šenku potichu otočila.",
+    data: "Útočník vyhral 1 z 5 bitiek (minule 4 zo 7). Kedysi, keď prvý bral obranca, vyhral obranca 7 z 8.",
+    riziko: "Keď útočník bral všetky tri karty naraz ako prvý, vyhral 8 z 11 — striedavé branie by to malo tlmiť.",
+    dopad: "stredny", zlozitost: "malá — jedno miesto v engine + PRAVIDLÁ §7" },
+
+  { skupina: "E — Zrozumiteľnosť" },
+  { id: "E1", odp: true, nazov: "Vysvetliť priazeň v momente posunu a ukazovať hrozbu",
+    co: "Pri prebytku porazený uvidí „dostávaš priazeň Fajčiar +2: +2 Cigaretky v 1. Pitke“. Nad staršími stály ukazovateľ vydesených starších oboch hráčov.",
+    data: "Eva: „prehrám, mám priazeň, ale súper má body — veľmi nezrozumiteľné pre nového hráča“; zrozumiteľnosť 4.",
+    riziko: "Žiadne pre pravidlá.",
+    dopad: "stredny", zlozitost: "malá — len rozhranie" },
+];
+
+const KLUC = "naex.navrh-dobiehanie";
+let vybrane = new Set();
+try { vybrane = new Set(JSON.parse(localStorage.getItem(KLUC) || "[]")); } catch (e) { /* bez úložiska */ }
+const uloz = () => { try { localStorage.setItem(KLUC, JSON.stringify([...vybrane])); } catch (e) { /* bez úložiska */ } };
+
+const ZNAMKY = { velky: ["velky", "veľký dopad"], stredny: ["stredny", "stredný dopad"], maly: ["", "malý dopad"] };
+const el = (tag, attrs, ...deti) => {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) { if (k === "class") n.className = v; else n.setAttribute(k, v); }
+  for (const d of deti) n.append(d);
+  return n;
+};
+
+const koren = document.getElementById("navrhy");
+for (const n of NAVRHY) {
+  if (n.skupina) { koren.append(el("div", { class: "skupina" }, n.skupina)); continue; }
+  const box = el("input", { type: "checkbox", id: "c-" + n.id });
+  box.checked = vybrane.has(n.id);
+  const h = el("h3", {}, el("label", { for: "c-" + n.id }, el("span", { class: "id" }, n.id), n.nazov));
+  if (n.odp) h.append(el("span", { class: "odporucane" }, "odporúčané"));
+  const [trieda, popis] = ZNAMKY[n.dopad];
+  const riadky = el("dl", { class: "riadky" },
+    el("dt", {}, "Čo"), el("dd", {}, n.co),
+    el("dt", {}, "Z partií"), el("dd", {}, n.data),
+    el("dt", {}, "Riziko"), el("dd", {}, n.riziko));
+  const znamky = el("div", { class: "znamky" }, el("span", { class: trieda }, popis), el("span", {}, "zložitosť: " + n.zlozitost));
+  const karta = el("article", { class: "navrh" + (box.checked ? " vybrany" : ""), "data-id": n.id }, box, h, el("div", { class: "obsah" }, riadky, znamky));
+  box.addEventListener("change", () => {
+    if (box.checked) vybrane.add(n.id); else vybrane.delete(n.id);
+    karta.classList.toggle("vybrany", box.checked);
+    uloz(); prepisVolbu();
+  });
+  koren.append(karta);
+}
+
+function textVolby() {
+  const zoznam = NAVRHY.filter((n) => n.id && vybrane.has(n.id));
+  return zoznam.length === 0 ? "" : "Chcem skúsiť: " + zoznam.map((n) => n.id + " " + n.nazov).join("; ") + ".";
+}
+function prepisVolbu() {
+  const t = document.getElementById("volbaText");
+  const zoznam = NAVRHY.filter((n) => n.id && vybrane.has(n.id));
+  t.innerHTML = zoznam.length === 0 ? "Zatiaľ nič nie je zaškrtnuté." : "<b>Tvoja voľba:</b> " + zoznam.map((n) => n.id).join(", ");
+}
+document.getElementById("vyberBalik").addEventListener("click", () => {
+  vybrane = new Set(NAVRHY.filter((n) => n.odp).map((n) => n.id));
+  for (const k of document.querySelectorAll(".navrh")) {
+    const on = vybrane.has(k.dataset.id);
+    k.querySelector("input").checked = on;
+    k.classList.toggle("vybrany", on);
+  }
+  uloz(); prepisVolbu();
+});
+document.getElementById("kopiruj").addEventListener("click", async (e) => {
+  const t = textVolby() || "Zatiaľ nič.";
+  try { await navigator.clipboard.writeText(t); }
+  catch (err) { const s = document.getElementById("schranka"); s.value = t; s.select(); document.execCommand("copy"); }
+  e.target.textContent = "skopírované";
+  setTimeout(() => { e.target.textContent = "skopírovať voľbu"; }, 1500);
+});
+prepisVolbu();
+</script>
+</body>
+</html>

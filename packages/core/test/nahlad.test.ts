@@ -41,7 +41,8 @@ describe("poskodenieBitky z verejného pohľadu", () => {
         if (prave && b !== null && b.krok === "prebytok" && b.damage !== null) {
           const view = viewFor(data, state, 0);
           const linia = evaluateLine(data, {
-            lokalita: view.ciel?.typ === "lokalita" ? view.ciel.lokalita : null,
+            // V bitke o staršieho leží v strede karta staršieho (Michal 2026-10-12).
+            lokalita: view.ciel?.lokalita ?? null,
             lokalitaOtocena: view.lokalitaOtocena,
             strany: view.strany,
           });

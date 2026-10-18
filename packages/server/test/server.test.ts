@@ -194,7 +194,7 @@ describe("M12 — účty, profil a admin API", () => {
     expect((await api("/admin/obsah", { cookie })).status).toBe(403);
     expect((await api("/admin/obsah")).status).toBe(401);
     const sada = await api("/sada");
-    expect((sada.telo?.karty as unknown[]).length).toBe(50);
+    expect((sada.telo?.karty as unknown[]).length).toBe(51);
     expect(sada.telo?.verzia).toBe(1);
     // Scorecardy z KartyAI sú v sade od prvého spustenia, ikony s významom v hre.
     expect((sada.telo?.bodovacie as unknown[]).length).toBe(8);
@@ -234,6 +234,16 @@ describe("M12 — admin: úprava karty a zverejnenie", () => {
         karty: { id: string; efekt: string }[];
       };
       expect(sada.karty.find((k) => k.id === "pijan")?.efekt).toBe("Furt: Testovací text.");
+
+      // Návrat na v1: zverejní sa znova ako v3; s návrhmi sa vráti aj návrh karty.
+      const navrat = (await (await api("/admin/sady/1/obnovit", { method: "POST", body: JSON.stringify({ navrhy: true }) })).json()) as { verzia: number };
+      expect(navrat.verzia).toBe(3);
+      const po = (await (await fetch(`http://127.0.0.1:${s2.port}/api/sada`)).json()) as { verzia: number; karty: { id: string; efekt: string }[] };
+      expect(po.verzia).toBe(3);
+      expect(po.karty.find((k) => k.id === "pijan")?.efekt).toBe(pijan?.efekt);
+      const navrhy = (await (await api("/admin/obsah")).json()) as { karty: { id: string; efekt: string }[] };
+      expect(navrhy.karty.find((k) => k.id === "pijan")?.efekt).toBe(pijan?.efekt);
+      expect((await api("/admin/sady/99/obnovit", { method: "POST", body: "{}" })).status).toBe(404);
 
       const exportRes = await api("/admin/export");
       expect(await exportRes.text()).toContain("CARD 1:");

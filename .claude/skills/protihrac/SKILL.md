@@ -22,19 +22,21 @@ Meno do 19 znakov (web doň pridá „ (AI)"), štýl jednou-dvoma vetami.
 
 ## Postup
 
-1. **Web** — predvolene vývojový server `http://localhost:8787`
-   (`NAEX_WEB_URL` alebo `--url` ho zmení). Over ho:
-   ```bash
-   node --experimental-strip-types --no-warnings tools/playtest/web.ts dostupny
-   ```
-   Ak nebeží, spusti ho na pozadí (`npm run dev`, `run_in_background`) a over
-   znova. Ak zmeny v klientovi ešte nie sú v buildi, `npm run dev` ich má.
-
-2. **Založ partiu**:
+1. **Založ partiu**:
    ```bash
    node --experimental-strip-types --no-warnings tools/playtest/zaloz-clovek.ts "<meno>" <dlzka>
    ```
-   Z výpisu si zober reláciu `R` a odkaz na pripojenie.
+   Skript spustí **vlastný server partie** (port od 8800, bez `--watch`) nad
+   databázou `data/` — reštart vývojového servera po zmene kódu ho nezhodí,
+   miestnosti totiž žijú len v pamäti servera. Ak je build klienta starší než
+   zdrojáky, najprv ho zbuildí (chvíľu trvá). Vývojový server `npm run dev`
+   netreba. Z výpisu si zober reláciu `R`, adresu servera partie `<web>`
+   a odkaz na pripojenie. (`--url <web>` založí partiu na existujúcom webe
+   bez vlastného servera — len na výslovnú žiadosť, viď Poznámky.)
+
+2. **AI účet musí byť hráč**, inak nezverejní spätnú väzbu (nový účet je
+   návštevník). Ak je účet nový, povedz používateľovi, nech ho v Tvorba →
+   Hráči povýši — dá sa to aj počas partie.
 
 3. **Daj používateľovi odkaz** — povedz mu: odkaz (`…/hra?kod=XXXX`), proti
    komu hrá a aký má agent štýl, dĺžku hry a že partia sa počíta do Frajeriny.
@@ -51,8 +53,13 @@ Meno do 19 znakov (web doň pridá „ (AI)"), štýl jednou-dvoma vetami.
    ```bash
    node --experimental-strip-types --no-warnings tools/playtest/hrac.ts R 1 stav > R/koniec.txt
    ```
+   zastav server partie:
+   ```bash
+   node --experimental-strip-types --no-warnings tools/playtest/ukonci.ts R
+   ```
    a odovzdaj používateľovi: výsledok partie, čo agent na hru povedal (3–5
-   bodov) a odkaz na stránku Spätná väzba (`<web>/spatna-vazba`), kde sú
+   bodov) a odkaz na stránku Spätná väzba (`http://localhost:8787/spatna-vazba`
+   alebo `npm start`, server partie je už zastavený), kde sú
    jeho názory. Ak chce prehľadný report, napíš ho ako interaktívne HTML
    (pravidlo pre dokumenty pre ľudí) z `R/hrac1/feedback.md` a `dennik.md`.
 
@@ -60,5 +67,9 @@ Meno do 19 znakov (web doň pridá „ (AI)"), štýl jednou-dvoma vetami.
 
 - Relácie sú v `playtest/` (mimo gitu), heslá AI účtov v `playtest/ucty.json`.
 - Agent vidí len to, čo hráč — ruku človeka nepozná.
+- Prihlásenie z `localhost:8787` platí aj na serveri partie (relácie sú
+  v databáze, cookie nerozlišuje porty). Log servera je v `R/server.log`.
+- Ak miestnosť zmizne („Miestnosť s týmto kódom neexistuje"), pozri
+  `R/server.log` — server partie spadol.
 - Na produkčný web (iný než localhost) zakladaj partiu len, keď to používateľ
   výslovne chce — AI účet tam bude verejne viditeľný.

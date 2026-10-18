@@ -11,7 +11,7 @@ import type {
   DamageResult,
   PlayerId,
 } from "@naex/core";
-import { KONSTANTY } from "@naex/core";
+import { KONSTANTY, jeCielLokalita, limitBuduceKolo, limitZhromazdenia } from "@naex/core";
 import type { Sada } from "@naex/tvorba";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { useTip, type TipObsah } from "../karta/Tip.tsx";
@@ -113,13 +113,17 @@ export interface HracDoskaProps {
   readonly prahy: { readonly cirhoza: number; readonly dlh: number; readonly exekutor: number; readonly priznaneDlhy: number };
   readonly menoKarty: (defId: string) => string;
   readonly popisKarty: (defId: string) => string;
+  /** Doliatie a nový poldeci za cigarety — len na tvojej doske (Michal 2026-10-18: nedali sa nájsť). */
+  readonly obchodCigariet?:
+    | { readonly mozno: boolean; readonly doliat: () => void; readonly novy: () => void; readonly cenaBarteru: number }
+    | undefined;
 }
 
 /**
  * Doska hráča. Obe dosky sú v jednom rade nad stolom — tvoja vľavo, súperova
  * vpravo a zrkadlovo (avatar pri vonkajšom okraji, zdroje smerom k stredu).
  */
-export function HracDoska({ view, p, info, prahy, menoKarty, popisKarty, body }: HracDoskaProps) {
+export function HracDoska({ view, p, info, prahy, menoKarty, popisKarty, body, obchodCigariet }: HracDoskaProps) {
   const hrac = view.hraci[p];
   const ja = p === view.ja;
   const meno = info?.meno ?? `Hráč ${p + 1}`;
@@ -127,7 +131,9 @@ export function HracDoska({ view, p, info, prahy, menoKarty, popisKarty, body }:
   const naTahu =
     view.koniec === null && (view.faza === "draft" && view.draftStav?.krok === "stavba" ? !view.draftStav.vybral[p] : view.naTahu === p);
   const naexNaStole = view.strany[0].concat(view.strany[1]).filter((pl) => pl.naexBy === p).length;
-  const limit = hrac.poldeciPlne + naexNaStole + 1;
+  // Limit, s ktorým hráč vstupuje do Zhromaždenia (so Zastávkou, Vínkom a NA EX na stole).
+  const limit = limitZhromazdenia(view, p);
+  const buduci = limitBuduceKolo(view, p);
   const z = view.zhromazdenieStav;
   const pitka = view.pitkaStav;
   const kto = ja ? "Máš" : "Má";
@@ -156,7 +162,7 @@ export function HracDoska({ view, p, info, prahy, menoKarty, popisKarty, body }:
               : { text: "stavia šenok", trieda: "", tip: "Vyberá zo svojho balíčka kartu do šenku a kartu naspodok; zvyšok podá súperovi." }
             : view.draftStav.hotovo[p]
               ? { text: `draftoval (${view.draftStav.noveKarty[p]} kariet)`, trieda: "tlmeny", tip: "Draft má za sebou." }
-              : { text: `berie zo šenku (${view.draftStav.noveKarty[p]}/3)`, trieda: "", tip: "Berie striedavo po jednej karte, najviac 3; za nevzaté dostane cigarety." }
+              : { text: `berie zo šenku (${view.draftStav.noveKarty[p]})`, trieda: "", tip: "Berie striedavo, koľko si môže dovoliť: 1 karta za cigaretu alebo 2 karty za plný poldeci." }
           : null;
 
   return (
@@ -210,7 +216,7 @@ export function HracDoska({ view, p, info, prahy, menoKarty, popisKarty, body }:
           }
           pod={
             <>
-              plné · {hrac.poldeciVypite} vypité{naexNaStole > 0 && ` · ${naexNaStole} na stole`}
+              plné · {hrac.poldeciVypite} vypité{naexNaStole > 0 && ` · ${naexNaStole} na stole`} · <b>limit {limit}</b>
             </>
           }
           tip={{
@@ -219,10 +225,19 @@ export function HracDoska({ view, p, info, prahy, menoKarty, popisKarty, body }:
               <>
                 {kto} {hrac.poldeciPlne} plné a {hrac.poldeciVypite} vypité
                 {naexNaStole > 0 ? `, ${naexNaStole} leží na stole cez NA EX` : ""}.
-                <span className="tip-stav">Limit vykladania = plné + na stole + 1 = {limit}</span>
+                <span className="tip-stav">
+                  {jeCielLokalita(view, "zastavka")
+                    ? `Limit vykladania: Zastávka — obaja ${limit}`
+                    : `Limit vykladania = plné + na stole + 1 = ${limit}`}
+                </span>
+                <span className="tip-riadok">
+                  V ďalšom kole limit {buduci}: poldeci z NA EX sa pri bitke vypijú a na začiatku kola sa{" "}
+                  {KONSTANTY.POLDECI_NA_ZACIATKU_KOLA} vypitý doleje sám (bez Poldecka a doliatia cigaretami).
+                </span>
                 <span className="tip-riadok">
                   V Pitke položíš plný poldeci na Občana alebo Starešinu (NA EX!): zdvojnásobí neaktívne akcie
-                  karty a zruší jej aktívne. Vypitý doleješ za 2 cigarety, nový získaš barterom za 5.
+                  karty a zruší jej aktívne. Plný poldeci platí aj kartu zo šenku. Vypitý doleješ za 2 cigarety, nový
+                  získaš barterom (5 cigariet, s priazňou Lakomca menej).
                 </span>
               </>
             ),
@@ -233,15 +248,45 @@ export function HracDoska({ view, p, info, prahy, menoKarty, popisKarty, body }:
           trieda="zdroj-cigarety"
           ikona={<IkonaCigareta />}
           hodnota={<span className="velke-cislo">{hrac.cigarety}</span>}
-          pod={hrac.cigarety >= 5 ? "stačí na barter" : `${5 - hrac.cigarety} do barteru`}
+          pod={
+            obchodCigariet === undefined ? (
+              hrac.cigarety >= KONSTANTY.BARTER_CENA ? "stačí na nový poldeci" : `${KONSTANTY.BARTER_CENA - hrac.cigarety} do nového poldeci`
+            ) : (
+              <span className="obchod-cigariet">
+                <button
+                  disabled={!obchodCigariet.mozno || hrac.cigarety < KONSTANTY.REFILL_CENA || hrac.poldeciVypite === 0}
+                  title={
+                    obchodCigariet.mozno
+                      ? `Za ${KONSTANTY.REFILL_CENA} cigarety otočíš vypitý poldeci na plný.`
+                      : "Doliať poldeci sa dá v Pitke na tvojom ťahu."
+                  }
+                  onClick={obchodCigariet.doliat}
+                >
+                  doliať −{KONSTANTY.REFILL_CENA}
+                </button>
+                <button
+                  disabled={!obchodCigariet.mozno || hrac.cigarety < obchodCigariet.cenaBarteru}
+                  title={
+                    obchodCigariet.mozno
+                      ? `Za ${obchodCigariet.cenaBarteru} cigariet nový plný poldeci navyše (natrvalo o jeden viac).`
+                      : "Nový poldeci za cigarety sa kupuje v Pitke na tvojom ťahu."
+                  }
+                  onClick={obchodCigariet.novy}
+                >
+                  nový poldeci −{obchodCigariet.cenaBarteru}
+                </button>
+              </span>
+            )
+          }
           tip={{
             nadpis: "Cigarety",
             text: (
               <>
                 {kto} {hrac.cigarety} fyzických cigariet.
                 <span className="tip-riadok">
-                  V Pitke: vyfajčená cigareta = o kartu viac pri ťahaní. 2 cigarety dolejú vypitý poldeci, 5 vymeníš
-                  za nový plný (stokársky barter). Na konci hry sa bodujú, ak to dovolí scorecard.
+                  Získavaš ich z aktívnych Cigaretiek v Pitke (mínus súperove Obmedzenia) a prenášajú sa z kola na kolo.
+                  Fajčiť smieš na svojom ťahu v Zhromaždení aj v Pitke: cigareta = karta hneď. V Pitke 2 cigarety dolejú
+                  vypitý poldeci, 5 (s priazňou Lakomca menej) vymeníš za nový plný (stokársky barter). Na konci hry bod za každé 3, ak to dovolí scorecard.
                 </span>
               </>
             ),
@@ -261,9 +306,11 @@ export function HracDoska({ view, p, info, prahy, menoKarty, popisKarty, body }:
             nadpis: "Poškodenie pečene",
             text: (
               <>
-                {hrac.pecen} z {prahy.cirhoza}. Pri dosiahnutí prahu hneď vzniká Cirhóza — v bitke pridáva tuhé poškodenie.
+                {hrac.pecen} z {prahy.cirhoza}. Vyhodnocuje sa len v Pitke: pri dosiahnutí prahu vzniká Cirhóza (v bitke pridáva tuhé
+                poškodenie) a <b>po každej Pitke sa pečeň vynuluje</b>.
                 <span className="tip-riadok">
-                  Pribúda akciami Pečeň, Poldecko a NA EX. Prah = {KONSTANTY.PRAH_CIRHOZY_ZAKLAD} + priazeň Alkoholika.
+                  Pribúda akciami Pečeň, Poldecko a NA EX v Pitke; pitie do dna v Zhromaždení ju pripíše dopredu do najbližšej Pitky.
+                  Prah = {KONSTANTY.PRAH_CIRHOZY_ZAKLAD} + priazeň Alkoholika.
                 </span>
               </>
             ),
@@ -284,7 +331,7 @@ export function HracDoska({ view, p, info, prahy, menoKarty, popisKarty, body }:
             text: (
               <>
                 {hrac.zadlzenie} z {prahy.dlh}. Pri dosiahnutí prahu hneď vzniká karta Dlh a ide do odhadzovacieho balíčka.
-                <span className="tip-riadok">Pribúda akciami Hazard v Pitke.</span>
+                <span className="tip-riadok">Pribúda akciami Hazard v Pitke a <b>po každej Pitke sa vynuluje</b>.</span>
               </>
             ),
           }}

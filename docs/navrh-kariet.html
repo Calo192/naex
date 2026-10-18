@@ -1,0 +1,687 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Revízia kariet — návrh — NA EX!</title>
+<style>
+  :root {
+    --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --okraj: #3d3229;
+    --text: #f1e8d8; --tlmeny: #b6a790; --slaby: #8b7d6a;
+    --akcent: #e9ad45; --cervena: #d0563f; --zelena: #7cbf74; --modra: #5cc0cf; --fialova: #b48ad8; --oranzova: #e08a3c;
+    color-scheme: dark;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #dccdb3;
+      --text: #2a2016; --tlmeny: #6b5b45; --slaby: #8a7a62;
+      --akcent: #a8680f; --cervena: #b0402c; --zelena: #3f7f38; --modra: #2a7f8c; --fialova: #7a4fa8; --oranzova: #b0601a;
+      color-scheme: light;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 system-ui, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 1100px; margin: 0 auto; padding: 32px 16px 140px; }
+  h1, h2, h3 { font-family: Georgia, "Bitter", serif; line-height: 1.2; }
+  h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); margin: 0 0 8px; }
+  h2 { font-size: 1.4rem; margin: 48px 0 12px; padding-top: 8px; border-top: 1px solid var(--okraj); }
+  h3 { font-size: 1.08rem; margin: 22px 0 8px; }
+  p { max-width: 80ch; }
+  .podnadpis { color: var(--tlmeny); margin: 0 0 20px; max-width: 80ch; }
+  a { color: var(--akcent); }
+  code { font-size: 0.88em; background: var(--plocha-2); padding: 1px 5px; border-radius: 5px; }
+  .verdikt { border: 1px solid color-mix(in srgb, var(--akcent) 55%, transparent); background: color-mix(in srgb, var(--akcent) 9%, transparent); border-radius: 14px; padding: 14px 18px; margin: 18px 0; }
+  .verdikt .stitok { display: inline-block; font: 700 0.8rem/1 system-ui, sans-serif; letter-spacing: 0.06em; text-transform: uppercase; color: var(--pozadie); background: var(--akcent); border-radius: 999px; padding: 5px 12px; margin-bottom: 8px; }
+  .verdikt ul { margin: 6px 0 0; padding-left: 22px; } .verdikt li { margin-bottom: 6px; }
+  .cisla { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin: 16px 0; }
+  .cislo { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; }
+  .cislo b { display: block; font: 700 1.5rem/1.15 Georgia, serif; color: var(--akcent); }
+  .cislo span { color: var(--tlmeny); font-size: 0.86rem; }
+  nav.obsah { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 10px 16px; margin: 16px 0; }
+  nav.obsah ol { margin: 4px 0; padding-left: 22px; columns: 2 260px; } nav.obsah li { margin: 2px 0; }
+  .tab { overflow-x: auto; background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; margin: 10px 0; }
+  .tab table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  .tab th, .tab td { padding: 6px 9px; border-bottom: 1px solid var(--okraj); text-align: left; vertical-align: top; }
+  .tab tr:last-child td { border-bottom: 0; }
+  .tab th { color: var(--slaby); font-weight: 600; font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .tab td.n, .tab th.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .tab td.c, .tab th.c { text-align: center; }
+  .tab tfoot td { font-weight: 700; border-top: 2px solid var(--okraj); }
+  .dobre { color: var(--zelena); font-weight: 600; } .zle { color: var(--cervena); font-weight: 600; } .pozn { color: var(--tlmeny); }
+  .filtre { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 14px; align-items: center; }
+  .filtre span { color: var(--slaby); font-size: 0.82rem; margin-right: 4px; }
+  button { font: inherit; font-size: 0.88rem; border-radius: 999px; padding: 5px 14px; border: 1px solid var(--okraj); background: var(--plocha-2); color: var(--text); cursor: pointer; }
+  button.on { background: var(--akcent); color: var(--pozadie); border-color: var(--akcent); font-weight: 700; }
+  button.hlavne { background: var(--akcent); color: var(--pozadie); border-color: var(--akcent); font-weight: 700; }
+  .strat-mriezka { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px; }
+  .strat { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 12px 14px; }
+  .strat h3 { margin: 0 0 6px; } .strat p { margin: 4px 0; font-size: 0.92rem; } .strat .kto { font-size: 0.86rem; color: var(--tlmeny); }
+  .sk { display: inline-block; min-width: 1.6em; text-align: center; font: 700 0.76rem/1.5 system-ui; border-radius: 6px; padding: 0 5px; color: #14110e; }
+  .sk.B { background: #d0563f; } .sk.S { background: #e9ad45; } .sk.V { background: #5cc0cf; } .sk.K { background: #e07a9b; } .sk.O { background: #7cbf74; } .sk.G { background: #a0a0a0; }
+  .skupina { margin: 30px 0 10px; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--slaby); border-bottom: 1px dashed var(--okraj); padding-bottom: 4px; }
+  .navrh { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 14px 16px; margin-bottom: 12px; }
+  .navrh.vybrany { border-color: var(--akcent); box-shadow: 0 0 0 1px var(--akcent); }
+  .navrh.bezzmeny { opacity: 0.86; }
+  .navrh > input { width: 20px; height: 20px; margin-top: 3px; accent-color: var(--akcent); cursor: pointer; }
+  .navrh .prazdne { width: 20px; }
+  .navrh h3 { margin: 0; font-size: 1.12rem; display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; }
+  .navrh h3 label { cursor: pointer; }
+  .navrh .id { color: var(--slaby); font-family: ui-monospace, monospace; font-size: 0.82rem; font-weight: 400; }
+  .navrh .obsah { grid-column: 2; display: grid; gap: 8px; min-width: 0; }
+  .navrh .identita { color: var(--tlmeny); font-style: italic; margin: 0; }
+  .znacka { font: 600 0.72rem/1 system-ui; border-radius: 999px; padding: 4px 9px; border: 1px solid var(--okraj); color: var(--tlmeny); white-space: nowrap; }
+  .znacka.typ { color: var(--text); background: var(--plocha-2); }
+  .znacka.kod-ziadny { color: var(--zelena); border-color: color-mix(in srgb, var(--zelena) 50%, transparent); }
+  .znacka.kod-text, .znacka.kod-konstanta { color: var(--modra); border-color: color-mix(in srgb, var(--modra) 50%, transparent); }
+  .znacka.kod-uprava { color: var(--akcent); border-color: color-mix(in srgb, var(--akcent) 50%, transparent); }
+  .znacka.kod-novy { color: var(--cervena); border-color: color-mix(in srgb, var(--cervena) 50%, transparent); }
+  .porovnanie { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 720px) { .porovnanie { grid-template-columns: 1fr; } }
+  .verzia { background: var(--plocha-2); border-radius: 10px; padding: 8px 10px; min-width: 0; }
+  .verzia .nadpis { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--slaby); margin-bottom: 4px; }
+  .verzia.nova { outline: 1px solid color-mix(in srgb, var(--akcent) 45%, transparent); }
+  .minikarta { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .strana { border: 1px solid var(--okraj); border-radius: 8px; padding: 4px; }
+  .strana.zmena { border-color: var(--akcent); }
+  .strana .popis { font-size: 0.7rem; color: var(--slaby); text-align: center; }
+  .slot { height: 22px; margin: 2px 0; border-radius: 5px; font-size: 0.7rem; line-height: 22px; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; padding: 0 3px; }
+  .slot.X { background: repeating-linear-gradient(45deg, var(--okraj) 0 4px, transparent 4px 8px); color: transparent; }
+  .slot.f { border: 1px dashed var(--okraj); color: var(--slaby); }
+  .slot.a { border: 1px solid var(--okraj); color: var(--tlmeny); background: var(--plocha); }
+  .akcie { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 4px; }
+  .ak { font: 600 0.72rem/1.5 system-ui; border-radius: 6px; padding: 0 6px; color: #14110e; }
+  .ak.utok { background: #e0735c; } .ak.duch { background: #6cc6d4; } .ak.starsi { background: #f0a060; } .ak.eko { background: #e5c46a; } .ak.mod { background: #8fcf86; } .ak.zle { background: #9a8a80; color: #fff; text-decoration: underline wavy #d0563f; }
+  .efekt { font-size: 0.88rem; margin-top: 6px; }
+  .efekt.zmena { color: var(--akcent); }
+  .metriky { font-size: 0.82rem; }
+  .metriky table { border-collapse: collapse; width: 100%; }
+  .metriky th, .metriky td { padding: 3px 6px; border-bottom: 1px solid var(--okraj); text-align: right; font-variant-numeric: tabular-nums; }
+  .metriky th:first-child, .metriky td:first-child { text-align: left; color: var(--tlmeny); font-weight: 400; }
+  .riadky { display: grid; grid-template-columns: 8.5em 1fr; gap: 3px 10px; font-size: 0.92rem; margin: 0; }
+  .riadky dt { color: var(--slaby); } .riadky dd { margin: 0; }
+  .otazka { color: var(--akcent); }
+  .graf { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 12px; margin: 10px 0; }
+  .graf svg { display: block; width: 100%; height: auto; }
+  .graf text { font: 11px system-ui, sans-serif; fill: var(--tlmeny); }
+  .graf .os { stroke: var(--okraj); }
+  .legenda { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 8px; font-size: 0.86rem; color: var(--tlmeny); }
+  .legenda i { display: inline-block; width: 16px; height: 8px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
+  .heat td.h { text-align: center; font-variant-numeric: tabular-nums; font-weight: 600; }
+  .volba-box { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 12px 16px; margin: 10px 0; }
+  .volba-box label { display: block; margin: 6px 0; cursor: pointer; }
+  .volba-box input { accent-color: var(--akcent); margin-right: 8px; }
+  .odporucane { font: 700 0.7rem/1 system-ui; border-radius: 999px; padding: 3px 8px; margin-left: 6px; color: var(--pozadie); background: var(--akcent); vertical-align: 2px; }
+  ol.otazky li, ul.rizika li { margin-bottom: 8px; max-width: 85ch; }
+  details { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 10px 14px; margin: 10px 0; }
+  details summary { cursor: pointer; color: var(--akcent); }
+  .volba { position: fixed; left: 0; right: 0; bottom: 0; background: var(--plocha-2); border-top: 1px solid var(--okraj); z-index: 3; }
+  .volba-in { max-width: 1100px; margin: 0 auto; padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+  .volba-text { flex: 1 1 300px; font-size: 0.92rem; color: var(--tlmeny); } .volba-text b { color: var(--text); }
+  textarea#vystup { width: 100%; min-height: 160px; background: var(--plocha); color: var(--text); border: 1px solid var(--okraj); border-radius: 10px; padding: 8px; font: 0.85rem ui-monospace, monospace; }
+</style>
+</head>
+<body>
+<main>
+<h1>Revízia kariet — návrh</h1>
+<p class="podnadpis">Pre Michala, 2026-10-18. Všetkých 50 kariet: štartovky, šenok, Nástroje, lokality, starší a kliatby; k tomu priazne starších
+a kľúčové slová Zopár a Trocha. <b>Je to len návrh</b> — v tvorcovi, databáze ani v <code>cards.json</code> sa nič nezmenilo a nič sa
+nezverejnilo. Zaškrtni, čo schvaľuješ. Výber si pamätá tento prehliadač a dole ho vieš skopírovať ako text.</p>
+
+<div class="verdikt">
+  <span class="stitok">Zhrnutie</span>
+  <ul id="verdikt"></ul>
+</div>
+<div class="cisla" id="cisla"></div>
+
+<nav class="obsah"><b>Obsah</b>
+  <ol>
+    <li><a href="#zasady">Zásady: typy kariet a rozpočet akcií</a></li>
+    <li><a href="#strategie">Stratégie a matica karta × stratégia</a></li>
+    <li><a href="#karty">Štartovky a karty zo šenku</a></li>
+    <li><a href="#nastroje">Nástroje: nový koncept</a></li>
+    <li><a href="#priazne">Priazne starších, Zopár a Trocha</a></li>
+    <li><a href="#ostatne">Lokality, starší, kliatby</a></li>
+    <li><a href="#simulacia">Vyrovnanosť zo simulácie</a></li>
+    <li><a href="#rizika">Riziká</a></li>
+    <li><a href="#kod">Čo je len dáta a čo potrebuje kód</a></li>
+    <li><a href="#otazky">Otvorené otázky</a></li>
+  </ol>
+</nav>
+
+<h2 id="zasady">1. Zásady návrhu</h2>
+<p>„Každá karta má svoju identitu“: akcie aj efekt vychádzajú z toho, kto alebo čo karta je. Recidivista sa bije, vzpiera a dlží —
+Vieru nemá. Miňištrant verí a upíja omšové víno. Vdova škandalizuje a mužov v okolí ubúda. Okrem témy platí rozpočet:</p>
+<div class="tab"><table>
+  <thead><tr><th>Typ</th><th>Akcie</th><th>Hluché miesta</th><th>Zámer</th><th>Príklady</th></tr></thead>
+  <tbody>
+    <tr><td><b>Štartovka</b></td><td>3–5, veľa Pečene a Hazardu, sem-tam Rana, Viera, Povera</td><td>3–4</td><td>slabá a otravná; efekt je príťaž. Hodnota v línii pod každou kartou zo šenku.</td><td>Pijan, Miňištrant, Manželka, Dievčina</td></tr>
+    <tr><td><b>Sila</b></td><td>2–4, aspoň jedna silná (Pecka, Petelica, Pohoršenie, Posilnenie), často jedna zlá</td><td>4–6</td><td>veľký účinok, ale ťažko sa spája; NA EX na ňu zdvojí aj zlú akciu</td><td>Pes, Recidivista, Hasič, Veterán, Vdova, Čierna mačka</td></tr>
+    <tr><td><b>Spojovač</b> (connector)</td><td>5–6 slabších aj zlých</td><td>2–3</td><td>ľahko sa pripojí k čomukoľvek, nesie stratégiu po kúskoch</td><td>Živnostník, Záhradkár, Podvodník, Šarlatán, Veštica, Finančná poradkyňa</td></tr>
+    <tr><td><b>Hybrid</b></td><td>3–4</td><td>4–5</td><td>hlavne efekt (kontrola, synergia)</td><td>Svokra, Policajtka, Zámočník, Liberál</td></tr>
+    <tr><td><b>Nástroj</b></td><td>2 (jedna na stranu), nikdy Petelica</td><td>6</td><td>v línii lacný pomocník Občana (nemíňa limit), v Dedičstve trvalý bonus ako malá priazeň</td><td>všetkých 8</td></tr>
+  </tbody>
+</table></div>
+<p class="pozn">Hodnoty akcií pre metriky (odhad v „tuhom ekvivalente“, nie pravidlo): Rana 1, Pecka 2, Petelica 3, Pohoršenie 1,2, Viera 0,9,
+Posilnenie 0,8, Cigaretka 0,6, Povera 0,5, Odpor 0,5, Obmedzenie 0,4, Poldecko 0,4, Vízia 0,3, Robota 0,3, Hazard −0,6, Pečeň −0,5.
+<b>Hodnota v línii</b> = ⌀ hodnota aktívnych akcií karty v 100 000 náhodných líniách (lokalita + 1–4 karty na stranu, pool = šenok ×2 + štartový balíček),
+počítaná jadrom hry. <b>Sila</b> = hodnota v línii + 0,4 × hodnota efektu (efekt odhadujem −3 až 3; simulácia línií efekty nemeria).
+<b>NA EX Δ</b> = ⌀ zmena hodnoty karty, keď na ňu príde NA EX (zdvojí neaktívne, zruší aktívne) — vysoké číslo = lákavý cieľ vlastného NA EX,
+záporné = súper ti ním ublíži.</p>
+
+<h2 id="strategie">2. Stratégie</h2>
+<p>Päť stratégií, každá s kartami v šenku aj s protiváhou. Karta môže niesť dve (prvá je hlavná). Pitie (poldeci, NA EX, Vínko, Nealko, Krčmárka)
+je ekonomická vetva Stokárov — viac poldeci = vyšší limit = dlhšia línia.</p>
+<div class="strat-mriezka" id="strat-boxy"></div>
+<div class="volba-box"><label><input type="checkbox" data-volba="s:strategie"> <b>Schvaľujem rozdelenie na 5 stratégií</b> (Bitkári, Stokári, Viera a Povera, Škandál, Sabotéri) ako cieľ sady.</label></div>
+<h3>Matica karta × stratégia (šenok a Nástroje)</h3>
+<p class="pozn">● hlavná stratégia, ○ vedľajšia. Každý druh je v spoločnom balíčku 2× (<code>KOPIE_V_SPOLOCNOM_BALICKU</code>).</p>
+<div class="tab"><table id="matica"></table></div>
+
+<h2 id="karty">3. Štartovky a karty zo šenku</h2>
+<p>Pri každej karte: dnes vľavo, návrh vpravo (pozície 0 hore až 3 dole, šrafované = blokované, prerušované = voľné, text = povolené akcie
+na pozícii; pod tým multimnožina akcií). Zlatý rámik = zmenená strana alebo efekt.</p>
+<div class="filtre" id="filtre">
+  <span>Zobraziť:</span>
+  <button data-f="vsetko" class="on">všetko</button>
+  <button data-f="zmenene">len zmenené</button>
+  <button data-f="kod">potrebuje kód</button>
+  <button data-f="B"><span class="sk B">B</span></button>
+  <button data-f="S"><span class="sk S">S</span></button>
+  <button data-f="V"><span class="sk V">V</span></button>
+  <button data-f="K"><span class="sk K">K</span></button>
+  <button data-f="O"><span class="sk O">O</span></button>
+</div>
+<div id="zoznam-karty"></div>
+
+<h2 id="nastroje">4. Nástroje: nový koncept</h2>
+<div class="verdikt">
+  <span class="stitok">Koncept</span>
+  <ul>
+    <li><b>V Dedičstve je Nástroj malá priazeň.</b> Každý dá trvalý, pevný bonus jednej oblasti — ako starší, ktorého priazeň máš, len slabší
+      a bez markera: Svätý text = Veriaci (Viera +1), Nealko = Alkoholik (prah Cirhózy +2), Cigorky = Fajčiar (cigareta v každej Pitke),
+      Vínko = poldeci navyše, Puška chráni markery, Noviny zosilnia Škandál, Pasca chytí podstrčenú kartu, Výherný automat je hazard.</li>
+    <li><b>V línii je Nástroj lacný pomocník Občana.</b> Nemíňa limit, preto len 2 akcie (jedna na stranu), žiadna Petelica. Od 2026-10-18
+      tvorí spoj len s Občanom alebo Starešinom — pri lokalite, staršom v strede, Psovi či Čiernej mačke nedá nič.</li>
+    <li><b>Voľba je skutočná:</b> v línii pomôže jedno kolo, v Dedičstve natrvalo — ale Dedičstvo sa neráta do veľkosti balíčka a Živnostník
+      ho vie zahodiť. Nástroje v Dedičstve sa sčítajú (dve kópie Svätého textu = Viera 3).</li>
+    <li>Dnešné efekty Nástrojov boli väčšinou zákazy (Cigorky, Vínko), alebo „v praxi nevýhoda“ (Svätý text, Noviny) — v playtestoch ich nikto nechcel;
+      výnimkou bola Puška ako blokátor s Petelicou na oboch hranách.</li>
+  </ul>
+</div>
+<div class="volba-box"><label><input type="checkbox" data-volba="n:koncept"> <b>Schvaľujem koncept Nástrojov</b> (Dedičstvo = malá priazeň, v línii 2 akcie bez Petelice).</label></div>
+<div class="tab"><table id="nastroje-tab"></table></div>
+<div id="zoznam-nastroje"></div>
+
+<h2 id="priazne">5. Priazne starších, Zopár a Trocha</h2>
+<h3>Prečo sa ich zbaviť</h3>
+<p><b>Trocha</b> = 1 + priazeň Lakomca, <b>Zopár</b> = 2 + priazeň Neprajníka. Od 2026-10-16 je priazeň 2 × sila, takže trocha je 1 / 3 / 5 / 7 a zopár
+2 / 4 / 6 / 8 — Podvodník ukradne 7 cigariet, Farár ignoruje 7 Povier. Číslo na karte závisí od staršieho, ktorý s kartou nemá nič spoločné,
+a hráč ho musí hľadať na inom mieste stola. <b>„Niekoľko“</b> sa v textoch kariet, kľúčových slovách ani pravidlách nevyskytuje — predpokladám,
+že išlo o Trochu (otázka nižšie).</p>
+<div class="volba-box" id="zopar-volby">
+  <label><input type="radio" name="zopar" data-volba="z:A"> <b>A — pevné čísla na kartách</b> <span class="odporucane">odporúčané</span><br>
+    <span class="pozn">Každý efekt napíše svoje číslo (Farár „ignoruj 2 Povery“). Lakomec a Neprajník dostanú novú priazeň (nižšie). Kľúčové slová trocha/zopár
+    sa z tvorcu odstránia. Najčitateľnejšie; kód: pevné čísla namiesto <code>hodnotaTrocha/hodnotaZopar</code> (malá úprava).</span></label>
+  <label><input type="radio" name="zopar" data-volba="z:B"> <b>B — slová ostanú, škáluje sa silou, nie 2 × silou</b><br>
+    <span class="pozn">trocha = 1 + sila priazne Lakomca (1–4), zopár = 2 + sila Neprajníka (2–5). Menšie výkyvy, ale stále skrytá závislosť od iného staršieho.
+    Kód: jeden vzorec.</span></label>
+  <label><input type="radio" name="zopar" data-volba="z:C"> <b>C — číslo z okolia karty</b><br>
+    <span class="pozn">Napr. Podvodník „ukradni cigaretu za každého Krimináila v tvojej partii“, Farár „ignoruj Poveru za každú tvoju aktívnu Vieru“. Najviac identity,
+    ale dlhšie texty a kód pri každej karte. Vhodné neskôr pre 1–2 karty, nie plošne.</span></label>
+  <label><input type="radio" name="zopar" data-volba="z:0"> <b>Ponechať, ako je</b></label>
+</div>
+<h3>Dopad na efekty, ktoré ich dnes používajú</h3>
+<div class="tab"><table>
+  <thead><tr><th>Karta / pravidlo</th><th>Dnes</th><th class="n">Hodnota pri priazni 0 / 1 / 2 / 3</th><th>Variant A (návrh)</th><th class="n">Variant B</th></tr></thead>
+  <tbody>
+    <tr><td>Autobusár (starší)</td><td>Ignoruj <i>trocha</i> absťákov.</td><td class="n">1 / 3 / 5 / 7</td><td>Ignoruj 1 Absťák.</td><td class="n">1 / 2 / 3 / 4</td></tr>
+    <tr><td>Farár (starší)</td><td>Ignoruj <i>trocha</i> povier súpera.</td><td class="n">1 / 3 / 5 / 7</td><td>Ignoruj 2 súperove Povery. <span class="pozn">(silnejšia protiváha Povery)</span></td><td class="n">1 / 2 / 3 / 4</td></tr>
+    <tr><td>Poštárka (starší)</td><td>Dober až <i>zopár</i> kariet a s nimi <i>trocha</i> dlhov.</td><td class="n">2 / 4 / 6 / 8 a 1 / 3 / 5 / 7</td><td>Dober až 2 karty a s nimi 1 Dlh.</td><td class="n">2–5 a 1–4</td></tr>
+    <tr><td>Veterinár (starší)</td><td>Cirhóza ti pridáva o <i>zopár</i> menej.</td><td class="n">2 / 4 / 6 / 8</td><td>… o 2 poškodenia menej.</td><td class="n">2 / 3 / 4 / 5</td></tr>
+    <tr><td>Niekoho stryná</td><td>Zahoď <i>trocha</i> kariet cirhózy.</td><td class="n">1 / 3 / 5 / 7</td><td>Zahoď 1 Cirhózu alebo 1 Dlh.</td><td class="n">1 / 2 / 3 / 4</td></tr>
+    <tr><td>Podvodník</td><td>Ukradni <i>trocha</i> cigariet.</td><td class="n">1 / 3 / 5 / 7</td><td>Ukradni 2 cigarety.</td><td class="n">1 / 2 / 3 / 4</td></tr>
+    <tr><td>Veľmi smútiaca vdova</td><td>… odhoď <i>zopár</i> svojich dlhov.</td><td class="n">2 / 4 / 6 / 8</td><td>… odhoď 2 svoje Dlhy.</td><td class="n">2 / 3 / 4 / 5</td></tr>
+    <tr><td>Výherný automat</td><td>Pri Výhre zahoď <i>zopár</i> Dlhov.</td><td class="n">2 / 4 / 6 / 8</td><td colspan="2">nový efekt (Výhra: 2 cigarety, Prehra: 1 Dlh) — viď Nástroje</td></tr>
+    <tr><td>Zberný dvor (lokalita)</td><td>O <i>trocha</i> menej dlhov.</td><td class="n">1 / 3 / 5 / 7</td><td>O 1 Dlh menej.</td><td class="n">1 / 2 / 3 / 4</td></tr>
+    <tr><td>Akcia Vízia</td><td>Zahoď <i>zopár</i> kliatieb, dober za ne.</td><td class="n">2 / 4 / 6 / 8 za Víziu</td><td>Zahoď až 2 kliatby za Víziu.</td><td class="n">2–5</td></tr>
+    <tr><td>Tvorca: kľúčové slová</td><td>trocha, zopár (kurzíva + tooltip)</td><td></td><td>odstrániť; opraviť aj popis „preskúmaj“ (stále spomína Očumovateľa, Preskúmanie je pevne 5)</td><td></td></tr>
+    <tr><td>PRAVIDLA §9, §13; web Pravidla a glosár; inštrukcie agentov</td><td>tabuľka priazní, glosár Trocha/Zopár</td><td></td><td>prepísať (po schválení zoznam zosúladenia)</td><td></td></tr>
+  </tbody>
+</table></div>
+<h3>Priazne: dnes → návrh</h3>
+<div class="tab"><table>
+  <thead><tr><th></th><th>Priazeň</th><th>Dnes (2 × sila: 2 / 4 / 6)</th><th>Návrh</th><th>Stratégia</th></tr></thead>
+  <tbody>
+    <tr><td></td><td>Zberateľ</td><td>limit ruky 6 + priazeň</td><td>bez zmeny</td><td></td></tr>
+    <tr><td><input type="checkbox" data-volba="p:lakomec"></td><td><b>Lakomec</b></td><td>Trocha = 1 + priazeň</td><td><b>Stokársky barter ťa stojí o silu priazne menej: 4 / 3 / 2 cigarety.</b> Lakomec zjednáva.</td><td><span class="sk S">S</span></td></tr>
+    <tr><td><input type="checkbox" data-volba="p:neprajnik"></td><td><b>Neprajník</b></td><td>Zopár = 2 + priazeň</td><td><b>Tvoje Povery smú dať mäkké poškodenie o 2 / 4 / 6 nad súperove priznané Dlhy.</b> Neprajník praje zlé — povera zaberie aj bez dlhov.</td><td><span class="sk V">V</span></td></tr>
+    <tr><td></td><td>Bitkár</td><td>+2 / +4 / +6 tuhé</td><td>bez zmeny (priazeň dostáva porazený — je to dobiehanie)</td><td><span class="sk B">B</span></td></tr>
+    <tr><td></td><td>Veriaci</td><td>Viera 3 / 5 / 7</td><td>bez zmeny</td><td><span class="sk V">V</span></td></tr>
+    <tr><td></td><td>Fajčiar</td><td>+2 / +4 / +6 cigariet v 1. Pitke</td><td>bez zmeny</td><td><span class="sk S">S</span></td></tr>
+    <tr><td></td><td>Alkoholik</td><td>prah Cirhózy 5 / 7 / 9</td><td>bez zmeny</td><td><span class="sk S">S</span></td></tr>
+    <tr><td></td><td>Exekútor</td><td>prah 14 / 18 / 22</td><td>bez zmeny</td><td></td></tr>
+  </tbody>
+</table></div>
+<p class="pozn">Obe nové priazne sú v simulácii napodobnené (barter za 5 − sila, Povera so stropom priznané Dlhy + priazeň). Lakomec nepoužíva
+2 × silu, lebo barter za 1 cigaretu by bol nový poldeci zadarmo.</p>
+
+<h2 id="ostatne">6. Lokality, starší, kliatby</h2>
+<p><b>Lokality:</b> Posilnenie na lokalite je podľa playtestov najsilnejšia akcia hry (zdvojí Petelicu susednej karty za nič) — z Ihriska,
+Zastávky a Kostola zmizne. <b>Starší:</b> ich akcie aktivujú podmienky na bodovacích kartách, preto ich nemeníme; mení sa len číslo
+v efektoch so Zopár/Trocha. <b>Kliatby</b> bez zmeny.</p>
+<div id="zoznam-ostatne"></div>
+
+<h2 id="simulacia">7. Vyrovnanosť zo simulácie</h2>
+<p>Dve merania. <b>Línie</b> (metriky pri kartách): náhodné línie vyhodnotené jadrom. <b>Celé partie</b>: dvaja boti so stratégiou nad jadrom
+(<code>apply</code> + <code>legalCommands</code>, stredná hra 7 lokalít). Stratégiu robí hlavne draft — bot berie zo šenku karty svojej stratégie
+(B, S, V, K, O; G = bez stratégie, berie najviac tuhého) — a v línii chce vyhrať bitku, so sklonom k svojim akciám. „Po“ beží na <b>kópii jadra
+v <code>admin-agent/</code></b>, ktorá napodobňuje navrhnuté efekty (okrem Psa a Pasce); <code>packages/core</code> sa nezmenil.
+Bot hrá jednoducho (jeden ťah dopredu), čísla porovnávaj medzi sebou, nie ako „pravdu“; rozdiel do ±5 bodov je šum.</p>
+<div class="cisla" id="sim-cisla"></div>
+<h3>Výhry stratégií proti ostatným</h3>
+<div class="tab"><table id="sim-strat"></table></div>
+<h3>Matica výhier (riadok proti stĺpcu)</h3>
+<div class="porovnanie"><div class="tab heat"><table id="heat-pred"></table></div><div class="tab heat"><table id="heat-po"></table></div></div>
+<h3>Krivka sily: ⌀ tuhé na hráča v bitke podľa kola</h3>
+<div class="graf"><svg id="graf-krivka" viewBox="0 0 760 300"></svg>
+  <div class="legenda"><span><i style="background:#5cc0cf"></i>dnes</span><span><i style="background:#e9ad45"></i>návrh</span></div></div>
+<p class="pozn">Návrh má menej tuhého (Pes, Recidivista, Hasič, Živnostník, Podvodník a Puška prišli o Pecku či Petelicu), ale krivka viac rastie:
+štart je slabší a karty zo šenku ho dvíhajú. Cena: viac remíz (remízu vyhrá útočník — ten, kto prehral minulú bitku).</p>
+<h3>Sila kariet zo šenku: dnes → návrh</h3>
+<div class="graf"><svg id="graf-sila" viewBox="0 0 760 640"></svg>
+  <div class="legenda"><span><i style="background:#5cc0cf"></i>dnes</span><span><i style="background:#e9ad45"></i>návrh</span><span>sila = hodnota v línii + 0,4 × efekt</span></div></div>
+<h3>Páky, ktoré som skúšal (len v simulácii)</h3>
+<div class="tab"><table id="sim-paky"></table></div>
+<ul class="rizika">
+  <li><b>Puška +1 tuhé v Dedičstve</b> (priazeň Bitkára): Bitkári 67–75 %, bez tohto bonusu 56 % → obranná Puška (prebytok proti tebe −2).</li>
+  <li><b>Noviny „Pohoršenia sa rátajú dvakrát“</b>: Škandál klesol na 27 % — viac Pohoršenia znamená viac priazne pre súpera. <b>Noviny „Pohoršenie ako mäkké“</b>: 36 %. Ostáva „Pohoršenie aj na krajnú pozíciu“ (40 %).</li>
+  <li><b>Priazeň bez zdvojenia (1 × sila)</b>: Bitkári ešte silnejší (dnes 75 %, návrh 68 %) — zdvojenie z 2026-10-16 naozaj pomáha dobiehať, nechať.</li>
+  <li><b>Pijan s dvoma Ranami</b>: remíz takmer rovnako (20 %), Bitkári silnejší → Pijan s jednou Ranou.</li>
+  <li><b>Vdova s Peckou</b>: najsilnejší cieľ NA EX v sade (⌀ +4,3) → Rana (+3,1 — stále najvyšší, ale je to zámerný silný ťah Škandálu: NA EX zdvojí dve Pohoršenia).</li>
+</ul>
+
+<h2 id="rizika">8. Riziká</h2>
+<ul class="rizika" id="rizika">
+  <li><b>Menej tuhého = viac remíz.</b> V simulácii remízy <span id="r-remizy"></span>, bitky 0 : 0 <span id="r-nula"></span>; remízu vyhráva útočník.
+    Prvé 3–4 kolá môžu pôsobiť náhodne. Páka, ak to playtest potvrdí: vrátiť Pecku jednej karte (Podvodník alebo Pes).</li>
+  <li><b>Bitkári ostávajú najsilnejší</b> a Škandál najslabší aj po návrhu. Pravidlo „víťaz = vyššie tuhé“ a body za lokality ťahajú hru k tuhému;
+    karty to v simulácii takmer nezmenili (rozdiel najsilnejšej a najslabšej stratégie 33 → 32 bodov; zlepšili sa Stokári, Sabotéri klesli). Ďalšie páky sú pravidlové (Viera so základom 2: Viera a Povera 38 → 45 %, ale remízy 21 → 25 %) — otázky nižšie.</li>
+  <li><b>Finančná poradkyňa + vlastný NA EX</b> pošle súperovi až 6 Hazardov (3 Dlhy). Je to zámer Sabotérov, ale sledovať v playteste.</li>
+  <li><b>Čierna mačka</b> (Povera bez stropu) so Šarlatánom a Veštičkou môže dať veľké mäkké a držať prebytok. Protiváha: Farár (ignoruje 2), Kostol, súperova Viera.</li>
+  <li><b>Noviny</b> umožnia Pohoršením vydesiť a prebudiť staršieho bez víťazstva v bitke — vydesenie môže prísť rýchlejšie. Protiváha: Policajtka.</li>
+  <li><b>Svätý text ×2 + Veriaci</b>: Viera 1 + 2 + 2 × sila — Bitkár môže byť úplne zastavený. Sú to dve kópie a súper ich vie zahodiť Živnostníkom.</li>
+  <li><b>Pijan je 4 z 10 štartových</b>: súper mu dá NA EX a zdvojí dve Pečene a Hazard — Cirhózy budú častejšie. Zámer („otravné“), ale bolieť môže; Nealko a Alkoholik sú protiváha.</li>
+  <li><b>Efekty Psa a Pasce simulácia nemeria</b> (bot ich ani neuprednostňuje). Policajtka je simulovaná v plnej verzii (všetky Pohoršenia proti tebe neplatia).</li>
+  <li><b>Tlač:</b> počet permutácií niektorých kariet stúpa (Pijan 4 → 8, Finančná poradkyňa 4 → 8, Dievčina 4 → 12) — v digitálnej hre nevadí
+    (2 kópie s náhodným variantom), vo fyzickej tlači áno.</li>
+  <li><b>Zmena textu implementovaného efektu bez kódu nezmení správanie.</b> Kým vývoj efekty neupraví, karty so zmeneným efektom treba nechať
+    so starým textom, alebo zaviesť len ich akcie (fáza 1 nižšie).</li>
+</ul>
+
+<h2 id="kod">9. Čo je len dáta a čo potrebuje kód</h2>
+<p>Akcie, blokované a povolené pozície a texty bez zmeny správania sú dáta — uložím ich v tvorcovi (<code>A uloz</code>) po schválení. Efekty sú kód
+v <code>packages/core</code> — pre ne napíšem zadania pre vývoj. Odporúčané poradie: <b>fáza 1</b> len akcie (bez kódu) → playtest;
+<b>fáza 2</b> pevné čísla a úpravy efektov; <b>fáza 3</b> nové efekty.</p>
+<div class="tab"><table id="kod-tab"></table></div>
+
+<h2 id="otazky">10. Otvorené otázky pre Michala</h2>
+<ol class="otazky">
+  <li><b>Zopár a Trocha:</b> variant A (pevné čísla), B alebo C? A myslel si „Niekoľko“ = Trocha, alebo iné slovo?</li>
+  <li><b>Nové priazne:</b> Lakomec = lacnejší barter (4 / 3 / 2), Neprajník = Povera nad priznané Dlhy (+2 / +4 / +6)?</li>
+  <li><b>Nealko:</b> prah Cirhózy +1 alebo +2?</li>
+  <li><b>Puška:</b> obranná (prebytok proti tebe −2), alebo priazeň Bitkára +1 len pri útoku (v simulácii silnejšia)?</li>
+  <li><b>Policajtka:</b> nový efekt (súperove Pohoršenia proti tebe neplatia), mäkší („prvé Pohoršenie v bitke“), alebo pôvodný (preskúmaj balíček)?</li>
+  <li><b>Pes:</b> nový efekt strážneho psa (kód), alebo nechať len zákaz iného zvieraťa?</li>
+  <li><b>Recidivista:</b> tag Zviera nechať (vtip, konflikt so Psom), alebo odstrániť?</li>
+  <li><b>Škandál</b> je v simulácii najslabší. Brať ho ako doplnkovú stratégiu, alebo skúsiť pravidlovú páku (napr. Pohoršenie neposúva do súperovej
+    oranžovej a červenej zóny, aby nedávalo súperovi silnú priazeň)? Tú som nemeral.</li>
+  <li><b>Viera so základom 2</b> (pravidlo, sťažnosť „Viera len −1“): skúsiť v playteste? V simulácii Viera a Povera 38 → 45 %, Bitkári 64 → 63 %, remízy 21 → 25 %.</li>
+  <li><b>Povera so stropom priznané Dlhy + 1</b> (pravidlo): v simulácii bez merateľného účinku — neodporúčam, kým nie sú v hre Čierna mačka a Neprajník.</li>
+  <li><b>Lokality bez Posilnenia</b> (Ihrisko, Zastávka, Kostol) — áno?</li>
+  <li><b>Remízy ~20 %</b> (dnes ~11 %): prijateľné, alebo vrátiť jednu Pecku do šenku?</li>
+  <li><b>Fázy:</b> súhlasíš, že najprv len akcie (dáta) + playtest, až potom efekty v kóde?</li>
+</ol>
+
+<h3>Tvoj výber</h3>
+<textarea id="vystup" readonly></textarea>
+</main>
+
+<div class="volba"><div class="volba-in">
+  <div class="volba-text" id="volba-text"></div>
+  <button class="hlavne" id="b-odporucane">Označiť odporúčané</button>
+  <button id="b-zrus">Zrušiť výber</button>
+  <button id="b-kopia">Skopírovať výber</button>
+</div></div>
+
+<script>
+const DATA = {"karty":[{"id":"pijan","nazov":"Pijan","tagy":["Občan","Závislý","Chlap"],"typ":"start","skupina":"start","strategie":[],"identita":"Dedinský pijan: pije, dlží v krčme a raz za čas niekomu vrazí.","pred":{"L":{"sloty":["_","_","X","X"],"akcie":[["Dlh",1],["PoškodeniePečene",1]]},"P":{"sloty":[["Rana"],["Rana"],["Poldeci"],["Poldeci"]],"akcie":[["Poldeci",1],["Rana",2]]},"efekt":"Bitka: Ak má žena v jeho okolí aktívnu akciu poldeci, udelí ranu do vlastnej partie","perm":4},"po":{"L":{"sloty":["X",["Dlh","PoškodeniePečene"],["Dlh","PoškodeniePečene"],"X"],"akcie":[["Dlh",1],["PoškodeniePečene",1]]},"P":{"sloty":[["Rana"],["Rana"],["Poldeci","PoškodeniePečene"],["Poldeci","PoškodeniePečene"]],"akcie":[["Rana",1],["Poldeci",1],["PoškodeniePečene",1]]},"efekt":"Bitka: Ak má žena v jeho okolí aktívnu akciu poldeci, udelí ranu do vlastnej partie","perm":8},"zmenaL":true,"zmenaP":true,"zmenaE":false,"kod":"ziadny","efH":[0,0],"zdov":"Pijan je 4 z 10 štartových kariet a dnes jediný útočník štartu: Rana×2 na jednej hrane, s NA EX 4 tuhé (playtesty ho hlásia ako silného). Jedna Rana, dve Pečene a Dlh z neho robia otravného spojovača — sem-tam rana, hlavne kliatby. Efekt (rana do vlastnej partie) je príťaž a ostáva.","alt":null,"otazka":null,"m":{"pred":{"akcii":5,"silnych":0,"zlych":2,"hluche":3,"potencial":1.3,"hodnota":1.08,"aktivacia":41,"naex":-0.44,"perm":4,"sila":1.08},"po":{"akcii":5,"silnych":0,"zlych":3,"hluche":3,"potencial":-0.2,"hodnota":0.17,"aktivacia":37,"naex":-0.9,"perm":8,"sila":0.17}}},{"id":"ministrant","nazov":"Miňištrant","tagy":["Občan","Závislý","Chlap"],"typ":"start","skupina":"start","strategie":[],"identita":"Miňištrant: verí, šíri povery od babiek a upíja omšové víno.","pred":{"L":{"sloty":[["Cigaretka"],["Cigaretka"],["Odpor"],["Odpor"]],"akcie":[["Cigaretka",1],["Odpor",1]]},"P":{"sloty":[["Viera"],["Viera"],["Cigaretka"],["Cigaretka"]],"akcie":[["Cigaretka",1],["Viera",1]]},"efekt":"Výhra: Posunutie ukazovateľa priazne staršieho ťa stojí o 1 prebytočné poškodenie viac.","perm":16},"po":{"L":{"sloty":[["Viera"],["Viera"],["PoškodeniePečene"],["PoškodeniePečene"]],"akcie":[["Viera",1],["PoškodeniePečene",1]]},"P":{"sloty":[["Povera"],["Povera"],["Cigaretka"],["Cigaretka"]],"akcie":[["Povera",1],["Cigaretka",1]]},"efekt":"Výhra: Posunutie ukazovateľa priazne staršieho ťa stojí o 1 prebytočné poškodenie viac.","perm":16},"zmenaL":true,"zmenaP":true,"zmenaE":false,"kod":"ziadny","efH":[0,0],"zdov":"Odpor z neho robil najlepšiu obranu štartu (playtesty: „Viera aj Odpor v jednom“). Odpor nahradí Povera, Cigaretka ostáva len na jednej strane a pribudne Pečeň. Efekt (drahší posun prebytkom) je príťaž a sedí — miništrant ťa brzdí pri víťazstve.","alt":null,"otazka":null,"m":{"pred":{"akcii":4,"silnych":0,"zlych":0,"hluche":4,"potencial":2.6,"hodnota":1,"aktivacia":42,"naex":1.24,"perm":16,"sila":1},"po":{"akcii":4,"silnych":0,"zlych":1,"hluche":4,"potencial":1.5,"hodnota":0.59,"aktivacia":36,"naex":1.13,"perm":16,"sila":0.59}}},{"id":"milujuca_manzelka","nazov":"Milujúca manželka","tagy":["Občan","Pamätník","Kliatba","Žena"],"typ":"start","skupina":"start","strategie":[],"identita":"Milujúca manželka: modlí sa za teba, minie výplatu a povie „nie“.","pred":{"L":{"sloty":[["Poldeci","Posilnenie"],["Poldeci","Posilnenie"],["PoškodeniePečene"],["PoškodeniePečene"]],"akcie":[["Poldeci",1],["Posilnenie",1],["PoškodeniePečene",1]]},"P":{"sloty":[["Povera"],["Povera"],["Odpor"],["Odpor"]],"akcie":[["Odpor",1],["Povera",1]]},"efekt":"Furt: Získavaš o jednu cigaretu menej.","perm":16},"po":{"L":{"sloty":[["Viera"],["Viera"],["Dlh"],["Dlh"]],"akcie":[["Viera",1],["Dlh",1]]},"P":{"sloty":[["Povera"],["Povera"],["Odpor"],["Odpor"]],"akcie":[["Povera",1],["Odpor",1]]},"efekt":"Furt: Získavaš o jednu cigaretu menej.","perm":16},"zmenaL":true,"zmenaP":true,"zmenaE":false,"kod":"ziadny","efH":[0,0],"zdov":"Posilnenie na štartovke zdvojovalo Pijanove Rany (playtest: Pijan + Posilnenie z Manželky = 3). Posilnenie a Poldecko von, namiesto nich Viera a Dlh. Odpor ostáva — zruší aj vlastný spoj, ak ju zle položíš. Efekt (o cigaretu menej, keď je priznaná) ostáva.","alt":null,"otazka":null,"m":{"pred":{"akcii":5,"silnych":1,"zlych":1,"hluche":3,"potencial":1.7,"hodnota":0.34,"aktivacia":43,"naex":-0.07,"perm":16,"sila":0.34},"po":{"akcii":4,"silnych":0,"zlych":1,"hluche":4,"potencial":1.3,"hodnota":0.36,"aktivacia":38,"naex":0.43,"perm":16,"sila":0.36}}},{"id":"dievcina_na_vydaj","nazov":"Dievčina na vydaj","tagy":["Občan","Závislý","Žena"],"typ":"start","skupina":"start","strategie":[],"identita":"Dievčina na vydaj: drahá svadba, klebety v dedine — a raz sa vydá a odíde.","pred":{"L":{"sloty":["_","_","_","X"],"akcie":[["Dlh",3]]},"P":{"sloty":[["Cigaretka"],["Cigaretka"],["Pohoršenie"],["Pohoršenie"]],"akcie":[["Cigaretka",1],["Pohoršenie",1]]},"efekt":"Bitka: Zahoď túto kartu, zahoď toľko dlhov zo stola, koľko mala táto karta aktívnych akcií.","perm":4},"po":{"L":{"sloty":["_","_","_","X"],"akcie":[["Dlh",2]]},"P":{"sloty":[["Pohoršenie"],["Pohoršenie"],["Povera"],["Povera"]],"akcie":[["Pohoršenie",1],["Povera",1]]},"efekt":"Bitka: Zahoď túto kartu, zahoď toľko dlhov zo stola, koľko mala táto karta aktívnych akcií.","perm":12},"zmenaL":true,"zmenaP":true,"zmenaE":false,"kod":"ziadny","efH":[1,1],"zdov":"Od 2026-10-18 smie súper dať NA EX aj na tvoju kartu: Dlh×3 na jednej hrane by súperovým NA EX dal 6 Hazardov (3 Dlhy) — to je už trest, nie otrava. Dlh×2 ostáva otravné. Cigaretka → Povera (klebety). Efekt (pri bitke sa zahodí) ostáva: je to jediná štartovka, ktorá z balíčka sama odíde.","alt":null,"otazka":null,"m":{"pred":{"akcii":5,"silnych":1,"zlych":3,"hluche":3,"potencial":0,"hodnota":0.24,"aktivacia":36,"naex":-0.65,"perm":4,"sila":0.64},"po":{"akcii":4,"silnych":1,"zlych":2,"hluche":4,"potencial":0.5,"hodnota":0.48,"aktivacia":36,"naex":-0.45,"perm":12,"sila":0.88}}},{"id":"pes","nazov":"Pes","tagy":["Zviera"],"typ":"sila","skupina":"senok-B","strategie":["B","O"],"identita":"Dvorový pes: hryzie a stráži dvor.","pred":{"L":{"sloty":["X","X","_","_"],"akcie":[["Rana",1]]},"P":{"sloty":["X","_","_","X"],"akcie":[["Pecka",1],["Petelica",1]]},"efekt":"Furt: Nikdy nesmie byť v partii s iným zvieraťom.","perm":4},"po":{"L":{"sloty":["X","X","_","_"],"akcie":[["Rana",1]]},"P":{"sloty":["X","_","_","X"],"akcie":[["Pecka",1],["Rana",1]]},"efekt":"Furt: Kým je Pes na konci tvojej strany, súper ti naň nesmie podstrčiť kartu. Nesmie byť v partii s iným zvieraťom.","perm":4},"zmenaL":false,"zmenaP":true,"zmenaE":true,"kod":"novy","efH":[0,2],"zdov":"Najsilnejšia karta sady (⌀ tuhé 3,2, Pecka + Petelica na dvoch pozíciách jednej hrany). Petelica → Rana: ostáva útočník s hluchými miestami. Strážny pes dáva identitu a je protiváhou Sabotérov (podstrčenie).","alt":"Bez zmeny kódu: ponechať súčasný efekt (len zákaz iného zvieraťa).","otazka":null,"m":{"pred":{"akcii":3,"silnych":2,"zlych":0,"hluche":5,"potencial":6,"hodnota":3,"aktivacia":41,"naex":null,"perm":4,"sila":3},"po":{"akcii":3,"silnych":1,"zlych":0,"hluche":5,"potencial":4,"hodnota":1.81,"aktivacia":43,"naex":null,"perm":4,"sila":2.61}}},{"id":"recidivista","nazov":"Recidivista","tagy":["Občan","Kriminál","Chlap","Zviera"],"typ":"sila","skupina":"senok-B","strategie":["B","O"],"identita":"Recidivista: bije, vzpiera sa a má dlhy u ľudí, ktorým sa nedlhuje.","pred":{"L":{"sloty":[["Rana"],["Rana"],["Odpor"],["Odpor"]],"akcie":[["Odpor",2],["Rana",1]]},"P":{"sloty":[["Pecka"],["Pecka"],["Petelica"],["Petelica"]],"akcie":[["Pecka",1],["Petelica",1]]},"efekt":"Bitka: Za každého zahraničného občana v súperovej partii udelí dodatočnú ranu.","perm":8},"po":{"L":{"sloty":[["Odpor"],["Odpor"],["Dlh"],["Dlh"]],"akcie":[["Odpor",1],["Dlh",1]]},"P":{"sloty":[["Petelica"],["Petelica"],["Rana"],["Rana"]],"akcie":[["Petelica",1],["Rana",1]]},"efekt":"Bitka: Za každého zahraničného občana v súperovej partii udelí dodatočnú ranu.","perm":16},"zmenaL":true,"zmenaP":true,"zmenaE":false,"kod":"ziadny","efH":[1,1],"zdov":"Každý playtest ho hlási ako najsilnejšieho: Pecka + Petelica na hrane, s NA EX 10–12 tuhého. Pecka von, Rana namiesto druhého Odporu na pravej, Dlh na ľavú — NA EX na neho zdvojí aj Dlh. Tag Zviera ostáva (vtip, konflikt so Psom).","alt":null,"otazka":"Tag Zviera na Recidivistovi: nechať ako vtip (nesmie byť v partii so Psom), alebo odstrániť?","m":{"pred":{"akcii":5,"silnych":2,"zlych":0,"hluche":3,"potencial":7,"hodnota":2.89,"aktivacia":43,"naex":3.48,"perm":8,"sila":3.29},"po":{"akcii":4,"silnych":1,"zlych":1,"hluche":4,"potencial":3.9,"hodnota":1.84,"aktivacia":39,"naex":1.14,"perm":16,"sila":2.24}}},{"id":"hasic","nazov":"Hasič","tagy":["Občan","Autorita","Chlap"],"typ":"sila","skupina":"senok-B","strategie":["B"],"identita":"Dobrovoľný hasič: sekera, poriadna robota a po zásahu sa pije.","pred":{"L":{"sloty":["X","X","_","_"],"akcie":[["Posilnenie",1]]},"P":{"sloty":["_","_","X","X"],"akcie":[["Petelica",1],["Rana",1]]},"efekt":"Nástup: Zober si pracujúceho občana do ruky z odhadzovacieho balíčka.","perm":4},"po":{"L":{"sloty":["X","X","_","_"],"akcie":[["Posilnenie",1],["PoškodeniePečene",1]]},"P":{"sloty":["_","_","X","X"],"akcie":[["Petelica",1],["Robota",1]]},"efekt":"Nástup: Zober si pracujúceho občana do ruky z odhadzovacieho balíčka.","perm":4},"zmenaL":true,"zmenaP":true,"zmenaE":false,"kod":"ziadny","efH":[1,1],"zdov":"Petelica + Rana na jednej hrane (⌀ tuhé 2,5, tretí v sade). Rana → Robota (ubudne tuhé) a k Posilneniu pribudne Pečeň (DHZ bez pálenky nie je DHZ) — NA EX zdvojí aj ju. Efekt (Pracujúci späť do ruky) ostáva.","alt":null,"otazka":null,"m":{"pred":{"akcii":3,"silnych":2,"zlych":0,"hluche":5,"potencial":4.8,"hodnota":2.55,"aktivacia":57,"naex":0.74,"perm":4,"sila":2.95},"po":{"akcii":4,"silnych":2,"zlych":1,"hluche":4,"potencial":3.6,"hodnota":1.64,"aktivacia":45,"naex":0.54,"perm":4,"sila":2.04}}},{"id":"veteran","nazov":"Veterán","tagy":["Občan","Pamätník","Chlap"],"typ":"sila","skupina":"senok-B","strategie":["B","O"],"identita":"Starý vojak: Petelica, Odpor voči všetkému novému a fľaška.","pred":{"L":{"sloty":["_","_","X","X"],"akcie":[["Poldeci",1],["PoškodeniePečene",1]]},"P":{"sloty":["X",["Odpor"],["Petelica"],["Petelica"]],"akcie":[["Odpor",1],["Petelica",1]]},"efekt":"Bitka: Ak je influencer v partii, neplatia jeho pravé akcie. Ak je podporený ženou vpravo od neho, neplatia jeho ľavé akcie.","perm":4},"po":{"L":{"sloty":["_","_","X","X"],"akcie":[["Poldeci",1],["PoškodeniePečene",1]]},"P":{"sloty":["X",["Odpor"],["Petelica"],["Petelica"]],"akcie":[["Odpor",1],["Petelica",1]]},"efekt":"Bitka: Ak je influencer v partii, neplatia jeho pravé akcie. Ak je podporený ženou vpravo od neho, neplatia jeho ľavé akcie.","perm":4},"zmenaL":false,"zmenaP":false,"zmenaE":false,"kod":"ziadny","efH":[-1,-1],"zdov":"Už dnes má presne tvar „silná akcia + hluché miesta + zlá akcia“ (Petelica, Odpor | Poldecko, Pečeň, 4 hluché) a jeho efekt je zaujímavá podmienka. Bez zmeny — je to meradlo pre ostatné sily.","alt":null,"otazka":null,"m":{"pred":{"akcii":4,"silnych":1,"zlych":1,"hluche":4,"potencial":3.4,"hodnota":1.04,"aktivacia":35,"naex":2.05,"perm":4,"sila":0.64},"po":{"akcii":4,"silnych":1,"zlych":1,"hluche":4,"potencial":3.4,"hodnota":0.92,"aktivacia":28,"naex":2.64,"perm":4,"sila":0.52}}},{"id":"zivnostnik","nazov":"Živnostník","tagy":["Občan","Pracujúci","Chlap"],"typ":"connector","skupina":"senok-B","strategie":["B","S"],"identita":"Živnostník: robí, predáva cigarety spod pultu a má úver.","pred":{"L":{"sloty":[["Rana"],["Rana"],["Dlh","Poldeci"],["Dlh","Poldeci"]],"akcie":[["Dlh",1],["Poldeci",1],["Rana",1]]},"P":{"sloty":[["Rana"],["Rana"],["Cigaretka","Pecka"],["Cigaretka","Pecka"]],"akcie":[["Cigaretka",1],["Pecka",1],["Rana",1]]},"efekt":"Nástup: Zahoď jedno súperovo dedičstvo.","perm":16},"po":{"L":{"sloty":[["Rana"],["Rana"],["Robota","Dlh"],["Robota","Dlh"]],"akcie":[["Rana",1],["Robota",1],["Dlh",1]]},"P":{"sloty":[["Cigaretka"],["Cigaretka"],["Rana"],["Rana"]],"akcie":[["Rana",1],["Cigaretka",2]]},"efekt":"Nástup: Zahoď jedno súperovo dedičstvo.","perm":8},"zmenaL":true,"zmenaP":true,"zmenaE":false,"kod":"ziadny","efH":[2,2],"zdov":"Dnes Rana×2 + Pecka + Cigaretka + Dlh/Poldecko (tuhé 4 a NA EX 13 tuhého v playteste). Spojovač: 6 slabých akcií, 2 hluché miesta, Pecka von. Efekt (zahoď súperovo Dedičstvo) je teraz dôležitejší — je to protiváha silnejších Nástrojov.","alt":null,"otazka":null,"m":{"pred":{"akcii":6,"silnych":1,"zlych":1,"hluche":2,"potencial":4.4,"hodnota":1.82,"aktivacia":36,"naex":3.37,"perm":16,"sila":2.62},"po":{"akcii":6,"silnych":0,"zlych":1,"hluche":2,"potencial":2.9,"hodnota":1.2,"aktivacia":37,"naex":2.1,"perm":8,"sila":2}}},{"id":"zamocnik","nazov":"Zámočník","tagy":["Občan","Pracujúci","Chlap"],"typ":"hybrid","skupina":"senok-B","strategie":["B","S"],"identita":"Zámočník: s náradím vie zázraky.","pred":{"L":{"sloty":["_","_","X","X"],"akcie":[["Cigaretka",1],["Poldeci",1]]},"P":{"sloty":["_","_","X","X"],"akcie":[["Pecka",1],["Robota",1]]},"efekt":"Furt: Akcie nástrojov v jeho okolí sú posilnené.","perm":4},"po":{"L":{"sloty":["_","_","X","X"],"akcie":[["Cigaretka",1],["Poldeci",1]]},"P":{"sloty":["_","_","X","X"],"akcie":[["Pecka",1],["Robota",1]]},"efekt":"Furt: Akcie nástrojov v jeho okolí sú posilnené.","perm":4},"zmenaL":false,"zmenaP":false,"zmenaE":false,"kod":"ziadny","efH":[1,2],"zdov":"Bez zmeny akcií. Jeho efekt (zdvojí akcie Nástrojov v okolí) s pravidlom 2026-10-18 (Nástroj potrebuje Občana) a novými Nástrojmi dostáva zmysel — je to Občan, ktorý Nástroj podporí a ešte zdvojí.","alt":null,"otazka":null,"m":{"pred":{"akcii":4,"silnych":1,"zlych":0,"hluche":4,"potencial":3.3,"hodnota":1.79,"aktivacia":43,"naex":1.47,"perm":4,"sila":2.19},"po":{"akcii":4,"silnych":1,"zlych":0,"hluche":4,"potencial":3.3,"hodnota":1.52,"aktivacia":41,"naex":1.89,"perm":4,"sila":2.32}}},{"id":"podvodnik","nazov":"Podvodník","tagy":["Občan","Kriminál","Chlap"],"typ":"connector","skupina":"senok-S","strategie":["S","O"],"identita":"Podvodník: berie ti cigarety, aj keď prehrá.","pred":{"L":{"sloty":[["Rana"],["Rana"],["Dlh"],["Dlh"]],"akcie":[["Dlh",1],["Rana",1]]},"P":{"sloty":[["Cigaretka","Rana"],["Cigaretka","Rana"],["Pecka"],["Pecka"]],"akcie":[["Cigaretka",1],["Pecka",1],["Rana",1]]},"efekt":"Prehra: Ukradni súperovi trocha cigariet.","perm":16},"po":{"L":{"sloty":[["Cigaretka"],["Cigaretka"],["Dlh"],["Dlh"]],"akcie":[["Cigaretka",2],["Dlh",1]]},"P":{"sloty":["X",["Obmedzenie"],["Rana"],["Rana"]],"akcie":[["Obmedzenie",1],["Rana",1]]},"efekt":"Prehra: Ukradni súperovi 2 cigarety.","perm":4},"zmenaL":true,"zmenaP":true,"zmenaE":true,"kod":"konstanta","efH":[1,2],"zdov":"Dnes druhý bitkár (Rana×2 + Pecka) — podvodník sa nebije, podvádza. Cigaretky a Obmedzenie robia z neho stokárskeho spojovača; ukradne pevne 2 cigarety (namiesto trocha = 1 až 7).","alt":null,"otazka":null,"m":{"pred":{"akcii":5,"silnych":1,"zlych":1,"hluche":3,"potencial":4,"hodnota":1.87,"aktivacia":41,"naex":2.52,"perm":16,"sila":2.27},"po":{"akcii":5,"silnych":0,"zlych":1,"hluche":3,"potencial":2,"hodnota":0.79,"aktivacia":36,"naex":1.56,"perm":4,"sila":1.59}}},{"id":"zahradkar","nazov":"Záhradkár","tagy":["Občan","Pracujúci","Chlap"],"typ":"connector","skupina":"senok-S","strategie":["S","O"],"identita":"Záhradkár: pestuje tabak, pálí slivovicu a pracuje.","pred":{"L":{"sloty":[["Cigaretka","Odpor"],["Cigaretka","Odpor"],["PoškodeniePečene"],["PoškodeniePečene"]],"akcie":[["Cigaretka",1],["Odpor",1],["PoškodeniePečene",1]]},"P":{"sloty":[["Poldeci","Rana"],["Poldeci","Rana"],["Robota"],["Robota"]],"akcie":[["Poldeci",1],["Rana",1],["Robota",1]]},"efekt":"Exekúcia: Môžeš ho zahodiť namiesto náradia.","perm":16},"po":{"L":{"sloty":[["Cigaretka"],["Cigaretka"],["PoškodeniePečene"],["PoškodeniePečene"]],"akcie":[["Cigaretka",2],["PoškodeniePečene",1]]},"P":{"sloty":[["Poldeci","Rana"],["Poldeci","Rana"],["Robota"],["Robota"]],"akcie":[["Poldeci",1],["Rana",1],["Robota",1]]},"efekt":"Exekúcia: Môžeš ho zahodiť namiesto náradia.","perm":8},"zmenaL":true,"zmenaP":false,"zmenaE":false,"kod":"ziadny","efH":[1,1],"zdov":"Odpor na ľavej strane → druhá Cigaretka (vlastný tabak). Pravá strana (Poldecko/Rana, Robota) ostáva. Spojovač Stokárov s 2 hluchými miestami. Efekt (ide namiesto náradia pri exekúcii) ostáva.","alt":null,"otazka":null,"m":{"pred":{"akcii":6,"silnych":0,"zlych":1,"hluche":2,"potencial":2.3,"hodnota":1.07,"aktivacia":43,"naex":0.53,"perm":16,"sila":1.47},"po":{"akcii":6,"silnych":0,"zlych":1,"hluche":2,"potencial":2.4,"hodnota":1.07,"aktivacia":38,"naex":1.49,"perm":8,"sila":1.47}}},{"id":"niekoho_stryna","nazov":"Niekoho stryná","tagy":["Občan","Pamätník","Žena"],"typ":"connector","skupina":"senok-V","strategie":["V"],"identita":"Niekoho stryná: modlí sa, verí poverám, naleje slivovicu a lieči bylinkami.","pred":{"L":{"sloty":["_","_","X","X"],"akcie":[["Poldeci",1]]},"P":{"sloty":[["Viera"],["Povera","Viera"],["Povera","Vízia"],["Povera","Vízia"]],"akcie":[["Povera",1],["Viera",1],["Vízia",1]]},"efekt":"Nástup: Zahoď trocha kariet cirhózy z ruky.","perm":12},"po":{"L":{"sloty":["_","_","X","X"],"akcie":[["Poldeci",1],["Viera",1]]},"P":{"sloty":[["Viera"],["Povera","Viera"],["Povera","Vízia"],["Povera","Vízia"]],"akcie":[["Povera",1],["Viera",1],["Vízia",1]]},"efekt":"Nástup: Zahoď 1 Cirhózu alebo 1 Dlh z ruky alebo z odhadzovacieho balíčka.","perm":12},"zmenaL":true,"zmenaP":false,"zmenaE":true,"kod":"uprava","efH":[1,2],"zdov":"K Poldecku na ľavej pribudne Viera (spojovač Viery: 5 akcií, 3 hluché miesta). Efekt: pevná 1 namiesto trocha a k Cirhóze aj Dlh — stryná vyrieši aj dlh u suseda.","alt":null,"otazka":null,"m":{"pred":{"akcii":4,"silnych":0,"zlych":0,"hluche":4,"potencial":2.1,"hodnota":1.01,"aktivacia":40,"naex":1.21,"perm":12,"sila":1.41},"po":{"akcii":5,"silnych":0,"zlych":0,"hluche":3,"potencial":3,"hodnota":1.11,"aktivacia":37,"naex":2.45,"perm":12,"sila":1.91}}},{"id":"vestica","nazov":"Veštica","tagy":["Občan","Zahraničný","Žena"],"typ":"connector","skupina":"senok-V","strategie":["V"],"identita":"Veštica: za cigaretu ti povie budúcnosť a všetky zlé znamenia.","pred":{"L":{"sloty":[["Cigaretka","Vízia"],["Cigaretka","Vízia"],["Dlh"],["Dlh"]],"akcie":[["Cigaretka",1],["Dlh",1],["Vízia",1]]},"P":{"sloty":[["Povera"],["Povera"],["Viera"],["Viera"]],"akcie":[["Povera",1],["Viera",1]]},"efekt":"Prehra: Preskúmaj súperov a svoj doberaci balík. Vymeň jednu jeho kartu za tvoju a karty vráť.","perm":16},"po":{"L":{"sloty":[["Vízia"],["Vízia"],["Cigaretka"],["Cigaretka"]],"akcie":[["Vízia",1],["Cigaretka",1]]},"P":{"sloty":["_","_","_","X"],"akcie":[["Povera",2],["Viera",1]]},"efekt":"Prehra: Preskúmaj súperov a svoj doberaci balík. Vymeň jednu jeho kartu za tvoju a karty vráť.","perm":12},"zmenaL":true,"zmenaP":true,"zmenaE":false,"kod":"ziadny","efH":[1,1],"zdov":"Dlh von (veštica berie, nedlží), na pravej dve Povery a Viera. Efekt (po prehre vymení kartu v balíčkoch) je jej identita a ostáva.","alt":null,"otazka":null,"m":{"pred":{"akcii":5,"silnych":0,"zlych":1,"hluche":3,"potencial":1.7,"hodnota":0.72,"aktivacia":36,"naex":1.25,"perm":16,"sila":1.12},"po":{"akcii":5,"silnych":0,"zlych":0,"hluche":3,"potencial":2.8,"hodnota":1.22,"aktivacia":42,"naex":1.79,"perm":12,"sila":1.62}}},{"id":"praudovravec","nazov":"Praudovravec","tagy":["Občan","Influencer","Chlap"],"typ":"connector","skupina":"senok-V","strategie":["V","O"],"identita":"Praudovravec: konšpirátor, ktorý neverí žiadnej autorite a vidí znamenia všade.","pred":{"L":{"sloty":[["Povera"],["Povera"],["Odpor"],"X"],"akcie":[["Odpor",1],["Povera",1]]},"P":{"sloty":[["Povera","Vízia"],["Povera","Vízia"],"X",["Obmedzenie"]],"akcie":[["Obmedzenie",1],["Povera",1],["Vízia",1]]},"efekt":"Furt: Autority v tvojej partii neuplatňujú efekt.","perm":4},"po":{"L":{"sloty":[["Povera"],["Povera"],["Odpor"],"X"],"akcie":[["Odpor",1],["Povera",1]]},"P":{"sloty":[["Povera","Vízia"],["Povera","Vízia"],"X",["Pohoršenie"]],"akcie":[["Povera",1],["Vízia",1],["Pohoršenie",1]]},"efekt":"Furt: Autority v súperovej partii neuplatňujú efekt.","perm":4},"zmenaL":false,"zmenaP":true,"zmenaE":true,"kod":"uprava","efH":[-1,2],"zdov":"Dnes vypína efekty Autorít v TVOJEJ partii — trest bez zmyslu. Obrátený na súpera je protiváha Policajtky, Svokry a Hasiča. Obmedzenie → Pohoršenie (influencer burcuje).","alt":null,"otazka":null,"m":{"pred":{"akcii":5,"silnych":0,"zlych":0,"hluche":3,"potencial":2.2,"hodnota":0.81,"aktivacia":44,"naex":1.03,"perm":4,"sila":0.41},"po":{"akcii":5,"silnych":1,"zlych":0,"hluche":3,"potencial":3,"hodnota":0.88,"aktivacia":41,"naex":2.29,"perm":4,"sila":1.68}}},{"id":"cierna_macka","nazov":"Čierna mačka","tagy":["Zviera"],"typ":"sila","skupina":"senok-V","strategie":["V","K"],"identita":"Čierna mačka: prebehne cez cestu a všetci zrazu veria poverám.","pred":{"L":{"sloty":["X","_","_","X"],"akcie":[["Pohoršenie",1],["Vízia",1]]},"P":{"sloty":["X","X","_","_"],"akcie":[["Rana",1]]},"efekt":"Pitka: Súperove Vízie neplatia.","perm":4},"po":{"L":{"sloty":["X","_","_","X"],"akcie":[["Povera",1],["Pohoršenie",1]]},"P":{"sloty":["X","X","_","_"],"akcie":[["Povera",1]]},"efekt":"Furt: Tvoje Povery spôsobujú mäkké poškodenie aj bez súperových priznaných dlhov.","perm":4},"zmenaL":true,"zmenaP":true,"zmenaE":true,"kod":"novy","efH":[0,3],"zdov":"Povera dnes nefunguje (súper Dlhy nepriznáva — 8 playtestov). Mačka je kľúč stratégie Viera a Povera: kým je v línii, každá tvoja Povera, ktorú súper nevyruší Vierou, dá mäkké a pomôže ti držať prebytok. Zviera — NA EX na ňu nejde, Nástroj s ňou spoj netvorí.","alt":null,"otazka":null,"m":{"pred":{"akcii":3,"silnych":1,"zlych":0,"hluche":5,"potencial":2.5,"hodnota":0.72,"aktivacia":28,"naex":null,"perm":4,"sila":0.72},"po":{"akcii":3,"silnych":1,"zlych":0,"hluche":5,"potencial":2.2,"hodnota":0.61,"aktivacia":28,"naex":null,"perm":4,"sila":1.81}}},{"id":"sarlatan","nazov":"Šarlatán","tagy":["Občan","Influencer","Chlap"],"typ":"connector","skupina":"senok-V","strategie":["V","K"],"identita":"Šarlatán: predáva zázračné kvapky na dlh a z viery robí videnia.","pred":{"L":{"sloty":[["Poldeci"],["Poldeci"],["Dlh"],["Dlh"]],"akcie":[["Dlh",2],["Poldeci",1]]},"P":{"sloty":[["Obmedzenie"],["Obmedzenie"],["Odpor"],["Pohoršenie"]],"akcie":[["Obmedzenie",1],["Odpor",1],["Pohoršenie",1]]},"efekt":"Furt: Viera v jeho okolí platia ako vízia.","perm":4},"po":{"L":{"sloty":["_","_","_","X"],"akcie":[["Povera",2],["Dlh",1]]},"P":{"sloty":["_","_","X","X"],"akcie":[["Pohoršenie",1],["Cigaretka",1]]},"efekt":"Furt: Viera v jeho okolí platia ako vízia.","perm":6},"zmenaL":true,"zmenaP":true,"zmenaE":false,"kod":"ziadny","efH":[1,1],"zdov":"Dnes Dlh×2 + Poldecko + Obmedzenie + Odpor + Pohoršenie (⌀ sila 0,26, nikto ho nechce). Šarlatán predáva povery: Povera×2 a Dlh, za cigaretu, so škandálom. Efekt (Viera v okolí ako Vízia) je protiváha Viery a ostáva.","alt":null,"otazka":null,"m":{"pred":{"akcii":6,"silnych":1,"zlych":2,"hluche":2,"potencial":1.3,"hodnota":0.35,"aktivacia":39,"naex":0.65,"perm":4,"sila":0.75},"po":{"akcii":5,"silnych":1,"zlych":1,"hluche":3,"potencial":2.2,"hodnota":1.09,"aktivacia":39,"naex":1.03,"perm":6,"sila":1.49}}},{"id":"liberal","nazov":"Liberál","tagy":["Občan","Zahraničný","Žena","Chlap"],"typ":"hybrid","skupina":"senok-K","strategie":["K","S"],"identita":"Liberál: fajčí, provokuje starších a na NA EX nepije.","pred":{"L":{"sloty":["_","_","X","X"],"akcie":[["Cigaretka",1],["Pohoršenie",1]]},"P":{"sloty":["X","X","_","_"],"akcie":[["Cigaretka",1],["Pohoršenie",1]]},"efekt":"Furt: Dvojnásobný efekt jeho akcií ak je v partii rovnaký počet pohlaví. Furt: Nevie dať NA EX.","perm":4},"po":{"L":{"sloty":["_","_","X","X"],"akcie":[["Cigaretka",1],["Pohoršenie",1]]},"P":{"sloty":["X","X","_","_"],"akcie":[["Cigaretka",1],["Pohoršenie",1]]},"efekt":"Furt: Dvojnásobný efekt jeho akcií ak je v partii rovnaký počet pohlaví. Furt: Nevie dať NA EX.","perm":4},"zmenaL":false,"zmenaP":false,"zmenaE":false,"kod":"ziadny","efH":[1,1],"zdov":"Bez zmeny. Cigaretka + Pohoršenie na oboch stranách a zdvojenie pri rovnováhe pohlaví dávajú jasnú identitu Škandálu aj Stokárov.","alt":null,"otazka":null,"m":{"pred":{"akcii":4,"silnych":2,"zlych":0,"hluche":4,"potencial":3.6,"hodnota":1.57,"aktivacia":31,"naex":null,"perm":4,"sila":1.97},"po":{"akcii":4,"silnych":2,"zlych":0,"hluche":4,"potencial":3.6,"hodnota":1.47,"aktivacia":31,"naex":null,"perm":4,"sila":1.87}}},{"id":"velmi_smutiaca_vdova","nazov":"Veľmi smútiaca vdova","tagy":["Občan","Kriminál","Žena"],"typ":"sila","skupina":"senok-K","strategie":["K","O"],"identita":"Veľmi smútiaca vdova: mužov v okolí ubúda a dedina má o čom rozprávať.","pred":{"L":{"sloty":[["Obmedzenie"],["Obmedzenie"],["Dlh"],["Dlh"]],"akcie":[["Dlh",1],["Obmedzenie",1]]},"P":{"sloty":["X","_","_","_"],"akcie":[["Pohoršenie",2]]},"efekt":"Nástup: Ak je vrchná karta doberacieho balíka súpera muž, odstráň ho z hry a odhoď zopár svojich dlhov.","perm":12},"po":{"L":{"sloty":[["Obmedzenie"],["Obmedzenie"],["Rana"],["Rana"]],"akcie":[["Obmedzenie",1],["Rana",1]]},"P":{"sloty":["X","_","_","_"],"akcie":[["Pohoršenie",2]]},"efekt":"Nástup: Ak je vrchná karta doberacieho balíčka súpera muž, odstráň ho z hry a odhoď 2 svoje Dlhy.","perm":12},"zmenaL":true,"zmenaP":false,"zmenaE":true,"kod":"konstanta","efH":[2,2],"zdov":"Pohoršenie×2 je srdce Škandálu a ostáva. Dlh → Rana (jed v polievke): Škandál nie je v bitke úplne bezbranný (simulácia: Škandál vyhral len 32 % bitiek). Skúšaná Pecka robila z Vdovy najsilnejší cieľ NA EX v sade (NA EX zdvojí 2 Pohoršenia aj Pecku: ⌀ +4,3), Rana to zmierni. V efekte pevné 2 namiesto zopár.","alt":null,"otazka":null,"m":{"pred":{"akcii":4,"silnych":2,"zlych":1,"hluche":4,"potencial":2.2,"hodnota":1.1,"aktivacia":37,"naex":1.2,"perm":12,"sila":1.9},"po":{"akcii":4,"silnych":2,"zlych":0,"hluche":4,"potencial":3.8,"hodnota":1.44,"aktivacia":36,"naex":3.11,"perm":12,"sila":2.24}}},{"id":"silna_nezavisla_zena","nazov":"Silná, nezávislá žena","tagy":["Občan","Influencer","Žena"],"typ":"sila","skupina":"senok-K","strategie":["K","O"],"identita":"Silná, nezávislá žena: nikoho nepotrebuje a starší z nej majú rozruch.","pred":{"L":{"sloty":[["Dlh"],["Dlh"],["Posilnenie"],["Posilnenie"]],"akcie":[["Dlh",2],["Posilnenie",1]]},"P":{"sloty":[["Dlh","Posilnenie"],["Dlh","Posilnenie"],["Povera"],["Povera"]],"akcie":[["Dlh",1],["Posilnenie",1],["Povera",1]]},"efekt":"Furt: Jej akcie platia, len ak je podporená dvoma chlapmi.","perm":8},"po":{"L":{"sloty":["X","_","_","X"],"akcie":[["Pohoršenie",1]]},"P":{"sloty":["X","_","_","X"],"akcie":[["Odpor",1]]},"efekt":"Furt: Ak vedľa nej nie je Chlap, jej aktívne akcie sa rátajú dvakrát.","perm":4},"zmenaL":true,"zmenaP":true,"zmenaE":true,"kod":"novy","efH":[-3,2],"zdov":"Dnes takmer nikdy neplatí (aktivácia 3 %, Dlh×3) — „podpora dvoch chlapov“ je presný opak mena. Nová: Pohoršenie a Odpor, zdvojené, keď je sama (pri lokalite, ženách, Nástroji, zvierati).","alt":null,"otazka":null,"m":{"pred":{"akcii":6,"silnych":2,"zlych":3,"hluche":2,"potencial":0.3,"hodnota":-0.06,"aktivacia":3,"naex":-1.42,"perm":8,"sila":-1.26},"po":{"akcii":2,"silnych":1,"zlych":0,"hluche":6,"potencial":1.7,"hodnota":0.55,"aktivacia":33,"naex":0.99,"perm":4,"sila":1.35}}},{"id":"kocovnik","nazov":"Kočovník","tagy":["Občan","Zahraničný","Chlap"],"typ":"connector","skupina":"senok-O","strategie":["O","S"],"identita":"Kočovník: príde odnikiaľ, sadne si k súperovi a prinesie cigarety.","pred":{"L":{"sloty":[["Cigaretka"],["Cigaretka"],["PoškodeniePečene"],["PoškodeniePečene"]],"akcie":[["Cigaretka",1],["PoškodeniePečene",1]]},"P":{"sloty":[["Odpor"],"X",["Dlh"],["Rana"]],"akcie":[["Dlh",1],["Odpor",1],["Rana",1]]},"efekt":"Nástup: Môže nastúpiť do súperovej partie.","perm":4},"po":{"L":{"sloty":[["Cigaretka"],["Cigaretka"],["PoškodeniePečene"],["PoškodeniePečene"]],"akcie":[["Cigaretka",1],["PoškodeniePečene",1]]},"P":{"sloty":[["Odpor"],"X",["Cigaretka"],["Rana"]],"akcie":[["Odpor",1],["Cigaretka",1],["Rana",1]]},"efekt":"Nástup: Môže nastúpiť do súperovej partie.","perm":4},"zmenaL":false,"zmenaP":true,"zmenaE":false,"kod":"ziadny","efH":[2,2],"zdov":"Jediný podstrčiteľ bez limitu — jadro Sabotérov. Dnes má v línii zápornú hodnotu (Pečeň aj Dlh, ⌀ 0,05): Dlh → Cigaretka, aby sa ho oplatilo podstrčiť a fajčil aj na súperovej strane.","alt":null,"otazka":null,"m":{"pred":{"akcii":5,"silnych":0,"zlych":2,"hluche":3,"potencial":1,"hodnota":0.05,"aktivacia":35,"naex":0.91,"perm":4,"sila":0.85},"po":{"akcii":5,"silnych":0,"zlych":1,"hluche":3,"potencial":2.2,"hodnota":0.55,"aktivacia":31,"naex":1.71,"perm":4,"sila":1.35}}},{"id":"svokra","nazov":"Svokra","tagy":["Občan","Autorita","Žena"],"typ":"hybrid","skupina":"senok-O","strategie":["O","V"],"identita":"Svokra: všetko vidí, zakáže ti piť a vrazí valčekom.","pred":{"L":{"sloty":["_","_","X","X"],"akcie":[["Poldeci",1]]},"P":{"sloty":[["Viera"],["Viera"],["Obmedzenie","Pecka"],["Obmedzenie","Pecka"]],"akcie":[["Obmedzenie",1],["Pecka",1],["Viera",1]]},"efekt":"Nástup: Vráť súperovi jedno NA EX z tvojej karty.","perm":8},"po":{"L":{"sloty":["_","_","X","X"],"akcie":[["Poldeci",1]]},"P":{"sloty":[["Viera"],["Viera"],["Obmedzenie","Pecka"],["Obmedzenie","Pecka"]],"akcie":[["Obmedzenie",1],["Pecka",1],["Viera",1]]},"efekt":"Nástup: Vráť súperovi jedno NA EX z tvojej karty.","perm":8},"zmenaL":false,"zmenaP":false,"zmenaE":false,"kod":"ziadny","efH":[2,2],"zdov":"Bez zmeny. Jediná karta proti NA EX; Viera + Obmedzenie/Pecka sedí.","alt":null,"otazka":null,"m":{"pred":{"akcii":4,"silnych":1,"zlych":0,"hluche":4,"potencial":3.7,"hodnota":1.55,"aktivacia":38,"naex":2.73,"perm":8,"sila":2.35},"po":{"akcii":4,"silnych":1,"zlych":0,"hluche":4,"potencial":3.7,"hodnota":1.45,"aktivacia":38,"naex":2.92,"perm":8,"sila":2.25}}},{"id":"financna_poradkyna","nazov":"Finančná poradkyňa","tagy":["Občan","Pracujúci","Žena"],"typ":"connector","skupina":"senok-O","strategie":["O","V"],"identita":"Finančná poradkyňa: úver dostane každý — hlavne tvoj súper.","pred":{"L":{"sloty":[["Posilnenie"],["Posilnenie"],["Dlh"],["Dlh"]],"akcie":[["Dlh",2],["Posilnenie",1]]},"P":{"sloty":[["Cigaretka"],["Cigaretka"],["Dlh"],["Dlh"]],"akcie":[["Cigaretka",1],["Dlh",2]]},"efekt":"Prestávka: Dlhy vygenerované týmto občanom sa udeľujú všetkým hráčom.","perm":4},"po":{"L":{"sloty":[["Dlh"],["Dlh"],["Povera"],["Povera"]],"akcie":[["Dlh",2],["Povera",1]]},"P":{"sloty":[["Cigaretka"],["Cigaretka"],["Dlh"],["Dlh"]],"akcie":[["Dlh",1],["Cigaretka",1]]},"efekt":"Prestávka: Hazard z jej akcií dostáva súper, nie ty.","perm":8},"zmenaL":true,"zmenaP":true,"zmenaE":true,"kod":"uprava","efH":[-1,2],"zdov":"Najslabšia karta sady (⌀ sila −0,08): Dlhy dávala obom, teda aj sebe. Keď ich dostáva len súper, je to zbraň Sabotérov a palivo Povery (súper má Dlhy → tvoje Povery majú čo zraziť). Spojovač: 5 akcií, 3 hluché; súperov NA EX na ňu zdvojí Hazard jemu samému.","alt":null,"otazka":null,"m":{"pred":{"akcii":6,"silnych":1,"zlych":4,"hluche":2,"potencial":-1,"hodnota":-0.41,"aktivacia":37,"naex":-2.21,"perm":4,"sila":-0.81},"po":{"akcii":5,"silnych":0,"zlych":3,"hluche":3,"potencial":-0.7,"hodnota":1,"aktivacia":34,"naex":2.69,"perm":8,"sila":1.8}}},{"id":"policajtka","nazov":"Policajtka","tagy":["Občan","Autorita","Žena"],"typ":"hybrid","skupina":"senok-O","strategie":["O"],"identita":"Policajtka: pokuty, obušok a poriadok v dedine.","pred":{"L":{"sloty":["_","X","X","X"],"akcie":[["Posilnenie",1]]},"P":{"sloty":["X",["Obmedzenie"],["Obmedzenie","Robota"],["Obmedzenie","Robota"]],"akcie":[["Obmedzenie",1],["Robota",1]]},"efekt":"Nástup: Preskúmaj svoj doberací balíček. Rozdeľ karty na 2 skupiny. Jednu skupinu vráť na vrch, druhú na spodok balíčka.","perm":4},"po":{"L":{"sloty":["_","_","X","X"],"akcie":[["Obmedzenie",1],["Rana",1]]},"P":{"sloty":["X","_","_","X"],"akcie":[["Robota",1]]},"efekt":"Furt: Súperove Pohoršenia proti tebe neplatia.","perm":4},"zmenaL":true,"zmenaP":true,"zmenaE":true,"kod":"uprava","efH":[1,2],"zdov":"Protiváha Škandálu prechádza z Pušky (tam bola trvalá v Dedičstve a hráči ju hlásili ako silnú) na Policajtku: platí len v kole, keď je v línii. Posilnenie → Rana (obušok) a Obmedzenie (pokuta).","alt":"Ponechať súčasný efekt (preskúmaj a rozdeľ doberací balíček) a protiváhu Škandálu dať inam.","otazka":null,"m":{"pred":{"akcii":3,"silnych":1,"zlych":0,"hluche":5,"potencial":1.5,"hodnota":0.33,"aktivacia":41,"naex":0.44,"perm":4,"sila":0.73},"po":{"akcii":3,"silnych":0,"zlych":0,"hluche":5,"potencial":1.7,"hodnota":0.56,"aktivacia":37,"naex":1.63,"perm":4,"sila":1.36}}},{"id":"puska","nazov":"Puška","tagy":["Nástroj"],"typ":"nastroj","skupina":"nastroj","strategie":["B"],"identita":"Puška na stene: výstrel v rukách Občana, a kým visí doma, nikto si veľa nedovolí.","pred":{"L":{"sloty":["X","X","_","_"],"akcie":[["Petelica",1]]},"P":{"sloty":["X","X","_","_"],"akcie":[["Petelica",1]]},"efekt":"Dedičstvo: Súperove Pohoršenia proti tebe neplatia. Tvoje povery súperovi nič nerobia.","perm":4},"po":{"L":{"sloty":["X","X","_","_"],"akcie":[["Rana",1]]},"P":{"sloty":["X","X","_","_"],"akcie":[["Pecka",1]]},"efekt":"Dedičstvo: Prebytočné poškodenie, ktoré proti tebe rozdeľuje súper, je o 2 menšie.","perm":4},"zmenaL":true,"zmenaP":true,"zmenaE":true,"kod":"uprava","efH":[2,2],"zdov":"Petelica na oboch hranách mimo limitu bola najsilnejší blokátor (5 playtestov). V línii len Rana | Pecka (a len pri Občanovi). Dedičstvo chráni markery, keď prehráš — brzdí nabaľovanie víťaza. Simulácia: prvý návrh (+1 tuhé v Dedičstve ako priazeň Bitkára) pri novej sade s ~2–3 tuhého na bitku rozhodoval bitky (Bitkári 75 % výhier; bez tohto bonusu 56 %), preto obranná verzia.","alt":"Priazeň Bitkára +1 (+1 tuhé), len keď útočíš — v simulácii stále príliš silné (Bitkári 63 %).","otazka":null,"m":{"pred":{"akcii":2,"silnych":2,"zlych":0,"hluche":6,"potencial":6,"hodnota":1.45,"aktivacia":23,"naex":null,"perm":4,"sila":2.25},"po":{"akcii":2,"silnych":1,"zlych":0,"hluche":6,"potencial":3,"hodnota":0.68,"aktivacia":23,"naex":null,"perm":4,"sila":1.48}}},{"id":"svaty_text","nazov":"Svätý text","tagy":["Nástroj"],"typ":"nastroj","skupina":"nastroj","strategie":["V"],"identita":"Svätý text: kto číta, ten vydrží.","pred":{"L":{"sloty":["_","_","X","X"],"akcie":[["Viera",1]]},"P":{"sloty":["_","_","X","X"],"akcie":[["Povera",1],["Viera",1]]},"efekt":"Dedičstvo: Tvoja Viera nechráni pred Tuhým ale pred Mäkkým poškodením.","perm":4},"po":{"L":{"sloty":["_","_","X","X"],"akcie":[["Viera",1]]},"P":{"sloty":["_","_","X","X"],"akcie":[["Viera",1]]},"efekt":"Dedičstvo: Hodnota tvojej Viery je o 1 vyššia.","perm":4},"zmenaL":false,"zmenaP":true,"zmenaE":true,"kod":"uprava","efH":[-1,3],"zdov":"Dnešný efekt (Viera chráni pred mäkkým, nie tuhým) je podľa §14 v praxi nevýhoda. Malá priazeň Veriaceho: Viera 2 namiesto 1 — rieši sťažnosť „Viera je len −1“.","alt":null,"otazka":null,"m":{"pred":{"akcii":3,"silnych":0,"zlych":0,"hluche":5,"potencial":2.3,"hodnota":0.85,"aktivacia":33,"naex":null,"perm":4,"sila":0.45},"po":{"akcii":2,"silnych":0,"zlych":0,"hluche":6,"potencial":1.8,"hodnota":0.56,"aktivacia":30,"naex":null,"perm":4,"sila":1.76}}},{"id":"noviny","nazov":"Noviny","tagy":["Nástroj"],"typ":"nastroj","skupina":"nastroj","strategie":["K"],"identita":"Noviny: čo je v novinách, to je pravda — a škandál.","pred":{"L":{"sloty":["X","_","_","X"],"akcie":[["Povera",1]]},"P":{"sloty":["X","_","_","X"],"akcie":[["Povera",1]]},"efekt":"Dedičstvo: Tvoje povery nerušia súperovu vieru. Súperova viera neruší tvoje povery.","perm":4},"po":{"L":{"sloty":["X","_","_","X"],"akcie":[["Pohoršenie",1]]},"P":{"sloty":["X","_","_","X"],"akcie":[["Povera",1]]},"efekt":"Dedičstvo: Tvoje Pohoršenie smie posunúť marker aj na krajnú pozíciu, ak bol na predposlednej už na začiatku kola.","perm":4},"zmenaL":true,"zmenaP":false,"zmenaE":true,"kod":"novy","efH":[0,3],"zdov":"Dnes: Povery a Viera sa nerušia — nikto ho nechce. Nové Noviny sú kľúč Škandálu: Pohoršením sa dá staršieho vydesiť a prebudiť aj bez víťazstva v bitke.","alt":null,"otazka":null,"m":{"pred":{"akcii":2,"silnych":0,"zlych":0,"hluche":6,"potencial":1,"hodnota":0.31,"aktivacia":28,"naex":null,"perm":4,"sila":0.31},"po":{"akcii":2,"silnych":1,"zlych":0,"hluche":6,"potencial":1.7,"hodnota":0.53,"aktivacia":29,"naex":null,"perm":4,"sila":1.73}}},{"id":"cigorky","nazov":"Cigorky","tagy":["Nástroj"],"typ":"nastroj","skupina":"nastroj","strategie":["S"],"identita":"Cigorky: balíček vždy po ruke.","pred":{"L":{"sloty":["X","X","_","_"],"akcie":[["Cigaretka",1]]},"P":{"sloty":["_","_","X","X"],"akcie":[["Cigaretka",1]]},"efekt":"Dedičstvo: Nemôžeš otočiť poldeci za cigarety. Cez prestávku pred bitkou za aktívnu Cigaretku potiahni cigaretu.","perm":4},"po":{"L":{"sloty":["X","X","_","_"],"akcie":[["Cigaretka",1]]},"P":{"sloty":["_","_","X","X"],"akcie":[["Cigaretka",1]]},"efekt":"Dedičstvo: V každej Pitke dostaneš 1 cigaretu navyše.","perm":4},"zmenaL":false,"zmenaP":false,"zmenaE":true,"kod":"uprava","efH":[0,2],"zdov":"Dnes zakazuje doliatie poldeci za cigarety (playtesty: „nikto nechce“). Malá priazeň Fajčiara, ale v každej Pitke.","alt":null,"otazka":null,"m":{"pred":{"akcii":2,"silnych":0,"zlych":0,"hluche":6,"potencial":1.2,"hodnota":0.42,"aktivacia":32,"naex":null,"perm":4,"sila":0.42},"po":{"akcii":2,"silnych":0,"zlych":0,"hluche":6,"potencial":1.2,"hodnota":0.37,"aktivacia":29,"naex":null,"perm":4,"sila":1.17}}},{"id":"vinko","nazov":"Vínko","tagy":["Nástroj"],"typ":"nastroj","skupina":"nastroj","strategie":["S"],"identita":"Vínko: vlastná fľaša v pivnici.","pred":{"L":{"sloty":["X","X","_","_"],"akcie":[["Poldeci",1],["PoškodeniePečene",1]]},"P":{"sloty":["X","X","_","_"],"akcie":[["Poldeci",1],["PoškodeniePečene",1]]},"efekt":"Dedičstvo: Počíta sa ako by si mal nevypitý poldeci navyše. Nemôžeš vykonať stokarsky barter.","perm":4},"po":{"L":{"sloty":["X","X","_","_"],"akcie":[["Poldeci",1]]},"P":{"sloty":["X","X","_","_"],"akcie":[["PoškodeniePečene",1]]},"efekt":"Dedičstvo: Počíta sa ako by si mal nevypitý poldeci navyše. Nemôžeš vykonať stokársky barter.","perm":4},"zmenaL":true,"zmenaP":true,"zmenaE":true,"kod":"text","efH":[2,2],"zdov":"Efekt už je „priazeň“ (limit +1 natrvalo, cena: bez barteru) — ostáva, opravený preklep. V línii dnes Poldecko + Pečeň na oboch stranách; po novom jedna akcia na strane.","alt":null,"otazka":null,"m":{"pred":{"akcii":4,"silnych":0,"zlych":2,"hluche":4,"potencial":-0.2,"hodnota":-0.05,"aktivacia":23,"naex":null,"perm":4,"sila":0.75},"po":{"akcii":2,"silnych":0,"zlych":1,"hluche":6,"potencial":-0.1,"hodnota":0,"aktivacia":22,"naex":null,"perm":4,"sila":0.8}}},{"id":"nealko","nazov":"Nealko","tagy":["Nástroj"],"typ":"nastroj","skupina":"nastroj","strategie":["S"],"identita":"Nealko: dnes nepijem — hovorí každý, kým nepríde Pitka.","pred":{"L":{"sloty":["_","_","X","X"],"akcie":[["Pohoršenie",2]]},"P":{"sloty":["X","X","_","_"],"akcie":[["Odpor",1]]},"efekt":"Dedičstvo: Poldeci ani NA EX! neprispieva k prahu cirhózy. Akcia Poldeci nedoplna Poldecak.","perm":2},"po":{"L":{"sloty":["X","X","_","_"],"akcie":[["Odpor",1]]},"P":{"sloty":["_","_","X","X"],"akcie":[["Robota",1]]},"efekt":"Dedičstvo: Tvoj prah Cirhózy je o 2 vyšší.","perm":4},"zmenaL":true,"zmenaP":true,"zmenaE":true,"kod":"uprava","efH":[1,2],"zdov":"Návrh Michala: Nealko zvýši prah pečene (malá priazeň Alkoholika). V línii Odpor (odmietne pohárik) a Robota; Pohoršenie×2 na Nealku nesedelo.","alt":null,"otazka":"Nealko: prah Cirhózy +1 alebo +2? (Alkoholik so silou 1 dáva +2.)","m":{"pred":{"akcii":3,"silnych":2,"zlych":0,"hluche":5,"potencial":2.9,"hodnota":0.96,"aktivacia":36,"naex":null,"perm":2,"sila":1.36},"po":{"akcii":2,"silnych":0,"zlych":0,"hluche":6,"potencial":0.8,"hodnota":0.11,"aktivacia":34,"naex":null,"perm":4,"sila":0.91}}},{"id":"pasca","nazov":"Pasca","tagy":["Nástroj"],"typ":"nastroj","skupina":"nastroj","strategie":["O"],"identita":"Pasca: kto sa zakráda, ten sa chytí.","pred":{"L":{"sloty":["_","X","_","X"],"akcie":[["Obmedzenie",1]]},"P":{"sloty":["X","X","_","_"],"akcie":[["Pecka",1]]},"efekt":"Dedičstvo: Každé obmedzenie dáva súperovi počas bitky pecku. Nemôžeš aktivovať viac ako jedno obmedzenie.","perm":4},"po":{"L":{"sloty":["_","X","_","X"],"akcie":[["Obmedzenie",1]]},"P":{"sloty":["X","X","_","_"],"akcie":[["Odpor",1]]},"efekt":"Dedičstvo: Akcie prvej karty, ktorú ti súper v kole podstrčí na tvoju stranu, neplatia.","perm":4},"zmenaL":false,"zmenaP":true,"zmenaE":true,"kod":"novy","efH":[2,2],"zdov":"Dnes: Obmedzenie dáva súperovi Pecku — divné a silné. Pasca je protiváha Sabotérov: prvú podstrčenú kartu v kole „chytí“. Pecka v línii → Odpor.","alt":null,"otazka":null,"m":{"pred":{"akcii":2,"silnych":1,"zlych":0,"hluche":6,"potencial":2.4,"hodnota":0.5,"aktivacia":23,"naex":null,"perm":4,"sila":1.3},"po":{"akcii":2,"silnych":0,"zlych":0,"hluche":6,"potencial":0.9,"hodnota":0.12,"aktivacia":28,"naex":null,"perm":4,"sila":0.92}}},{"id":"vyherny_automat","nazov":"Výherný automat","tagy":["Nástroj"],"typ":"nastroj","skupina":"nastroj","strategie":["S"],"identita":"Výherný automat: raz vyhráš, raz si dlžný.","pred":{"L":{"sloty":["X","_","X","_"],"akcie":[["Posilnenie",1]]},"P":{"sloty":["_","X","_","X"],"akcie":[["Posilnenie",1]]},"efekt":"Dedičstvo: Pri Výhre kola zahoď zopár Dlhov navyše, pri Prehre 1 Dlh získaj.","perm":4},"po":{"L":{"sloty":["X","_","_","X"],"akcie":[["Cigaretka",1]]},"P":{"sloty":["X","_","_","X"],"akcie":[["Dlh",1]]},"efekt":"Dedičstvo: Výhra: Dostaneš 2 cigarety. Prehra: Získaš 1 Dlh.","perm":4},"zmenaL":true,"zmenaP":true,"zmenaE":true,"kod":"uprava","efH":[1,2],"zdov":"Dnes Posilnenie na oboch stranách (silné v línii zadarmo) a efekt páli zopár Dlhov. Automat je hazard pre Stokárov: výhra = cigarety, prehra = Dlh. V línii Cigaretka a Hazard.","alt":null,"otazka":null,"m":{"pred":{"akcii":2,"silnych":2,"zlych":0,"hluche":6,"potencial":1.6,"hodnota":0,"aktivacia":0,"naex":null,"perm":4,"sila":0.4},"po":{"akcii":2,"silnych":0,"zlych":1,"hluche":6,"potencial":0,"hodnota":-0.01,"aktivacia":29,"naex":null,"perm":4,"sila":0.79}}},{"id":"lesna_cesta","nazov":"Lesná cesta","tagy":["Lokalita"],"typ":"lokalita","skupina":"lokalita","strategie":["B"],"identita":"Lesná cesta: tu sa bije a fajčí potajme.","pred":{"L":{"sloty":["_","X","X","X"],"akcie":[["Cigaretka",1]]},"P":{"sloty":["_","X","_","X"],"akcie":[["Rana",2]]},"efekt":"Pitka: Ak dáš NA EX! zahoď absťák.","perm":1},"po":{"L":{"sloty":["_","X","X","X"],"akcie":[["Cigaretka",1]]},"P":{"sloty":["_","X","_","X"],"akcie":[["Rana",2]]},"efekt":"Pitka: Ak dáš NA EX! zahoď absťák.","perm":1},"zmenaL":false,"zmenaP":false,"zmenaE":false,"kod":"ziadny","efH":[1,1],"zdov":"Bez zmeny.","alt":null,"otazka":null,"m":{"pred":{"akcii":3,"silnych":0,"zlych":0,"hluche":5,"potencial":2.6,"hodnota":null,"aktivacia":null,"naex":null,"perm":1,"sila":null},"po":{"akcii":3,"silnych":0,"zlych":0,"hluche":5,"potencial":2.6,"hodnota":null,"aktivacia":null,"naex":null,"perm":1,"sila":null}}},{"id":"ihrisko","nazov":"Ihrisko","tagy":["Lokalita"],"typ":"lokalita","skupina":"lokalita","strategie":["K"],"identita":"Ihrisko: matky na lavičke všetko vidia.","pred":{"L":{"sloty":["_","_","X","X"],"akcie":[["Cigaretka",1],["Posilnenie",1]]},"P":{"sloty":["X","X","X","X"],"akcie":[]},"efekt":"Furt: Prah Cirhózy je o 1 vyšší.","perm":2},"po":{"L":{"sloty":["_","_","X","X"],"akcie":[["Cigaretka",1],["Pohoršenie",1]]},"P":{"sloty":["X","X","X","X"],"akcie":[]},"efekt":"Furt: Prah Cirhózy je o 1 vyšší.","perm":2},"zmenaL":true,"zmenaP":false,"zmenaE":false,"kod":"ziadny","efH":[1,1],"zdov":"Posilnenie na lokalite je podľa playtestov najsilnejšia akcia hry (zdvojí Petelicu za nič). Posilnenie → Pohoršenie.","alt":null,"otazka":null,"m":{"pred":{"akcii":2,"silnych":1,"zlych":0,"hluche":6,"potencial":1.4,"hodnota":null,"aktivacia":null,"naex":null,"perm":2,"sila":null},"po":{"akcii":2,"silnych":1,"zlych":0,"hluche":6,"potencial":1.8,"hodnota":null,"aktivacia":null,"naex":null,"perm":2,"sila":null}}},{"id":"zberny_dvor","nazov":"Zberný dvor","tagy":["Lokalita"],"typ":"lokalita","skupina":"lokalita","strategie":["B"],"identita":"Zberný dvor: staré veci, staré dlhy.","pred":{"L":{"sloty":["_","X","X","X"],"akcie":[["Petelica",1]]},"P":{"sloty":["_","X","_","X"],"akcie":[["Obmedzenie",1],["Pohoršenie",1]]},"efekt":"Pitka: Hráči generujú o trocha menej dlhov.","perm":2},"po":{"L":{"sloty":["_","X","X","X"],"akcie":[["Petelica",1]]},"P":{"sloty":["_","X","_","X"],"akcie":[["Obmedzenie",1],["Pohoršenie",1]]},"efekt":"Pitka: Hráči generujú o 1 Dlh menej.","perm":2},"zmenaL":false,"zmenaP":false,"zmenaE":true,"kod":"konstanta","efH":[1,1],"zdov":"Pevná 1 namiesto trocha.","alt":null,"otazka":null,"m":{"pred":{"akcii":3,"silnych":2,"zlych":0,"hluche":5,"potencial":4.6,"hodnota":null,"aktivacia":null,"naex":null,"perm":2,"sila":null},"po":{"akcii":3,"silnych":2,"zlych":0,"hluche":5,"potencial":4.6,"hodnota":null,"aktivacia":null,"naex":null,"perm":2,"sila":null}}},{"id":"benzinka","nazov":"Benzínka","tagy":["Lokalita"],"typ":"lokalita","skupina":"lokalita","strategie":["S"],"identita":"Benzínka: fajčiť sa tu nesmie.","pred":{"L":{"sloty":["_","_","X","X"],"akcie":[["Cigaretka",1],["Pohoršenie",1]]},"P":{"sloty":["X","_","_","_"],"akcie":[["Cigaretka",1],["Odpor",1],["Povera",1]]},"efekt":"Bitka: Ak súčet akcií Cigaretka oboch hráčov presiahne 7, hráči musia zahodiť 3 občanov a lokalitu nikto nevyhráva.","perm":12},"po":{"L":{"sloty":["_","_","X","X"],"akcie":[["Cigaretka",1],["Pohoršenie",1]]},"P":{"sloty":["X","_","_","_"],"akcie":[["Cigaretka",1],["Odpor",1],["Povera",1]]},"efekt":"Bitka: Ak súčet akcií Cigaretka oboch hráčov presiahne 7, hráči musia zahodiť 3 občanov a lokalitu nikto nevyhráva.","perm":12},"zmenaL":false,"zmenaP":false,"zmenaE":false,"kod":"ziadny","efH":[2,2],"zdov":"Bez zmeny — je to protiváha Stokárov.","alt":null,"otazka":null,"m":{"pred":{"akcii":5,"silnych":1,"zlych":0,"hluche":3,"potencial":3.4,"hodnota":null,"aktivacia":null,"naex":null,"perm":12,"sila":null},"po":{"akcii":5,"silnych":1,"zlych":0,"hluche":3,"potencial":3.4,"hodnota":null,"aktivacia":null,"naex":null,"perm":12,"sila":null}}},{"id":"zastavka","nazov":"Zastávka","tagy":["Lokalita"],"typ":"lokalita","skupina":"lokalita","strategie":["B","S"],"identita":"Zastávka: čaká sa, fajčí a občas pobije.","pred":{"L":{"sloty":["X","_","_","X"],"akcie":[["Cigaretka",1],["Obmedzenie",1]]},"P":{"sloty":["X","_","_","X"],"akcie":[["Pecka",1],["Posilnenie",1]]},"efekt":"Zhromaždenie: Hráči hrajú 2 karty bez ohľadu na Poldecáky.","perm":4},"po":{"L":{"sloty":["X","_","_","X"],"akcie":[["Cigaretka",1],["Obmedzenie",1]]},"P":{"sloty":["X","_","_","X"],"akcie":[["Pecka",1],["Cigaretka",1]]},"efekt":"Zhromaždenie: Hráči hrajú 2 karty bez ohľadu na Poldecáky.","perm":4},"zmenaL":false,"zmenaP":true,"zmenaE":false,"kod":"ziadny","efH":[2,2],"zdov":"Posilnenie → Cigaretka (rovnaký dôvod ako Ihrisko).","alt":null,"otazka":null,"m":{"pred":{"akcii":4,"silnych":2,"zlych":0,"hluche":4,"potencial":3.8,"hodnota":null,"aktivacia":null,"naex":null,"perm":4,"sila":null},"po":{"akcii":4,"silnych":1,"zlych":0,"hluche":4,"potencial":3.6,"hodnota":null,"aktivacia":null,"naex":null,"perm":4,"sila":null}}},{"id":"krcma","nazov":"Krčma","tagy":["Lokalita"],"typ":"lokalita","skupina":"lokalita","strategie":["S"],"identita":"Krčma: kto má poldeci, pije.","pred":{"L":{"sloty":["_","_","_","X"],"akcie":[["Cigaretka",1],["Pecka",1],["PoškodeniePečene",1]]},"P":{"sloty":["X","_","_","X"],"akcie":[["Povera",1],["Vízia",1]]},"efekt":"Pitka: Ak máš poldeci, musíš dať NA EX!","perm":12},"po":{"L":{"sloty":["_","_","_","X"],"akcie":[["Cigaretka",1],["Pecka",1],["PoškodeniePečene",1]]},"P":{"sloty":["X","_","_","X"],"akcie":[["Povera",1],["Vízia",1]]},"efekt":"Pitka: Ak máš poldeci, musíš dať NA EX!","perm":12},"zmenaL":false,"zmenaP":false,"zmenaE":false,"kod":"ziadny","efH":[2,2],"zdov":"Bez zmeny.","alt":null,"otazka":null,"m":{"pred":{"akcii":5,"silnych":1,"zlych":1,"hluche":3,"potencial":2.9,"hodnota":null,"aktivacia":null,"naex":null,"perm":12,"sila":null},"po":{"akcii":5,"silnych":1,"zlych":1,"hluche":3,"potencial":2.9,"hodnota":null,"aktivacia":null,"naex":null,"perm":12,"sila":null}}},{"id":"kostol","nazov":"Kostol","tagy":["Lokalita"],"typ":"lokalita","skupina":"lokalita","strategie":["V"],"identita":"Kostol: tu sa verí, nie povera.","pred":{"L":{"sloty":["X","_","_","X"],"akcie":[["Posilnenie",1],["Viera",1]]},"P":{"sloty":["X","_","_","X"],"akcie":[["Viera",1],["Vízia",1]]},"efekt":"Zhromaždenie: Každý hráč s aktívnou Vierou si dobral kartu. Bitka: Povery v tejto lokalite neplatia.","perm":4},"po":{"L":{"sloty":["X","_","_","X"],"akcie":[["Viera",2]]},"P":{"sloty":["X","_","_","X"],"akcie":[["Viera",1],["Vízia",1]]},"efekt":"Zhromaždenie: Každý hráč s aktívnou Vierou si dobral kartu. Bitka: Povery v tejto lokalite neplatia.","perm":2},"zmenaL":true,"zmenaP":false,"zmenaE":false,"kod":"ziadny","efH":[2,2],"zdov":"Posilnenie → druhá Viera (Kostol je miesto Viery, Povery tu neplatia).","alt":null,"otazka":null,"m":{"pred":{"akcii":4,"silnych":1,"zlych":0,"hluche":4,"potencial":2.9,"hodnota":null,"aktivacia":null,"naex":null,"perm":4,"sila":null},"po":{"akcii":4,"silnych":0,"zlych":0,"hluche":4,"potencial":3,"hodnota":null,"aktivacia":null,"naex":null,"perm":2,"sila":null}}},{"id":"veterinar","nazov":"Veterinár","tagy":["Starešina","Chlap"],"typ":"starsi","skupina":"starsi","strategie":["S"],"identita":"Veterinár: lieči kravy aj pečeň.","pred":{"L":{"sloty":["X","_","_","X"],"akcie":[["Posilnenie",2]]},"P":{"sloty":["X",["Poldeci"],["Cigaretka"],"X"],"akcie":[["Cigaretka",1],["Poldeci",1]]},"efekt":"Bitka: Cirhóza ti pridáva v bitke o zopár poškodenia menej.","perm":1},"po":{"L":{"sloty":["X","_","_","X"],"akcie":[["Posilnenie",2]]},"P":{"sloty":["X",["Poldeci"],["Cigaretka"],"X"],"akcie":[["Cigaretka",1],["Poldeci",1]]},"efekt":"Bitka: Cirhóza ti pridáva v bitke o 2 poškodenia menej.","perm":1},"zmenaL":false,"zmenaP":false,"zmenaE":true,"kod":"konstanta","efH":[1,1],"zdov":"Pevné 2 namiesto zopár. Akcie starších aktivujú bodovacie podmienky — nemeníme ich.","alt":null,"otazka":null,"m":{"pred":{"akcii":4,"silnych":2,"zlych":0,"hluche":4,"potencial":2.6,"hodnota":null,"aktivacia":null,"naex":null,"perm":1,"sila":null},"po":{"akcii":4,"silnych":2,"zlych":0,"hluche":4,"potencial":2.6,"hodnota":null,"aktivacia":null,"naex":null,"perm":1,"sila":null}}},{"id":"autobusar","nazov":"Autobusár","tagy":["Starešina","Chlap"],"typ":"starsi","skupina":"starsi","strategie":["B"],"identita":"Autobusár: šoféruje aj po absťáku.","pred":{"L":{"sloty":["X",["Pecka"],["Cigaretka"],["Poldeci"]],"akcie":[["Cigaretka",1],["Pecka",1],["Poldeci",1]]},"P":{"sloty":["X","X","_","X"],"akcie":[["Robota",1]]},"efekt":"Bitka: Ignoruj trocha absťákov.","perm":1},"po":{"L":{"sloty":["X",["Pecka"],["Cigaretka"],["Poldeci"]],"akcie":[["Cigaretka",1],["Pecka",1],["Poldeci",1]]},"P":{"sloty":["X","X","_","X"],"akcie":[["Robota",1]]},"efekt":"Bitka: Ignoruj 1 Absťák.","perm":1},"zmenaL":false,"zmenaP":false,"zmenaE":true,"kod":"konstanta","efH":[1,1],"zdov":"Pevná 1 namiesto trocha.","alt":null,"otazka":null,"m":{"pred":{"akcii":4,"silnych":1,"zlych":0,"hluche":4,"potencial":3.3,"hodnota":null,"aktivacia":null,"naex":null,"perm":1,"sila":null},"po":{"akcii":4,"silnych":1,"zlych":0,"hluche":4,"potencial":3.3,"hodnota":null,"aktivacia":null,"naex":null,"perm":1,"sila":null}}},{"id":"farar","nazov":"Farár","tagy":["Starešina","Chlap"],"typ":"starsi","skupina":"starsi","strategie":["V"],"identita":"Farár: povery na fare nestrpí.","pred":{"L":{"sloty":["X","_","X","_"],"akcie":[["Posilnenie",2]]},"P":{"sloty":["_","X","_","X"],"akcie":[["Viera",2]]},"efekt":"Bitka: Ignoruj trocha povier súpera.","perm":1},"po":{"L":{"sloty":["X","_","X","_"],"akcie":[["Posilnenie",2]]},"P":{"sloty":["_","X","_","X"],"akcie":[["Viera",2]]},"efekt":"Bitka: Ignoruj 2 súperove Povery.","perm":1},"zmenaL":false,"zmenaP":false,"zmenaE":true,"kod":"konstanta","efH":[1,2],"zdov":"Pevné 2 namiesto trocha (1 bez Lakomca) — silnejšia protiváha Povery, ktorá po Čiernej mačke a Neprajníkovi začne fungovať.","alt":null,"otazka":null,"m":{"pred":{"akcii":4,"silnych":2,"zlych":0,"hluche":4,"potencial":3.4,"hodnota":null,"aktivacia":null,"naex":null,"perm":1,"sila":null},"po":{"akcii":4,"silnych":2,"zlych":0,"hluche":4,"potencial":3.4,"hodnota":null,"aktivacia":null,"naex":null,"perm":1,"sila":null}}},{"id":"postarka","nazov":"Poštárka","tagy":["Starešina","Žena"],"typ":"starsi","skupina":"starsi","strategie":["S"],"identita":"Poštárka: nosí listy aj účty.","pred":{"L":{"sloty":["X","_","X","X"],"akcie":[["Vízia",1]]},"P":{"sloty":[["Cigaretka"],["Povera"],["Vízia"],"X"],"akcie":[["Cigaretka",1],["Povera",1],["Vízia",1]]},"efekt":"Pitka: Smieš dobrať až zopár kariet navyše a spolu s nimi trocha dlhov.","perm":1},"po":{"L":{"sloty":["X","_","X","X"],"akcie":[["Vízia",1]]},"P":{"sloty":[["Cigaretka"],["Povera"],["Vízia"],"X"],"akcie":[["Cigaretka",1],["Povera",1],["Vízia",1]]},"efekt":"Pitka: Smieš dobrať až 2 karty navyše a spolu s nimi 1 Dlh.","perm":1},"zmenaL":false,"zmenaP":false,"zmenaE":true,"kod":"konstanta","efH":[2,2],"zdov":"Pevné čísla namiesto zopár a trocha.","alt":null,"otazka":null,"m":{"pred":{"akcii":4,"silnych":0,"zlych":0,"hluche":4,"potencial":1.7,"hodnota":null,"aktivacia":null,"naex":null,"perm":1,"sila":null},"po":{"akcii":4,"silnych":0,"zlych":0,"hluche":4,"potencial":1.7,"hodnota":null,"aktivacia":null,"naex":null,"perm":1,"sila":null}}},{"id":"starosta","nazov":"Starosta","tagy":["Starešina","Chlap"],"typ":"starsi","skupina":"starsi","strategie":["S"],"identita":"Starosta: vybaví všetko za cigaretu.","pred":{"L":{"sloty":[["Pecka"],"X",["Poldeci"],"X"],"akcie":[["Pecka",1],["Poldeci",1]]},"P":{"sloty":["X",["Cigaretka"],"X",["Pecka"]],"akcie":[["Cigaretka",1],["Pecka",1]]},"efekt":"Pitka: Za cigaretu môžeš vymeniť kartu z ruky za kartu zo šenku.","perm":1},"po":{"L":{"sloty":[["Pecka"],"X",["Poldeci"],"X"],"akcie":[["Pecka",1],["Poldeci",1]]},"P":{"sloty":["X",["Cigaretka"],"X",["Pecka"]],"akcie":[["Cigaretka",1],["Pecka",1]]},"efekt":"Pitka: Za cigaretu môžeš vymeniť kartu z ruky za kartu zo šenku.","perm":1},"zmenaL":false,"zmenaP":false,"zmenaE":false,"kod":"ziadny","efH":[2,2],"zdov":"Bez zmeny.","alt":null,"otazka":null,"m":{"pred":{"akcii":4,"silnych":2,"zlych":0,"hluche":4,"potencial":5,"hodnota":null,"aktivacia":null,"naex":null,"perm":1,"sila":null},"po":{"akcii":4,"silnych":2,"zlych":0,"hluche":4,"potencial":5,"hodnota":null,"aktivacia":null,"naex":null,"perm":1,"sila":null}}},{"id":"hrobar","nazov":"Hrobár","tagy":["Starešina","Chlap"],"typ":"starsi","skupina":"starsi","strategie":["S"],"identita":"Hrobár: zarobí na každom konci.","pred":{"L":{"sloty":[["Viera"],["Vízia"],"X","X"],"akcie":[["Viera",1],["Vízia",1]]},"P":{"sloty":["X","X",["Robota"],["Pohoršenie"]],"akcie":[["Pohoršenie",1],["Robota",1]]},"efekt":"Furt: Keď súper zahodí kartu, dober si cigaretu.","perm":1},"po":{"L":{"sloty":[["Viera"],["Vízia"],"X","X"],"akcie":[["Viera",1],["Vízia",1]]},"P":{"sloty":["X","X",["Robota"],["Pohoršenie"]],"akcie":[["Pohoršenie",1],["Robota",1]]},"efekt":"Furt: Keď súper zahodí kartu, dober si cigaretu.","perm":1},"zmenaL":false,"zmenaP":false,"zmenaE":false,"kod":"ziadny","efH":[2,2],"zdov":"Bez zmeny.","alt":null,"otazka":null,"m":{"pred":{"akcii":4,"silnych":1,"zlych":0,"hluche":4,"potencial":2.7,"hodnota":null,"aktivacia":null,"naex":null,"perm":1,"sila":null},"po":{"akcii":4,"silnych":1,"zlych":0,"hluche":4,"potencial":2.7,"hodnota":null,"aktivacia":null,"naex":null,"perm":1,"sila":null}}},{"id":"vychovavatelka","nazov":"Vychovávateľka","tagy":["Starešina","Žena"],"typ":"starsi","skupina":"starsi","strategie":["V"],"identita":"Vychovávateľka: kto pije, tomu prihodí dlh.","pred":{"L":{"sloty":[["Obmedzenie"],"X","X",["Cigaretka"]],"akcie":[["Cigaretka",1],["Obmedzenie",1]]},"P":{"sloty":[["Poldeci"],"X","X",["Povera"]],"akcie":[["Poldeci",1],["Povera",1]]},"efekt":"Zhromaždenie: Ak dáš NA EX! súper si musí od teba vziať priznaný dlh na ruku.","perm":1},"po":{"L":{"sloty":[["Obmedzenie"],"X","X",["Cigaretka"]],"akcie":[["Cigaretka",1],["Obmedzenie",1]]},"P":{"sloty":[["Poldeci"],"X","X",["Povera"]],"akcie":[["Poldeci",1],["Povera",1]]},"efekt":"Zhromaždenie: Ak dáš NA EX! súper si musí od teba vziať priznaný dlh na ruku.","perm":1},"zmenaL":false,"zmenaP":false,"zmenaE":false,"kod":"ziadny","efH":[1,1],"zdov":"Bez zmeny.","alt":null,"otazka":null,"m":{"pred":{"akcii":4,"silnych":0,"zlych":0,"hluche":4,"potencial":1.9,"hodnota":null,"aktivacia":null,"naex":null,"perm":1,"sila":null},"po":{"akcii":4,"silnych":0,"zlych":0,"hluche":4,"potencial":1.9,"hodnota":null,"aktivacia":null,"naex":null,"perm":1,"sila":null}}},{"id":"krcmarka","nazov":"Krčmárka","tagy":["Starešina","Žena"],"typ":"starsi","skupina":"starsi","strategie":["S"],"identita":"Krčmárka: naleje, keď si slušný.","pred":{"L":{"sloty":["X","X",["Obmedzenie"],["Poldeci"]],"akcie":[["Obmedzenie",1],["Poldeci",1]]},"P":{"sloty":[["Povera"],["Cigaretka"],"X","X"],"akcie":[["Cigaretka",1],["Povera",1]]},"efekt":"Bitka: Ak nemáš absťák a nedal si NA EX, môžeš otočiť poldecak.","perm":1},"po":{"L":{"sloty":["X","X",["Obmedzenie"],["Poldeci"]],"akcie":[["Obmedzenie",1],["Poldeci",1]]},"P":{"sloty":[["Povera"],["Cigaretka"],"X","X"],"akcie":[["Cigaretka",1],["Povera",1]]},"efekt":"Bitka: Ak nemáš absťák a nedal si NA EX, môžeš otočiť poldecak.","perm":1},"zmenaL":false,"zmenaP":false,"zmenaE":false,"kod":"ziadny","efH":[2,2],"zdov":"Bez zmeny.","alt":null,"otazka":null,"m":{"pred":{"akcii":4,"silnych":0,"zlych":0,"hluche":4,"potencial":1.9,"hodnota":null,"aktivacia":null,"naex":null,"perm":1,"sila":null},"po":{"akcii":4,"silnych":0,"zlych":0,"hluche":4,"potencial":1.9,"hodnota":null,"aktivacia":null,"naex":null,"perm":1,"sila":null}}},{"id":"dlh","nazov":"Dlh","tagy":["Kliatba"],"typ":"kliatba","skupina":"kliatba","strategie":[],"identita":"Dlh.","pred":{"L":{"sloty":["X","X","X","X"],"akcie":[]},"P":{"sloty":["X","X","X","X"],"akcie":[]},"efekt":"Bitka: Skontroluj či pred dverami nestojí exekútor.","perm":1},"po":{"L":{"sloty":["X","X","X","X"],"akcie":[]},"P":{"sloty":["X","X","X","X"],"akcie":[]},"efekt":"Bitka: Skontroluj či pred dverami nestojí exekútor.","perm":1},"zmenaL":false,"zmenaP":false,"zmenaE":false,"kod":"ziadny","efH":[0,0],"zdov":"Bez zmeny.","alt":null,"otazka":null,"m":{"pred":{"akcii":0,"silnych":0,"zlych":0,"hluche":8,"potencial":0,"hodnota":null,"aktivacia":null,"naex":null,"perm":1,"sila":null},"po":{"akcii":0,"silnych":0,"zlych":0,"hluche":8,"potencial":0,"hodnota":null,"aktivacia":null,"naex":null,"perm":1,"sila":null}}},{"id":"cirhoza","nazov":"Cirhóza","tagy":["Kliatba"],"typ":"kliatba","skupina":"kliatba","strategie":[],"identita":"Cirhóza.","pred":{"L":{"sloty":["X","X","X","X"],"akcie":[]},"P":{"sloty":["X","X","X","X"],"akcie":[]},"efekt":"Bitka: Obdržíš od súpera dodatočnú ranu.","perm":1},"po":{"L":{"sloty":["X","X","X","X"],"akcie":[]},"P":{"sloty":["X","X","X","X"],"akcie":[]},"efekt":"Bitka: Obdržíš od súpera dodatočnú ranu.","perm":1},"zmenaL":false,"zmenaP":false,"zmenaE":false,"kod":"ziadny","efH":[0,0],"zdov":"Bez zmeny.","alt":null,"otazka":null,"m":{"pred":{"akcii":0,"silnych":0,"zlych":0,"hluche":8,"potencial":0,"hodnota":null,"aktivacia":null,"naex":null,"perm":1,"sila":null},"po":{"akcii":0,"silnych":0,"zlych":0,"hluche":8,"potencial":0,"hodnota":null,"aktivacia":null,"naex":null,"perm":1,"sila":null}}},{"id":"abstak","nazov":"Absťák","tagy":["Kliatba"],"typ":"kliatba","skupina":"kliatba","strategie":[],"identita":"Absťák.","pred":{"L":{"sloty":["X","X","X","X"],"akcie":[]},"P":{"sloty":["X","X","X","X"],"akcie":[]},"efekt":"Bitka: Udeluješ súperovi o ranu menej.","perm":1},"po":{"L":{"sloty":["X","X","X","X"],"akcie":[]},"P":{"sloty":["X","X","X","X"],"akcie":[]},"efekt":"Bitka: Udeluješ súperovi o ranu menej.","perm":1},"zmenaL":false,"zmenaP":false,"zmenaE":false,"kod":"ziadny","efH":[0,0],"zdov":"Bez zmeny.","alt":null,"otazka":null,"m":{"pred":{"akcii":0,"silnych":0,"zlych":0,"hluche":8,"potencial":0,"hodnota":null,"aktivacia":null,"naex":null,"perm":1,"sila":null},"po":{"akcii":0,"silnych":0,"zlych":0,"hluche":8,"potencial":0,"hodnota":null,"aktivacia":null,"naex":null,"perm":1,"sila":null}}}],"strategie":{"B":{"nazov":"Bitkári","popis":"Tuhé poškodenie (Rana, Pecka, Petelica, Posilnenie). Vyhráva lokality a prebytkom desí starších.","protivaha":"Viera (Svätý text ju zdvojí), Odpor, Absťák, Pohoršenie súpera beží bez ohľadu na výsledok bitky, Policajtka."},"S":{"nazov":"Stokári","popis":"Cigarety: fajčenie = karty, 2 cigarety = doliaty poldeci, 5 = nový poldeci (stokársky barter), zvyšok boduje. Viac poldeci = vyšší limit = dlhšia línia.","protivaha":"Obmedzenie (Policajtka, Podvodník, Vdova, Svokra, Pasca), Benzínka, priznaná Milujúca manželka, Podvodník kradne."},"V":{"nazov":"Viera a Povera","popis":"Viera tlmí tuhé, Povera dáva mäkké — a mäkké rozhoduje, kto drží PREBYTOK. Hráč môže prehrať lokalitu, a predsa posúvať markery.","protivaha":"Šarlatán (Viera ako Vízia), Farár (ignoruje 2 Povery), Kostol (Povery neplatia), Robota a Dievčina mažú priznané Dlhy."},"K":{"nazov":"Škandál","popis":"Pohoršenie: posun markera bez ohľadu na výsledok bitky → starší sa ťa boja → zónové body a vydesenie. Cena: súper dostáva priazeň.","protivaha":"Policajtka (Pohoršenia proti tebe neplatia), súperova priazeň rastie s každým posunom, Miňištrant."},"O":{"nazov":"Sabotéri","popis":"Odpor, Obmedzenie a podstrčené karty: rušíš súperove spoje, berieš mu koniec strany, sypeš mu Hazard.","protivaha":"Pasca (podstrčená karta nič nedá), Pes (stráži koniec strany), Posilnenie + Odpor, odpoveď na NA EX."}},"sim":{"pred":{"partii":5400,"matica":{"B":{"B":0.5,"S":0.7383333333333333,"V":0.7233333333333334,"K":0.755,"O":0.6633333333333333,"G":0.515},"S":{"B":0.26166666666666666,"S":0.5,"V":0.58,"K":0.6066666666666667,"O":0.43166666666666664,"G":0.2816666666666667},"V":{"B":0.27666666666666667,"S":0.42,"V":0.5,"K":0.5466666666666666,"O":0.26166666666666666,"G":0.29333333333333333},"K":{"B":0.245,"S":0.3933333333333333,"V":0.4533333333333333,"K":0.5,"O":0.34833333333333333,"G":0.29333333333333333},"O":{"B":0.33666666666666667,"S":0.5683333333333334,"V":0.7383333333333333,"K":0.6516666666666666,"O":0.5,"G":0.37666666666666665},"G":{"B":0.485,"S":0.7183333333333334,"V":0.7066666666666667,"K":0.7066666666666667,"O":0.6233333333333333,"G":0.5}},"strat":{"B":{"vyhry":0.679,"body":80.43533333333333,"bodySuper":63.956,"tuheNaBitku":5.215323840973842,"bitky":0.5639378912283555,"zoSenku":10.842666666666666,"barter":0,"vydesene":2.416,"start":0.3513056952558488,"top":[["hasic",1.5866666666666667],["pes",1.3606666666666667],["podvodnik",1.252],["recidivista",1.252],["veteran",1.2293333333333334],["puska",1.1493333333333333]]},"S":{"vyhry":0.43233333333333335,"body":70.64066666666666,"bodySuper":78.20066666666666,"tuheNaBitku":4.349321017871021,"bitky":0.4809952184131615,"zoSenku":11.064,"barter":1.1533333333333333,"vydesene":1.6706666666666667,"start":0.35167328905633305,"top":[["zamocnik",1.8233333333333333],["liberal",1.7866666666666666],["zivnostnik",1.686],["zahradkar",1.512],["podvodnik",1.3473333333333333],["pes",0.728]]},"V":{"vyhry":0.3596666666666667,"body":70.32866666666666,"bodySuper":84.52533333333334,"tuheNaBitku":3.5654439893439904,"bitky":0.4845369170984456,"zoSenku":7.945333333333333,"barter":0,"vydesene":1.386,"start":0.40692636620631806,"top":[["praudovravec",1.9306666666666668],["niekoho_stryna",1.922],["vestica",1.348],["recidivista",0.9333333333333333],["svokra",0.564],["pes",0.3253333333333333]]},"K":{"vyhry":0.3466666666666667,"body":67.06733333333334,"bodySuper":81.11533333333334,"tuheNaBitku":3.3300699208199216,"bitky":0.38038744556239673,"zoSenku":7.546,"barter":0,"vydesene":1.5033333333333334,"start":0.4073820310952643,"top":[["velmi_smutiaca_vdova",1.8866666666666667],["liberal",1.7773333333333334],["cierna_macka",1.0886666666666667],["pes",0.632],["recidivista",0.6193333333333333],["zivnostnik",0.3393333333333333]]},"O":{"vyhry":0.5343333333333333,"body":77.76866666666666,"bodySuper":74.68933333333334,"tuheNaBitku":4.487654338254339,"bitky":0.5371465608036944,"zoSenku":9.126,"barter":0,"vydesene":1.8553333333333333,"start":0.38198439591311134,"top":[["svokra",1.6906666666666668],["praudovravec",1.572],["pes",1.3746666666666667],["recidivista",1.3153333333333332],["zivnostnik",0.9273333333333333],["veteran",0.5813333333333334]]},"G":{"vyhry":0.648,"body":81.17933333333333,"bodySuper":64.93333333333334,"tuheNaBitku":5.126593713693714,"bitky":0.5628606257618854,"zoSenku":10.782666666666668,"barter":0,"vydesene":2.25,"start":0.35796313533525015,"top":[["hasic",1.5853333333333333],["pes",1.362],["recidivista",1.286],["veteran",1.1993333333333334],["podvodnik",1.1953333333333334],["puska",1.1546666666666667]]}},"krivka":[[1,4.348518518518518],[2,3.879351851851852],[3,3.4411111111111112],[4,3.8430264863863677],[5,4.184127572779529],[6,4.582507942440666],[7,5.007369831546708],[8,5.383777239709443]],"konce":{"vydesenie":1042,"body":4349,"iné":9},"remizy":0.11340504022400996,"nula":0.04246855415796258},"po":{"partii":5400,"matica":{"B":{"B":0.5,"S":0.6016666666666667,"V":0.7683333333333333,"K":0.7233333333333334,"O":0.6983333333333334,"G":0.42333333333333334},"S":{"B":0.3983333333333333,"S":0.5,"V":0.665,"K":0.7466666666666667,"O":0.4583333333333333,"G":0.42833333333333334},"V":{"B":0.23166666666666666,"S":0.335,"V":0.5,"K":0.5366666666666666,"O":0.48,"G":0.29333333333333333},"K":{"B":0.27666666666666667,"S":0.25333333333333335,"V":0.4633333333333333,"K":0.5,"O":0.3416666666666667,"G":0.28},"O":{"B":0.3016666666666667,"S":0.5416666666666666,"V":0.52,"K":0.6583333333333333,"O":0.5,"G":0.25833333333333336},"G":{"B":0.5766666666666667,"S":0.5716666666666667,"V":0.7066666666666667,"K":0.72,"O":0.7416666666666667,"G":0.5}},"strat":{"B":{"vyhry":0.643,"body":77.89533333333334,"bodySuper":61.17333333333333,"tuheNaBitku":2.772906238206236,"bitky":0.5630493715600099,"zoSenku":10.874666666666666,"barter":0,"vydesene":1.2293333333333334,"start":0.3882742202643132,"top":[["puska",1.95],["hasic",1.6673333333333333],["recidivista",1.572],["veteran",1.3413333333333333],["pes",1.1953333333333334],["zamocnik",1.1533333333333333]]},"S":{"vyhry":0.5393333333333333,"body":79.03266666666667,"bodySuper":73.622,"tuheNaBitku":2.6499777980189743,"bitky":0.5220003247280403,"zoSenku":13.705333333333334,"barter":4.723333333333334,"vydesene":1.27,"start":0.38790137102319766,"top":[["cigorky",1.9293333333333333],["zahradkar",1.8986666666666667],["liberal",1.7693333333333334],["zivnostnik",1.754],["podvodnik",1.6],["zamocnik",1.3473333333333333]]},"V":{"vyhry":0.37533333333333335,"body":65.54,"bodySuper":79.00866666666667,"tuheNaBitku":1.3555044215044205,"bitky":0.4717323223998681,"zoSenku":11.160666666666666,"barter":0,"vydesene":0.8846666666666667,"start":0.37307016564446865,"top":[["vestica",1.988],["niekoho_stryna",1.944],["svaty_text",1.786],["praudovravec",1.5446666666666666],["cierna_macka",1.2873333333333334],["sarlatan",1.2833333333333334]]},"K":{"vyhry":0.323,"body":64,"bodySuper":85.92533333333333,"tuheNaBitku":1.3993027270115521,"bitky":0.3345015285959287,"zoSenku":10.813333333333333,"barter":0,"vydesene":1.974,"start":0.36767007236542765,"top":[["velmi_smutiaca_vdova",1.8866666666666667],["liberal",1.7193333333333334],["noviny",1.6966666666666668],["sarlatan",1.5706666666666667],["cierna_macka",1.308],["silna_nezavisla_zena",1.144]]},"O":{"vyhry":0.456,"body":69.946,"bodySuper":75.07933333333334,"tuheNaBitku":2.332158280608284,"bitky":0.520192936559843,"zoSenku":11.575333333333333,"barter":0,"vydesene":0.926,"start":0.3301812350229615,"top":[["svokra",1.9393333333333334],["velmi_smutiaca_vdova",1.5826666666666667],["recidivista",1.4986666666666666],["veteran",1.4033333333333333],["praudovravec",1.3486666666666667],["kocovnik",1.2586666666666666]]},"G":{"vyhry":0.6633333333333333,"body":79.208,"bodySuper":60.81333333333333,"tuheNaBitku":2.92714018204018,"bitky":0.6048440065681445,"zoSenku":10.871333333333334,"barter":0,"vydesene":1.1966666666666668,"start":0.37708720191630574,"top":[["pes",1.9466666666666668],["hasic",1.6093333333333333],["recidivista",1.5513333333333332],["veteran",1.256],["puska",1.132],["svokra",0.9]]}},"krivka":[[1,1.8367592592592592],[2,2.013611111111111],[3,1.618425925925926],[4,1.845],[5,2.057140211150213],[6,2.388198181480794],[7,2.741637077181835],[8,3.222972972972973]],"konce":{"body":4864,"vydesenie":522,"iné":14},"remizy":0.21214709584607086,"nula":0.126438590181622},"poPovera":{"partii":3600,"matica":{"B":{"B":0.5,"S":0.655,"V":0.755,"K":0.7775,"O":0.695,"G":0.4875},"S":{"B":0.345,"S":0.5,"V":0.6575,"K":0.695,"O":0.495,"G":0.465},"V":{"B":0.245,"S":0.3425,"V":0.5,"K":0.585,"O":0.4275,"G":0.32},"K":{"B":0.2225,"S":0.305,"V":0.415,"K":0.5,"O":0.435,"G":0.3325},"O":{"B":0.305,"S":0.505,"V":0.5725,"K":0.565,"O":0.5,"G":0.28},"G":{"B":0.5125,"S":0.535,"V":0.68,"K":0.6675,"O":0.72,"G":0.5}},"strat":{"B":{"vyhry":0.674,"body":78.124,"bodySuper":59.151,"tuheNaBitku":2.772973237873234,"bitky":0.5705445544554455,"zoSenku":10.839,"barter":0,"vydesene":1.215,"start":0.3881516834945236,"top":[["puska",1.947],["hasic",1.674],["recidivista",1.541],["veteran",1.362],["pes",1.181],["zamocnik",1.164]]},"S":{"vyhry":0.5315,"body":80.17,"bodySuper":75.673,"tuheNaBitku":2.62000891608392,"bitky":0.516874541452678,"zoSenku":13.691,"barter":4.943,"vydesene":1.225,"start":0.38712059583433406,"top":[["cigorky",1.938],["zahradkar",1.903],["liberal",1.777],["zivnostnik",1.746],["podvodnik",1.589],["zamocnik",1.423]]},"V":{"vyhry":0.384,"body":65.081,"bodySuper":77.65,"tuheNaBitku":1.3701141996892008,"bitky":0.47283150548354935,"zoSenku":11.18,"barter":0,"vydesene":0.997,"start":0.3746476941058598,"top":[["vestica",1.985],["niekoho_stryna",1.931],["svaty_text",1.795],["praudovravec",1.583],["cierna_macka",1.308],["sarlatan",1.266]]},"K":{"vyhry":0.342,"body":65.217,"bodySuper":85.049,"tuheNaBitku":1.3733063381063382,"bitky":0.3347452903801137,"zoSenku":10.796,"barter":0,"vydesene":1.927,"start":0.3621091867025301,"top":[["velmi_smutiaca_vdova",1.9],["liberal",1.726],["noviny",1.683],["sarlatan",1.539],["cierna_macka",1.319],["silna_nezavisla_zena",1.127]]},"O":{"vyhry":0.4455,"body":69.166,"bodySuper":74.694,"tuheNaBitku":2.309519089244092,"bitky":0.5211319822046465,"zoSenku":11.663,"barter":0,"vydesene":0.921,"start":0.3350607184338385,"top":[["svokra",1.951],["velmi_smutiaca_vdova",1.573],["recidivista",1.541],["veteran",1.392],["praudovravec",1.34],["kocovnik",1.276]]},"G":{"vyhry":0.623,"body":77.48,"bodySuper":63.021,"tuheNaBitku":2.9615305666555662,"bitky":0.6004647181117769,"zoSenku":10.942,"barter":0,"vydesene":1.152,"start":0.3702906272041932,"top":[["pes",1.953],["hasic",1.65],["recidivista",1.547],["veteran",1.306],["puska",1.149],["svokra",0.898]]}},"krivka":[[1,1.8197222222222222],[2,2.053472222222222],[3,1.5790277777777777],[4,1.8516666666666666],[5,2.1038888888888887],[6,2.4237830319888736],[7,2.747476163768929],[8,3.1067366579177604]],"konce":{"body":3245,"vydesenie":348,"iné":7},"remizy":0.2115040362076536,"nula":0.12571351369608538},"poViera":{"partii":3600,"matica":{"B":{"B":0.5,"S":0.5525,"V":0.6925,"K":0.8025,"O":0.615,"G":0.47},"S":{"B":0.4475,"S":0.5,"V":0.565,"K":0.6425,"O":0.525,"G":0.39},"V":{"B":0.3075,"S":0.435,"V":0.5,"K":0.59,"O":0.515,"G":0.3925},"K":{"B":0.1975,"S":0.3575,"V":0.41,"K":0.5,"O":0.3475,"G":0.2875},"O":{"B":0.385,"S":0.475,"V":0.485,"K":0.6525,"O":0.5,"G":0.335},"G":{"B":0.53,"S":0.61,"V":0.6075,"K":0.7125,"O":0.665,"G":0.5}},"strat":{"B":{"vyhry":0.6265,"body":77.441,"bodySuper":61.712,"tuheNaBitku":2.440403368853368,"bitky":0.5496259351620948,"zoSenku":11.05,"barter":0,"vydesene":1.111,"start":0.3907815568547372,"top":[["puska",1.955],["hasic",1.685],["recidivista",1.574],["veteran",1.398],["pes",1.21],["zamocnik",1.19]]},"S":{"vyhry":0.514,"body":79.764,"bodySuper":77.377,"tuheNaBitku":2.326315573315571,"bitky":0.5108071803639028,"zoSenku":13.719,"barter":4.691,"vydesene":1.042,"start":0.3829826305445503,"top":[["cigorky",1.945],["zahradkar",1.917],["liberal",1.766],["zivnostnik",1.734],["podvodnik",1.606],["zamocnik",1.391]]},"V":{"vyhry":0.448,"body":70.034,"bodySuper":75.407,"tuheNaBitku":1.3032092990343005,"bitky":0.5060211049037865,"zoSenku":11.056,"barter":0.001,"vydesene":0.942,"start":0.37131646191785483,"top":[["vestica",1.987],["niekoho_stryna",1.945],["svaty_text",1.788],["praudovravec",1.539],["cierna_macka",1.281],["sarlatan",1.231]]},"K":{"vyhry":0.32,"body":69.038,"bodySuper":90.711,"tuheNaBitku":1.2161536519036542,"bitky":0.3429050279329609,"zoSenku":10.868,"barter":0,"vydesene":1.796,"start":0.3674746863989128,"top":[["velmi_smutiaca_vdova",1.885],["liberal",1.743],["noviny",1.722],["sarlatan",1.554],["cierna_macka",1.317],["silna_nezavisla_zena",1.187]]},"O":{"vyhry":0.4665,"body":70.982,"bodySuper":75.062,"tuheNaBitku":2.038301595626595,"bitky":0.5212608158220025,"zoSenku":11.657,"barter":0,"vydesene":0.805,"start":0.3321503136462871,"top":[["svokra",1.957],["velmi_smutiaca_vdova",1.582],["recidivista",1.501],["veteran",1.405],["praudovravec",1.369],["kocovnik",1.281]]},"G":{"vyhry":0.625,"body":75.544,"bodySuper":62.534,"tuheNaBitku":2.5337164307914315,"bitky":0.586832298136646,"zoSenku":10.99,"barter":0,"vydesene":0.991,"start":0.3802559597136615,"top":[["pes",1.948],["hasic",1.652],["recidivista",1.553],["veteran",1.328],["puska",1.148],["svokra",0.929]]}},"krivka":[[1,1.5725],[2,1.80125],[3,1.4048611111111111],[4,1.593888888888889],[5,1.8516666666666666],[6,2.150264108979705],[7,2.4995807713806597],[8,2.905272564789991]],"konce":{"body":3341,"vydesenie":252,"iné":7},"remizy":0.2532885815025766,"nula":0.17602386764307024},"predN1":{"partii":1440,"matica":{"B":{"B":0.5,"S":0.8375,"V":0.8375,"K":0.85,"O":0.7125,"G":0.525},"S":{"B":0.1625,"S":0.5,"V":0.7,"K":0.6375,"O":0.4,"G":0.175},"V":{"B":0.1625,"S":0.3,"V":0.5,"K":0.39375,"O":0.25,"G":0.2},"K":{"B":0.15,"S":0.3625,"V":0.60625,"K":0.5,"O":0.2625,"G":0.1},"O":{"B":0.2875,"S":0.6,"V":0.75,"K":0.7375,"O":0.5,"G":0.2375},"G":{"B":0.475,"S":0.825,"V":0.8,"K":0.9,"O":0.7625,"G":0.5}},"strat":{"B":{"vyhry":0.7525,"body":86.715,"bodySuper":60.845,"tuheNaBitku":5.052440323565325,"bitky":0.5917375455650061,"zoSenku":10.77,"barter":0,"vydesene":2.52,"start":0.34525692761148796,"top":[["hasic",1.5825],["pes",1.3875],["recidivista",1.275],["podvodnik",1.245],["veteran",1.215],["zivnostnik",1.125]]},"S":{"vyhry":0.415,"body":74.4725,"bodySuper":85.805,"tuheNaBitku":4.094724483849486,"bitky":0.4778681120144535,"zoSenku":11.11,"barter":0.925,"vydesene":1.62,"start":0.3476611339605262,"top":[["zamocnik",1.82],["liberal",1.8125],["zivnostnik",1.72],["zahradkar",1.5175],["podvodnik",1.3275],["pes",0.7]]},"V":{"vyhry":0.26125,"body":64.77,"bodySuper":89.175,"tuheNaBitku":3.233726724664224,"bitky":0.45515354211006387,"zoSenku":7.9425,"barter":0,"vydesene":1.055,"start":0.4092706624730615,"top":[["niekoho_stryna",1.915],["praudovravec",1.9],["vestica",1.34],["recidivista",0.945],["svokra",0.5725],["pes",0.32]]},"K":{"vyhry":0.29625,"body":68.7,"bodySuper":90.5475,"tuheNaBitku":3.03184056915307,"bitky":0.36103467253714916,"zoSenku":7.5475,"barter":0,"vydesene":1.245,"start":0.406663349518129,"top":[["velmi_smutiaca_vdova",1.9075],["liberal",1.75],["cierna_macka",1.1175],["recidivista",0.6075],["pes",0.58],["nealko",0.3575]]},"O":{"vyhry":0.5225,"body":77.1825,"bodySuper":77.1675,"tuheNaBitku":4.175257804695302,"bitky":0.5311757719714965,"zoSenku":9.1725,"barter":0,"vydesene":1.74,"start":0.3771454834402786,"top":[["svokra",1.69],["praudovravec",1.605],["pes",1.4],["recidivista",1.3225],["zivnostnik",0.895],["veteran",0.6025]]},"G":{"vyhry":0.7525,"body":94.935,"bodySuper":63.235,"tuheNaBitku":5.01228339022089,"bitky":0.5957957957957958,"zoSenku":10.69,"barter":0,"vydesene":2.5025,"start":0.35687900832182956,"top":[["hasic",1.585],["pes",1.3675],["recidivista",1.27],["podvodnik",1.18],["veteran",1.175],["zivnostnik",1.115]]}},"krivka":[[1,4.3850694444444445],[2,3.8604166666666666],[3,3.264236111111111],[4,3.7600694444444445],[5,4.010771369006254],[6,4.150244584206848],[7,4.333690221270521],[8,4.965]],"konce":{"body":1226,"vydesenie":210,"iné":4},"remizy":0.11079943899018233,"nula":0.03580562659846547},"poN1":{"partii":1440,"matica":{"B":{"B":0.5,"S":0.61875,"V":0.7625,"K":0.7875,"O":0.75625,"G":0.475},"S":{"B":0.38125,"S":0.5,"V":0.6875,"K":0.6625,"O":0.4,"G":0.2875},"V":{"B":0.2375,"S":0.3125,"V":0.5,"K":0.50625,"O":0.46875,"G":0.3375},"K":{"B":0.2125,"S":0.3375,"V":0.49375,"K":0.5,"O":0.3625,"G":0.15},"O":{"B":0.24375,"S":0.6,"V":0.53125,"K":0.6375,"O":0.5,"G":0.375},"G":{"B":0.525,"S":0.7125,"V":0.6625,"K":0.85,"O":0.625,"G":0.5}},"strat":{"B":{"vyhry":0.68,"body":79.325,"bodySuper":58.8675,"tuheNaBitku":2.602827679265179,"bitky":0.5713842333954066,"zoSenku":11.23,"barter":0,"vydesene":1.1575,"start":0.3775465036339653,"top":[["puska",1.975],["recidivista",1.66],["hasic",1.6575],["veteran",1.4475],["zamocnik",1.1725],["pes",1.1425]]},"S":{"vyhry":0.48375,"body":78.6475,"bodySuper":78.9825,"tuheNaBitku":2.312464653402152,"bitky":0.5056523067522151,"zoSenku":13.97,"barter":4.745,"vydesene":1.0525,"start":0.37622768191691525,"top":[["cigorky",1.96],["zahradkar",1.91],["liberal",1.775],["zivnostnik",1.735],["podvodnik",1.6325],["zamocnik",1.405]]},"V":{"vyhry":0.3725,"body":67.1075,"bodySuper":79.7075,"tuheNaBitku":1.1503245851370851,"bitky":0.46106112317716413,"zoSenku":11.2925,"barter":0,"vydesene":0.9025,"start":0.3632737192180885,"top":[["vestica",1.9775],["niekoho_stryna",1.945],["svaty_text",1.825],["praudovravec",1.6125],["cierna_macka",1.3275],["sarlatan",1.2125]]},"K":{"vyhry":0.31125,"body":72.39,"bodySuper":98.015,"tuheNaBitku":1.2572357156732168,"bitky":0.338268156424581,"zoSenku":10.895,"barter":0,"vydesene":1.7925,"start":0.36407391722484633,"top":[["velmi_smutiaca_vdova",1.77],["liberal",1.75],["noviny",1.7375],["sarlatan",1.61],["cierna_macka",1.38],["silna_nezavisla_zena",1.17]]},"O":{"vyhry":0.4775,"body":72.87,"bodySuper":74.275,"tuheNaBitku":2.0878319111444106,"bitky":0.5314320760502913,"zoSenku":11.5875,"barter":0,"vydesene":0.7675,"start":0.3343558722301946,"top":[["svokra",1.855],["velmi_smutiaca_vdova",1.7025],["recidivista",1.415],["veteran",1.36],["praudovravec",1.2975],["kocovnik",1.29]]},"G":{"vyhry":0.675,"body":81.2875,"bodySuper":61.78,"tuheNaBitku":2.7913078934953948,"bitky":0.6072186836518046,"zoSenku":10.7525,"barter":0,"vydesene":1.0975,"start":0.37012949377548837,"top":[["pes",1.945],["hasic",1.6125],["recidivista",1.535],["veteran",1.07],["puska",1.0325],["velmi_smutiaca_vdova",1.03]]}},"krivka":[[1,1.8888888888888888],[2,2.0458333333333334],[3,1.570486111111111],[4,1.7059027777777778],[5,1.85],[6,2.0788194444444446],[7,2.334954829742877],[8,2.825]],"konce":{"body":1374,"vydesenie":64,"iné":2},"remizy":0.2236963640943824,"nula":0.12763456209589386}}};
+const KLUC = "naex.navrh-kariet-2026-10-18";
+let vybrane = new Set();
+try { vybrane = new Set(JSON.parse(localStorage.getItem(KLUC) || "[]")); } catch (e) { /* bez úložiska */ }
+const uloz = () => { try { localStorage.setItem(KLUC, JSON.stringify([...vybrane])); } catch (e) { /* bez úložiska */ } };
+const el = (tag, attrs, ...deti) => {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) { if (k === "class") n.className = v; else if (k === "html") n.innerHTML = v; else n.setAttribute(k, v); }
+  for (const d of deti) if (d != null) n.append(d);
+  return n;
+};
+const cislo = (x, d = 2) => (x == null ? "–" : (Math.round(x * 10 ** d) / 10 ** d).toFixed(d).replace(".", ","));
+const pct = (x) => (x == null ? "–" : Math.round(100 * x) + " %");
+
+const NAZOV_AKCIE = { Dlh: "Hazard", PoškodeniePečene: "Pečeň", Poldeci: "Poldecko" };
+const KAT = { Rana: "utok", Pecka: "utok", Petelica: "utok", Viera: "duch", Povera: "duch", Pohoršenie: "starsi", Cigaretka: "eko", Poldeci: "eko", Obmedzenie: "eko", Robota: "eko", Vízia: "eko", Posilnenie: "mod", Odpor: "mod", Dlh: "zle", PoškodeniePečene: "zle" };
+const nazovAkcie = (a) => NAZOV_AKCIE[a] || a;
+const TYP = { start: "štartovka", sila: "sila", connector: "spojovač", hybrid: "hybrid", nastroj: "Nástroj", lokalita: "lokalita", starsi: "starší", kliatba: "kliatba" };
+const KOD = { ziadny: "bez kódu", text: "len text", konstanta: "pevné číslo (malý kód)", uprava: "úprava efektu (kód)", novy: "nový efekt (kód)" };
+const SKUPINY = { start: "Štartovky (len v štartovom balíčku: 4 Pijan, 2 Miňištrant, 2 Manželka, 2 Dievčina)", "senok-B": "Šenok — Bitkári", "senok-S": "Šenok — Stokári", "senok-V": "Šenok — Viera a Povera", "senok-K": "Šenok — Škandál", "senok-O": "Šenok — Sabotéri", nastroj: "Nástroje", lokalita: "Lokality", starsi: "Starší (akcie = bodovacie podmienky, nemenia sa)", kliatba: "Kliatby" };
+
+function strana(s, zmena, popis) {
+  const box = el("div", { class: "strana" + (zmena ? " zmena" : "") }, el("div", { class: "popis" }, popis));
+  for (const t of s.sloty) {
+    if (t === "X") box.append(el("div", { class: "slot X" }, "x"));
+    else if (t === "_") box.append(el("div", { class: "slot f" }, "voľná"));
+    else box.append(el("div", { class: "slot a", title: t.map(nazovAkcie).join(" alebo ") }, t.map(nazovAkcie).join(" | ")));
+  }
+  const ak = el("div", { class: "akcie" });
+  for (const [a, n] of s.akcie) ak.append(el("span", { class: "ak " + (KAT[a] || "eko") }, nazovAkcie(a) + (n > 1 ? " ×" + n : "")));
+  if (!s.akcie.length) ak.append(el("span", { class: "pozn" }, "bez akcií"));
+  box.append(ak);
+  return box;
+}
+function verzia(v, k, nova) {
+  const box = el("div", { class: "verzia" + (nova ? " nova" : "") }, el("div", { class: "nadpis" }, (nova ? "Návrh" : "Dnes") + " · permutácií " + v.perm));
+  box.append(el("div", { class: "minikarta" }, strana(v.L, nova && k.zmenaL, "ľavá"), strana(v.P, nova && k.zmenaP, "pravá")));
+  box.append(el("div", { class: "efekt" + (nova && k.zmenaE ? " zmena" : "") }, v.efekt || "bez efektu"));
+  return box;
+}
+function metrikyTab(k) {
+  const a = k.m.pred, b = k.m.po;
+  if (!a || !b) return null;
+  const riadok = (n, f, lepsieVyssie) => {
+    const x = f(a), y = f(b);
+    return el("tr", {}, el("td", {}, n), el("td", {}, x), el("td", {}, y));
+  };
+  const t = el("table", {}, el("tr", {}, el("th", {}, ""), el("th", {}, "dnes"), el("th", {}, "návrh")));
+  t.append(riadok("akcie / hluché miesta", (m) => cislo(m.akcii, 0) + " / " + cislo(m.hluche, 0)));
+  t.append(riadok("silné / zlé akcie", (m) => cislo(m.silnych, 0) + " / " + cislo(m.zlych, 0)));
+  t.append(riadok("potenciál (Σ hodnôt)", (m) => cislo(m.potencial)));
+  if (b.hodnota != null) {
+    t.append(riadok("hodnota v línii", (m) => cislo(m.hodnota)));
+    t.append(riadok("aktivácia akcií", (m) => (m.aktivacia == null ? "–" : m.aktivacia + " %")));
+    t.append(riadok("NA EX Δ", (m) => cislo(m.naex)));
+    t.append(el("tr", {}, el("td", {}, "efekt (odhad)"), el("td", {}, String(k.efH[0])), el("td", {}, String(k.efH[1]))));
+    t.append(el("tr", {}, el("td", {}, el("b", {}, "sila")), el("td", {}, el("b", {}, cislo(a.sila))), el("td", {}, el("b", {}, cislo(b.sila)))));
+  }
+  return el("div", { class: "metriky" }, t);
+}
+const zmenena = (k) => k.zmenaL || k.zmenaP || k.zmenaE;
+const navrhy = [];
+function kartaEl(k) {
+  const zm = zmenena(k);
+  const id = "k:" + k.id;
+  const h = el("h3", {});
+  const lab = el("label", zm ? { for: "c-" + k.id } : {}, k.nazov);
+  h.append(lab, el("span", { class: "id" }, k.id), el("span", { class: "znacka typ" }, TYP[k.typ]));
+  for (const s of k.strategie) h.append(el("span", { class: "sk " + s, title: DATA.strategie[s].nazov }, s));
+  h.append(el("span", { class: "znacka kod-" + k.kod }, zm ? KOD[k.kod] : "bez zmeny"));
+  const obsah = el("div", { class: "obsah" }, h, el("p", { class: "identita" }, k.identita + "  ·  " + k.tagy.join(", ")));
+  obsah.append(el("div", { class: "porovnanie" }, verzia(k.pred, k, false), verzia(k.po, k, true)));
+  const dl = el("dl", { class: "riadky" }, el("dt", {}, "Prečo"), el("dd", {}, k.zdov));
+  if (k.alt) dl.append(el("dt", {}, "Alternatíva"), el("dd", {}, k.alt));
+  if (k.otazka) dl.append(el("dt", {}, "Otázka"), el("dd", { class: "otazka" }, k.otazka));
+  const mt = metrikyTab(k);
+  obsah.append(el("div", { class: "porovnanie" }, dl, mt || el("div")));
+  let box = null;
+  if (zm) {
+    box = el("input", { type: "checkbox", id: "c-" + k.id });
+    box.checked = vybrane.has(id);
+    navrhy.push({ id, box, odp: true, popis: k.nazov });
+  }
+  const art = el("article", { class: "navrh" + (zm ? "" : " bezzmeny") + (box && box.checked ? " vybrany" : ""), "data-strat": k.strategie.join(""), "data-zm": zm ? "1" : "0", "data-kod": k.kod === "ziadny" || k.kod === "text" ? "0" : "1" }, box || el("span", { class: "prazdne" }), obsah);
+  if (box) box.addEventListener("change", () => { if (box.checked) vybrane.add(id); else vybrane.delete(id); art.classList.toggle("vybrany", box.checked); uloz(); obnov(); });
+  return art;
+}
+function vypis(kontajner, skupiny) {
+  const koren = document.getElementById(kontajner);
+  for (const sk of skupiny) {
+    const ks = DATA.karty.filter((k) => k.skupina === sk);
+    if (!ks.length) continue;
+    koren.append(el("div", { class: "skupina" }, SKUPINY[sk]));
+    for (const k of ks) koren.append(kartaEl(k));
+  }
+}
+vypis("zoznam-karty", ["start", "senok-B", "senok-S", "senok-V", "senok-K", "senok-O"]);
+vypis("zoznam-nastroje", ["nastroj"]);
+vypis("zoznam-ostatne", ["lokalita", "starsi", "kliatba"]);
+
+// filtre
+for (const b of document.querySelectorAll("#filtre button")) b.addEventListener("click", () => {
+  for (const x of document.querySelectorAll("#filtre button")) x.classList.toggle("on", x === b);
+  const f = b.dataset.f;
+  for (const a of document.querySelectorAll("#zoznam-karty article")) {
+    const ok = f === "vsetko" || (f === "zmenene" && a.dataset.zm === "1") || (f === "kod" && a.dataset.kod === "1") || a.dataset.strat.includes(f);
+    a.style.display = ok ? "" : "none";
+  }
+});
+
+// stratégie
+const boxy = document.getElementById("strat-boxy");
+const senok = DATA.karty.filter((k) => k.skupina.startsWith("senok") || k.skupina === "nastroj");
+for (const [s, v] of Object.entries(DATA.strategie)) {
+  const hl = senok.filter((k) => k.strategie[0] === s).map((k) => k.nazov);
+  const ved = senok.filter((k) => k.strategie.slice(1).includes(s)).map((k) => k.nazov);
+  boxy.append(el("div", { class: "strat" }, el("h3", {}, el("span", { class: "sk " + s }, s), " " + v.nazov), el("p", {}, v.popis),
+    el("p", { class: "kto" }, el("b", {}, "Nesú: "), hl.join(", ") + (ved.length ? "; vedľajšie: " + ved.join(", ") : "")),
+    el("p", { class: "kto" }, el("b", {}, "Protiváha: "), v.protivaha)));
+}
+const mat = document.getElementById("matica");
+const S5 = ["B", "S", "V", "K", "O"];
+mat.append(el("thead", {}, el("tr", {}, el("th", {}, "Karta"), el("th", {}, "Typ"), ...S5.map((s) => el("th", { class: "c" }, el("span", { class: "sk " + s }, s))), el("th", { class: "n" }, "Sila dnes"), el("th", { class: "n" }, "Sila návrh"))));
+const tb = el("tbody");
+for (const k of senok) tb.append(el("tr", {}, el("td", {}, k.nazov), el("td", { class: "pozn" }, TYP[k.typ]), ...S5.map((s) => el("td", { class: "c" }, k.strategie[0] === s ? "●" : k.strategie.includes(s) ? "○" : "")), el("td", { class: "n" }, cislo(k.m.pred?.sila)), el("td", { class: "n" }, cislo(k.m.po?.sila))));
+mat.append(tb);
+mat.append(el("tfoot", {}, el("tr", {}, el("td", {}, "kariet (hlavná + vedľajšia), v balíčku ×2"), el("td", {}), ...S5.map((s) => {
+  const h = senok.filter((k) => k.strategie[0] === s).length, v = senok.filter((k) => k.strategie.slice(1).includes(s)).length;
+  return el("td", { class: "c" }, h + " + " + v);
+}), el("td"), el("td"))));
+
+// tabuľka Nástrojov
+const nt = document.getElementById("nastroje-tab");
+nt.append(el("thead", {}, el("tr", {}, el("th", {}, "Nástroj"), el("th", {}, "Dedičstvo dnes"), el("th", {}, "Dedičstvo návrh (ako priazeň)"), el("th", {}, "V línii návrh"), el("th", {}, "Stratégia"))));
+const ntb = el("tbody");
+for (const k of DATA.karty.filter((x) => x.typ === "nastroj")) {
+  const lin = (s) => s.akcie.map(([a, n]) => nazovAkcie(a) + (n > 1 ? "×" + n : "")).join(", ");
+  ntb.append(el("tr", {}, el("td", {}, el("b", {}, k.nazov)), el("td", { class: "pozn" }, k.pred.efekt.replace(/^Dedičstvo:\s*/, "")), el("td", {}, k.po.efekt.replace(/^Dedičstvo:\s*/, "")), el("td", {}, lin(k.po.L) + " | " + lin(k.po.P)), el("td", {}, ...k.strategie.map((s) => el("span", { class: "sk " + s }, s)))));
+}
+nt.append(ntb);
+
+// simulácia
+const sim = DATA.sim;
+const STR = ["B", "S", "V", "K", "O", "G"];
+const NAZ = { B: "Bitkári", S: "Stokári", V: "Viera a Povera", K: "Škandál", O: "Sabotéri", G: "bez stratégie (najviac tuhého)" };
+const spread = (x) => { const v = S5.map((s) => x.strat[s].vyhry); return Math.max(...v) - Math.min(...v); };
+const st = document.getElementById("sim-strat");
+st.append(el("thead", {}, el("tr", {}, el("th", {}, "Stratégia"), el("th", { class: "n" }, "výhry dnes"), el("th", { class: "n" }, "výhry návrh"), el("th", { class: "n" }, "⌀ body (súper)"), el("th", { class: "n" }, "tuhé / bitku"), el("th", { class: "n" }, "vyhraté bitky"), el("th", { class: "n" }, "zo šenku"), el("th", { class: "n" }, "barter"), el("th", { class: "n" }, "štart. na konci"), el("th", {}, "najčastejšie brané (návrh)"))));
+const stb = el("tbody");
+const nazovKarty = Object.fromEntries(DATA.karty.map((k) => [k.id, k.nazov]));
+for (const s of STR) {
+  const a = sim.pred.strat[s], b = sim.po.strat[s];
+  if (!a || !b) continue;
+  const d = b.vyhry - a.vyhry;
+  stb.append(el("tr", {}, el("td", {}, el("span", { class: "sk " + s }, s), " " + NAZ[s]), el("td", { class: "n" }, pct(a.vyhry)), el("td", { class: "n " + (Math.abs(d) >= 0.05 ? (d > 0 ? "dobre" : "zle") : "") }, pct(b.vyhry)),
+    el("td", { class: "n" }, cislo(b.body, 0) + " (" + cislo(b.bodySuper, 0) + ")"), el("td", { class: "n" }, cislo(b.tuheNaBitku, 1)), el("td", { class: "n" }, pct(b.bitky)), el("td", { class: "n" }, cislo(b.zoSenku, 1)), el("td", { class: "n" }, cislo(b.barter, 1)), el("td", { class: "n" }, pct(b.start)),
+    el("td", { class: "pozn" }, b.top.slice(0, 4).map(([id, n]) => (nazovKarty[id] || id) + " " + cislo(n, 1)).join(", "))));
+}
+st.append(stb);
+function heat(id, x, nadpis) {
+  const t = document.getElementById(id);
+  t.append(el("thead", {}, el("tr", {}, el("th", {}, nadpis), ...STR.map((s) => el("th", { class: "c" }, el("span", { class: "sk " + s }, s))))));
+  const b = el("tbody");
+  for (const r of STR) {
+    const tr = el("tr", {}, el("td", {}, el("span", { class: "sk " + r }, r)));
+    for (const c of STR) {
+      const v = x.matica[r]?.[c];
+      const td = el("td", { class: "h" }, v == null ? "–" : Math.round(100 * v) + "");
+      if (v != null && r !== c) td.style.background = v > 0.5 ? `color-mix(in srgb, var(--zelena) ${Math.min(60, (v - 0.5) * 200)}%, transparent)` : `color-mix(in srgb, var(--cervena) ${Math.min(60, (0.5 - v) * 200)}%, transparent)`;
+      tr.append(td);
+    }
+    b.append(tr);
+  }
+  t.append(b);
+}
+heat("heat-pred", sim.pred, "dnes");
+heat("heat-po", sim.po, "návrh");
+
+const NS = "http://www.w3.org/2000/svg";
+const sv = (tag, attrs, text) => { const n = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v); if (text != null) n.textContent = text; return n; };
+(function krivka() {
+  const svg = document.getElementById("graf-krivka");
+  const w = 760, h = 300, L = 46, R = 16, T = 16, B = 34;
+  const serie = [{ b: sim.pred.krivka, f: "#5cc0cf", n: "dnes" }, { b: sim.po.krivka, f: "#e9ad45", n: "návrh" }];
+  const kol = Math.max(...serie.flatMap((x) => x.b.map((p) => p[0])));
+  const maxY = Math.ceil(Math.max(...serie.flatMap((x) => x.b.map((p) => p[1]))) + 0.5);
+  const X = (k) => L + ((k - 1) / Math.max(1, kol - 1)) * (w - L - R);
+  const Y = (v) => T + (1 - v / maxY) * (h - T - B);
+  for (let v = 0; v <= maxY; v += 1) { svg.append(sv("line", { x1: L, x2: w - R, y1: Y(v), y2: Y(v), class: "os", "stroke-dasharray": v ? "2 4" : "" })); svg.append(sv("text", { x: L - 8, y: Y(v) + 4, "text-anchor": "end" }, String(v))); }
+  for (let k = 1; k <= kol; k++) svg.append(sv("text", { x: X(k), y: h - 12, "text-anchor": "middle" }, k + ". kolo"));
+  for (const x of serie) {
+    svg.append(sv("path", { d: x.b.map((p, i) => (i ? "L" : "M") + X(p[0]).toFixed(1) + " " + Y(p[1]).toFixed(1)).join(" "), fill: "none", stroke: x.f, "stroke-width": 3 }));
+    for (const p of x.b) { const c = sv("circle", { cx: X(p[0]), cy: Y(p[1]), r: 3.5, fill: x.f }); c.append(sv("title", {}, x.n + ": " + cislo(p[1], 1) + " (" + p[0] + ". kolo)")); svg.append(c); }
+  }
+})();
+(function silaGraf() {
+  const svg = document.getElementById("graf-sila");
+  const ks = DATA.karty.filter((k) => (k.skupina.startsWith("senok") || k.typ === "start" || k.typ === "nastroj") && k.m.po && k.m.po.sila != null)
+    .sort((a, b) => b.m.po.sila - a.m.po.sila);
+  const w = 760, L = 150, R = 20, riadok = 19, T = 10;
+  svg.setAttribute("viewBox", `0 0 ${w} ${T + ks.length * riadok + 24}`);
+  const vals = ks.flatMap((k) => [k.m.pred.sila, k.m.po.sila]);
+  const min = Math.min(0, ...vals), max = Math.max(...vals);
+  const X = (v) => L + ((v - min) / (max - min)) * (w - L - R);
+  svg.append(sv("line", { x1: X(0), x2: X(0), y1: T, y2: T + ks.length * riadok, class: "os" }));
+  ks.forEach((k, i) => {
+    const y = T + i * riadok;
+    svg.append(sv("text", { x: L - 8, y: y + 13, "text-anchor": "end" }, k.nazov + (k.typ === "start" ? " (štart)" : k.typ === "nastroj" ? " (N)" : "")));
+    for (const [v, f, dy] of [[k.m.pred.sila, "#5cc0cf", 2], [k.m.po.sila, "#e9ad45", 9]]) {
+      const r = sv("rect", { x: Math.min(X(0), X(v)), y: y + dy, width: Math.abs(X(v) - X(0)), height: 7, fill: f, rx: 2 });
+      r.append(sv("title", {}, k.nazov + ": " + cislo(v)));
+      svg.append(r);
+    }
+  });
+  for (let v = Math.ceil(min); v <= max; v += 1) svg.append(sv("text", { x: X(v), y: T + ks.length * riadok + 16, "text-anchor": "middle" }, String(v)));
+})();
+
+// páky
+const pk = document.getElementById("sim-paky");
+pk.append(el("thead", {}, el("tr", {}, el("th", {}, "Variant"), ...STR.map((s) => el("th", { class: "n" }, el("span", { class: "sk " + s }, s))), el("th", { class: "n" }, "rozptyl B–O"), el("th", {}, "poznámka"))));
+const pkb = el("tbody");
+const PAKY = [
+  [sim.pred, "Dnes (súčasná sada)", ""],
+  [sim.po, "Návrh", "len karty a efekty z tohto návrhu"],
+  [sim.poViera, "Návrh + Viera so základom 2", "pravidlo: hodnota Viery 2 + priazeň Veriaceho"],
+  [sim.poPovera, "Návrh + Povera strop +1", "pravidlo: mäkké ≤ priznané Dlhy súpera + 1"],
+  [sim.predN1, "Dnes, priazeň 1 × sila", "pred 2026-10-16"],
+  [sim.poN1, "Návrh, priazeň 1 × sila", ""],
+];
+for (const [x, n, p] of PAKY) {
+  if (!x) continue;
+  pkb.append(el("tr", {}, el("td", {}, n), ...STR.map((s) => el("td", { class: "n" }, x.strat[s] ? Math.round(100 * x.strat[s].vyhry) + "" : "–")), el("td", { class: "n" }, Math.round(100 * spread(x)) + " b."), el("td", { class: "pozn" }, p + " · " + x.partii + " partií")));
+}
+pk.append(pkb);
+
+// čísla hore
+const sen = DATA.karty.filter((k) => k.skupina.startsWith("senok"));
+const rozsah = (v) => { const xs = sen.map((k) => k.m[v]?.hodnota).filter((x) => x != null); return [Math.min(...xs), Math.max(...xs)]; };
+const [p0, p1] = rozsah("pred"), [q0, q1] = rozsah("po");
+const startMax = (v) => Math.max(...DATA.karty.filter((k) => k.typ === "start").map((k) => k.m[v].hodnota));
+const naexMax = (v) => { const xs = sen.filter((k) => k.m[v]?.naex != null).sort((a, b) => b.m[v].naex - a.m[v].naex); return [xs[0].nazov, xs[0].m[v].naex]; };
+const [nPn, nPv] = naexMax("pred"), [nQn, nQv] = naexMax("po");
+const kr = (x) => x.krivka[x.krivka.length - 1][1] / x.krivka[0][1];
+const cisla = [
+  [cislo(p0) + " až " + cislo(p1) + " → " + cislo(q0) + " až " + cislo(q1), "hodnota kariet zo šenku v línii (dnes → návrh)"],
+  [cislo(startMax("pred")) + " → " + cislo(startMax("po")), "najsilnejšia štartovka (Pijan dnes, Miňištrant v návrhu) — pod všetkými kartami zo šenku"],
+  [cislo(nPv) + " → " + cislo(nQv), "najväčší zisk z NA EX: " + nPn + " → " + nQn],
+  ["×" + cislo(kr(sim.pred), 1) + " → ×" + cislo(kr(sim.po), 1), "rast tuhého od 1. po posledné kolo (krivka sily)"],
+  [Math.round(100 * spread(sim.pred)) + " → " + Math.round(100 * spread(sim.po)) + " bodov", "rozdiel výhier najsilnejšej a najslabšej stratégie (B…O)"],
+  [String(DATA.karty.filter(zmenena).length) + " z " + DATA.karty.length, "kariet so zmenou; " + DATA.karty.filter((k) => zmenena(k) && (k.kod === "ziadny" || k.kod === "text")).length + " z nich bez kódu"],
+];
+const cb = document.getElementById("cisla");
+for (const [b, s] of cisla) cb.append(el("div", { class: "cislo" }, el("b", {}, b), el("span", {}, s)));
+const sc = document.getElementById("sim-cisla");
+for (const [b, s] of [
+  [pct(sim.pred.remizy) + " → " + pct(sim.po.remizy), "remízy (vyhráva útočník)"],
+  [pct(sim.pred.nula) + " → " + pct(sim.po.nula), "bitky 0 : 0"],
+  [cislo(sim.pred.krivka[0][1], 1) + " → " + cislo(sim.pred.krivka[sim.pred.krivka.length - 1][1], 1), "tuhé na hráča: 1. → 8. kolo, dnes"],
+  [cislo(sim.po.krivka[0][1], 1) + " → " + cislo(sim.po.krivka[sim.po.krivka.length - 1][1], 1), "tuhé na hráča: 1. → 8. kolo, návrh"],
+]) sc.append(el("div", { class: "cislo" }, el("b", {}, b), el("span", {}, s)));
+document.getElementById("r-remizy").textContent = pct(sim.pred.remizy) + " → " + pct(sim.po.remizy);
+document.getElementById("r-nula").textContent = pct(sim.pred.nula) + " → " + pct(sim.po.nula);
+
+// verdikt
+const vs = (x, s) => pct(x.strat[s].vyhry);
+const verdikt = [
+  `<b>Každá karta má identitu:</b> ${DATA.karty.filter(zmenena).length} kariet sa mení; akcie a efekty vychádzajú z postavy (Recidivista sa bije a dlží, Miňištrant verí a upíja, Vdova škandalizuje). Karty bez zmeny (Veterán, Svokra, Zámočník, Liberál, Kočovníkov efekt…) už identitu mali.`,
+  `<b>Štartovky sú slabé a otravné:</b> Pijan má jednu Ranu namiesto dvoch, k tomu dve Pečene a Hazard; Posilnenie a Odpor zo štartu zmizli. Všetky štyri sú v línii slabšie než ktorákoľvek karta zo šenku a NA EX súpera na Pijana bolí jeho majiteľa.`,
+  `<b>Šenok je vyrovnanejší:</b> sila v línii ${cislo(p0)}–${cislo(p1)} → ${cislo(q0)}–${cislo(q1)}. Silné karty majú hluché miesta a často jednu zlú akciu (NA EX ju zdvojí), spojovače majú 5–6 slabších akcií a 2–3 hluché miesta. Recidivista s NA EX dnes ${cislo(DATA.karty.find((k) => k.id === "recidivista").m.pred.naex)}, v návrhu ${cislo(DATA.karty.find((k) => k.id === "recidivista").m.po.naex)}.`,
+  `<b>Päť stratégií</b> (Bitkári, Stokári, Viera a Povera, Škandál, Sabotéri) má každá 6–13 kariet v šenku a protiváhu. V simulácii celých partií: Stokári ${vs(sim.pred, "S")} → ${vs(sim.po, "S")}, Bitkári ${vs(sim.pred, "B")} → ${vs(sim.po, "B")}, Viera a Povera ${vs(sim.pred, "V")} → ${vs(sim.po, "V")}, Škandál ${vs(sim.pred, "K")} → ${vs(sim.po, "K")}, Sabotéri ${vs(sim.pred, "O")} → ${vs(sim.po, "O")}. <b>Bitkári ostávajú najsilnejší a Škandál najslabší</b> — karty to len zmierňujú; ďalšie páky sú pravidlové (otázky).`,
+  `<b>Nástroje:</b> Dedičstvo = malá priazeň (Svätý text Viera +1, Nealko prah Cirhózy +2, Cigorky cigareta v každej Pitke…); v línii len 2 akcie bez Petelice. Puška už nie je blokátor.`,
+  `<b>Zopár a Trocha:</b> odporúčam pevné čísla na kartách (variant A). Lakomec a Neprajník dostanú novú priazeň — lacnejší barter a Povera nad priznané Dlhy.`,
+  `<b>Kód:</b> fáza 1 (len akcie, ${DATA.karty.filter((k) => (k.zmenaL || k.zmenaP)).length} kariet) sa dá uložiť v tvorcovi bez vývoja; efekty potrebujú zadania pre vývoj (sekcia 9). Riziko: viac remíz (${pct(sim.pred.remizy)} → ${pct(sim.po.remizy)}).`,
+];
+const vu = document.getElementById("verdikt");
+for (const v of verdikt) vu.append(el("li", { html: v }));
+
+// kód vs dáta
+const kt = document.getElementById("kod-tab");
+kt.append(el("thead", {}, el("tr", {}, el("th", {}, "Čo"), el("th", {}, "Karty"), el("th", {}, "Kto a ako"))));
+const ktb = el("tbody");
+const podla = (f) => DATA.karty.filter(f).map((k) => k.nazov).join(", ");
+for (const [co, f, ako] of [
+  ["Akcie a pozície (fáza 1)", (k) => k.zmenaL || k.zmenaP, "dáta — admin v tvorcovi (A zaloha → A uloz), bez vývoja"],
+  ["Len text, rovnaké správanie", (k) => zmenena(k) && k.kod === "text", "dáta — oprava preklepu"],
+  ["Pevné číslo namiesto trocha/zopár", (k) => zmenena(k) && k.kod === "konstanta", "malá úprava kódu (konštanta na mieste hodnotaTrocha/hodnotaZopar) + text v tvorcovi"],
+  ["Úprava existujúceho efektu", (k) => zmenena(k) && k.kod === "uprava", "kód v effects.ts / engine.ts — zadanie pre vývoj, test"],
+  ["Nový efekt", (k) => zmenena(k) && k.kod === "novy", "kód — zadanie pre vývoj; kým nie je, karta je manual (hra len pripomenie)"],
+]) ktb.append(el("tr", {}, el("td", {}, el("b", {}, co)), el("td", {}, podla(f) || "–"), el("td", { class: "pozn" }, ako)));
+ktb.append(el("tr", {}, el("td", {}, el("b", {}, "Priazne Lakomca a Neprajníka")), el("td", {}, "pravidlo (§9)"), el("td", { class: "pozn" }, "kód (priazen, barter, computeDamage) + PRAVIDLA a web")));
+ktb.append(el("tr", {}, el("td", {}, el("b", {}, "Akcia Vízia (zopár → 2)")), el("td", {}, "všetky karty s Víziou"), el("td", { class: "pozn" }, "konštanta v engine.ts + popis akcie (A akcia Vízia --popis)")));
+ktb.append(el("tr", {}, el("td", {}, el("b", {}, "Zosúladenie po schválení")), el("td", {}, "PRAVIDLA §3, §9, §13, §14; web Pravidla a glosár (Pravidla.tsx, HernaPlocha, Scorecard, KlucoveSlova); tvorba predvolene.ts; inštrukcie agentov (naex-admin, playtest hrac.ts)"), el("td", { class: "pozn" }, "úloha pre vývoj a dokumenty; kľúčové slová trocha/zopár a popis „preskúmaj“ v tvorcovi")));
+kt.append(ktb);
+
+// výber
+for (const inp of document.querySelectorAll("[data-volba]")) {
+  const id = inp.dataset.volba;
+  inp.checked = vybrane.has(id);
+  navrhy.push({ id, box: inp, odp: ["s:strategie", "n:koncept", "p:lakomec", "p:neprajnik", "z:A"].includes(id), popis: id });
+  inp.addEventListener("change", () => {
+    if (inp.type === "radio") for (const r of document.querySelectorAll(`input[name="${inp.name}"]`)) vybrane.delete(r.dataset.volba);
+    if (inp.checked) vybrane.add(id); else vybrane.delete(id);
+    uloz(); obnov();
+  });
+}
+const POPIS = { "s:strategie": "Rozdelenie na 5 stratégií", "n:koncept": "Koncept Nástrojov", "p:lakomec": "Priazeň Lakomca: lacnejší barter", "p:neprajnik": "Priazeň Neprajníka: Povera nad priznané Dlhy", "z:A": "Zopár/Trocha: A — pevné čísla", "z:B": "Zopár/Trocha: B — škálovanie silou", "z:C": "Zopár/Trocha: C — číslo z okolia", "z:0": "Zopár/Trocha: ponechať" };
+function obnov() {
+  const karty = navrhy.filter((n) => n.id.startsWith("k:"));
+  const vk = karty.filter((n) => vybrane.has(n.id)).length;
+  document.getElementById("volba-text").innerHTML = `Vybraté: <b>${vk}</b> z ${karty.length} kariet, <b>${[...vybrane].filter((x) => !x.startsWith("k:")).length}</b> ďalších rozhodnutí.`;
+  const riadky = [];
+  for (const n of navrhy) if (vybrane.has(n.id)) riadky.push("[x] " + (POPIS[n.id] || n.popis) + (n.id.startsWith("k:") ? " (" + n.id.slice(2) + ")" : ""));
+  const nevybrane = karty.filter((n) => !vybrane.has(n.id)).map((n) => n.popis);
+  document.getElementById("vystup").value = "Revízia kariet 2026-10-18 — schválené:\n" + riadky.join("\n") + (nevybrane.length ? "\n\nNeschválené karty: " + nevybrane.join(", ") : "");
+  for (const n of karty) n.box.closest("article")?.classList.toggle("vybrany", n.box.checked);
+}
+document.getElementById("b-odporucane").addEventListener("click", () => {
+  for (const n of navrhy) if (n.odp) { vybrane.add(n.id); n.box.checked = true; }
+  for (const r of ["z:B", "z:C", "z:0"]) vybrane.delete(r);
+  uloz(); obnov();
+});
+document.getElementById("b-zrus").addEventListener("click", () => { vybrane.clear(); for (const n of navrhy) n.box.checked = false; uloz(); obnov(); });
+document.getElementById("b-kopia").addEventListener("click", async () => {
+  const t = document.getElementById("vystup").value;
+  try { await navigator.clipboard.writeText(t); document.getElementById("b-kopia").textContent = "Skopírované"; } catch (e) { document.getElementById("vystup").select(); }
+  setTimeout(() => (document.getElementById("b-kopia").textContent = "Skopírovať výber"), 1500);
+});
+obnov();
+</script>
+</body>
+</html>

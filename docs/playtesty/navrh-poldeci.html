@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Poldeci špirála — NA EX!</title>
+<style>
+  :root {
+    --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --okraj: #3d3229;
+    --text: #f1e8d8; --tlmeny: #b6a790; --slaby: #8b7d6a;
+    --akcent: #e9ad45; --cervena: #d0563f; --zelena: #7cbf74; --modra: #5cc0cf;
+    color-scheme: dark;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #dccdb3;
+      --text: #2a2016; --tlmeny: #6b5b45; --slaby: #8a7a62;
+      --akcent: #a8680f; --cervena: #b0402c; --zelena: #3f7f38; --modra: #2a7f8c;
+      color-scheme: light;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 system-ui, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 980px; margin: 0 auto; padding: 32px 16px 120px; }
+  h1, h2, h3 { font-family: Georgia, "Bitter", serif; line-height: 1.2; }
+  h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); margin: 0 0 8px; }
+  h2 { font-size: 1.35rem; margin: 40px 0 12px; }
+  .podnadpis { color: var(--tlmeny); margin: 0 0 24px; max-width: 70ch; }
+  a { color: var(--akcent); }
+  .cisla { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; margin: 16px 0; }
+  .cislo { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; }
+  .cislo b { display: block; font: 700 1.7rem/1.1 Georgia, serif; color: var(--akcent); }
+  .cislo span { color: var(--tlmeny); font-size: 0.88rem; }
+  .slucka { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 12px; overflow-x: auto; }
+  .slucka svg { display: block; width: 100%; min-width: 620px; height: auto; }
+  .slucka text { font: 13px system-ui, sans-serif; fill: var(--text); }
+  .slucka .t { fill: var(--tlmeny); font-size: 12px; }
+  .pricina { margin: 0; padding-left: 22px; }
+  .pricina li { margin-bottom: 8px; }
+  .pricina strong { color: var(--akcent); }
+  .skupina { margin: 26px 0 8px; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--slaby); }
+  .navrh { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; background: var(--plocha); border: 1px solid var(--okraj);
+    border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; }
+  .navrh.vybrany { border-color: var(--akcent); box-shadow: 0 0 0 1px var(--akcent); }
+  .navrh input { width: 20px; height: 20px; margin-top: 3px; accent-color: var(--akcent); cursor: pointer; }
+  .navrh h3 { margin: 0; font-size: 1.08rem; }
+  .navrh h3 label { cursor: pointer; }
+  .navrh .id { color: var(--akcent); font-family: ui-monospace, monospace; font-size: 0.9rem; margin-right: 6px; }
+  .navrh .odporucane { font: 700 0.72rem/1 system-ui, sans-serif; color: var(--pozadie); background: var(--akcent); border-radius: 999px;
+    padding: 3px 9px; margin-left: 8px; vertical-align: 2px; }
+  .navrh .obsah { grid-column: 2; display: grid; gap: 6px; }
+  .navrh p { margin: 0; }
+  .riadky { display: grid; grid-template-columns: 9.5em 1fr; gap: 3px 10px; font-size: 0.93rem; }
+  .riadky dt { color: var(--slaby); }
+  .riadky dd { margin: 0; }
+  .znamky { display: inline-flex; gap: 6px; flex-wrap: wrap; }
+  .znamky span { font-size: 0.75rem; padding: 1px 9px; border-radius: 999px; border: 1px solid var(--okraj); color: var(--tlmeny); }
+  .znamky .velky { color: var(--zelena); border-color: color-mix(in srgb, var(--zelena) 50%, transparent); }
+  .znamky .stredny { color: var(--akcent); border-color: color-mix(in srgb, var(--akcent) 50%, transparent); }
+  .balik { border: 1px solid color-mix(in srgb, var(--akcent) 50%, transparent); background: color-mix(in srgb, var(--akcent) 9%, transparent);
+    border-radius: 14px; padding: 14px 18px; }
+  .balik ol { margin: 6px 0 0; padding-left: 22px; }
+  .balik li { margin-bottom: 6px; }
+  .balik button { margin-top: 8px; }
+  button { font: inherit; font-size: 0.92rem; border-radius: 999px; padding: 7px 16px; border: 1px solid var(--okraj);
+    background: var(--plocha-2); color: var(--text); cursor: pointer; }
+  button.hlavne { background: var(--akcent); color: var(--pozadie); border-color: var(--akcent); font-weight: 700; }
+  .meranie { padding-left: 22px; }
+  .meranie li { margin-bottom: 4px; }
+  .volba { position: fixed; left: 0; right: 0; bottom: 0; background: var(--plocha-2); border-top: 1px solid var(--okraj); z-index: 3; }
+  .volba-in { max-width: 980px; margin: 0 auto; padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+  .volba-text { flex: 1 1 300px; font-size: 0.92rem; color: var(--tlmeny); }
+  .volba-text b { color: var(--text); }
+  .skryte { position: absolute; left: -9999px; }
+  .kola { overflow-x: auto; background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; }
+  .kola table { width: 100%; border-collapse: collapse; font-size: 0.92rem; min-width: 600px; }
+  .kola th, .kola td { padding: 8px 12px; border-bottom: 1px solid var(--okraj); text-align: left; vertical-align: top; }
+  .kola tr:last-child td { border-bottom: 0; }
+  .kola th { color: var(--slaby); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .kola td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .kola .l1 { color: var(--cervena); font-weight: 700; }
+  .kola .pozn { color: var(--tlmeny); }
+  .poznamka { color: var(--tlmeny); font-size: 0.88rem; margin: 8px 2px 0; }
+  .dalsie { display: grid; gap: 10px; }
+  .dalsie article { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 16px; }
+  .dalsie h3 { margin: 0 0 4px; font-size: 1.02rem; }
+  .dalsie p { margin: 0; color: var(--tlmeny); font-size: 0.93rem; }
+  @media (max-width: 560px) {
+    .riadky { grid-template-columns: 1fr; }
+    .riadky dt { margin-top: 4px; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Poldeci špirála: kto vypije, nemá čím hrať</h1>
+  <p class="podnadpis">Najväčší problém playtestu <a href="20261016-155120.html">20261016-155120</a> (Eva vyhrala 111 : 104).
+    Obaja hráči ho uviedli medzi hlavnými problémami a rozhodol 5 zo 7 bitiek. Zaškrtni riešenia, ktoré chceš skúsiť,
+    dole sa poskladá voľba, ktorú mi pošleš. <strong>A1 a E1 sú v hre od 2026-10-16</strong>, ostatné nie.</p>
+
+  <h2>Čo ukázala partia</h2>
+  <div class="cisla">
+    <div class="cislo"><b>4 zo 7</b><span>kôl hrala Eva s limitom vykladania 1 (súper 3), od 3. kola až do konca okrem Zastávky</span></div>
+    <div class="cislo"><b>0 tuhého</b><span>mala Eva vo všetkých troch prehratých bitkách (0 : 6, 0 : 3, 0 : 5) — všetky Janove výhry</span></div>
+    <div class="cislo"><b>1 : 3</b><span>limit Jana v 1. kole. Vzal zo šenku dve karty, nevedel, že ho to stojí limit, a prehral 0 : 6</span></div>
+    <div class="cislo"><b>1×</b><span>sa za celú partiu dolialo (Jano v 5. kole za 2 cigarety). Eva nemala na doliatie nikdy dosť cigariet</span></div>
+    <div class="cislo"><b>0 a 0</b><span>plných poldeci mali obaja na konci partie</span></div>
+    <div class="cislo"><b>5 a 5</b><span>známky za rovnováhu; zrozumiteľnosť 4 a 5. Rozhodlo aj Vypiť pri limite 1 (Jano: „rozhodlo partiu“)</span></div>
+  </div>
+
+  <h2>Kolo po kole</h2>
+  <div class="kola">
+    <table>
+      <thead><tr><th>Kolo</th><th>Limit Eva : Jano</th><th>Bitka</th><th>Čo sa stalo s poldeci</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td class="num">3 : <span class="l1">1</span></td><td class="num">Eva 6 : 0</td><td class="pozn">Jano vzal zo šenku 2 karty a vypil za ne oba poldeci. Eva ako útočník vzala 1 kartu zadarmo.</td></tr>
+        <tr><td>2</td><td class="num">2 : ?</td><td class="num">Eva 6 : 4</td><td class="pozn">Eva zaplatila za Hasiča a posledný plný poldeci dala na NA EX, ktoré sa pri bitke vypilo. Od tejto chvíle nemala plný poldeci.</td></tr>
+        <tr><td>3</td><td class="num"><span class="l1">1</span> : 2</td><td class="num">Jano 6 : 0</td><td class="pozn">Eva nemohla brať zo šenku („nemá plný poldeci“), vyložila jednu kartu.</td></tr>
+        <tr><td>4</td><td class="num">2 : 2</td><td class="num">Eva 3 : 3</td><td class="pozn">Eva ako útočník zvolila Zastávku (limit 2 pre oboch) — jediný spôsob, ako sa z limitu 1 dostať.</td></tr>
+        <tr><td>5</td><td class="num"><span class="l1">1</span> : 3</td><td class="num">Jano 3 : 0</td><td class="pozn">Jano v Pitke dolial za 2 cigarety. Eva mala 1 cigaretu — dve priznané Manželky jej zastavili príjem z Cigaretiek.</td></tr>
+        <tr><td>6</td><td class="num"><span class="l1">1</span> : 3</td><td class="num">Jano 5 : 0</td><td class="pozn">Jano obrancom vykladal prvý a jej jedinú kartu zablokoval podstrčenou Puškou.</td></tr>
+        <tr><td>7</td><td class="num"><span class="l1">1</span> : 3→0</td><td class="num">Eva 2 : 0</td><td class="pozn">Jano dal Vypiť pri zostávajúcom limite 1, limit mu klesol na 0 a prišiel o poslednú kartu. Hra mu pritom sľúbila „2 vyloženia za sebou“.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="poznamka">Limity sú z denníkov oboch hráčov a z logu partie; „?“ = z podkladov sa nedá určiť.</p>
+
+  <h2>Prečo to tak je</h2>
+  <div class="slucka" role="img" aria-label="Schéma: poldeci sa míňajú draftom, NA EX a Vypiť, dopĺňajú sa len cigaretami v Pitke, ktoré hráč s limitom 1 nemá">
+    <svg viewBox="0 0 760 260">
+      <defs>
+        <marker id="sip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M0 0 L10 5 L0 10z" fill="#e9ad45"/>
+        </marker>
+        <marker id="sip2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M0 0 L10 5 L0 10z" fill="#8b7d6a"/>
+        </marker>
+      </defs>
+      <rect x="20" y="20" width="170" height="56" rx="10" fill="none" stroke="#d0563f" stroke-width="1.5"/>
+      <text x="105" y="44" text-anchor="middle">Karta zo šenku</text>
+      <text x="105" y="62" text-anchor="middle" class="t">1 plný poldeci (útočník 1. zadarmo)</text>
+      <rect x="20" y="100" width="170" height="56" rx="10" fill="none" stroke="#d0563f" stroke-width="1.5"/>
+      <text x="105" y="124" text-anchor="middle">NA EX</text>
+      <text x="105" y="142" text-anchor="middle" class="t">poldeci sa pri bitke vypije</text>
+      <rect x="20" y="180" width="170" height="56" rx="10" fill="none" stroke="#d0563f" stroke-width="1.5"/>
+      <text x="105" y="204" text-anchor="middle">Vypiť</text>
+      <text x="105" y="222" text-anchor="middle" class="t">limit −1 hneď</text>
+      <rect x="290" y="96" width="180" height="64" rx="10" fill="none" stroke="#e9ad45" stroke-width="2"/>
+      <text x="380" y="122" text-anchor="middle">Vypité poldeci</text>
+      <text x="380" y="142" text-anchor="middle" class="t">ostávajú vypité aj ďalšie kolá</text>
+      <rect x="570" y="40" width="170" height="56" rx="10" fill="none" stroke="#e9ad45" stroke-width="2"/>
+      <text x="655" y="64" text-anchor="middle">Limit 1</text>
+      <text x="655" y="82" text-anchor="middle" class="t">1 karta, šenok zavretý</text>
+      <rect x="570" y="160" width="170" height="56" rx="10" fill="none" stroke="#e9ad45" stroke-width="2"/>
+      <text x="655" y="184" text-anchor="middle">Prehra bitky</text>
+      <text x="655" y="202" text-anchor="middle" class="t">0 tuhého proti 3 kartám</text>
+      <rect x="290" y="200" width="180" height="50" rx="10" fill="none" stroke="#8b7d6a" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <text x="380" y="221" text-anchor="middle">Doliatie: 2 cigarety</text>
+      <text x="380" y="239" text-anchor="middle" class="t">len v Pitke, príjem ~0–1 za kolo</text>
+      <path d="M190 48 C 240 48, 250 110, 288 118" fill="none" stroke="#d0563f" stroke-width="1.8" marker-end="url(#sip)"/>
+      <path d="M190 128 L 288 128" fill="none" stroke="#d0563f" stroke-width="1.8" marker-end="url(#sip)"/>
+      <path d="M190 208 C 240 208, 250 150, 288 140" fill="none" stroke="#d0563f" stroke-width="1.8" marker-end="url(#sip)"/>
+      <path d="M470 116 C 520 100, 530 70, 568 68" fill="none" stroke="#e9ad45" stroke-width="2" marker-end="url(#sip)"/>
+      <path d="M655 96 L 655 158" fill="none" stroke="#e9ad45" stroke-width="2" marker-end="url(#sip)"/>
+      <path d="M570 196 C 520 196, 500 220, 472 224" fill="none" stroke="#8b7d6a" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#sip2)"/>
+      <text x="482" y="186" class="t">bez cigariet sa slučka nezastaví</text>
+    </svg>
+  </div>
+  <ol class="pricina">
+    <li><strong>Poldeci sú dva na celú partiu</strong> a vypité ostávajú vypité. Limit = plné poldeci + 1, takže každý výdavok znižuje limit
+      vo všetkých ďalších kolách, nie len v tomto.</li>
+    <li><strong>Výdavkov pribudlo, zdrojov nie.</strong> Zmena „Dobiehanie porazeného“ (2026-10-16) zaviedla poldeci ako cenu karty zo šenku.
+      Pravidlo hovorí „v tomto kole klesne limit vykladania“, ale poldeci sa nevráti, takže limit klesne natrvalo.</li>
+    <li><strong>Doliatie stojí 2 cigarety a ide len v Pitke.</strong> Cigariet je od tej istej zmeny málo (z Cigaretiek asi 1 za kolo),
+      súperí o ne fajčenie na karty a priznané Manželky ich uberajú. Eva od 2. kola nemala nikdy dve.</li>
+    <li><strong>Hráč s limitom 1 nemá ako odpovedať.</strong> Nevezme zo šenku, vyloží jednu kartu a súper (obranca vykladá prvý)
+      ju ešte zablokuje podstrčením. Jano to nazval „najsilnejší nástroj dobiehania“ a vyhral tak všetky svoje tri bitky.</li>
+    <li><strong>Náklad nie je vidieť.</strong> Tlačidlo „vziať zo šenku“ ani Vypiť neukáže, aký bude limit potom. Text Vypiť pri limite 1
+      sľúbi dve vyloženia a dá nulu (engine: <code>zostavaLimit − 1</code>, ponuka nekontroluje, či ostane aspoň 1).</li>
+  </ol>
+  <p class="poznamka">Zmena „Dobiehanie“ mala v časti „Čo sledovať“ práve toto: „či im neklesá limit vykladania príliš a či sa dolieva cigaretami“.
+    Odpoveď partie: klesá príliš a nedolieva sa.</p>
+
+  <h2>Riešenia</h2>
+  <p class="podnadpis">Zoradené podľa toho, kde slučku prerušia. Skupiny sa dopĺňajú; v skupinách A–C často stačí jedno riešenie.</p>
+  <div id="navrhy"></div>
+
+  <h2>Odporúčaný balík</h2>
+  <div class="balik">
+    <p>Tri zmeny. Prvá rieši príčinu, druhé dve sú opravy, ktoré treba tak či tak:</p>
+    <ol>
+      <li><b>A1 Nové kolo, jeden poldeci späť</b> — špirála sa zastaví, ale poldeci ostanú zdrojom, o ktorý sa hrá.
+        Eva by v 3., 5., 6. a 7. kole mala limit 2 namiesto 1. Rozdiel 2 : 3 sa dá prekonať, 1 : 3 nie.</li>
+      <li><b>D1 Vypiť len vtedy, keď niečo pridá</b> — oprava pasce, ktorá rozhodla partiu.</li>
+      <li><b>E1 Limit pred a po ťahu</b> — draft a Vypiť prestanú mať skrytú cenu.</li>
+    </ol>
+    <p>Ak A1 nebude stačiť, ďalší krok je B1 (draft stojí poldeci len v tom kole). C1 je najjednoduchšia poistka,
+      ale poldeci by pri nej takmer prestali vplývať na limit.</p>
+    <button type="button" class="hlavne" id="vyberBalik">zaškrtnúť odporúčaný balík</button>
+  </div>
+
+  <h2>Ďalšie problémy tejto partie</h2>
+  <div class="dalsie">
+    <article><h3>2. Lokalita má cenu ~20 bodov (obaja hráči)</h3>
+      <p>Na scorecardoch bolo 10 aktívnych podmienok „lokality“ po 2 bodoch. Eve dali lokality 80 zo 111 bodov, Janovi 60 zo 104.
+        Prvé dve bitky (0 : 69) rozhodli, kto dobieha, a hráč pri výbere lokality nevidí, čo je v stávke. Riešenia F1 a F2.</p></article>
+    <article><h3>3. Hrany podstrčenej karty a otočenej lokality (piaty playtest za sebou)</h3>
+      <p>Hra postupuje podľa §4, ale obaja hráči si to pomýlili (Evin Pes sa nespároval, Janov plán s Psom sa „rozsypal“). Riešenie F3.</p></article>
+    <article><h3>4. Remíza patrí útočníkovi</h3>
+      <p>Útočník vyhral 5 zo 7 bitiek a navyše má prvú kartu zo šenku zadarmo. Jano navrhuje remízu obrancovi. Riešenie F4.</p></article>
+  </div>
+
+  <h2>Ako to overíme</h2>
+  <ul class="meranie">
+    <li>2–3 playtesty s rovnakými štýlmi (Jano agresívny, Eva opatrná), aby sa dali porovnať s 20261016-155120.</li>
+    <li>Sledovať: limit oboch hráčov v každom kole, koľko kôl hral niekto s limitom 1, koľko kariet sa berie zo šenku,
+      koľkokrát sa dolialo a či bitky s nerovnakým limitom končia ešte 0 : X.</li>
+    <li>Známky rovnováhy (5 a 5) a zrozumiteľnosti (4 a 5) a či sa vo feedbacku ešte objaví „špirála“ alebo „skrytý náklad“.</li>
+    <li>Pozor na opačný extrém: či sa poldeci nestanú bezcennými — či si hráči ešte rozmýšľajú, koľko kariet vziať a kedy dať NA EX.</li>
+  </ul>
+</main>
+
+<div class="volba" role="region" aria-label="Tvoja voľba">
+  <div class="volba-in">
+    <span class="volba-text" id="volbaText">Zatiaľ nič nie je zaškrtnuté.</span>
+    <button type="button" id="kopiruj">skopírovať voľbu</button>
+  </div>
+</div>
+<textarea class="skryte" id="schranka" aria-hidden="true" tabindex="-1"></textarea>
+
+<script>
+const NAVRHY = [
+  { skupina: "A — Poldeci sa vracajú (viac zdrojov)" },
+  { id: "A1", odp: true, nazov: "Nové kolo, jeden poldeci späť",
+    co: "Na začiatku každého kola (pred stavbou šenku) sa každému hráčovi otočí jeden vypitý poldeci na plný. Viac vypitých si treba doliať ako doteraz (cigarety, barter, Poldecko, Krčmárka).",
+    data: "Eva by v 3., 5., 6. a 7. kole mala 1 plný poldeci → limit 2 namiesto 1 (alebo by si mohla vziať kartu zo šenku). Jano v 2. kole tiež 2. Rozdiel limitov by bol najviac 2 : 3.",
+    riziko: "Poldeci budú menej vzácne a doliatie cigaretami trochu stratí váhu (stále sa hodí na druhý poldeci). NA EX a draft budú lacnejšie — sleduj, či ich nebude priveľa.",
+    dopad: "velky", zlozitost: "malá — jeden krok na začiatku kola" },
+  { id: "A2", nazov: "Doliatie aj v Zhromaždení (návrh Evy)",
+    co: "Za 2 cigarety sa dá otočiť vypitý poldeci aj na svojom ťahu v Zhromaždení, nie len v Pitke. Limit sa hneď zvýši o 1.",
+    data: "Eva mala od 2. kola najviac 1 cigaretu, takže by jej to v tejto partii nepomohlo. Jano by mohol doliať o kolo skôr.",
+    riziko: "Pomôže tomu, kto má cigarety — často tomu, komu sa darí. Samo špirálu nezastaví.",
+    dopad: "maly", zlozitost: "malá" },
+  { id: "A3", nazov: "Doliatie za 1 cigaretu",
+    co: "Otočiť vypitý poldeci stojí 1 cigaretu namiesto 2 (v Pitke). Barter ostáva 5.",
+    data: "Eva mala v 3.–6. kole 1 cigaretu → od 4. kola by mala limit 2. Hráč si musí vybrať: cigareta na kartu (fajčenie), alebo na poldeci — dobrá dilema.",
+    riziko: "Kto nemá príjem z Cigaretiek (priznané Manželky, Obmedzenia), ostane v špirále. Cigarety bodujú po trojiciach, takže ich hráči môžu šetriť.",
+    dopad: "stredny", zlozitost: "malá — jedna konštanta" },
+  { skupina: "B — Draft neberie poldeci natrvalo (menej výdavkov)" },
+  { id: "B1", nazov: "Karta zo šenku zníži limit len v tomto kole",
+    co: "Poldeci vypitý za kartu zo šenku sa po bitke otočí späť na plný. Tak to pravidlo aj znie („v tomto kole klesne limit“). NA EX a Vypiť sa nemenia.",
+    data: "Jano by po 1. kole (2 karty, limit 1) mal v 2. kole znova 2 plné. Evinu špirálu však začalo NA EX v 2. kole, nie draft, takže B1 by jej pomohlo len čiastočne.",
+    riziko: "Draft bude výhodnejší a pitiek (|rozdiel kariet|) môže pribudnúť. Treba si v engine pamätať, koľko poldeci padlo na draft.",
+    dopad: "stredny", zlozitost: "stredná" },
+  { id: "B2", nazov: "Prvá karta zo šenku zadarmo pre oboch",
+    co: "Každý hráč má prvú kartu zo šenku zadarmo, útočník prvé dve. Výhoda útočníka v drafte ostáva.",
+    data: "Eva v 3., 5. a 6. kole nevzala nič, lebo nemala plný poldeci — dostala by aspoň jednu kartu. Jano v 1. kole by mal limit 2 namiesto 1.",
+    riziko: "Hráč s limitom 1 má síce kartu navyše, no vyloží stále len jednu. Viac kariet do ruky = viac odhadzovania nad limit.",
+    dopad: "stredny", zlozitost: "malá" },
+  { skupina: "C — Poistka limitu" },
+  { id: "C1", nazov: "Limit vykladania najmenej 2",
+    co: "Limit = plné poldeci + poldeci na NA EX + 1, ale najmenej 2. Limit 0 (prehra bitky) ostáva len pre efekty, ktoré ho priamo nastavia.",
+    data: "Všetky štyri Evine kolá s limitom 1 by boli s limitom 2. Rovnako Janovo 1. kolo.",
+    riziko: "Prvý vypitý poldeci by na limit nemal vplyv — draft a NA EX by sa stali takmer zadarmo a poldeci by rozhodovali len medzi 2 a 3. Najjednoduchšie, ale najviac oslabí ekonomiku.",
+    dopad: "velky", zlozitost: "malá" },
+  { skupina: "D — Vypiť (do dna)" },
+  { id: "D1", odp: true, nazov: "Vypiť len vtedy, keď niečo pridá, a pravdivý text",
+    co: "Hra ponúkne Vypiť len pri zostávajúcom limite aspoň 2 a napíše presne: „limit klesne na X, ďalšia karta neukončí ťah“. Súhrn v PRAVIDLÁCH (riadok 27) sa opraví.",
+    data: "Jano v 7. kole: limit 1 → 0, prišiel o poslednú kartu, mal v ruke tri Pijany. Od zavedenia (4 partie) Vypiť nikto nepoužil s úžitkom; dve karty za sebou dá až pri limite 3.",
+    riziko: "Žiadne pre pravidlá — je to oprava pasce.",
+    dopad: "stredny", zlozitost: "malá — podmienka v legalCommands a text" },
+  { id: "D2", nazov: "Vypiť nezníži limit v tomto kole",
+    co: "Do dna = ďalšia karta neukončí ťah, cena je +1 pečeň a vypitý poldeci (limit klesne až od ďalšieho kola). Tak Vypiť dá naozaj dve karty za sebou.",
+    data: "Vypiť dnes funguje len pri limite 3; hráči ho volajú „pasca“. D2 z neho urobí skutočný ťah: dokončiť kombináciu skôr, ako súper podstrčí sabotéra.",
+    riziko: "Bez A1 alebo B1 urýchli špirálu v ďalšom kole. Silnejšie pre toho, kto má plné poldeci.",
+    dopad: "stredny", zlozitost: "malá" },
+  { skupina: "E — Zrozumiteľnosť" },
+  { id: "E1", odp: true, nazov: "Limit pred a po ťahu",
+    co: "V drafte pri každej karte „po zobratí: limit X“, pri Vypiť „limit X → Y“, pri NA EX „v ďalšom kole limit X“. V hlavičke stále plné poldeci a limit oboch hráčov.",
+    data: "Jano: „draft potichu znižuje limit, klient to neukazuje“ (komentár aj názor). Eva zistila, že NA EX stojí poldeci aj na ďalšie kolo, až po omyle.",
+    riziko: "Žiadne pre pravidlá.",
+    dopad: "stredny", zlozitost: "malá — rozhranie aj klient agentov" },
+  { skupina: "F — Ďalšie problémy tejto partie" },
+  { id: "F1", nazov: "Náhľad stávky pri výbere lokality",
+    co: "Pri výbere lokality (aj otočenej) ukázať „ak vyhráš +X / ak prehráš +Y bodov“, ako pri bitke o staršieho.",
+    data: "Obaja: lokalita je 15–20 bodov a hráč to pri výbere nevidí.",
+    riziko: "Žiadne pre pravidlá.",
+    dopad: "stredny", zlozitost: "stredná — výpočet bodov dopredu" },
+  { id: "F2", nazov: "Lokalita za kus 1 bod namiesto 2",
+    co: "Ovládnutá lokalita dáva za kus 1 bod. Strach starších a cigarety ostávajú.",
+    data: "Lokality dali Eve 80 zo 111 a Janovi 60 zo 104. S 1 bodom by to bolo 40 a 30 a strach by vážil podobne ako lokality.",
+    riziko: "Bitka o lokalitu stratí váhu oproti strachu — v minulých partiách naopak rozhodoval strach (vydesenie).",
+    dopad: "stredny", zlozitost: "malá — jedna konštanta" },
+  { id: "F3", nazov: "Náhľad spojov pred vyložením",
+    co: "Pri výbere miesta (svoja/súperova strana, otočená lokalita) zvýrazniť hrany, ktoré sa spoja, a akcie, ktoré sa aktivujú.",
+    data: "Piaty playtest za sebou; Evin Pes na súperovej strane sa s ničím nespároval.",
+    riziko: "Žiadne pre pravidlá.",
+    dopad: "stredny", zlozitost: "stredná — rozhranie" },
+  { id: "F4", nazov: "Remíza patrí obrancovi",
+    co: "Pri rovnosti tuhého poškodenia vyhráva obranca, nie útočník.",
+    data: "Útočník vyhral 5 zo 7 bitiek; remíza 3 : 3 v 4. kole išla útočníkovi. Útočník má už prvú kartu zo šenku zadarmo.",
+    riziko: "Oslabí dobiehanie — útočník je porazený z minulej bitky. Overiť spolu s A1.",
+    dopad: "maly", zlozitost: "malá" },
+];
+
+const KLUC = "naex.navrh-poldeci";
+let vybrane = new Set();
+try { vybrane = new Set(JSON.parse(localStorage.getItem(KLUC) || "[]")); } catch (e) { /* bez úložiska */ }
+const uloz = () => { try { localStorage.setItem(KLUC, JSON.stringify([...vybrane])); } catch (e) { /* bez úložiska */ } };
+
+const ZNAMKY = { velky: ["velky", "veľký dopad"], stredny: ["stredny", "stredný dopad"], maly: ["", "malý dopad"] };
+const el = (tag, attrs, ...deti) => {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) { if (k === "class") n.className = v; else n.setAttribute(k, v); }
+  for (const d of deti) n.append(d);
+  return n;
+};
+
+const koren = document.getElementById("navrhy");
+for (const n of NAVRHY) {
+  if (n.skupina) { koren.append(el("div", { class: "skupina" }, n.skupina)); continue; }
+  const box = el("input", { type: "checkbox", id: "c-" + n.id });
+  box.checked = vybrane.has(n.id);
+  const h = el("h3", {}, el("label", { for: "c-" + n.id }, el("span", { class: "id" }, n.id), n.nazov));
+  if (n.odp) h.append(el("span", { class: "odporucane" }, "odporúčané"));
+  const [trieda, popis] = ZNAMKY[n.dopad];
+  const riadky = el("dl", { class: "riadky" },
+    el("dt", {}, "Čo"), el("dd", {}, n.co),
+    el("dt", {}, "Z partie"), el("dd", {}, n.data),
+    el("dt", {}, "Riziko"), el("dd", {}, n.riziko));
+  const znamky = el("div", { class: "znamky" }, el("span", { class: trieda }, popis), el("span", {}, "zložitosť: " + n.zlozitost));
+  const karta = el("article", { class: "navrh" + (box.checked ? " vybrany" : ""), "data-id": n.id }, box, h, el("div", { class: "obsah" }, riadky, znamky));
+  box.addEventListener("change", () => {
+    if (box.checked) vybrane.add(n.id); else vybrane.delete(n.id);
+    karta.classList.toggle("vybrany", box.checked);
+    uloz(); prepisVolbu();
+  });
+  koren.append(karta);
+}
+
+function textVolby() {
+  const zoznam = NAVRHY.filter((n) => n.id && vybrane.has(n.id));
+  return zoznam.length === 0 ? "" : "Chcem skúsiť: " + zoznam.map((n) => n.id + " " + n.nazov).join("; ") + ".";
+}
+function prepisVolbu() {
+  const t = document.getElementById("volbaText");
+  const zoznam = NAVRHY.filter((n) => n.id && vybrane.has(n.id));
+  t.innerHTML = zoznam.length === 0 ? "Zatiaľ nič nie je zaškrtnuté." : "<b>Tvoja voľba:</b> " + zoznam.map((n) => n.id).join(", ");
+}
+document.getElementById("vyberBalik").addEventListener("click", () => {
+  vybrane = new Set(NAVRHY.filter((n) => n.odp).map((n) => n.id));
+  for (const k of document.querySelectorAll(".navrh")) {
+    const on = vybrane.has(k.dataset.id);
+    k.querySelector("input").checked = on;
+    k.classList.toggle("vybrany", on);
+  }
+  uloz(); prepisVolbu();
+});
+document.getElementById("kopiruj").addEventListener("click", async (e) => {
+  const t = textVolby() || "Zatiaľ nič.";
+  try { await navigator.clipboard.writeText(t); }
+  catch (err) { const s = document.getElementById("schranka"); s.value = t; s.select(); document.execCommand("copy"); }
+  e.target.textContent = "skopírované";
+  setTimeout(() => { e.target.textContent = "skopírovať voľbu"; }, 1500);
+});
+prepisVolbu();
+</script>
+</body>
+</html>

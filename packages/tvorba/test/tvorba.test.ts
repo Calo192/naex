@@ -154,6 +154,7 @@ describe("tvorba — štatistiky", () => {
     for (const arr of Object.values(s.pozicie)) {
       for (const x of arr) expect(x).toBeLessThanOrEqual(1);
     }
-    expect(s.pouzitie.find((u) => u.kluc === "Robota")?.navrhov).toBe(5);
+    // Sada v5 (2026-10-18, + Anonymný alkoholik) má Robotu na 8 kartách.
+    expect(s.pouzitie.find((u) => u.kluc === "Robota")?.navrhov).toBe(8);
   });
 });

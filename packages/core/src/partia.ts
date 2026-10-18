@@ -51,6 +51,11 @@ export interface LineState {
   readonly lokalitaOtocena: boolean;
   /** partie[p][0] je karta najbližšie k lokalite. */
   readonly strany: readonly [readonly PlacedCard[], readonly PlacedCard[]];
+  /**
+   * pasca[p]: hráč p má Pascu v Dedičstve — akcie prvej karty, ktorú mu súper
+   * podstrčil na stranu, neplatia (Michal 2026-10-18). Chýba = nikto.
+   */
+  readonly pasca?: readonly [boolean, boolean];
 }
 
 export type SlotStav = "neaktivna" | "aktivna" | "zrusena";
@@ -90,6 +95,8 @@ interface Elem {
   /** Majiteľ karty — dostane jej aktívne akcie; lokalita má strany rozdelené. */
   readonly owner: PlayerId;
   readonly isLokalita: boolean;
+  /** Strana línie, na ktorej karta leží (lokalita v strede: null). */
+  readonly strana: PlayerId | null;
   readonly rotated: boolean;
   readonly printed: { readonly left: SideLayout; readonly right: SideLayout };
   readonly effLeft: readonly Slot[];
@@ -123,6 +130,7 @@ function makeElem(
   rotated: boolean,
   isLokalita: boolean,
   naexBy: PlayerId | undefined,
+  strana: PlayerId | null,
 ): Elem {
   const printed = printedSides(data, card);
   return {
@@ -131,6 +139,7 @@ function makeElem(
     tags: defOf(data, card).tags,
     owner,
     isLokalita,
+    strana,
     rotated,
     printed,
     effLeft: rotated ? reversed(printed.right) : [...printed.left],
@@ -152,8 +161,21 @@ function markVzbura(elem: Elem, side: 0 | 1): void {
   }
 }
 
+/**
+ * Nástroj funguje len na strane, kde ho podporuje Občan alebo Starešina
+ * (Michal 2026-10-18). Pri lokalite, karte staršieho v strede či karte bez
+ * týchto tagov spoj nevznikne — neaktivuje sa nič ani na susedovi.
+ */
+export function spojVznikne(a: { readonly tags: readonly Tag[]; readonly stred: boolean }, b: { readonly tags: readonly Tag[]; readonly stred: boolean }): boolean {
+  const podporuje = (x: typeof a): boolean => !x.stred && (x.tags.includes("Občan") || x.tags.includes("Starešina"));
+  if (a.tags.includes("Nástroj") && !a.stred && !podporuje(b)) return false;
+  if (b.tags.includes("Nástroj") && !b.stred && !podporuje(a)) return false;
+  return true;
+}
+
 /** Spoj medzi susedmi: pravá strana `a` proti ľavej strane `b`. */
 function resolveJunction(a: Elem, b: Elem): void {
+  if (!spojVznikne({ tags: a.tags, stred: a.isLokalita }, { tags: b.tags, stred: b.isLokalita })) return;
   for (let k = 0; k < 4; k++) {
     const actA = a.effRight[k];
     const actB = b.effLeft[k];
@@ -276,13 +298,6 @@ function kartoveEfekty(segments: readonly (readonly Elem[])[]): [number, number]
   for (const e of karty) {
     const [vlavo, vpravo] = susedia.get(e) ?? [null, null];
     switch (e.defId) {
-      case "silna_nezavisla_zena":
-        // Jej akcie platia, len ak je podporená dvoma chlapmi.
-        if (!(ma(vlavo, "Chlap") && ma(vpravo, "Chlap"))) {
-          vypniStranu(e, 0);
-          vypniStranu(e, 1);
-        }
-        break;
       case "veteran": {
         // Influencer v partii majiteľa → neplatia pravé akcie.
         const influencer = karty.some((x) => x !== e && x.owner === e.owner && x.tags.includes("Influencer"));
@@ -308,6 +323,10 @@ function kartoveEfekty(segments: readonly (readonly Elem[])[]): [number, number]
       for (const s of okolie(e)) if (s.tags.includes("Nástroj")) zdvojAktivne(s);
     } else if (e.defId === "sarlatan") {
       for (const s of okolie(e)) s.vieraAkoVizia = true;
+    } else if (e.defId === "silna_nezavisla_zena") {
+      // Michal 2026-10-18: podporuje okolie — aktívne akcie susedných kariet
+      // toho istého majiteľa sa rátajú dvakrát (lokalitu a cudzie karty nie).
+      for (const s of okolie(e)) if (!s.isLokalita && s.owner === e.owner) zdvojAktivne(s);
     }
   }
 
@@ -352,10 +371,10 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
   const segments: Elem[][] = [];
 
   const partia0 = line.strany[0].map((p) =>
-    makeElem(data, p.card, p.playedBy, p.playedBy === 1, false, p.naexBy),
+    makeElem(data, p.card, p.playedBy, p.playedBy === 1, false, p.naexBy, 0),
   );
   const partia1 = line.strany[1].map((p) =>
-    makeElem(data, p.card, p.playedBy, p.playedBy === 1, false, p.naexBy),
+    makeElem(data, p.card, p.playedBy, p.playedBy === 1, false, p.naexBy, 1),
   );
 
   // Akcie lokality na spoji dostane majiteľ susednej karty (pravidlá v3) —
@@ -363,7 +382,7 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
   const susedLokality: [PlayerId | null, PlayerId | null] = [partia0[0]?.owner ?? null, partia1[0]?.owner ?? null];
   if (line.lokalita !== null) {
     // owner lokality je len formálny — súčty jej strán idú majiteľovi suseda.
-    const lok = makeElem(data, line.lokalita, 0, line.lokalitaOtocena, true, undefined);
+    const lok = makeElem(data, line.lokalita, 0, line.lokalitaOtocena, true, undefined, null);
     segments.push([...[...partia0].reverse(), lok, ...partia1]);
     elems.push(...partia0, lok, ...partia1);
   } else {
@@ -380,6 +399,17 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
   }
   for (const elem of elems) applyVzbura(elem);
   for (const elem of elems) applyNaex(elem);
+  // Pasca: prvá podstrčená karta na strane hráča s Pascou (strana je zoradená
+  // od lokality, teda v poradí vykladania) — jej akcie neplatia, susedov spoj áno.
+  for (const q of [0, 1] as const) {
+    if (line.pasca?.[q] !== true) continue;
+    const partia = q === 0 ? partia0 : partia1;
+    const chytena = partia.find((e) => e.owner !== q);
+    if (chytena !== undefined) {
+      vypniStranu(chytena, 0);
+      vypniStranu(chytena, 1);
+    }
+  }
   const ranyPijana = kartoveEfekty(segments);
 
   const sums: [Partial<Record<Action, number>>, Partial<Record<Action, number>>] = [{}, {}];
@@ -395,7 +425,9 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
         if (nasobok === 0) continue;
         // Akcia lokality patrí majiteľovi karty, s ktorou tvorí spoj (bez suseda
         // nie je aktívna); akcia karty jej majiteľovi, nech leží kdekoľvek.
-        const target: PlayerId = elem.isLokalita ? (susedLokality[side] ?? side) : elem.owner;
+        // Kočovník (Michal 2026-10-18): jeho Hazard a Pečeň dostáva hráč, na ktorého strane leží.
+        const kocovnik = elem.defId === "kocovnik" && elem.strana !== null && (action === "Dlh" || action === "PoškodeniePečene");
+        const target: PlayerId = elem.isLokalita ? (susedLokality[side] ?? side) : kocovnik ? (elem.strana as PlayerId) : elem.owner;
         const ako: Action = elem.vieraAkoVizia && action === "Viera" ? "Vízia" : action;
         sums[target][ako] = (sums[target][ako] ?? 0) + nasobok;
       }
@@ -406,4 +438,45 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
   for (const elem of elems) cards.set(elem.uid, elemEval(elem));
 
   return { sums, cards };
+}
+
+/** Príspevok karty v línii k bitke — štatistiky partií a simulácia sily kariet v tvorcovi. */
+export interface KartaVBitke {
+  readonly uid: number;
+  readonly defId: string;
+  readonly majitel: PlayerId;
+  /** Akcie vytlačené na karte (bez modifikátorov Posilnenie/Odpor). */
+  readonly akcii: number;
+  /** Aktívne akcie karty vrátane násobkov (NA EX, Posilnenie). */
+  readonly aktivne: number;
+  /** Tuhé poškodenie z jej aktívnych akcií: Rana 1, Pecka 2, Petelica 3. */
+  readonly tuhe: number;
+  /** Aktívne kliatbové akcie (Hazard, Pečeň) — škodia majiteľovi. */
+  readonly zle: number;
+}
+
+const TUHE: Partial<Record<Action, number>> = { Rana: 1, Pecka: 2, Petelica: 3 };
+const ZLE: readonly Action[] = ["Dlh", "PoškodeniePečene"];
+
+/** Rozpis vyhodnotenej línie po kartách (lokalita sa nepočíta — nie je ničia). */
+export function prispevkyKariet(line: LineState, ev: LineEval): KartaVBitke[] {
+  const out: KartaVBitke[] = [];
+  for (const placed of [...line.strany[0], ...line.strany[1]]) {
+    const e = ev.cards.get(placed.card.uid);
+    let akcii = 0;
+    let aktivne = 0;
+    let tuhe = 0;
+    let zle = 0;
+    for (const slot of [...(e?.left ?? []), ...(e?.right ?? [])]) {
+      if (slot === null || MODIFIERS.includes(slot.action)) continue;
+      akcii++;
+      if (slot.stav !== "aktivna" || slot.nasobok === 0) continue;
+      const ako = slot.ako ?? slot.action;
+      aktivne += slot.nasobok;
+      tuhe += (TUHE[ako] ?? 0) * slot.nasobok;
+      if (ZLE.includes(ako)) zle += slot.nasobok;
+    }
+    out.push({ uid: placed.card.uid, defId: placed.card.defId, majitel: placed.playedBy, akcii, aktivne, tuhe, zle });
+  }
+  return out;
 }

@@ -7,8 +7,9 @@ import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { mediaUrl } from "../lib/api.ts";
 import { useTitulok } from "../lib/router.tsx";
 import { useAdmin } from "./stav.tsx";
+import { KartyVPartiach, SilaZoSimulacie } from "./SilaKariet.tsx";
 
-type Sekcia = "pouzitie" | "pozicie" | "pary" | "kopie" | "tagy" | "blokovane" | "bodovanie";
+type Sekcia = "pouzitie" | "pozicie" | "pary" | "kopie" | "tagy" | "blokovane" | "bodovanie" | "partie" | "sila";
 
 const SEKCIE: readonly [Sekcia, string][] = [
   ["pouzitie", "Použitie"],
@@ -18,6 +19,8 @@ const SEKCIE: readonly [Sekcia, string][] = [
   ["tagy", "Tagy"],
   ["blokovane", "Blokované"],
   ["bodovanie", "Bodovacie karty"],
+  ["partie", "V partiách"],
+  ["sila", "Sila (simulácia)"],
 ];
 
 const pct = (x: number) => `${Math.round(x * 100)} %`;
@@ -281,6 +284,8 @@ export function Statistiky() {
             )}
           </>
         )}
+        {sekcia === "partie" && <KartyVPartiach />}
+        {sekcia === "sila" && <SilaZoSimulacie />}
       </section>
     </div>
   );

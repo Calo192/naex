@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Progresia balíčka — NA EX!</title>
+<style>
+  :root {
+    --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --okraj: #3d3229;
+    --text: #f1e8d8; --tlmeny: #b6a790; --slaby: #8b7d6a;
+    --akcent: #e9ad45; --cervena: #d0563f; --zelena: #7cbf74; --modra: #5cc0cf;
+    color-scheme: dark;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #dccdb3;
+      --text: #2a2016; --tlmeny: #6b5b45; --slaby: #8a7a62;
+      --akcent: #a8680f; --cervena: #b0402c; --zelena: #3f7f38; --modra: #2a7f8c;
+      color-scheme: light;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 system-ui, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 1000px; margin: 0 auto; padding: 32px 16px 120px; }
+  h1, h2, h3 { font-family: Georgia, "Bitter", serif; line-height: 1.2; }
+  h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); margin: 0 0 8px; }
+  h2 { font-size: 1.35rem; margin: 44px 0 12px; }
+  h3 { font-size: 1.08rem; margin: 22px 0 8px; }
+  .podnadpis { color: var(--tlmeny); margin: 0 0 20px; max-width: 75ch; }
+  a { color: var(--akcent); }
+  code { font-size: 0.88em; background: var(--plocha-2); padding: 1px 5px; border-radius: 5px; }
+  .verdikt { border: 1px solid color-mix(in srgb, var(--akcent) 55%, transparent); background: color-mix(in srgb, var(--akcent) 9%, transparent);
+    border-radius: 14px; padding: 14px 18px; margin: 18px 0; }
+  .verdikt .stitok { display: inline-block; font: 700 0.8rem/1 system-ui, sans-serif; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--pozadie); background: var(--akcent); border-radius: 999px; padding: 5px 12px; margin-bottom: 8px; }
+  .verdikt ul { margin: 6px 0 0; padding-left: 22px; }
+  .verdikt li { margin-bottom: 5px; }
+  .cisla { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; margin: 16px 0; }
+  .cislo { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; }
+  .cislo b { display: block; font: 700 1.6rem/1.1 Georgia, serif; color: var(--akcent); }
+  .cislo span { color: var(--tlmeny); font-size: 0.88rem; }
+  .tab { overflow-x: auto; background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; margin: 10px 0; }
+  .tab table { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 620px; }
+  .tab th, .tab td { padding: 7px 10px; border-bottom: 1px solid var(--okraj); text-align: left; vertical-align: top; }
+  .tab tr:last-child td { border-bottom: 0; }
+  .tab th { color: var(--slaby); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; cursor: default; }
+  .tab th.zorad { cursor: pointer; user-select: none; }
+  .tab th.zorad:hover { color: var(--akcent); }
+  .tab td.n { font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
+  .tab tr.start td { background: color-mix(in srgb, var(--cervena) 12%, transparent); }
+  .tab tr.dnes td { background: color-mix(in srgb, var(--modra) 10%, transparent); }
+  .tab .pozn { color: var(--tlmeny); }
+  .tab .dobre { color: var(--zelena); font-weight: 600; }
+  .tab .zle { color: var(--cervena); font-weight: 600; }
+  .bar { display: inline-block; height: 9px; border-radius: 4px; background: var(--akcent); vertical-align: middle; margin-right: 6px; }
+  .bar.s { background: var(--cervena); }
+  .filtre { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+  .filtre button, button { font: inherit; font-size: 0.88rem; border-radius: 999px; padding: 5px 14px; border: 1px solid var(--okraj);
+    background: var(--plocha-2); color: var(--text); cursor: pointer; }
+  .filtre button.on { background: var(--akcent); color: var(--pozadie); border-color: var(--akcent); font-weight: 700; }
+  button.hlavne { background: var(--akcent); color: var(--pozadie); border-color: var(--akcent); font-weight: 700; }
+  .graf { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 12px; }
+  .graf svg { display: block; width: 100%; height: auto; }
+  .graf text { font: 12px system-ui, sans-serif; fill: var(--tlmeny); }
+  .graf .os { stroke: var(--okraj); }
+  .legenda { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 8px; font-size: 0.86rem; }
+  .legenda label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; color: var(--tlmeny); }
+  .legenda label.on { color: var(--text); }
+  .legenda i { display: inline-block; width: 16px; height: 4px; border-radius: 2px; }
+  .poznamka { color: var(--tlmeny); font-size: 0.88rem; margin: 8px 2px 0; }
+  .pricina { margin: 0; padding-left: 22px; }
+  .pricina li { margin-bottom: 8px; }
+  .pricina strong { color: var(--akcent); }
+  .skupina { margin: 26px 0 8px; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--slaby); }
+  .navrh { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; background: var(--plocha); border: 1px solid var(--okraj);
+    border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; }
+  .navrh.vybrany { border-color: var(--akcent); box-shadow: 0 0 0 1px var(--akcent); }
+  .navrh input { width: 20px; height: 20px; margin-top: 3px; accent-color: var(--akcent); cursor: pointer; }
+  .navrh h3 { margin: 0; font-size: 1.08rem; }
+  .navrh h3 label { cursor: pointer; }
+  .navrh .id { color: var(--akcent); font-family: ui-monospace, monospace; font-size: 0.9rem; margin-right: 6px; }
+  .navrh .odporucane, .navrh .neodporucane { font: 700 0.72rem/1 system-ui, sans-serif; border-radius: 999px; padding: 3px 9px; margin-left: 8px; vertical-align: 2px; }
+  .navrh .odporucane { color: var(--pozadie); background: var(--akcent); }
+  .navrh .neodporucane { color: var(--cervena); border: 1px solid var(--cervena); }
+  .navrh .obsah { grid-column: 2; display: grid; gap: 6px; }
+  .riadky { display: grid; grid-template-columns: 9.5em 1fr; gap: 3px 10px; font-size: 0.93rem; margin: 0; }
+  .riadky dt { color: var(--slaby); }
+  .riadky dd { margin: 0; }
+  .otazka { color: var(--akcent); }
+  .znamky { display: inline-flex; gap: 6px; flex-wrap: wrap; }
+  .znamky span { font-size: 0.75rem; padding: 1px 9px; border-radius: 999px; border: 1px solid var(--okraj); color: var(--tlmeny); }
+  .znamky .velky { color: var(--zelena); border-color: color-mix(in srgb, var(--zelena) 50%, transparent); }
+  .znamky .stredny { color: var(--akcent); border-color: color-mix(in srgb, var(--akcent) 50%, transparent); }
+  .znamky .negativny { color: var(--cervena); border-color: color-mix(in srgb, var(--cervena) 50%, transparent); }
+  .balik { border: 1px solid color-mix(in srgb, var(--akcent) 50%, transparent); background: color-mix(in srgb, var(--akcent) 9%, transparent);
+    border-radius: 14px; padding: 14px 18px; }
+  .balik ol { margin: 6px 0 0; padding-left: 22px; }
+  .balik li { margin-bottom: 6px; }
+  .meranie { padding-left: 22px; }
+  .meranie li { margin-bottom: 4px; }
+  .volba { position: fixed; left: 0; right: 0; bottom: 0; background: var(--plocha-2); border-top: 1px solid var(--okraj); z-index: 3; }
+  .volba-in { max-width: 1000px; margin: 0 auto; padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+  .volba-text { flex: 1 1 300px; font-size: 0.92rem; color: var(--tlmeny); }
+  .volba-text b { color: var(--text); }
+  .skryte { position: absolute; left: -9999px; }
+  details { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 10px 14px; margin: 10px 0; }
+  details summary { cursor: pointer; color: var(--akcent); }
+  @media (max-width: 560px) { .riadky { grid-template-columns: 1fr; } .riadky dt { margin-top: 4px; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Progresia balíčka: začína hráč slabý a silnie?</h1>
+  <p class="podnadpis">Analýza pre Michala, 2026-10-18. Zámer: štartový balíček je zámerne slabý a hráč silnie tým, že berie
+    silnejšie karty zo šenku. Overené na zverejnenej sade v3 (zhodná s <code>packages/core/data/cards.json</code>), pravidlách
+    (<code>docs/PRAVIDLA.md</code> §5–§8, §11), ôsmich playtestoch a na simulácii celých partií nad jadrom hry. Nič sa nezmenilo,
+    návrhy dole sú na zaškrtnutie.</p>
+
+  <div class="verdikt">
+    <span class="stitok">Verdikt: platí čiastočne</span>
+    <ul>
+      <li><b>Slabý štart platí.</b> Útočnú akciu má len Pijan (3 z 10 kariet). Štartová karta spraví v náhodnej línii priemerne
+        <b>0,37 tuhého</b>, najlepšie karty zo šenku 2,5–3,2. Štvrtý playtest za sebou sa hráči sťažujú na ruku z Miňištrantov, Dievčin a Manželiek.</li>
+      <li><b>Silnenie je slabé a v partiách ho skoro nevidno.</b> Hráč za strednú hru (7 lokalít) vezme zo šenku asi 4–6 kariet,
+        z toho dve tretiny zadarmo. Karta za poldeci vyjde nastejno: o koľko je hráč silnejší kartou, o toľko slabší nižším limitom.
+        V playtestoch tuhé od 1. po posledné kolo nerastie (trend −0,25 v 63 bitkách); rast ukázala len posledná partia (3,5 → 6,4).</li>
+      <li><b>Slabé karty ostávajú.</b> Dievčiny a Manželky odídu samé (spálenie, priznanie), ale 3 Pijani a 3 Miňištranti nemajú lacný
+        odchod. V simulácii tvoria štartové karty na konci partie stále <b>55–60 % balíčka</b>.</li>
+      <li><b>Simulácia ukazuje rast +64 %</b> (5,4 → 8,9 tuhého na hráča od 1. po 7. kolo). Robí ho najmä karta zadarmo a samovyraďovanie
+        Dievčin a Manželiek. Pri krátkej hre je rast len +24 %. Najviac pomôžu návrhy N1 (výmena štartovej karty pri braní zo šenku)
+        a N2 (obnova ruky): rast ×2,1 až ×2,5 a štart ostane rovnako slabý.</li>
+    </ul>
+  </div>
+
+  <div class="cisla">
+    <div class="cislo"><b>0,37 : 0,68</b><span>⌀ tuhé na kartu v náhodnej línii: štart : šenok (bez štartových druhov). Najlepšia štvorka zo šenku 2,5–3,2</span></div>
+    <div class="cislo"><b>7 z 28</b><span>druhov v šenku je jasne silnejších ako Pijan, najlepšia štartová karta. 15 z 28 nemá žiadny útok, rovnako ako Miňištrant</span></div>
+    <div class="cislo"><b>9 a 12</b><span>kariet zo šenku za celú partiu v dvoch playtestoch s cenou poldeci (6 a 7 z nich zadarmo). Predtým, keď sa platilo cigaretami, to bolo do ~36</span></div>
+    <div class="cislo"><b>6 z 10</b><span>štartových kariet nemá lacný odchod (3 Pijan, 3 Miňištrant). Odísť môžu len Pohrebom, Liečbou alebo pod staršieho</span></div>
+    <div class="cislo"><b>64 % : 34 %</b><span>posledný playtest: štartové karty mali 64 % výskytov v línii a urobili 34 % tuhého. Karty zo šenku 31 % výskytov a 66 % tuhého</span></div>
+    <div class="cislo"><b>+64 %</b><span>simulácia: rast tuhého od 1. po 7. kolo pri správaní z playtestov (pri 5 lokalitách +24 %)</span></div>
+  </div>
+
+  <!-- ============================================================ 1 -->
+  <h2>1. Štartový balíček oproti šenku</h2>
+  <p class="podnadpis">Štart podľa kódu (<code>KONSTANTY.START_RUKA</code>, stále s TODO, otvorená otázka č. 7): <b>3 Pijan, 3 Miňištrant,
+    2 Milujúca manželka, 2 Dievčina na vydaj</b>. Spoločný balíček (z neho sa stavia šenok) obsahuje 2 kópie každej karty okrem lokalít,
+    starších a čistých kliatob, teda <b>32 druhov × 2 = 64 kariet, vrátane všetkých štyroch štartových druhov</b> (8 kariet z 64).</p>
+
+  <div class="tab"><table>
+    <thead><tr><th>Skupina</th><th class="n">⌀ akcií</th><th class="n">⌀ útočných akcií</th><th class="n">⌀ tuhé vytlačené</th>
+      <th class="n">⌀ tuhé v línii (sim.)</th><th class="n">aktivácia</th><th class="n">⌀ zlé akcie</th><th class="n">má útok</th></tr></thead>
+    <tbody>
+      <tr class="start"><td>Štart (10 kariet, váhy 3/3/2/2)</td><td class="n">4,00 ± 1,00</td><td class="n">0,60 ± 0,92</td><td class="n">0,60 ± 0,92</td><td class="n">0,37 ± 0,57</td><td class="n">40 %</td><td class="n">1,40 ± 1,11</td><td class="n">30 %</td></tr>
+      <tr><td>Šenok — všetkých 32 druhov</td><td class="n">3,50 ± 1,30</td><td class="n">0,78 ± 1,05</td><td class="n">1,38 ± 1,96</td><td class="n">0,63 ± 0,93</td><td class="n">36 %</td><td class="n">0,78 ± 1,08</td><td class="n">44 %</td></tr>
+      <tr><td>Šenok bez štartových druhov (28)</td><td class="n">3,43 ± 1,32</td><td class="n">0,82 ± 1,07</td><td class="n">1,50 ± 2,04</td><td class="n">0,68 ± 0,96</td><td class="n">36 %</td><td class="n">0,68 ± 1,04</td><td class="n">46 %</td></tr>
+      <tr><td>— z toho Občania a Zvieratá (20)</td><td class="n">3,95 ± 1,02</td><td class="n">1,00 ± 1,14</td><td class="n">1,70 ± 2,03</td><td class="n">0,81 ± 1,02</td><td class="n">37 %</td><td class="n">0,85 ± 1,11</td><td class="n">55 %</td></tr>
+      <tr><td>— z toho Nástroje (8)</td><td class="n">2,13 ± 1,05</td><td class="n">0,38 ± 0,70</td><td class="n">1,00 ± 2,00</td><td class="n">0,35 ± 0,70</td><td class="n">32 %</td><td class="n">0,25 ± 0,66</td><td class="n">25 %</td></tr>
+    </tbody>
+  </table></div>
+  <p class="poznamka">Priemer ± smerodajná odchýlka cez druhy kariet (všetky varianty strán rovnako). „Tuhé v línii“ = 60 000 náhodných línií
+    vyhodnotených jadrom (<code>evaluateLine</code>), ako <code>A sila</code>, ale vrátane Manželky (tú <code>A sila</code> vynecháva, lebo má tag Kliatba).
+    Efekty kariet, NA EX ani podstrkovanie sa nerátajú. „Zlé akcie“ = Hazard a Pečeň.</p>
+
+  <ol class="pricina">
+    <li><strong>Štart je slabý, ale nie rovnomerne.</strong> Pijan je v hornej tretine tabuľky (8. z 32, 1,24 tuhého), silnejší než 21 z 28 druhov
+      zo šenku. V poslednom playteste bol najčastejšou kartou v línii (22 bitiek, 36 tuhého). Slabosť štartu robia Miňištrant,
+      Manželka a Dievčina: 7 z 10 kariet nemá žiadny útok.</li>
+    <li><strong>Šenok je v priemere len o niečo silnejší</strong> (0,68 oproti 0,37). Jasne silnejších ako Pijan je 7 druhov
+      (Pes, Recidivista, Hasič, Puška, Živnostník, Podvodník, Zámočník), teda 25 % šenku. 15 z 28 druhov nemá útok, niektoré majú
+      viac zlých akcií ako štart (Finančná poradkyňa 4, Silná, nezávislá žena 3).</li>
+    <li><strong>Hráči berú presne tie silné karty.</strong> V dvoch playtestoch s cenou poldeci sa zo šenku vzali Pes 3×,
+      Živnostník 3×, Recidivista 2×, Hasič 2×, Puška 2×, Veterán 2×, Zámočník, Svokra, Kočovník, Šarlatán, Nealko, ale aj Pijan 2×
+      (štartový druh). Stavba šenku dovolí silné karty do šenku vybrať, takže ponuka je lepšia ako náhodný priemer.</li>
+    <li><strong>Podmienky aktivácie sú podobné</strong> (aktivácia 36–40 %), štart nie je slabý tým, že sa ťažšie spája. Je slabý tým,
+      čo má na stranách: Odpor, Viera, Cigaretka, Pohoršenie, Dlh a Pečeň namiesto Rany a Pecky.</li>
+  </ol>
+
+  <h3>Všetky karty, ktoré sa dajú vziať zo šenku</h3>
+  <div class="filtre" id="filtreKarty">
+    <button type="button" data-f="vsetky" class="on">všetky</button>
+    <button type="button" data-f="start">štartové</button>
+    <button type="button" data-f="senok">len zo šenku</button>
+    <button type="button" data-f="utok">s útokom</button>
+  </div>
+  <div class="tab"><table id="tabKarty">
+    <thead><tr><th class="zorad" data-k="1">Karta</th><th class="zorad" data-k="4">perm.</th><th class="zorad n" data-k="5">akcií</th><th class="zorad n" data-k="6">útočných</th>
+      <th class="zorad n" data-k="7">tuhé vytl.</th><th class="zorad n" data-k="8">zlé</th><th class="zorad" data-k="9">tuhé v línii (sim.)</th><th class="zorad n" data-k="10">aktivácia</th></tr></thead>
+    <tbody></tbody>
+  </table></div>
+  <p class="poznamka">Červené riadky sú štartové druhy. Kliknutím na hlavičku sa tabuľka zoradí.</p>
+
+  <h3>Sila ruky podľa zloženia balíčka</h3>
+  <p class="podnadpis">Ruka 5 kariet z balíčka, najlepšie poskladaná vlastná strana pri náhodnej lokalite (všetky poradia, 2 000 pokusov).
+    Je to strop dokonalého hráča bez súpera, slúži na porovnanie balíčkov. „Greedy“ = z 8 náhodných kariet šenku vždy najlepšia.</p>
+  <div class="tab"><table>
+    <thead><tr><th>Balíček</th><th class="n">⌀ najlepšie tuhé, limit 2</th><th class="n">limit 3</th><th class="n">ruky bez tuhého (limit 3)</th></tr></thead>
+    <tbody>
+      <tr class="start"><td>Štart 10 (3 P, 3 M, 2 Ž, 2 D)</td><td class="n">3,07</td><td class="n">3,55</td><td class="n">6 %</td></tr>
+      <tr><td>Štart bez 2 Dievčín a 2 Manželiek (6 kariet)</td><td class="n">4,00</td><td class="n">4,96</td><td class="n">0 %</td></tr>
+      <tr><td>Štart + 3 zo šenku</td><td class="n">5,38</td><td class="n">6,83</td><td class="n">1 %</td></tr>
+      <tr class="dnes"><td>Štart − 2 D − 2 Ž + 4 zo šenku (typická stredná hra)</td><td class="n">6,29</td><td class="n">8,32</td><td class="n">0 %</td></tr>
+      <tr><td>Štart + 9 zo šenku</td><td class="n">7,02</td><td class="n">9,71</td><td class="n">0 %</td></tr>
+      <tr><td>Štart + 9 <i>náhodných</i> zo šenku</td><td class="n">3,91</td><td class="n">4,66</td><td class="n">8 %</td></tr>
+      <tr><td>10 náhodných zo spoločného balíčka</td><td class="n">4,99</td><td class="n">6,18</td><td class="n">5 %</td></tr>
+      <tr><td>10 len z útočných (Pes, Recidivista, Hasič, Živnostník, Podvodník, Zámočník, Veterán)</td><td class="n">8,37</td><td class="n">11,98</td><td class="n">0 %</td></tr>
+    </tbody>
+  </table></div>
+  <p class="poznamka">Potenciál rastu v kartách je veľký (3,6 → 8,3 pri typickej hre), ale len ak hráč berie najlepšie karty.
+    Náhodné karty zo šenku balíček takmer nezlepšia (3,6 → 4,7).</p>
+
+  <!-- ============================================================ 2 -->
+  <h2>2. Umožňuje draft silnieť?</h2>
+  <h3>Pravidlá (§7) a čo z nich vyplýva</h3>
+  <div class="tab"><table>
+    <thead><tr><th>Dĺžka hry</th><th class="n">draftov</th><th class="n">kariet zadarmo (spolu)</th><th class="n">strop za partiu</th><th>Poznámka</th></tr></thead>
+    <tbody>
+      <tr><td>Krátka — 5 lokalít</td><td class="n">5</td><td class="n">5</td><td class="n">30</td><td class="pozn">draft len v bitke o lokalitu; bitka o staršieho draft nemá</td></tr>
+      <tr><td>Stredná — 7 lokalít</td><td class="n">7</td><td class="n">7</td><td class="n">42</td><td class="pozn">predvolená</td></tr>
+      <tr><td>Dlhá — 11 lokalít</td><td class="n">11</td><td class="n">11</td><td class="n">—</td><td class="zle">sada má len 7 lokalít, dlhá hra sa nedá zvoliť (§11)</td></tr>
+    </tbody>
+  </table></div>
+  <ul class="pricina">
+    <li><strong>Strop</strong>: najviac 3 karty na hráča za draft a šenok má N kariet (N = nenahradení starší nadol na párne: 8, po náhradách 6 a 4).</li>
+    <li><strong>Cena</strong>: karta stojí plný poldeci, takže <b>limit vykladania v tom kole klesne o 1</b>. Limit je plné poldeci + 1,
+      čiže 3 pri dvoch plných. Na začiatku kola sa vráti jeden poldeci. Prakticky si hráč na kolo kúpi najviac 1–2 karty a každá ho stojí
+      jednu vyloženú kartu, tretinu limitu. O poldeci súperia aj NA EX a Vypiť.</li>
+    <li><strong>Zadarmo</strong> je len prvá karta útočníka, teda porazeného z minulej bitky. Je to nástroj dobiehania, nie silnenia oboch:
+      v poslednom playteste dostala Eva 4 karty zadarmo, Jano 2.</li>
+    <li><strong>Počet kariet zahraných za kolo nerastie</strong> (limit ostáva okolo 3). Silnieť sa dá len kvalitou kariet, nie počtom.</li>
+  </ul>
+
+  <h3>Čo hráči reálne berú (playtesty)</h3>
+  <div class="tab"><table>
+    <thead><tr><th>Playtest</th><th>Pravidlá draftu</th><th class="n">draftov</th><th class="n">kariet zo šenku</th><th class="n">z toho zadarmo</th><th>Čo povedali hráči</th></tr></thead>
+    <tbody>
+      <tr class="dnes"><td><a href="20261017-164450.html">20261017-164450</a></td><td>poldeci + doliatie na začiatku kola (dnešné)</td><td class="n">7</td><td class="n">9</td><td class="n">6</td>
+        <td class="pozn">Eva: draft bol takmer vždy „vezmi prvú zadarmo a končí“. V 9. kole nevzal nikto nič. Jano: zlé ruky v 2. a 5. kole.</td></tr>
+      <tr><td><a href="20261016-155120.html">20261016-155120</a></td><td>poldeci, bez doliatia</td><td class="n">7</td><td class="n">12</td><td class="n">7</td>
+        <td class="pozn">Jano vzal v 1. kole 2 karty, limit 1, prehral 0 : 6 („draft je drahý“). Eva od 3. kola brala len kartu zadarmo.</td></tr>
+      <tr><td><a href="20261016-134912.html">20261016-134912</a></td><td>cigaretový draft</td><td class="n">5</td><td class="n">~20</td><td class="n">—</td>
+        <td class="pozn">Jano v 4 z 5 draftov 3 karty. „Draft v neskorších kolách je skoro bez voľby.“</td></tr>
+      <tr><td><a href="20261012-173832.html">20261012-173832</a></td><td>cigaretový draft</td><td class="n">6</td><td class="n">~25</td><td class="n">—</td>
+        <td class="pozn">Jano: „vyber najmenej zlú z 8 zlých kariet“. Eva: výber zo šenku slabú ruku čiastočne napravuje.</td></tr>
+      <tr><td><a href="20261012-055944.html">20261012-055944</a></td><td>cigaretový draft</td><td class="n">7</td><td class="n">~36</td><td class="n">—</td>
+        <td class="pozn">V 12 zo 14 draftov si hráč vzal 3 karty. „Draft zo šenku dokázal veľa zmeniť.“</td></tr>
+    </tbody>
+  </table></div>
+  <p class="poznamka">Odkedy karta stojí poldeci (zmena „Dobiehanie porazeného“, 2026-10-16), berie sa 2–4× menej kariet. Zmena mala dobrý dôvod
+    (útočník vyhral 1 z 5 bitiek), ale silnenie balíčka tým zoslablo. Pozor: sú to dve partie s dnešnou cenou, teda dva údaje.</p>
+
+  <h3>Oplatí sa platiť? Simulácia 150 partií na riadok</h3>
+  <div class="tab"><table>
+    <thead><tr><th>Politika brania (obaja hráči rovnako)</th><th class="n">kariet zo šenku za partiu</th><th class="n">⌀ limit</th><th class="n">⌀ tuhé 1. kolo</th><th class="n">⌀ tuhé 7. kolo</th><th class="n">rast</th></tr></thead>
+    <tbody>
+      <tr><td>nikto neberie</td><td class="n">0</td><td class="n">3,0</td><td class="n">2,4</td><td class="n">3,0</td><td class="n">+26 %</td></tr>
+      <tr><td>len karta zadarmo</td><td class="n">6,9</td><td class="n">3,0</td><td class="n">4,6</td><td class="n">8,7</td><td class="n dobre">+90 %</td></tr>
+      <tr class="dnes"><td>ako v playtestoch (zadarmo + občas silná karta za poldeci)</td><td class="n">9,3</td><td class="n">2,7</td><td class="n">5,4</td><td class="n">8,9</td><td class="n">+64 %</td></tr>
+      <tr><td>berie každú dobrú kartu za poldeci</td><td class="n">19,5</td><td class="n">1,1–2,1</td><td class="n">5,1</td><td class="n">5,4</td><td class="n zle">+8 %</td></tr>
+      <tr><td>berie maximum</td><td class="n">24,7</td><td class="n">1,0–1,3</td><td class="n">4,3</td><td class="n">3,0</td><td class="n zle">−30 %</td></tr>
+    </tbody>
+  </table></div>
+  <div class="tab"><table>
+    <thead><tr><th>Priamy súboj politík (hráč A : hráč B; prvý riadok v oboch posedoch, ďalšie v jednom)</th><th class="n">kariet A : B</th><th class="n">⌀ tuhé A : B</th><th class="n">výhry bitiek A : B</th></tr></thead>
+    <tbody>
+      <tr><td>berie každú dobrú za poldeci : len zadarmo</td><td class="n">12,1 : 3,3</td><td class="n">7,0 : 7,0</td><td class="n">1 079 : 1 136 (49 %)</td></tr>
+      <tr><td>berie maximum : len zadarmo</td><td class="n">13,8 : 3,1</td><td class="n">6,8 : 7,0</td><td class="n">513 : 604 (46 %)</td></tr>
+      <tr><td>nikto neberie : len zadarmo</td><td class="n">0 : 2,3</td><td class="n">2,8 : 4,9</td><td class="n">336 : 678 (33 %), partie 9 : 140</td></tr>
+    </tbody>
+  </table></div>
+  <p class="poznamka"><b>Záver:</b> silnie sa vlastne len kartou zadarmo. Hráč, ktorý zaplatí za 9 kariet navyše, nie je v bitkách silnejší,
+    lebo každá karta ho stojí jedno vyloženie. Hráči to v playtestoch vycítili správne. Bot je jednoduchý (vykladá karty chamtivo podľa
+    poškodenia), preto ber absolútne čísla opatrne. Porovnanie politík medzi sebou je spoľahlivejšie.</p>
+
+  <!-- ============================================================ 3 -->
+  <h2>3. Dajú sa štartové karty vyradiť?</h2>
+  <div class="tab"><table>
+    <thead><tr><th>Spôsob</th><th>Ktoré karty</th><th>Podmienka / cena</th><th>V praxi</th></tr></thead>
+    <tbody>
+      <tr><td>Priznanie (§6)</td><td>Milujúca manželka (2), má tag Kliatba</td><td>kedykoľvek, ťah nemíňa; priznaná ale berie o 1 cigaretu menej v každej Pitke (Furt)</td>
+        <td class="pozn">priznávajú sa takmer vždy (posledný playtest 4 zo 4, bot 4 zo 4)</td></tr>
+      <tr><td>Dievčina na vydaj — efekt Bitka</td><td>Dievčina (2)</td><td>spáli sa po každej bitke, v ktorej leží v partii majiteľa (aj podstrčená)</td>
+        <td class="pozn">zmizne po prvom zahraní</td></tr>
+      <tr><td>Náhrada staršieho (§7)</td><td>ľubovoľný Občan alebo Zviera z balíčka</td><td>len víťaz bitky o staršieho</td>
+        <td class="pozn">posledný playtest 3× (2× Dievčina, Miňištrant); bot ⌀ 0,5 za partiu</td></tr>
+      <tr><td>Pohreb (§8.6)</td><td>ľubovoľná vlastná karta z línie</td><td>treba priznanú Cirhózu (spáli sa)</td>
+        <td class="pozn">playtesty: 1× (Miňištrant). Bot ho používa častejšie (⌀ 1,8 za partiu), je to optimistické</td></tr>
+      <tr><td>Liečba (§8.6)</td><td>Závislý z línie: Pijan, Miňištrant, Dievčina</td><td>priznaná Cirhóza; +1 Dlh, ale aj karta zo šenku</td>
+        <td class="pozn">playtesty: 1× (Pijan)</td></tr>
+      <tr><td>Limit ruky (6)</td><td>—</td><td>karty idú do odhadzovacieho balíčka, <b>nevyraďujú sa</b></td><td class="pozn">vrátia sa pri zamiešaní</td></tr>
+      <tr><td>Podlaha balíčka</td><td>—</td><td>balíček pod 5 kariet = <b>prehra</b> (§1)</td>
+        <td class="pozn">bez brania zo šenku skončilo v simulácii 58 % partií touto prehrou: štart sa sám stenčí z 10 na ~5,5</td></tr>
+    </tbody>
+  </table></div>
+  <ol class="pricina">
+    <li><strong>4 z 10 kariet odídu samé a skoro.</strong> Je to dobrý základ: balíček sa sám zbavuje najslabších kariet.</li>
+    <li><strong>Pijan a Miňištrant (6 kariet) ostávajú.</strong> Jediné cesty von sú Pohreb a Liečba (treba Cirhózu) a náhrada staršieho
+      (treba vyhrať bitku o staršieho). V simulácii je na konci partie stále 5,3–5,5 štartových kariet z ~9–10 (54–60 %).</li>
+    <li><strong>Slabé karty sa v ruke hromadia.</strong> Ruka sa dopĺňa na 5 a nezahraté karty v nej ostávajú. Kto drží 3 Miňištrantov,
+      dostane len 2 nové karty. Najlepšie karty sa zahrajú prvé, takže doberací balíček po 1. kole obsahuje hlavne slabé. Preto prichádza
+      „zlá ruka v 2. kole“: v simulácii klesne tuhé z 5,4 na 4,5 a rúk bez tuhého pribudne z 2 % na 6 %. V playteste to bola Janova
+      prehra 0 : 5 v 2. kole a v 155120 Janova „ruka bez poškodenia“ v 2. kole.</li>
+    <li><strong>Miňištrant navyše škodí víťazovi</strong> (posun prebytkom stojí o 1 viac za každého v partii). Hráči ho ale chvália
+      ako sabotéra s Odporom, takže úplne zbytočný nie je.</li>
+  </ol>
+
+  <!-- ============================================================ 4 -->
+  <h2>4. Krivka sily v čase</h2>
+  <p class="podnadpis">Simulácia: 150 celých partií na čiaru, dvaja jednoduchí boti nad jadrom hry (<code>apply</code>, <code>legalCommands</code>),
+    stredná hra (7 lokalít), bitka o staršieho v 25 % kôl, keď sa dá. Varianty pravidiel z časti 5 sú v simulácii len napodobené (jadro sa nemenilo).
+    Zaškrtni čiary a prepni ukazovateľ.</p>
+  <div class="filtre" id="metriky">
+    <button type="button" data-m="1" class="on">tuhé v bitke</button>
+    <button type="button" data-m="2">potenciál ruky</button>
+    <button type="button" data-m="3">štartové karty v balíčku</button>
+    <button type="button" data-m="4">karty zo šenku v balíčku</button>
+    <button type="button" data-m="6">ruky bez tuhého (%)</button>
+    <button type="button" data-m="7">limit vykladania</button>
+  </div>
+  <div class="filtre" id="dlzky">
+    <button type="button" data-d="7" class="on">7 lokalít</button>
+    <button type="button" data-d="5">5 lokalít</button>
+  </div>
+  <div class="graf"><svg id="graf" viewBox="0 0 760 320" role="img" aria-label="Graf krivky sily po kolách"></svg>
+    <div class="legenda" id="legenda"></div></div>
+  <p class="poznamka">„Tuhé v bitke“ = tuhé poškodenie hráča po Viere súpera. „Potenciál ruky“ = najlepšia vlastná strana z ruky na začiatku Zhromaždenia
+    (strop bez súpera). Kolo 8 má menej partií (len partie s bitkou o staršieho), preto sa nezobrazuje.</p>
+
+  <h3>Playtesty: tuhé na hráča po kolách</h3>
+  <div class="graf"><svg id="grafPT" viewBox="0 0 760 260" role="img" aria-label="Graf tuhého v playtestoch"></svg>
+    <div class="legenda" id="legendaPT"></div></div>
+  <p class="poznamka">Priemer tuhého oboch hráčov v každej bitke, z logov <code>playtest/*/hrac1/priebeh.log</code>. Spolu 8 partií a 63 bitiek,
+    lineárny trend od začiatku po koniec partie je −0,25 (priemer 3,9), teda plochý. Rast je len v 20261017-164450 (prvá tretina 3,5 → posledná 6,4;
+    víťaz 5,0 → 9,5). Partie sa hrali na rôznych verziách pravidiel. Ľudia hrajú inak než bot: podstrkujú, ukladajú NA EX a súper im rozbíja spoje.</p>
+
+  <!-- ============================================================ 5 -->
+  <h2>5. Návrhy, ako progresiu zosilniť</h2>
+  <p class="podnadpis">Každý návrh je odsimulovaný (stredná hra, 150 partií, správanie z playtestov). Pre porovnanie: <b>dnes 5,4 → 8,9 tuhého
+    na hráča od 1. po 7. kolo (×1,64)</b>, štartových kariet na konci 5,5. Všetky hodnoty v návrhoch sú <span class="otazka">návrhy, nie
+    rozhodnutia</span>. Žltou sú otázky pre Michala. Každý návrh mení pravidlá a potrebuje vývoj (jadro, web, inštrukcie agentov).</p>
+  <div id="navrhy"></div>
+
+  <h2>Odporúčaný balík</h2>
+  <div class="balik">
+    <ol>
+      <li><b>N1 Výmena pri šenku</b>: rieši vyraďovanie aj silnenie naraz. Štart ostane slabý, koniec partie je výrazne silnejší
+        (13,0 tuhého, štartových kariet na konci 2,9).</li>
+      <li><b>N2 Obnova ruky</b>: rieši opakovanú sťažnosť na zlú ruku a prepad v 2. kole.</li>
+    </ol>
+    <p>Spolu v simulácii 5,4 → 13,5 (×2,5), výkyvy bitiek na konci ostávajú ako dnes (|rozdiel tuhého| 5,2). Overiť playtestom
+      pred zverejnením. Ak by to bolo priveľa, stačí samotné N1. N3 je alternatíva k N1, ak Michal nechce nový krok v drafte.</p>
+    <button type="button" class="hlavne" id="vyberBalik">zaškrtnúť odporúčaný balík</button>
+  </div>
+
+  <h2>Ako to overíme</h2>
+  <ul class="meranie">
+    <li>Playtest so zvoleným balíkom, rovnaké štýly (Jano agresívny, Eva opatrná), stredná hra, aby sa dal porovnať s 20261017-164450.</li>
+    <li>Sledovať po kolách: tuhé oboch hráčov, počet štartových kariet v ruke, karty zo šenku (zadarmo a za poldeci), výmeny a obnovy ruky.
+      Podklad dá <code>A karty-v-partiach --playtesty</code>: podiel tuhého zo štartových kariet a zo šenku (dnes 34 % : 66 %).</li>
+    <li>Vo feedbacku: či hráči opíšu „silniem“ alebo „balíček sa zlepšuje“, a či zmizne „zlá ruka“ a „vezmi prvú zadarmo a končí“.</li>
+    <li>Pozor na opačný extrém: väčšie výkyvy bitiek v neskorých kolách (Eva už teraz píše o „lotérii“), rýchlejšie vydesenie a balíček
+      pod 5 kariet (podlaha).</li>
+  </ul>
+
+  <details>
+    <summary>Metodika, zdroje a obmedzenia</summary>
+    <ul class="meranie">
+      <li>Web na :8787 počas analýzy nebežal, preto nástroje <code>A …</code> nešli. Zverejnenú sadu v3 som prečítal z kópie vývojovej databázy
+        (zhodná s <code>cards.json</code> v akciách, tagoch aj efektoch). Archív webu nemá žiadnu partiu. Štatistiky kariet z partií
+        má len posledný playtest (zapisujú sa od 2026-10-16).</li>
+      <li>Skripty sú v <code>admin-agent/progresia/</code>: <code>staticka.ts</code> (sila kariet), <code>balicky.ts</code> (sila ruky),
+        <code>bot.ts</code> (celé partie; politika, počet partií, lokality; varianty cez <code>VARIANT=…</code>).</li>
+      <li>Bot: priznáva kliatby a fajčí, keď môže. Vykladá kartu, ktorá najviac zlepší rozdiel tuhého, NA EX dáva pri zisku nad 0,5, nikdy nepije
+        do dna. Do šenku dáva najlepšiu kartu a naspodok najhoršiu. Pri limite ruky odhadzuje najslabšie, pod staršieho dáva najslabšiu kartu,
+        Pohreb robí na štartovú kartu. Silu karty berie zo simulácie línií. Je to slabší a predvídateľnejší hráč ako človek. Platí to pre
+        porovnania, nie pre absolútne čísla.</li>
+      <li>Varianty pravidiel sú v simulácii napodobené úpravou stavu po príkaze (napr. vrátenie poldeci). V jadre nič nie je.</li>
+      <li>Playtestov s dnešnou cenou draftu sú dva (jeden aj s doliatím na začiatku kola). Sú to dva údaje, nie štatistika.</li>
+    </ul>
+  </details>
+</main>
+
+<div class="volba" role="region" aria-label="Tvoja voľba">
+  <div class="volba-in">
+    <span class="volba-text" id="volbaText">Zatiaľ nič nie je zaškrtnuté.</span>
+    <button type="button" id="kopiruj">skopírovať voľbu</button>
+  </div>
+</div>
+<textarea class="skryte" id="schranka" aria-hidden="true" tabindex="-1"></textarea>
+
+<script>
+// [id, názov, štart, nástroj, permutácie, akcií, útočných, tuhé vytlačené, zlé, tuhé v línii, aktivácia %, zlé v línii]
+const KARTY = [["pes","Pes",0,0,4,3,3,6,0,3.22,44,0],["recidivista","Recidivista",0,0,8,3,3,6,0,2.84,43,0],["hasic","Hasič",0,0,4,2,2,4,0,2.49,55,0],["puska","Puška",0,1,4,2,2,6,0,2.09,33,0],["zivnostnik","Živnostník",0,0,16,6,3,4,1,1.67,36,0.31],["podvodnik","Podvodník",0,0,16,5,3,4,1,1.63,40,0.31],["zamocnik","Zámočník",0,0,4,4,1,2,0,1.25,42,0],["pijan","Pijan",1,0,4,5,2,2,2,1.24,40,0.6],["veteran","Veterán",0,0,4,3,1,3,1,1.1,35,0.35],["pasca","Pasca",0,1,4,2,1,2,0,0.75,32,0],["svokra","Svokra",0,0,8,4,1,2,0,0.71,38,0],["zahradkar","Záhradkár",0,0,16,5,1,1,1,0.64,42,0.32],["cierna_macka","Čierna mačka",0,0,4,3,1,1,0,0.36,31,0],["kocovnik","Kočovník",0,0,4,4,1,1,2,0.3,35,0.83],["liberal","Liberál",0,0,4,4,0,0,0,0,31,0],["noviny","Noviny",0,1,4,2,0,0,0,0,42,0],["cigorky","Cigorky",0,1,4,2,0,0,0,0,43,0],["vinko","Vínko",0,1,4,4,0,0,2,0,32,0.68],["svaty_text","Svätý text",0,1,4,3,0,0,0,0,46,0],["nealko","Nealko",0,1,2,2,0,0,0,0,32,0],["vyherny_automat","Výherný automat",0,1,4,0,0,0,0,0,0,0],["milujuca_manzelka","Milujúca manželka",1,0,16,3,0,0,1,0,42,0.35],["ministrant","Miňištrant",1,0,16,3,0,0,0,0,41,0],["financna_poradkyna","Finančná poradkyňa",0,0,4,5,0,0,4,0,37,1.35],["velmi_smutiaca_vdova","Veľmi smútiaca vdova",0,0,12,4,0,0,1,0,36,0.31],["vestica","Veštica",0,0,16,5,0,0,1,0,36,0.31],["silna_nezavisla_zena","Silná, nezávislá žena",0,0,8,4,0,0,3,0,3,0.09],["policajtka","Policajtka",0,0,4,2,0,0,0,0,41,0],["praudovravec","Praudovravec",0,0,4,4,0,0,0,0,44,0],["niekoho_stryna","Niekoho stryná",0,0,12,4,0,0,0,0,40,0],["dievcina_na_vydaj","Dievčina na vydaj",1,0,4,5,0,0,3,0,36,0.92],["sarlatan","Šarlatán",0,0,4,5,0,0,2,0,38,0.72]];
+
+// séria → [[kolo, tuhé v bitke, potenciál ruky, štartové v balíčku, zo šenku v balíčku, balíček, ruky bez tuhého %, limit]]
+const SERIE = {"base-nic-7":[[1,2.4,3.5,8.8,0,8.8,6,3],[2,2.26,3.11,7.7,0,7.7,12,3],[3,1.92,3.55,6.8,0,6.8,4,3],[4,2.42,4.17,6.3,0,6.3,2,3],[5,2.42,4.4,5.9,0,5.9,3,3],[6,3.12,4.5,5.6,0,5.6,0,3],[7,3.03,4.6,5.5,0,5.5,1,3]],"base-zadarmo-7":[[1,4.58,5.71,8.8,0.5,9.3,2,3],[2,4.39,5.26,7.8,1,8.7,7,3],[3,4.89,5.71,7,1.5,8.5,3,3],[4,6.22,7.02,6.4,1.9,8.4,0,3],[5,6.57,7.2,6,2.4,8.4,0,2.99],[6,7.72,7.77,5.6,2.8,8.6,0,2.99],[7,8.7,8.19,5.3,3.3,8.8,0,2.99]],"base-pozorovane-7":[[1,5.44,5.91,8.8,0.7,9.5,2,2.83],[2,4.53,5.18,7.8,1.4,9.2,6,2.71],[3,5.93,6.04,7.1,2.1,9.2,2,2.65],[4,7,6.88,6.6,2.8,9.4,2,2.62],[5,6.77,6.88,6.2,3.3,9.5,1,2.72],[6,8.39,7.63,5.8,3.9,9.8,1,2.75],[7,8.9,7.78,5.5,4.4,10.1,0,2.78]],"base-chamtivo-7":[[1,5.06,4.26,8.8,2.1,10.9,6,1.35],[2,4.63,3.73,8.6,3.8,12.4,7,1.14],[3,4.1,4.14,8.4,5.3,13.8,4,1.16],[4,4.78,4.2,8.2,6.8,15.1,6,1.17],[5,4.99,5.56,8.1,7.5,15.7,3,1.86],[6,5.45,5.2,7.7,8.3,16.2,1,2.21],[7,5.44,5.31,7.4,9.3,16.9,1,2.11]],"base-max-7":[[1,4.33,3.28,8.8,2.5,11.3,7,1],[2,4.52,3.53,8.7,4.1,12.8,6,1.01],[3,3.99,3.86,8.6,5.6,14.2,8,1.1],[4,4.47,3.71,8.4,7.1,15.6,7,1.1],[5,3.97,4,8.2,8.3,16.6,6,1.26],[6,3.12,3.07,8,9.9,18.1,8,1.16],[7,3.03,2.99,7.9,11.4,19.5,8,1.2]],"vymena-pozorovane-7":[[1,5.62,5.75,8.2,0.7,8.9,2,2.78],[2,5.44,5.42,6.6,1.4,8,4,2.69],[3,7.35,6.4,5.5,2.2,7.7,0,2.59],[4,8.65,7.36,4.6,2.9,7.5,1,2.56],[5,10.44,8,3.9,3.4,7.4,0,2.69],[6,11.7,9.07,3.4,3.9,7.4,0,2.77],[7,13.02,9.22,2.9,4.5,7.6,0,2.8]],"mulligan-pozorovane-7":[[1,5.26,6.03,8.8,0.7,9.5,1,2.8],[2,6.29,6.14,7.8,1.4,9.2,1,2.7],[3,8.53,7.27,7.5,2.1,9.6,0,2.63],[4,9.12,8.05,7.1,2.8,9.9,0,2.64],[5,9.93,8.34,6.7,3.3,10.1,0,2.72],[6,10.45,8.68,6.4,3.9,10.4,0,2.75],[7,11.21,9.04,6.1,4.4,10.6,0,2.82]],"od2_zadarmo-zadarmo-7":[[1,4.75,5.49,8.8,0.5,9.3,3,3],[2,6.19,6.38,7.7,1.5,9.2,3,3],[3,6.98,6.99,7,2.5,9.5,1,2.99],[4,8.66,8.38,6.5,3.4,10,0,2.99],[5,9.28,8.05,6.2,4.4,10.6,0,2.99],[6,9.02,8.12,5.9,5.2,11.1,0,2.99],[7,9.89,8.61,5.6,6,11.7,1,2.98]],"obaja_zadarmo-zadarmo-7":[[1,6.59,7.12,8.8,1,9.8,0,3],[2,6.02,6.6,7.9,2,9.8,2,3],[3,7.67,7.51,7.1,3,10.1,1,2.98],[4,8.41,8.47,6.6,3.9,10.5,0,2.97],[5,9,8.07,6.2,4.8,11,0,2.97],[6,9.02,7.98,5.9,5.6,11.6,0,2.97],[7,9.98,8.65,5.5,6.5,12.2,0,2.97]],"cigareta-chamtivo-7":[[1,7.19,7.61,9,1.5,10.5,0,3],[2,6.22,4.73,8,2.4,10.4,19,2.99],[3,8.5,5.08,7,3.5,10.4,21,2.91],[4,9,6.58,6.2,4.3,10.6,9,2.84],[5,8.69,6.9,5.7,4.9,10.6,3,2.84],[6,9.5,6.67,5.3,5.5,10.9,6,2.88],[7,10.16,7.65,4.9,6.1,11.2,3,2.9]],"cisty_senok-pozorovane-7":[[1,5.65,6.27,8.8,0.8,9.6,1,2.75],[2,5.18,5.42,7.9,1.5,9.4,4,2.66],[3,5.34,6.25,7.2,2.2,9.3,4,2.62],[4,6.93,6.67,6.7,2.8,9.5,2,2.63],[5,7.23,6.89,6.3,3.5,9.8,1,2.66],[6,8.17,7.64,5.9,4,10,1,2.68],[7,8.83,7.81,5.6,4.6,10.3,0,2.74]],"start_2m3d-pozorovane-7":[[1,5.56,6.02,8.8,0.7,9.5,2,2.81],[2,5.21,5.36,7.7,1.3,9.1,6,2.74],[3,5.88,6.11,6.8,2,8.8,3,2.67],[4,7.45,6.75,6.1,2.7,8.8,1,2.59],[5,7.75,6.99,5.6,3.3,8.9,0,2.69],[6,9.02,7.68,5.1,3.8,9.1,0,2.78],[7,9.45,8.33,4.8,4.3,9.3,0,2.84]],"vymena+mulligan-pozorovane-7":[[1,5.41,5.95,8.2,0.7,8.9,1,2.79],[2,7.35,6.34,7,1.4,8.4,1,2.67],[3,9.41,7.37,6.1,2.1,8.3,0,2.63],[4,11.2,8.69,5.4,2.8,8.2,0,2.65],[5,11.41,9.08,4.8,3.3,8.2,0,2.73],[6,12.82,9.47,4.4,3.9,8.3,1,2.78],[7,13.5,9.58,4,4.4,8.6,0,2.81]],"base-pozorovane-5":[[1,5.76,5.98,8.8,0.7,9.5,2,2.76],[2,5.05,5.41,7.8,1.5,9.3,5,2.67],[3,5.3,6.08,7.2,2.1,9.3,2,2.69],[4,6.96,7.05,6.6,2.8,9.5,2,2.63],[5,7.12,6.77,6.3,3.4,9.7,1,2.7]],"vymena-pozorovane-5":[[1,5.39,5.92,8.1,0.7,8.9,2,2.78],[2,5.23,5.65,6.6,1.4,8,3,2.71],[3,7.09,6.58,5.5,2.1,7.6,0,2.69],[4,8.38,7.69,4.6,2.8,7.4,0,2.65],[5,10.28,8.21,3.9,3.4,7.3,0,2.74]],"mulligan-pozorovane-5":[[1,5.31,5.83,8.8,0.7,9.5,2,2.79],[2,6.51,6.17,7.8,1.4,9.2,1,2.68],[3,8.15,7.32,7.5,2.1,9.6,0,2.63],[4,9.02,7.73,7.1,2.8,9.9,1,2.62],[5,9.81,8.41,6.8,3.3,10.2,0,2.75]],"od2_zadarmo-zadarmo-5":[[1,4.65,5.7,8.8,0.5,9.3,3,3],[2,6.06,6.71,7.8,1.5,9.3,0,3],[3,6.8,7.4,7.2,2.5,9.6,1,3],[4,8.46,8.3,6.6,3.4,10,0,3],[5,8.73,7.99,6.2,4.3,10.6,0,3]]};
+
+const CIARY = [
+  { k: "base-pozorovane", n: "Dnes — ako v playtestoch", f: "#5cc0cf", on: true, hrubka: 3.5 },
+  { k: "base-zadarmo", n: "Dnes — len karta zadarmo", f: "#8fb8c0", on: false },
+  { k: "base-nic", n: "Dnes — nikto neberie", f: "#8b7d6a", on: true },
+  { k: "base-chamtivo", n: "Dnes — každá dobrá za poldeci", f: "#b07a5a", on: false },
+  { k: "base-max", n: "Dnes — berie maximum", f: "#d0563f", on: false },
+  { k: "vymena-pozorovane", n: "N1 Výmena pri šenku", f: "#e9ad45", on: true },
+  { k: "mulligan-pozorovane", n: "N2 Obnova ruky", f: "#7cbf74", on: true },
+  { k: "vymena+mulligan-pozorovane", n: "N1 + N2", f: "#f4d27a", on: false },
+  { k: "od2_zadarmo-zadarmo", n: "N3 Od 2. kola zadarmo aj obranca", f: "#b48ad8", on: false },
+  { k: "obaja_zadarmo-zadarmo", n: "N3 variant: obaja zadarmo od 1. kola", f: "#8a6fb0", on: false },
+  { k: "start_2m3d-pozorovane", n: "N4 Štart 3 P, 2 M, 2 Ž, 3 D", f: "#c9a27a", on: false },
+  { k: "cigareta-chamtivo", n: "N5 Karta za cigaretu", f: "#e07a9b", on: false },
+  { k: "cisty_senok-pozorovane", n: "N6 Čistejší šenok", f: "#a0a0a0", on: false },
+];
+const METRIKY = { 1: "tuhé v bitke (⌀ na hráča)", 2: "potenciál ruky (⌀ najlepšie tuhé)", 3: "štartové karty v balíčku", 4: "karty zo šenku v balíčku", 6: "ruky bez tuhého (%)", 7: "limit vykladania" };
+let metrika = 1, dlzka = 7;
+
+const NS = "http://www.w3.org/2000/svg";
+const s = (tag, attrs, text) => { const n = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v); if (text != null) n.textContent = text; return n; };
+
+function kresli(svg, serie, popisY, kol, w, h) {
+  svg.replaceChildren();
+  const L = 52, R = 16, T = 16, B = 36;
+  const vsetky = serie.flatMap((x) => x.body.map((b) => b[1]));
+  const maxY = Math.max(1, Math.ceil(Math.max(...vsetky, 0) * 1.1));
+  const X = (k) => L + ((k - 1) / Math.max(1, kol - 1)) * (w - L - R);
+  const Y = (v) => T + (1 - v / maxY) * (h - T - B);
+  const krok = maxY > 40 ? 10 : maxY > 12 ? 2 : maxY > 5 ? 1 : 0.5;
+  for (let v = 0; v <= maxY + 1e-9; v += krok) {
+    svg.append(s("line", { x1: L, x2: w - R, y1: Y(v), y2: Y(v), class: "os", "stroke-dasharray": v === 0 ? "" : "2 4" }));
+    svg.append(s("text", { x: L - 8, y: Y(v) + 4, "text-anchor": "end" }, String(Math.round(v * 10) / 10).replace(".", ",")));
+  }
+  for (let k = 1; k <= kol; k++) svg.append(s("text", { x: X(k), y: h - 14, "text-anchor": "middle" }, k + ". kolo"));
+  svg.append(s("text", { x: L, y: 12 }, popisY));
+  for (const x of serie) {
+    const d = x.body.map((b, i) => (i ? "L" : "M") + X(b[0]).toFixed(1) + " " + Y(b[1]).toFixed(1)).join(" ");
+    svg.append(s("path", { d, fill: "none", stroke: x.f, "stroke-width": x.hrubka || 2.2, "stroke-linejoin": "round", "stroke-dasharray": x.ciarka || "" }));
+    for (const b of x.body) {
+      const c = s("circle", { cx: X(b[0]), cy: Y(b[1]), r: 3.2, fill: x.f });
+      c.append(s("title", {}, x.n + ": " + String(b[1]).replace(".", ",") + " (" + b[0] + ". kolo)"));
+      svg.append(c);
+    }
+  }
+}
+
+function prekresli() {
+  const serie = CIARY.filter((c) => c.on && SERIE[c.k + "-" + dlzka]).map((c) => ({ ...c, body: SERIE[c.k + "-" + dlzka].map((r) => [r[0], r[metrika]]) }));
+  kresli(document.getElementById("graf"), serie, METRIKY[metrika], dlzka, 760, 320);
+}
+const leg = document.getElementById("legenda");
+for (const c of CIARY) {
+  const lab = document.createElement("label");
+  const box = document.createElement("input"); box.type = "checkbox"; box.checked = c.on;
+  const i = document.createElement("i"); i.style.background = c.f;
+  lab.append(box, i, c.n); lab.classList.toggle("on", c.on);
+  box.addEventListener("change", () => { c.on = box.checked; lab.classList.toggle("on", c.on); prekresli(); });
+  leg.append(lab);
+}
+for (const b of document.querySelectorAll("#metriky button")) b.addEventListener("click", () => {
+  metrika = Number(b.dataset.m); for (const x of document.querySelectorAll("#metriky button")) x.classList.toggle("on", x === b); prekresli();
+});
+for (const b of document.querySelectorAll("#dlzky button")) b.addEventListener("click", () => {
+  dlzka = Number(b.dataset.d); for (const x of document.querySelectorAll("#dlzky button")) x.classList.toggle("on", x === b); prekresli();
+});
+prekresli();
+
+// Playtesty: tuhé hráč1:hráč2 v poradí bitiek
+const PT = [
+  { n: "20261017-164450 (dnešné pravidlá)", f: "#e9ad45", b: "7:6,0:5,3:0,5:2,0:7,1:6,3:10,7:0,12:5,5:9", hrubka: 3.5 },
+  { n: "20261016-155120 (poldeci bez doliatia)", f: "#d0563f", b: "0:6,4:6,6:0,3:3,3:0,5:0,0:2" },
+  { n: "20261016-134912 (cig. draft)", f: "#7cbf74", b: "6:5,8:4,6:0,11:0,9:4" },
+  { n: "20261012-173832 (cig. draft)", f: "#5cc0cf", b: "8:5,3:10,7:8,0:3,7:7,0:7,2:8" },
+  { n: "20261012-101447", f: "#b48ad8", b: "5:1,5:2,2:3,3:0,2:7,1:5,4:1,1:1,0:0,2:1,3:7" },
+  { n: "20261012-055944", f: "#c9a27a", b: "7:0,12:5,0:0,1:4,0:5,1:7,2:12,0:5" },
+  { n: "20261011-183315", f: "#8b7d6a", b: "3:3,5:13,7:8,6:7,4:0,2:4,0:11" },
+  { n: "20261011-125943", f: "#a0a0a0", b: "3:0,4:7,0:1,0:1,1:0,8:3,4:2,6:0" },
+].map((p) => ({ ...p, on: true, body: p.b.split(",").map((x, i) => { const [a, c] = x.split(":").map(Number); return [i + 1, (a + c) / 2]; }) }));
+function prekresliPT() { kresli(document.getElementById("grafPT"), PT.filter((p) => p.on), "⌀ tuhé na hráča v bitke", 11, 760, 260); }
+const legPT = document.getElementById("legendaPT");
+for (const p of PT) {
+  const lab = document.createElement("label");
+  const box = document.createElement("input"); box.type = "checkbox"; box.checked = true;
+  const i = document.createElement("i"); i.style.background = p.f;
+  lab.append(box, i, p.n); lab.classList.add("on");
+  box.addEventListener("change", () => { p.on = box.checked; lab.classList.toggle("on", p.on); prekresliPT(); });
+  legPT.append(lab);
+}
+prekresliPT();
+
+// Tabuľka kariet
+let filter = "vsetky", zoradK = 9, zoradDesc = true;
+function tabulka() {
+  const tb = document.querySelector("#tabKarty tbody");
+  tb.replaceChildren();
+  const riadky = KARTY.filter((k) => filter === "vsetky" || (filter === "start" && k[2]) || (filter === "senok" && !k[2]) || (filter === "utok" && k[6] > 0))
+    .sort((a, b) => { const x = a[zoradK], y = b[zoradK]; const c = typeof x === "string" ? x.localeCompare(y, "sk") : x - y; return zoradDesc ? -c : c; });
+  for (const k of riadky) {
+    const tr = document.createElement("tr");
+    if (k[2]) tr.className = "start";
+    const td = (t, n) => { const e = document.createElement("td"); if (n) e.className = "n"; e.innerHTML = t; return e; };
+    const f = (v) => String(v).replace(".", ",");
+    const bar = '<span class="bar' + (k[2] ? " s" : "") + '" style="width:' + Math.round(k[9] * 34) + 'px"></span>' + f(k[9].toFixed(2));
+    tr.append(td(k[1] + (k[3] ? ' <span class="pozn">(Nástroj)</span>' : "") + (k[2] ? ' <span class="pozn">(štart)</span>' : "")), td(k[4], 1), td(f(k[5]), 1), td(f(k[6]), 1), td(f(k[7]), 1), td(f(k[8]), 1), td(bar), td(k[10] + " %", 1));
+    tb.append(tr);
+  }
+}
+for (const b of document.querySelectorAll("#filtreKarty button")) b.addEventListener("click", () => {
+  filter = b.dataset.f; for (const x of document.querySelectorAll("#filtreKarty button")) x.classList.toggle("on", x === b); tabulka();
+});
+for (const th of document.querySelectorAll("#tabKarty th.zorad")) th.addEventListener("click", () => {
+  const k = Number(th.dataset.k); if (k === zoradK) zoradDesc = !zoradDesc; else { zoradK = k; zoradDesc = k !== 1; } tabulka();
+});
+tabulka();
+
+// Návrhy
+const NAVRHY = [
+  { skupina: "Vyraďovanie štartových kariet" },
+  { id: "N1", odp: true, nazov: "Výmena pri šenku",
+    co: "Keď hráč vezme kartu zo šenku (aj zadarmo), smie zároveň dať jednu kartu z ruky lícom dole naspodok spoločného balíčka. Balíček sa tak zahusťuje: silná karta prichádza, slabá odchádza.",
+    sim: "5,6 → 13,0 tuhého (×2,3; dnes ×1,64). Štart rovnaký ako dnes. Štartových kariet na konci 2,9 (dnes 5,5), balíček ~7,6 kariet. Pod podlahu 5 kariet klesol balíček v 3 zo 150 partií (dnes 1). Výkyvy na konci 4,7 (dnes 5,2).",
+    otazky: "Len štartové karty, alebo hocijaká? Naspodok spoločného balíčka (môže sa vrátiť do šenku), alebo spáliť? Aj pri karte zadarmo? Návrh: hocijaká, naspodok, aj zadarmo.",
+    riziko: "Nový krok v drafte (dlhší o klik). Balíček sa blíži k podlahe 5 kariet. Pri 3 kartách za draft by sa dal vymeniť skoro celý štart; podľa playtestov je to skôr 1 karta.",
+    dopad: "velky", zlozitost: "stredná — nová voľba pri braní zo šenku (jadro, web, klient agentov)" },
+  { id: "N2", odp: true, nazov: "Obnova ruky na začiatku kola",
+    co: "Na začiatku kola, pred doplnením na 5, smie hráč odhodiť až 2 karty z ruky do odhadzovacieho balíčka. Pri doplnení dobere za ne nové. Slabé karty sa neodstránia, ale prestanú zapchávať ruku.",
+    sim: "5,3 → 11,2 (×2,1). Prepad v 2. kole zmizne (6,3 namiesto 4,5), rúk bez tuhého skoro 0 % (dnes 6 % v 2. kole). Pri 5 lokalitách 5,3 → 9,8 (dnes 5,8 → 7,1).",
+    otazky: "Koľko kariet (návrh 2)? Zadarmo, alebo za cigaretu? Môže hráč odhodiť aj kliatbu (vrátila by sa do balíčka)?",
+    riziko: "Ďalší krok v kole (tempo). Menší dôvod priznávať a pochovávať. Fajčenie (cigareta = karta) trochu stratí váhu.",
+    dopad: "velky", zlozitost: "malá až stredná — krok pred doplnením ruky" },
+  { skupina: "Viac kariet zo šenku" },
+  { id: "N3", odp: false, nazov: "Od 2. kola má prvú kartu zadarmo aj obranca",
+    co: "V prvom kole ostáva karta zadarmo len útočníkovi (štart ostane slabý). Od 2. kola má prvú kartu zo šenku zadarmo každý hráč. Druhá a ďalšie stoja poldeci ako dnes.",
+    sim: "4,75 → 9,9 (×2,1). Príjem 12,8 kariet za partiu (dnes ~7–9). Variant „obaja zadarmo už od 1. kola“ zosilní štart (6,6 → 10,0, len ×1,5), čo ide proti zámeru.",
+    otazky: "Nevadí, že útočník (porazený) stratí časť výhody? Dôvodom karty zadarmo bolo dobiehanie (útočník vyhral 1 z 5 bitiek).",
+    riziko: "Oslabí dobiehanie. Viac kariet do ruky znamená viac odhadzovania pri limite 6. Balíček rastie, ale štart sa neriedi tak ako pri N1.",
+    dopad: "velky", zlozitost: "malá — cena karty zo šenku" },
+  { skupina: "Štart a karty v šenku" },
+  { id: "N4", odp: false, nazov: "Štart 3 Pijan, 2 Miňištrant, 2 Manželka, 3 Dievčina",
+    co: "Jeden Miňištrant (ostáva navždy) sa vymení za Dievčinu (po prvej bitke sa spáli). Štart ostane slabý, ale rýchlejšie sa sám stenčí. Rozdelenie štartu je aj tak otvorená otázka č. 7 (TODO v kóde).",
+    sim: "5,6 → 9,5 (×1,7). Malý dopad. Štartových kariet na konci 4,8 (dnes 5,5). Pod podlahu 5 kariet v 4 zo 150 partií (dnes 1).",
+    otazky: "Aké je skutočné rozdelenie štartu podľa krabice? Mení sa len konštanta, ale je v jadre (TODO).",
+    riziko: "Hráč, ktorý neberie zo šenku, skôr klesne pod 5 kariet. Menej Miňištrantov znamená menej sabotérov s Odporom, ktorých hráči chvália.",
+    dopad: "maly", zlozitost: "malá — konštanta START_RUKA" },
+  { id: "N6", odp: false, nazov: "Čistejší šenok",
+    co: "Vyradiť zo spoločného balíčka štartové druhy (8 z 64 kariet) a karty bez útoku s mnohými zlými akciami (Finančná poradkyňa, Silná, nezávislá žena, Šarlatán, Nealko, Výherný automat) alebo im ubrať kópie.",
+    sim: "5,65 → 8,8 (×1,56), teda bez účinku na progresiu. Hráči a stavba šenku silné karty aj tak vyberú. Pomohlo by len pocitu z draftu („najmenej zlá z 8 zlých“).",
+    otazky: "Má mať tvorca kariet nastavenie „kópií v spoločnom balíčku“ (dnes pevne 2 pre všetko, TODO)?",
+    riziko: "Menej rôznorodý šenok. Nástroje bez útoku majú zmysel cez Dedičstvo, sila v línii ich nemeria.",
+    dopad: "maly", zlozitost: "stredná — kópie v spoločnom balíčku sú dnes v kóde" },
+  { skupina: "Overené a neodporúčané" },
+  { id: "N5", odp: false, zle: true, nazov: "Karta zo šenku za cigaretu namiesto poldeci",
+    co: "Druhá a ďalšie karty zo šenku by stáli 1 cigaretu a limit by sa nemenil.",
+    sim: "Štart silnejší (7,2 v 1. kole), rast len ×1,41. V 2. a 3. kole má 19–21 % rúk 0 tuhého, lebo cigarety idú na draft namiesto fajčenia (fajčenie = karta).",
+    otazky: "—",
+    riziko: "Ide proti zámeru slabého štartu a vracia problém „cigaretového draftu“, ktorý sa zrušil 2026-10-16.",
+    dopad: "negativny", zlozitost: "malá" },
+];
+
+const KLUC = "naex.progresia-balicka";
+let vybrane = new Set();
+try { vybrane = new Set(JSON.parse(localStorage.getItem(KLUC) || "[]")); } catch (e) { /* bez úložiska */ }
+const uloz = () => { try { localStorage.setItem(KLUC, JSON.stringify([...vybrane])); } catch (e) { /* bez úložiska */ } };
+const ZNAMKY = { velky: ["velky", "veľký dopad"], stredny: ["stredny", "stredný dopad"], maly: ["", "malý dopad"], negativny: ["negativny", "zhorší zámer"] };
+const el = (tag, attrs, ...deti) => {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) { if (k === "class") n.className = v; else n.setAttribute(k, v); }
+  for (const d of deti) n.append(d);
+  return n;
+};
+const koren = document.getElementById("navrhy");
+for (const n of NAVRHY) {
+  if (n.skupina) { koren.append(el("div", { class: "skupina" }, n.skupina)); continue; }
+  const box = el("input", { type: "checkbox", id: "c-" + n.id });
+  box.checked = vybrane.has(n.id);
+  const h = el("h3", {}, el("label", { for: "c-" + n.id }, el("span", { class: "id" }, n.id), n.nazov));
+  if (n.odp) h.append(el("span", { class: "odporucane" }, "odporúčané"));
+  if (n.zle) h.append(el("span", { class: "neodporucane" }, "neodporúčané"));
+  const [trieda, popis] = ZNAMKY[n.dopad];
+  const riadky = el("dl", { class: "riadky" },
+    el("dt", {}, "Čo"), el("dd", {}, n.co),
+    el("dt", {}, "Simulácia"), el("dd", {}, n.sim),
+    el("dt", {}, "Otázky"), el("dd", { class: "otazka" }, n.otazky),
+    el("dt", {}, "Riziko"), el("dd", {}, n.riziko));
+  const znamky = el("div", { class: "znamky" }, el("span", { class: trieda }, popis), el("span", {}, "zložitosť: " + n.zlozitost));
+  const karta = el("article", { class: "navrh" + (box.checked ? " vybrany" : ""), "data-id": n.id }, box, h, el("div", { class: "obsah" }, riadky, znamky));
+  box.addEventListener("change", () => {
+    if (box.checked) vybrane.add(n.id); else vybrane.delete(n.id);
+    karta.classList.toggle("vybrany", box.checked);
+    uloz(); prepisVolbu();
+  });
+  koren.append(karta);
+}
+function textVolby() {
+  const zoznam = NAVRHY.filter((n) => n.id && vybrane.has(n.id));
+  return zoznam.length === 0 ? "" : "Progresia balíčka — chcem skúsiť: " + zoznam.map((n) => n.id + " " + n.nazov).join("; ") + ".";
+}
+function prepisVolbu() {
+  const t = document.getElementById("volbaText");
+  const zoznam = NAVRHY.filter((n) => n.id && vybrane.has(n.id));
+  t.innerHTML = zoznam.length === 0 ? "Zatiaľ nič nie je zaškrtnuté." : "<b>Tvoja voľba:</b> " + zoznam.map((n) => n.id).join(", ");
+}
+document.getElementById("vyberBalik").addEventListener("click", () => {
+  vybrane = new Set(NAVRHY.filter((n) => n.odp).map((n) => n.id));
+  for (const k of document.querySelectorAll(".navrh")) {
+    const on = vybrane.has(k.dataset.id);
+    k.querySelector("input").checked = on;
+    k.classList.toggle("vybrany", on);
+  }
+  uloz(); prepisVolbu();
+});
+document.getElementById("kopiruj").addEventListener("click", async (e) => {
+  const t = textVolby() || "Zatiaľ nič.";
+  try { await navigator.clipboard.writeText(t); }
+  catch (err) { const a = document.getElementById("schranka"); a.value = t; a.select(); document.execCommand("copy"); }
+  e.target.textContent = "skopírované";
+  setTimeout(() => { e.target.textContent = "skopírovať voľbu"; }, 1500);
+});
+prepisVolbu();
+</script>
+</body>
+</html>

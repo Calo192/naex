@@ -9,7 +9,7 @@ import type { ClientState, Command } from "@naex/core";
 import { cieleVykladania, posunMarker } from "@naex/core";
 import type { GameServer } from "../src/server.ts";
 import { loadDataFromDisk } from "../src/server.ts";
-import { registruj, testovaciServer } from "./pomocnik.ts";
+import { TEST_ADMIN, prihlas, registruj, testovaciServer } from "./pomocnik.ts";
 
 /** Dáta sady pre pravidlá vykladania — robot ich pozná ako hráč (verejné karty). */
 const DATA = loadDataFromDisk();
@@ -86,7 +86,6 @@ class Robot {
     const view = this.view;
     if (view === null) throw new Error("bez stavu");
     const ja = view.ja;
-    if (view.volba?.hrac === ja) return { type: "policajtka", hore: [] };
 
     switch (view.faza) {
       case "volbaCiela": {
@@ -100,9 +99,13 @@ class Robot {
         if (d?.krok === "stavba" && prva !== undefined && druha !== undefined) {
           return { type: "stavbaSenku", doSenku: prva.uid, odhod: druha.uid };
         }
-        // Dve karty zo šenku, tretiu v cigarete.
+        // Najviac dve karty zo šenku: za cigaretu, inak za poldeci (2 karty).
         const karta = view.senok[0];
-        return (d?.noveKarty[ja] ?? 0) < 2 && karta !== undefined ? { type: "draftBer", uid: karta.uid } : { type: "draftStop" };
+        if (karta === undefined || d === null || (d.noveKarty[ja] >= 2 && d.kredit[ja] === 0)) return { type: "draftStop" };
+        if (d.kredit[ja] > 0) return { type: "draftBer", uid: karta.uid };
+        if (view.hraci[ja].cigarety > 0) return { type: "draftBer", uid: karta.uid, platba: "cigareta" };
+        if (view.hraci[ja].poldeciPlne > 0) return { type: "draftBer", uid: karta.uid, platba: "poldeci" };
+        return { type: "draftStop" };
       }
       case "zhromazdenie": {
         const zostava = view.zhromazdenieStav?.zostavaLimit[ja] ?? 0;
@@ -129,7 +132,7 @@ class Robot {
         const p = view.pitkaStav;
         if (p?.reakcia === ja) return { type: "bezReakcie" };
         // Krčma: s plným poldeci treba dať NA EX na vlastného Občana.
-        if (view.ciel?.lokalita?.defId === "krcma" && p !== null && !p.naexPouzity[ja] && !p.zakazNaex[ja] && view.hraci[ja].poldeciPlne > 0) {
+        if (view.ciel?.lokalita?.defId === "krcma" && p !== null && !p.naexPouzity[ja] && view.hraci[ja].poldeciPlne > 0) {
           const ciel = [...view.strany[0], ...view.strany[1]].find(
             (pl) =>
               pl.playedBy === ja &&
@@ -237,6 +240,21 @@ describe("E2E — celá partia cez server", () => {
     expect(a.view?.koniec).not.toBeNull();
     expect(b.view?.koniec).not.toBeNull();
     expect(tahov).toBeGreaterThan(20);
+
+    // Archív si pamätá štatistiky kariet partie — podklad pre rebalans v tvorcovi.
+    const admin = await prihlas(server.port, TEST_ADMIN.login, TEST_ADMIN.heslo);
+    for (let i = 0; i < 50; i++) {
+      const r = (await (await fetch(`http://127.0.0.1:${server.port}/api/admin/statistiky-kariet`, { headers: { cookie: admin } })).json()) as {
+        partie: number;
+        karty: Record<string, { bitky: number }>;
+      };
+      if (r.partie === 1) {
+        expect(Object.values(r.karty).some((k) => k.bitky > 0)).toBe(true);
+        break;
+      }
+      expect(i, "partia sa nezapísala do archívu").toBeLessThan(49);
+      await new Promise((res) => setTimeout(res, 20));
+    }
 
     a.zavri();
     b.zavri();

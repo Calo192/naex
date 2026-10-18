@@ -84,8 +84,9 @@ Meno daj krátke (do 24 znakov), štýl opíš jednou-dvoma vetami.
    report z playtestu." Ak existuje `R/organizator.md`, spomeň ho.
 
 7. **Odovzdaj výsledok používateľovi**:
-   - cesta k reportu `docs/playtesty/<id>.html` (interaktívna stránka —
-     otvor ju používateľovi v prehliadači),
+   - report na webe: `<web>/admin/playtesty/<id>.html` (sekcia Tvorba →
+     Playtesty, len admin a subadmin) — spisovateľ ho tam pridal uložením do
+     `docs/playtesty/`; súbor otvor používateľovi aj lokálne v prehliadači,
    - odkaz na stránku Spätná väzba (`<web>/spatna-vazba`) s názormi agentov,
    - výsledok partie (jedna veta, bez priebehu),
    - tabuľka známok 12 kritérií (hráč 1, hráč 2, priemer),

@@ -14,7 +14,6 @@ import {
   noveStatistiky,
   normalizujStatistiky,
   prazdneStatistiky,
-  priazenHraca,
   rngInt,
   rngSeed,
   scitajStatistiky,
@@ -121,11 +120,8 @@ describe("bodyTeraz — živý odhad bodov z pohľadu hráča", () => {
         expect(odhad.spolu[p]).toBe(body[p]);
         const su = p === 0 ? 1 : 0;
         if (!odhad.neiste[su]) expect(odhad.spolu[su]).toBe(body[su]);
-        // Bodovať smie pri staršom len ten, koho sa bojí — nikdy hráč s jeho priazňou.
-        for (const b of odhad.starsi) {
-          const elder = state.starsi.find((e) => e.elderId === b.elderId);
-          if (elder !== undefined && b.obavany !== null) expect(priazenHraca(elder)).not.toBe(b.obavany);
-        }
+        // Súčet je presne súčet scorecardov — rozpis sedí s „body teraz“.
+        expect(odhad.starsi.reduce((a, b) => a + b.body[p], 0)).toBe(odhad.spolu[p]);
         overene++;
       }
     }

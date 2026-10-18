@@ -16,6 +16,7 @@ import { Bodovacie } from "./Bodovacie.tsx";
 import { Tlac } from "./Tlac.tsx";
 import { ImportExport } from "./ImportExport.tsx";
 import { Pouzivatelia } from "./Pouzivatelia.tsx";
+import { Playtesty } from "./Playtesty.tsx";
 import "./admin.css";
 
 const SEKCIE: readonly { readonly href: string; readonly text: string; readonly znak: string }[] = [
@@ -30,6 +31,7 @@ const SEKCIE: readonly { readonly href: string; readonly text: string; readonly 
   { href: "/admin/tlac", text: "Tlač", znak: "⎙" },
   { href: "/admin/import-export", text: "Import / export", znak: "⇅" },
   { href: "/admin/pouzivatelia", text: "Hráči", znak: "☺" },
+  { href: "/admin/playtesty", text: "Playtesty", znak: "⚑" },
 ];
 
 function Obsah({ cesta }: { readonly cesta: string }) {
@@ -50,6 +52,7 @@ function Obsah({ cesta }: { readonly cesta: string }) {
     tlac: () => <Tlac />,
     "import-export": () => <ImportExport />,
     pouzivatelia: () => <Pouzivatelia />,
+    playtesty: () => <Playtesty subor={casti[2] !== undefined ? decodeURIComponent(casti[2]) : null} />,
   };
   return <>{(stranky[sekcia] ?? (() => <Hlaska>Neznáma sekcia.</Hlaska>))()}</>;
 }

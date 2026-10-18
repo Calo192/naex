@@ -15,3 +15,6 @@ __pycache__/
 
 # Relácie playtestov (dočasné servery, záznamy agentov)
 /playtest/
+
+# Pracovný priečinok agenta Admin (zálohy tvorcu, návrhy ilustrácií, id referencií v Leonarde)
+/admin-agent/

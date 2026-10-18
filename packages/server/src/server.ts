@@ -14,7 +14,7 @@ import { randomInt } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { join, normalize, extname, resolve } from "node:path";
 import { WebSocketServer, WebSocket } from "ws";
-import type { Command, DlzkaHry, DvojicaStatistik, Event, GameData, GameState, PlayerId } from "@naex/core";
+import type { Command, DlzkaHry, DvojicaStatistik, Event, GameData, GameState, PlayerId, StatistikyKariet } from "@naex/core";
 import type { Sada } from "@naex/tvorba";
 import {
   DLZKY_HRY,
@@ -29,6 +29,7 @@ import {
   uzavriStatistiky,
   viewFor,
   zapisTah,
+  zapisTahKariet,
 } from "@naex/core";
 import { otvorDb } from "./db.ts";
 import type { Pouzivatel } from "./auth.ts";
@@ -40,6 +41,7 @@ import { spracujApi } from "./api.ts";
 import type { ZmenaFrajeriny } from "./archiv.ts";
 import { Archiv } from "./archiv.ts";
 import { Nazory } from "./nazory.ts";
+import { Playtesty } from "./playtesty.ts";
 import { titul } from "./frajerina.ts";
 
 // ---------------------------------------------------------------------------
@@ -80,6 +82,8 @@ interface Room {
   zaciatok: number;
   /** Štatistiky rozohranej partie — zapisujú sa po každom ťahu. */
   statistiky: DvojicaStatistik | null;
+  /** Štatistiky kariet rozohranej partie (pre tvorcu kariet). */
+  statistikyKariet: StatistikyKariet;
   /** Zmena Frajeriny po dohraní (partia je už v archíve). */
   vysledok: readonly [ZmenaFrajeriny, ZmenaFrajeriny] | null;
   /** Odkedy je hráč na danom mieste odpojený (null = pripojený). */
@@ -130,6 +134,8 @@ export interface ServerOpts {
   readonly admin?: { readonly login: string; readonly heslo: string | null };
   /** Cookie s príznakom Secure (za HTTPS proxy). */
   readonly bezpecneCookie?: boolean;
+  /** Priečinok s reportmi playtestov (predvolene <repo>/docs/playtesty). */
+  readonly playtestyDir?: string;
 }
 
 export function createGameServer(opts: ServerOpts): Promise<GameServer> {
@@ -142,6 +148,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   const obsah = new Obsah(db, media);
   const archiv = new Archiv(db);
   const nazory = new Nazory(db);
+  const playtesty = new Playtesty(opts.playtestyDir ?? fileURLToPath(new URL("../../../docs/playtesty", import.meta.url)));
   obsah.naplnAkTreba(teraz());
   obsah.naplnBodovanieAkTreba(teraz());
   obsah.premenujZrusenePriazne(teraz());
@@ -172,6 +179,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           media,
           archiv,
           nazory,
+          playtesty,
           teraz,
           bezpecneCookie: opts.bezpecneCookie ?? false,
           otvoreneHry,
@@ -186,6 +194,10 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     }
     if (url.pathname.startsWith("/media/")) {
       media.posli(url.pathname.slice("/media/".length), res);
+      return;
+    }
+    if (url.pathname.startsWith("/playtesty/")) {
+      playtesty.posli(url.pathname.slice("/playtesty/".length), res, teraz(), req.headers.host);
       return;
     }
     serveStatic(staticDir, req, res);
@@ -303,6 +315,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           state: null,
           zaciatok: 0,
           statistiky: null,
+          statistikyKariet: {},
           vysledok: null,
           odpojenyOd: [null, null],
           hraci: [null, null],
@@ -339,6 +352,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           room.state = setupGame(room.data, randomInt(2 ** 31), { lokalit: DLZKY_HRY[room.dlzka] });
           room.zaciatok = teraz();
           room.statistiky = noveStatistiky();
+          room.statistikyKariet = {};
           broadcast(room, [{ type: "log", text: `Hra začína: ${h0.meno} proti ${h1.meno}.` }]);
         }
         break;
@@ -403,6 +417,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     room.state = result.state;
     room.lastActivity = teraz();
     if (room.statistiky !== null) room.statistiky = zapisTah(room.statistiky, pred, cmd, seat, result.state, result.events);
+    room.statistikyKariet = zapisTahKariet(room.statistikyKariet, pred, cmd, seat, result.events);
     broadcast(room, result.events);
     if (pred.koniec === null && result.state.koniec !== null) zapisDoArchivu(room, result.state, cmd.type !== "vzdat");
   };
@@ -423,6 +438,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         hraci: [h0.id, h1.id],
         body: koniec.koniec.body,
         statistiky: uzavriStatistiky(room.data, room.statistiky, koniec),
+        statistikyKariet: room.statistikyKariet,
       });
       room.vysledok = zmeny;
       // Návštevník sa po 3 dohratých partiách stáva hráčom.

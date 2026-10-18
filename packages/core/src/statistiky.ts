@@ -338,9 +338,9 @@ export function uzavriStatistiky(data: GameData, stat: DvojicaStatistik, koniec:
     if (bodovana) {
       s.bodovanePartie = 1;
       for (const elder of koniec.starsi) {
-        const score = elderScore(data, koniec, elder);
-        if (score === null || score.hrac !== p) continue;
-        for (const pol of score.polozky) s.bodyPodla[pol.podmienka] = (s.bodyPodla[pol.podmienka] ?? 0) + pol.body;
+        for (const pol of elderScore(data, koniec, elder).polozky[p]) {
+          s.bodyPodla[pol.podmienka] = (s.bodyPodla[pol.podmienka] ?? 0) + pol.body;
+        }
       }
       s.body = koniec.koniec?.body?.[p] ?? 0;
       s.najviacBodov = s.body;

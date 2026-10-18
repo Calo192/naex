@@ -27,7 +27,9 @@ dvaja ľudia na dvoch zariadeniach, nie viac hráčov naraz.
 4. **Náhoda je deterministická.** Jeden seedovaný generátor v `GameState`.
 5. **Dáta, nie kód.** Karty upravuje admin v tvorcovi (SQLite); hra beží na
    zverejnenej sade. `packages/core/data/cards.json` je východisková sada
-   pre prvé spustenie a testy (generuje ju `tools/import_print_pdf.py`).
+   pre prvé spustenie a testy — kópia zverejnenej sady v5 (revízia kariet
+   2026-10-18 + Anonymný alkoholik a nová Svokra, `cardsJson` z tabuľky `sady`); predtým ju generoval
+   `tools/import_print_pdf.py` z tlačového PDF.
 6. **Server púšťa `.ts` priamo (strip-types)** — len vymazateľná syntax
    (`erasableSyntaxOnly`): žiadne parametrické vlastnosti, enumy, namespaces.
 
@@ -38,6 +40,8 @@ npm install
 npm run dev          # server :8787 + klient :5173 (heslo admina: .env, NAEX_ADMIN_HESLO)
 npm start            # produkcia: server + zbuildovaný klient :8787
 npm run kniznica -- "docs/NA EX/NA EX"   # obrázky do knižnice tvorcu
+node --experimental-strip-types --no-warnings tools/admin/admin.ts <príkaz>   # nástroje agenta naex-admin
+                     # ilustrácie: Leonardo.Ai API, kľúč NAEX_LEONARDO_KEY v .env (stojí API kredit)
 npm test             # vitest
 npm run typecheck    # tsc --build
 npm run build
@@ -64,7 +68,7 @@ npm run build
 
 ```
 packages/core/       jadro pravidiel — čistý TS, bez I/O
-  data/cards.json      50 kariet tlačovej sady (generované, neupravuj ručne)
+  data/cards.json      51 kariet — kópia zverejnenej sady (neupravuj ručne)
   data/elders.json     8 starších; hodnoty sú PROVIZÓRNE, viď TODO
 packages/tvorba/     model tvorcu kariet — čistý TS (varianty, geometria karty,
                      farby, formát textu, export/import TXT, štatistiky)
@@ -75,4 +79,5 @@ deploy/, Dockerfile  nasadenie (docs/NASADENIE.md)
 docs/BRIEF.md        zadanie M0–M10
 docs/PRAVIDLA.md     špecifikácia pravidiel
 tools/               import z tlačového PDF, piktogramy akcií
+  admin/               nástroje agenta naex-admin (admin API, rebalans, štýl ilustrácií)
 ```

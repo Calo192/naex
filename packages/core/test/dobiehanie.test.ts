@@ -1,0 +1,183 @@
+// Zmeny Michala 2026-10-16 po playteste 20261016-134912 („snehová guľa“):
+// silnejšia priazeň, Cigaretka dáva fyzické cigarety, fajčenie kedykoľvek,
+// ohlásené vydesenie a oprava ceny prebytku pri Miňištrantovi.
+
+import { describe, expect, it } from "vitest";
+import cardsJson from "../data/cards.json";
+import eldersJson from "../data/elders.json";
+import scorecardsJson from "../data/scorecards.json";
+import type { BitkaStav, CardInstance, ElderState, GameState, MarkerPos, PlayerId } from "../src/index.ts";
+import { apply, evaluateLine, legalCommands, loadGameData, naTahu, priazen, setupGame, viewFor } from "../src/index.ts";
+
+const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
+
+let uidSeq = 90000;
+const inst = (defId: string, leftLayout = 0, rightLayout = 0): CardInstance => ({ uid: ++uidSeq, defId, leftLayout, rightLayout });
+
+function bitka(b: Partial<BitkaStav>): BitkaStav {
+  return {
+    krok: null,
+    caka: null,
+    sums: [{}, {}],
+    exekutorHotovy: [true, true],
+    pohorsenieZostava: [0, 0],
+    pohnuteMarkery: [],
+    damage: null,
+    vitaz: 0,
+    prebytokDrzi: null,
+    prebytokZostava: 0,
+    prebytokPosunute: [],
+    liecbaHotova: [true, true],
+    benzinkaZostava: [0, 0],
+    lokalitaPrepadne: false,
+    spalit: [],
+    vesticaHotova: true,
+    limitHotovy: [false, false],
+    ...b,
+  };
+}
+
+const sMarkerom = (e: ElderState, marker: MarkerPos): ElderState => ({ ...e, marker, markerZaciatokKola: marker });
+
+describe("priazeň: sila 1 / 2 / 3 a dvojnásobný účinok", () => {
+  it("bonus = 2 × sila podľa zóny na polovici hráča", () => {
+    const s0 = setupGame(data, 3);
+    const e0 = s0.starsi[0]!;
+    const favour = data.scorecards.find((sc) => sc.id === e0.scorecard)!.favour;
+    const s = (m: MarkerPos): GameState => ({ ...s0, starsi: [sMarkerom(e0, m), ...s0.starsi.slice(1)] });
+    expect([6, 7, 8].map((m) => priazen(data, s(m as MarkerPos), favour, 1))).toEqual([2, 4, 6]);
+    expect([2, 1, 0].map((m) => priazen(data, s(m as MarkerPos), favour, 0))).toEqual([2, 4, 6]);
+    expect(priazen(data, s(4), favour, 0)).toBe(0);
+    expect(priazen(data, s(8), favour, 0)).toBe(0);
+  });
+});
+
+describe("cigarety: Cigaretka ich dáva, fajčenie dáva karty", () => {
+  it("v Zhromaždení smie hráč fajčiť: karta hneď, cigareta preč, ťah mu neskončí", () => {
+    const s0 = setupGame(data, 4);
+    const s: GameState = {
+      ...s0,
+      faza: "zhromazdenie",
+      hraci: [{ ...s0.hraci[0], cigarety: 2 }, s0.hraci[1]],
+      zhromazdenieStav: { naTahu: 0, zostavaLimit: [3, 3], pasoval: [false, false], navyse: [0, 0] },
+    } as GameState;
+    expect(legalCommands(data, s, 0)).toContainEqual({ type: "smoke", pocet: 1 });
+    const po = apply(data, s, { type: "smoke", pocet: 1 }, 0).state;
+    expect(po.hraci[0].cigarety).toBe(1);
+    expect(po.hraci[0].ruka).toHaveLength(s.hraci[0].ruka.length + 1);
+    expect(naTahu(po)).toBe(0);
+    expect(po.zhromazdenieStav?.zostavaLimit[0]).toBe(3);
+  });
+
+  it("karty dobraté fajčením v Pitke sú súčasť ruky — viewFor ich súperovi nepošle", () => {
+    const s0 = setupGame(data, 6);
+    const s: GameState = {
+      ...s0,
+      faza: "pitka",
+      pitkyCelkom: 1,
+      pitkaCislo: 1,
+      hraci: [{ ...s0.hraci[0], cigarety: 1 }, s0.hraci[1]],
+      pitkaStav: { naTahu: 0, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false] },
+    } as GameState;
+    const po = apply(data, s, { type: "smoke", pocet: 1 }, 0).state;
+    expect(po.dobraneVPitke[0]).toHaveLength(1);
+    const pohlad = JSON.stringify(viewFor(data, po, 1));
+    expect(pohlad).not.toContain("dobraneVPitke");
+    expect(pohlad).not.toContain(`"uid":${po.dobraneVPitke[0]![0]}`);
+  });
+
+  it("aktívne Cigaretky v Pitke pridajú cigarety (mínus súperove Obmedzenia), karty nie", () => {
+    // Nájdi v tlačovej sade lokalitu a kartu, ktorej spoj s lokalitou dá hráčovi 0 Cigaretku.
+    const s0 = setupGame(data, 5);
+    let najdene: { lok: CardInstance; karta: CardInstance; cig: number; obm: number } | null = null;
+    for (const lok of s0.lokalityVHre) {
+      if (lok.defId === "kostol" || lok.defId === "benzinka") continue;
+      for (const def of data.cards.values()) {
+        if (!def.tags.includes("Občan")) continue;
+        const v = data.variants.get(def.id);
+        for (let l = 0; l < (v?.left.length ?? 0) && najdene === null; l++) {
+          for (let r = 0; r < (v?.right.length ?? 0) && najdene === null; r++) {
+            const karta = inst(def.id, l, r);
+            const ev = evaluateLine(data, { lokalita: lok, lokalitaOtocena: false, strany: [[{ card: karta, playedBy: 0 }], []] });
+            const cig = ev.sums[0].Cigaretka ?? 0;
+            if (cig > 0) najdene = { lok, karta, cig, obm: ev.sums[1].Obmedzenie ?? 0 };
+          }
+        }
+        if (najdene !== null) break;
+      }
+      if (najdene !== null) break;
+    }
+    expect(najdene).not.toBeNull();
+    const { lok, karta, cig, obm } = najdene!;
+    let s: GameState = {
+      ...s0,
+      faza: "pitka",
+      pitkyCelkom: 2,
+      pitkaCislo: 1,
+      ciel: { typ: "lokalita", lokalita: lok, elderId: null },
+      lokalitaOtocena: false,
+      strany: [[{ card: karta, playedBy: 0 }], []],
+      hraci: [{ ...s0.hraci[0], cigarety: 0, poldeciPlne: 0 }, { ...s0.hraci[1], cigarety: 0, poldeciPlne: 0 }],
+      pitkaStav: { naTahu: 0, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false] },
+    } as GameState;
+    const ruka = s.hraci[0].ruka.length;
+    for (let i = 0; i < 4 && s.faza === "pitka"; i++) s = apply(data, s, { type: "skipNaex" }, s.pitkaStav!.naTahu).state;
+    expect(s.faza).toBe("zhromazdenie");
+    expect(s.hraci[0].cigarety).toBe(Math.max(0, cig - obm));
+    expect(s.hraci[0].ruka).toHaveLength(ruka);
+  });
+});
+
+describe("ohlásené vydesenie", () => {
+  /** Hráč 0 má 3 vydesených starších a štvrtého na hrane; prebytok 1. */
+  function predVydesenim(seed: number): GameState {
+    const s0 = setupGame(data, seed);
+    const starsi = s0.starsi.map((e, i) => (i < 3 ? sMarkerom(e, 8) : i === 3 ? sMarkerom(e, 7) : e));
+    return {
+      ...s0,
+      faza: "bitka",
+      starsi,
+      ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]!, elderId: null },
+      bitkaStav: bitka({ krok: "prebytok", caka: 0, vitaz: 0, prebytokDrzi: 0, prebytokZostava: 1 }),
+    } as GameState;
+  }
+
+  it("polovica vydesených starších hru neukončí hneď — vydesenie sa ohlási", () => {
+    const s = predVydesenim(7);
+    const po = apply(data, s, { type: "prebytok", elderId: s.starsi[3]!.elderId }, 0);
+    expect(po.state.ohlaseneVydesenie[0]).toBe(s.kolo);
+    expect(po.state.koniec).toBeNull();
+    expect(po.events.some((e) => e.type === "log" && e.text.includes("Ak ich udrží do konca ďalšieho kola"))).toBe(true);
+  });
+
+  it("kto vydesenie udrží do konca nasledujúceho kola, vyhrá", () => {
+    const s0 = predVydesenim(8);
+    // Ohlásené už v minulom kole — na konci tohto kola rozhoduje.
+    const s: GameState = { ...s0, kolo: s0.kolo + 1, ohlaseneVydesenie: [s0.kolo, null] };
+    let po = apply(data, s, { type: "prebytok", elderId: s.starsi[3]!.elderId }, 0).state;
+    // Zvyšok bitky (limit ruky a pod.) dohrajú hráči podľa legálnych ťahov.
+    for (let i = 0; i < 20 && po.koniec === null && po.faza === "bitka"; i++) {
+      const p = naTahu(po) as PlayerId;
+      const c = legalCommands(data, po, p)[0];
+      if (c === undefined) break;
+      po = apply(data, po, c, p).state;
+    }
+    expect(po.koniec?.vitaz).toBe(0);
+    expect(po.koniec?.dovod).toMatch(/udržal/);
+  });
+});
+
+describe("prebytok a Miňištrant", () => {
+  it("posun, ktorý stojí viac než zvyšný prebytok, sa nedá urobiť", () => {
+    const s0 = setupGame(data, 9);
+    const s: GameState = {
+      ...s0,
+      faza: "bitka",
+      ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]!, elderId: null },
+      strany: [[{ card: inst("ministrant"), playedBy: 0 }], []],
+      bitkaStav: bitka({ krok: "prebytok", caka: 0, vitaz: 0, prebytokDrzi: 0, prebytokZostava: 1 }),
+    } as GameState;
+    expect(legalCommands(data, s, 0).some((c) => c.type === "prebytok")).toBe(false);
+    expect(() => apply(data, s, { type: "prebytok", elderId: s.starsi[0]!.elderId }, 0)).toThrow(/Miňištrant/);
+  });
+});

@@ -144,6 +144,29 @@
     filter 0.15s ease;
 }
 
+/* Hrany karty v návrhu vyloženia: vnútorná (k lokalite) sa spáruje so
+   susedom, vonkajšia ostáva voľná pre ďalšiu kartu. */
+.kl-hrana {
+  position: absolute;
+  left: calc((var(--x) - 1.6) * var(--pt));
+  top: calc((var(--y) - 1.6) * var(--pt));
+  width: calc((var(--s) + 3.2) * var(--pt));
+  height: calc((var(--h) + 3.2) * var(--pt));
+  border-radius: calc(2.4 * var(--pt));
+  pointer-events: none;
+}
+
+.kl-hrana-vnutorna {
+  background: rgba(255, 210, 90, 0.28);
+  box-shadow:
+    0 0 0 calc(0.9 * var(--pt)) #ffd25a,
+    0 0 calc(7 * var(--pt)) calc(2 * var(--pt)) rgba(255, 196, 64, 0.7);
+}
+
+.kl-hrana-vonkajsia {
+  border: calc(0.6 * var(--pt)) dashed rgba(120, 120, 120, 0.75);
+}
+
 .kl-slot .ikona-akcie {
   display: block;
   width: 100%;

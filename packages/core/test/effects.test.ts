@@ -1,4 +1,4 @@
-// M10 — register efektov: pokrytie všetkých 50 id, MANUAL pripomienky
+// M10 — register efektov: pokrytie všetkých 51 id, MANUAL pripomienky
 // a vzorové implementované efekty.
 
 import { describe, expect, it } from "vitest";
@@ -20,7 +20,6 @@ import {
   loadGameData,
   naTahu,
   prahCirhozyBonus,
-  refillZakazany,
   setupGame,
 } from "../src/index.ts";
 
@@ -42,12 +41,12 @@ function fakeState(overrides: Partial<GameState>): GameState {
 }
 
 describe("M10 — register", () => {
-  it("pokrýva všetkých 50 id, ani jedno navyše", () => {
+  it("pokrýva všetkých 51 id, ani jedno navyše", () => {
     const vRegistri = new Set(Object.keys(REGISTER));
     const vDatach = new Set(data.cards.keys());
     expect([...vDatach].filter((id) => !vRegistri.has(id))).toEqual([]);
     expect([...vRegistri].filter((id) => !vDatach.has(id))).toEqual([]);
-    expect(vRegistri.size).toBe(50);
+    expect(vRegistri.size).toBe(51);
   });
 
   it("neznáme id je automaticky MANUAL", () => {
@@ -59,24 +58,25 @@ describe("M10 — register", () => {
 describe("M10 — vzorové efekty (háčiky)", () => {
   it("ihrisko: prah Cirhózy +1, kým je lokalita odhalená", () => {
     const ihrisko = inst("ihrisko");
-    expect(prahCirhozyBonus(fakeState({}))).toBe(0);
+    expect(prahCirhozyBonus(fakeState({}), 0)).toBe(0);
     expect(
       prahCirhozyBonus(
         fakeState({ ciel: { typ: "lokalita", lokalita: ihrisko, elderId: null } }),
+        0,
       ),
     ).toBe(1);
     expect(
-      prahCirhozyBonus(fakeState({ ovladnute: [{ karta: ihrisko, hrac: 0 }] })),
+      prahCirhozyBonus(fakeState({ ovladnute: [{ karta: ihrisko, hrac: 0 }] }), 0),
     ).toBe(1);
   });
 
-  it("cigorky blokujú refill, vinko barter aj +1 limit, zastávka limit 2", () => {
+  it("nealko: prah Cirhózy +2; vinko barter aj +1 limit, zastávka limit 2", () => {
     const base = setupGame(data, 1);
-    const sCigorkami = fakeState({
-      hraci: [{ ...base.hraci[0], dedicstvo: [inst("cigorky")] }, base.hraci[1]],
+    const sNealkom = fakeState({
+      hraci: [{ ...base.hraci[0], dedicstvo: [inst("nealko")] }, base.hraci[1]],
     });
-    expect(refillZakazany(sCigorkami, 0)).toBe(true);
-    expect(refillZakazany(sCigorkami, 1)).toBe(false);
+    expect(prahCirhozyBonus(sNealkom, 0)).toBe(2);
+    expect(prahCirhozyBonus(sNealkom, 1)).toBe(0);
 
     const sVinkom = fakeState({
       hraci: [{ ...base.hraci[0], dedicstvo: [inst("vinko")] }, base.hraci[1]],
@@ -95,7 +95,7 @@ describe("M10 — vzorové efekty (háčiky)", () => {
       strany: [[placed("cierna_macka", 0)], []],
       cirhozyVKole: [0, 2],
     });
-    expect(bitkaMody(data, s, 0, 1, 2).tuheBonus).toBe(0);
+    expect(bitkaMody(data, s, 0).tuheBonus).toBe(0);
   });
 
   it("recidivista pridáva tuhé; farár a veterinár uberajú", () => {
@@ -105,30 +105,32 @@ describe("M10 — vzorové efekty (háčiky)", () => {
         [placed("kocovnik", 1), placed("veterinar", 1)],
       ],
     });
-    const mody0 = bitkaMody(data, s, 0, 1, 2);
+    const mody0 = bitkaMody(data, s, 0);
     // kocovnik je Zahraničný → recidivista +1.
     expect(mody0.tuheBonus).toBe(1);
-    // farár v partii 0: ignoruj trocha (1) povier súpera.
-    expect(mody0.superovePoveryZlava).toBe(1);
-    // veterinár v partii 1: cirhózy hráča 1 pridávajú hráčovi 0 o zopár menej.
+    // farár v partii 0: ignoruj 2 súperove Povery (pevné číslo, 2026-10-18).
+    expect(mody0.superovePoveryZlava).toBe(2);
+    // veterinár v partii 1: cirhózy hráča 1 pridávajú hráčovi 0 o 2 menej.
     expect(mody0.cirhozaZlava).toBe(2);
   });
 
-  it("noviny: povery vlastníka a viera súpera sa nerušia", () => {
-    const strany = [
-      { sums: { Povera: 2 }, cirhozaBonus: 0, tuheBonus: 0, abstaky: 0, priznaneDlhy: 0, priazenBitkara: 0, hodnotaViery: 1 },
-      { sums: { Viera: 2 }, cirhozaBonus: 0, tuheBonus: 0, abstaky: 0, priznaneDlhy: 5, priazenBitkara: 0, hodnotaViery: 1 },
-    ] as const;
-    const bez = computeDamage([strany[0], strany[1]]);
-    expect(bez.makke[0]).toBe(0); // povery zrušené vierou
-    const sNovinami = computeDamage([strany[0], strany[1]], {
-      poveraVieraSaNerusia: [true, false],
+  it("Neprajník a Čierna mačka: Povery nad súperove priznané Dlhy", () => {
+    const strana = (sums: Record<string, number>, dlhy: number, nad?: number) => ({
+      sums,
+      cirhozaBonus: 0,
+      tuheBonus: 0,
+      abstaky: 0,
+      priznaneDlhy: dlhy,
+      priazenBitkara: 0,
+      hodnotaViery: 1,
+      ...(nad === undefined ? {} : { makkeNadDlhy: nad }),
     });
-    // Povery hráča 0 prežili (noviny) — mäkké obmedzené priznaným dlhom.
-    expect(sNovinami.zvysnaPovera[0]).toBe(2);
-    expect(sNovinami.makke[0]).toBe(2);
-    // A viera hráča 1 zároveň ostala nedotknutá.
-    expect(sNovinami.zvysnaViera[1]).toBe(2);
+    // Bez priazne: mäkké je zastropené súperovými priznanými Dlhmi (1).
+    expect(computeDamage([strana({ Povera: 4 }, 0), strana({}, 1)]).makke[0]).toBe(1);
+    // Neprajník so silou 1 (priazeň 2): o 2 viac.
+    expect(computeDamage([strana({ Povera: 4 }, 0, 2), strana({}, 1)]).makke[0]).toBe(3);
+    // Čierna mačka: bez stropu.
+    expect(computeDamage([strana({ Povera: 4 }, 0, Number.POSITIVE_INFINITY), strana({}, 0)]).makke[0]).toBe(4);
   });
 });
 

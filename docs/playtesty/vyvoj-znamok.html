@@ -138,9 +138,31 @@ const PARTIE = [
     zmenyPred: ["Odpoveď na NA EX", "Nahradený starší ostáva v hre", "Bitka o staršieho: karta v strede a náhľad bodov",
       "Limit ruky a priazeň Zberateľ", "Útočník draftuje prvý, pitiek je |rozdiel|", "Body za kus: lokalita a starší po 2",
       "Všetky efekty kariet vyhodnocuje hra"] },
+  { id: "20261012-173832", report: "20261012-173832.html", dlzka: "stredná (7)", vysledok: "Eva — vydesenie 4 starších (35 : 0)",
+    jano: [6, 7, 4, 5, 9, 6, 5, 7, 7, 8, 5, 9], eva: [8, 8, 6, 6, 9, 6, 6, 8, 8, 8, 6, 9],
+    zmenyPred: ["Draft so stavbou šenku", "Slabé karty v ruke: priznanie Dlhu a Cirhózy, Liečba a Pohreb"] },
+  { id: "20261016-134912", report: "20261016-134912.html", dlzka: "stredná (7)", vysledok: "Jano — vydesenie 4 starších (124 : 42)",
+    jano: [8, 8, 5, 6, 9, 7, 6, 7, 7, 8, 6, 9], eva: [5, 6, 3, 6, 8, 7, 4, 6, 7, 8, 3, 8],
+    zmenyPred: ["Bodovanie bez strán: každá aktívna podmienka boduje obom", "Pečeň a zadĺženie len počas Pitky"] },
+  { id: "20261016-155120", report: "20261016-155120.html", dlzka: "stredná (7)", vysledok: "Eva 111 : 104",
+    jano: [7, 7, 5, 6, 8, 7, 4, 7, 7, 8, 8, 9], eva: [8, 8, 5, 7, 9, 7, 5, 7, 8, 7, 9, 9],
+    zmenyPred: ["Dobiehanie porazeného: silnejšia priazeň, útočník v drafte, ohlásené vydesenie"] },
+  { id: "20261017-164450", report: "20261017-164450.html", dlzka: "stredná (7)", vysledok: "Eva 79 : 64",
+    jano: [7, 7, 5, 6, 9, 7, 5, 7, 8, 7, 8, 9], eva: [7, 7, 5, 6, 8, 7, 5, 7, 7, 8, 8, 9],
+    zmenyPred: ["Poldeci špirála: jeden poldeci späť na začiatku kola, limit pred a po ťahu"] },
 ];
 // Zmeny, ktoré ešte žiadna partia neoverila.
-const CAKAJUCE = ["Draft so stavbou šenku", "Slabé karty v ruke: priznanie Dlhu a Cirhózy, Liečba a Pohreb"];
+const CAKAJUCE = [
+  "Štartovky len na štart (4 Pijan, 2/2/2), nie v šenku",
+  "NA EX aj na súperove karty",
+  "Nástroj funguje len pri Občanovi alebo Starešinovi",
+  "Revízia kariet (identita, 5 stratégií, Nástroje ako priazeň, bez Trocha/Zopár)",
+  "Prah Dlhu 1",
+  "Dedičstvo za 2 cigarety",
+  "Šenok: 1 karta za cigaretu, 2 za poldeci, bez limitu a bez karty zadarmo",
+  "Počet Pitiek = aktivované akcie lokality",
+  "Cigarety porazenému za posunutých starších",
+];
 
 const priemer = (a) => a.reduce((x, y) => x + y, 0) / a.length;
 const f1 = (x) => x.toFixed(1).replace(".", ",");
@@ -278,7 +300,7 @@ kresli();
   const cakajuce = `
     <details class="partia" open>
       <summary><span class="partia-id">Ďalšia partia</span><span class="partia-meta">ešte neodohraná</span></summary>
-      <div class="partia-telo"><strong>Zmeny, ktoré overí:</strong>${zoznam(CAKAJUCE)}</div>
+      <div class="partia-telo"><strong>Zmeny, ktoré overí:</strong>${CAKAJUCE.length ? zoznam(CAKAJUCE) : `<p class="ziadne">Zatiaľ žiadne — od poslednej partie sa pravidlá nezmenili.</p>`}</div>
     </details>`;
   document.getElementById("partie").innerHTML = cakajuce + html;
 })();

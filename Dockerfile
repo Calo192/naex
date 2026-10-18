@@ -28,6 +28,8 @@ COPY packages/core/data packages/core/data
 COPY packages/tvorba/src packages/tvorba/src
 COPY packages/server/src packages/server/src
 COPY packages/server/seed packages/server/seed
+# Reporty playtestov — v administrácii (Tvorba → Playtesty) pre admina a subadminov.
+COPY docs/playtesty docs/playtesty
 COPY --from=build /app/apps/web/dist apps/web/dist
 VOLUME /data
 EXPOSE 8787

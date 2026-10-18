@@ -75,7 +75,7 @@ tools/             import z tlačového PDF, piktogramy akcií
   = jeho karty na ktorejkoľvek strane (`partiaHraca`, `vPartii`). **NA EX** len na
   vlastnú kartu, s náhľadom bitky v hre; **Vypiť** (`{ type: "vypit" }`) v
   Zhromaždení: limit −1, pečeň +1, ďalšie vyloženie bez odovzdania ťahu. Akcie
-  lokality dostane majiteľ susednej karty. Svokra zakáže súperovi NA EX (BRIEF 11).
+  lokality dostane majiteľ susednej karty. Svokra za NA EX súpera ukradne cigaretu (BRIEF 11).
   **Ruka 5 kariet:** štartovacie karty idú do doberacieho balíčka, do ruky 5,
   na začiatku kola sa ruka dopĺňa na 5 (`KONSTANTY.VELKOST_RUKY`); nové
   kliatby idú do odhadzovacieho balíčka. V simulácii klesla priemerná ruka

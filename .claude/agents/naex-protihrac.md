@@ -48,12 +48,18 @@ by ich mohol prečítať alebo prepísať a vidieť tak tvoju ruku.
 - **Názvoslovie:** línia = celý rad; lokalita ju delí na dve **strany** (tvoja,
   súperova) — kam kartu kladieš. **Tvoja partia** = všetky tvoje karty
   (natočené k tebe), nech ležia na ktorejkoľvek strane.
-- **NA EX len na svoju kartu** (natočenú k tebe — aj podstrčenú na súperovej
-  strane). Zruší jej aktívne akcie a zdvojí neaktívne — vieš si tak zdvojiť
-  Petelicu, alebo zrušiť vlastný Dlh či Pečeň. Pečeň +1 je tvoja. Na súperovu
-  kartu NA EX dať nemožno. Svokra súperovi zakáže NA EX v najbližšej Pitke.
+- **NA EX na Občana alebo Starešinu v línii — svojho aj súperovho**
+  (Michal 2026-10-18). Zruší karte aktívne akcie a zdvojí neaktívne; akcie sa
+  rátajú majiteľovi karty. Na svojej karte si zdvojíš Petelicu alebo zrušíš
+  vlastný Dlh či Pečeň, na súperovej mu zrušíš aktívne akcie (pozor, jeho
+  neaktívne mu zdvojí). Pečeň +1 je tvoja. Za každé NA EX ti súperova Svokra
+  ukradne cigaretu; na Anonymného alkoholika ani jeho susedov NA EX nedá nikto.
+- **Nástroj funguje len pri Občanovi alebo Starešinovi** (Michal 2026-10-18):
+  pri lokalite, karte staršieho či karte bez tagu Občan/Starešina spoj
+  nevznikne — neaktivuje sa nič. Náhľad pri „vylož“ to už zohľadňuje.
 - **Vypiť do dna** (ťah `{"type":"vypit"}` v Zhromaždení): plný poldeci →
-  vypitý; tvoje ďalšie vyloženie neukončí ťah (dve karty za sebou), limit −1,
+  vypitý; tvoje ďalšie vyloženie neukončí ťah, ale limit klesne o 1 HNEĎ
+  (pri zostávajúcom limite 1 po vypití nevyložíš nič; dve karty za sebou až pri 3),
   pečeň +1, nerest. Dá sa opakovať, kým máš plné poldeci.
 - **Akcie lokality** na spoji dostane majiteľ karty, ktorá ich aktivuje —
   podstrčená karta pri lokalite si vezme súperovu stranu lokality.
@@ -72,19 +78,38 @@ by ich mohol prečítať alebo prepísať a vidieť tak tvoju ruku.
   zo šenku. Ďalej balíček čistí priznanie kliatob, Vízia (preosieje kliatby
   pri ťahaní) a Niekoho stryná či Výherný automat (zahodia Dlhy a Cirhózy).
   Odhodenie nad limit ruky nepomôže — karty sa vrátia do balíčka.
-- **Priazeň ≠ body.** Priazeň staršieho má hráč, ku ktorému je marker
-  posunutý (výhoda počas hry). Body na konci dostane ten **druhý** — koho sa
-  starší bojí. Posunúť marker k súperovi = dať mu priazeň teraz, body neskôr
-  ty. Klient ukazuje pri každom staršom „bojí sa … → body teraz" aj súčet
-  „BODY TERAZ".
+- **Bodovanie (Michal 2026-10-16).** Každá **aktívna** podmienka scorecardu
+  (na ktorejkoľvek strane) boduje **obom** hráčom, nech je marker toho
+  staršieho kdekoľvek. Za kus: lokality, získaní starší, cigarety (1 bod za každé 3), mínus
+  nepriznané Dlhy a Cirhózy. Znepokojenie / Strach / Vydesenie dávajú body za
+  každého staršieho v hre, ktorý sa ťa bojí aspoň na tú úroveň. Marker určuje
+  **priazeň** (má ju hráč, ku ktorému je posunutý) a koho sa starší bojí (toho
+  druhého). Posunúť marker k súperovi = dať mu priazeň, tebe vystrašeného
+  staršieho do zónových podmienok. Klient ukazuje pri každom staršom „body
+  teraz: ty X, súper Y" aj súčet „BODY TERAZ".
+- **Pečeň a zadĺženie žijú len v Pitke:** vyhodnotia sa v nej a po každej
+  Pitke sa vynulujú. Pečeň z pitia do dna sa vyhodnotí v najbližšej Pitke.
+- **Dobiehanie porazeného (Michal 2026-10-16, druhá zmena v ten deň):**
+  - **Priazeň** má silu 1 / 2 / 3 podľa zóny a účinok **2 × sila** (Bitkár
+    +2/+4/+6 tuhého, limit ruky 8/10/12, prah Cirhózy 5/7/9…). Prehrávaš →
+    prebytok posúva markery k tebe → silná priazeň. Využi ju.
+  - **Cigaretka dáva fyzické cigarety** (mínus súperove Obmedzenia), ktoré
+    sa prenášajú. **Fajčenie** (`smoke`) = karta hneď, na svojom ťahu
+    v Zhromaždení aj v Pitke; ťah neskončí. 2 cigarety dolejú poldeci, 5 = nový.
+  - **Nové kolo, jeden poldeci späť:** na začiatku každého kola sa ti jeden
+    vypitý poldeci doleje sám. Limit pred a po ťahu ukazuje výpis (ZDROJE, draft,
+    Vypiť, NA EX).
+  - **Ohlásené vydesenie:** kto vydesí polovicu starších, vyhrá až vtedy, keď
+    ich udrží do konca **ďalšieho** kola. Výpis ukazuje „VYDESENÍ“ a varovanie.
+    Odpoveď: ako útočník vyhraj bitku o vydeseného staršieho (marker do sivej).
 - **Zmeny z 12. 10. (playtest 20261012-055944):** po súperovom NA EX smieš
   hneď odpovedať jednou kartou z ruky mimo limitu (`place`, alebo
   `bezReakcie`) — striedavo, aj keď NA EX dáte obaja. NA EX nejde na Liberála.
-  Krčma vynúti NA EX. Pitiek je |rozdiel kariet z draftu|, aspoň 1. V bitke o staršieho leží jeho karta v strede ako
+  Krčma vynúti NA EX. Pitiek je toľko, koľko akcií karty lokality je aktivovaných (aspoň 1) — počas kola môže pribudnúť. V bitke o staršieho leží jeho karta v strede ako
   lokalita. Nahradený starší hrá ďalej (marker, priazeň, body). Na konci kola
   smieš mať v ruke najviac 6 kariet + priazeň Zberateľa (`odhod`). Lokalita
   a získaný starší dávajú 2 body za kus. Všetky efekty kariet hra vyhodnocuje
-  sama; niektoré si pýtajú voľbu (Policajtka, Veštica, Benzínka, Poštárka,
+  sama; niektoré si pýtajú voľbu (Veštica, Benzínka, Poštárka,
   Starosta) — presný JSON je v zozname ťahov.
 - **Draft so stavbou šenku (od 12. 10., playtest 20261012-101447):** pri
   bitke o lokalitu dostaneš zo spoločného balíčka vlastný balíček (8 kariet,
@@ -93,9 +118,16 @@ by ich mohol prečítať alebo prepísať a vidieť tak tvoju ruku.
   vyberáte naraz, takže `cakaj` sa vráti, aj keď je „na ťahu" súper.
   Do šenku dávaš, čo chceš sám, ale súper si to môže vziať skôr; naspodok
   pošli, čo nechceš dať súperovi. Z kariet, ktoré ti súper podá, vidíš, čo
-  pustil. Potom beriete zo šenku **striedavo po jednej, začína obranca**,
-  najviac 3 (`draftBer`); `draftStop` ukončí branie a za každú nevzatú
-  kartu dostaneš cigaretu. Nevzaté karty idú pri ďalšom drafte naspodok.
+  pustil. Potom beriete zo šenku **striedavo, začína útočník** (porazený
+  z minulej bitky), **koľko si môžete dovoliť** (Michal 2026-10-18): na ťahu
+  zaplatíš **1 cigaretu za 1 kartu** (`draftBer` s `"platba":"cigareta"`), alebo
+  **plný poldeci za 2 karty** (`"platba":"poldeci"`, druhú kartu berieš hneď
+  bez platby; poldeci sa otočí na vypitý → limit vykladania v tomto kole −1).
+  Nič nie je zadarmo. `draftStop` ukončí branie. Nevzaté karty idú pri ďalšom
+  drafte naspodok.
+- **Cigarety za prebytok:** ak súper rozdeľuje prebytok proti tebe, po bitke
+  dostaneš 1 cigaretu za každého staršieho, ktorého marker posunul (viac
+  posunov toho istého = 1). Cigarety sú teraz aj platidlo v šenku.
 
 ## Klient
 

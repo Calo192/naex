@@ -4,7 +4,7 @@
 
 import type { ClientState, GameData, PlayerId } from "@naex/core";
 import { bodyTeraz } from "@naex/core";
-import { NAZOV_PODMIENKY } from "../karta/podmienky.ts";
+import { RozpisBodov } from "./RozpisBodov.tsx";
 import type { ZmenyFrajeriny } from "./useHra.ts";
 
 export interface KoniecHryProps {
@@ -27,7 +27,7 @@ export function KoniecHry({ view, data, mena, menoKarty, frajerina, onZavri, opu
   // Rozpis po starších tým istým bodovaním ako na konci hry. Súperove skryté
   // karty klient nevidí — súčet zo servera (koniec.body) je smerodajný.
   // Pri vzdaní, exekúcii či vydesení sa nebodovalo — rozpis by mýlil.
-  const rozpis = koniec.body === null ? [] : bodyTeraz(data, view).starsi.filter((s) => s.obavany !== null && s.body !== 0);
+  const rozpis = koniec.body === null ? null : bodyTeraz(data, view);
   const zmena = frajerina?.[ja];
 
   return (
@@ -46,31 +46,18 @@ export function KoniecHry({ view, data, mena, menoKarty, frajerina, onZavri, opu
             </span>
           </p>
         )}
-        {rozpis.length > 0 && (
-          <table className="koniec-rozpis">
-            <caption>Body po starších (boduje ten, koho sa starší bojí)</caption>
-            <thead>
-              <tr>
-                <th scope="col">starší</th>
-                <th scope="col">kto</th>
-                <th scope="col">za čo</th>
-                <th scope="col">body</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rozpis.map((s) => {
-                const elder = view.starsi.find((e) => e.elderId === s.elderId);
-                return (
-                  <tr key={s.elderId} className={s.obavany === ja ? "moja" : "superova"}>
-                    <td>{elder === undefined ? s.elderId : menoKarty(elder.karta.defId)}</td>
-                    <td>{s.obavany === ja ? "ty" : mena[su]}</td>
-                    <td>{s.polozky.map((p) => `${NAZOV_PODMIENKY[p.podmienka]} ${p.body > 0 ? "+" : ""}${p.body}`).join(", ")}</td>
-                    <td className="cislo">{s.body}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+        {rozpis !== null && (
+          <div className="koniec-rozpis">
+            <RozpisBodov
+              body={rozpis}
+              starsi={view.starsi}
+              data={data}
+              ja={ja}
+              menoSupera={mena[su]}
+              menoKarty={menoKarty}
+              nadpis="Body po starších — každá aktívna podmienka boduje obom"
+            />
+          </div>
         )}
         {zmena !== undefined && (
           <p className="koniec-frajerina">

@@ -1,7 +1,7 @@
 // Prehľad tvorcu: stav návrhov oproti zverejnenej sade a zverejnenie.
 
 import { useEffect, useState } from "react";
-import { chybyNavrhu, neznameAkcie, variantyKarty } from "@naex/tvorba";
+import { chybyNavrhu, kontrolaTextov, neznameAkcie, variantyKarty } from "@naex/tvorba";
 import { api } from "../lib/api.ts";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { useSada } from "../lib/sada.tsx";
@@ -16,8 +16,8 @@ interface ZaznamSady {
 
 export function Prehlad() {
   useTitulok("Tvorba kariet");
-  const { obsah, zverejni } = useAdmin();
-  const { obnov: obnovSadu } = useSada();
+  const { obsah, zverejni, obnov: obnovObsah } = useAdmin();
+  const { sada, obnov: obnovSadu } = useSada();
   const [sady, setSady] = useState<readonly ZaznamSady[]>([]);
   const [sprava, setSprava] = useState<{ druh: "ok" | "chyba"; text: string } | null>(null);
   const [caka, setCaka] = useState(false);
@@ -33,6 +33,32 @@ export function Prehlad() {
     ...neznameAkcie(k).map((a) => ({ k, c: `akcia „${obsah.akcie.find((x) => x.kluc === a)?.nazov ?? a}“ nemá v hre pravidlá` })),
   ]);
   const vytlacenych = obsah.karty.reduce((s, k) => s + variantyKarty(k).pocet * k.kopie, 0);
+  // Texty efektov: preklepy, spúšťače a zmenený text efektu, ktorý hra vyhodnocuje kódom.
+  const texty = kontrolaTextov(obsah.karty, { klucoveSlova: obsah.klucoveSlova, akcie: obsah.akcie, zverejnene: sada?.karty ?? [] });
+
+  // Návrat na staršiu sadu = jej opätovné zverejnenie ako nová verzia.
+  const vratit = async (verzia: number) => {
+    if (!window.confirm(`Vrátiť hru na sadu v${verzia}? Zverejní sa znova ako nová verzia a nové partie pobežia na nej.`)) return;
+    const navrhy = window.confirm(
+      `Vrátiť aj návrhy kariet v tvorcovi na stav v${verzia}?\n\nOK = áno (úpravy kariet z tej sady sa prepíšu)\nZrušiť = nie, návrhy nechať`,
+    );
+    setCaka(true);
+    setSprava(null);
+    try {
+      const r = await api.post<{ verzia: number; kariet: number; mimoSady: string[] }>(`/admin/sady/${verzia}/obnovit`, { navrhy });
+      setSprava({
+        druh: "ok",
+        text: `Sada v${verzia} je znova v hre ako v${r.verzia} (${r.kariet} kariet).${navrhy && r.mimoSady.length > 0 ? ` Návrhy mimo tej sady ostali: ${r.mimoSady.join(", ")}.` : ""}`,
+      });
+      obnovSadu();
+      nacitajSady();
+      await obnovObsah();
+    } catch (e) {
+      setSprava({ druh: "chyba", text: e instanceof Error ? e.message : String(e) });
+    } finally {
+      setCaka(false);
+    }
+  };
 
   const zverejnit = async () => {
     setCaka(true);
@@ -89,6 +115,11 @@ export function Prehlad() {
             {`Pred zverejnením treba opraviť:\n${problemy.map((p) => `• ${p.k.nazov}: ${p.c}`).join("\n")}`}
           </Hlaska>
         )}
+        {texty.length > 0 && (
+          <Hlaska druh={texty.some((t) => t.uroven === "chyba") ? "chyba" : "info"}>
+            {`Texty efektov:\n${texty.map((t) => `• ${t.nazov}: ${t.text}`).join("\n")}`}
+          </Hlaska>
+        )}
         {sprava !== null && <Hlaska druh={sprava.druh}>{sprava.text}</Hlaska>}
         <button className="tlacidlo-hlavne" onClick={() => void zverejnit()} disabled={caka || problemy.length > 0}>
           {caka ? "Zverejňujem…" : "Zverejniť sadu"}
@@ -103,6 +134,7 @@ export function Prehlad() {
               <th>Verzia</th>
               <th>Zverejnená</th>
               <th>Kariet</th>
+              <th />
             </tr>
           </thead>
           <tbody>
@@ -111,6 +143,13 @@ export function Prehlad() {
                 <td>v{s.verzia}</td>
                 <td>{new Date(s.cas).toLocaleString("sk")}</td>
                 <td>{s.kariet}</td>
+                <td>
+                  {s.verzia !== posledna?.verzia && (
+                    <button className="tlacidlo-male" disabled={caka} onClick={() => void vratit(s.verzia)} title="Zverejniť túto sadu znova ako novú verziu">
+                      vrátiť
+                    </button>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>

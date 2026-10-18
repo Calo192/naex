@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Playtest 20261016-134912 — NA EX!</title>
+<style>
+:root {
+  --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --okraj: #3d3229;
+  --text: #f1e8d8; --tlmeny: #b6a790;
+  --akcent: #e9ad45; --cervena: #d0563f; --zelena: #7cbf74;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #dccdb3;
+    --text: #2a2016; --tlmeny: #5e4f3b;
+    --akcent: #9a5d06; --cervena: #a83a26; --zelena: #356e2f;
+    color-scheme: light;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 system-ui, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 28px 16px 56px; }
+h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; line-height: 1.2; }
+h1 { font-size: clamp(1.7rem, 4vw, 2.3rem); margin: 0 0 8px; }
+h2 { font-size: 1.45rem; margin: 40px 0 14px; padding-bottom: 6px; border-bottom: 1px solid var(--okraj); }
+h3 { font-size: 1.08rem; margin: 0 0 6px; }
+p { margin: 0 0 10px; }
+a { color: var(--akcent); }
+.podnadpis { color: var(--tlmeny); margin: 0; max-width: 75ch; }
+.preskoc { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+
+.dlazdice { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin: 0 0 18px; padding: 0; list-style: none; }
+.dlazdica { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; }
+.dlazdica.hlavna { border-color: var(--akcent); }
+.stitok { font-size: .82rem; color: var(--tlmeny); text-transform: uppercase; letter-spacing: .04em; }
+.hodnota { font-family: Georgia, serif; font-size: 1.9rem; line-height: 1.1; margin: 4px 0; }
+.dlazdica.hlavna .hodnota { color: var(--akcent); }
+.pozn { font-size: .88rem; color: var(--tlmeny); }
+
+.tabulka-obal { overflow-x: auto; }
+table.krit { width: 100%; border-collapse: collapse; font-size: .95rem; }
+table.krit th, table.krit td { padding: 7px 6px; text-align: left; vertical-align: middle; }
+table.krit thead th { border-bottom: 2px solid var(--okraj); font-weight: 600; }
+table.krit th button { all: unset; cursor: pointer; display: inline-flex; gap: 4px; align-items: center; border-radius: 4px; padding: 2px 2px; }
+table.krit th button:focus-visible { outline: 2px solid var(--akcent); }
+table.krit th[aria-sort="ascending"] button::after { content: "▲"; font-size: .7em; color: var(--akcent); }
+table.krit th[aria-sort="descending"] button::after { content: "▼"; font-size: .7em; color: var(--akcent); }
+table.krit tbody { border-bottom: 1px solid var(--okraj); }
+table.krit td.cislo, table.krit th.cislo { width: 22%; }
+table.krit td.poradie { width: 2.2em; color: var(--tlmeny); }
+.znamka { display: flex; align-items: center; gap: 6px; }
+.znamka b { min-width: 2.1em; font-variant-numeric: tabular-nums; }
+.pruh { flex: 1; height: 8px; background: var(--plocha-2); border-radius: 4px; overflow: hidden; min-width: 30px; }
+.pruh i { display: block; height: 100%; background: var(--akcent); border-radius: 4px; }
+.pruh i.nizka { background: var(--cervena); }
+.pruh i.vysoka { background: var(--zelena); }
+tr.dovody td { padding-top: 0; }
+details.dovod summary { cursor: pointer; color: var(--tlmeny); font-size: .88rem; }
+details.dovod[open] summary { color: var(--text); }
+details.dovod ul { margin: 6px 0 4px; padding-left: 18px; font-size: .92rem; }
+details.dovod li { margin-bottom: 4px; }
+.meno { font-weight: 600; }
+.zhrnutie-znamok { margin-top: 14px; background: var(--plocha); border-left: 3px solid var(--akcent); padding: 10px 14px; border-radius: 0 10px 10px 0; }
+
+ul.dobre { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+ul.dobre li { background: var(--plocha); border: 1px solid var(--okraj); border-left: 3px solid var(--zelena); border-radius: 10px; padding: 10px 14px; }
+.kto { font-size: .82rem; color: var(--tlmeny); }
+q, .citat { font-style: italic; }
+
+.filter { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; }
+.filter button { border: 1px solid var(--okraj); background: var(--plocha-2); color: var(--text); border-radius: 999px; padding: 6px 13px; font: inherit; font-size: .88rem; cursor: pointer; }
+.filter button[aria-pressed="true"] { background: var(--text); color: var(--pozadie); border-color: var(--text); }
+.filter-info { color: var(--tlmeny); font-size: .88rem; margin: 0 0 10px; }
+ol.zlepsit { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+ol.zlepsit > li { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; }
+ol.zlepsit > li[hidden] { display: none; }
+.cislo-z { color: var(--akcent); }
+.znacky { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 8px; }
+.znacka { font-size: .78rem; border-radius: 999px; padding: 2px 9px; border: 1px solid var(--okraj); background: var(--plocha-2); color: var(--tlmeny); }
+.znacka.oblast { color: var(--text); border-color: var(--akcent); }
+.znacka.potvrdene { color: var(--zelena); border-color: var(--zelena); }
+.znacka.chyba { color: var(--cervena); border-color: var(--cervena); }
+dl.polozka { margin: 0; display: grid; grid-template-columns: 6.2em 1fr; gap: 4px 10px; }
+dl.polozka dt { color: var(--tlmeny); font-size: .88rem; padding-top: 1px; }
+dl.polozka dd { margin: 0; }
+code { font-family: ui-monospace, Consolas, monospace; font-size: .88em; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; }
+
+.zmeny details { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 10px; padding: 0 14px; margin-bottom: 8px; }
+.zmeny summary { cursor: pointer; padding: 10px 0; font-weight: 600; }
+.zmeny summary span { font-weight: 400; color: var(--tlmeny); font-size: .88rem; }
+.zmeny details > *:not(summary) { margin-bottom: 10px; }
+.neprejavili { color: var(--tlmeny); font-size: .93rem; }
+footer { margin-top: 40px; padding-top: 12px; border-top: 1px solid var(--okraj); color: var(--tlmeny); font-size: .9rem; }
+
+@media (max-width: 560px) {
+  main { padding: 18px 10px 40px; }
+  table.krit { font-size: .86rem; }
+  table.krit th, table.krit td { padding: 6px 3px; }
+  .pruh { display: none; }
+  dl.polozka { grid-template-columns: 1fr; }
+  dl.polozka dt { padding-top: 6px; }
+}
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <h1>Playtest 20261016-134912</h1>
+  <p class="podnadpis">Jano Bitkár (hráč 1, agresívny) proti Eve Stratégovej (hráčka 2, opatrná, hrá na body) · vyhral <strong>Jano okamžite vydesením 4 z 8 starších</strong> v 5. kole, body v tej chvíli 124 : 42 (nepočítali sa) · 5 kôl, asi 26 minút (stredná hra, odohrali 4 zo 7 lokalít).</p>
+</header>
+
+<section aria-labelledby="h-znamky">
+  <h2 id="h-znamky">Známky playtesterov</h2>
+  <ul class="dlazdice">
+    <li class="dlazdica hlavna"><div class="stitok">Celkový priemer</div><div class="hodnota">6,5</div><div class="pozn">12 kritérií, obaja hráči · minule 6,8 (<a href="20261012-173832.html">playtest 20261012-173832</a>)</div></li>
+    <li class="dlazdica"><div class="stitok">Jano Bitkár</div><div class="hodnota">7,2</div><div class="pozn">vyhral · minule 6,5</div></li>
+    <li class="dlazdica"><div class="stitok">Eva Stratégová</div><div class="hodnota">5,9</div><div class="pozn">prehrala · minule 7,2</div></li>
+  </ul>
+
+  <div class="tabulka-obal">
+  <table class="krit" id="kriteria">
+    <caption class="preskoc">Známky 12 herných kritérií, stupnica 1–10. Kliknutím na hlavičku stĺpca sa tabuľka zoradí.</caption>
+    <thead><tr>
+      <th scope="col" data-col="n" aria-sort="ascending"><button type="button">#</button></th>
+      <th scope="col" data-col="k"><button type="button">Kritérium</button></th>
+      <th scope="col" class="cislo" data-col="j"><button type="button">Jano</button></th>
+      <th scope="col" class="cislo" data-col="e"><button type="button">Eva</button></th>
+      <th scope="col" class="cislo" data-col="p"><button type="button">Priemer</button></th>
+    </tr></thead>
+
+    <tbody data-n="1" data-k="Zábava" data-j="8" data-e="5" data-p="6.5">
+      <tr><td class="poradie">1</td><th scope="row">Zábava</th><td class="z" data-v="8">8</td><td class="z" data-v="5">5</td><td class="z" data-v="6.5">6,5</td></tr>
+      <tr class="dovody"><td></td><td colspan="4"><details class="dovod"><summary>Zdôvodnenia</summary><ul>
+        <li><span class="meno">Jano:</span> skladanie reťazí Pes–Puška–Kočovník a obrat po NA EX v 5. kole <q>boli veľmi príjemné</q>.</li>
+        <li><span class="meno">Eva:</span> momenty s NA EX a odpoveďou boli skvelé, <q>ale po 3. kole bolo jasné, že partia je rozhodnutá.</q></li>
+      </ul></details></td></tr>
+    </tbody>
+
+    <tbody data-n="2" data-k="Zmysluplné rozhodnutia" data-j="8" data-e="6" data-p="7">
+      <tr><td class="poradie">2</td><th scope="row">Zmysluplné rozhodnutia</th><td class="z" data-v="8">8</td><td class="z" data-v="6">6</td><td class="z" data-v="7">7</td></tr>
+      <tr class="dovody"><td></td><td colspan="4"><details class="dovod"><summary>Zdôvodnenia</summary><ul>
+        <li><span class="meno">Jano:</span> kam položiť kartu <q>mení výsledok o 3–5 zranení</q>; draft v neskorších kolách je však <q>skoro bez voľby</q>.</li>
+        <li><span class="meno">Eva:</span> draft (cigarety vs. karty), kam podstrčiť a kedy NA EX sú reálne voľby. <q>Opatrný štýl je ale potrestaný.</q></li>
+      </ul></details></td></tr>
+    </tbody>
+
+    <tbody data-n="3" data-k="Rovnováha a férovosť" data-j="5" data-e="3" data-p="4">
+      <tr><td class="poradie">3</td><th scope="row">Rovnováha a férovosť</th><td class="z" data-v="5">5</td><td class="z" data-v="3">3</td><td class="z" data-v="4">4</td></tr>
+      <tr class="dovody"><td></td><td colspan="4"><details class="dovod"><summary>Zdôvodnenia</summary><ul>
+        <li><span class="meno">Jano:</span> víťaz veľkej bitky prebytkom vytlačí starších <q>a súper to nevie zastaviť (zamknuté pozície)</q>.</li>
+        <li><span class="meno">Eva:</span> prehra posúva markery k porazenému, starší sa boja víťaza a ten zbiera body aj vydesenie: <q>kto vedie, vedie čoraz viac (snehová guľa).</q></li>
+      </ul></details></td></tr>
+    </tbody>
+
+    <tbody data-n="4" data-k="Náhoda vs. zručnosť" data-j="6" data-e="6" data-p="6">
+      <tr><td class="poradie">4</td><th scope="row">Náhoda vs. zručnosť</th><td class="z" data-v="6">6</td><td class="z" data-v="6">6</td><td class="z" data-v="6">6</td></tr>
+      <tr class="dovody"><td></td><td colspan="4"><details class="dovod"><summary>Zdôvodnenia</summary><ul>
+        <li><span class="meno">Jano:</span> ruka plná Pijanov a Miňištrantov bola náhoda, šenok a umiestnenie rozhodovali zručnosťou.</li>
+        <li><span class="meno">Eva:</span> ruka mala samé Miňištranty, Dievčiny a Pijanov, <q>súper hral s lepšími kartami zo šenku.</q></li>
+      </ul></details></td></tr>
+    </tbody>
+
+    <tbody data-n="5" data-k="Interakcia hráčov" data-j="9" data-e="8" data-p="8.5">
+      <tr><td class="poradie">5</td><th scope="row">Interakcia hráčov</th><td class="z" data-v="9">9</td><td class="z" data-v="8">8</td><td class="z" data-v="8.5">8,5</td></tr>
+      <tr class="dovody"><td></td><td colspan="4"><details class="dovod"><summary>Zdôvodnenia</summary><ul>
+        <li><span class="meno">Jano:</span> podstrčené Miňištranty s Odporom, NA EX na podstrčenú Recidivistu a jeho odpoveď: <q>hráči si naozaj skrížili plány.</q></li>
+        <li><span class="meno">Eva:</span> podstrčenie, odpoveď na NA EX, Živnostník ničiaci Dedičstvo. <q>Najlepšia časť.</q></li>
+      </ul></details></td></tr>
+    </tbody>
+
+    <tbody data-n="6" data-k="Tempo a prestoje" data-j="7" data-e="7" data-p="7">
+      <tr><td class="poradie">6</td><th scope="row">Tempo a prestoje</th><td class="z" data-v="7">7</td><td class="z" data-v="7">7</td><td class="z" data-v="7">7</td></tr>
+      <tr class="dovody"><td></td><td colspan="4"><details class="dovod"><summary>Zdôvodnenia</summary><ul>
+        <li><span class="meno">Jano:</span> 5 kôl, rýchlo; stavba šenku (4 kroky na kolo) je <q>zdĺhavá a v neskorších kolách zbytočná</q>.</li>
+        <li><span class="meno">Eva:</span> dve Zhromaždenia a Pitky v kole sú dlhé; tri bitky vyžadovali po 8 krokov stavby šenku.</li>
+      </ul></details></td></tr>
+    </tbody>
+
+    <tbody data-n="7" data-k="Zrozumiteľnosť pravidiel" data-j="6" data-e="4" data-p="5">
+      <tr><td class="poradie">7</td><th scope="row">Zrozumiteľnosť pravidiel</th><td class="z" data-v="6">6</td><td class="z" data-v="4">4</td><td class="z" data-v="5">5</td></tr>
+      <tr class="dovody"><td></td><td colspan="4"><details class="dovod"><summary>Zdôvodnenia</summary><ul>
+        <li><span class="meno">Jano:</span> orientácia podstrčených kariet a otočenej lokality <q>sa dá zistiť len pokusom</q>; prebytok 1 pri cene 3 prešiel bez vysvetlenia; Pes a Recidivista (Zviera) až po odmietnutom ťahu.</li>
+        <li><span class="meno">Eva:</span> natočenie lokality, párovanie na súperovej strane a <q>prečo prehra = priazeň a strach súpera</q>.</li>
+      </ul></details></td></tr>
+    </tbody>
+
+    <tbody data-n="8" data-k="Hĺbka vs. zložitosť" data-j="7" data-e="6" data-p="6.5">
+      <tr><td class="poradie">8</td><th scope="row">Hĺbka vs. zložitosť</th><td class="z" data-v="7">7</td><td class="z" data-v="6">6</td><td class="z" data-v="6.5">6,5</td></tr>
+      <tr class="dovody"><td></td><td colspan="4"><details class="dovod"><summary>Zdôvodnenia</summary><ul>
+        <li><span class="meno">Jano:</span> spoje a NA EX sú hlboké; <q>veľa tagov a výnimiek (Kočovník, Pes, Nástroje) je zbytočné bremeno.</q></li>
+        <li><span class="meno">Eva:</span> veľa hĺbky, ale zložitosť <q>ide aj do zbytočností (Dievčina, Pijan s ranou do vlastnej partie).</q></li>
+      </ul></details></td></tr>
+    </tbody>
+
+    <tbody data-n="9" data-k="Znovuhrateľnosť" data-j="7" data-e="7" data-p="7">
+      <tr><td class="poradie">9</td><th scope="row">Znovuhrateľnosť</th><td class="z" data-v="7">7</td><td class="z" data-v="7">7</td><td class="z" data-v="7">7</td></tr>
+      <tr class="dovody"><td></td><td colspan="4"><details class="dovod"><summary>Zdôvodnenia</summary><ul>
+        <li><span class="meno">Jano:</span> rôzni starší a lokality, ale <q>víťazná cesta (tlačiť starších prebytkom) je príliš zjavná.</q></li>
+        <li><span class="meno">Eva:</span> náhodní starší na scorecardoch menia hodnotu vecí (cigareta asi 6 bodov, lokalita asi 10).</li>
+      </ul></details></td></tr>
+    </tbody>
+
+    <tbody data-n="10" data-k="Téma a prepojenie" data-j="8" data-e="8" data-p="8">
+      <tr><td class="poradie">10</td><th scope="row">Téma a prepojenie</th><td class="z" data-v="8">8</td><td class="z" data-v="8">8</td><td class="z" data-v="8">8</td></tr>
+      <tr class="dovody"><td></td><td colspan="4"><details class="dovod"><summary>Zdôvodnenia</summary><ul>
+        <li><span class="meno">Jano:</span> <q>Pečeň, Dlh a poldeci žijú v Pitke prirodzene; Cigorky a Cirhóza sedia.</q></li>
+        <li><span class="meno">Eva:</span> poldeci, pečeň, Dlh a NA EX sedia k téme.</li>
+      </ul></details></td></tr>
+    </tbody>
+
+    <tbody data-n="11" data-k="Napätie a priebeh" data-j="6" data-e="3" data-p="4.5">
+      <tr><td class="poradie">11</td><th scope="row">Napätie a priebeh</th><td class="z" data-v="6">6</td><td class="z" data-v="3">3</td><td class="z" data-v="4.5">4,5</td></tr>
+      <tr class="dovody"><td></td><td colspan="4"><details class="dovod"><summary>Zdôvodnenia</summary><ul>
+        <li><span class="meno">Jano:</span> 5. kolo malo napätie (11 : 8 po NA EX), <q>inak som viedol od 3. kola.</q></li>
+        <li><span class="meno">Eva:</span> <q>Od 3. kola som nemala šancu otočiť. Predčasný koniec vydesením prišiel bez varovania.</q></li>
+      </ul></details></td></tr>
+    </tbody>
+
+    <tbody data-n="12" data-k="Originalita" data-j="9" data-e="8" data-p="8.5">
+      <tr><td class="poradie">12</td><th scope="row">Originalita</th><td class="z" data-v="9">9</td><td class="z" data-v="8">8</td><td class="z" data-v="8.5">8,5</td></tr>
+      <tr class="dovody"><td></td><td colspan="4"><details class="dovod"><summary>Zdôvodnenia</summary><ul>
+        <li><span class="meno">Jano:</span> spoje hrán, otáčanie, podstrčenie a strach starších.</li>
+        <li><span class="meno">Eva:</span> spoje kariet, podstrčenie a NA EX, ktorý zdvojuje neaktívne akcie.</li>
+      </ul></details></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="zhrnutie-znamok">
+    <p>Zhodli sa na tempe (7 / 7), téme (8 / 8), znovuhrateľnosti (7 / 7) a náhode (6 / 6). Interakciu a originalitu obaja hodnotia vysoko (9 / 8). Najviac sa rozišli v zábave (8 : 5), napätí (6 : 3), rovnováhe (5 : 3) a zrozumiteľnosti (6 : 4). Víťaz Jano problém vidí tiež, ale partiu si užil. Eva prehrala všetkých päť bitiek a <q>od 3. kola nemala šancu</q>. Príčinu menujú obaja rovnako: prebytok, ktorý sa nabaľuje až do okamžitého vydesenia.</p>
+    <p>Oproti minulému playtestu sa zlepšilo tempo (6 → 7). Klesli rovnováha (5 → 4), napätie (5,5 → 4,5) a hĺbka (7,5 → 6,5).</p>
+  </div>
+</section>
+
+<section aria-labelledby="h-dobre">
+  <h2 id="h-dobre">Čo bolo dobré</h2>
+  <ul class="dobre">
+    <li><strong>Odpoveď na NA EX.</strong> V 5. kole dala Eva NA EX na svoju Recidivistu podstrčenú na Janovu stranu. Neprepojená Pecka a Petelica sa zdvojili a bolo 11 : 8 pre ňu. Jano odpovedal Pijanom, ktorý jej akcie spároval, NA EX ich tým zrušilo a bitka skončila 9 : 4 pre neho. Obaja to uvádzajú ako najlepší moment partie. <span class="citat">„Skvelý moment, mechanika odpovede funguje.“</span> <span class="kto">— obaja; citát Jano (denník)</span></li>
+    <li><strong>Podstrkovanie kariet do súperovej partie.</strong> Živnostník na Evinej strane jej Nástupom dvakrát zahodil Cigorky z Dedičstva (Hasič ho Janovi vrátil z odhadzovacieho balíčka). Evin Miňištrant s Odporom zas Janovi zrušil Cigaretku. Interakcia dostala 9 a 8. <span class="citat">„Veľmi silné a zábavné.“</span> <span class="kto">— obaja; citát Eva</span></li>
+    <li><strong>Rozhodnutia pri vykladaní.</strong> Kam a komu položiť kartu a ktorý spoj obsadiť pri lokalite má podľa Jana dosah <q>3–5 zranení</q>. Eva pridáva rozhodnutie, či draft stopnúť za cigarety. <span class="kto">— obaja</span></li>
+    <li><strong>Téma a originalita.</strong> Pečeň, Dlh, poldeci a NA EX podľa oboch sedia k mechanikám (8 / 8). Spoje, otáčanie, podstrčenie a strach starších považujú za originálne (9 / 8). <span class="citat">„Cigorky a Cirhóza sedia.“</span> <span class="kto">— obaja; citát Jano</span></li>
+    <li><strong>Tempo kola.</strong> Tempo dostalo 7 a 7 (minule 6 a 6). Partia trvala 5 kôl a asi 26 minút. <span class="kto">— obaja; k stavbe šenku majú stále výhrady (pozri nižšie)</span></li>
+  </ul>
+</section>
+
+<section aria-labelledby="h-zlepsit">
+  <h2 id="h-zlepsit">Čo treba zlepšiť</h2>
+  <p class="filter-info">Zoradené podľa prínosu, najdôležitejšie hore.</p>
+  <div class="filter" role="group" aria-label="Filter podľa oblasti" hidden>
+    <button type="button" data-f="vsetko" aria-pressed="true">Všetko</button>
+    <button type="button" data-f="balans" aria-pressed="false">Pravidlá a balans</button>
+    <button type="button" data-f="karty" aria-pressed="false">Karty</button>
+    <button type="button" data-f="chyba" aria-pressed="false">Chyba v hre</button>
+    <button type="button" data-f="zrozumitelnost" aria-pressed="false">Zrozumiteľnosť pravidiel</button>
+  </div>
+  <p class="filter-info" id="filter-pocet" aria-live="polite"></p>
+
+  <ol class="zlepsit" id="zlepsit">
+    <li data-oblast="balans">
+      <h3><span class="cislo-z">1.</span> Prebytok sa nabaľuje až do okamžitého vydesenia (tretí playtest za sebou)</h3>
+      <div class="znacky"><span class="znacka oblast">pravidlá a balans</span><span class="znacka">obaja</span><span class="znacka">náročnosť: stredná</span></div>
+      <dl class="polozka">
+        <dt>Čo je zle</dt><dd>Jano vyhral bitky 6 : 5, 8 : 4, 6 : 0, 11 : 0 a 9 : 4, takže mal prebytky 1, 4, 6, 11 a 5. Prebytkom 11 v 4. kole dal dvoch starších na krajnú pozíciu a ďalších štyroch na predposlednú. Eva vedela Pohoršením vrátiť len o krok Krčmárku a Poštárku, zamknutých starších nepohla. V 5. kole stačili dva posuny a hra o 7 lokalít skončila po štyroch. Napätie dostalo 6 a 3, rovnováha 5 a 3. Jano: <q>kto vyhrá dve-tri bitky s veľkým rozdielom, zvyšok hry je len formalita.</q> Eva: <q>prehrávať bitky = plniť súperovi vydesenie.</q> Na snehovú guľu prispieva aj cena NA EX: porazená Eva mala po NA EX vypité poldeci, a teda menší limit vykladania (podľa nej 1 proti Janovým 3–4 kartám).</dd>
+        <dt>Návrh</dt><dd>Jano: najviac 2 body prebytku na jedného staršieho za kolo, alebo nech porazený po veľkej prehre posunie jedného staršieho zadarmo späť. Eva: obmedziť prebytok alebo dať jeho časť porazenému, kartu, ktorá posúva markery späť, a stále ukazovať, koľko starších je vydesených a koľko stojí na predposlednej pozícii. Pri NA EX navrhuje, aby vypité poldeci neznižovali limit tak výrazne.</dd>
+        <dt>Overenie</dt><dd>Hra postupovala podľa PRAVIDIEL: prebytok smie ísť viackrát tomu istému staršiemu (§8, Výsledok), krajnú pozíciu zamyká §9 (Zamknutá pozícia) a vydesenie polovice starších je okamžitá výhra (§1). Ide o balans, nie o chybu.</dd>
+      </dl>
+    </li>
+
+    <li data-oblast="balans">
+      <h3><span class="cislo-z">2.</span> Cigareta má po novom bodovaní hodnotu asi 6 bodov</h3>
+      <div class="znacky"><span class="znacka oblast">pravidlá a balans</span><span class="znacka">Eva (Jano to uvádza medzi problémami)</span><span class="znacka">náročnosť: malá</span></div>
+      <dl class="polozka">
+        <dt>Čo je zle</dt><dd>Aktívna podmienka za cigarety bola na šiestich riadkoch scorecardov a každá boduje obom. Všetkých 42 Eviných bodov na konci tvorilo 7 cigariet × 6 riadkov. Eva preto stopla draft vo všetkých piatich kolách (vzala 2, 1, 2, 1 a 2 karty). Podľa nej je <q>stop = 3 cigarety = 18 bodov</q> silnejší ako bojovať. Body tentoraz nerozhodli, lebo partia skončila vydesením. Minule tvorili cigarety 18 z 35 Eviných bodov.</dd>
+        <dt>Návrh</dt><dd>Eva: zastropovať body za cigarety. Ďalšou možnosťou je rátať podmienku cigariet len raz na hráča bez ohľadu na počet scorecardov alebo znížiť odmenu za stop.</dd>
+      </dl>
+    </li>
+
+    <li data-oblast="chyba">
+      <h3><span class="cislo-z">3.</span> Miňištrant: posledný posun prebytku za neúplnú cenu (stále neopravené)</h3>
+      <div class="znacky"><span class="znacka oblast">chyba v hre</span><span class="znacka">Jano</span><span class="znacka">náročnosť: malá</span><span class="znacka chyba">potvrdené v kóde</span></div>
+      <dl class="polozka">
+        <dt>Čo je zle</dt><dd>V 2. kole mal Jano v partii dvoch vlastných Miňištrantov, posun teda stál 3. Z prebytku 4 urobil dva posuny (3 + 1) namiesto jedného. Jano: <q>Prebytok 1 pri cene posunu 3 prešiel — zámer?</q> Tú istú chybu hlásil už playtest 20261012-173832.</dd>
+        <dt>Návrh</dt><dd>Posun povoliť, len ak zvyšok pokryje celú cenu. Ak má posledný zvyšok platiť, treba to výslovne napísať do PRAVIDIEL.</dd>
+        <dt>Overenie</dt><dd>Potvrdené: <code>cmdPrebytok</code> v <code>packages/core/src/engine.ts</code> kontroluje len <code>prebytokZostava &gt; 0</code> a zvyšok zrazí cez <code>Math.max(0, zostatok − cena)</code>. Cena je <code>1 + počet Miňištrantov</code> v partii víťaza (<code>cenaPrebytku</code> v <code>effects.ts</code>).</dd>
+      </dl>
+    </li>
+
+    <li data-oblast="zrozumitelnost">
+      <h3><span class="cislo-z">4.</span> Ktorý okraj sa spojí pri podstrčení a pri otočenej lokalite</h3>
+      <div class="znacky"><span class="znacka oblast">zrozumiteľnosť pravidiel</span><span class="znacka">obaja</span><span class="znacka">náročnosť: malá</span></div>
+      <dl class="polozka">
+        <dt>Čo je zle</dt><dd>Jano prvého podstrčeného Pijana položil <q>naslepo</q> a spoj sa vôbec nespároval. Eva nevedela, <q>ktoré okraje sa spoja</q>, ani kto vlastní akciu lokality, keď sú na jednom okraji dve karty. Silu spoja pri lokalite pritom obaja zažili: Janov Záhradkár na Evinej strane jej <q>zabral moju stranu lokality</q>. Spoje so súperovou kartou a otočenú lokalitu hráči zisťovali skúšaním už štvrtý playtest za sebou. Zrozumiteľnosť dostala 6 a 4.</dd>
+        <dt>Návrh</dt><dd>Obaja chcú náhľad spojov pred vyložením, aj na súperovej strane a pri otočenej lokalite. Do PRAVIDIEL §4 doplniť obrázkový príklad podstrčenej karty pri lokalite a otočenej lokality a vetu, že akciu lokality dostane majiteľ karty, ktorá s ňou susedí.</dd>
+      </dl>
+    </li>
+
+    <li data-oblast="zrozumitelnost">
+      <h3><span class="cislo-z">5.</span> Prečo porazený dostáva priazeň a víťaz strach a body</h3>
+      <div class="znacky"><span class="znacka oblast">zrozumiteľnosť pravidiel</span><span class="znacka">Eva</span><span class="znacka">náročnosť: malá</span><span class="znacka potvrdene">overené: zámer</span></div>
+      <dl class="polozka">
+        <dt>Čo je zle</dt><dd>Eva po každej prehre <q>s údivom sledovala, ako sa markery starších posúvajú ku mne</q>. V denníku si poznačila: <q>Divná mechanika – prehrá sa a súper dostane strach bodov. … Veľmi nezrozumiteľné pre nového hráča.</q> Ako priazeň mala od 4. kola napríklad limit ruky 8 (Veterinár), v prehratej partii jej to však nepomohlo.</dd>
+        <dt>Návrh</dt><dd>Do PRAVIDIEL §9 dať príklad na celý reťazec: prebytok víťaza → porazený má priazeň teraz, víťaza sa starší boja, víťaz za to dostáva body a blíži sa k vydeseniu. Eva sa pýtala aj na pravidlo zamknutej pozície (<q>musel byť na predposlednej na začiatku kola</q>), takže príklad by mal ukázať aj zamknutie.</dd>
+        <dt>Overenie</dt><dd>Podľa PRAVIDIEL §8 a §9 je to zámer („Priazeň a strach nikdy nepatria tomu istému hráčovi“).</dd>
+      </dl>
+    </li>
+
+    <li data-oblast="karty">
+      <h3><span class="cislo-z">6.</span> Mŕtve karty v ruke a slabý šenok v neskorších kolách</h3>
+      <div class="znacky"><span class="znacka oblast">karty</span><span class="znacka">obaja</span><span class="znacka">náročnosť: stredná</span></div>
+      <dl class="polozka">
+        <dt>Čo je zle</dt><dd>Obaja menujú ako slabé Miňištranta, Pijana, Dievčinu na vydaj a Milujúcu manželku. Eva mala v ruke <q>dve Dievčiny, tri Pijany, tri Miňištranty</q>, Jano Pijanov a Miňištrantov vykladal <q>len kvôli limitu</q>. V 5. kole Jano zo šenku nevzal nič. Ponúkal Nealko, Svätý text, Dievčinu, Výherný automat, Pijana a Šarlatána, Eva si vzala dve Vínka. Jano: draft sa <q>zmenil na pasívne preklikávanie</q>. Navyše mu priznané Manželky zobrali z odmeny za stop 2 z 3 cigariet. Ako karty navyše Jano menuje Nealko, Vínko, Výherný automat a Svätý text, Eva kópie Miňištranta a Pijana.</dd>
+        <dt>Návrh</dt><dd>Jano: odmena aspoň 1 cigareta za nevzatie aj s Manželkami, alebo pri drafte smieť odhodiť jednu kartu z ruky do šenku. Eva: menej kópií Miňištranta a Pijana. V tvorcovi prepracovať Dievčinu a Manželku (opakovaná sťažnosť).</dd>
+      </dl>
+    </li>
+
+    <li data-oblast="karty">
+      <h3><span class="cislo-z">7.</span> Chýbajú obranné karty</h3>
+      <div class="znacky"><span class="znacka oblast">karty</span><span class="znacka">obaja (každý inú)</span><span class="znacka">náročnosť: stredná</span></div>
+      <dl class="polozka">
+        <dt>Čo je zle</dt><dd>Eve chýba karta, ktorá posúva markery späť, ako obrana proti vydeseniu. Odpor by chcela na viacerých miestach. Jano postráda kartu, ktorá zruší súperovo NA EX, a lacnú obranu proti podstrčenej karte. Eva upozorňuje, že na NA EX sa dá odpovedať, len ak má hráč v ruke vhodnú kartu: <q>hráč, ktorý nemá v ruke vhodnú kartu, nemá šancu.</q></dd>
+        <dt>Návrh</dt><dd>V tvorcovi pridať aspoň jednu kartu s efektom „posuň marker staršieho o 1 k sebe“ (aj z predposlednej pozície) a jednu, ktorá zruší alebo zablokuje NA EX v Pitke.</dd>
+      </dl>
+    </li>
+
+    <li data-oblast="balans">
+      <h3><span class="cislo-z">8.</span> Stavba šenku je v neskorších kolách zdĺhavá</h3>
+      <div class="znacky"><span class="znacka oblast">pravidlá a balans</span><span class="znacka">obaja</span><span class="znacka">náročnosť: stredná</span></div>
+      <dl class="polozka">
+        <dt>Čo je zle</dt><dd>Draft zabral 66 zo 179 ťahov: 40 krokov stavby, 20 brania a 6 stopov. Jano: stavba je <q>zdĺhavá a v neskorších kolách zbytočná</q>. Eva: tri bitky vyžadovali po 8 krokov stavby. Tempo napriek tomu dostalo 7 a 7.</dd>
+        <dt>Návrh</dt><dd>Konkrétny návrh hráči nedali. Do úvahy prichádza kratšia stavba (2 výmeny namiesto 4), najmä keď v šenku ostávajú nevzaté karty.</dd>
+      </dl>
+    </li>
+
+    <li data-oblast="karty">
+      <h3><span class="cislo-z">9.</span> Recidivista je Zviera, Pes s ním nesmie byť v partii</h3>
+      <div class="znacky"><span class="znacka oblast">karty</span><span class="znacka">Jano</span><span class="znacka">náročnosť: malá</span><span class="znacka potvrdene">overené: podľa dát</span></div>
+      <dl class="polozka">
+        <dt>Čo je zle</dt><dd>V 4. kole hra Janovi dvakrát odmietla vyložiť Recidivistu: <q>Pes nesmie byť medzi tvojimi kartami s iným zvieraťom.</q> Jeho Pes ležal na Evinej strane, a predsa patril do jeho partie. Že je Recidivista Zviera, Jano zistil až z odmietnutia. Text karty o zvierati nehovorí.</dd>
+        <dt>Návrh</dt><dd>V tvorcovi overiť, či má Recidivista mať tag Zviera (ak áno, je to vtip, ktorý stojí za to zachovať). Odmietnutie by malo menovať kartu, s ktorou je konflikt.</dd>
+        <dt>Overenie</dt><dd>Správne podľa dát: Recidivista má tagy Občan, Kriminál, Chlap, Zviera a <code>zvieraKonflikt</code> v <code>engine.ts</code> kontroluje celú partiu hráča bez ohľadu na stranu (pravidlo „partia = tvoje karty“).</dd>
+      </dl>
+    </li>
+  </ol>
+</section>
+
+<section aria-labelledby="h-zmeny" class="zmeny">
+  <h2 id="h-zmeny">Overenie nedávnych zmien</h2>
+  <p>Skúšobné zmeny zo stránky <a href="zmeny-pravidiel.html">Zmeny z playtestov</a>, ktorých sa partia dotkla.</p>
+
+  <details>
+    <summary>Bodovanie bez strán <span>— 124 : 42, strach starších dal Janovi 72 bodov</span></summary>
+    <p>Súčty sú výrazne vyššie: na konci 124 : 42 (minule 35 : 0). Jano mal 72 bodov za strach starších zo zónových podmienok, 40 za 4 lokality (5 aktívnych riadkov × 8) a 12 za cigarety. Evine body tvorili len cigarety (7 × 6 riadkov). Tlačiť markery sa teda oplatí najviac. Rozhodlo však vydesenie, nie body. Eva pochopila, že cigareta boduje na všetkých scorecardoch (<q>~6 bodov</q>). Nerozumela však smeru: <q>prehrá sa a súper dostane strach bodov.</q> Či hráči rozumejú, prečo strach jedného staršieho pridáva body na inom scorecarde, nekomentoval nikto. Postreh z overenia: Veterinár má dvakrát Znepokojenie a kód rátal oba riadky (Jano za dvoch starších na úrovni 1 dostal 4 body, nie 2). PRAVIDLÁ §10 tento prípad výslovne neriešia.</p>
+  </details>
+
+  <details>
+    <summary>Pečeň a zadĺženie len počas Pitky <span>— 2 Cirhózy, 0 Dlhov</span></summary>
+    <p>Vznikli 2 Cirhózy, obe Janovi v 2. kole. V každej z dvoch Pitiek dosiahol prah 3 (podľa neho z Pijana a Kočovníka). Jano: <q>prah 3 je dosiahnuteľný rýchlo</q>. Dlh nevznikol žiadny: zadĺženie vystúplo štyrikrát na 1 a vynulovalo sa. Exekútor nehrozil (0/10 a 0/12). Minule mal každý hráč 1 Dlh a 2 Cirhózy.</p>
+  </details>
+
+  <details>
+    <summary>Draft so stavbou šenku <span>— útočník : obranca 1 : 4, tempo 7 a 7</span></summary>
+    <p>Útočník vyhral 1 z 5 bitiek (minule 4 zo 7). Vyhral len Jano v 1. kole, potom štyrikrát útočila Eva ako porazená a prehrala. Obranca Jano bral zo šenku prvý a v 4 z 5 draftov si vzal 3 karty (Živnostník, Puška, Hasič, Recidivista). Eva vždy stopla pri jednej alebo dvoch kartách kvôli cigaretám. Draft zabral 66 zo 179 ťahov. Na kolo pripadlo asi 36 ťahov a 5,1 minúty (minule 27,3 a 3,9), tempo však dostalo 7 a 7 (minule 6 a 6). Sťažnosť na slabé karty v šenku trvá. Do šenku dávali karty, ktoré chceli sami, napríklad Eva Psa v 1. kole. Odvodzovanie súperových odhodených kariet nespomenul nikto. Pri overovaní: PRAVIDLÁ §7 na začiatku stále píšu, že útočník „draftuje prvý“, kým odsek o braní a hra hovoria, že začína obranca.</p>
+  </details>
+
+  <details>
+    <summary>Slabé karty v ruke: priznanie, Liečba a Pohreb <span>— Pohreb raz, Liečba nie</span></summary>
+    <p>Jano priznal 2 Manželky a obe Cirhózy a Pohrebom spálil Cirhózu s Miňištrantom. Liečbu dvakrát vynechal. Eva nepriznala nič (Absťák jej priznala hra). Manželku si nechala zámerne, lebo priznaná by jej uberala cigarety. Dlhy neboli. Sťažnosti na kvalitu ruky ostali u oboch (Pijany, Miňištranti, Dievčiny).</p>
+  </details>
+
+  <details>
+    <summary>Odpoveď na NA EX <span>— 3 NA EX, 3 odpovede, jedna otočila bitku</span></summary>
+    <p>Všetky 3 NA EX dala Eva ako porazená. Víťaz bitky nedal NA EX ani raz z 5 (minule 1 zo 7). Jano odpovedal všetky tri razy. V 5. kole odpoveď Pijanom otočila 11 : 8 pre Evu na 9 : 4 pre Jana. V 1. kole jeho Pijan nespravil nič. Pitku odpoveď nepredĺžila. Obaja ju chvália. Eva upozorňuje, že bez vhodnej karty v ruke sa odpovedať nedá.</p>
+  </details>
+
+  <details>
+    <summary>NA EX len na vlastné karty <span>— žiadna bezpečná výhra</span></summary>
+    <p>NA EX nevyhralo ani jednu bitku z troch. Eva ho dala aj na vlastnú Recidivistu podstrčenú na Janovu stranu, kde zdvojilo neprepojenú Pecku a Petelicu. Kliatby z NA EX nevznikli. Na zrušenie vlastných kliatob ho nepoužil nikto.</p>
+  </details>
+
+  <details>
+    <summary>Strany línie a partia = tvoje karty <span>— podstrčených 38 % kariet</span></summary>
+    <p>Z 37 kariet vyložených do línie skončilo na súperovej strane 14 (Jano 10 z 25, Eva 4 z 12), minule 16 %. Jano vďaka Kočovníkovi podstrkoval <q>zadarmo</q>. Kradnutie strany lokality bolo citeľné (Záhradkár pri Zbernom dvore, Živnostník pri Zastávke). Rozdiel strana / partia hráči chápu, no ktorý okraj sa spojí, zisťovali skúškou (bod 4 vyššie).</p>
+  </details>
+
+  <details>
+    <summary>Limit ruky a priazeň Zberateľ <span>— ruky 5–8 a 5–10</span></summary>
+    <p>Ruky mali 5–8 kariet (Jano) a 5–10 (Eva). Nad limit odhodil Jano 1 kartu, Eva 2. Priazeň Zberateľa (Veterinár) dostala od 4. kola Eva, lebo Jano tlačil Veterinára k nej. Výhodu z vyššieho limitu nespomenula.</p>
+  </details>
+
+  <details>
+    <summary>Ruka 5 kariet a kliatby do balíčka · Priznávanie kliatob <span>— karty nedošli</span></summary>
+    <p>Karty nedošli. Doberacie balíčky sa minuli už v 2. kole a ďalej sa miešal odhadzovací, takže sa vracali slabé karty. Priznaných kariet bolo 5: Jano 2 Manželky a 2 Cirhózy, Eve hra priznala Absťák.</p>
+  </details>
+
+  <details>
+    <summary>Body za kus: lokalita a starší po 2 <span>— lokalita má hodnotu 10 bodov</span></summary>
+    <p>Lokality bodovali na piatich aktívnych riadkoch, teda 10 bodov za kus pre každého, kto ju ovládol. Najviac dal jeden starší 24 bodov (Veterinár Janovi). Partiu ale ukončilo vydesenie.</p>
+  </details>
+
+  <details>
+    <summary>Všetky efekty kariet vyhodnocuje hra <span>— bez ⚠</span></summary>
+    <p>Varovanie o nevyhodnotenom efekte sa neobjavilo, obaja píšu „žiadne som nezaznamenal(a)“. Vyhodnotili sa Živnostník (dvakrát zahodil Cigorky), Hasič (vrátil Živnostníka), Cigorky, Dievčina na vydaj (trikrát sa zahodila, Dlhy nezahodila) a priznaná Manželka (−2 cigarety pri stope). Balíčky neklesli pod 5 kariet.</p>
+  </details>
+
+  <details>
+    <summary>Tempo: nevyhnutné ťahy, priznanie bez ťahu, prahy <span>— 179 ťahov za 5 kôl</span></summary>
+    <p>Partia mala 179 ťahov za 5 kôl (5 odmietnutých), minule 191 za 7. Na kolo ich bolo viac (asi 36 proti 27,3), najviac pre stavbu šenku a 22 posunov prebytku. Prah Cirhózy 3 Jano dosiahol dvakrát v jednom kole. Exekútor nehrozil.</p>
+  </details>
+
+  <details>
+    <summary>Dĺžka hry 5 / 7 / 11 lokalít <span>— skončila po 4 zo 7 lokalít</span></summary>
+    <p>Stredná hra skončila v 5. kole po asi 26 minútach. Ovládnuté boli 4 lokality, všetky Janove. Druhýkrát za sebou partia skončila vydesením skôr, ako sa odohrali všetky lokality.</p>
+  </details>
+
+  <details>
+    <summary>Playtest: spätná väzba na web <span>— opäť nefungovala</span></summary>
+    <p>Účty „Jano Bitkár (AI)“ a „Eva Stratégová (AI)“ sú stále návštevníci, server zverejnenie odmietol. Pripravené texty sú v <code>playtest/20261016-134912/hrac1/</code> (3 názory, 2 komentáre) a <code>hrac2/</code> (2 názory, 1 komentár). Účty treba povýšiť na hráčov.</p>
+  </details>
+
+  <p class="neprejavili"><strong>Neprejavili sa:</strong> Vypiť (do dna) nepoužil nikto. Bitka o staršieho sa nehrala, takže ani karta staršieho v strede a nahradený starší. „Body za kus až od oranžovej zóny“ nové bodovanie bez strán zrušilo. Zmeny rozhrania (draft ťahaním a pás Pitiek, rozloženie a mobil, starší hore, výber kliknutím) sa nehodnotili, lebo hráči hrali cez textového klienta.</p>
+</section>
+
+<footer>
+  <p>Dve AI postavy hrali proti sebe cez skutočný server bez znalosti súperovej ruky; jedna partia je jeden údaj.</p>
+</footer>
+
+</main>
+<script>
+(function () {
+  // Známky: číslo + pruh (bez JS ostane aspoň číslo z data-v).
+  document.querySelectorAll("td.z").forEach(function (td) {
+    var v = parseFloat(td.getAttribute("data-v"));
+    var trieda = v <= 5 ? "nizka" : v >= 8 ? "vysoka" : "";
+    td.innerHTML = '<span class="znamka"><b>' + String(v).replace(".", ",") +
+      '</b><span class="pruh" aria-hidden="true"><i class="' + trieda + '" style="width:' + (v * 10) + '%"></i></span></span>';
+  });
+
+  // Triedenie tabuľky.
+  var tabulka = document.getElementById("kriteria");
+  var hlavicky = tabulka.querySelectorAll("thead th[data-col]");
+  hlavicky.forEach(function (th) {
+    th.querySelector("button").addEventListener("click", function () {
+      var col = th.getAttribute("data-col");
+      var predtym = th.getAttribute("aria-sort");
+      var smer;
+      if (predtym === "ascending") smer = "descending";
+      else if (predtym === "descending") smer = "ascending";
+      else smer = (col === "n" || col === "k") ? "ascending" : "descending";
+      hlavicky.forEach(function (h) { h.removeAttribute("aria-sort"); });
+      th.setAttribute("aria-sort", smer);
+      var tela = Array.prototype.slice.call(tabulka.tBodies);
+      tela.sort(function (a, b) {
+        var x = a.dataset[col], y = b.dataset[col], r;
+        if (col === "k") r = x.localeCompare(y, "sk");
+        else r = parseFloat(x) - parseFloat(y);
+        if (r === 0) r = parseFloat(a.dataset.n) - parseFloat(b.dataset.n);
+        return smer === "ascending" ? r : -r;
+      });
+      tela.forEach(function (t) { tabulka.appendChild(t); });
+    });
+  });
+
+  // Filter zlepšení podľa oblasti.
+  var filter = document.querySelector(".filter");
+  var polozky = document.querySelectorAll("#zlepsit > li");
+  var pocet = document.getElementById("filter-pocet");
+  filter.hidden = false;
+  function nastav(f) {
+    var n = 0;
+    polozky.forEach(function (li) {
+      var ukaz = f === "vsetko" || li.getAttribute("data-oblast") === f;
+      li.hidden = !ukaz;
+      if (ukaz) n++;
+    });
+    filter.querySelectorAll("button").forEach(function (b) {
+      b.setAttribute("aria-pressed", b.getAttribute("data-f") === f ? "true" : "false");
+    });
+    pocet.textContent = "Zobrazené: " + n + " z " + polozky.length + ".";
+  }
+  filter.querySelectorAll("button").forEach(function (b) {
+    b.addEventListener("click", function () { nastav(b.getAttribute("data-f")); });
+  });
+  nastav("vsetko");
+})();
+</script>
+</body>
+</html>

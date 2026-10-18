@@ -1,0 +1,765 @@
+// Agent Admin na webe NA EX!: tvorba kariet cez admin API (to isté, čo robí
+// človek v sekcii Tvorba), podklady pre rebalans, zálohy, overenie pred
+// zverejnením a zverejnenie.
+//
+// Agent má vlastný účet „Admin (AI)“ s úrovňou subadmin — tvorba kariet áno,
+// meniť úrovne účtov nie. Pri prvom použití ho nástroj založí a povýši
+// heslom admina z .env (NAEX_ADMIN_LOGIN / NAEX_ADMIN_HESLO). Heslo účtu je
+// v playtest/ucty.json (mimo gitu). Web: --url, NAEX_WEB_URL, inak :8787.
+//
+// Použitie (z koreňa repozitára):
+//   node --experimental-strip-types --no-warnings tools/admin/admin.ts <príkaz> [argumenty]
+//
+// Karty
+//   prehlad                       všetky návrhy: akcie, permutácie, kópie, obrázok, efekt, problémy
+//   karta <id>                    návrh karty ako JSON (vzor na úpravu)
+//   ako-vidi <id>                 karta tak, ako ju vidí hráč a agent playtester (všetky varianty)
+//   uloz <subor.json>             uloží návrh (id je v súbore) — nová karta alebo úprava
+//   zmaz <id> --potvrdene         zmaže návrh (predtým zálohuje)
+//   zaloha [poznamka]             celý obsah tvorcu do admin-agent/zalohy/
+//   obnov <zaloha.json> <id>…     vráti návrhy kariet zo zálohy (všetky: --vsetky)
+// Rebalans a kontrola
+//   karty-v-partiach [--od N] [--playtesty]   štatistiky kariet z odohraných partií (web, playtesty)
+//   sila [--pokusov N]            hromadná simulácia sily kariet z návrhov (náhodné línie)
+//   texty                         kontrola textov efektov (spúšťač, preklepy, zmenený implementovaný efekt)
+//   zmienky <id>                  kde v pravidlách, webe a inštrukciách agentov sa karta spomína
+//   starsi                        starší, ich karty a bodovacie karty s bodmi za podmienky
+// Vzhľad
+//   vzhlad                        akcie, kľúčové slová, kategórie, predvolené nastavenia
+//   akcia <kluc> [--nazov T] [--popis T]       zobrazí alebo upraví akciu
+//   ikona <kluc> <subor.svg>      nová SVG ikona akcie
+//   bodovacie                     bodovacie karty starších a ikony bodovania
+// Ilustrácie (generujú sa cez Leonardo.Ai API, kľúč NAEX_LEONARDO_KEY v .env)
+//   prompt <id> [--kategoria K] "<námet>"      prompt a referenčné obrázky; uloží zadanie
+//   generuj <id> [--pocet 1|2] [--sila LOW|MID|HIGH] [--seed N] [--navyse]
+//                                 jedno kolo v Leonarde (Nano Banana, 1024²) — stojí kredit!
+//                                 najviac 3 kolá na kartu; --navyse len so súhlasom Michala
+//   leonardo                      kolá generovania a cena po kartách
+//   obrazok <id-karty> <subor>    ilustrácia do knižnice aj ku karte
+//   nahraj <subor> [druh]         nahrá obrázok (karta | kniznica | pozadie | ikona), vypíše id média
+//   stiahni <id-media> <subor>    stiahne obrázok z webu (napr. ilustráciu karty)
+//   kniznica                      obrázky v knižnici
+// Zverejnenie
+//   overit                        nanečisto to, čo urobí zverejnenie, + karty zmenené od poslednej sady
+//   zverejni --potvrdene          zverejní VŠETKY návrhy ako novú sadu (len so súhlasom Michala)
+//   sady                          história zverejnených sád
+//   vrat <verzia> --potvrdene [--aj-navrhy]   zverejní staršiu sadu znova (návrat po neúspešnom rebalanse)
+// Spätná väzba a web
+//   nazory [kategoria]            spätná väzba hráčov
+//   komentar <id-nazoru> <subor>  komentár k názoru (ako Admin (AI))
+//   stav <id-nazoru> <stav>       nove | prijate | planovane | hotove | zamietnute
+//   playtesty                     reporty playtestov
+//   pouzivatelia                  účty na webe
+//   ucet                          prihlási agenta (prvýkrát založí a povýši účet)
+
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { basename, extname, join } from "node:path";
+import { DatabaseSync } from "node:sqlite";
+import type { GameData, Podmienka, StatKarty, StatistikyKariet } from "@naex/core";
+import { REGISTER, loadGameData, normalizujStatistikyKariet, printedSides, scitajStatistikyKariet } from "@naex/core";
+import eldersJson from "../../packages/core/data/elders.json" with { type: "json" };
+import scorecardsJson from "../../packages/core/data/scorecards.json" with { type: "json" };
+import type { AkciaDef, BodovaciaKarta, IkonaBodovania, KartaNavrh, Kategoria, KlucoveSlovo, Nastavenia } from "@naex/tvorba";
+import { chybyNavrhu, doCardsJson, doScorecardsJson, kontrolaTextov, neznameAkcie, silaKariet, variantyKarty } from "@naex/tvorba";
+import { prihlasAgenta, webUrl } from "../playtest/web.ts";
+import { MAX_KOL_NA_KARTU, generuj, nacitajZaznam } from "./leonardo.ts";
+import type { Sila } from "./leonardo.ts";
+import { MODEL, REFERENCIE, cestyReferencii, kategoriaPodlaTagov, zostavPrompt } from "./styl.ts";
+
+export const MENO_AGENTA = "Admin";
+export const PRACOVNY = "admin-agent";
+
+interface ObsahTvorcu {
+  readonly karty: readonly KartaNavrh[];
+  readonly nastavenia: Nastavenia;
+  readonly akcie: readonly AkciaDef[];
+  readonly klucoveSlova: readonly KlucoveSlovo[];
+  readonly kategorie: readonly Kategoria[];
+  readonly bodovacie: readonly BodovaciaKarta[];
+  readonly ikonyBodovania: readonly IkonaBodovania[];
+  readonly zverejnenaVerzia: number;
+}
+
+function nacitajEnv(): void {
+  try {
+    if (existsSync(".env")) process.loadEnvFile(".env");
+  } catch {
+    // .env je nepovinný
+  }
+}
+
+async function volaj(url: string, metoda: string, cesta: string, cookie: string, telo?: unknown, typ?: string): Promise<Response> {
+  const surove = telo instanceof Uint8Array;
+  return fetch(`${url}${cesta}`, {
+    method: metoda,
+    headers: {
+      "x-naex": "1",
+      cookie,
+      ...(telo === undefined ? {} : { "content-type": typ ?? (surove ? "application/octet-stream" : "application/json") }),
+    },
+    body: telo === undefined ? null : surove ? new Blob([telo as Uint8Array<ArrayBuffer>]) : JSON.stringify(telo),
+  });
+}
+
+async function json<T>(r: Response): Promise<T> {
+  const t = await r.text();
+  if (!r.ok) {
+    let chyba = t;
+    try {
+      chyba = (JSON.parse(t) as { chyba?: string }).chyba ?? t;
+    } catch {
+      // nie je JSON
+    }
+    throw new Error(`${r.status}: ${chyba}`);
+  }
+  return JSON.parse(t) as T;
+}
+
+/**
+ * Prihlási agenta. Nový účet je návštevník — povýši ho admin z .env na
+ * subadmina (tvorba kariet a správa obsahu, nie úrovne účtov).
+ */
+export async function prihlasAdmina(url: string): Promise<{ cookie: string; meno: string }> {
+  nacitajEnv();
+  const ucet = await prihlasAgenta(url, MENO_AGENTA);
+  const ja = await json<{ pouzivatel: { id: number; rola: string } | null }>(await volaj(url, "GET", "/api/ja", ucet.cookie));
+  const rola = ja.pouzivatel?.rola;
+  if (rola === "subadmin" || rola === "admin") return { cookie: ucet.cookie, meno: ucet.meno };
+
+  const heslo = process.env.NAEX_ADMIN_HESLO;
+  if (heslo === undefined || heslo === "") {
+    throw new Error(`Účet „${ucet.meno}“ je ${rola ?? "?"}, nie subadmin. Povýš ho v Tvorba → Hráči, alebo daj NAEX_ADMIN_HESLO do .env.`);
+  }
+  const login = process.env.NAEX_ADMIN_LOGIN ?? "Admin";
+  const r = await volaj(url, "POST", "/api/prihlasenie", "", { login, heslo });
+  await json(r);
+  const adminCookie = (r.headers.get("set-cookie") ?? "").split(";")[0] ?? "";
+  if (ja.pouzivatel === null) throw new Error("Agent nie je prihlásený.");
+  await json(await volaj(url, "PATCH", `/api/admin/pouzivatelia/${ja.pouzivatel.id}`, adminCookie, { rola: "subadmin" }));
+  await volaj(url, "POST", "/api/odhlasenie", adminCookie);
+  console.error(`(Účet „${ucet.meno}“ povýšený na subadmina.)`);
+  return { cookie: ucet.cookie, meno: ucet.meno };
+}
+
+// ---- výpisy ----------------------------------------------------------------------
+
+const strana = (s: KartaNavrh["lava"]): string => {
+  const akcie = Object.entries(s.akcie)
+    .filter(([, n]) => n > 0)
+    .map(([k, n]) => (n > 1 ? `${k}×${n}` : k))
+    .join(" ");
+  const blok = s.blokovane.length > 0 ? ` [blok ${s.blokovane.join(",")}]` : "";
+  const povolene = Object.keys(s.povolene).length > 0 ? " [obmedzené pozície]" : "";
+  return (akcie || "—") + blok + povolene;
+};
+
+function problemyKarty(k: KartaNavrh): string[] {
+  const out = [...chybyNavrhu(k)];
+  const nezname = neznameAkcie(k);
+  if (nezname.length > 0) out.push(`akcie bez pravidiel: ${nezname.join(", ")}`);
+  if (k.obrazok === null) out.push("bez ilustrácie");
+  return out;
+}
+
+/** Stav efektu v jadre: native/impl = hra ho vyhodnocuje, manual = len pripomenie v logu. */
+export function stavEfektu(k: Pick<KartaNavrh, "id" | "efekt">): string {
+  if (k.efekt.trim() === "") return "bez efektu";
+  return REGISTER[k.id] ?? "manual (jadro ho nepozná)";
+}
+
+function vypisPrehlad(o: ObsahTvorcu): void {
+  const kopii = o.karty.reduce((s, k) => s + k.kopie * Math.max(1, variantyKarty(k).pocet), 0);
+  console.log(`Návrhov: ${o.karty.length}, vytlačených kariet: ${kopii}. Zverejnená sada: verzia ${o.zverejnenaVerzia}.`);
+  for (const k of o.karty) {
+    const v = variantyKarty(k);
+    console.log(`\n${k.id} — ${k.nazov} [${k.tagy.join(", ")}] · ${v.pocet} permutácií × ${k.kopie} kópií`);
+    console.log(`  ľavá: ${strana(k.lava)} | pravá: ${strana(k.prava)}`);
+    if (k.efekt.trim() !== "") console.log(`  efekt (${stavEfektu(k)}): ${k.efekt.replace(/\s+/g, " ")}`);
+    const p = problemyKarty(k);
+    if (p.length > 0) console.log(`  ⚠ ${p.join("; ")}`);
+  }
+}
+
+/** Herné dáta z rozpracovaných návrhov (karty s neznámymi akciami vynechá). */
+function dataZNavrhov(o: ObsahTvorcu): GameData {
+  const hratelne = o.karty.filter((k) => neznameAkcie(k).length === 0 && variantyKarty(k).pocet > 0);
+  return loadGameData(doCardsJson(hratelne, "admin-agent"), eldersJson, scorecardsJson);
+}
+
+/** To isté, čo kontroluje server pri zverejnení (Obsah.zverejni) — bez zápisu. */
+export function overZverejnenie(o: ObsahTvorcu): string[] {
+  const problemy: string[] = [];
+  for (const k of o.karty) {
+    for (const ch of chybyNavrhu(k)) problemy.push(`${k.nazov}: ${ch}`);
+    const nezname = neznameAkcie(k);
+    if (nezname.length > 0) problemy.push(`${k.nazov}: akcia ${nezname.join(", ")} nemá v hre pravidlá — najprv ju treba naprogramovať v jadre.`);
+  }
+  const body = (scorecardsJson as { body: Record<Podmienka, number> }).body;
+  const sc = doScorecardsJson(o.bodovacie, o.ikonyBodovania, body);
+  problemy.push(...sc.problemy);
+  if (problemy.length === 0) {
+    try {
+      loadGameData(doCardsJson(o.karty, "overenie"), eldersJson, sc.json);
+    } catch (err) {
+      problemy.push(err instanceof Error ? err.message : String(err));
+    }
+  }
+  return problemy;
+}
+
+function zalohuj(o: ObsahTvorcu, poznamka: string): string {
+  mkdirSync(join(PRACOVNY, "zalohy"), { recursive: true });
+  const cas = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+  const slug = poznamka.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 40);
+  const subor = join(PRACOVNY, "zalohy", `${cas}${slug === "" ? "" : `-${slug}`}.json`);
+  writeFileSync(subor, JSON.stringify({ poznamka, cas: Date.now(), ...o }, null, 2));
+  return subor;
+}
+
+const TYP_OBRAZKA: Record<string, string> = { ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png", ".webp": "image/webp", ".svg": "image/svg+xml" };
+
+const f1 = (x: number): string => x.toFixed(1);
+const pct = (x: number): string => `${Math.round(x * 100)} %`;
+
+/** Jednoduchá textová tabuľka so zarovnanými stĺpcami. */
+function tabulka(hlavicka: readonly string[], riadky: readonly (readonly string[])[]): string {
+  const sirky = hlavicka.map((h, i) => Math.max(h.length, ...riadky.map((r) => (r[i] ?? "").length)));
+  const riadok = (r: readonly string[]) => r.map((c, i) => (i === 0 ? c.padEnd(sirky[i] ?? 0) : c.padStart(sirky[i] ?? 0))).join("  ");
+  return [riadok(hlavicka), sirky.map((s) => "-".repeat(s)).join("  "), ...riadky.map(riadok)].join("\n");
+}
+
+/** Štatistiky kariet z databáz playtestov (playtest/<id>/server-data/naex.sqlite). */
+function statistikyPlaytestov(): { partie: number; relacie: number; karty: StatistikyKariet } {
+  let karty: StatistikyKariet = {};
+  let partie = 0;
+  let relacie = 0;
+  if (!existsSync("playtest")) return { partie, relacie, karty };
+  for (const r of readdirSync("playtest")) {
+    const subor = join("playtest", r, "server-data", "naex.sqlite");
+    if (!existsSync(subor)) continue;
+    const db = new DatabaseSync(subor, { readOnly: true });
+    try {
+      const stlpce = db.prepare("PRAGMA table_info(partie)").all() as { name: string }[];
+      if (!stlpce.some((c) => c.name === "karty")) continue;
+      const rows = db.prepare("SELECT karty FROM partie WHERE karty IS NOT NULL").all() as { karty: string }[];
+      if (rows.length > 0) relacie++;
+      for (const row of rows) {
+        karty = scitajStatistikyKariet(karty, normalizujStatistikyKariet(JSON.parse(row.karty) as unknown));
+        partie++;
+      }
+    } finally {
+      db.close();
+    }
+  }
+  return { partie, relacie, karty };
+}
+
+function vypisStatistikyKariet(karty: StatistikyKariet, nazov: (id: string) => string): void {
+  const naBitku = (s: StatKarty, x: number) => (s.bitky === 0 ? "—" : f1(x / s.bitky));
+  const riadky = Object.entries(karty)
+    .sort(([, a], [, b]) => b.bitky - a.bitky || b.zoSenku - a.zoSenku)
+    .map(([id, s]) => [
+      `${nazov(id)} (${id})`,
+      String(s.partie),
+      String(s.zoSenku),
+      String(s.vylozene),
+      String(s.podstrcene),
+      String(s.priznane),
+      String(s.naex),
+      String(s.bitky),
+      s.bitky === 0 ? "—" : pct(s.vyhrateBitky / s.bitky),
+      naBitku(s, s.aktivne),
+      naBitku(s, s.tuhe),
+      naBitku(s, s.zle),
+    ]);
+  console.log(tabulka(["karta", "partie", "šenok", "vyložená", "podstrčená", "priznaná", "NA EX", "v bitke", "výhry", "⌀akt", "⌀tuhé", "⌀kliat"], riadky));
+}
+
+/** Súbory, v ktorých sa spomínajú karty: pravidlá, stránky webu, inštrukcie agentov, efekty. */
+function suboryZmienok(): string[] {
+  const out: string[] = ["docs/PRAVIDLA.md", "packages/core/src/effects.ts", "packages/core/src/engine.ts", "tools/playtest/hrac.ts"];
+  for (const adr of ["apps/web/src/stranky", ".claude/agents", ".claude/skills/playtest", ".claude/skills/protihrac"]) {
+    if (!existsSync(adr)) continue;
+    for (const f of readdirSync(adr)) {
+      const cesta = join(adr, f);
+      if (statSync(cesta).isFile() && /\.(md|tsx?|txt)$/.test(f)) out.push(cesta);
+    }
+  }
+  return out.filter((f) => existsSync(f));
+}
+
+const bezDiakritiky = (s: string): string => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+
+// ---- príkazový riadok ------------------------------------------------------------
+
+const S_HODNOTOU = new Set(["--url", "--od", "--pokusov", "--seed", "--popis", "--nazov", "--kategoria", "--pocet", "--sila"]);
+
+function rozober(argv: readonly string[]): { poz: string[]; prep: Map<string, string | true> } {
+  const poz: string[] = [];
+  const prep = new Map<string, string | true>();
+  for (let i = 0; i < argv.length; i++) {
+    const a = argv[i] ?? "";
+    if (!a.startsWith("--")) poz.push(a);
+    else if (S_HODNOTOU.has(a)) prep.set(a, argv[++i] ?? "");
+    else prep.set(a, true);
+  }
+  return { poz, prep };
+}
+
+async function main(): Promise<void> {
+  const argv = process.argv.slice(2);
+  const url = webUrl(argv);
+  const { poz, prep } = rozober(argv);
+  const hodnota = (k: string): string | undefined => {
+    const v = prep.get(k);
+    return typeof v === "string" ? v : undefined;
+  };
+  const potvrdene = prep.has("--potvrdene");
+  const [prikaz, ...arg] = poz;
+  if (prikaz === undefined) throw new Error("Chýba príkaz (pozri hlavičku tools/admin/admin.ts).");
+
+  // Príkazy bez webu.
+  if (prikaz === "zmienky") {
+    const id = arg[0];
+    if (id === undefined) throw new Error("Použitie: zmienky <id-karty>");
+    const def = (JSON.parse(readFileSync("packages/core/data/cards.json", "utf8")) as { cards: { id: string; name: string }[] }).cards.find((c) => c.id === id);
+    const hladane = [id, ...(def === undefined ? [] : [def.name])].map(bezDiakritiky);
+    let pocet = 0;
+    for (const f of suboryZmienok()) {
+      readFileSync(f, "utf8")
+        .split(/\r?\n/)
+        .forEach((riadok, i) => {
+          const r = bezDiakritiky(riadok);
+          if (hladane.some((h) => new RegExp(`(^|[^a-z0-9_])${h.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}([^a-z0-9_]|$)`).test(r))) {
+            pocet++;
+            console.log(`${f}:${i + 1}: ${riadok.trim().slice(0, 180)}`);
+          }
+        });
+    }
+    console.log(pocet === 0 ? `Karta ${id} sa nikde nespomína.` : `\n${pocet} zmienok — po zmene karty skontroluj, či ešte sedia.`);
+    return;
+  }
+
+  if (prikaz === "generuj") {
+    const id = arg[0];
+    if (id === undefined) throw new Error("Použitie: generuj <id-karty> [--pocet 1|2] [--sila LOW|MID|HIGH] [--seed N] [--navyse]");
+    nacitajEnv();
+    const sila = (hodnota("--sila") ?? "MID").toUpperCase();
+    if (sila !== "LOW" && sila !== "MID" && sila !== "HIGH") throw new Error("--sila je LOW, MID alebo HIGH.");
+    const seed = hodnota("--seed");
+    const kolo = await generuj({
+      id,
+      adr: join(PRACOVNY, "obrazky", id),
+      pracovny: PRACOVNY,
+      pocet: Number(hodnota("--pocet") ?? "2"),
+      sila: sila as Sila,
+      navyse: prep.has("--navyse"),
+      ...(seed === undefined ? {} : { seed: Number(seed) }),
+    });
+    console.log(`Kolo ${kolo.kolo}/${MAX_KOL_NA_KARTU} pre ${id} (sila ${kolo.sila}, cena ${kolo.cena ?? "neuvedená"}):`);
+    for (const f of kolo.subory) console.log(`  ${f}`);
+    console.log(`\nPozri ich (Read) vedľa referencií a najlepší nastav: admin.ts obrazok ${id} <subor>`);
+    return;
+  }
+
+  if (prikaz === "leonardo") {
+    const koren = join(PRACOVNY, "obrazky");
+    const riadky: string[][] = [];
+    let spolu = 0;
+    for (const id of existsSync(koren) ? readdirSync(koren) : []) {
+      const { kola } = nacitajZaznam(join(koren, id));
+      if (kola.length === 0) continue;
+      const ceny = kola.map((k) => Number.parseFloat(k.cena ?? "")).filter((x) => Number.isFinite(x));
+      const suma = ceny.reduce((a, b) => a + b, 0);
+      spolu += suma;
+      riadky.push([id, `${kola.length}/${MAX_KOL_NA_KARTU}`, String(kola.reduce((a, k) => a + k.pocet, 0)), suma.toFixed(4)]);
+    }
+    if (riadky.length === 0) console.log("Zatiaľ nič negenerované cez API.");
+    else console.log(`${tabulka(["karta", "kolá", "obrázky", "cena"], riadky)}\nSpolu: ${spolu.toFixed(4)} (jednotka podľa API, pri PAYG USD)`);
+    return;
+  }
+
+  const { cookie, meno } = await prihlasAdmina(url);
+  const api = <T>(metoda: string, cesta: string, telo?: unknown, typ?: string): Promise<T> =>
+    volaj(url, metoda, `/api${cesta}`, cookie, telo, typ).then((r) => json<T>(r));
+  const obsah = (): Promise<ObsahTvorcu> => api<ObsahTvorcu>("GET", "/admin/obsah");
+  const nahraj = async (subor: string, druh: string, nazov: string): Promise<string> => {
+    if (!existsSync(subor)) throw new Error(`Súbor ${subor} neexistuje.`);
+    const typ = TYP_OBRAZKA[extname(subor).toLowerCase()];
+    if (typ === undefined) throw new Error("Obrázok musí byť .jpg, .png, .webp (ikona .svg).");
+    const m = await api<{ id: string }>("POST", `/admin/media?druh=${druh}&nazov=${encodeURIComponent(nazov)}`, new Uint8Array(readFileSync(subor)), typ);
+    return m.id;
+  };
+  const karta = async (id: string | undefined): Promise<{ o: ObsahTvorcu; k: KartaNavrh }> => {
+    const o = await obsah();
+    const k = o.karty.find((x) => x.id === id);
+    if (k === undefined) throw new Error(`Karta „${id ?? ""}“ v tvorcovi nie je.`);
+    return { o, k };
+  };
+
+  switch (prikaz) {
+    case "ucet":
+      console.log(`Prihlásený ako „${meno}“ (subadmin) na ${url}.`);
+      break;
+
+    case "prehlad":
+      vypisPrehlad(await obsah());
+      break;
+
+    case "karta": {
+      const { k } = await karta(arg[0]);
+      console.log(JSON.stringify(k, null, 2));
+      console.log(`\n(efekt: ${stavEfektu(k)}; permutácií: ${variantyKarty(k).pocet})`);
+      break;
+    }
+
+    case "ako-vidi": {
+      const { o, k } = await karta(arg[0]);
+      const data = dataZNavrhov(o);
+      const v = data.variants.get(k.id);
+      if (v === undefined) throw new Error(`Karta ${k.id} sa do hry nedá načítať (neznáme akcie alebo žiadna permutácia).`);
+      console.log(`Takto kartu vypíše klient playtestera (tools/playtest/hrac.ts), ${v.total} variantov:`);
+      let n = 0;
+      for (let l = 0; l < v.left.length; l++) {
+        for (let r = 0; r < v.right.length; r++) {
+          if (++n > 8) continue;
+          const s = printedSides(data, { defId: k.id, leftLayout: l, rightLayout: r });
+          const f = (a: readonly (string | null)[]) => a.map((x) => x ?? "—").join(", ");
+          console.log(`#${n} ${k.nazov} [${k.tagy.join(", ")}] — ${k.efekt}\n      ľavá strana (zhora): ${f(s.left)} | pravá strana: ${f(s.right)}`);
+        }
+      }
+      if (n > 8) console.log(`… a ďalších ${n - 8} variantov.`);
+      console.log("\nV línii: karta podstrčená na súperovu stranu sa číta podľa PRAVIDIEL §4 — over, ktorá hrana sa dotkne lokality.");
+      break;
+    }
+
+    case "uloz": {
+      const subor = arg[0];
+      if (subor === undefined || !existsSync(subor)) throw new Error("Chýba súbor s návrhom karty (JSON).");
+      const navrh = JSON.parse(readFileSync(subor, "utf8")) as Partial<KartaNavrh>;
+      if (typeof navrh.id !== "string" || !/^[a-z0-9_]{1,64}$/.test(navrh.id)) throw new Error("Návrh potrebuje id: malé písmená, číslice, _ (napr. stary_mlynar).");
+      const o = await obsah();
+      const stara = o.karty.find((k) => k.id === navrh.id);
+      // Nová karta preberá predvolené rozmery a mierky z nastavení tvorcu.
+      const plny = { obrazok: null, farba: null, kopie: 1, efekt: "", tagy: [], ...o.nastavenia, ...stara, ...navrh };
+      const ulozena = await api<KartaNavrh>("PUT", `/admin/karty/${navrh.id}`, plny);
+      console.log(`${stara === undefined ? "Nová karta" : "Upravená karta"} ${ulozena.id} — ${ulozena.nazov} (${variantyKarty(ulozena).pocet} permutácií, efekt: ${stavEfektu(ulozena)}).`);
+      const p = problemyKarty(ulozena);
+      if (p.length > 0) console.log(`⚠ ${p.join("; ")}`);
+      for (const t of kontrolaTextov([ulozena], { klucoveSlova: o.klucoveSlova, akcie: o.akcie, zverejnene: (await api<{ karty: KartaNavrh[] }>("GET", "/sada")).karty })) {
+        console.log(`⚠ text: ${t.text}`);
+      }
+      break;
+    }
+
+    case "zmaz": {
+      const id = arg[0];
+      if (id === undefined) throw new Error("Chýba id karty.");
+      if (!potvrdene) throw new Error("Mazanie karty treba potvrdiť: --potvrdene (a mať na to súhlas Michala).");
+      console.log(`Záloha: ${zalohuj(await obsah(), `pred zmazanim ${id}`)}`);
+      await api("DELETE", `/admin/karty/${id}`);
+      console.log(`Návrh ${id} zmazaný (zverejnená sada sa nemení, kým sa nezverejní nová).`);
+      break;
+    }
+
+    case "zaloha":
+      console.log(`Záloha: ${zalohuj(await obsah(), arg.join(" "))}`);
+      break;
+
+    case "obnov": {
+      const subor = arg[0];
+      if (subor === undefined || !existsSync(subor)) throw new Error("Chýba súbor zálohy.");
+      const zaloha = JSON.parse(readFileSync(subor, "utf8")) as ObsahTvorcu;
+      const ids = prep.has("--vsetky") ? zaloha.karty.map((k) => k.id) : arg.slice(1);
+      if (ids.length === 0) throw new Error("Povedz, ktoré karty obnoviť (id…), alebo --vsetky.");
+      console.log(`Záloha pred obnovou: ${zalohuj(await obsah(), "pred obnovou")}`);
+      for (const id of ids) {
+        const k = zaloha.karty.find((x) => x.id === id);
+        if (k === undefined) {
+          console.log(`  ${id}: v zálohe nie je`);
+          continue;
+        }
+        await api("PUT", `/admin/karty/${id}`, k);
+        console.log(`  ${id}: obnovená`);
+      }
+      break;
+    }
+
+    // ---- rebalans a kontrola
+
+    case "karty-v-partiach": {
+      const o = await obsah();
+      const nazov = (id: string) => o.karty.find((k) => k.id === id)?.nazov ?? id;
+      const od = hodnota("--od");
+      const web = await api<{ partie: number; karty: StatistikyKariet }>("GET", `/admin/statistiky-kariet${od === undefined ? "" : `?od=${od}`}`);
+      let karty = web.karty;
+      let popis = `Web ${url}: ${web.partie} partií${od === undefined ? "" : ` od sady v${od}`}.`;
+      if (prep.has("--playtesty")) {
+        const p = statistikyPlaytestov();
+        karty = scitajStatistikyKariet(karty, p.karty);
+        popis += ` Playtesty: ${p.partie} partií z ${p.relacie} relácií (verziu sady nefiltrujem).`;
+      }
+      console.log(popis);
+      if (Object.keys(karty).length === 0) {
+        console.log("Zatiaľ žiadne partie so štatistikami kariet (zapisujú sa od 2026-10-16).");
+        break;
+      }
+      console.log("Stĺpce ⌀ sú na jednu bitku, v ktorej karta ležala v línii. Jedna partia je jeden údaj.\n");
+      vypisStatistikyKariet(karty, nazov);
+      break;
+    }
+
+    case "sila": {
+      const o = await obsah();
+      const pokusov = Math.max(500, Math.min(100000, Number(hodnota("--pokusov") ?? 10000) || 10000));
+      const vysledok = silaKariet(dataZNavrhov(o), { pokusov, seed: Number(hodnota("--seed") ?? 1) || 1 });
+      console.log(`Hromadná simulácia z návrhov: ${pokusov} náhodných línií (len akcie a spoje; efekty, NA EX a podstrkovanie nie).\n`);
+      console.log(
+        tabulka(
+          ["karta", "⌀tuhé", "⌀aktívnych", "aktivácia", "⌀kliatbové", "výskytov"],
+          vysledok.map((s) => [`${s.nazov} (${s.defId})`, f1(s.tuhe), f1(s.aktivne), pct(s.aktivacia), f1(s.zle), String(s.vyskytov)]),
+        ),
+      );
+      break;
+    }
+
+    case "texty": {
+      const o = await obsah();
+      const sada = await api<{ karty: KartaNavrh[] }>("GET", "/sada");
+      const problemy = kontrolaTextov(o.karty, { klucoveSlova: o.klucoveSlova, akcie: o.akcie, zverejnene: sada.karty });
+      if (problemy.length === 0) console.log("Texty efektov sú v poriadku.");
+      for (const p of problemy) console.log(`${p.id} [${p.uroven}] ${p.text}`);
+      break;
+    }
+
+    case "starsi": {
+      const o = await obsah();
+      const body = (scorecardsJson as { body: Record<string, number> }).body;
+      const ids = (eldersJson as { elders: { id: string }[] }).elders.map((e) => e.id);
+      console.log("STARŠÍ (karty ležia na ukazovateľoch; priazeň a body dáva bodovacia karta, ktorú starší dostane náhodne):");
+      for (const id of ids) {
+        const k = o.karty.find((x) => x.id === id);
+        console.log(`  ${id} — ${k?.nazov ?? "?"}: ľavá ${k === undefined ? "?" : strana(k.lava)} | pravá ${k === undefined ? "?" : strana(k.prava)}${k !== undefined && k.efekt !== "" ? `\n      efekt (${stavEfektu(k)}): ${k.efekt}` : ""}`);
+      }
+      const ikona = (id: string | null) => (id === null ? "—" : (o.ikonyBodovania.find((i) => i.id === id)?.podmienka ?? id));
+      console.log("\nBODOVACIE KARTY (názov = priazeň; podmienky vľavo | vpravo):");
+      for (const b of o.bodovacie) console.log(`  ${b.nazov}: ${b.lava.map(ikona).join(" ")} | ${b.prava.map(ikona).join(" ")}`);
+      console.log(`\nBODY ZA PODMIENKY (jadro, scorecards.json): ${Object.entries(body).map(([k, v]) => `${k} ${v}`).join(", ")}`);
+      console.log("Hodnoty priazní (sila 1/2/3 × 2) a pravidlá strachu: PRAVIDLÁ §9; body: §10.");
+      break;
+    }
+
+    // ---- vzhľad
+
+    case "vzhlad": {
+      const o = await obsah();
+      console.log("AKCIE (kľúč — názov: popis):");
+      for (const a of [...o.akcie].sort((x, y) => x.poradie - y.poradie)) console.log(`  ${a.kluc} — ${a.nazov}${a.ikona.typ === "svg" ? " [SVG ikona]" : ""}: ${a.popis.replace(/\s+/g, " ")}`);
+      console.log("\nKĽÚČOVÉ SLOVÁ (formátovanie textu efektu):");
+      for (const k of o.klucoveSlova) console.log(`  ${k.slovo}${k.tucne ? " [tučné]" : ""}${k.kurziva ? " [kurzíva]" : ""}${k.novyRiadok ? " [nový riadok]" : ""}${k.tvary.length > 0 ? ` tvary: ${k.tvary.join(", ")}` : ""} — ${k.popis.replace(/\s+/g, " ")}`);
+      console.log("\nKATEGÓRIE (farba karty podľa prvého zapnutého tagu):");
+      for (const k of o.kategorie) console.log(`  ${k.nazov}: odtieň ${k.odtien}${k.zapnuta ? "" : " (vypnutá)"}`);
+      console.log(`\nPREDVOLENÉ: ${JSON.stringify(o.nastavenia)}`);
+      break;
+    }
+
+    case "akcia": {
+      const kluc = arg[0];
+      const o = await obsah();
+      const a = o.akcie.find((x) => x.kluc === kluc);
+      if (a === undefined) throw new Error(`Akcia „${kluc ?? ""}“ neexistuje (pozri vzhlad).`);
+      const nazov = hodnota("--nazov");
+      const popis = hodnota("--popis");
+      if (nazov === undefined && popis === undefined) {
+        console.log(JSON.stringify(a, null, 2));
+        break;
+      }
+      console.log(`Záloha: ${zalohuj(o, `pred upravou akcie ${a.kluc}`)}`);
+      const nova = await api<AkciaDef>("PUT", `/admin/akcie/${encodeURIComponent(a.kluc)}`, { ...a, nazov: nazov ?? a.nazov, popis: popis ?? a.popis });
+      console.log(`Akcia ${nova.kluc}: ${nova.nazov} — ${nova.popis}`);
+      break;
+    }
+
+    case "ikona": {
+      const [kluc, subor] = arg;
+      if (kluc === undefined || subor === undefined || extname(subor).toLowerCase() !== ".svg") throw new Error("Použitie: ikona <kluc> <subor.svg>");
+      const o = await obsah();
+      const a = o.akcie.find((x) => x.kluc === kluc);
+      if (a === undefined) throw new Error(`Akcia „${kluc}“ neexistuje (pozri vzhlad).`);
+      console.log(`Záloha: ${zalohuj(o, `pred ikonou ${kluc}`)}`);
+      const media = await nahraj(subor, "ikona", `${a.nazov}.svg`);
+      await api("PUT", `/admin/akcie/${encodeURIComponent(kluc)}`, { ...a, ikona: { typ: "svg", media } });
+      console.log(`Akcia ${kluc} má novú ikonu (médium ${media}). Vrátiť vstavanú ikonu vie Michal v Tvorba → Akcie a ikony.`);
+      break;
+    }
+
+    case "bodovacie": {
+      const o = await obsah();
+      const ikona = (id: string | null) => (id === null ? "—" : (o.ikonyBodovania.find((i) => i.id === id)?.podmienka ?? id));
+      for (const b of o.bodovacie) console.log(`${b.id} — ${b.nazov}: ľavá ${b.lava.map(ikona).join(" ")} | pravá ${b.prava.map(ikona).join(" ")}`);
+      break;
+    }
+
+    // ---- ilustrácie
+
+    case "prompt": {
+      const [id, namet] = arg;
+      if (id === undefined || namet === undefined) throw new Error('Použitie: prompt <id-karty> [--kategoria K] "<námet po anglicky>"');
+      const k = (await obsah()).karty.find((x) => x.id === id);
+      const kat = hodnota("--kategoria") ?? (k === undefined ? null : kategoriaPodlaTagov(k.tagy));
+      if (kat === null || REFERENCIE[kat] === undefined) throw new Error(`Povedz --kategoria (${Object.keys(REFERENCIE).join(", ")}).`);
+      const prompt = zostavPrompt(namet);
+      const refs = cestyReferencii(kat);
+      const adr = join(PRACOVNY, "obrazky", id);
+      mkdirSync(adr, { recursive: true });
+      writeFileSync(join(adr, "prompt.txt"), `${prompt}\n`);
+      writeFileSync(join(adr, "zadanie.json"), `${JSON.stringify({ prompt, kategoria: kat, referencie: refs }, null, 2)}\n`);
+      console.log(`Model v Leonardo.Ai: ${MODEL}, pomer 1:1 (1024 × 1024), 2 obrázky.\n`);
+      console.log(`PROMPT (uložený v ${join(adr, "prompt.txt")}):\n${prompt}\n`);
+      console.log(`REFERENČNÉ OBRÁZKY (Image Reference, sila Mid; kategória ${kat}):`);
+      for (const r of refs) console.log(`  ${r}`);
+      console.log(`\nGeneruj: admin.ts generuj ${id}   (alebo hotové obrázky ulož do ${adr}/ a vyber: admin.ts obrazok ${id} <subor>)`);
+      break;
+    }
+
+    case "nahraj": {
+      const subor = arg[0] ?? "";
+      const druh = arg[1] ?? "kniznica";
+      console.log(await nahraj(subor, druh, basename(subor)));
+      break;
+    }
+
+    case "obrazok": {
+      const [id, subor] = arg;
+      if (id === undefined || subor === undefined) throw new Error("Použitie: obrazok <id-karty> <subor>");
+      const { k } = await karta(id);
+      // Do knižnice, aby si ju Michal v tvorcovi vedel orezať (náhľad 512 px robí
+      // prehliadač). Médium je jedno na obsah, takže to isté id slúži aj karte.
+      const media = await nahraj(subor, "kniznica", `${k.nazov} (${basename(subor)})`);
+      // Bez knižníc na obrázky nevieme zmenšiť — náhľad je zatiaľ ten istý súbor.
+      await api("PUT", `/admin/karty/${id}`, { ...k, obrazok: { plny: media, nahlad: media } });
+      console.log(`Ilustrácia karty ${id} nastavená (médium ${media}); je aj v knižnici tvorcu.`);
+      break;
+    }
+
+    case "stiahni": {
+      const [id, subor] = arg;
+      if (id === undefined || subor === undefined) throw new Error("Použitie: stiahni <id-media> <subor>");
+      const r = await fetch(`${url}/media/${id}`);
+      if (!r.ok) throw new Error(`Médium ${id}: ${r.status}`);
+      writeFileSync(subor, new Uint8Array(await r.arrayBuffer()));
+      console.log(`Uložené: ${subor}`);
+      break;
+    }
+
+    case "kniznica": {
+      const { media } = await api<{ media: { id: string; nazov: string }[] }>("GET", "/admin/media?druh=kniznica");
+      for (const m of media) console.log(`${m.id}  ${m.nazov}`);
+      break;
+    }
+
+    // ---- zverejnenie
+
+    case "overit": {
+      const o = await obsah();
+      const problemy = overZverejnenie(o);
+      console.log(problemy.length === 0 ? "Sada sa dá zverejniť — žiadne problémy." : `Zverejnenie by zlyhalo:\n${problemy.map((p) => `  - ${p}`).join("\n")}`);
+      const sada = await api<{ karty: KartaNavrh[] }>("GET", "/sada");
+      const texty = kontrolaTextov(o.karty, { klucoveSlova: o.klucoveSlova, akcie: o.akcie, zverejnene: sada.karty });
+      if (texty.length > 0) console.log(`Texty efektov (${texty.length}): ${texty.map((t) => `${t.id}: ${t.text}`).join(" · ")}`);
+      // Zverejnenie vydá VŠETKY návrhy — aj rozpracované od Michala či subadminov.
+      const { sady } = await api<{ sady: { verzia: number; cas: number }[] }>("GET", "/admin/sady");
+      const od = sady[0]?.cas ?? 0;
+      const zmenene = o.karty.filter((k) => k.upravene > od);
+      console.log(
+        zmenene.length === 0
+          ? `Od zverejnenia v${sady[0]?.verzia ?? "?"} sa žiadna karta nezmenila.`
+          : `Zmenené od zverejnenia v${sady[0]?.verzia ?? "?"} (zverejnenie ich vydá všetky): ${zmenene.map((k) => `${k.id} (${new Date(k.upravene).toISOString().slice(0, 16)})`).join(", ")}`,
+      );
+      process.exitCode = problemy.length === 0 ? 0 : 1;
+      break;
+    }
+
+    case "zverejni": {
+      if (!potvrdene) throw new Error("Zverejnenie mení hru pre všetkých hráčov — treba --potvrdene a súhlas Michala.");
+      const o = await obsah();
+      const problemy = overZverejnenie(o);
+      if (problemy.length > 0) throw new Error(`Zverejnenie by zlyhalo:\n${problemy.join("\n")}`);
+      console.log(`Záloha: ${zalohuj(o, "pred zverejnenim")}`);
+      const r = await api<{ verzia: number; kariet: number }>("POST", "/admin/zverejnit");
+      console.log(`Zverejnená sada verzia ${r.verzia} (${r.kariet} kariet). Nové partie pobežia na nej.`);
+      break;
+    }
+
+    case "sady": {
+      const { sady } = await api<{ sady: { verzia: number; cas: number; autor: number | null; kariet: number }[] }>("GET", "/admin/sady");
+      for (const s of sady) console.log(`v${s.verzia}  ${new Date(s.cas).toISOString().slice(0, 16)}  autor #${s.autor ?? "systém"}  ${s.kariet} kariet`);
+      break;
+    }
+
+    case "vrat": {
+      const verzia = Number(arg[0]);
+      if (!Number.isInteger(verzia)) throw new Error("Použitie: vrat <verzia> --potvrdene [--aj-navrhy]");
+      if (!potvrdene) throw new Error("Návrat na staršiu sadu mení hru pre všetkých hráčov — treba --potvrdene a súhlas Michala.");
+      console.log(`Záloha: ${zalohuj(await obsah(), `pred navratom na v${verzia}`)}`);
+      const r = await api<{ verzia: number; kariet: number; mimoSady: string[] }>("POST", `/admin/sady/${verzia}/obnovit`, { navrhy: prep.has("--aj-navrhy") });
+      console.log(`Sada v${verzia} je znova v hre ako v${r.verzia} (${r.kariet} kariet).`);
+      if (prep.has("--aj-navrhy")) {
+        console.log(`Návrhy kariet vrátené na stav v${verzia}.${r.mimoSady.length > 0 ? ` Návrhy mimo tej sady ostali: ${r.mimoSady.join(", ")}.` : ""}`);
+      } else {
+        console.log("Návrhy v tvorcovi ostali, ako boli (ďalšie zverejnenie by ich vydalo).");
+      }
+      break;
+    }
+
+    // ---- spätná väzba a web
+
+    case "nazory": {
+      const k = arg[0] === undefined ? "" : `&kategoria=${arg[0]}`;
+      const { nazory } = await api<{ nazory: { id: number; autor: { meno: string }; kategoria: string; stav: string; text: string; cigarety: number; komentare: { autor: { meno: string }; text: string }[] }[] }>("GET", `/nazory?triedenie=nove${k}`);
+      for (const n of nazory) {
+        console.log(`#${n.id} [${n.kategoria}, ${n.stav}] ${n.autor.meno} — ${n.cigarety} cig.\n  ${n.text.replace(/\n/g, "\n  ")}`);
+        for (const c of n.komentare) console.log(`    ↳ ${c.autor.meno}: ${c.text.replace(/\n/g, " ")}`);
+      }
+      break;
+    }
+
+    case "komentar": {
+      const [id, subor] = arg;
+      if (id === undefined || subor === undefined || !existsSync(subor)) throw new Error("Použitie: komentar <id-nazoru> <subor.txt>");
+      const r = await api<{ id: number }>("POST", `/nazory/${Number(id)}/komentare`, { text: readFileSync(subor, "utf8").trim() });
+      console.log(`Komentár #${r.id} k názoru #${id} pridaný ako ${meno}.`);
+      break;
+    }
+
+    case "stav": {
+      const [id, stav] = arg;
+      if (id === undefined || stav === undefined) throw new Error("Použitie: stav <id-nazoru> <nove|prijate|planovane|hotove|zamietnute>");
+      await api("PATCH", `/nazory/${Number(id)}`, { stav });
+      console.log(`Názor #${id}: stav ${stav}.`);
+      break;
+    }
+
+    case "playtesty": {
+      const { reporty } = await api<{ reporty: unknown[] }>("GET", "/admin/playtesty");
+      console.log(JSON.stringify(reporty, null, 2));
+      break;
+    }
+
+    case "pouzivatelia": {
+      const { pouzivatelia } = await api<{ pouzivatelia: { id: number; login: string; meno: string; rola: string; dohrate: number }[] }>("GET", "/admin/pouzivatelia");
+      for (const p of pouzivatelia) console.log(`${p.id}  ${p.rola.padEnd(10)} ${p.meno} (${p.login}), dohraté ${p.dohrate}`);
+      break;
+    }
+
+    default:
+      throw new Error(`Neznámy príkaz „${prikaz}“ (pozri hlavičku tools/admin/admin.ts).`);
+  }
+}
+
+if (process.argv[1]?.replace(/\\/g, "/").endsWith("tools/admin/admin.ts")) {
+  main().catch((err: unknown) => {
+    console.error(`CHYBA: ${err instanceof Error ? err.message : String(err)}`);
+    process.exitCode = 1;
+  });
+}

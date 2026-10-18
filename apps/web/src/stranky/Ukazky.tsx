@@ -3,7 +3,7 @@
 
 import { useMemo, useState } from "react";
 import type { CardInstance, GameData, LineEval, PlayerId } from "@naex/core";
-import { STUPNICA_ZONY, battleOutcome, computeDamage, evaluateLine, loadGameData } from "@naex/core";
+import { STUPNICA_HODNOTY, STUPNICA_ZONY, battleOutcome, computeDamage, evaluateLine, loadGameData } from "@naex/core";
 import eldersJson from "@naex/core/data/elders.json";
 import scorecardsJson from "@naex/core/data/scorecards.json";
 import type { KartaNavrh, RozlozenieStrany, Sada, Vzhlad } from "@naex/tvorba";
@@ -237,7 +237,8 @@ const ZONA_TRIEDA = ["cervena", "oranzova", "zlta", "siva", "siva", "siva", "zlt
 /** Stupnica strachu: kto má priazeň a koho sa starší bojí. */
 export function UkazkaStupnice() {
   const [m, setM] = useState(4);
-  const hodnota = STUPNICA_ZONY[m] ?? 0;
+  const hodnota = STUPNICA_HODNOTY[m] ?? 0;
+  const uroven = STUPNICA_ZONY[m] ?? 0;
   const strana = m < 3 ? "tvojej" : m > 5 ? "súperovej" : null;
   return (
     <div className="ukazka">
@@ -259,8 +260,9 @@ export function UkazkaStupnice() {
         ) : (
           <>
             Marker leží na {strana} polovici v zóne <strong>{ZONY[m]}</strong>: priazeň s hodnotou <strong>{hodnota}</strong>{" "}
-            má {strana === "tvojej" ? "ty" : "súper"}. Na konci hry sa však starší bojí {strana === "tvojej" ? "súpera" : "teba"} — body za
-            strach získa {strana === "tvojej" ? "súper" : "ty"}.
+            má {strana === "tvojej" ? "ty" : "súper"}. Starší sa bojí {strana === "tvojej" ? "súpera" : "teba"} na úrovni{" "}
+            <strong>{uroven}</strong> — na konci hry to {strana === "tvojej" ? "súperovi" : "tebe"} pridá body na každom
+            scorecarde s aktívnym Znepokojením, Strachom či Vydesením.
             {(m === 0 || m === 8) && " Krajná pozícia je zamknutá a starší sa prebudí pre vydesujúceho hráča."}
           </>
         )}

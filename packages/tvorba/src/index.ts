@@ -10,3 +10,5 @@ export * from "./export.ts";
 export * from "./zverejnenie.ts";
 export * from "./statistiky.ts";
 export * from "./predvolene.ts";
+export * from "./sila.ts";
+export * from "./texty.ts";

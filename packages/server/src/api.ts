@@ -17,6 +17,7 @@ import type { DruhMedia, Media } from "./media.ts";
 import type { Obsah } from "./obsah.ts";
 import type { Archiv } from "./archiv.ts";
 import type { KategoriaNazoru, Nazory, Triedenie } from "./nazory.ts";
+import type { Playtesty } from "./playtesty.ts";
 import { overKategoriu as overKategoriuNazoru } from "./nazory.ts";
 
 export interface OtvorenaHra {
@@ -32,6 +33,7 @@ export interface ApiKontext {
   readonly media: Media;
   readonly archiv: Archiv;
   readonly nazory: Nazory;
+  readonly playtesty: Playtesty;
   readonly teraz: () => number;
   readonly bezpecneCookie: boolean;
   /** Verejné hry čakajúce na súpera (z herného servera). */
@@ -502,6 +504,15 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       return ok({ verzia: sada.verzia, kariet: sada.karty.length });
     }
     if (sub === "GET /sady") return ok({ sady: ctx.obsah.historiaSad() });
+    // Návrat na staršiu sadu = jej opätovné zverejnenie ako nová verzia.
+    if (metoda === "POST" && casti[2] === "sady" && casti[4] === "obnovit" && casti.length === 5) {
+      const verzia = Number(casti[3]);
+      if (!Number.isInteger(verzia)) throw new ChybaVstupu("Neplatná verzia sady.");
+      const b = await citajJson(req);
+      const r = ctx.obsah.obnovSadu(verzia, ja2.id, teraz, b.navrhy === true);
+      ctx.poZverejneni();
+      return ok(r);
+    }
 
     if (sub === "GET /export") {
       const txt = exportTxt(ctx.obsah.karty.vsetky(), ctx.obsah.vzhlad().akcie, new Date(teraz));
@@ -549,6 +560,13 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     }
 
     if (sub === "GET /pouzivatelia") return ok({ pouzivatelia: ctx.ucty.zoznam() });
+    // Štatistiky kariet z odohraných partií (rebalans); ?od=<verzia sady>.
+    if (sub === "GET /statistiky-kariet") {
+      const od = query.get("od");
+      return ok(ctx.archiv.statistikyKariet(od === null || od === "" ? null : Math.round(num(Number(od), 0, 1e9, "Verzia"))));
+    }
+    // Reporty playtestov: zoznam a token na ich izolované zobrazenie (/playtesty/<token>/…).
+    if (sub === "GET /playtesty") return ok({ token: ctx.playtesty.token(teraz), reporty: ctx.playtesty.zoznam() });
     if (metoda === "PATCH" && casti[2] === "pouzivatelia" && casti.length === 4) {
       if (ja2.rola !== "admin") throw new ChybaVstupu("Úroveň účtu mení len admin.", 403);
       const b = await citajJson(req);

@@ -4,8 +4,8 @@
 // (štatistiky hráča ako JSON z @naex/core). Profil je súčet týchto riadkov —
 // pri desiatkach či stovkách partií na hráča to zvládne aj prostý JS.
 
-import type { DvojicaStatistik, StatistikyHraca } from "@naex/core";
-import { normalizujStatistiky, prazdneStatistiky, scitajStatistiky } from "@naex/core";
+import type { DvojicaStatistik, StatistikyHraca, StatistikyKariet } from "@naex/core";
+import { normalizujStatistiky, normalizujStatistikyKariet, prazdneStatistiky, scitajStatistiky, scitajStatistikyKariet } from "@naex/core";
 import type { Db } from "./db.ts";
 import { transakcia } from "./db.ts";
 import type { Vysledok } from "./frajerina.ts";
@@ -34,6 +34,8 @@ export interface ZaznamPartie {
   readonly hraci: readonly [number, number];
   readonly body: readonly [number, number] | null;
   readonly statistiky: DvojicaStatistik;
+  /** Štatistiky kariet partie (podklad pre rebalans). */
+  readonly statistikyKariet?: StatistikyKariet;
 }
 
 export interface ZmenaFrajeriny {
@@ -104,8 +106,8 @@ export class Archiv {
       const pred = [this.frajerina(z.hraci[0]), this.frajerina(z.hraci[1])] as const;
       const po = novaFrajerina([pred[0].hodnota, pred[1].hodnota], z.vitaz);
       const r = this.db
-        .prepare("INSERT INTO partie (kod, zaciatok, koniec, vitaz, dovod, kola, verzia_sady, dohrata) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
-        .run(z.kod, z.zaciatok, z.koniec, z.vitaz, z.dovod, z.kola, z.verziaSady, z.dohrata ? 1 : 0);
+        .prepare("INSERT INTO partie (kod, zaciatok, koniec, vitaz, dovod, kola, verzia_sady, dohrata, karty) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
+        .run(z.kod, z.zaciatok, z.koniec, z.vitaz, z.dovod, z.kola, z.verziaSady, z.dohrata ? 1 : 0, z.statistikyKariet === undefined ? null : JSON.stringify(z.statistikyKariet));
       const id = Number(r.lastInsertRowid);
       for (const miesto of [0, 1] as const) {
         const vysledok = vysledokPre(z.vitaz, miesto);
@@ -232,6 +234,19 @@ export class Archiv {
       partie,
       superi: [...superi.values()].sort((a, b) => b.partie - a.partie).slice(0, 8),
     };
+  }
+
+  /**
+   * Štatistiky kariet zo všetkých partií so zápisom kariet (od verzie sady
+   * `odVerzie`, ak je daná) — podklad pre rebalans v tvorcovi.
+   */
+  statistikyKariet(odVerzie: number | null = null): { partie: number; karty: StatistikyKariet } {
+    const rows = this.db
+      .prepare("SELECT karty FROM partie WHERE karty IS NOT NULL AND (? IS NULL OR verzia_sady >= ?)")
+      .all(odVerzie, odVerzie) as { karty: string }[];
+    let karty: StatistikyKariet = {};
+    for (const r of rows) karty = scitajStatistikyKariet(karty, normalizujStatistikyKariet(JSON.parse(r.karty) as unknown));
+    return { partie: rows.length, karty };
   }
 
   rebricek(limit = 100): RiadokRebricka[] {

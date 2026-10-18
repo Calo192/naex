@@ -40,6 +40,8 @@ export interface KartaLicoProps {
   readonly vybrana?: boolean;
   /** Karta leží voči divákovi nohami hore (zahral ju ten druhý hráč). */
   readonly otocena?: boolean;
+  /** Vytlačená strana, ktorou sa karta v línii páruje k lokalite — zvýrazní sa, protiľahlá ostane voľná. */
+  readonly hranaVnutorna?: "lava" | "prava" | undefined;
   /** Bez tooltipov a efektu — malá karta v zozname. */
   readonly bezPopisov?: boolean;
   readonly className?: string;
@@ -102,6 +104,23 @@ export function KartaLico(props: KartaLicoProps) {
         <IkonaAkcie kluc={kluc} akcia={akcia} />
         {st !== null && st.nasobok > 1 && <span className="kl-nasobok">×{st.nasobok}</span>}
       </span>
+    );
+  };
+
+  /** Rám okolo stĺpca slotov jednej strany (playtest 20261017-164450: ktorá hrana sa spáruje). */
+  const hrana = (strana: "lava" | "prava") => {
+    const sl = strana === "lava" ? g.slotyLave : g.slotyPrave;
+    const prvy = sl[0];
+    const posledny = sl[sl.length - 1];
+    if (prvy === undefined || posledny === undefined) return null;
+    const vnutorna = props.hranaVnutorna === strana;
+    return (
+      <span
+        key={`hrana-${strana}`}
+        className={`kl-hrana ${vnutorna ? "kl-hrana-vnutorna" : "kl-hrana-vonkajsia"}`}
+        style={{ "--x": prvy.x, "--y": prvy.y, "--s": prvy.w, "--h": posledny.y + posledny.h - prvy.y } as CSSProperties}
+        aria-hidden="true"
+      />
     );
   };
 
@@ -169,6 +188,7 @@ export function KartaLico(props: KartaLicoProps) {
           hover={hover}
         />
 
+        {props.hranaVnutorna !== undefined && [hrana("lava"), hrana("prava")]}
         {lava.map((k, i) => slot("lava", i, k))}
         {prava.map((k, i) => slot("prava", i, k))}
         {props.odznaky !== undefined && <div className="kl-odznaky">{props.odznaky}</div>}

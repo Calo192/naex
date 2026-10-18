@@ -59,7 +59,6 @@ function vPitke(s: GameState, strany: GameState["strany"], naTahuHrac: PlayerId 
       naTahu: naTahuHrac,
       hotovy: [false, false],
       naexPouzity: [false, false],
-      zakazNaex: [false, false],
       fajcenie: [0, 0],
       reakcia: null,
       postarka: [false, false],
@@ -93,6 +92,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     vitaz: 0,
     prebytokDrzi: null,
     prebytokZostava: 0,
+    prebytokPosunute: [],
     liecbaHotova: [true, true],
     benzinkaZostava: [0, 0],
     lokalitaPrepadne: false,
@@ -166,7 +166,8 @@ describe("nahradený starší ostáva v hre", () => {
       bitkaStav: bitka({ krok: "pohorsenie", caka: 1, pohorsenieZostava: [0, 1], vitaz: null }),
     };
     const favour = data.scorecards.find((sc) => sc.id === e0.scorecard)!.favour;
-    expect(priazen(data, s, favour, 1)).toBe(2);
+    // Marker na 7 = sila 2, účinok dvojnásobný (Michal 2026-10-16) → bonus 4.
+    expect(priazen(data, s, favour, 1)).toBe(4);
     expect(legalCommands(data, s, 1)).toContainEqual({ type: "pohorsenie", elderId: e0.elderId });
     const po = apply(data, s, { type: "pohorsenie", elderId: e0.elderId }, 1).state;
     expect(po.starsi[0]!.marker).toBe(6);
@@ -244,8 +245,10 @@ describe("Benzínka, Dievčina na vydaj a Krčmárka pri bitke", () => {
       ciel: { typ: "lokalita", lokalita: benzinka, elderId: null },
       lokalityVHre: s0.lokalityVHre.filter((x) => x.uid !== benzinka.uid),
     };
-    s = apply(sada, s, { type: "skipNaex" }, naTahu(s)!).state;
-    if (s.faza === "pitka") s = apply(sada, s, { type: "skipNaex" }, naTahu(s)!).state;
+    // Pitiek je toľko, koľko akcií Benzínky je aktivovaných (Michal 2026-10-18) — dohraj ich.
+    while (s.faza === "pitka" || s.faza === "zhromazdenie") {
+      s = apply(sada, s, { type: s.faza === "pitka" ? "skipNaex" : "pass" }, naTahu(s)!).state;
+    }
     s = dohrajBitku(sada, s);
     expect(s.prepadnute.map((x) => x.uid)).toEqual([benzinka.uid]);
     expect(s.ovladnute).toHaveLength(0);
@@ -337,9 +340,18 @@ describe("efekty v línii", () => {
     expect(evaluateLine(sd, linia("zena", "liberal", "zena2")).sums[0].Rana).toBe(2 + 2);
   });
 
-  it("Silná nezávislá žena: jej akcie platia len medzi dvoma chlapmi", () => {
-    expect(evaluateLine(sd, linia("chlapL", "silna_nezavisla_zena", "chlap")).sums[0].Rana).toBe(4);
-    expect(evaluateLine(sd, linia("chlapL", "silna_nezavisla_zena", "zena2")).sums[0].Rana).toBe(2);
+  // Michal 2026-10-18: Silná nezávislá žena podporuje okolie — aktívne akcie
+  // tvojich susedných kariet sa rátajú dvakrát (ona sama nie).
+  it("Silná nezávislá žena: zdvojí aktívne akcie tvojich susedov", () => {
+    // chlapL (1) + ona (1) + ona (1) + chlap (1) = 4 → susedia ×2 = 6.
+    expect(evaluateLine(sd, linia("chlapL", "silna_nezavisla_zena", "chlap")).sums[0].Rana).toBe(6);
+    // Sused patrí súperovi (otočený, nemá s ňou pár) — nič mu nezdvojí ani nepridá.
+    const cudzi: LineState = {
+      lokalita: null,
+      lokalitaOtocena: false,
+      strany: [[], [lezi(k("chlapL"), 0), lezi(k("silna_nezavisla_zena"), 0), lezi(k("chlap"), 1)]],
+    };
+    expect(evaluateLine(sd, cudzi).sums[1].Rana).toBeUndefined();
   });
 
   it("Zámočník: akcie Nástroja v jeho okolí sú posilnené", () => {
@@ -363,58 +375,19 @@ describe("efekty v línii", () => {
   });
 });
 
-describe("Svätý text a Pasca", () => {
-  it("Svätý text: Viera nechráni pred tuhým, ruší mäkké", () => {
-    const strana = (sums: Record<string, number>, dlhy = 0) => ({
-      sums,
-      cirhozaBonus: 0,
-      tuheBonus: 0,
-      abstaky: 0,
-      priznaneDlhy: dlhy,
-      priazenBitkara: 0,
-      hodnotaViery: 1,
-    });
-    // Bežne Viera najprv ruší Povery 1:1 — mäkké potom zmierni len Viera, ktorá
-    // ostala (napr. keď súperove Noviny vyrušenie vypnú).
-    const r = computeDamage([strana({ Rana: 3, Povera: 3 }), strana({ Viera: 2 }, 5)], {
-      poveraVieraSaNerusia: [true, false],
-      vieraProtiMakkemu: [false, true],
-    });
-    expect(r.tuhe[0]).toBe(3);
-    expect(r.makke[0]).toBe(1);
-  });
-
-  it("Pasca: najviac jedno Obmedzenie a to dá súperovi pecku", () => {
+describe("Svätý text a Puška (Nástroje 2026-10-18)", () => {
+  it("Svätý text: hodnota tvojej Viery je o 1 vyššia", () => {
     const s = setupGame(data, 23);
-    const stav = { ...s, hraci: [{ ...s.hraci[0], dedicstvo: [inst("pasca")] }, s.hraci[1]] as GameState["hraci"] };
-    const d = poskodenieBitky(data, stav, [{ Obmedzenie: 3 }, {}], [0, 0]);
-    expect(d.tuhe[0]).toBe(2);
+    const stav = { ...s, hraci: [s.hraci[0], { ...s.hraci[1], dedicstvo: [inst("svaty_text")] }] as GameState["hraci"] };
+    // 3 Rany proti 1 Viere: bez Svätého textu 3 − 1 = 2, so Svätým textom 3 − 2 = 1.
+    expect(poskodenieBitky(data, s, [{ Rana: 3 }, { Viera: 1 }], [0, 0]).tuhe[0]).toBe(2);
+    expect(poskodenieBitky(data, stav, [{ Rana: 3 }, { Viera: 1 }], [0, 0]).tuhe[0]).toBe(1);
   });
 });
 
-describe("Policajtka, Veštica — odhalené balíčky len tomu, kto vyberá", () => {
-  it("Policajtka: vlastný balíček vidí len vyberajúci; vybrané idú navrch", () => {
-    const s0 = setupGame(data, 24);
-    const z = { naTahu: 0 as PlayerId, zostavaLimit: [3, 3] as const, pasoval: [false, false] as const, navyse: [0, 0] as const };
-    const policajtka = inst("policajtka");
-    const s: GameState = {
-      ...s0,
-      faza: "zhromazdenie",
-      zhromazdenieStav: z,
-      hraci: [{ ...s0.hraci[0], ruka: [policajtka, ...s0.hraci[0].ruka] }, s0.hraci[1]],
-    };
-    const po = apply(data, s, { type: "place", uid: policajtka.uid, target: "vlastna" }, 0).state;
-    expect(po.volba).toEqual({ typ: "policajtka", hrac: 0, potom: "zhromazdenie" });
-    expect(naTahu(po)).toBe(0);
-    expect(viewFor(data, po, 0).volbaPolicajtka).toEqual(po.hraci[0].doberaci);
-    expect(viewFor(data, po, 1).volbaPolicajtka).toBeNull();
-    const balicek = po.hraci[0].doberaci;
-    const hotovo = apply(data, po, { type: "policajtka", hore: [2, 0] }, 0).state;
-    expect(hotovo.hraci[0].doberaci.slice(0, 3)).toEqual([balicek[2], balicek[0], balicek[1]]);
-    expect(hotovo.volba).toBeNull();
-    expect(naTahu(hotovo)).toBe(1);
-  });
-
+// Policajtka dostala 2026-10-18 nový efekt (súperove Pohoršenia proti tebe
+// neplatia) — test nového efektu je v michal-20261018.test.ts.
+describe("Veštica — odhalené balíčky len tomu, kto vyberá", () => {
   it("Veštica: oba balíčky vidí len porazený počas výberu", () => {
     const s0 = setupGame(data, 25);
     const s: GameState = { ...s0, faza: "bitka", bitkaStav: bitka({ krok: "vestica", caka: 1, vitaz: 0, vesticaHotova: false }) };

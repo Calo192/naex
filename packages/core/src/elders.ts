@@ -12,8 +12,10 @@
 import type { CardInstance, Favour, PlayerId, Podmienka, ScorecardDef, SlotIndex } from "./types.ts";
 import type { GameData } from "./data.ts";
 import { printedSides } from "./data.ts";
+import { KONSTANTY } from "./constants.ts";
 
-export const STUPNICA_HODNOTY = [2, 2, 1, 0, 0, 0, 1, 2, 2] as const;
+/** Sila priazne podľa pozície markera (Michal 2026-10-16: 1 / 2 / 3, predtým 1 / 2 / 2). */
+export const STUPNICA_HODNOTY = [3, 2, 1, 0, 0, 0, 1, 2, 3] as const;
 
 /** Zóna pozície: 0 = sivá, 1 = žltá, 2 = oranžová, 3 = červená. */
 export const STUPNICA_ZONY = [3, 2, 1, 0, 0, 0, 1, 2, 3] as const;
@@ -103,12 +105,14 @@ export function posunMarker(
   elder: ElderState,
   smerK: PlayerId,
   cezPohorsenie: boolean,
+  /** Noviny v Dedičstve: Pohoršenie smie na kraj za tej istej podmienky ako prebytok. */
+  pohorsenieNaKraj = false,
 ): MarkerPos | null {
   const pos = elder.marker;
   if (pos === 0 || pos === 8) return null;
   const target = (smerK === 0 ? pos - 1 : pos + 1) as MarkerPos;
   if (target === 0 || target === 8) {
-    if (cezPohorsenie) return null;
+    if (cezPohorsenie && !pohorsenieNaKraj) return null;
     if (elder.markerZaciatokKola !== pos) return null;
   }
   return target;
@@ -127,29 +131,24 @@ export function favourStarsieho(data: GameData, elder: ElderState): Favour {
 }
 
 /**
- * Od akej zóny markera podmienka boduje (1 žltá, 2 oranžová, 3 červená).
- * Kladné podmienky za kus až od Strachu — v playteste 20261011-183315 dali
- * v žltej zóne 51:1 a strach starších prestal rozhodovať (rozhodnutie Michala
- * 2026-10-12). Tresty za Dlhy a Cirhózy platia od Znepokojenia, aby sa im
- * nedalo vyhnúť slabším strachom.
+ * Úroveň strachu, ktorú zónová podmienka žiada: Znepokojenie 1 (žltá),
+ * Strach 2 (oranžová), Vydesenie 3 (červená). Ostatné podmienky sú za kus.
  */
-const PRAH_PODMIENKY: Readonly<Record<Podmienka, 1 | 2 | 3>> = {
+const UROVEN_ZONOVEJ: Readonly<Partial<Record<Podmienka, 1 | 2 | 3>>> = {
   znepokojenie: 1,
   strach: 2,
   vydesenie: 3,
-  lokality: 2,
-  starsi: 2,
-  cigarety: 2,
-  cirhoza: 1,
-  dlh: 1,
 };
 
-/** Najslabšia zóna markera, v ktorej podmienka boduje. */
-export function prahPodmienky(podmienka: Podmienka): 1 | 2 | 3 {
-  return PRAH_PODMIENKY[podmienka];
+/** Úroveň strachu zónovej podmienky, alebo null pri podmienke za kus. */
+export function urovenPodmienky(podmienka: Podmienka): 1 | 2 | 3 | null {
+  return UROVEN_ZONOVEJ[podmienka] ?? null;
 }
 
-const ZONOVE: ReadonlySet<Podmienka> = new Set(["znepokojenie", "strach", "vydesenie"]);
+/** Ako veľmi sa starší bojí hráča p: zóna markera na súperovej polovici, inak 0. */
+export function strachZ(elder: ElderState, p: PlayerId): 0 | 1 | 2 | 3 {
+  return obavanyHrac(elder) === p ? STUPNICA_ZONY[elder.marker] : 0;
+}
 
 /** Podmienka scorecardu tak, ako ju vidí hráč v hre (zvýraznenie) aj bodovanie. */
 export interface StavPodmienky {
@@ -158,8 +157,6 @@ export interface StavPodmienky {
   readonly podmienka: Podmienka;
   /** Karta na ukazovateli má na tejto strane a indexe neprázdnu akciu. */
   readonly aktivna: boolean;
-  /** Hráč, ktorému strana patrí (ľavá = 0, pravá = 1). */
-  readonly hrac: PlayerId;
 }
 
 /** Všetky podmienky scorecardu staršieho s tým, ktoré aktivuje karta na ukazovateli. */
@@ -173,13 +170,13 @@ export function podmienkyStarsieho(data: GameData, elder: ElderState): StavPodmi
     podmienky.forEach((podmienka, i) => {
       if (podmienka === null) return;
       const index = i as SlotIndex;
-      out.push({ strana, index, podmienka, aktivna: akcie[index] !== null, hrac: strana === "lava" ? 0 : 1 });
+      out.push({ strana, index, podmienka, aktivna: akcie[index] !== null });
     });
   }
   return out;
 }
 
-/** Čo potrebuje bodovanie zo stavu hry (počty kusov obávaného hráča). */
+/** Čo potrebuje bodovanie zo stavu hry (strach všetkých starších a počty kusov hráčov). */
 export interface StavBodovania {
   readonly ovladnute: readonly { readonly hrac: PlayerId }[];
   readonly starsi: readonly ElderState[];
@@ -202,7 +199,7 @@ function pocetKusov(podmienka: Podmienka, stav: StavBodovania, p: PlayerId): num
     case "starsi":
       return stav.starsi.filter((e) => e.ziskal === p).length;
     case "cigarety":
-      return hrac.cigarety;
+      return Math.floor(hrac.cigarety / KONSTANTY.CIGARIET_NA_KUS);
     case "cirhoza":
       return nepriznane("cirhoza");
     case "dlh":
@@ -212,36 +209,60 @@ function pocetKusov(podmienka: Podmienka, stav: StavBodovania, p: PlayerId): num
   }
 }
 
+/** Aktívna podmienka scorecardu a čo z nej hráč má. */
 export interface BodPodmienky extends StavPodmienky {
   readonly body: number;
+  /**
+   * Za koľko kusov: pri zónovej podmienke počet starších, ktorí sa hráča boja
+   * práve na jej úroveň; inak ovládnuté lokality, získaní starší, cigarety,
+   * nepriznané Dlhy či Cirhózy hráča.
+   */
+  readonly kusy: number;
+}
+
+export interface BodyScorecardu {
+  /** Body hráča 0 a hráča 1 z tohto scorecardu. */
+  readonly body: readonly [number, number];
+  /** Každá aktívna podmienka zvlášť, pre každého hráča (aj s nulou). */
+  readonly polozky: readonly [readonly BodPodmienky[], readonly BodPodmienky[]];
 }
 
 /**
- * Bodovanie jedného ukazovateľa na konci hry. Boduje len obávaný hráč a len
- * aktivované podmienky na SVOJEJ strane scorecardu (ľavá = hráč 0). Každá
- * podmienka platí od svojho prahu zóny (`prahPodmienky`); zóny dávajú pevné
- * body, ostatné podmienky body za každý kus obávaného hráča.
+ * Bodovanie jedného scorecardu na konci hry (Michal 2026-10-16). Starší nemá
+ * pri bodovaní strany: každá AKTÍVNA podmienka (karta na ukazovateli má pri
+ * nej akciu, na ktorejkoľvek strane) boduje OBOM hráčom, každá zvlášť.
+ * Marker tohto staršieho o bodoch nerozhoduje — určuje len priazeň.
+ *
+ *  - Za kus (lokality, starší, cigarety, Dlh, Cirhóza): kusy hráča × body.
+ *  - Zónové (Znepokojenie 1, Strach 2, Vydesenie 3) sa pozerajú na strach
+ *    VŠETKÝCH starších v hre, aj tohto: za každého staršieho, ktorý sa hráča
+ *    bojí na úrovni L, dá scorecard hodnotu svojej najvyššej aktívnej zónovej
+ *    podmienky s úrovňou ≤ L. Príklad: Farár má aktívne Znepokojenie a Strach,
+ *    starší A sa ťa bojí na úrovni 1, B na 2, C na 3 → 1 + 2 + 2.
  */
-export function elderScore(
-  data: GameData,
-  stav: StavBodovania,
-  elder: ElderState,
-): { hrac: PlayerId; body: number; polozky: BodPodmienky[] } | null {
-  const hrac = obavanyHrac(elder);
-  if (hrac === null) return null;
-  const markerZona = STUPNICA_ZONY[elder.marker];
-  if (markerZona === 0) return null;
-
-  const polozky: BodPodmienky[] = [];
-  for (const pod of podmienkyStarsieho(data, elder)) {
-    if (!pod.aktivna || pod.hrac !== hrac) continue;
-    const body =
-      markerZona < prahPodmienky(pod.podmienka)
-        ? 0
-        : ZONOVE.has(pod.podmienka)
-          ? data.bodyPodmienok[pod.podmienka]
-          : pocetKusov(pod.podmienka, stav, hrac) * data.bodyPodmienok[pod.podmienka];
-    if (body !== 0) polozky.push({ ...pod, body });
-  }
-  return { hrac, body: polozky.reduce((a, x) => a + x.body, 0), polozky };
+export function elderScore(data: GameData, stav: StavBodovania, elder: ElderState): BodyScorecardu {
+  const aktivne = podmienkyStarsieho(data, elder).filter((p) => p.aktivna);
+  const preHraca = (p: PlayerId): BodPodmienky[] => {
+    // Úroveň strachu → koľko starších sa hráča bojí práve na ňu.
+    const naUrovni: [number, number, number, number] = [0, 0, 0, 0];
+    for (const e of stav.starsi) naUrovni[strachZ(e, p)]++;
+    // Ktorá zónová podmienka berie starších na úrovni L: najvyššia aktívna s úrovňou ≤ L.
+    const urovne = new Set(aktivne.map((x) => urovenPodmienky(x.podmienka)).filter((u) => u !== null));
+    const beriePre = (u: 1 | 2 | 3): number => {
+      let kusy = 0;
+      for (let l = u; l <= 3; l++) {
+        const najvyssia = [3, 2, 1].find((x) => x <= l && urovne.has(x as 1 | 2 | 3));
+        if (najvyssia === u) kusy += naUrovni[l] ?? 0;
+      }
+      return kusy;
+    };
+    return aktivne.map((pod) => {
+      const u = urovenPodmienky(pod.podmienka);
+      const kusy = u !== null ? beriePre(u) : pocetKusov(pod.podmienka, stav, p);
+      return { ...pod, kusy, body: kusy * data.bodyPodmienok[pod.podmienka] };
+    });
+  };
+  const polozky = [preHraca(0), preHraca(1)] as const;
+  const sucet = (x: readonly BodPodmienky[]): number => x.reduce((a, y) => a + y.body, 0);
+  return { body: [sucet(polozky[0]), sucet(polozky[1])], polozky };
 }

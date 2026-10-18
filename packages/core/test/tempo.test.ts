@@ -38,7 +38,7 @@ function vPitke(strany: GameState["strany"], hraci?: GameState["hraci"]): GameSt
     pitkaCislo: 1,
     strany,
     hraci: hraci ?? s.hraci,
-    pitkaStav: { naTahu: 0, hotovy: [false, false], naexPouzity: [false, false], zakazNaex: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false] },
+    pitkaStav: { naTahu: 0, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false] },
   } as GameState;
 }
 
@@ -66,7 +66,8 @@ describe("nevyhnutné ťahy", () => {
 
   it("Vypiť sa neponúka, keď sa nedá nič vyložiť", () => {
     const s = vZhromazdeni([inst("pijan")], [0, 0], [false, false]);
-    expect(legalCommands(data, s, 0)).toEqual([{ type: "pass" }]);
+    // Fajčiť (karta za cigaretu) sa smie aj v Zhromaždení — za hráča sa však pasuje.
+    expect(legalCommands(data, s, 0).filter((c) => c.type !== "smoke")).toEqual([{ type: "pass" }]);
   });
 
   it("hráč bez poldeci a cigariet v Pitke nič nepotvrdzuje", () => {
@@ -80,12 +81,13 @@ describe("nevyhnutné ťahy", () => {
 });
 
 describe("prah Dlhu a Cirhózy", () => {
-  it("prahy sú 3 (Cirhóza) a 2 (Dlh)", () => {
+  // Michal 2026-10-18: prah Dlhu 1 — Dlh je základná kliatba hry.
+  it("prahy sú 3 (Cirhóza) a 1 (Dlh)", () => {
     expect(KONSTANTY.PRAH_CIRHOZY_ZAKLAD).toBe(3);
-    expect(KONSTANTY.PRAH_DLHU).toBe(2);
+    expect(KONSTANTY.PRAH_DLHU).toBe(1);
   });
 
-  it("dve akcie Dlh dajú jednu kartu Dlh a zadĺženie klesne na 0", () => {
+  it("dve akcie Dlh dajú dve karty Dlh a zadĺženie klesne na 0", () => {
     const karta = instanceFor(data, "dlznik", [null, "Dlh", null, null], EMPTY);
     const lezi: PlacedCard = { card: karta, playedBy: 0 as PlayerId };
     const s = vPitke([[lezi], []]);
@@ -97,8 +99,8 @@ describe("prah Dlhu a Cirhózy", () => {
     const po = apply(data, bezReakcie, { type: "skipNaex" }, 0).state;
     const { state, events } = apply(data, po, { type: "skipNaex" }, 1);
     const dlhyPo = state.hraci[0].odhadzovaci.filter((k) => k.defId === "dlh").length;
-    expect(dlhyPo - dlhyPred).toBe(1);
+    expect(dlhyPo - dlhyPred).toBe(2);
     expect(state.hraci[0].zadlzenie).toBe(0);
-    expect(events).toContainEqual({ type: "log", text: "Hráč 1 dosiahol prah dlhu (2) — Dlh." });
+    expect(events).toContainEqual({ type: "log", text: "Hráč 1 dosiahol prah dlhu (1) — Dlh." });
   });
 });

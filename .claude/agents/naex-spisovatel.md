@@ -34,7 +34,15 @@ klienta, ich poznámky k nemu vynechaj.
 ## Report — interaktívne HTML
 
 Samostatná HTML stránka `docs/playtesty/<id>.html` (id = názov priečinka
-relácie). Technicky:
+relácie). **Uložením do `docs/playtesty/` je report na webe** — v sekcii
+*Tvorba → Playtesty* (`/admin/playtesty`) ho vidí admin a subadmini; nič iné
+netreba. Web ho zobrazuje v izolovanom rámci (CSP sandbox), preto:
+- žiadne externé zdroje (CDN, písma, obrázky z internetu) — tie sa nenačítajú,
+- obrázky a odkazy na iné reporty len relatívne (`<id>/obrazok.png`,
+  `zmeny-pravidiel.html`),
+- nepoužívaj `localStorage`, `sessionStorage` ani cookies — v izolácii nefungujú.
+
+Technicky:
 - **Jeden súbor**, CSS aj JavaScript inline, žiadne knižnice ani CDN (otvára
   sa priamo z disku). Písmo systémové. Funguje na mobile (bez vodorovného
   posúvania) aj na veľkej obrazovke.

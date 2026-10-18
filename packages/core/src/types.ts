@@ -206,9 +206,9 @@ export interface ElderDef {
 }
 
 /**
- * Podmienka na scorecarde (bodovacej karte staršieho). Zóny sú prahové —
- * marker aspoň v danej zóne; ostatné bodujú za každý kus obávaného hráča,
- * kladné z nich až od oranžovej zóny (`prahPodmienky`).
+ * Podmienka na scorecarde (bodovacej karte staršieho). Aktívna podmienka
+ * boduje obom hráčom: zónové za starších, ktorí sa hráča boja, ostatné za
+ * každý kus hráča (`elderScore`).
  */
 export type Podmienka =
   | "znepokojenie"

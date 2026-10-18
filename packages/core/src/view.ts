@@ -9,10 +9,9 @@ import type { CardInstance, Phase, PlayerId } from "./types.ts";
 import type { GameData } from "./data.ts";
 import type { PlacedCard } from "./partia.ts";
 import type { BodPodmienky, ElderState } from "./elders.ts";
-import { elderScore, obavanyHrac, podmienkyStarsieho } from "./elders.ts";
+import { elderScore } from "./elders.ts";
 import type {
   BitkaKrok,
-  CakajucaVolba,
   CielKola,
   GameState,
   KartaVolba,
@@ -67,6 +66,8 @@ export interface DraftVerejne {
   readonly naTahu: PlayerId;
   readonly hotovo: readonly [boolean, boolean];
   readonly noveKarty: readonly [number, number];
+  /** Karty zaplatené poldeci, ktoré si hráč ešte vezme (verejné). */
+  readonly kredit: readonly [number, number];
 }
 
 export interface ClientState {
@@ -92,8 +93,6 @@ export interface ClientState {
   /** Limit ruky na konci kola (6 + priazeň Zberateľa). */
   readonly limitRuky: readonly [number, number];
   readonly naexVKole: readonly [boolean, boolean];
-  /** Rozhodnutie mimo poradia (Policajtka) — kto a čo vyberá. */
-  readonly volba: CakajucaVolba | null;
   readonly starsi: readonly ElderState[];
   readonly ciel: CielKola | null;
   readonly lokalitaOtocena: boolean;
@@ -109,11 +108,6 @@ export interface ClientState {
    */
   readonly volbyExekutor: readonly KartaVolba[] | null;
   readonly volbyNahrada: readonly KartaVolba[] | null;
-  /**
-   * Policajtka: MOJ doberací balíček v poradí — len kým ho hráč podľa karty
-   * preskúmava. Inak sa obsah doberacieho balíčka nikdy neposiela.
-   */
-  readonly volbaPolicajtka: readonly CardInstance[] | null;
   /** Veštica (Prehra): oba doberacie balíčky — len porazenému počas výberu. */
   readonly volbaVestica: { readonly moj: readonly CardInstance[]; readonly jeho: readonly CardInstance[] } | null;
   /**
@@ -123,6 +117,8 @@ export interface ClientState {
    */
   readonly mojeKliatbyVBalicku: { readonly dlh: number; readonly cirhoza: number };
   readonly koniec: KoniecHry | null;
+  /** Ohlásené vydesenie: kolo, v ktorom hráč vydesil polovicu starších (verejné). */
+  readonly ohlaseneVydesenie: readonly [number | null, number | null];
 }
 
 export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientState {
@@ -164,7 +160,6 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
     prepadnute: state.prepadnute,
     limitRuky: [limitRukyHraca(data, state, 0), limitRukyHraca(data, state, 1)],
     naexVKole: state.naexVKole,
-    volba: state.volba,
     starsi: state.starsi,
     ciel: state.ciel,
     lokalitaOtocena: state.lokalitaOtocena,
@@ -181,6 +176,7 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
             naTahu: d.naTahu,
             hotovo: d.hotovo,
             noveKarty: d.noveKarty,
+            kredit: d.kredit,
           },
     zhromazdenieStav: state.zhromazdenieStav,
     pitkaStav: state.pitkaStav,
@@ -204,8 +200,6 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
       mojaBitkovaVolba && bitka.krok === "exekutor" ? najdiNastroje(state, data, ja) : null,
     volbyNahrada:
       mojaBitkovaVolba && bitka.krok === "nahrada" ? najdiNahradnikov(state, data, ja) : null,
-    volbaPolicajtka:
-      state.volba?.typ === "policajtka" && state.volba.hrac === ja ? state.hraci[ja].doberaci : null,
     volbaVestica:
       mojaBitkovaVolba && bitka.krok === "vestica"
         ? { moj: state.hraci[ja].doberaci, jeho: state.hraci[ja === 0 ? 1 : 0].doberaci }
@@ -215,16 +209,17 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
       cirhoza: state.hraci[ja].doberaci.filter((k) => k.defId === "cirhoza").length,
     },
     koniec: state.koniec,
+    ohlaseneVydesenie: state.ohlaseneVydesenie,
   };
 }
 
-/** Body jedného staršieho, keby hra skončila teraz. */
+/** Body z jedného scorecardu, keby hra skončila teraz — pre oboch hráčov. */
 export interface BodyStarsieho {
   readonly elderId: string;
-  /** Koho sa starší bojí — len ten na konci boduje (null = nikoho). */
-  readonly obavany: PlayerId | null;
-  readonly body: number;
-  readonly polozky: readonly BodPodmienky[];
+  /** body[p] = body hráča p z tohto scorecardu. */
+  readonly body: readonly [number, number];
+  /** polozky[p] = každá aktívna podmienka a koľko z nej má hráč p. */
+  readonly polozky: readonly [readonly BodPodmienky[], readonly BodPodmienky[]];
   /** Súperove body tu závisia aj od jeho skrytých kliatob (ruka, balíček). */
   readonly neiste: boolean;
 }
@@ -261,14 +256,12 @@ export function bodyTeraz(data: GameData, view: ClientState): BodyTeraz {
   const neiste: [boolean, boolean] = [false, false];
   const starsi = view.starsi.map((elder): BodyStarsieho => {
     const s = elderScore(data, stav, elder);
-    if (s === null) return { elderId: elder.elderId, obavany: obavanyHrac(elder), body: 0, polozky: [], neiste: false };
-    const kliatbyRozhoduju = podmienkyStarsieho(data, elder).some(
-      (p) => p.aktivna && p.hrac === su && (p.podmienka === "dlh" || p.podmienka === "cirhoza"),
-    );
-    const neisteTu = s.hrac === su && superMaSkryte && kliatbyRozhoduju;
-    spolu[s.hrac] += s.body;
+    const kliatbyRozhoduju = s.polozky[su].some((p) => p.podmienka === "dlh" || p.podmienka === "cirhoza");
+    const neisteTu = superMaSkryte && kliatbyRozhoduju;
+    spolu[0] += s.body[0];
+    spolu[1] += s.body[1];
     if (neisteTu) neiste[su] = true;
-    return { elderId: elder.elderId, obavany: s.hrac, body: s.body, polozky: s.polozky, neiste: neisteTu };
+    return { elderId: elder.elderId, body: s.body, polozky: s.polozky, neiste: neisteTu };
   });
   return { spolu, neiste, starsi };
 }
@@ -282,7 +275,7 @@ export interface NahladBitkyOStarsieho {
 
 /**
  * Náhľad bitky o staršieho (Michal 2026-10-12): víťaz staršieho získa a jeho
- * marker vráti do sivej zóny — body z toho staršieho zmiznú obom a víťazovi
+ * marker vráti do sivej zóny — jeho strach prestane bodovať a víťazovi
  * pribudne získaný starší. Prebytok z bitky náhľad nezohľadňuje.
  */
 export function nahladBitkyOStarsieho(data: GameData, view: ClientState, elderId: string): NahladBitkyOStarsieho {

@@ -4,6 +4,7 @@
 //   NAEX_DATA            adresár s databázou a nahranými súbormi (predvolene <repo>/data)
 //   NAEX_ADMIN_HESLO     heslo jediného admina; účet sa pri štarte založí/aktualizuje
 //   NAEX_ADMIN_LOGIN     jeho prihlasovacie meno (predvolene Admin)
+//   NAEX_PLAYTESTY       priečinok s reportmi playtestov (predvolene <repo>/docs/playtesty)
 //   NAEX_SECURE_COOKIE   1 = cookie len cez HTTPS (nastav za reverse proxy)
 
 import { fileURLToPath } from "node:url";
@@ -16,6 +17,7 @@ createGameServer({
   dataDir: process.env.NAEX_DATA ?? fileURLToPath(new URL("../../../data", import.meta.url)),
   admin: { login: process.env.NAEX_ADMIN_LOGIN ?? "Admin", heslo: process.env.NAEX_ADMIN_HESLO || null },
   bezpecneCookie: process.env.NAEX_SECURE_COOKIE === "1",
+  ...(process.env.NAEX_PLAYTESTY ? { playtestyDir: process.env.NAEX_PLAYTESTY } : {}),
 })
   .then((server) => {
     console.log(`NA EX server počúva na http://localhost:${server.port}`);

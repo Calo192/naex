@@ -7,6 +7,7 @@ import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, Command, GameState, PlayerId } from "../src/index.ts";
 import {
+  pocetPitiek,
   apply,
   IllegalCommandError,
   legalCommands,
@@ -110,55 +111,73 @@ describe("stavba šenku", () => {
     expect(s.senok).toHaveLength(8);
     expect(s.spolocnyBalicek).toHaveLength(s0.spolocnyBalicek.length - 8);
     expect(s.draftStav?.krok).toBe("beranie");
-    expect(naTahu(s)).toBe(obrancaOf(s));
+    // Zo šenku berie prvý útočník (Michal 2026-10-16).
+    expect(naTahu(s)).toBe(s.utocnik);
   });
 });
 
-describe("branie zo šenku", () => {
-  it("striedavo po jednej, začína obranca; kto prestane, dostane cigarety, druhý berie ďalej", () => {
+describe("branie zo šenku (Michal 2026-10-18: 1 karta za cigaretu, 2 za poldeci, bez limitu)", () => {
+  it("striedavo, začína útočník; cigareta = 1 karta, poldeci = 2 karty v jednom ťahu, nič zadarmo", () => {
     let s = postavSenok(doDraftu(5));
     const u = s.utocnik;
     const o = obrancaOf(s);
-    const cigU = s.hraci[u].cigarety;
-    const cigO = s.hraci[o].cigarety;
+    const hraci = [...s.hraci] as [GameState["hraci"][0], GameState["hraci"][1]];
+    hraci[u] = { ...hraci[u], cigarety: 3 };
+    hraci[o] = { ...hraci[o], cigarety: 0 };
+    s = { ...s, hraci };
+    expect(() => apply(data, s, { type: "draftBer", uid: s.senok[0]!.uid, platba: "cigareta" }, o)).toThrow(IllegalCommandError);
+    // Bez platby sa nedá — žiadna karta zadarmo.
     expect(() => apply(data, s, { type: "draftBer", uid: s.senok[0]!.uid }, u)).toThrow(IllegalCommandError);
+    s = apply(data, s, { type: "draftBer", uid: s.senok[0]!.uid, platba: "cigareta" }, u).state;
+    expect(s.hraci[u].cigarety).toBe(2);
+    expect(s.hraci[u].poldeciPlne).toBe(2);
+    expect(naTahu(s)).toBe(o);
+    // Obranca bez cigariet platí poldeci: dve karty, druhú hneď v tom istom ťahu.
+    expect(legalCommands(data, s, o).some((c) => c.type === "draftBer" && c.platba === "cigareta")).toBe(false);
+    s = apply(data, s, { type: "draftBer", uid: s.senok[0]!.uid, platba: "poldeci" }, o).state;
+    expect([s.hraci[o].poldeciPlne, s.hraci[o].poldeciVypite]).toEqual([1, 1]);
+    expect(s.draftStav?.kredit[o]).toBe(1);
+    expect(naTahu(s)).toBe(o);
     s = apply(data, s, { type: "draftBer", uid: s.senok[0]!.uid }, o).state;
+    expect(s.draftStav?.noveKarty[o]).toBe(2);
     expect(naTahu(s)).toBe(u);
-    s = apply(data, s, { type: "draftStop" }, u).state;
-    expect(s.hraci[u].cigarety).toBe(cigU + 3);
-    expect(naTahu(s)).toBe(o);
-    s = apply(data, s, { type: "draftBer", uid: s.senok[0]!.uid }, o).state;
-    expect(naTahu(s)).toBe(o);
-    s = apply(data, s, { type: "draftBer", uid: s.senok[0]!.uid }, o).state;
-    // Tri karty — obranca končí bez cigariet, draft je hotový.
-    expect(s.hraci[o].cigarety).toBe(cigO);
-    expect(s.faza).toBe("zhromazdenie");
-    expect(s.pitkyCelkom).toBe(3);
-    expect(s.senok).toHaveLength(5);
+    // Limit 3 karty už neplatí.
+    for (let i = 0; i < 2; i++) {
+      s = apply(data, s, { type: "draftBer", uid: s.senok[0]!.uid, platba: "cigareta" }, u).state;
+      if (naTahu(s) === o) s = apply(data, s, { type: "draftStop" }, o).state;
+    }
+    expect(s.draftStav?.noveKarty[u]).toBe(3);
   });
 
-  it("priznaná Milujúca manželka uberie cigaretu", () => {
-    let manzelka: CardInstance | null = null;
-    let s = postavSenok(
-      doDraftu(6, (g) => {
-        const o = obrancaOf(g);
-        manzelka = { uid: 99001, defId: "milujuca_manzelka", leftLayout: 0, rightLayout: 0 };
-        const hraci = [...g.hraci] as [GameState["hraci"][0], GameState["hraci"][1]];
-        hraci[o] = { ...hraci[o], priznane: [manzelka], cigarety: 0 };
-        return { ...g, hraci };
-      }),
-    );
-    expect(manzelka).not.toBeNull();
+  it("bez cigariet a plného poldeci sa zo šenku nedá brať — hra za hráča branie ukončí", () => {
+    let s = postavSenok(doDraftu(6));
+    const u = s.utocnik;
     const o = obrancaOf(s);
-    s = apply(data, s, { type: "draftStop" }, o).state;
-    expect(s.hraci[o].cigarety).toBe(2);
+    const hraci = [...s.hraci] as [GameState["hraci"][0], GameState["hraci"][1]];
+    hraci[o] = { ...hraci[o], poldeciPlne: 0, poldeciVypite: 2, cigarety: 0 };
+    s = { ...s, hraci };
+    expect(legalCommands(data, s, o).some((c) => c.type === "draftBer")).toBe(false);
+    s = apply(data, s, { type: "draftBer", uid: s.senok[0]!.uid, platba: "poldeci" }, u).state;
+    s = apply(data, s, { type: "draftBer", uid: s.senok[0]!.uid }, u).state;
+    // Obranca nemá čím platiť → jeho branie sa ukončí samo, berie ďalej útočník.
+    expect(s.draftStav?.hotovo[o]).toBe(true);
+    expect(naTahu(s)).toBe(u);
+  });
+
+  it("počet Pitiek = aktivované akcie na karte lokality, aspoň 1 (Michal 2026-10-18)", () => {
+    let s = postavSenok(doDraftu(9));
+    s = apply(data, s, { type: "draftStop" }, naTahu(s)!).state;
+    s = apply(data, s, { type: "draftStop" }, naTahu(s)!).state;
+    // Prázdna línia: nič aktivované → 1 Pitka.
+    expect(s.faza).toBe("zhromazdenie");
+    expect(s.pitkyCelkom).toBe(1);
+    expect(pocetPitiek(data, s)).toBe(1);
   });
 
   it("prázdny šenok: hra za hráča sama ukončí branie", () => {
     let s = postavSenok(doDraftu(7));
     s = { ...s, senok: [] };
-    const o = obrancaOf(s);
-    expect(legalCommands(data, s, o)).toEqual([{ type: "draftStop" } satisfies Command]);
+    expect(legalCommands(data, s, s.utocnik)).toEqual([{ type: "draftStop" } satisfies Command]);
   });
 
   it("nevzaté karty idú pri ďalšom drafte naspodok spoločného balíčka", () => {

@@ -2,32 +2,45 @@
 // markerom na stupnici a stavom bodovacích podmienok.
 //
 // Starší ležia pre oboch hráčov rovnako, nohami nadol (rozhodnutie Michala
-// 2026-10-11) — ľavá strana scorecardu patrí hráčovi 0, pravá hráčovi 1.
-// Ktorá je tvoja, ukazuje farba zvýraznenia a popis nad radom starších.
+// 2026-10-11). Pri bodovaní strany nemá (Michal 2026-10-16): každá aktívna
+// podmienka boduje obom — odznak pri nej ukazuje, koľko z nej máš ty.
 
 import type { CSSProperties, ReactNode } from "react";
-import type { BodyStarsieho, ElderState, Favour, GameData, PlayerId, Podmienka } from "@naex/core";
+import type { BodPodmienky, BodyStarsieho, ElderState, Favour, GameData, PlayerId, Podmienka } from "@naex/core";
 import {
   KONSTANTY,
   STUPNICA_ZONY,
   favourStarsieho,
   obavanyHrac,
   podmienkyStarsieho,
-  prahPodmienky,
   prebudenyPre,
   priazenHraca,
   priazenSila,
   scorecardStarsieho,
+  urovenPodmienky,
 } from "@naex/core";
 import type { BodovaciaKarta, IkonaBodovania, Sada } from "@naex/tvorba";
 import { geometriaBodovacej, PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
 import { BodovaciaSvg, type StavSlotuBodovania } from "../karta/BodovaciaSvg.tsx";
 import { IkonaPodmienky } from "../karta/IkonaPodmienky.tsx";
-import { NAZOV_PODMIENKY, popisPodmienky } from "../karta/podmienky.ts";
+import { NAZOV_PODMIENKY, POZN_ZONOVYCH, popisPodmienky } from "../karta/podmienky.ts";
 import { useTip } from "../karta/Tip.tsx";
 
-const FARBA_JA = "#5cc0cf";
-const FARBA_SUPER = "#e0805f";
+const FARBA_AKTIVNA = "#5cc0cf";
+
+/** „+4“, „−2“, „0“. */
+export function znamienko(n: number): string {
+  return n > 0 ? `+${n}` : n < 0 ? `−${-n}` : "0";
+}
+
+/** Výpočet jednej podmienky pre hráča: „2 starší × 2 = +4“. */
+export function vypocetPodmienky(p: BodPodmienky, bodyZaKus: number): string {
+  const kusy =
+    urovenPodmienky(p.podmienka) !== null
+      ? `${p.kusy} ${p.kusy === 1 ? "starší" : "starších"}`
+      : `${p.kusy} ks`;
+  return `${kusy} × ${bodyZaKus < 0 ? `−${-bodyZaKus}` : bodyZaKus} = ${znamienko(p.body)}`;
+}
 
 /** Vzhľad scorecardu zo sady; staršie sady ho nemajú — poskladá sa z herných dát. */
 function vzhladScorecardu(sada: Sada, data: GameData, id: string): { karta: BodovaciaKarta; ikony: readonly IkonaBodovania[] } {
@@ -63,25 +76,27 @@ export interface ScorecardProps {
   /** Karta staršieho v rámčeku danej šírky. */
   readonly karta: (sirka: number) => ReactNode;
   readonly onClick?: (() => void) | undefined;
+  /** Živý odhad bodov tohto scorecardu (bodyTeraz) — odznaky pri podmienkach. */
+  readonly body?: BodyStarsieho | undefined;
 }
 
-export function Scorecard({ elder, data, sada, ja, sirka, karta, onClick }: ScorecardProps) {
+export function Scorecard({ elder, data, sada, ja, sirka, karta, onClick, body }: ScorecardProps) {
   const { tip, ukaz, skry } = useTip();
   const { karta: bk, ikony } = vzhladScorecardu(sada, data, elder.scorecard);
   const g = geometriaBodovacej(bk);
   const mierka = sirka / g.sirka;
   const o = g.odtlacok;
+  const su = (ja === 0 ? 1 : 0) as PlayerId;
 
-  const obavany = obavanyHrac(elder);
-  const zona = STUPNICA_ZONY[elder.marker];
   const podmienky = podmienkyStarsieho(data, elder);
   const stavPodmienky = (strana: "lava" | "prava", i: number) => podmienky.find((p) => p.strana === strana && p.index === i);
+  const bodyPre = (p: PlayerId, strana: "lava" | "prava", i: number): BodPodmienky | undefined =>
+    body?.polozky[p].find((x) => x.strana === strana && x.index === i);
   const stavSlotu = (strana: "lava" | "prava", i: number): StavSlotuBodovania | null => {
     const p = stavPodmienky(strana, i);
     if (p === undefined) return null;
-    const farba = p.hrac === ja ? FARBA_JA : FARBA_SUPER;
-    if (!p.aktivna) return { stav: "neaktivna", farba };
-    return { stav: obavany === p.hrac && zona >= prahPodmienky(p.podmienka) ? "plati" : "aktivna", farba };
+    if (!p.aktivna) return { stav: "neaktivna", farba: FARBA_AKTIVNA };
+    return { stav: (bodyPre(ja, strana, i)?.body ?? 0) !== 0 ? "plati" : "aktivna", farba: FARBA_AKTIVNA };
   };
 
   const pct = (v: number, z: number): string => `${(v / z) * 100}%`;
@@ -104,15 +119,9 @@ export function Scorecard({ elder, data, sada, ja, sirka, karta, onClick }: Scor
         (strana === "lava" ? g.slotyLave : g.slotyPrave).map((r, i) => {
           const p = stavPodmienky(strana, i);
           if (p === undefined) return null;
-          const st = stavSlotu(strana, i);
-          const komu = p.hrac === ja ? "Tvoja strana" : "Súperova strana";
-          const stav = !p.aktivna
-            ? "Neaktívna — karta staršieho tu nemá akciu."
-            : st?.stav === "plati"
-              ? "Aktívna a teraz by bodovala."
-              : obavany === p.hrac
-                ? `Aktívna — boduje, keď bude marker aspoň v ${["", "žltej", "oranžovej", "červenej"][prahPodmienky(p.podmienka)]} zóne.`
-                : "Aktívna — boduje, ak sa ťa starší bude báť.";
+          const bodyZaKus = data.bodyPodmienok[p.podmienka];
+          const moje = bodyPre(ja, strana, i);
+          const jeho = bodyPre(su, strana, i);
           const obsah = {
             nadpis: NAZOV_PODMIENKY[p.podmienka],
             ikona: (
@@ -122,10 +131,17 @@ export function Scorecard({ elder, data, sada, ja, sirka, karta, onClick }: Scor
             ),
             text: (
               <>
-                {popisPodmienky(p.podmienka, data.bodyPodmienok[p.podmienka])}
-                <span className="tip-stav">
-                  {komu} · {stav}
-                </span>
+                {popisPodmienky(p.podmienka, bodyZaKus)}
+                {urovenPodmienky(p.podmienka) !== null && <span className="tip-stav">{POZN_ZONOVYCH}</span>}
+                {!p.aktivna ? (
+                  <span className="tip-stav">Neaktívna — karta staršieho tu nemá akciu, neboduje nikomu.</span>
+                ) : (
+                  <span className="tip-stav">
+                    Aktívna — boduje obom. Keby hra skončila teraz: <b>ty {moje === undefined ? "0" : vypocetPodmienky(moje, bodyZaKus)}</b>
+                    {" · "}súper {jeho === undefined ? "0" : vypocetPodmienky(jeho, bodyZaKus)}
+                    {body?.neiste === true && (p.podmienka === "dlh" || p.podmienka === "cirhoza") ? " (súperove skryté kliatby môžu byť ďalšie)" : ""}
+                  </span>
+                )}
               </>
             ),
           };
@@ -136,7 +152,13 @@ export function Scorecard({ elder, data, sada, ja, sirka, karta, onClick }: Scor
               style={{ left: pct(r.x, g.sirka), top: pct(r.y, g.vyska), width: pct(r.w, g.sirka), height: pct(r.h, g.vyska) }}
               onMouseEnter={(e) => ukaz(e.currentTarget, obsah)}
               onMouseLeave={skry}
-            />
+            >
+              {p.aktivna && moje !== undefined && (
+                <span className={`scorecard-odznak ${strana} ${moje.body > 0 ? "plus" : moje.body < 0 ? "minus" : "nula"}`} style={{ fontSize: Math.max(9, r.h * mierka * 0.42) }}>
+                  {znamienko(moje.body)}
+                </span>
+              )}
+            </span>
           );
         }),
       )}
@@ -145,22 +167,31 @@ export function Scorecard({ elder, data, sada, ja, sirka, karta, onClick }: Scor
   );
 }
 
-/** Čo priazeň daného druhu dáva — pri sile 1 alebo 2 (PRAVIDLA §9). */
+/**
+ * Čo priazeň danej sily (1 / 2 / 3) dáva — bonus je NASOBOK_PRIAZNE × sila
+ * (Michal 2026-10-16: dvojnásobný účinok). PRAVIDLA §9.
+ */
 export const UCINOK_PRIAZNE: Readonly<Record<Favour, (sila: number) => string>> = {
-  ZBERATEL: (s) => `Limit ruky na konci kola ${KONSTANTY.LIMIT_RUKY_ZAKLAD + s} namiesto ${KONSTANTY.LIMIT_RUKY_ZAKLAD}.`,
-  LAKOMEC: (s) => `„Trocha“ v efektoch kariet je ${1 + s} namiesto 1.`,
-  NEPRAJNIK: (s) => `„Zopár“ v efektoch kariet je ${2 + s} namiesto 2.`,
-  BITKAR: (s) => `+${s} tuhého poškodenia v každej bitke.`,
-  VERIACI: (s) => `Tvoja Viera má hodnotu ${1 + s} namiesto 1.`,
-  FAJCIAR: (s) => `+${s} Cigaretiek v prvej Pitke bitky o lokalitu.`,
-  ALKOHOLIK: (s) => `Prah Cirhózy ${KONSTANTY.PRAH_CIRHOZY_ZAKLAD + s} namiesto ${KONSTANTY.PRAH_CIRHOZY_ZAKLAD} — Cirhózu dostaneš neskôr.`,
-  EXEKUTOR: (s) => `Prah Exekútora ${10 + 2 * s} namiesto 10.`,
+  ZBERATEL: (s) => `Limit ruky na konci kola ${KONSTANTY.LIMIT_RUKY_ZAKLAD + bonus(s)} namiesto ${KONSTANTY.LIMIT_RUKY_ZAKLAD}.`,
+  // Michal 2026-10-18: Trocha a Zopár zmizli — Lakomec zlacní barter, Neprajník pustí Povery nad priznané Dlhy.
+  LAKOMEC: (s) => `Stokársky barter (nový poldeci) za ${KONSTANTY.BARTER_CENA - s} cigariet namiesto ${KONSTANTY.BARTER_CENA}.`,
+  NEPRAJNIK: (s) => `Tvoje Povery smú dať mäkké poškodenie o ${bonus(s)} viac, než má súper priznaných Dlhov.`,
+  BITKAR: (s) => `+${bonus(s)} tuhého poškodenia v každej bitke.`,
+  VERIACI: (s) => `Tvoja Viera má hodnotu ${KONSTANTY.HODNOTA_VIERY_ZAKLAD + bonus(s)} namiesto ${KONSTANTY.HODNOTA_VIERY_ZAKLAD}.`,
+  FAJCIAR: (s) => `+${bonus(s)} cigariet z Cigaretiek v prvej Pitke bitky o lokalitu.`,
+  ALKOHOLIK: (s) => `Prah Cirhózy ${KONSTANTY.PRAH_CIRHOZY_ZAKLAD + bonus(s)} namiesto ${KONSTANTY.PRAH_CIRHOZY_ZAKLAD} — Cirhózu dostaneš neskôr.`,
+  EXEKUTOR: (s) => `Prah Exekútora ${KONSTANTY.PRAH_EXEKUTORA_ZAKLAD + 2 * bonus(s)} namiesto ${KONSTANTY.PRAH_EXEKUTORA_ZAKLAD}.`,
 };
 
+/** Bonus priazne danej sily (Michal 2026-10-16: dvojnásobný účinok). */
+function bonus(sila: number): number {
+  return KONSTANTY.NASOBOK_PRIAZNE * sila;
+}
+
 /**
- * Popis staršieho pod scorecardom — dve veci, ktoré sa nesmú pliesť:
- * PRIAZEŇ (počas hry) má hráč, ku ktorému je marker posunutý; BOJÍ SA toho
- * druhého a na konci hry boduje len ten, koho sa bojí.
+ * Popis staršieho pod scorecardom: PRIAZEŇ (počas hry) má hráč, ku ktorému
+ * je marker posunutý, a BOJÍ SA toho druhého — ten strach sa ráta do
+ * zónových podmienok všetkých scorecardov. BODY dáva scorecard obom hráčom.
  */
 export function StavStarsieho({
   elder,
@@ -192,28 +223,36 @@ export function StavStarsieho({
     text: (
       <>
         {priazen === null
-          ? `Marker je v strede — priazeň nemá nikto. Kto ho dostane na svoju polovicu, získa: ${UCINOK_PRIAZNE[favour](1)} (ďalej od stredu: ${UCINOK_PRIAZNE[favour](2)})`
+          ? `Marker je v strede — priazeň nemá nikto. Kto ho dostane na svoju polovicu, získa: ${UCINOK_PRIAZNE[favour](1)} Ďalej od stredu silnejšie — sila 2: ${UCINOK_PRIAZNE[favour](2)} Sila 3: ${UCINOK_PRIAZNE[favour](3)}`
           : `${priazen === ja ? "Máš" : "Súper má"} priazeň sily ${sila}: ${UCINOK_PRIAZNE[favour](sila)}`}
         <span className="tip-stav">Priazeň má ten, ku komu je marker posunutý. Platí počas hry, nie sú to body.</span>
       </>
     ),
   };
-  const bodyText =
-    obavany === null
-      ? "Nikoho sa nebojí (marker v sivej zóne) — na konci by tu nebodoval nikto."
-      : `Bojí sa ${kto(obavany)} — na konci hry tu boduje len ${obavany === ja ? "ty" : "súper"}, podmienkami na ${obavany === ja ? "tvojej" : "jeho"} strane scorecardu.`;
-  const polozky = (body?.polozky ?? []).map((p) => `${NAZOV_PODMIENKY[p.podmienka]} ${p.body > 0 ? "+" : ""}${p.body}`).join(", ");
-  const tipStrachu = {
-    nadpis: obavany === null ? "Strach: nikto" : `Strach: bojí sa ${kto(obavany)}`,
+  const su = (ja === 0 ? 1 : 0) as PlayerId;
+  const uroven = obavany === null ? 0 : STUPNICA_ZONY[elder.marker];
+  const rozpis = (p: PlayerId): ReactNode => {
+    const polozky = body?.polozky[p] ?? [];
+    if (polozky.length === 0) return "žiadna aktívna podmienka";
+    return polozky.map((x) => `${NAZOV_PODMIENKY[x.podmienka]}: ${vypocetPodmienky(x, data.bodyPodmienok[x.podmienka])}`).join(" · ");
+  };
+  const tipBodov = {
+    nadpis: `Body zo scorecardu ${meno}`,
     text: (
       <>
-        {bodyText}
-        {obavany !== null && (
-          <span className="tip-stav">
-            Keby hra skončila teraz: {body?.body ?? 0} b. {polozky !== "" ? `(${polozky})` : "— žiadna jeho podmienka neplatí"}
-            {body?.neiste === true ? " · súperove skryté Dlhy a Cirhózy môžu body ešte znížiť" : ""}
-          </span>
-        )}
+        Každá aktívna podmienka boduje obom hráčom — bez ohľadu na to, koho sa {meno} bojí. Keby hra skončila teraz:
+        <span className="tip-stav">
+          <b>Ty {znamienko(body?.body[ja] ?? 0)}</b> — {rozpis(ja)}
+        </span>
+        <span className="tip-stav">
+          Súper {znamienko(body?.body[su] ?? 0)}
+          {body?.neiste === true ? "?" : ""} — {rozpis(su)}
+        </span>
+        <span className="tip-stav">
+          {obavany === null
+            ? `${meno} sa nebojí nikoho — zónovým podmienkam nepridáva nič.`
+            : `${meno} sa bojí ${kto(obavany)} (úroveň ${uroven}) — ráta sa to do Znepokojenia, Strachu a Vydesenia na všetkých scorecardoch.`}
+        </span>
       </>
     ),
   };
@@ -234,20 +273,15 @@ export function StavStarsieho({
         <span aria-hidden="true">♥</span> {sc.nazov}
         {priazen === null ? " · nikto" : ` +${sila} · ${priazen === ja ? "tvoja" : "súperova"}`}
       </span>
-      <span
-        className={`starsi-riadok strach ${obavany === null ? "" : obavany === ja ? "moja" : "superova"}`}
-        onMouseEnter={(e) => ukaz(e.currentTarget, tipStrachu)}
-        onMouseLeave={skry}
-      >
-        {obavany === null ? (
-          "body: nikto"
-        ) : (
-          <>
-            <span aria-hidden="true">★</span> {obavany === ja ? "tvoje body" : "body súpera"} {body?.body ?? 0}
-            {body?.neiste === true ? "?" : ""}
-          </>
-        )}
+      <span className="starsi-riadok strach" onMouseEnter={(e) => ukaz(e.currentTarget, tipBodov)} onMouseLeave={skry}>
+        <span aria-hidden="true">★</span> <b className="moje">ty {znamienko(body?.body[ja] ?? 0)}</b> · súper {znamienko(body?.body[su] ?? 0)}
+        {body?.neiste === true ? "?" : ""}
       </span>
+      {obavany !== null && (
+        <span className={`starsi-riadok boji-sa ${obavany === ja ? "moja" : "superova"}`}>
+          bojí sa {kto(obavany)} · úroveň {uroven}
+        </span>
+      )}
       {prebudeny !== null && <span className={prebudeny === ja ? "dobry" : "zly"}>prebudený pre {kto(prebudeny)}</span>}
       {akcia !== undefined && <span className="starsi-akcia">{akcia}</span>}
       {tip}

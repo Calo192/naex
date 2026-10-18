@@ -63,9 +63,11 @@ export interface HernaKartaProps {
   readonly onClick?: (() => void) | undefined;
   readonly vybrana?: boolean;
   readonly bezPopisov?: boolean;
+  /** Vytlačená strana, ktorou sa karta páruje k lokalite (návrh vyloženia). */
+  readonly hranaVnutorna?: "left" | "right" | undefined;
 }
 
-export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev, naex, onClick, vybrana, bezPopisov }: HernaKartaProps) {
+export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev, naex, onClick, vybrana, bezPopisov, hranaVnutorna }: HernaKartaProps) {
   const vytlacene = printedSides(data, karta);
   const strana = (ps: "left" | "right"): { roz: RozlozenieStrany; sloty: (SlotStav | null)[] | null } => {
     const roz = [0, 1, 2, 3].map((k) => vytlacene[ps][k] ?? null) as unknown as RozlozenieStrany;
@@ -100,6 +102,7 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
       onClick={onClick}
       vybrana={vybrana ?? false}
       otocena={otocena}
+      hranaVnutorna={hranaVnutorna === undefined ? undefined : hranaVnutorna === "left" ? "lava" : "prava"}
       bezPopisov={bezPopisov ?? false}
     />
   );

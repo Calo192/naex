@@ -150,6 +150,8 @@ function migruj(db: Db): void {
     // Staré partie: vzdanie a kontumáciu prezradí len text dôvodu.
     db.exec("UPDATE partie SET dohrata = 0 WHERE dovod LIKE 'Partiu vzdáva%' OR dovod LIKE 'Kontumácia%'");
   }
+  // Štatistiky kariet partie (JSON z @naex/core) — staršie partie ich nemajú.
+  if (!stlpce.some((c) => c.name === "karty")) db.exec("ALTER TABLE partie ADD COLUMN karty TEXT");
 }
 
 /** Transakcia — pri výnimke sa všetko vráti. */

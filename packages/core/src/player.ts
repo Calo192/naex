@@ -16,9 +16,13 @@ export interface PlayerState {
   readonly poldeciVypite: number;
   /** Fyzické cigarety (menové aj bodové). */
   readonly cigarety: number;
-  /** Kumulatívne poškodenie pečene (pri prahu vzniká Cirhóza a počítadlo klesne). */
+  /**
+   * Poškodenie pečene v tejto Pitke (pri prahu vzniká Cirhóza a počítadlo
+   * klesne). Po každej Pitke sa vynuluje; pitie do dna v Zhromaždení sem
+   * pripíše pečeň dopredu a vyhodnotí sa v najbližšej Pitke.
+   */
   readonly pecen: number;
-  /** Kumulatívne zadĺženie z akcií Dlh (pri prahu vzniká Dlh a počítadlo klesne). */
+  /** Zadĺženie z akcií Dlh v tejto Pitke (pri prahu vzniká Dlh); po Pitke sa vynuluje. */
   readonly zadlzenie: number;
   /** Spotrebované neresti v predošlom kole — porovnanie dáva Absťák. */
   readonly nerestiMinuleKolo: number;
@@ -56,7 +60,7 @@ export function velkostBalicka(player: PlayerState): number {
  * partii. Vypité poldeci a priznané karty limit neovplyvňujú (PRAVIDLA §5).
  */
 export function limitVykladania(
-  player: PlayerState,
+  player: Pick<PlayerState, "poldeciPlne">,
   strany: readonly [readonly PlacedCard[], readonly PlacedCard[]],
   p: PlayerId,
 ): number {
@@ -89,10 +93,18 @@ export function limitRuky(priazenZberatela: number): number {
   return KONSTANTY.LIMIT_RUKY_ZAKLAD + priazenZberatela;
 }
 
-export function hodnotaTrocha(priazenLakomca: number): number {
-  return KONSTANTY.TROCHA_ZAKLAD + priazenLakomca;
+/**
+ * Stokársky barter (Michal 2026-10-18, priazeň Lakomca): stojí o silu priazne
+ * menej — 5 / 4 / 3 / 2 cigarety. Priazeň je 2 × sila, preto polovica.
+ */
+export function cenaBarteru(priazenLakomca: number): number {
+  return Math.max(1, KONSTANTY.BARTER_CENA - priazenLakomca / KONSTANTY.NASOBOK_PRIAZNE);
 }
 
-export function hodnotaZopar(priazenNeprajnika: number): number {
-  return KONSTANTY.ZOPAR_ZAKLAD + priazenNeprajnika;
+/**
+ * Mäkké poškodenie Povier smie prekročiť súperove priznané Dlhy o priazeň
+ * Neprajníka (2 / 4 / 6) — Michal 2026-10-18 namiesto kľúčového slova Zopár.
+ */
+export function makkeNadDlhy(priazenNeprajnika: number): number {
+  return priazenNeprajnika;
 }

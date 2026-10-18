@@ -311,7 +311,9 @@ do commitu a do README**, nech sa to dá ľahko prepnúť.
 5. **Cirhóza v partii** — „Obdržíš od súpera dodatočnú ranu" znamená +1 tuhé
    pre súpera za každú Cirhózu v mojej línii?
 6. **Absťák** — čo presne sa počíta ako „nerest"? Poldeci, cigarety, oboje?
-7. **Štartovacia ruka** — ako sa 10 kariet delí medzi 4 typy štartoviek?
+7. ~~**Štartovacia ruka** — ako sa 10 kariet delí medzi 4 typy štartoviek?~~
+   Vyriešené (Michal 2026-10-18): obaja 4 Pijan, 2 Miňištrant, 2 Milujúca
+   manželka, 2 Dievčina na vydaj; tieto druhy nie sú v spoločnom balíčku ani v šenku.
 8. **Lokality** — v `cards.json` je len **7**. Pravidlá v3 (2026-10-11): krátka 5,
    stredná 7, dlhá 11 lokalít; dlhá hra sa dá zvoliť, až keď sada bude mať
    aspoň 11 lokalít (pridať v tvorcovi).
@@ -322,7 +324,10 @@ do commitu a do README**, nech sa to dá ľahko prepnúť.
 11. **Svokra** (pravidlá v3) — NA EX smie len na vlastné karty, pôvodný efekt
    („vráť súperovi jedno NA EX z tvojej karty“) stratil zmysel. **Nový efekt
    (rozhodnutie Michala 2026-10-11):** „Nástup: Súper v najbližšej Pitke nesmie
-   dať NA EX.“ Implementované; text karty treba upraviť v tvorcovi.
+   dať NA EX.“ **Nahradené 2026-10-18** (NA EX opäť aj na súperove karty,
+   ochranu nesie nová karta Anonymný alkoholik): „Furt: Keď súper dá NA EX,
+   ukradni mu 1 cigaretu.“ Dve Svokry kradnú 2. Implementované; text v tvorcovi
+   je zmenený, čaká na zverejnenie.
 9. **Šenok** — čo sa stane, keď sa minie spoločný doberací balíček?
 
 ---
