@@ -7,7 +7,6 @@ import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, Command, GameState, PlayerId } from "../src/index.ts";
 import {
-  pocetPitiek,
   apply,
   IllegalCommandError,
   legalCommands,
@@ -164,14 +163,12 @@ describe("branie zo šenku (Michal 2026-10-18: 1 karta za cigaretu, 2 za poldeci
     expect(naTahu(s)).toBe(u);
   });
 
-  it("počet Pitiek = aktivované akcie na karte lokality, aspoň 1 (Michal 2026-10-18)", () => {
+  it("bitka začína jednou Pitkou (Michal 2026-10-19 — ďalšie sa objednávajú)", () => {
     let s = postavSenok(doDraftu(9));
     s = apply(data, s, { type: "draftStop" }, naTahu(s)!).state;
     s = apply(data, s, { type: "draftStop" }, naTahu(s)!).state;
-    // Prázdna línia: nič aktivované → 1 Pitka.
     expect(s.faza).toBe("zhromazdenie");
     expect(s.pitkyCelkom).toBe(1);
-    expect(pocetPitiek(data, s)).toBe(1);
   });
 
   it("prázdny šenok: hra za hráča sama ukončí branie", () => {

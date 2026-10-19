@@ -1,5 +1,5 @@
 {
- "source": "tvorca kariet 2026-10-18T18:53:22.276Z",
+ "source": "tvorca kariet 2026-10-19T05:54:29.661Z",
  "actions": [
   "Cigaretka",
   "Dlh",
@@ -2097,7 +2097,7 @@
     "Autorita",
     "Žena"
    ],
-   "effect_text": "Furt: Keď súper dá NA EX, ukradni mu 1 cigaretu.",
+   "effect_text": "Furt: Keď súper dá NA EX, ukradni mu 2 cigarety.",
    "triggers": [
     "Furt"
    ],
@@ -2311,7 +2311,7 @@
     "Závislý",
     "Chlap"
    ],
-   "effect_text": "Furt: Na neho ani na karty v jeho okolí nesmie nikto dať NA EX.",
+   "effect_text": "Furt: Na neho ani na tvoje karty v jeho okolí nesmie súper dať NA EX.",
    "triggers": [
     "Furt"
    ],

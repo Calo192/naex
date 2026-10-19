@@ -3,6 +3,7 @@ dist/
 dist-types/
 *.tsbuildinfo
 .env
+deploy/.env.produkcia
 .DS_Store
 
 # Veľké podklady — nepatria do gitu

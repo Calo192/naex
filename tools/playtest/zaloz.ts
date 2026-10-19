@@ -6,6 +6,9 @@
 //
 // Dĺžka hry = počet lokalít (5 / 7 / 11); predvolená je stredná.
 //
+// S prepínačom --bot hrá hráč 1 proti offline protihráčovi Štamgastovi
+// (NPC na serveri); meno hráča 2 sa vtedy ignoruje a účet hráča 2 nevzniká.
+//
 // Vypíše cestu k relácii (playtest/<id>/); všetko ostatné je v <relacia>/hra.json.
 // Server zastaví tools/playtest/ukonci.ts <relacia>.
 
@@ -16,7 +19,8 @@ import { createServer } from "node:net";
 import { join, resolve } from "node:path";
 import WebSocket from "ws";
 
-const [meno1 = "Playtester 1", meno2 = "Playtester 2", dlzka = "stredna"] = process.argv.slice(2);
+const protiBotovi = process.argv.includes("--bot");
+const [meno1 = "Playtester 1", meno2 = "Playtester 2", dlzka = "stredna"] = process.argv.slice(2).filter((a) => a !== "--bot");
 if (!["kratka", "stredna", "dlha"].includes(dlzka)) {
   console.error("Dĺžka hry musí byť kratka, stredna alebo dlha.");
   process.exit(1);
@@ -84,7 +88,7 @@ for (let i = 0; ; i++) {
 const hraci = [
   { login: "hrac1", heslo: randomBytes(9).toString("base64url"), meno: meno1.slice(0, 24) },
   { login: "hrac2", heslo: randomBytes(9).toString("base64url"), meno: meno2.slice(0, 24) },
-];
+].slice(0, protiBotovi ? 1 : 2);
 const cookies: string[] = [];
 for (const h of hraci) {
   const r = await fetch(`${api}/registracia`, {
@@ -117,21 +121,23 @@ function cakaj(ws: WebSocket, typ: string): Promise<Record<string, unknown>> {
 }
 
 const w1 = await pripoj(cookies[0] ?? "");
-const w2 = await pripoj(cookies[1] ?? "");
 const priv = cakaj(w1, "privitanie");
 const chyba = cakaj(w1, "error");
-w1.send(JSON.stringify({ type: "create", dlzka }));
+w1.send(JSON.stringify({ type: "create", dlzka, bot: protiBotovi }));
 const prva = await Promise.race([priv, chyba]);
 if (prva.type === "error") throw new Error(String(prva.text));
 const kod = String(prva.code);
-const stav = cakaj(w2, "state");
-w2.send(JSON.stringify({ type: "join", code: kod }));
-await stav;
+if (!protiBotovi) {
+  const w2 = await pripoj(cookies[1] ?? "");
+  const stav = cakaj(w2, "state");
+  w2.send(JSON.stringify({ type: "join", code: kod }));
+  await stav;
+  w2.close();
+}
 w1.close();
-w2.close();
 
-writeFileSync(join(relacia, "hra.json"), JSON.stringify({ id, port, kod, dlzka, pid: server.pid, zalozena: cas.toISOString(), hraci }, null, 2));
+writeFileSync(join(relacia, "hra.json"), JSON.stringify({ id, port, kod, dlzka, pid: server.pid, zalozena: cas.toISOString(), hraci, protiBotovi }, null, 2));
 // Lomky aj na Windows — cesta sa posiela agentom do príkazov.
 console.log(`Playtest založený: ${relacia.split("\\").join("/")}`);
 console.log(`Server: http://localhost:${port} (pid ${server.pid}), miestnosť ${kod}`);
-console.log(`Hráč 1: ${meno1} | Hráč 2: ${meno2} | dĺžka hry: ${dlzka}`);
+console.log(`Hráč 1: ${meno1} | Hráč 2: ${protiBotovi ? "Štamgast (offline protihráč)" : meno2} | dĺžka hry: ${dlzka}`);

@@ -498,5 +498,15 @@
   "mierkaIkon": 1.3,
   "kopie": 1,
   "obrazok": "zahradkar.jpg"
+ },
+ {
+  "id": "anonymny_alkoholik",
+  "farba": null,
+  "sirkaMm": 54.0,
+  "vyskaMm": 80.0,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "anonymny_alkoholik.jpg"
  }
 ]

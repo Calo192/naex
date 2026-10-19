@@ -10,8 +10,9 @@ import type {
   ClientState,
   DamageResult,
   PlayerId,
+  StavZavislosti,
 } from "@naex/core";
-import { KONSTANTY, jeCielLokalita, limitBuduceKolo, limitZhromazdenia } from "@naex/core";
+import { KONSTANTY, battleOutcome, textNeresti as neresti, jeCielLokalita, limitBuduceKolo, limitZhromazdenia } from "@naex/core";
 import type { Sada } from "@naex/tvorba";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { useTip, type TipObsah } from "../karta/Tip.tsx";
@@ -41,7 +42,134 @@ export function IkonaCigareta() {
   );
 }
 
+/** Absťák: prázdny pohárik v trasúcej sa ruke. */
+export function IkonaAbstak() {
+  return (
+    <svg className="ikona-abstak" viewBox="0 0 30 30" aria-hidden="true">
+      <path className="trasenie" d="M3 9q-2 3 0 6M5.5 7q-2.5 5 0 10M27 9q2 3 0 6M24.5 7q2.5 5 0 10" />
+      <path className="pohar" d="M9 4h12l-1.8 21H10.8z" />
+      <path className="kvapka" d="M15 13.5c-1.4 2-2 3-2 4a2 2 0 0 0 4 0c0-1-.6-2-2-4z" />
+    </svg>
+  );
+}
+
 // ---- doska hráča --------------------------------------------------------------
+
+/**
+ * Neresti kola proti minulému: dieliky po čiaru minulého kola treba
+ * zaplniť, aby Absťák nepribudol; dielik za čiarou jeden Absťák zoberie.
+ */
+function NerestiPruh({ z }: { readonly z: StavZavislosti }) {
+  const prve = z.vyhlad === "zaklad";
+  const dieliky = prve ? Math.max(z.teraz, 1) : Math.max(z.minule + 1, z.teraz);
+  return (
+    <span className="neresti-pruh" aria-hidden="true">
+      {Array.from({ length: dieliky }, (_, i) => {
+        const plny = i < z.teraz;
+        const trieda = prve
+          ? plny ? "plny" : ""
+          : i < z.minule
+            ? plny ? "plny" : "chyba"
+            : plny ? "plny nad" : "nad";
+        return (
+          <span key={i} className={trieda}>
+            {!prve && i === z.minule && <i className="ciara" />}
+          </span>
+        );
+      })}
+    </span>
+  );
+}
+
+/** Krátky výhľad pod počítadlom a jeho trieda (farba). */
+function vyhladAbstaku(z: StavZavislosti, ja: boolean): { text: string; trieda: string } {
+  switch (z.vyhlad) {
+    case "zaklad":
+      return { text: "1. kolo nastaví základ", trieda: "" };
+    case "ziska":
+      return { text: `hrozí +1 · chýba ${neresti(z.doBezpecia)}`, trieda: "zly" };
+    case "zbavi":
+      return { text: `${ja ? "zbavíš" : "zbaví"} sa 1 na konci kola`, trieda: "dobry" };
+    case "nic":
+      return z.doZbavenia > 0
+        ? { text: `bez zmeny · ešte ${neresti(z.doZbavenia)} = −1`, trieda: "" }
+        : { text: "bez zmeny", trieda: "" };
+  }
+}
+
+/** Absťák na doske: koľko ich má, čo robia, neresti kola a čo bude na konci kola. */
+function ZdrojAbstak({ z, ja }: { readonly z: StavZavislosti; readonly ja: boolean }) {
+  const vyhlad = vyhladAbstaku(z, ja);
+  const ty = ja ? "ti" : "mu";
+  return (
+    <Zdroj
+      nazov="Absťák"
+      trieda={`zdroj-abstak ${z.vyhlad === "ziska" ? "varovanie" : ""} ${z.abstaky > 0 ? "ma-abstak" : ""}`}
+      ikona={<IkonaAbstak />}
+      hodnota={
+        <span className="velke-cislo">
+          {z.abstaky}
+          {z.ubera > 0 && <small className="abstak-ubera"> −{z.ubera} tuhé</small>}
+        </span>
+      }
+      pod={
+        <>
+          <span className="neresti-pocet">
+            neresti {z.teraz}
+            {z.vyhlad !== "zaklad" && <> / minule {z.minule}</>}
+          </span>
+          <NerestiPruh z={z} />
+          <span className={`abstak-vyhlad ${vyhlad.trieda}`}>{vyhlad.text}</span>
+        </>
+      }
+      tip={{
+        nadpis: `Absťák — ${ja ? "máš" : "má"} ${z.abstaky}`,
+        text: (
+          <>
+            <span className="tip-stav">
+              {z.abstaky === 0
+                ? `Teraz ${ty} Absťák v bitke nič neuberá.`
+                : `V bitke ${ty} ${z.abstaky === 1 ? "uberie" : "uberú"} ${z.ubera} tuhé poškodenie${z.autobusar ? " (Autobusár 1 ignoruje)" : ""} — trasú sa ${ty} ruky.`}
+            </span>
+            <span className="tip-riadok">
+              <b>Kedy príde a odíde:</b> na konci kola, po bitke, sa porovnajú neresti tohto kola s minulým.{" "}
+              <b>Menej</b> → +1 Absťák (rovno priznaný). <b>Rovnako</b> → nič. <b>Viac</b> → jeden Absťák odíde. Prvé kolo
+              len nastaví základ.
+            </span>
+            <span className="tip-riadok">
+              <b>Nerest je:</b> Vypiť poldeci v Zhromaždení, NA EX (poldeci sa vypije v bitke), runda Ešte jednu!, každá
+              vyfajčená cigareta, doliatie poldeci (2) a stokársky barter (za každú cigaretu). Platba za šenok, Dedičstvo
+              a Starostu sa nepočíta.
+            </span>
+            <span className="tip-riadok">
+              <b>Toto kolo:</b> {neresti(z.teraz)}
+              {z.naexNaStole > 0 && ` (z toho ${z.naexNaStole} NA EX na stole)`}
+              {z.vyhlad === "zaklad"
+                ? ". Je to prvé kolo — určí, koľko nerestí bude treba v druhom."
+                : `, minulé kolo ${neresti(z.minule)}. ${
+                    z.vyhlad === "ziska"
+                      ? `Bez ďalších ${neresti(z.doBezpecia)} ${ja ? "dostaneš" : "dostane"} Absťák.`
+                      : z.vyhlad === "zbavi"
+                        ? `${ja ? "Zbavíš" : "Zbaví"} sa jedného Absťáku.`
+                        : z.doZbavenia > 0
+                          ? `Absťák nepribudne; ešte ${neresti(z.doZbavenia)} a jeden odíde.`
+                          : "Absťák nepribudne."
+                  }`}
+            </span>
+            {z.lesnaCesta && (
+              <span className="tip-riadok">
+                <b>Lesná cesta:</b> NA EX v tejto Pitke hneď zahodí jeden Absťák.
+              </span>
+            )}
+            <span className="tip-riadok">
+              <b>Krčmárka</b> (ak ju máš): bez Absťáku a bez NA EX v kole otočí pri bitke vypitý poldeci na plný.
+            </span>
+          </>
+        ),
+      }}
+    />
+  );
+}
 
 /** Pruh z dielikov: koľko zostáva do prahu (pečeň → Cirhóza, Dlhy → Exekútor). */
 function Pruh({ hodnota, prah }: { readonly hodnota: number; readonly prah: number }) {
@@ -111,6 +239,8 @@ export interface HracDoskaProps {
   readonly body?: { readonly body: number; readonly neiste: boolean };
   readonly info: HracInfo | null;
   readonly prahy: { readonly cirhoza: number; readonly dlh: number; readonly exekutor: number; readonly priznaneDlhy: number };
+  /** Absťáky, neresti kola a výhľad na koniec kola (stavZavislosti). */
+  readonly zavislost: StavZavislosti;
   readonly menoKarty: (defId: string) => string;
   readonly popisKarty: (defId: string) => string;
   /** Doliatie a nový poldeci za cigarety — len na tvojej doske (Michal 2026-10-18: nedali sa nájsť). */
@@ -123,7 +253,7 @@ export interface HracDoskaProps {
  * Doska hráča. Obe dosky sú v jednom rade nad stolom — tvoja vľavo, súperova
  * vpravo a zrkadlovo (avatar pri vonkajšom okraji, zdroje smerom k stredu).
  */
-export function HracDoska({ view, p, info, prahy, menoKarty, popisKarty, body, obchodCigariet }: HracDoskaProps) {
+export function HracDoska({ view, p, info, prahy, zavislost, menoKarty, popisKarty, body, obchodCigariet }: HracDoskaProps) {
   const hrac = view.hraci[p];
   const ja = p === view.ja;
   const meno = info?.meno ?? `Hráč ${p + 1}`;
@@ -292,6 +422,7 @@ export function HracDoska({ view, p, info, prahy, menoKarty, popisKarty, body, o
             ),
           }}
         />
+        <ZdrojAbstak z={zavislost} ja={ja} />
         <Zdroj
           nazov="Pečeň"
           trieda={`zdroj-pecen ${hrac.pecen >= prahy.cirhoza - 1 ? "varovanie" : ""}`}
@@ -391,7 +522,7 @@ export function HracDoska({ view, p, info, prahy, menoKarty, popisKarty, body, o
             <span className="oblast-skupina">
               <span className="oblast-nazov">priznané</span>
               {hrac.priznane.map((k) => (
-                <span key={k.uid} className="cip kliatba" title={popisKarty(k.defId)}>
+                <span key={k.uid} className={`cip kliatba ${k.defId === "abstak" ? "abstak" : ""}`} title={popisKarty(k.defId)}>
                   {menoKarty(k.defId)}
                 </span>
               ))}
@@ -427,6 +558,7 @@ function StranaBitky({
   sada,
   vitaz,
   zarovnanie,
+  abstaky,
 }: {
   readonly meno: string;
   readonly tuhe: number;
@@ -436,6 +568,8 @@ function StranaBitky({
   readonly sada: Sada;
   readonly vitaz: boolean;
   readonly zarovnanie: "vlavo" | "vpravo";
+  /** O koľko Absťáky znížili tuhé poškodenie. */
+  readonly abstaky: number;
 }) {
   const nazov = (kluc: string): string => sada.akcie.find((a) => a.kluc === kluc)?.nazov ?? kluc;
   const rozpis: { kluc: string; text: string }[] = [];
@@ -457,7 +591,7 @@ function StranaBitky({
       <span className="bitka-doplnok">
         {makke > 0 ? `+${makke} mäkké · ` : ""}celkom {celkove}
       </span>
-      {rozpis.length > 0 && (
+      {(rozpis.length > 0 || abstaky > 0) && (
         <span className="bitka-rozpis">
           {rozpis.map((r) => (
             <span key={r.kluc} title={sada.akcie.find((a) => a.kluc === r.kluc)?.popis ?? r.kluc}>
@@ -467,6 +601,14 @@ function StranaBitky({
               {r.text}
             </span>
           ))}
+          {abstaky > 0 && (
+            <span className="bitka-abstak" title="Absťák: každý uberie 1 tuhé poškodenie (trasú sa ruky).">
+              <span className="bitka-ikona">
+                <IkonaAbstak />
+              </span>
+              Absťák −{abstaky}
+            </span>
+          )}
         </span>
       )}
     </div>
@@ -482,21 +624,29 @@ export interface BitkaPanelProps {
   readonly mena: readonly [string, string];
   readonly sada: Sada;
   readonly ciel: string;
+  readonly oStarsieho: boolean;
+  /** O koľko Absťáky znížia tuhé poškodenie [hráč 0, hráč 1]. */
+  readonly abstaky: readonly [number, number];
 }
 
-export function BitkaPanel({ damage, sums, ja, utocnik, vysledok, mena, sada, ciel }: BitkaPanelProps) {
+export function BitkaPanel({ damage, sums, ja, utocnik, vysledok, mena, sada, ciel, oStarsieho, abstaky }: BitkaPanelProps) {
   const su = (ja === 0 ? 1 : 0) as PlayerId;
-  // Pri rovnosti tuhého poškodenia vyhráva útočník (PRAVIDLA §8.4).
-  const vitaz: PlayerId = damage.tuhe[ja] === damage.tuhe[su] ? utocnik : damage.tuhe[ja] > damage.tuhe[su] ? ja : su;
+  // Remíza v tuhom (Michal 2026-10-19): o lokalitu rozhodne celkové, potom
+  // obranca; o staršieho nevyhrá nikto (PRAVIDLA §8.4).
+  const { vitaz, prebytok, prebytokDrzi } = battleOutcome(damage, utocnik, oStarsieho);
   const rozdiel = Math.abs(damage.tuhe[ja] - damage.tuhe[su]);
-  const prebytok = Math.abs(damage.celkove[ja] - damage.celkove[su]);
-  const prebytokDrzi = damage.celkove[ja] === damage.celkove[su] ? null : damage.celkove[ja] > damage.celkove[su] ? ja : su;
   const vyhravam = vitaz === ja;
   const verdikt =
-    rozdiel === 0
-      ? vyhravam
-        ? "Remíza — vyhrávaš ako útočník"
-        : "Remíza — vyhráva útočník"
+    vitaz === null
+      ? "Remíza — starší ostáva na mieste"
+      : rozdiel === 0
+      ? damage.celkove[ja] === damage.celkove[su]
+        ? vyhravam
+          ? "Remíza — vyhrávaš ako obranca"
+          : "Remíza — vyhráva obranca"
+        : vyhravam
+          ? "Remíza v tuhom — vyhrávaš na celkové"
+          : "Remíza v tuhom — súper vyhráva na celkové"
       : vysledok
         ? vyhravam
           ? "Vyhral si bitku"
@@ -506,7 +656,7 @@ export function BitkaPanel({ damage, sums, ja, utocnik, vysledok, mena, sada, ci
           : `Prehrávaš o ${rozdiel}`;
 
   return (
-    <section className={`bitka-panel ${vyhravam ? "vyhravam" : "prehravam"}`} aria-label="Bitka">
+    <section className={`bitka-panel ${vitaz === null ? "" : vyhravam ? "vyhravam" : "prehravam"}`} aria-label="Bitka">
       <StranaBitky
         meno={mena[ja]}
         tuhe={damage.tuhe[ja]}
@@ -516,6 +666,7 @@ export function BitkaPanel({ damage, sums, ja, utocnik, vysledok, mena, sada, ci
         sada={sada}
         vitaz={vitaz === ja}
         zarovnanie="vlavo"
+        abstaky={abstaky[ja]}
       />
       <div className="bitka-stred">
         <span className="bitka-nadpis">
@@ -538,6 +689,7 @@ export function BitkaPanel({ damage, sums, ja, utocnik, vysledok, mena, sada, ci
         sada={sada}
         vitaz={vitaz === su}
         zarovnanie="vpravo"
+        abstaky={abstaky[su]}
       />
     </section>
   );

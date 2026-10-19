@@ -1,80 +1,126 @@
 // Vzdelávacia časť: pravidlá v2 po kapitolách (docs/naex_pravidla_v2_*.pdf)
 // s ilustráciami kapitol a interaktívnymi ukážkami.
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { Sada } from "@naex/tvorba";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
-import { useTip } from "../karta/Tip.tsx";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { useSada } from "../lib/sada.tsx";
-import { Nacitavanie } from "../komponenty.tsx";
 import { UkazkaBitky, UkazkaLimitu, UkazkaSpajania, UkazkaStupnice } from "./Ukazky.tsx";
 
 interface Kapitola {
   readonly id: string;
   readonly nazov: string;
+  /** Kratší názov do obsahu vľavo, keď sa celý nezmestí na riadok. */
+  readonly kratky?: string;
   readonly obrazok?: string;
   readonly obsah: (sada: Sada) => ReactNode;
 }
 
+/** Slovník pravidiel po témach (Michal 2026-10-19: pojmy musia mať jasný poriadok). */
+const SLOVNIK: readonly { readonly tema: string; readonly popis: string; readonly pojmy: readonly (readonly [string, string])[] }[] = [
+  {
+    tema: "Stôl a línia",
+    popis: "Kde karty ležia a s čím sa párujú.",
+    pojmy: [
+      ["Línia", "Celý rad kariet v kole; lokalita v strede ho delí na dve strany."],
+      ["Strana", "Polovica línie od lokality — tvoja a súperova. Kartu vykladáš na koniec ktorejkoľvek z nich."],
+      ["Partia", "Všetky tvoje karty v línii — tie natočené k tebe, nech ležia na ktorejkoľvek strane."],
+      ["Vnútorná hrana", "Hrana karty obrátená k lokalite; ňou sa karta páruje so susedom bližšie k stredu."],
+      ["Vonkajšia hrana", "Hrana karty odvrátená od lokality; ostáva voľná pre ďalšiu kartu."],
+      ["Susedstvo", "Dve karty susedia, ak sú v línii priamo vedľa seba."],
+      ["Okolie", "Karty priložené k danej karte (jej susedia, aj lokalita v strede)."],
+      ["Akcia", "Symbol na strane karty. Aktívna je, keď sa na spoji stretne s akciou suseda."],
+      ["Efekt", "Textové pole karty — čo karta robí navyše."],
+      ["Vzbura", "Odpor proti Odporu: obe karty vyhodnotia všetky inak neaktívne akcie ako aktívne."],
+      ["Hracia oblasť", "Priestor mimo línie pre priznané kliatby a Nástroje v Dedičstve."],
+    ],
+  },
+  {
+    tema: "Kolo a ťahy",
+    popis: "Kto čo robí a kedy.",
+    pojmy: [
+      ["Kolo", "Voľba cieľa, draft, Zhromaždenie a Pitka (aj rundy „Ešte jednu!“) zakončené bitkou o lokalitu alebo o staršieho."],
+      ["Útočník / Obranca", "Útočník prehral poslednú bitku: vyberá cieľ kola a berie zo šenku prvý; obranca vykladá prvý."],
+      ["Šenok", "Ponuka kariet lícom nahor, ktorú hráči postavia v drafte; vidia ju obaja."],
+      ["Vypiť", "Otočiť plný poldeci na vypitý: ďalšiu kartu zahráš hneď, ale limit −1 a pečeň +1 (vyhodnotí sa v najbližšej Pitke)."],
+      ["Fajčiť", "Vyfajčiť cigaretu = hneď si dobrať kartu. Na svojom ťahu v Zhromaždení aj v Pitke; ťah to neukončí."],
+      ["Stokársky barter", "Počas Pitky: za 5 cigariet nový plný poldeci."],
+      ["Náhrada", "Hráč nahradí kartu z množiny určenej efektom."],
+    ],
+  },
+  {
+    tema: "Zdroje, kliatby a body",
+    popis: "Čo hráč má, čoho sa zbavuje a za čo boduje.",
+    pojmy: [
+      ["Poldeci", "Fyzický pohár. Plný poldeci umožňuje vyložiť kartu, vypitý nie."],
+      ["Priznanie", "Vyloženie kliatby mimo línie do vlastnej hracej oblasti — natrvalo z balíčka."],
+      ["Tuhé / mäkké poškodenie", "Tuhé (Rana, Pecka, Petelica, Cirhóza) rozhoduje o víťazovi; mäkké (Povera) sa udeľuje do výšky súperovho priznaného dlhu."],
+      ["Podpora", "Karta je podporená, ak sú v jej okolí presne 2 karty."],
+      ["Priazeň", "Výhoda od staršieho, ku ktorému je marker posunutý: sila 1 / 2 / 3 podľa zóny, účinok 2 × sila."],
+    ],
+  },
+];
+
 function Pojmy({ sada }: { readonly sada: Sada }) {
-  const { tip, ukaz, skry } = useTip();
-  const POJMY: readonly [string, string][] = [
-    ["Akcia", "Symbol na strane karty."],
-    ["Efekt", "Textové pole na karte."],
-    ["Línia", "Celý rad kariet v kole; lokalita v strede ho delí na dve strany."],
-    ["Strana", "Polovica línie od lokality — tvoja a súperova. Kartu vykladáš na koniec ktorejkoľvek z nich."],
-    ["Partia", "Všetky tvoje karty v línii — tie natočené k tebe, nech ležia na ktorejkoľvek strane."],
-    ["Vnútorná hrana", "Hrana karty v línii obrátená k lokalite; ňou sa karta páruje so susedom bližšie k stredu."],
-    ["Vonkajšia hrana", "Hrana karty v línii odvrátená od lokality; ostáva voľná pre ďalšiu kartu."],
-    ["Vypiť", "Otočiť plný poldeci na vypitý: zahráš ďalšiu kartu hneď, ale limit −1 a pečeň +1 (vyhodnotí sa v najbližšej Pitke)."],
-    ["Šenok", "Ponuka kariet lícom nahor zo spoločného balíčka; vidia ju obaja hráči."],
-    ["Poldeci", "Fyzický pohár. Plný poldeci umožňuje vyložiť kartu, vypitý nie."],
-    ["Okolie", "Karty priložené k danej karte."],
-    ["Susedstvo", "Dve karty susedia, ak sú priamo vedľa seba."],
-    ["Podpora", "Karta je podporená, ak sú v jej okolí presne 2 karty."],
-    ["Priazeň", "Výhoda od staršieho, ku ktorému je marker posunutý: sila 1 / 2 / 3 podľa zóny, účinok 2 × sila."],
-    ["Priznanie", "Vyloženie kliatby mimo línie do vlastnej hracej oblasti — natrvalo z balíčka."],
-    ["Náhrada", "Hráč nahradí kartu z množiny určenej efektom."],
-    ["Kolo", "Cyklus Zhromaždení a Pitiek zakončený bitkou o lokalitu alebo o staršieho."],
-    ["Útočník / Obranca", "Útočník prehral poslednú bitku: vyberá cieľ kola a berie zo šenku prvý; obranca vykladá prvý."],
-    ["Fajčiť", "Vyfajčiť cigaretu = hneď si dobrať kartu. Na svojom ťahu v Zhromaždení aj v Pitke; ťah to neukončí."],
-    ["Hracia oblasť", "Priestor mimo línie pre priznané karty a Nástroje v Dedičstve."],
-    ["Tuhé / mäkké poškodenie", "Tuhé (Rana, Pecka, Petelica, Cirhóza) rozhoduje o víťazovi; mäkké (Povera) sa udeľuje do výšky súperovho priznaného dlhu."],
-    ["Vzbura", "Odpor proti Odporu: obe karty vyhodnotia všetky inak neaktívne akcie ako aktívne."],
-    ["Stokársky barter", "Počas Pitky: za 5 cigariet/cigaretiek nový plný poldeci."],
-  ];
+  const spustace = sada.klucoveSlova.filter((k) => k.tucne);
+  const slovesa = sada.klucoveSlova.filter((k) => !k.tucne);
   return (
-    <>
-      <p>
-        Pojmy, ktoré sa na kartách píšu <strong>tučne</strong> alebo <em>kurzívou</em>, majú presný význam. Prejdi myšou
-        ponad pojem.
+    <div className="pojmy-kapitola">
+      <p className="uvod">
+        Na kartách sú dva druhy slov s presným významom: <strong>tučné</strong> hovoria, <strong>kedy</strong> efekt platí,
+        a <em>kurzívou</em> písané, <strong>čo</strong> efekt robí. Pod nimi je slovník pravidiel podľa tém.
       </p>
-      <div className="pojmy">
-        {sada.klucoveSlova.map((k) => (
-          <span
-            key={k.slovo}
-            className={`pojem ${k.tucne ? "pojem-tucny" : ""} ${k.kurziva ? "pojem-kurziva" : ""}`}
-            tabIndex={0}
-            onMouseEnter={(e) => ukaz(e.currentTarget, { nadpis: k.slovo, text: k.popis })}
-            onMouseLeave={skry}
-            onFocus={(e) => ukaz(e.currentTarget, { nadpis: k.slovo, text: k.popis })}
-            onBlur={skry}
-          >
-            {k.slovo}
-          </span>
-        ))}
-      </div>
-      <dl className="slovnik">
-        {POJMY.map(([p, v]) => (
-          <div key={p}>
-            <dt>{p}</dt>
-            <dd>{v}</dd>
+
+      <section className="pojmy-skupina">
+        <header>
+          <h3>Kedy efekt platí</h3>
+          <span>tučné slovo na začiatku efektu karty</span>
+        </header>
+        <div className="pojmy-mriezka">
+          {spustace.map((k) => (
+            <div key={k.slovo} className="pojem-karta spustac">
+              <strong>{k.slovo}</strong>
+              <span>{k.popis}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {slovesa.length > 0 && (
+        <section className="pojmy-skupina">
+          <header>
+            <h3>Čo efekt robí</h3>
+            <span>slovo kurzívou v texte efektu</span>
+          </header>
+          <div className="pojmy-mriezka">
+            {slovesa.map((k) => (
+              <div key={k.slovo} className="pojem-karta sloveso">
+                <em>{k.slovo}</em>
+                <span>{k.popis}</span>
+              </div>
+            ))}
           </div>
-        ))}
-      </dl>
-      {tip}
-    </>
+        </section>
+      )}
+
+      {SLOVNIK.map((t) => (
+        <section key={t.tema} className="pojmy-skupina">
+          <header>
+            <h3>{t.tema}</h3>
+            <span>{t.popis}</span>
+          </header>
+          <dl className="pojmy-mriezka">
+            {t.pojmy.map(([pojem, vyznam]) => (
+              <div key={pojem} className="pojem-karta">
+                <dt>{pojem}</dt>
+                <dd>{vyznam}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      ))}
+    </div>
   );
 }
 
@@ -399,6 +445,7 @@ const KAPITOLY: readonly Kapitola[] = [
   {
     id: "pecen",
     nazov: "Poškodenie pečene a Cirhóza",
+    kratky: "Pečeň a Cirhóza",
     obrazok: "strana-26.jpg",
     obsah: () => (
       <>
@@ -427,14 +474,19 @@ const KAPITOLY: readonly Kapitola[] = [
     obsah: () => (
       <>
         <p>
-          Počítadlo závislosti sleduje neresti kola: fyzické cigarety, Cigaretky, poldeci cez NA EX, vypité poldeci (Vypiť) a
-          akcie Poldecko.
+          Počítadlo závislosti sleduje neresti kola. Nerest je: vypiť poldeci v Zhromaždení (Vypiť), NA EX (poldeci sa vypije
+          v bitke), runda <em>Ešte jednu!</em>, každá vyfajčená cigareta, doliatie poldeci (2 cigarety) a stokársky barter (za
+          každú cigaretu). Platba za šenok, Dedičstvo a Starostu sa nepočíta.
         </p>
         <ul>
-          <li>Menej nerestí než minulé kolo → <strong>Absťák</strong> rovno do hracej oblasti (priznaný).</li>
-          <li>Viac → jeden Absťák odhoď späť. Rovnako → nič. Prvé kolo len nastaví základ.</li>
+          <li>Na konci kola, po bitke, sa neresti porovnajú s minulým kolom.</li>
+          <li>Menej nerestí → <strong>Absťák</strong> rovno do hracej oblasti (priznaný).</li>
+          <li>Viac → jeden Absťák odíde. Rovnako → nič. Prvé kolo len nastaví základ.</li>
         </ul>
-        <p>Každý Absťák ti v bitke zníži tuhé poškodenie o 1 — trasú sa ti ruky.</p>
+        <p>
+          Každý Absťák ti v bitke zníži tuhé poškodenie o 1 — trasú sa ti ruky. Zbavíš sa ho aj NA EX na Lesnej ceste;
+          Autobusár jeden ignoruje. Na doske hráča vidíš neresti kola, čiaru minulého kola a čo sa stane na jeho konci.
+        </p>
       </>
     ),
   },
@@ -489,8 +541,8 @@ const KAPITOLY: readonly Kapitola[] = [
           berie ďalej sám.
         </p>
         <p className="zvyraznene">
-          Počet Pitiek = počet <strong>aktivovaných akcií na karte lokality</strong>, aspoň 1. Keď sa pri lokalite aktivujú ďalšie
-          akcie, Pitiek pribudne. V bitke o staršieho je vždy jedna.
+          <strong>Ešte jednu!</strong> Bitka má jednu Pitku. Kto po nej prehráva, smie <strong>vypiť plný poldeci</strong> a
+          objednať ďalšie Zhromaždenie a Pitku — vykladá v nich prvý. Najviac 2 rundy navyše.
         </p>
         <h3>Poradie Pitky</h3>
         <ol>
@@ -535,7 +587,7 @@ const KAPITOLY: readonly Kapitola[] = [
         <li><strong>Exekútor</strong> — najprv Robota, potom kontrola prahu priznaných dlhov.</li>
         <li><strong>Pohoršenie</strong> — každé posunie marker staršieho o 1 k súperovi (nie dvakrát ten istý, nie na krajnú pozíciu).</li>
         <li><strong>Poškodenie</strong> — Viera a Povera sa vyrušia, tuhé znižuje Viera a Absťáky, mäkké po strop dlhu.</li>
-        <li><strong>Výsledok</strong> — vyhráva vyššie TUHÉ (pri remíze útočník); prebytok rozdeľuje hráč s vyšším CELKOVÝM.</li>
+        <li><strong>Výsledok</strong> — vyhráva vyššie TUHÉ; pri remíze o lokalitu rozhodne CELKOVÉ a potom obranca, o staršieho nevyhrá nikto (starší ostáva). Prebytok rozdeľuje hráč s vyšším CELKOVÝM.</li>
         <li><strong>Cigarety za prebytok</strong> — hráč, proti ktorému sa prebytok rozdeľoval, dostane 1 cigaretu za každého staršieho, ktorého marker sa posunul (viac posunov toho istého = 1 cigareta).</li>
         <li><strong>Poldeci</strong> — poldeci z NA EX sa vypijú, Poldecko otočí vypitý späť na plný.</li>
         <li><strong>Veštica</strong> — porazený s Vešticou vymení kartu medzi doberacími balíčkami.</li>
@@ -586,6 +638,29 @@ export function Pravidla() {
   const { sada } = useSada();
   const [index, setIndex] = useState(indexZAdresy);
   const kapitola = KAPITOLY[index] ?? KAPITOLY[0]!;
+  // Ilustrácie všetkých kapitol sa načítajú hneď po otvorení (najprv
+  // aktuálna a nasledujúce) — listovanie je potom okamžité.
+  const [nacitane, setNacitane] = useState<ReadonlySet<string>>(() => new Set());
+  const oznacNacitany = (subor: string): void =>
+    setNacitane((s) => (s.has(subor) ? s : new Set(s).add(subor)));
+  useEffect(() => {
+    const subory = [...KAPITOLY.slice(index), ...KAPITOLY.slice(0, index)].flatMap((k) => (k.obrazok === undefined ? [] : [k.obrazok]));
+    const obrazky = subory.map((subor) => {
+      const img = new Image();
+      img.onload = () => oznacNacitany(subor);
+      img.src = `/pravidla/${subor}`;
+      return img;
+    });
+    return () => {
+      for (const img of obrazky) img.onload = null;
+    };
+    // Raz pri otvorení stránky; ďalšie kapitoly sú potom už v cache.
+  }, []);
+  // Posúva sa len text vpravo — nová kapitola začína zhora.
+  const textRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    textRef.current?.scrollTo({ top: 0 });
+  }, [index]);
   useTitulok(`Pravidlá — ${kapitola.nazov}`);
 
   useEffect(() => {
@@ -614,8 +689,7 @@ export function Pravidla() {
     return () => window.removeEventListener("keydown", f);
   });
 
-  if (sada === null) return <Nacitavanie />;
-
+  const obrazok = kapitola.obrazok;
   const predosla = KAPITOLY[index - 1];
   const dalsia = KAPITOLY[index + 1];
   const klikObsah = (i: number) => (e: React.MouseEvent) => {
@@ -636,7 +710,7 @@ export function Pravidla() {
                 aria-current={i === index ? "page" : undefined}
                 onClick={klikObsah(i)}
               >
-                {k.nazov}
+                {k.kratky ?? k.nazov}
               </a>
             </li>
           ))}
@@ -645,19 +719,41 @@ export function Pravidla() {
 
       <div className="pravidla-strana">
         <article key={kapitola.id} className={`kapitola ${kapitola.obrazok === undefined ? "bez-obrazka" : ""}`}>
-          {kapitola.obrazok !== undefined && (
-            <img className="kapitola-obrazok" src={`/pravidla/${kapitola.obrazok}`} alt="" />
+          {obrazok !== undefined && (
+            // Kým sa ilustrácia načíta, rám s názvom kapitoly jemne pulzuje
+            // a obrázok sa doň potom prelne (Michal 2026-10-19).
+            <div className={`kapitola-obrazok-ram ${nacitane.has(obrazok) ? "nacitany" : ""}`}>
+              <div className="kapitola-obrazok-nahrada" aria-hidden="true">
+                <span>NA EX!</span>
+                <strong>{kapitola.nazov}</strong>
+              </div>
+              <img
+                key={obrazok}
+                className="kapitola-obrazok"
+                src={`/pravidla/${obrazok}`}
+                alt=""
+                onLoad={() => oznacNacitany(obrazok)}
+              />
+            </div>
           )}
-          <div className="kapitola-telo">
-            <span className="kapitola-cislo">
-              Kapitola {index + 1} / {KAPITOLY.length}
-            </span>
-            <h2>{kapitola.nazov}</h2>
-            {kapitola.obsah(sada)}
-          </div>
-        </article>
+          <div className="kapitola-pravy" ref={textRef}>
+            <div className="kapitola-telo">
+              <span className="kapitola-cislo">
+                Kapitola {index + 1} / {KAPITOLY.length}
+              </span>
+              <h2>{kapitola.nazov}</h2>
+              {sada === null ? (
+                <div className="kostra-textu" aria-label="Načítava sa">
+                  {[92, 100, 84, 96, 70, 0, 88, 100, 60].map((w, i) => (
+                    <span key={i} style={{ width: `${w}%` }} />
+                  ))}
+                </div>
+              ) : (
+                kapitola.obsah(sada)
+              )}
+            </div>
 
-        <nav className="listovanie" aria-label="Listovanie kapitol">
+            <nav className="listovanie" aria-label="Listovanie kapitol">
           {predosla !== undefined ? (
             <a href={`#${predosla.id}`} className="listovanie-spat" onClick={klikObsah(index - 1)}>
               <span className="listovanie-smer">← predošlá</span>
@@ -672,10 +768,10 @@ export function Pravidla() {
               {dalsia.nazov}
             </a>
           )}
-        </nav>
+            </nav>
+          </div>
+        </article>
       </div>
-      {/* Ďalšia ilustrácia sa načíta vopred, listovanie je potom okamžité. */}
-      {dalsia?.obrazok !== undefined && <link rel="prefetch" href={`/pravidla/${dalsia.obrazok}`} />}
     </div>
   );
 }

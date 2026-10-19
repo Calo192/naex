@@ -220,19 +220,26 @@ button.cip.aktivny {
 
 /* ---- pravidlá ---- */
 
+/* Michal 2026-10-19: pravidlá na celé okno pod hlavičkou. Stránka sa
+   neposúva — obsah kapitol vľavo pri okraji a ilustrácia na celú výšku sú
+   pevné, posúva sa len text kapitoly vpravo. */
 .pravidla {
+  /* Každá ilustrácia má rovnakú výšku aj šírku — pevne z výšky okna, nie
+     z obsahu (Michal 2026-10-19: Farár sa menil pri klikaní na stupnicu). */
+  --vyska-obrazka: calc(100vh - 65px);
+  --sirka-obrazka: calc(var(--vyska-obrazka) * 760 / 1075);
   display: grid;
-  grid-template-columns: 250px 1fr;
-  gap: 40px;
-  align-items: start;
+  grid-template-columns: 220px minmax(0, 1fr);
+  /* Riadok má výšku okna, nie obsahu — inak by text nemal čo posúvať. */
+  grid-template-rows: minmax(0, 1fr);
+  height: 100%;
 }
 
 .pravidla-obsah {
-  position: sticky;
-  top: 88px;
-  max-height: calc(100vh - 110px);
+  min-height: 0;
+  height: 100%;
   overflow-y: auto;
-  padding-right: 6px;
+  padding: 16px 12px 16px 20px;
 }
 
 .pravidla-obsah h2 {
@@ -276,24 +283,26 @@ button.cip.aktivny {
   border-left-color: var(--akcent);
 }
 
-/* Kapitola = jedna strana: ilustrácia na výšku obrazovky, vedľa text.
-   Strana má výšku obrazovky aj pri krátkom texte, ďalšia kapitola sa
-   nikdy neukáže pod ňou. */
+/* Kapitola = jedna strana: ilustrácia na celú výšku, vedľa posúvaný text
+   s listovaním dole. */
 
 .pravidla-strana {
-  display: flex;
-  flex-direction: column;
   min-width: 0;
-  min-height: calc(100vh - 150px);
+  min-height: 0;
+  height: 100%;
+}
+
+@supports (height: 100dvh) {
+  .pravidla {
+    --vyska-obrazka: calc(100dvh - 65px);
+  }
 }
 
 .kapitola {
-  flex: 1;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: start;
-  gap: 48px;
-  padding: 4px 0 28px;
+  grid-template-columns: var(--sirka-obrazka) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  height: 100%;
   animation: listovanie 0.25s ease;
 }
 
@@ -304,28 +313,113 @@ button.cip.aktivny {
 @keyframes listovanie {
   from {
     opacity: 0;
-    transform: translateY(8px);
   }
 }
 
+/* Rám drží rozmer ilustrácie; kým sa načíta, pulzuje v ňom názov kapitoly
+   a obrázok sa potom prelne (Michal 2026-10-19). */
+.kapitola-obrazok-ram {
+  position: relative;
+  height: var(--vyska-obrazka);
+  width: var(--sirka-obrazka);
+  overflow: hidden;
+  background: linear-gradient(110deg, #1b1612 30%, #2b231c 50%, #1b1612 70%);
+  background-size: 220% 100%;
+  animation: ram-pulz 1.6s ease-in-out infinite;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
+}
+
+.kapitola-obrazok-ram.nacitany {
+  animation: none;
+}
+
+@keyframes ram-pulz {
+  from {
+    background-position: 110% 0;
+  }
+  to {
+    background-position: -110% 0;
+  }
+}
+
+.kapitola-obrazok-nahrada {
+  position: absolute;
+  inset: auto 0 22%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 18px 24px;
+  border-block: 2px solid rgba(233, 173, 69, 0.45);
+  text-align: center;
+  font-family: var(--nadpis);
+  color: rgba(244, 236, 220, 0.55);
+}
+
+.kapitola-obrazok-nahrada span {
+  color: rgba(233, 173, 69, 0.7);
+  font-size: 1.3rem;
+}
+
+.kapitola-obrazok-nahrada strong {
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+
 .kapitola-obrazok {
-  position: sticky;
-  top: 88px;
+  position: absolute;
+  inset: 0;
   display: block;
-  height: clamp(420px, calc(100vh - 190px), 980px);
-  width: auto;
-  max-width: 100%;
-  aspect-ratio: 760 / 1075;
+  height: 100%;
+  width: 100%;
   object-fit: cover;
-  border-radius: 16px;
-  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  transform: scale(1.015);
+  transition: opacity 0.45s ease, transform 0.6s ease;
+}
+
+.nacitany .kapitola-obrazok {
+  opacity: 1;
+  transform: none;
+}
+
+/* Kostra textu, kým príde sada kariet zo servera. */
+.kostra-textu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 46rem;
+}
+
+.kostra-textu span {
+  height: 14px;
+  border-radius: 7px;
+  background: linear-gradient(110deg, #221c17 30%, #322920 50%, #221c17 70%);
+  background-size: 220% 100%;
+  animation: ram-pulz 1.6s ease-in-out infinite;
+}
+
+.kostra-textu span[style="width: 0%;"] {
+  height: 6px;
+  background: none;
+}
+
+.kapitola-pravy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow-y: auto;
+  padding: 0 32px 20px 40px;
 }
 
 .kapitola-telo {
+  flex: 1 0 auto;
   min-width: 0;
-  max-width: 48rem;
-  padding-top: 10px;
-  font-size: 1.06rem;
+  padding: 26px 0 28px;
+  font-size: 1.1rem;
 }
 
 .kapitola-cislo {
@@ -429,44 +523,77 @@ button.cip.aktivny {
   background: #2a1713;
 }
 
-.pojmy {
+/* Kľúčové pojmy (Michal 2026-10-19): skupiny s nadpisom, popis vždy viditeľný. */
+.pojmy-kapitola {
   display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+.pojmy-skupina > header {
+  display: flex;
+  align-items: baseline;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 1.4rem;
+  gap: 4px 14px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--okraj);
 }
 
-.pojem {
-  padding: 5px 12px;
-  border-radius: 99px;
-  background: var(--plocha-3);
-  cursor: help;
-  border: 1px solid var(--okraj-svetly);
+.pojmy-skupina h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--akcent);
 }
 
-.pojem-tucny {
-  font-weight: 700;
+.pojmy-skupina > header span {
+  color: var(--tlmeny);
+  font-size: 0.9rem;
 }
 
-.pojem-kurziva {
-  font-style: italic;
-}
-
-.slovnik {
+.pojmy-mriezka {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 12px 24px;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 10px;
   margin: 0;
 }
 
-.slovnik dt {
+.pojem-karta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 14px;
+  border: 1px solid var(--okraj);
+  border-left: 3px solid var(--okraj-svetly);
+  border-radius: 10px;
+  background: var(--plocha-2);
+}
+
+.pojem-karta strong,
+.pojem-karta em,
+.pojem-karta dt {
+  font-size: 1.02rem;
+  color: var(--text);
+}
+
+.pojem-karta dt {
   font-weight: 700;
 }
 
-.slovnik dd {
-  margin: 2px 0 0;
+.pojem-karta span,
+.pojem-karta dd {
+  margin: 0;
   color: var(--tlmeny);
-  font-size: 0.93rem;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.pojem-karta.spustac {
+  border-left-color: var(--akcent);
+}
+
+.pojem-karta.sloveso {
+  border-left-color: #8a7ab8;
 }
 
 .tabulka {
@@ -718,11 +845,13 @@ button.cip.aktivny {
 @media (max-width: 980px) {
   .pravidla {
     grid-template-columns: 1fr;
+    height: auto;
   }
 
   .pravidla-obsah {
-    position: static;
-    max-height: none;
+    height: auto;
+    overflow: visible;
+    padding: 0 0 16px;
   }
 
   .pravidla-obsah ol {
@@ -731,8 +860,11 @@ button.cip.aktivny {
     gap: 4px;
   }
 
-  .pravidla-strana {
-    min-height: 0;
+  .pravidla-strana,
+  .kapitola,
+  .kapitola-pravy {
+    height: auto;
+    overflow: visible;
   }
 
   .kapitola {
@@ -740,11 +872,16 @@ button.cip.aktivny {
     gap: 20px;
   }
 
-  .kapitola-obrazok {
-    position: static;
+  .kapitola-pravy {
+    padding: 0;
+  }
+
+  .kapitola-obrazok-ram {
     height: auto;
     width: min(100%, 420px);
+    aspect-ratio: 760 / 1075;
     margin: 0 auto;
+    border-radius: 16px;
   }
 }
 
@@ -752,4 +889,11 @@ button.cip.aktivny {
   .bitka-strany {
     grid-template-columns: 1fr;
   }
+}
+
+/* Položka obsahu pravidiel na jeden riadok — dlhší názov radšej skrátiť. */
+.pravidla-obsah a {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

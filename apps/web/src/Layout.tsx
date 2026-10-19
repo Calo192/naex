@@ -14,7 +14,16 @@ const NAVIGACIA: readonly { readonly href: string; readonly text: string; readon
   { href: "/admin", text: "Tvorba", admin: true },
 ];
 
-export function Layout({ children, siroky = false }: { readonly children: ReactNode; readonly siroky?: boolean }) {
+/** siroky = do 1600 px; plna = celé okno pod hlavičkou bez posúvania stránky a bez pätičky (pravidlá). */
+export function Layout({
+  children,
+  siroky = false,
+  plna = false,
+}: {
+  readonly children: ReactNode;
+  readonly siroky?: boolean;
+  readonly plna?: boolean;
+}) {
   const cesta = useCesta();
   const { ja, nacitane, odhlas } = useUcet();
   const [menu, setMenu] = useState(false);
@@ -111,8 +120,8 @@ export function Layout({ children, siroky = false }: { readonly children: ReactN
           </div>
         </div>
       </header>
-      <main className={siroky ? "obsah obsah-siroky" : "obsah"}>{children}</main>
-      <footer className="paticka">
+      <main className={plna ? "obsah obsah-plna" : siroky ? "obsah obsah-siroky" : "obsah"}>{children}</main>
+      <footer className={plna ? "paticka paticka-skryta" : "paticka"}>
         <span>NA EX! — kartová hra pre dvoch · © Michal Calík</span>
         <span>Hra je fikcia a karikatúra. Alkohol, fajčenie a hazard škodia zdraviu.</span>
       </footer>

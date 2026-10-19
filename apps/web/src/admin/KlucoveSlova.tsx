@@ -12,7 +12,7 @@ export function KlucoveSlova() {
   useTitulok("Kľúčové slová — tvorba");
   const { obsah, ulozKlucoveSlova } = useAdmin();
   const [zoznam, setZoznam] = useState<KlucoveSlovo[]>(() => [...(obsah?.klucoveSlova ?? [])]);
-  const [skuska, setSkuska] = useState("Bitka: Zahoď trocha kariet. Furt: Preskúmaj zopár kariet.");
+  const [skuska, setSkuska] = useState("Bitka: Zahoď 1 kartu. Furt: Preskúmaj 5 kariet.");
   const [sprava, setSprava] = useState<{ druh: "ok" | "chyba"; text: string } | null>(null);
   const riadky = useMemo(() => formatujEfekt(skuska, zoznam), [skuska, zoznam]);
 

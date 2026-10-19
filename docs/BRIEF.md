@@ -177,7 +177,7 @@ rozhodnutie hráča (Pohoršenie, Liečba/Pohreb) — tie motor len **pripraví*
 - Viera znižuje súperovo tuhé poškodenie o `1 + priazeň Veriaceho`,
 - Viera a Povera sa vyrušia 1:1 a zrušená Povera neudelí nič,
 - mäkké poškodenie je zastropené súperovým **priznaným** dlhom,
-- pri remíze v tuhom poškodení vyhráva **útočník**,
+- pri remíze v tuhom poškodení o lokalitu rozhodne **celkové** a potom **obranca**, o staršieho nevyhrá nikto (Michal 2026-10-19; predtým útočník),
 - pri remíze v celkovom poškodení **nikto nezíska prebytok**.
 
 ---
@@ -326,8 +326,8 @@ do commitu a do README**, nech sa to dá ľahko prepnúť.
    (rozhodnutie Michala 2026-10-11):** „Nástup: Súper v najbližšej Pitke nesmie
    dať NA EX.“ **Nahradené 2026-10-18** (NA EX opäť aj na súperove karty,
    ochranu nesie nová karta Anonymný alkoholik): „Furt: Keď súper dá NA EX,
-   ukradni mu 1 cigaretu.“ Dve Svokry kradnú 2. Implementované; text v tvorcovi
-   je zmenený, čaká na zverejnenie.
+   ukradni mu 1 cigaretu.“ — od 2026-10-19 **2 cigarety**, dve Svokry 4.
+   Implementované a zverejnené (sada v6).
 9. **Šenok** — čo sa stane, keď sa minie spoločný doberací balíček?
 
 ---

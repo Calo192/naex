@@ -85,7 +85,7 @@ export const KONSTANTY = {
     POSTARKA_KARTY: 2,
     POSTARKA_DLHY: 1,
     PODVODNIK_CIGARETY: 2,
-    SVOKRA_CIGARETY: 1,
+    SVOKRA_CIGARETY: 2,
     VDOVA_DLHY: 2,
     STRYNA_KLIATBY: 1,
     VIZIA_KLIATBY: 2,
@@ -96,6 +96,13 @@ export const KONSTANTY = {
     AUTOMAT_VYHRA_CIGARETY: 2,
     AUTOMAT_PREHRA_DLHY: 1,
   },
+
+  /**
+   * „Ešte jednu!“ (Michal 2026-10-19): bitka má jednu Pitku; kto po nej
+   * prehráva, smie vypiť plný poldeci a objednať ďalšie Zhromaždenie a Pitku —
+   * najviac toľkokrát za bitku.
+   */
+  RUNDY_NAVYSE: 2,
 
   /** Stokársky barter: cigarety → nový plný poldeci (PRAVIDLA §5); Lakomec zlacní. */
   BARTER_CENA: 5,

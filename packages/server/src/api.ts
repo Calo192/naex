@@ -306,7 +306,8 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
 
     if (r === "DELETE /profil/avatar") {
       const p = prihlaseny();
-      return ok({ pouzivatel: ctx.ucty.upravProfil(p.id, { avatar: null }) });
+      // Bez vlastnej fotky dostane hráč náhodnú dedinskú trosku.
+      return ok({ pouzivatel: ctx.ucty.upravProfil(p.id, { avatar: ctx.ucty.predvolenyAvatar() }) });
     }
 
     // ----- verejné -------------------------------------------------------

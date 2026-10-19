@@ -92,13 +92,13 @@ describe("tvorba — vzhľad", () => {
   });
 
   it("spúšťač je tučný a začína nový riadok, pojmy kurzívou", () => {
-    const riadky = formatujEfekt("Zhromaždenie: Každý hráč dobral. Bitka: Zahoď trocha kariet.", PREDVOLENE_KLUCOVE_SLOVA);
+    const riadky = formatujEfekt("Zhromaždenie: Každý hráč dobral. Bitka: Zahoď kartu a preskúmaj balíček.", PREDVOLENE_KLUCOVE_SLOVA);
     expect(riadky.length).toBe(2);
     expect(riadky[0]?.[0]).toMatchObject({ text: "Zhromaždenie:", tucne: true });
     expect(riadky[1]?.[0]).toMatchObject({ text: "Bitka:", tucne: true });
     const kurzivy = riadky.flat().filter((u) => u.kurziva).map((u) => u.text);
-    expect(kurzivy).toEqual(["Zahoď", "trocha"]);
-    expect(riadky.flat().map((u) => u.text).join("")).toBe("Zhromaždenie: Každý hráč dobral.Bitka: Zahoď trocha kariet.");
+    expect(kurzivy).toEqual(["Zahoď", "preskúmaj"]);
+    expect(riadky.flat().map((u) => u.text).join("")).toBe("Zhromaždenie: Každý hráč dobral.Bitka: Zahoď kartu a preskúmaj balíček.");
   });
 });
 

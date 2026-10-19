@@ -221,8 +221,10 @@ export function UkazkaBitky() {
         </div>
       </div>
       <div className="ukazka-vysledok">
-        Vyhráva <strong>{MENA[o.vitaz]}</strong>
-        {d.tuhe[0] === d.tuhe[1] && " (remíza v tuhom — vyhráva útočník)"}.{" "}
+        Vyhráva <strong>{MENA[o.vitaz ?? utocnik]}</strong>
+        {d.tuhe[0] === d.tuhe[1] &&
+          (d.celkove[0] === d.celkove[1] ? " (remíza aj v celkovom — vyhráva obranca)" : " (remíza v tuhom — rozhodlo celkové poškodenie)")}
+        .{" "}
         {o.prebytokDrzi === null
           ? "Celkové poškodenie je vyrovnané — prebytok nezíska nikto."
           : `${MENA[o.prebytokDrzi]} rozdelí prebytok ${o.prebytok} medzi starších.`}

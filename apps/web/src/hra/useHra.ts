@@ -16,6 +16,8 @@ export interface HracInfo {
   readonly avatar: string | null;
   readonly frajerina?: number;
   readonly titul?: string;
+  /** Offline protihráč (počítač) — nemá účet ani Frajerinu. */
+  readonly bot?: boolean;
 }
 
 /** Zmena Frajeriny po dohraní partie (index = miesto hráča). */
@@ -48,7 +50,8 @@ export interface HraHook {
   readonly chyba: string | null;
   readonly superPripojeny: boolean;
   readonly frajerina: ZmenyFrajeriny | null;
-  zaloz(verejna: boolean, dlzka: DlzkaHry): void;
+  /** Nová hra; bot = proti offline protihráčovi (počítač), začína hneď. */
+  zaloz(verejna: boolean, dlzka: DlzkaHry, bot?: boolean): void;
   pripoj(code: string): void;
   cmd(command: Command): void;
   /** Kontumačná výhra, keď je súper dlho odpojený (server overí čas). */
@@ -69,7 +72,7 @@ function textUdalosti(e: Event, mena: readonly string[]): string | null {
     case "manualEfekt":
       return `⚠ EFEKT (vyhodnoťte ručne): ${e.nazov} — ${e.text}`;
     case "bitkaVysledok":
-      return `Bitka: tuhé ${e.damage.tuhe[0]}:${e.damage.tuhe[1]}, celkové ${e.damage.celkove[0]}:${e.damage.celkove[1]} — vyhráva ${meno(e.vitaz)}${e.prebytok > 0 ? `, prebytok ${e.prebytok}` : ""}.`;
+      return `Bitka: tuhé ${e.damage.tuhe[0]}:${e.damage.tuhe[1]}, celkové ${e.damage.celkove[0]}:${e.damage.celkove[1]} — ${e.vitaz === null ? "remíza, starší ostáva" : `vyhráva ${meno(e.vitaz)}`}${e.prebytok > 0 ? `, prebytok ${e.prebytok}` : ""}.`;
     case "koniec":
       return e.body === null ? `KONIEC: ${e.dovod}` : `KONIEC: ${e.dovod} Body ${e.body[0]}:${e.body[1]}.`;
     default:
@@ -188,7 +191,7 @@ export function useHra(aktivne: boolean): HraHook {
     chyba,
     superPripojeny,
     frajerina,
-    zaloz: useCallback((verejna: boolean, dlzka: DlzkaHry) => posli({ type: "create", verejna, dlzka }), [posli]),
+    zaloz: useCallback((verejna: boolean, dlzka: DlzkaHry, bot = false) => posli({ type: "create", verejna, dlzka, bot }), [posli]),
     pripoj: useCallback((code: string) => posli({ type: "join", code: code.trim().toUpperCase() }), [posli]),
     cmd: useCallback((command: Command) => posli({ type: "cmd", cmd: command }), [posli]),
     kontumacia: useCallback(() => posli({ type: "kontumacia" }), [posli]),

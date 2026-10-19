@@ -80,6 +80,8 @@ export function cookieOdhlasenia(bezpecne: boolean): string {
 export class Ucty {
   private readonly db: Db;
   private readonly adminLogin: string;
+  /** Náhodný predvolený avatar pre účet bez vlastnej fotky (pozri Avatary). */
+  private predvoleny: () => string | null = () => null;
 
   constructor(db: Db, admin: { readonly login: string; readonly heslo: string | null }) {
     this.db = db;
@@ -146,6 +148,20 @@ export class Ucty {
     );
   }
 
+  /**
+   * Predvolené avatary: účty bez fotky ich dostanú hneď, nové pri
+   * registrácii a po zmazaní fotky.
+   */
+  pouziPredvoleneAvatary(nahodny: () => string | null): void {
+    this.predvoleny = nahodny;
+    const bez = this.db.prepare("SELECT id FROM pouzivatelia WHERE avatar IS NULL").all() as { id: number }[];
+    for (const { id } of bez) this.db.prepare("UPDATE pouzivatelia SET avatar = ? WHERE id = ?").run(nahodny(), id);
+  }
+
+  predvolenyAvatar(): string | null {
+    return this.predvoleny();
+  }
+
   registruj(login: string, heslo: string, meno: string, teraz: number): Pouzivatel {
     const existuje = this.db.prepare("SELECT 1 FROM pouzivatelia WHERE login = ?").get(login);
     // Meno admina je rezervované, aj kým ho konfigurácia nezaložila.
@@ -153,8 +169,8 @@ export class Ucty {
       throw new ChybaVstupu("Toto prihlasovacie meno je obsadené.");
     }
     const r = this.db
-      .prepare("INSERT INTO pouzivatelia (login, heslo, meno, rola, vytvoreny) VALUES (?, ?, ?, 'navstevnik', ?)")
-      .run(login, hashHesla(heslo), meno, teraz);
+      .prepare("INSERT INTO pouzivatelia (login, heslo, meno, avatar, rola, vytvoreny) VALUES (?, ?, ?, ?, 'navstevnik', ?)")
+      .run(login, hashHesla(heslo), meno, this.predvoleny(), teraz);
     const p = this.podlaId(Number(r.lastInsertRowid));
     if (p === null) throw new Error("Účet sa nepodarilo vytvoriť.");
     return p;

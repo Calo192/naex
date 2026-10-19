@@ -85,6 +85,48 @@
 
   <div id="zmeny">
 
+    <details class="zmena" data-oblast="rozhranie">
+      <summary><h3>Absťák na doske hráča: neresti kola, čiara minulého kola a výhľad</h3><span class="stav">skúšobné</span>
+        <span class="meta"><span class="stitok rozhranie">rozhranie</span><span class="stitok">2026-10-19</span><span class="stitok">playtest 20261019-055945</span></span></summary>
+      <div class="telo">
+        <div class="blok"><h4>Prečo</h4><p>Jano: „Absťák (nikdy som nevidel, odkiaľ sa berie)“, „potichu znižuje ranu“ — v 4. a 5. kole ho nižšie rany stáli lokalitu. Neresti sa nikde neukazovali a stránka Pravidlá ich opisovala inak, než ich ráta motor (písala aj akcie Cigaretka a Poldecko). Pravidlo sa nemení — len zobrazenie.</p></div>
+        <div class="blok"><h4>Čo sa zmenilo</h4><ul>
+          <li><strong>Web — doska hráča:</strong> nový zdroj <em>Absťák</em> u oboch hráčov: počet a „−N tuhé“, neresti tohto a minulého kola, pruh s čiarou minulého kola (červené dieliky = chýbajúce neresti, zelený za čiarou = zbavíš sa jedného) a výhľad „hrozí +1 · chýba N“, „zbavíš sa 1 na konci kola“ alebo „bez zmeny“. Nápoveda vysvetľuje, kedy Absťák príde a odíde, čo je nerest, Lesnú cestu, Autobusára a Krčmárku. S Absťákom sa ikona trasie.</li>
+          <li><strong>Web — bitka:</strong> v rozpise oboch strán „Absťák −N“; priznaný Absťák má vlastný fialový čip.</li>
+          <li><strong>Log:</strong> „Základ závislosti“ po 1. kole a pri zisku či strate Absťáku počty nerestí oboch kôl.</li>
+          <li><strong>Klient agentov:</strong> riadok ABSŤÁK so stavom, nerestiami a výhľadom.</li>
+          <li><strong>Jadro:</strong> neresti oboch hráčov sú vo <code>viewFor</code> (verejné — pitie, fajčenie aj NA EX vidí každý), výhľad počíta <code>stavZavislosti</code> rovnako pre web aj agentov; NA EX na stole sa ráta dopredu.</li>
+          <li><strong>Pravidlá:</strong> zoznam nerestí podľa motora na webe aj v PRAVIDLA.md §12 (otvorená otázka — Michal ešte nepotvrdil).</li>
+        </ul></div>
+        <div class="blok sledovat"><h4>Čo sledovať</h4><ul>
+          <li>Či playtesteri vedia vysvetliť, prečo Absťák dostali, a či ho hrajú zámerne (napr. pijú, aby sa ho zbavili).</li>
+          <li>Či zoznam nerestí dáva zmysel — platba poldeci za šenok nerest nie je, hoci sa poldeci vypije.</li>
+        </ul></div>
+      </div>
+    </details>
+
+    <details class="zmena" data-oblast="pravidla">
+      <summary><h3>Ešte jednu!, remíza na celkové, náhľad posunu markera, užší Alkoholik, Svokra kradne 2</h3><span class="stav">skúšobné</span>
+        <span class="meta"><span class="stitok pravidla">pravidlá</span><span class="stitok rozhranie">rozhranie</span><span class="stitok">2026-10-19</span><span class="stitok">rozhodnutie Michala</span></span></summary>
+      <div class="telo">
+        <div class="blok"><h4>Prečo</h4><p>Playtest 20261018-185541: 24 Pitiek predĺžilo kolá, útočník vyhral 8 z 12 bitiek a tri bitky o staršieho skončili 0 : 0 v jeho prospech. Hráči nevedeli, komu posun markera pomôže. Podstrčený Anonymný alkoholik bol „veľmi silná sabotážna karta“ a Svokra od NA EX neodradila.</p></div>
+        <div class="blok"><h4>Čo sa zmenilo</h4><ul>
+          <li><strong>Ešte jednu!</strong> Bitka má jednu Pitku. Kto po nej prehráva (verejný odhad bez absťákov v ruke), smie vypiť plný poldeci (pečeň +1) a objednať ďalšie Zhromaždenie a Pitku — vykladá v nich prvý. Najviac 2 rundy navyše. Platí aj v bitke o staršieho. Počet Pitiek podľa lokality zrušený.</li>
+          <li><strong>Remíza:</strong> o lokalitu rozhodne celkové poškodenie (tuhé aj mäkké), pri jeho rovnosti obranca. O staršieho nevyhrá nikto — starší ostáva, prebytok sa nerozdeľuje a útočník ostáva útočníkom. Predtým vyhrával útočník.</li>
+          <li><strong>Náhľad posunu markera</strong> pri Pohoršení aj prebytku: pri každom staršom „body ty ±X, súper ±Y · ♥ komu +sila“. Rovnaký náhľad dostal klient AI agentov.</li>
+          <li><strong>Anonymný alkoholik</strong> (sada v6): <em>„Na neho ani na tvoje karty v jeho okolí nesmie súper dať NA EX.“</em> Majiteľ smie, súperove karty nechráni.</li>
+          <li><strong>Svokra</strong> (sada v6): za NA EX súpera ukradne 2 cigarety.</li>
+        </ul></div>
+        <div class="blok"><h4>Výsledok playtestu 20261019-055945</h4><p>Objednali sa 2 rundy, ani jedna bitku neotočila. Útočník : obranca 2 : 5, obe remízy (aj 0 : 0) išli obrancovi. Podstrčený Alkoholik nič nezablokoval a Svokra neukradla nič, lebo vždy prišla až ako odpoveď po NA EX. Eva hlási, že náhľad prebytku písal „priazeň ty“, no marker šiel súperovi.</p></div>
+        <div class="blok sledovat"><h4>Čo sledovať</h4><ul>
+          <li>Koľko rúnd sa objedná a či prehrávajúci rundou bitku otočí; či víťaz nevyužije rundu, ktorú objednal súper, lepšie než on.</li>
+          <li>Pomer výhier útočník : obranca a koľko bitiek o staršieho skončí remízou.</li>
+          <li>Či náhľad posunu zmení voľby pri prebytku (menej „omylov“ s priazňou).</li>
+          <li>Či sa Alkoholik ešte hrá, keď už nesabotuje, a či Svokra za 2 cigarety odradí od NA EX.</li>
+        </ul></div>
+      </div>
+    </details>
+
     <details class="zmena" data-oblast="pravidla">
       <summary><h3>Anonymný alkoholik chráni pred NA EX, Svokra za NA EX kradne cigaretu</h3><span class="stav">skúšobné</span>
         <span class="meta"><span class="stitok pravidla">pravidlá</span><span class="stitok">2026-10-18</span><span class="stitok">rozhodnutie Michala</span></span></summary>
@@ -95,6 +137,7 @@
           <li><strong>Svokra:</strong> <em>„Furt: Keď súper dá NA EX, ukradni mu 1 cigaretu.“</em> Každá Svokra jednu, bez cigarety nič, Praudovravec ju umlčí. Zákaz NA EX zo Svokry zmizol z jadra, webu aj klienta agentov.</li>
           <li>Oba efekty jadro vyhodnocuje automaticky. Karty sú v tvorcovi ako návrh — čakajú na zverejnenie.</li>
         </ul></div>
+        <div class="blok"><h4>Výsledok playtestu 20261018-185541</h4><p>Alkoholika hráči len podstrkovali (2× na súperovu stranu, obe bitky vyhral ten, kto ho podstrčil) a chránil aj karty súpera. NA EX nezriedol — padlo 23-krát. Svokra ukradla spolu 5 cigariet (3 : 2), od NA EX neodradila; Jano navrhuje kradnúť 2.</p></div>
         <div class="blok sledovat"><h4>Čo sledovať</h4><ul>
           <li>Či Alkoholik neurobí NA EX príliš vzácnym (podstrčený blokuje až 3 karty) a či ho hráči podstrkujú súperovi.</li>
           <li>Či 1 cigareta za NA EX robí zo Svokry citeľnú daň, alebo ju hráči ignorujú (páka: 2 cigarety).</li>
@@ -112,6 +155,8 @@
           <li><strong>Počet Pitiek</strong> = počet aktivovaných akcií na karte lokality, aspoň 1. Ráta sa priebežne — keď sa pri lokalite aktivujú ďalšie akcie, Pitiek pribudne (log to oznámi); pod odohrané neklesne. Bitka o staršieho má vždy 1. (Predtým |rozdiel kariet z draftu|.)</li>
           <li><strong>Cigarety za prebytok:</strong> hráč, proti ktorému sa prebytok rozdeľoval, dostane 1 cigaretu za každého posunutého staršieho (viac posunov toho istého = 1). Pohoršenie sa neráta.</li>
         </ul></div>
+        <div class="blok"><h4>Výsledok playtestu 20261018-185541</h4><p>Zo šenku 17 kariet (11 za cigaretu, 3 dvojice za poldeci), ruky neprerástli. Pitiek bolo 24 a tempo kleslo na 6 a 6. Porazený dostal 17 cigariet za prebytok a ďalšiu bitku vyhral 7 z 11.</p></div>
+        <div class="blok"><h4>Výsledok playtestu 20261019-055945</h4><p>Zo šenku 24 kariet, ruky do 9. Eva dostala za prebytok 7 cigariet, porazený vyhral ďalšiu bitku len 2 zo 6. Bez plného poldeci Eva v 6. kole nemala NA EX a draft za poldeci ju na to neupozornil.</p></div>
         <div class="blok sledovat"><h4>Čo sledovať</h4><ul>
           <li>Koľko kariet hráči berú zo šenku a či ich ruky neprerastú (limit ruky 6 + Zberateľ).</li>
           <li>Koľko Pitiek je v kole (lokality so 4 aktivovanými akciami = 4 Pitky a 4 Zhromaždenia) a tempo partie.</li>
@@ -132,6 +177,8 @@
           <li><strong>Trocha a Zopár zmizli</strong> — pevné čísla na kartách (Farár 2 Povery, Autobusár 1 Absťák, Veterinár 2, Zberný dvor 1 Dlh, Poštárka 2 karty + 1 Dlh, Podvodník 2 cigarety, Vdova 2 Dlhy, Vízia až 2 kliatby). Lakomec: barter za 4 / 3 / 2 cigarety. Neprajník: Povery o 2 / 4 / 6 nad súperove priznané Dlhy.</li>
           <li><strong>Nové efekty v jadre:</strong> Pes stráži koniec strany, Čierna mačka (Povery bez stropu), Policajtka (súperove Pohoršenia proti tebe neplatia), Praudovravec umlčí súperove Autority, Finančná poradkyňa dáva Hazard súperovi, Stryná zahodí Cirhózu alebo Dlh, Kočovník dáva Hazard a Pečeň tomu, na koho strane leží.</li>
         </ul></div>
+        <div class="blok"><h4>Výsledok playtestu 20261018-185541</h4><p>Asi 21 Dlhov a 15 Cirhóz (simulácia čakala 4 Dlhy na hráča), Exekútor nehrozil. Do Dedičstva nikto nič nedal, remízy 3 z 12. Nepriznané kliatby stáli Jana 48 bodov (Dlh −5, Cirhóza −4).</p></div>
+        <div class="blok"><h4>Výsledok playtestu 20261019-055945</h4><p>22 Dlhov a 10 Cirhóz, Exekútor nehrozil, Dedičstvo nepoužil nikto. Skóre 18 : −56 rozhodli nepriznané kliatby. NA EX zdvojí súperove neaktívne Dlhy a Pečeň, Silná nezávislá žena ich zdvojí ešte raz, a Jano mal po 2. kole 9 Dlhov a 6 Cirhóz. Kliatby stáli Jana asi 58 bodov, Evu asi 80.</p></div>
         <div class="blok sledovat"><h4>Čo sledovať</h4><ul>
           <li>Počet Dlhov a priznaní za partiu, Exekútor (prah 10 priznaných Dlhov) — či nie je záplava.</li>
           <li>Vyrovnanosť stratégií (simulácia: Bitkári 63 %, Škandál 35 %) a remízy (~20 %).</li>
@@ -152,6 +199,8 @@
           <li><strong>Rozhranie:</strong> scoreboard nad staršími (body po milníkoch: lokality, starší, cigarety, strach…, kto koľko); väčší starší; štítok „zo šenku“ len počas draftu; nová karta po dobratí (priznaný Dlh, fajčenie) má v ruke štítok „dobraná“ a log píše „priznáva Dlh a doberá si kartu“; doliatie (2 cig.) a nový poldeci (5 cig.) majú jasné názvy, svietia, keď na ne máš, a sú aj na tvojej doske pri cigaretách.</li>
           <li>Automatický pas ostáva, keď niet inej možnosti (ani kliatba na priznanie, ani Nástroj, ani cigarety v Pitke); cigarety v Zhromaždení ho už neblokujú — overené testom.</li>
         </ul></div>
+        <div class="blok"><h4>Výsledok playtestu 20261018-185541</h4><p>19 z 23 NA EX išlo na súperove karty bez „bezpečnej výhry“. Pohrebom a Liečbou zmizlo 6 štartoviek, no prvé tri kolá boli podľa oboch „nehrateľné“.</p></div>
+        <div class="blok"><h4>Výsledok playtestu 20261019-055945</h4><p>9 z 10 NA EX išlo na súpera a 5 z nich dostalo odpoveď. Jano ju volá najlepšou vecou v hre. Podľa oboch hráčov podstrčené karty (16 z 36) ako Hasič a Kočovník nenechajú súperovi protihru. Nástroj do línie nedal nikto.</p></div>
         <div class="blok sledovat"><h4>Čo sledovať</h4><ul>
           <li>Či hráči cítia, že silnejú: koľko kariet zo šenku berú a či štartovky v ruke ubúdajú.</li>
           <li>NA EX na súperovu kartu: či sa používa na rušenie súperových Petelíc a či sa nevracia „bezpečná výhra“ (playtest 20261011-183315).</li>

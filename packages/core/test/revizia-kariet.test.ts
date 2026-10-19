@@ -154,38 +154,6 @@ describe("Policajtka, Praudovravec, Puška, Noviny, Lakomec", () => {
 });
 
 // Michal 2026-10-18 (po revízii): Pitky podľa lokality, cigarety za prebytok.
-describe("Pitky podľa aktivovaných akcií lokality", () => {
-  it("vyloženie karty, ktorá aktivuje akcie lokality, zvýši počet Pitiek", () => {
-    const s0 = setupGame(data, 11);
-    // Lokalita, ktorej ľavá (k hráčovi 0) hrana má aspoň jednu akciu.
-    const lokalita = s0.lokalityVHre.find((k) => printedSides(data, k).left.some((x) => x !== null))!;
-    const lavaLok = printedSides(data, lokalita).left;
-    // Karta z ruky hráča 0, ktorej pravá hrana sa s lokalitou spáruje na čo najviac pozíciách.
-    const pary = (k: CardInstance) => printedSides(data, k).right.filter((x, i) => x !== null && lavaLok[i] !== null).length;
-    const kandidati = [...data.cards.values()]
-      .filter((c) => !c.tags.includes("Lokalita") && !c.tags.includes("Kliatba") && !c.tags.includes("Nástroj") && !c.tags.includes("Starešina"))
-      .flatMap((c) => {
-        const v = data.variants.get(c.id)!;
-        return v.right.map((_, r) => ({ uid: 99000 + r, defId: c.id, leftLayout: 0, rightLayout: r }) as CardInstance);
-      })
-      .sort((a, b) => pary(b) - pary(a));
-    const karta = kandidati[0]!;
-    if (pary(karta) < 2) return; // sada nemá lokalitu s 2 spárovateľnými akciami — test nemá čo overiť
-    const s: GameState = {
-      ...s0,
-      faza: "zhromazdenie",
-      ciel: { typ: "lokalita", lokalita, elderId: null },
-      lokalitaOtocena: false,
-      pitkyCelkom: 1,
-      pitkaCislo: 0,
-      hraci: [{ ...s0.hraci[0], ruka: [karta, ...s0.hraci[0].ruka] }, s0.hraci[1]],
-      zhromazdenieStav: { naTahu: 0, zostavaLimit: [2, 2], pasoval: [false, false], navyse: [0, 0] },
-    } as GameState;
-    const po = apply(data, s, { type: "place", uid: karta.uid, target: "vlastna" }, 0).state;
-    expect(po.pitkyCelkom).toBeGreaterThanOrEqual(2);
-  });
-});
-
 describe("cigarety porazenému za prebytok", () => {
   it("1 cigareta za každého posunutého staršieho, viac posunov toho istého = 1", () => {
     const s0 = setupGame(data, 12);

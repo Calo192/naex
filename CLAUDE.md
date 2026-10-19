@@ -27,8 +27,8 @@ dvaja ľudia na dvoch zariadeniach, nie viac hráčov naraz.
 4. **Náhoda je deterministická.** Jeden seedovaný generátor v `GameState`.
 5. **Dáta, nie kód.** Karty upravuje admin v tvorcovi (SQLite); hra beží na
    zverejnenej sade. `packages/core/data/cards.json` je východisková sada
-   pre prvé spustenie a testy — kópia zverejnenej sady v5 (revízia kariet
-   2026-10-18 + Anonymný alkoholik a nová Svokra, `cardsJson` z tabuľky `sady`); predtým ju generoval
+   pre prvé spustenie a testy — kópia zverejnenej sady v6 (revízia kariet
+   2026-10-18 + Anonymný alkoholik a Svokra z 2026-10-19, `cardsJson` z tabuľky `sady`); predtým ju generoval
    `tools/import_print_pdf.py` z tlačového PDF.
 6. **Server púšťa `.ts` priamo (strip-types)** — len vymazateľná syntax
    (`erasableSyntaxOnly`): žiadne parametrické vlastnosti, enumy, namespaces.
@@ -42,6 +42,7 @@ npm start            # produkcia: server + zbuildovaný klient :8787
 npm run kniznica -- "docs/NA EX/NA EX"   # obrázky do knižnice tvorcu
 node --experimental-strip-types --no-warnings tools/admin/admin.ts <príkaz>   # nástroje agenta naex-admin
                      # ilustrácie: Leonardo.Ai API, kľúč NAEX_LEONARDO_KEY v .env (stojí API kredit)
+node --experimental-strip-types --no-warnings tools/bot/turnaj.ts 20 chamtivy stredna stamgast   # sila povahy bota
 npm test             # vitest
 npm run typecheck    # tsc --build
 npm run build
@@ -70,14 +71,19 @@ npm run build
 packages/core/       jadro pravidiel — čistý TS, bez I/O
   data/cards.json      51 kariet — kópia zverejnenej sady (neupravuj ručne)
   data/elders.json     8 starších; hodnoty sú PROVIZÓRNE, viď TODO
+  src/bot.ts           offline protihráč (NPC: heuristiky + výpočet dopredu, žiadne
+                       LLM); tri povahy (POVAHY) — Štamgast, Rapavý Fero, Teta
+                       Gizka; server losuje. Skryté info pred výpočtom zamieša
 packages/tvorba/     model tvorcu kariet — čistý TS (varianty, geometria karty,
                      farby, formát textu, export/import TXT, štatistiky)
 packages/server/     server: hra (ws), REST API (/api), SQLite, médiá (/media)
   seed/                ilustrácie a vzhľad kariet pre prvé spustenie
+  seed/avatary/        predvolené avatary (náhodný pre hráča bez fotky), boti/<povaha>.jpg
 apps/web/            klient (React + Vite): stranky/, hra/, admin/, karta/
 deploy/, Dockerfile  nasadenie (docs/NASADENIE.md)
 docs/BRIEF.md        zadanie M0–M10
 docs/PRAVIDLA.md     špecifikácia pravidiel
 tools/               import z tlačového PDF, piktogramy akcií
+  bot/turnaj.ts        turnaj offline protihráča (proti náhodnému / chamtivému / sebe)
   admin/               nástroje agenta naex-admin (admin API, rebalans, štýl ilustrácií)
 ```

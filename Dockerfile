@@ -31,6 +31,8 @@ COPY packages/server/seed packages/server/seed
 # Reporty playtestov — v administrácii (Tvorba → Playtesty) pre admina a subadminov.
 COPY docs/playtesty docs/playtesty
 COPY --from=build /app/apps/web/dist apps/web/dist
+# Nový zväzok preberie vlastníka z obrazu — server beží ako node, nie root.
+RUN mkdir -p /data && chown node:node /data
 VOLUME /data
 EXPOSE 8787
 USER node

@@ -28,7 +28,7 @@ function Lobby({
   pripoj,
   chyba,
 }: {
-  readonly zaloz: (verejna: boolean, dlzka: DlzkaHry) => void;
+  readonly zaloz: (verejna: boolean, dlzka: DlzkaHry, bot?: boolean) => void;
   readonly pripoj: (kod: string) => void;
   readonly chyba: string | null;
 }) {
@@ -92,6 +92,15 @@ function Lobby({
               Súkromná hra s kódom
             </button>
             <button onClick={() => zaloz(true, dlzka)}>Verejná hra</button>
+          </div>
+          <h2 style={{ marginTop: 28 }}>Proti počítaču</h2>
+          <p className="tlmene">
+            Pri stole ťa čaká jeden z troch počítačových súperov — vyvážený Štamgast, rabiátor Rapavý Fero alebo vypočítavá Teta Gizka.
+            Koho dostaneš, je náhoda. Hrajú podľa pravidiel, vidia len to, čo by videl hráč pri stole, a nevzdávajú sa. Partia začne
+            hneď a do Frajeriny sa neráta.
+          </p>
+          <div className="riadok-tlacidiel">
+            <button onClick={() => zaloz(false, dlzka, true)}>Hrať proti počítaču</button>
           </div>
           <h2 style={{ marginTop: 28 }}>Mám kód</h2>
           <form

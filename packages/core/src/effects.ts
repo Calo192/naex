@@ -45,14 +45,14 @@ export type EfektStatus = "native" | "impl" | "manual";
 export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   // Texty podľa tlačovej sady (docs/KartyAI_PrintFile_20260716). Zmenený text
   // karty v tvorcovi → skontroluj, či implementácia ešte sedí.
-  autobusar: "impl", // Bitka: ignoruj trocha absťákov
+  autobusar: "impl", // Bitka: ignoruj 1 Absťák
   benzinka: "impl", // Bitka: súčet Cigaretiek > 7 → zahodenie občanov
   cigorky: "impl", // Dedičstvo: žiadny refill; pred bitkou cigareta za aktívnu Cigaretku
   kocovnik: "native", // Nástup: do súperovej partie bez limitu vykladania (návrh 2026-10-11)
   cirhoza: "native", // Bitka: dodatočná rana od súpera (cirhozaBonus)
   dievcina_na_vydaj: "impl", // Bitka: zahodenie + dlhy podľa aktívnych akcií
   dlh: "native", // Bitka: krok Exekútora
-  farar: "impl", // Bitka: ignoruj trocha povier súpera
+  farar: "impl", // Bitka: ignoruj 2 súperove Povery
   financna_poradkyna: "impl", // Prestávka: jej Dlhy dostávajú obaja hráči
   hasic: "impl", // Nástup: Pracujúci občan z odhadzovacieho do ruky
   hrobar: "impl", // Furt: cigareta, keď súper zahodí kartu
@@ -64,7 +64,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   milujuca_manzelka: "impl", // Furt: o cigaretu menej
   ministrant: "impl", // Výhra: posun markera stojí +1 prebytku
   nealko: "impl", // Dedičstvo: Poldeci/NA EX bez pečene; Poldeci nedopĺňa
-  niekoho_stryna: "impl", // Nástup: zahoď trocha Cirhóz z ruky
+  niekoho_stryna: "impl", // Nástup: zahoď 1 Cirhózu alebo 1 Dlh z ruky
   noviny: "impl", // Dedičstvo: tvoje povery a súperova viera sa nerušia
   pasca: "impl", // Dedičstvo: obmedzenie dáva súperovi pecku
   pijan: "impl", // Bitka: rana do vlastnej partie pri žene s aktívnym poldeci
@@ -84,18 +84,18 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   vinko: "impl", // Dedičstvo: poldeci navyše; žiadny barter
   vyherny_automat: "impl", // Dedičstvo: výhra páli dlhy, prehra dlh dáva
   zastavka: "impl", // Zhromaždenie: hrajú sa 2 karty bez ohľadu na poldeci
-  zberny_dvor: "impl", // Pitka: o trocha menej dlhov
+  zberny_dvor: "impl", // Pitka: o 1 Dlh menej
   zamocnik: "impl", // Furt: akcie nástrojov v okolí posilnené
   zivnostnik: "impl", // Nástup: zahoď súperovo dedičstvo
   abstak: "native", // Bitka: o ranu menej (−1 tuhé za kus)
   pes: "impl", // Furt: nikdy v partii s iným zvieraťom
   kostol: "impl", // Zhromaždenie: karta za aktívnu Vieru; Bitka: povery neplatia
   zahradkar: "impl", // Exekúcia: smie ísť namiesto náradia
-  svokra: "impl", // Furt: za každé NA EX súpera mu ukradni cigaretu (Michal 2026-10-18)
+  svokra: "impl", // Furt: za každé NA EX súpera mu ukradni 2 cigarety (Michal 2026-10-19)
   sarlatan: "impl", // Furt: Viera v okolí platí ako Vízia
-  podvodnik: "impl", // Prehra: ukradni trocha cigariet
+  podvodnik: "impl", // Prehra: ukradni 2 cigarety
   cierna_macka: "impl", // Pitka: súperove Vízie neplatia
-  anonymny_alkoholik: "impl", // Furt: na neho ani na susedov nikto nedá NA EX
+  anonymny_alkoholik: "impl", // Furt: súper nedá NA EX na neho ani na tvoje karty vedľa neho
 };
 
 export function jeEfektManual(defId: string): boolean {

@@ -4,14 +4,17 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { WebSocket } from "ws";
-import { createGameServer, type GameServer } from "../src/server.ts";
+import { createGameServer, type GameServer, type ServerOpts } from "../src/server.ts";
 
 /** Testovací admin — heslo len pre dočasnú databázu testu. */
 export const TEST_ADMIN = { login: "sefko", heslo: "sefkovo-testovacie" } as const;
 
-export async function testovaciServer(admin: { login: string; heslo: string | null } = TEST_ADMIN): Promise<{ server: GameServer; zmaz: () => Promise<void> }> {
+export async function testovaciServer(
+  admin: { login: string; heslo: string | null } = TEST_ADMIN,
+  navyse: Partial<ServerOpts> = {},
+): Promise<{ server: GameServer; zmaz: () => Promise<void> }> {
   const dir = mkdtempSync(join(tmpdir(), "naex-test-"));
-  const server = await createGameServer({ port: 0, dataDir: dir, admin, staticDir: join(dir, "nic") });
+  const server = await createGameServer({ ...navyse, port: 0, dataDir: dir, admin, staticDir: join(dir, "nic") });
   return {
     server,
     zmaz: async () => {

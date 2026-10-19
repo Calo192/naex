@@ -19,13 +19,17 @@ import type { Sada } from "@naex/tvorba";
 import {
   DLZKY_HRY,
   IllegalCommandError,
+  POVAHY,
   PREDVOLENA_DLZKA,
   apply,
   dostupneDlzky,
   eventsFor,
+  legalCommands,
   loadGameData,
+  mozeHrat,
   noveStatistiky,
   setupGame,
+  tahBota,
   uzavriStatistiky,
   viewFor,
   zapisTah,
@@ -35,6 +39,7 @@ import { otvorDb } from "./db.ts";
 import type { Pouzivatel } from "./auth.ts";
 import { Ucty } from "./auth.ts";
 import { Media } from "./media.ts";
+import { Avatary } from "./avatary.ts";
 import { Obsah, nacitajElders, nacitajScorecards } from "./obsah.ts";
 import type { OtvorenaHra } from "./api.ts";
 import { spracujApi } from "./api.ts";
@@ -64,6 +69,9 @@ interface HracVMiestnosti {
   frajerina: number;
 }
 
+/** Účet offline protihráča neexistuje — id 0 SQLite nikdy nepridelí. */
+const BOT_ID = 0;
+
 /** Ako dlho musí byť súper odpojený, kým si hráč môže vyžiadať kontumačnú výhru. */
 export const KONTUMACIA_PO_MS = 3 * 60 * 1000;
 
@@ -91,6 +99,12 @@ interface Room {
   readonly hraci: [HracVMiestnosti | null, HracVMiestnosti | null];
   readonly sockets: [WebSocket | null, WebSocket | null];
   lastActivity: number;
+  /** Miesto offline protihráča (NPC), alebo null v partii dvoch ľudí. */
+  readonly bot: PlayerId | null;
+  /** Povaha bota (POVAHY) — hráč si ju nevyberá, losuje sa pri založení. */
+  readonly botPovaha: string;
+  /** Naplánovaný ťah bota — kým beží, ďalší sa neplánuje. */
+  botTimer: ReturnType<typeof setTimeout> | null;
 }
 
 /** Bez O/0/I/1 — kód sa diktuje cez telefón. */
@@ -105,7 +119,7 @@ function novyKod(rooms: Map<string, Room>): string {
 }
 
 type ClientMsg =
-  | { type: "create"; verejna?: boolean; dlzka?: DlzkaHry }
+  | { type: "create"; verejna?: boolean; dlzka?: DlzkaHry; bot?: boolean }
   | { type: "join"; code: string }
   | { type: "rejoin"; code: string }
   | { type: "leave" }
@@ -136,6 +150,8 @@ export interface ServerOpts {
   readonly bezpecneCookie?: boolean;
   /** Priečinok s reportmi playtestov (predvolene <repo>/docs/playtesty). */
   readonly playtestyDir?: string;
+  /** Pauza pred ťahom offline protihráča, aby ho človek stihol sledovať (predvolene 700 ms). */
+  readonly botPauzaMs?: number;
 }
 
 export function createGameServer(opts: ServerOpts): Promise<GameServer> {
@@ -145,6 +161,8 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   const db = otvorDb(join(dataDir, "naex.sqlite"));
   const ucty = new Ucty(db, opts.admin ?? { login: "Admin", heslo: null });
   const media = new Media(db, dataDir);
+  const avatary = new Avatary(media, teraz());
+  ucty.pouziPredvoleneAvatary(() => avatary.nahodny());
   const obsah = new Obsah(db, media);
   const archiv = new Archiv(db);
   const nazory = new Nazory(db);
@@ -152,6 +170,8 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   obsah.naplnAkTreba(teraz());
   obsah.naplnBodovanieAkTreba(teraz());
   obsah.premenujZrusenePriazne(teraz());
+  obsah.doplnChybajuceIlustracie(teraz());
+  obsah.odstranZruseneKlucoveSlova(teraz());
 
   const rooms = new Map<string, Room>();
   const infos = new WeakMap<WebSocket, SocketInfo>();
@@ -223,8 +243,12 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   };
 
   const posliHracov = (room: Room): void => {
-    const hraci = room.hraci.map((h) =>
-      h === null ? null : { id: h.id, meno: h.meno, avatar: h.avatar, frajerina: h.frajerina, titul: titul(h.frajerina) },
+    const hraci = room.hraci.map((h, i) =>
+      h === null
+        ? null
+        : i === room.bot
+          ? { meno: h.meno, avatar: h.avatar, bot: true }
+          : { id: h.id, meno: h.meno, avatar: h.avatar, frajerina: h.frajerina, titul: titul(h.frajerina) },
     );
     for (const ws of room.sockets) if (ws !== null) send(ws, { type: "hraci", hraci });
   };
@@ -268,7 +292,8 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     posliHracov(room);
     if (room.state !== null) {
       send(ws, { type: "state", view: viewFor(room.data, room.state, seat), events: [] });
-      send(ws, { type: "superPripojeny", connected: room.sockets[seat === 0 ? 1 : 0] !== null });
+      const druhe: PlayerId = seat === 0 ? 1 : 0;
+      send(ws, { type: "superPripojeny", connected: room.sockets[druhe] !== null || room.bot === druhe });
     }
     if (room.vysledok !== null) send(ws, { type: "frajerina", zmeny: room.vysledok });
     oznamPripojenie(room, seat, true);
@@ -286,6 +311,9 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     if (room.state === null) {
       room.hraci[seat] = null;
       if (room.hraci[0] === null && room.hraci[1] === null) rooms.delete(room.code);
+    } else if (room.bot !== null) {
+      // Partiu proti botovi nikto iný nedohrá — odchodom zaniká.
+      zrusMiestnost(room);
     }
     oznamPripojenie(room, seat, false);
     info.room = null;
@@ -300,6 +328,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     switch (msg.type) {
       case "create": {
         const { sada, data } = obsah.aktualnaSada();
+        const protiBotovi = msg.bot === true;
         const dlzka = msg.dlzka ?? PREDVOLENA_DLZKA;
         if (!dostupneDlzky(data).includes(dlzka)) {
           sendError(ws, `Na túto dĺžku hry nemá sada dosť lokalít (má ${data.lokality.length}).`);
@@ -309,7 +338,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           code: novyKod(rooms),
           data,
           sada,
-          verejna: msg.verejna === true,
+          verejna: msg.verejna === true && !protiBotovi,
           dlzka,
           vytvorena: teraz(),
           state: null,
@@ -321,9 +350,21 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           hraci: [null, null],
           sockets: [null, null],
           lastActivity: teraz(),
+          bot: protiBotovi ? 1 : null,
+          botPovaha: POVAHY[randomInt(POVAHY.length)]?.id ?? "stamgast",
+          botTimer: null,
         };
         rooms.set(room.code, room);
+        if (protiBotovi) {
+          // Offline protihráč sedí hneď — partia začína bez čakania.
+          const povaha = POVAHY.find((p) => p.id === room.botPovaha);
+          room.hraci[1] = { id: BOT_ID, meno: povaha?.meno ?? "Štamgast", avatar: avatary.bota(room.botPovaha), frajerina: 0 };
+          room.state = setupGame(room.data, randomInt(2 ** 31), { lokalit: DLZKY_HRY[room.dlzka] });
+          room.zaciatok = teraz();
+          room.statistiky = noveStatistiky();
+        }
         usadit(ws, room, 0);
+        if (protiBotovi) naplanujBota(room);
         break;
       }
       case "join":
@@ -392,7 +433,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         }
         const super_: PlayerId = seat === 0 ? 1 : 0;
         const od = room.odpojenyOd[super_];
-        if (room.sockets[super_] !== null || od === null) {
+        if (room.sockets[super_] !== null || od === null || room.bot === super_) {
           sendError(ws, "Súper je pripojený.");
           return;
         }
@@ -419,7 +460,43 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     if (room.statistiky !== null) room.statistiky = zapisTah(room.statistiky, pred, cmd, seat, result.state, result.events);
     room.statistikyKariet = zapisTahKariet(room.statistikyKariet, pred, cmd, seat, result.events);
     broadcast(room, result.events);
-    if (pred.koniec === null && result.state.koniec !== null) zapisDoArchivu(room, result.state, cmd.type !== "vzdat");
+    // Partie proti botovi nejdú do archívu — Frajerina a rebríček sú medzi ľuďmi.
+    if (pred.koniec === null && result.state.koniec !== null && room.bot === null) zapisDoArchivu(room, result.state, cmd.type !== "vzdat");
+    naplanujBota(room);
+  };
+
+  /** Keď môže hrať offline protihráč, po krátkej pauze zahrá (pri stavbe šenku aj súbežne s človekom). */
+  const naplanujBota = (room: Room): void => {
+    const bot = room.bot;
+    if (bot === null || room.botTimer !== null || room.state === null || !mozeHrat(room.state, bot)) return;
+    room.botTimer = setTimeout(() => {
+      room.botTimer = null;
+      const state = room.state;
+      if (state === null || !rooms.has(room.code) || !mozeHrat(state, bot)) return;
+      let cmd: Command;
+      try {
+        cmd = tahBota(room.data, state, bot, randomInt(2 ** 31), { povaha: room.botPovaha });
+      } catch (err) {
+        console.error("Bot nevedel vybrať ťah:", err);
+        const nahrada = legalCommands(room.data, state, bot)[0];
+        if (nahrada === undefined) return;
+        cmd = nahrada;
+      }
+      try {
+        vykonaj(room, cmd, bot);
+      } catch (err) {
+        // Nelegálny ťah bota je chyba v bote — partia nesmie zamrznúť.
+        console.error("Bot poslal nelegálny ťah:", cmd, err);
+        const nahrada = legalCommands(room.data, state, bot)[0];
+        if (nahrada !== undefined) vykonaj(room, nahrada, bot);
+      }
+    }, opts.botPauzaMs ?? 700);
+  };
+
+  const zrusMiestnost = (room: Room): void => {
+    if (room.botTimer !== null) clearTimeout(room.botTimer);
+    room.botTimer = null;
+    rooms.delete(room.code);
   };
 
   const zapisDoArchivu = (room: Room, koniec: GameState, dohrata: boolean): void => {
@@ -509,9 +586,9 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   // Opustené miestnosti sa po 2 hodinách nečinnosti upracú.
   const cleanupInterval = setInterval(() => {
     const t = teraz();
-    for (const [code, room] of rooms) {
+    for (const room of rooms.values()) {
       const prazdna = room.sockets[0] === null && room.sockets[1] === null;
-      if (prazdna && t - room.lastActivity > 2 * 60 * 60 * 1000) rooms.delete(code);
+      if (prazdna && t - room.lastActivity > 2 * 60 * 60 * 1000) zrusMiestnost(room);
     }
   }, 10 * 60 * 1000);
 
@@ -526,6 +603,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           new Promise<void>((done) => {
             clearInterval(pingInterval);
             clearInterval(cleanupInterval);
+            for (const room of rooms.values()) if (room.botTimer !== null) clearTimeout(room.botTimer);
             for (const ws of wss.clients) ws.terminate();
             wss.close(() =>
               http.close(() => {
@@ -594,7 +672,13 @@ function serveStatic(dir: string, req: IncomingMessage, res: ServerResponse): vo
       ].join("; ");
     }
     // Vite pridáva do názvov hash — tie sa môžu cachovať natrvalo.
-    hlavicky["cache-control"] = subor.includes(`${join("assets", "")}`) ? "public, max-age=31536000, immutable" : "no-cache";
+    // Ilustrácie pravidiel nemajú hash v názve, ale menia sa zriedka — deň v cache
+    // ušetrí opakované dotazy na server (Singapur je od nás ďaleko).
+    hlavicky["cache-control"] = subor.includes(`${join("assets", "")}`)
+      ? "public, max-age=31536000, immutable"
+      : subor.includes(`${join("pravidla", "")}`) && extname(subor) === ".jpg"
+        ? "public, max-age=86400"
+        : "no-cache";
     res.writeHead(200, hlavicky);
     res.end(obsah);
   } catch {

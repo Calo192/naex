@@ -52,7 +52,7 @@ export function App() {
 
   if (cesta.startsWith("/admin")) return <Layout siroky>{chranene(<Admin cesta={cesta} />, true)}</Layout>;
   if (cesta === "/hra") return <Layout siroky><Hra /></Layout>;
-  if (cesta === "/pravidla") return <Layout siroky><Pravidla /></Layout>;
+  if (cesta === "/pravidla") return <Layout plna><Pravidla /></Layout>;
   const hrac = /^\/hrac\/(\d+)$/.exec(cesta);
   if (hrac !== null) return <Layout siroky>{chranene(<HracProfil id={Number(hrac[1])} />)}</Layout>;
   if (cesta === "/profil") return <Layout siroky>{chranene(<Profil />)}</Layout>;

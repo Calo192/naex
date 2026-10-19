@@ -227,8 +227,12 @@ export function Profil() {
               {nahrava ? "Nahrávam…" : ja.avatar === null ? "Nahrať fotku" : "Zmeniť fotku"}
             </button>
             {ja.avatar !== null && (
-              <button className="tlacidlo-male tlacidlo-jemne" onClick={() => void zmazAvatar()}>
-                Odstrániť
+              <button
+                className="tlacidlo-male tlacidlo-jemne"
+                onClick={() => void zmazAvatar()}
+                title="Namiesto fotky ti pridelí náhodnú dedinskú trosku."
+              >
+                Náhodný avatar
               </button>
             )}
           </div>

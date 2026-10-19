@@ -33,7 +33,16 @@ k hre.
   rátajú majiteľovi karty. Na svojej karte si zdvojíš Petelicu alebo zrušíš
   vlastný Dlh či Pečeň, na súperovej mu zrušíš aktívne akcie (pozor, jeho
   neaktívne mu zdvojí). Pečeň +1 je tvoja. Za každé NA EX ti súperova Svokra
-  ukradne cigaretu; na Anonymného alkoholika ani jeho susedov NA EX nedá nikto.
+  ukradne 2 cigarety; na súperovho Anonymného alkoholika ani súperove karty
+  vedľa neho NA EX nedáš (na svoje áno).
+- **Ešte jednu!** (Michal 2026-10-19): bitka má jednu Pitku. Kto po nej
+  prehráva, smie vypiť plný poldeci (`{"type":"runda"}`) a objednať ďalšie
+  Zhromaždenie a Pitku — vykladá v nich prvý; najviac 2 rundy. Inak
+  `{"type":"bezRundy"}`.
+- **Remíza:** o lokalitu rozhodne celkové poškodenie, potom obranca; o
+  staršieho nevyhrá nikto (starší ostáva, útočník ostáva útočníkom).
+- **Náhľad posunu markera:** pri Pohoršení a prebytku klient pri každom
+  staršom ukáže, ako sa zmenia body oboch a komu pripadne priazeň.
 - **Nástroj funguje len pri Občanovi alebo Starešinovi** (Michal 2026-10-18):
   pri lokalite, karte staršieho či karte bez tagu Občan/Starešina spoj
   nevznikne — neaktivuje sa nič. Náhľad pri „vylož“ to už zohľadňuje.

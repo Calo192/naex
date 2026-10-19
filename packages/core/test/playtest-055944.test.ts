@@ -245,9 +245,9 @@ describe("Benzínka, Dievčina na vydaj a Krčmárka pri bitke", () => {
       ciel: { typ: "lokalita", lokalita: benzinka, elderId: null },
       lokalityVHre: s0.lokalityVHre.filter((x) => x.uid !== benzinka.uid),
     };
-    // Pitiek je toľko, koľko akcií Benzínky je aktivovaných (Michal 2026-10-18) — dohraj ich.
+    // Dohraj Pitku; rundu navyše nikto neobjedná.
     while (s.faza === "pitka" || s.faza === "zhromazdenie") {
-      s = apply(sada, s, { type: s.faza === "pitka" ? "skipNaex" : "pass" }, naTahu(s)!).state;
+      s = apply(sada, s, { type: s.faza === "zhromazdenie" ? "pass" : s.ponukaRundy !== null ? "bezRundy" : "skipNaex" }, naTahu(s)!).state;
     }
     s = dohrajBitku(sada, s);
     expect(s.prepadnute.map((x) => x.uid)).toEqual([benzinka.uid]);
@@ -277,6 +277,7 @@ describe("Benzínka, Dievčina na vydaj a Krčmárka pri bitke", () => {
     };
     s = apply(sada2, s, { type: "skipNaex" }, naTahu(s)!).state;
     if (s.faza === "pitka") s = apply(sada2, s, { type: "skipNaex" }, naTahu(s)!).state;
+    if (s.ponukaRundy !== null) s = apply(sada2, s, { type: "bezRundy" }, s.ponukaRundy).state;
     s = dohrajBitku(sada2, s);
     // 1 aktívna akcia → 1 Dlh; Exekútor (mimo ohrozenia) spáli ďalší.
     expect(s.hraci[0].priznane.filter((k) => k.defId === "dlh")).toHaveLength(1);

@@ -21,7 +21,7 @@ import type {
   ZhromazdenieStav,
 } from "./engine.ts";
 import { limitRukyHraca, mozeHrat, najdiNahradnikov, najdiNastroje, naTahu } from "./engine.ts";
-import { MARKER_STRED } from "./elders.ts";
+import { MARKER_STRED, posunMarker, priazenHraca, priazenSila } from "./elders.ts";
 import type { DamageResult } from "./battle.ts";
 
 export interface HracVerejne {
@@ -36,6 +36,12 @@ export interface HracVerejne {
   readonly cigarety: number;
   readonly pecen: number;
   readonly zadlzenie: number;
+  /**
+   * Neresti tohto a predošlého kola (Absťák). Verejné — pitie, fajčenie aj
+   * NA EX vidí každý pri stole.
+   */
+  readonly nerestiTotoKolo: number;
+  readonly nerestiMinuleKolo: number;
 }
 
 export interface BitkaVerejne {
@@ -80,6 +86,8 @@ export interface ClientState {
   readonly mozemHrat: boolean;
   readonly pitkaCislo: number;
   readonly pitkyCelkom: number;
+  /** „Ešte jednu!“ — hráč, ktorý práve smie objednať ďalšiu rundu (verejné). */
+  readonly ponukaRundy: PlayerId | null;
   /** Moja ruka — jediná ruka, ktorá sa posiela celá. */
   readonly ruka: readonly CardInstance[];
   readonly hraci: readonly [HracVerejne, HracVerejne];
@@ -135,6 +143,8 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
       cigarety: hrac.cigarety,
       pecen: hrac.pecen,
       zadlzenie: hrac.zadlzenie,
+      nerestiTotoKolo: hrac.nerestiTotoKolo,
+      nerestiMinuleKolo: hrac.nerestiMinuleKolo,
     };
   };
 
@@ -150,6 +160,7 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
     mozemHrat: mozeHrat(state, ja),
     pitkaCislo: state.pitkaCislo,
     pitkyCelkom: state.pitkyCelkom,
+    ponukaRundy: state.ponukaRundy,
     ruka: state.hraci[ja].ruka,
     hraci: [publicPlayer(0), publicPlayer(1)],
     spolocnyBalicekPocet: state.spolocnyBalicek.length,
@@ -287,4 +298,43 @@ export function nahladBitkyOStarsieho(data: GameData, view: ClientState, elderId
     return [spolu[0], spolu[1]];
   };
   return { teraz: bodyTeraz(data, view).spolu, vyhra: [po(0), po(1)] };
+}
+
+/** Body a priazeň po posune markera jedného staršieho (prebytok, Pohoršenie). */
+export interface NahladPosunu {
+  /** Body [hráč 0, hráč 1] spolu, keby hra skončila hneď po posune. */
+  readonly body: readonly [number, number];
+  /** Zmena bodov oproti stavu pred posunom. */
+  readonly zmena: readonly [number, number];
+  /** Komu patrí priazeň staršieho po posune a s akou silou. */
+  readonly priazen: PlayerId | null;
+  readonly sila: number;
+}
+
+/**
+ * Náhľad posunu markera o jedno pole k hráčovi k (Michal 2026-10-19 —
+ * playtest 20261018-185541: hráči nevedeli, komu posun pomôže). Ten istý
+ * výpočet ako bodyTeraz; null, keď sa marker posunúť nedá.
+ */
+export function nahladPosunuMarkera(
+  data: GameData,
+  view: ClientState,
+  elderId: string,
+  k: PlayerId,
+  cezPohorsenie: boolean,
+  pohorsenieNaKraj = false,
+): NahladPosunu | null {
+  const elder = view.starsi.find((e) => e.elderId === elderId);
+  if (elder === undefined) return null;
+  const marker = posunMarker(elder, k, cezPohorsenie, pohorsenieNaKraj);
+  if (marker === null) return null;
+  const posunuty = { ...elder, marker };
+  const pred = bodyTeraz(data, view).spolu;
+  const po = bodyTeraz(data, { ...view, starsi: view.starsi.map((e) => (e.elderId === elderId ? posunuty : e)) }).spolu;
+  return {
+    body: [po[0], po[1]],
+    zmena: [po[0] - pred[0], po[1] - pred[1]],
+    priazen: priazenHraca(posunuty),
+    sila: priazenSila(posunuty),
+  };
 }

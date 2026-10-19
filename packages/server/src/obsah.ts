@@ -206,6 +206,67 @@ export class Obsah {
     this.prezverejniBodovanie(teraz);
   }
 
+  /**
+   * Karty bez ilustrácie, ku ktorým seed už ilustráciu má, ju dostanú — v
+   * návrhu aj vo zverejnenej sade (nová verzia s rovnakými kartami, takže
+   * rozpracované návrhy sa nezverejnia). Ilustráciu, ktorú admin nastavil,
+   * neprepisuje. Prečo: Anonymný alkoholik pribudol do sady skôr než do
+   * seed/, a server založený z čistej databázy ho mal bez obrázka.
+   */
+  doplnChybajuceIlustracie(teraz: number): void {
+    const seedPath = join(SEED, "navrhy.json");
+    if (!existsSync(seedPath)) return;
+    const navrhy = JSON.parse(readFileSync(seedPath, "utf8")) as SeedNavrh[];
+    const zoSeedu = (id: string): KartaNavrh["obrazok"] => {
+      const s = navrhy.find((n) => n.id === id);
+      return s === undefined ? null : this.seedObrazok(s.obrazok, teraz);
+    };
+    const doplnene = new Map<string, NonNullable<KartaNavrh["obrazok"]>>();
+    transakcia(this.db, () => {
+      for (const k of this.karty.vsetky()) {
+        if (k.obrazok !== null) continue;
+        const obrazok = zoSeedu(k.id);
+        if (obrazok === null) continue;
+        doplnene.set(k.id, obrazok);
+        this.ulozKartu({ ...k, obrazok });
+      }
+    });
+    const posledna = this.db.prepare("SELECT data FROM sady ORDER BY verzia DESC LIMIT 1").get() as { data: string } | undefined;
+    if (posledna === undefined) return;
+    const stara = JSON.parse(posledna.data) as Omit<Sada, "verzia">;
+    let zmena = false;
+    const karty = stara.karty.map((k) => {
+      if (k.obrazok !== null) return k;
+      const obrazok = doplnene.get(k.id) ?? zoSeedu(k.id);
+      if (obrazok === null) return k;
+      zmena = true;
+      return { ...k, obrazok };
+    });
+    if (!zmena) return;
+    this.db.prepare("INSERT INTO sady (cas, autor, data) VALUES (?, ?, ?)").run(teraz, null, JSON.stringify({ ...stara, cas: teraz, karty }));
+    this.cache = null;
+  }
+
+  /**
+   * Kľúčové slová Trocha a Zopár zrušila revízia kariet (Michal 2026-10-18):
+   * efekty majú pevné čísla. Zo starých databáz sa odstránia z tvorcu aj zo
+   * zverejnenej sady (nová verzia s rovnakými kartami) — inak by ich pravidlá
+   * na webe stále ukazovali.
+   */
+  odstranZruseneKlucoveSlova(teraz: number): void {
+    const zrusene = new Set(["trocha", "zopár"]);
+    transakcia(this.db, () => {
+      for (const k of this.klucoveSlova.vsetky()) if (zrusene.has(k.slovo.toLowerCase())) this.klucoveSlova.zmaz(k.slovo);
+    });
+    const posledna = this.db.prepare("SELECT data FROM sady ORDER BY verzia DESC LIMIT 1").get() as { data: string } | undefined;
+    if (posledna === undefined) return;
+    const stara = JSON.parse(posledna.data) as Omit<Sada, "verzia">;
+    const klucoveSlova = stara.klucoveSlova.filter((k) => !zrusene.has(k.slovo.toLowerCase()));
+    if (klucoveSlova.length === stara.klucoveSlova.length) return;
+    this.db.prepare("INSERT INTO sady (cas, autor, data) VALUES (?, ?, ?)").run(teraz, null, JSON.stringify({ ...stara, cas: teraz, klucoveSlova }));
+    this.cache = null;
+  }
+
   /** Nová verzia sady s rovnakými kartami a aktuálnymi scorecardmi z tvorcu. */
   private prezverejniBodovanie(teraz: number): void {
     const posledna = this.db.prepare("SELECT data FROM sady ORDER BY verzia DESC LIMIT 1").get() as { data: string } | undefined;

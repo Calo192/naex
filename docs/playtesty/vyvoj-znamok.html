@@ -150,19 +150,18 @@ const PARTIE = [
   { id: "20261017-164450", report: "20261017-164450.html", dlzka: "stredná (7)", vysledok: "Eva 79 : 64",
     jano: [7, 7, 5, 6, 9, 7, 5, 7, 8, 7, 8, 9], eva: [7, 7, 5, 6, 8, 7, 5, 7, 7, 8, 8, 9],
     zmenyPred: ["Poldeci špirála: jeden poldeci späť na začiatku kola, limit pred a po ťahu"] },
+  { id: "20261018-185541", report: "20261018-185541.html", dlzka: "stredná (7)", vysledok: "Eva 62 : 17",
+    jano: [7, 8, 5, 6, 9, 6, 5, 7, 7, 8, 8, 9], eva: [7, 7, 5, 6, 9, 6, 5, 7, 8, 8, 7, 9],
+    zmenyPred: ["Štartovky len na štart (4 Pijan, 2/2/2), nie v šenku", "NA EX aj na súperove karty", "Nástroj funguje len pri Občanovi alebo Starešinovi", "Revízia kariet (identita, 5 stratégií, Nástroje ako priazeň, bez Trocha/Zopár)", "Prah Dlhu 1", "Dedičstvo za 2 cigarety", "Šenok: 1 karta za cigaretu, 2 za poldeci, bez limitu a bez karty zadarmo", "Počet Pitiek = aktivované akcie lokality", "Cigarety porazenému za posunutých starších", "Anonymný alkoholik a Svokra kradne cigaretu"] },
+  { id: "20261019-055945", report: "20261019-055945.html", dlzka: "stredná (7)", vysledok: "Jano 18 : −56",
+    jano: [8, 8, 6, 6, 9, 7, 5, 7, 8, 8, 6, 9], eva: [6, 6, 4, 5, 9, 7, 4, 6, 7, 8, 4, 9],
+    zmenyPred: ["Ešte jednu!: jedna Pitka, prehrávajúci objedná rundu za poldeci (najviac 2)",
+      "Remíza: o lokalitu celkové a potom obranca, o staršieho nikto",
+      "Náhľad posunu markera (body a priazeň)",
+      "Anonymný alkoholik chráni len majiteľove karty; Svokra kradne 2"] },
 ];
 // Zmeny, ktoré ešte žiadna partia neoverila.
-const CAKAJUCE = [
-  "Štartovky len na štart (4 Pijan, 2/2/2), nie v šenku",
-  "NA EX aj na súperove karty",
-  "Nástroj funguje len pri Občanovi alebo Starešinovi",
-  "Revízia kariet (identita, 5 stratégií, Nástroje ako priazeň, bez Trocha/Zopár)",
-  "Prah Dlhu 1",
-  "Dedičstvo za 2 cigarety",
-  "Šenok: 1 karta za cigaretu, 2 za poldeci, bez limitu a bez karty zadarmo",
-  "Počet Pitiek = aktivované akcie lokality",
-  "Cigarety porazenému za posunutých starších",
-];
+const CAKAJUCE = [];
 
 const priemer = (a) => a.reduce((x, y) => x + y, 0) / a.length;
 const f1 = (x) => x.toFixed(1).replace(".", ",");

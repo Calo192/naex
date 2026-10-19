@@ -29,6 +29,11 @@ export interface PlayerState {
   readonly nerestiTotoKolo: number;
 }
 
+/** „1 nerest“, „3 neresti“, „5 nerestí“ — pre log a rozhranie. */
+export function textNeresti(n: number): string {
+  return n === 1 ? "1 nerest" : n >= 2 && n <= 4 ? `${n} neresti` : `${n} nerestí`;
+}
+
 export function freshPlayer(): PlayerState {
   return {
     ruka: [],

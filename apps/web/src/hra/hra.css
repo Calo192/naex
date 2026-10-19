@@ -458,6 +458,124 @@
   background: #e0573f;
 }
 
+/* Absťák: prázdny pohárik v trasúcej sa ruke; neresti kola proti minulému. */
+.ikona-abstak {
+  width: 24px;
+  height: 24px;
+  overflow: visible;
+}
+
+.ikona-abstak .pohar {
+  fill: rgba(255, 255, 255, 0.05);
+  stroke: #c9b8e8;
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+}
+
+.ikona-abstak .kvapka {
+  fill: #c9b8e8;
+  opacity: 0.55;
+}
+
+.ikona-abstak .trasenie {
+  fill: none;
+  stroke: #9d8bc4;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+}
+
+.zdroj-abstak.ma-abstak .ikona-abstak {
+  animation: abstak-trasenie 0.5s ease-in-out infinite;
+}
+
+.zdroj-abstak .abstak-ubera {
+  color: #ff9d88;
+  font-size: 0.8rem;
+}
+
+@keyframes abstak-trasenie {
+  0%,
+  100% {
+    transform: translateX(0) rotate(0);
+  }
+  25% {
+    transform: translateX(-1px) rotate(-3deg);
+  }
+  75% {
+    transform: translateX(1px) rotate(3deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zdroj-abstak.ma-abstak .ikona-abstak {
+    animation: none;
+  }
+}
+
+.neresti-pocet {
+  display: block;
+}
+
+.neresti-pruh {
+  display: flex;
+  gap: 2px;
+  margin: 3px 0 2px;
+}
+
+.neresti-pruh span {
+  position: relative;
+  flex: 1;
+  min-width: 8px;
+  max-width: 16px;
+  height: 6px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.neresti-pruh span.plny {
+  background: #b59ce0;
+}
+
+/* Chýbajúca nerest do čiary minulého kola — hrozí Absťák. */
+.neresti-pruh span.chyba {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px #e0573f;
+}
+
+/* Za čiarou: nerest navyše zoberie jeden Absťák. */
+.neresti-pruh span.nad {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px rgba(124, 191, 116, 0.6);
+}
+
+.neresti-pruh span.plny.nad {
+  background: var(--zelena);
+  box-shadow: none;
+}
+
+.neresti-pruh .ciara {
+  position: absolute;
+  left: -2px;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  border-radius: 1px;
+  background: var(--text);
+}
+
+.abstak-vyhlad {
+  display: block;
+  font-weight: 600;
+}
+
+.abstak-vyhlad.zly {
+  color: #ff9d88;
+}
+
+.abstak-vyhlad.dobry {
+  color: var(--zelena);
+}
+
 .karty-pocty {
   display: flex;
   flex-direction: column;
@@ -525,6 +643,12 @@
   background: #3b1c26;
   border-color: #7b3a50;
   color: #ffc4d4;
+}
+
+.cip.kliatba.abstak {
+  background: #2a2140;
+  border-color: #5e4c8a;
+  color: #dcd0f5;
 }
 
 .cip.nastroj {
@@ -626,6 +750,10 @@
   display: inline-block;
   width: 24px;
   height: 24px;
+}
+
+.bitka-rozpis > .bitka-abstak {
+  color: #ff9d88;
 }
 
 .bitka-ikona .ikona-akcie {
@@ -2737,7 +2865,9 @@ button.dlzka-volba.aktivna {
   color: var(--akcent);
 }
 
-/* Scoreboard nad staršími (Michal 2026-10-18): body po bodovacích milníkoch. */
+/* Scoreboard nad staršími (Michal 2026-10-18): body po bodovacích milníkoch.
+   Michal 2026-10-19: názov v strede, body po stranách (ty vľavo, súper vpravo),
+   väčšie písmo; prejdenie myšou ukáže rozpis po starších. */
 .scoreboard {
   display: flex;
   flex-wrap: wrap;
@@ -2746,39 +2876,75 @@ button.dlzka-volba.aktivna {
 }
 
 .sb-milnik {
-  flex: 1 1 150px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 6px 10px;
+  flex: 1 1 190px;
+  display: grid;
+  grid-template-columns: minmax(42px, auto) 1fr minmax(42px, auto);
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-left: 3px solid transparent;
+  border-bottom: 3px solid transparent;
   border-radius: 8px;
   background: rgba(0, 0, 0, 0.22);
-  font-size: 12px;
+  cursor: help;
+}
+
+.sb-milnik:hover,
+.sb-milnik:focus-visible {
+  background: rgba(255, 255, 255, 0.06);
+  outline: none;
 }
 
 .sb-milnik.ja {
-  border-left-color: var(--ja);
+  border-bottom-color: var(--ja);
 }
 
 .sb-milnik.su {
-  border-left-color: var(--su);
+  border-bottom-color: var(--su);
+}
+
+.sb-stred {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-width: 0;
 }
 
 .sb-nazov {
   font-weight: 700;
+  font-size: 14px;
+  line-height: 1.2;
 }
 
 .sb-pravidlo {
   color: var(--tlmeny);
+  font-size: 12px;
+}
+
+.sb-strana {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.sb-strana b {
+  font-size: 21px;
+  font-variant-numeric: tabular-nums;
+}
+
+.sb-strana small {
+  color: var(--tlmeny);
   font-size: 11px;
 }
 
-.sb-hraci {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
+.sb-ja {
+  align-items: flex-start;
+}
+
+.sb-su {
+  align-items: flex-end;
+  text-align: right;
 }
 
 .sb-ja b {
@@ -2789,21 +2955,42 @@ button.dlzka-volba.aktivna {
   color: var(--su);
 }
 
-.sb-hraci small {
-  color: var(--tlmeny);
-}
-
 .sb-spolu {
-  flex: 0 1 170px;
+  flex: 0 1 210px;
   background: rgba(233, 173, 69, 0.1);
+  cursor: default;
 }
 
-.sb-spolu b {
-  font-size: 15px;
+.sb-spolu .sb-strana b {
+  font-size: 25px;
 }
 
 .sb-prazdny {
   color: var(--tlmeny);
   font-size: 12px;
   align-self: center;
+}
+
+/* Voľba cieľa na stole (Michal 2026-10-19): lokality v paneli namiesto stavby
+   šenku; starší, o ktorého sa teraz nedá biť, je sivý. */
+.volba-ciela-karty {
+  justify-content: center;
+}
+
+.volba-ciela-karty .karta {
+  cursor: pointer;
+}
+
+.scorecard-obal {
+  transition: filter 0.2s ease, opacity 0.2s ease;
+}
+
+.scorecard-obal.nedostupny {
+  filter: grayscale(1) brightness(0.75);
+  opacity: 0.75;
+}
+
+.scorecard-obal.vyzvat .scorecard {
+  cursor: pointer;
+  box-shadow: 0 0 0 2px var(--akcent), 0 10px 26px rgba(0, 0, 0, 0.5);
 }

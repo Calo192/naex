@@ -4,64 +4,56 @@ Hra potrebuje **stále bežiaci server** (WebSocket pre hru), **trvalý disk**
 (SQLite databáza a nahrané obrázky) a **HTTPS**. Najlacnejšie a najspoľahlivejšie
 je to na malom virtuálnom serveri (VPS).
 
-## Odporúčanie: Hetzner Cloud + Docker + Caddy
+## Odporúčanie: OVHcloud VPS-1, mesačne (stav október 2026)
 
 | Položka | Cena (približne) |
 |---|---|
-| VPS Hetzner **CX22** (2 vCPU, 4 GB RAM, 40 GB SSD, dátové centrum v Nemecku) | ~4 – 5 € / mesiac |
-| Automatické zálohy servera v Hetzneri (voliteľné, +20 %) | ~1 € / mesiac |
-| Doména `.sk` (napr. Websupport, Active24) | ~10 – 15 € / rok |
-| HTTPS certifikát (Let's Encrypt cez Caddy) | zadarmo |
-| **Spolu** | **~6 € mesačne** |
+| VPS **OVHcloud VPS-1** (Ubuntu 24.04, dátové centrum Frankfurt / Varšava / Strasbourg), **mesačne bez záväzku** | ~6,50 € bez DPH / mesiac |
+| Adresa `<ip-s-pomlčkami>.sslip.io` s HTTPS (Let's Encrypt cez Caddy) | zadarmo |
+| Vlastná doména `.sk` (voliteľné, neskôr) | ~10 – 15 € / rok |
 
-Prečo práve takto:
+Prečo práve takto (Michal 2026-10-19: najlacnejšie, platba mesačne, nie ročne):
 
-- Server v Nemecku je zo Slovenska blízko — hra reaguje rýchlo.
-- Výkon CX22 bohato stačí na desiatky súčasných partií; hra je malá (stav partie
-  je v pamäti, obrázky sa cachujú v prehliadači).
+- **Hetzner** (doteraz odporúčaný, ~6 €/mes. s hodinovým účtovaním) od jari 2026
+  nedáva nové cloud servery novým zákazníkom — lacné plány sú „currently
+  unavailable". Keď ich obnoví, je stále dobrá voľba; postup je rovnaký.
+- **Netcup** má lacné VPS len so 12-mesačnou zmluvou, **Contabo** inzeruje ceny
+  pri 24 mesiacoch.
+- **Oracle Always Free** je zadarmo, ale registrácia s kartou často zlyhá a
+  nečinné servery vie odobrať — rozohrané partie žijú v pamäti servera.
 - Bezplatné „platformy" (Render, Railway free…) server po nečinnosti uspia a
-  nemajú trvalý disk — rozbehnutá partia by sa prerušila a dáta by sa stratili.
-- Fly.io je podobne lacné, ale nastavenie trvalého disku a WebSocketov je
-  zložitejšie. VPS s Dockerom sa dá kedykoľvek presťahovať inam.
+  nemajú trvalý disk.
+- VPS s Dockerom sa dá kedykoľvek presťahovať inam tým istým skriptom.
 
 ## Postup krok za krokom
 
-### 1. Server
+### 1. Server (urobí Michal — účet a platba)
 
-1. Založ účet na <https://www.hetzner.com/cloud>, vytvor projekt a server:
-   - lokalita **Falkenstein** alebo **Nuremberg**,
-   - obraz **Ubuntu 24.04**,
-   - typ **CX22**,
-   - pridaj svoj SSH kľúč,
-   - zapni **Backups** (odporúčané).
-2. Poznač si IP adresu servera.
+1. Založ účet na <https://www.ovhcloud.com> a objednaj **VPS-1**; pri platbe
+   zvoľ **mesačne / bez záväzku** (predvolené býva predplatné na 12 mesiacov).
+2. Systém **Ubuntu 24.04**, lokalita Frankfurt, Varšava alebo Strasbourg.
+3. Vlož verejný SSH kľúč `~/.ssh/naex_server.pub` (vygenerovaný na Michalovom
+   počítači 2026-10-19; nový: `ssh-keygen -t ed25519 -f ~/.ssh/naex_server`).
+4. Poznač si IP adresu servera (príde aj e-mailom).
 
-### 2. Doména
+### 2. Nahratie a spustenie
 
-U registrátora domény nastav DNS záznam **A** (napr. `naex.sk` alebo
-`hra.naex.sk`) na IP adresu servera. Zmena sa prejaví do pár minút až hodín.
-
-### 3. Inštalácia na server
+Z koreňa repozitára (Git Bash):
 
 ```bash
-ssh root@IP_SERVERA
-
-# Docker
-curl -fsSL https://get.docker.com | sh
-
-# Firewall: len SSH, HTTP a HTTPS
-ufw allow OpenSSH && ufw allow 80 && ufw allow 443 && ufw --force enable
-
-# Kód hry
-git clone <adresa tvojho git repozitára> /opt/naex
-cd /opt/naex/deploy
-cp .env.example .env
-nano .env        # DOMENA=tvoja-domena.sk, NAEX_ADMIN_HESLO=heslo-admina
-docker compose up -d --build
+deploy/nahraj.sh <IP-servera>            # OVH: používateľ ubuntu; iný VPS: deploy/nahraj.sh <IP> root
 ```
 
-Po minúte beží hra na `https://tvoja-domena.sk`. Caddy sám získa a obnovuje
-HTTPS certifikát.
+Skript zabalí pracovnú kópiu (aj necommitnuté zmeny, bez node_modules, dát a
+veľkých podkladov), pošle ju na server, pri prvom spustení nainštaluje Docker,
+firewall (SSH, 80, 443) a dennú zálohu, vytvorí `deploy/.env` s náhodným heslom
+admina (kópia v `deploy/.env.produkcia`, mimo gitu) a spustí `docker compose`.
+Hra potom beží na `https://<ip-s-pomlčkami>.sslip.io`.
+
+### 3. Vlastná doména (neskôr)
+
+U registrátora nastav záznam **A** domény na IP servera a spusti znova
+`deploy/nahraj.sh <IP> ubuntu tvoja-domena.sk` — Caddy vybaví nový certifikát.
 
 ### 4. Prvý admin
 
@@ -89,14 +81,8 @@ V tvorcovi kariet sa potom zobrazia v záložke **Knižnica obrázkov**.
 
 ### 6. Zálohy
 
-Okrem záloh Hetzneru si nastav dennú zálohu databázy a obrázkov:
-
-```bash
-chmod +x /opt/naex/deploy/zaloha.sh
-crontab -e
-# pridaj riadok:
-0 4 * * * /opt/naex/deploy/zaloha.sh
-```
+Dennú zálohu databázy a obrázkov (4:00) nastaví `deploy/nahraj.sh` sám
+(cron spúšťa `/opt/naex/deploy/zaloha.sh`).
 
 Zálohy sú v `/opt/naex-zalohy` (posledných 14 dní). Raz za čas si ich stiahni
 k sebe (`scp -r root@IP_SERVERA:/opt/naex-zalohy .`).
@@ -104,7 +90,7 @@ k sebe (`scp -r root@IP_SERVERA:/opt/naex-zalohy .`).
 ### 7. Aktualizácia hry
 
 ```bash
-cd /opt/naex && git pull && cd deploy && docker compose up -d --build
+deploy/nahraj.sh <IP-servera>
 ```
 
 Rozohrané partie sa pri reštarte stratia (stav partie je v pamäti) — aktualizuj,

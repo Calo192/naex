@@ -77,11 +77,28 @@ describe("M4 — poškodenie", () => {
 });
 
 describe("M4 — výsledok", () => {
-  it("pri remíze v tuhom poškodení vyhráva útočník", () => {
+  // Michal 2026-10-19: remíza v tuhom — o lokalitu rozhodne celkové, potom
+  // obranca; o staršieho nevyhrá nikto a prebytok sa nerozdeľuje.
+  it("pri úplnej remíze o lokalitu vyhráva obranca", () => {
     const damage = computeDamage([side({ sums: { Rana: 2 } }), side({ sums: { Pecka: 1 } })]);
     expect(damage.tuhe).toEqual([2, 2]);
-    expect(battleOutcome(damage, 1).vitaz).toBe(1);
-    expect(battleOutcome(damage, 0).vitaz).toBe(0);
+    expect(damage.celkove).toEqual([2, 2]);
+    expect(battleOutcome(damage, 1).vitaz).toBe(0);
+    expect(battleOutcome(damage, 0).vitaz).toBe(1);
+  });
+
+  it("pri remíze v tuhom o lokalitu rozhodne celkové poškodenie", () => {
+    const d = { tuhe: [2, 2], makke: [0, 1], celkove: [2, 3], zvysnaViera: [0, 0], zvysnaPovera: [0, 0] } as const;
+    const o = battleOutcome(d, 0);
+    expect(o.vitaz).toBe(1);
+    expect(o.prebytokDrzi).toBe(1);
+    expect(o.prebytok).toBe(1);
+  });
+
+  it("pri remíze v tuhom o staršieho nevyhrá nikto a prebytok nie je", () => {
+    const d = { tuhe: [2, 2], makke: [0, 3], celkove: [2, 5], zvysnaViera: [0, 0], zvysnaPovera: [0, 0] } as const;
+    const o = battleOutcome(d, 0, true);
+    expect(o).toEqual({ vitaz: null, prebytokDrzi: null, prebytok: 0 });
   });
 
   it("pri remíze v celkovom poškodení nikto nezíska prebytok", () => {

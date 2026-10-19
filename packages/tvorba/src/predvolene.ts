@@ -58,8 +58,6 @@ export const PREDVOLENE_KLUCOVE_SLOVA: readonly KlucoveSlovo[] = [
   S("Prestávka", "Uplatní sa cez prestávku pred bitkou."),
   S("Podpora", "Uplatní sa, keď má karta v okolí presne 2 karty."),
   S("Exekúcia", "Uplatní sa, keď ťa navštívi Exekútor."),
-  P("trocha", [], "Trocha — základná hodnota 1, upraviteľná priazňou Lakomca."),
-  P("zopár", [], "Zopár — základná hodnota 2, upraviteľná priazňou Neprajníka."),
   P("zahoď", ["zahodiť", "zahodí", "zahodia"], "Zahodenie — kartu odstrániš z hry (spáliš)."),
   P("odhoď", ["odhodiť", "odhodí", "odhodia"], "Odhodenie — karta ide do odhadzovacieho balíčka hráča, ktorý ju zahral."),
   P("preskúmaj", ["preskúmať", "preskúma"], "Preskúmanie — zober a prezri si 5 kariet, potom ich vráť."),
