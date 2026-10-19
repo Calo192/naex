@@ -36,6 +36,19 @@ export interface Pouzivatel {
   readonly meno: string;
   readonly avatar: string | null;
   readonly rola: Rola;
+  /** Zväčšenie karty pri prejdení myšou v percentách (LUPA_OD – LUPA_DO). */
+  readonly lupa: number;
+}
+
+export const LUPA_OD = 150;
+export const LUPA_DO = 400;
+export const LUPA_PREDVOLENA = 200;
+
+/** Zväčšenie lupy z requestu — celé percentá v rozsahu nastavenia. */
+export function overLupu(v: unknown): number {
+  const n = Number(v);
+  if (!Number.isFinite(n) || n < LUPA_OD || n > LUPA_DO) throw new ChybaVstupu(`Zväčšenie musí byť ${LUPA_OD} až ${LUPA_DO} %.`);
+  return Math.round(n);
 }
 
 /** Dohraté partie používateľa — poddotaz nad riadkom `pouzivatelia` (stĺpec id). */
@@ -137,12 +150,13 @@ export class Ucty {
       meno: String(r.meno),
       avatar: r.avatar === null ? null : String(r.avatar),
       rola: rolaZDb(r.rola),
+      lupa: r.lupa === null || r.lupa === undefined ? LUPA_PREDVOLENA : Number(r.lupa),
     };
   }
 
   podlaId(id: number): Pouzivatel | null {
     return this.riadok(
-      this.db.prepare("SELECT id, login, meno, avatar, rola FROM pouzivatelia WHERE id = ?").get(id) as
+      this.db.prepare("SELECT id, login, meno, avatar, rola, lupa FROM pouzivatelia WHERE id = ?").get(id) as
         | Record<string, unknown>
         | undefined,
     );
@@ -213,8 +227,9 @@ export class Ucty {
     return this.podlaId(r.pouzivatel);
   }
 
-  upravProfil(id: number, zmeny: { meno?: string; avatar?: string | null }): Pouzivatel | null {
+  upravProfil(id: number, zmeny: { meno?: string; avatar?: string | null; lupa?: number }): Pouzivatel | null {
     if (zmeny.meno !== undefined) this.db.prepare("UPDATE pouzivatelia SET meno = ? WHERE id = ?").run(zmeny.meno, id);
+    if (zmeny.lupa !== undefined) this.db.prepare("UPDATE pouzivatelia SET lupa = ? WHERE id = ?").run(zmeny.lupa, id);
     if (zmeny.avatar !== undefined) this.db.prepare("UPDATE pouzivatelia SET avatar = ? WHERE id = ?").run(zmeny.avatar, id);
     return this.podlaId(id);
   }

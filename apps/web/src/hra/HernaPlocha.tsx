@@ -55,7 +55,8 @@ import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
 import type { Sada } from "@naex/tvorba";
 import { HernaKarta, posunVzpriamenej, vzhladKarty, type HernaKartaProps } from "./HernaKarta.tsx";
-import { Lupa } from "./Lupa.tsx";
+import { Lupa, maxMierkaLupy } from "./Lupa.tsx";
+import { LUPA_PREDVOLENA, useUcet } from "../lib/ucet.tsx";
 import { Vrstva as VrstvaPanel } from "./Vrstva.tsx";
 import { BitkaPanel, HracDoska, PriebehKola } from "./Panely.tsx";
 import { RozpisBodov } from "./RozpisBodov.tsx";
@@ -125,7 +126,6 @@ const SIRKA_V_LINII = 198;
 /** Dlhá línia sa zmenší na šírku stola, ale nie pod túto šírku karty. */
 const SIRKA_V_LINII_MIN = 96;
 /** Zväčšenie karty v lupe (a v ruke, viď hra.css). */
-const MIERKA_LUPY = 2;
 /** Karty v šenku a lokalitách — väčšie než kedysi v bočnom paneli. */
 const SIRKA_VO_VRSTVE = 150;
 /** Scorecardy starších nad stolom; výška vyplýva z pomeru strán. */
@@ -274,6 +274,8 @@ export function HernaPlocha({ view, data, sada, hraci, log, chyba, superPripojen
   const vRade = sirkaRadu >= SIRKA_PRE_JEDEN_RAD ? 8 : 4;
   const minScorecardu = maliStarsi ? SIRKA_SCORECARDU_MALA : 120;
   const sirkaScorecardu = Math.min(maliStarsi ? SIRKA_SCORECARDU_MALA : SIRKA_SCORECARDU_MAX, Math.max(minScorecardu, Math.floor((sirkaRadu - (vRade - 1) * MEDZERA_SCORECARDOV) / vRade)));
+  // Zväčšenie karty pri prejdení myšou podľa nastavenia v profile.
+  const mierkaLupy = (useUcet().ja?.lupa ?? LUPA_PREDVOLENA) / 100;
   const mierkaLupyScorecardu = Math.max(1.6, SIRKA_SCORECARDU_V_LUPE / sirkaScorecardu);
   const lokalitaRef = useRef<HTMLDivElement>(null);
   // Línia môže byť dlhá — lokalitu drž v strede pohľadu.
@@ -2570,11 +2572,11 @@ export function HernaPlocha({ view, data, sada, hraci, log, chyba, superPripojen
         return (
           <Lupa
             rect={lupa.rect}
-            mierka={lk.mierka ?? MIERKA_LUPY}
+            mierka={lk.mierka ?? mierkaLupy}
             onZavri={() => setLupa(null)}
             onPointerDown={chytit ? (e) => zacni(z, e, lupa.rect.width) : undefined}
           >
-            {lk.render(lupa.rect.width * (lk.mierka ?? MIERKA_LUPY))}
+            {lk.render(lupa.rect.width * Math.min(lk.mierka ?? mierkaLupy, maxMierkaLupy(lupa.rect)))}
           </Lupa>
         );
       })()}

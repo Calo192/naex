@@ -1,10 +1,10 @@
 // Prihlásenie, registrácia a profil (herné meno, avatar, heslo).
 
-import { useRef, useState, type FormEvent } from "react";
-import { api } from "../lib/api.ts";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import { api, mediaUrl } from "../lib/api.ts";
 import { nacitajObrazok, stvorec } from "../lib/obrazky.ts";
 import { Odkaz, chod, useTitulok } from "../lib/router.tsx";
-import { NAZOV_UROVNE, PARTII_NA_HRACA, jeSpravca, useUcet, type Pouzivatel } from "../lib/ucet.tsx";
+import { LUPA_DO, LUPA_OD, LUPA_PREDVOLENA, NAZOV_UROVNE, PARTII_NA_HRACA, jeSpravca, useUcet, type Pouzivatel } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Pole } from "../komponenty.tsx";
 import { MojeStatistiky } from "./Statistiky.tsx";
 
@@ -151,6 +151,43 @@ export function Profil() {
     }
   };
 
+  // Zväčšenie karty pri prejdení myšou (Michal 2026-10-19) — uloží sa chvíľu
+  // po poslednom pohnutí posuvníkom, nie pri každom kroku.
+  const [lupa, setLupa] = useState(ja?.lupa ?? LUPA_PREDVOLENA);
+  const ulozenaLupa = ja?.lupa ?? LUPA_PREDVOLENA;
+  useEffect(() => {
+    if (lupa === ulozenaLupa) return;
+    const t = setTimeout(() => {
+      api
+        .patch<{ pouzivatel: Pouzivatel }>("/profil", { lupa })
+        .then((r) => nastav(r.pouzivatel))
+        .catch(chyba);
+    }, 400);
+    return () => clearTimeout(t);
+  }, [lupa, ulozenaLupa]);
+
+  // Výber z predvolených avatarov (Michal 2026-10-19) — kto nechce nahrávať fotku.
+  const [galeria, setGaleria] = useState<readonly string[] | null>(null);
+  const [galeriaOtvorena, setGaleriaOtvorena] = useState(false);
+  const otvorGaleriu = (): void => {
+    setGaleriaOtvorena(!galeriaOtvorena);
+    if (galeria === null) {
+      api
+        .get<{ avatary: string[] }>("/avatary")
+        .then((r) => setGaleria(r.avatary))
+        .catch(chyba);
+    }
+  };
+  const vyberAvatar = async (id: string) => {
+    try {
+      const r = await api.put<{ pouzivatel: Pouzivatel }>("/profil/avatar-predvoleny", { avatar: id });
+      nastav(r.pouzivatel);
+      setSprava({ druh: "ok", text: "Avatar je zmenený." });
+    } catch (err) {
+      chyba(err);
+    }
+  };
+
   const nahrajAvatar = async (f: File) => {
     setNahrava(true);
     setSprava(null);
@@ -226,6 +263,9 @@ export function Profil() {
             <button className="tlacidlo-male" onClick={() => subor.current?.click()} disabled={nahrava}>
               {nahrava ? "Nahrávam…" : ja.avatar === null ? "Nahrať fotku" : "Zmeniť fotku"}
             </button>
+            <button className="tlacidlo-male" onClick={otvorGaleriu} aria-expanded={galeriaOtvorena}>
+              {galeriaOtvorena ? "Zavrieť výber" : "Vybrať avatara"}
+            </button>
             {ja.avatar !== null && (
               <button
                 className="tlacidlo-male tlacidlo-jemne"
@@ -238,6 +278,32 @@ export function Profil() {
           </div>
         </div>
       </section>
+
+      {galeriaOtvorena && (
+        <section className="panel galeria-avatarov" aria-label="Výber avatara">
+          <h3>Vyber si dedinskú trosku</h3>
+          {galeria === null ? (
+            <p className="tlmene">Načítavam…</p>
+          ) : galeria.length === 0 ? (
+            <p className="tlmene">Predvolené avatary zatiaľ nie sú.</p>
+          ) : (
+            <div className="galeria-mriezka">
+              {galeria.map((id) => (
+                <button
+                  key={id}
+                  type="button"
+                  className={id === ja.avatar ? "galeria-volba zvoleny" : "galeria-volba"}
+                  onClick={() => void vyberAvatar(id)}
+                  aria-pressed={id === ja.avatar}
+                  aria-label="Vybrať tento avatar"
+                >
+                  <img src={mediaUrl(id)} alt="" width={88} height={88} loading="lazy" />
+                </button>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
 
       <MojeStatistiky id={ja.id} />
 
@@ -263,6 +329,30 @@ export function Profil() {
         </Pole>
         <button type="submit">Zmeniť heslo</button>
       </form>
+
+      <div className="panel">
+        <h3>Zväčšenie kariet</h3>
+        <Pole
+          label={`Karta pri prejdení myšou: ${lupa} %`}
+          pomoc={`V hre sa karta, na ktorú ukážeš myšou, zväčší na ${lupa} % (${LUPA_OD} – ${LUPA_DO} %). Ukladá sa samo.`}
+        >
+          <input
+            type="range"
+            className="posuvnik-lupy"
+            min={LUPA_OD}
+            max={LUPA_DO}
+            step={10}
+            value={lupa}
+            onChange={(e) => setLupa(Number(e.target.value))}
+            aria-valuetext={`${lupa} %`}
+          />
+        </Pole>
+        <div className="posuvnik-stupnica" aria-hidden="true">
+          <span>{LUPA_OD} %</span>
+          <span>{LUPA_PREDVOLENA} %</span>
+          <span>{LUPA_DO} %</span>
+        </div>
+      </div>
       </div>
     </div>
   );

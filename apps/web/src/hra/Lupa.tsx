@@ -1,4 +1,5 @@
-// Lupa: karta zo stola alebo z vrstvy (šenok, lokality) zväčšená na 200 %,
+// Lupa: karta zo stola alebo z vrstvy (šenok, lokality) zväčšená podľa
+// nastavenia hráča v profile (150 – 400 %, predvolene 200 %),
 // nad všetkým ostatným.
 //
 // Línia aj vrstvy sa posúvajú (overflow), takže zväčšenie priamo v nich by
@@ -12,6 +13,11 @@ import { createPortal } from "react-dom";
 
 const OKRAJ = 8;
 
+/** Najväčšie zväčšenie, pri ktorom sa karta ešte celá zmestí do okna. */
+export function maxMierkaLupy(rect: DOMRect): number {
+  return Math.min((window.innerWidth - 2 * OKRAJ) / rect.width, (window.innerHeight - 2 * OKRAJ) / rect.height);
+}
+
 export interface LupaProps {
   /** Poloha pôvodnej karty na obrazovke. */
   readonly rect: DOMRect;
@@ -22,10 +28,12 @@ export interface LupaProps {
   readonly children: ReactNode;
 }
 
-export function Lupa({ rect, mierka, onZavri, onPointerDown, children }: LupaProps) {
+export function Lupa({ rect, mierka: ziadana, onZavri, onPointerDown, children }: LupaProps) {
   const zavriRef = useRef(onZavri);
   zavriRef.current = onZavri;
 
+  // Hráč si zväčšenie volí v profile (až 400 %) — väčšie, než sa zmestí, nie.
+  const mierka = Math.min(ziadana, maxMierkaLupy(rect));
   const w = rect.width * mierka;
   const h = rect.height * mierka;
   const cx = rect.left + rect.width / 2;

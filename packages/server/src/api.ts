@@ -12,7 +12,7 @@ import { ALL_PODMIENKY, dostupneDlzky } from "@naex/core";
 import type { KartaNavrh, Pozicia, StranaNavrhu, AkciaDef, KlucoveSlovo, Kategoria, BodovaciaKarta, IkonaBodovania, Nastavenia } from "@naex/tvorba";
 import { exportTxt, importTxt, slug, PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
 import type { Pouzivatel, Ucty } from "./auth.ts";
-import { ChybaVstupu, cookieOdhlasenia, cookieRelacie, overHesloVstup, overLogin, overMeno, citajCookie, jeSpravca } from "./auth.ts";
+import { ChybaVstupu, cookieOdhlasenia, cookieRelacie, overHesloVstup, overLogin, overLupu, overMeno, citajCookie, jeSpravca } from "./auth.ts";
 import type { DruhMedia, Media } from "./media.ts";
 import type { Obsah } from "./obsah.ts";
 import type { Archiv } from "./archiv.ts";
@@ -31,6 +31,8 @@ export interface ApiKontext {
   readonly ucty: Ucty;
   readonly obsah: Obsah;
   readonly media: Media;
+  /** Predvolené avatary (dedinské trosky), z ktorých si hráč môže vybrať. */
+  readonly predvoleneAvatary: readonly string[];
   readonly archiv: Archiv;
   readonly nazory: Nazory;
   readonly playtesty: Playtesty;
@@ -287,7 +289,13 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     if (r === "PATCH /profil") {
       const p = prihlaseny();
       const b = await citajJson(req);
-      return ok({ pouzivatel: ctx.ucty.upravProfil(p.id, { meno: overMeno(b.meno) }) });
+      // Meno aj zväčšenie lupy sa ukladajú samostatne — posiela sa len to, čo sa mení.
+      return ok({
+        pouzivatel: ctx.ucty.upravProfil(p.id, {
+          ...(b.meno !== undefined ? { meno: overMeno(b.meno) } : {}),
+          ...(b.lupa !== undefined ? { lupa: overLupu(b.lupa) } : {}),
+        }),
+      });
     }
 
     if (r === "POST /profil/heslo") {
@@ -302,6 +310,17 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       const buf = await citajTelo(req, AVATAR_LIMIT);
       const m = ctx.media.uloz(buf, "avatar", `avatar-${p.id}`, teraz, ["image/jpeg", "image/png", "image/webp"]);
       return ok({ pouzivatel: ctx.ucty.upravProfil(p.id, { avatar: m.id }) });
+    }
+
+    // Michal 2026-10-19: namiesto vlastnej fotky si hráč vyberie jednu z trosiek.
+    if (r === "GET /avatary") return ok({ avatary: ctx.predvoleneAvatary });
+
+    if (r === "PUT /profil/avatar-predvoleny") {
+      const p = prihlaseny();
+      const b = await citajJson(req);
+      const id = String(b.avatar ?? "");
+      if (!ctx.predvoleneAvatary.includes(id)) throw new ChybaVstupu("Taký predvolený avatar neexistuje.");
+      return ok({ pouzivatel: ctx.ucty.upravProfil(p.id, { avatar: id }) });
     }
 
     if (r === "DELETE /profil/avatar") {

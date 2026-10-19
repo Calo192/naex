@@ -197,6 +197,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           ucty,
           obsah,
           media,
+          predvoleneAvatary: avatary.hracov,
           archiv,
           nazory,
           playtesty,

@@ -152,6 +152,9 @@ function migruj(db: Db): void {
   }
   // Štatistiky kariet partie (JSON z @naex/core) — staršie partie ich nemajú.
   if (!stlpce.some((c) => c.name === "karty")) db.exec("ALTER TABLE partie ADD COLUMN karty TEXT");
+  // Zväčšenie karty pri prejdení myšou v percentách (Michal 2026-10-19); NULL = predvolené.
+  const ucty = db.prepare("PRAGMA table_info(pouzivatelia)").all() as { name: string }[];
+  if (!ucty.some((c) => c.name === "lupa")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN lupa INTEGER");
 }
 
 /** Transakcia — pri výnimke sa všetko vráti. */

@@ -27,7 +27,13 @@ export interface Pouzivatel {
   readonly rola: Rola;
   /** Dohraté partie — posiela ho len /api/ja. */
   readonly dohrate?: number;
+  /** Zväčšenie karty pri prejdení myšou v percentách (150 – 400, predvolene 200). */
+  readonly lupa?: number;
 }
+
+export const LUPA_OD = 150;
+export const LUPA_DO = 400;
+export const LUPA_PREDVOLENA = 200;
 
 interface UcetKontext {
   readonly ja: Pouzivatel | null;
