@@ -524,3 +524,13 @@ describe("Veriaci (Michal 2026-10-20): Viera navyše rovná sile", () => {
     expect(dmg.tuhe[1]).toBe(12 - 4);
   });
 });
+
+describe("Cirhóza v bitke (Michal 2026-10-20): škodí tomu, kto ju priznal", () => {
+  it("za každú priznanú Cirhózu dá súper +1 tuhé", () => {
+    const s0 = setupGame(data, 50);
+    const s = sHracom({ ...s0, strany: [[], []] }, 0, { priznane: [inst("cirhoza"), inst("cirhoza")] });
+    const dmg = poskodenieBitky(data, s, [{}, {}], [0, 0]);
+    expect(dmg.tuhe[1]).toBe(2);
+    expect(dmg.tuhe[0]).toBe(0);
+  });
+});

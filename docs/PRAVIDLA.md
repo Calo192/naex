@@ -131,6 +131,7 @@ odsekmi vyššie):**
   ťah (1 alebo 2 karty), potom branie končí (§7).
 - **Doplnenie šenku:** po braní sa šenok doplní z vrchu spoločného balíčka na
   **8** kariet — pre Liečbu, Starostu a iné efekty (§7).
+- **Priznaná Cirhóza** dá súperovi v každej bitke +1 tuhé (predtým Cirhóza v línii) (§8).
 - **Veriaci:** Viera navyše rovná sile (+1 / +2 / +3), hodnota Viery ostáva 1 (§9).
 - **Náhrada staršieho** sa volí z kariet s viditeľným variantom akcií
   a náhľadom bodov (web).
@@ -412,14 +413,14 @@ hracej oblasti.
 - **Kliatba do línie nepatrí** (Michal 2026-10-20): dá sa len priznať.
   Výnimka je Milujúca manželka — je aj Občan a má akcie.
 - Cena: priznaný **Dlh** sa ráta k prahu Exekútora a súperove Povery proti
-  nemu udelia mäkké poškodenie. Priznaná **Cirhóza** nemá takmer žiadnu
-  nevýhodu — body neuberá a umožní Liečbu či Pohreb. Priznaná **Milujúca
+  nemu udelia mäkké poškodenie. Priznaná **Cirhóza** body neuberá a umožní
+  Liečbu či Pohreb, ale v každej bitke dá súperovi **+1 tuhé** (Michal 2026-10-20). Priznaná **Milujúca
   manželka** naďalej posúva latku Absťáku (§14).
 
 | | Nepriznaná | Priznaná |
 |---|---|---|
 | Dlh | −1 bod na konci hry | body neuberá; **ráta sa k prahu Exekútora**; povery proti nej udelia mäkké poškodenie; pri priznaní hráč **dobere kartu** |
-| Cirhóza | −2 body na konci hry | body neuberá; dá sa liečiť / použiť pri Pohrebe; pri priznaní hráč **dobere kartu** |
+| Cirhóza | −2 body na konci hry | body neuberá; **súper za ňu v bitke +1 tuhé**; dá sa liečiť / použiť pri Pohrebe; kartu za priznanie **nedostaneš** |
 
 **Dedičstvo** — Nástroje sa namiesto priznania vykladajú do hracej oblasti ako
 Dedičstvo a uplatňuje sa ich pasívny efekt `Dedičstvo`. Poldeci sa na Nástroje
@@ -638,9 +639,9 @@ akcia sa aktivovala.
 
 Cirhóza sa počíta ako tuhé poškodenie, takže ju zvyšná Viera tiež znižuje.
 Karta Cirhóza má efekt „Bitka: Obdržíš od súpera dodatočnú ranu."
-**[?]** Znamená to +1 tuhé pre súpera za každú Cirhózu v mojej línii?
-*(Implementované: +1 tuhé súperovi za každú **moju** Cirhózu v línii — podľa
-majiteľa — teda podľa partie —, nie podľa strany, na ktorej leží.)*
+**Cirhóza škodí tomu, kto ju priznal** (Michal 2026-10-20): za každú
+**priznanú** Cirhózu hráča dostane súper v každej bitke +1 tuhé (Veterinár to
+znižuje). Predtým sa rátali Cirhózy v línii — kliatba však do línie už nepatrí.
 
 ### 4. Výsledok
 

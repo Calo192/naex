@@ -724,13 +724,14 @@ function zhromazdenie(v: Volba): Command | null {
   const z = state.zhromazdenieStav;
   if (z === null) return null;
 
-  // Priznanie neodovzdá ťah: Cirhózu vždy, Dlh, kým je Exekútor ďaleko.
-  const prahy = prahyHraca(data, state, ja);
+  // Priznanie neodovzdá ťah. Dlh sa prizná sám pri dobratí; Cirhóza priznaná
+  // dá súperovi +1 tuhé v každej bitke (Michal 2026-10-20), nepriznaná −2 body
+  // na konci — prizná ju, až keď ostávajú najviac dve bitky.
   for (const cmd of v.legal) {
     if (cmd.type !== "place" || cmd.target !== "priznanie") continue;
     const karta = h.ruka.find((x) => x.uid === cmd.uid);
-    if (karta?.defId === "cirhoza") return cmd;
-    if (karta?.defId === "dlh" && prahy.priznaneDlhy + 1 <= prahy.exekutor - 4 && prahy.priznaneDlhy < 3) return cmd;
+    if (karta?.defId === "cirhoza" && state.lokalityVHre.length <= 2) return cmd;
+    if (karta?.defId === "dlh") return cmd;
   }
 
   // Dedičstvo: dobrý Nástroj natrvalo, keď na to sú cigarety a balíček to znesie.

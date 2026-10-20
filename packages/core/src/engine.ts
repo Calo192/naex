@@ -591,8 +591,13 @@ export function abstakyVBitke(data: GameData, s: VerejnyStav, p: PlayerId, vRuke
 }
 
 /** Cirhózy hráča p vyložené v línii (jeho karty = jeho postihy). */
-function cirhozyVPartii(s: VerejnyStav, p: PlayerId): number {
-  return partiaHraca(s, p).filter((pl) => pl.card.defId === "cirhoza").length;
+/**
+ * Cirhózy, za ktoré súper hráča p v bitke udrie navyše — jeho PRIZNANÉ
+ * Cirhózy (Michal 2026-10-20; predtým len Cirhózy v línii, kam už kliatba
+ * nesmie). Za každú dostane súper +1 tuhé.
+ */
+function cirhozyPriznane(s: VerejnyStav, p: PlayerId): number {
+  return pocetKariet(s.hraci[p], "cirhoza", "priznane");
 }
 
 /**
@@ -625,7 +630,7 @@ function stranyBitky(
     const vieraNavyse = priazen(data, s, "VERIACI", p) / KONSTANTY.NASOBOK_PRIAZNE;
     return {
       sums: { ...sums[p], Povera: povera, ...(vieraNavyse > 0 ? { Viera: (sums[p].Viera ?? 0) + vieraNavyse } : {}) },
-      cirhozaBonus: Math.max(0, cirhozyVPartii(s, opp) - mody[p]!.cirhozaZlava),
+      cirhozaBonus: Math.max(0, cirhozyPriznane(s, opp) - mody[p]!.cirhozaZlava),
       tuheBonus: mody[p]!.tuheBonus,
       tuheZlava: mody[p]!.tuheZlava,
       // Neprajník: Povery smú nad súperove priznané Dlhy; čierna mačka: bez stropu.

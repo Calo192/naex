@@ -398,7 +398,7 @@ export function HracDoska({ view, p, info, prahy, zavislost, menoKarty, popisKar
             nadpis: "Poškodenie pečene",
             text: (
               <>
-                {hrac.pecen} z {prahy.cirhoza}. Vyhodnocuje sa len v Pitke: pri dosiahnutí prahu vzniká Cirhóza (v bitke pridáva tuhé
+                {hrac.pecen} z {prahy.cirhoza}. Vyhodnocuje sa len v Pitke: pri dosiahnutí prahu vzniká Cirhóza (priznaná dá súperovi v bitke +1 tuhé
                 poškodenie) a <b>po každej Pitke sa pečeň vynuluje</b>.
                 <span className="tip-riadok">
                   Pribúda akciami Poškodenie pečene a Poldeci a NA EX v Pitke; poldeci vypitý v Zhromaždení ju pripíše dopredu do najbližšej Pitky.
@@ -530,7 +530,7 @@ const PORADIE_AKCII: readonly Action[] = [
 
 /** Zdroje rozpisu poškodenia, ktoré nie sú kartou. */
 const ZDROJ_ROZPISU: Readonly<Record<string, string>> = {
-  cirhoza: "súperove Cirhózy v jeho partii",
+  cirhoza: "súperove priznané Cirhózy",
   BITKAR: "priazeň Bitkára",
   Viera: "súperova nezrušená Viera",
   abstak: "Absťáky (trasú sa ruky)",

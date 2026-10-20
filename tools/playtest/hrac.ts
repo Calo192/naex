@@ -534,7 +534,7 @@ function moznosti(v: ClientState): string[] {
       // Tamže: Jano držal 6 Cirhóz v ruke, takže Liečbu ani Pohreb nikdy nevidel.
       if (v.ruka.some((k) => k.defId === "cirhoza"))
         out.push(
-          "(Máš v ruke Cirhózu: priznaj ju — body neuberá a po bitke ti odomkne Liečbu alebo Pohreb. Pohreb navždy spáli tvoju slabú kartu, ktorú si vyložil do línie; Liečba vymení tvojho Závislého z línie za kartu zo šenku.)",
+          "(Máš v ruke Cirhózu: zváž priznanie — nepriznaná uberá na konci 2 body, priznaná dá súperovi v každej bitke +1 tuhé, ale po bitke ti odomkne Liečbu alebo Pohreb (tie ju spália). Pohreb navždy spáli tvoju slabú kartu, ktorú si vyložil do línie; Liečba vymení tvojho Závislého z línie za kartu zo šenku.)",
         );
       break;
     }

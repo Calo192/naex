@@ -483,7 +483,7 @@ const KAPITOLY: readonly Kapitola[] = [
           <strong>2</strong> + sila Úžerníka získaš kartu Dlh — teda dve akcie Dlh v jednej Pitke sú karta Dlh — a po Pitke sa vynuluje. Dlhy, ktoré karta dáva priamo (napr. Liečba), idú rovno.
           Viac Pitiek v bitke znamená viac pečene aj Dlhov.
         </p>
-        <p>Každá Cirhóza ti v bitke pridáva 1 tuhé poškodenie, akoby ti ho udelil súper. Viera ju znižuje.</p>
+        <p>Každá tvoja <strong>priznaná</strong> Cirhóza ti v bitke pridáva 1 tuhé poškodenie, akoby ti ho udelil súper. Viera ju znižuje. Nepriznaná uberá na konci hry 2 body.</p>
         <p>
           <strong>Liečba:</strong> spáľ priznanú Cirhózu a svojho Závislého z línie, získaj 1 Dlh a vyber si kartu zo šenku.{" "}
           <strong>Pohreb:</strong> spáľ priznanú Cirhózu a ľubovoľnú svoju kartu z línie.

@@ -124,7 +124,8 @@ Pred prvým ťahom (súper sa pripravuje tiež, na teba počká):
   Karty navyše: šenok, fajčenie (`smoke`: cigareta = karta hneď, v Zhromaždení
   aj v Pitke), priznanie kliatby, Vízia, efekty.
 - **Kliatby:** Dlh sa **prizná sám**, keď si ho dobereš, a ťaháš ďalšiu kartu.
-  Cirhózu priznáš, keď chceš, ale kartu za ňu **nedobereš**; Milujúca manželka
+  Cirhózu priznáš, keď chceš, ale kartu za ňu **nedobereš** a súper za každú
+  priznanú dostane v bitke +1 tuhé (nepriznaná −2 body na konci); Milujúca manželka
   a Absťák kartu dajú. Kliatba do línie nepatrí (len Milujúca manželka). Priznanie nemíňa
   limit ani neodovzdá ťah. Priznaný Dlh sa ráta k Exekútorovi.
 - **Vízia:** na konci Pitky za každú aktívnu Víziu uvidíš vrchnú kartu svojho
