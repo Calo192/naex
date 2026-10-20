@@ -93,6 +93,21 @@ k sebe (`scp -r root@IP_SERVERA:/opt/naex-zalohy .`).
 deploy/nahraj.sh <IP-servera>
 ```
 
+**Karty na produkciu.** Server má vlastnú databázu tvorcu — nasadenie prenesie
+len kód. Keď sa sada zverejnila lokálne (a skopírovala do
+`packages/core/data/cards.json`), pred nasadením prenes aj ilustrácie a údaje
+návrhov do seedu:
+
+```bash
+node --experimental-strip-types --no-warnings tools/admin/do-seedu.ts
+```
+
+Server pri štarte (`Obsah.dorovnajSoSeedom`, raz pre každú značku migrácie)
+prepíše návrhy podľa `cards.json` a `seed/`, doplní kľúčové slová a zverejní
+novú verziu sady. Ak má produkčný tvorca nezverejnenú prácu, dorovnanie sa
+preskočí (varovanie v logu) — nič neprepíše. Pre ďalšie dorovnanie treba v kóde
+novú značku (`dorovnajSoSeedom(teraz, "migracia-sada-vN-…")`).
+
 Rozohrané partie sa pri reštarte stratia (stav partie je v pamäti) — aktualizuj,
 keď nikto nehrá. Účty, karty a obrázky ostávajú v databáze.
 

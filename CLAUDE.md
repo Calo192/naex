@@ -27,8 +27,9 @@ dvaja ľudia na dvoch zariadeniach, nie viac hráčov naraz.
 4. **Náhoda je deterministická.** Jeden seedovaný generátor v `GameState`.
 5. **Dáta, nie kód.** Karty upravuje admin v tvorcovi (SQLite); hra beží na
    zverejnenej sade. `packages/core/data/cards.json` je východisková sada
-   pre prvé spustenie a testy — kópia zverejnenej sady v8 (2026-10-20:
-   14 lokalít s krajmi, nová Pasca, Nealko; `cardsJson` z tabuľky `sady`); predtým ju generoval
+   pre prvé spustenie a testy — kópia zverejnenej sady v9 (2026-10-20:
+   14 lokalít s krajmi, prevaha, Presbiter, Dvojčatá; `cardsJson` z tabuľky `sady`;
+   na produkciu cez `tools/admin/do-seedu.ts`, viď docs/NASADENIE.md); predtým ju generoval
    `tools/import_print_pdf.py` z tlačového PDF.
 6. **Server púšťa `.ts` priamo (strip-types)** — len vymazateľná syntax
    (`erasableSyntaxOnly`): žiadne parametrické vlastnosti, enumy, namespaces.
@@ -70,7 +71,7 @@ npm run build
 
 ```
 packages/core/       jadro pravidiel — čistý TS, bez I/O
-  data/cards.json      58 kariet — kópia zverejnenej sady v8 (neupravuj ručne)
+  data/cards.json      60 kariet — kópia zverejnenej sady v9 (neupravuj ručne)
   data/elders.json     8 starších; hodnoty sú PROVIZÓRNE, viď TODO
   src/bot.ts           offline protihráč (NPC: heuristiky + výpočet dopredu, žiadne
                        LLM); tri povahy (POVAHY) — Štamgast, Rapavý Fero, Teta

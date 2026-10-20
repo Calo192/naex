@@ -1,5 +1,5 @@
 {
- "source": "tvorca kariet 2026-10-20T12:23:19.345Z",
+ "source": "tvorca kariet 2026-10-20T12:42:11.760Z",
  "actions": [
   "Cigareta",
   "Dlh",
@@ -488,7 +488,7 @@
    "tags": [
     "Lokalita"
    ],
-   "effect_text": "Bitka: Za každú svoju kartu na súperovej strane máš 1 tuhé poškodenie navyše, najviac 2.",
+   "effect_text": "Bitka: Za každého svojho Občana, Zviera či Starešinu v súperovom kraji máš 1 tuhé poškodenie navyše, najviac 2.",
    "triggers": [
     "Bitka"
    ],
@@ -537,7 +537,7 @@
    "tags": [
     "Lokalita"
    ],
-   "effect_text": "Bitka: Na každej strane línie má hráč, ktorý tam má viac svojich kariet, 2 tuhé poškodenia navyše.",
+   "effect_text": "Bitka: V každom kraji, kde máš viac svojich Občanov, Zvierat a Starešinov než súper, máš 2 tuhé poškodenia navyše.",
    "triggers": [
     "Bitka"
    ],
@@ -2856,6 +2856,83 @@
     "total": 1,
     "left": 1,
     "right": 1
+   }
+  },
+  {
+   "id": "presbiter",
+   "index": 59,
+   "name": "Presbiter",
+   "tags": [
+    "Občan",
+    "Autorita",
+    "Chlap"
+   ],
+   "effect_text": "Bitka: Ak v jeho kraji nemáš iného Občana, Zviera ani Starešinu a súper tam má prevahu, súper má o toľko Viery menej, koľko má Presbiter aktívnych akcií.",
+   "triggers": [
+    "Bitka"
+   ],
+   "left": {
+    "blocked": [
+     0,
+     3
+    ],
+    "actions": {
+     "Pohoršenie": 1,
+     "Povera": 1
+    }
+   },
+   "right": {
+    "blocked": [
+     2,
+     3
+    ],
+    "actions": {
+     "Rana": 1,
+     "Viera": 1
+    }
+   },
+   "permutations": {
+    "total": 4,
+    "left": 2,
+    "right": 2
+   }
+  },
+  {
+   "id": "dvojcata",
+   "index": 60,
+   "name": "Dvojčatá",
+   "tags": [
+    "Občan",
+    "Chlap"
+   ],
+   "effect_text": "Furt: Do prevahy sa rátajú za dvoch.",
+   "triggers": [
+    "Furt"
+   ],
+   "left": {
+    "blocked": [
+     2,
+     3
+    ],
+    "actions": {
+     "Dlh": 1,
+     "Rana": 1
+    }
+   },
+   "right": {
+    "blocked": [
+     0,
+     1
+    ],
+    "actions": {
+     "Cigareta": 1,
+     "Rana": 1
+    }
+   },
+   "permutations": {
+    "total": 4,
+    "left": 2,
+    "right": 2
    }
   }
  ]

@@ -70,7 +70,10 @@ export const PREDVOLENE_KLUCOVE_SLOVA: readonly KlucoveSlovo[] = [
   S("Bitka", "Uplatní sa pri vyhodnotení bitky."),
   S("Pitka", "Uplatní sa počas Pitky — keď si hráči doberajú karty a vyhodnocujú efekty."),
   S("Zhromaždenie", "Uplatní sa počas Zhromaždenia — keď hráči vykladajú karty."),
-  S("Dedičstvo", "Pasívny bonus Nástroja, kým leží v tvojej hracej oblasti."),
+  S(
+    "Dedičstvo",
+    "Pasívny bonus Nástroja, kým leží v tvojej hracej oblasti. Vyloženie do Dedičstva stojí cigarety — cena rastie spoločne pre oboch: prvý Nástroj v hre 1 cigaretu, druhý 2, tretí 3…",
+  ),
   S("Výhra", "Uplatní sa, keď vyhráš bitku o lokalitu alebo o staršieho."),
   S("Prehra", "Uplatní sa, keď prehráš bitku o lokalitu alebo o staršieho."),
   S("Prestávka", "Uplatní sa cez prestávku pred bitkou."),
@@ -79,6 +82,16 @@ export const PREDVOLENE_KLUCOVE_SLOVA: readonly KlucoveSlovo[] = [
   P("zahoď", ["zahodiť", "zahodí", "zahodia"], "Zahodenie — kartu odstrániš z hry (spáliš)."),
   P("odhoď", ["odhodiť", "odhodí", "odhodia"], "Odhodenie — karta ide do odhadzovacieho balíčka hráča, ktorý ju zahral."),
   P("preskúmaj", ["preskúmať", "preskúma"], "Preskúmanie — zober a prezri si 5 kariet, potom ich vráť."),
+  // Michal 2026-10-20: prevaha v kraji rozhoduje o akciách hrany lokality.
+  {
+    slovo: "Prevaha",
+    tucne: false,
+    kurziva: true,
+    novyRiadok: false,
+    tvary: ["prevaha", "prevahu", "prevahy", "prevahe", "prevahou"],
+    popis:
+      "Prevahu v kraji (polovici línie pri jednej hrane lokality) má hráč, ktorý tam má viac svojich Občanov, Zvierat a Starešinov — Nástroje a iné karty sa nerátajú. Pri rovnosti rozhoduje majiteľ karty pri lokalite. Hráč s prevahou dostane akcie hrany lokality v tom kraji.",
+  },
 ];
 
 /** Odtiene odmerané z tlačového PDF; Občan a pohlavia farbu nedávajú. */

@@ -94,18 +94,21 @@ Pred prvým ťahom (súper sa pripravuje tiež, na teba počká):
   Pitkou je Zhromaždenie. Počet sa mení s líniou — výpis ho ukazuje. „Ešte
   jednu!“ už neexistuje.
 - **Prevaha (2026-10-20):** akcie hrany lokality dostane, kto má v tej
-  polovici línie (kraji) **viac svojich kariet** (Nástroje nie); pri rovnosti
+  polovici línie (kraji) **viac svojich Občanov, Zvierat a Starešinov** (Nástroje a Cirhóza nie); pri rovnosti
   majiteľ karty pri lokalite. Jedna podstrčená karta hranu neukradne. Kraje
   majú mená podľa lokality (Krčma: pri výčape / pri dverách). **Pasca**
   (Dedičstvo): každé súperovo Zviera v línii mu uberie 1 tuhé.
+  Nové karty (po zverejnení): **Presbiter** — sám proti súperovej prevahe
+  v kraji zoberie súperovi toľko Viery, koľko má aktívnych akcií;
+  **Dvojčatá** — do prevahy sa rátajú za dvoch.
 - **Poradie (2026-10-20):** cieľ kola vyberá a natáča **obranca** (víťaz
   poslednej bitky); **útočník** (porazený) berie zo šenku prvý a **vykladá
   prvý**; v Pitke začína obranca.
 - **Lokality (2026-10-20)** — efekt platí v kole o ňu: Krčma (s plným
   poldeci povinné NA EX), Kostol (nikto nevypije ani nedá NA EX — v ťahu
   1 karta), Benzínka (nikto nefajčí), Zastávka (spoločný limit = súčet
-  limitov), Lesná cesta (+1 tuhé za tvoju kartu na súperovej strane, max +2),
-  Ihrisko (+2 tuhé za každú stranu, kde máš viac svojich kariet), Zberný
+  limitov), Lesná cesta (+1 tuhé za tvojho Občana/Zviera/Starešinu v súperovom kraji, max +2),
+  Ihrisko (+2 tuhé za každý kraj, kde máš viac svojich Občanov, Zvierat a Starešinov), Zberný
   dvor (raz za Pitku `vykup`: cigareta → karta z odhadzovacieho do ruky),
   Most (len na vlastnú stranu), Cintorín (porazený `cintorin`: Nástroj
   z ruky do Dedičstva zadarmo), Obecný úrad (prah Exekútora −4, Robota

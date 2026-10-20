@@ -26,10 +26,13 @@ const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 /** Zoznam uid, ktoré hráč `ja` NIKDY nesmie dostať. */
 function tajneUids(state: GameState, ja: PlayerId): number[] {
   const super_ = ja === 0 ? 1 : 0;
+  // Vízia (Michal 2026-10-19): hráč, ktorý práve rozhoduje, vidí vrchnú kartu
+  // SVOJHO balíčka — jedinú výnimku; súper ju nevidí nikdy.
+  const vidiVrch = state.vizia !== null && naTahu(state) === ja;
   return [
     ...state.hraci[super_].ruka.map((k) => k.uid),
-    ...state.hraci[0].doberaci.map((k) => k.uid),
-    ...state.hraci[1].doberaci.map((k) => k.uid),
+    ...state.hraci[ja].doberaci.slice(vidiVrch ? 1 : 0).map((k) => k.uid),
+    ...state.hraci[super_].doberaci.map((k) => k.uid),
     ...state.spolocnyBalicek.map((k) => k.uid),
     // Súperov balíček stavby šenku (jeho výber v kroku je jeho súčasťou).
     ...(state.draftStav?.balicky[super_] ?? []).map((k) => k.uid),

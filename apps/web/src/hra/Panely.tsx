@@ -619,14 +619,17 @@ function StranaBitky({
   for (const a of PORADIE_AKCII) {
     const hodnota = sums[a] ?? 0;
     const ignorovana = a === "Povera" ? rozpis.poveraIgnorovana : 0;
-    if (hodnota === 0 && ignorovana === 0) continue;
     const zoznam = zdroje[a] ?? [];
-    // Zdvojenia (Posilnenie, NA EX, efekty kariet) — o koľko je súčet vyšší než počet aktívnych slotov.
-    const navyse = zoznam.reduce((s, z) => s + z.hodnota, 0) - zoznam.length;
+    if (hodnota === 0 && ignorovana === 0 && zoznam.length === 0) continue;
+    // Zdvojenia (Posilnenie, NA EX, efekty kariet) — o koľko je súčet vyšší než počet aktívnych slotov;
+    // záporné položky sú zrážky súperových efektov (Presbiter).
+    const kladne = zoznam.filter((z) => z.hodnota > 0);
+    const navyse = kladne.reduce((s, z) => s + z.hodnota, 0) - kladne.length;
+    const zrazkaEfektom = zoznam.filter((z) => z.hodnota < 0).reduce((s, z) => s + z.hodnota, 0);
     const zrusene = a === "Viera" ? rozpis.zrusenaViera : a === "Povera" ? rozpis.zrusenaPovera : 0;
     const riadky: ReactNode[] = zoznam.map((z, i) => (
       <span key={i} className="tip-riadok">
-        {menoKarty(z.defId)}
+        {z.hodnota < 0 ? `súperov ${menoKarty(z.defId)}` : menoKarty(z.defId)}
         {z.vStrede ? " (karta v strede)" : ""}: <b>{znamienko(z.hodnota)}</b>
         {z.dovody.length > 0 ? ` — ${z.dovody.map(dovod).join(", ")}` : ""}
       </span>
@@ -649,7 +652,7 @@ function StranaBitky({
         trieda={sila !== undefined ? "tuha" : ""}
         ikona={<IkonaAkcie kluc={a} akcia={akcia(a)} />}
         hodnota={hodnota}
-        zmeny={[navyse, -zrusene, -ignorovana]}
+        zmeny={[navyse, zrazkaEfektom, -zrusene, -ignorovana]}
         tip={{
           nadpis: `${nazov(a)} ${hodnota}${navyse > 0 ? ` (z toho ${znamienko(navyse)} zdvojením)` : ""}`,
           text: (

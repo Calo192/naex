@@ -63,7 +63,8 @@ interface SeedBodovanie {
 
 interface SeedNavrh {
   readonly id: string;
-  readonly farba: string;
+  /** null = farba podľa kategórie (tagov). */
+  readonly farba: string | null;
   readonly sirkaMm: number;
   readonly vyskaMm: number;
   readonly mierkaTextu: number;
@@ -74,6 +75,12 @@ interface SeedNavrh {
 
 type RawSide = { blocked: Pozicia[]; actions: Record<string, number>; allowed?: Record<string, string[]>; name?: string };
 type RawCard = { id: string; name: string; tags: string[]; effect_text: string; left: RawSide; right: RawSide };
+
+/** Strana návrhu v porovnateľnom tvare (poradie kľúčov akcií a pozícií). */
+function rovnaStrana(s: StranaNavrhu): unknown {
+  const zoradene = <T>(o: Readonly<Record<string, T>>) => Object.entries(o).sort(([a], [b]) => a.localeCompare(b));
+  return [[...s.blokovane].sort(), zoradene(s.akcie), zoradene(s.povolene as Record<string, readonly string[]>), s.kraj ?? null];
+}
 
 function stranaZJson(s: RawSide): StranaNavrhu {
   return {
@@ -305,6 +312,67 @@ export class Obsah {
     if (JSON.stringify(nova) === JSON.stringify(stara)) return;
     this.db.prepare("INSERT INTO sady (cas, autor, data) VALUES (?, ?, ?)").run(teraz, null, JSON.stringify({ ...nova, cas: teraz }));
     this.cache = null;
+  }
+
+  /**
+   * Dorovnanie tvorcu so sadou v repozitári (Michal 2026-10-20: „make it part
+   * of live website“). Produkčný server má vlastnú databázu; nasadenie prenáša
+   * len kód. Návrhy kariet sa prepíšu podľa data/cards.json (texty, tagy,
+   * akcie, kraje) a seed/ (kópie, mierky, ilustrácie), chýbajúce pribudnú,
+   * kľúčové slová sa doplnia z predvolených a tvorca sa zverejní. Beží raz pre
+   * každú značku; preskočí sa, ak má tvorca nezverejnenú prácu (návrh upravený
+   * po poslednom zverejnení) — tú by prepísal.
+   */
+  dorovnajSoSeedom(teraz: number, znacka = "migracia-sada-v9-20261020"): "hotovo" | "bez-zmeny" | "preskocene" | "uz-bezalo" {
+    if (this.nastaveniaT.jeden(znacka) !== null) return "uz-bezalo";
+    const posledna = this.db.prepare("SELECT cas FROM sady ORDER BY verzia DESC LIMIT 1").get() as { cas: number } | undefined;
+    const navrhy = this.karty.vsetky();
+    if (posledna !== undefined && navrhy.some((k) => k.upravene > posledna.cas)) {
+      console.warn(`Tvorca má nezverejnené návrhy — ${znacka} sa preskakuje (dorovnaj ručne).`);
+      return "preskocene";
+    }
+    const cards = (JSON.parse(readFileSync(join(CORE_DATA, "cards.json"), "utf8")) as { cards: RawCard[] }).cards;
+    const seedPath = join(SEED, "navrhy.json");
+    const seed = existsSync(seedPath) ? (JSON.parse(readFileSync(seedPath, "utf8")) as SeedNavrh[]) : [];
+    const kluc = (k: KartaNavrh): string =>
+      JSON.stringify([k.nazov, k.tagy, k.efekt, k.obrazok, k.farba, k.mierkaTextu, k.mierkaIkon, k.sirkaMm, k.vyskaMm, k.kopie, rovnaStrana(k.lava), rovnaStrana(k.prava)]);
+    let zmena = false;
+    transakcia(this.db, () => {
+      cards.forEach((c, i) => {
+        const stary = this.karty.jeden(c.id);
+        const s = seed.find((n) => n.id === c.id);
+        const obrazok = (s === undefined ? null : this.seedObrazok(s.obrazok, teraz)) ?? stary?.obrazok ?? null;
+        const novy: KartaNavrh = {
+          id: c.id,
+          nazov: c.name,
+          tagy: c.tags,
+          efekt: c.effect_text,
+          obrazok,
+          farba: s !== undefined ? s.farba : (stary?.farba ?? null),
+          mierkaTextu: s?.mierkaTextu ?? stary?.mierkaTextu ?? PREDVOLENE_NASTAVENIA.mierkaTextu,
+          mierkaIkon: s?.mierkaIkon ?? stary?.mierkaIkon ?? PREDVOLENE_NASTAVENIA.mierkaIkon,
+          sirkaMm: s?.sirkaMm ?? stary?.sirkaMm ?? PREDVOLENE_NASTAVENIA.sirkaMm,
+          vyskaMm: s?.vyskaMm ?? stary?.vyskaMm ?? PREDVOLENE_NASTAVENIA.vyskaMm,
+          kopie: s?.kopie ?? stary?.kopie ?? 1,
+          lava: stranaZJson(c.left),
+          prava: stranaZJson(c.right),
+          upravene: teraz,
+        };
+        if (stary !== null && kluc(stary) === kluc(novy)) return;
+        zmena = true;
+        this.ulozKartu(novy, stary === null ? navrhy.length + i : undefined);
+      });
+      for (const k of PREDVOLENE_KLUCOVE_SLOVA) {
+        const stare = this.klucoveSlova.jeden(k.slovo);
+        if (stare !== null && JSON.stringify(stare) === JSON.stringify(k)) continue;
+        zmena = true;
+        this.klucoveSlova.uloz(k.slovo, k);
+      }
+      this.nastaveniaT.uloz(znacka, { cas: teraz });
+    });
+    if (!zmena) return "bez-zmeny";
+    this.zverejni(null, teraz);
+    return "hotovo";
   }
 
   /** Nová verzia sady s rovnakými kartami a aktuálnymi scorecardmi z tvorcu. */

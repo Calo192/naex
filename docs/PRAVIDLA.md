@@ -22,7 +22,7 @@ poškodenie pečene.
 - Každú kartu možno vyložiť na **tvoju aj súperovu stranu**. Karta je vždy
   natočená k hráčovi, ktorý ju zahral, a **patrí jemu** — je v jeho partii,
   jej akcie aj efekty sa rátajú jemu (§4). Akcie hrany lokality dostane hráč
-  s **prevahou** v tej polovici línie (viac svojich kariet; Michal 2026-10-20).
+  s **prevahou** v tom kraji (viac svojich Občanov, Zvierat a Starešinov; Michal 2026-10-20).
 - **NA EX** smie hráč dať na Občana alebo Starešinu v línii — **vlastného aj
   súperovho** (§5, Michal 2026-10-18). **Vypiť** — v
   Zhromaždení otočí plný poldeci na vypitý a zahrá dve karty za sebou (§5).
@@ -230,7 +230,8 @@ indexe**. Každá aktívna akcia sa počíta samostatne.
 - **Akcie lokality — prevaha** (Michal 2026-10-20, rozbor
   `docs/playtesty/strategia-strany-20261020.html`): hranu lokality aktivuje
   karta, ktorá s ňou tvorí spoj, no jej akcie dostane hráč, ktorý má v tej
-  polovici línie **viac svojich kariet** (Nástroje sa nerátajú); pri rovnosti
+  polovici línie **viac svojich Občanov, Zvierat a Starešinov** (Nástroje, Cirhóza ani iné karty sa
+  nerátajú); pri rovnosti
   majiteľ karty pri lokalite. Jedna podstrčená karta teda hranu neukradne —
   treba v kraji prevládnuť. Natočenie lokality (volí obranca) určuje, ktorá
   hrana leží pri ktorej polovici.
@@ -877,7 +878,8 @@ klient ukazuje neresti oboch hráčov a výhľad (`stavZavislosti`).
 | Pojem | Význam |
 |---|---|
 | Línia | celý rad kariet v kole; lokalita v strede |
-| Strana | polovica línie od lokality — tvoja a súperova; kam karta leží |
+| Strana / kraj | polovica línie od lokality — tvoja a súperova; kraj je jej meno podľa hrany lokality (Krčma: pri výčape / pri dverách) |
+| Prevaha | v kraji ju má, kto tam má viac svojich Občanov, Zvierat a Starešinov (Nástroje, Cirhóza nie); pri rovnosti majiteľ karty pri lokalite; dostane akcie hrany lokality v tom kraji |
 | Partia | všetky karty natočené k hráčovi (jeho karty), na ktorejkoľvek strane |
 | Vypiť | otočiť plný poldeci na vypitý: limit −1, pečeň +1, ďalšia karta v tom istom ťahu |
 | Šenok | ponuka kariet lícom nahor; obaja vidia, čo berú |
@@ -907,8 +909,8 @@ a do hry prídu so zverejnením sady.
 | Kostol | Zhromaždenie, Pitka | Nikto nesmie vypiť (v ťahu teda len jedna karta) ani dať NA EX. (Predtým karta za Vieru.) |
 | Benzínka | Zhromaždenie, Pitka | Nikto nesmie fajčiť. (Predtým spálenie Občanov a prepadnutie lokality.) |
 | Zastávka | Zhromaždenie | Spoločný limit vykladania pre oboch = súčet limitov oboch hráčov; každé vyloženie a Vypiť ho míňa obom. (Predtým limit 2.) |
-| Lesná cesta | Bitka | +1 tuhé za každú svoju kartu (nie Nástroj) na súperovej strane, najviac +2. |
-| Ihrisko | Bitka | Na každej strane +2 tuhé tomu, kto tam má viac svojich kariet (Nástroje sa nerátajú) — z oboch strán teda až +4. |
+| Lesná cesta | Bitka | +1 tuhé za každého svojho Občana, Zviera či Starešinu v súperovom kraji, najviac +2. |
+| Ihrisko | Bitka | V každom kraji +2 tuhé tomu, kto tam má viac svojich Občanov, Zvierat a Starešinov (pri rovnosti nikto) — z oboch krajov teda až +4. |
 | Zberný dvor | Pitka | Raz za Pitku: za 1 cigaretu karta z vlastného odhadzovacieho balíčka do ruky (cigareta je nerest ako pri barteri). |
 | Most | Zhromaždenie, Pitka | Karty sa smú vykladať len na vlastnú stranu — aj odpoveď na NA EX. |
 | Cintorín | Prehra | Porazený smie po Liečbe dať jeden Nástroj z ruky do Dedičstva bez platenia; spoločná cena Dedičstva sa zvýši ako vždy. |
@@ -947,6 +949,8 @@ Všetky efekty tlačovej sady engine vyhodnocuje automaticky (playtest
 | Pijan | Ak má Žena v jeho okolí aktívnu akciu Poldeci, súper majiteľa Pijana dostane +1 Ranu. |
 | Policajtka | Furt: súperove Pohoršenia proti majiteľovi neplatia (Michal 2026-10-18; Autorita — Praudovravec súpera ju umlčí). |
 | Poštárka | V Pitke raz: majiteľ smie dobrať 1 až 2 karty; ak dobral, získa 1 Dlh. |
+| Presbiter | Bitka (návrh, čaká na zverejnenie — Michal 2026-10-20): ak v jeho kraji nemá majiteľ iného Občana, Zviera ani Starešinu a súper tam má prevahu, súper má o toľko Viery menej, koľko má Presbiter aktívnych akcií (s násobkami Posilnenia a NA EX). Ráta sa počet Vier pred rušením s Poverou, najviac na 0. Funguje aj podstrčený do súperovho kraja. Autorita — súperov Praudovravec ho umlčí. |
+| Dvojčatá | Furt (návrh, čaká na zverejnenie): do prevahy sa rátajú za dvoch. Na Ihrisko, Lesnú cestu a podmienku „sám“ Presbitera nie (tam sa rátajú karty). |
 | Praudovravec | Autority v **súperovej** partii neuplatňujú efekt (Michal 2026-10-18; predtým v tvojej). |
 | Silná nezávislá žena | Aktívne akcie tvojich kariet, ktoré s ňou susedia, sa rátajú dvakrát (lokalitu, kartu staršieho ani súperove karty nezdvojí). |
 | Starosta | V Pitke raz: za 1 cigaretu vymeň kartu z ruky za kartu zo šenku. |

@@ -1059,11 +1059,11 @@ export function HernaPlocha({ view, data, sada, hraci, log, chyba, superPripojen
   // kým lokalita nie je otočená.
   const kraje = krajeStran(data, stredKarta, starsiNavrh?.otocena ?? lokalitaNavrh?.otocena ?? view.lokalitaOtocena);
   const krajStrany = (p: PlayerId): string | null => kraje[p];
-  // Prevaha: akcie hrany dostane, kto má na tej strane viac svojich kariet.
+  // Prevaha: akcie hrany dostane, kto má v kraji viac svojich Občanov, Zvierat a Starešinov.
   const prevaha = prevahaStran(data, stol.strany);
   const kto = (p: PlayerId | null): string => (p === null ? "nikto" : p === ja ? "ty" : menoHraca(p));
   const tipKraja = (p: PlayerId): string =>
-    `Akcie tejto hrany dostane, kto má v tejto polovici línie viac svojich kariet (Nástroje sa nerátajú); pri rovnosti majiteľ karty pri lokalite. Teraz: ${kto(prevaha[p])}.`;
+    `Prevaha: akcie tejto hrany dostane, kto má v tomto kraji viac svojich Občanov, Zvierat a Starešinov (Nástroje a Cirhóza sa nerátajú); pri rovnosti majiteľ karty pri lokalite. Teraz: ${kto(prevaha[p])}.`;
   const popisKraja = (p: PlayerId, smer: "vlavo" | "vpravo") => {
     const nazov = krajStrany(p) ?? (p === ja ? "tvoja strana" : `strana — ${menoHraca(p)}`);
     return (

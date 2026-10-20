@@ -135,27 +135,77 @@ interface Elem {
 }
 
 /**
- * Kto má prevahu na strane (prvok [0] leží pri lokalite): viac vlastných
- * kariet okrem Nástrojov; pri rovnosti majiteľ karty pri lokalite.
+ * PREVAHA (Michal 2026-10-20): v kraji (polovici línie) ju má hráč, ktorý tam
+ * má viac svojich Občanov, Zvierat a Starešinov — Nástroje a iné karty sa
+ * nerátajú. Pri rovnosti rozhoduje majiteľ karty pri lokalite. Hráč s prevahou
+ * dostane akcie hrany lokality v tom kraji.
  */
-function prevaha(strana: readonly Elem[]): PlayerId | null {
-  const pocet = [0, 0];
-  for (const e of strana) if (!e.tags.includes("Nástroj")) pocet[e.owner]! += 1;
-  if (pocet[0]! > pocet[1]!) return 0;
-  if (pocet[1]! > pocet[0]!) return 1;
-  return strana[0]?.owner ?? null;
+export function rataSaDoPrevahy(tags: readonly Tag[]): boolean {
+  return tags.includes("Občan") || tags.includes("Zviera") || tags.includes("Starešina");
 }
 
-/** Prevaha na strane hráča 0 a 1 — kto dostane akcie príslušnej hrany lokality. */
+/** Prevaha v kraji z počtov a majiteľa karty pri lokalite (null = prázdny kraj). */
+function kto(pocet: readonly [number, number], priLokalite: PlayerId | null): PlayerId | null {
+  if (pocet[0] > pocet[1]) return 0;
+  if (pocet[1] > pocet[0]) return 1;
+  return priLokalite;
+}
+
+/**
+ * Presbiter (Michal 2026-10-20, Bitka): ak v jeho kraji nemá majiteľ iného
+ * Občana, Zviera ani Starešinu a súper tam má prevahu, súper má o toľko Viery
+ * menej, koľko má Presbiter aktívnych akcií (s násobkami). Ráta sa počet Vier
+ * pred vzájomným rušením s Poverou; Praudovravec súpera ho umlčí (Autorita).
+ */
+function presbiter(
+  kraje: readonly [readonly Elem[], readonly Elem[]],
+  prevahaKrajov: readonly [PlayerId | null, PlayerId | null],
+  elems: readonly Elem[],
+  sums: [Partial<Record<Action, number>>, Partial<Record<Action, number>>],
+  zdroje: [Partial<Record<Action, ZdrojAkcie[]>>, Partial<Record<Action, ZdrojAkcie[]>>],
+): void {
+  for (const k of [0, 1] as const) {
+    for (const e of kraje[k]) {
+      if (e.defId !== "presbiter") continue;
+      const su: PlayerId = e.owner === 0 ? 1 : 0;
+      if (prevahaKrajov[k] !== su) continue;
+      if (kraje[k].some((x) => x !== e && x.owner === e.owner && rataSaDoPrevahy(x.tags))) continue;
+      if (elems.some((x) => x.defId === "praudovravec" && x.owner === su)) continue;
+      let aktivnych = 0;
+      for (const side of [0, 1] as const) {
+        for (let i = 0; i < 4; i++) if (e.stav[side]![i] === "aktivna") aktivnych += e.nasobok[side]![i] as number;
+      }
+      const ubrat = Math.min(aktivnych, sums[su].Viera ?? 0);
+      if (ubrat === 0) continue;
+      sums[su].Viera = (sums[su].Viera ?? 0) - ubrat;
+      (zdroje[su].Viera ??= []).push({ defId: "presbiter", uid: e.uid, hodnota: -ubrat, vStrede: false, dovody: ["karta:presbiter"] });
+    }
+  }
+}
+
+/** Koľko karta váži v prevahe: Dvojčatá (Furt) za dvoch, ostatné do prevahy 1, iné 0. */
+function vahaVPrevahe(defId: string, tags: readonly Tag[]): number {
+  if (!rataSaDoPrevahy(tags)) return 0;
+  return defId === "dvojcata" ? 2 : 1;
+}
+
+/** Prevaha v kraji z prvkov línie (prvok [0] leží pri lokalite). */
+function prevaha(strana: readonly Elem[]): PlayerId | null {
+  const pocet: [number, number] = [0, 0];
+  for (const e of strana) pocet[e.owner] += vahaVPrevahe(e.defId, e.tags);
+  return kto(pocet, strana[0]?.owner ?? null);
+}
+
+/** Sila hráča 0 a 1 v kraji pre prevahu (Dvojčatá sa rátajú za dvoch). */
+export function silaVKraji(data: GameData, strana: readonly PlacedCard[]): [number, number] {
+  const pocet: [number, number] = [0, 0];
+  for (const pl of strana) pocet[pl.playedBy] += vahaVPrevahe(pl.card.defId, defOf(data, pl.card).tags);
+  return pocet;
+}
+
+/** Prevaha v kraji pri strane hráča 0 a 1 — kto dostane akcie príslušnej hrany lokality. */
 export function prevahaStran(data: GameData, strany: readonly [readonly PlacedCard[], readonly PlacedCard[]]): [PlayerId | null, PlayerId | null] {
-  const vyhodnot = (s: readonly PlacedCard[]): PlayerId | null => {
-    const pocet = [0, 0];
-    for (const pl of s) if (!defOf(data, pl.card).tags.includes("Nástroj")) pocet[pl.playedBy]! += 1;
-    if (pocet[0]! > pocet[1]!) return 0;
-    if (pocet[1]! > pocet[0]!) return 1;
-    return s[0]?.playedBy ?? null;
-  };
-  return [vyhodnot(strany[0]), vyhodnot(strany[1])];
+  return [kto(silaVKraji(data, strany[0]), strany[0][0]?.playedBy ?? null), kto(silaVKraji(data, strany[1]), strany[1][0]?.playedBy ?? null)];
 }
 
 function reversed(side: SideLayout): Slot[] {
@@ -510,6 +560,8 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
 
   // Efektívna ľavá strana karty v strede susedí so stranou hráča 0, pravá s hráčom 1.
   const aktivne = (side: 0 | 1): number => (stred === null ? 0 : stred.stav[side]!.filter((x) => x === "aktivna").length);
+
+  presbiter([partia0, partia1], susedLokality, elems, sums, zdroje);
 
   return { sums, cards, aktivneStredu: [aktivne(0), aktivne(1)], zdroje };
 }

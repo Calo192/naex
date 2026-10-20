@@ -25,6 +25,11 @@ const SLOVNIK: readonly { readonly tema: string; readonly popis: string; readonl
     pojmy: [
       ["Línia", "Celý rad kariet v kole; lokalita v strede ho delí na dve strany."],
       ["Strana", "Polovica línie od lokality — tvoja a súperova. Kartu vykladáš na koniec ktorejkoľvek z nich."],
+      ["Kraj", "Meno polovice línie podľa hrany lokality — každá lokalita má vlastné (Krčma: pri výčape a pri dverách)."],
+      [
+        "Prevaha",
+        "V kraji ju má, kto tam má viac svojich Občanov, Zvierat a Starešinov (Nástroje ani Cirhóza sa nerátajú); pri rovnosti majiteľ karty pri lokalite. Hráč s prevahou dostane akcie hrany lokality v tom kraji.",
+      ],
       ["Partia", "Všetky tvoje karty v línii — tie natočené k tebe, nech ležia na ktorejkoľvek strane."],
       ["Vnútorná hrana", "Hrana karty obrátená k lokalite; ňou sa karta páruje so susedom bližšie k stredu."],
       ["Vonkajšia hrana", "Hrana karty odvrátená od lokality; ostáva voľná pre ďalšiu kartu."],
@@ -339,7 +344,8 @@ const KAPITOLY: readonly Kapitola[] = [
           Podstrčená karta sa so súperovými susedmi páruje normálne: aktivuje im akcie na spoji (tie dostane súper) a svoje
           akcie boduje pre teba. Pošli mu <strong>sabotéra</strong> — tvoj Odpor mu zruší akciu, ktorú potreboval, a zaberieš mu
           koniec strany. Akcie hrany <strong>lokality</strong> dostane hráč s <strong>prevahou</strong> v tej polovici línie —
-          kto tam má viac svojich kariet (Nástroje sa nerátajú; pri rovnosti majiteľ karty pri lokalite). Polovice línie sa volajú
+          kto tam má viac svojich <strong>Občanov, Zvierat a Starešinov</strong> (Nástroje a Cirhóza sa nerátajú; pri rovnosti majiteľ karty pri
+          lokalite). Polovice línie sa volajú
           podľa lokality — <strong>kraje</strong>, napr. v Krčme „pri výčape“ a „pri dverách“. Rovnako akcie <strong>Nástroja</strong> dostane majiteľ karty, s ktorou Nástroj
           tvorí spoj.
         </p>
@@ -546,7 +552,7 @@ const KAPITOLY: readonly Kapitola[] = [
       <>
         <p>
           Obranca vyberie lokalitu a natočí ju — lokalita leží v strede línie a natočenie určuje, ktoré jej akcie sú obrátené ku
-          ktorému kraju (dostane ich hráč s prevahou v kraji — viac svojich kariet).
+          ktorému kraju (dostane ich hráč s prevahou v kraji — viac svojich Občanov, Zvierat a Starešinov).
           Potom <strong>draft</strong> v dvoch krokoch.
         </p>
         <p>
@@ -590,8 +596,8 @@ const KAPITOLY: readonly Kapitola[] = [
             <tr><td>Kostol</td><td>Zhromaždenie, Pitka</td><td>Nikto nesmie vypiť (v ťahu len jedna karta) ani dať NA EX.</td></tr>
             <tr><td>Benzínka</td><td>Zhromaždenie, Pitka</td><td>Nikto nesmie fajčiť.</td></tr>
             <tr><td>Zastávka</td><td>Zhromaždenie</td><td>Spoločný limit vykladania pre oboch = súčet vašich limitov.</td></tr>
-            <tr><td>Lesná cesta</td><td>Bitka</td><td>+1 tuhé za každú tvoju kartu (nie Nástroj) na súperovej strane, najviac +2.</td></tr>
-            <tr><td>Ihrisko</td><td>Bitka</td><td>Na každej strane +2 tuhé tomu, kto tam má viac svojich kariet — spolu až +4.</td></tr>
+            <tr><td>Lesná cesta</td><td>Bitka</td><td>+1 tuhé za každého tvojho Občana, Zviera či Starešinu v súperovom kraji, najviac +2.</td></tr>
+            <tr><td>Ihrisko</td><td>Bitka</td><td>V každom kraji +2 tuhé tomu, kto tam má viac svojich Občanov, Zvierat a Starešinov — spolu až +4.</td></tr>
             <tr><td>Zberný dvor</td><td>Pitka</td><td>Raz za Pitku za cigaretu karta z tvojho odhadzovacieho balíčka do ruky.</td></tr>
             <tr><td>Most</td><td>Zhromaždenie, Pitka</td><td>Karty len na vlastnú stranu, aj odpoveď na NA EX.</td></tr>
             <tr><td>Cintorín</td><td>Prehra</td><td>Porazený smie dať Nástroj z ruky do Dedičstva zadarmo (cena Dedičstva aj tak stúpne).</td></tr>

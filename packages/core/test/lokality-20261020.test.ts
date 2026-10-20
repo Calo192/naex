@@ -330,3 +330,61 @@ describe("Prevaha (Michal 2026-10-20): hranu lokality dostane, kto má na strane
     expect(prevahaStran(sd, strany)).toEqual([null, 0]);
   });
 });
+
+describe("Prevaha rátajú len Občania, Zvieratá a Starešinovia (Michal 2026-10-20)", () => {
+  it("Cirhóza ani Nástroj do prevahy nerátajú", () => {
+    const strany: GameState["strany"] = [
+      [na(inst("pijan"), 1), na(inst("cirhoza"), 0), na(inst("puska"), 0)],
+      [na(inst("pes"), 0), na(inst("ministrant"), 1)],
+    ];
+    // Kraj 0: hráč 0 má len Cirhózu a Nástroj → 0 : 1, prevahu má hráč 1.
+    // Kraj 1: Pes (Zviera) a Ministrant (Občan) → 1 : 1, rozhodne karta pri lokalite (Pes, hráč 0).
+    expect(prevahaStran(data, strany)).toEqual([1, 0]);
+  });
+});
+
+describe("Presbiter a Dvojčatá (Michal 2026-10-20)", () => {
+  const R = ["Rana", null, null, null] as const;
+  const V = ["Viera", null, null, null] as const;
+  const E = [null, null, null, null] as const;
+  const sd = syntheticData([
+    // Pravá hrana lokality (kraj hráča 1) dáva Vieru tomu, kto tam má prevahu.
+    makeDef("lokV", R, V, { tags: ["Lokalita"] }),
+    makeDef("presbiter", R, R, { tags: ["Občan", "Autorita", "Chlap"] }),
+    makeDef("obcan", R, R, { tags: ["Občan"] }),
+    makeDef("prazdny", E, E, { tags: ["Občan"] }),
+    makeDef("dvojcata", E, E, { tags: ["Občan", "Chlap"] }),
+    makeDef("praudovravec", E, E, { tags: ["Občan"] }),
+  ]);
+  const k = (id: string, l: readonly (string | null)[], r: readonly (string | null)[]) => instanceFor(sd, id, l as never, r as never);
+  const lok = () => k("lokV", R, V);
+  const pl = (id: string, l: readonly (string | null)[], r: readonly (string | null)[], playedBy: PlayerId): PlacedCard => ({ card: k(id, l, r), playedBy });
+  const linia = (strany: GameState["strany"]) => evaluateLine(sd, { lokalita: lok(), lokalitaOtocena: false, strany });
+
+  it("Presbiter sám proti prevahe zoberie súperovi toľko Viery, koľko má aktívnych akcií", () => {
+    // Kraj hráča 1: Presbiter hráča 0 pri lokalite, za ním dve karty hráča 1 → prevaha hráča 1 (Viera lokality jemu).
+    const s = (prvy: string): GameState["strany"] => [[], [pl(prvy, R, R, 0), pl("prazdny", E, E, 1), pl("prazdny", E, E, 1)]];
+    expect(linia(s("obcan")).sums[1].Viera).toBe(1);
+    const ev = linia(s("presbiter"));
+    expect(ev.sums[1].Viera ?? 0).toBe(0);
+    expect(ev.zdroje[1].Viera).toContainEqual(expect.objectContaining({ defId: "presbiter", hodnota: -1 }));
+  });
+
+  it("nie je sám, alebo súper nemá prevahu, alebo ho umlčí súperov Praudovravec → nič", () => {
+    const nieSam: GameState["strany"] = [
+      [],
+      [pl("presbiter", R, R, 0), pl("prazdny", E, E, 0), pl("prazdny", E, E, 1), pl("prazdny", E, E, 1), pl("prazdny", E, E, 1)],
+    ];
+    expect(linia(nieSam).sums[1].Viera).toBe(1);
+    const umlcany: GameState["strany"] = [[pl("praudovravec", E, E, 1)], [pl("presbiter", R, R, 0), pl("prazdny", E, E, 1), pl("prazdny", E, E, 1)]];
+    expect(linia(umlcany).sums[1].Viera).toBe(1);
+  });
+
+  it("Dvojčatá sa do prevahy rátajú za dvoch", () => {
+    const s = (id: string): GameState["strany"] => [[], [pl("obcan", R, R, 0), pl(id, E, E, 1)]];
+    // 1 : 1 → rozhodne karta pri lokalite (hráč 0); s Dvojčatami 1 : 2 → hráč 1.
+    expect(prevahaStran(sd, s("prazdny"))).toEqual([null, 0]);
+    expect(prevahaStran(sd, s("dvojcata"))).toEqual([null, 1]);
+    expect(linia(s("dvojcata")).sums[1].Viera).toBe(1);
+  });
+});

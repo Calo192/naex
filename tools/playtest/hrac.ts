@@ -294,12 +294,12 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
     "Každá karta sa páruje VNÚTORNOU hranou (obrátenou k lokalite) so susedom bližšie k stredu; VONKAJŠIA hrana ostáva voľná pre ďalšiu kartu. Na spoji sa stretnú akcie na rovnakej pozícii zhora. ✓ aktívna, ✗ zrušená Odporom, · neaktívna (bez páru).",
   );
   out.push("Karta PATRÍ tomu, kto ju zahral (je natočená k nemu) — jej akcie a efekty sa rátajú jemu, nech leží na ktorejkoľvek strane. Tvoja PARTIA = tvoje karty.");
-  // Prevaha (Michal 2026-10-20): akcie hrany lokality dostane, kto má v kraji viac svojich kariet.
+  // Prevaha (Michal 2026-10-20): akcie hrany lokality dostane, kto má v kraji viac svojich Občanov, Zvierat a Starešinov.
   const kraje = krajeStran(DATA, v.ciel?.lokalita ?? null, v.lokalitaOtocena);
   const prevaha = prevahaStran(DATA, v.strany);
   const nazovKraja = (p: PlayerId): string => (kraje[p] === null ? (p === ja ? "tvoja strana" : "súperova strana") : `kraj „${kraje[p]}“ (${p === ja ? "tvoja strana" : "súperova strana"})`);
   out.push(
-    `PREVAHA: akcie hrany lokality dostane, kto má v tej polovici línie viac svojich kariet (Nástroje nie; pri rovnosti majiteľ karty pri lokalite). ${nazovKraja(ja)}: ${prevaha[ja] === null ? "prázdna" : kto(prevaha[ja])}; ${nazovKraja(su)}: ${prevaha[su] === null ? "prázdna" : kto(prevaha[su])}.`,
+    `PREVAHA: akcie hrany lokality dostane, kto má v tom kraji viac svojich Občanov, Zvierat a Starešinov (Nástroje a Cirhóza nie; pri rovnosti majiteľ karty pri lokalite). ${nazovKraja(ja)}: ${prevaha[ja] === null ? "prázdna" : kto(prevaha[ja])}; ${nazovKraja(su)}: ${prevaha[su] === null ? "prázdna" : kto(prevaha[su])}.`,
   );
   const majitel = (p: PlayerId) => (p === ja ? "TVOJA karta" : "SÚPEROVA karta");
   const moja = [...v.strany[ja]].reverse();

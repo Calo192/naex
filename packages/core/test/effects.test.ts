@@ -41,12 +41,15 @@ function fakeState(overrides: Partial<GameState>): GameState {
 }
 
 describe("M10 — register", () => {
-  it("pokrýva všetkých 58 id sady v8, ani jedno navyše", () => {
+  // Nové karty (Michal 2026-10-20) sú v registri skôr než vo zverejnenej sade —
+  // data/cards.json je jej kópia a doplní sa po zverejnení.
+  const CAKAJU_NA_ZVEREJNENIE: string[] = [];
+
+  it("pokrýva všetky id sady, navyše len karty čakajúce na zverejnenie", () => {
     const vRegistri = new Set(Object.keys(REGISTER));
     const vDatach = new Set(data.cards.keys());
     expect([...vDatach].filter((id) => !vRegistri.has(id))).toEqual([]);
-    expect([...vRegistri].filter((id) => !vDatach.has(id))).toEqual([]);
-    expect(vRegistri.size).toBe(58);
+    expect([...vRegistri].filter((id) => !vDatach.has(id) && !CAKAJU_NA_ZVEREJNENIE.includes(id))).toEqual([]);
   });
 
   it("neznáme id je automaticky MANUAL", () => {

@@ -135,10 +135,11 @@ export class Robot {
         if (view.vizia !== null) return { type: "vizia", vziat: true };
         const p = view.pitkaStav;
         if (p?.reakcia === ja) return { type: "bezReakcie" };
-        // Krčma: s plným poldeci treba dať NA EX na vlastného Občana.
+        // Krčma: s plným poldeci treba dať NA EX — na vlastného Občana, inak na hocikoho v línii.
         if (view.ciel?.lokalita?.defId === "krcma" && p !== null && !p.naexPouzity[ja] && view.hraci[ja].poldeciPlne > 0) {
           const ciele = new Set(naexCieleVLinii(DATA, view.strany, ja));
-          const ciel = [...view.strany[0], ...view.strany[1]].find((pl) => pl.playedBy === ja && ciele.has(pl.card.uid));
+          const linia = [...view.strany[0], ...view.strany[1]];
+          const ciel = linia.find((pl) => pl.playedBy === ja && ciele.has(pl.card.uid)) ?? linia.find((pl) => ciele.has(pl.card.uid));
           if (ciel !== undefined) return { type: "naex", uid: ciel.card.uid };
         }
         return { type: "skipNaex" };
@@ -176,6 +177,8 @@ export class Robot {
             ? { type: "pohorsenie", elderId: elder.elderId }
             : { type: "prebytok", elderId: elder.elderId };
         }
+        // Cintorín (Michal 2026-10-20): robot nič do Dedičstva nedáva.
+        if (b.krok === "cintorin") return { type: "cintorin", uid: null };
         if (b.krok === "nahrada") {
           const volba = view.volbyNahrada?.[0];
           if (volba === undefined) throw new Error("náhrada bez volieb");

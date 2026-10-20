@@ -14,6 +14,7 @@ import type { ElderState } from "./elders.ts";
 import { prebudenyPre } from "./elders.ts";
 import type { CardInstance } from "./types.ts";
 import type { PlacedCard } from "./partia.ts";
+import { rataSaDoPrevahy } from "./partia.ts";
 import { limitVykladania } from "./player.ts";
 import { KONSTANTY } from "./constants.ts";
 
@@ -56,10 +57,10 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   financna_poradkyna: "impl", // Prestávka: Dlh z jej akcií dostáva súper, nie jej majiteľ (Michal 2026-10-18)
   hasic: "impl", // Nástup: Pracujúci občan z odhadzovacieho do ruky
   hrobar: "impl", // Furt: cigareta, keď súper zahodí kartu
-  ihrisko: "impl", // Bitka: na každej strane +2 tuhé tomu, kto tam má viac svojich kariet (Michal 2026-10-20)
+  ihrisko: "impl", // Bitka: v každom kraji +2 tuhé tomu, kto tam má viac svojich Občanov, Zvierat a Starešinov (Michal 2026-10-20)
   krcma: "impl", // Pitka: s plným poldeci povinný NA EX (bez NA EX sa Pitka neskončí)
   krcmarka: "impl", // Bitka: otočenie vypitého poldeci
-  lesna_cesta: "impl", // Bitka: +1 tuhé za každú svoju kartu na súperovej strane, najviac 2 (Michal 2026-10-20)
+  lesna_cesta: "impl", // Bitka: +1 tuhé za každého svojho Občana, Zviera či Starešinu v súperovom kraji, najviac 2 (Michal 2026-10-20)
   liberal: "impl", // Furt: 2× akcie pri rovnosti pohlaví; Furt: nevie NA EX
   milujuca_manzelka: "impl", // Furt: Absťák aj pri rovnakom počte nerestí (Michal 2026-10-19)
   ministrant: "impl", // Výhra: posun markera stojí +1 prebytku
@@ -71,6 +72,8 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   policajtka: "impl", // Nástup: preskúmaj a rozdeľ doberací balíček (voľba hráča)
   postarka: "impl", // Pitka: voliteľné doberanie s dlhmi
   praudovravec: "impl", // Furt: Autority v tvojej partii neuplatňujú efekt
+  presbiter: "impl", // Bitka: sám proti prevahe — súper má o toľko Viery menej, koľko má Presbiter aktívnych akcií (partia.ts, Michal 2026-10-20)
+  dvojcata: "impl", // Furt: do prevahy sa rátajú za dvoch (partia.ts, Michal 2026-10-20)
   puska: "impl", // Dedičstvo: pohoršenia proti tebe neplatia; tvoje povery nič
   recidivista: "impl", // Bitka: rana za zahraničného v súperovej partii
   silna_nezavisla_zena: "impl", // Furt: akcie len s podporou dvoch chlapov
@@ -327,16 +330,17 @@ export function bitkaMody(data: GameData, state: VerejnyStav, p: PlayerId): Bitk
   if (vPartii(state, p, "recidivista")) {
     pridaj("recidivista", partiaHraca(state, opp).filter((pl) => defOf(data, pl.card).tags.includes("Zahraničný")).length);
   }
-  const bezNastroja = (pl: PlacedCard): boolean => !defOf(data, pl.card).tags.includes("Nástroj");
+  // Rátajú sa tie isté karty ako do prevahy: Občania, Zvieratá, Starešinovia.
+  const doPrevahy = (pl: PlacedCard): boolean => rataSaDoPrevahy(defOf(data, pl.card).tags);
   // lesna_cesta (Michal 2026-10-20): +1 tuhé za každú svoju kartu na súperovej strane, najviac 2.
   if (jeCielLokalita(state, "lesna_cesta")) {
-    pridaj("lesna_cesta", Math.min(KONSTANTY.EFEKT.LESNA_CESTA_MAX, state.strany[opp].filter((pl) => pl.playedBy === p && bezNastroja(pl)).length));
+    pridaj("lesna_cesta", Math.min(KONSTANTY.EFEKT.LESNA_CESTA_MAX, state.strany[opp].filter((pl) => pl.playedBy === p && doPrevahy(pl)).length));
   }
-  // ihrisko (Michal 2026-10-20): na každej strane +2 tuhé tomu, kto tam má viac svojich kariet.
+  // ihrisko (Michal 2026-10-20): v každom kraji +2 tuhé tomu, kto tam má viac svojich Občanov, Zvierat a Starešinov.
   if (jeCielLokalita(state, "ihrisko")) {
     for (const strana of state.strany) {
-      const moje = strana.filter((pl) => pl.playedBy === p && bezNastroja(pl)).length;
-      const jeho = strana.filter((pl) => pl.playedBy === opp && bezNastroja(pl)).length;
+      const moje = strana.filter((pl) => pl.playedBy === p && doPrevahy(pl)).length;
+      const jeho = strana.filter((pl) => pl.playedBy === opp && doPrevahy(pl)).length;
       if (moje > jeho) pridaj("ihrisko", KONSTANTY.EFEKT.IHRISKO_TUHE);
     }
   }
