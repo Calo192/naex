@@ -394,7 +394,7 @@ const UCINOK: Record<string, (s: number) => string> = {
   LAKOMEC: (s) => `stokársky barter za ${KONSTANTY.BARTER_CENA - s} cigariet`,
   NEPRAJNIK: (s) => `tvoje Povery smú dať o ${bonus(s)} mäkkého viac, než má súper priznaných Dlhov`,
   BITKAR: (s) => `+${bonus(s)} tuhého poškodenia v bitke`,
-  VERIACI: (s) => `Viera má hodnotu ${KONSTANTY.HODNOTA_VIERY_ZAKLAD + bonus(s)}`,
+  VERIACI: (s) => `+${s} Viery v každej bitke`,
   FAJCIAR: (s) => `+${s} ${s === 1 ? "cigareta" : "cigarety"} v 1. Pitke bitky o lokalitu`,
   ALKOHOLIK: (s) => `prah Cirhózy ${KONSTANTY.PRAH_CIRHOZY_ZAKLAD + bonus(s)}`,
   EXEKUTOR: (s) => `prah Exekútora ${KONSTANTY.PRAH_EXEKUTORA_ZAKLAD + 2 * bonus(s)}`,

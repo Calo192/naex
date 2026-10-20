@@ -91,8 +91,9 @@ export function prahExekutora(priazenExekutora: number): number {
   return KONSTANTY.PRAH_EXEKUTORA_ZAKLAD + 2 * priazenExekutora;
 }
 
-export function hodnotaViery(priazenVeriaceho: number): number {
-  return KONSTANTY.HODNOTA_VIERY_ZAKLAD + priazenVeriaceho;
+/** Hodnota jednej Viery; Veriaci od 2026-10-20 dáva Vieru navyše, nie vyššiu hodnotu. */
+export function hodnotaViery(): number {
+  return KONSTANTY.HODNOTA_VIERY_ZAKLAD;
 }
 
 /**

@@ -178,7 +178,8 @@ export const UCINOK_PRIAZNE: Readonly<Record<Favour, (sila: number) => string>> 
   LAKOMEC: (s) => `Stokársky barter (nový poldeci) za ${KONSTANTY.BARTER_CENA - s} cigariet namiesto ${KONSTANTY.BARTER_CENA}.`,
   NEPRAJNIK: (s) => `Tvoje Povery smú dať mäkké poškodenie o ${bonus(s)} viac, než má súper priznaných Dlhov.`,
   BITKAR: (s) => `+${bonus(s)} tuhého poškodenia v každej bitke.`,
-  VERIACI: (s) => `Tvoja Viera má hodnotu ${KONSTANTY.HODNOTA_VIERY_ZAKLAD + bonus(s)} namiesto ${KONSTANTY.HODNOTA_VIERY_ZAKLAD}.`,
+  // Michal 2026-10-20: Viera navyše rovná sile — predtým vyššia hodnota každej Viery (dve Viery = štít 10).
+  VERIACI: (s) => `+${s} ${s === 1 ? "Viera" : "Viery"} v každej bitke (ruší súperove Povery a uberá jeho tuhé poškodenie).`,
   // Michal 2026-10-19: cigarety platia šenok aj Dedičstvo — Fajčiar dáva silu, bez dvojnásobku.
   FAJCIAR: (s) => `+${s} ${s === 1 ? "cigareta" : "cigarety"} v prvej Pitke bitky o lokalitu.`,
   ALKOHOLIK: (s) => `Prah Cirhózy ${KONSTANTY.PRAH_CIRHOZY_ZAKLAD + bonus(s)} namiesto ${KONSTANTY.PRAH_CIRHOZY_ZAKLAD} — Cirhózu dostaneš neskôr.`,

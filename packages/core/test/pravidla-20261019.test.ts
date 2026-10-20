@@ -20,6 +20,7 @@ import {
   naTahu,
   parseScorecards,
   planVykladania,
+  poskodenieBitky,
   prahyHraca,
   priazenZKluca,
   pocetPitiek,
@@ -509,5 +510,17 @@ describe("Dlhy sa priznávajú samy, Cirhóza bez dobratia (Michal 2026-10-20)",
     expect(s.hraci[0].doberaci).toHaveLength(balicek);
     s = apply(data, s, { type: "place", uid: manzelka.uid, target: "priznanie" }, 0).state;
     expect(s.hraci[0].ruka).toHaveLength(1);
+  });
+});
+
+describe("Veriaci (Michal 2026-10-20): Viera navyše rovná sile", () => {
+  it("dve Viery s priazňou sily 2 uberú súperovi 4 tuhé, nie 10", () => {
+    const s0 = setupGame(data, 49);
+    const veriaci = s0.starsi.find((e) => favourStarsieho(data, e) === "VERIACI")!;
+    // Marker na 1 = priazeň hráča 0, sila 2.
+    const s: GameState = { ...s0, strany: [[], []], starsi: s0.starsi.map((e) => (e === veriaci ? { ...e, marker: 1, markerZaciatokKola: 1 } : e)) };
+    const dmg = poskodenieBitky(data, s, [{ Viera: 2 }, { Petelica: 4 }], [0, 0]);
+    expect(dmg.zvysnaViera[0]).toBe(4);
+    expect(dmg.tuhe[1]).toBe(12 - 4);
   });
 });

@@ -65,12 +65,11 @@ describe("M3 — odvodené hodnoty", () => {
     expect(velkostBalicka(player)).toBe(4);
   });
 
-  it("prahy a hodnota viery rastú s priazňou", () => {
+  it("prahy rastú s priazňou, hodnota Viery je 1 (Veriaci dáva Vieru navyše)", () => {
     expect(prahCirhozy(0)).toBe(3);
     expect(prahCirhozy(2)).toBe(5);
     expect(prahExekutora(0)).toBe(10);
     expect(prahExekutora(2)).toBe(14);
-    expect(hodnotaViery(0)).toBe(1);
-    expect(hodnotaViery(1)).toBe(2);
+    expect(hodnotaViery()).toBe(1);
   });
 });

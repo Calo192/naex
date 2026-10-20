@@ -80,7 +80,7 @@ export const KONSTANTY = {
    */
   NASOBOK_PRIAZNE: 2,
   PRAH_EXEKUTORA_ZAKLAD: 10, // + 2 × priazeň Exekútora
-  HODNOTA_VIERY_ZAKLAD: 1, // + priazeň Veriaceho
+  HODNOTA_VIERY_ZAKLAD: 1, // Veriaci (2026-10-20) dáva Vieru navyše rovnú sile, hodnotu nemení
   PRESKUMANIE: 5,
 
   /** Prehra pri poklese balíčka pod túto hodnotu (PRAVIDLA §1). */

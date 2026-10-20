@@ -620,8 +620,11 @@ function stranyBitky(
     const opp = opponentOf(p);
     // farár súpera časť Povier ignoruje.
     const povera = Math.max(0, (sums[p].Povera ?? 0) - mody[opp]!.superovePoveryZlava);
+    // Veriaci (Michal 2026-10-20): Viera navyše rovná sile priazne, nie vyššia
+    // hodnota každej Viery — dve Viery s priazňou 2 dávali štít 10.
+    const vieraNavyse = priazen(data, s, "VERIACI", p) / KONSTANTY.NASOBOK_PRIAZNE;
     return {
-      sums: { ...sums[p], Povera: povera },
+      sums: { ...sums[p], Povera: povera, ...(vieraNavyse > 0 ? { Viera: (sums[p].Viera ?? 0) + vieraNavyse } : {}) },
       cirhozaBonus: Math.max(0, cirhozyVPartii(s, opp) - mody[p]!.cirhozaZlava),
       tuheBonus: mody[p]!.tuheBonus,
       tuheZlava: mody[p]!.tuheZlava,
@@ -631,8 +634,7 @@ function stranyBitky(
       priznaneDlhy: pocetKariet(s.hraci[p], "dlh", "priznane"),
       priazenBitkara: priazen(data, s, "BITKAR", p),
       // svaty_text (Dedičstvo): hodnota tvojej Viery je vyššia.
-      hodnotaViery:
-        hodnotaViery(priazen(data, s, "VERIACI", p)) + (vDedicstve(s, p, "svaty_text") ? KONSTANTY.EFEKT.SVATY_TEXT_VIERA : 0),
+      hodnotaViery: hodnotaViery() + (vDedicstve(s, p, "svaty_text") ? KONSTANTY.EFEKT.SVATY_TEXT_VIERA : 0),
     };
   };
   return [strana(0), strana(1)];

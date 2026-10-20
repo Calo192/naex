@@ -131,6 +131,7 @@ odsekmi vyššie):**
   ťah (1 alebo 2 karty), potom branie končí (§7).
 - **Doplnenie šenku:** po braní sa šenok doplní z vrchu spoločného balíčka na
   **8** kariet — pre Liečbu, Starostu a iné efekty (§7).
+- **Veriaci:** Viera navyše rovná sile (+1 / +2 / +3), hodnota Viery ostáva 1 (§9).
 - **Náhrada staršieho** sa volí z kariet s viditeľným variantom akcií
   a náhľadom bodov (web).
 
@@ -792,7 +793,7 @@ aby vyvážil prehrávanie — prebytok posúva markery k porazenému). Sila 1 /
 | Lakomec | Stokársky barter | 5 − sila cigariet | 4 / 3 / 2 |
 | Neprajník | Mäkké poškodenie Povier | smie prekročiť súperove priznané Dlhy o priazeň | +2 / +4 / +6 |
 | Bitkár | Vyhodnotenie bitky | tuhé poškodenie navyše rovné priazni | +2 / +4 / +6 |
-| Veriaci | Hodnota Viery | 1 + priazeň | 3 / 5 / 7 |
+| Veriaci | Viera v bitke | Viera navyše rovná sile (Michal 2026-10-20; predtým hodnota Viery 1 + priazeň — dve Viery dávali štít 10) | +1 / +2 / +3 |
 | Fajčiar | Prvá Pitka bitky o lokalitu | cigarety navyše rovné sile (bez ×2 — cigarety platia šenok aj Dedičstvo) | +1 / +2 / +3 |
 | Alkoholik | Prah Cirhózy | 3 + priazeň | 5 / 7 / 9 |
 | Exekútor | Prah Exekútora | 10 + 2 × priazeň | 14 / 18 / 22 |

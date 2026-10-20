@@ -414,7 +414,7 @@ const KAPITOLY: readonly Kapitola[] = [
         <p>
           Priazeň je hlavná protiváha pre toho, kto prehráva — víťaz bitky mu prebytkom posúva markery na jeho polovicu.
           Sila je <strong>1 / 2 / 3</strong> podľa zóny (žltá, oranžová, červená) a väčšina priazní pridáva{" "}
-          <strong>2 × sila</strong> (Fajčiar, Lakomec a Úžerník len silu).
+          <strong>2 × sila</strong> (Fajčiar, Lakomec, Úžerník a Veriaci len silu).
         </p>
         <p>
           V hre to vidíš pri každom staršom: riadok ♥ ukazuje, komu patrí priazeň a čo dáva, riadok ★ koľko bodov by scorecard
@@ -432,7 +432,7 @@ const KAPITOLY: readonly Kapitola[] = [
             <tr><td>Lakomec</td><td>Stokársky barter (cigariet)</td><td>4 / 3 / 2</td></tr>
             <tr><td>Neprajník</td><td>Povery nad súperove priznané Dlhy</td><td>+2 / +4 / +6</td></tr>
             <tr><td>Bitkár</td><td>Vyhodnotenie bitky</td><td>+2 / +4 / +6 tuhého poškodenia</td></tr>
-            <tr><td>Veriaci</td><td>Hodnota Viery</td><td>3 / 5 / 7</td></tr>
+            <tr><td>Veriaci</td><td>Viera navyše v bitke</td><td>+1 / +2 / +3</td></tr>
             <tr><td>Fajčiar</td><td>Prvá Pitka bitky o lokalitu</td><td>+1 / +2 / +3 cigarety</td></tr>
             <tr><td>Alkoholik</td><td>Prah Cirhózy</td><td>5 / 7 / 9</td></tr>
             <tr><td>Exekútor</td><td>Prah Exekútora</td><td>14 / 18 / 22</td></tr>
