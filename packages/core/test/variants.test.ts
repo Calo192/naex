@@ -9,7 +9,7 @@ import { cardVariants, loadGameData, sideLayouts } from "../src/index.ts";
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
 describe("M1 — načítanie dát", () => {
-  it("načíta 60 kariet, 8 starších, 14 lokalít, 8 nástrojov (sada v9, 2026-10-20)", () => {
+  it("načíta 60 kariet, 8 starších, 14 lokalít, 8 nástrojov (sada v12, 2026-10-20)", () => {
     expect(data.cards.size).toBe(60);
     expect(data.elders.size).toBe(8);
     expect(data.lokality.length).toBe(14);

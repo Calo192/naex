@@ -3240,3 +3240,163 @@ button.dlzka-volba.aktivna {
 .kraj-prevaha.superova {
   color: var(--su);
 }
+
+/* ---- výber miesta klikom (Michal 2026-10-20) ----
+ * Úzke miesto na konci strany; po kliknutí sa z ruky vysunú karty,
+ * ktoré tam vytvoria spoj. Stlmené sa dajú položiť bez spoja. */
+
+.miesto-volby {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 0 6px;
+  padding: 6px 2px;
+  border: 2px dashed color-mix(in srgb, var(--zelena) 55%, transparent);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--zelena) 6%, transparent);
+  color: var(--zelena);
+  font: 600 0.72rem/1.15 var(--pismo);
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.miesto-volby:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--zelena) 16%, transparent);
+}
+
+.miesto-volby.vybrane {
+  border-style: solid;
+  background: color-mix(in srgb, var(--zelena) 26%, transparent);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--zelena) 45%, transparent);
+}
+
+.miesto-volby.zakazane {
+  border-color: rgba(150, 150, 150, 0.4);
+  background: transparent;
+  color: var(--slaby);
+  cursor: not-allowed;
+}
+
+.miesto-volby .mv-plus {
+  font: 800 1.8rem/1 var(--nadpis);
+}
+
+.miesto-volby .mv-text {
+  overflow-wrap: anywhere;
+}
+
+/* Karty v ruke pri vybranom mieste. Pás pokynov sa posunie o --vysun vyššie,
+   aby ho vysunuté karty neprekryli; `translate` sa skladá s posunom pri hoveri. */
+.ruka.volba-miesta {
+  --vysun: 38px;
+  height: calc(var(--ruka-h) + var(--vysun));
+}
+
+.ruka.volba-miesta .ruka-rad {
+  margin-top: var(--vysun);
+}
+
+.ruka-rad > .tahatelna.vysunuta {
+  translate: 0 calc(-1 * var(--vysun, 38px));
+}
+
+.ruka-rad > .tahatelna.vysunuta > .kl {
+  box-shadow:
+    0 0 0 2px #7dff9c,
+    0 0 18px rgba(90, 240, 130, 0.55);
+}
+
+.ruka-rad > .tahatelna.bez-spoja > .kl {
+  filter: brightness(0.6) saturate(0.6);
+}
+
+.ruka-rad > .tahatelna.nemoze > .kl {
+  filter: brightness(0.35) grayscale(0.85);
+  cursor: not-allowed;
+}
+
+body:not(.tahanie-aktivne) .ruka-rad > .tahatelna.bez-spoja:hover > .kl,
+body:not(.tahanie-aktivne) .ruka-rad > .tahatelna.nemoze:hover > .kl {
+  filter: none;
+}
+
+.spoj-stitok {
+  position: absolute;
+  left: 50%;
+  top: -10px;
+  transform: translateX(-50%);
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: #1c3a24;
+  border: 1px solid #7dff9c;
+  color: #9dffb5;
+  font: 700 0.7rem/1.4 var(--pismo);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.volba-miesta-text strong {
+  color: var(--zelena);
+}
+
+/* ---- tlačidlá návrhu na stole: potvrdiť, otočiť, vrátiť ---- */
+.stol-tlacidla {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  width: fit-content;
+  max-width: calc(100% - 24px);
+  margin: -20px auto 0;
+  padding: 6px 10px;
+  border-radius: 14px;
+  background: var(--stol);
+  border: 1px solid var(--stol-okraj);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+}
+
+/* ---- zväčšenie klikom (Michal 2026-10-20: pod myšou len karty v ruke) ---- */
+.s-lupou {
+  position: relative;
+}
+
+.s-lupou.klik-lupa {
+  cursor: zoom-in;
+}
+
+.lupa-tlacidlo {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--akcent);
+  background: rgba(14, 11, 8, 0.85);
+  font-size: 0.8rem;
+  line-height: 1;
+  cursor: zoom-in;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.s-lupou:hover > .lupa-tlacidlo,
+.lupa-tlacidlo:focus-visible {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .lupa-tlacidlo {
+    opacity: 0.85;
+  }
+}

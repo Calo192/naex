@@ -151,7 +151,7 @@ export function Profil() {
     }
   };
 
-  // Zväčšenie karty pri prejdení myšou (Michal 2026-10-19) — uloží sa chvíľu
+  // Zväčšenie karty (Michal 2026-10-19; v ruke pod myšou, inde klikom od 2026-10-20) — uloží sa chvíľu
   // po poslednom pohnutí posuvníkom, nie pri každom kroku.
   const [lupa, setLupa] = useState(ja?.lupa ?? LUPA_PREDVOLENA);
   const ulozenaLupa = ja?.lupa ?? LUPA_PREDVOLENA;
@@ -333,8 +333,8 @@ export function Profil() {
       <div className="panel">
         <h3>Zväčšenie kariet</h3>
         <Pole
-          label={`Karta pri prejdení myšou: ${lupa} %`}
-          pomoc={`V hre sa karta, na ktorú ukážeš myšou, zväčší na ${lupa} % (${LUPA_OD} – ${LUPA_DO} %). Ukladá sa samo.`}
+          label={`Zväčšená karta: ${lupa} %`}
+          pomoc={`V hre sa karta v ruke zväčší, keď na ňu ukážeš myšou, ostatné karty (stôl, starší, lokality) keď na ne klikneš — na ${lupa} % (${LUPA_OD} – ${LUPA_DO} %). Ukladá sa samo.`}
         >
           <input
             type="range"

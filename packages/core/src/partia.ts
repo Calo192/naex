@@ -271,6 +271,34 @@ export function spojVznikne(a: { readonly tags: readonly Tag[]; readonly stred: 
   return true;
 }
 
+/**
+ * Pes (Michal 2026-10-20): za každý pár akcií na spoji Psa so súperovou
+ * kartou (z ktorejkoľvek strany Psa) dá majiteľ Psa v bitke +1 tuhé.
+ * Rátajú sa všetky spárované akcie, aj zrušené Odporom či NA EX — spojené sú.
+ * Výsledok [hráč 0, hráč 1] = dodatočné tuhé majiteľa Psov.
+ */
+export function spojePsa(data: GameData, strany: readonly [readonly PlacedCard[], readonly PlacedCard[]]): [number, number] {
+  const out: [number, number] = [0, 0];
+  for (const strana of [0, 1] as const) {
+    // V úseku línie leží strana hráča 0 obrátene (index 0 je pri lokalite).
+    const rad = strana === 0 ? [...strany[0]].reverse() : strany[1];
+    const elems = rad.map((pl) => makeElem(data, pl.card, pl.playedBy, pl.playedBy === 1, false, pl.naexBy, strana));
+    for (let i = 0; i + 1 < elems.length; i++) {
+      const a = elems[i] as Elem;
+      const b = elems[i + 1] as Elem;
+      if (a.owner === b.owner) continue;
+      const pes = a.defId === "pes" ? a : b.defId === "pes" ? b : null;
+      if (pes === null || !spojVznikne({ tags: a.tags, stred: false }, { tags: b.tags, stred: false })) continue;
+      let pary = 0;
+      for (let k = 0; k < 4; k++) if (a.effRight[k] != null && b.effLeft[k] != null) pary++;
+      // Pes vedľa súperovho Psa: každý dá svojmu majiteľovi.
+      if (a.defId === "pes") out[a.owner] += pary;
+      if (b.defId === "pes") out[b.owner] += pary;
+    }
+  }
+  return out;
+}
+
 /** Spoj medzi susedmi: pravá strana `a` proti ľavej strane `b`. */
 function resolveJunction(a: Elem, b: Elem): void {
   if (!spojVznikne({ tags: a.tags, stred: a.isLokalita }, { tags: b.tags, stred: b.isLokalita })) return;

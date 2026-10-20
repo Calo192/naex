@@ -42,6 +42,8 @@ export interface KartaLicoProps {
   readonly otocena?: boolean;
   /** Vytlačená strana, ktorou sa karta v línii páruje k lokalite — zvýrazní sa, protiľahlá ostane voľná. */
   readonly hranaVnutorna?: "lava" | "prava" | undefined;
+  /** Sloty (vytlačené strany, indexy zhora), ktoré by pri vybranom vyložení vytvorili spoj. */
+  readonly spoj?: { readonly lava: readonly number[]; readonly prava: readonly number[] } | undefined;
   /** Bez tooltipov a efektu — malá karta v zozname. */
   readonly bezPopisov?: boolean;
   readonly className?: string;
@@ -82,7 +84,7 @@ export function KartaLico(props: KartaLicoProps) {
     return (
       <span
         key={`${strana}${i}`}
-        className={`kl-slot${st === null ? "" : ` kl-${st.stav}`}`}
+        className={`kl-slot${st === null ? "" : ` kl-${st.stav}`}${props.spoj?.[strana].includes(i) === true ? " kl-spoj" : ""}`}
         style={{ "--x": r.x, "--y": r.y, "--s": r.w, "--r": g.polomerSlotu } as CSSProperties}
         tabIndex={bezPopisov ? undefined : 0}
         aria-label={`${nazov}: ${akcia?.popis ?? ""}`}

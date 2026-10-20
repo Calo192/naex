@@ -402,3 +402,18 @@
     0 0 0 calc(0.57 * var(--pt)) #fff,
     calc(0.5 * var(--pt)) calc(0.9 * var(--pt)) 0 calc(0.57 * var(--pt)) rgba(0, 0, 0, 0.27);
 }
+
+/* Akcia, ktorá pri vybranom mieste na stole vytvorí spoj (Michal 2026-10-20). */
+.kl-slot.kl-spoj {
+  z-index: 3;
+  box-shadow:
+    0 0 0 calc(0.9 * var(--pt)) #7dff9c,
+    0 0 calc(10 * var(--pt)) calc(3.5 * var(--pt)) rgba(90, 240, 130, 0.9);
+  animation: kl-spoj-pulz 1.1s ease-in-out infinite;
+}
+
+@keyframes kl-spoj-pulz {
+  50% {
+    transform: scale(1.16);
+  }
+}

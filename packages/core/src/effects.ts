@@ -14,7 +14,7 @@ import type { ElderState } from "./elders.ts";
 import { prebudenyPre } from "./elders.ts";
 import type { CardInstance } from "./types.ts";
 import type { PlacedCard } from "./partia.ts";
-import { rataSaDoPrevahy } from "./partia.ts";
+import { rataSaDoPrevahy, spojePsa } from "./partia.ts";
 import { limitVykladania } from "./player.ts";
 import { KONSTANTY } from "./constants.ts";
 
@@ -91,7 +91,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   zamocnik: "impl", // Furt: akcie nástrojov v okolí posilnené
   zivnostnik: "impl", // Nástup: zahoď súperovo dedičstvo
   abstak: "native", // Bitka: o ranu menej (−1 tuhé za kus)
-  pes: "impl", // Furt: nikdy v partii s iným zvieraťom
+  pes: "impl", // Furt: +1 tuhé za pár akcií na spoji so súperovou kartou; nikdy v partii s iným zvieraťom
   kostol: "impl", // Zhromaždenie: nikto nesmie vypiť; Pitka: nikto nesmie dať NA EX (Michal 2026-10-20)
   zahradkar: "impl", // Exekúcia: smie ísť namiesto náradia
   svokra: "impl", // Furt: za každé NA EX súpera mu ukradni 2 cigarety (Michal 2026-10-19)
@@ -330,6 +330,8 @@ export function bitkaMody(data: GameData, state: VerejnyStav, p: PlayerId): Bitk
   if (vPartii(state, p, "recidivista")) {
     pridaj("recidivista", partiaHraca(state, opp).filter((pl) => defOf(data, pl.card).tags.includes("Zahraničný")).length);
   }
+  // pes (Michal 2026-10-20): +1 tuhé za každý pár akcií na spoji Psa so súperovou kartou.
+  pridaj("pes", spojePsa(data, state.strany)[p]);
   // Rátajú sa tie isté karty ako do prevahy: Občania, Zvieratá, Starešinovia.
   const doPrevahy = (pl: PlacedCard): boolean => rataSaDoPrevahy(defOf(data, pl.card).tags);
   // lesna_cesta (Michal 2026-10-20): +1 tuhé za každú svoju kartu na súperovej strane, najviac 2.

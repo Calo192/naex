@@ -29,20 +29,6 @@ let uidSeq = 50000;
 const inst = (defId: string): CardInstance => ({ uid: ++uidSeq, defId, leftLayout: 0, rightLayout: 0 });
 const lezi = (defId: string, playedBy: PlayerId): PlacedCard => ({ card: inst(defId), playedBy });
 
-describe("Pes stráži koniec strany", () => {
-  it("na súperovho Psa na konci jeho strany nepodstrčíš, na svoju stranu áno", () => {
-    const strany: GameState["strany"] = [[], [lezi("pes", 1)]];
-    const ciele = cieleVykladania(data, strany, 0, inst("ministrant"), 3);
-    expect(ciele).toContain("vlastna");
-    expect(ciele).not.toContain("superova");
-  });
-
-  it("keď za Psom leží ďalšia karta, koniec už nestráži", () => {
-    const strany: GameState["strany"] = [[], [lezi("pes", 1), lezi("ministrant", 1)]];
-    expect(cieleVykladania(data, strany, 0, inst("ministrant"), 3)).toContain("superova");
-  });
-});
-
 describe("Dedičstvo stojí cigarety (od 2026-10-19 rastúca cena, viď pravidla-20261019)", () => {
   it("bez cigariet sa Nástroj do Dedičstva nedá, s nimi áno a cigarety ubudnú", () => {
     expect(cieleVykladania(data, [[], []], 0, inst("puska"), 3, false)).not.toContain("dedicstvo");

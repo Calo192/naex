@@ -1415,11 +1415,6 @@ function vylozDoLinie(
   }
   // pes: nikdy nesmie byť v partii s iným zvieraťom — medzi kartami toho istého majiteľa.
   need(!zvieraKonflikt(data, partiaHraca(s as GameState, p), def), "Pes nesmie byť medzi tvojimi kartami s iným zvieraťom.");
-  // pes (Furt): kým je na konci strany svojho majiteľa, súper naň nesmie podstrčiť kartu.
-  need(
-    !(cielPartia !== p && sused != null && sused.card.defId === "pes" && sused.playedBy === cielPartia),
-    "Pes stráži koniec strany — sem nepodstrčíš.",
-  );
   const karta = vezmiZRuky(s, p, uid);
   partia.push({ card: karta, playedBy: p } as DeepMutable<PlacedCard>);
   events.push({
@@ -2573,8 +2568,6 @@ export function cieleVykladania(
     if (!jeNastroj && zostavaLimit <= 0 && !bezLimituPracujuci(lokalita, def.tags)) return false;
     if (ciel === "superova" && lenVlastnaStrana(lokalita)) return false;
     const koniec = partia.length > 0 ? partia[partia.length - 1] : null;
-    // pes (Furt, Michal 2026-10-18): kým je na konci strany svojho majiteľa, súper naň nepodstrčí.
-    if (ciel === "superova" && koniec != null && koniec.card.defId === "pes" && koniec.playedBy !== p) return false;
     return !(jeNastroj && koniec != null && defOf(data, koniec.card).tags.includes("Nástroj"));
   };
   const out: CielVykladania[] = [];

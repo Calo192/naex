@@ -27,7 +27,7 @@ export interface Pouzivatel {
   readonly rola: Rola;
   /** Dohraté partie — posiela ho len /api/ja. */
   readonly dohrate?: number;
-  /** Zväčšenie karty pri prejdení myšou v percentách (150 – 400, predvolene 200). */
+  /** Zväčšenie karty (ruka pod myšou, inde klikom) v percentách (150 – 400, predvolene 200). */
   readonly lupa?: number;
 }
 
