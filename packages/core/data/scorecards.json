@@ -29,8 +29,8 @@
  "scorecards": [
   {
    "id": "zberatel",
-   "nazov": "Zberateľ",
-   "favour": "ZBERATEL",
+   "nazov": "Úžerník",
+   "favour": "UZERNIK",
    "lava": ["dlh", "znepokojenie", "vydesenie", "starsi"],
    "prava": ["strach", "lokality", "znepokojenie", "cirhoza"]
   },

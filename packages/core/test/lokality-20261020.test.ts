@@ -246,8 +246,6 @@ describe("Cintorín: porazený dá Nástroj z ruky do Dedičstva zadarmo", () =>
       lokalitaPrepadne: false,
       spalit: [],
       vesticaHotova: true,
-      zberatelHotovy: [true, true],
-      zberatelPonuka: [[], []],
     };
     return sHracom({ ...s, faza: "bitka", bitkaStav: bitka }, 0, { ruka, cigarety: 0 });
   }

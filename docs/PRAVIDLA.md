@@ -111,6 +111,29 @@ prednosť pred staršími odsekmi vyššie):**
   (nie Poldecko), Cigareta (kľúč `Cigaretka` → `Cigareta`, staré sady cez
   alias). Slovo „fyzická cigareta“ sa nepoužíva — cigareta je cigareta.
 
+**Zmeny 2026-10-20 večer (rozhodnutia Michala; majú prednosť pred staršími
+odsekmi vyššie):**
+
+- **Štart: 2 plné poldeci** (predtým 3), cigarety ostávajú 3 (§11).
+- **Pas:** kto v Zhromaždení pasuje, do najbližšej Pitky už nevykladá — súper
+  vykladá sám — a dostane **1 cigaretu za každú kartu, ktorú ešte smel
+  vyložiť** (zostávajúci limit). Platí aj, keď pasuje hra za neho (§7).
+- **Prah Dlhu 2 + sila Úžerníka** (3 / 4 / 5). **Úžerník** nahradil Zberateľa;
+  prezeranie kariet po bitke zaniklo (§7, §9).
+- **Kliatba do línie nepatrí** — dá sa len priznať; výnimka je Milujúca
+  manželka, ktorá je aj Občan s akciami (§6).
+- **Dlhy sa priznávajú samy:** dobratý Dlh sa hneď prizná a hráč za neho ťahá
+  ďalšiu kartu (aj tá môže byť Dlh). **Cirhózu** prizná hráč, keď chce, ale
+  kartu za ňu **nedobere** (§6).
+- **Stavba šenku bez podávania:** z N kariet dá každý naraz polovicu do šenku
+  a polovicu naspodok (§7).
+- **Posledná šanca v šenku:** keď jeden prestane brať, druhý má už len jeden
+  ťah (1 alebo 2 karty), potom branie končí (§7).
+- **Doplnenie šenku:** po braní sa šenok doplní z vrchu spoločného balíčka na
+  **8** kariet — pre Liečbu, Starostu a iné efekty (§7).
+- **Náhrada staršieho** sa volí z kariet s viditeľným variantom akcií
+  a náhľadom bodov (web).
+
 > Miesta označené **[?]** sú nejednoznačné alebo v pravidlách chýbajú.
 > Neimplementuj ich potichu — pozri `docs/BRIEF.md`, sekcia „Otvorené otázky".
 
@@ -177,7 +200,7 @@ Tagy nemajú vlastné pravidlá, pokiaľ sa na ne neodkazuje efekt.
 | Povera | `Povera` | mäkké poškodenie do výšky súperovho **priznaného** dlhu; ruší sa s Vierou 1:1 |
 | Pohoršenie | `Pohoršenie` | posunie marker ľubovoľného staršieho o 1 k súperovi |
 | Viera | `Viera` | znižuje súperovo tuhé poškodenie; základ 1 + priazeň; ruší sa s Poverou 1:1 |
-| Dlh | `Dlh` | zvýši **zadĺženie** o 1; pri prahu (**1**, Michal 2026-10-18) vznikne karta Dlh — každá aktívna akcia Dlh v Pitke je karta Dlh |
+| Dlh | `Dlh` | zvýši **zadĺženie** o 1; pri prahu (**2 + sila Úžerníka**, Michal 2026-10-20; predtým 1) vznikne karta Dlh |
 | Poškodenie pečene | `PoškodeniePečene` | pridá poškodenie pečene |
 | Obmedzenie | `Obmedzenie` | súper dostane v Pitke o 1 cigaretu menej (Michal 2026-10-16; predtým menej potiahnutí) |
 | Cigareta | `Cigareta` | +1 **cigareta** v Pitke (Michal 2026-10-16) — cigarety sa prenášajú; platia šenok, Dedičstvo, doliatie a barter, fajčením dávajú karty |
@@ -379,9 +402,14 @@ hracej oblasti.
 - Priznanie **nemíňa limit vykladania** a **neodovzdá ťah** (Michal
   2026-10-12): hráč prizná ľubovoľne veľa kliatob za sebou a potom ešte
   vykladá alebo pasuje. Smie priznávať aj pri vyčerpanom limite — kým nepasuje.
-- **Za každú priznanú kliatbu si hráč hneď dobere kartu** (Michal 2026-10-19;
-  predtým len za Dlh) — aj za Cirhózu, Milujúcu manželku a Absťák, ktorý
-  prichádza rovno priznaný.
+- **Za priznanú kliatbu si hráč hneď dobere kartu** (Michal 2026-10-19;
+  predtým len za Dlh) — za Dlh, Milujúcu manželku a Absťák, ktorý prichádza
+  rovno priznaný. **Za Cirhózu nie** (Michal 2026-10-20).
+- **Dlh sa prizná sám** (Michal 2026-10-20, zrýchlenie hry): keď si ho hráč
+  dobere (ťahanie, fajčenie, Vízia, Zberný dvor…), hneď ide do priznaných
+  a hráč ťahá ďalšiu kartu — aj tá môže byť Dlh a prizná sa tiež.
+- **Kliatba do línie nepatrí** (Michal 2026-10-20): dá sa len priznať.
+  Výnimka je Milujúca manželka — je aj Občan a má akcie.
 - Cena: priznaný **Dlh** sa ráta k prahu Exekútora a súperove Povery proti
   nemu udelia mäkké poškodenie. Priznaná **Cirhóza** nemá takmer žiadnu
   nevýhodu — body neuberá a umožní Liečbu či Pohreb. Priznaná **Milujúca
@@ -452,13 +480,12 @@ na „mŕtve“ karty v šenku a útočník vyhral 8 z 11 bitiek).
 **1. Stavba šenku.** Karty, ktoré zo starého šenku nikto nevzal, idú lícom
 dole naspodok spoločného balíčka. Každý hráč si potom zo spoločného balíčka
 vezme **N kariet** (N = počet nenahradených starších, zaokrúhlený nadol na
-párne číslo; pri nedostatku kariet menej). Obaja naraz a tajne vyberú zo
-svojho balíčka **dve karty do šenku** a **dve naspodok spoločného balíčka**
-(lícom dole — súper nevidí, čo hráč odhodil; pri menšom balíčku menej).
-Keď vyberú obaja, karty do šenku sa odhalia a hráči si zvyšné balíčky
-**vymenia**. Opakuje sa, kým sa balíčky neminú — pri N = 8 sú to dva kroky
-(Michal 2026-10-19, predtým po jednej karte v štyroch krokoch) a šenok má
-potom N kariet, polovicu od každého.
+párne číslo; pri nedostatku kariet menej). Obaja naraz a tajne dajú zo
+svojho balíčka **polovicu do šenku** a **polovicu naspodok spoločného
+balíčka** (lícom dole — súper nevidí, čo hráč odhodil). Keď vyberú obaja,
+karty do šenku sa odhalia. Balíčky si hráči **nepodávajú** (Michal
+2026-10-20 — predtým po 2 + 2 s výmenou zvyšku, posledné karty išli do šenku
+bez voľby). Pri N = 8 je to 4 + 4 a šenok má 8 kariet, polovicu od každého.
 
 **2. Branie zo šenku** (Michal 2026-10-19). Hráči berú zo šenku **striedavo,
 začína útočník**, kým obaja neprestanú. Na svojom ťahu hráč vezme:
@@ -468,10 +495,13 @@ začína útočník**, kým obaja neprestanú. Na svojom ťahu hráč vezme:
 
 Poldeci sa v šenku neplatí (predtým 2 karty za plný poldeci). Nič nie je
 zadarmo. Kto nemá cigaretu, brať nemôže (hra za neho branie ukončí). Keď jeden
-prestane, druhý berie ďalej sám. Prázdny šenok branie ukončí obom.
+prestane, druhý má už len **jednu poslednú šancu** (jeden ťah, Michal 2026-10-20 —
+predtým bral ďalej sám), potom branie končí. Prázdny šenok branie ukončí obom.
 
 Nevzaté karty ostávajú v šenku do ďalšieho draftu (Starosta a Liečba z neho
 berú aj medzitým); bitka o staršieho draft nemá, šenok sa vtedy nemení.
+Po braní sa šenok **doplní z vrchu spoločného balíčka na 8 kariet**
+(Michal 2026-10-20), aby Liečba, Starosta a iné efekty mali z čoho brať.
 
 ### Počet Pitiek
 
@@ -515,7 +545,10 @@ za plný poldeci, §5), priznávajú karty alebo vykladajú Nástroje do Dedičs
 **Vykladať začína útočník** (Michal 2026-10-20; predtým obranca). Vyloženie Nástroja sa v striedaní počíta ako ťah,
 priznanie nie (§6).
 
-Končí, keď obaja odohrajú svoj limit alebo obaja pasujú.
+Končí, keď obaja odohrajú svoj limit alebo obaja pasujú. **Pas** (Michal
+2026-10-20): kto pasuje, do najbližšej Pitky už nevykladá (súper vykladá sám)
+a dostane 1 cigaretu za každú kartu, ktorú ešte smel vyložiť — aj keď pasuje
+hra za neho.
 
 **Nevyhnutné ťahy** (Michal 2026-10-12): keď hráč nemá inú možnosť než
 pasovať (v Zhromaždení), preskočiť NA EX (v Pitke) alebo Pohreb, hra ten ťah
@@ -525,7 +558,7 @@ urobí za neho.
 
 1. **NA EX** — jediná príležitosť; súper smie hneď odpovedať jednou kartou (§5).
    Poštárka a Starosta sa používajú tiež v tejto časti Pitky.
-2. **Dlh** — zadĺženie; pri dosiahnutí prahu (1) hráč hneď získa kartu Dlh
+2. **Dlh** — zadĺženie; pri dosiahnutí prahu (2 + sila Úžerníka) hráč hneď získa kartu Dlh
 3. **Poškodenie pečene a Cirhóza** — akcie Poškodenie pečene, Poldeci a NA EX
    (a pečeň z poldeci vypitých v predošlom Zhromaždení); pri dosiahnutí prahu hráč hneď získa Cirhózu
 4. **Obmedzenie**
@@ -666,12 +699,11 @@ kartami v línii** (svojou partiou, na ktorejkoľvek strane):
 Len pri bitke o Cintorín (Michal 2026-10-20): porazený smie dať jeden Nástroj
 z ruky do Dedičstva bez platenia; spoločná cena Dedičstva sa zvýši ako vždy.
 
-### 6b. Zberateľ
+### 6b. Zberateľ — zrušený
 
-Kto má priazeň **Zberateľa** (sila s), prezrie si 2 × s vrchných kariet svojho
-doberacieho balíčka, s z nich si vezme do ruky a ostatné odhodí (Michal
-2026-10-19 — limit ruky zanikol). Obranca vyberá prvý; po poslednej bitke hry sa
-krok vynecháva.
+Krok Zberateľa po bitke zanikol (Michal 2026-10-20): jeho ukazovateľ je teraz
+**Úžerník** s prahom Dlhu (§9). Staré sady so Zberateľom či Očumovateľom sa
+načítajú ako Úžerník.
 
 ### 7. Návrat kariet
 
@@ -756,7 +788,7 @@ aby vyvážil prehrávanie — prebytok posúva markery k porazenému). Sila 1 /
 
 | Priazeň | Uplatňuje sa pri | Vplyv | sila 1 / 2 / 3 |
 |---|---|---|---|
-| Zberateľ | Po bitke (§8.6b) | prezri 2 × sila vrchných kariet, sila z nich si vezmi | z 2 / 4 / 6 vezmi 1 / 2 / 3 |
+| Úžerník | Prah Dlhu (§7, krok 2) | 2 + sila (bez ×2 — zadĺženie sa po Pitke nuluje) | 3 / 4 / 5 |
 | Lakomec | Stokársky barter | 5 − sila cigariet | 4 / 3 / 2 |
 | Neprajník | Mäkké poškodenie Povier | smie prekročiť súperove priznané Dlhy o priazeň | +2 / +4 / +6 |
 | Bitkár | Vyhodnotenie bitky | tuhé poškodenie navyše rovné priazni | +2 / +4 / +6 |
@@ -842,7 +874,7 @@ Michala 2026-10-11).
   manželka, Dievčina na vydaj (v rôznych variáciách). Zamiešajú sa do jeho
   **doberacieho balíčka** a hráč si dobere **5 kariet do ruky** (pravidlá v3).
   **[?]** Presné rozdelenie 10 kariet medzi tie 4 typy pravidlá neuvádzajú.
-- Každý hráč začína s **3 cigaretami**, **3 nevypitými poldeci** (Michal 2026-10-19),
+- Každý hráč začína s **3 cigaretami**, **2 nevypitými poldeci** (Michal 2026-10-20; predtým 3),
   0 dlhmi, 0 poškodením pečene, 0 absťákmi, počítadlom závislosti na 0.
 - Šenok je na začiatku prázdny — hráči ho postavia v prvom drafte (§7);
   jeho veľkosť je počet **nenahradených** starších (nadol na párne).

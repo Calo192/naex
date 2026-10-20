@@ -848,11 +848,11 @@ export function PriebehKola({ view }: { readonly view: ClientState }) {
         nadpis: "Draft — šenok",
         text: (
           <>
-            <b>Stavba šenku:</b> obaja naraz dajú z balíčka stavby {KONSTANTY.STAVBA_DO_SENKU} karty do šenku a {KONSTANTY.STAVBA_NASPODOK}{" "}
-            naspodok, zvyšok podajú súperovi.
+            <b>Stavba šenku:</b> obaja naraz dajú z balíčka stavby polovicu kariet do šenku a polovicu naspodok spoločného
+            balíčka — bez podávania.
             <span className="tip-riadok">
               <b>Branie:</b> striedavo, začína útočník — 1 karta za {KONSTANTY.CENA_SENKU[1]} cigaretu, 2 karty za {KONSTANTY.CENA_SENKU[2]}{" "}
-              cigarety. Bez cigariet sa nedá brať.
+              cigarety. Bez cigariet sa nedá brať. Kto prestane, súperovi nechá už len jeden posledný ťah.
             </span>
           </>
         ),
@@ -872,8 +872,9 @@ export function PriebehKola({ view }: { readonly view: ClientState }) {
               Striedavo vykladáte karty z ruky na hociktorú stranu línie, začína útočník. Limit vykladania = plné poldeci + poldeci na
               stole + 1; každá ďalšia karta v tom istom ťahu stojí plný poldeci.
               <span className="tip-riadok">
-                Kedykoľvek na ťahu: priznať kliatbu (dobereš kartu), Nástroj do Dedičstva (za cigarety, cena rastie), fajčiť
-                (cigareta = karta). Končí, keď obaja vyčerpajú limit alebo pasujú.
+                Kedykoľvek na ťahu: priznať kliatbu (za Cirhózu sa nedoberá; Dlh sa prizná sám pri dobratí), Nástroj do Dedičstva (za cigarety, cena rastie), fajčiť
+                (cigareta = karta). Kto pasuje, do Pitky už nevykladá a dostane cigaretu za každú kartu, ktorú ešte smel
+                vyložiť. Končí, keď obaja vyčerpajú limit alebo pasujú.
               </span>
               {viac && <span className="tip-stav">{pocetPozn}</span>}
             </>
@@ -910,7 +911,7 @@ export function PriebehKola({ view }: { readonly view: ClientState }) {
           Rozhoduje tuhé poškodenie (Rana 1, Pecka 2, Petelica 3; mínus súperova Viera a vlastné Absťáky), pri rovnosti celkové, potom
           vyhráva obranca. Víťaz {oStarsieho ? "získa staršieho" : "ovládne lokalitu"}, prebytok posúva markery starších.
           <span className="tip-riadok">
-            Potom Exekútor, Pohoršenie, Liečba, Zberateľ… a každý si dobere {KONSTANTY.KARTY_PO_BITKE} karty. Porazený je v ďalšom kole
+            Potom Exekútor, Pohoršenie, Liečba… a každý si dobere {KONSTANTY.KARTY_PO_BITKE} karty. Porazený je v ďalšom kole
             útočník.
           </span>
         </>

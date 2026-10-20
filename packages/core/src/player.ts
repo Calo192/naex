@@ -82,8 +82,9 @@ export function prahCirhozy(priazenAlkoholika: number): number {
   return KONSTANTY.PRAH_CIRHOZY_ZAKLAD + priazenAlkoholika;
 }
 
-export function prahDlhu(): number {
-  return KONSTANTY.PRAH_DLHU;
+/** Prah Dlhu = 2 + sila Úžerníka (priazeň je 2 × sila, Úžerník pridáva len silu). */
+export function prahDlhu(priazenUzernika: number): number {
+  return KONSTANTY.PRAH_DLHU_ZAKLAD + priazenUzernika / KONSTANTY.NASOBOK_PRIAZNE;
 }
 
 export function prahExekutora(priazenExekutora: number): number {

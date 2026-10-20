@@ -81,13 +81,13 @@ describe("nevyhnutné ťahy", () => {
 });
 
 describe("prah Dlhu a Cirhózy", () => {
-  // Michal 2026-10-18: prah Dlhu 1 — Dlh je základná kliatba hry.
-  it("prahy sú 3 (Cirhóza) a 1 (Dlh)", () => {
+  // Michal 2026-10-20: prah Dlhu 2 (+ sila Úžerníka).
+  it("prahy sú 3 (Cirhóza) a 2 (Dlh)", () => {
     expect(KONSTANTY.PRAH_CIRHOZY_ZAKLAD).toBe(3);
-    expect(KONSTANTY.PRAH_DLHU).toBe(1);
+    expect(KONSTANTY.PRAH_DLHU_ZAKLAD).toBe(2);
   });
 
-  it("dve akcie Dlh dajú dve karty Dlh a zadĺženie klesne na 0", () => {
+  it("dve akcie Dlh dajú jednu kartu Dlh a zadĺženie klesne na 0", () => {
     const karta = instanceFor(data, "dlznik", [null, "Dlh", null, null], EMPTY);
     const lezi: PlacedCard = { card: karta, playedBy: 0 as PlayerId };
     const s = vPitke([[lezi], []]);
@@ -99,8 +99,8 @@ describe("prah Dlhu a Cirhózy", () => {
     const po = apply(data, bezReakcie, { type: "skipNaex" }, 0).state;
     const { state, events } = apply(data, po, { type: "skipNaex" }, 1);
     const dlhyPo = state.hraci[0].odhadzovaci.filter((k) => k.defId === "dlh").length;
-    expect(dlhyPo - dlhyPred).toBe(2);
+    expect(dlhyPo - dlhyPred).toBe(1);
     expect(state.hraci[0].zadlzenie).toBe(0);
-    expect(events).toContainEqual({ type: "log", text: "Hráč 1 dosiahol prah dlhu (1) — Dlh." });
+    expect(events).toContainEqual({ type: "log", text: "Hráč 1 dosiahol prah dlhu (2) — Dlh." });
   });
 });

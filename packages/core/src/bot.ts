@@ -199,7 +199,7 @@ const VAHA_PRIAZNE: Readonly<Record<Favour, number>> = {
   NEPRAJNIK: 0.15,
   ALKOHOLIK: 0.1,
   EXEKUTOR: 0.05,
-  ZBERATEL: 0.05,
+  UZERNIK: 0.05,
   LAKOMEC: 0.1,
 };
 
@@ -951,12 +951,6 @@ function bitka(v: Volba): Command | null {
         }
       }
       return best ?? { type: "cintorin", uid: null };
-    }
-    case "zberatel": {
-      // Zberateľ: z ponuky si vezme najcennejšie karty, kliatby nechá odísť.
-      const pocet = v.legal.find((c) => c.type === "zberatel")?.uids.length ?? 0;
-      const ponuka = [...b.zberatelPonuka[ja]].sort((x, y) => hodnotaKarty(data, y) - hodnotaKarty(data, x));
-      return { type: "zberatel", uids: ponuka.slice(0, pocet).map((x) => x.uid) };
     }
     case "vestica": {
       const su = opponentOf(ja);

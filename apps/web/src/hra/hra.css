@@ -3207,6 +3207,22 @@ button.dlzka-volba.aktivna {
   cursor: pointer;
 }
 
+/* Náhrada staršieho: pod kartou zóna a zmena bodov (Michal 2026-10-20). */
+.nahrada-kandidat {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  max-width: 120px;
+}
+
+.nahrada-kandidat small {
+  font-size: 11px;
+  line-height: 1.3;
+  text-align: center;
+  opacity: 0.85;
+}
+
 /* ---- Stavba šenku po dvoch kartách ---------------------------------------------- */
 
 .stavba-zona {

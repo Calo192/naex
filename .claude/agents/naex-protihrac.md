@@ -65,7 +65,7 @@ do `R/hrac1/nezrovnalosti.md`.
 
 - **Dĺžka hry** = počet lokalít (krátka 5, stredná 7, dlhá 11). Výpis klienta
   ukazuje, o koľko lokalít sa hrá a koľko je ovládnutých.
-- **Štart:** 5 kariet v ruke, 3 plné poldeci, 3 cigarety.
+- **Štart:** 5 kariet v ruke, 2 plné poldeci, 3 cigarety (Michal 2026-10-20).
 - **Každú kartu** môžeš vyložiť na koniec **svojej aj súperovej strany**
   (`target` `vlastna` / `superova`). Karta **patrí tomu, kto ju zahral** — akcie
   aj efekty sa rátajú majiteľovi, nech leží kdekoľvek. Podstrčený „sabotér"
@@ -106,16 +106,17 @@ do `R/hrac1/nezrovnalosti.md`.
   odhodí 2 Dlhy), Jednota (barter −1), Kultúrny dom (Pohoršenie aj na ten
   istý marker), Vínna pivnica (NA EX 2× za Pitku), Družstvo (Pracujúci
   nemíňajú limit). Nové lokality prídu do hry so zverejnením sady.
-- **Draft:** stavba šenku po **2 kartách do šenku a 2 naspodok**
-  (`{"type":"stavbaSenku","doSenku":[A,B],"odhod":[C,D]}`), zvyšok podáš súperovi
-  — vyberáte naraz. Branie striedavo, začína útočník: **1 karta za 1 cigaretu,
+- **Draft:** stavba šenku naraz, bez podávania: z N kariet dáš **polovicu do šenku
+  a polovicu naspodok** (`{"type":"stavbaSenku","doSenku":[…],"odhod":[…]}`, pri 8 kartách 4 + 4)
+  — vyberáte naraz. Po braní sa šenok sám doplní na 8 z vrchu spoločného balíčka. Branie striedavo, začína útočník: **1 karta za 1 cigaretu,
   2 karty za 3 cigarety** (`{"type":"draftBer","uids":[…]}`); poldeci sa
   v šenku neplatí; `draftStop` ukončí branie.
 - **Ruka bez limitu:** po každej bitke si dobereš **2 karty**; nič neodhadzuješ.
   Karty navyše: šenok, fajčenie (`smoke`: cigareta = karta hneď, v Zhromaždení
-  aj v Pitke), priznanie kliatby, Vízia, Zberateľ, efekty.
-- **Priznanie každej kliatby = hneď dobereš kartu** (Dlh, Cirhóza, Milujúca
-  manželka; Absťák príde rovno priznaný a tiež dá kartu). Priznanie nemíňa
+  aj v Pitke), priznanie kliatby, Vízia, efekty.
+- **Kliatby:** Dlh sa **prizná sám**, keď si ho dobereš, a ťaháš ďalšiu kartu.
+  Cirhózu priznáš, keď chceš, ale kartu za ňu **nedobereš**; Milujúca manželka
+  a Absťák kartu dajú. Kliatba do línie nepatrí (len Milujúca manželka). Priznanie nemíňa
   limit ani neodovzdá ťah. Priznaný Dlh sa ráta k Exekútorovi.
 - **Vízia:** na konci Pitky za každú aktívnu Víziu uvidíš vrchnú kartu svojho
   balíčka — `{"type":"vizia","vziat":true}` do ruky, alebo `false` = zahodiť
@@ -144,9 +145,8 @@ do `R/hrac1/nezrovnalosti.md`.
   lokality a získaní starší 2, cigarety 1 za každé 3, mínus nepriznané Dlhy
   a Cirhózy; Znepokojenie / Strach / Vydesenie za každého staršieho, ktorý sa
   ťa bojí. Marker určuje **priazeň** (komu je posunutý) a koho sa starší bojí.
-- **Priazeň** sila 1 / 2 / 3 podľa zóny; väčšina dáva 2 × sila. Zberateľ: po
-  bitke prezri 2 / 4 / 6 vrchných kariet a 1 / 2 / 3 si vezmi
-  (`{"type":"zberatel","uids":[…]}`); Fajčiar +1 / +2 / +3 cigarety v 1. Pitke.
+- **Priazeň** sila 1 / 2 / 3 podľa zóny; väčšina dáva 2 × sila. Úžerník: prah
+  Dlhu 2 + sila (3 / 4 / 5); Fajčiar +1 / +2 / +3 cigarety v 1. Pitke.
 - **Remíza:** o lokalitu rozhodne celkové poškodenie, potom obranca; o
   staršieho nevyhrá nikto. **Ohlásené vydesenie:** polovicu starších treba
   udržať do konca ďalšieho kola. **Cigarety za prebytok** dostane ten, proti

@@ -172,8 +172,8 @@ export function Scorecard({ elder, data, sada, ja, sirka, karta, onClick, body }
  * (Michal 2026-10-16: dvojnásobný účinok). PRAVIDLA §9.
  */
 export const UCINOK_PRIAZNE: Readonly<Record<Favour, (sila: number) => string>> = {
-  // Michal 2026-10-19: limit ruky zanikol — Zberateľ prezrie vrchné karty balíčka a niektoré si vezme.
-  ZBERATEL: (s) => `Po bitke si prezrieš ${bonus(s)} vrchných kariet balíčka a ${s} z nich si vezmeš do ruky (ostatné odhodíš).`,
+  // Michal 2026-10-20: Úžerník nahradil Zberateľa — prah Dlhu + sila (bez dvojnásobku).
+  UZERNIK: (s) => `Prah Dlhu ${KONSTANTY.PRAH_DLHU_ZAKLAD + s} namiesto ${KONSTANTY.PRAH_DLHU_ZAKLAD} — Dlh dostaneš neskôr.`,
   // Michal 2026-10-18: Trocha a Zopár zmizli — Lakomec zlacní barter, Neprajník pustí Povery nad priznané Dlhy.
   LAKOMEC: (s) => `Stokársky barter (nový poldeci) za ${KONSTANTY.BARTER_CENA - s} cigariet namiesto ${KONSTANTY.BARTER_CENA}.`,
   NEPRAJNIK: (s) => `Tvoje Povery smú dať mäkké poškodenie o ${bonus(s)} viac, než má súper priznaných Dlhov.`,
@@ -263,7 +263,7 @@ export function StavStarsieho({
     <div className="scorecard-stav">
       <strong>{meno}</strong>
       {elder.nahradeny && (
-        <span className="znacka tlmeny" title="Na ukazovateli leží náhrada. Scorecard hrá ďalej (marker, priazeň, body), len o neho sa už bojovať nedá.">
+        <span className="znacka" title="Na ukazovateli leží náhrada. Scorecard hrá ďalej (marker, priazeň, body), len o neho sa už bojovať nedá.">
           náhrada
         </span>
       )}

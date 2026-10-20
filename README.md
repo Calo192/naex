@@ -164,8 +164,8 @@ v `docs/playtesty/zmeny-pravidiel.html`, znenie v `docs/PRAVIDLA.md`):
   bitka len o pôvodného staršieho.
 - **Bitka o staršieho** — karta staršieho v strede línie, útočník ju natočí
   (`chooseElder.otocena`); náhľad bodov `nahladBitkyOStarsieho` (`view.ts`).
-- **Limit ruky** 6 + priazeň **Zberateľa** (nahradil Očumovateľa; alias
-  `OCUMOVATEL → ZBERATEL`, server premenuje bodovaciu kartu v databáze).
+- **Úžerník** (prah Dlhu 2 + sila; nahradil Zberateľa a ten Očumovateľa — alias
+  `OCUMOVATEL, ZBERATEL → UZERNIK`, server premenuje bodovaciu kartu v databáze).
 - **Útočník draftuje prvý**, pitiek `max(1, |rozdiel|)`.
 - **Body za kus** lokalita a starší 2; server berie body vždy z jadra.
 - **Všetky efekty** tlačovej sady vyhodnocuje motor.

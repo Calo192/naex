@@ -98,8 +98,6 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     lokalitaPrepadne: false,
     spalit: [],
     vesticaHotova: true,
-    zberatelHotovy: [false, false],
-    zberatelPonuka: [[], []],
     ...b,
   };
 }

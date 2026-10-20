@@ -167,7 +167,7 @@ export interface CardInstance {
 
 /** Priazne starších (kľúče z elders.json). */
 export type Favour =
-  | "ZBERATEL"
+  | "UZERNIK"
   | "LAKOMEC"
   | "NEPRAJNIK"
   | "BITKAR"
@@ -177,7 +177,7 @@ export type Favour =
   | "EXEKUTOR";
 
 export const ALL_FAVOURS: readonly Favour[] = [
-  "ZBERATEL",
+  "UZERNIK",
   "LAKOMEC",
   "NEPRAJNIK",
   "BITKAR",
@@ -190,9 +190,9 @@ export const ALL_FAVOURS: readonly Favour[] = [
 /**
  * Zrušené priazne a ich náhrady — staré zverejnené sady a databázy ich ešte
  * nesú. Očumovateľ (Preskúmanie) v hre nič nerobil; nahradil ho Zberateľ
- * s limitom ruky (Michal 2026-10-12, playtest 20261012-055944).
+ * (Michal 2026-10-12) a Zberateľa Úžerník s prahom Dlhu (Michal 2026-10-20).
  */
-const PRIAZNE_ALIAS: Readonly<Record<string, Favour>> = { OCUMOVATEL: "ZBERATEL" };
+const PRIAZNE_ALIAS: Readonly<Record<string, Favour>> = { OCUMOVATEL: "UZERNIK", ZBERATEL: "UZERNIK" };
 
 /** Priazeň z kľúča (aj zrušeného), alebo null, ak taká nie je. */
 export function priazenZKluca(kluc: string): Favour | null {

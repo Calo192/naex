@@ -3,8 +3,11 @@
 // Menia sa TU, kód sa meniť nemusí.
 
 export const KONSTANTY = {
-  /** Štartovacie vybavenie hráča (PRAVIDLA §11; Michal 2026-10-19: 3 poldeci, 3 cigarety). */
-  START_POLDECI: 3,
+  /**
+   * Štartovacie vybavenie hráča (PRAVIDLA §11). Michal 2026-10-20 znížil
+   * poldeci z 3 na 2 (cigarety ostávajú 3) — pas teraz platí cigaretami.
+   */
+  START_POLDECI: 2,
   /**
    * Štartovacia ruka (rozhodnutie Michala 2026-10-11): štartovacie karty sa
    * zamiešajú do doberacieho balíčka a hráč si dobere toľkoto. Kliatby idú
@@ -44,22 +47,27 @@ export const KONSTANTY = {
    */
   PRAH_CIRHOZY_ZAKLAD: 3,
   /**
-   * Prah Dlhu: akcie Dlh plnia zadĺženie a kartu Dlh hráč dostane pri
-   * tomto prahu. Michal 2026-10-18 znížil z 2 na 1 — Dlh je základná kliatba
-   * hry a v playteste nevznikol ani jeden: každá aktívna akcia Dlh v Pitke = karta Dlh.
+   * Prah Dlhu (+ sila Úžerníka): akcie Dlh plnia zadĺženie a kartu Dlh hráč
+   * dostane pri tomto prahu. Michal 2026-10-18 znížil z 2 na 1 (Dlh v playteste
+   * nevznikol), 2026-10-20 vrátil na 2 s priazňou Úžerníka. Úžerník pridáva
+   * silu, nie 2 × silu — zadĺženie sa po Pitke nuluje a vyšší prah by Dlh vypol.
    */
-  PRAH_DLHU: 1,
+  PRAH_DLHU_ZAKLAD: 2,
+  /**
+   * Pas (Michal 2026-10-20): kto v Zhromaždení pasuje, dostane toľko cigariet,
+   * koľko kariet ešte smel vyložiť (zostávajúci limit), a hrá až v Pitke.
+   */
+  CIGARETY_ZA_PAS_NA_KARTU: 1,
   /**
    * Šenok (Michal 2026-10-19): hráč na ťahu berie 1 kartu za 1 cigaretu, alebo
    * 2 karty za 3 cigarety; poldeci sa v šenku neplatí. Index = počet kariet.
    */
   CENA_SENKU: [0, 1, 3] as readonly number[],
   /**
-   * Stavba šenku (Michal 2026-10-19): v každom kroku hráč dá z balíčka stavby
-   * toľkoto kariet do šenku a toľkoto naspodok, zvyšok podá súperovi.
+   * Po braní sa šenok doplní z vrchu spoločného balíčka na toľkoto kariet
+   * (Michal 2026-10-20) — pre Liečbu, Starostu a iné efekty, ktoré z neho berú.
    */
-  STAVBA_DO_SENKU: 2,
-  STAVBA_NASPODOK: 2,
+  SENOK_PO_BRANI: 8,
   /**
    * Dedičstvo (Michal 2026-10-19): cena rastie spoločne pre oboch hráčov —
    * prvý Nástroj v hre stojí 1 cigaretu, druhý 2, tretí 3…

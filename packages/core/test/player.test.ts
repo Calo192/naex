@@ -20,10 +20,10 @@ function placed(playedBy: 0 | 1, naexBy?: 0 | 1): PlacedCard {
 }
 
 describe("M3 — limit vykladania", () => {
-  it("3 plné poldeci na štarte → limit 4 (Michal 2026-10-19)", () => {
+  it("2 plné poldeci na štarte → limit 3 (Michal 2026-10-20)", () => {
     const player = freshPlayer();
-    expect(player.poldeciPlne).toBe(3);
-    expect(limitVykladania(player, [[], []], 0)).toBe(4);
+    expect(player.poldeciPlne).toBe(2);
+    expect(limitVykladania(player, [[], []], 0)).toBe(3);
   });
 
   it("po vypití jedného → limit 2", () => {

@@ -61,7 +61,7 @@ const SLOVNIK: readonly { readonly tema: string; readonly popis: string; readonl
     pojmy: [
       ["Poldeci", "Pohárik pálenky. Každý plný poldeci zvyšuje limit vykladania o 1, vypitý nie."],
       ["Cigareta", "Mena hry: platí šenok, Dedičstvo, doliatie a barter; vyfajčená cigareta = karta hneď. Na konci hry bod za každé 3."],
-      ["Priznanie", "Vyloženie kliatby mimo línie do vlastnej hracej oblasti — natrvalo z balíčka; za každú priznanú kliatbu si hneď dobereš kartu."],
+      ["Priznanie", "Vyloženie kliatby mimo línie do vlastnej hracej oblasti — natrvalo z balíčka; za priznanú kliatbu (okrem Cirhózy) si hneď dobereš kartu. Dlh sa prizná sám, keď si ho dobereš."],
       ["Tuhé / mäkké poškodenie", "Tuhé (Rana, Pecka, Petelica, Cirhóza) rozhoduje o víťazovi; mäkké (Povera) sa udeľuje do výšky súperovho priznaného dlhu."],
       ["Podpora", "Karta je podporená, ak sú v jej okolí presne 2 karty."],
       ["Priazeň", "Výhoda od staršieho, ku ktorému je marker posunutý: sila 1 / 2 / 3 podľa zóny, účinok 2 × sila."],
@@ -269,7 +269,7 @@ const KAPITOLY: readonly Kapitola[] = [
     obsah: () => (
       <>
         <p>
-          Poldeci určujú, koľko kariet smieš vyložiť počas jedného Zhromaždenia. Na začiatku hry máš <strong>3 plné poldeci</strong>.
+          Poldeci určujú, koľko kariet smieš vyložiť počas jedného Zhromaždenia. Na začiatku hry máš <strong>2 plné poldeci</strong>.
           Limit sa počíta nanovo na začiatku každého Zhromaždenia. Ak je limit 0, okamžite prehrávaš bitku. Na začiatku
           každého kola sa ti <strong>jeden vypitý poldeci doleje sám</strong> — kto všetko minie, nezostane s limitom 1 do konca partie.
         </p>
@@ -359,7 +359,8 @@ const KAPITOLY: readonly Kapitola[] = [
         </p>
         <p className="zvyraznene">
           Priznaná kliatba je natrvalo mimo balíčka — priznávaním si balíček čistíš a dopĺňaš ruku. Priznanie nemíňa limit
-          vykladania ani neodovzdá ťah — priznáš všetko naraz a potom ešte vykladáš alebo pasuješ. Pri Dlhu zváž Exekútora.
+          vykladania ani neodovzdá ťah — priznáš všetko naraz a potom ešte vykladáš alebo pasuješ. Dlhy sa priznávajú samy hneď pri
+          dobratí; Cirhózu priznáš, keď chceš, ale kartu za ňu nedobereš.
         </p>
       </>
     ),
@@ -413,7 +414,7 @@ const KAPITOLY: readonly Kapitola[] = [
         <p>
           Priazeň je hlavná protiváha pre toho, kto prehráva — víťaz bitky mu prebytkom posúva markery na jeho polovicu.
           Sila je <strong>1 / 2 / 3</strong> podľa zóny (žltá, oranžová, červená) a väčšina priazní pridáva{" "}
-          <strong>2 × sila</strong> (Fajčiar a Lakomec len silu, Zberateľ viď tabuľku).
+          <strong>2 × sila</strong> (Fajčiar, Lakomec a Úžerník len silu).
         </p>
         <p>
           V hre to vidíš pri každom staršom: riadok ♥ ukazuje, komu patrí priazeň a čo dáva, riadok ★ koľko bodov by scorecard
@@ -427,7 +428,7 @@ const KAPITOLY: readonly Kapitola[] = [
             <tr><th>Priazeň</th><th>Uplatňuje sa pri</th><th>Sila 1 / 2 / 3</th></tr>
           </thead>
           <tbody>
-            <tr><td>Zberateľ</td><td>Po bitke: prezrieš vrchné karty balíčka a vezmeš si</td><td>z 2 / 4 / 6 kariet 1 / 2 / 3</td></tr>
+            <tr><td>Úžerník</td><td>Prah Dlhu (2 + sila)</td><td>3 / 4 / 5</td></tr>
             <tr><td>Lakomec</td><td>Stokársky barter (cigariet)</td><td>4 / 3 / 2</td></tr>
             <tr><td>Neprajník</td><td>Povery nad súperove priznané Dlhy</td><td>+2 / +4 / +6</td></tr>
             <tr><td>Bitkár</td><td>Vyhodnotenie bitky</td><td>+2 / +4 / +6 tuhého poškodenia</td></tr>
@@ -452,8 +453,9 @@ const KAPITOLY: readonly Kapitola[] = [
     obsah: () => (
       <>
         <p>
-          Každá aktivovaná akcia <strong>Dlh</strong> v Pitke vytvorí kartu Dlh. Nepriznaný Dlh uberá na konci hry −1 bod;
-          priznaný sa ráta k prahu Exekútora (a za jeho priznanie si dobereš kartu).
+          Akcie <strong>Dlh</strong> v Pitke plnia zadĺženie a pri prahu vznikne karta Dlh. Keď si Dlh dobereš, <strong>sám sa prizná</strong>{" "}
+          a ťaháš ďalšiu kartu (aj tá môže byť Dlh). Nedobratý Dlh v balíčku uberá na konci hry −1 bod;
+          priznaný sa ráta k prahu Exekútora.
         </p>
         <ol>
           <li><strong>Robota:</strong> ešte pred kontrolou prahu odhodíš za každú aktívnu Robotu 1 priznaný Dlh.</li>
@@ -478,7 +480,7 @@ const KAPITOLY: readonly Kapitola[] = [
         </p>
         <p>
           Podobne funguje <strong>zadĺženie</strong>: každá akcia <strong>Dlh</strong> v Pitke ho zvýši o 1, pri prahu{" "}
-          <strong>1</strong> získaš kartu Dlh — teda každá aktívna akcia Dlh je karta Dlh — a po Pitke sa vynuluje. Dlhy, ktoré karta dáva priamo (napr. Liečba), idú rovno.
+          <strong>2</strong> + sila Úžerníka získaš kartu Dlh — teda dve akcie Dlh v jednej Pitke sú karta Dlh — a po Pitke sa vynuluje. Dlhy, ktoré karta dáva priamo (napr. Liečba), idú rovno.
           Viac Pitiek v bitke znamená viac pečene aj Dlhov.
         </p>
         <p>Každá Cirhóza ti v bitke pridáva 1 tuhé poškodenie, akoby ti ho udelil súper. Viera ju znižuje.</p>
@@ -525,7 +527,7 @@ const KAPITOLY: readonly Kapitola[] = [
         <p>
           Zvoľte dĺžku hry — vyberte 5 lokalít (krátka hra), 7 (stredná) alebo 11 (dlhá). Rozmiestnite 8 starších, markery do stredu. Každý
           hráč zamieša svojich 10 štartovacích kariet (Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj) do
-          doberacieho balíčka a dobere si <strong>5 kariet do ruky</strong>. K tomu <strong>3 cigarety a 3 plné poldeci</strong>.
+          doberacieho balíčka a dobere si <strong>5 kariet do ruky</strong>. K tomu <strong>3 cigarety a 2 plné poldeci</strong>.
         </p>
         <p className="zvyraznene">
           <strong>Po každej bitke si dobereš 2 karty.</strong> Limit ruky nie je — kariet môžeš mať, koľko chceš, ale získať ich
@@ -538,7 +540,8 @@ const KAPITOLY: readonly Kapitola[] = [
         <p>
           Cieľ kola vyberá a natáča obranca (víťaz poslednej bitky); útočník (porazený) berie zo šenku prvý. Vo fáze <strong>Zhromaždenie</strong> hráči striedavo vykladajú
           karty — začína útočník; na ťahu môžeš vyložiť aj viac kariet, každú ďalšiu za plný poldeci. Keď obaja odohrajú limit
-          alebo pasujú, nasleduje <strong>Pitka</strong>. Ak má bitka ďalšiu Pitku, pred ňou je znova Zhromaždenie. Keď nemáš
+          alebo pasujú, nasleduje <strong>Pitka</strong>. Kto <strong>pasuje</strong>, do Pitky už nevykladá — súper vykladá sám — a dostane
+          <strong>cigaretu za každú kartu</strong>, ktorú ešte smel vyložiť. Ak má bitka ďalšiu Pitku, pred ňou je znova Zhromaždenie. Keď nemáš
           inú možnosť (nič sa nedá vyložiť, v Pitke nemáš čo urobiť), hra za teba pasuje sama.
         </p>
       </>
@@ -558,13 +561,13 @@ const KAPITOLY: readonly Kapitola[] = [
         <p>
           <strong>Stavba šenku:</strong> nevzaté karty zo starého šenku idú naspodok spoločného balíčka. Každý si zo
           spoločného balíčka vezme toľko kariet, koľko je nenahradených starších (na začiatku 8). Obaja naraz a tajne dajú{" "}
-          <strong>dve karty do šenku</strong> a <strong>dve naspodok</strong> balíčka, zvyšok si vymenia — a tak dokola, kým sa
-          balíčky neminú (pri 8 kartách dva kroky, šenok má potom 8 kariet).
+          <strong>polovicu do šenku</strong> a <strong>polovicu naspodok</strong> balíčka — nič si nepodávate (pri 8 kartách 4 + 4,
+          šenok má potom 8 kariet).
         </p>
         <p>
           <strong>Branie:</strong> zo šenku sa berie striedavo, začína <strong>útočník</strong>. Na ťahu vezmeš{" "}
           <strong>1 kartu za 1 cigaretu</strong>, alebo <strong>2 karty za 3 cigarety</strong>. Poldeci sa v šenku neplatí. Beriete,
-          kým obaja neprestanete; kto nemá cigaretu, prestane sám, a kto prestane, druhý berie ďalej sám.
+          kým obaja neprestanete; kto nemá cigaretu, prestane sám, a kto prestane, druhému ostáva už len jedna posledná šanca (jeden ťah).
         </p>
         <p className="zvyraznene">
           <strong>Koľko Pitiek:</strong> 1 + menší z počtov aktivovaných akcií lokality na jej dvoch stranách. Akciu lokality
@@ -647,7 +650,6 @@ const KAPITOLY: readonly Kapitola[] = [
         <li><strong>Veštica</strong> — porazený s Vešticou vymení kartu medzi doberacími balíčkami.</li>
         <li><strong>Liečba alebo Pohreb</strong> — s priznanou Cirhózou.</li>
         <li><strong>Cintorín</strong> — len na Cintoríne: porazený smie dať Nástroj z ruky do Dedičstva zadarmo.</li>
-        <li><strong>Zberateľ</strong> — kto má jeho priazeň, prezrie vrchné karty balíčka a vyberie si do ruky.</li>
         <li><strong>Návrat kariet</strong> — do odhadzovacieho balíčka hráča, ktorý ich zahral.</li>
         <li><strong>Absťák</strong> — porovnanie nerestí kola s minulým (viď Závislosť).</li>
         <li><strong>Nové kolo</strong> — každému sa doleje jeden vypitý poldeci a každý si dobere 2 karty.</li>

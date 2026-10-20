@@ -87,7 +87,7 @@ describe("M6 — setup", () => {
     expect(state.starsi.length).toBe(8);
     expect(state.lokalityVHre.length).toBe(7);
     expect(state.lokalitCelkom).toBe(7);
-    expect(state.hraci[0].poldeciPlne).toBe(3);
+    expect(state.hraci[0].poldeciPlne).toBe(2);
     expect(state.hraci[0].cigarety).toBe(3);
     expect(state.faza).toBe("volbaCiela");
   });

@@ -49,7 +49,7 @@ Pred prvým ťahom (súper sa pripravuje tiež, na teba počká):
    poznáš. Pre každú fázu kola (voľba cieľa → draft: stavba šenku, branie →
    (Zhromaždenie → Pitka) × 1–4 → Vízia → bitka: Exekútor, Pohoršenie,
    poškodenie, výsledok, prebytok, náhrada, Veštica, Liečba/Pohreb,
-   Zberateľ) vypíš **všetky ťahy**, ktoré tam existujú, čo stoja, čo prinášajú
+   Cintorín) vypíš **všetky ťahy**, ktoré tam existujú, čo stoja, čo prinášajú
    a na čo si dať pozor. Ďalej: ako sa ráta poškodenie a výsledok bitky
    (§8), ako sa boduje (§10, scorecardy), všetky podmienky konca (§1),
    priazne a ich účinok (§9), kliatby (§12), zdroje (poldeci, cigarety,
@@ -65,16 +65,16 @@ Pred prvým ťahom (súper sa pripravuje tiež, na teba počká):
 | voľba cieľa | `chooseLocation` / `chooseElder`, každý aj otočený o 180° (`otocena`) — mení, ktoré akcie lokality padnú na ktorú stranu |
 | draft — stavba šenku | `stavbaSenku` (2 do šenku + 2 naspodok, zvyšok súperovi) |
 | draft — branie | `draftBer` s 1 kartou (1 cigareta) alebo 2 kartami (3 cigarety), `draftStop` |
-| Zhromaždenie | `place` (`vlastna`, `superova`, `priznanie` kliatby = dobereš kartu, `dedicstvo` pre Nástroj za rastúcu cenu), `tah` (viac kariet naraz, každá ďalšia za plný poldeci), `vypit`, `smoke`, `pass` |
+| Zhromaždenie | `place` (`vlastna`, `superova`, `priznanie` kliatby (Dlh sa prizná sám; za Cirhózu sa nedoberá), `dedicstvo` pre Nástroj za rastúcu cenu), `tah` (viac kariet naraz, každá ďalšia za plný poldeci), `vypit`, `smoke`, `pass` (do Pitky už nevykladáš; cigareta za každú kartu, ktorú si ešte smel vyložiť) |
 | Pitka | `naex`, odpoveď na NA EX (`place` / `bezReakcie`), `smoke`, `barter` (cigarety → nový poldeci), `refillPoldeci` (2 cigarety), efekty kariet (`postarka`, `starosta`), `skipNaex` |
 | koniec Pitky | `vizia` (vrchná karta do ruky / zahodiť) — za každú aktívnu Víziu |
-| bitka | `exekutorTool`, `pohorsenie`, `prebytok`, `nahrada`, `benzinka`, `vestica`, `liecba` / `pohreb` / `skipLiecba`, `zberatel` |
+| bitka | `exekutorTool`, `pohorsenie`, `prebytok`, `nahrada`, `benzinka`, `vestica`, `liecba` / `pohreb` / `skipLiecba` |
 
 ## Ťahák — platné pravidlá (podrobne v `docs/PRAVIDLA.md`, zmeny 2026-10-19 v jeho úvode)
 
 - **Dĺžka hry** = počet lokalít (krátka 5, stredná 7, dlhá 11). Výpis klienta
   ukazuje, o koľko lokalít sa hrá a koľko je ovládnutých.
-- **Štart:** 5 kariet v ruke, 3 plné poldeci, 3 cigarety.
+- **Štart:** 5 kariet v ruke, 2 plné poldeci, 3 cigarety (Michal 2026-10-20).
 - **Každú kartu** môžeš vyložiť na koniec **svojej aj súperovej strany**
   (`target` `vlastna` / `superova`). Karta **patrí tomu, kto ju zahral** — akcie
   aj efekty sa rátajú majiteľovi, nech leží kdekoľvek. Podstrčený „sabotér"
@@ -115,16 +115,17 @@ Pred prvým ťahom (súper sa pripravuje tiež, na teba počká):
   odhodí 2 Dlhy), Jednota (barter −1), Kultúrny dom (Pohoršenie aj na ten
   istý marker), Vínna pivnica (NA EX 2× za Pitku), Družstvo (Pracujúci
   nemíňajú limit). Nové lokality prídu do hry so zverejnením sady.
-- **Draft:** stavba šenku po **2 kartách do šenku a 2 naspodok**
-  (`{"type":"stavbaSenku","doSenku":[A,B],"odhod":[C,D]}`), zvyšok podáš súperovi
-  — vyberáte naraz. Branie striedavo, začína útočník: **1 karta za 1 cigaretu,
+- **Draft:** stavba šenku naraz, bez podávania: z N kariet dáš **polovicu do šenku
+  a polovicu naspodok** (`{"type":"stavbaSenku","doSenku":[…],"odhod":[…]}`, pri 8 kartách 4 + 4)
+  — vyberáte naraz. Po braní sa šenok sám doplní na 8 z vrchu spoločného balíčka. Branie striedavo, začína útočník: **1 karta za 1 cigaretu,
   2 karty za 3 cigarety** (`{"type":"draftBer","uids":[…]}`); poldeci sa
   v šenku neplatí; `draftStop` ukončí branie.
 - **Ruka bez limitu:** po každej bitke si dobereš **2 karty**; nič neodhadzuješ.
   Karty navyše: šenok, fajčenie (`smoke`: cigareta = karta hneď, v Zhromaždení
-  aj v Pitke), priznanie kliatby, Vízia, Zberateľ, efekty.
-- **Priznanie každej kliatby = hneď dobereš kartu** (Dlh, Cirhóza, Milujúca
-  manželka; Absťák príde rovno priznaný a tiež dá kartu). Priznanie nemíňa
+  aj v Pitke), priznanie kliatby, Vízia, efekty.
+- **Kliatby:** Dlh sa **prizná sám**, keď si ho dobereš, a ťaháš ďalšiu kartu.
+  Cirhózu priznáš, keď chceš, ale kartu za ňu **nedobereš**; Milujúca manželka
+  a Absťák kartu dajú. Kliatba do línie nepatrí (len Milujúca manželka). Priznanie nemíňa
   limit ani neodovzdá ťah. Priznaný Dlh sa ráta k Exekútorovi.
 - **Vízia:** na konci Pitky za každú aktívnu Víziu uvidíš vrchnú kartu svojho
   balíčka — `{"type":"vizia","vziat":true}` do ruky, alebo `false` = zahodiť
@@ -153,9 +154,8 @@ Pred prvým ťahom (súper sa pripravuje tiež, na teba počká):
   lokality a získaní starší 2, cigarety 1 za každé 3, mínus nepriznané Dlhy
   a Cirhózy; Znepokojenie / Strach / Vydesenie za každého staršieho, ktorý sa
   ťa bojí. Marker určuje **priazeň** (komu je posunutý) a koho sa starší bojí.
-- **Priazeň** sila 1 / 2 / 3 podľa zóny; väčšina dáva 2 × sila. Zberateľ: po
-  bitke prezri 2 / 4 / 6 vrchných kariet a 1 / 2 / 3 si vezmi
-  (`{"type":"zberatel","uids":[…]}`); Fajčiar +1 / +2 / +3 cigarety v 1. Pitke.
+- **Priazeň** sila 1 / 2 / 3 podľa zóny; väčšina dáva 2 × sila. Úžerník: prah
+  Dlhu 2 + sila (3 / 4 / 5); Fajčiar +1 / +2 / +3 cigarety v 1. Pitke.
 - **Remíza:** o lokalitu rozhodne celkové poškodenie, potom obranca; o
   staršieho nevyhrá nikto. **Ohlásené vydesenie:** polovicu starších treba
   udržať do konca ďalšieho kola. **Cigarety za prebytok** dostane ten, proti
@@ -167,7 +167,7 @@ Skús tieto mechaniky (podstrčenie, NA EX na vlastnú aj súperovu kartu, odpov
 ## Ako sa rozhoduješ — rozhodovací záznam
 
 Pri každom netriviálnom rozhodnutí (voľba cieľa, stavba šenku, koľko brať
-zo šenku, čo a koľko kariet vyložiť (každá ďalšia za poldeci), NA EX, Vízia, Pohoršenie, prebytok, Liečba/Pohreb, Zberateľ)
+zo šenku, čo a koľko kariet vyložiť (každá ďalšia za poldeci), NA EX, Vízia, Pohoršenie, prebytok, Liečba/Pohreb, náhrada staršieho)
 **prejdi celý zoznam MOŽNÝCH ŤAHOV**, nie len prvý vhodný. Zváž aj ťahy,
 ktoré zoznam neponúka, hoci by ich pravidlá mali povoliť (to je nezrovnalosť).
 Do denníka zapíš krátky záznam:

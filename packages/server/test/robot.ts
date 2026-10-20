@@ -154,10 +154,6 @@ export class Robot {
           return { type: "benzinka", uids: obcania.slice(0, b.benzinkaZostava[ja]).map((pl) => pl.card.uid) };
         }
         if (b.krok === "vestica") return { type: "vestica", moja: 0, jeho: 0 };
-        if (b.krok === "zberatel") {
-          const ponuka = view.volbaZberatel ?? [];
-          return { type: "zberatel", uids: ponuka.slice(0, Math.min(view.zberatel[ja], ponuka.length)).map((k) => k.uid) };
-        }
         if (b.krok === "exekutor") {
           const volba = view.volbyExekutor?.[0];
           if (volba === undefined) throw new Error("exekútor bez volieb");

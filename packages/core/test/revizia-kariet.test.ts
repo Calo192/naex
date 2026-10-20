@@ -153,8 +153,6 @@ describe("cigarety porazenému za prebytok", () => {
         lokalitaPrepadne: false,
         spalit: [],
         vesticaHotova: true,
-        zberatelHotovy: [true, true],
-        zberatelPonuka: [[], []],
       },
     } as GameState;
     const cig = s.hraci[1].cigarety;

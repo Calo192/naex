@@ -47,6 +47,7 @@ import {
   vykupZoSrotu,
   zakazFajcit,
   zakazNaex,
+  nahladNahrady,
   nahladPosunuMarkera,
   pohorsenieNaKraj,
   nahladVylozenia,
@@ -184,8 +185,8 @@ type Mode =
   | { typ: "liecbaZavisly"; cirhozaUid: number }
   | { typ: "liecbaSenok"; cirhozaUid: number; zavislyUid: number }
   | { typ: "pohrebKarta"; cirhozaUid: number }
-  | { typ: "nahradaMarker"; defId: string; kde: KartaZdroj }
-  // Výbery viacerých kariet: Benzínka (Občania v línii), Zberateľ, Veštica.
+  | { typ: "nahradaMarker"; defId: string; kde: KartaZdroj; leftLayout: number; rightLayout: number }
+  // Výbery viacerých kariet: Benzínka (Občania v línii), Veštica.
   | { typ: "vyber"; uids: readonly number[] }
   | { typ: "vestica"; moja: number | null; jeho: number | null }
   | { typ: "starosta"; rukaUid: number | null }
@@ -732,7 +733,7 @@ export function HernaPlocha({ view, data, sada, hraci, log, chyba, superPripojen
   const krokVyberu: string | null =
     bs0 !== null && bs0.caka === ja ? (bs0.krok ?? null) : null;
   useEffect(() => {
-    if (krokVyberu === "benzinka" || krokVyberu === "zberatel") setMode({ typ: "vyber", uids: [] });
+    if (krokVyberu === "benzinka") setMode({ typ: "vyber", uids: [] });
     else if (krokVyberu === "vestica") setMode({ typ: "vestica", moja: null, jeho: null });
   }, [krokVyberu, klucTahu]);
 
@@ -1233,7 +1234,7 @@ export function HernaPlocha({ view, data, sada, hraci, log, chyba, superPripojen
     );
   };
   const odkladacieZony = [
-    odkladanie("priznanie", "priznať", "navždy z balíčka · hneď si dobereš kartu · nemíňa limit · Dlh ráta Exekútor · Cirhóza po bitke odomkne Liečbu a Pohreb"),
+    odkladanie("priznanie", "priznať", "navždy z balíčka · nemíňa limit · za Cirhózu sa nedoberá · Cirhóza po bitke odomkne Liečbu a Pohreb"),
     odkladanie("dedicstvo", "do Dedičstva", `pasívny efekt · teraz stojí ${cigariet(view.cenaDedicstva)} (cena rastie pre oboch) · nemíňa limit`),
   ].filter(
     (z) => z !== null,
@@ -1543,7 +1544,7 @@ export function HernaPlocha({ view, data, sada, hraci, log, chyba, superPripojen
             text: (
               <>
                 Potiahni {kariet(krokSt.odhod)} na <strong>Smetisko</strong> (vľavo — naspodok spoločného balíčka, súper ich neuvidí) a{" "}
-                {kariet(krokSt.doSenku)} do <strong>Šenku</strong> (vpravo — uvidia ich obaja). Zvyšok podáš {menoHraca(super_)}. Vyberáte naraz.
+                {kariet(krokSt.doSenku)} do <strong>Šenku</strong> (vpravo — uvidia ich obaja). Vyberáte naraz, nič si nepodávate.
                 Kartu zo zóny vrátiš pravým klikom.
               </>
             ),
@@ -1594,7 +1595,7 @@ export function HernaPlocha({ view, data, sada, hraci, log, chyba, superPripojen
             text: textNahladuTahania ?? textVolbyMiesta ?? (
               <>
                 Potiahni kartu z ruky na stôl, alebo klikni na <strong>+</strong> na konci strany — vysunú sa karty, ktoré sa tam spoja. Alebo
-                pasuj.{" "}
+                pasuj do Pitky (cigareta za každú nevyloženú kartu).{" "}
                 <span className="tlmene">
                   Ďalšie karty v tom istom ťahu smieš pridať, každá ťa stojí plný poldeci (limit −1, pečeň +1){plne === 0 ? " — teraz žiadny nemáš" : ""}.
                 </span>
@@ -1603,7 +1604,12 @@ export function HernaPlocha({ view, data, sada, hraci, log, chyba, superPripojen
             tlacidla: (
               <>
                 {fajcit}
-                <button onClick={() => posli({ type: "pass" })}>pasovať</button>
+                <button
+                  title="Do Pitky už nevykladáš, súper vykladá sám. Za každú kartu, ktorú si ešte smel vyložiť, dostaneš cigaretu."
+                  onClick={() => posli({ type: "pass" })}
+                >
+                  pasovať <span className="cena">+{view.zhromazdenieStav?.zostavaLimit[ja] ?? 0} cig.</span>
+                </button>
               </>
             ),
           };
@@ -1955,37 +1961,6 @@ export function HernaPlocha({ view, data, sada, hraci, log, chyba, superPripojen
             tlacidla: <button onClick={() => posli({ type: "cintorin", uid: null })}>nič</button>,
           };
         }
-        if (b.krok === "zberatel") {
-          // Zberateľ (Michal 2026-10-19): z 2 × sila vrchných kariet balíčka si hráč vyberie sila do ruky.
-          const vybrane = mode.typ === "vyber" ? mode.uids : [];
-          const ponuka = view.volbaZberatel ?? [];
-          const treba = Math.min(view.zberatel[ja], ponuka.length);
-          const prepni = (uid: number): void =>
-            setMode({ typ: "vyber", uids: vybrane.includes(uid) ? vybrane.filter((u) => u !== uid) : [...vybrane, uid] });
-          return {
-            nadpis: "Zberateľ",
-            text: (
-              <span className="zberatel-text">
-                <span>
-                  Priazeň Zberateľa: z vrchných kariet balíčka si vyber <strong>{kariet(treba)}</strong> do ruky, ostatné odhodíš (vybrané:{" "}
-                  {vybrane.length}).
-                </span>
-                <span className="zberatel-ponuka">
-                  {ponuka.map((k) => (
-                    <span key={k.uid} onContextMenu={pravyKlik(vybrane.includes(k.uid) ? () => prepni(k.uid) : undefined)}>
-                      {karta({ karta: k, sirka: 84, vybrana: vybrane.includes(k.uid), onClick: () => prepni(k.uid) })}
-                    </span>
-                  ))}
-                </span>
-              </span>
-            ),
-            tlacidla: (
-              <button className="tlacidlo-hlavne" disabled={vybrane.length !== treba} onClick={() => posli({ type: "zberatel", uids: vybrane })}>
-                vziať
-              </button>
-            ),
-          };
-        }
         if (b.krok === "exekutor") {
           return {
             nadpis: "Exekútor!",
@@ -2029,32 +2004,75 @@ export function HernaPlocha({ view, data, sada, hraci, log, chyba, superPripojen
           };
         }
         if (b.krok === "nahrada") {
+          // Michal 2026-10-20: náhradu treba vidieť — kandidáti ako karty (variant akcií
+          // rozhoduje o podmienkach scorecardu) a pri každom zmena bodov oboch hráčov.
+          const elderId = view.ciel?.typ === "starsi" ? view.ciel.elderId : null;
+          const kandidati = (view.volbyNahrada ?? []).map((v, i) => ({
+            ...v,
+            karta: { uid: -100 - i, defId: v.defId, leftLayout: v.leftLayout, rightLayout: v.rightLayout },
+          }));
+          const zn = (x: number): string => (x > 0 ? `+${x}` : x < 0 ? `−${-x}` : "±0");
+          const popisZmeny = (k: (typeof kandidati)[number], marker: 3 | 4 | 5): string => {
+            if (elderId === null) return "";
+            const n = nahladNahrady(data, view, elderId, k.karta, marker);
+            return `body ty ${zn(n.zmena[ja])} (${n.body[ja]}), súper ${zn(n.zmena[super_])} (${n.body[super_]})`;
+          };
+          const ZONA: Readonly<Record<KartaZdroj, string>> = { ruka: "z ruky", odhadzovaci: "z odhadzovacieho", doberaci: "z balíčka", dedicstvo: "z Dedičstva" };
           if (mode.typ === "nahradaMarker") {
+            const k = kandidati.find((x) => x.defId === mode.defId && x.kde === mode.kde && x.leftLayout === mode.leftLayout && x.rightLayout === mode.rightLayout);
             return {
               nadpis: "Náhrada staršieho",
               text: (
+                <span className="zberatel-text">
+                  <span>
+                    Na ukazovateľ ide <strong>{menoKarty(mode.defId)}</strong> ({ZONA[mode.kde]}) — kam s markerom v sivej zóne?
+                  </span>
+                  {k !== undefined && <span className="zberatel-ponuka">{karta({ karta: k.karta, sirka: 96 })}</span>}
+                </span>
+              ),
+              tlacidla: (
                 <>
-                  <strong>{menoKarty(mode.defId)}</strong> — kam s markerom?
+                  {([3, 4, 5] as const).map((m) => (
+                    <button
+                      key={m}
+                      title={k === undefined ? undefined : popisZmeny(k, m)}
+                      onClick={() =>
+                        posli({ type: "nahrada", defId: mode.defId, kde: mode.kde, marker: m, leftLayout: mode.leftLayout, rightLayout: mode.rightLayout })
+                      }
+                    >
+                      pozícia {m}
+                      {k !== undefined && <span className="cena">{popisZmeny(k, m)}</span>}
+                    </button>
+                  ))}
+                  <button onClick={zrus}>iná karta</button>
                 </>
               ),
-              tlacidla: [3, 4, 5].map((m) => (
-                <button
-                  key={m}
-                  onClick={() => posli({ type: "nahrada", defId: mode.defId, kde: mode.kde, marker: m as 3 | 4 | 5 })}
-                >
-                  pozícia {m}
-                </button>
-              )),
             };
           }
           return {
             nadpis: "Náhrada staršieho",
-            text: "Vyber Občana alebo Zviera, ktorý nahradí staršieho.",
-            tlacidla: (view.volbyNahrada ?? []).map((v, i) => (
-              <button key={i} onClick={() => setMode({ typ: "nahradaMarker", defId: v.defId, kde: v.kde })}>
-                {menoKarty(v.defId)} <span className="cena">{v.kde}</span>
-              </button>
-            )),
+            text: (
+              <span className="zberatel-text">
+                <span>
+                  Vyber Občana alebo Zviera, ktorý nahradí staršieho na ukazovateli. Jeho akcie zapnú podmienky scorecardu — pod kartou je
+                  zmena bodov, keby hra skončila hneď (marker na strede sivej zóny).
+                </span>
+                <span className="zberatel-ponuka">
+                  {kandidati.map((k) => (
+                    <span key={k.karta.uid} className="nahrada-kandidat">
+                      {karta({
+                        karta: k.karta,
+                        sirka: 84,
+                        onClick: () => setMode({ typ: "nahradaMarker", defId: k.defId, kde: k.kde, leftLayout: k.leftLayout, rightLayout: k.rightLayout }),
+                      })}
+                      <small>
+                        {ZONA[k.kde]} · {popisZmeny(k, 4)}
+                      </small>
+                    </span>
+                  ))}
+                </span>
+              </span>
+            ),
           };
         }
         if (b.krok === "liecba") {

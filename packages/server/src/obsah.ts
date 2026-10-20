@@ -203,14 +203,15 @@ export class Obsah {
   }
 
   /**
-   * Očumovateľa nahradil Zberateľ (Michal 2026-10-12): bodovacia karta sa
-   * v databáze premenuje a scorecardy sa zverejnia nanovo s rovnakými kartami.
+   * Očumovateľa nahradil Zberateľ (Michal 2026-10-12) a Zberateľa Úžerník
+   * s prahom Dlhu (Michal 2026-10-20): bodovacia karta sa v databáze premenuje
+   * a scorecardy sa zverejnia nanovo s rovnakými kartami.
    */
   premenujZrusenePriazne(teraz: number): void {
-    const stare = this.bodovacie.vsetky().filter((b) => b.nazov === "Očumovateľ");
+    const stare = this.bodovacie.vsetky().filter((b) => b.nazov === "Očumovateľ" || b.nazov === "Zberateľ");
     if (stare.length === 0) return;
     transakcia(this.db, () => {
-      for (const b of stare) this.bodovacie.uloz(b.id, { ...b, nazov: "Zberateľ", upravene: teraz });
+      for (const b of stare) this.bodovacie.uloz(b.id, { ...b, nazov: "Úžerník", upravene: teraz });
     });
     this.prezverejniBodovanie(teraz);
   }
