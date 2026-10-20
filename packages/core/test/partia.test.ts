@@ -219,13 +219,13 @@ describe("M2 — NA EX", () => {
 
 describe("M2 — lokalita v línii", () => {
   it("akcie lokality sa aktivujú s prvou kartou a rátajú sa jej hráčovi", () => {
-    const lok = makeDef("lok", [null, "Cigaretka", null, null], ["Pecka", null, null, null], {
+    const lok = makeDef("lok", [null, "Cigareta", null, null], ["Pecka", null, null, null], {
       tags: ["Lokalita"],
     });
     const a = makeDef("a", EMPTY, [null, "Rana", null, null]);
     const c = makeDef("c", EMPTY, ["Viera", null, null, null]);
     const data = syntheticData([lok, a, c]);
-    const lokCard = instanceFor(data, "lok", [null, "Cigaretka", null, null], ["Pecka", null, null, null]);
+    const lokCard = instanceFor(data, "lok", [null, "Cigareta", null, null], ["Pecka", null, null, null]);
     const cardA = instanceFor(data, "a", EMPTY, [null, "Rana", null, null]);
     const cardC = instanceFor(data, "c", EMPTY, ["Viera", null, null, null]);
     const line: LineState = {
@@ -236,20 +236,20 @@ describe("M2 — lokalita v línii", () => {
       strany: [[own(cardA)], [{ card: cardC, playedBy: 1 }]],
     };
     const evaluated = evaluateLine(data, line);
-    // Spoj hráča 0: A.right[1] (Rana) ↔ lokalita.left[1] (Cigaretka).
-    expect(evaluated.sums[0]).toEqual({ Rana: 1, Cigaretka: 1 });
+    // Spoj hráča 0: A.right[1] (Rana) ↔ lokalita.left[1] (Cigareta).
+    expect(evaluated.sums[0]).toEqual({ Rana: 1, Cigareta: 1 });
     // Spoj hráča 1: lokalita.right[0] (Pecka) ↔ C otočená: eff left[0] = printed right[3]?
     // C má Vieru na printed right[0] → eff left[3]; na indexe 0 je prázdno → bez spoja.
     expect(evaluated.sums[1]).toEqual({});
   });
 
   it("natočenie lokality vymení strany aj indexy", () => {
-    const lok = makeDef("lok", [null, "Cigaretka", null, null], ["Pecka", null, null, null], {
+    const lok = makeDef("lok", [null, "Cigareta", null, null], ["Pecka", null, null, null], {
       tags: ["Lokalita"],
     });
     const a = makeDef("a", EMPTY, [null, null, "Rana", null]);
     const data = syntheticData([lok, a]);
-    const lokCard = instanceFor(data, "lok", [null, "Cigaretka", null, null], ["Pecka", null, null, null]);
+    const lokCard = instanceFor(data, "lok", [null, "Cigareta", null, null], ["Pecka", null, null, null]);
     const cardA = instanceFor(data, "a", EMPTY, [null, null, "Rana", null]);
     const line: LineState = {
       lokalita: lokCard,
@@ -263,7 +263,7 @@ describe("M2 — lokalita v línii", () => {
     // Rana na right[3] by sa už spárovala s Peckou (eff index 3).
     const a2 = makeDef("a2", EMPTY, [null, null, null, "Rana"]);
     const data2 = syntheticData([lok, a2]);
-    const lokCard2 = instanceFor(data2, "lok", [null, "Cigaretka", null, null], ["Pecka", null, null, null]);
+    const lokCard2 = instanceFor(data2, "lok", [null, "Cigareta", null, null], ["Pecka", null, null, null]);
     const cardA2 = instanceFor(data2, "a2", EMPTY, [null, null, null, "Rana"]);
     const line2: LineState = {
       lokalita: lokCard2,

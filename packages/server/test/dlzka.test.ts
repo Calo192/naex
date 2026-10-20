@@ -21,8 +21,7 @@ async function zalozAPripoj(dlzka?: string): Promise<{ view: { lokalitCelkom: nu
   await a.otvorene();
   await b.otvorene();
   a.posli(dlzka === undefined ? { type: "create" } : { type: "create", dlzka });
-  // Klient čaká naraz len na jeden typ správy — dlhá hra skončí chybou.
-  const odpoved = await a.cakaj(dlzka === "dlha" ? "error" : "privitanie");
+  const odpoved = await a.cakaj("privitanie");
   if (odpoved.type === "error") {
     a.zavri();
     b.zavri();
@@ -48,11 +47,12 @@ describe("dĺžka hry", () => {
     expect("view" in r && r.view.lokalitCelkom).toBe(5);
     const { cookie } = await registruj(server.port);
     const res = await fetch(`http://127.0.0.1:${server.port}/api/hry/otvorene`, { headers: { cookie } });
-    expect(((await res.json()) as { dlzky: string[] }).dlzky).toEqual(["kratka", "stredna"]);
+    // Sada v8 má 14 lokalít — dlhá hra (11) je možná.
+    expect(((await res.json()) as { dlzky: string[] }).dlzky).toEqual(["kratka", "stredna", "dlha"]);
   });
 
-  it("dlhú hru sada so 7 lokalitami nedovolí", async () => {
+  it("dlhá hra má 11 lokalít", async () => {
     const r = await zalozAPripoj("dlha");
-    expect("chyba" in r && r.chyba).toContain("lokalít");
+    expect("view" in r && r.view.lokalitCelkom).toBe(11);
   });
 });

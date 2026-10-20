@@ -3,7 +3,9 @@
 // Toto je jediné miesto, ktoré rozhoduje, čo hráč vidí. Zo stavu sa NIKDY
 // nesmie dostať von: obsah súperovej ruky, obsah ani poradie ŽIADNEHO
 // doberacieho balíčka (vlastného, súperovho, spoločného), súperov balíček
-// stavby šenku a jeho výber v kroku stavby. Posielajú sa len počty. Skryť kartu v rozhraní je bezcenné — filtruje sa TU a testuje sa to.
+// stavby šenku a jeho výber v kroku stavby, súperova ponuka Zberateľa a jeho
+// karta z Vízie.
+// Posielajú sa len počty. Skryť kartu v rozhraní je bezcenné — filtruje sa TU a testuje sa to.
 
 import type { CardInstance, Phase, PlayerId } from "./types.ts";
 import type { GameData } from "./data.ts";
@@ -20,7 +22,7 @@ import type {
   VyberStavby,
   ZhromazdenieStav,
 } from "./engine.ts";
-import { limitRukyHraca, mozeHrat, najdiNahradnikov, najdiNastroje, naTahu } from "./engine.ts";
+import { cenaDedicstva, mozeHrat, najdiNahradnikov, najdiNastroje, naTahu, zberatelBerie } from "./engine.ts";
 import { MARKER_STRED, posunMarker, priazenHraca, priazenSila } from "./elders.ts";
 import type { DamageResult } from "./battle.ts";
 
@@ -72,8 +74,6 @@ export interface DraftVerejne {
   readonly naTahu: PlayerId;
   readonly hotovo: readonly [boolean, boolean];
   readonly noveKarty: readonly [number, number];
-  /** Karty zaplatené poldeci, ktoré si hráč ešte vezme (verejné). */
-  readonly kredit: readonly [number, number];
 }
 
 export interface ClientState {
@@ -86,8 +86,10 @@ export interface ClientState {
   readonly mozemHrat: boolean;
   readonly pitkaCislo: number;
   readonly pitkyCelkom: number;
-  /** „Ešte jednu!“ — hráč, ktorý práve smie objednať ďalšiu rundu (verejné). */
-  readonly ponukaRundy: PlayerId | null;
+  /** Cena ďalšieho Nástroja do Dedičstva v cigaretách — rastie pre oboch (verejné). */
+  readonly cenaDedicstva: number;
+  /** Nástroje vyložené do Dedičstva za celú hru (verejné) — z nich je cena. */
+  readonly dedicstvaVylozene: number;
   /** Moja ruka — jediná ruka, ktorá sa posiela celá. */
   readonly ruka: readonly CardInstance[];
   readonly hraci: readonly [HracVerejne, HracVerejne];
@@ -98,8 +100,8 @@ export interface ClientState {
   readonly ovladnute: readonly { readonly karta: CardInstance; readonly hrac: PlayerId }[];
   /** Lokality, ktoré nikto nevyhral (Benzínka). */
   readonly prepadnute: readonly CardInstance[];
-  /** Limit ruky na konci kola (6 + priazeň Zberateľa). */
-  readonly limitRuky: readonly [number, number];
+  /** Zberateľ: koľko kariet si hráč po bitke vezme z 2× toľkých vrchných (0 = priazeň nemá). */
+  readonly zberatel: readonly [number, number];
   readonly naexVKole: readonly [boolean, boolean];
   readonly starsi: readonly ElderState[];
   readonly ciel: CielKola | null;
@@ -118,6 +120,12 @@ export interface ClientState {
   readonly volbyNahrada: readonly KartaVolba[] | null;
   /** Veštica (Prehra): oba doberacie balíčky — len porazenému počas výberu. */
   readonly volbaVestica: { readonly moj: readonly CardInstance[]; readonly jeho: readonly CardInstance[] } | null;
+  /** Zberateľ: vrchné karty MÔJHO balíčka, z ktorých si práve vyberám — len mne. */
+  readonly volbaZberatel: readonly CardInstance[] | null;
+  /** Vízia: koľko vrchných kariet ešte kto prezrie (verejné, null = Vízia neprebieha). */
+  readonly vizia: { readonly zostava: readonly [number, number] } | null;
+  /** Vízia: vrchná karta MÔJHO balíčka, o ktorej práve rozhodujem — len mne. */
+  readonly volbaVizia: CardInstance | null;
   /**
    * Nepriznané kliatby v MOJOM doberacom balíčku (len počty, poradie nie).
    * Vlastné karty hráč pozná, len nevie, v akom poradí ich dobere — bez nich
@@ -160,7 +168,8 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
     mozemHrat: mozeHrat(state, ja),
     pitkaCislo: state.pitkaCislo,
     pitkyCelkom: state.pitkyCelkom,
-    ponukaRundy: state.ponukaRundy,
+    cenaDedicstva: cenaDedicstva(state),
+    dedicstvaVylozene: state.dedicstvaVylozene,
     ruka: state.hraci[ja].ruka,
     hraci: [publicPlayer(0), publicPlayer(1)],
     spolocnyBalicekPocet: state.spolocnyBalicek.length,
@@ -169,7 +178,7 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
     lokalitCelkom: state.lokalitCelkom,
     ovladnute: state.ovladnute,
     prepadnute: state.prepadnute,
-    limitRuky: [limitRukyHraca(data, state, 0), limitRukyHraca(data, state, 1)],
+    zberatel: [zberatelBerie(data, state, 0), zberatelBerie(data, state, 1)],
     naexVKole: state.naexVKole,
     starsi: state.starsi,
     ciel: state.ciel,
@@ -187,7 +196,6 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
             naTahu: d.naTahu,
             hotovo: d.hotovo,
             noveKarty: d.noveKarty,
-            kredit: d.kredit,
           },
     zhromazdenieStav: state.zhromazdenieStav,
     pitkaStav: state.pitkaStav,
@@ -215,6 +223,9 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
       mojaBitkovaVolba && bitka.krok === "vestica"
         ? { moj: state.hraci[ja].doberaci, jeho: state.hraci[ja === 0 ? 1 : 0].doberaci }
         : null,
+    volbaZberatel: mojaBitkovaVolba && bitka.krok === "zberatel" ? bitka.zberatelPonuka[ja] : null,
+    vizia: state.vizia,
+    volbaVizia: state.vizia !== null && naTahu(state) === ja ? (state.hraci[ja].doberaci[0] ?? null) : null,
     mojeKliatbyVBalicku: {
       dlh: state.hraci[ja].doberaci.filter((k) => k.defId === "dlh").length,
       cirhoza: state.hraci[ja].doberaci.filter((k) => k.defId === "cirhoza").length,

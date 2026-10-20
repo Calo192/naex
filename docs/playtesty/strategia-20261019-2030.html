@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stratégia 20261019-2030 — viac Pitiek, progresia a tempo — NA EX!</title>
+<style>
+  :root {
+    --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #dccdb3;
+    --text: #2a2016; --tlmeny: #6b5b45; --slaby: #7d6d55;
+    --akcent: #9a5f0c; --cervena: #a83c28; --zelena: #3a7533; --modra: #276f7a;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 system-ui, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 1040px; margin: 0 auto; padding: 32px 16px 100px; }
+  h1, h2, h3 { font-family: Georgia, serif; line-height: 1.2; }
+  h1 { font-size: clamp(1.7rem, 4vw, 2.3rem); margin: 0 0 8px; }
+  h2 { font-size: 1.35rem; margin: 44px 0 12px; }
+  h3 { font-size: 1.08rem; margin: 0 0 6px; }
+  .podnadpis { color: var(--tlmeny); margin: 0 0 20px; max-width: 78ch; }
+  a { color: var(--akcent); }
+  code { font-size: 0.88em; background: var(--plocha-2); padding: 1px 5px; border-radius: 5px; }
+  .verdikt { border: 1px solid color-mix(in srgb, var(--akcent) 55%, transparent); background: color-mix(in srgb, var(--akcent) 8%, var(--plocha));
+    border-radius: 14px; padding: 14px 18px; margin: 18px 0; }
+  .verdikt p { margin: 6px 0; }
+  .stitok { display: inline-block; font: 700 0.78rem/1 system-ui, sans-serif; letter-spacing: 0.06em; text-transform: uppercase;
+    color: #fff; background: var(--akcent); border-radius: 999px; padding: 5px 12px; margin-bottom: 8px; }
+  .cisla { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; margin: 16px 0; }
+  .cislo { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; }
+  .cislo b { display: block; font: 700 1.45rem/1.1 Georgia, serif; color: var(--akcent); }
+  .cislo span { color: var(--tlmeny); font-size: 0.88rem; display: block; margin-top: 4px; }
+  .tab { overflow-x: auto; background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; margin: 10px 0; }
+  .tab table { width: 100%; border-collapse: collapse; font-size: 0.86rem; min-width: 760px; }
+  .tab th, .tab td { padding: 7px 9px; border-bottom: 1px solid var(--okraj); text-align: left; vertical-align: top; }
+  .tab tr:last-child td { border-bottom: 0; }
+  .tab th { color: var(--slaby); font-weight: 600; font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .tab th button { all: unset; cursor: pointer; }
+  .tab th button:hover, .tab th button:focus-visible { color: var(--akcent); outline: none; text-decoration: underline; }
+  .tab td.n { font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
+  .tab tr.vych td { background: color-mix(in srgb, var(--modra) 9%, transparent); }
+  .tab tr.odpor td { background: color-mix(in srgb, var(--zelena) 10%, transparent); }
+  .dobre { color: var(--zelena); font-weight: 600; }
+  .zle { color: var(--cervena); font-weight: 600; }
+  .zav { display: inline-block; border-radius: 999px; padding: 1px 9px; font-size: 0.78rem; font-weight: 700; }
+  .zav.vys { background: color-mix(in srgb, var(--cervena) 18%, transparent); color: var(--cervena); }
+  .zav.str { background: color-mix(in srgb, var(--akcent) 18%, transparent); color: var(--akcent); }
+  .zav.niz { background: color-mix(in srgb, var(--zelena) 18%, transparent); color: var(--zelena); }
+  .graf { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 12px 14px; margin: 10px 0; }
+  .riadok { display: grid; grid-template-columns: 150px 1fr; gap: 8px; align-items: center; margin: 5px 0; font-size: 0.86rem; }
+  .riadok .meno { color: var(--tlmeny); }
+  .pruhy { display: grid; gap: 3px; }
+  .pruh { position: relative; height: 15px; background: var(--plocha-2); border-radius: 4px; }
+  .pruh i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; background: var(--akcent); }
+  .pruh.e25 i { background: var(--modra); }
+  .pruh.pit i { background: var(--zelena); }
+  .pruh em { position: absolute; right: 6px; top: 0; font-style: normal; font-size: 0.74rem; color: var(--text); }
+  .pruh .polovica { position: absolute; left: 50%; top: -2px; bottom: -2px; border-left: 1px dashed var(--slaby); }
+  .legenda { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 8px; font-size: 0.84rem; color: var(--tlmeny); }
+  .legenda i { display: inline-block; width: 16px; height: 8px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
+  .poznamka { color: var(--tlmeny); font-size: 0.88rem; margin: 8px 2px 0; }
+  .filtre { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 14px; }
+  .filtre button { font: inherit; font-size: 0.88rem; border-radius: 999px; padding: 5px 14px; border: 1px solid var(--okraj);
+    background: var(--plocha-2); color: var(--text); cursor: pointer; }
+  .filtre button[aria-pressed="true"] { background: var(--akcent); color: #fff; border-color: var(--akcent); font-weight: 700; }
+  .filtre button:focus-visible, details summary:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+  .navrh { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 14px 16px; margin-bottom: 12px; }
+  .navrh.odp-zaviest { border-left: 5px solid var(--zelena); }
+  .navrh.odp-vyskusat { border-left: 5px solid var(--akcent); }
+  .navrh.odp-zamietnut { border-left: 5px solid var(--cervena); }
+  .navrh dl { display: grid; grid-template-columns: minmax(110px, 170px) 1fr; gap: 4px 12px; margin: 8px 0 0; font-size: 0.93rem; }
+  .navrh dt { color: var(--slaby); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; padding-top: 3px; }
+  .navrh dd { margin: 0; }
+  .odp { display: inline-block; font-size: 0.76rem; font-weight: 700; border-radius: 999px; padding: 2px 10px; margin-left: 6px; vertical-align: middle; color: #fff; }
+  .odp.zaviest { background: var(--zelena); }
+  .odp.vyskusat { background: var(--akcent); }
+  .odp.zamietnut { background: var(--cervena); }
+  blockquote { margin: 6px 0; padding: 4px 12px; border-left: 3px solid var(--okraj); color: var(--tlmeny); font-style: italic; font-size: 0.9rem; }
+  ol.otazky li, ul.zoznam li { margin-bottom: 7px; }
+  details { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 8px 14px; margin: 8px 0; }
+  details summary { cursor: pointer; font-weight: 600; }
+  footer { margin-top: 50px; padding-top: 14px; border-top: 1px solid var(--okraj); color: var(--slaby); font-size: 0.85rem; }
+  @media (max-width: 560px) {
+    .navrh dl { grid-template-columns: 1fr; }
+    .riadok { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<main>
+<h1>Viac Pitiek, progresia a tempo</h1>
+<p class="podnadpis">Rozbor stratéga 20261019-2030 · bez playtestu · podklad pre interview s Michalom. Nadväzuje na
+<a href="strategia-20261019-1858.html">rozbor ruky a prílevu kariet</a>. Zmerané sú Michalove návrhy 1–6 jednotlivo, tri mechanizmy Pitiek a dva balíky.
+Bot Štamgast hrá proti sebe, stredná hra (7 lokalít), 192 partií na variant. Rebrík a delené rozdania: 96 rozdaní × 2 miesta.</p>
+
+<section class="verdikt" aria-labelledby="verdikt">
+  <span class="stitok" id="verdikt">Verdikt</span>
+  <p>Michal má pravdu: dnes <b>87 % bitiek o lokalitu má jedinú Pitku</b>. Pitiek je 11,9 na partiu a hráč vyloží 2,1 až 2,8 karty za kolo.
+  Dlhov vznikne dosť (8,1 na hráča), lenže končia v odhadzovacom balíčku a v ruke ich je v priemere 0,29.
+  Najlepší pomer prínosu a ceny majú <b>pevne 2 Pitky o lokalitu a 1 o staršieho</b> namiesto „Ešte jednu!“. Pitiek je o 42 % viac, kariet vyložených za kolo o 50 % viac,
+  Dlhov o 53 % viac a otočky ostanú na 40 %. Platí sa za to +18 % príkazov za partiu, jedna Pitka je však kratšia (18,5 príkazu oproti 22,3).</p>
+  <p>Celý balík (body 1–6) splní „viac kliatob“ až priveľmi: kliatby v ruke stúpnu 4,4-krát, Absťáky 2,4-krát a otočky klesnú na 30 %.
+  Hra potom <b>začína najsilnejšia</b>: limit 4 v 1. kole, potom 3. Progresiu teda nepridá, skôr ju otočí.
+  Šenok za cigarety pri 1 štartovej cigarete vyschne (−36 % kariet zo šenku). Nový efekt Milujúcej manželky zdvojnásobí Absťáky.
+  Odporúčam zaviesť 2 Pitky ako prvé, k nim +2 karty po bitke a Dedičstvo s rastúcou cenou. Šenok za cigarety len so 3 štartovými cigaretami a Manželku v miernejšej podobe.</p>
+</section>
+
+<h2 id="cisla">Čísla: východisko → 2 Pitky → celý balík</h2>
+<div class="cisla">
+  <div class="cislo"><b>60 → 65 → 66 %</b><span>Rebrík ε = 0,1 (predošlý rozbor: 60 %). Bot s 10 % náhodných ťahov prehráva o niečo častejšie, chyba sa trestá viac. Šum je asi ±7 bodov, takže ide len o náznak.</span></div>
+  <div class="cislo"><b>88 → 87 → 82 %</b><span>Rebrík ε = 0,25. Pri hrubých chybách sa nič nezlepšilo. V balíku je pokles na hrane šumu, lebo viac kliatob pridáva náhodu z dobierania.</span></div>
+  <div class="cislo"><b>50 → 42 → 46 %</b><span>Delené rozdania pri ε = 0,1: o niečo menej partií rozhodne rozdanie alebo miesto namiesto hráča.</span></div>
+  <div class="cislo"><b>48 → 45 → 52 %</b><span>Výhoda hráča 1: všetky tri sú férové (±4 body šumu).</span></div>
+  <div class="cislo"><b>39 → 40 → 30 %</b><span>Otočky: víťaz po polovici kôl prehrával. Pri 2 Pitkách ostáva dobiehanie celé, balík sa blíži k dolnej hranici pásma 20–40 %.</span></div>
+  <div class="cislo"><b>64 → 62 → 73 %</b><span>Vedúci po 5. kole vyhrá. V balíku sa partia rozhodne skôr, čo je cena za snowball kliatob.</span></div>
+  <div class="cislo"><b>0,39 → 0,32 → 0,32</b><span>Predurčenosť rozdania (šum ≈ 0,31). Rozdanie určuje víťaza menej, pri 10 rozdaniach je to však len náznak. Balík s objednávaním (0,46) ide opačne.</span></div>
+  <div class="cislo"><b>11,9 → 16,9 → 16,7</b><span>Pitiek za partiu. Na bitku o lokalitu 1,14 → 2,00. V 1. kole sa vyloží 2,3 → 3,8 → 4,0 karty.</span></div>
+  <div class="cislo"><b>265 → 312 → 318</b><span>Príkazov za partiu (+18 %, +20 %). Kôl je 10,2 → 9,9 → 9,7. Hra sa nezrýchli, kým sa neuberú kolá.</span></div>
+  <div class="cislo"><b>0,29 → 0,46 → 1,28</b><span>Kliatby v ruke na začiatku kola. Nových Dlhov na hráča 8,1 → 12,4 → 19,4, Cirhóz 3,0 → 4,1 → 10,2.</span></div>
+</div>
+
+<h3>Rebrík vo všetkých variantoch</h3>
+<div class="graf">
+  <div id="rebrik" role="img" aria-label="Rebrík zručnosti: podiel výhier bota proti sebe s 10 % a 25 % náhodných ťahov vo všetkých variantoch">
+    <p class="poznamka">Graf potrebuje JavaScript. Rovnaké čísla sú v tabuľke nižšie.</p>
+  </div>
+  <div class="legenda"><span><i style="background:var(--akcent)"></i>ε = 0,1</span><span><i style="background:var(--modra)"></i>ε = 0,25 (merané len pri Pitkách a balíkoch)</span><span>prerušovaná čiara = 50 %</span></div>
+</div>
+<p class="poznamka">Pri 96 rozdaniach je štandardná chyba rozdielu dvoch variantov asi ±7 bodov. Rebrík pri ε = 0,1 stúpol vo všetkých variantoch (63–71 %), čo je skôr znak, že meranie východiska vyšlo nízko, než že každá zmena pridá zručnosť.</p>
+
+<h2 id="tabulka">Všetky varianty</h2>
+<p class="poznamka">Kliknutím na hlavičku stĺpca zoradíš. Hodnoty sú na hráča a partiu, ak nie je uvedené inak. „Kl. v ruke“ = kliatby v ruke na začiatku kola. „Šenok“ = kariet zo šenku na hráča a partiu.</p>
+<div class="tab">
+<table id="varianty">
+<thead><tr>
+<th><button data-k="0">Variant</button></th><th><button data-k="1">Pitky / partia</button></th><th><button data-k="2">Pitky / lokalita</button></th><th><button data-k="3">Príkazy</button></th><th><button data-k="4">Kolá</button></th>
+<th><button data-k="5">Dlh</button></th><th><button data-k="6">Cirhóza</button></th><th><button data-k="7">Absťák</button></th><th><button data-k="8">Kl. v ruke</button></th><th><button data-k="9">Šenok</button></th>
+<th><button data-k="10">ε 0,1</button></th><th><button data-k="11">Delené</button></th><th><button data-k="12">ε 0,25</button></th><th><button data-k="13">Otočky</button></th><th><button data-k="14">Ved. k5</button></th>
+</tr></thead>
+<tbody>
+<tr class="vych"><td>Východisko (dnes)</td><td class="n">11,9</td><td class="n">1,14</td><td class="n">265</td><td class="n">10,2</td><td class="n">8,1</td><td class="n">3,0</td><td class="n">2,0</td><td class="n">0,29</td><td class="n">15,2</td><td class="n">60 %</td><td class="n">50 %</td><td class="n">88 %</td><td class="n">39 %</td><td class="n">64 %</td></tr>
+<tr><td>1 · poldeci 3</td><td class="n">13,0</td><td class="n">1,24</td><td class="n">297</td><td class="n">10,1</td><td class="n">11,7</td><td class="n">4,3</td><td class="n">2,1</td><td class="n">0,42</td><td class="n">18,3</td><td class="n">69 %</td><td class="n">38 %</td><td class="n">—</td><td class="n">31 %</td><td class="n">67 %</td></tr>
+<tr><td>2 · +2 karty po bitke, bez limitu ruky</td><td class="n">11,6</td><td class="n">1,13</td><td class="n">267</td><td class="n">9,9</td><td class="n">6,5</td><td class="n">2,3</td><td class="n">1,9</td><td class="n">0,34</td><td class="n">14,4</td><td class="n">66 %</td><td class="n">43 %</td><td class="n">—</td><td class="n">41 %</td><td class="n">59 %</td></tr>
+<tr><td>3 · šenok len za cigarety (1 = 1, 2 = 3)</td><td class="n">12,7</td><td class="n">1,30</td><td class="n">273</td><td class="n">10,0</td><td class="n">12,9</td><td class="n">5,6</td><td class="n">2,4</td><td class="n">0,82</td><td class="n">9,7</td><td class="n">71 %</td><td class="n">43 %</td><td class="n">—</td><td class="n">35 %</td><td class="n">72 %</td></tr>
+<tr><td>4 · Dedičstvo 1, 2, 3… cigariet</td><td class="n">11,8</td><td class="n">1,13</td><td class="n">262</td><td class="n">10,1</td><td class="n">7,7</td><td class="n">3,1</td><td class="n">2,0</td><td class="n">0,29</td><td class="n">15,2</td><td class="n">60 %</td><td class="n">53 %</td><td class="n">—</td><td class="n">39 %</td><td class="n">62 %</td></tr>
+<tr><td>5 · priznanie = karta, Manželka: prah Absťáku +1</td><td class="n">11,3</td><td class="n">1,16</td><td class="n">253</td><td class="n">9,6</td><td class="n">7,1</td><td class="n">3,1</td><td class="n zle">4,8</td><td class="n">0,27</td><td class="n">15,6</td><td class="n">64 %</td><td class="n">44 %</td><td class="n">—</td><td class="n">42 %</td><td class="n">64 %</td></tr>
+<tr class="odpor"><td>6a · 2 Pitky o lokalitu, 1 o staršieho</td><td class="n">16,9</td><td class="n">2,00</td><td class="n">312</td><td class="n">9,9</td><td class="n">12,4</td><td class="n">4,1</td><td class="n">1,7</td><td class="n">0,46</td><td class="n">17,5</td><td class="n">65 %</td><td class="n">42 %</td><td class="n">87 %</td><td class="n">40 %</td><td class="n">62 %</td></tr>
+<tr><td>6b · objednať smie aj vedúci</td><td class="n">13,1</td><td class="n">1,24</td><td class="n">282</td><td class="n">10,3</td><td class="n">9,5</td><td class="n">3,6</td><td class="n">2,0</td><td class="n">0,32</td><td class="n">15,6</td><td class="n">65 %</td><td class="n">43 %</td><td class="n">90 %</td><td class="n">39 %</td><td class="n">64 %</td></tr>
+<tr><td>6c · tesná bitka (rozdiel ≤ 2) = ďalšia Pitka, najviac 3</td><td class="n">17,4</td><td class="n">1,98</td><td class="n">325</td><td class="n">10,5</td><td class="n">13,8</td><td class="n">5,0</td><td class="n">1,9</td><td class="n">0,54</td><td class="n">17,6</td><td class="n">69 %</td><td class="n">45 %</td><td class="n">87 %</td><td class="n">38 %</td><td class="n">67 %</td></tr>
+<tr><td>Balík 1–5 + 6a</td><td class="n">16,7</td><td class="n">2,00</td><td class="n">318</td><td class="n">9,7</td><td class="n">19,4</td><td class="n">10,2</td><td class="n zle">4,7</td><td class="n">1,28</td><td class="n">10,7</td><td class="n">66 %</td><td class="n">46 %</td><td class="n">82 %</td><td class="n zle">30 %</td><td class="n zle">73 %</td></tr>
+<tr><td>Balík 1–5 + 6b</td><td class="n">17,9</td><td class="n">1,90</td><td class="n">340</td><td class="n">9,7</td><td class="n">21,1</td><td class="n">12,2</td><td class="n zle">4,5</td><td class="n">1,33</td><td class="n">11,1</td><td class="n">70 %</td><td class="n">39 %</td><td class="n">83 %</td><td class="n zle">27 %</td><td class="n zle">74 %</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="progresia">Progresia: silnie hráč počas partie?</h2>
+<p>Navrhujem tri čísla, každé zvlášť, lebo každé meria inú vrstvu: <b>limit vykladania</b> (koľko stihnem za kolo), <b>aktívne akcie v línii pri bitke</b>
+(sila toho, čo vyložím) a <b>podiel kariet mimo štartoviek a kliatob</b> v balíčku (či sa balíček zlepšuje). Zdravá progresia znamená, že všetky tri od 1. po 9. kolo rastú.</p>
+<div class="tab">
+<table>
+<thead><tr><th>Kolo 1 → 3 → 5 → 7 → 9</th><th>Limit vykladania</th><th>Aktívne akcie v línii</th><th>Tuhé v bitke</th><th>Podiel nových kariet</th><th>Balíček</th><th>Ruka</th></tr></thead>
+<tbody>
+<tr class="vych"><td>Východisko</td><td>2,0 → 2,1 → 2,2 → 2,3 → 2,3</td><td>6,0 → 6,2 → 6,5 → 7,3 → 7,7</td><td>3,2 → 2,3 → 2,0 → 1,7 → 2,3</td><td>20 → 34 → 41 → 46 → 49 %</td><td>13 → 27</td><td>7,5 → 6,7</td></tr>
+<tr><td>1 · poldeci 3</td><td>2,2 → 2,3 → 2,4 → 2,5 → 2,9</td><td>7,5 → 7,0 → 7,9 → 8,4 → 9,5</td><td>3,7 → 2,3 → 2,3 → 2,2 → 2,8</td><td>27 → 39 → 44 → 48 → 49 %</td><td>14 → 32</td><td>8,8 → 6,8</td></tr>
+<tr><td>2 · +2 karty</td><td>2,0 → 2,1 → 2,1 → 2,3 → 2,5</td><td>6,0 → 6,1 → 6,3 → 7,9 → 8,4</td><td>3,2 → 2,1 → 2,8 → 3,0 → 2,9</td><td>20 → 34 → 43 → 49 → 53 %</td><td>13 → 24</td><td class="zle">7,5 → 13,2</td></tr>
+<tr><td>3 · šenok za cigarety</td><td>3,0 → 2,4 → 2,7 → 2,9 → 3,0</td><td>9,0 → 7,7 → 8,5 → 8,0 → 8,8</td><td>3,3 → 2,8 → 2,6 → 2,5 → 2,8</td><td class="zle">9 → 17 → 26 → 32 → 38 %</td><td>11 → 24</td><td>6,0 → 6,2</td></tr>
+<tr><td>5 · priznanie + Manželka</td><td>2,0 → 2,0 → 2,2 → 2,3 → 2,6</td><td>6,1 → 6,4 → 7,2 → 7,0 → 7,4</td><td class="zle">3,4 → 2,5 → 1,8 → 1,4 → 1,3</td><td>20 → 36 → 44 → 50 → 52 %</td><td>13 → 27</td><td>7,5 → 6,6</td></tr>
+<tr class="odpor"><td>6a · 2 Pitky</td><td>2,0 → 2,1 → 2,1 → 2,3 → 2,6</td><td>10,0 → 8,8 → 9,0 → 10,2 → 10,8</td><td>4,1 → 2,6 → 2,7 → 2,7 → 2,7</td><td>20 → 33 → 41 → 46 → 49 %</td><td>13 → 30</td><td>7,5 → 6,7</td></tr>
+<tr><td>Balík 1–5 + 6a</td><td class="zle">4,0 → 3,0 → 3,4 → 3,9 → 4,2</td><td class="zle">13,5 → 9,1 → 10,4 → 11,0 → 10,8</td><td class="zle">4,1 → 2,6 → 2,8 → 2,3 → 2,2</td><td class="zle">9 → 17 → 24 → 32 → 37 %</td><td>11 → 27</td><td>6,0 → 4,6 → 6,0</td></tr>
+</tbody>
+</table>
+</div>
+<ul class="zoznam">
+  <li><b>Dnes rastie balíček, ale nie stôl.</b> Podiel nových kariet stúpne z 20 % na 49 %, aktívne akcie len o 28 % a limit o 0,3. Tuhé poškodenie v bitke dokonca klesá (3,2 → 2,3), lebo pribúdajú Absťáky a Viera ruší Poveru. Odtiaľ „poriadne nič nestihám“.</li>
+  <li><b>Balík začína na vrchole.</b> Tri poldeci plus šenok bez poldeci dajú v 1. kole limit 4 a 13,5 aktívnej akcie. Potom sa NA EX a Absťáky zjedia a 9. kolo je slabšie než 1. To je opak „začína slabý a vylepšuje sa“.</li>
+  <li><b>Šenok za cigarety brzdí stavbu balíčka</b>: 9 → 38 % nových kariet oproti 20 → 49 %. Hráč na začiatku kola má 0,0 / 0,4 / 1,0 cigarety (1., 3. a 5. kolo).</li>
+  <li><b>Najčistejšiu progresiu dávajú 2 Pitky a +2 karty</b>: akcie rastú, tuhé sa po 3. kole nepropadá a balíček sa zlepšuje ako dnes.</li>
+</ul>
+<p class="poznamka">Merané v stave na začiatku prvého Zhromaždenia kola (limit, balíček, ruka) a v poslednej Pitke pred bitkou (akcie a tuhé bez Absťákov v ruke). Skript: <code>playtest/strategia/20261019-2030/pitky.ts</code>.</p>
+
+<h2 id="mapa">Kde vzniká pocit „nič nestihám“: mapa</h2>
+<div class="tab">
+<table>
+<thead><tr><th>Zdroj</th><th>Kedy vstupuje</th><th>Rozptyl / veľkosť</th><th>Čím sa dá dnes tlmiť</th><th>Závažnosť</th></tr></thead>
+<tbody>
+<tr><td>Jedna Pitka na bitku</td><td>pevné pravidlo; „Ešte jednu!“ len pre prehrávajúceho</td><td>87 % bitiek o lokalitu má 1 Pitku, 11 % 2 a 2 % 3</td><td>vypiť poldeci a objednať rundu. Vedúci nemá nič, a tak víťaz „čaká“.</td><td><span class="zav vys">vysoká</span></td></tr>
+<tr><td>Kliatby idú do odhadzovacieho balíčka</td><td>po Pitke; do ruky prídu až po zamiešaní</td><td>8,1 Dlhu na hráča za partiu, v ruke 0,29 kliatby na kolo</td><td>nič. Kliatba sa vráti o 4–6 kôl neskôr, často až po rozhodnutí partie.</td><td><span class="zav vys">vysoká</span></td></tr>
+<tr><td>Limit vykladania stojí na mieste</td><td>celú partiu</td><td>2,0 → 2,3 za 9 kôl</td><td>barter za 5 cigariet, Poldecko a Krčmárka. Väčšina poldeci ide do šenku (78 % kariet zo šenku je za poldeci).</td><td><span class="zav str">stredná</span></td></tr>
+<tr><td>Dobranie kliatby po zmene pravidiel</td><td>pred rozhodnutím (vidí ju v ruke)</td><td>v balíku 1,28 kliatby v ruke na kolo</td><td>priznanie (karta navyše), Vízia, Dievčina</td><td><span class="zav str">stredná, rastie s balíkom</span></td></tr>
+<tr><td>Cigarety ako jediná mena šenku</td><td>pred draftom</td><td>v balíku 0,0–1,4 cigarety na začiatku kola</td><td>Cigaretky v línii; štart dáva 1 cigaretu</td><td><span class="zav vys">vysoká, ak sa zavedie bod 3</span></td></tr>
+</tbody>
+</table>
+</div>
+<blockquote>„Hra pôsobí, že hráč poriadne nič nestihá spraviť, väčšina bitiek je na jednu Pitku.“ — Michal</blockquote>
+<blockquote>Playtest 20261019-055945 (zmeny pravidiel): „Objednali sa 2 rundy, ani jedna bitku neotočila.“</blockquote>
+
+<h2 id="navrhy">Návrhy</h2>
+<div class="filtre" role="group" aria-label="Filter podľa odporúčania">
+  <button type="button" data-f="vsetky" aria-pressed="true">Všetky</button>
+  <button type="button" data-f="zaviest" aria-pressed="false">Zaviesť</button>
+  <button type="button" data-f="vyskusat" aria-pressed="false">Vyskúšať v playteste</button>
+  <button type="button" data-f="zamietnut" aria-pressed="false">Zamietnuť / upraviť</button>
+</div>
+<div id="navrhy">
+
+<article class="navrh odp-zaviest" data-odp="zaviest">
+  <h3>6a. Pevne 2 Pitky o lokalitu, 1 o staršieho, bez „Ešte jednu!“ <span class="odp zaviest">zaviesť</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>87 % bitiek o lokalitu má jedinú Pitku. „Ešte jednu!“ smie len prehrávajúci a v playteste rundou bitku neotočil nikto.</dd>
+    <dt>Zmena</dt><dd>Každá bitka o lokalitu má 2 Zhromaždenia a 2 Pitky. Bitka o staršieho má 1 Pitku. Pravidlo „Ešte jednu!“ zaniká (<code>RUNDY_NAVYSE</code> 0, v drafte <code>pitkyCelkom = 2</code>).</dd>
+    <dt>Prečo zručnosť</dt><dd>Obaja vedia vopred, že príde druhé Zhromaždenie. Môžu si šetriť kartu, NA EX a odpoveď na druhú Pitku a plánovať dve vlny. Kliatby z 1. Pitky sa môžu prejaviť v 2. a priznanie Dlhu dá kartu, ktorú ešte stihneš zahrať.</dd>
+    <dt>Čísla</dt><dd>Pitky 11,9 → 16,9 · vyložené za kolo 2,1–2,8 → 3,1–3,8 · Dlh 8,1 → 12,4 · Cirhóza 3,0 → 4,1 · kliatby v ruke 0,29 → 0,46 · rebrík 60 → 65 % / 88 → 87 % · otočky 39 → 40 % · predurčenosť 0,39 → 0,32 · príkazy 265 → 312 (+18 %), kolá 10,2 → 9,9.</dd>
+    <dt>Cena a riziko</dt><dd>Kolo o lokalitu je dlhšie o jedno Zhromaždenie. V histórii bolo 24 Pitiek „priveľa“ (Pitky podľa lokality, 20261018-185541). 2 Pitky dajú v 7-lokalitovej hre 14 + 3 ≈ 17, teda pod touto hranicou.
+      Ak sa má hra zrýchliť, treba ubrať kolá, nie Pitky (viď otázku 2 pre Michala).</dd>
+    <dt>Náročnosť</dt><dd>malá: konštanta a jeden riadok v drafte. Botovi netreba nič, iba zmazať rozhodovanie o runde. Web: pás „Pitka X z 2“ už existuje.</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zaviest" data-odp="zaviest">
+  <h3>2. Po bitke dober 2 karty, bez limitu ruky — ale len spolu s 2 Pitkami <span class="odp zaviest">zaviesť s 6a</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Doplnenie na 5 dáva v priemere 1 kartu za kolo (predošlý rozbor). Limit ruky skoro nič nerobí (2,8 odhodených kariet za partiu).</dd>
+    <dt>Zmena</dt><dd>Na začiatku kola (po bitke) si každý hráč dobere 2 karty. Limit ruky zaniká (<code>LIMIT_RUKY_ZAKLAD</code> by mal byť nekonečno a Zberateľ potrebuje nový efekt).</dd>
+    <dt>Prečo zručnosť</dt><dd>Prílev je pevný a predvídateľný, takže hráč vie, s čím plánuje. Bez limitu sa oplatí šetriť kombo na neskôr.</dd>
+    <dt>Čísla</dt><dd>Samostatne: ruky 7,5 → 13,2 v 7. kole (to isté ako D2 v predošlom rozbore), Dlh 8,1 → 6,5, otočky 41 %, rebrík 66 %.
+      V balíku s 2 Pitkami a vyšším limitom: ruky 4,6–6,0, pretože 2 Pitky karty spotrebujú.</dd>
+    <dt>Cena a riziko</dt><dd>Bez 2 Pitiek ruky nafúknu (13 kariet) a hráč prestane cítiť nedostatok. Zberateľovi zanikne priazeň.
+      Alternatíva, ktorá viaže prílev na Pitky: <b>dober 1 kartu po každej Pitke</b> (pri 2 Pitkách to isté, pri staršom polovica). Nemerané.</dd>
+    <dt>Náročnosť</dt><dd>malá (jedna funkcia), stredná kvôli Zberateľovi.</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zaviest" data-odp="zaviest">
+  <h3>4. Dedičstvo s rastúcou cenou: 1., 2., 3. Nástroj = 1, 2, 3 cigarety <span class="odp zaviest">zaviesť</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Do Dedičstva v playtestoch nedal nikto nič (zmeny pravidiel, 20261018-185541 aj 20261019-055945).</dd>
+    <dt>Zmena</dt><dd>n-tý Nástroj v Dedičstve stojí n cigariet (dnes vždy 2). Návrh textu: „Dedičstvo: prvý Nástroj stojí 1 cigaretu, každý ďalší o 1 viac.“</dd>
+    <dt>Prečo zručnosť</dt><dd>Prvý Nástroj je lacný, takže je to skutočná voľba v 1.–3. kole: dať ho do línie, alebo natrvalo. Ďalšie sú drahšie, takže treba vybrať, ktorý sa oplatí.</dd>
+    <dt>Čísla</dt><dd>Nástrojov v Dedičstve 0,81 → 1,04 na hráča (+28 %). Ostatné čísla sa nepohnú (rebrík 60 %, otočky 39 %). Bot si Nástroje vyberá podľa pevnej tabuľky, takže nárast u ľudí môže byť väčší.</dd>
+    <dt>Cena a riziko</dt><dd>Takmer žiadne. Pri šenku za cigarety (bod 3) sa Dedičstvo s šenkom bije o cigarety: v balíku klesne na 0,45.</dd>
+    <dt>Náročnosť</dt><dd>malá. Treba upraviť <code>cieleVykladania</code> (cena podľa počtu v Dedičstve) a text na webe.</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-vyskusat" data-odp="vyskusat">
+  <h3>3. Šenok len za cigarety (1 karta = 1, 2 karty = 3) — a viac štartových cigariet <span class="odp vyskusat">vyskúšať so START_CIGARETY 3</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Dnes 78 % kariet zo šenku stojí poldeci, takže stavba balíčka priamo uberá limit vykladania v tom istom kole. Hráč si vyberá medzi „silnieť“ a „stihnúť“.</dd>
+    <dt>Zmena</dt><dd>Podľa Michala: platí sa len cigaretami, 1 karta za 1, 2 karty naraz za 3 (prémia za to, že súperovi zoberieš dve). Kto nemá cigaretu, pasuje.</dd>
+    <dt>Prečo zručnosť</dt><dd>Poldeci ostanú na Zhromaždenie (limit v 1. kole 2,0 → 3,0) a cigarety sa stanú hlavnou menou: šenok, Dedičstvo, fajčenie aj doliatie sa bijú o to isté.</dd>
+    <dt>Čísla</dt><dd>Kariet zo šenku 15,2 → <b class="zle">9,7</b> (−36 %), podiel nových kariet v 9. kole 49 → 38 %, cigarety na začiatku kola 0,0 / 0,4 / 1,0 (1., 3. a 5. kolo).
+      Dlh 8,1 → 12,9, kliatby v ruke 0,29 → 0,82 (menší balíček sa skôr zamieša), Pitky 1,14 → 1,30 na lokalitu (poldeci ostanú na „Ešte jednu!“), rebrík 71 %, otočky 35 %.</dd>
+    <dt>Cena a riziko</dt><dd>So štartovou 1 cigaretou šenok vyschne a progresia balíčka klesne, čo je opak cieľa. Dve karty za 3 si bot vzal 0-krát, lebo na to cigarety nemá.
+      Poistka (nemeraná): <b>START_CIGARETY 3</b> (v 1. kole buď 3 karty po jednej, alebo dvojica a jedna). Druhá možnosť je <b>2 karty za 2 cigarety</b> bez prémie, s jednoduchšou matematikou, no zanikne v nej voľba „zober súperovi dve“.</dd>
+    <dt>Náročnosť</dt><dd>malá v jadre. Bot potrebuje prepočet ceny (urobený vo variante). Web: prepínač platby.</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-vyskusat" data-odp="vyskusat">
+  <h3>1. Štartové poldeci 3 <span class="odp vyskusat">vyskúšať, ale nie spolu so šenkom bez poldeci</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Limit 2 → 2,3 za celú partiu. Hráč „nič nestihá“.</dd>
+    <dt>Zmena</dt><dd><code>START_POLDECI</code> 2 → 3.</dd>
+    <dt>Čísla</dt><dd>Samostatne: limit v 1. kole iba 2,0 → 2,2, lebo bot tretí poldeci minie v šenku (kariet zo šenku 15,2 → 18,3). Pitky 13,0, Dlh +44 %, rebrík 69 %, otočky <span class="zle">31 %</span>, príkazy +12 %.
+      V balíku so šenkom za cigarety: limit v 1. kole <b class="zle">4,0</b>, v 3. kole 3,0. Hra začína najsilnejšia.</dd>
+    <dt>Cena a riziko</dt><dd>So šenkom bez poldeci ide proti progresii, lebo silný štart potom upadá. Ak sa zavedie šenok za cigarety, odporúčam <b>nechať 2 poldeci</b> (limit 3 v 1. kole stačí) a rast limitu dať inam, napríklad <code>BARTER_CENA</code> 5 → 3 alebo „nový poldeci po 3. a 6. kole“ (nemerané).</dd>
+    <dt>Náročnosť</dt><dd>malá (konštanta).</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-vyskusat" data-odp="vyskusat">
+  <h3>5a. Priznanie akejkoľvek kliatby = dober 1 kartu <span class="odp vyskusat">vyskúšať</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Kliatba v ruke je dnes mŕtva karta, okrem Dlhu, ktorý dá kartu. Priznaná Cirhóza už dnes „nemá takmer žiadnu nevýhodu“ (PRAVIDLÁ §6).</dd>
+    <dt>Zmena</dt><dd>Pri priznaní Dlhu, Cirhózy aj Milujúcej manželky si hráč dobere 1 kartu.</dd>
+    <dt>Čísla</dt><dd>Merané len spolu s 5b. Priznaných kliatob 3,8 → 4,6 na hráča, ostatné čísla sa hýbu najmä kvôli 5b.</dd>
+    <dt>Cena a riziko</dt><dd>Priznaná Cirhóza by bola „zadarmo karta“, teda kliatba prestane byť kliatbou. Poistka: Cirhóza pri priznaní kartu nedá, alebo dá, no zvýši prah Exekútora či pečene. Na rozhodnutie Michala.</dd>
+    <dt>Náročnosť</dt><dd>malá.</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zamietnut" data-odp="zamietnut">
+  <h3>5b. Milujúca manželka: „Furt: prah Absťáku o 1 horší“ <span class="odp zamietnut">upraviť (v meranej podobe zamietnuť)</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Manželka ako kliatba dnes uberá cigaretu z Cigaretiek a hráči ju nevnímajú.</dd>
+    <dt>Ako sa Absťák ráta</dt><dd><code>koniecKola</code>: Absťák pribudne, keď <i>neresti tohto kola &lt; neresti minulého</i>. Zbavíš sa ho, keď <i>teraz &gt; minule</i>.
+      Merané znenie: „Furt: Absťák dostaneš, ak nemáš aspoň o 1 nerest viac ako v minulom kole, za každú priznanú Manželku“ (teda <i>teraz &lt; minule + M</i>). Jeden Absťák sa potom zbaví len pri <i>teraz &gt; minule + M</i>.</dd>
+    <dt>Čísla</dt><dd>Absťáky 2,0 → <b class="zle">4,8</b> na hráča. Tuhé v bitke v 9. kole 2,3 → 1,3, takže stôl počas hry slabne. Príkazy 253, otočky 42 %. Bot prizná prvú Manželku vždy (karta navyše).</dd>
+    <dt>Cena a riziko</dt><dd>Špirála nerestí: aby sa hráč vyhol Absťáku, musí každé kolo piť viac a latka stále rastie. To je presne „roztočila sa na tri Absťáky“ z playtestu 20261019-102558.
+      Miernejšie znenia (nemerané): <b>A</b> „Furt: Absťáku sa zbavíš, len keď máš o 2 nerestí viac ako minule“ (sťaží len zbavenie, latku nedvíha);
+      <b>B</b> „Furt: rovnako nerestí ako minule = Absťák“ (iba pri prvej Manželke, druhá nepridáva). Odporúčam A.</dd>
+    <dt>Náročnosť</dt><dd>malá. Treba upraviť aj <code>zavislost.ts</code> (výhľad pre rozhranie) a <code>stropNeresti</code> v botovi (vo variante urobené).</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-vyskusat" data-odp="vyskusat">
+  <h3>6c. Tesná bitka: ďalšia Pitka automaticky (rozdiel celkového ≤ 2), najviac 3 <span class="odp vyskusat">alternatíva 1</span></h3>
+  <dl>
+    <dt>Zmena</dt><dd>Po Pitke o lokalitu: keď sa celkové poškodenie líši najviac o 2, nasleduje ďalšie Zhromaždenie a Pitka (vykladá prvý prehrávajúci), najviac 3 Pitky.</dd>
+    <dt>Čísla</dt><dd>Pitky 1,98 na lokalitu (1 Pitka: 39 %, 2: 24 %, 3: 37 %), Pitiek 17,4 na partiu, príkazy <span class="zle">325 (+23 %)</span>, Dlh 13,8, rebrík 69 % / 87 %, otočky 38 %.</dd>
+    <dt>Cena a riziko</dt><dd>Poškodenie je dnes malé (2–4), takže „tesná“ je skoro každá bitka a pravidlo sa správa ako „2 až 3 Pitky“, len menej predvídateľne. Dá sa zneužiť: vedúci môže zámerne držať rozdiel nad 2, aby Pitku ukončil. To je zaujímavé, ale ťažko čitateľné.
+      Ak, tak s prahom 1.</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zamietnut" data-odp="zamietnut">
+  <h3>6b. Objednať smie aj vedúci (najprv prehrávajúci, potom súper) <span class="odp zamietnut">zamietnuť</span></h3>
+  <dl>
+    <dt>Zmena</dt><dd>„Ešte jednu!“ ponúknutá najprv prehrávajúcemu, keď odmietne, vedúcemu (za plný poldeci), najviac 3 Pitky.</dd>
+    <dt>Čísla</dt><dd>Pitky na lokalitu len 1,14 → 1,24, príkazy +6 %, rebrík 65 % / 90 %. V balíku (s poldeci navyše) 1,90, ale predurčenosť 0,46 a otočky 27 %.</dd>
+    <dt>Prečo nie</dt><dd>Vedúcemu sa runda takmer nikdy neoplatí, takže Pitiek pribudne málo. Ak poldeci pribudne (balík), objednávanie posilní toho, kto ho má, a otočky klesnú. Problém „rozhoduje, kto má plný poldeci“ ostáva.</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-vyskusat" data-odp="vyskusat">
+  <h3>6d–e. Ďalšie alternatívy Pitiek (nemerané) <span class="odp vyskusat">alternatíva 2</span></h3>
+  <dl>
+    <dt>6d · 2 Pitky + tretia na objednávku</dt><dd>Pevne 2 Pitky. Po 2. Pitke smie <i>ktokoľvek</i> (začína obranca) zaplatiť 2 cigarety a objednať 3., najviac 1-krát. Cigarety majú ďalšie využitie a 3. Pitka je rozhodnutie, nie automatika. Riziko: posilní hráča s cigaretami.</dd>
+    <dt>6e · Pitky podľa lokality so stropom 2</dt><dd>Lokalita s 0–1 aktivovanou akciou = 1 Pitka, s 2 a viac = 2. Počet je známy pri výbere cieľa, takže sa dá plánovať, a pridáva dôvod aktivovať akcie lokality. V histórii bez stropu (1–4) dalo 24 Pitiek a dlhé kolá. Strop 2 to rieši.</dd>
+    <dt>Kliatby navrch doberacieho balíčka</dt><dd>Mimo Pitiek: Michal chce viac Dlhov <i>na rukách</i>. Dnes vznikne 8,1 Dlhu, no v ruke je 0,29 kliatby. Keby nová kliatba išla navrch doberacieho balíčka, prišla by v nasledujúcom kole. Rieši to priamo, bez ďalších Pitiek. Nemerané.</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zamietnut" data-odp="zamietnut">
+  <h3>Balík 1–6 naraz <span class="odp zamietnut">nezavádzať naraz</span></h3>
+  <dl>
+    <dt>Čísla</dt><dd>Pitky 16,7, Dlh 19,4 (2,4×), Cirhóza 10,2 (3,4×), kliatby v ruke 1,28 (4,4×), Absťák 4,7. Rebrík 66 % / 82 %, otočky <span class="zle">30 %</span>, vedúci po 5. kole vyhrá <span class="zle">73 %</span>, príkazy 318 (+20 %). Limit 4,0 → 3,0 → 4,2 a podiel nových kariet 9 → 37 %.</dd>
+    <dt>Prečo nie</dt><dd>Tri zmeny ťahajú proti sebe. Poldeci 3 a šenok bez poldeci dávajú silný štart, Manželka a kliatby dávajú slabý koniec. Výsledok je opak progresie a menej otočiek. Odporúčaný balík: <b>6a + 2 + 4</b>, potom <b>3 so START_CIGARETY 3</b> a poldeci 2, a <b>5a</b> s rozhodnutím o Cirhóze.</dd>
+  </dl>
+</article>
+</div>
+
+<h2 id="sledovat">Čo sledovať v ďalšom playteste</h2>
+<ol class="otazky">
+  <li>Pri 2 Pitkách: šetril si v 1. Zhromaždení kartu alebo NA EX na 2. Pitku? Kedy si sa rozhodol, a bolo to rozhodnutie, alebo samozrejmosť?</li>
+  <li>Koľko trvá kolo o lokalitu (minúty, príkazy)? Je partia so 17 Pitkami dlhá, alebo pôsobí, že „konečne sa niečo deje“?</li>
+  <li>Koľko kliatob ti prišlo do ruky a kedy? Priznával si ich kvôli karte navyše, alebo by si ich radšej nechal?</li>
+  <li>Cítiš sa v 7. kole silnejší než v 2. kole? Čím: kartami zo šenku, limitom, Dedičstvom? (Odpovedz číslom 1–5 po 2., 5. a 8. kole.)</li>
+  <li>Ak hráš šenok za cigarety: koľkokrát si nemal cigaretu na kartu, ktorú si chcel, a vzal si niekedy 2 karty za 3?</li>
+</ol>
+
+<h2 id="otazky-michal">Otázky na rozhodnutie Michala</h2>
+<ol class="otazky">
+  <li><b>Počet Pitiek</b>: (a) pevne 2 o lokalitu, 1 o staršieho; (b) 2 a tretia za 2 cigarety pre kohokoľvek; (c) podľa lokality, 1–2. <i>Odporúčam a, potom b, ak bude 2 málo.</i></li>
+  <li><b>Tempo</b>: viac Pitiek predĺži partiu o ~18 % príkazov. Čím to vyvážiť? (a) strednú hru skrátiť na 6 lokalít; (b) bitku o staršieho bez draftu (už je) a menej bitiek o staršieho; (c) nechať tak. <i>Odporúčam a a zmerať.</i></li>
+  <li><b>Šenok za cigarety</b>: (a) áno, START_CIGARETY 3, 2 karty za 3; (b) áno, 2 karty za 2; (c) nechať platbu poldeci. <i>Odporúčam a. Bez viac cigariet šenok vyschne (−36 %).</i></li>
+  <li><b>Poldeci 3</b>: (a) áno, iba ak šenok ostane aj za poldeci; (b) nie, poldeci 2 a rast limitu cez lacnejší barter (5 → 3) alebo nový poldeci po 3. a 6. kole. <i>Odporúčam b. Progresia má rásť, nie začínať na 4.</i></li>
+  <li><b>Priznaná Cirhóza a karta</b>: (a) aj Cirhóza dá kartu; (b) kartu dá Dlh a Manželka, Cirhóza nie. <i>Odporúčam b, inak Cirhóza nie je kliatba.</i></li>
+  <li><b>Milujúca manželka</b>: (a) merané „prah Absťáku +1“ (Absťáky 2,4×); (b) „zbavíš sa Absťáku len pri +2 nerestiach“; (c) nechať „o cigaretu menej“. <i>Odporúčam b.</i></li>
+  <li><b>Zberateľ</b> pri zrušení limitu ruky stratí priazeň. Čo dostane namiesto nej? (napr. +1 karta po bitke)</li>
+</ol>
+
+<footer>
+  <p>Meranie: bot Štamgast proti sebe, stredná hra (7 lokalít), semienka 3000+i / 500+i, 192 partií na variant (<code>pitky.ts</code>, nový skript).
+  Rebrík: bot proti sebe s ε náhodných ťahov, 96 rozdaní × 2 miesta (<code>rebrik.ts</code> z rozboru 20261019-1858). ε = 0,25 len pri východisku, Pitkách a balíkoch.
+  Predurčenosť: <code>strategickost.ts --len rozdanie</code>, 10 rozdaní × 6 behov (šum ≈ 0,31). Žiadna partia sa nezasekla (limit 20 000 príkazov). Zacyklenie pri remíze o staršieho sa neobjavilo.</p>
+  <p>Varianty bežali vo worktree mimo gitu, diffy sú v <code>playtest/strategia/20261019-2030/*.diff</code>. Bot sa variantom neprispôsobuje. Upravené bolo len minimum:
+  cena dvoch kariet v šenku, priznanie prvej Manželky a latka Absťáku s Manželkami. Pri 2 Pitkách bot nevie, že druhá Pitka príde, a šetrenie kariet na ňu nehrá.
+  Čísla z variantov sú teda náznak smeru, nie dôkaz. Testy jadra vo worktree balíka padajú len na staré hodnoty (poldeci 2, doplnenie na 5, platba poldeci), bez výnimiek v hre.</p>
+</footer>
+</main>
+<script>
+(function () {
+  var data = [
+    ["Východisko", 60, 88], ["1 poldeci 3", 69, null], ["2 +2 karty", 66, null], ["3 šenok za cig.", 71, null],
+    ["4 Dedičstvo", 60, null], ["5 priznanie", 64, null], ["6a 2 Pitky", 65, 87], ["6b objednaj", 65, 90],
+    ["6c tesná", 69, 87], ["Balík + 6a", 66, 82], ["Balík + 6b", 70, 83]
+  ];
+  var cont = document.getElementById("rebrik");
+  if (cont) {
+    var html = "";
+    data.forEach(function (d) {
+      html += '<div class="riadok"><span class="meno">' + d[0] + '</span><div class="pruhy">' +
+        '<div class="pruh"><i style="width:' + d[1] + '%"></i><span class="polovica"></span><em>' + d[1] + ' %</em></div>' +
+        (d[2] === null ? "" : '<div class="pruh e25"><i style="width:' + d[2] + '%"></i><span class="polovica"></span><em>' + d[2] + ' %</em></div>') +
+        '</div></div>';
+    });
+    cont.innerHTML = html;
+  }
+  var tl = document.querySelectorAll(".filtre button");
+  tl.forEach(function (b) {
+    b.addEventListener("click", function () {
+      var f = b.getAttribute("data-f");
+      tl.forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      document.querySelectorAll("#navrhy .navrh").forEach(function (n) {
+        n.hidden = !(f === "vsetky" || n.getAttribute("data-odp") === f);
+      });
+    });
+  });
+  var tab = document.getElementById("varianty");
+  if (tab) {
+    var smer = {};
+    tab.querySelectorAll("th button").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var k = Number(b.getAttribute("data-k"));
+        smer[k] = !smer[k];
+        var tb = tab.tBodies[0];
+        var riadky = Array.prototype.slice.call(tb.rows);
+        var hodnota = function (r) {
+          var t = r.cells[k].textContent.replace(/[%\s]/g, "").replace(",", ".");
+          var n = parseFloat(t);
+          return isNaN(n) ? r.cells[k].textContent : n;
+        };
+        riadky.sort(function (a, c) {
+          var x = hodnota(a), y = hodnota(c);
+          var v = typeof x === "number" && typeof y === "number" ? x - y : String(x).localeCompare(String(y), "sk");
+          return smer[k] ? v : -v;
+        });
+        riadky.forEach(function (r) { tb.appendChild(r); });
+      });
+    });
+  }
+})();
+</script>
+</body>
+</html>

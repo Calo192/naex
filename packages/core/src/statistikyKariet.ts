@@ -51,8 +51,10 @@ function vRuke(s: GameState, p: PlayerId, uid: number): string | undefined {
 export function zapisTahKariet(stat: StatistikyKariet, pred: GameState, cmd: Command, autor: PlayerId, events: readonly Event[]): StatistikyKariet {
   const out: Record<string, StatKarty> = { ...stat };
   if (cmd.type === "draftBer") {
-    const defId = pred.senok.find((k) => k.uid === cmd.uid)?.defId;
-    if (defId !== undefined) pridaj(out, defId, { zoSenku: 1 });
+    for (const uid of cmd.uids) {
+      const defId = pred.senok.find((k) => k.uid === uid)?.defId;
+      if (defId !== undefined) pridaj(out, defId, { zoSenku: 1 });
+    }
   } else if (cmd.type === "place") {
     const defId = vRuke(pred, autor, cmd.uid);
     if (defId !== undefined) {

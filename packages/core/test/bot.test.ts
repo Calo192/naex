@@ -70,7 +70,7 @@ describe("offline protihráč", () => {
     }
   }, 90_000);
 
-  it("pri Zastávke platí za šenok poldeci — limit je aj tak 2", () => {
+  it("zo šenku berie len za cigarety a len legálne (Michal 2026-10-19)", () => {
     // Stav brania zo šenku, ktorý vznikne v partii; cieľ sa prepíše na Zastávku.
     let s = setupGame(data, 77, { lokalit: DLZKY_HRY.kratka });
     for (let krok = 0; krok < 400 && !(s.faza === "draft" && s.draftStav?.krok === "beranie"); krok++) {
@@ -81,16 +81,12 @@ describe("offline protihráč", () => {
     const p = s.draftStav?.naTahu;
     expect(p).toBeDefined();
     if (p === undefined) return;
-    const zastavka = { uid: 99_999, defId: "zastavka", leftLayout: 0, rightLayout: 0 };
-    const hrac = { ...s.hraci[p], cigarety: 0, poldeciPlne: 2, poldeciVypite: 0 };
-    const naZastavke: GameState = {
-      ...s,
-      ciel: { typ: "lokalita", lokalita: zastavka, elderId: null },
-      hraci: p === 0 ? [hrac, s.hraci[1]] : [s.hraci[0], hrac],
-    };
+    const hrac = { ...s.hraci[p], cigarety: 4 };
+    const sCigaretami: GameState = { ...s, hraci: p === 0 ? [hrac, s.hraci[1]] : [s.hraci[0], hrac] };
+    const legalne = JSON.stringify(legalCommands(data, sCigaretami, p));
     for (const povaha of POVAHY) {
-      const cmd = tahBota(data, naZastavke, p, 5, { povaha: povaha.id });
-      expect(cmd, povaha.id).toMatchObject({ type: "draftBer", platba: "poldeci" });
+      const cmd = tahBota(data, sCigaretami, p, 5, { povaha: povaha.id });
+      expect(legalne, povaha.id).toContain(JSON.stringify(cmd));
     }
   }, 30_000);
 

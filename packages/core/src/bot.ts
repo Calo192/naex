@@ -39,10 +39,12 @@ import {
   apply,
   barterCena,
   cieleVykladania,
+  cielLokalitaId,
   krcmaVyzaduje,
+  krokStavby,
+  manzelkyHraca,
   legalCommands,
   naexCieleVLinii,
-  limitRukyHraca,
   lineState,
   poskodenieBitky,
   prahVydesenia,
@@ -140,7 +142,7 @@ const VAHA_AKCIE: Readonly<Record<Action, number>> = {
   Dlh: -0.8,
   PoškodeniePečene: -0.5,
   Obmedzenie: 0.3,
-  Cigaretka: 0.4,
+  Cigareta: 0.4,
   Vízia: 0.15,
   Poldeci: 0.5,
   Posilnenie: 0.6,
@@ -348,11 +350,11 @@ function hodnotaBitky(k: Kontext, s: GameState, q: PlayerId, ostrost: number): n
       const so = sums[opponentOf(p)];
       const h = s.hraci[p];
       let w = 0;
-      w += 0.3 * Math.max(0, (sp.Cigaretka ?? 0) - (so.Obmedzenie ?? 0)) * k.buducnost;
+      w += 0.3 * Math.max(0, (sp.Cigareta ?? 0) - (so.Obmedzenie ?? 0)) * k.buducnost;
       w += 0.5 * Math.min(3, sp.Pohoršenie ?? 0);
       const naex = s.strany.flat().filter((pl) => pl.naexBy === p).length;
       w += 0.4 * Math.min(sp.Poldeci ?? 0, h.poldeciVypite + naex) * k.buducnost;
-      // Každý aktívny Hazard je Dlh (prah 1). Pečeň pod prahom sa po Pitke
+      // Každá aktívna akcia Dlh je karta Dlh (prah 1). Pečeň pod prahom sa po Pitke
       // vynuluje, ale tesne pod prahom ju dorazí ďalšie pitie či NA EX.
       const prah = prahyHraca(data, s, p).cirhoza;
       const pecen = h.pecen + (sp.PoškodeniePečene ?? 0) + (sp.Poldeci ?? 0);
@@ -385,7 +387,8 @@ function hodnotaZdrojov(k: Kontext, s: GameState, p: PlayerId): number {
   if (s.kolo === 1) {
     postih += 0.25 * h.nerestiTotoKolo;
   } else {
-    const deficit = h.nerestiMinuleKolo - h.nerestiTotoKolo;
+    // Milujúca manželka: Absťák už pri rovnosti nerestí (každá o 1 viac).
+    const deficit = h.nerestiMinuleKolo + manzelky(s, p) - h.nerestiTotoKolo;
     if (deficit > 0) postih += Math.min(1.3, 0.45 * deficit);
     else postih += 0.1 * -deficit;
   }
@@ -453,7 +456,7 @@ function najlepsieVylozenie(k: Kontext, s: GameState, ruka: readonly CardInstanc
   const videne = new Set<string>();
   for (const karta of ruka) {
     if (jeKliatbaBezAkcii(k.data, karta)) continue;
-    for (const kam of cieleVykladania(k.data, s.strany, q, karta, limit, 0)) {
+    for (const kam of cieleVykladania(k.data, s.strany, q, karta, limit, false, cielLokalitaId(s))) {
       if (kam !== "vlastna" && kam !== "superova") continue;
       const kluc = `${karta.defId}/${karta.leftLayout}/${karta.rightLayout}/${kam}`;
       if (videne.has(kluc)) continue;
@@ -470,9 +473,7 @@ function najlepsieVylozenie(k: Kontext, s: GameState, ruka: readonly CardInstanc
 }
 
 function minieLimit(data: GameData, v: Vylozenie): boolean {
-  const def = defOf(data, v.karta);
-  if (def.tags.includes("Nástroj")) return false;
-  return !(def.id === "kocovnik" && v.kam === "superova");
+  return !defOf(data, v.karta).tags.includes("Nástroj");
 }
 
 /** Dohrá Zhromaždenie: kto je na ťahu, vyloží najlepšiu kartu, alebo pasuje. */
@@ -681,30 +682,22 @@ function draft(v: Volba): Command | null {
   const d = state.draftStav;
   if (d === null) return null;
   if (d.krok === "stavba") {
-    // Najlepšiu kartu do šenku (inak ju tam dá súper). Obranca berie zo šenku
-    // druhý — druhú najlepšiu radšej odhodí, než by ju poslal súperovi.
+    // Najlepšie karty do šenku (inak ich tam dá súper). Obranca berie zo šenku
+    // druhý — ďalšie dobré radšej pošle naspodok, než by ich podal súperovi.
     const zoradene = [...d.balicky[ja]].sort((a, b) => hodnotaKarty(data, b) - hodnotaKarty(data, a));
-    const doSenku = zoradene[0];
-    const odhod = state.utocnik === ja ? zoradene[zoradene.length - 1] : zoradene[1];
-    if (doSenku === undefined || odhod === undefined || odhod.uid === doSenku.uid) return null;
-    return { type: "stavbaSenku", doSenku: doSenku.uid, odhod: odhod.uid };
+    const krok = krokStavby(zoradene.length);
+    const doSenku = zoradene.slice(0, krok.doSenku);
+    const zvysok = zoradene.slice(krok.doSenku);
+    const odhod = state.utocnik === ja ? zvysok.slice(zvysok.length - krok.odhod) : zvysok.slice(0, krok.odhod);
+    return { type: "stavbaSenku", doSenku: doSenku.map((x) => x.uid), odhod: odhod.map((x) => x.uid) };
   }
-  // Branie zo šenku: karta stojí cigaretu, dve karty plný poldeci.
+  // Branie zo šenku (Michal 2026-10-19): 1 karta za cigaretu, 2 karty za 3.
   const ponuka = [...state.senok].sort((a, b) => hodnotaKarty(data, b) - hodnotaKarty(data, a));
   const najlepsia = ponuka[0];
   if (najlepsia === undefined) return { type: "draftStop" };
   const druha = ponuka[1];
-  const platby = v.legal.filter((c) => c.type === "draftBer");
-  const ber = (platba: "cigareta" | "poldeci" | null): Command | null => {
-    const cmd = platby.find((c) => c.type === "draftBer" && c.uid === najlepsia.uid && (c.platba ?? null) === platba);
-    return cmd ?? null;
-  };
-  // Druhá karta za už zaplatený poldeci — zadarmo, inak prepadne.
-  const kredit = ber(null);
-  if (kredit !== null) return kredit;
   // Zisk karty do balíčka oproti tomu, čo stojí. Cigareta má cenu aj v
-  // bodoch (podmienky „zvyšné cigarety“); poldeci toľko, o koľko klesne
-  // limit vykladania v tomto kole — pri Zastávke (limit 2) vôbec.
+  // bodoch (podmienky „zvyšné cigarety“) a je platidlo aj na Dedičstvo.
   const { k } = v;
   const h = state.hraci[ja];
   const priemer = priemernaKarta(data, state, ja);
@@ -712,20 +705,14 @@ function draft(v: Volba): Command | null {
   const zisk = (x: CardInstance | undefined): number =>
     x === undefined ? 0 : hodnotaKarty(data, x) - priemer + 0.5 + (balicek < 10 ? 0.6 : 0);
   const cenaCigarety = 0.3 * k.buducnost * k.povaha.zdroje + bodyZaCigaretu(data, state) * k.povaha.body;
-  const pokles = limitZhromazdenia(state, ja) - limitZhromazdenia(state, ja, -1);
-  // Posledný plný poldeci je aj jediná šanca na NA EX a „Ešte jednu!“ v tomto
-  // kole (playtest 20261019-102541: Fero ho prepil v drafte a bitku nemal čím otočiť).
-  const posledny = h.poldeciPlne <= 1 ? 1.5 * k.povaha.bitka : 0;
-  const cenaPoldeci = 1.2 * pokles * k.povaha.bitka + 0.4 * k.buducnost * k.povaha.zdroje + posledny;
-  const zaPoldeci = zisk(najlepsia) + Math.max(0, zisk(druha)) - cenaPoldeci;
-  const zaCigaretu = zisk(najlepsia) - cenaCigarety;
-  const poldeci = ber("poldeci");
-  const cigareta = ber("cigareta");
-  // Poldeci, keď dve karty vynesú viac než dve cigarety (alebo cigarety niet).
-  if (poldeci !== null && zaPoldeci > 0 && (cigareta === null || zaPoldeci > zaCigaretu + Math.max(0, zisk(druha) - cenaCigarety))) {
-    return poldeci;
-  }
-  if (cigareta !== null && zaCigaretu > 0) return cigareta;
+  const mozne = (uids: readonly number[]): Command | null =>
+    v.legal.find((c) => c.type === "draftBer" && c.uids.length === uids.length && uids.every((u) => c.uids.includes(u))) ?? null;
+  const jedna = mozne([najlepsia.uid]);
+  const dve = druha === undefined ? null : mozne([najlepsia.uid, druha.uid]);
+  const zaJednu = zisk(najlepsia) - (KONSTANTY.CENA_SENKU[1] ?? 1) * cenaCigarety;
+  const zaDve = zisk(najlepsia) + zisk(druha) - (KONSTANTY.CENA_SENKU[2] ?? 3) * cenaCigarety;
+  if (dve !== null && zaDve > 0 && zaDve > zaJednu) return dve;
+  if (jedna !== null && zaJednu > 0) return jedna;
   return { type: "draftStop" };
 }
 
@@ -798,8 +785,11 @@ function stropNeresti(state: GameState, ja: PlayerId): number {
   if (state.lokalityVHre.length === 0) return Number.POSITIVE_INFINITY;
   const h = state.hraci[ja];
   if (state.kolo === 1) return 1;
-  return h.nerestiMinuleKolo + (verejneAbstaky(state, ja) > 0 ? 1 : 0);
+  return h.nerestiMinuleKolo + manzelky(state, ja) + (verejneAbstaky(state, ja) > 0 ? 1 : 0);
 }
+
+/** Odhalené Milujúce manželky hráča — posúvajú latku Absťáku (Michal 2026-10-19). */
+const manzelky = (state: GameState, p: PlayerId): number => manzelkyHraca(state, p);
 
 // --- Pitka -----------------------------------------------------------------
 
@@ -808,12 +798,13 @@ function pitka(v: Volba): Command | null {
   const su = opponentOf(ja);
   const h = state.hraci[ja];
 
-  // „Ešte jednu!“ — runda sa oplatí, keď sa po nej bitka dá otočiť.
-  // V novej Pitke smie dať aj ďalšie NA EX — aj s prázdnou rukou.
-  if (state.ponukaRundy === ja) {
-    const bez = hodnotaStavu(k, v.vzorky[0] ?? state, 1.5);
-    const runda = priemer(v, { type: "runda" }, (po) => sNajlepsimNaex(k, dohrajZhromazdenie(k, po), ja, 1.2));
-    return runda > bez + k.povaha.prahRiziko ? { type: "runda" } : { type: "bezRundy" };
+  // Vízia: vrchnú kartu si nechá, ak je lepšia ako priemer balíčka; kliatby
+  // a slabé karty zahodí — ale balíček nesmie klesnúť pod minimum (prehra).
+  if (state.vizia !== null) {
+    const vrchna = h.doberaci[0];
+    const balicek = h.ruka.length + h.doberaci.length + h.odhadzovaci.length + partiaHraca(state, ja).length;
+    const zahodit = vrchna !== undefined && balicek > KONSTANTY.MIN_VELKOST_BALICKA + 3 && hodnotaKarty(data, vrchna) < priemernaKarta(data, state, ja) - 0.3;
+    return { type: "vizia", vziat: !zahodit };
   }
 
   const p = state.pitkaStav;
@@ -946,12 +937,26 @@ function bitka(v: Volba): Command | null {
         .sort((x, y) => hodnotaKarty(data, x.card) - hodnotaKarty(data, y.card));
       return { type: "benzinka", uids: obcania.slice(0, pocet).map((pl) => pl.card.uid) };
     }
-    case "limitRuky": {
-      const nadbytok = h.ruka.length - limitRukyHraca(data, state, ja);
-      // Cirhózu si nechá na priznanie, ostatné kliatby a slabé karty odhodí.
-      const ponechat = (x: CardInstance): number => (x.defId === "cirhoza" ? 5 : hodnotaKarty(data, x));
-      const zoradene = [...h.ruka].sort((x, y) => ponechat(x) - ponechat(y));
-      return { type: "odhod", uids: zoradene.slice(0, Math.max(0, nadbytok)).map((x) => x.uid) };
+    case "cintorin": {
+      // Cintorín: zadarmo do Dedičstva najcennejší Nástroj z ruky.
+      let best: Command | null = null;
+      let bestV = 0;
+      for (const cmd of v.legal) {
+        if (cmd.type !== "cintorin" || cmd.uid === null) continue;
+        const karta = h.ruka.find((x) => x.uid === cmd.uid);
+        const hodnota = karta === undefined ? 0 : 1 + (DEDICSTVO[karta.defId] ?? 0);
+        if (hodnota > bestV) {
+          bestV = hodnota;
+          best = cmd;
+        }
+      }
+      return best ?? { type: "cintorin", uid: null };
+    }
+    case "zberatel": {
+      // Zberateľ: z ponuky si vezme najcennejšie karty, kliatby nechá odísť.
+      const pocet = v.legal.find((c) => c.type === "zberatel")?.uids.length ?? 0;
+      const ponuka = [...b.zberatelPonuka[ja]].sort((x, y) => hodnotaKarty(data, y) - hodnotaKarty(data, x));
+      return { type: "zberatel", uids: ponuka.slice(0, pocet).map((x) => x.uid) };
     }
     case "vestica": {
       const su = opponentOf(ja);

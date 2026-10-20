@@ -85,6 +85,59 @@
 
   <div id="zmeny">
 
+    <details class="zmena" data-oblast="pravidla">
+      <summary><h3>14 lokalít, cieľ volí obranca, Nealko a nové rozhranie bitky</h3><span class="stav">skúšobné</span>
+        <span class="meta"><span class="stitok pravidla">pravidlá</span><span class="stitok rozhranie">rozhranie</span><span class="stitok">2026-10-20</span><span class="stitok">rozhodnutie Michala</span></span></summary>
+      <div class="telo">
+        <div class="blok"><h4>Prečo</h4><p>Michal vybral lokality z <a href="navrh-lokality.html">navrh-lokality</a>. Natočenie lokality už neurčuje, kto kam vykladá (akcie dostane, koho karta s lokalitou tvorí spoj), takže nemalo zmysel, aby obranca vykladal prvý. Aktívne efekty v odhade bitky boli malé a nevýrazné, odhad počas draftu mätúci.</p></div>
+        <div class="blok"><h4>Čo sa zmenilo</h4><ul>
+          <li><strong>Poradie:</strong> cieľ kola vyberá a natáča <strong>obranca</strong>, <strong>útočník</strong> vykladá prvý (zo šenku berie prvý ako doteraz; v Pitke začína obranca).</li>
+          <li><strong>Lokality:</strong> Krčma ostáva; Kostol — nikto nevypije ani nedá NA EX; Benzínka — nikto nefajčí; Zastávka — spoločný limit (súčet limitov oboch); Lesná cesta — +1 tuhé za svoju kartu na súperovej strane (max +2); Ihrisko — +2 tuhé za každú stranu s prevahou (až +4); Zberný dvor — výkup karty z odhadzovacieho za cigaretu raz za Pitku. Nové: Most (len vlastná strana), Cintorín (porazený dá Nástroj do Dedičstva zadarmo, cena stúpne), Obecný úrad (Exekútor −4, Robota 2 Dlhy), Jednota (barter −1), Kultúrny dom (Pohoršenie aj na ten istý marker), Vínna pivnica (NA EX 2×), Družstvo (Pracujúci nemíňajú limit). Motor ich pozná; 7 nových je v tvorcovi ako návrhy a do hry prídu so zverejnením sady.</li>
+          <li><strong>Prevaha:</strong> akcie hrany lokality dostane, kto má v tej polovici línie viac svojich kariet (Nástroje nie; rovnosť = karta pri lokalite) — rozbor <a href="strategia-strany-20261020.html">strategia-strany-20261020</a>. „+1 tuhé za prevahu“ zamietnuté.</li>
+          <li><strong>Kraje:</strong> polovice línie sa volajú podľa lokality (Krčma: pri výčape / pri dverách) — pole „kraj“ pri hrane lokality v tvorcovi; na stole aj s tým, kto má v kraji prevahu.</li>
+          <li><strong>Pasca:</strong> Dedičstvo — každé súperovo Zviera v línii mu uberie 1 tuhé (predtým rušila prvú podstrčenú kartu).</li>
+          <li><strong>Nealko:</strong> Pohoršenie na oboch stranách namiesto Odporu a Roboty.</li>
+          <li><strong>Sada v8</strong> (58 kariet) zverejnená a skopírovaná do <code>cards.json</code>; dlhá hra (11 lokalít) je už možná.</li>
+          <li><strong>Rozhranie:</strong> aktívne efekty oboch hráčov ako veľké ikony s hodnotou, prírastky a úbytky v zátvorke, nápoveda vymenuje karty a dôvody (Posilnenie, NA EX, Vzbura, efekt karty, Lesná cesta, Absťáky…). Odhad bitky sa pri voľbe cieľa a v drafte neukazuje. Časová os kola je prilepená hore a vypisuje každé Zhromaždenie a Pitku s nápovedou. Dosky hráčov idú od stredu k portrétu na okraji; bublinky so stavom zmizli.</li>
+        </ul></div>
+        <div class="blok sledovat"><h4>Čo sledovať</h4><ul>
+          <li>Či útočník, ktorý vykladá prvý, nestráca hranu lokality na podstrčenie od obrancu, ktorý vykladá posledný.</li>
+          <li>Či sa lokality hrajú inak — Most bez podstrkovania, Zastávka so spoločným limitom, Kostol s jednou kartou za ťah.</li>
+          <li>Či hráči chápu z nápovedy, prečo je akcia aktívna či zdvojená.</li>
+        </ul></div>
+      </div>
+    </details>
+
+    <details class="zmena" data-oblast="pravidla">
+      <summary><h3>Strategickosť: Pitky z lokality, ruka bez limitu, šenok za cigarety, celý ťah naraz, nová Vízia</h3><span class="stav">skúšobné</span>
+        <span class="meta"><span class="stitok pravidla">pravidlá</span><span class="stitok rozhranie">rozhranie</span><span class="stitok">2026-10-20</span><span class="stitok">interview Michala 2026-10-19</span></span></summary>
+      <div class="telo">
+        <div class="blok"><h4>Prečo</h4><p>Michal: „Hráč poriadne nič nestihá spraviť, väčšina bitiek je na jednu Pitku.“ Cieľ: viac Pitiek, viac zmysluplných ťahov, pocit progresie (hráč začína slabý a vylepšuje sa), menej klikov. Podklad: rozbory stratéga <a href="strategia-20261019-1858.html">strategia-20261019-1858</a> a <a href="strategia-20261019-2030.html">strategia-20261019-2030</a> (87 % bitiek malo jedinú Pitku, doplnenie na 5 dávalo ⌀ 1 kartu za kolo) a analýza admina.</p></div>
+        <div class="blok"><h4>Čo sa zmenilo</h4><ul>
+          <li><strong>Pitky:</strong> 1 + menší počet aktivovaných akcií karty v strede z jej dvoch strán (1–4), aj v bitke o staršieho. „Ešte jednu!“ zrušené. Lokality treba prerobiť na 1–3 akcie na každej strane — návrh 14 lokalít: <a href="navrh-lokality.html">navrh-lokality</a>.</li>
+          <li><strong>Ruka:</strong> po každej bitke +2 karty; doplnenie na 5 a limit ruky zanikli. Zberateľ: po bitke prezri 2/4/6 vrchných kariet a 1/2/3 si vezmi. Fajčiar +1/+2/+3 cigarety.</li>
+          <li><strong>Šenok:</strong> 1 karta = 1 cigareta, 2 karty = 3 cigarety, poldeci sa neplatí; kto nemá cigaretu, prestane sám. Stavba po 2 do šenku a 2 naspodok (dva kroky).</li>
+          <li><strong>Štart:</strong> 3 poldeci a 3 cigarety (stratég varoval, že 3 poldeci oslabia progresiu — Michal rozhodol 3).</li>
+          <li><strong>Celý ťah naraz:</strong> v Zhromaždení ťaháš karty na stôl ako návrh, každá ďalšia stojí plný poldeci (štítok „−1 poldeci“), server dostane ťah až po „hotovo“ (atomický príkaz <code>tah</code>). Samostatné tlačidlo „do dna“ zmizlo.</li>
+          <li><strong>Priznanie každej kliatby = karta</strong> (aj Cirhóza, Absťák, Milujúca manželka).</li>
+          <li><strong>Dedičstvo:</strong> cena rastie pre oboch spolu — 1., 2., 3. Nástroj v hre stojí 1, 2, 3 cigarety.</li>
+          <li><strong>Nástroj v línii:</strong> akcie dostane majiteľ karty, s ktorou tvorí spoj; efekt len v Dedičstve.</li>
+          <li><strong>Vízia:</strong> za každú aktívnu Víziu na konci Pitky vrchná karta balíčka do ruky, alebo zahodiť.</li>
+          <li><strong>Karty (jadro):</strong> Milujúca manželka — Absťák aj pri rovnosti nerestí (Furt, sčítava sa); Kočovník míňa limit; Vínko zakazuje doliatie, barter povoľuje; Vychovávateľka dá Dlh súperovi do balíčka; Veľmi smútiaca vdova opravená. Texty kariet v tvorcovi a Silnú nezávislú ženu (Pohoršenie, Dlh, Cigareta) treba ešte upraviť a zverejniť (etapa 3).</li>
+          <li><strong>Názvy:</strong> akcie Dlh, Poškodenie pečene, Poldeci, Cigareta; kľúč <code>Cigaretka</code> → <code>Cigareta</code> s aliasom pre staré sady, server pri štarte premenuje akcie v databáze tvorcu a zverejnenú sadu. Slovo „fyzická cigareta“ zmizlo.</li>
+          <li><strong>Web:</strong> zoom z profilu platí aj pre karty v ruke; pravidlá na webe a PRAVIDLA.md prepísané podľa hry (aj chýbajúca cena Dedičstva a nepravdivé „Nástroj z Dedičstva do línie“).</li>
+        </ul></div>
+        <div class="blok sledovat"><h4>Čo sledovať</h4><ul>
+          <li>Koľko Pitiek má bitka (stratég čakal pri pevných 2 Pitkách ⌀ 17 za partiu) a či hráči lokalitu vyberajú aj podľa toho.</li>
+          <li>Či majú hráči dosť cigariet na šenok a či sa ruky nenafukujú (bez limitu, +2 po bitke) ani nevysychajú.</li>
+          <li>Či sa hráči pri viac kartách v ťahu rozhodujú vedome a či štítok „−1 poldeci“ stačí, aby to nebolo prekvapenie.</li>
+          <li>Či Milujúca manželka spolu s „priznanie = karta“ nespôsobuje špirálu Absťákov (stratég: 2,0 → 4,8 na hráča).</li>
+          <li>Pocit progresie: limit, sila línie a podiel nových kariet po kolách (3 poldeci na štarte môžu hru otočiť na „najsilnejší na začiatku“).</li>
+          <li>Či sa Vízia používa na čistenie balíčka a či niekto neklesne pod 5 kariet.</li>
+        </ul></div>
+      </div>
+    </details>
+
     <details class="zmena" data-oblast="rozhranie">
       <summary><h3>Absťák na doske hráča: neresti kola, čiara minulého kola a výhľad</h3><span class="stav">skúšobné</span>
         <span class="meta"><span class="stitok rozhranie">rozhranie</span><span class="stitok">2026-10-19</span><span class="stitok">playtest 20261019-055945</span></span></summary>

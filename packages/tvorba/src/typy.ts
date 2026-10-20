@@ -21,6 +21,11 @@ export interface StranaNavrhu {
    * prázdna). Chýbajúca alebo prázdna pozícia povoľuje všetko.
    */
   readonly povolene: Readonly<Partial<Record<Pozicia, readonly string[]>>>;
+  /**
+   * Lokalita: názov polovice línie pri tejto hrane, napr. Krčma „pri výčape“
+   * a „pri dverách“ (Michal 2026-10-20 — namiesto mätúcej „tvojej/súperovej strany“).
+   */
+  readonly kraj?: string;
 }
 
 /** Obrázok karty v dvoch veľkostiach (média sú nemenné, id = hash obsahu). */

@@ -9,6 +9,7 @@ import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { Command, GameState, PlayerId } from "../src/index.ts";
 import {
+  KONSTANTY,
   apply,
   eventsFor,
   legalCommands,
@@ -73,7 +74,7 @@ function smoke(seed: number, kontrolaFiltrovania: boolean): { state: GameState; 
 }
 
 describe("M6 — setup", () => {
-  it("hra sa rozdá: 10 štartovacích kariet, z toho 5 na ruke, šenok prázdny, poldeci 2, cigareta 1", () => {
+  it("hra sa rozdá: 10 štartovacích kariet, z toho 5 na ruke, šenok prázdny, poldeci 3, cigarety 3", () => {
     const state = setupGame(data, 42);
     for (const p of [0, 1] as const) {
       expect(state.hraci[p].ruka.length).toBe(5);
@@ -83,8 +84,8 @@ describe("M6 — setup", () => {
     expect(state.starsi.length).toBe(8);
     expect(state.lokalityVHre.length).toBe(7);
     expect(state.lokalitCelkom).toBe(7);
-    expect(state.hraci[0].poldeciPlne).toBe(2);
-    expect(state.hraci[0].cigarety).toBe(1);
+    expect(state.hraci[0].poldeciPlne).toBe(3);
+    expect(state.hraci[0].cigarety).toBe(3);
     expect(state.faza).toBe("volbaCiela");
   });
 
@@ -114,7 +115,7 @@ describe("M6 — smoke test", () => {
     });
   }
 
-  it("na začiatku každého kola si hráč doplní ruku na 5 a kliatby idú do odhadzovacieho balíčka", () => {
+  it("po každej bitke si hráč dobere 2 karty a kliatby idú do odhadzovacieho balíčka", () => {
     let state = setupGame(data, 2024);
     let testRng = rngSeed(77);
     let kolo = state.kolo;
@@ -142,8 +143,8 @@ describe("M6 — smoke test", () => {
         for (const p of [0, 1] as const) {
           const h = state.hraci[p];
           const dostupne = h.doberaci.length + h.odhadzovaci.length;
-          // Ruka má aspoň 5, ak bolo z čoho ťahať; väčšia ruka sa nezahadzuje.
-          expect(h.ruka.length).toBeGreaterThanOrEqual(Math.min(5, pred.hraci[p].ruka.length + dostupne));
+          // Po bitke +2 karty, ak bolo z čoho ťahať (Michal 2026-10-19); limit ruky nie je.
+          expect(h.ruka.length).toBeGreaterThanOrEqual(Math.min(KONSTANTY.KARTY_PO_BITKE, dostupne));
         }
         expect(events.some((e) => e.type === "kartyTahane" || e.type === "log")).toBe(true);
         overenych++;

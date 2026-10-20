@@ -65,8 +65,8 @@ describe("tvorba — varianty a zverejnenie", () => {
   });
 
   it("obmedzenie pozícií filtruje rozloženia", () => {
-    const s: StranaNavrhu = { blokovane: [0, 3], akcie: { Cigaretka: 1, Poldeci: 1 }, povolene: { 1: ["Poldeci"] } };
-    expect(rozlozeniaStrany(s)).toEqual([[null, "Poldeci", "Cigaretka", null]]);
+    const s: StranaNavrhu = { blokovane: [0, 3], akcie: { Cigareta: 1, Poldeci: 1 }, povolene: { 1: ["Poldeci"] } };
+    expect(rozlozeniaStrany(s)).toEqual([[null, "Poldeci", "Cigareta", null]]);
   });
 
   it("slug zodpovedá id kariet", () => {
@@ -106,7 +106,7 @@ describe("tvorba — export a import TXT", () => {
   it("export → import zachová karty", () => {
     const txt = exportTxt(navrhy, PREDVOLENE_AKCIE, new Date(2026, 9, 10, 12, 0));
     expect(txt).toContain("CARD 1: ");
-    expect(txt).toContain("Actions: Hazard x2");
+    expect(txt).toContain("Actions: Dlh x2");
     const { karty, nezname } = importTxt(txt, PREDVOLENE_AKCIE);
     expect(nezname).toEqual([]);
     expect(karty.length).toBe(navrhy.length);
@@ -154,7 +154,7 @@ describe("tvorba — štatistiky", () => {
     for (const arr of Object.values(s.pozicie)) {
       for (const x of arr) expect(x).toBeLessThanOrEqual(1);
     }
-    // Sada v5 (2026-10-18, + Anonymný alkoholik) má Robotu na 8 kartách.
-    expect(s.pouzitie.find((u) => u.kluc === "Robota")?.navrhov).toBe(8);
+    // Sada v8 (2026-10-20, 14 lokalít) má Robotu na 11 kartách.
+    expect(s.pouzitie.find((u) => u.kluc === "Robota")?.navrhov).toBe(11);
   });
 });

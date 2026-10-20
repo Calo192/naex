@@ -1,6 +1,6 @@
 ---
 name: playtest
-description: Spustí playtest hry NA EX! — dvaja AI playtesteri odohrajú celú partiu proti sebe cez skutočný server (bez znalosti súperovej ruky) a spisovateľ z ich spätnej väzby napíše report — známky podľa kritérií, čo bolo dobré a čo zlepšiť. Použi, keď používateľ povie /playtest, „spusti playtest", „nech to zahrajú agenti", „otestuj hru agentmi".
+description: Spustí playtest hry NA EX! — dvaja AI playtesteri, ktorí poznajú všetky pravidlá, odohrajú celú partiu proti sebe cez skutočný server (bez znalosti súperovej ruky) a spisovateľ z ich spätnej väzby napíše report — známky podľa kritérií, náhoda vs. zručnosť, nezrovnalosti medzi pravidlami a hrou, návrhy na strategickosť, čo bolo dobré a čo zlepšiť — a stratég turnajmi botov zmeria náhodu vs. zručnosť a návrhy overí na variantoch pravidiel. Použi, keď používateľ povie /playtest, „spusti playtest", „nech to zahrajú agenti", „otestuj hru agentmi".
 argument-hint: "[štýl hráča 1] | [štýl hráča 2] [| kratka|stredna|dlha]"
 ---
 
@@ -12,7 +12,10 @@ kým dohrajú, a dáš spísať report. Sám nehráš a do partie nezasahuješ.
 Agenti (definície v `.claude/agents/`):
 - `naex-playtester` ×2 — hrajú proti sebe, každý vidí len svoju stranu,
   a po partii zverejnia spätnú väzbu na stránke Spätná väzba webu,
-- `naex-spisovatel` — po partii napíše interaktívny HTML report do `docs/playtesty/`.
+- `naex-spisovatel` — po partii napíše interaktívny HTML report do `docs/playtesty/`,
+- `naex-strateg` — po partii zmeria turnajmi botov, koľko rozhoduje zručnosť
+  a koľko náhoda, návrhy playtesterov aj vlastné vyskúša ako varianty pravidiel
+  (vo worktree, hlavnú vetvu nemení) a napíše rozbor `docs/playtesty/strategia-<id>.html`.
 
 Sledovateľ vizuálu (`naex-sledovatel`) sa zatiaľ nespúšťa (Michal 2026-10-12) —
 definícia ostáva pre neskoršie hodnotenie rozhrania.
@@ -20,6 +23,13 @@ definícia ostáva pre neskoršie hodnotenie rozhrania.
 Hru proti človeku (agent proti používateľovi) zakladá skill `protihrac`.
 
 Kritériá hodnotenia: `tools/playtest/kriteria.md`.
+
+**Hlavná téma (Michal 2026-10-19): strategickosť.** Hra má odmeňovať skill
+a znalosť, nie náhodu. Playtesteri pred partiou naštudujú celé pravidlá
+a všetky ťahy, hrajú ako experti, zapisujú rozhodovacie záznamy a
+nezrovnalosti medzi pravidlami a hrou a v spätnej väzbe rozoberú náhodu
+vs. zručnosť a navrhnú aspoň 5 zmien smerom k strategickej hre
+(`kriteria.md`, časť C).
 
 ## Štýly hráčov
 
@@ -34,7 +44,9 @@ dĺžka je stredná (7 lokalít).** Ak štýly chýbajú, použi:
   scorecardov a strach starších, šetrí poldeci a cigarety, vyhýba sa
   kliatbám, bitky vyberá s rozmyslom.
 
-Meno daj krátke (do 24 znakov), štýl opíš jednou-dvoma vetami.
+Meno daj krátke (do 24 znakov), štýl opíš jednou-dvoma vetami. Štýl
+určuje priority, nie úroveň — obaja hrajú ako skúsení hráči, ktorí poznajú
+všetky pravidlá a karty.
 
 ## Postup
 
@@ -57,9 +69,17 @@ Meno daj krátke (do 24 znakov), štýl opíš jednou-dvoma vetami.
 3. **Spusti oboch playtesterov naraz** — v jednej správe dve volania Agent,
    obe s `run_in_background: true`:
    - `naex-playtester`: „Relácia: R. Si hráč 1, meno: …, štýl: …. Web: <url>
-     (alebo nedostupný). Odohraj celú partiu, napíš spätnú väzbu a zverejni
-     ju na webe."
+     (alebo nedostupný). Najprv sa priprav (celé pravidlá, karty,
+     moznosti.md), potom odohraj celú partiu ako expert. Hlavne potrebujem
+     rozbor náhoda vs. zručnosť, nezrovnalosti medzi pravidlami a hrou
+     a návrhy, ako hru spraviť strategickejšou. Napíš spätnú väzbu
+     a zverejni ju na webe."
    - `naex-playtester`: to isté pre hráča 2.
+
+   Ak existuje predošlý rozbor `docs/playtesty/strategia-*.html`, pridaj do
+   zadania oboch jeho otázky z časti „Čo sledovať v ďalšom playteste“ ako
+   **otázky na sledovanie** (playtester na ne odpovie v rozbore náhoda vs.
+   zručnosť).
 
    Používateľovi povedz, že playtest beží, kto proti komu hrá a že partia
    trvá desiatky minút (stredná hra so 7 lokalitami dlhšie ako krátka). Upozorni ho, aby sa na port playtestu neprihlasoval
@@ -80,8 +100,14 @@ Meno daj krátke (do 24 znakov), štýl opíš jednou-dvoma vetami.
    node --experimental-strip-types --no-warnings tools/playtest/ukonci.ts R
    ```
 
-6. **Report** — spusti `naex-spisovatel` (v popredí): „Relácia: R. Napíš
-   report z playtestu." Ak existuje `R/organizator.md`, spomeň ho.
+6. **Report a rozbor** — v jednej správe spusti oboch na pozadí:
+   - `naex-spisovatel`: „Relácia: R. Napíš report z playtestu." Ak existuje
+     `R/organizator.md`, spomeň ho.
+   - `naex-strateg`: „Relácia: R. Zmeraj náhodu a zručnosť, vyhodnoť návrhy
+     playtesterov na strategickosť, najsľubnejšie vyskúšaj ako varianty
+     a napíš rozbor." Stratég beží dlhšie (turnaje botov, desiatky minút);
+     používateľovi odovzdaj report spisovateľa hneď a rozbor stratéga, keď
+     dobehne.
 
 7. **Odovzdaj výsledok používateľovi**:
    - report na webe: `<web>/admin/playtesty/<id>.html` (sekcia Tvorba →
@@ -90,7 +116,17 @@ Meno daj krátke (do 24 znakov), štýl opíš jednou-dvoma vetami.
    - odkaz na stránku Spätná väzba (`<web>/spatna-vazba`) s názormi agentov,
    - výsledok partie (jedna veta, bez priebehu),
    - tabuľka známok 12 kritérií (hráč 1, hráč 2, priemer),
-   - čo bolo dobré a 3–5 najdôležitejších vecí na zlepšenie.
+   - náhoda vs. zručnosť: odhad oboch hráčov a čo rozhodlo partiu,
+   - nezrovnalosti medzi pravidlami a hrou — potvrdené chyby v hre zvlášť,
+     otázky na autora (nejasné pravidlá) zvlášť; potvrdené chyby ponúkni
+     opraviť,
+   - 3–5 najsilnejších návrhov na strategickosť,
+   - čo bolo dobré a 3–5 ďalších vecí na zlepšenie,
+   - z rozboru stratéga (`<web>/admin/playtesty/strategia-<id>.html`):
+     kľúčové čísla (rebrík zručnosti, delené rozdania, otočky) a ako sa
+     pohli oproti predošlému rozboru, 3 odporúčané zmeny s nameraným
+     posunom a čo od Michala potrebuje rozhodnúť. Zmeny pravidiel sám
+     nezavádzaj — ponúkni, ktorú implementovať.
    Ponúkni, že report zverejníš ako stránku (Artifact) na zdieľanie.
 
    Do `docs/playtesty/zmeny-pravidiel.html` doplň pri dotknutých zmenách blok

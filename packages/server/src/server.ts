@@ -172,6 +172,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   obsah.premenujZrusenePriazne(teraz());
   obsah.doplnChybajuceIlustracie(teraz());
   obsah.odstranZruseneKlucoveSlova(teraz());
+  obsah.zjednotNazvyAkcii(teraz());
 
   const rooms = new Map<string, Room>();
   const infos = new WeakMap<WebSocket, SocketInfo>();

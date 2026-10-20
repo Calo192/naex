@@ -180,7 +180,13 @@ export function normalizujStatistiky(v: unknown): StatistikyHraca {
     }
     return r;
   };
-  out.akcie = mapa(o.akcie);
+  const akcie = mapa(o.akcie);
+  // Kľúč Cigaretka sa 2026-10-19 premenoval na Cigareta — staré partie sa zlúčia.
+  if (akcie.Cigaretka !== undefined) {
+    akcie.Cigareta = (akcie.Cigareta ?? 0) + akcie.Cigaretka;
+    delete akcie.Cigaretka;
+  }
+  out.akcie = akcie;
   out.bodyPodla = mapa(o.bodyPodla);
   return out;
 }

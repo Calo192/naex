@@ -42,7 +42,8 @@ function nahodny(s: GameState, p: PlayerId, seed: number): Command {
 function chamtivy(s: GameState, p: PlayerId, seed: number): Command {
   const cmds = legalCommands(data, s, p);
   if (s.faza === "pitka" && s.pitkaStav?.reakcia !== p) {
-    const skip = cmds.find((c) => c.type === "skipNaex" || c.type === "bezRundy");
+    // Vízia: chamtivý hráč si kartu vždy vezme.
+    const skip = cmds.find((c) => c.type === "skipNaex" || (c.type === "vizia" && c.vziat));
     if (skip !== undefined) return skip;
   }
   if (s.faza === "zhromazdenie" || (s.faza === "pitka" && s.pitkaStav?.reakcia === p)) {

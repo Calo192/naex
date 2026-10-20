@@ -24,22 +24,28 @@
 
 /* ---- hlavička: kód, priebeh kola, spojenie ---- */
 
+/* Úzka časová os kola — prilepená pod hlavičkou webu ako ruka dole (Michal 2026-10-20). */
 .hra-hlava {
+  position: sticky;
+  top: var(--hlavicka-h, 0px);
+  z-index: 45;
   display: flex;
   align-items: center;
-  gap: 10px 18px;
-  flex-wrap: wrap;
-  padding: 10px 14px;
-  border-radius: 14px;
-  background: var(--plocha-2);
+  gap: 8px 14px;
+  padding: 5px 10px;
+  border-radius: 0 0 12px 12px;
+  background: rgba(40, 33, 26, 0.94);
+  backdrop-filter: blur(8px);
   border: 1px solid var(--okraj);
+  border-top: none;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
 }
 
 .hra-hlava .kod {
   font: 800 1.05rem/1 var(--nadpis);
   letter-spacing: 0.22em;
   color: var(--akcent);
-  padding: 7px 10px;
+  padding: 5px 10px;
   border-radius: 8px;
   background: #2d2312;
 }
@@ -87,25 +93,42 @@
 }
 
 .priebeh-kola {
+  flex: 1 1 auto;
+  min-width: 0;
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px;
+  align-items: stretch;
+  gap: 3px;
   list-style: none;
   margin: 0;
   padding: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
 
 .priebeh-kola li {
   position: relative;
-  padding: 6px 12px 6px 18px;
-  font-size: 0.85rem;
+  flex: 1 0 auto;
+  padding: 4px 12px 4px 18px;
+  font-size: 0.8rem;
+  line-height: 1.35;
+  white-space: nowrap;
+  text-align: center;
   color: var(--slaby);
   background: var(--plocha);
+  cursor: help;
+  outline: none;
   clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%, 8px 50%);
 }
 
+.priebeh-kola li:hover,
+.priebeh-kola li:focus-visible {
+  color: var(--text);
+  background: var(--plocha-3);
+}
+
 .priebeh-kola li.priebeh-kolo {
+  flex: none;
+  cursor: default;
   padding-left: 12px;
   clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%);
   color: var(--text);
@@ -117,7 +140,8 @@
   color: var(--tlmeny);
 }
 
-.priebeh-kola li.aktualny {
+.priebeh-kola li.aktualny,
+.priebeh-kola li.aktualny:hover {
   color: #1b1408;
   font-weight: 700;
   background: var(--akcent);
@@ -216,7 +240,7 @@
   display: grid;
   /* Meno a značky majú pevný strop — radšej sa zalomia značky, než by sa
      zdroje rozpadli do dvoch radov a doska narástla do výšky. */
-  grid-template-columns: minmax(150px, 230px) minmax(0, 1fr);
+  grid-template-columns: minmax(150px, 220px) minmax(0, 1fr);
   grid-template-areas: "hrac zdroje" "oblast oblast";
   align-items: center;
   gap: 10px 16px;
@@ -230,7 +254,7 @@
 .doska.superova {
   --farba: var(--su);
   --farba-tmava: var(--su-tmava);
-  grid-template-columns: minmax(0, 1fr) minmax(150px, 230px);
+  grid-template-columns: minmax(0, 1fr) minmax(150px, 220px);
   grid-template-areas: "zdroje hrac" "oblast oblast";
   background: linear-gradient(270deg, var(--farba-tmava), var(--plocha) 45%);
   border-left-width: 1px;
@@ -247,6 +271,7 @@
 }
 
 .doska.superova .doska-zdroje {
+  flex-direction: row;
   justify-content: flex-start;
 }
 
@@ -316,12 +341,33 @@
   color: #ff9d88;
 }
 
+/* Od stredu k portrétu (Michal 2026-10-20): na tvojej doske ide poradie
+   sprava doľava — poldeci pri strede obrazovky, karty pri avatare. */
 .doska-zdroje {
   grid-area: zdroje;
   display: flex;
+  flex-direction: row-reverse;
   flex-wrap: wrap;
   gap: 6px;
-  justify-content: flex-end;
+  justify-content: flex-start;
+}
+
+.doska-rola {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 3px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: help;
+}
+
+.doska-rola.utocnik {
+  color: #ffb8a3;
+}
+
+.doska-rola.obranca {
+  color: #a9cdf2;
 }
 
 .zdroj {
@@ -681,24 +727,118 @@
   background: var(--plocha);
 }
 
+/* Michal 2026-10-20: aktívne efekty ako veľké ikony s hodnotou pod nimi;
+   súper zrkadlovo (od stredu k okraju). */
 .bitka-strana {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 12px 18px;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 16px;
+  min-width: 0;
 }
 
 .bitka-strana.vlavo {
-  align-items: flex-start;
   background: linear-gradient(90deg, var(--ja-tmava), transparent);
   border-left: 5px solid var(--ja);
+  --efekt-farba: var(--ja);
 }
 
 .bitka-strana.vpravo {
-  align-items: flex-end;
+  flex-direction: row-reverse;
   text-align: right;
   background: linear-gradient(270deg, var(--su-tmava), transparent);
   border-right: 5px solid var(--su);
+  --efekt-farba: var(--su);
+}
+
+.bitka-suhrn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: none;
+  gap: 2px;
+  text-align: center;
+}
+
+.efekty {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+.bitka-strana.vpravo .efekty {
+  flex-direction: row-reverse;
+}
+
+.efekty-ziadne {
+  font-size: 0.85rem;
+  color: var(--slaby);
+}
+
+.efekt {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  min-width: 60px;
+  padding: 6px 7px 5px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: help;
+  outline: none;
+}
+
+.efekt:hover,
+.efekt:focus-visible {
+  border-color: var(--efekt-farba);
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.efekt.tuha {
+  border-color: color-mix(in srgb, var(--efekt-farba) 55%, transparent);
+}
+
+.efekt-ikona {
+  display: block;
+  width: 46px;
+  height: 46px;
+}
+
+.efekt-ikona .ikona-akcie {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 7px;
+}
+
+.efekt-hodnota {
+  font: 800 1.35rem/1 var(--nadpis);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.efekt-zmeny {
+  margin-left: 3px;
+  font: 600 0.72rem/1 var(--pismo);
+  color: var(--tlmeny);
+}
+
+.efekt.efekt-tuhe {
+  min-width: 74px;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.efekt.efekt-tuhe .efekt-ikona {
+  width: auto;
+  height: auto;
+}
+
+.efekt.efekt-tuhe .efekt-hodnota {
+  font: inherit;
 }
 
 .bitka-meno {
@@ -1210,7 +1350,8 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:hover {
 }
 
 body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:hover > .kl {
-  transform: translateY(calc(-1 * var(--ruka-skryte) - 6px)) scale(2);
+  /* Zväčšenie podľa nastavenia lupy v profile (Michal 2026-10-19), predvolene 2×. */
+  transform: translateY(calc(-1 * var(--ruka-skryte) - 6px)) scale(var(--lupa-ruky, 2));
   box-shadow:
     0 0 0 1.5px var(--akcent),
     0 24px 50px rgba(0, 0, 0, 0.7);
@@ -1218,11 +1359,11 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:hover > .kl {
 
 /* Susedia uhnú o polovicu prírastku šírky zväčšenej karty. */
 body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:has(~ .tahatelna:hover) {
-  transform: translateX(calc(var(--ruka-w) / -2 - 6px));
+  transform: translateX(calc(var(--ruka-w) * (var(--lupa-ruky, 2) - 1) / -2 - 6px));
 }
 
 body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:hover ~ .tahatelna {
-  transform: translateX(calc(var(--ruka-w) / 2 + 6px));
+  transform: translateX(calc(var(--ruka-w) * (var(--lupa-ruky, 2) - 1) / 2 + 6px));
 }
 
 /* ---- pás pokynov nad rukou: vrstvy · čo robiť · tlačidlá ťahu ----
@@ -1742,16 +1883,17 @@ button:disabled .cena {
 
   .doska-zdroje,
   .doska.superova .doska-zdroje {
+    flex-direction: row;
     justify-content: flex-start;
   }
 
   .bitka-panel {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
   }
 
-  .bitka-stred {
-    grid-column: 1 / -1;
-    grid-row: 1;
+  .bitka-strana,
+  .bitka-strana.vpravo {
+    flex-direction: column;
   }
 }
 
@@ -2993,4 +3135,108 @@ button.dlzka-volba.aktivna {
 .scorecard-obal.vyzvat .scorecard {
   cursor: pointer;
   box-shadow: 0 0 0 2px var(--akcent), 0 10px 26px rgba(0, 0, 0, 0.5);
+}
+
+/* ---- Celý ťah naraz: ďalšia karta stojí poldeci (Michal 2026-10-19) ---------- */
+
+.poldeci-stitok {
+  position: absolute;
+  left: 50%;
+  bottom: -10px;
+  transform: translateX(-50%);
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #8a5a1c, #5a3a12);
+  border: 1px solid #ffd08a;
+  color: #ffe2b0;
+  font-size: 0.72rem;
+  font-weight: 800;
+  white-space: nowrap;
+  box-shadow: 0 0 12px rgba(233, 173, 69, 0.55);
+  pointer-events: none;
+}
+
+.nm-poldeci,
+.poldeci-varovanie {
+  color: #ffd08a;
+  font-weight: 800;
+  animation: treba 1.6s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+.nm-poldeci {
+  display: block;
+  margin-top: 4px;
+  padding: 2px 6px;
+  background: rgba(90, 58, 18, 0.85);
+}
+
+.poldeci-text {
+  color: #ffd08a;
+}
+
+.chyba-tahu {
+  color: var(--cervena);
+}
+
+.tah-polozka {
+  white-space: nowrap;
+}
+
+/* ---- Vízia a Zberateľ: karty priamo v pokyne --------------------------------- */
+
+.vizia-text,
+.zberatel-text {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.vizia-karta {
+  flex: none;
+}
+
+.zberatel-ponuka {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.zberatel-ponuka > span {
+  cursor: pointer;
+}
+
+/* ---- Stavba šenku po dvoch kartách ---------------------------------------------- */
+
+.stavba-zona {
+  max-width: none;
+}
+
+.stavba-zona-nazov small {
+  font-weight: 600;
+  color: var(--tlmeny);
+}
+
+.stavba-zona-karty {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Prevaha v polovici línie (Michal 2026-10-20). */
+.kraj-prevaha {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 600;
+  color: var(--tlmeny);
+}
+
+.kraj-prevaha.moja {
+  color: var(--ja);
+}
+
+.kraj-prevaha.superova {
+  color: var(--su);
 }

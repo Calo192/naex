@@ -82,8 +82,12 @@ export interface ImportVysledok {
   readonly nezname: readonly string[];
 }
 
+/** Staré názvy akcií v exportoch spred 2026-10-19 (jednotné názvy). */
+const STARE_NAZVY: Readonly<Record<string, string>> = { hazard: "Dlh", "pečeň": "PoškodeniePečene", poldecko: "Poldeci", cigaretka: "Cigareta" };
+
 function najdiAkciu(nazov: string, akcie: readonly AkciaDef[]): string | null {
-  const n = nazov.trim().toLocaleLowerCase("sk");
+  const povodny = nazov.trim().toLocaleLowerCase("sk");
+  const n = (STARE_NAZVY[povodny] ?? povodny).toLocaleLowerCase("sk");
   const a = akcie.find((x) => x.nazov.toLocaleLowerCase("sk") === n || x.kluc.toLocaleLowerCase("sk") === n);
   return a?.kluc ?? null;
 }

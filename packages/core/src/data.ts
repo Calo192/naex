@@ -58,6 +58,13 @@ function asArray(v: unknown, path: string): readonly unknown[] {
   return v;
 }
 
+/**
+ * Staré kľúče akcií v zverejnených sadách (Michal 2026-10-19: Cigaretka sa
+ * premenovala na Cigareta, aby sa akcia volala ako zdroj, ktorý dáva).
+ */
+const AKCIE_ALIAS: Readonly<Record<string, Action>> = { Cigaretka: "Cigareta" };
+const akcia = (kluc: string): string => AKCIE_ALIAS[kluc] ?? kluc;
+
 function parseSide(v: unknown, path: string): SideDef {
   if (!isRecord(v)) fail(path, "očakávam objekt");
   const blocked = asArray(v.blocked, `${path}.blocked`).map((b, i) => {
@@ -67,25 +74,27 @@ function parseSide(v: unknown, path: string): SideDef {
   });
   if (!isRecord(v.actions)) fail(`${path}.actions`, "očakávam objekt");
   const actions: Partial<Record<Action, number>> = {};
-  for (const [key, count] of Object.entries(v.actions)) {
+  for (const [povodny, count] of Object.entries(v.actions)) {
+    const key = akcia(povodny);
     if (!(ALL_ACTIONS as readonly string[]).includes(key)) {
-      fail(`${path}.actions`, `neznáma akcia „${key}“`);
+      fail(`${path}.actions`, `neznáma akcia „${povodny}“`);
     }
-    actions[key as Action] = asNumber(count, `${path}.actions.${key}`);
+    actions[key as Action] = asNumber(count, `${path}.actions.${povodny}`);
   }
-  if (v.allowed === undefined) return { blocked, actions };
+  const kraj = typeof v.name === "string" && v.name.trim() !== "" ? { kraj: v.name.trim() } : {};
+  if (v.allowed === undefined) return { blocked, actions, ...kraj };
   if (!isRecord(v.allowed)) fail(`${path}.allowed`, "očakávam objekt");
   const allowed: Partial<Record<SlotIndex, readonly Action[]>> = {};
   for (const [pos, list] of Object.entries(v.allowed)) {
     const n = Number(pos);
     if (n !== 0 && n !== 1 && n !== 2 && n !== 3) fail(`${path}.allowed`, `pozícia ${pos} mimo 0..3`);
     allowed[n as SlotIndex] = asArray(list, `${path}.allowed.${pos}`).map((a) => {
-      const s = asString(a, `${path}.allowed.${pos}`);
+      const s = akcia(asString(a, `${path}.allowed.${pos}`));
       if (!(ALL_ACTIONS as readonly string[]).includes(s)) fail(`${path}.allowed`, `neznáma akcia „${s}“`);
       return s as Action;
     });
   }
-  return { blocked, actions, allowed };
+  return { blocked, actions, allowed, ...kraj };
 }
 
 export function parseCards(json: unknown): ReadonlyMap<string, CardDef> {

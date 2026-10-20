@@ -262,7 +262,7 @@ function Akcia({ kluc }: { readonly kluc: Action }) {
 /** Aktívne akcie z bitiek ako riadok ikon s počtami. */
 function AkcieVBitkach({ akcie, bitky }: { readonly akcie: StatistikyHraca["akcie"]; readonly bitky: number }) {
   const { sada } = useSada();
-  const poradie: Action[] = ["Rana", "Pecka", "Petelica", "Povera", "Viera", "Pohoršenie", "Dlh", "PoškodeniePečene", "Cigaretka", "Vízia", "Poldeci", "Robota"];
+  const poradie: Action[] = ["Rana", "Pecka", "Petelica", "Povera", "Viera", "Pohoršenie", "Dlh", "PoškodeniePečene", "Cigareta", "Vízia", "Poldeci", "Robota"];
   const zoznam = poradie.filter((k) => (akcie[k] ?? 0) > 0);
   if (zoznam.length === 0) return <p className="tlmene">Zatiaľ žiadna aktívna akcia v bitke.</p>;
   return (

@@ -27,8 +27,8 @@ dvaja ľudia na dvoch zariadeniach, nie viac hráčov naraz.
 4. **Náhoda je deterministická.** Jeden seedovaný generátor v `GameState`.
 5. **Dáta, nie kód.** Karty upravuje admin v tvorcovi (SQLite); hra beží na
    zverejnenej sade. `packages/core/data/cards.json` je východisková sada
-   pre prvé spustenie a testy — kópia zverejnenej sady v6 (revízia kariet
-   2026-10-18 + Anonymný alkoholik a Svokra z 2026-10-19, `cardsJson` z tabuľky `sady`); predtým ju generoval
+   pre prvé spustenie a testy — kópia zverejnenej sady v8 (2026-10-20:
+   14 lokalít s krajmi, nová Pasca, Nealko; `cardsJson` z tabuľky `sady`); predtým ju generoval
    `tools/import_print_pdf.py` z tlačového PDF.
 6. **Server púšťa `.ts` priamo (strip-types)** — len vymazateľná syntax
    (`erasableSyntaxOnly`): žiadne parametrické vlastnosti, enumy, namespaces.
@@ -43,6 +43,7 @@ npm run kniznica -- "docs/NA EX/NA EX"   # obrázky do knižnice tvorcu
 node --experimental-strip-types --no-warnings tools/admin/admin.ts <príkaz>   # nástroje agenta naex-admin
                      # ilustrácie: Leonardo.Ai API, kľúč NAEX_LEONARDO_KEY v .env (stojí API kredit)
 node --experimental-strip-types --no-warnings tools/bot/turnaj.ts 20 chamtivy stredna stamgast   # sila povahy bota
+node --experimental-strip-types --no-warnings tools/bot/strategickost.ts   # náhoda vs. zručnosť (rebrík, duplikát), ≈ 8 min
 npm test             # vitest
 npm run typecheck    # tsc --build
 npm run build
@@ -69,7 +70,7 @@ npm run build
 
 ```
 packages/core/       jadro pravidiel — čistý TS, bez I/O
-  data/cards.json      51 kariet — kópia zverejnenej sady (neupravuj ručne)
+  data/cards.json      58 kariet — kópia zverejnenej sady v8 (neupravuj ručne)
   data/elders.json     8 starších; hodnoty sú PROVIZÓRNE, viď TODO
   src/bot.ts           offline protihráč (NPC: heuristiky + výpočet dopredu, žiadne
                        LLM); tri povahy (POVAHY) — Štamgast, Rapavý Fero, Teta
@@ -85,5 +86,6 @@ docs/BRIEF.md        zadanie M0–M10
 docs/PRAVIDLA.md     špecifikácia pravidiel
 tools/               import z tlačového PDF, piktogramy akcií
   bot/turnaj.ts        turnaj offline protihráča (proti náhodnému / chamtivému / sebe)
+  bot/strategickost.ts meranie strategickosti — podklad agenta naex-strateg (skill strategia)
   admin/               nástroje agenta naex-admin (admin API, rebalans, štýl ilustrácií)
 ```

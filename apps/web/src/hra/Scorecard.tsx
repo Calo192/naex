@@ -172,13 +172,15 @@ export function Scorecard({ elder, data, sada, ja, sirka, karta, onClick, body }
  * (Michal 2026-10-16: dvojnásobný účinok). PRAVIDLA §9.
  */
 export const UCINOK_PRIAZNE: Readonly<Record<Favour, (sila: number) => string>> = {
-  ZBERATEL: (s) => `Limit ruky na konci kola ${KONSTANTY.LIMIT_RUKY_ZAKLAD + bonus(s)} namiesto ${KONSTANTY.LIMIT_RUKY_ZAKLAD}.`,
+  // Michal 2026-10-19: limit ruky zanikol — Zberateľ prezrie vrchné karty balíčka a niektoré si vezme.
+  ZBERATEL: (s) => `Po bitke si prezrieš ${bonus(s)} vrchných kariet balíčka a ${s} z nich si vezmeš do ruky (ostatné odhodíš).`,
   // Michal 2026-10-18: Trocha a Zopár zmizli — Lakomec zlacní barter, Neprajník pustí Povery nad priznané Dlhy.
   LAKOMEC: (s) => `Stokársky barter (nový poldeci) za ${KONSTANTY.BARTER_CENA - s} cigariet namiesto ${KONSTANTY.BARTER_CENA}.`,
   NEPRAJNIK: (s) => `Tvoje Povery smú dať mäkké poškodenie o ${bonus(s)} viac, než má súper priznaných Dlhov.`,
   BITKAR: (s) => `+${bonus(s)} tuhého poškodenia v každej bitke.`,
   VERIACI: (s) => `Tvoja Viera má hodnotu ${KONSTANTY.HODNOTA_VIERY_ZAKLAD + bonus(s)} namiesto ${KONSTANTY.HODNOTA_VIERY_ZAKLAD}.`,
-  FAJCIAR: (s) => `+${bonus(s)} cigariet z Cigaretiek v prvej Pitke bitky o lokalitu.`,
+  // Michal 2026-10-19: cigarety platia šenok aj Dedičstvo — Fajčiar dáva silu, bez dvojnásobku.
+  FAJCIAR: (s) => `+${s} ${s === 1 ? "cigareta" : "cigarety"} v prvej Pitke bitky o lokalitu.`,
   ALKOHOLIK: (s) => `Prah Cirhózy ${KONSTANTY.PRAH_CIRHOZY_ZAKLAD + bonus(s)} namiesto ${KONSTANTY.PRAH_CIRHOZY_ZAKLAD} — Cirhózu dostaneš neskôr.`,
   EXEKUTOR: (s) => `Prah Exekútora ${KONSTANTY.PRAH_EXEKUTORA_ZAKLAD + 2 * bonus(s)} namiesto ${KONSTANTY.PRAH_EXEKUTORA_ZAKLAD}.`,
 };

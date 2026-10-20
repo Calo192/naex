@@ -9,10 +9,10 @@ import { cardVariants, loadGameData, sideLayouts } from "../src/index.ts";
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
 describe("M1 — načítanie dát", () => {
-  it("načíta 51 kariet, 8 starších, 7 lokalít, 8 nástrojov", () => {
-    expect(data.cards.size).toBe(51);
+  it("načíta 58 kariet, 8 starších, 14 lokalít, 8 nástrojov (sada v8, 2026-10-20)", () => {
+    expect(data.cards.size).toBe(58);
     expect(data.elders.size).toBe(8);
-    expect(data.lokality.length).toBe(7);
+    expect(data.lokality.length).toBe(14);
     expect(data.nastroje.length).toBe(8);
     expect(data.staresinovia.length).toBe(8);
   });
@@ -27,7 +27,7 @@ describe("M1 — načítanie dát", () => {
 });
 
 describe("M1 — generovanie variantov", () => {
-  it("pre všetkých 51 kariet sedí ľavé × pravé s permutations", () => {
+  it("pre všetkých 58 kariet sedí ľavé × pravé s permutations", () => {
     for (const def of data.cards.values()) {
       const v = cardVariants(def);
       expect(v.left.length, `${def.id} vľavo`).toBe(def.permutations.left);
@@ -58,15 +58,15 @@ describe("M1 — generovanie variantov", () => {
   });
 
   it("obmedzenie pozícií vyradí rozloženia so zakázanou akciou", () => {
-    // Veterinár vpravo: Cigaretka + Poldeci na pozíciách 1–2, Poldeci len na 1.
-    const volne = sideLayouts({ blocked: [0, 3], actions: { Cigaretka: 1, Poldeci: 1 } });
+    // Veterinár vpravo: Cigareta + Poldeci na pozíciách 1–2, Poldeci len na 1.
+    const volne = sideLayouts({ blocked: [0, 3], actions: { Cigareta: 1, Poldeci: 1 } });
     expect(volne.length).toBe(2);
     const obmedzene = sideLayouts({
       blocked: [0, 3],
-      actions: { Cigaretka: 1, Poldeci: 1 },
+      actions: { Cigareta: 1, Poldeci: 1 },
       allowed: { 1: ["Poldeci"] },
     });
-    expect(obmedzene).toEqual([[null, "Poldeci", "Cigaretka", null]]);
+    expect(obmedzene).toEqual([[null, "Poldeci", "Cigareta", null]]);
   });
 
   it("rozloženia sú deterministické a v stabilnom poradí", () => {

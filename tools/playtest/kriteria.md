@@ -1,6 +1,9 @@
 # Kritériá hodnotenia playtestu NA EX!
 
-Každé kritérium sa hodnotí na stupnici **1–10** a ku každému patrí jedna až
+Časti A (12 kritérií) a C (strategickosť — hlavná téma) hodnotia
+playtesteri, časť B sledovateľ vizuálu.
+
+Každé kritérium častí A a B sa hodnotí na stupnici **1–10** a ku každému patrí jedna až
 dve vety zdôvodnenia s konkrétnym príkladom z partie. Kotvy: **1–2** zásadne
 nefunguje, **3–4** slabé, **5–6** priemerné, **7–8** dobré, **9–10** výnimočné.
 
@@ -33,6 +36,83 @@ v zdrojoch opakuje.
 - **Čo je navyše** — karty alebo akcie, ktoré nič neprinášajú alebo sa prekrývajú.
 - **Čo chýba** — typ karty, protiťah alebo mechanika, ktorú som v partii postrádal.
 - **Efekty, ktoré hra nevyhodnocuje** — hlášky „⚠ EFEKT…": ktoré a ako to pokazilo hru.
+
+## C. Strategickosť — hlavná téma playtestov (Michal 2026-10-19)
+
+Autor chce posunúť NA EX! k **strategickému titulu**: lepší a znalejší hráč
+má vyhrávať výrazne častejšie než horší. Dnes je v hre veľa náhody a nie
+vždy vyhrá ten lepší. Táto časť sa neznámkuje (známky ostávajú v časti A,
+aby sa dali porovnávať partie), ale je **najdôležitejšou časťou spätnej
+väzby**.
+
+### C1. Rozbor partie: náhoda vs. zručnosť
+
+- **Kľúčové momenty (3–6):** ktoré udalosti rozhodli partiu? Pri každom
+  označ, či rozhodla **voľba** (hráčovo rozhodnutie, ktoré mohlo byť iné),
+  **náhoda** (dobratie, poradie v balíčku, čo prišlo do stavby šenku,
+  náhodní starší / lokality) alebo **skrytá informácia** (nemohol som
+  vedieť, čo súper má). Uveď kolo a konkrétne karty či čísla.
+- **Odhad podielu:** koľko percent výsledku pripisuješ zručnosti a koľko
+  náhode — s jednou vetou zdôvodnenia.
+- **Čo by spravil lepší hráč:** kde by skúsenejší hráč (alebo ty s dnešnou
+  skúsenosťou) hral inak a koľko by to zmenilo. Ak by to nezmenilo nič,
+  je to signál, že voľba nemala váhu.
+- **Prázdne rozhodnutia:** situácie, keď bol len jeden rozumný ťah, keď
+  bolo jedno, čo spravíš, alebo keď si nemal z čoho vyberať (zlá ruka,
+  limit 1, žiadne cigarety).
+- **Plánovanie dopredu:** dalo sa plánovať na viac kôl (balíček, starší,
+  scorecardy, zdroje)? Kde plán zničila náhoda tak, že sa nedalo reagovať?
+- **Zmiernenie náhody:** ktoré nástroje na zmiernenie smoly existujú
+  (fajčenie, šenok, Vízia, priznanie, Pohreb, …), či si ich použil a či
+  stačili. Kde chýba spôsob, ako zlú ruku zachrániť šikovnosťou?
+- **Čítanie súpera:** dalo sa z verejných informácií (stôl, zdroje, odhodené,
+  šenok, čo súper pustil v stavbe šenku) odhadnúť, čo chystá? Odmenila hra
+  pozornosť?
+- **Snowball a dobiehanie:** rozhodli o výsledku skôr rozhodnutia, alebo
+  prvá vyhratá/prehratá bitka? Pomáha dobiehanie lepšiemu, alebo len
+  vyrovnáva náhodne?
+
+### C2. Nezrovnalosti medzi pravidlami a hrou
+
+Každý rozdiel medzi tým, čo hovorí `docs/PRAVIDLA.md` (alebo text karty,
+alebo výpis klienta), a tým, ako sa hra naozaj zachovala. Formát jednej
+položky:
+
+- **Kde:** kolo, fáza, ťah (JSON), karty.
+- **Pravidlo:** paragraf `docs/PRAVIDLA.md` (napr. „§8 krok 3“) alebo text
+  karty, krátky citát.
+- **Čakal som:** čo malo podľa pravidla nastať (s výpočtom, ak ide o čísla).
+- **Stalo sa:** čo ukázal výpis (presné čísla).
+- **Istota:** *istá chyba* / *pravdepodobne* / *nejasné pravidlo* (pravidlo
+  sa dá čítať dvoma spôsobmi — uveď oba).
+
+Patria sem aj: odmietnutý ťah, ktorý pravidlá povoľujú; ponúknutý ťah,
+ktorý pravidlá zakazujú; nápoveda klienta, ktorá odporuje pravidlám;
+rozpory medzi dvoma miestami pravidiel navzájom.
+
+### C3. Návrhy smerom k strategickej hre
+
+Aspoň **5 návrhov**, zoradených podľa toho, koľko pridajú zručnosti. Každý
+návrh:
+
+- **Problém:** čo dnes robí hru náhodnou alebo plytkou — s príkladom z partie.
+- **Návrh:** konkrétna zmena pravidla, karty alebo hodnoty (s číslami,
+  nie „nejako vyvážiť“).
+- **Prečo pridá zručnosť:** aké nové rozhodnutie vznikne, akú informáciu
+  hráč získa, akú náhodu odstráni či zmierni.
+- **Cena:** o koľko sa hra skomplikuje, čo sa môže pokaziť, koho to zvýhodní.
+- **Ako to overiť:** čo sledovať v ďalšom playteste.
+
+Inšpirácia — osvedčené spôsoby, ako hry presúvajú výsledok od náhody
+k zručnosti: viac **otvorenej informácie** (viditeľný šenok, odhodené,
+budúce lokality), **náhoda pred voľbou namiesto po nej** (najprv vidím,
+potom sa rozhodnem — *input vs. output randomness*), **kontrola balíčka**
+(cielené dobratie, preosiatie, ponechanie kariet), **menej, ale ťažších
+rozhodnutí**, **viac ciest k víťazstvu** s viditeľnými kompromismi,
+**plánovateľné zdroje**, **blafovanie a čítanie súpera**, **mechaniky
+„tempa“** (kto začína, kto je na ťahu), **remízy a tiebreaky** odmeňujúce
+lepšiu hru. Návrhy nemusia byť malé — aj zásadná zmena je vítaná, ak je
+dobre zdôvodnená.
 
 ## B. Vizuálna stránka (hodnotí sledovateľ)
 

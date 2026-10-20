@@ -9,14 +9,14 @@ import type { CardInstance, Command, GameState, PlacedCard, PlayerId } from "../
 import {
   REGISTER,
   apply,
-  barterZakazany,
+  doliatieZakazane,
   bitkaMody,
   computeDamage,
   jeEfektManual,
   legalCommands,
   najdiNastroje,
   limitBonus,
-  limitOverride,
+  spolocnyLimit,
   loadGameData,
   naTahu,
   prahCirhozyBonus,
@@ -41,12 +41,12 @@ function fakeState(overrides: Partial<GameState>): GameState {
 }
 
 describe("M10 — register", () => {
-  it("pokrýva všetkých 51 id, ani jedno navyše", () => {
+  it("pokrýva všetkých 58 id sady v8, ani jedno navyše", () => {
     const vRegistri = new Set(Object.keys(REGISTER));
     const vDatach = new Set(data.cards.keys());
     expect([...vDatach].filter((id) => !vRegistri.has(id))).toEqual([]);
     expect([...vRegistri].filter((id) => !vDatach.has(id))).toEqual([]);
-    expect(vRegistri.size).toBe(51);
+    expect(vRegistri.size).toBe(58);
   });
 
   it("neznáme id je automaticky MANUAL", () => {
@@ -56,21 +56,12 @@ describe("M10 — register", () => {
 });
 
 describe("M10 — vzorové efekty (háčiky)", () => {
-  it("ihrisko: prah Cirhózy +1, kým je lokalita odhalená", () => {
+  it("ihrisko už prah Cirhózy nemení (Michal 2026-10-20 — nový efekt v bitke)", () => {
     const ihrisko = inst("ihrisko");
-    expect(prahCirhozyBonus(fakeState({}), 0)).toBe(0);
-    expect(
-      prahCirhozyBonus(
-        fakeState({ ciel: { typ: "lokalita", lokalita: ihrisko, elderId: null } }),
-        0,
-      ),
-    ).toBe(1);
-    expect(
-      prahCirhozyBonus(fakeState({ ovladnute: [{ karta: ihrisko, hrac: 0 }] }), 0),
-    ).toBe(1);
+    expect(prahCirhozyBonus(fakeState({ ciel: { typ: "lokalita", lokalita: ihrisko, elderId: null } }), 0)).toBe(0);
   });
 
-  it("nealko: prah Cirhózy +2; vinko barter aj +1 limit, zastávka limit 2", () => {
+  it("nealko: prah Cirhózy +2; vinko doliatie aj +1 limit, zastávka spoločný limit", () => {
     const base = setupGame(data, 1);
     const sNealkom = fakeState({
       hraci: [{ ...base.hraci[0], dedicstvo: [inst("nealko")] }, base.hraci[1]],
@@ -81,13 +72,13 @@ describe("M10 — vzorové efekty (háčiky)", () => {
     const sVinkom = fakeState({
       hraci: [{ ...base.hraci[0], dedicstvo: [inst("vinko")] }, base.hraci[1]],
     });
-    expect(barterZakazany(sVinkom, 0)).toBe(true);
+    expect(doliatieZakazane(sVinkom, 0)).toBe(true);
+    expect(doliatieZakazane(sVinkom, 1)).toBe(false);
     expect(limitBonus(sVinkom, 0)).toBe(1);
     expect(limitBonus(sVinkom, 1)).toBe(0);
 
-    expect(
-      limitOverride(fakeState({ ciel: { typ: "lokalita", lokalita: inst("zastavka"), elderId: null } })),
-    ).toBe(2);
+    expect(spolocnyLimit(fakeState({ ciel: { typ: "lokalita", lokalita: inst("zastavka"), elderId: null } }))).toBe(true);
+    expect(spolocnyLimit(fakeState({}))).toBe(false);
   });
 
   it("čierna mačka už nepridáva ranu (nový text: len Vízie)", () => {

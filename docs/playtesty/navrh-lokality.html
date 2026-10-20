@@ -1,0 +1,949 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lokality nanovo — návrh 14 lokalít — NA EX!</title>
+<style>
+  :root {
+    --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --okraj: #3d3229;
+    --text: #f1e8d8; --tlmeny: #b6a790; --slaby: #8b7d6a;
+    --akcent: #e9ad45; --cervena: #d0563f; --zelena: #7cbf74; --modra: #5cc0cf; --fialova: #b993d6; --siva: #6d6357;
+    color-scheme: dark;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #dccdb3;
+      --text: #2a2016; --tlmeny: #6b5b45; --slaby: #7a6a52;
+      --akcent: #a8680f; --cervena: #b0402c; --zelena: #3f7f38; --modra: #2a7f8c; --fialova: #7a4fa0; --siva: #8a7f72;
+      color-scheme: light;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 system-ui, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 1060px; margin: 0 auto; padding: 32px 16px 140px; }
+  h1, h2, h3, h4 { font-family: Georgia, "Bitter", serif; line-height: 1.2; }
+  h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); margin: 0 0 8px; }
+  h2 { font-size: 1.4rem; margin: 44px 0 12px; }
+  a { color: var(--akcent); }
+  code { font: 0.86em ui-monospace, Consolas, monospace; background: var(--plocha-2); padding: 1px 5px; border-radius: 5px; }
+  .podnadpis { color: var(--tlmeny); margin: 0 0 20px; max-width: 75ch; }
+  :focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+  .cisla { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin: 16px 0; }
+  .cislo { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; }
+  .cislo b { display: block; font: 700 1.6rem/1.1 Georgia, serif; color: var(--akcent); }
+  .cislo span { color: var(--tlmeny); font-size: 0.88rem; }
+  .zasady { margin: 0; padding-left: 22px; }
+  .zasady li { margin-bottom: 9px; }
+  .zasady strong { color: var(--akcent); }
+  .mini { display: block; color: var(--slaby); font-size: 0.8rem; line-height: 1.35; margin-top: 2px; }
+  /* filtre */
+  .filtre { display: flex; flex-wrap: wrap; gap: 10px 22px; margin: 12px 0; }
+  .filtre fieldset { border: 0; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .filtre legend { float: left; margin-right: 6px; color: var(--slaby); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.06em; }
+  .filtre label { position: relative; }
+  .filtre input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .filtre label span { display: inline-block; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--okraj); background: var(--plocha); color: var(--tlmeny); font-size: 0.88rem; cursor: pointer; }
+  .filtre input:checked + span { background: var(--akcent); color: var(--pozadie); border-color: var(--akcent); font-weight: 600; }
+  .filtre input:focus-visible + span { outline: 2px solid var(--akcent); outline-offset: 2px; }
+  .filtre .zhrnutie { color: var(--slaby); font-size: 0.85rem; align-self: center; }
+  /* tabuľka */
+  .tab { overflow-x: auto; background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 860px; }
+  th, td { padding: 8px 10px; border-bottom: 1px solid var(--okraj); text-align: left; vertical-align: top; }
+  tbody tr:last-child > * { border-bottom: 0; }
+  thead th { color: var(--slaby); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+  thead button { all: unset; cursor: pointer; }
+  thead button:focus-visible { outline: 2px solid var(--akcent); }
+  thead th[aria-sort="ascending"] button::after { content: " ▲"; }
+  thead th[aria-sort="descending"] button::after { content: " ▼"; }
+  tbody th { font-family: Georgia, serif; font-size: 1rem; white-space: nowrap; }
+  td.num { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  tr[hidden], article[hidden] { display: none; }
+  .chip { display: inline-block; font-size: 0.74rem; padding: 0 7px; border-radius: 999px; margin: 1px 2px 1px 0; border: 1px solid currentColor; white-space: nowrap; }
+  .utok { color: var(--cervena); } .obrana { color: var(--modra); } .makke { color: var(--fialova); } .starsi { color: var(--fialova); }
+  .dlhy { color: var(--zelena); } .eko { color: var(--akcent); } .pitie { color: var(--akcent); } .zle { color: var(--siva); } .mod { color: var(--tlmeny); }
+  .starsi { font-weight: 600; }
+  .tag { display: inline-block; font-size: 0.75rem; padding: 1px 9px; border-radius: 999px; border: 1px solid var(--okraj); color: var(--tlmeny); white-space: nowrap; }
+  .tag.n-dáta { color: var(--zelena); border-color: color-mix(in srgb, var(--zelena) 55%, transparent); }
+  .tag.n-malá { color: var(--akcent); border-color: color-mix(in srgb, var(--akcent) 55%, transparent); }
+  .tag.n-stredná { color: var(--cervena); border-color: color-mix(in srgb, var(--cervena) 55%, transparent); }
+  .legenda { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 0.82rem; color: var(--tlmeny); margin: 10px 2px 0; }
+  .pouzitie { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .pouzitie .chip { font-size: 0.85rem; padding: 2px 10px; }
+  /* lokality */
+  .lok { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 16px; padding: 16px 18px; margin: 0 0 16px; scroll-margin-top: 12px; }
+  .lok.vybrana { border-color: var(--zelena); }
+  .lok.uprava { border-color: var(--akcent); }
+  .lok.zamietnuta { opacity: 0.72; }
+  .lok-hlava h3 { margin: 0; font-size: 1.35rem; }
+  .cislo-lok { display: inline-block; min-width: 1.7em; color: var(--akcent); }
+  .znamky { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 12px; padding: 0; }
+  .znamky span { font-size: 0.78rem; padding: 1px 9px; border-radius: 999px; border: 1px solid var(--okraj); color: var(--tlmeny); }
+  .hrany { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .hrana { background: var(--plocha-2); border-radius: 12px; padding: 10px 12px; }
+  .hrana h4 { margin: 0 0 8px; font-size: 1rem; }
+  .hrana p { margin: 8px 0 0; font-size: 0.9rem; color: var(--tlmeny); }
+  .sloty { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+  .slot { display: flex; align-items: center; gap: 8px; border: 1px solid currentColor; border-radius: 8px; padding: 3px 8px; font-size: 0.9rem; min-height: 30px; }
+  .slot .akc { font-weight: 600; flex: 1; }
+  .slot .poz { color: var(--slaby); font-variant-numeric: tabular-nums; width: 1em; }
+  .slot .opak { font-size: 0.95rem; }
+  .slot.blok { color: var(--slaby); border-style: dashed; background: repeating-linear-gradient(135deg, transparent 0 6px, color-mix(in srgb, var(--okraj) 45%, transparent) 6px 8px); }
+  .riadky { display: grid; grid-template-columns: 9.5em 1fr; gap: 6px 12px; font-size: 0.93rem; margin: 0; }
+  .riadky dt { color: var(--slaby); }
+  .riadky dd { margin: 0; }
+  .riadky ul { margin: 0; padding-left: 18px; }
+  .riadky li { margin-bottom: 3px; }
+  .efekt { font-family: Georgia, serif; font-size: 1.04rem; color: var(--text); quotes: "„" "“"; }
+  .data span { display: block; font: 0.8rem/1.45 ui-monospace, Consolas, monospace; color: var(--tlmeny); }
+  .rozhodnutie { border: 1px solid var(--okraj); border-radius: 12px; margin: 14px 0 0; padding: 8px 12px; display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: center; }
+  .rozhodnutie legend { font-size: 0.8rem; color: var(--slaby); padding: 0 4px; }
+  .rozhodnutie input[type=radio] { accent-color: var(--akcent); width: 18px; height: 18px; vertical-align: -3px; }
+  .rozhodnutie .pozn { flex: 1 1 220px; display: flex; gap: 8px; align-items: center; color: var(--slaby); font-size: 0.88rem; }
+  .rozhodnutie .pozn input { flex: 1; min-width: 0; font: inherit; color: var(--text); background: var(--plocha-2); border: 1px solid var(--okraj); border-radius: 8px; padding: 4px 8px; }
+  .prace { margin: 0; padding-left: 22px; }
+  .prace li { margin-bottom: 6px; }
+  .otazky { margin: 0; padding-left: 24px; }
+  .otazky li { margin-bottom: 10px; }
+  .otazky b { color: var(--akcent); }
+  /* lišta voľby */
+  .volba { position: fixed; left: 0; right: 0; bottom: 0; background: var(--plocha-2); border-top: 1px solid var(--okraj); z-index: 3; }
+  .volba-in { max-width: 1060px; margin: 0 auto; padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+  .volba-text { flex: 1 1 300px; font-size: 0.92rem; color: var(--tlmeny); }
+  .volba-text b { color: var(--text); }
+  button.tl { font: inherit; font-size: 0.92rem; border-radius: 999px; padding: 7px 16px; border: 1px solid var(--okraj); background: var(--plocha); color: var(--text); cursor: pointer; }
+  button.hlavne { background: var(--akcent); color: var(--pozadie); border-color: var(--akcent); font-weight: 700; }
+  #vystup { width: 100%; min-height: 9em; font: 0.85rem/1.45 ui-monospace, Consolas, monospace; color: var(--text); background: var(--plocha); border: 1px solid var(--okraj); border-radius: 10px; padding: 8px 10px; }
+  #vystup-obal[hidden] { display: none; }
+  #vystup-obal { flex-basis: 100%; }
+  @media (max-width: 640px) {
+    .hrany { grid-template-columns: 1fr; }
+    .riadky { grid-template-columns: 1fr; }
+    .riadky dt { margin-top: 6px; font-weight: 600; }
+  }
+  @media print { .volba, .filtre, .rozhodnutie { display: none; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Lokality nanovo: 14 lokalít na schválenie</h1>
+  <p class="podnadpis">Zadanie Michala 2026-10-19: prerobiť všetkých 7 lokalít a pridať 7 nových (dlhá hra potrebuje 11). Každá lokalita má na oboch hranách rovnako akcií (1, 2 alebo 3), hrany majú odlišný štýl a každá lokalita má nový efekt. Je to <strong>len návrh</strong> — v tvorcovi ani na webe sa nič nezmenilo. Pri každej lokalite vyber <em>beriem / s úpravou / nie</em>, dole sa poskladá voľba, ktorú mi pošleš.</p>
+
+  <div class="cisla">
+    <div class="cislo"><b>7 + 7</b><span>prerobené lokality (názvy ostávajú) a nové: Most, Cintorín, Obecný úrad, Jednota, Kultúrny dom, Vínna pivnica, Družstvo</span></div>
+    <div class="cislo"><b>5 / 5 / 4</b><span>lokalít s 1 / 2 / 3 akciami na hranu (spolu 2, 4, 6) — najviac 2 / 3 / 4 Pitky</span></div>
+    <div class="cislo"><b>⌀ 2,4</b><span>Pitky na bitku o lokalitu, keď obaja spájajú hrany (1 akcia: 1,9, 2: 2,5, 3: 3,0). Stredná hra ≈ 17 Pitiek za lokality</span></div>
+    <div class="cislo"><b>54 akcií</b><span>14 druhov; Posilnenie zámerne nie (pred revíziou 2026-10-18 robilo z lokalít kombá 6–7 tuhého)</span></div>
+    <div class="cislo"><b>1 / 11 / 2</b><span>náročnosť: len dáta / malá logika / stredná (nový príkaz alebo rozhodnutie)</span></div>
+  </div>
+
+  <h2>Ako lokalita funguje po zmene</h2>
+  <ol class="zasady">
+    <li><strong>Pitky = 1 + menší z počtov aktivovaných akcií na hranách.</strong> Hranu aktivuje prvá karta na strane — aj podstrčená; akcie hrany dostane jej majiteľ (§4). Lokalita s 1 / 2 / 3 akciami na hranu dá najviac 2 / 3 / 4 Pitky.</li>
+    <li><strong>Pitkové akcie sa opakujú, bitkové nie.</strong> Cigareta, Obmedzenie, Vízia, Dlh, Poškodenie pečene a pečeň z Poldeci sa vyhodnocujú <em>v každej Pitke</em> (značka ↻). Rana, Pecka, Petelica, Viera, Povera, Pohoršenie, Robota a otočenie poldeci len raz pri bitke. Majiteľ pitkovej hrany preto chce dlhú bitku, majiteľ bojovej skôr krátku. Toto je hlavná páka návrhu: hrany sa líšia nielen akciami, ale aj tým, akú dĺžku bitky ich majiteľ chce.</li>
+    <li><strong>Krátka bitka stojí akcie.</strong> Kto chce 1 Pitku, nespojí svoju hranu (vyloží kartu bez páru) a príde o jej akcie. Pri Krčme, Benzínke či Moste je to skutočné rozhodnutie.</li>
+    <li><strong>Hranu si v praxi vyberá obranca.</strong> Útočník lokalitu natočí, no obranca vykladá prvý a podstrčením môže obsadiť útočníkovu hranu; útočník potom obsadí tú druhú. Útočníkovo natočenie platí naisto len na <a href="#most">Moste</a>. Riadok <em>Natočenie</em> pri lokalite hovorí, kto po ktorej hrane siahne.</li>
+    <li><strong>Zápis hrán.</strong> Hrana je kreslená tak, ako ju vidí hráč, ku ktorému je obrátená (pozícia 0 hore). Hrana A = vytlačená ľavá strana, hrana B = vytlačená pravá, ktorú motor číta odzadu (<code>stranyLokality</code>), preto je v riadku <em>Dáta pre tvorcu</em> zapísaná odzadu. Akcie sú pripnuté cez <code>povolene</code>, takže každá lokalita má jeden variant (otázka 2).</li>
+    <li><strong>Pozícia určuje, ako ľahko sa hrana spojí.</strong> Z kariet sady má akciu na vnútornej hrane pozícia 0 v 41 %, 1 v 57 %, 2 v 50 % a 3 v 42 % prípadov. Stredné pozície (1, 2) sa spoja ľahšie, krajné (0, 3) ťažšie — silné akcie sú preto často na kraji.</li>
+    <li><strong>Nástroj pri lokalite hranu umŕtvi.</strong> Nástroj netvorí spoj s lokalitou (§6) a limit nemíňa, takže skrátiť bitku na 1 Pitku sa dá zadarmo (otázka 4).</li>
+  </ol>
+
+  <h2 id="prehlad">Prehľad</h2>
+  <div class="filtre" role="group" aria-label="Filtre lokalít">
+    <fieldset><legend>Akcií na hranu</legend>
+      <label><input type="checkbox" data-filter="n" value="1"><span>1</span></label>
+      <label><input type="checkbox" data-filter="n" value="2"><span>2</span></label>
+      <label><input type="checkbox" data-filter="n" value="3"><span>3</span></label>
+    </fieldset>
+    <fieldset><legend>Náročnosť</legend>
+      <label><input type="checkbox" data-filter="narocnost" value="dáta"><span>dáta</span></label>
+      <label><input type="checkbox" data-filter="narocnost" value="malá"><span>malá</span></label>
+      <label><input type="checkbox" data-filter="narocnost" value="stredná"><span>stredná</span></label>
+    </fieldset>
+    <fieldset><legend>Lokalita</legend>
+      <label><input type="checkbox" data-filter="povod" value="prerobená"><span>prerobená</span></label>
+      <label><input type="checkbox" data-filter="povod" value="nová"><span>nová</span></label>
+    </fieldset>
+    <span class="zhrnutie" id="filtre-zhrnutie" aria-live="polite">Zobrazených 14 zo 14.</span>
+  </div>
+  <div class="tab">
+    <table id="tabulka">
+      <caption class="mini" style="text-align:left;padding:8px 10px 0">Kliknutím na názov stĺpca zoradíš. Pitky: rozsah a ⌀, keď obaja spájajú hrany.</caption>
+      <thead><tr>
+        <th scope="col" data-sort="nazov"><button type="button">Lokalita</button></th>
+        <th scope="col" data-sort="n"><button type="button">Akcie</button></th>
+        <th scope="col">Hrana A · štýl</th>
+        <th scope="col">Hrana B · štýl</th>
+        <th scope="col">Efekt v skratke</th>
+        <th scope="col" data-sort="pitky"><button type="button">Pitky</button></th>
+        <th scope="col" data-sort="narocnost"><button type="button">Náročnosť</button></th>
+      </tr></thead>
+      <tbody>
+        <tr data-n="3" data-narocnost="dáta" data-povod="prerobená" data-nazov="Krčma" data-pitky="2,99">
+          <th scope="row"><a href="#krcma">Krčma</a><span class="mini">prerobená</span></th>
+          <td class="num">3 + 3</td>
+          <td><b>Výčap</b> <span class="chip utok" title="1 tuhé poškodenie">Rana</span><span class="chip utok" title="2 tuhé poškodenia">Pecka</span><span class="chip pitie" title="pri bitke otočí vypitý poldeci na plný; v každej Pitke pridá pečeň">Poldeci↻</span><span class="mini">bitka pri pulte</span></td>
+          <td><b>Na sekeru</b> <span class="chip eko" title="cigareta v každej Pitke">Cigar.↻</span><span class="chip zle" title="zadĺženie v každej Pitke — pri prahu 1 karta Dlhu">Dlh↻</span><span class="chip makke" title="mäkké poškodenie do výšky súperových priznaných Dlhov">Povera</span><span class="mini">život na dlh</span></td>
+          <td>povinné NA EX v každej Pitke<span class="mini">Pitka</span></td>
+          <td class="num">1–4<span class="mini">⌀ 3,0</span></td>
+          <td><span class="tag n-dáta">dáta</span></td>
+        </tr>
+        <tr data-n="2" data-narocnost="malá" data-povod="prerobená" data-nazov="Kostol" data-pitky="2,52">
+          <th scope="row"><a href="#kostol">Kostol</a><span class="mini">prerobená</span></th>
+          <td class="num">2 + 2</td>
+          <td><b>Modlitba</b> <span class="chip obrana" title="znižuje súperovo tuhé poškodenie">Viera</span><span class="chip eko" title="v každej Pitke preosieje dobraté kliatby">Vízia↻</span><span class="mini">obrana a čistý balíček</span></td>
+          <td><b>Klebety po omši</b> <span class="chip makke" title="mäkké poškodenie do výšky súperových priznaných Dlhov">Povera</span><span class="chip starsi" title="posunie marker staršieho o 1 k súperovi">Pohorš.</span><span class="mini">tlak na starších a mäkké poškodenie</span></td>
+          <td>triezvo: žiadne Vypiť ani NA EX<span class="mini">Zhromaždenie + Pitka</span></td>
+          <td class="num">1–3<span class="mini">⌀ 2,5</span></td>
+          <td><span class="tag n-malá">malá</span></td>
+        </tr>
+        <tr data-n="2" data-narocnost="malá" data-povod="prerobená" data-nazov="Benzínka" data-pitky="2,41">
+          <th scope="row"><a href="#benzinka">Benzínka</a><span class="mini">prerobená</span></th>
+          <td class="num">2 + 2</td>
+          <td><b>Pumpa</b> <span class="chip eko" title="cigareta v každej Pitke">Cigar.↻</span><span class="chip eko" title="cigareta v každej Pitke">Cigar.↻</span><span class="mini">zásoby</span></td>
+          <td><b>Prepad pumpy</b> <span class="chip utok" title="2 tuhé poškodenia">Pecka</span><span class="chip eko" title="súper dostane v každej Pitke o cigaretu menej">Obmedz.↻</span><span class="mini">útok a brzda</span></td>
+          <td>nefajčí sa — karty len z ruky<span class="mini">Zhromaždenie + Pitka</span></td>
+          <td class="num">1–3<span class="mini">⌀ 2,4</span></td>
+          <td><span class="tag n-malá">malá</span></td>
+        </tr>
+        <tr data-n="1" data-narocnost="malá" data-povod="prerobená" data-nazov="Zastávka" data-pitky="1,87">
+          <th scope="row"><a href="#zastavka">Zastávka</a><span class="mini">prerobená</span></th>
+          <td class="num">1 + 1</td>
+          <td><b>Lavička</b> <span class="chip eko" title="cigareta v každej Pitke">Cigar.↻</span><span class="mini">čakanie s cigaretou</span></td>
+          <td><b>Výtržnosť</b> <span class="chip utok" title="2 tuhé poškodenia">Pecka</span><span class="mini">bitka pod prístreškom</span></td>
+          <td>obom limit podľa väčšieho<span class="mini">Zhromaždenie</span></td>
+          <td class="num">1–2<span class="mini">⌀ 1,9</span></td>
+          <td><span class="tag n-malá">malá</span></td>
+        </tr>
+        <tr data-n="1" data-narocnost="malá" data-povod="prerobená" data-nazov="Lesná cesta" data-pitky="1,85">
+          <th scope="row"><a href="#lesna_cesta">Lesná cesta</a><span class="mini">prerobená</span></th>
+          <td class="num">1 + 1</td>
+          <td><b>Zo zálohy</b> <span class="chip utok" title="2 tuhé poškodenia">Pecka</span><span class="mini">prepadnutie</span></td>
+          <td><b>Strašidlá</b> <span class="chip makke" title="mäkké poškodenie do výšky súperových priznaných Dlhov">Povera</span><span class="mini">strach z lesa</span></td>
+          <td>+1 tuhé za podstrčenú kartu (najviac 2)<span class="mini">Bitka</span></td>
+          <td class="num">1–2<span class="mini">⌀ 1,8</span></td>
+          <td><span class="tag n-malá">malá</span></td>
+        </tr>
+        <tr data-n="2" data-narocnost="malá" data-povod="nová" data-nazov="Most" data-pitky="2,49">
+          <th scope="row"><a href="#most">Most</a><span class="mini">nová</span></th>
+          <td class="num">2 + 2</td>
+          <td><b>Mýtnik</b> <span class="chip obrana" title="znižuje súperovo tuhé poškodenie">Viera</span><span class="chip eko" title="súper dostane v každej Pitke o cigaretu menej">Obmedz.↻</span><span class="mini">brániť most</span></td>
+          <td><b>Skok z mosta</b> <span class="chip utok" title="3 tuhé poškodenia">Petel.</span><span class="chip zle" title="zadĺženie v každej Pitke — pri prahu 1 karta Dlhu">Dlh↻</span><span class="mini">riskantný útok</span></td>
+          <td>len na vlastnú stranu, bez podstrkovania<span class="mini">Zhromaždenie</span></td>
+          <td class="num">1–3<span class="mini">⌀ 2,5</span></td>
+          <td><span class="tag n-malá">malá</span></td>
+        </tr>
+        <tr data-n="2" data-narocnost="malá" data-povod="prerobená" data-nazov="Ihrisko" data-pitky="2,41">
+          <th scope="row"><a href="#ihrisko">Ihrisko</a><span class="mini">prerobená</span></th>
+          <td class="num">2 + 2</td>
+          <td><b>Útok po krídlach</b> <span class="chip utok" title="1 tuhé poškodenie">Rana</span><span class="chip utok" title="1 tuhé poškodenie">Rana</span><span class="mini">útočníci na krídlach</span></td>
+          <td><b>Lavička náhradníkov</b> <span class="chip eko" title="cigareta v každej Pitke">Cigar.↻</span><span class="chip pitie" title="pri bitke otočí vypitý poldeci na plný; v každej Pitke pridá pečeň">Poldeci↻</span><span class="mini">široká súpiska</span></td>
+          <td>viac kariet v línii = +2 tuhé<span class="mini">Bitka</span></td>
+          <td class="num">1–3<span class="mini">⌀ 2,4</span></td>
+          <td><span class="tag n-malá">malá</span></td>
+        </tr>
+        <tr data-n="3" data-narocnost="stredná" data-povod="prerobená" data-nazov="Zberný dvor" data-pitky="2,99">
+          <th scope="row"><a href="#zberny_dvor">Zberný dvor</a><span class="mini">prerobená</span></th>
+          <td class="num">3 + 3</td>
+          <td><b>Šrotár</b> <span class="chip dlhy" title="pri Exekútorovi odhodí 1 priznaný Dlh">Robota</span><span class="chip eko" title="cigareta v každej Pitke">Cigar.↻</span><span class="chip utok" title="3 tuhé poškodenia">Petel.</span><span class="mini">poctivá práca</span></td>
+          <td><b>Zlodej šrotu</b> <span class="chip eko" title="súper dostane v každej Pitke o cigaretu menej">Obmedz.↻</span><span class="chip starsi" title="posunie marker staršieho o 1 k súperovi">Pohorš.</span><span class="chip zle" title="zadĺženie v každej Pitke — pri prahu 1 karta Dlhu">Dlh↻</span><span class="mini">kradne a ohovára</span></td>
+          <td>výkup: karta z odhadzovacieho za cigaretu<span class="mini">Pitka</span></td>
+          <td class="num">1–4<span class="mini">⌀ 3,0</span></td>
+          <td><span class="tag n-stredná">stredná</span></td>
+        </tr>
+        <tr data-n="1" data-narocnost="stredná" data-povod="nová" data-nazov="Cintorín" data-pitky="1,91">
+          <th scope="row"><a href="#cintorin">Cintorín</a><span class="mini">nová</span></th>
+          <td class="num">1 + 1</td>
+          <td><b>Smútočný sprievod</b> <span class="chip obrana" title="znižuje súperovo tuhé poškodenie">Viera</span><span class="mini">úcta</span></td>
+          <td><b>Hrobník</b> <span class="chip dlhy" title="pri Exekútorovi odhodí 1 priznaný Dlh">Robota</span><span class="mini">pochováva dlhy</span></td>
+          <td>porazený: Nástroj do Dedičstva zadarmo<span class="mini">Prehra</span></td>
+          <td class="num">1–2<span class="mini">⌀ 1,9</span></td>
+          <td><span class="tag n-stredná">stredná</span></td>
+        </tr>
+        <tr data-n="2" data-narocnost="malá" data-povod="nová" data-nazov="Obecný úrad" data-pitky="2,46">
+          <th scope="row"><a href="#obecny_urad">Obecný úrad</a><span class="mini">nová</span></th>
+          <td class="num">2 + 2</td>
+          <td><b>Podateľňa</b> <span class="chip dlhy" title="pri Exekútorovi odhodí 1 priznaný Dlh">Robota</span><span class="chip obrana" title="znižuje súperovo tuhé poškodenie">Viera</span><span class="mini">poriadok</span></td>
+          <td><b>Vymáhač</b> <span class="chip makke" title="mäkké poškodenie do výšky súperových priznaných Dlhov">Povera</span><span class="chip utok" title="2 tuhé poškodenia">Pecka</span><span class="mini">vymáhanie</span></td>
+          <td>Exekútor o 4 prísnejší, Robota za 2 Dlhy<span class="mini">Bitka</span></td>
+          <td class="num">1–3<span class="mini">⌀ 2,5</span></td>
+          <td><span class="tag n-malá">malá</span></td>
+        </tr>
+        <tr data-n="1" data-narocnost="malá" data-povod="nová" data-nazov="Jednota" data-pitky="1,91">
+          <th scope="row"><a href="#jednota">Jednota</a><span class="mini">nová</span></th>
+          <td class="num">1 + 1</td>
+          <td><b>Pokladňa</b> <span class="chip eko" title="cigareta v každej Pitke">Cigar.↻</span><span class="mini">nákup</span></td>
+          <td><b>Rad pred pultom</b> <span class="chip starsi" title="posunie marker staršieho o 1 k súperovi">Pohorš.</span><span class="mini">ohováranie v rade</span></td>
+          <td>trofej: majiteľ berie 2 karty za 2 cigarety<span class="mini">Furt</span></td>
+          <td class="num">1–2<span class="mini">⌀ 1,9</span></td>
+          <td><span class="tag n-malá">malá</span></td>
+        </tr>
+        <tr data-n="3" data-narocnost="malá" data-povod="nová" data-nazov="Kultúrny dom" data-pitky="2,94">
+          <th scope="row"><a href="#kulturny_dom">Kultúrny dom</a><span class="mini">nová</span></th>
+          <td class="num">3 + 3</td>
+          <td><b>Na parkete</b> <span class="chip starsi" title="posunie marker staršieho o 1 k súperovi">Pohorš.</span><span class="chip starsi" title="posunie marker staršieho o 1 k súperovi">Pohorš.</span><span class="chip zle" title="pečeň v každej Pitke — pri prahu Cirhóza">Pošk. pečene↻</span><span class="mini">pohoršuješ starších</span></td>
+          <td><b>Pri stole so starými</b> <span class="chip obrana" title="znižuje súperovo tuhé poškodenie">Viera</span><span class="chip eko" title="cigareta v každej Pitke">Cigar.↻</span><span class="chip utok" title="1 tuhé poškodenie">Rana</span><span class="mini">slušný hosť</span></td>
+          <td>Pohoršenie aj viackrát na ten istý marker<span class="mini">Bitka</span></td>
+          <td class="num">1–4<span class="mini">⌀ 2,9</span></td>
+          <td><span class="tag n-malá">malá</span></td>
+        </tr>
+        <tr data-n="1" data-narocnost="malá" data-povod="nová" data-nazov="Vínna pivnica" data-pitky="1,91">
+          <th scope="row"><a href="#vinna_pivnica">Vínna pivnica</a><span class="mini">nová</span></th>
+          <td class="num">1 + 1</td>
+          <td><b>Degustácia</b> <span class="chip pitie" title="pri bitke otočí vypitý poldeci na plný; v každej Pitke pridá pečeň">Poldeci↻</span><span class="mini">pitie s rozumom</span></td>
+          <td><b>Hádka pri sude</b> <span class="chip utok" title="2 tuhé poškodenia">Pecka</span><span class="mini">rana</span></td>
+          <td>NA EX dvakrát za Pitku<span class="mini">Pitka</span></td>
+          <td class="num">1–2<span class="mini">⌀ 1,9</span></td>
+          <td><span class="tag n-malá">malá</span></td>
+        </tr>
+        <tr data-n="3" data-narocnost="malá" data-povod="nová" data-nazov="Družstvo" data-pitky="2,97">
+          <th scope="row"><a href="#druzstvo">Družstvo</a><span class="mini">nová</span></th>
+          <td class="num">3 + 3</td>
+          <td><b>Brigáda</b> <span class="chip dlhy" title="pri Exekútorovi odhodí 1 priznaný Dlh">Robota</span><span class="chip pitie" title="pri bitke otočí vypitý poldeci na plný; v každej Pitke pridá pečeň">Poldeci↻</span><span class="chip utok" title="1 tuhé poškodenie">Rana</span><span class="mini">po robote poldeci</span></td>
+          <td><b>Štrajk</b> <span class="chip mod" title="zruší akciu karty na tej istej pozícii; Odpor proti Odporu = Vzbura">Odpor</span><span class="chip starsi" title="posunie marker staršieho o 1 k súperovi">Pohorš.</span><span class="chip eko" title="súper dostane v každej Pitke o cigaretu menej">Obmedz.↻</span><span class="mini">štrajk a sťažnosti</span></td>
+          <td>Pracujúci nemíňajú limit<span class="mini">Zhromaždenie</span></td>
+          <td class="num">1–4<span class="mini">⌀ 3,0</span></td>
+          <td><span class="tag n-malá">malá</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="legenda" aria-label="Legenda farieb akcií">
+    <span class="utok">● útok (tuhé)</span><span class="obrana">● obrana</span><span class="makke">● mäkké</span><span class="starsi">● starší</span><span class="dlhy">● dlhy</span><span class="eko">● cigarety a balíček</span><span class="pitie">● pitie</span><span class="zle">● zlé akcie</span><span class="mod">● modifikátor</span><span>↻ opakuje sa v každej Pitke</span>
+  </div>
+
+  <h2>Rozmanitosť</h2>
+  <div class="cisla">
+    <div class="cislo"><b>5 · 5 · 4 · 1 · 1</b><span>spúšťače: Pitka 5, Zhromaždenie 5, Bitka 4, Prehra 1, Furt 1 (Kostol a Benzínka majú dva)</span></div>
+    <div class="cislo"><b>4 jednoduché</b><span>efekt len upraví číslo alebo jednu hodnotu: Zastávka, Lesná cesta, Ihrisko, Jednota</span></div>
+    <div class="cislo"><b>3 páry</b><span>protiklady: Krčma (musíš piť) × Kostol (nesmieš); Lesná cesta (odmena za podstrčenie) × Most (zákaz); Jednota (víťazovi) × Cintorín (porazenému)</span></div>
+  </div>
+  <p class="mini" style="font-size:0.88rem">Použitie akcií na všetkých hranách (zlé akcie sú zámerne zriedkavé — Dlh 3×, Poškodenie pečene 1×):</p>
+  <div class="pouzitie"><span class="chip eko">Cigareta 8×</span><span class="chip utok">Pecka 6×</span><span class="chip starsi">Pohoršenie 6×</span><span class="chip utok">Rana 5×</span><span class="chip obrana">Viera 5×</span><span class="chip pitie">Poldeci 4×</span><span class="chip makke">Povera 4×</span><span class="chip eko">Obmedzenie 4×</span><span class="chip dlhy">Robota 4×</span><span class="chip zle">Dlh 3×</span><span class="chip utok">Petelica 2×</span><span class="chip eko">Vízia 1×</span><span class="chip zle">Poškodenie pečene 1×</span><span class="chip mod">Odpor 1×</span></div>
+
+  <h2 id="lokality">Lokality</h2>
+  
+  <article class="lok" id="krcma" data-n="3" data-narocnost="dáta" data-povod="prerobená" aria-labelledby="h-krcma">
+    <header class="lok-hlava">
+      <h3 id="h-krcma"><span class="cislo-lok">1</span>Krčma</h3>
+      <p class="znamky"><span>názov ostáva</span><span>3 akcie na hranu</span><span>Pitka</span><span class="tag n-dáta">náročnosť: dáta</span><span>id <code>krcma</code> ostáva</span></p>
+    </header>
+    <div class="hrany">
+      <section class="hrana" aria-label="Hrana A: Výčap">
+        <h4>Hrana A · Výčap</h4>
+        <ol class="sloty"><li class="slot utok" title="Rana: 1 tuhé poškodenie"><span class="poz">0</span><span class="akc">Rana</span></li><li class="slot utok" title="Pecka: 2 tuhé poškodenia"><span class="poz">1</span><span class="akc">Pecka</span></li><li class="slot pitie" title="Poldeci: pri bitke otočí vypitý poldeci na plný; v každej Pitke pridá pečeň"><span class="poz">2</span><span class="akc">Poldeci</span><span class="opak" aria-label="opakuje sa v každej Pitke" title="opakuje sa v každej Pitke">↻</span></li><li class="slot blok" aria-label="pozícia 3: blokovaná"><span class="poz">3</span><span>✕</span></li></ol>
+        <p>bitka pri pulte — 3 tuhé a Poldeci, ktorý doleje limit na ďalšie kolo (v každej Pitke pridá pečeň).</p>
+      </section>
+      <section class="hrana" aria-label="Hrana B: Na sekeru">
+        <h4>Hrana B · Na sekeru</h4>
+        <ol class="sloty"><li class="slot blok" aria-label="pozícia 0: blokovaná"><span class="poz">0</span><span>✕</span></li><li class="slot eko" title="Cigareta: cigareta v každej Pitke"><span class="poz">1</span><span class="akc">Cigareta</span><span class="opak" aria-label="opakuje sa v každej Pitke" title="opakuje sa v každej Pitke">↻</span></li><li class="slot zle" title="Dlh: zadĺženie v každej Pitke — pri prahu 1 karta Dlhu"><span class="poz">2</span><span class="akc">Dlh</span><span class="opak" aria-label="opakuje sa v každej Pitke" title="opakuje sa v každej Pitke">↻</span></li><li class="slot makke" title="Povera: mäkké poškodenie do výšky súperových priznaných Dlhov"><span class="poz">3</span><span class="akc">Povera</span></li></ol>
+        <p>život na dlh — v každej Pitke cigareta aj Dlh, Povera trestá súperove priznané Dlhy.</p>
+      </section>
+    </div>
+    <dl class="riadky">
+      <dt>Natočenie</dt><dd>Útočník, ktorý chce vyhrať tuhým, si natočí Výčap; kto stavia na cigarety a Povery, Na sekeru. Majiteľ Na sekeru chce dlhú bitku (cigareta v každej Pitke), ale s každou Pitkou nazbiera aj Dlh.</dd>
+      <dt>Efekt</dt><dd><q class="efekt">Pitka: Ak máš plný poldeci, musíš dať NA EX.</q><span class="mini">Pôvodne: Pitka: Ak máš poldeci, musíš dať NA EX! — správanie ostáva, len presnejší text.</span></dd>
+      <dt>Výklad</dt><dd><ul><li>Spúšťa sa v každej Pitke: pri 3 Pitkách až 3 povinné NA EX na hráča.</li><li>Povinné je len pre toho, kto má plný poldeci a v línii Občana alebo Starešinu, na ktorého NA EX smie dať (§14 — Liberál a súperov Anonymný alkoholik to môžu znemožniť).</li><li>Poldeci z Výčapu otočí vypitý poldeci až pri bitke; v Pitke pridá pečeň.</li></ul></dd>
+      <dt>Zážitok</dt><dd>Najopitejšia lokalita. Každá ďalšia Pitka znamená ďalšie povinné NA EX — pečeň a nižší limit v ďalšom kole. Hlavné rozhodnutie: koľko Pitiek pripustiť. Kto sa bojí Cirhózy, nespojí svoju hranu a bitku skráti, ale príde o akcie lokality. Kto nemá plný poldeci, je v Krčme v bezpečí, takže doliať v Pitke je tu dvojsečné. <span class="mini">Pre: riskér a pijan; hráč s priazňou Alkoholika.</span></dd>
+      <dt>Pitky</dt><dd><b>1–4</b>. Horný odhad, keď obaja spoja svoju hranu najlepšou z 5 kariet v ruke: ⌀ 3,0 (2: 6 % · 3: 89 % · 4: 5 %). Kto chce krátku bitku, svoju hranu nespojí — 1 Pitka, ale bez akcií lokality.</dd>
+      <dt>Riziká</dt><dd><ul><li>Dlhá bitka znamená Cirhózy: majiteľ Výčapu má s povinným NA EX 2 pečene za Pitku (prah 3).</li><li>Svokra: každé povinné NA EX súpera dá jej majiteľovi 2 cigarety — v Krčme veľmi silná.</li><li>Na sekeru v 4 Pitkách = 4 Dlhy; Exekútor sa prvýkrát priblíži.</li></ul></dd>
+      <dt>Implementácia</dt><dd>Len dáta: nové akcie v tvorcovi, efekt <code>krcma</code> sa nemení. Spresnený text označí <code>A texty</code> ako zmenený text implementovaného efektu — vývoj len potvrdí, že správanie sedí.</dd>
+      <dt>Dáta pre tvorcu</dt><dd class="data"><span>ľavá (A): blokované [3] · akcie Rana×1, Pecka×1, Poldeci×1 · povolené 0: Rana; 1: Pecka; 2: Poldeci</span><span>pravá (B, zapísaná odzadu): blokované [3] · akcie Povera×1, Dlh×1, Cigareta×1 · povolené 0: Povera; 1: Dlh; 2: Cigareta</span></dd>
+    </dl>
+    <fieldset class="rozhodnutie">
+      <legend>Rozhodnutie k lokalite Krčma</legend>
+      <label><input type="radio" name="v-krcma" value="beriem"> beriem</label>
+      <label><input type="radio" name="v-krcma" value="upraviť"> beriem s úpravou</label>
+      <label><input type="radio" name="v-krcma" value="nie"> nie</label>
+      <label class="pozn">poznámka <input type="text" name="p-krcma" autocomplete="off"></label>
+    </fieldset>
+  </article>
+  <article class="lok" id="kostol" data-n="2" data-narocnost="malá" data-povod="prerobená" aria-labelledby="h-kostol">
+    <header class="lok-hlava">
+      <h3 id="h-kostol"><span class="cislo-lok">2</span>Kostol</h3>
+      <p class="znamky"><span>názov ostáva</span><span>2 akcie na hranu</span><span>Zhromaždenie + Pitka</span><span class="tag n-malá">náročnosť: malá</span><span>id <code>kostol</code> ostáva</span></p>
+    </header>
+    <div class="hrany">
+      <section class="hrana" aria-label="Hrana A: Modlitba">
+        <h4>Hrana A · Modlitba</h4>
+        <ol class="sloty"><li class="slot blok" aria-label="pozícia 0: blokovaná"><span class="poz">0</span><span>✕</span></li><li class="slot obrana" title="Viera: znižuje súperovo tuhé poškodenie"><span class="poz">1</span><span class="akc">Viera</span></li><li class="slot eko" title="Vízia: v každej Pitke preosieje dobraté kliatby"><span class="poz">2</span><span class="akc">Vízia</span><span class="opak" aria-label="opakuje sa v každej Pitke" title="opakuje sa v každej Pitke">↻</span></li><li class="slot blok" aria-label="pozícia 3: blokovaná"><span class="poz">3</span><span>✕</span></li></ol>
+        <p>obrana a čistý balíček — Viera znižuje súperovo tuhé, Vízia v každej Pitke preosieva dobraté kliatby.</p>
+      </section>
+      <section class="hrana" aria-label="Hrana B: Klebety po omši">
+        <h4>Hrana B · Klebety po omši</h4>
+        <ol class="sloty"><li class="slot blok" aria-label="pozícia 0: blokovaná"><span class="poz">0</span><span>✕</span></li><li class="slot makke" title="Povera: mäkké poškodenie do výšky súperových priznaných Dlhov"><span class="poz">1</span><span class="akc">Povera</span></li><li class="slot starsi" title="Pohoršenie: posunie marker staršieho o 1 k súperovi"><span class="poz">2</span><span class="akc">Pohoršenie</span></li><li class="slot blok" aria-label="pozícia 3: blokovaná"><span class="poz">3</span><span>✕</span></li></ol>
+        <p>tlak na starších a mäkké poškodenie — Pohoršenie posúva marker, Povera trestá súperove priznané Dlhy.</p>
+      </section>
+    </div>
+    <dl class="riadky">
+      <dt>Natočenie</dt><dd>Michalov príklad: Viera proti Pohoršeniu. Útočník, ktorý desí starších, si natočí Klebety; kto potrebuje bitku prežiť, Modlitbu.</dd>
+      <dt>Efekt</dt><dd><q class="efekt">Zhromaždenie: Nikto nesmie vypiť. Pitka: Nikto nesmie dať NA EX.</q><span class="mini">Pôvodne: Zhromaždenie: karta za aktívnu Vieru. Bitka: Povery neplatia. (Playtesteri: „Povera bez dlhov nič nerobí a Kostol ju ešte ruší.“)</span></dd>
+      <dt>Výklad</dt><dd><ul><li>Platí len, kým je Kostol cieľom kola.</li><li>Doliatie poldeci za cigarety, barter a Krčmárka ostávajú — to nie je pitie.</li><li>Neresti z pitia v tomto kole chýbajú: kto pije každé kolo, môže na konci kola dostať Absťák, ak to nevyváži fajčením.</li></ul></dd>
+      <dt>Zážitok</dt><dd>Triezva bitka bez zvratov. Bez NA EX sa nič nezdvojí ani nezruší — rozhoduje len to, ako kto poskladá spoje, a limit sa nedá navýšiť pitím. Súper presne vie, čo ho čaká. Dobrá lokalita na plánovanie aj na učenie hry. <span class="mini">Pre: plánovač a pozičná hra; proti súperovi, ktorý žije z NA EX.</span></dd>
+      <dt>Pitky</dt><dd><b>1–3</b>. Horný odhad, keď obaja spoja svoju hranu najlepšou z 5 kariet v ruke: ⌀ 2,5 (2: 47 % · 3: 53 %). Kto chce krátku bitku, svoju hranu nespojí — 1 Pitka, ale bez akcií lokality.</dd>
+      <dt>Riziká</dt><dd><ul><li>Absťák pre pravidelných pijanov (téma abstinencie — chceme to? otázka 5).</li><li>Bez NA EX nemá prehrávajúci ako otočiť bitku — lepšia ruka vyhrá isto.</li><li>Šarlatán (Viera ako Vízia) a Farár (ignoruje 2 Povery) proti Klebetám.</li></ul></dd>
+      <dt>Implementácia</dt><dd>Zakázať Vypiť a NA EX pri cieli <code>kostol</code> (motor, bot, náhľad v klientovi); odstrániť háčiky <code>poveryNeplatia</code> a <code>kartaZaVieru</code>.</dd>
+      <dt>Dáta pre tvorcu</dt><dd class="data"><span>ľavá (A): blokované [0, 3] · akcie Viera×1, Vízia×1 · povolené 1: Viera; 2: Vízia</span><span>pravá (B, zapísaná odzadu): blokované [0, 3] · akcie Pohoršenie×1, Povera×1 · povolené 1: Pohoršenie; 2: Povera</span></dd>
+    </dl>
+    <fieldset class="rozhodnutie">
+      <legend>Rozhodnutie k lokalite Kostol</legend>
+      <label><input type="radio" name="v-kostol" value="beriem"> beriem</label>
+      <label><input type="radio" name="v-kostol" value="upraviť"> beriem s úpravou</label>
+      <label><input type="radio" name="v-kostol" value="nie"> nie</label>
+      <label class="pozn">poznámka <input type="text" name="p-kostol" autocomplete="off"></label>
+    </fieldset>
+  </article>
+  <article class="lok" id="benzinka" data-n="2" data-narocnost="malá" data-povod="prerobená" aria-labelledby="h-benzinka">
+    <header class="lok-hlava">
+      <h3 id="h-benzinka"><span class="cislo-lok">3</span>Benzínka</h3>
+      <p class="znamky"><span>názov ostáva</span><span>2 akcie na hranu</span><span>Zhromaždenie + Pitka</span><span class="tag n-malá">náročnosť: malá</span><span>id <code>benzinka</code> ostáva</span></p>
+    </header>
+    <div class="hrany">
+      <section class="hrana" aria-label="Hrana A: Pumpa">
+        <h4>Hrana A · Pumpa</h4>
+        <ol class="sloty"><li class="slot blok" aria-label="pozícia 0: blokovaná"><span class="poz">0</span><span>✕</span></li><li class="slot eko" title="Cigareta: cigareta v každej Pitke"><span class="poz">1</span><span class="akc">Cigareta</span><span class="opak" aria-label="opakuje sa v každej Pitke" title="opakuje sa v každej Pitke">↻</span></li><li class="slot eko" title="Cigareta: cigareta v každej Pitke"><span class="poz">2</span><span class="akc">Cigareta</span><span class="opak" aria-label="opakuje sa v každej Pitke" title="opakuje sa v každej Pitke">↻</span></li><li class="slot blok" aria-label="pozícia 3: blokovaná"><span class="poz">3</span><span>✕</span></li></ol>
+        <p>zásoby — 2 cigarety v každej Pitke, ktoré sa tu nedajú vyfajčiť: ušetríš ich na šenok, doliatie a Dedičstvo.</p>
+      </section>
+      <section class="hrana" aria-label="Hrana B: Prepad pumpy">
+        <h4>Hrana B · Prepad pumpy</h4>
+        <ol class="sloty"><li class="slot utok" title="Pecka: 2 tuhé poškodenia"><span class="poz">0</span><span class="akc">Pecka</span></li><li class="slot blok" aria-label="pozícia 1: blokovaná"><span class="poz">1</span><span>✕</span></li><li class="slot blok" aria-label="pozícia 2: blokovaná"><span class="poz">2</span><span>✕</span></li><li class="slot eko" title="Obmedzenie: súper dostane v každej Pitke o cigaretu menej"><span class="poz">3</span><span class="akc">Obmedzenie</span><span class="opak" aria-label="opakuje sa v každej Pitke" title="opakuje sa v každej Pitke">↻</span></li></ol>
+        <p>útok a brzda — Pecka do bitky a Obmedzenie, ktoré v každej Pitke uberá cigarety majiteľovi Pumpy.</p>
+      </section>
+    </div>
+    <dl class="riadky">
+      <dt>Natočenie</dt><dd>Útočník s plnou rukou si natočí Pumpu a zbiera na ďalšie kolá; kto chce vyhrať hneď a súperovi zobrať príjem, Prepad. Prepad má akcie na krajných pozíciách — spojí sa ťažšie.</dd>
+      <dt>Efekt</dt><dd><q class="efekt">Zhromaždenie: Nikto nesmie fajčiť. Pitka: Nikto nesmie fajčiť.</q><span class="mini">Pôvodne: Bitka: pri viac ako 7 aktívnych Cigaretách každý zahodí 3 Občanov a lokalita prepadne. (Playtesterka: „Najviac mi vadila Benzínka, ktorá mohla zrušiť výhru lokality.“)</span></dd>
+      <dt>Výklad</dt><dd><ul><li>Cigarety z akcií Cigareta sa pripisujú ako vždy.</li><li>Doliatie poldeci, barter, Starosta a platba za Dedičstvo ostávajú — cigaretou platiť smieš, fajčiť nie.</li><li>Počas bitky prídu karty len z efektov (napr. Poštárka); inak hráš z ruky.</li></ul></dd>
+      <dt>Zážitok</dt><dd>Bitka z toho, čo máš v ruke. Kto prišiel s malou rukou a vreckom cigariet, si ich nepremení na karty — útočník preto Benzínku volí, keď má súper cigarety a málo kariet. Cigarety z Pumpy sa prenesú do ďalších kôl: dlhá bitka na Benzínke je investícia. <span class="mini">Pre: ekonóm, ktorý myslí na ďalšie kolá; hráč s plnou rukou.</span></dd>
+      <dt>Pitky</dt><dd><b>1–3</b>. Horný odhad, keď obaja spoja svoju hranu najlepšou z 5 kariet v ruke: ⌀ 2,4 (1: 1 % · 2: 56 % · 3: 43 %). Kto chce krátku bitku, svoju hranu nespojí — 1 Pitka, ale bez akcií lokality.</dd>
+      <dt>Riziká</dt><dd><ul><li>Absťák pre fajčiarov (menej nerestí) — doliatie a šenok ho vedia vyvážiť.</li><li>Majiteľ Pumpy chce dlhú bitku; Prepad ju skráti, ak svoju hranu nespojí (a príde o Pecku).</li><li>Cigorky a priazeň Fajčiara Pumpu ešte posilnia.</li></ul></dd>
+      <dt>Implementácia</dt><dd>Zakázať fajčenie pri cieli <code>benzinka</code> (motor, bot, klient); odstrániť starý efekt (zahodenie Občanov, <code>lokalitaPrepadne</code>).</dd>
+      <dt>Dáta pre tvorcu</dt><dd class="data"><span>ľavá (A): blokované [0, 3] · akcie Cigareta×2 · povolené 1: Cigareta; 2: Cigareta</span><span>pravá (B, zapísaná odzadu): blokované [1, 2] · akcie Obmedzenie×1, Pecka×1 · povolené 0: Obmedzenie; 3: Pecka</span></dd>
+    </dl>
+    <fieldset class="rozhodnutie">
+      <legend>Rozhodnutie k lokalite Benzínka</legend>
+      <label><input type="radio" name="v-benzinka" value="beriem"> beriem</label>
+      <label><input type="radio" name="v-benzinka" value="upraviť"> beriem s úpravou</label>
+      <label><input type="radio" name="v-benzinka" value="nie"> nie</label>
+      <label class="pozn">poznámka <input type="text" name="p-benzinka" autocomplete="off"></label>
+    </fieldset>
+  </article>
+  <article class="lok" id="zastavka" data-n="1" data-narocnost="malá" data-povod="prerobená" aria-labelledby="h-zastavka">
+    <header class="lok-hlava">
+      <h3 id="h-zastavka"><span class="cislo-lok">4</span>Zastávka</h3>
+      <p class="znamky"><span>názov ostáva</span><span>1 akcia na hranu</span><span>Zhromaždenie</span><span class="tag n-malá">náročnosť: malá</span><span>id <code>zastavka</code> ostáva</span></p>
+    </header>
+    <div class="hrany">
+      <section class="hrana" aria-label="Hrana A: Lavička">
+        <h4>Hrana A · Lavička</h4>
+        <ol class="sloty"><li class="slot blok" aria-label="pozícia 0: blokovaná"><span class="poz">0</span><span>✕</span></li><li class="slot eko" title="Cigareta: cigareta v každej Pitke"><span class="poz">1</span><span class="akc">Cigareta</span><span class="opak" aria-label="opakuje sa v každej Pitke" title="opakuje sa v každej Pitke">↻</span></li><li class="slot blok" aria-label="pozícia 2: blokovaná"><span class="poz">2</span><span>✕</span></li><li class="slot blok" aria-label="pozícia 3: blokovaná"><span class="poz">3</span><span>✕</span></li></ol>
+        <p>čakanie s cigaretou — karta navyše v každej Pitke, v strede, spojí sa ľahko.</p>
+      </section>
+      <section class="hrana" aria-label="Hrana B: Výtržnosť">
+        <h4>Hrana B · Výtržnosť</h4>
+        <ol class="sloty"><li class="slot blok" aria-label="pozícia 0: blokovaná"><span class="poz">0</span><span>✕</span></li><li class="slot blok" aria-label="pozícia 1: blokovaná"><span class="poz">1</span><span>✕</span></li><li class="slot blok" aria-label="pozícia 2: blokovaná"><span class="poz">2</span><span>✕</span></li><li class="slot utok" title="Pecka: 2 tuhé poškodenia"><span class="poz">3</span><span class="akc">Pecka</span></li></ol>
+        <p>bitka pod prístreškom — 2 tuhé na krajnej pozícii, spojí sa ťažšie.</p>
+      </section>
+    </div>
+    <dl class="riadky">
+      <dt>Natočenie</dt><dd>Pecka rozhoduje túto bitku, cigareta pomáha neskôr. Kto prehráva na kartách, vezme Lavičku; kto potrebuje 2 tuhé, Výtržnosť.</dd>
+      <dt>Efekt</dt><dd><q class="efekt">Zhromaždenie: Limit vykladania oboch hráčov sa rovná väčšiemu z ich limitov.</q><span class="mini">Pôvodne: Zhromaždenie: Hráči hrajú 2 karty bez ohľadu na poldeci.</span></dd>
+      <dt>Výklad</dt><dd><ul><li>Na začiatku každého Zhromaždenia sa obom spočíta limit podľa §5 (aj s Vínkom) a menší sa zdvihne na väčší.</li><li>Vypiť potom znižuje zostávajúci limit ako vždy.</li><li>Kto pred Zastávkou platil za šenok poldecákmi, nestratí nič, ak má súper vyšší limit.</li></ul></dd>
+      <dt>Zážitok</dt><dd>Na zastávke čakajú všetci rovnako. Záchrana z poldeci špirály: kto má limit 1, dostane súperov limit. Útočník (porazený z minulého kola) ju volí, keď je vypitý; súper zas vie, že si pred Zastávkou môže dovoliť platiť za šenok poldecákmi. <span class="mini">Pre: dobiehanie — hráč s vypitými poldeci.</span></dd>
+      <dt>Pitky</dt><dd><b>1–2</b>. Horný odhad, keď obaja spoja svoju hranu najlepšou z 5 kariet v ruke: ⌀ 1,9 (1: 13 % · 2: 87 %). Kto chce krátku bitku, svoju hranu nespojí — 1 Pitka, ale bez akcií lokality.</dd>
+      <dt>Riziká</dt><dd><ul><li>Vypitý hráč na nej nič nestratí, takže sa pred ňou oplatí „vypiť všetko“.</li><li>Krátka bitka — akcie lokality rozhodnú málo, rozhodne ruka.</li></ul></dd>
+      <dt>Implementácia</dt><dd><code>limitOverride</code> vráti väčší z oboch limitov namiesto 2.</dd>
+      <dt>Dáta pre tvorcu</dt><dd class="data"><span>ľavá (A): blokované [0, 2, 3] · akcie Cigareta×1 · povolené 1: Cigareta</span><span>pravá (B, zapísaná odzadu): blokované [1, 2, 3] · akcie Pecka×1 · povolené 0: Pecka</span></dd>
+    </dl>
+    <fieldset class="rozhodnutie">
+      <legend>Rozhodnutie k lokalite Zastávka</legend>
+      <label><input type="radio" name="v-zastavka" value="beriem"> beriem</label>
+      <label><input type="radio" name="v-zastavka" value="upraviť"> beriem s úpravou</label>
+      <label><input type="radio" name="v-zastavka" value="nie"> nie</label>
+      <label class="pozn">poznámka <input type="text" name="p-zastavka" autocomplete="off"></label>
+    </fieldset>
+  </article>
+  <article class="lok" id="lesna_cesta" data-n="1" data-narocnost="malá" data-povod="prerobená" aria-labelledby="h-lesna_cesta">
+    <header class="lok-hlava">
+      <h3 id="h-lesna_cesta"><span class="cislo-lok">5</span>Lesná cesta</h3>
+      <p class="znamky"><span>názov ostáva</span><span>1 akcia na hranu</span><span>Bitka</span><span class="tag n-malá">náročnosť: malá</span><span>id <code>lesna_cesta</code> ostáva</span></p>
+    </header>
+    <div class="hrany">
+      <section class="hrana" aria-label="Hrana A: Zo zálohy">
+        <h4>Hrana A · Zo zálohy</h4>
+        <ol class="sloty"><li class="slot utok" title="Pecka: 2 tuhé poškodenia"><span class="poz">0</span><span class="akc">Pecka</span></li><li class="slot blok" aria-label="pozícia 1: blokovaná"><span class="poz">1</span><span>✕</span></li><li class="slot blok" aria-label="pozícia 2: blokovaná"><span class="poz">2</span><span>✕</span></li><li class="slot blok" aria-label="pozícia 3: blokovaná"><span class="poz">3</span><span>✕</span></li></ol>
+        <p>prepadnutie — 2 tuhé na krajnej pozícii.</p>
+      </section>
+      <section class="hrana" aria-label="Hrana B: Strašidlá">
+        <h4>Hrana B · Strašidlá</h4>
+        <ol class="sloty"><li class="slot blok" aria-label="pozícia 0: blokovaná"><span class="poz">0</span><span>✕</span></li><li class="slot blok" aria-label="pozícia 1: blokovaná"><span class="poz">1</span><span>✕</span></li><li class="slot makke" title="Povera: mäkké poškodenie do výšky súperových priznaných Dlhov"><span class="poz">2</span><span class="akc">Povera</span></li><li class="slot blok" aria-label="pozícia 3: blokovaná"><span class="poz">3</span><span>✕</span></li></ol>
+        <p>strach z lesa — Povera trestá súperove priznané Dlhy, spojí sa ľahšie.</p>
+      </section>
+    </div>
+    <dl class="riadky">
+      <dt>Natočenie</dt><dd>Na Lesnej ceste sa hrany kradnú najčastejšie: podstrčená karta pri lokalite vezme hranu a k tomu boduje efektom.</dd>
+      <dt>Efekt</dt><dd><q class="efekt">Bitka: Za každú svoju kartu na súperovej strane máš 1 tuhé poškodenie navyše, najviac 2.</q><span class="mini">Pôvodne: Pitka: Ak dáš NA EX, zahoď Absťák.</span></dd>
+      <dt>Výklad</dt><dd><ul><li>„Svoja karta“ je karta natočená k tebe (z tvojej partie), ktorá v čase bitky leží na súperovej strane. Nástroje sa nerátajú.</li><li>Tuhé navyše sa pripočíta pred odpočtom súperovej Viery a tvojich Absťákov (ako priazeň Bitkára).</li><li>Pes na konci súperovej strany a Pasca v jeho Dedičstve sa bránia ako vždy.</li></ul></dd>
+      <dt>Zážitok</dt><dd>Lokalita sabotérov. Každé podstrčenie je zároveň Rana, takže hráči súperia o konce strán. Obranca, ktorý vykladá prvý, môže hneď prepadnúť útočníkovu hranu. <span class="mini">Pre: agresívny sabotér; hráč s Kočovníkom.</span></dd>
+      <dt>Pitky</dt><dd><b>1–2</b>. Horný odhad, keď obaja spoja svoju hranu najlepšou z 5 kariet v ruke: ⌀ 1,8 (1: 15 % · 2: 85 %). Kto chce krátku bitku, svoju hranu nespojí — 1 Pitka, ale bez akcií lokality.</dd>
+      <dt>Riziká</dt><dd><ul><li>Kočovník ide na súperovu stranu bez limitu: 1 tuhé zadarmo. Rátať ho? (otázka 8)</li><li>Podstrčená karta pomáha aj súperovi (jeho spoje s ňou) — efekt to vyrovnáva len čiastočne.</li></ul></dd>
+      <dt>Implementácia</dt><dd>Tuhé navyše v <code>bitkaMody</code> pri cieli <code>lesna_cesta</code>; odstrániť <code>naexPaliAbstak</code> a príznak <code>lesnaCesta</code> v <code>stavZavislosti</code>.</dd>
+      <dt>Dáta pre tvorcu</dt><dd class="data"><span>ľavá (A): blokované [1, 2, 3] · akcie Pecka×1 · povolené 0: Pecka</span><span>pravá (B, zapísaná odzadu): blokované [0, 2, 3] · akcie Povera×1 · povolené 1: Povera</span></dd>
+    </dl>
+    <fieldset class="rozhodnutie">
+      <legend>Rozhodnutie k lokalite Lesná cesta</legend>
+      <label><input type="radio" name="v-lesna_cesta" value="beriem"> beriem</label>
+      <label><input type="radio" name="v-lesna_cesta" value="upraviť"> beriem s úpravou</label>
+      <label><input type="radio" name="v-lesna_cesta" value="nie"> nie</label>
+      <label class="pozn">poznámka <input type="text" name="p-lesna_cesta" autocomplete="off"></label>
+    </fieldset>
+  </article>
+  <article class="lok" id="most" data-n="2" data-narocnost="malá" data-povod="nová" aria-labelledby="h-most">
+    <header class="lok-hlava">
+      <h3 id="h-most"><span class="cislo-lok">6</span>Most</h3>
+      <p class="znamky"><span>nová (zadanie Michala)</span><span>2 akcie na hranu</span><span>Zhromaždenie</span><span class="tag n-malá">náročnosť: malá</span><span>nové id <code>most</code></span></p>
+    </header>
+    <div class="hrany">
+      <section class="hrana" aria-label="Hrana A: Mýtnik">
+        <h4>Hrana A · Mýtnik</h4>
+        <ol class="sloty"><li class="slot blok" aria-label="pozícia 0: blokovaná"><span class="poz">0</span><span>✕</span></li><li class="slot obrana" title="Viera: znižuje súperovo tuhé poškodenie"><span class="poz">1</span><span class="akc">Viera</span></li><li class="slot eko" title="Obmedzenie: súper dostane v každej Pitke o cigaretu menej"><span class="poz">2</span><span class="akc">Obmedzenie</span><span class="opak" aria-label="opakuje sa v každej Pitke" title="opakuje sa v každej Pitke">↻</span></li><li class="slot blok" aria-label="pozícia 3: blokovaná"><span class="poz">3</span><span>✕</span></li></ol>
+        <p>brániť most — Viera proti tuhému a Obmedzenie, ktoré v každej Pitke uberá súperovi cigarety.</p>
+      </section>
+      <section class="hrana" aria-label="Hrana B: Skok z mosta">
+        <h4>Hrana B · Skok z mosta</h4>
+        <ol class="sloty"><li class="slot utok" title="Petelica: 3 tuhé poškodenia"><span class="poz">0</span><span class="akc">Petelica</span></li><li class="slot zle" title="Dlh: zadĺženie v každej Pitke — pri prahu 1 karta Dlhu"><span class="poz">1</span><span class="akc">Dlh</span><span class="opak" aria-label="opakuje sa v každej Pitke" title="opakuje sa v každej Pitke">↻</span></li><li class="slot blok" aria-label="pozícia 2: blokovaná"><span class="poz">2</span><span>✕</span></li><li class="slot blok" aria-label="pozícia 3: blokovaná"><span class="poz">3</span><span>✕</span></li></ol>
+        <p>riskantný útok — 3 tuhé na krajnej pozícii, hneď pod ňou Dlh v každej Pitke; karta s akciou na pozícii 0, ale nie na 1, vezme Petelicu bez Dlhu.</p>
+      </section>
+    </div>
+    <dl class="riadky">
+      <dt>Natočenie</dt><dd>Na Moste sa nepodstrkuje, takže hranu dostane naisto ten, ku komu ju útočník natočí. Len tu si útočník skutočne vyberá štýl — svoj aj súperov.</dd>
+      <dt>Efekt</dt><dd><q class="efekt">Zhromaždenie: Karty sa smú vykladať len na vlastnú stranu.</q></dd>
+      <dt>Výklad</dt><dd><ul><li>Platí aj pre odpoveď na NA EX a pre Kočovníka.</li><li>NA EX na súperove karty ostáva povolené — to nie je vykladanie.</li><li>Hrana lokality vždy patrí hráčovi na jej strane. Pes a Pasca tu nemajú čo strážiť.</li></ul></dd>
+      <dt>Zážitok</dt><dd>Čistý súboj bez sabotáže, opak Lesnej cesty. Každý stavia svoju stranu a dĺžku bitky má každý vo svojich rukách: kto nespojí svoju hranu, skráti bitku na 1 Pitku. Mýtnik chce dlhú bitku (Obmedzenie v každej Pitke), Skok krátku (Dlh v každej Pitke). <span class="mini">Pre: plánovač; nováčik (žiadne podstrčené karty, ktoré mýlia).</span></dd>
+      <dt>Pitky</dt><dd><b>1–3</b>. Horný odhad, keď obaja spoja svoju hranu najlepšou z 5 kariet v ruke: ⌀ 2,5 (1: 1 % · 2: 50 % · 3: 50 %). Kto chce krátku bitku, svoju hranu nespojí — 1 Pitka, ale bez akcií lokality.</dd>
+      <dt>Riziká</dt><dd><ul><li>Útočník dostane Petelicu naisto — silnému útočníkovi pridáva.</li><li>Bez podstrkovania ubúda interakcie, ktorú playtesteri chvália najviac — preto len jedna taká lokalita.</li><li>Variant B (útočník určí jeden breh, obaja vykladajú len naň): jedna spoločná rada, každý spoj je sporný. Druhá hrana by ostala prázdna, takže by Most potreboval vlastný vzorec Pitiek a motor dve partie v jednej rade — náročnosť veľká (otázka 1).</li></ul></dd>
+      <dt>Implementácia</dt><dd><code>cmdPlace</code> a odpoveď na NA EX odmietnu súperovu stranu pri cieli <code>most</code>; bot, náhľad vykladania; nové id v <code>REGISTER</code>.</dd>
+      <dt>Dáta pre tvorcu</dt><dd class="data"><span>ľavá (A): blokované [0, 3] · akcie Viera×1, Obmedzenie×1 · povolené 1: Viera; 2: Obmedzenie</span><span>pravá (B, zapísaná odzadu): blokované [0, 1] · akcie Dlh×1, Petelica×1 · povolené 2: Dlh; 3: Petelica</span></dd>
+    </dl>
+    <fieldset class="rozhodnutie">
+      <legend>Rozhodnutie k lokalite Most</legend>
+      <label><input type="radio" name="v-most" value="beriem"> beriem</label>
+      <label><input type="radio" name="v-most" value="upraviť"> beriem s úpravou</label>
+      <label><input type="radio" name="v-most" value="nie"> nie</label>
+      <label class="pozn">poznámka <input type="text" name="p-most" autocomplete="off"></label>
+    </fieldset>
+  </article>
+  <article class="lok" id="ihrisko" data-n="2" data-narocnost="malá" data-povod="prerobená" aria-labelledby="h-ihrisko">
+    <header class="lok-hlava">
+      <h3 id="h-ihrisko"><span class="cislo-lok">7</span>Ihrisko</h3>
+      <p class="znamky"><span>názov ostáva</span><span>2 akcie na hranu</span><span>Bitka</span><span class="tag n-malá">náročnosť: malá</span><span>id <code>ihrisko</code> ostáva</span></p>
+    </header>
+    <div class="hrany">
+      <section class="hrana" aria-label="Hrana A: Útok po krídlach">
+        <h4>Hrana A · Útok po krídlach</h4>
+        <ol class="sloty"><li class="slot utok" title="Rana: 1 tuhé poškodenie"><span class="poz">0</span><span class="akc">Rana</span></li><li class="slot blok" aria-label="pozícia 1: blokovaná"><span class="poz">1</span><span>✕</span></li><li class="slot blok" aria-label="pozícia 2: blokovaná"><span class="poz">2</span><span>✕</span></li><li class="slot utok" title="Rana: 1 tuhé poškodenie"><span class="poz">3</span><span class="akc">Rana</span></li></ol>
+        <p>útočníci na krídlach — 2 Rany na krajných pozíciách, spoja sa ťažšie.</p>
+      </section>
+      <section class="hrana" aria-label="Hrana B: Lavička náhradníkov">
+        <h4>Hrana B · Lavička náhradníkov</h4>
+        <ol class="sloty"><li class="slot blok" aria-label="pozícia 0: blokovaná"><span class="poz">0</span><span>✕</span></li><li class="slot eko" title="Cigareta: cigareta v každej Pitke"><span class="poz">1</span><span class="akc">Cigareta</span><span class="opak" aria-label="opakuje sa v každej Pitke" title="opakuje sa v každej Pitke">↻</span></li><li class="slot pitie" title="Poldeci: pri bitke otočí vypitý poldeci na plný; v každej Pitke pridá pečeň"><span class="poz">2</span><span class="akc">Poldeci</span><span class="opak" aria-label="opakuje sa v každej Pitke" title="opakuje sa v každej Pitke">↻</span></li><li class="slot blok" aria-label="pozícia 3: blokovaná"><span class="poz">3</span><span>✕</span></li></ol>
+        <p>široká súpiska — cigareta v každej Pitke a Poldeci, ktorý doleje limit: viac kariet do línie teraz aj v ďalšom kole.</p>
+      </section>
+    </div>
+    <dl class="riadky">
+      <dt>Natočenie</dt><dd>Útok dá až 2 tuhé hneď, no spojí sa ťažšie; Lavička sa spojí ľahko a pomáha vyložiť viac kariet, za čo Ihrisko dáva 2 tuhé. Kto má plnšiu ruku, vezme Útok.</dd>
+      <dt>Efekt</dt><dd><q class="efekt">Bitka: Kto má v línii viac svojich kariet, má 2 tuhé poškodenia navyše.</q><span class="mini">Pôvodne: Furt: Prah Cirhózy je o 1 vyšší.</span></dd>
+      <dt>Výklad</dt><dd><ul><li>Rátajú sa karty natočené k hráčovi (jeho partia) na oboch stranách, bez Nástrojov.</li><li>Pri rovnosti nikto.</li><li>+2 sa pripočíta pred odpočtom Viery a Absťákov.</li></ul></dd>
+      <dt>Zážitok</dt><dd>Futbal: vyhráva, kto postaví viac hráčov. Každé Vypiť (dve karty za sebou) a každá cigareta má váhu; podstrčená karta sa ráta tomu, kto ju zahral. Rozhodnutie: vyložiť kartu kvôli počtu, aj keď nemá pár? <span class="mini">Pre: hráč s plnou rukou a cigaretami.</span></dd>
+      <dt>Pitky</dt><dd><b>1–3</b>. Horný odhad, keď obaja spoja svoju hranu najlepšou z 5 kariet v ruke: ⌀ 2,4 (1: 1 % · 2: 56 % · 3: 42 %). Kto chce krátku bitku, svoju hranu nespojí — 1 Pitka, ale bez akcií lokality.</dd>
+      <dt>Riziká</dt><dd><ul><li>Bonus ide zväčša tomu, kto už má lepšiu ruku — mierne nabaľovanie.</li><li>Vykladajú sa karty bez páru len kvôli počtu (limit to brzdí).</li></ul></dd>
+      <dt>Implementácia</dt><dd>Tuhé navyše v <code>bitkaMody</code> pri cieli <code>ihrisko</code>; odstrániť Ihrisko z <code>prahCirhozyBonus</code>.</dd>
+      <dt>Dáta pre tvorcu</dt><dd class="data"><span>ľavá (A): blokované [1, 2] · akcie Rana×2 · povolené 0: Rana; 3: Rana</span><span>pravá (B, zapísaná odzadu): blokované [0, 3] · akcie Poldeci×1, Cigareta×1 · povolené 1: Poldeci; 2: Cigareta</span></dd>
+    </dl>
+    <fieldset class="rozhodnutie">
+      <legend>Rozhodnutie k lokalite Ihrisko</legend>
+      <label><input type="radio" name="v-ihrisko" value="beriem"> beriem</label>
+      <label><input type="radio" name="v-ihrisko" value="upraviť"> beriem s úpravou</label>
+      <label><input type="radio" name="v-ihrisko" value="nie"> nie</label>
+      <label class="pozn">poznámka <input type="text" name="p-ihrisko" autocomplete="off"></label>
+    </fieldset>
+  </article>
+  <article class="lok" id="zberny_dvor" data-n="3" data-narocnost="stredná" data-povod="prerobená" aria-labelledby="h-zberny_dvor">
+    <header class="lok-hlava">
+      <h3 id="h-zberny_dvor"><span class="cislo-lok">8</span>Zberný dvor</h3>
+      <p class="znamky"><span>názov ostáva</span><span>3 akcie na hranu</span><span>Pitka</span><span class="tag n-stredná">náročnosť: stredná</span><span>id <code>zberny_dvor</code> ostáva</span></p>
+    </header>
+    <div class="hrany">
+      <section class="hrana" aria-label="Hrana A: Šrotár">
+        <h4>Hrana A · Šrotár</h4>
+        <ol class="sloty"><li class="slot blok" aria-label="pozícia 0: blokovaná"><span class="poz">0</span><span>✕</span></li><li class="slot dlhy" title="Robota: pri Exekútorovi odhodí 1 priznaný Dlh"><span class="poz">1</span><span class="akc">Robota</span></li><li class="slot eko" title="Cigareta: cigareta v každej Pitke"><span class="poz">2</span><span class="akc">Cigareta</span><span class="opak" aria-label="opakuje sa v každej Pitke" title="opakuje sa v každej Pitke">↻</span></li><li class="slot utok" title="Petelica: 3 tuhé poškodenia"><span class="poz">3</span><span class="akc">Petelica</span></li></ol>
+        <p>poctivá práca — Robota odhodí priznaný Dlh, cigareta v každej Pitke zaplatí výkup, Petelica (krajná pozícia) 3 tuhé.</p>
+      </section>
+      <section class="hrana" aria-label="Hrana B: Zlodej šrotu">
+        <h4>Hrana B · Zlodej šrotu</h4>
+        <ol class="sloty"><li class="slot eko" title="Obmedzenie: súper dostane v každej Pitke o cigaretu menej"><span class="poz">0</span><span class="akc">Obmedzenie</span><span class="opak" aria-label="opakuje sa v každej Pitke" title="opakuje sa v každej Pitke">↻</span></li><li class="slot starsi" title="Pohoršenie: posunie marker staršieho o 1 k súperovi"><span class="poz">1</span><span class="akc">Pohoršenie</span></li><li class="slot zle" title="Dlh: zadĺženie v každej Pitke — pri prahu 1 karta Dlhu"><span class="poz">2</span><span class="akc">Dlh</span><span class="opak" aria-label="opakuje sa v každej Pitke" title="opakuje sa v každej Pitke">↻</span></li><li class="slot blok" aria-label="pozícia 3: blokovaná"><span class="poz">3</span><span>✕</span></li></ol>
+        <p>kradne a ohovára — Obmedzenie uberá súperovi cigarety na výkup, Pohoršenie tlačí na starších, Dlh padá v každej Pitke.</p>
+      </section>
+    </div>
+    <dl class="riadky">
+      <dt>Natočenie</dt><dd>Šrotár je bitka a ekonomika, Zlodej sabotáž a starší. V dlhej bitke Zlodej nazbiera Dlhy — kto ho drží, zvažuje, či bitku predĺžiť.</dd>
+      <dt>Efekt</dt><dd><q class="efekt">Pitka: Raz za Pitku smieš za 1 cigaretu vziať do ruky ľubovoľnú kartu zo svojho odhadzovacieho balíčka.</q><span class="mini">Pôvodne: Pitka: Hráči generujú o 1 Dlh menej.</span></dd>
+      <dt>Výklad</dt><dd><ul><li>Na svojom ťahu v Pitke, raz za Pitku pre každého hráča; ráta sa ako nerest (ako fajčenie).</li><li>Kartu si vyberieš, nie naslepo, preto ju Vízia nepreosieva. Návrh: súper vidí, ktorú kartu si vzal.</li><li>Kliatbu si vziať smieš (napríklad aby si ju priznal).</li></ul></dd>
+      <dt>Zážitok</dt><dd>Vyhrabeš zo šrotu presne to, čo potrebuješ — Recidivistu, ktorý minulé kolo rozhodol, alebo Hasiča. Fajčenie dáva náhodnú kartu, výkup istú: vyberáš medzi istotou a množstvom. V dlhej bitke (až 4 Pitky) si postavíš ruku na mieru. <span class="mini">Pre: kombinátor, ktorý pozná svoj balíček.</span></dd>
+      <dt>Pitky</dt><dd><b>1–4</b>. Horný odhad, keď obaja spoja svoju hranu najlepšou z 5 kariet v ruke: ⌀ 3,0 (2: 6 % · 3: 89 % · 4: 5 %). Kto chce krátku bitku, svoju hranu nespojí — 1 Pitka, ale bez akcií lokality.</dd>
+      <dt>Riziká</dt><dd><ul><li>Opakované vyťahovanie najsilnejšej karty — preto raz za Pitku.</li><li>Príbuzné Hasičovi (Pracujúci z odhadzovacieho), no za cigaretu a pre každú kartu.</li><li>Dlhy zo Zlodeja v dlhej bitke.</li></ul></dd>
+      <dt>Implementácia</dt><dd>Nový príkaz v Pitke (výber z odhadzovacieho balíčka), pohľad hráča (<code>viewFor</code> — vlastný odhadzovací balíček), bot, klient agentov; odstrániť <code>dlhovMenej</code>.</dd>
+      <dt>Dáta pre tvorcu</dt><dd class="data"><span>ľavá (A): blokované [0] · akcie Robota×1, Cigareta×1, Petelica×1 · povolené 1: Robota; 2: Cigareta; 3: Petelica</span><span>pravá (B, zapísaná odzadu): blokované [0] · akcie Dlh×1, Pohoršenie×1, Obmedzenie×1 · povolené 1: Dlh; 2: Pohoršenie; 3: Obmedzenie</span></dd>
+    </dl>
+    <fieldset class="rozhodnutie">
+      <legend>Rozhodnutie k lokalite Zberný dvor</legend>
+      <label><input type="radio" name="v-zberny_dvor" value="beriem"> beriem</label>
+      <label><input type="radio" name="v-zberny_dvor" value="upraviť"> beriem s úpravou</label>
+      <label><input type="radio" name="v-zberny_dvor" value="nie"> nie</label>
+      <label class="pozn">poznámka <input type="text" name="p-zberny_dvor" autocomplete="off"></label>
+    </fieldset>
+  </article>
+  <article class="lok" id="cintorin" data-n="1" data-narocnost="stredná" data-povod="nová" aria-labelledby="h-cintorin">
+    <header class="lok-hlava">
+      <h3 id="h-cintorin"><span class="cislo-lok">9</span>Cintorín</h3>
+      <p class="znamky"><span>nová</span><span>1 akcia na hranu</span><span>Prehra</span><span class="tag n-stredná">náročnosť: stredná</span><span>nové id <code>cintorin</code></span></p>
+    </header>
+    <div class="hrany">
+      <section class="hrana" aria-label="Hrana A: Smútočný sprievod">
+        <h4>Hrana A · Smútočný sprievod</h4>
+        <ol class="sloty"><li class="slot blok" aria-label="pozícia 0: blokovaná"><span class="poz">0</span><span>✕</span></li><li class="slot obrana" title="Viera: znižuje súperovo tuhé poškodenie"><span class="poz">1</span><span class="akc">Viera</span></li><li class="slot blok" aria-label="pozícia 2: blokovaná"><span class="poz">2</span><span>✕</span></li><li class="slot blok" aria-label="pozícia 3: blokovaná"><span class="poz">3</span><span>✕</span></li></ol>
+        <p>úcta — Viera znižuje súperovo tuhé.</p>
+      </section>
+      <section class="hrana" aria-label="Hrana B: Hrobník">
+        <h4>Hrana B · Hrobník</h4>
+        <ol class="sloty"><li class="slot blok" aria-label="pozícia 0: blokovaná"><span class="poz">0</span><span>✕</span></li><li class="slot blok" aria-label="pozícia 1: blokovaná"><span class="poz">1</span><span>✕</span></li><li class="slot dlhy" title="Robota: pri Exekútorovi odhodí 1 priznaný Dlh"><span class="poz">2</span><span class="akc">Robota</span></li><li class="slot blok" aria-label="pozícia 3: blokovaná"><span class="poz">3</span><span>✕</span></li></ol>
+        <p>pochováva dlhy — Robota pri Exekútorovi odhodí priznaný Dlh.</p>
+      </section>
+    </div>
+    <dl class="riadky">
+      <dt>Natočenie</dt><dd>Obe hrany sú tiché (len v bitke, v Pitke nič). Kto má veľa priznaných Dlhov, berie Hrobníka.</dd>
+      <dt>Efekt</dt><dd><q class="efekt">Prehra: Smieš vyložiť jeden Nástroj z ruky do Dedičstva bez platenia; spoločná cena Dedičstva sa nezvýši.</q></dd>
+      <dt>Výklad</dt><dd><ul><li>Platí pre porazeného, po vyhodnotení bitky (§8) a pred návratom kariet.</li><li>Nástroj musí byť v ruke; Nástroj z línie nie.</li><li>Pri remíze o lokalitu je porazený ten, kto nevyhral (rovnosť vyhráva obranca).</li></ul></dd>
+      <dt>Zážitok</dt><dd>Pozostalý dedí. Bitka, v ktorej prehra niečo dáva: kto vie, že nevyhrá, nemusí tlačiť a ušetrí karty, ak má v ruke Nástroj. Víťaz zas zvažuje, či sa oplatí vyhrať tesne, keď súperovi tým daruje Dedičstvo. Protiváha Jednoty, ktorá pomáha víťazovi. <span class="mini">Pre: dobiehanie; hráč s Nástrojmi (Svätý text, Nealko, Puška).</span></dd>
+      <dt>Pitky</dt><dd><b>1–2</b>. Horný odhad, keď obaja spoja svoju hranu najlepšou z 5 kariet v ruke: ⌀ 1,9 (1: 9 % · 2: 91 %). Kto chce krátku bitku, svoju hranu nespojí — 1 Pitka, ale bez akcií lokality.</dd>
+      <dt>Riziká</dt><dd><ul><li>„Prehrať naschvál“: Dedičstvo zadarmo môže mať väčšiu cenu ako lokalita — sledovať v playteste.</li><li>Bez Nástroja v ruke je to obyčajná krátka bitka.</li></ul></dd>
+      <dt>Implementácia</dt><dd>Rozhodnutie porazeného po bitke (výber Nástroja z ruky), napojenie na novú spoločnú cenu Dedičstva; nové id.</dd>
+      <dt>Dáta pre tvorcu</dt><dd class="data"><span>ľavá (A): blokované [0, 2, 3] · akcie Viera×1 · povolené 1: Viera</span><span>pravá (B, zapísaná odzadu): blokované [0, 2, 3] · akcie Robota×1 · povolené 1: Robota</span></dd>
+    </dl>
+    <fieldset class="rozhodnutie">
+      <legend>Rozhodnutie k lokalite Cintorín</legend>
+      <label><input type="radio" name="v-cintorin" value="beriem"> beriem</label>
+      <label><input type="radio" name="v-cintorin" value="upraviť"> beriem s úpravou</label>
+      <label><input type="radio" name="v-cintorin" value="nie"> nie</label>
+      <label class="pozn">poznámka <input type="text" name="p-cintorin" autocomplete="off"></label>
+    </fieldset>
+  </article>
+  <article class="lok" id="obecny_urad" data-n="2" data-narocnost="malá" data-povod="nová" aria-labelledby="h-obecny_urad">
+    <header class="lok-hlava">
+      <h3 id="h-obecny_urad"><span class="cislo-lok">10</span>Obecný úrad</h3>
+      <p class="znamky"><span>nová</span><span>2 akcie na hranu</span><span>Bitka</span><span class="tag n-malá">náročnosť: malá</span><span>nové id <code>obecny_urad</code></span></p>
+    </header>
+    <div class="hrany">
+      <section class="hrana" aria-label="Hrana A: Podateľňa">
+        <h4>Hrana A · Podateľňa</h4>
+        <ol class="sloty"><li class="slot blok" aria-label="pozícia 0: blokovaná"><span class="poz">0</span><span>✕</span></li><li class="slot dlhy" title="Robota: pri Exekútorovi odhodí 1 priznaný Dlh"><span class="poz">1</span><span class="akc">Robota</span></li><li class="slot obrana" title="Viera: znižuje súperovo tuhé poškodenie"><span class="poz">2</span><span class="akc">Viera</span></li><li class="slot blok" aria-label="pozícia 3: blokovaná"><span class="poz">3</span><span>✕</span></li></ol>
+        <p>poriadok — Robota (tu za 2 Dlhy) a Viera: bezpečie pre dlžníka.</p>
+      </section>
+      <section class="hrana" aria-label="Hrana B: Vymáhač">
+        <h4>Hrana B · Vymáhač</h4>
+        <ol class="sloty"><li class="slot blok" aria-label="pozícia 0: blokovaná"><span class="poz">0</span><span>✕</span></li><li class="slot makke" title="Povera: mäkké poškodenie do výšky súperových priznaných Dlhov"><span class="poz">1</span><span class="akc">Povera</span></li><li class="slot blok" aria-label="pozícia 2: blokovaná"><span class="poz">2</span><span>✕</span></li><li class="slot utok" title="Pecka: 2 tuhé poškodenia"><span class="poz">3</span><span class="akc">Pecka</span></li></ol>
+        <p>vymáhanie — Povera trestá súperove priznané Dlhy, Pecka (krajná pozícia) pridá 2 tuhé.</p>
+      </section>
+    </div>
+    <dl class="riadky">
+      <dt>Natočenie</dt><dd>Útočník s čistým kontom si natočí Vymáhača a ide po zadlženom súperovi; zadlžený obranca sa ponáhľa vziať si Podateľňu podstrčením.</dd>
+      <dt>Efekt</dt><dd><q class="efekt">Bitka: Prah Exekútora je o 4 nižší a každá aktívna Robota odhodí 2 priznané Dlhy.</q></dd>
+      <dt>Výklad</dt><dd><ul><li>Krok 1 §8, pre oboch, len v tejto bitke: prah = 10 + 2 × priazeň Exekútora − 4.</li><li>Robota z kariet aj z lokality.</li><li>Kto exekúcii nečelí, spáli 1 priznaný Dlh ako vždy; kto čelí a nemá Nástroj (ani Záhradkára), prehráva hru (§8.1).</li></ul></dd>
+      <dt>Zážitok</dt><dd>Deň, keď prišiel exekútor. Priznané Dlhy (za ktoré si hráč dobral karty) sa tu prvýkrát vypomstia: kto ich má 6 a viac, odovzdá Nástroj alebo prehrá. Hráči pred bitkou počítajú Dlhy, zháňajú Robotu a Nástroje a Povery majú na koho útočiť. <span class="mini">Pre: hráč s čistým kontom proti zadlženému; Záhradkár sa tu konečne uplatní.</span></dd>
+      <dt>Pitky</dt><dd><b>1–3</b>. Horný odhad, keď obaja spoja svoju hranu najlepšou z 5 kariet v ruke: ⌀ 2,5 (2: 53 % · 3: 46 %). Kto chce krátku bitku, svoju hranu nespojí — 1 Pitka, ale bez akcií lokality.</dd>
+      <dt>Riziká</dt><dd><ul><li>Okamžitá prehra celej hry na jednej lokalite — −4 je odhad (otázka 6).</li><li>Kto nemá Dlhy, efekt necíti.</li></ul></dd>
+      <dt>Implementácia</dt><dd>Prah Exekútora a násobok Roboty pri cieli <code>obecny_urad</code>; nové id.</dd>
+      <dt>Dáta pre tvorcu</dt><dd class="data"><span>ľavá (A): blokované [0, 3] · akcie Robota×1, Viera×1 · povolené 1: Robota; 2: Viera</span><span>pravá (B, zapísaná odzadu): blokované [1, 3] · akcie Pecka×1, Povera×1 · povolené 0: Pecka; 2: Povera</span></dd>
+    </dl>
+    <fieldset class="rozhodnutie">
+      <legend>Rozhodnutie k lokalite Obecný úrad</legend>
+      <label><input type="radio" name="v-obecny_urad" value="beriem"> beriem</label>
+      <label><input type="radio" name="v-obecny_urad" value="upraviť"> beriem s úpravou</label>
+      <label><input type="radio" name="v-obecny_urad" value="nie"> nie</label>
+      <label class="pozn">poznámka <input type="text" name="p-obecny_urad" autocomplete="off"></label>
+    </fieldset>
+  </article>
+  <article class="lok" id="jednota" data-n="1" data-narocnost="malá" data-povod="nová" aria-labelledby="h-jednota">
+    <header class="lok-hlava">
+      <h3 id="h-jednota"><span class="cislo-lok">11</span>Jednota</h3>
+      <p class="znamky"><span>nová (dedinské potraviny)</span><span>1 akcia na hranu</span><span>Furt</span><span class="tag n-malá">náročnosť: malá</span><span>nové id <code>jednota</code></span></p>
+    </header>
+    <div class="hrany">
+      <section class="hrana" aria-label="Hrana A: Pokladňa">
+        <h4>Hrana A · Pokladňa</h4>
+        <ol class="sloty"><li class="slot blok" aria-label="pozícia 0: blokovaná"><span class="poz">0</span><span>✕</span></li><li class="slot eko" title="Cigareta: cigareta v každej Pitke"><span class="poz">1</span><span class="akc">Cigareta</span><span class="opak" aria-label="opakuje sa v každej Pitke" title="opakuje sa v každej Pitke">↻</span></li><li class="slot blok" aria-label="pozícia 2: blokovaná"><span class="poz">2</span><span>✕</span></li><li class="slot blok" aria-label="pozícia 3: blokovaná"><span class="poz">3</span><span>✕</span></li></ol>
+        <p>nákup — cigareta v každej Pitke.</p>
+      </section>
+      <section class="hrana" aria-label="Hrana B: Rad pred pultom">
+        <h4>Hrana B · Rad pred pultom</h4>
+        <ol class="sloty"><li class="slot blok" aria-label="pozícia 0: blokovaná"><span class="poz">0</span><span>✕</span></li><li class="slot blok" aria-label="pozícia 1: blokovaná"><span class="poz">1</span><span>✕</span></li><li class="slot starsi" title="Pohoršenie: posunie marker staršieho o 1 k súperovi"><span class="poz">2</span><span class="akc">Pohoršenie</span></li><li class="slot blok" aria-label="pozícia 3: blokovaná"><span class="poz">3</span><span>✕</span></li></ol>
+        <p>ohováranie v rade — Pohoršenie posunie staršieho.</p>
+      </section>
+    </div>
+    <dl class="riadky">
+      <dt>Natočenie</dt><dd>Krátka bitka, hrany sú drobnosť — ide o trofej.</dd>
+      <dt>Efekt</dt><dd><q class="efekt">Furt: Kto ovláda Jednotu, berie zo šenku 2 karty za 2 cigarety.</q></dd>
+      <dt>Výklad</dt><dd><ul><li>Furt platí od ovládnutia do konca hry; počas bitky o Jednotu ešte nikomu.</li><li>1 karta stojí stále 1 cigaretu; dve namiesto 3 cigariet len 2.</li><li>Ovládnutá lokalita sa nedá stratiť.</li></ul></dd>
+      <dt>Zážitok</dt><dd>Trofejná lokalita — jediná, ktorá dáva výhodu na zvyšok hry. Čím skôr ju niekto získa, tým viac ušetrí. Útočník ju volí skoro, ak verí, že vyhrá, alebo ju nechá na koniec, aby výhoda veľa neznamenala. <span class="mini">Pre: ekonóm; skorá hra.</span></dd>
+      <dt>Pitky</dt><dd><b>1–2</b>. Horný odhad, keď obaja spoja svoju hranu najlepšou z 5 kariet v ruke: ⌀ 1,9 (1: 9 % · 2: 91 %). Kto chce krátku bitku, svoju hranu nespojí — 1 Pitka, ale bez akcií lokality.</dd>
+      <dt>Riziká</dt><dd><ul><li>Nabaľovanie víťaza (cigareta ušetrená pri každom dvojnákupe); v dlhej hre je výhoda väčšia.</li><li>Protiváhou je Cintorín (pomáha porazenému).</li></ul></dd>
+      <dt>Implementácia</dt><dd>Cena šenku podľa ovládnutia (<code>ovladnute</code>), náhľad ceny v klientovi; nové id.</dd>
+      <dt>Dáta pre tvorcu</dt><dd class="data"><span>ľavá (A): blokované [0, 2, 3] · akcie Cigareta×1 · povolené 1: Cigareta</span><span>pravá (B, zapísaná odzadu): blokované [0, 2, 3] · akcie Pohoršenie×1 · povolené 1: Pohoršenie</span></dd>
+    </dl>
+    <fieldset class="rozhodnutie">
+      <legend>Rozhodnutie k lokalite Jednota</legend>
+      <label><input type="radio" name="v-jednota" value="beriem"> beriem</label>
+      <label><input type="radio" name="v-jednota" value="upraviť"> beriem s úpravou</label>
+      <label><input type="radio" name="v-jednota" value="nie"> nie</label>
+      <label class="pozn">poznámka <input type="text" name="p-jednota" autocomplete="off"></label>
+    </fieldset>
+  </article>
+  <article class="lok" id="kulturny_dom" data-n="3" data-narocnost="malá" data-povod="nová" aria-labelledby="h-kulturny_dom">
+    <header class="lok-hlava">
+      <h3 id="h-kulturny_dom"><span class="cislo-lok">12</span>Kultúrny dom</h3>
+      <p class="znamky"><span>nová (posedenie s dôchodcami)</span><span>3 akcie na hranu</span><span>Bitka</span><span class="tag n-malá">náročnosť: malá</span><span>nové id <code>kulturny_dom</code></span></p>
+    </header>
+    <div class="hrany">
+      <section class="hrana" aria-label="Hrana A: Na parkete">
+        <h4>Hrana A · Na parkete</h4>
+        <ol class="sloty"><li class="slot starsi" title="Pohoršenie: posunie marker staršieho o 1 k súperovi"><span class="poz">0</span><span class="akc">Pohoršenie</span></li><li class="slot blok" aria-label="pozícia 1: blokovaná"><span class="poz">1</span><span>✕</span></li><li class="slot starsi" title="Pohoršenie: posunie marker staršieho o 1 k súperovi"><span class="poz">2</span><span class="akc">Pohoršenie</span></li><li class="slot zle" title="Poškodenie pečene: pečeň v každej Pitke — pri prahu Cirhóza"><span class="poz">3</span><span class="akc">Poškodenie pečene</span><span class="opak" aria-label="opakuje sa v každej Pitke" title="opakuje sa v každej Pitke">↻</span></li></ol>
+        <p>pohoršuješ starších — 2 Pohoršenia, ale pečeň v každej Pitke.</p>
+      </section>
+      <section class="hrana" aria-label="Hrana B: Pri stole so starými">
+        <h4>Hrana B · Pri stole so starými</h4>
+        <ol class="sloty"><li class="slot blok" aria-label="pozícia 0: blokovaná"><span class="poz">0</span><span>✕</span></li><li class="slot obrana" title="Viera: znižuje súperovo tuhé poškodenie"><span class="poz">1</span><span class="akc">Viera</span></li><li class="slot eko" title="Cigareta: cigareta v každej Pitke"><span class="poz">2</span><span class="akc">Cigareta</span><span class="opak" aria-label="opakuje sa v každej Pitke" title="opakuje sa v každej Pitke">↻</span></li><li class="slot utok" title="Rana: 1 tuhé poškodenie"><span class="poz">3</span><span class="akc">Rana</span></li></ol>
+        <p>slušný hosť — Viera, cigareta v každej Pitke a Rana: obrana s trochou útoku.</p>
+      </section>
+    </div>
+    <dl class="riadky">
+      <dt>Natočenie</dt><dd>Útočník, ktorý ide po strachu starších, si natočí Parket; kto chce bitku prežiť, Stôl.</dd>
+      <dt>Efekt</dt><dd><q class="efekt">Bitka: Pohoršenie smie posunúť ten istý marker aj viackrát.</q></dd>
+      <dt>Výklad</dt><dd><ul><li>Dnes §8.2 zakazuje posunúť ten istý marker Pohoršením dvakrát; tu to smie.</li><li>Na krajnú pozíciu sa Pohoršením stále dostať nedá.</li><li>Policajtka platí. Posuny sa vyhodnotia po jednom v poradí, ktoré zvolí majiteľ Pohoršení.</li></ul></dd>
+      <dt>Zážitok</dt><dd>Posedenie s dôchodcami. Sústredené Pohoršenia dostanú jedného staršieho zo sivej až do oranžovej zóny (Strach) za jedno kolo. Pohoršenie sa ráta bez ohľadu na výsledok, takže aj porazený tu niečo získa. <span class="mini">Pre: hráč, ktorý ide po strachu starších a bodoch z neho.</span></dd>
+      <dt>Pitky</dt><dd><b>1–4</b>. Horný odhad, keď obaja spoja svoju hranu najlepšou z 5 kariet v ruke: ⌀ 2,9 (2: 11 % · 3: 82 % · 4: 6 %). Kto chce krátku bitku, svoju hranu nespojí — 1 Pitka, ale bez akcií lokality.</dd>
+      <dt>Riziká</dt><dd><ul><li>Rýchly Strach otvára bitky o staršieho (potrebujú aspoň oranžovú zónu).</li><li>Parket v dlhej bitke dá pečeň v každej Pitke (1 za Pitku je bezpečné; s NA EX už nie).</li></ul></dd>
+      <dt>Implementácia</dt><dd>Vynechať kontrolu „ten istý marker dvakrát“ pri cieli <code>kulturny_dom</code> (motor, bot, klient); nové id.</dd>
+      <dt>Dáta pre tvorcu</dt><dd class="data"><span>ľavá (A): blokované [1] · akcie Pohoršenie×2, PoškodeniePečene×1 · povolené 0: Pohoršenie; 2: Pohoršenie; 3: PoškodeniePečene</span><span>pravá (B, zapísaná odzadu): blokované [3] · akcie Rana×1, Cigareta×1, Viera×1 · povolené 0: Rana; 1: Cigareta; 2: Viera</span></dd>
+    </dl>
+    <fieldset class="rozhodnutie">
+      <legend>Rozhodnutie k lokalite Kultúrny dom</legend>
+      <label><input type="radio" name="v-kulturny_dom" value="beriem"> beriem</label>
+      <label><input type="radio" name="v-kulturny_dom" value="upraviť"> beriem s úpravou</label>
+      <label><input type="radio" name="v-kulturny_dom" value="nie"> nie</label>
+      <label class="pozn">poznámka <input type="text" name="p-kulturny_dom" autocomplete="off"></label>
+    </fieldset>
+  </article>
+  <article class="lok" id="vinna_pivnica" data-n="1" data-narocnost="malá" data-povod="nová" aria-labelledby="h-vinna_pivnica">
+    <header class="lok-hlava">
+      <h3 id="h-vinna_pivnica"><span class="cislo-lok">13</span>Vínna pivnica</h3>
+      <p class="znamky"><span>nová</span><span>1 akcia na hranu</span><span>Pitka</span><span class="tag n-malá">náročnosť: malá</span><span>nové id <code>vinna_pivnica</code></span></p>
+    </header>
+    <div class="hrany">
+      <section class="hrana" aria-label="Hrana A: Degustácia">
+        <h4>Hrana A · Degustácia</h4>
+        <ol class="sloty"><li class="slot blok" aria-label="pozícia 0: blokovaná"><span class="poz">0</span><span>✕</span></li><li class="slot pitie" title="Poldeci: pri bitke otočí vypitý poldeci na plný; v každej Pitke pridá pečeň"><span class="poz">1</span><span class="akc">Poldeci</span><span class="opak" aria-label="opakuje sa v každej Pitke" title="opakuje sa v každej Pitke">↻</span></li><li class="slot blok" aria-label="pozícia 2: blokovaná"><span class="poz">2</span><span>✕</span></li><li class="slot blok" aria-label="pozícia 3: blokovaná"><span class="poz">3</span><span>✕</span></li></ol>
+        <p>pitie s rozumom — Poldeci doleje limit (v Pitke pridá pečeň).</p>
+      </section>
+      <section class="hrana" aria-label="Hrana B: Hádka pri sude">
+        <h4>Hrana B · Hádka pri sude</h4>
+        <ol class="sloty"><li class="slot blok" aria-label="pozícia 0: blokovaná"><span class="poz">0</span><span>✕</span></li><li class="slot blok" aria-label="pozícia 1: blokovaná"><span class="poz">1</span><span>✕</span></li><li class="slot utok" title="Pecka: 2 tuhé poškodenia"><span class="poz">2</span><span class="akc">Pecka</span></li><li class="slot blok" aria-label="pozícia 3: blokovaná"><span class="poz">3</span><span>✕</span></li></ol>
+        <p>rana — 2 tuhé.</p>
+      </section>
+    </div>
+    <dl class="riadky">
+      <dt>Natočenie</dt><dd>Krátka a ostrá bitka. Kto plánuje veľa NA EX, chce Degustáciu (doleje si).</dd>
+      <dt>Efekt</dt><dd><q class="efekt">Pitka: Každý hráč smie dať NA EX až dvakrát.</q></dd>
+      <dt>Výklad</dt><dd><ul><li>Dvakrát za Pitku; každé NA EX potrebuje plný poldeci a súper má na každé svoju odpoveď (§5).</li><li>Na kartu, na ktorej už poldeci leží, ďalší nejde (ako dnes).</li><li>Svokra a Vychovávateľka sa uplatnia pri každom NA EX.</li></ul></dd>
+      <dt>Zážitok</dt><dd>Ochutnávka: dve NA EX za Pitku. Prvé zruší súperovi aktívne akcie, druhé zdvojí tvoje neaktívne, alebo naopak. Bitka sa otáča do poslednej chvíle; vyhráva, kto si nechal plný poldeci navyše. <span class="mini">Pre: pijan a taktik NA EX; hráč s priazňou Alkoholika.</span></dd>
+      <dt>Pitky</dt><dd><b>1–2</b>. Horný odhad, keď obaja spoja svoju hranu najlepšou z 5 kariet v ruke: ⌀ 1,9 (1: 9 % · 2: 91 %). Kto chce krátku bitku, svoju hranu nespojí — 1 Pitka, ale bez akcií lokality.</dd>
+      <dt>Riziká</dt><dd><ul><li>Cirhózy: dve NA EX a Poldeci = 3 pečene za Pitku (prah 3).</li><li>Svokra: až 4 cigarety za Pitku.</li><li>Po Pivnici má hráč málo plných poldeci, v ďalšom kole nízky limit.</li></ul></dd>
+      <dt>Implementácia</dt><dd>Počítadlo NA EX za Pitku namiesto príznaku <code>naexPouzity</code>, bot, klient; nové id.</dd>
+      <dt>Dáta pre tvorcu</dt><dd class="data"><span>ľavá (A): blokované [0, 2, 3] · akcie Poldeci×1 · povolené 1: Poldeci</span><span>pravá (B, zapísaná odzadu): blokované [0, 2, 3] · akcie Pecka×1 · povolené 1: Pecka</span></dd>
+    </dl>
+    <fieldset class="rozhodnutie">
+      <legend>Rozhodnutie k lokalite Vínna pivnica</legend>
+      <label><input type="radio" name="v-vinna_pivnica" value="beriem"> beriem</label>
+      <label><input type="radio" name="v-vinna_pivnica" value="upraviť"> beriem s úpravou</label>
+      <label><input type="radio" name="v-vinna_pivnica" value="nie"> nie</label>
+      <label class="pozn">poznámka <input type="text" name="p-vinna_pivnica" autocomplete="off"></label>
+    </fieldset>
+  </article>
+  <article class="lok" id="druzstvo" data-n="3" data-narocnost="malá" data-povod="nová" aria-labelledby="h-druzstvo">
+    <header class="lok-hlava">
+      <h3 id="h-druzstvo"><span class="cislo-lok">14</span>Družstvo</h3>
+      <p class="znamky"><span>nová (JRD)</span><span>3 akcie na hranu</span><span>Zhromaždenie</span><span class="tag n-malá">náročnosť: malá</span><span>nové id <code>druzstvo</code></span></p>
+    </header>
+    <div class="hrany">
+      <section class="hrana" aria-label="Hrana A: Brigáda">
+        <h4>Hrana A · Brigáda</h4>
+        <ol class="sloty"><li class="slot dlhy" title="Robota: pri Exekútorovi odhodí 1 priznaný Dlh"><span class="poz">0</span><span class="akc">Robota</span></li><li class="slot pitie" title="Poldeci: pri bitke otočí vypitý poldeci na plný; v každej Pitke pridá pečeň"><span class="poz">1</span><span class="akc">Poldeci</span><span class="opak" aria-label="opakuje sa v každej Pitke" title="opakuje sa v každej Pitke">↻</span></li><li class="slot blok" aria-label="pozícia 2: blokovaná"><span class="poz">2</span><span>✕</span></li><li class="slot utok" title="Rana: 1 tuhé poškodenie"><span class="poz">3</span><span class="akc">Rana</span></li></ol>
+        <p>po robote poldeci — Robota odhodí priznaný Dlh, Poldeci doleje, Rana pridá tuhé.</p>
+      </section>
+      <section class="hrana" aria-label="Hrana B: Štrajk">
+        <h4>Hrana B · Štrajk</h4>
+        <ol class="sloty"><li class="slot blok" aria-label="pozícia 0: blokovaná"><span class="poz">0</span><span>✕</span></li><li class="slot mod" title="Odpor: zruší akciu karty na tej istej pozícii; Odpor proti Odporu = Vzbura"><span class="poz">1</span><span class="akc">Odpor</span></li><li class="slot starsi" title="Pohoršenie: posunie marker staršieho o 1 k súperovi"><span class="poz">2</span><span class="akc">Pohoršenie</span></li><li class="slot eko" title="Obmedzenie: súper dostane v každej Pitke o cigaretu menej"><span class="poz">3</span><span class="akc">Obmedzenie</span><span class="opak" aria-label="opakuje sa v každej Pitke" title="opakuje sa v každej Pitke">↻</span></li></ol>
+        <p>štrajk a sťažnosti — Odpor zruší akciu tvojej karty na pozícii 1 (hodí sa na vlastný Dlh či Poškodenie pečene, proti Odporu vznikne Vzbura), Pohoršenie a Obmedzenie.</p>
+      </section>
+    </div>
+    <dl class="riadky">
+      <dt>Natočenie</dt><dd>Brigáda je jednoduchá a poctivá; Štrajk je hádanka pre skúsených — kto má kartu s Odporom alebo zlou akciou na pozícii 1, získa z neho najviac.</dd>
+      <dt>Efekt</dt><dd><q class="efekt">Zhromaždenie: Karty s tagom Pracujúci nemíňajú limit vykladania.</q></dd>
+      <dt>Výklad</dt><dd><ul><li>Vyloženie Pracujúceho je ťah ako vždy, len neuberie z limitu; platí aj na súperovu stranu.</li><li>Pracujúci v sade: Finančná poradkyňa, Zámočník, Živnostník, Záhradkár. Hasič (Nástup: Pracujúci z odhadzovacieho do ruky) ich doženie.</li><li>Odpor na lokalite je modifikátor: zruší akciu karty na tej istej pozícii a nič sám nedáva (pozri otázku 3 o Pitkách).</li></ul></dd>
+      <dt>Zážitok</dt><dd>Pracujúci idú do línie zadarmo, takže hráč s nimi postaví dlhšiu líniu. Tag, ktorý inak nemá pravidlá, tu rozhoduje — hráči začnú brať Pracujúcich zo šenku vopred. <span class="mini">Pre: staviteľ balíčka; hráč, ktorý si drží Pracujúcich.</span></dd>
+      <dt>Pitky</dt><dd><b>1–4</b>. Horný odhad, keď obaja spoja svoju hranu najlepšou z 5 kariet v ruke: ⌀ 3,0 (2: 8 % · 3: 86 % · 4: 5 %). Kto chce krátku bitku, svoju hranu nespojí — 1 Pitka, ale bez akcií lokality.</dd>
+      <dt>Riziká</dt><dd><ul><li>Pracujúcich je málo (4 karty po 2 kópie) — často bez účinku.</li><li>Vzbura (Odpor proti Odporu) aktivuje celú hranu Štrajku a všetky neaktívne akcie karty.</li></ul></dd>
+      <dt>Implementácia</dt><dd>Výnimka z limitu podľa tagu (ako Kočovník v <code>bezLimituVykladania</code>); nové id.</dd>
+      <dt>Dáta pre tvorcu</dt><dd class="data"><span>ľavá (A): blokované [2] · akcie Robota×1, Poldeci×1, Rana×1 · povolené 0: Robota; 1: Poldeci; 3: Rana</span><span>pravá (B, zapísaná odzadu): blokované [3] · akcie Obmedzenie×1, Pohoršenie×1, Odpor×1 · povolené 0: Obmedzenie; 1: Pohoršenie; 2: Odpor</span></dd>
+    </dl>
+    <fieldset class="rozhodnutie">
+      <legend>Rozhodnutie k lokalite Družstvo</legend>
+      <label><input type="radio" name="v-druzstvo" value="beriem"> beriem</label>
+      <label><input type="radio" name="v-druzstvo" value="upraviť"> beriem s úpravou</label>
+      <label><input type="radio" name="v-druzstvo" value="nie"> nie</label>
+      <label class="pozn">poznámka <input type="text" name="p-druzstvo" autocomplete="off"></label>
+    </fieldset>
+  </article>
+
+  <h2>Spoločná práca pre vývoj</h2>
+  <ul class="prace">
+    <li>Vzorec Pitiek (1 + menší počet) sa práve implementuje — návrh s ním počíta. Ostatné nové pravidlá (šenok za cigarety, rastúca cena Dedičstva, Nástroj dáva akcie majiteľovi spojenej karty) tiež.</li>
+    <li>7 prerobených lokalít si nechá id; ich efekty sú viazané na id, preto každý nový efekt potrebuje kód (okrem Krčmy). Staré háčiky na odstránenie: <code>prahCirhozyBonus</code> (Ihrisko), <code>limitOverride</code> (Zastávka — zmena), <code>naexPaliAbstak</code> a <code>lesnaCesta</code> v <code>stavZavislosti</code>, <code>poveryNeplatia</code>, <code>kartaZaVieru</code>, <code>dlhovMenej</code>, Benzínka a <code>lokalitaPrepadne</code>; konštanty v <code>KONSTANTY.EFEKT</code>.</li>
+    <li>7 nových id do <code>REGISTER</code> (kým nie sú v kóde, sú <code>manual</code> — hra ich len pripomenie, čo pri efektoch meniacich pravidlá nestačí; zverejniť až po implementácii).</li>
+    <li>Offline protihráč (<code>bot.ts</code>) a textový klient agentov musia poznať zákazy (Kostol, Benzínka, Most) a nové voľby (Zberný dvor, Cintorín, Kultúrny dom, Vínna pivnica).</li>
+    <li>PRAVIDLÁ §14 (výklad), stránka Pravidlá a glosár na webe, inštrukcie playtesterov — po schválení vypíšem cez <code>A zmienky</code>.</li>
+    <li>Ilustrácie 7 nových lokalít (Leonardo.Ai, do 3 kôl po 2 obrázkoch na kartu) — až po schválení.</li>
+  </ul>
+
+  <h2>Ako to overíme</h2>
+  <ul class="prace">
+    <li>Po schválení: návrhy do tvorcu (záloha, <code>A uloz</code>, <code>A overit</code>), Simulácia línií pri každej lokalite a <code>A sila</code> (meria akcie a spoje, efekty nie).</li>
+    <li>Playtest na dlhej hre (11 lokalít): Pitky na bitku a za partiu, dĺžka kola, koľkokrát niekto umŕtvil hranu, kto obsadil ktorú hranu (obranca, útočník, podstrčením), víťaz podľa roly.</li>
+    <li>Zvlášť sledovať: Cirhózy v Krčme a Pivnici, exekúcie na Obecnom úrade, „prehru naschvál“ na Cintoríne, Absťáky po Kostole a Benzínke.</li>
+  </ul>
+
+  <h2 id="otazky">Otázky pre Michala</h2>
+  <ol class="otazky">
+    <li><b>Most.</b> „Len na jednu stranu“ som navrhol ako <strong>len na vlastnú stranu</strong> (bez podstrkovania, malá zmena). Alebo si myslel <strong>spoločný breh</strong> — útočník určí jednu stranu a obaja vykladajú len na ňu (veľká zmena motora a vlastný vzorec Pitiek)?</li>
+    <li><b>Pevné rozloženie.</b> Má mať každá lokalita <strong>jeden variant</strong> (akcie pripnuté na pozície)? Hráči si ju naučia a tlačí sa jedna karta. Dnes sa variant losuje (napr. Krčma mala 12 variantov).</li>
+    <li><b>Odpor a Pitky.</b> Rozpracovaný kód (<code>aktivneStredu</code>) ráta do Pitiek aj <strong>Odpor na lokalite</strong> v páre a pri Vzbure celú hranu. Je to tak správne? Týka sa to Družstva (Štrajk).</li>
+    <li><b>Hrana bez spoja.</b> Nástroj netvorí spoj s lokalitou a limit nemíňa. Kto ho vyloží ako prvú kartu pri lokalite (aj súperovi), hranu <strong>zadarmo umŕtvi</strong> a bitka má 1 Pitku. Obmedziť to (napr. prvá karta pri lokalite nesmie byť Nástroj), alebo je to legitímna obrana?</li>
+    <li><b>Abstinencia.</b> Kostol (bez pitia) a Benzínka (bez fajčenia) ubúdajú neresti, takže hrozí <strong>Absťák</strong> na konci kola. Chceš to ako tému, alebo sa má v takom kole Absťák neudeľovať?</li>
+    <li><b>Obecný úrad.</b> Prah Exekútora <strong>−4</strong> (z 10 na 6) môže na jednej lokalite ukončiť hru. Ponechať, zmierniť na −3, alebo namiesto prehry iný trest?</li>
+    <li><b>Krčma.</b> Efekt Krčmy (povinné NA EX) je jediný, ktorý som nechal — playtesteri ho chvália. Súhlasíš, alebo ho tiež prerobiť?</li>
+    <li><b>Lesná cesta.</b> Rátať do bonusu aj <strong>Kočovníka</strong> (na súperovu stranu ide bez limitu)? Navrhujem rátať — je to jeho rola.</li>
+    <li><b>Trofej a útecha.</b> Chceš lokality s účinkom <strong>po ovládnutí</strong> (Jednota — nabaľovanie víťaza) a <strong>pri prehre</strong> (Cintorín — útecha)? Ak áno, môžu pribudnúť ďalšie.</li>
+    <li><b>Názvy a dĺžka.</b> Sedia názvy nových lokalít (Most, Cintorín, Obecný úrad, Jednota, Kultúrny dom, Vínna pivnica, Družstvo) a mená hrán? A je v poriadku odhad ⌀ asi 2,4 Pitky na bitku o lokalitu (playtest 20261018-185541 mal 24 Pitiek za partiu a bolo to veľa)?</li>
+  </ol>
+</main>
+
+<div class="volba" role="region" aria-label="Tvoja voľba">
+  <div class="volba-in">
+    <p class="volba-text" id="volba-text" aria-live="polite">Zatiaľ nič nevybraté.</p>
+    <button type="button" class="tl hlavne" id="ukaz">Zobraziť voľbu</button>
+    <div id="vystup-obal" hidden>
+      <label for="vystup" class="mini">Voľba na skopírovanie</label>
+      <textarea id="vystup" readonly></textarea>
+      <button type="button" class="tl" id="kopiruj">Kopírovať</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var LOK = [{"id":"krcma","nazov":"Krčma"},{"id":"kostol","nazov":"Kostol"},{"id":"benzinka","nazov":"Benzínka"},{"id":"zastavka","nazov":"Zastávka"},{"id":"lesna_cesta","nazov":"Lesná cesta"},{"id":"most","nazov":"Most"},{"id":"ihrisko","nazov":"Ihrisko"},{"id":"zberny_dvor","nazov":"Zberný dvor"},{"id":"cintorin","nazov":"Cintorín"},{"id":"obecny_urad","nazov":"Obecný úrad"},{"id":"jednota","nazov":"Jednota"},{"id":"kulturny_dom","nazov":"Kultúrny dom"},{"id":"vinna_pivnica","nazov":"Vínna pivnica"},{"id":"druzstvo","nazov":"Družstvo"}];
+  var filtre = Array.prototype.slice.call(document.querySelectorAll("[data-filter]"));
+  var riadky = Array.prototype.slice.call(document.querySelectorAll("#tabulka tbody tr"));
+  var clanky = Array.prototype.slice.call(document.querySelectorAll("article.lok"));
+
+  function vybrane(skupina) {
+    return filtre.filter(function (f) { return f.dataset.filter === skupina && f.checked; }).map(function (f) { return f.value; });
+  }
+  function prejde(el) {
+    return ["n", "narocnost", "povod"].every(function (g) {
+      var v = vybrane(g);
+      return v.length === 0 || v.indexOf(el.dataset[g]) !== -1;
+    });
+  }
+  function filtruj() {
+    var n = 0;
+    riadky.forEach(function (r) { var ok = prejde(r); r.hidden = !ok; if (ok) n++; });
+    clanky.forEach(function (c) { c.hidden = !prejde(c); });
+    document.getElementById("filtre-zhrnutie").textContent = "Zobrazených " + n + " zo " + riadky.length + ".";
+  }
+  filtre.forEach(function (f) { f.addEventListener("change", filtruj); });
+
+  // Zoradenie tabuľky
+  var poradieNarocnosti = { "dáta": 0, "malá": 1, "stredná": 2 };
+  Array.prototype.forEach.call(document.querySelectorAll("#tabulka thead th[data-sort]"), function (th) {
+    th.querySelector("button").addEventListener("click", function () {
+      var kluc = th.dataset.sort;
+      var smer = th.getAttribute("aria-sort") === "ascending" ? "descending" : "ascending";
+      Array.prototype.forEach.call(document.querySelectorAll("#tabulka thead th"), function (x) { x.removeAttribute("aria-sort"); });
+      th.setAttribute("aria-sort", smer);
+      var hodnota = function (r) {
+        var v = r.dataset[kluc];
+        if (kluc === "nazov") return v;
+        if (kluc === "narocnost") return poradieNarocnosti[v];
+        return parseFloat(String(v).replace(",", "."));
+      };
+      var tb = document.querySelector("#tabulka tbody");
+      riadky.slice().sort(function (a, b) {
+        var x = hodnota(a), y = hodnota(b);
+        var c = typeof x === "string" ? x.localeCompare(y, "sk") : x - y;
+        return smer === "ascending" ? c : -c;
+      }).forEach(function (r) { tb.appendChild(r); });
+    });
+  });
+
+  // Voľba
+  function zhrn() {
+    var poc = { "beriem": 0, "upraviť": 0, "nie": 0 };
+    var riadkyVolby = [];
+    LOK.forEach(function (l) {
+      var r = document.querySelector('input[name="v-' + l.id + '"]:checked');
+      var p = document.querySelector('input[name="p-' + l.id + '"]').value.trim();
+      var cl = document.getElementById(l.id);
+      cl.classList.toggle("vybrana", !!r && r.value === "beriem");
+      cl.classList.toggle("uprava", !!r && r.value === "upraviť");
+      cl.classList.toggle("zamietnuta", !!r && r.value === "nie");
+      if (r) poc[r.value]++;
+      if (r || p) riadkyVolby.push(l.nazov + ": " + (r ? (r.value === "upraviť" ? "beriem s úpravou" : r.value) : "bez rozhodnutia") + (p ? " — " + p : ""));
+    });
+    var spolu = poc["beriem"] + poc["upraviť"] + poc["nie"];
+    document.getElementById("volba-text").innerHTML = spolu === 0 ? "Zatiaľ nič nevybraté." :
+      "Rozhodnuté <b>" + spolu + " zo 14</b>: beriem " + poc["beriem"] + ", s úpravou " + poc["upraviť"] + ", nie " + poc["nie"] + ".";
+    document.getElementById("vystup").value = riadkyVolby.length ? "Lokality — voľba Michala:\n" + riadkyVolby.join("\n") : "";
+  }
+  document.addEventListener("change", function (e) { if (e.target.name && /^[vp]-/.test(e.target.name)) zhrn(); });
+  document.addEventListener("input", function (e) { if (e.target.name && /^p-/.test(e.target.name)) zhrn(); });
+  document.getElementById("ukaz").addEventListener("click", function () {
+    var o = document.getElementById("vystup-obal");
+    o.hidden = !o.hidden;
+    this.textContent = o.hidden ? "Zobraziť voľbu" : "Skryť voľbu";
+    zhrn();
+  });
+  document.getElementById("kopiruj").addEventListener("click", function () {
+    var t = document.getElementById("vystup");
+    t.select();
+    var tl = this;
+    var hotovo = function () { tl.textContent = "Skopírované"; setTimeout(function () { tl.textContent = "Kopírovať"; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(t.value).then(hotovo, function () { try { document.execCommand("copy"); hotovo(); } catch (e) {} });
+    } else { try { document.execCommand("copy"); hotovo(); } catch (e) {} }
+  });
+})();
+</script>
+</body>
+</html>

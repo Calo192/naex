@@ -152,7 +152,8 @@ function overStranu(v: unknown, pole: string): StranaNavrhu {
     const kluce = zoz.map((k) => str(k, 64, `${pole}.povolene`));
     if (kluce.length > 0) povolene[poz] = kluce;
   }
-  return { blokovane: pozicie(s.blokovane ?? [], `${pole}.blokovane`), akcie, povolene };
+  const kraj = typeof s.kraj === "string" ? str(s.kraj, 40, `${pole}.kraj`).trim() : "";
+  return { blokovane: pozicie(s.blokovane ?? [], `${pole}.blokovane`), akcie, povolene, ...(kraj === "" ? {} : { kraj }) };
 }
 
 export function overNavrh(v: Record<string, unknown>, id: string, teraz: number): KartaNavrh {

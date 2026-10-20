@@ -10,6 +10,7 @@ import {
   apply,
   evaluateLine,
   legalCommands,
+  lineState,
   loadGameData,
   naTahu,
   poskodenieBitky,
@@ -40,12 +41,8 @@ describe("poskodenieBitky z verejného pohľadu", () => {
         predtymBezPoskodenia = b === null || b.damage === null;
         if (prave && b !== null && b.krok === "prebytok" && b.damage !== null) {
           const view = viewFor(data, state, 0);
-          const linia = evaluateLine(data, {
-            // V bitke o staršieho leží v strede karta staršieho (Michal 2026-10-12).
-            lokalita: view.ciel?.lokalita ?? null,
-            lokalitaOtocena: view.lokalitaOtocena,
-            strany: view.strany,
-          });
+          // lineState ako klient: karta v strede (aj starší) a Pasca v Dedičstve.
+          const linia = evaluateLine(data, lineState(view));
           const odhad = poskodenieBitky(data, view, linia.sums, [abstakyVRuke(state, 0), abstakyVRuke(state, 1)]);
           expect(odhad).toEqual(b.damage);
           porovnane++;

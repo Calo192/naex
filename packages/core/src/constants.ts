@@ -3,16 +3,20 @@
 // Menia sa TU, kód sa meniť nemusí.
 
 export const KONSTANTY = {
-  /** Štartovacie vybavenie hráča (PRAVIDLA §11). */
-  START_POLDECI: 2,
+  /** Štartovacie vybavenie hráča (PRAVIDLA §11; Michal 2026-10-19: 3 poldeci, 3 cigarety). */
+  START_POLDECI: 3,
   /**
-   * Veľkosť ruky (rozhodnutie Michala 2026-10-11): štartovacie karty sa
-   * zamiešajú do doberacieho balíčka, hráč si dobere toľkoto a na začiatku
-   * každého kola si ruku doplní na túto veľkosť. Kliatby idú do
-   * odhadzovacieho balíčka, nie do ruky.
+   * Štartovacia ruka (rozhodnutie Michala 2026-10-11): štartovacie karty sa
+   * zamiešajú do doberacieho balíčka a hráč si dobere toľkoto. Kliatby idú
+   * do odhadzovacieho balíčka, nie do ruky.
    */
   VELKOST_RUKY: 5,
-  START_CIGARETY: 1,
+  /**
+   * Po každej bitke si hráč dobere toľkoto kariet (Michal 2026-10-19) —
+   * namiesto doplnenia ruky na 5. Limit ruky nie je.
+   */
+  KARTY_PO_BITKE: 2,
+  START_CIGARETY: 3,
 
   /**
    * Štartovací balíček každého hráča (Michal 2026-10-18). Tieto štyri druhy
@@ -40,19 +44,27 @@ export const KONSTANTY = {
    */
   PRAH_CIRHOZY_ZAKLAD: 3,
   /**
-   * Prah Dlhu: akcie Hazard plnia zadĺženie a kartu Dlh hráč dostane pri
+   * Prah Dlhu: akcie Dlh plnia zadĺženie a kartu Dlh hráč dostane pri
    * tomto prahu. Michal 2026-10-18 znížil z 2 na 1 — Dlh je základná kliatba
-   * hry a v playteste nevznikol ani jeden: každý aktívny Hazard v Pitke = Dlh.
+   * hry a v playteste nevznikol ani jeden: každá aktívna akcia Dlh v Pitke = karta Dlh.
    */
   PRAH_DLHU: 1,
   /**
-   * Šenok (Michal 2026-10-18): hráči berú, koľko si môžu dovoliť — 1 karta za
-   * cigaretu, alebo 2 karty za plný poldeci (otočí sa na vypitý). Bez karty zadarmo.
+   * Šenok (Michal 2026-10-19): hráč na ťahu berie 1 kartu za 1 cigaretu, alebo
+   * 2 karty za 3 cigarety; poldeci sa v šenku neplatí. Index = počet kariet.
    */
-  SENOK_KARTY_ZA_POLDECI: 2,
-  SENOK_CIGARIET_ZA_KARTU: 1,
-  /** Vyloženie Nástroja do Dedičstva stojí fyzické cigarety (Michal 2026-10-18). */
-  CENA_DEDICSTVA: 2,
+  CENA_SENKU: [0, 1, 3] as readonly number[],
+  /**
+   * Stavba šenku (Michal 2026-10-19): v každom kroku hráč dá z balíčka stavby
+   * toľkoto kariet do šenku a toľkoto naspodok, zvyšok podá súperovi.
+   */
+  STAVBA_DO_SENKU: 2,
+  STAVBA_NASPODOK: 2,
+  /**
+   * Dedičstvo (Michal 2026-10-19): cena rastie spoločne pre oboch hráčov —
+   * prvý Nástroj v hre stojí 1 cigaretu, druhý 2, tretí 3…
+   */
+  CENA_DEDICSTVA_ZAKLAD: 1,
   /**
    * Priazeň (Michal 2026-10-16): sila 1 / 2 / 3 podľa zóny markera a účinok
    * dvojnásobný — každá priazeň pridáva NASOBOK_PRIAZNE × sila. Má vyvážiť
@@ -62,12 +74,6 @@ export const KONSTANTY = {
   PRAH_EXEKUTORA_ZAKLAD: 10, // + 2 × priazeň Exekútora
   HODNOTA_VIERY_ZAKLAD: 1, // + priazeň Veriaceho
   PRESKUMANIE: 5,
-  /**
-   * Limit ruky na konci kola (+ priazeň Zberateľa). Michal 2026-10-12: ruky
-   * v playteste 20261012-055944 narástli na 10–16 kariet; nadbytok hráč
-   * odhodí do odhadzovacieho balíčka podľa vlastného výberu.
-   */
-  LIMIT_RUKY_ZAKLAD: 6,
 
   /** Prehra pri poklese balíčka pod túto hodnotu (PRAVIDLA §1). */
   MIN_VELKOST_BALICKA: 5,
@@ -81,14 +87,17 @@ export const KONSTANTY = {
     AUTOBUSAR_ABSTAKY: 1,
     FARAR_POVERY: 2,
     VETERINAR_CIRHOZA: 2,
-    ZBERNY_DVOR_DLHY: 1,
+    LESNA_CESTA_MAX: 2,
+    IHRISKO_TUHE: 2,
+    URAD_PRAH_EXEKUTORA: 4,
+    URAD_ROBOTA: 2,
+    ZBERNY_DVOR_CENA: 1,
     POSTARKA_KARTY: 2,
     POSTARKA_DLHY: 1,
     PODVODNIK_CIGARETY: 2,
     SVOKRA_CIGARETY: 2,
     VDOVA_DLHY: 2,
     STRYNA_KLIATBY: 1,
-    VIZIA_KLIATBY: 2,
     NEALKO_PRAH_CIRHOZY: 2,
     SVATY_TEXT_VIERA: 1,
     PUSKA_PREBYTOK: 2,
@@ -97,16 +106,9 @@ export const KONSTANTY = {
     AUTOMAT_PREHRA_DLHY: 1,
   },
 
-  /**
-   * „Ešte jednu!“ (Michal 2026-10-19): bitka má jednu Pitku; kto po nej
-   * prehráva, smie vypiť plný poldeci a objednať ďalšie Zhromaždenie a Pitku —
-   * najviac toľkokrát za bitku.
-   */
-  RUNDY_NAVYSE: 2,
-
   /** Stokársky barter: cigarety → nový plný poldeci (PRAVIDLA §5); Lakomec zlacní. */
   BARTER_CENA: 5,
-  /** Fyzické cigarety → otočenie vypitého poldeci (PRAVIDLA §5). */
+  /** Cigarety → otočenie vypitého poldeci (PRAVIDLA §5). */
   REFILL_CENA: 2,
   /**
    * Nové kolo, nový poldeci (Michal 2026-10-16, playtest 20261016-155120):
@@ -117,7 +119,7 @@ export const KONSTANTY = {
 
   /**
    * Podmienka „zvyšné cigarety“ ráta kusy po trojiciach (Michal 2026-10-16):
-   * cigarety sa hromadia z Cigaretiek a sú hlavne mena, nie zdroj bodov.
+   * cigarety sa hromadia z akcií Cigareta a sú hlavne mena, nie zdroj bodov.
    */
   CIGARIET_NA_KUS: 3,
 

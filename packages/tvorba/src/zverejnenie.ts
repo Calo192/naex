@@ -29,6 +29,7 @@ function stranaJson(s: StranaNavrhu): Record<string, unknown> {
     if (z !== undefined && z.length > 0 && !s.blokovane.includes(p)) allowed[String(p)] = [...z];
   }
   if (Object.keys(allowed).length > 0) out.allowed = allowed;
+  if (s.kraj !== undefined && s.kraj.trim() !== "") out.name = s.kraj.trim();
   return out;
 }
 

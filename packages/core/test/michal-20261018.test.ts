@@ -101,7 +101,7 @@ describe("priznanie Dlhu dá kartu", () => {
     const { s, dlh } = sDlhom([vrch], []);
     const po = apply(data, s, { type: "place", uid: dlh.uid, target: "priznanie" }, 0);
     expect(po.state.hraci[0].ruka.map((k) => k.uid)).toContain(vrch.uid);
-    expect(po.events.some((e) => e.type === "log" && e.text.includes("priznáva Dlh a doberá si kartu"))).toBe(true);
+    expect(po.events.some((e) => e.type === "log" && e.text.includes("priznáva kartu Dlh a doberá si kartu"))).toBe(true);
   });
 
   it("aj keď je doberací prázdny — zamieša sa odhadzovací", () => {

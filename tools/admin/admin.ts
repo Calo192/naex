@@ -27,6 +27,7 @@
 // Vzhľad
 //   vzhlad                        akcie, kľúčové slová, kategórie, predvolené nastavenia
 //   akcia <kluc> [--nazov T] [--popis T]       zobrazí alebo upraví akciu
+//   slovo <slovo> [--popis T]     zobrazí alebo upraví vysvetlenie kľúčového slova (tooltip)
 //   ikona <kluc> <subor.svg>      nová SVG ikona akcie
 //   bodovacie                     bodovacie karty starších a ikony bodovania
 // Ilustrácie (generujú sa cez Leonardo.Ai API, kľúč NAEX_LEONARDO_KEY v .env)
@@ -577,6 +578,22 @@ async function main(): Promise<void> {
       console.log(`Záloha: ${zalohuj(o, `pred upravou akcie ${a.kluc}`)}`);
       const nova = await api<AkciaDef>("PUT", `/admin/akcie/${encodeURIComponent(a.kluc)}`, { ...a, nazov: nazov ?? a.nazov, popis: popis ?? a.popis });
       console.log(`Akcia ${nova.kluc}: ${nova.nazov} — ${nova.popis}`);
+      break;
+    }
+
+    case "slovo": {
+      const slovo = arg[0];
+      const o = await obsah();
+      const k = o.klucoveSlova.find((x) => x.slovo === slovo);
+      if (k === undefined) throw new Error(`Kľúčové slovo „${slovo ?? ""}“ neexistuje (pozri vzhlad).`);
+      const popis = hodnota("--popis");
+      if (popis === undefined) {
+        console.log(JSON.stringify(k, null, 2));
+        break;
+      }
+      console.log(`Záloha: ${zalohuj(o, `pred upravou slova ${k.slovo}`)}`);
+      await api("PUT", "/admin/klucove-slova", o.klucoveSlova.map((x) => (x.slovo === k.slovo ? { ...x, popis } : x)));
+      console.log(`Kľúčové slovo ${k.slovo}: ${popis}`);
       break;
     }
 

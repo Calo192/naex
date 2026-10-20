@@ -21,9 +21,9 @@ describe("cieleVykladania", () => {
     expect(cieleVykladania(data, prazdne, 0, karta("pijan"), 0)).toEqual([]);
   });
 
-  it("Kočovník do súperovej partie limit nemíňa", () => {
+  it("Kočovník míňa limit ako každá karta (Michal 2026-10-19)", () => {
     expect(cieleVykladania(data, prazdne, 0, karta("kocovnik"), 1)).toEqual(["vlastna", "superova"]);
-    expect(cieleVykladania(data, prazdne, 0, karta("kocovnik"), 0)).toEqual(["superova"]);
+    expect(cieleVykladania(data, prazdne, 0, karta("kocovnik"), 0)).toEqual([]);
   });
 
   it("Kliatbu možno priznať aj pri vyčerpanom limite", () => {

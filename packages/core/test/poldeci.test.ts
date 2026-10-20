@@ -34,12 +34,13 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     lokalitaPrepadne: false,
     spalit: [],
     vesticaHotova: true,
-    limitHotovy: [false, false],
+    zberatelHotovy: [false, false],
+    zberatelPonuka: [[], []],
     ...b,
   };
 }
 
-/** Stav v poslednom kroku bitky (limit ruky) — príkaz odhod posunie hru do ďalšieho kola. */
+/** Stav pri Liečbe na konci bitky — skipLiecba posunie hru do ďalšieho kola. */
 function koniecBitky(poldeci: readonly [readonly [number, number], readonly [number, number]]): { s: GameState; ruka: CardInstance[] } {
   const s0 = setupGame(data, 21);
   const ruka = Array.from({ length: 8 }, () => inst("pijan"));
@@ -53,7 +54,7 @@ function koniecBitky(poldeci: readonly [readonly [number, number], readonly [num
     ],
     ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]!, elderId: null },
     lokalityVHre: s0.lokalityVHre.slice(1),
-    bitkaStav: bitka({ krok: "limitRuky", caka: 0, limitHotovy: [false, true] }),
+    bitkaStav: bitka({ krok: "liecba", caka: 0, liecbaHotova: [false, true] }),
   };
   return { s, ruka };
 }
@@ -61,8 +62,8 @@ function koniecBitky(poldeci: readonly [readonly [number, number], readonly [num
 describe("A1: nové kolo, jeden poldeci späť", () => {
   it("na začiatku kola sa každému doleje najviac POLDECI_NA_ZACIATKU_KOLA vypitých", () => {
     expect(KONSTANTY.POLDECI_NA_ZACIATKU_KOLA).toBe(1);
-    const { s, ruka } = koniecBitky([[0, 2], [2, 0]]);
-    const r = apply(data, s, { type: "odhod", uids: [ruka[0]!.uid, ruka[1]!.uid] }, 0);
+    const { s } = koniecBitky([[0, 2], [2, 0]]);
+    const r = apply(data, s, { type: "skipLiecba" }, 0);
     expect(r.state.kolo).toBe(s.kolo + 1);
     // Hráč 1 mal oba vypité → jeden plný. Hráč 2 nemal čo doliať.
     expect([r.state.hraci[0].poldeciPlne, r.state.hraci[0].poldeciVypite]).toEqual([1, 1]);
@@ -72,9 +73,9 @@ describe("A1: nové kolo, jeden poldeci späť", () => {
   });
 
   it("dolieva sa len vypitý poldeci — nový z ničoho nevznikne", () => {
-    const { s, ruka } = koniecBitky([[1, 1], [0, 0]]);
+    const { s } = koniecBitky([[1, 1], [0, 0]]);
     // Hráč 2 má 0 plných a 0 vypitých (napr. po strate poldeci) — nič nedostane.
-    const r = apply(data, s, { type: "odhod", uids: [ruka[0]!.uid, ruka[1]!.uid] }, 0);
+    const r = apply(data, s, { type: "skipLiecba" }, 0);
     expect([r.state.hraci[0].poldeciPlne, r.state.hraci[0].poldeciVypite]).toEqual([2, 0]);
     expect([r.state.hraci[1].poldeciPlne, r.state.hraci[1].poldeciVypite]).toEqual([0, 0]);
   });
@@ -94,11 +95,12 @@ describe("E1: limit vykladania pred a po ťahu", () => {
     expect(limitZhromazdenia(s, 0, -5)).toBe(2);
   });
 
-  it("Zastávka prepíše limit na 2, Vínko v Dedičstve pridá 1", () => {
+  it("Zastávka: spoločný limit = súčet limitov oboch; Vínko v Dedičstve pridá 1", () => {
     const s0 = setupGame(data, 23);
     const zastavka: GameState = { ...s0, ciel: { typ: "lokalita", lokalita: inst("zastavka"), elderId: null } };
-    expect(limitZhromazdenia(zastavka, 0)).toBe(2);
-    expect(limitZhromazdenia(zastavka, 0, -1)).toBe(2);
+    const jeden = KONSTANTY.START_POLDECI + 1;
+    expect(limitZhromazdenia(zastavka, 0)).toBe(2 * jeden);
+    expect(limitZhromazdenia(zastavka, 0, -1)).toBe(2 * jeden - 1);
     const vinko: GameState = { ...s0, hraci: [{ ...s0.hraci[0], dedicstvo: [inst("vinko")] }, s0.hraci[1]] };
     expect(limitZhromazdenia(vinko, 0)).toBe(KONSTANTY.START_POLDECI + 2);
   });

@@ -9,8 +9,8 @@ import type { PlayerId } from "./types.ts";
 import type { GameData } from "./data.ts";
 import type { VerejnyHrac, VerejnyStav } from "./effects.ts";
 import type { PlayerState } from "./player.ts";
-import { bitkaMody, jeCielLokalita } from "./effects.ts";
-import { abstakyVBitke, verejneAbstaky } from "./engine.ts";
+import { bitkaMody } from "./effects.ts";
+import { abstakyVBitke, manzelkyHraca, verejneAbstaky } from "./engine.ts";
 
 type HracZavislosti = VerejnyHrac & Pick<PlayerState, "nerestiTotoKolo" | "nerestiMinuleKolo">;
 
@@ -23,7 +23,7 @@ export interface StavPreZavislost extends VerejnyStav {
 /**
  * Čo sa stane na konci kola, keby skončilo teraz:
  *  - zaklad: prvé kolo len nastaví základ,
- *  - ziska:  menej nerestí než minule → +1 Absťák,
+ *  - ziska:  menej nerestí než minule (+ Milujúce manželky) → +1 Absťák,
  *  - zbavi:  viac nerestí než minule a má Absťák → −1 Absťák,
  *  - nic:    rovnako, alebo viac, ale Absťák nemá.
  */
@@ -40,13 +40,13 @@ export interface StavZavislosti {
   /** Z toho NA EX na stole, ešte nezapočítané. */
   readonly naexNaStole: number;
   readonly minule: number;
+  /** Odhalené Milujúce manželky: Absťák príde aj pri toľko nerestiach navyše oproti minulému kolu. */
+  readonly manzelky: number;
   readonly vyhlad: VyhladZavislosti;
   /** Koľko nerestí ešte chýba, aby Absťák nepribudol (pri „ziska“), inak 0. */
   readonly doBezpecia: number;
   /** Koľko nerestí ešte chýba, aby jeden Absťák odišiel (keď nejaký má), inak 0. */
   readonly doZbavenia: number;
-  /** Lesná cesta je cieľ kola: NA EX v Pitke zahodí Absťák hneď. */
-  readonly lesnaCesta: boolean;
 }
 
 export function stavZavislosti(data: GameData, s: StavPreZavislost, p: PlayerId): StavZavislosti {
@@ -56,8 +56,11 @@ export function stavZavislosti(data: GameData, s: StavPreZavislost, p: PlayerId)
   const teraz = hrac.nerestiTotoKolo + naexNaStole;
   const minule = hrac.nerestiMinuleKolo;
   const abstaky = verejneAbstaky(s, p);
+  // Milujúca manželka: Absťák aj pri rovnosti (každá ďalšia o 1 viac); zbavenie sa nemení.
+  const manzelky = manzelkyHraca(s, p);
+  const latka = minule + manzelky;
   const vyhlad: VyhladZavislosti =
-    s.kolo <= 1 ? "zaklad" : teraz < minule ? "ziska" : teraz > minule && abstaky > 0 ? "zbavi" : "nic";
+    s.kolo <= 1 ? "zaklad" : teraz < latka ? "ziska" : teraz > minule && abstaky > 0 ? "zbavi" : "nic";
   return {
     abstaky,
     ubera: abstakyVBitke(data, s, p, 0),
@@ -65,9 +68,9 @@ export function stavZavislosti(data: GameData, s: StavPreZavislost, p: PlayerId)
     teraz,
     naexNaStole,
     minule,
+    manzelky,
     vyhlad,
-    doBezpecia: vyhlad === "ziska" ? minule - teraz : 0,
+    doBezpecia: vyhlad === "ziska" ? latka - teraz : 0,
     doZbavenia: s.kolo > 1 && abstaky > 0 && teraz <= minule ? minule + 1 - teraz : 0,
-    lesnaCesta: jeCielLokalita(s, "lesna_cesta"),
   };
 }

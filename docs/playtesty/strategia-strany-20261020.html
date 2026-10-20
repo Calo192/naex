@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stratégia strany-20261020 — strany línie a prevaha na strane — NA EX!</title>
+<style>
+  :root {
+    --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #dccdb3;
+    --text: #2a2016; --tlmeny: #6b5b45; --slaby: #7d6d55;
+    --akcent: #9a5f0c; --cervena: #a83c28; --zelena: #3a7533; --modra: #276f7a;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 system-ui, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 1040px; margin: 0 auto; padding: 32px 16px 100px; }
+  h1, h2, h3 { font-family: Georgia, serif; line-height: 1.2; }
+  h1 { font-size: clamp(1.7rem, 4vw, 2.3rem); margin: 0 0 8px; }
+  h2 { font-size: 1.35rem; margin: 44px 0 12px; }
+  h3 { font-size: 1.08rem; margin: 0 0 6px; }
+  .podnadpis { color: var(--tlmeny); margin: 0 0 20px; max-width: 78ch; }
+  a { color: var(--akcent); }
+  code { font-size: 0.88em; background: var(--plocha-2); padding: 1px 5px; border-radius: 5px; }
+  .verdikt { border: 1px solid color-mix(in srgb, var(--akcent) 55%, transparent); background: color-mix(in srgb, var(--akcent) 8%, var(--plocha));
+    border-radius: 14px; padding: 14px 18px; margin: 18px 0; }
+  .verdikt p { margin: 6px 0; }
+  .stitok { display: inline-block; font: 700 0.78rem/1 system-ui, sans-serif; letter-spacing: 0.06em; text-transform: uppercase;
+    color: #fff; background: var(--akcent); border-radius: 999px; padding: 5px 12px; margin-bottom: 8px; }
+  .cisla { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; margin: 16px 0; }
+  .cislo { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; }
+  .cislo b { display: block; font: 700 1.45rem/1.1 Georgia, serif; color: var(--akcent); }
+  .cislo span { color: var(--tlmeny); font-size: 0.88rem; display: block; margin-top: 4px; }
+  .tab { overflow-x: auto; background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; margin: 10px 0; }
+  .tab table { width: 100%; border-collapse: collapse; font-size: 0.86rem; min-width: 720px; }
+  .tab th, .tab td { padding: 7px 9px; border-bottom: 1px solid var(--okraj); text-align: left; vertical-align: top; }
+  .tab tr:last-child td { border-bottom: 0; }
+  .tab th { color: var(--slaby); font-weight: 600; font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .tab td.n { font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
+  .tab tr.vych td { background: color-mix(in srgb, var(--modra) 9%, transparent); }
+  .zav { display: inline-block; border-radius: 999px; padding: 1px 9px; font-size: 0.78rem; font-weight: 700; }
+  .zav.vys { background: color-mix(in srgb, var(--cervena) 18%, transparent); color: var(--cervena); }
+  .zav.str { background: color-mix(in srgb, var(--akcent) 18%, transparent); color: var(--akcent); }
+  .zav.niz { background: color-mix(in srgb, var(--zelena) 18%, transparent); color: var(--zelena); }
+  .graf { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 12px 14px; margin: 10px 0; }
+  .riadok { display: grid; grid-template-columns: 170px 1fr; gap: 8px; align-items: center; margin: 6px 0; font-size: 0.86rem; }
+  .riadok .meno { color: var(--tlmeny); }
+  .pruhy { display: grid; gap: 3px; }
+  .pruh { position: relative; height: 16px; background: var(--plocha-2); border-radius: 4px; }
+  .pruh i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; background: var(--akcent); }
+  .pruh.e25 i { background: var(--modra); }
+  .pruh em { position: absolute; right: 6px; top: 0; font-style: normal; font-size: 0.74rem; color: var(--text); }
+  .pruh .polovica { position: absolute; left: 50%; top: -2px; bottom: -2px; border-left: 1px dashed var(--slaby); }
+  .legenda { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 8px; font-size: 0.84rem; color: var(--tlmeny); }
+  .legenda i { display: inline-block; width: 16px; height: 8px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
+  .poznamka { color: var(--tlmeny); font-size: 0.88rem; margin: 8px 2px 0; }
+  .filtre { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 14px; }
+  .filtre button { font: inherit; font-size: 0.88rem; border-radius: 999px; padding: 5px 14px; border: 1px solid var(--okraj);
+    background: var(--plocha-2); color: var(--text); cursor: pointer; }
+  .filtre button[aria-pressed="true"] { background: var(--akcent); color: #fff; border-color: var(--akcent); font-weight: 700; }
+  .filtre button:focus-visible, details summary:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+  .navrh { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 14px 16px; margin-bottom: 12px; }
+  .navrh.odp-zaviest { border-left: 5px solid var(--zelena); }
+  .navrh.odp-vyskusat { border-left: 5px solid var(--akcent); }
+  .navrh.odp-zamietnut { border-left: 5px solid var(--cervena); }
+  .navrh dl { display: grid; grid-template-columns: minmax(110px, 170px) 1fr; gap: 4px 12px; margin: 8px 0 0; font-size: 0.93rem; }
+  .navrh dt { color: var(--slaby); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; padding-top: 3px; }
+  .navrh dd { margin: 0; }
+  .odp { display: inline-block; font-size: 0.76rem; font-weight: 700; border-radius: 999px; padding: 2px 10px; margin-left: 6px; vertical-align: middle; color: #fff; }
+  .odp.zaviest { background: var(--zelena); }
+  .odp.vyskusat { background: var(--akcent); }
+  .odp.zamietnut { background: var(--cervena); }
+  .znenie { background: var(--plocha-2); border-radius: 8px; padding: 6px 10px; }
+  blockquote { margin: 6px 0; padding: 4px 12px; border-left: 3px solid var(--okraj); color: var(--tlmeny); font-style: italic; font-size: 0.9rem; }
+  ol.otazky li, ul.zoznam li { margin-bottom: 7px; }
+  .mena { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; }
+  .meno-k { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; }
+  .meno-k.odpor { border-left: 5px solid var(--zelena); }
+  .meno-k p { margin: 6px 0; font-size: 0.92rem; }
+  footer { margin-top: 50px; padding-top: 14px; border-top: 1px solid var(--okraj); color: var(--slaby); font-size: 0.85rem; }
+  @media (max-width: 560px) {
+    .navrh dl { grid-template-columns: 1fr; }
+    .riadok { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<main>
+<h1>Strany línie a prevaha na strane</h1>
+<p class="podnadpis">Rozbor stratéga strany-20261020 · bez playtestu · téma od Michala:
+<q>Pojem „súperova strana, moja strana“ je zavádzajúci… dá sa tým vymyslieť mechanika ako „prevaha na tej alebo druhej strane“.</q>
+Nadväzuje na <a href="strategia-20261019-2030.html">rozbor Pitiek a tempa</a> a na <a href="navrh-lokality.html">návrh lokalít</a> (Ihrisko, Lesná cesta, Most).
+Merané nad pravidlami z interview 2026-10-19 (pracovný strom ráno 2026-10-20, ešte bez 14 nových lokalít).</p>
+
+<section class="verdikt" aria-labelledby="verdikt">
+  <span class="stitok" id="verdikt">Verdikt</span>
+  <p>Strany dnes nikomu nepatria ani v praxi: <strong>48 % vyložení ide na „súperovu“ stranu</strong> a 89 % strán má v čase Pitky aspoň jednu cudziu kartu. O hrane lokality pritom rozhodne jediná karta, tá pri lokalite, a nie to, kto stranu ovládol. Na 24 % strán dostane akcie lokality iný hráč, než kto tam má viac kariet.</p>
+<p>Zručnosť dnes rozhoduje stredne: rebrík pri ε = 0,1 je 64 % a 47 % rozdaní je delených. Ako prvé odporúčam <strong>vyskúšať v playteste A: hrana lokality patrí prevahe</strong> (pri rovnosti karte pri lokalite ako dnes). Rebrík ostal 63 %, delených rozdaní je menej (47 → 39 %), otočky mierne stúpli (24 → 27 %) a partia sa rozhoduje neskôr: vedúci po 3. kole vyhrá 60 % namiesto 69 %, po 8. kole 85 % namiesto 71 %.</p>
+<p>Variant B (+1 tuhé za každý kraj s prevahou) zručnosť <strong>ubral</strong>: rebrík 64 → 55 % a pri ε = 0,25 80 → 73 %. Prevahu ako bonus k tuhému preto nechajte len na Ihrisku a nedávajte ho do základných pravidiel. Na premenovanie strán odporúčam <strong>domáci a hosťovský kraj</strong>.</p>
+
+</section>
+
+<h2 id="dnes">Ako strany vyzerajú dnes</h2>
+<p>Strany už dnes nikomu nepatria — ani v praxi. Bot Štamgast proti sebe (64 partií, 932 snímok línie pred Pitkou):</p>
+<div class="cisla">
+  <div class="cislo"><b>48 %</b><span>vyložení ide na „súperovu“ stranu. Podstrčenie je polovica hry, nie výnimka (hráči v playtestoch 22–59 %).</span></div>
+  <div class="cislo"><b>49 %</b><span>kariet na strane v čase bitky patrí tomu, „koho strana to nie je“. Strán aspoň s jednou cudzou kartou: 89 %.</span></div>
+  <div class="cislo"><b>3,9</b><span>kariet priemerne leží na jednej strane v bitke — prevaha sa teda rozhoduje o 1–2 karty.</span></div>
+  <div class="cislo"><b>41 % / 38 % / 21 %</b><span>prevaha na neprázdnej strane: domáci / cudzí / remíza. „Domáci“ (hráč, pri ktorom strana leží) ju má len o málo častejšie.</span></div>
+  <div class="cislo"><b>45 %</b><span>snímok, v ktorých má každý hráč prevahu na inom kraji; jeden na oboch: 15 %; aspoň jedna strana vyrovnaná: 40 %.</span></div>
+  <div class="cislo"><b>24 %</b><span>strán, kde kartu pri lokalite (a s ňou akcie lokality) má iný hráč, než kto má na strane prevahu. Pri lokalite leží cudzia karta na 65 % strán.</span></div>
+</div>
+<p class="poznamka">Kto má prevahu na oboch stranách, vedie v tuhom pred Pitkou v 85 % prípadov — prevaha už dnes súvisí so silou, ale nie je jej odmenou sama osebe.</p>
+
+<h2 id="cisla">Čísla: východisko a dva zmerané varianty</h2>
+<div class="cisla">
+  <div class="cislo"><b>64 %</b><span>Rebrík ε = 0,1 (predošlý rozbor 60 %): toľko partií vyhrá bot proti sebe s 10 % náhodných ťahov.</span></div>
+  <div class="cislo"><b>80 %</b><span>Rebrík ε = 0,25 (predtým 88 %): hrubšie chyby sa trestajú spoľahlivo.</span></div>
+  <div class="cislo"><b>47 %</b><span>Delené rozdania pri ε = 0,1 (predtým 50 %): každý stolec vyhral raz — rozhodlo rozdanie či miesto, nie hráč.</span></div>
+  <div class="cislo"><b>55 %</b><span>Výhoda hráča 1 (predtým 48 %): miesto je férové.</span></div>
+  <div class="cislo"><b>24 %</b><span>Otočky (predtým 39 %): víťaz po polovici kôl prehrával — dobiehanie žije.</span></div>
+  <div class="cislo"><b>0,30</b><span>Predurčenosť rozdania (predtým 0,39, šum 0,31): bližšie k šumu = rozdanie víťaza neurčuje.</span></div>
+</div>
+
+<div class="tab"><table>
+  <caption class="poznamka" style="text-align:left;padding:8px 10px">Rebrík: 64 rozdaní × 2 miesta na ε. Zrkadlo (výhoda hráča 1, otočky, vedúci): 64 partií. Predurčenosť: 10 rozdaní × 6 behov. Šum rebríka pri tomto počte asi ±6 bodov.</caption>
+  <thead><tr><th scope="col">Variant</th><th scope="col">ε = 0,1</th><th scope="col">delené</th><th scope="col">ε = 0,25</th><th scope="col">výhoda h. 1</th><th scope="col">otočky</th><th scope="col">vedúci po 3. / 5. / 7. kole vyhrá</th><th scope="col">predurč.</th><th scope="col">každý prevahu na inej strane</th><th scope="col">vykladaní na súperovu</th></tr></thead>
+  <tbody>
+    <tr class="vych"><th scope="row">Východisko</th><td class="n">64 %</td><td class="n">47 %</td><td class="n">80 %</td><td class="n">55 %</td><td class="n">24 %</td><td class="n">69 % / 73 % / 75 %</td><td class="n">0,30</td><td class="n">45 %</td><td class="n">48 %</td></tr>
+    <tr><th scope="row">A — hrana patrí prevahe</th><td class="n">63 %</td><td class="n">39 %</td><td class="n">79 %</td><td class="n">48 %</td><td class="n">27 %</td><td class="n">60 % / 78 % / 78 %</td><td class="n">0,37</td><td class="n">39 %</td><td class="n">48 %</td></tr>
+    <tr><th scope="row">B — +1 tuhé za kraj</th><td class="n">55 %</td><td class="n">53 %</td><td class="n">73 %</td><td class="n">51 %</td><td class="n">31 %</td><td class="n">63 % / 73 % / 71 %</td><td class="n">0,33</td><td class="n">41 %</td><td class="n">49 %</td></tr>
+
+  </tbody>
+</table></div>
+
+<div class="graf" role="img" aria-label="Rebrík: Východisko: ε 0,1 64 %, ε 0,25 80 %; A — hrana patrí prevahe: ε 0,1 63 %, ε 0,25 79 %; B — +1 tuhé za kraj: ε 0,1 55 %, ε 0,25 73 %.">
+  <div class="riadok"><span class="meno">Východisko</span><div class="pruhy">
+    <div class="pruh"><i style="width:64.1%"></i><span class="polovica"></span><em>64 %</em></div>
+    <div class="pruh e25"><i style="width:79.7%"></i><span class="polovica"></span><em>80 %</em></div>
+  </div></div>
+  <div class="riadok"><span class="meno">A — hrana patrí prevahe</span><div class="pruhy">
+    <div class="pruh"><i style="width:63.3%"></i><span class="polovica"></span><em>63 %</em></div>
+    <div class="pruh e25"><i style="width:78.9%"></i><span class="polovica"></span><em>79 %</em></div>
+  </div></div>
+  <div class="riadok"><span class="meno">B — +1 tuhé za kraj</span><div class="pruhy">
+    <div class="pruh"><i style="width:54.7%"></i><span class="polovica"></span><em>55 %</em></div>
+    <div class="pruh e25"><i style="width:73.4%"></i><span class="polovica"></span><em>73 %</em></div>
+  </div></div>
+
+  <div class="legenda"><span><i style="background:var(--akcent)"></i>ε = 0,1</span><span><i style="background:var(--modra)"></i>ε = 0,25</span><span>prerušovaná čiara = 50 %</span></div>
+</div>
+<p class="poznamka">Rozdiel A oproti východisku (−1 bod) je v šume (±6 bodov pri 64 rozdaniach). Pokles B je pri oboch ε rovnakým smerom (−9 a −6 bodov), preto ho beriem vážne, nie však ako dôkaz. Bot sa novej prevahe prispôsobí len cez svoje hodnotenie bitky (A aj B sú v <code>evaluateLine</code> / <code>bitkaMody</code>, ktoré bot pri vykladaní počíta), jeho váhy sú ladené na dnešné pravidlá.
+</p>
+
+<h2 id="mapa">Mapa náhody okolo strán</h2>
+<div class="tab"><table>
+  <thead><tr><th scope="col">Zdroj</th><th scope="col">Kedy vstupuje</th><th scope="col">Rozptyl</th><th scope="col">Čím sa dá tlmiť dnes</th><th scope="col">Závažnosť</th></tr></thead>
+  <tbody>
+    <tr><td>Či mám v ruke kartu s párom na spoj pri lokalite</td><td>pred rozhodnutím (ruka je známa), ale po draftu</td><td>vysoký — hrana lokality dáva 1–3 akcie a určuje Pitky</td><td>šenok za cigarety, fajčenie, Vízia; podstrčiť skôr ako súper</td><td><span class="zav vys">vysoká</span></td></tr>
+    <tr><td>Kto vykladá posledný na stranu</td><td>dané poradím (obranca začína) a limitom</td><td>stredný — posledná podstrčená karta pri lokalite dnes „ukradne“ hranu a súper nemá odpoveď</td><td>Vypiť (druhá karta v ťahu), Pes, Pasca</td><td><span class="zav str">stredná</span></td></tr>
+    <tr><td>Natočenie lokality</td><td>pred Zhromaždením, volí útočník</td><td>stredný — ktorá hrana je obrátená ku ktorej strane</td><td>keďže strany sú spoločné, hranu si môže „vziať“ ktokoľvek; dnes ju rozhodne jedna karta</td><td><span class="zav str">stredná</span></td></tr>
+    <tr><td>Súperova ruka (skrytá informácia, nie náhoda)</td><td>počas Zhromaždenia</td><td>interakcia: odpoveď na podstrčenie</td><td>čítanie súpera, počítanie limitu a poldeci</td><td><span class="zav niz">žiadúca</span></td></tr>
+  </tbody>
+</table></div>
+<blockquote>„Podstrčené karty (16 z 36) ako Hasič a Kočovník nenechajú súperovi protihru.“ — playtest 20261019-055945</blockquote>
+<blockquote>„Podstrkovanie bolo hlavnou činnosťou: Jano 16 z 27 vyložení, Eva 11 z 29.“ — playtest 20261011-183315</blockquote>
+<p>Jadro problému: dnes o hrane lokality rozhodne <strong>jedna karta</strong> (tá pri lokalite) a to, kto stihne byť pri lokalite prvý. Prevaha by z toho spravila <strong>súboj o stranu počas celého Zhromaždenia</strong>, kde sa dá odpovedať — teda viac rozhodnutí a menej „kto mal správnu kartu skôr“.</p>
+
+<h2 id="navrhy">Návrhy mechaník prevahy</h2>
+<p class="poznamka">Spoločná definícia pre všetky: <strong>prevahu na strane</strong> má hráč, ktorý na nej má viac svojich kariet (natočených k nemu). Nástroje sa nerátajú (rovnako ako pri Ihrisku a Lesnej ceste). Pri rovnosti prevahu nemá nikto.</p>
+<div class="filtre" role="group" aria-label="Filter podľa odporúčania">
+  <button type="button" data-f="vsetko" aria-pressed="true">Všetky</button>
+  <button type="button" data-f="zaviest" aria-pressed="false">Zaviesť</button>
+  <button type="button" data-f="vyskusat" aria-pressed="false">Vyskúšať v playteste</button>
+  <button type="button" data-f="zamietnut" aria-pressed="false">Zamietnuť</button>
+</div>
+<div id="navrhy-zoznam">
+<article class="navrh odp-vyskusat" data-odp="vyskusat">
+  <h3>1. Hrana lokality patrí prevahe <span class="odp vyskusat">vyskúšať v playteste</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>O akciách lokality dnes rozhodne jediná karta pri lokalite. Na 24 % krajov ich dostane hráč, ktorý tam má menej kariet. Pri lokalite leží cudzia karta na 65 % krajov: kto podstrčí ako prvý, má hranu a súper už nemá ako odpovedať. „Podstrčené karty ako Hasič a Kočovník nenechajú súperovi protihru“ (playtest 20261019-055945).</dd>
+    <dt>Znenie</dt><dd class="znenie">„Akcie lokality na hrane obrátenej ku kraju dostane hráč, ktorý má na tom kraji <strong>prevahu</strong> (viac svojich kariet; Nástroje sa nerátajú). Pri rovnosti ich dostane majiteľ karty pri lokalite. Bez karty pri lokalite nie sú aktívne.“ Pitky sa rátajú ako dnes (1 + menší z počtov aktivovaných akcií hrán).</dd>
+    <dt>Prečo zručnosť</dt><dd>O hrane sa rozhoduje počas celého Zhromaždenia a dá sa na ňu odpovedať. Každé vyloženie má dve hodnoty: spoj (akcie) a počet (prevaha). Vypiť pre druhú kartu v ťahu, šetrenie limitu a poradie (kto vykladá posledný) začnú mať cenu. Podstrčenie ostáva silné, už však nie je „kto prvý, ten berie“.</dd>
+    <dt>Čísla variantu</dt><dd>Rebrík ε = 0,1: 64 → 63 %; delené 47 → <span class="dobre">39 %</span>; ε = 0,25: 80 → 79 % (delené tu 25 → 39 %, opačný smer, šum). Otočky 24 → 27 %. Vedúci po 2. / 3. / 8. kole vyhrá: 64 / 69 / 71 % → <span class="dobre">49 / 60 / 85 %</span>: začiatok je otvorenejší, koniec sa dá dohrať plánom. Výhoda hráča 1 55 → 48 %. Predurčenosť 0,30 → 0,37 (šum 0,31, sledovať). Vyložení na partiu 86 → 91.</dd>
+    <dt>Interakcie</dt><dd><strong>Podstrčenie:</strong> ostáva hlavnou zbraňou, ale cudzia karta pri lokalite vezme hranu len vtedy, keď kraj nepreváži druhý hráč. <strong>Pes</strong> (súper naň nepodstrčí) zamkne prevahu na domácom kraji, takže zosilnie. Treba to sledovať. <strong>Pasca:</strong> navrhujem, aby sa chytená karta do prevahy nerátala. <strong>Most</strong> (len domáci kraj): prevaha je vždy domáca, teda ako dnes. <strong>Lesná cesta</strong> odmeňuje karty v hosťovskom kraji, a tým ťahá proti domácej prevahe, čo je dobrý protiťah. <strong>Ihrisko</strong> (+2 tuhé za kraj s prevahou) sa stane „dvojitou prevahou“: prevaha tam dá hranu aj tuhé. Hodí sa to, ale bitka bude výrazne nabaľovacia. <strong>Kočovník</strong> sa ráta tomu, kto ho zahral. <strong>Bitka o staršieho</strong> funguje rovnako s kartou staršieho.</dd>
+    <dt>Cena</dt><dd>Jedna veta v §4. Web: štítok prevahy nad každým krajom („prevaha Fero 2 : 1“) a náhľad vyloženia musí počítať prevahu (<code>hrany.ts</code>). Motor: približne 15 riadkov v <code>evaluateLine</code> (<code>strany-prevaha.diff</code>).</dd>
+    <dt>Riziko</dt><dd>Kraj je vyrovnaný v 21 % prípadov a vtedy platí dnešné pravidlo, takže hráč musí poznať obe. Kto má viac kariet a poldeci, berie obe hrany, čo mierne nabaľuje. Môžu pribudnúť „prázdne“ vyloženia len kvôli počtu.</dd>
+    <dt>Náročnosť</dt><dd>malá</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-vyskusat" data-odp="vyskusat">
+  <h3>2. Remíza podľa prevahy <span class="odp vyskusat">vyskúšať v playteste</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Remízu o lokalitu dnes po celkovom poškodení rozhodne <em>obranca</em>, teda miesto, nie hra. Remízu o staršieho nevyhrá nikto.</dd>
+    <dt>Znenie</dt><dd class="znenie">„Pri rovnosti tuhého vyhrá ten, kto má prevahu na viacerých krajoch. Až keď je aj tu rovnosť, rozhodne celkové poškodenie a potom obranca (o lokalitu), alebo nikto (o staršieho).“</dd>
+    <dt>Prečo zručnosť</dt><dd>Tesná bitka sa rozhodne tým, kto lepšie rozložil karty, a nie stoličkou. Hráč, ktorý cíti remízu, má dôvod bojovať o počet.</dd>
+    <dt>Čísla</dt><dd>Nemerané. Jeden hráč má prevahu na oboch krajoch v 15 % snímok línie a z nich vedie v tuhom v 85 %. Pravidlo by sa teda uplatnilo v malej časti remíz.</dd>
+    <dt>Cena a riziko</dt><dd>Jedna veta v §7. Riziko je nízke, pribudne však ďalší stupeň v poradí rozhodovania remízy.</dd>
+    <dt>Náročnosť</dt><dd>malá. Dá sa skúšať spolu s návrhom 1.</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-vyskusat" data-odp="vyskusat">
+  <h3>3. Prevaha natočí lokalitu ďalšieho kola <span class="odp vyskusat">vyskúšať v playteste (po 1)</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Natočenie lokality volí útočník a v playtestoch je to častý zdroj omylov aj výhody („Eva v 4. kole kvôli otočeniu lokality dala súperovi Petelicu“). Na ďalšie kolo sa dnes v línii nedá nič pripraviť.</dd>
+    <dt>Znenie</dt><dd class="znenie">„Útočník vyberá lokalitu. Natočí ju hráč, ktorý mal na konci poslednej Pitky prevahu na viacerých krajoch. Pri rovnosti ju natočí útočník.“</dd>
+    <dt>Prečo zručnosť</dt><dd>Prevaha má hodnotu aj o kolo dopredu, takže pribudne plánovanie na viac kôl, o ktoré Michal stojí. Výhody kola sa rozdelia: porazený (útočník) vyberá lokalitu, hráč, ktorý ovládol líniu, ju natočí.</dd>
+    <dt>Čísla</dt><dd>Nemerané. Bot by sa to musel naučiť, lebo hodnotu natočenia o kolo dopredu dnes nevidí.</dd>
+    <dt>Cena a riziko</dt><dd>Stav navyše (kto natáča) a krok v UI. Ak má víťaz bitky aj prevahu, dostane aj natočenie, čo nabaľuje. Protiváhou je, že výber lokality ostáva porazenému.</dd>
+    <dt>Náročnosť</dt><dd>stredná</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zamietnut" data-odp="zamietnut">
+  <h3>4. Prevaha v bitke: +1 tuhé za každý kraj <span class="odp zamietnut">zamietnuť ako základné pravidlo</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Michal navrhol prevahu ako bonus a Ihrisko ho má (+2 tuhé za kraj).</dd>
+    <dt>Znenie (merané)</dt><dd class="znenie">„V každej bitke máš za každý kraj, kde máš prevahu, 1 tuhé poškodenie navyše (pred odpočtom Viery a Absťákov).“</dd>
+    <dt>Čísla variantu</dt><dd>Rebrík ε = 0,1: 64 → <span class="zle">55 %</span> (delené 47 → 53 %); ε = 0,25: 80 → <span class="zle">73 %</span>. Otočky 24 → 31 %. Vedúci vyhrá po 3. až 6. kole len 60–63 %, takže plánovanie neodmeňuje. Vyložení na partiu 86 → 98, kôl 9,4 → 10,4.</dd>
+    <dt>Prečo nie</dt><dd>Prevaha sa rozhoduje o jednu kartu (3,9 karty na kraji) a bonus k tuhému ju premení na výsledok bitky. Rozhodne potom, kto mal v ruke viac kariet, a nie ako ich zahral. Prevaha už dnes súvisí so silou: kto ju má na oboch krajoch, vedie v tuhom v 85 %. Bonus teda pridá najmä tomu, kto už vyhráva.</dd>
+    <dt>Čo s tým</dt><dd>Ponechať <strong>len na Ihrisku</strong>, ako jednu z lokalít. Ak sa zavedie aj návrh 1, Ihrisko zvážiť zmierniť na +1.</dd>
+    <dt>Náročnosť</dt><dd>malá (<code>strany-bitka.diff</code>)</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zamietnut" data-odp="zamietnut">
+  <h3>5. Zatvorený kraj („obsadenie“) <span class="odp zamietnut">zamietnuť ako základné pravidlo</span></h3>
+  <dl>
+    <dt>Nápad</dt><dd class="znenie">„Keď na koniec kraja vyložíš druhú svoju kartu za sebou, kraj je zatvorený a do konca Zhromaždenia naň nikto nevykladá.“ Kto má posledné slovo, obsadí kraj.</dd>
+    <dt>Prečo nie</dt><dd>Zabíja podstrčenie, ktoré hráči šesť playtestov za sebou označili za najlepšiu vec v hre. Vypiť by sa stalo povinným ťahom na zatvorenie a Pes by stratil rolu. Posledné slovo dnes aj tak určuje poradie, nie rozhodnutie.</dd>
+    <dt>Čo s tým</dt><dd>Hodí sa ako efekt jednej karty alebo lokality (napr. „Zamknuté dvere: kraj s dvomi tvojimi kartami na konci je zatvorený“), nie ako pravidlo.</dd>
+    <dt>Náročnosť</dt><dd>stredná</dd>
+  </dl>
+</article>
+
+</div>
+
+<h2 id="mena">Ako strany pomenovať</h2>
+<p>Ak strana nikomu nepatrí, „tvoja / súperova“ klame. Pravidlá aj tak potrebujú pevné meno pre dve veci: <em>kde karta leží</em> (Pes, Pasca, Most, Lesná cesta, Kočovník) a <em>ktorá hrana lokality je obrátená ku ktorej strane</em> (natočenie). Tri možnosti:</p>
+<div class="mena">
+  <div class="meno-k odpor">
+    <h3>1. Domáci kraj a hosťovský kraj <small>(odporúčam)</small></h3>
+    <p>Kraj línie pri tebe je tvoj <strong>domáci kraj</strong>, pri súperovi <strong>hosťovský</strong>. Ako vo futbale: domáce ihrisko nie je tvoje, hrajú na ňom obaja — rozhoduje, kto má na ňom prevahu. Ladí s Ihriskom.</p>
+    <p>Pes: „Kým je Pes na konci domáceho kraja svojho majiteľa…“. Lesná cesta: „za každú svoju kartu v hosťovskom kraji“. Most: „len do domáceho kraja“. Podstrčiť = vyložiť do hosťovského kraja.</p>
+    <p>Cena: premenovanie v pravidlách, webe a texte 3–4 kariet. Riziko: slovo „domáci“ ešte trochu naznačuje vlastníctvo.</p>
+  </div>
+  <div class="meno-k">
+    <h3>2. Pri výčape a pri dverách</h3>
+    <p>Krčmové pevné mená: jeden kraj línie je <strong>pri výčape</strong>, druhý <strong>pri dverách</strong>, rovnako pre oboch hráčov. Na webe štítok nad krajom; hráč 1 sedí pri výčape (alebo losom).</p>
+    <p>Plus: nulové vlastníctvo, téma, karty môžu hrať na miesto („Vyhadzovač: pri dverách +1 Rana“). Mínus: karty viazané na hráča (Pes, Pasca, Most) potrebujú dlhšie znenie („kraj pri tebe“), a dve mená navyše na učenie.</p>
+  </div>
+  <div class="meno-k">
+    <h3>3. Hrana A a hrana B lokality</h3>
+    <p>Kraj sa volá podľa hrany lokality, ku ktorej prilieha (v tvorcovi už je „hrana A = vytlačená ľavá“). Natočenie lokality = útočník určí, či je hrana A pri ňom alebo pri súperovi.</p>
+    <p>Plus: presné, hodí sa k tvorcovi a k navrh-lokality. Mínus: suché, a v bitke o staršieho treba to isté pre kartu staršieho; hráči by mysleli „A je vľavo“, čo z pohľadu súpera neplatí.</p>
+  </div>
+</div>
+<p class="poznamka">Na webe netreba meniť rozloženie: každý hráč vidí svoj domáci kraj vľavo ako dnes; mení sa len text a štítok prevahy nad každým krajom (napr. „prevaha: Fero 2 : 1“).</p>
+
+<h2 id="sledovat">Čo sledovať v ďalšom playteste</h2>
+<ol class="otazky">
+  <li>Koľkokrát v partii si vyložil kartu <strong>len kvôli počtu</strong> (bez páru), aby si získal alebo udržal prevahu na kraji? Bolo to zaujímavé rozhodnutie, alebo povinnosť?</li>
+  <li>Keď ti súper podstrčil kartu pri lokalite, vedel si hranu „dobyť späť“ prevahou? Koľko kariet a poldeci ťa to stálo a stálo to za to?</li>
+  <li>Bolo vždy jasné, kto má na ktorom kraji prevahu a komu idú akcie lokality (štítok nad krajom)? Zapíš každý omyl.</li>
+  <li>Sedia názvy <em>domáci / hosťovský kraj</em>? Používal si ich pri rozprávaní, alebo si hovoril „moja strana“?</li>
+  <li>Pes a Pasca pri prevahe: bol Pes na konci domáceho kraja príliš silný (súper nemôže prevážiť)? Ako často rozhodla rovnosť na kraji?</li>
+
+</ol>
+
+<footer>
+<p>Merané nad jadrom z pracovného stromu 2026-10-20 ráno (pravidlá z interview 2026-10-19; ešte bez 14 nových lokalít a bez nového Ihriska), skopírovaným do worktree <code>playtest/varianty/strany-*</code>. Bot Štamgast, stredná hra (7 lokalít). Rebrík: 64 rozdaní × 2 miesta pre ε = 0,1 aj 0,25 (<code>playtest/strategia/20261019-1858/rebrik.ts</code>). Zrkadlo: 64 partií, predurčenosť: 10 rozdaní × 6 behov (<code>tools/bot/strategickost.ts</code>). Štatistika krajov: 64 partií, snímka línie pri každom prechode Zhromaždenie → Pitka (<code>playtest/strategia/strany-20261020/strany.ts</code>).</p>
+<p>Bot sa variantom neprispôsobuje: novú prevahu vidí len cez hodnotenie bitky, ktoré pri vykladaní dopočíta, jeho váhy a heuristiky sú ladené na dnešné pravidlá. Čísla variantov ukazujú smer, nie sú dôkazom. Predošlé hodnoty sú z rozboru <a href="strategia-20261019-2030.html">20261019-2030</a> (iná verzia pravidiel, 96 rozdaní). Diffy variantov: <code>playtest/strategia/strany-20261020/*.diff</code>. Hlavná vetva sa nemenila.</p>
+
+</footer>
+</main>
+<script>
+  (function () {
+    var tlacidla = document.querySelectorAll('.filtre button');
+    var karty = document.querySelectorAll('#navrhy-zoznam .navrh');
+    tlacidla.forEach(function (b) {
+      b.addEventListener('click', function () {
+        var f = b.getAttribute('data-f');
+        tlacidla.forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+        karty.forEach(function (k) { k.hidden = !(f === 'vsetko' || k.getAttribute('data-odp') === f); });
+      });
+    });
+  })();
+</script>
+</body>
+</html>

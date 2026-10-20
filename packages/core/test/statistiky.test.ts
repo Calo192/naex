@@ -69,7 +69,8 @@ describe("štatistiky partie", () => {
           expect(podla).toBe(s.body);
         }
       }
-      expect(stat[0].bitkyVyhrane + stat[1].bitkyVyhrane).toBe(bitky.length);
+      // Remíza o staršieho nemá víťaza.
+      expect(stat[0].bitkyVyhrane + stat[1].bitkyVyhrane).toBe(bitky.filter((b) => b.vitaz !== null).length);
       expect(stat[0].tahy + stat[1].tahy).toBeGreaterThan(0);
     }
   });

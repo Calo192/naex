@@ -18,7 +18,7 @@ export type Action =
   | "Dlh"
   | "PoškodeniePečene"
   | "Obmedzenie"
-  | "Cigaretka"
+  | "Cigareta"
   | "Vízia"
   | "Poldeci"
   | "Posilnenie"
@@ -35,7 +35,7 @@ export const ALL_ACTIONS: readonly Action[] = [
   "Dlh",
   "PoškodeniePečene",
   "Obmedzenie",
-  "Cigaretka",
+  "Cigareta",
   "Vízia",
   "Poldeci",
   "Posilnenie",
@@ -128,6 +128,8 @@ export interface SideDef {
    * povoľuje všetko.
    */
   readonly allowed?: Readonly<Partial<Record<SlotIndex, readonly Action[]>>>;
+  /** Lokalita: názov polovice línie pri tejto hrane (kraj), napr. „pri výčape“. */
+  readonly kraj?: string;
 }
 
 export interface CardDef {

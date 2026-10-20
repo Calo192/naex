@@ -58,7 +58,9 @@ Meno do 19 znakov (web doň pridá „ (AI)"), štýl jednou-dvoma vetami.
    node --experimental-strip-types --no-warnings tools/playtest/ukonci.ts R
    ```
    a odovzdaj používateľovi: výsledok partie, čo agent na hru povedal (3–5
-   bodov) a odkaz na stránku Spätná väzba (`http://localhost:8787/spatna-vazba`
+   bodov), jeho odhad zručnosť : náhoda, nezrovnalosti medzi pravidlami
+   a hrou (`R/hrac1/nezrovnalosti.md`), najsilnejšie návrhy na strategickosť
+   a odkaz na stránku Spätná väzba (`http://localhost:8787/spatna-vazba`
    alebo `npm start`, server partie je už zastavený), kde sú
    jeho názory. Ak chce prehľadný report, napíš ho ako interaktívne HTML
    (pravidlo pre dokumenty pre ľudí) z `R/hrac1/feedback.md` a `dennik.md`.

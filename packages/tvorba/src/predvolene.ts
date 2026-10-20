@@ -4,6 +4,29 @@
 
 import type { AkciaDef, Kategoria, KlucoveSlovo } from "./typy.ts";
 
+/**
+ * Akcie, ktorých názov alebo popis zmenili rozhodnutia Michala 2026-10-19:
+ * jednotné názvy (akcia sa volá ako karta či zdroj, ktorý dáva — Dlh,
+ * Poškodenie pečene, Poldeci, Cigareta; nikde „fyzická cigareta“) a nová
+ * Vízia. Server nimi pri štarte prepíše staré databázy (zjednotNazvyAkcii).
+ */
+export const AKCIE_20261019: readonly { readonly kluc: string; readonly nazov: string; readonly popis: string }[] = [
+  { kluc: "Dlh", nazov: "Dlh", popis: "Zvýši zadĺženie o 1. V Pitke každé zadĺženie dá kartu Dlh (prah 1)." },
+  { kluc: "PoškodeniePečene", nazov: "Poškodenie pečene", popis: "Pridá 1 poškodenie pečene. V Pitke pri prahu získaš Cirhózu." },
+  { kluc: "Poldeci", nazov: "Poldeci", popis: "Pri bitke otočí jeden tvoj vypitý poldeci späť na plný. Poškodenie pečene z neho sa počíta už v Pitke." },
+  {
+    kluc: "Cigareta",
+    nazov: "Cigareta",
+    popis: "V Pitke dostaneš 1 cigaretu (mínus súperove Obmedzenia). Cigarety sa prenášajú — platíš nimi šenok, Dedičstvo a doliatie poldeci, vyfajčená cigareta = karta hneď.",
+  },
+  { kluc: "Obmedzenie", nazov: "Obmedzenie", popis: "Súper dostane v Pitke o 1 cigaretu menej." },
+  {
+    kluc: "Vízia",
+    nazov: "Vízia",
+    popis: "Na konci Pitky sa za každú Víziu pozrieš na vrchnú kartu svojho doberacieho balíčka: vezmeš si ju do ruky, alebo ju zahodíš (navždy z hry).",
+  },
+];
+
 const A = (kluc: string, nazov: string, popis: string): Omit<AkciaDef, "poradie"> => ({
   kluc,
   nazov,
@@ -18,12 +41,7 @@ export const PREDVOLENE_AKCIE: readonly AkciaDef[] = [
   A("Povera", "Povera", "Mäkké poškodenie do výšky súperovho priznaného dlhu. So súperovou Vierou sa ruší 1 : 1."),
   A("Viera", "Viera", "Znižuje súperovo tuhé poškodenie (základ 1, upraviteľný priazňou). So súperovou Poverou sa ruší 1 : 1."),
   A("Pohoršenie", "Pohoršenie", "Posunie marker ľubovoľného staršieho o 1 smerom k súperovi — vyhodnocuje sa ako prvé, bez ohľadu na výsledok bitky."),
-  A("Dlh", "Hazard", "Zvýši zadĺženie o 1. V Pitke pri prahu (2) získaš kartu Dlhu."),
-  A("PoškodeniePečene", "Poškodenie pečene", "Pridá poškodenie pečene. V Pitke pri prahu získaš Cirhózu."),
-  A("Poldeci", "Poldecko", "Pri bitke otočí jeden vypitý poldeci späť na plný. Poškodenie pečene sa počíta už v Pitke."),
-  A("Cigaretka", "Cigaretka", "V Pitke dostaneš fyzickú cigaretu. Cigarety sa prenášajú; vyfajčená cigareta = karta hneď."),
-  A("Obmedzenie", "Obmedzenie", "Súper dostane v Pitke o cigaretu z Cigaretiek menej."),
-  A("Vízia", "Vízia", "Z práve dobraných kariet smieš zahodiť zopár kliatieb a dobrať si rovnaký počet nových."),
+  ...AKCIE_20261019.map((a) => A(a.kluc, a.nazov, a.popis)),
   A("Posilnenie", "Posilnenie", "Zdvojnásobí prepojenú akciu — priaznivú aj nepriaznivú."),
   A("Odpor", "Odpor", "Zruší prepojenú akciu. Odpor proti Odporu = Vzbura: obe karty aktivujú všetky inak neaktívne akcie."),
   A("Robota", "Robota", "Pred kontrolou prahu Exekútora odhodí 1 priznaný Dlh. Funguje aj bez exekúcie."),

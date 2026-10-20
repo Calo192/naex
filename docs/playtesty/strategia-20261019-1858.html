@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stratégia 20261019-1858 — ruka a prílev kariet — NA EX!</title>
+<style>
+  :root {
+    --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --okraj: #3d3229;
+    --text: #f1e8d8; --tlmeny: #b6a790; --slaby: #8b7d6a;
+    --akcent: #e9ad45; --cervena: #d0563f; --zelena: #7cbf74; --modra: #5cc0cf;
+    color-scheme: dark;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #dccdb3;
+      --text: #2a2016; --tlmeny: #6b5b45; --slaby: #8a7a62;
+      --akcent: #a8680f; --cervena: #b0402c; --zelena: #3f7f38; --modra: #2a7f8c;
+      color-scheme: light;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 system-ui, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 1000px; margin: 0 auto; padding: 32px 16px 100px; }
+  h1, h2, h3 { font-family: Georgia, serif; line-height: 1.2; }
+  h1 { font-size: clamp(1.7rem, 4vw, 2.3rem); margin: 0 0 8px; }
+  h2 { font-size: 1.35rem; margin: 44px 0 12px; }
+  h3 { font-size: 1.08rem; margin: 0 0 6px; }
+  .podnadpis { color: var(--tlmeny); margin: 0 0 20px; max-width: 75ch; }
+  a { color: var(--akcent); }
+  code { font-size: 0.88em; background: var(--plocha-2); padding: 1px 5px; border-radius: 5px; }
+  .verdikt { border: 1px solid color-mix(in srgb, var(--akcent) 55%, transparent); background: color-mix(in srgb, var(--akcent) 9%, transparent);
+    border-radius: 14px; padding: 14px 18px; margin: 18px 0; }
+  .stitok { display: inline-block; font: 700 0.78rem/1 system-ui, sans-serif; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--pozadie); background: var(--akcent); border-radius: 999px; padding: 5px 12px; margin-bottom: 8px; }
+  .cisla { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin: 16px 0; }
+  .cislo { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; }
+  .cislo b { display: block; font: 700 1.5rem/1.1 Georgia, serif; color: var(--akcent); }
+  .cislo b small { font-size: 0.95rem; color: var(--tlmeny); font-weight: 400; }
+  .cislo span { color: var(--tlmeny); font-size: 0.88rem; display: block; margin-top: 4px; }
+  .tab { overflow-x: auto; background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; margin: 10px 0; }
+  .tab table { width: 100%; border-collapse: collapse; font-size: 0.88rem; min-width: 640px; }
+  .tab th, .tab td { padding: 7px 9px; border-bottom: 1px solid var(--okraj); text-align: left; vertical-align: top; }
+  .tab tr:last-child td { border-bottom: 0; }
+  .tab th { color: var(--slaby); font-weight: 600; font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .tab th button { all: unset; cursor: pointer; }
+  .tab th button:hover, .tab th button:focus-visible { color: var(--akcent); outline: none; text-decoration: underline; }
+  .tab td.n { font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
+  .tab tr.vych td { background: color-mix(in srgb, var(--modra) 10%, transparent); }
+  .tab tr.odpor td { background: color-mix(in srgb, var(--zelena) 10%, transparent); }
+  .dobre { color: var(--zelena); font-weight: 600; }
+  .zle { color: var(--cervena); font-weight: 600; }
+  .zav { display: inline-block; border-radius: 999px; padding: 1px 9px; font-size: 0.78rem; font-weight: 700; }
+  .zav.vys { background: color-mix(in srgb, var(--cervena) 25%, transparent); color: var(--cervena); }
+  .zav.str { background: color-mix(in srgb, var(--akcent) 22%, transparent); color: var(--akcent); }
+  .zav.niz { background: color-mix(in srgb, var(--zelena) 22%, transparent); color: var(--zelena); }
+  .graf { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 12px 14px; }
+  .riadok { display: grid; grid-template-columns: 130px 1fr; gap: 8px; align-items: center; margin: 5px 0; font-size: 0.86rem; }
+  .riadok .meno { color: var(--tlmeny); }
+  .pruhy { display: grid; gap: 3px; }
+  .pruh { position: relative; height: 14px; background: var(--plocha-2); border-radius: 4px; }
+  .pruh i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; background: var(--akcent); }
+  .pruh.e25 i { background: var(--modra); }
+  .pruh em { position: absolute; right: 6px; top: -1px; font-style: normal; font-size: 0.74rem; color: var(--text); }
+  .pruh .polovica { position: absolute; left: 50%; top: -2px; bottom: -2px; border-left: 1px dashed var(--slaby); }
+  .legenda { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 8px; font-size: 0.84rem; color: var(--tlmeny); }
+  .legenda i { display: inline-block; width: 16px; height: 8px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
+  .poznamka { color: var(--tlmeny); font-size: 0.88rem; margin: 8px 2px 0; }
+  .filtre { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 14px; }
+  .filtre button { font: inherit; font-size: 0.88rem; border-radius: 999px; padding: 5px 14px; border: 1px solid var(--okraj);
+    background: var(--plocha-2); color: var(--text); cursor: pointer; }
+  .filtre button[aria-pressed="true"] { background: var(--akcent); color: var(--pozadie); border-color: var(--akcent); font-weight: 700; }
+  .filtre button:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+  .navrh { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 14px 16px; margin-bottom: 12px; }
+  .navrh.odp-zaviest { border-left: 5px solid var(--zelena); }
+  .navrh.odp-vyskusat { border-left: 5px solid var(--akcent); }
+  .navrh.odp-zamietnut { border-left: 5px solid var(--cervena); opacity: 0.92; }
+  .navrh dl { display: grid; grid-template-columns: minmax(110px, 160px) 1fr; gap: 4px 12px; margin: 8px 0 0; font-size: 0.93rem; }
+  .navrh dt { color: var(--slaby); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; padding-top: 3px; }
+  .navrh dd { margin: 0; }
+  .odp { display: inline-block; font-size: 0.76rem; font-weight: 700; border-radius: 999px; padding: 2px 10px; margin-left: 6px; vertical-align: middle; }
+  .odp.zaviest { background: var(--zelena); color: var(--pozadie); }
+  .odp.vyskusat { background: var(--akcent); color: var(--pozadie); }
+  .odp.zamietnut { background: var(--cervena); color: var(--pozadie); }
+  blockquote { margin: 6px 0; padding: 4px 12px; border-left: 3px solid var(--okraj); color: var(--tlmeny); font-style: italic; font-size: 0.9rem; }
+  ol.otazky li, ul.zoznam li { margin-bottom: 6px; }
+  footer { margin-top: 50px; padding-top: 14px; border-top: 1px solid var(--okraj); color: var(--slaby); font-size: 0.85rem; }
+  @media (max-width: 560px) {
+    .navrh dl { grid-template-columns: 1fr; }
+    .riadok { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<main>
+<h1>Ruka a prílev kariet — bez limitu ruky</h1>
+<p class="podnadpis">Rozbor stratéga 20261019-1858 · bez playtestu · téma: Michalov návrh, aby limit ruky zanikol
+a karty do ruky sa museli zháňať. Bot Štamgast proti sebe a proti slabším verziám seba, desať variantov pravidiel vo worktree.</p>
+
+<section class="verdikt" aria-labelledby="verdikt">
+  <span class="stitok" id="verdikt">Verdikt</span>
+  <p><strong>Limit ruky dnes takmer nič nerobí.</strong> Hráč ho prekročí asi 2-krát za partiu (2,8 karty) a jeho zrušenie (variant B) neposunie žiadne číslo.
+  Karty dnes vzácne nie sú: ruka má na začiatku Zhromaždenia 6,8 karty, kolo končí so 4,2. Brzdou je <strong>limit vykladania</strong>
+  (2,3 karty na Zhromaždenie), nie ruka. Doplnenie na 5 dáva priemerne len <strong>1,0 kartu za kolo</strong>, takže „pevne +1“ (D) je takmer to isté ako dnes
+  a ruky bez limitu narastú na 9 až 13. Ruku z ruky robí vzácny zdroj až <strong>obmedzenie doplnenia</strong>.</p>
+  <p><strong>Ako prvé odporúčam vyskúšať variant E: bez limitu ruky, doplnenie len na 3.</strong> Prílev klesne o 21 %,
+  79 % kariet príde z hráčovho rozhodnutia (dnes 67 %) a ruka má poistku proti vysychaniu (v bitke o staršieho má ≤1 hrateľnú kartu 2 % rúk, pri C 17 %).
+  Rebrík pri ε = 0,1 stúpol zo 60 % na 70 % a predurčenosť klesla z 0,39 na 0,29. Pri ε = 0,25 a v otočkách je posun v šume.
+  Čistý Michalov variant C (bez doplnenia) má podobné čísla, ale prázdne ruky a riziko špirály v bitke o staršieho. Pred playtestom C treba poistku.</p>
+</section>
+
+<h2>Čísla</h2>
+<p class="poznamka">Východisko → odporúčaný variant E. Rebrík: 96 rozdaní × 2 miesta. Zrkadlo a otočky: 192 partií. Predurčenosť: 10 rozdaní × 6 behov.
+Predošlý rozbor stratéga k tejto téme neexistuje. Meranie tej istej verzie o 18:51 (16 rozdaní) dalo pri ε = 0,1 69 %, teda šum pri malom počte rozdaní je asi ±9 bodov.</p>
+<div class="cisla">
+  <div class="cislo"><b>60 % → 70 %</b><span>Rebrík ε = 0,1: o toľko vyhrá bot proti sebe s 10 % náhodných ťahov. Smer je dobrý, ale rozdiel je len asi 1,5-násobok šumu.</span></div>
+  <div class="cislo"><b>88 % → 84 %</b><span>Rebrík ε = 0,25: hrubé chyby sa trestajú rovnako. Rozdiel je v šume.</span></div>
+  <div class="cislo"><b>50 % → 44 %</b><span>Delené rozdania pri ε = 0,1: o niečo menej partií rozhodne miesto alebo rozdanie namiesto hráča.</span></div>
+  <div class="cislo"><b>48 % → 47 %</b><span>Výhoda hráča 1: obe sú férové.</span></div>
+  <div class="cislo"><b>39 % → 40 %</b><span>Otočky (víťaz po polovici kôl prehrával): dobiehanie ostáva v pásme 20–40 %.</span></div>
+  <div class="cislo"><b>0,39 → 0,29</b><span>Predurčenosť rozdania: v E je na úrovni šumu (0,31), teda rozdanie víťaza neurčuje viac než náhoda behu.</span></div>
+  <div class="cislo"><b>3,50 → 2,76</b><span>Kariet do ruky na hráča a kolo. Doplnenie dáva 1,00 → 0,43.</span></div>
+  <div class="cislo"><b>265 → 236</b><span>Príkazov na partiu (−11 %). Počet kôl sa nemení (10,2 → 9,9).</span></div>
+</div>
+
+<h3 style="margin-top:22px">Rebrík pri ε = 0,1 a 0,25 vo všetkých variantoch</h3>
+<div class="graf" role="img" aria-label="Rebrík zručnosti podľa variantu: výhry silného bota proti botovi s 10 a 25 percentami náhodných ťahov">
+  <div id="rebrik"></div>
+  <div class="legenda"><span><i style="background:var(--akcent)"></i>ε = 0,1</span><span><i style="background:var(--modra)"></i>ε = 0,25</span><span>prerušovaná čiara = 50 %</span></div>
+</div>
+<noscript><p class="poznamka">Graf potrebuje JavaScript. Rovnaké čísla sú v tabuľke nižšie.</p></noscript>
+<p class="poznamka">Ako čítať: strmší rebrík (vyššie čísla pri malom ε) znamená, že sa viac trestá chyba. Pri 96 rozdaniach je štandardná chyba rozdielu dvoch variantov asi ±7 bodov.
+Varianty C, D, E a Dbot (69–70 %) sú teda len náznakom, nie dôkazom.</p>
+
+<h3 style="margin-top:22px">Všetky varianty</h3>
+<div class="tab">
+<table id="varianty">
+  <caption class="poznamka" style="caption-side:bottom;text-align:left;padding:8px 10px">Kliknutím na hlavičku stĺpca zoradíš. Ruka k3/k7 = priemerná ruka na začiatku 1. Zhromaždenia v 3. a 7. kole.
+  Prázdna = podiel (Zhromaždenie × hráč), keď hráč nevyužil limit, lebo nemal hrateľnú kartu. Starší ≤1 = podiel rúk v bitke o staršieho s najviac 1 hrateľnou kartou.
+  Mŕtve = štartovky a kliatby v ruke. Rozhodnutím = podiel prílevu zo šenku, fajčenia, priznania Dlhu a Poštárky.</caption>
+  <thead><tr>
+    <th scope="col"><button type="button" data-k="0">Variant</button></th>
+    <th scope="col"><button type="button" data-k="1">ε 0,1</button></th>
+    <th scope="col"><button type="button" data-k="2">ε 0,25</button></th>
+    <th scope="col"><button type="button" data-k="3">Delené</button></th>
+    <th scope="col"><button type="button" data-k="4">Hráč 1</button></th>
+    <th scope="col"><button type="button" data-k="5">Otočky</button></th>
+    <th scope="col"><button type="button" data-k="6">Predurč.</button></th>
+    <th scope="col"><button type="button" data-k="7">Príkazy</button></th>
+    <th scope="col"><button type="button" data-k="8">Prílev</button></th>
+    <th scope="col"><button type="button" data-k="9">Rozhodnutím</button></th>
+    <th scope="col"><button type="button" data-k="10">Ruka k3</button></th>
+    <th scope="col"><button type="button" data-k="11">Ruka k7</button></th>
+    <th scope="col"><button type="button" data-k="12">Prázdna</button></th>
+    <th scope="col"><button type="button" data-k="13">Starší ≤1</button></th>
+    <th scope="col"><button type="button" data-k="14">Mŕtve</button></th>
+  </tr></thead>
+  <tbody>
+    <tr class="vych"><td>A — dnes (limit 6, doplnenie na 5)</td><td class="n">60 %</td><td class="n">88 %</td><td class="n">50 %</td><td class="n">48 %</td><td class="n">39 %</td><td class="n">0,39</td><td class="n">265</td><td class="n">3,50</td><td class="n">67 %</td><td class="n">6,8</td><td class="n">6,6</td><td class="n">2 %</td><td class="n">0 %</td><td class="n">55 %</td></tr>
+    <tr><td>B — bez limitu, doplnenie na 5</td><td class="n">60 %*</td><td class="n">88 %*</td><td class="n">54 %</td><td class="n">49 %</td><td class="n">35 %</td><td class="n">0,40</td><td class="n">254</td><td class="n">3,34</td><td class="n">68 %</td><td class="n">7,0</td><td class="n">7,5</td><td class="n">1 %</td><td class="n">0 %</td><td class="n">57 %</td></tr>
+    <tr><td>C — bez limitu, bez doplnenia</td><td class="n">69 %</td><td class="n">81 %</td><td class="n">42 %</td><td class="n">49 %</td><td class="n">36 %</td><td class="n">0,30</td><td class="n">225</td><td class="n">2,26</td><td class="n">94 %</td><td class="n">5,8</td><td class="n">4,6</td><td class="n">6 %</td><td class="n">17 %</td><td class="n">50 %</td></tr>
+    <tr><td>C1 — ako C, poldeci v šenku = 1 karta</td><td class="n">66 %</td><td class="n">74 %</td><td class="n">43 %</td><td class="n">51 %</td><td class="n">32 %</td><td class="n">0,23</td><td class="n">202</td><td class="n">1,78</td><td class="n">93 %</td><td class="n">3,5</td><td class="n">2,7</td><td class="n">15 %</td><td class="n">41 %</td><td class="n">52 %</td></tr>
+    <tr><td>Cbot — C, bot si cení kartu v ruke 2×</td><td class="n">63 %</td><td class="n">82 %</td><td class="n">50 %</td><td class="n">46 %</td><td class="n">40 %</td><td class="n">0,39</td><td class="n">229</td><td class="n">2,24</td><td class="n">94 %</td><td class="n">6,8</td><td class="n">5,3</td><td class="n">5 %</td><td class="n">13 %</td><td class="n">48 %</td></tr>
+    <tr><td>D — bez limitu, +1 karta za kolo</td><td class="n">70 %</td><td class="n">89 %</td><td class="n">46 %</td><td class="n">46 %</td><td class="n">34 %</td><td class="n">0,40</td><td class="n">249</td><td class="n">3,28</td><td class="n">68 %</td><td class="n">7,8</td><td class="n">8,9</td><td class="n">2 %</td><td class="n">4 %</td><td class="n">58 %</td></tr>
+    <tr><td>D2 — bez limitu, +2 karty za kolo</td><td class="n">64 %*</td><td class="n">90 %*</td><td class="n">48 %</td><td class="n">44 %</td><td class="n">41 %</td><td class="n">0,27</td><td class="n">267</td><td class="n">4,24</td><td class="n">54 %</td><td class="n">9,8</td><td class="n">13,2</td><td class="n">1 %</td><td class="n">1 %</td><td class="n">59 %</td></tr>
+    <tr><td>Dbot — D, bot si cení kartu v ruke 2×</td><td class="n">69 %</td><td class="n">85 %</td><td class="n">45 %</td><td class="n">44 %</td><td class="n">35 %</td><td class="n">0,40</td><td class="n">248</td><td class="n">3,28</td><td class="n">68 %</td><td class="n">8,9</td><td class="n">10,6</td><td class="n">1 %</td><td class="n">2 %</td><td class="n">56 %</td></tr>
+    <tr class="odpor"><td>E — bez limitu, doplnenie na 3</td><td class="n">70 %</td><td class="n">84 %</td><td class="n">44 %</td><td class="n">47 %</td><td class="n">40 %</td><td class="n">0,29</td><td class="n">236</td><td class="n">2,76</td><td class="n">79 %</td><td class="n">6,0</td><td class="n">5,8</td><td class="n">2 %</td><td class="n">2 %</td><td class="n">53 %</td></tr>
+    <tr><td>F — ako C, pas s nevyužitým limitom = 1 karta</td><td class="n">63 %</td><td class="n">83 %</td><td class="n">40 %</td><td class="n">56 %</td><td class="n">39 %</td><td class="n">0,30</td><td class="n">235</td><td class="n">2,62</td><td class="n">81 %</td><td class="n">6,2</td><td class="n">5,8</td><td class="n">2 %</td><td class="n">9 %</td><td class="n">54 %</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="poznamka">* B a D2 len 48 rozdaní × 2 miesta (šum asi ±10 bodov). Delené, Otočky a Hráč 1 sú pri ε = 0,1 / zrkadle. Hodnotu Cbot ovplyvnila jedna nekonečná partia (viď návrh 3); z merania ruky je vynechaná.</p>
+
+<h3 style="margin-top:22px">Odkiaľ dnes karty prichádzajú (na hráča a kolo)</h3>
+<div class="tab">
+<table>
+  <thead><tr><th scope="col">Zdroj</th><th scope="col">A dnes</th><th scope="col">B</th><th scope="col">C</th><th scope="col">D</th><th scope="col">E</th><th scope="col">Poznámka</th></tr></thead>
+  <tbody>
+    <tr><td>Doplnenie na začiatku kola</td><td class="n">1,00</td><td class="n">0,89</td><td class="n">0</td><td class="n">0,90</td><td class="n">0,43</td><td>Dnes ruka zriedka klesne pod 5, takže doplnenie dá málo.</td></tr>
+    <tr><td>Šenok (cigareta / poldeci)</td><td class="n">1,49</td><td class="n">1,54</td><td class="n">1,61</td><td class="n">1,57</td><td class="n">1,59</td><td>Najväčší zdroj už dnes. Bez doplnenia ho bot využíva len o málo viac. Nevie, že karta je vzácnejšia.</td></tr>
+    <tr><td>Fajčenie</td><td class="n">0,54</td><td class="n">0,47</td><td class="n">0,47</td><td class="n">0,47</td><td class="n">0,44</td><td>Bot fajčí kvôli Absťáku a pri prázdnej ruke, nie kvôli zásobe.</td></tr>
+    <tr><td>Priznanie Dlhu</td><td class="n">0,24</td><td class="n">—</td><td class="n">0,03</td><td class="n">—</td><td class="n">0,12</td><td>Bez doplnenia sa Dlhy z balíčka takmer nedoberú. Ostanú v ňom a na konci hry stoja −1 bod.</td></tr>
+    <tr><td>Poštárka, Kostol, výmeny</td><td class="n">0,20</td><td class="n">0,19</td><td class="n">0,15</td><td class="n">0,13</td><td class="n">0,16</td><td>Poštárku bot použije zriedka (0,01–0,04 za kolo). Jej sila bez limitu sa meraním nedá overiť.</td></tr>
+    <tr><td><strong>Spolu</strong></td><td class="n"><strong>3,50</strong></td><td class="n">3,34</td><td class="n"><strong>2,26</strong></td><td class="n">3,28</td><td class="n"><strong>2,76</strong></td><td>Vyložené do línie: 2,1 (A), 1,8 (C), 2,0 (E) na Zhromaždenie.</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="poznamka">Odhadzovanie limitom ruky dnes: 2,0-krát za partiu, spolu 2,8 karty (0,14 na hráča a kolo). Hráč dnes nevyužije limit vykladania v 21 % Zhromaždení. Prázdnu ruku pritom má len v 2 %, ostatné je jeho voľba.</p>
+
+<h2>Mapa náhody — ruka a prílev</h2>
+<div class="tab">
+<table>
+  <thead><tr><th scope="col">Zdroj</th><th scope="col">Kedy vstupuje</th><th scope="col">Rozptyl</th><th scope="col">Čím sa dá tlmiť</th><th scope="col">Závažnosť</th></tr></thead>
+  <tbody>
+    <tr><td>Štartovacia ruka (5 z 10 štartoviek)</td><td>Pred 1. Zhromaždením, hráč na ňu reaguje draftom.</td><td>Balíček je pre oboch rovnaký, mení sa len poradie. 2× Dievčina a 2× Manželka proti 2× Pijan a 2× Miňištrant.</td><td>Šenkom v 1. kole (hráč si kúpi ⌀ 2,6 karty).</td><td><span class="zav str">stredná</span></td></tr>
+    <tr><td>Doplnenie na 5</td><td>Na začiatku kola, pred voľbou cieľa. Hráč na neho reaguje.</td><td>Malý: ⌀ 1,0 karty. Z balíčka plného štartoviek a kliatob však ide náhodná karta.</td><td>Priznaním, Pohrebom a Liečbou (čistenie balíčka).</td><td><span class="zav str">stredná</span></td></tr>
+    <tr><td>Zloženie šenku</td><td>Pri stavbe šenku, pred braním. Stavajú ho hráči z náhodných balíčkov.</td><td>Stredný. Je to draft, teda interakcia.</td><td>Stavbou šenku a poradím brania.</td><td><span class="zav niz">nízka</span></td></tr>
+    <tr><td>Fajčenie a Kostol</td><td>Po rozhodnutí: hráč sa rozhodne ťahať, ale nevie čo.</td><td>Karta z balíčka.</td><td>Stavbou balíčka.</td><td><span class="zav niz">nízka</span></td></tr>
+    <tr><td>Kliatby v balíčku (Dlh, Cirhóza)</td><td>Pri ťahaní; zaberajú miesto v ruke.</td><td>Stredný. Dnes ich zriedi doplnenie (kliatba v ruke = menej doplnených kariet). Bez limitu ruky ostanú v ruke, kým ich hráč neprizná.</td><td>Priznaním (Dlh dá kartu), Pohrebom, odhodením nad limit (to po zrušení limitu zmizne).</td><td><span class="zav str">stredná</span></td></tr>
+    <tr><td>Bitka o staršieho bez draftu</td><td>Hráč hrá s tým, čo má v ruke.</td><td>Dnes malý (⌀ 5,0 hrateľnej karty). Pri C 3,6 a ≤1 karta v 17 % rúk, pri C1 v 41 %.</td><td>Šetrením kariet (v C to rozhoduje), voľbou cieľa útočníkom.</td><td><span class="zav vys">vysoká pri C</span></td></tr>
+    <tr><td>Súperova ruka</td><td>Skrytá informácia, nie náhoda.</td><td>Bez doplnenia sa dá ľahšie odhadnúť: počet kariet je verejný a väčšina je zo šenku, ktorý obaja videli (C: 94 % prílevu je z rozhodnutí).</td><td>Pamäťou: kto si čo vzal zo šenku.</td><td><span class="zav niz">interakcia</span></td></tr>
+  </tbody>
+</table>
+</div>
+<p>Z playtestov (staršie relácie, sekcia „Ruka a balíček“):</p>
+<blockquote>„Ruka sa mi nafúkla na 10 až 16 kariet, pretože som po draftoch a ťahaní v Pitke nikdy nehrala toľko, koľko som dobrala (limit vykladania 1 až 3).“ — Eva, 20261012-055944 (pred zavedením limitu ruky)</blockquote>
+<blockquote>„Odhadzovanie nad limit 6 mi umožnilo zbaviť sa Miňištrantov (ale sú to len presuny do balíčka).“ — playtesterka, pravidlá v3</blockquote>
+<blockquote>„Rozhodla skôr ruka a šenok než šikovnosť: moja ruka bola plná Dievčín, Miňištrantov a Cirhóz.“ — hodnotenie „Náhoda vs. zručnosť“ 5/10</blockquote>
+<p class="poznamka">Prvý citát je dôvod, prečo vznikol limit 6 (2026-10-12). Vtedy bol šenok takmer zadarmo. Dnes karta stojí cigaretu alebo pol poldeci a ruky v meraní bez limitu (B) narastú len na ⌀ 7,5 (max 18). Bez doplnenia (C, E) nerastú vôbec.</p>
+
+<h2>Čo zrušenie limitu ruky zasiahne</h2>
+<ul class="zoznam">
+  <li><strong>Priazeň Zberateľa</strong> (limit ruky 6 + 2/4/6) nebude mať účinok. Treba jej dať nový obsah. V E sa ponúka „doplnenie na 3 + sila priazne“ (1/2/3, nie dvojnásobok, inak by na sile 3 dávala viac než dnešné doplnenie na 5). Nemerané.</li>
+  <li><strong>Hrobár</strong> stratí spúšťač „odhodenie limitom ruky“. Dnes to bolo 2,8 karty za partiu, teda nanajvýš 2,8 cigarety pre súperovho Hrobára. Ostanú mu Benzínka, Dievčina, Pohreb a efekty.</li>
+  <li><strong>Odhodenie mŕtvych kariet</strong> limitom zmizne. Podiel štartoviek a kliatob v ruke sa však nezvýši (B 57 %, E 53 %, C 50 % proti dnešným 55 %). Bez doplnenia ruku tvoria hlavne karty zo šenku a mŕtve karty hráč podstrčí alebo prizná.</li>
+  <li><strong>Priznanie Dlhu</strong> (Dlh = karta) sa stane hlavným zdrojom karty z balíčka. Dlhy sa však bez doplnenia takmer nedoberú (0,24 → 0,03 za kolo v C) a v balíčku na konci hry stoja −1 bod. Čistenie balíčka stráca váhu, lebo balíček sa skoro neťahá.</li>
+  <li><strong>Poštárka</strong> (2 karty + Dlh za Pitku, s „Ešte jednu!“ až 3 Pitky) je bez doplnenia jeden z mála zdrojov. Bot ju používa zriedka, preto tu meranie nič nepovie. Riziko „6 kariet za bitku“ (naex-admin) je reálne pre človeka.</li>
+  <li><strong>Hasič, Vízia, Kostol, Starosta, Liečba</strong> (karty do ruky alebo výmena) v C/E zosilnejú, lebo karta je vzácnejšia. <strong>Veštica</strong> zoslabne, lebo poradie balíčka je menej dôležité.</li>
+  <li><strong>Vychovávateľka</strong> (súper si berie priznaný Dlh na ruku): bez limitu ho súper neodhodí. Prizná ho späť a dostane za to kartu.</li>
+  <li><strong>Technicky:</strong> krok bitky <code>limitRuky</code>, príkaz <code>odhod</code>, <code>limitRukyHraca</code> vo <code>viewFor</code>, prípad v <code>bot.ts</code>, tri testy (limit ruky + Hrobár, dva testy poldeci zostavujú bitku v kroku limitu ruky).</li>
+</ul>
+
+<h2>Návrhy</h2>
+<p class="poznamka">Zoradené podľa pomeru prínos : cena. Všetky čísla sú návrhy na Michalovo rozhodnutie.</p>
+<div class="filtre" role="group" aria-label="Filter podľa odporúčania">
+  <button type="button" data-f="vsetky" aria-pressed="true">Všetky</button>
+  <button type="button" data-f="zaviest" aria-pressed="false">Zaviesť</button>
+  <button type="button" data-f="vyskusat" aria-pressed="false">Vyskúšať v playteste</button>
+  <button type="button" data-f="zamietnut" aria-pressed="false">Zamietnuť</button>
+</div>
+
+<div id="navrhy">
+<article class="navrh odp-vyskusat" data-odp="vyskusat">
+  <h3>1. Variant E: bez limitu ruky, doplnenie len na 3 <span class="odp vyskusat">vyskúšať v playteste</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Karty nie sú vzácne: ⌀ 6,8 v ruke, kolo končí so 4,2 kartami, limit ruky prekročí hráč 2-krát za partiu. Michal chce, aby si hráč ruku budoval.</dd>
+    <dt>Zmena</dt><dd><code>LIMIT_RUKY_ZAKLAD</code> zrušiť (krok bitky <code>limitRuky</code> vypnúť). Na začiatku kola od 2. kola doplniť ruku na <strong>3</strong> (dnes 5). Štart ostáva 5 kariet.
+      Alternatíva na zváženie: na <strong>2</strong>. Nemerané, ale bude medzi E a C: viac budovania, viac rizika prázdnej ruky.</dd>
+    <dt>Prečo zručnosť</dt><dd>79 % prílevu je z rozhodnutia (šenok, fajčenie, priznanie), dnes 67 %. Každá karta nad 3 je zaplatená cigaretou alebo poldeci, teda súperí s NA EX, doliatím a bodmi za cigarety.
+      Poistka 3 kariet tlmí špirálu porazeného a bitku o staršieho bez draftu.</dd>
+    <dt>Čísla</dt><dd>ε 0,1: 60 → <span class="dobre">70 %</span> · ε 0,25: 88 → 84 % · delené 50 → 44 % · hráč 1 48 → 47 % · otočky 39 → 40 % · predurčenosť 0,39 → <span class="dobre">0,29</span> ·
+      prílev 3,50 → 2,76 · ruka v 7. kole 6,6 → 5,8 · príkazy 265 → 236 · starší ≤1 karta 0 → 2 %.</dd>
+    <dt>Cena a riziko</dt><dd>Malé pravidlo (jedno číslo). Zberateľ potrebuje nový účinok (návrh 4). Bot si karty zámerne nešetrí, preto skutočný prínos „ruky ako zásoby“ ukáže až človek.
+      Môže sa vrátiť nafúknutá ruka, ak hráči začnú kupovať zo šenku viac. Strop je limit vykladania.</dd>
+    <dt>Náročnosť</dt><dd>malá</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zaviest" data-odp="zaviest">
+  <h3>2. Pri C aj E: poistka proti nekonečnej bitke o staršieho <span class="odp zaviest">zaviesť spolu s C alebo E</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Variant Cbot (C, bot si cení kartu v ruke 2×): partia č. 169 sa zacyklila na <strong>6 612 kôl</strong>. Útočník volí stále toho istého staršieho, nikto nevyloží (karty sú drahé),
+      remíza o staršieho ⇒ útočník ostáva (pravidlo 2026-10-19) ⇒ opakuje sa. Obaja mali 0 cigariet a prázdny doberací balíček. Dnes pravidlá cyklus nevylučujú, len ho doplnenie robí nepravdepodobným.</dd>
+    <dt>Zmena</dt><dd>Po remíze v bitke o staršieho musí útočník v ďalšom kole bojovať o <strong>lokalitu</strong>. Lokalít ubúda, takže hra vždy skončí.
+      Alternatíva: po remíze o staršieho sa útočník vymení.</dd>
+    <dt>Prečo zručnosť</dt><dd>Nepridáva ju. Je to poistka: zabráni patu, v ktorom sa oplatí nehrať.</dd>
+    <dt>Čísla</dt><dd>1 z 192 partií v Cbot. V A, C, E a ostatných variantoch sa za 192 partií nezacyklila žiadna.</dd>
+    <dt>Cena a riziko</dt><dd>Jedna veta pravidiel. Bitku o staršieho po remíze odloží o kolo.</dd>
+    <dt>Náročnosť</dt><dd>malá</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-vyskusat" data-odp="vyskusat">
+  <h3>3. Variant C: bez limitu ruky a bez doplnenia (Michalov návrh) <span class="odp vyskusat">vyskúšať v playteste až po E, s poistkou</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Ako pri E. Toto je najčistejšia podoba zámeru „karty sa na ruku ťažko získavajú“.</dd>
+    <dt>Zmena</dt><dd>Limit ruky zrušiť, doplnenie zrušiť. Karty len zo šenku, fajčenia a efektov. Štart 5 kariet.</dd>
+    <dt>Prečo zručnosť</dt><dd>94 % prílevu je z rozhodnutia a ruku tvoria hlavne karty zo šenku, ktoré hráč videl a vybral. Podiel mŕtvych kariet klesá počas partie (57 % → 37 %).
+      Súperova ruka sa dá čítať (obaja videli šenok).</dd>
+    <dt>Čísla</dt><dd>ε 0,1: 60 → 69 % · ε 0,25: 88 → <span class="zle">81 %</span> · delené 50 → 42 % · hráč 1 49 % · otočky 39 → 36 % · predurčenosť 0,30 · prílev 2,26 · ruka v 7. kole 4,6, v 9. kole 4,1 ·
+      príkazy −15 % · prázdna ruka v 6 % Zhromaždení (dnes 2 %) · <span class="zle">v bitke o staršieho ≤1 hrateľná karta v 17 % rúk</span>.</dd>
+    <dt>Cena a riziko</dt><dd>Špirála porazeného sa v bote nepotvrdila: stíhajúci má na začiatku kola o 0,1 až 0,6 karty <em>viac</em> než vedúci (priazeň a cigarety za prebytok fungujú). Bitka o staršieho bez draftu však býva s prázdnou rukou.
+      Balíček sa takmer neťahá, takže stavba balíčka a čistenie od kliatob strácajú zmysel a nepriznané Dlhy v balíčku stoja body. Bez poistky (návrh 2) hrozí pat.</dd>
+    <dt>Náročnosť</dt><dd>malá (pravidlo), stredná (Zberateľ, Hrobár, texty)</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-vyskusat" data-odp="vyskusat">
+  <h3>4. Nový účinok priazne Zberateľa <span class="odp vyskusat">rozhodnúť spolu s E</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Bez limitu ruky priazeň Zberateľa nerobí nič. Priazeň je hlavný nástroj dobiehania.</dd>
+    <dt>Zmena</dt><dd>Dve možnosti: (a) <strong>doplnenie na 3 + sila priazne</strong> (1/2/3, bez dvojnásobku, teda doplnenie na 4/5/6). Porazený tak má poistku väčšiu presne vtedy, keď ju potrebuje.
+      (b) <strong>+1 karta zo šenku zadarmo za kolo</strong> pri sile ≥ 2. Viac rozhodnutia, ale silnejšie.</dd>
+    <dt>Prečo zručnosť</dt><dd>Keď Zberateľa posúva Pohoršenie a prebytok, víťaz rozhoduje, či porazenému dá kartu navyše, alebo inú priazeň (dnes dávajú „neškodnú priazeň“, playtest 20261016-155120).</dd>
+    <dt>Čísla</dt><dd>Nemerané. Pri (a) a sile 3 je prílev ako dnes (doplnenie na 5–6).</dd>
+    <dt>Cena a riziko</dt><dd>Zmena textu scorecardu. NASOBOK_PRIAZNE 2 by tu dal 5/7/9, to je priveľa, preto treba výnimku.</dd>
+    <dt>Náročnosť</dt><dd>malá</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zamietnut" data-odp="zamietnut">
+  <h3>5. Variant B: bez limitu, doplnenie na 5 ostáva <span class="odp zamietnut">zamietnuť</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Pôvodný prvý krok Michalovho nápadu.</dd>
+    <dt>Čísla</dt><dd>ε 0,1 60 → 60 % · ε 0,25 88 → 88 % · otočky 39 → 35 % · predurčenosť 0,40 · ruka 6,6 → 7,5 (max 18) · mŕtve 55 → 57 %.</dd>
+    <dt>Dôvod</dt><dd>Nič sa nezmení, lebo na limit sa takmer nenaráža. Ruka sa len stane odkladiskom. Mŕtve karty ostanú v ruke a znížia doplnenie, karty vzácne nebudú. Zámer sa nesplní.</dd>
+    <dt>Náročnosť</dt><dd>malá</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zamietnut" data-odp="zamietnut">
+  <h3>6. Variant D / D2: bez limitu, pevne +1 alebo +2 karty za kolo <span class="odp zamietnut">zamietnuť</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Pevný prílev namiesto doplnenia.</dd>
+    <dt>Čísla</dt><dd>D: ε 0,1 70 % · ε 0,25 89 % · otočky <span class="zle">34 %</span> · ruka v 7. kole <span class="zle">8,9</span> (max 19) · prílev 3,28 (dnes 3,50).
+      D2: ruka v 7. kole <span class="zle">13,2</span> (max 23) · hráč 1 44 % · prílev 4,24.</dd>
+    <dt>Dôvod</dt><dd>+1 je takmer presne to, čo dnes dáva doplnenie (⌀ 1,0), len bez stropu. Ruky narastú a karty vzácne nebudú, teda je to opak zámeru. D2 vracia problém nafúknutých rúk spred limitu
+      (playtest 20261012-055944, 10–16 kariet). Číslo 70 % pri ε 0,1 je v šume, na rozdiel od E k nemu nevedie žiadny mechanizmus.</dd>
+    <dt>Náročnosť</dt><dd>malá</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zamietnut" data-odp="zamietnut">
+  <h3>7. Variant C1: ako C, ale poldeci v šenku = 1 karta <span class="odp zamietnut">zamietnuť</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>naex-admin: bez doplnenia je najlacnejší zdroj poldeci za 2 karty, pričom jeden poldeci sa každé kolo doleje zadarmo.</dd>
+    <dt>Čísla</dt><dd>ε 0,25: 88 → <span class="zle">74 %</span>, delené <span class="zle">44 %</span> · otočky 32 % · vedúci po 8. kole vyhrá 83 % · prílev 1,78 · ruka v 7. kole 2,7 ·
+      <span class="zle">prázdna ruka v 15 % Zhromaždení</span> · <span class="zle">bitka o staršieho s ≤1 kartou 41 %</span> · príkazy 202.</dd>
+    <dt>Dôvod</dt><dd>Hladná ruka robí hru náhodnejšou: hrubé chyby sa trestajú menej, lebo obaja často nemajú čo zahrať. Poldeci za 2 karty je v C a E skôr ventil než diera:
+      stojí limit vykladania v tomto kole, a teda bitku. Ak sa ukáže priveľa kupovania, skôr zdražiť cigaretu (2 cigarety za kartu) než poldeci.</dd>
+    <dt>Náročnosť</dt><dd>malá</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zamietnut" data-odp="zamietnut">
+  <h3>8. Variant F: ako C, pas s nevyužitým limitom = 1 karta <span class="odp zamietnut">zamietnuť (zatiaľ)</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Vlastný pokus: prílev odmeňuje rozhodnutie „nehrať teraz, šetriť“ namiesto automatiky.</dd>
+    <dt>Čísla</dt><dd>ε 0,1 63 % · ε 0,25 83 % · <span class="zle">hráč 1 56 %</span> · otočky 39 % · prílev 2,62 · starší ≤1 karta 9 %.</dd>
+    <dt>Dôvod</dt><dd>Bot voľbu použije (nevyužitý limit 21 → 30 %), ale zručnosť sa nezvýšila a miesto začalo rozhodovať. Pridáva výnimku do Zhromaždenia. Vrátiť sa k nemu, ak E v playteste ukáže, že šetrenie sa nevypláca.</dd>
+    <dt>Náročnosť</dt><dd>stredná</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zamietnut" data-odp="zamietnut">
+  <h3>9. Bot „šetrí ruku“ (Cbot, Dbot) <span class="odp zamietnut">nie je návrh pravidla, len kontrola merania</span></h3>
+  <dl>
+    <dt>Čo sa skúšalo</dt><dd>Bot si kartu v ruke cenil 0,6 namiesto 0,3 (pri vykladaní aj v drafte), aby ju držal na neskôr.</dd>
+    <dt>Čísla</dt><dd>Cbot: ε 0,1 63 % (C 69 %) · Dbot: 69 % (D 70 %). Ruky väčšie, zručnosť nestúpla. V Cbot vznikol pat (návrh 2).</dd>
+    <dt>Záver</dt><dd>Jednoduchá váha karty plánovanie nenahradí. Bot nevie, <em>na ktorú</em> bitku šetriť (napr. lokalita s vyššími bodmi, bitka o staršieho bez draftu). Preto meranie podhodnocuje prínos C a E pre ľudí, a pri C aj ich riziko.</dd>
+  </dl>
+</article>
+</div>
+
+<h2>Čo sledovať v ďalšom playteste (variant E, prípadne C)</h2>
+<ol class="otazky">
+  <li>Nechal si si niekedy <strong>zámerne</strong> karty v ruke na neskoršiu bitku (napr. na bitku o staršieho, kde nie je draft)? Ktoré a prečo? Vyplatilo sa to?</li>
+  <li>Kedy si kupoval zo šenku za <strong>poldeci</strong> (2 karty, nižší limit vykladania) a kedy za <strong>cigaretu</strong>? Mal si niekedy pocit, že nemáš čím hrať, hoci si mal plné poldeci?</li>
+  <li>Bola tvoja ruka niekedy pod 2 hrateľné karty? V ktorom kole, po prehre či po výhre? Dostal si sa z toho a čím?</li>
+  <li>Čo si robil s mŕtvymi kartami (štartovky, Dlh, Cirhóza), keď ich už nejde odhodiť nad limit? Podstrčenie, priznanie, nechal si ich ležať?</li>
+  <li>Vedel si odhadnúť, čo má súper v ruke, podľa toho, čo si vzal zo šenku?</li>
+</ol>
+
+<h2>Čo potrebujem od Michala rozhodnúť</h2>
+<ul class="zoznam">
+  <li>Doplnenie na <strong>3</strong> (E, merané), na <strong>2</strong> (nemerané, bližšie k zámeru), alebo <strong>0</strong> (C)?</li>
+  <li>Nový účinok priazne Zberateľa: (a) doplnenie +1/+2/+3, alebo (b) karta zo šenku zadarmo?</li>
+  <li>Poistka proti patu po remíze o staršieho: útočník musí ísť o lokalitu, alebo sa útočník vymení?</li>
+  <li>Hrobár: stačí mu zvyšok spúšťačov, alebo ho naex-admin upraví?</li>
+</ul>
+
+<footer>
+  <p><strong>Ako sa meralo.</strong> Bot Štamgast (<code>tahBota</code>, povaha <code>stamgast</code>), stredná dĺžka hry (7 lokalít). Rebrík: rozdania 1000–1095 × 2 miesta (duplikát) proti tomu istému botovi s ε = 0,1 a 0,25
+  (B a D2 len 1000–1047). Zrkadlo, otočky, ruka a prílev: 192 partií (semienka 3000–3191 / 500–691), skript <code>playtest/strategia/20261019-1858/ruka.ts</code>.
+  Predurčenosť: <code>tools/bot/strategickost.ts --len rozdanie</code> (10 × 6). Každý variant v samostatnom worktree z HEAD <code>eeb5660</code>. Diffy sú v <code>playtest/strategia/20261019-1858/ruka-*.diff</code>.
+  Testy jadra prešli až na tri, ktoré stavajú bitku v kroku limitu ruky (očakávané), a štatistický test so zmenenou semiačkovou partiou.</p>
+  <p><strong>Bot sa variantom neprispôsobuje.</strong> Kartu v ruke si cení ako cigaretu (0,3) a vykladá, kým sa mu to v tejto bitke oplatí. Neplánuje, na ktorú bitku karty šetriť.
+  V C1 sa naučil len to, že poldeci dá jednu kartu. V Cbot a Dbot si kartu cenil 2×. Čísla variantov sú náznak smeru, nie dôkaz. Rozdiely pod asi 7 bodov v rebríku sú v šume.</p>
+</footer>
+</main>
+<script>
+(function () {
+  var data = [
+    ["A dnes", 60, 88], ["B", 60, 88], ["C", 69, 81], ["C1", 66, 74], ["Cbot", 63, 82],
+    ["D", 70, 89], ["D2", 64, 90], ["Dbot", 69, 85], ["E", 70, 84], ["F", 63, 83]
+  ];
+  var cont = document.getElementById("rebrik");
+  if (cont) {
+    var html = "";
+    data.forEach(function (d) {
+      html += '<div class="riadok"><span class="meno">' + d[0] + '</span><div class="pruhy">' +
+        '<div class="pruh"><i style="width:' + d[1] + '%"></i><span class="polovica"></span><em>' + d[1] + ' %</em></div>' +
+        '<div class="pruh e25"><i style="width:' + d[2] + '%"></i><span class="polovica"></span><em>' + d[2] + ' %</em></div></div></div>';
+    });
+    cont.innerHTML = html;
+  }
+  var tl = document.querySelectorAll(".filtre button");
+  tl.forEach(function (b) {
+    b.addEventListener("click", function () {
+      var f = b.getAttribute("data-f");
+      tl.forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      document.querySelectorAll("#navrhy .navrh").forEach(function (n) {
+        var o = n.getAttribute("data-odp");
+        n.hidden = !(f === "vsetky" || o === f);
+      });
+    });
+  });
+  var tab = document.getElementById("varianty");
+  if (tab) {
+    var smer = {};
+    tab.querySelectorAll("th button").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var k = Number(b.getAttribute("data-k"));
+        smer[k] = !smer[k];
+        var tb = tab.tBodies[0];
+        var riadky = Array.prototype.slice.call(tb.rows);
+        var hodnota = function (r) {
+          var t = r.cells[k].textContent.replace(/[%*\s]/g, "").replace(",", ".");
+          var n = parseFloat(t);
+          return isNaN(n) ? r.cells[k].textContent : n;
+        };
+        riadky.sort(function (a, c) {
+          var x = hodnota(a), y = hodnota(c);
+          var v = typeof x === "number" && typeof y === "number" ? x - y : String(x).localeCompare(String(y), "sk");
+          return smer[k] ? v : -v;
+        });
+        riadky.forEach(function (r) { tb.appendChild(r); });
+      });
+    });
+  }
+})();
+</script>
+</body>
+</html>

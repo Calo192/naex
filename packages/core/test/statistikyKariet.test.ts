@@ -37,7 +37,8 @@ function partia(seed: number): { stat: StatistikyKariet; prikazy: Record<string,
     rng = r;
     const cmd = cmds[idx] as Command;
     const kluc = cmd.type === "place" ? `place:${cmd.target}` : cmd.type;
-    prikazy[kluc] = (prikazy[kluc] ?? 0) + 1;
+    // Zo šenku sa berie 1 alebo 2 karty jedným príkazom (Michal 2026-10-19).
+    prikazy[kluc] = (prikazy[kluc] ?? 0) + (cmd.type === "draftBer" ? cmd.uids.length : 1);
     const res = apply(data, state, cmd, p);
     stat = zapisTahKariet(stat, state, cmd, p, res.events);
     bitky.push(...res.events.filter((e) => e.type === "bitkaVysledok"));

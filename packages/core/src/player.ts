@@ -14,7 +14,7 @@ export interface PlayerState {
   readonly dedicstvo: readonly CardInstance[];
   readonly poldeciPlne: number;
   readonly poldeciVypite: number;
-  /** Fyzické cigarety (menové aj bodové). */
+  /** Cigarety (mena aj body). */
   readonly cigarety: number;
   /**
    * Poškodenie pečene v tejto Pitke (pri prahu vzniká Cirhóza a počítadlo
@@ -92,10 +92,6 @@ export function prahExekutora(priazenExekutora: number): number {
 
 export function hodnotaViery(priazenVeriaceho: number): number {
   return KONSTANTY.HODNOTA_VIERY_ZAKLAD + priazenVeriaceho;
-}
-
-export function limitRuky(priazenZberatela: number): number {
-  return KONSTANTY.LIMIT_RUKY_ZAKLAD + priazenZberatela;
 }
 
 /**

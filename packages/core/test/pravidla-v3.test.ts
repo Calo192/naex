@@ -155,14 +155,14 @@ describe("Pečeň a zadĺženie len počas Pitky (Michal 2026-10-16)", () => {
 
 describe("akcie lokality patria majiteľovi susednej karty", () => {
   it("podstrčená karta aktivuje stranu lokality pre seba", () => {
-    const lok = makeDef("lok", [null, "Cigaretka", null, null], ["Pecka", null, null, null], { tags: ["Lokalita"] });
+    const lok = makeDef("lok", [null, "Cigareta", null, null], ["Pecka", null, null, null], { tags: ["Lokalita"] });
     const a = makeDef("a", [null, null, null, null], [null, "Rana", null, null]);
     const syn = syntheticData([lok, a]);
-    const lokCard = instanceFor(syn, "lok", [null, "Cigaretka", null, null], ["Pecka", null, null, null]);
+    const lokCard = instanceFor(syn, "lok", [null, "Cigareta", null, null], ["Pecka", null, null, null]);
     const cardA = instanceFor(syn, "a", [null, null, null, null], [null, "Rana", null, null]);
     const base: LineState = { lokalita: lokCard, lokalitaOtocena: false, strany: [[{ card: cardA, playedBy: 0 }], []] };
-    // Vlastná karta hráča 0 na jeho strane: Rana aj Cigaretka lokality pre hráča 0.
-    expect(evaluateLine(syn, base).sums[0]).toEqual({ Rana: 1, Cigaretka: 1 });
+    // Vlastná karta hráča 0 na jeho strane: Rana aj Cigareta lokality pre hráča 0.
+    expect(evaluateLine(syn, base).sums[0]).toEqual({ Rana: 1, Cigareta: 1 });
     // Tú istú kartu (rovnaké efektívne strany) má hráč 1 podstrčenú na strane hráča 0:
     // otočená karta má inú geometriu, preto ju skladáme tak, aby spoj vznikol rovnako.
     const b = makeDef("b", [null, null, "Rana", null], [null, null, null, null]);
@@ -170,7 +170,7 @@ describe("akcie lokality patria majiteľovi susednej karty", () => {
     const cardB = instanceFor(syn2, "b", [null, null, "Rana", null], [null, null, null, null]);
     const podstrcena: LineState = { lokalita: lokCard, lokalitaOtocena: false, strany: [[{ card: cardB, playedBy: 1 }], []] };
     const ev = evaluateLine(syn2, podstrcena);
-    expect(ev.sums[1]).toEqual({ Rana: 1, Cigaretka: 1 });
+    expect(ev.sums[1]).toEqual({ Rana: 1, Cigareta: 1 });
     expect(ev.sums[0]).toEqual({});
   });
 });

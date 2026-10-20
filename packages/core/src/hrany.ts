@@ -132,3 +132,16 @@ export function nahladVylozenia(
     zmeny: [rozdiel(pred.sums[0], po.sums[0]), rozdiel(pred.sums[1], po.sums[1])],
   };
 }
+
+/**
+ * Kraje línie (Michal 2026-10-20): názov polovice pri strane hráča 0 a 1 podľa
+ * hrán karty v strede (tvorca, `kraj`). Vytlačená ľavá hrana leží pri strane
+ * hráča 0, kým lokalita nie je otočená. Bez názvu null.
+ */
+export function krajeStran(data: GameData, stred: CardInstance | null, otocena: boolean): [string | null, string | null] {
+  const def = stred === null ? undefined : data.cards.get(stred.defId);
+  if (def === undefined) return [null, null];
+  const lava = def.left.kraj ?? null;
+  const prava = def.right.kraj ?? null;
+  return otocena ? [prava, lava] : [lava, prava];
+}

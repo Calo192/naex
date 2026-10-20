@@ -20,10 +20,10 @@ function placed(playedBy: 0 | 1, naexBy?: 0 | 1): PlacedCard {
 }
 
 describe("M3 — limit vykladania", () => {
-  it("2 plné poldeci → limit 3", () => {
+  it("3 plné poldeci na štarte → limit 4 (Michal 2026-10-19)", () => {
     const player = freshPlayer();
-    expect(player.poldeciPlne).toBe(2);
-    expect(limitVykladania(player, [[], []], 0)).toBe(3);
+    expect(player.poldeciPlne).toBe(3);
+    expect(limitVykladania(player, [[], []], 0)).toBe(4);
   });
 
   it("po vypití jedného → limit 2", () => {
@@ -38,12 +38,13 @@ describe("M3 — limit vykladania", () => {
     const strany: [PlacedCard[], PlacedCard[]] = [[], [placed(1, 0)]];
     expect(limitVykladania(player, strany, 0)).toBe(3);
     // Súperovi ten istý poldeci limit nezvyšuje.
-    expect(limitVykladania(freshPlayer(), strany, 1)).toBe(3); // 2 + 0 + 1
+    expect(limitVykladania({ poldeciPlne: 2 }, strany, 1)).toBe(3); // 2 + 0 + 1
   });
 
   it("priznané karty limit neovplyvňujú", () => {
     const player = {
       ...freshPlayer(),
+      poldeciPlne: 2,
       priznane: [instanceFor(data, "obcan", EMPTY, EMPTY)],
     };
     expect(limitVykladania(player, [[], []], 0)).toBe(3);

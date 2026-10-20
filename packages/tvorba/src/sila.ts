@@ -18,7 +18,7 @@ export interface SilaKarty {
   readonly aktivne: number;
   /** Podiel vytlačených akcií, ktoré sa aktivovali (0–1, násobky sa neštepia). */
   readonly aktivacia: number;
-  /** Priemer aktívnych kliatbových akcií (Hazard, Pečeň) na výskyt. */
+  /** Priemer aktívnych kliatbových akcií (Dlh, Poškodenie pečene) na výskyt. */
   readonly zle: number;
 }
 

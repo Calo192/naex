@@ -20,6 +20,7 @@ import type {
   StranaNavrhu,
 } from "@naex/tvorba";
 import {
+  AKCIE_20261019,
   PREDVOLENE_AKCIE,
   PREDVOLENE_KATEGORIE,
   PREDVOLENE_KLUCOVE_SLOVA,
@@ -71,7 +72,7 @@ interface SeedNavrh {
   readonly obrazok: string;
 }
 
-type RawSide = { blocked: Pozicia[]; actions: Record<string, number>; allowed?: Record<string, string[]> };
+type RawSide = { blocked: Pozicia[]; actions: Record<string, number>; allowed?: Record<string, string[]>; name?: string };
 type RawCard = { id: string; name: string; tags: string[]; effect_text: string; left: RawSide; right: RawSide };
 
 function stranaZJson(s: RawSide): StranaNavrhu {
@@ -79,6 +80,7 @@ function stranaZJson(s: RawSide): StranaNavrhu {
     blokovane: s.blocked,
     akcie: s.actions,
     povolene: Object.fromEntries(Object.entries(s.allowed ?? {}).map(([k, v]) => [Number(k), v])),
+    ...(s.name === undefined ? {} : { kraj: s.name }),
   };
 }
 
@@ -264,6 +266,44 @@ export class Obsah {
     const klucoveSlova = stara.klucoveSlova.filter((k) => !zrusene.has(k.slovo.toLowerCase()));
     if (klucoveSlova.length === stara.klucoveSlova.length) return;
     this.db.prepare("INSERT INTO sady (cas, autor, data) VALUES (?, ?, ?)").run(teraz, null, JSON.stringify({ ...stara, cas: teraz, klucoveSlova }));
+    this.cache = null;
+  }
+
+  /**
+   * Jednotné názvy akcií a nová Vízia (Michal 2026-10-19): kľúč Cigaretka sa
+   * premenuje na Cigareta v tvorcovi (akcie, karty) aj vo zverejnenej sade
+   * (nová verzia s rovnakými kartami) a názvy a popisy akcií sa prepíšu podľa
+   * AKCIE_20261019 — inak by hráči videli Hazard, Poldecko a starú Víziu.
+   * Beží raz; značku si pamätá v nastaveniach.
+   */
+  zjednotNazvyAkcii(teraz: number): void {
+    const ZNACKA = "migracia-akcie-20261019";
+    if (this.nastaveniaT.jeden(ZNACKA) !== null) return;
+    const premenuj = <T>(x: T): T => JSON.parse(JSON.stringify(x).replaceAll('"Cigaretka"', '"Cigareta"')) as T;
+    const upravAkciu = (a: AkciaDef): AkciaDef => {
+      const kluc = a.kluc === "Cigaretka" ? "Cigareta" : a.kluc;
+      const nova = AKCIE_20261019.find((x) => x.kluc === kluc);
+      return nova === undefined ? { ...a, kluc } : { ...a, kluc, nazov: nova.nazov, popis: nova.popis };
+    };
+    transakcia(this.db, () => {
+      for (const a of this.akcie.vsetky()) {
+        const nova = upravAkciu(a);
+        if (nova.kluc !== a.kluc) this.akcie.zmaz(a.kluc);
+        this.akcie.uloz(nova.kluc, nova);
+      }
+      for (const k of this.karty.vsetky()) {
+        const nova = premenuj(k);
+        if (JSON.stringify(nova) !== JSON.stringify(k)) this.ulozKartu(nova);
+      }
+      this.nastaveniaT.uloz(ZNACKA, { cas: teraz });
+    });
+    const posledna = this.db.prepare("SELECT data FROM sady ORDER BY verzia DESC LIMIT 1").get() as { data: string } | undefined;
+    if (posledna === undefined) return;
+    const stara = JSON.parse(posledna.data) as Omit<Sada, "verzia">;
+    const nova = { ...premenuj(stara), akcie: stara.akcie.map(upravAkciu) };
+    // Čistá databáza má už nové názvy — bez zmeny netreba novú verziu.
+    if (JSON.stringify(nova) === JSON.stringify(stara)) return;
+    this.db.prepare("INSERT INTO sady (cas, autor, data) VALUES (?, ?, ?)").run(teraz, null, JSON.stringify({ ...nova, cas: teraz }));
     this.cache = null;
   }
 

@@ -43,10 +43,10 @@ describe("Pes stráži koniec strany", () => {
   });
 });
 
-describe("Dedičstvo stojí 2 cigarety", () => {
-  it("bez cigariet sa Nástroj do Dedičstva nedá, s dvoma áno a cigarety ubudnú", () => {
-    expect(cieleVykladania(data, [[], []], 0, inst("puska"), 3, 1)).not.toContain("dedicstvo");
-    expect(cieleVykladania(data, [[], []], 0, inst("puska"), 3, 2)).toContain("dedicstvo");
+describe("Dedičstvo stojí cigarety (od 2026-10-19 rastúca cena, viď pravidla-20261019)", () => {
+  it("bez cigariet sa Nástroj do Dedičstva nedá, s nimi áno a cigarety ubudnú", () => {
+    expect(cieleVykladania(data, [[], []], 0, inst("puska"), 3, false)).not.toContain("dedicstvo");
+    expect(cieleVykladania(data, [[], []], 0, inst("puska"), 3, true)).toContain("dedicstvo");
 
     const s0 = setupGame(data, 5);
     const puska = inst("puska");
@@ -58,11 +58,11 @@ describe("Dedičstvo stojí 2 cigarety", () => {
       zhromazdenieStav: { naTahu: 0, zostavaLimit: [2, 2], pasoval: [false, false], navyse: [0, 0] },
     } as GameState;
     const po = apply(data, s, { type: "place", uid: puska.uid, target: "dedicstvo" }, 0).state;
-    expect(po.hraci[0].cigarety).toBe(3 - KONSTANTY.CENA_DEDICSTVA);
+    expect(po.hraci[0].cigarety).toBe(3 - KONSTANTY.CENA_DEDICSTVA_ZAKLAD);
     expect(po.hraci[0].dedicstvo.map((k) => k.uid)).toContain(puska.uid);
 
-    const chudobny = { ...s, hraci: [{ ...s.hraci[0], cigarety: 1 }, s.hraci[1]] } as GameState;
-    expect(() => apply(data, chudobny, { type: "place", uid: puska.uid, target: "dedicstvo" }, 0)).toThrow(/cigarety/);
+    const chudobny = { ...s, hraci: [{ ...s.hraci[0], cigarety: 0 }, s.hraci[1]] } as GameState;
+    expect(() => apply(data, chudobny, { type: "place", uid: puska.uid, target: "dedicstvo" }, 0)).toThrow(/cigaret/);
   });
 });
 
@@ -78,20 +78,6 @@ describe("Pasca a Kočovník vo vyhodnotení línie", () => {
   ]);
   const k = (id: string, l: readonly (string | null)[], r: readonly (string | null)[]) =>
     instanceFor(sd, id, l as never, r as never);
-
-  it("Pasca: akcie prvej podstrčenej karty neplatia, susedov spoj áno", () => {
-    // Hráč 0 podstrčí Občana na stranu hráča 1, hneď k lokalite.
-    const podstrcena: PlacedCard = { card: k("obcan", R, R), playedBy: 0 };
-    const line = (pasca: boolean): LineState => ({
-      lokalita: k("lok", R, R),
-      lokalitaOtocena: false,
-      strany: [[], [podstrcena]],
-      pasca: [false, pasca],
-    });
-    expect(evaluateLine(sd, line(false)).sums[0].Rana).toBe(2); // jeho Rana + Rana lokality
-    // S Pascou hráča 1 nemá podstrčená karta nič; akcia lokality sa stále páruje (dostane ju majiteľ susednej karty).
-    expect(evaluateLine(sd, line(true)).sums[0].Rana).toBe(1);
-  });
 
   it("Kočovník: jeho Hazard dostáva hráč, na ktorého strane leží", () => {
     const lokD = makeDef("lokD", D, D, { tags: ["Lokalita"] });
@@ -181,7 +167,8 @@ describe("cigarety porazenému za prebytok", () => {
         lokalitaPrepadne: false,
         spalit: [],
         vesticaHotova: true,
-        limitHotovy: [true, true],
+        zberatelHotovy: [true, true],
+        zberatelPonuka: [[], []],
       },
     } as GameState;
     const cig = s.hraci[1].cigarety;

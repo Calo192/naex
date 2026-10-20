@@ -22,6 +22,8 @@ export interface BattleSide {
   readonly tuheBonus: number;
   /** Počet mojich Absťákov — znižujú MOJE tuhé poškodenie (PRAVIDLA §12). */
   readonly abstaky: number;
+  /** Tuhé menej z efektov súpera (Pasca: −1 za každé moje Zviera v línii). Chýba = 0. */
+  readonly tuheZlava?: number;
   /** Moje priznané Dlhy — strop pre súperove mäkké poškodenie. */
   readonly priznaneDlhy: number;
   /**
@@ -68,7 +70,7 @@ export function computeDamage(sides: readonly [BattleSide, BattleSide]): DamageR
       me.cirhozaBonus +
       me.tuheBonus +
       me.priazenBitkara;
-    return Math.max(0, base - oppViera * opp.hodnotaViery - me.abstaky);
+    return Math.max(0, base - oppViera * opp.hodnotaViery - me.abstaky - (me.tuheZlava ?? 0));
   }) as [number, number];
 
   // 3. Mäkké poškodenie je zastropené súperovým PRIZNANÝM dlhom (+ priazeň

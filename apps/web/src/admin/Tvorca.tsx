@@ -75,12 +75,15 @@ function StranaEditor({
   nastav,
   akcie,
   farba,
+  lokalita,
 }: {
   readonly nazov: string;
   readonly strana: StranaNavrhu;
   readonly nastav: (s: StranaNavrhu) => void;
   readonly akcie: readonly AkciaDef[];
   readonly farba: string;
+  /** Pri lokalite sa pomenúva kraj — polovica línie pri tejto hrane. */
+  readonly lokalita: boolean;
 }) {
   const pouzite = Object.entries(strana.akcie).filter(([, n]) => n > 0);
   const volne = volnePozicie(strana).length;
@@ -129,6 +132,18 @@ function StranaEditor({
           {pocet}/{volne} akcií · {rozlozeni} {rozlozeni === 1 ? "rozloženie" : "rozložení"}
         </span>
       </div>
+
+      {lokalita && (
+        <label className="strana-kraj" title="Ako sa volá polovica línie pri tejto hrane — hra ju tak popíše (napr. Krčma: pri výčape / pri dverách).">
+          kraj{" "}
+          <input
+            value={strana.kraj ?? ""}
+            maxLength={40}
+            placeholder="napr. pri výčape"
+            onChange={(e) => nastav({ ...strana, kraj: e.target.value })}
+          />
+        </label>
+      )}
 
       <div className="strana-akcie">
         {pouzite.map(([kluc, n]) => (
@@ -412,8 +427,8 @@ export function Tvorca({ id }: { readonly id: string }) {
         </section>
 
         <section className="panel strany">
-          <StranaEditor nazov="Ľavá strana" strana={k.lava} nastav={(s) => nastav("lava", s)} akcie={vzhlad.akcie} farba={farba} />
-          <StranaEditor nazov="Pravá strana" strana={k.prava} nastav={(s) => nastav("prava", s)} akcie={vzhlad.akcie} farba={farba} />
+          <StranaEditor nazov="Ľavá strana" strana={k.lava} nastav={(s) => nastav("lava", s)} akcie={vzhlad.akcie} farba={farba} lokalita={k.tagy.includes("Lokalita")} />
+          <StranaEditor nazov="Pravá strana" strana={k.prava} nastav={(s) => nastav("prava", s)} akcie={vzhlad.akcie} farba={farba} lokalita={k.tagy.includes("Lokalita")} />
         </section>
       </div>
 

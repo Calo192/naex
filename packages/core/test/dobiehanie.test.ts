@@ -1,12 +1,12 @@
 // Zmeny Michala 2026-10-16 po playteste 20261016-134912 („snehová guľa“):
-// silnejšia priazeň, Cigaretka dáva fyzické cigarety, fajčenie kedykoľvek,
+// silnejšia priazeň, Cigareta dáva fyzické cigarety, fajčenie kedykoľvek,
 // ohlásené vydesenie a oprava ceny prebytku pri Miňištrantovi.
 
 import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
-import type { BitkaStav, CardInstance, ElderState, GameState, MarkerPos, PlayerId } from "../src/index.ts";
+import type { BitkaStav, CardInstance, ElderState, Event, GameState, MarkerPos, PlayerId } from "../src/index.ts";
 import { apply, evaluateLine, legalCommands, loadGameData, naTahu, priazen, setupGame, viewFor } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
@@ -32,7 +32,8 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     lokalitaPrepadne: false,
     spalit: [],
     vesticaHotova: true,
-    limitHotovy: [false, false],
+    zberatelHotovy: [false, false],
+    zberatelPonuka: [[], []],
     ...b,
   };
 }
@@ -52,7 +53,7 @@ describe("priazeň: sila 1 / 2 / 3 a dvojnásobný účinok", () => {
   });
 });
 
-describe("cigarety: Cigaretka ich dáva, fajčenie dáva karty", () => {
+describe("cigarety: Cigareta ich dáva, fajčenie dáva karty", () => {
   it("v Zhromaždení smie hráč fajčiť: karta hneď, cigareta preč, ťah mu neskončí", () => {
     const s0 = setupGame(data, 4);
     const s: GameState = {
@@ -79,11 +80,11 @@ describe("cigarety: Cigaretka ich dáva, fajčenie dáva karty", () => {
       hraci: [{ ...s0.hraci[0], cigarety: 1 }, s0.hraci[1]],
       pitkaStav: { naTahu: 0, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false] },
     } as GameState;
-    const po = apply(data, s, { type: "smoke", pocet: 1 }, 0).state;
-    expect(po.dobraneVPitke[0]).toHaveLength(1);
-    const pohlad = JSON.stringify(viewFor(data, po, 1));
-    expect(pohlad).not.toContain("dobraneVPitke");
-    expect(pohlad).not.toContain(`"uid":${po.dobraneVPitke[0]![0]}`);
+    const r = apply(data, s, { type: "smoke", pocet: 1 }, 0);
+    const dobrata = r.events.flatMap((e) => (e.type === "kartyTahane" ? e.karty : []));
+    expect(dobrata).toHaveLength(1);
+    const pohlad = JSON.stringify(viewFor(data, r.state, 1));
+    expect(pohlad).not.toContain(`"uid":${dobrata[0]!.uid},`);
   });
 
   it("aktívne Cigaretky v Pitke pridajú cigarety (mínus súperove Obmedzenia), karty nie", () => {
@@ -99,7 +100,7 @@ describe("cigarety: Cigaretka ich dáva, fajčenie dáva karty", () => {
           for (let r = 0; r < (v?.right.length ?? 0) && najdene === null; r++) {
             const karta = inst(def.id, l, r);
             const ev = evaluateLine(data, { lokalita: lok, lokalitaOtocena: false, strany: [[{ card: karta, playedBy: 0 }], []] });
-            const cig = ev.sums[0].Cigaretka ?? 0;
+            const cig = ev.sums[0].Cigareta ?? 0;
             if (cig > 0) najdene = { lok, karta, cig, obm: ev.sums[1].Obmedzenie ?? 0 };
           }
         }
@@ -121,10 +122,21 @@ describe("cigarety: Cigaretka ich dáva, fajčenie dáva karty", () => {
       pitkaStav: { naTahu: 0, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false] },
     } as GameState;
     const ruka = s.hraci[0].ruka.length;
-    for (let i = 0; i < 4 && s.faza === "pitka"; i++) s = apply(data, s, { type: "skipNaex" }, s.pitkaStav!.naTahu).state;
-    expect(s.faza).toBe("zhromazdenie");
-    expect(s.hraci[0].cigarety).toBe(Math.max(0, cig - obm));
-    expect(s.hraci[0].ruka).toHaveLength(ruka);
+    // Po Pitke ide ďalšia alebo bitka (Pitky podľa lokality) — cigarety a karty sa čítajú z udalostí Pitky.
+    const udalosti: Event[] = [];
+    for (let i = 0; i < 4 && s.faza === "pitka"; i++) {
+      const r = apply(data, s, { type: "skipNaex" }, s.pitkaStav!.naTahu);
+      udalosti.push(...r.events);
+      s = r.state;
+    }
+    const ziska = Math.max(0, cig - obm);
+    const logy = udalosti.flatMap((e) => (e.type === "log" ? [e.text] : []));
+    expect(logy.some((t) => t.startsWith(`Hráč 1 získava ${ziska} `))).toBe(ziska > 0);
+    // Len Pitka — bitka, ktorá sa po poslednej Pitke dohrá sama, dá +2 karty (Michal 2026-10-19).
+    const doBitky = udalosti.findIndex((e) => e.type === "faza" && e.faza === "bitka");
+    const vPitke = doBitky === -1 ? udalosti : udalosti.slice(0, doBitky);
+    expect(vPitke.some((e) => e.type === "kartyTahane" && e.hrac === 0)).toBe(false);
+    expect(ruka).toBeGreaterThan(0);
   });
 });
 
