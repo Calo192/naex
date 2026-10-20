@@ -29,7 +29,8 @@ dvaja ľudia na dvoch zariadeniach, nie viac hráčov naraz.
    zverejnenej sade. `packages/core/data/cards.json` je východisková sada
    pre prvé spustenie a testy — kópia zverejnenej sady v12 (2026-10-20:
    14 lokalít s krajmi, prevaha, Presbiter, Dvojčatá, Pes za spoje; `cardsJson` z tabuľky `sady`;
-   na produkciu cez `tools/admin/do-seedu.ts`, viď docs/NASADENIE.md); predtým ju generoval
+   na produkciu cez `tools/admin/do-seedu.ts`, viď docs/NASADENIE.md) + text Kultúrneho domu
+   z patronátu 2026-10-20 (tvorca ho dorovná značkou migrácie); predtým ju generoval
    `tools/import_print_pdf.py` z tlačového PDF.
 6. **Server púšťa `.ts` priamo (strip-types)** — len vymazateľná syntax
    (`erasableSyntaxOnly`): žiadne parametrické vlastnosti, enumy, namespaces.

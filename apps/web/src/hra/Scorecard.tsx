@@ -264,7 +264,7 @@ export function StavStarsieho({
     <div className="scorecard-stav">
       <strong>{meno}</strong>
       {elder.nahradeny && (
-        <span className="znacka" title="Na ukazovateli leží náhrada. Scorecard hrá ďalej (marker, priazeň, body), len o neho sa už bojovať nedá.">
+        <span className="znacka" title="Na ukazovateli leží náhrada. Scorecard hrá ďalej (marker, priazeň, body), len do ruky si ho už nikto nevezme (patronát).">
           náhrada
         </span>
       )}

@@ -160,10 +160,10 @@ v `docs/playtesty/zmeny-pravidiel.html`, znenie v `docs/PRAVIDLA.md`):
 
 - **Odpoveď na NA EX** — po súperovom NA EX jedna karta z ruky mimo limitu,
   striedavo (`engine.ts`, `PitkaStav.reakcia`, príkazy `place`/`bezReakcie`).
-- **Nahradený starší ostáva v hre** (marker, priazeň, body, vydesenie);
-  bitka len o pôvodného staršieho.
-- **Bitka o staršieho** — karta staršieho v strede línie, útočník ju natočí
-  (`chooseElder.otocena`); náhľad bodov `nahladBitkyOStarsieho` (`view.ts`).
+- **Nahradený starší ostáva v hre** (marker, priazeň, body, vydesenie).
+- ~~Bitka o staršieho~~ — od 2026-10-20 ju nahradil **patronát** (krok draftu
+  `patronat`, príkazy `patronat`/`bezPatronatu`, tajná náhrada v
+  `GameState.patronat`, náhľad `nahladPatronatu` vo `view.ts`).
 - **Úžerník** (prah Dlhu 2 + sila; nahradil Zberateľa a ten Očumovateľa — alias
   `OCUMOVATEL, ZBERATEL → UZERNIK`, server premenuje bodovaciu kartu v databáze).
 - **Útočník draftuje prvý**, pitiek `max(1, |rozdiel|)`.

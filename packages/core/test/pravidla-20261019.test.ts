@@ -49,7 +49,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     sums: [{}, {}],
     exekutorHotovy: [true, true],
     pohorsenieZostava: [0, 0],
-    pohnuteMarkery: [],
+    pohorsenieHranice: {},
     damage: null,
     vitaz: 0,
     prebytokDrzi: null,
@@ -78,7 +78,7 @@ function predKoncomBitky(seed: number, uprav: (s: GameState) => GameState = (s) 
     faza: "bitka",
     kolo: 2,
     strany: [[], []],
-    ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]!, elderId: null },
+    ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
     lokalityVHre: s0.lokalityVHre.slice(1),
     bitkaStav: bitka({ krok: "liecba", caka: 0, liecbaHotova: [false, true] }),
   });
@@ -99,7 +99,7 @@ function vZhromazdeni(strany: GameState["strany"]): GameState {
     ...s0,
     faza: "zhromazdenie",
     utocnik: 0,
-    ciel: { typ: "lokalita", lokalita: instanceFor(sadaP, "lok_pitky", ["Rana", "Rana", "Rana", null], [null, "Viera", null, null]), elderId: null },
+    ciel: { typ: "lokalita", lokalita: instanceFor(sadaP, "lok_pitky", ["Rana", "Rana", "Rana", null], [null, "Viera", null, null]) },
     lokalitaOtocena: false,
     strany,
     pitkyCelkom: 1,
@@ -143,32 +143,6 @@ describe("Pitky = 1 + menší počet aktivovaných akcií lokality (Michal 2026-
     let s = vZhromazdeni([[kartaTri()], []]);
     for (let i = 0; i < 4 && s.faza !== "bitka"; i++) s = apply(sadaP, s, { type: s.faza === "zhromazdenie" ? "pass" : "skipNaex" }, naTahu(s)!).state;
     expect(s.faza).toBe("bitka");
-  });
-});
-
-describe("remíza o staršieho", () => {
-  it("starší ostáva na mieste, prebytok nie je a útočník ostáva útočníkom", () => {
-    let s = setupGame(data, 21);
-    const elder = s.starsi[0]!;
-    s = { ...s, starsi: s.starsi.map((e, i) => (i === 0 ? { ...e, marker: 1, markerZaciatokKola: 1 } : e)) };
-    const utocnik: PlayerId = s.utocnik;
-    s = apply(data, s, { type: "chooseElder", elderId: elder.elderId, otocena: false }, naTahu(s)!).state;
-    // Obaja hneď pasujú — prázdna línia, 0 : 0.
-    for (let i = 0; i < 40 && s.faza !== "bitka" && s.faza !== "volbaCiela"; i++) {
-      s = apply(data, s, { type: s.faza === "zhromazdenie" ? "pass" : "skipNaex" }, naTahu(s)!).state;
-    }
-    const markeryPred = s.starsi.map((e) => e.marker);
-    for (let i = 0; i < 40 && s.faza === "bitka"; i++) {
-      const p = naTahu(s);
-      if (p === null) break;
-      s = apply(data, s, legalCommands(data, s, p)[0]!, p).state;
-    }
-    expect(s.faza).toBe("volbaCiela");
-    const po = s.starsi.find((e) => e.elderId === elder.elderId)!;
-    expect(po.nahradeny).toBe(false);
-    expect(po.marker).toBe(1);
-    expect(s.starsi.map((e) => e.marker)).toEqual(markeryPred);
-    expect(s.utocnik).toBe(utocnik);
   });
 });
 
@@ -228,7 +202,7 @@ function vZhromazdeniHrac0(seed: number, h: Partial<GameState["hraci"][0]>): Gam
     {
       ...s0,
       faza: "zhromazdenie",
-      ciel: { typ: "lokalita", lokalita, elderId: null },
+      ciel: { typ: "lokalita", lokalita },
       lokalityVHre: s0.lokalityVHre.slice(1),
       zhromazdenieStav: { naTahu: 0, zostavaLimit: [2, 2], pasoval: [false, false], navyse: [0, 0] },
     },
@@ -362,7 +336,7 @@ describe("Vízia: vrchnú kartu balíčka do ruky, alebo zahodiť (Michal 2026-1
       ...s0,
       faza: "pitka",
       utocnik: 1,
-      ciel: { typ: "lokalita", lokalita: instanceFor(sadaV, "lok_vizia", ["Rana", null, null, null], EMPTY), elderId: null },
+      ciel: { typ: "lokalita", lokalita: instanceFor(sadaV, "lok_vizia", ["Rana", null, null, null], EMPTY) },
       lokalitaOtocena: false,
       strany: [[{ card: instanceFor(sadaV, "vestec", EMPTY, ["Vízia", null, null, null]), playedBy: 0 }], []],
       pitkyCelkom: 1,
@@ -435,7 +409,7 @@ describe("Vychovávateľka: Dlh ide súperovi do balíčka, nie na ruku", () => 
       {
         ...s0,
         faza: "pitka",
-        ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]!, elderId: null },
+        ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
         lokalityVHre: s0.lokalityVHre.slice(1),
         strany: [[{ card: vych, playedBy: 0 }, { card: ciel, playedBy: 0 }], []],
         pitkyCelkom: 1,

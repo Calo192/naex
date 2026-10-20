@@ -95,12 +95,6 @@ describe("M4 — výsledok", () => {
     expect(o.prebytok).toBe(1);
   });
 
-  it("pri remíze v tuhom o staršieho nevyhrá nikto a prebytok nie je", () => {
-    const d = { tuhe: [2, 2], makke: [0, 3], celkove: [2, 5], zvysnaViera: [0, 0], zvysnaPovera: [0, 0] } as const;
-    const o = battleOutcome(d, 0, true);
-    expect(o).toEqual({ vitaz: null, prebytokDrzi: null, prebytok: 0 });
-  });
-
   it("pri remíze v celkovom poškodení nikto nezíska prebytok", () => {
     const damage = computeDamage([side({ sums: { Rana: 2 } }), side({ sums: { Pecka: 1 } })]);
     expect(damage.celkove).toEqual([2, 2]);

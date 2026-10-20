@@ -4,7 +4,7 @@
 import { expect } from "vitest";
 import { WebSocket } from "ws";
 import type { ClientState, Command } from "@naex/core";
-import { cieleVykladania, cielLokalitaId, krokStavby, naexCieleVLinii, posunMarker } from "@naex/core";
+import { cieleVykladania, cielLokalitaId, krokStavby, naexCieleVLinii, pohorsenieMozne, posunMarker } from "@naex/core";
 import { loadDataFromDisk } from "../src/server.ts";
 
 /** Dáta sady pre pravidlá vykladania — robot ich pozná ako hráč (verejné karty). */
@@ -103,6 +103,8 @@ export class Robot {
           const krok = krokStavby(uids.length);
           return { type: "stavbaSenku", doSenku: uids.slice(0, krok.doSenku), odhod: uids.slice(krok.doSenku, krok.doSenku + krok.odhod) };
         }
+        // Patronát robot nevyužíva.
+        if (d?.krok === "patronat") return { type: "bezPatronatu" };
         // Najviac dve karty zo šenku, po jednej za cigaretu.
         const karta = view.senok[0];
         if (karta === undefined || d === null || d.noveKarty[ja] >= 2) return { type: "draftStop" };
@@ -160,13 +162,9 @@ export class Robot {
           return { type: "exekutorTool", defId: volba.defId, kde: volba.kde };
         }
         if (b.krok === "pohorsenie" || b.krok === "prebytok") {
-          const vyluceny = view.ciel?.typ === "starsi" ? view.ciel.elderId : null;
           const smerK = ja === 0 ? 1 : 0;
-          const elder = view.starsi.find(
-            (e) =>
-              e.elderId !== (b.krok === "prebytok" ? vyluceny : null) &&
-              !(b.krok === "pohorsenie" && b.pohnuteMarkery.includes(e.elderId)) &&
-              posunMarker(e, smerK, b.krok === "pohorsenie") !== null,
+          const elder = view.starsi.find((e) =>
+            b.krok === "pohorsenie" ? pohorsenieMozne(view, ja, e) : posunMarker(e, smerK, false) !== null,
           );
           if (elder === undefined) throw new Error(`${b.krok}: žiadny posúvateľný marker`);
           return b.krok === "pohorsenie"
@@ -175,11 +173,6 @@ export class Robot {
         }
         // Cintorín (Michal 2026-10-20): robot nič do Dedičstva nedáva.
         if (b.krok === "cintorin") return { type: "cintorin", uid: null };
-        if (b.krok === "nahrada") {
-          const volba = view.volbyNahrada?.[0];
-          if (volba === undefined) throw new Error("náhrada bez volieb");
-          return { type: "nahrada", defId: volba.defId, kde: volba.kde, marker: 4 };
-        }
         return { type: "skipLiecba" };
       }
       default:

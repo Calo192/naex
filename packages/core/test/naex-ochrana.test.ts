@@ -76,7 +76,7 @@ describe("Anonymný alkoholik", () => {
   it("Krčma nevyžaduje NA EX, keď jediný Občan je súperov pri Alkoholikovi", () => {
     const s = {
       ...vPitke([[lezi("pijan", 1), lezi("anonymny_alkoholik", 1)], []], 0),
-      ciel: { typ: "lokalita", lokalita: inst("krcma"), elderId: null },
+      ciel: { typ: "lokalita", lokalita: inst("krcma") },
     } as GameState;
     expect(krcmaVyzaduje(data, s, 0)).toBe(false);
   });

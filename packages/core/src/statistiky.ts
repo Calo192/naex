@@ -25,6 +25,7 @@ export interface StatistikyHraca {
   readonly bitkyVyhrane: number;
   readonly bitkyAkoUtocnik: number;
   readonly bitkyAkoUtocnikVyhrane: number;
+  /** Patronáty — starší vzatí do ruky (Michal 2026-10-20; kľúč ostal z bitiek o starších). */
   readonly bitkyOStarsich: number;
 
   readonly tuheUdelene: number;
@@ -274,8 +275,8 @@ function zapisJedneho(
       case "pohreb":
         s.pohreby += 1;
         break;
-      case "nahrada":
-        s.starsiZiskani += 1;
+      case "patronat":
+        s.bitkyOStarsich += 1;
         break;
       default:
         break;
@@ -293,7 +294,6 @@ function zapisJedneho(
         s.bitkyAkoUtocnik += 1;
         if (e.vitaz === p) s.bitkyAkoUtocnikVyhrane += 1;
       }
-      if (pred.ciel?.typ === "starsi") s.bitkyOStarsich += 1;
       s.tuheUdelene += d.tuhe[p];
       s.makkeUdelene += d.makke[p];
       s.poskodenieObdrzane += d.celkove[opp];
@@ -307,6 +307,9 @@ function zapisJedneho(
   }
 
   // ---- rozdiely stavu
+  // Starší získaný patronátom (rozhodne sa pri návrate kariet po bitke).
+  const ziskani = (st: GameState): number => st.starsi.filter((e) => e.ziskal === p).length;
+  s.starsiZiskani += Math.max(0, ziskani(po) - ziskani(pred));
   s.cirhozyZiskane += noveKliatby(pred, po, p, "cirhoza");
   const noveDlhy = noveKliatby(pred, po, p, "dlh");
   s.dlhyZiskane += noveDlhy;

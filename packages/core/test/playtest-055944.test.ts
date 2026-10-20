@@ -24,10 +24,10 @@ import {
   legalCommands,
   loadGameData,
   moznostiNaex,
-  nahladBitkyOStarsieho,
   naTahu,
   parseScorecards,
   poskodenieBitky,
+  patronatMozny,
   priazen,
   setupGame,
   viewFor,
@@ -87,7 +87,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     sums: [{}, {}],
     exekutorHotovy: [true, true],
     pohorsenieZostava: [0, 0],
-    pohnuteMarkery: [],
+    pohorsenieHranice: {},
     damage: null,
     vitaz: 0,
     prebytokDrzi: null,
@@ -143,7 +143,7 @@ describe("Krčma vynúti NA EX", () => {
     const s0 = setupGame(data, 14);
     const krcma = inst("krcma");
     const moja = inst("pijan");
-    const s = { ...vPitke(s0, [[lezi(moja, 0)], []]), ciel: { typ: "lokalita" as const, lokalita: krcma, elderId: null } };
+    const s = { ...vPitke(s0, [[lezi(moja, 0)], []]), ciel: { typ: "lokalita" as const, lokalita: krcma } };
     expect(legalCommands(data, s, 0)).not.toContainEqual({ type: "skipNaex" });
     expect(() => apply(data, s, { type: "skipNaex" }, 0)).toThrow(/Krčma/);
     // Bez poldeci povinnosť zaniká.
@@ -153,7 +153,7 @@ describe("Krčma vynúti NA EX", () => {
 });
 
 describe("nahradený starší ostáva v hre", () => {
-  it("dáva priazeň a jeho marker sa dá posunúť Pohoršením; bojovať o neho sa nedá", () => {
+  it("dáva priazeň a jeho marker sa dá posunúť Pohoršením; do ruky ho vziať nemožno", () => {
     const s0 = setupGame(data, 15);
     const e0 = s0.starsi[0]!;
     const nahradeny = { ...e0, nahradeny: true, ziskal: 0 as PlayerId, marker: 7 as const, markerZaciatokKola: 7 as const };
@@ -170,31 +170,8 @@ describe("nahradený starší ostáva v hre", () => {
     expect(legalCommands(data, s, 1)).toContainEqual({ type: "pohorsenie", elderId: e0.elderId });
     const po = apply(data, s, { type: "pohorsenie", elderId: e0.elderId }, 1).state;
     expect(po.starsi[0]!.marker).toBe(6);
-    // Bitka o náhradu nie je v ponuke.
-    const volba: GameState = { ...s0, starsi };
-    expect(legalCommands(data, volba, (1 - volba.utocnik) as PlayerId).some((c) => c.type === "chooseElder" && c.elderId === e0.elderId)).toBe(false);
-  });
-});
-
-describe("bitka o staršieho", () => {
-  it("karta staršieho leží v strede línie a obranca ju natočí", () => {
-    const s0 = setupGame(data, 16);
-    const e0 = { ...s0.starsi[0]!, marker: 7 as const, markerZaciatokKola: 7 as const };
-    const s: GameState = { ...s0, starsi: [e0, ...s0.starsi.slice(1)] };
-    expect(legalCommands(data, s, (1 - s.utocnik) as PlayerId)).toContainEqual({ type: "chooseElder", elderId: e0.elderId, otocena: true });
-    const po = apply(data, s, { type: "chooseElder", elderId: e0.elderId, otocena: true }, (1 - s.utocnik) as PlayerId).state;
-    expect(po.ciel?.lokalita).toEqual(e0.karta);
-    expect(po.lokalitaOtocena).toBe(true);
-  });
-
-  it("náhľad: víťazovi pribudne získaný starší, body z toho staršieho zmiznú", () => {
-    const s0 = setupGame(data, 17);
-    const e0 = { ...s0.starsi[0]!, marker: 1 as const, markerZaciatokKola: 1 as const };
-    const view = viewFor(data, { ...s0, starsi: [e0, ...s0.starsi.slice(1)] }, 0);
-    const n = nahladBitkyOStarsieho(data, view, e0.elderId);
-    // Po bitke je marker v sivej — hráč 1 (obávaný) z neho nemá nič.
-    expect(n.vyhra[0][1]).toBeLessThanOrEqual(n.teraz[1]);
-    expect(n.vyhra[1][1]).toBeLessThanOrEqual(n.teraz[1]);
+    // Patronát nad náhradou nie je v ponuke.
+    expect(patronatMozny(nahradeny, 1)).toBe(false);
   });
 });
 
@@ -208,7 +185,7 @@ describe("limit ruky zrušený (Michal 2026-10-19)", () => {
       faza: "bitka",
       strany: [[], [lezi(hrobar, 1)]],
       hraci: [{ ...s0.hraci[0], ruka }, { ...s0.hraci[1], cigarety: 0, ruka: [] }],
-      ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]!, elderId: null },
+      ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
       lokalityVHre: s0.lokalityVHre.slice(1),
       bitkaStav: bitka({ krok: "liecba", caka: 0, liecbaHotova: [false, true] }),
     };
@@ -237,7 +214,7 @@ describe("Benzínka, Dievčina na vydaj a Krčmárka pri bitke", () => {
     let s: GameState = {
       ...vPitke(s0, [[lezi(a, 0), lezi(b, 0), lezi(krcmarka, 0)], [lezi(c, 1), lezi(d, 1)]], s0.utocnik === 0 ? 1 : 0),
       hraci,
-      ciel: { typ: "lokalita", lokalita: benzinka, elderId: null },
+      ciel: { typ: "lokalita", lokalita: benzinka },
       lokalityVHre: s0.lokalityVHre.filter((x) => x.uid !== benzinka.uid),
     };
     s = { ...s, hraci: [{ ...s.hraci[0], cigarety: 3 }, { ...s.hraci[1], cigarety: 3 }] };
@@ -271,7 +248,7 @@ describe("Benzínka, Dievčina na vydaj a Krčmárka pri bitke", () => {
     let s: GameState = {
       ...vPitke(s0, [[], [lezi(d, 0), lezi(n, 0)]], s0.utocnik === 0 ? 1 : 0),
       hraci,
-      ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]!, elderId: null },
+      ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
       lokalityVHre: s0.lokalityVHre.slice(1),
     };
     s = apply(sada2, s, { type: "skipNaex" }, naTahu(s)!).state;

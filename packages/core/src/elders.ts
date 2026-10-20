@@ -6,7 +6,7 @@
 //  - Priazeň (počas hry): marker na polovici hráča → TEN hráč má priazeň.
 //  - Strach (koniec hry): starší sa bojí hráča na OPAČNEJ strane a body
 //    získava OBÁVANÝ hráč — podľa podmienok scorecardu, na ktorom starší leží.
-//  - Nahradený starší (bitka o staršieho) ostáva v hre celý: marker, priazeň,
+//  - Nahradený starší (patronát) ostáva v hre celý: marker, priazeň,
 //    prebudenie aj body — podmienky aktivuje karta náhrady (Michal 2026-10-12).
 
 import type { CardInstance, Favour, PlayerId, Podmienka, ScorecardDef, SlotIndex } from "./types.ts";
@@ -86,11 +86,30 @@ export function vydesil(elder: ElderState, p: PlayerId): boolean {
 }
 
 /**
- * Bitka o staršieho sa dá vyvolať, len ak je marker aspoň v oranžovej zóne
- * a na ukazovateli ešte leží pôvodný starší (o náhradu sa nebojuje).
+ * Patronát (Michal 2026-10-20 — nahradil bitku o staršieho): patrón je hráč,
+ * ktorému starší prejavuje priazeň. Po šenku si smie vziať do ruky pôvodného
+ * (nenahradeného) staršieho, ktorého marker je aspoň v žltej zóne na jeho
+ * polovici.
  */
-export function bitkaOStarsiehoMozna(elder: ElderState): boolean {
-  return !elder.nahradeny && STUPNICA_ZONY[elder.marker] >= 2;
+export function patronatMozny(elder: ElderState, p: PlayerId): boolean {
+  return !elder.nahradeny && priazenHraca(elder) === p && STUPNICA_ZONY[elder.marker] >= 1;
+}
+
+/**
+ * Cena patronátu: cigarety = koľko markeru chýba do červenej (žltá 2,
+ * oranžová 1, červená 0), súper dostane v bitke toľko Pohoršení, o koľko sa
+ * marker posunie do stredu (2 / 3 / 4). Spolu vždy 4.
+ */
+export function cenaPatronatu(elder: ElderState): { readonly cigarety: number; readonly pohorsenia: number } {
+  return { cigarety: 3 - STUPNICA_ZONY[elder.marker], pohorsenia: Math.abs(elder.marker - MARKER_STRED) };
+}
+
+/** Zóna so stranou (−3 … 3, sivá 0) — hranicu zón prekročí posun, ktorý ju zmení. */
+const ZONA_SO_STRANOU = [-3, -2, -1, 0, 0, 0, 1, 2, 3] as const;
+
+/** Prekročí posun z `z` na `na` hranicu zón? (Pohoršenie smie najviac dve — §8.2.) */
+export function prekraciaHranicu(z: MarkerPos, na: MarkerPos): boolean {
+  return ZONA_SO_STRANOU[z] !== ZONA_SO_STRANOU[na];
 }
 
 /**

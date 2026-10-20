@@ -81,7 +81,7 @@ do `R/hrac1/nezrovnalosti.md`.
   `{"type":"tah","kroky":[…]}` (priznania, potom karty a pred každou okrem
   poslednej `{"type":"vypit"}`), alebo jednotlivé `place` / `vypit`.
 - **Pitky:** Pitiek v bitke = **1 + menší počet aktivovaných akcií lokality**
-  z jej dvoch strán (1–4; v bitke o staršieho z karty staršieho). Pred každou
+  z jej dvoch strán (1–4). Pred každou
   Pitkou je Zhromaždenie. Počet sa mení s líniou — výpis ho ukazuje. „Ešte
   jednu!“ už neexistuje.
 - **Prevaha (2026-10-20):** akcie hrany lokality dostane, kto má v tej
@@ -103,8 +103,8 @@ do `R/hrac1/nezrovnalosti.md`.
   dvor (raz za Pitku `vykup`: cigareta → karta z odhadzovacieho do ruky),
   Most (len na vlastnú stranu), Cintorín (porazený `cintorin`: Nástroj
   z ruky do Dedičstva zadarmo), Obecný úrad (prah Exekútora −4, Robota
-  odhodí 2 Dlhy), Jednota (barter −1), Kultúrny dom (Pohoršenie aj na ten
-  istý marker), Vínna pivnica (NA EX 2× za Pitku), Družstvo (Pracujúci
+  odhodí 2 Dlhy), Jednota (barter −1), Kultúrny dom (Pohoršenie bez limitu
+  dvoch hraníc zón), Vínna pivnica (NA EX 2× za Pitku), Družstvo (Pracujúci
   nemíňajú limit). Nové lokality prídu do hry so zverejnením sady.
 - **Draft:** stavba šenku naraz, bez podávania: z N kariet dáš **polovicu do šenku
   a polovicu naspodok** (`{"type":"stavbaSenku","doSenku":[…],"odhod":[…]}`, pri 8 kartách 4 + 4)
@@ -148,8 +148,20 @@ do `R/hrac1/nezrovnalosti.md`.
   ťa bojí. Marker určuje **priazeň** (komu je posunutý) a koho sa starší bojí.
 - **Priazeň** sila 1 / 2 / 3 podľa zóny; väčšina dáva 2 × sila. Úžerník: prah
   Dlhu 2 + sila (3 / 4 / 5); Fajčiar +1 / +2 / +3 cigarety v 1. Pitke.
-- **Remíza:** o lokalitu rozhodne celkové poškodenie, potom obranca; o
-  staršieho nevyhrá nikto. **Ohlásené vydesenie:** polovicu starších treba
+- **Patronát (2026-10-20, nahradil bitku o staršieho):** po braní zo šenku
+  (útočník, potom obranca; `patronat` / `bezPatronatu`) si smieš vziať do ruky
+  staršieho, ktorý ti **prejavuje priazeň** (marker aspoň v žltej na tvojej
+  polovici, pôvodný starší). Na jeho scorecard dáš lícom dole Občana/Zviera
+  z ruky, marker ide do stredu. Platíš cigarety do červenej (žltá 2, oranžová 1,
+  červená 0), súper dostane v bitke Pohoršenia navyše (o koľko marker išiel do
+  stredu: 2 / 3 / 4). Treba mať aspoň 1 poldeci. Kartu staršieho smieš v kole
+  vyložiť. **Výhra** = lokalita aj starší (náhrada sa otočí); **prehra** = starší
+  sa vráti, náhrada do ruky a **odhodíš poldeci** natrvalo. Patronát je jediná
+  obrana proti vydeseniu (uvoľní krajnú pozíciu).
+- **Pohoršenie (2026-10-20):** ten istý marker smieš posunúť aj viackrát, tvoje
+  Pohoršenia ho však prenesú najviac cez **dve hranice zón** (pravá sivá → ľavá
+  oranžová áno) a nikdy nie na krajnú pozíciu (okrem Novín).
+- **Remíza:** rozhodne celkové poškodenie, potom obranca. **Ohlásené vydesenie:** polovicu starších treba
   udržať do konca ďalšieho kola. **Cigarety za prebytok** dostane ten, proti
   komu sa prebytok delil.
 

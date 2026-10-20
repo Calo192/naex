@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prihodenie staršieho — návrhy — NA EX!</title>
+<style>
+  :root {
+    --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --okraj: #3d3229;
+    --text: #f1e8d8; --tlmeny: #b6a790; --slaby: #8b7d6a;
+    --akcent: #e9ad45; --cervena: #d0563f; --zelena: #7cbf74; --modra: #5cc0cf; --fialova: #b993d6; --zlta: #d9c24a; --oranzova: #e08a3a;
+    color-scheme: dark;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #dccdb3;
+      --text: #2a2016; --tlmeny: #6b5b45; --slaby: #7a6a52;
+      --akcent: #a8680f; --cervena: #b0402c; --zelena: #3f7f38; --modra: #2a7f8c; --fialova: #7a4fa0; --zlta: #9a8410; --oranzova: #b0601a;
+      color-scheme: light;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 system-ui, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 1060px; margin: 0 auto; padding: 32px 16px 120px; }
+  h1, h2, h3, h4 { font-family: Georgia, "Bitter", serif; line-height: 1.2; }
+  h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); margin: 0 0 8px; }
+  h2 { font-size: 1.4rem; margin: 48px 0 12px; }
+  h3 { font-size: 1.2rem; margin: 0 0 6px; }
+  a { color: var(--akcent); }
+  code { font: 0.86em ui-monospace, Consolas, monospace; background: var(--plocha-2); padding: 1px 5px; border-radius: 5px; }
+  .podnadpis { color: var(--tlmeny); margin: 0 0 20px; max-width: 78ch; }
+  :focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+  .cisla { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin: 16px 0; }
+  .cislo { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; }
+  .cislo b { display: block; font: 700 1.6rem/1.1 Georgia, serif; color: var(--akcent); }
+  .cislo span { color: var(--tlmeny); font-size: 0.88rem; }
+  .box { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 16px 18px; margin: 0 0 14px; }
+  .box > :last-child { margin-bottom: 0; }
+  .box.problem { border-left: 4px solid var(--cervena); }
+  .box.odporucam { border-color: var(--zelena); border-width: 2px; }
+  .mini { color: var(--slaby); font-size: 0.85rem; }
+  ol, ul { padding-left: 22px; }
+  li { margin-bottom: 6px; }
+  .tok { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 12px 0; }
+  .tok span { padding: 4px 12px; border-radius: 999px; border: 1px solid var(--okraj); background: var(--plocha); font-size: 0.9rem; }
+  .tok span.nove { border-color: var(--akcent); color: var(--akcent); font-weight: 600; }
+  .tok i { color: var(--slaby); font-style: normal; }
+  .chip { display: inline-block; font-size: 0.78rem; padding: 1px 9px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; margin-right: 4px; }
+  .z1 { color: var(--zlta); } .z2 { color: var(--oranzova); } .z3 { color: var(--cervena); }
+  .plus { color: var(--zelena); } .minus { color: var(--cervena); } .neutral { color: var(--tlmeny); }
+  /* záložky návrhov */
+  .zalozky { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
+  .zalozky button { font: inherit; cursor: pointer; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--okraj); background: var(--plocha); color: var(--tlmeny); }
+  .zalozky button[aria-selected="true"] { background: var(--akcent); color: var(--pozadie); border-color: var(--akcent); font-weight: 600; }
+  .navrh[hidden] { display: none; }
+  .navrh .stitky { margin: 0 0 10px; }
+  .dva { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 720px) { .dva { grid-template-columns: 1fr; } }
+  .dva h4 { margin: 0 0 4px; font-size: 1rem; }
+  /* tabuľky */
+  .tab { overflow-x: auto; background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 720px; }
+  th, td { padding: 8px 10px; border-bottom: 1px solid var(--okraj); text-align: left; vertical-align: top; }
+  tbody tr:last-child > * { border-bottom: 0; }
+  thead th { color: var(--slaby); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  tbody th { font-family: Georgia, serif; white-space: nowrap; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  /* kalkulačka */
+  .kalk { display: grid; grid-template-columns: minmax(240px, 320px) 1fr; gap: 16px; }
+  @media (max-width: 760px) { .kalk { grid-template-columns: 1fr; } }
+  .kalk fieldset { border: 0; padding: 0; margin: 0 0 12px; }
+  .kalk legend { color: var(--slaby); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+  .kalk label { display: block; padding: 6px 10px; border: 1px solid var(--okraj); border-radius: 10px; margin-bottom: 4px; cursor: pointer; background: var(--plocha-2); }
+  .kalk label:has(input:checked) { border-color: var(--akcent); }
+  .kalk input { margin-right: 6px; accent-color: var(--akcent); }
+  .vysl { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+  .vysl div { background: var(--plocha-2); border-radius: 10px; padding: 10px 12px; }
+  .vysl b { display: block; font: 700 1.4rem/1.1 Georgia, serif; }
+  .vysl span { color: var(--tlmeny); font-size: 0.84rem; }
+  .verdikt { margin-top: 10px; padding: 10px 12px; border-radius: 10px; background: var(--plocha-2); }
+  details { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 10px 14px; margin-bottom: 8px; }
+  summary { cursor: pointer; font-weight: 600; }
+  details[open] summary { margin-bottom: 8px; }
+  .otazka { border-left: 3px solid var(--akcent); padding-left: 12px; margin: 0 0 14px; }
+  .otazka p { margin: 4px 0; }
+</style>
+</head>
+<body>
+<main>
+
+<h1>Prihodenie staršieho</h1>
+<p class="podnadpis">Rozbor nápadu Michala (2026-10-20): starší už nie je cieľ bitky — hráč ho po šenku <em>prihodí</em> k bitke o lokalitu, súper ho dostane do ruky a na scorecard ide lícom dole náhrada. Kto bitku vyhrá, berie lokalitu aj staršieho. Dokument ukazuje, čo dnes nefunguje, čo hovoria čísla a štyri návrhy, ako to zapracovať.</p>
+
+<div class="cisla">
+  <div class="cislo"><b>len víťaz</b><span>bitku o staršieho dnes vyvolá iba obranca — hráč, ktorý vyhral poslednú bitku</span></div>
+  <div class="cislo"><b>≈ 17 b</b><span>starší, ktorý sa ťa bojí na úrovni 3 (Vydesenie), na konci hry. Úroveň 2 ≈ 11 b, úroveň 1 ≈ 4 b</span></div>
+  <div class="cislo"><b>≈ 6,7 b</b><span>jeden získaný starší (priemerne 3,4 aktívne podmienky „väzeň“ × 2)</span></div>
+  <div class="cislo"><b>+1 kolo</b><span>každá bitka o staršieho dnes predĺži hru — lokalitu nespotrebuje</span></div>
+</div>
+<p class="mini">Bodové hodnoty: priemer z 2000 náhodných rozdaní scorecardov so sadou v12 (<code>setupGame</code> + <code>podmienkyStarsieho</code>). Konkrétna partia sa môže líšiť podľa toho, ktoré podmienky sú aktívne.</p>
+
+<h2>1. Čo dnes nefunguje</h2>
+
+<div class="box problem">
+  <h3>Bitku o staršieho vyvolá len ten, kto ju nepotrebuje</h3>
+  <p>Cieľ kola volí obranca, teda víťaz poslednej bitky (§7). Prebytok posúva markery <strong>k porazenému</strong> — porazený tým dostáva priazeň a starší sa boja víťaza. Bitka o staršieho je teda najcennejšia pre porazeného (zbaví víťaza strachu, ktorý mu nesie body), lenže ten ju vyvolať nesmie. Víťaz ju vyvolá skoro vždy len proti sebe. Kto vyhráva, môže v krajnom prípade voliť cieľ celú hru.</p>
+</div>
+<div class="box problem">
+  <h3>Na ohlásené vydesenie sa nedá odpovedať</h3>
+  <p>§1 dáva súperovi „kolo na odpoveď, napr. bitku o vydeseného staršieho“. Vydesenie však ohlasuje spravidla víťaz bitky. V ďalšom kole je obrancom a cieľ volí on, takže porazený bitku o staršieho vyvolať nemôže. Marker na krajnej pozícii sa bežným posunom nepohne, uvoľní ho len náhrada (§9). Dnes je táto „odpoveď“ len na papieri.</p>
+</div>
+<div class="box problem">
+  <h3>Bitka o staršieho je kolo navyše bez draftu</h3>
+  <p>Nespotrebuje lokalitu, preto predĺži hru. Nemá šenok, takže sa v nej hrá len tým, čo hráč má. Pitky sa rátajú z akcií karty staršieho, nie lokality. Je to iný typ kola s inými pravidlami, ktoré sa musí hráč učiť zvlášť.</p>
+</div>
+
+<p>Tvoj nápad rieši všetky tri naraz: staršieho môže prihodiť <strong>ktokoľvek</strong>, robí sa to <strong>v bežnom kole o lokalitu</strong> (dĺžka hry je pevná 5 / 7 / 11 bitiek) a krajný marker sa dá uvoľniť aj z pozície porazeného.</p>
+
+<h2>2. Kľúčová vec: smer strachu</h2>
+
+<p>„Prastarý, z ktorého má strach“ sa dá čítať dvoma spôsobmi. Rozdiel je zásadný, lebo čísla vychádzajú opačne:</p>
+
+<div class="dva">
+  <div class="box">
+    <h4>Smer A — „starší sa bojí teba“</h4>
+    <p>Marker leží na <em>súperovej</em> polovici: súper má priazeň, starší sa bojí teba. Keď ho získaš, <span class="minus">prídeš o vlastné body za jeho strach</span>, ale <span class="plus">súperovi vezmeš priazeň</span> (napr. Bitkár +6 tuhé) a dostaneš kartu staršieho do balíčka.</p>
+    <p class="mini">Typicky ho prihodí víťaz predošlých bitiek. Brzdí to dobiehanie porazeného — priazeň je jeho hlavný nástroj.</p>
+  </div>
+  <div class="box">
+    <h4>Smer B — „starší sa bojí súpera“</h4>
+    <p>Marker leží na <em>tvojej</em> polovici: ty máš priazeň, starší sa bojí súpera. Keď ho získaš, <span class="minus">prídeš o vlastnú priazeň</span>, ale <span class="plus">súperovi vezmeš body za strach</span> a jeden kus do vydesenia.</p>
+    <p class="mini">Typicky ho prihodí porazený. Je to jediná obrana proti ohlásenému vydeseniu a zamknutej krajnej pozícii.</p>
+  </div>
+</div>
+
+<p>Tvoja tabuľka kompenzácie (žltá 2 cigarety, oranžová 1, červená 0) presne sedí na <strong>smer A</strong>. Zo žltej je získanie pre teba v pluse, preto súper dostane najviac. Z červenej prídeš o veľa vlastných bodov, takže kompenzácia netreba. Pri <strong>smere B</strong> hodnota so zónou naopak rastie: z červenej je to rozdiel okolo 24 bodov. Vyskúšaj si to:</p>
+
+<div class="box">
+  <div class="kalk">
+    <form id="kalk" aria-label="Kalkulačka prihodenia">
+      <fieldset>
+        <legend>Smer</legend>
+        <label><input type="radio" name="smer" value="A" checked>A — starší sa bojí teba</label>
+        <label><input type="radio" name="smer" value="B">B — starší sa bojí súpera</label>
+      </fieldset>
+      <fieldset>
+        <legend>Zóna markera</legend>
+        <label><input type="radio" name="zona" value="1" checked><span class="chip z1">žltá</span> Znepokojenie</label>
+        <label><input type="radio" name="zona" value="2"><span class="chip z2">oranžová</span> Strach</label>
+        <label><input type="radio" name="zona" value="3"><span class="chip z3">červená</span> Vydesenie</label>
+      </fieldset>
+      <fieldset>
+        <legend>Kompenzácia súperovi</legend>
+        <label><input type="radio" name="komp" value="michal" checked>Michalova: 2 / 1 / 0 cigariet</label>
+        <label><input type="radio" name="komp" value="ziadna">žiadna</label>
+      </fieldset>
+    </form>
+    <div>
+      <div class="vysl" aria-live="polite">
+        <div><b id="vTy">—</b><span>body pre teba (koniec hry)</span></div>
+        <div><b id="vSuper">—</b><span>body pre súpera</span></div>
+        <div><b id="vRozdiel">—</b><span>rozdiel v tvoj prospech</span></div>
+        <div><b id="vPriazen">—</b><span>priazeň, ktorá zanikne</span></div>
+      </div>
+      <div class="verdikt" id="verdikt"></div>
+      <p class="mini">Ráta len zmenu po úspešnom získaní: strach toho staršieho prestane bodovať (marker ide do sivej), víťazovi pribudne získaný starší. Cigarety: 3 = 1 bod. Neráta kartu staršieho v balíčku ani to, že náhrada zmení aktívne podmienky na jeho scorecarde.</p>
+    </div>
+  </div>
+</div>
+
+<h2>3. Spoločné jadro všetkých návrhov</h2>
+
+<p>Tieto časti majú všetky štyri návrhy rovnaké. Líšia sa v tom, <em>kto</em> smie prihodiť a <em>akú úlohu</em> má zóna markera.</p>
+
+<div class="tok" aria-label="Priebeh kola">
+  <span>Voľba lokality (obranca)</span><i>→</i><span>Stavba šenku</span><i>→</i><span>Branie zo šenku</span><i>→</i><span class="nove">Prihodenie</span><i>→</i><span>(Zhromaždenie → Pitka) × 1–4</span><i>→</i><span>Bitka</span>
+</div>
+
+<ol>
+  <li><strong>Bitka o staršieho ako cieľ zaniká.</strong> Každé kolo je bitka o lokalitu, hra má presne 5 / 7 / 11 bitiek.</li>
+  <li><strong>Prihodenie</strong> po braní zo šenku: hráč vyberie nenahradeného staršieho s markerom aspoň v <span class="chip z1">žltej</span> zóne (dnes je minimum oranžová).</li>
+  <li><strong>Karta staršieho ide súperovi do ruky</strong> na toto kolo (v návrhu 5 patrónovi — viď nižšie). Súper ju smie vyložiť ako bežnú kartu (Starešina — ráta sa do prevahy, smie naň dať NA EX), nemíňa ňou nič navyše. Po bitke sa karta vracia na scorecard, ak ju prihadzujúci nezíska.</li>
+  <li><strong>Náhrada lícom dole:</strong> prihadzujúci dá na scorecard jedného Občana alebo Zviera z ruky. Súper nevie, ktorého — a práve náhrada určí, ktoré podmienky scorecardu budú aktívne pre <em>oboch</em>. Je to skrytá informácia s blafom.</li>
+  <li><strong>Výhra bitky</strong> → prihadzujúci berie lokalitu aj staršieho: karta staršieho do jeho odhadzovacieho balíčka, náhrada sa otočí lícom hore, marker si nastaví do sivej (ako dnes po bitke o staršieho).</li>
+  <li><strong>Prehra bitky</strong> → starší sa vracia na scorecard s nezmeneným markerom, náhrada sa vracia prihadzujúcemu do ruky.</li>
+</ol>
+
+<h2>4. Návrhy</h2>
+
+<div class="zalozky" role="tablist" aria-label="Návrhy">
+  <button role="tab" aria-selected="true" aria-controls="n1" id="t1">1 · Prihodenie</button>
+  <button role="tab" aria-selected="false" aria-controls="n2" id="t2">2 · Výkupné z prebytku</button>
+  <button role="tab" aria-selected="false" aria-controls="n3" id="t3">3 · Prihadzuje útočník</button>
+  <button role="tab" aria-selected="false" aria-controls="n4" id="t4">4 · Tajná stávka</button>
+  <button role="tab" aria-selected="false" aria-controls="n5" id="t5">5 · Na pomoc patrónovi</button>
+</div>
+
+<section class="navrh box" role="tabpanel" id="n1" aria-labelledby="t1">
+  <h3>Návrh 1 — Prihodenie (tvoj nápad, doladený)</h3>
+  <p class="stitky"><span class="chip neutral">blízko pôvodnej myšlienky</span><span class="chip neutral">stredná zložitosť</span></p>
+  <ul>
+    <li><strong>Kto:</strong> ktorýkoľvek hráč. Prvý sa rozhoduje útočník (porazený), potom obranca. Za kolo najviac <strong>jedno prihodenie</strong> — keď prihodí útočník, obranca už nie.</li>
+    <li><strong>Ktorý starší:</strong> oba smery (A aj B), marker aspoň v žltej.</li>
+    <li><strong>Úloha zóny:</strong> súper dostane <strong>hneď pri prihodení</strong> cigarety: <span class="chip z1">žltá 2</span><span class="chip z2">oranžová 1</span><span class="chip z3">červená 0</span>. Hneď preto, aby ich mohol v tom istom kole použiť na obranu (fajčenie = karty, doliatie poldeci, Dedičstvo).</li>
+  </ul>
+  <div class="dva">
+    <div><h4 class="plus">Prečo áno</h4><p>Jedno jednoduché pravidlo, porazený má prednosť (rieši monopol víťaza), dĺžka hry pevná. Kompenzácia vyvažuje lacné prihodenie zo žltej v smere A.</p></div>
+    <div><h4 class="minus">Riziká</h4><p>Pri smere B je kompenzácia obrátená voči hodnote: z červenej je to najväčší zisk (≈ 24 b rozdiel) a súper nedostane nič. Prirodzenou cenou je strata vlastnej priazne (2 / 4 / 6), ale je otázne, či stačí — treba zmerať.</p></div>
+  </div>
+</section>
+
+<section class="navrh box" role="tabpanel" id="n2" aria-labelledby="t2" hidden>
+  <h3>Návrh 2 — Výkupné z prebytku</h3>
+  <p class="stitky"><span class="chip neutral">bez novej meny</span><span class="chip neutral">stredná zložitosť</span></p>
+  <ul>
+    <li><strong>Kto a ktorý:</strong> ako návrh 1.</li>
+    <li><strong>Úloha zóny:</strong> na získanie nestačí bitku vyhrať — víťaz musí zaplatiť <strong>prebytkom</strong> toľko, koľko markeru chýba k okraju + 1: <span class="chip z3">červená 1</span><span class="chip z2">oranžová 2</span><span class="chip z1">žltá 3</span>. Tesná výhra na vystrašeného staršieho stačí, na znepokojeného nie. Kto prebytok nemá, lokalitu získa a starší sa vráti.</li>
+    <li>Prebytok minutý na výkupné nikoho neposúva, preto za neho porazený nedostane cigarety (§8).</li>
+  </ul>
+  <div class="dva">
+    <div><h4 class="plus">Prečo áno</h4><p>Strach staršieho priamo vyjadruje, „koľko z neho ešte zostáva“. Využíva existujúcu menu (prebytok), nič sa nerozdáva zadarmo. Víťaz volí: posúvať markery, alebo vykúpiť staršieho — dobrá dilema.</p></div>
+    <div><h4 class="minus">Riziká</h4><p>Smer B z červenej stojí len 1 prebytku — obrana proti vydeseniu je lacná (to môže byť zámer). Treba vedieť, aký veľký býva prebytok; ak je zvyčajne 0–1, zo žltej sa nebude dať získať takmer nikdy.</p></div>
+  </div>
+</section>
+
+<section class="navrh box" role="tabpanel" id="n3" aria-labelledby="t3" hidden>
+  <h3>Návrh 3 — Prihadzuje len útočník</h3>
+  <p class="stitky"><span class="chip neutral">najjednoduchší</span><span class="chip neutral">silné dobiehanie</span></p>
+  <ul>
+    <li><strong>Kto:</strong> len útočník (porazený z minulej bitky). Delenie moci: <em>obranca volí miesto, útočník volí stávku.</em></li>
+    <li><strong>Ktorý starší:</strong> oba smery, marker aspoň v žltej. V praxi to bude takmer vždy smer B (porazený má priazeň, starší sa boja víťaza).</li>
+    <li><strong>Úloha zóny:</strong> kompenzácia z návrhu 1 (2 / 1 / 0), alebo výkupné z návrhu 2.</li>
+  </ul>
+  <div class="dva">
+    <div><h4 class="plus">Prečo áno</h4><p>Jedno rozhodnutie za kolo, žiadne poradie ani konflikty. Priamo rieši odpoveď na ohlásené vydesenie. Víťaz sa nabaľuje menej, čo bol problém z playtestu 20261016-134912.</p></div>
+    <div><h4 class="minus">Riziká</h4><p>Odchyľuje sa od „ktorýkoľvek hráč“. Víťaz nemá ako získať staršieho, ktorý sa ho bojí (smer A) — hra stráca útočnú stávku. Môže byť príliš silné dobiehanie; porazený navyše útočí prvý v šenku aj vo vykladaní.</p></div>
+  </div>
+</section>
+
+<section class="navrh box" role="tabpanel" id="n4" aria-labelledby="t4" hidden>
+  <h3>Návrh 4 — Tajná stávka oboch</h3>
+  <p class="stitky"><span class="chip neutral">symetrický</span><span class="chip neutral">najzložitejší</span></p>
+  <ul>
+    <li><strong>Kto:</strong> obaja naraz a tajne (ako stavba šenku): každý vyberie staršieho a náhradu lícom dole, alebo nič. Potom sa odhalí, koho kto prihodil.</li>
+    <li><strong>Výsledok:</strong> víťaz bitky získa <em>svojho</em> prihodeného staršieho, porazeného stávka prepadne (starší sa vráti). Keď obaja prihodia toho istého, rozhodne bitka, kto ho získa.</li>
+    <li><strong>Úloha zóny:</strong> kompenzácia 2 / 1 / 0, súperovi pri odhalení.</li>
+  </ul>
+  <div class="dva">
+    <div><h4 class="plus">Prečo áno</h4><p>Úplne symetrické, žiadna výhoda poradia. Najviac napätia — v kole môžu byť dve karty starších v rukách a bitka je „o všetko“.</p></div>
+    <div><h4 class="minus">Riziká</h4><p>Dve stávky naraz zvýšia výkyvy (jedna bitka môže pohnúť dvoma staršími). Zložitejšie rozhranie a viac hraničných prípadov. Botovi sa ťažšie odhaduje.</p></div>
+  </div>
+</section>
+
+<section class="navrh box" role="tabpanel" id="n5" aria-labelledby="t5" hidden>
+  <h3>Návrh 5 — Starší ide na pomoc svojmu patrónovi</h3>
+  <p class="stitky"><span class="chip neutral">Michalov druhý nápad</span><span class="chip neutral">tematicky najsilnejší</span></p>
+  <p><strong>Patrón</strong> = hráč, ktorému starší prejavuje priazeň (marker leží na jeho polovici). Starší sa teda bojí súpera — ide o <strong>smer B</strong>. Patrón si po šenku vezme kartu staršieho <strong>do vlastnej ruky „na pomoc“</strong>. Súper, ktorého sa starší bojí, dostane bonus podľa úrovne strachu.</p>
+  <div class="dva">
+    <div>
+      <h4>5a — len pomoc</h4>
+      <p>Starší v tomto kole bojuje za patróna a po bitke sa vráti na scorecard. Nič sa nezíska, marker sa nemení. Bonus súperovi stačí malý, napr. <span class="chip z1">žltá 2</span><span class="chip z2">oranžová 1</span><span class="chip z3">červená 0</span> cigariet — čím viac sa starší bojí, tým ochotnejšie sa skryje u patróna.</p>
+      <p class="mini">Patrón je spravidla porazený, takže je to ďalší nástroj dobiehania navrch k priazni. Ohlásené vydesenie však nerieši — na krajnej pozícii marker ostáva.</p>
+    </div>
+    <div>
+      <h4>5b — pomoc so stávkou</h4>
+      <p>Ako 5a, ale keď patrón bitku vyhrá, staršieho <strong>získa</strong> (náhrada lícom dole, marker do sivej). Súper tým príde o body za strach (≈ 4 / 11 / 17 b), preto jeho bonus musí so zónou <em>rásť</em>: napr. v tejto bitke <span class="chip z1">+1</span><span class="chip z2">+2</span><span class="chip z3">+3</span> tuhé — „starší sa ťa bojí, v bitke o neho máš navrch“.</p>
+      <p class="mini">Patrón má kartu staršieho na svojej strane a ešte ho môže získať, takže bez rastúceho bonusu by bol z červenej takmer istý zisk ≈ 24 b rozdielu.</p>
+    </div>
+  </div>
+  <div class="box" style="margin-top:12px">
+    <h4 style="margin:0 0 4px">Spojenie s návrhom 1: jedno pravidlo pre oba smery</h4>
+    <p style="margin:0"><strong>Karta prihodeného staršieho ide vždy do ruky jeho patróna</strong>, nech ho prihodil ktokoľvek. Ak prihodíš staršieho, ktorý sa bojí teba (smer A), pomáha súperovi brániť ho — to je tvoj pôvodný nápad. Ak prihodíš staršieho, ktorý ti prejavuje priazeň (smer B), pomáha tebe — to je tento nápad. Bonus vždy dostane súper prihadzujúceho: v smere A cigarety 2 / 1 / 0, v smere B tuhé +1 / +2 / +3. Stačí si zapamätať „starší bojuje za toho, koho má rád“.</p>
+  </div>
+  <div class="dva" style="margin-top:12px">
+    <div><h4 class="plus">Prečo áno</h4><p>Tematicky prirodzené: starší pomáha tomu, koho má rád. Priazeň dostane v bitke viditeľnú podobu (karta v ruke), nie len číslo. Patrónom je zvyčajne porazený, takže to rieši monopol víťaza bez pravidla o poradí.</p></div>
+    <div><h4 class="minus">Riziká</h4><p>Sila sa sčítava: priazeň, karta staršieho a možný zisk ≈ 24 b. Bonus pre smer B treba zmerať — +1 / +2 / +3 tuhé je len prvý odhad. Variant 5a bez stávky nechá vydesenie bez odpovede.</p></div>
+  </div>
+</section>
+
+<h2>5. Porovnanie</h2>
+<div class="tab">
+<table>
+  <thead><tr><th></th><th>1 · Prihodenie</th><th>2 · Výkupné</th><th>3 · Útočník</th><th>4 · Tajná stávka</th><th>5b · Na pomoc</th></tr></thead>
+  <tbody>
+    <tr><th>Kto smie</th><td>obaja, útočník prvý, 1 za kolo</td><td>obaja, útočník prvý, 1 za kolo</td><td>len útočník</td><td>obaja naraz</td><td>patrón (spravidla porazený)</td></tr>
+    <tr><th>Karta staršieho</th><td>súperovi</td><td>súperovi</td><td>súperovi</td><td>súperovi</td><td>patrónovi — sebe</td></tr>
+    <tr><th>Úloha zóny</th><td>cigarety súperovi 2/1/0</td><td>cena v prebytku 3/2/1</td><td>2/1/0 alebo prebytok</td><td>cigarety súperovi 2/1/0</td><td>súperovi +1/+2/+3 tuhé</td></tr>
+    <tr><th>Rieši monopol víťaza</th><td>áno</td><td>áno</td><td>áno, najviac</td><td>áno</td><td>áno</td></tr>
+    <tr><th>Odpoveď na vydesenie</th><td>áno</td><td>áno (lacná)</td><td>áno</td><td>áno</td><td>áno (5a nie)</td></tr>
+    <tr><th>Riziko nabaľovania</th><td>stredné (víťaz môže brať priazeň smerom A)</td><td>nižšie (výkupné zje prebytok)</td><td>nízke</td><td>vyššie (dve stávky)</td><td>nízke, skôr silné dobiehanie</td></tr>
+    <tr><th>Zložitosť pravidla</th><td>stredná</td><td>stredná</td><td>nízka</td><td>vysoká</td><td>nízka</td></tr>
+    <tr><th>Práca v kóde</th><td>stredná</td><td>stredná</td><td>nižšia</td><td>vysoká</td><td>stredná</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>6. Odporúčanie</h2>
+<div class="box odporucam">
+  <p><strong>Spojiť návrh 1 a 5b do jedného pravidla:</strong> staršieho smie prihodiť ktorýkoľvek hráč (útočník prvý, jedno prihodenie za kolo), <strong>karta staršieho ide vždy do ruky jeho patróna</strong> a súper prihadzujúceho dostane bonus podľa zóny. V simulácii porovnať s <strong>návrhom 2</strong> (výkupné z prebytku) ako alternatívou ceny. Dôvody:</p>
+  <ul>
+    <li>Jedno pravidlo pokryje oba smery: starší vždy bojuje za toho, koho má rád. Pri smere A bráni súpera, pri smere B pomáha tebe.</li>
+    <li>Prednosť útočníka (porazeného) rieši monopol víťaza bez toho, aby víťaz prišiel o útočnú stávku.</li>
+    <li>Kompenzácia 2 / 1 / 0 cigariet sedí na smer A presne. Smer B je hodnotnejší a starší v ňom pomáha prihadzujúcemu, preto bonus súpera musí so zónou rásť (+1 / +2 / +3 tuhé ako východisko).</li>
+    <li>Návrh 4 nechať na neskôr: jeho prínos (symetria) pokryje prednosť útočníka lacnejšie.</li>
+  </ul>
+  <p>Merať turnajom botov (agent naex-strateg, varianty vo worktree): ako často sa prihadzuje a v ktorom smere, úspešnosť prihadzujúceho, ako často porazený dobehne (comeback rate) a či ohlásené vydesenie ešte rozhoduje hry.</p>
+</div>
+
+<h2>7. Hraničné prípady (platia pre všetky návrhy)</h2>
+<details open><summary>Karta staršieho v súperovej ruke</summary>
+<ul>
+  <li>Nedá sa <strong>spáliť ani zahodiť</strong> — Pohreb, Liečba, Dievčina na vydaj, Hrobár ani Starosta (výmena so šenkom) na ňu nesmú. Po bitke ide späť na scorecard, nech leží kdekoľvek.</li>
+  <li>Do veľkosti balíčka súpera (§1, prehra pod 5) sa <strong>neráta</strong>.</li>
+  <li>Ak ju súper nevyloží, po bitke sa jednoducho vráti.</li>
+  <li><strong>Prebudený starší</strong> (krajná červená): kým je prihodený, jeho efekt pre vydesujúceho hráča neplatí — karta je v hre ako bežná karta súpera. Inak by efekt platil dvakrát.</li>
+</ul></details>
+<details><summary>Náhrada lícom dole</summary>
+<ul>
+  <li>Musí byť Občan alebo Zviera z <strong>ruky</strong> (dnes sa smie brať aj z balíčkov) — viazaná karta je cena prihodenia, v kole ju nevyložíš.</li>
+  <li>Do veľkosti balíčka prihadzujúceho sa <strong>ráta</strong> — inak by prihodenie mohlo spôsobiť prehru pod 5.</li>
+  <li>Bez Občana či Zvieraťa v ruke sa prihodiť nedá.</li>
+  <li>Kým leží lícom dole, scorecard nemá aktívne podmienky; ak je to posledná bitka, rozhoduje stav <em>po</em> vyhodnotení prihodenia.</li>
+</ul></details>
+<details><summary>Server a skrytá informácia</summary>
+<ul>
+  <li><code>viewFor()</code> súperovi náhradu nepošle — len „karta lícom dole na scorecarde X“ a menší počet kariet v ruke. Treba test (nemenné pravidlo 2).</li>
+  <li>Kartu staršieho v súperovej ruke vidia obaja — je verejná.</li>
+  <li>Rozbehnuté partie na serveri vo fáze bitky o staršieho treba dohrať po starom, alebo ich migrovať.</li>
+</ul></details>
+
+<h2>8. Implementácia</h2>
+<ol>
+  <li><strong>Jadro</strong> (<code>packages/core</code>): v <code>GameState</code> pole <code>stavka: { hrac, elderId, nahrada } | null</code>. Nový krok draftu <code>prihodenie</code> po braní (útočník, potom obranca), príkazy <code>prihod</code> a <code>bezPrihodenia</code>. Pri prihodení karta staršieho do súperovej ruky a kompenzácia (<code>KONSTANTY.STAVKA</code>). V bitke po prebytku: ak vyhral prihadzujúci, krok <code>nahrada</code> už len s voľbou markera (karta je daná). Inak návrat staršieho aj náhrady. Výnimky v spaľovaní a v návrate kariet po bitke (§8 krok 7). Zrušiť <code>chooseElder</code>, <code>bitkaOStarsiehoMozna</code> a vetvu <code>ciel.typ === "starsi"</code>.</li>
+  <li><strong>Pohľad</strong> (<code>view.ts</code>): skryť náhradu, <code>nahladNahrady</code> prerobiť na náhľad prihodenia (body pre oboch, kompenzácia, smer).</li>
+  <li><strong>Bot</strong> (<code>bot.ts</code>): rozhodnutie o prihodení — <code>rozdielBodov</code> už modeluje získanie staršieho, stačí ho vážiť odhadom šance na výhru; použitie karty staršieho v ruke je bežné vykladanie.</li>
+  <li><strong>Web</strong>: krok „Prihodiť staršieho?“ po šenku — kandidáti so smerom, kompenzáciou a náhľadom bodov, výber náhrady z ruky (ťahaním na scorecard). Karta staršieho v súperovej ruke výrazne označená. Na scorecarde karta lícom dole.</li>
+  <li><strong>Nástroje a agenti</strong>: <code>tools/playtest/hrac.ts</code>, <code>packages/server/test/robot.ts</code>, <code>tools/bot/turnaj.ts</code> a <code>strategickost.ts</code>, ťahák playtesterov a protihráča.</li>
+  <li><strong>Pravidlá</strong>: <code>PRAVIDLA.md</code> §1 (odpoveď na vydesenie), §7 (bitka o staršieho → prihodenie), §9; web <code>Pravidla.tsx</code>, <code>zmeny-pravidiel.html</code>.</li>
+  <li><strong>Testy</strong>: skrytá náhrada vo <code>viewFor</code>, kompenzácia podľa zóny, získanie pri výhre, návrat pri prehre, zákaz spálenia karty staršieho, veľkosť balíčka, prebudený starší počas prihodenia.</li>
+</ol>
+<p class="mini">Postup ako pri doterajších zmenách: najprv jadro a testy, simulácia variantov (1 vs. 2), po tvojom rozhodnutí klient a pravidlá.</p>
+
+<h2>9. Na rozhodnutie</h2>
+<div class="otazka"><p><strong>1. Smer:</strong> ktorý starší sa smie prihodiť — ten, čo sa bojí teba (A), ten, čo sa bojí súpera (B), alebo oba? <span class="mini">Odporúčam oba; B je jediná obrana proti vydeseniu.</span></p></div>
+<div class="otazka"><p><strong>1b. Komu ide karta staršieho:</strong> vždy súperovi prihadzujúceho (pôvodný nápad), alebo vždy patrónovi (návrh 5)? A v návrhu 5 — len pomoc (5a), alebo pomoc so stávkou (5b)? <span class="mini">Odporúčam patrónovi a 5b.</span></p></div>
+<div class="otazka"><p><strong>2. Kto a koľkokrát:</strong> obaja s prednosťou útočníka a 1 za kolo (návrh 1), len útočník (3), alebo obaja tajne (4)?</p></div>
+<div class="otazka"><p><strong>3. Cena:</strong> cigarety súperovi 2 / 1 / 0 hneď pri prihodení, alebo výkupné z prebytku 3 / 2 / 1? Platí rovnaká tabuľka pre oba smery?</p></div>
+<div class="otazka"><p><strong>4. Neúspech:</strong> náhrada sa vráti do ruky (bez straty), do odhadzovacieho balíčka, alebo prepadne (spáli sa)?</p></div>
+<div class="otazka"><p><strong>5. Náhrada:</strong> len z ruky (viazaná karta = cena), alebo z celého balíčka ako dnes?</p></div>
+<div class="otazka"><p><strong>6. Minimálna zóna:</strong> žltá pre oba smery, alebo pre smer B až oranžová (ako dnes)?</p></div>
+
+</main>
+<script>
+  // Priemer z 2000 rozdaní (sada v12): body za staršieho na úrovni strachu 1/2/3 a za získaného staršieho.
+  const STRACH = { 1: 3.8, 2: 10.9, 3: 16.9 };
+  const VAZEN = 6.7;
+  const KOMP = { michal: { 1: 2, 2: 1, 3: 0 }, ziadna: { 1: 0, 2: 0, 3: 0 } };
+  const f = (x) => (x > 0 ? "+" : x < 0 ? "−" : "") + Math.abs(x).toFixed(1).replace(".", ",");
+  const trieda = (el, x) => { el.className = x > 0.05 ? "plus" : x < -0.05 ? "minus" : "neutral"; };
+  function prepocitaj() {
+    const form = document.getElementById("kalk");
+    const smer = form.smer.value, zona = Number(form.zona.value), komp = KOMP[form.komp.value][zona];
+    const cigBody = komp / 3;
+    const ty = smer === "A" ? VAZEN - STRACH[zona] : VAZEN;
+    const sup = (smer === "A" ? 0 : -STRACH[zona]) + cigBody;
+    const rozdiel = ty - sup;
+    const out = [["vTy", ty], ["vSuper", sup], ["vRozdiel", rozdiel]];
+    for (const [id, v] of out) { const el = document.getElementById(id); el.textContent = f(v); trieda(el, v); }
+    const sila = zona, ucinok = 2 * zona;
+    document.getElementById("vPriazen").textContent = smer === "A" ? `súperova ${sila}` : `tvoja ${sila}`;
+    const v = document.getElementById("verdikt");
+    const priazenText = smer === "A"
+      ? `Súper navyše príde o priazeň sily ${sila} (účinok ${ucinok}, napr. Bitkár +${ucinok} tuhé v každej ďalšej bitke).`
+      : `Ty prídeš o priazeň sily ${sila} (účinok ${ucinok}) — to je prirodzená cena smeru B.`;
+    const komPText = komp > 0 ? ` Súper dostane ${komp} ${komp === 1 ? "cigaretu" : "cigarety"} (≈ ${cigBody.toFixed(1).replace(".", ",")} b na konci, ale hlavne karty fajčením hneď v tomto kole).` : "";
+    const hodnotenie = rozdiel > 12 ? "Veľmi výhodné — toto bude hráč robiť vždy, keď môže." : rozdiel > 2 ? "Výhodné." : rozdiel > -2 ? "Približne vyrovnané — rozhodne priazeň a karta staršieho." : "Bodovo nevýhodné — oplatí sa len kvôli priazni súpera alebo karte staršieho.";
+    v.textContent = `${hodnotenie} ${priazenText}${komPText}`;
+  }
+  document.getElementById("kalk").addEventListener("change", prepocitaj);
+  prepocitaj();
+
+  const tabs = [...document.querySelectorAll('[role="tab"]')];
+  function vyber(t) {
+    for (const x of tabs) {
+      const ano = x === t;
+      x.setAttribute("aria-selected", String(ano));
+      x.tabIndex = ano ? 0 : -1;
+      document.getElementById(x.getAttribute("aria-controls")).hidden = !ano;
+    }
+  }
+  tabs.forEach((t, i) => {
+    t.tabIndex = i === 0 ? 0 : -1;
+    t.addEventListener("click", () => vyber(t));
+    t.addEventListener("keydown", (e) => {
+      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+      const n = tabs[(i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length];
+      vyber(n); n.focus();
+    });
+  });
+</script>
+</body>
+</html>

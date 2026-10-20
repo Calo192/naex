@@ -2645,7 +2645,7 @@
    "tags": [
     "Lokalita"
    ],
-   "effect_text": "Bitka: Pohoršenie smie posunúť ten istý marker aj viackrát.",
+   "effect_text": "Bitka: Pohoršenie smie posunúť ten istý marker aj cez viac než dve hranice zón.",
    "triggers": [
     "Bitka"
    ],

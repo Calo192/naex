@@ -3,8 +3,8 @@
 // Toto je jediné miesto, ktoré rozhoduje, čo hráč vidí. Zo stavu sa NIKDY
 // nesmie dostať von: obsah súperovej ruky, obsah ani poradie ŽIADNEHO
 // doberacieho balíčka (vlastného, súperovho, spoločného), súperov balíček
-// stavby šenku a jeho výber v kroku stavby a jeho
-// karta z Vízie.
+// stavby šenku a jeho výber v kroku stavby, jeho
+// karta z Vízie a jeho karta lícom dole pri patronáte (náhrada staršieho).
 // Posielajú sa len počty. Skryť kartu v rozhraní je bezcenné — filtruje sa TU a testuje sa to.
 
 import type { CardInstance, Phase, PlayerId } from "./types.ts";
@@ -17,13 +17,12 @@ import type {
   CielKola,
   GameState,
   KartaVolba,
-  NahradaVolba,
   KoniecHry,
   PitkaStav,
   VyberStavby,
   ZhromazdenieStav,
 } from "./engine.ts";
-import { cenaDedicstva, mozeHrat, najdiNahradnikov, najdiNastroje, naTahu } from "./engine.ts";
+import { cenaDedicstva, mozeHrat, najdiNastroje, naTahu } from "./engine.ts";
 import { MARKER_STRED, posunMarker, priazenHraca, priazenSila } from "./elders.ts";
 import type { MarkerPos } from "./elders.ts";
 import type { DamageResult } from "./battle.ts";
@@ -56,7 +55,8 @@ export interface BitkaVerejne {
   readonly prebytokDrzi: PlayerId | null;
   readonly prebytokZostava: number;
   readonly pohorsenieZostava: readonly [number, number];
-  readonly pohnuteMarkery: readonly string[];
+  /** Koľko hraníc zón už Pohoršenia hráča prekročili s markerom (kľúč `hráč:elderId`). */
+  readonly pohorsenieHranice: Readonly<Record<string, number>>;
   readonly benzinkaZostava: readonly [number, number];
   readonly lokalitaPrepadne: boolean;
   /** Karty v línii, ktoré sa po bitke spália (Dievčina na vydaj). */
@@ -68,7 +68,7 @@ export interface BitkaVerejne {
  * výber v kroku len ako „vybral“ (karty sa odhalia, až keď vyberú obaja).
  */
 export interface DraftVerejne {
-  readonly krok: "stavba" | "beranie";
+  readonly krok: "stavba" | "beranie" | "patronat";
   readonly mojBalicek: readonly CardInstance[];
   readonly balicekPocet: readonly [number, number];
   readonly mojVyber: VyberStavby | null;
@@ -76,6 +76,12 @@ export interface DraftVerejne {
   readonly naTahu: PlayerId;
   readonly hotovo: readonly [boolean, boolean];
   readonly noveKarty: readonly [number, number];
+}
+
+/** Patronát hráča v kole — verejné je, koho si vzal a koľko Pohoršení dostane súper. */
+export interface PatronatVerejne {
+  readonly elderId: string;
+  readonly pohorsenia: number;
 }
 
 export interface ClientState {
@@ -117,7 +123,10 @@ export interface ClientState {
    * Naplnené len vtedy, keď rozhodnutie patrí hráčovi `ja`.
    */
   readonly volbyExekutor: readonly KartaVolba[] | null;
-  readonly volbyNahrada: readonly NahradaVolba[] | null;
+  /** Patronáty oboch hráčov v tomto kole (verejné, bez karty lícom dole). */
+  readonly patronat: readonly [PatronatVerejne | null, PatronatVerejne | null];
+  /** Moja karta lícom dole na scorecarde (patronát) — súper ju nevidí. */
+  readonly mojaNahrada: CardInstance | null;
   /** Veštica (Prehra): oba doberacie balíčky — len porazenému počas výberu. */
   readonly volbaVestica: { readonly moj: readonly CardInstance[]; readonly jeho: readonly CardInstance[] } | null;
   /** Vízia: koľko vrchných kariet ešte kto prezrie (verejné, null = Vízia neprebieha). */
@@ -154,6 +163,10 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
     };
   };
 
+  const verejnyPatronat = (p: PlayerId): PatronatVerejne | null => {
+    const x = state.patronat[p];
+    return x === null ? null : { elderId: x.elderId, pohorsenia: x.pohorsenia };
+  };
   const d = state.draftStav;
   const bitka = state.bitkaStav;
   const mojaBitkovaVolba = bitka !== null && bitka.caka === ja;
@@ -207,15 +220,15 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
             prebytokDrzi: bitka.prebytokDrzi,
             prebytokZostava: bitka.prebytokZostava,
             pohorsenieZostava: bitka.pohorsenieZostava,
-            pohnuteMarkery: bitka.pohnuteMarkery,
+            pohorsenieHranice: bitka.pohorsenieHranice,
             benzinkaZostava: bitka.benzinkaZostava,
             lokalitaPrepadne: bitka.lokalitaPrepadne,
             spalit: bitka.spalit,
           },
     volbyExekutor:
       mojaBitkovaVolba && bitka.krok === "exekutor" ? najdiNastroje(state, data, ja) : null,
-    volbyNahrada:
-      mojaBitkovaVolba && bitka.krok === "nahrada" ? najdiNahradnikov(state, data, ja) : null,
+    patronat: [verejnyPatronat(0), verejnyPatronat(1)],
+    mojaNahrada: state.patronat[ja]?.nahrada ?? null,
     volbaVestica:
       mojaBitkovaVolba && bitka.krok === "vestica"
         ? { moj: state.hraci[ja].doberaci, jeho: state.hraci[ja === 0 ? 1 : 0].doberaci }
@@ -284,27 +297,37 @@ export function bodyTeraz(data: GameData, view: ClientState): BodyTeraz {
   return { spolu, neiste, starsi };
 }
 
-/** Body oboch hráčov teraz a po bitke o staršieho, ak ju vyhrá jeden či druhý. */
-export interface NahladBitkyOStarsieho {
+/** Body oboch hráčov pri patronáte: teraz, po vzatí (aj pri prehre) a pri výhre patróna. */
+export interface NahladPatronatu {
   readonly teraz: readonly [number, number];
-  /** vyhra[w] = body [hráč 0, hráč 1], keď bitku vyhrá hráč w. */
-  readonly vyhra: readonly [readonly [number, number], readonly [number, number]];
+  /** Marker v strede, starší sa vráti na scorecard — body pri prehre bitky. */
+  readonly prehra: readonly [number, number];
+  /** Patrón vyhrá: starší je jeho, na scorecarde leží karta lícom dole. */
+  readonly vyhra: readonly [number, number];
 }
 
 /**
- * Náhľad bitky o staršieho (Michal 2026-10-12): víťaz staršieho získa a jeho
- * marker vráti do sivej zóny — jeho strach prestane bodovať a víťazovi
- * pribudne získaný starší. Prebytok z bitky náhľad nezohľadňuje.
+ * Náhľad patronátu (Michal 2026-10-20) z pohľadu patróna `view.ja`: marker
+ * pôjde do stredu a pri výhre na scorecard ľahne `karta` (ožijú podmienky
+ * podľa jej akcií). Pohoršenia, ktoré dostane súper, náhľad nezohľadňuje —
+ * tými si strach môže vrátiť.
  */
-export function nahladBitkyOStarsieho(data: GameData, view: ClientState, elderId: string): NahladBitkyOStarsieho {
-  const po = (w: PlayerId): [number, number] => {
-    const starsi = view.starsi.map((e) =>
-      e.elderId === elderId ? { ...e, marker: MARKER_STRED, nahradeny: true, ziskal: w } : e,
-    );
+export function nahladPatronatu(
+  data: GameData,
+  view: ClientState,
+  elderId: string,
+  karta: Pick<CardInstance, "defId" | "leftLayout" | "rightLayout"> | null,
+): NahladPatronatu {
+  const po = (vyhral: boolean): [number, number] => {
+    const starsi = view.starsi.map((e): ElderState => {
+      if (e.elderId !== elderId) return e;
+      const stred = { ...e, marker: MARKER_STRED, markerZaciatokKola: MARKER_STRED };
+      return vyhral ? { ...stred, karta: karta === null ? e.karta : { uid: -1, ...karta }, nahradeny: true, ziskal: view.ja } : stred;
+    });
     const spolu = bodyTeraz(data, { ...view, starsi }).spolu;
     return [spolu[0], spolu[1]];
   };
-  return { teraz: bodyTeraz(data, view).spolu, vyhra: [po(0), po(1)] };
+  return { teraz: bodyTeraz(data, view).spolu, prehra: po(false), vyhra: po(true) };
 }
 
 /** Body a priazeň po posune markera jedného staršieho (prebytok, Pohoršenie). */
@@ -343,31 +366,5 @@ export function nahladPosunuMarkera(
     zmena: [po[0] - pred[0], po[1] - pred[1]],
     priazen: priazenHraca(posunuty),
     sila: priazenSila(posunuty),
-  };
-}
-
-/**
- * Náhľad náhrady staršieho (Michal 2026-10-20): body oboch hráčov, keby na
- * ukazovateli ležala táto karta a marker skončil na danej pozícii — podmienky
- * scorecardu ožívajú podľa akcií náhrady, preto sa body líšia kandidát od
- * kandidáta. Porovnáva sa so stavom pred náhradou.
- */
-export function nahladNahrady(
-  data: GameData,
-  view: ClientState,
-  elderId: string,
-  karta: Pick<CardInstance, "defId" | "leftLayout" | "rightLayout">,
-  marker: MarkerPos,
-): NahladPosunu {
-  const pred = bodyTeraz(data, view).spolu;
-  const elder = view.starsi.find((e) => e.elderId === elderId);
-  const nahradeny = elder === undefined ? undefined : { ...elder, karta: { uid: -1, ...karta }, marker, markerZaciatokKola: marker, nahradeny: true, ziskal: view.ja };
-  const starsi = view.starsi.map((e) => (e.elderId === elderId && nahradeny !== undefined ? nahradeny : e));
-  const po = bodyTeraz(data, { ...view, starsi }).spolu;
-  return {
-    body: [po[0], po[1]],
-    zmena: [po[0] - pred[0], po[1] - pred[1]],
-    priazen: nahradeny === undefined ? null : priazenHraca(nahradeny),
-    sila: nahradeny === undefined ? 0 : priazenSila(nahradeny),
   };
 }

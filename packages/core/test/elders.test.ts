@@ -6,8 +6,8 @@ import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, ElderState, MarkerPos, ScorecardDef, StavBodovania } from "../src/index.ts";
 import {
-  bitkaOStarsiehoMozna,
   buildGameData,
+  cenaPatronatu,
   elderScore,
   favourStarsieho,
   freshElder,
@@ -15,6 +15,8 @@ import {
   podmienkyStarsieho,
   setupGame,
   obavanyHrac,
+  patronatMozny,
+  prekraciaHranicu,
   posunMarker,
   prebudenyPre,
   priazenHraca,
@@ -95,13 +97,27 @@ describe("M5 — pohyb markera", () => {
   });
 });
 
-describe("M5 — bitka o staršieho a bodovanie", () => {
-  it("bitka o staršieho len od oranžovej zóny", () => {
-    expect(bitkaOStarsiehoMozna(elderAt(4))).toBe(false);
-    expect(bitkaOStarsiehoMozna(elderAt(6))).toBe(false); // žltá nestačí
-    expect(bitkaOStarsiehoMozna(elderAt(7))).toBe(true);
-    expect(bitkaOStarsiehoMozna(elderAt(1))).toBe(true);
-    expect(bitkaOStarsiehoMozna(elderAt(8))).toBe(true);
+describe("M5 — patronát a bodovanie", () => {
+  it("patronát len patrónovi a od žltej zóny (Michal 2026-10-20)", () => {
+    expect(patronatMozny(elderAt(4), 1)).toBe(false);
+    expect(patronatMozny(elderAt(6), 1)).toBe(true); // žltá stačí, priazeň má hráč 1
+    expect(patronatMozny(elderAt(6), 0)).toBe(false); // hráč 0 je obávaný, nie patrón
+    expect(patronatMozny(elderAt(1), 0)).toBe(true);
+    expect(patronatMozny(elderAt(8), 1)).toBe(true);
+    expect(patronatMozny({ ...elderAt(7), nahradeny: true }, 1)).toBe(false);
+  });
+
+  it("cena patronátu: cigarety do červenej + Pohoršenia do stredu, spolu 4", () => {
+    expect(cenaPatronatu(elderAt(6))).toEqual({ cigarety: 2, pohorsenia: 2 });
+    expect(cenaPatronatu(elderAt(1))).toEqual({ cigarety: 1, pohorsenia: 3 });
+    expect(cenaPatronatu(elderAt(8))).toEqual({ cigarety: 0, pohorsenia: 4 });
+  });
+
+  it("hranice zón: v sivej sa nič neprekračuje", () => {
+    expect(prekraciaHranicu(5, 4)).toBe(false);
+    expect(prekraciaHranicu(3, 2)).toBe(true);
+    expect(prekraciaHranicu(2, 1)).toBe(true);
+    expect(prekraciaHranicu(6, 5)).toBe(true);
   });
 
   it("podmienky za kus bodujú obom hráčom bez ohľadu na marker a stranu (Michal 2026-10-16)", () => {

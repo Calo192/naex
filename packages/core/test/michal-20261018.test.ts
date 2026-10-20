@@ -89,7 +89,7 @@ describe("priznanie Dlhu dá kartu", () => {
     const s = {
       ...s0,
       faza: "zhromazdenie",
-      ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]!, elderId: null },
+      ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
       hraci: [{ ...s0.hraci[0], ruka: [dlh, inst("pijan")], doberaci, odhadzovaci }, s0.hraci[1]],
       zhromazdenieStav: { naTahu: 0, zostavaLimit: [2, 2], pasoval: [false, false], navyse: [0, 0] },
     } as GameState;
@@ -119,7 +119,7 @@ describe("automatický pas", () => {
     return {
       ...s,
       faza: "zhromazdenie",
-      ciel: { typ: "lokalita", lokalita: s.lokalityVHre[0]!, elderId: null },
+      ciel: { typ: "lokalita", lokalita: s.lokalityVHre[0]! },
       hraci: [{ ...s.hraci[0], ruka, cigarety }, s.hraci[1]],
       zhromazdenieStav: { naTahu: 0, zostavaLimit: [limit, 0], pasoval: [false, true], navyse: [0, 0] },
     } as GameState;

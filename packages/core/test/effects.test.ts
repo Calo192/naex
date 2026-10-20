@@ -61,7 +61,7 @@ describe("M10 — register", () => {
 describe("M10 — vzorové efekty (háčiky)", () => {
   it("ihrisko už prah Cirhózy nemení (Michal 2026-10-20 — nový efekt v bitke)", () => {
     const ihrisko = inst("ihrisko");
-    expect(prahCirhozyBonus(fakeState({ ciel: { typ: "lokalita", lokalita: ihrisko, elderId: null } }), 0)).toBe(0);
+    expect(prahCirhozyBonus(fakeState({ ciel: { typ: "lokalita", lokalita: ihrisko } }), 0)).toBe(0);
   });
 
   it("nealko: prah Cirhózy +2; vinko doliatie aj +1 limit, zastávka spoločný limit", () => {
@@ -80,7 +80,7 @@ describe("M10 — vzorové efekty (háčiky)", () => {
     expect(limitBonus(sVinkom, 0)).toBe(1);
     expect(limitBonus(sVinkom, 1)).toBe(0);
 
-    expect(spolocnyLimit(fakeState({ ciel: { typ: "lokalita", lokalita: inst("zastavka"), elderId: null } }))).toBe(true);
+    expect(spolocnyLimit(fakeState({ ciel: { typ: "lokalita", lokalita: inst("zastavka") } }))).toBe(true);
     expect(spolocnyLimit(fakeState({}))).toBe(false);
   });
 

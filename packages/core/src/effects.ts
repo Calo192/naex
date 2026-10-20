@@ -104,7 +104,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   cintorin: "impl", // Prehra: Nástroj z ruky do Dedičstva bez platenia
   obecny_urad: "impl", // Bitka: prah Exekútora −4, Robota odhodí 2 priznané Dlhy
   jednota: "impl", // Pitka: stokársky barter o 1 cigaretu lacnejší
-  kulturny_dom: "impl", // Bitka: Pohoršenie smie posunúť ten istý marker viackrát
+  kulturny_dom: "impl", // Bitka: Pohoršenie bez limitu hraníc zón (na krajnú stále nie)
   vinna_pivnica: "impl", // Pitka: NA EX až dvakrát
   druzstvo: "impl", // Zhromaždenie: Pracujúci nemíňajú limit vykladania
 };
@@ -213,8 +213,11 @@ export function naexZaPitku(state: VerejnyStav): number {
   return jeCielLokalita(state, "vinna_pivnica") ? 2 : 1;
 }
 
-/** kulturny_dom: Pohoršenie smie posunúť ten istý marker viackrát. */
-export function opakovanePohorsenie(state: VerejnyStav): boolean {
+/**
+ * kulturny_dom: Pohoršenie nemá limit hraníc zón (Michal 2026-10-20 — viac
+ * posunov toho istého markera je už bežné pravidlo; predtým to bol efekt).
+ */
+export function pohorsenieBezLimitu(state: VerejnyStav): boolean {
   return jeCielLokalita(state, "kulturny_dom");
 }
 

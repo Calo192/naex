@@ -39,7 +39,7 @@ describe("Dedičstvo stojí cigarety (od 2026-10-19 rastúca cena, viď pravidla
     const s = {
       ...s0,
       faza: "zhromazdenie",
-      ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]!, elderId: null },
+      ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
       hraci: [{ ...s0.hraci[0], ruka: [puska, inst("pijan")], cigarety: 3 }, s0.hraci[1]],
       zhromazdenieStav: { naTahu: 0, zostavaLimit: [2, 2], pasoval: [false, false], navyse: [0, 0] },
     } as GameState;
@@ -134,7 +134,7 @@ describe("cigarety porazenému za prebytok", () => {
     const s: GameState = {
       ...s0,
       faza: "bitka",
-      ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]!, elderId: null },
+      ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
       starsi: [stred(e1!), stred(e2!), ...s0.starsi.slice(2)],
       bitkaStav: {
         krok: "prebytok",
@@ -142,7 +142,7 @@ describe("cigarety porazenému za prebytok", () => {
         sums: [{}, {}],
         exekutorHotovy: [true, true],
         pohorsenieZostava: [0, 0],
-        pohnuteMarkery: [],
+        pohorsenieHranice: {},
         damage: { tuhe: [5, 0], makke: [0, 0], celkove: [5, 0], zvysnaViera: [0, 0], zvysnaPovera: [0, 0] },
         vitaz: 0,
         prebytokDrzi: 0,

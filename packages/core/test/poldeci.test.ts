@@ -23,7 +23,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     sums: [{}, {}],
     exekutorHotovy: [true, true],
     pohorsenieZostava: [0, 0],
-    pohnuteMarkery: [],
+    pohorsenieHranice: {},
     damage: null,
     vitaz: 0,
     prebytokDrzi: null,
@@ -50,7 +50,7 @@ function koniecBitky(poldeci: readonly [readonly [number, number], readonly [num
       { ...s0.hraci[0], ruka, poldeciPlne: poldeci[0][0], poldeciVypite: poldeci[0][1] },
       { ...s0.hraci[1], ruka: [], poldeciPlne: poldeci[1][0], poldeciVypite: poldeci[1][1] },
     ],
-    ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]!, elderId: null },
+    ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
     lokalityVHre: s0.lokalityVHre.slice(1),
     bitkaStav: bitka({ krok: "liecba", caka: 0, liecbaHotova: [false, true] }),
   };
@@ -95,7 +95,7 @@ describe("E1: limit vykladania pred a po ťahu", () => {
 
   it("Zastávka: spoločný limit = súčet limitov oboch; Vínko v Dedičstve pridá 1", () => {
     const s0 = setupGame(data, 23);
-    const zastavka: GameState = { ...s0, ciel: { typ: "lokalita", lokalita: inst("zastavka"), elderId: null } };
+    const zastavka: GameState = { ...s0, ciel: { typ: "lokalita", lokalita: inst("zastavka") } };
     const jeden = KONSTANTY.START_POLDECI + 1;
     expect(limitZhromazdenia(zastavka, 0)).toBe(2 * jeden);
     expect(limitZhromazdenia(zastavka, 0, -1)).toBe(2 * jeden - 1);

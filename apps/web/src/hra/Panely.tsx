@@ -723,21 +723,17 @@ export interface BitkaPanelProps {
   readonly mena: readonly [string, string];
   readonly sada: Sada;
   readonly ciel: string;
-  readonly oStarsieho: boolean;
   readonly menoKarty: (defId: string) => string;
 }
 
-export function BitkaPanel({ damage, sums, zdroje, rozpis, ja, utocnik, vysledok, mena, sada, ciel, oStarsieho, menoKarty }: BitkaPanelProps) {
+export function BitkaPanel({ damage, sums, zdroje, rozpis, ja, utocnik, vysledok, mena, sada, ciel, menoKarty }: BitkaPanelProps) {
   const su = (ja === 0 ? 1 : 0) as PlayerId;
-  // Remíza v tuhom (Michal 2026-10-19): o lokalitu rozhodne celkové, potom
-  // obranca; o staršieho nevyhrá nikto (PRAVIDLA §8.4).
-  const { vitaz, prebytok, prebytokDrzi } = battleOutcome(damage, utocnik, oStarsieho);
+  // Remíza v tuhom (Michal 2026-10-19): rozhodne celkové, potom obranca (PRAVIDLA §8.4).
+  const { vitaz, prebytok, prebytokDrzi } = battleOutcome(damage, utocnik);
   const rozdiel = Math.abs(damage.tuhe[ja] - damage.tuhe[su]);
   const vyhravam = vitaz === ja;
   const verdikt =
-    vitaz === null
-      ? "Remíza — starší ostáva na mieste"
-      : rozdiel === 0
+    rozdiel === 0
       ? damage.celkove[ja] === damage.celkove[su]
         ? vyhravam
           ? "Remíza — vyhrávaš ako obranca"
@@ -819,7 +815,6 @@ function KrokOsi({ krok, trieda }: { readonly krok: KrokKola; readonly trieda: s
 }
 
 export function PriebehKola({ view }: { readonly view: ClientState }) {
-  const oStarsieho = view.ciel?.typ === "starsi";
   const pitiek = Math.max(1, view.pitkyCelkom);
   const viac = pitiek > 1;
   const pocetPozn =
@@ -832,20 +827,17 @@ export function PriebehKola({ view }: { readonly view: ClientState }) {
         nadpis: "Voľba cieľa",
         text: (
           <>
-            Obranca (víťaz poslednej bitky) vyberie lokalitu a natočí ju — alebo vyvolá bitku o staršieho, ktorého marker je aspoň v
-            oranžovej zóne.
+            Obranca (víťaz poslednej bitky) vyberie lokalitu a natočí ju.
             <span className="tip-riadok">Natočenie určuje, ktoré akcie lokality sú obrátené ku ktorej strane.</span>
           </>
         ),
       },
     },
-  ];
-  if (!oStarsieho) {
-    kroky.push({
+    {
       id: "draft",
       nazov: "Draft",
       tip: {
-        nadpis: "Draft — šenok",
+        nadpis: "Draft — šenok a patronát",
         text: (
           <>
             <b>Stavba šenku:</b> obaja naraz dajú z balíčka stavby polovicu kariet do šenku a polovicu naspodok spoločného
@@ -854,11 +846,16 @@ export function PriebehKola({ view }: { readonly view: ClientState }) {
               <b>Branie:</b> striedavo, začína útočník — 1 karta za {KONSTANTY.CENA_SENKU[1]} cigaretu, 2 karty za {KONSTANTY.CENA_SENKU[2]}{" "}
               cigarety. Bez cigariet sa nedá brať. Kto prestane, súperovi nechá už len jeden posledný ťah.
             </span>
+            <span className="tip-riadok">
+              <b>Patronát:</b> komu starší prejavuje priazeň (aspoň žltá), smie si ho vziať do ruky — najprv útočník, potom obranca.
+              Na scorecard dá lícom dole Občana či Zviera z ruky, marker ide do stredu. Platí cigarety do červenej, súper dostane
+              v bitke Pohoršenia (o koľko marker išiel do stredu). Výhra = starší je jeho; prehra = odhodí poldeci.
+            </span>
           </>
         ),
       },
-    });
-  }
+    },
+  ];
   for (let i = 1; i <= pitiek; i++) {
     const cislo = viac ? ` ${i}` : "";
     kroky.push(
@@ -905,11 +902,11 @@ export function PriebehKola({ view }: { readonly view: ClientState }) {
     id: "bitka",
     nazov: "Bitka",
     tip: {
-      nadpis: oStarsieho ? "Bitka o staršieho" : "Bitka o lokalitu",
+      nadpis: "Bitka o lokalitu",
       text: (
         <>
           Rozhoduje tuhé poškodenie (Rana 1, Pecka 2, Petelica 3; mínus súperova Viera a vlastné Absťáky), pri rovnosti celkové, potom
-          vyhráva obranca. Víťaz {oStarsieho ? "získa staršieho" : "ovládne lokalitu"}, prebytok posúva markery starších.
+          vyhráva obranca. Víťaz ovládne lokalitu (a staršieho, ak ho má v patronáte), prebytok posúva markery starších.
           <span className="tip-riadok">
             Potom Exekútor, Pohoršenie, Liečba… a každý si dobere {KONSTANTY.KARTY_PO_BITKE} karty. Porazený je v ďalšom kole
             útočník.

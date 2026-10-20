@@ -134,7 +134,22 @@ odsekmi vyššie):**
 - **Priznaná Cirhóza** dá súperovi v každej bitke +1 tuhé (predtým Cirhóza v línii) (§8).
 - **Veriaci:** Viera navyše rovná sile (+1 / +2 / +3), hodnota Viery ostáva 1 (§9).
 - **Náhrada staršieho** sa volí z kariet s viditeľným variantom akcií
-  a náhľadom bodov (web).
+  a náhľadom bodov (web) — v patronáte (nižšie) pri vzatí staršieho z ruky.
+
+**Patronát a Pohoršenie (rozhodnutia Michala 2026-10-20 v noci; majú prednosť
+pred staršími odsekmi vyššie — rozbor `docs/playtesty/navrh-stavka-starsieho.html`):**
+
+- **Bitka o staršieho zaniká** — každé kolo je bitka o lokalitu, hra má presne
+  5 / 7 / 11 bitiek. Dôvod: cieľ volí obranca (víťaz), takže porazený nemal ako
+  odpovedať na ohlásené vydesenie a bitka o staršieho predlžovala hru.
+- **Patronát** (§7): po braní zo šenku si hráč, ktorému starší **prejavuje
+  priazeň** (aspoň žltá zóna), smie vziať jeho kartu do ruky. Na scorecard dá
+  lícom dole Občana či Zviera z ruky, marker ide do stredu. Platí cigarety do
+  červenej (žltá 2, oranžová 1, červená 0), súper dostane v bitke Pohoršenia
+  navyše (o koľko marker išiel do stredu: 2 / 3 / 4). Vyhrá bitku → lokalitu aj
+  staršieho; prehrá → starší sa vráti, náhrada do ruky a hráč **odhodí poldeci**.
+- **Pohoršenie** (§8.2): ten istý marker smie ísť viackrát, Pohoršenia jedného
+  hráča ho však prenesú najviac cez **dve hranice zón**. Kultúrny dom limit ruší.
 
 > Miesta označené **[?]** sú nejednoznačné alebo v pravidlách chýbajú.
 > Neimplementuj ich potichu — pozri `docs/BRIEF.md`, sekcia „Otvorené otázky".
@@ -150,7 +165,7 @@ bijú sa o lokality, desia starších.
 
 | Udalosť | Výsledok |
 |---|---|
-| Hráč vydesí aspoň polovicu starších (aj nahradených) a **udrží ich do konca nasledujúceho kola** (Michal 2026-10-16 — ohlásené vydesenie; súper má kolo na odpoveď, napr. bitku o vydeseného staršieho) | **vyhráva** |
+| Hráč vydesí aspoň polovicu starších (aj nahradených) a **udrží ich do konca nasledujúceho kola** (Michal 2026-10-16 — ohlásené vydesenie; súper má kolo na odpoveď, napr. patronát nad vydeseným starším — vráti marker do stredu) | **vyhráva** |
 | Hráč nedokáže čeliť exekúcii | okamžite **prehráva** |
 | Veľkosť balíčka hráča klesne pod 5 | okamžite **prehráva** |
 | Odohrá sa posledná bitka o lokalitu (5 / 7 / 11 podľa dĺžky hry) | spočítajú sa body |
@@ -232,10 +247,7 @@ indexe**. Každá aktívna akcia sa počíta samostatne.
 ### Línia, strany a partia (pravidlá v3)
 
 - **Línia** je jeden súvislý rad kariet. **Lokalita** leží v jej strede a delí
-  ju na dve **strany** — tvoju (vľavo z tvojho pohľadu) a súperovu. V bitke
-  o staršieho leží v strede **karta staršieho** a správa sa ako lokalita
-  (jej akcie na spoji dostane majiteľ susednej karty; jej efekt sa
-  neuplatní, ak starší nie je prebudený) — Michal 2026-10-12.
+  ju na dve **strany** — tvoju (vľavo z tvojho pohľadu) a súperovu.
 - Kartu vykladáš vždy na **vonkajší koniec** jednej zo strán — **tvojej aj
   súperovej**. Strana určuje len to, kde karta leží a s čím susedí.
 - **Vnútorná hrana** karty je tá, ktorá je obrátená k lokalite — ňou sa karta
@@ -469,7 +481,7 @@ koľko chce. Karty navyše dáva šenok, fajčenie (cigareta = karta hneď, na s
 ťahu v Zhromaždení aj v Pitke), priznanie kliatby, Vízia, Zberateľ a efekty.
 
 ```
-Voľba cieľa → [Draft] → (Zhromaždenie → Pitka) × 1–4 → Bitka
+Voľba cieľa → Draft (stavba šenku, branie, patronát) → (Zhromaždenie → Pitka) × 1–4 → Bitka
 ```
 
 ### Bitka o lokalitu — draft
@@ -501,14 +513,14 @@ prestane, druhý má už len **jednu poslednú šancu** (jeden ťah, Michal 2026
 predtým bral ďalej sám), potom branie končí. Prázdny šenok branie ukončí obom.
 
 Nevzaté karty ostávajú v šenku do ďalšieho draftu (Starosta a Liečba z neho
-berú aj medzitým); bitka o staršieho draft nemá, šenok sa vtedy nemení.
+berú aj medzitým).
 Po braní sa šenok **doplní z vrchu spoločného balíčka na 8 kariet**
 (Michal 2026-10-20), aby Liečba, Starosta a iné efekty mali z čoho brať.
 
 ### Počet Pitiek
 
 Pitiek v bitke = **1 + menší z počtov aktivovaných akcií karty v strede**
-(lokalita, v bitke o staršieho jeho karta) na jej dvoch stranách (Michal
+(lokalita) na jej dvoch stranách (Michal
 2026-10-19; „Ešte jednu!“ zrušené). Akciu lokality aktivuje karta, ktorá s ňou
 tvorí spoj; ráta sa každá aktívna akcia hrany (aj Odpor či Posilnenie v páre).
 Príklad: hráč A aktivuje 3 akcie lokality, hráč B 1 → **2 Pitky**; kto pri
@@ -518,26 +530,43 @@ kola (vykladanie, NA EX); už začatá Pitka sa vždy dopije. Lokality majú na
 každej strane 1–3 akcie, teda 1–4 Pitky (návrh 14 lokalít:
 `docs/playtesty/navrh-lokality.html`).
 
-### Bitka o staršieho
+### Patronát (Michal 2026-10-20 — nahradil bitku o staršieho)
 
-Ako bitka o lokalitu, s rozdielmi:
+Po braní zo šenku sa rozhoduje **útočník, potom obranca** (druhý už vidí voľbu
+prvého); každý smie vziať najviac jedného staršieho za kolo. Hráč, ktorému
+starší **prejavuje priazeň** — marker aspoň v **žltej** zóne na jeho polovici,
+na ukazovateli ešte pôvodný starší (nie náhrada) — smie:
 
-- Pitiek je ako pri lokalite — z aktivovaných akcií **karty staršieho** v strede,
-- **žiadny draft** — hrá sa len s tým, čo hráč má,
-- dá sa vyvolať, **len ak je marker aspoň v oranžovej zóne** (Strach) a na
-  ukazovateli leží ešte pôvodný starší — o náhradu sa nebojuje,
-- **karta staršieho leží v strede línie** namiesto lokality a obranca ju
-  natočí; strany sa spájajú cez ňu ako cez lokalitu (Michal 2026-10-12 —
-  predtým sa prvé karty strán v strede nepárovali a hráči to tri playtesty
-  nechápali).
+1. vziať **kartu staršieho do ruky** — v tomto kole ju smie vyložiť ako
+   ktorúkoľvek kartu (Starešina: ráta sa do prevahy, smie naň dať NA EX),
+2. na jeho scorecard dať **lícom dole** jedného **Občana alebo Zviera** z ruky
+   (nie Nástroj, nie Kliatbu) — súper nevie, ktorého (`viewFor` mu ho nepošle),
+3. posunúť **marker do stredu** (index 4; začiatok kola sa ráta tiež od
+   stredu, takže na krajnú pozíciu sa v tomto kole nedostane).
 
-Keď hráč bitku o staršieho vyhrá: rozdelí prebytočné poškodenie medzi
-*ostatných* starších, vezme si kartu staršieho **do svojho balíčka**, na jeho
-miesto položí zo svojho balíčka ľubovoľného **Občana alebo Zviera** (nie Nástroj,
-nie Kliatbu) a nastaví marker na ľubovoľnú pozíciu v **sivej** zóne.
-Nahradený starší potom hrá ďalej celý (§9). Web pred bitkou ukáže **náhľad
-bodov** oboch hráčov pre výhru jedného či druhého — strach toho staršieho
-prestane bodovať (marker ide do sivej), víťazovi pribudne získaný starší.
+Cena:
+
+- **cigarety** = koľko markeru chýbalo do červenej: žltá **2**, oranžová **1**,
+  červená **0**,
+- súper dostane v tejto bitke toľko **Pohoršení navyše**, o koľko sa marker
+  posunul do stredu: **2 / 3 / 4** (spolu s cigaretami vždy 4). Hrá ich ako
+  svoje (§8.2) — aj na toho istého staršieho; strach, ktorý spôsobil, mu tak
+  neprepadne. Patrónova Policajtka ich zruší, súperove Noviny platia,
+- hráč musí mať aspoň **jeden poldeci** (plný či vypitý) — na bolestné.
+
+Po bitke (pred návratom kariet, §8.7):
+
+- **patrón vyhral** → nechá si staršieho (karta je jeho — z línie sa vráti do
+  jeho odhadzovacieho balíčka, v ruke ostáva), karta lícom dole sa otočí a ostáva
+  na ukazovateli ako **náhrada** (§9), marker ostáva, kde je,
+- **patrón prehral** → karta staršieho sa vráti na scorecard (z ruky aj
+  z línie), náhrada mu ide späť do ruky a ako **bolestné odhodí jeden poldeci**
+  natrvalo — vypitý, ak ho má, inak plný (nový stojí barter). Smie klesnúť aj na
+  0 poldeci. Marker ostáva, kde je.
+
+Kartu staršieho z patronátu nemožno pochovať (Pohreb) ani vymeniť Starostom.
+Patronát je jediné, čo uvoľní marker z krajnej pozície — preto je odpoveďou na
+ohlásené vydesenie (§1). Bot ho vyhodnocuje z bodov (`bot.ts`, `patronat`).
 
 ### Zhromaždenie
 
@@ -616,8 +645,12 @@ Každé aktivované Pohoršenie posunie marker jedného staršieho o 1 smerom
 k súperovi, **bez ohľadu na výsledok bitky**. Staršieho vyberá hráč, ktorého
 akcia sa aktivovala.
 
-- ten istý marker sa **nesmie posunúť dvakrát**,
-- Pohoršením sa **nedá dostať na krajnú pozíciu**.
+- ten istý marker smie ísť **aj viackrát**, Pohoršenia jedného hráča ho však
+  prenesú najviac cez **dve hranice zón** (Michal 2026-10-20; predtým každý
+  marker najviac raz) — z pravej sivej do ľavej oranžovej áno (4 posuny),
+  z pravej oranžovej len po ľavú sivú. **Kultúrny dom** limit ruší,
+- Pohoršením sa **nedá dostať na krajnú pozíciu** (okrem Novín),
+- k aktívnym Pohoršeniam pribudnú **Pohoršenia z patronátu** súpera (§7).
 
 ### 3. Poškodenie
 
@@ -647,8 +680,7 @@ znižuje). Predtým sa rátali Cirhózy v línii — kliatba však do línie už
 
 ```
 víťaz          = vyššie TUHÉ poškodenie
-  remíza o lokalitu: vyššie CELKOVÉ poškodenie, pri jeho rovnosti OBRANCA
-  remíza o staršieho: nikto — starší ostáva na mieste
+  remíza: vyššie CELKOVÉ poškodenie, pri jeho rovnosti OBRANCA
 prebytok drží  = vyššie CELKOVÉ poškodenie
 prebytok       = |rozdiel celkových|      (pri remíze prebytok nikto nezíska)
 ```
@@ -656,9 +688,7 @@ prebytok       = |rozdiel celkových|      (pri remíze prebytok nikto nezíska)
 **Remíza** (Michal 2026-10-19, playtest 20261018-185541: tri bitky o staršieho
 skončili 0 : 0 a všetky vyhral útočník, ktorý vyhral 8 z 12 bitiek): o
 lokalitu rozhoduje celkové poškodenie (tuhé aj mäkké), a keď je aj to rovnaké,
-vyhráva obranca. Remíza v tuhom o staršieho nemá víťaza: starší ostáva na
-mieste, prebytok sa nerozdeľuje, efekty Výhra/Prehra sa nespúšťajú a útočník
-ostáva útočníkom aj v ďalšom kole.
+vyhráva obranca. (Remíza o staršieho bez víťaza zanikla s bitkou o staršieho.)
 
 Víťaz rozdelí prebytočné poškodenie medzi starších. Každý pridelený bod posunie
 marker o 1 **smerom k porazenému**. Smie prideliť aj viac bodov tomu istému
@@ -707,6 +737,11 @@ Krok Zberateľa po bitke zanikol (Michal 2026-10-20): jeho ukazovateľ je teraz
 **Úžerník** s prahom Dlhu (§9). Staré sady so Zberateľom či Očumovateľom sa
 načítajú ako Úžerník.
 
+### 6d. Patronát
+
+Víťaz-patrón si staršieho nechá, porazený patrón ho vracia na scorecard a
+odhodí poldeci (§7, Patronát).
+
 ### 7. Návrat kariet
 
 Všetky karty z oboch partií sa vrátia do odhadzovacieho balíčka **hráča, ktorý
@@ -722,9 +757,8 @@ v bitke (Dievčina na vydaj) sa nevracajú. Lokalitu získa víťaz.
 **Nahradený starší ostáva v hre celý** (Michal 2026-10-12, playtest
 20261012-055944): marker sa hýbe Pohoršením aj prebytkom, scorecard dáva
 priazeň, karta náhrady môže byť prebudená, na konci boduje a ráta sa do
-vydesenia. Podmienky scorecardu aktivuje karta náhrady. Jediný rozdiel: o
-náhradu sa nedá vyvolať bitka o staršieho. (Engine ho dovtedy vyraďoval,
-web aj klient agentov pritom jeho posun ponúkali.)
+vydesenia. Podmienky scorecardu aktivuje karta náhrady. Jediný rozdiel: náhradu
+si nikto nevezme do ruky (patronát, §7).
 
 ### Stupnica strachu
 
@@ -771,7 +805,7 @@ bodmi a tlačidlo „rozpis bodov" ukáže tabuľku všetkých podmienok.
   **na začiatku kola** — nie viacerými posunmi v jednom kole.
 - Pohoršením sa na krajnú pozíciu dostať **nedá nikdy**.
 - Z krajnej pozície sa marker bežným posunom **nepohne**. Uvoľní ju len
-  náhrada staršieho.
+  patronát (marker ide do stredu).
 
 ### Prebudenie
 
@@ -834,7 +868,7 @@ Scorecardy sa starším **rozdajú náhodne** pri príprave hry a scorecard urč
 |---|---|---|
 | 1 / 2 / 3 šípky | Znepokojenie / Strach / Vydesenie | za každého staršieho v hre, ktorý sa hráča bojí aspoň na úrovni 1 / 2 / 3 |
 | smerovník | ovládnuté lokality | za kus |
-| väzeň | starší získaní náhradou | za kus |
+| väzeň | starší získaní patronátom | za kus |
 | cigareta | zvyšné cigarety | za kus — **kus = 3 cigarety** (Michal 2026-10-16) |
 | pečeň | nepriznaná cirhóza | za kus (záporné) |
 | bankovky | nepriznaný dlh | za kus (−1) |
@@ -950,7 +984,7 @@ a do hry prídu so zverejnením sady.
 | Cintorín | Prehra | Porazený smie po Liečbe dať jeden Nástroj z ruky do Dedičstva bez platenia; spoločná cena Dedičstva sa zvýši ako vždy. |
 | Obecný úrad | Bitka | Prah Exekútora je o 4 nižší; každá Robota odhodí 2 priznané Dlhy namiesto 1. |
 | Jednota | Pitka | Stokársky barter (nový poldeci) je o 1 cigaretu lacnejší. |
-| Kultúrny dom | Bitka | Pohoršenie smie posunúť ten istý marker aj viackrát. |
+| Kultúrny dom | Bitka | Pohoršenie nemá limit dvoch hraníc zón (na krajnú pozíciu stále nie). Predtým: ten istý marker viackrát — to je od 2026-10-20 bežné pravidlo. |
 | Vínna pivnica | Pitka | NA EX smie hráč dať v Pitke až dvakrát. |
 | Družstvo | Zhromaždenie | Karty s tagom Pracujúci nemíňajú limit vykladania. |
 

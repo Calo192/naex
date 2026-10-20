@@ -21,7 +21,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     sums: [{}, {}],
     exekutorHotovy: [true, true],
     pohorsenieZostava: [0, 0],
-    pohnuteMarkery: [],
+    pohorsenieHranice: {},
     damage: null,
     vitaz: 0,
     prebytokDrzi: null,
@@ -113,7 +113,7 @@ describe("cigarety: Cigareta ich dáva, fajčenie dáva karty", () => {
       faza: "pitka",
       pitkyCelkom: 2,
       pitkaCislo: 1,
-      ciel: { typ: "lokalita", lokalita: lok, elderId: null },
+      ciel: { typ: "lokalita", lokalita: lok },
       lokalitaOtocena: false,
       strany: [[{ card: karta, playedBy: 0 }], []],
       hraci: [{ ...s0.hraci[0], cigarety: 0, poldeciPlne: 0 }, { ...s0.hraci[1], cigarety: 0, poldeciPlne: 0 }],
@@ -147,7 +147,7 @@ describe("ohlásené vydesenie", () => {
       ...s0,
       faza: "bitka",
       starsi,
-      ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]!, elderId: null },
+      ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
       bitkaStav: bitka({ krok: "prebytok", caka: 0, vitaz: 0, prebytokDrzi: 0, prebytokZostava: 1 }),
     } as GameState;
   }
@@ -183,7 +183,7 @@ describe("prebytok a Miňištrant", () => {
     const s: GameState = {
       ...s0,
       faza: "bitka",
-      ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]!, elderId: null },
+      ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
       strany: [[{ card: inst("ministrant"), playedBy: 0 }], []],
       bitkaStav: bitka({ krok: "prebytok", caka: 0, vitaz: 0, prebytokDrzi: 0, prebytokZostava: 1 }),
     } as GameState;

@@ -20,8 +20,12 @@ import {
   textNeresti,
   KONSTANTY,
   STUPNICA_ZONY,
-  bitkaOStarsiehoMozna,
   battleOutcome,
+  cenaPatronatu,
+  kandidatiNaNahradu,
+  nahladPatronatu,
+  patronatMozny,
+  pohorsenieMozne,
   bodyTeraz,
   cenaPrebytku,
   favourStarsieho,
@@ -34,11 +38,8 @@ import {
   limitZhromazdenia,
   lineState,
   loadGameData,
-  nahladBitkyOStarsieho,
-  nahladNahrady,
   nahladPosunuMarkera,
   pohorsenieNaKraj,
-  opakovanePohorsenie,
   vykupZoSrotu,
   zakazFajcit,
   zakazNaex,
@@ -236,8 +237,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
     `Ty si ${mena[ja]} (${v.utocnik === ja ? "útočník — zo šenku berieš prvý a vykladáš prvý" : "obranca — vyberáš a natáčaš cieľ kola, zo šenku berieš aj vykladáš druhý"}), súper ${mena[su]}. Hrá sa o ${v.lokalitCelkom} lokalít, ovládnutých ${v.ovladnute.length}${v.prepadnute.length > 0 ? `, prepadnutých ${v.prepadnute.length}` : ""}. Limit ruky nie je; po každej bitke si každý dobere ${KONSTANTY.KARTY_PO_BITKE} karty. Ďalší Nástroj do Dedičstva stojí ${v.cenaDedicstva} cig. (cena rastie pre oboch). Pitiek v bitke = 1 + menší počet aktivovaných akcií karty v strede (z dvoch strán).`,
   );
 
-  // Stôl po prípadnom vyhodnotení — rovnako ako klient. V strede leží
-  // lokalita, v bitke o staršieho karta staršieho.
+  // Stôl po prípadnom vyhodnotení — rovnako ako klient. V strede leží lokalita.
   const lineEval = evaluateLine(DATA, lineState(v));
   const stol: VerejnyStav = { ciel: v.ciel, ovladnute: v.ovladnute, strany: v.strany, starsi: v.starsi, hraci: v.hraci };
   for (const p of [ja, su] as const) {
@@ -284,11 +284,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
 
   out.push("");
   out.push(
-    v.ciel === null
-      ? "CIEĽ KOLA: ešte nevybraný."
-      : v.ciel.typ === "lokalita"
-        ? `CIEĽ KOLA: bitka o lokalitu ${meno(v.ciel.lokalita?.defId ?? "")}.`
-        : `CIEĽ KOLA: bitka o staršieho ${meno(v.starsi.find((e) => e.elderId === v.ciel?.elderId)?.karta.defId ?? "")}.`,
+    v.ciel === null ? "CIEĽ KOLA: ešte nevybraný." : `CIEĽ KOLA: bitka o lokalitu ${meno(v.ciel.lokalita?.defId ?? "")}.`,
   );
   out.push("LÍNIA zľava doprava (tvoja strana vľavo, lokalita v strede, súperova strana vpravo), hrany zhora nadol tak, ako ich vidíš.");
   out.push(
@@ -312,7 +308,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
       ]),
     );
   if (v.ciel !== null && v.ciel.lokalita !== null) {
-    const popis = v.ciel.typ === "lokalita" ? " [LOKALITA]" : " [KARTA STARŠIEHO V STREDE — jej akcie na spoji dostane hráč s prevahou v kraji, efekt nie]";
+    const popis = " [LOKALITA]";
     out.push(kartaVLinii(v.ciel.lokalita, v.lokalitaOtocena !== (ja === 1), lineEval, popis, [`hrana k TEBE — ${nazovKraja(ja)}`, `hrana k SÚPEROVI — ${nazovKraja(su)}`]));
   } else out.push("  (stred línie — ešte nič)");
   for (const pl of v.strany[su])
@@ -332,10 +328,17 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
     out.push(
       `${v.bitkaStav?.damage ? "VÝSLEDOK BITKY" : "ODHAD BITKY (súperove absťáky v ruke nepoznáš)"}: tuhé poškodenie ty ${d.tuhe[ja]} : súper ${d.tuhe[su]}, celkové ty ${d.celkove[ja]} : súper ${d.celkove[su]}.`,
     );
-    const o = battleOutcome(d, v.utocnik, v.ciel.typ === "starsi");
-    out.push(
-      `  → ${o.vitaz === null ? "remíza: starší ostáva na mieste, nikto nevyhrá" : o.vitaz === ja ? "vyhrávaš" : "prehrávaš"}. Remíza v tuhom: o lokalitu rozhodne celkové poškodenie, pri jeho rovnosti obranca; o staršieho nevyhrá nikto.`,
-    );
+    const o = battleOutcome(d, v.utocnik);
+    out.push(`  → ${o.vitaz === ja ? "vyhrávaš" : "prehrávaš"}. Remíza v tuhom: rozhodne celkové poškodenie, pri jeho rovnosti obranca.`);
+    // Patronát (Michal 2026-10-20): kto má staršieho v ruke, pri výhre si ho nechá, pri prehre odhodí poldeci.
+    for (const p of [ja, su] as const) {
+      const pat = v.patronat[p];
+      if (pat === null) continue;
+      const e = v.starsi.find((x) => x.elderId === pat.elderId);
+      out.push(
+        `  PATRONÁT: ${p === ja ? "TY máš" : "SÚPER má"} v ruke staršieho ${meno(e?.karta.defId ?? "")}${p === ja && v.mojaNahrada !== null ? ` (na scorecarde lícom dole ${meno(v.mojaNahrada.defId)})` : " (na scorecarde karta lícom dole)"} — ${p === ja ? "vyhráš bitku = starší je tvoj; prehráš = odhodíš poldeci" : "ak bitku vyhrá, staršieho si nechá; ak prehrá, odhodí poldeci"}. ${p === ja ? "Súper" : "Ty"} dostane${p === ja ? "" : "š"} v bitke ${pat.pohorsenia} Pohoršení navyše.`,
+      );
+    }
   }
 
   out.push("");
@@ -356,7 +359,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
   for (const p of [ja, su] as const) {
     const o = v.ohlaseneVydesenie[p];
     if (o !== null)
-      out.push(`  ⚠ ${p === ja ? "TY si vydesil" : "SÚPER vydesil"} polovicu starších v kole ${o} — ${p === ja ? "vyhráš" : "vyhrá"} na konci kola ${o + 1}, ak ich ${p === ja ? "udržíš" : "udrží"}. Vrátiť vydeseného do sivej sa dá výhrou bitky o neho (vyvolá ju útočník).`);
+      out.push(`  ⚠ ${p === ja ? "TY si vydesil" : "SÚPER vydesil"} polovicu starších v kole ${o} — ${p === ja ? "vyhráš" : "vyhrá"} na konci kola ${o + 1}, ak ich ${p === ja ? "udržíš" : "udrží"}. Vrátiť vydeseného do stredu sa dá patronátom — vezme si ho do ruky ten, komu prejavuje priazeň (po šenku).`);
   }
   for (const e of v.starsi) {
     const b = body.starsi.find((x) => x.elderId === e.elderId);
@@ -465,15 +468,6 @@ function moznosti(v: ClientState): string[] {
         c({ type: "chooseLocation", uid: k.uid, otocena: false }, `bitka o lokalitu ${meno(k.defId)} — ${popisStranLokality(v, k, false)}`);
         c({ type: "chooseLocation", uid: k.uid, otocena: true }, `bitka o lokalitu ${meno(k.defId)}, otočenú o 180° — ${popisStranLokality(v, k, true)}`);
       }
-      for (const e of v.starsi) {
-        if (!bitkaOStarsiehoMozna(e)) continue;
-        // Náhľad: víťaz dá marker do sivej — strach toho staršieho prestane bodovať.
-        const n = nahladBitkyOStarsieho(DATA, v, e.elderId);
-        const b = (x: readonly [number, number]) => `${x[ja]}:${x[su]}`;
-        const popis = `bitka o staršieho ${meno(e.karta.defId)} (jeho karta leží v strede ako lokalita); body ty:súper teraz ${b(n.teraz)}, ak vyhráš ${b(n.vyhra[ja])}, ak prehráš ${b(n.vyhra[su])} (bez prebytku)`;
-        c({ type: "chooseElder", elderId: e.elderId, otocena: false }, `${popis} — ${popisStranLokality(v, e.karta, false)}`);
-        c({ type: "chooseElder", elderId: e.elderId, otocena: true }, `${popis}, karta otočená o 180° — ${popisStranLokality(v, e.karta, true)}`);
-      }
       break;
     }
     case "draft": {
@@ -484,6 +478,26 @@ function moznosti(v: ClientState): string[] {
         out.push(
           `{"type":"stavbaSenku","doSenku":[${Array.from({ length: krok.doSenku }, (_, i) => `A${i + 1}`).join(",")}],"odhod":[${Array.from({ length: krok.odhod }, (_, i) => `B${i + 1}`).join(",")}]}   — z TVOJHO BALÍČKA STAVBY (vyššie) daj ${krok.doSenku} ${krok.doSenku === 1 ? "kartu" : "karty"} do šenku (uvidia ich obaja, berie sa z neho) a ${krok.odhod} naspodok spoločného balíčka (súper ich neuvidí). Nič si nepodávate. Súper vyberá naraz s tebou; karty do šenku sa odhalia, keď vyberiete obaja.`,
         );
+        break;
+      }
+      if (ds.krok === "patronat") {
+        // Patronát (Michal 2026-10-20): staršieho, ktorý ti prejavuje priazeň, si vezmeš do ruky.
+        c({ type: "bezPatronatu" }, "staršieho do ruky neberieš");
+        const h = v.hraci[ja];
+        const kandidati = kandidatiNaNahradu(DATA, v.ruka);
+        if (h.poldeciPlne + h.poldeciVypite < 1 || kandidati.length === 0) break;
+        const b = (x: readonly [number, number]) => `${x[ja]}:${x[su]}`;
+        for (const e of v.starsi) {
+          const cena = cenaPatronatu(e);
+          if (!patronatMozny(e, ja) || h.cigarety < cena.cigarety) continue;
+          for (const k of kandidati) {
+            const n = nahladPatronatu(DATA, v, e.elderId, k);
+            c(
+              { type: "patronat", elderId: e.elderId, uid: k.uid },
+              `PATRONÁT: vezmi do ruky staršieho ${meno(e.karta.defId)} (v tomto kole ho smieš vyložiť), na jeho scorecard lícom dole ${meno(k.defId)}, marker do stredu; zaplatíš ${cena.cigarety} cig., súper dostane v bitke ${cena.pohorsenia} Pohoršení navyše (môže nimi vrátiť marker späť). Vyhráš bitku = starší je tvoj, prehráš = odhodíš poldeci natrvalo. Body ty:súper teraz ${b(n.teraz)}, pri výhre ${b(n.vyhra)}, pri prehre ${b(n.prehra)} (bez Pohoršení súpera)`,
+            );
+          }
+        }
         break;
       }
       // Michal 2026-10-19: na ťahu 1 karta za cigaretu, alebo 2 karty za 3 cigarety; poldeci sa neplatí.
@@ -631,29 +645,19 @@ function moznosti(v: ClientState): string[] {
       if (b?.krok === "pohorsenie") {
         const naKraj = pohorsenieNaKraj(v, ja);
         for (const e of v.starsi) {
-          // Kultúrny dom: ten istý marker smie Pohoršenie posunúť znova.
-          if ((b.pohnuteMarkery.includes(e.elderId) && !opakovanePohorsenie(v)) || posunMarker(e, su, true, naKraj) === null) continue;
+          // Ten istý marker aj viackrát, najviac cez dve hranice zón (Kultúrny dom bez limitu).
+          if (!pohorsenieMozne(v, ja, e)) continue;
           c({ type: "pohorsenie", elderId: e.elderId }, `posuň marker ${meno(e.karta.defId)} k súperovi (on dostane priazeň, starší sa začne báť teba)${nahlad(e, true, naKraj)}`);
         }
       }
       if (b?.krok === "prebytok") {
-        const vyluceny = v.ciel?.typ === "starsi" ? v.ciel.elderId : null;
         const cena = b.vitaz === ja ? cenaPrebytku({ strany: v.strany } as unknown as GameState, ja) : 1;
         out.push(`(Prebytok zostáva ${b.prebytokZostava}; jeden posun ťa stojí ${cena}${cena > 1 ? " — Miňištrant vo tvojej partii" : ""}.)`);
         for (const e of v.starsi) {
-          if (b.prebytokZostava < cena || e.elderId === vyluceny || posunMarker(e, su, false) === null) continue;
+          if (b.prebytokZostava < cena || posunMarker(e, su, false) === null) continue;
           c({ type: "prebytok", elderId: e.elderId }, `prebytok: posuň marker ${meno(e.karta.defId)} smerom k porazenému (súper dostane priazeň, starší sa začne báť teba)${nahlad(e, false)}`);
         }
       }
-      if (b?.krok === "nahrada")
-        for (const o of v.volbyNahrada ?? []) {
-          for (const m of [3, 4, 5] as const) {
-            const karta = { defId: o.defId, leftLayout: o.leftLayout, rightLayout: o.rightLayout };
-            const n = v.ciel?.typ === "starsi" && v.ciel.elderId !== null ? nahladNahrady(DATA, v, v.ciel.elderId, karta, m) : null;
-            const body = n === null ? "" : `; body potom ty ${n.body[ja]} (${n.zmena[ja] >= 0 ? "+" : ""}${n.zmena[ja]}), súper ${n.body[su]} (${n.zmena[su] >= 0 ? "+" : ""}${n.zmena[su]})`;
-            out.push(`${JSON.stringify({ type: "nahrada", defId: o.defId, kde: o.kde, marker: m, leftLayout: o.leftLayout, rightLayout: o.rightLayout })}   — náhrada staršieho kartou ${popisKarty({ uid: -1, ...karta })} (${o.kde}), marker na ${m}${body}`);
-          }
-        }
       if (b?.krok === "liecba") {
         c({ type: "skipLiecba" }, "preskočiť Liečbu/Pohreb");
         const cirhoza = v.hraci[ja].priznane.find((k) => k.defId === "cirhoza");
@@ -689,7 +693,7 @@ function textUdalosti(e: Event, mena: readonly string[], ja: PlayerId): string |
     case "manualEfekt":
       return `⚠ EFEKT, ktorý hra nevyhodnocuje automaticky: ${e.nazov} — ${e.text}`;
     case "bitkaVysledok":
-      return `Bitka: tuhé ${e.damage.tuhe[ja]}:${e.damage.tuhe[ja === 0 ? 1 : 0]} (ty:súper), celkové ${e.damage.celkove[ja]}:${e.damage.celkove[ja === 0 ? 1 : 0]} — ${e.vitaz === null ? "remíza, starší ostáva na mieste" : `vyhráva ${m(e.vitaz)}`}${e.prebytok > 0 ? `, prebytok ${e.prebytok}` : ""}.`;
+      return `Bitka: tuhé ${e.damage.tuhe[ja]}:${e.damage.tuhe[ja === 0 ? 1 : 0]} (ty:súper), celkové ${e.damage.celkove[ja]}:${e.damage.celkove[ja === 0 ? 1 : 0]} — vyhráva ${e.vitaz === null ? "nikto" : m(e.vitaz)}${e.prebytok > 0 ? `, prebytok ${e.prebytok}` : ""}.`;
     case "koniec":
       return `KONIEC: vyhral ${e.vitaz === null ? "nikto (remíza)" : m(e.vitaz)}. ${e.dovod}${e.body ? ` Body ${e.body[0]}:${e.body[1]} (hráč 1 : hráč 2).` : ""}`;
     default:

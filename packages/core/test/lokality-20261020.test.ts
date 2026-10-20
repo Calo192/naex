@@ -19,7 +19,7 @@ import {
   loadGameData,
   moznostiNaex,
   naexZaPitku,
-  opakovanePohorsenie,
+  pohorsenieBezLimitu,
   parseScorecards,
   planVykladania,
   evaluateLine,
@@ -57,7 +57,7 @@ function vKole(defId: string, seed = 41): GameState {
     kolo: 2,
     utocnik: 0,
     strany: [[], []],
-    ciel: { typ: "lokalita", lokalita: inst(defId), elderId: null },
+    ciel: { typ: "lokalita", lokalita: inst(defId) },
     lokalitaOtocena: false,
     lokalityVHre: s0.lokalityVHre.filter((k) => k.defId !== defId),
   };
@@ -145,7 +145,7 @@ describe("Kostol: nikto nesmie vypiť ani dať NA EX", () => {
   it("v Pitke niet NA EX", () => {
     const s = vPitke("kostol", { poldeciPlne: 2 }, [[na(inst("pijan"), 0)], []]);
     expect(moznostiNaex(data, s, 0)).toEqual([]);
-    expect(moznostiNaex(data, { ...s, ciel: { typ: "lokalita", lokalita: inst("krcma"), elderId: null } }, 0).length).toBeGreaterThan(0);
+    expect(moznostiNaex(data, { ...s, ciel: { typ: "lokalita", lokalita: inst("krcma") } }, 0).length).toBeGreaterThan(0);
   });
 });
 
@@ -187,9 +187,9 @@ describe("Vínna pivnica, Jednota, Obecný úrad, Kultúrny dom", () => {
     expect(prahyHraca(data, vKole("obecny_urad"), 0).exekutor).toBe(prahyHraca(data, vKole("krcma"), 0).exekutor - KONSTANTY.EFEKT.URAD_PRAH_EXEKUTORA);
   });
 
-  it("Kultúrny dom: Pohoršenie smie ten istý marker znova", () => {
-    expect(opakovanePohorsenie(vKole("kulturny_dom"))).toBe(true);
-    expect(opakovanePohorsenie(vKole("krcma"))).toBe(false);
+  it("Kultúrny dom: Pohoršenie bez limitu hraníc zón (Michal 2026-10-20)", () => {
+    expect(pohorsenieBezLimitu(vKole("kulturny_dom"))).toBe(true);
+    expect(pohorsenieBezLimitu(vKole("krcma"))).toBe(false);
   });
 });
 
@@ -235,7 +235,7 @@ describe("Cintorín: porazený dá Nástroj z ruky do Dedičstva zadarmo", () =>
       sums: [{}, {}],
       exekutorHotovy: [true, true],
       pohorsenieZostava: [0, 0],
-      pohnuteMarkery: [],
+      pohorsenieHranice: {},
       damage: null,
       vitaz: 1,
       prebytokDrzi: null,

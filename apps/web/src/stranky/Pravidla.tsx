@@ -45,7 +45,8 @@ const SLOVNIK: readonly { readonly tema: string; readonly popis: string; readonl
     tema: "Kolo a ťahy",
     popis: "Kto čo robí a kedy.",
     pojmy: [
-      ["Kolo", "Voľba cieľa, draft, potom Zhromaždenie a Pitka (1 až 4-krát podľa lokality) a nakoniec bitka o lokalitu alebo o staršieho."],
+      ["Kolo", "Voľba cieľa, draft (šenok a patronát), potom Zhromaždenie a Pitka (1 až 4-krát podľa lokality) a nakoniec bitka o lokalitu."],
+      ["Patronát", "Komu starší prejavuje priazeň, smie si ho po šenku vziať do ruky; kto potom vyhrá bitku, staršieho si nechá."],
       ["Útočník / Obranca", "Útočník prehral poslednú bitku: berie zo šenku prvý a vykladá prvý. Obranca vyberá a natáča cieľ kola."],
       ["Šenok", "Ponuka kariet lícom nahor, ktorú hráči postavia v drafte; vidia ju obaja."],
       ["Vypiť", "Otočiť plný poldeci na vypitý: v Zhromaždení tak zaplatíš každú ďalšiu kartu v tom istom ťahu — limit −1, pečeň +1 (vyhodnotí sa v najbližšej Pitke), ráta sa ako nerest."],
@@ -440,7 +441,7 @@ const KAPITOLY: readonly Kapitola[] = [
         </table>
         <p>
           <strong>Zamknutá pozícia:</strong> na krajnú pozíciu sa dostaneš len z predposlednej, kde marker bol už na začiatku
-          kola — nie viacerými posunmi naraz ani Pohoršením. <strong>Prebudenie:</strong> keď vytlačíš marker na krajnú
+          kola — nie viacerými posunmi naraz ani Pohoršením. Z krajnej pozície marker uvoľní len patronát. <strong>Prebudenie:</strong> keď vytlačíš marker na krajnú
           červenú, efekt staršieho začne pôsobiť pre teba (okrem Nástupu a Podpory).
         </p>
       </>
@@ -535,7 +536,7 @@ const KAPITOLY: readonly Kapitola[] = [
           v Pitke), priznanie kliatby, Vízia a efekty kariet. Akcie Cigareta ti v Pitke dajú cigarety, ktoré sa prenášajú z kola na kolo.
         </p>
         <div className="priebeh">
-          <span>Voľba cieľa</span>→<span>Draft</span>→<span>Zhromaždenie</span>→<span>Pitka</span>→<span>…</span>→<span>Bitka</span>
+          <span>Voľba cieľa</span>→<span>Draft</span>→<span>Patronát</span>→<span>Zhromaždenie</span>→<span>Pitka</span>→<span>…</span>→<span>Bitka</span>
         </div>
         <p>
           Cieľ kola vyberá a natáča obranca (víťaz poslednej bitky); útočník (porazený) berie zo šenku prvý. Vo fáze <strong>Zhromaždenie</strong> hráči striedavo vykladajú
@@ -606,7 +607,7 @@ const KAPITOLY: readonly Kapitola[] = [
             <tr><td>Cintorín</td><td>Prehra</td><td>Porazený smie dať Nástroj z ruky do Dedičstva zadarmo (cena Dedičstva aj tak stúpne).</td></tr>
             <tr><td>Obecný úrad</td><td>Bitka</td><td>Prah Exekútora −4; Robota odhodí 2 priznané Dlhy.</td></tr>
             <tr><td>Jednota</td><td>Pitka</td><td>Nový poldeci (barter) o 1 cigaretu lacnejší.</td></tr>
-            <tr><td>Kultúrny dom</td><td>Bitka</td><td>Pohoršenie smie posunúť ten istý marker aj viackrát.</td></tr>
+            <tr><td>Kultúrny dom</td><td>Bitka</td><td>Pohoršenie nemá limit dvoch hraníc zón (na krajnú pozíciu stále nie).</td></tr>
             <tr><td>Vínna pivnica</td><td>Pitka</td><td>NA EX až dvakrát za Pitku.</td></tr>
             <tr><td>Družstvo</td><td>Zhromaždenie</td><td>Pracujúci nemíňajú limit vykladania.</td></tr>
           </tbody>
@@ -616,20 +617,35 @@ const KAPITOLY: readonly Kapitola[] = [
   },
   {
     id: "starsi-bitka",
-    nazov: "Bitka o staršieho",
+    nazov: "Patronát",
     obrazok: "strana-34.jpg",
     obsah: () => (
       <>
-        <p>Prebieha ako bitka o lokalitu, ale:</p>
-        <ul>
-          <li>bez draftu; Pitiek je ako pri lokalite — 1 + menší počet aktivovaných akcií karty staršieho z dvoch strán,</li>
-          <li>dá sa vyvolať, len ak je marker aspoň v oranžovej zóne (Strach) a na ukazovateli leží pôvodný starší,</li>
-          <li>v strede línie leží <strong>karta staršieho</strong> ako lokalita — obranca ju natočí a strany sa cez ňu spájajú.</li>
-        </ul>
         <p>
-          Víťaz si vezme kartu staršieho do balíčka a na jeho miesto položí vlastného Občana alebo Zviera; marker nastaví do
-          sivej zóny. <em>Áno, aj koza smie zasadnúť do rady starších.</em> Náhrada hrá ďalej ako každý starší — marker,
-          priazeň aj body. Pred bitkou ti hra ukáže, ako sa zmenia body oboch hráčov.
+          O staršieho sa nebojuje samostatnou bitkou — starší príde na pomoc tomu, koho má rád. Po braní zo šenku sa
+          najprv útočník, potom obranca rozhodne, či si vezme do ruky staršieho, ktorý mu <strong>prejavuje priazeň</strong>{" "}
+          (marker aspoň v žltej zóne na jeho polovici, na ukazovateli ešte pôvodný starší). Každý najviac jedného za kolo.
+        </p>
+        <ul>
+          <li>Kartu staršieho si vezmeš do ruky — v tomto kole ju smieš vyložiť ako každú inú kartu.</li>
+          <li>Na jeho scorecard dáš <strong>lícom dole</strong> Občana alebo Zviera z ruky — súper nevie, ktorého.</li>
+          <li>Marker staršieho ide do stredu.</li>
+          <li>
+            Zaplatíš toľko cigariet, koľko markeru chýbalo do červenej (žltá 2, oranžová 1, červená 0), a súper dostane v tejto
+            bitke toľko <strong>Pohoršení navyše</strong>, o koľko marker išiel do stredu (2 / 3 / 4) — strach, ktorý spôsobil,
+            mu tak neprepadne (Policajtka ich zruší, Noviny platia).
+          </li>
+          <li>Treba mať aspoň jeden poldeci — na bolestné.</li>
+        </ul>
+        <p className="zvyraznene">
+          <strong>Vyhráš bitku</strong> — lokalitu aj staršieho: karta staršieho je tvoja, náhrada sa otočí lícom hore a hrá ďalej
+          ako každý starší (marker, priazeň aj body). <em>Áno, aj koza smie zasadnúť do rady starších.</em>{" "}
+          <strong>Prehráš</strong> — starší sa vráti na scorecard (marker ostane, kde je), náhradu si vezmeš späť do ruky a ako
+          bolestné <strong>odhodíš jeden poldeci</strong> (plný či vypitý; nový stojí 5 cigariet).
+        </p>
+        <p>
+          Patronát je aj obrana proti vydeseniu: marker z krajnej pozície uvoľní len on. Pred potvrdením ti hra ukáže body oboch
+          hráčov pri výhre a pri prehre.
         </p>
       </>
     ),
@@ -642,14 +658,15 @@ const KAPITOLY: readonly Kapitola[] = [
       <ol className="kroky">
         <li><strong>Efekty bitky</strong> — Krčmárka, Dievčina na vydaj.</li>
         <li><strong>Exekútor</strong> — najprv Robota, potom kontrola prahu priznaných dlhov.</li>
-        <li><strong>Pohoršenie</strong> — každé posunie marker staršieho o 1 k súperovi (nie dvakrát ten istý, nie na krajnú pozíciu).</li>
+        <li><strong>Pohoršenie</strong> — každé posunie marker staršieho o 1 k súperovi; ten istý marker aj viackrát, no tvoje Pohoršenia ho prenesú najviac cez dve hranice zón (z pravej sivej až do ľavej oranžovej áno) a nikdy nie na krajnú pozíciu. Patrónov súper k nim dostane Pohoršenia z patronátu.</li>
         <li><strong>Poškodenie</strong> — Viera a Povera sa vyrušia, tuhé znižuje Viera a Absťáky, mäkké po strop dlhu.</li>
-        <li><strong>Výsledok</strong> — vyhráva vyššie TUHÉ; pri remíze o lokalitu rozhodne CELKOVÉ a potom obranca, o staršieho nevyhrá nikto (starší ostáva). Prebytok rozdeľuje hráč s vyšším CELKOVÝM.</li>
+        <li><strong>Výsledok</strong> — vyhráva vyššie TUHÉ; pri remíze rozhodne CELKOVÉ a potom obranca. Prebytok rozdeľuje hráč s vyšším CELKOVÝM.</li>
         <li><strong>Cigarety za prebytok</strong> — hráč, proti ktorému sa prebytok rozdeľoval, dostane 1 cigaretu za každého staršieho, ktorého marker sa posunul (viac posunov toho istého = 1 cigareta).</li>
         <li><strong>Poldeci</strong> — poldeci z NA EX sa vypijú, aktívna akcia Poldeci otočí vypitý späť na plný.</li>
         <li><strong>Veštica</strong> — porazený s Vešticou vymení kartu medzi doberacími balíčkami.</li>
         <li><strong>Liečba alebo Pohreb</strong> — s priznanou Cirhózou.</li>
         <li><strong>Cintorín</strong> — len na Cintoríne: porazený smie dať Nástroj z ruky do Dedičstva zadarmo.</li>
+        <li><strong>Patronát</strong> — víťaz si staršieho nechá, porazený patrón ho vráti na scorecard a odhodí poldeci.</li>
         <li><strong>Návrat kariet</strong> — do odhadzovacieho balíčka hráča, ktorý ich zahral.</li>
         <li><strong>Absťák</strong> — porovnanie nerestí kola s minulým (viď Závislosť).</li>
         <li><strong>Nové kolo</strong> — každému sa doleje jeden vypitý poldeci a každý si dobere 2 karty.</li>
@@ -665,7 +682,7 @@ const KAPITOLY: readonly Kapitola[] = [
         <p>
           Hra sa končí okamžite, keď niekto nečelí exekúcii alebo mu balíček klesne pod 5 kariet (prehráva). Kto vydesí
           polovicu starších, vyhrá, ak ich udrží do konca nasledujúceho kola — súper má jedno kolo na odpoveď (napríklad
-          vyhrať bitku o vydeseného staršieho a vrátiť ho do sivej). Hra ohlásenie ukáže obom.
+          vziať si vydeseného staršieho do ruky — patronát vráti marker do stredu). Hra ohlásenie ukáže obom.
         </p>
         <p>
           Inak po poslednej bitke o lokalitu sa bodujú scorecardy. Každá aktívna podmienka boduje{" "}

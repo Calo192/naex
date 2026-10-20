@@ -3416,3 +3416,21 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna.nemoze:hover > .kl {
     opacity: 0.85;
   }
 }
+
+/* ---- Patronát (Michal 2026-10-20): starší v ruke patróna ---------------------- */
+
+.scorecard-obal.v-patronate .scorecard {
+  opacity: 0.55;
+  filter: saturate(0.6);
+}
+
+.patronat-stitok {
+  margin: 4px 0 0;
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--akcent) 22%, transparent);
+  border: 1px solid var(--akcent);
+  font-size: 0.72rem;
+  line-height: 1.3;
+  text-align: center;
+}

@@ -93,24 +93,21 @@ export function computeDamage(sides: readonly [BattleSide, BattleSide]): DamageR
 
 export interface BattleOutcome {
   /**
-   * Vyššie TUHÉ poškodenie. Remíza (Michal 2026-10-19): o lokalitu rozhodne
-   * CELKOVÉ poškodenie a pri jeho rovnosti obranca; o staršieho nevyhrá
-   * nikto (null) — starší ostáva na mieste.
+   * Vyššie TUHÉ poškodenie. Remíza (Michal 2026-10-19): rozhodne CELKOVÉ
+   * poškodenie a pri jeho rovnosti obranca — bitka o lokalitu má víťaza vždy.
    */
-  readonly vitaz: PlayerId | null;
+  readonly vitaz: PlayerId;
   /** Vyššie CELKOVÉ poškodenie; pri remíze prebytok nikto nezíska. */
   readonly prebytokDrzi: PlayerId | null;
   readonly prebytok: number;
 }
 
-export function battleOutcome(damage: DamageResult, utocnik: PlayerId, oStarsieho = false): BattleOutcome {
+export function battleOutcome(damage: DamageResult, utocnik: PlayerId): BattleOutcome {
   const prebytokDrzi: PlayerId | null =
     damage.celkove[0] === damage.celkove[1] ? null : damage.celkove[0] > damage.celkove[1] ? 0 : 1;
   if (damage.tuhe[0] !== damage.tuhe[1]) {
     return { vitaz: damage.tuhe[0] > damage.tuhe[1] ? 0 : 1, prebytokDrzi, prebytok: Math.abs(damage.celkove[0] - damage.celkove[1]) };
   }
-  // Remíza o staršieho: bez víťaza aj bez prebytku.
-  if (oStarsieho) return { vitaz: null, prebytokDrzi: null, prebytok: 0 };
   const obranca: PlayerId = utocnik === 0 ? 1 : 0;
   return { vitaz: prebytokDrzi ?? obranca, prebytokDrzi, prebytok: Math.abs(damage.celkove[0] - damage.celkove[1]) };
 }

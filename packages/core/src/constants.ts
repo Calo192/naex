@@ -82,6 +82,12 @@ export const KONSTANTY = {
   PRAH_EXEKUTORA_ZAKLAD: 10, // + 2 × priazeň Exekútora
   HODNOTA_VIERY_ZAKLAD: 1, // Veriaci (2026-10-20) dáva Vieru navyše rovnú sile, hodnotu nemení
   PRESKUMANIE: 5,
+  /**
+   * Pohoršenie (Michal 2026-10-20): ten istý marker smie ísť v bitke aj
+   * viackrát, Pohoršenia jedného hráča ho však posunú najviac cez toľkoto
+   * hraníc zón (pravá sivá → ľavá oranžová áno). Kultúrny dom limit ruší.
+   */
+  POHORSENIE_MAX_HRANIC: 2,
 
   /** Prehra pri poklese balíčka pod túto hodnotu (PRAVIDLA §1). */
   MIN_VELKOST_BALICKA: 5,
