@@ -660,7 +660,7 @@ function moznosti(v: ClientState): string[] {
       const mamKartu = (defId: string) => [...v.strany[0], ...v.strany[1]].some((pl) => pl.playedBy === ja && pl.card.defId === defId);
       if (mamKartu("postarka") && pk?.postarka[ja] !== true) {
         for (let n = 1; n <= KONSTANTY.EFEKT.POSTARKA_KARTY; n++)
-          c({ type: "postarka", pocet: n }, `Poštárka: dober ${n} kariet navyše a s nimi ${KONSTANTY.EFEKT.POSTARKA_DLHY} Dlh`);
+          c({ type: "postarka", pocet: n }, `Poštárka: dober ${n} kariet navyše a získaj ${KONSTANTY.EFEKT.POSTARKA_DLHY} Dlh (hneď priznaný)`);
       }
       if (mamKartu("starosta") && pk?.starosta[ja] !== true && h.cigarety > 0) {
         out.push(`{"type":"starosta","rukaUid":U,"senokUid":S}   — Starosta: za 1 cigaretu vymeň kartu z ruky (U) za kartu zo šenku (S)`);

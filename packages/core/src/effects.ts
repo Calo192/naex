@@ -102,7 +102,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   // Nové lokality (Michal 2026-10-20, docs/playtesty/navrh-lokality.html).
   most: "impl", // Zhromaždenie: karty len na vlastnú stranu
   cintorin: "impl", // Prehra: Nástroj z ruky do Dedičstva bez platenia
-  obecny_urad: "impl", // Bitka: prah Exekútora −4, Robota odhodí 2 priznané Dlhy
+  obecny_urad: "impl", // Bitka: prah Exekútora −4, Robota spáli 2 priznané Dlhy
   jednota: "impl", // Pitka: stokársky barter o 1 cigaretu lacnejší
   kulturny_dom: "impl", // Bitka: Pohoršenie bez limitu hraníc zón (na krajnú stále nie)
   vinna_pivnica: "impl", // Pitka: NA EX až dvakrát

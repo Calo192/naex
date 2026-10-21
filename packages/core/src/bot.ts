@@ -382,7 +382,7 @@ function hodnotaBitky(k: Kontext, s: GameState, q: PlayerId, ostrost: number): n
       w += 0.5 * Math.min(3, sp.Pohoršenie ?? 0);
       const naex = s.strany.flat().filter((pl) => pl.naexBy === p).length;
       w += 0.4 * Math.min(sp.Poldeci ?? 0, h.poldeciVypite + naex) * k.buducnost;
-      // Každá aktívna akcia Dlh je karta Dlh (prah 1). Pečeň pod prahom sa po Pitke
+      // Akcia Dlh zadlžuje (karta Dlh za každý celý prah). Pečeň pod prahom sa po Pitke
       // vynuluje, ale tesne pod prahom ju dorazí ďalšie pitie či NA EX.
       const prah = prahyHraca(data, s, p).cirhoza;
       const pecen = h.pecen + (sp.PoškodeniePečene ?? 0) + (sp.Poldeci ?? 0);

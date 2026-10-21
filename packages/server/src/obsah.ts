@@ -320,11 +320,12 @@ export class Obsah {
    * of live website“). Produkčný server má vlastnú databázu; nasadenie prenáša
    * len kód. Návrhy kariet sa prepíšu podľa data/cards.json (texty, tagy,
    * akcie, kraje) a seed/ (kópie, mierky, ilustrácie), chýbajúce pribudnú,
-   * kľúčové slová sa doplnia z predvolených a tvorca sa zverejní. Beží raz pre
-   * každú značku; preskočí sa, ak má tvorca nezverejnenú prácu (návrh upravený
+   * kľúčové slová a popisy vstavaných akcií sa doplnia z predvolených a tvorca
+   * sa zverejní. Beží raz pre každú značku (nová značka pri každej zmene
+   * cards.json); preskočí sa, ak má tvorca nezverejnenú prácu (návrh upravený
    * po poslednom zverejnení) — tú by prepísal.
    */
-  dorovnajSoSeedom(teraz: number, znacka = "migracia-sada-kulturny-dom-20261020"): "hotovo" | "bez-zmeny" | "preskocene" | "uz-bezalo" {
+  dorovnajSoSeedom(teraz: number, znacka = "migracia-texty-m23-20261021"):"hotovo" | "bez-zmeny" | "preskocene" | "uz-bezalo" {
     if (this.nastaveniaT.jeden(znacka) !== null) return "uz-bezalo";
     const posledna = this.db.prepare("SELECT cas FROM sady ORDER BY verzia DESC LIMIT 1").get() as { cas: number } | undefined;
     const navrhy = this.karty.vsetky();
@@ -368,6 +369,14 @@ export class Obsah {
         if (stare !== null && JSON.stringify(stare) === JSON.stringify(k)) continue;
         zmena = true;
         this.klucoveSlova.uloz(k.slovo, k);
+      }
+      // Popisy vstavaných akcií idú s pravidlami (M23: Robota, Dlh, Poškodenie
+      // pečene); názov, ikonu a poradie z tvorcu nechá.
+      for (const a of PREDVOLENE_AKCIE) {
+        const stara = this.akcie.jeden(a.kluc);
+        if (stara === null || stara.popis === a.popis) continue;
+        zmena = true;
+        this.akcie.uloz(a.kluc, { ...stara, popis: a.popis });
       }
       this.nastaveniaT.uloz(znacka, { cas: teraz });
     });

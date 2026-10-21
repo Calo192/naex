@@ -9,10 +9,20 @@ import type { AkciaDef, Kategoria, KlucoveSlovo } from "./typy.ts";
  * jednotné názvy (akcia sa volá ako karta či zdroj, ktorý dáva — Dlh,
  * Poškodenie pečene, Poldeci, Cigareta; nikde „fyzická cigareta“) a nová
  * Vízia. Server nimi pri štarte prepíše staré databázy (zjednotNazvyAkcii).
+ * Popisy Dlhu a Poškodenia pečene sú už podľa M23 (verejný dlh, 2026-10-21) —
+ * staré databázy ich dostanú z dorovnajSoSeedom.
  */
 export const AKCIE_20261019: readonly { readonly kluc: string; readonly nazov: string; readonly popis: string }[] = [
-  { kluc: "Dlh", nazov: "Dlh", popis: "Zvýši zadĺženie o 1. V Pitke každé zadĺženie dá kartu Dlh (prah 1)." },
-  { kluc: "PoškodeniePečene", nazov: "Poškodenie pečene", popis: "Pridá 1 poškodenie pečene. V Pitke pri prahu získaš Cirhózu." },
+  {
+    kluc: "Dlh",
+    nazov: "Dlh",
+    popis: "Zvýši zadĺženie o 1. V Pitke za každý celý prah zadĺženia (2 + sila Úžerníka) získaš Dlh — hneď sa prizná a na konci hry uberá bod aj priznaný.",
+  },
+  {
+    kluc: "PoškodeniePečene",
+    nazov: "Poškodenie pečene",
+    popis: "Pridá 1 poškodenie pečene. V Pitke za každý celý prah získaš Cirhózu — ide navrch tvojho doberacieho balíčka.",
+  },
   { kluc: "Poldeci", nazov: "Poldeci", popis: "Pri bitke otočí jeden tvoj vypitý poldeci späť na plný. Poškodenie pečene z neho sa počíta už v Pitke." },
   {
     kluc: "Cigareta",
@@ -44,7 +54,7 @@ export const PREDVOLENE_AKCIE: readonly AkciaDef[] = [
   ...AKCIE_20261019.map((a) => A(a.kluc, a.nazov, a.popis)),
   A("Posilnenie", "Posilnenie", "Zdvojnásobí prepojenú akciu — priaznivú aj nepriaznivú."),
   A("Odpor", "Odpor", "Zruší prepojenú akciu. Odpor proti Odporu = Vzbura: obe karty aktivujú všetky inak neaktívne akcie."),
-  A("Robota", "Robota", "Pred kontrolou prahu Exekútora odhodí 1 priznaný Dlh. Funguje aj bez exekúcie."),
+  A("Robota", "Robota", "Pred kontrolou prahu Exekútora zahodí 1 priznaný Dlh (spáli ho, z hry). Funguje aj bez exekúcie."),
 ].map((a, poradie) => ({ ...a, poradie }));
 
 const S = (slovo: string, popis: string): KlucoveSlovo => ({
@@ -74,8 +84,8 @@ export const PREDVOLENE_KLUCOVE_SLOVA: readonly KlucoveSlovo[] = [
     "Dedičstvo",
     "Pasívny bonus Nástroja, kým leží v tvojej hracej oblasti. Vyloženie do Dedičstva stojí cigarety — cena rastie spoločne pre oboch: prvý Nástroj v hre 1 cigaretu, druhý 2, tretí 3…",
   ),
-  S("Výhra", "Uplatní sa, keď vyhráš bitku o lokalitu alebo o staršieho."),
-  S("Prehra", "Uplatní sa, keď prehráš bitku o lokalitu alebo o staršieho."),
+  S("Výhra", "Uplatní sa, keď vyhráš bitku o lokalitu (máš vyššie tuhé poškodenie). Pri rovnakom tuhom nevyhrá nikto — lokalita ide na sekeru."),
+  S("Prehra", "Uplatní sa, keď prehráš bitku o lokalitu (máš nižšie tuhé poškodenie). Pri rovnakom tuhom neprehrá nikto — lokalita ide na sekeru."),
   S("Prestávka", "Uplatní sa cez prestávku pred bitkou."),
   S("Podpora", "Uplatní sa, keď má karta v okolí presne 2 karty."),
   S("Exekúcia", "Uplatní sa, keď ťa navštívi Exekútor."),

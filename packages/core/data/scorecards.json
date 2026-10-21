@@ -10,7 +10,7 @@
   "",
   "body: znepokojenie/strach/vydesenie = body, ak je marker aspoň v tej zóne;",
   "      ostatné = body za každý kus obávaného hráča (ovládnutá lokalita, starší",
-  "      získaný náhradou, zvyšná cigareta, nepriznaná cirhóza, nepriznaný dlh).",
+  "      získaný náhradou, zvyšná cigareta, nepriznaná cirhóza, každý dlh — aj priznaný).",
   "      Lokality, starší a cigarety bodujú len od oranžovej zóny (prahPodmienky",
   "      v elders.ts, rozhodnutie Michala 2026-10-12). Lokality a starší dávajú",
   "      2 za kus (predtým 3) — Michal 2026-10-12 po playteste 20261012-055944.",

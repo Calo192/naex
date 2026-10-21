@@ -1035,7 +1035,7 @@ a do hry prídu so zverejnením sady.
 | Zberný dvor | Pitka | Raz za Pitku: za 1 cigaretu karta z vlastného odhadzovacieho balíčka do ruky (cigareta je nerest ako pri barteri). |
 | Most | Zhromaždenie, Pitka | Karty sa smú vykladať len na vlastnú stranu — aj odpoveď na NA EX. |
 | Cintorín | Prehra | Porazený smie po Liečbe dať jeden Nástroj z ruky do Dedičstva bez platenia; spoločná cena Dedičstva sa zvýši ako vždy. |
-| Obecný úrad | Bitka | Prah Exekútora je o 4 nižší; každá Robota odhodí 2 priznané Dlhy namiesto 1. |
+| Obecný úrad | Bitka | Prah Exekútora je o 4 nižší; každá Robota spáli 2 priznané Dlhy namiesto 1 (od 2026-10-21; predtým ich odhodila). |
 | Jednota | Pitka | Stokársky barter (nový poldeci) je o 1 cigaretu lacnejší. |
 | Kultúrny dom | Bitka | Pohoršenie nemá limit dvoch hraníc zón (na krajnú pozíciu stále nie). Predtým: ten istý marker viackrát — to je od 2026-10-20 bežné pravidlo. |
 | Vínna pivnica | Pitka | NA EX smie hráč dať v Pitke až dvakrát. |

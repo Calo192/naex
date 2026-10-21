@@ -64,6 +64,24 @@ describe("dorovnanie tvorcu so seedom", () => {
     expect(pocetSad(db)).toBe(pred + 1);
   });
 
+  it("popisy akcií a kľúčových slov z pravidiel M23 prepíše, názov a ikonu akcie nechá", () => {
+    const { obsah, db } = priprav();
+    const robota = obsah.akcie.jeden("Robota");
+    if (robota === null) throw new Error("chýba Robota");
+    obsah.akcie.uloz("Robota", { ...robota, nazov: "Fuška", popis: "Pred kontrolou prahu Exekútora odhodí 1 priznaný Dlh." });
+    const vyhra = obsah.klucoveSlova.jeden("Výhra");
+    if (vyhra === null) throw new Error("chýba Výhra");
+    obsah.klucoveSlova.uloz("Výhra", { ...vyhra, popis: "Uplatní sa, keď vyhráš bitku o lokalitu alebo o staršieho." });
+    obsah.zverejni(null, 3);
+    expect(obsah.dorovnajSoSeedom(10)).toBe("hotovo");
+    const sada = obsah.aktualnaSada().sada;
+    const nova = sada.akcie.find((a) => a.kluc === "Robota");
+    expect(nova?.popis).toContain("spáli");
+    expect(nova?.nazov).toBe("Fuška");
+    expect(sada.klucoveSlova.find((k) => k.slovo === "Výhra")?.popis).toContain("sekeru");
+    expect(pocetSad(db)).toBeGreaterThan(1);
+  });
+
   it("nezverejnenú prácu admina neprepíše", () => {
     const { obsah, db } = priprav();
     staraProdukcia(obsah, db);

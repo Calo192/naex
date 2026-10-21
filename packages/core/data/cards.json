@@ -1,5 +1,5 @@
 {
- "source": "tvorca kariet 2026-10-20T14:11:42.416Z",
+ "source": "tvorca kariet 2026-10-21T14:19:04.145Z",
  "actions": [
   "Cigareta",
   "Dlh",
@@ -840,7 +840,7 @@
     "Kriminál",
     "Žena"
    ],
-   "effect_text": "Nástup: Ak je vrchná karta doberacieho balíčka súpera muž, odstráň ho z hry a odhoď 2 svoje Dlhy.",
+   "effect_text": "Nástup: Ak je vrchná karta doberacieho balíčka súpera muž, odstráň ho z hry a zahoď 2 svoje Dlhy, aj spomedzi priznaných.",
    "triggers": [
     "Nástup"
    ],
@@ -1153,7 +1153,7 @@
     "Pamätník",
     "Žena"
    ],
-   "effect_text": "Nástup: Zahoď 1 Cirhózu alebo 1 Dlh z ruky alebo z odhadzovacieho balíčka.",
+   "effect_text": "Nástup: Zahoď 1 Cirhózu alebo 1 Dlh z ruky či z odhadzovacieho balíčka, Dlh aj spomedzi priznaných.",
    "triggers": [
     "Nástup"
    ],
@@ -1407,7 +1407,7 @@
     "Starešina",
     "Žena"
    ],
-   "effect_text": "Pitka: Smieš dobrať až 2 karty navyše a spolu s nimi 1 Dlh.",
+   "effect_text": "Pitka: Raz smieš dobrať až 2 karty navyše; získaš za to 1 Dlh.",
    "triggers": [
     "Pitka"
    ],
@@ -2541,7 +2541,7 @@
    "tags": [
     "Lokalita"
    ],
-   "effect_text": "Bitka: Prah Exekútora je o 4 nižší a každá aktívna Robota odhodí 2 priznané Dlhy.",
+   "effect_text": "Bitka: Prah Exekútora je o 4 nižší a každá aktívna Robota zahodí 2 priznané Dlhy.",
    "triggers": [
     "Bitka"
    ],

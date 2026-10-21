@@ -40,7 +40,7 @@ export function popisPodmienky(p: Podmienka, body: number): string {
     case "cirhoza":
       return `${b(body)} za každú nepriznanú cirhózu.`;
     case "dlh":
-      return `${b(body)} za každý nepriznaný dlh.`;
+      return `${b(body)} za každý Dlh (aj priznaný).`;
   }
 }
 
