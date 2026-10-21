@@ -11,10 +11,6 @@
   --ruka-skryte: calc(var(--ruka-kh) * 0.3);
   --pokyn-h: 46px;
   --ruka-h: calc(var(--ruka-kh) - var(--ruka-skryte) + 14px + var(--pokyn-h) + 10px);
-  --ja: #5cc0cf;
-  --ja-tmava: #1d3b40;
-  --su: #e0805f;
-  --su-tmava: #43261d;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -34,7 +30,7 @@
   gap: 8px 14px;
   padding: 5px 10px;
   border-radius: 0 0 12px 12px;
-  background: rgba(40, 33, 26, 0.94);
+  background: color-mix(in srgb, var(--plocha-2) 94%, transparent);
   backdrop-filter: blur(8px);
   border: 1px solid var(--okraj);
   border-top: none;
@@ -47,14 +43,14 @@
   color: var(--akcent);
   padding: 5px 10px;
   border-radius: 8px;
-  background: #2d2312;
+  background: color-mix(in oklab, var(--akcent-tmavy) 18%, var(--pozadie));
 }
 
 /* Tlačidlá vpravo odtlačí stav spojenia (.hlava-stav, margin-left: auto). */
 
 .hra-hlava .opustit.potvrdit {
   background: var(--cervena);
-  border-color: #e7735e;
+  border-color: var(--cervena-text);
   color: #fff;
 }
 
@@ -62,7 +58,7 @@
   margin-left: 8px;
   padding: 1px 7px;
   border-radius: 999px;
-  background: rgba(233, 173, 69, 0.14);
+  background: color-mix(in srgb, var(--akcent) 14%, transparent);
   color: var(--akcent);
   font: 600 0.78rem/1.4 var(--pismo);
   font-variant-numeric: tabular-nums;
@@ -166,7 +162,7 @@
 
 .priebeh-kola li.aktualny,
 .priebeh-kola li.aktualny:hover {
-  color: #1b1408;
+  color: var(--na-akcente);
   font-weight: 700;
   background: var(--akcent);
 }
@@ -174,9 +170,9 @@
 .hra > .chyba {
   padding: 10px 14px;
   border-radius: 10px;
-  background: #3a1a14;
-  border: 1px solid #7a3326;
-  color: #ffc2b4;
+  background: color-mix(in oklab, var(--tehla-tmava) 27%, var(--pozadie));
+  border: 1px solid color-mix(in oklab, var(--tehla-tmava) 66%, var(--plocha-2));
+  color: color-mix(in oklab, var(--cervena-svetla) 51%, var(--text));
 }
 
 /* Hra na celú šírku okna: hore partia ako stredobod, pod ňou starší.
@@ -341,28 +337,28 @@
 }
 
 .znacka.utocnik {
-  background: #4a2219;
-  color: #ffb8a3;
+  background: color-mix(in oklab, var(--tehla-tmava) 39%, var(--pozadie));
+  color: color-mix(in oklab, var(--cervena-svetla) 63%, var(--text));
 }
 
 .znacka.obranca {
-  background: #1f3247;
-  color: #a9cdf2;
+  background: color-mix(in oklab, var(--info-silna) 26%, var(--pozadie));
+  color: color-mix(in oklab, var(--info) 75%, var(--text));
 }
 
 .znacka.na-tahu {
   background: var(--farba, var(--akcent));
-  color: #0e1414;
+  color: var(--na-akcente);
 }
 
 .znacka.dobry {
-  background: #1f3520;
+  background: color-mix(in oklab, var(--zelena-ziariva) 17%, var(--pozadie));
   color: var(--zelena);
 }
 
 .znacka.zly {
-  background: #3e1d17;
-  color: #ff9d88;
+  background: color-mix(in oklab, var(--tehla-tmava) 30%, var(--pozadie));
+  color: var(--cervena-svetla);
 }
 
 /* Od stredu k portrétu (Michal 2026-10-20): na tvojej doske ide poradie
@@ -393,11 +389,11 @@
 }
 
 .doska-rola.utocnik {
-  color: #ffb8a3;
+  color: color-mix(in oklab, var(--cervena-svetla) 63%, var(--text));
 }
 
 .doska-rola.obranca {
-  color: #a9cdf2;
+  color: color-mix(in oklab, var(--info) 75%, var(--text));
 }
 
 .zdroj {
@@ -410,8 +406,8 @@
   outline: none;
   transition: background-color 0.15s ease, border-color 0.15s ease;
   border-radius: 10px;
-  background: rgba(0, 0, 0, 0.28);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: color-mix(in srgb, #000 calc(var(--tma) * 28%), transparent);
+  border: 1px solid color-mix(in srgb, var(--lesk) 6%, transparent);
 }
 
 .zdroj-nazov {
@@ -451,12 +447,12 @@
 }
 
 .zdroj.varovanie {
-  border-color: #8a3a2b;
-  background: rgba(120, 30, 20, 0.28);
+  border-color: color-mix(in oklab, var(--cervena) 64%, var(--pozadie));
+  background: color-mix(in srgb, color-mix(in oklab, var(--tehla-tmava) 65%, var(--pozadie)) 28%, transparent);
 }
 
 .zdroj.varovanie .velke-cislo {
-  color: #ff9d88;
+  color: var(--cervena-svetla);
 }
 
 .poldeci-rad {
@@ -526,15 +522,15 @@
   min-width: 8px;
   height: 6px;
   border-radius: 2px;
-  background: rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--lesk) 10%, transparent);
 }
 
 .pruh span.plny {
-  background: #d9a03f;
+  background: color-mix(in oklab, var(--akcent) 68%, var(--akcent-tmavy));
 }
 
 .pruh.blizko span.plny {
-  background: #e0573f;
+  background: color-mix(in oklab, var(--cervena) 60%, var(--cervena-text));
 }
 
 /* Absťák: prázdny pohárik v trasúcej sa ruke; neresti kola proti minulému. */
@@ -568,7 +564,7 @@
 }
 
 .zdroj-abstak .abstak-ubera {
-  color: #ff9d88;
+  color: var(--cervena-svetla);
   font-size: 0.8rem;
 }
 
@@ -608,7 +604,7 @@
   max-width: 16px;
   height: 6px;
   border-radius: 2px;
-  background: rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--lesk) 10%, transparent);
 }
 
 .neresti-pruh span.plny {
@@ -618,13 +614,13 @@
 /* Chýbajúca nerest do čiary minulého kola — hrozí Absťák. */
 .neresti-pruh span.chyba {
   background: transparent;
-  box-shadow: inset 0 0 0 1px #e0573f;
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--cervena) 60%, var(--cervena-text));
 }
 
 /* Za čiarou: nerest navyše zoberie jeden Absťák. */
 .neresti-pruh span.nad {
   background: transparent;
-  box-shadow: inset 0 0 0 1px rgba(124, 191, 116, 0.6);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--zelena) 60%, transparent);
 }
 
 .neresti-pruh span.plny.nad {
@@ -648,7 +644,7 @@
 }
 
 .abstak-vyhlad.zly {
-  color: #ff9d88;
+  color: var(--cervena-svetla);
 }
 
 .abstak-vyhlad.dobry {
@@ -673,7 +669,7 @@
 
 .zdroj:hover,
 .zdroj:focus-visible {
-  background: rgba(255, 255, 255, 0.06);
+  background: color-mix(in srgb, var(--lesk) 6%, transparent);
   border-color: color-mix(in srgb, var(--farba) 45%, transparent);
 }
 
@@ -731,9 +727,9 @@
 }
 
 .cip.nastroj {
-  background: #1d2f3b;
-  border-color: #3b6079;
-  color: #c3e2f7;
+  background: color-mix(in oklab, var(--info-silna) 23%, var(--pozadie));
+  border-color: color-mix(in oklab, var(--info-silna) 56%, var(--pozadie));
+  color: color-mix(in oklab, var(--info) 34%, var(--text));
 }
 
 .cip.moja {
@@ -817,8 +813,8 @@
   min-width: 60px;
   padding: 6px 7px 5px;
   border-radius: 10px;
-  background: rgba(0, 0, 0, 0.28);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, #000 calc(var(--tma) * 28%), transparent);
+  border: 1px solid color-mix(in srgb, var(--lesk) 8%, transparent);
   cursor: help;
   outline: none;
 }
@@ -826,7 +822,7 @@
 .efekt:hover,
 .efekt:focus-visible {
   border-color: var(--efekt-farba);
-  background: rgba(0, 0, 0, 0.45);
+  background: color-mix(in srgb, #000 calc(var(--tma) * 45%), transparent);
 }
 
 .efekt.tuha {
@@ -890,7 +886,7 @@
 
 .bitka-strana.vitaz .bitka-tuhe {
   color: var(--akcent);
-  text-shadow: 0 0 22px rgba(233, 173, 69, 0.45);
+  text-shadow: 0 0 22px color-mix(in srgb, var(--akcent) 45%, transparent);
 }
 
 .bitka-popis {
@@ -926,7 +922,7 @@
 }
 
 .bitka-rozpis > .bitka-abstak {
-  color: #ff9d88;
+  color: var(--cervena-svetla);
 }
 
 .bitka-ikona .ikona-akcie {
@@ -944,7 +940,7 @@
   gap: 4px;
   padding: 12px 14px;
   text-align: center;
-  background: rgba(0, 0, 0, 0.25);
+  background: color-mix(in srgb, #000 calc(var(--tma) * 25%), transparent);
 }
 
 .bitka-nadpis {
@@ -964,7 +960,7 @@
 }
 
 .prehravam .bitka-verdikt {
-  color: #ff8f78;
+  color: color-mix(in oklab, var(--cervena) 13%, var(--cervena-svetla));
 }
 
 .bitka-pozn {
@@ -982,25 +978,25 @@
 /* Stôl je stredobod hry a jeho farba hovorí, čí je ťah:
    zelený = hráš ty, sivý = čakáš na súpera. */
 .linia-obal {
-  --stol: #262626;
-  --stol-okraj: #444;
-  --stol-svetlo: rgba(255, 255, 255, 0.05);
-  --stol-stav: #9a9a9a;
+  --stol: color-mix(in oklab, var(--info) 14%, var(--pozadie));
+  --stol-okraj: color-mix(in oklab, var(--info-silna) 16%, var(--okraj));
+  --stol-svetlo: color-mix(in srgb, var(--lesk) 5%, transparent);
+  --stol-stav: color-mix(in oklab, var(--info) 25%, var(--slaby-text));
   position: relative;
   padding-top: 14px;
 }
 
 .linia-obal.moj-tah {
-  --stol: #173320;
-  --stol-okraj: #4fae66;
-  --stol-svetlo: rgba(120, 230, 150, 0.14);
-  --stol-stav: #7fe39a;
+  --stol: color-mix(in oklab, var(--zelena-ziariva) 15%, var(--pozadie));
+  --stol-okraj: color-mix(in oklab, var(--zelena-ziariva) 68%, var(--pozadie));
+  --stol-svetlo: color-mix(in srgb, color-mix(in oklab, var(--zelena-svetla) 81%, var(--zelena-ziariva)) 14%, transparent);
+  --stol-stav: var(--zelena-svetla);
 }
 
 .linia-obal.koniec {
-  --stol: #2a2316;
+  --stol: color-mix(in oklab, var(--akcent) 13%, var(--pozadie));
   --stol-okraj: var(--akcent);
-  --stol-svetlo: rgba(233, 173, 69, 0.1);
+  --stol-svetlo: color-mix(in srgb, var(--akcent) 10%, transparent);
   --stol-stav: var(--akcent);
 }
 
@@ -1058,7 +1054,7 @@
 }
 
 .lupa > .kl {
-  box-shadow: 0 0 0 2px var(--akcent, #e9ad45);
+  box-shadow: 0 0 0 2px var(--akcent, var(--akcent));
 }
 
 @keyframes lupa-in {
@@ -1086,7 +1082,7 @@
 .linia-skupina.lokalita {
   scroll-snap-align: center;
   padding: 0 2px;
-  background: rgba(233, 173, 69, 0.08);
+  background: color-mix(in srgb, var(--akcent) 8%, transparent);
   border-radius: 12px;
 }
 
@@ -1112,7 +1108,7 @@
   min-height: calc(198px * 80 / 54);
   padding: 12px;
   /* Kontrast okraja 3,1 : 1 (bol 1,46) — cieľ ťahania musí byť vidno (UI N1). */
-  border: 2px dashed rgba(241, 232, 216, 0.38);
+  border: 2px dashed color-mix(in srgb, var(--text) 38%, transparent);
   border-radius: 10px;
   font-size: 0.85rem;
   text-align: center;
@@ -1120,7 +1116,7 @@
 }
 
 .lokalita-miesto {
-  border-color: rgba(233, 173, 69, 0.4) !important;
+  border-color: color-mix(in srgb, var(--akcent) 40%, transparent) !important;
   color: var(--akcent);
   font-style: normal !important;
 }
@@ -1154,7 +1150,7 @@ body.tahanie-aktivne * {
 .tahatelna.navrh > .kl {
   outline: 2px dashed var(--akcent);
   outline-offset: 3px;
-  box-shadow: 0 0 22px rgba(233, 173, 69, 0.35);
+  box-shadow: 0 0 22px color-mix(in srgb, var(--akcent) 35%, transparent);
 }
 
 .tahatelna.nahraditelna > .kl {
@@ -1174,7 +1170,7 @@ body.tahanie-aktivne * {
   transform: translate(-50%, -50%);
   padding: 4px 10px;
   border-radius: 999px;
-  background: rgba(20, 28, 20, 0.92);
+  background: color-mix(in srgb, color-mix(in oklab, var(--zelena) 6%, var(--pozadie)) 92%, transparent);
   border: 1px solid var(--zelena);
   color: var(--zelena);
   font-size: 0.8rem;
@@ -1311,18 +1307,18 @@ body.tahanie-aktivne * {
   padding: 14px calc(var(--ruka-w) / 2 + 16px) 0;
   /* Mimo kariet klik prepadne na stránku pod rukou. */
   pointer-events: none;
-  background: linear-gradient(to top, rgba(14, 11, 8, 0.94), rgba(14, 11, 8, 0.6) 70%, transparent);
+  background: linear-gradient(to top, color-mix(in srgb, var(--pozadie) 94%, transparent), color-mix(in srgb, var(--pozadie) 60%, transparent) 70%, transparent);
 }
 
 .ruka.ciel-zona {
   pointer-events: auto;
   outline: none;
-  background: linear-gradient(to top, color-mix(in srgb, var(--zelena) 28%, rgba(14, 11, 8, 0.94)), transparent);
+  background: linear-gradient(to top, color-mix(in srgb, var(--zelena) 28%, color-mix(in srgb, var(--pozadie) 94%, transparent)), transparent);
   box-shadow: inset 0 2px 0 color-mix(in srgb, var(--zelena) 55%, transparent);
 }
 
 .ruka.ciel-zona.nad-cielom {
-  background: linear-gradient(to top, color-mix(in srgb, var(--zelena) 50%, rgba(14, 11, 8, 0.94)), transparent);
+  background: linear-gradient(to top, color-mix(in srgb, var(--zelena) 50%, color-mix(in srgb, var(--pozadie) 94%, transparent)), transparent);
 }
 
 .ruka-nadpis {
@@ -1406,7 +1402,7 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:hover ~ .tahatelna {
  * zelený, keď si na ťahu. */
 
 .pokyn {
-  --pokyn-akcent: #6b6b6b;
+  --pokyn-akcent: color-mix(in oklab, var(--info) 30%, var(--okraj-svetly));
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
@@ -1419,7 +1415,7 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:hover ~ .tahatelna {
   margin-bottom: 10px;
   padding: 0 6px 0 6px;
   border-radius: 12px;
-  background: rgba(24, 20, 16, 0.92);
+  background: color-mix(in srgb, color-mix(in oklab, var(--pozadie) 98%, var(--text)) 92%, transparent);
   border: 1px solid var(--okraj);
   border-left: 3px solid var(--pokyn-akcent);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
@@ -1429,7 +1425,7 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:hover ~ .tahatelna {
 }
 
 .pokyn.moj-tah {
-  --pokyn-akcent: #4fae66;
+  --pokyn-akcent: color-mix(in oklab, var(--zelena-ziariva) 68%, var(--pozadie));
 }
 
 .pokyn.koniec {
@@ -1504,7 +1500,7 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:hover ~ .tahatelna {
 
 .pocet.nove {
   background: var(--akcent);
-  color: #2b1b03;
+  color: var(--na-akcente);
 }
 
 .pokyn-text {
@@ -1593,7 +1589,7 @@ button:disabled .cena {
   width: min(1180px, 100%);
   max-height: 100%;
   border-radius: 16px;
-  background: rgba(30, 25, 20, 0.88);
+  background: color-mix(in srgb, var(--plocha) 88%, transparent);
   border: 1px solid var(--okraj-svetly);
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
 }
@@ -1769,7 +1765,7 @@ button:disabled .cena {
   cursor: pointer;
   box-shadow:
     0 0 0 2px var(--akcent),
-    0 0 18px rgba(233, 173, 69, 0.35);
+    0 0 18px color-mix(in srgb, var(--akcent) 35%, transparent);
 }
 
 .scorecard-karta {
@@ -1870,11 +1866,11 @@ button:disabled .cena {
 }
 
 .rozpis-bodov td.plus b {
-  color: #3ddc84;
+  color: color-mix(in oklab, var(--zelena-ziariva) 85%, var(--pozadie));
 }
 
 .rozpis-bodov td.minus b {
-  color: #ff6b5b;
+  color: color-mix(in oklab, var(--cervena-text) 76%, var(--cervena-svetla));
 }
 
 .rozpis-bodov small {
@@ -1888,7 +1884,7 @@ button:disabled .cena {
 }
 
 .lupa > .scorecard {
-  box-shadow: 0 0 0 2px var(--akcent, #e9ad45);
+  box-shadow: 0 0 0 2px var(--akcent, var(--akcent));
 }
 
 .scorecard-stav {
@@ -1943,7 +1939,7 @@ button:disabled .cena {
 }
 
 .log .manual {
-  color: #ffd97a;
+  color: var(--akcent-svetly);
 }
 
 @media (max-width: 1250px) {
@@ -2101,7 +2097,7 @@ button.dlzka-volba {
 .dlzka-volba.aktivna,
 button.dlzka-volba.aktivna {
   border-color: var(--akcent);
-  background: #3b2a10;
+  background: color-mix(in oklab, var(--akcent-tmavy) 25%, var(--pozadie));
   color: var(--akcent);
 }
 
@@ -2181,7 +2177,7 @@ button.dlzka-volba.aktivna {
   margin: -2px 0 12px;
   padding: 10px 12px;
   border-radius: 8px;
-  background: rgba(0, 0, 0, 0.22);
+  background: color-mix(in srgb, #000 calc(var(--tma) * 22%), transparent);
   font-size: 0.85rem;
   color: var(--tlmeny);
 }
@@ -2226,7 +2222,7 @@ button.dlzka-volba.aktivna {
   overflow-x: auto;
   padding: 8px;
   border-radius: 12px;
-  background: rgba(20, 17, 14, 0.96);
+  background: color-mix(in srgb, var(--pozadie) 96%, transparent);
   border: 1px solid var(--okraj-svetly);
   box-shadow: var(--tien);
   pointer-events: auto;
@@ -2266,14 +2262,14 @@ button.dlzka-volba.aktivna {
 /* ---- Vypiť do dna --------------------------------------------------------------- */
 
 .pokyn button.tlacidlo-dodna {
-  background: linear-gradient(180deg, #5a3a12, #3b2508);
-  border-color: #8a5a1c;
-  color: #ffd08a;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--akcent-tmavy) 42%, var(--pozadie)), color-mix(in oklab, var(--akcent-tmavy) 22%, var(--pozadie)));
+  border-color: color-mix(in oklab, var(--akcent-tmavy) 72%, var(--pozadie));
+  color: var(--akcent-svetly);
   font-weight: 700;
 }
 
 .pokyn button.tlacidlo-dodna:hover:not(:disabled) {
-  background: linear-gradient(180deg, #6e4716, #4a2f0a) !important;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--akcent-tmavy) 54%, var(--pozadie)), color-mix(in oklab, var(--akcent-tmavy) 32%, var(--pozadie))) !important;
 }
 
 .dodna-text strong {
@@ -2380,7 +2376,7 @@ button.dlzka-volba.aktivna {
   font: 800 0.66rem/1.4 var(--pismo);
   letter-spacing: 0.08em;
   background: var(--akcent);
-  color: #2b1b03;
+  color: var(--na-akcente);
   pointer-events: none;
 }
 
@@ -2400,7 +2396,7 @@ button.dlzka-volba.aktivna {
   font: 800 0.9rem/1.2 var(--pismo);
   text-align: center;
   background: var(--akcent);
-  color: #2b1b03;
+  color: var(--na-akcente);
   pointer-events: none;
 }
 
@@ -2490,7 +2486,7 @@ button.dlzka-volba.aktivna {
  * by sa počas ťahania skryla. Zelený okraj = hráš ty, sivý = čakáš. */
 
 .draft-panel {
-  --draft-akcent: #6b6b6b;
+  --draft-akcent: color-mix(in oklab, var(--info) 30%, var(--okraj-svetly));
   display: grid;
   gap: 12px;
   padding: 14px 16px;
@@ -2500,9 +2496,9 @@ button.dlzka-volba.aktivna {
 }
 
 .draft-panel.moj-tah {
-  --draft-akcent: #4fae66;
-  background: color-mix(in srgb, #173320 70%, var(--plocha-2));
-  box-shadow: 0 0 0 4px rgba(79, 174, 102, 0.18);
+  --draft-akcent: color-mix(in oklab, var(--zelena-ziariva) 68%, var(--pozadie));
+  background: color-mix(in srgb, color-mix(in oklab, var(--zelena-ziariva) 15%, var(--pozadie)) 70%, var(--plocha-2));
+  box-shadow: 0 0 0 4px color-mix(in srgb, color-mix(in oklab, var(--zelena-ziariva) 68%, var(--pozadie)) 18%, transparent);
 }
 
 .draft-panel.cakanie .draft-karty,
@@ -2526,7 +2522,7 @@ button.dlzka-volba.aktivna {
 }
 
 .draft-panel.moj-tah .draft-hlava strong {
-  color: #7fe39a;
+  color: var(--zelena-svetla);
 }
 
 .draft-karty {
@@ -2575,7 +2571,7 @@ button.dlzka-volba.aktivna {
 }
 
 .stavba-zona.smetisko {
-  background: rgba(120, 120, 120, 0.12);
+  background: color-mix(in srgb, color-mix(in oklab, var(--info) 40%, var(--okraj-svetly)) 12%, transparent);
 }
 
 .stavba-zona.senok {
@@ -2646,7 +2642,7 @@ button.dlzka-volba.aktivna {
 }
 
 .draft-panel.branie.moj-tah .branie-karty .tahatelna.chytitelna > .kl {
-  box-shadow: 0 0 0 2px #4fae66, 0 6px 16px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--zelena-ziariva) 68%, var(--pozadie)), 0 6px 16px rgba(0, 0, 0, 0.4);
 }
 
 .tlacidlo-cigarety {
@@ -2662,7 +2658,7 @@ button.dlzka-volba.aktivna {
 
 /* Karty, ktoré si hráč v tomto kole vzal zo šenku. */
 .ruka-rad > .tahatelna.nova-zo-senku > .kl {
-  box-shadow: 0 0 0 2.5px var(--akcent), 0 0 18px rgba(233, 173, 69, 0.45);
+  box-shadow: 0 0 0 2.5px var(--akcent), 0 0 18px color-mix(in srgb, var(--akcent) 45%, transparent);
 }
 
 .nova-stitok {
@@ -2673,7 +2669,7 @@ button.dlzka-volba.aktivna {
   padding: 1px 8px;
   border-radius: 999px;
   background: var(--akcent);
-  color: #1b1405;
+  color: var(--na-akcente);
   font-size: 0.68rem;
   font-weight: 800;
   white-space: nowrap;
@@ -2751,21 +2747,21 @@ button.dlzka-volba.aktivna {
 }
 
 .vydeseni-pocet.hrozba {
-  color: #ff8a73;
+  color: color-mix(in oklab, var(--cervena-text) 34%, var(--cervena-svetla));
   font-weight: 700;
 }
 
 .hrozba-vydesenia {
   padding: 10px 14px;
   border-radius: 12px;
-  border: 2px solid #d0563f;
-  background: color-mix(in srgb, #d0563f 18%, var(--plocha-2));
+  border: 2px solid var(--cervena);
+  background: color-mix(in srgb, var(--cervena) 18%, var(--plocha-2));
   text-align: center;
 }
 
 .hrozba-vydesenia.moja {
-  border-color: #4fae66;
-  background: color-mix(in srgb, #4fae66 18%, var(--plocha-2));
+  border-color: color-mix(in oklab, var(--zelena-ziariva) 68%, var(--pozadie));
+  background: color-mix(in srgb, color-mix(in oklab, var(--zelena-ziariva) 68%, var(--pozadie)) 18%, var(--plocha-2));
 }
 
 .oznamy-priazne {
@@ -2988,7 +2984,7 @@ button.dlzka-volba.aktivna {
   font-weight: 700;
   white-space: nowrap;
   pointer-events: none;
-  color: #1b1408;
+  color: var(--na-akcente);
 }
 
 .stavba-rola.do-senku {
@@ -3063,14 +3059,14 @@ button.dlzka-volba.aktivna {
   margin: 0 2px;
   padding: 1px 3px;
   border-radius: 4px;
-  background: rgba(0, 0, 0, 0.25);
+  background: color-mix(in srgb, #000 calc(var(--tma) * 25%), transparent);
 }
 
 /* Doliatie a barter (Michal 2026-10-18: nedali sa nájsť) — keď na ne máš, svietia. */
 .tlacidlo-cigarety.mozne {
   border-color: var(--akcent);
   color: var(--akcent);
-  box-shadow: 0 0 10px rgba(233, 173, 69, 0.45);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--akcent) 45%, transparent);
 }
 
 .obchod-cigariet {
@@ -3106,16 +3102,16 @@ button.dlzka-volba.aktivna {
   align-items: center;
   gap: 6px;
   padding: 7px 10px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid color-mix(in srgb, var(--lesk) 10%, transparent);
   border-bottom: 3px solid transparent;
   border-radius: 8px;
-  background: rgba(0, 0, 0, 0.22);
+  background: color-mix(in srgb, #000 calc(var(--tma) * 22%), transparent);
   cursor: help;
 }
 
 .sb-milnik:hover,
 .sb-milnik:focus-visible {
-  background: rgba(255, 255, 255, 0.06);
+  background: color-mix(in srgb, var(--lesk) 6%, transparent);
   outline: none;
 }
 
@@ -3188,7 +3184,7 @@ button.dlzka-volba.aktivna {
 
 .sb-spolu {
   flex: 0 1 210px;
-  background: rgba(233, 173, 69, 0.1);
+  background: color-mix(in srgb, var(--akcent) 10%, transparent);
   cursor: default;
 }
 
@@ -3235,19 +3231,19 @@ button.dlzka-volba.aktivna {
   transform: translateX(-50%);
   padding: 2px 10px;
   border-radius: 999px;
-  background: linear-gradient(180deg, #8a5a1c, #5a3a12);
-  border: 1px solid #ffd08a;
-  color: #ffe2b0;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--akcent-tmavy) 72%, var(--pozadie)), color-mix(in oklab, var(--akcent-tmavy) 42%, var(--pozadie)));
+  border: 1px solid var(--akcent-svetly);
+  color: color-mix(in oklab, var(--akcent-svetly) 40%, var(--text));
   font-size: 0.72rem;
   font-weight: 800;
   white-space: nowrap;
-  box-shadow: 0 0 12px rgba(233, 173, 69, 0.55);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--akcent) 55%, transparent);
   pointer-events: none;
 }
 
 .nm-poldeci,
 .poldeci-varovanie {
-  color: #ffd08a;
+  color: var(--akcent-svetly);
   font-weight: 800;
   animation: treba 1.6s ease-in-out infinite;
   border-radius: 6px;
@@ -3257,11 +3253,11 @@ button.dlzka-volba.aktivna {
   display: block;
   margin-top: 4px;
   padding: 2px 6px;
-  background: rgba(90, 58, 18, 0.85);
+  background: color-mix(in srgb, color-mix(in oklab, var(--akcent-tmavy) 42%, var(--pozadie)) 85%, transparent);
 }
 
 .poldeci-text {
-  color: #ffd08a;
+  color: var(--akcent-svetly);
 }
 
 .chyba-tahu {
@@ -3380,7 +3376,7 @@ button.dlzka-volba.aktivna {
 }
 
 .miesto-volby.zakazane {
-  border-color: rgba(150, 150, 150, 0.4);
+  border-color: color-mix(in srgb, color-mix(in oklab, var(--info) 36%, var(--slaby)) 40%, transparent);
   background: transparent;
   color: var(--slaby);
   cursor: not-allowed;
@@ -3411,8 +3407,8 @@ button.dlzka-volba.aktivna {
 
 .ruka-rad > .tahatelna.vysunuta > .kl {
   box-shadow:
-    0 0 0 2px #7dff9c,
-    0 0 18px rgba(90, 240, 130, 0.55);
+    0 0 0 2px var(--zelena-ziariva),
+    0 0 18px color-mix(in srgb, color-mix(in oklab, var(--zelena-ziariva) 93%, var(--pozadie)) 55%, transparent);
 }
 
 .ruka-rad > .tahatelna.bez-spoja > .kl {
@@ -3436,9 +3432,9 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna.nemoze:hover > .kl {
   transform: translateX(-50%);
   padding: 1px 8px;
   border-radius: 999px;
-  background: #1c3a24;
-  border: 1px solid #7dff9c;
-  color: #9dffb5;
+  background: color-mix(in oklab, var(--zelena-ziariva) 19%, var(--pozadie));
+  border: 1px solid var(--zelena-ziariva);
+  color: color-mix(in oklab, var(--zelena-ziariva) 73%, var(--text));
   font: 700 0.7rem/1.4 var(--pismo);
   white-space: nowrap;
   pointer-events: none;
@@ -3487,7 +3483,7 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna.nemoze:hover > .kl {
   padding: 0;
   border-radius: 50%;
   border: 1px solid var(--akcent);
-  background: rgba(14, 11, 8, 0.85);
+  background: color-mix(in srgb, var(--pozadie) 85%, transparent);
   font-size: 0.8rem;
   line-height: 1;
   cursor: zoom-in;
@@ -3584,15 +3580,15 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna.nemoze:hover > .kl {
  * Šrafa = čo pripíšu karty na stole; červená = cez prah (Cirhóza / Dlh). */
 
 .pruh span.caka {
-  background: repeating-linear-gradient(135deg, #d9a03f 0 3px, rgba(217, 160, 63, 0.25) 3px 6px);
+  background: repeating-linear-gradient(135deg, color-mix(in oklab, var(--akcent) 68%, var(--akcent-tmavy)) 0 3px, color-mix(in srgb, color-mix(in oklab, var(--akcent) 68%, var(--akcent-tmavy)) 25%, transparent) 3px 6px);
 }
 
 .pruh span.nad {
-  background: repeating-linear-gradient(135deg, #e0573f 0 3px, rgba(224, 87, 63, 0.3) 3px 6px);
+  background: repeating-linear-gradient(135deg, color-mix(in oklab, var(--cervena) 60%, var(--cervena-text)) 0 3px, color-mix(in srgb, color-mix(in oklab, var(--cervena) 60%, var(--cervena-text)) 30%, transparent) 3px 6px);
 }
 
 .pruh span.plny.nad {
-  background: #e0573f;
+  background: color-mix(in oklab, var(--cervena) 60%, var(--cervena-text));
 }
 
 .pruh span.prah {
@@ -3601,7 +3597,7 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna.nemoze:hover > .kl {
 
 .velke-cislo .projekcia {
   font-size: 1.05rem;
-  color: #f0b45a;
+  color: color-mix(in oklab, var(--akcent) 72%, var(--akcent-svetly));
 }
 
 .zdroj .vyhlad {
@@ -3613,18 +3609,18 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna.nemoze:hover > .kl {
 }
 
 .zdroj .vyhlad.zly {
-  color: #ff9d88;
+  color: var(--cervena-svetla);
   font-weight: 600;
 }
 
 .zdroj.hrozi {
-  border-color: #b7462f;
-  background: rgba(140, 36, 22, 0.32);
-  box-shadow: 0 0 0 1px rgba(208, 86, 63, 0.35);
+  border-color: color-mix(in oklab, var(--cervena-text) 25%, var(--tehla-tmava));
+  background: color-mix(in srgb, color-mix(in oklab, var(--tehla-tmava) 79%, var(--pozadie)) 32%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--cervena) 35%, transparent);
 }
 
 .zdroj.hrozi .velke-cislo {
-  color: #ff9d88;
+  color: var(--cervena-svetla);
 }
 
 .oblast-skupina.nepriznane .cip {
@@ -3690,7 +3686,7 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna.nemoze:hover > .kl {
 }
 
 .stolicka.na-tahu {
-  box-shadow: 0 0 0 1px var(--akcent), 0 0 14px rgba(233, 173, 69, 0.3);
+  box-shadow: 0 0 0 1px var(--akcent), 0 0 14px color-mix(in srgb, var(--akcent) 30%, transparent);
 }
 
 .stolicka.hotova {
@@ -3743,7 +3739,7 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna.nemoze:hover > .kl {
 }
 
 .pokyn-posledny {
-  color: #8fc3e0;
+  color: var(--info);
 }
 
 /* Text pokynu smie mať dva riadky — jedna veta a cena (UI N4). */
@@ -3766,7 +3762,7 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna.nemoze:hover > .kl {
   padding: 2px;
   border-radius: 10px;
   border: 1px solid var(--okraj);
-  background: rgba(0, 0, 0, 0.2);
+  background: color-mix(in srgb, #000 calc(var(--tma) * 20%), transparent);
 }
 
 .skupina-nazov {
@@ -3817,7 +3813,7 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna.nemoze:hover > .kl {
   gap: 4px;
   padding: 6px;
   border-radius: 10px;
-  background: rgba(20, 17, 14, 0.97);
+  background: color-mix(in srgb, var(--pozadie) 97%, transparent);
   border: 1px solid var(--okraj-svetly);
   box-shadow: var(--tien);
 }
@@ -3852,7 +3848,7 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna.nemoze:hover > .kl {
 }
 
 .naex-kliatby.zle {
-  color: #ff9d88;
+  color: var(--cervena-svetla);
 }
 
 .s-lupou.naex-nie {
@@ -3863,7 +3859,7 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna.nemoze:hover > .kl {
 /* Súperova karta z jeho posledného ťahu — do tvojho ďalšieho potvrdenia (UX N3). */
 .s-lupou.nova-superova > .kl,
 .s-lupou.nova-superova > .tahatelna > .kl {
-  box-shadow: 0 0 0 2.5px #5aa9d6, 0 0 18px rgba(90, 169, 214, 0.45);
+  box-shadow: 0 0 0 2.5px var(--info-silna), 0 0 18px color-mix(in srgb, var(--info-silna) 45%, transparent);
 }
 
 .s-lupou {
@@ -3871,7 +3867,7 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna.nemoze:hover > .kl {
 }
 
 .s-lupou.nova-superova > .nova-stitok {
-  background: #5aa9d6;
+  background: var(--info-silna);
 }
 
 /* ---- účet bitky nad stolom (UX N3) ---- */

@@ -8,6 +8,7 @@ import { HUDBA_PREDVOLENA, LUPA_DO, LUPA_OD, LUPA_PREDVOLENA, NAZOV_UROVNE, PART
 import { Avatar, Hlaska, Pole } from "../komponenty.tsx";
 import { MojeStatistiky } from "./Statistiky.tsx";
 import { hlasitostZvuku, nacitajSkladby, urlSkladby } from "../hra/Hudba.tsx";
+import { SCHEMY, aktualnaSchema, pouziSchemu } from "../lib/schemy.ts";
 
 /** Kam sa vrátiť po prihlásení (?spat=/hra). */
 function navrat(): string {
@@ -212,6 +213,17 @@ export function Profil() {
     a.play().catch(chyba);
   };
 
+  // Farebná schéma (Michal 2026-10-21) — prefarbí web hneď, uloží sa v prehliadači aj v účte.
+  const [schema, setSchema] = useState(aktualnaSchema);
+  const vyberSchemu = (id: string): void => {
+    pouziSchemu(id);
+    setSchema(id);
+    api
+      .patch<{ pouzivatel: Pouzivatel }>("/profil", { schema: id })
+      .then((r) => nastav(r.pouzivatel))
+      .catch(chyba);
+  };
+
   // Výber z predvolených avatarov (Michal 2026-10-19) — kto nechce nahrávať fotku.
   const [galeria, setGaleria] = useState<readonly string[] | null>(null);
   const [galeriaOtvorena, setGaleriaOtvorena] = useState(false);
@@ -354,6 +366,35 @@ export function Profil() {
       <MojeStatistiky id={ja.id} />
 
       <h2 className="profil-nastavenia-nadpis">Nastavenia účtu</h2>
+      <section className="panel vzhlad-webu" aria-labelledby="vzhlad-webu-nadpis">
+        <h3 id="vzhlad-webu-nadpis">Vzhľad webu</h3>
+        <p className="tlmene">
+          Farby inšpirované knihou Sanza Wadu <i>A Dictionary of Color Combinations</i>. Mení sa len okolie — karty, farby
+          hráčov a zóny starších ostávajú. Ukladá sa samo.
+        </p>
+        <div className="schemy-mriezka">
+          {SCHEMY.map((s) => (
+            <button
+              key={s.id}
+              type="button"
+              className={s.id === schema ? "schema-volba zvolena" : "schema-volba"}
+              onClick={() => vyberSchemu(s.id)}
+              aria-pressed={s.id === schema}
+              title={s.wada}
+            >
+              <span className="schema-nahlad" style={{ background: s.nahlad[0] }} aria-hidden="true">
+                <span className="schema-nahlad-plocha" style={{ background: s.nahlad[1] }}>
+                  <span className="schema-nahlad-riadok" style={{ background: s.nahlad[3] }} />
+                  <span className="schema-nahlad-riadok kratky" style={{ background: s.nahlad[3] }} />
+                  <span className="schema-nahlad-tlacidlo" style={{ background: s.nahlad[2] }} />
+                </span>
+              </span>
+              <span className="schema-nazov">{s.nazov}</span>
+              <span className="schema-popis">{s.popis}</span>
+            </button>
+          ))}
+        </div>
+      </section>
       <div className="profil-nastavenia">
       <form className="panel" onSubmit={(e) => void ulozMeno(e)}>
         <h3>Herné meno</h3>

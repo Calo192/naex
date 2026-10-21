@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UX návrh — farebné schémy webu (farebne-schemy-20261021-1400)</title>
+<style>
+:root{--bg:#14110e;--pl:#1e1914;--pl2:#2a231c;--tx:#f1e8d8;--sl:#b9ab95;--ja:#e9ad45;--te:#e0644c;--ze:#7cbf74;--mo:#6fb3d2;--ok:#3a3128;--wf:#3b342c;--wf2:#4a4239}
+@media (prefers-color-scheme: light){:root{--bg:#f7f2ea;--pl:#fffaf2;--pl2:#efe6d8;--tx:#221a12;--sl:#5d5245;--ja:#8a5a00;--te:#a8331f;--ze:#2f7a28;--mo:#1d6b8f;--ok:#d9cdb9;--wf:#e3dccf;--wf2:#d2c8b8}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:24px 16px 64px}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;line-height:1.25}
+h1{font-size:1.9rem;margin:.2em 0 .3em}
+h2{font-size:1.45rem;margin:2.2em 0 .6em;border-bottom:1px solid var(--ok);padding-bottom:.25em}
+h3{font-size:1.15rem;margin:1.4em 0 .4em}
+h4{font-size:1rem;margin:1em 0 .3em}
+a{color:var(--ja)}
+a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible+span,label:focus-within{outline:3px solid var(--ja);outline-offset:2px}
+code{font-size:.88em;overflow-wrap:anywhere}
+.meta{color:var(--sl);font-size:.93rem}
+.verdikt{background:var(--pl);border-left:4px solid var(--ja);padding:12px 16px;border-radius:6px}
+.mriezka{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.dlazdica{background:var(--pl);border:1px solid var(--ok);border-radius:8px;padding:12px 14px}
+.dlazdica b{color:var(--ja)}
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+th,td{text-align:left;vertical-align:top;padding:8px;border-bottom:1px solid var(--ok)}
+th{color:var(--sl);font-weight:600}
+.tab-obal{overflow-x:auto}
+.z{display:inline-block;min-width:1.7em;text-align:center;border-radius:4px;padding:0 .3em;font-weight:700;color:#14110e}
+.z4{background:#e0644c}.z3{background:#e9ad45}.z2{background:#c8b98f}.z1{background:#8f8574}
+.stitok{display:inline-block;font-size:.78rem;border:1px solid var(--ok);border-radius:999px;padding:0 .55em;margin:0 .2em .2em 0;color:var(--sl)}
+.stitok.mala{border-color:var(--ze);color:var(--ze)}
+.stitok.stredna{border-color:var(--ja);color:var(--ja)}
+.stitok.velka{border-color:var(--te);color:var(--te)}
+.filtre{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 12px}
+.filtre button{min-height:44px;padding:0 14px;border-radius:6px;border:1px solid var(--ok);background:var(--pl);color:var(--tx);font:inherit;cursor:pointer}
+.filtre button[aria-pressed="true"]{background:var(--ja);color:#14110e;border-color:var(--ja)}
+figure{margin:12px 0 18px;background:var(--pl);border:1px solid var(--ok);border-radius:8px;padding:8px}
+figure img{max-width:100%;height:auto;display:block;border-radius:4px}
+figure.uzka img{max-width:300px;margin:0 auto}
+.dve{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+@media (max-width:760px){.dve{grid-template-columns:1fr}}
+figcaption{font-size:.88rem;color:var(--sl);padding:6px 4px 0}
+.tok{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+@media (max-width:700px){.tok{grid-template-columns:1fr}}
+.tok>div{background:var(--pl2);border:1px solid var(--ok);border-radius:8px;padding:10px 14px}
+.tok ol{margin:0;padding-left:1.3em}
+.pred h4{color:var(--te)}.po h4{color:var(--ze)}
+.navrh{background:var(--pl);border:1px solid var(--ok);border-radius:10px;padding:4px 18px 16px;margin:18px 0}
+.navrh>h3{margin-top:.9em}
+.navrh dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:8px 0}
+.navrh dt{color:var(--sl);font-weight:600}
+.navrh dd{margin:0}
+@media (max-width:600px){.navrh dl{grid-template-columns:1fr}.navrh dt{margin-top:6px}}
+details{margin:8px 0}
+summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:600}
+.citat{border-left:3px solid var(--mo);padding:4px 12px;margin:8px 0;color:var(--sl);font-style:italic}
+.pozn{font-size:.88rem;color:var(--sl)}
+.zamok{color:var(--ze);font-weight:700}.voln{color:var(--ja);font-weight:700}
+/* drôtené modely */
+.wf{background:var(--wf);border:1px dashed var(--wf2);border-radius:8px;padding:12px;color:var(--tx);font-size:.9rem}
+.wf .blok{background:var(--wf2);border-radius:6px;padding:8px 10px;margin:6px 0}
+.wf .sivy{background:var(--wf2);border-radius:4px;height:10px;margin:6px 0}
+.wf .tl{display:inline-block;border:1px solid var(--sl);border-radius:6px;padding:4px 10px;margin:4px 4px 0 0;font-size:.85rem}
+.wf .tl.hl{background:var(--sl);color:var(--bg);font-weight:700}
+.wf h5{margin:0 0 6px;font:700 .95rem Georgia,serif}
+.wf .male{font-size:.8rem;color:var(--sl)}
+.wf-mriezka{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.wf-karta{border:1px solid var(--wf2);border-radius:8px;padding:8px;background:var(--wf)}
+.wf-karta.vybrana{border:3px solid var(--tx)}
+.pruh{display:flex;height:22px;border-radius:4px;overflow:hidden;margin-bottom:6px}
+.pruh span{flex:1}
+.wf-riadok{display:flex;gap:10px;align-items:center;border:1px solid var(--wf2);border-radius:8px;padding:8px;min-height:56px;margin:6px 0}
+.wf-riadok .pruh{width:64px;height:36px;margin:0;flex:none}
+.wf-riadok.vybrana{border:3px solid var(--tx)}
+.wf-mobil{max-width:360px;margin:0 auto}
+/* interaktívny mockup */
+.demo{display:grid;gap:16px;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr)}
+@media (max-width:820px){.demo{grid-template-columns:1fr}}
+.demo fieldset{border:1px solid var(--ok);border-radius:8px;padding:8px 10px;margin:0}
+.demo legend{font-weight:700;padding:0 6px}
+.volba{display:flex;gap:10px;align-items:center;min-height:56px;padding:6px 8px;border-radius:8px;border:2px solid transparent;cursor:pointer;margin:4px 0}
+.volba:hover{background:var(--pl2)}
+.volba input{width:22px;height:22px;flex:none;accent-color:var(--ja)}
+.volba .pruh{width:60px;height:30px;margin:0;flex:none}
+.volba .meno{font-weight:700;display:block}
+.volba .popis{font-size:.85rem;color:var(--sl);display:block}
+.volba.je-vybrana{border-color:var(--ja);background:var(--pl2)}
+.volba .znak{margin-left:auto;font-size:.8rem;font-weight:700;color:var(--ja);visibility:hidden}
+.volba.je-vybrana .znak{visibility:visible}
+.skupina-nadpis{font-size:.82rem;color:var(--sl);text-transform:uppercase;letter-spacing:.06em;margin:10px 8px 2px}
+.nahlad{border-radius:10px;overflow:hidden;border:1px solid var(--ok);font-size:14px;background:var(--n-bg);color:var(--n-tx)}
+.n-hl{display:flex;gap:12px;align-items:center;padding:8px 12px;background:var(--n-hlav);border-bottom:1px solid var(--n-ok)}
+.n-logo{font:800 1rem Georgia,serif}
+.n-nav{color:var(--n-tl);font-size:.85rem}
+.n-nav b{color:var(--n-tx)}
+.n-obsah{padding:12px}
+.n-panel{background:var(--n-pl);border:1px solid var(--n-ok);border-radius:8px;padding:10px 12px;margin-bottom:10px}
+.n-panel h5{margin:0 0 4px;font:700 1rem Georgia,serif}
+.n-tl{color:var(--n-tl)}.n-sl{color:var(--n-sl);font-size:.82rem}
+.n-btn{display:inline-block;border-radius:7px;padding:5px 12px;margin:6px 6px 0 0;font-weight:700;font-size:.85rem}
+.n-btn.h{background:var(--n-ak);color:var(--n-nak)}
+.n-btn.s{background:var(--n-pl2);border:1px solid var(--n-ok2);color:var(--n-tx)}
+.n-vstup{border:1px solid var(--n-ok2);border-radius:7px;padding:5px 8px;margin-top:6px;color:var(--n-sl);background:var(--n-bg)}
+.n-stol{border-radius:8px;padding:8px 10px;border:2px solid var(--n-sto);background:var(--n-st);color:var(--n-tx)}
+.n-stol .r{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:.85rem}
+.n-ja{color:var(--n-ja);font-weight:700}.n-su{color:var(--n-su);font-weight:700}
+.n-tah{color:var(--n-stt);border:1px solid var(--n-sto);border-radius:999px;padding:1px 9px;font-weight:700}
+.dot{display:inline-block;width:12px;height:12px;border-radius:50%;border:1px solid #0006}
+.kontrasty{font-size:.85rem;margin-top:8px}
+.kontrasty td,.kontrasty th{padding:4px 6px}
+.ok-k{color:var(--ze);font-weight:700}.zle-k{color:var(--te);font-weight:700}
+.toast{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--pl2);border:1px solid var(--ok);border-left:4px solid var(--ze);border-radius:8px;padding:8px 12px;margin-top:10px;min-height:44px}
+.toast button,.btn{min-height:44px;padding:0 14px;border-radius:6px;border:1px solid var(--sl);background:transparent;color:var(--tx);font:inherit;cursor:pointer}
+.skryte{display:none}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+svg text{font-family:system-ui,sans-serif}
+</style>
+</head>
+<body>
+<main>
+<p class="meta">UX návrh · id <code>farebne-schemy-20261021-1400</code> · 2026-10-21 · vzhľad paliet rieši UI dizajnér: <a href="dizajn-farebne-schemy-20261021-1400-ui.html">dizajn-farebne-schemy-20261021-1400-ui.html</a></p>
+<h1>Farebné schémy webu NA EX! — výber v profile</h1>
+
+<div class="mriezka">
+  <div class="dlazdica"><b>Cieľ</b><br>Výber z ~5 farebných schém (inšpirácia Sanzo Wada, <i>A Dictionary of Color Combinations</i>) na <code>/profil</code> (<code>Profil</code> v <code>apps/web/src/stranky/Ucet.tsx</code>). Schéma platí na celom webe: domov, pravidlá, karty, hra, rebríček, spätná väzba, profil, Tvorba.</div>
+  <div class="dlazdica"><b>Kto a prečo</b><br><b>Hráč</b> chce web, na ktorý sa mu dobre pozerá (večer, dlhá partia) a „svoj“. <b>Hráč so slabším zrakom</b> potrebuje vyšší kontrast. <b>Návštevník bez účtu</b> si číta pravidlá. <b>Admin</b> v Tvorbe posudzuje farby kariet a potrebuje neutrálne pozadie.</div>
+  <div class="dlazdica"><b>Hlavné úlohy</b><br>1. Nájsť nastavenie. 2. Porovnať schémy a vidieť, ako budú vyzerať (aj na stole). 3. Vybrať, prípadne vrátiť späť. 4. Pri ďalšej návšteve a na inom zariadení mať svoju schému hneď, bez bliknutia.</div>
+</div>
+
+<h2 id="verdikt">Verdikt</h2>
+<p class="verdikt"><b>Áno, je to bežná prax a oplatí sa to</b>, ak sa dodržia dve podmienky. Prvá: schéma mení len <b>„miestnosť“</b> (pozadie, plochy, okraje, text, akcent). <b>Jazyk stola</b> ostáva rovnaký vo všetkých schémach: farby hráčov (ty modrá, súper oranžová), zelený stôl pri tvojom ťahu, zóny starších a lícne strany kariet. Druhá: schémy sú dáta, ktoré <b>automaticky kontroluje test kontrastu</b>, a ukladajú sa aj v prehliadači, aby web pri načítaní nebliká. Pokus so samotnou výmenou premenných v <code>:root</code> ukázal, že sa prefarbí asi 80 % webu. Zvyšok (hlavička, hlavné tlačidlo, dok na stole) má farby zapísané natvrdo a pred spustením ho treba prepojiť na premenné.</p>
+
+<!-- ============================================================ -->
+<h2 id="prax">1. Je to bežná prax?</h2>
+<p>Áno, ale výber sa takmer všade obmedzuje na pár schém, ktoré pripravil dizajnér, a vždy je niektorá predvolená. Vlastné farby si nastavuje len málo aplikácií a prakticky nikdy hry.</p>
+<div class="tab-obal"><table>
+<thead><tr><th>Kde</th><th>Čo sa vyberá</th><th>Poučenie pre NA EX!</th></tr></thead>
+<tbody>
+<tr><td>Operačné systémy (Windows, macOS, Android, iOS)</td><td>svetlá/tmavá, farba akcentu, na Androide farby z tapety (Material You), „zvýšiť kontrast“</td><td>Akcent a kontrast sú osobné nastavenie, ktoré prirodzene platí všade. Systémové preferencie (<code>prefers-color-scheme</code>, <code>prefers-contrast</code>) má web rešpektovať ako východisko.</td></tr>
+<tr><td>GitHub</td><td>svetlá, tmavá, stlmená tmavá, vysoký kontrast, varianty pre farbosleposť; zvlášť pre deň a noc</td><td>Prístupná schéma (vysoký kontrast) je štandardná súčasť ponuky, nie bonus.</td></tr>
+<tr><td>Slack, Discord, Telegram</td><td>niekoľko pomenovaných tém, náhľad na mieste, okamžitá zmena</td><td>Témy majú <b>mená a nálady</b>, nie kódy farieb. Mení sa hneď, bez tlačidla Uložiť. Pozor: v Discorde môže byť téma profilu viditeľná pre ostatných, preto treba povedať, či našu schému vidí aj súper (viď otázky).</td></tr>
+<tr><td>Lichess, Chess.com</td><td>téma šachovnice, sada figúrok, pozadie stránky</td><td>Hra mení <b>vzhľad stola, nie význam figúrok</b>. Biela ostáva bielou. U nás to isté: ty a súper, zóny a stav ťahu sú figúrky.</td></tr>
+<tr><td>Digitálne kartové hry (Hearthstone, MTG Arena)</td><td>kozmetika: rubové strany, podložky</td><td>Lícne strany kariet a herné farby (mana, typy) sú nedotknuteľné. Pre nás: karty z tvorcu sa neprefarbujú.</td></tr>
+</tbody></table></div>
+
+<div class="dve">
+<div class="dlazdica"><b>Prínosy</b>
+<ul>
+<li>Komfort: dlhé večerné partie, tmavšia alebo mäkšia schéma.</li>
+<li>Pocit „môj web“ za malú cenu, podobne ako avatar a herné meno.</li>
+<li>Prístupnosť: schéma s vysokým kontrastom pomôže ľuďom so slabším zrakom a hraniu na slnku. Dnešná paleta tri páry WCAG nesplní (audit A4).</li>
+<li>Upratanie tokenov, ktoré si schémy vyžiadajú, zjednoduší aj ďalšie úpravy vzhľadu.</li>
+</ul></div>
+<div class="dlazdica"><b>Riziká</b>
+<ul>
+<li><b>Význam farieb na stole.</b> Hráči ich používajú pri hraní („ty vždy vľavo/modrá“, „Poštárka v oranžovej“). Ak by ich schéma posunula, hráči by sa mýlili.</li>
+<li><b>Údržba.</b> Každý nový prvok treba skontrolovať v N schémach. Bez automatického testu kontrastu sa chyby dostanú do produkcie.</li>
+<li><b>Bliknutie pri načítaní (FOUC)</b>: používateľ sa dnes načíta až po vykreslení stránky.</li>
+<li><b>Snímky a pomoc</b>: návody („klikni na zlaté tlačidlo“) a snímky z playtestov sa medzi ľuďmi líšia.</li>
+<li><b>Identita</b>: tmavá krčma so zlatými akcentmi je značka, ktorú hodnotitelia chvália. Predvolená schéma preto ostáva Krčma.</li>
+<li>Využitie (odhad): väčšina ľudí predvolenú schému nezmení. Funkcia má byť lacná na údržbu, nie ťažisko webu.</li>
+</ul></div>
+</div>
+<p class="citat">„Konzistentnosť 8 — Farby hráčov, tvar kariet a ikon, tlačidlá jednotné; ‚ty‘ vždy vľavo/modrá.“ — hodnotenie sledovateľa v playtestoch</p>
+<p class="citat">„Hra vyzerá atmosféricky: tmavá hospodská paleta, ilustrované karty, jasné farby hráčov (modrá/oranžová).“ — hodnotenie sledovateľa</p>
+<p class="citat">„Poštárka v oranžovej dala súperke +2 cigarety — nevšimol som si, že priazeň je pre ňu výhoda.“ — feedback hráča (zóny majú v reči hráčov mená farieb)</p>
+
+<h3 id="zamky">Čo smie schéma meniť a čo nie</h3>
+<div class="tab-obal"><table>
+<thead><tr><th>Vrstva</th><th>Dnes v kóde</th><th>Schéma</th><th>Prečo</th></tr></thead>
+<tbody>
+<tr><td>Pozadie, plochy, okraje, text, tlmený text</td><td><code>styles.css:3-22</code> (<code>--pozadie</code> … <code>--slaby</code>)</td><td class="voln">mení</td><td>To je „miestnosť“.</td></tr>
+<tr><td>Akcent (odkazy, hlavné tlačidlo, aktívna fáza, fokus)</td><td><code>--akcent</code>, ale aj natvrdo <code>styles.css:121</code></td><td class="voln">mení, s obmedzením</td><td>Akcent nesmie byť zelený, modrozelený ani oranžovočervený, inak splynie s „tvoj ťah“, „ty“ a „súper“. Test to musí overiť.</td></tr>
+<tr><td>Ty / súper</td><td><code>--ja #5cc0cf</code>, <code>--su #e0805f</code> (<code>hra/hra.css:14-17</code>), <code>Scorecard.tsx:29</code></td><td class="zamok">zamknutý odtieň</td><td>Hráči si ich pamätajú („modrá/oranžová“). Pre farbosleposť je dvojica modrá a oranžová bezpečná. Odtieň ostáva (modrá okolo 186°, oranžová okolo 16°), svetlosť sa smie doladiť kvôli kontrastu. Pracovná verzia paliet UI dizajnéra to tak robí.</td></tr>
+<tr><td>Stav ťahu: zelený stôl = hráš ty, sivý = čakáš, jantárový = koniec</td><td><code>hra/hra.css:950-972</code>, dok <code>1374-1401</code></td><td class="zamok">zamknuté</td><td>Najdôležitejší stav hry. Pozor na schémy so zelenkastým podkladom (napr. olivová): zelený stôl na nich menej vynikne.</td></tr>
+<tr><td>Kladné / záporné, platný cieľ</td><td><code>--zelena</code>, <code>--cervena</code></td><td class="zamok">zamknuté vo význame</td><td>Odtieň sa smie doladiť len kvôli kontrastu. Vždy ich sprevádza znamienko +/− alebo text.</td></tr>
+<tr><td>Zóny starších (červená, oranžová, žltá, sivá)</td><td>pravidlá <code>docs/PRAVIDLA.md:770</code>, karta staršieho</td><td class="zamok">zamknuté</td><td>Sú to pojmy z pravidiel.</td></tr>
+<tr><td>Lícne strany kariet, farby typov</td><td><code>karta/karta.css</code>, dáta z tvorcu</td><td class="zamok">zamknuté</td><td>Obsah, nie rozhranie. Tlačia sa.</td></tr>
+<tr><td>Náhľad karty v Tvorbe, tlač</td><td><code>admin/</code>, <code>admin/tlac</code></td><td class="zamok">neutrálne pozadie</td><td>Admin posudzuje farby karty. Tónované okolie skresľuje vnímanie farby (simultánny kontrast).</td></tr>
+</tbody></table></div>
+
+<!-- ============================================================ -->
+<h2 id="toky">2. Toky dnes</h2>
+<p>Dnes sa schéma vybrať nedá. Nižšie je miesto, kam by výber patril, a pokus, ako sa web prefarbí, keď sa vymenia len premenné v <code>:root</code>.</p>
+<div class="dve">
+<figure><img src="dizajn-farebne-schemy-20261021-1400/ux-profil.png" alt="Stránka Môj profil na počítači: karta hráča, Frajerina a pod nadpisom Nastavenia účtu štyri panely: Herné meno, Zmena hesla, Zväčšenie kariet, Hudba počas partie." loading="lazy"><figcaption>Profil na počítači. Nastavenia sú štyri panely bez poradia podľa dôležitosti. Panel Vzhľad by pribudol ako piaty. Lupa a hudba sa ukladajú samy („Ukladá sa samo.“), schéma by sa mala správať rovnako.</figcaption></figure>
+<figure class="uzka"><img src="dizajn-farebne-schemy-20261021-1400/ux-profil-mobil.png" alt="Ten istý profil na telefóne: nastavenia začínajú asi 1700 pixelov od vrchu stránky, posledný je panel Hudba." loading="lazy"><figcaption>Telefón (390 × 2282 px). Nastavenia začínajú asi 1 700 px od vrchu. Panel Vzhľad by bol až za Hudbou, teda úplne na konci.</figcaption></figure>
+</div>
+<div class="dve">
+<figure><img src="dizajn-farebne-schemy-20261021-1400/ux-stol.png" alt="Herný stôl v predvolenej Krčme: horná lišta s fázami, scorecard s modrými a oranžovými číslami, rad starších so zónovými bodkami, dok Čakáš." loading="lazy"><figcaption>Stôl dnes (relácia 20261021-120034, 78MT). Modré a oranžové čísla patria hráčom, bodky na starších sú zóny, jantárová je aktívna fáza.</figcaption></figure>
+<figure><img src="dizajn-farebne-schemy-20261021-1400/ux-token-stol.png" alt="Ten istý stôl so zámenou premenných na modrosivú paletu: plochy sú modrosivé, hlavička a horná lišta s kódom miestnosti ostali hnedé, dok Čakáš ostal hnedý." loading="lazy"><figcaption><b>Pokus:</b> vymenené len premenné v <code>:root</code> (modrosivá, akcent zlatý). Panely a karty starších sa prefarbili. <b>Hnedé ostali</b> hlavička (<code>styles.css:310</code>), dok „Čakáš“ (<code>hra/hra.css:1387</code>) a prechod pod rukou (<code>hra/hra.css:1279</code>). Farby hráčov a zóny ostali, a tak to má byť.</figcaption></figure>
+</div>
+<figure><img src="dizajn-farebne-schemy-20261021-1400/ux-token-domov.png" alt="Domovská stránka s modrosivou paletou: plochy a karty dlaždíc sú modrosivé, hlavička je stále hnedočierna, žiara pod hlavičkou je teplá, hlavné tlačidlo Hrať teraz je jantárové." loading="lazy"><figcaption>Domov s rovnakou zámenou. Dlaždice a text sa prefarbili. Natvrdo ostali hlavička, teplá žiara pozadia (<code>styles.css:36</code>) a prechod hlavného tlačidla (<code>styles.css:121</code>). Pri jemnej schéme to vyzerá ako „takmer“, pri výraznejšej ako chyba.</figcaption></figure>
+
+<!-- ============================================================ -->
+<h2 id="audit">3. Audit</h2>
+<p class="pozn">Závažnosť 0–4 podľa Nielsena (4 = katastrofa, 3 = veľký problém, 2 = menší, 1 = kozmetika). Problémy, ktoré by funkcia vyrobila, ak sa urobí naivne, a dnešné nedostatky, ktoré by zdedila.</p>
+<div class="filtre" role="group" aria-label="Filter podľa závažnosti">
+  <button type="button" data-f="vsetky" aria-pressed="true">Všetky</button>
+  <button type="button" data-f="3" aria-pressed="false">Závažnosť 3</button>
+  <button type="button" data-f="2" aria-pressed="false">Závažnosť 2</button>
+  <button type="button" data-f="1" aria-pressed="false">Závažnosť 1</button>
+</div>
+<div class="tab-obal"><table id="audit-tab">
+<thead><tr><th>#</th><th>Problém</th><th>Heuristika</th><th>Záv.</th><th>Dôkaz</th><th>Koho sa týka</th></tr></thead>
+<tbody>
+<tr data-z="3"><td>A1</td><td>Schéma môže zmeniť alebo prekryť význam farieb na stole: ty/súper, zelený stôl pri tvojom ťahu, zóny, +/−. Akcent alebo podklad v podobnom odtieni zníži odlíšenie.</td><td>Konzistencia, prevencia chýb</td><td><span class="z z3">3</span></td><td><code>hra/hra.css:14-17, 950-972, 1374-1401</code>; <code>Scorecard.tsx:29</code>; <code>PRAVIDLA.md:770</code>; citáty hráčov vyššie</td><td>každý hráč v schéme inej než predvolená, v každom ťahu</td></tr>
+<tr data-z="3"><td>A2</td><td>Mimo premenných je zapísaných asi 256 hex farieb a 110 <code>rgba()</code> (všetky <code>.css</code> súbory, z toho <code>hra.css</code> 106 a 64). Schéma by web prefarbila len čiastočne.</td><td>Konzistencia a estetika</td><td><span class="z z3">3</span></td><td>snímky pokusu vyššie; <code>styles.css:36, 106, 121, 310</code>; <code>hra/hra.css:1279, 1387, 2147, 3401</code></td><td>všetci v inej než predvolenej schéme, na každej stránke</td></tr>
+<tr data-z="3"><td>A3</td><td>Bliknutie pri načítaní: nastavenia používateľa prichádzajú z <code>/api/ja</code> až po prvom vykreslení. Každé načítanie by najprv ukázalo Krčmu a potom by sa web prefarbil.</td><td>Viditeľnosť stavu, estetika</td><td><span class="z z3">3</span></td><td><code>lib/ucet.tsx:58-64</code>; <code>index.html</code> nemá skript v <code>&lt;head&gt;</code></td><td>pri každom načítaní stránky</td></tr>
+<tr data-z="2"><td>A4</td><td>Dnešná paleta má páry pod hranicou WCAG. Nové schémy ich zopakujú, ak sa nekontrolujú: <code>--slaby</code> na <code>--plocha-2</code> 3,96:1 a na <code>--plocha-3</code> 3,51:1 (treba 4,5), <code>--cervena</code> ako text 4,22:1, okraj polí <code>--okraj-svetly</code> 1,99:1 (treba 3:1, WCAG 1.4.11).</td><td>Prístupnosť (1.4.3, 1.4.11)</td><td><span class="z z2">2</span></td><td>výpočet kontrastu z <code>styles.css:3-22</code>; <code>--slaby</code> má 36 použití</td><td>ľudia so slabším zrakom, telefón na slnku</td></tr>
+<tr data-z="2"><td>A5</td><td>Nastavenie by bolo ťažko nájsť: v profile je posledné, na telefóne asi 1 700 px od vrchu. Menu účtu odkaz naň nemá.</td><td>Rozpoznanie namiesto pamätania, efektívnosť</td><td><span class="z z2">2</span></td><td>snímka mobilu; <code>Layout.tsx:84-108</code></td><td>každý, kto hľadá vzhľad prvýkrát</td></tr>
+<tr data-z="2"><td>A6</td><td>Hlášky automatického ukladania sú na vrchu stránky a nemajú <code>role="status"</code>. Keď sa uloženie nepodarí, používateľ to pri paneli dole nevidí a čítačka to neprečíta.</td><td>Viditeľnosť stavu, pomoc pri chybách</td><td><span class="z z2">2</span></td><td><code>komponenty.tsx:38-39</code>; <code>Ucet.tsx:278</code></td><td>týka sa už dnes lupy a hudby, po zmene aj schémy</td></tr>
+<tr data-z="2"><td>A7</td><td>Návštevník bez účtu sa na <code>/profil</code> nedostane, takže schému s vysokým kontrastom by mal až po registrácii. Bariéra prístupnosti.</td><td>Prístupnosť, sloboda</td><td><span class="z z2">2</span></td><td><code>Ucet.tsx:140</code> (<code>if (ja === null) return null</code>)</td><td>čitatelia pravidiel bez účtu</td></tr>
+<tr data-z="2"><td>A8</td><td>Svetlá schéma by si vyžiadala vlastné ladenie stola: tmavé priesvitné vrstvy a tiene majú farby natvrdo a <code>color-scheme: dark</code> platí pre celý web (formuláre, posuvníky).</td><td>Konzistencia</td><td><span class="z z2">2</span></td><td><code>styles.css:21</code>; <code>hra/hra.css:1279, 3401</code></td><td>len ak sa pridá svetlá schéma</td></tr>
+<tr data-z="2"><td>A9</td><td>Tvorca kariet: farba karty sa na tónovanom pozadí vníma inak, takže admin by mohol karty ladiť podľa svojej schémy.</td><td>Zhoda so svetom (tlač)</td><td><span class="z z2">2</span></td><td><code>apps/web/src/admin/Tvorca.tsx</code>, náhľad karty</td><td>admin a subadmin</td></tr>
+<tr data-z="1"><td>A10</td><td>Nie je jasné, či schému v profile vidia aj ostatní. Pri avatare ich vidia („Ako ma vidia ostatní“), pri téme v Discorde tiež.</td><td>Zhoda s očakávaním</td><td><span class="z z1">1</span></td><td><code>Ucet.tsx</code>, odkaz „Ako ma vidia ostatní“ hneď pri profile</td><td>každý pri prvom výbere</td></tr>
+<tr data-z="1"><td>A11</td><td>Chýba <code>&lt;meta name="theme-color"&gt;</code>, takže lišta prehliadača v telefóne nesedí s webom ani dnes, ani po zmene schémy.</td><td>Estetika</td><td><span class="z z1">1</span></td><td><code>apps/web/index.html</code></td><td>mobil</td></tr>
+</tbody></table></div>
+
+<!-- ============================================================ -->
+<h2 id="mockup">4. Interaktívny mockup výberu</h2>
+<p>Skúsi sa tu tok z návrhu N2: klik na schému okamžite prefarbí náhľad (na webe celú stránku), ukáže sa hláška s možnosťou vrátiť a pod tým kontrola kontrastu. Palety sú z <b>pracovnej verzie UI dizajnéra</b> (Krčma, Polnoc na dedine, Vínna pivnica, Tabak, Jedálny lístok), platí ich finálna podoba v <a href="dizajn-farebne-schemy-20261021-1400-ui.html">UI návrhu</a>. Ostrý kontrast je zástupný návrh (N4). Na páse „stôl“ si všimni, že modrá „ty“, oranžová „súper“ a zóny majú vo všetkých schémach ten istý odtieň.</p>
+<div class="demo">
+  <fieldset>
+    <legend>Vzhľad webu</legend>
+    <p class="pozn" style="margin:0 8px 6px">Zmena platí hneď na celom webe a ukladá sa sama. Farby hráčov, zón a kariet ostávajú rovnaké. Vzhľad vidíš len ty.</p>
+    <div class="skupina-nadpis" aria-hidden="true">Schémy</div>
+    <div id="volby"></div>
+    <div class="skupina-nadpis" aria-hidden="true">Prístupnosť</div>
+    <div id="volby-pristupnost"></div>
+  </fieldset>
+  <div>
+    <div class="nahlad" id="nahlad" aria-label="Náhľad vybranej schémy" role="img">
+      <div class="n-hl"><span class="n-logo">NA EX!</span><span class="n-nav"><b>Pravidlá</b> · Karty · Hrať · Rebríček</span></div>
+      <div class="n-obsah">
+        <div class="n-panel"><h5>Herné meno</h5><div class="n-tl">Ako ťa uvidí súper</div><div class="n-vstup">Ferko z horného konca</div><div class="n-sl">2 – 24 znakov.</div><span class="n-btn h">Uložiť meno</span><span class="n-btn s">Zrušiť</span></div>
+        <div class="n-stol"><div class="r"><span class="n-tah">Tvoj ťah</span><span>skóre <span class="n-ja">ty +4</span> · <span class="n-su">súper +2</span></span><span aria-hidden="true">zóny <span class="dot" style="background:#d0412f"></span> <span class="dot" style="background:#e8892d"></span> <span class="dot" style="background:#f2cf3c"></span> <span class="dot" style="background:#bdbdbd"></span></span></div></div>
+      </div>
+    </div>
+    <div class="toast skryte" id="toast" role="status" aria-live="polite"><span id="toast-text"></span><button type="button" id="vratit">Vrátiť</button></div>
+    <table class="kontrasty" aria-label="Kontrola kontrastu vybranej schémy"><thead><tr><th>Pár</th><th>Pomer</th><th>WCAG AA</th></tr></thead><tbody id="kontrasty"></tbody></table>
+    <p class="pozn">Rovnaká tabuľka má byť <b>automatický test</b> nad dátami schém (N1). Do produkcie sa nedostane schéma, ktorá neprejde.</p>
+  </div>
+</div>
+
+<h3 id="pripomienky">Pripomienky k paletám (pracovná verzia UI, kontrola podľa pravidiel z N1)</h3>
+<ul>
+<li><b>Odtieň ty/súper je všade zachovaný</b> (modrá 185–188°, oranžová 15–18°), mení sa len svetlosť. Presne tak to má byť.</li>
+<li><b>Slabý text na ploche 3</b> (<code>--slaby</code> na <code>--plocha-3</code>) má vo všetkých piatich paletách 4,10 až 4,37:1, čo je pod hranicou 4,5. Stačí <code>--slaby</code> o krok zosvetliť (vo svetlej schéme stmaviť).</li>
+<li><b>Jedálny lístok</b>: „ty“ <code>#127380</code> na <code>--plocha-3</code> má 3,89:1. Skóre a „ty +1“ pod staršími sú na tmavších plochách, treba to stmaviť alebo obmedziť, na ktorých plochách sa „ty“ kreslí.</li>
+<li><b>Tabak</b>: akcent <code>#d9c46e</code> a zelená <code>#9fc67e</code> majú takmer rovnakú svetlosť (1,11:1) a líšia sa len o 44° odtieňa. Na stole akcent znamená „koniec“ a aktívnu fázu, zelená „tvoj ťah“ a platný cieľ. Odporúčam teplejší, oranžovejší tabakový akcent. K tomu olivový podklad oslabuje zelený stôl, overiť v playtestovej otázke 3.</li>
+<li><b>Vínna pivnica</b>: akcent <code>#efbb80</code> je od súperovej oranžovej <code>#f0956f</code> len 14° odtieňa (1,31:1, v Krčme 23° a 1,42:1). Akcenty sa na stole kreslia pri súperových číslach v scorecarde, takže je dobré odtiene viac rozostúpiť (akcent žltší).</li>
+<li><b>Jedálny lístok je svetlá schéma</b>, a to mení rozsah práce (A8, N5). Ak pôjde do prvej dávky, treba svetlé varianty prekrytí a tieňov na stole a okraj kariet na svetlom podklade. Inak ju presunúť do druhej dávky.</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="navrhy">5. Návrhy</h2>
+<p>N1 až N3 tvoria jednu dodávku. Bez N1 vyzerá funkcia nedorobene, bez N3 bliká. N4 je súčasť ponuky, N5 je odvážnejší smer na neskôr.</p>
+
+<!-- N1 -->
+<section class="navrh" id="n1">
+<h3>N1 — Dve vrstvy farieb: „miestnosť“ sa mení, „stôl“ hovorí stále rovnako</h3>
+<p><span class="stitok stredna">stredná</span><span class="stitok">rieši A1, A2, A4, A8, A9</span><span class="stitok">predpoklad pre všetko ostatné</span></p>
+<p>Predtým, než sa pridá prvá schéma: (1) farby zapísané natvrdo v hlavičke, tlačidlách, doku a prekrytiach sa nahradia premennými, (2) premenné sa rozdelia na <b>schémové</b> a <b>herné</b>, (3) schémy sú dáta v jednom súbore a test kontroluje kontrast aj odlíšenie od herných farieb.</p>
+<div class="tok">
+  <div class="pred"><h4>Pred</h4><ol><li>Paleta v <code>:root</code> a stovky farieb natvrdo.</li><li>Nová schéma = hľadanie, čo sa neprefarbilo.</li><li>Kontrast sa kontroluje okom, ak vôbec.</li></ol></div>
+  <div class="po"><h4>Po</h4><ol><li><code>html[data-schema="…"]</code> nastaví asi 12 schémových premenných (pozadie, plochy 1–3, okraj, okraj ovládacích prvkov, text, tlmený, slabý, akcent, text na akcente, žiara, <code>color-scheme</code>).</li><li>Herné premenné (<code>--ja</code>, <code>--su</code>, <code>--tah</code>, <code>--cakas</code>, <code>--zelena</code>, <code>--cervena</code>, zóny) sú v jednom bloku s komentárom „schéma ich nemení“.</li><li>Test: každá schéma × každý pár ≥ 4,5:1 (text), ≥ 3:1 (okraje polí, fokus) a akcent je dosť ďaleko od <code>--ja</code>, <code>--su</code> a <code>--tah</code>.</li></ol></div>
+</div>
+<h4>Drôtený model — rozdelenie tokenov</h4>
+<div class="wf" aria-label="Drôtený model rozdelenia premenných">
+  <div class="dve">
+    <div class="blok"><h5>Schéma (mení sa)</h5><div class="male">pozadie · plocha · plocha-2 · plocha-3 · okraj · okraj-pola · text · tlmeny · slaby · akcent · na-akcente · ziara · color-scheme · theme-color</div></div>
+    <div class="blok"><h5>Stôl (zamknuté)</h5><div class="male">ja · su · tah (zelený stôl) · cakas (sivý) · koniec · zelena (+) · cervena (−) · zóny červená/oranžová/žltá/sivá · lícne strany kariet · náhľad v Tvorbe a tlač</div></div>
+  </div>
+</div>
+<dl>
+<dt>Mikrocopy</dt><dd>Komentár v CSS: „Schéma nemení farby hráčov, stavu ťahu ani zón — hráči sa nimi riadia (playtesty 10/2026).“</dd>
+<dt>Prístupnosť</dt><dd>Test opraví aj dnešné nedostatky (A4). Fokus <code>:focus-visible</code> berie farbu z akcentu a musí mať aspoň 3:1 voči ploche v každej schéme.</dd>
+<dt>Tvorba</dt><dd>Náhľad karty v tvorcovi a stránka tlače dostanú pevné neutrálne pozadie (napr. sivú 50 %), ostatok Tvorby sa riadi schémou.</dd>
+<dt>Súbory</dt><dd><code>apps/web/src/styles.css</code>, <code>stranky/stranky.css</code>, <code>stranky/statistiky.css</code>, <code>hra/hra.css</code>, <code>karta/karta.css</code>, <code>admin/admin.css</code>, <code>playtest/playtest.css</code>, <code>hra/Scorecard.tsx:29</code>; nový súbor so schémami (napr. <code>apps/web/src/lib/schemy.ts</code> + CSS) a test vo vitest.</dd>
+<dt>Ako overiť</dt><dd>Snímky všetkých stránok v každej schéme (nástroj <code>snimka.ts</code> s parametrom schémy). Na snímke nesmie ostať hnedá „krčmová“ plocha v inej schéme. Test kontrastu musí byť zelený.</dd>
+</dl>
+</section>
+
+<!-- N2 -->
+<section class="navrh" id="n2">
+<h3>N2 — Panel „Vzhľad webu“ v profile: klik = hneď vidíš, ukladá sa samo, dá sa vrátiť</h3>
+<p><span class="stitok mala">malá</span><span class="stitok">rýchla výhra (po N1)</span><span class="stitok">rieši A5, A6, A10</span></p>
+<div class="tok">
+  <div class="pred"><h4>Pred (bežný „formulár“)</h4><ol><li>Profil, posunúť dole k nastaveniam.</li><li>Vybrať v zozname.</li><li>Uložiť.</li><li>Prejsť na inú stránku a zistiť, ako to vyzerá.</li><li>Ak sa nepáči, vrátiť sa a zopakovať.</li></ol></div>
+  <div class="po"><h4>Po</h4><ol><li>Menu účtu → <b>Vzhľad webu</b> (skočí na <code>/profil#vzhlad</code>), alebo v profile panel hneď prvý v skupine „Hra a vzhľad“.</li><li>Klik na kartu schémy: <b>celý web sa prefarbí hneď</b>, schéma sa uloží sama (s oneskorením 400 ms ako lupa a hudba).</li><li>Hláška: „Vzhľad: Polnoc na dedine. [Vrátiť]“. Krok späť bez dialógu.</li></ol></div>
+</div>
+<h4>Drôtený model — profil na počítači</h4>
+<div class="wf" aria-label="Drôtený model profilu na počítači">
+  <div class="blok">[ karta hráča · avatar · Frajerina — bez zmeny ]</div>
+  <h5 style="margin-top:12px">Hra a vzhľad</h5>
+  <div class="blok" id="wf-vzhlad">
+    <h5>Vzhľad webu</h5>
+    <div class="male">Zmena platí hneď na celom webe a ukladá sa sama. Farby hráčov, zón a kariet ostávajú rovnaké. Vzhľad vidíš len ty.</div>
+    <div class="wf-mriezka" style="margin-top:8px">
+      <div class="wf-karta vybrana"><div class="pruh"><span style="background:#14110e"></span><span style="background:#28211a"></span><span style="background:#f1e8d8"></span><span style="background:#e9ad45"></span></div><b>Krčma</b> · predvolená<div class="male">Tmavé drevo a jantár.</div><div class="male"><b>Vybraná</b></div></div>
+      <div class="wf-karta"><div class="pruh"><span style="background:#0e131b"></span><span style="background:#1c2533"></span><span style="background:#ede6d4"></span><span style="background:#efc179"></span></div><b>Polnoc na dedine</b><div class="male">Indigová noc a lampa za oknom.</div></div>
+      <div class="wf-karta"><div class="pruh"><span style="background:#160d10"></span><span style="background:#2b1a20"></span><span style="background:#f4e7dc"></span><span style="background:#efbb80"></span></div><b>Vínna pivnica</b><div class="male">Tmavé víno a škoricové svetlo.</div></div>
+      <div class="wf-karta"><div class="pruh"><span style="background:#11120c"></span><span style="background:#23251a"></span><span style="background:#efebdc"></span><span style="background:#d9c46e"></span></div><b>Tabak</b><div class="male">Olivová tma a suchý tabak.</div></div>
+      <div class="wf-karta"><div class="pruh"><span style="background:#f1e8d3"></span><span style="background:#efe5cf"></span><span style="background:#2a2018"></span><span style="background:#d08f2e"></span></div><b>Jedálny lístok</b> · svetlá<div class="male">Krémový papier a sépia.</div></div>
+    </div>
+    <div class="male" style="margin-top:8px">Prístupnosť</div>
+    <div class="wf-karta" style="max-width:300px"><div class="pruh"><span style="background:#000"></span><span style="background:#111"></span><span style="background:#fff"></span><span style="background:#ffd23f"></span></div><b>Ostrý kontrast</b><div class="male">Čierna, biela a žltá. Najlepšie čitateľné.</div></div>
+  </div>
+  <div class="dve" style="margin-top:6px"><div class="blok">Zväčšenie kariet [posuvník]</div><div class="blok">Hudba počas partie [posuvník]</div></div>
+  <h5 style="margin-top:12px">Účet</h5>
+  <div class="dve"><div class="blok">Herné meno</div><div class="blok">Zmena hesla</div></div>
+</div>
+<p class="pozn">Mená a farby sú z pracovnej verzie UI dizajnéra, platí <a href="dizajn-farebne-schemy-20261021-1400-ui.html">UI návrh</a>. Princíp mien: slovenské, krčmové alebo dedinské, opisujú náladu, nie odtieň. Pod výberom môže byť drobná poznámka „Farby podľa knihy Sanza Wadu <i>A Dictionary of Color Combinations</i>.“</p>
+
+<h4>Drôtený model — telefón a menu účtu</h4>
+<div class="dve">
+<div class="wf wf-mobil" aria-label="Drôtený model výberu na telefóne">
+  <h5>Vzhľad webu</h5>
+  <div class="male">Zmena platí hneď a ukladá sa sama.</div>
+  <div class="wf-riadok vybrana"><div class="pruh"><span style="background:#14110e"></span><span style="background:#28211a"></span><span style="background:#e9ad45"></span></div><div><b>Krčma</b> · predvolená<div class="male">Tmavé drevo a jantár</div></div><span style="margin-left:auto" class="male"><b>Vybraná</b></span></div>
+  <div class="wf-riadok"><div class="pruh"><span style="background:#0e131b"></span><span style="background:#1c2533"></span><span style="background:#efc179"></span></div><div><b>Polnoc na dedine</b><div class="male">Indigová noc a lampa za oknom</div></div></div>
+  <div class="wf-riadok"><div class="pruh"><span style="background:#160d10"></span><span style="background:#2b1a20"></span><span style="background:#efbb80"></span></div><div><b>Vínna pivnica</b><div class="male">Tmavé víno a škoricové svetlo</div></div></div>
+  <div class="male">… Tabak, Jedálny lístok, Ostrý kontrast</div>
+  <div class="male">Každý riadok má aspoň 56 px na výšku a celý je klikateľný.</div>
+</div>
+<div class="wf" aria-label="Drôtený model menu účtu">
+  <div class="blok"><b>Dizajnér (AI)</b><div class="male">@ai-dizajner · subadmin</div></div>
+  <div class="blok">Môj profil</div>
+  <div class="blok">Moje štatistiky</div>
+  <div class="blok">Vzhľad webu <span class="male">· Krčma</span> <span class="pruh" style="display:inline-flex;width:40px;height:12px;vertical-align:middle;margin:0"><span style="background:#14110e"></span><span style="background:#e9ad45"></span></span></div>
+  <div class="blok">Hrať</div>
+  <div class="blok">Odhlásiť sa</div>
+  <div class="male">Do hlavičky schválne <b>nepridávam</b> stály prepínač. Schéma sa nastaví raz a potom sa nemení, hlavička je na telefóne plná a ďalšia ikona by súperila s Hrať. Položka v menu stačí.</div>
+</div>
+</div>
+<dl>
+<dt>Mikrocopy</dt><dd>
+Nadpis: <b>Vzhľad webu</b><br>
+Popis: „Zmena platí hneď na celom webe a ukladá sa sama. Farby hráčov, zón a kariet ostávajú rovnaké. Vzhľad vidíš len ty.“<br>
+Karta: „<b>Krčma</b> · predvolená — Tmavé drevo a jantár.“ Pri vybranej: „Vybraná“.<br>
+Hláška po zmene: „Vzhľad: Polnoc na dedine.“ s tlačidlom „Vrátiť“ (vráti predošlú, zmizne po 8 s alebo pri ďalšej zmene).<br>
+Chyba uloženia: „Vzhľad sa nepodarilo uložiť k účtu. Na tomto zariadení ostane, k účtu ho uložíme pri ďalšej zmene.“<br>
+Návrat k predvolenej: kliknúť na Krčmu. Samostatné tlačidlo Obnoviť netreba.</dd>
+<dt>Prístupnosť</dt><dd>
+Natívne <code>&lt;fieldset&gt;&lt;legend&gt;Vzhľad webu&lt;/legend&gt;</code> a <code>&lt;input type="radio" name="schema"&gt;</code> v <code>&lt;label&gt;</code>. Šípky prepínajú schémy a zmenu hneď vidno, ukladanie s oneskorením zabráni dávke požiadaviek. Vybranú schému neoznačuje len farba: je tam aj značka a text „Vybraná“ a hrubší okraj. Pruh farieb je <code>aria-hidden</code>, čítačka prečíta meno a popis. Hláška má <code>role="status"</code> a zobrazuje sa <b>pri paneli</b>, nie hore na stránke (A6). Zmena farieb bez animácie, žiadne prechody cez celú stránku.</dd>
+<dt>Súbory</dt><dd><code>stranky/Ucet.tsx</code> (nový panel, preskupenie na „Hra a vzhľad“ a „Účet“), <code>Layout.tsx</code> (položka menu), <code>komponenty.tsx</code> (<code>Hlaska</code> s <code>role="status"</code>), <code>lib/ucet.tsx</code> (<code>schema</code> v <code>Pouzivatel</code>), server <code>api.ts</code>, <code>auth.ts</code>, <code>db.ts</code> (stĺpec <code>schema TEXT</code>, povolené len známe id, neznáme = predvolená).</dd>
+<dt>Ako overiť</dt><dd>Úloha pre testera: „Zmeň si vzhľad webu a potom ho vráť späť.“ Sledovať čas a cestu (menu alebo profil), či niekto hľadá tlačidlo Uložiť, či použije Vrátiť. Cieľ: do 20 s a bez chyby.</dd>
+</dl>
+</section>
+
+<!-- N3 -->
+<section class="navrh" id="n3">
+<h3>N3 — Bez bliknutia a pre každého: zariadenie si pamätá, účet synchronizuje</h3>
+<p><span class="stitok stredna">stredná</span><span class="stitok">rieši A3, A7, A11</span></p>
+<p>Schéma sa uloží na dve miesta. V prehliadači (<code>localStorage</code>, kľúč napr. <code>naex.schema</code>) kvôli rýchlosti a pre návštevníkov. Na serveri (profil) kvôli ďalším zariadeniam. Malý skript v <code>&lt;head&gt;</code> ju nastaví ešte pred prvým vykreslením.</p>
+<svg viewBox="0 0 1000 250" role="img" aria-labelledby="svg-n3-t svg-n3-d" style="width:100%;height:auto;max-width:1000px">
+  <title id="svg-n3-t">Tok načítania schémy bez bliknutia</title>
+  <desc id="svg-n3-d">Krok 1: prehliadač načíta index.html. Krok 2: skript v hlavičke prečíta schému z localStorage, ak tam nie je, pozrie systémové nastavenie vyššieho kontrastu, inak Krčma, a nastaví data-schema na element html. Krok 3: CSS vykreslí stránku už v správnej schéme. Krok 4: React načíta používateľa z /api/ja. Krok 5: ak má účet inú schému, prepne sa a zapíše do localStorage, čo nastane len na novom zariadení. Ak účet schému nemá a prehliadač áno, odošle sa na server.</desc>
+  <g font-size="14" fill="currentColor">
+    <rect x="10" y="20" width="170" height="80" rx="8" fill="none" stroke="currentColor" opacity=".6"/><text x="22" y="48">1. index.html</text><text x="22" y="70" font-size="12" opacity=".8">prvý bajt stránky</text>
+    <rect x="210" y="20" width="230" height="80" rx="8" fill="none" stroke="#7cbf74" stroke-width="2"/><text x="222" y="44">2. skript v &lt;head&gt;</text><text x="222" y="64" font-size="12" opacity=".8">localStorage → prefers-contrast</text><text x="222" y="82" font-size="12" opacity=".8">→ Krčma; html[data-schema]</text>
+    <rect x="470" y="20" width="160" height="80" rx="8" fill="none" stroke="currentColor" opacity=".6"/><text x="482" y="48">3. prvé vykreslenie</text><text x="482" y="70" font-size="12" opacity=".8">už v správnej schéme</text>
+    <rect x="660" y="20" width="150" height="80" rx="8" fill="none" stroke="currentColor" opacity=".6"/><text x="672" y="48">4. GET /api/ja</text><text x="672" y="70" font-size="12" opacity=".8">React, UcetProvider</text>
+    <rect x="840" y="20" width="150" height="80" rx="8" fill="none" stroke="#e9ad45" stroke-width="2"/><text x="852" y="48">5. porovnať</text><text x="852" y="70" font-size="12" opacity=".8">účet ≠ zariadenie?</text>
+    <path d="M180 60h28M440 60h28M630 60h28M810 60h28" stroke="currentColor" stroke-width="2" marker-end="url(#sip)"/>
+    <defs><marker id="sip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+    <rect x="560" y="150" width="200" height="80" rx="8" fill="none" stroke="currentColor" opacity=".6"/><text x="572" y="178">účet má schému</text><text x="572" y="200" font-size="12" opacity=".8">prepnúť + zapísať lokálne</text><text x="572" y="216" font-size="12" opacity=".8">(len nové zariadenie)</text>
+    <rect x="790" y="150" width="200" height="80" rx="8" fill="none" stroke="currentColor" opacity=".6"/><text x="802" y="178">účet nemá, zariadenie áno</text><text x="802" y="200" font-size="12" opacity=".8">PATCH /profil {schema}</text><text x="802" y="216" font-size="12" opacity=".8">(výber návštevníka sa zachová)</text>
+    <path d="M880 100 L700 148 M915 100 L890 148" stroke="currentColor" stroke-width="1.5" marker-end="url(#sip)"/>
+  </g>
+</svg>
+<div class="tok">
+  <div class="pred"><h4>Pred (len server)</h4><ol><li>Stránka sa vykreslí v Krčme.</li><li>Po 100–500 ms príde <code>/api/ja</code>.</li><li>Celý web sa prefarbí, a to pri každom načítaní a na každej stránke.</li><li>Návštevník schému mať nemôže.</li></ol></div>
+  <div class="po"><h4>Po</h4><ol><li>Skript v <code>&lt;head&gt;</code> (asi 5 riadkov, v <code>try/catch</code>) nastaví <code>data-schema</code> a <code>&lt;meta name="theme-color"&gt;</code>.</li><li>Stránka je v správnej schéme od prvého vykreslenia.</li><li>Server zariadenie dorovná najviac raz, na novom zariadení.</li><li>Návštevník: odkaz <b>Vzhľad</b> v pätičke otvorí ten istý výber.</li></ol></div>
+</div>
+<h4>Drôtený model — návštevník (pätička)</h4>
+<div class="wf" aria-label="Drôtený model výberu pre návštevníka">
+  <div class="blok male">NA EX! — kartová hra pre dvoch · © Michal Calík &nbsp; | &nbsp; <u>Vzhľad: Krčma</u></div>
+  <div class="blok" style="max-width:420px"><h5>Vzhľad webu</h5><div class="male">Tento prehliadač si vybraný vzhľad zapamätá. Keď sa prihlásiš, uložíme ho k tvojmu účtu.</div><div class="wf-riadok vybrana"><b>Krčma</b> · predvolená</div><div class="wf-riadok"><b>Polnoc na dedine</b></div><div class="male">… ďalšie a Ostrý kontrast</div><span class="tl">Zavrieť</span></div>
+</div>
+<dl>
+<dt>Pravidlá</dt><dd>
+<b>Priorita:</b> výslovná voľba (účet, inak zariadenie) &gt; systém žiada vyšší kontrast (<code>prefers-contrast: more</code>) → Ostrý kontrast &gt; Krčma.<br>
+<b>Odhlásenie:</b> schéma na zariadení ostane, pretože je to pohodlie zariadenia, nie tajomstvo.<br>
+<b>Systémová svetlá alebo tmavá téma:</b> kým neexistuje svetlá schéma, web ostane tmavý, a to je v poriadku (hry sú tmavé bežne). Až so svetlou schémou (N5) sa pridá voľba „Automaticky podľa zariadenia“.<br>
+<b>Zmazaná alebo premenovaná schéma:</b> id sa nemenia, neznáme id znamená Krčmu bez chyby.<br>
+<b>AI účty a snímky z playtestov</b> zostávajú na Krčme, aby sa snímky dali porovnať.</dd>
+<dt>Prístupnosť</dt><dd>Výber s vysokým kontrastom je dostupný bez účtu (A7). <code>color-scheme</code> sa nastavuje podľa schémy, takže formuláre a posuvníky sedia. V režime <code>forced-colors</code> (Windows s vysokým kontrastom) treba overiť, že stav ťahu a ty/súper ostanú rozlíšené textom.</dd>
+<dt>Súbory</dt><dd><code>apps/web/index.html</code> (skript a <code>theme-color</code>), <code>lib/ucet.tsx</code> (porovnanie po <code>/api/ja</code>), <code>Layout.tsx</code> (pätička), server ako v N2. Ak sa niekedy pridá CSP, inline skript potrebuje hash.</dd>
+<dt>Ako overiť</dt><dd>Pomalé pripojenie (DevTools „Slow 4G“), schéma Polnoc na dedine, desaťkrát načítať <code>/pravidla</code> a <code>/hra</code>: ani raz sa nesmie objaviť Krčma. Na druhom zariadení sa po prihlásení schéma prepne raz a pri ďalšom načítaní už neblikne.</dd>
+</dl>
+</section>
+
+<!-- N4 -->
+<section class="navrh" id="n4">
+<h3>N4 — „Ostrý kontrast“ ako samostatná schéma v skupine Prístupnosť</h3>
+<p><span class="stitok stredna">stredná</span><span class="stitok">rieši A4, A7 (spolu s N3)</span></p>
+<p>Nie je to šiesta „pekná“ schéma. Je to pomôcka: text aspoň 7:1 (AAA), okraje ovládacích prvkov aspoň 3:1, bez priesvitných vrstiev a žiary, výraznejší fokus (3 px). Herné farby ostávajú, len sa overí, že na čiernom podklade majú aspoň 4,5:1, a v prípade potreby sa zosvetlia v rámci toho istého odtieňa.</p>
+<div class="tok">
+  <div class="pred"><h4>Pred</h4><ol><li>Kto zle vidí, zväčší písmo prehliadača a dúfa.</li><li>Tlmený text v paneloch má 3,5–4:1.</li></ol></div>
+  <div class="po"><h4>Po</h4><ol><li>Vyberie Ostrý kontrast, alebo ho web nastaví sám podľa systému.</li><li>Celý web vrátane stola je čitateľný na slnku.</li></ol></div>
+</div>
+<dl>
+<dt>Mikrocopy</dt><dd>„<b>Ostrý kontrast</b> — Čierna, biela a žltá. Najlepšie čitateľné, aj na slnku.“ Ak ju zapol systém: „Tvoje zariadenie žiada vyšší kontrast, preto sme zapli Ostrý kontrast. Môžeš si vybrať inú schému.“</dd>
+<dt>Prečo nie prepínač „Vyšší kontrast“ ku každej schéme</dt><dd>Zdvojnásobil by počet kombinácií na testovanie (5 × 2) a ľudia by ho museli hľadať zvlášť. Jedna schéma stačí, rozšíriť sa dá neskôr.</dd>
+<dt>Súbory</dt><dd>dáta schém (N1), <code>index.html</code> (<code>prefers-contrast</code> v skripte z N3).</dd>
+<dt>Ako overiť</dt><dd>Test kontrastu (N1) s prísnejšími prahmi pre túto schému. Playtest: jedna partia v Ostrom kontraste, otázka „Bolo niečo na stole ťažko čitateľné?“</dd>
+</dl>
+</section>
+
+<!-- N5 -->
+<section class="navrh" id="n5">
+<h3>N5 — Odvážnejší smer: svetlá schéma „Papier“ a režim podľa zariadenia</h3>
+<p><span class="stitok velka">veľká</span><span class="stitok">nové možnosti, rieši A8 len ak sa robí</span></p>
+<p>Mnohé kombinácie Wadu sú svetlé (papier, krieda, pastely) a pracovná verzia UI už jednu má („Jedálny lístok“). Svetlá schéma sa hodí na čítanie pravidiel cez deň a na telefón vonku. Je to však iná trieda práce: tiene, priesvitné vrstvy a „stôl“ sú navrhnuté pre tmu a biele spodky kariet na svetlom podklade splývajú. Model podľa GitHubu: <b>režim</b> (Automaticky / Tmavý / Svetlý) a <b>paleta</b> zvlášť.</p>
+<div class="wf" aria-label="Drôtený model režimu a palety">
+  <h5>Vzhľad webu</h5>
+  <div class="male">Režim</div>
+  <span class="tl hl">Automaticky podľa zariadenia</span><span class="tl">Vždy tmavý</span><span class="tl">Vždy svetlý</span>
+  <div class="male" style="margin-top:8px">Paleta (každá má tmavú aj svetlú verziu)</div>
+  <div class="wf-mriezka"><div class="wf-karta vybrana"><b>Krčma</b></div><div class="wf-karta"><b>Polnoc na dedine</b></div><div class="wf-karta"><b>Vínna pivnica</b></div><div class="wf-karta"><b>Tabak</b></div></div>
+  <div class="male" style="margin-top:8px">Herný stôl: <span class="tl hl">vždy tmavý</span><span class="tl">podľa režimu</span></div>
+</div>
+<dl>
+<dt>Riziko</dt><dd>Počet kombinácií na testovanie sa zdvojnásobí. Lacnejší medzistupeň: <b>jedna</b> svetlá schéma „Papier“ ako šiesta voľba a herný stôl ostane v nej tmavý (ako plátno na stole). To je ale výnimka z „platí všade“ a rozhodnúť ju musí Michal.</dd>
+<dt>Súbory</dt><dd>všetky CSS (svetlé varianty prekrytí a tieňov), <code>karta/karta.css</code> (okraj karty na svetlom podklade), <code>index.html</code>.</dd>
+<dt>Ako overiť</dt><dd>Až keď N1 až N4 bežia aspoň dva týždne: koľko ľudí vôbec zmenilo schému (počty podľa stĺpca <code>schema</code>) a či niekto žiada svetlú (Spätná väzba, kategória „Web a vzhľad“).</dd>
+</dl>
+</section>
+
+<!-- ============================================================ -->
+<h2 id="poradie">6. Odporúčané poradie</h2>
+<ol>
+<li><b>N1</b>: prepojiť farby na premenné, rozdeliť premenné na schémové a herné, pripraviť test kontrastu. Hneď pritom opraviť A4 v Krčme.</li>
+<li><b>N2 a N3 spolu</b>: panel v profile, položka v menu, okamžitá zmena s možnosťou vrátiť, skript proti blikaniu, server a zariadenie. Bez N3 nespúšťať, inak bude web blikať.</li>
+<li><b>N4</b> ako súčasť prvej ponuky: Krčma, Polnoc na dedine, Vínna pivnica, Tabak (po úprave akcentu) a Ostrý kontrast.</li>
+<li><b>N5</b>: Jedálny lístok (svetlá) v druhej dávke, keď bude stôl pripravený na svetlý podklad. Ak ju Michal chce hneď, pribudne voľba „Podľa zariadenia“ (tmavé zariadenie → Krčma, svetlé → Jedálny lístok).</li>
+</ol>
+<p>Prvý viditeľný krok pre Michala je N2. Bez N1 však bude výsledok vyzerať ako „takmer“ (viď hnedú hlavičku na snímke pokusu), preto N1 ide prvé, aj keď ho používateľ priamo nevidí.</p>
+
+<h2 id="otazky">7. Otázky</h2>
+<h3>Na Michala</h3>
+<ol>
+<li><b>Vidia schému aj ostatní?</b> Odporúčam nie: schéma je len pre teba a súper vidí web vo svojej. Ak by mala byť „vizitka“ ako avatar, je to iná funkcia (napr. farba rámu avatara).</li>
+<li><b>Svetlá schéma áno alebo nie?</b> Ak áno, má byť herný stôl aj vo svetlej schéme tmavý? (N5)</li>
+<li><b>Počet:</b> 5 schém vrátane Krčmy a k tomu Ostrý kontrast v skupine Prístupnosť, alebo Ostrý kontrast ako jedna z piatich?</li>
+<li><b>Tvorba:</b> súhlasíš, že náhľad karty v tvorcovi a tlač ostanú na neutrálnom pozadí bez ohľadu na schému?</li>
+<li><b>Návštevník bez účtu:</b> stačí mu výber v pätičke, alebo má byť schéma len pre prihlásených (a Ostrý kontrast len podľa systému)?</li>
+<li>Neskorší nápad, nie pravidlo hry: schémy ako odmena za Frajerinu alebo dohraté partie? Odporúčam nie, Ostrý kontrast nesmie byť zamknutý nikdy.</li>
+</ol>
+<h3>Do playtestu</h3>
+<ol>
+<li>„Zmeň si vzhľad webu a vráť ho späť.“ Čas, cesta, či niekto hľadal Uložiť.</li>
+<li>Partia v inej schéme než Krčma: „Vedel si vždy, kto je na ťahu a čo je tvoje?“ Sledovať omyly typu „pomýlil som si svoju a súperovu kartu“ v <code>nezrovnalosti.md</code>.</li>
+<li>Pri Tabaku (zelenkastý podklad): všimol si si, keď prišiel tvoj ťah? Porovnať s Krčmou.</li>
+<li>Telefón: našiel tester výber cez menu účtu bez posúvania profilu?</li>
+</ol>
+<p class="pozn">Podklady: snímky a poznámky v <code>playtest/dizajn/farebne-schemy-20261021-1400/</code>. Pokus so zámenou premenných urobil dočasný skript (Chrome cez DevTools, vloženie <code>&lt;style&gt;</code> s premennými), kód webu sa nemenil.</p>
+</main>
+
+<script>
+(function(){
+  // Filter auditu
+  var tl = document.querySelectorAll('.filtre button');
+  tl.forEach(function(b){ b.addEventListener('click', function(){
+    tl.forEach(function(x){ x.setAttribute('aria-pressed', x===b ? 'true' : 'false'); });
+    var f = b.getAttribute('data-f');
+    document.querySelectorAll('#audit-tab tbody tr').forEach(function(r){
+      r.hidden = !(f === 'vsetky' || r.getAttribute('data-z') === f);
+    });
+  }); });
+
+  // Zástupné palety, len na ukážku toku (finálne palety: UI návrh).
+  // Palety: pracovná verzia UI dizajnéra (2026-10-21), Ostrý kontrast zástupný (N4).
+  var S = [{"id":"krcma","meno":"Krčma","pozn":"predvolená","popis":"Tmavé drevo a jantár.","bg":"#14110e","hlav":"#1e1914","pl":"#1e1914","pl2":"#28211a","pl3":"#332a21","ok":"#3d3229","ok2":"#7a6652","tx":"#f1e8d8","tl":"#b6a790","sl":"#9a8b76","ak":"#e9ad45","akt":"#e9ad45","nak":"#2b1b03","ja":"#5cc0cf","su":"#e0805f","st":"#173320","sto":"#4fae66","stt":"#7fe39a","cer":"#e4705a"},{"id":"noc","meno":"Polnoc na dedine","popis":"Indigová noc a lampa za oknom.","bg":"#0e131b","hlav":"#151c27","pl":"#151c27","pl2":"#1c2533","pl3":"#242f40","ok":"#2e3a4e","ok2":"#6a7d9c","tx":"#ede6d4","tl":"#a9b1bf","sl":"#8690a2","ak":"#efc179","akt":"#efc179","nak":"#2a1d05","ja":"#6fd0d8","su":"#ec9070","st":"#183428","sto":"#57b27a","stt":"#8ee6a8","cer":"#e07a80"},{"id":"vino","meno":"Vínna pivnica","popis":"Tmavé víno a škoricové svetlo.","bg":"#160d10","hlav":"#211318","pl":"#211318","pl2":"#2b1a20","pl3":"#36222a","ok":"#472c36","ok2":"#8a5f6f","tx":"#f4e7dc","tl":"#c4aaa7","sl":"#9f8584","ak":"#efbb80","akt":"#efbb80","nak":"#2b140a","ja":"#6ccbd3","su":"#f0956f","st":"#1b3022","sto":"#5aae72","stt":"#8fdea4","cer":"#ef7b6e"},{"id":"tabak","meno":"Tabak","popis":"Olivová tma a suchý tabak.","bg":"#11120c","hlav":"#1a1b13","pl":"#1a1b13","pl2":"#23251a","pl3":"#2d2f22","ok":"#393c2b","ok2":"#737858","tx":"#efebdc","tl":"#b5b297","sl":"#918e73","ak":"#d9c46e","akt":"#d9c46e","nak":"#211f08","ja":"#62c4cf","su":"#e58a62","st":"#183420","sto":"#52b06c","stt":"#86e09e","cer":"#de6a48"},{"id":"papier","meno":"Jedálny lístok","pozn":"svetlá","popis":"Krémový papier a sépia.","bg":"#f1e8d3","hlav":"#fbf6ea","pl":"#fbf6ea","pl2":"#efe5cf","pl3":"#e5d7b9","ok":"#d5c3a0","ok2":"#8c7650","tx":"#2a2018","tl":"#5c4c3b","sl":"#6f5e4a","ak":"#d08f2e","akt":"#8a4f0c","nak":"#1f1205","ja":"#127380","su":"#b24f2c","st":"#dcebd3","sto":"#3f8a4f","stt":"#2a6a35","cer":"#a8321f"}];
+  var P = [{"id":"kontrast","meno":"Ostrý kontrast","popis":"Čierna, biela a žltá. Najlepšie čitateľné, aj na slnku.","bg":"#000000","hlav":"#000000","pl":"#0d0d0d","pl2":"#1a1a1a","pl3":"#262626","ok":"#9a9a9a","ok2":"#c8c8c8","tx":"#ffffff","tl":"#f0f0f0","sl":"#d6d6d6","ak":"#ffd23f","akt":"#ffd23f","nak":"#000000","ja":"#7fe0ea","su":"#ffa37f","st":"#0f2a17","sto":"#7fe39a","stt":"#a6f5bb","cer":"#ff8a73"}];
+  var vsetky = S.concat(P);
+
+  function L(h){ h=h.replace('#',''); var c=[0,2,4].map(function(i){var v=parseInt(h.substr(i,2),16)/255; return v<=0.03928? v/12.92 : Math.pow((v+0.055)/1.055,2.4);}); return 0.2126*c[0]+0.7152*c[1]+0.0722*c[2]; }
+  function K(a,b){ var x=L(a), y=L(b); return (Math.max(x,y)+0.05)/(Math.min(x,y)+0.05); }
+
+  function volba(s, kontajner){
+    var lab = document.createElement('label'); lab.className='volba';
+    var inp = document.createElement('input'); inp.type='radio'; inp.name='schema'; inp.value=s.id;
+    var pr = document.createElement('span'); pr.className='pruh'; pr.setAttribute('aria-hidden','true');
+    [s.bg, s.pl2, s.tx, s.ak].forEach(function(f){ var x=document.createElement('span'); x.style.background=f; pr.appendChild(x); });
+    var t = document.createElement('span');
+    var m = document.createElement('span'); m.className='meno'; m.textContent = s.meno + (s.pozn ? ' · ' + s.pozn : '');
+    var p = document.createElement('span'); p.className='popis'; p.textContent = s.popis;
+    t.appendChild(m); t.appendChild(p);
+    var z = document.createElement('span'); z.className='znak'; z.textContent='Vybraná';
+    lab.appendChild(inp); lab.appendChild(pr); lab.appendChild(t); lab.appendChild(z);
+    inp.addEventListener('change', function(){ vyber(s.id, true); });
+    kontajner.appendChild(lab);
+  }
+  var kv = document.getElementById('volby'), kp = document.getElementById('volby-pristupnost');
+  S.forEach(function(s){ volba(s, kv); });
+  P.forEach(function(s){ volba(s, kp); });
+
+  var aktualna = 'krcma', predosla = null, casovac = null;
+  var toast = document.getElementById('toast'), toastText = document.getElementById('toast-text');
+
+  function vyber(id, ukazToast){
+    var s = vsetky.filter(function(x){return x.id===id;})[0]; if(!s) return;
+    if (ukazToast && id !== aktualna) predosla = aktualna;
+    aktualna = id;
+    var n = document.getElementById('nahlad');
+    var m = {bg:'--n-bg', hlav:'--n-hlav', pl:'--n-pl', pl2:'--n-pl2', ok:'--n-ok', ok2:'--n-ok2', tx:'--n-tx', tl:'--n-tl', sl:'--n-sl', ak:'--n-ak', nak:'--n-nak', ja:'--n-ja', su:'--n-su', st:'--n-st', sto:'--n-sto', stt:'--n-stt'};
+    Object.keys(m).forEach(function(k){ n.style.setProperty(m[k], s[k]); });
+    n.setAttribute('aria-label', 'Náhľad schémy ' + s.meno);
+    document.querySelectorAll('.volba').forEach(function(l){
+      var i = l.querySelector('input'); var je = i.value === id; i.checked = je; l.classList.toggle('je-vybrana', je);
+    });
+    var pary = [
+      ['Text na ploche', s.tx, s.pl, 4.5],
+      ['Tlmený text na ploche', s.tl, s.pl, 4.5],
+      ['Slabý text na ploche 3', s.sl, s.pl3, 4.5],
+      ['Akcent ako text na pozadí', s.akt, s.bg, 4.5],
+      ['Text na hlavnom tlačidle', s.nak, s.ak, 4.5],
+      ['Okraj poľa voči ploche', s.ok2, s.pl, 3],
+      ['Ty na ploche 3', s.ja, s.pl3, 4.5],
+      ['Súper na ploche', s.su, s.pl, 4.5],
+      ['Chyba (červený text) na ploche', s.cer, s.pl, 4.5],
+      ['Tvoj ťah: text na zelenom stole', s.stt, s.st, 4.5]
+    ];
+    var tb = document.getElementById('kontrasty'); tb.innerHTML='';
+    pary.forEach(function(p){
+      var k = K(p[1], p[2]); var ok = k >= p[3];
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td>'+p[0]+'</td><td>'+k.toFixed(2).replace('.',',')+':1</td><td class="'+(ok?'ok-k':'zle-k')+'">'+(ok?'spĺňa':'nespĺňa')+' (≥ '+String(p[3]).replace('.',',')+')</td>';
+      tb.appendChild(tr);
+    });
+    if (ukazToast){
+      toastText.textContent = 'Vzhľad: ' + s.meno + '.';
+      var vr = document.getElementById('vratit');
+      vr.hidden = predosla === null;
+      toast.classList.remove('skryte');
+      clearTimeout(casovac); casovac = setTimeout(function(){ toast.classList.add('skryte'); }, 8000);
+    }
+  }
+  document.getElementById('vratit').addEventListener('click', function(){
+    if (predosla === null) return;
+    var p = predosla; predosla = null; vyber(p, false);
+    var s = vsetky.filter(function(x){return x.id===p;})[0];
+    toastText.textContent = 'Vrátené: ' + s.meno + '.';
+    document.getElementById('vratit').hidden = true;
+    clearTimeout(casovac); casovac = setTimeout(function(){ toast.classList.add('skryte'); }, 4000);
+  });
+  vyber('krcma', false);
+})();
+</script>
+</body>
+</html>

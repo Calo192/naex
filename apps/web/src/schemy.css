@@ -1,0 +1,347 @@
+/* Farebné schémy webu (Michal 2026-10-21) — inšpirované knihou Sanzo Wada,
+   A Dictionary of Color Combinations. Hráč si schému volí v profile; <html data-schema="…">
+   nastaví public/schema.js ešte pred vykreslením. Schéma mení len okolie — líca kariet,
+   stupnica zón a piktogramy zdrojov majú vlastné farby. V tmavých schémach sú farby
+   s herným významom (ty, súper, zelený stôl, červená/zelená) rovnaké ako v Krčme,
+   svetlé schémy ich len stmavujú kvôli kontrastu. Text na plochách má aspoň 4,5 : 1.
+   --tma = sila tmavých podkladov (čierna s priehľadnosťou), na svetlom papieri slabšia. */
+
+:root,
+:root[data-schema="krcma"] {
+  --pozadie: #14110e;
+  --plocha: #1e1914;
+  --plocha-2: #28211a;
+  --plocha-3: #332a21;
+  --okraj: #3d3229;
+  --okraj-svetly: #57483a;
+  --text: #f1e8d8;
+  --tlmeny: #b6a790;
+  --slaby: #8b7d6a;
+  --slaby-text: #9d8f7b;
+  --akcent: #e9ad45;
+  --akcent-tmavy: #b9802a;
+  --akcent-svetly: #ffd08a;
+  --na-akcente: #2b1b03;
+  --cervena: #d0563f;
+  --cervena-text: #e5735c;
+  --cervena-svetla: #ff9d88;
+  --tehla-tmava: #a8341f;
+  --zelena: #7cbf74;
+  --zelena-svetla: #7fe39a;
+  --zelena-ziariva: #7dff9c;
+  --info: #8fc3e0;
+  --info-silna: #5aa9d6;
+  --ja: #5cc0cf;
+  --ja-tmava: #1d3b40;
+  --su: #e0805f;
+  --su-tmava: #43261d;
+  --lesk: #ffffff;
+  --tma: 1;
+  color-scheme: dark;
+}
+
+/* Polnoc na dedine — Indigo Blue · Cinnamon Buff */
+:root[data-schema="noc"] {
+  --pozadie: #0d1219;
+  --plocha: #121a26;
+  --plocha-2: #182333;
+  --plocha-3: #1e2c41;
+  --okraj: #25354c;
+  --okraj-svetly: #354c6e;
+  --text: #f0e8da;
+  --tlmeny: #b3a892;
+  --slaby: #877e6c;
+  --slaby-text: #9d9380;
+  --akcent: #efc179;
+  --akcent-tmavy: #bf9552;
+  --akcent-svetly: #ffdfaa;
+  --na-akcente: #271700;
+  --cervena: #d0563f;
+  --cervena-text: #e5735c;
+  --cervena-svetla: #ff9d88;
+  --tehla-tmava: #a8341f;
+  --zelena: #7cbf74;
+  --zelena-svetla: #7fe39a;
+  --zelena-ziariva: #7dff9c;
+  --info: #8fc3e0;
+  --info-silna: #5aa9d6;
+  --ja: #5cc0cf;
+  --ja-tmava: #1d3b40;
+  --su: #e0805f;
+  --su-tmava: #43261d;
+  --lesk: #ffffff;
+  --tma: 1;
+  color-scheme: dark;
+}
+
+/* Vínna pivnica — Vistoris Lake · Light Pinkish Cinnamon */
+:root[data-schema="vino"] {
+  --pozadie: #190e10;
+  --plocha: #271418;
+  --plocha-2: #341920;
+  --plocha-3: #422028;
+  --okraj: #4d2730;
+  --okraj-svetly: #6e3745;
+  --text: #f4e6db;
+  --tlmeny: #b9a595;
+  --slaby: #8d7c6e;
+  --slaby-text: #a29082;
+  --akcent: #f0c690;
+  --akcent-tmavy: #c09a68;
+  --akcent-svetly: #ffdfb7;
+  --na-akcente: #261702;
+  --cervena: #d0563f;
+  --cervena-text: #e5735c;
+  --cervena-svetla: #ff9d88;
+  --tehla-tmava: #a8341f;
+  --zelena: #7cbf74;
+  --zelena-svetla: #7fe39a;
+  --zelena-ziariva: #7dff9c;
+  --info: #8fc3e0;
+  --info-silna: #5aa9d6;
+  --ja: #5cc0cf;
+  --ja-tmava: #1d3b40;
+  --su: #e0805f;
+  --su-tmava: #43261d;
+  --lesk: #ffffff;
+  --tma: 1;
+  color-scheme: dark;
+}
+
+/* Tabak — Deep Grayish Olive · Olive Buff */
+:root[data-schema="tabak"] {
+  --pozadie: #12120a;
+  --plocha: #1a1b0e;
+  --plocha-2: #232411;
+  --plocha-3: #2c2e15;
+  --okraj: #35371b;
+  --okraj-svetly: #4c4e26;
+  --text: #ede9da;
+  --tlmeny: #afa992;
+  --slaby: #857f6c;
+  --slaby-text: #9d9783;
+  --akcent: #dcc66e;
+  --akcent-tmavy: #ae9a47;
+  --akcent-svetly: #f5e5a5;
+  --na-akcente: #221a00;
+  --cervena: #d0563f;
+  --cervena-text: #e8765f;
+  --cervena-svetla: #ff9d88;
+  --tehla-tmava: #a8341f;
+  --zelena: #7cbf74;
+  --zelena-svetla: #7fe39a;
+  --zelena-ziariva: #7dff9c;
+  --info: #8fc3e0;
+  --info-silna: #5aa9d6;
+  --ja: #5cc0cf;
+  --ja-tmava: #1d3b40;
+  --su: #e0805f;
+  --su-tmava: #43261d;
+  --lesk: #ffffff;
+  --tma: 1;
+  color-scheme: dark;
+}
+
+/* Bridlica — Slate Color · Naples Yellow */
+:root[data-schema="bridlica"] {
+  --pozadie: #0c1317;
+  --plocha: #101c22;
+  --plocha-2: #14252e;
+  --plocha-3: #1a2f3b;
+  --okraj: #203845;
+  --okraj-svetly: #2e5063;
+  --text: #eee9da;
+  --tlmeny: #b1a992;
+  --slaby: #867f6c;
+  --slaby-text: #9e9783;
+  --akcent: #efd27c;
+  --akcent-tmavy: #c0a555;
+  --akcent-svetly: #f9e3a5;
+  --na-akcente: #231900;
+  --cervena: #d0563f;
+  --cervena-text: #e8765f;
+  --cervena-svetla: #ff9d88;
+  --tehla-tmava: #a8341f;
+  --zelena: #7cbf74;
+  --zelena-svetla: #7fe39a;
+  --zelena-ziariva: #7dff9c;
+  --info: #8fc3e0;
+  --info-silna: #5aa9d6;
+  --ja: #5cc0cf;
+  --ja-tmava: #1d3b40;
+  --su: #e0805f;
+  --su-tmava: #43261d;
+  --lesk: #ffffff;
+  --tma: 1;
+  color-scheme: dark;
+}
+
+/* Slivovica — Dark Vinaceous · Pale Lemon Yellow */
+:root[data-schema="slivovica"] {
+  --pozadie: #170e15;
+  --plocha: #23151f;
+  --plocha-2: #2e1b2a;
+  --plocha-3: #3b2236;
+  --okraj: #452a3f;
+  --okraj-svetly: #633b5b;
+  --text: #f1e8da;
+  --tlmeny: #b4a793;
+  --slaby: #897e6c;
+  --slaby-text: #9e9380;
+  --akcent: #e9d78e;
+  --akcent-tmavy: #bbaa67;
+  --akcent-svetly: #f2e5af;
+  --na-akcente: #211a00;
+  --cervena: #d0563f;
+  --cervena-text: #e5735c;
+  --cervena-svetla: #ff9d88;
+  --tehla-tmava: #a8341f;
+  --zelena: #7cbf74;
+  --zelena-svetla: #7fe39a;
+  --zelena-ziariva: #7dff9c;
+  --info: #8fc3e0;
+  --info-silna: #5aa9d6;
+  --ja: #5cc0cf;
+  --ja-tmava: #1d3b40;
+  --su: #e0805f;
+  --su-tmava: #43261d;
+  --lesk: #ffffff;
+  --tma: 1;
+  color-scheme: dark;
+}
+
+/* Levanduľa — Dusky Slate Violet · Light Lavender */
+:root[data-schema="levandula"] {
+  --pozadie: #121017;
+  --plocha: #1b1823;
+  --plocha-2: #23202f;
+  --plocha-3: #2d283d;
+  --okraj: #363047;
+  --okraj-svetly: #4d4566;
+  --text: #ebe6f6;
+  --tlmeny: #aca5bb;
+  --slaby: #827c8f;
+  --slaby-text: #9790a4;
+  --akcent: #cbb9ea;
+  --akcent-tmavy: #9f8eba;
+  --akcent-svetly: #eadcff;
+  --na-akcente: #1e1728;
+  --cervena: #d0563f;
+  --cervena-text: #e5735c;
+  --cervena-svetla: #ff9d88;
+  --tehla-tmava: #a8341f;
+  --zelena: #7cbf74;
+  --zelena-svetla: #7fe39a;
+  --zelena-ziariva: #7dff9c;
+  --info: #8fc3e0;
+  --info-silna: #5aa9d6;
+  --ja: #5cc0cf;
+  --ja-tmava: #1d3b40;
+  --su: #e0805f;
+  --su-tmava: #43261d;
+  --lesk: #ffffff;
+  --tma: 1;
+  color-scheme: dark;
+}
+
+/* Dym — Neutral Gray · Pale Orange Yellow */
+:root[data-schema="dym"] {
+  --pozadie: #121110;
+  --plocha: #1b1a18;
+  --plocha-2: #24221f;
+  --plocha-3: #2e2b28;
+  --okraj: #373430;
+  --okraj-svetly: #4f4a45;
+  --text: #f1e8da;
+  --tlmeny: #b4a793;
+  --slaby: #897e6c;
+  --slaby-text: #9e9380;
+  --akcent: #f2c46e;
+  --akcent-tmavy: #c29847;
+  --akcent-svetly: #ffdfa1;
+  --na-akcente: #261800;
+  --cervena: #d0563f;
+  --cervena-text: #e5735c;
+  --cervena-svetla: #ff9d88;
+  --tehla-tmava: #a8341f;
+  --zelena: #7cbf74;
+  --zelena-svetla: #7fe39a;
+  --zelena-ziariva: #7dff9c;
+  --info: #8fc3e0;
+  --info-silna: #5aa9d6;
+  --ja: #5cc0cf;
+  --ja-tmava: #1d3b40;
+  --su: #e0805f;
+  --su-tmava: #43261d;
+  --lesk: #ffffff;
+  --tma: 1;
+  color-scheme: dark;
+}
+
+/* Jedálny lístok — Ivory Buff · Sepia · Yellow Ocher */
+:root[data-schema="listok"] {
+  --pozadie: #f5ecd9;
+  --plocha: #fef9ee;
+  --plocha-2: #f0e5cf;
+  --plocha-3: #e7dbc2;
+  --okraj: #d9ccb4;
+  --okraj-svetly: #bdb093;
+  --text: #312317;
+  --tlmeny: #624e3f;
+  --slaby: #917c6b;
+  --slaby-text: #705c4c;
+  --akcent: #865100;
+  --akcent-tmavy: #764300;
+  --akcent-svetly: #794b06;
+  --na-akcente: #fff9f3;
+  --cervena: #b8452f;
+  --cervena-text: #a8321f;
+  --cervena-svetla: #9a2c1a;
+  --tehla-tmava: #a8341f;
+  --zelena: #256d2f;
+  --zelena-svetla: #2b6b36;
+  --zelena-ziariva: #2f9e4f;
+  --info: #2e5f86;
+  --info-silna: #3a76ad;
+  --ja: #006a77;
+  --ja-tmava: #d2ecee;
+  --su: #a3401d;
+  --su-tmava: #f5ddd2;
+  --lesk: #000000;
+  --tma: 0.3;
+  color-scheme: light;
+}
+
+/* Ľan — Pale Gull Gray · Dark Slate · Vinaceous */
+:root[data-schema="lan"] {
+  --pozadie: #e7eef4;
+  --plocha: #f6f9fd;
+  --plocha-2: #e0e7ef;
+  --plocha-3: #d5dde6;
+  --okraj: #c7cfd7;
+  --okraj-svetly: #a9b2bc;
+  --text: #22272d;
+  --tlmeny: #4d535b;
+  --slaby: #7a8189;
+  --slaby-text: #585e66;
+  --akcent: #7b3d69;
+  --akcent-tmavy: #632752;
+  --akcent-svetly: #663056;
+  --na-akcente: #fff8fc;
+  --cervena: #b8452f;
+  --cervena-text: #a8321f;
+  --cervena-svetla: #9a2c1a;
+  --tehla-tmava: #a8341f;
+  --zelena: #256d2f;
+  --zelena-svetla: #2b6b36;
+  --zelena-ziariva: #2f9e4f;
+  --info: #2e5f86;
+  --info-silna: #3a76ad;
+  --ja: #006a77;
+  --ja-tmava: #d2ecee;
+  --su: #a3401d;
+  --su-tmava: #f5ddd2;
+  --lesk: #000000;
+  --tma: 0.3;
+  color-scheme: light;
+}

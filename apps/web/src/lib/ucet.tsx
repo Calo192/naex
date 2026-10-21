@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { api } from "./api.ts";
+import { aktualnaSchema, pouziSchemu } from "./schemy.ts";
 
 /** Úroveň účtu (Michal 2026-10-12) — práva overuje server, tu len podľa nej kreslíme. */
 export type Rola = "admin" | "subadmin" | "hrac" | "navstevnik";
@@ -33,6 +34,8 @@ export interface Pouzivatel {
   readonly hudba?: number;
   /** Účet AI agenta (nastavuje admin). */
   readonly ai?: boolean;
+  /** Farebná schéma webu (lib/schemy.ts); null = predvolená. */
+  readonly schema?: string | null;
 }
 
 export const LUPA_OD = 150;
@@ -50,8 +53,14 @@ interface UcetKontext {
 const Kontext = createContext<UcetKontext | null>(null);
 
 export function UcetProvider({ children }: { children: ReactNode }) {
-  const [ja, setJa] = useState<Pouzivatel | null>(null);
+  const [ja, setJaStav] = useState<Pouzivatel | null>(null);
   const [nacitane, setNacitane] = useState(false);
+
+  // Schéma uložená v účte má prednosť pred tou v prehliadači — platí na každom zariadení.
+  const setJa = useCallback((p: Pouzivatel | null): void => {
+    if (p?.schema != null && p.schema !== aktualnaSchema()) pouziSchemu(p.schema);
+    setJaStav(p);
+  }, []);
 
   useEffect(() => {
     api

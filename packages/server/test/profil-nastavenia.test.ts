@@ -39,6 +39,18 @@ describe("nastavenia profilu", () => {
     expect(((await volaj("GET", "/ja", cookie)).data.pouzivatel as { lupa: number }).lupa).toBe(320);
   });
 
+  it("farebná schéma: predvolene žiadna, uloží sa len id v správnom tvare", async () => {
+    const { cookie } = await registruj(server.port);
+    expect(((await volaj("GET", "/ja", cookie)).data.pouzivatel as { schema: string | null }).schema).toBeNull();
+
+    const ok = await volaj("PATCH", "/profil", cookie, { schema: "noc" });
+    expect(ok.status).toBe(200);
+    expect((ok.data.pouzivatel as { schema: string }).schema).toBe("noc");
+
+    for (const zle of ["", "Noc", "noc; drop", 3, "x".repeat(30)]) expect((await volaj("PATCH", "/profil", cookie, { schema: zle })).status).toBe(400);
+    expect(((await volaj("GET", "/ja", cookie)).data.pouzivatel as { schema: string }).schema).toBe("noc");
+  });
+
   it("hráč si vyberie predvolený avatar, cudzie médium nie", async () => {
     const { cookie } = await registruj(server.port);
     const zoznam = (await volaj("GET", "/avatary", cookie)).data.avatary as string[];

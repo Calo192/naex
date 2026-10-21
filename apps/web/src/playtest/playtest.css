@@ -20,7 +20,7 @@
   min-height: 480px;
   border: 1px solid var(--okraj);
   border-radius: 10px;
-  background: #14110e;
+  background: var(--pozadie);
 }
 
 .playtest-zoznam {
@@ -118,20 +118,20 @@
 
 .navrh-kritickost.vysoka {
   color: var(--akcent);
-  border-color: #6b4c1a;
-  background: #3b2a10;
+  border-color: color-mix(in oklab, var(--akcent-tmavy) 56%, var(--pozadie));
+  background: color-mix(in oklab, var(--akcent-tmavy) 25%, var(--pozadie));
 }
 
 .navrh-stav.implementovat,
 .navrh-stav.rozpracovane {
   color: var(--akcent);
-  border-color: #6b4c1a;
+  border-color: color-mix(in oklab, var(--akcent-tmavy) 56%, var(--pozadie));
 }
 
 .navrh-stav.implementovane {
   color: var(--zelena);
-  border-color: rgba(124, 191, 116, 0.45);
-  background: rgba(124, 191, 116, 0.12);
+  border-color: color-mix(in srgb, var(--zelena) 45%, transparent);
+  background: color-mix(in srgb, var(--zelena) 12%, transparent);
 }
 
 .navrh-stav.zamietnute {

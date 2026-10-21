@@ -42,6 +42,8 @@ export interface Pouzivatel {
   readonly hudba: number;
   /** Účet AI agenta — jeho spätná väzba je na webe označená a predvolene skrytá. */
   readonly ai: boolean;
+  /** Farebná schéma webu (id zo zoznamu klienta); null = predvolená. */
+  readonly schema: string | null;
 }
 
 export const LUPA_OD = 150;
@@ -53,6 +55,15 @@ export function overLupu(v: unknown): number {
   const n = Number(v);
   if (!Number.isFinite(n) || n < LUPA_OD || n > LUPA_DO) throw new ChybaVstupu(`Zväčšenie musí byť ${LUPA_OD} až ${LUPA_DO} %.`);
   return Math.round(n);
+}
+
+/**
+ * Farebná schéma z requestu. Zoznam schém pozná len klient (apps/web/src/lib/schemy.ts) —
+ * neznáme id prehliadač ignoruje a ukáže predvolenú, preto stačí overiť tvar.
+ */
+export function overSchemu(v: unknown): string {
+  if (typeof v !== "string" || !/^[a-z]{2,20}$/.test(v)) throw new ChybaVstupu("Neznáma farebná schéma.");
+  return v;
 }
 
 export const HUDBA_PREDVOLENA = 30;
@@ -165,12 +176,13 @@ export class Ucty {
       lupa: r.lupa === null || r.lupa === undefined ? LUPA_PREDVOLENA : Number(r.lupa),
       hudba: r.hudba === null || r.hudba === undefined ? HUDBA_PREDVOLENA : Number(r.hudba),
       ai: Number(r.ai) === 1,
+      schema: typeof r.schema === "string" ? r.schema : null,
     };
   }
 
   podlaId(id: number): Pouzivatel | null {
     return this.riadok(
-      this.db.prepare("SELECT id, login, meno, avatar, rola, lupa, hudba, ai FROM pouzivatelia WHERE id = ?").get(id) as
+      this.db.prepare("SELECT id, login, meno, avatar, rola, lupa, hudba, ai, schema FROM pouzivatelia WHERE id = ?").get(id) as
         | Record<string, unknown>
         | undefined,
     );
@@ -241,10 +253,14 @@ export class Ucty {
     return this.podlaId(r.pouzivatel);
   }
 
-  upravProfil(id: number, zmeny: { meno?: string; avatar?: string | null; lupa?: number; hudba?: number }): Pouzivatel | null {
+  upravProfil(
+    id: number,
+    zmeny: { meno?: string; avatar?: string | null; lupa?: number; hudba?: number; schema?: string },
+  ): Pouzivatel | null {
     if (zmeny.meno !== undefined) this.db.prepare("UPDATE pouzivatelia SET meno = ? WHERE id = ?").run(zmeny.meno, id);
     if (zmeny.lupa !== undefined) this.db.prepare("UPDATE pouzivatelia SET lupa = ? WHERE id = ?").run(zmeny.lupa, id);
     if (zmeny.hudba !== undefined) this.db.prepare("UPDATE pouzivatelia SET hudba = ? WHERE id = ?").run(zmeny.hudba, id);
+    if (zmeny.schema !== undefined) this.db.prepare("UPDATE pouzivatelia SET schema = ? WHERE id = ?").run(zmeny.schema, id);
     if (zmeny.avatar !== undefined) this.db.prepare("UPDATE pouzivatelia SET avatar = ? WHERE id = ?").run(zmeny.avatar, id);
     return this.podlaId(id);
   }

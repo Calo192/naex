@@ -11,6 +11,7 @@
 // potrebná — Git Bash ju aj tak prepisuje) namiesto partie.
 // --klik klikne na prvok (CSS selektor, napr. ".tlacidlo-naex") a odfotí výsledok;
 // --klik sa dá zopakovať — kliky idú postupne, po každom snímka.
+// --schema noc odfotí web vo farebnej schéme (id z apps/web/src/lib/schemy.ts).
 //
 // Režim „web“ nepotrebuje partiu: prihlási sa na web (predvolene vývojový server
 // :8787, inak --url / NAEX_WEB_URL) AI účtom „<--ako> (AI)“ — hráč, s --tvorba
@@ -44,7 +45,7 @@ const volne = args.filter((a, i) => {
 const [relacia, hracArg, nazovArg] = volne;
 const web = relacia === "web";
 if (relacia === undefined || (!web && hracArg !== "1" && hracArg !== "2")) {
-  console.error("Použitie: snimka.ts <relacia> <1|2> [nazov] [--sirka N] [--vyska N] [--hover x,y] [--cesta stranka] [--klik selektor]");
+  console.error("Použitie: snimka.ts <relacia> <1|2> [nazov] [--sirka N] [--vyska N] [--hover x,y] [--cesta stranka] [--klik selektor] [--schema id]");
   console.error("          snimka.ts web [nazov] --cesta stranka [--ako meno] [--tvorba] [--plna] [--mobil] [--vystup priečinok]");
   process.exit(1);
 }
@@ -61,6 +62,8 @@ if (msys?.[1] !== undefined) cesta = msys[1].replace(/\\/g, "/");
 if (!cesta.startsWith("/")) cesta = `/${cesta}`;
 /** CSS selektory prvkov, na ktoré sa postupne klikne (--klik sa dá zopakovať); po každom snímka. */
 const kliky = args.flatMap((a, i) => (args[i - 1] === "--klik" ? [a] : []));
+/** Farebná schéma webu (apps/web/src/lib/schemy.ts), napr. „noc"; inak tá z účtu. */
+const schema = volba("--schema");
 const nazov = ((web ? hracArg : nazovArg) ?? "stav").replace(/[^a-z0-9_-]/gi, "_");
 
 /** Kam a ako sa prihlásiť: hráč partie playtestu, alebo AI účet na webe. */
@@ -157,7 +160,9 @@ try {
   const { zaklad } = ucet;
   await posli("Page.navigate", { url: `${zaklad}/` });
   await pockaj(1500);
-  const miestnost = ucet.miestnost === null ? "" : `localStorage.setItem('naex.miestnost',${JSON.stringify(ucet.miestnost)});`;
+  const miestnost =
+    (ucet.miestnost === null ? "" : `localStorage.setItem('naex.miestnost',${JSON.stringify(ucet.miestnost)});`) +
+    (schema === undefined ? "" : `localStorage.setItem('naex-schema',${JSON.stringify(schema)});`);
   await js(
     `fetch('/api/prihlasenie',{method:'POST',headers:{'content-type':'application/json','x-naex':'1'},body:JSON.stringify(${JSON.stringify({ login: ucet.login, heslo: ucet.heslo })})}).then(r=>r.status).then(s=>{${miestnost}return s})`,
   );

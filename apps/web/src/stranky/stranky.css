@@ -323,7 +323,7 @@ button.cip.aktivny {
   height: var(--vyska-obrazka);
   width: var(--sirka-obrazka);
   overflow: hidden;
-  background: linear-gradient(110deg, #1b1612 30%, #2b231c 50%, #1b1612 70%);
+  background: linear-gradient(110deg, color-mix(in oklab, var(--plocha) 63%, var(--pozadie)) 30%, var(--plocha-2) 50%, color-mix(in oklab, var(--plocha) 63%, var(--pozadie)) 70%);
   background-size: 220% 100%;
   animation: ram-pulz 1.6s ease-in-out infinite;
   box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
@@ -350,14 +350,14 @@ button.cip.aktivny {
   align-items: center;
   gap: 6px;
   padding: 18px 24px;
-  border-block: 2px solid rgba(233, 173, 69, 0.45);
+  border-block: 2px solid color-mix(in srgb, var(--akcent) 45%, transparent);
   text-align: center;
   font-family: var(--nadpis);
-  color: rgba(244, 236, 220, 0.55);
+  color: color-mix(in srgb, var(--text) 55%, transparent);
 }
 
 .kapitola-obrazok-nahrada span {
-  color: rgba(233, 173, 69, 0.7);
+  color: color-mix(in srgb, var(--akcent) 70%, transparent);
   font-size: 1.3rem;
 }
 
@@ -395,7 +395,7 @@ button.cip.aktivny {
 .kostra-textu span {
   height: 14px;
   border-radius: 7px;
-  background: linear-gradient(110deg, #221c17 30%, #322920 50%, #221c17 70%);
+  background: linear-gradient(110deg, color-mix(in oklab, var(--plocha) 55%, var(--plocha-2)) 30%, var(--plocha-3) 50%, color-mix(in oklab, var(--plocha) 55%, var(--plocha-2)) 70%);
   background-size: 220% 100%;
   animation: ram-pulz 1.6s ease-in-out infinite;
 }
@@ -489,9 +489,9 @@ button.cip.aktivny {
 .zvyraznene {
   padding: 12px 16px;
   border-radius: 10px;
-  background: #2d2312;
+  background: color-mix(in oklab, var(--akcent-tmavy) 18%, var(--pozadie));
   border-left: 3px solid var(--akcent);
-  color: #f6e2b8;
+  color: color-mix(in oklab, var(--akcent-svetly) 34%, var(--text));
 }
 
 .upozornenie {
@@ -514,13 +514,13 @@ button.cip.aktivny {
 }
 
 .karticka-ok {
-  border-color: #3e6b36;
-  background: #1b2618;
+  border-color: color-mix(in oklab, var(--zelena-ziariva) 42%, var(--pozadie));
+  background: color-mix(in oklab, var(--zelena-ziariva) 10%, var(--pozadie));
 }
 
 .karticka-zle {
-  border-color: #7a3326;
-  background: #2a1713;
+  border-color: color-mix(in oklab, var(--tehla-tmava) 66%, var(--plocha-2));
+  background: color-mix(in oklab, var(--tehla-tmava) 15%, var(--pozadie));
 }
 
 /* Kľúčové pojmy (Michal 2026-10-19): skupiny s nadpisom, popis vždy viditeľný. */
@@ -644,15 +644,15 @@ button.cip.aktivny {
   padding: 18px;
   border-radius: 16px;
   background:
-    radial-gradient(ellipse at top, rgba(233, 173, 69, 0.08), transparent 70%),
-    #191510;
-  border: 1px dashed #5c4a33;
+    radial-gradient(ellipse at top, color-mix(in srgb, var(--akcent) 8%, transparent), transparent 70%),
+    color-mix(in oklab, var(--akcent) 3%, var(--pozadie));
+  border: 1px dashed color-mix(in oklab, var(--akcent) 20%, var(--okraj));
 }
 
 .ukazka-hlava {
   font-weight: 700;
   margin-bottom: 14px;
-  color: #f2d9a6;
+  color: color-mix(in oklab, var(--akcent-svetly) 60%, var(--text));
 }
 
 .ukazka-hlava::before {
@@ -693,7 +693,7 @@ button.cip.aktivny {
 }
 
 .ukazka-vzbura {
-  color: #ffcf4d;
+  color: color-mix(in oklab, var(--akcent) 12%, var(--akcent-svetly));
 }
 
 .bitka-strany {
@@ -821,19 +821,19 @@ button.cip.aktivny {
 .pohar {
   width: 24px;
   height: 32px;
-  border: 2.5px solid #e9e1d1;
+  border: 2.5px solid color-mix(in oklab, var(--pozadie) 3%, var(--text));
   border-top: none;
   border-radius: 0 0 5px 5px;
   clip-path: polygon(-10% 0, 110% 0, 90% 100%, 10% 100%);
 }
 
 .pohar.plny {
-  background: linear-gradient(180deg, transparent 25%, #e9ad45 25%);
+  background: linear-gradient(180deg, transparent 25%, var(--akcent) 25%);
 }
 
 .pohar.naex {
-  background: linear-gradient(180deg, transparent 25%, #e9ad45 25%);
-  box-shadow: 0 0 12px rgba(233, 173, 69, 0.8);
+  background: linear-gradient(180deg, transparent 25%, var(--akcent) 25%);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--akcent) 80%, transparent);
   border-color: var(--akcent);
 }
 

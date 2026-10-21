@@ -178,6 +178,8 @@ function migruj(db: Db): void {
   // Účet AI agenta (playtester, protihráč, admin) — jeho spätná väzba je
   // predvolene skrytá (Michal 2026-10-21). Nastavuje len admin.
   if (!ucty.some((c) => c.name === "ai")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN ai INTEGER NOT NULL DEFAULT 0");
+  // Farebná schéma webu (Michal 2026-10-21); NULL = predvolená Krčma.
+  if (!ucty.some((c) => c.name === "schema")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN schema TEXT");
 }
 
 /** Transakcia — pri výnimke sa všetko vráti. */

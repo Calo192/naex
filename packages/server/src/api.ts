@@ -12,7 +12,7 @@ import { ALL_PODMIENKY, dostupneDlzky } from "@naex/core";
 import type { KartaNavrh, Pozicia, StranaNavrhu, AkciaDef, KlucoveSlovo, Kategoria, BodovaciaKarta, IkonaBodovania, Nastavenia } from "@naex/tvorba";
 import { exportTxt, importTxt, slug, PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
 import type { Pouzivatel, Ucty } from "./auth.ts";
-import { ChybaVstupu, cookieOdhlasenia, cookieRelacie, overHesloVstup, overLogin, overHlasitost, overLupu, overMeno, citajCookie, jeSpravca } from "./auth.ts";
+import { ChybaVstupu, cookieOdhlasenia, cookieRelacie, overHesloVstup, overLogin, overHlasitost, overLupu, overMeno, overSchemu, citajCookie, jeSpravca } from "./auth.ts";
 import type { DruhMedia, Media } from "./media.ts";
 import type { Hudba } from "./hudba.ts";
 import type { Obsah } from "./obsah.ts";
@@ -296,12 +296,13 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     if (r === "PATCH /profil") {
       const p = prihlaseny();
       const b = await citajJson(req);
-      // Meno, zväčšenie lupy aj hlasitosť hudby sa ukladajú samostatne — posiela sa len to, čo sa mení.
+      // Meno, zväčšenie lupy, hlasitosť hudby aj farebná schéma sa ukladajú samostatne — posiela sa len to, čo sa mení.
       return ok({
         pouzivatel: ctx.ucty.upravProfil(p.id, {
           ...(b.meno !== undefined ? { meno: overMeno(b.meno) } : {}),
           ...(b.lupa !== undefined ? { lupa: overLupu(b.lupa) } : {}),
           ...(b.hudba !== undefined ? { hudba: overHlasitost(b.hudba) } : {}),
+          ...(b.schema !== undefined ? { schema: overSchemu(b.schema) } : {}),
         }),
       });
     }

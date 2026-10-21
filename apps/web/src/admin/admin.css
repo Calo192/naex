@@ -136,8 +136,8 @@
   align-items: center;
   gap: 6px;
   border-radius: 10px;
-  border: 2px dashed #7a3326;
-  color: #ffc2b4;
+  border: 2px dashed color-mix(in oklab, var(--tehla-tmava) 66%, var(--plocha-2));
+  color: color-mix(in oklab, var(--cervena-svetla) 51%, var(--text));
   cursor: pointer;
 }
 
@@ -269,7 +269,7 @@
   padding: 6px;
   border-radius: 9px;
   border: 1px solid var(--okraj-svetly);
-  background: #17130f;
+  background: color-mix(in oklab, var(--plocha) 26%, var(--pozadie));
 }
 
 .tagy-vstup input {
@@ -322,7 +322,7 @@
 }
 
 .strana-stav.zle {
-  color: #ff9c8a;
+  color: var(--cervena-svetla);
 }
 
 .strana-akcie {
@@ -382,7 +382,7 @@
 }
 
 .pozicia-riadok.blokovana {
-  background: repeating-linear-gradient(135deg, #1b1714, #1b1714 6px, #241e19 6px, #241e19 12px);
+  background: repeating-linear-gradient(135deg, color-mix(in oklab, var(--pozadie) 96%, var(--text)), color-mix(in oklab, var(--pozadie) 96%, var(--text)) 6px, color-mix(in oklab, var(--plocha) 35%, var(--plocha-2)) 6px, color-mix(in oklab, var(--plocha) 35%, var(--plocha-2)) 12px);
   color: var(--slaby);
 }
 
@@ -628,7 +628,7 @@ code {
 
 td.teplo {
   background: rgba(233, 173, 69, calc(var(--a) * 0.85));
-  color: color-mix(in srgb, #fff calc(100% - var(--a) * 100%), #1a1206);
+  color: color-mix(in srgb, #fff calc(100% - var(--a) * 100%), var(--na-akcente));
   font-size: 0.82rem;
 }
 

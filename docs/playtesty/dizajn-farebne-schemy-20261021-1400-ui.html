@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dizajn UI — farebné schémy webu NA EX!</title>
+<style>
+/* ---- vzhľad samotného návrhu (prefix --r-, aby sa nebil so schémami v ukážkach) ---- */
+:root{--r-poz:#14110e;--r-pl:#1e1914;--r-pl2:#28211a;--r-ok:#3d3229;--r-text:#f1e8d8;--r-tl:#b6a790;--r-ak:#e9ad45;--r-cer:#e4705a;--r-zel:#7cbf74;--r-info:#8fc3e0;color-scheme:dark}
+@media (prefers-color-scheme: light){:root{--r-poz:#f4efe6;--r-pl:#fffaf2;--r-pl2:#efe6d6;--r-ok:#d8cbb5;--r-text:#2a2018;--r-tl:#5c4c3b;--r-ak:#8a4f0c;--r-cer:#a8321f;--r-zel:#2f6e33;--r-info:#2e5f86;color-scheme:light}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--r-poz);color:var(--r-text);font:16px/1.6 system-ui,"Segoe UI",Roboto,sans-serif}
+h1,h2,h3,h4{font-family:Georgia,"Bitter",serif;line-height:1.25;margin:0 0 .5em}
+h1{font-size:clamp(1.7rem,4vw,2.4rem)}
+h2{font-size:1.5rem;margin-top:2.2rem;padding-top:.6rem;border-top:1px solid var(--r-ok)}
+h3{font-size:1.15rem;margin-top:1.4rem}
+a{color:var(--r-ak)}
+p,li{max-width:75ch}
+code{font:.88em/1.4 ui-monospace,Consolas,monospace;background:var(--r-pl2);padding:1px 5px;border-radius:5px}
+pre{background:var(--r-pl);border:1px solid var(--r-ok);border-radius:10px;padding:12px 14px;overflow-x:auto;font:.84rem/1.5 ui-monospace,Consolas,monospace;max-width:100%}
+pre code{background:none;padding:0}
+.obal{max-width:1180px;margin:0 auto;padding:24px clamp(14px,3vw,32px) 64px}
+.meta{color:var(--r-tl);font-size:.95rem}
+.verdikt{background:var(--r-pl);border:1px solid var(--r-ok);border-left:4px solid var(--r-ak);border-radius:10px;padding:14px 18px;margin:16px 0}
+.verdikt p{margin:.3em 0}
+nav.obsah{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.92rem;margin:10px 0 0}
+:focus-visible{outline:2px solid var(--r-ak);outline-offset:2px}
+.tlmene{color:var(--r-tl)}
+.male{font-size:.88rem}
+figure{margin:0}
+.snimky{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px}
+.snimky img{width:100%;height:auto;border-radius:8px;border:1px solid var(--r-ok);display:block}
+figcaption{font-size:.86rem;color:var(--r-tl);margin-top:6px}
+.tab-obal{overflow-x:auto;max-width:100%;border:1px solid var(--r-ok);border-radius:10px}
+table.r{border-collapse:collapse;width:100%;font-size:.92rem}
+table.r th,table.r td{padding:8px 10px;border-bottom:1px solid var(--r-ok);text-align:left;vertical-align:top}
+table.r th{background:var(--r-pl2);font-weight:600}
+table.r tr:last-child td{border-bottom:0}
+table.r td.c{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.zav{display:inline-block;font-size:.78rem;font-weight:700;padding:1px 9px;border-radius:99px;border:1px solid}
+.zav-vysoka{color:var(--r-cer);border-color:currentColor}
+.zav-stredna{color:var(--r-ak);border-color:currentColor}
+.zav-nizka{color:var(--r-tl);border-color:currentColor}
+.filtre{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 12px}
+.filtre button,.r-btn{font:inherit;font-size:.9rem;min-height:40px;padding:6px 14px;border-radius:9px;border:1px solid var(--r-ok);background:var(--r-pl);color:var(--r-text);cursor:pointer}
+.filtre button[aria-pressed="true"]{border-color:var(--r-ak);box-shadow:inset 0 0 0 1px var(--r-ak)}
+.navrh{background:var(--r-pl);border:1px solid var(--r-ok);border-radius:12px;padding:16px 18px;margin:16px 0}
+.navrh h3{margin-top:0}
+.navrh dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:8px 0 0;font-size:.94rem}
+.navrh dt{color:var(--r-tl)}
+.navrh dd{margin:0}
+@media (max-width:640px){.navrh dl{grid-template-columns:1fr}.navrh dd{margin-bottom:6px}}
+.predpo{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:12px 0}
+@media (max-width:760px){.predpo{grid-template-columns:1fr}}
+.predpo>div{min-width:0}
+.predpo>div>.stitok{font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--r-tl);margin-bottom:6px}
+.ok{color:var(--r-zel);font-weight:700}
+.zle{color:var(--r-cer);font-weight:700}
+.vzorky{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.vzorka{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:.72rem;color:var(--r-tl);width:76px}
+.vzorka i{display:block;width:76px;height:40px;border-radius:7px;border:1px solid var(--r-ok)}
+.vzorka b{color:var(--r-text);font-weight:600;font-size:.74rem}
+.schema-karta{background:var(--r-pl);border:1px solid var(--r-ok);border-radius:12px;padding:16px 18px;margin:16px 0}
+.schema-karta h3{margin-top:0;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
+.schema-karta h3 small{font:600 .8rem system-ui,sans-serif;color:var(--r-tl)}
+.dva{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.dva>*,.mini-mriezka>*,.snimky>*{min-width:0}
+@media (max-width:860px){.dva{grid-template-columns:1fr}}
+details{margin:8px 0}
+summary{cursor:pointer;color:var(--r-ak);min-height:32px}
+.lepiaci{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--r-poz) 92%,transparent);backdrop-filter:blur(6px);padding:10px 0;border-bottom:1px solid var(--r-ok);margin-bottom:16px}
+.prepinac{display:flex;flex-wrap:wrap;gap:8px;border:0;margin:0;padding:0;min-width:0;min-inline-size:0}
+.prepinac legend{font-size:.85rem;color:var(--r-tl);padding:0;margin-bottom:6px;width:100%}
+.prepinac label{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:6px 14px 6px 8px;border-radius:99px;border:1px solid var(--r-ok);background:var(--r-pl);cursor:pointer;font-size:.92rem}
+.prepinac input{position:absolute;opacity:0;width:1px;height:1px}
+.prepinac input:checked+label{border-color:var(--r-ak);box-shadow:inset 0 0 0 1px var(--r-ak);font-weight:700}
+.prepinac input:focus-visible+label{outline:2px solid var(--r-ak);outline-offset:2px}
+.prepinac .gulicka{width:26px;height:26px;border-radius:50%;flex:none;border:1px solid rgba(128,128,128,.5)}
+.ukazka-nadpis{font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--r-tl);margin:26px 0 8px}
+
+/* ============ SCHÉMY (generované) ============ */
+[data-schema="krcma"]{color-scheme:dark;--pozadie:#14110e;--plocha:#1e1914;--plocha-2:#28211a;--plocha-3:#332a21;--plocha-hover:#3e3428;--okraj:#3d3229;--okraj-svetly:#57483a;--okraj-pole:#7a6652;--pole:#17130f;--text:#f1e8d8;--tlmeny:#b6a790;--slaby:#9a8b76;--akcent:#e9ad45;--akcent-svetly:#f0b955;--akcent-tmavy:#b9802a;--akcent-text:#e9ad45;--na-akcente:#2b1b03;--cervena:#d0563f;--cervena-text:#e4705a;--zelena:#7cbf74;--info:#8fc3e0;--ja:#5cc0cf;--su:#e0805f;--stol:#262626;--stol-okraj:#444444;--stol-moj:#173320;--stol-moj-okraj:#4fae66;--stol-moj-text:#7fe39a;--tien:0 10px 30px rgba(0,0,0,.35);--karta-tien:0 1px 2px rgba(0,0,0,.4), 0 10px 26px rgba(0,0,0,.38)}
+[data-schema="noc"]{color-scheme:dark;--pozadie:#0e131b;--plocha:#151c27;--plocha-2:#1c2533;--plocha-3:#242f40;--plocha-hover:#2c384c;--okraj:#2e3a4e;--okraj-svetly:#4a5a74;--okraj-pole:#6a7d9c;--pole:#0c1118;--text:#ede6d4;--tlmeny:#a9b1bf;--slaby:#8690a2;--akcent:#efc179;--akcent-svetly:#f5d08f;--akcent-tmavy:#c0913f;--akcent-text:#efc179;--na-akcente:#2a1d05;--cervena:#d0626a;--cervena-text:#e07a80;--zelena:#8cc79a;--info:#9cc3e8;--ja:#6fd0d8;--su:#ec9070;--stol:#1f2633;--stol-okraj:#3c4860;--stol-moj:#183428;--stol-moj-okraj:#57b27a;--stol-moj-text:#8ee6a8;--tien:0 10px 30px rgba(0,0,0,.35);--karta-tien:0 1px 2px rgba(0,0,0,.4), 0 10px 26px rgba(0,0,0,.38)}
+[data-schema="vino"]{color-scheme:dark;--pozadie:#160d10;--plocha:#211318;--plocha-2:#2b1a20;--plocha-3:#36222a;--plocha-hover:#412a33;--okraj:#472c36;--okraj-svetly:#664552;--okraj-pole:#8a5f6f;--pole:#13090c;--text:#f4e7dc;--tlmeny:#c4aaa7;--slaby:#9f8584;--akcent:#efbb80;--akcent-svetly:#f5cb98;--akcent-tmavy:#c4885a;--akcent-text:#efbb80;--na-akcente:#2b140a;--cervena:#d9584e;--cervena-text:#ef7b6e;--zelena:#97b99c;--info:#a9c3d9;--ja:#6ccbd3;--su:#f0956f;--stol:#2a1d22;--stol-okraj:#4f3640;--stol-moj:#1b3022;--stol-moj-okraj:#5aae72;--stol-moj-text:#8fdea4;--tien:0 10px 30px rgba(0,0,0,.35);--karta-tien:0 1px 2px rgba(0,0,0,.4), 0 10px 26px rgba(0,0,0,.38)}
+[data-schema="tabak"]{color-scheme:dark;--pozadie:#11120c;--plocha:#1a1b13;--plocha-2:#23251a;--plocha-3:#2d2f22;--plocha-hover:#363929;--okraj:#393c2b;--okraj-svetly:#565a41;--okraj-pole:#737858;--pole:#0e0f09;--text:#efebdc;--tlmeny:#b5b297;--slaby:#918e73;--akcent:#d9c46e;--akcent-svetly:#e4d286;--akcent-tmavy:#a8963f;--akcent-text:#d9c46e;--na-akcente:#211f08;--cervena:#c95a3c;--cervena-text:#de6a48;--zelena:#9fc67e;--info:#9cc0d0;--ja:#62c4cf;--su:#e58a62;--stol:#24261d;--stol-okraj:#45493a;--stol-moj:#183420;--stol-moj-okraj:#52b06c;--stol-moj-text:#86e09e;--tien:0 10px 30px rgba(0,0,0,.35);--karta-tien:0 1px 2px rgba(0,0,0,.4), 0 10px 26px rgba(0,0,0,.38)}
+[data-schema="papier"]{color-scheme:light;--pozadie:#f1e8d3;--plocha:#fbf6ea;--plocha-2:#efe5cf;--plocha-3:#e5d7b9;--plocha-hover:#dccba8;--okraj:#d5c3a0;--okraj-svetly:#b9a47c;--okraj-pole:#8c7650;--pole:#fffdf7;--text:#2a2018;--tlmeny:#5c4c3b;--slaby:#6f5e4a;--akcent:#d08f2e;--akcent-svetly:#dea24a;--akcent-tmavy:#8a4f0c;--akcent-text:#8a4f0c;--na-akcente:#1f1205;--cervena:#a8321f;--cervena-text:#a8321f;--zelena:#2f6e33;--info:#2e5f86;--ja:#127380;--su:#b24f2c;--stol:#e6dcc6;--stol-okraj:#b9a989;--stol-moj:#dcebd3;--stol-moj-okraj:#3f8a4f;--stol-moj-text:#2a6a35;--tien:0 6px 18px rgba(70,45,10,.12);--karta-tien:0 0 0 1px rgba(60,40,10,.16), 0 6px 16px rgba(60,40,10,.18)}
+
+/* ============ UKÁŽKY WEBU — používajú len tokeny schémy ============ */
+.mk{font-variant-numeric:lining-nums;background:var(--pozadie);color:var(--text);font:15px/1.55 Roboto,"Segoe UI",system-ui,sans-serif;border:1px solid var(--okraj);border-radius:14px;overflow:hidden;transition:background-color .2s ease,color .2s ease}
+@media (prefers-reduced-motion:reduce){.mk,.mk *{transition:none!important}}
+.mk h1,.mk h2,.mk h3,.mk h4{font-family:"Bitter",Cambria,Georgia,serif;color:var(--text);border:0;padding:0;margin:0 0 .4em}
+.mk p{margin:0 0 .8em}
+.mk a{color:var(--akcent-text)}
+.mk-hlavicka{display:flex;align-items:center;gap:6px 18px;flex-wrap:wrap;padding:10px 18px;border-bottom:1px solid var(--okraj);background:color-mix(in srgb,var(--pozadie) 70%,var(--plocha))}
+.mk-logo{display:flex;align-items:center;gap:8px;font:800 1.25rem "Bitter",Cambria,Georgia,serif;color:var(--text)}
+.mk-pohar{width:16px;height:22px;border:2px solid var(--text);border-top:0;border-radius:0 0 4px 4px;background:linear-gradient(to top,var(--akcent) 70%,transparent 70%)}
+.mk-nav{display:flex;flex-wrap:wrap;gap:2px}
+.mk-nav span{padding:6px 11px;border-radius:8px;color:var(--tlmeny);font-weight:500;font-size:.92rem}
+.mk-nav span.ak{background:var(--plocha-3);color:var(--text)}
+.mk-ucet{margin-left:auto;display:flex;align-items:center;gap:8px;font-weight:700;font-size:.9rem}
+.mk-avatar{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#8a7360,#3a2c22);border:2px solid var(--okraj-svetly);flex:none}
+.mk-telo{padding:22px 22px 26px;background:radial-gradient(ellipse 90% 60% at 50% -10%,color-mix(in srgb,var(--akcent) 13%,transparent),transparent 60%),var(--pozadie)}
+.mk-btn{display:inline-flex;align-items:center;justify-content:center;gap:.4em;min-height:40px;font:500 .92rem/1.2 Roboto,system-ui,sans-serif;padding:.55rem 1rem;border-radius:9px;border:1px solid var(--okraj-svetly);background:var(--plocha-3);color:var(--text);cursor:pointer}
+.mk-btn:hover{background:var(--plocha-hover)}
+.mk-btn-h{background:linear-gradient(180deg,var(--akcent-svetly),var(--akcent));border-color:var(--akcent-tmavy);color:var(--na-akcente);font-weight:700}
+.mk-btn-h:hover{background:linear-gradient(180deg,var(--akcent-svetly),var(--akcent-svetly))}
+.mk-btn-m{min-height:34px;padding:.35rem .8rem;font-size:.85rem}
+.mk-panel{background:var(--plocha);border:1px solid var(--okraj);border-radius:12px;padding:16px 18px;box-shadow:var(--tien)}
+.mk-tlmene{color:var(--tlmeny)}
+.mk-slabe{color:var(--slaby);font-size:.82rem}
+.mk-odznak{display:inline-block;padding:1px 9px;border-radius:99px;font-size:.74rem;font-weight:700;background:color-mix(in srgb,var(--akcent) 16%,var(--plocha));color:var(--akcent-text);border:1px solid color-mix(in srgb,var(--akcent) 45%,var(--plocha))}
+.mk-hlaska{border-radius:9px;padding:8px 12px;font-size:.88rem;border:1px solid}
+.mk-hlaska.chyba{background:color-mix(in srgb,var(--cervena) 14%,var(--plocha));border-color:color-mix(in srgb,var(--cervena) 55%,var(--plocha));color:var(--text)}
+.mk-hlaska.chyba b{color:var(--cervena-text)}
+.mk-hlaska.uspech{background:color-mix(in srgb,var(--zelena) 13%,var(--plocha));border-color:color-mix(in srgb,var(--zelena) 50%,var(--plocha));color:var(--text)}
+.mk-hlaska.uspech b{color:var(--zelena)}
+.mk-pole{display:block;width:100%;font:inherit;padding:.5rem .7rem;border-radius:9px;border:1px solid var(--okraj-pole);background:var(--pole);color:var(--text)}
+/* domov */
+.mk-hero{display:grid;grid-template-columns:1.1fr 1fr;gap:18px;align-items:center}
+@media (max-width:760px){.mk-hero{grid-template-columns:1fr}}
+.mk-hero h1{font-size:clamp(1.8rem,4.2vw,2.7rem);line-height:1.08;margin-bottom:.35em}
+.mk-hero h1 em{font-style:normal;color:var(--akcent-text)}
+.mk-vejar{position:relative;height:250px;display:flex;justify-content:center;align-items:center}
+.mk-vejar .mk-karta{position:absolute}
+.mk-vejar .mk-karta:nth-child(1){transform:translateX(-95px) rotate(-11deg) translateY(14px)}
+.mk-vejar .mk-karta:nth-child(3){transform:translateX(95px) rotate(10deg) translateY(14px)}
+.mk-vejar .mk-karta:nth-child(2){z-index:1;width:150px}
+.mk-tri{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+@media (max-width:760px){.mk-tri{grid-template-columns:1fr}}
+.mk-tri .mk-panel h3{font-size:1.05rem}
+/* karta — líce z tvorcu, schéma ho NEMENÍ */
+.mk-karta{width:120px;aspect-ratio:54/80;background:#fff;border-radius:9px;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--karta-tien);font-family:Roboto,system-ui,sans-serif;flex:none}
+.mk-karta .il{flex:0 0 58%;background:linear-gradient(165deg,#6b5644 0%,#2e241c 55%,#1a1512 100%);position:relative}
+.mk-karta .il::after{content:"";position:absolute;left:30%;right:30%;bottom:0;height:62%;border-radius:45% 45% 0 0;background:linear-gradient(#3d3027,#120e0b)}
+.mk-karta .pas{background:var(--v);color:#fff;text-align:center;padding:5px 4px 4px;line-height:1.1}
+.mk-karta .pas b{display:block;font-size:.78rem}
+.mk-karta .pas span{font-size:.56rem;opacity:.95}
+.mk-karta .tx{overflow:hidden;flex:1;color:#333;font-size:.55rem;padding:5px 7px;line-height:1.3;text-align:center}
+.mk-karta .tx b{color:var(--v)}
+.mk-karta.vybrana{outline:3px solid var(--akcent);outline-offset:2px;box-shadow:var(--karta-tien),0 0 22px color-mix(in srgb,var(--akcent) 45%,transparent)}
+/* herný stôl */
+.mk-fazy{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--okraj);border-radius:12px;background:var(--plocha-2);margin-bottom:12px}
+.mk-kod{font:800 1rem "Bitter",Cambria,Georgia,serif;letter-spacing:.2em;color:var(--akcent-text);padding:2px 8px}
+.mk-kolo{background:var(--plocha-3);border-radius:7px;padding:3px 9px;font-size:.8rem;font-weight:700}
+.mk-kroky{display:flex;flex-wrap:wrap;gap:2px;list-style:none;margin:0;padding:0}
+.mk-kroky li{font-size:.8rem;padding:4px 14px;color:var(--slaby);background:var(--plocha);clip-path:polygon(0 0,calc(100% - 9px) 0,100% 50%,calc(100% - 9px) 100%,0 100%,9px 50%)}
+.mk-kroky li.hotovo{color:var(--tlmeny)}
+.mk-kroky li.ak{background:var(--akcent);color:var(--na-akcente);font-weight:700}
+.mk-odpojeny{margin-left:auto;color:var(--cervena-text);font-size:.85rem}
+.mk-linia{position:relative;border:2px solid var(--stol-okraj);background:radial-gradient(ellipse at 50% 30%,color-mix(in srgb,var(--stol-okraj) 14%,transparent),transparent 70%),var(--stol);border-radius:14px;padding:30px 14px 16px;margin-top:14px}
+.mk-linia.moj-tah{border-color:var(--stol-moj-okraj);background:radial-gradient(ellipse at 50% 30%,color-mix(in srgb,var(--stol-moj-okraj) 16%,transparent),transparent 70%),var(--stol-moj)}
+.mk-linia-stav{position:absolute;top:-13px;left:50%;transform:translateX(-50%);white-space:nowrap;padding:3px 14px;border-radius:99px;font-size:.78rem;font-weight:800;letter-spacing:.08em;background:var(--stol);color:var(--text);border:2px solid var(--stol-okraj)}
+.mk-linia.moj-tah .mk-linia-stav{background:var(--stol-moj);color:var(--stol-moj-text);border-color:var(--stol-moj-okraj)}
+.mk-rad{display:flex;justify-content:center;align-items:center;gap:6px;flex-wrap:wrap}
+.mk-rad .mk-karta{width:96px}
+.mk-sipka{color:var(--tlmeny);font-size:1.2rem;padding:0 4px}
+.mk-slot{width:96px;aspect-ratio:54/80;border:2px dashed color-mix(in srgb,var(--text) 22%,transparent);border-radius:9px;display:grid;place-items:center;color:var(--slaby);font-size:.75rem;font-style:italic}
+.mk-hraci{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+@media (max-width:760px){.mk-hraci{grid-template-columns:1fr}}
+.mk-hrac{--f:var(--ja);border:1px solid color-mix(in srgb,var(--f) 60%,var(--okraj));border-left:4px solid var(--f);border-radius:12px;padding:12px;background:linear-gradient(100deg,color-mix(in srgb,var(--f) 18%,var(--plocha)),var(--plocha) 60%);display:grid;grid-template-columns:auto 1fr;gap:10px 12px;align-items:center}
+.mk-hrac.su{--f:var(--su);border-left-width:1px;border-right:4px solid var(--f);background:linear-gradient(260deg,color-mix(in srgb,var(--f) 18%,var(--plocha)),var(--plocha) 60%)}
+.mk-hrac .meno{font:700 1.05rem "Bitter",Cambria,Georgia,serif}
+.mk-hrac .rola{color:var(--f);font-weight:700;font-size:.8rem}
+.mk-stat{display:flex;gap:6px;flex-wrap:wrap;grid-column:1/-1}
+.mk-stat div{background:var(--plocha-2);border:1px solid var(--okraj);border-radius:9px;padding:5px 10px;min-width:76px}
+.mk-stat small{display:block;font-size:.66rem;font-weight:800;letter-spacing:.1em;color:var(--tlmeny)}
+.mk-stat b{font:800 1.3rem/1.1 "Bitter",Cambria,Georgia,serif;font-variant-numeric:tabular-nums}
+.mk-stat b span{font-size:.8rem;color:var(--slaby)}
+.mk-pokyn{display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;margin:14px auto 0;max-width:760px;padding:9px 14px;border-radius:12px;border:1px solid var(--okraj);border-left:4px solid var(--stol-moj-okraj);background:var(--plocha-2);font-size:.9rem}
+.mk-pokyn .zaloz{color:var(--tlmeny)}
+.mk-pokyn .zaloz i{font-style:normal;color:var(--slaby);margin-left:4px}
+.mk-pokyn .stav{margin-left:auto;font-weight:600}
+.mk-pokyn .stav small{font-size:.72rem;letter-spacing:.12em;font-weight:800;color:var(--stol-moj-text);margin-right:6px}
+/* rebríček */
+.mk-tab{width:100%;border-collapse:collapse;font-size:.92rem}
+.mk-tab th{text-align:left;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--tlmeny);font-weight:700;padding:8px 10px;border-bottom:1px solid var(--okraj)}
+.mk-tab td{padding:9px 10px;border-bottom:1px solid color-mix(in srgb,var(--okraj) 70%,transparent)}
+.mk-tab tr:last-child td{border-bottom:0}
+.mk-tab .c{text-align:right;font-variant-numeric:tabular-nums}
+.mk-tab tr.ja td{background:color-mix(in srgb,var(--akcent) 9%,transparent)}
+.mk-tab tr.ja td:first-child{box-shadow:inset 3px 0 0 var(--akcent)}
+.mk-tab .por{font:800 1rem "Bitter",Cambria,Georgia,serif;width:2.2em}
+.mk-tab .m1{color:#f2c85b}.mk-tab .m2{color:#d6d0c4}.mk-tab .m3{color:#d39a62}
+[data-schema="papier"] .mk-tab .m1{color:#8a6400}[data-schema="papier"] .mk-tab .m2{color:#5f6066}[data-schema="papier"] .mk-tab .m3{color:#8a4f1c}
+.mk-hrac-bunka{display:flex;align-items:center;gap:8px;font-weight:600}
+.mk-hrac-bunka .mk-avatar{width:26px;height:26px}
+.mk-plus{color:var(--zelena);font-variant-numeric:tabular-nums}
+.mk-minus{color:var(--cervena-text);font-variant-numeric:tabular-nums}
+.mk-bot{font-size:.7rem;font-weight:700;color:var(--info);border:1px solid color-mix(in srgb,var(--info) 50%,transparent);border-radius:99px;padding:0 7px}
+/* profil — výber schémy */
+.mk-nastavenia{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:14px}
+.mk-schemy{grid-column:1/-1}
+.mk-schemy fieldset{border:0;margin:0;padding:0;min-width:0;min-inline-size:0}
+.mk-schemy legend{font:700 1.15rem "Bitter",Cambria,Georgia,serif;padding:0;margin-bottom:4px}
+.mk-dlazdice{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,130px),1fr));gap:10px;margin-top:10px}
+@media (max-width:520px){.mk-nahlad{height:64px}.mk-dlazdica .fajka{top:10px;right:10px}}
+.mk-dlazdica{position:relative;display:block;cursor:pointer;border-radius:12px;border:1px solid var(--okraj);background:var(--plocha-2);padding:8px 8px 10px;transition:border-color .15s ease,transform .15s ease}
+.mk-dlazdica:hover{border-color:var(--okraj-pole);transform:translateY(-1px)}
+.mk-dlazdica input{position:absolute;opacity:0;width:1px;height:1px}
+.mk-dlazdica:has(input:checked){border-color:var(--akcent);box-shadow:0 0 0 2px var(--akcent)}
+.mk-dlazdica:has(input:focus-visible){outline:2px solid var(--akcent-text);outline-offset:3px}
+.mk-dlazdica .nazov{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:.9rem;margin-top:8px;gap:6px}
+.mk-dlazdica .fajka{position:absolute;top:12px;right:12px;box-shadow:0 1px 4px rgba(0,0,0,.35);display:none;font-size:.72rem;font-weight:800;color:var(--na-akcente);background:var(--akcent);border-radius:99px;padding:0 7px}
+.mk-dlazdica:has(input:checked) .fajka{display:inline-block}
+.mk-dlazdica .pop{display:block;font-size:.76rem;color:var(--tlmeny);line-height:1.35;margin-top:2px}
+.mk-nahlad{display:block;border-radius:8px;overflow:hidden;border:1px solid var(--okraj);background:var(--pozadie);height:84px;position:relative}
+.mk-nahlad .h{display:block;height:16px;background:color-mix(in srgb,var(--pozadie) 70%,var(--plocha));border-bottom:1px solid var(--okraj)}
+.mk-nahlad .h::before{content:"";position:absolute;left:7px;top:5px;width:6px;height:7px;background:var(--akcent);border-radius:0 0 2px 2px}
+.mk-nahlad .p{position:absolute;left:9px;right:9px;top:24px;bottom:9px;background:var(--plocha);border:1px solid var(--okraj);border-radius:6px;padding:6px 7px}
+.mk-nahlad .l1,.mk-nahlad .l2{display:block;height:4px;border-radius:2px;background:var(--text);width:70%;margin-bottom:5px}
+.mk-nahlad .l2{background:var(--tlmeny);width:52%}
+.mk-nahlad .b{position:absolute;left:7px;bottom:6px;width:34px;height:10px;border-radius:3px;background:var(--akcent)}
+.mk-nahlad .ja,.mk-nahlad .su{position:absolute;bottom:7px;width:9px;height:9px;border-radius:50%}
+.mk-nahlad .ja{right:22px;background:var(--ja)}.mk-nahlad .su{right:8px;background:var(--su)}
+.mk-prepinac-system{display:flex;gap:10px;align-items:flex-start;margin-top:12px;font-size:.9rem;min-height:44px}
+.mk-prepinac-system input{width:20px;height:20px;accent-color:var(--akcent);margin-top:2px}
+@media (max-width:520px){.mk-rad .mk-karta,.mk-rad .mk-slot{width:62px}.mk-rad .mk-karta .tx{display:none}.mk-sipka{display:none}.mk-telo{padding:14px}.mk-hrac .mk-stat div{min-width:64px}}
+@media (max-width:640px){.prepinac{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}.prepinac label{flex:none}}
+/* všetky naraz */
+.mini-mriezka{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:14px}
+.mk-mini .mk-telo{padding:14px}
+.mk-mini .mk-nav span{padding:4px 7px;font-size:.8rem}
+.mk-mini .mk-logo{font-size:1.05rem}
+.mk-mini h3{font-size:1.05rem}
+.mk-mini .mk-tab{font-size:.84rem}
+.mk-mini .mk-tab td,.mk-mini .mk-tab th{padding:6px}
+.mk-mini .riadok{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.mk-mini .cip{font-size:.78rem;font-weight:700;padding:2px 9px;border-radius:99px;border:1px solid}
+.mk-mini .cip.ja{color:var(--ja);border-color:var(--ja)}.mk-mini .cip.su{color:var(--su);border-color:var(--su)}
+.mini-titul{font:700 .95rem Georgia,serif;margin:0 0 6px;color:var(--r-text)}
+</style>
+</head>
+<body>
+<div class="obal">
+
+<header>
+  <p class="meta">NA EX! · návrh UI · id <code>farebne-schemy-20261021-1400</code> · 21. 10. 2026 · UX pohľad: <a href="dizajn-farebne-schemy-20261021-1400-ux.html">dizajn-farebne-schemy-20261021-1400-ux.html</a></p>
+  <h1>Farebné schémy webu podľa Sanza Wadu</h1>
+  <p class="tlmene">Cieľ: výber schémy v <code>/profil</code> (<code>apps/web/src/stranky/Ucet.tsx</code>, komponent <code>Profil</code>), ktorá sa uplatní na všetky stránky: domov, pravidlá, karty, hra, rebríček, spätná väzba, profil aj Tvorbu.</p>
+  <div class="verdikt">
+    <p><b>Verdikt:</b> Áno, je to bežné a pre tento web to dáva zmysel. Odporúčam 4 tmavé schémy a 1 svetlú, predvolená ostáva <b>Krčma</b> (dnešný vzhľad). Hlavná práca však nie sú farby, ale <b>pretokenizovanie</b>: v CSS je mimo premenných <b>228 hex farieb a 106 <code>rgba()</code></b>. Bez toho by prepnutie schémy zmenilo len časť webu.</p>
+    <p>Líca kariet schéma <b>nemení</b>, pretože sú totožné s tlačou a farba variantu niečo znamená. Mení sa len všetko okolo nich: stôl, záblesk pri výbere, tiene a prázdne miesta.</p>
+  </div>
+  <nav class="obsah" aria-label="Obsah">
+    <a href="#prax">1. Bežná prax?</a><a href="#stav">2. Súčasný stav</a><a href="#audit">3. Audit</a><a href="#schemy">4. Päť schém</a><a href="#mockupy">5. Mockupy</a><a href="#navrhy">6. Návrhy</a><a href="#technika">7. Technicky</a><a href="#poradie">8. Poradie</a><a href="#otazky">9. Otázky</a>
+  </nav>
+</header>
+
+<section id="prax" aria-labelledby="h-prax">
+  <h2 id="h-prax">1. Je to bežná prax?</h2>
+  <ul>
+    <li><b>Svetlá, tmavá a podľa systému</b> je dnes štandard. Operačné systémy to majú od roku 2019 a web sa pýta cez <code>prefers-color-scheme</code>. Robia to napríklad GitHub, YouTube, Discord aj Slack, väčšinou s 2 až 3 voľbami.</li>
+    <li><b>Viac pomenovaných tém</b> má menej aplikácií, ale je to bežné: GitHub má asi 9 tém (aj pre farbosleposť a vysoký kontrast), VS Code a Slack desiatky, Discord farebné témy.</li>
+    <li><b>V hrách</b> je to kozmetika a niekedy odmena. Lichess a Chess.com ponúkajú témy šachovnice a pozadia, MTG Arena a Hearthstone obaly kariet a herné plochy. Tvar hracích prvkov sa tam nemení, vždy len to, čo je okolo nich. Presne to platí aj pre karty NA EX!.</li>
+    <li><b>Riziká:</b> (1) Každá schéma je ďalší vzhľad, ktorý treba udržiavať, takže každý nový komponent treba overiť vo všetkých. Pomôžu sémantické tokeny a automatická kontrola kontrastu. (2) Snímky a návody vyzerajú pre každého inak. (3) Identita sa môže rozriediť, preto všetky schémy držia ten istý krčmový princíp: tmavý alebo papierový podklad a jeden teplý akcent.</li>
+  </ul>
+  <p><b>Odporúčanie:</b> spraviť to, ale v poradí <b>najprv tokeny, potom schémy</b>. Päť schém je primeraný počet. Predvolená ostáva Krčma, k tomu voľba „Podľa zariadenia“ (Krčma v tme, Jedálny lístok vo svetle). Farby hry, ktoré niečo znamenajú, sú vo všetkých schémach rovnaké: zelený stôl = tvoj ťah, tyrkys = ty, korál = súper, farby variantov kariet.</p>
+</section>
+
+<section id="stav" aria-labelledby="h-stav">
+  <h2 id="h-stav">2. Súčasný stav (snímky z lokálneho servera)</h2>
+  <div class="snimky">
+    <figure><img src="dizajn-farebne-schemy-20261021-1400/ui-domov.jpg" alt="Domovská stránka: tmavé pozadie, jantárový nadpis Na ex!, vejár troch kariet" loading="lazy" width="1280" height="800"><figcaption>Domov 1280 × 800: jantár nesie identitu (nadpis, hlavné tlačidlo, logo pohára). Líca kariet sú biele s pásom podľa variantu.</figcaption></figure>
+    <figure><img src="dizajn-farebne-schemy-20261021-1400/ui-stol-hore.jpg" alt="Herný stôl partie 78MT vo fáze Voľba cieľa" loading="lazy" width="1280" height="800"><figcaption>Herný stôl (partia 78MT, Voľba cieľa): fázy majú jantárovú aktívnu šípku. „Dizajn 2 odpojený“ je červený text s kontrastom 4,22 : 1.</figcaption></figure>
+    <figure><img src="dizajn-farebne-schemy-20261021-1400/ui-stol-dole.jpg" alt="Panely hráčov: ja tyrkysový, súper korálový; línia sivá" loading="lazy" width="1280" height="800"><figcaption>Línia je sivá, keď čakáš (<code>hra.css:952</code>), a zelená, keď hráš. Panel „ja“ je tyrkysový, súperov korálový. Tieto významy musia platiť v každej schéme.</figcaption></figure>
+    <figure><img src="dizajn-farebne-schemy-20261021-1400/ui-profil.jpg" alt="Profil: hlavička s avatarom, Frajerina, nastavenia v troch stĺpcoch" loading="lazy" width="1200" height="1060"><figcaption>Profil: „Nastavenia účtu“ sú mriežka panelov. Panel „Farebná schéma“ sem patrí ako prvý, cez celú šírku.</figcaption></figure>
+  </div>
+</section>
+
+<section id="audit" aria-labelledby="h-audit">
+  <h2 id="h-audit">3. Audit: čo bráni prepnutiu schémy</h2>
+  <h3>Inventúra farieb natvrdo</h3>
+  <p class="tlmene male">Počítané skriptom: hex a <code>rgba()</code> mimo riadkov <code>--premenna: …</code>. „Akcent“ = <code>rgba(233,173,69,…)</code>, teda jantár prepísaný ručne. „Č/B“ = čierne a biele tiene a závoje, ktoré v tmavých schémach môžu zostať.</p>
+  <div class="tab-obal">
+  <table class="r">
+    <thead><tr><th>Súbor</th><th class="c">hex</th><th class="c">rgba()</th><th class="c">z toho akcent</th><th class="c">z toho č/b</th><th>Čo s tým</th></tr></thead>
+    <tbody>
+      <tr><td><code>styles.css</code></td><td class="c">28</td><td class="c">4</td><td class="c">2</td><td class="c">1</td><td>Hlavné tlačidlo (gradient), hover, pole, hlásky, odznaky na tokeny</td></tr>
+      <tr><td><code>stranky/stranky.css</code></td><td class="c">27</td><td class="c">11</td><td class="c">5</td><td class="c">4</td><td>Skeletony, výzvy a nástenka na tokeny. Farby hodností Frajeriny (<code>#e8cc4a</code>…) ostávajú ako dátové farby</td></tr>
+      <tr><td><code>stranky/statistiky.css</code></td><td class="c">21</td><td class="c">9</td><td class="c">2</td><td class="c">1</td><td>Riadky tabuliek a +/− na tokeny. Medaily a grafy sú dátové farby (svetlá schéma dostane tmavšie odtiene)</td></tr>
+      <tr><td><code>hra/hra.css</code></td><td class="c">91</td><td class="c">61</td><td class="c">10</td><td class="c">32</td><td>Najviac práce: stôl, pokyn, hlásky, odtiene červeného textu. <code>--ja</code>, <code>--su</code> a <code>--stol-*</code> už sú premenné, len ich treba presunúť do schémy</td></tr>
+      <tr><td><code>admin/admin.css</code></td><td class="c">27</td><td class="c">3</td><td class="c">1</td><td class="c">2</td><td>Časť je náhľad tlače (<code>#fff</code>, ostáva), zvyšok na tokeny</td></tr>
+      <tr><td><code>playtest/playtest.css</code></td><td class="c">5</td><td class="c">2</td><td class="c">0</td><td class="c">0</td><td>Na tokeny</td></tr>
+      <tr><td><code>karta/karta.css</code></td><td class="c">29</td><td class="c">16</td><td class="c">0</td><td class="c">9</td><td><b>Ostáva.</b> Líce karty je vzhľad z tvorcu</td></tr>
+      <tr><td><b>Spolu</b></td><td class="c"><b>228</b></td><td class="c"><b>106</b></td><td class="c">20</td><td class="c">49</td><td>142 unikátnych hex. Bez <code>karta.css</code> 199 hex a 90 rgba(), ktoré treba zlúčiť do približne 25 sémantických tokenov</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Nálezy</h3>
+  <div class="filtre" role="group" aria-label="Filter podľa závažnosti">
+    <button type="button" data-filter="vsetky" aria-pressed="true">Všetky</button>
+    <button type="button" data-filter="vysoka" aria-pressed="false">Vysoká</button>
+    <button type="button" data-filter="stredna" aria-pressed="false">Stredná</button>
+    <button type="button" data-filter="nizka" aria-pressed="false">Nízka</button>
+  </div>
+  <div class="tab-obal">
+  <table class="r" id="audit-tab">
+    <thead><tr><th>#</th><th>Oblasť</th><th>Problém</th><th>Dôkaz</th><th>Závažnosť</th></tr></thead>
+    <tbody>
+      <tr data-z="vysoka"><td>A1</td><td>Tokeny</td><td>Farby sú natvrdo mimo <code>:root</code>, takže schéma by prepla len pozadie, plochy a text. Hlavné tlačidlo, hlásky, stôl a pokyn by zostali krčmové.</td><td><code>styles.css:121–129</code> (gradient tlačidla), <code>styles.css:234–248</code> (hlásky), <code>hra.css:952–971</code> (stôl), inventúra vyššie</td><td><span class="zav zav-vysoka">vysoká</span></td></tr>
+      <tr data-z="vysoka"><td>A2</td><td>Tokeny</td><td>Jantár je 20× prepísaný ako <code>rgba(233, 173, 69, x)</code>, takže žiary a podfarbenia by po zmene akcentu ostali jantárové.</td><td><code>styles.css:36, 180</code>, <code>hra.css:68, 860, 1056, 1088, 1122</code>, <code>stranky.css:353, 360, 647, 797</code></td><td><span class="zav zav-vysoka">vysoká</span></td></tr>
+      <tr data-z="vysoka"><td>A3</td><td>Tokeny</td><td>Chýba token „text na akcente“. Tmavohnedá na jantári je napísaná 7× v troch odtieňoch.</td><td><code>#2b1b03</code> v <code>styles.css:123</code>, <code>hra.css:1472, 2301, 2321</code>; <code>#1b1408</code> v <code>hra.css:145</code>; <code>#1b1405</code> v <code>hra.css:2594</code></td><td><span class="zav zav-vysoka">vysoká</span></td></tr>
+      <tr data-z="stredna"><td>A4</td><td>Kontrast</td><td><code>--slaby #8b7d6a</code> na <code>--plocha-2 #28211a</code> má <b>3,96 : 1</b> (treba 4,5). Používa sa na malé texty: „0 ks“, @login, stupnice posuvníkov.</td><td><code>styles.css:12</code>, 35 výskytov <code>var(--slaby)</code>, snímka profilu</td><td><span class="zav zav-stredna">stredná</span></td></tr>
+      <tr data-z="stredna"><td>A5</td><td>Kontrast</td><td><code>--cervena #d0563f</code> ako text na <code>--plocha</code> má <b>4,22 : 1</b>. Web to rieši ručne deviatimi inými odtieňmi červeného textu (<code>#ff9d88</code>, <code>#ffb8a3</code>, <code>#ffc2b4</code>, <code>#ff8f78</code>, <code>#ff8a73</code>, <code>#ff9c8a</code>, <code>#ff6b5b</code>, <code>#ec8a75</code>, <code>#f19a86</code>), spolu 16 výskytov.</td><td>snímka stola („Dizajn 2 odpojený“), <code>hra.css:321, 366, 426, 538, 934, 2672</code></td><td><span class="zav zav-stredna">stredná</span></td></tr>
+      <tr data-z="stredna"><td>A6</td><td>Kontrast</td><td>Okraj polí <code>--okraj-svetly #57483a</code> má proti ploche <b>1,99 : 1</b> (WCAG 1.4.11 chce pre hranice ovládacích prvkov 3 : 1), takže prázdne pole heslá splýva.</td><td><code>styles.css:169–170</code>, snímka profilu (Zmena hesla)</td><td><span class="zav zav-stredna">stredná</span></td></tr>
+      <tr data-z="stredna"><td>A7</td><td>Tokeny</td><td>Farby sú natvrdo aj v TSX: <code>FARBA_AKTIVNA = "#5cc0cf"</code> (duplikát <code>--ja</code>) a <code>"#8a7a62"</code> v štatistikách.</td><td><code>hra/Scorecard.tsx:29</code>, <code>admin/Statistiky.tsx:48</code></td><td><span class="zav zav-stredna">stredná</span></td></tr>
+      <tr data-z="nizka"><td>A8</td><td>Schéma</td><td><code>color-scheme: dark</code> je pevne v <code>:root</code>. Pri svetlej schéme by posuvníky a natívne prvky ostali tmavé.</td><td><code>styles.css:21</code></td><td><span class="zav zav-nizka">nízka</span></td></tr>
+      <tr data-z="nizka"><td>A9</td><td>Načítanie</td><td>CSP povoľuje len <code>script-src 'self'</code>, takže skript, ktorý nastaví schému ešte pred Reactom, nemôže byť inline. Bez neho svetlá schéma pri načítaní na chvíľu blikne tmavou.</td><td><code>packages/server/src/server.ts:692</code>, <code>apps/web/index.html</code></td><td><span class="zav zav-nizka">nízka</span></td></tr>
+      <tr data-z="nizka"><td>A10</td><td>Stavy</td><td>Neaktívne hlavné tlačidlo („Uložiť meno“) je jantár s <code>opacity .45</code>. Vo svetlej schéme by vyzeralo ako aktívne.</td><td><code>styles.css:114</code>, snímka profilu</td><td><span class="zav zav-nizka">nízka</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section id="schemy" aria-labelledby="h-schemy">
+  <h2 id="h-schemy">4. Päť schém podľa Sanza Wadu</h2>
+  <p><b>Ako čítať väzbu na Wadu.</b> <i>A Dictionary of Color Combinations</i> (Seigensha, 348 kombinácií) používa názvy farieb podľa Ridgwaya, napríklad <i>Cinnamon Buff</i> alebo <i>Vistoris Lake</i>. Pri každej schéme uvádzam Wadove farby, z ktorých vychádza. <b>Čísla kombinácií neuvádzam:</b> knihu nemám pri ruke a nechcem si ich vymýšľať. V registri farieb na konci knihy ich nájdeš podľa názvu. Hex hodnoty sú <b>moje odvodeniny pre obrazovku</b> (stmavené alebo zosvetlené kvôli kontrastu WCAG), nie tlačové vzorky. Pravidlo pre všetky schémy: jeden teplý akcent, tlmené plochy, nič neónové.</p>
+  <p class="tlmene male">Kontrast je vypočítaný podľa WCAG 2.2 (relatívny jas). Text musí mať aspoň 4,5 : 1, hranice ovládacích prvkov aspoň 3 : 1. Hodnoty pre svetlú schému sú nižšie, lebo tmavý text na papieri nemá taký rozsah.</p>
+<article class="schema-karta" id="s-krcma"><h3>1. Krčma <small>tmavá · predvolená · <code>data-schema="krcma"</code></small></h3>
+<p>Tmavé drevo, jantárové svetlo, tehlová. Dnešný vzhľad — predvolená schéma.</p><p class="male"><b>Z Wadu:</b> Pôvodná paleta webu, nie je prevzatá z Wadu. Vo Wadovom slovníku jej zodpovedá trojica <b>Vandyke Brown</b> (drevo) · <b>Cinnamon Buff</b> (jantár) · <b>Brick Red</b> (tehlová). Oproti dnešku mení len 3 hodnoty kvôli kontrastu (slabý text, červený text, okraj polí).</p>
+<div class="vzorky" role="list" aria-label="Vzorky farieb"><span class="vzorka" role="listitem"><i style="background:#14110e"></i><b>pozadie</b>#14110e</span><span class="vzorka" role="listitem"><i style="background:#1e1914"></i><b>plocha</b>#1e1914</span><span class="vzorka" role="listitem"><i style="background:#332a21"></i><b>plocha-3</b>#332a21</span><span class="vzorka" role="listitem"><i style="background:#3d3229"></i><b>okraj</b>#3d3229</span><span class="vzorka" role="listitem"><i style="background:#f1e8d8"></i><b>text</b>#f1e8d8</span><span class="vzorka" role="listitem"><i style="background:#b6a790"></i><b>tlmeny</b>#b6a790</span><span class="vzorka" role="listitem"><i style="background:#e9ad45"></i><b>akcent</b>#e9ad45</span><span class="vzorka" role="listitem"><i style="background:#d0563f"></i><b>cervena</b>#d0563f</span><span class="vzorka" role="listitem"><i style="background:#7cbf74"></i><b>zelena</b>#7cbf74</span><span class="vzorka" role="listitem"><i style="background:#8fc3e0"></i><b>info</b>#8fc3e0</span><span class="vzorka" role="listitem"><i style="background:#5cc0cf"></i><b>ja</b>#5cc0cf</span><span class="vzorka" role="listitem"><i style="background:#e0805f"></i><b>su</b>#e0805f</span></div>
+<div class="dva"><div class="tab-obal"><table class="r"><caption class="male tlmene" style="text-align:left;padding:6px 10px">Priradenie na tokeny</caption><thead><tr><th>Rola</th><th>Token</th><th>Hex</th></tr></thead><tbody><tr><td>Pozadie stránky</td><td><code>--pozadie</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#14110e"></span> <code>#14110e</code></td></tr><tr><td>Plocha / panel</td><td><code>--plocha</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#1e1914"></span> <code>#1e1914</code></td></tr><tr><td>Plocha 2 (vnorená)</td><td><code>--plocha-2</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#28211a"></span> <code>#28211a</code></td></tr><tr><td>Plocha 3 (tlačidlo)</td><td><code>--plocha-3</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#332a21"></span> <code>#332a21</code></td></tr><tr><td>Okraj</td><td><code>--okraj</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#3d3229"></span> <code>#3d3229</code></td></tr><tr><td>Okraj poľa</td><td><code>--okraj-pole</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#7a6652"></span> <code>#7a6652</code></td></tr><tr><td>Text</td><td><code>--text</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#f1e8d8"></span> <code>#f1e8d8</code></td></tr><tr><td>Tlmený text</td><td><code>--tlmeny</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#b6a790"></span> <code>#b6a790</code></td></tr><tr><td>Slabý text</td><td><code>--slaby</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#9a8b76"></span> <code>#9a8b76</code></td></tr><tr><td>Akcent (výplň)</td><td><code>--akcent</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#e9ad45"></span> <code>#e9ad45</code></td></tr><tr><td>Akcent ako text / odkaz</td><td><code>--akcent-text</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#e9ad45"></span> <code>#e9ad45</code></td></tr><tr><td>Text na akcente</td><td><code>--na-akcente</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#2b1b03"></span> <code>#2b1b03</code></td></tr><tr><td>Akcent 2 · tehlová / chyba</td><td><code>--cervena</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#d0563f"></span> <code>#d0563f</code></td></tr><tr><td>Chyba ako text</td><td><code>--cervena-text</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#e4705a"></span> <code>#e4705a</code></td></tr><tr><td>Úspech</td><td><code>--zelena</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#7cbf74"></span> <code>#7cbf74</code></td></tr><tr><td>Info / bot</td><td><code>--info</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#8fc3e0"></span> <code>#8fc3e0</code></td></tr><tr><td>Ty</td><td><code>--ja</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#5cc0cf"></span> <code>#5cc0cf</code></td></tr><tr><td>Súper</td><td><code>--su</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#e0805f"></span> <code>#e0805f</code></td></tr><tr><td>Stôl: tvoj ťah</td><td><code>--stol-moj</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#173320"></span> <code>#173320</code></td></tr><tr><td>Stôl: tvoj ťah, okraj</td><td><code>--stol-moj-okraj</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#4fae66"></span> <code>#4fae66</code></td></tr></tbody></table></div>
+<div class="tab-obal"><table class="r"><caption class="male tlmene" style="text-align:left;padding:6px 10px">Kontrast WCAG 2.2</caption><thead><tr><th>Pár</th><th class="c">Pomer</th><th>AA</th></tr></thead><tbody><tr><td>Text na pozadí<br><code>text</code> / <code>pozadie</code></td><td class="c">15,48 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Text na tlačidle<br><code>text</code> / <code>plocha-3</code></td><td class="c">11,56 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Tlmený text na ploche 2<br><code>tlmeny</code> / <code>plocha-2</code></td><td class="c">6,74 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Slabý text na ploche 2 (najhorší prípad)<br><code>slaby</code> / <code>plocha-2</code></td><td class="c">4,78 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Odkaz / akcent na ploche<br><code>akcent-text</code> / <code>plocha</code></td><td class="c">8,74 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Text na hlavnom tlačidle<br><code>na-akcente</code> / <code>akcent</code></td><td class="c">8,35 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Chyba (text) na ploche<br><code>cervena-text</code> / <code>plocha</code></td><td class="c">5,62 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Úspech na ploche 2<br><code>zelena</code> / <code>plocha-2</code></td><td class="c">7,23 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Info na ploche<br><code>info</code> / <code>plocha</code></td><td class="c">9,18 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Ty na ploche<br><code>ja</code> / <code>plocha</code></td><td class="c">8,22 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Súper na ploche<br><code>su</code> / <code>plocha</code></td><td class="c">6,16 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>„TVOJ ŤAH“ na stole<br><code>stol-moj-text</code> / <code>stol-moj</code></td><td class="c">8,73 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Okraj poľa (hranica)<br><code>okraj-pole</code> / <code>pole</code></td><td class="c">3,39 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Hlavné tlačidlo na pozadí (hranica)<br><code>akcent</code> / <code>pozadie</code></td><td class="c">9,43 : 1</td><td><span class="ok">✓ AA</span></td></tr></tbody></table></div></div></article>
+<article class="schema-karta" id="s-noc"><h3>2. Polnoc na dedine <small>tmavá · <code>data-schema="noc"</code></small></h3>
+<p>Indigová noc a teplé svetlo lampy za oknom krčmy.</p><p class="male"><b>Z Wadu:</b> Hlboká modrá <b>Indigo Blue</b> / <b>Dark Tyrian Blue</b> (pozadie a plochy) s teplým <b>Cinnamon Buff</b> (akcent) — typická Wadova dvojica studená tma + teplý okr; chyba tónom <b>Old Rose</b>.</p>
+<div class="vzorky" role="list" aria-label="Vzorky farieb"><span class="vzorka" role="listitem"><i style="background:#0e131b"></i><b>pozadie</b>#0e131b</span><span class="vzorka" role="listitem"><i style="background:#151c27"></i><b>plocha</b>#151c27</span><span class="vzorka" role="listitem"><i style="background:#242f40"></i><b>plocha-3</b>#242f40</span><span class="vzorka" role="listitem"><i style="background:#2e3a4e"></i><b>okraj</b>#2e3a4e</span><span class="vzorka" role="listitem"><i style="background:#ede6d4"></i><b>text</b>#ede6d4</span><span class="vzorka" role="listitem"><i style="background:#a9b1bf"></i><b>tlmeny</b>#a9b1bf</span><span class="vzorka" role="listitem"><i style="background:#efc179"></i><b>akcent</b>#efc179</span><span class="vzorka" role="listitem"><i style="background:#d0626a"></i><b>cervena</b>#d0626a</span><span class="vzorka" role="listitem"><i style="background:#8cc79a"></i><b>zelena</b>#8cc79a</span><span class="vzorka" role="listitem"><i style="background:#9cc3e8"></i><b>info</b>#9cc3e8</span><span class="vzorka" role="listitem"><i style="background:#6fd0d8"></i><b>ja</b>#6fd0d8</span><span class="vzorka" role="listitem"><i style="background:#ec9070"></i><b>su</b>#ec9070</span></div>
+<div class="dva"><div class="tab-obal"><table class="r"><caption class="male tlmene" style="text-align:left;padding:6px 10px">Priradenie na tokeny</caption><thead><tr><th>Rola</th><th>Token</th><th>Hex</th></tr></thead><tbody><tr><td>Pozadie stránky</td><td><code>--pozadie</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#0e131b"></span> <code>#0e131b</code></td></tr><tr><td>Plocha / panel</td><td><code>--plocha</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#151c27"></span> <code>#151c27</code></td></tr><tr><td>Plocha 2 (vnorená)</td><td><code>--plocha-2</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#1c2533"></span> <code>#1c2533</code></td></tr><tr><td>Plocha 3 (tlačidlo)</td><td><code>--plocha-3</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#242f40"></span> <code>#242f40</code></td></tr><tr><td>Okraj</td><td><code>--okraj</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#2e3a4e"></span> <code>#2e3a4e</code></td></tr><tr><td>Okraj poľa</td><td><code>--okraj-pole</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#6a7d9c"></span> <code>#6a7d9c</code></td></tr><tr><td>Text</td><td><code>--text</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#ede6d4"></span> <code>#ede6d4</code></td></tr><tr><td>Tlmený text</td><td><code>--tlmeny</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#a9b1bf"></span> <code>#a9b1bf</code></td></tr><tr><td>Slabý text</td><td><code>--slaby</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#8690a2"></span> <code>#8690a2</code></td></tr><tr><td>Akcent (výplň)</td><td><code>--akcent</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#efc179"></span> <code>#efc179</code></td></tr><tr><td>Akcent ako text / odkaz</td><td><code>--akcent-text</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#efc179"></span> <code>#efc179</code></td></tr><tr><td>Text na akcente</td><td><code>--na-akcente</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#2a1d05"></span> <code>#2a1d05</code></td></tr><tr><td>Akcent 2 · tehlová / chyba</td><td><code>--cervena</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#d0626a"></span> <code>#d0626a</code></td></tr><tr><td>Chyba ako text</td><td><code>--cervena-text</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#e07a80"></span> <code>#e07a80</code></td></tr><tr><td>Úspech</td><td><code>--zelena</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#8cc79a"></span> <code>#8cc79a</code></td></tr><tr><td>Info / bot</td><td><code>--info</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#9cc3e8"></span> <code>#9cc3e8</code></td></tr><tr><td>Ty</td><td><code>--ja</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#6fd0d8"></span> <code>#6fd0d8</code></td></tr><tr><td>Súper</td><td><code>--su</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#ec9070"></span> <code>#ec9070</code></td></tr><tr><td>Stôl: tvoj ťah</td><td><code>--stol-moj</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#183428"></span> <code>#183428</code></td></tr><tr><td>Stôl: tvoj ťah, okraj</td><td><code>--stol-moj-okraj</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#57b27a"></span> <code>#57b27a</code></td></tr></tbody></table></div>
+<div class="tab-obal"><table class="r"><caption class="male tlmene" style="text-align:left;padding:6px 10px">Kontrast WCAG 2.2</caption><thead><tr><th>Pár</th><th class="c">Pomer</th><th>AA</th></tr></thead><tbody><tr><td>Text na pozadí<br><code>text</code> / <code>pozadie</code></td><td class="c">14,96 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Text na tlačidle<br><code>text</code> / <code>plocha-3</code></td><td class="c">10,84 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Tlmený text na ploche 2<br><code>tlmeny</code> / <code>plocha-2</code></td><td class="c">7,14 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Slabý text na ploche 2 (najhorší prípad)<br><code>slaby</code> / <code>plocha-2</code></td><td class="c">4,79 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Odkaz / akcent na ploche<br><code>akcent-text</code> / <code>plocha</code></td><td class="c">10,25 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Text na hlavnom tlačidle<br><code>na-akcente</code> / <code>akcent</code></td><td class="c">9,85 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Chyba (text) na ploche<br><code>cervena-text</code> / <code>plocha</code></td><td class="c">5,92 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Úspech na ploche 2<br><code>zelena</code> / <code>plocha-2</code></td><td class="c">7,89 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Info na ploche<br><code>info</code> / <code>plocha</code></td><td class="c">9,28 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Ty na ploche<br><code>ja</code> / <code>plocha</code></td><td class="c">9,52 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Súper na ploche<br><code>su</code> / <code>plocha</code></td><td class="c">7,16 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>„TVOJ ŤAH“ na stole<br><code>stol-moj-text</code> / <code>stol-moj</code></td><td class="c">8,99 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Okraj poľa (hranica)<br><code>okraj-pole</code> / <code>pole</code></td><td class="c">4,53 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Hlavné tlačidlo na pozadí (hranica)<br><code>akcent</code> / <code>pozadie</code></td><td class="c">11,15 : 1</td><td><span class="ok">✓ AA</span></td></tr></tbody></table></div></div></article>
+<article class="schema-karta" id="s-vino"><h3>3. Vínna pivnica <small>tmavá · <code>data-schema="vino"</code></small></h3>
+<p>Tmavé víno a staré ružové drevo, svetlo ako škorica.</p><p class="male"><b>Z Wadu:</b> Vínové <b>Vistoris Lake</b> / <b>Pale Burnt Lake</b> (pozadie a plochy) · <b>Light Pinkish Cinnamon</b> (akcent) · šalviová <b>Artemesia Green</b> (úspech).</p>
+<div class="vzorky" role="list" aria-label="Vzorky farieb"><span class="vzorka" role="listitem"><i style="background:#160d10"></i><b>pozadie</b>#160d10</span><span class="vzorka" role="listitem"><i style="background:#211318"></i><b>plocha</b>#211318</span><span class="vzorka" role="listitem"><i style="background:#36222a"></i><b>plocha-3</b>#36222a</span><span class="vzorka" role="listitem"><i style="background:#472c36"></i><b>okraj</b>#472c36</span><span class="vzorka" role="listitem"><i style="background:#f4e7dc"></i><b>text</b>#f4e7dc</span><span class="vzorka" role="listitem"><i style="background:#c4aaa7"></i><b>tlmeny</b>#c4aaa7</span><span class="vzorka" role="listitem"><i style="background:#efbb80"></i><b>akcent</b>#efbb80</span><span class="vzorka" role="listitem"><i style="background:#d9584e"></i><b>cervena</b>#d9584e</span><span class="vzorka" role="listitem"><i style="background:#97b99c"></i><b>zelena</b>#97b99c</span><span class="vzorka" role="listitem"><i style="background:#a9c3d9"></i><b>info</b>#a9c3d9</span><span class="vzorka" role="listitem"><i style="background:#6ccbd3"></i><b>ja</b>#6ccbd3</span><span class="vzorka" role="listitem"><i style="background:#f0956f"></i><b>su</b>#f0956f</span></div>
+<div class="dva"><div class="tab-obal"><table class="r"><caption class="male tlmene" style="text-align:left;padding:6px 10px">Priradenie na tokeny</caption><thead><tr><th>Rola</th><th>Token</th><th>Hex</th></tr></thead><tbody><tr><td>Pozadie stránky</td><td><code>--pozadie</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#160d10"></span> <code>#160d10</code></td></tr><tr><td>Plocha / panel</td><td><code>--plocha</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#211318"></span> <code>#211318</code></td></tr><tr><td>Plocha 2 (vnorená)</td><td><code>--plocha-2</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#2b1a20"></span> <code>#2b1a20</code></td></tr><tr><td>Plocha 3 (tlačidlo)</td><td><code>--plocha-3</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#36222a"></span> <code>#36222a</code></td></tr><tr><td>Okraj</td><td><code>--okraj</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#472c36"></span> <code>#472c36</code></td></tr><tr><td>Okraj poľa</td><td><code>--okraj-pole</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#8a5f6f"></span> <code>#8a5f6f</code></td></tr><tr><td>Text</td><td><code>--text</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#f4e7dc"></span> <code>#f4e7dc</code></td></tr><tr><td>Tlmený text</td><td><code>--tlmeny</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#c4aaa7"></span> <code>#c4aaa7</code></td></tr><tr><td>Slabý text</td><td><code>--slaby</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#9f8584"></span> <code>#9f8584</code></td></tr><tr><td>Akcent (výplň)</td><td><code>--akcent</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#efbb80"></span> <code>#efbb80</code></td></tr><tr><td>Akcent ako text / odkaz</td><td><code>--akcent-text</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#efbb80"></span> <code>#efbb80</code></td></tr><tr><td>Text na akcente</td><td><code>--na-akcente</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#2b140a"></span> <code>#2b140a</code></td></tr><tr><td>Akcent 2 · tehlová / chyba</td><td><code>--cervena</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#d9584e"></span> <code>#d9584e</code></td></tr><tr><td>Chyba ako text</td><td><code>--cervena-text</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#ef7b6e"></span> <code>#ef7b6e</code></td></tr><tr><td>Úspech</td><td><code>--zelena</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#97b99c"></span> <code>#97b99c</code></td></tr><tr><td>Info / bot</td><td><code>--info</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#a9c3d9"></span> <code>#a9c3d9</code></td></tr><tr><td>Ty</td><td><code>--ja</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#6ccbd3"></span> <code>#6ccbd3</code></td></tr><tr><td>Súper</td><td><code>--su</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#f0956f"></span> <code>#f0956f</code></td></tr><tr><td>Stôl: tvoj ťah</td><td><code>--stol-moj</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#1b3022"></span> <code>#1b3022</code></td></tr><tr><td>Stôl: tvoj ťah, okraj</td><td><code>--stol-moj-okraj</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#5aae72"></span> <code>#5aae72</code></td></tr></tbody></table></div>
+<div class="tab-obal"><table class="r"><caption class="male tlmene" style="text-align:left;padding:6px 10px">Kontrast WCAG 2.2</caption><thead><tr><th>Pár</th><th class="c">Pomer</th><th>AA</th></tr></thead><tbody><tr><td>Text na pozadí<br><code>text</code> / <code>pozadie</code></td><td class="c">15,75 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Text na tlačidle<br><code>text</code> / <code>plocha-3</code></td><td class="c">12,20 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Tlmený text na ploche 2<br><code>tlmeny</code> / <code>plocha-2</code></td><td class="c">7,59 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Slabý text na ploche 2 (najhorší prípad)<br><code>slaby</code> / <code>plocha-2</code></td><td class="c">4,85 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Odkaz / akcent na ploche<br><code>akcent-text</code> / <code>plocha</code></td><td class="c">10,32 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Text na hlavnom tlačidle<br><code>na-akcente</code> / <code>akcent</code></td><td class="c">10,02 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Chyba (text) na ploche<br><code>cervena-text</code> / <code>plocha</code></td><td class="c">6,60 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Úspech na ploche 2<br><code>zelena</code> / <code>plocha-2</code></td><td class="c">7,66 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Info na ploche<br><code>info</code> / <code>plocha</code></td><td class="c">9,82 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Ty na ploche<br><code>ja</code> / <code>plocha</code></td><td class="c">9,50 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Súper na ploche<br><code>su</code> / <code>plocha</code></td><td class="c">7,89 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>„TVOJ ŤAH“ na stole<br><code>stol-moj-text</code> / <code>stol-moj</code></td><td class="c">8,81 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Okraj poľa (hranica)<br><code>okraj-pole</code> / <code>pole</code></td><td class="c">3,68 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Hlavné tlačidlo na pozadí (hranica)<br><code>akcent</code> / <code>pozadie</code></td><td class="c">11,00 : 1</td><td><span class="ok">✓ AA</span></td></tr></tbody></table></div></div></article>
+<article class="schema-karta" id="s-tabak"><h3>4. Tabak <small>tmavá · <code>data-schema="tabak"</code></small></h3>
+<p>Olivová tma ako zadymená izba, akcent farby suchého tabaku.</p><p class="male"><b>Z Wadu:</b> Tmavé olivy <b>Deep Grayish Olive</b> / <b>Blackish Olive</b> (pozadie a plochy) · <b>Olive Buff</b> (akcent) · <b>Brick Red</b> (chyba).</p>
+<div class="vzorky" role="list" aria-label="Vzorky farieb"><span class="vzorka" role="listitem"><i style="background:#11120c"></i><b>pozadie</b>#11120c</span><span class="vzorka" role="listitem"><i style="background:#1a1b13"></i><b>plocha</b>#1a1b13</span><span class="vzorka" role="listitem"><i style="background:#2d2f22"></i><b>plocha-3</b>#2d2f22</span><span class="vzorka" role="listitem"><i style="background:#393c2b"></i><b>okraj</b>#393c2b</span><span class="vzorka" role="listitem"><i style="background:#efebdc"></i><b>text</b>#efebdc</span><span class="vzorka" role="listitem"><i style="background:#b5b297"></i><b>tlmeny</b>#b5b297</span><span class="vzorka" role="listitem"><i style="background:#d9c46e"></i><b>akcent</b>#d9c46e</span><span class="vzorka" role="listitem"><i style="background:#c95a3c"></i><b>cervena</b>#c95a3c</span><span class="vzorka" role="listitem"><i style="background:#9fc67e"></i><b>zelena</b>#9fc67e</span><span class="vzorka" role="listitem"><i style="background:#9cc0d0"></i><b>info</b>#9cc0d0</span><span class="vzorka" role="listitem"><i style="background:#62c4cf"></i><b>ja</b>#62c4cf</span><span class="vzorka" role="listitem"><i style="background:#e58a62"></i><b>su</b>#e58a62</span></div>
+<div class="dva"><div class="tab-obal"><table class="r"><caption class="male tlmene" style="text-align:left;padding:6px 10px">Priradenie na tokeny</caption><thead><tr><th>Rola</th><th>Token</th><th>Hex</th></tr></thead><tbody><tr><td>Pozadie stránky</td><td><code>--pozadie</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#11120c"></span> <code>#11120c</code></td></tr><tr><td>Plocha / panel</td><td><code>--plocha</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#1a1b13"></span> <code>#1a1b13</code></td></tr><tr><td>Plocha 2 (vnorená)</td><td><code>--plocha-2</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#23251a"></span> <code>#23251a</code></td></tr><tr><td>Plocha 3 (tlačidlo)</td><td><code>--plocha-3</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#2d2f22"></span> <code>#2d2f22</code></td></tr><tr><td>Okraj</td><td><code>--okraj</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#393c2b"></span> <code>#393c2b</code></td></tr><tr><td>Okraj poľa</td><td><code>--okraj-pole</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#737858"></span> <code>#737858</code></td></tr><tr><td>Text</td><td><code>--text</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#efebdc"></span> <code>#efebdc</code></td></tr><tr><td>Tlmený text</td><td><code>--tlmeny</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#b5b297"></span> <code>#b5b297</code></td></tr><tr><td>Slabý text</td><td><code>--slaby</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#918e73"></span> <code>#918e73</code></td></tr><tr><td>Akcent (výplň)</td><td><code>--akcent</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#d9c46e"></span> <code>#d9c46e</code></td></tr><tr><td>Akcent ako text / odkaz</td><td><code>--akcent-text</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#d9c46e"></span> <code>#d9c46e</code></td></tr><tr><td>Text na akcente</td><td><code>--na-akcente</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#211f08"></span> <code>#211f08</code></td></tr><tr><td>Akcent 2 · tehlová / chyba</td><td><code>--cervena</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#c95a3c"></span> <code>#c95a3c</code></td></tr><tr><td>Chyba ako text</td><td><code>--cervena-text</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#de6a48"></span> <code>#de6a48</code></td></tr><tr><td>Úspech</td><td><code>--zelena</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#9fc67e"></span> <code>#9fc67e</code></td></tr><tr><td>Info / bot</td><td><code>--info</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#9cc0d0"></span> <code>#9cc0d0</code></td></tr><tr><td>Ty</td><td><code>--ja</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#62c4cf"></span> <code>#62c4cf</code></td></tr><tr><td>Súper</td><td><code>--su</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#e58a62"></span> <code>#e58a62</code></td></tr><tr><td>Stôl: tvoj ťah</td><td><code>--stol-moj</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#183420"></span> <code>#183420</code></td></tr><tr><td>Stôl: tvoj ťah, okraj</td><td><code>--stol-moj-okraj</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#52b06c"></span> <code>#52b06c</code></td></tr></tbody></table></div>
+<div class="tab-obal"><table class="r"><caption class="male tlmene" style="text-align:left;padding:6px 10px">Kontrast WCAG 2.2</caption><thead><tr><th>Pár</th><th class="c">Pomer</th><th>AA</th></tr></thead><tbody><tr><td>Text na pozadí<br><code>text</code> / <code>pozadie</code></td><td class="c">15,76 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Text na tlačidle<br><code>text</code> / <code>plocha-3</code></td><td class="c">11,41 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Tlmený text na ploche 2<br><code>tlmeny</code> / <code>plocha-2</code></td><td class="c">7,24 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Slabý text na ploche 2 (najhorší prípad)<br><code>slaby</code> / <code>plocha-2</code></td><td class="c">4,68 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Odkaz / akcent na ploche<br><code>akcent-text</code> / <code>plocha</code></td><td class="c">9,98 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Text na hlavnom tlačidle<br><code>na-akcente</code> / <code>akcent</code></td><td class="c">9,55 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Chyba (text) na ploche<br><code>cervena-text</code> / <code>plocha</code></td><td class="c">5,17 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Úspech na ploche 2<br><code>zelena</code> / <code>plocha-2</code></td><td class="c">8,03 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Info na ploche<br><code>info</code> / <code>plocha</code></td><td class="c">8,98 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Ty na ploche<br><code>ja</code> / <code>plocha</code></td><td class="c">8,53 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Súper na ploche<br><code>su</code> / <code>plocha</code></td><td class="c">6,73 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>„TVOJ ŤAH“ na stole<br><code>stol-moj-text</code> / <code>stol-moj</code></td><td class="c">8,49 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Okraj poľa (hranica)<br><code>okraj-pole</code> / <code>pole</code></td><td class="c">4,18 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Hlavné tlačidlo na pozadí (hranica)<br><code>akcent</code> / <code>pozadie</code></td><td class="c">10,82 : 1</td><td><span class="ok">✓ AA</span></td></tr></tbody></table></div></div></article>
+<article class="schema-karta" id="s-papier"><h3>5. Jedálny lístok <small>svetlá · <code>data-schema="papier"</code></small></h3>
+<p>Svetlá: krémový papier z výčapu, sépiový text, okrový akcent.</p><p class="male"><b>Z Wadu:</b> Svetlá schéma: <b>Ivory Buff</b> (papier) · <b>Sepia</b> (text) · <b>Yellow Ocher</b> (akcent) · <b>Pompeian Red</b> (chyba) · <b>Dull Blue Violet</b> (info).</p>
+<div class="vzorky" role="list" aria-label="Vzorky farieb"><span class="vzorka" role="listitem"><i style="background:#f1e8d3"></i><b>pozadie</b>#f1e8d3</span><span class="vzorka" role="listitem"><i style="background:#fbf6ea"></i><b>plocha</b>#fbf6ea</span><span class="vzorka" role="listitem"><i style="background:#e5d7b9"></i><b>plocha-3</b>#e5d7b9</span><span class="vzorka" role="listitem"><i style="background:#d5c3a0"></i><b>okraj</b>#d5c3a0</span><span class="vzorka" role="listitem"><i style="background:#2a2018"></i><b>text</b>#2a2018</span><span class="vzorka" role="listitem"><i style="background:#5c4c3b"></i><b>tlmeny</b>#5c4c3b</span><span class="vzorka" role="listitem"><i style="background:#d08f2e"></i><b>akcent</b>#d08f2e</span><span class="vzorka" role="listitem"><i style="background:#a8321f"></i><b>cervena</b>#a8321f</span><span class="vzorka" role="listitem"><i style="background:#2f6e33"></i><b>zelena</b>#2f6e33</span><span class="vzorka" role="listitem"><i style="background:#2e5f86"></i><b>info</b>#2e5f86</span><span class="vzorka" role="listitem"><i style="background:#127380"></i><b>ja</b>#127380</span><span class="vzorka" role="listitem"><i style="background:#b24f2c"></i><b>su</b>#b24f2c</span></div>
+<div class="dva"><div class="tab-obal"><table class="r"><caption class="male tlmene" style="text-align:left;padding:6px 10px">Priradenie na tokeny</caption><thead><tr><th>Rola</th><th>Token</th><th>Hex</th></tr></thead><tbody><tr><td>Pozadie stránky</td><td><code>--pozadie</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#f1e8d3"></span> <code>#f1e8d3</code></td></tr><tr><td>Plocha / panel</td><td><code>--plocha</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#fbf6ea"></span> <code>#fbf6ea</code></td></tr><tr><td>Plocha 2 (vnorená)</td><td><code>--plocha-2</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#efe5cf"></span> <code>#efe5cf</code></td></tr><tr><td>Plocha 3 (tlačidlo)</td><td><code>--plocha-3</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#e5d7b9"></span> <code>#e5d7b9</code></td></tr><tr><td>Okraj</td><td><code>--okraj</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#d5c3a0"></span> <code>#d5c3a0</code></td></tr><tr><td>Okraj poľa</td><td><code>--okraj-pole</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#8c7650"></span> <code>#8c7650</code></td></tr><tr><td>Text</td><td><code>--text</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#2a2018"></span> <code>#2a2018</code></td></tr><tr><td>Tlmený text</td><td><code>--tlmeny</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#5c4c3b"></span> <code>#5c4c3b</code></td></tr><tr><td>Slabý text</td><td><code>--slaby</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#6f5e4a"></span> <code>#6f5e4a</code></td></tr><tr><td>Akcent (výplň)</td><td><code>--akcent</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#d08f2e"></span> <code>#d08f2e</code></td></tr><tr><td>Akcent ako text / odkaz</td><td><code>--akcent-text</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#8a4f0c"></span> <code>#8a4f0c</code></td></tr><tr><td>Text na akcente</td><td><code>--na-akcente</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#1f1205"></span> <code>#1f1205</code></td></tr><tr><td>Akcent 2 · tehlová / chyba</td><td><code>--cervena</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#a8321f"></span> <code>#a8321f</code></td></tr><tr><td>Chyba ako text</td><td><code>--cervena-text</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#a8321f"></span> <code>#a8321f</code></td></tr><tr><td>Úspech</td><td><code>--zelena</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#2f6e33"></span> <code>#2f6e33</code></td></tr><tr><td>Info / bot</td><td><code>--info</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#2e5f86"></span> <code>#2e5f86</code></td></tr><tr><td>Ty</td><td><code>--ja</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#127380"></span> <code>#127380</code></td></tr><tr><td>Súper</td><td><code>--su</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#b24f2c"></span> <code>#b24f2c</code></td></tr><tr><td>Stôl: tvoj ťah</td><td><code>--stol-moj</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#dcebd3"></span> <code>#dcebd3</code></td></tr><tr><td>Stôl: tvoj ťah, okraj</td><td><code>--stol-moj-okraj</code></td><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(128,128,128,.5);background:#3f8a4f"></span> <code>#3f8a4f</code></td></tr></tbody></table></div>
+<div class="tab-obal"><table class="r"><caption class="male tlmene" style="text-align:left;padding:6px 10px">Kontrast WCAG 2.2</caption><thead><tr><th>Pár</th><th class="c">Pomer</th><th>AA</th></tr></thead><tbody><tr><td>Text na pozadí<br><code>text</code> / <code>pozadie</code></td><td class="c">13,07 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Text na tlačidle<br><code>text</code> / <code>plocha-3</code></td><td class="c">11,19 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Tlmený text na ploche 2<br><code>tlmeny</code> / <code>plocha-2</code></td><td class="c">6,57 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Slabý text na ploche 2 (najhorší prípad)<br><code>slaby</code> / <code>plocha-2</code></td><td class="c">4,97 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Odkaz / akcent na ploche<br><code>akcent-text</code> / <code>plocha</code></td><td class="c">6,08 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Text na hlavnom tlačidle<br><code>na-akcente</code> / <code>akcent</code></td><td class="c">6,67 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Chyba (text) na ploche<br><code>cervena-text</code> / <code>plocha</code></td><td class="c">6,20 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Úspech na ploche 2<br><code>zelena</code> / <code>plocha-2</code></td><td class="c">4,94 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Info na ploche<br><code>info</code> / <code>plocha</code></td><td class="c">6,29 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Ty na ploche<br><code>ja</code> / <code>plocha</code></td><td class="c">5,14 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Súper na ploche<br><code>su</code> / <code>plocha</code></td><td class="c">4,81 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>„TVOJ ŤAH“ na stole<br><code>stol-moj-text</code> / <code>stol-moj</code></td><td class="c">5,25 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Okraj poľa (hranica)<br><code>okraj-pole</code> / <code>pole</code></td><td class="c">4,28 : 1</td><td><span class="ok">✓ AA</span></td></tr><tr><td>Obrys hlavného tlačidla (hranica)<br><code>akcent-tmavy</code> / <code>pozadie</code></td><td class="c">5,38 : 1</td><td><span class="ok">✓ AA</span></td></tr></tbody></table></div></div></article>
+</section>
+
+<section id="mockupy" aria-labelledby="h-mockupy">
+  <h2 id="h-mockupy">5. Mockupy: ako by to vyzeralo</h2>
+  <p>Výrezy webu nakreslené výhradne tokenmi schémy, s reálnym textom zo stránok. Prepínač prepne všetky ukážky naraz. Rovnako fungujú aj dlaždice v mockupe profilu, dá sa na ne kliknúť. Písmo v ukážke je Bitter alebo Roboto, ak ich máš nainštalované, inak Cambria alebo Georgia a systémové písmo.</p>
+  <div class="lepiaci">
+    <fieldset class="prepinac" id="prepinac">
+      <legend>Schéma v ukážkach</legend>
+      <input type="radio" name="schema-prepinac" id="pp-krcma" value="krcma" checked><label for="pp-krcma"><span class="gulicka" style="background:linear-gradient(135deg,#14110e 0 50%,#e9ad45 50% 100%)" aria-hidden="true"></span>Krčma</label>
+      <input type="radio" name="schema-prepinac" id="pp-noc" value="noc"><label for="pp-noc"><span class="gulicka" style="background:linear-gradient(135deg,#0e131b 0 50%,#efc179 50% 100%)" aria-hidden="true"></span>Polnoc na dedine</label>
+      <input type="radio" name="schema-prepinac" id="pp-vino" value="vino"><label for="pp-vino"><span class="gulicka" style="background:linear-gradient(135deg,#160d10 0 50%,#efbb80 50% 100%)" aria-hidden="true"></span>Vínna pivnica</label>
+      <input type="radio" name="schema-prepinac" id="pp-tabak" value="tabak"><label for="pp-tabak"><span class="gulicka" style="background:linear-gradient(135deg,#11120c 0 50%,#d9c46e 50% 100%)" aria-hidden="true"></span>Tabak</label>
+      <input type="radio" name="schema-prepinac" id="pp-papier" value="papier"><label for="pp-papier"><span class="gulicka" style="background:linear-gradient(135deg,#f1e8d3 0 50%,#d08f2e 50% 100%)" aria-hidden="true"></span>Jedálny lístok</label>
+    </fieldset>
+  </div>
+
+  <p class="ukazka-nadpis">A · Hlavička a domov</p>
+  <div class="mk mk-koren" data-schema="krcma">
+    <div class="mk-hlavicka">
+      <span class="mk-logo"><span class="mk-pohar" aria-hidden="true"></span>NA EX!</span>
+      <span class="mk-nav"><span>Pravidlá</span><span>Karty</span><span>Hrať</span><span>Rebríček</span><span>Spätná väzba</span></span>
+      <span class="mk-ucet"><span class="mk-avatar" aria-hidden="true"></span>Dizajn 1</span>
+    </div>
+    <div class="mk-telo">
+      <div class="mk-hero">
+        <div>
+          <h1>Bitka o dedinu.<br><em>Na ex!</em></h1>
+          <p class="mk-tlmene">Kompetitívna kartová hra pre dvoch v drsnom dedinskom prostredí. Stav partiu z kariet, ktoré sa dotýkajú stranami, bi sa o lokality, des starších — a nezabudni na vlastné dlhy.</p>
+          <span class="mk-btn mk-btn-h">Hrať teraz</span> <span class="mk-btn">Naučiť sa pravidlá</span>
+        </div>
+        <div class="mk-vejar" aria-hidden="true">
+          <div class="mk-karta" style="--v:#c0699a"><div class="il"></div><div class="pas"><b>Pijan</b><span>Občan • Závislák</span></div><div class="tx"><b>Bitka:</b> Ak má žena akciu poldeci, udeľ ranu.</div></div>
+          <div class="mk-karta" style="--v:#6b63b8"><div class="il"></div><div class="pas"><b>Farár</b><span>Starešina • Chlap</span></div><div class="tx"><b>Bitka:</b> Ignoruj 2 súperove Povery.</div></div>
+          <div class="mk-karta" style="--v:#5aaa62"><div class="il"></div><div class="pas"><b>Krčma</b><span>Lokalita</span></div><div class="tx">Ak máš plný poldeci, môžeš dať NA EX.</div></div>
+        </div>
+      </div>
+      <div class="mk-tri">
+        <div class="mk-panel"><h3>Nauč sa hrať</h3><p class="mk-tlmene" style="margin:0">Pravidlá krok za krokom, s interaktívnymi príkladmi spájania kariet a výpočtu bitky.</p></div>
+        <div class="mk-panel"><h3>Glosár kariet</h3><p class="mk-tlmene" style="margin:0">Všetky karty hry. Prejdi myšou ponad akciu alebo pojem a uvidíš, čo robí.</p></div>
+        <div class="mk-panel"><h3>Hraj proti kamarátovi</h3><p class="mk-tlmene" style="margin:0">Založ hru, pošli kód alebo si vyber súpera zo zoznamu otvorených hier.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="ukazka-nadpis">B · Herný stôl (tvoj ťah, voľba cieľa)</p>
+  <div class="mk mk-koren" data-schema="krcma">
+    <div class="mk-telo">
+      <div class="mk-fazy">
+        <span class="mk-kod">78MT</span><span class="mk-kolo">Kolo 1 · lokalita 1/5</span>
+        <ol class="mk-kroky" aria-label="Fázy kola"><li class="ak" aria-current="step">Voľba cieľa</li><li>Draft</li><li>Zhromaždenie</li><li>Pitka</li><li>Bitka</li></ol>
+        <span class="mk-odpojeny">○ Dizajn 2 odpojený</span>
+        <span class="mk-btn mk-btn-m">vzdať sa</span>
+      </div>
+      <div class="mk-linia moj-tah">
+        <span class="mk-linia-stav">TVOJ ŤAH</span>
+        <div class="mk-rad">
+          <div class="mk-karta" style="--v:#c0699a" aria-hidden="true"><div class="il"></div><div class="pas"><b>Hráč</b><span>Občan</span></div><div class="tx"><b>Pitka:</b> +1 poldeci</div></div>
+          <div class="mk-karta" style="--v:#c0699a" aria-hidden="true"><div class="il"></div><div class="pas"><b>Kurva</b><span>Občan • Žena</span></div><div class="tx"><b>Bitka:</b> rana za Dlh</div></div>
+          <span class="mk-sipka" aria-hidden="true">←</span>
+          <div class="mk-karta vybrana" style="--v:#5aaa62"><div class="il"></div><div class="pas"><b>Krčma</b><span>Lokalita · vybraná</span></div><div class="tx">Ak máš plný poldeci, môžeš dať NA EX.</div></div>
+          <span class="mk-sipka" aria-hidden="true">→</span>
+          <div class="mk-karta" style="--v:#7f8c99" aria-hidden="true"><div class="il"></div><div class="pas"><b>Úžerník</b><span>Občan • Chlap</span></div><div class="tx"><b>Bitka:</b> Dlh +1</div></div>
+          <div class="mk-slot">prázdna</div>
+        </div>
+      </div>
+      <div class="mk-hraci">
+        <div class="mk-hrac"><span class="mk-avatar" style="width:44px;height:44px" aria-hidden="true"></span><div><div class="meno">Dizajn 1 <span class="mk-tlmene">(ty)</span></div><span class="rola">⚔ útočník</span> <span class="mk-odznak">1200</span></div>
+          <div class="mk-stat"><div><small>CIGARETY</small><b>3</b></div><div><small>POLDECI</small><b>2</b></div><div><small>DLHY</small><b>0<span>/10</span></b></div><div><small>PEČEŇ</small><b>0<span>/3</span></b></div></div></div>
+        <div class="mk-hrac su"><span class="mk-avatar" style="width:44px;height:44px" aria-hidden="true"></span><div><div class="meno">Dizajn 2</div><span class="rola">⛨ obranca</span> <span class="mk-odznak">1200</span></div>
+          <div class="mk-stat"><div><small>POLDECI</small><b>2</b></div><div><small>CIGARETY</small><b>3</b></div><div><small>DLHY</small><b>0<span>/10</span></b></div><div><small>ZADĹŽENIE</small><b>0<span>/2</span></b></div></div></div>
+      </div>
+      <div class="mk-pokyn"><span class="zaloz">Šenok<i>0</i></span><span class="zaloz">Lokality<i>5</i></span><span class="zaloz">Log</span><span class="stav"><small>TVOJ ŤAH</small>Vyber lokalitu, o ktorú sa bude bojovať.</span></div>
+    </div>
+  </div>
+
+  <p class="ukazka-nadpis">C · Rebríček</p>
+  <div class="mk mk-koren" data-schema="krcma">
+    <div class="mk-telo">
+      <h2 style="font-size:1.7rem">Rebríček</h2>
+      <p class="mk-tlmene" style="max-width:62ch">Poradie hráčov podľa <b style="color:var(--text)">Frajeriny</b>. Funguje ako šachové Elo: za výhru nad rovnako silným súperom získaš asi 16 bodov a on ich toľko stratí.</p>
+      <div class="mk-panel" style="padding:6px 8px;overflow-x:auto">
+        <table class="mk-tab">
+          <thead><tr><th>#</th><th>Hráč</th><th>Hodnosť</th><th class="c">Frajerina</th><th class="c">Partie</th><th class="c">Posledná</th></tr></thead>
+          <tbody>
+            <tr><td class="por m1">1</td><td><span class="mk-hrac-bunka"><span class="mk-avatar" aria-hidden="true"></span>Michal</span></td><td>Postrach dediny</td><td class="c"><b>1824</b></td><td class="c">41</td><td class="c mk-plus">+14</td></tr>
+            <tr><td class="por m2">2</td><td><span class="mk-hrac-bunka"><span class="mk-avatar" aria-hidden="true"></span>Teta Gizka <span class="mk-bot">bot</span></span></td><td>Veľký frajer</td><td class="c"><b>1611</b></td><td class="c">96</td><td class="c mk-minus">−9</td></tr>
+            <tr class="ja"><td class="por m3">3</td><td><span class="mk-hrac-bunka"><span class="mk-avatar" aria-hidden="true"></span>Dizajn 1 <span class="mk-tlmene">(ty)</span></span></td><td>Frajer</td><td class="c"><b>1472</b></td><td class="c">12</td><td class="c mk-plus">+17</td></tr>
+            <tr><td class="por">4</td><td><span class="mk-hrac-bunka"><span class="mk-avatar" aria-hidden="true"></span>Rapavý Fero <span class="mk-bot">bot</span></span></td><td>Štamgast</td><td class="c"><b>1318</b></td><td class="c">88</td><td class="c mk-minus">−16</td></tr>
+            <tr><td class="por">5</td><td><span class="mk-hrac-bunka"><span class="mk-avatar" aria-hidden="true"></span>Dizajn 2</span></td><td>Návštevník</td><td class="c"><b>1200?</b></td><td class="c">3</td><td class="c mk-minus">−17</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <p class="ukazka-nadpis">D · Profil: výber schémy (nový panel v „Nastavenia účtu“)</p>
+  <div class="mk mk-koren" data-schema="krcma">
+    <div class="mk-telo">
+      <h2 style="font-size:1.4rem">Nastavenia účtu</h2>
+      <div class="mk-nastavenia">
+        <div class="mk-panel mk-schemy">
+          <fieldset>
+            <legend>Farebná schéma</legend>
+            <p class="mk-slabe" style="margin:0">Platí na všetkých stránkach a na každom zariadení, kde si prihlásený. Ukladá sa samo. Karty vyzerajú vo všetkých schémach rovnako.</p>
+            <div class="mk-dlazdice">
+              <label class="mk-dlazdica"><input type="radio" name="schema-profil" value="krcma" checked><span class="mk-nahlad" data-schema="krcma" aria-hidden="true"><span class="h"></span><span class="p"><span class="l1"></span><span class="l2"></span><span class="b"></span><span class="ja"></span><span class="su"></span></span></span><span class="nazov">Krčma<span class="fajka">✓ zvolená</span></span><span class="pop">Drevo a jantár · predvolená</span></label>
+              <label class="mk-dlazdica"><input type="radio" name="schema-profil" value="noc"><span class="mk-nahlad" data-schema="noc" aria-hidden="true"><span class="h"></span><span class="p"><span class="l1"></span><span class="l2"></span><span class="b"></span><span class="ja"></span><span class="su"></span></span></span><span class="nazov">Polnoc na dedine<span class="fajka">✓ zvolená</span></span><span class="pop">Indigo a lampa</span></label>
+              <label class="mk-dlazdica"><input type="radio" name="schema-profil" value="vino"><span class="mk-nahlad" data-schema="vino" aria-hidden="true"><span class="h"></span><span class="p"><span class="l1"></span><span class="l2"></span><span class="b"></span><span class="ja"></span><span class="su"></span></span></span><span class="nazov">Vínna pivnica<span class="fajka">✓ zvolená</span></span><span class="pop">Víno a škorica</span></label>
+              <label class="mk-dlazdica"><input type="radio" name="schema-profil" value="tabak"><span class="mk-nahlad" data-schema="tabak" aria-hidden="true"><span class="h"></span><span class="p"><span class="l1"></span><span class="l2"></span><span class="b"></span><span class="ja"></span><span class="su"></span></span></span><span class="nazov">Tabak<span class="fajka">✓ zvolená</span></span><span class="pop">Oliva a tabak</span></label>
+              <label class="mk-dlazdica"><input type="radio" name="schema-profil" value="papier"><span class="mk-nahlad" data-schema="papier" aria-hidden="true"><span class="h"></span><span class="p"><span class="l1"></span><span class="l2"></span><span class="b"></span><span class="ja"></span><span class="su"></span></span></span><span class="nazov">Jedálny lístok<span class="fajka">✓ zvolená</span></span><span class="pop">Svetlá · papier a sépia</span></label>
+            </div>
+            <label class="mk-prepinac-system"><input type="checkbox" id="podla-zariadenia"><span>Podľa zariadenia: keď má telefón alebo počítač svetlý režim, použije sa <b>Jedálny lístok</b>, inak zvolená tmavá schéma.</span></label>
+          </fieldset>
+        </div>
+        <div class="mk-panel">
+          <h3>Herné meno</h3>
+          <label class="mk-slabe" for="mk-meno" style="display:block;font-weight:600;color:var(--tlmeny);margin-bottom:4px">Ako ťa uvidí súper</label>
+          <input id="mk-meno" class="mk-pole" value="Dizajn 1">
+          <p class="mk-slabe" style="margin:4px 0 10px">2 – 24 znakov.</p>
+          <span class="mk-btn mk-btn-h">Uložiť meno</span>
+        </div>
+        <div class="mk-panel">
+          <h3>Zväčšenie kariet</h3>
+          <p style="margin:0 0 6px;font-weight:600;color:var(--tlmeny);font-size:.88rem">Zväčšená karta: 200 %</p>
+          <input type="range" min="150" max="400" step="10" value="200" style="width:100%;accent-color:var(--akcent)" aria-label="Zväčšená karta">
+          <div class="mk-hlaska uspech" style="margin-top:10px"><b>✓</b> Herné meno je uložené.</div>
+          <div class="mk-hlaska chyba" style="margin-top:8px"><b>✕</b> Heslo musí mať aspoň 8 znakov.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Všetkých päť naraz</h3>
+  <p class="tlmene male">Rovnaký výrez v každej schéme na porovnanie. Tento pohľad funguje aj bez JavaScriptu.</p>
+  <div class="mini-mriezka">
+    <div><p class="mini-titul">Krčma</p>
+    <div class="mk mk-mini" data-schema="krcma">
+      <div class="mk-hlavicka"><span class="mk-logo"><span class="mk-pohar" aria-hidden="true"></span>NA EX!</span><span class="mk-nav"><span class="ak">Hrať</span><span>Rebríček</span><span>Karty</span></span></div>
+      <div class="mk-telo">
+        <div class="mk-linia moj-tah" style="padding:20px 8px 10px;margin-top:6px"><span class="mk-linia-stav">TVOJ ŤAH</span><div class="mk-rad"><div class="mk-karta" style="--v:#c0699a;width:56px" aria-hidden="true"><div class="il"></div><div class="pas"><b style="font-size:.5rem">Pijan</b></div><div class="tx"></div></div><div class="mk-karta vybrana" style="--v:#5aaa62;width:56px" aria-hidden="true"><div class="il"></div><div class="pas"><b style="font-size:.5rem">Krčma</b></div><div class="tx"></div></div><div class="mk-karta" style="--v:#6b63b8;width:56px" aria-hidden="true"><div class="il"></div><div class="pas"><b style="font-size:.5rem">Farár</b></div><div class="tx"></div></div></div></div>
+        <div class="mk-panel" style="margin-top:12px;padding:10px 12px">
+          <h3>Rebríček</h3>
+          <table class="mk-tab"><tbody><tr><td class="por m1">1</td><td>Michal</td><td class="c"><b>1824</b></td><td class="c mk-plus">+14</td></tr><tr class="ja"><td class="por m2">2</td><td>Dizajn 1 <span class="mk-tlmene">(ty)</span></td><td class="c"><b>1472</b></td><td class="c mk-plus">+17</td></tr><tr><td class="por m3">3</td><td>Teta Gizka <span class="mk-bot">bot</span></td><td class="c"><b>1318</b></td><td class="c mk-minus">−16</td></tr></tbody></table>
+          <p class="mk-slabe" style="margin:6px 0 0">Otáznik znamená provizórne hodnotenie.</p>
+        </div>
+        <div class="riadok"><span class="cip ja">ty 4</span><span class="cip su">Dizajn 2 4?</span><span class="mk-odznak">subadmin</span></div>
+        <div class="mk-hlaska chyba" style="margin-top:10px"><b>○</b> Dizajn 2 odpojený — <a href="#mockupy">kontumačná výhra</a></div>
+        <div class="riadok"><span class="mk-btn mk-btn-h mk-btn-m">Hrať teraz</span><span class="mk-btn mk-btn-m">Naučiť sa pravidlá</span></div>
+      </div>
+    </div></div>
+    <div><p class="mini-titul">Polnoc na dedine</p>
+    <div class="mk mk-mini" data-schema="noc">
+      <div class="mk-hlavicka"><span class="mk-logo"><span class="mk-pohar" aria-hidden="true"></span>NA EX!</span><span class="mk-nav"><span class="ak">Hrať</span><span>Rebríček</span><span>Karty</span></span></div>
+      <div class="mk-telo">
+        <div class="mk-linia moj-tah" style="padding:20px 8px 10px;margin-top:6px"><span class="mk-linia-stav">TVOJ ŤAH</span><div class="mk-rad"><div class="mk-karta" style="--v:#c0699a;width:56px" aria-hidden="true"><div class="il"></div><div class="pas"><b style="font-size:.5rem">Pijan</b></div><div class="tx"></div></div><div class="mk-karta vybrana" style="--v:#5aaa62;width:56px" aria-hidden="true"><div class="il"></div><div class="pas"><b style="font-size:.5rem">Krčma</b></div><div class="tx"></div></div><div class="mk-karta" style="--v:#6b63b8;width:56px" aria-hidden="true"><div class="il"></div><div class="pas"><b style="font-size:.5rem">Farár</b></div><div class="tx"></div></div></div></div>
+        <div class="mk-panel" style="margin-top:12px;padding:10px 12px">
+          <h3>Rebríček</h3>
+          <table class="mk-tab"><tbody><tr><td class="por m1">1</td><td>Michal</td><td class="c"><b>1824</b></td><td class="c mk-plus">+14</td></tr><tr class="ja"><td class="por m2">2</td><td>Dizajn 1 <span class="mk-tlmene">(ty)</span></td><td class="c"><b>1472</b></td><td class="c mk-plus">+17</td></tr><tr><td class="por m3">3</td><td>Teta Gizka <span class="mk-bot">bot</span></td><td class="c"><b>1318</b></td><td class="c mk-minus">−16</td></tr></tbody></table>
+          <p class="mk-slabe" style="margin:6px 0 0">Otáznik znamená provizórne hodnotenie.</p>
+        </div>
+        <div class="riadok"><span class="cip ja">ty 4</span><span class="cip su">Dizajn 2 4?</span><span class="mk-odznak">subadmin</span></div>
+        <div class="mk-hlaska chyba" style="margin-top:10px"><b>○</b> Dizajn 2 odpojený — <a href="#mockupy">kontumačná výhra</a></div>
+        <div class="riadok"><span class="mk-btn mk-btn-h mk-btn-m">Hrať teraz</span><span class="mk-btn mk-btn-m">Naučiť sa pravidlá</span></div>
+      </div>
+    </div></div>
+    <div><p class="mini-titul">Vínna pivnica</p>
+    <div class="mk mk-mini" data-schema="vino">
+      <div class="mk-hlavicka"><span class="mk-logo"><span class="mk-pohar" aria-hidden="true"></span>NA EX!</span><span class="mk-nav"><span class="ak">Hrať</span><span>Rebríček</span><span>Karty</span></span></div>
+      <div class="mk-telo">
+        <div class="mk-linia moj-tah" style="padding:20px 8px 10px;margin-top:6px"><span class="mk-linia-stav">TVOJ ŤAH</span><div class="mk-rad"><div class="mk-karta" style="--v:#c0699a;width:56px" aria-hidden="true"><div class="il"></div><div class="pas"><b style="font-size:.5rem">Pijan</b></div><div class="tx"></div></div><div class="mk-karta vybrana" style="--v:#5aaa62;width:56px" aria-hidden="true"><div class="il"></div><div class="pas"><b style="font-size:.5rem">Krčma</b></div><div class="tx"></div></div><div class="mk-karta" style="--v:#6b63b8;width:56px" aria-hidden="true"><div class="il"></div><div class="pas"><b style="font-size:.5rem">Farár</b></div><div class="tx"></div></div></div></div>
+        <div class="mk-panel" style="margin-top:12px;padding:10px 12px">
+          <h3>Rebríček</h3>
+          <table class="mk-tab"><tbody><tr><td class="por m1">1</td><td>Michal</td><td class="c"><b>1824</b></td><td class="c mk-plus">+14</td></tr><tr class="ja"><td class="por m2">2</td><td>Dizajn 1 <span class="mk-tlmene">(ty)</span></td><td class="c"><b>1472</b></td><td class="c mk-plus">+17</td></tr><tr><td class="por m3">3</td><td>Teta Gizka <span class="mk-bot">bot</span></td><td class="c"><b>1318</b></td><td class="c mk-minus">−16</td></tr></tbody></table>
+          <p class="mk-slabe" style="margin:6px 0 0">Otáznik znamená provizórne hodnotenie.</p>
+        </div>
+        <div class="riadok"><span class="cip ja">ty 4</span><span class="cip su">Dizajn 2 4?</span><span class="mk-odznak">subadmin</span></div>
+        <div class="mk-hlaska chyba" style="margin-top:10px"><b>○</b> Dizajn 2 odpojený — <a href="#mockupy">kontumačná výhra</a></div>
+        <div class="riadok"><span class="mk-btn mk-btn-h mk-btn-m">Hrať teraz</span><span class="mk-btn mk-btn-m">Naučiť sa pravidlá</span></div>
+      </div>
+    </div></div>
+    <div><p class="mini-titul">Tabak</p>
+    <div class="mk mk-mini" data-schema="tabak">
+      <div class="mk-hlavicka"><span class="mk-logo"><span class="mk-pohar" aria-hidden="true"></span>NA EX!</span><span class="mk-nav"><span class="ak">Hrať</span><span>Rebríček</span><span>Karty</span></span></div>
+      <div class="mk-telo">
+        <div class="mk-linia moj-tah" style="padding:20px 8px 10px;margin-top:6px"><span class="mk-linia-stav">TVOJ ŤAH</span><div class="mk-rad"><div class="mk-karta" style="--v:#c0699a;width:56px" aria-hidden="true"><div class="il"></div><div class="pas"><b style="font-size:.5rem">Pijan</b></div><div class="tx"></div></div><div class="mk-karta vybrana" style="--v:#5aaa62;width:56px" aria-hidden="true"><div class="il"></div><div class="pas"><b style="font-size:.5rem">Krčma</b></div><div class="tx"></div></div><div class="mk-karta" style="--v:#6b63b8;width:56px" aria-hidden="true"><div class="il"></div><div class="pas"><b style="font-size:.5rem">Farár</b></div><div class="tx"></div></div></div></div>
+        <div class="mk-panel" style="margin-top:12px;padding:10px 12px">
+          <h3>Rebríček</h3>
+          <table class="mk-tab"><tbody><tr><td class="por m1">1</td><td>Michal</td><td class="c"><b>1824</b></td><td class="c mk-plus">+14</td></tr><tr class="ja"><td class="por m2">2</td><td>Dizajn 1 <span class="mk-tlmene">(ty)</span></td><td class="c"><b>1472</b></td><td class="c mk-plus">+17</td></tr><tr><td class="por m3">3</td><td>Teta Gizka <span class="mk-bot">bot</span></td><td class="c"><b>1318</b></td><td class="c mk-minus">−16</td></tr></tbody></table>
+          <p class="mk-slabe" style="margin:6px 0 0">Otáznik znamená provizórne hodnotenie.</p>
+        </div>
+        <div class="riadok"><span class="cip ja">ty 4</span><span class="cip su">Dizajn 2 4?</span><span class="mk-odznak">subadmin</span></div>
+        <div class="mk-hlaska chyba" style="margin-top:10px"><b>○</b> Dizajn 2 odpojený — <a href="#mockupy">kontumačná výhra</a></div>
+        <div class="riadok"><span class="mk-btn mk-btn-h mk-btn-m">Hrať teraz</span><span class="mk-btn mk-btn-m">Naučiť sa pravidlá</span></div>
+      </div>
+    </div></div>
+    <div><p class="mini-titul">Jedálny lístok</p>
+    <div class="mk mk-mini" data-schema="papier">
+      <div class="mk-hlavicka"><span class="mk-logo"><span class="mk-pohar" aria-hidden="true"></span>NA EX!</span><span class="mk-nav"><span class="ak">Hrať</span><span>Rebríček</span><span>Karty</span></span></div>
+      <div class="mk-telo">
+        <div class="mk-linia moj-tah" style="padding:20px 8px 10px;margin-top:6px"><span class="mk-linia-stav">TVOJ ŤAH</span><div class="mk-rad"><div class="mk-karta" style="--v:#c0699a;width:56px" aria-hidden="true"><div class="il"></div><div class="pas"><b style="font-size:.5rem">Pijan</b></div><div class="tx"></div></div><div class="mk-karta vybrana" style="--v:#5aaa62;width:56px" aria-hidden="true"><div class="il"></div><div class="pas"><b style="font-size:.5rem">Krčma</b></div><div class="tx"></div></div><div class="mk-karta" style="--v:#6b63b8;width:56px" aria-hidden="true"><div class="il"></div><div class="pas"><b style="font-size:.5rem">Farár</b></div><div class="tx"></div></div></div></div>
+        <div class="mk-panel" style="margin-top:12px;padding:10px 12px">
+          <h3>Rebríček</h3>
+          <table class="mk-tab"><tbody><tr><td class="por m1">1</td><td>Michal</td><td class="c"><b>1824</b></td><td class="c mk-plus">+14</td></tr><tr class="ja"><td class="por m2">2</td><td>Dizajn 1 <span class="mk-tlmene">(ty)</span></td><td class="c"><b>1472</b></td><td class="c mk-plus">+17</td></tr><tr><td class="por m3">3</td><td>Teta Gizka <span class="mk-bot">bot</span></td><td class="c"><b>1318</b></td><td class="c mk-minus">−16</td></tr></tbody></table>
+          <p class="mk-slabe" style="margin:6px 0 0">Otáznik znamená provizórne hodnotenie.</p>
+        </div>
+        <div class="riadok"><span class="cip ja">ty 4</span><span class="cip su">Dizajn 2 4?</span><span class="mk-odznak">subadmin</span></div>
+        <div class="mk-hlaska chyba" style="margin-top:10px"><b>○</b> Dizajn 2 odpojený — <a href="#mockupy">kontumačná výhra</a></div>
+        <div class="riadok"><span class="mk-btn mk-btn-h mk-btn-m">Hrať teraz</span><span class="mk-btn mk-btn-m">Naučiť sa pravidlá</span></div>
+      </div>
+    </div></div>
+  </div>
+</section>
+
+<section id="navrhy" aria-labelledby="h-navrhy">
+  <h2 id="h-navrhy">6. Návrhy</h2>
+
+  <article class="navrh" id="n1">
+    <h3>N1 · Rýchla výhra: kontrast v Krčme</h3>
+    <p>Tri hodnoty v <code>:root</code> zmenia vzhľad len nepatrne a opravia nálezy A4–A6. Dá sa to spraviť hneď, nezávisle od schém.</p>
+    <div class="predpo">
+      <div><div class="stitok">Pred</div>
+        <div class="mk" data-schema="krcma" style="--slaby:#8b7d6a;--cervena-text:#d0563f;--okraj-pole:#57483a"><div class="mk-telo">
+          <div class="mk-panel" style="background:var(--plocha-2)"><p class="mk-slabe" style="margin:0 0 6px">@ai-dizajner · 0 ks · 150 % (<b>3,96 : 1</b>)</p><p style="color:var(--cervena-text);margin:0 0 8px">○ Dizajn 2 odpojený (<b>4,22 : 1</b>)</p><input class="mk-pole" aria-label="Súčasné heslo (pred)" placeholder="" type="password"><p class="mk-slabe" style="margin:4px 0 0">okraj poľa 1,99 : 1</p></div>
+        </div></div>
+      </div>
+      <div><div class="stitok">Po</div>
+        <div class="mk" data-schema="krcma"><div class="mk-telo">
+          <div class="mk-panel" style="background:var(--plocha-2)"><p class="mk-slabe" style="margin:0 0 6px">@ai-dizajner · 0 ks · 150 % (<b>4,78 : 1</b>)</p><p style="color:var(--cervena-text);margin:0 0 8px">○ Dizajn 2 odpojený (<b>5,62 : 1</b>)</p><input class="mk-pole" aria-label="Súčasné heslo (po)" placeholder="" type="password"><p class="mk-slabe" style="margin:4px 0 0">okraj poľa 3,20 : 1</p></div>
+        </div></div>
+      </div>
+    </div>
+    <dl>
+      <dt>Rieši</dt><dd>A4, A5, A6</dd>
+      <dt>Zmena</dt><dd><code>--slaby: #8b7d6a → #9a8b76</code>; nový <code>--cervena-text: #e4705a</code> (výplne ostávajú <code>--cervena</code>); nový <code>--okraj-pole: #7a6652</code> pre <code>input/select/textarea</code>.</dd>
+      <dt>Mobil</dt><dd>Bez zmeny rozloženia. Na slnku pomôže čitateľnosť.</dd>
+      <dt>Náročnosť</dt><dd><b>malá</b> (asi hodina vrátane zjednotenia 16 výskytov červeného textu)</dd>
+      <dt>Súbory</dt><dd><code>styles.css</code>, <code>hra/hra.css</code>, <code>stranky/statistiky.css</code>, <code>admin/admin.css</code></dd>
+    </dl>
+  </article>
+
+  <article class="navrh" id="n2">
+    <h3>N2 · Pretokenizovať farby (vzhľad sa nezmení)</h3>
+    <p>Predpoklad pre všetko ďalšie. Nahradiť 199 hex a 90 <code>rgba()</code> (bez líca karty) približne 25 sémantickými tokenmi. Výsledok musí vyzerať pixel po pixeli rovnako, overí sa snímkami pred a po.</p>
+    <div class="predpo">
+      <div><div class="stitok">Pred (<code>styles.css:120–129</code>, <code>234–236</code>)</div>
+<pre><code>.tlacidlo-hlavne {
+  background: linear-gradient(180deg, #f0b955, #d9962e);
+  border-color: #f3c46c;
+  color: #2b1b03;
+}
+.hlaska-chyba {
+  background: #3a1a14;
+  border: 1px solid #7a3326;
+  color: #ffc2b4;
+}
+input:focus { box-shadow: 0 0 0 3px rgba(233, 173, 69, 0.18); }</code></pre></div>
+      <div><div class="stitok">Po</div>
+<pre><code>.tlacidlo-hlavne {
+  background: linear-gradient(180deg, var(--akcent-svetly), var(--akcent));
+  border-color: var(--akcent-tmavy);
+  color: var(--na-akcente);
+}
+.hlaska-chyba {
+  background: var(--chyba-plocha);   /* color-mix z --cervena */
+  border: 1px solid var(--chyba-okraj);
+  color: var(--text);
+}
+input:focus { box-shadow: 0 0 0 3px color-mix(in srgb, var(--akcent) 18%, transparent); }</code></pre></div>
+    </div>
+    <dl>
+      <dt>Rieši</dt><dd>A1, A2, A3, A7, A8</dd>
+      <dt>Zmena</dt><dd>Nové tokeny (zoznam v časti 7): <code>--plocha-hover</code>, <code>--pole</code>, <code>--okraj-pole</code>, <code>--akcent-svetly</code>, <code>--akcent-text</code>, <code>--na-akcente</code>, <code>--cervena-text</code>, <code>--info</code>, <code>--chyba-/ok-/info-plocha</code> a <code>-okraj</code>, <code>--tien</code>, <code>--karta-tien</code>, <code>--zavoj</code> (modálne pozadie), <code>--stol*</code>, <code>--ja/--su</code> (presun z <code>hra.css:14–17</code>). Priehľadnosti cez <code>color-mix()</code>. TSX konštanty nahradiť <code>var(--ja)</code>.</dd>
+      <dt>Mobil</dt><dd>Bez zmeny.</dd>
+      <dt>Náročnosť</dt><dd><b>stredná</b> (1 až 2 dni, najviac v <code>hra.css</code>)</dd>
+      <dt>Súbory</dt><dd><code>styles.css</code>, <code>stranky/stranky.css</code>, <code>stranky/statistiky.css</code>, <code>hra/hra.css</code>, <code>admin/admin.css</code>, <code>playtest/playtest.css</code>, <code>hra/Scorecard.tsx</code>, <code>admin/Statistiky.tsx</code></dd>
+    </dl>
+  </article>
+
+  <article class="navrh" id="n3">
+    <h3>N3 · Štyri tmavé schémy a výber v profile</h3>
+    <p>Krčma, Polnoc na dedine, Vínna pivnica a Tabak. Ukážka je v <a href="#mockupy">mockupoch</a> (prepínač aj dlaždice v profile). Všetky štyri sú tmavé, takže tiene, ilustrácie a stôl fungujú bez úprav a mení sa len farebný odtieň.</p>
+    <dl>
+      <dt>Rieši</dt><dd>samotné zadanie. Stavia na N2.</dd>
+      <dt>Zmena</dt><dd>Bloky <code>[data-schema="…"]</code> v novom súbore <code>apps/web/src/schemy.css</code>. Panel „Farebná schéma“ ako prvý v <code>.profil-nastavenia</code> cez celú šírku: <code>&lt;fieldset&gt;</code> s natívnymi rádiami, dlaždica s náhľadom kreslená tokenmi danej schémy. Prepnutie je okamžité, s prechodom 200 ms (pri <code>prefers-reduced-motion</code> bez prechodu).</dd>
+      <dt>Mobil</dt><dd>Dlaždice v mriežke <code>auto-fill, minmax(130px, 1fr)</code>, na telefóne 2 v rade. Cieľ kliku je celá dlaždica (≥ 44 × 44 px). Prepne sa aj <code>&lt;meta name="theme-color"&gt;</code>, teda farba lišty prehliadača.</dd>
+      <dt>Náročnosť</dt><dd><b>stredná</b> (asi pol dňa na schémy a panel, server pridá stĺpec <code>schema</code> rovnako ako <code>lupa</code> a <code>hudba</code>)</dd>
+      <dt>Súbory</dt><dd>nový <code>schemy.css</code>, <code>stranky/Ucet.tsx</code>, <code>stranky/stranky.css</code>, <code>Layout.tsx</code> (nastaví <code>data-schema</code>), <code>index.html</code> a nový <code>public/schema.js</code>, server: <code>auth.ts</code>, <code>api.ts</code>, <code>db.ts</code></dd>
+    </dl>
+  </article>
+
+  <article class="navrh" id="n4">
+    <h3>N4 · Odvážnejší smer: svetlá schéma „Jedálny lístok“ a voľba Podľa zariadenia</h3>
+    <p>Krémový papier ako jedálny lístok vo výčape: sépiový text, okrový akcent, tehlová chyba. Identitu nezrieďuje, krčma je aj cez deň. Je to ale <b>iný režim, nie len iný odtieň</b>, preto ho oddeľujem od N3.</p>
+    <dl>
+      <dt>Rieši</dt><dd>hranie cez deň a na mobile vonku, ľudí, ktorým tmavé stránky unavujú oči, a voľbu „Podľa zariadenia“ (<code>prefers-color-scheme</code>).</dd>
+      <dt>Zmena</dt><dd>Okrem tokenov treba: <code>color-scheme: light</code>, mäkšie tiene (<code>--tien</code>), biele líca kariet dostanú jemný obrys (<code>--karta-tien</code>), inak splynú s papierom. Dátové farby (medaily, hodnosti Frajeriny) dostanú tmavšie odtiene. Neaktívne tlačidlo cez <code>--plocha-3</code> a <code>--slaby</code> namiesto priehľadnosti (A10). Ilustrácie ostávajú tmavé, na papieri pôsobia ako fotky v ráme, čo je v poriadku.</dd>
+      <dt>Mobil</dt><dd>Najväčší prínos práve tu (slnko). Treba overiť pokyn a ruku v hre, ktoré majú tmavé závoje <code>rgba(14, 11, 8, …)</code> (<code>hra.css:1279–1290</code>).</dd>
+      <dt>Náročnosť</dt><dd><b>veľká</b> (asi 2× tmavá schéma: prejsť 49 čiernych a bielych tieňov a závojov a otestovať herný stôl vo všetkých fázach)</dd>
+      <dt>Súbory</dt><dd>ako N3 a k tomu <code>hra/hra.css</code> (závoje a tiene), <code>stranky/statistiky.css</code> (dátové farby), <code>karta/karta.css</code> (len tieň okolo líca, nie líce)</dd>
+    </dl>
+  </article>
+</section>
+
+<section id="technika" aria-labelledby="h-technika">
+  <h2 id="h-technika">7. Ako to spraviť tokenmi (bez kódu do repa, len smer)</h2>
+  <h3>Vrstvy</h3>
+  <ol>
+    <li><b>Schéma</b> = blok premenných na <code>&lt;html data-schema="noc"&gt;</code>. Krčma zostane aj ako <code>:root</code>, takže bez atribútu web vyzerá ako dnes.</li>
+    <li><b>Sémantické tokeny</b> (<code>--plocha</code>, <code>--akcent-text</code>, <code>--chyba-plocha</code>…) používajú komponenty. Komponent nikdy nepíše hex.</li>
+    <li><b>Odvodené</b> priehľadnosti a podfarbenia sa počítajú cez <code>color-mix()</code> zo sémantických tokenov, takže sa schéme prispôsobia samy.</li>
+    <li><b>Herné a dátové farby</b> (<code>--ja</code>, <code>--su</code>, zelený stôl, medaily, stupnica starších z <code>packages/tvorba/src/geometria.ts:120</code>) majú v každej schéme rovnaký odtieň. Mení sa len svetlosť, aby prešiel kontrast.</li>
+  </ol>
+<pre><code>/* apps/web/src/schemy.css — návrh */
+:root, [data-schema="krcma"] {
+  color-scheme: dark;
+  --pozadie: #14110e;  --plocha: #1e1914;  --plocha-2: #28211a;  --plocha-3: #332a21;
+  --plocha-hover: #3e3428;  --pole: #17130f;
+  --okraj: #3d3229;  --okraj-svetly: #57483a;  --okraj-pole: #7a6652;
+  --text: #f1e8d8;  --tlmeny: #b6a790;  --slaby: #9a8b76;
+  --akcent: #e9ad45;  --akcent-svetly: #f0b955;  --akcent-tmavy: #b9802a;
+  --akcent-text: #e9ad45;  --na-akcente: #2b1b03;
+  --cervena: #d0563f;  --cervena-text: #e4705a;  --zelena: #7cbf74;  --info: #8fc3e0;
+  --ja: #5cc0cf;  --su: #e0805f;
+  --stol: #262626;  --stol-okraj: #444;  --stol-moj: #173320;  --stol-moj-okraj: #4fae66;
+  --tien: 0 10px 30px rgb(0 0 0 / .35);
+  --karta-tien: 0 1px 2px rgb(0 0 0 / .4), 0 10px 26px rgb(0 0 0 / .38);
+}
+[data-schema="noc"] { /* … hodnoty z časti 4 … */ }
+[data-schema="papier"] { color-scheme: light; /* … */ }
+
+/* odvodené — raz, pre všetky schémy */
+:root {
+  --chyba-plocha: color-mix(in srgb, var(--cervena) 14%, var(--plocha));
+  --chyba-okraj:  color-mix(in srgb, var(--cervena) 55%, var(--plocha));
+  --ziara:        color-mix(in srgb, var(--akcent) 13%, transparent);
+}</code></pre>
+  <p class="tlmene male">Pozor: odvodené tokeny cez <code>var()</code> sa počítajú na prvku, kde sú deklarované. Ak sú na <code>:root</code> a schéma je tiež na <code>&lt;html&gt;</code>, je to ten istý prvok, takže to funguje. Schému preto dávať vždy na <code>&lt;html&gt;</code>, nie na <code>&lt;body&gt;</code>.</p>
+
+  <h3>Uloženie a načítanie bez bliknutia</h3>
+  <ul>
+    <li><b>Server:</b> stĺpec <code>pouzivatelia.schema TEXT</code> (hodnoty <code>krcma | noc | vino | tabak | papier | auto</code>), <code>PATCH /profil { schema }</code> s overením zo zoznamu, rovnako ako <code>lupa</code> a <code>hudba</code> (<code>packages/server/src/auth.ts:244</code>).</li>
+    <li><b>Klient:</b> po prihlásení <code>Layout</code> nastaví <code>document.documentElement.dataset.schema</code> a hodnotu skopíruje do <code>localStorage</code> (v aplikácii smie, na rozdiel od tohto reportu).</li>
+    <li><b>Bez bliknutia:</b> CSP má <code>script-src 'self'</code>, preto nie inline skript, ale malý <code>public/schema.js</code> načítaný synchrónne v <code>&lt;head&gt;</code> pred CSS. Ten prečíta <code>localStorage</code> a pri <code>auto</code> rozhodne cez <code>matchMedia('(prefers-color-scheme: light)')</code>.</li>
+    <li><b>Návštevník bez účtu</b> dostane predvolenú Krčmu alebo voľbu z <code>localStorage</code>, ak ju niekedy zmenil.</li>
+    <li><b>Výnimky:</b> náhľad karty v tvorcovi, Tlač (<code>admin/Tlac.tsx</code>) a reporty Playtestu (vlastný iframe) schému nepreberajú.</li>
+  </ul>
+
+  <h3>Karty a schéma</h3>
+  <p><b>Líce karty schéma nemení</b>: biele líce, pás vo farbe variantu, ikony akcií, bodovacia karta (<code>karta.css</code>, <code>BodovaciaSvg.tsx</code>, farby z tvorcu). Dôvody: (1) karta na webe má byť zhodná s vytlačenou, (2) farba variantu nesie význam (Starešina, Občan, Lokalita) a hráči sa ju učia, (3) tvorca musí vidieť to, čo pôjde do tlače. Schéma mení to, čo je <b>okolo</b> karty: stôl, záblesk pri výbere (<code>--akcent</code>), tieň (<code>--karta-tien</code>) a prázdne miesto. Rub karty tiež ostáva, je súčasťou balíčka.</p>
+
+  <h3>Kontrola kontrastu</h3>
+  <p>Pridať do <code>npm test</code> malý test, ktorý načíta <code>schemy.css</code>, pre každú schému vypočíta páry z tabuliek v časti 4 a zlyhá pod 4,5 : 1 (text) alebo 3 : 1 (hranice). Tak sa nová schéma alebo zmena tokenu nedostane na web s nečitateľným textom.</p>
+</section>
+
+<section id="poradie" aria-labelledby="h-poradie">
+  <h2 id="h-poradie">8. Odporúčané poradie</h2>
+  <ol>
+    <li><b>N1</b> hneď. Hodina práce, oprava prístupnosti, ktorá platí aj bez schém.</li>
+    <li><b>N2</b> ako samostatný commit, ktorý nemení vzhľad. Overiť snímkami pred a po (domov, stôl vo všetkých fázach, profil, rebríček, Tvorba).</li>
+    <li><b>N3</b>: štyri tmavé schémy a panel v profile. Hodnoty sú v časti 4, kontrast prejde vo všetkých.</li>
+    <li><b>N4</b> až keď sa ukáže, že hráči svetlú chcú, alebo ak ju Michal chce kvôli hraniu na mobile cez deň.</li>
+  </ol>
+</section>
+
+<section id="otazky" aria-labelledby="h-otazky">
+  <h2 id="h-otazky">9. Otázky na Michala</h2>
+  <ol>
+    <li><b>Zadarmo alebo ako odmena?</b> Všetky schémy hneď, alebo niektoré odomknúť hodnosťou (napr. Vínna pivnica od Štamgasta, 1300)? Je to UX otázka, ale mení výzor dlaždíc (zámok).</li>
+    <li><b>Svetlá schéma áno alebo nie?</b> Je to najviac práce (N4). A ak áno: má byť herný stôl vo svetlej schéme tiež svetlý, alebo ostane tmavé „súkno“ uprostred papiera?</li>
+    <li><b>Názvy:</b> Krčma, Polnoc na dedine, Vínna pivnica, Tabak, Jedálny lístok. Sedia, alebo chceš krčmovejšie a vtipnejšie?</li>
+    <li><b>Wada presne:</b> stačí inšpirácia názvami farieb, alebo chceš, aby každá schéma zodpovedala konkrétnemu číslu kombinácie z knihy? Na to by som potreboval čísla z tvojho výtlačku a hodnoty by som potom doladil.</li>
+    <li><b>Tvorba:</b> má schéma platiť aj v Tvorbe a Playteste (admin)? Navrhujem áno, s výnimkou náhľadu karty a Tlače.</li>
+  </ol>
+</section>
+
+</div>
+<script>
+(function(){
+  // filter auditu
+  var fb=document.querySelectorAll('[data-filter]');
+  fb.forEach(function(b){b.addEventListener('click',function(){
+    var f=b.getAttribute('data-filter');
+    fb.forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});
+    document.querySelectorAll('#audit-tab tbody tr').forEach(function(r){r.hidden=!(f==='vsetky'||r.getAttribute('data-z')===f)});
+  })});
+  // prepínač schém — mení len ukážky (.mk-koren), nie samotný návrh
+  function nastav(s){
+    document.querySelectorAll('.mk-koren').forEach(function(m){m.setAttribute('data-schema',s)});
+    document.querySelectorAll('input[name="schema-prepinac"],input[name="schema-profil"]').forEach(function(i){i.checked=(i.value===s)});
+  }
+  document.querySelectorAll('input[name="schema-prepinac"],input[name="schema-profil"]').forEach(function(i){
+    i.addEventListener('change',function(){if(i.checked)nastav(i.value)});
+  });
+  var pz=document.getElementById('podla-zariadenia');
+  if(pz)pz.addEventListener('change',function(){
+    if(pz.checked&&window.matchMedia&&matchMedia('(prefers-color-scheme: light)').matches)nastav('papier');
+  });
+})();
+</script>
+</body>
+</html>

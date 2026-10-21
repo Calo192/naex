@@ -1,22 +1,7 @@
-/* NA EX! — tmavá krčmová paleta: tmavé drevo, jantárové svetlo, tehlová červená. */
+/* NA EX! — rozloženie a komponenty; farby berú z tokenov schémy (schemy.css). */
 
 :root {
-  --pozadie: #14110e;
-  --plocha: #1e1914;
-  --plocha-2: #28211a;
-  --plocha-3: #332a21;
-  --okraj: #3d3229;
-  --okraj-svetly: #57483a;
-  --text: #f1e8d8;
-  --tlmeny: #b6a790;
-  --slaby: #8b7d6a;
-  /* Drobný text, ktorý sa má dať prečítať — 5,52 : 1 na --plocha (WCAG AA);
-     --slaby ostáva na dekor (dizajn hra-20261021-1240, UI N1). */
-  --slaby-text: #9d8f7b;
-  /* Červený text (odpojený, chyby) — 5,25 : 1 na --plocha-2. */
-  --cervena-text: #e5735c;
-  /* Pečiatka NA EX! — biely text 6,07 : 1. */
-  --tehla-tmava: #a8341f;
+  /* Farby sú v schemy.css — schéma podľa profilu (data-schema na <html>). */
   /* Typografická škála 1,25 (migrácia postupne). */
   --t-xs: 0.75rem;
   --t-s: 0.875rem;
@@ -24,15 +9,10 @@
   --t-l: 1.25rem;
   --t-xl: 1.563rem;
   --t-2xl: 1.953rem;
-  --akcent: #e9ad45;
-  --akcent-tmavy: #b9802a;
-  --cervena: #d0563f;
-  --zelena: #7cbf74;
   --polomer: 12px;
   --tien: 0 10px 30px rgba(0, 0, 0, 0.35);
   --nadpis: "Bitter", Georgia, serif;
   --pismo: Roboto, "Segoe UI", system-ui, sans-serif;
-  color-scheme: dark;
 }
 
 * {
@@ -47,7 +27,7 @@ body {
   margin: 0;
   font: 16px/1.55 var(--pismo);
   background:
-    radial-gradient(ellipse 90% 60% at 50% -10%, rgba(233, 173, 69, 0.13), transparent 60%),
+    radial-gradient(ellipse 90% 60% at 50% -10%, color-mix(in srgb, var(--akcent) 13%, transparent), transparent 60%),
     var(--pozadie);
   background-attachment: fixed;
   color: var(--text);
@@ -117,8 +97,8 @@ button,
 
 button:hover:not(:disabled),
 .tlacidlo:hover {
-  background: #3e3428;
-  border-color: #6b5947;
+  background: var(--okraj);
+  border-color: color-mix(in oklab, var(--okraj-svetly) 79%, var(--tlmeny));
 }
 
 button:active:not(:disabled) {
@@ -132,15 +112,15 @@ button:disabled {
 
 .tlacidlo-hlavne,
 button.tlacidlo-hlavne {
-  background: linear-gradient(180deg, #f0b955, #d9962e);
-  border-color: #f3c46c;
-  color: #2b1b03;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--akcent) 67%, var(--akcent-svetly)), color-mix(in oklab, var(--akcent) 55%, var(--akcent-tmavy)));
+  border-color: color-mix(in oklab, var(--akcent) 36%, var(--akcent-svetly));
+  color: var(--na-akcente);
   font-weight: 700;
 }
 
 .tlacidlo-hlavne:hover:not(:disabled) {
-  background: linear-gradient(180deg, #f6c66a, #e2a03a) !important;
-  border-color: #f7d18a !important;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--akcent) 31%, var(--akcent-svetly)), color-mix(in oklab, var(--akcent) 74%, var(--akcent-tmavy))) !important;
+  border-color: color-mix(in oklab, var(--akcent-svetly) 95%, var(--tlmeny)) !important;
 }
 
 .tlacidlo-jemne,
@@ -158,12 +138,12 @@ button.tlacidlo-jemne {
 .tlacidlo-nebezpecne,
 button.tlacidlo-nebezpecne {
   background: transparent;
-  border-color: #6b2f24;
-  color: #f19a86;
+  border-color: color-mix(in oklab, var(--tehla-tmava) 53%, var(--plocha-2));
+  color: color-mix(in oklab, var(--cervena-svetla) 88%, var(--slaby));
 }
 
 .tlacidlo-nebezpecne:hover:not(:disabled) {
-  background: #3a1d17 !important;
+  background: color-mix(in oklab, var(--tehla-tmava) 27%, var(--pozadie)) !important;
   border-color: var(--cervena) !important;
 }
 
@@ -181,7 +161,7 @@ textarea {
   padding: 0.6rem 0.75rem;
   border-radius: 9px;
   border: 1px solid var(--okraj-svetly);
-  background: #17130f;
+  background: color-mix(in oklab, var(--plocha) 26%, var(--pozadie));
   color: var(--text);
   transition: border-color 0.15s ease;
 }
@@ -191,7 +171,7 @@ select:focus,
 textarea:focus {
   outline: none;
   border-color: var(--akcent);
-  box-shadow: 0 0 0 3px rgba(233, 173, 69, 0.18);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--akcent) 18%, transparent);
 }
 
 input[type="checkbox"],
@@ -245,21 +225,21 @@ textarea {
 }
 
 .hlaska-chyba {
-  background: #3a1a14;
-  border: 1px solid #7a3326;
-  color: #ffc2b4;
+  background: color-mix(in oklab, var(--tehla-tmava) 27%, var(--pozadie));
+  border: 1px solid color-mix(in oklab, var(--tehla-tmava) 66%, var(--plocha-2));
+  color: color-mix(in oklab, var(--cervena-svetla) 51%, var(--text));
 }
 
 .hlaska-ok {
-  background: #1b2d18;
-  border: 1px solid #3e6b36;
-  color: #c8f0bf;
+  background: color-mix(in oklab, var(--zelena-ziariva) 13%, var(--pozadie));
+  border: 1px solid color-mix(in oklab, var(--zelena-ziariva) 42%, var(--pozadie));
+  color: color-mix(in oklab, var(--zelena-ziariva) 38%, var(--text));
 }
 
 .hlaska-info {
-  background: #2b2416;
-  border: 1px solid #5c4a28;
-  color: #f2dcae;
+  background: color-mix(in oklab, var(--akcent) 14%, var(--pozadie));
+  border: 1px solid color-mix(in oklab, var(--akcent) 39%, var(--pozadie));
+  color: color-mix(in oklab, var(--akcent-svetly) 49%, var(--text));
 }
 
 .nacitavanie {
@@ -298,7 +278,7 @@ textarea {
   border-radius: 50%;
   object-fit: cover;
   flex: none;
-  border: 2px solid rgba(255, 255, 255, 0.12);
+  border: 2px solid color-mix(in srgb, var(--lesk) 12%, transparent);
 }
 
 .avatar-inicialy {
@@ -321,7 +301,7 @@ textarea {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(20, 17, 14, 0.86);
+  background: color-mix(in srgb, var(--pozadie) 86%, transparent);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--okraj);
 }
@@ -619,15 +599,15 @@ textarea {
 }
 
 .odznak-admin {
-  background: #3b2a10;
+  background: color-mix(in oklab, var(--akcent-tmavy) 25%, var(--pozadie));
   color: var(--akcent);
-  border-color: #6b4c1a;
+  border-color: color-mix(in oklab, var(--akcent-tmavy) 56%, var(--pozadie));
 }
 
 .odznak-ai {
-  background: #1d2a33;
-  color: #8fc3e0;
-  border-color: #33505f;
+  background: color-mix(in oklab, var(--info-silna) 18%, var(--pozadie));
+  color: var(--info);
+  border-color: color-mix(in oklab, var(--info-silna) 45%, var(--pozadie));
 }
 
 .riadok-tlacidiel {
@@ -781,6 +761,99 @@ textarea {
 
 .galeria-volba.zvoleny {
   border-color: var(--akcent);
+}
+
+/* Výber farebnej schémy v profile (Michal 2026-10-21) — náhľad má farby schémy natvrdo,
+   aby bolo vidno, ako bude vyzerať, ešte kým ju hráč nezvolí. */
+.vzhlad-webu {
+  margin: 24px 0;
+}
+
+.schemy-mriezka {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.schema-volba {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 4px;
+  padding: 8px 8px 10px;
+  border: 2px solid var(--okraj);
+  border-radius: 10px;
+  background: var(--plocha-2);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.schema-volba:hover:not(:disabled),
+.schema-volba:focus-visible {
+  border-color: var(--okraj-svetly);
+  background: var(--plocha-2);
+  transform: translateY(-2px);
+}
+
+.schema-volba.zvolena,
+.schema-volba.zvolena:hover {
+  border-color: var(--akcent);
+}
+
+.schema-nahlad {
+  display: block;
+  height: 64px;
+  padding: 10px;
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1px rgba(127, 127, 127, 0.25);
+}
+
+.schema-nahlad-plocha {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  height: 100%;
+  padding: 7px 8px;
+  border-radius: 4px;
+}
+
+.schema-nahlad-riadok {
+  display: block;
+  width: 70%;
+  height: 4px;
+  border-radius: 2px;
+  opacity: 0.85;
+}
+
+.schema-nahlad-riadok.kratky {
+  width: 45%;
+  opacity: 0.5;
+}
+
+.schema-nahlad-tlacidlo {
+  display: block;
+  width: 36px;
+  height: 8px;
+  margin-top: auto;
+  border-radius: 4px;
+}
+
+.schema-nazov {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.schema-volba.zvolena .schema-nazov::after {
+  content: " ✓";
+  color: var(--akcent);
+}
+
+.schema-popis {
+  font-size: var(--t-xs);
+  line-height: 1.35;
+  color: var(--slaby-text);
 }
 
 /* Posuvník zväčšenia kariet v profile. */
