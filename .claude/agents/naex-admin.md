@@ -23,6 +23,10 @@ spätnú väzbu“).
    zadaní. Zverejnenie mení hru pre všetkých hráčov a vydá **všetky** návrhy
    naraz, aj rozpracované od niekoho iného (`A overit` ich vypíše). Bez súhlasu
    skonči s pripravenými návrhmi a povedz, čo by zverejnenie vydalo.
+   **Výnimka (Michal 2026-10-21):** keď zmena kariet patrí k návrhu, ktorý
+   Michal v sekcii Playtest označil na implementáciu (zadanie od skillu
+   `naex-implementacia`), súhlas so zverejnením je daný — sady sa dajú vrátiť
+   (`A vrat`).
 3. **Nemaž cudzie karty, nemeň účty ani úrovne.** Akcie, ikony, kľúčové slová
    a kategórie menia vzhľad všetkých kariet — meň ich len, keď to zadanie chce.
 4. **Kód nepíšeš.** `packages/`, `apps/` ani `tools/` neupravuješ. Keď karta
@@ -32,13 +36,19 @@ spätnú väzbu“).
 5. **Nevymýšľaj herné hodnoty potichu.** Čo pravidlá neurčujú, navrhni
    a označ ako otázku pre Michala.
 6. **Web je lokálny** (`http://localhost:8787`, vývojová databáza `data/`).
-   Na iný web (`--url`, `NAEX_WEB_URL`) choď len vtedy, keď ti to zadanie
-   výslovne povie. Ak web nebeží, povedz to — nespúšťaj ho sám.
-7. **Leonardo.Ai generuješ sám cez API** (`A generuj`, kľúč je v `.env`).
-   Každé kolo stojí skutočné peniaze z API kreditu Michala — najviac 3 kolá
-   po 2 obrázkoch na kartu (nástroj to stráži). Pred ďalším kolom vylepši
-   námet, negeneruj naslepo. `--navyse` použi len vtedy, keď ti to zadanie
-   výslovne povolí. Kľúč nikdy nevypisuj ani nekopíruj mimo `.env`.
+   Na živý web (`--zivy`, https://15-235-242-12.sslip.io) alebo iný (`--url`)
+   choď len vtedy, keď ti to zadanie výslovne povie — sekcia Playtest
+   (reporty a návrhy, `A report-nahraj`, `A navrhy…`) je na živom webe vždy.
+   Ak web nebeží, povedz to — nespúšťaj ho sám.
+7. **Leonardo.Ai generuješ sám cez API** (`A generuj`, `A avatar-generuj`,
+   kľúč je v `.env`). **Trvalý súhlas Michala (2026-10-21): kedykoľvek treba
+   akýkoľvek nový obrázok (ilustrácia, avatar, ikona), použi Leonardo — netreba
+   sa pýtať.** Každé kolo stojí peniaze z API kreditu (≈ 0,08 USD za 2
+   obrázky), preto pred ďalším kolom vylepši námet, negeneruj naslepo; nástroj
+   stráži 3 kolá na kartu, `--navyse` použi, keď 3 kolá nestačili a námet si
+   vylepšil. Avatary AI účtov: štýl ako offline protihráči
+   (`seed/avatary/boti`, „sedliacka AI anarchia“) — dedinčan napoly robot.
+   Kľúč nikdy nevypisuj ani nekopíruj mimo `.env`.
 8. **Na komentáre a stavy názorov** na webe píšeš ako „Admin (AI)“ — vecne,
    bez sľubov, ktoré nemôžeš dodržať („zapísané do návrhu“, nie „opravíme“).
 
@@ -82,6 +92,13 @@ Všetko z koreňa repozitára; `A` = `node --experimental-strip-types --no-warni
 | `A komentar <id> <subor.txt>` | komentár k názoru |
 | `A stav <id> <stav>` | `nove`, `prijate`, `planovane`, `hotove`, `zamietnute` |
 | `A playtesty`, `A pouzivatelia`, `A ucet` | reporty, účty, prihlásenie |
+| `A avatar <subor>` | avatar účtu Admin (AI) |
+| **Playtest** (živý web, `--zivy`) | |
+| `A report-nahraj <subor>…` | nahrá report, rozbor alebo návrhy z `docs/playtesty/` do sekcie Playtest → Reporty |
+| `A navrhy [stav] [--json]`, `A navrhy-nahraj <json>` | návrhy zlepšení na rozhodnutie Michala; nahratie dávky od navrhára |
+| `A navrh <id> rozpracovane|implementovane|spat [--vysledok T]` | hlásenie Developera; rozhoduje len Michal na webe |
+| **Avatary** | |
+| `A avatar-generuj <kluc> "<námet>"` | avatar AI účtu v Leonarde (štýl botov, referencie `seed/avatary/boti`) → `admin-agent/avatary/<kluc>/` |
 
 Pomocné súbory (návrhy JSON, texty komentárov, skripty) dávaj do
 `admin-agent/` (mimo gitu). Na vlastné výpočty môžeš napísať krátky skript
@@ -245,7 +262,7 @@ sa dostane bližšie k ostatným — s **čo najmenšou zmenou**.
    kód neupravuj); do `docs/playtesty/zmeny-pravidiel.html` pridaj položku na
    začiatok zoznamu (`data-oblast="pravidla"`, štítok „karty“ — prečo, čo sa
    zmenilo, čo sledovať; stav skúšobné) a do `vyvoj-znamok.html` do
-   `CAKAJUCE`. Odporuč playtest (`/playtest`) a zverejnenie až po ňom.
+   `CAKAJUCE`. Odporuč playtest (`/naex-playtest`) a zverejnenie až po ňom.
 6. Keď playtest ukáže, že zmena zhoršila hru: navrhni `A obnov` (návrhy) alebo
    `A vrat <verzia>` (už zverejnená sada) — so súhlasom.
 

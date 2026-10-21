@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stratégia remiza-20261021: ako riešiť remízu elegantne (NA EX!)</title>
+<style>
+  :root {
+    --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #dccdb3;
+    --text: #2a2016; --tlmeny: #6b5b45; --slaby: #7d6d55;
+    --akcent: #9a5f0c; --cervena: #a83c28; --zelena: #3a7533; --modra: #276f7a;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 system-ui, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 1040px; margin: 0 auto; padding: 32px 16px 100px; }
+  h1, h2, h3 { font-family: Georgia, serif; line-height: 1.2; }
+  h1 { font-size: clamp(1.7rem, 4vw, 2.3rem); margin: 0 0 8px; }
+  h2 { font-size: 1.35rem; margin: 44px 0 12px; }
+  h3 { font-size: 1.08rem; margin: 0 0 6px; }
+  .podnadpis { color: var(--tlmeny); margin: 0 0 20px; max-width: 78ch; }
+  a { color: var(--akcent); }
+  code { font-size: 0.88em; background: var(--plocha-2); padding: 1px 5px; border-radius: 5px; }
+  .verdikt { border: 1px solid color-mix(in srgb, var(--akcent) 55%, transparent); background: color-mix(in srgb, var(--akcent) 8%, var(--plocha));
+    border-radius: 14px; padding: 14px 18px; margin: 18px 0; }
+  .verdikt p { margin: 6px 0; }
+  .pravidlo { font-family: Georgia, serif; font-size: 1.12rem; background: var(--plocha); border: 1px dashed var(--akcent); border-radius: 10px; padding: 10px 14px; margin: 10px 0; }
+  .stitok { display: inline-block; font: 700 0.78rem/1 system-ui, sans-serif; letter-spacing: 0.06em; text-transform: uppercase;
+    color: #fff; background: var(--akcent); border-radius: 999px; padding: 5px 12px; margin-bottom: 8px; }
+  .cisla { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; margin: 16px 0; }
+  .cislo { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; }
+  .cislo b { display: block; font: 700 1.45rem/1.1 Georgia, serif; color: var(--akcent); }
+  .cislo span { color: var(--tlmeny); font-size: 0.88rem; display: block; margin-top: 4px; }
+  .tab { overflow-x: auto; background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; margin: 10px 0; }
+  .tab table { width: 100%; border-collapse: collapse; font-size: 0.86rem; min-width: 760px; }
+  .tab th, .tab td { padding: 7px 9px; border-bottom: 1px solid var(--okraj); text-align: left; vertical-align: top; }
+  .tab tr:last-child td { border-bottom: 0; }
+  .tab th { color: var(--slaby); font-weight: 600; font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .tab td.n { font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
+  .tab tr.vych td { background: color-mix(in srgb, var(--modra) 9%, transparent); }
+  .tab tr.hlavny td { background: color-mix(in srgb, var(--zelena) 9%, transparent); }
+  .dobre { color: var(--zelena); font-weight: 600; }
+  .zle { color: var(--cervena); font-weight: 600; }
+  .zav { display: inline-block; border-radius: 999px; padding: 1px 9px; font-size: 0.78rem; font-weight: 700; }
+  .zav.vys { background: color-mix(in srgb, var(--cervena) 18%, transparent); color: var(--cervena); }
+  .zav.str { background: color-mix(in srgb, var(--akcent) 18%, transparent); color: var(--akcent); }
+  .zav.niz { background: color-mix(in srgb, var(--zelena) 18%, transparent); color: var(--zelena); }
+  .graf { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 12px 14px; margin: 10px 0; }
+  .riadok { display: grid; grid-template-columns: 190px 1fr; gap: 8px; align-items: center; margin: 6px 0; font-size: 0.86rem; }
+  .riadok .meno { color: var(--tlmeny); }
+  .pruhy { display: grid; gap: 3px; }
+  .pruh { position: relative; height: 16px; background: var(--plocha-2); border-radius: 4px; }
+  .pruh i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; background: var(--akcent); }
+  .pruh.e25 i { background: var(--modra); }
+  .pruh.rem i { background: var(--cervena); }
+  .pruh em { position: absolute; right: 6px; top: 0; font-style: normal; font-size: 0.74rem; color: var(--text); }
+  .pruh .polovica { position: absolute; left: 50%; top: -2px; bottom: -2px; border-left: 1px dashed var(--slaby); }
+  .legenda { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 8px; font-size: 0.84rem; color: var(--tlmeny); }
+  .legenda i { display: inline-block; width: 16px; height: 8px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
+  .poznamka { color: var(--tlmeny); font-size: 0.88rem; margin: 8px 2px 0; }
+  .filtre { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 14px; }
+  .filtre button { font: inherit; font-size: 0.88rem; border-radius: 999px; padding: 5px 14px; border: 1px solid var(--okraj);
+    background: var(--plocha-2); color: var(--text); cursor: pointer; }
+  .filtre button[aria-pressed="true"] { background: var(--akcent); color: #fff; border-color: var(--akcent); font-weight: 700; }
+  .filtre button:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+  .navrh { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 14px 16px; margin-bottom: 12px; }
+  .navrh.odp-zaviest { border-left: 5px solid var(--zelena); }
+  .navrh.odp-vyskusat { border-left: 5px solid var(--akcent); }
+  .navrh.odp-zamietnut { border-left: 5px solid var(--cervena); }
+  .navrh dl { display: grid; grid-template-columns: minmax(110px, 170px) 1fr; gap: 4px 12px; margin: 8px 0 0; font-size: 0.93rem; }
+  .navrh dt { color: var(--slaby); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; padding-top: 3px; }
+  .navrh dd { margin: 0; }
+  .odp { display: inline-block; font-size: 0.76rem; font-weight: 700; border-radius: 999px; padding: 2px 10px; margin-left: 6px; vertical-align: middle; color: #fff; }
+  .odp.zaviest { background: var(--zelena); }
+  .odp.vyskusat { background: var(--akcent); }
+  .odp.zamietnut { background: var(--cervena); }
+  blockquote { margin: 6px 0; padding: 4px 12px; border-left: 3px solid var(--okraj); color: var(--tlmeny); font-style: italic; font-size: 0.9rem; }
+  ol.otazky li, ul.zoznam li { margin-bottom: 7px; }
+  details { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 8px 14px; margin: 10px 0; }
+  summary { cursor: pointer; font-weight: 600; }
+  summary:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+  footer { margin-top: 50px; padding-top: 14px; border-top: 1px solid var(--okraj); color: var(--slaby); font-size: 0.85rem; }
+  @media (max-width: 560px) {
+    .navrh dl { grid-template-columns: 1fr; }
+    .riadok { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<main>
+<h1>Ako riešiť remízu elegantne</h1>
+<p class="podnadpis">Rozbor stratéga bez playtestu, téma <strong>remíza v bitke o lokalitu</strong>. Nadväzuje na rozbor
+<a href="strategia-20261021-041728.html">20261021-041728</a> (variant „remíza podľa prevahy“), report <a href="20261021-041728.html">playtestu 20261021-041728</a>
+a <a href="navrhy-20261021-041728.html">návrhy zlepšení</a> (bod 3). Meraný stav: commit M22 (be897a6). Bot Štamgast, stredná hra (7 lokalít),
+východisko a štyri varianty pravidla.</p>
+
+<section class="verdikt" aria-labelledby="verdikt-h">
+  <span class="stitok">Verdikt</span>
+  <h2 id="verdikt-h" style="margin-top:4px">Lokalita z remízy má ísť na sekeru, nie obrancovi</h2>
+  <p>Úplnú remízu (rovnaké tuhé aj celkové poškodenie) dnes dostane obranca. Takto sa rozhodne <strong>11,4 % bitiek</strong>, v priemere 0,8 bitky na partiu, a v playteste 20261021-041728 to boli dve lokality zo siedmich.
+  Celkové poškodenie, ktoré má remízu rozhodnúť ako prvé, rozhodne len 5 z 56 remíz v tuhom. Žiadne kritérium zo stavu hry (priazeň, poldeci, cigarety, karty) nerozhodne všetky remízy, takže každé by potrebovalo ešte jedno náhradné pravidlo.</p>
+  <p>Ako hlavné riešenie odporúčam <strong>vyskúšať v playteste „na sekeru“</strong>:</p>
+  <p class="pravidlo">„Pri remíze nezíska lokalitu nikto. Ide na sekeru a vezme si ju víťaz najbližšej bitky.“</p>
+  <p>Pravidlo sa dá povedať jednou vetou a nerozhoduje v ňom rola. Je tematické (piť na sekeru), body z hry nemiznú a z remízy vzniká plánovanie na ďalšie kolo, lebo nasledujúca bitka má dvojnásobnú stávku.
+  V meraní je rebrík 67 → 72 %, úplných remíz je menej (11,4 → 9,6 %) a útočník vyhrá 54 % bitiek (predtým 51 %). Všetky posuny sú v šume, takže bot nič nepokazil. Záložné riešenie je jednoduchšie „lokalita prepadne“.</p>
+</section>
+
+<h2 id="cisla">Čísla východiska</h2>
+<p class="poznamka" style="margin-top:0">Celkové čísla sú z meraní rozboru <a href="strategia-20261021-041728.html">20261021-041728</a> na tej istej verzii jadra. Nemeral som ich znova. Čísla o remízach sú nové a pochádzajú zo 64 partií bota proti sebe (448 bitiek).</p>
+<div class="cisla">
+  <div class="cislo"><b>67 %</b><span>Rebrík ε = 0,1. Bot s 10 % náhodných ťahov prehrá dve tretiny partií. Šum je ±6 bodov.</span></div>
+  <div class="cislo"><b>85 %</b><span>Rebrík ε = 0,25. Hrubé chyby sa trestajú spoľahlivo.</span></div>
+  <div class="cislo"><b>44 %</b><span>Delené rozdania. V takých rozdaniach rozhodlo rozdanie alebo miesto, nie hráč.</span></div>
+  <div class="cislo"><b>56 %</b><span>Výhoda hráča 1. Je v šume (±6).</span></div>
+  <div class="cislo"><b>27 %</b><span>Otočky, teda víťaz po polovici hry prehrával. Zdravé pásmo je 20–40 %.</span></div>
+  <div class="cislo"><b>0,37</b><span>Predurčenosť rozdania. Šum je 0,31, takže rozdanie určuje víťaza len málo.</span></div>
+  <div class="cislo"><b>12,5 %</b><span>Bitiek má rovnaké tuhé poškodenie (56 zo 448). Remíza sa stáva v každom kole, aj v prvom (9×) a v poslednom (9×).</span></div>
+  <div class="cislo"><b>11,4 %</b><span>Bitiek rozhodne „remíza → obranca“ (51 zo 448). Predošlý rozbor uvádzal 9,6 %, lebo vynechal remízy, ktoré by rozhodla prevaha.</span></div>
+  <div class="cislo"><b>5 z 56</b><span>Toľko remíz v tuhom rozhodne celkové poškodenie. Stupeň „celkové“ teda pomôže len v 1 % bitiek.</span></div>
+  <div class="cislo"><b>51 %</b><span>Bitiek vyhrá útočník. Remíza pre obrancu dnes vyvažuje výhodu útočníka, ktorý má v Pitke posledné slovo.</span></div>
+</div>
+
+<h3>Rebrík a remízy vo variantoch</h3>
+<div class="graf" role="img" aria-label="Rebrík zručnosti pri 10 a 25 percentách náhodných ťahov a podiel úplných remíz vo východisku a v štyroch variantoch remízy">
+  <div class="riadok"><span class="meno">Východisko (obranca)</span><div class="pruhy"><div class="pruh"><i style="width:67%"></i><span class="polovica"></span><em>67 %</em></div><div class="pruh e25"><i style="width:85%"></i><span class="polovica"></span><em>85 %</em></div><div class="pruh rem"><i style="width:45.6%"></i><em>remízy 11,4 %</em></div></div></div>
+  <div class="riadok"><span class="meno">Na sekeru</span><div class="pruhy"><div class="pruh"><i style="width:72%"></i><span class="polovica"></span><em>72 %</em></div><div class="pruh e25"><i style="width:85%"></i><span class="polovica"></span><em>85 %</em></div><div class="pruh rem"><i style="width:38.4%"></i><em>remízy 9,6 %</em></div></div></div>
+  <div class="riadok"><span class="meno">Lokalita prepadne</span><div class="pruhy"><div class="pruh"><i style="width:72%"></i><span class="polovica"></span><em>72 %</em></div><div class="pruh e25"><i style="width:86%"></i><span class="polovica"></span><em>86 %</em></div><div class="pruh rem"><i style="width:35.6%"></i><em>remízy 8,9 %</em></div></div></div>
+  <div class="riadok"><span class="meno">Podtácok</span><div class="pruhy"><div class="pruh"><i style="width:69%"></i><span class="polovica"></span><em>69 %</em></div><div class="pruh e25"><i style="width:84%"></i><span class="polovica"></span><em>84 %</em></div><div class="pruh rem"><i style="width:42%"></i><em>remízy 10,5 %</em></div></div></div>
+  <div class="riadok"><span class="meno">Triezvejší</span><div class="pruhy"><div class="pruh"><i style="width:71%"></i><span class="polovica"></span><em>71 %</em></div><div class="pruh e25"><i style="width:85%"></i><span class="polovica"></span><em>85 %</em></div><div class="pruh rem"><i style="width:44.8%"></i><em>remízy 11,2 %</em></div></div></div>
+  <div class="legenda"><span><i style="background:var(--akcent)"></i>rebrík ε = 0,1</span><span><i style="background:var(--modra)"></i>rebrík ε = 0,25</span><span><i style="background:var(--cervena)"></i>úplné remízy (pruh v mierke × 4)</span><span>prerušovaná čiara = 50 %</span></div>
+</div>
+<p class="poznamka">Remíza rozhoduje asi desatinu bitiek, takže žiadny variant nemôže celkové čísla pohnúť veľa. Všetky rozdiely rebríka (+2 až +5 bodov) sú v šume ±6. Bot tým aspoň ukazuje, že žiadny variant zručnosť neuberá. Rozhodovať sa treba podľa toho, kto vyhráva remízy, či sa o ne oplatí hrať a ako znie pravidlo.</p>
+
+<div class="tab">
+<table>
+  <caption class="poznamka" style="text-align:left;padding:8px 9px 0">Východisko a varianty (rebrík 64 rozdaní × 2 miesta, zrkadlo 64 partií, predurčenosť 10 × 6, rozbor a remízy 64 partií po 7 bitiek)</caption>
+  <thead><tr><th scope="col">Variant</th><th scope="col">ε 0,1</th><th scope="col">delené</th><th scope="col">ε 0,25</th><th scope="col">hráč 1</th><th scope="col">otočky</th><th scope="col">vedúci po 1. / 3. / 6. kole</th><th scope="col">predurč.</th><th scope="col">úplné remízy</th><th scope="col">útočník vyhrá bitku</th><th scope="col">remíza vyhrala</th><th scope="col">lokality nikomu / partia</th><th scope="col">víťaz posl. bitky vyhrá</th></tr></thead>
+  <tbody>
+    <tr class="vych"><td>Východisko: obranca</td><td class="n">67 %</td><td class="n">44 %</td><td class="n">85 %</td><td class="n">56 %</td><td class="n">27 %</td><td class="n">61 / 63 / 79 %</td><td class="n">0,37</td><td class="n">11,4 %</td><td class="n">51 %</td><td>obranca 51 : útočník 0</td><td class="n">0</td><td class="n">85 %</td></tr>
+    <tr class="hlavny"><td>Na sekeru</td><td class="n">72 %</td><td class="n">41 %</td><td class="n">85 %</td><td class="n">59 %</td><td class="n">25 %</td><td class="n">52 / 51 / 84 %</td><td class="n">0,25</td><td class="n dobre">9,6 %</td><td class="n">54 %</td><td>nikto; víťaz ďalšej bitky (vedúci 12 z 25)</td><td class="n">0,09</td><td class="n">79 %</td></tr>
+    <tr><td>Lokalita prepadne</td><td class="n">72 %</td><td class="n">41 %</td><td class="n">86 %</td><td class="n">62 %</td><td class="n">31 %</td><td class="n">57 / 61 / 83 %</td><td class="n">0,23</td><td class="n dobre">8,9 %</td><td class="n">54 %</td><td>nikto</td><td class="n zle">0,63</td><td class="n">78 %</td></tr>
+    <tr><td>Podtácok</td><td class="n">69 %</td><td class="n">44 %</td><td class="n">84 %</td><td class="n">49 %</td><td class="n">27 %</td><td class="n">53 / 62 / 83 %</td><td class="n">0,25</td><td class="n">10,5 %</td><td class="n zle">57 %</td><td>obranca 21 : útočník 26 (vedúci 15 z 38)</td><td class="n">0</td><td class="n">70 %</td></tr>
+    <tr><td>Triezvejší, inak prepadne</td><td class="n">71 %</td><td class="n dobre">36 %</td><td class="n">85 %</td><td class="n">57 %</td><td class="n">25 %</td><td class="n">57 / 69 / 85 %</td><td class="n">0,33</td><td class="n">11,2 %</td><td class="n">56 %</td><td>obranca 18 : útočník 13 : nikto 19</td><td class="n">0,30</td><td class="n">79 %</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="poznamka">Šum: rebrík a hráč 1 ±6 bodov, podiel remíz ±2 body (rozdiel 11,4 → 8,9 % je asi 1,2 σ), útočník ±2,4 bodu. Predurčenosť z 10 rozdaní má šum 0,31, takže všetky varianty sú pri ňom.
+„Víťaz poslednej bitky vyhrá“ sa ráta len z partií, ktorých posledná bitka mala víťaza. Celkové počty Pitiek sa nezmenili (1,49–1,52 na bitku), takže tempo ostáva rovnaké.</p>
+
+<h2 id="mapa">Mapa náhody okolo remízy</h2>
+<div class="tab">
+<table>
+  <thead><tr><th scope="col">Zdroj</th><th scope="col">Kedy vstupuje</th><th scope="col">Rozptyl</th><th scope="col">Čím sa dá tlmiť dnes</th><th scope="col">Závažnosť</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Remíza → obranca</strong></td><td>Hráč to vie pred rozhodnutím, no rozhoduje rola. Rolu určila predošlá bitka, nie hráč v tejto bitke.</td><td>11,4 % bitiek, v playteste 2 zo 7 lokalít (2 × 8 b) a navyše vyhraný patronát nad Farárom (+9 b).
+      <blockquote>„Rozhodla štruktúra pravidla, nie hráč.“ (Eva)</blockquote><blockquote>„Obe (a), (c) sú remíza → vyhrá obranca (ja). … výsledok závisí od pravidla, nie od zručnosti.“ (Jano, K3)</blockquote></td>
+      <td>Útočník musí zahrať o kartu viac. Obranca hrá na vyrovnanie, nie na výhru.</td><td><span class="zav vys">vysoká</span></td></tr>
+    <tr><td>Posledné slovo v Pitke</td><td>Poradie. Útočník vidí obrancovo NA EX, obranca má potom ešte odpoveď kartou.</td><td>Rozhodlo K4 v playteste: Evine 2 : 1 vyrovnal Jano odpoveďou Živnostníkom na 2 : 2.
+      <blockquote>„Posledné slovo v poslednej Pitke má ten, kto dáva odpoveď po mojom NA EX.“ (Eva)</blockquote></td><td>Čítanie súpera, šetrenie karty na odpoveď</td><td><span class="zav str">stredná</span> (interakcia, nie náhoda)</td></tr>
+    <tr><td>Rovnosť v kraji</td><td>Poradie. Pri rovnakom počte Občanov, Zvierat a Starešinov dostane hranu lokality majiteľ karty pri lokalite, teda kto kladie prvý.</td><td>Rozhodlo K1 a K6 v playteste.
+      <blockquote>„Útočník kladie prvý a drží rovnosť na kraji.“ (Eva)</blockquote></td><td>Dvojčatá, podstrčenie</td><td><span class="zav str">stredná</span> (mimo tejto témy, Michal o nej rozhodol 20. 10.)</td></tr>
+    <tr><td>Celkové poškodenie ako 1. stupeň remízy</td><td>Stav hry: Povery proti súperovým priznaným Dlhom</td><td>Rozhodne 5 z 56 remíz v tuhom (1 % bitiek).</td><td>Povery, hygiena Dlhov</td><td><span class="zav niz">nízka</span> (pravidlo skôr zbytočné)</td></tr>
+    <tr><td>Remíza v poslednej bitke</td><td>Na konci hry, keď už niet ako odpovedať</td><td>9 z 56 remíz (16 %). Lokalita za 8 b rozhodne aj partiu.</td><td>nič</td><td><span class="zav str">stredná</span></td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>Rozhodlo by remízu niečo zo stavu hry?</h3>
+<p class="poznamka" style="margin-top:0">Pri každej z 51 úplných remíz východiska som sa pozrel, či by ju rozhodlo kritérium zo stavu hry a komu by pomohlo. Ideálne kritérium rozhodne skoro všetky remízy a nepomáha systematicky obrancovi, vedúcemu ani dobiehajúcemu.</p>
+<div class="tab">
+<table>
+  <thead><tr><th scope="col">Kritérium (vyhrá, kto má…)</th><th scope="col">rozhodne remíz</th><th scope="col">z toho obrancovi</th><th scope="col">z toho vedúcemu v bodoch</th><th scope="col">Čítanie</th></tr></thead>
+  <tbody>
+    <tr><td>viac priazne starších (zrkadlovo: menej strachu)</td><td class="n">36 z 51 (71 %)</td><td class="n">19 %</td><td class="n zle">23 %</td><td>Automatické dobiehanie: pomáha porazenému z minulej bitky (útočníkovi). 15 remíz ostane nerozhodnutých, väčšinou v 1. kole.</td></tr>
+    <tr><td>viac plných poldeci (triezvejší)</td><td class="n">31 z 51 (61 %)</td><td class="n">65 %</td><td class="n">53 %</td><td>Neutrálne a ovplyvnené rozhodnutím (piť, alebo nie), no 39 % remíz ostane.</td></tr>
+    <tr><td>menej nerestí v kole</td><td class="n">24 z 51 (47 %)</td><td class="n">50 %</td><td class="n">50 %</td><td>Neutrálne, ale rozhodne menej ako polovicu. Navyše sa bije s Absťákom (menej nerestí = Absťák).</td></tr>
+    <tr><td>viac (alebo menej) cigariet</td><td class="n">37 z 51 (73 %)</td><td class="n">38 %</td><td class="n">40 %</td><td>Pas a šenok už cigaretami platia. Tiebreak by ich hodnotu zdvojil.</td></tr>
+    <tr><td>menej kariet v línii / viac v ruke</td><td class="n">38–39 z 51 (75 %)</td><td class="n">47–49 %</td><td class="n">53 %</td><td>Neutrálne, no nemá tému a trestá hráča, ktorý hrá.</td></tr>
+    <tr><td>menej lokalít</td><td class="n">32 z 51 (63 %)</td><td class="n">6 %</td><td class="n zle">0 %</td><td>Automatický bonus porazenému.</td></tr>
+    <tr><td>menej bodov</td><td class="n">46 z 51 (90 %)</td><td class="n">15 %</td><td class="n zle">0 %</td><td>Automatický bonus porazenému a vyžaduje rátať body počas hry.</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="poznamka"><strong>Záver:</strong> každé kritérium zo stavu hry nechá 10–50 % remíz nerozhodnutých a potrebuje náhradné pravidlo, takže sa nedá povedať jednou vetou. Elegantné riešenie preto nemá remízu „rozhodnúť“. Má z nej urobiť vlastný výsledok: lokalita nikomu, prípadne na sekeru.</p>
+
+<h2 id="navrhy">Návrhy</h2>
+<p class="poznamka" style="margin-top:0">Zoradené podľa pomeru prínosu a ceny. Pri meraných variantoch sa bot nové pravidlo naučil (úprava hodnoty remízy v <code>hodnotaBitky</code>, pri sekere aj stávky). Čísla sú náznak smeru, nie dôkaz.</p>
+<div class="filtre" role="group" aria-label="Filter návrhov podľa odporúčania">
+  <button type="button" data-f="vsetko" aria-pressed="true">Všetky</button>
+  <button type="button" data-f="zaviest" aria-pressed="false">Zaviesť</button>
+  <button type="button" data-f="vyskusat" aria-pressed="false">Vyskúšať v playteste</button>
+  <button type="button" data-f="zamietnut" aria-pressed="false">Zamietnuť</button>
+</div>
+
+<div id="navrhy-zoznam">
+
+<article class="navrh odp-vyskusat" data-odp="vyskusat">
+  <h3>1. Na sekeru <span class="odp vyskusat">vyskúšať v playteste · hlavné</span></h3>
+  <p class="pravidlo">„Pri remíze nezíska lokalitu nikto. Ide na sekeru a vezme si ju víťaz najbližšej bitky.“</p>
+  <dl>
+    <dt>Problém</dt><dd>Úplnú remízu dostane obranca: 11,4 % bitiek, v playteste 2 zo 7 lokalít. Rozhoduje rola z predošlej bitky. Kritika sa obrátila zakaždým, keď sa zmenila stolička (do 19. 10. dostával remízu útočník), takže vadí, že rozhoduje stolička, a nie ktorá.</dd>
+    <dt>Zmena</dt><dd>§8.4: pri rovnakom tuhom aj celkovom poškodení lokalitu nezíska nikto. Lokalita leží vedľa ďalšieho cieľa „na sekere“ a víťaz najbližšej bitky ju získa spolu s jej lokalitou. Viac remíz po sebe sa na sekere kopí.
+      <ul class="zoznam">
+        <li>Roly ostávajú: útočník ostáva útočníkom a obranca volí ďalší cieľ. Tak to bolo aj pri niekdajšej remíze o staršieho.</li>
+        <li>Prebytok pri úplnej remíze nie je, ako dnes.</li>
+        <li>Remíza v poslednej bitke: lokality na sekere <strong>prepadnú</strong> (merané). Druhá hodnota: v poslednej bitke rozhodne obranca ako dnes. Hra by tak mala víťaza bitky vždy, no pre poslednú bitku by sa vrátila stolička.</li>
+        <li>Patronát pri remíze: patrón nevyhral, starší sa vráti. Michal rozhodne, či (a) s bolestným ako pri prehre (merané), alebo (b) bez bolestného.</li>
+      </ul></dd>
+    <dt>Prečo zručnosť</dt><dd>Remízu nikto nedostane zadarmo, takže útočník aj obranca majú dôvod pridať kartu. Po remíze obaja vedia, že ďalšia bitka má dvojnásobnú stávku. Šetria poldeci a cigarety, obranca volí cieľ s ohľadom na sekeru a pas sa stane drahým. Informácia prichádza pred rozhodnutím a plánuje sa na dve kolá.
+      Téma sedí: kto pil na sekeru, účet vyrovná pri ďalšej runde.</dd>
+    <dt>Čísla variantu</dt><dd>Rebrík ε 0,1: 67 → 72 %, delené 44 → 41 %, ε 0,25: 85 → 85 %. Úplné remízy 11,4 → <strong>9,6 %</strong>: o remízu sa hrá menej, lebo už nie je výhrou pre obrancu.
+      Útočník vyhrá 51 → 54 % bitiek. Útočník je porazený z minulej bitky, takže je to mierne dobiehanie navyše.
+      Bitku o dve a viac lokalít mala polovica partií (33 bitiek v 64 partiách, z toho 3 o tri lokality). Vyhral ju vedúci v 12 z 25 prípadov, teda sekera nenabaľuje ani nedorovnáva.
+      Prepadlo 0,09 lokality na partiu (6 partií skončilo remízou s niečím na sekere). Vedúci po 1. / 3. / 6. kole vyhrá 52 / 51 / 84 % (stred hry otvorenejší, koniec rovnako jasný). Otočky 27 → 25 % (zrkadlo), predurčenosť 0,37 → 0,25 (v šume). Hráč 1 59 % (v šume).</dd>
+    <dt>Playtest 20261021-041728 podľa sekery</dt><dd>Hrubý prepočet bez zmeny ťahov: Most (K2 6 : 6) by išiel na sekeru a v K3 by ho vzal Jano spolu s Kostolom. Krčmu (K4 2 : 2) by v K5 vzala Eva spolu s Jednotou a Jano by stratil aj patronát nad Farárom.
+      Lokality by boli 3 : 4 pre Evu a skóre približne 33 : 41 namiesto 50 : 33. Hra by sa však vyvíjala inak: Jano v K5 pasoval za 2 cigarety, no o dve lokality by asi bojoval.</dd>
+    <dt>Cena a riziko</dt><dd>Treba si pamätať, čo je na sekere (na stole to leží viditeľne). Stav jadra má jedno pole navyše a rozhranie musí ukázať stávku ďalšej bitky.
+      Riziko: dobiehajúci môže v predposlednom kole hrať zámerne na remízu, aby posledná bitka mala dvojnásobnú stávku. To je rozhodnutie s cenou, nie automatický bonus, no bot ho nevie a meranie ho nevidí. Treba ho sledovať v playteste.
+      Remíza v poslednej bitke pripraví o body oboch, takže vedúcemu stačí remíza. Rovnako je to však aj dnes pri obrancovi.</dd>
+    <dt>Náročnosť</dt><dd>malá až stredná (jadro: pole a 10 riadkov v <code>koniecBitky</code>, bot: stávka, UI: odznak „na sekere“ pri cieli, veta v §8.4). Diff: <code>playtest/strategia/remiza-20261021/sekera.diff</code>.</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zaviest" data-odp="zaviest">
+  <h3>2. Odhad bitky ukáže, čo sa stane pri remíze <span class="odp zaviest">zaviesť</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>V playteste hráči pravidlo poznali, no prepočítavali ho z hlavy pri každom ťahu („Remíza = jeho výhra, takže +1 môže rozhodnúť“, Eva K4). Rovnako to navrhuje navrhár v bode 3A.</dd>
+    <dt>Zmena</dt><dd>V odhade bitky (Zhromaždenie, Pitka, potvrdenie pasu) pri rovnosti napísať, čo z nej plynie. Pri dnešnom pravidle „remíza → vyhrá obranca (súper)“, pri sekere „remíza → lokalita na sekeru, ďalšia bitka o 2 lokality“. Pri cieli kola ukázať, čo leží na sekere.</dd>
+    <dt>Prečo zručnosť</dt><dd>Informácia príde pred rozhodnutím. Platí pri akomkoľvek pravidle remízy.</dd>
+    <dt>Čísla</dt><dd>Nemerané (bot pravidlo pozná).</dd>
+    <dt>Cena a riziko</dt><dd>Jeden riadok v odhade. Riziko nízke.</dd>
+    <dt>Náročnosť</dt><dd>malá</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-vyskusat" data-odp="vyskusat">
+  <h3>3. Remíza = rovnaké tuhé (bez stupňa „celkové“) <span class="odp vyskusat">vyskúšať spolu s návrhom 1</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Stupeň „pri rovnakom tuhom rozhodne celkové“ rozhodne 5 z 56 remíz (1 % bitiek), a predsa ho treba vysvetliť a hráči ho rátajú. Jedna veta o remíze má byť naozaj jedna.</dd>
+    <dt>Zmena</dt><dd>§8.4: „Vyhráva vyššie tuhé. Pri rovnakom tuhom ide lokalita na sekeru.“ Prebytok sa ďalej riadi celkovým poškodením. Kto má viac celkového, rozdelí prebytok aj pri remíze v tuhom, tak ako dnes môže prebytok držať aj porazený.</dd>
+    <dt>Prečo zručnosť</dt><dd>Zručnosť nepridá, len zjednoduší pravidlo. Povery ostanú užitočné cez prebytok.</dd>
+    <dt>Čísla</dt><dd>Nemerané samostatne. Týka sa asi 1 % bitiek, takže sa v meraní nemôže prejaviť.</dd>
+    <dt>Cena a riziko</dt><dd>Pri remíze v tuhom môže lokalita ísť na sekeru a zároveň niekto rozdelí prebytok. Treba to raz vysvetliť.</dd>
+    <dt>Náročnosť</dt><dd>malá</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-vyskusat" data-odp="vyskusat">
+  <h3>4. Lokalita prepadne <span class="odp vyskusat">záloha, ak sekera v playteste mätie</span></h3>
+  <p class="pravidlo">„Pri remíze nezíska lokalitu nikto.“</p>
+  <dl>
+    <dt>Problém</dt><dd>Ako pri návrhu 1. Toto riešenie navrhli obaja playtesteri (Eva: <q>remíza = lokalita ostáva nikomu</q>, Jano: <q>pri remíze nikto nezíska lokalitu</q>) a stratég aj navrhár ho dali zmerať.</dd>
+    <dt>Zmena</dt><dd>§8.4: pri úplnej remíze lokalita prepadne, prebytok nie je a útočník ostáva útočníkom.</dd>
+    <dt>Prečo zručnosť</dt><dd>Remízu nikto nedostane zadarmo. Na rozdiel od sekery však z nej nevzniká plán na ďalšie kolo.</dd>
+    <dt>Čísla variantu</dt><dd>Rebrík 67 → 72 %, ε 0,25 85 → 86 %, úplné remízy 11,4 → <strong>8,9 %</strong>, útočník 51 → 54 %, otočky 27 → 31 %. Hráč 1 vyhrá <span class="zle">62 %</span> (na hrane šumu).
+      Prepadne <strong>0,63 lokality na partiu</strong>, takže body za lokality víťaza klesnú zo 60 na 53. Podmienka „lokality“ na scorecardoch tým oslabne.</dd>
+    <dt>Cena a riziko</dt><dd>Najjednoduchšie možné pravidlo. Body však z hry miznú a tesná bitka nemá dohru. Kto vedie, tomu v poslednej bitke stačí remíza (to platí aj pri sekere).</dd>
+    <dt>Náročnosť</dt><dd>malá (6 riadkov, jadro už vie „lokalita prepadla“ z bývalej Benzínky). Diff: <code>prepadne.diff</code>.</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zamietnut" data-odp="zamietnut">
+  <h3>5. Podtácok: remízu vyhrá jeho držiteľ a podá ho súperovi <span class="odp zamietnut">zamietnuť (zatiaľ)</span></h3>
+  <p class="pravidlo">„Pri remíze vyhrá, kto má podtácok, a podá ho súperovi.“ Na začiatku ho má prvý útočník.</p>
+  <dl>
+    <dt>Problém</dt><dd>Ako pri návrhu 1, ak má mať každá bitka víťaza.</dd>
+    <dt>Prečo by pridal zručnosť</dt><dd>Je verejný a vopred známy, takže sa dá plánovať („mám podtácok, stačí mi vyrovnať“). Remízy sa striedajú, takže nik ich nevyhráva sústavne.</dd>
+    <dt>Čísla variantu</dt><dd>Rebrík 67 → 69 %, delené 44 %, hráč 1 49 %. Remízu vyhral útočník 26-krát a obranca 21-krát, vedúci v bodoch len 15 z 38 (podtácok prirodzene putuje k dobiehajúcemu).
+      Útočník však vyhrá <span class="zle">57 %</span> bitiek (+6, asi 2,5 σ) a víťaz poslednej bitky vyhrá partiu len v 70 % prípadov. Úplných remíz je stále 10,5 %, lebo držiteľ o ne hrá.</dd>
+    <dt>Prečo zatiaľ nie</dt><dd>Stále rozhoduje pravidlo, nie hra, len stolička sa točí. Pribudne žetón a stále sa oplatí hrať na remízu. Oživiť, ak Michal trvá na tom, že každá bitka má mať víťaza. Ešte lepšie by bolo, keby držiteľ smel podtácok nepoužiť (lokalita by prepadla a podtácok by mu ostal), lebo to by bolo rozhodnutie.</dd>
+    <dt>Náročnosť</dt><dd>malá (pole v stave, žetón v UI). Diff: <code>podtacok.diff</code>.</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zamietnut" data-odp="zamietnut">
+  <h3>6. Triezvejší vyhrá (viac plných poldeci), inak lokalita prepadne <span class="odp zamietnut">zamietnuť</span></h3>
+  <dl>
+    <dt>Prečo by pridal zručnosť</dt><dd>Najkrajšia téma („vyhrá, kto ešte stojí na nohách“) a skutočné rozhodnutie: vypiť pre kartu navyše, alebo si nechať poldeci na remízu. Kritérium je neutrálne (obrancovi 65 %, vedúcemu 53 %).</dd>
+    <dt>Čísla variantu</dt><dd>Rebrík 71 %, delené <span class="dobre">36 %</span> (najmenej, ale v šume), otočky 25 %. Rozhodne len 61 % remíz a zvyšok prepadne (0,30 lokality na partiu). Úplných remíz je 11,2 %, takže o remízu sa hrá rovnako ako dnes.</dd>
+    <dt>Prečo nie</dt><dd>Potrebuje dva stupne (triezvejší, potom prepadne), takže sa nedá povedať jednou vetou. Pri štarte s 2 poldeci je rovnosť častá. Dvakrát trestá pitie, ktoré už platí pečeňou, nerestou a limitom. Ako doplnok k sekere by pravidlo len predĺžil.</dd>
+    <dt>Náročnosť</dt><dd>malá. Diff: <code>triezvy.diff</code>.</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zamietnut" data-odp="zamietnut">
+  <h3>7. Priazeň starších rozhodne (starší sa prihovorí za svojho) <span class="odp zamietnut">zamietnuť</span></h3>
+  <dl>
+    <dt>Návrh</dt><dd>Pri remíze vyhrá ten, komu prejavuje priazeň viac starších (súčet síl).</dd>
+    <dt>Čísla (nad remízami východiska)</dt><dd>Rozhodne 71 % remíz, z toho 77 % dobiehajúcemu a 81 % útočníkovi. 15 z 51 remíz (najmä v 1. kole, keď sú markery v strede) ostane nerozhodnutých.</dd>
+    <dt>Prečo nie</dt><dd>Je to automatický bonus porazenému, nie dobiehanie, ktoré odmeňuje rozhodnutie. Priazeň už porazenému dáva silu v bitke (2 × sila) a ďalšie zdvojenie by ju preplatilo. Navyše treba náhradné pravidlo.</dd>
+    <dt>Náročnosť</dt><dd>malá</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zamietnut" data-odp="zamietnut">
+  <h3>8. „Ešte jednu!“: pri remíze sa pije ešte jedna runda <span class="odp zamietnut">zamietnuť</span></h3>
+  <dl>
+    <dt>Návrh</dt><dd>Úplná remíza po poslednej Pitke pridá ešte jedno Zhromaždenie a Pitku (raz). Ak je aj potom remíza, lokalita prepadne.</dd>
+    <dt>Prečo nie</dt><dd>Téma je výborná, no mechanika „Ešte jednu!“ sa zrušila 2026-10-19 kvôli tempu (24 Pitiek v partii) a nahradili ju Pitky z lokality. Runda navyše vracia problém posledného slova v Pitke (kto začína, kto odpovedá) a remíza sa môže zopakovať, takže treba aj náhradné pravidlo. Pridalo by asi 0,8 Pitky na partiu. Nemerané.</dd>
+    <dt>Náročnosť</dt><dd>stredná (jadro, bot)</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zamietnut" data-odp="zamietnut">
+  <h3>9. Kto zaplatí rundu: tajná ponuka cigariet <span class="odp zamietnut">zamietnuť (zatiaľ)</span></h3>
+  <dl>
+    <dt>Návrh</dt><dd>Pri remíze obaja tajne ponúknu cigarety. Vyššia ponuka berie lokalitu a cigarety dá súperovi. Pri rovnakej ponuke lokalita prepadne.</dd>
+    <dt>Prečo by pridal zručnosť</dt><dd>Čistá voľba a čítanie súpera (koľko mu lokalita stojí). Platba súperovi vyrovná ekonomiku.</dd>
+    <dt>Prečo zatiaľ nie</dt><dd>Nový krok s tajným zápisom (UI, <code>viewFor</code>, bot sa musí naučiť dražiť) a ďalšie využitie cigariet, ktoré už platia šenok, pas, Dedičstvo, doliatie a barter. Bohatší hráč (v playteste 15 cigariet) by remízy vyhrával. Nemerané. Oživiť, ak sekera v playteste neprejde a Michal chce, aby o remíze rozhodol hráč.</dd>
+    <dt>Náročnosť</dt><dd>veľká</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zamietnut" data-odp="zamietnut">
+  <h3>10. Ďalšie kritériá: menej lokalít, menej bodov, menej nepriznaných kliatob, prevaha <span class="odp zamietnut">zamietnuť</span></h3>
+  <dl>
+    <dt>Prečo nie</dt><dd><strong>Menej lokalít</strong> a <strong>menej bodov</strong> dajú remízu vždy porazenému (vedúcemu 0 %), čo je automatický bonus. <strong>Nepriznané kliatby</strong> (Jano) sú skrytá informácia a v bodoch by sa zarátali dvakrát (navrhár, bod 3C). <strong>Prevaha v krajoch</strong> bola zmeraná a zamietnutá 21. 10.: rozhodne len 2 % bitiek, lebo pri remíze má zvyčajne každý jeden kraj.
+      <strong>Obaja dostanú lokalitu</strong> (alebo polovicu bodov) je pre dvoch hráčov to isté ako prepadnutie, len s nafúknutým skóre.</dd>
+  </dl>
+</article>
+
+</div>
+
+<details>
+  <summary>Súvis: remíza a posledné slovo v Pitke</summary>
+  <p>Navrhár (bod 4) aj spisovateľ upozornili, že remíza pre obrancu dnes vyvažuje výhodu útočníka v Pitke (útočník rozhoduje o NA EX s plnou informáciou). Meranie to potvrdzuje:
+  pri remíze pre obrancu vyhrá útočník 51 % bitiek, po jej zrušení 54 % (sekera, prepadne). Posun je malý a ide k hráčovi, ktorý minulú bitku prehral, takže pôsobí ako mierne dobiehanie.
+  Netreba ho hneď vyvažovať. Ak by však playtest ukázal výraznú výhodu útočníka, prvý kandidát je navrhárov bod 4B (Pitka sa skončí až po dvoch „hotovo“ za sebou), nie návrat remízy k obrancovi.</p>
+  <p>Rovnosť v kraji (hranu dostane majiteľ karty pri lokalite) je podobná „stoličková“ rovnosť. Eva navrhla „hrana nikomu“, ako je to pri Ihrisku. Patrí do samostatného rozboru, lebo o nej Michal rozhodol 20. 10.</p>
+</details>
+
+<h2 id="sledovat">Čo sledovať v ďalšom playteste</h2>
+<p class="poznamka" style="margin-top:0">Platí, ak sa skúša „na sekeru“. Organizátor môže otázky dať playtesterom do zadania.</p>
+<ol class="otazky">
+  <li><strong>Remíza:</strong> pri každej remíze zapíš, či si o ňu hral zámerne a prečo. Chcel si, aby lokalita išla na sekeru? Vedel si v ťahu, ktorý k remíze viedol, čo sa pri nej stane?</li>
+  <li><strong>Bitka o sekeru:</strong> zmenil si plán už v kole remízy, napríklad šetril poldeci či cigarety, volil iný cieľ alebo nepasoval? Kto bitku o sekeru vyhral a viedol vtedy v bodoch?</li>
+  <li><strong>Pravidlo jednou vetou:</strong> pochopil si pravidlo bez pýtania? Bolo na stole a v rozhraní jasné, čo leží na sekere a kto si to vezme?</li>
+  <li><strong>Útočník a obranca:</strong> zapisuj, kto vyhral každú bitku a či o nej rozhodlo posledné slovo v Pitke (NA EX alebo odpoveď). Pomer v posledných dvoch playtestoch bol 2 : 5 v prospech obrancu.</li>
+  <li><strong>Koniec hry:</strong> ak skončila posledná bitka remízou a niečo prepadlo, bolo to fér? Vedúcemu stačila remíza. Hral o ňu?</li>
+</ol>
+
+<h2 id="michal">Čo potrebujem od Michala</h2>
+<ol class="otazky">
+  <li>Môže sa remíza skončiť <strong>bez víťaza bitky</strong>? Ak áno, sekera (alebo prepadnutie). Ak nie, podtácok.</li>
+  <li>Remíza v <strong>poslednej bitke</strong>: (a) lokality na sekere prepadnú (merané), alebo (b) rozhodne obranca ako dnes.</li>
+  <li><strong>Patronát</strong> pri remíze: (a) ako prehra s bolestným (merané), alebo (b) starší sa vráti bez bolestného.</li>
+  <li>Vypustiť stupeň „celkové“ (návrh 3)?</li>
+</ol>
+
+<footer>
+  <p><strong>Ako sa meralo.</strong> Bot Štamgast (<code>tahBota</code>), stredná hra (7 lokalít), commit M22 (be897a6). Jadro v pracovnom strome je rovnaké ako HEAD.
+  Východisko je prevzaté z rozboru 20261021-041728: rebrík 64 rozdaní × 2 miesta pri ε = 0,1 a 0,25 (<code>playtest/strategia/20261019-1858/rebrik.ts</code>), zrkadlo 64 partií a predurčenosť 10 rozdaní × 6 behov (<code>tools/bot/strategickost.ts</code>), rozbor bodov 64 partií.
+  Varianty sa merali rovnakými parametrami a semienkami, každý vo vlastnom worktree <code>playtest/varianty/remiza-*</code> (už zmazané). Remízy a kritériá stavu hry: 64 partií (448 bitiek) na variant (<code>playtest/strategia/remiza-20261021/remizy2.ts</code>).
+  Rozbor bodov používa opravenú kópiu <code>rozbor.ts</code>, ktorá ráta víťaza bitky z udalosti (pôvodná pri prepadnutej lokalite započítala posledného vlastníka dvakrát). Súhrn je v <code>suhrn.json</code>, diffy v <code>*.diff</code>.</p>
+  <p>Testy jadra prešli vo všetkých variantoch. Jediné zlyhania boli časové limity testov pri plne vyťaženom procesore (súčasne bežal ďalší stratég), výnimky nepadli.
+  Bot sa variantom neprispôsobuje, okrem toho, ako hodnotí remízu (pri sekere aj stávku). Nevie hrať zámerne na remízu kvôli budúcej sekere, nešetrí na bitku o sekeru a nedraží. Čísla variantov sú preto náznak smeru, nie dôkaz. Šum rebríka je ±6 bodov, podielu remíz ±2 body.</p>
+  <p>Rozbor stratéga (naex-strateg), 2026-10-21. Nič z toho nie je zavedené, rozhoduje Michal.</p>
+</footer>
+</main>
+<script>
+  (function () {
+    var tlacidla = document.querySelectorAll('.filtre button');
+    var karty = document.querySelectorAll('#navrhy-zoznam .navrh');
+    tlacidla.forEach(function (b) {
+      b.addEventListener('click', function () {
+        var f = b.getAttribute('data-f');
+        tlacidla.forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+        karty.forEach(function (k) { k.hidden = !(f === 'vsetko' || k.getAttribute('data-odp') === f); });
+      });
+    });
+  })();
+</script>
+</body>
+</html>

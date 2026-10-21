@@ -4,9 +4,10 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { api, mediaUrl } from "../lib/api.ts";
 import { nacitajObrazok, stvorec } from "../lib/obrazky.ts";
 import { Odkaz, chod, useTitulok } from "../lib/router.tsx";
-import { LUPA_DO, LUPA_OD, LUPA_PREDVOLENA, NAZOV_UROVNE, PARTII_NA_HRACA, jeSpravca, useUcet, type Pouzivatel } from "../lib/ucet.tsx";
+import { HUDBA_PREDVOLENA, LUPA_DO, LUPA_OD, LUPA_PREDVOLENA, NAZOV_UROVNE, PARTII_NA_HRACA, jeSpravca, useUcet, type Pouzivatel } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Pole } from "../komponenty.tsx";
 import { MojeStatistiky } from "./Statistiky.tsx";
+import { hlasitostZvuku, nacitajSkladby, urlSkladby } from "../hra/Hudba.tsx";
 
 /** Kam sa vrátiť po prihlásení (?spat=/hra). */
 function navrat(): string {
@@ -165,6 +166,51 @@ export function Profil() {
     }, 400);
     return () => clearTimeout(t);
   }, [lupa, ulozenaLupa]);
+
+  // Hlasitosť hudby počas partie (Michal 2026-10-20) — ukladá sa ako lupa, chvíľu po pohnutí.
+  const [hudba, setHudba] = useState(ja?.hudba ?? HUDBA_PREDVOLENA);
+  const ulozenaHudba = ja?.hudba ?? HUDBA_PREDVOLENA;
+  useEffect(() => {
+    if (hudba === ulozenaHudba) return;
+    const t = setTimeout(() => {
+      api
+        .patch<{ pouzivatel: Pouzivatel }>("/profil", { hudba })
+        .then((r) => nastav(r.pouzivatel))
+        .catch(chyba);
+    }, 400);
+    return () => clearTimeout(t);
+  }, [hudba, ulozenaHudba]);
+
+  // Ukážka — hlasitosť sa dá nastaviť aj bez rozohranej partie.
+  const ukazka = useRef<HTMLAudioElement | null>(null);
+  const [ukazkaHra, setUkazkaHra] = useState<string | null>(null);
+  useEffect(() => {
+    if (ukazka.current !== null) ukazka.current.volume = hlasitostZvuku(hudba);
+  }, [hudba]);
+  useEffect(() => () => ukazka.current?.pause(), []);
+  const prepniUkazku = async (): Promise<void> => {
+    if (ukazka.current !== null) {
+      ukazka.current.pause();
+      ukazka.current = null;
+      setUkazkaHra(null);
+      return;
+    }
+    const skladby = await nacitajSkladby();
+    const s = skladby[Math.floor(Math.random() * skladby.length)];
+    if (s === undefined) {
+      setSprava({ druh: "chyba", text: "Hudba na serveri zatiaľ nie je." });
+      return;
+    }
+    const a = new Audio(urlSkladby(s));
+    a.volume = hlasitostZvuku(hudba);
+    a.addEventListener("ended", () => {
+      ukazka.current = null;
+      setUkazkaHra(null);
+    });
+    ukazka.current = a;
+    setUkazkaHra(s.nazov);
+    a.play().catch(chyba);
+  };
 
   // Výber z predvolených avatarov (Michal 2026-10-19) — kto nechce nahrávať fotku.
   const [galeria, setGaleria] = useState<readonly string[] | null>(null);
@@ -351,6 +397,36 @@ export function Profil() {
           <span>{LUPA_OD} %</span>
           <span>{LUPA_PREDVOLENA} %</span>
           <span>{LUPA_DO} %</span>
+        </div>
+      </div>
+
+      <div className="panel">
+        <h3>Hudba počas partie</h3>
+        <Pole
+          label={hudba === 0 ? "Hlasitosť: vypnutá" : `Hlasitosť: ${hudba} %`}
+          pomoc="Počas partie hrajú v náhodnom poradí skladby z playlistu NaEx – PLEBS. Úplne vľavo je hudba vypnutá. Ukladá sa samo."
+        >
+          <input
+            type="range"
+            className="posuvnik-lupy"
+            min={0}
+            max={100}
+            step={5}
+            value={hudba}
+            onChange={(e) => setHudba(Number(e.target.value))}
+            aria-valuetext={hudba === 0 ? "vypnutá" : `${hudba} %`}
+          />
+        </Pole>
+        <div className="posuvnik-stupnica" aria-hidden="true">
+          <span>vypnutá</span>
+          <span>50 %</span>
+          <span>100 %</span>
+        </div>
+        <div className="riadok-tlacidiel" style={{ marginTop: 12 }}>
+          <button type="button" className="tlacidlo-male" onClick={() => void prepniUkazku()} disabled={hudba === 0 && ukazkaHra === null}>
+            {ukazkaHra === null ? "Vyskúšať" : "Zastaviť ukážku"}
+          </button>
+          {ukazkaHra !== null && <span className="tlmene">♪ {ukazkaHra}</span>}
         </div>
       </div>
       </div>

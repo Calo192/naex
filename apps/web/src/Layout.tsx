@@ -11,6 +11,7 @@ const NAVIGACIA: readonly { readonly href: string; readonly text: string; readon
   { href: "/hra", text: "Hrať" },
   { href: "/rebricek", text: "Rebríček" },
   { href: "/spatna-vazba", text: "Spätná väzba" },
+  { href: "/playtest", text: "Playtest", admin: true },
   { href: "/admin", text: "Tvorba", admin: true },
 ];
 
@@ -97,6 +98,9 @@ export function Layout({
                     </Odkaz>
                     {jeSpravca(ja.rola) && (
                       <>
+                        <Odkaz href="/playtest" role="menuitem">
+                          Playtest
+                        </Odkaz>
                         <Odkaz href="/admin" role="menuitem">
                           Tvorba kariet
                         </Odkaz>

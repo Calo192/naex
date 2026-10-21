@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stratégia kliatby-20261021: záporné body z kliatob (NA EX!)</title>
+<style>
+  :root {
+    --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #dccdb3;
+    --text: #2a2016; --tlmeny: #6b5b45; --slaby: #7d6d55;
+    --akcent: #9a5f0c; --cervena: #a83c28; --zelena: #3a7533; --modra: #276f7a;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 system-ui, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 1040px; margin: 0 auto; padding: 32px 16px 100px; }
+  h1, h2, h3 { font-family: Georgia, serif; line-height: 1.2; }
+  h1 { font-size: clamp(1.7rem, 4vw, 2.3rem); margin: 0 0 8px; }
+  h2 { font-size: 1.35rem; margin: 44px 0 12px; }
+  h3 { font-size: 1.08rem; margin: 0 0 6px; }
+  .podnadpis { color: var(--tlmeny); margin: 0 0 20px; max-width: 78ch; }
+  a { color: var(--akcent); }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+  code { font-size: 0.88em; background: var(--plocha-2); padding: 1px 5px; border-radius: 5px; }
+  .verdikt { border: 1px solid color-mix(in srgb, var(--akcent) 55%, transparent); background: color-mix(in srgb, var(--akcent) 8%, var(--plocha));
+    border-radius: 14px; padding: 14px 18px; margin: 18px 0; }
+  .verdikt p { margin: 6px 0; }
+  .stitok { display: inline-block; font: 700 0.78rem/1 system-ui, sans-serif; letter-spacing: 0.06em; text-transform: uppercase;
+    color: #fff; background: var(--akcent); border-radius: 999px; padding: 5px 12px; margin-bottom: 8px; }
+  .cisla { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; margin: 16px 0; }
+  .cislo { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; }
+  .cislo b { display: block; font: 700 1.45rem/1.1 Georgia, serif; color: var(--akcent); }
+  .cislo.kl b { color: var(--cervena); }
+  .cislo span { color: var(--tlmeny); font-size: 0.88rem; display: block; margin-top: 4px; }
+  .tab { overflow-x: auto; background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; margin: 10px 0; }
+  .tab table { width: 100%; border-collapse: collapse; font-size: 0.86rem; min-width: 760px; }
+  .tab th, .tab td { padding: 7px 9px; border-bottom: 1px solid var(--okraj); text-align: left; vertical-align: top; }
+  .tab tr:last-child td { border-bottom: 0; }
+  .tab th { color: var(--slaby); font-weight: 600; font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .tab td.n { font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
+  .tab tr.vych td { background: color-mix(in srgb, var(--modra) 9%, transparent); }
+  .tab tr.hlavne td { background: color-mix(in srgb, var(--zelena) 9%, transparent); }
+  .dobre { color: var(--zelena); font-weight: 600; }
+  .zle { color: var(--cervena); font-weight: 600; }
+  .zav { display: inline-block; border-radius: 999px; padding: 1px 9px; font-size: 0.78rem; font-weight: 700; white-space: nowrap; }
+  .zav.vys { background: color-mix(in srgb, var(--cervena) 18%, transparent); color: var(--cervena); }
+  .zav.str { background: color-mix(in srgb, var(--akcent) 18%, transparent); color: var(--akcent); }
+  .zav.niz { background: color-mix(in srgb, var(--zelena) 18%, transparent); color: var(--zelena); }
+  .graf { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 12px 14px; margin: 10px 0; }
+  .riadok { display: grid; grid-template-columns: 210px 1fr; gap: 8px; align-items: center; margin: 6px 0; font-size: 0.86rem; }
+  .riadok .meno { color: var(--tlmeny); }
+  .pruhy { display: grid; gap: 3px; }
+  .pruh { position: relative; height: 16px; background: var(--plocha-2); border-radius: 4px; }
+  .pruh i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; background: var(--akcent); }
+  .pruh.e25 i { background: var(--modra); }
+  .pruh.kl i { background: var(--cervena); }
+  .pruh em { position: absolute; right: 6px; top: 0; font-style: normal; font-size: 0.74rem; color: var(--text); }
+  .pruh .polovica { position: absolute; left: 50%; top: -2px; bottom: -2px; border-left: 1px dashed var(--slaby); }
+  .legenda { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 8px; font-size: 0.84rem; color: var(--tlmeny); }
+  .legenda i { display: inline-block; width: 16px; height: 8px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
+  .poznamka { color: var(--tlmeny); font-size: 0.88rem; margin: 8px 2px 0; }
+  .cesta { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 12px 16px; margin: 10px 0; }
+  .cesta ol { margin: 6px 0; padding-left: 22px; }
+  .cesta li { margin-bottom: 6px; }
+  .filtre { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 14px; }
+  .filtre button { font: inherit; font-size: 0.88rem; border-radius: 999px; padding: 5px 14px; border: 1px solid var(--okraj);
+    background: var(--plocha-2); color: var(--text); cursor: pointer; }
+  .filtre button[aria-pressed="true"] { background: var(--akcent); color: #fff; border-color: var(--akcent); font-weight: 700; }
+  .navrh { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 14px 16px; margin-bottom: 12px; }
+  .navrh.odp-zaviest { border-left: 5px solid var(--zelena); }
+  .navrh.odp-vyskusat { border-left: 5px solid var(--akcent); }
+  .navrh.odp-zamietnut { border-left: 5px solid var(--cervena); }
+  .navrh dl { display: grid; grid-template-columns: minmax(110px, 170px) 1fr; gap: 4px 12px; margin: 8px 0 0; font-size: 0.93rem; }
+  .navrh dt { color: var(--slaby); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; padding-top: 3px; }
+  .navrh dd { margin: 0; }
+  .odp { display: inline-block; font-size: 0.76rem; font-weight: 700; border-radius: 999px; padding: 2px 10px; margin-left: 6px; vertical-align: middle; color: #fff; }
+  .odp.zaviest { background: var(--zelena); }
+  .odp.vyskusat { background: var(--akcent); }
+  .odp.zamietnut { background: var(--cervena); }
+  .hlavny { display: inline-block; font-size: 0.72rem; font-weight: 700; border-radius: 999px; padding: 2px 9px; margin-left: 4px; vertical-align: middle;
+    border: 1px solid var(--zelena); color: var(--zelena); }
+  blockquote { margin: 6px 0; padding: 4px 12px; border-left: 3px solid var(--okraj); color: var(--tlmeny); font-style: italic; font-size: 0.9rem; }
+  ol.otazky li, ul.zoznam li { margin-bottom: 7px; }
+  .pravidlo { background: color-mix(in srgb, var(--zelena) 7%, var(--plocha)); border: 1px dashed color-mix(in srgb, var(--zelena) 50%, transparent);
+    border-radius: 10px; padding: 8px 12px; margin: 6px 0; font-size: 0.92rem; }
+  footer { margin-top: 50px; padding-top: 14px; border-top: 1px solid var(--okraj); color: var(--slaby); font-size: 0.85rem; }
+  @media (max-width: 560px) {
+    .navrh dl { grid-template-columns: 1fr; }
+    .riadok { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<main>
+<h1>Kliatby: bomba, ktorá vybuchne pri sčítaní</h1>
+<p class="podnadpis">Rozbor stratéga bez playtestu, téma <strong>záporné body z Dlhov a Cirhóz</strong>. Nadväzuje na rozbor
+<a href="strategia-20261021-041728.html">20261021-041728</a> (návrhy 1 a 4), report playtestu <a href="20261021-041728.html">20261021-041728</a>
+a <a href="navrhy-20261021-041728.html">návrhy zlepšení</a> (bod 1). Meraný stav: commit M22 (be897a6), bot Štamgast, stredná hra (7 lokalít), šesť variantov pravidiel vo worktree.</p>
+
+<section class="verdikt" aria-labelledby="verdikt-h">
+  <span class="stitok">Verdikt</span>
+  <h2 id="verdikt-h" style="margin-top:4px">Cena kliatby je dnes lotéria, ktorá sa losuje po rozhodnutí</h2>
+  <p>Zručnosť v hre rozhoduje dosť (rebrík 67 / 85 %). Kliatby však trestajú až pri sčítaní a výška trestu nezávisí od rozhodnutia, ale od zamiešania.
+  <strong>Dlh, ktorý si hráč dobere, nestojí nič</strong>: sám sa prizná a hráč ťahá náhradu. Dlh, ktorý sa do konca nedobere, stojí 1 až 8 bodov podľa scorecardov (priemerne 3,9). Kliatby stoja hráča priemerne −11,6 b so smerodajnou odchýlkou 12 b a chvostom do −62 b.
+  U ľudí, ktorí robia NA EX bomby v poslednom kole, rozhodli kliatby tri partie za sebou.</p>
+  <p>Ako hlavné riešenie odporúčam <strong>vyskúšať v playteste „verejný dlh“</strong>. Dlh sa prizná hneď, ako vznikne, a na konci hry sa ráta aj priznaný. Nová Cirhóza ide navrch doberacieho balíčka.
+  Skryté body z kliatob klesnú z 11,6 na 2,1 b. Cena NA EX bomby je známa a viditeľná v Pitke, v ktorej vznikla, a zručnosť sa pritom nemení (rebrík v šume).
+  Pred playtestom treba rozhodnúť, či sa priznaný Dlh v bitke ďalej <em>páli</em>. Odporúčam áno: drobné Dlhy zo štartoviek zhoria a bolí len bomba, ktorú hráč robí vedome.
+  Bez pálenia ostane Dlh rovnako drahý ako dnes (−5,3 b na hráča), ale už viditeľne. Rebrík a predurčenosť sa však posunuli zlým smerom (60 %, 0,47).</p>
+</section>
+
+<h2 id="cisla">Čísla</h2>
+<p class="poznamka" style="margin-top:0">Štandardné čísla východiska sú rovnaké ako v rozbore <a href="strategia-20261021-041728.html">20261021-041728</a>, lebo jadro sa odvtedy nezmenilo. V zátvorke je rozbor pred ním (strany a prevaha, 2026-10-20).
+Čísla o kliatbach sú nové (vlastný skript <code>kliatby.ts</code>, tie isté partie).</p>
+<div class="cisla">
+  <div class="cislo"><b>67 %</b><span>Rebrík ε = 0,1 (predtým 64 %). Bot, ktorý robí 10 % náhodných ťahov, prehrá dve tretiny partií.</span></div>
+  <div class="cislo"><b>85 %</b><span>Rebrík ε = 0,25 (predtým 80 %). Hrubé chyby sa trestajú spoľahlivo.</span></div>
+  <div class="cislo"><b>44 %</b><span>Delené rozdania pri ε = 0,1 (predtým 47 %). Tam rozhodlo rozdanie alebo miesto, nie hráč.</span></div>
+  <div class="cislo"><b>56 %</b><span>Výhoda hráča 1 (predtým 55 %). V šume ±6 bodov.</span></div>
+  <div class="cislo"><b>27 %</b><span>Otočky (predtým 24 %). Víťaz po polovici kôl prehrával. Dobiehanie je v zdravom pásme.</span></div>
+  <div class="cislo"><b>0,37</b><span>Predurčenosť rozdania (predtým 0,30; čistý šum 0,31). Rozdanie určuje víťaza mierne.</span></div>
+  <div class="cislo kl"><b>−11,6 b</b><span>Body z kliatob na hráča. Smerodajná odchýlka je 12 b, medián −8, najhorší hráč −62. Štvrtina hráčov má 0 a štvrtina −20 a horšie.</span></div>
+  <div class="cislo kl"><b>3,9 × / 2,4 ×</b><span>Na koľkých aktívnych podmienkach scorecardov sa ráta nepriznaný Dlh / Cirhóza (rozpätie 1–8 a 0–5). Dlh teda stojí −1 až −8 b, Cirhóza 0 až −10 b. Pri vzniku kliatby ešte nie je isté ani to: 35 % kliatob skončí s iným násobkom, než mali pri vzniku.</span></div>
+  <div class="cislo kl"><b>2,75</b><span>Nepriznaných kliatob na hráča na konci (1,43 Dlhu a 1,32 Cirhózy). Vznikne ich 3,6 a 3,8, takže do konca sa nedoberie 40 % Dlhov a 35 % Cirhóz. 0,73 kusa vznikne v poslednom kole, keď sa dobrať už nedajú.</span></div>
+  <div class="cislo kl"><b>41 %</b><span>Hráčov dostane aspoň raz za partiu 2 a viac Cirhóz v jednej Pitke. Pečeň sa sčíta z Pijanov, Poldeci a NA EX a prah dá kartu za každý násobok.</span></div>
+  <div class="cislo kl"><b>3 / 62</b><span>V toľkých partiách bota by bez kliatob vyhral druhý hráč (5 %). V tesných partiách s rozdielom do 20 b je to 2 z 11. U ľudí to boli 3 playtesty z 3: ich partie sú tesnejšie a bomby robia neskoro.</span></div>
+  <div class="cislo kl"><b>0 b</b><span>Toľko stojí dobratý Dlh: prizná sa sám a hráč za neho ťahá náhradu (Exekútor nehrozil v žiadnej zo 64 partií). Celá cena Dlhu je teda v tom, či sa do konca <em>nedoberie</em>.</span></div>
+</div>
+
+<h3>Rebrík a body z kliatob vo variantoch</h3>
+<div class="graf" role="img" aria-label="Rebrík zručnosti pri 10 a 25 percentách náhodných ťahov a priemerné body z kliatob na hráča vo východisku a v piatich variantoch">
+  <div class="riadok"><span class="meno">Východisko</span><div class="pruhy"><div class="pruh"><i style="width:67%"></i><span class="polovica"></span><em>67 %</em></div><div class="pruh e25"><i style="width:85%"></i><span class="polovica"></span><em>85 %</em></div><div class="pruh kl"><i style="width:58%"></i><em>−11,6 b</em></div></div></div>
+  <div class="riadok"><span class="meno">Verejný dlh, páli sa</span><div class="pruhy"><div class="pruh"><i style="width:64%"></i><span class="polovica"></span><em>64 %</em></div><div class="pruh e25"><i style="width:89%"></i><span class="polovica"></span><em>89 %</em></div><div class="pruh kl"><i style="width:13.5%"></i><em>−2,7 b</em></div></div></div>
+  <div class="riadok"><span class="meno">Verejný dlh, nepáli sa</span><div class="pruhy"><div class="pruh"><i style="width:60%"></i><span class="polovica"></span><em>60 %</em></div><div class="pruh e25"><i style="width:87%"></i><span class="polovica"></span><em>87 %</em></div><div class="pruh kl"><i style="width:31%"></i><em>−6,2 b</em></div></div></div>
+  <div class="riadok"><span class="meno">Cirhóza navrch</span><div class="pruhy"><div class="pruh"><i style="width:62%"></i><span class="polovica"></span><em>62 %</em></div><div class="pruh e25"><i style="width:80%"></i><span class="polovica"></span><em>80 %</em></div><div class="pruh kl"><i style="width:36.5%"></i><em>−7,3 b</em></div></div></div>
+  <div class="riadok"><span class="meno">Strop 1 karta za Pitku</span><div class="pruhy"><div class="pruh"><i style="width:63%"></i><span class="polovica"></span><em>63 %</em></div><div class="pruh e25"><i style="width:81%"></i><span class="polovica"></span><em>81 %</em></div><div class="pruh kl"><i style="width:42.5%"></i><em>−8,5 b</em></div></div></div>
+  <div class="riadok"><span class="meno">Ráta sa raz</span><div class="pruhy"><div class="pruh"><i style="width:68%"></i><span class="polovica"></span><em>68 %</em></div><div class="pruh e25"><i style="width:81%"></i><span class="polovica"></span><em>81 %</em></div><div class="pruh kl"><i style="width:20%"></i><em>−4,0 b</em></div></div></div>
+  <div class="legenda"><span><i style="background:var(--akcent)"></i>rebrík ε = 0,1</span><span><i style="background:var(--modra)"></i>rebrík ε = 0,25</span><span><i style="background:var(--cervena)"></i>body z kliatob na hráča (celý pruh = −20 b)</span><span>prerušovaná čiara = 50 %</span></div>
+</div>
+<p class="poznamka">Pri 64 rozdaniach × 2 miestach je šum rebríka asi ±4 až 5 bodov a rozdielu dvoch variantov ±6 bodov. Žiadny variant rebrík preukázateľne nezmenil, takže o voľbe rozhodujú čísla o kliatbach a to, čo vidí hráč.</p>
+
+<div class="tab">
+<table>
+  <caption class="poznamka" style="text-align:left;padding:8px 9px 0">Všetky varianty (rebrík 64 rozdaní × 2 miesta, zrkadlo a rozbor kliatob 64 partií, predurčenosť 10 × 6)</caption>
+  <thead><tr><th scope="col">Variant</th><th scope="col">ε 0,1</th><th scope="col">delené</th><th scope="col">ε 0,25</th><th scope="col">hráč 1</th><th scope="col">otočky</th><th scope="col">vedúci po 1. / 3. / 6. kole</th><th scope="col">predurč.</th><th scope="col">kliatby na konci</th><th scope="col">body z kliatob (sd; najhorší)</th><th scope="col">skryté body</th><th scope="col">bez kliatob vyhrá druhý</th></tr></thead>
+  <tbody>
+    <tr class="vych"><td>Východisko (M22)</td><td class="n">67 %</td><td class="n">44 %</td><td class="n">85 %</td><td class="n">56 %</td><td class="n">27 %</td><td class="n">61 / 63 / 79 %</td><td class="n">0,37</td><td class="n">2,75</td><td class="n">−11,6 (12,0; −62)</td><td class="n">11,6</td><td class="n">3 / 62</td></tr>
+    <tr class="hlavne"><td>Verejný dlh + Cirhóza navrch, Dlh sa páli</td><td class="n">64 %</td><td class="n">47 %</td><td class="n">89 %</td><td class="n">52 %</td><td class="n">34 %</td><td class="n">51 / 60 / 77 %</td><td class="n dobre">0,27</td><td class="n dobre">0,52</td><td class="n dobre">−2,7 (4,7; −22)</td><td class="n dobre">2,1</td><td class="n">3 / 64</td></tr>
+    <tr class="hlavne"><td>Verejný dlh + Cirhóza navrch, Dlh sa nepáli</td><td class="n">60 %</td><td class="n">55 %</td><td class="n">87 %</td><td class="n">48 %</td><td class="n">36 %</td><td class="n">46 / 54 / 73 %</td><td class="n">0,47</td><td class="n">0,54</td><td class="n">−6,2 (7,1; −34)</td><td class="n">2,5</td><td class="n">3 / 64</td></tr>
+    <tr><td>Len Cirhóza navrch</td><td class="n">62 %</td><td class="n zle">61 %</td><td class="n">80 %</td><td class="n">59 %</td><td class="n">30 %</td><td class="n">59 / 69 / 80 %</td><td class="n dobre">0,27</td><td class="n">1,70</td><td class="n">−7,3 (9,7; −54)</td><td class="n">7,3</td><td class="n">2 / 64</td></tr>
+    <tr><td>Strop 1 Dlh a 1 Cirhóza za Pitku</td><td class="n">63 %</td><td class="n">47 %</td><td class="n">81 %</td><td class="n">56 %</td><td class="n">40 %</td><td class="n">63 / 62 / 83 %</td><td class="n dobre">0,27</td><td class="n">1,91</td><td class="n">−8,5 (9,4; −41)</td><td class="n">8,5</td><td class="n">4 / 63</td></tr>
+    <tr><td>Kliatba sa na scorecardoch ráta raz</td><td class="n">68 %</td><td class="n">45 %</td><td class="n">81 %</td><td class="n">56 %</td><td class="n">27 %</td><td class="n">54 / 63 / 79 %</td><td class="n">0,33</td><td class="n">2,69</td><td class="n">−4,0 (4,2; −20)</td><td class="n">4,0</td><td class="n">0 / 64</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="poznamka"><strong>Skryté body</strong> = body z kliatob, ktoré súper na displeji nevidí (nepriznané kliatby × násobok scorecardov). <strong>Bez kliatob vyhrá druhý</strong> = v koľkých rozhodnutých partiách by po odčítaní kliatob oboch hráčov vyhral porazený.
+Vo verejnom dlhu sa priznané Dlhy hráča pri bitke (cieľ súperových Povier a prah Exekútora) pohli z 0,18 na 0,08 (páli sa) a 0,58 (najviac 6) (nepáli sa). Exekúcia nenastala v žiadnom variante (nepáli sa: 0 zo 64).</p>
+
+<h2 id="mapa">Mapa náhody — odkiaľ prichádzajú záporné body</h2>
+<div class="cesta">
+  <h3>Cesta jednej kliatby (dnešné pravidlá)</h3>
+  <ol>
+    <li><strong>Vznik v Pitke.</strong> Akcie Dlh plnia zadĺženie a Poškodenie pečene, Poldeci a NA EX plnia pečeň. Pri prahu (Dlh 2 + sila Úžerníka, Cirhóza 3 + priazeň Alkoholika) vznikne karta <em>za každý celý násobok prahu</em> (<code>while</code> v <code>pridajZadlzenie</code> a <code>skontrolujPrahPecene</code>). Násobky kariet sa násobia: NA EX ×2 na kartu vedľa Silnej ženy ×2 = ×4. Evina bomba (Živnostník + Silná) dala zadĺženie 8, čiže 4 karty Dlh za Pitku, a to dvakrát.</li>
+    <li><strong>Odhadzovací balíček.</strong> Nová kliatba ide do odhadzovacieho balíčka. Či sa ešte dostane do ruky, rozhodne, kedy sa doberací balíček minie a zamieša. To je náhoda <em>po</em> rozhodnutí.</li>
+    <li><strong>Dobratie.</strong> Dlh sa prizná sám a hráč ťahá náhradu, takže nestojí nič. Cirhózu hráč prizná, keď chce: súper dostane +1 tuhé v každej bitke, ale odomkne sa Liečba a Pohreb.</li>
+    <li><strong>Sčítanie.</strong> Každá nepriznaná kliatba v ruke aj v oboch balíčkoch uberie body <em>na každej aktívnej podmienke</em> „bankovky“ či „pečeň“ (8 podmienok Dlh, z toho 3 na Lakomcovi, a 5 podmienok Cirhóza). Či je podmienka aktívna, určuje karta na ukazovateli a mení sa pri patronáte a náhrade.</li>
+  </ol>
+  <p class="poznamka">Celý trest teda vzniká ako súčin: <em>kariet za Pitku</em> (násobky × prah za každý násobok) × <em>šanca, že sa nedoberú</em> (zamiešanie) × <em>násobok scorecardov</em> (1–8). Prvý činiteľ je rozhodnutie hráča, ktorého cenu dnes nevidno, druhý je náhoda a tretí je verejný, no premenlivý.</p>
+</div>
+
+<div class="tab">
+<table>
+  <thead><tr><th scope="col">Zdroj</th><th scope="col">Kedy vstupuje</th><th scope="col">Rozptyl (bot, 64 partií)</th><th scope="col">Čím sa dá tlmiť dnes</th><th scope="col">Závažnosť</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Zamiešanie</strong>: dober sa kliatba pred koncom?</td><td>po rozhodnutí</td><td>Do konca ostane 40 % Dlhov a 35 % Cirhóz, 2,75 kusa na hráča, −11,6 b ± 12 b. Dobratý Dlh stojí 0, nedobratý −3,9 b.
+      <blockquote>„Kliatby Dlh a Cirhóza som v ruke nikdy nemala, aj keď sa mi každé kolo odpočítavali v skóre.“ (Eva, 20261019-055945)</blockquote></td><td>Vízia, fajčenie (kopanie v balíčku), Niekoho stryná</td><td><span class="zav vys">vysoká</span></td></tr>
+    <tr><td><strong>Kliatby z poslednej bitky</strong></td><td>po rozhodnutí, bez možnosti nápravy</td><td>0,73 kusa na hráča vznikne v 7. kole (27 % kliatob na konci). Eva: 8 Dlhov v K7, −24 b.
+      <blockquote>„Koniec bol zbytočne ‚skrytý‘ (Dlh/Cirhóza prišli až po rozhodujúcej bitke).“ (Eva, 20261021-041728)</blockquote></td><td>nič, len nerobiť NA EX bombu v 7. kole</td><td><span class="zav vys">vysoká</span></td></tr>
+    <tr><td><strong>Násobok scorecardov</strong></td><td>pred hrou (verejný), ale mení sa počas hry</td><td>Dlh 1–8 podmienok (priemer 3,9, sd 1,4), Cirhóza 0–5 (2,4, sd 1,2). 35 % kliatob skončí s iným násobkom než pri vzniku.
+      <blockquote>„Nepriznaná Cirhóza/Dlh sa násobí počtom scorecardov (≈ −8 / −6).“ (20261019-102558)</blockquote></td><td>čítanie scorecardov, patronát (náhrada mení aktívne podmienky)</td><td><span class="zav str">stredná</span></td></tr>
+    <tr><td><strong>Násobky a prah za každý násobok</strong></td><td>rozhodnutie hráča, ktorého cena je skrytá</td><td>U bota 3 a viac Dlhov v jednej Pitke len 3 % hráčov (bot bomby nerobí), Cirhóza 2 a viac v jednej Pitke 41 %. U ľudí 4 Dlhy za Pitku.
+      <blockquote>„Hra mi neukázala, že 8 zadĺžení = 4 Dlh karty za Pitku.“ (Eva) — „Pečeň v Pitke ukazovala 1/3, skutočnosť 3.“ (Jano)</blockquote></td><td>počítať z hlavy; pravidlá „kartu za každý násobok“ ani „×2 · ×2 = ×4“ nepíšu</td><td><span class="zav vys">vysoká</span> u ľudí</td></tr>
+    <tr><td><strong>Súperove nepriznané kliatby</strong></td><td>skrytá informácia (nie náhoda): súper ich nevidí, hoci sa dajú odvodiť z udalostí</td><td>Displej pred poslednou bitkou 48 : 76, výsledok 50 : 33.
+      <blockquote>„Hru rozhodla hygiena balíčka, nie bitky.“ (Jano)</blockquote></td><td>pamäť (odhadzovací balíček je verejný, ruka a doberací nie)</td><td><span class="zav vys">vysoká</span></td></tr>
+  </tbody>
+</table>
+</div>
+<p class="poznamka">Prečo to u bota rozhoduje len 5 % partií a u ľudí 3 z 3: bot vyhráva s rozdielom 54 b (rozdiel kliatob medzi hráčmi je 9,4 b) a NA EX bombu skoro nerobí. Ľudia hrajú tesnejšie (50 : 33, 18 : −56) a bomby robia práve v poslednom kole, keď sa výsledok bitky zdá dôležitejší než body na konci.</p>
+
+<h3>Mapa zručnosti pri kliatbach</h3>
+<ul class="zoznam">
+  <li><strong>Skutočné rozhodnutia:</strong> NA EX na kartu s neaktívnym Dlhom či Pečeňou (tuhé teraz za kliatby), Vypiť, priznanie Cirhózy (súper +1 tuhé v každej bitke, alebo body na konci), Liečba a Pohreb, Vízia (zahodiť kliatbu z vrchu), fajčenie ako kopanie v balíčku.</li>
+  <li><strong>Voľba len zdanlivá:</strong> Dlh sa prizná sám, takže pri Dlhu hráč nerozhoduje nič. Jeho cena je len v tom, či sa dober. Pri NA EX bombe hráč volí, no cenu nevidí, takže rozhoduje tuhé poškodenie, ktoré vidí.</li>
+  <li><strong>Kde sa lepší hráč dnes neodlíši:</strong> výška trestu za nedobraté kliatby. Eva: <q>v K7 by neuprednostnil dmg bombu pred −24 b za Dlh; stačilo 15 : 12 (bez bomby)</q>. Lepší hráč by to vedel, keby to hra ukázala.</li>
+</ul>
+
+<h2 id="navrhy">Návrhy</h2>
+<p>Zoradené podľa pomeru prínosu a ceny. Čísla variantov sú náznak smeru: bot je ladený na dnešné pravidlá a bomby skoro nerobí, takže vplyv na ľudí bude väčší.
+Pri každom návrhu je aj prepočet Evinej bomby z playtestu (2 Pitky po 4 Dlhy v 7. kole, násobok 3). Je to prepočet, nie meranie.</p>
+<div class="filtre" role="group" aria-label="Filter návrhov podľa odporúčania">
+  <button type="button" data-f="vsetko" aria-pressed="true">Všetky</button>
+  <button type="button" data-f="zaviest" aria-pressed="false">Zaviesť</button>
+  <button type="button" data-f="vyskusat" aria-pressed="false">Vyskúšať v playteste</button>
+  <button type="button" data-f="zamietnut" aria-pressed="false">Zamietnuť</button>
+</div>
+
+<div id="navrhy-zoznam">
+<article class="navrh odp-vyskusat" data-odp="vyskusat">
+  <h3>1. Verejný dlh: Dlh sa prizná hneď a ráta sa aj priznaný, Cirhóza navrch balíčka <span class="odp vyskusat">vyskúšať v playteste</span><span class="hlavny">hlavné riešenie</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Dobratý Dlh nestojí nič, nedobratý stojí −1 až −8 b. Cenu Dlhu teda určí zamiešanie, nie hráč, a súper ju nevidí. Cirhóza z posledných kôl sa do ruky nedostane a nedá sa o nej rozhodnúť. Skrytých bodov je 11,6 na hráča (najviac 62).</dd>
+    <dt>Zmena</dt><dd>
+      <div class="pravidlo">§12: <strong>Nový Dlh sa hneď prizná</strong>: ide medzi tvoje priznané karty a kartu zaň nedobereš. <strong>Na konci hry uberá body každý tvoj Dlh</strong>, priznaný aj v balíčku (podmienka „bankovky“ = za každý tvoj Dlh −1).<br>
+      §12: <strong>Nová Cirhóza ide navrch tvojho doberacieho balíčka</strong> a do ruky príde pri najbližšom ťahaní. Priznanie Cirhózy ostáva, ako je.</div>
+      Číslo na rozhodnutie (pravidlo 2): <strong>páli sa priznaný Dlh v bitke ďalej?</strong> Dnes hráč, ktorý exekúcii nečelí, spáli v každej bitke 1 priznaný Dlh (§8.1).
+      <br>(a) <em>Páli sa</em> (zmerané): Dlh vzniká v Pitke tesne pred bitkou, takže prvý Dlh v kole hneď zhorí. Bot má na konci −1,6 b z Dlhov a −2,7 b z kliatob spolu. Drobné Dlhy (1 za kolo; podľa mňa väčšinou zo štartoviek, nemerané) sú zadarmo a bolí len to, čo je navyše, teda bomba.
+      <br>(b) <em>Nepáli sa</em> (zmerané): Dlh zmizne len kartami (Dievčina, Vdova, Stryná, Výherný automat) a exekúciou. Bot má −5,3 b z Dlhov (dnes −5,7) a −6,2 b z kliatob spolu. Dlh bolí ako dnes, no viditeľne a s istou cenou. Trest však padá aj na Dlhy zo štartoviek v 1. a 2. kole, kde vzniká 42 % všetkých kliatob a kde hráč väčšinou nemá na výber. Rebrík ε 0,1 klesol na 60 %, delené stúpli na 55 % a predurčenosť na 0,47. Každé z týchto čísel je samo v šume, no všetky sa pohli rovnakým, zlým smerom.</dd>
+    <dt>Prečo zručnosť</dt><dd>Celá cena kliatby sa ukáže v Pitke, v ktorej kliatba vznikne. Priznané Dlhy sú verejné, takže displej oboch hráčov ich hneď odpočíta, a o Cirhóze hráč rozhoduje v ďalšom kole (prizná ju, alebo ju podrží). NA EX bomba sa stane obchodom „tuhé teraz za X bodov“, ktorý hráč vidí. Zamiešanie už o bodoch nerozhoduje. Dlh navyše dostane cenu aj počas hry: súperove Povery strieľajú do priznaných Dlhov a prah Exekútora (10) začne mať zmysel. Dievčina na vydaj, ktorú playtesteri volajú slabou (<q>pálenie Dlhov, keď nemáš priznané</q>), dostane robotu.</dd>
+    <dt>Čísla variantu</dt><dd>Skryté body 11,6 → <strong>2,1</strong> (páli sa) / 2,5 (nepáli sa). Kliatby na konci 2,75 → 0,52 / 0,54. Body z kliatob −11,6 ± 12,0 → −2,7 ± 4,7 / −6,2 ± 7,1. Najhorší hráč −62 → −22 / −34.
+      Predurčenosť 0,37 → 0,27 / 0,47. Rebrík ε 0,1: 67 → 64 / 60 %, ε 0,25: 85 → 89 / 87 % (v šume). Otočky 27 → 34 / 36 %. Víťaz poslednej bitky vyhrá partiu 85 → 72 / 80 %.
+      <br>Evina bomba: −24 b, ktoré by videla hneď po prvej Pitke (−12) a pred druhým NA EX. Ak sa páli, −21 b.</dd>
+    <dt>Cena a riziko</dt><dd>Pravidlo „za priznaný Dlh dobereš kartu“ pri novom Dlhu zmizne (Dlh v balíčku z Vychovávateľky či Roboty sa pri dobratí prizná sám ako dnes). Treba prečítať karty, ktoré s Dlhmi pracujú: Niekoho stryná, Veľmi smútiaca vdova a Výherný automat majú brať Dlh z priznaných. Robota odhodí priznaný Dlh do balíčka a ten sa vráti, preto navrhujem „spáli“. Vychovávateľka by prenášala dlh aj s jeho bodmi, takže zosilnie. Pri (b) rastie riziko exekúcie (okamžitá prehra bez Nástroja) a s ním aj hodnota Nástrojov. Bot nevyrobil ani jednu exekúciu, ale ani bombu, takže to treba sledovať v playteste.
+      <br>Technicky: <code>pridajKliatbu</code>, <code>pocetKusov</code>, <code>bodyTeraz</code> vo <code>view.ts</code> (rátať priznané Dlhy), texty §6, §7, §10 a §12. Cirhóza navrch: súper vie, že tvoja vrchná karta je Cirhóza, čo je podľa pravidla verejné. Test filtrovania však pri tomto variante padá, lebo <code>uid</code> novej Cirhózy je vo výhľade súpera. Treba ho skryť, alebo test upraviť.
+      <br>Botovi som ukázal súperove priznané Dlhy v odhade bodov. Cirhózu v ruke priznáva po starom, až keď ostávajú dve bitky.</dd>
+    <dt>Náročnosť</dt><dd>stredná (jadro malé, no pravidlá na štyroch miestach a štyri karty)</dd>
+    <dt>Odporúčanie</dt><dd><strong>Vyskúšať v playteste</strong>, spolu s návrhom 2. Ako prvú hodnotu odporúčam (a) <em>páli sa</em>. Trestá rozhodnutie (bombu), a nie rozdanie, a čísla zručnosti sú pri nej v poriadku. Bolí aj tak: 8 Dlhov v 7. kole stojí −21 b a 8 Dlhov v 3. kole ostane na stole proti súperovým Poverám ešte 4 bitky (7 z 10 na prahu Exekútora) a na konci stojí −9 b.
+      Ak by sa ukázalo, že Dlh je bez bômb bezvýznamný, medzistupeň „spáli 1 Dlh len porazený bitky“ (nemerané) nechá Dlh dlhšie tomu, kto vyhráva, a porazenému pomôže dobiehať.</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zaviest" data-odp="zaviest">
+  <h3>2. Cena kliatob na displeji (náhľad pri NA EX a Vypiť, súperove kliatby) <span class="odp zaviest">zaviesť</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Hráč nevidí, koľko kariet vznikne (prah za každý násobok, ×2 · ×2 = ×4), ani koľko bodov ho stoja. Súperove nepriznané kliatby nevidno vôbec. Navrhli to už rozbor <a href="strategia-20261021-041728.html">20261021-041728</a> (návrh 1) a <a href="navrhy-20261021-041728.html">návrhy</a> (bod 1A). Zatiaľ to nie je zavedené.</dd>
+    <dt>Zmena</dt><dd>Pri NA EX a Vypiť náhľad „zadĺženie +8 → 4× Dlh, pečeň 3 → 1× Cirhóza, spolu −16 b na konci (Dlh −3, Cirhóza −4 pri dnešných scorecardoch)“. Pri súperovi počet nepriznaných Dlhov a Cirhóz (z verejných udalostí) a body o ne znížené. Do §7 a §5 dopísať „karta za každý násobok prahu“ a „násobky sa násobia“.</dd>
+    <dt>Prečo zručnosť</dt><dd>Informácia príde pred rozhodnutím. S verejným dlhom (návrh 1) stačí menšia časť: Dlhy sú verejné samy, ostane náhľad pri NA EX a počet Cirhóz.</dd>
+    <dt>Čísla</dt><dd>Nemerané (bot informáciu má).</dd>
+    <dt>Cena a riziko</dt><dd>Rozhranie a <code>viewFor</code>. Počet sa smie rátať len z verejných udalostí a treba to otestovať. Riziko je nízke.</dd>
+    <dt>Náročnosť</dt><dd>malá</dd>
+    <dt>Odporúčanie</dt><dd><strong>Zaviesť</strong> hneď, aj bez návrhu 1. Bez neho ostane cena viditeľná, ale náhodná (či sa dober).</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zamietnut" data-odp="zamietnut">
+  <h3>3. Len Cirhóza navrch balíčka <span class="odp zamietnut">zamietnuť samostatne</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Navrhár odporučil „len Cirhózu navrch“, aby Dlh nezlacnel (<a href="navrhy-20261021-041728.html">návrhy</a>, 1B). Stratég predtým zmeral obe kliatby navrch: kliatby na konci 2,75 → 0,70, ale Dlh navrch sa hneď prizná a nestojí nič.</dd>
+    <dt>Zmena (meraná)</dt><dd>Nová Cirhóza ide navrch doberacieho balíčka, Dlh do odhadzovacieho ako dnes.</dd>
+    <dt>Čísla variantu</dt><dd>Body z Cirhóz −5,9 → −1,2, z Dlhov −5,7 → −6,2 (bez zmeny), spolu −11,6 → −7,3 b. Najhorší hráč −54. Delené 44 → <span class="zle">61 %</span> (asi 2,5 σ; vo verejnom dlhu s tou istou Cirhózou navrch 47 %, takže skôr šum), predurčenosť 0,37 → 0,27, rebrík 62 / 80 %. Evina bomba: −24 b bez zmeny.</dd>
+    <dt>Prečo zamietnuť samostatne</dt><dd>Rieši menšiu polovicu. Lotéria Dlhu ostáva celá a Evinej bombe by nezabránila. Ako súčasť verejného dlhu (návrh 1) áno.</dd>
+    <dt>Náročnosť</dt><dd>malá</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zamietnut" data-odp="zamietnut">
+  <h3>4. Strop: najviac 1 karta Dlh a 1 Cirhóza za Pitku <span class="odp zamietnut">zamietnuť (záloha)</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Najčastejší návrh playtesterov: Eva ho dala trikrát (20261018-185541, 20261019-055945, 20261021-041728), Jano raz. <q>Zadĺženie 8 mi v jednej Pitke dalo 4 karty a ďalšie 4 v ďalšej; jedna bomba stála 24 b.</q></dd>
+    <dt>Zmena (meraná)</dt><dd>Prah dá v jednej Pitke najviac jednu kartu Dlh a jednu Cirhózu, zvyšok prepadne. Druhá hodnota je „najviac 2“, ktorá bombu zmierni, no úplne ju nezruší.</dd>
+    <dt>Čísla variantu</dt><dd>Vznik 3,6 / 3,8 → 3,0 / 3,0. Body z kliatob −11,6 ± 12,0 → −8,5 ± 9,4, najhorší −41. Skryté body 8,5. Otočky 27 → 40 % (horná hranica), predurčenosť 0,37 → 0,27, rebrík 63 / 81 % (v šume). Evina bomba: −24 → −6 b, Eva by vyhrala 51 : 50.</dd>
+    <dt>Prečo zamietnuť</dt><dd>Bombu zlacní, a nie zviditeľní. NA EX na kartu s neaktívnym Dlhom by dalo +8 tuhých za −3 b, čím sa vracia „bezpečná výhra“ z 11. a 12. 10. Lotéria zamiešania ostáva (8,5 skrytého bodu). Ak verejný dlh v playteste ukáže, že bomby aj s viditeľnou cenou rozhodujú priveľa, je to záloha s hodnotou 2.</dd>
+    <dt>Náročnosť</dt><dd>malá</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zamietnut" data-odp="zamietnut">
+  <h3>5. Kliatba sa na scorecardoch ráta len raz <span class="odp zamietnut">zamietnuť</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Násobok scorecardov robí z jednej kliatby −1 až −8 b (Dlh) a 0 až −10 b (Cirhóza). Jano: <q>zastropovať postih na −2 / −1 bez ohľadu na počet scorecardov</q>. Hlásené už v 20261019-102541 (−12 na jednej scorecarde) a 20261019-102558.</dd>
+    <dt>Zmena (meraná)</dt><dd>Nepriznaný Dlh či Cirhóza sa ráta len na prvej aktívnej podmienke svojho druhu (−1 a −2 b), ostatné podmienky ho ignorujú.</dd>
+    <dt>Čísla variantu</dt><dd>Body z kliatob −11,6 ± 12,0 → −4,0 ± 4,2, najhorší −20. Bez kliatob vyhrá druhý 0 zo 64. Rebrík 68 / 81 %, predurčenosť 0,33. Kliatby na konci 2,69, takže zamiešanie rozhoduje ďalej, len o menej. Evina bomba: −24 → −8 b.</dd>
+    <dt>Prečo zamietnuť</dt><dd>Kliatby by prestali bolieť (v žiadnej partii nerozhodnú) a NA EX bomba zlacnie trojnásobne. Cena je stále skrytá v balíčku. Ako ladiaci gombík k verejnému dlhu sa hodí miernejšia verzia „Dlh najviac na 2 podmienkach“, ak by Michal chcel ubrať premenlivosť násobku (dnes 1–8). Nemerané.</dd>
+    <dt>Náročnosť</dt><dd>malá (<code>elderScore</code>)</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zamietnut" data-odp="zamietnut">
+  <h3>6. Násobky sa nenásobia (najviac ×2) <span class="odp zamietnut">zamietnuť pre tento cieľ</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Jano: <q>NA EX zdvojí neaktívne akcie najviac na 3 poškodenia a doublery sa nezlučujú (max ×2)</q>. Bomba vzniká násobením NA EX a Silnej ženy (×4).</dd>
+    <dt>Zmena (navrhovaná)</dt><dd>Zdvojenia sa nesčítajú: karta má najviac ×2. Užšia verzia: Silná žena nezdvojuje Dlh a Poškodenie pečene.</dd>
+    <dt>Prečo zamietnuť</dt><dd>Zasiahne aj poškodenie a kombá, ktoré hráči chvália ako plánovanie (Eva: <q>Plánovanie dopredu: dalo sa výborne — NA EX bomby</q>). Problém kliatob nie je v tom, že bomba je veľká, ale v tom, že jej cena je skrytá a náhodná. Ak je Silná žena primocná, je to otázka sily karty pre admina (rebalans), nie náhody. Nemerané.</dd>
+    <dt>Náročnosť</dt><dd>malá (<code>zdvojAktivne</code>), no s veľkým dosahom na NA EX</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zamietnut" data-odp="zamietnut">
+  <h3>7. Celkový strop postihu (napr. najviac −10 b z kliatob) <span class="odp zamietnut">zamietnuť</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Chvost rozdelenia: štvrtina hráčov má −20 b a horšie, najhorší −62 b.</dd>
+    <dt>Zmena (navrhovaná)</dt><dd>Body z kliatob na hráča sú najviac −10 (druhá hodnota −15).</dd>
+    <dt>Prečo zamietnuť</dt><dd>Po dosiahnutí stropu je každá ďalšia kliatba zadarmo, takže stroj odmení práve „all-in“ bombu, ktorú chceme zdražiť. Rozhodnutie stratí cenu presne tam, kde je najväčšie. Nemerané.</dd>
+    <dt>Náročnosť</dt><dd>malá</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zamietnut" data-odp="zamietnut">
+  <h3>8. Vykúpenie kliatob pred sčítaním za cigarety <span class="odp zamietnut">zamietnuť</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Nedobraté kliatby sa nedajú priznať (<q>Priznať sa nedalo, lebo sa nedostali do ruky.</q> 20261019-102558). Lacnejšie či automatické priznanie by ich dostalo von.</dd>
+    <dt>Zmena (navrhovaná)</dt><dd>Pred sčítaním smie hráč za 2 cigarety (druhá hodnota 1) odstrániť jednu nepriznanú kliatbu z balíčka.</dd>
+    <dt>Prečo zamietnuť</dt><dd>Trest sa presunie na toho, kto nemá cigarety, teda spravidla na porazeného, ktorý pasoval menej (proti dobiehaniu). Cena je až na konci, takže súper ju počas hry nevidí. Verejný dlh rieši to isté bez novej meny. Nemerané.</dd>
+    <dt>Náročnosť</dt><dd>malá</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zamietnut" data-odp="zamietnut">
+  <h3>9. Zahodiť 1 kliatbu z ruky na konci kola, Pohreb aj na nepriznanú Cirhózu <span class="odp zamietnut">zamietnuť</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Eva (20261021-041728, návrh 8): <q>balíček sa po kole 5 zaplnil kliatbami; neviem sa ich zbaviť</q>. Chýba čistenie (aj 20261019-055945: <q>čistenie Dlhu bez priznania</q>).</dd>
+    <dt>Prečo zamietnuť</dt><dd>Kliatbu v ruke sa už dá zbaviť priznaním (Dlh sa prizná sám a Cirhózu prizná hráč). Problém sú kliatby v balíčku, ktoré sa do ruky nedostanú, a to rieši návrh 1. Pohreb nepriznanej Cirhózy by zrušil cenu priznania (+1 tuhé súperovi). Čistenie balíčka s cenou (napr. v šenku „za cigaretu zahoď kartu namiesto brania“) ostáva podkladom pre samostatný rozbor (rozbor 20261021-041728, návrh 8).</dd>
+    <dt>Náročnosť</dt><dd>malá</dd>
+  </dl>
+</article>
+</div>
+
+<h2 id="sledovat">Čo sledovať v ďalšom playteste</h2>
+<ol class="otazky">
+  <li><strong>Cena pri rozhodnutí:</strong> pri každom NA EX a Vypiť zapíš, koľko kliatob a bodov podľa teba vznikne. Po Pitke zapíš, koľko naozaj vzniklo. Zmenila cena tvoju voľbu (napríklad bombu v 7. kole)?</li>
+  <li><strong>Odhad na konci:</strong> pred poslednou bitkou zapíš skóre oboch hráčov tak, ako ho vidíš, a porovnaj ho s výsledkom. O koľko sa líši a koľko z toho sú kliatby?</li>
+  <li>(Ak sa skúša verejný dlh) <strong>Dlh počas hry:</strong> koľko priznaných Dlhov ste mali pri každej bitke, koľko mäkkého poškodenia dali súperove Povery a priblížil sa niekto k Exekútorovi? Bol Dlh citeľný, alebo bezvýznamný?</li>
+  <li>(Ak sa skúša Cirhóza navrch) <strong>Cirhóza v ruke:</strong> keď ti prišla, priznal si ju, alebo si ju držal? Prečo? Bolo to rozhodnutie, alebo samozrejmosť?</li>
+  <li><strong>Kliatby z posledného kola:</strong> koľko kliatob vzniklo v 7. kole a kto ich mal? Rozhodli o víťazovi?</li>
+</ol>
+
+<h2 id="rozhodnutia">Čo potrebujem od Michala rozhodnúť</h2>
+<ol class="otazky">
+  <li>Či ísť do playtestu s verejným dlhom (návrh 1), a v akom poradí s náhľadom ceny (návrh 2). Odporúčam najprv návrh 2, v ďalšom playteste návrh 1, aby sa dalo rozlíšiť, čo zabralo.</li>
+  <li>Či sa priznaný Dlh v bitke ďalej páli: (a) áno, drobné Dlhy sú zadarmo a bolí len bomba (−1,6 b na hráča u bota), alebo (b) nie, Dlh bolí ako dnes (−5,3 b), hrozí exekúcia a viac rozhoduje rozdanie. Odporúčam (a).</li>
+  <li>Či má Dlh zostať na všetkých aktívnych podmienkach scorecardov (dnes 1–8, priemer 3,9 b), alebo najviac na dvoch.</li>
+  <li>Texty kariet pri verejnom dlhu: Niekoho stryná, Veľmi smútiaca vdova a Výherný automat berú Dlh z priznaných; Robota Dlh <em>spáli</em> namiesto odhodenia. Vychovávateľka zosilnie a treba zvážiť, či ju nechať.</li>
+</ol>
+
+<footer>
+  <p><strong>Ako sa meralo.</strong> Bot Štamgast (<code>tahBota</code>) proti sebe, stredná hra (7 lokalít), stav commitu M22 (be897a6). Jadro v pracovnom strome sa rovnalo HEAD. Každý variant bežal vo vlastnom worktree <code>playtest/varianty/kliatby-*</code>.
+  Rebrík: 64 rozdaní × 2 miesta pri ε = 0,1 a 0,25 (<code>playtest/strategia/20261019-1858/rebrik.ts</code>). Zrkadlo (hráč 1, otočky, vedúci): 64 partií. Predurčenosť: 10 rozdaní × 6 behov (<code>tools/bot/strategickost.ts</code>).
+  Štandardné čísla východiska sú prevzaté z rozboru 20261021-041728 (ten istý stav jadra a parametre). Rozbor kliatob (<code>playtest/strategia/kliatby-20261021/kliatby.ts</code>, súhrn <code>analyza.cjs</code> a <code>tab.cjs</code>) bežal na 64 partiách s tými istými semienkami ako <code>rozbor.ts</code> aj pre východisko. Diffy variantov sú v <code>playtest/strategia/kliatby-20261021/*.diff</code>.</p>
+  <p>Testy jadra prešli bez výnimiek. Padli len testy, ktoré čakajú staré hodnoty: pri strope žiadny; pri „raz“ test bodovania; pri Cirhóze navrch test filtrovania (uid novej Cirhózy je vo výhľade); pri verejnom dlhu testy Poštárky, prahu Dlhu, <code>bodyTeraz</code> a pri „nepáli sa“ aj Dievčiny.
+  <strong>Bot sa variantom neprispôsobuje</strong>, iba vo verejnom dlhu vidí súperove priznané Dlhy v odhade bodov. Bot NA EX bomby skoro nerobí (3 a viac Dlhov v jednej Pitke má 3 % hráčov), takže čísla podceňujú vplyv kliatob na ľudí. Šum rebríka je ±4 až 5 bodov, rozdielu variantov ±6.</p>
+  <p>Rozbor stratéga (naex-strateg), 2026-10-21. Nič z toho nie je zavedené: rozhoduje Michal.</p>
+</footer>
+</main>
+<script>
+  (function () {
+    var tlacidla = document.querySelectorAll('.filtre button');
+    var karty = document.querySelectorAll('#navrhy-zoznam .navrh');
+    tlacidla.forEach(function (b) {
+      b.addEventListener('click', function () {
+        var f = b.getAttribute('data-f');
+        tlacidla.forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+        karty.forEach(function (k) { k.hidden = !(f === 'vsetko' || k.getAttribute('data-odp') === f); });
+      });
+    });
+  })();
+</script>
+</body>
+</html>

@@ -42,14 +42,24 @@ npm install
 npm run dev          # server :8787 + klient :5173 (heslo admina: .env, NAEX_ADMIN_HESLO)
 npm start            # produkcia: server + zbuildovaný klient :8787
 npm run kniznica -- "docs/NA EX/NA EX"   # obrázky do knižnice tvorcu
+npm run hudba -- "<priečinok s MP3>"     # hudba počas partie (stiahnutá zo Suno) do data/hudba
 node --experimental-strip-types --no-warnings tools/admin/admin.ts <príkaz>   # nástroje agenta naex-admin
-                     # ilustrácie: Leonardo.Ai API, kľúč NAEX_LEONARDO_KEY v .env (stojí API kredit)
+                     # ilustrácie: Leonardo.Ai API, kľúč NAEX_LEONARDO_KEY v .env (stojí API kredit);
+                     # Michal 2026-10-21: na AKÝKOĽVEK nový obrázok smieš Leonardo použiť bez pýtania
+node --experimental-strip-types --no-warnings tools/playtest/turnus.ts 2 stredna   # 2 partie AI playtesterov naraz (skill naex-playtest)
 node --experimental-strip-types --no-warnings tools/bot/turnaj.ts 20 chamtivy stredna stamgast   # sila povahy bota
 node --experimental-strip-types --no-warnings tools/bot/strategickost.ts   # náhoda vs. zručnosť (rebrík, duplikát), ≈ 8 min
 npm test             # vitest
 npm run typecheck    # tsc --build
 npm run build
 ```
+
+**Živý web** je https://15-235-242-12.sslip.io (OVH, `deploy/nahraj.sh`;
+heslo admina v `deploy/.env.produkcia`, mimo gitu). Nástroje agentov naň idú
+prepínačom `--zivy`. Playtesty a návrhy z nich sú v sekcii **Playtest**
+(len admin a subadmin); Michal tam o návrhoch rozhoduje a schválené
+implementuje skill `naex-implementacia` (agent `naex-developer`): hneď commit,
+push a merge do master bez pýtania (Michal 2026-10-21).
 
 ## Konvencie
 
@@ -82,12 +92,16 @@ packages/tvorba/     model tvorcu kariet — čistý TS (varianty, geometria kar
 packages/server/     server: hra (ws), REST API (/api), SQLite, médiá (/media)
   seed/                ilustrácie a vzhľad kariet pre prvé spustenie
   seed/avatary/        predvolené avatary (náhodný pre hráča bez fotky), boti/<povaha>.jpg
-apps/web/            klient (React + Vite): stranky/, hra/, admin/, karta/
+apps/web/            klient (React + Vite): stranky/, hra/, admin/, karta/,
+                     playtest/ (sekcia Playtest: návrhy na rozhodnutie, reporty)
 deploy/, Dockerfile  nasadenie (docs/NASADENIE.md)
 docs/BRIEF.md        zadanie M0–M10
 docs/PRAVIDLA.md     špecifikácia pravidiel
 tools/               import z tlačového PDF, piktogramy akcií
   bot/turnaj.ts        turnaj offline protihráča (proti náhodnému / chamtivému / sebe)
-  bot/strategickost.ts meranie strategickosti — podklad agenta naex-strateg (skill strategia)
-  admin/               nástroje agenta naex-admin (admin API, rebalans, štýl ilustrácií)
+  bot/strategickost.ts meranie strategickosti — podklad agenta naex-strateg (skill naex-strategia)
+  admin/               nástroje agenta naex-admin (admin API, rebalans, štýl ilustrácií,
+                       nahrávanie reportov a návrhov, avatary AI účtov)
+  playtest/            klient AI playtesterov; hraci.json = 6 postáv (štýl, zameranie),
+                       turnus.ts = 1–3 partie naraz s náhodnými dvojicami
 ```

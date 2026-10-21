@@ -53,7 +53,7 @@ apps/web/          klient (React + Vite)
 tools/             import z tlačového PDF, piktogramy akcií
   playtest/          AI playtest: konzolový klient (hrac.ts), založenie partie agentov
                      (zaloz.ts) aj agent proti človeku (zaloz-clovek.ts), spätná väzba
-                     agentov na webe (web.ts) — skilly /playtest a /protihrac
+                     agentov na webe (web.ts) — skilly /naex-playtest a /naex-protihrac
 ```
 
 - **Server nikdy nepošle klientovi nič, čo hráč nemá vidieť.**

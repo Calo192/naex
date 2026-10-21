@@ -38,6 +38,10 @@ export interface Pouzivatel {
   readonly rola: Rola;
   /** Zväčšenie karty pri prejdení myšou v percentách (LUPA_OD – LUPA_DO). */
   readonly lupa: number;
+  /** Hlasitosť hudby počas partie v percentách (0 = vypnutá). */
+  readonly hudba: number;
+  /** Účet AI agenta — jeho spätná väzba je na webe označená a predvolene skrytá. */
+  readonly ai: boolean;
 }
 
 export const LUPA_OD = 150;
@@ -49,6 +53,14 @@ export function overLupu(v: unknown): number {
   const n = Number(v);
   if (!Number.isFinite(n) || n < LUPA_OD || n > LUPA_DO) throw new ChybaVstupu(`Zväčšenie musí byť ${LUPA_OD} až ${LUPA_DO} %.`);
   return Math.round(n);
+}
+
+export const HUDBA_PREDVOLENA = 30;
+
+/** Hlasitosť hudby z requestu — celé percentá 0 – 100. */
+export function overHlasitost(v: unknown): number {
+  if (typeof v !== "number" || !Number.isFinite(v) || v < 0 || v > 100) throw new ChybaVstupu("Hlasitosť hudby musí byť 0 až 100 %.");
+  return Math.round(v);
 }
 
 /** Dohraté partie používateľa — poddotaz nad riadkom `pouzivatelia` (stĺpec id). */
@@ -151,12 +163,14 @@ export class Ucty {
       avatar: r.avatar === null ? null : String(r.avatar),
       rola: rolaZDb(r.rola),
       lupa: r.lupa === null || r.lupa === undefined ? LUPA_PREDVOLENA : Number(r.lupa),
+      hudba: r.hudba === null || r.hudba === undefined ? HUDBA_PREDVOLENA : Number(r.hudba),
+      ai: Number(r.ai) === 1,
     };
   }
 
   podlaId(id: number): Pouzivatel | null {
     return this.riadok(
-      this.db.prepare("SELECT id, login, meno, avatar, rola, lupa FROM pouzivatelia WHERE id = ?").get(id) as
+      this.db.prepare("SELECT id, login, meno, avatar, rola, lupa, hudba, ai FROM pouzivatelia WHERE id = ?").get(id) as
         | Record<string, unknown>
         | undefined,
     );
@@ -227,22 +241,27 @@ export class Ucty {
     return this.podlaId(r.pouzivatel);
   }
 
-  upravProfil(id: number, zmeny: { meno?: string; avatar?: string | null; lupa?: number }): Pouzivatel | null {
+  upravProfil(id: number, zmeny: { meno?: string; avatar?: string | null; lupa?: number; hudba?: number }): Pouzivatel | null {
     if (zmeny.meno !== undefined) this.db.prepare("UPDATE pouzivatelia SET meno = ? WHERE id = ?").run(zmeny.meno, id);
     if (zmeny.lupa !== undefined) this.db.prepare("UPDATE pouzivatelia SET lupa = ? WHERE id = ?").run(zmeny.lupa, id);
+    if (zmeny.hudba !== undefined) this.db.prepare("UPDATE pouzivatelia SET hudba = ? WHERE id = ?").run(zmeny.hudba, id);
     if (zmeny.avatar !== undefined) this.db.prepare("UPDATE pouzivatelia SET avatar = ? WHERE id = ?").run(zmeny.avatar, id);
     return this.podlaId(id);
   }
 
   zoznam(): (Pouzivatel & { vytvoreny: number; dohrate: number })[] {
     const rows = this.db
-      .prepare(`SELECT id, login, meno, avatar, rola, vytvoreny, (${DOHRATE_SQL}) AS dohrate FROM pouzivatelia ORDER BY id`)
+      .prepare(`SELECT id, login, meno, avatar, rola, ai, vytvoreny, (${DOHRATE_SQL}) AS dohrate FROM pouzivatelia ORDER BY id`)
       .all() as Record<string, unknown>[];
     return rows.map((r) => ({ ...(this.riadok(r) as Pouzivatel), vytvoreny: Number(r.vytvoreny), dohrate: Number(r.dohrate) }));
   }
 
   nastavRolu(id: number, rola: Rola): void {
     this.db.prepare("UPDATE pouzivatelia SET rola = ? WHERE id = ?").run(rola, id);
+  }
+
+  nastavAi(id: number, ai: boolean): void {
+    this.db.prepare("UPDATE pouzivatelia SET ai = ? WHERE id = ?").run(ai ? 1 : 0, id);
   }
 }
 

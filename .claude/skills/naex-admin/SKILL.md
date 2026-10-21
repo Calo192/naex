@@ -1,6 +1,6 @@
 ---
-name: admin
-description: Spustí agenta naex-admin — tvorba a úprava kariet NA EX! na webe (práva subadmina), ilustrácie generované v Leonardo.Ai (API) v štýle hry, rebalans slabých a silných kariet (štatistiky z partií, simulácia), kontrola textov a sady pred zverejnením, triedenie spätnej väzby. Použi, keď používateľ povie /admin, „vytvor kartu", „uprav kartu", „karta je slabá/silná", „rebalans", „ilustrácia ku karte", „skontroluj sadu", „roztrieď spätnú väzbu".
+name: naex-admin
+description: Spustí agenta naex-admin — tvorba a úprava kariet NA EX! na webe (práva subadmina), ilustrácie generované v Leonardo.Ai (API) v štýle hry, rebalans slabých a silných kariet (štatistiky z partií, simulácia), kontrola textov a sady pred zverejnením, triedenie spätnej väzby. Použi, keď používateľ povie /naex-admin, „vytvor kartu", „uprav kartu", „karta je slabá/silná", „rebalans", „ilustrácia ku karte", „skontroluj sadu", „roztrieď spätnú väzbu".
 argument-hint: "<úloha, napr. nová karta Mlynár | rebalans Dievčiny | ilustrácia pre zberny_dvor | kontrola sady>"
 ---
 

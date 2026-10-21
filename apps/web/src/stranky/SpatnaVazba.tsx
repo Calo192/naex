@@ -36,6 +36,7 @@ interface Autor {
   readonly meno: string;
   readonly avatar: string | null;
   readonly rola: string;
+  readonly ai: boolean;
 }
 
 interface Komentar {
@@ -62,6 +63,25 @@ interface Nazor {
 
 const MAX_NAZOR = 3000;
 const MAX_KOMENTAR = 1000;
+
+/** Spätná väzba AI agentov je predvolene skrytá (Michal 2026-10-21); voľba sa pamätá v prehliadači. */
+const KLUC_AI = "naex-spatna-vazba-ai";
+
+function citajUkazAi(): boolean {
+  try {
+    return localStorage.getItem(KLUC_AI) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function ulozUkazAi(v: boolean): void {
+  try {
+    localStorage.setItem(KLUC_AI, v ? "1" : "0");
+  } catch {
+    // súkromné okno — voľba platí len do obnovenia stránky
+  }
+}
 
 function kedy(cas: number): string {
   const s = Math.round((Date.now() - cas) / 1000);
@@ -150,6 +170,11 @@ function MenoAutora({ autor }: { readonly autor: Autor }) {
       <Odkaz href={`/hrac/${autor.id}`}>{autor.meno}</Odkaz>
       {autor.rola === "admin" && <span className="odznak odznak-admin">tvorca hry</span>}
       {autor.rola === "subadmin" && <span className="odznak">subadmin</span>}
+      {autor.ai && (
+        <span className="odznak odznak-ai" title="Napísal AI agent (playtester alebo protihráč)">
+          AI
+        </span>
+      )}
     </span>
   );
 }
@@ -189,9 +214,22 @@ function KomentarPolozka({ k, ja, obnov, chyba }: { readonly k: Komentar; readon
   );
 }
 
-function NazorKarta({ n, ja, obnov, chyba }: { readonly n: Nazor; readonly ja: Pouzivatel; readonly obnov: () => void; readonly chyba: (e: unknown) => void }) {
+function NazorKarta({
+  n,
+  ja,
+  ukazAi,
+  obnov,
+  chyba,
+}: {
+  readonly n: Nazor;
+  readonly ja: Pouzivatel;
+  readonly ukazAi: boolean;
+  readonly obnov: () => void;
+  readonly chyba: (e: unknown) => void;
+}) {
+  const komentare = ukazAi ? n.komentare : n.komentare.filter((k) => !k.autor.ai);
   const [cig, setCig] = useState({ pocet: n.cigarety, moja: n.mojaCigareta });
-  const [otvorene, setOtvorene] = useState(n.komentare.length > 0 && n.komentare.length <= 3);
+  const [otvorene, setOtvorene] = useState(komentare.length > 0 && komentare.length <= 3);
   const [komentar, setKomentar] = useState("");
   const [uprava, setUprava] = useState<string | null>(null);
   const [posiela, setPosiela] = useState(false);
@@ -285,7 +323,7 @@ function NazorKarta({ n, ja, obnov, chyba }: { readonly n: Nazor; readonly ja: P
       <div className="nazor-akcie">
         <TlacidloCigarety pocet={cig.pocet} moja={cig.moja} vlastne={moj} prepni={prepniCigaretu} navstevnik={!pise} />
         <button type="button" className="tlacidlo-male tlacidlo-jemne" onClick={() => setOtvorene(!otvorene)} aria-expanded={otvorene}>
-          {n.komentare.length === 0 ? (pise ? "komentovať" : "0 komentárov") : `${n.komentare.length} ${tvar(n.komentare.length, "komentár", "komentáre", "komentárov")}`}
+          {komentare.length === 0 ? (pise ? "komentovať" : "0 komentárov") : `${komentare.length} ${tvar(komentare.length, "komentár", "komentáre", "komentárov")}`}
         </button>
         {moj && uprava === null && (
           <button type="button" className="tlacidlo-male tlacidlo-jemne" onClick={() => setUprava(n.text)}>
@@ -305,9 +343,9 @@ function NazorKarta({ n, ja, obnov, chyba }: { readonly n: Nazor; readonly ja: P
 
       {otvorene && (
         <div className="komentare">
-          {n.komentare.length > 0 && (
+          {komentare.length > 0 && (
             <ul>
-              {n.komentare.map((k) => (
+              {komentare.map((k) => (
                 <KomentarPolozka key={k.id} k={k} ja={ja} obnov={obnov} chyba={chyba} />
               ))}
             </ul>
@@ -392,6 +430,7 @@ export function SpatnaVazba() {
   const [nazory, setNazory] = useState<readonly Nazor[] | null>(null);
   const [triedenie, setTriedenie] = useState<Triedenie>("nove");
   const [filter, setFilter] = useState<Kategoria | null>(null);
+  const [ukazAi, setUkazAi] = useState(citajUkazAi);
   const [chyba, setChyba] = useState<string | null>(null);
 
   const ukazChybu = useCallback((e: unknown) => setChyba(e instanceof Error ? e.message : String(e)), []);
@@ -411,6 +450,8 @@ export function SpatnaVazba() {
   useEffect(obnov, [obnov]);
 
   if (ja === null) return null;
+  const odAi = nazory?.filter((n) => n.autor.ai).length ?? 0;
+  const viditelne = nazory === null || ukazAi ? nazory : nazory.filter((n) => !n.autor.ai);
 
   return (
     <div className="spatna-vazba">
@@ -451,16 +492,32 @@ export function SpatnaVazba() {
             <option value="diskusia">najživšia diskusia</option>
           </select>
         </label>
+        <label className="nazory-ai" title="Názory a komentáre AI agentov z playtestov">
+          <input
+            type="checkbox"
+            checked={ukazAi}
+            onChange={(e) => {
+              setUkazAi(e.target.checked);
+              ulozUkazAi(e.target.checked);
+            }}
+          />
+          <span>
+            Zobraziť aj spätnú väzbu od AI{odAi > 0 && <span className="tlmene"> ({odAi})</span>}
+          </span>
+        </label>
       </div>
 
-      {nazory === null ? (
+      {viditelne === null ? (
         <Nacitavanie />
-      ) : nazory.length === 0 ? (
-        <p className="tlmene nazory-prazdne">{filter === null ? "Zatiaľ tu nie je žiadny názor. Napíš prvý." : "V tejto kategórii zatiaľ nič nie je."}</p>
+      ) : viditelne.length === 0 ? (
+        <p className="tlmene nazory-prazdne">
+          {filter === null ? "Zatiaľ tu nie je žiadny názor. Napíš prvý." : "V tejto kategórii zatiaľ nič nie je."}
+          {odAi > 0 && !ukazAi && ` Skrytých názorov od AI: ${odAi}.`}
+        </p>
       ) : (
         <div className="nazory">
-          {nazory.map((n) => (
-            <NazorKarta key={n.id} n={n} ja={ja} obnov={obnov} chyba={ukazChybu} />
+          {viditelne.map((n) => (
+            <NazorKarta key={n.id} n={n} ja={ja} ukazAi={ukazAi} obnov={obnov} chyba={ukazChybu} />
           ))}
         </div>
       )}

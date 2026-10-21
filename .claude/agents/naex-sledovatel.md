@@ -1,6 +1,6 @@
 ---
 name: naex-sledovatel
-description: Sledovateľ playtestu NA EX! — počas partie dvoch playtesterov fotí, ako hra vyzerá v prehliadači u oboch hráčov, a nezávisle hodnotí vizuálnu stránku (prezentácia údajov, rozloženie, čitateľnosť, vzhľad webu). Navrhuje konkrétne vizuálne zlepšenia. Skill playtest ho zatiaľ nespúšťa (Michal 2026-10-12) — použi len na výslovnú žiadosť.
+description: Sledovateľ playtestu NA EX! — počas partie dvoch playtesterov fotí, ako hra vyzerá v prehliadači u oboch hráčov, a nezávisle hodnotí vizuálnu stránku (prezentácia údajov, rozloženie, čitateľnosť, vzhľad webu). Navrhuje konkrétne vizuálne zlepšenia. Skill naex-playtest ho zatiaľ nespúšťa (Michal 2026-10-12) — použi len na výslovnú žiadosť.
 tools: Bash, Read, Write, Edit, Glob, Grep
 model: sonnet
 ---

@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dizajn herného stola — prehľad UI a UX (hra-20261021-1240)</title>
+<style>
+:root{--bg:#14110e;--pl:#1e1914;--pl2:#2a231c;--tx:#f1e8d8;--sl:#b9ab95;--ja:#e9ad45;--te:#d0563f;--ze:#7cbf74;--mo:#6fb3d2;--ok:#3a3128}
+@media (prefers-color-scheme: light){:root{--bg:#f7f2ea;--pl:#fffaf2;--pl2:#efe6d8;--tx:#221a12;--sl:#5d5245;--ja:#8a5a00;--te:#a8331f;--ze:#2f7a28;--mo:#1d6b8f;--ok:#d9cdb9}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:24px 16px 64px}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;line-height:1.25}
+h1{font-size:1.9rem;margin:.2em 0 .3em}
+h2{font-size:1.45rem;margin:2.2em 0 .6em;border-bottom:1px solid var(--ok);padding-bottom:.25em}
+a{color:var(--ja)}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--ja);outline-offset:2px}
+code{font-size:.88em;overflow-wrap:anywhere}
+.meta{color:var(--sl);font-size:.93rem}
+.verdikt{background:var(--pl);border-left:4px solid var(--ja);padding:12px 16px;border-radius:6px}
+.mriezka{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.dlazdica{background:var(--pl);border:1px solid var(--ok);border-radius:8px;padding:12px 14px}
+.dlazdica h3{margin:.1em 0 .4em;font-size:1.1rem}
+.dlazdica.zhoda{border-color:var(--ja)}
+.odkaz{display:block;background:var(--pl);border:1px solid var(--ok);border-radius:8px;padding:14px 16px;text-decoration:none;color:var(--tx)}
+.odkaz:hover{border-color:var(--ja)}
+.odkaz b{color:var(--ja);font-size:1.1rem}
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+th,td{text-align:left;vertical-align:top;padding:8px;border-bottom:1px solid var(--ok)}
+th{color:var(--sl);font-weight:600}
+.tab-obal{overflow-x:auto}
+.stitok{display:inline-block;font-size:.78rem;border:1px solid var(--ok);border-radius:999px;padding:0 .55em;margin:0 .2em .2em 0;color:var(--sl);white-space:nowrap}
+.stitok.ui{border-color:var(--mo);color:var(--mo)}
+.stitok.ux{border-color:var(--ze);color:var(--ze)}
+.stitok.zh{border-color:var(--ja);color:var(--ja)}
+.stitok.mala{border-color:var(--ze);color:var(--ze)}
+.stitok.stredna{border-color:var(--ja);color:var(--ja)}
+.stitok.velka{border-color:var(--te);color:var(--te)}
+.filtre{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 12px}
+.filtre button{background:var(--pl);color:var(--tx);border:1px solid var(--ok);border-radius:999px;padding:4px 12px;font:inherit;font-size:.9rem;cursor:pointer;min-height:32px}
+.filtre button[aria-pressed="true"]{border-color:var(--ja);background:var(--pl2);color:var(--ja)}
+tr.vybrany td{background:var(--pl2)}
+td.vyber{width:2.2em}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--ja)}
+.suhrn{position:sticky;bottom:0;background:var(--pl2);border:1px solid var(--ja);border-radius:8px;padding:10px 14px;margin-top:12px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.suhrn button{background:var(--ja);color:#14110e;border:0;border-radius:6px;padding:6px 12px;font:inherit;font-weight:600;cursor:pointer}
+.poradie{counter-reset:k;list-style:none;padding:0}
+.poradie li{counter-increment:k;background:var(--pl);border:1px solid var(--ok);border-radius:8px;padding:10px 14px 10px 52px;margin:0 0 8px;position:relative}
+.poradie li::before{content:counter(k);position:absolute;left:14px;top:8px;font:700 1.5rem/1 Georgia,serif;color:var(--ja)}
+.rozpor{border-left:4px solid var(--te)}
+.suvis{border-left:4px solid var(--mo)}
+ol.otazky li{margin:0 0 .6em}
+</style>
+</head>
+<body>
+<main>
+<p class="meta">Dizajn · herný stôl <code>/hra</code> · 2026-10-21 · id <code>hra-20261021-1240</code> · skill naex-dizajn (UI + UX)</p>
+<h1>Herný stôl: spoločný prehľad UI a UX návrhov</h1>
+<div class="verdikt">
+  <p><b>Zhodli sa na tom hlavnom:</b> keď si na ťahu, <b>nevidíš stôl</b> a <b>na mobile sa ťah nedá dokončiť</b>. Stôl začína až okolo y ≈ 947 px a väčšinu prvej obrazovky zaberá skóre, starší a cieľ kola. Pripnutá ruka zakrýva časť stola, na ktorej sa práve hrá.</p>
+  <p class="meta">Kód webu ani jeden nemenil. Návrhy nadväzujú na <a href="dizajn-hra-nezrovnalosti-20261021-1229-ui.html">dizajn-hra-nezrovnalosti-20261021-1229</a> a body z neho neopakujú.</p>
+</div>
+
+<h2>Podrobné návrhy</h2>
+<div class="mriezka">
+  <a class="odkaz" href="dizajn-hra-20261021-1240-ui.html"><b>UI: vizuálna stránka →</b><br><span class="meta">Hierarchia, typografia, kontrast, komponenty. Ukážky pred a po, merania v DOM, 8 snímok.</span></a>
+  <a class="odkaz" href="dizajn-hra-20261021-1240-ux.html"><b>UX: použiteľnosť →</b><br><span class="meta">Úlohy a toky, heuristiky, WCAG 2.2, mobil. Drôtené modely, 8 snímok.</span></a>
+</div>
+
+<h2>Najväčšie problémy</h2>
+<div class="mriezka">
+  <div class="dlazdica zhoda"><span class="stitok zh">UI aj UX</span>
+    <h3>Stôl je stále pod záhybom</h3>
+    <p>Pri 1600 × 1000 začína stôl na y = 947 px (pri 1280 × 800 na 940). Nad ním sú lišta kola, skóre (130 px), starší (324 px) a cieľ kola (288 px). Stránka sa sama posunie k miestu ťahu len pri voľbe cieľa (<code>HernaPlocha.tsx:480</code>).</p></div>
+  <div class="dlazdica zhoda"><span class="stitok zh">UI aj UX</span>
+    <h3>Pripnutá ruka zakrýva hru</h3>
+    <p>Ruka s pásom pokynov má 204 px, teda 20–26 % výšky okna. Prekrýva panel cieľa, stavbu šenku a v Bitke aj vlastnú kartu na stole.</p></div>
+  <div class="dlazdica zhoda"><span class="stitok zh">UI aj UX</span>
+    <h3>Mobil je rozbitý</h3>
+    <p>Každý našiel inú príčinu a treba opraviť obe:</p>
+    <ul><li><b>UI:</b> stránka je široká 461 px namiesto 390, lebo „body teraz“ sa nezalomí (<code>HernaPlocha.tsx:2586</code>).</li>
+    <li><b>UX:</b> pás pokynov pretečie (<code>hra.css:1373</code>), takže „pasovať“ a „potvrdiť“ sú mimo obrazovky.</li></ul></div>
+  <div class="dlazdica"><span class="stitok ux">UX</span>
+    <h3>Súperov ťah a výsledok bitky nie sú na stole</h3>
+    <p>Vidno ich len v logu a ten je po obnovení stránky prázdny.</p></div>
+  <div class="dlazdica zhoda"><span class="stitok zh">UI aj UX</span>
+    <h3>Prístupnosť</h3>
+    <ul><li>Stavať šenok a brať z neho sa dá len ťahaním (WCAG 2.5.7).</li>
+    <li>Prázdne miesta majú kontrast 1,46 : 1.</li>
+    <li>Slabý text nemá vlastný token farby.</li>
+    <li>Chyby zo servera sa ukážu hore, mimo zrak hráča.</li></ul></div>
+  <div class="dlazdica"><span class="stitok ux">UX</span>
+    <h3>Drobnosti</h3>
+    <p>„Pasovať“ sa nedá vrátiť a stačí naň jeden klik. Vo vrstve Lokality ostal zastaraný text „bitka o staršieho“.</p></div>
+</div>
+
+<h2>Všetky návrhy</h2>
+<p class="meta">Zaškrtni, čo chceš implementovať. Výber sa dole dá skopírovať ako zadanie.</p>
+<div class="filtre" role="group" aria-label="Filter">
+  <button type="button" data-f="vsetko" aria-pressed="true">Všetko</button>
+  <button type="button" data-f="ui" aria-pressed="false">UI</button>
+  <button type="button" data-f="ux" aria-pressed="false">UX</button>
+  <button type="button" data-f="mala" aria-pressed="false">Malá náročnosť</button>
+  <button type="button" data-f="stredna" aria-pressed="false">Stredná</button>
+  <button type="button" data-f="velka" aria-pressed="false">Veľká</button>
+</div>
+<div class="tab-obal">
+<table id="navrhy">
+<thead><tr><th></th><th>Kto</th><th>Návrh</th><th>Čo rieši</th><th>Náročnosť</th><th>Balík</th></tr></thead>
+<tbody>
+<tr data-k="ui mala"><td class="vyber"><input type="checkbox" aria-label="UI N1"></td><td><span class="stitok ui">UI N1</span></td><td><b>Rýchla výhra</b></td><td>Pretečenie na mobile, tokeny <code>--slaby-text</code> (5,52 : 1) a <code>--cervena-text</code>, tlačidlá v lište kola, stlmené nuly v skóre, kontrast prázdnych miest 1,46 → 3,1 : 1.</td><td><span class="stitok mala">malá (~1 h)</span></td><td>1</td></tr>
+<tr data-k="ux mala"><td class="vyber"><input type="checkbox" aria-label="UX N1"></td><td><span class="stitok ux">UX N1</span></td><td><b>Hra ti zavolá</b></td><td>Pás pokynov na mobile, posun k miestu ťahu pri zmene fázy, „● Tvoj ťah“, chyba priamo v páse, potvrdenie pasovania v páse, rozlišujúci náhľad pri Pohoršení, oprava textu „bitka o staršieho“.</td><td><span class="stitok mala">malá</span></td><td>1</td></tr>
+<tr data-k="ui mala stredna"><td class="vyber"><input type="checkbox" aria-label="UI N4"></td><td><span class="stitok ui">UI N4</span></td><td><b>Jedno hlavné tlačidlo</b></td><td>NA EX! ako pečiatka, „hotovo“ neutrálne so zámkom, cigarety v jednej skupine.</td><td><span class="stitok mala">malá</span>–<span class="stitok stredna">stredná</span></td><td>2</td></tr>
+<tr data-k="ux stredna"><td class="vyber"><input type="checkbox" aria-label="UX N4"></td><td><span class="stitok ux">UX N4</span></td><td><b>Bez ťahania a bez myši</b></td><td>Šenok sa dá ovládať klikom, ruka sa dá čítať z klávesnice aj na dotyku, jedno zastavenie klávesnice na kartu, pri nedostupnej voľbe dôvod.</td><td><span class="stitok stredna">stredná</span></td><td>2</td></tr>
+<tr data-k="ui stredna"><td class="vyber"><input type="checkbox" aria-label="UI N2"></td><td><span class="stitok ui">UI N2</span></td><td><b>Skóre ako jedna lišta</b></td><td>Veľké „Spolu“, kto vedie a o koľko, pruh prevahy, čipy len nenulových milníkov; mriežka ako rozpis. Výška 130 → ~84 px, na mobile 529 → ~230 px.</td><td><span class="stitok stredna">stredná</span></td><td>3</td></tr>
+<tr data-k="ux stredna"><td class="vyber"><input type="checkbox" aria-label="UX N2"></td><td><span class="stitok ux">UX N2</span></td><td><b>Stôl v strede, prehľad po ruke</b></td><td>Stavová lišta navrchu. Starší a body sa zbalia a sami sa rozbalia pri patronáte, Pohoršení a prebytku. Odhad bitky v jednom riadku.</td><td><span class="stitok stredna">stredná</span></td><td>3</td></tr>
+<tr data-k="ux stredna"><td class="vyber"><input type="checkbox" aria-label="UX N3"></td><td><span class="stitok ux">UX N3</span></td><td><b>Čo sa práve stalo</b></td><td>Posledný ťah súpera ako riadok v páse, zvýraznená karta v línii, po bitke „Účet bitky“. Ide spolu s N5 z návrhu 1229.</td><td><span class="stitok stredna">stredná</span></td><td>4</td></tr>
+<tr data-k="ui stredna"><td class="vyber"><input type="checkbox" aria-label="UI N3"></td><td><span class="stitok ui">UI N3</span></td><td><b>Krčmový stôl</b></td><td>Drevo z CSS a lampa nad stranou hráča na ťahu namiesto zeleného plátna, pivná podtácka „TVOJ ŤAH“. Posilní identitu hry.</td><td><span class="stitok stredna">stredná</span></td><td>5</td></tr>
+<tr data-k="ui velka"><td class="vyber"><input type="checkbox" aria-label="UI N5"></td><td><span class="stitok ui">UI N5</span></td><td><b>Herná obrazovka bez scrollu</b></td><td>Desktop v jednom okne: dosky po bokoch, ruka ako riadok mriežky (nič neprekrýva), cieľ kola priamo na stole. Stôl ~380 px namiesto 484, ale celý v okne.</td><td><span class="stitok velka">veľká</span></td><td>6</td></tr>
+<tr data-k="ux velka"><td class="vyber"><input type="checkbox" aria-label="UX N5"></td><td><span class="stitok ux">UX N5</span></td><td><b>Telefón na jednu obrazovku</b></td><td>Záložky Stôl / Starší / Body / Log, ovládanie v dosahu palca, spodný panel pre kartu.</td><td><span class="stitok velka">veľká</span></td><td>6</td></tr>
+</tbody>
+</table>
+</div>
+<div class="suhrn" aria-live="polite">
+  <span id="pocet">Nič nie je vybrané.</span>
+  <button type="button" id="kopiruj">Skopírovať ako zadanie</button>
+</div>
+
+<h2>Čo spolu súvisí a čo si odporuje</h2>
+<div class="mriezka">
+  <div class="dlazdica suvis"><h3>UI N1 + UX N1</h3><p>Opravujú dve rôzne príčiny toho istého pretečenia na mobile. Treba ich robiť spolu, inak bude mobil stále rozbitý.</p></div>
+  <div class="dlazdica suvis"><h3>UI N2 + UX N2</h3><p>Riešia ten istý horný pás. Odporúčam ich spojiť: skóre ako lišta (UI) plus starší, ktorí sa zbalia a sami rozbalia (UX).</p></div>
+  <div class="dlazdica rozpor"><h3>Rozpor so starším rozhodnutím</h3><p>Obaja chcú starších zmenšiť alebo zbaliť. To ide proti tvojmu rozhodnutiu z 2026-10-18 dať skóre a väčších starších navrch.</p></div>
+  <div class="dlazdica rozpor"><h3>Kto je na ťahu</h3><p>UI N3 chce zelené plátno („zelená = tvoj“) nahradiť lampou na dreve, UX N1 pridáva titulok „● Tvoj ťah“. Treba ich zladiť, aby neboli dva rôzne signály.</p></div>
+  <div class="dlazdica suvis"><h3>UI N4 + UX N1</h3><p>Menia tie isté tlačidlá Pitky. UI chce jedno hlavné tlačidlo, UX potvrdenie pasovania v páse. Treba ich navrhnúť spolu.</p></div>
+  <div class="dlazdica suvis"><h3>UI N5 + UX N5</h3><p>Dopĺňajú sa (desktop a mobil). Spolu sú to nové rozloženie stola, robil by som ich naraz až na konci.</p></div>
+</div>
+
+<h2>Odporúčané poradie</h2>
+<ol class="poradie">
+  <li><b>UI N1 + UX N1</b> · rýchle opravy, mobil bude hrateľný. <span class="stitok mala">malá</span></li>
+  <li><b>UI N4 + UX N4</b> · tlačidlá a ovládanie bez ťahania. <span class="stitok stredna">stredná</span></li>
+  <li><b>UI N2 + UX N2 spojené</b> · horný pás, stôl sa dostane vyššie. Najprv rozhodni otázku 1. <span class="stitok stredna">stredná</span></li>
+  <li><b>UX N3</b> · čo sa práve stalo (spolu s N5 z návrhu 1229). <span class="stitok stredna">stredná</span></li>
+  <li><b>UI N3</b> · krčmový vzhľad. Najprv rozhodni otázku 2. <span class="stitok stredna">stredná</span></li>
+  <li><b>UI N5 + UX N5</b> · nové rozloženie, prípadne najprv voliteľné v profile. <span class="stitok velka">veľká</span></li>
+</ol>
+
+<h2>Otázky na Michala</h2>
+<ol class="otazky">
+  <li><b>Starší a skóre:</b> smú byť predvolene zbalení alebo zmenšení, aj keď si ich 2026-10-18 dal väčších navrch?</li>
+  <li><b>Kto je na ťahu:</b> ostane zelený stôl („zelená = tvoj“, <code>HernaPlocha.tsx:2699</code>), alebo ho môže nahradiť lampa na dreve?</li>
+  <li><b>Pitka:</b> má byť hlavné tlačidlo NA EX!, alebo „hotovo“? Má „pasovať“ vyžadovať potvrdenie?</li>
+  <li><b>Mobil:</b> má sa na telefóne dať odohrať celá partia, alebo stačí dohrať kolo?</li>
+  <li><b>Ruka na desktope:</b> môže prestať prekrývať stôl a stať sa časťou mriežky? Má byť nové rozloženie najprv voliteľné v profile?</li>
+  <li><b>Zvuk a skratky:</b> chceš zvuk pri vlastnom ťahu (predvolene vypnutý) a klávesové skratky (Enter = potvrdiť, 1–9 = karta v ruke)?</li>
+</ol>
+</main>
+<script>
+(() => {
+  const riadky = [...document.querySelectorAll("#navrhy tbody tr")];
+  const tlacidla = [...document.querySelectorAll(".filtre button")];
+  tlacidla.forEach(b => b.addEventListener("click", () => {
+    tlacidla.forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+    const f = b.dataset.f;
+    riadky.forEach(r => { r.hidden = f !== "vsetko" && !r.dataset.k.split(" ").includes(f); });
+  }));
+  const pocet = document.getElementById("pocet");
+  const vybrane = () => riadky.filter(r => r.querySelector("input").checked);
+  const obnov = () => {
+    riadky.forEach(r => r.classList.toggle("vybrany", r.querySelector("input").checked));
+    const v = vybrane();
+    pocet.textContent = v.length === 0 ? "Nič nie je vybrané." : `Vybrané: ${v.map(r => r.querySelector("input").getAttribute("aria-label")).join(", ")}`;
+  };
+  riadky.forEach(r => r.querySelector("input").addEventListener("change", obnov));
+  document.getElementById("kopiruj").addEventListener("click", async () => {
+    const v = vybrane();
+    if (v.length === 0) { pocet.textContent = "Najprv zaškrtni návrhy."; return; }
+    const text = "Implementuj z dizajn-hra-20261021-1240: " + v.map(r => `${r.querySelector("input").getAttribute("aria-label")} (${r.cells[2].textContent})`).join(", ");
+    try { await navigator.clipboard.writeText(text); pocet.textContent = "Skopírované: " + text; }
+    catch { pocet.textContent = text; }
+  });
+})();
+</script>
+</body>
+</html>

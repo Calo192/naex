@@ -17,7 +17,8 @@
     "test:watch": "vitest",
     "typecheck": "tsc --build --force",
     "start": "node --experimental-strip-types --env-file-if-exists=.env packages/server/src/index.ts",
-    "kniznica": "npm run kniznica --workspace=@naex/server --"
+    "kniznica": "npm run kniznica --workspace=@naex/server --",
+    "hudba": "npm run hudba --workspace=@naex/server --"
   },
   "devDependencies": {
     "typescript": "^5.9.0",

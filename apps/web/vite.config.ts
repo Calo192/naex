@@ -11,6 +11,7 @@ export default defineConfig({
       "/ws": { target: "ws://localhost:8787", ws: true },
       "/api": { target: "http://localhost:8787" },
       "/media": { target: "http://localhost:8787" },
+      "/hudba": { target: "http://localhost:8787" },
       "/playtesty": { target: "http://localhost:8787" },
     },
   },

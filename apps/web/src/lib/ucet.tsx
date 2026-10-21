@@ -29,11 +29,16 @@ export interface Pouzivatel {
   readonly dohrate?: number;
   /** Zväčšenie karty (ruka pod myšou, inde klikom) v percentách (150 – 400, predvolene 200). */
   readonly lupa?: number;
+  /** Hlasitosť hudby počas partie v percentách (0 = vypnutá, predvolene 30). */
+  readonly hudba?: number;
+  /** Účet AI agenta (nastavuje admin). */
+  readonly ai?: boolean;
 }
 
 export const LUPA_OD = 150;
 export const LUPA_DO = 400;
 export const LUPA_PREDVOLENA = 200;
+export const HUDBA_PREDVOLENA = 30;
 
 interface UcetKontext {
   readonly ja: Pouzivatel | null;

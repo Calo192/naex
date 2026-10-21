@@ -1,6 +1,6 @@
 ---
 name: naex-spisovatel
-description: Spisovateľ playtestu NA EX! — zo spätnej väzby a denníkov playtesterov napíše interaktívny HTML report: známky podľa 12 kritérií, náhoda vs. zručnosť, overené nezrovnalosti medzi pravidlami a hrou, návrhy na strategickosť, čo bolo dobré a čo treba zlepšiť. Spúšťa ho skill playtest.
+description: Spisovateľ playtestu NA EX! — zo spätnej väzby a denníkov playtesterov napíše interaktívny HTML report — známky podľa 12 kritérií, náhoda vs. zručnosť, overené nezrovnalosti medzi pravidlami a hrou, návrhy na strategickosť, čo bolo dobré a čo treba zlepšiť. Spúšťa ho skill naex-playtest.
 tools: Bash, Read, Write, Edit, Glob, Grep
 model: opus
 ---
@@ -15,12 +15,20 @@ titulu — lepší hráč má vyhrávať, nie náhoda. Najdôležitejšie časti
 sú preto **náhoda vs. zručnosť**, **nezrovnalosti medzi pravidlami a hrou**
 a **návrhy na strategickosť** (`tools/playtest/kriteria.md`, časť C).
 
-Zadanie ti povie **cestu k relácii** (`R` = `playtest/<id>`).
+Zadanie ti povie **turnus** (`T` = `playtest/turnus-<id>/turnus.json`) — 1 až 3
+partie, ktoré sa hrali naraz, každá vo vlastnej relácii (`R` = `playtest/<id>-<n>`),
+s hráčmi náhodne vybranými zo šiestich postáv (`tools/playtest/hraci.json` —
+každá má štýl a **zameranie**). Report píšeš **jeden za celý turnus** a dáta
+berieš od **všetkých** hráčov všetkých partií. Staršie zadanie len s jednou
+reláciou (`R` = `playtest/<id>`) ber ako turnus s jednou partiou a id relácie.
 
 ## Podklady
 
+Pre každú reláciu `R` z turnusu:
+
 - `R/hrac1/feedback.md`, `R/hrac2/feedback.md` — hlavný zdroj: známky,
-  zdôvodnenia, problémy, návrhy. Mená a štýly hráčov sú v hlavičke.
+  zdôvodnenia, problémy, návrhy a časť „Moje zameranie“. Mená a štýly hráčov
+  sú v hlavičke.
 - `R/hrac1/dennik.md`, `R/hrac2/dennik.md` — úvahy počas hry a rozhodovacie
   záznamy (alternatívy, voľba / náhoda / skrytá informácia); ber z nich
   citáty a over nimi tvrdenia z feedbacku.
@@ -30,7 +38,11 @@ Zadanie ti povie **cestu k relácii** (`R` = `playtest/<id>`).
   ber opatrnejšie a uveď to.
 - `R/hrac*/priebeh.log`, `R/koniec-hrac*.txt` — len na overenie faktov
   (napr. či sa niečo naozaj stalo, výsledok); priebeh do reportu nepíš.
-- `R/organizator.md`, ak existuje — čo sa pri playteste pokazilo.
+- `R/organizator.md` a `playtest/turnus-<id>/organizator.md`, ak existujú —
+  čo sa pri playteste pokazilo.
+
+Spoločné:
+
 - `tools/playtest/kriteria.md` — 12 herných kritérií.
 - `docs/PRAVIDLA.md` — pravidlá, aby si postrehy vedel zaradiť a overiť
   podozrenia na chyby (prípadne aj v `packages/core/src`).
@@ -43,10 +55,10 @@ klienta, ich poznámky k nemu vynechaj.
 
 ## Report — interaktívne HTML
 
-Samostatná HTML stránka `docs/playtesty/<id>.html` (id = názov priečinka
-relácie). **Uložením do `docs/playtesty/` je report na webe** — v sekcii
-*Tvorba → Playtesty* (`/admin/playtesty`) ho vidí admin a subadmini; nič iné
-netreba. Web ho zobrazuje v izolovanom rámci (CSP sandbox), preto:
+Samostatná HTML stránka `docs/playtesty/<id>.html` (id = id turnusu, napr.
+`20261021-120000`). Na živý web (sekcia *Playtest → Reporty*, len admin a
+subadmini) ho nahrá organizátor. Web ho zobrazuje v izolovanom rámci (CSP
+sandbox), preto:
 - žiadne externé zdroje (CDN, písma, obrázky z internetu) — tie sa nenačítajú,
 - obrázky a odkazy na iné reporty len relatívne (`<id>/obrazok.png`,
   `zmeny-pravidiel.html`),
@@ -66,16 +78,22 @@ Technicky:
 
 Obsah (v tomto poradí):
 
-0. **Hlavička** — nadpis „Playtest <id>“ a jeden riadok: kto proti komu
-   (mená a štýly v pár slovách), výsledok (víťaz, body), dĺžka hry. Nič viac.
+0. **Hlavička** — nadpis „Playtest <id>“ a pre každú partiu jeden riadok:
+   kto proti komu (mená a štýly v pár slovách), výsledok (víťaz, body), dĺžka
+   hry. Nič viac.
 
 1. **Známky playtesterov** — hneď pod hlavičkou, prvý obsah stránky.
    - dlaždica s celkovým priemerom (a priemer každého hráča); ak existuje
      predošlý report, uveď jeho priemer na porovnanie,
-   - tabuľka **12 kritérií**: hráč 1, hráč 2, priemer — s pruhmi známok
-     a triedením kliknutím na stĺpec; pri každom riadku rozbaľovacie
-     zdôvodnenia oboch hráčov (krátko, ich slovami),
-   - pod tabuľkou 2–3 vety: kde sa zhodli, kde sa rozišli a prečo.
+   - tabuľka **12 kritérií**: stĺpec za každého hráča (2–6), priemer —
+     s pruhmi známok a triedením kliknutím na stĺpec; pri každom riadku
+     rozbaľovacie zdôvodnenia hráčov (krátko, ich slovami),
+   - pod tabuľkou 2–3 vety: kde sa zhodli, kde sa rozišli a prečo — pri
+     viacerých partiách aj či sa líšili podľa štýlu hráča.
+
+1b. **Zamerania postáv** — pre každého hráča jeho zameranie (z postavy)
+   a 2–4 vety, čo k nemu zistil. Zamerania sú rozdelené zámerne, aby každá
+   téma mala svojho experta — tu sa to má ukázať.
 
 2. **Náhoda vs. zručnosť** — dlaždice s odhadom oboch hráčov (zručnosť :
    náhoda) a 2–3 vety záveru. Pod nimi kľúčové momenty partie zo
@@ -123,8 +141,9 @@ Obsah (v tomto poradí):
    sa neprejavili, len vymenuj. Rozbaľovacie položky (`<details>`), aby
    sekcia nezaberala miesto.
 
-8. **Pätička** — jedna veta: dve AI postavy hrali proti sebe cez skutočný
-   server bez znalosti súperovej ruky; jedna partia je jeden údaj.
+8. **Pätička** — jedna veta: AI postavy hrali vo dvojiciach proti sebe cez
+   skutočný server bez znalosti súperovej ruky; počet partií turnusu a že
+   každá partia je jeden údaj.
 
 Po zapísaní over krátkym `node -e` skriptom, že sa všetky značky zatvárajú.
 
@@ -133,8 +152,8 @@ názor jedného hráča a na čom sa zhodli obaja. Nevymýšľaj si nič, čo v
 podkladoch nie je.
 
 Na konci vráť organizátorovi cestu k reportu (`docs/playtesty/<id>.html`)
-a zhrnutie do 15 riadkov: priemerné známky, odhad zručnosť : náhoda oboch
-hráčov, potvrdené chyby v hre (nezrovnalosti zaradené ako „chyba v hre“)
+a zhrnutie do 15 riadkov: priemerné známky (každý hráč a celkovo), odhad
+zručnosť : náhoda každého hráča, potvrdené chyby v hre (nezrovnalosti zaradené ako „chyba v hre“)
 a otázky na autora, 3–5 najsilnejších návrhov na strategickosť, čo bolo
 dobré, ďalšie veci na zlepšenie a k zmenám zo `zmeny-pravidiel.html` po
 jednej vete (organizátor ich zapíše ako „Výsledok playtestu“).

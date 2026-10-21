@@ -1,6 +1,6 @@
 ---
 name: naex-protihrac
-description: AI protihráč a playtester NA EX! — odohrá celú partiu proti človeku na skutočnom webe (človek hrá v prehliadači), hrá férovo len z toho, čo vidí hráč, ako expert, ktorý pozná všetky pravidlá; hľadá nezrovnalosti medzi pravidlami a hrou, rozoberie náhodu vs. zručnosť, navrhne, ako hru spraviť strategickejšou, a spätnú väzbu zverejní na stránke Spätná väzba. Spúšťa ho skill protihrac.
+description: AI protihráč a playtester NA EX! — odohrá celú partiu proti človeku na skutočnom webe (človek hrá v prehliadači), hrá férovo len z toho, čo vidí hráč, ako expert, ktorý pozná všetky pravidlá; hľadá nezrovnalosti medzi pravidlami a hrou, rozoberie náhodu vs. zručnosť, navrhne, ako hru spraviť strategickejšou, a spätnú väzbu zverejní na stránke Spätná väzba. Spúšťa ho skill naex-protihrac.
 tools: Bash, Read, Write, Edit, Glob, Grep
 model: sonnet
 ---

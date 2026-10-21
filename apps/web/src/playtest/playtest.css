@@ -1,0 +1,240 @@
+/* Sekcia Playtest — návrhy z playtestov a reporty. */
+
+.playtest-hlavicka {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  margin-bottom: 14px;
+}
+
+.playtest-hlavicka h1 {
+  margin: 0;
+}
+
+/* Report v izolovanom rámci na celú výšku */
+.playtest-ramec {
+  display: block;
+  width: 100%;
+  height: calc(100vh - 210px);
+  min-height: 480px;
+  border: 1px solid var(--okraj);
+  border-radius: 10px;
+  background: #14110e;
+}
+
+.playtest-zoznam {
+  margin: 0 0 18px;
+  padding-left: 20px;
+}
+
+.playtest-zoznam li {
+  margin: 4px 0;
+}
+
+/* ---- návrhy ---- */
+
+.navrhy-prazdne {
+  margin-top: 24px;
+}
+
+.navrhy-davka {
+  margin-top: 26px;
+}
+
+.navrhy-davka h2 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 14px;
+}
+
+.navrhy-podklad {
+  font: 400 0.85rem var(--pismo);
+}
+
+.navrh {
+  display: grid;
+  gap: 14px;
+  margin: 14px 0;
+  border-left: 4px solid var(--okraj-svetly);
+}
+
+.navrh.krit-kriticka {
+  border-left-color: var(--cervena);
+}
+
+.navrh.krit-vysoka {
+  border-left-color: var(--akcent);
+}
+
+.navrh.stav-zamietnute,
+.navrh.stav-implementovane {
+  opacity: 0.8;
+}
+
+.navrh-hlava h3 {
+  margin: 6px 0 0;
+  font-size: 1.2rem;
+}
+
+.navrh h4 {
+  margin: 0 0 4px;
+  font: 700 0.75rem/1.3 var(--pismo);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--akcent);
+}
+
+.navrh-text {
+  margin: 0 0 6px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.navrh-rozbor {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.navrh-kritickost,
+.navrh-stav {
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.5;
+  padding: 1px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--okraj-svetly);
+  background: var(--plocha-2);
+  color: var(--tlmeny);
+}
+
+.navrh-kritickost.kriticka {
+  color: #fff;
+  background: var(--cervena);
+  border-color: var(--cervena);
+}
+
+.navrh-kritickost.vysoka {
+  color: var(--akcent);
+  border-color: #6b4c1a;
+  background: #3b2a10;
+}
+
+.navrh-stav.implementovat,
+.navrh-stav.rozpracovane {
+  color: var(--akcent);
+  border-color: #6b4c1a;
+}
+
+.navrh-stav.implementovane {
+  color: var(--zelena);
+  border-color: rgba(124, 191, 116, 0.45);
+  background: rgba(124, 191, 116, 0.12);
+}
+
+.navrh-stav.zamietnute {
+  color: var(--slaby);
+  text-decoration: line-through;
+}
+
+.navrh-dokazy ul,
+.navrh-otazky ol {
+  margin: 8px 0 0;
+  padding-left: 22px;
+  color: var(--tlmeny);
+}
+
+.navrh-moznosti {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 0;
+  border: 0;
+}
+
+.navrh-moznosti legend {
+  margin-bottom: 6px;
+  font: 700 0.75rem/1.3 var(--pismo);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--akcent);
+}
+
+.navrh-moznost {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border: 1px solid var(--okraj);
+  border-radius: 10px;
+  background: var(--plocha-2);
+  cursor: pointer;
+}
+
+.navrh-moznost.vybrana {
+  border-color: var(--akcent);
+  background: var(--plocha-3);
+}
+
+.navrh-moznost input {
+  margin-top: 4px;
+  width: auto;
+}
+
+.navrh-moznost-telo {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.navrh-moznost-nazov {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+}
+
+.navrh-dopad {
+  font-size: 0.9rem;
+  color: var(--tlmeny);
+}
+
+.navrh-odporucanie,
+.navrh-otazky,
+.navrh-vysledok {
+  margin-bottom: 12px;
+}
+
+.navrh-poznamka {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+  color: var(--tlmeny);
+}
+
+.navrh-kto {
+  margin: 8px 0 0;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 760px) {
+  .navrh-rozbor {
+    grid-template-columns: 1fr;
+  }
+
+  .playtest-ramec {
+    height: calc(100vh - 240px);
+  }
+}
+
+.playtest-hlavicka .cip {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.playtest-hlavicka .cip.aktivny {
+  color: var(--pozadie);
+}

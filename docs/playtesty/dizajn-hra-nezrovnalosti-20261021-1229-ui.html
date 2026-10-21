@@ -1,0 +1,640 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI návrh — herný stôl: vizuálne nezrovnalosti (hra-nezrovnalosti-20261021-1229)</title>
+<style>
+:root {
+  --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --plocha-3: #332a21;
+  --okraj: #3d3229; --okraj-svetly: #57483a; --text: #f1e8d8; --tlmeny: #b6a790; --slaby: #8b7d6a;
+  --akcent: #e9ad45; --cervena: #d0563f; --zelena: #7cbf74; --ja: #5cc0cf; --su: #e0805f;
+  --ja-tmava: #1d3b40; --su-tmava: #43261d;
+  --r-text: #f1e8d8; --r-pozadie: #14110e; --r-plocha: #1e1914; --r-okraj: #3d3229; --r-tlmeny: #b6a790;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root { --r-text: #2a1d12; --r-pozadie: #f6efe2; --r-plocha: #fffaf1; --r-okraj: #d9c9ad; --r-tlmeny: #5e4d38; color-scheme: light; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; font: 16px/1.55 system-ui, "Segoe UI", Roboto, sans-serif; background: var(--r-pozadie); color: var(--r-text); }
+h1, h2, h3, h4 { font-family: Georgia, "Bitter", serif; line-height: 1.2; margin: 0 0 .5em; }
+h1 { font-size: clamp(1.6rem, 3.5vw, 2.3rem); }
+h2 { font-size: 1.45rem; margin-top: 2.2rem; padding-top: .6rem; border-top: 1px solid var(--r-okraj); }
+h3 { font-size: 1.15rem; }
+a { color: #b9802a; }
+@media (prefers-color-scheme: dark) { a { color: var(--akcent); } }
+main { max-width: 1180px; margin: 0 auto; padding: 24px clamp(14px, 3vw, 32px) 80px; }
+p, li { max-width: 78ch; }
+code { font-size: .88em; background: rgba(127,127,127,.16); padding: 1px 5px; border-radius: 5px; overflow-wrap: anywhere; }
+.meta { color: var(--r-tlmeny); font-size: .92rem; }
+.verdikt { background: var(--r-plocha); border: 1px solid var(--r-okraj); border-left: 5px solid #e9ad45; border-radius: 12px; padding: 14px 18px; margin: 16px 0; }
+.verdikt p { margin: 0 0 .5em; }
+nav.obsah { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .92rem; margin: 10px 0 0; }
+:focus-visible { outline: 2px solid #e9ad45; outline-offset: 2px; }
+
+/* tabuľky */
+.tab-obal { overflow-x: auto; border: 1px solid var(--r-okraj); border-radius: 12px; background: var(--r-plocha); }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; }
+th, td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--r-okraj); }
+thead th { font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color: var(--r-tlmeny); }
+tbody tr:last-child td { border-bottom: none; }
+.zav { display: inline-block; font-size: .75rem; font-weight: 700; padding: 1px 8px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+.zav.vysoka { color: #c2452f; } .zav.stredna { color: #a8741c; } .zav.nizka { color: #4f8f49; }
+@media (prefers-color-scheme: dark) { .zav.vysoka { color: #e26a52; } .zav.stredna { color: #e9ad45; } .zav.nizka { color: #9fd89a; } }
+.typ { font-size: .78rem; padding: 1px 7px; border-radius: 6px; background: rgba(127,127,127,.18); white-space: nowrap; }
+.filter { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+.filter button { font: inherit; font-size: .9rem; padding: 6px 14px; min-height: 40px; border-radius: 999px; border: 1px solid var(--r-okraj); background: var(--r-plocha); color: var(--r-text); cursor: pointer; }
+.filter button[aria-pressed="true"] { background: #e9ad45; color: #1b1408; border-color: #e9ad45; font-weight: 700; }
+tr[hidden] { display: none; }
+@media (max-width: 640px) {
+  .tab-obal table, .tab-obal tbody, .tab-obal tr, .tab-obal td { display: block; width: 100%; }
+  .tab-obal thead { display: none; }
+  .tab-obal tr { padding: 8px 0; border-bottom: 1px solid var(--r-okraj); }
+  .tab-obal tr[hidden] { display: none; }
+  .tab-obal td { border: none; padding: 3px 12px; }
+  .tab-obal td::before { display: block; font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--r-tlmeny); }
+  #overenie-tab td:nth-child(2)::before { content: "Čo hovorí kód"; }
+  #overenie-tab td:nth-child(3)::before { content: "Zaradenie"; }
+  #overenie-tab td:nth-child(4)::before { content: "Návrh"; }
+  #audit-tab td:first-child { font-weight: 700; }
+  #audit-tab td:nth-child(4)::before { content: "Dôkaz"; }
+}
+
+/* snímky */
+.galeria { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 520px), 1fr)); gap: 16px; }
+figure { margin: 0; background: var(--r-plocha); border: 1px solid var(--r-okraj); border-radius: 12px; padding: 10px; }
+figure img { display: block; width: 100%; height: auto; border-radius: 6px; }
+figcaption { font-size: .88rem; color: var(--r-tlmeny); margin-top: 6px; }
+figure.uzky { max-width: 300px; }
+
+/* karty návrhov */
+.navrh { background: var(--r-plocha); border: 1px solid var(--r-okraj); border-radius: 14px; padding: 18px clamp(12px, 2.5vw, 24px); margin: 22px 0; }
+.navrh header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+.navrh header h3 { margin: 0; font-size: 1.25rem; }
+.stitok { font-size: .78rem; font-weight: 700; padding: 2px 9px; border-radius: 999px; background: rgba(233,173,69,.18); color: inherit; border: 1px solid rgba(233,173,69,.5); }
+.navrh dl { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; margin: 12px 0; font-size: .94rem; }
+.navrh dt { font-weight: 700; }
+.navrh dd { margin: 0; }
+@media (max-width: 640px) { .navrh dl { grid-template-columns: 1fr; } .navrh dd { margin-bottom: 6px; } }
+pre { background: #1a1511; color: #f1e8d8; padding: 10px 12px; border-radius: 8px; overflow-x: auto; font-size: .82rem; line-height: 1.45; }
+
+/* pred / po */
+.pp { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 14px 0; }
+.pp.tri { grid-template-columns: 1fr 1fr 1fr; }
+@media (max-width: 900px) { .pp, .pp.tri { grid-template-columns: 1fr; } }
+.pp > div { min-width: 0; }
+.pp-hlava { font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--r-tlmeny); margin-bottom: 6px; }
+.pp-hlava.po { color: #4f8f49; }
+@media (prefers-color-scheme: dark) { .pp-hlava.po { color: #9fd89a; } }
+
+/* ========== ukážky v jazyku hry (vždy tmavé, tokeny zo styles.css / hra.css) ========== */
+.hd { color-scheme: dark; background: radial-gradient(ellipse 90% 70% at 50% -20%, rgba(233,173,69,.12), transparent 60%), var(--pozadie);
+  color: var(--text); border-radius: 12px; padding: 14px; border: 1px solid var(--okraj); font-family: Roboto, "Segoe UI", system-ui, sans-serif; font-size: 14px; line-height: 1.4; overflow: hidden; }
+.hd b, .hd strong { font-weight: 700; }
+.hd .rad { display: flex; flex-wrap: wrap; gap: 6px; align-items: stretch; }
+.hd .tl { color: var(--tlmeny); font-size: 12px; }
+.hd .moje { color: var(--ja); } .hd .superove { color: var(--su); }
+
+/* zdroj (doska hráča) */
+.hd .zdroj { display: flex; flex-direction: column; gap: 2px; min-width: 96px; padding: 6px 10px 8px; border-radius: 10px; background: rgba(0,0,0,.28); border: 1px solid rgba(255,255,255,.06); }
+.hd .zn { font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--tlmeny); }
+.hd .vc { font: 700 26px/1.1 Georgia, "Bitter", serif; font-variant-numeric: tabular-nums; }
+.hd .vc small { font-size: 15px; color: var(--tlmeny); font-weight: 400; }
+.hd .vc .sip { font-size: 16px; color: var(--tlmeny); margin: 0 3px; font-family: system-ui, sans-serif; }
+.hd .pruh { display: flex; gap: 3px; margin-top: 4px; }
+.hd .pruh i { flex: 1; height: 5px; border-radius: 3px; background: #3a3129; }
+.hd .pruh i.on { background: var(--akcent); }
+/* NOVÝ token: --caka = čo pribudne pri vyhodnotení Pitky (šrafovanie, nie farba — farba nie je jediný nosič) */
+.hd .pruh i.caka { background: repeating-linear-gradient(135deg, var(--akcent) 0 3px, transparent 3px 6px); outline: 1px solid rgba(233,173,69,.55); }
+.hd .pruh i.cez { background: repeating-linear-gradient(135deg, var(--cervena) 0 3px, transparent 3px 6px); outline: 1px solid var(--cervena); }
+.hd .zdroj.hrozi { border-color: var(--cervena); background: linear-gradient(180deg, rgba(208,86,63,.16), rgba(0,0,0,.28)); }
+.hd .chip-kl { align-self: flex-start; margin-top: 4px; font-size: 11.5px; font-weight: 700; padding: 1px 7px; border-radius: 6px; background: #3a1a14; color: #ffb4a3; border: 1px solid #7a3326; }
+.hd .chip-ok { align-self: flex-start; margin-top: 4px; font-size: 11.5px; font-weight: 700; padding: 1px 7px; border-radius: 6px; background: #1d3320; color: #9fd89a; border: 1px solid #3c6a3f; }
+.hd .pod { font-size: 11.5px; color: var(--tlmeny); }
+
+/* časová os */
+.hd .os { display: flex; gap: 3px; overflow: hidden; white-space: nowrap; }
+.hd .os li, .hd .os span.k { list-style: none; position: relative; padding: 4px 12px 4px 18px; font-size: 12.8px; color: var(--slaby); background: var(--plocha);
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%, 8px 50%); flex: none; }
+.hd .os .kolo { color: var(--text); font-weight: 700; background: var(--plocha-3); padding-left: 12px; clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%); }
+.hd .os .akt { background: var(--akcent); color: #1b1408; font-weight: 700; }
+.hd .os .hot { color: var(--tlmeny); }
+.hd .os-po { display: flex; gap: 3px; white-space: nowrap; overflow-x: auto; scrollbar-width: none;
+  mask-image: linear-gradient(90deg, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%); }
+.hd .os-po .k { color: #9d8f7b; } /* NOVÝ odtieň --slaby-text: 5,52 : 1 na --plocha */
+.hd .os-po .hot { color: var(--tlmeny); }
+.hd .os-po .hot::after { content: " \2713"; color: var(--zelena); }
+.hd .ramik { width: 100%; max-width: 520px; border: 1px dashed var(--okraj-svetly); border-radius: 8px; padding: 6px; }
+
+/* pás kola / Pitka */
+.hd .pas { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding: 8px 14px; border-radius: 12px; background: var(--plocha); border: 1px solid var(--okraj); }
+.hd .pas-n { font: 700 17px Georgia, "Bitter", serif; color: var(--akcent); }
+.hd .bodky { display: inline-flex; gap: 4px; }
+.hd .bodky i { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid var(--tlmeny); }
+.hd .bodky i.t { background: var(--akcent); border-color: var(--akcent); }
+.hd .bodky i.h { background: var(--slaby); border-color: var(--slaby); }
+.hd .cip-tah { display: inline-block; margin: 10px auto 0; padding: 4px 16px; border-radius: 999px; border: 1px solid #4fae66; color: #7fe39a; font-weight: 700; letter-spacing: .12em; font-size: 12.5px; background: #173320; }
+.hd .stolicky { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: stretch; width: 100%; }
+@media (max-width: 560px) { .hd .stolicky { grid-template-columns: 1fr; } .hd .stolicky .sip2 { display: none; } }
+.hd .stolicka { --f: var(--su); display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; padding: 8px 12px; border-radius: 10px; background: rgba(0,0,0,.25); border: 1px solid color-mix(in srgb, var(--f) 40%, var(--okraj)); border-left: 4px solid var(--f); }
+.hd .stolicka.ja { --f: var(--ja); }
+.hd .stolicka.tah { box-shadow: 0 0 0 1px var(--f), 0 0 18px color-mix(in srgb, var(--f) 35%, transparent); }
+.hd .stolicka.hotova { opacity: .82; }
+.hd .por { grid-row: span 2; font: 700 22px Georgia, serif; color: var(--f); align-self: center; }
+.hd .st-meno { font-weight: 700; }
+.hd .st-stav { font-size: 12.5px; color: var(--tlmeny); display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; }
+.hd .znak { display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 700; padding: 1px 7px; border-radius: 6px; border: 1px solid currentColor; }
+.hd .znak.hot { color: var(--tlmeny); }
+.hd .znak.tah { color: #7fe39a; }
+.hd .znak.nx { color: var(--akcent); }
+.hd .sip2 { align-self: center; color: var(--tlmeny); font-size: 18px; }
+.hd svg.zamok { width: 11px; height: 11px; }
+.hd .tlac { font: inherit; font-size: 13.5px; padding: 7px 14px; border-radius: 9px; border: 1px solid var(--okraj-svetly); background: var(--plocha-2); color: var(--text); }
+.hd .tlac.hl { background: var(--akcent); color: #1b1408; border-color: var(--akcent); font-weight: 700; }
+.hd .tlac.nx { background: #6b1f14; border-color: #a33a27; color: #fff; font-weight: 700; }
+.hd .pokyn { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; padding: 10px 14px; border-radius: 12px; background: rgba(30,25,20,.94); border: 1px solid var(--okraj); border-left: 4px solid var(--akcent); }
+.hd .pokyn .t { flex: 1 1 260px; font-size: 13.5px; }
+.hd .pokyn .n { font-size: 11.5px; letter-spacing: .14em; font-weight: 700; color: #7fe39a; margin-right: 8px; }
+.hd .log { font-size: 13px; border-radius: 8px; background: rgba(0,0,0,.25); padding: 8px 10px; }
+.hd .log div { padding: 2px 0; }
+.hd .log .nove { color: var(--akcent); }
+
+/* scoreboard */
+.hd .sb { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 10px; background: var(--plocha); border: 1px solid var(--okraj); margin-bottom: 6px; }
+.hd .sb .l, .hd .sb .r { font: 700 21px Georgia, "Bitter", serif; font-variant-numeric: tabular-nums; }
+.hd .sb .l { color: var(--ja); } .hd .sb .r { color: var(--su); text-align: right; }
+.hd .sb small { display: block; font: 400 11px system-ui, sans-serif; color: var(--tlmeny); }
+.hd .sb .c { text-align: center; font-weight: 700; font-size: 13.5px; }
+.hd .sb .c span { display: block; font-weight: 400; font-size: 11.5px; color: var(--tlmeny); }
+.hd .sb.spolu { background: var(--plocha-2); border-color: var(--okraj-svetly); }
+/* NOVÝ vzor --neiste: šrafované pozadie čísla, ktoré je len horná hranica */
+.hd .neiste { border: 1.5px dashed rgba(224,128,95,.75); border-radius: 6px; padding: 0 6px; background: rgba(224,128,95,.08); }
+.hd .hranica { display: block; font: 700 10px system-ui, sans-serif; letter-spacing: .1em; text-transform: uppercase; color: var(--su); }
+.hd .rozsah { position: relative; height: 10px; border-radius: 5px; background: #3a3129; margin-top: 6px; }
+.hd .rozsah i { position: absolute; top: 0; bottom: 0; border-radius: 5px; }
+
+/* náhľad NA EX */
+.hd .nahl-pred { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px; border-radius: 12px; background: rgba(30,25,20,.94); border: 1px solid var(--okraj); }
+.hd .nahl-pred div { padding: 7px 12px; border-radius: 9px; border: 1px solid #4b6b45; background: var(--plocha); font-size: 12.5px; }
+.hd .nahl { max-width: 430px; border-radius: 12px; background: var(--plocha); border: 1px solid var(--akcent); box-shadow: 0 12px 30px rgba(0,0,0,.5); overflow: hidden; }
+.hd .nahl h4 { font: 700 15px Georgia, serif; margin: 0; padding: 9px 12px; background: linear-gradient(90deg, rgba(233,173,69,.22), transparent); display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.hd .nahl .skore { font-variant-numeric: tabular-nums; }
+.hd .nahl .skore b { color: var(--zelena); }
+.hd .nahl table { width: 100%; font-size: 12.5px; border-collapse: collapse; }
+.hd .nahl td { padding: 4px 12px; border-bottom: 1px solid rgba(255,255,255,.06); color: var(--text); vertical-align: middle; }
+.hd .nahl td.c { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.hd .nasob { display: inline-block; font-size: 11px; font-weight: 700; padding: 0 5px; border-radius: 5px; background: rgba(233,173,69,.18); color: var(--akcent); border: 1px solid rgba(233,173,69,.45); margin-left: 3px; }
+.hd .zrus { color: var(--tlmeny); text-decoration: line-through; }
+.hd .cena { padding: 8px 12px; background: rgba(0,0,0,.25); font-size: 12.5px; display: grid; gap: 4px; }
+.hd .dl { display: inline-flex; flex-direction: column; align-items: center; padding: 6px 8px; border-radius: 9px; background: #000; border: 1px solid #333; min-width: 54px; }
+.hd .dl .ik { width: 28px; height: 28px; border-radius: 6px; background: #fff; color: #000; display: grid; place-items: center; font-weight: 900; font-size: 14px; }
+.hd .dl .h { font: 700 19px Georgia, serif; margin-top: 3px; }
+.hd .dl .h small { font: 400 11px system-ui, sans-serif; color: var(--tlmeny); }
+
+/* doska — stabilná mriežka */
+.hd .doska { display: grid; gap: 6px; padding: 10px; border-radius: 12px; background: linear-gradient(270deg, var(--su-tmava), var(--plocha) 50%); border: 1px solid #6b3a2b; border-right: 5px solid var(--su); }
+.hd .doska.flex { display: flex; flex-wrap: wrap; flex-direction: row; gap: 6px; max-width: 470px; }
+.hd .doska.mriezka { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-areas: "poldeci cigarety abstak" "podpivnik dlhy karty"; max-width: 520px; }
+.hd .doska.mriezka.ja { background: linear-gradient(90deg, var(--ja-tmava), var(--plocha) 50%); border: 1px solid #2f5e66; border-left: 5px solid var(--ja); grid-template-areas: "abstak cigarety poldeci" "karty dlhy podpivnik"; }
+.hd .podpivnik { grid-area: podpivnik; display: flex; gap: 10px; align-items: center; padding: 6px 10px; border-radius: 10px; background: rgba(0,0,0,.28); border: 1px solid rgba(255,255,255,.06); }
+.hd .tacka { width: 64px; height: 64px; border-radius: 50%; flex: none; display: grid; place-items: center;
+  background: radial-gradient(circle, #e7d7b6 0 56%, #c9b48d 57% 60%, #e7d7b6 61%); box-shadow: inset 0 0 0 3px #a8916a, 0 3px 8px rgba(0,0,0,.5); color: #2a1d12; }
+.hd .ciarky { display: flex; gap: 3px; align-items: center; }
+.hd .ciarky i { width: 3px; height: 20px; background: #2a1d12; border-radius: 2px; transform: rotate(6deg); }
+.hd .ciarky i.c { background: repeating-linear-gradient(180deg, #a3402c 0 3px, transparent 3px 6px); }
+.hd .ciarky i.x { background: repeating-linear-gradient(180deg, #a3402c 0 3px, transparent 3px 6px); width: 30px; height: 3px; margin-left: -30px; transform: rotate(-28deg); }
+.hd .podpivnik .txt { font-size: 12px; color: var(--tlmeny); line-height: 1.35; }
+.hd .podpivnik .txt b { color: var(--text); }
+/* bloček od krčmára */
+.hd .blocek { max-width: 330px; padding-bottom: 40px !important; background: #f1e8d8; color: #2a1d12; font-family: "Courier New", ui-monospace, monospace; font-size: 12.5px; padding: 14px 14px 18px; position: relative; transform: rotate(-1.2deg); box-shadow: 0 10px 22px rgba(0,0,0,.55);
+  -webkit-mask: radial-gradient(6px at 50% 100%, #0000 98%, #000) 50% / 14px 100% repeat-x; mask: radial-gradient(6px at 50% 100%, #0000 98%, #000) 50% / 14px 100% repeat-x; }
+.hd .blocek h5 { font: 700 13px "Courier New", monospace; text-align: center; margin: 0 0 6px; letter-spacing: .12em; }
+.hd .blocek hr { border: none; border-top: 1px dashed #8b7d6a; margin: 6px 0; }
+.hd .blocek .r { display: flex; justify-content: space-between; gap: 10px; }
+.hd .blocek .m { color: #7a2a1c; font-weight: 700; }
+.hd .blocek .pec { position: absolute; right: 14px; bottom: 12px; transform: rotate(-12deg); border: 2px solid #7a2a1c; color: #7a2a1c; font-weight: 700; padding: 0 6px; font-size: 11px; letter-spacing: .1em; opacity: .85; }
+@media (prefers-reduced-motion: no-preference) {
+  .hd .anim-blocek { animation: blocek-in .22s ease-out both; }
+  @keyframes blocek-in { from { transform: translateY(-10px) rotate(-1.2deg); opacity: 0; } }
+}
+.hd .koniec { max-width: 460px; border-radius: 14px; background: var(--plocha-2); border-top: 4px solid var(--zelena); padding: 14px 16px; }
+.hd .koniec h4 { font: 700 24px Georgia, serif; margin: 0 0 4px; }
+.hd .koniec .sk { font: 700 22px Georgia, serif; margin: 6px 0 10px; font-variant-numeric: tabular-nums; }
+.hd .koniec table { width: 100%; font-size: 12.5px; border-collapse: collapse; }
+.hd .koniec td, .hd .koniec th { padding: 4px 6px; border-bottom: 1px solid rgba(255,255,255,.07); text-align: left; color: var(--text); }
+.hd .koniec td.c, .hd .koniec th.c { text-align: right; font-variant-numeric: tabular-nums; }
+.hd .koniec tfoot td, .hd .koniec tfoot th { font-weight: 700; border-top: 1px solid var(--okraj-svetly); }
+.hd .koniec .rozdiel td { color: #ffb4a3; }
+.hd .chyba-zn { outline: 2px dashed var(--cervena); outline-offset: 2px; border-radius: 4px; }
+.pozn-demo { font-size: .85rem; color: var(--r-tlmeny); margin: 6px 0 0; }
+.poradie li { margin: 6px 0; }
+</style>
+</head>
+<body>
+<main>
+<header>
+  <p class="meta">UI návrh · id <code>hra-nezrovnalosti-20261021-1229</code> · 2026-10-21 · naex-ui</p>
+  <h1>Herný stôl <code>/hra</code>: čo hráč vidí, nesedí so stavom</h1>
+  <p class="meta">
+    Cieľ: <code>apps/web/src/hra/</code> (HernaPlocha, Panely, Scoreboard, RozpisBodov, KoniecHry, Vrstva, hra.css) ·
+    snímky z krátkej partie <code>playtest/20261021-102901</code> (hrané za oboch hráčov) ·
+    podklady: <a href="20261021-041728.html">playtest 20261021-041728</a>, nezrovnalosti hráčov a hodnotenia sledovateľa (2026-10-11 až 10-12) ·
+    súbežný UX návrh: <a href="dizajn-hra-nezrovnalosti-20261021-1229-ux.html">dizajn-hra-nezrovnalosti-20261021-1229-ux.html</a>
+  </p>
+  <div class="verdikt">
+    <p><strong>Verdikt.</strong> Jadro počíta správne. Mätú hlavne čísla, ktoré vyzerajú ako stav, ale znamenajú niečo iné.
+      Pečeň a Zadĺženie ukazujú stav <em>pred</em> vyhodnotením Pitky, skóre súpera je len „najviac“ s otáznikom
+      a to, že súper už dal „hotovo“, sa nezobrazí nikde. Dve veci sú naozaj chyby zobrazenia: okno konca hry ukazuje dva rôzne súčty
+      a pri 1280 px nevidno na časovej osi aktuálnu Pitku.</p>
+    <p>Odporúčam začať rýchlou výhrou N1 (poctivé počítadlá, asi 1–2 hodiny), potom N2 (poradie v Pitke a „hotovo“).
+      Návrh N3 (skóre súpera) potrebuje tvoje rozhodnutie, čo smie server posielať.</p>
+  </div>
+  <nav class="obsah" aria-label="Obsah">
+    <a href="#overenie">1. Overenie nezrovnalostí</a><a href="#stav">2. Súčasný stav</a><a href="#audit">3. Audit</a>
+    <a href="#navrhy">4. Návrhy</a><a href="#poradie">5. Poradie</a><a href="#otazky">6. Otázky</a>
+  </nav>
+</header>
+
+<!-- ============================================================ -->
+<h2 id="overenie">1. Overenie nahlásených nezrovnalostí v kóde</h2>
+<p>Každú nezrovnalosť z playtestu som overil v jadre aj v klientovi. Zaradenie: <span class="typ">chyba zobrazenia</span> klient ukazuje niečo nesprávne,
+  <span class="typ">správne, mätie</span> číslo je správne, ale hráč ho číta inak, <span class="typ">chýba</span> stav existuje, ale UI ho neukazuje,
+  <span class="typ">pravidlo</span> rozhoduje autor.</p>
+<div class="tab-obal">
+<table id="overenie-tab">
+  <thead><tr><th>Nahlásené</th><th>Čo hovorí kód</th><th>Zaradenie</th><th>Návrh</th></tr></thead>
+  <tbody>
+    <tr><td><strong>„BODY TERAZ“ súpera 76, na konci 33</strong> (Jano, K6–K7); Autobusár 0/0 → 0/2 bez zmeny (Eva)</td>
+      <td><code>view.ts:268–297</code> <code>bodyTeraz</code>: súperove kliatby sa rátajú len z verejného odhadzovacieho balíčka. Po premiešaní do doberacieho balíčka zmiznú z výpočtu a súperove body <em>vyskočia</em> bez jediného ťahu. Na snímke: Dlh súpera <code>−18? · 3 ks</code> (03). V tejto partii sa každý Dlh ráta na 6 scorecardoch (−6 b) a Cirhóza na 2 (−4 b). Jediný signál je znak „?“ (<code>Scoreboard.tsx:98–107</code>).</td>
+      <td><span class="typ">správne, mätie</span></td><td>N3</td></tr>
+    <tr><td><strong>Koniec hry</strong>: rozpis a skóre</td>
+      <td><code>KoniecHry.tsx:30</code> rozpis počíta <code>bodyTeraz(view)</code>, ale skóre nad ním je <code>koniec.body</code> zo servera. Riadok „spolu“ v <code>RozpisBodov.tsx:61–74</code> tak pri súperovi ukáže <code>76?</code>, kým nadpis hovorí <code>33</code>, a to v tom istom okne. (Vidno to len z kódu, partia pre snímky skončila vzdaním a tam sa nebodovalo.)</td>
+      <td><span class="typ">chyba zobrazenia</span></td><td>N1</td></tr>
+    <tr><td><strong>Pečeň v Pitke 1/3, skončilo 3 a Cirhóza</strong> (Jano K1); inokedy 2/3 aj s akciami</td>
+      <td><code>Panely.tsx:387–409</code> ukazuje <code>hrac.pecen</code>. Vypiť (<code>engine.ts:1775</code>) a NA EX (<code>engine.ts:1836</code>) sa pripíšu hneď. Akcie Poškodenie pečene a Poldeci na stole pribudnú až pri vyhodnotení (<code>engine.ts:2110–2114</code>). Číslo je raz „s predplatným“ a raz bez neho. Overené: 1/3 a súčasne v odhade bitky Pečeň 2 + Poldeci 1 → Cirhóza (01). V Pitke 3 bolo 0/3 a tiež prišla Cirhóza.</td>
+      <td><span class="typ">správne, mätie</span></td><td>N1, N5</td></tr>
+    <tr><td><strong>4 karty Dlh v jednej Pitke</strong> (Eva K7)</td>
+      <td>To isté pri Zadĺžení (<code>Panely.tsx:411–429</code>): počas Pitky ukazuje 0/2. Že pri zadĺžení 8 a prahu 2 vzniknú 4 karty (<code>engine.ts:575–583</code>, cyklus <code>while</code>), nevidno vopred nikde.</td>
+      <td><span class="typ">chýba</span> + <span class="typ">pravidlo</span></td><td>N1, N4</td></tr>
+    <tr><td><strong>Kto začína Pitku</strong> (oba hráči: raz obranca, raz útočník)</td>
+      <td>Jadro je konzistentné: <code>engine.ts:1788</code> <code>naTahu: obranca(s)</code>. <code>cmdSkipNaex</code> (<code>engine.ts:2065–2077</code>) však nepridá žiadnu udalosť, takže keď obranca hneď dá „hotovo“, súperovi to vyzerá, že začína on. Stav <code>pitkaStav.hotovy</code> klient má (<code>view.ts:211</code>), ale pás kola v Pitke ukazuje len bodky (<code>HernaPlocha.tsx:2486–2500</code>). Na snímke 02 som na ťahu, súper už skončil, a nikde to nevidno.</td>
+      <td><span class="typ">chýba</span></td><td>N2</td></tr>
+    <tr><td><strong>„hotovo“ je nevratné</strong> (Eva K6)</td>
+      <td>„hotovo“ je hlavné jantárové tlačidlo (<code>HernaPlocha.tsx:1922–1929</code>), vizuálne rovnaké ako bežné „ďalej“. Nič nenaznačuje, že ukončí aj možnosť NA EX.</td>
+      <td><span class="typ">správne, mätie</span></td><td>N2 (správanie rieši UX)</td></tr>
+    <tr><td><strong>Násobky ×4 bez náhľadu</strong> (NA EX × Silná žena)</td>
+      <td>Sloty karty ukazujú <code>×N</code> (<code>KartaLico.tsx:107</code>). Náhľad NA EX však ukazuje len výsledok <code>Rana +4</code> (05) a dlaždica v odhade bitky <code>4 (+3)</code> (<code>Panely.tsx:572</code>). Vzorec ×2 × ×2 ani dopad na pečeň a zadĺženie nie sú nikde. Na snímke 05 NA EX na Záhradkára zrušil Evine akcie pečene, čím ju ušetril od Cirhózy, a náhľad o tom mlčí.</td>
+      <td><span class="typ">chýba</span> + <span class="typ">pravidlo</span> (strop ×2?)</td><td>N4</td></tr>
+    <tr><td><strong>Zhromaždenie 2/3, 3/3</strong> a nový limit (Jano)</td>
+      <td>Pás kola ukazuje sloty limitu správne (<code>HernaPlocha.tsx:2467–2483</code>). Počet Pitiek však počas Zhromaždenia narastie z 1 na 3 bez upozornenia (01-volba → 04-zhrom). Pri 1280 px je časová os orezaná: <code>hra.css:95–106</code> má <code>overflow-x: auto</code> so skrytým posuvníkom a aktuálny krok sa nedoskroluje (04).</td>
+      <td><span class="typ">chyba zobrazenia</span></td><td>N1</td></tr>
+    <tr><td><strong>Cena posunu s Miňištrantmi</strong> až v kroku prebytku (Eva)</td>
+      <td>Odhad bitky píše len „prebytok 4 → Eva“. Pri kroku prebytku ukazuje každý starší „body ty ±0, súper ±0“ (jeden posun), hoci tri posuny dali +11 (snímky 103936 → 104033).</td>
+      <td><span class="typ">správne, mätie</span></td><td>N4 (riadok prebytku)</td></tr>
+    <tr><td><strong>Preskočenie NA EX nie je v logu</strong></td>
+      <td>Udalosť nevzniká (viď vyššie). Log sa navyše zbiera len od pripojenia (<code>useHra.ts:88, 117–121</code>), takže po F5 je prázdny. Hlavička vrstvy Log je pod pripnutou časovou osou (<code>.vrstva</code> z-index 22, <code>.hra-hlava</code> z-index 45, <code>hra.css:31, 1531–1535</code>) (06).</td>
+      <td><span class="typ">chyba zobrazenia</span> + <span class="typ">chýba</span></td><td>N1, N2</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="stav">2. Súčasný stav (snímky)</h2>
+<div class="galeria">
+  <figure><img src="dizajn-hra-nezrovnalosti-20261021-1229/01-pecen-projekcia.jpg" alt="Odhad bitky a dosky hráčov v Pitke 1: Pečeň 1/3, v odhade bitky Poškodenie pečene 2 a Poldeci 1" loading="lazy">
+    <figcaption><b>01 · Pitka 1, 1600 px.</b> Vľavo Pečeň <b>1/3</b> bez varovania, ale v odhade bitky svieti Poškodenie pečene 2 a Poldeci 1, po Pitke teda 4 a Cirhóza. Súper má 0/3 a na stole 2(+1) + 2(+1). Poradie zdrojov na oboch doskách sa líši (103325).</figcaption></figure>
+  <figure><img src="dizajn-hra-nezrovnalosti-20261021-1229/02-pitka-kto-hotovo.jpg" alt="Pás Pitka 1 z 3 a pokyn Tvoj ťah, bez informácie, že súper už dal hotovo" loading="lazy">
+    <figcaption><b>02 · Som na ťahu po súperovom „hotovo“.</b> Pás ukazuje len „Pitka 1 z 3“ a bodky. Že súper skončil a ja mám posledné slovo, nevidno. „hotovo“ je jantárové hlavné tlačidlo (103446).</figcaption></figure>
+  <figure><img src="dizajn-hra-nezrovnalosti-20261021-1229/03-skore-otaznik.jpg" alt="Scoreboard: súperov Nepriznaný dlh −18? 3 ks, Spolu −4 a +33?" loading="lazy">
+    <figcaption><b>03 · Kolo 2, scoreboard.</b> Súperove „−18? · 3 ks“ sú Dlhy v jeho odhadzovacom balíčku. Keď ich zamieša, −18 zmizne a jeho „Spolu +33?“ stúpne na +51, hoci sa nič nestalo. Neistotu nesie jediný znak „?“ (104101).</figcaption></figure>
+  <figure><img src="dizajn-hra-nezrovnalosti-20261021-1229/04-notebook-os-dock.jpg" alt="Notebook 1280 × 800: časová os končí pri Pitka 2, pás pokynov a ruka zakrývajú stôl" loading="lazy">
+    <figcaption><b>04 · Notebook 1280 × 800, Pitka 3.</b> Os kola končí pri „Pitka 2“, aktuálna Pitka 3 ani Bitka nie sú vidno. „kontumačná výhra“ a „vzdať sa“ sa lámu na dva riadky. Stôl je pod ohybom a pás pokynov s rukou ho zakrývajú (103833).</figcaption></figure>
+  <figure><img src="dizajn-hra-nezrovnalosti-20261021-1229/05-naex-nahlad.jpg" alt="Náhľad NA EX: čipy Pijan, Pijan, Záhradkár 2:2 → 6:2 Rana +4, Silná žena" loading="lazy">
+    <figcaption><b>05 · Náhľad NA EX.</b> „Rana +4“ bez rozkladu ×2 NA EX × ×2 Silná žena. Čo NA EX urobí s pečeňou, zadĺžením a kliatbami, nevidno. Čipy navyše prekrývajú karty, na ktoré sa mieri (103333).</figcaption></figure>
+  <figure><img src="dizajn-hra-nezrovnalosti-20261021-1229/06-log-pod-osou.jpg" alt="Vrstva Log: nadpis a tlačidlo zavrieť sú schované pod pripnutou časovou osou kola" loading="lazy">
+    <figcaption><b>06 · Log.</b> Nadpis „LOG“ aj ✕ sú pod pripnutou osou kola. Po pripojení je log prázdny, zbiera sa od pripojenia (103517).</figcaption></figure>
+  <figure><img src="dizajn-hra-nezrovnalosti-20261021-1229/07-doska-skace.jpg" alt="Súperova doska po NA EX: Pečeň presunutá do druhého radu" loading="lazy">
+    <figcaption><b>07 · Doska súpera po jeho NA EX.</b> Poldeci dostali text „1 na stole“, kartička sa rozšírila a Pečeň preskočila do druhého radu (porovnaj s 01). Spôsobuje to <code>flex-wrap</code> s <code>row-reverse</code> v <code>hra.css:346–353</code> (103409).</figcaption></figure>
+  <figure class="uzky"><img src="dizajn-hra-nezrovnalosti-20261021-1229/08-mobil.jpg" alt="Mobil 390 × 844: pás pokynov zakrýva celú obrazovku" loading="lazy">
+    <figcaption><b>08 · Mobil 390 × 844.</b> Pás pokynov zaberie celú výšku, text má 2–4 slová na riadok, os kola je orezaná (103628).</figcaption></figure>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="audit">3. Audit</h2>
+<div class="filter" role="group" aria-label="Filter podľa závažnosti">
+  <button type="button" data-f="vsetky" aria-pressed="true">všetky (14)</button>
+  <button type="button" data-f="vysoka" aria-pressed="false">vysoká</button>
+  <button type="button" data-f="stredna" aria-pressed="false">stredná</button>
+  <button type="button" data-f="nizka" aria-pressed="false">nízka</button>
+</div>
+<div class="tab-obal">
+<table id="audit-tab">
+  <thead><tr><th>#</th><th>Oblasť</th><th>Problém</th><th>Dôkaz</th><th>Závažnosť</th></tr></thead>
+  <tbody>
+    <tr data-z="vysoka"><td>A1</td><td>Stav / čísla</td><td>Pečeň a Zadĺženie počas Pitky nepredpovedajú koniec Pitky. Mixujú okamžité (Vypiť, NA EX) a čakajúce (akcie na stole) prírastky, varovanie <code>.varovanie</code> sa nezapne ani pri istej Cirhóze.</td><td>01; <code>Panely.tsx:387–429</code>; <code>engine.ts:1775, 1836, 2110</code></td><td><span class="zav vysoka">vysoká</span></td></tr>
+    <tr data-z="vysoka"><td>A2</td><td>Stav / skóre</td><td>Súperove body skáču pri premiešaní balíčka. Neistota je len znak „?“ bez veľkosti a bez vysvetlenia na prvý pohľad.</td><td>03; <code>view.ts:268–297</code>; <code>Scoreboard.tsx:98–107</code></td><td><span class="zav vysoka">vysoká</span></td></tr>
+    <tr data-z="vysoka"><td>A3</td><td>Koniec hry</td><td>V jednom okne sú dva súčty: <code>koniec.body</code> (server) a „spolu“ rozpisu bez súperových skrytých kliatob.</td><td><code>KoniecHry.tsx:30, 39–48</code>; <code>RozpisBodov.tsx:61–74</code></td><td><span class="zav vysoka">vysoká</span></td></tr>
+    <tr data-z="vysoka"><td>A4</td><td>Kto je na ťahu</td><td>V Pitke nevidno poradie (obranca → útočník) ani kto už dal „hotovo“. Kto je druhý, má posledné slovo, a práve to UI zamlčí.</td><td>02; <code>HernaPlocha.tsx:2486–2500</code>; <code>engine.ts:1788, 2065</code></td><td><span class="zav vysoka">vysoká</span></td></tr>
+    <tr data-z="vysoka"><td>A5</td><td>Navigácia / responzivita</td><td>Časová os kola pri 1280 px oreže aktuálny krok. Posuvník je skrytý a aktuálny krok sa nedoskroluje do zorného poľa.</td><td>04; <code>hra.css:95–106</code></td><td><span class="zav vysoka">vysoká</span></td></tr>
+    <tr data-z="stredna"><td>A6</td><td>Náhľad</td><td>Náhľad NA EX ukazuje len výsledok („Rana +4“), nie vzorec násobkov ani cenu (pečeň, zadĺženie, kliatby, limit). Dlaždica „4 (+3)“ v odhade bitky je nejasná.</td><td>05; <code>Panely.tsx:572, 650–656</code></td><td><span class="zav stredna">stredná</span></td></tr>
+    <tr data-z="stredna"><td>A7</td><td>Mriežka</td><td>Dosky hráčov majú rozdielne poradie zdrojov a pozícia sa mení podľa dĺžky textu. Pečeň skáče medzi radmi, porovnať ma a súpera sa nedá.</td><td>01 vs 07; <code>hra.css:273–276, 346–353</code></td><td><span class="zav stredna">stredná</span></td></tr>
+    <tr data-z="stredna"><td>A8</td><td>Elevácia / prekryvy</td><td>Pás pokynov a ruka prekrývajú stôl. Pri 1280 × 800 prekrýva pás aj panel starších a náhľad NA EX zakryje cieľové karty. Sledovateľ to hlási od 2026-10-11 (V7 4–5/10).</td><td>04, 05; 103435; <code>hra.css:9–13</code></td><td><span class="zav stredna">stredná</span></td></tr>
+    <tr data-z="stredna"><td>A9</td><td>Vrstvy</td><td>Hlavička vrstvy Log (aj Šenok, Lokality) je pod pripnutou osou kola a ✕ nie je vidno. Prázdny log po F5 nemá vysvetlenie v hlavičke.</td><td>06; <code>hra.css:31, 1528–1535</code></td><td><span class="zav stredna">stredná</span></td></tr>
+    <tr data-z="stredna"><td>A10</td><td>Pohyb / zmena stavu</td><td>Výsledok Pitky (Cirhóza, Dlh, cigarety) ani bitky (lokalita, posuny) sa nijako nezvýrazní. Nové kolo začne ticho, výsledok bitky je len čip pod rukou.</td><td>103620, 104101</td><td><span class="zav stredna">stredná</span></td></tr>
+    <tr data-z="stredna"><td>A11</td><td>Mobil</td><td>Na 390 px pás pokynov zakryje celú obrazovku a os kola je orezaná.</td><td>08</td><td><span class="zav stredna">stredná</span></td></tr>
+    <tr data-z="nizka"><td>A12</td><td>Náhľad</td><td>Pri prebytku ukazuje 8 starších rovnaké „body ty ±0, súper ±0“ (jeden posun). Kumulatívny efekt (+11 po 3 posunoch) nevidno.</td><td>103936 → 104033</td><td><span class="zav nizka">nízka</span></td></tr>
+    <tr data-z="nizka"><td>A13</td><td>Kontrast</td><td>Budúce kroky osi: <code>--slaby #8b7d6a</code> na <code>--plocha</code> = <b>4,35 : 1</b> pri 12,8 px (AA vyžaduje 4,5). „odpojený“ <code>--cervena</code> na <code>--plocha</code> = <b>4,22 : 1</b>. <code>--slaby</code> na <code>--plocha-2</code> = 3,96 : 1.</td><td>prepočet WCAG 2.2</td><td><span class="zav nizka">nízka</span></td></tr>
+    <tr data-z="nizka"><td>A14</td><td>Zmena stavu</td><td>Počet Pitiek narastie počas Zhromaždenia (1 → 3), os sa ticho predĺži bez upozornenia, ktorá akcia lokality ho spôsobila.</td><td>01-volba → 04-zhrom (103042, 103229)</td><td><span class="zav nizka">nízka</span></td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="navrhy">4. Návrhy</h2>
+
+<!-- N1 -->
+<article class="navrh" id="n1">
+<header><h3>N1 · Poctivé počítadlá</h3><span class="stitok">rýchla výhra · malá (1–2 h)</span></header>
+<dl>
+  <dt>Rieši</dt><dd>A1, A3, A5, A9, A13</dd>
+  <dt>Zmena</dt><dd>
+    <b>a) Pečeň a Zadĺženie s projekciou konca Pitky</b> (len v klientovi, z verejnej línie): <code>projekcia = hrac.pecen + sums[p].PoškodeniePečene + sums[p].Poldeci</code> a <code>zadlzenie + sums[p].Dlh</code>. <code>evaluateLine</code> sa už počíta pre odhad bitky. Zobraziť „1 → 4/3“, pruh: plné segmenty pre stav a šrafované (<b>nový token <code>--caka</code></b>) pre to, čo pribudne. Pretečenie dostane štítok „po Pitke: Cirhóza ×1“ alebo „Dlh ×4“. Varovanie <code>.hrozi</code> riadi projekcia, nie <code>pecen ≥ prah − 1</code>. Mimo Pitky sa ukáže, čo pripíše najbližšia Pitka.<br>
+    <b>b) Koniec hry s jedným súčtom</b>: pätička rozpisu má riadok „súperove skryté kliatby (odhalené na konci)“ = <code>koniec.body[su] − rozpis.spolu[su]</code> a „spolu“ berie <code>koniec.body</code>. Otáznik v okne konca zmizne.<br>
+    <b>c) Časová os</b>: po zmene kroku <code>scrollIntoView({inline: "center"})</code> na <code>li.aktualny</code>, okraje zjemniť maskou. Hotové dvojice zbaliť na „Z1 P1 ✓“. Budúce kroky dostanú farbu <code>#9d8f7b</code> (5,52 : 1, <b>nový token <code>--slaby-text</code></b>).<br>
+    <b>d) Vrstvy</b>: <code>.vrstva { z-index: 46; padding-top: calc(var(--hlavicka-h) + var(--os-h, 44px) + 12px) }</code>, aby hlavička a ✕ neboli pod osou.
+  </dd>
+  <dt>Mobil</dt><dd>Projekcia je text v tej istej kartičke, šírka sa nemení. Os sa na mobile doskroluje k aktuálnemu kroku, teraz je tam vidno len „Voľba cieľa“.</dd>
+  <dt>Súbory</dt><dd><code>Panely.tsx</code> (Zdroj Pečeň, Zadĺženie, <code>Pruh</code>), <code>KoniecHry.tsx</code>, <code>RozpisBodov.tsx</code> (voliteľný prop <code>spoluServer</code>), <code>Panely.tsx</code> (<code>PriebehKola</code>), <code>hra.css</code>, <code>styles.css</code> (<code>--slaby-text</code>)</dd>
+</dl>
+
+<h4>a) Pečeň a Zadĺženie v Pitke 1 (reálne čísla z 01)</h4>
+<div class="pp">
+  <div><div class="pp-hlava">Pred</div>
+    <div class="hd"><div class="rad">
+      <div class="zdroj"><span class="zn">Zadĺženie</span><span class="vc">0<small>/2</small></span><span class="pruh"><i></i><i></i></span></div>
+      <div class="zdroj"><span class="zn">Pečeň</span><span class="vc">1<small>/3</small></span><span class="pruh"><i class="on"></i><i></i><i></i></span></div>
+    </div><p class="tl" style="margin:8px 0 0">Po „hotovo“ oboch: <span class="superove">Dizajn UI 1 dosiahol prah pečene (3) — Cirhóza.</span></p></div>
+  </div>
+  <div><div class="pp-hlava po">Po</div>
+    <div class="hd"><div class="rad">
+      <div class="zdroj"><span class="zn">Zadĺženie</span><span class="vc">0<span class="sip">→</span>1<small>/2</small></span><span class="pruh"><i class="caka"></i><i></i></span><span class="pod">+1 Dlh zo stola</span></div>
+      <div class="zdroj hrozi"><span class="zn">Pečeň</span><span class="vc">1<span class="sip">→</span>4<small>/3</small></span><span class="pruh"><i class="on"></i><i class="caka"></i><i class="caka"></i><i class="cez" style="flex:.6"></i></span><span class="chip-kl">po Pitke: Cirhóza ×1</span><span class="pod">+2 Pošk. pečene, +1 Poldeci zo stola</span></div>
+    </div><p class="tl" style="margin:8px 0 0">Šrafa znamená, že to pribudne pri vyhodnotení. Červená šrafa je pretečenie prahu. Význam nesie aj text, nie len farba.</p></div>
+  </div>
+</div>
+
+<h4>b) Okno konca hry (čísla z playtestu 041728, rozdiel −43)</h4>
+<div class="pp">
+  <div><div class="pp-hlava">Pred</div>
+    <div class="hd"><div class="koniec"><h4>Vyhral si!</h4><div class="tl">Hra sa skončila po poslednej lokalite.</div>
+      <div class="sk"><span class="moje">ty 50</span> : <span class="superove">33 Eva</span></div>
+      <table><thead><tr><th>starší</th><th class="c">ty</th><th class="c">Eva</th></tr></thead>
+        <tbody><tr><td>… 8 scorecardov …</td><td class="c">…</td><td class="c">…</td></tr></tbody>
+        <tfoot><tr><th>spolu</th><td class="c moje">50</td><td class="c superove"><span class="chyba-zn">76?</span></td></tr></tfoot></table></div></div>
+  </div>
+  <div><div class="pp-hlava po">Po</div>
+    <div class="hd"><div class="koniec"><h4>Vyhral si!</h4><div class="tl">Hra sa skončila po poslednej lokalite.</div>
+      <div class="sk"><span class="moje">ty 50</span> : <span class="superove">33 Eva</span></div>
+      <table><thead><tr><th>starší</th><th class="c">ty</th><th class="c">Eva</th></tr></thead>
+        <tbody><tr><td>… 8 scorecardov …</td><td class="c">…</td><td class="c">…</td></tr>
+          <tr><td>zo stola a verejných kariet</td><td class="c">50</td><td class="c">76</td></tr>
+          <tr class="rozdiel"><td>skryté kliatby (odhalené na konci)</td><td class="c">0</td><td class="c">−43</td></tr></tbody>
+        <tfoot><tr><th>spolu</th><td class="c moje">50</td><td class="c superove">33</td></tr></tfoot></table></div></div>
+  </div>
+</div>
+
+<h4>c) Časová os pri 1280 px (Pitka 3 je aktuálna)</h4>
+<div class="pp">
+  <div><div class="pp-hlava">Pred</div>
+    <div class="hd"><div class="ramik"><div class="os"><span class="k kolo">Kolo 1 · lokalita 1/5</span><span class="k hot">Voľba cieľa</span><span class="k hot">Draft</span><span class="k hot">Zhromaždenie 1</span><span class="k hot">Pitka 1</span><span class="k hot">Zhromaždenie 2</span><span class="k hot">Pitka 2</span><span class="k">Zhromaždenie 3</span><span class="k akt">Pitka 3</span><span class="k">Bitka</span></div></div>
+    <p class="tl" style="margin:6px 0 0">Aktuálna „Pitka 3“ je za okrajom rámika, posuvník je skrytý.</p></div>
+  </div>
+  <div><div class="pp-hlava po">Po</div>
+    <div class="hd"><div class="ramik"><div class="os os-po"><span class="k kolo">Kolo 1 · 1/5</span><span class="k hot">Cieľ</span><span class="k hot">Draft</span><span class="k hot">Z1 P1</span><span class="k hot">Z2 P2</span><span class="k hot">Z3</span><span class="k akt">Pitka 3 z 3</span><span class="k">Bitka</span></div></div>
+    <p class="tl" style="margin:6px 0 0">Hotové páry sú zbalené a aktuálny krok je vždy v strede. Plný názov ostáva v <code>title</code>.</p></div>
+  </div>
+</div>
+</article>
+
+<!-- N2 -->
+<article class="navrh" id="n2">
+<header><h3>N2 · Pitka ako dve stoličky pri pulte</h3><span class="stitok">malá – stredná (3–4 h)</span></header>
+<dl>
+  <dt>Rieši</dt><dd>A4, čiastočne A10. Nezrovnalosť „kto začína Pitku“ a „hotovo je nevratné“.</dd>
+  <dt>Zmena</dt><dd>V Pitke pás kola (<code>pasKola</code>, <code>HernaPlocha.tsx:2460</code>) dostane namiesto prázdnej pravej časti <b>dve stoličky</b> v poradí: <b>1.</b> obranca, <b>2.</b> útočník. Na každej je meno, rola a stav: <span class="typ">čaká</span> / <span class="typ">na ťahu</span> / <span class="typ">NA EX na Záhradkára</span> / <span class="typ">hotovo (zámok)</span>. Dáta sú všetky v <code>view.pitkaStav</code> (<code>naTahu</code>, <code>hotovy</code>, <code>naexPouzity</code>) a NA EX na stole (<code>naexBy</code>). Server sa meniť nemusí. Keď je súper hotový a ja na ťahu, stolička ukáže „posledné slovo máš ty“ a tlačidlo sa premenuje na „<b>hotovo — Pitka sa vyhodnotí</b>“ s ikonou zámku. Zvýrazniť ho má stolička na ťahu (tieň <code>na-tahu</code>), nie farba tlačidla. Do logu treba udalosť „X končí svoju časť Pitky“ v <code>cmdSkipNaex</code>. To je zmena jadra, malá, ale mimo UI (otázka 2).</dd>
+  <dt>Mobil</dt><dd>Stoličky sa pod 560 px poskladajú pod seba, každá má výšku aspoň 44 px. Šípka medzi nimi zmizne a poradie nesie číslo.</dd>
+  <dt>Súbory</dt><dd><code>HernaPlocha.tsx</code> (<code>pasKola</code>, tlačidlo „hotovo“), <code>hra.css</code> (<code>.pas-stolicky</code>), voliteľne <code>engine.ts</code> (udalosť)</dd>
+</dl>
+<div class="pp">
+  <div><div class="pp-hlava">Pred</div>
+    <div class="hd">
+      <div class="pas"><span class="pas-n">Pitka 1 z 3</span><span class="bodky"><i class="t"></i><i></i><i></i></span><span class="tl">3 Pitky — po každej ďalšie Zhromaždenie</span></div>
+      <div style="text-align:center"><span class="cip-tah">TVOJ ŤAH</span></div>
+      <div class="pokyn" style="margin-top:8px"><span class="t"><span class="n">PITKA 1/3</span>Daj NA EX (karty so značkou ho prijmú), fajči, doliať poldeci (2 cig.) alebo kúp nový poldeci (5 cig.) — potom hotovo.</span>
+        <button class="tlac nx" type="button" tabindex="-1">NA EX!</button><button class="tlac hl" type="button" tabindex="-1">hotovo</button></div>
+    </div>
+  </div>
+  <div><div class="pp-hlava po">Po</div>
+    <div class="hd">
+      <div class="pas"><span class="pas-n">Pitka 1 z 3</span><span class="bodky"><i class="t"></i><i></i><i></i></span>
+        <div class="stolicky">
+          <div class="stolicka hotova"><span class="por">1.</span><span class="st-meno superove">Dizajn UI 2 · obranca</span>
+            <span class="st-stav"><span class="znak nx">NA EX na Záhradkára</span><span class="znak hot"><svg class="zamok" viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="5" width="8" height="6" rx="1" fill="currentColor"/><path d="M4 5V3.5a2 2 0 0 1 4 0V5" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>hotovo</span></span></div>
+          <span class="sip2" aria-hidden="true">→</span>
+          <div class="stolicka ja tah"><span class="por">2.</span><span class="st-meno moje">ty · útočník</span>
+            <span class="st-stav"><span class="znak tah">na ťahu</span>posledné slovo máš ty</span></div>
+        </div>
+      </div>
+      <div class="pokyn" style="margin-top:8px"><span class="t"><span class="n">PITKA 1/3</span>Súper skončil. Môžeš dať NA EX, fajčiť alebo doliať. Po tvojom „hotovo“ sa Pitka vyhodnotí.</span>
+        <button class="tlac nx" type="button" tabindex="-1">NA EX!</button>
+        <button class="tlac" type="button" tabindex="-1"><svg class="zamok" viewBox="0 0 12 12" aria-hidden="true" style="width:11px;height:11px"><rect x="2" y="5" width="8" height="6" rx="1" fill="currentColor"/><path d="M4 5V3.5a2 2 0 0 1 4 0V5" fill="none" stroke="currentColor" stroke-width="1.4"/></svg> hotovo — Pitka sa vyhodnotí</button></div>
+      <div class="log" style="margin-top:8px"><div>Pitka 1/3.</div><div>Dizajn UI 2 dáva NA EX na svoju kartu Záhradkár.</div><div>Dizajn UI 1 na NA EX neodpovedá.</div><div class="nove">Dizajn UI 2 končí svoju časť Pitky (hotovo).</div></div>
+    </div>
+  </div>
+</div>
+<p class="pozn-demo">Hlavným tlačidlom ostáva NA EX! (akcia s dôsledkom). „hotovo“ je sekundárne, ale nesie zámok a dôsledok v texte. O poradí a potvrdení rozhoduje UX návrh.</p>
+</article>
+
+<!-- N3 -->
+<article class="navrh" id="n3">
+<header><h3>N3 · Skóre súpera bez falošnej istoty</h3><span class="stitok">stredná · variant B potrebuje rozhodnutie</span></header>
+<dl>
+  <dt>Rieši</dt><dd>A2 a nezrovnalosti „76 vs 33“ a „Autobusár 0/0 → 0/2“.</dd>
+  <dt>Zmena</dt><dd>
+    <b>Variant A (len klient):</b> súperov súčet nesie výslovne „najviac“ a šrafu (<b>nový vzor <code>.neiste</code></b>: prerušovaný rám, rovnaký jazyk ako šrafa „čaká“ v N1), nie tichý „?“. Riadky kliatob súpera majú „verejné: −18 (3 ks) · v ruke a balíčku: nevieš“. Tooltip vysvetlí, že premiešanie toto číslo zvýši.<br>
+    <b>Variant B (odporúčam, potrebuje 1 pole vo <code>viewFor</code>):</b> server pošle počet súperových kliatob v ruke a doberacom balíčku <code>superoveKliatbySkryte: {dlh, cirhoza}</code>, rovnako ako dnes posiela <code>mojeKliatbyVBalicku</code>. Počet sa dá odvodiť z verejných udalostí (vznik Dlhu a Cirhózy je v logu, priznanie tiež), preto nič neprezradí. Skóre je potom presné, otáznik zmizne a pri riadku stačí „z toho −24 za 4 Dlhy v balíčku“.
+  </dd>
+  <dt>Mobil</dt><dd>Scoreboard je na mobile 1 stĺpec. Šrafa a slovo „najviac“ sa zmestia, rozsahový pruh (A) je 100 % šírky.</dd>
+  <dt>Súbory</dt><dd><code>Scoreboard.tsx</code>, <code>RozpisBodov.tsx</code>, <code>HernaPlocha.tsx:2587</code> (body teraz), <code>hra.css</code>. Pri B aj <code>packages/core/src/view.ts</code> (<code>bodyTeraz</code>, <code>viewFor</code>) a test filtrovania.</dd>
+</dl>
+<div class="pp tri">
+  <div><div class="pp-hlava">Pred</div>
+    <div class="hd">
+      <div class="sb"><span class="l">0<small>0 ks</small></span><span class="c">Nepriznaný dlh<span>6× · −1 za kus</span></span><span class="r">−18?<small>3 ks</small></span></div>
+      <div class="sb spolu"><span class="l">−4</span><span class="c">Spolu<span>ty · Dizajn UI 2</span></span><span class="r">+33?</span></div>
+      <p class="tl" style="margin:6px 0 0">Po premiešaní súperovho balíčka: „0? · 0 ks“ a „+51?“.</p>
+    </div></div>
+  <div><div class="pp-hlava po">Po · variant A</div>
+    <div class="hd">
+      <div class="sb"><span class="l">0<small>0 ks</small></span><span class="c">Nepriznaný dlh<span>6× · −1 za kus</span></span><span class="r">−18<small>3 ks verejne</small><small>+ nevieš v balíčku</small></span></div>
+      <div class="sb spolu"><span class="l">−4</span><span class="c">Spolu<span>ty · Dizajn UI 2</span></span><span class="r"><span class="hranica">najviac</span><span class="neiste">+33</span></span></div>
+      <p class="tl" style="margin:6px 0 0">Neistotu nesie prerušovaný rám a slovo „najviac“, nie farba.</p>
+    </div></div>
+  <div><div class="pp-hlava po">Po · variant B</div>
+    <div class="hd">
+      <div class="sb"><span class="l">0<small>0 ks</small></span><span class="c">Nepriznaný dlh<span>6× · −1 za kus</span></span><span class="r">−42<small>3 verejné + 4 skryté</small></span></div>
+      <div class="sb spolu"><span class="l">−4</span><span class="c">Spolu<span>ty · Dizajn UI 2</span></span><span class="r">+9</span></div>
+      <p class="tl" style="margin:6px 0 0">Presné číslo (ilustračne 4 skryté Dlhy). Premiešanie ho nezmení.</p>
+    </div></div>
+</div>
+</article>
+
+<!-- N4 -->
+<article class="navrh" id="n4">
+<header><h3>N4 · Náhľad NA EX so vzorcom a cenou</h3><span class="stitok">stredná (½–1 deň)</span></header>
+<dl>
+  <dt>Rieši</dt><dd>A6, A8 (náhľad cez stôl), A12. Nezrovnalosti „×4 bez náhľadu“, „4 Dlhy za Pitku“ a „cena posunu s Miňištrantmi“.</dd>
+  <dt>Zmena</dt><dd>Čipy nad pásom pokynov nahradí <b>jeden náhľad pri karte</b>, na ktorú myš ukazuje. Ostáva prilepený k jej hornej hrane, mimo ostatných cieľov, polomer 12 px, rám <code>--akcent</code>. Má tri bloky:
+    <b>1. bitka</b> 2 : 2 → 6 : 2 s výsledkom slovom.
+    <b>2. vzorec</b> po akciách: „Rana 1 <span class="typ">×2 NA EX</span> <span class="typ">×2 Silná žena</span> = 4“, zrušené akcie prečiarknuté.
+    <b>3. cena</b>: pečeň a zadĺženie po Pitke s rovnakou projekciou ako N1 (aj „Cirhóza odpadne“, ak NA EX zruší aktívne akcie pečene), limit v ďalšom kole a „súper smie odpovedať 1 kartou“.
+    V odhade bitky sa „(+3)“ mení na čip <span class="typ">×4</span>, tooltip ostáva. V strede odhadu bitky pribudne riadok „prebytok 4 = 4 posuny (posun stojí 1)“. Pri Miňištrantovi „prebytok 3 = 1 posun (posun stojí 3, Miňištrant ×2)“.</dd>
+  <dt>Mobil</dt><dd>Náhľad je spodný panel (bottom sheet) nad rukou. Vzorce sa zalomia do dvoch riadkov a čísla sú zarovnané vpravo, <code>tabular-nums</code>.</dd>
+  <dt>Súbory</dt><dd><code>HernaPlocha.tsx</code> (náhľad NA EX, režim <code>naexCiel</code>), <code>Panely.tsx</code> (<code>Dlazdica</code>, stred odhadu bitky), <code>hra.css</code>. Dáta: <code>evaluateLine</code> pred a po (dnes sa už počíta), <code>CardLineEval.nasobok</code>.</dd>
+</dl>
+<div class="pp">
+  <div><div class="pp-hlava">Pred</div>
+    <div class="hd">
+      <div class="nahl-pred">
+        <div><b>Pijan</b><br>bitka 2:2 → <span style="color:var(--zelena)">2:1</span><br>akcie bez zmeny</div>
+        <div><b>Záhradkár</b><br>bitka 2:2 → <span style="color:var(--zelena)">6:2</span><br>Rana +4, Cigareta +2, Robota −2, Poldeci −2, Poškodenie pečene −2</div>
+      </div>
+      <div class="rad" style="margin-top:10px"><span class="dl"><span class="ik">R</span><span class="h">4 <small>(+3)</small></span></span><span class="dl"><span class="ik">C</span><span class="h">4 <small>(+3)</small></span></span></div>
+    </div></div>
+  <div><div class="pp-hlava po">Po</div>
+    <div class="hd">
+      <div class="nahl" role="group" aria-label="Náhľad NA EX na Záhradkára">
+        <h4><span>NA EX na Záhradkára</span><span class="skore">bitka 2 : 2 → <b>6 : 2</b> · vyhrávaš o 4</span></h4>
+        <table>
+          <tr><td>Rana</td><td class="c">1 <span class="nasob">×2 NA EX</span><span class="nasob">×2 Silná žena</span> = <b>4</b></td></tr>
+          <tr><td>Cigareta</td><td class="c">1 <span class="nasob">×2 NA EX</span> = <b>2</b></td></tr>
+          <tr><td class="zrus">Robota, Poldeci, Poškodenie pečene</td><td class="c tl">zrušené (boli aktívne)</td></tr>
+        </table>
+        <div class="cena">
+          <span><b>Pečeň po Pitke:</b> 4/3 Cirhóza <span class="sip">→</span> <b style="color:var(--zelena)">1/3 bez Cirhózy</b></span>
+          <span><b>Zadĺženie po Pitke:</b> 2/2 → Dlh ×1 (−6 b na konci)</span>
+          <span class="tl">Poldeci sa pri bitke vypije: limit v ďalšom kole 3 → 2 · súper smie odpovedať 1 kartou</span>
+        </div>
+      </div>
+      <div class="rad" style="margin-top:10px"><span class="dl"><span class="ik">R</span><span class="h">4</span><span class="nasob">×4</span></span><span class="dl"><span class="ik">C</span><span class="h">4</span><span class="nasob">×2 ×2</span></span></div>
+    </div></div>
+</div>
+<p class="pozn-demo">Čísla sú z partie 102901 (Eva, Pitka 1/3). Že NA EX na Záhradkára Evu ušetril od Cirhózy, ukázal až log. Náhľad o tom dnes mlčí.</p>
+</article>
+
+<!-- N5 -->
+<article class="navrh" id="n5">
+<header><h3>N5 · Krčmový účet: podpivník na doske a bloček po Pitke</h3><span class="stitok">odvážny smer · veľká (2–3 dni)</span></header>
+<dl>
+  <dt>Rieši</dt><dd>A7, A10, A14 a identitu. Spája N1 (projekcia) s tým, ako krčma naozaj počíta: čiarky na podpivníku a bloček od krčmára.</dd>
+  <dt>Zmena</dt><dd>
+    <b>Stabilná doska:</b> <code>.doska-zdroje</code> z flexu na mriežku s pomenovanými oblasťami. Súper má zrkadlové <code>grid-template-areas</code>, takže každý zdroj má pevnú bunku v rovnakom rade u oboch hráčov a nič neskáče.<br>
+    <b>Podpivník:</b> Pečeň a Zadĺženie (zdroje „tejto Pitky“) sú spolu na jednej tácke. Pečeň sa píše ako čiarky: plná = už vypité, prerušovaná červenou kriedou = pribudne pri vyhodnotení. Prah sa „uzavrie“ šikmou čiarou ako pri plote, s nápisom „Cirhóza“. Zadĺženie je druhý riadok. Tvar je nový komponent <b><code>.podpivnik</code></b> z CSS, bez obrázkov.<br>
+    <b>Bloček po Pitke a po bitke:</b> po vyhodnotení sa na 4 s (alebo do kliknutia) vysunie papierový bloček s tým, čo sa zapísalo: kto dostal Cirhózu či Dlh (aj s cenou v bodoch), cigarety a kto dal „hotovo“ prvý. Po bitke tam pribudne víťaz, lokalita a posuny markerov. Animácia 220 ms, pri <code>prefers-reduced-motion</code> bez pohybu. Bloček ostane v logu ako zbalený záznam.
+  </dd>
+  <dt>Mobil</dt><dd>Mriežka má 2 stĺpce (Poldeci, Cigarety / Podpivník, Absťák / Dlhy, Karty). Bloček je toast na celú šírku nad rukou.</dd>
+  <dt>Súbory</dt><dd><code>Panely.tsx</code> (<code>HracDoska</code>, nový <code>Podpivnik</code>), <code>HernaPlocha.tsx</code> (bloček z udalostí <code>pecen</code>, <code>log</code>, <code>bitkaVysledok</code>), <code>useHra.ts</code> (zoskupenie udalostí po Pitke), <code>hra.css</code></dd>
+</dl>
+<div class="pp">
+  <div><div class="pp-hlava">Pred</div>
+    <div class="hd">
+      <p class="tl" style="margin:0 0 6px">Súper pred NA EX</p>
+      <div class="doska flex">
+        <div class="zdroj"><span class="zn">Poldeci</span><span class="vc">2</span><span class="pod">plné · 0 vypité · limit 3</span></div>
+        <div class="zdroj"><span class="zn">Cigarety</span><span class="vc">1</span></div>
+        <div class="zdroj"><span class="zn">Absťák</span><span class="vc">0</span></div>
+        <div class="zdroj"><span class="zn">Pečeň</span><span class="vc">0<small>/3</small></span></div>
+        <div class="zdroj"><span class="zn">Zadĺženie</span><span class="vc">0<small>/2</small></span></div>
+        <div class="zdroj"><span class="zn">Dlhy</span><span class="vc">0<small>/6</small></span></div>
+        <div class="zdroj"><span class="zn">Karty</span><span class="vc">5</span></div>
+      </div>
+      <p class="tl" style="margin:10px 0 6px">Súper po NA EX: Poldeci sa rozšírili, Pečeň preskočila do 2. radu</p>
+      <div class="doska flex">
+        <div class="zdroj" style="min-width:190px"><span class="zn">Poldeci</span><span class="vc">1</span><span class="pod">plné · 0 vypité · 1 na stole · limit 3</span></div>
+        <div class="zdroj"><span class="zn">Cigarety</span><span class="vc">1</span></div>
+        <div class="zdroj"><span class="zn">Absťák</span><span class="vc">0</span></div>
+        <div class="zdroj"><span class="zn">Pečeň</span><span class="vc">1<small>/3</small></span></div>
+        <div class="zdroj"><span class="zn">Zadĺženie</span><span class="vc">0<small>/2</small></span></div>
+        <div class="zdroj"><span class="zn">Dlhy</span><span class="vc">0<small>/6</small></span></div>
+        <div class="zdroj"><span class="zn">Karty</span><span class="vc">5</span></div>
+      </div>
+    </div></div>
+  <div><div class="pp-hlava po">Po</div>
+    <div class="hd">
+      <div class="doska mriezka ja">
+        <div class="zdroj" style="grid-area:abstak"><span class="zn">Absťák</span><span class="vc">0</span></div>
+        <div class="zdroj" style="grid-area:cigarety"><span class="zn">Cigarety</span><span class="vc">0</span></div>
+        <div class="zdroj" style="grid-area:poldeci"><span class="zn">Poldeci</span><span class="vc">1</span><span class="pod">1 vypitý · limit 2</span></div>
+        <div class="zdroj" style="grid-area:karty"><span class="zn">Karty</span><span class="vc">5</span></div>
+        <div class="zdroj" style="grid-area:dlhy"><span class="zn">Dlhy</span><span class="vc">0<small>/6</small></span></div>
+        <div class="podpivnik">
+          <div class="tacka" aria-hidden="true"><div class="ciarky"><i></i><i class="c"></i><i class="c"></i><i class="x"></i></div></div>
+          <div class="txt"><b>Pečeň 1 → 4/3</b><br><span style="color:#ffb4a3">po Pitke Cirhóza</span><br>Zadĺženie 0 → 1/2</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:flex-start;margin-top:12px">
+        <div class="blocek anim-blocek" role="status">
+          <h5>PITKA 1/3 · ÚČET</h5>
+          <div class="r"><span>Dizajn UI 1 · pečeň 4/3</span><span class="m">Cirhóza −4 b</span></div>
+          <div class="r"><span>Dizajn UI 2 · zadĺženie 2/2</span><span class="m">Dlh −6 b</span></div>
+          <div class="r"><span>Dizajn UI 2 · cigarety</span><span>+4</span></div>
+          <hr>
+          <div class="r"><span>hotovo prvý</span><span>Dizajn UI 2</span></div>
+          <div class="r"><span>posledné slovo</span><span>ty</span></div>
+          <span class="pec">ZAPÍSANÉ</span>
+        </div>
+      </div>
+      <p class="tl" style="margin:8px 0 0">Doska má pevné bunky a súper ich má zrkadlovo v rovnakých radoch. Čiarky kriedou (prerušované) ešte len pribudnú.</p>
+    </div></div>
+</div>
+</article>
+
+<!-- ============================================================ -->
+<h2 id="poradie">5. Odporúčané poradie</h2>
+<ol class="poradie">
+  <li><b>N1 Poctivé počítadlá</b>, hneď. Opraví obe chyby zobrazenia (koniec hry, os kola) a najčastejšiu nezrovnalosť (pečeň). Jadro ani server sa nemenia.</li>
+  <li><b>N2 Pitka ako dve stoličky</b>. Údaje už sú vo <code>view.pitkaStav</code>, takže je to čisto UI. Udalosť do logu je malá zmena jadra (otázka 2). Treba ju zladiť s UX návrhom o potvrdení „hotovo“.</li>
+  <li><b>N4 Náhľad NA EX so vzorcom a cenou</b> využije projekciu z N1. Ak sa rozhodneš pre strop násobku ×2, náhľad ho ukáže rovnakým čipom.</li>
+  <li><b>N3 Skóre súpera</b>, po rozhodnutí o variante. A je možné hneď, B je lepšie, ale mení <code>viewFor</code>, takže treba test filtrovania.</li>
+  <li><b>N5 Krčmový účet</b> ako ďalší krok identity. Stabilnú mriežku dosky (časť N5) sa oplatí spraviť spolu s N1, je to asi 1 h a zastaví skákanie dosky.</li>
+</ol>
+
+<h2 id="otazky">6. Otázky na Michala</h2>
+<ol>
+  <li><b>Kliatby súpera:</b> smie server posielať počet súperových Dlhov a Cirhóz v ruke a doberacom balíčku (variant B)? Dá sa odvodiť z verejných udalostí, ale je to rozhodnutie o skrytej informácii. Alebo ostane „najviac“ (variant A)?</li>
+  <li><b>„hotovo“ v logu:</b> môže <code>cmdSkipNaex</code> pridať udalosť „X končí svoju časť Pitky“? Je to malá zmena v <code>packages/core</code>, mimo čistého UI.</li>
+  <li><b>Násobky:</b> ostáva ×2 × ×2 = ×4 (NA EX a Silná žena aj pri Dlhu a pečeni), alebo platí strop ×2? Náhľad v N4 ukáže to, čo rozhodneš.</li>
+  <li><b>Mobil:</b> má byť herný stôl na telefóne plnohodnotný? Ak áno, pás pokynov treba prerobiť na spodný panel (je to v UX návrhu). Tento návrh rieši len to, aby čísla na mobile nepreskakovali.</li>
+  <li><b>Tón bločka (N5):</b> sedí papierový bloček s pečiatkou „ZAPÍSANÉ“ ku karikatúre, alebo radšej striedmejší toast v štýle webu?</li>
+</ol>
+<p class="meta">Snímky: <code>playtest/dizajn/hra-nezrovnalosti-20261021-1229/</code> (pracovné, mimo gitu), výber v <code>docs/playtesty/dizajn-hra-nezrovnalosti-20261021-1229/</code>. Kontrasty sú prepočítané podľa WCAG 2.2.</p>
+</main>
+<script>
+(function () {
+  // Ukážka N1c: aktuálny krok osi sa doskroluje do stredu (tak ako navrhujeme v hre).
+  var osi = document.querySelectorAll(".os-po");
+  for (var o = 0; o < osi.length; o++) { var a = osi[o].querySelector(".akt"); if (a) osi[o].scrollLeft = a.offsetLeft - osi[o].offsetLeft - (osi[o].clientWidth - a.offsetWidth) / 2; }
+  var tlacidla = document.querySelectorAll(".filter button");
+  var riadky = document.querySelectorAll("#audit-tab tbody tr");
+  for (var i = 0; i < tlacidla.length; i++) {
+    tlacidla[i].addEventListener("click", function (e) {
+      var f = e.currentTarget.getAttribute("data-f");
+      for (var j = 0; j < tlacidla.length; j++) tlacidla[j].setAttribute("aria-pressed", tlacidla[j] === e.currentTarget ? "true" : "false");
+      for (var k = 0; k < riadky.length; k++) riadky[k].hidden = !(f === "vsetky" || riadky[k].getAttribute("data-z") === f);
+    });
+  }
+})();
+</script>
+</body>
+</html>

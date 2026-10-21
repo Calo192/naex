@@ -10,7 +10,8 @@
 // (NPC na serveri); meno hráča 2 sa vtedy ignoruje a účet hráča 2 nevzniká.
 //
 // Vypíše cestu k relácii (playtest/<id>/); všetko ostatné je v <relacia>/hra.json.
-// Server zastaví tools/playtest/ukonci.ts <relacia>.
+// Server zastaví tools/playtest/ukonci.ts <relacia>. Viac partií naraz zakladá
+// tools/playtest/turnus.ts — dáva im id prepínačom --id <id> (napr. 20261021-120000-2).
 
 import { spawn } from "node:child_process";
 import { randomBytes } from "node:crypto";
@@ -20,7 +21,15 @@ import { join, resolve } from "node:path";
 import WebSocket from "ws";
 
 const protiBotovi = process.argv.includes("--bot");
-const [meno1 = "Playtester 1", meno2 = "Playtester 2", dlzka = "stredna"] = process.argv.slice(2).filter((a) => a !== "--bot");
+const iId = process.argv.indexOf("--id");
+const danyId = iId === -1 ? undefined : process.argv[iId + 1];
+if (danyId !== undefined && !/^\d{8}-\d{6}(-\d)?$/.test(danyId)) {
+  console.error("--id má tvar RRRRMMDD-HHMMSS alebo RRRRMMDD-HHMMSS-N.");
+  process.exit(1);
+}
+const [meno1 = "Playtester 1", meno2 = "Playtester 2", dlzka = "stredna"] = process.argv
+  .slice(2)
+  .filter((a, j, v) => a !== "--bot" && a !== "--id" && v[j - 1] !== "--id");
 if (!["kratka", "stredna", "dlha"].includes(dlzka)) {
   console.error("Dĺžka hry musí byť kratka, stredna alebo dlha.");
   process.exit(1);
@@ -41,7 +50,7 @@ function volnyPort(od: number): Promise<number> {
 }
 
 const cas = new Date();
-const id = cas.toISOString().slice(0, 19).replace(/[-:]/g, "").replace("T", "-");
+const id = danyId ?? cas.toISOString().slice(0, 19).replace(/[-:]/g, "").replace("T", "-");
 const relacia = join("playtest", id);
 const dataDir = resolve(relacia, "server-data");
 for (const d of ["hrac1", "hrac2", "sledovatel/snimky", "server-data"]) mkdirSync(join(relacia, d), { recursive: true });

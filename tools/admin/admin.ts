@@ -52,6 +52,16 @@
 //   playtesty                     reporty playtestov
 //   pouzivatelia                  účty na webe
 //   ucet                          prihlási agenta (prvýkrát založí a povýši účet)
+//   avatar <subor>                avatar účtu Admin (AI)
+// Playtest (sekcia Playtest na webe — reporty a návrhy, Michal 2026-10-21)
+//   report-nahraj <subor>…        nahrá report / rozbor / návrhy z docs/playtesty (aj obrázky v podpriečinku)
+//   navrhy [stav] [--json]        návrhy zlepšení; stav: nove | implementovat | odlozene | zamietnute | rozpracovane | implementovane
+//   navrhy-nahraj <subor.json>    nahrá dávku návrhov od navrhára (tvar v .claude/agents/naex-navrhar.md)
+//   navrh <id> <stav> [--vysledok "text"]   Developer: rozpracovane | implementovane (+ čo spravil, commit) | spat
+// Avatary AI účtov (Leonardo.Ai, v štýle avatarov offline protihráčov)
+//   avatar-generuj <kluc> "<námet po anglicky>" [--seed N]   jedno kolo (2 obrázky) do admin-agent/avatary/<kluc>/
+//
+// Na živý web (https://<DOMENA z deploy/.env.produkcia>) prepínač --zivy.
 
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { basename, extname, join } from "node:path";
@@ -62,7 +72,7 @@ import eldersJson from "../../packages/core/data/elders.json" with { type: "json
 import scorecardsJson from "../../packages/core/data/scorecards.json" with { type: "json" };
 import type { AkciaDef, BodovaciaKarta, IkonaBodovania, KartaNavrh, Kategoria, KlucoveSlovo, Nastavenia } from "@naex/tvorba";
 import { chybyNavrhu, doCardsJson, doScorecardsJson, kontrolaTextov, neznameAkcie, silaKariet, variantyKarty } from "@naex/tvorba";
-import { prihlasAgenta, webUrl } from "../playtest/web.ts";
+import { nacitajEnv, prihlasAgenta, webUrl } from "../playtest/web.ts";
 import { MAX_KOL_NA_KARTU, generuj, nacitajZaznam } from "./leonardo.ts";
 import type { Sila } from "./leonardo.ts";
 import { MODEL, REFERENCIE, cestyReferencii, kategoriaPodlaTagov, zostavPrompt } from "./styl.ts";
@@ -79,14 +89,6 @@ interface ObsahTvorcu {
   readonly bodovacie: readonly BodovaciaKarta[];
   readonly ikonyBodovania: readonly IkonaBodovania[];
   readonly zverejnenaVerzia: number;
-}
-
-function nacitajEnv(): void {
-  try {
-    if (existsSync(".env")) process.loadEnvFile(".env");
-  } catch {
-    // .env je nepovinný
-  }
 }
 
 async function volaj(url: string, metoda: string, cesta: string, cookie: string, telo?: unknown, typ?: string): Promise<Response> {
@@ -117,28 +119,16 @@ async function json<T>(r: Response): Promise<T> {
 }
 
 /**
- * Prihlási agenta. Nový účet je návštevník — povýši ho admin z .env na
- * subadmina (tvorba kariet a správa obsahu, nie úrovne účtov).
+ * Prihlási agenta. Nový účet je návštevník — prihlasAgenta ho heslom admina
+ * z .env povýši na subadmina (tvorba kariet a správa obsahu, nie úrovne účtov).
  */
 export async function prihlasAdmina(url: string): Promise<{ cookie: string; meno: string }> {
-  nacitajEnv();
-  const ucet = await prihlasAgenta(url, MENO_AGENTA);
-  const ja = await json<{ pouzivatel: { id: number; rola: string } | null }>(await volaj(url, "GET", "/api/ja", ucet.cookie));
+  const ucet = await prihlasAgenta(url, MENO_AGENTA, "subadmin");
+  const ja = await json<{ pouzivatel: { rola: string } | null }>(await volaj(url, "GET", "/api/ja", ucet.cookie));
   const rola = ja.pouzivatel?.rola;
-  if (rola === "subadmin" || rola === "admin") return { cookie: ucet.cookie, meno: ucet.meno };
-
-  const heslo = process.env.NAEX_ADMIN_HESLO;
-  if (heslo === undefined || heslo === "") {
+  if (rola !== "subadmin" && rola !== "admin") {
     throw new Error(`Účet „${ucet.meno}“ je ${rola ?? "?"}, nie subadmin. Povýš ho v Tvorba → Hráči, alebo daj NAEX_ADMIN_HESLO do .env.`);
   }
-  const login = process.env.NAEX_ADMIN_LOGIN ?? "Admin";
-  const r = await volaj(url, "POST", "/api/prihlasenie", "", { login, heslo });
-  await json(r);
-  const adminCookie = (r.headers.get("set-cookie") ?? "").split(";")[0] ?? "";
-  if (ja.pouzivatel === null) throw new Error("Agent nie je prihlásený.");
-  await json(await volaj(url, "PATCH", `/api/admin/pouzivatelia/${ja.pouzivatel.id}`, adminCookie, { rola: "subadmin" }));
-  await volaj(url, "POST", "/api/odhlasenie", adminCookie);
-  console.error(`(Účet „${ucet.meno}“ povýšený na subadmina.)`);
   return { cookie: ucet.cookie, meno: ucet.meno };
 }
 
@@ -293,7 +283,16 @@ const bezDiakritiky = (s: string): string => s.normalize("NFD").replace(/[̀-ͯ]
 
 // ---- príkazový riadok ------------------------------------------------------------
 
-const S_HODNOTOU = new Set(["--url", "--od", "--pokusov", "--seed", "--popis", "--nazov", "--kategoria", "--pocet", "--sila"]);
+const S_HODNOTOU = new Set(["--url", "--od", "--pokusov", "--seed", "--popis", "--nazov", "--kategoria", "--pocet", "--sila", "--vysledok"]);
+
+/** Štýl avatarov AI účtov — ako avatary offline protihráčov (seed/avatary/boti): dedinčan napoly robot. */
+const STYL_AVATARA =
+  "Square portrait avatar, head and shoulders, subject centered and looking at the viewer. A rural Slovak villager who is half human, " +
+  "half crude home-made robot: rusty metal plates, exposed wires, a glowing cybernetic eye — 'peasant AI anarchy'. " +
+  "Gritty adult comic book illustration matching the reference images: bold black ink outlines, cross-hatching, grainy texture, " +
+  "muted dirty palette of browns, olive, slate blue and grey with one warm bulb light, slightly grotesque caricatured expressive face, " +
+  "run-down post-socialist village interior. No text, no letters, no logos, no watermark, no frame, no border.";
+const REFERENCIE_AVATARA = ["stamgast", "rapavy_fero", "teta_gizka"].map((b) => join("packages/server/seed/avatary/boti", `${b}.jpg`));
 
 function rozober(argv: readonly string[]): { poz: string[]; prep: Map<string, string | true> } {
   const poz: string[] = [];
@@ -338,6 +337,32 @@ async function main(): Promise<void> {
         });
     }
     console.log(pocet === 0 ? `Karta ${id} sa nikde nespomína.` : `\n${pocet} zmienok — po zmene karty skontroluj, či ešte sedia.`);
+    return;
+  }
+
+  if (prikaz === "avatar-generuj") {
+    const [kluc, namet] = arg;
+    if (kluc === undefined || namet === undefined || !/^[a-z0-9-]{2,32}$/.test(kluc)) {
+      throw new Error('Použitie: avatar-generuj <kluc> "<námet po anglicky>" [--seed N]');
+    }
+    nacitajEnv();
+    const adr = join(PRACOVNY, "avatary", kluc);
+    mkdirSync(adr, { recursive: true });
+    const prompt = `${namet.trim().replace(/\.$/, "")}. ${STYL_AVATARA}`;
+    writeFileSync(join(adr, "zadanie.json"), `${JSON.stringify({ prompt, kategoria: "avatar", referencie: REFERENCIE_AVATARA }, null, 2)}\n`);
+    const seed = hodnota("--seed");
+    const kolo = await generuj({
+      id: `avatar ${kluc}`,
+      adr,
+      pracovny: PRACOVNY,
+      pocet: 2,
+      sila: "MID",
+      navyse: prep.has("--navyse"),
+      ...(seed === undefined ? {} : { seed: Number(seed) }),
+    });
+    console.log(`Kolo ${kolo.kolo}/${MAX_KOL_NA_KARTU} avatara ${kluc} (cena ${kolo.cena ?? "neuvedená"}):`);
+    for (const f of kolo.subory) console.log(`  ${f}`);
+    console.log("\nPozri ich (Read) a najlepší nastav: web.ts avatar --ako \"<meno>\" <subor> (Admin: admin.ts avatar <subor>).");
     return;
   }
 
@@ -760,6 +785,74 @@ async function main(): Promise<void> {
     case "playtesty": {
       const { reporty } = await api<{ reporty: unknown[] }>("GET", "/admin/playtesty");
       console.log(JSON.stringify(reporty, null, 2));
+      break;
+    }
+
+    case "avatar": {
+      const subor = arg[0];
+      const typ = subor === undefined ? undefined : TYP_OBRAZKA[extname(subor).toLowerCase()];
+      if (subor === undefined || !existsSync(subor) || typ === undefined || typ === "image/svg+xml") throw new Error("Použitie: avatar <obrazok.jpg|png|webp>");
+      await api("PUT", "/profil/avatar", new Uint8Array(readFileSync(subor)), typ);
+      console.log(`Avatar účtu „${meno}“ nastavený na ${url}.`);
+      break;
+    }
+
+    // ---- playtest: reporty a návrhy
+
+    case "report-nahraj": {
+      if (arg.length === 0) throw new Error("Použitie: report-nahraj <subor v docs/playtesty>…");
+      for (const subor of arg) {
+        if (!existsSync(subor) || !statSync(subor).isFile()) throw new Error(`Súbor ${subor} neexistuje.`);
+        // Cesta na webe = cesta v docs/playtesty (obrázky reportu v podpriečinku <id>/).
+        const rel = subor.replace(/\\/g, "/").replace(/^(\.\/)?docs\/playtesty\//, "");
+        const cesta = rel.split("/").map(encodeURIComponent).join("/");
+        await api("PUT", `/admin/playtesty/subor/${cesta}`, new Uint8Array(readFileSync(subor)));
+        console.log(`Nahraté: ${url}/playtest/reporty/${encodeURIComponent(rel)}`);
+      }
+      break;
+    }
+
+    case "navrhy": {
+      const { navrhy } = await api<{ navrhy: { id: number; davka: string; nazov: string; kritickost: string; stav: string; volba: string | null; poznamka: string; rozhodol: { meno: string; ai: boolean } | null; vysledok: string }[] }>("GET", "/admin/navrhy");
+      const vybrane = navrhy.filter((n) => arg[0] === undefined || n.stav === arg[0]);
+      if (prep.has("--json")) {
+        console.log(JSON.stringify(vybrane, null, 2));
+        break;
+      }
+      if (vybrane.length === 0) console.log(arg[0] === undefined ? "Žiadne návrhy." : `Žiadne návrhy v stave ${arg[0]}.`);
+      for (const n of vybrane) {
+        const kto = n.rozhodol === null ? "" : `, rozhodol ${n.rozhodol.meno}${n.rozhodol.ai ? " (AI!)" : ""}`;
+        console.log(`#${n.id} [${n.stav}${n.volba === null ? "" : `, možnosť ${n.volba}`}${kto}] ${n.davka} · ${n.kritickost} · ${n.nazov}`);
+        if (n.poznamka !== "") console.log(`    poznámka: ${n.poznamka.replace(/\n/g, " ")}`);
+        if (n.vysledok !== "") console.log(`    výsledok: ${n.vysledok.replace(/\n/g, " ")}`);
+      }
+      break;
+    }
+
+    case "navrhy-nahraj": {
+      const subor = arg[0];
+      if (subor === undefined || !existsSync(subor)) throw new Error("Použitie: navrhy-nahraj <navrhy-<id>.json>");
+      const r = await api<{ ids: number[] }>("POST", "/admin/navrhy", JSON.parse(readFileSync(subor, "utf8")) as unknown);
+      console.log(`Nahratých ${r.ids.length} návrhov (#${r.ids.join(", #")}) — ${url}/playtest`);
+      break;
+    }
+
+    case "navrh": {
+      const [id, stav] = arg;
+      if (id === undefined || stav === undefined || !/^\d+$/.test(id)) throw new Error('Použitie: navrh <id> <rozpracovane|implementovane|spat> [--vysledok "text"]');
+      // Agent rozhodnutia admina nemení — len hlási priebeh implementácie;
+      // „spat“ vráti nedokončený návrh z rozpracovaného na implementovať (rozhodnutie ostane).
+      if (stav !== "rozpracovane" && stav !== "implementovane" && stav !== "spat") throw new Error("Agent nastavuje len rozpracovane, implementovane alebo spat; rozhoduje Michal na webe.");
+      if (stav === "spat") {
+        const { navrhy } = await api<{ navrhy: { id: number; stav: string }[] }>("GET", "/admin/navrhy");
+        if (navrhy.find((n) => n.id === Number(id))?.stav !== "rozpracovane") throw new Error(`Návrh #${id} nie je rozpracovaný.`);
+        await api("PATCH", `/admin/navrhy/${id}`, { stav: "implementovat", ...(hodnota("--vysledok") === undefined ? {} : { vysledok: hodnota("--vysledok") }) });
+        console.log(`Návrh #${id}: späť na implementovať.`);
+        break;
+      }
+      const vysledok = hodnota("--vysledok");
+      await api("PATCH", `/admin/navrhy/${id}`, { stav, ...(vysledok === undefined ? {} : { vysledok }) });
+      console.log(`Návrh #${id}: ${stav}.`);
       break;
     }
 

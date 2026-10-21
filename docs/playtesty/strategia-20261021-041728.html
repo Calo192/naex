@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stratégia 20261021-041728: kliatby, remízy a výber pri ťahaní (NA EX!)</title>
+<style>
+  :root {
+    --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #dccdb3;
+    --text: #2a2016; --tlmeny: #6b5b45; --slaby: #7d6d55;
+    --akcent: #9a5f0c; --cervena: #a83c28; --zelena: #3a7533; --modra: #276f7a;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 system-ui, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 1040px; margin: 0 auto; padding: 32px 16px 100px; }
+  h1, h2, h3 { font-family: Georgia, serif; line-height: 1.2; }
+  h1 { font-size: clamp(1.7rem, 4vw, 2.3rem); margin: 0 0 8px; }
+  h2 { font-size: 1.35rem; margin: 44px 0 12px; }
+  h3 { font-size: 1.08rem; margin: 0 0 6px; }
+  .podnadpis { color: var(--tlmeny); margin: 0 0 20px; max-width: 78ch; }
+  a { color: var(--akcent); }
+  code { font-size: 0.88em; background: var(--plocha-2); padding: 1px 5px; border-radius: 5px; }
+  .verdikt { border: 1px solid color-mix(in srgb, var(--akcent) 55%, transparent); background: color-mix(in srgb, var(--akcent) 8%, var(--plocha));
+    border-radius: 14px; padding: 14px 18px; margin: 18px 0; }
+  .verdikt p { margin: 6px 0; }
+  .stitok { display: inline-block; font: 700 0.78rem/1 system-ui, sans-serif; letter-spacing: 0.06em; text-transform: uppercase;
+    color: #fff; background: var(--akcent); border-radius: 999px; padding: 5px 12px; margin-bottom: 8px; }
+  .cisla { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; margin: 16px 0; }
+  .cislo { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; }
+  .cislo b { display: block; font: 700 1.45rem/1.1 Georgia, serif; color: var(--akcent); }
+  .cislo span { color: var(--tlmeny); font-size: 0.88rem; display: block; margin-top: 4px; }
+  .tab { overflow-x: auto; background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; margin: 10px 0; }
+  .tab table { width: 100%; border-collapse: collapse; font-size: 0.86rem; min-width: 720px; }
+  .tab th, .tab td { padding: 7px 9px; border-bottom: 1px solid var(--okraj); text-align: left; vertical-align: top; }
+  .tab tr:last-child td { border-bottom: 0; }
+  .tab th { color: var(--slaby); font-weight: 600; font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .tab td.n { font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
+  .tab tr.vych td { background: color-mix(in srgb, var(--modra) 9%, transparent); }
+  .dobre { color: var(--zelena); font-weight: 600; }
+  .zle { color: var(--cervena); font-weight: 600; }
+  .zav { display: inline-block; border-radius: 999px; padding: 1px 9px; font-size: 0.78rem; font-weight: 700; }
+  .zav.vys { background: color-mix(in srgb, var(--cervena) 18%, transparent); color: var(--cervena); }
+  .zav.str { background: color-mix(in srgb, var(--akcent) 18%, transparent); color: var(--akcent); }
+  .zav.niz { background: color-mix(in srgb, var(--zelena) 18%, transparent); color: var(--zelena); }
+  .graf { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 12px 14px; margin: 10px 0; }
+  .riadok { display: grid; grid-template-columns: 190px 1fr; gap: 8px; align-items: center; margin: 6px 0; font-size: 0.86rem; }
+  .riadok .meno { color: var(--tlmeny); }
+  .pruhy { display: grid; gap: 3px; }
+  .pruh { position: relative; height: 16px; background: var(--plocha-2); border-radius: 4px; }
+  .pruh i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; background: var(--akcent); }
+  .pruh.e25 i { background: var(--modra); }
+  .pruh em { position: absolute; right: 6px; top: 0; font-style: normal; font-size: 0.74rem; color: var(--text); }
+  .pruh .polovica { position: absolute; left: 50%; top: -2px; bottom: -2px; border-left: 1px dashed var(--slaby); }
+  .legenda { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 8px; font-size: 0.84rem; color: var(--tlmeny); }
+  .legenda i { display: inline-block; width: 16px; height: 8px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
+  .poznamka { color: var(--tlmeny); font-size: 0.88rem; margin: 8px 2px 0; }
+  .filtre { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 14px; }
+  .filtre button { font: inherit; font-size: 0.88rem; border-radius: 999px; padding: 5px 14px; border: 1px solid var(--okraj);
+    background: var(--plocha-2); color: var(--text); cursor: pointer; }
+  .filtre button[aria-pressed="true"] { background: var(--akcent); color: #fff; border-color: var(--akcent); font-weight: 700; }
+  .filtre button:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+  .navrh { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 14px 16px; margin-bottom: 12px; }
+  .navrh.odp-zaviest { border-left: 5px solid var(--zelena); }
+  .navrh.odp-vyskusat { border-left: 5px solid var(--akcent); }
+  .navrh.odp-zamietnut { border-left: 5px solid var(--cervena); }
+  .navrh dl { display: grid; grid-template-columns: minmax(110px, 170px) 1fr; gap: 4px 12px; margin: 8px 0 0; font-size: 0.93rem; }
+  .navrh dt { color: var(--slaby); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; padding-top: 3px; }
+  .navrh dd { margin: 0; }
+  .odp { display: inline-block; font-size: 0.76rem; font-weight: 700; border-radius: 999px; padding: 2px 10px; margin-left: 6px; vertical-align: middle; color: #fff; }
+  .odp.zaviest { background: var(--zelena); }
+  .odp.vyskusat { background: var(--akcent); }
+  .odp.zamietnut { background: var(--cervena); }
+  blockquote { margin: 6px 0; padding: 4px 12px; border-left: 3px solid var(--okraj); color: var(--tlmeny); font-style: italic; font-size: 0.9rem; }
+  ol.otazky li, ul.zoznam li { margin-bottom: 7px; }
+  footer { margin-top: 50px; padding-top: 14px; border-top: 1px solid var(--okraj); color: var(--slaby); font-size: 0.85rem; }
+  @media (max-width: 560px) {
+    .navrh dl { grid-template-columns: 1fr; }
+    .riadok { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<main>
+<h1>Kliatby, remízy a výber pri ťahaní</h1>
+<p class="podnadpis">Rozbor stratéga k playtestu <a href="20261021-041728.html">20261021-041728</a> (Jano Bitkár proti Eve Stratégovej, 50 : 33).
+Nadväzuje na rozbor <a href="strategia-strany-20261020.html">strany a prevaha</a>. Meraný stav: commit M22 (patronát, 14 lokalít, prevaha, pas za cigarety, 2 poldeci).
+Bot Štamgast, stredná hra (7 lokalít), päť variantov pravidiel vo worktree.</p>
+
+<section class="verdikt" aria-labelledby="verdikt-h">
+  <span class="stitok">Verdikt</span>
+  <h2 id="verdikt-h" style="margin-top:4px">Zručnosť rozhoduje dosť, no koniec hry kazí to, čo hráč nevidí</h2>
+  <p>Zručnosť rozhoduje viac než pred tromi dňami. Bot, ktorý robí 10 % náhodných ťahov, prehrá 67 % partií (predtým 64 %), pri 25 % náhodných ťahov prehrá 85 %. Delených rozdaní je 44 %.
+  Najväčším zdrojom náhody nie je štartová ruka (lepšia ruka vyhrá len 57 % partií), ale <strong>kliatby, ktoré sa do konca hry nestihnú dobrať</strong>.
+  Na konci hry ostanú hráčovi v priemere 2,75 nepriznanej kliatby, čo je asi −11 bodov. V playteste sa Evino skóre pri sčítaní zosunulo o 43 bodov a ani jeden hráč to nevidel prichádzať.</p>
+  <p>Ako prvé odporúčam <strong>zaviesť</strong> do rozhrania súperove nepriznané kliatby a cenu NA EX v Dlhoch. Pravidlá sa tým nemenia.
+  Ako prvú zmenu pravidiel odporúčam <strong>vyskúšať v playteste „dober 3, nechaj 2“</strong>: predurčenosť rozdania klesla z 0,37 na 0,17, rebrík stúpol zo 67 na 72 % a otočky z 27 na 40 %.</p>
+</section>
+
+<h2 id="cisla">Čísla východiska</h2>
+<div class="cisla">
+  <div class="cislo"><b>67 %</b><span>Rebrík ε = 0,1 (predošlý rozbor 64 %). Bot s 10 % náhodných ťahov prehrá dve tretiny partií, takže chyba sa trestá o niečo viac.</span></div>
+  <div class="cislo"><b>85 %</b><span>Rebrík ε = 0,25 (predtým 80 %). Hrubé chyby sa trestajú spoľahlivo.</span></div>
+  <div class="cislo"><b>44 %</b><span>Delené rozdania pri ε = 0,1 (predtým 47 %). V takom rozdaní každý stolec vyhral raz, takže rozhodlo rozdanie alebo miesto, nie hráč.</span></div>
+  <div class="cislo"><b>56 %</b><span>Výhoda hráča 1 (predtým 55 %). Miesto je pri 64 partiách férové, šum je ±6 bodov.</span></div>
+  <div class="cislo"><b>27 %</b><span>Otočky (predtým 24 %). Víťaz po polovici kôl prehrával, takže dobiehanie žije a je v zdravom pásme 20–40 %.</span></div>
+  <div class="cislo"><b>0,37</b><span>Predurčenosť rozdania (predtým 0,30; čistý šum 0,31). Rozdanie určuje víťaza o niečo viac než minule.</span></div>
+  <div class="cislo"><b>61 → 79 %</b><span>Vedúci po 1. / 6. kole vyhrá (61, 61, 63, 73, 72, 79 %). Náskok sa dá budovať, partia však nie je rozhodnutá priskoro.</span></div>
+  <div class="cislo"><b>85 %</b><span>Víťaz poslednej bitky vyhrá partiu. Jedna bitka pohne rozdielom bodov o 19 až 29 bodov, kým celý rozdiel na konci je 54 bodov.</span></div>
+  <div class="cislo"><b>9,6 %</b><span>Bitiek rozhodne pravidlo „remíza → obranca“. Rovnaké tuhé má 12,5 % bitiek (v playteste 2 zo 7).</span></div>
+  <div class="cislo"><b>−11 b</b><span>Toľko bodov stoja nepriznané kliatby, ktoré hráčovi ostanú na konci hry (2,75 kusa na hráča).</span></div>
+</div>
+<p class="poznamka">Zo 64 partií bota proti sebe: víťaz má 60 bodov z lokalít, porazený 30. Zo strachu starších má víťaz 19 bodov a porazený 4, zo získaných starších 9 a 3 a z cigariet 6 a 6. Kliatby stoja víťaza 10 bodov a porazeného 12.
+Kto vyhrá viac lokalít, vyhrá partiu v 89 % prípadov. Bot si strach starších buduje menej než ľudia: v playteste jedna bitka s prebytkom 5 až 7 pohla skóre o 49 až 60 bodov.</p>
+
+<h3>Rebrík vo všetkých variantoch</h3>
+<div class="graf" role="img" aria-label="Rebrík zručnosti: podiel výhier bota proti sebe s 10 a 25 percentami náhodných ťahov vo východisku a v piatich variantoch">
+  <div class="riadok"><span class="meno">Východisko</span><div class="pruhy"><div class="pruh"><i style="width:67%"></i><span class="polovica"></span><em>67 %</em></div><div class="pruh e25"><i style="width:85%"></i><span class="polovica"></span><em>85 %</em></div></div></div>
+  <div class="riadok"><span class="meno">Dober 3, nechaj 2</span><div class="pruhy"><div class="pruh"><i style="width:72%"></i><span class="polovica"></span><em>72 %</em></div><div class="pruh e25"><i style="width:84%"></i><span class="polovica"></span><em>84 %</em></div></div></div>
+  <div class="riadok"><span class="meno">Kliatba navrch</span><div class="pruhy"><div class="pruh"><i style="width:66%"></i><span class="polovica"></span><em>66 %</em></div><div class="pruh e25"><i style="width:82%"></i><span class="polovica"></span><em>82 %</em></div></div></div>
+  <div class="riadok"><span class="meno">Remíza podľa prevahy</span><div class="pruhy"><div class="pruh"><i style="width:70%"></i><span class="polovica"></span><em>70 %</em></div><div class="pruh e25"><i style="width:83%"></i><span class="polovica"></span><em>83 %</em></div></div></div>
+  <div class="riadok"><span class="meno">Zrkadlový štart</span><div class="pruhy"><div class="pruh"><i style="width:66%"></i><span class="polovica"></span><em>66 %</em></div><div class="pruh e25"><i style="width:82%"></i><span class="polovica"></span><em>82 %</em></div></div></div>
+  <div class="riadok"><span class="meno">Čistenie štartoviek</span><div class="pruhy"><div class="pruh"><i style="width:59%"></i><span class="polovica"></span><em>59 %</em></div><div class="pruh e25"><i style="width:83%"></i><span class="polovica"></span><em>83 %</em></div></div></div>
+  <div class="legenda"><span><i style="background:var(--akcent)"></i>ε = 0,1</span><span><i style="background:var(--modra)"></i>ε = 0,25</span><span>prerušovaná čiara = 50 %</span></div>
+</div>
+<p class="poznamka">Pri 64 rozdaniach × 2 miestach je šum rebríka asi ±4 až 5 bodov a rozdiel dvoch variantov ±6 bodov. Predurčenosť z 10 rozdaní je len náznak.</p>
+
+<div class="tab">
+<table>
+  <caption class="poznamka" style="text-align:left;padding:8px 9px 0">Všetky varianty (64 rozdaní × 2 miesta, zrkadlo 64 partií, predurčenosť 10 × 6)</caption>
+  <thead><tr><th scope="col">Variant</th><th scope="col">ε 0,1</th><th scope="col">delené</th><th scope="col">ε 0,25</th><th scope="col">hráč 1</th><th scope="col">otočky</th><th scope="col">vedúci po 1. / 3. / 6. kole</th><th scope="col">predurč.</th><th scope="col">kliatby na konci</th></tr></thead>
+  <tbody>
+    <tr class="vych"><td>Východisko (M22)</td><td class="n">67 %</td><td class="n">44 %</td><td class="n">85 %</td><td class="n">56 %</td><td class="n">27 %</td><td class="n">61 / 63 / 79 %</td><td class="n">0,37</td><td class="n">2,75</td></tr>
+    <tr><td>Dober 3, nechaj 2</td><td class="n dobre">72 %</td><td class="n">41 %</td><td class="n">84 %</td><td class="n">41 %</td><td class="n dobre">40 %</td><td class="n">62 / 69 / 84 %</td><td class="n dobre">0,17</td><td class="n">3,07</td></tr>
+    <tr><td>Kliatba navrch balíčka</td><td class="n">66 %</td><td class="n zle">53 %</td><td class="n">82 %</td><td class="n">52 %</td><td class="n">33 %</td><td class="n">52 / 58 / 84 %</td><td class="n dobre">0,27</td><td class="n dobre">0,70</td></tr>
+    <tr><td>Remíza podľa prevahy</td><td class="n">70 %</td><td class="n">41 %</td><td class="n">83 %</td><td class="n">48 %</td><td class="n">21 %</td><td class="n">56 / 67 / 79 %</td><td class="n">0,39</td><td class="n">2,37</td></tr>
+    <tr><td>Zrkadlový štart</td><td class="n">66 %</td><td class="n zle">52 %</td><td class="n">82 %</td><td class="n">47 %</td><td class="n">27 %</td><td class="n">48 / 61 / 79 %</td><td class="n">0,30</td><td class="n">3,05</td></tr>
+    <tr><td>Čistenie štartoviek (automaticky)</td><td class="n zle">59 %</td><td class="n zle">56 %</td><td class="n">83 %</td><td class="n">42 %</td><td class="n">31 %</td><td class="n">67 / 72 / 86 %</td><td class="n">0,37</td><td class="n">2,05</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2 id="mapa">Mapa náhody</h2>
+<p>Hráči spolu zapísali 38 rozhodovacích záznamov (Jano 20, Eva 18). Vo všetkých 38 uviedli ako hlavný dôvod voľbu. Náhodu pridali dvakrát (5 %), skrytú informáciu päťkrát (13 %) a pravidlo či poradie (remíza → obranca, útočník kladie prvý) päťkrát (13 %).
+Vlastný odhad zručnosti a náhody: Jano 55 : 45, Eva 70 : 30. Prázdne rozhodnutia: draft s 0 cigaretami (Jano K5), stavba šenku z 8 neznámych kariet (Eva K1), Pitka bez plného poldeci, Pohoršenie, ktoré sa dá posunúť len o 1, a povinné NA EX na Krčme.</p>
+<div class="tab">
+<table>
+  <thead><tr><th scope="col">Zdroj</th><th scope="col">Kedy vstupuje</th><th scope="col">Rozptyl</th><th scope="col">Čím sa dá tlmiť dnes</th><th scope="col">Závažnosť</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Kliatby v balíčku</strong> (či sa dober pred koncom hry)</td><td><strong>po</strong> rozhodnutí: kliatba vznikne v Pitke a či sa ešte dober a prizná, rozhodne zamiešanie odhadzovacieho balíčka</td><td>2,75 nepriznanej kliatby na hráča na konci hry, −11 b. Násobí sa počtom scorecardov s podmienkou Dlh či Cirhóza (Lakomec má Dlh trikrát).
+      <blockquote>„8 nepriznaných Dlhov = −24 b. … Dlh/Cirhóza prišli až po rozhodujúcej bitke.“ (Eva)</blockquote></td><td>Vízia, Niekoho stryná, fajčenie (kopanie v balíčku), priznanie Cirhózy</td><td><span class="zav vys">vysoká</span></td></tr>
+    <tr><td><strong>Skryté súperove kliatby na displeji</strong></td><td>pred rozhodnutím, ale hráč ich nevidí, hoci sa dajú odvodiť z verejných udalostí</td><td>V playteste ukazoval odhad pred poslednou bitkou 48 : 76, skutočný výsledok bol 50 : 33.
+      <blockquote>„Hru rozhodla hygiena balíčka, nie bitky.“ (Jano)</blockquote></td><td>nič, len počítanie z hlavy</td><td><span class="zav vys">vysoká</span></td></tr>
+    <tr><td>Remíza → obranca</td><td>pravidlo (nie náhoda), rozhoduje však stolička</td><td>9,6 % bitiek, v playteste 2 zo 7 (6 : 6 a 2 : 2)
+      <blockquote>„Rozhodla štruktúra pravidla, nie hráč.“ (Eva)</blockquote></td><td>zahrať o kartu viac; kto cíti remízu, má byť obrancom</td><td><span class="zav str">stredná</span></td></tr>
+    <tr><td>Dobieranie po bitke (2 karty)</td><td><strong>pred</strong> rozhodnutím (na začiatku kola)</td><td>Štartovky v balíčku sú mŕtva váha.
+      <blockquote>„V K3 a K5 som mal samé Pijany.“ (Jano)</blockquote></td><td>fajčenie (cigareta = karta), Vízia, šenok</td><td><span class="zav str">stredná</span></td></tr>
+    <tr><td>Štartová ruka a balíček</td><td>pred rozhodnutím; oba balíčky majú rovnaké druhy kariet, varianty a poradie sú náhodné</td><td>Lepšia ruka (podľa hodnotenia bota) vyhrá 57 % partií, teda takmer nič.</td><td>šenok od 1. kola, fajčenie</td><td><span class="zav niz">nízka</span></td></tr>
+    <tr><td>Stavba šenku (8 náhodných kariet každému)</td><td>pred rozhodnutím; čo hráč dá naspodok, súper nevie</td><td>Asymetrické, ale polovica ide do spoločného šenku a druhú hráč skryje aj súperovi.
+      <blockquote>„Šenok a jeho odhodené prezrádzali jeho plán … Pozornosť sa odmeňuje.“ (Eva)</blockquote></td><td>voľba, čo do šenku a čo naspodok</td><td><span class="zav niz">nízka</span></td></tr>
+    <tr><td>Rozdanie scorecardov starším</td><td>pred hrou, verejné</td><td>Určuje váhy kategórií (napríklad štyrikrát „lokality“ dá 8 bodov za lokalitu), pre oboch hráčov rovnako.</td><td>čítanie scorecardov; náhľad bodov pri posune markera</td><td><span class="zav niz">nízka</span> (znovuhrateľnosť)</td></tr>
+    <tr><td>Lokality a prvý útočník</td><td>pred hrou, všetkých 7 lokalít je známych</td><td>Prvý útočník vyhrá 44 % partií, hráč 1 vyhrá 56 %.</td><td>cieľ volí obranca</td><td><span class="zav niz">nízka</span></td></tr>
+    <tr><td>Súperova ruka, čo dal naspodok a NA EX v Pitke</td><td>interakcia, nie náhoda</td><td>
+      <blockquote>„Kto je v Pitke druhý, vidí NA EX súpera … kto je prvý, musí hádať.“ (Eva)</blockquote></td><td>čítanie súpera, odpoveď na NA EX</td><td>žiaduca</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2 id="zrucnost">Mapa zručnosti</h2>
+<ul class="zoznam">
+  <li><strong>Rozhodnutia na viac kôl:</strong> cigaretová ekonomika (pas za cigarety, šenok, Dedičstvo), patronát (náhľad výhra / prehra, náhrada mení body až o 24), reťaze kariet s Posilnením a NA EX, hygiena balíčka (fajčenie, Vízia, priznanie). Toto sú miesta, kde sa lepší hráč odlišuje.</li>
+  <li><strong>Voľba len zdanlivá:</strong> Pohoršenie, keď ide posunúť len o 1, povinné NA EX na Krčme, draft s 0 cigaretami. Bot má priemerne 11,2 možnosti na ťah a 0 % vynútených ťahov, takže prázdnych ťahov je málo.</li>
+  <li><strong>Karty s veľkým rozdielom sily:</strong> Dvojčatá, Silná nezávislá žena, Recidivista, Hasič a Živnostník proti Pijanovi, Dievčine a Miňištrantovi. Silné karty sa však kupujú v spoločnom šenku za cigarety, takže o tom, kto ich má, rozhoduje ekonomika, nie dobranie.</li>
+  <li><strong>Slepé miesto:</strong> hodnota prebytku. Jano pasoval za 2 cigarety a prehra ho stála asi 60 bodov. <q>Netušil som, že zóna strach úroveň 2 je ~14 b na jedného staršieho.</q></li>
+  <li><strong>Vedľajší nález:</strong> v chybnom behu variantu „zrkadlo“ mal hráč 2 v štartovacom balíčku len 5 štartoviek namiesto 10 a vyhral 69 % zo 64 partií. Tenší štartovací balíček je obrovská výhoda. Čistenie balíčka by bolo silnou strategickou osou, ak by malo cenu (návrh 8).</li>
+</ul>
+
+<h2 id="navrhy">Návrhy</h2>
+<p>Zoradené podľa pomeru prínosu a ceny. Čísla variantov sú náznak smeru: bot je ladený na dnešné pravidlá.</p>
+<div class="filtre" role="group" aria-label="Filter návrhov podľa odporúčania">
+  <button type="button" data-f="vsetko" aria-pressed="true">Všetky</button>
+  <button type="button" data-f="zaviest" aria-pressed="false">Zaviesť</button>
+  <button type="button" data-f="vyskusat" aria-pressed="false">Vyskúšať v playteste</button>
+  <button type="button" data-f="zamietnut" aria-pressed="false">Zamietnuť</button>
+</div>
+<div id="navrhy-zoznam">
+
+<article class="navrh odp-zaviest" data-odp="zaviest">
+  <h3>1. Súperove nepriznané kliatby a cena NA EX na displeji <span class="odp zaviest">zaviesť</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Tri playtesty za sebou rozhodli kliatby, ktoré hráči nevideli: 20261018-185541 (48 b), 20261019-055945 (18 : −56) a teraz Evin zosun o 43 b. <q>Displej mi ukazoval 48 : 76 v Evin prospech … Po hre bolo 50 : 33.</q> Eva: <q>hra mi neukázala, že 8 zadĺžení = 4 Dlh karty za Pitku.</q> Bot: 2,75 nepriznanej kliatby na hráča na konci hry (−11 b).</dd>
+    <dt>Zmena</dt><dd>(a) Pri súperovi ukázať <em>počet nepriznaných Dlhov a Cirhóz v jeho balíčku</em> a body o ne znížiť. Číslo sa dá odvodiť z verejných udalostí (vznik kliatby, priznanie, Niekoho stryná, Veľmi smútiaca vdova). Výnimkou je Vízia, ktorá zahodí skrytú kartu. Tam treba písať „najviac N“, alebo Víziou zahodenú kliatbu ohlásiť. (b) Pri NA EX a Vypiť ukázať náhľad „zadĺženie +X → Y kariet Dlh, pečeň → Cirhóza, spolu −Z b na konci“. Pravidlá sa nemenia.</dd>
+    <dt>Prečo zručnosť</dt><dd>Informácia príde pred rozhodnutím. Hygiena balíčka a NA EX „bomba“ sa stanú vedomým obchodom (tuhé teraz za body na konci) a nie prekvapením. Nahrádza Evin návrh „najviac 1 Dlh za Pitku“, ktorý by cenu rozhodnutia zrušil.</dd>
+    <dt>Čísla</dt><dd>Nemerané (bot tú informáciu už má). Opakuje sa v troch playtestoch po sebe, takže signál je silný.</dd>
+    <dt>Cena a riziko</dt><dd>Iba rozhranie a <code>viewFor</code>: počet sa musí rátať len z verejných udalostí (CLAUDE.md, pravidlo 2) a otestovať. Riziko je nízke.</dd>
+    <dt>Náročnosť</dt><dd>malá</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zaviest" data-odp="zaviest">
+  <h3>2. Stávka bitky pri pase <span class="odp zaviest">zaviesť</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Jano pasoval v K5 za 2 cigarety a prehrou stratil asi 60 bodov. V playteste jedna bitka s prebytkom 5 až 7 pohla skóre o 49 až 60 bodov. U bota víťaz poslednej bitky vyhrá 85 % partií a jedna bitka pohne rozdielom o 19 až 29 bodov. Náhľad posunu markera sa dnes ukáže až pri rozdeľovaní prebytku, keď je už neskoro.</dd>
+    <dt>Zmena</dt><dd>V hlavičke Zhromaždenia a v potvrdení pasu ukázať „táto bitka: prehra s prebytkom 3 ≈ −X b, výhra ≈ +Y b“ (rovnaký výpočet ako dnešný náhľad posunu markera, pre prebytok 1 až 5).</dd>
+    <dt>Prečo zručnosť</dt><dd>Hodnota bitky je dnes najväčšia skrytá premenná pri rozhodnutí „pasovať, alebo bojovať“. Zviditeľní sa tak hlavná strategická os (lokality proti strachu starších).</dd>
+    <dt>Čísla</dt><dd>Nemerané.</dd>
+    <dt>Cena a riziko</dt><dd>Jedno číslo navyše na už preplnenej obrazovke. Odhad je hrubý, lebo nevie, ako súper prebytok rozdelí.</dd>
+    <dt>Náročnosť</dt><dd>malá až stredná</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-vyskusat" data-odp="vyskusat">
+  <h3>3. Dober 3, nechaj 2 <span class="odp vyskusat">vyskúšať v playteste</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Dobieranie po bitke je jediný pravidelný prílev kariet a štartovky v ňom zavadzajú (<q>K3 a K5 samé Pijany</q>, <q>slabá ruka veľa rozhodnutí vzala</q>). Predurčenosť rozdania stúpla z 0,30 na 0,37.</dd>
+    <dt>Zmena</dt><dd>Po bitke si hráč pozrie <strong>3</strong> vrchné karty, <strong>2</strong> si vezme a tretiu dá naspodok svojho doberacieho balíčka. Kliatbu naspodok dať nesmie (inak by si nimi skrýval trest, viď riziko). Druhá hodnota: pozri 4, nechaj 2. Hráč má väčšiu kontrolu, ale balíček sa točí pomalšie a slabé karty sa hromadia naspodku.</dd>
+    <dt>Prečo zručnosť</dt><dd>Náhoda vstupuje pred rozhodnutím a hráč ju tlmí voľbou, ktorá súvisí s plánom (ktorá karta sa hodí na ďalšiu lokalitu). Plánovať sa dá na dve kolá dopredu, lebo hráč vie, čo leží naspodku.</dd>
+    <dt>Čísla variantu</dt><dd>Rebrík ε 0,1: 67 → <strong>72 %</strong>, delené 44 → 41 %, ε 0,25: 85 → 84 %. Predurčenosť <strong>0,37 → 0,17</strong> (pod šumom 0,31). Otočky 27 → 40 % (horná hranica zdravého pásma). Vedúci po 6. kole vyhrá 79 → 84 %. Hráč 1 vyhral 56 → 41 % (pravdepodobne šum, treba sledovať). Kliatby na konci 2,75 → 3,07: bot dával naspodok aj Cirhózu, preto pravidlo „kliatbu nie“.</dd>
+    <dt>Cena a riziko</dt><dd>Nový krok po bitke (výber z 3) a nový príkaz. Vo variante voľbu robila automaticky <code>hodnotaKarty</code> bota, takže meranie nevidí chyby pri tejto voľbe. Skutočný vplyv zručnosti bude skôr vyšší. Tempo: jeden klik na kolo.</dd>
+    <dt>Náročnosť</dt><dd>stredná (jadro, príkaz, bot, UI výberu)</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-vyskusat" data-odp="vyskusat">
+  <h3>4. Nová kliatba ide navrch doberacieho balíčka <span class="odp vyskusat">vyskúšať v playteste</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Kliatba vzniká v Pitke a ide do odhadzovacieho balíčka. Či sa dober a prizná pred koncom hry, rozhodne zamiešanie, teda náhoda <em>po</em> rozhodnutí. Rozbor 20261019-2030 to opísal ako „kliatba sa vráti o 4–6 kôl neskôr, často až po rozhodnutí partie“ a odvtedy sa to nezmenilo.</dd>
+    <dt>Zmena</dt><dd>§12: „Nová kliatba (Dlh, Cirhóza) ide <strong>navrch</strong> doberacieho balíčka hráča.“ Dlh sa pri dobratí sám prizná a hráč za neho ťahá ďalšiu kartu ako dnes. Cirhóza príde do ruky v ďalšom kole.</dd>
+    <dt>Prečo zručnosť</dt><dd>Trest príde hneď a predvídateľne. Hráč vie, že NA EX bomba mu v ďalšom kole vezme ťahanie, a môže to zahrnúť do plánu. Body na konci hry už nerozhoduje miešanie.</dd>
+    <dt>Čísla variantu</dt><dd>Kliatby na konci 2,75 → <strong>0,70</strong> (−11 → asi −3,5 b). Predurčenosť 0,37 → <strong>0,27</strong>. Vedúci po 1. kole vyhrá 61 → 52 % (otvorenejší začiatok), po 6. kole 79 → 84 %. Otočky 27 → 33 %. Rebrík ε 0,1: 67 → 66 %, ale <span class="zle">delené 44 → 53 %</span> (asi 1,5 σ) a ε 0,25: 85 → 82 %.</dd>
+    <dt>Cena a riziko</dt><dd>Dlh navrch sa hneď prizná a nahradí kartou, takže Dlh skoro neuberá body na konci. Jeho cena sa presunie k prahu Exekútora a súperovým Poverám. Podmienka „nepriznaný dlh“ na scorecardoch tak takmer zmizne. Treba rozhodnúť, či to Michal chce. Ak nie, druhá hodnota: navrch ide len Cirhóza, Dlh ostáva v odhadzovacom balíčku.</dd>
+    <dt>Náročnosť</dt><dd>malá (jeden riadok v jadre, veta v §12)</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zamietnut" data-odp="zamietnut">
+  <h3>5. Remíza podľa prevahy v krajoch <span class="odp zamietnut">zamietnuť</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Obaja hráči sa sťažujú, že remízu dostane obranca (K2 6 : 6, K4 2 : 2: <q>dve lokality o nič</q>). U bota rozhodne remíza → obranca 9,6 % bitiek. Návrh sa objavil už v rozbore strany-20261020 a dnes je podložený meraním.</dd>
+    <dt>Zmena (meraná)</dt><dd>Pri rovnosti tuhého vyhrá, kto má prevahu vo viacerých krajoch, až potom rozhodne celkové poškodenie a obranca. Bot sa nové poradie naučil.</dd>
+    <dt>Čísla variantu</dt><dd>Prevaha rozhodne len 16 % remíz (2 % všetkých bitiek), lebo pri remíze má zvyčajne každý jeden kraj. Rebrík 67 → 70 %, delené 44 → 41 %, otočky 27 → <span class="zle">21 %</span>, predurčenosť 0,37 → 0,39. Všetko je v šume.</dd>
+    <dt>Prečo zamietnuť</dt><dd>Účinok je príliš malý na ďalší stupeň pravidla. Ak chce Michal remízu riešiť, ponúkam nemeranú alternatívu na rozhodnutie: <em>úplná remíza = lokalita prepadne, útočník ostáva útočníkom</em>. Tesná bitka by tak stála za boj obom a nikto by nedostal 2 × (lokality) bodov zadarmo. Cenou je o niečo menej bodov v hre.</dd>
+    <dt>Náročnosť</dt><dd>malá</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zamietnut" data-odp="zamietnut">
+  <h3>6. Strop zónových bodov alebo prebytku <span class="odp zamietnut">zamietnuť (zatiaľ)</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Jano: <q>Prebytok (strach starších) je 5–8× cennejší ako lokalita.</q> Eva: <q>K5 prebytok 7 mi dal +49 b.</q> Zónová podmienka scorecardu ráta všetkých 8 starších, takže jeden vydesený starší boduje na viacerých scorecardoch naraz (≈ 14 b).</dd>
+    <dt>Zmena (navrhovaná)</dt><dd>Jano: zónové body najviac z 3 scorecardov. Eva: prebytok najviac 4. Alternatíva: zónová podmienka ráta najviac 3 (alebo 4) starších.</dd>
+    <dt>Prečo zatiaľ nie</dt><dd>U bota rozhodujú lokality (víťaz 60 b, porazený 30) a strach len 19 : 4. Kto vyhrá viac lokalít, vyhrá v 89 % partií. Problém v playteste vznikol skôr z toho, že hráč nevedel, koľko bitka stojí, než z prehnanej hodnoty. Otočky (27 %) sú zdravé a veľký výkyv v poslednej bitke drží dobiehanie. Najprv návrh 2. Oživiť, ak v ďalšom playteste s náhľadom stávky ešte rozhodne jedna bitka o 40 a viac bodov.</dd>
+    <dt>Náročnosť</dt><dd>malá (dáta alebo <code>elderScore</code>)</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zamietnut" data-odp="zamietnut">
+  <h3>7. Zrkadlový štart (totožné štartovacie balíčky) <span class="odp zamietnut">zamietnuť</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Varianty štartoviek a ich poradie sú náhodné. Eva: <q>ruka troch Pijanov v K1</q>.</dd>
+    <dt>Zmena (meraná)</dt><dd>Oba štartovacie balíčky majú rovnaké varianty v rovnakom poradí, takže aj rovnakú prvú ruku.</dd>
+    <dt>Čísla variantu</dt><dd>Rebrík 67 → 66 %, <span class="zle">delené 44 → 52 %</span>, predurčenosť 0,37 → 0,30, vedúci po 1. kole 61 → 48 %, otočky 27 % bez zmeny.</dd>
+    <dt>Prečo zamietnuť</dt><dd>Štartová ruka je slabý zdroj náhody (lepšia ruka vyhrá 57 %) a zrkadlo zručnosť nepridalo. Navyše by hráč poznal súperovu ruku aj ďalšie dobratia až do zamiešania, čím by sa stratila skrytá informácia.</dd>
+    <dt>Náročnosť</dt><dd>malá</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zamietnut" data-odp="zamietnut">
+  <h3>8. Čistenie štartoviek po bitke (automaticky) <span class="odp zamietnut">zamietnuť v tejto podobe</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Štartovky sú mŕtva váha a tenší balíček je obrovská výhoda: hráč s 5 namiesto 10 štartoviek vyhral 69 % zo 64 partií (chybný beh zrkadla). Eva: <q>Kliatby v balíčku sú trest bez opravy.</q></dd>
+    <dt>Zmena (meraná)</dt><dd>Pri návrate kariet smie hráč zahodiť z hry jednu svoju štartovku z línie, ak mu ostane aspoň 9 kariet. Vo variante to bot robil vždy.</dd>
+    <dt>Čísla variantu</dt><dd>Rebrík ε 0,1: <span class="zle">67 → 59 %</span>, delené 44 → 56 %, predurčenosť 0,37 bez zmeny, kliatby na konci 2,75 → 2,05.</dd>
+    <dt>Prečo zamietnuť</dt><dd>Čistenie zadarmo pre oboch zručnosť ubralo. Os „čistenie a stavba balíčka“ je však silná a stojí za návrh s cenou, napríklad v šenku „za 1 cigaretu zahoď kartu z ruky namiesto brania“, aby súperila s nákupom. Taký návrh treba merať s botom, ktorý sa ho naučí. To je podklad na ďalší rozbor, nie hotové číslo.</dd>
+    <dt>Náročnosť</dt><dd>stredná</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zamietnut" data-odp="zamietnut">
+  <h3>9. Skrytý súčasný NA EX <span class="odp zamietnut">zamietnuť (zatiaľ)</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Eva: <q>Kto je v Pitke druhý, vidí NA EX súpera a odpovie kartou a potom svojím NA EX.</q> Obaja hlásili nekonzistentné poradie v Pitke. Podľa <a href="20261021-041728.html">reportu spisovateľa</a> hra poradie dodržiava, len <code>cmdSkipNaex</code> nepošle udalosť, takže súper nevie, že obranca svoju časť skončil.</dd>
+    <dt>Zmena (navrhovaná)</dt><dd>Obaja naraz a tajne zapíšu NA EX, potom ho odhalia.</dd>
+    <dt>Prečo zatiaľ nie</dt><dd>Súčasný zápis vymení čítanie súpera za hádanie a odpoveď na NA EX by stratila zmysel. Najprv treba opraviť chýbajúcu udalosť a zistiť, či „posledné slovo“ vadí, aj keď je poradie viditeľné. Ďalší playtest má zapisovať, kto mal v Pitke posledné slovo.</dd>
+    <dt>Náročnosť</dt><dd>veľká (nový krok, UI, bot)</dd>
+  </dl>
+</article>
+
+<article class="navrh odp-zamietnut" data-odp="zamietnut">
+  <h3>10. Rovnováha mimo náhody: šenok pre chudobných, strop NA EX, Policajtka, Dedičstvo <span class="odp zamietnut">zamietnuť ako strategickú zmenu</span></h3>
+  <dl>
+    <dt>Návrhy playtesterov</dt><dd>Jano: prvá karta zo šenku zadarmo (s 0 cigaretami nekúpil nič). Eva: rastúca cena šenku a pas za 1 cigaretu za kolo. Jano: NA EX zdvojí najviac 3 poškodenia a Silná najviac ×2. Eva: Policajtka neruší Pohoršenia z patronátu. Jano: Dedičstvo chránené pred Živnostníkom.</dd>
+    <dt>Prečo nie</dt><dd>Kartu zadarmo Michal zrušil 2026-10-18 a príjem pre chudobného dnes dáva pas za cigarety (2026-10-20). Dvaja hráči ťahajú šenok opačnými smermi, čo je znak, že je vyvážený. NA EX kombá sú plánovanie, nie náhoda (Eva: <q>Plánovanie dopredu: dalo sa výborne — NA EX bomby</q>) a odpoveď na NA EX existuje. Policajtka a Živnostník sú otázky sily kariet pre admina (naex-admin, rebalans), nie pre náhodu a zručnosť.</dd>
+    <dt>Náročnosť</dt><dd>—</dd>
+  </dl>
+</article>
+
+</div>
+
+<h2 id="sledovat">Čo sledovať v ďalšom playteste</h2>
+<ol class="otazky">
+  <li><strong>Odhad skóre:</strong> pred poslednou bitkou zapíš, koľko podľa teba majú obaja hráči, a porovnaj to s výsledkom. O koľko sa líšil a prečo (kliatby, strach starších, lokality)?</li>
+  <li><strong>Pas:</strong> pri každom pase zapíš, koľko bodov podľa teba bitka stojí, a po bitke skutočný posun skóre. Pasoval by si znova?</li>
+  <li><strong>Kliatby:</strong> koľko nepriznaných Dlhov a Cirhóz ti ostalo na konci a kedy vznikli? Mohol si ich ešte dobrať a priznať?</li>
+  <li><strong>Remízy a posledné slovo:</strong> pri každej remíze v tuhom a pri každej Pitke zapíš, kto začal, kto mal posledné slovo (NA EX alebo odpoveď) a či si vedel, že súper svoju časť skončil.</li>
+  <li><strong>(Ak sa skúša „dober 3, nechaj 2“)</strong> Koľkokrát bola voľba zrejmá a koľkokrát si váhal? Čo si dal naspodok a vrátilo sa ti to?</li>
+</ol>
+
+<footer>
+  <p><strong>Ako sa meralo.</strong> Bot Štamgast (<code>tahBota</code>), stredná hra (7 lokalít), stav commitu M22 (be897a6). Jadro v pracovnom strome bolo rovnaké ako HEAD.
+  Rebrík: 64 rozdaní × 2 miesta pri ε = 0,1 a 0,25 (<code>playtest/strategia/20261019-1858/rebrik.ts</code>). Zrkadlo (výhoda hráča 1, otočky, vedúci): 64 partií. Predurčenosť: 10 rozdaní × 6 behov (<code>tools/bot/strategickost.ts</code>).
+  Zloženie bodov, výkyvy, remízy, kliatby na konci a štartová ruka: 64 partií (<code>playtest/strategia/20261021-041728/rozbor.ts</code>, <code>remizy.ts</code>). Súhrn je v <code>suhrn.json</code>, diffy variantov v <code>*.diff</code>.</p>
+  <p>Každý variant bežal vo vlastnom worktree a testy jadra prešli (pri „navrch“ padli 2 testy, ktoré čakajú kliatbu v odhadzovacom balíčku, a pri „zrkadlo“ test skrytej súperovej ruky; výnimky nepadli žiadne). <strong>Bot sa variantom neprispôsobuje.</strong> Výnimkou je remíza, ktorej nové poradie sa bot naučil. Pri „dober 3“ a „čistenie“ robí voľbu automaticky <code>hodnotaKarty</code> bota namiesto hráča. Čísla variantov sú náznak smeru, nie dôkaz. Šum rebríka je ±4 až 5 bodov, rozdielu variantov ±6.</p>
+  <p>Rozbor stratéga (naex-strateg), 2026-10-21. Nič z toho nie je zavedené: rozhoduje Michal.</p>
+</footer>
+</main>
+<script>
+  (function () {
+    var tlacidla = document.querySelectorAll('.filtre button');
+    var karty = document.querySelectorAll('#navrhy-zoznam .navrh');
+    tlacidla.forEach(function (b) {
+      b.addEventListener('click', function () {
+        var f = b.getAttribute('data-f');
+        tlacidla.forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+        karty.forEach(function (k) { k.hidden = !(f === 'vsetko' || k.getAttribute('data-odp') === f); });
+      });
+    });
+  })();
+</script>
+</body>
+</html>

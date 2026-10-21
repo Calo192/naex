@@ -1,7 +1,7 @@
 // Administrácia (/admin/*) — webová verzia MAUI aplikácie KartyAI.
 
-import type { ReactNode } from "react";
-import { Odkaz } from "../lib/router.tsx";
+import { useEffect, type ReactNode } from "react";
+import { Odkaz, chod } from "../lib/router.tsx";
 import { Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { AdminProvider, useAdmin } from "./stav.tsx";
 import { Prehlad } from "./Prehlad.tsx";
@@ -16,7 +16,6 @@ import { Bodovacie } from "./Bodovacie.tsx";
 import { Tlac } from "./Tlac.tsx";
 import { ImportExport } from "./ImportExport.tsx";
 import { Pouzivatelia } from "./Pouzivatelia.tsx";
-import { Playtesty } from "./Playtesty.tsx";
 import "./admin.css";
 
 const SEKCIE: readonly { readonly href: string; readonly text: string; readonly znak: string }[] = [
@@ -31,8 +30,13 @@ const SEKCIE: readonly { readonly href: string; readonly text: string; readonly 
   { href: "/admin/tlac", text: "Tlač", znak: "⎙" },
   { href: "/admin/import-export", text: "Import / export", znak: "⇅" },
   { href: "/admin/pouzivatelia", text: "Hráči", znak: "☺" },
-  { href: "/admin/playtesty", text: "Playtesty", znak: "⚑" },
 ];
+
+/** Playtesty sa presunuli do samostatnej sekcie Playtest (Michal 2026-10-21) — staré odkazy z reportov vedú tam. */
+function Presmeruj({ na }: { readonly na: string }) {
+  useEffect(() => chod(na, true), [na]);
+  return <Nacitavanie />;
+}
 
 function Obsah({ cesta }: { readonly cesta: string }) {
   const { obsah, chyba } = useAdmin();
@@ -52,7 +56,7 @@ function Obsah({ cesta }: { readonly cesta: string }) {
     tlac: () => <Tlac />,
     "import-export": () => <ImportExport />,
     pouzivatelia: () => <Pouzivatelia />,
-    playtesty: () => <Playtesty subor={casti[2] !== undefined ? decodeURIComponent(casti[2]) : null} />,
+    playtesty: () => <Presmeruj na={`/playtest/reporty${casti[2] !== undefined ? `/${casti[2]}` : ""}`} />,
   };
   return <>{(stranky[sekcia] ?? (() => <Hlaska>Neznáma sekcia.</Hlaska>))()}</>;
 }

@@ -132,6 +132,24 @@ CREATE TABLE IF NOT EXISTS cigarety_komentarov (
   pouzivatel INTEGER NOT NULL REFERENCES pouzivatelia(id) ON DELETE CASCADE,
   PRIMARY KEY (komentar, pouzivatel)
 );
+
+-- Návrhy zlepšení z playtestov a rozhodnutia admina o nich (Michal 2026-10-21).
+CREATE TABLE IF NOT EXISTS navrhy (
+  id INTEGER PRIMARY KEY,
+  davka TEXT NOT NULL,
+  kluc TEXT NOT NULL,
+  poradie INTEGER NOT NULL,
+  data TEXT NOT NULL,
+  podklady TEXT NOT NULL DEFAULT '[]',
+  stav TEXT NOT NULL DEFAULT 'nove',
+  volba TEXT,
+  poznamka TEXT NOT NULL DEFAULT '',
+  rozhodol INTEGER REFERENCES pouzivatelia(id) ON DELETE SET NULL,
+  rozhodnuty INTEGER,
+  vysledok TEXT NOT NULL DEFAULT '',
+  vytvoreny INTEGER NOT NULL,
+  UNIQUE (davka, kluc)
+);
 `;
 
 export function otvorDb(cesta: string): Db {
@@ -155,6 +173,11 @@ function migruj(db: Db): void {
   // Zväčšenie karty pri prejdení myšou v percentách (Michal 2026-10-19); NULL = predvolené.
   const ucty = db.prepare("PRAGMA table_info(pouzivatelia)").all() as { name: string }[];
   if (!ucty.some((c) => c.name === "lupa")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN lupa INTEGER");
+  // Hlasitosť hudby počas partie v percentách (Michal 2026-10-20); NULL = predvolená.
+  if (!ucty.some((c) => c.name === "hudba")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN hudba INTEGER");
+  // Účet AI agenta (playtester, protihráč, admin) — jeho spätná väzba je
+  // predvolene skrytá (Michal 2026-10-21). Nastavuje len admin.
+  if (!ucty.some((c) => c.name === "ai")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN ai INTEGER NOT NULL DEFAULT 0");
 }
 
 /** Transakcia — pri výnimke sa všetko vráti. */

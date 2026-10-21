@@ -847,26 +847,6 @@ td.teplo {
   }
 }
 
-/* ---- Playtesty: report v izolovanom rámci na celú výšku ---- */
-.playtest-ramec {
-  display: block;
-  width: 100%;
-  height: calc(100vh - 170px);
-  min-height: 480px;
-  border: 1px solid var(--okraj);
-  border-radius: 10px;
-  background: #14110e;
-}
-
-.playtest-zoznam {
-  margin: 0 0 18px;
-  padding-left: 20px;
-}
-
-.playtest-zoznam li {
-  margin: 4px 0;
-}
-
 /* Štatistiky → V partiách / Sila: popis a pole v jednom riadku */
 .pole-riadok {
   display: inline-flex;

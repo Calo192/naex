@@ -1,5 +1,5 @@
 // Smerovanie stránok. Verejné: domov, pravidlá, karty. Hra a profil pre
-// prihlásených, tvorba kariet len pre admina (overuje aj server).
+// prihlásených, tvorba kariet a playtesty len pre admina a subadminov (overuje aj server).
 
 import type { ReactNode } from "react";
 import { Layout } from "./Layout.tsx";
@@ -15,6 +15,7 @@ import { HracProfil } from "./stranky/Statistiky.tsx";
 import { Rebricek } from "./stranky/Rebricek.tsx";
 import { SpatnaVazba } from "./stranky/SpatnaVazba.tsx";
 import { Admin } from "./admin/Admin.tsx";
+import { Playtest } from "./playtest/Playtest.tsx";
 
 function Neprihlaseny() {
   return (
@@ -50,6 +51,7 @@ export function App() {
     return obsah;
   };
 
+  if (cesta === "/playtest" || cesta.startsWith("/playtest/")) return <Layout siroky>{chranene(<Playtest cesta={cesta} />, true)}</Layout>;
   if (cesta.startsWith("/admin")) return <Layout siroky>{chranene(<Admin cesta={cesta} />, true)}</Layout>;
   if (cesta === "/hra") return <Layout siroky><Hra /></Layout>;
   if (cesta === "/pravidla") return <Layout plna><Pravidla /></Layout>;

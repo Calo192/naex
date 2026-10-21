@@ -27,9 +27,9 @@ export function Pouzivatelia() {
       .catch((e: unknown) => setChyba(e instanceof Error ? e.message : String(e)));
   useEffect(nacitaj, []);
 
-  const nastavUroven = async (p: Riadok, rola: Rola) => {
+  const uprav = async (p: Riadok, zmena: { rola?: Rola; ai?: boolean }) => {
     try {
-      await api.patch(`/admin/pouzivatelia/${p.id}`, { rola });
+      await api.patch(`/admin/pouzivatelia/${p.id}`, zmena);
       nacitaj();
     } catch (e) {
       setChyba(e instanceof Error ? e.message : String(e));
@@ -47,7 +47,8 @@ export function Pouzivatelia() {
       <p className="tlmene">
         {zoznam.length} účtov — {pocet("subadmin")} subadmin, {pocet("hrac")} hráčov, {pocet("navstevnik")} návštevníkov. Nový účet je
         návštevník (hrá a číta spätnú väzbu); po {PARTII_NA_HRACA} dohratých partiách sa sám stane hráčom. Subadmin smie to isté čo admin
-        okrem zmeny úrovní. {somAdmin ? "Úroveň meníš v poslednom stĺpci." : "Úrovne mení len admin."}
+        okrem zmeny úrovní. Účty AI agentov (playtesteri, protihráč) sú hráči so značkou AI — ich spätnú väzbu web predvolene skrýva;
+        nástroje playtestu ich zaradia samy. {somAdmin ? "Úroveň a značku AI meníš v posledných stĺpcoch." : "Úrovne mení len admin."}
       </p>
       {chyba !== null && <Hlaska>{chyba}</Hlaska>}
       <input type="search" placeholder="Hľadať…" value={hladat} onChange={(e) => setHladat(e.target.value)} style={{ maxWidth: 280, marginBottom: 14 }} />
@@ -59,6 +60,7 @@ export function Pouzivatelia() {
             <th>Registrácia</th>
             <th>Dohraté partie</th>
             <th>Úroveň</th>
+            <th>AI</th>
           </tr>
         </thead>
         <tbody>
@@ -74,7 +76,7 @@ export function Pouzivatelia() {
               <td>{p.dohrate}</td>
               <td>
                 {somAdmin && p.rola !== "admin" ? (
-                  <select value={p.rola} onChange={(e) => void nastavUroven(p, e.target.value as Rola)} style={{ maxWidth: 150 }} aria-label={`Úroveň ${p.meno}`}>
+                  <select value={p.rola} onChange={(e) => void uprav(p, { rola: e.target.value as Rola })} style={{ maxWidth: 150 }} aria-label={`Úroveň ${p.meno}`}>
                     {NASTAVITELNE.map((r) => (
                       <option key={r} value={r}>
                         {NAZOV_UROVNE[r]}
@@ -83,6 +85,13 @@ export function Pouzivatelia() {
                   </select>
                 ) : (
                   <span className={p.rola === "admin" || p.rola === "subadmin" ? "odznak odznak-admin" : "odznak"}>{NAZOV_UROVNE[p.rola]}</span>
+                )}
+              </td>
+              <td>
+                {somAdmin && p.rola !== "admin" ? (
+                  <input type="checkbox" checked={p.ai === true} onChange={(e) => void uprav(p, { ai: e.target.checked })} aria-label={`${p.meno} je AI agent`} />
+                ) : (
+                  p.ai === true && <span className="odznak odznak-ai">AI</span>
                 )}
               </td>
             </tr>

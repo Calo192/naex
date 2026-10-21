@@ -1,6 +1,6 @@
 ---
-name: strategia
-description: Spustí rozbor strategickosti NA EX! bez novej partie — agent naex-strateg turnajmi botov zmeria, koľko o výsledku rozhoduje zručnosť a koľko náhoda, zmapuje zdroje náhody, zozbiera návrhy z doterajších playtestov, najsľubnejšie zmeny vyskúša ako varianty pravidiel a napíše HTML rozbor s odporúčaniami na balans. Použi, keď používateľ povie /strategia, „je v hre veľa náhody", „ako spraviť hru strategickejšou", „zmeraj náhodu", „over návrh pravidla simuláciou".
+name: naex-strategia
+description: Spustí rozbor strategickosti NA EX! bez novej partie — agent naex-strateg turnajmi botov zmeria, koľko o výsledku rozhoduje zručnosť a koľko náhoda, zmapuje zdroje náhody, zozbiera návrhy z doterajších playtestov, najsľubnejšie zmeny vyskúša ako varianty pravidiel a napíše HTML rozbor s odporúčaniami na balans. Použi, keď používateľ povie /naex-strategia, „je v hre veľa náhody", „ako spraviť hru strategickejšou", „zmeraj náhodu", „over návrh pravidla simuláciou".
 argument-hint: "[téma alebo konkrétny návrh na overenie] [| relácia playtest/<id>]"
 ---
 
@@ -21,7 +21,7 @@ a z reportov v `docs/playtesty/`.
    východisku.
 2. Používateľovi povedz, že rozbor beží (turnaje botov trvajú desiatky minút)
    a že hlavnú vetvu nemení — varianty skúša vo worktree v `playtest/varianty/`.
-3. Keď skončí, odovzdaj: odkaz `http://localhost:8787/admin/playtesty/strategia-<id>.html`
+3. Keď skončí, odovzdaj: odkaz `http://localhost:8787/playtest/reporty/strategia-<id>.html`
    (a lokálny súbor `docs/playtesty/strategia-<id>.html`), kľúčové čísla,
    3 odporúčané zmeny s nameraným posunom, otázky na Michala. Ponúkni,
    ktorú zmenu implementovať — implementácia je samostatná úloha (pravidlá,

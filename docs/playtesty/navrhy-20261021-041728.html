@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Návrhy zlepšení 21. 10. 2026 — NA EX!</title>
+<style>
+:root {
+  --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --okraj: #3d3229;
+  --text: #f1e8d8; --tlmeny: #b6a790;
+  --akcent: #e9ad45; --cervena: #d0563f; --zelena: #7cbf74; --modra: #8fb4e0;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #dccdb3;
+    --text: #2a2016; --tlmeny: #5e4f3b;
+    --akcent: #9a5d06; --cervena: #a83a26; --zelena: #356e2f; --modra: #2d5a8f;
+  }
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 system-ui, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 1100px; margin: 0 auto; padding: 24px 16px 64px; }
+h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; line-height: 1.25; }
+h1 { font-size: 2rem; margin: 0 0 6px; color: var(--akcent); }
+h2 { font-size: 1.45rem; margin: 44px 0 14px; padding-bottom: 6px; border-bottom: 1px solid var(--okraj); }
+h3 { font-size: 1.15rem; margin: 0 0 8px; }
+p { margin: 0 0 10px; }
+a { color: var(--akcent); }
+:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+.podnadpis { color: var(--tlmeny); margin: 0 0 16px; max-width: 80ch; }
+.verdikt { background: var(--plocha); border: 1px solid var(--akcent); border-radius: 12px; padding: 14px 18px; max-width: 85ch; }
+.verdikt p:last-child { margin-bottom: 0; }
+.pozn { font-size: .88rem; color: var(--tlmeny); }
+.stitok { display: inline-block; font-size: .75rem; padding: 1px 8px; border-radius: 10px; border: 1px solid var(--okraj); background: var(--plocha-2); color: var(--tlmeny); white-space: nowrap; }
+.stitok.balans { border-color: var(--cervena); color: var(--cervena); }
+.stitok.zrozum { border-color: var(--modra); color: var(--modra); }
+.stitok.strat { border-color: var(--zelena); color: var(--zelena); }
+.stitok.mala { border-color: var(--zelena); color: var(--zelena); }
+.stitok.stredna { border-color: var(--akcent); color: var(--akcent); }
+.stitok.velka { border-color: var(--cervena); color: var(--cervena); }
+.tab-obal { overflow-x: auto; }
+table.prehlad { width: 100%; border-collapse: collapse; font-size: .95rem; min-width: 640px; }
+table.prehlad th, table.prehlad td { text-align: left; padding: 8px 8px; border-bottom: 1px solid var(--okraj); vertical-align: top; }
+table.prehlad thead th { font-weight: 600; border-bottom: 2px solid var(--okraj); }
+table.prehlad tbody tr { cursor: pointer; }
+table.prehlad tbody tr:hover { background: var(--plocha); }
+table.prehlad td.cislo { font-family: Georgia, serif; font-size: 1.3rem; color: var(--akcent); width: 2em; }
+.bod { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 18px; margin: 0 0 22px; scroll-margin-top: 12px; }
+.bod-hlava { display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; margin-bottom: 8px; }
+.bod-hlava .cislo { font-family: Georgia, serif; font-size: 1.8rem; color: var(--akcent); line-height: 1; }
+.bod-hlava h3 { flex: 1 1 260px; margin: 0; font-size: 1.3rem; }
+.problem { font-size: 1.05rem; font-weight: 600; margin: 4px 0 12px; }
+dl.riadky { display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; margin: 0 0 12px; }
+dl.riadky dt { color: var(--tlmeny); font-size: .9rem; padding-top: 2px; }
+dl.riadky dd { margin: 0; }
+@media (max-width: 640px) { dl.riadky { grid-template-columns: 1fr; } dl.riadky dt { padding-top: 6px; } }
+details { margin: 0 0 12px; }
+details > summary { cursor: pointer; color: var(--akcent); font-weight: 600; }
+details ul { margin: 8px 0 0; padding-left: 20px; }
+details li { margin-bottom: 6px; }
+blockquote { margin: 4px 0; padding-left: 10px; border-left: 3px solid var(--okraj); color: var(--tlmeny); font-style: italic; }
+.moznosti { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 10px 0 14px; }
+.moznost { background: var(--plocha-2); border: 1px solid var(--okraj); border-radius: 10px; padding: 12px; }
+.moznost.odporucana { border: 2px solid var(--akcent); }
+.moznost h4 { margin: 0 0 6px; font-size: 1rem; }
+.moznost .odp { display: inline-block; margin-bottom: 6px; font-size: .75rem; font-weight: 700; color: var(--pozadie); background: var(--akcent); border-radius: 10px; padding: 1px 8px; }
+.moznost p { font-size: .92rem; margin-bottom: 6px; }
+.moznost p b { color: var(--tlmeny); font-weight: 600; }
+.cisla { font-variant-numeric: tabular-nums; }
+.odporucanie { border-left: 4px solid var(--akcent); padding: 8px 12px; background: var(--plocha-2); border-radius: 0 8px 8px 0; margin-bottom: 10px; }
+.otazka { border-left: 4px solid var(--modra); padding: 8px 12px; background: var(--plocha-2); border-radius: 0 8px 8px 0; }
+.suvis { font-size: .9rem; color: var(--tlmeny); margin-top: 10px; }
+ol.zvysok > li, ol.rozhodnutia > li { margin-bottom: 10px; }
+ol.rozhodnutia > li { padding-left: 4px; }
+.navrat { font-size: .85rem; }
+footer { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--okraj); font-size: .88rem; color: var(--tlmeny); }
+footer ul { padding-left: 20px; }
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <h1>Návrhy zlepšení 21. 10. 2026</h1>
+  <p class="podnadpis">Navrhár (naex-navrhar) · vychádza z 12 hodnotených playtestov (11. – 21. 10. 2026; najnovší <a href="20261021-041728.html">20261021-041728</a> prečítaný celý), 5 partií agenta proti človeku, rozborov stratéga (posledný <a href="strategia-20261021-041728.html">strategia-20261021-041728</a>), histórie <a href="zmeny-pravidiel.html">zmien pravidiel</a> a <a href="vyvoj-znamok.html">známok</a> a 29 názorov zo stránky Spätná väzba (všetky od AI, žiadny od človeka, žiadny nemá stav). Každé tvrdenie o správaní hry je overené v PRAVIDLA.md a v <code>packages/core/src</code>.</p>
+  <div class="verdikt">
+    <p><strong>Najväčší problém dnes:</strong> partiu rozhoduje to, čo hráč pri rozhodnutí nevidí. Tri playtesty za sebou rozhodli nepriznané kliatby, ktoré sa ukázali až pri sčítaní (−43, −58/−80, −48 bodov). Jednou bitkou sa skóre pohne o 50–60 bodov a hráč pred pasom nevie, koľko bitka stojí.</p>
+    <p>Rovnováha (priemer 4,9) a zrozumiteľnosť (4,8) sú najnižšie kritériá vo všetkých 12 partiách a ani raz neprekročili 5,5. Doterajšie zmeny riešili <em>množstvo</em> kliatob a <em>veľkosť</em> prebytku, nie to, či ich hráč vidí, a problém trval.</p>
+    <p><strong>Ako prvé odporúčam</strong> dve malé zmeny rozhrania, ktoré pravidlá nemenia: ukázať súperove nepriznané kliatby a cenu NA EX v Dlhoch (bod 1A) a ukázať stávku bitky pri pase (bod 2A). Hneď za nimi záznam „hotovo“ v Pitke (bod 4A). Pravidlá (kliatba navrch, dober 3, remíza) nech idú do playtestu až po týchto zmenách, aby sa dalo rozlíšiť, čo zabralo.</p>
+  </div>
+</header>
+
+<section aria-labelledby="h-prehlad">
+  <h2 id="h-prehlad">Prehľad bodov</h2>
+  <p class="pozn">Klik na riadok skočí na detail.</p>
+  <div class="tab-obal">
+  <table class="prehlad">
+    <thead><tr><th scope="col">#</th><th scope="col">Téma</th><th scope="col">Druh</th><th scope="col">Prečo je kritická</th><th scope="col">Odporúčaná možnosť</th><th scope="col">Náročnosť</th></tr></thead>
+    <tbody>
+      <tr data-ciel="bod-1"><td class="cislo">1</td><td><a href="#bod-1">Kliatby: trest, ktorý príde až pri sčítaní</a></td><td><span class="stitok balans">balans</span> <span class="stitok zrozum">zrozumiteľnosť</span></td><td>Rozhodli tri playtesty za sebou (−43, −58/−80, −48 b), opakuje sa od 11. 10. a štyri zmeny pravidiel ho nevyriešili.</td><td>A teraz (súperove kliatby a cena NA EX na displeji), B do playtestu (Cirhóza navrch balíčka)</td><td><span class="stitok mala">malá</span></td></tr>
+      <tr data-ciel="bod-2"><td class="cislo">2</td><td><a href="#bod-2">Hodnota bitky: 50 bodov, ktoré nevidno</a></td><td><span class="stitok balans">balans</span> <span class="stitok strat">strategickosť</span></td><td>Jeden pas stál Jana ~60 b. U bota víťaz poslednej bitky vyhrá 85 % partií. Hlásené od 12. 10. v piatich playtestoch.</td><td>A teraz (stávka bitky pri pase), B dať zmerať (najviac 2 posuny na staršieho)</td><td><span class="stitok mala">malá</span>–<span class="stitok stredna">stredná</span></td></tr>
+      <tr data-ciel="bod-3"><td class="cislo">3</td><td><a href="#bod-3">Remízu rozhoduje stolička</a></td><td><span class="stitok balans">balans</span></td><td>2 zo 7 lokalít v partii, 9,6 % bitiek u bota. Kritizuje sa pri útočníkovi aj pri obrancovi.</td><td>B dať zmerať: úplná remíza = lokalita nikomu</td><td><span class="stitok mala">malá</span></td></tr>
+      <tr data-ciel="bod-4"><td class="cislo">4</td><td><a href="#bod-4">Pitka: kto začína a kto má posledné slovo</a></td><td><span class="stitok zrozum">zrozumiteľnosť</span> <span class="stitok balans">balans</span></td><td>Obaja hráči aj organizátor hlásili chybu, ktorá chybou nie je. Eva stratila NA EX nevratným „hotovo“.</td><td>A teraz (záznam „hotovo“, poradie v páse, varovanie)</td><td><span class="stitok mala">malá</span></td></tr>
+      <tr data-ciel="bod-5"><td class="cislo">5</td><td><a href="#bod-5">Mŕtve štartovky a slepé dobieranie</a></td><td><span class="stitok strat">strategickosť</span> <span class="stitok balans">balans</span></td><td>Sťažnosť na slabú ruku trvá od 12. 10. Je to zmerané: „dober 3, nechaj 2“ zvýšil rebrík zo 67 na 72 % a znížil predurčenosť z 0,37 na 0,17.</td><td>A do playtestu (dober 3, nechaj 2) a hneď opraviť text Pijana</td><td><span class="stitok stredna">stredná</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section aria-labelledby="h-body">
+<h2 id="h-body">Body</h2>
+
+<!-- ===================== BOD 1 ===================== -->
+<article class="bod" id="bod-1" aria-labelledby="h-bod-1">
+  <div class="bod-hlava"><span class="cislo">1</span><h3 id="h-bod-1">Kliatby: trest, ktorý príde až pri sčítaní</h3><span class="stitok balans">balans</span><span class="stitok zrozum">zrozumiteľnosť</span></div>
+  <p class="problem">Nepriznané Dlhy a Cirhózy rozhodujú partie, no hráč ich cenu nevidí, keď ich vyrába, ani keď odhaduje súperovo skóre.</p>
+  <details open>
+    <summary>Dôkazy</summary>
+    <ul>
+      <li><strong>20261021-041728, Jano:</strong> pred poslednou bitkou mu displej ukazoval 48 : 76 v Evin prospech, skončilo sa 50 : 33. Evino skóre pri sčítaní kleslo asi o 43 b. <blockquote>„Hru rozhodla hygiena balíčka, nie bitky.“</blockquote> Názor #24.</li>
+      <li><strong>20261021-041728, Eva:</strong> NA EX na Živnostníka vedľa Silnej ženy znamenalo v jednej Pitke zadĺženie 8, a teda 4 karty Dlh. Dve také Pitky dali 8 nepriznaných Dlhov, teda −24 b. Poslednú bitku vyhrala 17 : 14, partiu prehrala. <blockquote>„Hra mi neukázala, že 8 zadĺžení = 4 Dlh karty za Pitku.“</blockquote> Názor #28.</li>
+      <li><strong>Predošlé dva playtesty:</strong> 20261019-055945 skončil 18 : −56 (kliatby stáli Jana asi 58 b, Evu asi 80 b), v 20261018-185541 stáli nepriznané kliatby Jana 48 b. Názory #1 a #4 (z 11. 10.) a tri súhlasné komentáre opisujú to isté.</li>
+      <li><strong>Stratég (bot):</strong> na konci hry ostane hráčovi 2,75 nepriznanej kliatby (−11 b), víťazovi aj porazenému takmer rovnako (−10 : −12). U bota teda kliatby partiu nerozhodujú, u ľudí áno. Rozdiel je podľa mňa (odhad) v tom, že ľudia robia NA EX bomby neskoro a bot priznáva Cirhózu až v posledných dvoch bitkách.</li>
+    </ul>
+  </details>
+  <dl class="riadky">
+    <dt>Príčina</dt>
+    <dd>Majú to na svedomí štyri veci naraz.
+      (1) Nová kliatba ide do <em>odhadzovacieho</em> balíčka (<code>engine.ts</code>, <code>pridajKliatbu</code>), takže či sa ešte dober a prizná, rozhodne zamiešanie, nie hráč. Kliatba z poslednej bitky sa nedober nikdy.
+      (2) Prah dáva kartu za <em>každý</em> násobok (<code>pridajZadlzenie</code> a <code>skontrolujPrahPecene</code>, cyklus <code>while</code>) a násobky NA EX, Silnej ženy a Posilnenia sa násobia (<code>partia.ts</code>, <code>zdvojAktivne</code>: ×2 · ×2 = ×4). PRAVIDLA §7 krok 2 však píše „získa kartu Dlh“ v jednotnom čísle a §5 ani §14 o násobení násobkov nič nehovoria.
+      (3) Postih sa ráta na každom scorecarde s podmienkou zvlášť (§10), v tejto partii −3 za Dlh a −4 za Cirhózu.
+      (4) Súperov odhad bodov nezapočíta kliatby v jeho ruke a doberacom balíčku (<code>view.ts</code>, <code>bodyTeraz</code>).</dd>
+    <dt>Čo sa už skúšalo</dt>
+    <dd>NA EX len na vlastné karty (11. 10., 18. 10. vrátené), prah Cirhózy 3, prah Dlhu 2 → 1 → 2 + Úžerník, pečeň len v Pitke, priznanie = karta, Dlh sa prizná sám. Všetky tieto zmeny upravovali <em>množstvo</em> kliatob, žiadna nemenila to, či hráč ich cenu vidí a kedy ho trest zasiahne. Problém trvá, takže tieto zmeny nezabrali.</dd>
+    <dt>Overené navyše</dt>
+    <dd>Počet súperových nepriznaných kliatob sa <strong>dá odvodiť z verejného logu</strong>: vznik kliatby, priznanie, Niekoho stryná, Veľmi smútiaca vdova, Veštica aj zahodenie Víziou (<code>engine.ts</code>: „Vízia: hráč … zahadzuje vrchnú kartu balíčka — <em>meno karty</em>“) sa do logu zapisujú s menom karty. Stratég pri Vízii navrhoval písať „najviac N“. Netreba to: zobrazenie počtu neprezradí nič, čo by hráč s dobrou pamäťou nevedel. Zruší len daň za pamätanie (pravidlo 2 v CLAUDE.md ostáva dodržané, počet sa ráta z verejných udalostí a musí to overiť test).</dd>
+  </dl>
+  <div class="moznosti">
+    <div class="moznost odporucana">
+      <span class="odp">odporúčam · teraz</span>
+      <h4>A · Ukázať cenu (rozhranie)</h4>
+      <p><b>Zmena:</b> (a) Pri súperovi zobraziť „nepriznané: Dlh N, Cirhóza M“ a jeho body o ne znížiť. (b) Pri NA EX a Vypiť zobraziť náhľad: „zadĺženie +8 → 4× Dlh, pečeň 3 → Cirhóza, spolu ≈ −16 b na konci“. (c) Do §7 dopísať, že prah dáva kartu za každý násobok, a do §5, že sa násobky násobia (×4).</p>
+      <p><b>Zlepší:</b> NA EX bomba sa stane vedomým obchodom (tuhé teraz za body na konci). Hráč vie, kto vedie.</p>
+      <p><b>Cena:</b> nič na pravidlách, viewFor a test.</p>
+      <p><b>Riziko:</b> nízke. <b>Náročnosť:</b> malá.</p>
+    </div>
+    <div class="moznost">
+      <span class="odp" style="background:var(--zelena)">potom · playtest</span>
+      <h4>B · Kliatba navrch balíčka (pravidlo)</h4>
+      <p><b>Zmena:</b> §12: nová Cirhóza (a možno aj Dlh) ide <em>navrch</em> doberacieho balíčka a príde do ruky v ďalšom kole.</p>
+      <p><b>Zmerané (obe kliatby navrch):</b> kliatby na konci 2,75 → 0,70, predurčenosť 0,37 → 0,27, vedúci po 1. kole vyhrá 61 → 52 %, rebrík ε 0,1 67 → 66 %, delené 44 → 53 % (asi 1,5 σ).</p>
+      <p><b>Cena:</b> Dlh navrch sa hneď sám prizná a hráč zaň ťahá ďalšiu kartu, takže skoro nič nestojí (Exekútor v playtestoch nehrozil). Preto odporúčam variant <strong>len Cirhóza navrch</strong>, Dlh ostane v odhadzovacom balíčku. Pozor: na kliatby z <em>poslednej</em> bitky to nepomôže, Evinej −24 b by nezabránilo. To rieši len A.</p>
+      <p><b>Náročnosť:</b> malá (riadok v jadre, veta v §12).</p>
+    </div>
+    <div class="moznost">
+      <h4>C · Strop (pravidlo)</h4>
+      <p><b>Zmena:</b> najviac 1 karta Dlh a 1 Cirhóza za Pitku (Eva), alebo násobky najviac ×2 (Jano).</p>
+      <p><b>Zlepší:</b> bomba by Eve dala 2 Dlhy namiesto 8.</p>
+      <p><b>Cena:</b> NA EX na vlastnú kartu s neaktívnymi akciami stratí hlavnú protiváhu (kliatby). Stratég: strop by cenu rozhodnutia zrušil, nie ju ukázal. Silná žena oslabne.</p>
+      <p><b>Riziko:</b> návrat „bezpečnej výhry“ NA EX z 11. – 12. 10. <b>Náročnosť:</b> malá.</p>
+    </div>
+  </div>
+  <div class="odporucanie"><strong>Odporúčanie:</strong> A zaviesť hneď (zhodne so stratégom, návrh 1). B vyskúšať v najbližšom playteste po A, vo variante „len Cirhóza navrch“. Stratég zmeral len variant s oboma kliatbami, preto ho treba zmerať aj s Cirhózou samotnou. C nezavádzať: problém je vo viditeľnosti, nie v sile.</div>
+  <dl class="riadky">
+    <dt>Ako overiť</dt>
+    <dd><strong>Stratég:</strong> variant „len Cirhóza navrch“ (rebrík, delené, kliatby na konci, body z kliatob víťaza a porazeného). <strong>Playtesteri:</strong> pred poslednou bitkou zapísať odhad skóre oboch hráčov a porovnať ho s výsledkom. Pri každom NA EX zapísať, či náhľad kliatob zmenil voľbu.</dd>
+  </dl>
+  <div class="otazka"><strong>Michal rozhoduje:</strong> otázky 1, 2 a 3 v <a href="#rozhodnutia">Rozhodnutiach</a>.</div>
+  <p class="suvis">Súvis: s bodom 5 (pri „dober 3“ sa kliatba nesmie dať naspodok, takže s B príde určite) a s bodom 2 (kliatby aj strach násobí ten istý mechanizmus §10: každá aktívna podmienka boduje zvlášť).</p>
+  <p class="navrat"><a href="#h-prehlad">↑ prehľad</a></p>
+</article>
+
+<!-- ===================== BOD 2 ===================== -->
+<article class="bod" id="bod-2" aria-labelledby="h-bod-2">
+  <div class="bod-hlava"><span class="cislo">2</span><h3 id="h-bod-2">Hodnota bitky: 50 bodov, ktoré nevidno</h3><span class="stitok balans">balans</span><span class="stitok strat">strategickosť</span></div>
+  <p class="problem">Prebytok cez zónové body robí z jednej bitky väčší výkyv než niekoľko lokalít a hráč pri pase, NA EX či karte navyše nevie, koľko bitka stojí.</p>
+  <details open>
+    <summary>Dôkazy</summary>
+    <ul>
+      <li><strong>20261021-041728, K5:</strong> Jano viedol 35 : −7, pasoval za 2 cigarety a prehral (podľa logu 0 : 7, prebytok 7). Eva posunula troch starších a skóre bolo 35 : 54. <blockquote>„Netušil som, že zóna strach úroveň 2 je ~14 b na jedného staršieho.“ — Jano</blockquote> Eva: „prebytok 7 mi dal +49 b“. Názor #23.</li>
+      <li><strong>Opakuje sa:</strong> 20261012-101447 (posledná bitka prehodila 13 : −2 na 3 : 12, názory #18 a #20), 20261012-173832 (vydesenie 4 starších jedným prebytkom, 35 : 0), 20261017-164450 (podľa záznamu zmien „rozhodol posledný prebytok už tretí playtest za sebou“).</li>
+      <li><strong>Stratég (bot):</strong> víťaz poslednej bitky vyhrá partiu v 85 %. Jedna bitka pohne rozdielom bodov o 19 – 29 b, kým rozdiel na konci je 54 b. Porazený v playteste vyhral nasledujúcu bitku len 1 zo 6.</li>
+    </ul>
+  </details>
+  <dl class="riadky">
+    <dt>Príčina</dt>
+    <dd>§10, zmena „Bodovanie bez strán“ (16. 10.): Znepokojenie, Strach a Vydesenie sa pozerajú na strach všetkých 8 starších a každý scorecard s aktívnou zónovou podmienkou boduje zvlášť. Jeden starší na úrovni 2 tak dá asi 14 b. Prebytok nemá strop na jedného staršieho, brzdí ho len Puška (−2), Miňištrant a zamknutá krajná pozícia. Náhľad posunu (body ±X) sa ukáže až pri rozdeľovaní prebytku, keď je už neskoro.</dd>
+    <dt>Čo sa už skúšalo</dt>
+    <dd>Body za kus až od oranžovej (12. 10., zrušené), body za kus 2, cigarety porazenému za prebytok, ohlásené vydesenie, patronát (20. 10.). Výkyvy hlási každý druhý playtest.</dd>
+    <dt>Kde sa nezhodnem so stratégom</dt>
+    <dd>Stratég strop zamietol „zatiaľ“, lebo u bota rozhodujú lokality (víťaz 60 b, porazený 30) a strach len 19 : 4. Sám však píše, že bot si strach buduje menej než ľudia. Bot teda problém podceňuje a frekvencia v playtestoch je vysoká. Súhlasím, že najprv treba ukázať cenu (A). Strop B by som však dal zmerať už teraz, aby bolo číslo hotové, keď ho budeme potrebovať.</dd>
+  </dl>
+  <div class="moznosti">
+    <div class="moznost odporucana">
+      <span class="odp">odporúčam · teraz</span>
+      <h4>A · Stávka bitky (rozhranie)</h4>
+      <p><b>Zmena:</b> v hlavičke Zhromaždenia a pri potvrdení pasu: „táto bitka: prehra o 3 ≈ −X b, výhra o 3 ≈ +Y b“. Rovnaký výpočet ako dnešný náhľad posunu markera, pre prebytok 1 – 5 (stratég, návrh 2).</p>
+      <p><b>Zlepší:</b> hlavná strategická os (lokality proti strachu) bude vidno pred rozhodnutím.</p>
+      <p><b>Cena:</b> jedno číslo na preplnenej obrazovke, odhad je hrubý (nevie, ako súper prebytok rozdelí).</p>
+      <p><b>Náročnosť:</b> malá až stredná.</p>
+    </div>
+    <div class="moznost">
+      <span class="odp" style="background:var(--zelena)">dať zmerať</span>
+      <h4>B · Najviac 2 posuny na staršieho</h4>
+      <p><b>Zmena:</b> prebytkom sa jeden starší v jednej bitke posunie najviac o 2 (Pohoršenie zvlášť, ako dnes). Zvyšok prebytku sa musí rozdeliť inam.</p>
+      <p><b>Zlepší:</b> K5 by dala 3 + 2 + 2 namiesto 3 + 3 + 1, teda menej starších na krajnú. §10 sa nemení, bodovanie sa vysvetľuje rovnako.</p>
+      <p><b>Cena:</b> vydesenie (koniec hry) sa vzdiali, menej dramatické konce.</p>
+      <p><b>Náročnosť:</b> malá (kontrola v <code>cmdPrebytok</code>).</p>
+    </div>
+    <div class="moznost">
+      <h4>C · Strop zónových bodov</h4>
+      <p><b>Zmena:</b> zónová podmienka ráta najviac 3 starších, alebo zónové body len z 3 scorecardov (Jano, #23).</p>
+      <p><b>Zlepší:</b> mieri priamo na násobok 14 b.</p>
+      <p><b>Cena:</b> mení §10 a horšie sa vysvetľuje. Stratég zamietol: otočky 27 % sú zdravé a veľký výkyv drží dobiehanie.</p>
+      <p><b>Náročnosť:</b> malá (<code>elderScore</code>).</p>
+    </div>
+  </div>
+  <div class="odporucanie"><strong>Odporúčanie:</strong> A zaviesť hneď spolu s bodom 1A, obe sú zobrazenie ceny. B dať stratégovi zmerať. Do playtestu ho zaradiť len vtedy, keď aj s A jedna bitka znova pohne skóre o 40 a viac bodov (to je stratégova hranica).</div>
+  <dl class="riadky">
+    <dt>Ako overiť</dt>
+    <dd><strong>Stratég:</strong> variant B, a ak sa dá, aj s povahou bota, ktorá viac tlačí markery. Merať výkyv na bitku, „víťaz poslednej bitky vyhrá“, otočky, zloženie bodov a koľko partií skončí vydesením. <strong>Playtesteri:</strong> pri každom pase zapísať odhadovanú cenu bitky a po bitke skutočný posun. Pasovali by znova?</dd>
+  </dl>
+  <div class="otazka"><strong>Michal rozhoduje:</strong> otázky 4 a 5.</div>
+  <p class="suvis">Súvis: bod 3 (pri úplnej remíze nie je prebytok, takže remíza o lokalitu má cenu „len“ lokality). Bod 1: rovnaký násobiaci mechanizmus scorecardov.</p>
+  <p class="navrat"><a href="#h-prehlad">↑ prehľad</a></p>
+</article>
+
+<!-- ===================== BOD 3 ===================== -->
+<article class="bod" id="bod-3" aria-labelledby="h-bod-3">
+  <div class="bod-hlava"><span class="cislo">3</span><h3 id="h-bod-3">Remízu rozhoduje stolička</h3><span class="stitok balans">balans</span></div>
+  <p class="problem">Pri rovnakom tuhom aj celkovom poškodení dostane lokalitu obranca. O bitke tak rozhodne miesto pri stole, nie hra.</p>
+  <details open>
+    <summary>Dôkazy</summary>
+    <ul>
+      <li><strong>20261021-041728:</strong> K2 6 : 6 a K4 2 : 2, obe lokality obrancovi Janovi (pri štyroch aktívnych podmienkach „lokality“ je to 2 × 8 b). <blockquote>„Dve z mojich štyroch lokalít mi priniesla remíza.“ — Jano, #26</blockquote> <blockquote>„Rozhodla štruktúra pravidla, nie hráč.“ — Eva, #27</blockquote></li>
+      <li><strong>Stratég (bot):</strong> pravidlo „remíza → obranca“ rozhodne 9,6 % bitiek, rovnaké tuhé má 12,5 %.</li>
+      <li><strong>História:</strong> do 19. 10. remízu vyhrával útočník. V 20261012-101447 Absťáky robili 0 : 0 a 1 : 1 v jeho prospech, v 20261018-185541 skončili tri bitky 0 : 0 pre útočníka a Eva v #21 žiadala remízu pre obrancu. Po zmene ide remíza obrancovi a kritika sa obrátila. <strong>Nevadí teda, ktorá stolička vyhráva, ale to, že rozhoduje stolička.</strong></li>
+    </ul>
+  </details>
+  <dl class="riadky">
+    <dt>Príčina</dt>
+    <dd><code>battle.ts</code>, <code>battleOutcome</code>: tuhé, potom celkové, potom obranca (PRAVIDLA §8, BRIEF „Michal 2026-10-19“).</dd>
+    <dt>Zmerané</dt>
+    <dd>Prevaha v krajoch ako ďalší stupeň rozhodne len 16 % remíz (2 % bitiek), lebo pri remíze má zvyčajne každý jeden kraj. Rebrík 67 → 70 %, otočky 27 → 21 %, všetko v šume. Stratég ju zamietol a ja súhlasím.</dd>
+  </dl>
+  <div class="moznosti">
+    <div class="moznost">
+      <h4>A · Nechať, ale ukázať</h4>
+      <p><b>Zmena:</b> v odhade bitky výslovne „pri remíze vyhrá obranca (súper)“, aby útočník vedel, že potrebuje o bod viac.</p>
+      <p><b>Zlepší:</b> menej prekvapení. Stolička rozhoduje ďalej.</p>
+      <p><b>Náročnosť:</b> malá.</p>
+    </div>
+    <div class="moznost odporucana">
+      <span class="odp">odporúčam · zmerať</span>
+      <h4>B · Úplná remíza = lokalita nikomu</h4>
+      <p><b>Zmena:</b> pri rovnakom tuhom aj celkovom lokalitu nezíska nikto (0 b, bez prebytku), lokalita prepadne a roly ostanú (obranca ostáva obrancom). Počet bitiek sa nemení. Eva #27, stratég ako nemeranú alternatívu.</p>
+      <p><b>Zlepší:</b> tesná bitka stojí za boj obom a nikto nedostane lokalitu zadarmo. Útočník aj obranca majú dôvod pridať kartu.</p>
+      <p><b>Cena:</b> menej bodov v hre. Obranca stratí protiváhu k výhode útočníka v Pitke (bod 4).</p>
+      <p><b>Náročnosť:</b> malá.</p>
+    </div>
+    <div class="moznost">
+      <h4>C · Menej nepriznaných kliatob vyhrá</h4>
+      <p><b>Zmena:</b> pri úplnej remíze vyhrá ten, kto má menej nepriznaných kliatob (Jano, #26).</p>
+      <p><b>Zlepší:</b> odmení hygienu balíčka.</p>
+      <p><b>Cena:</b> bez bodu 1A je to pre hráča nečitateľné, a ten istý faktor by sa zarátal dvakrát (aj v bodoch na konci).</p>
+      <p><b>Náročnosť:</b> malá, ale len po 1A.</p>
+    </div>
+  </div>
+  <div class="odporucanie"><strong>Odporúčanie:</strong> B dať stratégovi zmerať (bot sa poradie musí naučiť, inak čísla klamú). Kým nie je meranie, zaviesť aspoň A. Do playtestu B len spolu s pozorovaním bodu 4, lebo dnes sa tieto dve výhody navzájom vyvažujú.</div>
+  <dl class="riadky">
+    <dt>Ako overiť</dt>
+    <dd><strong>Stratég:</strong> variant B, merať počet úplných remíz, útočník : obranca (u bota dnes 51 %, v posledných dvoch playtestoch 2 : 5 a 2 : 5), rebrík a otočky. <strong>Playtesteri:</strong> pri každej remíze v tuhom zapísať, či o ňu niekto zámerne hral.</dd>
+  </dl>
+  <div class="otazka"><strong>Michal rozhoduje:</strong> otázka 6.</div>
+  <p class="suvis">Súvis: bod 4. Rovnosť v kraji (karta pri lokalite) je podobná „stoličková“ rovnosť. Je uvedená v Ďalších témach, lebo o nej Michal rozhodol 20. 10.</p>
+  <p class="navrat"><a href="#h-prehlad">↑ prehľad</a></p>
+</article>
+
+<!-- ===================== BOD 4 ===================== -->
+<article class="bod" id="bod-4" aria-labelledby="h-bod-4">
+  <div class="bod-hlava"><span class="cislo">4</span><h3 id="h-bod-4">Pitka: kto začína a kto má posledné slovo</h3><span class="stitok zrozum">zrozumiteľnosť</span><span class="stitok balans">balans</span></div>
+  <p class="problem">Hra poradie v Pitke dodržiava, no hráči to nevidia. Kto je v Pitke prvý, musí o NA EX rozhodnúť naslepo a jeho „hotovo“ je nevratné, kým druhý vidí všetko.</p>
+  <details open>
+    <summary>Dôkazy</summary>
+    <ul>
+      <li><strong>20261021-041728:</strong> obaja hráči aj organizátor hlásili „nekonzistentné poradie v Pitke“ (Jano, nezrovnalosť 1; Eva, nezrovnalosť 3, názor #29). Je to <strong>omyl</strong>: Pitku začína vždy obranca, no jeho „hotovo“ sa nikde nezapíše, takže súper si myslí, že začína sám.</li>
+      <li><strong>Eva, K6:</strong> dala „hotovo“, aby najprv videla Janovo NA EX, a svoje NA EX potom dať nemohla („Nie si na ťahu“). <strong>K4:</strong> jej vypočítané 2 : 1 zmenil Jano odpoveďou Živnostníkom na 2 : 2, takže remíza išla obrancovi.</li>
+      <li><strong>Od 12. 10.:</strong> <blockquote>„Hráč, ktorý pasuje posledný, vidí všetko a NA EX má poslednú reč.“ — Jano, #17</blockquote> Odpoveď na NA EX (12. 10.) problém zmenšila, ale poradie ostalo nečitateľné.</li>
+    </ul>
+  </details>
+  <dl class="riadky">
+    <dt>Príčina</dt>
+    <dd><code>engine.ts</code>: <code>zacniPitku</code> dá ťah obrancovi a <code>cmdSkipNaex</code> nastaví hráča ako hotového bez udalosti v logu. Po odpovedi na NA EX ide ťah späť tomu, kto NA EX dal. Útočník teda o svojom NA EX rozhoduje vždy s plnou informáciou o obrancovom NA EX. Obranca má zas poslednú odpoveď kartou. §7 nepíše, že „hotovo“ je konečné.</dd>
+  </dl>
+  <div class="moznosti">
+    <div class="moznost odporucana">
+      <span class="odp">odporúčam · teraz</span>
+      <h4>A · Ukázať poradie</h4>
+      <p><b>Zmena:</b> log „Hráč X končí svoju časť Pitky (bez NA EX)“. V páse Pitky „začína obranca: ty / súper · súper už skončil“. Pri „hotovo“ upozornenie „nevratné — súper potom hrá sám a vidí tvoje rozhodnutie“. Veta v §7 a v ťaháku agentov.</p>
+      <p><b>Zlepší:</b> zmizne domnelá chyba, prvý v poradí vie, čo vzdáva.</p>
+      <p><b>Náročnosť:</b> malá.</p>
+    </div>
+    <div class="moznost">
+      <h4>B · Pitka končí po dvoch „hotovo“ za sebou</h4>
+      <p><b>Zmena:</b> „hotovo“ prestane platiť, keď súper potom ešte niečo urobí (NA EX, fajčenie, barter). Pitka skončí, až keď dajú „hotovo“ obaja za sebou. NA EX ostáva raz za Pitku, takže sa to nezacyklí.</p>
+      <p><b>Zlepší:</b> prvý môže čakať. Ak čakajú obaja, Pitka skončí bez NA EX, čím pribudne blafovanie čakaním namiesto hádania.</p>
+      <p><b>Cena:</b> viac ťahov v Pitke (tempo). Bot sa musí naučiť čakať.</p>
+      <p><b>Náročnosť:</b> stredná.</p>
+    </div>
+    <div class="moznost">
+      <h4>C · Súčasný tajný NA EX</h4>
+      <p><b>Zmena:</b> obaja tajne zapíšu NA EX a naraz ho odkryjú (Eva, #29).</p>
+      <p><b>Cena:</b> stratég zamietol: čítanie súpera vymení za hádanie a odpoveď na NA EX stratí zmysel. Koliduje s Krčmou, Svokrou a Vínnou pivnicou.</p>
+      <p><b>Náročnosť:</b> veľká.</p>
+    </div>
+  </div>
+  <div class="odporucanie"><strong>Odporúčanie:</strong> A zaviesť hneď. V ďalšom playteste zapisovať pri každej Pitke, kto začal a kto mal posledné slovo (stratég). B zvážiť, až keď aj pri viditeľnom poradí rozhodne posledné slovo viac bitiek. C nie.</div>
+  <dl class="riadky">
+    <dt>Ako overiť</dt>
+    <dd><strong>Playtesteri:</strong> či ešte niekto hlási „nekonzistentné poradie“ a koľko bitiek otočila odpoveď po NA EX. <strong>Stratég</strong> (len ak príde na rad B): podiel bitiek, v ktorých posledné NA EX alebo posledná odpoveď zmenila víťaza.</dd>
+  </dl>
+  <div class="otazka"><strong>Michal rozhoduje:</strong> otázka 7.</div>
+  <p class="suvis">Súvis: bod 3. Remíza pre obrancu dnes vyvažuje informačnú výhodu útočníka v Pitke. Kto mení jedno, má sledovať aj druhé.</p>
+  <p class="navrat"><a href="#h-prehlad">↑ prehľad</a></p>
+</article>
+
+<!-- ===================== BOD 5 ===================== -->
+<article class="bod" id="bod-5" aria-labelledby="h-bod-5">
+  <div class="bod-hlava"><span class="cislo">5</span><h3 id="h-bod-5">Mŕtve štartovky a slepé dobieranie</h3><span class="stitok strat">strategickosť</span><span class="stitok balans">balans</span></div>
+  <p class="problem">Štartovky (4 Pijan, 2 Miňištrant, 2 Milujúca manželka, 2 Dievčina na vydaj) berú prvým kolám rozhodnutia a neskôr zavadzajú v dobieraní. Niektoré dokonca škodia vlastnému hráčovi.</p>
+  <details open>
+    <summary>Dôkazy</summary>
+    <ul>
+      <li><strong>20261021-041728:</strong> Eva: „nudné boli K1 – K3, kde som s rukou troch Pijanov nemala čo robiť“. Jano: „V K3 a K5 som mal samé Pijany“. Pijan vedľa Ženy s aktívnym Poldeci dal súperovi Ranu trikrát (obom hráčom), dvaja Miňištranti zdražili Eve každý posun na 3.</li>
+      <li><strong>Opakuje sa:</strong> 20261012-101447 („sťažovali sa skôr na kvalitu ruky — Dievčiny, Manželky“), 20261012-173832, 20261016-155120, 20261017-164450 („sťažnosť na slabé karty trvá, štvrtý playtest“), 20261018-185541 („prvé tri kolá nehrateľné“).</li>
+      <li><strong>Stratég:</strong> lepšia ruka vyhrá len 57 %, takže štartová ruka sama nie je veľký zdroj náhody. Problém je v rozhodnutiach, ktoré berie. V chybnom behu mal hráč 5 štartoviek namiesto 10 a vyhral 69 % zo 64 partií, takže čistenie balíčka je silná strategická os. Dnes však nemá nástroj s cenou.</li>
+    </ul>
+  </details>
+  <dl class="riadky">
+    <dt>Príčina</dt>
+    <dd>Michal (18. 10.) chce slabý a otravný štart a progresiu, a to je v poriadku. Prílev kariet je však slepý (+2 karty po bitke, <code>doberPoBitke</code>) a štartovky sa zbaviť nedá, kým nedoberieš čistiacu kartu (Vízia, Niekoho stryná, Pohreb, Liečba). Text Pijana navyše hovorí niečo iné než §14 („udelí ranu do vlastnej partie“ proti „súper dostane +1 Ranu“, názor #25). Hra robí §14.</dd>
+  </dl>
+  <div class="moznosti">
+    <div class="moznost odporucana">
+      <span class="odp">odporúčam · playtest</span>
+      <h4>A · Dober 3, nechaj 2</h4>
+      <p><b>Zmena:</b> po bitke si hráč pozrie 3 vrchné karty, 2 si vezme a tretiu dá naspodok svojho balíčka. Kliatbu naspodok dať nesmie. Druhá hodnota: pozri 4, nechaj 2 (väčšia kontrola, balíček sa točí pomalšie).</p>
+      <p><b>Zmerané:</b> rebrík ε 0,1 67 → 72 %, delené 44 → 41 %, predurčenosť 0,37 → 0,17, otočky 27 → 40 %, vedúci po 6. kole vyhrá 79 → 84 %. Hráč 1 vyhral 56 → 41 % (pravdepodobne šum, treba sledovať).</p>
+      <p><b>Cena:</b> nový krok a klik po každej bitke.</p>
+      <p><b>Náročnosť:</b> stredná (jadro, príkaz, bot, UI).</p>
+    </div>
+    <div class="moznost">
+      <span class="odp" style="background:var(--zelena)">dať zmerať</span>
+      <h4>B · Čistenie s cenou</h4>
+      <p><b>Zmena:</b> v drafte smie hráč namiesto brania za 1 cigaretu zahodiť z hry kartu z ruky (stratégov nápad, nemerané).</p>
+      <p><b>Zlepší:</b> čistenie súperí s nákupom. Kto cigarety šetrí, môže štíhliť balíček.</p>
+      <p><b>Cena:</b> čistenie zadarmo zručnosť ubralo (rebrík 59 %), cena je teda nutná. Výšku ceny musí nájsť meranie.</p>
+      <p><b>Náročnosť:</b> stredná.</p>
+    </div>
+    <div class="moznost">
+      <h4>C · Prejsť štartovky</h4>
+      <p><b>Zmena:</b> naex-admin prejde štyri štartovky tak, aby každá mala aspoň jednu situáciu, keď sa ju oplatí zahrať, a hneď opraví text Pijana na „súper dostane Ranu“.</p>
+      <p><b>Cena:</b> treba stráž, aby štart ostal slabý (Michalov zámer).</p>
+      <p><b>Náročnosť:</b> malá (text Pijana) až stredná (štartovky).</p>
+    </div>
+  </div>
+  <div class="odporucanie"><strong>Odporúčanie:</strong> text Pijana opraviť hneď (je to chyba v texte karty, nie zmena pravidiel). A vyskúšať v playteste (zhodne so stratégom, návrh 3), ale v inom playteste než bod 1B, alebo vedome spolu, lebo sa navzájom ovplyvňujú. B dať stratégovi zmerať s botom, ktorý sa voľbu naučí.</div>
+  <dl class="riadky">
+    <dt>Ako overiť</dt>
+    <dd><strong>Stratég:</strong> B s cenou 1 a 2 cigarety; A spolu s 1B („len Cirhóza navrch“). <strong>Playtesteri:</strong> koľkokrát bola voľba z 3 zrejmá a koľkokrát váhali, čo dali naspodok a či sa im to vrátilo. Či sa cítia v 5. kole silnejší než v 2. (1 – 5).</dd>
+  </dl>
+  <div class="otazka"><strong>Michal rozhoduje:</strong> otázky 8, 9 a 10.</div>
+  <p class="suvis">Súvis: bod 1B. Pri „dober 3“ sa kliatba nesmie dať naspodok, takže s „kliatbou navrch“ príde v ďalšom kole určite. Trest je potom okamžitý a nedá sa odložiť.</p>
+  <p class="navrat"><a href="#h-prehlad">↑ prehľad</a></p>
+</article>
+</section>
+
+<section aria-labelledby="h-dalsie">
+  <h2 id="h-dalsie">Ďalšie témy</h2>
+  <p class="pozn">Podľa kritickosti, od najvážnejšej.</p>
+  <ol class="zvysok">
+    <li><strong>Tempo.</strong> 83 minút a 16 Pitiek, tempo 5,5 je najnižšie od 11. 10. (predtým 7). Eva navrhuje strednú hru na 5 lokalít a najviac 2 Pitky. Michal chcel viac Pitiek (interview 19. 10.), preto zatiaľ len sledovať. Stratég má nemeraný návrh „Pitky podľa lokality so stropom 2“. <span class="pozn">— 20261021-041728, obaja</span></li>
+    <li><strong>Cena posunu prebytku pri Miňištrantoch</strong> sa ukáže až pri rozdeľovaní: Eva z prebytku 3 posunula jediného staršieho. Ukázať „posun ťa stojí N“ už v Zhromaždení pri karte. Malá zmena, hodí sa k 2A. <span class="pozn">— Eva 041728, názory #8 a #22</span></li>
+    <li><strong>Krčma: povinné NA EX + Poldeci lokality = nevyhnutná Cirhóza</strong> v prvej Pitke pre oboch. Zvážiť, či povinné NA EX na Krčme pečeň nepridáva. <span class="pozn">— obaja; Eva to radí medzi prázdne rozhodnutia</span></li>
+    <li><strong>Dedičstvo proti Živnostníkovi:</strong> Živnostník zahodil 3 zo 4 Nástrojov a cena Dedičstva po zahodení neklesá (§6 „v hre“ je nejasné; kód: <code>cenaDedicstva</code> = 1 + počet vyložení za partiu). Otázka na Michala: má sa cena po zahodení vrátiť o stupeň? <span class="pozn">— Jano, Eva; spisovateľ, nezrovnalosť 6</span></li>
+    <li><strong>Rovnosť v kraji vyhrá, kto kladie prvý</strong> (karta pri lokalite = útočník). Rozhodla trikrát (K1, K6). Michal o pravidle rozhodol 20. 10. Nové je, že obava „útočník stratí hranu“ sa nepotvrdila, skôr naopak. Zatiaľ len sledovať, pri bode 3B sa k tomu vrátiť. <span class="pozn">— Eva #27</span></li>
+    <li><strong>Násobky ×4 (NA EX × Silná žena):</strong> Jano chce strop ×2, Eva to vníma ako plánovanie. Riešené v bode 1A(c): dopísať do §5. Strop netreba, ak bude vidno cenu v kliatbach.</li>
+    <li><strong>Policajtka ruší Pohoršenia z patronátu</strong> (2 zo 4 patronátov boli „zadarmo“). Michal to 20. 10. výslovne rozhodol a patrón vyhral len 1 zo 4 (boti 63 %), takže patronát zatiaľ nie je prisilný. Sledovať. <span class="pozn">— Eva</span></li>
+    <li><strong>Ekonomika cigariet:</strong> Jano v K5 bez cigariet nekúpil nič, Eva mala 14 – 19. Návrhy oboch ťahajú opačnými smermi a stratég šenok považuje za vyvážený. Jano bol bez cigariet skôr vlastnými voľbami (Dedičstvo, doliatie).</li>
+    <li><strong>Pohoršenie sa nedá vynechať</strong> (§8.2, povinné). Keď ide posunúť len o 1, je to prázdny ťah. Hra môže ťah urobiť sama, ak je jediná možnosť neškodná. <span class="pozn">— Eva</span></li>
+    <li><strong>Absťák s Milujúcou manželkou</strong> je podľa Jana šum, Eva ho hrala zámerne. Špirála Absťákov nenastala. Netreba nič meniť.</li>
+    <li><strong>Karty, ktoré sa nehrali:</strong> Presbiter, Pasca (dvakrát v šenku), Anonymný alkoholik. Úloha pre naex-admin: sledovať v štatistikách.</li>
+    <li><strong>Názvy krajov</strong> („pri výčape / pri dverách“) hráči nepoužívajú, hovoria „môj / jeho kraj“. Do textov dať „tvoj kraj / súperov kraj“ a názov kraja ako prívlastok.</li>
+    <li><strong>Texty pravidiel:</strong> §5 opisuje Vypiť dvoma rôznymi poradiami, §7 o šenku „ostávajú / idú naspodok“ dvoma vetami. Zjednotiť. <span class="pozn">— spisovateľ</span></li>
+    <li><strong>Strata miestnosti po páde servera</strong> (partia proti človeku 20261012-182322, názor #7). Novšie hlásenia nie sú a overené to nemám. Treba sa uistiť, že rozohraná partia prežije reštart.</li>
+  </ol>
+
+  <h3>Omyly hráčov — hra je správne</h3>
+  <ul>
+    <li><strong>Poradie v Pitke</strong> (obaja, organizátor): kód poradie dodržiava. Riešenie je v bode 4A.</li>
+    <li><strong>Počítadlo pečene 1/3, skončilo na 3</strong> (Jano): počítadlo ukazuje doterajšiu pečeň, akcie na stole sa pripíšu pri vyhodnotení. Riešenie: náhľad z bodu 1A(b) („pečeň → Cirhóza“).</li>
+    <li><strong>Vypiť zníži limit</strong> a <strong>limit sa ráta v každom Zhromaždení nanovo</strong> (Jano): §5 to hovorí. Doplniť do ťaháku s príkladom.</li>
+    <li><strong>Pohoršenie je povinné</strong> (Eva) a <strong>náhľad Autobusára 0 → 2</strong> (Eva, súperova Cirhóza sa zamiešala do skrytého balíčka): v poriadku. Druhé zmizne s bodom 1A(a).</li>
+    <li><strong>Čísla vo feedbackoch:</strong> Jano píše K5 „2 : 7, prebytok 5“ a Dedičstvo „spálené trikrát“, log hovorí 0 : 7, prebytok 7 a dva jeho Nástroje. Eva píše 20 Pitiek, bolo ich 16.</li>
+  </ul>
+</section>
+
+<section aria-labelledby="rozhodnutia">
+  <h2 id="rozhodnutia">Rozhodnutia pre Michala</h2>
+  <p class="pozn">Stačí odpovedať číslom a áno / nie alebo písmenom.</p>
+  <ol class="rozhodnutia">
+    <li><strong>(Bod 1A)</strong> Zobraziť pri súperovi počet jeho nepriznaných Dlhov a Cirhóz (rátaný len z verejných udalostí) a znížiť o ne jeho body, a pri NA EX a Vypiť ukázať náhľad kliatob a ich ceny v bodoch? <em>áno / nie</em></li>
+    <li><strong>(Bod 1B)</strong> Playtest „nová kliatba navrch doberacieho balíčka“: <em>(a)</em> len Cirhóza, <em>(b)</em> Cirhóza aj Dlh, <em>(c)</em> nie. Odporúčam a, po zmeraní stratégom.</li>
+    <li><strong>(Bod 1A(c))</strong> Potvrdiť dnešné správanie a dopísať ho do pravidiel: prah dáva kartu Dlh a Cirhózu za <em>každý</em> násobok a násobky NA EX, Silnej ženy a Posilnenia sa násobia (×4)? <em>áno / nie, chcem strop (1 kartu za Pitku alebo ×2)</em></li>
+    <li><strong>(Bod 2A)</strong> Ukázať v Zhromaždení a pri pase stávku bitky („prehra o 3 ≈ −X b, výhra ≈ +Y b“)? <em>áno / nie</em></li>
+    <li><strong>(Bod 2B)</strong> Dať stratégovi zmerať „prebytkom najviac 2 posuny na jedného staršieho za bitku“? <em>áno / nie</em></li>
+    <li><strong>(Bod 3)</strong> Remíza v tuhom aj celkovom: <em>(a)</em> nechať obrancovi a len to ukázať v odhade, <em>(b)</em> dať zmerať „lokalita nikomu, roly ostávajú“, <em>(c)</em> zaviesť b rovno do playtestu.</li>
+    <li><strong>(Bod 4A)</strong> Zapísať do logu „hráč končí svoju časť Pitky“, v páse ukázať, kto začína a kto skončil, a pri „hotovo“ upozorniť, že je nevratné? <em>áno / nie</em> — a ak posledné slovo bude rozhodovať aj potom, chceš vyskúšať „Pitka končí po dvoch hotovo za sebou“? <em>áno / nie</em></li>
+    <li><strong>(Bod 5A)</strong> Playtest „po bitke pozri 3, nechaj 2, tretiu naspodok (kliatbu nie)“: <em>(a)</em> pozri 3, <em>(b)</em> pozri 4, <em>(c)</em> nie.</li>
+    <li><strong>(Bod 5B)</strong> Dať stratégovi zmerať čistenie s cenou („v drafte namiesto brania zahoď kartu z ruky z hry za 1 cigaretu“)? <em>áno / nie</em></li>
+    <li><strong>(Bod 5C)</strong> Opraviť text Pijana na „súper dostane Ranu“ (naex-admin, zverejnenie so súhlasom)? <em>áno / nie</em></li>
+    <li><strong>(Ďalšie témy 4)</strong> Má cena Dedičstva po zahodení Nástroja klesnúť o stupeň? <em>áno / nie</em></li>
+    <li><strong>Poradie zavádzania:</strong> najprv rozhranie (1A, 2A, 4A, text Pijana), potom jeden playtest bez zmien pravidiel, až potom pravidlá (1B, 5A, prípadne 3B)? <em>áno / chcem pravidlá hneď</em></li>
+  </ol>
+  <h3>Čo má zmerať stratég</h3>
+  <ul>
+    <li>1B „len Cirhóza navrch“: rebrík, delené, kliatby na konci, body z kliatob víťaza a porazeného.</li>
+    <li>2B „najviac 2 posuny na staršieho“: výkyv na bitku, víťaz poslednej bitky, otočky, koľko partií skončí vydesením. Ak sa dá, aj s botom, ktorý viac tlačí markery.</li>
+    <li>3B „úplná remíza = lokalita nikomu“: počet remíz, útočník : obranca, rebrík, otočky (bot sa nové poradie musí naučiť).</li>
+    <li>5B „čistenie za 1 a 2 cigarety“ a 5A spolu s 1B.</li>
+  </ul>
+</section>
+
+<footer>
+  <p><strong>Podklady</strong></p>
+  <ul>
+    <li>Playtesty (hodnotené): 20261011-101224, -125943, -183315, 20261012-055944, -101447, -173832, 20261016-134912, -155120, 20261017-164450, 20261018-185541, 20261019-055945, 20261021-041728 (celý: feedback, denníky, nezrovnalosti, možnosti, poznámky organizátora). Partie agenta proti človeku: 20261011-125116, 20261012-182322, 20261012-183527, 20261016-093043, 20261018-094040.</li>
+    <li>Reporty: <a href="20261021-041728.html">20261021-041728</a> (spisovateľ, nezrovnalosti overené), staršie reporty v tejto sekcii.</li>
+    <li>Rozbory stratéga: <a href="strategia-20261021-041728.html">strategia-20261021-041728</a> (merania vo <code>playtest/strategia/20261021-041728/suhrn.json</code>), <a href="strategia-strany-20261020.html">strategia-strany-20261020</a>, <a href="strategia-20261019-2030.html">strategia-20261019-2030</a>, <a href="strategia-20261019-1858.html">strategia-20261019-1858</a>.</li>
+    <li>História: <a href="zmeny-pravidiel.html">zmeny pravidiel</a>, <a href="vyvoj-znamok.html">vývoj známok</a> (12 partií: rovnováha ⌀ 4,9, zrozumiteľnosť ⌀ 4,8, náhoda ⌀ 6,1, tempo ⌀ 6,6; interakcia ⌀ 8,7, originalita ⌀ 8,8).</li>
+    <li>Web, stránka Spätná väzba: 29 názorov (#1 – #29) a 7 komentárov. Všetky sú od AI playtesterov, žiadny nemá stav („plánujeme“ či „nebudeme robiť“) a majú 0 – 2 cigarety.</li>
+    <li>Overené v kóde: <code>engine.ts</code> (pridajKliatbu, pridajZadlzenie, skontrolujPrahPecene, zacniPitku, cmdSkipNaex, log Vízie), <code>partia.ts</code> (zdvojAktivne, Silná žena, Pijan), <code>battle.ts</code> (battleOutcome), <code>elders.ts</code> (body za nepriznané kliatby), <code>view.ts</code> (bodyTeraz, viewFor).</li>
+    <li>Pracovné poznámky (mimo gitu): <code>playtest/navrhy/20261021-041728/zistenia.md</code>.</li>
+  </ul>
+  <p>Navrhár nemení pravidlá, karty ani kód. Všetky čísla v návrhoch sú ponuky a rozhoduje Michal.</p>
+</footer>
+</main>
+<script>
+(function () {
+  document.querySelectorAll("table.prehlad tbody tr[data-ciel]").forEach(function (tr) {
+    tr.addEventListener("click", function (e) {
+      if (e.target.closest("a")) return;
+      var ciel = document.getElementById(tr.getAttribute("data-ciel"));
+      if (ciel) { ciel.scrollIntoView({ behavior: "smooth", block: "start" }); ciel.focus({ preventScroll: true }); }
+    });
+  });
+  document.querySelectorAll("article.bod").forEach(function (a) { a.setAttribute("tabindex", "-1"); });
+})();
+</script>
+</body>
+</html>

@@ -142,6 +142,16 @@ describe("úrovne účtov — API", () => {
     expect((await volaj(navstevnik, "POST", `/nazory/${id}/komentare`, { text: "Návštevník komentuje." })).status).toBe(403);
     expect((await volaj(navstevnik, "PUT", `/nazory/${id}/cigareta`)).status).toBe(403);
 
+    // Príznak AI nastavuje len admin; autor názoru ho nesie, aby ho klient vedel skryť.
+    expect((await volaj(sub, "PATCH", `/admin/pouzivatelia/${idHraca}`, { ai: true })).status).toBe(403);
+    expect((await volaj(admin, "PATCH", `/admin/pouzivatelia/${idHraca}`, { ai: "áno" })).status).toBe(400);
+    expect((await volaj(admin, "PATCH", `/admin/pouzivatelia/${idHraca}`, {})).status).toBe(400);
+    const autor = () => volaj(hrac, "GET", "/nazory").then((r) => (r.data.nazory as { id: number; autor: { ai: boolean } }[]).find((n) => n.id === id)?.autor.ai);
+    expect(await autor()).toBe(false);
+    expect((await volaj(admin, "PATCH", `/admin/pouzivatelia/${idHraca}`, { ai: true })).status).toBe(200);
+    expect(await autor()).toBe(true);
+    expect((await volaj(hrac, "GET", "/ja")).data.pouzivatel).toMatchObject({ rola: "hrac", ai: true });
+
     // Subadmin zmaže cudzí názor a smie meniť jeho stav.
     expect((await volaj(sub, "PATCH", `/nazory/${id}`, { stav: "prijate" })).status).toBe(200);
     expect((await volaj(sub, "DELETE", `/nazory/${id}`)).status).toBe(200);

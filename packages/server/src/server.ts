@@ -40,6 +40,7 @@ import type { Pouzivatel } from "./auth.ts";
 import { Ucty } from "./auth.ts";
 import { Media } from "./media.ts";
 import { Avatary } from "./avatary.ts";
+import { Hudba } from "./hudba.ts";
 import { Obsah, nacitajElders, nacitajScorecards } from "./obsah.ts";
 import type { OtvorenaHra } from "./api.ts";
 import { spracujApi } from "./api.ts";
@@ -47,6 +48,7 @@ import type { ZmenaFrajeriny } from "./archiv.ts";
 import { Archiv } from "./archiv.ts";
 import { Nazory } from "./nazory.ts";
 import { Playtesty } from "./playtesty.ts";
+import { Navrhy } from "./navrhy.ts";
 import { titul } from "./frajerina.ts";
 
 // ---------------------------------------------------------------------------
@@ -162,11 +164,13 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   const ucty = new Ucty(db, opts.admin ?? { login: "Admin", heslo: null });
   const media = new Media(db, dataDir);
   const avatary = new Avatary(media, teraz());
+  const hudba = new Hudba(dataDir);
   ucty.pouziPredvoleneAvatary(() => avatary.nahodny());
   const obsah = new Obsah(db, media);
   const archiv = new Archiv(db);
   const nazory = new Nazory(db);
-  const playtesty = new Playtesty(opts.playtestyDir ?? fileURLToPath(new URL("../../../docs/playtesty", import.meta.url)));
+  const playtesty = new Playtesty(opts.playtestyDir ?? fileURLToPath(new URL("../../../docs/playtesty", import.meta.url)), join(dataDir, "playtesty"));
+  const navrhy = new Navrhy(db);
   obsah.naplnAkTreba(teraz());
   obsah.naplnBodovanieAkTreba(teraz());
   obsah.premenujZrusenePriazne(teraz());
@@ -200,9 +204,11 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           obsah,
           media,
           predvoleneAvatary: avatary.hracov,
+          hudba,
           archiv,
           nazory,
           playtesty,
+          navrhy,
           teraz,
           bezpecneCookie: opts.bezpecneCookie ?? false,
           otvoreneHry,
@@ -217,6 +223,10 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     }
     if (url.pathname.startsWith("/media/")) {
       media.posli(url.pathname.slice("/media/".length), res);
+      return;
+    }
+    if (url.pathname.startsWith("/hudba/")) {
+      hudba.posli(url.pathname.slice("/hudba/".length), req, res);
       return;
     }
     if (url.pathname.startsWith("/playtesty/")) {

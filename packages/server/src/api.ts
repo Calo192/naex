@@ -12,12 +12,14 @@ import { ALL_PODMIENKY, dostupneDlzky } from "@naex/core";
 import type { KartaNavrh, Pozicia, StranaNavrhu, AkciaDef, KlucoveSlovo, Kategoria, BodovaciaKarta, IkonaBodovania, Nastavenia } from "@naex/tvorba";
 import { exportTxt, importTxt, slug, PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
 import type { Pouzivatel, Ucty } from "./auth.ts";
-import { ChybaVstupu, cookieOdhlasenia, cookieRelacie, overHesloVstup, overLogin, overLupu, overMeno, citajCookie, jeSpravca } from "./auth.ts";
+import { ChybaVstupu, cookieOdhlasenia, cookieRelacie, overHesloVstup, overLogin, overHlasitost, overLupu, overMeno, citajCookie, jeSpravca } from "./auth.ts";
 import type { DruhMedia, Media } from "./media.ts";
+import type { Hudba } from "./hudba.ts";
 import type { Obsah } from "./obsah.ts";
 import type { Archiv } from "./archiv.ts";
 import type { KategoriaNazoru, Nazory, Triedenie } from "./nazory.ts";
 import type { Playtesty } from "./playtesty.ts";
+import type { Navrhy } from "./navrhy.ts";
 import { overKategoriu as overKategoriuNazoru } from "./nazory.ts";
 
 export interface OtvorenaHra {
@@ -33,9 +35,13 @@ export interface ApiKontext {
   readonly media: Media;
   /** Predvolené avatary (dedinské trosky), z ktorých si hráč môže vybrať. */
   readonly predvoleneAvatary: readonly string[];
+  /** Hudba počas partie (skladby z playlistu na Suno). */
+  readonly hudba: Hudba;
   readonly archiv: Archiv;
   readonly nazory: Nazory;
   readonly playtesty: Playtesty;
+  /** Návrhy zlepšení z playtestov a rozhodnutia o nich (sekcia Playtest). */
+  readonly navrhy: Navrhy;
   readonly teraz: () => number;
   readonly bezpecneCookie: boolean;
   /** Verejné hry čakajúce na súpera (z herného servera). */
@@ -290,11 +296,12 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     if (r === "PATCH /profil") {
       const p = prihlaseny();
       const b = await citajJson(req);
-      // Meno aj zväčšenie lupy sa ukladajú samostatne — posiela sa len to, čo sa mení.
+      // Meno, zväčšenie lupy aj hlasitosť hudby sa ukladajú samostatne — posiela sa len to, čo sa mení.
       return ok({
         pouzivatel: ctx.ucty.upravProfil(p.id, {
           ...(b.meno !== undefined ? { meno: overMeno(b.meno) } : {}),
           ...(b.lupa !== undefined ? { lupa: overLupu(b.lupa) } : {}),
+          ...(b.hudba !== undefined ? { hudba: overHlasitost(b.hudba) } : {}),
         }),
       });
     }
@@ -314,6 +321,8 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     }
 
     // Michal 2026-10-19: namiesto vlastnej fotky si hráč vyberie jednu z trosiek.
+    if (r === "GET /hudba") return ok({ skladby: ctx.hudba.zoznam() });
+
     if (r === "GET /avatary") return ok({ avatary: ctx.predvoleneAvatary });
 
     if (r === "PUT /profil/avatar-predvoleny") {
@@ -588,15 +597,36 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     }
     // Reporty playtestov: zoznam a token na ich izolované zobrazenie (/playtesty/<token>/…).
     if (sub === "GET /playtesty") return ok({ token: ctx.playtesty.token(teraz), reporty: ctx.playtesty.zoznam() });
+    // Nahratie reportu turnusu na živý web (agent Admin po playteste); telo = obsah súboru.
+    if (metoda === "PUT" && casti[2] === "playtesty" && casti[3] === "subor" && casti.length >= 5) {
+      ctx.playtesty.uloz(casti.slice(4).join("/"), await citajTelo(req, MEDIA_LIMIT));
+      return ok({ ok: true });
+    }
+    // Návrhy zlepšení z playtestov — sekcia Playtest.
+    if (sub === "GET /navrhy") return ok({ navrhy: ctx.navrhy.zoznam() });
+    if (sub === "POST /navrhy") return ok({ ids: ctx.navrhy.nahraj(ja2, await citajJson(req), teraz) }, 201);
+    if (casti[2] === "navrhy" && casti.length === 4 && /^\d+$/.test(id)) {
+      if (metoda === "PATCH") {
+        ctx.navrhy.uprav(ja2, Number(id), await citajJson(req), teraz);
+        return ok({ ok: true });
+      }
+      if (metoda === "DELETE") {
+        ctx.navrhy.zmaz(ja2, Number(id));
+        return ok({ ok: true });
+      }
+    }
     if (metoda === "PATCH" && casti[2] === "pouzivatelia" && casti.length === 4) {
       if (ja2.rola !== "admin") throw new ChybaVstupu("Úroveň účtu mení len admin.", 403);
       const b = await citajJson(req);
       // Admin je len jeden — nikoho ďalšieho na admina povýšiť nemožno.
-      if (b.rola !== "subadmin" && b.rola !== "hrac" && b.rola !== "navstevnik") throw new ChybaVstupu("Neznáma úroveň účtu.");
+      if (b.rola !== undefined && b.rola !== "subadmin" && b.rola !== "hrac" && b.rola !== "navstevnik") throw new ChybaVstupu("Neznáma úroveň účtu.");
+      if (b.ai !== undefined && typeof b.ai !== "boolean") throw new ChybaVstupu("Príznak AI musí byť áno/nie.");
+      if (b.rola === undefined && b.ai === undefined) throw new ChybaVstupu("Chýba úroveň účtu alebo príznak AI.");
       const ciel = ctx.ucty.podlaId(Number(id));
       if (ciel === null) throw new ChybaVstupu("Taký účet neexistuje.", 404);
       if (ciel.rola === "admin") throw new ChybaVstupu("Úroveň admina sa nemení.");
-      ctx.ucty.nastavRolu(ciel.id, b.rola);
+      if (b.rola !== undefined) ctx.ucty.nastavRolu(ciel.id, b.rola);
+      if (b.ai !== undefined) ctx.ucty.nastavAi(ciel.id, b.ai);
       return ok({ ok: true });
     }
 

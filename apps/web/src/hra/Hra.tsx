@@ -8,6 +8,7 @@ import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { useUcet } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { HernaPlocha } from "./HernaPlocha.tsx";
+import { HudbaPartie } from "./Hudba.tsx";
 import { useHra } from "./useHra.ts";
 import "./hra.css";
 
@@ -231,6 +232,8 @@ export function Hra() {
   }
 
   return (
+    <>
+    <HudbaPartie />
     <HernaPlocha
       view={hra.view}
       data={hra.data}
@@ -245,5 +248,6 @@ export function Hra() {
       frajerina={hra.frajerina}
       kontumacia={hra.kontumacia}
     />
+    </>
   );
 }

@@ -610,6 +610,12 @@ textarea {
   border-color: #6b4c1a;
 }
 
+.odznak-ai {
+  background: #1d2a33;
+  color: #8fc3e0;
+  border-color: #33505f;
+}
+
 .riadok-tlacidiel {
   display: flex;
   gap: 10px;

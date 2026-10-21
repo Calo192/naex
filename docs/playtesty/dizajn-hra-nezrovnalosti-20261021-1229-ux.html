@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UX návrh — herný stôl: nezrovnalosti počas hry (hra-nezrovnalosti-20261021-1229)</title>
+<style>
+:root{--bg:#14110e;--pl:#1e1914;--pl2:#2a231c;--tx:#f1e8d8;--sl:#b9ab95;--ja:#e9ad45;--te:#d0563f;--ze:#7cbf74;--mo:#6fb3d2;--ok:#3a3128;--wf:#3b342c;--wf2:#4a4239}
+@media (prefers-color-scheme: light){:root{--bg:#f7f2ea;--pl:#fffaf2;--pl2:#efe6d8;--tx:#221a12;--sl:#5d5245;--ja:#8a5a00;--te:#a8331f;--ze:#2f7a28;--mo:#1d6b8f;--ok:#d9cdb9;--wf:#e3dccf;--wf2:#d2c8b8}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:24px 16px 64px}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;line-height:1.25}
+h1{font-size:1.9rem;margin:.2em 0 .3em}
+h2{font-size:1.45rem;margin:2.2em 0 .6em;border-bottom:1px solid var(--ok);padding-bottom:.25em}
+h3{font-size:1.15rem;margin:1.4em 0 .4em}
+a{color:var(--ja)}
+a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--ja);outline-offset:2px}
+.meta{color:var(--sl);font-size:.93rem}
+.verdikt{background:var(--pl);border-left:4px solid var(--ja);padding:12px 16px;border-radius:6px}
+.mriezka{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.dlazdica{background:var(--pl);border:1px solid var(--ok);border-radius:8px;padding:12px 14px}
+.dlazdica b{color:var(--ja)}
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+th,td{text-align:left;vertical-align:top;padding:8px 8px;border-bottom:1px solid var(--ok)}
+th{color:var(--sl);font-weight:600}
+.tab-obal{overflow-x:auto}
+.z{display:inline-block;min-width:1.7em;text-align:center;border-radius:4px;padding:0 .3em;font-weight:700;color:#14110e}
+.z4{background:#e0644c}.z3{background:#e9ad45}.z2{background:#c8b98f}.z1{background:#8f8574}
+.stitok{display:inline-block;font-size:.78rem;border:1px solid var(--ok);border-radius:999px;padding:0 .55em;margin:0 .2em .2em 0;color:var(--sl)}
+.stitok.ui{border-color:var(--te);color:var(--te)}
+.stitok.omyl{border-color:var(--ze);color:var(--ze)}
+.filtre{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 12px}
+.filtre button{min-height:44px;padding:0 14px;border-radius:6px;border:1px solid var(--ok);background:var(--pl);color:var(--tx);font:inherit;cursor:pointer}
+.filtre button[aria-pressed="true"]{background:var(--ja);color:#14110e;border-color:var(--ja)}
+figure{margin:12px 0 18px;background:var(--pl);border:1px solid var(--ok);border-radius:8px;padding:8px}
+figure img{max-width:100%;height:auto;display:block;border-radius:4px}
+figcaption{font-size:.88rem;color:var(--sl);padding:6px 4px 0}
+.tok{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+@media (max-width:700px){.tok{grid-template-columns:1fr}}
+.tok>div{background:var(--pl);border:1px solid var(--ok);border-radius:8px;padding:10px 14px}
+.tok h4{margin:.2em 0 .4em;font-size:1rem}
+.tok ol{margin:0;padding-left:1.3em}
+.pred h4{color:var(--te)}.po h4{color:var(--ze)}
+.navrh{background:var(--pl);border:1px solid var(--ok);border-radius:10px;padding:4px 18px 16px;margin:18px 0}
+.navrh>h3{margin-top:.9em}
+.navrh dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:8px 0}
+.navrh dt{color:var(--sl);font-weight:600}
+.navrh dd{margin:0}
+@media (max-width:600px){.navrh dl{grid-template-columns:1fr}.navrh dt{margin-top:6px}}
+details{margin:8px 0}
+summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:600}
+/* drôtené modely */
+.wf{background:var(--wf);border:1px dashed var(--sl);border-radius:8px;padding:10px;margin:10px 0;font-size:.9rem;color:var(--tx)}
+.wf .r{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch}
+.wf .b{background:var(--wf2);border-radius:6px;padding:6px 10px}
+.wf .b.hl{outline:2px solid var(--ja)}
+.wf .b.tl{color:var(--sl)}
+.wf .tlac{display:inline-block;background:var(--wf2);border:1px solid var(--sl);border-radius:6px;padding:4px 12px;min-height:32px}
+.wf .tlac.hl{background:var(--ja);color:#14110e;border-color:var(--ja)}
+.wf small{color:var(--sl)}
+.wf .pr{display:flex;gap:3px;margin-top:4px}
+.wf .pr i{width:18px;height:8px;border-radius:2px;background:var(--wf);border:1px solid var(--sl)}
+.wf .pr i.p{background:var(--sl)}
+.wf .pr i.g{background:transparent;border-style:dashed;border-color:var(--te)}
+.mikro{border-left:3px solid var(--mo);padding:2px 12px;margin:6px 0;font-style:italic}
+.pozn{font-size:.9rem;color:var(--sl)}
+.mapa td:first-child{white-space:nowrap}
+.skok{position:absolute;left:-999px}.skok:focus{left:16px;top:8px;background:var(--ja);color:#14110e;padding:6px 10px;z-index:9}
+nav.obsah ol{columns:2;column-gap:28px;padding-left:1.2em}
+@media (max-width:600px){nav.obsah ol{columns:1}}
+svg text{fill:var(--tx);font:13px system-ui,sans-serif}
+svg .sl{fill:var(--sl)}
+</style>
+</head>
+<body>
+<a class="skok" href="#navrhy">Preskočiť na návrhy</a>
+<main>
+<header>
+<p class="meta">UX návrh · id <code>hra-nezrovnalosti-20261021-1229</code> · naex-ux · 21. 10. 2026 · vzhľad rieši súbežný UI návrh <a href="dizajn-hra-nezrovnalosti-20261021-1229-ui.html">dizajn-hra-nezrovnalosti-20261021-1229-ui.html</a></p>
+<h1>Herný stôl: čo hráč vidí, nesedí s tým, čo hra urobí</h1>
+<p><strong>Cieľ:</strong> <code>/hra</code> — <code>apps/web/src/hra/</code> (HernaPlocha, Panely, Scoreboard, Scorecard, KoniecHry), dáta z <code>packages/core/src/view.ts</code> a <code>engine.ts</code>. Overené na vlastnej partii <code>playtest/20261021-102902</code> (2 hráči, 5 lokalít, odohraná do konca) a na hláseniach z playtestu <a href="20261021-041728.html">20261021-041728</a>, starších feedbackov a stránky Spätná väzba.</p>
+<div class="mriezka">
+<div class="dlazdica"><b>Kto:</b> dvaja hráči pri stole (človek aj AI playtester). AI playtester číta textového klienta <code>tools/playtest/hrac.ts</code>, ktorý má tie isté medzery ako web — preto ich hlásia.</div>
+<div class="dlazdica"><b>Úlohy počas partie:</b> (1) odhadnúť, kto vedie a o koľko; (2) rozhodnúť NA EX — kam a za akú cenu; (3) vedieť, čí je ťah v Pitke a čo ešte smie súper; (4) pochopiť, čo sa práve stalo.</div>
+<div class="dlazdica"><b>Overené:</b> 7 nahlásených nezrovnalostí, všetky sedia s pravidlami. Žiadna nie je chyba výpočtu — <b>všetky sú chyby zobrazenia</b>. Stôl ukazuje stav „teraz“, hráč sa rozhoduje podľa stavu „po“.</div>
+</div>
+<p class="verdikt"><strong>Verdikt.</strong> Stôl ukazuje čísla, ktoré sú správne len v úzkom zmysle: pečeň „doteraz“, nie „po Pitke“, súperove body „z toho, čo práve leží navrchu“, nie „z toho, čo už stôl videl“. Navyše rozhodnutia v Pitke (poradie, „hotovo“) nezanechajú stopu. Hráč sa preto rozhoduje podľa iného stavu, než aký hra vyhodnotí, a výsledok považuje za chybu. Ako prvé odporúčam <a href="#n1">N1 Pitka nahlas</a> (malá úprava, odstráni najčastejšiu domnelú chybu) a hneď za ním <a href="#n2">N2 Účet Pitky</a> spolu s <a href="#n3">N3</a>.</p>
+<nav class="obsah" aria-label="Obsah">
+<ol>
+<li><a href="#overenie">Overenie nahlásených nezrovnalostí</a></li>
+<li><a href="#toky">Toky dnes (snímky)</a></li>
+<li><a href="#audit">Audit použiteľnosti</a></li>
+<li><a href="#navrhy">Návrhy N1–N5</a></li>
+<li><a href="#poradie">Odporúčané poradie</a></li>
+<li><a href="#otazky">Otázky do playtestu a na Michala</a></li>
+</ol>
+</nav>
+</header>
+
+<section aria-labelledby="overenie">
+<h2 id="overenie">1. Overenie nahlásených nezrovnalostí</h2>
+<p>Každé hlásenie som overil v kóde a zopakoval v relácii 102902. Stĺpec „Prečo to mätie“ je UX príčina — tú riešia návrhy.</p>
+<div class="tab-obal">
+<table>
+<caption class="pozn" style="text-align:left;caption-side:top">Hlásenie → kód → verdikt</caption>
+<thead><tr><th>Hlásenie</th><th>Čo robí hra (kód)</th><th>Verdikt</th><th>Prečo to mätie</th></tr></thead>
+<tbody>
+<tr><td>Skóre súpera „76“, na konci 33 (Jano, 041728)</td><td><code>view.ts:283</code> — súperovi sa do odhadu nedá ruka ani doberací balíček, len odhadzovací. Kliatba vznikne v odhadzovacom (verejná), po zamiešaní zmizne z odhadu.</td><td><span class="stitok ui">chyba zobrazenia</span></td><td>V 102902: koniec 3. kola sa súperov odhadzovací zamiešal → môj odhad súpera skočil z <b>−10 na 63</b> bez jediného ťahu. Na konci hry som videl „súper 105?“, výsledok bol 59. Odhad <b>zabúda verejnú informáciu</b>.</td></tr>
+<tr><td>Pečeň v Pitke 1/3, skončila na 3 (Jano K1; 185541: „stav ukazoval 0/3, dostal som 2 Cirhózy“)</td><td><code>engine.ts</code> <code>vyhodnotPitku</code> pripíše Poškodenie pečene a Poldeci zo stola až na konci Pitky; doska ukazuje <code>hrac.pecen</code> (<code>Panely.tsx:387–410</code>).</td><td><span class="stitok ui">chyba zobrazenia</span></td><td>Na tej istej obrazovke odhad bitky ukazuje „Poškodenie pečene 6“ a doska „Pečeň 1/3“ (snímka 2). Dve čísla o tom istom, nič ich nespája. Po Pitke prišli 2 Cirhózy a 1 Dlh.</td></tr>
+<tr><td>Pitku raz začína obranca, raz útočník (Jano, Eva, organizátor; názor #29)</td><td><code>engine.ts:1788</code> — vždy začína obranca. <code>cmdSkipNaex</code> (<code>engine.ts:2065–2077</code>) nastaví „hotový“ bez udalosti.</td><td><span class="stitok omyl">omyl hráča</span> spôsobený UI</td><td>Keď obranca dá „hotovo“, súper dostane len „Tvoj ťah“ — ako keby začínal on. V logu ani v páse Pitky nie je nič (snímky 4, 5).</td></tr>
+<tr><td>Po „hotovo“ už nemôžem NA EX (Eva K6)</td><td><code>HernaPlocha.tsx:1921–1928</code> — „hotovo“ pošle <code>skipNaex</code> jedným klikom.</td><td><span class="stitok omyl">omyl hráča</span> + nejasné pravidlo</td><td>Tlačidlo nehovorí, že vzdávaš NA EX a dávaš súperovi posledné slovo.</td></tr>
+<tr><td>8 kariet Dlh z jedného NA EX, ×4 (Eva K7, názor #28)</td><td>Násobky NA EX × Silná žena sa násobia, prah dáva kartu za každý celý násobok (<code>pridajZadlzenie</code>, cyklus). NA EX leží do bitky a zdvojuje v <b>každej</b> Pitke kola.</td><td><span class="stitok">nejasné pravidlo</span> + chýba náhľad</td><td>Náhľad NA EX ukazuje „Poškodenie pečene +4, Dlh +2“, ale nie „= 2× Cirhóza, 1× Dlh, v každej Pitke znova, ≈ −26 b“. V 102902 dala Pitka 2 rovnaké kliatby ešte raz bez nového ťahu.</td></tr>
+<tr><td>„Zhromaždenie 2/3, 3/3“ — nečakaný plný limit súpera (Jano K3)</td><td>Limit sa počíta v každom Zhromaždení nanovo (§5). Počet Pitiek = 1 + menší počet aktivovaných akcií lokality (<code>engine.ts:1051</code>) a mení sa počas Zhromaždenia.</td><td><span class="stitok omyl">omyl hráča</span></td><td>Pás tvrdí „len 1 Pitka — potom bitka“ (<code>HernaPlocha.tsx:2497</code>), o pár kariet neskôr je „1 z 2“. Popis pri páse uvádza iný vzorec než pravidlo (<code>:2488</code>). Limit súpera v ďalšom Zhromaždení nikde nevidno.</td></tr>
+<tr><td>Cena posunu pri Miňištrantoch až pri rozdeľovaní (Eva K7)</td><td>§8.4, správne.</td><td><span class="stitok omyl">omyl hráča</span></td><td>Cena je vidno až v kroku Prebytok. Rieši to návrh 2A navrhára (stávka bitky); tu len odkaz.</td></tr>
+</tbody>
+</table>
+</div>
+<p class="pozn">Súvis: navrhár odporučil 1A (súperove kliatby a cena NA EX na displeji) a 4A (záznam „hotovo“, poradie v páse) v <a href="navrhy-20261021-041728.html">navrhy-20261021-041728</a>. Návrhy N1–N4 nižšie sú ich rozpracovanie do tokov a obrazoviek.</p>
+</section>
+
+<section aria-labelledby="toky">
+<h2 id="toky">2. Toky dnes</h2>
+
+<h3>Tok A — „Kto vedie?“</h3>
+<ol>
+<li>Hráč pozrie scoreboard alebo „body teraz“ v hlavičke Starších (dve miesta s tým istým číslom).</li>
+<li>Pri súperovi je „?“ — už v 1. ťahu, keď súper nemá ani jednu kliatbu (<code>view.ts:285</code> stačí, že má karty v ruke). Vysvetlenie je len v <code>title</code> pri prejdení myšou.</li>
+<li>Súper dostane v Pitke kliatby → jeho skóre klesne (−26, snímka 6). Po zamiešaní jeho odhadzovacieho balíčka skóre zase stúpne (−10 → 63), hoci sa nič nestalo.</li>
+<li>Koniec hry: veľké číslo zo servera, pod ním rozpis z klienta, v ktorom súper má kliatby „0?“ (snímka 7) — rozpis sa nesčíta na výsledok.</li>
+</ol>
+<figure><img src="dizajn-hra-nezrovnalosti-20261021-1229/ux-01-skore-zaciatok.jpg" alt="Scoreboard v prvom ťahu partie: pri súperovi Nepriznaný dlh 0?, Nepriznaná cirhóza 0?, Spolu +5?" width="1200" height="108"><figcaption>1 · Prvý ťah partie: „0?“ a „+5?“ pri súperovi, ktorý žiadnu kliatbu nemá. Otáznik bez veľkosti a od začiatku — hráč si naň zvykne a prestane ho čítať.</figcaption></figure>
+<figure><img src="dizajn-hra-nezrovnalosti-20261021-1229/ux-06-po-pitke.jpg" alt="Scoreboard po Pitke: súper Nepriznaný dlh −6?, Nepriznaná cirhóza −20?, Spolu −26?" width="1200" height="119"><figcaption>6 · Po jednej Pitke súper −26 (kliatby ležia v jeho odhadzovacom, sú verejné). O dve kolá neskôr sa zamiešajú a odhad ich „zabudne“.</figcaption></figure>
+
+<h3>Tok B — Pitka: kto je na ťahu a čo už kto urobil</h3>
+<div class="tok">
+<div><h4>Obranca (začína)</h4><ol><li>Pás: „Pitka 1 z 2“ — nič o poradí.</li><li>Pokyn: „Daj NA EX… potom hotovo.“ Nepovie, že súper uvidí jeho rozhodnutie.</li><li>Klik „hotovo“ → hneď odoslané, bez stopy v logu.</li></ol></div>
+<div><h4>Útočník (druhý)</h4><ol><li>Kým obranca hrá: „Čakáš · Na ťahu je …“.</li><li>Potom „Tvoj ťah“ a rovnaký pokyn ako mal obranca — nevie, že súper skončil a že je posledný.</li><li>Log po obnovení stránky prázdny („log sa zbiera od pripojenia“, <code>useHra.ts:122</code>, <code>server.ts:304</code>).</li></ol></div>
+</div>
+<figure><img src="dizajn-hra-nezrovnalosti-20261021-1229/ux-04-pitka-pokyn.jpg" alt="Pás Pitka 1 z 2 a pokyn obrancu s tlačidlami NA EX, fajčiť, doliať, nový poldeci a hotovo" width="1200" height="173"><figcaption>4 · Obranca v Pitke 1: pás ani pokyn nepovedia, že začína a že súper uvidí jeho NA EX. „hotovo“ je zvýraznené ako hlavná akcia — a je nevratné.</figcaption></figure>
+<figure><img src="dizajn-hra-nezrovnalosti-20261021-1229/ux-05-log-prazdny.jpg" alt="Útočník po hotovo obrancu: otvorený Log je prázdny, pokyn Pitka 1/2 je rovnaký ako pre obrancu" width="1000" height="506"><figcaption>5 · Útočník hneď po „hotovo“ obrancu: log prázdny, pokyn rovnaký ako pre prvého. Hlavička logu je navyše pod časovou osou (rieši UI návrh).</figcaption></figure>
+
+<h3>Tok C — Rozhodnutie o NA EX</h3>
+<ol>
+<li>„NA EX!“ → nad stolom sa ukážu tlačidlá podľa kariet: tri razy „Pijan“, bez vlastníka a miesta (<code>HernaPlocha.tsx:1756</code>).</li>
+<li>Pri súperovej karte „akcie bez zmeny“, hoci bitka 3:1 → 3:0 — náhľad porovnáva len moje akcie (<code>:593</code>).</li>
+<li>Pri vlastnej karte „Poškodenie pečene +4, Dlh +2“ — bez prepočtu na karty Cirhóza/Dlh, bez opakovania v ďalších Pitkách, bez bodov.</li>
+<li>Text pod tým: „limit o 1 nižší“ (napísané natvrdo, <code>:1741</code>), pred kliknutím pás hovoril „v ďalšom kole limit 3 (bez NA EX 3)“ — dva protichodné údaje.</li>
+</ol>
+<figure><img src="dizajn-hra-nezrovnalosti-20261021-1229/ux-03-naex-nahlad.jpg" alt="Náhľad NA EX: tri tlačidlá Pijan s bitkou a zmenami akcií; text o limite o 1 nižšom" width="1100" height="128"><figcaption>3 · Tri „Pijan“: prvý je súperov („akcie bez zmeny“, bitka sa pritom zmení), tretí môj (+4 pečene = v skutočnosti 2 Cirhózy v tejto Pitke a 2 v ďalšej).</figcaption></figure>
+
+<h3>Tok D — Koniec Pitky: „čo sa práve stalo“</h3>
+<ol>
+<li>Pitka sa vyhodnotí, pečeň a zadĺženie sa vynulujú — moment „3/3 → Cirhóza“ hráč nikdy neuvidí na počítadle.</li>
+<li>Kliatby sa objavia len v logu (za tlačidlom) a ako počet „odhodené“.</li>
+<li>Čítačka nedostane žiadne oznámenie (jediný <code>aria-live</code> sú oznamy priazne, <code>:2236</code>).</li>
+</ol>
+<figure><img src="dizajn-hra-nezrovnalosti-20261021-1229/ux-02-pecen-vs-odhad.jpg" alt="Odhad bitky ukazuje hráčovi Poškodenie pečene 6, doska hráča Pečeň 1/3" width="1200" height="300"><figcaption>2 · Ten istý hráč, tá istá chvíľa: v odhade bitky „Poškodenie pečene 6 (+2)“, na doske „Pečeň 1/3“. Po Pitke: 7 → 2× Cirhóza, Dlh 1×. V nasledujúcej Pitke to isté znova.</figcaption></figure>
+<div class="mriezka">
+<figure><img src="dizajn-hra-nezrovnalosti-20261021-1229/ux-07-koniec.jpg" alt="Koniec hry: 30:59, pod tým rozpis s nepriznanými kliatbami súpera 0?" width="640" height="730"><figcaption>7 · Koniec hry: súčet zo servera, rozpis z klienta bez súperových skrytých kliatob (<code>KoniecHry.tsx:30</code>). Riadky sa nesčítajú na 59.</figcaption></figure>
+<figure><img src="dizajn-hra-nezrovnalosti-20261021-1229/ux-08-mobil.jpg" alt="Mobil: scoreboard s ôsmimi riadkami zaberá celú prvú obrazovku, Spolu +59 a +30?" width="390" height="844"><figcaption>8 · Mobil: scoreboard zaberá celú prvú obrazovku; „+30?“ ostáva aj po konci hry.</figcaption></figure>
+</div>
+</section>
+
+<section aria-labelledby="audit">
+<h2 id="audit">3. Audit použiteľnosti</h2>
+<p>Závažnosť podľa Nielsena: 4 katastrofa (hráč sa rozhodne zle alebo hlási chybu), 3 veľký problém, 2 menší, 1 kozmetika. „Koho“ = obaja hráči, ak nie je uvedené inak.</p>
+<div class="filtre" role="group" aria-label="Filter podľa závažnosti">
+<button type="button" data-f="vsetko" aria-pressed="true">Všetko (16)</button>
+<button type="button" data-f="4" aria-pressed="false">4 — katastrofa</button>
+<button type="button" data-f="3" aria-pressed="false">3 — veľký</button>
+<button type="button" data-f="2" aria-pressed="false">2 — menší</button>
+<button type="button" data-f="1" aria-pressed="false">1 — kozmetika</button>
+</div>
+<p class="pozn" id="filtre-stav" aria-live="polite"></p>
+<div class="tab-obal">
+<table id="audit-tab">
+<thead><tr><th>#</th><th>Problém</th><th>Heuristika</th><th>Záv.</th><th>Dôkaz</th><th>Koho, ako často</th><th>Návrh</th></tr></thead>
+<tbody>
+<tr data-z="4"><td>A1</td><td>Odhad súperových bodov zabudne jeho verejné kliatby, keď sa jeho odhadzovací balíček zamieša. Skóre skáče bez ťahu, pred bitkou ukazuje súpera o desiatky bodov lepšieho.</td><td>Viditeľnosť stavu; zhoda so svetom (pri stole si to pamätáš)</td><td><span class="z z4">4</span></td><td><code>view.ts:283</code>; 102902: −10 → 63 bez ťahu, „105?“ vs. 59; 041728: 76 vs. 33; 185541 Jano: −30 b „viditeľné len v čísle BODY TERAZ“</td><td>Každá partia s kliatbami, rozhoduje voľbu v poslednom kole</td><td>N4</td></tr>
+<tr data-z="4"><td>A2</td><td>Pečeň a Zadĺženie ukazujú stav „doteraz“; čo pripíšu karty na stole, je len v odhade bitky ako iné číslo. Cirhóza a Dlh prekvapia.</td><td>Viditeľnosť stavu; rozpoznanie namiesto pamätania</td><td><span class="z z4">4</span></td><td>Snímka 2; <code>Panely.tsx:387–430</code>; 041728 Jano #3; 185541 Jano; názor #1 „tri Cirhózy naraz“</td><td>Takmer každá Pitka s Pijanom či Poldeci</td><td>N2</td></tr>
+<tr data-z="4"><td>A3</td><td>Poradie v Pitke nevidno a „hotovo“ nezanechá stopu — súper si myslí, že začína.</td><td>Viditeľnosť stavu; spätná väzba</td><td><span class="z z4">4</span></td><td><code>engine.ts:1788, 2065–2077</code>; pás <code>HernaPlocha.tsx:2486–2499</code>; obaja hráči + organizátor 041728, názor #29</td><td>Každá Pitka</td><td>N1</td></tr>
+<tr data-z="3"><td>A4</td><td>NA EX leží do bitky a zdvojuje v každej ďalšej Pitke; text hovorí „Cena: pečeň +1“.</td><td>Prevencia chýb; náhľad dôsledku</td><td><span class="z z3">3</span></td><td>102902 Pitka 2: znova 2× Cirhóza + Dlh bez nového ťahu; komentár Jana k #2 „v každej Pitke zdvojnásobil pečeň“; <code>HernaPlocha.tsx:1740</code></td><td>Kolá s 2–3 Pitkami (041728: 3 zo 7 kôl)</td><td>N2, N3</td></tr>
+<tr data-z="3"><td>A5</td><td>Náhľad NA EX: rovnaké mená bez vlastníka a miesta, len moje akcie (pri súperovej karte „akcie bez zmeny“), bez kliatob a bodov.</td><td>Rozpoznanie; konzistencia; prevencia chýb</td><td><span class="z z3">3</span></td><td>Snímka 3; <code>HernaPlocha.tsx:582–600, 1756</code>; Eva #28 „hra mi neukázala osem kariet Dlh“</td><td>Každé NA EX (041728: 17×)</td><td>N3</td></tr>
+<tr data-z="3"><td>A6</td><td>„hotovo“ v Pitke je nevratné na jeden klik a nepovie, čo vzdávaš.</td><td>Kontrola a sloboda; prevencia chýb</td><td><span class="z z3">3</span></td><td><code>HernaPlocha.tsx:1921–1928</code>; Eva K6 „Nie si na ťahu“</td><td>Prvý v Pitke, kým má plný poldeci</td><td>N1</td></tr>
+<tr data-z="3"><td>A7</td><td>Log žije len v pamäti prehliadača — po obnovení či výpadku je prázdny. Je to jediný záznam súperových ťahov.</td><td>Viditeľnosť stavu; pamäť</td><td><span class="z z3">3</span></td><td>Snímka 5; <code>useHra.ts:122</code>; <code>server.ts:304</code> (<code>events: []</code> pri návrate)</td><td>Každé obnovenie stránky, mobil pri prepnutí aplikácie</td><td>N5</td></tr>
+<tr data-z="3"><td>A8</td><td>Koniec hry: súčet zo servera, rozpis z klienta bez súperových skrytých kliatob — nesčíta sa.</td><td>Konzistencia; dôvera</td><td><span class="z z3">3</span></td><td>Snímka 7; <code>KoniecHry.tsx:30</code></td><td>Každý riadny koniec, ak mal súper skryté kliatby</td><td>N4</td></tr>
+<tr data-z="2"><td>A9</td><td>„?“ pri súperovi od 1. ťahu, bez veľkosti, vysvetlenie len pri prejdení myšou (<code>title</code>) — na dotyku nedostupné.</td><td>Minimalizmus; nápoveda; WCAG 1.3.1</td><td><span class="z z2">2</span></td><td>Snímka 1; <code>view.ts:285</code>; <code>Scoreboard.tsx</code></td><td>Stále</td><td>N4</td></tr>
+<tr data-z="2"><td>A10</td><td>Protichodný text o limite: pokyn „v ďalšom kole limit 3 (bez NA EX 3)“, po kliknutí na NA EX „limit o 1 nižší“ (natvrdo).</td><td>Konzistencia</td><td><span class="z z2">2</span></td><td>Snímky 3, 4; <code>HernaPlocha.tsx:1741</code> vs. <code>:1854</code></td><td>Každé NA EX, keď sa poldeci doleje sám</td><td>N1</td></tr>
+<tr data-z="2"><td>A11</td><td>Počet Pitiek sa mení počas Zhromaždenia, pás tvrdí „len 1 Pitka — potom bitka“; popis uvádza iný vzorec než pravidlo.</td><td>Viditeľnosť stavu; zhoda s pravidlami</td><td><span class="z z2">2</span></td><td><code>HernaPlocha.tsx:2488, 2497</code>; <code>engine.ts:1051</code>; 102902: 1 z 1 → 1 z 2</td><td>Lokality s akciami na oboch stranách</td><td>N1</td></tr>
+<tr data-z="2"><td>A12</td><td>V Zhromaždení nevidno, s akým limitom príde súper do ďalšieho Zhromaždenia.</td><td>Rozpoznanie namiesto pamätania</td><td><span class="z z2">2</span></td><td>041728 Jano #7 (Policajtka v K3)</td><td>Kolá s viac Pitkami</td><td>N1</td></tr>
+<tr data-z="2"><td>A13</td><td>Zmena ťahu a súperove ťahy sa čítačke neohlásia.</td><td>WCAG 4.1.3 Stavové správy</td><td><span class="z z2">2</span></td><td><code>HernaPlocha.tsx:2236</code> — jediný <code>aria-live</code></td><td>Hráči s čítačkou — každý ťah</td><td>N5</td></tr>
+<tr data-z="2"><td>A14</td><td>Agentský klient <code>hrac.ts</code> má tie isté texty („pečeň v Pitke 1/3“, „BODY TERAZ … najviac“, „hotovo“) — playtesty merajú jeho medzery.</td><td>Konzistencia (proces)</td><td><span class="z z2">2</span></td><td><code>tools/playtest/hrac.ts:247, 354, 614</code></td><td>Každý AI playtest</td><td>všetky</td></tr>
+<tr data-z="2"><td>A15</td><td>Cena posunu prebytku (Miňištrant, Puška) sa ukáže až pri rozdeľovaní.</td><td>Náhľad dôsledku</td><td><span class="z z2">2</span></td><td>041728 Eva #7, názory #8, #22</td><td>Hráči s Miňištrantom</td><td>navrhár 2A</td></tr>
+<tr data-z="1"><td>A16</td><td>Body sú dvakrát (Scoreboard „Spolu“ a „body teraz“ v hlavičke Starších); na mobile scoreboard zaberie celú prvú obrazovku.</td><td>Minimalizmus</td><td><span class="z z1">1</span></td><td>Snímky 1, 8</td><td>Mobil</td><td>UI návrh</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section aria-labelledby="navrhy">
+<h2 id="navrhy">4. Návrhy</h2>
+<p>Päť návrhov, od rýchlej výhry po väčšiu zmenu toku. Žiaden nemení pravidlá a žiaden neukazuje skrytú informáciu (súperovu ruku, balíčky, ich poradie). N4 potrebuje Michalovo rozhodnutie. Mapa na UI návrh: N1 ≈ UI N2 „dve stoličky“, N2 ≈ UI N1 + N5 „poctivé počítadlá, bloček“, N3 ≈ UI N4, N4 ≈ UI N3. Tu je tok a obsah, v UI návrhu vzhľad.</p>
+
+<article class="navrh" id="n1" aria-labelledby="n1-h">
+<h3 id="n1-h">N1 · Pitka nahlas <span class="stitok">rýchla výhra</span> <span class="stitok">náročnosť: malá</span></h3>
+<p><strong>Rieši:</strong> A3, A6, A10, A11, A12. Hra už poradie dodržiava, len ho nikde neukazuje.</p>
+<svg viewBox="0 0 760 120" role="img" aria-labelledby="n1-svg-t" style="width:100%;max-width:760px;height:auto">
+<title id="n1-svg-t">Poradie v Pitke: obranca začína, môže dať NA EX, súper môže odpovedať kartou; po hotovo obrancu hrá útočník, jeho NA EX smie obranca prebiť len jednou kartou.</title>
+<rect x="4" y="20" width="170" height="54" rx="8" fill="none" stroke="currentColor" style="color:var(--mo)"/>
+<text x="16" y="42">⛨ Obranca začína</text><text x="16" y="62" class="sl">NA EX · fajčiť · hotovo</text>
+<rect x="200" y="20" width="170" height="54" rx="8" fill="none" stroke="currentColor" style="color:var(--sl)"/>
+<text x="212" y="42">Útočník odpovie</text><text x="212" y="62" class="sl">1 karta (ak bolo NA EX)</text>
+<rect x="396" y="20" width="170" height="54" rx="8" fill="none" stroke="currentColor" style="color:var(--te)"/>
+<text x="408" y="42">⚔ Útočník hrá</text><text x="408" y="62" class="sl">vidí všetko · posledný</text>
+<rect x="592" y="20" width="160" height="54" rx="8" fill="none" stroke="currentColor" style="color:var(--sl)"/>
+<text x="604" y="42">Obranca odpovie</text><text x="604" y="62" class="sl">1 karta · potom účet</text>
+<path d="M174 47h22M370 47h22M566 47h22" stroke="currentColor" style="color:var(--sl)" fill="none" marker-end="url(#sip)"/>
+<defs><marker id="sip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor" style="color:var(--sl)"/></marker></defs>
+<text x="4" y="104" class="sl">Dnes je z tejto schémy na stole vidieť len „Tvoj ťah“ / „Čakáš“. N1 ju dá do pásu Pitky a do logu.</text>
+</svg>
+<div class="tok">
+<div class="pred"><h4>Pred</h4><ol><li>Obranca: pokyn „Daj NA EX… potom hotovo“ → klik „hotovo“ (odoslané).</li><li>Útočník: „Tvoj ťah“, ten istý pokyn. Nevie, že je posledný.</li><li>Log: nič. Hráč hlási „nekonzistentné poradie“.</li></ol></div>
+<div class="po"><h4>Po</h4><ol><li>Pás Pitky má dve „stoličky“ so stavom: kto začína, kto je na ťahu, kto skončil, kto už dal NA EX.</li><li>Obranca: pokyn povie, že je prvý. „hotovo“ chce druhý klik len vtedy, keď ním vzdáva možné NA EX.</li><li>Log a súperov pás: „Jano končí svoju časť Pitky (bez NA EX).“ Útočník: „Si posledný.“</li></ol></div>
+</div>
+<div class="wf" aria-label="Drôtený model: pás Pitky">
+<div class="r"><div class="b">Pitka 1 z 2 <small>· zatiaľ — môže pribudnúť</small></div>
+<div class="b">⛨ Jano · obranca · <b>začína</b> · ✓ skončil bez NA EX</div>
+<div class="b hl">⚔ ty · <b>na ťahu</b> · NA EX: môžeš · posledný v Pitke</div></div>
+<div class="r" style="margin-top:8px"><div class="b tl">Ďalšie Zhromaždenie: ty limit 3 · Jano limit 3 (limit sa obnoví)</div></div>
+</div>
+<div class="wf" aria-label="Drôtený model: hotovo s potvrdením">
+<div class="r"><div class="b" style="flex:1">PITKA 1/2 · Začínaš Pitku. Súper uvidí tvoje NA EX a smie naň odpovedať kartou aj vlastným NA EX.</div>
+<span class="tlac">NA EX!</span> <span class="tlac">fajčiť −1</span> <span class="tlac hl">hotovo</span></div>
+<div class="r" style="margin-top:8px"><div class="b" style="flex:1">Skončiť bez NA EX? V tejto Pitke ho už nedáš a Jano bude hrať s vedomím, že si skončil.</div><span class="tlac hl">Skončiť Pitku</span> <span class="tlac">Ešte nie</span></div>
+</div>
+<p><strong>Mikrocopy</strong></p>
+<p class="mikro">Obranca, prvý ťah: „Začínaš Pitku. Súper uvidí tvoje NA EX a smie naň odpovedať kartou aj vlastným NA EX.“</p>
+<p class="mikro">Útočník po súperovom „hotovo“: „Jano skončil bez NA EX. Si posledný — na tvoje NA EX už odpovie len jednou kartou.“</p>
+<p class="mikro">Log: „Jano končí svoju časť Pitky (bez NA EX).“ / „… (po NA EX na Pijana).“</p>
+<p class="mikro">Limit pri NA EX (z <code>limitBuduceKolo</code>, nie natvrdo): „V ďalšom kole limit ostane 3 — poldeci sa doleje sám.“ alebo „V ďalšom kole limit 2 namiesto 3.“</p>
+<p class="mikro">Pás: „Pitka 1 z 2 · zatiaľ“ — popis: „Pitiek je 1 + menší z počtov aktivovaných akcií lokality na jej dvoch stranách. Keď sa aktivuje ďalšia na oboch, Pitka pribudne.“</p>
+<dl>
+<dt>Pravidlá</dt><dd>Bez zmeny. Inline potvrdenie namiesto „späť“ — vrátenie by menilo pravidlo, lebo súper hneď hrá. Potvrdenie sa ukáže len keď: mám plný poldeci, NA EX je možné a súper ešte neskončil (inak by bolo zbytočné). Na Krčme je „hotovo“ zakázané ako dnes.</dd>
+<dt>Prístupnosť</dt><dd>Pás Pitky ako zoznam so stavom v texte (nie len farba, „✓ skončil“). Zmena stavu súpera do <code>aria-live="polite"</code>. Potvrdenie inline, fokus sa presunie na „Skončiť Pitku“, Esc = „Ešte nie“. Ciele aspoň 44 × 44 px.</dd>
+<dt>Súbory</dt><dd><code>packages/core/src/engine.ts</code> (<code>cmdSkipNaex</code>: jedna log udalosť), <code>apps/web/src/hra/HernaPlocha.tsx</code> (<code>pasKola</code>, pokyn fázy Pitka, tlačidlo „hotovo“, text pri NA EX), <code>hra.css</code>, <code>tools/playtest/hrac.ts</code> (rovnaké vety pre agentov). Dáta už sú v <code>view.pitkaStav</code> (<code>hotovy</code>, <code>naexPouzity</code>, <code>reakcia</code>) — server netreba meniť.</dd>
+<dt>Ako overiť</dt><dd>Playtest: v nezrovnalostiach sledovať hlásenia „poradie v Pitke“ (cieľ 0). Otázka do denníka: „Kto začínal Pitku a kto mal posledné slovo — vedel si to v tej chvíli?“ Sledovať, koľkokrát hráč potvrdenie zrušil („Ešte nie“).</dd>
+</dl>
+</article>
+
+<article class="navrh" id="n2" aria-labelledby="n2-h">
+<h3 id="n2-h">N2 · Účet Pitky — počítadlá ukazujú „po Pitke“ <span class="stitok">náročnosť: stredná</span></h3>
+<p><strong>Rieši:</strong> A2, A4 (a čiastočne A15 — rovnaký princíp „ukáž výsledok vopred“). Hráč nemá počítať pečeň v hlave z ikon v odhade bitky.</p>
+<div class="tok">
+<div class="pred"><h4>Pred</h4><ol><li>Doska: „Pečeň 1/3“. Odhad bitky (iný panel): „Poškodenie pečene 6“.</li><li>Hráč nesčíta, dá hotovo.</li><li>Pitka: 2× Cirhóza + Dlh, počítadlo sa vynuluje → „0/3“. Kliatby len v logu.</li><li>Ďalšia Pitka: to isté znova, nikto nevaroval.</li></ol></div>
+<div class="po"><h4>Po</h4><ol><li>Doska: „Pečeň 1 ▸ 7 po Pitke · 2× Cirhóza (≈ −20 b)“, pruh s prerušovanými dielikmi „čo príde“.</li><li>To isté pre súpera (všetko je z verejnej línie).</li><li>Pri viac Pitkách: „a znova v Pitke 2/2, kým leží NA EX“.</li><li>Po Pitke krátky „bloček“: „Pitka 1: ty +2 Cirhózy, +1 Dlh · Jano nič“ — aj v logu a pre čítačku.</li></ol></div>
+</div>
+<div class="wf" aria-label="Drôtený model: doska s projekciou">
+<div class="r">
+<div class="b"><small>PEČEŇ</small><br><b>1 ▸ 7</b> <small>/3</small><div class="pr"><i class="p"></i><i class="g"></i><i class="g"></i></div><small>po Pitke: <b>2× Cirhóza</b> · ≈ −20 b</small></div>
+<div class="b"><small>ZADĹŽENIE</small><br><b>0 ▸ 3</b> <small>/2</small><div class="pr"><i class="g"></i><i class="g"></i></div><small>po Pitke: <b>1× Dlh</b> · ≈ −6 b</small></div>
+<div class="b tl"><small>v Pitke 2/2 znova</small><br>≈ 2× Cirhóza, 1× Dlh<br><small>(NA EX leží do bitky)</small></div>
+</div>
+<div class="r" style="margin-top:8px"><div class="b hl" role="status">Pitka 1 vyhodnotená · ty: +2 Cirhózy, +1 Dlh (≈ −26 b) · Jano: nič</div></div>
+</div>
+<p><strong>Mikrocopy</strong></p>
+<p class="mikro">Doska: „Pečeň 1 ▸ 7 po Pitke — 2× Cirhóza.“ Nápoveda: „Pripočíta sa: Poškodenie pečene 6 a Poldeci 0 z kariet na stole. Každé 3 = Cirhóza. Po Pitke sa pečeň vynuluje.“</p>
+<p class="mikro">V Zhromaždení, keď hráč kladie kartu: „Do Pitky 1: pečeň ▸ 3 = Cirhóza.“</p>
+<p class="mikro">Cena v bodoch: „Cirhóza ≈ −10 b (5 scorecardov × −2), Dlh ≈ −6 b (6 × −1), ak ju do konca nepriznáš.“</p>
+<dl>
+<dt>Ako počítať</dt><dd>Jedna čistá funkcia v jadre (napr. <code>nahladPitky(data, view)</code>), ktorú volá aj <code>vyhodnotPitku</code> pre kroky 2–3 (Dlh vrátane Finančnej poradkyne a Kočovníka, pečeň, Cirhóza/Dlh za každý celý prah). Tak sa náhľad nemôže rozísť s vyhodnotením. Body za kus z tých istých položiek ako <code>bodyTeraz</code>. Odhad = „ak sa do konca Pitky nič nezmení“ — tak to aj napísať.</dd>
+<dt>Prístupnosť</dt><dd>Projekcia ako text („▸ 7, 2× Cirhóza“), nie len prerušované dieliky. Bloček po Pitke cez <code>role="status"</code>. Varovanie farbou aj slovom („Cirhóza“).</dd>
+<dt>Súbory</dt><dd><code>packages/core/src/engine.ts</code> (vyčleniť výpočet), export z <code>@naex/core</code>, <code>apps/web/src/hra/Panely.tsx</code> (Zdroj Pečeň, Zadĺženie), <code>HernaPlocha.tsx</code> (bloček, pokyn Zhromaždenia), <code>useHra.ts</code> (text udalosti), <code>tools/playtest/hrac.ts</code> („pečeň v Pitke 1 ▸ 7/3 → 2× Cirhóza“). Test: náhľad = výsledok <code>vyhodnotPitku</code> v náhodných partiách botov.</dd>
+<dt>Náročnosť</dt><dd>Stredná — hlavne refaktor jadra a test, UI je malé.</dd>
+<dt>Ako overiť</dt><dd>Nezrovnalosti typu „počítadlo pečene“ (cieľ 0). Do denníka: „Prekvapila ťa Cirhóza alebo Dlh? Kedy si o nej vedel?“ Porovnať počet nepriznaných kliatob na konci s 041728 (Eva 15 Dlhov).</dd>
+</dl>
+</article>
+
+<article class="navrh" id="n3" aria-labelledby="n3-h">
+<h3 id="n3-h">N3 · NA EX s celou cenou <span class="stitok">náročnosť: stredná</span></h3>
+<p><strong>Rieši:</strong> A5, A4, A10. Najdrahšie rozhodnutie v hre má mať náhľad, ktorý povie výsledok pre oboch a cenu v kliatbách a bodoch.</p>
+<div class="tok">
+<div class="pred"><h4>Pred</h4><ol><li>„NA EX!“ → 3× „Pijan“, len moje akcie.</li><li>Hráč hádá, ktorý Pijan je ktorý (prejde myšou po stole).</li><li>Klik = NA EX odoslané.</li></ol></div>
+<div class="po"><h4>Po</h4><ol><li>„NA EX!“ → karty v línii svietia, zoznam volieb má vlastníka a miesto. Prejdenie / fokus zvýrazní kartu na stole (a naopak).</li><li>Každá voľba: bitka pred → po, zmeny oboch hráčov, kliatby z tejto Pitky a ďalších, body.</li><li>Klik na voľbu = výber, NA EX potvrdí jedno tlačidlo „Dať NA EX na …“. Esc zruší.</li></ol></div>
+</div>
+<div class="wf" aria-label="Drôtený model: náhľad NA EX">
+<div class="r">
+<div class="b"><b>Pijan</b> · Jano · 1. od lokality<br>bitka 3:1 → <b>3:0</b> ▲<br><small>Jano: Rana −1, Poldeci −1 · ty: bez zmeny</small><br><small>kliatby: nikto</small></div>
+<div class="b hl"><b>Pijan</b> · tvoj · 2. od lokality<br>bitka 3:1 → <b>2:1</b> ▼<br><small>ty: Poškodenie pečene 2 → 6 (×2 NA EX), Dlh 1 → 3</small><br><small>kliatby: <b>2× Cirhóza, 1× Dlh v Pitke 1 a znova v Pitke 2</b> · ≈ −52 b</small></div>
+</div>
+<div class="r" style="margin-top:8px"><div class="b" style="flex:1">Cena: plný poldeci a pečeň +1 hneď. Karta sa zdvojuje v každej Pitke až do bitky (ešte 2). V ďalšom kole limit ostane 3.</div><span class="tlac hl">Dať NA EX na tvojho Pijana</span> <span class="tlac">zrušiť</span></div>
+</div>
+<p><strong>Mikrocopy</strong></p>
+<p class="mikro">Názov voľby: „Pijan · Jano · 1. od lokality“ / „Pijan · tvoj · 2. od lokality“.</p>
+<p class="mikro">Riadok kliatob: „2× Cirhóza, 1× Dlh — v tejto Pitke aj v Pitke 2/2 · ≈ −52 b, ak ich nepriznáš.“</p>
+<p class="mikro">Pri ×4: „Dlh 1 → 4 (×2 NA EX × ×2 Silná žena)“ — vzorec rieši aj UI návrh N4.</p>
+<dl>
+<dt>Pravidlá</dt><dd>Bez zmeny. Náhľad používa N2 (<code>nahladPitky</code>) na línii s NA EX — teda tú istú logiku ako engine.</dd>
+<dt>Prístupnosť</dt><dd>Voľby ako <code>role="radiogroup"</code> so šípkami; dostupný názov obsahuje vlastníka a výsledok. Lepšie/horšie aj textom (▲ ▼, „prehrávaš menej“), nie len zelená/červená (WCAG 1.4.1). Potvrdzovacie tlačidlo s názvom karty.</dd>
+<dt>Súbory</dt><dd><code>apps/web/src/hra/HernaPlocha.tsx</code> (<code>nahladNaex</code> porovnať oboch hráčov, módy <code>naexCiel</code>, zvýraznenie karty), <code>hra.css</code>, <code>tools/playtest/hrac.ts</code> (riadok „NA EX na …“ doplniť o kliatby).</dd>
+<dt>Náročnosť</dt><dd>Stredná; jednoduchšia po N2.</dd>
+<dt>Ako overiť</dt><dd>Do denníka pri každom NA EX: čo náhľad sľuboval a čo prišlo; či náhľad zmenil voľbu. Cieľ: žiadne „hra mi neukázala“ (#28).</dd>
+</dl>
+</article>
+
+<article class="navrh" id="n4" aria-labelledby="n4-h">
+<h3 id="n4-h">N4 · Skóre, ktoré nezabúda <span class="stitok">náročnosť: stredná</span> <span class="stitok ui">rozhodnutie Michala</span></h3>
+<p><strong>Rieši:</strong> A1, A8, A9. Hra má pamätať to, čo už raz ukázala na stole. Každý vznik kliatby, priznanie, zahodenie Víziou, Veštica (<code>engine.ts:2514</code>, s menom karty) aj Dlh priznaný pri dobratí idú do verejného logu. Počet súperových nepriznaných kliatob si teda hráč s dobrou pamäťou vie spočítať. Návrh nemusí ukázať nič, čo stôl nevidel, len zruší daň za pamätanie.</p>
+<div class="tok">
+<div class="pred"><h4>Pred</h4><ol><li>Súper −26 (kliatby v odhadzovacom).</li><li>Zamiešanie → súper 63, „?“.</li><li>Posledné kolo hrá hráč ako dobiehajúci, hoci vedie.</li><li>Koniec: 30 : 59, rozpis sa nesčíta.</li></ol></div>
+<div class="po"><h4>Po</h4><ol><li>Pri súperovi: „nepriznané: Dlh 1, Cirhóza 2“ (nikdy ktoré karty, ani kde v balíčku sú).</li><li>Body súpera presné, bez „?“. Skok po zamiešaní zmizne.</li><li>Koniec: rozpis zo servera, sčíta sa na výsledok.</li></ol></div>
+</div>
+<div class="wf" aria-label="Drôtený model: súperove body">
+<div class="r"><div class="b">Spolu · ty <b>30</b> · Jano <b>59</b></div><div class="b tl">Jano má nepriznané: Dlh 1 · Cirhóza 2 <small>(spolu −26 b, už v súčte)</small></div></div>
+<div class="r" style="margin-top:8px"><div class="b tl">Ak N4 nie: Jano <b>najviac 76</b> · každá jeho skrytá kliatba: Dlh −6, Cirhóza −10 · „?“ až keď môže mať skrytú kliatbu</div></div>
+</div>
+<p><strong>Mikrocopy</strong></p>
+<p class="mikro">„Jano má nepriznané: Dlh 1, Cirhóza 2. Počítané z toho, čo sa ukázalo na stole — ktoré karty a kde, nevidíš.“</p>
+<p class="mikro">Záložný variant (bez N4): „Jano najviac 76 — jeho skryté kliatby nevidíš; každá: Dlh −6, Cirhóza −10.“</p>
+<dl>
+<dt>Bezpečnosť</dt><dd>Počet ráta server z verejných udalostí, nie zo skrytých zón. Test vo <code>viewFor</code>: v stovkách partií botov sa počet zrekonštruovaný z <code>eventsFor(seat)</code> musí zhodovať s posielaným. Ak sa nezhoduje, je niekde neverejný prechod a počet sa poslať nesmie (pravidlo 2 v CLAUDE.md). Na konci hry pošle server rozpis bodov (čísla za podmienky), nie karty.</dd>
+<dt>Záložný variant</dt><dd>Ak Michal povie nie: „?“ len keď súper môže mať skrytú kliatbu (aspoň raz nejakú mal), namiesto „76?“ písať „najviac 76“ a vedľa cenu jednej skrytej kliatby. Koniec hry: rozpis bez riadkov s kliatbami súpera, zato s vetou „súperove kliatby: −46 b (rozdiel od súčtu)“.</dd>
+<dt>Prístupnosť</dt><dd>Bez „?“, ktorý čítačka prečíta ako „otáznik“. Vysvetlenie v texte, nie v <code>title</code>.</dd>
+<dt>Súbory</dt><dd><code>packages/core/src/engine.ts</code> (verejné počítadlo kliatob mimo odhadzovacieho), <code>view.ts</code> (<code>viewFor</code>, <code>bodyTeraz</code>, <code>KoniecHry</code> rozpis), <code>packages/core/test</code> (test rekonštrukcie), <code>Scoreboard.tsx</code>, <code>Scorecard.tsx</code>, <code>RozpisBodov.tsx</code>, <code>KoniecHry.tsx</code>, <code>tools/playtest/hrac.ts</code> („BODY TERAZ“ bez „najviac“).</dd>
+<dt>Ako overiť</dt><dd>Playtesteri pred poslednou bitkou zapíšu odhad skóre oboch; rozdiel voči výsledku (dnes 43–46 b, cieľ 0). Stratég nemusí nič merať — pravidlá sa nemenia.</dd>
+</dl>
+</article>
+
+<article class="navrh" id="n5" aria-labelledby="n5-h">
+<h3 id="n5-h">N5 · Čo sa práve stalo — história, ktorá prežije obnovenie <span class="stitok">odvážnejší smer</span> <span class="stitok">náročnosť: veľká</span></h3>
+<p><strong>Rieši:</strong> A7, A13, A14 a posilní N1–N2. Log dnes skrýva tlačidlo „Log“ a po obnovení stránky zmizne. Pri hre, kde rozhodujú súperove ťahy v Pitke, má byť „posledný ťah súpera“ vždy na očiach a história má byť tá istá po obnovení stránky aj na druhom zariadení.</p>
+<div class="tok">
+<div class="pred"><h4>Pred</h4><ol><li>Súper ťahá → zmení sa stôl, nič sa neohlási.</li><li>Hráč otvorí Log (ak si všimne číslo na tlačidle).</li><li>Obnovenie stránky → log prázdny.</li></ol></div>
+<div class="po"><h4>Po</h4><ol><li>Riadok nad rukou: „Jano: NA EX na tvojho Pijana → bitka 3:1 → 3:0“, ostane do tvojho ďalšieho ťahu. Zmenené karty na chvíľu zvýraznené.</li><li>Log zoskupený podľa kola a Pitky, s bločkom z N2 na konci každej Pitky. Skratka <kbd>L</kbd>.</li><li>Server drží históriu (už filtrovanú cez <code>eventsFor</code>) a pošle ju pri návrate.</li></ol></div>
+</div>
+<div class="wf" aria-label="Drôtený model: posledný ťah a log">
+<div class="r"><div class="b hl" style="flex:1" role="status">Jano: NA EX na tvojho Pijana (1. od lokality) → bitka 3:1 → 3:0 · môžeš odpovedať jednou kartou</div><span class="tlac">Log (L)</span></div>
+<div class="r" style="margin-top:8px"><div class="b" style="flex:1"><b>Kolo 1 · Pitka 1/2</b><br>Jano (obranca) končí svoju časť Pitky bez NA EX.<br>Ty: NA EX na Pijana. Jano neodpovedá.<br><b>Účet:</b> ty +2 Cirhózy, +1 Dlh · Jano nič</div></div>
+</div>
+<dl>
+<dt>Bezpečnosť</dt><dd>História obsahuje len to, čo hráč už dostal (<code>eventsFor(seat)</code>), teda nič nové. Pri návrate sa pošle tá istá postupnosť.</dd>
+<dt>Prístupnosť</dt><dd>Oznamovač <code>aria-live="polite"</code> pre zmenu ťahu a súperove ťahy, <code>assertive</code> len pre „Tvoj ťah“ po dlhom čakaní. Zvýraznenie kariet aj textom v riadku, bez závislosti na pohybe (<code>prefers-reduced-motion</code>). Log ako <code>&lt;ol&gt;</code> s nadpismi kôl.</dd>
+<dt>Súbory</dt><dd><code>packages/server/src/server.ts</code> (história v miestnosti, <code>rejoin</code>), <code>apps/web/src/hra/useHra.ts</code> (texty udalostí — presunúť do jadra, aby ich zdieľal <code>hrac.ts</code>), <code>HernaPlocha.tsx</code> (riadok posledného ťahu, log), <code>hra.css</code>, <code>tools/playtest/hrac.ts</code>.</dd>
+<dt>Ako overiť</dt><dd>Playtest so zámerným obnovením stránky uprostred Pitky: vie hráč povedať, čo urobil súper? Test s NVDA: ohlási sa „Tvoj ťah“ a súperovo NA EX? V denníku: „Kedy si nevedel, čo sa práve stalo?“</dd>
+</dl>
+</article>
+</section>
+
+<section aria-labelledby="poradie">
+<h2 id="poradie">5. Odporúčané poradie</h2>
+<ol>
+<li><strong>N1 Pitka nahlas</strong> — hneď. Malé, bez servera, odstráni najčastejšiu domnelú chybu (3 hlásenia v jednej partii). Spolu s ním opraviť natvrdo napísaný text o limite (A10).</li>
+<li><strong>N2 Účet Pitky + N3 NA EX s celou cenou</strong> — spolu, zdieľajú jeden výpočet v jadre. Sú to navrhárove body 1A(b) a „pri NA EX ukázať náhľad kliatob“.</li>
+<li><strong>N4 Skóre, ktoré nezabúda</strong> — po Michalovom „áno“ (navrhárova otázka 1). Kým nepríde, aspoň záložný variant („najviac 76“, cena skrytej kliatby, „?“ len keď má zmysel).</li>
+<li><strong>N5 Čo sa práve stalo</strong> — po prvých troch; najväčší zásah, ale aj pre ľudí na mobile (obnovenie stránky).</li>
+</ol>
+<p>Pri každom kroku zmeniť aj <code>tools/playtest/hrac.ts</code> rovnakými vetami — inak AI playtest bude ďalej hlásiť staré nezrovnalosti a nezmeriame, či zmena pomohla. Podľa navrhára: najprv tieto zmeny rozhrania, potom jeden playtest bez zmien pravidiel.</p>
+</section>
+
+<section aria-labelledby="otazky">
+<h2 id="otazky">6. Otázky</h2>
+<h3>Do playtestu (denník a nezrovnalosti)</h3>
+<ul>
+<li>Pri každej Pitke: kto začínal, kto mal posledné slovo — a vedel si to v tej chvíli zo stola?</li>
+<li>Prekvapila ťa niekedy Cirhóza alebo Dlh? Čo ukazovalo počítadlo tesne pred tým?</li>
+<li>Pri každom NA EX: čo sľuboval náhľad (bitka, kliatby, body) a čo prišlo? Zmenil náhľad tvoju voľbu?</li>
+<li>Pred poslednou bitkou zapíš skóre oboch tak, ako ho vidíš, a svoj odhad skutočného. Porovnáme s koncom.</li>
+<li>Dal si niekedy „hotovo“ a potom ho ľutoval? Zrušil si potvrdenie?</li>
+<li>Kedy si nevedel, čo sa práve stalo (napr. po obnovení stránky)?</li>
+</ul>
+<h3>Na Michala</h3>
+<ol>
+<li><strong>N4:</strong> Smie stôl ukazovať počet súperových nepriznaných kliatob, ak ho server ráta len z verejných udalostí a test to overí? A smie koniec hry ukázať súperov rozpis bodov zo servera (čísla, nie karty)? áno / nie (záložný variant)</li>
+<li><strong>N1:</strong> Je zámer, že obranca v Pitke vždy rozhoduje prvý a „hotovo“ je konečné? Ak áno, dopíšem vetu do §7 a do ťaháku; ak nie, je to otázka pravidla (navrhár 4B), nie rozhrania.</li>
+<li><strong>N2:</strong> Má účet Pitky ukazovať projekciu aj pri súperovi? Všetko je z verejnej línie, ale ubudne počítania — je počítanie pečene súčasťou zručnosti, ktorú chceš zachovať?</li>
+<li><strong>N3:</strong> Má byť NA EX dvojkrokové (vybrať kartu, potom potvrdiť)? Pridá jeden klik k najdôležitejšiemu ťahu v Pitke, zato zmizne omyl s rovnakými menami.</li>
+</ol>
+</section>
+
+<footer class="pozn" style="margin-top:3em">
+<p>Podklady: relácia <code>playtest/20261021-102902</code> (snímky a poznámky v <code>playtest/dizajn/hra-nezrovnalosti-20261021-1229/</code>, <code>ux-poznamky.md</code>), <code>playtest/20261021-041728/hrac*/nezrovnalosti.md</code>, feedbacky 20261016–20261021, názory #1, #2, #28, #29 na stránke Spätná väzba, <a href="20261021-041728.html">report 041728</a>, <a href="navrhy-20261021-041728.html">návrhy navrhára</a>. Kód webu som nemenil. Odhady bodov v drôtených modeloch sú z tejto partie (Dlh 6 scorecardov × −1, Cirhóza 5 × −2).</p>
+</footer>
+</main>
+<script>
+(function(){
+  var tlac=document.querySelectorAll('.filtre button');
+  var riadky=document.querySelectorAll('#audit-tab tbody tr');
+  var stav=document.getElementById('filtre-stav');
+  function filtruj(f){
+    var n=0;
+    riadky.forEach(function(r){var ok=f==='vsetko'||r.getAttribute('data-z')===f;r.hidden=!ok;if(ok)n++;});
+    tlac.forEach(function(b){b.setAttribute('aria-pressed',String(b.getAttribute('data-f')===f));});
+    stav.textContent=f==='vsetko'?'Zobrazené všetky problémy ('+n+').':'Zobrazené problémy so závažnosťou '+f+': '+n+'.';
+  }
+  tlac.forEach(function(b){b.addEventListener('click',function(){filtruj(b.getAttribute('data-f'));});});
+})();
+</script>
+</body>
+</html>

@@ -79,6 +79,32 @@ docker compose exec naex node --experimental-strip-types packages/server/src/kni
 
 V tvorcovi kariet sa potom zobrazia v záložke **Knižnica obrázkov**.
 
+### 5b. Hudba počas partie
+
+Počas partie hrajú v náhodnom poradí skladby z playlistu **NaEx – PLEBS** na Suno
+(<https://suno.com/playlist/00621406-82e0-4708-9ba6-93a53e9b4908>), medzi nimi
+10 s ticho. Hráč si hlasitosť nastaví v profile (0 = vypnutá, predvolene 30 %).
+
+Suno stream šifruje a jeho dočasné odkazy po mesiaci zanikajú, preto hudbu
+servíruje náš server. Skladby stiahni zo Suno ako **MP3** (vlastník skladby:
+*⋯ → Download → MP3 Audio*) do jedného priečinka — názov súboru je názov
+skladby, ktorý sa ukáže hráčovi. Priečinok je celý playlist: import skladby,
+ktoré v ňom nie sú, zmaže.
+
+```bash
+# lokálne
+npm run hudba -- "C:/Users/Michal/Downloads/NaEx PLEBS"
+# produkcia — z tvojho počítača
+scp -r "C:/Users/Michal/Downloads/NaEx PLEBS" ubuntu@IP_SERVERA:/tmp/hudba
+# na serveri
+cd /opt/naex/deploy
+docker compose cp /tmp/hudba naex:/tmp/hudba
+docker compose exec naex node --experimental-strip-types --no-warnings packages/server/src/hudba-import.ts /tmp/hudba
+```
+
+Skladby sú v `/data/hudba` (zväzok, prežijú aktualizáciu); denná záloha ich
+nekopíruje — originály sú na Suno. Server ich netreba reštartovať.
+
 ### 6. Zálohy
 
 Dennú zálohu databázy a obrázkov (4:00) nastaví `deploy/nahraj.sh` sám

@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UX návrh — herný stôl /hra (hra-20261021-1240)</title>
+<style>
+:root{--bg:#14110e;--pl:#1e1914;--pl2:#2a231c;--tx:#f1e8d8;--sl:#b9ab95;--ja:#e9ad45;--te:#d0563f;--ze:#7cbf74;--mo:#6fb3d2;--ok:#3a3128;--wf:#3b342c;--wf2:#4a4239}
+@media (prefers-color-scheme: light){:root{--bg:#f7f2ea;--pl:#fffaf2;--pl2:#efe6d8;--tx:#221a12;--sl:#5d5245;--ja:#8a5a00;--te:#a8331f;--ze:#2f7a28;--mo:#1d6b8f;--ok:#d9cdb9;--wf:#e3dccf;--wf2:#d2c8b8}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:24px 16px 64px}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;line-height:1.25}
+h1{font-size:1.9rem;margin:.2em 0 .3em}
+h2{font-size:1.45rem;margin:2.2em 0 .6em;border-bottom:1px solid var(--ok);padding-bottom:.25em}
+h3{font-size:1.15rem;margin:1.4em 0 .4em}
+a{color:var(--ja)}
+a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--ja);outline-offset:2px}
+code{font-size:.88em;overflow-wrap:anywhere}
+.meta{color:var(--sl);font-size:.93rem}
+.verdikt{background:var(--pl);border-left:4px solid var(--ja);padding:12px 16px;border-radius:6px}
+.mriezka{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.dlazdica{background:var(--pl);border:1px solid var(--ok);border-radius:8px;padding:12px 14px}
+.dlazdica b{color:var(--ja)}
+.cislo{font:700 2rem/1.1 Georgia,serif;color:var(--ja);display:block}
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+th,td{text-align:left;vertical-align:top;padding:8px 8px;border-bottom:1px solid var(--ok)}
+th{color:var(--sl);font-weight:600}
+.tab-obal{overflow-x:auto}
+.z{display:inline-block;min-width:1.7em;text-align:center;border-radius:4px;padding:0 .3em;font-weight:700;color:#14110e}
+.z4{background:#e0644c}.z3{background:#e9ad45}.z2{background:#c8b98f}.z1{background:#8f8574}
+.stitok{display:inline-block;font-size:.78rem;border:1px solid var(--ok);border-radius:999px;padding:0 .55em;margin:0 .2em .2em 0;color:var(--sl)}
+.stitok.dobre{border-color:var(--ze);color:var(--ze)}
+.stitok.malá,.stitok.mala{border-color:var(--ze);color:var(--ze)}
+.stitok.stredna{border-color:var(--ja);color:var(--ja)}
+.stitok.velka{border-color:var(--te);color:var(--te)}
+.filtre{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 12px}
+.filtre button{min-height:44px;padding:0 14px;border-radius:6px;border:1px solid var(--ok);background:var(--pl);color:var(--tx);font:inherit;cursor:pointer}
+.filtre button[aria-pressed="true"]{background:var(--ja);color:#14110e;border-color:var(--ja)}
+figure{margin:12px 0 18px;background:var(--pl);border:1px solid var(--ok);border-radius:8px;padding:8px}
+figure img{max-width:100%;height:auto;display:block;border-radius:4px}
+figure.uzka img{max-width:390px;margin:0 auto}
+.dve{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+@media (max-width:700px){.dve{grid-template-columns:1fr}}
+figcaption{font-size:.88rem;color:var(--sl);padding:6px 4px 0}
+.tok{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+@media (max-width:700px){.tok{grid-template-columns:1fr}}
+.tok>div{background:var(--pl2);border:1px solid var(--ok);border-radius:8px;padding:10px 14px}
+.tok h4{margin:.2em 0 .4em;font-size:1rem}
+.tok ol{margin:0;padding-left:1.3em}
+.pred h4{color:var(--te)}.po h4{color:var(--ze)}
+.navrh{background:var(--pl);border:1px solid var(--ok);border-radius:10px;padding:4px 18px 16px;margin:18px 0}
+.navrh>h3{margin-top:.9em}
+.navrh dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:8px 0}
+.navrh dt{color:var(--sl);font-weight:600}
+.navrh dd{margin:0}
+@media (max-width:600px){.navrh dl{grid-template-columns:1fr}.navrh dt{margin-top:6px}}
+details{margin:8px 0}
+summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:600}
+.wf{background:var(--wf);border:1px dashed var(--sl);border-radius:8px;padding:10px;margin:10px 0;font-size:.9rem;color:var(--tx)}
+.wf .r{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin:6px 0}
+.wf .b{background:var(--wf2);border-radius:6px;padding:6px 10px}
+.wf .b.hl{outline:2px solid var(--ja)}
+.wf .b.nov{outline:2px dashed var(--mo)}
+.wf .b.tl{color:var(--sl)}
+.wf .b.rast{flex:1 1 auto}
+.wf .tlac{display:inline-block;background:var(--wf2);border:1px solid var(--sl);border-radius:6px;padding:4px 12px;min-height:32px}
+.wf .tlac.hl{background:var(--ja);color:#14110e;border-color:var(--ja)}
+.wf small{color:var(--sl)}
+.wf .karta{display:inline-flex;align-items:flex-end;justify-content:center;width:62px;height:86px;border-radius:6px;background:var(--wf2);border:1px solid var(--sl);font-size:.72rem;padding:3px;text-align:center}
+.wf .karta.hl{outline:2px solid var(--ja)}
+.wf .karta.nov{outline:2px dashed var(--mo)}
+.wf .mob{max-width:300px;margin:0 auto;border:2px solid var(--sl);border-radius:18px;padding:10px 8px}
+.mikro{border-left:3px solid var(--mo);padding:2px 12px;margin:6px 0;font-style:italic}
+.pozn{font-size:.9rem;color:var(--sl)}
+.skok{position:absolute;left:-999px}.skok:focus{left:16px;top:8px;background:var(--ja);color:#14110e;padding:6px 10px;z-index:9}
+nav.obsah ol{columns:2;column-gap:28px;padding-left:1.2em}
+@media (max-width:600px){nav.obsah ol{columns:1}}
+svg{max-width:100%;height:auto}
+svg text{fill:var(--tx);font:12px system-ui,sans-serif}
+svg .sl{fill:var(--sl)}
+svg .blok{fill:var(--wf2);stroke:var(--sl);stroke-width:1}
+svg .aktiv{fill:var(--ja);fill-opacity:.35;stroke:var(--ja);stroke-width:2}
+svg .pevne{fill:var(--mo);fill-opacity:.3;stroke:var(--mo)}
+svg .okno{fill:none;stroke:var(--te);stroke-width:2;stroke-dasharray:6 4}
+</style>
+</head>
+<body>
+<a class="skok" href="#navrhy">Preskočiť na návrhy</a>
+<main>
+<header>
+<p class="meta">UX návrh · id <code>hra-20261021-1240</code> · naex-ux · 21. 10. 2026 · vzhľad rieši súbežný UI návrh <a href="dizajn-hra-20261021-1240-ui.html">dizajn-hra-20261021-1240-ui.html</a> · nadväzuje na <a href="dizajn-hra-nezrovnalosti-20261021-1229-ux.html">dizajn-hra-nezrovnalosti-20261021-1229-ux.html</a> (Pitka, skóre, NA EX, log)</p>
+<h1>Herný stôl: ťah sa deje mimo obrazovky</h1>
+<p><strong>Cieľ:</strong> <code>/hra</code> počas partie — <code>apps/web/src/hra/HernaPlocha.tsx</code> (3090 riadkov, celý stôl), <code>Panely.tsx</code>, <code>Scoreboard.tsx</code>, <code>Vrstva.tsx</code>, <code>hra.css</code>. Prejdené na partii <code>playtest/20261021-104041</code> (Dizajn 1 vs. Dizajn 2, krátka hra, Lesná cesta) od voľby cieľa po krok Pohoršenie v prvej bitke, na 1600 × 1000 a na telefóne 390 × 844. K tomu hlásenia zo stránky Spätná väzba (#1–#29) a feedbacky playtestov 20261017 až 20261021.</p>
+<div class="mriezka">
+<div class="dlazdica"><b>Kto:</b> dvaja ľudia na dvoch zariadeniach, často v inej karte prehliadača, kým ťahá súper. Ďalej hráč proti botovi (rýchle tempo) a nováčik, ktorý pravidlá spoznáva pri stole.</div>
+<div class="dlazdica"><b>Úlohy:</b> (1) vedieť, čí je ťah a čo mám urobiť; (2) urobiť ťah fázy s náhľadom (cieľ, šenok, vyloženie, NA EX, posun markera); (3) pochopiť, čo urobil súper a ako dopadla bitka; (4) priebežne sledovať body a starších.</div>
+<div class="dlazdica"><span class="cislo">≈ 10 %</span>obrazovky 1600 × 1000 zaberá pri načítaní plocha, kde sa práve ťahá (stavba šenku, línia): začína na y ≈ 650–710, pás pokynov a ruka sú pripnuté od y ≈ 790. Zvyšok tvorí prehľad (scoreboard a 8 starších).</div>
+</div>
+<p class="verdikt"><strong>Verdikt.</strong> Mechanika ťahu je dobrá: návrh leží na stole, spoje sa ukážu vopred, pravý klik a Esc vracajú, potvrdenie je pri karte. Stránka je však poskladaná ako dokument, nie ako stôl. Navrchu je stále ten istý prehľad, pracovná plocha fázy je pod záhybom a pod pripnutou rukou, takže hráč pri každej fáze roluje a stráca zo zreteľa buď stôl, alebo tlačidlá. Na telefóne sa ťah nedá dokončiť, lebo pás pokynov pretečie mimo obrazovky. Čo urobil súper a ako dopadla bitka, sa dá zistiť len z logu. Ako prvé odporúčam <a href="#n1">N1 Hra ti zavolá</a> (malá úprava, opraví aj mobil), potom <a href="#n3">N3 Čo sa práve stalo</a> a <a href="#n2">N2 Stôl v strede</a>. Pri N2 treba Michalovo rozhodnutie.</p>
+<nav class="obsah" aria-label="Obsah">
+<ol>
+<li><a href="#toky">Toky dnes (snímky)</a></li>
+<li><a href="#signaly">Signály z playtestov a spätnej väzby</a></li>
+<li><a href="#audit">Audit použiteľnosti</a></li>
+<li><a href="#navrhy">Návrhy N1–N5</a></li>
+<li><a href="#poradie">Odporúčané poradie</a></li>
+<li><a href="#otazky">Otázky do playtestu a na Michala</a></li>
+</ol>
+</nav>
+</header>
+
+<section aria-labelledby="toky">
+<h2 id="toky">1. Toky dnes</h2>
+<p>Každá snímka je stránka tesne po načítaní alebo po kliknutí. Pozícia rolovania 0 je stav, v akom hráč stránku dostane po obnovení alebo po návrate do partie kódom. Pás „Šenok · Lokality · Log · pokyn“ a ruka sú pripnuté k spodku okna.</p>
+
+<h3>Tok A — Cieľ kola (funguje, vzor pre ostatné)</h3>
+<ol>
+<li>Lokality sú v paneli Cieľ kola, na 1600 × 1000 z polovice pod rukou. Text kariet sa dá prečítať len cez lupu.</li>
+<li>Klik na lokalitu: položí ju na stôl ako návrh, stránka sa sama posunie k stolu (<code>HernaPlocha.tsx:480</code>), pri lokalite sú tlačidlá „← späť na výber · otočiť ↻ · potvrdiť“ a pás ukazuje, ktoré akcie hrany dostane ktorá strana.</li>
+<li>Potvrdiť → nasleduje draft.</li>
+</ol>
+<figure><img src="dizajn-hra-20261021-1240/ux-08-ciel-kola-dobre.jpg" alt="Lesná cesta na stole ako návrh, nad ňou kraje v húštine a pri kríži, pod ňou tlačidlá späť na výber, otočiť a potvrdiť" width="1200" height="750" loading="lazy"><figcaption>ux-08 · Dobrý vzor: stôl je v zábere, návrh aj tlačidlá sú pri sebe a dá sa vrátiť. Tento posun k stolu robí hra dnes <b>len</b> pri voľbe cieľa.</figcaption></figure>
+
+<h3>Tok B — Stavba šenku a branie</h3>
+<ol>
+<li>Po potvrdení cieľa zostane stránka posunutá pri stole. Panel stavby je <b>nad</b> stolom, mimo obrazovky. Pás pokynov hovorí „Potiahni 4 karty na Smetisko…“, ale Smetisko nevidno.</li>
+<li>Po obnovení (snímka) panel začína na y ≈ 650 a zóny Smetisko a Šenok zakrýva pás a ruka.</li>
+<li>Karty sa dajú len <b>ťahať</b>: karta v balíčku stavby nemá klik, klik ju len zväčší (<code>:2361</code>). V branie zo šenku je to rovnako (<code>:2421</code>), no vo vrstve „Šenok“ sa karta klikom vyberá (<code>:2805</code>). Tá istá úloha má teda dve rôzne ovládania.</li>
+</ol>
+<figure><img src="dizajn-hra-20261021-1240/ux-01-stavba-pod-rukou.jpg" alt="Stavba šenku: zóny Smetisko 0/4 a Šenok 0/4 sú prekryté pásom pokynov a rukou, nad nimi scoreboard a rad starších" width="1200" height="750" loading="lazy"><figcaption>ux-01 · Stavba šenku po načítaní: dve tretiny okna zaberá prehľad, zóny, do ktorých sa ťahá, sú pod pásom a pod rukou.</figcaption></figure>
+
+<h3>Tok C — Zhromaždenie: vyložiť kartu</h3>
+<div class="tok">
+<div><h4>Kroky</h4><ol><li>Klik na „+“ na konci strany. Z ruky sa vysunú karty, ktoré tam vytvoria spoj, so štítkom „1 spoj“ (výborné).</li><li>Klik na kartu → návrh leží na stole, pás ukazuje „Miňištrant → na tvoju stranu · spoj Cigareta + Povera · ty: Cigareta +1…“.</li><li>„potvrdiť“ je na stole, pod líniou. Pri načítaní je línia na y ≈ 710, tlačidlo pod pásom.</li><li>Po rolovaní nadol je tlačidlo vidno, ale karta v línii je odrezaná pod lepiacou časovou osou. Odhad bitky a doska sú ešte nižšie.</li></ol></div>
+<div><h4>Čo hráč potrebuje mať naraz v zábere</h4><ol><li>Líniu s návrhom.</li><li>Tlačidlá potvrdiť a vrátiť.</li><li>Odhad bitky („Remíza — vyhráva obranca“).</li><li>Svoj limit a poldeci, súperov zvyšný limit (ten je v páse kola nad stolom).</li></ol><p class="pozn">Dnes sú tieto štyri veci rozložené na výške ≈ 1100 px pri okne vysokom 1000 px, z ktorých ≈ 300 px zaberá pripnutá hlavička a ruka.</p></div>
+</div>
+<div class="dve">
+<figure><img src="dizajn-hra-20261021-1240/ux-02-navrh-mimo-obrazovky.jpg" alt="Po kliknutí na kartu: pás pokynov opisuje návrh, ale línia s kartou a tlačidlo potvrdiť sú pod pásom a rukou" width="1200" height="750" loading="lazy"><figcaption>ux-02 · Návrh je hotový, pás ho opisuje, ale samotnú kartu ani tlačidlo „potvrdiť“ nevidno.</figcaption></figure>
+<figure><img src="dizajn-hra-20261021-1240/ux-03-potvrdit-dole.jpg" alt="Po rolovaní nadol: tlačidlá vrátiť do ruky a potvrdiť sú vidno, karta v línii je odrezaná, pod ňou odhad bitky a dosky hráčov" width="1200" height="750" loading="lazy"><figcaption>ux-03 · Odrolované nadol: tlačidlá a odhad bitky vidno, kartu, o ktorej sa rozhoduje, nie.</figcaption></figure>
+</div>
+
+<h3>Tok D — Súper potiahol: čo urobil?</h3>
+<ol>
+<li>Dizajn 1 vyložil Miňištranta. Dizajn 2 dostane „Tvoj ťah“, pás kola ukáže „Dizajn 1 vyloží ešte 2 karty“. Na stole nič nového nesvieti.</li>
+<li>Jediný záznam je Log v páse (počítadlo nových riadkov). Po obnovení stránky alebo návrate do partie je však prázdny: „Zatiaľ žiadne záznamy — log sa zbiera od pripojenia“. Okno logu sa navyše otvorí pod lepiacou časovou osou, ktorá prekryje jeho nadpis.</li>
+<li>Výsledok bitky („Bitka: tuhé 2:0 … prebytok 2“) je tiež len riadok logu (<code>useHra.ts:74</code>). Nová fáza ďalšieho kola ho hneď prekryje.</li>
+</ol>
+<figure><img src="dizajn-hra-20261021-1240/ux-04-log-prazdny.jpg" alt="Okno Log po načítaní stránky je prázdne a jeho nadpis prekrýva časová os kola" width="1200" height="750" loading="lazy"><figcaption>ux-04 · Po súperovom ťahu a obnovení: log je prázdny. Pretrvanie logu rieši N5 v návrhu 1229; tu ide o to, aby hráč log vôbec nepotreboval.</figcaption></figure>
+
+<h3>Tok E — Bitka: Pohoršenie</h3>
+<ol>
+<li>Pás pokynov: „Klikni na staršieho hore — marker sa posunie k súperovi…“. Hráč je pri stole, starší sú o obrazovku vyššie.</li>
+<li>Všetkých 8 starších má rovnaký náhľad „posunúť k súperovi · body ty ±0, súper ±0 · ♥ nikto“ (<code>popisPosunu</code>, <code>:2113</code>). Náhľad je správny (z neutrálu 4 na 5 sa nič nezmení), lenže voľbu nijako nerozlišuje. Hráč volí naslepo, hoci rozdiel sa ukáže o jeden posun neskôr.</li>
+</ol>
+<figure><img src="dizajn-hra-20261021-1240/ux-07-pohorsenie-nulove.jpg" alt="Rad ôsmich starších, pod každým rovnaký text posunúť k súperovi, body ty ±0, súper ±0, priazeň nikto" width="1200" height="750" loading="lazy"><figcaption>ux-07 · Osem rovnakých náhľadov. Bez rozlišovacieho údaju náhľad nepomôže.</figcaption></figure>
+
+<h3>Tok F — Telefón 390 × 844</h3>
+<ol>
+<li>Prvú obrazovku zaberá osem dlaždíc scoreboardu (Ovládnuté lokality … Nepriznaný dlh). Stôl začína na y ≈ 990, teda na druhej obrazovke.</li>
+<li>Pás pokynov má pevné tri stĺpce a <code>min-width: min(820px, 100%)</code> (<code>hra.css:1373</code>) a pre úzke okno nemá vlastné pravidlo. Pretečie doprava, zakryje tretinu obrazovky a vytlačí ruku aj tlačidlá „fajčiť / pasovať“ mimo okna.</li>
+<li>Karty v ruke majú 72 px a priblížia sa len pri <code>:hover</code> (<code>hra.css:1348</code>). Na dotyku ani z klávesnice sa karta v ruke nedá prečítať.</li>
+</ol>
+<div class="dve">
+<figure class="uzka"><img src="dizajn-hra-20261021-1240/ux-05-mobil-pas.jpg" alt="Telefón: pás pokynov pretečie doprava, text je odrezaný, ruka ani tlačidlá ťahu nie sú vidno" width="390" height="844" loading="lazy"><figcaption>ux-05 · Telefón, Zhromaždenie na ťahu: pás pretečie, ruka a tlačidlá nie sú na obrazovke.</figcaption></figure>
+<figure class="uzka"><img src="dizajn-hra-20261021-1240/ux-06-mobil-cela.jpg" alt="Celá stránka na telefóne: osem dlaždíc scoreboardu, starší, pás kola, stôl až v strede, pod ním odhad bitky a dosky" width="390" height="3277" loading="lazy"><figcaption>ux-06 · Celá stránka na telefóne (zmenšená). Stôl je až v strede tretej výšky obrazovky.</figcaption></figure>
+</div>
+</section>
+
+<section aria-labelledby="signaly">
+<h2 id="signaly">2. Signály z playtestov a spätnej väzby</h2>
+<p class="pozn">AI playtesteri hrajú cez textového klienta <code>tools/playtest/hrac.ts</code>, nie cez web. Ich hlásenia preto hovoria o tom, <em>čo</em> chýba vedieť, nie o rozložení stránky. Rozloženie a mobil dokladajú snímky a kód vyššie.</p>
+<div class="tab-obal">
+<table>
+<thead><tr><th>Signál</th><th>Zdroj</th><th>Čo hovorí o stole</th></tr></thead>
+<tbody>
+<tr><td>„pri lokalite neviem, ktorú stranu dostanem po otočení“, „náhľad spojov pred potvrdením“</td><td>názory #3, #5, #9, #22</td><td>Dnes je to vyriešené návrhom na stole (Tok A, C). Dôkaz, že náhľad „na mieste“ funguje — treba ho rozšíriť na ďalšie fázy.</td></tr>
+<tr><td>„V Pitke mi klient NA EX na Pušku vôbec neponúkol… nikde sa to nepíše“</td><td>názor #16</td><td>Nedostupná voľba bez dôvodu. Karty bez značky NA EX nepovedia prečo („Nástroj — NA EX len na Občana či Starešinu“).</td></tr>
+<tr><td>„Vypiť pri limite 0… ponúkol len Nástroj a Kočovníka“</td><td>názor #12</td><td>Následok voľby treba ukázať pred ňou. Princíp rovnaký ako pri NA EX (návrh 1229 N3).</td></tr>
+<tr><td>„ani hra, ani klient nepovedia, koľko nerestí som mal“</td><td>názor #19</td><td>Doska ich už ukazuje („neresti 0 · 1. kolo nastaví základ“), no je pod stolom a mimo zrak. Rieši N2 (stavová lišta).</td></tr>
+<tr><td>„skóre v klientovi sa pri prechode z K3 do K4 zmenilo z 30 : 0 na 14 : 6 bez súhrnu“</td><td>feedback 20261018-185541</td><td>Chýba účet kola — rieši N3.</td></tr>
+<tr><td>„Zobrazenie po ťahu často ukáže starý stav (stavba šenku)“</td><td>feedback 20261019</td><td>Zmena stavu bez oznámenia. Na webe: žiadne <code>aria-live</code> okrem oznamov priazne (<code>:2236</code>).</td></tr>
+<tr><td>Človek: „strata miestnosti uprostred partie bez akéhokoľvek upozornenia“</td><td>20261012-182322-clovek</td><td>Chybové hlásenia sa ukazujú hore na stránke (<code>:2559</code>), kde hráč pri stole nie je.</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section aria-labelledby="audit">
+<h2 id="audit">3. Audit použiteľnosti</h2>
+<p>Závažnosť podľa Nielsena: 4 = ťah sa nedá dokončiť alebo hráč urobí nechcený ťah, 3 = veľký problém pri každom ťahu, 2 = menší, 1 = kozmetika. Body z návrhu 1229 (Pitka, skóre, náhľad NA EX, pretrvanie logu) sem neopakujem. Odkazujem na ne v stĺpci Návrh.</p>
+<div class="filtre" role="group" aria-label="Filter podľa závažnosti">
+<button type="button" data-f="vsetko" aria-pressed="true">Všetko (15)</button>
+<button type="button" data-f="4" aria-pressed="false">4 — katastrofa</button>
+<button type="button" data-f="3" aria-pressed="false">3 — veľký</button>
+<button type="button" data-f="2" aria-pressed="false">2 — menší</button>
+<button type="button" data-f="1" aria-pressed="false">1 — kozmetika</button>
+</div>
+<p id="filtre-stav" class="pozn" aria-live="polite">Zobrazené všetky problémy (15).</p>
+<div class="tab-obal">
+<table id="audit-tab">
+<thead><tr><th>#</th><th>Problém</th><th>Heuristika</th><th>Záv.</th><th>Dôkaz</th><th>Koho, ako často</th><th>Návrh</th></tr></thead>
+<tbody>
+<tr data-z="4"><td>U1</td><td>Telefón: pás pokynov pretečie doprava, ruka a tlačidlá ťahu („pasovať“, „potvrdiť“) sú mimo obrazovky.</td><td>Viditeľnosť stavu; mobil a dotyk</td><td><span class="z z4">4</span></td><td>ux-05; <code>hra.css:1373</code> (grid 3 stĺpce, <code>min-width</code>), žiadne pravidlo pre šírku pod 760 px</td><td>Každý hráč na telefóne, každý ťah</td><td>N1 (oprava), N5</td></tr>
+<tr data-z="3"><td>U2</td><td>Pracovná plocha fázy (stavba, branie, línia) je pod záhybom a pod pripnutou rukou. Hore je stále rovnaký prehľad (scoreboard + 8 starších ≈ 470 px).</td><td>Minimalizmus; viditeľnosť stavu; efektívnosť</td><td><span class="z z3">3</span></td><td>ux-01, ux-02; poradie <code>HernaPlocha.tsx:2563</code> (Scoreboard) → <code>:2574</code> (starší) → <code>:2691</code> (stôl)</td><td>Každá fáza, oba hráči; na 1280 px horšie (UI snímka 02)</td><td>N1, N2</td></tr>
+<tr data-z="3"><td>U3</td><td>Po zmene fázy alebo ťahu sa stránka neposunie k miestu, kde sa ťahá. Robí to len pri voľbe cieľa. Po potvrdení cieľa ostane stránka pri stole, stavba šenku je nad ním.</td><td>Viditeľnosť stavu; rozpoznanie</td><td><span class="z z3">3</span></td><td><code>:480</code> (jediný <code>scrollIntoView</code>); Tok B krok 1</td><td>Každý prechod fázy</td><td>N1</td></tr>
+<tr data-z="3"><td>U4</td><td>Stavba šenku a branie zo šenku idú len ťahaním. Klávesnica nemá cestu, na dotyku je ťahanie presné a pomalé. Vrstva „Šenok“ pritom vyberá klikom.</td><td>WCAG 2.2 — 2.5.7 Ťahanie (AA), 2.1.1 Klávesnica; konzistencia</td><td><span class="z z3">3</span></td><td><code>:2361</code>, <code>:2421</code> bez <code>onClick</code>; vrstva <code>:2805</code> s klikom</td><td>Každé kolo, 8 kariet stavby + branie</td><td>N4</td></tr>
+<tr data-z="3"><td>U5</td><td>Súperov ťah na stole nezanechá stopu. Nová karta nesvieti, pás nepovie, čo urobil. Zostáva log v okne a ten je po obnovení prázdny.</td><td>Viditeľnosť stavu; rozpoznanie namiesto pamätania</td><td><span class="z z3">3</span></td><td>ux-04; Tok D; feedback 20261019 „zobrazenie po ťahu“</td><td>Každý súperov ťah</td><td>N3 (+ 1229 N5)</td></tr>
+<tr data-z="3"><td>U6</td><td>Výsledok bitky, prebytok a posuny markerov sú len riadky logu. Ďalšie kolo ich hneď prekryje a skóre skočí bez súhrnu.</td><td>Viditeľnosť stavu; spätná väzba</td><td><span class="z z3">3</span></td><td><code>useHra.ts:74</code>; feedback 185541 „30 : 0 na 14 : 6 bez súhrnu“</td><td>Každá bitka</td><td>N3</td></tr>
+<tr data-z="3"><td>U7</td><td>Chyba zo servera (odmietnutý ťah, stratená partia) sa vypíše hore na stránke, mimo zrak hráča pri stole, a bez <code>role="alert"</code>.</td><td>Pomoc pri chybách; WCAG 4.1.3</td><td><span class="z z3">3</span></td><td><code>:2559</code>; 182322-clovek „bez akéhokoľvek upozornenia“</td><td>Zriedka, ale vtedy kriticky</td><td>N1</td></tr>
+<tr data-z="3"><td>U8</td><td>Karty v ruke sa priblížia len pri prejdení myšou. Na dotyku a z klávesnice sa nedajú prečítať (na telefóne majú 72 px). Ruka nie je fokusovateľná, kým nie je vybrané miesto.</td><td>Bez závislosti na hover; WCAG 1.4.13, 2.1.1</td><td><span class="z z3">3</span></td><td><code>hra.css:1348–1366</code>; <code>SIRKA_V_RUKE_MOBIL = 72</code> (<code>:139</code>)</td><td>Telefón a klávesnica, stále</td><td>N4, N5</td></tr>
+<tr data-z="2"><td>U9</td><td>Hra nedá vedieť, že som na ťahu, keď mám otvorenú inú kartu prehliadača. Titulok ostáva „Hrať · NA EX!“, nie je ani zvuk.</td><td>Viditeľnosť stavu</td><td><span class="z z2">2</span></td><td><code>lib/router.tsx:44</code> — titulok sa mení len s cestou</td><td>Partie s človekom, každé čakanie</td><td>N1</td></tr>
+<tr data-z="2"><td>U10</td><td>„pasovať“ ukončí moje vykladanie na jeden klik, nevratne. Leží hneď vedľa „fajčiť“. „vzdať sa“ pritom potvrdenie má.</td><td>Prevencia chýb; konzistencia</td><td><span class="z z2">2</span></td><td><code>:1636</code> vs. <code>:2537–2552</code> (vzdať sa s potvrdením)</td><td>Každé Zhromaždenie (podobne „hotovo“ v Pitke — 1229 A6)</td><td>N1</td></tr>
+<tr data-z="2"><td>U11</td><td>Pohoršenie a prebytok: všetci starší majú rovnaký náhľad „±0 · ♥ nikto“. Voľbu nič nerozlišuje a starší sú o obrazovku vyššie ako stôl a pás.</td><td>Náhľad dôsledku; rozpoznanie</td><td><span class="z z2">2</span></td><td>ux-07; <code>popisPosunu</code> <code>:2113</code></td><td>Každá bitka s Pohoršením či prebytkom</td><td>N1 (text), N2 (miesto)</td></tr>
+<tr data-z="2"><td>U12</td><td>Tab poradie: každý slot akcie na každej karte je zastavenie klávesnice (<code>tabIndex=0</code>). Pred stolom je tak odhadom 60+ zastavení cez starších. Okná (Vrstva) a koniec hry nepresunú fokus.</td><td>WCAG 2.4.3 Poradie fokusu; efektívnosť</td><td><span class="z z2">2</span></td><td><code>karta/KartaLico.tsx:89</code>; <code>Vrstva.tsx</code> bez fokusu (odhad počtu z 8 scorecardov)</td><td>Hráči s klávesnicou či čítačkou</td><td>N4</td></tr>
+<tr data-z="2"><td>U13</td><td>Nedostupná voľba nepovie dôvod: karta bez značky NA EX, sivé „+“ na konci strany len v <code>title</code>, ktorý na dotyku nevidno.</td><td>Pomoc; nápoveda</td><td><span class="z z2">2</span></td><td>názor #16; <code>:1158</code> (<code>title</code> miesta)</td><td>Nováčikovia, dotyk</td><td>N4</td></tr>
+<tr data-z="1"><td>U14</td><td>Vrstva „Lokality“ ponúka „bitka o staršieho“ a „Alebo zavri okno a klikni na staršieho“. Bitku o staršieho nahradil patronát (M22) a tlačidlo okno len zavrie.</td><td>Zhoda so svetom; konzistencia</td><td><span class="z z1">1</span></td><td><code>:2833–2836</code>; PRAVIDLA §144</td><td>Kto otvorí vrstvu Lokality pri voľbe cieľa</td><td>N1</td></tr>
+<tr data-z="1"><td>U15</td><td>Dosky hráčov: súperova je zrkadlová a jej dlaždice preskakujú medzi riadkami podľa dĺžky textu (Pečeň raz hore, raz dole). Ťažko sa porovnáva „ja vs. súper“.</td><td>Konzistencia; rozpoznanie</td><td><span class="z z1">1</span></td><td>Tok C, snímky dosiek; <code>Panely.tsx</code> <code>HracDoska</code></td><td>Stále</td><td>N2 (UI návrh rieši vzhľad)</td></tr>
+</tbody>
+</table>
+</div>
+<p class="pozn">Čo funguje a treba zachovať: návrh ťahu na stole s tlačidlami pri karte (Michal 2026-10-20), „+“ na konci strany s vysunutím kariet so spojom, pravý klik a Esc ako „späť“, zelená farba stola a štítok „TVOJ ŤAH“, časová os kola, náhľad NA EX so skóre bitky pred a po.</p>
+</section>
+
+<section aria-labelledby="navrhy">
+<h2 id="navrhy">4. Návrhy</h2>
+<p>Päť návrhov, od rýchlej úpravy po zmenu rozloženia na telefóne. Žiaden nemení pravidlá ani neukazuje skrytú informáciu (súperova ruka, balíčky). Všetko, čo zobrazujú, je už v <code>view</code> alebo v udalostiach logu. Pitku, skóre a pretrvanie logu rieši <a href="dizajn-hra-nezrovnalosti-20261021-1229-ux.html">návrh 1229</a> (N1–N5 tam), tu sú len prepojenia.</p>
+
+<article class="navrh" id="n1">
+<h3 id="n1-h">N1 · Hra ti zavolá <span class="stitok mala">rýchla výhra · malá</span></h3>
+<p><strong>Rieši:</strong> U1 (oprava pásu), U3, U7, U9, U10, U11 (text), U14. Šesť malých úprav, každá do pár desiatok riadkov.</p>
+<div class="tok">
+<div class="pred"><h4>Pred</h4><ol><li>Súper potvrdí cieľ. Mne sa zmení pás na „Stavba šenku…“, stránka ostane pri stole.</li><li>Hľadám zóny, rolujem hore, ťahám pod pásom.</li><li>Kým čakám v inej karte, neviem, že som na ťahu.</li><li>Odmietnutý ťah: hláška hore na stránke, nevidím ju.</li></ol></div>
+<div class="po"><h4>Po</h4><ol><li>Pri zmene fázy alebo kroku, keď som na ťahu, sa stránka jemne posunie tak, aby aktívna plocha začínala pod časovou osou (stavba / branie / cieľ → panel, Zhromaždenie a Pitka → línia, Pohoršenie a prebytok → starší).</li><li>Titulok karty: „● Tvoj ťah — Stavba šenku · NA EX!“. Voliteľný krátky zvuk (predvolene vypnutý, prepínač pri hudbe).</li><li>Chyba sa ukáže v páse pokynov s <code>role="alert"</code> a cestou von.</li></ol></div>
+</div>
+<div class="wf" aria-label="Drôtený model: pás pokynov s chybou a inline potvrdením pasovania">
+<div class="r"><span class="b tl">Šenok 8 · Lokality 4 · Log</span><span class="b rast"><b>ZHROMAŽDENIE</b> limit 3 — Klikni na <b>+</b> na konci strany…</span><span class="tlac">fajčiť −1</span><span class="tlac">pasovať +3 cig.</span></div>
+<div class="r"><span class="b rast hl"><b>Pasovať?</b> Do Pitky už nevyložíš ani jednu kartu, súper vykladá sám. Dostaneš 3 cigarety.</span><span class="tlac hl">Pasovať</span><span class="tlac">Ešte vykladám</span></div>
+<div class="r"><span class="b rast hl" role="presentation">⚠ Ťah neprešiel: Karta už nie je v šenku — súper ju vzal skôr. Vyber inú.</span><span class="tlac">OK</span></div>
+<small>Telefón: pás sa zalomí do stĺpca — riadok záložiek, text (najviac 2 riadky, „viac“), tlačidlá v plnej šírke v dosahu palca.</small>
+</div>
+<p><strong>Mikrocopy</strong></p>
+<p class="mikro">Titulok: „● Tvoj ťah — Zhromaždenie · NA EX!“ / pri čakaní „Na ťahu je Jano · NA EX!“.</p>
+<p class="mikro">Pasovať (len keď mám limit > 0 a v ruke kartu, ktorá sa dá vyložiť): „Pasovať? Do Pitky už nevyložíš ani jednu kartu, súper vykladá sám. Dostaneš 3 cigarety.“ — [Pasovať] [Ešte vykladám]</p>
+<p class="mikro">Chyba so stratou partie: „Partia sa stratila — server sa reštartoval. Tvoja Frajerina sa nezmenila. [Späť do lobby]“</p>
+<p class="mikro">Pohoršenie pri náhľade ±0: „Farár · neutrál 4 → 5 · do žltej ešte 1 krok (vtedy ty +4)“ — údaj zo stupnice markera, nie odhad.</p>
+<p class="mikro">Vrstva Lokality: vypustiť „bitka o staršieho“; päta len „[umiestniť na stôl]“.</p>
+<dl>
+<dt>Prístupnosť</dt><dd>Posun rešpektuje <code>prefers-reduced-motion</code> (skok bez animácie) a neposúva, ak hráč za posledné 3 s sám roloval. Chyba v páse má <code>role="alert"</code>, fokus sa na ňu nepresúva. Potvrdenie pasovania je inline (nie modálne okno), fokus prejde na „Pasovať“ a Esc znamená „Ešte vykladám“. Ciele 44 × 44 px.</dd>
+<dt>Náročnosť</dt><dd><span class="stitok mala">malá</span> — 1–2 dni.</dd>
+<dt>Súbory</dt><dd><code>HernaPlocha.tsx</code> (efekt posunu podľa <code>klucTahu</code> namiesto jediného pri lokalite <code>:476–481</code>; <code>document.title</code>; chyba v <code>pokyn</code>; pasovanie po vzore <code>potvrdVzdanie</code>; <code>popisPosunu</code>; <code>:2833–2836</code>), <code>hra.css</code> (<code>.pokyn</code> pod 760 px), <code>Hudba.tsx</code> (prepínač zvuku).</dd>
+<dt>Ako overiť</dt><dd>Playtest s človekom na notebooku aj telefóne. Sledovať, či hráč po zmene fázy začne ťahať do 5 s bez rolovania a koľko je omylom pasovaných ťahov (otázka: „Stalo sa ti, že si pasoval skôr, než si chcel?“). Na telefóne: dá sa dohrať celé kolo?</dd>
+</dl>
+</article>
+
+<article class="navrh" id="n2">
+<h3 id="n2-h">N2 · Stôl v strede, prehľad po ruke <span class="stitok stredna">stredná</span></h3>
+<p><strong>Rieši:</strong> U2, U11 (miesto), U15, signál #19 (neresti mimo zrak). Rozloženie podľa toho, čo fáza potrebuje: aktívna plocha je vždy v zábere, prehľad sa rozbalí, keď ho treba.</p>
+<figure>
+<svg viewBox="0 0 640 330" role="img" aria-labelledby="svg-n2-t svg-n2-d">
+<title id="svg-n2-t">Rozloženie stránky dnes a po N2 pri okne vysokom 1000 px</title>
+<desc id="svg-n2-d">Dnes: hlavička, časová os, scoreboard, rad starších, pás kola, stôl, odhad bitky, dosky; okno končí v polovici stola a spodok zakrýva ruka. Po: hlavička, stavová lišta, plocha fázy so stolom, malý odhad bitky, pás a ruka; všetko sa zmestí do okna.</desc>
+<text x="20" y="16">Dnes (výšky v mierke 1 : 4)</text>
+<rect class="blok" x="20" y="24" width="260" height="16"/><text x="26" y="36" class="sl">hlavička webu + časová os</text>
+<rect class="blok" x="20" y="42" width="260" height="32"/><text x="26" y="62">scoreboard (2 riadky)</text>
+<rect class="blok" x="20" y="76" width="260" height="82"/><text x="26" y="120">rad 8 starších</text>
+<rect class="blok" x="20" y="160" width="260" height="10"/><text x="286" y="169" class="sl">pás kola</text>
+<rect class="aktiv" x="20" y="172" width="260" height="118"/><text x="26" y="232">STÔL / plocha fázy</text>
+<rect class="blok" x="20" y="292" width="260" height="36"/><text x="26" y="314" class="sl">odhad bitky, dosky ↓</text>
+<rect class="pevne" x="20" y="202" width="260" height="48"/><text x="26" y="230">pás + ruka (pripnuté)</text>
+<rect class="okno" x="16" y="22" width="268" height="230"/><text x="196" y="266" class="sl">koniec okna</text>
+<text x="350" y="16">Po N2</text>
+<rect class="blok" x="350" y="24" width="270" height="16"/><text x="356" y="36" class="sl">hlavička webu + časová os</text>
+<rect class="blok" x="350" y="42" width="270" height="12"/><text x="356" y="52" class="sl">stavová lišta: body · vydesení · limit · poldeci</text>
+<rect class="aktiv" x="350" y="56" width="270" height="132"/><text x="356" y="120">STÔL / plocha fázy</text>
+<rect class="blok" x="350" y="190" width="270" height="12"/><text x="356" y="200" class="sl">odhad bitky (1 riadok)</text>
+<rect class="pevne" x="350" y="204" width="270" height="46"/><text x="356" y="230">pás + ruka (pripnuté)</text>
+<rect class="okno" x="346" y="22" width="278" height="230"/>
+<text x="350" y="276" class="sl">Starší a scoreboard: zbalený rad (96 px, už existuje),</text>
+<text x="350" y="292" class="sl">rozbalí sa sám pri patronáte, Pohoršení a prebytku,</text>
+<text x="350" y="308" class="sl">inak na klik „Starší a body“. Dosky na klik pri mene.</text>
+</svg>
+<figcaption>Výšky podľa snímok 1600 × 1000. Odhad: dnes je v okne z plochy fázy ≈ 80–140 px pri načítaní, po N2 celá.</figcaption>
+</figure>
+<div class="tok">
+<div class="pred"><h4>Pred (Zhromaždenie)</h4><ol><li>Načítanie: vidím body a starších, stôl nie.</li><li>Rolujem k stolu, kliknem „+“ a kartu.</li><li>Rolujem nižšie k „potvrdiť“ a odhadu bitky, karta sa odreže.</li><li>Rolujem ešte nižšie k doske pre limit a neresti, potom späť.</li></ol></div>
+<div class="po"><h4>Po</h4><ol><li>Načítanie: lišta (body, limit, poldeci, neresti), pod ňou línia.</li><li>„+“ → karta → návrh v línii, pod ňou „potvrdiť“ a riadok odhadu bitky „Remíza — vyhráva obranca · prebytok nikto“.</li><li>Potvrdím. Bez rolovania.</li><li>Pohoršenie: rad starších sa rozbalí nad stolom a stránka sa k nemu posunie (N1). Po výbere sa zbalí.</li></ol></div>
+</div>
+<div class="wf" aria-label="Drôtený model rozloženia po N2 na desktope">
+<div class="r"><span class="b">Kolo 1 · lokalita 1/5 · <b>Zhromaždenie 1 z 1</b></span><span class="b">Body <b>ty 4 : 6?</b> Dizajn 1</span><span class="b">Vydesení 0/4 : 0/4</span><span class="b">Limit <b>3</b> · poldeci ▮▮ · neresti 0</span><span class="b">Dizajn 1: limit 2</span><span class="tlac">Starší a body ▾</span></div>
+<div class="r"><span class="b tl rast">Starší (zbalené): Farár ○○●○○ · Krčmárka ○○●○○ · … — marker a ♥ čitateľné, klik = lupa</span></div>
+<div class="r" style="justify-content:center"><span class="karta">Miňištrant<br><small>tvoj</small></span><span class="karta hl">Lesná cesta</span><span class="karta">+</span></div>
+<div class="r" style="justify-content:center"><span class="tlac">vrátiť do ruky</span><span class="tlac hl">potvrdiť</span></div>
+<div class="r"><span class="b rast">Odhad bitky: <b>Remíza — vyhráva obranca</b> · tuhé 0 : 0 · prebytok nikto <small>[rozpis ▾]</small></span></div>
+<div class="r"><span class="b tl rast">pás pokynov · ruka (pripnuté)</span></div>
+</div>
+<p><strong>Mikrocopy</strong></p>
+<p class="mikro">Tlačidlo lišty: „Starší a body ▾“ / „skryť ▴“. Automatické rozbalenie: „Vyber staršieho pre Pohoršenie — zostáva 1“.</p>
+<p class="mikro">Odhad v jednom riadku: „Vyhrávaš o 2 · prebytok 2 → tebe“. Rozpis (dnešný BitkaPanel) po kliknutí.</p>
+<dl>
+<dt>Prístupnosť</dt><dd>Lišta je <code>&lt;section aria-label="Stav partie"&gt;</code> s textom, nie len farbou. Rozbaľovanie cez <code>aria-expanded</code>. Automatické rozbalenie oznámi pás pokynov (<code>aria-live</code> v N3). Na začiatku stránky odkazy „Na stôl“ a „Na ruku“.</dd>
+<dt>Náročnosť</dt><dd><span class="stitok stredna">stredná</span> — presun blokov v <code>HernaPlocha.tsx</code> (<code>:2560–2760</code>), kompaktný <code>BitkaPanel</code> a <code>HracDoska</code> (<code>Panely.tsx</code>), nová lišta, pravidlo automatického rozbalenia (dnes <code>maliStarsi</code> + <code>starsiNaMobile</code> <code>:2146</code> — logika „klikateľní starší“ už je).</dd>
+<dt>Riziko</dt><dd>Michal 2026-10-18 dal scoreboard nad starších a zväčšil starších (<code>SIRKA_SCORECARDU_MAX</code>, komentár <code>:153</code>). N2 ich predvolene zmenší — <a href="#otazky">otázka 1</a>. Miernejší variant: nechať poradie a spraviť len N1 (posun k ploche) plus jednoriadkový odhad bitky.</dd>
+<dt>Ako overiť</dt><dd>A/B v dvoch playtestoch s človekom: počet rolovaní za kolo (záznam obrazovky), čas od „Tvoj ťah“ po prvý klik. Otázka: „Chýbalo ti niečo, čo si predtým videl hore?“ Sledovať, či hráč sám rozbaľuje starších mimo bitky — ak často, rad ostane rozbalený.</dd>
+</dl>
+</article>
+
+<article class="navrh" id="n3">
+<h3 id="n3-h">N3 · Čo sa práve stalo — na stole, nie v logu <span class="stitok stredna">stredná</span></h3>
+<p><strong>Rieši:</strong> U5, U6, signály zo 185541 a 20261019. Dopĺňa návrh 1229 N5 (log, ktorý prežije obnovenie): tam ide o históriu, tu o to, aby hráč na poslednú udalosť log nepotreboval.</p>
+<div class="tok">
+<div class="pred"><h4>Pred</h4><ol><li>„Tvoj ťah.“ Porovnávam líniu s tým, čo si pamätám.</li><li>Otvorím Log (ak nebol obnovený).</li><li>Po bitke sa hneď zmení fáza, skóre skočí, výsledok je len riadok v logu.</li></ol></div>
+<div class="po"><h4>Po</h4><ol><li>Pás pokynov má nad textom riadok „Dizajn 1: Miňištrant → jeho strana · spoj Cigareta + Povera · vyloží ešte 2“.</li><li>Karta v línii má do môjho ďalšieho potvrdenia modrý obrys a štítok „nová“.</li><li>Po bitke ostane nad stolom karta „Účet bitky“, kým ju nezavriem alebo kým nespravím prvý ťah ďalšieho kola. Znova sa dá otvoriť klikom na krok „Bitka“ v časovej osi.</li></ol></div>
+</div>
+<div class="wf" aria-label="Drôtený model: riadok posledného ťahu a účet bitky">
+<div class="r"><span class="b rast nov">↺ <b>Dizajn 1</b>: Miňištrant → jeho strana · spoj Cigareta + Povera · vyloží ešte 2</span><span class="tlac">Log 3</span></div>
+<div class="r" style="justify-content:center"><span class="karta nov">Miňištrant<br><small>nová</small></span><span class="karta">Lesná cesta</span><span class="karta">Dievčina</span></div>
+<div class="r"><span class="b rast hl"><b>Účet bitky — Lesná cesta</b><br>Tuhé 2 : 0 · <b>vyhral Dizajn 2</b> (obranca) · prebytok 2<br>Posuny: Krčmárka 4 → 5 · Farár 4 → 5<br>Body: ty 4 → 12 · Dizajn 1 6? → 6? · Ovládnuté: Lesná cesta (Dizajn 2)<br><small>Dlhy a Cirhózy z Pitiek: ty 0 · súper 0 verejne</small></span><span class="tlac hl">Ďalej</span></div>
+</div>
+<p><strong>Mikrocopy</strong></p>
+<p class="mikro">Súperov ťah: „Jano: Pijan → tvoja strana · spoj Rana + Pecka · tebe Rana +1“ — rovnaká veta ako pri mojom návrhu (<code>textSpoja</code>, <code>textZmien</code>), len v minulom čase.</p>
+<p class="mikro">Pas: „Jano pasoval (+2 cig.). Do Pitky vykladáš už len ty — ešte 3.“</p>
+<p class="mikro">Účet bitky, nadpis: „Bitka o Lesnú cestu: vyhral si o 2“ / „Prehral si o 3 — Jano posúva markery“.</p>
+<dl>
+<dt>Prístupnosť</dt><dd>Riadok posledného ťahu je v oblasti <code>aria-live="polite"</code> (dnes jediná je pri oznamoch priazne, <code>:2236</code>). Obrys novej karty má aj text „nová“, nie len farbu. Účet bitky je región s nadpisom, nie modálne okno. Fokus sa nepresúva, „Ďalej“ je dosiahnuteľné klávesnicou.</dd>
+<dt>Dáta</dt><dd>Udalosti zo servera už idú (<code>useHra.ts</code>: <code>log</code>, <code>bitkaVysledok</code>). Posledný súperov ťah klient pozná z rozdielu <code>view.strany</code>. Posuny markerov z rozdielu <code>view.starsi</code> (tak už funguje <code>oznamyPriazne</code>). Nič skryté sa neukazuje.</dd>
+<dt>Náročnosť</dt><dd><span class="stitok stredna">stredná</span> — <code>HernaPlocha.tsx</code> (riadok v <code>pokyn</code>, trieda „nová“ v <code>kartyStrany</code>, komponent účtu bitky), <code>useHra.ts</code> (uchovať poslednú udalosť a výsledok bitky), <code>hra.css</code>. Server bez zmeny, s výnimkou 1229 N5 (história pri návrate).</dd>
+<dt>Ako overiť</dt><dd>Otázka v playteste po každej bitke: „Ako dopadla posledná bitka a prečo sa zmenilo skóre?“ Cieľ: správna odpoveď bez otvorenia logu. Sledovať počet otvorení logu za partiu (dnes jediný zdroj).</dd>
+</dl>
+</article>
+
+<article class="navrh" id="n4">
+<h3 id="n4-h">N4 · Bez ťahania a bez myši <span class="stitok stredna">stredná</span></h3>
+<p><strong>Rieši:</strong> U4, U8, U12, U13. WCAG 2.2 AA vyžaduje pri každom ťahaní aj alternatívu jedným ukazovaním (2.5.7). Vykladanie ju už má („+“ a karta), stavba a branie nie.</p>
+<div class="tok">
+<div class="pred"><h4>Pred (stavba šenku)</h4><ol><li>Chytím kartu, ťahám na Smetisko, pustím. 8×.</li><li>Klik na kartu ju len zväčší.</li><li>Z klávesnice sa nedá.</li></ol></div>
+<div class="po"><h4>Po</h4><ol><li>Klik (Enter) na kartu → pod kartou dve tlačidlá „→ Smetisko“ a „→ Šenok“ (s počtom 2/4). Alebo klik na zónu a potom na karty, ako pri „+“ v Zhromaždení.</li><li>Ťahanie ostáva pre skúsených.</li><li>Branie: klik vyberie (ako vo vrstve Šenok), tlačidlo „vziať za 1 cig.“.</li></ol></div>
+</div>
+<div class="wf" aria-label="Drôtený model: karta v stavbe šenku s dvoma tlačidlami">
+<div class="r"><span class="b">Smetisko 1/4 <small>súper ich neuvidí</small></span><span class="karta hl">Presbiter</span><span class="karta">Puška</span><span class="karta">Silná žena</span><span class="b">Šenok 2/4 <small>uvidia obaja</small></span></div>
+<div class="r"><span class="tlac">→ Smetisko</span><span class="tlac">→ Šenok</span><span class="tlac">🔍 zväčšiť</span></div>
+</div>
+<p><strong>Ďalej v N4</strong></p>
+<ul>
+<li><b>Ruka:</b> priblíženie aj pri <code>:focus-visible</code>. Na dotyku ťuknutie otvorí lupu (dnes len pri kartách na stole), v lupe tlačidlá podľa fázy („Vyložiť na moju stranu · spoj 1“).</li>
+<li><b>Fokus:</b> jedna zastávka na kartu. Sloty akcií dostanú <code>tabIndex=-1</code>, ich popis je v lupe a v <code>aria-label</code> karty. Vrstva a Koniec hry dajú fokus na prvý prvok a po zatvorení ho vrátia.</li>
+<li><b>Dôvod nedostupnosti:</b> karta, ktorá nemôže prijať NA EX, má po ťuknutí riadok „NA EX len na Občana alebo Starešinu“. Sivé „+“ ukáže dôvod textom pod sebou, nie len v <code>title</code>.</li>
+<li><b>Skratky</b> (ak Michal chce): Enter = potvrdiť návrh na stole, Esc = späť (už je), 1–9 = karta v ruke pri vybranom mieste. Zoznam pod „?“ v páse.</li>
+</ul>
+<dl>
+<dt>Prístupnosť</dt><dd>Splní 2.5.7, 2.1.1, 2.4.3, 2.4.7. Tlačidlá na karte ≥ 44 × 44 px (2.5.8).</dd>
+<dt>Náročnosť</dt><dd><span class="stitok stredna">stredná</span> — <code>HernaPlocha.tsx</code> (<code>zonaStavby</code>, <code>draftPanel</code>, ruka), <code>karta/KartaLico.tsx</code> (<code>tabIndex</code> slotov — pozor, KartaLico používa aj tvorca kariet), <code>Lupa.tsx</code> (akcie v lupe), <code>Vrstva.tsx</code>, <code>hra.css</code> (<code>:focus-visible</code> pri ruke).</dd>
+<dt>Ako overiť</dt><dd>Odohrať kolo len klávesnicou a len dotykom (tablet). Zmerať čas stavby šenku: ťahanie vs. klik. Otázka: „Ktorý spôsob si použil pri stavbe šenku a prečo?“</dd>
+</dl>
+</article>
+
+<article class="navrh" id="n5">
+<h3 id="n5-h">N5 · Telefón: stôl na jednu obrazovku <span class="stitok velka">odvážny smer · veľká</span></h3>
+<p><strong>Rieši:</strong> U1 a U8 na telefóne do hĺbky, U2 na mobile. N1 opraví pretekajúci pás. N5 navrhuje rozloženie, v ktorom sa na telefóne dá pohodlne hrať.</p>
+<div class="tok">
+<div class="pred"><h4>Pred</h4><ol><li>Prvá obrazovka: 8 dlaždíc bodov.</li><li>Rolujem cez starších a pás kola ku stolu (y ≈ 990).</li><li>Pás pokynov pretečie, ruku nevidno.</li><li>Karty v ruke 72 px, bez priblíženia.</li></ol></div>
+<div class="po"><h4>Po</h4><ol><li>Hore lišta: kolo a fáza, „ty 4 : 6? Jano“.</li><li>Stred: záložky „Stôl · Starší · Body · Log“ (predvolene Stôl, pri Pohoršení sa prepne na Starší sám).</li><li>Spodok v dosahu palca: jedna veta pokynu a hlavné tlačidlo. Pod ňou ruka ako vodorovný pás kariet 96 px.</li><li>Ťuk na kartu v ruke → spodný panel s kartou a voľbami „Na moju stranu · spoj Cigareta + Povera“ / „Na súperovu · bez spoja“.</li></ol></div>
+</div>
+<div class="wf" aria-label="Drôtený model rozloženia na telefóne">
+<div class="mob">
+<div class="r"><span class="b rast"><b>K1 · Zhromaždenie</b> · ty 4 : 6? Jano</span></div>
+<div class="r"><span class="tlac hl">Stôl</span><span class="tlac">Starší</span><span class="tlac">Body</span><span class="tlac">Log 2</span></div>
+<div class="r" style="justify-content:center"><span class="karta">+</span><span class="karta">Miňi&shy;štrant</span><span class="karta hl">Lesná cesta</span><span class="karta nov">Diev&shy;čina</span></div>
+<div class="r"><span class="b rast">Odhad: vyhrávaš o 2</span></div>
+<div class="r"><span class="b rast"><b>Tvoj ťah</b> · limit 3 · vyber miesto „+“</span></div>
+<div class="r"><span class="tlac">fajčiť</span><span class="tlac hl" style="flex:1">pasovať +3</span></div>
+<div class="r"><span class="karta">Pijan</span><span class="karta">Dievčina</span><span class="karta">Miňi&shy;štrant</span><span class="karta">…</span></div>
+</div>
+</div>
+<p class="mikro">Spodný panel karty: „Miňištrant — Na tvoju stranu: spoj Cigareta + Povera (ty +1 Cigareta, +1 Povera) · Na súperovu: spoj Pečeň + Pecka · [Zväčšiť]“.</p>
+<dl>
+<dt>Prístupnosť</dt><dd>Záložky ako <code>role="tablist"</code> s textom. Gestá (potiahnutie) majú vždy tlačidlo. Hlavné akcie v dolnej tretine, ciele ≥ 44 px.</dd>
+<dt>Náročnosť</dt><dd><span class="stitok velka">veľká</span> — vlastná vetva rozloženia v <code>HernaPlocha.tsx</code> (už existuje prepínač <code>mobil</code>, <code>:262</code>), nový komponent záložiek a spodného panela, CSS. Odporúčam až po N2, pretože zdieľajú pravidlo „čo fáza potrebuje vidieť“.</dd>
+<dt>Ako overiť</dt><dd>Celá krátka partia na telefóne s človekom. Merať dokončenie (áno/nie), počet omylov pri vyložení a čas kola oproti desktopu. Otázka: „Hral by si radšej na telefóne, alebo na počítači?“</dd>
+</dl>
+</article>
+</section>
+
+<section aria-labelledby="poradie">
+<h2 id="poradie">5. Odporúčané poradie</h2>
+<ol>
+<li><b>N1 hneď.</b> Oprava pásu na telefóne je chyba, nie vylepšenie. Posun k aktívnej ploche a titulok „Tvoj ťah“ sú lacné a pomôžu pri každom ťahu. Spolu s N1 z návrhu 1229 (Pitka nahlas) ide o jednu malú dávku úprav v <code>pokyn</code>.</li>
+<li><b>N3 spolu s 1229 N5.</b> „Čo sa stalo“ a log, ktorý prežije obnovenie, sú dve polovice toho istého. Účet bitky zároveň vysvetlí skoky skóre (1229 N4).</li>
+<li><b>N4 po častiach.</b> Klik pri stavbe a braní šenku je malá časť a dá sa spraviť hneď za N1. Fokus a sloty v <code>KartaLico</code> treba skúsiť aj v tvorcovi kariet.</li>
+<li><b>N2 po rozhodnutí Michala.</b> Najväčší prínos na desktope, ale mení jeho rozhodnutie z 2026-10-18.</li>
+<li><b>N5</b> až keď bude jasné, že ľudia chcú hrať na telefóne.</li>
+</ol>
+</section>
+
+<section aria-labelledby="otazky">
+<h2 id="otazky">6. Otázky</h2>
+<h3>Na Michala</h3>
+<ol>
+<li><b>Starší a scoreboard nad stolom</b> (rozhodnutie 2026-10-18): smie byť rad starších predvolene zbalený (96 px, marker čitateľný) s automatickým rozbalením pri patronáte, Pohoršení a prebytku? Alebo ostáva veľký navrchu a stačí N1 (posun k ploche)?</li>
+<li><b>Telefón:</b> je cieľom odohrať partiu na telefóne, alebo stačí, aby sa na ňom dalo dohrať kolo (N1)?</li>
+<li><b>Zvuk pri tvojom ťahu:</b> chceš ho (predvolene vypnutý, prepínač pri hudbe)?</li>
+<li><b>Potvrdenie pasovania:</b> inline otázka len vtedy, keď ešte máš čo vyložiť. Nespomalí to skúsených? Alternatíva je „späť“ na 3 s, ale to by menilo poradie ťahov, lebo súper hneď hrá.</li>
+<li><b>Klávesové skratky</b> (Enter potvrdiť, 1–9 karta v ruke): áno, alebo radšej nie, aby sa nedalo omylom potvrdiť?</li>
+</ol>
+<h3>Do playtestu (s človekom, záznam obrazovky)</h3>
+<ul>
+<li>„Musel si hľadať, kam ťahať, keď sa zmenila fáza?“ — sledovať rolovanie po zmene fázy.</li>
+<li>„Čo urobil súper vo svojom poslednom ťahu?“ — opýtať sa uprostred Zhromaždenia, bez otvorenia logu.</li>
+<li>„Ako dopadla posledná bitka a prečo sa zmenilo skóre?“ — po každej bitke.</li>
+<li>„Pasoval si niekedy skôr, než si chcel?“ — počet omylov.</li>
+<li>Na telefóne: dohrá hráč kolo bez pomoci? Kde sa zasekne?</li>
+</ul>
+<p class="pozn">Obmedzenie: partiu som prešiel po krok Pohoršenie v 1. bitke. Prebytok, patronát, Vízia, Veštica a koniec hry som v tejto relácii nevidel. Pitku a koniec hry pokrýva návrh 1229. Snímky „po kliknutí“ sú z nového načítania stránky (nástroj snímok), takže pozícia rolovania je vždy 0. Pri živom hraní ostáva tam, kde ju hráč nechal — U3 to opisuje.</p>
+</section>
+</main>
+<script>
+(function(){
+  var tlac=document.querySelectorAll('.filtre button');
+  var riadky=document.querySelectorAll('#audit-tab tbody tr');
+  var stav=document.getElementById('filtre-stav');
+  function filtruj(f){
+    var n=0;
+    riadky.forEach(function(r){var ok=f==='vsetko'||r.getAttribute('data-z')===f;r.hidden=!ok;if(ok)n++;});
+    tlac.forEach(function(b){b.setAttribute('aria-pressed',String(b.getAttribute('data-f')===f));});
+    stav.textContent=f==='vsetko'?'Zobrazené všetky problémy ('+n+').':'Zobrazené problémy so závažnosťou '+f+': '+n+'.';
+  }
+  tlac.forEach(function(b){b.addEventListener('click',function(){filtruj(b.getAttribute('data-f'));});});
+})();
+</script>
+</body>
+</html>

@@ -22,6 +22,8 @@ interface Autor {
   readonly meno: string;
   readonly avatar: string | null;
   readonly rola: string;
+  /** Účet AI agenta — klient jeho príspevky predvolene skrýva. */
+  readonly ai: boolean;
 }
 
 export interface Komentar {
@@ -87,7 +89,7 @@ export class Nazory {
     const riadky = this.db
       .prepare(
         `SELECT n.id, n.kategoria, n.text, n.stav, n.vytvoreny, n.upraveny,
-                u.id AS autor_id, u.meno AS autor_meno, u.avatar AS autor_avatar, u.rola AS autor_rola,
+                u.id AS autor_id, u.meno AS autor_meno, u.avatar AS autor_avatar, u.rola AS autor_rola, u.ai AS autor_ai,
                 (SELECT COUNT(*) FROM cigarety_nazorov c WHERE c.nazor = n.id) AS cigarety,
                 (SELECT COUNT(*) FROM cigarety_nazorov c WHERE c.nazor = n.id AND c.pouzivatel = ?) AS moja,
                 (SELECT COUNT(*) FROM nazory_komentare k WHERE k.nazor = n.id) AS komentarov
@@ -103,7 +105,7 @@ export class Nazory {
     const komentare = this.db
       .prepare(
         `SELECT k.id, k.nazor, k.text, k.vytvoreny,
-                u.id AS autor_id, u.meno AS autor_meno, u.avatar AS autor_avatar, u.rola AS autor_rola,
+                u.id AS autor_id, u.meno AS autor_meno, u.avatar AS autor_avatar, u.rola AS autor_rola, u.ai AS autor_ai,
                 (SELECT COUNT(*) FROM cigarety_komentarov c WHERE c.komentar = k.id) AS cigarety,
                 (SELECT COUNT(*) FROM cigarety_komentarov c WHERE c.komentar = k.id AND c.pouzivatel = ?) AS moja
          FROM nazory_komentare k JOIN pouzivatelia u ON u.id = k.autor
@@ -217,5 +219,6 @@ function autorZ(r: Record<string, unknown>): Autor {
     meno: String(r.autor_meno),
     avatar: r.autor_avatar === null ? null : String(r.autor_avatar),
     rola: String(r.autor_rola),
+    ai: Number(r.autor_ai) === 1,
   };
 }

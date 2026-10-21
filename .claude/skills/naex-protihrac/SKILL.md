@@ -1,6 +1,6 @@
 ---
-name: protihrac
-description: Založí partiu NA EX! proti AI protihráčovi — agent naex-protihrac hrá proti človeku na skutočnom webe (človek v prehliadači), hrá ako playtester a po partii zverejní spätnú väzbu na stránke Spätná väzba. Použi, keď používateľ povie /protihrac, „chcem hrať proti AI", „zahraj si so mnou", „daj mi súpera agenta".
+name: naex-protihrac
+description: Založí partiu NA EX! proti AI protihráčovi — agent naex-protihrac hrá proti človeku na skutočnom webe (človek v prehliadači), hrá ako playtester a po partii zverejní spätnú väzbu na stránke Spätná väzba. Použi, keď používateľ povie /naex-protihrac, „chcem hrať proti AI", „zahraj si so mnou", „daj mi súpera agenta".
 argument-hint: "[štýl agenta] [kratka|stredna|dlha]"
 ---
 
@@ -35,8 +35,9 @@ Meno do 19 znakov (web doň pridá „ (AI)"), štýl jednou-dvoma vetami.
    bez vlastného servera — len na výslovnú žiadosť, viď Poznámky.)
 
 2. **AI účet musí byť hráč**, inak nezverejní spätnú väzbu (nový účet je
-   návštevník). Ak je účet nový, povedz používateľovi, nech ho v Tvorba →
-   Hráči povýši — dá sa to aj počas partie.
+   návštevník). Nástroj ho pri prihlásení sám zaradí ako hráča so značkou AI
+   heslom admina z `.env` (`NAEX_ADMIN_HESLO`); ak heslo chýba, povedz
+   používateľovi, nech ho v Tvorba → Hráči povýši — dá sa to aj počas partie.
 
 3. **Daj používateľovi odkaz** — povedz mu: odkaz (`…/hra?kod=XXXX`), proti
    komu hrá a aký má agent štýl, dĺžku hry a že partia sa počíta do Frajeriny.
