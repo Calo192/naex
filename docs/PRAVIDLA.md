@@ -151,6 +151,31 @@ pred staršími odsekmi vyššie — rozbor `docs/playtesty/navrh-stavka-starsie
 - **Pohoršenie** (§8.2): ten istý marker smie ísť viackrát, Pohoršenia jedného
   hráča ho však prenesú najviac cez **dve hranice zón**. Kultúrny dom limit ruší.
 
+**Kliatby, remíza a Pitka nahlas (rozhodnutia Michala 2026-10-21, skúšobné;
+majú prednosť pred staršími odsekmi — rozbory `docs/playtesty/strategia-kliatby-20261021.html`,
+`strategia-remiza-20261021.html`, dizajn `dizajn-hra-nezrovnalosti-20261021-1229-*.html`):**
+
+- **Verejný dlh** (§12): nový Dlh sa **hneď prizná** — ide medzi priznané karty
+  a kartu zaň hráč nedobere. Na konci hry uberá body **každý** Dlh, aj priznaný
+  (§10). V bitke sa priznaný Dlh ďalej páli (§8.1). Dôvod: trest za kliatby bol
+  lotéria (dobratý Dlh nestál nič, nedobratý −1 až −8) a súper ho nevidel.
+- **Cirhóza navrch** (§12): nová Cirhóza ide **navrch doberacieho balíčka** —
+  do ruky príde pri najbližšom ťahaní a hráč o nej rozhodne (prizná ju, alebo ju podrží).
+- **Robota spáli** priznaný Dlh (predtým ho odhodila do balíčka, odkiaľ by sa
+  znova priznal); **Niekoho stryná** a **Veľmi smútiaca vdova** berú Dlh aj
+  spomedzi priznaných (§14).
+- **Remíza na sekeru** (§8.4): pri **rovnakom tuhom** poškodení nevyhrá nikto —
+  lokalita ide **na sekeru** a vezme si ju víťaz najbližšej bitky spolu s jej
+  lokalitou. Útočník ostáva útočníkom, patronát sa vyrieši ako prehra
+  (bolestné). V **poslednej bitke** lokality na sekere prepadnú. Stupeň
+  „rozhodne celkové“ zanikol — celkové určuje už len prebytok.
+- **Pitka nahlas** (§7): obranca začína, útočník má **posledné slovo**;
+  „hotovo“ je nevratné a zapíše sa do logu. Zadĺženie a pečeň dávajú kartu za
+  **každý celý prah** a násobky sa **násobia** (NA EX ×2 × Silná žena ×2 = ×4).
+- **Verejný počet kliatob:** hráč vidí, koľko nepriznaných Dlhov a Cirhóz má
+  súper (každý vznik, priznanie aj zahodenie je vo verejnom logu); body súpera
+  sú presné. Ktoré karty a kde ležia, sa neposiela.
+
 > Miesta označené **[?]** sú nejednoznačné alebo v pravidlách chýbajú.
 > Neimplementuj ich potichu — pozri `docs/BRIEF.md`, sekcia „Otvorené otázky".
 
@@ -225,7 +250,7 @@ Tagy nemajú vlastné pravidlá, pokiaľ sa na ne neodkazuje efekt.
 | Poldeci | `Poldeci` | otočí jeden vypitý poldeci späť na plný (**až pri bitke**); v Pitke pridá poškodenie pečene |
 | Posilnenie | `Posilnenie` | zdvojnásobí prepojenú akciu (priaznivú aj nepriaznivú) |
 | Odpor | `Odpor` | zruší prepojenú akciu; Odpor + Odpor = Vzbura |
-| Robota | `Robota` | v kroku Exekútora, **pred** kontrolou prahu, odhodí 1 priznaný Dlh (do odhadzovacieho balíčka); funguje aj bez exekúcie |
+| Robota | `Robota` | v kroku Exekútora, **pred** kontrolou prahu, spáli 1 priznaný Dlh (z hry — od 2026-10-21; predtým do odhadzovacieho balíčka); funguje aj bez exekúcie |
 
 Akcia sa volá ako karta či zdroj, ktorý dáva (Michal 2026-10-19): `Dlh` → Dlh,
 `PoškodeniePečene` → Poškodenie pečene, `Poldeci` → Poldeci, `Cigareta` → Cigareta
@@ -587,11 +612,25 @@ urobí za neho.
 
 ### Pitka — poradie vyhodnotenia
 
+**Kto hrá kedy** (Michal 2026-10-21 — playtest 20261021-041728: obaja hráči si
+mysleli, že poradie nesedí): Pitku **začína obranca**. Dáva NA EX, fajčí,
+dolieva — a skončí „hotovo“. „Hotovo“ je **nevratné** a zapíše sa do logu
+(„Hráč X končí svoju časť Pitky bez NA EX“). Potom hrá útočník a má
+**posledné slovo**: na jeho NA EX už obranca odpovie len jednou kartou. Po
+„hotovo“ oboch sa Pitka vyhodnotí.
+
 1. **NA EX** — jediná príležitosť; súper smie hneď odpovedať jednou kartou (§5).
    Poštárka a Starosta sa používajú tiež v tejto časti Pitky.
-2. **Dlh** — zadĺženie; pri dosiahnutí prahu (2 + sila Úžerníka) hráč hneď získa kartu Dlh
+2. **Dlh** — zadĺženie; za **každý celý prah** (2 + sila Úžerníka) hráč získa
+   kartu Dlh — zadĺženie 8 pri prahu 2 = 4 Dlhy
 3. **Poškodenie pečene a Cirhóza** — akcie Poškodenie pečene, Poldeci a NA EX
-   (a pečeň z poldeci vypitých v predošlom Zhromaždení); pri dosiahnutí prahu hráč hneď získa Cirhózu
+   (a pečeň z poldeci vypitých v predošlom Zhromaždení); za **každý celý prah** hráč získa Cirhózu
+
+Násobky akcií sa **násobia**: NA EX zdvojí neaktívnu akciu, Silná žena ju
+zdvojí tiež, spolu ×4 (aj pri Dlhu a Poškodení pečene). NA EX leží na karte
+až do bitky — jej akcie sa vyhodnotia v **každej** Pitke kola. Klient aj
+konzolový klient ukazujú výhľad „po Pitke“ (`nahladPitky` — ten istý výpočet
+ako vyhodnotenie, `prirastkyPitky`).
 4. **Obmedzenie**
 5. **Cigarety** — hráč dostane cigarety za akcie Cigareta (Michal 2026-10-16)
 6. **Ťahanie kariet** — Pitka sama karty nedáva; doberajú sa fajčením, priznaním
@@ -626,8 +665,9 @@ a seba) (§14). Stará Benzínka (spálenie Občanov a prepadnutie lokality) od
 
 ### 1. Exekútor
 
-Najprv **Robota**: za každú aktívnu Robotu hráč odhodí 1 priznaný Dlh.
-Potom sa spočítajú **priznané** Dlhy (nepriznané sa nerátajú).
+Najprv **Robota**: za každú aktívnu Robotu hráč **spáli** 1 priznaný Dlh
+(Michal 2026-10-21 — predtým ho odhodila do balíčka, odkiaľ by sa pri verejnom
+dlhu znova priznal). Potom sa spočítajú **priznané** Dlhy (nepriznané sa nerátajú).
 
 ```
 prah = 10 + 2 × priazeň Exekútora
@@ -680,15 +720,21 @@ znižuje). Predtým sa rátali Cirhózy v línii — kliatba však do línie už
 
 ```
 víťaz          = vyššie TUHÉ poškodenie
-  remíza: vyššie CELKOVÉ poškodenie, pri jeho rovnosti OBRANCA
-prebytok drží  = vyššie CELKOVÉ poškodenie
-prebytok       = |rozdiel celkových|      (pri remíze prebytok nikto nezíska)
+  remíza (rovnaké tuhé): nevyhrá nikto — lokalita ide NA SEKERU
+prebytok drží  = vyššie CELKOVÉ poškodenie (aj pri remíze v tuhom)
+prebytok       = |rozdiel celkových|      (pri rovnakom celkovom ho nikto nezíska)
 ```
 
-**Remíza** (Michal 2026-10-19, playtest 20261018-185541: tri bitky o staršieho
-skončili 0 : 0 a všetky vyhral útočník, ktorý vyhral 8 z 12 bitiek): o
-lokalitu rozhoduje celkové poškodenie (tuhé aj mäkké), a keď je aj to rovnaké,
-vyhráva obranca. (Remíza o staršieho bez víťaza zanikla s bitkou o staršieho.)
+**Remíza — na sekeru** (Michal 2026-10-21, rozbor `strategia-remiza-20261021`;
+predtým od 2026-10-19 rozhodlo celkové a potom obranca, čo kritizovali obaja
+playtesteri ako „rozhoduje stolička“): pri rovnakom tuhom poškodení lokalitu
+**nezíska nikto**. Leží vedľa ďalšieho cieľa **na sekere** a víťaz najbližšej
+bitky si ju vezme spolu s lokalitou, o ktorú sa bil; viac remíz po sebe sa na
+sekere kopí. Remíza nemení roly (útočník ostáva útočníkom), patronát sa
+vyrieši ako prehra (staršieho späť, bolestné). V **poslednej bitke** niet
+najbližšej bitky — lokalita aj všetko na sekere **prepadne**. Benzínka sa
+neprepadá na sekeru: jej lokalita prepadne ako doteraz a víťaz (ak je) si
+vezme len sekeru.
 
 Víťaz rozdelí prebytočné poškodenie medzi starších. Každý pridelený bod posunie
 marker o 1 **smerom k porazenému**. Smie prideliť aj viac bodov tomu istému
@@ -871,11 +917,11 @@ Scorecardy sa starším **rozdajú náhodne** pri príprave hry a scorecard urč
 | väzeň | starší získaní patronátom | za kus |
 | cigareta | zvyšné cigarety | za kus — **kus = 3 cigarety** (Michal 2026-10-16) |
 | pečeň | nepriznaná cirhóza | za kus (záporné) |
-| bankovky | nepriznaný dlh | za kus (−1) |
+| bankovky | každý dlh — aj priznaný (Michal 2026-10-21) | za kus (−1) |
 
 Za kus: ovládnutá lokalita **2**, získaný starší **2**, cigareta **1**
 (Michal 2026-10-12 — predtým 3/3/1; Veterinár dal v playteste 20261012-055944
-sám 24 bodov). Nepriznaná Cirhóza −2, nepriznaný Dlh −1. Znepokojenie **1**,
+sám 24 bodov). Nepriznaná Cirhóza −2, Dlh −1 (aj priznaný — verejný dlh, §12). Znepokojenie **1**,
 Strach **2**, Vydesenie **3**.
 
 **Zónové podmienky** sa pozerajú na **všetkých 8 starších** vrátane toho,
@@ -919,16 +965,23 @@ Michala 2026-10-11).
 
 ## 12. Kliatby
 
-Nová kliatba (Dlh, Cirhóza) ide do **odhadzovacieho balíčka** hráča, nie do
-ruky (pravidlá v3) — do ruky príde, až keď si ju hráč dobere; vtedy ju môže
-priznať (a dobrať si za ňu kartu), alebo ju Vízia z vrchu balíčka zahodí. Na konci hry sa nepriznané
-kliatby rátajú v ruke aj v oboch balíčkoch. Efekty, ktoré „zahadzujú" Dlhy či
-Cirhózy z ruky (Niekoho stryná, Výherný automat), berú aj z odhadzovacieho
-balíčka.
+**Verejný dlh** (Michal 2026-10-21, skúšobné): nový **Dlh sa hneď prizná** —
+ide medzi priznané karty, kartu zaň hráč nedobere a na konci hry uberá body
+aj priznaný. Nová **Cirhóza** ide **navrch doberacieho balíčka** — do ruky
+príde pri najbližšom ťahaní, hráč ju prizná, keď chce (bez dobratia karty),
+alebo ju Vízia zahodí. Dlh, ktorý sa do balíčka dostane inak (Vychovávateľka),
+sa pri dobratí prizná sám ako doteraz. Na konci hry sa nepriznané Cirhózy
+rátajú v ruke aj v oboch balíčkoch, Dlhy všetky. Efekty, ktoré „zahadzujú"
+Dlhy či Cirhózy (Niekoho stryná, Veľmi smútiaca vdova), berú z ruky,
+z odhadzovacieho balíčka a Dlh aj spomedzi priznaných.
+
+(Predtým, pravidlá v3: nová kliatba išla do odhadzovacieho balíčka a jej cena
+na konci hry závisela od toho, či sa do konca dobrala — rozbor
+`strategia-kliatby-20261021`: −11,6 ± 12 bodov na hráča, súper ju nevidel.)
 
 | Karta | Vzniká | Účinok |
 |---|---|---|
-| **Dlh** | pri dosiahnutí prahu zadĺženia (akcie Dlh); priamo z efektov kariet | bez akcií; ráta sa k prahu Exekútora (keď je priznaný); nepriznaný uberá body |
+| **Dlh** | za každý celý prah zadĺženia (akcie Dlh); priamo z efektov kariet — hneď priznaný | bez akcií; ráta sa k prahu Exekútora (keď je priznaný); uberá body na konci hry (aj priznaný) |
 | **Cirhóza** | pri dosiahnutí prahu poškodenia pečene | v bitke pridáva tuhé poškodenie |
 | **Absťák** | keď hráč v kole skonzumuje **menej nerestí** než v predošlom (s Milujúcou manželkou aj rovnako, §14); vykladá sa **rovno priznaný** a hráč si zaň dobere kartu. Viac nerestí → jeden Absťák späť do zásoby; prvé kolo len nastaví základ | znižuje **tvoje** tuhé poškodenie (o 1 za kus) |
 
@@ -1031,6 +1084,6 @@ Všetky efekty tlačovej sady engine vyhodnocuje automaticky (playtest
 | Veterán | Ak je v partii majiteľa Influencer, neplatia jeho pravé akcie. Ak má oboch susedov a vpravo (z pohľadu majiteľa) je Žena, neplatia jeho ľavé akcie. |
 | Veštica | Pri prehre: porazený si prezrie oba doberacie balíčky, vymení jednu svoju kartu za súperovu, potom sa oba balíčky zamiešajú. |
 | Vychovávateľka | Keď majiteľ dá NA EX, jeden jeho priznaný Dlh sa zamieša do súperovho **doberacieho balíčka** (Michal 2026-10-19 — predtým do ruky, kde by ho súper priznal a dobral si kartu). |
-| Veľmi smútiaca vdova | Nástup: odhalí sa vrchná karta súperovho doberacieho balíčka (prázdny sa doplní zamiešaním odhadzovacieho). Ak je to muž (tag Chlap), ide z hry a majiteľ Vdovy **zahodí** (z hry) 2 svoje Dlhy z ruky alebo odhadzovacieho balíčka. Log vždy oznámi odhalenú kartu. Hrobár sa za Dlhy nespúšťa. (Oprava 2026-10-19 — predtým sa Dlhy len odhodili a vrátili.) |
+| Veľmi smútiaca vdova | Nástup: odhalí sa vrchná karta súperovho doberacieho balíčka (prázdny sa doplní zamiešaním odhadzovacieho). Ak je to muž (tag Chlap), ide z hry a majiteľ Vdovy **zahodí** (z hry) 2 svoje Dlhy z ruky, odhadzovacieho balíčka alebo spomedzi priznaných (priznané od 2026-10-21 — nový Dlh je hneď priznaný). Log vždy oznámi odhalenú kartu. Hrobár sa za Dlhy nespúšťa. (Oprava 2026-10-19 — predtým sa Dlhy len odhodili a vrátili.) |
 | Vínko | Dedičstvo: ráta sa ako plný poldeci navyše (limit +1); majiteľ nesmie dolievať poldeci za cigarety. Stokársky barter je povolený (Michal 2026-10-19 — predtým zakazovalo barter). Text karty treba upraviť v tvorcovi. |
 | Zámočník | Aktívne akcie Nástrojov v jeho okolí sa rátajú dvakrát. |

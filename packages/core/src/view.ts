@@ -5,7 +5,9 @@
 // doberacieho balíčka (vlastného, súperovho, spoločného), súperov balíček
 // stavby šenku a jeho výber v kroku stavby, jeho
 // karta z Vízie a jeho karta lícom dole pri patronáte (náhrada staršieho).
-// Posielajú sa len počty. Skryť kartu v rozhraní je bezcenné — filtruje sa TU a testuje sa to.
+// Posielajú sa len počty (aj počet súperových nepriznaných kliatob — ten sa
+// dá odvodiť z verejného logu). Skryť kartu v rozhraní je bezcenné — filtruje
+// sa TU a testuje sa to.
 
 import type { CardInstance, Phase, PlayerId } from "./types.ts";
 import type { GameData } from "./data.ts";
@@ -139,9 +141,33 @@ export interface ClientState {
    * by živý odhad bodov nevedel započítať záporné body za Dlh a Cirhózu.
    */
   readonly mojeKliatbyVBalicku: { readonly dlh: number; readonly cirhoza: number };
+  /**
+   * Nepriznané kliatby OBOCH hráčov spolu (ruka, doberací aj odhadzovací
+   * balíček) — len počty (Michal 2026-10-21). Každý vznik, priznanie aj
+   * zahodenie kliatby je vo verejnom logu, takže si ich hráč s dobrou pamäťou
+   * spočíta sám; server mu len odpustí daň za pamätanie. Ktoré karty a kde
+   * ležia, sa neposiela. Test: view-kliatby.test.ts.
+   */
+  readonly nepriznaneKliatby: readonly [KliatbyHraca, KliatbyHraca];
+  /** Lokality na sekere — z remíz, berie ich víťaz najbližšej bitky (verejné). */
+  readonly naSekeru: readonly CardInstance[];
   readonly koniec: KoniecHry | null;
   /** Ohlásené vydesenie: kolo, v ktorom hráč vydesil polovicu starších (verejné). */
   readonly ohlaseneVydesenie: readonly [number | null, number | null];
+}
+
+export interface KliatbyHraca {
+  readonly dlh: number;
+  readonly cirhoza: number;
+}
+
+/** Nepriznané kliatby hráča — v ruke a v oboch balíčkoch. */
+export function nepriznaneKliatbyHraca(hrac: GameState["hraci"][number]): KliatbyHraca {
+  const vsetky = [...hrac.ruka, ...hrac.doberaci, ...hrac.odhadzovaci];
+  return {
+    dlh: vsetky.filter((k) => k.defId === "dlh").length,
+    cirhoza: vsetky.filter((k) => k.defId === "cirhoza").length,
+  };
 }
 
 export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientState {
@@ -239,6 +265,8 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
       dlh: state.hraci[ja].doberaci.filter((k) => k.defId === "dlh").length,
       cirhoza: state.hraci[ja].doberaci.filter((k) => k.defId === "cirhoza").length,
     },
+    nepriznaneKliatby: [nepriznaneKliatbyHraca(state.hraci[0]), nepriznaneKliatbyHraca(state.hraci[1])],
+    naSekeru: state.naSekeru,
     koniec: state.koniec,
     ohlaseneVydesenie: state.ohlaseneVydesenie,
   };
@@ -251,50 +279,57 @@ export interface BodyStarsieho {
   readonly body: readonly [number, number];
   /** polozky[p] = každá aktívna podmienka a koľko z nej má hráč p. */
   readonly polozky: readonly [readonly BodPodmienky[], readonly BodPodmienky[]];
-  /** Súperove body tu závisia aj od jeho skrytých kliatob (ruka, balíček). */
-  readonly neiste: boolean;
 }
 
 export interface BodyTeraz {
   readonly spolu: readonly [number, number];
-  /** Súčet môže byť nepresný — súperove skryté Dlhy a Cirhózy ho ešte znížia. */
-  readonly neiste: readonly [boolean, boolean];
   readonly starsi: readonly BodyStarsieho[];
+}
+
+/** Stand-in karty pre bodovanie — za kliatby, ktorých počet je známy, no karty nie. */
+function nahradne(defId: string, pocet: number): CardInstance[] {
+  return Array.from({ length: Math.max(0, pocet) }, (_, i) => ({ uid: -1 - i, defId, leftLayout: 0, rightLayout: 0 }));
 }
 
 /**
  * Živý odhad záverečného bodovania z pohľadu hráča — tým istým elderScore
- * ako na konci hry. Vlastné kliatby hráč pozná presne; pri súperovi vidí len
- * verejný odhadzovací balíček, takže súperove body môžu byť ešte nižšie.
+ * ako na konci hry, pre oboch presný: súperove nepriznané kliatby sa
+ * dopočítajú z verejného počtu (nepriznaneKliatby), nie len z odhadzovacieho
+ * balíčka, takže premiešanie balíčka už body súpera nezmení.
  */
 export function bodyTeraz(data: GameData, view: ClientState): BodyTeraz {
-  const ja = view.ja;
-  const su: PlayerId = ja === 0 ? 1 : 0;
-  const nahradne = (defId: string, pocet: number): CardInstance[] =>
-    Array.from({ length: pocet }, (_, i) => ({ uid: -1 - i, defId, leftLayout: 0, rightLayout: 0 }));
-  const hrac = (p: PlayerId) =>
-    p === ja
-      ? {
-          cigarety: view.hraci[p].cigarety,
-          ruka: view.ruka,
-          doberaci: [...nahradne("dlh", view.mojeKliatbyVBalicku.dlh), ...nahradne("cirhoza", view.mojeKliatbyVBalicku.cirhoza)],
-          odhadzovaci: view.hraci[p].odhadzovaci,
-        }
-      : { cigarety: view.hraci[p].cigarety, ruka: [], doberaci: [], odhadzovaci: view.hraci[p].odhadzovaci };
+  const hrac = (p: PlayerId) => {
+    const h = view.hraci[p];
+    const vOdhadzovacom = (defId: string): number => h.odhadzovaci.filter((k) => k.defId === defId).length;
+    const kliatby = view.nepriznaneKliatby[p];
+    return {
+      cigarety: h.cigarety,
+      ruka: [],
+      doberaci: [...nahradne("dlh", kliatby.dlh - vOdhadzovacom("dlh")), ...nahradne("cirhoza", kliatby.cirhoza - vOdhadzovacom("cirhoza"))],
+      odhadzovaci: h.odhadzovaci,
+      priznane: h.priznane,
+    };
+  };
   const stav = { ovladnute: view.ovladnute, starsi: view.starsi, hraci: [hrac(0), hrac(1)] };
-  const superMaSkryte = view.hraci[su].rukaPocet + view.hraci[su].doberaciPocet > 0;
   const spolu: [number, number] = [0, 0];
-  const neiste: [boolean, boolean] = [false, false];
   const starsi = view.starsi.map((elder): BodyStarsieho => {
     const s = elderScore(data, stav, elder);
-    const kliatbyRozhoduju = s.polozky[su].some((p) => p.podmienka === "dlh" || p.podmienka === "cirhoza");
-    const neisteTu = superMaSkryte && kliatbyRozhoduju;
     spolu[0] += s.body[0];
     spolu[1] += s.body[1];
-    if (neisteTu) neiste[su] = true;
-    return { elderId: elder.elderId, body: s.body, polozky: s.polozky, neiste: neisteTu };
+    return { elderId: elder.elderId, body: s.body, polozky: s.polozky };
   });
-  return { spolu, neiste, starsi };
+  return { spolu, starsi };
+}
+
+/**
+ * Body jednej kliatby navyše — koľko by hráča p stál ďalší Dlh či Cirhóza
+ * pri dnešných scorecardoch (záporné číslo). Pre náhľad ceny NA EX a Vypiť.
+ */
+export function cenaKliatby(data: GameData, view: ClientState, p: PlayerId, defId: "dlh" | "cirhoza"): number {
+  const pred = bodyTeraz(data, view).spolu[p];
+  const kliatby: [KliatbyHraca, KliatbyHraca] = [view.nepriznaneKliatby[0], view.nepriznaneKliatby[1]];
+  kliatby[p] = { ...kliatby[p], [defId]: kliatby[p][defId] + 1 };
+  return bodyTeraz(data, { ...view, nepriznaneKliatby: kliatby }).spolu[p] - pred;
 }
 
 /** Body oboch hráčov pri patronáte: teraz, po vzatí (aj pri prehre) a pri výhre patróna. */

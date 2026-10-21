@@ -91,15 +91,16 @@ describe("prah Dlhu a Cirhózy", () => {
     const karta = instanceFor(data, "dlznik", [null, "Dlh", null, null], EMPTY);
     const lezi: PlacedCard = { card: karta, playedBy: 0 as PlayerId };
     const s = vPitke([[lezi], []]);
-    const dlhyPred = s.hraci[0].odhadzovaci.filter((k) => k.defId === "dlh").length;
     // NA EX zdvojí neaktívny Dlh → 2 akcie Dlh.
     const naex = apply(data, s, { type: "naex", uid: karta.uid }, 0).state;
     // Súper smie na NA EX odpovedať kartou — tu nechce.
     const bezReakcie = apply(data, naex, { type: "bezReakcie" }, 1).state;
     const po = apply(data, bezReakcie, { type: "skipNaex" }, 0).state;
     const { state, events } = apply(data, po, { type: "skipNaex" }, 1);
-    const dlhyPo = state.hraci[0].odhadzovaci.filter((k) => k.defId === "dlh").length;
-    expect(dlhyPo - dlhyPred).toBe(1);
+    // Verejný dlh (2026-10-21): nový Dlh ide rovno medzi priznané (bitka po Pitke
+    // hneď jeden priznaný spáli, preto z logu).
+    const dlhy = events.filter((e) => e.type === "log" && e.text.startsWith("Hráč 1 získava Dlh — hneď sa priznáva")).length;
+    expect(dlhy).toBe(1);
     expect(state.hraci[0].zadlzenie).toBe(0);
     expect(events).toContainEqual({ type: "log", text: "Hráč 1 dosiahol prah dlhu (2) — Dlh." });
   });

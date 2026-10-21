@@ -19,12 +19,19 @@ export interface VrstvaProps {
 export function Vrstva({ nazov, pozn, skryta, onZavri, paticka, children }: VrstvaProps) {
   const zavriRef = useRef(onZavri);
   zavriRef.current = onZavri;
+  const zavrietRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     const klaves = (e: KeyboardEvent): void => {
       if (e.key === "Escape") zavriRef.current();
     };
     window.addEventListener("keydown", klaves);
-    return () => window.removeEventListener("keydown", klaves);
+    // Fokus do okna a po zatvorení späť tam, kde bol (dizajn UX N4, WCAG 2.4.3).
+    const predtym = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    zavrietRef.current?.focus({ preventScroll: true });
+    return () => {
+      window.removeEventListener("keydown", klaves);
+      predtym?.focus({ preventScroll: true });
+    };
   }, []);
 
   return (
@@ -39,7 +46,7 @@ export function Vrstva({ nazov, pozn, skryta, onZavri, paticka, children }: Vrst
         <header className="vrstva-hlava">
           <h2>{nazov}</h2>
           {pozn !== undefined && <span className="vrstva-pozn">{pozn}</span>}
-          <button className="vrstva-zavriet" onClick={onZavri} aria-label="Zavrieť" title="Zavrieť (Esc)">
+          <button ref={zavrietRef} className="vrstva-zavriet" onClick={onZavri} aria-label="Zavrieť" title="Zavrieť (Esc)">
             ✕
           </button>
         </header>

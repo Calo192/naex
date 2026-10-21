@@ -21,7 +21,7 @@ const ZA_CO: Readonly<Record<Podmienka, string>> = {
   znepokojenie: "Za každého staršieho, ktorý sa ťa bojí aspoň na úrovni 1 (marker v žltej zóne na súperovej polovici).",
   strach: "Za každého staršieho, ktorý sa ťa bojí aspoň na úrovni 2 (oranžová zóna).",
   vydesenie: "Za každého vydeseného staršieho (červená krajná pozícia).",
-  dlh: "Za každý nepriznaný Dlh v ruke a v balíčkoch — priznaním sa ho zbavíš.",
+  dlh: "Za každý tvoj Dlh — aj priznaný. Nový Dlh sa hneď prizná; zbavíš sa ho len pálením v bitke a kartami (Dievčina, Robota, Stryná…).",
   cirhoza: "Za každú nepriznanú Cirhózu v ruke a v balíčkoch — priznaj ju.",
 };
 
@@ -69,14 +69,13 @@ export function Scoreboard({ body, data, ja, menoSupera, menoStarsieho }: Scoreb
     }
   }
   const rad = PORADIE.map((p) => milniky.get(p)).filter((m): m is Milnik => m !== undefined);
-  const neisteSuper = body.neiste[su];
 
   const popis = (m: Milnik): TipObsah => {
     const zaKus = data.bodyPodmienok[m.podmienka];
     const kliatba = m.podmienka === "dlh" || m.podmienka === "cirhoza";
     const vypocet = (pol: BodPodmienky | null): string => (pol === null ? "0" : vypocetPodmienky(pol, zaKus));
     return {
-      nadpis: `${NAZOV_PODMIENKY[m.podmienka]} — ty ${znamienko(m.body[ja])}, ${menoSupera} ${znamienko(m.body[su])}${kliatba && neisteSuper ? "?" : ""}`,
+      nadpis: `${NAZOV_PODMIENKY[m.podmienka]} — ty ${znamienko(m.body[ja])}, ${menoSupera} ${znamienko(m.body[su])}`,
       text: (
         <>
           {ZA_CO[m.podmienka]} {zaKus > 0 ? "+" : "−"}
@@ -87,21 +86,22 @@ export function Scoreboard({ body, data, ja, menoSupera, menoStarsieho }: Scoreb
               <b>{menoStarsieho(z.elderId)}:</b> ty {vypocet(z.polozky[ja])} · {menoSupera} {vypocet(z.polozky[su])}
             </span>
           ))}
-          {kliatba && neisteSuper && (
-            <span className="tip-stav">Súperove kliatby v ruke a balíčku nevidíš — jeho mínus môže byť ešte väčšie.</span>
+          {kliatba && (
+            <span className="tip-stav">
+              Súperove nepriznané kliatby sa rátajú z toho, čo sa ukázalo na stole (vznik, priznanie, zahodenie) — ktoré karty a kde ležia,
+              nevidíš, ale ich počet áno.
+            </span>
           )}
         </>
       ),
     };
   };
 
-  const strana = (kto: "ja" | "su", ks: number | null, b: number, neiste: boolean) => (
+  // Nuly sú stlmené — farbu hráča má len nenulová hodnota, oko nájde, kde sa niečo deje (dizajn hra-20261021-1240, UI N1).
+  const strana = (kto: "ja" | "su", ks: number | null, b: number) => (
     <span className={`sb-strana sb-${kto}`} role="cell">
-      <b>
-        {znamienko(b)}
-        {neiste ? "?" : ""}
-      </b>
-      {ks !== null && <small>{ks} ks</small>}
+      <b className={b === 0 ? "nula" : undefined}>{znamienko(b)}</b>
+      {ks !== null && <small className={ks === 0 ? "nula" : undefined}>{ks} ks</small>}
     </span>
   );
 
@@ -110,7 +110,6 @@ export function Scoreboard({ body, data, ja, menoSupera, menoStarsieho }: Scoreb
       {rad.length === 0 && <span className="sb-prazdny">Zatiaľ žiadny starší nemá aktívnu bodovaciu podmienku.</span>}
       {rad.map((m) => {
         const zaKus = data.bodyPodmienok[m.podmienka];
-        const kliatba = m.podmienka === "dlh" || m.podmienka === "cirhoza";
         const vediem = m.body[ja] > m.body[su] ? "ja" : m.body[ja] < m.body[su] ? "su" : "";
         const obsah = popis(m);
         return (
@@ -124,7 +123,7 @@ export function Scoreboard({ body, data, ja, menoSupera, menoStarsieho }: Scoreb
             onFocus={(e) => ukaz(e.currentTarget, obsah)}
             onBlur={skry}
           >
-            {strana("ja", m.kusy[ja], m.body[ja], false)}
+            {strana("ja", m.kusy[ja], m.body[ja])}
             <span className="sb-stred">
               <span className="sb-nazov" role="rowheader">
                 {NAZOV_PODMIENKY[m.podmienka]}
@@ -134,19 +133,19 @@ export function Scoreboard({ body, data, ja, menoSupera, menoStarsieho }: Scoreb
                 {Math.abs(zaKus)} za kus
               </span>
             </span>
-            {strana("su", m.kusy[su], m.body[su], kliatba && neisteSuper)}
+            {strana("su", m.kusy[su], m.body[su])}
           </div>
         );
       })}
       <div className={`sb-milnik sb-spolu ${body.spolu[ja] > body.spolu[su] ? "ja" : body.spolu[ja] < body.spolu[su] ? "su" : ""}`} role="row">
-        {strana("ja", null, body.spolu[ja], false)}
+        {strana("ja", null, body.spolu[ja])}
         <span className="sb-stred">
           <span className="sb-nazov" role="rowheader">
             Spolu
           </span>
           <span className="sb-pravidlo">ty · {menoSupera}</span>
         </span>
-        {strana("su", null, body.spolu[su], neisteSuper)}
+        {strana("su", null, body.spolu[su])}
       </div>
       {tip}
     </div>

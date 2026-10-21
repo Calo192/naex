@@ -290,13 +290,28 @@ function bodyZaCigaretu(data: GameData, s: GameState): number {
   return (n * data.bodyPodmienok.cigarety) / KONSTANTY.CIGARIET_NA_KUS;
 }
 
-/** Body zo scorecardov, keby hra skončila teraz: moje mínus súperove (súperove skryté kliatby nevidno). */
+/**
+ * Body zo scorecardov, keby hra skončila teraz: moje mínus súperove. Súperove
+ * karty v ruke a balíčku bot nevidí — len počet jeho nepriznaných kliatob,
+ * ktorý je verejný (rovnako ako na stole hráča).
+ */
 function rozdielBodov(data: GameData, s: GameState, ja: PlayerId, starsi: readonly ElderState[] = s.starsi): number {
   const su = opponentOf(ja);
+  const skryte = (p: PlayerId, defId: string): CardInstance[] => {
+    const h = s.hraci[p];
+    const n = [...h.ruka, ...h.doberaci].filter((k) => k.defId === defId).length;
+    return Array.from({ length: n }, (_, i) => ({ uid: -1 - i, defId, leftLayout: 0, rightLayout: 0 }));
+  };
   const hrac = (p: PlayerId) =>
     p === ja
       ? s.hraci[p]
-      : { cigarety: s.hraci[p].cigarety, ruka: [], doberaci: [], odhadzovaci: s.hraci[p].odhadzovaci };
+      : {
+          cigarety: s.hraci[p].cigarety,
+          ruka: [],
+          doberaci: [...skryte(p, "dlh"), ...skryte(p, "cirhoza")],
+          odhadzovaci: s.hraci[p].odhadzovaci,
+          priznane: s.hraci[p].priznane,
+        };
   const stav = { ovladnute: s.ovladnute, starsi, hraci: [hrac(0), hrac(1)] };
   let v = 0;
   for (const elder of starsi) {
@@ -322,7 +337,8 @@ function stavkaBitky(data: GameData, s: GameState, ja: PlayerId): number {
   // Patronát: víťaz-patrón si staršieho nechá, porazený platí poldeci.
   let patronat = 0;
   for (const q of [0, 1] as const) if (s.patronat[q] !== null) patronat += hodnotaZiskania(data, s, ja, q) + 2;
-  return lokality * data.bodyPodmienok.lokality + 1.5 + patronat;
+  // Na sekeru (Michal 2026-10-21): víťaz berie aj lokality z predošlých remíz.
+  return lokality * data.bodyPodmienok.lokality * (1 + s.naSekeru.length) + 1.5 + patronat;
 }
 
 /**
@@ -349,12 +365,9 @@ function hodnotaBitky(k: Kontext, s: GameState, q: PlayerId, ostrost: number): n
   const abstaky: [number, number] = [0, 0];
   abstaky[k.ja] = s.hraci[k.ja].ruka.filter((x) => x.defId === "abstak").length;
   const dmg = poskodenieBitky(data, s, sums, abstaky);
-  let m = dmg.tuhe[q] - dmg.tuhe[o];
+  // Remíza v tuhom (m = 0) nevyhrá nikto — lokalita ide na sekeru (šanca ½).
+  const m = dmg.tuhe[q] - dmg.tuhe[o];
   const celk = dmg.celkove[q] - dmg.celkove[o];
-  if (m === 0 && s.ciel?.typ === "lokalita") {
-    // Remíza o lokalitu: rozhodne celkové poškodenie, potom obranca.
-    m = celk > 0 ? 0.5 : celk < 0 ? -0.5 : s.utocnik === q ? -0.3 : 0.3;
-  }
   const sanca = 1 / (1 + Math.exp(-ostrost * m));
   let v = k.povaha.bitka * (k.stavka * (sanca - 0.5) + 0.35 * Math.max(-6, Math.min(6, celk)));
 

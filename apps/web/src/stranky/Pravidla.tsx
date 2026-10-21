@@ -284,7 +284,9 @@ const KAPITOLY: readonly Kapitola[] = [
         <p className="zvyraznene">
           NA EX zdvojnásobí neaktívne akcie a zároveň zruší aktívne akcie karty. Akcie sa rátajú majiteľovi karty: na svojej
           si zdvojíš Petelicu alebo zrušíš vlastný Dlh či Pečeň, na súperovej mu zrušíš aktívne akcie — ale jeho neaktívne mu
-          zdvojíš. Pred potvrdením ti hra ukáže náhľad bitky. NA EX môže zmeniť aj počet Pitiek. Pamätaj: poldeci sa pri bitke vypije, takže
+          zdvojíš. Násobky sa násobia: NA EX na kartu vedľa Silnej ženy dá ×4 (aj Dlhu a Poškodeniu pečene) a NA EX leží na karte do
+          bitky, takže sa vyhodnotí v každej Pitke kola. Pred potvrdením ti hra ukáže náhľad: bitku pred a po, zmeny oboch
+          hráčov a koľko Cirhóz a Dlhov z toho bude a za koľko bodov. NA EX môže zmeniť aj počet Pitiek. Pamätaj: poldeci sa pri bitke vypije, takže
           v ďalšom kole ti chýba (na začiatku kola sa doleje len jeden vypitý). Hra ti pri NA EX ukáže, aký limit budeš mať
           v ďalšom kole. Na Liberála NA EX dať nemožno.
         </p>
@@ -354,9 +356,10 @@ const KAPITOLY: readonly Kapitola[] = [
         <p>
           Kliatbu (Dlh, Cirhóza, Milujúca manželka…) môžeš namiesto do línie vyložiť do svojej hracej oblasti — je{" "}
           <strong>priznaná</strong>. <strong>Za každú priznanú kliatbu si hneď doberieš kartu</strong> (aj za Absťák, ktorý
-          prichádza rovno priznaný). Priznaný Dlh sa ráta k prahu Exekútora, priznaná Cirhóza sa dá liečiť alebo pochovať.
-          Nepriznané kliatby uberajú body na konci hry. Nová kliatba ide do tvojho <strong>odhadzovacieho balíčka</strong> — do
-          ruky príde, až keď si ju dobereš.
+          prichádza rovno priznaný; za Cirhózu nie). Priznaný Dlh sa ráta k prahu Exekútora, priznaná Cirhóza sa dá liečiť alebo
+          pochovať. Nový <strong>Dlh sa hneď prizná</strong> sám a na konci hry uberá body aj priznaný. Nová{" "}
+          <strong>Cirhóza ide navrch tvojho doberacieho balíčka</strong> — do ruky príde pri najbližšom ťahaní. Nepriznaná Cirhóza
+          uberá body na konci hry.
         </p>
         <p className="zvyraznene">
           Priznaná kliatba je natrvalo mimo balíčka — priznávaním si balíček čistíš a dopĺňaš ruku. Priznanie nemíňa limit
@@ -454,12 +457,13 @@ const KAPITOLY: readonly Kapitola[] = [
     obsah: () => (
       <>
         <p>
-          Akcie <strong>Dlh</strong> v Pitke plnia zadĺženie a pri prahu vznikne karta Dlh. Keď si Dlh dobereš, <strong>sám sa prizná</strong>{" "}
-          a ťaháš ďalšiu kartu (aj tá môže byť Dlh). Nedobratý Dlh v balíčku uberá na konci hry −1 bod;
-          priznaný sa ráta k prahu Exekútora.
+          Akcie <strong>Dlh</strong> v Pitke plnia zadĺženie a za každý celý prah vznikne karta Dlh — <strong>hneď priznaná</strong>,
+          kartu za ňu nedoberáš. Každý tvoj Dlh, aj priznaný, uberá na konci hry −1 bod za každú aktívnu podmienku „bankovky“;
+          priznaný sa ráta aj k prahu Exekútora. Hra ti cenu Dlhu ukáže vopred (doska, náhľad NA EX). Dlh, ktorý ti súper
+          podstrčí do balíčka (Vychovávateľka), sa pri dobratí prizná sám a ťaháš ďalšiu kartu.
         </p>
         <ol>
-          <li><strong>Robota:</strong> ešte pred kontrolou prahu odhodíš za každú aktívnu Robotu 1 priznaný Dlh.</li>
+          <li><strong>Robota:</strong> ešte pred kontrolou prahu spáliš za každú aktívnu Robotu 1 priznaný Dlh.</li>
           <li>Ak priznané Dlhy dosiahnu prah (základ 10), musíš odovzdať Nástroj — inak okamžite prehrávaš.</li>
           <li>Ak Nástroj odovzdáš, polovica Dlhov zhorí (nadol). Kto exekúcii nečelí, spáli 1 priznaný Dlh.</li>
         </ol>
@@ -475,8 +479,9 @@ const KAPITOLY: readonly Kapitola[] = [
       <>
         <p>
           K poškodeniu pečene prispieva každá akcia <strong>Poškodenie pečene</strong>, každá akcia <strong>Poldeci</strong> a
-          každé <strong>NA EX</strong>. Pečeň sa vyhodnocuje <strong>len počas Pitky</strong> — keď dosiahneš prah, hneď získaš kartu
-          Cirhózy. Prah je <strong>3</strong> + priazeň Alkoholika. <strong>Po každej Pitke sa pečeň vynuluje</strong> — zvyšok
+          každé <strong>NA EX</strong>. Pečeň sa vyhodnocuje <strong>len počas Pitky</strong> — za každý celý prah získaš kartu
+          Cirhózy (ide navrch tvojho doberacieho balíčka). Prah je <strong>3</strong> + priazeň Alkoholika. Doska ti ukazuje,
+          koľko pečene pripíšu karty na stole a či z toho bude Cirhóza („po Pitke“). <strong>Po každej Pitke sa pečeň vynuluje</strong> — zvyšok
           pod prahom sa neprenáša. Poldeci vypitý v Zhromaždení (ďalšia karta v ťahu) pripíše +1 pečene dopredu do najbližšej Pitky.
         </p>
         <p>
@@ -577,10 +582,14 @@ const KAPITOLY: readonly Kapitola[] = [
           ráta nanovo). Počet sa počas kola mení s líniou — začatá Pitka sa vždy dopije.
         </p>
         <h3>Poradie Pitky</h3>
+        <p>
+          <strong>Začína obranca.</strong> Keď dá „hotovo“ (nedá sa vrátiť), hrá útočník a má <strong>posledné slovo</strong> — na
+          jeho NA EX už obranca odpovie len jednou kartou. Po „hotovo“ oboch sa Pitka vyhodnotí:
+        </p>
         <ol>
           <li>NA EX (súper smie hneď odpovedať jednou kartou)</li>
-          <li>Dlh — každá aktívna akcia Dlh je karta Dlh</li>
-          <li>Poškodenie pečene a Cirhóza</li>
+          <li>Dlh — za každý celý prah zadĺženia karta Dlh (hneď priznaná)</li>
+          <li>Poškodenie pečene a Cirhóza — za každý celý prah Cirhóza</li>
           <li>Obmedzenie</li>
           <li>Cigarety — za akcie Cigareta dostaneš cigarety (mínus súperove Obmedzenia)</li>
           <li>Pitka sama karty nedáva — doberáš si ich fajčením, priznaním kliatby, Poštárkou a Víziou</li>
@@ -605,7 +614,7 @@ const KAPITOLY: readonly Kapitola[] = [
             <tr><td>Zberný dvor</td><td>Pitka</td><td>Raz za Pitku za cigaretu karta z tvojho odhadzovacieho balíčka do ruky.</td></tr>
             <tr><td>Most</td><td>Zhromaždenie, Pitka</td><td>Karty len na vlastnú stranu, aj odpoveď na NA EX.</td></tr>
             <tr><td>Cintorín</td><td>Prehra</td><td>Porazený smie dať Nástroj z ruky do Dedičstva zadarmo (cena Dedičstva aj tak stúpne).</td></tr>
-            <tr><td>Obecný úrad</td><td>Bitka</td><td>Prah Exekútora −4; Robota odhodí 2 priznané Dlhy.</td></tr>
+            <tr><td>Obecný úrad</td><td>Bitka</td><td>Prah Exekútora −4; Robota spáli 2 priznané Dlhy.</td></tr>
             <tr><td>Jednota</td><td>Pitka</td><td>Nový poldeci (barter) o 1 cigaretu lacnejší.</td></tr>
             <tr><td>Kultúrny dom</td><td>Bitka</td><td>Pohoršenie nemá limit dvoch hraníc zón (na krajnú pozíciu stále nie).</td></tr>
             <tr><td>Vínna pivnica</td><td>Pitka</td><td>NA EX až dvakrát za Pitku.</td></tr>
@@ -660,7 +669,11 @@ const KAPITOLY: readonly Kapitola[] = [
         <li><strong>Exekútor</strong> — najprv Robota, potom kontrola prahu priznaných dlhov.</li>
         <li><strong>Pohoršenie</strong> — každé posunie marker staršieho o 1 k súperovi; ten istý marker aj viackrát, no tvoje Pohoršenia ho prenesú najviac cez dve hranice zón (z pravej sivej až do ľavej oranžovej áno) a nikdy nie na krajnú pozíciu. Patrónov súper k nim dostane Pohoršenia z patronátu.</li>
         <li><strong>Poškodenie</strong> — Viera a Povera sa vyrušia, tuhé znižuje Viera a Absťáky, mäkké po strop dlhu.</li>
-        <li><strong>Výsledok</strong> — vyhráva vyššie TUHÉ; pri remíze rozhodne CELKOVÉ a potom obranca. Prebytok rozdeľuje hráč s vyšším CELKOVÝM.</li>
+        <li>
+          <strong>Výsledok</strong> — vyhráva vyššie TUHÉ. Pri <strong>rovnakom tuhom nevyhrá nikto</strong>: lokalita ide{" "}
+          <strong>na sekeru</strong> a vezme si ju víťaz najbližšej bitky spolu s tou, o ktorú sa bije (v poslednej bitke prepadne);
+          útočník ostáva útočníkom. Prebytok rozdeľuje hráč s vyšším CELKOVÝM — aj pri remíze v tuhom.
+        </li>
         <li><strong>Cigarety za prebytok</strong> — hráč, proti ktorému sa prebytok rozdeľoval, dostane 1 cigaretu za každého staršieho, ktorého marker sa posunul (viac posunov toho istého = 1 cigareta).</li>
         <li><strong>Poldeci</strong> — poldeci z NA EX sa vypijú, aktívna akcia Poldeci otočí vypitý späť na plný.</li>
         <li><strong>Veštica</strong> — porazený s Vešticou vymení kartu medzi doberacími balíčkami.</li>
@@ -687,7 +700,7 @@ const KAPITOLY: readonly Kapitola[] = [
         <p>
           Inak po poslednej bitke o lokalitu sa bodujú scorecardy. Každá aktívna podmienka boduje{" "}
           <strong>obom hráčom</strong>, nech je marker staršieho kdekoľvek: za kusy — ovládnuté lokality (2), získaných
-          starších (2), zvyšné cigarety (1 za každé 3), mínus za nepriznané Dlhy (−1) a Cirhózy (−2). Znepokojenie (1), Strach (2)
+          starších (2), zvyšné cigarety (1 za každé 3), mínus za každý Dlh — aj priznaný (−1) a za nepriznané Cirhózy (−2). Znepokojenie (1), Strach (2)
           a Vydesenie (3) dávajú body za každého staršieho v hre (aj toho na tomto scorecarde), ktorý sa ťa bojí aspoň na
           tú úroveň; pri jednom staršom sa ráta len najvyššia splnená. Príklad: Farár má aktívne Znepokojenie a Strach,
           jeden starší sa ťa bojí na úrovni 1, druhý na 2 a sám Farár na 3 — z Farára máš 1 + 2 + 2 = 5 bodov.

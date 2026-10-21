@@ -36,6 +36,8 @@ type ServerMsg =
   | { type: "privitanie"; code: string; seat: 0 | 1; started: boolean; verejna: boolean; dlzka: DlzkaHry; sada: Sada }
   | { type: "hraci"; hraci: [HracInfo | null, HracInfo | null] }
   | { type: "state"; view: ClientState; events: Event[] }
+  /** Doterajší log partie pri návrate (obnovenie stránky, výpadok) — nahrádza miestny. */
+  | { type: "historia"; events: Event[] }
   | { type: "superPripojeny"; connected: boolean }
   | { type: "frajerina"; zmeny: ZmenyFrajeriny }
   | { type: "error"; text: string };
@@ -47,6 +49,8 @@ export interface HraHook {
   readonly hraci: readonly [HracInfo | null, HracInfo | null];
   readonly view: ClientState | null;
   readonly log: readonly string[];
+  /** Udalosti poslednej správy so stavom (id rastie) — účet Pitky a bitky na stole. */
+  readonly udalosti: { readonly id: number; readonly events: readonly Event[] };
   readonly chyba: string | null;
   readonly superPripojeny: boolean;
   readonly frajerina: ZmenyFrajeriny | null;
@@ -72,7 +76,7 @@ function textUdalosti(e: Event, mena: readonly string[]): string | null {
     case "manualEfekt":
       return `⚠ EFEKT (vyhodnoťte ručne): ${e.nazov} — ${e.text}`;
     case "bitkaVysledok":
-      return `Bitka: tuhé ${e.damage.tuhe[0]}:${e.damage.tuhe[1]}, celkové ${e.damage.celkove[0]}:${e.damage.celkove[1]} — ${e.vitaz === null ? "remíza, starší ostáva" : `vyhráva ${meno(e.vitaz)}`}${e.prebytok > 0 ? `, prebytok ${e.prebytok}` : ""}.`;
+      return `Bitka: tuhé ${e.damage.tuhe[0]}:${e.damage.tuhe[1]}, celkové ${e.damage.celkove[0]}:${e.damage.celkove[1]} — ${e.vitaz === null ? "remíza, lokalita ide na sekeru" : `vyhráva ${meno(e.vitaz)}`}${e.prebytok > 0 ? `, prebytok ${e.prebytok}` : ""}.`;
     case "koniec":
       return e.body === null ? `KONIEC: ${e.dovod}` : `KONIEC: ${e.dovod} Body ${e.body[0]}:${e.body[1]}.`;
     default:
@@ -86,6 +90,7 @@ export function useHra(aktivne: boolean): HraHook {
   const [hraci, setHraci] = useState<readonly [HracInfo | null, HracInfo | null]>([null, null]);
   const [view, setView] = useState<ClientState | null>(null);
   const [log, setLog] = useState<readonly string[]>([]);
+  const [udalosti, setUdalosti] = useState<{ readonly id: number; readonly events: readonly Event[] }>({ id: 0, events: [] });
   const [chyba, setChyba] = useState<string | null>(null);
   const [superPripojeny, setSuperPripojeny] = useState(true);
   const [frajerina, setFrajerina] = useState<ZmenyFrajeriny | null>(null);
@@ -116,6 +121,9 @@ export function useHra(aktivne: boolean): HraHook {
         case "hraci":
           setHraci(msg.hraci);
           break;
+        case "historia":
+          setLog(msg.events.map((e) => textUdalosti(e, menaRef.current)).filter((t): t is string => t !== null).slice(-250));
+          break;
         case "state":
           setView(msg.view);
           setMiestnost((m) => (m === null || m.started ? m : { ...m, started: true }));
@@ -123,6 +131,7 @@ export function useHra(aktivne: boolean): HraHook {
             const nove = msg.events.map((e) => textUdalosti(e, menaRef.current)).filter((t): t is string => t !== null);
             return [...stary, ...nove].slice(-250);
           });
+          if (msg.events.length > 0) setUdalosti((u) => ({ id: u.id + 1, events: msg.events }));
           break;
         case "superPripojeny":
           setSuperPripojeny(msg.connected);
@@ -188,6 +197,7 @@ export function useHra(aktivne: boolean): HraHook {
     hraci,
     view,
     log,
+    udalosti,
     chyba,
     superPripojeny,
     frajerina,

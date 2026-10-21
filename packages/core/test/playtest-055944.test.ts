@@ -388,9 +388,11 @@ describe("Poštárka, Starosta a Vychovávateľka", () => {
       [[lezi(postarka, 0), lezi(starosta, 0)], []],
     );
     const ruka = s.hraci[0].ruka.length;
+    const dlhyPred = s.hraci[0].priznane.filter((k) => k.defId === "dlh").length;
     s = apply(data, s, { type: "postarka", pocet: 2 }, 0).state;
     expect(s.hraci[0].ruka.length).toBe(ruka + 2);
-    expect(s.hraci[0].odhadzovaci.filter((k) => k.defId === "dlh")).toHaveLength(1);
+    // Verejný dlh (2026-10-21): Dlh z Poštárky sa hneď prizná.
+    expect(s.hraci[0].priznane.filter((k) => k.defId === "dlh").length - dlhyPred).toBe(1);
     expect(() => apply(data, s, { type: "postarka", pocet: 1 }, 0)).toThrow(/už použil/);
     const zRuky = s.hraci[0].ruka[0]!;
     const zoSenku = s.senok[0]!;

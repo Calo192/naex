@@ -86,6 +86,72 @@
   <div id="zmeny">
 
     <details class="zmena" data-oblast="pravidla">
+      <summary><h3>Verejný dlh: Dlh sa hneď prizná, Cirhóza navrch balíčka, cena kliatob vopred</h3><span class="stav">skúšobné</span>
+        <span class="meta"><span class="stitok pravidla">pravidlá</span><span class="stitok rozhranie">rozhranie</span><span class="stitok">2026-10-21</span><span class="stitok">rozhodnutie Michala</span></span></summary>
+      <div class="telo">
+        <div class="blok"><h4>Prečo</h4><p>Kliatby rozhodli tri playtesty po sebe (−43, −58 a −48 bodov pri sčítaní). Dobratý Dlh nestál nič, nedobratý −1 až −8 bodov — cenu určilo zamiešanie, nie hráč, a súper ju nevidel (skóre súpera na displeji 76, výsledok 33). Rozbor: <a href="strategia-kliatby-20261021.html">strategia-kliatby-20261021</a> (návrhy 1 a 2), návrhy navrhára <a href="navrhy-20261021-041728.html">navrhy-20261021-041728</a> (bod 1).</p></div>
+        <div class="blok"><h4>Čo sa zmenilo</h4><ul>
+          <li><strong>Nový Dlh sa hneď prizná</strong> — kartu zaň hráč nedobere, na konci hry uberá body aj priznaný. V bitke sa priznaný Dlh ďalej páli (hráč pod prahom Exekútora spáli 1).</li>
+          <li><strong>Nová Cirhóza ide navrch doberacieho balíčka</strong> — do ruky príde pri najbližšom ťahaní a hráč o nej rozhodne.</li>
+          <li><strong>Robota spáli</strong> priznaný Dlh (predtým ho odhodila do balíčka); <strong>Niekoho stryná</strong> a <strong>Veľmi smútiaca vdova</strong> berú Dlh aj spomedzi priznaných. Texty týchto kariet a Obecného úradu v tvorcovi treba dorovnať (naex-admin, so súhlasom Michala).</li>
+          <li><strong>Cena kliatob vopred:</strong> doska ukazuje pečeň a zadĺženie „po Pitke“ (šrafa = čo pripíšu karty na stole) a koľko Cirhóz a Dlhov z toho bude aj za koľko bodov; náhľad NA EX ukazuje kliatby z tejto aj ďalších Pitiek kola pre oboch.</li>
+          <li><strong>Súperove kliatby:</strong> server posiela počet súperových nepriznaných kliatob (z verejných udalostí, overené testom) — skóre súpera je presné, otáznik zmizol, rozpis na konci hry sa sčíta na výsledok.</li>
+        </ul></div>
+        <div class="blok sledovat"><h4>Čo sledovať</h4><ul>
+          <li>Odhad ceny kliatob pred NA EX a Vypiť proti skutočnosti — zmenil náhľad voľbu?</li>
+          <li>Odhad skóre oboch pred poslednou bitkou proti výsledku (dnes rozdiel 43–46 b, cieľ 0).</li>
+          <li>Priznané Dlhy pri každej bitke, súperove Povery a prah Exekútora — nezačne Exekútor rozhodovať?</li>
+          <li>Pri Cirhóze navrch: priznať, alebo držať? Kliatby zo 7. kola.</li>
+        </ul></div>
+      </div>
+    </details>
+
+    <details class="zmena" data-oblast="pravidla">
+      <summary><h3>Remíza na sekeru, bez stupňa „celkové“</h3><span class="stav">skúšobné</span>
+        <span class="meta"><span class="stitok pravidla">pravidlá</span><span class="stitok rozhranie">rozhranie</span><span class="stitok">2026-10-21</span><span class="stitok">rozhodnutie Michala</span></span></summary>
+      <div class="telo">
+        <div class="blok"><h4>Prečo</h4><p>Úplnú remízu dostával obranca — 11,4 % bitiek botov, v playteste 20261021-041728 dve zo siedmich lokalít (6 : 6 a 2 : 2). Obaja hráči: „rozhoduje stolička“. Stupeň „rozhodne celkové“ rozhodol len 5 z 56 remíz. Rozbor: <a href="strategia-remiza-20261021.html">strategia-remiza-20261021</a> (návrhy 1, 2 a 3).</p></div>
+        <div class="blok"><h4>Čo sa zmenilo</h4><ul>
+          <li><strong>Pri rovnakom tuhom nevyhrá nikto</strong> — lokalita ide <strong>na sekeru</strong> a vezme si ju víťaz najbližšej bitky spolu so svojou. Viac remíz sa na sekere kopí; útočník ostáva útočníkom, patronát sa vyrieši ako prehra (s bolestným).</li>
+          <li><strong>Posledná bitka:</strong> pri remíze lokalita aj všetko na sekere prepadne.</li>
+          <li>Stupeň „celkové“ zanikol — celkové poškodenie určuje už len, kto rozdelí prebytok (aj pri remíze v tuhom).</li>
+          <li><strong>Rozhranie:</strong> odhad bitky píše, čo sa stane pri remíze („lokalita na sekeru → ďalšia bitka o 3 lokality“), koľko lokalít je v stávke a čo leží na sekere; časová os ukazuje „na sekere N“.</li>
+          <li>Merané u botov (bot sa remízu naučil): rebrík 67 → 72 %, úplné remízy 11,4 → 9,6 %, útočník vyhrá 54 % bitiek, vedúci vyhral bitku o sekeru 12 z 25 — všetko v šume.</li>
+        </ul></div>
+        <div class="blok sledovat"><h4>Čo sledovať</h4><ul>
+          <li>Hral niekto zámerne na remízu, aby lokalita išla na sekeru?</li>
+          <li>Zmenil hráč plán v kole remízy (šetril poldeci, iný cieľ, nepasoval)?</li>
+          <li>Pochopil pravidlo z jednej vety a bolo jasné, čo leží na sekere?</li>
+          <li>Ak posledná bitka skončila remízou a niečo prepadlo — bolo to fér?</li>
+        </ul></div>
+      </div>
+    </details>
+
+    <details class="zmena" data-oblast="rozhranie">
+      <summary><h3>Herný stôl: čo vidíš, to platí — Pitka nahlas, účet Pitky a bitky, NA EX na dva kroky</h3><span class="stav">skúšobné</span>
+        <span class="meta"><span class="stitok rozhranie">rozhranie</span><span class="stitok">2026-10-21</span><span class="stitok">rozhodnutie Michala</span></span></summary>
+      <div class="telo">
+        <div class="blok"><h4>Prečo</h4><p>Všetky nezrovnalosti nahlásené v playteste 20261021-041728 boli chyby zobrazenia, nie výpočtu: pečeň „doteraz“ namiesto „po Pitke“, skóre súpera zabúdalo jeho kliatby po zamiešaní, „hotovo“ v Pitke nezanechalo stopu, takže obaja hlásili nesprávne poradie. Návrhy: <a href="dizajn-hra-nezrovnalosti-20261021-1229-ui.html">UI</a> a <a href="dizajn-hra-nezrovnalosti-20261021-1229-ux.html">UX</a> (všetko), <a href="dizajn-hra-20261021-1240.html">dizajn-hra-20261021-1240</a> (UI N1, N4, UX N1, N3, N4).</p></div>
+        <div class="blok"><h4>Čo sa zmenilo</h4><ul>
+          <li><strong>Pitka nahlas:</strong> „hotovo“ sa zapíše do logu; pás kola ukazuje dve „stoličky“ (obranca začína, útočník má posledné slovo, kto skončil a s NA EX či bez); „hotovo“ so zámkom chce potvrdenie, keď ním hráč vzdáva možné NA EX.</li>
+          <li><strong>NA EX na dva kroky</strong> s celou cenou: vlastník a miesto karty, bitka pred a po, zmeny oboch hráčov, vzorec násobkov (×2 NA EX × ×2 Silná žena), kliatby a body; NA EX! je pečiatka — hlavné tlačidlo Pitky, cigarety v jednej skupine.</li>
+          <li><strong>Účet Pitky</strong> v páse („Pitka 1 vyhodnotená · ty: +2 Cirhóza (−4 b)…“) a <strong>účet bitky</strong> nad stolom v novom kole (výsledok, lokality aj zo sekery, posuny markerov, body pred a po); súperove nové karty majú štítok „nová“ a pás ukazuje jeho posledný ťah; log prežije obnovenie stránky.</li>
+          <li><strong>Pasovať</strong> chce potvrdenie, keď ešte môžeš vykladať; chyba ťahu sa ukáže v páse; stránka sa posunie k miestu ťahu; titulok karty prehliadača hlási „● Tvoj ťah“.</li>
+          <li><strong>Bez ťahania a myši:</strong> stavba šenku a branie klikom, karta v ruke sa zväčší fokusom či ťuknutím, karta je jedna zastávka klávesnice, okno vrstvy drží fokus.</li>
+          <li><strong>Vizuál:</strong> mobil už nepreteká (390 px), tokeny <code>--slaby-text</code> a <code>--cervena-text</code> (WCAG AA), stlmené nuly v skóre, stabilná mriežka dosky, časová os sa posúva k aktuálnemu kroku a zbaľuje hotové Pitky, vrstva nad osou, lišta kola (kontumácia pri stave, „vzdať sa“ tehlové).</li>
+          <li>Konzolový klient AI playtesterov (<code>tools/playtest/hrac.ts</code>) má tie isté údaje: výhľad Pitky, poradie, cenu NA EX, presné body súpera.</li>
+          <li>Neurobené (čaká na rozhodnutie Michala): zbalenie starších a skóre, náhrada zeleného stola, nové rozloženie stola, zvuk a klávesové skratky.</li>
+        </ul></div>
+        <div class="blok sledovat"><h4>Čo sledovať</h4><ul>
+          <li>Nezrovnalosti typu „poradie v Pitke“ a „počítadlo pečene“ — cieľ 0.</li>
+          <li>Prekvapila hráča Cirhóza alebo Dlh? Čo ukazovalo počítadlo tesne pred tým?</li>
+          <li>Koľkokrát hráč zrušil potvrdenie „hotovo“ či „pasovať“ („ešte nie“)?</li>
+          <li>Vedel hráč po bitke povedať, ako dopadla a prečo sa zmenilo skóre, bez otvorenia logu?</li>
+        </ul></div>
+      </div>
+    </details>
+
+    <details class="zmena" data-oblast="pravidla">
       <summary><h3>Patronát namiesto bitky o staršieho, Pohoršenie cez dve zóny</h3><span class="stav">skúšobné</span>
         <span class="meta"><span class="stitok pravidla">pravidlá</span><span class="stitok rozhranie">rozhranie</span><span class="stitok">2026-10-20</span><span class="stitok">rozhodnutie Michala</span></span></summary>
       <div class="telo">

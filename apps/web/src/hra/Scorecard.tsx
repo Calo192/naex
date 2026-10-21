@@ -139,7 +139,6 @@ export function Scorecard({ elder, data, sada, ja, sirka, karta, onClick, body }
                   <span className="tip-stav">
                     Aktívna — boduje obom. Keby hra skončila teraz: <b>ty {moje === undefined ? "0" : vypocetPodmienky(moje, bodyZaKus)}</b>
                     {" · "}súper {jeho === undefined ? "0" : vypocetPodmienky(jeho, bodyZaKus)}
-                    {body?.neiste === true && (p.podmienka === "dlh" || p.podmienka === "cirhoza") ? " (súperove skryté kliatby môžu byť ďalšie)" : ""}
                   </span>
                 )}
               </>
@@ -248,8 +247,7 @@ export function StavStarsieho({
           <b>Ty {znamienko(body?.body[ja] ?? 0)}</b> — {rozpis(ja)}
         </span>
         <span className="tip-stav">
-          Súper {znamienko(body?.body[su] ?? 0)}
-          {body?.neiste === true ? "?" : ""} — {rozpis(su)}
+          Súper {znamienko(body?.body[su] ?? 0)} — {rozpis(su)}
         </span>
         <span className="tip-stav">
           {obavany === null
@@ -278,7 +276,6 @@ export function StavStarsieho({
       </span>
       <span className="starsi-riadok strach" onMouseEnter={(e) => ukaz(e.currentTarget, tipBodov)} onMouseLeave={skry}>
         <span aria-hidden="true">★</span> <b className="moje">ty {znamienko(body?.body[ja] ?? 0)}</b> · súper {znamienko(body?.body[su] ?? 0)}
-        {body?.neiste === true ? "?" : ""}
       </span>
       {obavany !== null && (
         <span className={`starsi-riadok boji-sa ${obavany === ja ? "moja" : "superova"}`}>

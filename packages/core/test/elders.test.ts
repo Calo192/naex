@@ -211,6 +211,7 @@ function stavBodovania(o: { cigarety: [number, number]; dlhy: [number, number] }
     ruka: Array.from({ length: o.dlhy[p] }, (_, i): CardInstance => ({ uid: 900 + 10 * p + i, defId: "dlh", leftLayout: 0, rightLayout: 0 })),
     doberaci: [],
     odhadzovaci: [],
+    priznane: [],
   });
   return { ovladnute: [], starsi: [], hraci: [hrac(0), hrac(1)] };
 }

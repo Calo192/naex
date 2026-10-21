@@ -108,7 +108,8 @@ Pred prvým ťahom (súper sa pripravuje tiež, na teba počká):
   **Dvojčatá** — do prevahy sa rátajú za dvoch.
 - **Poradie (2026-10-20):** cieľ kola vyberá a natáča **obranca** (víťaz
   poslednej bitky); **útočník** (porazený) berie zo šenku prvý a **vykladá
-  prvý**; v Pitke začína obranca.
+  prvý**; v Pitke začína obranca — jeho „hotovo“ je nevratné a zapíše sa
+  do logu, útočník potom má **posledné slovo** (2026-10-21).
 - **Lokality (2026-10-20)** — efekt platí v kole o ňu: Krčma (s plným
   poldeci povinné NA EX), Kostol (nikto nevypije ani nedá NA EX — v ťahu
   1 karta), Benzínka (nikto nefajčí), Zastávka (spoločný limit = súčet
@@ -117,7 +118,7 @@ Pred prvým ťahom (súper sa pripravuje tiež, na teba počká):
   dvor (raz za Pitku `vykup`: cigareta → karta z odhadzovacieho do ruky),
   Most (len na vlastnú stranu), Cintorín (porazený `cintorin`: Nástroj
   z ruky do Dedičstva zadarmo), Obecný úrad (prah Exekútora −4, Robota
-  odhodí 2 Dlhy), Jednota (barter −1), Kultúrny dom (Pohoršenie bez limitu
+  spáli 2 Dlhy), Jednota (barter −1), Kultúrny dom (Pohoršenie bez limitu
   dvoch hraníc zón), Vínna pivnica (NA EX 2× za Pitku), Družstvo (Pracujúci
   nemíňajú limit). Nové lokality prídu do hry so zverejnením sady.
 - **Draft:** stavba šenku naraz, bez podávania: z N kariet dáš **polovicu do šenku
@@ -128,9 +129,12 @@ Pred prvým ťahom (súper sa pripravuje tiež, na teba počká):
 - **Ruka bez limitu:** po každej bitke si dobereš **2 karty**; nič neodhadzuješ.
   Karty navyše: šenok, fajčenie (`smoke`: cigareta = karta hneď, v Zhromaždení
   aj v Pitke), priznanie kliatby, Vízia, efekty.
-- **Kliatby:** Dlh sa **prizná sám**, keď si ho dobereš, a ťaháš ďalšiu kartu.
-  Cirhózu priznáš, keď chceš, ale kartu za ňu **nedobereš** a súper za každú
-  priznanú dostane v bitke +1 tuhé (nepriznaná −2 body na konci); Milujúca manželka
+- **Kliatby (verejný dlh, 2026-10-21):** nový **Dlh sa hneď prizná** (kartu zaň
+  nedobereš) a na konci hry uberá body **aj priznaný**; Dlh podstrčený do balíčka
+  (Vychovávateľka) sa pri dobratí prizná sám. Nová **Cirhóza ide navrch tvojho
+  doberacieho balíčka**; priznáš ju, keď chceš, ale kartu za ňu **nedobereš** a súper za každú
+  priznanú dostane v bitke +1 tuhé (nepriznaná −2 body na konci). Počet súperových
+  nepriznaných kliatob je verejný (stav ho ukazuje), body súpera sú presné. Robota Dlh spáli; Milujúca manželka
   a Absťák kartu dajú. Kliatba do línie nepatrí (len Milujúca manželka). Priznanie nemíňa
   limit ani neodovzdá ťah. Priznaný Dlh sa ráta k Exekútorovi.
 - **Vízia:** na konci Pitky za každú aktívnu Víziu uvidíš vrchnú kartu svojho
@@ -147,18 +151,22 @@ Pred prvým ťahom (súper sa pripravuje tiež, na teba počká):
   Pečeň +1 je tvoja. Súper smie hneď odpovedať jednou kartou mimo limitu
   (`place` / `bezReakcie`). Nie na Liberála, nie na súperovho Anonymného
   alkoholika a jeho susedov. Svokra súpera ti za NA EX zoberie 2 cigarety.
-  Krčma vynúti NA EX.
+  Krčma vynúti NA EX. Násobky sa **násobia** (NA EX × Silná žena = ×4, aj Dlh
+  a Poškodenie pečene) a NA EX leží na karte do bitky — vyhodnotí sa v každej
+  Pitke kola. Každá možnosť `naex` v stave ukazuje cenu: bitku pred a po
+  a kliatby (Cirhóza, Dlh) aj s bodmi pre oboch.
 - **Doliatie** v Pitke: 2 cigarety → vypitý poldeci späť na plný (nie s Vínkom
   v Dedičstve). **Barter:** 5 cigariet → nový plný poldeci. Na začiatku kola sa
   jeden vypitý poldeci doleje sám.
 - **Pečeň a zadĺženie žijú len v Pitke** — vyhodnotia sa v nej a potom sa
-  vynulujú. Každá aktívna akcia Dlh v Pitke = karta Dlh.
+  vynulujú. Za **každý celý prah** jedna kliatba (zadĺženie 8 pri prahu 2 = 4 Dlhy).
+  Riadok „VÝHĽAD PITKY“ v stave ukazuje, čo pripíšu karty na stole a koľko kliatob z toho bude.
 - **Absťák:** na konci kola, ak máš menej nerestí než minule (s odhalenou
   Milujúcou manželkou aj pri rovnosti, dve = aj o 1 viac). Viac nerestí →
   jeden Absťák odíde.
 - **Bodovanie:** každá aktívna podmienka scorecardu boduje obom hráčom; za kus
-  lokality a získaní starší 2, cigarety 1 za každé 3, mínus nepriznané Dlhy
-  a Cirhózy; Znepokojenie / Strach / Vydesenie za každého staršieho, ktorý sa
+  lokality a získaní starší 2, cigarety 1 za každé 3, mínus každý Dlh (aj
+  priznaný) a nepriznané Cirhózy; Znepokojenie / Strach / Vydesenie za každého staršieho, ktorý sa
   ťa bojí. Marker určuje **priazeň** (komu je posunutý) a koho sa starší bojí.
 - **Priazeň** sila 1 / 2 / 3 podľa zóny; väčšina dáva 2 × sila. Úžerník: prah
   Dlhu 2 + sila (3 / 4 / 5); Fajčiar +1 / +2 / +3 cigarety v 1. Pitke.
@@ -175,7 +183,9 @@ Pred prvým ťahom (súper sa pripravuje tiež, na teba počká):
 - **Pohoršenie (2026-10-20):** ten istý marker smieš posunúť aj viackrát, tvoje
   Pohoršenia ho však prenesú najviac cez **dve hranice zón** (pravá sivá → ľavá
   oranžová áno) a nikdy nie na krajnú pozíciu (okrem Novín).
-- **Remíza:** rozhodne celkové poškodenie, potom obranca. **Ohlásené vydesenie:** polovicu starších treba
+- **Remíza (na sekeru, 2026-10-21):** pri rovnakom tuhom nevyhrá nikto —
+  lokalita ide **na sekeru** a vezme si ju víťaz najbližšej bitky (v poslednej
+  bitke prepadne); útočník ostáva, patronát = prehra. Celkové určuje už len prebytok. **Ohlásené vydesenie:** polovicu starších treba
   udržať do konca ďalšieho kola. **Cigarety za prebytok** dostane ten, proti
   komu sa prebytok delil.
 

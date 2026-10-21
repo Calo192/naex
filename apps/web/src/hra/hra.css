@@ -50,10 +50,7 @@
   background: #2d2312;
 }
 
-/* Tlačidlá vpravo: prvé z nich odtlačí zvyšok hlavičky doľava. */
-.hra-hlava > button:first-of-type {
-  margin-left: auto;
-}
+/* Tlačidlá vpravo odtlačí stav spojenia (.hlava-stav, margin-left: auto). */
 
 .hra-hlava .opustit.potvrdit {
   background: var(--cervena);
@@ -89,7 +86,19 @@
 }
 
 .offline {
-  color: var(--cervena);
+  color: var(--cervena-text);
+}
+
+/* Stav spojenia a kontumácia spolu — kontumácia patrí k „odpojený“ (UI N1). */
+.hlava-stav {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.hra-hlava button {
+  white-space: nowrap;
 }
 
 .priebeh-kola {
@@ -103,6 +112,8 @@
   padding: 0;
   overflow-x: auto;
   scrollbar-width: none;
+  /* Okraje osi jemne miznú — vidno, že pokračuje (UI N1c). */
+  mask-image: linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
 }
 
 .priebeh-kola li {
@@ -113,7 +124,7 @@
   line-height: 1.35;
   white-space: nowrap;
   text-align: center;
-  color: var(--slaby);
+  color: var(--slaby-text);
   background: var(--plocha);
   cursor: help;
   outline: none;
@@ -138,6 +149,19 @@
 
 .priebeh-kola li.hotovy {
   color: var(--tlmeny);
+}
+
+.priebeh-kola li.zbalene {
+  flex: none;
+}
+
+.priebeh-kola li.klikatelny {
+  cursor: pointer;
+  text-decoration: underline dotted;
+}
+
+.priebeh-sekera {
+  color: var(--akcent);
 }
 
 .priebeh-kola li.aktualny,
@@ -183,6 +207,7 @@
 
 .plocha > section h3 {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
   gap: 8px;
@@ -198,7 +223,7 @@
   font-size: 0.72rem;
   letter-spacing: 0.02em;
   text-transform: none;
-  color: var(--slaby);
+  color: var(--slaby-text);
 }
 
 .popis {
@@ -271,8 +296,7 @@
 }
 
 .doska.superova .doska-zdroje {
-  flex-direction: row;
-  justify-content: flex-start;
+  direction: ltr;
 }
 
 .doska.superova .doska-oblast {
@@ -342,14 +366,20 @@
 }
 
 /* Od stredu k portrétu (Michal 2026-10-20): na tvojej doske ide poradie
-   sprava doľava — poldeci pri strede obrazovky, karty pri avatare. */
+   sprava doľava — poldeci pri strede obrazovky, karty pri avatare.
+   Stabilná mriežka (dizajn hra-nezrovnalosti-20261021-1229, UI N5): rovnako
+   široké bunky v rovnakom poradí na oboch doskách — dlaždice neskáču do
+   schodov podľa dĺžky textu; súper má poradie zrkadlovo (direction). */
 .doska-zdroje {
   grid-area: zdroje;
-  display: flex;
-  flex-direction: row-reverse;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(124px, 1fr));
   gap: 6px;
-  justify-content: flex-start;
+  direction: rtl;
+}
+
+.doska-zdroje > * {
+  direction: ltr;
 }
 
 .doska-rola {
@@ -400,8 +430,11 @@
 }
 
 .zdroj-pod {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
   font-size: 0.74rem;
-  color: var(--slaby);
+  color: var(--slaby-text);
 }
 
 .velke-cislo {
@@ -1078,10 +1111,12 @@
   width: 198px;
   min-height: calc(198px * 80 / 54);
   padding: 12px;
-  border: 2px dashed rgba(255, 255, 255, 0.12);
+  /* Kontrast okraja 3,1 : 1 (bol 1,46) — cieľ ťahania musí byť vidno (UI N1). */
+  border: 2px dashed rgba(241, 232, 216, 0.38);
   border-radius: 10px;
   font-size: 0.85rem;
   text-align: center;
+  color: var(--slaby-text);
 }
 
 .lokalita-miesto {
@@ -1525,14 +1560,15 @@ button:disabled .cena {
 /* ---- vrstva: šenok, lokality, log cez celú obrazovku ----
  * Pod rukou (ruka s pásom ostáva navrchu), nad stolom. */
 
+/* Nad pripnutou osou kola (z-index 45), aby hlavička a ✕ neboli pod ňou (UI N1d). */
 .vrstva {
   position: fixed;
   inset: 0;
-  z-index: 22;
+  z-index: 46;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 72px 24px calc(var(--ruka-h) + 16px);
+  padding: calc(var(--hlavicka-h, 0px) + 56px) 24px calc(var(--ruka-h) + 16px);
   background: rgba(10, 8, 6, 0.72);
   backdrop-filter: blur(4px);
   animation: vrstva-in 0.16s ease-out;
@@ -1621,16 +1657,58 @@ button:disabled .cena {
   line-height: 1.6;
 }
 
+/* NA EX! ako pečiatka — hlavná akcia Pitky, podľa ktorej sa hra volá (UI N4). */
+.pokyn button.tlacidlo-naex,
 .tlacidlo-naex {
-  font: 800 1rem/1.2 var(--nadpis);
+  position: relative;
+  min-height: 44px;
+  padding: 0.45rem 1.1rem;
+  font: 800 1.1rem/1 var(--nadpis);
   letter-spacing: 0.04em;
-  background: #7a2a1c;
-  border-color: #b7462f;
-  color: #ffe4c7;
+  text-transform: uppercase;
+  color: #fff4e2;
+  background: var(--tehla-tmava);
+  border: 2px solid var(--cervena);
+  border-radius: 10px;
+  box-shadow:
+    0 3px 0 #5e1b0f,
+    0 0 0 4px rgb(208 86 63 / 0.18);
+  rotate: -2deg;
+  transition:
+    rotate 0.18s ease,
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.tlacidlo-naex::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border: 1px dashed rgb(255 244 226 / 0.45);
+  border-radius: 7px;
+  pointer-events: none;
 }
 
 .tlacidlo-naex:hover:not(:disabled) {
-  background: #943521;
+  rotate: 0deg;
+  background: #b93a23;
+}
+
+.tlacidlo-naex:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #5e1b0f;
+}
+
+.tlacidlo-naex:disabled {
+  rotate: 0deg;
+  opacity: 0.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tlacidlo-naex {
+    rotate: 0deg;
+    transition: none;
+  }
 }
 
 .cakanie-text {
@@ -1883,8 +1961,8 @@ button:disabled .cena {
 
   .doska-zdroje,
   .doska.superova .doska-zdroje {
-    flex-direction: row;
-    justify-content: flex-start;
+    direction: ltr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .bitka-panel {
@@ -2074,8 +2152,12 @@ button.dlzka-volba.aktivna {
   color: var(--su);
 }
 
+/* Zalomí sa do šírky telefónu — predtým stránka pretekala na 461 px (UI N1). */
 .body-teraz {
   display: inline-flex;
+  flex-wrap: wrap;
+  white-space: normal;
+  min-width: 0;
   align-items: center;
   gap: 6px;
   font-weight: 400;
@@ -3080,6 +3162,13 @@ button.dlzka-volba.aktivna {
   font-size: 11px;
 }
 
+/* Nuly stlmené — farbu hráča má len nenulová hodnota (UI N1). */
+.sb-strana b.nula,
+.sb-strana small.nula {
+  color: var(--slaby-text) !important;
+  font-weight: 500;
+}
+
 .sb-ja {
   align-items: flex-start;
 }
@@ -3488,5 +3577,427 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna.nemoze:hover > .kl {
 @media (prefers-reduced-motion: reduce) {
   .hudba-oznam {
     animation: none;
+  }
+}
+
+/* ---- výhľad Pitky na doske: pečeň a zadĺženie „po Pitke“ (2026-10-21) ----
+ * Šrafa = čo pripíšu karty na stole; červená = cez prah (Cirhóza / Dlh). */
+
+.pruh span.caka {
+  background: repeating-linear-gradient(135deg, #d9a03f 0 3px, rgba(217, 160, 63, 0.25) 3px 6px);
+}
+
+.pruh span.nad {
+  background: repeating-linear-gradient(135deg, #e0573f 0 3px, rgba(224, 87, 63, 0.3) 3px 6px);
+}
+
+.pruh span.plny.nad {
+  background: #e0573f;
+}
+
+.pruh span.prah {
+  margin-left: 4px;
+}
+
+.velke-cislo .projekcia {
+  font-size: 1.05rem;
+  color: #f0b45a;
+}
+
+.zdroj .vyhlad {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.72rem;
+  line-height: 1.25;
+  color: var(--slaby-text);
+}
+
+.zdroj .vyhlad.zly {
+  color: #ff9d88;
+  font-weight: 600;
+}
+
+.zdroj.hrozi {
+  border-color: #b7462f;
+  background: rgba(140, 36, 22, 0.32);
+  box-shadow: 0 0 0 1px rgba(208, 86, 63, 0.35);
+}
+
+.zdroj.hrozi .velke-cislo {
+  color: #ff9d88;
+}
+
+.oblast-skupina.nepriznane .cip {
+  border-style: dashed;
+}
+
+/* ---- odhad bitky: násobok, sekera ---- */
+
+.efekt-nasobok {
+  margin-left: 3px;
+  padding: 0 4px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--akcent) 22%, transparent);
+  color: var(--akcent);
+  font-weight: 800;
+}
+
+.bitka-sekera,
+.sekera-pozn {
+  font-size: 0.8rem;
+  color: var(--akcent);
+}
+
+.sekera-pozn {
+  margin: 8px 0 0;
+}
+
+.cip.sekera {
+  border-color: var(--akcent);
+  color: var(--akcent);
+}
+
+/* ---- Pitka ako dve stoličky (UI N2 + UX N1) ---- */
+
+.pas-stolicky {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stolicka {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: baseline;
+  gap: 0 8px;
+  min-height: 44px;
+  padding: 5px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--okraj);
+  background: var(--plocha);
+  font-size: 0.85rem;
+}
+
+.stolicka.moja {
+  border-left: 3px solid var(--ja);
+}
+
+.stolicka.superova {
+  border-left: 3px solid var(--su);
+}
+
+.stolicka.na-tahu {
+  box-shadow: 0 0 0 1px var(--akcent), 0 0 14px rgba(233, 173, 69, 0.3);
+}
+
+.stolicka.hotova {
+  opacity: 0.75;
+}
+
+.stolicka-poradie {
+  grid-row: span 2;
+  font: 800 1.2rem/1 var(--nadpis);
+  color: var(--slaby-text);
+}
+
+.stolicka-meno {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.stolicka-stav {
+  color: var(--tlmeny);
+}
+
+.stolicka-posledne {
+  grid-column: 2;
+  color: var(--akcent);
+  font-weight: 700;
+}
+
+/* ---- pás pokynov: udalosti, cigarety, hotovo (UI N4, UX N1/N3) ---- */
+
+.pokyn-udalosti {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  padding: 6px 4px 0;
+  font-size: 0.85rem;
+  color: var(--tlmeny);
+}
+
+.pokyn-chyba {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--cervena-text);
+  font-weight: 700;
+}
+
+.pokyn-ucet {
+  color: var(--text);
+}
+
+.pokyn-posledny {
+  color: #8fc3e0;
+}
+
+/* Text pokynu smie mať dva riadky — jedna veta a cena (UI N4). */
+.pokyn-text > span {
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.pokyn-tlacidla {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.skupina-cigariet {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 10px;
+  border: 1px solid var(--okraj);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.skupina-nazov {
+  padding: 0 8px;
+  font-size: 0.74rem;
+  color: var(--slaby-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.skupina-nazov b {
+  color: var(--text);
+}
+
+.pokyn .skupina-cigariet button {
+  border-color: transparent;
+  background: transparent;
+}
+
+.pokyn .skupina-cigariet button.mozne {
+  color: var(--akcent);
+}
+
+.pokyn .skupina-cigariet button .cena {
+  font-variant-numeric: tabular-nums;
+}
+
+.cigarety-menu {
+  position: relative;
+}
+
+.cigarety-menu > summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid var(--okraj-svetly);
+  cursor: pointer;
+  list-style: none;
+}
+
+.cigarety-menu-obsah {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  z-index: 5;
+  display: grid;
+  gap: 4px;
+  padding: 6px;
+  border-radius: 10px;
+  background: rgba(20, 17, 14, 0.97);
+  border: 1px solid var(--okraj-svetly);
+  box-shadow: var(--tien);
+}
+
+/* „hotovo“ je nevratné — pevné, ale tiché; hlavné je NA EX!, keď sa dá. */
+.pokyn button.tlacidlo-hotovo:not(.tlacidlo-hlavne) {
+  background: var(--plocha-3);
+  border-color: var(--okraj-svetly);
+  color: var(--text);
+}
+
+/* ---- náhľad NA EX: výber, potom potvrdenie (UX N3) ---- */
+
+.pokyn .naex-moznost {
+  white-space: normal;
+  max-width: 340px;
+}
+
+.naex-moznost.vybrana {
+  border-color: var(--akcent);
+  box-shadow: 0 0 0 2px var(--akcent);
+}
+
+.naex-vzorec {
+  color: var(--akcent);
+  font-size: 0.78rem;
+}
+
+.naex-kliatby {
+  font-size: 0.78rem;
+  color: var(--tlmeny);
+}
+
+.naex-kliatby.zle {
+  color: #ff9d88;
+}
+
+.s-lupou.naex-nie {
+  opacity: 0.45;
+  filter: saturate(0.5);
+}
+
+/* Súperova karta z jeho posledného ťahu — do tvojho ďalšieho potvrdenia (UX N3). */
+.s-lupou.nova-superova > .kl,
+.s-lupou.nova-superova > .tahatelna > .kl {
+  box-shadow: 0 0 0 2.5px #5aa9d6, 0 0 18px rgba(90, 169, 214, 0.45);
+}
+
+.s-lupou {
+  position: relative;
+}
+
+.s-lupou.nova-superova > .nova-stitok {
+  background: #5aa9d6;
+}
+
+/* ---- účet bitky nad stolom (UX N3) ---- */
+
+.ucet-bitky {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--okraj-svetly);
+  background: var(--plocha-2);
+  animation: oznam-prichod 0.22s ease;
+}
+
+.ucet-bitky header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ucet-bitky ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  font-size: 0.88rem;
+  color: var(--tlmeny);
+}
+
+.ucet-bitky b {
+  color: var(--text);
+}
+
+/* ---- stavba šenku klikom (UX N4) ---- */
+
+.stavba-volby {
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  z-index: 3;
+  display: grid;
+  gap: 4px;
+  translate: -50% 0;
+}
+
+.stavba-volby button {
+  min-height: 36px;
+  white-space: nowrap;
+}
+
+.mv-text.mv-dovod {
+  font-size: 0.62rem;
+  line-height: 1.2;
+  white-space: normal;
+  text-align: center;
+}
+
+/* ---- ruka bez myši: fokus zväčší ako hover (UX N4) ---- */
+
+body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:focus-visible {
+  z-index: 10;
+  outline: none;
+}
+
+body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:focus-visible > .kl {
+  transform: translateY(calc(-1 * var(--ruka-skryte) - 6px)) scale(var(--lupa-ruky, 2));
+  box-shadow:
+    0 0 0 2.5px var(--akcent),
+    0 24px 50px rgba(0, 0, 0, 0.7);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ucet-bitky {
+    animation: none;
+  }
+}
+
+/* Užší desktop: tlačidlá Pitky pod textom na celú šírku pásu, aby text
+   pokynu nebol stlačený do úzkeho stĺpca (UI N4: „akcie pod textom“). */
+@media (min-width: 761px) and (max-width: 1400px) {
+  .pokyn {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .pokyn-tlacidla {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+    padding-bottom: 6px;
+  }
+}
+
+/* ---- mobil: pás pokynov v stĺpci, ovládanie v dosahu palca (UX N1, U1) ---- */
+
+@media (max-width: 760px) {
+  .pokyn {
+    max-width: 100%;
+  }
+
+  .pokyn-text {
+    flex-wrap: wrap;
+    white-space: normal;
+  }
+
+  .pokyn-tlacidla {
+    justify-content: stretch;
+  }
+
+  .pokyn-tlacidla > button,
+  .pokyn-tlacidla > details {
+    flex: 1 1 auto;
+    min-height: 44px;
+  }
+
+  .naex-nahlad {
+    flex-direction: column;
+    width: calc(100vw - 32px);
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+
+  .pokyn .naex-moznost {
+    max-width: none;
+  }
+
+  .hlava-stav {
+    margin-left: 0;
+  }
+
+  .stolicka {
+    flex: 1 1 100%;
   }
 }

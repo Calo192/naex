@@ -77,20 +77,19 @@ describe("M4 — poškodenie", () => {
 });
 
 describe("M4 — výsledok", () => {
-  // Michal 2026-10-19: remíza v tuhom — o lokalitu rozhodne celkové, potom
-  // obranca; o staršieho nevyhrá nikto a prebytok sa nerozdeľuje.
-  it("pri úplnej remíze o lokalitu vyhráva obranca", () => {
+  // Michal 2026-10-21 (strategia-remiza-20261021): pri rovnakom tuhom nevyhrá
+  // nikto — lokalita ide na sekeru. Rola ani celkové remízu nerozhodujú.
+  it("pri úplnej remíze nevyhrá nikto (ani obranca)", () => {
     const damage = computeDamage([side({ sums: { Rana: 2 } }), side({ sums: { Pecka: 1 } })]);
     expect(damage.tuhe).toEqual([2, 2]);
     expect(damage.celkove).toEqual([2, 2]);
-    expect(battleOutcome(damage, 1).vitaz).toBe(0);
-    expect(battleOutcome(damage, 0).vitaz).toBe(1);
+    expect(battleOutcome(damage).vitaz).toBeNull();
   });
 
-  it("pri remíze v tuhom o lokalitu rozhodne celkové poškodenie", () => {
+  it("pri remíze v tuhom nevyhrá nikto, prebytok drží vyššie celkové", () => {
     const d = { tuhe: [2, 2], makke: [0, 1], celkove: [2, 3], zvysnaViera: [0, 0], zvysnaPovera: [0, 0] } as const;
-    const o = battleOutcome(d, 0);
-    expect(o.vitaz).toBe(1);
+    const o = battleOutcome(d);
+    expect(o.vitaz).toBeNull();
     expect(o.prebytokDrzi).toBe(1);
     expect(o.prebytok).toBe(1);
   });
@@ -98,7 +97,7 @@ describe("M4 — výsledok", () => {
   it("pri remíze v celkovom poškodení nikto nezíska prebytok", () => {
     const damage = computeDamage([side({ sums: { Rana: 2 } }), side({ sums: { Pecka: 1 } })]);
     expect(damage.celkove).toEqual([2, 2]);
-    const outcome = battleOutcome(damage, 0);
+    const outcome = battleOutcome(damage);
     expect(outcome.prebytokDrzi).toBeNull();
     expect(outcome.prebytok).toBe(0);
   });
@@ -111,7 +110,7 @@ describe("M4 — výsledok", () => {
     ]);
     expect(damage.tuhe).toEqual([4, 3]);
     expect(damage.celkove).toEqual([4, 6]);
-    const outcome = battleOutcome(damage, 0);
+    const outcome = battleOutcome(damage);
     expect(outcome.vitaz).toBe(0);
     expect(outcome.prebytokDrzi).toBe(1);
     expect(outcome.prebytok).toBe(2);

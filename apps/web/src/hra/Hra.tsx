@@ -240,7 +240,9 @@ export function Hra() {
       sada={m.sada}
       hraci={hra.hraci}
       log={hra.log}
+      udalosti={hra.udalosti}
       chyba={hra.chyba}
+      zrusChybu={hra.zrusChybu}
       superPripojeny={hra.superPripojeny}
       kod={m.code}
       cmd={hra.cmd}

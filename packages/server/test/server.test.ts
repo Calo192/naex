@@ -99,6 +99,11 @@ describe("M7 — server", () => {
     const spat = await b2.cakaj("privitanie");
     expect(spat.seat).toBe(1);
     expect(spat.started).toBe(true);
+    // Log prežije návrat (Michal 2026-10-21) — bez súkromných kariet.
+    const historia = await b2.cakaj("historia");
+    const udalosti = historia.events as { type: string; text?: string }[];
+    expect(udalosti.some((e) => e.type === "log")).toBe(true);
+    expect(udalosti.some((e) => e.type === "kartyTahane")).toBe(false);
     const stavPoNavrate = await b2.cakaj("state");
     expect((stavPoNavrate.view as { faza: string }).faza).toBe("draft");
     const pripojeny = await a.cakaj("superPripojeny");

@@ -156,7 +156,6 @@ export function UkazkaBitky() {
     { ...NULA, Rana: 2, Pecka: 1, Povera: 1 },
     { ...NULA, Petelica: 1, Viera: 1, dlhy: 2 },
   ]);
-  const [utocnik, setUtocnik] = useState<PlayerId>(0);
   const nastav = (p: 0 | 1, k: keyof StranaBitky, n: number) =>
     setS((x) => (p === 0 ? [{ ...x[0], [k]: n }, x[1]] : [x[0], { ...x[1], [k]: n }]));
   const strana = (x: StranaBitky) => ({
@@ -169,7 +168,7 @@ export function UkazkaBitky() {
     hodnotaViery: 1,
   });
   const d = computeDamage([strana(s[0]), strana(s[1])]);
-  const o = battleOutcome(d, utocnik);
+  const o = battleOutcome(d);
   const MENA = ["Ty", "Súper"];
 
   return (
@@ -178,12 +177,7 @@ export function UkazkaBitky() {
       <div className="bitka-strany">
         {([0, 1] as const).map((p) => (
           <div key={p} className="bitka-strana">
-            <h4>
-              {MENA[p]}
-              <label className="bitka-utocnik">
-                <input type="radio" name="utocnik" checked={utocnik === p} onChange={() => setUtocnik(p)} /> útočník
-              </label>
-            </h4>
+            <h4>{MENA[p]}</h4>
             <Pocitadlo label="Rana (1)" hodnota={s[p].Rana} nastav={(n) => nastav(p, "Rana", n)} />
             <Pocitadlo label="Pecka (2)" hodnota={s[p].Pecka} nastav={(n) => nastav(p, "Pecka", n)} />
             <Pocitadlo label="Petelica (3)" hodnota={s[p].Petelica} nastav={(n) => nastav(p, "Petelica", n)} />
@@ -221,10 +215,15 @@ export function UkazkaBitky() {
         </div>
       </div>
       <div className="ukazka-vysledok">
-        Vyhráva <strong>{MENA[o.vitaz ?? utocnik]}</strong>
-        {d.tuhe[0] === d.tuhe[1] &&
-          (d.celkove[0] === d.celkove[1] ? " (remíza aj v celkovom — vyhráva obranca)" : " (remíza v tuhom — rozhodlo celkové poškodenie)")}
-        .{" "}
+        {o.vitaz === null ? (
+          <>
+            <strong>Remíza</strong> v tuhom — lokalitu nezíska nikto, ide na sekeru a vezme si ju víťaz najbližšej bitky.
+          </>
+        ) : (
+          <>
+            Vyhráva <strong>{MENA[o.vitaz]}</strong>.
+          </>
+        )}{" "}
         {o.prebytokDrzi === null
           ? "Celkové poškodenie je vyrovnané — prebytok nezíska nikto."
           : `${MENA[o.prebytokDrzi]} rozdelí prebytok ${o.prebytok} medzi starších.`}

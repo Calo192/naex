@@ -110,7 +110,7 @@ describe("vzdanie sa", () => {
 });
 
 describe("bodyTeraz — živý odhad bodov z pohľadu hráča", () => {
-  it("na konci hry sa vlastné body rovnajú záverečnému bodovaniu; súperove len ak nie sú neisté", () => {
+  it("na konci hry sa odhad oboch hráčov rovná záverečnému bodovaniu (súperove kliatby z verejného počtu)", () => {
     let overene = 0;
     for (const seed of [3, 8, 21, 55, 89]) {
       const { state } = odohraj(seed);
@@ -120,7 +120,7 @@ describe("bodyTeraz — živý odhad bodov z pohľadu hráča", () => {
         const odhad = bodyTeraz(data, viewFor(data, state, p));
         expect(odhad.spolu[p]).toBe(body[p]);
         const su = p === 0 ? 1 : 0;
-        if (!odhad.neiste[su]) expect(odhad.spolu[su]).toBe(body[su]);
+        expect(odhad.spolu[su]).toBe(body[su]);
         // Súčet je presne súčet scorecardov — rozpis sedí s „body teraz“.
         expect(odhad.starsi.reduce((a, b) => a + b.body[p], 0)).toBe(odhad.spolu[p]);
         overene++;

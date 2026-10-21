@@ -106,6 +106,7 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
       otocena={otocena}
       hranaVnutorna={hranaVnutorna === undefined ? undefined : hranaVnutorna === "left" ? "lava" : "prava"}
       bezPopisov={bezPopisov ?? false}
+      slotyBezFokusu
       spoj={spoj === undefined ? undefined : { lava: spoj.left, prava: spoj.right }}
     />
   );

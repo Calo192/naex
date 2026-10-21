@@ -107,7 +107,17 @@ interface Room {
   readonly botPovaha: string;
   /** Naplánovaný ťah bota — kým beží, ďalší sa neplánuje. */
   botTimer: ReturnType<typeof setTimeout> | null;
+  /**
+   * História logu pre každé miesto (Michal 2026-10-21): len udalosti, ktoré
+   * hráč už dostal (eventsFor), aby log prežil obnovenie stránky.
+   */
+  readonly historia: [Event[], Event[]];
 }
+
+/** Koľko udalostí histórie si miestnosť pamätá na jedno miesto. */
+const HISTORIA_MAX = 600;
+/** Udalosti, z ktorých klient skladá log — súkromné karty (kartyTahane) sa neukladajú. */
+const DO_HISTORIE: ReadonlySet<Event["type"]> = new Set(["log", "tahal", "manualEfekt", "bitkaVysledok", "koniec"]);
 
 /** Bez O/0/I/1 — kód sa diktuje cez telefón. */
 const ABECEDA = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
@@ -249,6 +259,9 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   const broadcast = (room: Room, events: readonly Event[]): void => {
     if (room.state === null) return;
     for (const seat of [0, 1] as const) {
+      const historia = room.historia[seat];
+      historia.push(...eventsFor(events, seat).filter((e) => DO_HISTORIE.has(e.type)));
+      if (historia.length > HISTORIA_MAX) historia.splice(0, historia.length - HISTORIA_MAX);
       const ws = room.sockets[seat];
       if (ws === null) continue;
       send(ws, { type: "state", view: viewFor(room.data, room.state, seat), events: eventsFor(events, seat) });
@@ -304,6 +317,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     });
     posliHracov(room);
     if (room.state !== null) {
+      send(ws, { type: "historia", events: room.historia[seat] });
       send(ws, { type: "state", view: viewFor(room.data, room.state, seat), events: [] });
       const druhe: PlayerId = seat === 0 ? 1 : 0;
       send(ws, { type: "superPripojeny", connected: room.sockets[druhe] !== null || room.bot === druhe });
@@ -366,6 +380,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           bot: protiBotovi ? 1 : null,
           botPovaha: POVAHY[randomInt(POVAHY.length)]?.id ?? "stamgast",
           botTimer: null,
+          historia: [[], []],
         };
         rooms.set(room.code, room);
         if (protiBotovi) {

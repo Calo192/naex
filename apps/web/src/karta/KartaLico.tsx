@@ -46,6 +46,11 @@ export interface KartaLicoProps {
   readonly spoj?: { readonly lava: readonly number[]; readonly prava: readonly number[] } | undefined;
   /** Bez tooltipov a efektu — malá karta v zozname. */
   readonly bezPopisov?: boolean;
+  /**
+   * Sloty bez vlastnej zastávky klávesnice (herný stôl, dizajn UX N4: karta =
+   * jedna zastávka, nie desiatky slotov). Tooltip ostáva myšou; tvorca kariet nechá predvolené.
+   */
+  readonly slotyBezFokusu?: boolean;
   readonly className?: string;
 }
 
@@ -86,7 +91,7 @@ export function KartaLico(props: KartaLicoProps) {
         key={`${strana}${i}`}
         className={`kl-slot${st === null ? "" : ` kl-${st.stav}`}${props.spoj?.[strana].includes(i) === true ? " kl-spoj" : ""}`}
         style={{ "--x": r.x, "--y": r.y, "--s": r.w, "--r": g.polomerSlotu } as CSSProperties}
-        tabIndex={bezPopisov ? undefined : 0}
+        tabIndex={bezPopisov ? undefined : props.slotyBezFokusu === true ? -1 : 0}
         aria-label={`${nazov}: ${akcia?.popis ?? ""}`}
         {...hover({
           nadpis: nazov,

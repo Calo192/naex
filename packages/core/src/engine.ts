@@ -15,7 +15,7 @@ import type { GameData } from "./data.ts";
 import { defOf } from "./data.ts";
 import type { RngState } from "./rng.ts";
 import { rngInt, rngSeed, rngShuffle } from "./rng.ts";
-import type { ActionSums, KartaVBitke, LineState, PlacedCard } from "./partia.ts";
+import type { ActionSums, KartaVBitke, LineEval, LineState, PlacedCard } from "./partia.ts";
 import { evaluateLine, prispevkyKariet } from "./partia.ts";
 import type { PlayerState } from "./player.ts";
 import {
@@ -227,8 +227,13 @@ export interface GameState {
   /** Počet lokalít, o ktoré sa hrá (dĺžka hry). */
   readonly lokalitCelkom: number;
   readonly ovladnute: readonly OvladnutaLokalita[];
-  /** Lokality, ktoré nikto nevyhral (Benzínka) — z hry vypadli. */
+  /** Lokality, ktoré nikto nevyhral (Benzínka, remíza v poslednej bitke) — z hry vypadli. */
   readonly prepadnute: readonly CardInstance[];
+  /**
+   * Lokality „na sekere“ (Michal 2026-10-21): z remíz, berie ich víťaz
+   * najbližšej bitky spolu s jej lokalitou. Verejné.
+   */
+  readonly naSekeru: readonly CardInstance[];
   /** Hráč dal v tomto kole NA EX (Krčmárka). */
   readonly naexVKole: readonly [boolean, boolean];
   readonly starsi: readonly ElderState[];
@@ -354,7 +359,7 @@ export type Event =
       readonly damage: DamageResult;
       /** Súčty aktívnych akcií oboch partií (línia je verejná) — štatistiky. */
       readonly sums: readonly [ActionSums, ActionSums];
-      /** null = remíza v bitke o staršieho (starší ostáva). */
+      /** null = remíza v tuhom: lokalita ide na sekeru. */
       readonly vitaz: PlayerId | null;
       readonly prebytok: number;
       readonly prebytokDrzi: PlayerId | null;
@@ -363,6 +368,17 @@ export type Event =
     }
   /** Poškodenie pečene započítané k prahu Cirhózy — štatistiky. */
   | { readonly type: "pecen"; readonly hrac: PlayerId; readonly mnozstvo: number }
+  /**
+   * Účet Pitky (Michal 2026-10-21): čo vyhodnotenie pripísalo obom hráčom —
+   * verejné, klient z neho ukáže súhrn po Pitke.
+   */
+  | {
+      readonly type: "pitkaVysledok";
+      readonly pitka: number;
+      readonly cirhozy: readonly [number, number];
+      readonly dlhy: readonly [number, number];
+      readonly cigarety: readonly [number, number];
+    }
   | {
       readonly type: "koniec";
       readonly vitaz: PlayerId | null;
@@ -535,13 +551,24 @@ function doRuky(s: MutState, p: PlayerId, karta: DeepMutable<CardInstance>, even
 }
 
 /**
- * Pridá kliatbu (dlh / cirhoza) do ODHADZOVACIEHO balíčka hráča — do ruky
- * príde, až keď si ju dobere (PRAVIDLA §12). Balíček zaneráda, ruku nie.
+ * Nová kliatba (PRAVIDLA §12, „verejný dlh“ Michal 2026-10-21): Dlh sa hneď
+ * prizná — ide medzi priznané karty, kartu zaň hráč nedobere a na konci
+ * hry uberá body aj priznaný. Cirhóza ide NAVRCH doberacieho balíčka, aby
+ * prišla do ruky pri najbližšom ťahaní a hráč o nej rozhodol. Cena kliatby
+ * je tak známa hneď, nie až pri sčítaní podľa toho, či sa dobrala.
  */
 function pridajKliatbu(s: MutState, data: GameData, p: PlayerId, defId: string, events: Event[]): void {
-  const karta = novaInstancia(s, data, defId);
-  hrac(s, p).odhadzovaci.push(karta as DeepMutable<CardInstance>);
-  events.push({ type: "log", text: `Hráč ${p + 1} získava kartu ${defId === "dlh" ? "Dlh" : defId === "cirhoza" ? "Cirhóza" : "Absťák"}.` });
+  const karta = novaInstancia(s, data, defId) as DeepMutable<CardInstance>;
+  if (defId === "dlh") hrac(s, p).priznane.push(karta);
+  else if (defId === "cirhoza") hrac(s, p).doberaci.unshift(karta);
+  else hrac(s, p).odhadzovaci.push(karta);
+  const text =
+    defId === "dlh"
+      ? `Hráč ${p + 1} získava Dlh — hneď sa priznáva (na konci hry uberá body aj priznaný).`
+      : defId === "cirhoza"
+        ? `Hráč ${p + 1} získava Cirhózu — ide navrch jeho doberacieho balíčka.`
+        : `Hráč ${p + 1} získava kartu Absťák.`;
+  events.push({ type: "log", text });
 }
 
 /** Poškodenie pečene + okamžitá Cirhóza pri prahu (PRAVIDLA §7 krok 3). */
@@ -583,6 +610,99 @@ function pridajZadlzenie(s: MutState, data: GameData, p: PlayerId, mnozstvo: num
     pridajKliatbu(s, data, p, "dlh", events);
     events.push({ type: "log", text: `Hráč ${p + 1} dosiahol prah dlhu (${prah}) — Dlh.` });
   }
+}
+
+/**
+ * Čo pripíšu karty na stole pri vyhodnotení Pitky (PRAVIDLA §7 kroky 2–3):
+ * zadĺženie z aktívnych akcií Dlh (Finančná poradkyňa ich posiela súperovi)
+ * a pečeň z akcií Poškodenie pečene a Poldeci. Jeden výpočet pre
+ * vyhodnotenie aj náhľad, aby sa nemohli rozísť.
+ */
+export interface PrirastkyPitky {
+  readonly zadlzenie: readonly [number, number];
+  readonly poskodeniePecene: readonly [number, number];
+  readonly poldeci: readonly [number, number];
+}
+
+export function prirastkyPitky(
+  data: GameData,
+  s: VerejnyStav & { readonly lokalitaOtocena: boolean },
+  vyhodnotenie: LineEval = evaluateLine(data, lineState(s)),
+): PrirastkyPitky {
+  const sums = vyhodnotenie.sums;
+  const poradkynaDlhy = [0, 0] as [number, number];
+  for (const p of [0, 1] as const) {
+    for (const placed of partiaHraca(s, p)) {
+      if (placed.card.defId !== "financna_poradkyna") continue;
+      if (efektPotlaceny(data, s, p, "financna_poradkyna")) continue;
+      const ev = vyhodnotenie.cards.get(placed.card.uid);
+      if (ev === undefined) continue;
+      for (const strana of [ev.left, ev.right]) {
+        for (const slot of strana) {
+          if (slot?.action === "Dlh" && slot.stav === "aktivna") poradkynaDlhy[p] += slot.nasobok;
+        }
+      }
+    }
+  }
+  // financna_poradkyna (Michal 2026-10-18): Dlh z jej akcií dostáva súper, nie jej majiteľ.
+  const zadlzenie = ([0, 1] as const).map((p) => Math.max(0, (sums[p].Dlh ?? 0) - poradkynaDlhy[p]) + poradkynaDlhy[opponentOf(p)]);
+  return {
+    zadlzenie: [zadlzenie[0] ?? 0, zadlzenie[1] ?? 0],
+    poskodeniePecene: [sums[0].PoškodeniePečene ?? 0, sums[1].PoškodeniePečene ?? 0],
+    poldeci: [sums[0].Poldeci ?? 0, sums[1].Poldeci ?? 0],
+  };
+}
+
+/** Náhľad konca Pitky pre jedného hráča — „ak sa do konca Pitky na stole nič nezmení“. */
+export interface NahladPitkyHraca {
+  /** Pečeň a zadĺženie teraz (Vypiť a NA EX sú už pripísané). */
+  readonly pecen: number;
+  readonly zadlzenie: number;
+  /** Čo pripíšu karty na stole. */
+  readonly pecenZoStola: number;
+  readonly zadlzenieZoStola: number;
+  readonly prahPecene: number;
+  readonly prahDlhu: number;
+  /** Kariet Cirhóza a Dlh po vyhodnotení — za každý celý prah jedna. */
+  readonly cirhozy: number;
+  readonly dlhy: number;
+}
+
+/**
+ * Náhľad vyhodnotenia Pitky (Michal 2026-10-21, dizajn hra-nezrovnalosti):
+ * počítadlá pečene a zadĺženia ukazujú stav „po Pitke“, nie „doteraz“.
+ * Ten istý výpočet ako vyhodnotPitku — test pitka-nahlad.test.ts.
+ */
+export function nahladPitky(
+  data: GameData,
+  s: VerejnyStav & {
+    readonly lokalitaOtocena: boolean;
+    readonly hraci: readonly [VerejnyHrac & PecenHraca, VerejnyHrac & PecenHraca];
+  },
+): readonly [NahladPitkyHraca, NahladPitkyHraca] {
+  const pr = prirastkyPitky(data, s);
+  const pre = (p: PlayerId): NahladPitkyHraca => {
+    const prahPecene = prahCirhozy(priazen(data, s, "ALKOHOLIK", p)) + prahCirhozyBonus(s, p);
+    const prahD = prahDlhu(priazen(data, s, "UZERNIK", p));
+    const pecenZoStola = pr.poskodeniePecene[p] + pr.poldeci[p];
+    const h = s.hraci[p];
+    return {
+      pecen: h.pecen,
+      zadlzenie: h.zadlzenie,
+      pecenZoStola,
+      zadlzenieZoStola: pr.zadlzenie[p],
+      prahPecene,
+      prahDlhu: prahD,
+      cirhozy: Math.floor((h.pecen + pecenZoStola) / prahPecene),
+      dlhy: Math.floor((h.zadlzenie + pr.zadlzenie[p]) / prahD),
+    };
+  };
+  return [pre(0), pre(1)];
+}
+
+interface PecenHraca {
+  readonly pecen: number;
+  readonly zadlzenie: number;
 }
 
 function pocetKariet(player: VerejnyHrac, defId: string, kde: "priznane"): number {
@@ -791,6 +911,7 @@ export function setupGame(data: GameData, seed: number, opts?: SetupOptions): Ga
     lokalitCelkom: 0,
     ovladnute: [],
     prepadnute: [],
+    naSekeru: [],
     naexVKole: [false, false],
     starsi: [],
     ciel: null,
@@ -1652,12 +1773,13 @@ function nastupEfekt(
       break;
     }
     case "niekoho_stryna": {
-      // Zahoď 1 Cirhózu alebo 1 Dlh z ruky alebo z odhadzovacieho balíčka.
-      // Hra vyberie za hráča: najprv z ruky, Cirhózu pred Dlhom (uberá viac bodov).
+      // Zahoď 1 Cirhózu alebo 1 Dlh z ruky alebo z odhadzovacieho balíčka,
+      // Dlh aj spomedzi priznaných (verejný dlh 2026-10-21 — nový Dlh je hneď
+      // priznaný). Hra vyberie za hráča: najprv z ruky, Cirhózu pred Dlhom.
       let zostava = KONSTANTY.EFEKT.STRYNA_KLIATBY;
       let zRuky = 0;
-      for (const kde of ["ruka", "odhadzovaci"] as const) {
-        for (const kliatba of ["cirhoza", "dlh"] as const) {
+      for (const kde of ["ruka", "odhadzovaci", "priznane"] as const) {
+        for (const kliatba of kde === "priznane" ? (["dlh"] as const) : (["cirhoza", "dlh"] as const)) {
           while (zostava > 0) {
             const idx = s.hraci[p][kde].findIndex((k) => k.defId === kliatba);
             if (idx === -1) break;
@@ -1707,7 +1829,7 @@ function nastupEfekt(
       }
       opponent.doberaci.shift();
       let zostava = KONSTANTY.EFEKT.VDOVA_DLHY;
-      for (const kde of ["ruka", "odhadzovaci"] as const) {
+      for (const kde of ["ruka", "odhadzovaci", "priznane"] as const) {
         while (zostava > 0) {
           const idx = s.hraci[p][kde].findIndex((k) => k.defId === "dlh");
           if (idx === -1) break;
@@ -2069,6 +2191,15 @@ function cmdSkipNaex(s: MutState, data: GameData, p: PlayerId, events: Event[]):
   need(!krcmaVyzaduje(data, s as GameState, p), "Krčma: kým máš plný poldeci, musíš dať NA EX.");
   pitka.hotovy[p] = true;
   const oppon = opponentOf(p);
+  // Záznam pre súpera (Michal 2026-10-21): bez neho to vyzeralo, že Pitku
+  // začína on — hotovo obrancu nezanechalo žiadnu stopu.
+  const naex = (pitka.naexPocet?.[p] ?? 0) > 0;
+  events.push({
+    type: "log",
+    text: pitka.hotovy[oppon]
+      ? `Hráč ${p + 1} končí svoju časť Pitky${naex ? "" : " bez NA EX"} — Pitka sa vyhodnotí.`
+      : `Hráč ${p + 1} končí svoju časť Pitky${naex ? "" : " bez NA EX"}. Na ťahu je hráč ${oppon + 1} — má posledné slovo.`,
+  });
   if (!pitka.hotovy[oppon]) {
     pitka.naTahu = oppon;
     return;
@@ -2082,35 +2213,23 @@ function vyhodnotPitku(s: MutState, data: GameData, events: Event[]): void {
   if (pitka === null) return;
   const vyhodnotenie = evaluateLine(data, lineState(s as GameState));
   const sums = vyhodnotenie.sums;
+  // Prírastky počíta prirastkyPitky — ten istý výpočet ukazuje náhľad (nahladPitky).
+  const prirastky = prirastkyPitky(data, s as GameState, vyhodnotenie);
+  const ucet = { cirhozy: [0, 0] as [number, number], dlhy: [0, 0] as [number, number], cigarety: [0, 0] as [number, number] };
+  const kliatbyPred = ([0, 1] as const).map((p) => ({
+    cirhozy: s.cirhozyVKole[p],
+    dlhy: s.hraci[p].priznane.filter((k) => k.defId === "dlh").length,
+  }));
 
   // 2. Dlh — aktívne akcie Dlh postihujú majiteľa karty, Dlhy Finančnej
-  //    poradkyne súpera; zberny_dvor generuje o 1 menej.
-  const poradkynaDlhy = [0, 0] as [number, number];
-  for (const p of [0, 1] as const) {
-    for (const placed of partiaHraca(s as GameState, p)) {
-      if (placed.card.defId !== "financna_poradkyna") continue;
-      if (efektPotlaceny(data, s as GameState, p, "financna_poradkyna")) continue;
-      const ev = vyhodnotenie.cards.get(placed.card.uid);
-      if (ev === undefined) continue;
-      for (const strana of [ev.left, ev.right]) {
-        for (const slot of strana) {
-          if (slot?.action === "Dlh" && slot.stav === "aktivna") poradkynaDlhy[p] += slot.nasobok;
-        }
-      }
-    }
-  }
-  // financna_poradkyna (Michal 2026-10-18): Dlh z jej akcií dostáva súper, nie jej majiteľ.
-  for (const p of [0, 1] as const) {
-    const odSupera = poradkynaDlhy[opponentOf(p)];
-    const vlastne = Math.max(0, (sums[p].Dlh ?? 0) - poradkynaDlhy[p]);
-    pridajZadlzenie(s, data, p, vlastne + odSupera, events);
-  }
+  //    poradkyne súpera.
+  for (const p of [0, 1] as const) pridajZadlzenie(s, data, p, prirastky.zadlzenie[p], events);
 
   // 3. Poškodenie pečene: akcie Poškodenie pečene a Poldeci [R6b]; NA EX už pripísané,
   //    pitie do dna zo Zhromaždenia čaká na prah práve tu.
   for (const p of [0, 1] as const) {
-    pridajPecen(s, data, p, sums[p].PoškodeniePečene ?? 0, events);
-    pridajPecen(s, data, p, sums[p].Poldeci ?? 0, events);
+    pridajPecen(s, data, p, prirastky.poskodeniePecene[p], events);
+    pridajPecen(s, data, p, prirastky.poldeci[p], events);
     skontrolujPrahPecene(s, data, p, events);
   }
 
@@ -2129,6 +2248,7 @@ function vyhodnotPitku(s: MutState, data: GameData, events: Event[]): void {
     // cigorky (Dedičstvo): v každej Pitke cigareta navyše — Obmedzenie ju neuberie.
     const cigorky = vDedicstve(s as GameState, p, "cigorky") ? KONSTANTY.EFEKT.CIGORKY_CIGARETY : 0;
     const ziska = Math.max(0, cigarety - obmedzenia) + cigorky;
+    ucet.cigarety[p] = ziska;
     if (ziska > 0) {
       hrac(s, p).cigarety += ziska;
       events.push({
@@ -2137,6 +2257,12 @@ function vyhodnotPitku(s: MutState, data: GameData, events: Event[]): void {
       });
     }
   }
+
+  for (const p of [0, 1] as const) {
+    ucet.cirhozy[p] = s.cirhozyVKole[p] - (kliatbyPred[p]?.cirhozy ?? 0);
+    ucet.dlhy[p] = s.hraci[p].priznane.filter((k) => k.defId === "dlh").length - (kliatbyPred[p]?.dlhy ?? 0);
+  }
+  events.push({ type: "pitkaVysledok", pitka: s.pitkaCislo, ...ucet });
 
   // 7. Vízia (Michal 2026-10-19): za každú aktívnu Víziu sa hráč pozrie na
   //    vrchnú kartu svojho doberacieho balíčka a rozhodne — do ruky, alebo
@@ -2362,16 +2488,16 @@ function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
   if (b.krok === "exekutor") {
     for (const p of [obranca(s), s.utocnik]) {
       if (b.exekutorHotovy[p]) continue;
-      // Robota (pravidlá v2): ešte pred kontrolou prahu odhodí za každú
-      // aktívnu Robotu 1 priznaný Dlh — do odhadzovacieho balíčka
-      // (na Obecnom úrade 2, Michal 2026-10-20).
+      // Robota (pravidlá v2): ešte pred kontrolou prahu spáli za každú
+      // aktívnu Robotu 1 priznaný Dlh (na Obecnom úrade 2, Michal 2026-10-20).
+      // Verejný dlh (2026-10-21): predtým ho odhodila do balíčka, odkiaľ by sa
+      // pri dobratí znova priznal — teraz z hry zmizne.
       const urad = exekutorLokality(s as GameState);
       for (let r = (b.sums[p].Robota ?? 0) * urad.robota; r > 0; r--) {
         const idx = s.hraci[p].priznane.findIndex((k) => k.defId === "dlh");
         if (idx === -1) break;
-        const [dlh] = hrac(s, p).priznane.splice(idx, 1);
-        if (dlh !== undefined) hrac(s, p).odhadzovaci.push(dlh);
-        events.push({ type: "log", text: `Robota: hráč ${p + 1} odhadzuje 1 priznaný Dlh.` });
+        hrac(s, p).priznane.splice(idx, 1);
+        events.push({ type: "log", text: `Robota: hráč ${p + 1} páli 1 priznaný Dlh.` });
       }
       const dlhy = pocetKariet(s.hraci[p] as PlayerState, "dlh", "priznane");
       const vysledok = exekutorCheck(dlhy + urad.zlava, priazen(data, s as GameState, "EXEKUTOR", p));
@@ -2790,7 +2916,7 @@ function vyhodnotPoskodenie(s: MutState, data: GameData, events: Event[]): void 
   if (b === null) return;
   const vRuke = (p: PlayerId): number => s.hraci[p].ruka.filter((k) => k.defId === "abstak").length;
   const damage = poskodenieBitky(data, s as GameState, b.sums as readonly [ActionSums, ActionSums], [vRuke(0), vRuke(1)]);
-  const outcome = battleOutcome(damage, s.utocnik);
+  const outcome = battleOutcome(damage);
   b.damage = damage as DeepMutable<DamageResult>;
   b.vitaz = outcome.vitaz;
   b.prebytokDrzi = outcome.prebytokDrzi;
@@ -2942,7 +3068,7 @@ function cmdSkipLiecba(s: MutState, data: GameData, p: PlayerId, events: Event[]
 function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
   const b = s.bitkaStav;
   if (b === null) return;
-  // null = remíza o staršieho: nikto nevyhral ani neprehral.
+  // null = remíza: nikto nevyhral ani neprehral, lokalita ide na sekeru.
   const vitaz = b.vitaz as PlayerId | null;
   const porazeny = vitaz === null ? null : opponentOf(vitaz);
 
@@ -2994,13 +3120,41 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
   s.strany = [[], []];
 
   // Lokalitu si berie víťaz — po Benzínke ju nikto nevyhrá a prepadne.
+  // Remíza (Michal 2026-10-21): lokalita ide na sekeru, víťaz najbližšej
+  // bitky si vezme aj ju; v poslednej bitke už niet komu, tak prepadne.
   const lokalita = cielLokalita(s as GameState);
+  const poslednaBitka = s.lokalityVHre.length === 0;
   if (lokalita !== null && b.lokalitaPrepadne) {
     s.prepadnute.push(lokalita as DeepMutable<CardInstance>);
     events.push({ type: "log", text: `Lokalitu ${defOf(data, lokalita).name} nikto nevyhral — prepadla.` });
+  } else if (lokalita !== null && vitaz === null && !poslednaBitka) {
+    s.naSekeru.push(lokalita as DeepMutable<CardInstance>);
+    events.push({
+      type: "log",
+      text: `Remíza: lokalita ${defOf(data, lokalita).name} ide na sekeru — vezme si ju víťaz najbližšej bitky (na sekere ${s.naSekeru.length}).`,
+    });
+  } else if (lokalita !== null && vitaz === null) {
+    s.prepadnute.push(lokalita as DeepMutable<CardInstance>);
+    events.push({ type: "log", text: `Remíza v poslednej bitke: lokalita ${defOf(data, lokalita).name} prepadla.` });
   } else if (lokalita !== null && vitaz !== null) {
     s.ovladnute.push({ karta: lokalita, hrac: vitaz } as DeepMutable<OvladnutaLokalita>);
     events.push({ type: "log", text: `Hráč ${vitaz + 1} ovládol lokalitu ${defOf(data, lokalita).name}.` });
+  }
+  const zoSekery = lokalita === null ? [] : s.naSekeru.filter((k) => k.uid !== lokalita.uid);
+  if (vitaz !== null && zoSekery.length > 0) {
+    for (const k of zoSekery) s.ovladnute.push({ karta: k, hrac: vitaz } as DeepMutable<OvladnutaLokalita>);
+    s.naSekeru = s.naSekeru.filter((k) => !zoSekery.includes(k));
+    events.push({
+      type: "log",
+      text: `Hráč ${vitaz + 1} berie aj lokality zo sekery: ${zoSekery.map((k) => defOf(data, k as CardInstance).name).join(", ")}.`,
+    });
+  } else if (poslednaBitka && s.naSekeru.length > 0) {
+    events.push({
+      type: "log",
+      text: `Posledná bitka nemá víťaza — lokality na sekere prepadli: ${s.naSekeru.map((k) => defOf(data, k as CardInstance).name).join(", ")}.`,
+    });
+    s.prepadnute.push(...s.naSekeru);
+    s.naSekeru = [];
   }
 
   // Absťák (pravidlá v2): menej nerestí než minulé kolo → Absťák rovno do
@@ -3054,7 +3208,7 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
     return;
   }
 
-  // Ďalšie kolo: útočníkom je porazený; po remíze o staršieho ostáva ten istý.
+  // Ďalšie kolo: útočníkom je porazený; po remíze ostáva ten istý.
   s.kolo += 1;
   if (vitaz !== null) s.utocnik = opponentOf(vitaz);
   s.faza = "volbaCiela";

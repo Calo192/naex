@@ -10,6 +10,20 @@
   --text: #f1e8d8;
   --tlmeny: #b6a790;
   --slaby: #8b7d6a;
+  /* Drobný text, ktorý sa má dať prečítať — 5,52 : 1 na --plocha (WCAG AA);
+     --slaby ostáva na dekor (dizajn hra-20261021-1240, UI N1). */
+  --slaby-text: #9d8f7b;
+  /* Červený text (odpojený, chyby) — 5,25 : 1 na --plocha-2. */
+  --cervena-text: #e5735c;
+  /* Pečiatka NA EX! — biely text 6,07 : 1. */
+  --tehla-tmava: #a8341f;
+  /* Typografická škála 1,25 (migrácia postupne). */
+  --t-xs: 0.75rem;
+  --t-s: 0.875rem;
+  --t-m: 1rem;
+  --t-l: 1.25rem;
+  --t-xl: 1.563rem;
+  --t-2xl: 1.953rem;
   --akcent: #e9ad45;
   --akcent-tmavy: #b9802a;
   --cervena: #d0563f;

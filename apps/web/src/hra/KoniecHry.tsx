@@ -24,8 +24,9 @@ export function KoniecHry({ view, data, mena, menoKarty, frajerina, onZavri, opu
   const su: PlayerId = ja === 0 ? 1 : 0;
   const nadpis = koniec.vitaz === null ? "Remíza" : koniec.vitaz === ja ? "Vyhral si!" : "Prehral si";
   const dovod = koniec.dovod.replace(/Hráč ([12])/g, (_, n: string) => mena[Number(n) - 1] ?? `Hráč ${n}`);
-  // Rozpis po starších tým istým bodovaním ako na konci hry. Súperove skryté
-  // karty klient nevidí — súčet zo servera (koniec.body) je smerodajný.
+  // Rozpis po starších tým istým bodovaním ako na konci hry — súperove
+  // nepriznané kliatby pozná view z verejného počtu, takže sa sčíta na
+  // koniec.body (playtest 20261021-041728: predtým dva rôzne súčty v jednom okne).
   // Pri vzdaní, exekúcii či vydesení sa nebodovalo — rozpis by mýlil.
   const rozpis = koniec.body === null ? null : bodyTeraz(data, view);
   const zmena = frajerina?.[ja];
@@ -67,7 +68,7 @@ export function KoniecHry({ view, data, mena, menoKarty, frajerina, onZavri, opu
         )}
         <div className="koniec-tlacidla">
           <button onClick={onZavri}>pozrieť stôl</button>
-          <button className="tlacidlo-hlavne" onClick={opustit}>
+          <button className="tlacidlo-hlavne" onClick={opustit} autoFocus>
             späť do lobby
           </button>
         </div>

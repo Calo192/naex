@@ -21,7 +21,7 @@ export function RozpisBodov({ body, starsi, data, ja, menoSupera, menoKarty, nad
   const riadky = body.starsi.flatMap((s) => {
     const elder = starsi.find((e) => e.elderId === s.elderId);
     const meno = elder === undefined ? s.elderId : menoKarty(elder.karta.defId);
-    return s.polozky[ja].map((moja, i) => ({ kluc: `${s.elderId}-${i}`, meno, prvy: i === 0, pocet: s.polozky[ja].length, moja, jeho: s.polozky[su][i], neiste: s.neiste }));
+    return s.polozky[ja].map((moja, i) => ({ kluc: `${s.elderId}-${i}`, meno, prvy: i === 0, pocet: s.polozky[ja].length, moja, jeho: s.polozky[su][i] }));
   });
   if (riadky.length === 0) return <p className="tlmene">Žiadny starší nemá aktívnu bodovaciu podmienku.</p>;
   return (
@@ -38,7 +38,6 @@ export function RozpisBodov({ body, starsi, data, ja, menoSupera, menoKarty, nad
       <tbody>
         {riadky.map((r) => {
           const zaKus = data.bodyPodmienok[r.moja.podmienka];
-          const kliatba = r.moja.podmienka === "dlh" || r.moja.podmienka === "cirhoza";
           return (
             <tr key={r.kluc} className={r.prvy ? "prvy" : ""}>
               {r.prvy && (
@@ -52,7 +51,6 @@ export function RozpisBodov({ body, starsi, data, ja, menoSupera, menoKarty, nad
               </td>
               <td className="cislo superove" title={r.jeho === undefined ? undefined : vypocetPodmienky(r.jeho, zaKus)}>
                 {r.jeho === undefined ? "0" : znamienko(r.jeho.body)}
-                {r.neiste && kliatba ? "?" : ""}
               </td>
             </tr>
           );
@@ -66,10 +64,7 @@ export function RozpisBodov({ body, starsi, data, ja, menoSupera, menoKarty, nad
           <td className="cislo moje">
             <b>{body.spolu[ja]}</b>
           </td>
-          <td className="cislo superove">
-            {body.spolu[su]}
-            {body.neiste[su] ? "?" : ""}
-          </td>
+          <td className="cislo superove">{body.spolu[su]}</td>
         </tr>
       </tfoot>
     </table>

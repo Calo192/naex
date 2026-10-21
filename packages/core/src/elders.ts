@@ -204,6 +204,8 @@ export interface StavBodovania {
     readonly ruka: readonly CardInstance[];
     readonly doberaci: readonly CardInstance[];
     readonly odhadzovaci: readonly CardInstance[];
+    /** Priznané karty — z nich sa na konci ráta Dlh (verejný dlh). */
+    readonly priznane: readonly CardInstance[];
   }[];
 }
 
@@ -212,6 +214,8 @@ function pocetKusov(podmienka: Podmienka, stav: StavBodovania, p: PlayerId): num
   if (hrac === undefined) return 0;
   const nepriznane = (defId: string): number =>
     [...hrac.ruka, ...hrac.doberaci, ...hrac.odhadzovaci].filter((k) => k.defId === defId).length;
+  // Verejný dlh (Michal 2026-10-21): Dlh uberá body všade — v balíčku, v ruke
+  // aj priznaný. Cirhóza len nepriznaná: priznaná už platí v každej bitke.
   switch (podmienka) {
     case "lokality":
       return stav.ovladnute.filter((o) => o.hrac === p).length;
@@ -222,7 +226,7 @@ function pocetKusov(podmienka: Podmienka, stav: StavBodovania, p: PlayerId): num
     case "cirhoza":
       return nepriznane("cirhoza");
     case "dlh":
-      return nepriznane("dlh");
+      return nepriznane("dlh") + hrac.priznane.filter((k) => k.defId === "dlh").length;
     default:
       return 0;
   }
@@ -234,7 +238,7 @@ export interface BodPodmienky extends StavPodmienky {
   /**
    * Za koľko kusov: pri zónovej podmienke počet starších, ktorí sa hráča boja
    * práve na jej úroveň; inak ovládnuté lokality, získaní starší, cigarety,
-   * nepriznané Dlhy či Cirhózy hráča.
+   * Dlhy (aj priznané) či nepriznané Cirhózy hráča.
    */
   readonly kusy: number;
 }
