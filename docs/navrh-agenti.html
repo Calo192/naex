@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agenti a workflow NA EX!</title>
+<style>
+:root {
+  --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --okraj: #3d3229; --okraj-svetly: #57483a;
+  --text: #f1e8d8; --tlmeny: #b6a790; --slaby: #9d8f7b;
+  --akcent: #e9ad45; --na-akcente: #2b1b03; --cervena: #e5735c; --zelena: #7cbf74; --info: #8fc3e0; --fialova: #b993d6;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #dccdb3; --okraj-svetly: #c4b08f;
+    --text: #2a2016; --tlmeny: #5e4f3b; --slaby: #6f5f48;
+    --akcent: #9a5d06; --na-akcente: #fffaf1; --cervena: #a83a26; --zelena: #356e2f; --info: #2d5a8f; --fialova: #6e4596;
+    color-scheme: light;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 "Segoe UI", system-ui, sans-serif; }
+h1, h2, h3 { font-family: Georgia, serif; line-height: 1.25; }
+a { color: var(--akcent); }
+code { font: 0.88em ui-monospace, Consolas, monospace; background: var(--plocha-2); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+.obal { max-width: 1100px; margin: 0 auto; padding: 0 16px 48px; }
+header { padding: 28px 0 8px; }
+h1 { margin: 0 0 8px; color: var(--akcent); font-size: clamp(1.6rem, 3.5vw, 2.2rem); }
+.uvod { color: var(--tlmeny); max-width: 80ch; margin: 0 0 8px; }
+h2 { margin: 36px 0 12px; font-size: 1.35rem; }
+
+.verdikt { background: var(--plocha); border: 1px solid var(--okraj); border-left: 4px solid var(--akcent); border-radius: 12px; padding: 14px 18px; margin: 18px 0; }
+.verdikt p { margin: 6px 0; }
+
+/* slučka */
+.slucka { display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch; margin: 8px 0 4px; }
+.krok { flex: 1 1 140px; background: var(--plocha); border: 1px solid var(--okraj); border-radius: 10px; padding: 10px 12px; font-size: 0.92rem; position: relative; }
+.krok b { display: block; font-family: Georgia, serif; font-size: 1rem; }
+.krok span { color: var(--tlmeny); }
+.krok.diera { border: 2px dashed var(--cervena); }
+.krok.diera::after { content: "chýba"; position: absolute; top: -10px; right: 10px; background: var(--cervena); color: var(--pozadie); font-size: 0.72rem; font-weight: 700; padding: 1px 8px; border-radius: 999px; }
+.legenda { color: var(--slaby); font-size: 0.88rem; }
+
+/* filter */
+.filter { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 16px; }
+.filter button { cursor: pointer; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--okraj); background: var(--plocha); color: var(--tlmeny); }
+.filter button[aria-pressed="true"] { background: var(--akcent); border-color: var(--akcent); color: var(--na-akcente); font-weight: 600; }
+
+/* prehľad */
+.tab-obal { overflow-x: auto; border: 1px solid var(--okraj); border-radius: 12px; }
+table { width: 100%; border-collapse: collapse; font-size: 0.93rem; min-width: 640px; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--okraj); vertical-align: top; }
+th { background: var(--plocha-2); font-weight: 600; }
+tr:last-child td { border-bottom: 0; }
+tbody tr { cursor: pointer; }
+tbody tr:hover { background: var(--plocha); }
+
+/* karty */
+.navrh { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 16px 18px; margin: 14px 0; scroll-margin-top: 16px; }
+.navrh.vybrany { border-color: var(--akcent); box-shadow: 0 0 0 1px var(--akcent); }
+.navrh-hlava { display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+.cislo { flex: none; width: 34px; height: 34px; border-radius: 50%; background: var(--plocha-2); border: 1px solid var(--okraj-svetly); display: grid; place-items: center; font-weight: 700; font-family: Georgia, serif; }
+.navrh h3 { margin: 4px 0 4px; flex: 1 1 300px; font-size: 1.12rem; }
+.stitky { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 8px; }
+.stitok { font-size: 0.78rem; padding: 2px 9px; border-radius: 999px; border: 1px solid var(--okraj-svetly); color: var(--tlmeny); }
+.stitok.oprava { color: var(--info); border-color: var(--info); }
+.stitok.workflow { color: var(--zelena); border-color: var(--zelena); }
+.stitok.agent { color: var(--fialova); border-color: var(--fialova); }
+.stitok.prinos-vysoky { color: var(--akcent); border-color: var(--akcent); font-weight: 600; }
+.chcem { display: flex; gap: 6px; align-items: center; cursor: pointer; font-size: 0.9rem; color: var(--tlmeny); padding: 4px 10px; border: 1px solid var(--okraj); border-radius: 8px; }
+.chcem input { width: 18px; height: 18px; accent-color: var(--akcent); }
+.navrh dl { margin: 6px 0 0; display: grid; grid-template-columns: 9.5em 1fr; gap: 6px 14px; }
+.navrh dt { color: var(--slaby); font-size: 0.9rem; padding-top: 1px; }
+.navrh dd { margin: 0; }
+.navrh dd ul, .navrh dd ol { margin: 0; padding-left: 1.2em; }
+@media (max-width: 640px) { .navrh dl { grid-template-columns: 1fr; } .navrh dt { margin-top: 6px; } }
+[hidden] { display: none !important; }
+
+/* výber */
+.vyber { position: sticky; bottom: 0; margin-top: 24px; background: var(--plocha-2); border: 1px solid var(--okraj-svetly); border-radius: 12px; padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.vyber output { flex: 1 1 260px; font-size: 0.93rem; }
+.vyber button { cursor: pointer; padding: 8px 16px; border-radius: 8px; border: 0; background: var(--akcent); color: var(--na-akcente); font-weight: 600; }
+.vyber button:disabled { opacity: 0.5; cursor: default; }
+footer { color: var(--slaby); font-size: 0.88rem; margin-top: 32px; }
+</style>
+</head>
+<body>
+<div class="obal">
+
+<header>
+  <h1>Agenti a workflow NA EX! — čo zlepšiť</h1>
+  <p class="uvod">Rozbor desiatich agentov a siedmich skillov v <code>.claude/</code> (stav 2026-10-21) a návrhy, čo opraviť, čo pridať a ktoré workflow chýbajú. Každý návrh vychádza z niečoho, čo je dnes v súboroch. Zaškrtni, čo chceš, a dole skopíruj zadanie.</p>
+</header>
+
+<section class="verdikt" aria-label="Verdikt">
+  <p><strong>Linka od playtestu po rozhodnutie je dobrá</strong>: playtest → report → stratég s navrhárom → rozhodnutie na webe → roadmapa → Developer. <strong>Chýbajú jej dva konce</strong>: zmeny sa nasadzujú na živý web ručne a nikto neoveruje, či schválená zmena zabrala. Návrh tak skončí ako „implementovaný“, aj keď problém trvá.</p>
+  <p>Ako prvé odporúčam <strong>#4 Jeden ťahák</strong>, lebo je to malá a hneď užitočná oprava. Potom <strong>#1 Overenie zmien</strong> a <strong>#2 /naex-nasad</strong>, ktoré tú slučku uzavrú. Ako tretie <strong>#3 Pravidlá ako testy</strong>: chyby v hre bude odhaľovať lacný test, a nie drahá partia.</p>
+</section>
+
+<h2>Dnešná slučka a kde má diery</h2>
+<div class="slucka" role="list">
+  <div class="krok" role="listitem"><b>Playtest</b><span>/naex-playtest — 1–3 partie AI</span></div>
+  <div class="krok" role="listitem"><b>Rozbor</b><span>spisovateľ, stratég, navrhár</span></div>
+  <div class="krok" role="listitem"><b>Rozhodnutie</b><span>Michal v sekcii Playtest</span></div>
+  <div class="krok" role="listitem"><b>Implementácia</b><span>Developer + Admin, merge</span></div>
+  <div class="krok diera" role="listitem"><b>Nasadenie</b><span>len „ponúkni“, ručne nahraj.sh</span></div>
+  <div class="krok diera" role="listitem"><b>Overenie</b><span>zabrala zmena? nikto nesleduje</span></div>
+</div>
+<p class="legenda">Návrhy z dizajnu (naex-ui/ux) do tejto slučky dnes nevstupujú vôbec. Končia ako HTML a „ponúkni, čo implementovať“ (viď #5).</p>
+
+<h2>Prehľad</h2>
+<div class="filter" role="group" aria-label="Filter podľa druhu">
+  <button type="button" data-filter="vsetko" aria-pressed="true">Všetko</button>
+  <button type="button" data-filter="workflow" aria-pressed="false">Nový workflow</button>
+  <button type="button" data-filter="agent" aria-pressed="false">Nový agent</button>
+  <button type="button" data-filter="oprava" aria-pressed="false">Oprava existujúceho</button>
+</div>
+<div class="tab-obal">
+<table>
+  <thead><tr><th>#</th><th>Návrh</th><th>Druh</th><th>Čo rieši</th><th>Prínos</th><th>Náročnosť</th></tr></thead>
+  <tbody id="prehlad"></tbody>
+</table>
+</div>
+
+<h2>Návrhy</h2>
+<div id="navrhy">
+
+<article class="navrh" id="n1" data-druh="workflow">
+  <div class="navrh-hlava"><div class="cislo">1</div><h3>Overenie zmien: schválený návrh sa zatvorí, až keď playtest ukáže, že zabral</h3>
+    <label class="chcem"><input type="checkbox" value="1"> chcem</label></div>
+  <div class="stitky"><span class="stitok workflow">nový workflow</span><span class="stitok prinos-vysoky">prínos vysoký</span><span class="stitok">stredná</span></div>
+  <dl>
+    <dt>Dnes</dt><dd>Developer po merge označí návrh <code>implementovane</code> a tým to končí. <code>naex-implementacia</code> len „odporučí overiť ďalším playtestom“. Navrhár má pravidlo „ak problém trvá, zmena nezabrala“, lenže to musí sám vyčítať zo <code>zmeny-pravidiel.html</code>.</dd>
+    <dt>Návrh</dt><dd><ol>
+      <li>Do JSON návrhu pribudne pole <code>overenie</code>: 1–3 merateľné otázky, napr. „útočník vyhráva bitky 40–60 %“ alebo „nikto si nesťažuje na Dlh ×4“.</li>
+      <li><code>/naex-playtest</code> pred štartom stiahne implementované a ešte neoverené návrhy (<code>admin.ts navrhy implementovane --zivy</code>) a ich otázky dá playtesterom do zadania. Dnes to robí len s otázkami stratéga.</li>
+      <li>Spisovateľ v sekcii „Overenie nedávnych zmien“ odpovie na každú otázku a dá jej verdikt <em>zabralo / nezabralo / málo dát</em>.</li>
+      <li>Organizátor zapíše verdikt k návrhu na webe ako nový stav <code>overene</code>, alebo návrh vráti s poznámkou „nezabralo“. Na <code>/vyvoj</code> sa potom dá ukázať, koľko zmien naozaj zabralo.</li>
+    </ol></dd>
+    <dt>Prečo</dt><dd>Bez overenia sa zmeny pravidiel len kopia na seba. Je to jediný spôsob, ako zistiť, či linka návrhov hru naozaj zlepšuje, a nielen mení.</dd>
+    <dt>Treba zmeniť</dt><dd>Agentov naex-navrhar (pole <code>overenie</code>) a naex-spisovatel, skill naex-playtest, stav návrhu v API a na webe (<code>packages/server/src/api.ts</code>, <code>apps/web/src/playtest/</code>).</dd>
+  </dl>
+</article>
+
+<article class="navrh" id="n2" data-druh="workflow">
+  <div class="navrh-hlava"><div class="cislo">2</div><h3>/naex-nasad — bezpečné vydanie na živý web</h3>
+    <label class="chcem"><input type="checkbox" value="2"> chcem</label></div>
+  <div class="stitky"><span class="stitok workflow">nový skill</span><span class="stitok prinos-vysoky">prínos vysoký</span><span class="stitok">stredná</span></div>
+  <dl>
+    <dt>Dnes</dt><dd>Krok 6 v <code>naex-implementacia</code> nasadenie len „ponúkne“, lebo reštart zhodí rozohrané partie. Postup je v <code>docs/NASADENIE.md</code> a karty na produkciu majú vlastné kroky (značka migrácie, <code>do-seedu.ts</code>). Všetko sa robí ručne.</dd>
+    <dt>Návrh</dt><dd>Skill (bez agenta), ktorý:<ol>
+      <li>overí, že <code>master</code> = <code>origin/master</code> a že prejde <code>npm test</code>, typecheck aj build,</li>
+      <li>vypíše, čo pôjde von: commity od posledného nasadenia a karty, ak sa zmenila sada,</li>
+      <li>zistí, či na živom webe beží partia ľudí. Ak beží, počká, kým dohrá, alebo sa opýta. Na to treba malý admin endpoint s počtom miestností, ak ešte nie je,</li>
+      <li>spustí <code>deploy/nahraj.sh</code>,</li>
+      <li>spraví smoke test: <code>web.ts dostupny --zivy</code>, prihlásenie, založenie partie proti botovi a pár ťahov,</li>
+      <li>ťahy v roadmape (Hotové) označí „na živom webe“ a voliteľne napíše hráčom krátke „Čo je nové“.</li>
+    </ol></dd>
+    <dt>Prečo</dt><dd>Kým zmena nie je na živom webe, ľudia ju nevidia a ich spätná väzba sa vzťahuje na staré pravidlá. Pri overovaní (#1) by sa potom porovnávali nesprávne verzie.</dd>
+    <dt>Rozhodni</dt><dd>Má sa nasadzovať automaticky po každej implementácii (ako commit a merge), alebo vždy až na tvoj pokyn?</dd>
+  </dl>
+</article>
+
+<article class="navrh" id="n3" data-druh="agent">
+  <div class="navrh-hlava"><div class="cislo">3</div><h3>naex-rozhodca — pravidlá ako testy</h3>
+    <label class="chcem"><input type="checkbox" value="3"> chcem</label></div>
+  <div class="stitky"><span class="stitok agent">nový agent</span><span class="stitok prinos-vysoky">prínos vysoký</span><span class="stitok">stredná (prvý prechod veľký)</span></div>
+  <dl>
+    <dt>Dnes</dt><dd>Nezrovnalosti medzi pravidlami a hrou hľadajú playtesteri počas partie. Je to drahé (dve hodiny, dvaja agenti) a často ide o omyl hráča. Príklad: „poradie v Pitke“ v playteste 20261021-041728 bolo omylom oboch hráčov (<code>naex-navrhar.md</code>). Spisovateľ aj navrhár potom každé hlásenie overujú v kóde znova.</dd>
+    <dt>Návrh</dt><dd>Agent prejde <code>docs/PRAVIDLA.md</code> paragraf po paragrafe a pri každom normatívnom pravidle („obranca volí cieľ“, „Pohoršenie najviac 2 hranice zón“…) nájde test vo vitest. Ak test chýba, dopíše ho. Engine nemení. Padnutý test je nález, ktorý zaradí ako <em>chybu v hre</em> alebo <em>chybu v pravidlách</em> a dá ho do sekcie Playtest ako návrh. Výstup je mapa „§ → test“. Developer potom pri každej zmene pravidla doplní test k svojmu paragrafu a rozhodca pri ďalšom behu kontroluje len zmenené paragrafy.</dd>
+    <dt>Prečo</dt><dd>Správnosť stráži lacný a opakovateľný test, nie partia. Playtesty sa tak môžu venovať tomu, čo test nezmeria: zábave, strategickosti a zrozumiteľnosti.</dd>
+  </dl>
+</article>
+
+<article class="navrh" id="n4" data-druh="oprava">
+  <div class="navrh-hlava"><div class="cislo">4</div><h3>Jeden ťahák pravidiel namiesto dvoch kópií v agentoch</h3>
+    <label class="chcem"><input type="checkbox" value="4"> chcem</label></div>
+  <div class="stitky"><span class="stitok oprava">oprava</span><span class="stitok">prínos stredný</span><span class="stitok">malá</span></div>
+  <dl>
+    <dt>Dnes</dt><dd>Takmer ten istý ťahák s ~115 riadkami je vložený v <code>naex-playtester.md</code> aj v <code>naex-protihrac.md</code>. Developer má v <code>naex-developer.md:43</code> povinnosť aktualizovať len ťahák playtesterov. Protihráč, ktorý hrá proti ľuďom, preto pri ďalšej zmene pravidiel zostarne.</dd>
+    <dt>Návrh</dt><dd>Ťahák presunúť do <code>tools/playtest/tahak.md</code> a oba agenti ho načítajú v príprave (už teraz pri nej čítajú PRAVIDLA.md). Developer bude aktualizovať jedno miesto. Voliteľne pribudne malý test, ktorý overí, že čísla v ťaháku (ruka, poldeci, lokality) sedia s <code>constants.ts</code>.</dd>
+    <dt>Prečo</dt><dd>Zastaraný ťahák vyrába falošné nezrovnalosti a playtester hrá podľa starých pravidiel. Kratšie prompty agentov sú bonus.</dd>
+  </dl>
+</article>
+
+<article class="navrh" id="n5" data-druh="oprava">
+  <div class="navrh-hlava"><div class="cislo">5</div><h3>Návrhy dizajnérov idú na rozhodnutie na web, rovnako ako návrhy z playtestu</h3>
+    <label class="chcem"><input type="checkbox" value="5"> chcem</label></div>
+  <div class="stitky"><span class="stitok oprava">oprava</span><span class="stitok">prínos stredný</span><span class="stitok">stredná</span></div>
+  <dl>
+    <dt>Dnes</dt><dd>V <code>docs/playtesty/</code> je 15 súborov <code>dizajn-*.html</code>, z toho päť verzií „pokyn na stole“ za jeden deň. <code>naex-dizajn</code> končí slovami „ponúkni, ktoré návrhy implementovať“. Návrhy sa nedostanú do sekcie Playtest ani do roadmapy a <code>naex-implementacia</code> ich nevie zobrať.</dd>
+    <dt>Návrh</dt><dd>Skill naex-dizajn po skončení oboch dizajnérov zlúči ich návrhy do <code>navrhy-dizajn-&lt;id&gt;.json</code> v tvare navrhára (oblasť „rozhranie“, možnosti A/B/C = varianty dizajnu, odkaz na HTML ukážku) a nahrá ho cez <code>navrhy-nahraj</code>. Ďalej to ide známou cestou: tvoja voľba, roadmapa, Developer.</dd>
+    <dt>Prečo</dt><dd>Všetky rozhodnutia budú v jednej fronte s jednou históriou a nič sa nestratí v rozhovore.</dd>
+  </dl>
+</article>
+
+<article class="navrh" id="n6" data-druh="workflow">
+  <div class="navrh-hlava"><div class="cislo">6</div><h3>/naex-stav — čo čaká na teba</h3>
+    <label class="chcem"><input type="checkbox" value="6"> chcem</label></div>
+  <div class="stitky"><span class="stitok workflow">nový skill</span><span class="stitok">prínos stredný</span><span class="stitok">malá</span></div>
+  <dl>
+    <dt>Dnes</dt><dd>Linka má veľa frontov a každá žije inde: návrhy na rozhodnutie (web), stĺpec Teraz (roadmapa), commity v master, ktoré nie sú na živom webe, nové názory ľudí na Spätnej väzbe, hodnoty s <code>TODO</code> v <code>data/</code> a necommitnutá práca. Práve teraz sú v pracovnom strome odstránené admin stránky Štatistiky, Sila kariet a Simulácia a nový <code>spolocne.tsx</code>.</dd>
+    <dt>Návrh</dt><dd>Skill bez agenta, ktorý všetko pozbiera cez <code>admin.ts</code>, <code>web.ts</code> a <code>git</code> a v termináli ukáže jednu obrazovku: čo čaká na tvoje rozhodnutie, čo na Developera, čo na nasadenie a jeden odporúčaný ďalší krok. Je to lacné: pár volaní API, žiadna partia.</dd>
+    <dt>Prečo</dt><dd>Čím viac agentov, tým ľahšie sa niečo zasekne medzi krokmi. Toto je ranný prehľad za pár sekúnd.</dd>
+  </dl>
+</article>
+
+<article class="navrh" id="n7" data-druh="oprava">
+  <div class="navrh-hlava"><div class="cislo">7</div><h3>Developer prikladá dôkaz: snímky pred a po, turnaj botov</h3>
+    <label class="chcem"><input type="checkbox" value="7"> chcem</label></div>
+  <div class="stitky"><span class="stitok oprava">oprava</span><span class="stitok">prínos stredný</span><span class="stitok">malá</span></div>
+  <dl>
+    <dt>Dnes</dt><dd>Developer overuje len <code>npm test</code>, typecheck a build. Pri zmene rozhrania nikto nevidí, ako vyzerá na mobile. Pri zmene pravidla má síce „naučiť bota novú voľbu“, ale nič nekontroluje, či ju bot naozaj používa.</dd>
+    <dt>Návrh</dt><dd><ul>
+      <li>Pri zmene UI spraví snímky pred a po (desktop a mobil) nástrojmi, ktoré už používa naex-ui, a pri návrhu na webe na ne dá odkaz.</li>
+      <li>Pri zmene pravidla spustí <code>turnaj.ts 20</code> pred a po: či nič nespadne, koľkokrát bot novú voľbu použil a ako sa pohla výhoda hráča 1. Čísla zapíše do <code>--vysledok</code>.</li>
+    </ul></dd>
+    <dt>Prečo</dt><dd>V sekcii Playtest uvidíš výsledok bez spúšťania webu a pravidlo, ktoré bot nikdy nepoužije, sa odhalí hneď, nie až pri ďalšom meraní stratéga.</dd>
+  </dl>
+</article>
+
+<article class="navrh" id="n8" data-druh="agent">
+  <div class="navrh-hlava"><div class="cislo">8</div><h3>naex-bot-trener — silnejší bot pre merania aj pre ľudí</h3>
+    <label class="chcem"><input type="checkbox" value="8"> chcem</label></div>
+  <div class="stitky"><span class="stitok agent">nový agent</span><span class="stitok">prínos stredný až vysoký</span><span class="stitok">stredná až veľká</span></div>
+  <dl>
+    <dt>Dnes</dt><dd>Stratég meria strategickosť botom a sám píše: „Bot je ladený na súčasné pravidlá, takže pri variante sa nová stratégia neprejaví. Číslo z variantu je náznak smeru, nie dôkaz.“ Bot je zároveň prvý súper každého návštevníka, ktorý sa hráčom stáva až po prvej dohratej partii.</dd>
+    <dt>Návrh</dt><dd>Agent, ktorý ladí <code>packages/core/src/bot.ts</code>. Iba heuristiky a výpočet dopredu, žiadne LLM, takže pravidlo „žiadne AI v hre“ ostáva. Postup:<ol>
+      <li>Nájde, kde bot prehráva: turnaje povah, momenty z denníkov playtesterov, ktoré bot nehrá dobre.</li>
+      <li>Upraví heuristiku.</li>
+      <li>Nový bot musí poraziť starý v turnaji, napríklad ≥ 55 % zo 100 partií pri rovnakých semienkach.</li>
+      <li>Až potom commit.</li>
+    </ol>Môže tiež vedieť „naučiť bota variant“ pre stratéga.</dd>
+    <dt>Prečo</dt><dd>Lepší bot znamená presnejšie čísla rebríka a variantov, teda lepšie rozhodnutia o pravidlách, a zaujímavejšiu prvú partiu pre ľudí.</dd>
+  </dl>
+</article>
+
+<article class="navrh" id="n9" data-druh="oprava">
+  <div class="navrh-hlava"><div class="cislo">9</div><h3>Ostré partie ľudí ako podklad pre rebalans (bez UI)</h3>
+    <label class="chcem"><input type="checkbox" value="9"> chcem</label></div>
+  <div class="stitky"><span class="stitok oprava">oprava</span><span class="stitok">prínos rastie s počtom ľudí</span><span class="stitok">malá až stredná</span></div>
+  <dl>
+    <dt>Dnes</dt><dd>V <code>packages/server/src/archiv.ts</code> je pri štatistikách kariet komentár „zatiaľ sa len ukladajú, nikde sa nezobrazujú“. Admin stránky Štatistiky a Sila kariet práve odstraňuješ. Rebalans u naex-admin a navrhára teda stojí len na dojmoch AI playtesterov.</dd>
+    <dt>Návrh</dt><dd>Žiadna nová stránka. Stačí príkaz <code>admin.ts karty-statistiky --zivy</code> (ako často sa karta hrá a kupuje v šenku, výhernosť partií s ňou, rozdiel ľudia vs. AI), ktorý naex-admin, navrhár a stratég zahrnú do podkladov. Platí rovnaká hranica ako pri známkach: ľudské čísla až od rozumného počtu partií.</dd>
+    <dt>Rozhodni</dt><dd>Je ľudských partií už dosť, aby to malo zmysel, alebo to odložiť do roadmapy na Neskôr?</dd>
+  </dl>
+</article>
+
+<article class="navrh" id="n10" data-druh="oprava">
+  <div class="navrh-hlava"><div class="cislo">10</div><h3>Vyradiť naex-sledovatel</h3>
+    <label class="chcem"><input type="checkbox" value="10"> chcem</label></div>
+  <div class="stitky"><span class="stitok oprava">oprava</span><span class="stitok">prínos malý</span><span class="stitok">malá</span></div>
+  <dl>
+    <dt>Dnes</dt><dd>Od 2026-10-12 sa nespúšťa a v popise má „použi len na výslovnú žiadosť“. Jeho prácu (vizuál počas partie) dnes robí lepšie naex-ui, ktorý vie fotiť aj rozohranú partiu cez skill naex-dizajn.</dd>
+    <dt>Návrh</dt><dd>Agenta zmazať alebo jeho časť o fotení počas partie presunúť do naex-ui. Bude o jedného agenta menej, z ktorého sa vyberá, a o jeden prompt menej na udržiavanie, keď sa zmení klient.</dd>
+  </dl>
+</article>
+
+</div>
+
+<div class="vyber" aria-live="polite">
+  <output id="vyber-text">Zaškrtni návrhy, ktoré chceš, a skopíruj zadanie.</output>
+  <button type="button" id="kopiruj" disabled>Skopírovať zadanie</button>
+</div>
+
+<footer>Podklady: <code>.claude/agents/*.md</code> (10), <code>.claude/skills/*/SKILL.md</code> (7), <code>docs/playtesty/</code>, <code>packages/server/src/archiv.ts</code>, <code>git status</code> z 2026-10-21. Nič z návrhov nie je implementované.</footer>
+</div>
+
+<script>
+(function () {
+  var karty = Array.prototype.slice.call(document.querySelectorAll(".navrh"));
+  var druhNazov = { workflow: "nový workflow", agent: "nový agent", oprava: "oprava" };
+  var telo = document.getElementById("prehlad");
+
+  karty.forEach(function (k) {
+    var c = k.querySelector(".cislo").textContent;
+    var stitky = k.querySelectorAll(".stitok");
+    var tr = document.createElement("tr");
+    tr.dataset.druh = k.dataset.druh;
+    tr.tabIndex = 0;
+    var dnes = k.querySelector("dd").textContent;
+    var riadok = [c, k.querySelector("h3").textContent, druhNazov[k.dataset.druh],
+      dnes.length > 110 ? dnes.slice(0, 107).replace(/\s+\S*$/, "") + "…" : dnes,
+      stitky[1].textContent.replace("prínos ", ""), stitky[2].textContent];
+    riadok.forEach(function (t) { var td = document.createElement("td"); td.textContent = t; tr.appendChild(td); });
+    function skoc() { k.scrollIntoView({ behavior: "smooth", block: "start" }); }
+    tr.addEventListener("click", skoc);
+    tr.addEventListener("keydown", function (e) { if (e.key === "Enter") skoc(); });
+    telo.appendChild(tr);
+  });
+
+  var tlacidla = document.querySelectorAll(".filter button");
+  tlacidla.forEach(function (b) {
+    b.addEventListener("click", function () {
+      tlacidla.forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      var f = b.dataset.filter;
+      document.querySelectorAll("[data-druh]").forEach(function (el) {
+        el.hidden = f !== "vsetko" && el.dataset.druh !== f;
+      });
+    });
+  });
+
+  var vystup = document.getElementById("vyber-text");
+  var kopiruj = document.getElementById("kopiruj");
+  function zadanie() {
+    var vybrane = karty.filter(function (k) { return k.querySelector("input").checked; });
+    karty.forEach(function (k) { k.classList.toggle("vybrany", k.querySelector("input").checked); });
+    if (vybrane.length === 0) { kopiruj.disabled = true; vystup.textContent = "Zaškrtni návrhy, ktoré chceš, a skopíruj zadanie."; return ""; }
+    kopiruj.disabled = false;
+    var text = "Implementuj z docs/navrh-agenti.html návrhy: " + vybrane.map(function (k) {
+      return "#" + k.querySelector(".cislo").textContent + " " + k.querySelector("h3").textContent;
+    }).join("; ");
+    vystup.textContent = text;
+    return text;
+  }
+  document.getElementById("navrhy").addEventListener("change", zadanie);
+  kopiruj.addEventListener("click", function () {
+    var text = zadanie();
+    function hotovo() { kopiruj.textContent = "Skopírované"; setTimeout(function () { kopiruj.textContent = "Skopírovať zadanie"; }, 1500); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(hotovo, function () { vyberText(); });
+    } else { vyberText(); }
+    function vyberText() { var r = document.createRange(); r.selectNodeContents(vystup); var s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+  });
+})();
+</script>
+</body>
+</html>
