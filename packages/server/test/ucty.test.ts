@@ -1,5 +1,5 @@
 // Úrovne účtov (Michal 2026-10-12): admin z konfigurácie, subadmin, hráč,
-// návštevník; návštevník sa po 3 dohratých partiách stáva hráčom.
+// návštevník; návštevník sa po prvej odohranej bitke stáva hráčom (Michal 2026-10-21).
 
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -7,7 +7,7 @@ import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { prazdneStatistiky } from "@naex/core";
 import { Archiv } from "../src/archiv.ts";
-import { PARTII_NA_HRACA, Ucty, hashHesla } from "../src/auth.ts";
+import { Ucty, hashHesla } from "../src/auth.ts";
 import { otvorDb } from "../src/db.ts";
 import type { GameServer } from "../src/server.ts";
 import { TEST_ADMIN, nastavUroven, prihlas, registruj, testovaciServer } from "./pomocnik.ts";
@@ -28,7 +28,7 @@ function partia(archiv: Archiv, hraci: [number, number], dohrata: boolean): void
 }
 
 describe("úrovne účtov — databáza", () => {
-  it("nový účet je návštevník; po 3 dohratých partiách hráč, vzdané sa nerátajú", () => {
+  it("nový účet je návštevník; po prvej bitke hráč, vyššiu úroveň bitka nemení", () => {
     const { db, zmaz } = docasnaDb();
     try {
       const ucty = new Ucty(db, { login: "Admin", heslo: null });
@@ -37,13 +37,13 @@ describe("úrovne účtov — databáza", () => {
       const b = ucty.registruj("eva", "tajneheslo", "Eva", 1);
       expect(a.rola).toBe("navstevnik");
       partia(archiv, [a.id, b.id], false);
-      for (let i = 0; i < PARTII_NA_HRACA - 1; i++) partia(archiv, [a.id, b.id], true);
-      ucty.povysPoPartii(a.id);
-      expect(ucty.dohrate(a.id)).toBe(PARTII_NA_HRACA - 1);
-      expect(ucty.podlaId(a.id)?.rola).toBe("navstevnik");
-      partia(archiv, [a.id, b.id], true);
-      ucty.povysPoPartii(a.id);
+      expect(ucty.dohrate(a.id)).toBe(0);
+      expect(ucty.povysPoBitke(a.id)).toBe(true);
       expect(ucty.podlaId(a.id)?.rola).toBe("hrac");
+      expect(ucty.povysPoBitke(a.id)).toBe(false);
+      ucty.nastavRolu(b.id, "subadmin");
+      expect(ucty.povysPoBitke(b.id)).toBe(false);
+      expect(ucty.podlaId(b.id)?.rola).toBe("subadmin");
     } finally {
       zmaz();
     }
@@ -78,8 +78,8 @@ describe("úrovne účtov — databáza", () => {
           db.prepare("INSERT INTO partie_hraci (partia, miesto, pouzivatel, vysledok, frajerina_pred, frajerina_po, statistiky) VALUES (?, ?, ?, 'vyhra', 0, 0, '{}')").run(id, miesto, kto);
         }
       };
-      for (let i = 0; i < 3; i++) zapis("Odohrala sa posledná bitka o lokalitu.");
-      // Novačik má z troch partií len dve dohraté — tretia bola kontumácia.
+      zapis("Odohrala sa posledná bitka o lokalitu.");
+      // Novačik nemá dohratú partiu — z tej jedinej ho vyradíme, ostane mu kontumácia.
       db.prepare("DELETE FROM partie_hraci WHERE pouzivatel = ? AND partia = (SELECT MAX(id) FROM partie)").run(novacik);
       const kontumacia = Number(db.prepare("INSERT INTO partie (kod, zaciatok, koniec, vitaz, dovod, kola, dohrata) VALUES ('X', 0, 1, 0, 'Kontumácia: Eva je dlho odpojená.', 3, 0)").run().lastInsertRowid);
       db.prepare("INSERT INTO partie_hraci (partia, miesto, pouzivatel, vysledok, frajerina_pred, frajerina_po, statistiky) VALUES (?, 1, ?, 'prehra', 0, 0, '{}')").run(kontumacia, novacik);

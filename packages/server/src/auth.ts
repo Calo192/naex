@@ -3,7 +3,7 @@
 //
 // Úroveň účtu (Michal 2026-10-12): admin (jediný, z NAEX_ADMIN_HESLO),
 // subadmin (povýši ho admin), hráč, návštevník. Nový účet je návštevník
-// a hráčom sa stane po PARTII_NA_HRACA dohratých partiách.
+// a hráčom sa stane po prvej odohranej bitke, aj proti botovi (Michal 2026-10-21).
 
 import { createHash, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 import type { IncomingMessage } from "node:http";
@@ -13,9 +13,6 @@ export type Rola = "admin" | "subadmin" | "hrac" | "navstevnik";
 
 export const UROVNE: readonly Rola[] = ["admin", "subadmin", "hrac", "navstevnik"];
 
-/** Koľko dohratých partií treba, aby sa návštevník stal hráčom. */
-export const PARTII_NA_HRACA = 3;
-
 /** Admin a subadmin: správa hráčov, tvorba kariet, mazanie cudzích príspevkov. */
 export function jeSpravca(rola: Rola): boolean {
   return rola === "admin" || rola === "subadmin";
@@ -24,7 +21,7 @@ export function jeSpravca(rola: Rola): boolean {
 /** Spätnú väzbu (názory, komentáre, cigarety) píšu hráči a správcovia, návštevník len číta. */
 export function smiePisat(ja: { readonly rola: Rola }): void {
   if (ja.rola === "navstevnik") {
-    throw new ChybaVstupu(`Návštevník spätnú väzbu len číta — písať môžeš po ${PARTII_NA_HRACA} dohratých partiách.`, 403);
+    throw new ChybaVstupu("Návštevník spätnú väzbu len číta — písať môžeš po prvej odohranej bitke.", 403);
   }
 }
 
@@ -133,10 +130,12 @@ export class Ucty {
   private pripravUrovne(admin: { readonly login: string; readonly heslo: string | null }): void {
     this.db
       .prepare(
-        `UPDATE pouzivatelia SET rola = CASE WHEN (${DOHRATE_SQL}) >= ? THEN 'hrac' ELSE 'navstevnik' END
+        `UPDATE pouzivatelia SET rola = CASE WHEN (${DOHRATE_SQL}) >= 1 THEN 'hrac' ELSE 'navstevnik' END
          WHERE rola NOT IN ('admin', 'subadmin', 'hrac', 'navstevnik')`,
       )
-      .run(PARTII_NA_HRACA);
+      .run();
+    // Od 2026-10-21 stačí na úroveň hráč jedna bitka — dohratá partia ju určite mala.
+    this.db.prepare(`UPDATE pouzivatelia SET rola = 'hrac' WHERE rola = 'navstevnik' AND (${DOHRATE_SQL}) >= 1`).run();
     this.db.prepare("UPDATE pouzivatelia SET rola = 'hrac' WHERE rola = 'admin' AND login <> ?").run(admin.login);
     if (admin.heslo === null) return;
     const r = this.db.prepare("SELECT id, heslo FROM pouzivatelia WHERE login = ?").get(admin.login) as
@@ -158,11 +157,9 @@ export class Ucty {
     return (this.db.prepare(`SELECT (${DOHRATE_SQL}) AS n FROM pouzivatelia WHERE id = ?`).get(id) as { n: number } | undefined)?.n ?? 0;
   }
 
-  /** Po zápise partie: návštevník s dosť dohratými partiami sa stáva hráčom. */
-  povysPoPartii(id: number): void {
-    this.db
-      .prepare(`UPDATE pouzivatelia SET rola = 'hrac' WHERE id = ? AND rola = 'navstevnik' AND (${DOHRATE_SQL}) >= ?`)
-      .run(id, PARTII_NA_HRACA);
+  /** Po vyhodnotení bitky (aj proti botovi) sa návštevník stáva hráčom. Vracia, či sa úroveň zmenila. */
+  povysPoBitke(id: number): boolean {
+    return this.db.prepare("UPDATE pouzivatelia SET rola = 'hrac' WHERE id = ? AND rola = 'navstevnik'").run(id).changes > 0;
   }
 
   private riadok(r: Record<string, unknown> | undefined): Pouzivatel | null {

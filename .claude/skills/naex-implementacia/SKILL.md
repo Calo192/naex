@@ -28,7 +28,14 @@ všetky v stave `implementovat`.
    ```bash
    A="node --experimental-strip-types --no-warnings tools/admin/admin.ts"
    $A navrhy implementovat --zivy --json
+   $A roadmapa --zivy          # poradie: Teraz zhora, potom Prijímač, Ďalej…
    ```
+   **Poradie určuje roadmapa** (Michal 2026-10-21): schválený návrh sa sám
+   objaví v Prijímači roadmapy a Michal ho potiahne do horizontu. Návrhy ber
+   v poradí, v akom ich položky (`[návrh #id]`) stoja v stĺpci **Teraz** zhora,
+   potom tie, čo ostali v Prijímači; návrh v Ďalej, Potom či Neskôr nechaj
+   tak, kým ho Michal nepresunie, a povedz to. Po `navrh <id> implementovane`
+   sa položka presunie do Hotové sama.
    Ber len návrhy, o ktorých rozhodol **človek** (`rozhodol.ai === false`).
    Návrh s rozhodnutím od účtu AI preskoč a povedz to používateľovi. Pri
    voľbe `vlastne` je riešenie v poznámke. Ak nie je nič na implementáciu,

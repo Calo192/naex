@@ -20,6 +20,8 @@ import type { Archiv } from "./archiv.ts";
 import type { KategoriaNazoru, Nazory, Triedenie } from "./nazory.ts";
 import type { Playtesty } from "./playtesty.ts";
 import type { Navrhy } from "./navrhy.ts";
+import type { Roadmapa } from "./roadmapa.ts";
+import type { Hodnotenia } from "./znamky.ts";
 import { overKategoriu as overKategoriuNazoru } from "./nazory.ts";
 
 export interface OtvorenaHra {
@@ -42,6 +44,10 @@ export interface ApiKontext {
   readonly playtesty: Playtesty;
   /** Návrhy zlepšení z playtestov a rozhodnutia o nich (sekcia Playtest). */
   readonly navrhy: Navrhy;
+  /** Roadmapa hry — verejná, upravuje správca. */
+  readonly roadmapa: Roadmapa;
+  /** Známky hry podľa 12 kritérií a ich vývoj v čase. */
+  readonly hodnotenia: Hodnotenia;
   readonly teraz: () => number;
   readonly bezpecneCookie: boolean;
   /** Verejné hry čakajúce na súpera (z herného servera). */
@@ -348,6 +354,34 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       return ok({ hry: ctx.otvoreneHry(), dlzky: dostupneDlzky(ctx.obsah.aktualnaSada().data) });
     }
 
+    // ----- známky hry a roadmapa (verejné čítanie) -----------------------
+    // Von idú len priemery; ľudia až od MIN_LUDI hodnotiteľov (znamky.ts).
+    if (r === "GET /znamky") return ok({ ...ctx.hodnotenia.vyvoj(), udalosti: ctx.roadmapa.udalosti() });
+    if (r === "GET /znamky/moje") return ok(ctx.hodnotenia.moje(prihlaseny()));
+    if (r === "PUT /znamky") return ok(ctx.hodnotenia.uloz(prihlaseny(), await citajJson(req), teraz));
+
+    if (casti[1] === "roadmapa") {
+      if (r === "GET /roadmapa") return ok(ctx.roadmapa.zoznam(ja));
+      const p = prihlaseny();
+      if (r === "POST /roadmapa") return ok({ id: ctx.roadmapa.pridaj(p, await citajJson(req), teraz) }, 201);
+      const id = Number(casti[2]);
+      if (Number.isInteger(id)) {
+        if (metoda === "PATCH" && casti.length === 3) {
+          ctx.roadmapa.uprav(p, id, await citajJson(req), teraz);
+          return ok({ ok: true });
+        }
+        if (metoda === "DELETE" && casti.length === 3) {
+          ctx.roadmapa.zmaz(p, id);
+          return ok({ ok: true });
+        }
+        if (metoda === "POST" && casti[3] === "presun" && casti.length === 4) {
+          ctx.roadmapa.presun(p, id, await citajJson(req), teraz);
+          return ok({ ok: true });
+        }
+      }
+      throw new ChybaVstupu("Neznáma cesta.", 404);
+    }
+
     // ----- profily hráčov a rebríček (pre prihlásených) -----------------
     if (metoda === "GET" && casti[1] === "hraci" && casti.length === 3) {
       prihlaseny();
@@ -608,7 +642,11 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     if (sub === "POST /navrhy") return ok({ ids: ctx.navrhy.nahraj(ja2, await citajJson(req), teraz) }, 201);
     if (casti[2] === "navrhy" && casti.length === 4 && /^\d+$/.test(id)) {
       if (metoda === "PATCH") {
-        ctx.navrhy.uprav(ja2, Number(id), await citajJson(req), teraz);
+        const b = await citajJson(req);
+        ctx.navrhy.uprav(ja2, Number(id), b, teraz);
+        // Rozhodnutie aj hlásenie Developera sa premietne do roadmapy.
+        const n = typeof b.stav === "string" ? ctx.navrhy.zoznam().find((x) => x.id === Number(id)) : undefined;
+        if (n !== undefined) ctx.roadmapa.zNavrhu(n, n.stav, teraz);
         return ok({ ok: true });
       }
       if (metoda === "DELETE") {

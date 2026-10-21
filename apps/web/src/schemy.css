@@ -8,6 +8,9 @@
 
 :root,
 :root[data-schema="krcma"] {
+  /* Série grafu známok (ľudia, AI) — overené validátorom palety voči tmavej ploche; tmavé schémy ich dedia. */
+  --graf-ludia: #1fa2b5;
+  --graf-ai: #d9653a;
   --pozadie: #14110e;
   --plocha: #1e1914;
   --plocha-2: #28211a;
@@ -280,6 +283,8 @@
 
 /* Jedálny lístok — Ivory Buff · Sepia · Yellow Ocher */
 :root[data-schema="listok"] {
+  --graf-ludia: #00889e;
+  --graf-ai: #c2531c;
   --pozadie: #f5ecd9;
   --plocha: #fef9ee;
   --plocha-2: #f0e5cf;
@@ -314,6 +319,8 @@
 
 /* Ľan — Pale Gull Gray · Dark Slate · Vinaceous */
 :root[data-schema="lan"] {
+  --graf-ludia: #00889e;
+  --graf-ai: #c2531c;
   --pozadie: #e7eef4;
   --plocha: #f6f9fd;
   --plocha-2: #e0e7ef;

@@ -4,6 +4,7 @@
 
 import type { ClientState, GameData, PlayerId } from "@naex/core";
 import { bodyTeraz } from "@naex/core";
+import { Odkaz } from "../lib/router.tsx";
 import { RozpisBodov } from "./RozpisBodov.tsx";
 import type { ZmenyFrajeriny } from "./useHra.ts";
 
@@ -68,6 +69,10 @@ export function KoniecHry({ view, data, mena, menoKarty, frajerina, onZavri, opu
         )}
         <div className="koniec-tlacidla">
           <button onClick={onZavri}>pozrieť stôl</button>
+          {/* Hodnotenie hry tými istými kritériami ako AI playtesteri (Michal 2026-10-21). */}
+          <Odkaz href="/spatna-vazba#hodnotenie" className="tlacidlo">
+            ohodnotiť hru
+          </Odkaz>
           <button className="tlacidlo-hlavne" onClick={opustit} autoFocus>
             späť do lobby
           </button>

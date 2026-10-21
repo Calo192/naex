@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { api, mediaUrl } from "../lib/api.ts";
 import { nacitajObrazok, stvorec } from "../lib/obrazky.ts";
 import { Odkaz, chod, useTitulok } from "../lib/router.tsx";
-import { HUDBA_PREDVOLENA, LUPA_DO, LUPA_OD, LUPA_PREDVOLENA, NAZOV_UROVNE, PARTII_NA_HRACA, jeSpravca, useUcet, type Pouzivatel } from "../lib/ucet.tsx";
+import { HUDBA_PREDVOLENA, LUPA_DO, LUPA_OD, LUPA_PREDVOLENA, NAZOV_UROVNE, jeSpravca, useUcet, type Pouzivatel } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Pole } from "../komponenty.tsx";
 import { MojeStatistiky } from "./Statistiky.tsx";
 import { hlasitostZvuku, nacitajSkladby, urlSkladby } from "../hra/Hudba.tsx";
@@ -300,7 +300,7 @@ export function Profil() {
           </div>
           {ja.rola === "navstevnik" && (
             <p className="tlmene" style={{ margin: "6px 0 0" }}>
-              Hráčom sa staneš po {PARTII_NA_HRACA} dohratých partiách — máš {ja.dohrate ?? 0}. Hráč môže písať spätnú väzbu.
+              Hráčom sa staneš po prvej odohranej bitke, aj proti botovi. Hráč píše spätnú väzbu a hodnotí hru.
             </p>
           )}
           <p style={{ margin: "6px 0 0" }}>

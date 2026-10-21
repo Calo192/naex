@@ -4,9 +4,10 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { api } from "../lib/api.ts";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
-import { PARTII_NA_HRACA, jeSpravca, useUcet, type Pouzivatel } from "../lib/ucet.tsx";
+import { jeSpravca, useUcet, type Pouzivatel } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { tvar } from "./Statistiky.tsx";
+import { HodnotenieHry } from "./HodnotenieHry.tsx";
 import "./statistiky.css";
 
 const KATEGORIE = {
@@ -111,7 +112,7 @@ export function TlacidloCigarety({
   readonly navstevnik?: boolean;
 }) {
   const popis = navstevnik
-    ? `Cigarety dávajú hráči — po ${PARTII_NA_HRACA} dohratých partiách.`
+    ? "Cigarety dávajú hráči — hráčom si po prvej odohranej bitke."
     : vlastne
     ? "Sám sebe cigaretu nedáš."
     : moja
@@ -426,7 +427,7 @@ function NovyNazor({ pridany, chyba }: { readonly pridany: () => void; readonly 
 
 export function SpatnaVazba() {
   useTitulok("Spätná väzba");
-  const { ja } = useUcet();
+  const { ja, obnov: obnovUcet } = useUcet();
   const [nazory, setNazory] = useState<readonly Nazor[] | null>(null);
   const [triedenie, setTriedenie] = useState<Triedenie>("nove");
   const [filter, setFilter] = useState<Kategoria | null>(null);
@@ -448,6 +449,8 @@ export function SpatnaVazba() {
   }, [triedenie, filter, ukazChybu]);
 
   useEffect(obnov, [obnov]);
+  // Úroveň sa mení počas partie (hráčom po prvej bitke) — klient mohol mať starú.
+  useEffect(obnovUcet, [obnovUcet]);
 
   if (ja === null) return null;
   const odAi = nazory?.filter((n) => n.autor.ai).length ?? 0;
@@ -464,10 +467,11 @@ export function SpatnaVazba() {
       </header>
 
       {chyba !== null && <Hlaska>{chyba}</Hlaska>}
+      <HodnotenieHry smiePisat={ja.rola !== "navstevnik" || ja.ai === true} />
       {ja.rola === "navstevnik" ? (
         <p className="panel tlmene">
-          Ako <strong>návštevník</strong> spätnú väzbu zatiaľ len čítaš. Písať názory, komentovať a dávať cigarety môžeš, keď dohráš{" "}
-          {PARTII_NA_HRACA} partie (máš {ja.dohrate ?? 0}) — vtedy sa staneš hráčom.
+          Ako <strong>návštevník</strong> spätnú väzbu zatiaľ len čítaš. Písať názory, komentovať, dávať cigarety a hodnotiť hru môžeš po prvej
+          odohranej bitke — stačí aj partia proti botovi. Vtedy sa staneš hráčom.
         </p>
       ) : (
         <NovyNazor pridany={obnov} chyba={ukazChybu} />

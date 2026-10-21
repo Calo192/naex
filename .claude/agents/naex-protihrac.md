@@ -212,7 +212,8 @@ podľa pravidiel legálny, zapíš to do `R/hrac1/nezrovnalosti.md`.
 5. **Zverejni spätnú väzbu na webe** presne ako playtester (časť „Spätná
    väzba na webe" v `.claude/agents/naex-playtester.md`): najprv
    `web.ts nazory`, potom 2–4 názory (aspoň jeden návrh na strategickosť,
-   istá nezrovnalosť ako `chyba`), prípadne komentáre a cigarety. Účet je
+   istá nezrovnalosť ako `chyba`), prípadne komentáre a cigarety, a nakoniec
+   známky (`web.ts znamky … --zdroj <id-partie>`, krok 5 tamtiež). Účet je
    ten istý, s ktorým si hral („<meno> (AI)"). Človek si tvoj názor prečíta —
    môžeš v ňom poďakovať za partiu, ale bez vtieravosti.
 6. Vráť organizátorovi 6–10 riadkov: výsledok partie, tvoje skóre kritérií

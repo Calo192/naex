@@ -16,6 +16,8 @@
 //   node ... web.ts komentar --ako "<meno>" <id-nazoru> <subor.txt>   komentár k názoru
 //   node ... web.ts cigareta --ako "<meno>" <id-nazoru>               dá cigaretu (páči sa mi)
 //   node ... web.ts avatar   --ako "<meno>" <obrazok.jpg|png|webp>    nastaví agentovi avatar (do 2 MB)
+//   node ... web.ts znamky   --ako "<meno>" <feedback.md> [--zdroj <id-playtestu>] [--cas <ISO>]
+//                            12 známok z tabuľky „Hodnotenie podľa kritérií“ do časovej osi na /vyvoj
 // Všade možno pridať --zivy (živý web) alebo --url <adresa>.
 // Kategórie: pravidla, karty, hranie, web, chyba, napad, ine.
 
@@ -116,6 +118,31 @@ async function volaj(url: string, metoda: string, cesta: string, cookie: string,
   });
 }
 
+/** Kľúče 12 kritérií v poradí tabuľky z tools/playtest/kriteria.md (zhodne so server/src/znamky.ts). */
+export const KLUCE_KRITERII = [
+  "zabava", "rozhodnutia", "rovnovaha", "nahoda", "interakcia", "tempo",
+  "zrozumitelnost", "hlbka", "znovuhratelnost", "tema", "napatie", "originalita",
+] as const;
+
+/**
+ * Známky z feedback.md playtestera: tabuľka pod nadpisom „Hodnotenie podľa kritérií“,
+ * riadky „| číslo | kritérium | známka | …“. Kritérium sa určí podľa čísla 1–12.
+ */
+export function znamkyZFeedbacku(text: string): Record<string, number> {
+  const od = text.search(/^##\s+Hodnotenie podľa kritérií/m);
+  if (od === -1) return {};
+  const zvysok = text.slice(od).split(/\r?\n/).slice(1);
+  const koniec = zvysok.findIndex((r) => /^##\s/.test(r));
+  const out: Record<string, number> = {};
+  for (const riadok of koniec === -1 ? zvysok : zvysok.slice(0, koniec)) {
+    const m = /^\|\s*(\d{1,2})\s*\|[^|]*\|\s*(\d{1,2})\s*\|/.exec(riadok);
+    const kluc = m === null ? undefined : KLUCE_KRITERII[Number(m[1]) - 1];
+    const z = m === null ? Number.NaN : Number(m[2]);
+    if (kluc !== undefined && z >= 1 && z <= 10) out[kluc] = z;
+  }
+  return out;
+}
+
 /** Úroveň, ktorú agent na webe potrebuje: hráč píše spätnú väzbu, subadmin tvorí karty. */
 export type UrovenAgenta = "hrac" | "subadmin";
 
@@ -210,7 +237,12 @@ async function main(): Promise<void> {
   const url = webUrl(argv);
   const i = argv.indexOf("--ako");
   const ako = i !== -1 ? argv[i + 1] : undefined;
-  const volne = argv.filter((a, j) => (i === -1 || (j !== i && j !== i + 1)) && a !== "--url" && a !== "--zivy" && argv[j - 1] !== "--url");
+  const hodnota = (prepinac: string): string | undefined => {
+    const k = argv.indexOf(prepinac);
+    return k === -1 ? undefined : argv[k + 1];
+  };
+  const sHodnotou = new Set(["--url", "--zdroj", "--cas"]);
+  const volne = argv.filter((a, j) => (i === -1 || (j !== i && j !== i + 1)) && a !== "--zivy" && !sHodnotou.has(a) && !sHodnotou.has(argv[j - 1] ?? ""));
   const [prikaz, a1, a2] = volne;
 
   if (prikaz === "dostupny") {
@@ -271,8 +303,17 @@ async function main(): Promise<void> {
       console.log(`Avatar účtu „${ucet.meno}“ nastavený na ${url}.`);
       break;
     }
+    case "znamky": {
+      const znamky = znamkyZFeedbacku(citajText(a1));
+      if (Object.keys(znamky).length === 0) throw new Error(`V ${a1 ?? ""} nie je tabuľka „## Hodnotenie podľa kritérií“ so známkami 1–10.`);
+      const zdroj = hodnota("--zdroj");
+      const cas = hodnota("--cas");
+      await over(await api("PUT", "/znamky", { znamky, ...(zdroj !== undefined ? { zdroj } : {}), ...(cas !== undefined ? { cas: Date.parse(cas) } : {}) }));
+      console.log(`${Object.keys(znamky).length} známok od ${ucet.meno} zapísaných na ${url}/vyvoj${zdroj !== undefined ? ` (playtest ${zdroj})` : ""}.`);
+      break;
+    }
     default:
-      throw new Error("Príkazy: dostupny | nazory | nazor | komentar | cigareta | avatar (pozri hlavičku súboru).");
+      throw new Error("Príkazy: dostupny | nazory | nazor | komentar | cigareta | avatar | znamky (pozri hlavičku súboru).");
   }
 }
 

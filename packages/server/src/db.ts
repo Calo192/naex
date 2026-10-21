@@ -150,6 +150,35 @@ CREATE TABLE IF NOT EXISTS navrhy (
   vytvoreny INTEGER NOT NULL,
   UNIQUE (davka, kluc)
 );
+
+-- Známky hry podľa 12 kritérií playtestu (Michal 2026-10-21). Každá zmena je
+-- nový riadok: priemer k dátumu sa počíta z posledných známok každého hodnotiteľa.
+CREATE TABLE IF NOT EXISTS znamky (
+  id INTEGER PRIMARY KEY,
+  pouzivatel INTEGER NOT NULL REFERENCES pouzivatelia(id) ON DELETE CASCADE,
+  cas INTEGER NOT NULL,
+  -- JSON {kriterium: 1–10}; kritérium, ku ktorému hodnotiteľ nemá názor, chýba.
+  data TEXT NOT NULL,
+  -- Odkiaľ známky sú (napr. playtest „20261021-041728“); '' = hráč na webe.
+  zdroj TEXT NOT NULL DEFAULT ''
+);
+CREATE INDEX IF NOT EXISTS znamky_cas ON znamky(cas);
+CREATE UNIQUE INDEX IF NOT EXISTS znamky_zdroj ON znamky(pouzivatel, zdroj) WHERE zdroj <> '';
+
+-- Roadmapa (Michal 2026-10-21): stĺpce sú horizonty, poradie v stĺpci je priorita.
+CREATE TABLE IF NOT EXISTS roadmapa (
+  id INTEGER PRIMARY KEY,
+  stlpec TEXT NOT NULL,
+  -- Zlomkové poradie: presun je jeden UPDATE bez prečíslovania stĺpca.
+  poradie REAL NOT NULL,
+  data TEXT NOT NULL,
+  navrh INTEGER REFERENCES navrhy(id) ON DELETE SET NULL,
+  verejna INTEGER NOT NULL DEFAULT 1,
+  vytvorena INTEGER NOT NULL,
+  upravena INTEGER NOT NULL,
+  dokoncena INTEGER
+);
+CREATE INDEX IF NOT EXISTS roadmapa_stlpec ON roadmapa(stlpec, poradie);
 `;
 
 export function otvorDb(cesta: string): Db {

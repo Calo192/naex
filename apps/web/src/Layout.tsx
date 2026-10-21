@@ -11,6 +11,7 @@ const NAVIGACIA: readonly { readonly href: string; readonly text: string; readon
   { href: "/hra", text: "Hrať" },
   { href: "/rebricek", text: "Rebríček" },
   { href: "/spatna-vazba", text: "Spätná väzba" },
+  { href: "/vyvoj", text: "Vývoj" },
   { href: "/playtest", text: "Playtest", admin: true },
   { href: "/admin", text: "Tvorba", admin: true },
 ];

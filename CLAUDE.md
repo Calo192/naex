@@ -62,6 +62,15 @@ prepínačom `--zivy`. Playtesty a návrhy z nich sú v sekcii **Playtest**
 implementuje skill `naex-implementacia` (agent `naex-developer`): hneď commit,
 push a merge do master bez pýtania (Michal 2026-10-21).
 
+Verejná stránka **Vývoj** (`/vyvoj`, Michal 2026-10-21): priemery známok hry
+podľa 12 kritérií playtestu v čase (ľudia, AI, spolu; ľudia až od 3
+hodnotiteľov, nikdy jednotlivec) a **roadmapa** (`/vyvoj/roadmapa`, stĺpce =
+horizonty, poradie zhora = priorita). Schválený návrh z Playtestu padne sám do
+Prijímača roadmapy; Developer berie stĺpec Teraz zhora (`admin.ts roadmapa`).
+Hráči hodnotia v Spätnej väzbe, AI playtesteri po partii `web.ts znamky`
+(história: `tools/playtest/znamky-import.ts`). Návštevník je hráčom po prvej
+odohranej bitke, aj proti botovi.
+
 ## Konvencie
 
 - **Doménové pojmy po slovensky**: `Partia`, `poldeci`, `zhromazdenie`,

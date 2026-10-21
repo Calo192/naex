@@ -315,6 +315,7 @@ $W nazory   --ako "<meno>" --zivy                               # čo už napís
 $W nazor    --ako "<meno>" --zivy <kategoria> R/hracN/nazor-1.txt
 $W komentar --ako "<meno>" --zivy <id> R/hracN/komentar-1.txt
 $W cigareta --ako "<meno>" --zivy <id>
+$W znamky   --ako "<meno>" --zivy R/hracN/feedback.md --zdroj <id-partie>   # 12 známok na /vyvoj
 ```
 
 Kategórie: `pravidla`, `karty`, `hranie`, `web`, `chyba`, `napad`, `ine`.
@@ -334,6 +335,13 @@ Kategórie: `pravidla`, `karty`, `hranie`, `web`, `chyba`, `napad`, `ine`.
    Na konci názoru jedna veta, že ide o postreh AI playtestera z partie.
 4. Na názor súpera z tej istej partie môžeš reagovať komentárom, ak máš iný
    pohľad. Sám sebe cigaretu nedávaj (web to aj tak nedovolí).
+5. **Zapíš známky** príkazom `znamky` (Michal 2026-10-21): prečíta tabuľku
+   „Hodnotenie podľa kritérií“ z tvojho `feedback.md` a zapíše 12 známok do
+   časovej osi na stránke **Vývoj** (`/vyvoj`) — verejne ako priemer AI
+   playtesterov, nie pod tvojím menom. `--zdroj` je id partie (názov
+   priečinka `R`, napr. `20261021-143600-1`); opakovaný zápis tej istej
+   partie záznam prepíše. Preto musí tabuľka v `feedback.md` mať presne
+   tvar nižšie (číslo kritéria 1–12 v prvom stĺpci, známka v treťom).
 
 ## Štruktúra `feedback.md`
 

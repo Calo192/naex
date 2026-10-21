@@ -28,8 +28,12 @@ async function cakaj(podmienka: () => boolean, popis: string): Promise<void> {
 }
 
 describe("offline protihráč na serveri", () => {
-  it("človek dohrá celú partiu proti botovi", async () => {
-    const a = new Robot(server.port, (await registruj(server.port)).cookie);
+  it("človek dohrá celú partiu proti botovi a po bitke je z neho hráč", async () => {
+    const { cookie } = await registruj(server.port);
+    const rola = async () =>
+      ((await (await fetch(`http://127.0.0.1:${server.port}/api/ja`, { headers: { cookie } })).json()) as { pouzivatel: { rola: string } }).pouzivatel.rola;
+    expect(await rola()).toBe("navstevnik");
+    const a = new Robot(server.port, cookie);
     await a.otvorene();
     a.posli({ type: "create", bot: true });
     await cakaj(() => a.view !== null, "začiatok partie");
@@ -61,6 +65,8 @@ describe("offline protihráč na serveri", () => {
       expect(tahov).toBeLessThan(3000);
     }
     expect(a.view?.koniec).not.toBeNull();
+    // Návštevník sa stáva hráčom po prvej bitke, aj proti botovi (Michal 2026-10-21).
+    expect(await rola()).toBe("hrac");
 
     // Kontumovať bota nemožno a partia sa do archívu nezapísala.
     a.posli({ type: "kontumacia" });

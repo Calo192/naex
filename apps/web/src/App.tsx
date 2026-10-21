@@ -1,5 +1,6 @@
 // Smerovanie stránok. Verejné: domov, pravidlá, karty. Hra a profil pre
 // prihlásených, tvorba kariet a playtesty len pre admina a subadminov (overuje aj server).
+// Vývoj hry (známky v čase a roadmapa) je verejný.
 
 import type { ReactNode } from "react";
 import { Layout } from "./Layout.tsx";
@@ -14,6 +15,7 @@ import { Hra } from "./hra/Hra.tsx";
 import { HracProfil } from "./stranky/Statistiky.tsx";
 import { Rebricek } from "./stranky/Rebricek.tsx";
 import { SpatnaVazba } from "./stranky/SpatnaVazba.tsx";
+import { Vyvoj } from "./stranky/Vyvoj.tsx";
 import { Admin } from "./admin/Admin.tsx";
 import { Playtest } from "./playtest/Playtest.tsx";
 
@@ -55,6 +57,8 @@ export function App() {
   if (cesta.startsWith("/admin")) return <Layout siroky>{chranene(<Admin cesta={cesta} />, true)}</Layout>;
   if (cesta === "/hra") return <Layout siroky><Hra /></Layout>;
   if (cesta === "/pravidla") return <Layout plna><Pravidla /></Layout>;
+  // Vývoj hry a roadmapa sú verejné (Michal 2026-10-21); upravuje ich správca.
+  if (cesta === "/vyvoj" || cesta.startsWith("/vyvoj/")) return <Layout siroky><Vyvoj cesta={cesta} /></Layout>;
   const hrac = /^\/hrac\/(\d+)$/.exec(cesta);
   if (hrac !== null) return <Layout siroky>{chranene(<HracProfil id={Number(hrac[1])} />)}</Layout>;
   if (cesta === "/profil") return <Layout siroky>{chranene(<Profil />)}</Layout>;

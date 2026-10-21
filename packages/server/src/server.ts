@@ -49,6 +49,8 @@ import { Archiv } from "./archiv.ts";
 import { Nazory } from "./nazory.ts";
 import { Playtesty } from "./playtesty.ts";
 import { Navrhy } from "./navrhy.ts";
+import { Roadmapa } from "./roadmapa.ts";
+import { Hodnotenia } from "./znamky.ts";
 import { titul } from "./frajerina.ts";
 
 // ---------------------------------------------------------------------------
@@ -181,6 +183,9 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   const nazory = new Nazory(db);
   const playtesty = new Playtesty(opts.playtestyDir ?? fileURLToPath(new URL("../../../docs/playtesty", import.meta.url)), join(dataDir, "playtesty"));
   const navrhy = new Navrhy(db);
+  const roadmapa = new Roadmapa(db);
+  roadmapa.naplnAkTreba(fileURLToPath(new URL("../seed/roadmapa.json", import.meta.url)), teraz());
+  const hodnotenia = new Hodnotenia(db);
   obsah.naplnAkTreba(teraz());
   obsah.naplnBodovanieAkTreba(teraz());
   obsah.premenujZrusenePriazne(teraz());
@@ -219,6 +224,8 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           nazory,
           playtesty,
           navrhy,
+          roadmapa,
+          hodnotenia,
           teraz,
           bezpecneCookie: opts.bezpecneCookie ?? false,
           otvoreneHry,
@@ -488,6 +495,10 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     if (room.statistiky !== null) room.statistiky = zapisTah(room.statistiky, pred, cmd, seat, result.state, result.events);
     room.statistikyKariet = zapisTahKariet(room.statistikyKariet, pred, cmd, seat, result.events);
     broadcast(room, result.events);
+    // Návštevník sa stáva hráčom po prvej odohranej bitke, aj proti botovi (Michal 2026-10-21).
+    if (result.events.some((e) => e.type === "bitkaVysledok")) {
+      for (const h of room.hraci) if (h !== null && h.id !== BOT_ID) ucty.povysPoBitke(h.id);
+    }
     // Partie proti botovi nejdú do archívu — Frajerina a rebríček sú medzi ľuďmi.
     if (pred.koniec === null && result.state.koniec !== null && room.bot === null) zapisDoArchivu(room, result.state, cmd.type !== "vzdat");
     naplanujBota(room);
@@ -546,8 +557,6 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         statistikyKariet: room.statistikyKariet,
       });
       room.vysledok = zmeny;
-      // Návštevník sa po 3 dohratých partiách stáva hráčom.
-      for (const h of [h0, h1]) ucty.povysPoPartii(h.id);
       h0.frajerina = zmeny[0].po;
       h1.frajerina = zmeny[1].po;
       for (const ws of room.sockets) if (ws !== null) send(ws, { type: "frajerina", zmeny });

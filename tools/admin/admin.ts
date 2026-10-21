@@ -58,6 +58,10 @@
 //   navrhy [stav] [--json]        návrhy zlepšení; stav: nove | implementovat | odlozene | zamietnute | rozpracovane | implementovane
 //   navrhy-nahraj <subor.json>    nahrá dávku návrhov od navrhára (tvar v .claude/agents/naex-navrhar.md)
 //   navrh <id> <stav> [--vysledok "text"]   Developer: rozpracovane | implementovane (+ čo spravil, commit) | spat
+// Roadmapa (stránka Vývoj → Roadmapa, Michal 2026-10-21)
+//   roadmapa [stlpec] [--json]    poradie položiek; stĺpce prijimac | teraz | dalej | potom | neskor | hotove
+//                                 Developer berie schválené návrhy v poradí stĺpca Teraz zhora
+//   roadmapa-pridaj <subor.json>  nová položka do Prijímača ({nazov, kratko, preco, hotovo, oblast, narocnost, zdroj})
 // Avatary AI účtov (Leonardo.Ai, v štýle avatarov offline protihráčov)
 //   avatar-generuj <kluc> "<námet po anglicky>" [--seed N]   jedno kolo (2 obrázky) do admin-agent/avatary/<kluc>/
 //
@@ -853,6 +857,39 @@ async function main(): Promise<void> {
       const vysledok = hodnota("--vysledok");
       await api("PATCH", `/admin/navrhy/${id}`, { stav, ...(vysledok === undefined ? {} : { vysledok }) });
       console.log(`Návrh #${id}: ${stav}.`);
+      break;
+    }
+
+    case "roadmapa": {
+      const { stlpce, polozky } = await api<{
+        stlpce: { kluc: string; nazov: string; zamer: string }[];
+        polozky: { id: number; stlpec: string; nazov: string; kratko: string; stav: string; oblast: string; narocnost: string; navrh: number | null; zavisi: number[] }[];
+      }>("GET", "/roadmapa");
+      const vybrane = stlpce.filter((s) => arg[0] === undefined || s.kluc === arg[0]);
+      if (vybrane.length === 0) throw new Error(`Neznámy stĺpec „${arg[0] ?? ""}“: ${stlpce.map((s) => s.kluc).join(" | ")}.`);
+      if (prep.has("--json")) {
+        console.log(JSON.stringify(polozky.filter((p) => vybrane.some((s) => s.kluc === p.stlpec)), null, 2));
+        break;
+      }
+      for (const s of vybrane) {
+        const v = polozky.filter((p) => p.stlpec === s.kluc);
+        console.log(`\n${s.nazov.toUpperCase()} (${v.length}) — ${s.zamer}`);
+        v.forEach((p, i) => {
+          const navrh = p.navrh === null ? "" : ` [návrh #${p.navrh}]`;
+          const zavisi = p.zavisi.length === 0 ? "" : ` (po #${p.zavisi.join(", #")})`;
+          console.log(`  ${i + 1}. #${p.id} ${p.nazov} · ${p.oblast}, ${p.narocnost}, ${p.stav}${navrh}${zavisi}`);
+        });
+      }
+      break;
+    }
+
+    case "roadmapa-pridaj": {
+      const subor = arg[0];
+      if (subor === undefined || !existsSync(subor)) throw new Error("Použitie: roadmapa-pridaj <polozka.json>");
+      // Agent pridáva len do Prijímača — stĺpec a poradie určí Michal na webe.
+      const telo = { ...(JSON.parse(readFileSync(subor, "utf8")) as Record<string, unknown>), stlpec: "prijimac" };
+      const r = await api<{ id: number }>("POST", "/roadmapa", telo);
+      console.log(`Položka #${r.id} je v Prijímači — ${url}/vyvoj/roadmapa`);
       break;
     }
 

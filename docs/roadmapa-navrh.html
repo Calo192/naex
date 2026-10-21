@@ -1,0 +1,896 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Roadmapa NA EX!</title>
+<style>
+:root {
+  --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --plocha-3: #332a21;
+  --okraj: #3d3229; --okraj-svetly: #57483a;
+  --text: #f1e8d8; --tlmeny: #b6a790; --slaby: #9d8f7b;
+  --akcent: #e9ad45; --akcent-svetly: #ffd08a; --na-akcente: #2b1b03;
+  --cervena: #e5735c; --zelena: #7cbf74; --info: #8fc3e0; --ja: #5cc0cf; --su: #e0805f; --fialova: #b993d6;
+  --tien: 0 10px 30px rgba(0, 0, 0, 0.35);
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --plocha-3: #e8dcc6;
+    --okraj: #dccdb3; --okraj-svetly: #c4b08f;
+    --text: #2a2016; --tlmeny: #5e4f3b; --slaby: #6f5f48;
+    --akcent: #9a5d06; --akcent-svetly: #c47f1a; --na-akcente: #fffaf1;
+    --cervena: #a83a26; --zelena: #356e2f; --info: #2d5a8f; --ja: #23707c; --su: #a4502e; --fialova: #6e4596;
+    --tien: 0 10px 30px rgba(60, 40, 10, 0.15);
+    color-scheme: light;
+  }
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 Roboto, "Segoe UI", system-ui, sans-serif; }
+h1, h2, h3, h4 { font-family: "Bitter", Georgia, serif; line-height: 1.25; }
+a { color: var(--akcent); }
+:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+button { font: inherit; color: inherit; }
+.obal { max-width: 1440px; margin: 0 auto; padding: 0 16px; }
+
+/* ---- dokument okolo mockupu ---- */
+.dok-hlava { padding: 28px 0 8px; }
+.dok-hlava h1 { margin: 0 0 6px; font-size: clamp(1.6rem, 3.5vw, 2.2rem); color: var(--akcent); }
+.dok-hlava p { margin: 0 0 10px; color: var(--tlmeny); max-width: 85ch; }
+.dok-zalozky { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0 18px; }
+.dok-zalozky button { cursor: pointer; padding: 7px 16px; border-radius: 999px; border: 1px solid var(--okraj); background: var(--plocha); color: var(--tlmeny); }
+.dok-zalozky button[aria-selected="true"] { background: var(--akcent); border-color: var(--akcent); color: var(--na-akcente); font-weight: 600; }
+[role="tabpanel"][hidden] { display: none; }
+
+/* ---- rám mockupu: napodobenina webu ---- */
+.ram { border: 1px solid var(--okraj); border-radius: 16px; overflow: hidden; box-shadow: var(--tien); background:
+  radial-gradient(ellipse 90% 50% at 50% -10%, color-mix(in srgb, var(--akcent) 12%, transparent), transparent 60%), var(--pozadie); }
+.ram-pruh { display: flex; gap: 6px; align-items: center; padding: 8px 12px; background: var(--plocha-2); border-bottom: 1px solid var(--okraj); font-size: 0.8rem; color: var(--slaby); }
+.ram-pruh i { width: 10px; height: 10px; border-radius: 50%; background: var(--okraj-svetly); display: inline-block; }
+.ram-pruh span { margin-left: 8px; }
+.web-hlava { display: flex; align-items: center; gap: 18px; padding: 10px 18px; border-bottom: 1px solid var(--okraj); flex-wrap: wrap; }
+.logo { font: 800 1.35rem/1 "Bitter", Georgia, serif; color: var(--akcent); letter-spacing: 0.02em; }
+.web-nav { display: flex; gap: 4px; flex-wrap: wrap; flex: 1; }
+.web-nav span { padding: 6px 10px; border-radius: 8px; color: var(--tlmeny); font-size: 0.92rem; }
+.web-nav span.aktivna { color: var(--text); background: var(--plocha-2); }
+.avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, var(--akcent), var(--su)); }
+.web-obsah { padding: 18px 18px 26px; }
+.podnav { display: flex; gap: 4px; border-bottom: 1px solid var(--okraj); margin-bottom: 16px; flex-wrap: wrap; }
+.podnav span { padding: 8px 14px; color: var(--tlmeny); border-bottom: 2px solid transparent; margin-bottom: -1px; font-size: 0.95rem; }
+.podnav span.aktivna { color: var(--text); border-color: var(--akcent); font-weight: 600; }
+.podnav b { display: inline-block; min-width: 20px; padding: 0 6px; margin-left: 4px; border-radius: 999px; background: var(--akcent); color: var(--na-akcente); font-size: 0.75rem; text-align: center; }
+.rm-hlava { display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: flex-end; justify-content: space-between; margin-bottom: 12px; }
+.rm-hlava h2 { margin: 0; font-size: 1.6rem; }
+.rm-hlava p { margin: 2px 0 0; color: var(--tlmeny); font-size: 0.92rem; max-width: 70ch; }
+.tlacidlo { cursor: pointer; padding: 7px 14px; border-radius: 10px; border: 1px solid var(--okraj-svetly); background: var(--plocha-3); color: var(--text); font-size: 0.9rem; white-space: nowrap; }
+.tlacidlo:hover { border-color: var(--tlmeny); }
+.tlacidlo.hlavne { background: var(--akcent); border-color: var(--akcent); color: var(--na-akcente); font-weight: 600; }
+.tlacidla { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* filtre */
+.filtre { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 0 0 14px; }
+.filtre .chip-f { cursor: pointer; padding: 4px 11px; border-radius: 999px; border: 1px solid var(--okraj); background: var(--plocha); color: var(--tlmeny); font-size: 0.84rem; display: inline-flex; gap: 6px; align-items: center; }
+.filtre .chip-f[aria-pressed="true"] { border-color: var(--akcent); color: var(--text); background: var(--plocha-2); font-weight: 600; }
+.filtre .chip-f i, .oblast i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; background: var(--f); }
+.filtre .medzera { flex: 1; }
+.filtre input[type="search"] { font: inherit; font-size: 0.9rem; padding: 5px 10px; border-radius: 8px; border: 1px solid var(--okraj-svetly); background: var(--plocha); color: var(--text); min-width: 180px; }
+.filtre label.prepinac { display: inline-flex; gap: 6px; align-items: center; font-size: 0.86rem; color: var(--tlmeny); cursor: pointer; }
+
+/* farby oblastí */
+[data-obl="pravidla"] { --f: var(--akcent); }
+[data-obl="ui"] { --f: var(--info); }
+[data-obl="karty"] { --f: var(--zelena); }
+[data-obl="2v2"] { --f: var(--su); }
+[data-obl="platforma"] { --f: var(--fialova); }
+[data-obl="komunita"] { --f: var(--cervena); }
+
+/* tabuľa */
+.tabula { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(270px, 1fr); gap: 12px; overflow-x: auto; padding-bottom: 10px; scroll-snap-type: x proximity; align-items: start; }
+.stlpec { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; display: flex; flex-direction: column; min-height: 240px; scroll-snap-align: start; }
+.stlpec.prijimac { background: transparent; border-style: dashed; border-color: var(--okraj-svetly); }
+.stlpec.hotove { background: transparent; }
+.stlpec.zbaleny { min-width: 0; }
+.stlpec-hlava { padding: 12px 12px 8px; border-bottom: 1px solid var(--okraj); }
+.stlpec-hlava h3 { margin: 0; font-size: 1.05rem; display: flex; gap: 8px; align-items: baseline; }
+.stlpec-hlava h3 .pocet { font: 600 0.78rem/1 Roboto, system-ui, sans-serif; color: var(--slaby); background: var(--plocha-2); border-radius: 999px; padding: 3px 8px; }
+.stlpec-hlava h3 .horizont { margin-left: auto; font: 500 0.72rem/1 Roboto, system-ui, sans-serif; color: var(--slaby); text-transform: uppercase; letter-spacing: 0.06em; }
+.stlpec-hlava p { margin: 4px 0 0; font-size: 0.84rem; color: var(--tlmeny); }
+.stlpec-hlava .zbal { cursor: pointer; background: none; border: 0; color: var(--slaby); font-size: 0.8rem; padding: 0; margin-top: 6px; text-decoration: underline; }
+.stlpec-telo { padding: 10px; display: flex; flex-direction: column; gap: 8px; flex: 1; min-height: 60px; }
+.stlpec-telo.nad { background: color-mix(in srgb, var(--akcent) 7%, transparent); border-radius: 0 0 14px 14px; }
+.prazdny { color: var(--slaby); font-size: 0.85rem; text-align: center; padding: 18px 6px; border: 1px dashed var(--okraj); border-radius: 10px; }
+.miesto { height: 4px; border-radius: 2px; background: var(--akcent); margin: -2px 0; }
+
+/* karta položky */
+.polozka { position: relative; background: var(--plocha-2); border: 1px solid var(--okraj); border-left: 4px solid var(--f); border-radius: 10px; padding: 9px 10px 9px 12px; cursor: grab; transition: border-color .15s, transform .15s, box-shadow .15s; }
+.polozka:hover { border-color: var(--okraj-svetly); border-left-color: var(--f); }
+.polozka:focus-visible { outline-offset: 1px; }
+.polozka.tahana { opacity: 0.45; }
+.polozka.nova { animation: prilet 1.6s ease-out; }
+@keyframes prilet { 0% { transform: translateY(-14px); box-shadow: 0 0 0 3px var(--akcent); } 60% { box-shadow: 0 0 0 3px var(--akcent); } 100% { transform: none; box-shadow: none; } }
+@media (prefers-reduced-motion: reduce) { .polozka, .polozka.nova { animation: none; transition: none; } }
+.polozka .riadok1 { display: flex; gap: 6px; align-items: center; font-size: 0.74rem; color: var(--slaby); margin-bottom: 3px; }
+.polozka .poradie { font: 700 0.78rem/1 "Bitter", Georgia, serif; color: var(--tlmeny); min-width: 1.4em; }
+.oblast { display: inline-flex; gap: 5px; align-items: center; }
+.narocnost { margin-left: auto; border: 1px solid var(--okraj-svetly); border-radius: 6px; padding: 0 5px; font-weight: 600; }
+.polozka h4 { margin: 0; font: 600 0.95rem/1.3 Roboto, system-ui, sans-serif; }
+.polozka .kratko { margin: 3px 0 0; font-size: 0.83rem; color: var(--tlmeny); }
+.polozka .paticka { display: flex; flex-wrap: wrap; gap: 4px 6px; margin-top: 7px; }
+.stitok { font-size: 0.72rem; padding: 1px 7px; border-radius: 999px; border: 1px solid var(--okraj-svetly); color: var(--tlmeny); white-space: nowrap; }
+.stitok.zdroj-playtest { border-color: var(--akcent); color: var(--akcent); }
+.stitok.zdroj-dizajn { border-color: var(--info); color: var(--info); }
+.stitok.zdroj-michal { border-color: var(--zelena); color: var(--zelena); }
+.stitok.stav-nove { background: var(--akcent); border-color: var(--akcent); color: var(--na-akcente); font-weight: 600; }
+.stitok.stav-rozpracovane { border-style: dashed; color: var(--text); }
+.stitok.zavisi { border-style: dotted; }
+.hotove .polozka { opacity: 0.72; cursor: default; }
+.hotove .polozka h4::before { content: "✓ "; color: var(--zelena); }
+
+/* bočný panel detailu */
+.panel-pozadie { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.45); z-index: 20; }
+.panel { position: fixed; top: 0; right: 0; bottom: 0; width: min(460px, 100%); background: var(--plocha); border-left: 1px solid var(--okraj); z-index: 21; overflow-y: auto; padding: 18px 20px 30px; box-shadow: var(--tien); }
+.panel[hidden], .panel-pozadie[hidden] { display: none; }
+.panel .zavriet { position: absolute; top: 12px; right: 12px; cursor: pointer; background: var(--plocha-2); border: 1px solid var(--okraj); border-radius: 8px; width: 34px; height: 34px; font-size: 1.1rem; }
+.panel h3 { margin: 6px 40px 6px 0; font-size: 1.3rem; }
+.panel dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 12px; margin: 14px 0; font-size: 0.92rem; }
+.panel dt { color: var(--slaby); }
+.panel dd { margin: 0; }
+.panel h5 { margin: 16px 0 4px; font: 600 0.78rem/1 Roboto, system-ui, sans-serif; color: var(--slaby); text-transform: uppercase; letter-spacing: 0.06em; }
+.panel p { margin: 0 0 8px; }
+.panel .presun { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+.panel select { font: inherit; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--okraj-svetly); background: var(--plocha-2); color: var(--text); width: 100%; }
+.panel .historia { font-size: 0.84rem; color: var(--tlmeny); padding-left: 18px; }
+
+/* dialóg novej položky */
+dialog { border: 1px solid var(--okraj); border-radius: 14px; background: var(--plocha); color: var(--text); padding: 18px 20px; width: min(480px, calc(100% - 32px)); }
+dialog::backdrop { background: rgba(0, 0, 0, 0.5); }
+dialog h3 { margin: 0 0 12px; }
+dialog label { display: block; font-size: 0.88rem; color: var(--tlmeny); margin: 0 0 10px; }
+dialog input, dialog textarea, dialog select { display: block; width: 100%; margin-top: 4px; font: inherit; padding: 7px 9px; border-radius: 8px; border: 1px solid var(--okraj-svetly); background: var(--plocha-2); color: var(--text); }
+dialog .dva { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); background: var(--plocha-3); border: 1px solid var(--akcent); padding: 9px 16px; border-radius: 10px; z-index: 30; font-size: 0.9rem; box-shadow: var(--tien); }
+.toast[hidden] { display: none; }
+.napoveda-klav { font-size: 0.8rem; color: var(--slaby); margin: 10px 0 0; }
+kbd { font: 0.78rem ui-monospace, Consolas, monospace; border: 1px solid var(--okraj-svetly); border-bottom-width: 2px; border-radius: 4px; padding: 0 4px; background: var(--plocha-2); }
+
+/* ---- textové záložky ---- */
+.clanok { max-width: 980px; padding-bottom: 60px; }
+.clanok h2 { font-size: 1.45rem; margin: 36px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--okraj); }
+.clanok h2:first-child { margin-top: 8px; }
+.clanok p, .clanok li { max-width: 80ch; }
+.verdikt { background: var(--plocha); border: 1px solid var(--akcent); border-radius: 12px; padding: 14px 18px; }
+.verdikt p:last-child { margin-bottom: 0; }
+.cisla { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin: 14px 0; }
+.cislo { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; }
+.cislo b { display: block; font: 700 1.6rem/1.15 "Bitter", Georgia, serif; font-variant-numeric: tabular-nums; }
+.cislo b.zle { color: var(--cervena); } .cislo b.dobre { color: var(--zelena); } .cislo b.neutral { color: var(--akcent); }
+.cislo span { color: var(--tlmeny); font-size: 0.86rem; }
+.zasady { counter-reset: z; list-style: none; padding: 0; }
+.zasady > li { counter-increment: z; background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 16px 12px 56px; margin: 0 0 10px; position: relative; max-width: none; }
+.zasady > li::before { content: counter(z); position: absolute; left: 16px; top: 10px; font: 700 1.5rem/1 "Bitter", Georgia, serif; color: var(--akcent); }
+.zasady h3 { margin: 0 0 4px; font-size: 1.08rem; }
+.zasady p { margin: 0; color: var(--tlmeny); }
+.tab-obal { overflow-x: auto; background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; }
+table { width: 100%; border-collapse: collapse; font-size: 0.92rem; min-width: 620px; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--okraj); vertical-align: top; }
+thead th { color: var(--slaby); font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.05em; }
+tbody tr:last-child > * { border-bottom: 0; }
+td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.horizonty { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin: 14px 0; }
+.horizont-k { background: var(--plocha); border: 1px solid var(--okraj); border-top: 4px solid var(--akcent); border-radius: 12px; padding: 12px 14px; }
+.horizont-k h3 { margin: 0 0 2px; font-size: 1.05rem; }
+.horizont-k .zamer { font-weight: 600; margin: 0 0 6px; }
+.horizont-k p { margin: 0; font-size: 0.88rem; color: var(--tlmeny); }
+.tok { width: 100%; max-width: 940px; display: block; margin: 10px 0 6px; }
+.tok text { font-family: Roboto, "Segoe UI", system-ui, sans-serif; fill: var(--text); font-size: 13px; }
+.tok .tl { fill: var(--tlmeny); font-size: 11.5px; }
+.tok rect { fill: var(--plocha); stroke: var(--okraj-svetly); }
+.tok rect.hl { stroke: var(--akcent); stroke-width: 2; }
+.tok path { stroke: var(--tlmeny); fill: none; stroke-width: 1.4; }
+.tok .sipka { fill: var(--tlmeny); stroke: none; }
+pre { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 10px; padding: 12px 14px; overflow-x: auto; font: 0.84rem/1.5 ui-monospace, Consolas, monospace; }
+code { font: 0.86em ui-monospace, Consolas, monospace; background: var(--plocha-2); padding: 1px 5px; border-radius: 5px; }
+.otazky li { margin-bottom: 8px; }
+.mini { font-size: 0.86rem; color: var(--slaby); }
+
+@media (max-width: 640px) {
+  .web-nav { display: none; }
+  .web-obsah { padding: 14px 12px 20px; }
+  .tabula { grid-auto-columns: 86%; }
+  .panel dl { grid-template-columns: 1fr; }
+  dialog .dva { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="obal">
+  <header class="dok-hlava">
+    <h1>Roadmapa NA EX!: mockup a návrh smerovania</h1>
+    <p>Mockup novej záložky <b>Playtest → Roadmapa</b> s obsahom, ktorý navrhujem. Stĺpce sú abstraktné horizonty,
+    nie dátumy, a v každom stĺpci ide poradie zhora nadol. Karty sa dajú ťahať myšou a otvoriť klikom.
+    Zmeny poradia si stránka pamätá len v tomto prehliadači; tlačidlom <i>Skopírovať poradie</i> mi ich môžeš poslať.
+    Kód hry sa nemenil.</p>
+    <div class="dok-zalozky" role="tablist" aria-label="Časti dokumentu">
+      <button role="tab" id="z-mockup" aria-controls="p-mockup" aria-selected="true">Mockup stránky</button>
+      <button role="tab" id="z-smer" aria-controls="p-smer" aria-selected="false" tabindex="-1">Kam by sa hra mala uberať</button>
+      <button role="tab" id="z-napojenie" aria-controls="p-napojenie" aria-selected="false" tabindex="-1">Napojenie na playtesty a implementácia</button>
+    </div>
+  </header>
+
+  <!-- ===================== MOCKUP ===================== -->
+  <section id="p-mockup" role="tabpanel" aria-labelledby="z-mockup">
+    <div class="ram">
+      <div class="ram-pruh" aria-hidden="true"><i></i><i></i><i></i><span>15-235-242-12.sslip.io/playtest/roadmapa</span></div>
+      <div class="web-hlava">
+        <span class="logo">NA EX!</span>
+        <nav class="web-nav" aria-label="Navigácia webu (ukážka)">
+          <span>Pravidlá</span><span>Karty</span><span>Hrať</span><span>Rebríček</span><span>Spätná väzba</span><span class="aktivna">Playtest</span><span>Tvorba</span>
+        </nav>
+        <span class="avatar" aria-hidden="true"></span>
+      </div>
+      <div class="web-obsah">
+        <div class="podnav" aria-label="Záložky sekcie Playtest (ukážka)">
+          <span>Návrhy <b id="pocet-navrhov">3</b></span><span>Reporty</span><span class="aktivna">Roadmapa</span>
+        </div>
+        <div class="rm-hlava">
+          <div>
+            <h2>Roadmapa</h2>
+            <p>Kam hra smeruje. Stĺpec je horizont, poradie v ňom je priorita: Developer berie položky zo stĺpca <b>Teraz</b> zhora.</p>
+          </div>
+          <div class="tlacidla">
+            <button class="tlacidlo" id="simuluj" title="Ukážka toku: navrhár nahrá nový návrh, Michal ho schváli">Ukážka: nový návrh z playtestu</button>
+            <button class="tlacidlo" id="kopiruj">Skopírovať poradie</button>
+            <button class="tlacidlo hlavne" id="pridaj">+ Položka</button>
+          </div>
+        </div>
+        <div class="filtre" id="filtre" role="group" aria-label="Filtrovať podľa oblasti"></div>
+        <div class="tabula" id="tabula"></div>
+        <p class="napoveda-klav">Klávesnica: karta s fokusom <kbd>Enter</kbd> otvorí detail, <kbd>Alt</kbd>+<kbd>↑</kbd>/<kbd>↓</kbd> ju posunie v stĺpci,
+        <kbd>Alt</kbd>+<kbd>←</kbd>/<kbd>→</kbd> do susedného stĺpca. Na mobile sa presúva v detaile.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SMEROVANIE ===================== -->
+  <section id="p-smer" role="tabpanel" aria-labelledby="z-smer" hidden>
+    <div class="clanok">
+      <h2>Kde hra je</h2>
+      <div class="verdikt">
+        <p><b>Silnou stránkou NA EX! je interakcia a originalita, slabou je férovosť a čitateľnosť.</b>
+        Za 12 hodnotených playtestov sa rovnováha a zrozumiteľnosť ani raz nedostali nad 5,5. Pravidlá sa pritom menia
+        rýchlejšie, než ich stihne overiť playtest: M18 až M23 je šesť míľnikov so zmenami pravidiel za dva dni (20. a 21. 10.).
+        Navyše všetkých 29 názorov na stránke Spätná väzba napísala AI, od človeka zatiaľ nie je ani jeden.</p>
+      </div>
+      <div class="cisla">
+        <div class="cislo"><b class="dobre">8,7 / 8,8</b><span>interakcia / originalita, najvyššie kritériá</span></div>
+        <div class="cislo"><b class="zle">4,9 / 4,8</b><span>rovnováha / zrozumiteľnosť, najnižšie kritériá</span></div>
+        <div class="cislo"><b class="zle">85 %</b><span>partií vyhrá bot, ktorý vyhrá poslednú bitku</span></div>
+        <div class="cislo"><b class="neutral">83 min</b><span>trvala posledná stredná partia (16 Pitiek)</span></div>
+        <div class="cislo"><b class="neutral">67 % · 0,37</b><span>rebrík zručnosti · predurčenosť (stratég)</span></div>
+        <div class="cislo"><b class="zle">0 z 29</b><span>názorov na Spätnej väzbe je od človeka</span></div>
+      </div>
+      <p class="mini">Zdroje: <a href="playtesty/vyvoj-znamok.html">vývoj známok</a>, <a href="playtesty/navrhy-20261021-041728.html">návrhy 21. 10.</a>,
+      <a href="playtesty/strategia-20261021-041728.html">rozbor stratéga 21. 10.</a>, git log. Čísla stratéga sú z turnajov botov, nie z ľudí.</p>
+
+      <h2>Päť zásad na ďalšie obdobie</h2>
+      <ol class="zasady">
+        <li><h3>Najprv čitateľnosť, potom čísla</h3>
+          <p>Najhoršie problémy nevznikli z toho, že bola nejaká hodnota zlá, ale z toho, že hráč nevidel, čo ho rozhodnutie stojí
+          (kliatby pri sčítaní, cena bitky pri pase). M23 to začal riešiť. Pravidlo pre každú novú mechaniku: jej cena musí byť
+          na stole vidieť ešte pred rozhodnutím.</p></li>
+        <li><h3>Zmraziť pravidlá a meniť ich po dávkach</h3>
+          <p>Po horizonte <b>Teraz</b> vyhlásiť <b>Pravidlá v4</b>. Potom meniť pravidlá najviac raz za dávku a len tak, že zmenu najprv
+          zmeria stratég, potom ju overí turnus playtestu a až potom o nej rozhodneš. V jednej téme jedna zmena naraz, inak sa nedá
+          rozlíšiť, čo zabralo (to isté písal aj navrhár).</p></li>
+        <li><h3>Ľudia pred formátom 2 na 2</h3>
+          <p>AI playtesteri hodnotia hru stále podobne a môžu sa mýliť rovnakým smerom. Formát 2 na 2 zdvojnásobí plochu, ktorú treba
+          vyvažovať. Preto najprv aspoň 10 ľudských partií s rovnakým dotazníkom, aký vypĺňajú agenti, a porovnanie oboch.</p></li>
+        <li><h3>2 na 2 ako ďalší formát, nie náhrada</h3>
+          <p>Hlavná zostáva hra 1 na 1. Jadro sa pripraví tak, že 1 na 1 bude osobitný prípad (dva tímy, každý s jedným miestom),
+          a všetky dnešné testy musia ostať zelené. Ak sa niečo z 2 na 2 neosvedčí, vypne sa prepínačom.</p></li>
+        <li><h3>Nový obsah až po zmrazení</h3>
+          <p>Svokra sa prerábala trikrát a Kočovník dvakrát, lebo sa pod nimi menili pravidlá. Doladiť existujúce karty áno, ale nové karty
+          a rozšírenia až vtedy, keď sa pravidlá nemenia každý deň.</p></li>
+      </ol>
+
+      <h2>Horizonty roadmapy</h2>
+      <p>Stĺpce nemajú dátum, majú zámer. Horizont je splnený, keď platia jeho ciele, nie keď uplynie čas.</p>
+      <div class="horizonty">
+        <div class="horizont-k"><h3>Teraz</h3><p class="zamer">Férová a čitateľná partia</p><p>Overiť M23, vyriešiť cenu bitky a mŕtve štartovky, skrátiť partiu.</p></div>
+        <div class="horizont-k"><h3>Ďalej</h3><p class="zamer">Pripravená pre ľudí</p><p>Pravidlá v4, prvá partia s nápovedou, ľudské playtesty, doladenie kariet.</p></div>
+        <div class="horizont-k"><h3>Potom</h3><p class="zamer">Hra vo dvojici</p><p>Formát 2 na 2: rozhodnutia, jadro s tímami, bot, herňa pre štyroch, playtest.</p></div>
+        <div class="horizont-k"><h3>Neskôr</h3><p class="zamer">Obsah a komunita</p><p>Partia týždňa, sezóny, rozšírenie kariet, tlač, hra na pokračovanie.</p></div>
+      </div>
+
+      <h2>Ciele: kedy je horizont splnený</h2>
+      <div class="tab-obal"><table>
+        <thead><tr><th>Metrika</th><th>Dnes</th><th>Cieľ</th><th>Horizont</th><th>Kto meria</th></tr></thead>
+        <tbody>
+          <tr><td>Rovnováha a férovosť (priemer playtesterov)</td><td class="num">4,9</td><td class="num">≥ 6,5 v troch partiách po sebe</td><td>Teraz</td><td>playtest, spisovateľ</td></tr>
+          <tr><td>Zrozumiteľnosť pravidiel</td><td class="num">4,8</td><td class="num">≥ 6,5 v troch partiách po sebe</td><td>Teraz</td><td>playtest, spisovateľ</td></tr>
+          <tr><td>Víťaz poslednej bitky vyhrá partiu</td><td class="num">85 %</td><td class="num">≤ 65 %</td><td>Teraz</td><td>stratég (boti)</td></tr>
+          <tr><td>Rebrík: lepší bot porazí slabšieho</td><td class="num">67 %</td><td class="num">≥ 72 %</td><td>Teraz</td><td>stratég</td></tr>
+          <tr><td>Predurčenosť rozdaním</td><td class="num">0,37</td><td class="num">≤ 0,20</td><td>Teraz</td><td>stratég (duplikát)</td></tr>
+          <tr><td>Dĺžka strednej partie</td><td class="num">83 min</td><td class="num">≤ 60 min</td><td>Teraz</td><td>log partie</td></tr>
+          <tr><td>Karty, ktoré nikto nezahrá</td><td class="num">3</td><td class="num">0 v piatich partiách po sebe</td><td>Ďalej</td><td>admin (štatistiky)</td></tr>
+          <tr><td>Ľudské partie s dotazníkom</td><td class="num">0</td><td class="num">10</td><td>Ďalej</td><td>Michal, Spätná väzba</td></tr>
+          <tr><td>Rozdiel známok ľudí a AI v rovnováhe</td><td class="num">nevieme</td><td class="num">≤ 1 bod</td><td>Ďalej</td><td>spisovateľ</td></tr>
+        </tbody>
+      </table></div>
+      <p class="mini">Hranice 65 %, 72 % a 0,20 sú môj návrh. Hodnoty 72 % a 0,17 už stratég nameral pri variante „dober 3, nechaj 2“, takže sú dosiahnuteľné.</p>
+
+      <h2>Čo by som do roadmapy nedával</h2>
+      <ul>
+        <li><b>Viac ako dvaja súperi naraz</b> (3 alebo 4 hráči každý sám za seba). Stupnica strachu, kraje a bitka sú postavené na dvoch stranách. Formát 2 na 2 tieto dve strany zachová.</li>
+        <li><b>Monetizácia a obchod s kartami.</b> Kým nie je hra stabilná a nehrajú ju ľudia, nemá to na čom stáť.</li>
+        <li><b>Úplne voľné stavanie balíčka pred partiou.</b> Rozbilo by progresiu cez šenok, ktorá je jadrom hry. Ak niečo také, tak len ako variant „draft“ v horizonte Neskôr.</li>
+      </ul>
+
+      <h2>Na čo potrebujem tvoje rozhodnutie</h2>
+      <ol class="otazky">
+        <li>Súhlasíš s poradím horizontov, teda ľudské playtesty a Pravidlá v4 pred formátom 2 na 2? Alternatíva je robiť jadro 2 na 2 súbežne s horizontom Ďalej, lebo refaktor <code>PlayerId → tím + SeatId</code> pravidlá nemení.</li>
+        <li>Majú byť pravidlá zmrazené (v4) a meniť sa po dávkach, alebo chceš zachovať dnešné tempo zmien?</li>
+        <li>Má mať roadmapa aj verejný pohľad pre hráčov („Čo chystáme“, len položky označené ako verejné), alebo ostane len pre admina a subadmina?</li>
+        <li>Majú ciele z tabuľky vyššie platiť ako podmienka na posun horizontu? Napríklad 2 na 2 by sa nezačalo, kým rovnováha nie je ≥ 6,5.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ===================== NAPOJENIE ===================== -->
+  <section id="p-napojenie" role="tabpanel" aria-labelledby="z-napojenie" hidden>
+    <div class="clanok">
+      <h2>Ako sa návrh z playtestu dostane do roadmapy</h2>
+      <svg class="tok" viewBox="0 -4 940 234" role="img" aria-label="Tok: playtest, návrhy, rozhodnutie, prijímač roadmapy, stĺpec, Developer, hotové">
+        <defs><marker id="s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="sipka" d="M0 0L10 5L0 10z"/></marker></defs>
+        <rect x="6" y="20" width="130" height="60" rx="10"/><text x="71" y="46" text-anchor="middle">Playtest</text><text class="tl" x="71" y="64" text-anchor="middle">navrhár + stratég</text>
+        <rect x="166" y="20" width="130" height="60" rx="10"/><text x="231" y="46" text-anchor="middle">Návrhy</text><text class="tl" x="231" y="64" text-anchor="middle">čaká na rozhodnutie</text>
+        <rect x="326" y="20" width="130" height="60" rx="10"/><text x="391" y="46" text-anchor="middle">Michal rozhodne</text><text class="tl" x="391" y="64" text-anchor="middle">možnosť + poznámka</text>
+        <rect class="hl" x="486" y="20" width="130" height="60" rx="10"/><text x="551" y="46" text-anchor="middle">Prijímač</text><text class="tl" x="551" y="64" text-anchor="middle">roadmapy (sám)</text>
+        <rect class="hl" x="646" y="20" width="130" height="60" rx="10"/><text x="711" y="46" text-anchor="middle">Stĺpec + poradie</text><text class="tl" x="711" y="64" text-anchor="middle">Michal potiahne</text>
+        <rect x="806" y="20" width="128" height="60" rx="10"/><text x="870" y="46" text-anchor="middle">Developer</text><text class="tl" x="870" y="64" text-anchor="middle">berie Teraz zhora</text>
+        <rect x="806" y="140" width="128" height="60" rx="10"/><text x="870" y="166" text-anchor="middle">Hotové</text><text class="tl" x="870" y="184" text-anchor="middle">+ commit, sám</text>
+        <rect x="486" y="140" width="130" height="60" rx="10"/><text x="551" y="166" text-anchor="middle">Neskôr</text><text class="tl" x="551" y="184" text-anchor="middle">odložené (sám)</text>
+        <rect x="326" y="140" width="130" height="60" rx="10"/><text x="391" y="166" text-anchor="middle">Zamietnuté</text><text class="tl" x="391" y="184" text-anchor="middle">do roadmapy nejde</text>
+        <path d="M136 50H164" marker-end="url(#s)"/><path d="M296 50H324" marker-end="url(#s)"/><path d="M456 50H484" marker-end="url(#s)"/>
+        <text class="tl" x="470" y="12" text-anchor="middle">schválené</text>
+        <path d="M616 50H644" marker-end="url(#s)"/><path d="M776 50H804" marker-end="url(#s)"/><path d="M870 80V138" marker-end="url(#s)"/>
+        <path d="M420 80C440 120 480 150 484 166" marker-end="url(#s)"/><text class="tl" x="478" y="118">odložené</text>
+        <path d="M391 80V138" marker-end="url(#s)"/>
+      </svg>
+      <ul>
+        <li><b>Schválený návrh</b> (stav „implementovať“) sa sám objaví v stĺpci <b>Prijímač</b> so zvolenou možnosťou a tvojou poznámkou. Ty ho potiahneš do horizontu a na miesto v poradí.</li>
+        <li><b>Odložený návrh</b> ide sám na koniec stĺpca <b>Neskôr</b>, aby sa nestratil. <b>Zamietnutý</b> do roadmapy nejde.</li>
+        <li><b>Developer</b> (skill <code>naex-implementacia</code>) berie schválené návrhy v poradí stĺpca <b>Teraz</b> zhora, nie v poradí, v akom prišli. Poradie na tabuli tak priamo riadi, čo sa robí najskôr.</li>
+        <li>Keď Developer označí návrh ako implementovaný, položka sa sama presunie do <b>Hotové</b> aj s commitom. Položky, ktoré nepochádzajú z návrhu (napríklad 2 na 2 alebo tutoriál), sa posúvajú ručne.</li>
+        <li><b>Navrhár</b> smie pridávať položky len do Prijímača (príkaz <code>roadmapa-pridaj</code>). Stĺpce a poradie mení len admin.</li>
+      </ul>
+
+      <h2>Dátový model</h2>
+      <p>Dve nové tabuľky v SQLite (<code>node:sqlite</code>, bez ORM). Horizonty sú v tabuľke, aby sa dali premenovať alebo pridať bez zmeny kódu.</p>
+<pre>CREATE TABLE IF NOT EXISTS roadmapa_stlpce (
+  kluc     TEXT PRIMARY KEY,         -- prijimac | teraz | dalej | potom | neskor | hotove
+  nazov    TEXT NOT NULL,
+  zamer    TEXT NOT NULL DEFAULT '',
+  poradie  INTEGER NOT NULL
+);
+CREATE TABLE IF NOT EXISTS roadmapa (
+  id        INTEGER PRIMARY KEY,
+  stlpec    TEXT NOT NULL REFERENCES roadmapa_stlpce(kluc),
+  poradie   REAL NOT NULL,           -- zlomkové poradie: presun = 1 UPDATE, bez prečíslovania
+  nazov     TEXT NOT NULL,
+  popis     TEXT NOT NULL DEFAULT '',
+  oblast    TEXT NOT NULL,           -- pravidla | ui | karty | 2v2 | platforma | komunita
+  narocnost TEXT NOT NULL,           -- S | M | L
+  stav      TEXT NOT NULL,           -- napad | rozhodnute | rozpracovane | hotove
+  navrh     INTEGER REFERENCES navrhy(id) ON DELETE SET NULL,
+  odkazy    TEXT NOT NULL DEFAULT '[]',  -- JSON: podklady, commity
+  verejna   INTEGER NOT NULL DEFAULT 0,
+  upravene  INTEGER NOT NULL,
+  upravil   INTEGER REFERENCES pouzivatelia(id)
+);</pre>
+      <h2>API a nástroje</h2>
+      <div class="tab-obal"><table>
+        <thead><tr><th>Kde</th><th>Čo</th><th>Kto</th></tr></thead>
+        <tbody>
+          <tr><td><code>GET /api/admin/roadmapa</code></td><td>stĺpce aj položky naraz</td><td>admin, subadmin</td></tr>
+          <tr><td><code>POST /api/admin/roadmapa</code></td><td>nová položka (agent len do Prijímača)</td><td>admin, AI navrhár</td></tr>
+          <tr><td><code>PUT /api/admin/roadmapa/:id</code></td><td>úprava textu, stavu, oblasti</td><td>admin</td></tr>
+          <tr><td><code>POST /api/admin/roadmapa/:id/presun</code></td><td><code>{ stlpec, za }</code>, server dopočíta poradie</td><td>admin</td></tr>
+          <tr><td><code>navrhy.ts → uprav()</code></td><td>pri rozhodnutí návrhu vytvorí alebo presunie položku</td><td>server</td></tr>
+          <tr><td><code>tools/admin/admin.ts roadmapa [stlpec]</code></td><td>výpis pre agentov; Developer z neho číta poradie</td><td>agenti</td></tr>
+          <tr><td><code>GET /api/roadmapa</code> (voliteľné)</td><td>verejný pohľad, len položky s <code>verejna = 1</code></td><td>každý</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2>Rozsah implementácie</h2>
+      <p>Odhadom jeden menší míľnik (M24), bez nových závislostí:</p>
+      <ol>
+        <li>Server: tabuľky, <code>roadmapa.ts</code> podľa vzoru <code>navrhy.ts</code>, väzba na rozhodnutie návrhu, testy (presun, prístup podľa roly, agent mimo Prijímača dostane 403).</li>
+        <li>Web: <code>apps/web/src/playtest/Roadmapa.tsx</code> ako tretia záložka vedľa Návrhov a Reportov; ťahanie myšou (HTML5 drag and drop), presun klávesnicou a v detaile pre mobil; farby len cez tokeny zo <code>schemy.css</code>.</li>
+        <li>Nástroje: <code>admin.ts roadmapa</code> a <code>roadmapa-pridaj</code>; skill <code>naex-implementacia</code> zoradí schválené návrhy podľa poradia v stĺpci Teraz.</li>
+        <li>Seed: prvé naplnenie obsahom z tohto mockupu (po tvojich úpravách poradia).</li>
+      </ol>
+    </div>
+  </section>
+</div>
+
+<!-- detail položky -->
+<div class="panel-pozadie" id="panel-pozadie" hidden></div>
+<aside class="panel" id="panel" hidden aria-labelledby="panel-nadpis" role="dialog" aria-modal="true">
+  <button class="zavriet" id="panel-zavriet" aria-label="Zavrieť detail">×</button>
+  <div id="panel-obsah"></div>
+</aside>
+
+<!-- nová položka -->
+<dialog id="dialog-nova" aria-labelledby="dn-nadpis">
+  <form method="dialog" id="form-nova">
+    <h3 id="dn-nadpis">Nová položka roadmapy</h3>
+    <label>Názov<input name="nazov" required maxlength="80"></label>
+    <label>Krátko (jedna veta)<input name="kratko" maxlength="140"></label>
+    <div class="dva">
+      <label>Oblasť<select name="obl" id="dn-obl"></select></label>
+      <label>Náročnosť<select name="nar"><option value="S">S, malá</option><option value="M" selected>M, stredná</option><option value="L">L, veľká</option></select></label>
+    </div>
+    <label>Stĺpec<select name="stl" id="dn-stl"></select></label>
+    <div class="tlacidla" style="justify-content:flex-end">
+      <button class="tlacidlo" value="zrusit" formnovalidate>Zrušiť</button>
+      <button class="tlacidlo hlavne" value="ok">Pridať na koniec stĺpca</button>
+    </div>
+  </form>
+</dialog>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+"use strict";
+const OBLASTI = {
+  pravidla: "Pravidlá a balans", ui: "Rozhranie (UI/UX)", karty: "Karty", "2v2": "2 na 2",
+  platforma: "Platforma", komunita: "Ľudia a komunita",
+};
+const NAROCNOST = { S: "malá", M: "stredná", L: "veľká" };
+const STAVY = { nove: "na rozhodnutie", schvalene: "schválené, zaradiť", rozhodnute: "rozhodnuté", napad: "nápad", rozpracovane: "rozpracované", hotove: "hotové", overit: "treba overiť" };
+const STLPCE = [
+  { kluc: "prijimac", nazov: "Prijímač", horizont: "", zamer: "Návrhy z playtestov a dizajnu, ktoré čakajú na rozhodnutie alebo zaradenie. Potiahni ich do horizontu." },
+  { kluc: "teraz", nazov: "Teraz", horizont: "horizont 1", zamer: "Férová a čitateľná partia." },
+  { kluc: "dalej", nazov: "Ďalej", horizont: "horizont 2", zamer: "Pripravená pre ľudí." },
+  { kluc: "potom", nazov: "Potom", horizont: "horizont 3", zamer: "Hra vo dvojici: formát 2 na 2." },
+  { kluc: "neskor", nazov: "Neskôr", horizont: "horizont 4", zamer: "Obsah a komunita. Nápady, odložené návrhy." },
+  { kluc: "hotove", nazov: "Hotové", horizont: "", zamer: "Implementované a nasadené." },
+];
+const P = "playtesty/";
+// Poradie v poli = poradie v stĺpci.
+const POVODNE = [
+  // ---- Prijímač
+  { id: "p-stavka", stl: "prijimac", obl: "pravidla", nar: "S", stav: "nove", nazov: "Stávka bitky pri pase",
+    kratko: "Pred pasom ukázať, o koľko bodov sa v bitke hrá: lokalita, strach a prebytok.",
+    zdroj: { typ: "playtest", text: "Playtest 21. 10. · bod 2A", odkaz: P + "navrhy-20261021-041728.html#h-bod-2" },
+    preco: "Jano pasoval za 2 cigarety a prehral 0 : 7, čo ho stálo asi 60 bodov (35 : −7 → 35 : 54). „Netušil som, že strach úroveň 2 je asi 14 bodov.“",
+    hotovo: "Pri voľbe pasu vidno odhad bodov v hre. Treba overiť, či ho už nepokrýva odhad bitky z M23." },
+  { id: "p-posuny", stl: "prijimac", obl: "pravidla", nar: "S", stav: "nove", nazov: "Prebytok: najviac 2 posuny na staršieho",
+    kratko: "Jeden starší sa v bitke posunie najviac o 2, zvyšok prebytku ide inam.",
+    zdroj: { typ: "playtest", text: "Playtest 21. 10. · bod 2B", odkaz: P + "navrhy-20261021-041728.html#h-bod-2" },
+    preco: "Prebytok 7 v poslednej bitke dal Eve +49 bodov. Navrhár odporúča najprv meranie stratégom.",
+    hotovo: "Stratég zmeria výkyv na bitku, otočky a podiel partií ukončených vydesením." },
+  { id: "p-dober3", stl: "prijimac", obl: "pravidla", nar: "M", stav: "nove", nazov: "Dober 3, nechaj 2",
+    kratko: "Po bitke hráč dober 3 karty a 2 si nechá. Menej slepého dobierania.",
+    zdroj: { typ: "playtest", text: "Playtest 21. 10. · bod 5A", odkaz: P + "navrhy-20261021-041728.html#h-bod-5" },
+    preco: "Je to zmerané: rebrík zručnosti stúpol zo 67 na 72 % a predurčenosť klesla z 0,37 na 0,17.",
+    hotovo: "Turnus playtestu s pravidlom; sťažnosť na mŕtvu ruku zmizne z feedbacku." },
+  { id: "p-pokyn", stl: "prijimac", obl: "ui", nar: "M", stav: "nove", nazov: "Pás pokynov nad rukou",
+    kratko: "Pás robí päť úloh naraz (33 stavov, 38 tlačidiel). Rozdeliť ho, tlačidlo NA EX! nechať.",
+    zdroj: { typ: "dizajn", text: "Dizajn pokyn-bar 21. 10. (UX)", odkaz: P + "dizajn-pokyn-bar-20261021-1639-ux.html" },
+    preco: "Michal: „Nepáči sa mi tento bar nad kartami… mnoho vecí sa do neho tlačí počas hry.“",
+    hotovo: "UX návrh je hotový, UI návrh k nemu ešte chýba. Potom rozhodnutie a implementácia." },
+  { id: "p-stol", stl: "prijimac", obl: "ui", nar: "M", stav: "nove", nazov: "Stôl nad záhybom",
+    kratko: "Zbaliť starších a skóre, aby hráč na ťahu videl stôl bez posúvania.",
+    zdroj: { typ: "dizajn", text: "Dizajn hra 21. 10. · N2, N3, N5", odkaz: P + "dizajn-hra-20261021-1240.html" },
+    preco: "Pri 1600 × 1000 začína stôl až na y = 947 px. Michal 21. 10.: nerobiť bez rozhodnutia.",
+    hotovo: "Rozhodnutie o rozložení (UI/UX N2, UI N3, UI N5, UX N5)." },
+
+  // ---- Teraz
+  { id: "t-m23", stl: "teraz", obl: "pravidla", nar: "S", stav: "rozhodnute", nazov: "Overiť M23 v playteste",
+    kratko: "Verejný dlh a remíza na sekeru sú skúšobné. Dva turnusy po troch partiách, so stratégom.",
+    zdroj: { typ: "michal", text: "Rozhodnutie 21. 10.", odkaz: P + "zmeny-pravidiel.html" },
+    preco: "Tri playtesty za sebou rozhodli kliatby pri sčítaní (−43, −58/−80, −48 b). M23 je prvá zmena, ktorá ich ukazuje.",
+    hotovo: "Žiadna partia sa nerozhodne kliatbami, ktoré hráč nevidel. Rovnováha ≥ 6 v priemere turnusu." },
+  { id: "t-bitka", stl: "teraz", obl: "pravidla", nar: "M", stav: "overit", nazov: "Posledná bitka nerozhoduje celú partiu",
+    kratko: "Dnes vyhrá 85 % partií bot, ktorý vyhrá poslednú bitku. Vyriešiť podľa stávky a merania posunov.",
+    zdroj: { typ: "playtest", text: "Playtesty od 12. 10. · bod 2", odkaz: P + "navrhy-20261021-041728.html#h-bod-2" },
+    zavisi: ["p-stavka", "p-posuny"],
+    preco: "Hlásené v piatich playtestoch: „vyhráva ten, kto vyhrá poslednú bitku“. Výkyv 19–29 bodov na bitku.",
+    hotovo: "Víťaz poslednej bitky vyhrá ≤ 65 % partií botov." },
+  { id: "t-startovky", stl: "teraz", obl: "karty", nar: "M", stav: "napad", nazov: "Štartovky, ktoré majú zmysel",
+    kratko: "Pijan, Miňištrant, Manželka a Dievčina: každej jedno dobré použitie alebo lacný odchod z balíčka.",
+    zdroj: { typ: "playtest", text: "Playtesty od 12. 10.", odkaz: P + "progresia-balicka.html" },
+    preco: "„Prvé tri kolá nehrateľné.“ Na konci partie tvoria štartovky stále 55–60 % balíčka. Pijan dáva súperovi Ranu.",
+    hotovo: "Admin navrhne úpravy, stratég ich zmeria, potom zverejnenie sady." },
+  { id: "t-tempo", stl: "teraz", obl: "ui", nar: "M", stav: "napad", nazov: "Stredná partia do 60 minút",
+    kratko: "Z logu zmerať, kde ide čas, a ubrať kliky a čakanie.",
+    zdroj: { typ: "playtest", text: "Playtest 21. 10.", odkaz: P + "20261021-041728.html" },
+    preco: "Posledná partia trvala 83 minút a mala 16 Pitiek. Tempo bolo najnižšie od 11. 10.",
+    hotovo: "Stredná partia dvoch ľudí trvá ≤ 60 min." },
+  { id: "t-mobil", stl: "teraz", obl: "ui", nar: "M", stav: "overit", nazov: "Celý ťah na mobile",
+    kratko: "Po M23 overiť na 390 px, aby ruka nezakrývala stôl a ťah sa dal dokončiť.",
+    zdroj: { typ: "dizajn", text: "Dizajn hra 21. 10.", odkaz: P + "dizajn-hra-20261021-1240.html" },
+    preco: "Pripnutá ruka zaberá 20–26 % výšky okna. M23 opravil pretekanie, zvyšok ostáva.",
+    hotovo: "Celá partia sa dá odohrať na telefóne bez posúvania do strany." },
+  { id: "t-otazky", stl: "teraz", obl: "pravidla", nar: "S", stav: "napad", nazov: "Uzavrieť otvorené hodnoty",
+    kratko: "Priazne 8 starších sú provizórne (TODO v elders.json); čo sa stane, keď sa minie balíček pre šenok.",
+    zdroj: { typ: "michal", text: "BRIEF: otvorené otázky", odkaz: "BRIEF.md" },
+    preco: "Pred zmrazením pravidiel nesmú v jadre ostať provizórne hodnoty.",
+    hotovo: "elders.json bez TODO, otázka 9 v BRIEF rozhodnutá." },
+
+  // ---- Ďalej
+  { id: "d-v4", stl: "dalej", obl: "pravidla", nar: "M", stav: "napad", nazov: "Pravidlá v4: zmrazenie",
+    kratko: "Jedno znenie v PRAVIDLA.md, na webe aj na tlač. Odvtedy zmeny len po dávkach, s prehľadom zmien pre hráčov.",
+    zavisi: ["t-m23", "t-bitka"],
+    preco: "M18 až M23 je šesť míľnikov so zmenami pravidiel za dva dni. Hráči (aj AI) sa nestíhajú učiť.",
+    hotovo: "Verzia v4 je vyznačená v hre, pravidlách aj v štatistikách partií." },
+  { id: "d-ludia", stl: "dalej", obl: "komunita", nar: "M", stav: "napad", nazov: "Prvých 10 ľudských partií",
+    kratko: "Pozvať kamarátov, po partii krátky dotazník s rovnakými 12 kritériami ako u AI.",
+    preco: "Všetkých 29 názorov na Spätnej väzbe je od AI. Nevieme, či ľudia vidia hru rovnako.",
+    hotovo: "10 partií, porovnanie známok ľudí a AI v reporte spisovateľa." },
+  { id: "d-tutorial", stl: "dalej", obl: "ui", nar: "L", stav: "napad", nazov: "Prvá partia s nápovedou",
+    kratko: "Pripravená partia proti Štamgastovi s pevným seedom; nápoveda prevedie šenkom, Zhromaždením, Pitkou a bitkou.",
+    zavisi: ["d-v4"],
+    preco: "Zrozumiteľnosť je najnižšie kritérium. Deterministická náhoda umožňuje pripraviť rovnakú partiu pre každého.",
+    hotovo: "Nový hráč dohrá prvú partiu bez čítania pravidiel." },
+  { id: "d-nehrane", stl: "dalej", obl: "karty", nar: "M", stav: "napad", nazov: "Karty, ktoré nikto nehrá",
+    kratko: "Presbiter, Pasca a Anonymný alkoholik: posilniť alebo prerobiť.",
+    zdroj: { typ: "playtest", text: "Inventúra navrhára 21. 10.", odkaz: P + "navrhy-20261021-041728.html" },
+    preco: "V posledných playtestoch ich nezahral ani jeden hráč.",
+    hotovo: "Každá karta zahraná aspoň v jednej z piatich partií." },
+  { id: "d-krcma", stl: "dalej", obl: "karty", nar: "S", stav: "napad", nazov: "Krčma: istá Cirhóza",
+    kratko: "Povinné NA EX spolu s Poldeci dáva skoro vždy Cirhózu. Zjemniť.",
+    zdroj: { typ: "playtest", text: "Playtest 21. 10.", odkaz: P + "navrhy-20261021-041728.html" },
+    preco: "Hlásili to obaja playtesteri.", hotovo: "Krčma je voľba, nie trest." },
+  { id: "d-dedicstvo", stl: "dalej", obl: "karty", nar: "S", stav: "napad", nazov: "Nástroje v Dedičstve",
+    kratko: "3 zo 4 Nástrojov hráči zahodili Živnostníkom. Cena v Dedičstve rastie a neklesá.",
+    zdroj: { typ: "playtest", text: "Playtest 21. 10.", odkaz: P + "navrhy-20261021-041728.html" },
+    preco: "Nástroj je dnes skôr palivo ako rozhodnutie.", hotovo: "Admin s úpravou, stratég zmeria." },
+  { id: "d-replay", stl: "dalej", obl: "platforma", nar: "M", stav: "napad", nazov: "Prehrávač partie",
+    kratko: "Prehrať odohranú partiu krok po kroku zo seedu a logu. Reporty by odkazovali na konkrétny ťah.",
+    preco: "Pri sporoch „bola to chyba hry, alebo hráča?“ sa dnes číta log. Engine je deterministický, takže prehrávač je lacný.",
+    hotovo: "Odkaz z reportu otvorí partiu na danom ťahu." },
+  { id: "d-zvuk", stl: "dalej", obl: "ui", nar: "S", stav: "napad", nazov: "Zvuk a klávesové skratky",
+    kratko: "Zvuk NA EX!, prípitku a bitky; skratky na hotovo, pas a NA EX.",
+    zdroj: { typ: "michal", text: "Odložené 21. 10." },
+    preco: "Michal to 21. 10. odložil, nie zamietol.", hotovo: "Dá sa vypnúť v profile." },
+  { id: "d-novinky", stl: "dalej", obl: "komunita", nar: "S", stav: "napad", nazov: "Čo je nové: pre hráčov",
+    kratko: "Prehľad zmien pravidiel a kariet pre hráčov. Voliteľne verejný pohľad na roadmapu.",
+    zavisi: ["d-v4"],
+    preco: "Zmeny pravidiel dnes vidí len admin (zmeny-pravidiel.html).", hotovo: "Hráč po prihlásení vidí, čo sa od jeho poslednej partie zmenilo." },
+
+  // ---- Potom: 2 na 2
+  { id: "q-pravidla", stl: "potom", obl: "2v2", nar: "M", stav: "napad", nazov: "Rozhodnúť pravidlá 2 na 2",
+    kratko: "Čo vidí partner, tímové prvky, kapitán kola, dĺžka hry. Nový paragraf „Formát 2 na 2“.",
+    zdroj: { typ: "dizajn", text: "Návrh 2 na 2 (21. 10.)", odkaz: P + "navrh-2v2.html" },
+    zavisi: ["d-v4"],
+    preco: "Návrh je hotový, ale hra je dnes podľa CLAUDE.md, BRIEF aj PRAVIDIEL striktne pre dvoch. Treba to vedome zmeniť.",
+    hotovo: "Odpovede na otázky z návrhu; upravené CLAUDE.md, BRIEF a PRAVIDLA." },
+  { id: "q-jadro", stl: "potom", obl: "2v2", nar: "L", stav: "napad", nazov: "Jadro: tím a miesto",
+    kratko: "PlayerId sa stane tímom, pribudne SeatId 0–3 pre hospodárstvo hráča. 1 na 1 = dva tímy s jedným miestom.",
+    zavisi: ["q-pravidla"],
+    preco: "Strana (kraj, prevaha, markery) patrí tímu, majiteľ (ruka, poldeci, kliatby) hráčovi. Hra to už dnes rozlišuje.",
+    hotovo: "Všetky testy 1 na 1 zelené; nové testy pre 4 miesta." },
+  { id: "q-view", stl: "potom", obl: "2v2", nar: "M", stav: "napad", nazov: "viewFor pre štyroch",
+    kratko: "Filtrovanie pre partnera a dvoch súperov. Testy, že súperi nedostanú nič navyše.",
+    zavisi: ["q-jadro"],
+    preco: "Nemenné pravidlo 2: server nepošle nič, čo hráč nemá vidieť. Pri partnerovi sa to mení podľa rozhodnutia o informáciách.",
+    hotovo: "Test úniku pre každé miesto a každú fázu." },
+  { id: "q-bot", stl: "potom", obl: "2v2", nar: "M", stav: "napad", nazov: "Bot ako partner aj súper",
+    kratko: "Aby sa dalo hrať aj v troch, alebo sám s botom proti dvom botom. Turnaj botov 2 na 2.",
+    zavisi: ["q-jadro"],
+    preco: "Štyria ľudia naraz sa schádzajú ťažko; bez botov by formát nikto nehral.",
+    hotovo: "turnaj.ts zvládne 2 na 2, bot rešpektuje tímové prvky." },
+  { id: "q-herna", stl: "potom", obl: "2v2", nar: "M", stav: "napad", nazov: "Herňa pre štyroch",
+    kratko: "Pozvánka so 4 miestami, stôl so štyrmi líniami, tímový chat a ukazovák.",
+    zavisi: ["q-view"],
+    preco: "Dnešný stôl a lobby počítajú s dvoma hráčmi.", hotovo: "Štyria ľudia na štyroch zariadeniach dohrajú partiu." },
+  { id: "q-timove", stl: "potom", obl: "2v2", nar: "M", stav: "napad", nazov: "Tímové prvky za prepínačom",
+    kratko: "Podanie pod stolom, ručenie, spoločný prípitok. Každý sa zapína zvlášť a meria simuláciou.",
+    zdroj: { typ: "dizajn", text: "Návrh 2 na 2", odkaz: P + "navrh-2v2.html" },
+    zavisi: ["q-bot"],
+    preco: "Bez nich by 2 na 2 boli dve partie vedľa seba, ktoré sa len sčítajú.",
+    hotovo: "Stratég zmeria každý prvok zvlášť." },
+  { id: "q-playtest", stl: "potom", obl: "2v2", nar: "S", stav: "napad", nazov: "Playtest 2 na 2",
+    kratko: "Turnus so štyrmi postavami; report s tímovými kritériami (koordinácia, partner).",
+    zavisi: ["q-herna", "q-timove"],
+    preco: "Overiť formát rovnako ako 1 na 1.", hotovo: "Dva turnusy, rozhodnutie o zverejnení." },
+
+  // ---- Neskôr
+  { id: "n-duplikat", stl: "neskor", obl: "platforma", nar: "M", stav: "napad", nazov: "Partia týždňa",
+    kratko: "Všetci hrajú rovnaké rozdanie proti botovi, rebríček podľa skóre.",
+    preco: "Využíva seedovanú náhodu a duplikátne rozdania, ktoré už má stratég. Porovnáva zručnosť bez šťastia.",
+    hotovo: "Týždenné rozdanie s vlastným rebríčkom." },
+  { id: "n-sezony", stl: "neskor", obl: "platforma", nar: "S", stav: "napad", nazov: "Sezóny rebríčka a Elo",
+    kratko: "Rebríček podľa sily súperov, sezóna = verzia pravidiel.",
+    zavisi: ["d-v4"], preco: "Pri zmrazených pravidlách dáva sezóna zmysel.", hotovo: "" },
+  { id: "n-rozsirenie", stl: "neskor", obl: "karty", nar: "L", stav: "napad", nazov: "Rozšírenie: Hody",
+    kratko: "Tematická sada dedinských udalostí (Hody, Zabíjačka, Svadba, Fašiangy) ako lokality a karty.",
+    zavisi: ["d-v4"], preco: "Téma je silná stránka hry (originalita 8,8). Rozšírenie sa oplatí až nad stabilnými pravidlami.", hotovo: "" },
+  { id: "n-tlac", stl: "neskor", obl: "karty", nar: "M", stav: "napad", nazov: "Tlač z tvorcu",
+    kratko: "Export zverejnenej sady do tlačového PDF: návrat k fyzickej hre.",
+    preco: "Hra vznikla ako fyzické karty (tlačová sada M11). Po zmrazení sa oplatí mať aktuálnu krabicu.", hotovo: "" },
+  { id: "n-async", stl: "neskor", obl: "platforma", nar: "L", stav: "napad", nazov: "Hra na pokračovanie",
+    kratko: "Ťah, keď máš čas, s upozornením. Pre mobil a pre ľudí, ktorí nemajú hodinu naraz.",
+    preco: "Dlhá partia je jedna z prekážok, aby si ľudia sadli k hre.", hotovo: "" },
+  { id: "n-divak", stl: "neskor", obl: "platforma", nar: "M", stav: "napad", nazov: "Divácky režim",
+    kratko: "Pozerať partiu kamarátov alebo AI s oneskorením, len verejné informácie.",
+    preco: "Dobré na učenie sa hry a na komunitu.", hotovo: "" },
+  { id: "n-uspechy", stl: "neskor", obl: "komunita", nar: "S", stav: "napad", nazov: "Úspechy a zbierka",
+    kratko: "Odznaky (prvé vydesenie, päť NA EX v jednej Pitke) a odomykateľné avatary.",
+    preco: "Lacný dôvod vrátiť sa k hre.", hotovo: "" },
+  { id: "n-cestina", stl: "neskor", obl: "platforma", nar: "M", stav: "napad", nazov: "Čeština",
+    kratko: "Preklad kariet a pravidiel. Humor sa musí prebásniť, nie preložiť.",
+    preco: "Najbližší trh s rovnakou kultúrou krčmy.", hotovo: "" },
+
+  // ---- Hotové
+  { id: "h-m23", stl: "hotove", obl: "pravidla", nar: "L", stav: "hotove", nazov: "M23: verejný dlh, remíza na sekeru", kratko: "21. 10. · herný stôl „čo vidíš, to platí“, sada v15", commit: "9b82d7d" },
+  { id: "h-schemy", stl: "hotove", obl: "ui", nar: "M", stav: "hotove", nazov: "Farebné schémy webu", kratko: "21. 10. · 10 schém, výber v profile", commit: "75fd04c" },
+  { id: "h-playtest", stl: "hotove", obl: "platforma", nar: "M", stav: "hotove", nazov: "Sekcia Playtest s návrhmi", kratko: "21. 10. · 6 postáv, turnus 1–3 partií, Developer", commit: "c5fe111" },
+  { id: "h-m22", stl: "hotove", obl: "pravidla", nar: "M", stav: "hotove", nazov: "M22: patronát staršieho", kratko: "20. 10. · Pohoršenie cez dve hranice zón", commit: "be897a6" },
+  { id: "h-m21", stl: "hotove", obl: "pravidla", nar: "M", stav: "hotove", nazov: "M21: pas za cigarety, Úžerník", kratko: "20. 10. · šenok bez podávania", commit: "08b3d74" },
+  { id: "h-m18", stl: "hotove", obl: "pravidla", nar: "L", stav: "hotove", nazov: "M18–M20: 14 lokalít, prevaha", kratko: "20. 10. · Pitky z lokalít, výber miesta klikom", commit: "2337ed4" },
+  { id: "h-m17", stl: "hotove", obl: "platforma", nar: "L", stav: "hotove", nazov: "M17: offline protihráči", kratko: "19. 10. · tri povahy bota, nasadenie na OVH", commit: "4d6dc92" },
+];
+
+// ---------- stav (pamätá sa len v tomto prehliadači) ----------
+const KLUC = "naex-roadmapa-mockup-v1";
+let polozky = nacitaj();
+let filterObl = null, lenPlaytest = false, hladat = "", tahana = null;
+const zbalene = new Set(["hotove"]);
+const zaznamy = {};
+
+function nacitaj() {
+  const kopia = POVODNE.map((p) => ({ ...p }));
+  try {
+    const s = JSON.parse(localStorage.getItem(KLUC) || "null");
+    if (!s || !Array.isArray(s.poradie)) return kopia;
+    const podlaId = new Map(kopia.map((p) => [p.id, p]));
+    for (const n of s.nove || []) if (!podlaId.has(n.id)) podlaId.set(n.id, n);
+    const vysledok = [];
+    for (const [id, stl] of s.poradie) { const p = podlaId.get(id); if (p) { p.stl = stl; vysledok.push(p); podlaId.delete(id); } }
+    return vysledok.concat([...podlaId.values()]);
+  } catch { return kopia; }
+}
+function uloz() {
+  try {
+    const povodneId = new Set(POVODNE.map((p) => p.id));
+    localStorage.setItem(KLUC, JSON.stringify({ poradie: polozky.map((p) => [p.id, p.stl]), nove: polozky.filter((p) => !povodneId.has(p.id)) }));
+  } catch { /* súkromné okno: zmeny len do obnovenia stránky */ }
+}
+
+// ---------- vykreslenie ----------
+const el = (tag, attrs = {}, ...deti) => {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (v === null || v === undefined || v === false) continue;
+    if (k === "class") e.className = v; else if (k.startsWith("on")) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v === true ? "" : v);
+  }
+  for (const d of deti.flat()) if (d !== null && d !== undefined && d !== false) e.append(d);
+  return e;
+};
+const nazovPolozky = (id) => (polozky.find((p) => p.id === id) || {}).nazov || id;
+const viditelna = (p) => (!filterObl || p.obl === filterObl) && (!lenPlaytest || (p.zdroj && p.zdroj.typ === "playtest"))
+  && (!hladat || (p.nazov + " " + (p.kratko || "")).toLowerCase().includes(hladat));
+
+function vykresliFiltre() {
+  const f = document.getElementById("filtre");
+  f.replaceChildren(
+    el("button", { class: "chip-f", "aria-pressed": String(filterObl === null), onclick: () => { filterObl = null; vykresli(); } }, "Všetko"),
+    ...Object.entries(OBLASTI).map(([k, t]) => el("button", { class: "chip-f", "data-obl": k, "aria-pressed": String(filterObl === k), onclick: () => { filterObl = filterObl === k ? null : k; vykresli(); } }, el("i"), t)),
+    el("span", { class: "medzera" }),
+    el("label", { class: "prepinac" }, el("input", { type: "checkbox", checked: lenPlaytest, onchange: (e) => { lenPlaytest = e.target.checked; vykresli(); } }), "len z playtestov"),
+    el("input", { type: "search", placeholder: "Hľadať…", "aria-label": "Hľadať v roadmape", value: hladat, oninput: (e) => { hladat = e.target.value.trim().toLowerCase(); vykresliTabulu(); } }),
+  );
+}
+
+function kartaPolozky(p, i) {
+  const pat = el("div", { class: "paticka" });
+  if (p.zdroj) pat.append(el("span", { class: "stitok zdroj-" + p.zdroj.typ }, p.zdroj.text));
+  if (p.stav && p.stav !== "hotove") pat.append(el("span", { class: "stitok stav-" + p.stav }, STAVY[p.stav] || p.stav));
+  if (p.zavisi && p.zavisi.length) pat.append(el("span", { class: "stitok zavisi", title: "Závisí od: " + p.zavisi.map(nazovPolozky).join(", ") }, "↳ po " + p.zavisi.length));
+  if (p.commit) pat.append(el("span", { class: "stitok" }, p.commit));
+  const hotova = p.stl === "hotove";
+  const k = el("article", {
+    class: "polozka" + (p.nova ? " nova" : ""), "data-obl": p.obl, "data-id": p.id, tabindex: "0", draggable: hotova ? null : "true",
+    "aria-label": `${i + 1}. ${p.nazov}`,
+    onclick: () => otvorDetail(p.id),
+    onkeydown: (e) => klavesy(e, p),
+    ondragstart: (e) => { tahana = p.id; k.classList.add("tahana"); e.dataTransfer.effectAllowed = "move"; try { e.dataTransfer.setData("text/plain", p.id); } catch {} },
+    ondragend: () => { tahana = null; k.classList.remove("tahana"); document.querySelectorAll(".miesto").forEach((m) => m.remove()); document.querySelectorAll(".nad").forEach((m) => m.classList.remove("nad")); },
+  },
+    el("div", { class: "riadok1" }, el("span", { class: "poradie" }, (i + 1) + "."), el("span", { class: "oblast" }, el("i"), OBLASTI[p.obl]), el("span", { class: "narocnost", title: "náročnosť " + NAROCNOST[p.nar] }, p.nar)),
+    el("h4", {}, p.nazov),
+    p.kratko ? el("p", { class: "kratko" }, p.kratko) : null,
+    pat,
+  );
+  if (p.nova) setTimeout(() => { delete p.nova; }, 1700);
+  return k;
+}
+
+function vykresliTabulu() {
+  const t = document.getElementById("tabula");
+  const fokusId = document.activeElement && document.activeElement.dataset ? document.activeElement.dataset.id : null;
+  t.replaceChildren(...STLPCE.map((s) => {
+    const vsetky = polozky.filter((p) => p.stl === s.kluc);
+    const vid = vsetky.filter(viditelna);
+    const zbal = zbalene.has(s.kluc);
+    const telo = el("div", { class: "stlpec-telo", "data-stl": s.kluc });
+    if (!zbal) {
+      if (vid.length === 0) telo.append(el("div", { class: "prazdny" }, vsetky.length ? "Nič nevyhovuje filtru." : "Sem potiahni položku."));
+      vid.forEach((p) => telo.append(kartaPolozky(p, vsetky.indexOf(p))));
+    }
+    if (s.kluc !== "hotove") {
+      telo.addEventListener("dragover", (e) => { if (!tahana) return; e.preventDefault(); telo.classList.add("nad"); ukazMiesto(telo, e.clientY); });
+      telo.addEventListener("dragleave", (e) => { if (!telo.contains(e.relatedTarget)) { telo.classList.remove("nad"); telo.querySelectorAll(".miesto").forEach((m) => m.remove()); } });
+      telo.addEventListener("drop", (e) => { e.preventDefault(); if (!tahana) return; const za = idPredMiestom(telo); presun(tahana, s.kluc, za); });
+    }
+    return el("section", { class: "stlpec" + (s.kluc === "prijimac" ? " prijimac" : "") + (s.kluc === "hotove" ? " hotove" : ""), "aria-label": s.nazov },
+      el("header", { class: "stlpec-hlava" },
+        el("h3", {}, s.nazov, el("span", { class: "pocet" }, String(vsetky.length)), s.horizont ? el("span", { class: "horizont" }, s.horizont) : null),
+        el("p", {}, s.zamer),
+        s.kluc === "hotove" ? el("button", { class: "zbal", onclick: () => { zbal ? zbalene.delete(s.kluc) : zbalene.add(s.kluc); vykresliTabulu(); } }, zbal ? `Ukázať ${vsetky.length} hotových` : "Zbaliť") : null,
+      ),
+      telo);
+  }));
+  const pocet = polozky.filter((p) => p.stl === "prijimac" && p.stav === "nove").length;
+  document.getElementById("pocet-navrhov").textContent = String(pocet);
+  if (fokusId) { const f = t.querySelector(`[data-id="${CSS.escape(fokusId)}"]`); if (f) f.focus(); }
+}
+function vykresli() { vykresliFiltre(); vykresliTabulu(); }
+
+// ---------- presúvanie ----------
+function ukazMiesto(telo, y) {
+  telo.querySelectorAll(".miesto").forEach((m) => m.remove());
+  const karty = [...telo.querySelectorAll(".polozka:not(.tahana)")];
+  const pred = karty.find((k) => { const r = k.getBoundingClientRect(); return y < r.top + r.height / 2; });
+  const m = el("div", { class: "miesto", "data-pred": pred ? pred.dataset.id : "" });
+  pred ? telo.insertBefore(m, pred) : telo.append(m);
+}
+function idPredMiestom(telo) { const m = telo.querySelector(".miesto"); return m && m.dataset.pred ? m.dataset.pred : null; }
+
+/** Presunie položku do stĺpca pred položku `predId` (null = na koniec stĺpca). */
+function presun(id, stl, predId) {
+  const i = polozky.findIndex((p) => p.id === id);
+  if (i < 0 || id === predId) return;
+  const [p] = polozky.splice(i, 1);
+  const zStl = p.stl;
+  p.stl = stl;
+  let kam = predId ? polozky.findIndex((q) => q.id === predId) : -1;
+  if (kam < 0) { const posledna = polozky.map((q) => q.stl).lastIndexOf(stl); kam = posledna < 0 ? polozky.length : posledna + 1; }
+  polozky.splice(kam, 0, p);
+  if (p.stav === "schvalene" && stl !== "prijimac") p.stav = "rozhodnute";
+  (zaznamy[id] ||= []).push(zStl === stl ? `poradie v stĺpci ${nazovStlpca(stl)}: ${poradieV(p)}.` : `presunuté: ${nazovStlpca(zStl)} → ${nazovStlpca(stl)}, ${poradieV(p)}. miesto`);
+  uloz(); vykresliTabulu();
+  if (!document.getElementById("panel").hidden) otvorDetail(id);
+}
+const nazovStlpca = (k) => STLPCE.find((s) => s.kluc === k).nazov;
+const poradieV = (p) => polozky.filter((q) => q.stl === p.stl).indexOf(p) + 1;
+
+function posunVStlpci(p, smer) {
+  const v = polozky.filter((q) => q.stl === p.stl);
+  const j = v.indexOf(p) + smer;
+  if (j < 0 || j >= v.length) return;
+  presun(p.id, p.stl, smer < 0 ? v[j].id : (v[j + 1] ? v[j + 1].id : null));
+}
+function posunStlpec(p, smer) {
+  const poradieStl = STLPCE.map((s) => s.kluc).filter((k) => k !== "hotove");
+  const j = poradieStl.indexOf(p.stl) + smer;
+  if (j < 0 || j >= poradieStl.length) return;
+  presun(p.id, poradieStl[j], null);
+}
+function klavesy(e, p) {
+  if (e.key === "Enter" || e.key === " ") { e.preventDefault(); otvorDetail(p.id); return; }
+  if (!e.altKey || p.stl === "hotove") return;
+  const m = { ArrowUp: () => posunVStlpci(p, -1), ArrowDown: () => posunVStlpci(p, 1), ArrowLeft: () => posunStlpec(p, -1), ArrowRight: () => posunStlpec(p, 1) }[e.key];
+  if (m) { e.preventDefault(); m(); }
+}
+
+// ---------- detail ----------
+let poslednyFokus = null;
+function otvorDetail(id) {
+  const p = polozky.find((q) => q.id === id);
+  if (!p) return;
+  const panel = document.getElementById("panel");
+  if (panel.hidden) poslednyFokus = document.activeElement;
+  const zdroj = p.zdroj ? (p.zdroj.odkaz ? el("a", { href: p.zdroj.odkaz }, p.zdroj.text) : p.zdroj.text) : "vlastný nápad (roadmapa)";
+  const presunSel = el("select", { "aria-label": "Stĺpec" }, ...STLPCE.filter((s) => s.kluc !== "hotove").map((s) => el("option", { value: s.kluc, selected: s.kluc === p.stl }, s.nazov)));
+  const blokuje = polozky.filter((q) => (q.zavisi || []).includes(p.id));
+  document.getElementById("panel-obsah").replaceChildren(
+    el("div", { class: "riadok1", "data-obl": p.obl, style: "display:flex;gap:8px;font-size:.8rem;color:var(--slaby)" }, el("span", { class: "oblast" }, el("i"), OBLASTI[p.obl]), "·", nazovStlpca(p.stl) + ", " + poradieV(p) + ". miesto"),
+    el("h3", { id: "panel-nadpis" }, p.nazov),
+    p.kratko ? el("p", {}, p.kratko) : null,
+    el("dl", {},
+      el("dt", {}, "Stav"), el("dd", {}, STAVY[p.stav] || p.stav),
+      el("dt", {}, "Náročnosť"), el("dd", {}, `${p.nar}, ${NAROCNOST[p.nar]}`),
+      el("dt", {}, "Zdroj"), el("dd", {}, zdroj),
+      p.commit ? el("dt", {}, "Commit") : null, p.commit ? el("dd", {}, el("code", {}, p.commit)) : null,
+    ),
+    p.preco ? [el("h5", {}, "Prečo"), el("p", {}, p.preco)] : null,
+    p.hotovo ? [el("h5", {}, "Hotovo, keď"), el("p", {}, p.hotovo)] : null,
+    p.zavisi && p.zavisi.length ? [el("h5", {}, "Závisí od"), el("ul", {}, p.zavisi.map((z) => el("li", {}, el("a", { href: "#", onclick: (e) => { e.preventDefault(); otvorDetail(z); } }, nazovPolozky(z)))))] : null,
+    blokuje.length ? [el("h5", {}, "Čaká na to"), el("ul", {}, blokuje.map((q) => el("li", {}, el("a", { href: "#", onclick: (e) => { e.preventDefault(); otvorDetail(q.id); } }, q.nazov))))] : null,
+    p.stl !== "hotove" ? [
+      el("h5", {}, "Presunúť"),
+      el("div", { class: "presun" },
+        el("button", { class: "tlacidlo", onclick: () => posunVStlpci(p, -1) }, "↑ Vyššie"),
+        el("button", { class: "tlacidlo", onclick: () => posunVStlpci(p, 1) }, "↓ Nižšie"),
+        presunSel,
+        el("button", { class: "tlacidlo", onclick: () => { if (presunSel.value !== p.stl) presun(p.id, presunSel.value, null); } }, "Na koniec stĺpca"),
+      ),
+    ] : null,
+    zaznamy[p.id] ? [el("h5", {}, "História (táto relácia)"), el("ul", { class: "historia" }, zaznamy[p.id].map((z) => el("li", {}, z)))] : null,
+  );
+  panel.hidden = false;
+  document.getElementById("panel-pozadie").hidden = false;
+  document.getElementById("panel-zavriet").focus();
+}
+function zavriDetail() {
+  document.getElementById("panel").hidden = true;
+  document.getElementById("panel-pozadie").hidden = true;
+  if (poslednyFokus && document.contains(poslednyFokus)) poslednyFokus.focus();
+}
+document.getElementById("panel-zavriet").addEventListener("click", zavriDetail);
+document.getElementById("panel-pozadie").addEventListener("click", zavriDetail);
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !document.getElementById("panel").hidden) zavriDetail(); });
+
+// ---------- nová položka, ukážka toku, export ----------
+const dlg = document.getElementById("dialog-nova");
+document.getElementById("dn-obl").replaceChildren(...Object.entries(OBLASTI).map(([k, t]) => el("option", { value: k }, t)));
+document.getElementById("dn-stl").replaceChildren(...STLPCE.filter((s) => s.kluc !== "hotove").map((s) => el("option", { value: s.kluc, selected: s.kluc === "prijimac" }, s.nazov)));
+document.getElementById("pridaj").addEventListener("click", () => { document.getElementById("form-nova").reset(); dlg.returnValue = ""; dlg.showModal(); });
+dlg.addEventListener("close", () => {
+  if (dlg.returnValue !== "ok") return;
+  const d = new FormData(document.getElementById("form-nova"));
+  const nazov = String(d.get("nazov") || "").trim();
+  if (!nazov) return;
+  const p = { id: "u-" + Date.now().toString(36), stl: String(d.get("stl")), obl: String(d.get("obl")), nar: String(d.get("nar")), stav: "napad", nazov, kratko: String(d.get("kratko") || "").trim(), nova: true };
+  const posledna = polozky.map((q) => q.stl).lastIndexOf(p.stl);
+  polozky.splice(posledna < 0 ? polozky.length : posledna + 1, 0, p);
+  uloz(); vykresliTabulu(); toast(`Pridané do stĺpca ${nazovStlpca(p.stl)}.`);
+});
+
+let ukazka = 0;
+const UKAZKY = [
+  { nazov: "Vypiť: jedna formulácia v §5", obl: "pravidla", nar: "S", kratko: "Pravidlá majú pre Vypiť dve rôzne formulácie. Zjednotiť.",
+    zdroj: { typ: "playtest", text: "Playtest (ukážka) · bod 6A" }, preco: "Spisovateľ našiel dve znenia toho istého pravidla.", hotovo: "Jedno znenie v PRAVIDLA.md a na webe." },
+  { nazov: "Cena posunu s Miňištrantom vopred", obl: "ui", nar: "S", kratko: "Ukázať zdraženie posunu skôr, než hráč zaplatí.",
+    zdroj: { typ: "playtest", text: "Playtest (ukážka) · bod 7A" }, preco: "Eva a názory #8 a #22: cenu vidno neskoro.", hotovo: "Cena je pri tlačidle posunu." },
+];
+document.getElementById("simuluj").addEventListener("click", () => {
+  const u = UKAZKY[ukazka++ % UKAZKY.length];
+  const p = { ...u, id: "s-" + Date.now().toString(36), stl: "prijimac", stav: "schvalene", nova: true };
+  polozky.unshift(p);
+  filterObl = null; lenPlaytest = false; hladat = "";
+  uloz(); vykresli();
+  toast("Michal schválil návrh v Návrhoch → objavil sa navrchu Prijímača. Potiahni ho do horizontu.");
+});
+
+document.getElementById("kopiruj").addEventListener("click", async () => {
+  const text = STLPCE.filter((s) => s.kluc !== "hotove").map((s) =>
+    s.nazov.toUpperCase() + "\n" + polozky.filter((p) => p.stl === s.kluc).map((p, i) => `${i + 1}. ${p.nazov}`).join("\n")).join("\n\n");
+  try { await navigator.clipboard.writeText(text); toast("Poradie je v schránke. Vlož mi ho do chatu."); }
+  catch { const w = window.open("", "_blank"); if (w) { w.document.body.style.whiteSpace = "pre-wrap"; w.document.body.textContent = text; } else toast("Schránka nie je dostupná."); }
+});
+
+let toastCas;
+function toast(t) { const e = document.getElementById("toast"); e.textContent = t; e.hidden = false; clearTimeout(toastCas); toastCas = setTimeout(() => { e.hidden = true; }, 3600); }
+
+// ---------- záložky dokumentu ----------
+const zalozky = [...document.querySelectorAll('.dok-zalozky [role="tab"]')];
+function vyberZalozku(z) {
+  zalozky.forEach((b) => { const ano = b === z; b.setAttribute("aria-selected", String(ano)); b.tabIndex = ano ? 0 : -1; document.getElementById(b.getAttribute("aria-controls")).hidden = !ano; });
+  try { localStorage.setItem(KLUC + "-zalozka", z.id); } catch {}
+}
+zalozky.forEach((b, i) => {
+  b.addEventListener("click", () => vyberZalozku(b));
+  b.addEventListener("keydown", (e) => { const d = { ArrowRight: 1, ArrowLeft: -1 }[e.key]; if (d) { const n = zalozky[(i + d + zalozky.length) % zalozky.length]; vyberZalozku(n); n.focus(); } });
+});
+try { const z = document.getElementById(localStorage.getItem(KLUC + "-zalozka")); if (z) vyberZalozku(z); } catch {}
+
+vykresli();
+</script>
+</body>
+</html>

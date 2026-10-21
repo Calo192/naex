@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../lib/api.ts";
 import { useTitulok } from "../lib/router.tsx";
-import { NAZOV_UROVNE, PARTII_NA_HRACA, useUcet, type Pouzivatel, type Rola } from "../lib/ucet.tsx";
+import { NAZOV_UROVNE, useUcet, type Pouzivatel, type Rola } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
 
 type Riadok = Pouzivatel & { readonly vytvoreny: number; readonly dohrate: number };
@@ -46,7 +46,7 @@ export function Pouzivatelia() {
       <h1>Hráči</h1>
       <p className="tlmene">
         {zoznam.length} účtov — {pocet("subadmin")} subadmin, {pocet("hrac")} hráčov, {pocet("navstevnik")} návštevníkov. Nový účet je
-        návštevník (hrá a číta spätnú väzbu); po {PARTII_NA_HRACA} dohratých partiách sa sám stane hráčom. Subadmin smie to isté čo admin
+        návštevník (hrá a číta spätnú väzbu); po prvej odohranej bitke (aj proti botovi) sa sám stane hráčom. Subadmin smie to isté čo admin
         okrem zmeny úrovní. Účty AI agentov (playtesteri, protihráč) sú hráči so značkou AI — ich spätnú väzbu web predvolene skrýva;
         nástroje playtestu ich zaradia samy. {somAdmin ? "Úroveň a značku AI meníš v posledných stĺpcoch." : "Úrovne mení len admin."}
       </p>
