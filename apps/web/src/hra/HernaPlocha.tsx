@@ -676,7 +676,7 @@ export function HernaPlocha({
     const h = view.hraci;
     const hraci: ClientState["hraci"] =
       ja === 0 ? [{ ...h[0], pecen: h[0].pecen + vypijemVTahu }, h[1]] : [h[0], { ...h[1], pecen: h[1].pecen + vypijemVTahu }];
-    return nahladPitky(data, { ciel: stol.ciel, ovladnute: view.ovladnute, strany: stol.strany, starsi: view.starsi, hraci, lokalitaOtocena: otocenaTeraz });
+    return nahladPitky(data, { ciel: stol.ciel, ovladnute: view.ovladnute, strany: stol.strany, starsi: view.starsi, hraci, lokalitaOtocena: otocenaTeraz, vizia: view.vizia });
   }, [data, view, stol, ja, vypijemVTahu, otocenaTeraz]);
   /** Body jednej Cirhózy a jedného Dlhu na konci hry pri dnešných scorecardoch (záporné). */
   const cenyKliatob = useMemo(
@@ -771,7 +771,7 @@ export function HernaPlocha({
       // Kliatby: NA EX pripíše pečeň +1 tomu, kto ho dal, a zmení línie — porovnaj výhľad Pitky pred a po.
       const h = view.hraci;
       const hraci: ClientState["hraci"] = ja === 0 ? [{ ...h[0], pecen: h[0].pecen + 1 }, h[1]] : [h[0], { ...h[1], pecen: h[1].pecen + 1 }];
-      const po = nahladPitky(data, { ciel: stol.ciel, ovladnute: view.ovladnute, strany, starsi: view.starsi, hraci, lokalitaOtocena: view.lokalitaOtocena });
+      const po = nahladPitky(data, { ciel: stol.ciel, ovladnute: view.ovladnute, strany, starsi: view.starsi, hraci, lokalitaOtocena: view.lokalitaOtocena, vizia: view.vizia });
       const kliatby = ([0, 1] as const).map((p): KliatbyNaex => {
         const a = nahladyPitky[p];
         const b = po[p];

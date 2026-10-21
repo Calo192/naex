@@ -183,6 +183,24 @@ describe("náhľad Pitky = vyhodnotenie (Michal 2026-10-21)", () => {
     expect(pitiek).toBeGreaterThan(20);
   });
 
+  it("vo Vízii je Pitka vyhodnotená — náhľad nepripočíta stôl druhýkrát (playtest 20261021-143600)", () => {
+    let vizii = 0;
+    for (const seed of SEEDY) {
+      partia(seed, ({ pred }) => {
+        if (pred.vizia === null) return;
+        const nahlad = nahladPitky(data, pred);
+        for (const p of [0, 1] as const) {
+          expect(nahlad[p].pecenZoStola).toBe(0);
+          expect(nahlad[p].zadlzenieZoStola).toBe(0);
+          expect(nahlad[p].cirhozy).toBe(0);
+          expect(nahlad[p].dlhy).toBe(0);
+        }
+        vizii++;
+      });
+    }
+    expect(vizii).toBeGreaterThan(0);
+  });
+
   it("„hotovo“ v Pitke sa zapíše do logu, ktorý vidia obaja", () => {
     let hotovych = 0;
     partia(4, ({ cmd, hrac, events }) => {
