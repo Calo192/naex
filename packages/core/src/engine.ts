@@ -678,23 +678,29 @@ export function nahladPitky(
   s: VerejnyStav & {
     readonly lokalitaOtocena: boolean;
     readonly hraci: readonly [VerejnyHrac & PecenHraca, VerejnyHrac & PecenHraca];
+    readonly vizia: GameState["vizia"];
   },
 ): readonly [NahladPitkyHraca, NahladPitkyHraca] {
   const pr = prirastkyPitky(data, s);
+  // Vo Vízii je Pitka už vyhodnotená — karty na stole pečeň a zadĺženie pripísali
+  // a nulujú sa až v dokonciPitku. Rátať ich znova hlásilo kliatby, ktoré nevzniknú
+  // (playtest 20261021-143600).
+  const vyhodnotena = s.vizia !== null;
   const pre = (p: PlayerId): NahladPitkyHraca => {
     const prahPecene = prahCirhozy(priazen(data, s, "ALKOHOLIK", p)) + prahCirhozyBonus(s, p);
     const prahD = prahDlhu(priazen(data, s, "UZERNIK", p));
-    const pecenZoStola = pr.poskodeniePecene[p] + pr.poldeci[p];
+    const pecenZoStola = vyhodnotena ? 0 : pr.poskodeniePecene[p] + pr.poldeci[p];
+    const zadlzenieZoStola = vyhodnotena ? 0 : pr.zadlzenie[p];
     const h = s.hraci[p];
     return {
       pecen: h.pecen,
       zadlzenie: h.zadlzenie,
       pecenZoStola,
-      zadlzenieZoStola: pr.zadlzenie[p],
+      zadlzenieZoStola,
       prahPecene,
       prahDlhu: prahD,
       cirhozy: Math.floor((h.pecen + pecenZoStola) / prahPecene),
-      dlhy: Math.floor((h.zadlzenie + pr.zadlzenie[p]) / prahD),
+      dlhy: Math.floor((h.zadlzenie + zadlzenieZoStola) / prahD),
     };
   };
   return [pre(0), pre(1)];
