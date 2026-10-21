@@ -10,7 +10,8 @@ Web má tri časti a prihlásenie:
 | **Pravidlá** (`/pravidla`) | ktokoľvek | pravidlá v2 po kapitolách s ilustráciami a interaktívnymi ukážkami |
 | **Karty** (`/karty`) | ktokoľvek | glosár kariet v tlačovom vzhľade, tooltipy akcií a pojmov, varianty |
 | **Hrať** (`/hra`) | prihlásený hráč | súkromná hra s kódom alebo verejná hra zo zoznamu, mená a avatary |
-| **Tvorba** (`/admin`) | admin | webová verzia MAUI aplikácie KartyAI — návrhy kariet, tvorca, akcie, kľúčové slová, farby, štatistiky, simulácia, bodovacie karty, tlač, import/export, používatelia, zverejnenie sady |
+| **Tvorba** (`/admin`) | admin, subadmin | webová verzia MAUI aplikácie KartyAI — návrhy kariet, tvorca, akcie, kľúčové slová, farby, bodovacie karty, tlač, import/export, zverejnenie sady |
+| **Hráči** (`/hraci`) | admin, subadmin | účty a úrovne (admin / subadmin / hráč / návštevník), značka AI; úrovne mení len admin |
 | **Profil** (`/profil`, `/hrac/:id`) | prihlásený | herné meno, avatar, heslo; **Frajerina** a podrobné štatistiky z dohraných partií |
 | **Rebríček** (`/rebricek`) | prihlásený | poradie hráčov podľa Frajeriny, hodnosti |
 | **Spätná väzba** (`/spatna-vazba`) | prihlásený | názory na hru, komentáre, cigarety (obdoba „páči sa mi“); admin mení stav názoru |
@@ -46,7 +47,7 @@ packages/core/     jadro pravidiel — čistý TS, bez I/O, deterministické
   data/elders.json   8 starších (len zoznam)
   data/scorecards.json  8 scorecardov z KartyAI — podmienky; body PROVIZÓRNE
 packages/tvorba/   model tvorcu kariet — čistý TS (varianty, farby, geometria
-                   karty, formát textu, export/import TXT, štatistiky)
+                   karty, formát textu, export/import TXT)
 packages/server/   autoritatívny server: hra (ws), REST API, SQLite, médiá
   seed/              ilustrácie a vzhľad kariet pre prvé spustenie
 apps/web/          klient (React + Vite)

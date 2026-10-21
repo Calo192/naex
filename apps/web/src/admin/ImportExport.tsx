@@ -5,6 +5,7 @@ import { api } from "../lib/api.ts";
 import { useTitulok } from "../lib/router.tsx";
 import { Hlaska } from "../komponenty.tsx";
 import { useAdmin } from "./stav.tsx";
+import { AdminHlava } from "./spolocne.tsx";
 
 interface Vysledok {
   readonly kariet: number;
@@ -34,7 +35,7 @@ export function ImportExport() {
 
   return (
     <div className="admin-stranka">
-      <h1>Import a export</h1>
+      <AdminHlava titul="Import a export" popis="Návrhy kariet ako text vo formáte MAUI aplikácie KartyAI — na zálohu alebo hromadnú úpravu." />
       <section className="panel">
         <h2>Export</h2>
         <p className="tlmene">

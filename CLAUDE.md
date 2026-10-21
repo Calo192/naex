@@ -103,7 +103,7 @@ packages/core/       jadro pravidiel — čistý TS, bez I/O
                        LLM); tri povahy (POVAHY) — Štamgast, Rapavý Fero, Teta
                        Gizka; server losuje. Skryté info pred výpočtom zamieša
 packages/tvorba/     model tvorcu kariet — čistý TS (varianty, geometria karty,
-                     farby, formát textu, export/import TXT, štatistiky)
+                     farby, formát textu, export/import TXT)
 packages/server/     server: hra (ws), REST API (/api), SQLite, médiá (/media)
   seed/                ilustrácie a vzhľad kariet pre prvé spustenie
   seed/avatary/        predvolené avatary (náhodný pre hráča bez fotky), boti/<povaha>.jpg

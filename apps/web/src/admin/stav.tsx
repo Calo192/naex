@@ -3,6 +3,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { AkciaDef, BodovaciaKarta, IkonaBodovania, KartaNavrh, Kategoria, KlucoveSlovo, Nastavenia, Vzhlad } from "@naex/tvorba";
+import { chybyNavrhu, neznameAkcie } from "@naex/tvorba";
 import { api } from "../lib/api.ts";
 
 export interface AdminObsah {
@@ -16,11 +17,20 @@ export interface AdminObsah {
   readonly zverejnenaVerzia: number;
 }
 
+export interface ZaznamSady {
+  readonly verzia: number;
+  readonly cas: number;
+  readonly kariet: number;
+}
+
 interface AdminKontext {
   readonly obsah: AdminObsah | null;
   readonly chyba: string | null;
   readonly vzhlad: Vzhlad | null;
+  /** História zverejnených sád, najnovšia prvá; null kým sa nenačíta. */
+  readonly sady: readonly ZaznamSady[] | null;
   obnov(): Promise<void>;
+  obnovSady(): void;
   ulozKartu(k: KartaNavrh): Promise<KartaNavrh>;
   zmazKartu(id: string): Promise<void>;
   ulozAkciu(a: Omit<AkciaDef, "poradie"> & { poradie?: number }): Promise<void>;
@@ -40,6 +50,14 @@ const Kontext = createContext<AdminKontext | null>(null);
 export function AdminProvider({ children }: { readonly children: ReactNode }) {
   const [obsah, setObsah] = useState<AdminObsah | null>(null);
   const [chyba, setChyba] = useState<string | null>(null);
+  const [sady, setSady] = useState<readonly ZaznamSady[] | null>(null);
+
+  const obnovSady = useCallback(() => {
+    void api
+      .get<{ sady: ZaznamSady[] }>("/admin/sady")
+      .then((r) => setSady(r.sady))
+      .catch(() => setSady([]));
+  }, []);
 
   const obnov = useCallback(async () => {
     try {
@@ -52,7 +70,8 @@ export function AdminProvider({ children }: { readonly children: ReactNode }) {
 
   useEffect(() => {
     void obnov();
-  }, [obnov]);
+    obnovSady();
+  }, [obnov, obnovSady]);
 
   const zmen = (f: (o: AdminObsah) => AdminObsah) => setObsah((o) => (o === null ? o : f(o)));
 
@@ -61,7 +80,9 @@ export function AdminProvider({ children }: { readonly children: ReactNode }) {
       obsah,
       chyba,
       vzhlad: obsah === null ? null : { akcie: obsah.akcie, klucoveSlova: obsah.klucoveSlova, kategorie: obsah.kategorie },
+      sady,
       obnov,
+      obnovSady,
       ulozKartu: async (k) => {
         const ulozena = await api.put<KartaNavrh>(`/admin/karty/${k.id}`, k);
         zmen((o) => ({
@@ -126,10 +147,11 @@ export function AdminProvider({ children }: { readonly children: ReactNode }) {
       zverejni: async () => {
         const r = await api.post<{ verzia: number }>("/admin/zverejnit");
         zmen((o) => ({ ...o, zverejnenaVerzia: r.verzia }));
+        obnovSady();
         return r.verzia;
       },
     }),
-    [obsah, chyba, obnov],
+    [obsah, chyba, sady, obnov, obnovSady],
   );
 
   return <Kontext.Provider value={hodnota}>{children}</Kontext.Provider>;
@@ -139,6 +161,20 @@ export function useAdmin(): AdminKontext {
   const k = useContext(Kontext);
   if (k === null) throw new Error("useAdmin mimo AdminProvider");
   return k;
+}
+
+/** Návrhy upravené po poslednom zverejnení (bez histórie sád žiadne). */
+export function zmeneneOdZverejnenia(obsah: AdminObsah, sady: readonly ZaznamSady[] | null): KartaNavrh[] {
+  const posledna = sady?.[0];
+  return posledna === undefined ? [] : obsah.karty.filter((k) => k.upravene > posledna.cas);
+}
+
+/** Čo bráni zverejneniu: chyby návrhu a akcie, ktoré hra nepozná. */
+export function problemyNavrhov(obsah: AdminObsah): { readonly karta: KartaNavrh; readonly text: string }[] {
+  return obsah.karty.flatMap((k) => [
+    ...chybyNavrhu(k).map((text) => ({ karta: k, text })),
+    ...neznameAkcie(k).map((a) => ({ karta: k, text: `akcia „${obsah.akcie.find((x) => x.kluc === a)?.nazov ?? a}“ nemá v hre pravidlá` })),
+  ]);
 }
 
 /** Krátke náhodné id pre nové záznamy (bodovacie karty, ikony). */

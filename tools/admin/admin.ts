@@ -20,7 +20,6 @@
 //   obnov <zaloha.json> <id>…     vráti návrhy kariet zo zálohy (všetky: --vsetky)
 // Rebalans a kontrola
 //   karty-v-partiach [--od N] [--playtesty]   štatistiky kariet z odohraných partií (web, playtesty)
-//   sila [--pokusov N]            hromadná simulácia sily kariet z návrhov (náhodné línie)
 //   texty                         kontrola textov efektov (spúšťač, preklepy, zmenený implementovaný efekt)
 //   zmienky <id>                  kde v pravidlách, webe a inštrukciách agentov sa karta spomína
 //   starsi                        starší, ich karty a bodovacie karty s bodmi za podmienky
@@ -80,7 +79,7 @@ import { REGISTER, loadGameData, normalizujStatistikyKariet, printedSides, scita
 import eldersJson from "../../packages/core/data/elders.json" with { type: "json" };
 import scorecardsJson from "../../packages/core/data/scorecards.json" with { type: "json" };
 import type { AkciaDef, BodovaciaKarta, IkonaBodovania, KartaNavrh, Kategoria, KlucoveSlovo, Nastavenia } from "@naex/tvorba";
-import { chybyNavrhu, doCardsJson, doScorecardsJson, kontrolaTextov, neznameAkcie, silaKariet, variantyKarty } from "@naex/tvorba";
+import { chybyNavrhu, doCardsJson, doScorecardsJson, kontrolaTextov, neznameAkcie, variantyKarty } from "@naex/tvorba";
 import { nacitajEnv, prihlasAgenta, webUrl } from "../playtest/web.ts";
 import { MAX_KOL_NA_KARTU, generuj, nacitajZaznam } from "./leonardo.ts";
 import type { Sila } from "./leonardo.ts";
@@ -292,7 +291,7 @@ const bezDiakritiky = (s: string): string => s.normalize("NFD").replace(/[̀-ͯ]
 
 // ---- príkazový riadok ------------------------------------------------------------
 
-const S_HODNOTOU = new Set(["--url", "--od", "--pokusov", "--seed", "--popis", "--nazov", "--kategoria", "--pocet", "--sila", "--vysledok"]);
+const S_HODNOTOU = new Set(["--url", "--od", "--seed", "--popis", "--nazov", "--kategoria", "--pocet", "--sila", "--vysledok"]);
 
 /** Štýl avatarov AI účtov — ako avatary offline protihráčov (seed/avatary/boti): dedinčan napoly robot. */
 const STYL_AVATARA =
@@ -564,20 +563,6 @@ async function main(): Promise<void> {
       }
       console.log("Stĺpce ⌀ sú na jednu bitku, v ktorej karta ležala v línii. Jedna partia je jeden údaj.\n");
       vypisStatistikyKariet(karty, nazov);
-      break;
-    }
-
-    case "sila": {
-      const o = await obsah();
-      const pokusov = Math.max(500, Math.min(100000, Number(hodnota("--pokusov") ?? 10000) || 10000));
-      const vysledok = silaKariet(dataZNavrhov(o), { pokusov, seed: Number(hodnota("--seed") ?? 1) || 1 });
-      console.log(`Hromadná simulácia z návrhov: ${pokusov} náhodných línií (len akcie a spoje; efekty, NA EX a podstrkovanie nie).\n`);
-      console.log(
-        tabulka(
-          ["karta", "⌀tuhé", "⌀aktívnych", "aktivácia", "⌀kliatbové", "výskytov"],
-          vysledok.map((s) => [`${s.nazov} (${s.defId})`, f1(s.tuhe), f1(s.aktivne), pct(s.aktivacia), f1(s.zle), String(s.vyskytov)]),
-        ),
-      );
       break;
     }
 

@@ -7,6 +7,7 @@ import { pastelHex, rozlozOdtiene } from "@naex/tvorba";
 import { useTitulok } from "../lib/router.tsx";
 import { Hlaska, Pole } from "../komponenty.tsx";
 import { useAdmin } from "./stav.tsx";
+import { AdminHlava } from "./spolocne.tsx";
 
 export function Nastavenia() {
   useTitulok("Nastavenia — tvorba");
@@ -65,7 +66,7 @@ export function Nastavenia() {
 
   return (
     <div className="admin-stranka">
-      <h1>Farby a nastavenia</h1>
+      <AdminHlava titul="Farby a rozmery" popis="Farba karty podľa kategórie jej prvého tagu a predvolené rozmery a mierky nových kariet." />
       {sprava !== null && <Hlaska druh={sprava.druh}>{sprava.text}</Hlaska>}
 
       <section className="panel">

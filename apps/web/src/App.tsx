@@ -1,5 +1,6 @@
 // Smerovanie stránok. Verejné: domov, pravidlá, karty. Hra a profil pre
-// prihlásených, tvorba kariet a playtesty len pre admina a subadminov (overuje aj server).
+// prihlásených, tvorba kariet, playtesty a správa hráčov len pre admina a subadminov
+// (overuje aj server).
 // Vývoj hry (známky v čase a roadmapa) je verejný.
 
 import type { ReactNode } from "react";
@@ -17,6 +18,7 @@ import { Rebricek } from "./stranky/Rebricek.tsx";
 import { SpatnaVazba } from "./stranky/SpatnaVazba.tsx";
 import { Vyvoj } from "./stranky/Vyvoj.tsx";
 import { Admin } from "./admin/Admin.tsx";
+import { Hraci } from "./stranky/Hraci.tsx";
 import { Playtest } from "./playtest/Playtest.tsx";
 
 function Neprihlaseny() {
@@ -55,6 +57,7 @@ export function App() {
 
   if (cesta === "/playtest" || cesta.startsWith("/playtest/")) return <Layout siroky>{chranene(<Playtest cesta={cesta} />, true)}</Layout>;
   if (cesta.startsWith("/admin")) return <Layout siroky>{chranene(<Admin cesta={cesta} />, true)}</Layout>;
+  if (cesta === "/hraci") return <Layout siroky>{chranene(<Hraci />, true)}</Layout>;
   if (cesta === "/hra") return <Layout siroky><Hra /></Layout>;
   if (cesta === "/pravidla") return <Layout plna><Pravidla /></Layout>;
   // Vývoj hry a roadmapa sú verejné (Michal 2026-10-21); upravuje ich správca.

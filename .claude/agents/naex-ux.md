@@ -51,8 +51,8 @@ node --experimental-strip-types --no-warnings tools/playtest/hrac.ts R 1 stav   
 
 Snímky si prezrieš nástrojom Read. Prihlasuje sa AI účet „Dizajnér (AI)“.
 Cesty Tvorby: `admin`, `admin/karty`, `admin/akcie`, `admin/klucove-slova`,
-`admin/nastavenia`, `admin/statistiky`, `admin/simulacia`, `admin/bodovacie`,
-`admin/tlac`, `admin/import-export`, `admin/pouzivatelia`, `playtest`, `playtest/reporty`.
+`admin/nastavenia`, `admin/bodovacie`, `admin/tlac`, `admin/import-export`;
+správcovské mimo Tvorby: `hraci`, `playtest`, `playtest/reporty`.
 Ostatné: `/`, `pravidla`, `karty`, `hra`, `rebricek`, `spatna-vazba`, `profil`.
 
 Podklady o používateľoch:
