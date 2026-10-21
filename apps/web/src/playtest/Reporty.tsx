@@ -50,11 +50,8 @@ export function Reporty({ subor }: { readonly subor: string | null }) {
             otvoriť v novej karte
           </a>
         </div>
-        {report === undefined ? (
-          <Hlaska>Taký report nie je.</Hlaska>
-        ) : (
-          <iframe className="playtest-ramec" src={adresa} title={report.nazov} sandbox="allow-scripts allow-popups" />
-        )}
+        {/* Aj súbor mimo zoznamu (návrhy a dizajny bez dátumu, na ktoré odkazuje roadmapa) — prístup stráži token servera. */}
+        <iframe className="playtest-ramec" src={adresa} title={report?.nazov ?? subor} sandbox="allow-scripts allow-popups" />
       </div>
     );
   }
