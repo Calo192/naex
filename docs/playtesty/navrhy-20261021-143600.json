@@ -1,0 +1,323 @@
+{
+  "davka": "20261021-143600",
+  "podklady": [
+    "20261021-143600.html",
+    "strategia-20261021-143600.html",
+    "navrhy-20261021-143600.html"
+  ],
+  "navrhy": [
+    {
+      "kluc": "nahlady-co-vidis-neplati",
+      "nazov": "Náhľady sľubujú inú cenu, než hra potom zúčtuje",
+      "kritickost": "kriticka",
+      "oblast": "rozhranie",
+      "problem": "Herný stôl z 21. 10. mal splniť zásadu „čo vidíš, to platí“. Pri bitke to platí: všetci šiesti hráči ju prepočítali a sedela. Pri kliatbach a prebytku nie. Náhľad NA EX sľuboval súperovi „Dlh +2 až +4 (−8 až −24 b)“ a nenaplnilo sa to ani raz.\n\nPri odpovedi na NA EX hra neukáže výsledok bitky. Výhľad Pitky v kroku Vízia ráta pečeň a zadĺženie druhýkrát. Keď Puška, Miňištrant či Policajtka niečo zrušia, hra mlčí a hráči to považujú za chybu.",
+      "pricina": "Štyri miesta.\n\n(1) Chyba v hre: v kroku Vízia výhľad Pitky (nahladPitky v engine.ts) vezme pečeň a zadĺženie, ktoré vyhodnotenie Pitky už navýšilo, a znova k nim pripočíta to, čo leží na stole. Vynulujú sa až na konci Pitky, teda po Vízii.\n\n(2) Cena NA EX (náhľad v HernaPlocha a cenaKliatby vo view.ts) ráta každý nový Dlh ako trvalý. Nevie o Robote, Dievčine na vydaj ani o vete §8.1 „kto exekúcii nečelí, spáli 1 priznaný Dlh“, hoci všetko z toho leží na stole. Cirhózu ráta ako nepriznanú a nepovie, že priznaná body neuberá (stojí súpera +1 tuhé v každej bitke).\n\n(3) Pri odpovedi na NA EX hra ukáže len zmenu akcií („Rana +1, Viera +1“), nie bitku pred a po ani kliatby.\n\n(4) Vyhodnotenie bitky ohlási prebytok ešte pred odpočtom Pušky, nezaplatiteľný prebytok (Miňištrant) vynuluje bez hlášky a Pohoršenia z patronátu zrušené Policajtkou tiež.",
+      "prejav": "Všetci šiesti: žiadna predpoveď ceny Dlhu sa nenaplnila. Hela 4 zo 4, Eva 2 z 2, Fero mal za partiu asi 9 Dlhov a na konci 0. Jano dal v P2 K1 NA EX na Recidivistu kvôli hrozbe „Dlh +3 (−18 b)“, ktorá neplatila.\n\nEva v P1 K1 po odpovedi čakala 5 : 5, vyšlo 5 : 6 (Viera sa zrušila s Poverou). V K4 nevidela, že dostane 4 Cirhózy (−16 b). Chybu vo Vízii hlásili štyria hráči z dvoch partií, tiché zrušenie prebytku tiež štyria.",
+      "dokazy": [
+        "playtest 20261021-143600-3, Paragrafista Vilo, K1: výhľad v kroku Vízia „pečeň 2 ▸ 4/3 → Cirhóza ×1 (−8 b)“, log potom „pečeň (2) a zadĺženie (1) sa vynulovali“ a nič nevzniklo; to isté Fero, Eva (P1) a Šimon (P3). Spisovateľ chybu potvrdil v kóde.",
+        "playtest 20261021-143600-2, Hazardná Hela: „Číslo Dlh +3 (−18 b) sa mi v troch prípadoch nenaplnilo… Dlh teda nebol ani raz citeľný.“ Web, názor #9 (3 cigarety, potvrdzujú Eva a Fero).",
+        "playtest 20261021-143600-1, Eva Stratégová: „Pri samotnom NA EX hra ukazuje bitku pred a po aj kliatby, pri odpovedi len zmenu akcií.“ Web, názor #16.",
+        "playtest 20261021-143600-3, Šimon, K4: „prebytok 2“ a nič — Puška ho znížila na 0 bez hlášky; P1 K2 Fero: prebytok 2 prepadol pre dvoch Miňištrantov bez hlášky. Web #3, #7, #18.",
+        "stratég 20261021-143600, návrh 2: náhľady, ktoré nepoznajú pálenie Dlhov ani odpoveď — zaviesť, pravidlá sa nemenia.",
+        "stratég, posudok konceptu: podporuje B; „Dlh po pálení musí rátať presne to isté ako krok Exekútora v jadre“; doplniť počet súperových kariet v ruke."
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Opraviť chybu a doplniť hlášky",
+          "popis": "(1) Výhľad Pitky v kroku Vízia: keď je Pitka už vyhodnotená, výhľad nepripočíta nič zo stola (prírastky 0) — alebo sa pečeň a zadĺženie vynulujú ešte pred krokom Vízia. Prípad doplniť do testu pitka-nahlad.\n\n(2) Riadky v logu a v účte bitky: „Puška: prebytok 2 → 0“, „Miňištrant: posun stojí 3, prebytok 2 prepadol“, „Policajtka: 2 Pohoršenia z patronátu neplatia“, „Praudovravec umlčal Policajtku“. Na webe aj v konzolovom klientovi agentov.",
+          "dopad": "Odstráni jedinú potvrdenú chybu hry a štyri domnelé chyby. Cena Dlhu v náhľade NA EX ostane nepravdivá.",
+          "narocnost": "malá",
+          "odporucana": false
+        },
+        {
+          "kluc": "B",
+          "nazov": "A + náhľady, ktoré poznajú pálenie a odpoveď",
+          "popis": "Všetko z A a k tomu:\n\n(3) Náhľad NA EX a výhľad Pitky ukazujú Dlh po bitke: od nových Dlhov odpočítajú tie, ktoré v najbližšej bitke spáli Robota, Dievčina na vydaj a veta §8.1 (ak ostane, pozri bod Dlh), podľa toho, čo práve leží na stole. Napríklad „súper Dlh +3, v bitke sa spália 2 → ostane 1 (−6 b)“.\n\n(4) Pri každej možnosti odpovede na NA EX rovnaký náhľad ako pri NA EX: bitka pred a po a kliatby oboch po Pitke.\n\n(5) V náhľade NA EX aj odpovede riadok „súper má v ruke N kariet“ (verejný údaj).\n\n(6) Pri Cirhóze v náhľade dve ceny: „nepriznaná −8 b · priznaná: súper +1 tuhé v každej ďalšej bitke“.\n\nVšetko sa ráta z verejného stavu. Súperovu ruku náhľad nepozná, preto píše „ak súper neodpovie“.\n\nDlh po pálení sa ráta tým istým kódom ako krok Exekútor v jadre (Robota × Obecný úrad, Dievčina podľa aktívnych akcií aj zdvojených cez NA EX, veta §8.1, ak ostane) nad hypotetickým stavom — nie druhým vzorcom, inak vznikne nový rozdiel medzi náhľadom a hrou. Cena Cirhózy sa ráta tým istým výpočtom ako cenník (bod 2).",
+          "dopad": "Hráč sa rozhoduje podľa ceny, ktorá naozaj platí. Stratég: informácia príde pred voľbou, takže chyby z nepozornosti (Evina odpoveď) prestanú rozhodovať. Pravidlá sa nemenia, bot tieto informácie už má. Cena: viac textu v okne NA EX a odpovede.",
+          "narocnost": "stredná",
+          "odporucana": true
+        }
+      ],
+      "odporucanie": "B zaviesť hneď, bez playtestu, lebo pravidlá sa nemenia — zhodne so stratégom. A je jej prvá polovica a dá sa nasadiť samostatne ako oprava chyby.\n\nSúvis s bodom Dlh: ak Michal zvolí „Dlh sa sám nepáli“, náhľad v (3) bude skoro vždy pravdivý aj bez odpočtu, ostane len Robota a Dievčina. S bodom Cenník: cena Cirhózy a Dlhu je tá istá ako v cenníku.",
+      "otazky": [
+        "Opraviť výhľad Pitky v kroku Vízia a doplniť hlášky pri Puške, Miňištrantovi, Policajtke a Praudovravcovi (možnosť A)? áno / nie",
+        "Rozšíriť náhľady o Dlh po pálení v bitke, náhľad odpovede na NA EX a dvojakú cenu Cirhózy (možnosť B)? áno / nie"
+      ]
+    },
+    {
+      "kluc": "cennik-partie",
+      "nazov": "Skutočné ceny bodov pozná len ten, kto si spočíta scorecardy",
+      "kritickost": "kriticka",
+      "oblast": "rozhranie",
+      "problem": "Pravidlá aj texty hovoria „lokalita 2 body, Dlh −1, nepriznaná Cirhóza −2“. V partii však každá aktívna podmienka na každom scorecarde boduje zvlášť, takže lokalita stála 12, 18 a 12 bodov, Dlh −4 až −7 a Cirhóza −2 až −8. Hra súčet nikde neukáže.\n\nVšetci šiesti si pred partiou zapísali „lokalita 2“ a skutočné ceny skladali ručne až v hre. Bez nich sa nedá rozhodnúť, či bojovať, pasovať za cigarety, alebo tlačiť staršieho.",
+      "pricina": "§10: „každá aktívna podmienka boduje obom, každá zvlášť“ (Bodovanie bez strán, 16. 10.). Hra počíta správne.\n\nZastarané sú texty: §6 tabuľka priznania (−1 / −2 bez „za každú podmienku“), stránka Pravidlá (Pravidla.tsx, riadok 492: „Nepriznaná uberá na konci hry 2 body“) a nápoveda pri Cirhóze v klientovi agentov (tools/playtest/hrac.ts, riadok 615).\n\nRozhranie ukazuje body pri každom staršom a rozpis jeho podmienok, ale nie súhrn za typ („lokalita = 12 b“). Hodnota sa mení aj počas hry: náhrada pri patronáte zmenila Šimonovi lokalitu z 12 na 10 b a nikto to nevidel.",
+      "prejav": "6 zo 6 hráčov. Jano: „skóre 114 : 35 je dané hlavne náhodným rozdaním scorecardov“ (lokalita 18 b, 3 cigarety = 3 b, Dlh −6 b). Eva: „Hodnotu lokality (12 b) a Dlhu (−4) som poskladala zo scorecardov až v K1.“ Vilo: „Hint v ruke klame 4×.“\n\nZrozumiteľnosť je spolu s rovnováhou dlhodobo najnižšie kritérium: priemer 4,9 v 15 partiách, nikdy nad 6. V turnuse 5,5 a väčšina zdôvodnení menuje práve skryté násobenie.",
+      "dokazy": [
+        "stratég 20261021-143600, 2 000 rozdaní: lokalita 12,4 ± 3,5 b (90 % partií 6–18 b, extrém 2–22), starší v oranžovej 10,8 b, Dlh −4,0, Cirhóza −4,7, 3 cigarety 3,0 b. „Nie je to náhoda medzi hráčmi — hodnoty sú verejné a rovnaké pre oboch, len ich nikto nevidí.“",
+        "playtest 20261021-143600-3, Šimon, K5: predpoveď 64 b, skutočnosť 62 — „lokalita bola po výmene náhrady na Starostovi len 10 b… Hodnota lokality sa mení počas hry a hra ju nikde neukazuje.“",
+        "playtest 20261021-143600-3, Šimon: pri NA EX videl „Cirhóza ×2 (−16 b)“ a nevedel, že priznaná body neuberá. Web #3.",
+        "web: názor #4 (Vilo) a #15 (Eva, „panel hodnoty“); Eva, Šimon, Hela a Fero navrhli to isté vo feedbacku.",
+        "vyvoj-znamok: zrozumiteľnosť ⌀ 4,93 v 15 partiách (max 6), turnus 5,5.",
+        "stratég, posudok konceptu: B podporuje; C zmeral a nesúhlasí — „Lokalita je os, na ktorej sa najviac prejaví zručnosť v bitke; kto vyhrá viac lokalít, vyhrá u bota v 96 % partií.“"
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Opraviť texty",
+          "popis": "§6 tabuľka a §10: „−1 / −2 za každú aktívnu podmienku bankovky / pečeň; skutočnú hodnotu určuje rozdanie scorecardov“. To isté na stránke Pravidlá (Pravidla.tsx, riadok 492) a v nápovede pri Cirhóze (hrac.ts, riadok 615). Pri karte Dlh a Cirhóza v ruke a medzi priznanými ukázať skutočnú cenu z dnešných scorecardov (výpočet cenaKliatby už existuje).",
+          "dopad": "Zmizne nepravda v pravidlách. Plánovať treba stále z hlavy.",
+          "narocnost": "malá",
+          "odporucana": false
+        },
+        {
+          "kluc": "B",
+          "nazov": "A + cenník partie na stole",
+          "popis": "Všetko z A. K tomu pri skóre jeden riadok, ktorý sa prepočíta vždy, keď sa podmienky zmenia (náhrada, patronát): „Táto partia: lokalita 12 · starší z patronátu 6 · 3 cigarety 4 · Dlh −4 · nepriznaná Cirhóza −4 · starší sa ťa bojí 4 / 11 / 17“. Je to súčet aktívnych podmienok, ten istý výpočet ako body starších.\n\nPri voľbe cieľa a v hlavičke bitky „lokalita = 12 b (so sekerou 24 b)“. V konzolovom klientovi agentov riadok CENNÍK. V §10 veta, že ceny určuje rozdanie a hra ich ukazuje pri skóre.",
+          "dopad": "Stratég: informácia je verejná už dnes, len je drahá; bez cenníka vyhráva ten, kto si lepšie spočíta tabuľku, nie ten, kto lepšie hrá. Pravidlá sa nemenia; bot cenník už pozná, takže sa nemeria. Cena: jeden riadok na plnom stole. Stratég: cenník sa musí prepočítať po patronáte a náhrade, inak klame ako v Šimonovom prípade (12 → 10 b).",
+          "narocnost": "malá",
+          "odporucana": true
+        },
+        {
+          "kluc": "C",
+          "nazov": "B + menej políčok „lokality“ v scorecardoch",
+          "popis": "Všetko z B. K tomu v scorecardoch (data/scorecards.json) najviac 1 políčko „lokality“ na scorecard — z dnešných 12 zo 64 na 7, uvoľnené políčka prázdne. Lokalita by stála typicky 6–8 b namiesto 12 a zmizli by extrémy 18–22 b. Menší, nemeraný zásah: najviac 2 políčka „lokality“ na scorecard (Bitkár ich má dnes 4).",
+          "dopad": "Stratég zmeral (12 → 7): krátka hra rebrík 64 → 55 %, výhoda hráča 1 len 37 %, predurčenosť 0,32 → 0,43; stredná hra rebrík 66 → 63 %, pri ε 0,25 83 → 76 %, otočky 33 → 21 %. Body z lokalít 57 / 30 → 30 / 19 b, strach ostal 25 b — o partii by viac rozhodoval strach, ktorý sa láme v jednej veľkej bitke. Je to druhý strop cenníka, ktorý zručnosť ubral (prvý „každá podmienka najviac 3×“: 57 %). Rebrík je z tých istých 64 rozdaní pre všetky varianty: rozdiely platia, absolútna úroveň je asi o 5 bodov nižšia (východisko strednej hry na 192 rozdaniach 60,7 %).",
+          "narocnost": "stredná",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "B zaviesť hneď — žiadalo to 6 zo 6 hráčov a pravidlá sa nemenia. C nezavádzať: stratég ho zmeral a zručnosť klesla (krátka hra 64 → 55 %). Rozdanie scorecardov je verejné a rovnaké pre oboch; problém je, že ceny nevidno, nie že sú veľké. Ak Michal chce predsa len menej extrémov, jediná rozumná cesta je obmedziť chvost (najviac 2 políčka „lokality“ na scorecard) a najprv ju dať zmerať.\n\nSúvis: bod Posledná bitka (stávka bitky ráta z toho istého cenníka) a bod Dlh (cena Dlhu je v cenníku).",
+      "otazky": [
+        "Zaviesť cenník partie pri skóre, hodnotu lokality pri voľbe cieľa a opraviť texty §6, §10 a stránky Pravidlá (možnosť B)? áno / nie",
+        "Chceš menej extrémnu hodnotu lokality? Ak áno, stratég zmeria „najviac 2 políčka lokality na scorecard“ (zníženie na 1 zručnosť ubralo). áno / nie"
+      ]
+    },
+    {
+      "kluc": "posledna-bitka-prepise-partiu",
+      "nazov": "Posledná bitka prepíše celú partiu",
+      "kritickost": "kriticka",
+      "oblast": "pravidlá",
+      "problem": "Prebytok z jednej bitky sa cez strach starších premietne do bodov na všetkých scorecardoch. V poslednej bitke sa preto prevráti viac bodov než vo všetkých predošlých. Eva viedla po štyroch bitkách 60 : 20 a po poslednej prehrala 28 : 36.\n\nU botov v krátkej hre vyhrá víťaz poslednej bitky 86 % partií. Hráč, ktorý dobre hrá štyri kolá, si náskok neudrží, a kto pasuje, nevie, koľko ho bitka stojí.",
+      "pricina": "§8.4: víťaz rozdelí celý prebytok (rozdiel celkového poškodenia). Brzdí ho len Puška (−2) a Miňištrant.\n\n§10 (Bodovanie bez strán): strach každého staršieho sa ráta na všetkých scorecardoch so zónovou podmienkou, jeden krok do oranžovej je asi 10–12 b. Po poslednej bitke sa posuny už nedajú vrátiť.\n\nStávka bitky („výhra ≈ +X b, prehra ≈ −Y b“) sa v hre neukazuje. Navrhol ju stratég aj navrhár už v 20261021-041728 (bod 2A) a zavedená nie je.",
+      "prejav": "P1 K5: prebytok 7, po Puške 5, a k tomu Pohoršenie. Obrat 64 b, kým K1–K4 spolu dali asi 40 b (Fero aj Eva). Fero: „Výsledok partie závisí hlavne od posledných dvoch bitiek.“ Eva: „Posledné kolo nie je jedno z piatich, ale konverzia.“ P3 K2: prebytok 5 ≈ 30 b za jedno kolo (Šimon, Vilo).\n\nOpakuje sa od 12. 10. v 20261012-101447, 20261012-173832, 20261017-164450 a 20261021-041728 (prebytok 7 ≈ +49 b). Body za kus, cigarety porazenému za prebytok ani patronát to nezmenili.",
+      "dokazy": [
+        "playtest 20261021-143600-1, Eva Stratégová, K5: „Pri jeho výhre 6 : 0 … lokalita +12, dva kroky na každého z mojich dvoch oranžových starších (−24 pre mňa), zvyšok na vlastný strach (+8). Môj náskok 40 sa rozpustil na −8.“ Web #14.",
+        "playtest 20261021-143600-1, Fero Šenkár: „po štvrtej bitke som prehrával 20 : 60, v piatej som vyhral 6 : 0 s prebytkom 5 a skončil 36 : 28“. Web #17.",
+        "stratég 20261021-143600, krátka hra: víťaz poslednej bitky vyhrá 86 % partií (stredná 72 %), posledná bitka prehodí vedúceho v 32 % (stredná 14 %), výkyv poslednej bitky 26,3 b.",
+        "stratég 20261021-041728: strop zamietol „zatiaľ“ — „oživiť, ak jedna bitka znova pohne skóre o 40 a viac bodov“. V tomto turnuse 64 b.",
+        "stratég, posudok konceptu: A podporuje, B s hodnotou 3 (nie 4), C nie (otočky 33 → 23 %). Strop 3 a „Dlh sa sám nepáli“ spolu: stredná hra rebrík 63 / 86 %, výkyv 20,9 b; krátka 59 / 81 % (šum s opačnými znamienkami) — „do jedného playtestu ich dať môžete“."
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Stávka bitky (rozhranie)",
+          "popis": "V hlavičke Zhromaždenia a pri potvrdení pasu: „táto bitka: výhra o 3 ≈ +X b, prehra o 3 ≈ −Y b“ (rovnaký výpočet ako dnešný náhľad posunu markera, pre prebytok 1–5, označené „asi“). Pred poslednou bitkou navyše: „najviac, čo môže súper získať: lokalita + prebytok ≈ Z b“. Pravidlá sa nemenia.",
+          "dopad": "Hráč vidí cenu pred pasom a pred poslednou bitkou (žiadali Eva, Vilo, Hela). Výkyv ostane rovnako veľký. Stratég odporúča stávku zaviesť od rozboru 041728.",
+          "narocnost": "stredná",
+          "odporucana": false
+        },
+        {
+          "kluc": "B",
+          "nazov": "A + prebytok najviac 3 v poslednej bitke",
+          "popis": "Všetko z A. K tomu §8.4: „V poslednej bitke rozdelí víťaz najviac 3 body prebytku (počíta sa po Puške a Miňištrantovi), zvyšok prepadne.“ Pohoršenia sa nemenia. Hlavička poslednej bitky to ohlási („posledná bitka: prebytok najviac 3“), náhľad prebytku tiež. Druhá hodnota: 4 (zachová viac drámy).\n\nStávka z A v hlavičke poslednej bitky ráta už so stropom („najviac 3“ započítané), aby obe čísla sedeli.",
+          "dopad": "Stratég, krátka hra: výkyv poslednej bitky 26,3 → 20,7 b, víťaz poslednej bitky vyhrá 86 → 81 %, posledná bitka prehodí vedúceho 32 → 27 %, predurčenosť 0,32 → 0,26, rebrík 64 / 77 % bez zmeny, otočky 27 → 29 %. Stredná hra: výkyv 22,9 → 19,5 b, ostatné bez zmeny. Druhá hodnota 4 robí len polovicu práce: výkyv 22,8 b, víťaz poslednej bitky 84 %, prehodí vedúceho 31 %. U botov je účinok malý, lebo bot si strach buduje menej než ľudia; u ľudí s prebytkom 5–7 je rozdiel medzi 3 a 4 väčší a v partii 1 by si Eva podľa stratéga náskok udržala. Samotný strop je jeden riadok v jadre a veta v §8.4; stredná náročnosť je pre stávku z A.",
+          "narocnost": "stredná",
+          "odporucana": true
+        },
+        {
+          "kluc": "C",
+          "nazov": "A + prebytok najviac 3 v každej bitke",
+          "popis": "Ako B, ale strop platí v každej bitke (návrh Fera a Evy).",
+          "dopad": "Stratég, stredná hra: rebrík 66 → 68 % a 83 → 87 % (v šume), ale otočky 33 → 23 % a vedúci po 1. kole vyhrá 60 → 68 %. Partia sa rozhodne skôr a dobiehanie oslabne. V krátkej hre útočník vyhrá 66 % bitiek namiesto 59 %. Samotný strop je jeden riadok v jadre a veta v §8.4 (malá zmena); stredná je pre stávku z A.",
+          "narocnost": "stredná",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "B s hodnotou 3 vyskúšať v najbližšom playteste, zhodne so stratégom, spolu s bodom Dlh (B) — ukazovatele sa neprekrývajú (výkyv poslednej bitky proti Dlhom na konci), takže sa dá rozlíšiť, čo zabralo. Časť A je rozhranie a môže ísť hneď. Hodnotu 4 voliť len vtedy, ak Michal nechce, aby posledná bitka zovšednela.\n\nPartie 2 a 3, rozhodnuté už po 3. kole, strop nerieši. Tam rozhodlo rozdanie scorecardov a cigarety (bod Cenník a Ďalšie témy).",
+      "otazky": [
+        "Ukázať stávku bitky pri pase a pred poslednou bitkou „najviac, čo môže súper získať“ (možnosť A)? áno / nie",
+        "Vyskúšať v playteste strop prebytku v poslednej bitke: (a) 3, (b) 4, (c) nie."
+      ]
+    },
+    {
+      "kluc": "dlh-bez-ceny",
+      "nazov": "Dlh sa vždy spáli a nestojí nič",
+      "kritickost": "vysoka",
+      "oblast": "pravidlá",
+      "problem": "Verejný dlh (21. 10.) mal z Dlhu urobiť viditeľnú cenu NA EX bomby. V turnuse sa však všetky Dlhy spálili v tej istej bitke, v ktorej vznikli. Fero ich mal za partiu asi 9, Jano 3, Hela 4, na konci hry mali všetci šiesti nulu.\n\nU botov stojí Dlh na konci −0,35 b na hráča. Celá os hry — akcie Dlh, Úžerník, Robota, Exekútor, Povera a Neprajník — tak nemá na čo pôsobiť.",
+      "pricina": "§8.1, krok Exekútor: najprv Robota spáli 1 priznaný Dlh za každú aktívnu Robotu, potom „hráč, ktorý exekúcii nečelí, spáli 1 priznaný Dlh“ (engine.ts, pokracujBitku). K tomu Dievčina na vydaj na začiatku bitky.\n\nPred verejným dlhom ležal nový Dlh v odhadzovacom balíčku a pálenie sa ho netýkalo. Od 21. 10. je hneď priznaný, takže ho pálenie zmaže skôr, než sa ráta. Zmena splnila viditeľnosť, ale zrušila cenu.",
+      "prejav": "6 zo 6 hráčov. Fero: „Dlh nie je ekonomický nástroj ani trest; je to nulový efekt.“ Eva: „Dlh nebol citeľný.“ Hela: Dlh „4× vznikol, 4× spálený“. Jano: „Verejný dlh = takmer bezvýznamný.“\n\nVilo: Povera a Neprajník bez priznaných Dlhov súpera nič nerobia. Mäkké poškodenie z Povier bolo najviac 2 za bitku, k prahu Exekútora sa nikto nepriblížil (najviac 3 z 10).",
+      "dokazy": [
+        "playtest 20261021-143600-1, Fero Šenkár: „V partii som mal ~9 Dlhov a na konci 0. Výhľad Dlh ×3 (−12 b) pri NA EX sa nikdy nenaplnil.“",
+        "playtest 20261021-143600-2, Jano, K3: „v kroku Exekútora každý hráč, ktorý exekúcii nečelí, spáli 1 priznaný Dlh => moje Dlh +1 sa spálil a nestál nič“. Web #9 (3 cigarety, komentáre Evy a Fera).",
+        "stratég 20261021-143600: Dlhy na konci −0,35 b na hráča; pred verejným dlhom −5,3 b, ale ako lotéria (rozbor kliatob).",
+        "spisovateľ 20261021-143600, nezrovnalosť 5: „Žiadna predpoveď ceny Dlhu sa nenaplnila.“",
+        "stratég, posudok konceptu: B podporuje, C zmeral a vyradil („Dlhu cenu nevráti“), A len ako záloha, ak B v playteste prinesie prehry exekúciou."
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Nechať pálenie, opraviť len náhľad a text",
+          "popis": "Pravidlo ostáva. Náhľad podľa bodu Náhľady (možnosť B) ukáže „spáli sa v bitke“ a §8.1 a §10 povedia, že priznaný Dlh väčšinou zhorí v najbližšej bitke.",
+          "dopad": "Zmizne klamlivá cena. Dlh ostane bez váhy a NA EX na súperove Dlhy stratí zmysel.",
+          "narocnost": "malá",
+          "odporucana": false
+        },
+        {
+          "kluc": "B",
+          "nazov": "Dlh sa sám nepáli",
+          "popis": "§8.1: vypustiť vetu „Hráč, ktorý exekúcii nečelí, spáli 1 priznaný Dlh.“ Robota, Dievčina na vydaj, Niekoho stryná a Veľmi smútiaca vdova Dlhy pália ďalej — tie si hráč vyberá a zahrá. Upraviť text Exekútora v pravidlách, na stránke Pravidlá a v ťaháku agentov.",
+          "dopad": "Stratég: Dlhy na konci −0,3 / −0,4 → −2,6 / −2,8 b (víťaz / porazený, teda symetricky). Rebrík ε 0,1 66 → 63 %, ε 0,25 83 → 85 %, delené 42 → 42 %, predurčenosť 0,40 → 0,40, otočky 33 → 32 %, všetko v šume. Dlh dostane známu cenu a vznikne voľba brať Úžerníka, Robotu či Dievčinu. Riziko: Exekútor (prah 10) sa stane dosiahnuteľný pre hráča, ktorý robí veľa NA EX bômb na vlastné Pijany; Dlhy sa vrátia ako body (−4 až −7 za kus pri dnešných scorecardoch) — preto spolu s cenníkom. V 64 partiách ani jedna prehra exekúciou. Stratég upozorňuje: v krátkej hre stojí Dlh porazeného viac (−4,6 b proti −2,7 b víťaza), lebo bomby robí ten, kto dobieha — B mierne tlmí dobiehanie, treba sledovať. Rebrík je z tých istých 64 rozdaní pre všetky varianty: rozdiely platia, absolútna úroveň je asi o 5 bodov nižšia (východisko strednej hry na 192 rozdaniach 60,7 %).",
+          "narocnost": "malá",
+          "odporucana": true
+        },
+        {
+          "kluc": "C",
+          "nazov": "Pálenie len bez Roboty a Dievčiny",
+          "popis": "Veta §8.1 ostane, ale platí len v bitke, v ktorej hráč nemal aktívnu Robotu ani Dievčinu na vydaj.",
+          "dopad": "Stratég zmeral: Dlhy na konci −0,4 / −0,6 b, takmer ako dnes (rebrík 67 / 83 %). Bitka bez Roboty aj Dievčiny je bežná, takže pálenie skoro vždy prebehne. Problém nevyrieši a ťažšie sa vysvetľuje — neodporúčam.",
+          "narocnost": "malá",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "B vyskúšať v playteste, zhodne so stratégom, spolu s bodmi Náhľady (B) a Cenník (B), aby hráči cenu Dlhu videli vopred, a v tom istom playteste ako strop prebytku. A je záloha, ak by B prinieslo prehry exekúciou. C stratég zmeral a Dlhu cenu nevráti.",
+      "otazky": [
+        "Vyskúšať v playteste „Dlh sa sám nepáli“ (vypustiť pálenie 1 Dlhu mimo exekúcie, možnosť B)? áno / nie, len opraviť náhľad (A)"
+      ]
+    },
+    {
+      "kluc": "vyhoda-utocnika-vnimana",
+      "nazov": "Hráči považujú poradie za výhodu útočníka",
+      "kritickost": "vysoka",
+      "oblast": "rozhranie",
+      "problem": "Rovnováha je najslabšie kritérium hry: priemer 4,9 v 15 partiách, nikdy nad 6. V turnuse ju všetci šiesti zdôvodnili tým istým — útočník vykladá prvý, pri rovnosti v kraji drží hranu lokality a v Pitke má posledné slovo. Päť zo šiestich žiada tajné súčasné NA EX.\n\nMerania stratéga však ukazujú, že útočník výhodu navyše nemá: je to porazený z minulého kola a jeho výhody slúžia na dobiehanie. Hráči to nevidia, a preto to cítia ako „stoličku“.",
+      "pricina": "§7: Pitku začína obranca, útočník má posledné slovo; Zhromaždenie začína útočník (20. 10.). §4: pri rovnosti v kraji dostane akcie hrany hráč, ktorého karta leží hneď pri lokalite, teda kto ju položil prvý. Znenie „majiteľ karty pri lokalite“ sa číta ako majiteľ lokality (Hela, Jano, Fero).\n\nRozhranie v Zhromaždení neukazuje, kto bude mať v Pitke posledné slovo, ani koľko kariet treba na prebitie rovnosti v kraji. Pri súperovom „hotovo“ nie je zvýraznené, koľko má plných poldeci a kariet v ruke, hoci sú to verejné údaje.",
+      "prejav": "Útočník vyhral 9 z 15 bitiek (+1 remíza). Posledné slovo podľa hráčov rozhodlo asi päť bitiek (P1 K1, K4, K5; P2 K2; P3 K5). Rovnosť v kraji išla tomu, kto kladie prvý (Hela, Šimon, Vilo, Jano).\n\nJano: „pri náskoku NA EX nerob“ — vedúci NA EX nedáva, lebo súper dostane voľnú odpoveď. Web: názor #2 (4 cigarety, 3 súhlasné komentáre), #5, #6 (4 cigarety).",
+      "dokazy": [
+        "stratég 20261021-143600: posledné slovo presunuté na obrancu → útočník vyhrá 53 % bitiek namiesto 54 %; rebrík 66 → 63 %, delené 42 → 56 %, predurčenosť 0,40 → 0,23 — ukazovatele idú opačnými smermi, je to šum. „Útočník je porazený z minulého kola, takže je to dobiehanie.“",
+        "stratég 20261021-143600: rovnosť v kraji pre nikoho → rebrík 66 → 63 % a 83 → 80 %, otočky 33 → 21 %; rovnosť pre domáci kraj → útočník 54 → 51 %, predurčenosť 0,40 → 0,47. Ani jeden zručnosť nepridal.",
+        "playtest 20261021-143600-1, Fero, K4: „vedel som 4 : 2, Eva čakala s poldeci až do posledného slova“; stratég: je to skrytá informácia o súperových poldeci, rieši ju rozhranie.",
+        "vyvoj-znamok: rovnováha ⌀ 4,90 v 15 partiách (max 6); v predošlom playteste 041728 útočník : obranca 2 : 5, v tomto 9 : 5.",
+        "stratég, posudok konceptu: A podporuje („meranie ukázalo dobiehanie, nie nerovnováhu“), B zmeral a neodporúča, C nie."
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Ukázať poradie a rovnosť v kraji",
+          "popis": "(1) V páse Zhromaždenia: „v Pitke začne súper, posledné slovo máš ty“ (alebo naopak).\n\n(2) Pri kraji: „rovnosť 2 : 2 → hranu má Jano (jeho karta leží pri lokalite) · na prebitie 1 karta“ a zostávajúci limit vykladania oboch hráčov.\n\n(3) V páse Pitky pri súperovom aj vlastnom „hotovo“: „súper: 2 plné poldeci, 3 karty v ruke“.\n\n(4) V hlavičke bitky: „útočník = porazený z minulej bitky“.\n\n(5) §4 a §13 nové znenie: „pri rovnosti hráč, ktorého karta v tom kraji leží hneď pri lokalite (vyložená ako prvá)“. To isté na stránke Pravidlá a v ťaháku agentov.",
+          "dopad": "Rieši to, čo hráči opisujú ako stoličku: prekvapenie, nie skutočnú nerovnováhu. Pravidlá sa nemenia. Stratég: problém „vedel som 4 : 2, Eva čakala s poldeci“ je skrytá informácia a rieši ho rozhranie.",
+          "narocnost": "malá",
+          "odporucana": true
+        },
+        {
+          "kluc": "B",
+          "nazov": "Striedať, kto Pitku začína",
+          "popis": "V bitke s viacerými Pitkami sa začínajúci strieda: Pitku 1 začína obranca (posledné slovo útočník), Pitku 2 útočník, Pitku 3 obranca. Pri jedinej Pitke ostáva dnešné poradie (Šimon navrhol dať vtedy posledné slovo obrancovi).",
+          "dopad": "Stratég zmeral: útočník 54 → 55 % bitiek, rebrík 66 → 63 % a pri ε 0,25 83 → 77 %, otočky 33 → 26 %, predurčenosť 0,40 → 0,19, výhoda hráča 1 63 %. Predurčenosť je lepšia, ale pri ε 0,25 je to na hrane šumu a otočky klesli. Úplný presun posledného slova na obrancu dal útočníka 53 % — posledné slovo má u bota hodnotu asi 1 bodu, striedanie nemá čo opraviť. Rebrík je z tých istých 64 rozdaní pre všetky varianty: rozdiely platia, absolútna úroveň je asi o 5 bodov nižšia (východisko strednej hry na 192 rozdaniach 60,7 %).",
+          "narocnost": "stredná",
+          "odporucana": false
+        },
+        {
+          "kluc": "C",
+          "nazov": "Tajné súčasné NA EX",
+          "popis": "V každej Pitke obaja naraz a skryto vyberú cieľ NA EX alebo „nič“, potom sa odhalia a nasledujú odpovede kartou (Fero, Eva, Jano, Hela, Vilo).",
+          "dopad": "Stratég zamietol: čítanie súpera vymení za hádanie, odpoveď na NA EX (Jano: „najlepší nápad v hre“) stratí zmysel a posledné slovo dnes drží dobiehanie. Treba vyriešiť dve NA EX na jednu kartu, Krčmu, Svokru a Vínnu pivnicu.",
+          "narocnost": "veľká",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "A zaviesť hneď, zhodne so stratégom. Pravidlá nemeniť: stratég zmeral, že ani posledné slovo, ani rovnosť v kraji, ani striedanie začínajúceho útočníkovi nepridávajú víťazstvá a žiadna zmena zručnosť nezvýšila. Ak po zavedení A playtesteri znova zdôvodnia nízku rovnováhu posledným slovom, je to otázka pocitu a vysvetlenia, nie čísel.",
+      "otazky": [
+        "Zaviesť v rozhraní, kto bude mať posledné slovo, stav rovnosti v kraji s počtom kariet na prebitie, súperove poldeci a karty pri „hotovo“ a nové znenie §4 (možnosť A)? áno / nie — striedanie (B) a tajné NA EX (C) stratég zmeral či posúdil a neodporúča."
+      ]
+    },
+    {
+      "kluc": "ruka-dobieranie-naslepo",
+      "nazov": "Ruka plná mŕtvych kariet a dobieranie naslepo",
+      "kritickost": "stredna",
+      "oblast": "pravidlá",
+      "problem": "Zlú ruku sa nedá zachrániť rozhodnutím. Po bitke hráč dobere 2 karty naslepo a aj fajčenie je naslepo. Jednému sa ruka nafúkne na 9–13 kariet, z ktorých väčšinu nezahrá, druhému ostanú v ruke dve Cirhózy.\n\nSťažnosť na slabú ruku trvá od 12. 10. Na dnešných pravidlách však výber kariet zručnosť nepridáva: stratég premeral „dober 3, nechaj 2“ a zisk z rozboru 041728 sa nezopakoval. Ide skôr o pocit bezmocnosti než o to, kto vyhrá.",
+      "pricina": "Po bitke +2 karty naslepo (limit ruky zanikol 19. 10.), fajčenie berie vrchnú kartu (§7). Štartovky — 4 Pijan, 2 Miňištrant, 2 Milujúca manželka, 2 Dievčina na vydaj — nemajú tuhé (Michal 18. 10.: slabý štart je zámer). Čistiť balíček vedia len karty, ktoré treba najprv dobrať (Vízia, Niekoho stryná, Pohreb, Liečba).",
+      "prejav": "Šimon mal 9–13 kariet, „~70 % ruky je mŕtvych“. Fero: „4 smoky = 3 zo 4 odpad“. Hela, Šimon aj Eva mali v 1. kole tri Pijany bez tuhého. Jano mal v P2 K4 v ruke len 2 Cirhózy a balíček sa mu dvakrát vyprázdnil, Vilo mal v K3–K5 1–4 karty.\n\nNávrhy hráčov: Fero fajčenie s výberom z 2, Šimon „zahoď 2, dober 1“, Hela mulligan. V 20261021-041728 to isté: Eva „s rukou troch Pijanov nemala čo robiť“.",
+      "dokazy": [
+        "playtest 20261021-143600-3, Šimon: „Ruka mi rástla na 9–13 kariet… limit vykladania je 3, takže ~70 % ruky je mŕtvych.“",
+        "playtest 20261021-143600-1, Fero, K4: „4 smoky = Miňištrant, Praudovravec, Miňištrant, Manželka — 3 z 4 odpad“.",
+        "stratég 20261021-041728 (pravidlá M22): „dober 3, nechaj 2“ — rebrík ε 0,1 67 → 72 %, predurčenosť 0,37 → 0,17, otočky 27 → 40 %, vedúci po 6. kole 79 → 84 %, hráč 1 56 → 41 % (pravdepodobne šum).",
+        "stratég, posudok konceptu (M23, 192 rozdaní): „dober 3, nechaj 2“ krátka hra rebrík 65,6 → 65,9 %, stredná 60,7 → 60,7 % (šum ±2,4), predurčenosť 0,40 → 0,47. „Pravdepodobne preto, lebo Cirhóza navrch a verejný dlh už odstránili najväčšiu časť náhody, ktorú dober 3 predtým tlmil.“",
+        "stratég 20261021-143600: lepšia štartová ruka vyhrá u bota len 52 % (krátka hra 55 %)."
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Fajčenie s výberom",
+          "popis": "Fajčenie: hráč sa pozrie na 2 vrchné karty balíčka, jednu si vezme a druhú dá naspodok. Cirhózu naspodok dať nesmie — ak je jednou z dvoch, ide do ruky (inak by sa Cirhóza navrch dala obísť). Cena 1 cigareta ako dnes.",
+          "dopad": "Stratég zmeral: stredná hra rebrík 66 / 77 %, predurčenosť 0,40 → 0,27; krátka 64 / 80 %, ostatné v šume. Zručnosť nepridá ani neuberie, ale náhodu pri fajčení presunie pred voľbu (Fero) — zmena pre pocit hráča. Malý zásah; Vízia ostane silnejšia, lebo zahadzuje z hry. Rebrík je z tých istých 64 rozdaní pre všetky varianty: rozdiely platia, absolútna úroveň je asi o 5 bodov nižšia (východisko strednej hry na 192 rozdaniach 60,7 %).",
+          "narocnost": "malá",
+          "odporucana": true
+        },
+        {
+          "kluc": "B",
+          "nazov": "Dober 3, nechaj 2",
+          "popis": "Po bitke sa hráč pozrie na 3 vrchné karty svojho balíčka, 2 si vezme a tretiu dá naspodok. Kliatbu naspodok dať nesmie, takže Cirhóza navrch príde do ruky určite. Druhá hodnota: pozri 4, nechaj 2.",
+          "dopad": "Stratég premeral na dnešných pravidlách (M23, Cirhózu naspodok nie, 192 rozdaní): krátka hra rebrík 65,6 → 65,9 %, stredná 60,7 → 60,7 %, predurčenosť 0,40 → 0,47, výhoda hráča 1 45 %. Zisk z rozboru 041728 (67 → 72 %) sa nezopakoval. Voľbu v meraní robí ohodnotenie karty botom, nie plán, takže u ľudí môže byť zisk väčší — čísla ho však nepodložia. Cena: nový krok po každej bitke.",
+          "narocnost": "stredná",
+          "odporucana": false
+        },
+        {
+          "kluc": "C",
+          "nazov": "Zahoď 2, dober 1",
+          "popis": "Raz za kolo smie hráč vo svojom ťahu v Zhromaždení zahodiť 2 karty z ruky do odhadzovacieho balíčka a dobrať 1 (Šimon). Kliatby takto zahodiť nesmie. Neráta sa ako ťah.",
+          "dopad": "Nemerané. Stratég: čistenie zadarmo v 041728 zručnosť ubralo (rebrík 59 %); tu karty len cyklujú, ale bez ceny (napr. 1 cigareta) neodporúča.",
+          "narocnost": "stredná",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "Pravidlá ruky teraz nemeniť — stratég premeral „dober 3“ a na dnešných pravidlách nepomáha, preto som bod znížil z vysokej na strednú. Ak Michal chce na pocit bezmocnosti niečo skúsiť, tak A (fajčenie z 2): je lacné, zručnosť neuberá a náhodu dá pred voľbu. Nedávať ho do playtestu so stropom prebytku a Dlhom, ale až do ďalšieho.",
+      "otazky": [
+        "Vyskúšať v neskoršom playteste fajčenie s výberom z 2 kariet (možnosť A)? áno / nie — „dober 3, nechaj 2“ (B) na dnešných pravidlách zručnosť nepridáva."
+      ]
+    },
+    {
+      "kluc": "medzery-v-pravidlach",
+      "nazov": "Medzery a nejasné vety v pravidlách",
+      "kritickost": "nizka",
+      "oblast": "pravidlá",
+      "problem": "Hra sa správa podľa kódu, ale pravidlá niektoré prípady nepopisujú alebo popisujú dvojako. Hráči sa preto pýtajú, či ide o chybu. Jeden prípad sa dá zneužiť: pas na Zastávke vyplatí cigarety za celý spoločný limit oboch hráčov.",
+      "pricina": "Zastávka (§14): spoločný limit je súčet limitov a pas (§7) platí 1 cigaretu za každú kartu, ktorú hráč ešte smel vyložiť — kód vyplatí celú spoločnú zásobu.\n\nV pravidlách chýba: NA EX na kartu pri lokalite ruší len akcie karty, nie akcie hrany (rozhodnutie je len v kóde). Na kartu, na ktorej už poldeci leží, NA EX nejde. Odporom zrušená akcia hrany sa do počtu Pitiek neráta. Dievčina na vydaj ráta aj akcie zdvojené súperovým NA EX.\n\n§5 opisuje poradie Vypiť dvoma rôznymi spôsobmi (kód prijme „Vypiť, karta, karta“) a §4 „majiteľ karty pri lokalite“ mýli (pozri bod Výhoda útočníka).",
+      "prejav": "Vilo (Zastávka, NA EX a hrana, Odpor a Pitky), Eva (Dievčina po NA EX, Vypiť), Hela (Vypiť — ťah odmietnutý), Fero (druhé NA EX). Spisovateľ všetko overil v kóde; Zastávka sa v partii nezahrala, Vilo ju videl v ponuke „dostaneš 5 cig.“.",
+      "dokazy": [
+        "playtest 20261021-143600-3, Vilo, K4 (Zastávka): výpis „tebe zostáva 5, súperovi 5“ a ponuka pasu „dostaneš 5 cig.“ — pas na začiatku ≈ +8 b a súperovi ostane celá zásoba.",
+        "playtest 20261021-143600-1, Eva, K1: NA EX na súperovu Dievčinu, aby mu zdvojila Dlh — „Dievčina na vydaj ju zahadzuje a s ňou 2 priznaných Dlhov“.",
+        "playtest 20261021-143600-3, Vilo, K2: NA EX na Policajtku pri hrane → 1 : 6 → 1 : 5, Petelica hrany ostala. „Pravidlo to nehovorí; je to veľmi dôležité.“",
+        "playtest 20261021-143600-2, Hela, K5: ťah [Vdova, Vypiť, Veštica] odmietnutý, [Vypiť, Vdova, Veštica] prešiel; to isté hlásila Eva aj v 20261021-041728.",
+        "stratég, posudok konceptu: A podporuje — pas na Zastávke za spoločný zostatok je „lacný a dominantný ťah, ktorý by sa po objavení hral vždy“; B uberie voľbu. Dievčinu po NA EX aj „NA EX neruší hranu“ odporúča potvrdiť."
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Dopísať dnešné správanie, Zastávka: pas za vlastný limit",
+          "popis": "Do PRAVIDLA.md, na stránku Pravidlá a do ťaháku agentov dopísať: (1) NA EX na kartu pri lokalite ruší len akcie karty, nie akcie hrany lokality (§5). (2) Na kartu, na ktorej už poldeci leží, sa NA EX dať nedá (§5). (3) Do počtu Pitiek sa ráta Odpor na hrane lokality, nie akcia hrany zrušená Odporom karty (§7). (4) Dievčina na vydaj ráta aj akcie zdvojené cez NA EX (§14). (5) §5 jedna veta o poradí: pri dvoch kartách v ťahu „Vypiť, karta, karta“.\n\nJediná zmena pravidla: na Zastávke dá pas cigarety najviac za vlastný limit hráča mínus karty, ktoré v tomto Zhromaždení už vyložil.",
+          "dopad": "Zavrie medzeru na Zastávke a päť nejasností. Na bežné partie nemá vplyv.",
+          "narocnost": "malá",
+          "odporucana": true
+        },
+        {
+          "kluc": "B",
+          "nazov": "Ako A, ale na Zastávke pas cigarety nedáva",
+          "popis": "Všetko z A okrem poslednej vety. Namiesto nej: na Zastávke pas cigarety nedáva vôbec.",
+          "dopad": "Jednoduchšie pravidlo. Zastávka zmení charakter — pasovať sa tam neoplatí.",
+          "narocnost": "malá",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "A. Dnešné správanie dáva zmysel a stačí ho dopísať. Medzeru na Zastávke uzavrieť skôr, ako ju niekto začne hrať. Pri Dievčine a NA EX pri lokalite stačí áno / nie — ak Michal chce iné správanie, je to zmena pravidla a patrí do samostatného návrhu.",
+      "otazky": [
+        "Zastávka: pas dá cigarety (a) len za vlastný limit, (b) žiadne, (c) nechať ako dnes.",
+        "Dievčina na vydaj po súperovom NA EX páli Dlhy aj za zdvojené akcie (dnes áno) — potvrdiť? áno / nie",
+        "NA EX na kartu pri lokalite neruší akcie hrany lokality (dnes áno) — potvrdiť a dopísať? áno / nie"
+      ]
+    }
+  ]
+}

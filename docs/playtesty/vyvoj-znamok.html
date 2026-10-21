@@ -78,7 +78,7 @@
 <body>
 <main>
   <h1>Vývoj známok playtestov</h1>
-  <p class="pod">Ako AI playtesteri (Jano Bitkár, Eva Stratégová) hodnotili hru podľa 12 kritérií naprieč partiami a ktoré zmeny pravidiel medzi partiami prišli. Zmeny: <a href="zmeny-pravidiel.html">zmeny-pravidiel.html</a>.</p>
+  <p class="pod">Ako AI playtesteri (do 21. 10. Jano Bitkár a Eva Stratégová, potom šesť postáv v turnusoch) hodnotili hru podľa 12 kritérií naprieč partiami a ktoré zmeny pravidiel medzi partiami prišli. Zmeny: <a href="zmeny-pravidiel.html">zmeny-pravidiel.html</a>.</p>
 
   <div class="dlazdice" id="dlazdice"></div>
 
@@ -163,17 +163,25 @@ const PARTIE = [
     jano: [7, 7, 5, 6, 8, 6, 5, 6, 7, 7, 8, 8], eva: [7, 8, 5, 7, 9, 5, 4, 7, 8, 6, 8, 9],
     zmenyPred: ["Absťák na doske hráča", "Strategickosť: Pitky z lokality, ruka bez limitu, šenok za cigarety, celý ťah naraz",
       "14 lokalít, cieľ volí obranca, Nealko", "Patronát namiesto bitky o staršieho, Pohoršenie cez dve zóny"] },
+  // Turnus 3 partií naraz: postavy sa líšia, preto mena; jano/eva = hráč 1/hráč 2.
+  { id: "20261021-143600-1", report: "20261021-143600.html", dlzka: "krátka (5)", vysledok: "Fero 36 : 28 Eva", mena: ["Fero", "Eva"],
+    jano: [8, 8, 5, 7, 9, 6, 6, 7, 8, 8, 9, 9], eva: [8, 8, 5, 6, 9, 6, 5, 7, 6, 6, 9, 8],
+    zmenyPred: ["Verejný dlh: Dlh sa hneď prizná, Cirhóza navrch balíčka, cena kliatob vopred",
+      "Remíza na sekeru, bez stupňa „celkové“",
+      "Herný stôl: Pitka nahlas, účet Pitky a bitky, NA EX na dva kroky, presné skóre súpera"] },
+  { id: "20261021-143600-2", report: "20261021-143600.html", dlzka: "krátka (5)", vysledok: "Jano 114 : 35 Hela", mena: ["Jano", "Hela"],
+    jano: [8, 7, 5, 6, 9, 6, 6, 7, 8, 8, 6, 9], eva: [6, 8, 4, 7, 9, 5, 5, 7, 7, 6, 5, 9],
+    zmenyPred: [] },
+  { id: "20261021-143600-3", report: "20261021-143600.html", dlzka: "krátka (5)", vysledok: "Šimon 62 : 30 Vilo", mena: ["Šimon", "Vilo"],
+    jano: [8, 8, 6, 7, 9, 6, 6, 8, 8, 7, 7, 9], eva: [7, 7, 5, 6, 9, 6, 5, 7, 7, 8, 6, 9],
+    zmenyPred: [] },
 ];
 // Zmeny, ktoré ešte žiadna partia neoverila.
-const CAKAJUCE = [
-  "Verejný dlh: Dlh sa hneď prizná, Cirhóza navrch balíčka, cena kliatob vopred",
-  "Remíza na sekeru, bez stupňa „celkové“",
-  "Herný stôl: Pitka nahlas, účet Pitky a bitky, NA EX na dva kroky, presné skóre súpera",
-];
+const CAKAJUCE = [];
 
 const priemer = (a) => a.reduce((x, y) => x + y, 0) / a.length;
 const f1 = (x) => x.toFixed(1).replace(".", ",");
-const kratke = (id) => Number(id.slice(6, 8)) + ". " + Number(id.slice(4, 6)) + ". " + id.slice(9, 11) + ":" + id.slice(11, 13);
+const kratke = (id) => Number(id.slice(6, 8)) + ". " + Number(id.slice(4, 6)) + ". " + id.slice(9, 11) + ":" + id.slice(11, 13) + (id[15] === "-" ? " #" + id.slice(16) : "");
 const hodnota = (p, k) => (k < 0 ? priemer([...p.jano, ...p.eva]) : (p.jano[k] + p.eva[k]) / 2);
 const hracov = (p, k) => (k < 0 ? [priemer(p.jano), priemer(p.eva)] : [p.jano[k], p.eva[k]]);
 const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
@@ -264,7 +272,7 @@ function kresli() {
       t.textContent = f1(hodnoty[i]);
     }
     const [j, e] = hracov(p, k);
-    const html = `<strong>${kratke(p.id)} · ${esc(p.vysledok)}</strong>${k < 0 ? "Priemer" : esc(KRITERIA[k])}: ${f1(hodnoty[i])}<br>Jano ${f1(j)} · Eva ${f1(e)}<br><span class="upozornenie">${esc(p.dlzka)}</span>`;
+    const html = `<strong>${kratke(p.id)} · ${esc(p.vysledok)}</strong>${k < 0 ? "Priemer" : esc(KRITERIA[k])}: ${f1(hodnoty[i])}<br>${(p.mena ?? ["Jano", "Eva"])[0]} ${f1(j)} · ${(p.mena ?? ["Jano", "Eva"])[1]} ${f1(e)}<br><span class="upozornenie">${esc(p.dlzka)}</span>`;
     const ciel = el("circle", { cx, cy, r: 16, class: "bod-cieľ", tabindex: 0, "aria-label": `${p.id}: ${f1(hodnoty[i])}` }, svg);
     const ukaz = () => { const r = svg.getBoundingClientRect(); ukazTip(html, (cx / W) * r.width, (cy / H) * r.height); };
     ciel.addEventListener("mouseenter", ukaz); ciel.addEventListener("focus", ukaz);
