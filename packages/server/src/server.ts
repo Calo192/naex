@@ -42,7 +42,7 @@ import { Media } from "./media.ts";
 import { Avatary } from "./avatary.ts";
 import { Hudba } from "./hudba.ts";
 import { Obsah, nacitajElders, nacitajScorecards } from "./obsah.ts";
-import type { OtvorenaHra } from "./api.ts";
+import type { OtvorenaHra, StavServera } from "./api.ts";
 import { spracujApi } from "./api.ts";
 import type { ZmenaFrajeriny } from "./archiv.ts";
 import { Archiv } from "./archiv.ts";
@@ -199,6 +199,25 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
 
   const staticDir = opts.staticDir ?? fileURLToPath(new URL("../../../apps/web/dist", import.meta.url));
 
+  // VERZIA.json zapíše deploy/nahraj.sh do balíka — na vývojovom stroji chýba.
+  const spusteny = teraz();
+  const suborVerzie = fileURLToPath(new URL("../../../VERZIA.json", import.meta.url));
+  const verzia = existsSync(suborVerzie) ? (JSON.parse(readFileSync(suborVerzie, "utf8")) as StavServera["verzia"]) : null;
+  const stavServera = (): StavServera => {
+    const bezi = [...rooms.values()].filter((r) => r.state !== null && r.state.koniec === null);
+    const cakajuce = [...rooms.values()].filter((r) => r.state === null).length;
+    return {
+      verzia,
+      spusteny,
+      partie: {
+        ludia: bezi.filter((r) => r.bot === null).length,
+        sBotom: bezi.filter((r) => r.bot !== null).length,
+        cakajuce,
+        poslednaAktivita: bezi.length === 0 ? null : Math.max(...bezi.map((r) => r.lastActivity)),
+      },
+    };
+  };
+
   const otvoreneHry = (): OtvorenaHra[] =>
     [...rooms.values()]
       .filter((r) => r.verejna && r.state === null && r.hraci[0] !== null && r.sockets[0] !== null && r.hraci[1] === null)
@@ -230,6 +249,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           bezpecneCookie: opts.bezpecneCookie ?? false,
           otvoreneHry,
           poZverejneni: () => undefined,
+          stavServera,
         },
         req,
         res,

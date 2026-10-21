@@ -19,3 +19,6 @@ __pycache__/
 
 # Pracovný priečinok agenta Admin (zálohy tvorcu, návrhy ilustrácií, id referencií v Leonarde)
 /admin-agent/
+
+# Nasadená verzia — zapisuje deploy/nahraj.sh
+/VERZIA.json

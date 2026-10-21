@@ -5,7 +5,8 @@
 // skryl. Upravuje ju admin a subadmin; AI agent (navrhár) smie len pridávať,
 // a to len do Prijímača. Rozhodnutie o návrhu z playtestu sa do roadmapy
 // premietne samo (zNavrhu): schválený do Prijímača, odložený do Neskôr,
-// implementovaný do Hotové.
+// implementovaný do Hotové; keď ďalší playtest ukáže, že nezabral, vráti sa
+// do Prijímača na nové rozhodnutie.
 
 import { existsSync, readFileSync } from "node:fs";
 import type { Db } from "./db.ts";
@@ -258,7 +259,8 @@ export class Roadmapa {
     const doHotovych = stlpec === "hotove" && p.stlpec !== "hotove";
     const zHotovych = stlpec !== "hotove" && p.stlpec === "hotove";
     const stav: StavPolozky | undefined = doHotovych ? "hotove" : zHotovych ? "rozhodnute" : undefined;
-    const data = obsahZ({ ...p, ...zmeny, ...(stav !== undefined ? { stav } : {}) });
+    // Výslovný stav (napr. „overit“ po nezabratí) má prednosť pred stavom z presunu.
+    const data = obsahZ({ ...p, ...(stav !== undefined ? { stav } : {}), ...zmeny });
     this.db
       .prepare("UPDATE roadmapa SET stlpec = ?, poradie = ?, data = ?, upravena = ?, dokoncena = ? WHERE id = ?")
       .run(stlpec, poradie, JSON.stringify(data), teraz, doHotovych ? teraz : zHotovych ? null : p.dokoncena, p.id);
@@ -292,7 +294,10 @@ export class Roadmapa {
       oblast: oblastNavrhu(n.oblast),
       narocnost: "M",
       stav: "rozhodnute",
-      zdroj: { typ: "playtest", text: `Playtest ${n.davka}`, odkaz: "/playtest" },
+      zdroj:
+        n.zdroj === "dizajn"
+          ? { typ: "dizajn", text: `Dizajn ${n.davka}`, odkaz: "/playtest" }
+          : { typ: "playtest", text: `${n.zdroj === "rozhodca" ? "Rozhodca" : "Playtest"} ${n.davka}`, odkaz: "/playtest" },
       zavisi: [],
       commit: "",
     };
@@ -313,6 +318,14 @@ export class Roadmapa {
       case "implementovane":
         if (p === null) this.vloz({ ...obsah, stav: "hotove", commit: n.vysledok.slice(0, 300) }, "hotove", this.hranica("hotove", "zaciatok"), teraz, n.id, true, teraz);
         else this.premiestni(p, "hotove", this.hranica("hotove", "zaciatok"), teraz, { commit: n.vysledok.slice(0, 300) });
+        return;
+      case "overene":
+        if (p !== null) this.premiestni(p, p.stlpec, p.poradie, teraz, { hotovo: `Overené playtestom: ${n.verdikt}`.slice(0, MAX_TEXT) });
+        return;
+      case "nezabralo":
+        // Zmena je v kóde, ale problém trvá — o ďalšom kroku rozhodne Michal.
+        if (p === null) this.vloz({ ...obsah, stav: "overit", hotovo: `Nezabralo: ${n.verdikt}`.slice(0, MAX_TEXT) }, "prijimac", this.hranica("prijimac", "zaciatok"), teraz, n.id);
+        else this.premiestni(p, "prijimac", this.hranica("prijimac", "zaciatok"), teraz, { stav: "overit", hotovo: `Nezabralo: ${n.verdikt}`.slice(0, MAX_TEXT) });
         return;
       case "zamietnute":
       case "nove":

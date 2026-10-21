@@ -4,16 +4,22 @@
 // s parametrom max) a nahrá ich sem. Admin pri každom vyberie možnosť, dopíše
 // poznámku a rozhodne: implementovať, odložiť, zamietnuť. Skill
 // naex-implementacia potom zoberie len návrhy, o ktorých implementácii rozhodol
-// človek (nie účet AI), a agent Developer ich po dokončení označí.
+// človek (nie účet AI), a agent Developer ich po dokončení označí. Uzavrie ho
+// až verdikt ďalšieho playtestu (overené / nezabralo) — inak by sa zmeny
+// pravidiel len kopili bez dôkazu, že problém zmizol.
 
 import type { Db } from "./db.ts";
 import type { Pouzivatel } from "./auth.ts";
 import { ChybaVstupu, jeSpravca } from "./auth.ts";
 
-export const STAVY_NAVRHU = ["nove", "implementovat", "odlozene", "zamietnute", "rozpracovane", "implementovane"] as const;
+export const STAVY_NAVRHU = ["nove", "implementovat", "odlozene", "zamietnute", "rozpracovane", "implementovane", "overene", "nezabralo"] as const;
 export type StavNavrhu = (typeof STAVY_NAVRHU)[number];
 
-/** Rozhodnutia človeka; zvyšné stavy nastavuje Developer počas práce. */
+/** Odkiaľ návrh je — z playtestu, od dizajnérov webu (skill naex-dizajn), alebo rozpor pravidiel a kódu (agent naex-rozhodca). */
+export const ZDROJE_NAVRHU = ["playtest", "dizajn", "rozhodca"] as const;
+export type ZdrojNavrhu = (typeof ZDROJE_NAVRHU)[number];
+
+/** Rozhodnutia človeka; zvyšné stavy nastavuje Developer počas práce a organizátor playtestu po overení. */
 const ROZHODNUTIA: readonly StavNavrhu[] = ["nove", "implementovat", "odlozene", "zamietnute"];
 
 export const KRITICKOSTI = ["kriticka", "vysoka", "stredna", "nizka"] as const;
@@ -42,6 +48,9 @@ export interface ObsahNavrhu {
   readonly moznosti: readonly Moznost[];
   readonly odporucanie: string;
   readonly otazky: readonly string[];
+  /** Merateľné otázky, na ktoré má odpovedať ďalší playtest po implementácii. */
+  readonly overenie: readonly string[];
+  readonly zdroj: ZdrojNavrhu;
 }
 
 interface Osoba {
@@ -65,6 +74,8 @@ export interface Navrh extends ObsahNavrhu {
   readonly rozhodnuty: number | null;
   /** Čo Developer spravil (commit, poznámka), keď návrh implementoval. */
   readonly vysledok: string;
+  /** Čo ukázal playtest po implementácii (stav overené / nezabralo). */
+  readonly verdikt: string;
   readonly vytvoreny: number;
 }
 
@@ -110,6 +121,8 @@ export function overObsah(v: unknown): ObsahNavrhu {
     };
   });
   if (new Set(moznosti.map((m) => m.kluc)).size !== moznosti.length) throw new ChybaVstupu(`Návrh ${kluc}: kľúče možností sa opakujú.`);
+  const zdroj = o.zdroj ?? "playtest";
+  if (!(ZDROJE_NAVRHU as readonly unknown[]).includes(zdroj)) throw new ChybaVstupu(`Návrh ${kluc}: zdroj ${ZDROJE_NAVRHU.join(" | ")}.`);
   return {
     kluc,
     nazov: text(o.nazov, MAX_KRATKY, "Názov"),
@@ -122,6 +135,8 @@ export function overObsah(v: unknown): ObsahNavrhu {
     moznosti,
     odporucanie: text(o.odporucanie, MAX_TEXT, "Odporúčanie", false),
     otazky: zoznamTextov(o.otazky, 1000, "Otázka"),
+    overenie: zoznamTextov(o.overenie, 1000, "Overenie"),
+    zdroj: zdroj as ZdrojNavrhu,
   };
 }
 
@@ -141,7 +156,8 @@ export class Navrhy {
       )
       .all() as Record<string, unknown>[];
     return riadky.map((r) => ({
-      ...(JSON.parse(String(r.data)) as ObsahNavrhu),
+      // Návrhy nahraté pred overovaním nemajú overenie ani zdroj.
+      ...({ overenie: [], zdroj: "playtest", ...(JSON.parse(String(r.data)) as Partial<ObsahNavrhu>) } as ObsahNavrhu),
       id: Number(r.id),
       davka: String(r.davka),
       podklady: JSON.parse(String(r.podklady)) as string[],
@@ -152,6 +168,7 @@ export class Navrhy {
       rozhodol: r.rozhodol === null ? null : { id: Number(r.rozhodol), meno: String(r.rozhodol_meno ?? "?"), ai: Number(r.rozhodol_ai) === 1 },
       rozhodnuty: r.rozhodnuty === null ? null : Number(r.rozhodnuty),
       vysledok: String(r.vysledok),
+      verdikt: String(r.verdikt),
       vytvoreny: Number(r.vytvoreny),
     }));
   }
@@ -179,8 +196,9 @@ export class Navrhy {
   }
 
   /**
-   * Rozhodnutie admina (stav, voľba, poznámka) alebo hlásenie Developera
-   * (rozpracované / implementované + výsledok).
+   * Rozhodnutie admina (stav, voľba, poznámka), hlásenie Developera
+   * (rozpracované / implementované + výsledok) alebo verdikt playtestu
+   * (overené / nezabralo + verdikt).
    */
   uprav(ja: Pouzivatel, id: number, zmeny: Record<string, unknown>, teraz: number): void {
     if (!jeSpravca(ja.rola)) throw new ChybaVstupu("Návrhy spravuje len admin alebo subadmin.", 403);
@@ -196,6 +214,11 @@ export class Navrhy {
     }
     const poznamka = zmeny.poznamka === undefined ? undefined : text(zmeny.poznamka, MAX_TEXT, "Poznámka", false);
     const vysledok = zmeny.vysledok === undefined ? undefined : text(zmeny.vysledok, MAX_TEXT, "Výsledok", false);
+    const verdikt = zmeny.verdikt === undefined ? undefined : text(zmeny.verdikt, MAX_TEXT, "Verdikt", false);
+    if (stav === "overene" || stav === "nezabralo") {
+      if (r.stav !== "implementovane" && r.stav !== "overene" && r.stav !== "nezabralo") throw new ChybaVstupu("Overiť sa dá len implementovaný návrh.");
+      if ((verdikt ?? "") === "") throw new ChybaVstupu("Verdikt: čo playtest po implementácii ukázal.");
+    }
     if (volba === "vlastne" && (poznamka ?? "") === "" && stav === "implementovat") {
       throw new ChybaVstupu("Pri vlastnom riešení ho opíš v poznámke.");
     }
@@ -212,6 +235,7 @@ export class Navrhy {
            volba = CASE WHEN ? THEN ? ELSE volba END,
            poznamka = COALESCE(?, poznamka),
            vysledok = COALESCE(?, vysledok),
+           verdikt = COALESCE(?, verdikt),
            rozhodol = CASE WHEN ? THEN ? ELSE rozhodol END,
            rozhodnuty = CASE WHEN ? THEN ? ELSE rozhodnuty END
          WHERE id = ?`,
@@ -222,6 +246,7 @@ export class Navrhy {
         typeof volba === "string" ? volba : null,
         poznamka ?? null,
         vysledok ?? null,
+        verdikt ?? null,
         rozhodnutie ? 1 : 0,
         ja.id,
         rozhodnutie ? 1 : 0,

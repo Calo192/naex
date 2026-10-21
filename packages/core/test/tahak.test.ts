@@ -1,0 +1,23 @@
+// Ťahák AI hráčov (tools/playtest/tahak.md) opakuje čísla pravidiel. Keď sa
+// hodnota v constants.ts zmení a ťahák nie, playtesteri hrajú podľa starých
+// pravidiel a hlásia falošné nezrovnalosti — preto ho stráži test.
+
+import { readFileSync } from "node:fs";
+import { describe, expect, it } from "vitest";
+import { DLZKY_HRY, KONSTANTY } from "../src/constants.ts";
+
+const tahak = readFileSync(new URL("../../../tools/playtest/tahak.md", import.meta.url), "utf8").replace(/\s+/g, " ");
+
+describe("ťahák AI hráčov sedí s constants.ts", () => {
+  it.each([
+    ["dĺžky hry", `krátka ${DLZKY_HRY.kratka}, stredná ${DLZKY_HRY.stredna}, dlhá ${DLZKY_HRY.dlha}`],
+    ["štart", `${KONSTANTY.VELKOST_RUKY} kariet v ruke, ${KONSTANTY.START_POLDECI} plné poldeci, ${KONSTANTY.START_CIGARETY} cigarety`],
+    ["karty po bitke", `dobereš **${KONSTANTY.KARTY_PO_BITKE} karty**`],
+    ["cena šenku", `1 karta za ${KONSTANTY.CENA_SENKU[1]} cigaretu, 2 karty za ${KONSTANTY.CENA_SENKU[2]} cigarety`],
+    ["doplnenie šenku", `doplní na ${KONSTANTY.SENOK_PO_BRANI}`],
+    ["doliatie", `${KONSTANTY.REFILL_CENA} cigarety → vypitý poldeci`],
+    ["barter", `${KONSTANTY.BARTER_CENA} cigariet → nový plný poldeci`],
+  ])("%s", (_, ocakavane) => {
+    expect(tahak).toContain(ocakavane);
+  });
+});

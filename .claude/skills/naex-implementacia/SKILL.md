@@ -58,21 +58,27 @@ všetky v stave `implementovat`.
    postupne, aby sa commity nebili). Zadanie pre každý návrh: id, názov,
    problém, príčina, **presný text vybranej možnosti** (alebo vlastné riešenie
    z poznámky), Michalova poznámka (má prednosť), otázky navrhára s Michalovými
-   odpoveďami z poznámky, čo robí Admin, a koncovka commitu:
+   odpoveďami z poznámky, otázky `overenie` (podľa nich sa zmena overí — nech
+   na ne myslí), čo robí Admin, a koncovka commitu:
    `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
    Developer návrh na webe sám označí `rozpracovane` a po merge `implementovane`.
 
 5. **Kontrola po Developerovi** — `git log --oneline -5 master`, či je commit
    v master a na origin, a `$A navrhy implementovane --zivy`, či je návrh
-   označený. Ak Developer zlyhal (testy, konflikt), vráť návrh na
+   označený a či výsledok obsahuje **dôkaz** (zmena pravidla: turnaj pred → po
+   a koľkokrát bot novú voľbu použil — nula znamená, že bot ju nepozná;
+   zmena rozhrania: odkaz na `dokaz-<id>.html` so snímkami). Chýbajúci dôkaz
+   si od Developera vyžiadaj (SendMessage), kým pôjdeš ďalej. Ak Developer zlyhal (testy, konflikt), vráť návrh na
    implementovať (`$A navrh <id> spat --zivy --vysledok "<prečo>"`) — Michalovo
    rozhodnutie ostane — a povedz používateľovi prečo.
 
-6. **Nasadenie** — implementované zmeny sú na živom webe až po nasadení
-   (`deploy/nahraj.sh`, docs/NASADENIE.md). Reštart zhodí rozohrané partie,
-   preto nasadenie **ponúkni** a urob ho, keď používateľ súhlasí.
+6. **Nasadenie** — implementované zmeny sú na živom webe až po nasadení.
+   Reštart zhodí rozohrané partie, preto nasadenie **ponúkni** a keď
+   používateľ súhlasí, spusti skill `/naex-nasad` (skontroluje master, testy,
+   rozohrané partie, nasadí a overí živý web).
 
 7. **Odovzdaj** používateľovi: pre každý návrh jednu-dve vety (čo sa zmenilo,
-   commit), čo ostalo otvorené (hodnoty s `TODO`, chyby mimo návrhu, ktoré
-   Developer našiel) a odporúčanie overiť zmenu ďalším playtestom
-   (`/naex-playtest`).
+   commit, dôkaz), čo ostalo otvorené (hodnoty s `TODO`, chyby mimo návrhu, ktoré
+   Developer našiel) a že návrh teraz čaká na **overenie**: najbližší
+   `/naex-playtest` (predvolený alebo `max`) dostane jeho otázky `overenie`
+   a podľa výsledku ho uzavrie (zabralo) alebo vráti na rozhodnutie (nezabralo).

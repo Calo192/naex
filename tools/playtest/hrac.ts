@@ -113,7 +113,7 @@ interface Spojenie {
 type Sprava =
   | { typ: "state"; view: ClientState; events: Event[] }
   | { typ: "error"; text: string }
-  // Sledovateľ si otvára partiu v prehliadači za toho istého hráča a server
+  // Snímka (tools/playtest/snimka.ts) otvára partiu v prehliadači za toho istého hráča a server
   // mu na chvíľu odovzdá miesto — čakanie sa vtedy pripojí znova.
   | { typ: "zatvorene" };
 
@@ -861,7 +861,7 @@ async function main(): Promise<void> {
     const cmd = JSON.parse(arg) as Command;
     s.ws.send(JSON.stringify({ type: "cmd", cmd }));
     let m = await s.dalsia(15_000);
-    // Miesto na chvíľu prevzal sledovateľ — pošli ťah ešte raz.
+    // Miesto na chvíľu prevzala snímka z prehliadača — pošli ťah ešte raz.
     if (m?.typ === "zatvorene" || (m?.typ === "error" && m.text.includes("prevzal"))) {
       await new Promise((ok) => setTimeout(ok, 1500));
       s = await pripoj();

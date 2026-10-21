@@ -31,6 +31,15 @@ export interface OtvorenaHra {
   readonly vytvorena: number;
 }
 
+/** Čo beží na serveri — podklad pre bezpečné nasadenie (skill naex-nasad) a prehľad naex-stav. */
+export interface StavServera {
+  /** Nasadená verzia (VERZIA.json, ktorý zapíše deploy/nahraj.sh); null = nenasadené (vývoj). */
+  readonly verzia: { readonly commit: string; readonly vetva: string; readonly necommitnute: boolean; readonly nahrate: string } | null;
+  readonly spusteny: number;
+  /** Rozohrané partie — reštart servera ich zhodí. */
+  readonly partie: { readonly ludia: number; readonly sBotom: number; readonly cakajuce: number; readonly poslednaAktivita: number | null };
+}
+
 export interface ApiKontext {
   readonly ucty: Ucty;
   readonly obsah: Obsah;
@@ -54,6 +63,7 @@ export interface ApiKontext {
   readonly otvoreneHry: () => readonly OtvorenaHra[];
   /** Po zverejnení novej sady — nové hry pobežia na nej. */
   readonly poZverejneni: () => void;
+  readonly stavServera: () => StavServera;
 }
 
 const JSON_LIMIT = 2 * 1024 * 1024;
@@ -654,6 +664,7 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
         return ok({ ok: true });
       }
     }
+    if (sub === "GET /stav-servera") return ok(ctx.stavServera());
     if (metoda === "PATCH" && casti[2] === "pouzivatelia" && casti.length === 4) {
       if (ja2.rola !== "admin") throw new ChybaVstupu("Úroveň účtu mení len admin.", 403);
       const b = await citajJson(req);

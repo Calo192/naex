@@ -1,4 +1,4 @@
-// Snímky obrazovky partie tak, ako ju vidí hráč v prehliadači (pre sledovateľa),
+// Snímky obrazovky partie tak, ako ju vidí hráč v prehliadači,
 // alebo ľubovoľnej stránky webu (pre UI a UX dizajnéra).
 // Headless Chrome cez DevTools protokol: prihlási sa za hráča, otvorí /hra
 // a odfotí vrch stránky (stôl) a spodok (starší, ruka). Voliteľne prejde
@@ -94,7 +94,7 @@ async function prihlasenie(): Promise<Prihlasenie> {
     login: ucet.login,
     heslo: ucet.heslo,
     miestnost: hra.kod,
-    vystup: volba("--vystup") ?? join(relacia ?? "", "sledovatel", "snimky"),
+    vystup: volba("--vystup") ?? join(relacia ?? "", "snimky"),
     predpona: `hrac${hracArg ?? ""}-`,
   };
 }

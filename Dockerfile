@@ -30,6 +30,8 @@ COPY packages/server/src packages/server/src
 COPY packages/server/seed packages/server/seed
 # Reporty playtestov — v administrácii (Tvorba → Playtesty) pre admina a subadminov.
 COPY docs/playtesty docs/playtesty
+# Nasadená verzia (zapíše ju deploy/nahraj.sh); vzor [n], aby build prešiel aj bez nej.
+COPY tsconfig.json VERZIA.jso[n] ./
 COPY --from=build /app/apps/web/dist apps/web/dist
 # Nový zväzok preberie vlastníka z obrazu — server beží ako node, nie root.
 RUN mkdir -p /data && chown node:node /data

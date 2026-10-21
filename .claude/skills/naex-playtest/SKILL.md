@@ -43,7 +43,6 @@ a do partií nezasahuješ.
 - `naex-navrhar` — pri `max` návrhy zmien (`docs/playtesty/navrhy-<id>.json`
   pre web a `navrhy-<id>.html`).
 
-Sledovateľ vizuálu (`naex-sledovatel`) sa nespúšťa (Michal 2026-10-12).
 Hru proti človeku zakladá skill `naex-protihrac`.
 
 **Živý web** = `https://<DOMENA z deploy/.env.produkcia>` (dnes
@@ -73,6 +72,17 @@ nezrovnalosti pravidiel a hry a navrhnú zmeny (`tools/playtest/kriteria.md`,
    a zameraním. Ak zlyhá, pozri `R/server.log` a povedz používateľovi prečo.
    Klient musí byť zbuildovaný (`npm run build --workspace=@naex/web`).
 
+2b. **Návrhy na overenie** (Michal 2026-10-21: návrh sa uzavrie, až keď
+   playtest ukáže, že zabral):
+   ```bash
+   $A navrhy implementovane --zivy --json
+   ```
+   Ber tie, ktorých commit (vo `vysledok`) je v kóde, ktorý sa hrá
+   (`git merge-base --is-ancestor <hash> HEAD`) — inak by sa overovalo staré
+   správanie. Z každého si zober id, názov a otázky `overenie` (návrh bez nich:
+   jedna otázka „Trvá problém <problem jednou vetou>?“). Pri followupe `min`
+   sa neoveruje (nie je spisovateľ) — preskoč.
+
 3. **Spusti všetkých playtesterov naraz** — v jednej správe `2 × počet`
    volaní Agent (`naex-playtester`, `run_in_background: true`), pre každého:
    „Relácia: R. Si hráč N. Postava: <meno> — štýl: <štýl> Zameranie:
@@ -83,7 +93,9 @@ nezrovnalosti pravidiel a hry a navrhnú zmeny (`tools/playtest/kriteria.md`,
    zameranie. Napíš spätnú väzbu a zverejni ju na webe.“
 
    Ak existuje predošlý rozbor `docs/playtesty/strategia-*.html`, pridaj do
-   zadania jeho otázky z časti „Čo sledovať v ďalšom playteste“.
+   zadania jeho otázky z časti „Čo sledovať v ďalšom playteste“. Ak sú návrhy
+   na overenie (krok 2b), pridaj: „Otázky na overenie zmien (odpovedz v
+   feedback.md, časť Overenie zmien): #<id> <názov>: <otázky>; …“.
 
    Používateľovi povedz: koľko partií beží, kto proti komu (mená postáv),
    followup a že partia trvá desiatky minút. Upozorni, aby sa na porty
@@ -107,7 +119,8 @@ nezrovnalosti pravidiel a hry a navrhnú zmeny (`tools/playtest/kriteria.md`,
 
 6. **Followup predvolený a `max` — report.** Spusti `naex-spisovatel` na
    pozadí: „Turnus: playtest/turnus-<id>/turnus.json. Napíš report zo všetkých
-   partií.“ (spomeň `organizator.md`, ak vznikol). Pri `max` v **tej istej
+   partií.“ (spomeň `organizator.md`, ak vznikol; ak sú návrhy na overenie,
+   pridaj „Návrhy na overenie: #<id> <názov> — <otázky>; … Daj každému verdikt.“). Pri `max` v **tej istej
    správe** spusti aj `naex-strateg`: „Turnus: … . Zmeraj náhodu a zručnosť,
    vyhodnoť návrhy playtesterov, najsľubnejšie vyskúšaj ako varianty a napíš
    rozbor. Potom ťa požiadam o posudok návrhov navrhára.“
@@ -135,6 +148,15 @@ nezrovnalosti pravidiel a hry a navrhnú zmeny (`tools/playtest/kriteria.md`,
    ```
    Obrázky reportu v `docs/playtesty/<id>/` nahraj tým istým príkazom.
 
+8b. **Verdikty overenia** zo zhrnutia spisovateľa zapíš k návrhom:
+   ```bash
+   $A navrh <id> overene --vysledok "<dôvod> (playtest <id turnusu>)" --zivy      # zabralo
+   $A navrh <id> nezabralo --vysledok "<dôvod> (playtest <id turnusu>)" --zivy    # vráti sa Michalovi na rozhodnutie
+   ```
+   „Málo dát“ nechaj tak — návrh počká na ďalší playtest. Nezabraté návrhy
+   sa samy vrátia do Prijímača roadmapy a navrhár ich pri ďalších návrhoch
+   berie ako najsilnejší signál.
+
 9. **Záznamy** (predvolený aj `max`):
    - do `docs/playtesty/zmeny-pravidiel.html` pri dotknutých zmenách blok
      „Výsledok playtestu <id>“ (1–3 vety z reportu),
@@ -154,6 +176,8 @@ nezrovnalosti pravidiel a hry a navrhnú zmeny (`tools/playtest/kriteria.md`,
     - nezrovnalosti — potvrdené chyby v hre zvlášť (ponúkni opravu), otázky na
       autora zvlášť,
     - 3–5 najsilnejších návrhov na strategickosť a čo bolo dobré,
+    - overenie zmien: pre každý overovaný návrh verdikt (zabralo / nezabralo /
+      málo dát) a jedna veta; nezabraté čakajú na Michala v `<živý web>/playtest`,
     - pri `max`: odkaz na **`<živý web>/playtest`**, kde čakajú návrhy na
       rozhodnutie — pre každý jeden riadok (téma, kritickosť, odporúčaná
       možnosť, verdikt stratéga) a že po rozhodnutí ich implementuje

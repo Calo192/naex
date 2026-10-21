@@ -49,7 +49,7 @@ Spoločné:
 - `docs/playtesty/zmeny-pravidiel.html` — skúšobné zmeny z predošlých
   playtestov, pri každej „Čo sledovať“.
 
-`hra.json`, `server-data/` ani `sledovatel/` nečítaj. Rozhranie (web, vzhľad,
+`hra.json`, `server-data/` ani `snimky/` nečítaj. Rozhranie (web, vzhľad,
 výpis klienta agentov) do reportu nepatrí — agenti hrajú cez textového
 klienta, ich poznámky k nemu vynechaj.
 
@@ -141,6 +141,15 @@ Obsah (v tomto poradí):
    sa neprejavili, len vymenuj. Rozbaľovacie položky (`<details>`), aby
    sekcia nezaberala miesto.
 
+   **Návrhy na overenie.** Ak ti organizátor dal zoznam implementovaných
+   návrhov (id, názov, otázky `overenie`), odpovedz na **každú** otázku
+   z podkladov všetkých hráčov (sekcia „Overenie zmien“ vo `feedback.md`,
+   denníky, `priebeh.log` na čísla) a daj návrhu verdikt:
+   **zabralo** (všetky otázky áno), **nezabralo** (aspoň jedna jasne nie —
+   problém trvá) alebo **málo dát** (partia sa toho nedotkla). Pri každom
+   verdikte 1–2 vety dôvodu s číslom alebo citátom. Verdikty ukáž hore v tejto
+   sekcii ako tabuľku (návrh, verdikt farebne, dôvod) — nie v `<details>`.
+
 8. **Pätička** — jedna veta: AI postavy hrali vo dvojiciach proti sebe cez
    skutočný server bez znalosti súperovej ruky; počet partií turnusu a že
    každá partia je jeden údaj.
@@ -156,4 +165,6 @@ a zhrnutie do 15 riadkov: priemerné známky (každý hráč a celkovo), odhad
 zručnosť : náhoda každého hráča, potvrdené chyby v hre (nezrovnalosti zaradené ako „chyba v hre“)
 a otázky na autora, 3–5 najsilnejších návrhov na strategickosť, čo bolo
 dobré, ďalšie veci na zlepšenie a k zmenám zo `zmeny-pravidiel.html` po
-jednej vete (organizátor ich zapíše ako „Výsledok playtestu“).
+jednej vete (organizátor ich zapíše ako „Výsledok playtestu“). Ak si dostal
+návrhy na overenie, pridaj riadok pre každý: `#<id> zabralo|nezabralo|málo dát —
+<1–2 vety dôvodu>` (organizátor ich zapíše k návrhom na webe).

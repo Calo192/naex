@@ -55,9 +55,14 @@
 //   avatar <subor>                avatar účtu Admin (AI)
 // Playtest (sekcia Playtest na webe — reporty a návrhy, Michal 2026-10-21)
 //   report-nahraj <subor>…        nahrá report / rozbor / návrhy z docs/playtesty (aj obrázky v podpriečinku)
-//   navrhy [stav] [--json]        návrhy zlepšení; stav: nove | implementovat | odlozene | zamietnute | rozpracovane | implementovane
-//   navrhy-nahraj <subor.json>    nahrá dávku návrhov od navrhára (tvar v .claude/agents/naex-navrhar.md)
+//   navrhy [stav] [--json]        návrhy zlepšení; stav: nove | implementovat | odlozene | zamietnute | rozpracovane
+//                                 | implementovane (čaká na overenie) | overene | nezabralo
+//   navrhy-nahraj <subor.json>    nahrá dávku návrhov od navrhára alebo z dizajnu (tvar v .claude/agents/naex-navrhar.md)
 //   navrh <id> <stav> [--vysledok "text"]   Developer: rozpracovane | implementovane (+ čo spravil, commit) | spat
+//                                 organizátor playtestu: overene | nezabralo (--vysledok = verdikt: čo playtest ukázal)
+// Server a prehľad
+//   server-stav [--json]          nasadená verzia (commit) a rozohrané partie — pred nasadením (skill naex-nasad)
+//   prehlad                       čo čaká na Michala, Developera a nasadenie (skill naex-stav); s --zivy aj nenasadené commity
 // Roadmapa (stránka Vývoj → Roadmapa, Michal 2026-10-21)
 //   roadmapa [stlpec] [--json]    poradie položiek; stĺpce prijimac | teraz | dalej | potom | neskor | hotove
 //                                 Developer berie schválené návrhy v poradí stĺpca Teraz zhora
@@ -297,6 +302,29 @@ const STYL_AVATARA =
   "muted dirty palette of browns, olive, slate blue and grey with one warm bulb light, slightly grotesque caricatured expressive face, " +
   "run-down post-socialist village interior. No text, no letters, no logos, no watermark, no frame, no border.";
 const REFERENCIE_AVATARA = ["stamgast", "rapavy_fero", "teta_gizka"].map((b) => join("packages/server/seed/avatary/boti", `${b}.jpg`));
+
+/** GET /api/admin/stav-servera (StavServera v packages/server/src/api.ts). */
+interface StavServeraCli {
+  readonly verzia: { readonly commit: string; readonly vetva: string; readonly necommitnute: boolean; readonly nahrate: string } | null;
+  readonly spusteny: number;
+  readonly partie: { readonly ludia: number; readonly sBotom: number; readonly cakajuce: number; readonly poslednaAktivita: number | null };
+}
+
+function vypisStavServera(s: StavServeraCli): void {
+  const kedy = (t: number) => new Date(t).toLocaleString("sk-SK");
+  console.log(
+    s.verzia === null
+      ? "  Verzia: neznáma (server bez VERZIA.json)."
+      : `  Verzia: ${s.verzia.commit.slice(0, 7)} (${s.verzia.vetva}${s.verzia.necommitnute ? ", s necommitnutými zmenami!" : ""}), nahraté ${s.verzia.nahrate}`,
+  );
+  console.log(`  Spustený: ${kedy(s.spusteny)}`);
+  const p = s.partie;
+  console.log(
+    `  Rozohrané partie: ${p.ludia} ľudia proti sebe, ${p.sBotom} s botom; čakajúce miestnosti: ${p.cakajuce}` +
+      (p.poslednaAktivita === null ? "" : `; posledný ťah ${Math.round((Date.now() - p.poslednaAktivita) / 60000)} min dozadu`),
+  );
+  if (p.ludia + p.sBotom > 0) console.log("  Reštart servera (nasadenie) tieto partie zhodí.");
+}
 
 function rozober(argv: readonly string[]): { poz: string[]; prep: Map<string, string | true> } {
   const poz: string[] = [];
@@ -817,7 +845,9 @@ async function main(): Promise<void> {
     }
 
     case "navrhy": {
-      const { navrhy } = await api<{ navrhy: { id: number; davka: string; nazov: string; kritickost: string; stav: string; volba: string | null; poznamka: string; rozhodol: { meno: string; ai: boolean } | null; vysledok: string }[] }>("GET", "/admin/navrhy");
+      const { navrhy } = await api<{
+        navrhy: { id: number; davka: string; nazov: string; kritickost: string; stav: string; volba: string | null; poznamka: string; rozhodol: { meno: string; ai: boolean } | null; vysledok: string; overenie?: string[]; verdikt?: string }[];
+      }>("GET", "/admin/navrhy");
       const vybrane = navrhy.filter((n) => arg[0] === undefined || n.stav === arg[0]);
       if (prep.has("--json")) {
         console.log(JSON.stringify(vybrane, null, 2));
@@ -829,6 +859,8 @@ async function main(): Promise<void> {
         console.log(`#${n.id} [${n.stav}${n.volba === null ? "" : `, možnosť ${n.volba}`}${kto}] ${n.davka} · ${n.kritickost} · ${n.nazov}`);
         if (n.poznamka !== "") console.log(`    poznámka: ${n.poznamka.replace(/\n/g, " ")}`);
         if (n.vysledok !== "") console.log(`    výsledok: ${n.vysledok.replace(/\n/g, " ")}`);
+        for (const o of n.overenie ?? []) console.log(`    overiť: ${o}`);
+        if ((n.verdikt ?? "") !== "") console.log(`    verdikt: ${(n.verdikt ?? "").replace(/\n/g, " ")}`);
       }
       break;
     }
@@ -846,7 +878,17 @@ async function main(): Promise<void> {
       if (id === undefined || stav === undefined || !/^\d+$/.test(id)) throw new Error('Použitie: navrh <id> <rozpracovane|implementovane|spat> [--vysledok "text"]');
       // Agent rozhodnutia admina nemení — len hlási priebeh implementácie;
       // „spat“ vráti nedokončený návrh z rozpracovaného na implementovať (rozhodnutie ostane).
-      if (stav !== "rozpracovane" && stav !== "implementovane" && stav !== "spat") throw new Error("Agent nastavuje len rozpracovane, implementovane alebo spat; rozhoduje Michal na webe.");
+      if (stav !== "rozpracovane" && stav !== "implementovane" && stav !== "spat" && stav !== "overene" && stav !== "nezabralo") {
+        throw new Error("Agent nastavuje len rozpracovane, implementovane, spat, overene alebo nezabralo; rozhoduje Michal na webe.");
+      }
+      // Verdikt overenia: playtest po implementácii ukázal, či zmena zabrala.
+      if (stav === "overene" || stav === "nezabralo") {
+        const verdikt = hodnota("--vysledok");
+        if (verdikt === undefined || verdikt.trim() === "") throw new Error(`Použitie: navrh <id> ${stav} --vysledok "<čo playtest ukázal, odkaz na report>"`);
+        await api("PATCH", `/admin/navrhy/${id}`, { stav, verdikt });
+        console.log(`Návrh #${id}: ${stav === "overene" ? "overené — zabralo" : "nezabralo, vrátený Michalovi na rozhodnutie"}.`);
+        break;
+      }
       if (stav === "spat") {
         const { navrhy } = await api<{ navrhy: { id: number; stav: string }[] }>("GET", "/admin/navrhy");
         if (navrhy.find((n) => n.id === Number(id))?.stav !== "rozpracovane") throw new Error(`Návrh #${id} nie je rozpracovaný.`);
@@ -857,6 +899,69 @@ async function main(): Promise<void> {
       const vysledok = hodnota("--vysledok");
       await api("PATCH", `/admin/navrhy/${id}`, { stav, ...(vysledok === undefined ? {} : { vysledok }) });
       console.log(`Návrh #${id}: ${stav}.`);
+      break;
+    }
+
+    case "server-stav": {
+      const s = await api<StavServeraCli>("GET", "/admin/stav-servera");
+      if (prep.has("--json")) {
+        console.log(JSON.stringify(s, null, 2));
+        break;
+      }
+      vypisStavServera(s);
+      break;
+    }
+
+    case "prehlad": {
+      // Ranný prehľad celej linky (skill naex-stav): kto na čom čaká.
+      const { spawnSync } = await import("node:child_process");
+      const git = (...a: string[]): string => {
+        const r = spawnSync("git", a, { encoding: "utf8" });
+        return r.status === 0 ? r.stdout.trim() : "";
+      };
+      const { navrhy } = await api<{ navrhy: { id: number; nazov: string; stav: string; davka: string; rozhodol: { ai: boolean } | null }[] }>("GET", "/admin/navrhy");
+      const { polozky } = await api<{ polozky: { id: number; stlpec: string; nazov: string; stav: string; navrh: number | null }[] }>("GET", "/roadmapa");
+      const { nazory } = await api<{ nazory: { id: number; stav: string; text: string; autor: { meno: string; ai: boolean } }[] }>("GET", "/nazory?triedenie=nove");
+      const s = await api<StavServeraCli>("GET", "/admin/stav-servera");
+      const riadok = (n: { id: number; nazov: string; davka: string }) => `    #${n.id} ${n.nazov} (${n.davka})`;
+      const skupina = (nadpis: string, zoznam: readonly string[]) => {
+        console.log(`\n${nadpis} (${zoznam.length})`);
+        for (const z of zoznam.slice(0, 8)) console.log(z);
+        if (zoznam.length > 8) console.log(`    … a ďalších ${zoznam.length - 8}`);
+      };
+      console.log(`Web: ${url}`);
+
+      console.log("\n== Čaká na Michala");
+      skupina("  Návrhy na rozhodnutie (/playtest)", navrhy.filter((n) => n.stav === "nove").map(riadok));
+      skupina("  Nezabrali — rozhodnúť znova", navrhy.filter((n) => n.stav === "nezabralo").map(riadok));
+      skupina("  Prijímač roadmapy — zaradiť do horizontu", polozky.filter((p) => p.stlpec === "prijimac").map((p) => `    #${p.id} ${p.nazov}`));
+      const ludske = nazory.filter((n) => n.stav === "nove" && !n.autor.ai);
+      skupina("  Nové názory ľudí na Spätnej väzbe", ludske.map((n) => `    #${n.id} ${n.autor.meno}: ${n.text.replace(/\s+/g, " ").slice(0, 90)}`));
+
+      console.log("\n== Čaká na Developera (/naex-implementacia)");
+      const vTeraz = polozky.filter((p) => p.stlpec === "teraz" && p.stav !== "hotove");
+      skupina("  Stĺpec Teraz zhora", vTeraz.map((p) => `    #${p.id} ${p.nazov}${p.navrh === null ? "" : ` [návrh #${p.navrh}]`} · ${p.stav}`));
+      skupina("  Návrhy na implementáciu", navrhy.filter((n) => n.stav === "implementovat" || n.stav === "rozpracovane").map((n) => `${riadok(n)} · ${n.stav}${n.rozhodol?.ai === true ? " · rozhodol účet AI — Developer nevezme!" : ""}`));
+
+      console.log("\n== Čaká na playtest (overenie zmien)");
+      skupina("  Implementované, neoverené", navrhy.filter((n) => n.stav === "implementovane").map(riadok));
+
+      console.log("\n== Server a nasadenie");
+      vypisStavServera(s);
+      if (s.verzia !== null && git("rev-parse", "--verify", "--quiet", `${s.verzia.commit}^{commit}`) !== "") {
+        const nenasadene = git("log", "--oneline", `${s.verzia.commit}..origin/master`).split("\n").filter((r) => r !== "");
+        skupina("  Commity v origin/master, ktoré nie sú nasadené (/naex-nasad)", nenasadene.map((r) => `    ${r}`));
+      } else if (s.verzia === null) {
+        console.log("  Server nevie svoju verziu (nasadený pred VERZIA.json, alebo vývojový) — nenasadené commity nezistím.");
+      }
+
+      console.log("\n== Pracovný strom");
+      const zmeny = git("status", "--porcelain").split("\n").filter((r) => r !== "");
+      console.log(`  vetva ${git("rev-parse", "--abbrev-ref", "HEAD")}, necommitnuté súbory: ${zmeny.length}`);
+      const vpred = git("rev-list", "--count", "origin/master..master");
+      if (vpred !== "" && vpred !== "0") console.log(`  master je ${vpred} commitov pred origin/master — chýba push.`);
+      const todo = git("grep", "-c", "TODO", "--", "packages/core/data").split("\n").filter((r) => r !== "");
+      if (todo.length > 0) console.log(`  TODO v herných dátach: ${todo.join(", ")}`);
       break;
     }
 

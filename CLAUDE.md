@@ -60,7 +60,12 @@ heslo admina v `deploy/.env.produkcia`, mimo gitu). Nástroje agentov naň idú
 prepínačom `--zivy`. Playtesty a návrhy z nich sú v sekcii **Playtest**
 (len admin a subadmin); Michal tam o návrhoch rozhoduje a schválené
 implementuje skill `naex-implementacia` (agent `naex-developer`): hneď commit,
-push a merge do master bez pýtania (Michal 2026-10-21).
+push a merge do master bez pýtania (Michal 2026-10-21). Implementovaný návrh
+sa uzavrie až verdiktom ďalšieho playtestu (overené / nezabralo — nezabratý
+sa vráti Michalovi); návrhy z dizajnu (`naex-dizajn`) a rozpory pravidiel
+s kódom (`naex-rozhodca`) idú tou istou cestou. Na živý web nasadzuje
+`/naex-nasad` (len čistý `origin/master`, počká na rozohrané partie), čo kde
+čaká ukáže `/naex-stav`.
 
 Verejná stránka **Vývoj** (`/vyvoj`, Michal 2026-10-21): priemery známok hry
 podľa 12 kritérií playtestu v čase (ľudia, AI, spolu; ľudia až od 3
@@ -108,10 +113,13 @@ deploy/, Dockerfile  nasadenie (docs/NASADENIE.md)
 docs/BRIEF.md        zadanie M0–M10
 docs/PRAVIDLA.md     špecifikácia pravidiel
 tools/               import z tlačového PDF, piktogramy akcií
-  bot/turnaj.ts        turnaj offline protihráča (proti náhodnému / chamtivému / sebe)
+  bot/turnaj.ts        turnaj offline protihráča (proti náhodnému / chamtivému / sebe /
+                       starej verzii bota z iného worktree); vypíše, ktoré ťahy bot používa
   bot/strategickost.ts meranie strategickosti — podklad agenta naex-strateg (skill naex-strategia)
   admin/               nástroje agenta naex-admin (admin API, rebalans, štýl ilustrácií,
-                       nahrávanie reportov a návrhov, avatary AI účtov)
+                       nahrávanie reportov a návrhov, avatary AI účtov, prehlad, server-stav)
   playtest/            klient AI playtesterov; hraci.json = 6 postáv (štýl, zameranie),
-                       turnus.ts = 1–3 partie naraz s náhodnými dvojicami
+                       turnus.ts = 1–3 partie naraz s náhodnými dvojicami,
+                       tahak.md = ťahák pravidiel AI hráčov (jediné miesto, čísla stráži test)
+  rozhodca/            mapa „paragraf PRAVIDLA.md → test“ agenta naex-rozhodca
 ```

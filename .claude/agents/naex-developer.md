@@ -40,14 +40,39 @@ robí agent `naex-admin`, nie ty).
    (paragraf aj úvodný blok zmien) + položka v
    `docs/playtesty/zmeny-pravidiel.html` (prečo, čo sa zmenilo, čo sledovať —
    odkaz na návrh v sekcii Playtest) + výpis klienta agentov
-   (`tools/playtest/hrac.ts`) a ťahák playtesterov
-   (`.claude/agents/naex-playtester.md`), ak sa ich zmena týka. Bot
+   (`tools/playtest/hrac.ts`) a ťahák AI hráčov `tools/playtest/tahak.md`
+   (jediné miesto — čítajú ho playtester aj protihráč; nové číslo pravidla
+   pridaj aj do `packages/core/test/tahak.test.ts`), ak sa ich zmena týka.
+   Paragraf, ktorý meníš, dostane test (pozri `tools/rozhodca/mapa.json` —
+   k paragrafu tam doplň názov testu, agent `naex-rozhodca` na to nadväzuje). Bot
    (`packages/core/src/bot.ts`) nauč novú voľbu, inak ju nikdy nepoužije.
    **Zmena rozhrania** = `apps/web` (pozri existujúce komponenty a CSS
    premenné, mobil aj desktop).
 4. **Over**: `npm test`, `npm run typecheck`, `npm run build`. Všetko musí
    prejsť. Padnutý test, ktorý testuje starú hodnotu pravidla, uprav na novú
    a povedz to; iné padnuté testy oprav v kóde, nie v teste.
+4b. **Dôkaz** — Michal má v sekcii Playtest vidieť výsledok bez spúšťania webu.
+   Stav „pred“ zachyť **skôr, než začneš meniť kód** (alebo v dočasnom worktree
+   `git worktree add --detach playtest/varianty/pred-<id> HEAD`, ktorý na konci zmažeš).
+   - **Zmena pravidla alebo bota:** turnaj pred a po s rovnakými parametrami
+     ```bash
+     T="node --experimental-strip-types --no-warnings tools/bot/turnaj.ts"
+     $T 20 chamtivy stredna stamgast > playtest/dokazy/<id>/turnaj-po.txt   # v worktree „pred“ to isté do turnaj-pred.txt
+     ```
+     Pozri riadok „Ťahy bota podľa typu“: nová voľba (napr. nový ťah) musí mať
+     nenulový počet, inak ju bot nepoužíva — nauč ho, kým commitneš. Do výsledku
+     daj výhry bota pred → po, počet použití novej voľby a či nejaká partia
+     nedohrala.
+   - **Zmena rozhrania:** snímky pred a po, desktop aj mobil
+     (`tools/playtest/snimka.ts web <nazov> --cesta <stránka> --plna` a to isté
+     s `--mobil`; herný stôl `tools/playtest/zaloz.ts` + `snimka.ts R 1`, pozri
+     `.claude/agents/naex-ui.md`, časť Nástroje). Ulož ich do
+     `docs/playtesty/dokaz-<id>/` a napíš k nim krátke HTML
+     `docs/playtesty/dokaz-<id>.html` (pred | po vedľa seba, na mobile pod sebou;
+     pravidlá reportu ako u spisovateľa — jeden súbor, bez externých zdrojov). Nahraj
+     `admin.ts report-nahraj docs/playtesty/dokaz-<id>.html --zivy` a odkaz
+     `/playtest/reporty/dokaz-<id>.html` daj do výsledku. PNG zmenši na šírku
+     najviac 1600 px — idú do gitu.
 5. **Commitni** len súbory, ktoré si zmenil ty (`git add <súbory>`, nikdy
    `git add -A` — v pracovnom strome môže byť rozpracovaná práca iných).
    Správa po slovensky: prvý riadok čo sa zmenilo, v tele návrh
@@ -62,9 +87,11 @@ robí agent `naex-admin`, nie ty).
    ```
    Ak merge narazí na konflikt, nerieš ho hádaním — vráť sa (`git merge --abort`)
    a povedz organizátorovi, v ktorých súboroch.
-7. Označ návrh ako implementovaný s výsledkom (čo si zmenil, commit, čo ostalo
-   otvorené):
-   `… admin.ts navrh <id> implementovane --zivy --vysledok "<2–5 viet, commit <hash>>"`
+7. Označ návrh ako implementovaný s výsledkom (čo si zmenil, commit, dôkaz,
+   čo ostalo otvorené):
+   `… admin.ts navrh <id> implementovane --zivy --vysledok "<2–5 viet, commit <hash>, turnaj pred → po / odkaz na dôkaz>"`
+   Návrh tým nie je uzavretý — čaká na overenie ďalším playtestom (jeho otázky
+   `overenie`); verdikt zapíše organizátor playtestu.
 
 Viac návrhov rob **po jednom**: implementácia, overenie, commit, označenie —
 potom ďalší. Keď dva návrhy menia to isté miesto, rob ich v poradí, ako ich
@@ -79,12 +106,13 @@ dostaneš, a druhý stav nadviaž na prvý.
   `packages/core/data/cards.json`; po zverejnení novej sady ho podľa zadania
   skopíruješ zo sady a spustíš `tools/admin/do-seedu.ts` (docs/NASADENIE.md,
   „Karty na produkciu“), vrátane novej značky migrácie v kóde.
-- Nenasadzuješ na živý web (`deploy/nahraj.sh`) — to rozhoduje organizátor
-  s Michalom.
+- Nenasadzuješ na živý web (`deploy/nahraj.sh`) — to robí skill `naex-nasad`,
+  keď to Michal povolí.
 - Hooky a podpisovanie commitov neobchádzaš (`--no-verify` nie).
 
 ## Návrat organizátorovi
 
-Pre každý návrh 2–4 riadky: čo si zmenil (súbory), výsledok testov, commit
+Pre každý návrh 2–4 riadky: čo si zmenil (súbory), výsledok testov, dôkaz
+(turnaj pred → po, použitia novej voľby botom, odkaz na snímky), commit
 (hash) a či je zmergovaný do master; čo ostalo otvorené alebo čo si musel
 rozhodnúť sám (hodnoty s `TODO`).

@@ -75,6 +75,16 @@ je v časti „Spolupráca so stratégom“.
 - **Rozhodnutia Michala**: `docs/BRIEF.md` (otvorené otázky), `CLAUDE.md`.
   Nenavrhuj znovu niečo, čo Michal zamietol, ak nevieš povedať, čo je dnes
   inak.
+- **Predošlé návrhy a ich osud** na webe:
+  ```bash
+  A="node --experimental-strip-types --no-warnings tools/admin/admin.ts"
+  $A navrhy nezabralo --zivy        # implementované, ale playtest ukázal, že problém trvá
+  $A navrhy implementovane --zivy   # implementované, čakajú na overenie
+  $A navrhy overene --zivy          # zabrali — téma je vyriešená, neotváraj ju bez nového dôkazu
+  ```
+  Návrh v stave **nezabralo** je najsilnejší signál: problém je potvrdený a
+  jedno riešenie už zlyhalo. Ak tú tému berieš, povedz, prečo by nová možnosť
+  zabrala tam, kde stará nie.
 - Pravidlá a kód: `docs/PRAVIDLA.md`, `packages/core/data/*.json`,
   `packages/core/src/` (`constants.ts`, `engine.ts`, `bot.ts`), klient
   `apps/web/src/hra/` pri bodoch o rozhraní.
@@ -118,7 +128,13 @@ je v časti „Spolupráca so stratégom“.
      téma), riziko a náročnosť (malá / stredná / veľká),
    - **Odporúčanie**: ktorá možnosť a prečo; či ju zaviesť hneď, alebo najprv
      dať stratégovi zmerať či vyskúšať v playteste,
-   - **Ako overiť**: čo má zmerať stratég a na čo sa opýtať playtesterov,
+   - **Ako overiť**: čo má zmerať stratég a na čo sa opýtať playtesterov.
+     Z toho 1–3 **merateľné otázky** do poľa `overenie` — ďalší playtest po
+     implementácii ich dostane do zadania a podľa odpovede sa návrh uzavrie
+     (zabralo) alebo vráti Michalovi (nezabralo). Merateľná = dá sa z jednej-
+     troch partií odpovedať áno/nie alebo číslom („útočník vyhral 30–70 %
+     bitiek“, „žiadny hráč nespomenie Dlh ×4 ako nespravodlivý“, „v stave
+     vidno cenu NA EX a hráč ju použije pri rozhodnutí“), nie „hra je lepšia“,
    - **Čo musí Michal rozhodnúť** (otázka, na ktorú stačí odpoveď áno / nie
      alebo výber možnosti).
    Ak dva body spolu súvisia (riešenie jedného mení druhý), povedz to.
@@ -156,7 +172,8 @@ sa zmení: pravidlo, hodnota, karta, obrazovka).
         { "kluc": "B", "nazov": "…", "popis": "…", "dopad": "…", "narocnost": "stredná", "odporucana": false }
       ],
       "odporucanie": "Ktorá možnosť a prečo; či najprv vyskúšať v playteste.",
-      "otazky": ["Čo musí Michal rozhodnúť — áno/nie alebo výber."]
+      "otazky": ["Čo musí Michal rozhodnúť — áno/nie alebo výber."],
+      "overenie": ["Útočník vyhrá 30–70 % bitiek partie.", "Žiadny hráč neoznačí bitku za rozhodnutú ťahaním kariet."]
     }
   ]
 }
@@ -168,6 +185,11 @@ sa zmení: pravidlo, hodnota, karta, obrazovka).
 - `kluc` návrhu: malé písmená, číslice, pomlčky; v dávke jedinečný.
 - `kritickost`: `kriticka` | `vysoka` | `stredna` | `nizka`. Kľúč možnosti je
   jedno veľké písmeno; 2–4 možnosti, presne jedna `odporucana`.
+- `overenie`: 1–3 merateľné otázky pre playtest po implementácii (krok 5,
+  „Ako overiť“). Povinné pri každom návrhu — bez nich sa návrh nedá uzavrieť.
+- `zdroj` (nepovinné): `playtest` (predvolené), `dizajn` (návrhy UI a UX zo
+  skillu `naex-dizajn`), `rozhodca` (rozpor pravidiel a kódu od agenta
+  `naex-rozhodca`).
 - Texty sú obyčajný text (odseky oddeľ prázdnym riadkom), bez Markdownu
   a HTML. Píš pre Michala, nie pre programátora.
 - Over platnosť: `node -e "JSON.parse(require('fs').readFileSync('docs/playtesty/navrhy-<id>.json','utf8'))"`.

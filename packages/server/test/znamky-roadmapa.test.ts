@@ -213,6 +213,52 @@ describe("roadmapa — poradie a návrhy", () => {
       zmaz();
     }
   });
+
+  it("overenie po playteste: zabralo ostane v Hotové, nezabralo sa vráti do Prijímača na rozhodnutie", () => {
+    const { db, ucet, zmaz } = docasnaDb();
+    try {
+      const r = new Roadmapa(db);
+      const navrhy = new Navrhy(db);
+      const admin = ucet("subadmin");
+      const moznost = { kluc: "A", nazov: "Ukázať cenu", popis: "p", dopad: "", narocnost: "", odporucana: true };
+      const zaklad = { nazov: "Cena bitky", kritickost: "vysoka", oblast: "rozhranie", problem: "Hráč nevie.", pricina: "x", prejav: "y", moznosti: [moznost] };
+      const [id1, id2] = navrhy.nahraj(
+        admin,
+        { davka: "20261021-041728", navrhy: [{ ...zaklad, kluc: "bitka", overenie: ["Nikto sa nepýta na cenu bitky."] }, { ...zaklad, kluc: "druhy", zdroj: "dizajn" }] },
+        T0,
+      ) as [number, number];
+      const zmen = (id: number, zmeny: Record<string, unknown>) => {
+        navrhy.uprav(admin, id, zmeny, T0);
+        const n = navrhy.zoznam().find((x) => x.id === id);
+        if (n !== undefined) r.zNavrhu(n, n.stav, T0 + 1);
+        return n;
+      };
+      const polozka = (navrh: number) => r.zoznam(admin).polozky.find((p) => p.navrh === navrh);
+
+      expect(navrhy.zoznam().find((n) => n.id === id1)).toMatchObject({ overenie: ["Nikto sa nepýta na cenu bitky."], zdroj: "playtest", verdikt: "" });
+      // Neimplementovaný návrh sa overiť nedá; verdikt je povinný.
+      expect(() => navrhy.uprav(admin, id1, { stav: "overene", verdikt: "ok" }, T0)).toThrow(/implementovaný/);
+      zmen(id1, { stav: "implementovat", volba: "A" });
+      zmen(id1, { stav: "implementovane", vysledok: "commit abc" });
+      expect(() => navrhy.uprav(admin, id1, { stav: "overene" }, T0)).toThrow(/Verdikt/);
+      expect(zmen(id1, { stav: "overene", verdikt: "Playtest 20261022: nikto sa nepýtal." })).toMatchObject({ stav: "overene", verdikt: "Playtest 20261022: nikto sa nepýtal." });
+      expect(polozka(id1)).toMatchObject({ stlpec: "hotove", hotovo: "Overené playtestom: Playtest 20261022: nikto sa nepýtal." });
+
+      // Návrh z dizajnu má v roadmape zdroj dizajn; keď nezaberie, vráti sa Michalovi.
+      zmen(id2, { stav: "implementovat", volba: "A" });
+      expect(polozka(id2)?.zdroj).toMatchObject({ typ: "dizajn" });
+      zmen(id2, { stav: "implementovane", vysledok: "commit def" });
+      zmen(id2, { stav: "nezabralo", verdikt: "Hráči cenu stále prehliadajú." });
+      expect(polozka(id2)).toMatchObject({ stlpec: "prijimac", stav: "overit", hotovo: "Nezabralo: Hráči cenu stále prehliadajú." });
+      // Rozhodnutie po nezabratí je znova rozhodnutie človeka.
+      expect(zmen(id2, { stav: "implementovat", volba: "A", poznamka: "Skús väčšie písmo." })).toMatchObject({ stav: "implementovat", rozhodol: { id: admin.id } });
+      expect(() => navrhy.nahraj(admin, { davka: "20261021-041728", navrhy: [{ ...zaklad, kluc: "zly", zdroj: "sen" }] }, T0)).toThrow(/zdroj/);
+      navrhy.nahraj(admin, { davka: "20261021-041728", navrhy: [{ ...zaklad, kluc: "rozpor", zdroj: "rozhodca" }] }, T0);
+      expect(navrhy.zoznam().find((n) => n.kluc === "rozpor")?.zdroj).toBe("rozhodca");
+    } finally {
+      zmaz();
+    }
+  });
 });
 
 describe("známky a roadmapa — API", () => {

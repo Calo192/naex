@@ -138,7 +138,11 @@ skript do `playtest/strategia/<id>/` nad jadrom (vzor: `tools/bot/strategickost.
    strom môže mať necommitnuté zmeny). Zmenu urob čo najmenšiu: najprv dáta
    (`data/*.json`), potom `constants.ts`, až potom logiku. Keď zmena pridá
    novú voľbu (nový ťah), botovi ju v tom worktree minimálne nauč, inak ju
-   nikdy nepoužije, a uveď to. Spusti `npx vitest run packages/core` vo
+   nikdy nepoužije, a uveď to. Či ju naozaj používa, ukáže riadok „Ťahy bota
+   podľa typu“ z `tools/bot/turnaj.ts` spusteného vo worktree. Keď na variante
+   záleží a tvoje minimálne naučenie nestačí, povedz organizátorovi — môže
+   pustiť `naex-bot-trener` („variant <nazov>“), ktorý bota vo worktree naučí
+   poriadne. Spusti `npx vitest run packages/core` vo
    worktree, aby si vedel, že variant nie je rozbitý (padnuté testy na staré
    hodnoty sú v poriadku, výnimky nie). Zmeraj rovnakými parametrami ako
    východisko. Diff ulož do `playtest/strategia/<id>/<nazov>.diff` a na konci

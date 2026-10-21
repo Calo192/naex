@@ -1,7 +1,7 @@
 # Kritériá hodnotenia playtestu NA EX!
 
 Časti A (12 kritérií) a C (strategickosť — hlavná téma) hodnotia
-playtesteri, časť B sledovateľ vizuálu.
+playtesteri, časť B UI a UX dizajnér pri fotení partie (skill naex-dizajn).
 
 Každé kritérium častí A a B sa hodnotí na stupnici **1–10** a ku každému patrí jedna až
 dve vety zdôvodnenia s konkrétnym príkladom z partie. Kotvy: **1–2** zásadne
@@ -114,7 +114,7 @@ rozhodnutí**, **viac ciest k víťazstvu** s viditeľnými kompromismi,
 lepšiu hru. Návrhy nemusia byť malé — aj zásadná zmena je vítaná, ak je
 dobre zdôvodnená.
 
-## B. Vizuálna stránka (hodnotí sledovateľ)
+## B. Vizuálna stránka (hodnotí UI a UX dizajnér)
 
 Vychádza z Nielsenových heuristík použiteľnosti a z kritéria „komponenty"
 stolových hier — v digitálnej hre je to rozhranie.

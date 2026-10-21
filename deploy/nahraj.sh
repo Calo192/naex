@@ -23,6 +23,14 @@ SSH=(ssh -i "$KLUC" -o StrictHostKeyChecking=accept-new "$CIEL")
 
 cd "$(dirname "$0")/.."
 ARCHIV="$(mktemp -d)/naex.tgz"
+# Čo presne beží na serveri (GET /api/admin/stav-servera) — skill naex-stav
+# podľa toho vie, ktoré commity ešte nie sú nasadené.
+NECOMMITNUTE=false
+[ -n "$(git status --porcelain 2>/dev/null)" ] && NECOMMITNUTE=true
+printf '{"commit":"%s","vetva":"%s","necommitnute":%s,"nahrate":"%s"}\n' \
+  "$(git rev-parse HEAD 2>/dev/null || echo "?")" "$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "?")" \
+  "$NECOMMITNUTE" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > VERZIA.json
+trap 'rm -f VERZIA.json' EXIT
 echo "Balím pracovnú kópiu…"
 tar -czf "$ARCHIV" \
   --exclude=./node_modules --exclude='./*/*/node_modules' --exclude='./*/*/dist' \

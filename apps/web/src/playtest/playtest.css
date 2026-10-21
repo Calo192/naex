@@ -69,8 +69,12 @@
 }
 
 .navrh.stav-zamietnute,
-.navrh.stav-implementovane {
+.navrh.stav-overene {
   opacity: 0.8;
+}
+
+.navrh.stav-nezabralo {
+  border-left-color: var(--cervena);
 }
 
 .navrh-hlava h3 {
@@ -131,6 +135,16 @@
 .navrh-stav.implementovane {
   color: var(--zelena);
   border-color: color-mix(in srgb, var(--zelena) 45%, transparent);
+}
+
+.navrh-stav.nezabralo {
+  color: var(--cervena-text);
+  border-color: color-mix(in srgb, var(--cervena) 45%, transparent);
+}
+
+.navrh-stav.overene {
+  color: var(--zelena);
+  border-color: color-mix(in srgb, var(--zelena) 45%, transparent);
   background: color-mix(in srgb, var(--zelena) 12%, transparent);
 }
 
@@ -140,7 +154,8 @@
 }
 
 .navrh-dokazy ul,
-.navrh-otazky ol {
+.navrh-otazky ol,
+.navrh-otazky ul {
   margin: 8px 0 0;
   padding-left: 22px;
   color: var(--tlmeny);

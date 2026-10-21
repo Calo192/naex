@@ -1,7 +1,8 @@
 // Návrhy zlepšení z playtestov (Michal 2026-10-21). Navrhár so stratégom ich
 // nahrá po playteste; admin pri každom vyberie možnosť, dopíše poznámku a
 // rozhodne. Návrhy na implementáciu potom spracuje skill naex-implementacia
-// (agent Developer) a označí ich ako implementované.
+// (agent Developer) a označí ich ako implementované; ďalší playtest ich potom
+// overí (zabralo / nezabralo). Rovnako sem chodia návrhy dizajnérov webu.
 
 import { useEffect, useState, type FormEvent } from "react";
 import { api } from "../lib/api.ts";
@@ -10,7 +11,7 @@ import { useUcet } from "../lib/ucet.tsx";
 import { Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { kedy, odkazNaReport } from "./Reporty.tsx";
 
-type Stav = "nove" | "implementovat" | "odlozene" | "zamietnute" | "rozpracovane" | "implementovane";
+type Stav = "nove" | "implementovat" | "odlozene" | "zamietnute" | "rozpracovane" | "implementovane" | "overene" | "nezabralo";
 type Kritickost = "kriticka" | "vysoka" | "stredna" | "nizka";
 
 interface Moznost {
@@ -37,12 +38,15 @@ export interface Navrh {
   readonly moznosti: readonly Moznost[];
   readonly odporucanie: string;
   readonly otazky: readonly string[];
+  readonly overenie: readonly string[];
+  readonly zdroj: "playtest" | "dizajn" | "rozhodca";
   readonly stav: Stav;
   readonly volba: string | null;
   readonly poznamka: string;
   readonly rozhodol: { readonly id: number; readonly meno: string; readonly ai: boolean } | null;
   readonly rozhodnuty: number | null;
   readonly vysledok: string;
+  readonly verdikt: string;
 }
 
 const STAVY: Readonly<Record<Stav, string>> = {
@@ -51,7 +55,15 @@ const STAVY: Readonly<Record<Stav, string>> = {
   odlozene: "odložené",
   zamietnute: "zamietnuté",
   rozpracovane: "Developer na tom pracuje",
-  implementovane: "implementované",
+  implementovane: "implementované, čaká na overenie",
+  overene: "overené — zabralo",
+  nezabralo: "nezabralo — rozhodni znova",
+};
+
+const ZDROJE: Readonly<Record<Navrh["zdroj"], string>> = {
+  playtest: "Playtest",
+  dizajn: "Dizajn",
+  rozhodca: "Rozhodca (pravidlá vs. kód)",
 };
 
 const KRITICKOSTI: Readonly<Record<Kritickost, string>> = {
@@ -62,13 +74,21 @@ const KRITICKOSTI: Readonly<Record<Kritickost, string>> = {
 };
 
 const FILTRE = [
-  { kluc: "rozhodnut", text: "Na rozhodnutie", stavy: ["nove"] },
+  { kluc: "rozhodnut", text: "Na rozhodnutie", stavy: ["nove", "nezabralo"] },
   { kluc: "implementovat", text: "Na implementáciu", stavy: ["implementovat", "rozpracovane"] },
-  { kluc: "hotove", text: "Implementované", stavy: ["implementovane"] },
+  { kluc: "overit", text: "Na overenie", stavy: ["implementovane"] },
+  { kluc: "hotove", text: "Overené", stavy: ["overene"] },
   { kluc: "odlozene", text: "Odložené", stavy: ["odlozene"] },
   { kluc: "zamietnute", text: "Zamietnuté", stavy: ["zamietnute"] },
   { kluc: "vsetky", text: "Všetky", stavy: null },
 ] as const satisfies readonly { kluc: string; text: string; stavy: readonly Stav[] | null }[];
+
+function popisPodkladu(p: string): string {
+  if (p.startsWith("strategia-")) return "rozbor stratéga";
+  if (p.startsWith("navrhy-")) return "návrhy (HTML)";
+  if (p.startsWith("dizajn-")) return p.endsWith("-ui.html") ? "ukážky UI" : p.endsWith("-ux.html") ? "ukážky UX" : "dizajn";
+  return "report";
+}
 
 /** Vlastné odseky z textu navrhára (prázdny riadok = nový odsek). */
 function Text({ children }: { readonly children: string }) {
@@ -91,7 +111,7 @@ function NavrhKarta({ n, zmenene }: { readonly n: Navrh; readonly zmenene: (n: N
   const [chyba, setChyba] = useState<string | null>(null);
   const [dokazy, setDokazy] = useState(false);
   // Na návrhu, na ktorom Developer pracuje alebo ho dokončil, sa rozhodnutie nemení.
-  const uzavrety = n.stav === "rozpracovane" || n.stav === "implementovane";
+  const uzavrety = n.stav === "rozpracovane" || n.stav === "implementovane" || n.stav === "overene";
 
   const rozhodni = async (stav: Stav, e?: FormEvent) => {
     e?.preventDefault();
@@ -192,6 +212,16 @@ function NavrhKarta({ n, zmenene }: { readonly n: Navrh; readonly zmenene: (n: N
             </ol>
           </div>
         )}
+        {n.overenie.length > 0 && (
+          <div className="navrh-otazky">
+            <h4>Ako ďalší playtest overí, že to zabralo</h4>
+            <ul>
+              {n.overenie.map((o, i) => (
+                <li key={i}>{o}</li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         <label className="navrh-poznamka">
           <span>Poznámka pre Developera (odpovede na otázky, úpravy, obmedzenia)</span>
@@ -199,17 +229,22 @@ function NavrhKarta({ n, zmenene }: { readonly n: Navrh; readonly zmenene: (n: N
         </label>
 
         {chyba !== null && <Hlaska>{chyba}</Hlaska>}
-        {uzavrety ? (
-          n.vysledok !== "" && (
-            <div className="navrh-vysledok">
-              <h4>Čo Developer spravil</h4>
-              <Text>{n.vysledok}</Text>
-            </div>
-          )
-        ) : (
+        {n.vysledok !== "" && (uzavrety || n.stav === "nezabralo") && (
+          <div className="navrh-vysledok">
+            <h4>Čo Developer spravil</h4>
+            <Text>{n.vysledok}</Text>
+          </div>
+        )}
+        {n.verdikt !== "" && (
+          <div className={`navrh-vysledok verdikt-${n.stav}`}>
+            <h4>{n.stav === "nezabralo" ? "Playtest: nezabralo" : "Playtest: zabralo"}</h4>
+            <Text>{n.verdikt}</Text>
+          </div>
+        )}
+        {!uzavrety && (
           <div className="riadok-tlacidiel">
             <button type="submit" className="tlacidlo-hlavne" disabled={posiela || volba === null}>
-              {n.stav === "implementovat" ? "Uložiť zmeny" : "Implementovať"}
+              {n.stav === "implementovat" ? "Uložiť zmeny" : n.stav === "nezabralo" ? "Implementovať znova" : "Implementovať"}
             </button>
             <button type="button" className="tlacidlo-jemne" disabled={posiela} onClick={() => void rozhodni("odlozene")}>
               Odložiť
@@ -265,8 +300,9 @@ export function Navrhy() {
   return (
     <div>
       <p className="tlmene">
-        Návrhy, ktoré po playteste spoločne pripravili navrhár a stratég. Pri každom vyber riešenie, dopíš poznámku a rozhodni. Návrhy na implementáciu
-        spracuje skill <code>/naex-implementacia</code> — agent Developer ich naprogramuje, commitne a označí tu ako implementované.
+        Návrhy, ktoré po playteste spoločne pripravili navrhár a stratég, a návrhy dizajnérov webu. Pri každom vyber riešenie, dopíš poznámku a rozhodni.
+        Návrhy na implementáciu spracuje skill <code>/naex-implementacia</code> — agent Developer ich naprogramuje, commitne a označí tu ako implementované.
+        Ďalší playtest potom overí, či zmena zabrala; ak nie, návrh sa vráti sem na rozhodnutie.
       </p>
       <div className="cipy" role="tablist" aria-label="Stav návrhov">
         {FILTRE.map((f) => (
@@ -282,10 +318,10 @@ export function Navrhy() {
         return (
           <section key={d} className="navrhy-davka">
             <h2>
-              Playtest {d}
+              {ZDROJE[vDavke[0]?.zdroj ?? "playtest"]} {d}
               {podklady.map((p) => (
                 <Odkaz key={p} href={odkazNaReport(p)} className="navrhy-podklad">
-                  {p.startsWith("strategia-") ? "rozbor stratéga" : p.startsWith("navrhy-") ? "návrhy (HTML)" : "report"}
+                  {popisPodkladu(p)}
                 </Odkaz>
               ))}
             </h2>

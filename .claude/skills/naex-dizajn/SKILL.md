@@ -43,4 +43,29 @@ používateľa trápi. Ak cieľ chýba, opýtaj sa, ktorú stránku alebo časť
    - čo spolu súvisí alebo si odporuje (napr. UI zmenší prvok, ktorý UX chce
      výraznejší) a tvoje odporúčané poradie,
    - otázky na Michala.
-   Ponúkni, ktoré návrhy implementovať. Implementácia je samostatná úloha.
+6. **Na rozhodnutie na web** (Michal 2026-10-21: návrhy dizajnu idú tou istou
+   cestou ako návrhy z playtestu — sekcia Playtest → roadmapa → Developer).
+   Z oboch návrhov zostav dávku `docs/playtesty/navrhy-dizajn-<id>.json`
+   v tvare navrhára (`.claude/agents/naex-navrhar.md`, „Návrhy pre web“):
+   - `davka` = dátum a čas v tvare `RRRRMMDD-HHMMSS` (z `id`, sekundy `00`),
+     `podklady` = `dizajn-<id>-ui.html`, `dizajn-<id>-ux.html`,
+   - **jeden návrh = jeden problém stránky** (nie jeden na dizajnéra): kde sa
+     UI a UX zhodli, zlúč ich do jedného návrhu; `zdroj: "dizajn"`,
+     `oblast: "rozhranie"`, `kritickost` podľa dopadu na hráča,
+   - `moznosti` = varianty riešenia z oboch HTML (od najmenšieho zásahu),
+     v `popis` presne čo sa zmení (komponent, súbor v `apps/web/src/`, texty)
+     a v ktorej ukážke to Michal vidí („ukážka UI, návrh 2“), odporúčaná
+     jedna; ak si UI a UX odporujú, sú to dve možnosti a v `odporucanie`
+     povedz, ktorú a prečo,
+   - `overenie` = čo musí ďalšia kontrola ukázať (napr. „na mobile 390 px sa
+     ruka zmestí bez vodorovného posúvania“, „hráč nájde cenu NA EX bez
+     otvárania pravidiel“) — overí to ďalší `/naex-dizajn` na tú istú stránku
+     alebo playtest.
+   Over JSON (`node -e "JSON.parse(…)"`) a nahraj:
+   ```bash
+   A="node --experimental-strip-types --no-warnings tools/admin/admin.ts"
+   $A report-nahraj docs/playtesty/dizajn-<id>-ui.html docs/playtesty/dizajn-<id>-ux.html --zivy
+   $A navrhy-nahraj docs/playtesty/navrhy-dizajn-<id>.json --zivy
+   ```
+   Michalovi daj odkaz `<živý web>/playtest`: tam pri každom návrhu vyberie
+   variant a rozhodne; schválené implementuje `/naex-implementacia`.

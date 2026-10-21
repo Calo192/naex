@@ -53,7 +53,7 @@ const cas = new Date();
 const id = danyId ?? cas.toISOString().slice(0, 19).replace(/[-:]/g, "").replace("T", "-");
 const relacia = join("playtest", id);
 const dataDir = resolve(relacia, "server-data");
-for (const d of ["hrac1", "hrac2", "sledovatel/snimky", "server-data"]) mkdirSync(join(relacia, d), { recursive: true });
+for (const d of ["hrac1", "hrac2", "snimky", "server-data"]) mkdirSync(join(relacia, d), { recursive: true });
 
 if (!existsSync("apps/web/dist/index.html")) {
   console.error("Chýba zbuildovaný klient (apps/web/dist) — spusti najprv: npm run build --workspace=@naex/web");
