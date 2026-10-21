@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Variant 2 na 2 — návrh — NA EX!</title>
+<style>
+  :root {
+    --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --okraj: #3d3229;
+    --text: #f1e8d8; --tlmeny: #b6a790; --slaby: #8b7d6a;
+    --akcent: #e9ad45; --cervena: #d0563f; --zelena: #7cbf74; --modra: #5cc0cf; --fialova: #b993d6; --zlta: #d9c24a; --oranzova: #e08a3a;
+    --timA: #5cc0cf; --timB: #e08a3a;
+    color-scheme: dark;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #dccdb3;
+      --text: #2a2016; --tlmeny: #6b5b45; --slaby: #7a6a52;
+      --akcent: #a8680f; --cervena: #b0402c; --zelena: #3f7f38; --modra: #2a7f8c; --fialova: #7a4fa0; --zlta: #9a8410; --oranzova: #b0601a;
+      --timA: #2a7f8c; --timB: #b0601a;
+      color-scheme: light;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 system-ui, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 1060px; margin: 0 auto; padding: 32px 16px 120px; }
+  h1, h2, h3, h4 { font-family: Georgia, "Bitter", serif; line-height: 1.2; }
+  h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); margin: 0 0 8px; }
+  h2 { font-size: 1.4rem; margin: 48px 0 12px; }
+  h3 { font-size: 1.15rem; margin: 0 0 6px; }
+  a { color: var(--akcent); }
+  code { font: 0.86em ui-monospace, Consolas, monospace; background: var(--plocha-2); padding: 1px 5px; border-radius: 5px; }
+  .podnadpis { color: var(--tlmeny); margin: 0 0 20px; max-width: 78ch; }
+  :focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+  .cisla { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin: 16px 0; }
+  .cislo { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; }
+  .cislo b { display: block; font: 700 1.5rem/1.15 Georgia, serif; color: var(--akcent); }
+  .cislo span { color: var(--tlmeny); font-size: 0.88rem; }
+  .box { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 16px 18px; margin: 0 0 14px; }
+  .box > :last-child { margin-bottom: 0; }
+  .box.problem { border-left: 4px solid var(--cervena); }
+  .box.odporucam { border-color: var(--zelena); border-width: 2px; }
+  .mini { color: var(--slaby); font-size: 0.85rem; }
+  ol, ul { padding-left: 22px; }
+  li { margin-bottom: 6px; }
+  .chip { display: inline-block; font-size: 0.78rem; padding: 1px 9px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; margin-right: 4px; }
+  .A { color: var(--timA); } .B { color: var(--timB); }
+  .plus { color: var(--zelena); } .minus { color: var(--cervena); }
+  .dva { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 720px) { .dva { grid-template-columns: 1fr; } }
+  .dva h4 { margin: 0 0 4px; font-size: 1rem; }
+  /* záložky */
+  .zalozky { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
+  .zalozky button { font: inherit; cursor: pointer; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--okraj); background: var(--plocha); color: var(--tlmeny); }
+  .zalozky button[aria-selected="true"] { background: var(--akcent); color: var(--pozadie); border-color: var(--akcent); font-weight: 600; }
+  [role="tabpanel"][hidden] { display: none; }
+  /* tabuľky */
+  .tab { overflow-x: auto; background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 680px; }
+  th, td { padding: 8px 10px; border-bottom: 1px solid var(--okraj); text-align: left; vertical-align: top; }
+  tbody tr:last-child > * { border-bottom: 0; }
+  thead th { color: var(--slaby); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  tbody th { font-family: Georgia, serif; white-space: nowrap; }
+  tr[hidden] { display: none; }
+  .filtre { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 10px 0; }
+  .filtre input { font: inherit; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--okraj); background: var(--plocha); color: var(--text); min-width: 200px; }
+  .filtre button { font: inherit; font-size: 0.85rem; cursor: pointer; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--okraj); background: var(--plocha); color: var(--tlmeny); }
+  .filtre button[aria-pressed="true"] { border-color: var(--akcent); color: var(--akcent); font-weight: 600; }
+  /* stôl */
+  .stol { width: 100%; max-width: 760px; display: block; margin: 8px auto; }
+  .stol text { font-family: system-ui, "Segoe UI", sans-serif; fill: var(--text); }
+  .stol .tl { fill: var(--tlmeny); font-size: 12px; }
+  /* krokovač kola */
+  .krokovac { display: grid; grid-template-columns: minmax(220px, 300px) 1fr; gap: 16px; }
+  @media (max-width: 760px) { .krokovac { grid-template-columns: 1fr; } }
+  .fazy { list-style: none; padding: 0; margin: 0; }
+  .fazy li { margin: 0 0 6px; }
+  .fazy button { width: 100%; text-align: left; font: inherit; cursor: pointer; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--okraj); background: var(--plocha); color: var(--text); }
+  .fazy button[aria-current="step"] { border-color: var(--akcent); background: var(--plocha-2); font-weight: 600; }
+  .poradie { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 10px 0; }
+  .poradie span { padding: 4px 12px; border-radius: 999px; border: 2px solid currentColor; font-weight: 600; font-size: 0.9rem; }
+  .poradie i { color: var(--slaby); font-style: normal; }
+  .ovladanie { display: flex; gap: 8px; margin-top: 12px; }
+  .ovladanie button { font: inherit; cursor: pointer; padding: 6px 14px; border-radius: 8px; border: 1px solid var(--okraj); background: var(--plocha); color: var(--text); }
+  .ovladanie label { display: flex; gap: 6px; align-items: center; color: var(--tlmeny); font-size: 0.9rem; margin-left: auto; }
+  details { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 10px 14px; margin: 0 0 10px; }
+  details summary { cursor: pointer; font-weight: 600; }
+  details[open] summary { margin-bottom: 8px; }
+  .otazka { counter-increment: q; }
+  .otazka h3::before { content: counter(q) ". "; color: var(--akcent); }
+  .otazky { counter-reset: q; }
+</style>
+</head>
+<body>
+<main>
+
+<h1>NA EX! vo dvojici — variant 2 na 2</h1>
+<p class="podnadpis">Návrh, ako hrať NA EX! v štyroch: dva tímy po dvoch hráčoch, štyri zariadenia, jedna partia.
+Cieľom je, aby sa pravidlá menili čo najmenej, motor (<code>packages/core</code>) ostal jeden
+a tímová hra sa nezmenila na „dve partie 1 na 1 vedľa seba“. Čísla v návrhu sú
+<b>východiskové</b> — pred zverejnením ich treba overiť turnajom botov a playtestom.</p>
+
+<div class="box problem">
+  <b>Pozor na rozsah.</b> CLAUDE.md aj pravidlá (§1) hovoria, že hra je <i>striktne pre dvoch hráčov</i>.
+  Variant 2 na 2 by bol samostatný <b>formát</b> vedľa 1 na 1 (voľba pri zakladaní hry), nie náhrada.
+  Ak ho schváliš, treba upraviť CLAUDE.md, BRIEF a PRAVIDLA (nový § „Formát 2 na 2“).
+</div>
+
+<div class="cisla">
+  <div class="cislo"><b>Strana = tím</b><span>markery starších, kraje, lokality, body, bitka a výhra sú tímové</span></div>
+  <div class="cislo"><b>Hospodárstvo = hráč</b><span>balíček, ruka, poldeci, cigarety, kliatby, pečeň, exekúcia ostávajú každému zvlášť</span></div>
+  <div class="cislo"><b>Protivník</b><span>každý má jedného „svojho“ súpera na efekty kariet, ktoré mieria na jedného človeka</span></div>
+  <div class="cislo"><b>3 tímové prvky</b><span>podanie pod stolom, ručenie a spoločný prípitok — kvôli nim sa oplatí hrať spolu</span></div>
+</div>
+
+<h2>Prečo práve takto</h2>
+<p>NA EX! už teraz rozlišuje dve veci: <b>stranu</b> (kde karta leží, ku komu ide marker, kto má prevahu v kraji)
+a <b>majiteľa</b> (komu sa rátajú akcie, kto pije, kto fajčí). V hre 1 na 1 sú to tie isté dve osoby.
+V 2 na 2 ich stačí rozdeliť: strana patrí <b>tímu</b>, majiteľ je <b>hráč</b>. Stupnica strachu má
+stále dve polovice, línia stále dva kraje, bitku stále vyhrá jedna strana — len na každej strane sedia dvaja.</p>
+<p>Pre kód to znamená, že dnešné <code>PlayerId = 0 | 1</code> sa môže stať identifikátorom <b>tímu</b>
+(všetko okolo markerov, krajov a bodov funguje ďalej) a pribudne <code>SeatId = 0 | 1 | 2 | 3</code>
+pre hospodárstvo hráča. 1 na 1 je potom len špeciálny prípad: dva tímy, každý s jedným miestom.</p>
+
+<svg class="stol" viewBox="0 0 760 330" role="img" aria-label="Rozloženie stola: tím A vľavo, tím B vpravo, línia s lokalitou v strede, poradie miest A1, B1, A2, B2">
+  <rect x="8" y="8" width="744" height="314" rx="22" fill="var(--plocha)" stroke="var(--okraj)"/>
+  <!-- línia -->
+  <g>
+    <rect x="70" y="140" width="56" height="78" rx="6" fill="none" stroke="var(--timA)" stroke-width="2"/>
+    <rect x="132" y="140" width="56" height="78" rx="6" fill="none" stroke="var(--timA)" stroke-width="2" stroke-dasharray="5 4"/>
+    <rect x="194" y="140" width="56" height="78" rx="6" fill="none" stroke="var(--timA)" stroke-width="2"/>
+    <rect x="256" y="140" width="56" height="78" rx="6" fill="none" stroke="var(--timB)" stroke-width="2"/>
+    <rect x="318" y="130" width="124" height="98" rx="8" fill="var(--plocha-2)" stroke="var(--akcent)" stroke-width="2"/>
+    <text x="380" y="176" text-anchor="middle" font-weight="700">Lokalita</text>
+    <text x="380" y="196" text-anchor="middle" class="tl">natočí obranný tím</text>
+    <rect x="448" y="140" width="56" height="78" rx="6" fill="none" stroke="var(--timB)" stroke-width="2"/>
+    <rect x="510" y="140" width="56" height="78" rx="6" fill="none" stroke="var(--timB)" stroke-width="2" stroke-dasharray="5 4"/>
+    <rect x="572" y="140" width="56" height="78" rx="6" fill="none" stroke="var(--timA)" stroke-width="2"/>
+    <rect x="634" y="140" width="56" height="78" rx="6" fill="none" stroke="var(--timB)" stroke-width="2"/>
+    <text x="190" y="246" text-anchor="middle" class="tl">kraj tímu A — prevaha = Občania, Zvieratá, Starešinovia oboch hráčov A</text>
+    <text x="570" y="262" text-anchor="middle" class="tl">kraj tímu B</text>
+    <text x="284" y="128" text-anchor="middle" class="tl">podstrčená</text>
+    <text x="600" y="128" text-anchor="middle" class="tl">podstrčená</text>
+  </g>
+  <!-- miesta -->
+  <g font-weight="700">
+    <circle cx="150" cy="58" r="26" fill="none" stroke="var(--timA)" stroke-width="3"/><text x="150" y="64" text-anchor="middle" style="fill:var(--timA)">A1</text>
+    <circle cx="610" cy="58" r="26" fill="none" stroke="var(--timB)" stroke-width="3"/><text x="610" y="64" text-anchor="middle" style="fill:var(--timB)">B1</text>
+  </g>
+  <circle cx="230" cy="58" r="26" fill="none" stroke="var(--timA)" stroke-width="3"/><text x="230" y="64" text-anchor="middle" font-weight="700" style="fill:var(--timA)">A2</text>
+  <circle cx="530" cy="58" r="26" fill="none" stroke="var(--timB)" stroke-width="3"/><text x="530" y="64" text-anchor="middle" font-weight="700" style="fill:var(--timB)">B2</text>
+  <path d="M178 50 Q380 0 582 50" fill="none" stroke="var(--slaby)" stroke-dasharray="4 4"/>
+  <text x="380" y="30" text-anchor="middle" class="tl">protivníci A1 ↔ B1</text>
+  <path d="M258 70 Q380 100 502 70" fill="none" stroke="var(--slaby)" stroke-dasharray="4 4"/>
+  <text x="380" y="104" text-anchor="middle" class="tl">protivníci A2 ↔ B2</text>
+  <text x="380" y="300" text-anchor="middle" class="tl">Poradie ťahov sa strieda medzi tímami: A1 → B1 → A2 → B2 (kapitán kola začína za svoj tím)</text>
+</svg>
+<p class="mini">Plný obrys = karta hráča 1 tímu, prerušovaný = karta hráča 2. Farba = tím, ku ktorému je karta natočená.
+Na súperovu stranu sa smie podstrčiť ako dnes.</p>
+
+<h2>Pravidlá v skratke</h2>
+<div class="tab"><table>
+  <thead><tr><th>Oblasť</th><th>1 na 1 (dnes)</th><th>2 na 2 (návrh)</th></tr></thead>
+  <tbody>
+    <tr><th>Príprava</th><td>10 štartovacích kariet, 5 do ruky, 2 poldeci, 3 cigarety</td><td><b>Každý hráč</b> to isté. Spoločný balíček, šenok, 8 starších a lokality sú jedny pre stôl.</td></tr>
+    <tr><th>Dĺžka</th><td>5 / 7 / 11 bitiek</td><td>Rovnako, ale predvolená <b>krátka (5)</b> — kolo má dvakrát viac ťahov.</td></tr>
+    <tr><th>Roly</th><td>útočník / obranca</td><td><b>Útočný tím / obranný tím</b> (porazený tím útočí). V každom tíme je <b>kapitán kola</b> a strieda sa každé kolo — rozhoduje tímové voľby (natočenie lokality, rozdelenie prebytku, kto si vezme cigarety za prebytok), ak sa tím nedohodne do časového limitu.</td></tr>
+    <tr><th>Stavba šenku</th><td>každý vezme N, polovicu do šenku</td><td>Každý hráč vezme <b>N/2</b> (pri 8 starších 4), 2 do šenku, 2 naspodok → šenok má stále <b>8</b> kariet, dve od každého.</td></tr>
+    <tr><th>Branie zo šenku</th><td>striedavo, začína útočník</td><td>Striedavo v poradí <b>U-kapitán, O-kapitán, U2, O2</b>; ceny rovnaké (1 za 1, 2 za 3 cigarety). Posledná šanca: keď prestanú obaja z jedného tímu, druhý tím má ešte po jednom ťahu.</td></tr>
+    <tr><th>Patronát</th><td>každý najviac jedného staršieho</td><td><b>Tím</b> najviac jedného staršieho za kolo. Karta ide do ruky jednému hráčovi (patrónovi) — ten platí cigarety, dáva náhradu a pri prehre odhodí poldeci. Pohoršenia navyše dostane súperský tím.</td></tr>
+    <tr><th>Zhromaždenie</th><td>striedavo, začína útočník</td><td>Štyri ťahy dookola: <b>U-kapitán → O-kapitán → U2 → O2</b>. Limit vykladania, Vypiť a fajčenie má každý svoje. Pas platí len pre hráča (partner hrá ďalej); za pas cigarety ako dnes.</td></tr>
+    <tr><th>Pitka</th><td>obranca začína, útočník má posledné slovo</td><td>Najprv obaja z <b>obranného tímu</b> (v ľubovoľnom poradí, kým obaja nedajú „hotovo“), potom <b>útočný tím</b>. NA EX najviac raz za Pitku <b>každý hráč</b>. Odpovedá jednou kartou <b>protivník</b> toho, kto NA EX dal.</td></tr>
+    <tr><th>Prevaha v kraji</th><td>viac svojich Občanov, Zvierat, Starešinov</td><td>Rátajú sa karty <b>celého tímu</b>. Akcie hrany dostane hráč tímu, ktorý tam má najviac svojich takých kariet (pri rovnosti kapitán).</td></tr>
+    <tr><th>Akcie</th><td>všetky majiteľovi</td><td><b>Bojové</b> (Rana, Pecka, Petelica, Viera, Povera, Pohoršenie) idú do <b>tímovej</b> kasy. <b>Hospodárske</b> (Dlh, Poškodenie pečene, Poldeci, Cigareta, Obmedzenie, Vízia, Robota) majiteľovi karty. Obmedzenie uberá cigarety jeho protivníkovi.</td></tr>
+    <tr><th>Bitka</th><td>tuhé a celkové hráča</td><td>Tuhé tímu = súčet bojových akcií oboch, + Cirhózy súperov, + Bitkár; − Viera súperov, − Absťáky <b>oboch</b> členov. Mäkké: Povery tímu proti <b>súčtu</b> priznaných Dlhov súperského tímu. Remíza na sekeru ako dnes.</td></tr>
+    <tr><th>Pohoršenie</th><td>najviac 2 hranice zón za hráča</td><td>Najviac 2 hranice zón <b>za tím</b> na jeden marker (inak by tím posunul marker o 4 zóny).</td></tr>
+    <tr><th>Exekúcia</th><td>nečelí → prehrá</td><td>Každému zvlášť (prah z jeho priznaných Dlhov). Nástroj smie odovzdať aj <b>partner</b> (ručenie, nižšie). Ak ho neodovzdá nikto, <b>prehrá celý tím</b>.</td></tr>
+    <tr><th>Balíček pod 5</th><td>prehrá</td><td>Prehrá celý tím (strata hráča by rozbila 2 na 2).</td></tr>
+    <tr><th>Vydesenie</th><td>polovica starších, udržať kolo</td><td>Rovnako, za tím.</td></tr>
+    <tr><th>Body</th><td>scorecardy hráčovi</td><td>Scorecardy bodujú <b>tímu</b>. Cigarety sa sčítajú za tím a delia tromi. Dlhy a nepriznané Cirhózy oboch členov uberajú tímu.</td></tr>
+    <tr><th>Dedičstvo</th><td>cena 1, 2, 3… spoločná</td><td>Dedičstvo má každý svoje, cena rastie <b>spoločne pre všetkých štyroch</b>. Efekty Dedičstva platia majiteľovi; tie o bitke (Puška, Pasca, Svätý text) celému tímu.</td></tr>
+  </tbody>
+</table></div>
+
+<h2>Priebeh kola</h2>
+<p>Klikni na fázu alebo na „ďalej“. Prepínačom zmeníš, kto je útočný tím.</p>
+<div class="krokovac">
+  <ol class="fazy" id="fazy"></ol>
+  <div class="box" id="faza-detail" aria-live="polite"></div>
+</div>
+
+<h2>Tímové prvky</h2>
+<p>Bez nich by 2 na 2 boli dve takmer nezávislé hry, ktoré sa len sčítajú. Navrhujem tri, každú s jasnou cenou:</p>
+<div class="dva">
+  <div class="box">
+    <h3>Podanie pod stolom</h3>
+    <p>Raz za kolo smie hráč v Zhromaždení <b>namiesto vyloženia karty</b> (ráta sa ako ťah, limit nemíňa) dať partnerovi
+    <b>jednu kartu z ruky</b> alebo <b>až 2 cigarety</b>. Súperi vidia, že sa niečo podalo, nie čo (pri karte).</p>
+    <p class="mini">Prečo: partner má lepší spoj pre tvoju kartu, alebo mu chýba cigareta na šenok či doliatie. Cena = stratený ťah.</p>
+  </div>
+  <div class="box">
+    <h3>Ručenie</h3>
+    <p>Keď hráč čelí exekúcii a nemá Nástroj, partner smie odovzdať svoj (z ruky, balíčka či Dedičstva). Polovica dlhov
+    zhorí ako vždy. Zachráni tím, no partner príde o Nástroj.</p>
+    <p class="mini">Prečo: okamžitá prehra celého tímu za cudzie dlhy by bola frustrujúca; ručenie z nej robí tímové rozhodnutie.</p>
+  </div>
+  <div class="box">
+    <h3>Spoločný prípitok</h3>
+    <p>Keď v jednej Pitke dajú NA EX <b>obaja</b> hráči tímu na <b>susedné</b> karty, poškodenie pečene z NA EX sa im počíta
+    len raz (každému polovica, nahor). „Na zdravie, švagre.“</p>
+    <p class="mini">Prečo: odmena za koordináciu v línii, ktorá je tematická a malá. Treba overiť simuláciou — môže byť zbytočná.</p>
+  </div>
+  <div class="box">
+    <h3>Spoločná partia</h3>
+    <p>Text karty „v tvojej partii“ znamená karty <b>tvojho tímu</b> (Silná žena zdvojí aj partnerovu kartu vedľa nej, Liberál ráta
+    ženy a chlapov celého tímu, Pes nesmie byť v tíme s iným Zvieraťom). Nie je to nové pravidlo, len výklad — ale robí z línie
+    spoločnú stavbu.</p>
+  </div>
+</div>
+
+<h2>Informácie: čo vidí partner</h2>
+<div class="zalozky" role="tablist" aria-label="Viditeľnosť ruky partnera">
+  <button role="tab" id="t-otv" aria-selected="true" aria-controls="p-otv">Otvorené karty v tíme</button>
+  <button role="tab" id="t-skr" aria-selected="false" aria-controls="p-skr" tabindex="-1">Skrytá ruka + signály</button>
+</div>
+<div role="tabpanel" id="p-otv" aria-labelledby="t-otv">
+  <div class="box odporucam">
+    <p><span class="chip plus">odporúčam</span> Partner vidí tvoju ruku, vrch tvojho doberacieho balíčka z Vízie a tvoje rozhodnutia
+    v šenku. Tím má vlastný chat a „ukazovák“ (kliknutím zvýrazníš kartu v línii či v ruke partnera).</p>
+    <ul>
+      <li><b>Férové online:</b> kamaráti aj tak volajú cez Discord. Skrytá ruka by zvýhodnila tých, čo podvádzajú telefónom.</li>
+      <li><b>Pravidlo č. 2 ostáva čisté:</b> <code>viewFor(seat)</code> pošle ruku partnera, súperom nič — dá sa otestovať ako dnes.</li>
+      <li><b>Hĺbka nezmizne:</b> súperi ruky nevidia, šenok sa stavia tajne, NA EX a odpovede sú stále hádanie.</li>
+    </ul>
+  </div>
+</div>
+<div role="tabpanel" id="p-skr" aria-labelledby="t-skr" hidden>
+  <div class="box">
+    <p>Ruka partnera je skrytá ako súperova. Tím má len pevné signály (ukazovák na kartu v línii, „mám Nástroj“, „nemám cigarety“),
+    žiadny voľný chat.</p>
+    <ul>
+      <li class="plus">Viac „čítania“ partnera, bližšie k Bridge či Tichu.</li>
+      <li class="minus">Online sa to nedá vynútiť; hráči s hlasovým hovorom majú výhodu.</li>
+      <li class="minus">Tímové prvky (podanie, ručenie) sa hrajú naslepo — horšie sa učia.</li>
+    </ul>
+  </div>
+</div>
+
+<h2>Karty, ktoré treba vyložiť</h2>
+<p>Pravidlo palca: <b>„súper“</b> v texte karty je <b>protivník</b>, keď ide o ruku, balíček, cigarety či kliatby jedného človeka,
+a <b>súperský tím</b>, keď ide o líniu, bitku alebo markery. <b>„Tvoja partia“</b> = karty tvojho tímu.</p>
+<div class="filtre">
+  <input type="search" id="hladaj" placeholder="Hľadaj kartu…" aria-label="Hľadaj kartu">
+  <button aria-pressed="false" data-druh="protivnik">súper = protivník</button>
+  <button aria-pressed="false" data-druh="tim">súper = tím</button>
+  <button aria-pressed="false" data-druh="lokalita">lokality</button>
+</div>
+<div class="tab"><table id="karty">
+  <thead><tr><th>Karta</th><th>Výklad v 2 na 2</th></tr></thead>
+  <tbody>
+    <tr data-druh="tim"><th>Svokra</th><td>Každé NA EX ktoréhokoľvek hráča súperského tímu mu zoberie 2 cigarety pre majiteľa Svokry.</td></tr>
+    <tr data-druh="protivnik"><th>Veštica</th><td>Porazený s Vešticou vymení kartu so <b>svojím protivníkom</b>.</td></tr>
+    <tr data-druh="protivnik"><th>Finančná poradkyňa</th><td>Dlh z jej akcií dostane protivník majiteľa.</td></tr>
+    <tr data-druh="protivnik"><th>Vychovávateľka</th><td>Dlh sa zamieša do doberacieho balíčka protivníka.</td></tr>
+    <tr data-druh="protivnik"><th>Veľmi smútiaca vdova</th><td>Odhalí vrch balíčka protivníka.</td></tr>
+    <tr data-druh="protivnik"><th>Kočovník</th><td>Dlh a pečeň z jeho akcií dostane hráč, ktorý je kapitánom tímu strany, kde Kočovník leží (alebo protivník, ak leží na súperovej strane — na rozhodnutie).</td></tr>
+    <tr data-druh="tim"><th>Hrobár</th><td>Cigareta za každú kartu, ktorú zahodí ktorýkoľvek hráč súperského tímu.</td></tr>
+    <tr data-druh="tim"><th>Policajtka</th><td>Pohoršenia súperského tímu proti tvojmu tímu neplatia.</td></tr>
+    <tr data-druh="tim"><th>Praudovravec</th><td>Umlčí Autority celého súperského tímu.</td></tr>
+    <tr data-druh="tim"><th>Anonymný alkoholik</th><td>Súperský tím nedá NA EX na neho ani na karty <b>tvojho tímu</b> vedľa neho.</td></tr>
+    <tr data-druh="tim"><th>Silná nezávislá žena</th><td>Zdvojí aj aktívne akcie <b>partnerových</b> kariet vedľa nej.</td></tr>
+    <tr data-druh="tim"><th>Liberál</th><td>Ženy a chlapi sa rátajú v partii celého tímu.</td></tr>
+    <tr data-druh="tim"><th>Pes</th><td>Nesmie byť v tíme s iným Zvieraťom; +1 tuhé za pár so súperskou kartou ide tímu.</td></tr>
+    <tr data-druh="tim"><th>Pijan</th><td>+1 Rana pre súperský tím, ak má Žena v jeho okolí aktívne Poldeci.</td></tr>
+    <tr data-druh="tim"><th>Presbiter, Dvojčatá</th><td>„Majiteľ“ v kraji = tím (prevaha je tímová).</td></tr>
+    <tr data-druh="protivnik"><th>Poštárka, Starosta, Krčmárka, Dievčina na vydaj</th><td>Bez zmeny — týkajú sa len majiteľa.</td></tr>
+    <tr data-druh="lokalita"><th>Krčma</th><td>Každý hráč s plným poldeci a cieľom musí dať NA EX.</td></tr>
+    <tr data-druh="lokalita"><th>Zastávka</th><td>Spoločný limit <b>všetkých štyroch</b> = súčet ich limitov. Môže byť príliš chaotické — kandidát na vyradenie v 2 na 2.</td></tr>
+    <tr data-druh="lokalita"><th>Lesná cesta, Ihrisko</th><td>Rátajú sa karty tímu; bonus ide tímu.</td></tr>
+    <tr data-druh="lokalita"><th>Vínna pivnica</th><td>Každý hráč smie dať NA EX dvakrát — štyri NA EX na tím sú veľa; zvážiť „tím spolu trikrát“.</td></tr>
+    <tr data-druh="lokalita"><th>Most, Kostol, Benzínka, Družstvo, Jednota, Zberný dvor, Obecný úrad, Kultúrny dom, Cintorín</th><td>Bez zmeny, platia pre každého hráča (Cintorín: smie každý z porazeného tímu).</td></tr>
+  </tbody>
+</table></div>
+
+<h2>Iné spôsoby, ktoré som zvážil</h2>
+<div class="zalozky" role="tablist" aria-label="Alternatívy">
+  <button role="tab" id="t-a" aria-selected="true" aria-controls="p-a">A · Jeden stôl (návrh)</button>
+  <button role="tab" id="t-b" aria-selected="false" aria-controls="p-b" tabindex="-1">B · Dve línie</button>
+  <button role="tab" id="t-c" aria-selected="false" aria-controls="p-c" tabindex="-1">C · Spoločná pokladnica</button>
+</div>
+<div role="tabpanel" id="p-a" aria-labelledby="t-a">
+  <div class="box odporucam">
+    <p><b>Jedna línia, strany tímové, hospodárstvo osobné</b> — všetko vyššie. Najmenej nových pravidiel, línia sa stáva spoločnou
+    stavbou a prevaha v kraji dostane nový zmysel (dvaja hráči ju budujú spolu, podstrčenie je silnejšie, lebo línia je dlhšia).</p>
+    <p class="mini">Riziko: dlhšie kolo a viac čakania. Odpoveď: predvolená krátka hra a časový limit ťahu.</p>
+  </div>
+</div>
+<div role="tabpanel" id="p-b" aria-labelledby="t-b" hidden>
+  <div class="box">
+    <p>Každý pár protivníkov hrá vlastnú líniu o vlastnú lokalitu (dve bitky naraz), markery starších sú spoločné.
+    Tím vyhrá kolo, ak vyhrá obe bitky; pri 1:1 rozhodne súčet prebytkov.</p>
+    <ul>
+      <li class="plus">Kratšie čakanie — dvojice hrajú súbežne.</li>
+      <li class="minus">Spolupráca takmer chýba, je to „dve partie 1 na 1“; dvakrát viac lokalít na hru (14 na 7 bitiek nestačí).</li>
+    </ul>
+  </div>
+</div>
+<div role="tabpanel" id="p-c" aria-labelledby="t-c" hidden>
+  <div class="box">
+    <p>Ako A, ale tím má spoločné poldeci a cigarety (jedna kasa) a spoločný limit vykladania.</p>
+    <ul>
+      <li class="plus">Jednoduchšie počítanie, silná spolupráca.</li>
+      <li class="minus">Silnejší hráč „ťahá“ celý tím, slabší sa stáva divákom; mizne osobné riziko pitia a fajčenia (nerest, Absťák, Cirhóza), čo je jadro témy.</li>
+    </ul>
+  </div>
+</div>
+
+<h2>Ako by sa to programovalo</h2>
+<ol>
+  <li><b>Jadro (najväčší kus):</b> <code>PlayerId</code> ostane ako tím (strana, markery, body). Pribudne <code>SeatId</code>, <code>timOf(seat)</code>,
+  <code>protivnikOf(seat)</code> a stav hráča sa presunie na miesta. Formát <code>"1v1" | "2v2"</code> v nastaveniach hry; v 1 na 1 má každý tím jedno miesto,
+  takže všetky dnešné testy musia prejsť bez zmeny. <code>engine.ts</code> má ~3 500 riadkov a <code>opponentOf</code> je v ňom 38-krát — každé
+  použitie treba roztriediť na „protivník“ alebo „súperský tím“.</li>
+  <li><b>Poradie ťahov:</b> jedna funkcia <code>dalsiNaTahu(state)</code> pre Zhromaždenie, šenok aj Pitku namiesto dnešného striedania dvoch.</li>
+  <li><b><code>viewFor(seat)</code>:</b> partnerova ruka podľa zvolenej viditeľnosti, súperom nič; testy na každú skrytú informáciu (ruka, šenok naspodok, Vízia, patronát lícom dole).</li>
+  <li><b>Server:</b> lobby so 4 miestami, voľné miesto obsadí bot (aj ako partner človeka), tímový chat.</li>
+  <li><b>Bot:</b> v prvej verzii hrá každé miesto sám za seba (tím mu len pripočíta akcie partnera); spolupráca (podanie, ručenie) neskôr.</li>
+  <li><b>Klient:</b> herný stôl so štyrmi panelmi hráčov (partner zvýraznený), farby tímov cez tokeny zo <code>schemy.css</code>, ukazovák.</li>
+  <li><b>Overenie:</b> turnaj botov 2 na 2 (dĺžka kola, vyrovnanosť útočníka a obrancu, či tímové prvky niekto používa) a playtest so štyrmi AI playtestermi (turnus s 4 postavami).</li>
+</ol>
+
+<h2>Na rozhodnutie</h2>
+<div class="otazky">
+  <div class="box otazka"><h3>Chceš 2 na 2 ako samostatný formát?</h3><p>Ak áno, upravím CLAUDE.md, BRIEF a PRAVIDLA a založím míľnik.</p></div>
+  <div class="box otazka"><h3>Viditeľnosť ruky partnera</h3><p>Otvorené karty v tíme (odporúčam), alebo skrytá ruka so signálmi?</p></div>
+  <div class="box otazka"><h3>Protivník pevný, alebo striedavý?</h3><p>Návrh: pevný (A1↔B1, A2↔B2). Striedanie každé kolo by bolo spravodlivejšie, ale ťažšie sa sleduje.</p></div>
+  <div class="box otazka"><h3>Prehra celého tímu pri exekúcii a balíčku pod 5</h3><p>Návrh: áno, s ručením. Alternatíva: hráč vypadne a partner dohrá sám (zložitejšie a menej zábavné).</p></div>
+  <div class="box otazka"><h3>Ktoré tímové prvky</h3><p>Podanie pod stolom a ručenie odporúčam určite; spoločný prípitok len ak ho simulácia neukáže ako zbytočný.</p></div>
+  <div class="box otazka"><h3>Zastávka a Vínna pivnica v 2 na 2</h3><p>Vyradiť z balíčka lokalít pre 2 na 2, alebo upraviť (tím spolu)?</p></div>
+</div>
+
+<p class="mini">Návrh vychádza z <code>docs/PRAVIDLA.md</code> (stav 2026-10-21, sada v15). Čísla (šenok N/2, limit Pohoršenia za tím, predvolená
+krátka hra) sú východiskové a nemerané.</p>
+
+</main>
+<script>
+(function () {
+  // záložky
+  document.querySelectorAll('[role="tablist"]').forEach(function (lista) {
+    var tlacidla = Array.prototype.slice.call(lista.querySelectorAll('[role="tab"]'));
+    function vyber(t) {
+      tlacidla.forEach(function (b) {
+        var ano = b === t;
+        b.setAttribute('aria-selected', ano ? 'true' : 'false');
+        b.tabIndex = ano ? 0 : -1;
+        document.getElementById(b.getAttribute('aria-controls')).hidden = !ano;
+      });
+    }
+    tlacidla.forEach(function (b, i) {
+      b.addEventListener('click', function () { vyber(b); });
+      b.addEventListener('keydown', function (e) {
+        var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+        if (!d) return;
+        var n = tlacidla[(i + d + tlacidla.length) % tlacidla.length];
+        n.focus(); vyber(n);
+      });
+    });
+  });
+
+  // filter kariet
+  var hladaj = document.getElementById('hladaj');
+  var druhy = Array.prototype.slice.call(document.querySelectorAll('.filtre button'));
+  var aktivny = null;
+  function filtruj() {
+    var q = hladaj.value.trim().toLowerCase();
+    document.querySelectorAll('#karty tbody tr').forEach(function (r) {
+      var okText = !q || r.textContent.toLowerCase().indexOf(q) >= 0;
+      var okDruh = !aktivny || r.dataset.druh === aktivny;
+      r.hidden = !(okText && okDruh);
+    });
+  }
+  hladaj.addEventListener('input', filtruj);
+  druhy.forEach(function (b) {
+    b.addEventListener('click', function () {
+      aktivny = aktivny === b.dataset.druh ? null : b.dataset.druh;
+      druhy.forEach(function (x) { x.setAttribute('aria-pressed', x.dataset.druh === aktivny ? 'true' : 'false'); });
+      filtruj();
+    });
+  });
+
+  // krokovač kola
+  var utociA = true;
+  function m(t, i) { return { t: t, i: i }; }
+  function poradie(faza) {
+    var U = utociA ? 'A' : 'B', O = utociA ? 'B' : 'A';
+    switch (faza) {
+      case 'ciel': return [m(O, 'kapitán')];
+      case 'senok': return [m(U, 1), m(O, 1), m(U, 2), m(O, 2)];
+      case 'branie': return [m(U, 'kap.'), m(O, 'kap.'), m(U, 2), m(O, 2), '↻'];
+      case 'patronat': return [m(U, 'tím'), m(O, 'tím')];
+      case 'zhrom': return [m(U, 'kap.'), m(O, 'kap.'), m(U, 2), m(O, 2), '↻'];
+      case 'pitka': return [m(O, 1), m(O, 2), '→', m(U, 1), m(U, 2)];
+      case 'bitka': return [m(U, 'tím'), 'vs', m(O, 'tím')];
+      default: return [];
+    }
+  }
+  var fazy = [
+    { id: 'ciel', n: 'Voľba cieľa', d: 'Na začiatku kola sa každému hráčovi otočí jeden vypitý poldeci na plný a každý si dobere 2 karty. Obranný tím vyberie a natočí lokalitu — rozhoduje kapitán, partner radí.' },
+    { id: 'senok', n: 'Stavba šenku', d: 'Každý z štyroch vezme zo spoločného balíčka N/2 kariet (pri 8 starších 4), naraz a tajne dá polovicu do šenku a polovicu naspodok. Šenok má 8 kariet, dve od každého. Partner vidí, čo si dal ty (pri otvorených kartách).' },
+    { id: 'branie', n: 'Branie zo šenku', d: 'Striedavo dookola, začína kapitán útočného tímu. 1 karta za 1 cigaretu, 2 za 3. Kto prestane, už neberie; keď prestanú obaja z jedného tímu, druhý tím má ešte po jednom ťahu. Šenok sa potom doplní na 8.' },
+    { id: 'patronat', n: 'Patronát', d: 'Najprv útočný, potom obranný tím: najviac jeden starší za tím. Kartu staršieho si vezme do ruky jeden hráč — patrón — ten platí cigarety a dáva náhradu lícom dole. Pohoršenia navyše dostane súperský tím a rozdelí si ich.' },
+    { id: 'zhrom', n: 'Zhromaždenie', d: 'Štyri ťahy dookola. Každý vykladá na koniec svojej alebo súperovej strany, ďalšia karta v ťahu stojí plný poldeci, fajčí a priznáva ako dnes. Namiesto vyloženia smie raz za kolo podať partnerovi kartu či 2 cigarety. Pas ukončí Zhromaždenie len pasujúcemu.' },
+    { id: 'pitka', n: 'Pitka (1–4×)', d: 'Najprv obranný tím (obaja, kým nedajú „hotovo“), potom útočný — útočníci majú posledné slovo. NA EX raz za Pitku každý hráč; jednou kartou odpovedá protivník toho, kto ho dal. Dlh, pečeň, cigarety a Vízia sa vyhodnotia každému zvlášť. Počet Pitiek = 1 + menší z počtov aktivovaných akcií lokality (tímovo).' },
+    { id: 'bitka', n: 'Bitka', d: 'Exekúcia každému zvlášť (partner smie ručiť Nástrojom). Pohoršenie tímovo, najviac 2 hranice zón za tím na marker. Tuhé a mäkké poškodenie sa sčíta za tím. Víťazný tím rozdelí prebytok (kapitán), porazený tím dostane cigarety za posunutých starších a rozhodne, kto ich dostane. Karty sa vrátia majiteľom, porazený tím útočí.' }
+  ];
+  var aktualna = 0;
+  var zoznam = document.getElementById('fazy');
+  var detail = document.getElementById('faza-detail');
+  fazy.forEach(function (f, i) {
+    var li = document.createElement('li');
+    var b = document.createElement('button');
+    b.textContent = (i + 1) + '. ' + f.n;
+    b.addEventListener('click', function () { aktualna = i; kresli(); });
+    li.appendChild(b); zoznam.appendChild(li);
+  });
+  function kresli() {
+    Array.prototype.forEach.call(zoznam.querySelectorAll('button'), function (b, i) {
+      if (i === aktualna) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
+    });
+    var f = fazy[aktualna];
+    var html = '<h3>' + f.n + '</h3><div class="poradie">';
+    poradie(f.id).forEach(function (x) {
+      if (typeof x === 'string') { html += '<i>' + x + '</i>'; return; }
+      var popis = typeof x.i === 'number' ? x.t + x.i : x.t + ' · ' + x.i;
+      html += '<span class="' + x.t + '">' + popis + '</span>';
+    });
+    html += '</div><p>' + f.d + '</p>';
+    html += '<div class="ovladanie"><button type="button" id="spat">← späť</button><button type="button" id="dalej">ďalej →</button>' +
+      '<label><input type="checkbox" id="prepni"' + (utociA ? '' : ' checked') + '> útočí tím B</label></div>';
+    detail.innerHTML = html;
+    document.getElementById('spat').onclick = function () { aktualna = (aktualna + fazy.length - 1) % fazy.length; kresli(); };
+    document.getElementById('dalej').onclick = function () { aktualna = (aktualna + 1) % fazy.length; kresli(); };
+    document.getElementById('prepni').onchange = function (e) { utociA = !e.target.checked; kresli(); };
+  }
+  kresli();
+})();
+</script>
+</body>
+</html>

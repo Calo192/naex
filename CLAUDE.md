@@ -69,7 +69,7 @@ horizonty, poradie zhora = priorita). Schválený návrh z Playtestu padne sám 
 Prijímača roadmapy; Developer berie stĺpec Teraz zhora (`admin.ts roadmapa`).
 Hráči hodnotia v Spätnej väzbe, AI playtesteri po partii `web.ts znamky`
 (história: `tools/playtest/znamky-import.ts`). Návštevník je hráčom po prvej
-odohranej bitke, aj proti botovi.
+dohratej partii, aj proti botovi (do štatistík sa partie s botom nerátajú).
 
 ## Konvencie
 

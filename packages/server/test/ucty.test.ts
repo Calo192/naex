@@ -1,5 +1,5 @@
 // Úrovne účtov (Michal 2026-10-12): admin z konfigurácie, subadmin, hráč,
-// návštevník; návštevník sa po prvej odohranej bitke stáva hráčom (Michal 2026-10-21).
+// návštevník; návštevník sa po prvej dohratej partii (aj proti botovi) stáva hráčom (Michal 2026-10-21).
 
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -28,7 +28,7 @@ function partia(archiv: Archiv, hraci: [number, number], dohrata: boolean): void
 }
 
 describe("úrovne účtov — databáza", () => {
-  it("nový účet je návštevník; po prvej bitke hráč, vyššiu úroveň bitka nemení", () => {
+  it("nový účet je návštevník; po prvej dohratej partii hráč, vyššiu úroveň partia nemení", () => {
     const { db, zmaz } = docasnaDb();
     try {
       const ucty = new Ucty(db, { login: "Admin", heslo: null });
@@ -38,11 +38,11 @@ describe("úrovne účtov — databáza", () => {
       expect(a.rola).toBe("navstevnik");
       partia(archiv, [a.id, b.id], false);
       expect(ucty.dohrate(a.id)).toBe(0);
-      expect(ucty.povysPoBitke(a.id)).toBe(true);
+      expect(ucty.povysPoPartii(a.id)).toBe(true);
       expect(ucty.podlaId(a.id)?.rola).toBe("hrac");
-      expect(ucty.povysPoBitke(a.id)).toBe(false);
+      expect(ucty.povysPoPartii(a.id)).toBe(false);
       ucty.nastavRolu(b.id, "subadmin");
-      expect(ucty.povysPoBitke(b.id)).toBe(false);
+      expect(ucty.povysPoPartii(b.id)).toBe(false);
       expect(ucty.podlaId(b.id)?.rola).toBe("subadmin");
     } finally {
       zmaz();

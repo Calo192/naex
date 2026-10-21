@@ -130,7 +130,7 @@ export class Hodnotenia {
     this.db = db;
   }
 
-  /** Hodnotiť smie hráč (po prvej bitke), správca a AI agent; návštevník nie. */
+  /** Hodnotiť smie každý hráč (po prvej dohratej partii), správca a AI agent; návštevník nie. */
   smie(ja: Pouzivatel): boolean {
     return ja.rola !== "navstevnik" || ja.ai;
   }
@@ -149,7 +149,7 @@ export class Hodnotenia {
    * správca — import známok z playtestu s časom partie.
    */
   uloz(ja: Pouzivatel, telo: Record<string, unknown>, teraz: number): { cas: number } {
-    if (!this.smie(ja)) throw new ChybaVstupu("Hru hodnotí hráč — návštevníkom si, kým neodohráš prvú bitku.", 403);
+    if (!this.smie(ja)) throw new ChybaVstupu("Hru hodnotí hráč — návštevníkom si, kým nedohráš prvú partiu (stačí aj proti botovi).", 403);
     const znamky = overZnamky(telo.znamky);
     const importuje = telo.zdroj !== undefined || telo.cas !== undefined;
     if (importuje && !ja.ai && !jeSpravca(ja.rola)) throw new ChybaVstupu("Zdroj a čas hodnotenia posiela len AI agent.", 403);

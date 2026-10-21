@@ -84,7 +84,7 @@ describe("hodnotenia — ukladanie a vývoj", () => {
     const { db, ucet, zmaz } = docasnaDb();
     try {
       const h = new Hodnotenia(db);
-      expect(() => h.uloz(ucet("navstevnik"), { znamky: { zabava: 5 } }, T0)).toThrow(/prvú bitku/);
+      expect(() => h.uloz(ucet("navstevnik"), { znamky: { zabava: 5 } }, T0)).toThrow(/prvú partiu/);
       const ja = ucet();
       h.uloz(ja, { znamky: { zabava: 5 } }, T0);
       h.uloz(ja, { znamky: { zabava: 7, tempo: 3 } }, T0 + 60_000);

@@ -112,7 +112,7 @@ export function TlacidloCigarety({
   readonly navstevnik?: boolean;
 }) {
   const popis = navstevnik
-    ? "Cigarety dávajú hráči — hráčom si po prvej odohranej bitke."
+    ? "Cigarety dávajú hráči — hráčom si po prvej dohratej partii."
     : vlastne
     ? "Sám sebe cigaretu nedáš."
     : moja
@@ -449,7 +449,7 @@ export function SpatnaVazba() {
   }, [triedenie, filter, ukazChybu]);
 
   useEffect(obnov, [obnov]);
-  // Úroveň sa mení počas partie (hráčom po prvej bitke) — klient mohol mať starú.
+  // Úroveň sa mení počas partie (hráčom po prvej dohratej partii) — klient mohol mať starú.
   useEffect(obnovUcet, [obnovUcet]);
 
   if (ja === null) return null;
@@ -471,7 +471,7 @@ export function SpatnaVazba() {
       {ja.rola === "navstevnik" ? (
         <p className="panel tlmene">
           Ako <strong>návštevník</strong> spätnú väzbu zatiaľ len čítaš. Písať názory, komentovať, dávať cigarety a hodnotiť hru môžeš po prvej
-          odohranej bitke — stačí aj partia proti botovi. Vtedy sa staneš hráčom.
+          dohratej partii — stačí aj proti botovi. Vtedy sa staneš hráčom.
         </p>
       ) : (
         <NovyNazor pridany={obnov} chyba={ukazChybu} />

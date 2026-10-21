@@ -495,10 +495,10 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     if (room.statistiky !== null) room.statistiky = zapisTah(room.statistiky, pred, cmd, seat, result.state, result.events);
     room.statistikyKariet = zapisTahKariet(room.statistikyKariet, pred, cmd, seat, result.events);
     broadcast(room, result.events);
-    // Návštevník sa stáva hráčom po prvej odohranej bitke, aj proti botovi (Michal 2026-10-21).
-    if (result.events.some((e) => e.type === "bitkaVysledok")) {
-      for (const h of room.hraci) if (h !== null && h.id !== BOT_ID) ucty.povysPoBitke(h.id);
-    }
+    const dohrata = pred.koniec === null && result.state.koniec !== null && cmd.type !== "vzdat";
+    // Návštevník sa stáva hráčom po prvej dohratej partii proti človeku aj proti botovi (Michal 2026-10-21);
+    // partia s botom sa pritom do archívu ani štatistík nezapíše.
+    if (dohrata) for (const h of room.hraci) if (h !== null && h.id !== BOT_ID) ucty.povysPoPartii(h.id);
     // Partie proti botovi nejdú do archívu — Frajerina a rebríček sú medzi ľuďmi.
     if (pred.koniec === null && result.state.koniec !== null && room.bot === null) zapisDoArchivu(room, result.state, cmd.type !== "vzdat");
     naplanujBota(room);

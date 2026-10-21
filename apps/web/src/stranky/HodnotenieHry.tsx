@@ -90,7 +90,7 @@ export function HodnotenieHry({ smiePisat }: { readonly smiePisat: boolean }) {
       </header>
 
       {!smiePisat ? (
-        <p className="tlmene">Hodnotiť hru môžeš po prvej odohranej bitke — stačí aj partia proti botovi.</p>
+        <p className="tlmene">Hodnotiť hru môže každý hráč — hráčom sa staneš po prvej dohratej partii, stačí aj proti botovi.</p>
       ) : (
         ulozene.cas !== null &&
         !otvorene && (

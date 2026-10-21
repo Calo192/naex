@@ -3,7 +3,7 @@
 //
 // Úroveň účtu (Michal 2026-10-12): admin (jediný, z NAEX_ADMIN_HESLO),
 // subadmin (povýši ho admin), hráč, návštevník. Nový účet je návštevník
-// a hráčom sa stane po prvej odohranej bitke, aj proti botovi (Michal 2026-10-21).
+// a hráčom sa stane po prvej dohratej partii proti človeku aj proti botovi (Michal 2026-10-21).
 
 import { createHash, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 import type { IncomingMessage } from "node:http";
@@ -21,7 +21,7 @@ export function jeSpravca(rola: Rola): boolean {
 /** Spätnú väzbu (názory, komentáre, cigarety) píšu hráči a správcovia, návštevník len číta. */
 export function smiePisat(ja: { readonly rola: Rola }): void {
   if (ja.rola === "navstevnik") {
-    throw new ChybaVstupu("Návštevník spätnú väzbu len číta — písať môžeš po prvej odohranej bitke.", 403);
+    throw new ChybaVstupu("Návštevník spätnú väzbu len číta — písať môžeš po prvej dohratej partii (stačí aj proti botovi).", 403);
   }
 }
 
@@ -134,7 +134,7 @@ export class Ucty {
          WHERE rola NOT IN ('admin', 'subadmin', 'hrac', 'navstevnik')`,
       )
       .run();
-    // Od 2026-10-21 stačí na úroveň hráč jedna bitka — dohratá partia ju určite mala.
+    // Od 2026-10-21 stačí na úroveň hráč jedna dohratá partia.
     this.db.prepare(`UPDATE pouzivatelia SET rola = 'hrac' WHERE rola = 'navstevnik' AND (${DOHRATE_SQL}) >= 1`).run();
     this.db.prepare("UPDATE pouzivatelia SET rola = 'hrac' WHERE rola = 'admin' AND login <> ?").run(admin.login);
     if (admin.heslo === null) return;
@@ -157,8 +157,8 @@ export class Ucty {
     return (this.db.prepare(`SELECT (${DOHRATE_SQL}) AS n FROM pouzivatelia WHERE id = ?`).get(id) as { n: number } | undefined)?.n ?? 0;
   }
 
-  /** Po vyhodnotení bitky (aj proti botovi) sa návštevník stáva hráčom. Vracia, či sa úroveň zmenila. */
-  povysPoBitke(id: number): boolean {
+  /** Po dohratej partii (aj proti botovi) sa návštevník stáva hráčom. Vracia, či sa úroveň zmenila. */
+  povysPoPartii(id: number): boolean {
     return this.db.prepare("UPDATE pouzivatelia SET rola = 'hrac' WHERE id = ? AND rola = 'navstevnik'").run(id).changes > 0;
   }
 

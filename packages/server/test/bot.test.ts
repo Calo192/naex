@@ -28,7 +28,7 @@ async function cakaj(podmienka: () => boolean, popis: string): Promise<void> {
 }
 
 describe("offline protihráč na serveri", () => {
-  it("človek dohrá celú partiu proti botovi a po bitke je z neho hráč", async () => {
+  it("človek dohrá celú partiu proti botovi a je z neho hráč", async () => {
     const { cookie } = await registruj(server.port);
     const rola = async () =>
       ((await (await fetch(`http://127.0.0.1:${server.port}/api/ja`, { headers: { cookie } })).json()) as { pouzivatel: { rola: string } }).pouzivatel.rola;
@@ -51,6 +51,8 @@ describe("offline protihráč na serveri", () => {
     for (;;) {
       await cakaj(() => a.view?.koniec != null || a.view?.mozemHrat === true, `môj ťah (fáza ${a.view?.faza})`);
       if (a.view?.koniec != null) break;
+      // Bitka ešte nestačí — hráčom je až po dohratej partii (Michal 2026-10-21).
+      if (a.view?.kolo === 2 && tahov % 10 === 0) expect(await rola()).toBe("navstevnik");
       const pred = a.pocetStavov;
       a.posli({ type: "cmd", cmd: a.vyberTah() });
       await cakaj(() => a.pocetStavov > pred || a.chyby.length > 0, "odpoveď servera");
@@ -65,7 +67,7 @@ describe("offline protihráč na serveri", () => {
       expect(tahov).toBeLessThan(3000);
     }
     expect(a.view?.koniec).not.toBeNull();
-    // Návštevník sa stáva hráčom po prvej bitke, aj proti botovi (Michal 2026-10-21).
+    // Návštevník sa stáva hráčom po prvej dohratej partii, aj proti botovi (Michal 2026-10-21).
     expect(await rola()).toBe("hrac");
 
     // Kontumovať bota nemožno a partia sa do archívu nezapísala.

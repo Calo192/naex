@@ -46,7 +46,7 @@ export function Pouzivatelia() {
       <h1>Hráči</h1>
       <p className="tlmene">
         {zoznam.length} účtov — {pocet("subadmin")} subadmin, {pocet("hrac")} hráčov, {pocet("navstevnik")} návštevníkov. Nový účet je
-        návštevník (hrá a číta spätnú väzbu); po prvej odohranej bitke (aj proti botovi) sa sám stane hráčom. Subadmin smie to isté čo admin
+        návštevník (hrá a číta spätnú väzbu); po prvej dohratej partii (aj proti botovi) sa sám stane hráčom. Subadmin smie to isté čo admin
         okrem zmeny úrovní. Účty AI agentov (playtesteri, protihráč) sú hráči so značkou AI — ich spätnú väzbu web predvolene skrýva;
         nástroje playtestu ich zaradia samy. {somAdmin ? "Úroveň a značku AI meníš v posledných stĺpcoch." : "Úrovne mení len admin."}
       </p>

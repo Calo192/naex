@@ -300,7 +300,7 @@ export function Profil() {
           </div>
           {ja.rola === "navstevnik" && (
             <p className="tlmene" style={{ margin: "6px 0 0" }}>
-              Hráčom sa staneš po prvej odohranej bitke, aj proti botovi. Hráč píše spätnú väzbu a hodnotí hru.
+              Hráčom sa staneš po prvej dohratej partii, aj proti botovi. Hráč píše spätnú väzbu a hodnotí hru.
             </p>
           )}
           <p style={{ margin: "6px 0 0" }}>

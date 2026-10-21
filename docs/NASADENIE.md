@@ -62,7 +62,8 @@ Admin je len jeden: server ho pri štarte založí s prihlasovacím menom
 reštarte). Prihlás sa ním — v menu sa objaví **Tvorba** a **Hráči**. V sekcii
 *Tvorba → Hráči* môžeš ľubovoľného hráča povýšiť na **subadmina** (smie to isté
 čo admin okrem zmeny úrovní). Nové účty sú návštevníci; hráčmi sa stanú samy po
-prvej odohranej bitke, aj proti botovi (Michal 2026-10-21).
+prvej dohratej partii proti človeku aj proti botovi (Michal 2026-10-21); partie
+proti botovi sa do štatistík nerátajú.
 
 ### 5. Knižnica obrázkov (voliteľné)
 

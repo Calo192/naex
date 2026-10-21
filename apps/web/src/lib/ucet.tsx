@@ -44,7 +44,7 @@ interface UcetKontext {
   readonly ja: Pouzivatel | null;
   readonly nacitane: boolean;
   nastav(p: Pouzivatel | null): void;
-  /** Znova načíta účet zo servera — úroveň sa mení aj počas partie (hráčom po prvej bitke). */
+  /** Znova načíta účet zo servera — úroveň sa mení aj počas partie (hráčom po prvej dohratej partii). */
   obnov(): void;
   odhlas(): Promise<void>;
 }
