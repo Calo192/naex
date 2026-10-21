@@ -2,18 +2,20 @@
 
 .admin {
   display: grid;
-  grid-template-columns: 230px minmax(0, 1fr);
-  gap: 28px;
+  grid-template-columns: 236px minmax(0, 1fr);
+  gap: 32px;
   align-items: start;
 }
+
+/* ---- bočné menu: skupiny, ikony, počítadlá ---- */
 
 .admin-menu {
   position: sticky;
   top: 84px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 10px;
+  gap: 14px;
+  padding: 14px 10px 10px;
   border-radius: 14px;
   background: var(--plocha);
   border: 1px solid var(--okraj);
@@ -24,18 +26,38 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--akcent);
-  padding: 8px 10px 10px;
+  padding: 0 10px;
+}
+
+.admin-menu-skupina {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-menu-nazov {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--slaby-text);
+  padding: 0 10px 4px;
 }
 
 .admin-menu a {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 10px;
+  min-height: 38px;
+  padding: 6px 10px;
   border-radius: 8px;
   color: var(--tlmeny);
   text-decoration: none;
   font-size: 0.93rem;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 
 .admin-menu a:hover {
@@ -46,12 +68,77 @@
 .admin-menu a.aktivna {
   background: var(--plocha-3);
   color: var(--text);
+  font-weight: 600;
 }
 
-.admin-znak {
-  width: 20px;
-  text-align: center;
-  opacity: 0.8;
+/* Aktívna položka má jantárový prúžok vľavo — vidno ju aj bez farby pozadia. */
+.admin-menu a.aktivna::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 3px;
+  background: var(--akcent);
+}
+
+.admin-menu .ikona {
+  flex: none;
+  opacity: 0.85;
+}
+
+.admin-menu a.aktivna .ikona {
+  color: var(--akcent);
+  opacity: 1;
+}
+
+.admin-menu-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-menu a.admin-menu-nova {
+  justify-content: center;
+  border: 1px dashed var(--okraj-svetly);
+  color: var(--text);
+}
+
+.admin-menu a.admin-menu-nova:hover {
+  border-color: var(--akcent);
+  color: var(--akcent-svetly);
+}
+
+.admin-znacka {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 99px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  background: var(--plocha-3);
+  color: var(--tlmeny);
+  border: 1px solid var(--okraj-svetly);
+}
+
+.admin-znacka.nova {
+  background: color-mix(in oklab, var(--akcent) 22%, var(--plocha));
+  border-color: color-mix(in oklab, var(--akcent) 55%, var(--plocha));
+  color: var(--akcent-svetly);
+}
+
+.admin-znacka.zla {
+  background: color-mix(in oklab, var(--cervena) 26%, var(--plocha));
+  border-color: color-mix(in oklab, var(--cervena) 60%, var(--plocha));
+  color: var(--cervena-svetla);
+  margin-left: 8px;
+}
+
+.admin-menu .admin-znacka.zla {
+  margin-left: 0;
 }
 
 .admin-obsah {
@@ -82,6 +169,36 @@
   margin: 0;
 }
 
+/* Hlavička podstránky (AdminHlava): nadpis, veta o účele, akcie vpravo. */
+.admin-hlavicka {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px 24px;
+  flex-wrap: wrap;
+  padding-bottom: 4px;
+}
+
+.admin-hlavicka h1 {
+  margin: 0 0 6px;
+}
+
+.admin-hlavicka-text p {
+  margin: 0;
+  max-width: 70ch;
+  color: var(--tlmeny);
+}
+
+.admin-hlavicka-akcie {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tlacidlo .ikona {
+  vertical-align: -3px;
+}
+
 .spat {
   font-size: 0.88rem;
   text-decoration: none;
@@ -96,10 +213,20 @@
 .dlazdica {
   display: flex;
   flex-direction: column;
-  padding: 16px 18px;
+  padding: 14px 18px;
   border-radius: 14px;
   background: linear-gradient(180deg, var(--plocha-2), var(--plocha));
   border: 1px solid var(--okraj);
+  color: inherit;
+  text-decoration: none;
+}
+
+a.dlazdica {
+  transition: border-color 0.15s;
+}
+
+a.dlazdica:hover {
+  border-color: var(--okraj-svetly);
 }
 
 .dlazdica span {
@@ -108,10 +235,357 @@
 }
 
 .dlazdica strong {
-  font: 800 2rem/1.15 var(--nadpis);
+  font: 800 1.8rem/1.15 var(--nadpis);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- prehľad: stav zverejnenia ---- */
+
+.zverejnenie {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border-left-width: 4px;
+}
+
+.zverejnenie-blokovane {
+  border-left-color: var(--cervena);
+}
+
+.zverejnenie-pripravene {
+  border-left-color: var(--akcent);
+}
+
+.zverejnenie-aktualne {
+  border-left-color: var(--zelena);
+}
+
+.zverejnenie-hlava {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  flex-wrap: wrap;
+}
+
+.zverejnenie-hlava h2 {
+  margin: 0 0 4px;
+}
+
+.zverejnenie-hlava p {
+  margin: 0;
+}
+
+.zverejnenie-zoznam {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.zverejnenie-zoznam li {
+  display: flex;
+  gap: 4px 12px;
+  flex-wrap: wrap;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--plocha);
+  border: 1px solid var(--okraj);
+  font-size: 0.92rem;
+}
+
+.zverejnenie-zoznam.zle li,
+.zverejnenie-zoznam li.zle {
+  border-color: color-mix(in oklab, var(--cervena) 45%, var(--okraj));
+}
+
+.zverejnenie-zoznam a {
+  font-weight: 700;
+  min-width: 140px;
+}
+
+.zverejnenie-zoznam span {
+  color: var(--tlmeny);
+}
+
+.zverejnenie-karty {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.zverejnenie-karty .cip {
+  text-decoration: none;
+  color: var(--text);
+}
+
+.zverejnenie-texty summary {
+  cursor: pointer;
+  color: var(--tlmeny);
+  font-size: 0.92rem;
+  padding: 4px 0;
+}
+
+.zverejnenie-texty[open] summary {
+  margin-bottom: 8px;
+}
+
+.odznak-aktualna {
+  margin-left: 8px;
+  color: var(--zelena-svetla);
+  border-color: color-mix(in oklab, var(--zelena) 55%, var(--okraj));
+}
+
+.admin-stranka .tabulka .cislo {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 
 /* ---- galéria ---- */
+
+.galeria-ovladanie {
+  position: sticky;
+  top: 64px;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 0;
+  background: color-mix(in srgb, var(--pozadie) 92%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--okraj);
+}
+
+.galeria-riadok {
+  display: flex;
+  align-items: center;
+  gap: 10px 16px;
+  flex-wrap: wrap;
+}
+
+.hladanie {
+  position: relative;
+  flex: 1 1 260px;
+  max-width: 360px;
+  color: var(--tlmeny);
+}
+
+.hladanie .ikona {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.hladanie input {
+  width: 100%;
+  padding-left: 36px;
+}
+
+.galeria-triedenie {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  color: var(--tlmeny);
+}
+
+.galeria-triedenie select {
+  width: auto;
+}
+
+.galeria-pocet {
+  margin-left: auto;
+  font-size: 0.88rem;
+  color: var(--tlmeny);
+  font-variant-numeric: tabular-nums;
+}
+
+.galeria {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 190px);
+  gap: 22px 18px;
+  justify-content: start;
+}
+
+.galeria-polozka {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.galeria-karta {
+  position: relative;
+  display: block;
+  border-radius: 10px;
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s;
+}
+
+.galeria-karta:hover,
+.galeria-karta:focus-visible {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+.galeria-stitky {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  pointer-events: none;
+}
+
+.galeria-stitok {
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: var(--akcent);
+  color: var(--na-akcente);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+.galeria-stitok.zly {
+  background: var(--cervena);
+  color: var(--text);
+}
+
+.galeria-prazdna {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 32px 0;
+  color: var(--tlmeny);
+}
+
+button.tlacidlo-ikona {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 8px;
+  background: transparent;
+  border-color: transparent;
+  color: var(--tlmeny);
+}
+
+button.tlacidlo-ikona:hover:not(:disabled) {
+  background: var(--plocha-3);
+  border-color: var(--okraj-svetly);
+  color: var(--text);
+}
+
+button.tlacidlo-ikona.nebezpecne:hover:not(:disabled) {
+  color: var(--cervena-svetla);
+  border-color: color-mix(in oklab, var(--cervena) 60%, var(--okraj));
+}
+
+/* ---- tvorca: lepiaca lišta s uložením ---- */
+
+.tvorca-lista {
+  position: sticky;
+  top: 64px;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  flex-wrap: wrap;
+  padding: 10px 0;
+  background: color-mix(in srgb, var(--pozadie) 92%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--okraj);
+}
+
+.tvorca-lista-nazov {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.tvorca-lista h1 {
+  margin: 0;
+  font-size: 1.6rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tvorca-lista-stav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.82rem;
+  color: var(--tlmeny);
+}
+
+.tvorca-lista-stav code {
+  padding: 1px 6px;
+  border-radius: 5px;
+  background: var(--plocha-3);
+  font-size: 0.78rem;
+}
+
+.stav-bodka {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stav-bodka::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--tlmeny);
+}
+
+.stav-bodka.ok::before {
+  background: var(--zelena);
+}
+
+.stav-bodka.nova {
+  color: var(--akcent-svetly);
+}
+
+.stav-bodka.nova::before {
+  background: var(--akcent);
+}
+
+.stav-bodka.zla {
+  color: var(--cervena-svetla);
+}
+
+.stav-bodka.zla::before {
+  background: var(--cervena);
+}
+
+.tvorca-lista kbd {
+  margin-left: 8px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font: 600 0.7rem/1.4 var(--pismo);
+  background: color-mix(in srgb, var(--na-akcente) 15%, transparent);
+  opacity: 0.8;
+}
+
+.tvorca-formular .panel h3 {
+  margin-top: 0;
+}
+
+/* ---- návrh v galérii ---- */
 
 .navrh-popis {
   width: 100%;
@@ -157,14 +631,21 @@
   min-width: 0;
 }
 
+.tvorca-stranka {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Pod lepiacou hlavičkou webu (64 px) a lištou tvorcu. */
 .tvorca-nahlad {
   position: sticky;
-  top: 84px;
+  top: 156px;
   display: flex;
   flex-direction: column;
   gap: 12px;
   align-items: center;
-  max-height: calc(100vh - 100px);
+  max-height: calc(100vh - 172px);
   overflow-y: auto;
   padding: 4px 4px 12px;
 }
@@ -572,109 +1053,8 @@ code {
   width: 130px;
 }
 
-/* ---- štatistiky ---- */
-
-.stlpce {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.stlpec-riadok {
-  display: grid;
-  grid-template-columns: auto 150px 1fr auto;
-  align-items: center;
-  gap: 10px;
-  font-size: 0.9rem;
-}
-
-.stlpec-riadok:not(:has(.mini-slot)) {
-  grid-template-columns: 150px 1fr auto;
-}
-
-.stlpec {
-  height: 12px;
-  border-radius: 99px;
-  background: var(--plocha-3);
-  overflow: hidden;
-}
-
-.stlpec span {
-  display: block;
-  height: 100%;
-  background: linear-gradient(90deg, var(--akcent-tmavy), var(--akcent));
-}
-
-.stlpec-cislo {
-  color: var(--tlmeny);
-  font-variant-numeric: tabular-nums;
-  font-size: 0.85rem;
-}
-
 .tabulka-obal {
   overflow-x: auto;
-}
-
-.teplotna th,
-.teplotna td {
-  text-align: center;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-
-.teplotna tbody th {
-  text-align: left;
-}
-
-td.teplo {
-  background: rgba(233, 173, 69, calc(var(--a) * 0.85));
-  color: color-mix(in srgb, #fff calc(100% - var(--a) * 100%), var(--na-akcente));
-  font-size: 0.82rem;
-}
-
-.mini-ikona {
-  width: 22px;
-  height: 22px;
-  vertical-align: middle;
-  background: #fff;
-  border-radius: 4px;
-}
-
-/* ---- simulácia ---- */
-
-.simulacia-linia {
-  display: flex;
-  align-items: flex-end;
-  gap: 0;
-  overflow-x: auto;
-  padding: 10px 4px 16px;
-}
-
-.simulacia-slot {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-
-.simulacia-ovladanie {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  align-items: center;
-  padding: 0 6px;
-}
-
-.simulacia-ovladanie select {
-  max-width: 170px;
-}
-
-.simulacia-pridat {
-  align-self: center;
-  margin-left: 16px;
-  min-width: 100px;
-  min-height: 140px;
-  border-style: dashed;
 }
 
 /* ---- bodovacie karty ---- */
@@ -831,29 +1211,85 @@ td.teplo {
     grid-template-columns: 1fr;
   }
 
+  /* Na úzkej obrazovke je menu jeden vodorovne posúvateľný pás bez nadpisov skupín. */
+  .admin {
+    gap: 16px;
+  }
+
   .admin-menu {
     position: static;
     flex-direction: row;
-    flex-wrap: wrap;
+    gap: 4px;
+    padding: 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
   }
 
-  .admin-menu-titul {
-    width: 100%;
+  .admin-menu-titul,
+  .admin-menu-nazov {
+    display: none;
+  }
+
+  .admin-menu-skupina {
+    flex-direction: row;
+    flex: none;
+  }
+
+  .admin-menu a {
+    white-space: nowrap;
+    min-height: 40px;
+  }
+
+  .admin-menu a.aktivna::before {
+    left: 10px;
+    right: 10px;
+    top: auto;
+    bottom: 2px;
+    width: auto;
+    height: 3px;
+  }
+
+  .admin-menu a.admin-menu-nova {
+    flex: none;
+  }
+
+  /* Na telefóne by lepiaca lišta s tagmi zakryla polovicu obrazovky. */
+  .galeria-ovladanie {
+    position: static;
+    padding-top: 0;
+  }
+
+  .galeria-ovladanie .cipy {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin: 0 -16px;
+    padding: 0 16px 2px;
+  }
+
+  .galeria-ovladanie .cip {
+    flex: none;
+  }
+
+  .galeria {
+    grid-template-columns: repeat(auto-fill, 160px);
+    justify-content: center;
+    gap: 18px 12px;
+  }
+
+  .galeria-pocet {
+    margin-left: 0;
+  }
+
+  /* Na telefóne stačia šípky variantov; mriežka náhľadov by odsunula formulár. */
+  .tvorca-varianty {
+    display: none;
   }
 
   .bodovacia-editor,
   .vyber-orez {
     grid-template-columns: 1fr;
   }
-}
-
-/* Štatistiky → V partiách / Sila: popis a pole v jednom riadku */
-.pole-riadok {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin: 4px 0 10px;
-  color: var(--tlmeny, inherit);
 }
 
 /* Kraj lokality — názov polovice línie pri hrane (Michal 2026-10-20). */

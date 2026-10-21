@@ -49,16 +49,15 @@ SN="node --experimental-strip-types --no-warnings tools/playtest/snimka.ts"
 $SN web <nazov> --cesta spatna-vazba --plna --vystup playtest/dizajn/<id>          # celá stránka, 1600 px
 $SN web <nazov> --cesta spatna-vazba --sirka 1280 --vyska 800 --vystup …           # notebook
 $SN web <nazov> --cesta spatna-vazba --mobil --plna --vystup …                     # telefón 390 × 844
-$SN web <nazov> --cesta admin/pouzivatelia --tvorba --vystup …                     # sekcia Tvorba (subadmin)
+$SN web <nazov> --cesta admin/karty --tvorba --vystup …                            # sekcia Tvorba (subadmin)
 $SN web <nazov> --cesta karty --klik ".nejaky-prvok" --hover 700,400 --vystup …    # stav po kliknutí, hover
 $SN R 1 <nazov> --vystup …                                                          # herný stôl bežiacej partie R (hráč 1)
 ```
 
 Snímky si prezrieš nástrojom Read (obrázky vidíš). Prihlasuje sa AI účet
 „Dizajnér (AI)“. Cesty Tvorby: `admin`, `admin/karty`, `admin/akcie`,
-`admin/klucove-slova`, `admin/nastavenia`, `admin/statistiky`,
-`admin/simulacia`, `admin/bodovacie`, `admin/tlac`, `admin/import-export`,
-`admin/pouzivatelia`, `playtest`, `playtest/reporty`. Ostatné: `/`, `pravidla`, `karty`,
+`admin/klucove-slova`, `admin/nastavenia`, `admin/bodovacie`, `admin/tlac`,
+`admin/import-export`; správcovské mimo Tvorby: `hraci`, `playtest`, `playtest/reporty`. Ostatné: `/`, `pravidla`, `karty`,
 `hra`, `rebricek`, `spatna-vazba`, `profil`.
 
 Kód: `apps/web/src/` (`App.tsx` smerovanie, `Layout.tsx`, `stranky/`, `hra/`,

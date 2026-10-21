@@ -12,6 +12,7 @@ import { nacitajObrazok, stvorec } from "../lib/obrazky.ts";
 import { useTitulok } from "../lib/router.tsx";
 import { Hlaska, Pole } from "../komponenty.tsx";
 import { nahrajMedia, noveId, useAdmin } from "./stav.tsx";
+import { AdminHlava } from "./spolocne.tsx";
 
 import { BodovaciaSvg } from "../karta/BodovaciaSvg.tsx";
 import { NAZOV_PODMIENKY } from "../karta/podmienky.ts";
@@ -220,18 +221,16 @@ export function Bodovacie() {
 
   return (
     <div className="admin-stranka">
-      <div className="admin-hlava">
-        <h1>Bodovacie karty</h1>
+      <AdminHlava
+        titul="Bodovacie karty"
+        popis="Podložka, do ktorej sa vkladá karta staršieho. Bočné pozície ležia presne na výškach akcií karty, takže neprázdna akcia staršieho „ukazuje“ na bodovaciu podmienku."
+      >
         {upravuje === null && (
           <button className="tlacidlo-hlavne" onClick={() => setUpravuje(nova())}>
             + Nová bodovacia karta
           </button>
         )}
-      </div>
-      <p className="tlmene">
-        Podložka, do ktorej sa vkladá karta staršieho. Bočné pozície ležia presne na výškach akcií karty, takže neprázdna akcia
-        staršieho „ukazuje“ na bodovaciu podmienku.
-      </p>
+      </AdminHlava>
       {upravuje !== null ? (
         <section className="panel">
           <Editor key={upravuje.id} povodna={upravuje} zavri={() => setUpravuje(null)} />

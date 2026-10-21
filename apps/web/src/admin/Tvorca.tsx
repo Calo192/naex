@@ -304,7 +304,7 @@ export function Tvorca({ id }: { readonly id: string }) {
 
   return (
     <div
-      className="tvorca"
+      className="tvorca-stranka"
       onKeyDown={(e) => {
         if ((e.ctrlKey || e.metaKey) && e.key === "s") {
           e.preventDefault();
@@ -312,167 +312,186 @@ export function Tvorca({ id }: { readonly id: string }) {
         }
       }}
     >
-      <div className="tvorca-formular">
-        <div className="admin-hlava">
-          <div>
-            <Odkaz href="/admin/karty" className="spat">
-              ← Karty
-            </Odkaz>
-            <h1>{nova ? "Nová karta" : k.nazov}</h1>
-            {!nova && <span className="tlmene">id: {k.id}</span>}
-          </div>
-          <div className="riadok-tlacidiel">
-            {!nova && (
-              <button className="tlacidlo-nebezpecne tlacidlo-male" onClick={() => void zmaz()}>
-                Zmazať
-              </button>
+      {/* Lišta je nad oboma stĺpcami, aby bola Uložiť na dosah aj na telefóne, kde je náhľad nad formulárom. */}
+      <div className="tvorca-lista">
+        <div className="tvorca-lista-nazov">
+          <Odkaz href="/admin/karty" className="spat">
+            ← Karty
+          </Odkaz>
+          <h1>{nova ? k.nazov || "Nová karta" : k.nazov || "(bez názvu)"}</h1>
+          <span className="tvorca-lista-stav">
+            {!nova && <code title="Stabilné id — viaže sa naň efekt v jadre, nemení sa">{k.id}</code>}
+            {chyby.length > 0 ? (
+              <span className="stav-bodka zla">{chyby.length === 1 ? "1 chyba" : `${chyby.length} chyby`}</span>
+            ) : zmenene ? (
+              <span className="stav-bodka nova">neuložené zmeny</span>
+            ) : (
+              <span className="stav-bodka ok">uložené</span>
             )}
-            <button className="tlacidlo-hlavne" onClick={() => void uloz()} disabled={uklada || chyby.length > 0 || !zmenene}>
-              {uklada ? "Ukladám…" : zmenene ? "Uložiť (Ctrl+S)" : "Uložené"}
-            </button>
-          </div>
+          </span>
         </div>
-
-        {sprava !== null && <Hlaska druh={sprava.druh}>{sprava.text}</Hlaska>}
-        {chyby.length > 0 && <Hlaska>{chyby.join("\n")}</Hlaska>}
-        {nezname.length > 0 && (
-          <Hlaska druh="info">
-            Vlastná akcia {nezname.map((a) => vzhlad.akcie.find((x) => x.kluc === a)?.nazov ?? a).join(", ")} nemá v hre
-            pravidlá — kartu môžeš navrhovať a tlačiť, ale do hry ju nezverejníš, kým akciu nenaprogramujeme.
-          </Hlaska>
-        )}
-
-        <section className="panel">
-          <Pole label="Názov">
-            <input value={k.nazov} onChange={(e) => nastav("nazov", e.target.value)} maxLength={80} autoFocus={nova} />
-          </Pole>
-          <Pole label="Tagy" pomoc="Enter alebo čiarka pridá tag. Prvý tag so zapnutou kategóriou určuje farbu.">
-            <TagyVstup tagy={k.tagy} nastav={(t) => nastav("tagy", t)} navrhy={vsetkyTagy} />
-          </Pole>
-          <Pole
-            label="Efekt"
-            pomoc={
-              spustace.length > 0
-                ? `Spúšťače: ${spustace.join(", ")}. Kľúčové slová sa formátujú podľa sekcie Kľúčové slová.`
-                : "Začni spúšťačom, napr. „Bitka: …“, „Furt: …“."
-            }
+        <div className="riadok-tlacidiel">
+          {!nova && (
+            <button className="tlacidlo-nebezpecne tlacidlo-male" onClick={() => void zmaz()}>
+              Zmazať
+            </button>
+          )}
+          <button
+            className="tlacidlo-hlavne"
+            onClick={() => void uloz()}
+            disabled={uklada || chyby.length > 0 || !zmenene}
+            title={chyby.length > 0 ? "Najprv oprav chyby návrhu" : "Ctrl+S"}
           >
-            <textarea value={k.efekt} onChange={(e) => nastav("efekt", e.target.value)} rows={3} maxLength={600} />
-          </Pole>
-        </section>
-
-        <section className="panel">
-          <h3>Ilustrácia a farba</h3>
-          <Riadok>
-            <div className="tvorca-obrazok">
-              {k.obrazok !== null ? (
-                <img src={`/media/${k.obrazok.nahlad}`} alt="" />
-              ) : (
-                <span className="tlmene">bez obrázka</span>
-              )}
-            </div>
-            <div className="riadok-tlacidiel">
-              <button onClick={() => setVyberObrazka(true)}>{k.obrazok === null ? "Vybrať obrázok" : "Zmeniť obrázok"}</button>
-              {k.obrazok !== null && (
-                <button className="tlacidlo-jemne" onClick={() => nastav("obrazok", null)}>
-                  Odstrániť
-                </button>
-              )}
-            </div>
-          </Riadok>
-          <div className="farba-volba">
-            <label>
-              <input type="radio" checked={k.farba === null} onChange={() => nastav("farba", null)} /> Podľa kategórie{" "}
-              <span className="farba-vzorka" style={{ background: farbaKarty({ ...k, farba: null }, vzhlad.kategorie) }} />
-            </label>
-            <label>
-              <input type="radio" checked={k.farba !== null} onChange={() => nastav("farba", farba)} /> Vlastná farba
-            </label>
-            {k.farba !== null && (
-              <span className="farba-vlastna">
-                <input
-                  type="range"
-                  min={0}
-                  max={359}
-                  value={odtienZHex(k.farba)}
-                  onChange={(e) => nastav("farba", pastelHex(Number(e.target.value)))}
-                  className="duha"
-                  aria-label="Odtieň (pastel)"
-                />
-                <input type="color" value={k.farba} onChange={(e) => nastav("farba", e.target.value)} aria-label="Presná farba" />
-              </span>
-            )}
-          </div>
-        </section>
-
-        <section className="panel">
-          <h3>Rozmer a tlač</h3>
-          <div className="mriezka-poli">
-            <Pole label="Šírka (mm)">
-              <input type="number" min={20} max={200} step={0.5} value={k.sirkaMm} onChange={(e) => nastav("sirkaMm", Number(e.target.value))} />
-            </Pole>
-            <Pole label="Výška (mm)">
-              <input type="number" min={20} max={300} step={0.5} value={k.vyskaMm} onChange={(e) => nastav("vyskaMm", Number(e.target.value))} />
-            </Pole>
-            <Pole label={`Mierka textu ${k.mierkaTextu.toFixed(2)}×`}>
-              <input type="range" min={0.6} max={1.8} step={0.02} value={k.mierkaTextu} onChange={(e) => nastav("mierkaTextu", Number(e.target.value))} />
-            </Pole>
-            <Pole label={`Mierka ikon ${k.mierkaIkon.toFixed(2)}×`}>
-              <input type="range" min={0.5} max={1.8} step={0.02} value={k.mierkaIkon} onChange={(e) => nastav("mierkaIkon", Number(e.target.value))} />
-            </Pole>
-            <Pole label="Kópie každej permutácie" pomoc={`Vytlačí sa ${varianty.pocet * k.kopie} kariet.`}>
-              <input type="number" min={1} max={1000} value={k.kopie} onChange={(e) => nastav("kopie", Math.max(1, Math.round(Number(e.target.value))))} />
-            </Pole>
-          </div>
-        </section>
-
-        <section className="panel strany">
-          <StranaEditor nazov="Ľavá strana" strana={k.lava} nastav={(s) => nastav("lava", s)} akcie={vzhlad.akcie} farba={farba} lokalita={k.tagy.includes("Lokalita")} />
-          <StranaEditor nazov="Pravá strana" strana={k.prava} nastav={(s) => nastav("prava", s)} akcie={vzhlad.akcie} farba={farba} lokalita={k.tagy.includes("Lokalita")} />
-        </section>
+            {uklada ? "Ukladám…" : zmenene ? "Uložiť" : "Uložené"}
+            {zmenene && !uklada && <kbd>Ctrl+S</kbd>}
+          </button>
+        </div>
       </div>
 
-      <aside className="tvorca-nahlad">
-        <div className="tvorca-nahlad-karta">
-          {roz !== null ? (
-            <KartaLico karta={k} lava={roz.lava} prava={roz.prava} vzhlad={vzhlad} sirka={320} />
-          ) : (
-            <div className="navrh-chybny" style={{ width: 320 }}>
-              žiadne platné rozloženie
+      {sprava !== null && <Hlaska druh={sprava.druh}>{sprava.text}</Hlaska>}
+      {chyby.length > 0 && <Hlaska>{chyby.join("\n")}</Hlaska>}
+      {nezname.length > 0 && (
+        <Hlaska druh="info">
+          Vlastná akcia {nezname.map((a) => vzhlad.akcie.find((x) => x.kluc === a)?.nazov ?? a).join(", ")} nemá v hre
+          pravidlá — kartu môžeš navrhovať a tlačiť, ale do hry ju nezverejníš, kým akciu nenaprogramujeme.
+        </Hlaska>
+      )}
+
+      <div className="tvorca">
+        <div className="tvorca-formular">
+
+          <section className="panel">
+            <Pole label="Názov">
+              <input value={k.nazov} onChange={(e) => nastav("nazov", e.target.value)} maxLength={80} autoFocus={nova} />
+            </Pole>
+            <Pole label="Tagy" pomoc="Enter alebo čiarka pridá tag. Prvý tag so zapnutou kategóriou určuje farbu.">
+              <TagyVstup tagy={k.tagy} nastav={(t) => nastav("tagy", t)} navrhy={vsetkyTagy} />
+            </Pole>
+            <Pole
+              label="Efekt"
+              pomoc={
+                spustace.length > 0
+                  ? `Spúšťače: ${spustace.join(", ")}. Kľúčové slová sa formátujú podľa sekcie Kľúčové slová.`
+                  : "Začni spúšťačom, napr. „Bitka: …“, „Furt: …“."
+              }
+            >
+              <textarea value={k.efekt} onChange={(e) => nastav("efekt", e.target.value)} rows={3} maxLength={600} />
+            </Pole>
+          </section>
+
+          <section className="panel">
+            <h3>Ilustrácia a farba</h3>
+            <Riadok>
+              <div className="tvorca-obrazok">
+                {k.obrazok !== null ? (
+                  <img src={`/media/${k.obrazok.nahlad}`} alt="" />
+                ) : (
+                  <span className="tlmene">bez obrázka</span>
+                )}
+              </div>
+              <div className="riadok-tlacidiel">
+                <button onClick={() => setVyberObrazka(true)}>{k.obrazok === null ? "Vybrať obrázok" : "Zmeniť obrázok"}</button>
+                {k.obrazok !== null && (
+                  <button className="tlacidlo-jemne" onClick={() => nastav("obrazok", null)}>
+                    Odstrániť
+                  </button>
+                )}
+              </div>
+            </Riadok>
+            <div className="farba-volba">
+              <label>
+                <input type="radio" checked={k.farba === null} onChange={() => nastav("farba", null)} /> Podľa kategórie{" "}
+                <span className="farba-vzorka" style={{ background: farbaKarty({ ...k, farba: null }, vzhlad.kategorie) }} />
+              </label>
+              <label>
+                <input type="radio" checked={k.farba !== null} onChange={() => nastav("farba", farba)} /> Vlastná farba
+              </label>
+              {k.farba !== null && (
+                <span className="farba-vlastna">
+                  <input
+                    type="range"
+                    min={0}
+                    max={359}
+                    value={odtienZHex(k.farba)}
+                    onChange={(e) => nastav("farba", pastelHex(Number(e.target.value)))}
+                    className="duha"
+                    aria-label="Odtieň (pastel)"
+                  />
+                  <input type="color" value={k.farba} onChange={(e) => nastav("farba", e.target.value)} aria-label="Presná farba" />
+                </span>
+              )}
+            </div>
+          </section>
+
+          <section className="panel">
+            <h3>Rozmer a tlač</h3>
+            <div className="mriezka-poli">
+              <Pole label="Šírka (mm)">
+                <input type="number" min={20} max={200} step={0.5} value={k.sirkaMm} onChange={(e) => nastav("sirkaMm", Number(e.target.value))} />
+              </Pole>
+              <Pole label="Výška (mm)">
+                <input type="number" min={20} max={300} step={0.5} value={k.vyskaMm} onChange={(e) => nastav("vyskaMm", Number(e.target.value))} />
+              </Pole>
+              <Pole label={`Mierka textu ${k.mierkaTextu.toFixed(2)}×`}>
+                <input type="range" min={0.6} max={1.8} step={0.02} value={k.mierkaTextu} onChange={(e) => nastav("mierkaTextu", Number(e.target.value))} />
+              </Pole>
+              <Pole label={`Mierka ikon ${k.mierkaIkon.toFixed(2)}×`}>
+                <input type="range" min={0.5} max={1.8} step={0.02} value={k.mierkaIkon} onChange={(e) => nastav("mierkaIkon", Number(e.target.value))} />
+              </Pole>
+              <Pole label="Kópie každej permutácie" pomoc={`Vytlačí sa ${varianty.pocet * k.kopie} kariet.`}>
+                <input type="number" min={1} max={1000} value={k.kopie} onChange={(e) => nastav("kopie", Math.max(1, Math.round(Number(e.target.value))))} />
+              </Pole>
+            </div>
+          </section>
+
+          <section className="panel strany">
+            <StranaEditor nazov="Ľavá strana" strana={k.lava} nastav={(s) => nastav("lava", s)} akcie={vzhlad.akcie} farba={farba} lokalita={k.tagy.includes("Lokalita")} />
+            <StranaEditor nazov="Pravá strana" strana={k.prava} nastav={(s) => nastav("prava", s)} akcie={vzhlad.akcie} farba={farba} lokalita={k.tagy.includes("Lokalita")} />
+          </section>
+        </div>
+
+        <aside className="tvorca-nahlad">
+          <div className="tvorca-nahlad-karta">
+            {roz !== null ? (
+              <KartaLico karta={k} lava={roz.lava} prava={roz.prava} vzhlad={vzhlad} sirka={320} />
+            ) : (
+              <div className="navrh-chybny" style={{ width: 320 }}>
+                žiadne platné rozloženie
+              </div>
+            )}
+          </div>
+          <div className="glosar-varianty" style={{ justifyContent: "center", display: "flex" }}>
+            <button className="tlacidlo-male" onClick={() => setV((v - 1 + varianty.pocet) % Math.max(1, varianty.pocet))} disabled={varianty.pocet <= 1}>
+              ‹
+            </button>
+            variant {varianty.pocet === 0 ? 0 : (v % varianty.pocet) + 1} / {varianty.pocet}
+            <button className="tlacidlo-male" onClick={() => setV((v + 1) % Math.max(1, varianty.pocet))} disabled={varianty.pocet <= 1}>
+              ›
+            </button>
+          </div>
+          {varianty.pocet > 1 && (
+            <div className="tvorca-varianty">
+              {Array.from({ length: Math.min(varianty.pocet, 60) }, (_, i) => {
+                const r = variant(varianty, i);
+                return r === null ? null : (
+                  <KartaLico
+                    key={i}
+                    karta={k}
+                    lava={r.lava}
+                    prava={r.prava}
+                    vzhlad={vzhlad}
+                    sirka={74}
+                    bezPopisov
+                    vybrana={i === v % varianty.pocet}
+                    onClick={() => setV(i)}
+                  />
+                );
+              })}
+              {varianty.pocet > 60 && <span className="tlmene">… a ďalších {varianty.pocet - 60}</span>}
             </div>
           )}
-        </div>
-        <div className="glosar-varianty" style={{ justifyContent: "center", display: "flex" }}>
-          <button className="tlacidlo-male" onClick={() => setV((v - 1 + varianty.pocet) % Math.max(1, varianty.pocet))} disabled={varianty.pocet <= 1}>
-            ‹
-          </button>
-          variant {varianty.pocet === 0 ? 0 : (v % varianty.pocet) + 1} / {varianty.pocet}
-          <button className="tlacidlo-male" onClick={() => setV((v + 1) % Math.max(1, varianty.pocet))} disabled={varianty.pocet <= 1}>
-            ›
-          </button>
-        </div>
-        {varianty.pocet > 1 && (
-          <div className="tvorca-varianty">
-            {Array.from({ length: Math.min(varianty.pocet, 60) }, (_, i) => {
-              const r = variant(varianty, i);
-              return r === null ? null : (
-                <KartaLico
-                  key={i}
-                  karta={k}
-                  lava={r.lava}
-                  prava={r.prava}
-                  vzhlad={vzhlad}
-                  sirka={74}
-                  bezPopisov
-                  vybrana={i === v % varianty.pocet}
-                  onClick={() => setV(i)}
-                />
-              );
-            })}
-            {varianty.pocet > 60 && <span className="tlmene">… a ďalších {varianty.pocet - 60}</span>}
-          </div>
-        )}
-      </aside>
+        </aside>
+      </div>
 
       {vyberObrazka && <VyberObrazka nazov={k.nazov || "karta"} zavri={() => setVyberObrazka(false)} vyber={(o) => nastav("obrazok", o)} />}
     </div>

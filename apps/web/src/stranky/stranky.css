@@ -897,3 +897,72 @@ button.cip.aktivny {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* ---- Hráči (/hraci) — správa účtov mimo Tvorby ---- */
+
+.hraci-stranka {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.hraci-hlavicka h1 {
+  margin-bottom: 6px;
+}
+
+.hraci-hlavicka p {
+  max-width: 75ch;
+  margin: 0;
+}
+
+.hraci-ovladanie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+}
+
+.hraci-ovladanie input[type="search"] {
+  max-width: 280px;
+}
+
+.hraci-tabulka td,
+.hraci-tabulka th {
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.hraci-tabulka .cislo {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.hraci-tabulka select {
+  max-width: 150px;
+}
+
+.hraci-meno {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.hraci-meno > span {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.hraci-meno:hover strong {
+  text-decoration: underline;
+}
+
+.hraci-meno .tlmene {
+  font-size: 0.82rem;
+}
+
+.hraci-prazdne {
+  padding: 16px 4px;
+}

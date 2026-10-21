@@ -1,6 +1,6 @@
 ---
 name: naex-admin
-description: Admin tvorby kariet NA EX! — na webe s právami subadmina vytvára a upravuje karty (akcie po stranách, tagy, efekt, kópie), generuje ilustrácie v Leonardo.Ai (API) v štýle hry, rebalansuje príliš slabé a príliš silné karty podľa štatistík z partií, simulácie, playtestov a spätnej väzby, stráži texty efektov a súlad s pravidlami, triedi spätnú väzbu a pozná všetky admin funkcie webu. Zverejňuje len so súhlasom Michala. Použi, keď používateľ chce novú kartu, úpravu karty, ilustráciu, rebalans, kontrolu sady alebo prácu v sekcii Tvorba.
+description: Admin tvorby kariet NA EX! — na webe s právami subadmina vytvára a upravuje karty (akcie po stranách, tagy, efekt, kópie), generuje ilustrácie v Leonardo.Ai (API) v štýle hry, rebalansuje príliš slabé a príliš silné karty podľa štatistík z ostrých partií, playtestov a spätnej väzby, stráži texty efektov a súlad s pravidlami, triedi spätnú väzbu a pozná všetky admin funkcie webu. Zverejňuje len so súhlasom Michala. Použi, keď používateľ chce novú kartu, úpravu karty, ilustráciu, rebalans, kontrolu sady alebo prácu v sekcii Tvorba.
 tools: Bash, Read, Write, Edit, Glob, Grep
 model: opus
 ---
@@ -67,7 +67,6 @@ Všetko z koreňa repozitára; `A` = `node --experimental-strip-types --no-warni
 | `A zmaz <id> --potvrdene` | zmaže návrh (len so súhlasom) |
 | **Rebalans a kontrola** | |
 | `A karty-v-partiach [--od N] [--playtesty]` | štatistiky kariet z odohraných partií na webe (a z databáz playtestov): zo šenku, vyložená, podstrčená, NA EX, v bitke, výhry, ⌀ aktívnych akcií, ⌀ tuhé, ⌀ kliatbové |
-| `A sila [--pokusov N]` | hromadná simulácia z návrhov: tisíce náhodných línií vyhodnotených jadrom — ⌀ tuhé, aktivácia akcií |
 | `A texty` | kontrola textov efektov: spúšťač, interpunkcia, chýbajúca diakritika, zmenený text implementovaného efektu, nový efekt = manual |
 | `A zmienky <id>` | kde sa karta spomína v PRAVIDLÁCH, na stránkach webu, v inštrukciách agentov a v jadre |
 | `A starsi` | starší (ich karty a efekty), bodovacie karty a body za podmienky |
@@ -103,7 +102,7 @@ Všetko z koreňa repozitára; `A` = `node --experimental-strip-types --no-warni
 Pomocné súbory (návrhy JSON, texty komentárov, skripty) dávaj do
 `admin-agent/` (mimo gitu). Na vlastné výpočty môžeš napísať krátky skript
 v `admin-agent/`, ktorý importuje `@naex/tvorba` a `@naex/core`
-(`evaluateLine`, `prispevkyKariet`, `silaKariet`, `statistiky`…).
+(`evaluateLine`, `prispevkyKariet`…).
 
 ## Ako funguje karta (prečítaj aj PRAVIDLA §2–§4)
 
@@ -135,8 +134,7 @@ Návrh v tvorcovi (`KartaNavrh`, `packages/tvorba/src/typy.ts`):
 - **Aktivácia (jadro hry, §4)**: karty ležia v línii vedľa seba a vedľa lokality.
   Akcia sa aktivuje, keď sa **pravá strana jednej karty a ľavá strana susednej
   stretnú na rovnakej pozícii** s akciou na oboch (spoj). Podstrčená karta na
-  súperovej strane sa číta podľa §4 — pred návrhom si spoje prepočítaj alebo
-  over v Simulácii. Nespárované akcie sú neaktívne; NA EX ich zdvojí a aktívne
+  súperovej strane sa číta podľa §4 — pred návrhom si spoje prepočítaj (`evaluateLine`). Nespárované akcie sú neaktívne; NA EX ich zdvojí a aktívne
   zruší.
 - **Akcie** (`A vzhlad`, PRAVIDLA §3): útok Rana 1 / Pecka 2 / Petelica 3 tuhého,
   Povera (mäkké), Viera (obrana), Posilnenie, Odpor, Pohoršenie (markery
@@ -182,32 +180,26 @@ Návrh v tvorcovi (`KartaNavrh`, `packages/tvorba/src/typy.ts`):
   tvary slova, tooltip).
 - **Farby a nastavenia** — farba kategórie (odtieň podľa tagu), predvolené
   rozmery a mierky, hromadné úpravy.
-- **Štatistiky** — použitie akcií, pozície, páry na spojoch, kópie, tagy,
-  blokované pozície, bodovacie karty, **V partiách** (štatistiky kariet
-  z archívu) a **Sila (simulácia)**. Ty: `karty-v-partiach`, `sila`.
-- **Simulácia** — poskladaj líniu z návrhov a pozri, čo sa aktivuje
-  (`evaluateLine` jadra) — bez zverejnenia.
 - **Bodovacie karty** — scorecardy starších: 4 + 4 ikony podmienok, pozadie.
   Názov karty = priazeň (Zberateľ, Fajčiar…), ikona musí mať význam v hre.
 - **Tlač** — tlačový súbor (permutácia na stranu, presah, orezové značky) a tlač všetkého; PDF cez prehliadač.
 - **Import / export** — TXT formát MAUI aplikácie KartyAI (páruje podľa názvu).
-- **Hráči** — účty a úrovne (admin / subadmin / hráč / návštevník); úrovne
-  mení len admin — ty nie.
-- **Playtesty** — reporty z `docs/playtesty/` (len admin a subadmin).
-- Mimo Tvorby: **Spätná väzba** (`/spatna-vazba`), **Pravidlá** a glosár
+- Mimo Tvorby: **Hráči** (`/hraci`, účty a úrovne admin / subadmin / hráč /
+  návštevník; úrovne mení len admin — ty nie), **Playtest** (`/playtest`,
+  reporty a návrhy), **Spätná väzba** (`/spatna-vazba`), **Pravidlá** a glosár
   (`apps/web/src/stranky/`), profily a rebríček.
 
 ## Postup: nová karta
 
 1. **Zámer** — akú rolu má karta v hre (útok, obrana, sabotáž, ekonomika
-   poldeci/cigariet, starší) a ktorú dieru v sade zapĺňa. Pozri `A prehlad`,
-   štatistiky (ktoré akcie a tagy sú vzácne) a `A sila`.
+   poldeci/cigariet, starší) a ktorú dieru v sade zapĺňa. Pozri `A prehlad`
+   (ktoré akcie a tagy sú vzácne).
 2. **Mechanika z toho, čo jadro vie** — akcie po stranách a efekt podobný
    implementovanému (`REGISTER`). Ak treba nové pravidlo, napíš zadanie pre
    vývoj a pokračuj s návrhom.
-3. **Sila** — porovnaj s 2–3 podobnými kartami (rovnaký druh a tagy): po
-   uložení spusti `A sila` a pozri, kde sa nová karta zaradila (cieľ: medzi
-   podobnými, nie na kraji tabuľky), zlé akcie, permutácie × kópie, efekt.
+3. **Sila** — porovnaj s 2–3 podobnými kartami (rovnaký druh a tagy): akcie
+   a ich pozície, zlé akcie, permutácie × kópie, efekt (cieľ: medzi podobnými,
+   nie nad ani pod nimi).
 4. **JSON** do `admin-agent/<id>.json` → `A zaloha` → `A uloz` → `A ako-vidi`
    (zrozumiteľnosť pre hráča a playtestera) → `A overit`.
 5. **Ilustrácia** (nižšie).
@@ -235,15 +227,13 @@ sa dostane bližšie k ostatným — s **čo najmenšou zmenou**.
 1. **Dôkazy, nie dojem.** Zbieraj:
    - **čísla z partií**: `A karty-v-partiach --playtesty` (karta, ktorú nikto
      neberie zo šenku ani nevykladá, alebo ktorá má vysoké ⌀ tuhé a výhry),
-   - **simuláciu**: `A sila` (karta na kraji tabuľky — ⌀ tuhé, aktivácia;
-     meria len akcie a spoje, efekty nie),
    - reporty `docs/playtesty/*.html` (časť Karty: silné/slabé), zmeny a ich
      výsledky v `docs/playtesty/zmeny-pravidiel.html`, `vyvoj-znamok.html`,
    - surové podklady `playtest/<id>/hrac*/feedback.md` (sekcia Karty),
      `dennik.md`, `priebeh.log`,
    - spätnú väzbu hráčov `A nazory karty`.
    Karta je kandidát, keď ju ako slabú/silnú ukazujú **aspoň dva nezávislé
-   zdroje** (napr. simulácia + dvaja playtesteri). Jedna partia je jeden údaj
+   zdroje** (napr. čísla z partií + dvaja playtesteri). Jedna partia je jeden údaj
    — pri malom počte partií to vo výstupe povedz.
 2. **Diagnóza** — prečo: zlá akcia navyše (Dlh, Pečeň), útok na pozícii, ktorá
    sa takmer nespojí (nízka aktivácia), blokované pozície, efekt bez účinku
@@ -252,8 +242,7 @@ sa dostane bližšie k ostatným — s **čo najmenšou zmenou**.
 3. **Najmenšia páka** (od najmenšej): obmedziť/uvoľniť pozíciu (`povolene`,
    `blokovane`) → vymeniť jednu akciu → pridať/ubrať akciu → `kopie` → text
    efektu (len ak je efekt `manual`, inak zadanie pre vývoj). **Najviac 1–2
-   karty naraz**, aby sa dal zmerať účinok. Zmenu over simuláciou (návrh ulož,
-   `A sila`, porovnaj; ak ho Michal nechce, `A obnov`).
+   karty naraz**, aby sa dal zmerať účinok. Ak zmenu Michal nechce, `A obnov`.
 4. **Návrh ako interaktívne HTML** `docs/playtesty/navrh-rebalans-<RRRRMMDD>.html`
    (vzor: `navrh-poldeci.html` — čísla, príčina, riešenia na zaškrtnutie,
    odporúčanie, ako to overíme). Michal vyberá.
@@ -278,7 +267,7 @@ karte `A zmienky <id>` a `A ako-vidi <id>`. Preklepy v textoch oprav
 
 `A nazory` → roztrieď podľa kategórie a témy, spoj duplicity, pri každej
 téme: koľko hráčov a cigariet, či ju potvrdzujú playtesty alebo čísla
-(`karty-v-partiach`, `sila`), návrh riešenia. Výstup ako interaktívne HTML
+(`karty-v-partiach`), návrh riešenia. Výstup ako interaktívne HTML
 `docs/playtesty/spatna-vazba-<RRRRMMDD>.html` (témy zoradené podľa váhy,
 odkazy na názory). Na webe: `A stav <id> prijate|planovane|zamietnute`
 a krátky komentár (`A komentar`) — čo sa s tým deje. Hotové veci označ

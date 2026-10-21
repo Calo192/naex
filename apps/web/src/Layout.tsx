@@ -61,7 +61,7 @@ export function Layout({
           </button>
           <nav className={mobilne ? "navigacia otvorena" : "navigacia"}>
             {NAVIGACIA.filter((n) => n.admin !== true || (ja !== null && jeSpravca(ja.rola))).map((n) => (
-              <Odkaz key={n.href} href={n.href} className={cesta.startsWith(n.href) ? "aktivna" : undefined}>
+              <Odkaz key={n.href} href={n.href} className={cesta === n.href || cesta.startsWith(`${n.href}/`) ? "aktivna" : undefined}>
                 {n.text}
               </Odkaz>
             ))}
@@ -107,7 +107,7 @@ export function Layout({
                         <Odkaz href="/admin" role="menuitem">
                           Tvorba kariet
                         </Odkaz>
-                        <Odkaz href="/admin/pouzivatelia" role="menuitem">
+                        <Odkaz href="/hraci" role="menuitem">
                           Hráči
                         </Odkaz>
                       </>

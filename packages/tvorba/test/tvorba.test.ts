@@ -17,7 +17,6 @@ import {
   pastelHex,
   rozlozeniaStrany,
   slug,
-  statistiky,
   variantyKarty,
 } from "../src/index.ts";
 
@@ -143,18 +142,5 @@ Total permutations: 6 (left 6 x right 1)
     const { karty, nezname } = importTxt(txt, PREDVOLENE_AKCIE);
     expect(nezname).toEqual(["Smrť"]);
     expect(karty[0]?.lava).toEqual({ blokovane: [0], akcie: { Rana: 1 }, povolene: {} });
-  });
-});
-
-describe("tvorba — štatistiky", () => {
-  it("rátajú vytlačené karty a pozície", () => {
-    const s = statistiky(navrhy);
-    expect(s.navrhov).toBe(navrhy.length);
-    expect(s.vytlacenychKariet).toBe(navrhy.reduce((a, k) => a + variantyKarty(k).pocet, 0));
-    for (const arr of Object.values(s.pozicie)) {
-      for (const x of arr) expect(x).toBeLessThanOrEqual(1);
-    }
-    // Sada v8 (2026-10-20, 14 lokalít) má Robotu na 11 kartách.
-    expect(s.pouzitie.find((u) => u.kluc === "Robota")?.navrhov).toBe(11);
   });
 });

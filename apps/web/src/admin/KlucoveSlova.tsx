@@ -7,6 +7,7 @@ import { formatujEfekt } from "@naex/tvorba";
 import { useTitulok } from "../lib/router.tsx";
 import { Hlaska } from "../komponenty.tsx";
 import { useAdmin } from "./stav.tsx";
+import { AdminHlava } from "./spolocne.tsx";
 
 export function KlucoveSlova() {
   useTitulok("Kľúčové slová — tvorba");
@@ -28,15 +29,14 @@ export function KlucoveSlova() {
 
   return (
     <div className="admin-stranka">
-      <div className="admin-hlava">
-        <h1>Kľúčové slová</h1>
+      <AdminHlava
+        titul="Kľúčové slová"
+        popis="Formátovanie textu efektov a vysvetlivky v tooltipe. Slovo sa porovnáva bez interpunkcie a bez ohľadu na veľké písmená; „Nový riadok“ zalomí text pred slovom (spúšťače)."
+      >
         <button className="tlacidlo-hlavne" onClick={() => void uloz()}>
           Uložiť
         </button>
-      </div>
-      <p className="tlmene">
-        Slovo sa porovnáva bez interpunkcie a bez ohľadu na veľké písmená. „Nový riadok“ zalomí text pred slovom (spúšťače).
-      </p>
+      </AdminHlava>
       {sprava !== null && <Hlaska druh={sprava.druh}>{sprava.text}</Hlaska>}
 
       <section className="panel">

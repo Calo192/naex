@@ -8,6 +8,7 @@ import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { useTitulok } from "../lib/router.tsx";
 import { Hlaska } from "../komponenty.tsx";
 import { nahrajMedia, useAdmin } from "./stav.tsx";
+import { AdminHlava } from "./spolocne.tsx";
 
 function RiadokAkcie({ akcia, pouzitie }: { readonly akcia: AkciaDef; readonly pouzitie: number }) {
   const { ulozAkciu, zmazAkciu } = useAdmin();
@@ -109,11 +110,10 @@ export function Akcie() {
 
   return (
     <div className="admin-stranka">
-      <h1>Akcie a ikony</h1>
-      <p className="tlmene">
-        Názov a popis vidia hráči v tooltipe nad akciou. Vlastnú akciu môžeš navrhovať a tlačiť hneď; do hry sa dostane,
-        až keď jej pravidlá naprogramujeme v jadre.
-      </p>
+      <AdminHlava
+        titul="Akcie a ikony"
+        popis="Názov a popis vidia hráči v tooltipe nad akciou. Vlastnú akciu môžeš navrhovať a tlačiť hneď; do hry sa dostane, až keď jej pravidlá naprogramujeme v jadre."
+      />
       {chyba !== null && <Hlaska>{chyba}</Hlaska>}
       <form
         className="panel riadok-tlacidiel"
