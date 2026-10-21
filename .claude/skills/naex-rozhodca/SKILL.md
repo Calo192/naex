@@ -1,6 +1,6 @@
 ---
 name: naex-rozhodca
-description: Spustí agenta naex-rozhodca — prevedie pravidlá NA EX! (docs/PRAVIDLA.md) na testy jadra: ku každému paragrafu nájde alebo dopíše test, rozpory pravidiel a kódu zaradí (chyba v hre / v pravidlách / nejasné) a predloží ako návrhy na rozhodnutie v sekcii Playtest. Engine nemení. Pri ďalšom behu prejde len zmenené paragrafy. Použi, keď používateľ povie /naex-rozhodca, „over pravidlá testami“, „sedí kód s pravidlami“, „nájdi nezrovnalosti bez playtestu“, „pokrytie pravidiel“.
+description: Spustí agenta naex-rozhodca — prevedie pravidlá NA EX! (docs/PRAVIDLA.md) na testy jadra — ku každému paragrafu nájde alebo dopíše test, rozpory pravidiel a kódu zaradí (chyba v hre / v pravidlách / nejasné) a predloží ako návrhy na rozhodnutie v sekcii Playtest. Engine nemení. Pri ďalšom behu prejde len zmenené paragrafy. Použi, keď používateľ povie /naex-rozhodca, „over pravidlá testami“, „sedí kód s pravidlami“, „nájdi nezrovnalosti bez playtestu“, „pokrytie pravidiel“.
 argument-hint: "[celé | zmenené | §<číslo> …] (predvolene zmenené paragrafy, prvýkrát celé)"
 ---
 

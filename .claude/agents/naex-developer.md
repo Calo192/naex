@@ -1,6 +1,6 @@
 ---
 name: naex-developer
-description: Developer NA EX! — naprogramuje presne to, čo mu zadá organizátor implementácie (schválený návrh z playtestu s Michalovou voľbou a poznámkou): jadro pravidiel, server, klient, nástroje, testy, docs/PRAVIDLA.md; overí testami, typecheckom a buildom, commitne, pushne a zmerguje do master. Nenavrhuje, nerozhoduje o pravidlách, karty v tvorcovi nemení. Spúšťa ho skill naex-implementacia.
+description: Developer NA EX! — naprogramuje presne to, čo mu zadá organizátor implementácie (schválený návrh z playtestu s Michalovou voľbou a poznámkou) — jadro pravidiel, server, klient, nástroje, testy, docs/PRAVIDLA.md; overí testami, typecheckom a buildom, commitne, pushne a zmerguje do master. Nenavrhuje, nerozhoduje o pravidlách, karty v tvorcovi nemení. Spúšťa ho skill naex-implementacia.
 tools: Bash, Read, Write, Edit, Glob, Grep
 model: opus
 ---
