@@ -9,7 +9,8 @@
   --ruka-w: 120px;
   --ruka-kh: calc(var(--ruka-w) * 80 / 54);
   --ruka-skryte: calc(var(--ruka-kh) * 0.3);
-  --pokyn-h: 46px;
+  /* Pás pokynov nad rukou zanikol (Michal 2026-10-21) — pokyn je na stole. */
+  --pokyn-h: 0px;
   --ruka-h: calc(var(--ruka-kh) - var(--ruka-skryte) + 14px + var(--pokyn-h) + 10px);
   display: flex;
   flex-direction: column;
@@ -461,54 +462,51 @@
   gap: 2px;
 }
 
+/* Piktogramy z kariet (Panely.tsx) — jediná podoba poldeci a cigarety v hre. */
 .ikona-poldeci {
-  width: 17px;
-  height: 23px;
+  width: 24px;
+  height: 24px;
+  flex: none;
   overflow: visible;
+  fill: var(--akcent);
 }
 
-.ikona-poldeci .pohar {
-  fill: rgba(255, 255, 255, 0.07);
-  stroke: #e6dccb;
-  stroke-width: 1.6;
-  stroke-linejoin: round;
+.ikona-poldeci.vypity {
+  fill: var(--slaby);
+  opacity: 0.6;
 }
 
-.ikona-poldeci .palenka {
-  fill: #e9ad45;
-}
-
-.ikona-poldeci .odlesk {
-  stroke: rgba(255, 255, 255, 0.5);
-  stroke-width: 1.4;
+.ikona-poldeci .plus {
+  stroke: currentColor;
+  stroke-width: 12;
   stroke-linecap: round;
 }
 
-.ikona-poldeci.vypity .pohar {
-  stroke: #7d7062;
-  stroke-dasharray: 2.5 2;
-}
-
-.ikona-poldeci.vypity .odlesk {
-  display: none;
-}
-
 .ikona-cigareta {
-  width: 40px;
-  height: 11px;
+  width: 24px;
+  height: 24px;
+  flex: none;
+  fill: var(--text);
 }
 
-.ikona-cigareta .tabak {
-  fill: #f1ece2;
+.ikona-cigareta .preskrt {
+  stroke: var(--cervena);
+  stroke-width: 10;
+  stroke-linecap: round;
 }
 
-.ikona-cigareta .filter {
-  fill: #d58a3e;
+.cena-cig {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
-.ikona-cigareta .ohen {
-  fill: #ff5a2b;
-  filter: drop-shadow(0 0 3px #ff7b3b);
+.cena-cig .ikona-cigareta {
+  width: 1.15em;
+  height: 1.15em;
+  fill: currentColor;
 }
 
 .pruh {
@@ -983,7 +981,6 @@
   --stol-svetlo: color-mix(in srgb, var(--lesk) 5%, transparent);
   --stol-stav: color-mix(in oklab, var(--info) 25%, var(--slaby-text));
   position: relative;
-  padding-top: 14px;
 }
 
 .linia-obal.moj-tah {
@@ -1000,22 +997,55 @@
   --stol-stav: var(--akcent);
 }
 
+/* Pilulka na hornej hrane stola: fáza a pokyn (Michal 2026-10-21, predtým pás nad rukou).
+   Je v toku a spodkom zasahuje do stola, takže sedí na hrane pri akejkoľvek výške. */
 .linia-stav {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  z-index: 1;
-  transform: translateX(-50%);
-  padding: 5px 16px;
-  border-radius: 99px;
-  font: 800 0.85rem/1.2 var(--pismo);
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 2px 12px;
+  width: fit-content;
+  max-width: min(980px, calc(100% - 32px));
+  margin: 0 auto -16px;
+  padding: 6px 20px;
+  border-radius: 20px;
+  font-size: 0.93rem;
+  line-height: 1.4;
+  text-align: center;
+  color: var(--tlmeny);
+  background: var(--plocha);
+  border: 2px solid var(--stol-okraj);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  transition: border-color 0.3s ease;
+}
+
+.pilulka-nadpis {
+  flex: none;
+  font: 800 0.8rem/1.4 var(--pismo);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   white-space: nowrap;
   color: var(--stol-stav);
-  background: var(--stol);
-  border: 1px solid var(--stol-okraj);
-  transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.pilulka-nadpis small {
+  margin-left: 4px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--slaby);
+}
+
+.pilulka-text strong,
+.pilulka-text b {
+  color: var(--text);
+}
+
+/* Karty a ponuky v pokyne (Patronát, výkup, Cintorín, Vízia) — pilulka narastie na panel. */
+.linia-stav:has(.zberatel-ponuka, .vizia-karta) {
+  border-radius: 14px;
 }
 
 .linia {
@@ -1120,7 +1150,6 @@
   color: var(--akcent);
   font-style: normal !important;
 }
-
 
 /* ---- ťahanie kariet a návrh ťahu ---- */
 
@@ -1258,7 +1287,6 @@ body.tahanie-aktivne * {
   text-transform: uppercase;
 }
 
-
 .partia-popis {
   display: block;
   font-size: 0.8rem;
@@ -1340,6 +1368,23 @@ body.tahanie-aktivne * {
   color: var(--text);
 }
 
+.odhodene-nadpis {
+  left: auto;
+  right: 12px;
+  padding: 4px 6px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.odhodene-nadpis:hover,
+.odhodene-nadpis.otvorena {
+  border-color: var(--okraj);
+  color: var(--text);
+}
+
 .ruka-rad {
   display: flex;
   flex-wrap: nowrap;
@@ -1401,72 +1446,7 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:hover ~ .tahatelna {
  * Súčasť ruky, nie stola — je vždy po ruke. Akcent je rovnaký ako stôl:
  * zelený, keď si na ťahu. */
 
-.pokyn {
-  --pokyn-akcent: color-mix(in oklab, var(--info) 30%, var(--okraj-svetly));
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 14px;
-  /* Šírka podľa obsahu, ale nie menej než min-width — medzi fázami neskáče. */
-  align-self: center;
-  min-width: min(820px, 100%);
-  max-width: min(1280px, 100%);
-  min-height: 46px;
-  margin-bottom: 10px;
-  padding: 0 6px 0 6px;
-  border-radius: 12px;
-  background: color-mix(in srgb, color-mix(in oklab, var(--pozadie) 98%, var(--text)) 92%, transparent);
-  border: 1px solid var(--okraj);
-  border-left: 3px solid var(--pokyn-akcent);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(6px);
-  pointer-events: auto;
-  transition: border-color 0.3s ease;
-}
-
-.pokyn.moj-tah {
-  --pokyn-akcent: color-mix(in oklab, var(--zelena-ziariva) 68%, var(--pozadie));
-}
-
-.pokyn.koniec {
-  --pokyn-akcent: var(--akcent);
-}
-
-.pokyn button {
-  padding: 0.38rem 0.8rem;
-  font-size: 0.88rem;
-  border-radius: 8px;
-}
-
-.pokyn-vrstvy {
-  display: flex;
-  gap: 2px;
-  padding-right: 10px;
-  border-right: 1px solid var(--okraj);
-}
-
-.pokyn button.pokyn-vrstva {
-  background: transparent;
-  border-color: transparent;
-  color: var(--tlmeny);
-}
-
-.pokyn button.pokyn-vrstva:hover:not(:disabled) {
-  background: var(--plocha-3);
-  color: var(--text);
-}
-
-.pokyn button.pokyn-vrstva.otvorena {
-  background: var(--plocha-3);
-  border-color: var(--okraj-svetly);
-  color: var(--text);
-}
-
 /* Tu treba siahnuť (Draft, Liečba, výber lokality). */
-.pokyn button.pokyn-vrstva.treba {
-  color: var(--akcent);
-  animation: treba 1.6s ease-in-out infinite;
-}
 
 @keyframes treba {
   50% {
@@ -1475,16 +1455,6 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:hover ~ .tahatelna {
 }
 
 /* Karta zo šenku / lokalita sa vracia pustením na tlačidlo. */
-.pokyn button.pokyn-vrstva.ciel-zona {
-  outline: 2px dashed color-mix(in srgb, var(--zelena) 70%, transparent);
-  outline-offset: 1px;
-  color: var(--text);
-}
-
-.pokyn button.pokyn-vrstva.nad-cielom {
-  outline-style: solid;
-  background: color-mix(in srgb, var(--zelena) 25%, transparent);
-}
 
 .pocet {
   min-width: 1.5em;
@@ -1501,47 +1471,6 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:hover ~ .tahatelna {
 .pocet.nove {
   background: var(--akcent);
   color: var(--na-akcente);
-}
-
-.pokyn-text {
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-  min-width: 0;
-  font-size: 0.92rem;
-  color: var(--tlmeny);
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.pokyn-text > span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.pokyn-text strong {
-  color: var(--text);
-}
-
-.pokyn-nadpis {
-  flex: none;
-  font: 800 0.8rem/1.2 var(--pismo);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--pokyn-akcent) !important;
-}
-
-.pokyn-nadpis small {
-  margin-left: 4px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: var(--slaby);
-}
-
-.pokyn-tlacidla {
-  display: flex;
-  align-items: center;
-  gap: 6px;
 }
 
 .cena {
@@ -2207,70 +2136,7 @@ button.dlzka-volba.aktivna {
 
 /* ---- NA EX: náhľad účinku nad pásom pokynov ---------------------------------- */
 
-.pokyn {
-  position: relative;
-}
-
-.naex-nahlad {
-  position: absolute;
-  bottom: calc(100% + 10px);
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 8px;
-  max-width: calc(100vw - 32px);
-  overflow-x: auto;
-  padding: 8px;
-  border-radius: 12px;
-  background: color-mix(in srgb, var(--pozadie) 96%, transparent);
-  border: 1px solid var(--okraj-svetly);
-  box-shadow: var(--tien);
-  pointer-events: auto;
-}
-
-.pokyn .naex-moznost {
-  display: grid;
-  gap: 2px;
-  justify-items: start;
-  min-width: 150px;
-  padding: 0.5rem 0.75rem;
-  text-align: left;
-  font-size: 0.82rem;
-  white-space: nowrap;
-}
-
-.naex-moznost b {
-  font-variant-numeric: tabular-nums;
-}
-
-.naex-moznost.lepsie {
-  border-color: color-mix(in srgb, var(--zelena) 60%, transparent);
-}
-
-.naex-moznost.lepsie b {
-  color: var(--zelena);
-}
-
-.naex-moznost.horsie {
-  border-color: color-mix(in srgb, var(--cervena) 60%, transparent);
-}
-
-.naex-moznost.horsie b {
-  color: var(--cervena);
-}
-
 /* ---- Vypiť do dna --------------------------------------------------------------- */
-
-.pokyn button.tlacidlo-dodna {
-  background: linear-gradient(180deg, color-mix(in oklab, var(--akcent-tmavy) 42%, var(--pozadie)), color-mix(in oklab, var(--akcent-tmavy) 22%, var(--pozadie)));
-  border-color: color-mix(in oklab, var(--akcent-tmavy) 72%, var(--pozadie));
-  color: var(--akcent-svetly);
-  font-weight: 700;
-}
-
-.pokyn button.tlacidlo-dodna:hover:not(:disabled) {
-  background: linear-gradient(180deg, color-mix(in oklab, var(--akcent-tmavy) 54%, var(--pozadie)), color-mix(in oklab, var(--akcent-tmavy) 32%, var(--pozadie))) !important;
-}
 
 .dodna-text strong {
   color: var(--akcent);
@@ -2336,18 +2202,6 @@ button.dlzka-volba.aktivna {
 
 /* Pás pokynov sa pri dlhšom texte zalomí; jeho výšku meria HernaPlocha
    a cez --pokyn-h podľa nej posúva ruku aj spodný okraj stola. */
-.pokyn {
-  padding-block: 4px;
-}
-
-.pokyn-text {
-  white-space: normal;
-}
-
-.pokyn-tlacidla {
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
 
 .nahlad-spojov {
   color: var(--tlmeny);
@@ -2930,16 +2784,25 @@ button.dlzka-volba.aktivna {
 
 /* Mobil: hlavička v jednom riadku (posúva sa vodorovne), menší pás. */
 @media (max-width: 760px) {
+  /* Os kola sa posúva do strany; Šenok · Lokality · Log majú vlastný riadok, aby boli vždy po ruke. */
   .hra-hlava {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    gap: 8px;
+    flex-wrap: wrap;
+    gap: 6px 8px;
     padding: 6px 8px;
-    scrollbar-width: none;
   }
 
   .hra-hlava > * {
     flex: none;
+  }
+
+  .hra-hlava > .priebeh-kola {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .hra-hlava > .hlava-vrstvy {
+    width: 100%;
+    justify-content: center;
   }
 
   .hra-hlava .kod {
@@ -2947,19 +2810,6 @@ button.dlzka-volba.aktivna {
     font-size: 0.85rem;
   }
 
-  .pokyn {
-    grid-template-columns: minmax(0, 1fr);
-    min-width: 0;
-    gap: 6px;
-  }
-
-  .pokyn-vrstvy {
-    flex-wrap: wrap;
-  }
-
-  .pokyn-tlacidla {
-    justify-content: flex-start;
-  }
 }
 
 .starsi-mobil {
@@ -3444,22 +3294,451 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna.nemoze:hover > .kl {
   color: var(--zelena);
 }
 
-/* ---- tlačidlá návrhu na stole: potvrdiť, otočiť, vrátiť ---- */
-.stol-tlacidla {
-  position: relative;
-  z-index: 2;
+/* ---- spodná hrana stola (Michal 2026-10-21): nákupy · NA EX! · koniec ťahu ----
+ * Rad tlačidiel sedí na spodnej hrane stola; keď je hrana pod rukou,
+ * prilepí sa nad ňu (sticky), takže ťah sa dá vždy dokončiť. */
+.linia-obal.s-hranou .linia {
+  padding-bottom: 40px;
+}
+
+.stol-hrana {
+  position: sticky;
+  bottom: calc(var(--ruka-h) - 8px);
+  z-index: 3;
+  margin-top: -34px;
+  pointer-events: none;
+}
+
+.hrana-rad {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+}
+
+.hrana-vlavo,
+.hrana-stred,
+.hrana-vpravo {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  align-items: center;
   gap: 8px;
-  width: fit-content;
-  max-width: calc(100% - 24px);
-  margin: -20px auto 0;
-  padding: 6px 10px;
-  border-radius: 14px;
-  background: var(--stol);
-  border: 1px solid var(--stol-okraj);
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+  min-height: 0;
+}
+
+.hrana-vlavo > *,
+.hrana-stred > *,
+.hrana-vpravo > * {
+  pointer-events: auto;
+}
+
+.hrana-vlavo {
+  justify-content: flex-start;
+}
+
+.hrana-stred {
+  justify-content: center;
+}
+
+.hrana-vpravo {
+  justify-content: flex-end;
+}
+
+/* Bežné tlačidlá na hrane (potvrdiť, zrušiť…) nesú farbu stola, aby boli čitateľné cez okraj. */
+.hrana-rad button:not(.pecat):not(.tlacidlo-naex):not(.pecat-zrusit) {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+}
+
+.stol-hrana .pokyn-udalosti {
+  justify-content: center;
+  margin-top: 8px;
+  padding: 0 16px;
+  pointer-events: auto;
+}
+
+/* Počet cigariet pred nákupmi. */
+.hrana-zasoba {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 4px;
+  font: 700 0.62rem/1.2 var(--pismo);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--slaby);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.hrana-zasoba b {
+  font: 800 1.4rem/1.05 var(--nadpis);
+  letter-spacing: 0;
+  color: var(--text);
+}
+
+/* Pečiatky — tlačidlá hrany stola hovoria jazykom NA EX!. Nákup je papierová
+   pečiatka; čo sa práve nedá, je len prerušovaný obrys a pri myši povie prečo. */
+button.pecat {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-height: 52px;
+  padding: 6px 14px;
+  border-radius: 9px;
+  font: 800 0.74rem/1.1 var(--nadpis);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition:
+    rotate 0.15s ease,
+    transform 0.1s ease;
+}
+
+button.pecat::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border: 1px dashed currentColor;
+  border-radius: 6px;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+button.pecat-nakup {
+  min-width: 104px;
+  color: #2b2116;
+  background: #e8dfcc;
+  border: 2px solid #b8a887;
+  box-shadow:
+    0 3px 0 #8f8572,
+    0 8px 18px rgba(0, 0, 0, 0.45);
+}
+
+button.pecat-nakup:hover:not([aria-disabled="true"]) {
+  background: #f3ead7;
+  rotate: -1.5deg;
+}
+
+button.pecat-nakup:active:not([aria-disabled="true"]) {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #8f8572;
+}
+
+.pecat-riadok {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pecat-nakup .cena-cig {
+  font: 800 0.9rem/1 var(--nadpis);
+  color: #8a2a1a;
+}
+
+.pecat-nakup .ikona-cigareta {
+  fill: #2b2116;
+}
+
+.pecat-nakup .ikona-poldeci {
+  width: 20px;
+  height: 20px;
+  fill: #a8641a;
+}
+
+.pecat-nakup .ikona-srotu {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: #2b2116;
+  stroke-width: 2;
+}
+
+/* Nedá sa: nevypálená pečiatka — obrys bez farby, kurzor povie, že nie. */
+button.pecat-nakup.ne,
+button.pecat-nakup.ne:hover {
+  cursor: not-allowed;
+  color: var(--slaby);
+  background: color-mix(in srgb, var(--pozadie) 55%, transparent);
+  border: 2px dashed var(--okraj-svetly);
+  box-shadow: none;
+  rotate: 0deg;
+}
+
+button.pecat-nakup.ne::after {
+  display: none;
+}
+
+.pecat-nakup.ne .cena-cig,
+.pecat-nakup.ne .ikona-cigareta,
+.pecat-nakup.ne .ikona-poldeci {
+  color: var(--slaby);
+  fill: var(--slaby);
+}
+
+.pecat-nakup.ne .ikona-srotu {
+  stroke: var(--slaby);
+}
+
+/* Koniec ťahu (končím, pasovať): jantárová pečiatka pri pravom okraji stola. */
+button.pecat-koncim {
+  flex-direction: row;
+  gap: 8px;
+  min-height: 50px;
+  padding: 0 22px;
+  font-size: 1.05rem;
+  letter-spacing: 0.08em;
+  color: var(--akcent);
+  background: color-mix(in oklab, var(--akcent-tmavy) 16%, var(--pozadie));
+  border: 2px solid var(--akcent-tmavy);
+  box-shadow:
+    0 3px 0 #120d07,
+    0 8px 20px rgba(0, 0, 0, 0.5);
+  rotate: 2deg;
+}
+
+button.pecat-koncim:hover:not([aria-disabled="true"]) {
+  rotate: 0deg;
+  background: color-mix(in oklab, var(--akcent-tmavy) 28%, var(--pozadie));
+}
+
+button.pecat-koncim[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.45;
+  rotate: 0deg;
+}
+
+button.pecat-koncim .cena-cig {
+  font-size: 0.85rem;
+}
+
+/* Tichá voľba vedľa pečiatky (ešte nie, ešte vykladám). */
+button.pecat-tichy {
+  min-height: 44px;
+  color: var(--tlmeny);
+  background: var(--plocha);
+  border: 1px solid var(--okraj-svetly);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+}
+
+button.pecat-tichy::after {
+  display: none;
+}
+
+/* NA EX! v strede hrany — ukáže sa až po výbere karty; ✕ v rohu výber zruší. */
+.pecat-naex-obal {
+  position: relative;
+  display: inline-flex;
+  animation: pecat-dopad 0.22s ease-out;
+}
+
+button.tlacidlo-naex.pecat-naex {
+  min-height: 60px;
+  padding: 0 30px;
+  font-size: 1.6rem;
+  rotate: -4deg;
+  box-shadow:
+    0 3px 0 #5e1b0f,
+    0 0 0 4px rgb(208 86 63 / 0.18),
+    0 10px 24px rgba(0, 0, 0, 0.5);
+}
+
+button.pecat-zrusit {
+  position: absolute;
+  top: -12px;
+  right: -14px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 50%;
+  font: 700 0.85rem/1 var(--pismo);
+  color: var(--text);
+  background: var(--plocha);
+  border: 1px solid var(--okraj-svetly);
+}
+
+@keyframes pecat-dopad {
+  from {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pecat-naex-obal {
+    animation: none;
+  }
+
+  button.pecat,
+  button.tlacidlo-naex.pecat-naex {
+    rotate: 0deg;
+    transition: none;
+  }
+}
+
+.ikona-srotu {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+/* NA EX na karte v línii: štítok nad kartou; výber pre NA EX: nápis pod kartou (Michal 2026-10-21). */
+.naex-nad {
+  position: absolute;
+  top: -13px;
+  left: 50%;
+  z-index: 3;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 9px 2px 5px;
+  border-radius: 99px;
+  font: 800 0.68rem/1.4 var(--pismo);
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  color: #fff4e2;
+  background: var(--tehla-tmava);
+  border: 1px solid var(--cervena);
+  pointer-events: none;
+}
+
+.naex-nad .ikona-poldeci {
+  width: 15px;
+  height: 15px;
+  fill: #ffd08a;
+}
+
+/* Na karte už NA EX je — štítok „NA EX“ (dá sa dať) by sa s ním prekrýval. */
+.s-lupou.naex-dany::before {
+  display: none;
+}
+
+.vybrana-pod {
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  z-index: 3;
+  transform: translateX(-50%);
+  padding: 2px 10px;
+  border-radius: 99px;
+  font: 800 0.68rem/1.4 var(--pismo);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--na-akcente);
+  background: var(--akcent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+/* Náhľad NA EX na vybranú kartu v pilulke. */
+.naex-vyber-text b {
+  color: var(--akcent);
+}
+
+/* ---- os kola: Šenok · Lokality · Log vpravo (Michal 2026-10-21) ---- */
+.hlava-vrstvy {
+  display: flex;
+  flex: none;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.hra-hlava button.hlava-vrstva {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.32rem 0.7rem;
+  font-size: 0.86rem;
+  border-radius: 8px;
+  color: var(--tlmeny);
+  background: transparent;
+  border: 1px solid var(--okraj);
+}
+
+.hra-hlava button.hlava-vrstva:hover:not(:disabled) {
+  background: var(--plocha-3);
+  color: var(--text);
+}
+
+.hra-hlava button.hlava-vrstva.otvorena {
+  background: var(--plocha-3);
+  border-color: var(--okraj-svetly);
+  color: var(--text);
+}
+
+/* Tu treba siahnuť (Draft, Liečba, výber lokality). */
+.hra-hlava button.hlava-vrstva.treba {
+  color: var(--akcent);
+  border-color: var(--akcent-tmavy);
+  animation: treba 1.6s ease-in-out infinite;
+}
+
+/* Karta zo šenku / lokalita sa vracia pustením na tlačidlo. */
+.hra-hlava button.hlava-vrstva.ciel-zona {
+  outline: 2px dashed color-mix(in srgb, var(--zelena) 70%, transparent);
+  outline-offset: 1px;
+  color: var(--text);
+}
+
+.hra-hlava button.hlava-vrstva.nad-cielom {
+  outline-style: solid;
+  background: color-mix(in srgb, var(--zelena) 25%, transparent);
+}
+
+/* ---- hlavička webu počas partie: spojenie, kontumácia, vzdať sa, odísť ---- */
+.hlavicka-partia {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.hlavicka-partia .spojenie {
+  font-size: 0.85rem;
+}
+
+.hlavicka-partia .opustit.potvrdit {
+  background: var(--cervena);
+  border-color: var(--cervena-text);
+  color: #fff;
+}
+
+@media (max-width: 760px) {
+  .hrana-rad {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 8px;
+  }
+
+  .hrana-vlavo,
+  .hrana-vpravo {
+    justify-content: center;
+  }
+
+  .stol-hrana {
+    margin-top: -20px;
+  }
+
+  button.pecat-nakup {
+    min-width: 0;
+    padding: 5px 10px;
+  }
+
+  .hlavicka-partia .spojenie {
+    display: none;
+  }
+
+  .hlava-vrstvy {
+    margin-left: 0;
+  }
 }
 
 /* ---- zväčšenie klikom (Michal 2026-10-20: pod myšou len karty v ruke) ---- */
@@ -3743,99 +4022,10 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna.nemoze:hover > .kl {
 }
 
 /* Text pokynu smie mať dva riadky — jedna veta a cena (UI N4). */
-.pokyn-text > span {
-  white-space: normal;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-}
-
-.pokyn-tlacidla {
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.skupina-cigariet {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  padding: 2px;
-  border-radius: 10px;
-  border: 1px solid var(--okraj);
-  background: color-mix(in srgb, #000 calc(var(--tma) * 20%), transparent);
-}
-
-.skupina-nazov {
-  padding: 0 8px;
-  font-size: 0.74rem;
-  color: var(--slaby-text);
-  font-variant-numeric: tabular-nums;
-}
-
-.skupina-nazov b {
-  color: var(--text);
-}
-
-.pokyn .skupina-cigariet button {
-  border-color: transparent;
-  background: transparent;
-}
-
-.pokyn .skupina-cigariet button.mozne {
-  color: var(--akcent);
-}
-
-.pokyn .skupina-cigariet button .cena {
-  font-variant-numeric: tabular-nums;
-}
-
-.cigarety-menu {
-  position: relative;
-}
-
-.cigarety-menu > summary {
-  min-height: 44px;
-  display: flex;
-  align-items: center;
-  padding: 0 12px;
-  border-radius: 8px;
-  border: 1px solid var(--okraj-svetly);
-  cursor: pointer;
-  list-style: none;
-}
-
-.cigarety-menu-obsah {
-  position: absolute;
-  bottom: calc(100% + 6px);
-  left: 0;
-  z-index: 5;
-  display: grid;
-  gap: 4px;
-  padding: 6px;
-  border-radius: 10px;
-  background: color-mix(in srgb, var(--pozadie) 97%, transparent);
-  border: 1px solid var(--okraj-svetly);
-  box-shadow: var(--tien);
-}
 
 /* „hotovo“ je nevratné — pevné, ale tiché; hlavné je NA EX!, keď sa dá. */
-.pokyn button.tlacidlo-hotovo:not(.tlacidlo-hlavne) {
-  background: var(--plocha-3);
-  border-color: var(--okraj-svetly);
-  color: var(--text);
-}
 
 /* ---- náhľad NA EX: výber, potom potvrdenie (UX N3) ---- */
-
-.pokyn .naex-moznost {
-  white-space: normal;
-  max-width: 340px;
-}
-
-.naex-moznost.vybrana {
-  border-color: var(--akcent);
-  box-shadow: 0 0 0 2px var(--akcent);
-}
 
 .naex-vzorec {
   color: var(--akcent);
@@ -3944,50 +4134,10 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:focus-visible > .kl {
 
 /* Užší desktop: tlačidlá Pitky pod textom na celú šírku pásu, aby text
    pokynu nebol stlačený do úzkeho stĺpca (UI N4: „akcie pod textom“). */
-@media (min-width: 761px) and (max-width: 1400px) {
-  .pokyn {
-    grid-template-columns: auto minmax(0, 1fr);
-  }
-
-  .pokyn-tlacidla {
-    grid-column: 1 / -1;
-    justify-content: flex-end;
-    padding-bottom: 6px;
-  }
-}
 
 /* ---- mobil: pás pokynov v stĺpci, ovládanie v dosahu palca (UX N1, U1) ---- */
 
 @media (max-width: 760px) {
-  .pokyn {
-    max-width: 100%;
-  }
-
-  .pokyn-text {
-    flex-wrap: wrap;
-    white-space: normal;
-  }
-
-  .pokyn-tlacidla {
-    justify-content: stretch;
-  }
-
-  .pokyn-tlacidla > button,
-  .pokyn-tlacidla > details {
-    flex: 1 1 auto;
-    min-height: 44px;
-  }
-
-  .naex-nahlad {
-    flex-direction: column;
-    width: calc(100vw - 32px);
-    max-height: 50vh;
-    overflow-y: auto;
-  }
-
-  .pokyn .naex-moznost {
-    max-width: none;
-  }
 
   .hlava-stav {
     margin-left: 0;

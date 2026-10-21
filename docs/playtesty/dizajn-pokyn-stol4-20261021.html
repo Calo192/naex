@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NA EX! v strede</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Bitter:wght@700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --pozadie: #14110e;
+    --plocha: #1e1914;
+    --plocha-2: #28211a;
+    --plocha-3: #332a21;
+    --okraj: #3d3229;
+    --okraj-svetly: #57483a;
+    --text: #f1e8d8;
+    --tlmeny: #b6a790;
+    --slaby: #8b7d6a;
+    --akcent: #e9ad45;
+    --akcent-tmavy: #b9802a;
+    --na-akcente: #2b1b03;
+    --cervena: #d0563f;
+    --cervena-text: #e5735c;
+    --tehla-tmava: #a8341f;
+    --zelena: #7cbf74;
+    --ja: #5cc0cf;
+    --su: #e0805f;
+    --plst-okraj: #5caa6a;
+    --nadpis: "Bitter", Georgia, serif;
+    --pismo: Roboto, "Segoe UI", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--pozadie); color: var(--text); font: 400 15px/1.5 var(--pismo); }
+  main { max-width: 1400px; margin: 0 auto; padding: 32px 16px 80px; }
+  h1 { font: 800 2rem/1.15 var(--nadpis); margin: 0 0 6px; }
+  h2 { font: 800 1.35rem/1.2 var(--nadpis); margin: 44px 0 12px; }
+  h3 { font: 700 1.15rem/1.3 var(--nadpis); margin: 0; }
+  p { margin: 0 0 10px; color: var(--tlmeny); }
+  b, strong { color: var(--text); }
+  .podnadpis { color: var(--slaby); font-size: 0.9rem; margin-bottom: 18px; }
+
+  .ovladanie { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; gap: 10px 24px; align-items: center; padding: 12px 0; background: var(--pozadie); border-bottom: 1px solid var(--okraj); margin-top: 24px; }
+  .skupina { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .skupina > span { font: 700 0.7rem/1 var(--pismo); letter-spacing: 0.1em; text-transform: uppercase; color: var(--slaby); margin-right: 4px; }
+  .skupina button { font: 500 0.88rem/1 var(--pismo); color: var(--tlmeny); background: var(--plocha); border: 1px solid var(--okraj); border-radius: 8px; padding: 8px 11px; cursor: pointer; min-height: 36px; }
+  .skupina button:hover { color: var(--text); border-color: var(--okraj-svetly); }
+  .skupina button[aria-pressed="true"] { color: var(--na-akcente); background: var(--akcent); border-color: var(--akcent); font-weight: 700; }
+
+  .galeria { display: flex; flex-direction: column; gap: 26px; margin-top: 18px; }
+  .mock { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; overflow: hidden; display: grid; grid-template-columns: minmax(0, 1fr) 320px; }
+  .ram { position: relative; width: 100%; aspect-ratio: 1600 / 1000; overflow: hidden; background: var(--pozadie); }
+  .javisko { position: absolute; left: 0; top: 0; width: 1600px; height: 1000px; transform-origin: 0 0; font-family: var(--pismo); }
+  .mock-popis { padding: 18px 18px 18px; border-left: 1px solid var(--okraj); }
+  .mock-cislo { font: 800 2.4rem/1 var(--nadpis); color: var(--akcent); display: block; margin-bottom: 6px; }
+  .mock-popis ul { margin: 10px 0 0; padding-left: 18px; color: var(--tlmeny); font-size: 0.93rem; }
+  .mock-popis li { margin: 3px 0; }
+  .lisi { margin-top: 12px; padding: 10px 12px; border-radius: 8px; background: var(--plocha-2); font-size: 0.88rem; color: var(--tlmeny); }
+  .lisi b { color: var(--akcent); font-weight: 700; }
+  .plus::marker { content: "+  "; color: var(--zelena); font-weight: 700; }
+  .minus::marker { content: "−  "; color: var(--cervena); font-weight: 700; }
+  .vyrez { display: block; width: 100%; aspect-ratio: 1000 / 190; overflow: hidden; position: relative; border-top: 1px solid var(--okraj); background: var(--pozadie); }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.92rem; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--okraj); vertical-align: top; }
+  th { font: 700 0.72rem/1.2 var(--pismo); letter-spacing: 0.08em; text-transform: uppercase; color: var(--slaby); }
+  td { color: var(--tlmeny); }
+  td:first-child { color: var(--text); font-weight: 500; white-space: nowrap; }
+
+  @media (max-width: 1000px) {
+    .mock { grid-template-columns: 1fr; }
+    .mock-popis { border-left: 0; border-top: 1px solid var(--okraj); }
+    td:first-child { white-space: normal; }
+  }
+
+  /* ---------- prvky mockupu (súradnice snímky 1600 × 1000) ---------- */
+  .m { position: absolute; }
+  .rez { position: absolute; left: 0; width: 1600px; background-repeat: no-repeat; }
+  .m-tag { font: 700 13px/1 var(--pismo); letter-spacing: 0.12em; text-transform: uppercase; color: var(--zelena); white-space: nowrap; }
+  .m-tag.su { color: var(--su); }
+  .m-txt { font: 400 15px/1.4 var(--pismo); color: var(--text); white-space: nowrap; }
+  .m-naex { position: relative; display: inline-flex; align-items: center; min-height: 62px; padding: 0 30px; white-space: nowrap; font: 800 27px/1 var(--nadpis); letter-spacing: 0.04em; text-transform: uppercase; color: #fff4e2; background: var(--tehla-tmava); border: 2px solid var(--cervena); border-radius: 10px; box-shadow: 0 3px 0 #5e1b0f, 0 0 0 4px rgb(208 86 63 / 0.18), 0 10px 24px rgb(0 0 0 / .5); rotate: -4deg; }
+  .m-naex::after { content: ""; position: absolute; inset: 3px; border: 1px dashed rgb(255 244 226 / 0.45); border-radius: 7px; pointer-events: none; }
+  .m-vrstva { display: inline-flex; align-items: center; gap: 7px; height: 30px; padding: 0 11px; font: 500 14px/1 var(--pismo); color: var(--tlmeny); background: var(--plocha-3); border: 1px solid var(--okraj); border-radius: 8px; white-space: nowrap; }
+  .m-vrstva .n { font-size: 12px; color: var(--slaby); background: var(--plocha); border-radius: 5px; padding: 3px 6px; }
+  .m-vrstva .n.nove { background: var(--akcent); color: var(--na-akcente); font-weight: 700; }
+  .h-btn { display: inline-flex; align-items: center; height: 32px; padding: 0 11px; font: 500 14px/1 var(--pismo); color: var(--tlmeny); border: 1px solid var(--okraj); border-radius: 8px; white-space: nowrap; }
+  .h-btn.cervene { color: var(--cervena-text); border-color: rgb(208 86 63 / .55); }
+  .h-btn.tichy { border-color: transparent; }
+  .bodky::after { content: "…"; }
+  .pilulka { height: 100%; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 0 18px; background: var(--plocha); border: 2px solid var(--zelena); border-radius: 999px; box-shadow: 0 4px 14px rgb(0 0 0 / .4); }
+  .pilulka.su { border-color: var(--su); }
+  .vypnute { opacity: .38; filter: saturate(.4); }
+
+  /* 1 · pečiatky */
+  .pec { position: relative; display: inline-flex; align-items: center; gap: 10px; min-height: 50px; padding: 0 20px; white-space: nowrap; font: 800 18px/1 var(--nadpis); letter-spacing: 0.07em; text-transform: uppercase; border-radius: 9px; }
+  .pec::after { content: ""; position: absolute; inset: 3px; border: 1px dashed currentColor; opacity: .45; border-radius: 6px; pointer-events: none; }
+  .pec.cig { color: #2b2116; background: #e8dfcc; border: 2px solid #b8a887; box-shadow: 0 3px 0 #8f8572, 0 10px 22px rgb(0 0 0 / .45); rotate: 2.5deg; }
+  .pec.kon { color: var(--akcent); background: #2a2114; border: 2px solid var(--akcent-tmavy); box-shadow: 0 3px 0 #120d07, 0 10px 22px rgb(0 0 0 / .45); rotate: 3deg; }
+  .pec .pocet { display: inline-grid; place-items: center; min-width: 26px; height: 26px; border-radius: 13px; background: #2b2116; color: #f2ead9; font: 800 15px/1 var(--nadpis); letter-spacing: 0; }
+  /* 2 · jazýčky */
+  .jazyk { display: flex; align-items: center; justify-content: center; gap: 10px; height: 100%; padding: 0 18px; font: 500 16px/1 var(--pismo); color: var(--text); background: linear-gradient(180deg, #24301f, #1b2418); border: 2px solid var(--plst-okraj); border-top: 0; border-radius: 0 0 14px 14px; box-shadow: 0 8px 18px rgb(0 0 0 / .45); white-space: nowrap; }
+  .jazyk .ikona { font-size: 18px; }
+  .jazyk small { font-size: 13px; color: var(--slaby); }
+  .jazyk.kon { color: var(--akcent); font-weight: 700; }
+  /* 3 · žetóny */
+  .zeton { display: flex; flex-direction: column; align-items: center; gap: 7px; }
+  .zeton-kruh { position: relative; width: 66px; height: 66px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 35% 30%, #3e3326, #231c15 70%); border: 3px solid var(--okraj-svetly); box-shadow: inset 0 0 0 4px #1a140f, inset 0 0 0 5px rgb(233 173 69 / .35), 0 8px 18px rgb(0 0 0 / .55); font-size: 28px; }
+  .zeton-kruh b { position: absolute; right: -6px; top: -6px; min-width: 26px; height: 26px; border-radius: 13px; display: grid; place-items: center; background: var(--akcent); color: var(--na-akcente); font: 800 15px/1 var(--nadpis); box-shadow: 0 2px 6px rgb(0 0 0 / .5); }
+  .zeton.kon .zeton-kruh { border-color: var(--akcent-tmavy); box-shadow: inset 0 0 0 4px #1a140f, inset 0 0 0 5px rgb(233 173 69 / .6), 0 8px 18px rgb(0 0 0 / .55); }
+  .zeton span { font: 700 12px/1 var(--pismo); letter-spacing: .1em; text-transform: uppercase; color: var(--tlmeny); background: rgb(20 17 14 / .75); padding: 4px 8px; border-radius: 5px; }
+  .zeton.kon span { color: var(--akcent); }
+  .poldec-ikona { width: 24px; height: 30px; clip-path: polygon(0 0, 100% 0, 86% 100%, 14% 100%); background: linear-gradient(0deg, rgb(255 255 255 / .55), rgb(255 255 255 / .25)); rotate: 180deg; }
+  .menu { background: var(--plocha); border: 1px solid var(--okraj-svetly); border-radius: 10px; box-shadow: 0 12px 30px rgb(0 0 0 / .6); padding: 6px; display: flex; flex-direction: column; gap: 2px; }
+  .menu > div { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 8px 12px; border-radius: 7px; font: 500 15px/1.2 var(--pismo); color: var(--text); white-space: nowrap; }
+  .menu > div:first-child { background: var(--plocha-3); }
+  .menu .cena { font: 700 14px/1 var(--pismo); color: var(--akcent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>NA EX! v strede</h1>
+  <div class="podnadpis">NA EX! · herný stôl · 3 mockupy na výber · Pitka 1/3 · 2026-10-21</div>
+  <p>
+    Vo všetkých troch je <b>NA EX! v strede na spodnej hrane stola</b>, <b>cigarety vľavo</b> a <b>hotovo vpravo</b>, na jednej vodorovnej línii.
+    Pilulka s pokynom hore ostáva. Líšia sa <b>tvarom bočných tlačidiel</b>, tým, <b>čo je v strede, kým nie je vybraná karta</b>,
+    a tým, <b>ako sa otvoria cigarety</b>. Pod každým mockupom je zväčšený výrez hrany stola.
+  </p>
+
+  <div class="ovladanie">
+    <div class="skupina" id="ov-stav"><span>Stav</span>
+      <button data-v="nic">Tvoj ťah · nič nevybraté</button>
+      <button data-v="vybrana">Tvoj ťah · vybraný Pijan</button>
+      <button data-v="menu">Otvorené cigarety</button>
+      <button data-v="caka">Čakáš na súpera</button>
+    </div>
+  </div>
+
+  <div class="galeria" id="galeria"></div>
+
+  <h2>V čom sa líšia</h2>
+  <table>
+    <thead><tr><th></th><th>Bočné tlačidlá</th><th>Stred bez vybranej karty</th><th>Cigarety sa otvoria</th><th>Pocit</th></tr></thead>
+    <tbody>
+      <tr><td>1 · Tri pečiatky</td><td>menšie pečiatky (papierová, jantárová), natočené</td><td>prázdna hrana, pečiatka sa „vytlačí“ po výbere</td><td>ponuka smerom hore, nad stôl</td><td>najhravejšie, všetko v jazyku NA EX!</td></tr>
+      <tr><td>2 · Jazýčky z hrany</td><td>visia zo spodnej hrany stola ako zásuvky, farba plste</td><td>prerušovaný obrys pečiatky „vyber kartu“</td><td>ponuka smerom dole, zo zásuvky</td><td>najtichšie, NA EX! jediné hlasné</td></tr>
+      <tr><td>3 · Žetóny</td><td>okrúhle žetóny s ikonou a počtom (krabička, pohárik hore dnom)</td><td>krátka nápoveda na hrane „klikni na kartu so značkou“</td><td>tri žetóny sa vejárom rozložia nad stôl</td><td>najstručnejšie, ikony namiesto slov</td></tr>
+    </tbody>
+  </table>
+</main>
+
+<script>
+  const OBR = "dizajn-pokyn-bar-20261021-1639/zaklad-stol-pitka.jpg";
+  const Y = 712;
+  const RUKA = 850;
+  const F = 40;
+  const HRANA = 727 + F; // spodná hrana stola po predĺžení
+  const PILULKA_Y = 221;
+  const STRED = 800;
+  const BOK = 250; // vzdialenosť bočných tlačidiel od stredu
+  const stav = { stav: "vybrana" };
+
+  const rez = (odY, vyska, naY) =>
+    vyska <= 0 ? "" : `<div class="rez" style="top:${naY}px;height:${vyska}px;background-image:url('${OBR}');background-position:0 ${-odY}px"></div>`;
+  const el = (x, y, w, h, obsah, styl = "") =>
+    `<div class="m" style="left:${x}px;top:${y}px;${w === null ? "" : `width:${w}px;`}${h === null ? "" : `height:${h}px;`}${styl}">${obsah}</div>`;
+  const stred = (x, y, w, h, obsah, styl = "") => el(x - w / 2, y, w, h, obsah, styl);
+  const vypln = (y, f) => {
+    const s = f / 12;
+    return el(0, y, 1600, f, "", `background-image:url('${OBR}');background-repeat:no-repeat;background-size:1600px ${1000 * s}px;background-position:0 ${-712 * s}px`);
+  };
+  // Pod stolom pribudne medzera G, aby pečiatka a tlačidlá na hrane neprekrývali panel „Odhad bitky“.
+  const G = 44;
+  const podklad = () =>
+    rez(0, Y, 0) + vypln(Y, F) + rez(Y, 16, Y + F) +
+    el(0, Y + F + 16, 1600, G, "", "background:var(--pozadie)") +
+    rez(Y + 16, RUKA - Y - F - 16 - G, Y + F + 16 + G) + rez(RUKA, 1000 - RUKA, RUKA);
+  const naStred = (x, w, h, obsah, posun = 0) => stred(x, HRANA - h / 2 + posun, w, h, `<div style="height:100%;display:grid;place-items:center">${obsah}</div>`);
+
+  const VETA = {
+    nic: `Klikni na kartu so značkou NA EX, alebo Pitku ukonči.`,
+    menu: `Klikni na kartu so značkou NA EX, alebo Pitku ukonči.`,
+    vybrana: `<b>Pijan:</b> NA EX zruší 2 aktívne akcie a zdvojí neaktívne · pečeň +1`,
+    caka: `Na ťahu je <b>Dizajn 2</b><span class="bodky"></span> <span style="color:var(--slaby)">· naposledy: NA EX na tvojho Pijana</span>`,
+  };
+
+  function spolocne(s) {
+    let h = el(800, 14, 535, 36,
+      `<div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;height:100%">
+        <span style="font:700 12px/1 var(--pismo);letter-spacing:.12em;color:var(--akcent);margin-right:4px">PARTIA 65X7</span>
+        <span style="font:500 14px/1 var(--pismo);color:var(--cervena-text);margin-right:2px">○ Dizajn 2 odpojený</span>
+        <span class="h-btn">kontumačná výhra</span><span class="h-btn cervene">vzdať sa</span><span class="h-btn tichy">odísť</span>
+      </div>`);
+    h += el(1140, 66, 438, 38, "", "background:#282119");
+    h += el(1150, 66, 422, 38,
+      `<div style="display:flex;justify-content:flex-end;align-items:center;gap:7px;height:100%">
+        <span class="m-vrstva">Šenok <span class="n">0</span></span><span class="m-vrstva">Lokality <span class="n">4</span></span><span class="m-vrstva">Log <span class="n nove">3</span></span>
+      </div>`);
+    const caka = s === "caka";
+    h += stred(STRED, PILULKA_Y - 4, 860, 38,
+      `<div class="pilulka${caka ? " su" : ""}">${caka ? `<span class="m-tag su">Pitka 1/3 · čakáš</span>` : `<span class="m-tag">● Pitka 1/3 · tvoj ťah</span>`}<span class="m-txt">${VETA[s]}</span></div>`);
+    if (s === "vybrana") {
+      h += el(289, 381, 205, 308, "", "border:3px solid var(--akcent);border-radius:12px;box-shadow:0 0 0 6px rgb(233 173 69 / .25), 0 0 30px rgb(233 173 69 / .45)");
+      h += el(330, 356, null, 24, `<span style="display:inline-block;padding:5px 10px;border-radius:6px;background:var(--akcent);color:var(--na-akcente);font:700 12px/1 var(--pismo);letter-spacing:.08em">VYBRANÁ</span>`);
+    }
+    return h;
+  }
+
+  // NA EX! v strede — iba s vybranou kartou; zrušenie je malé ✕ v rohu pečiatky, aby nenarušilo líniu.
+  const naexStred = () =>
+    naStred(STRED, 260, 80, `<span class="m-naex">NA EX!<span title="zrušiť výber" style="position:absolute;right:-14px;top:-14px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--plocha);border:1px solid var(--okraj-svetly);color:var(--text);font:700 14px/1 var(--pismo);rotate:4deg">✕</span></span>`);
+
+  const MENU = (x, y) =>
+    el(x, y, 250, null,
+      `<div class="menu">
+        <div><span>🚬 fajčiť</span><span class="cena">−1</span></div>
+        <div><span>🥃 doliať poldeci</span><span class="cena">−2</span></div>
+        <div><span>🥃 nový poldeci</span><span class="cena">−5</span></div>
+      </div>`);
+
+  const VARIANTY = [
+    {
+      nazov: "Tri pečiatky",
+      popis: "Všetky tri tlačidlá hovoria jazykom NA EX!: sú to pečiatky. NA EX! je najväčšia a tehlová v strede. Cigarety sú papierová pečiatka s počtom vľavo, KONČÍM jantárová vpravo. Bočné sú menšie a natočené na druhú stranu.",
+      plus: ["Najhravejšie a najkrčmovejšie, nadväzuje na to, čo sa ti páči.", "Hierarchiu dáva veľkosť a farba: NA EX! > KONČÍM > cigarety."],
+      minus: ["Tri pečiatky naraz môžu pôsobiť preplnene.", "Kým nie je vybraná karta, v strede je diera."],
+      lisi: "<b>bočné:</b> pečiatky · <b>stred bez karty:</b> prázdny · <b>cigarety:</b> ponuka hore",
+      kresli(s) {
+        const moj = s !== "caka";
+        let h = "";
+        h += naStred(STRED - BOK, 220, 70, `<span class="pec cig${moj ? "" : " vypnute"}">🚬 cigarety <span class="pocet">3</span></span>`);
+        h += naStred(STRED + BOK, 200, 70, `<span class="pec kon${moj ? "" : " vypnute"}">končím</span>`);
+        if (s === "menu") h += MENU(STRED - BOK - 125, HRANA - 32 - 150);
+        return h;
+      },
+    },
+    {
+      nazov: "Jazýčky z hrany",
+      popis: "Cigarety a hotovo sú jazýčky, ktoré visia zo spodnej hrany stola ako zásuvky, vo farbe plste a s jej okrajom. Sú tiché, takže jediné hlasné je NA EX!. Kým nie je vybraná karta, v strede je prerušovaný obrys pečiatky „vyber kartu“.",
+      plus: ["Najpokojnejšie: tlačidlá sú súčasť stola, nie predmety na ňom.", "Obrys v strede ukazuje, kde sa NA EX! objaví a ako ho dostaneš."],
+      minus: ["Jazýčky visia pod hranu, takže pod stolom treba medzeru (tu 44 px).", "Hotovo je tiché aj vtedy, keď je to jediný zmysluplný ťah."],
+      lisi: "<b>bočné:</b> jazýčky z hrany · <b>stred bez karty:</b> obrys „vyber kartu“ · <b>cigarety:</b> ponuka dole",
+      kresli(s) {
+        const moj = s !== "caka";
+        let h = "";
+        const jazyk = (x, w, obsah, kon) => el(x - w / 2, HRANA - 1, w, 46, `<div class="jazyk${kon ? " kon" : ""}${moj ? "" : " vypnute"}">${obsah}</div>`);
+        h += jazyk(STRED - BOK, 200, `<span class="ikona">🚬</span> cigarety <small>3 ▾</small>`, false);
+        h += jazyk(STRED + BOK, 170, `hotovo <span>✓</span>`, true);
+        if (s === "nic" || s === "menu") {
+          h += naStred(STRED, 240, 70,
+            `<span style="display:inline-flex;align-items:center;min-height:56px;padding:0 24px;border:2px dashed rgb(208 86 63 / .55);border-radius:10px;rotate:-4deg;font:700 14px/1.2 var(--pismo);color:var(--cervena-text);background:rgb(20 17 14 / .55);text-align:center">vyber kartu<br>so značkou</span>`);
+        }
+        if (s === "menu") h += MENU(STRED - BOK - 125, HRANA + 50);
+        return h;
+      },
+    },
+    {
+      nazov: "Žetóny",
+      popis: "Cigarety a hotovo sú okrúhle žetóny s ikonou: krabička s počtom vľavo, pohárik hore dnom (krčmové „končím“) vpravo. Klik na krabičku rozloží tri menšie žetóny vejárom nad stôl. Kým nie je vybraná karta, v strede je krátka nápoveda.",
+      plus: ["Najstručnejšie: ikona a počet, slová iba v malých štítkoch.", "Žetóny sedia presne na hrane, línia je čistá.", "Vejár cigariet je rýchly, dá sa vybrať jedným pohybom."],
+      minus: ["Ikony sa treba naučiť (štítky pomôžu).", "Okrúhle tlačidlá sú menšie, ale stále 66 px."],
+      lisi: "<b>bočné:</b> okrúhle žetóny · <b>stred bez karty:</b> nápoveda · <b>cigarety:</b> vejár žetónov",
+      kresli(s) {
+        const moj = s !== "caka";
+        let h = "";
+        h += naStred(STRED - BOK, 120, 100, `<div class="zeton${moj ? "" : " vypnute"}"><div class="zeton-kruh">🚬<b>3</b></div><span>cigarety</span></div>`, 8);
+        h += naStred(STRED + BOK, 120, 100, `<div class="zeton kon${moj ? "" : " vypnute"}"><div class="zeton-kruh"><div class="poldec-ikona"></div></div><span>končím</span></div>`, 8);
+        if (s === "nic") {
+          h += naStred(STRED, 280, 34, `<span style="font:500 14px/1 var(--pismo);color:var(--tlmeny);background:rgb(20 17 14 / .8);border:1px solid var(--okraj);border-radius:17px;padding:9px 14px;white-space:nowrap">↑ klikni na kartu so značkou NA EX</span>`);
+        }
+        if (s === "menu") {
+          const maly = (dx, dy, ikona, text, cena) =>
+            stred(STRED - BOK + dx, HRANA - 33 + dy, 120, 90,
+              `<div class="zeton" style="gap:5px"><div class="zeton-kruh" style="width:52px;height:52px;font-size:20px">${ikona}</div><span style="letter-spacing:.04em">${text} <b style="color:var(--akcent)">${cena}</b></span></div>`);
+          h += maly(-110, -95, "🚬", "fajčiť", "−1") + maly(0, -128, "🥃", "doliať", "−2") + maly(110, -95, "🥃", "nový", "−5");
+        }
+        return h;
+      },
+    },
+  ];
+
+  function vykresli() {
+    const s = stav.stav;
+    const g = document.getElementById("galeria");
+    g.innerHTML = VARIANTY.map((v, i) => {
+      const scena = `${podklad()}${spolocne(s)}${v.kresli(s)}${s === "vybrana" ? naexStred() : ""}`;
+      return `
+      <article class="mock">
+        <div>
+          <div class="ram"><div class="javisko">${scena}</div></div>
+          <div class="vyrez" data-vyrez><div class="javisko">${scena}</div><span style="position:absolute;left:10px;top:8px;font:700 11px/1 var(--pismo);letter-spacing:.1em;text-transform:uppercase;color:var(--na-akcente);background:var(--akcent);padding:4px 7px;border-radius:5px">zväčšená hrana stola</span></div>
+        </div>
+        <div class="mock-popis">
+          <span class="mock-cislo">${i + 1}</span><h3>${v.nazov}</h3>
+          <p style="margin-top:8px">${v.popis}</p>
+          <ul>${v.plus.map((t) => `<li class="plus">${t}</li>`).join("")}${v.minus.map((t) => `<li class="minus">${t}</li>`).join("")}</ul>
+          <div class="lisi">${v.lisi}</div>
+        </div>
+      </article>`;
+    }).join("");
+    mierka();
+    for (const b of document.querySelectorAll("#ov-stav button")) b.setAttribute("aria-pressed", String(b.dataset.v === s));
+  }
+
+  // Celý stôl sa zmenší na šírku rámu; výrez ukáže 1000 × 190 px okolo hrany stola zväčšene.
+  function mierka() {
+    for (const r of document.querySelectorAll(".ram")) r.firstElementChild.style.transform = `scale(${r.clientWidth / 1600})`;
+    for (const r of document.querySelectorAll("[data-vyrez]")) {
+      const k = r.clientWidth / 1000;
+      r.firstElementChild.style.transform = `scale(${k}) translate(${-(STRED - 500)}px, ${-(HRANA - 95)}px)`;
+    }
+  }
+
+  document.getElementById("ov-stav").addEventListener("click", (e) => {
+    const b = e.target.closest("button");
+    if (b === null) return;
+    stav.stav = b.dataset.v;
+    vykresli();
+  });
+  for (const cast of location.hash.slice(1).split("-")) {
+    if (["nic", "vybrana", "menu", "caka"].includes(cast)) stav.stav = cast;
+  }
+  new ResizeObserver(mierka).observe(document.body);
+  vykresli();
+</script>
+</body>
+</html>

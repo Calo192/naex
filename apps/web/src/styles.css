@@ -367,6 +367,16 @@ textarea {
   align-items: center;
 }
 
+/* Miesto pre ovládanie partie (portál z hernej plochy) — mimo partie prázdne. */
+.hlavicka-hra {
+  display: flex;
+  align-items: center;
+}
+
+.hlavicka-hra:empty {
+  display: none;
+}
+
 .ucet-tlacidlo {
   background: transparent;
   border: 1px solid transparent;
@@ -522,6 +532,25 @@ textarea {
 
   .ucet {
     margin-left: auto;
+  }
+
+  /* Ovládanie partie sa na úzkej hlavičke nezmestí vedľa loga — ide do vlastného riadku. */
+  .hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) {
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 64px;
+    row-gap: 0;
+  }
+
+  .hlavicka-hra:not(:empty) {
+    order: 5;
+    width: 100%;
+    justify-content: flex-end;
+    padding-bottom: 8px;
+  }
+
+  .hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .navigacia {
+    top: 100%;
   }
 
   .skryt-mobil {
@@ -692,6 +721,13 @@ textarea {
 .cast:hover {
   transform: translateY(-4px);
   border-color: var(--akcent-tmavy);
+}
+
+/* Poldeci ako piktogram z karty — rovnaký ako v hre. */
+.cast-znak .ikona-poldeci {
+  width: 1em;
+  height: 1em;
+  fill: var(--akcent);
 }
 
 .cast h2 {

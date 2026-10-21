@@ -59,7 +59,6 @@ export interface HernaKartaProps {
   readonly sirka: number;
   readonly otocena?: boolean;
   readonly eval?: CardLineEval | null;
-  readonly naex?: string | undefined;
   readonly onClick?: (() => void) | undefined;
   readonly vybrana?: boolean;
   readonly bezPopisov?: boolean;
@@ -69,7 +68,7 @@ export interface HernaKartaProps {
   readonly spoj?: { readonly left: readonly number[]; readonly right: readonly number[] } | undefined;
 }
 
-export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev, naex, onClick, vybrana, bezPopisov, hranaVnutorna, spoj }: HernaKartaProps) {
+export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev, onClick, vybrana, bezPopisov, hranaVnutorna, spoj }: HernaKartaProps) {
   const vytlacene = printedSides(data, karta);
   const strana = (ps: "left" | "right"): { roz: RozlozenieStrany; sloty: (SlotStav | null)[] | null } => {
     const roz = [0, 1, 2, 3].map((k) => vytlacene[ps][k] ?? null) as unknown as RozlozenieStrany;
@@ -84,13 +83,8 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
   };
   const l = strana("left");
   const p = strana("right");
-  const odznaky =
-    naex !== undefined || ev?.vzbura === true ? (
-      <>
-        {naex !== undefined && <span title={`NA EX — poldeci hráča ${naex}`}>🥃 {naex}</span>}
-        {ev?.vzbura === true && <span>Vzbura!</span>}
-      </>
-    ) : undefined;
+  // NA EX na karte ukazuje štítok nad kartou v línii (HernaPlocha), nie odznak v nej.
+  const odznaky = ev?.vzbura === true ? <span>Vzbura!</span> : undefined;
 
   return (
     <KartaLico

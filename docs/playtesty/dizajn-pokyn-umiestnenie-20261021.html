@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kam s pásom pokynov</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Bitter:wght@700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --pozadie: #14110e;
+    --plocha: #1e1914;
+    --plocha-2: #28211a;
+    --plocha-3: #332a21;
+    --okraj: #3d3229;
+    --okraj-svetly: #57483a;
+    --text: #f1e8d8;
+    --tlmeny: #b6a790;
+    --slaby: #8b7d6a;
+    --akcent: #e9ad45;
+    --na-akcente: #2b1b03;
+    --cervena: #d0563f;
+    --tehla-tmava: #a8341f;
+    --zelena: #7cbf74;
+    --ja: #5cc0cf;
+    --nadpis: "Bitter", Georgia, serif;
+    --pismo: Roboto, "Segoe UI", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--pozadie);
+    color: var(--text);
+    font: 400 15px/1.5 var(--pismo);
+  }
+  main { max-width: 1240px; margin: 0 auto; padding: 32px 16px 80px; }
+  h1 { font: 800 2rem/1.15 var(--nadpis); margin: 0 0 6px; }
+  h2 { font: 800 1.3rem/1.2 var(--nadpis); margin: 40px 0 10px; }
+  h3 { font: 700 1rem/1.3 var(--nadpis); margin: 0 0 4px; }
+  p { margin: 0 0 10px; color: var(--tlmeny); }
+  .podnadpis { color: var(--slaby); font-size: 0.9rem; margin-bottom: 18px; }
+  b, strong { color: var(--text); }
+
+  /* ovládanie */
+  .ovladanie {
+    position: sticky; top: 0; z-index: 5;
+    display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center;
+    padding: 12px 0; background: var(--pozadie);
+    border-bottom: 1px solid var(--okraj);
+  }
+  .skupina { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .skupina > span { font: 700 0.7rem/1 var(--pismo); letter-spacing: 0.1em; text-transform: uppercase; color: var(--slaby); margin-right: 4px; }
+  .skupina button {
+    font: 500 0.88rem/1 var(--pismo); color: var(--tlmeny);
+    background: var(--plocha); border: 1px solid var(--okraj); border-radius: 8px;
+    padding: 8px 11px; cursor: pointer; min-height: 36px;
+  }
+  .skupina button:hover { color: var(--text); border-color: var(--okraj-svetly); }
+  .skupina button[aria-pressed="true"] { color: var(--na-akcente); background: var(--akcent); border-color: var(--akcent); font-weight: 700; }
+  .skupina button:disabled { opacity: 0.4; cursor: default; }
+
+  /* javisko — súradnice 1600 × 1000 ako snímka, zmenšené na šírku stránky */
+  .javisko-obal { margin-top: 16px; border: 1px solid var(--okraj); border-radius: 10px; overflow: hidden; }
+  .javisko-ram { position: relative; width: 100%; aspect-ratio: 1600 / 1000; overflow: hidden; }
+  .javisko { position: absolute; left: 0; top: 0; width: 1600px; height: 1000px; transform-origin: 0 0; font-family: var(--pismo); }
+  .rez { position: absolute; left: 0; width: 1600px; background-repeat: no-repeat; }
+  .varovanie { margin-top: 10px; padding: 10px 14px; border: 1px solid var(--cervena); border-radius: 8px; color: #ffb4a4; display: none; }
+
+  .popis-variant { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+  .karta-popis { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 10px; padding: 14px 16px; }
+  .karta-popis .stitok { font: 700 0.7rem/1 var(--pismo); letter-spacing: 0.1em; text-transform: uppercase; color: var(--akcent); margin-bottom: 6px; display: block; }
+  .karta-popis ul { margin: 6px 0 0; padding-left: 18px; color: var(--tlmeny); }
+  .karta-popis li { margin: 2px 0; }
+  .plus::marker { content: "+  "; color: var(--zelena); font-weight: 700; }
+  .minus::marker { content: "−  "; color: var(--cervena); font-weight: 700; }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.92rem; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--okraj); vertical-align: top; }
+  th { font: 700 0.72rem/1.2 var(--pismo); letter-spacing: 0.08em; text-transform: uppercase; color: var(--slaby); }
+  td { color: var(--tlmeny); }
+  td:first-child { color: var(--text); font-weight: 500; white-space: nowrap; }
+  .ok { color: var(--zelena); } .zle { color: var(--cervena); } .stred { color: var(--akcent); }
+  .odporucanie { margin-top: 14px; padding: 14px 16px; border-left: 4px solid var(--zelena); background: var(--plocha); border-radius: 0 10px 10px 0; }
+  ol.otazky li { margin: 6px 0; color: var(--tlmeny); }
+
+  @media (max-width: 760px) {
+    .popis-variant { grid-template-columns: 1fr; }
+    td:first-child { white-space: normal; }
+  }
+
+  /* ---------- prvky mockupu (v súradniciach snímky) ---------- */
+  .m { position: absolute; }
+  .m-tag { font: 700 13px/1 var(--pismo); letter-spacing: 0.12em; text-transform: uppercase; color: var(--zelena); }
+  .m-txt { font: 400 15px/1.45 var(--pismo); color: var(--text); }
+  .m-txt b { font-weight: 700; }
+  .m-info { display: inline-grid; place-items: center; width: 20px; height: 20px; margin-left: 4px; border-radius: 50%; border: 1px solid var(--okraj-svetly); color: var(--tlmeny); font: 700 12px/1 var(--pismo); vertical-align: 1px; }
+  .m-btn {
+    display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px;
+    font: 500 15px/1 var(--pismo); color: var(--text); background: var(--plocha-3);
+    border: 1px solid var(--okraj-svetly); border-radius: 9px; white-space: nowrap;
+  }
+  .m-btn .cena { color: var(--slaby); font-size: 13px; }
+  .m-btn.tichy { background: transparent; border-color: var(--okraj); color: var(--tlmeny); }
+  .m-btn.hlavne { background: var(--akcent); border-color: var(--akcent); color: var(--na-akcente); font-weight: 700; }
+  .m-btn.vypnute { opacity: 0.45; }
+  /* NA EX! — presne ako .tlacidlo-naex v hra.css */
+  .m-naex {
+    position: relative; display: inline-flex; align-items: center; min-height: 48px; padding: 0 20px; white-space: nowrap;
+    font: 800 20px/1 var(--nadpis); letter-spacing: 0.04em; text-transform: uppercase; color: #fff4e2;
+    background: var(--tehla-tmava); border: 2px solid var(--cervena); border-radius: 10px;
+    box-shadow: 0 3px 0 #5e1b0f, 0 0 0 4px rgb(208 86 63 / 0.18); rotate: -2deg;
+  }
+  .m-naex::after { content: ""; position: absolute; inset: 3px; border: 1px dashed rgb(255 244 226 / 0.45); border-radius: 7px; }
+  .m-vrstva {
+    display: inline-flex; align-items: center; gap: 7px; min-height: 36px; padding: 0 12px;
+    font: 500 15px/1 var(--pismo); color: var(--tlmeny); background: var(--plocha-2);
+    border: 1px solid var(--okraj); border-radius: 9px; white-space: nowrap;
+  }
+  .m-vrstva .n { font-size: 12px; color: var(--slaby); background: var(--plocha-3); border-radius: 6px; padding: 3px 6px; }
+  .m-vrstva .n.nove { background: var(--akcent); color: var(--na-akcente); font-weight: 700; }
+  .m-vrstva.treba { border-color: var(--akcent); color: var(--akcent); box-shadow: 0 0 0 3px rgb(233 173 69 / 0.2); }
+  .m-roh { display: flex; flex-direction: column; align-items: center; font: 700 11px/1.2 var(--pismo); letter-spacing: 0.1em; text-transform: uppercase; color: var(--slaby); }
+  .m-roh b { font: 800 24px/1.1 var(--nadpis); color: var(--text); letter-spacing: 0; }
+  .m-zaplata { background: var(--pozadie); }
+  .m-sipka { font: 700 13px/1 var(--pismo); color: var(--akcent); }
+  .m-oznacenie {
+    position: absolute; font: 700 12px/1 var(--pismo); color: var(--na-akcente); background: var(--akcent);
+    padding: 5px 8px; border-radius: 6px; box-shadow: 0 2px 8px rgb(0 0 0 / 0.5); white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Kam s pásom pokynov</h1>
+  <div class="podnadpis">NA EX! · herný stôl · mockupy nad skutočnou snímkou partie (1600 × 1000) · 2026-10-21</div>
+  <p>
+    Pás nad rukou sa rozpadá na tri časti a každá môže ísť inam:
+    <b>prepínače Šenok · Lokality · Log</b>, <b>pokyn</b> (čo mám teraz robiť) a <b>tlačidlá ťahu</b> (hotovo, cigarety, NA EX!).
+    Hore si vyber, kam ide pokyn a kam prepínače, a pri „Fáze“ prepni medzi krátkym pokynom (Cieľ kola) a najnabitejším (Pitka s tlačidlami).
+    Snímka pod mockupom je bez dnešného pásu. Vpravo dole je už <b>Odhodené</b>, ktoré som pridal ako zrkadlo k „Ruka“.
+  </p>
+
+  <div class="ovladanie">
+    <div class="skupina" id="ov-pokyn"><span>Pokyn</span>
+      <button data-v="P0">Dnes</button>
+      <button data-v="P1">A · Krídla ruky</button>
+      <button data-v="P2">B · Pod pásom fáz</button>
+      <button data-v="P3">C · Pri mieste ťahu</button>
+      <button data-v="P4">D · V hlavičke webu</button>
+    </div>
+    <div class="skupina" id="ov-nav"><span>Šenok · Lokality · Log</span>
+      <button data-v="N1">1 · Hlavička webu</button>
+      <button data-v="N2">2 · Záložky na okraji</button>
+      <button data-v="N3">3 · Pri svojom paneli</button>
+    </div>
+    <div class="skupina" id="ov-faza"><span>Fáza</span>
+      <button data-v="ciel">Cieľ kola</button>
+      <button data-v="pitka">Pitka</button>
+    </div>
+  </div>
+
+  <div class="javisko-obal"><div class="javisko-ram" id="ram"><div class="javisko" id="javisko"></div></div></div>
+  <div class="varovanie" id="varovanie"></div>
+
+  <div class="popis-variant">
+    <div class="karta-popis" id="popis-pokyn"></div>
+    <div class="karta-popis" id="popis-nav"></div>
+  </div>
+
+  <h2>Porovnanie</h2>
+  <table>
+    <thead><tr><th>Pokyn</th><th>Zakrýva stôl</th><th>Vidno vždy</th><th>Blízko ťahu</th><th>Notebook 1280</th><th>Mobil</th><th>Náročnosť</th></tr></thead>
+    <tbody>
+      <tr><td>Dnes (nad rukou)</td><td class="zle">áno, 46–150 px</td><td class="ok">áno</td><td class="stred">ruka áno, stôl nie</td><td class="zle">zakryje šenok</td><td class="zle">orezaný text</td><td>—</td></tr>
+      <tr><td>A · Krídla ruky</td><td class="ok">nie</td><td class="ok">áno</td><td class="ok">ruka áno</td><td class="stred">krídla ~300 px</td><td class="stred">krídla pod ruku</td><td>stredná</td></tr>
+      <tr><td>B · Pod pásom fáz</td><td class="ok">nie, 44 px výšky</td><td class="ok">áno</td><td class="zle">ďaleko od ruky</td><td class="ok">áno</td><td class="ok">jeden riadok</td><td>malá</td></tr>
+      <tr><td>C · Pri mieste ťahu</td><td class="ok">nie</td><td class="zle">len pri paneli</td><td class="ok">najbližšie</td><td class="ok">áno</td><td class="ok">áno</td><td>veľká</td></tr>
+      <tr><td>D · V hlavičke webu</td><td class="ok">nie</td><td class="ok">áno</td><td class="zle">úplne hore</td><td class="stred">~450 px na vetu</td><td class="zle">hlavička je úzka</td><td>malá</td></tr>
+    </tbody>
+  </table>
+  <table>
+    <thead><tr><th>Prepínače</th><th>Zakrýva stôl</th><th>Vidno vždy</th><th>Mobil</th><th>Náročnosť</th></tr></thead>
+    <tbody>
+      <tr><td>1 · Hlavička webu</td><td class="ok">nie, miesto je prázdne</td><td class="ok">áno, hlavička je prilepená</td><td class="stred">ikony bez textu</td><td>malá</td></tr>
+      <tr><td>2 · Záložky na okraji</td><td class="stred">12 px okraja</td><td class="ok">áno</td><td class="zle">málo miesta</td><td>malá</td></tr>
+      <tr><td>3 · Pri svojom paneli</td><td class="ok">nie</td><td class="zle">len pri paneli</td><td class="ok">áno</td><td>stredná</td></tr>
+    </tbody>
+  </table>
+
+  <div class="odporucanie">
+    <h3>Odporúčam: A · Krídla ruky + 1 · Hlavička webu</h3>
+    <p style="margin:0">
+      Pás úplne zmizne a stôl už nezakrýva nič. Pokyn je vľavo od ruky, NA EX! a hotovo vpravo, v tom istom pohľade ako karty, iba vedľa nich.
+      Šenok, Lokality a Log sa presunú do prázdneho stredu prilepenej hlavičky, takže sú vidno vždy a nič nezaberajú.
+      Ak by sa krídla na notebooku s plnou rukou neprekrývali dobre, záloha je <b>B · Pod pásom fáz</b> pre pokyn
+      a tlačidlá ostanú v pravom krídle pri ruke.
+    </p>
+  </div>
+
+  <h2>Otázky</h2>
+  <ol class="otazky">
+    <li>Vadí ti, že sa Šenok, Lokality a Log ocitnú v hlavičke webu medzi „Spätná väzba“ a tvojím menom? Počas partie by tam boli iba ony.</li>
+    <li>Krídla ruky: má byť pokyn vľavo a tlačidlá vpravo, alebo naopak? Pravák má NA EX! bližšie vpravo.</li>
+    <li>Pri mnohých kartách v ruke (8+) sa ruka zúži na stred medzi krídla, takže sa karty viac prekrývajú. Je to v poriadku?</li>
+    <li>Môže sa dlhý výklad pravidiel (napr. pri Pitke) schovať za ⓘ, aby pokyn bola jedna-dve vety?</li>
+  </ol>
+</main>
+
+<script>
+  const ZAKLAD = "dizajn-pokyn-bar-20261021-1639/";
+  // Kde končí prilepený pás fáz na každej snímke (od toho sa posúva obsah pri variante B).
+  const SNIMKA = {
+    ciel: { obr: ZAKLAD + "zaklad-hore.jpg", pasFazDole: 136 },
+    pitka: { obr: ZAKLAD + "zaklad-dole.jpg", pasFazDole: 104 },
+  };
+  const RUKA_HORE = 850;
+
+  const stav = { pokyn: "P1", nav: "N1", faza: "ciel" };
+  // Odkaz na konkrétnu kombináciu: #P2-N2-pitka
+  for (const cast of location.hash.slice(1).split("-")) {
+    if (/^P[0-4]$/.test(cast)) stav.pokyn = cast;
+    if (/^N[1-3]$/.test(cast)) stav.nav = cast;
+    if (cast === "ciel" || cast === "pitka") stav.faza = cast;
+  }
+
+  const POKYN = {
+    ciel: {
+      tag: "Cieľ kola",
+      kratky: "Klikni na lokalitu, o ktorú sa chceš biť.",
+      dnes: "Klikni na lokalitu v paneli Cieľ kola.",
+      tlacidla: () => `<span class="m-btn hlavne vypnute">potvrdiť cieľ</span>`,
+    },
+    pitka: {
+      tag: "Pitka 1/2",
+      kratky: "<b>Začínaš Pitku.</b> Daj NA EX na kartu so značkou, alebo Pitku ukonči.",
+      dnes: "<b>Začínaš Pitku.</b> Dizajn 1 uvidí tvoje NA EX a smie naň odpovedať kartou aj vlastným NA EX. Daj NA EX na kartu so značkou, alebo Pitku ukonči. NA EX sa pri bitke vypije → v ďalšom kole limit ostane 3.",
+      tlacidla: (dnes) =>
+        dnes
+          ? `<span class="m-btn tichy">cigarety <b>4</b></span><span class="m-btn tichy">fajčiť <span class="cena">−1</span></span><span class="m-btn tichy">doliať poldeci <span class="cena">−2</span></span><span class="m-btn tichy">nový poldeci <span class="cena">−5</span></span><span class="m-btn">🔒 hotovo</span><span class="m-naex">NA EX!</span>`
+          : `<span class="m-btn tichy">🚬 4 ▾</span><span class="m-btn">hotovo</span><span class="m-naex">NA EX!</span>`,
+    },
+  };
+
+  const VRSTVY = (treba) => [
+    `<span class="m-vrstva">Šenok <span class="n">0</span></span>`,
+    `<span class="m-vrstva${treba ? " treba" : ""}">Lokality <span class="n">5</span></span>`,
+    `<span class="m-vrstva">Log <span class="n nove">3</span></span>`,
+  ];
+
+  function rez(obr, odY, vyska, naY) {
+    return `<div class="rez" style="top:${naY}px;height:${vyska}px;background-image:url('${obr}');background-position:0 ${-odY}px"></div>`;
+  }
+
+  function el(x, y, w, h, obsah, styl = "") {
+    const rozmer = (w === null ? "" : `width:${w}px;`) + (h === null ? "" : `height:${h}px;`);
+    return `<div class="m" style="left:${x}px;top:${y}px;${rozmer}${styl}">${obsah}</div>`;
+  }
+
+  function oznacenie(x, y, text) {
+    return `<div class="m-oznacenie" style="left:${x}px;top:${y}px">${text}</div>`;
+  }
+
+  function vykresli() {
+    const s = SNIMKA[stav.faza];
+    const p = POKYN[stav.faza];
+    const dnes = stav.pokyn === "P0";
+    let h = "";
+
+    // Podklad: pri variante B sa obsah medzi pásom fáz a rukou posunie o výšku riadku pokynu.
+    const posun = stav.pokyn === "P2" ? 46 : 0;
+    if (posun === 0) {
+      h += rez(s.obr, 0, 1000, 0);
+    } else {
+      h += rez(s.obr, 0, s.pasFazDole, 0);
+      h += rez(s.obr, s.pasFazDole, RUKA_HORE - s.pasFazDole - posun, s.pasFazDole + posun);
+      h += rez(s.obr, RUKA_HORE, 1000 - RUKA_HORE, RUKA_HORE);
+    }
+
+    // Odhodené vpravo dole — už v kóde.
+    h += el(1512, 938, 76, 56, `<div class="m-roh">odhodené<b>0</b></div>`);
+
+    // ---- pokyn ----
+    if (dnes) {
+      const vys = stav.faza === "ciel" ? 46 : 112;
+      const y = 866 - vys - 4;
+      h += el(350, y, 900, vys,
+        `<div style="display:flex;gap:14px;align-items:${stav.faza === "ciel" ? "center" : "flex-start"};height:100%;padding:${stav.faza === "ciel" ? "0" : "10px"} 14px;background:rgb(30 25 20 / .96);border:1px solid var(--okraj);border-left:3px solid var(--zelena);border-radius:10px;box-shadow:0 6px 24px rgb(0 0 0 / .5)">
+          <div style="display:flex;gap:6px;flex-shrink:0;padding-right:12px;border-right:1px solid var(--okraj)">${VRSTVY(stav.faza === "ciel").join("")}</div>
+          <div style="flex:1;min-width:0">
+            <div class="m-txt" style="font-size:14px;${stav.faza === "pitka" ? "display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden" : ""}"><span class="m-tag" style="margin-right:10px">${p.tag}</span>${p.dnes}</div>
+            ${stav.faza === "pitka" ? `<div style="display:flex;gap:6px;justify-content:flex-end;align-items:center;margin-top:8px;transform:scale(.86);transform-origin:100% 0">${p.tlacidla(true)}</div>` : ""}
+          </div>
+        </div>`);
+    }
+
+    // Pravé krídlo s tlačidlami — pri A, C (len Cieľ), D.
+    const praveKridlo = () =>
+      el(1128, 872, 372, 118,
+        `<div style="display:flex;flex-wrap:wrap-reverse;justify-content:flex-end;align-content:flex-start;gap:10px;height:100%;align-items:center">${p.tlacidla(false)}</div>`);
+
+    if (stav.pokyn === "P1") {
+      h += el(64, 872, 404, 118,
+        `<div style="height:100%;padding:12px 16px;background:rgb(30 25 20 / .92);border:1px solid var(--okraj);border-left:3px solid var(--zelena);border-radius:10px">
+          <div class="m-tag" style="margin-bottom:7px">● ${p.tag} · tvoj ťah</div>
+          <div class="m-txt">${p.kratky}<span class="m-info">i</span></div>
+        </div>`);
+      h += praveKridlo();
+      h += oznacenie(64, 846, "A · pokyn vľavo od ruky");
+      h += oznacenie(1260, 846, "tlačidlá vpravo od ruky");
+    }
+
+    if (stav.pokyn === "P2") {
+      h += el(20, s.pasFazDole + 4, 1560, 40,
+        `<div style="display:flex;align-items:center;gap:14px;height:100%;padding:0 6px 0 14px;background:var(--plocha);border:1px solid var(--okraj);border-left:3px solid var(--zelena);border-radius:9px">
+          <span class="m-tag">● ${p.tag}</span>
+          <span class="m-txt" style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.kratky}<span class="m-info">i</span></span>
+          <span style="display:flex;gap:8px;align-items:center;transform:scale(.8);transform-origin:100% 50%">${p.tlacidla(false)}</span>
+        </div>`);
+      h += oznacenie(560, s.pasFazDole + 50, "B · riadok pokynu prilepený pod pásom fáz — obsah sa posunie, nič neprekryje");
+    }
+
+    if (stav.pokyn === "P3") {
+      if (stav.faza === "ciel") {
+        // Pokyn je hlavička panela Cieľ kola (ten ho už dnes má vpravo — pás ho len opakuje).
+        h += el(22, 641, 1556, 50,
+          `<div style="display:flex;align-items:center;gap:16px;height:100%;padding:0 16px;background:linear-gradient(rgb(124 191 116 / .18), rgb(124 191 116 / .18)), #1d1a14;border-bottom:1px solid rgb(124 191 116 / .4);border-radius:12px 12px 0 0">
+            <span class="m-tag" style="font-size:16px">● Cieľ kola · tvoj ťah</span>
+            <span class="m-txt" style="flex:1">Klikni na lokalitu, o ktorú sa chceš biť. Klik na vybranú ju otočí.<span class="m-info">i</span></span>
+            <span class="m-btn hlavne vypnute">potvrdiť cieľ</span>
+          </div>`);
+        h += oznacenie(980, 610, "C · pokyn a potvrdenie v hlavičke panela, kde ťaháš");
+      } else {
+        h += el(22, 106, 1556, 50,
+          `<div style="display:flex;align-items:center;gap:16px;height:100%;padding:0 10px 0 16px;background:linear-gradient(rgb(124 191 116 / .18), rgb(124 191 116 / .18)), #1d1a14;border-bottom:1px solid rgb(124 191 116 / .4)">
+            <span class="m-tag" style="font-size:16px">● Pitka 1/2 · tvoj ťah</span>
+            <span class="m-txt" style="flex:1">${p.kratky}<span class="m-info">i</span></span>
+            <span style="display:flex;gap:8px;align-items:center;transform:scale(.82);transform-origin:100% 50%">${p.tlacidla(false)}</span>
+          </div>`);
+        h += oznacenie(700, 164, "C · pokyn v hlavičke stola — Pitka sa hrá na stole");
+      }
+    }
+
+    if (stav.pokyn === "P4") {
+      h += el(730, 10, 600, 46,
+        `<div style="display:flex;align-items:center;gap:12px;height:100%;padding:0 14px;background:var(--plocha);border:1px solid var(--okraj);border-left:3px solid var(--zelena);border-radius:9px">
+          <span class="m-tag">● ${p.tag}</span>
+          <span class="m-txt" style="flex:1;font-size:14px;line-height:1.25">${p.kratky}<span class="m-info">i</span></span>
+        </div>`);
+      h += praveKridlo();
+      h += oznacenie(880, 62, "D · pokyn v strede prilepenej hlavičky");
+      h += oznacenie(1260, 846, "tlačidlá vpravo od ruky");
+    }
+
+    // ---- Šenok · Lokality · Log ----
+    if (!dnes) {
+      const treba = stav.faza === "ciel" && stav.pokyn !== "P3";
+      if (stav.nav === "N1") {
+        // Pri D je stred hlavičky obsadený pokynom (viď upozornenie pod mockupom).
+        const x = 780;
+        if (stav.pokyn !== "P4") {
+          h += el(x, 14, null, 38,
+            `<div style="display:flex;gap:8px;align-items:center;height:100%"><span style="font:700 11px/1 var(--pismo);letter-spacing:.12em;text-transform:uppercase;color:var(--slaby);margin-right:4px">stôl</span>${VRSTVY(treba).join("")}</div>`);
+          h += oznacenie(x + 60, 58, "1 · v prázdnom strede hlavičky webu");
+        }
+      }
+      if (stav.nav === "N2") {
+        const tab = (t, n, nove, y, tr) =>
+          el(1566, y, 34, 112,
+            `<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:var(--plocha-2);border:1px solid ${tr ? "var(--akcent)" : "var(--okraj-svetly)"};border-right:0;border-radius:9px 0 0 9px;box-shadow:-4px 0 14px rgb(0 0 0 / .5)">
+              <span style="writing-mode:vertical-rl;rotate:180deg;font:500 14px/1 var(--pismo);color:${tr ? "var(--akcent)" : "var(--tlmeny)"}">${t}</span>
+              <span class="n" style="font:700 11px/1 var(--pismo);padding:3px 5px;border-radius:5px;${nove ? "background:var(--akcent);color:var(--na-akcente)" : "background:var(--plocha-3);color:var(--slaby)"}">${n}</span>
+            </div>`);
+        h += tab("Šenok", 0, false, 330, false) + tab("Lokality", 5, false, 450, treba) + tab("Log", 3, true, 570, false);
+        h += oznacenie(1370, 300, "2 · záložky na pravom okraji okna →");
+      }
+      if (stav.nav === "N3") {
+        if (stav.faza === "ciel" && stav.pokyn !== "P3") {
+          h += el(150, 649, null, 34, `<span class="m-vrstva treba">Lokality v hre <span class="n">5</span> ▸</span>`);
+          h += oznacenie(330, 655, "3 · Lokality pri paneli Cieľ kola");
+        }
+        if (stav.faza === "ciel" && stav.pokyn === "P3") {
+          h += el(1400, 700, null, 34, `<span class="m-vrstva">Lokality v hre <span class="n">5</span> ▸</span>`);
+        }
+        // Log a Šenok idú do prázdneho ľavého stĺpca tvojho panela hráča (pod menom).
+        const logY = stav.faza === "ciel" ? null : 640 + posun;
+        if (logY !== null) {
+          h += el(40, logY, null, 34, `<span class="m-vrstva">Log <span class="n nove">3</span></span><span class="m-vrstva" style="margin-left:8px">Šenok <span class="n">0</span></span>`);
+          h += oznacenie(40, logY + 44, "3 · Log a Šenok v tvojom paneli hráča");
+        } else {
+          h += oznacenie(760, 22, "3 · Log a Šenok sú v tvojom paneli hráča — tu ich nevidno");
+        }
+      }
+    }
+
+    document.getElementById("javisko").innerHTML = h;
+
+    // Upozornenie na kombinácie, ktoré si prekážajú.
+    const v = document.getElementById("varovanie");
+    const sprava =
+      stav.pokyn === "P4" && stav.nav === "N1"
+        ? "D a 1 chcú obe prázdny stred hlavičky. Pri D zvoľ pre prepínače 2 alebo 3."
+        : dnes
+          ? "„Dnes“ ukazuje súčasný pás aj s prepínačmi, takže voľba Šenok · Lokality · Log sa neuplatní."
+          : "";
+    v.textContent = sprava;
+    v.style.display = sprava === "" ? "none" : "block";
+
+    document.getElementById("popis-pokyn").innerHTML = POPIS[stav.pokyn];
+    document.getElementById("popis-nav").innerHTML = dnes ? POPIS.N0 : POPIS[stav.nav];
+    for (const [id, kluc] of [["ov-pokyn", "pokyn"], ["ov-nav", "nav"], ["ov-faza", "faza"]]) {
+      for (const b of document.querySelectorAll(`#${id} button`)) b.setAttribute("aria-pressed", String(b.dataset.v === stav[kluc]));
+    }
+    for (const b of document.querySelectorAll("#ov-nav button")) b.disabled = dnes;
+  }
+
+  const POPIS = {
+    P0: `<span class="stitok">Pokyn · dnes</span><h3>Pás nad rukou</h3>
+      <ul><li class="minus">Pláva cez stôl: pri Cieli kola leží na lokalitách, pri Pitke je vysoký ~110 px.</li>
+      <li class="minus">Navigácia, pokyn a tlačidlá v jednom; výška skáče podľa fázy.</li>
+      <li class="minus">Text je orezaný na 2 riadky, cena sa stratí.</li></ul>`,
+    P1: `<span class="stitok">Pokyn · A</span><h3>Krídla ruky</h3>
+      <p>Ruka ostáva v strede. Vľavo od nej je pokyn (fáza a jedna-dve vety, výklad za ⓘ), vpravo tlačidlá ťahu a pečiatka NA EX!.</p>
+      <ul><li class="plus">Nad kartami nie je nič a stôl je celý vidno.</li>
+      <li class="plus">Výška je stála. Pokyn, karty a NA EX! sú v jednom pohľade.</li>
+      <li class="plus">Využije prázdne miesto vedľa ruky (na 1600 px asi 400 px na každej strane).</li>
+      <li class="minus">Pri 8+ kartách sa ruka zúži do stredu a karty sa viac prekrývajú.</li>
+      <li class="minus">Na mobile sa krídla presunú pod ruku ako dva riadky.</li></ul>`,
+    P2: `<span class="stitok">Pokyn · B</span><h3>Pod pásom fáz</h3>
+      <p>Riadok pokynu je prilepený hneď pod pásom fáz (Volba cieľa → Draft → …). Pás fáz hovorí <i>kde</i> v kole si, riadok pokynu <i>čo</i> máš urobiť.</p>
+      <ul><li class="plus">Nič neprekrýva: obsah sa posunie o 44 px.</li>
+      <li class="plus">Jeden riadok funguje na notebooku aj na mobile.</li>
+      <li class="minus">Tlačidlá a NA EX! sú ďaleko od ruky. Lepšie je nechať ich v pravom krídle (A).</li>
+      <li class="minus">Stôl stratí 44 px výšky natrvalo.</li></ul>`,
+    P3: `<span class="stitok">Pokyn · C</span><h3>Pri mieste ťahu</h3>
+      <p>Pokyn a potvrdenie sú v hlavičke panela, kde sa práve ťahá: Cieľ kola, Šenok, stôl. Panel Cieľ kola má pokyn vpravo už dnes, pás ho len opakuje.</p>
+      <ul><li class="plus">Pokyn je presne tam, kam pozeráš, a „potvrdiť“ hneď vedľa.</li>
+      <li class="plus">Nič neprekrýva.</li>
+      <li class="minus">Keď panel odroluješ, pokyn nevidíš. Treba malý ukazovateľ „↓ tvoj ťah“.</li>
+      <li class="minus">Najväčšia prestavba: každý panel dostane vlastnú hlavičku s tlačidlami.</li></ul>`,
+    P4: `<span class="stitok">Pokyn · D</span><h3>V hlavičke webu</h3>
+      <p>Prilepená hlavička má v strede ~600 px prázdna. Pokyn ide tam a tlačidlá do pravého krídla pri ruke.</p>
+      <ul><li class="plus">Nič neprekrýva a nič nepridáva na výške.</li>
+      <li class="plus">Vidno vždy, aj pri rolovaní.</li>
+      <li class="minus">Úplne hore, ďaleko od kariet. Oko tam pri ťahu nechodí.</li>
+      <li class="minus">Na mobile je v hlavičke miesto iba na fázu, nie na vetu.</li></ul>`,
+    N0: `<span class="stitok">Šenok · Lokality · Log</span><h3>Dnes v páse</h3><p>Pri variante „Dnes“ sú prepínače v páse vľavo.</p>`,
+    N1: `<span class="stitok">Prepínače · 1</span><h3>Hlavička webu</h3>
+      <p>Počas partie má hlavička v strede prázdne miesto (medzi „Spätná väzba“ a tvojím menom). Dajú sa doň tri prepínače s počtami, označené „stôl“.</p>
+      <ul><li class="plus">Hlavička je prilepená, takže prepínače vidno vždy, a stôl o nič nepríde.</li>
+      <li class="plus">Výzva „pozri Lokality“ (jantárový okraj) svieti tam, kde ju čakáš.</li>
+      <li class="minus">Miešajú sa herné prepínače s menu webu, treba ich oddeliť štítkom „stôl“.</li>
+      <li class="minus">Na mobile iba ikony s počtom.</li></ul>`,
+    N2: `<span class="stitok">Prepínače · 2</span><h3>Záložky na okraji</h3>
+      <p>Tri zvislé záložky na pravom okraji okna. Klik vysunie vrstvu sprava ako zásuvku.</p>
+      <ul><li class="plus">Vidno vždy a zaberú iba 34 px okraja.</li>
+      <li class="plus">Zásuvka sprava zakryje iba časť stola, nie celý.</li>
+      <li class="minus">Zvislý text sa číta horšie.</li>
+      <li class="minus">Na mobile skoro nie je miesto.</li></ul>`,
+    N3: `<span class="stitok">Prepínače · 3</span><h3>Pri svojom paneli</h3>
+      <p>Každý prepínač je pri paneli, ku ktorému patrí: Lokality pri Cieli kola, Šenok pri Drafte, Log pri tvojom paneli hráča.</p>
+      <ul><li class="plus">Logické a nič navyše.</li>
+      <li class="minus">Nie sú stále po ruke: v Pitke Lokality nevidno, Log je až dole na stránke.</li>
+      <li class="minus">Tri miesta namiesto jedného, takže sa horšie hľadajú.</li></ul>`,
+  };
+
+  for (const [id, kluc] of [["ov-pokyn", "pokyn"], ["ov-nav", "nav"], ["ov-faza", "faza"]]) {
+    document.getElementById(id).addEventListener("click", (e) => {
+      const b = e.target.closest("button");
+      if (b === null || b.disabled) return;
+      stav[kluc] = b.dataset.v;
+      vykresli();
+    });
+  }
+
+  const ram = document.getElementById("ram");
+  const javisko = document.getElementById("javisko");
+  const mierka = () => { javisko.style.transform = `scale(${ram.clientWidth / 1600})`; };
+  new ResizeObserver(mierka).observe(ram);
+  mierka();
+  vykresli();
+</script>
+</body>
+</html>

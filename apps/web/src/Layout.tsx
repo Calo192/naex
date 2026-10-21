@@ -66,6 +66,8 @@ export function Layout({
               </Odkaz>
             ))}
           </nav>
+          {/* Počas partie sem herná plocha cez portál dá ovládanie partie (vzdať sa, odísť…). */}
+          <div id="hlavicka-hra" className="hlavicka-hra" />
           <div className="ucet" ref={menuRef}>
             {!nacitane ? null : ja === null ? (
               <>

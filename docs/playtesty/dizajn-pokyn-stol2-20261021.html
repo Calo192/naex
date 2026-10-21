@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pokyn v strede stola</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Bitter:wght@700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --pozadie: #14110e;
+    --plocha: #1e1914;
+    --plocha-2: #28211a;
+    --plocha-3: #332a21;
+    --okraj: #3d3229;
+    --okraj-svetly: #57483a;
+    --text: #f1e8d8;
+    --tlmeny: #b6a790;
+    --slaby: #8b7d6a;
+    --akcent: #e9ad45;
+    --na-akcente: #2b1b03;
+    --cervena: #d0563f;
+    --cervena-text: #e5735c;
+    --tehla-tmava: #a8341f;
+    --zelena: #7cbf74;
+    --ja: #5cc0cf;
+    --su: #e0805f;
+    --plst-okraj: #5caa6a;
+    --nadpis: "Bitter", Georgia, serif;
+    --pismo: Roboto, "Segoe UI", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--pozadie); color: var(--text); font: 400 15px/1.5 var(--pismo); }
+  main { max-width: 1400px; margin: 0 auto; padding: 32px 16px 80px; }
+  h1 { font: 800 2rem/1.15 var(--nadpis); margin: 0 0 6px; }
+  h2 { font: 800 1.35rem/1.2 var(--nadpis); margin: 44px 0 12px; }
+  h3 { font: 700 1.05rem/1.3 var(--nadpis); margin: 0; }
+  p { margin: 0 0 10px; color: var(--tlmeny); }
+  b, strong { color: var(--text); }
+  .podnadpis { color: var(--slaby); font-size: 0.9rem; margin-bottom: 18px; }
+  .zaklad { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+  .zaklad > div { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 10px; padding: 12px 14px; }
+  .stitok { font: 700 0.7rem/1 var(--pismo); letter-spacing: 0.1em; text-transform: uppercase; color: var(--akcent); display: block; margin-bottom: 6px; }
+
+  .ovladanie { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; gap: 10px 24px; align-items: center; padding: 12px 0; background: var(--pozadie); border-bottom: 1px solid var(--okraj); margin-top: 28px; }
+  .skupina { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .skupina > span { font: 700 0.7rem/1 var(--pismo); letter-spacing: 0.1em; text-transform: uppercase; color: var(--slaby); margin-right: 4px; }
+  .skupina button { font: 500 0.88rem/1 var(--pismo); color: var(--tlmeny); background: var(--plocha); border: 1px solid var(--okraj); border-radius: 8px; padding: 8px 11px; cursor: pointer; min-height: 36px; }
+  .skupina button:hover { color: var(--text); border-color: var(--okraj-svetly); }
+  .skupina button[aria-pressed="true"] { color: var(--na-akcente); background: var(--akcent); border-color: var(--akcent); font-weight: 700; }
+
+  .galeria { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 18px; }
+  .galeria.jeden { grid-template-columns: 1fr; }
+  .mock { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+  .mock-hlava { display: flex; align-items: baseline; gap: 10px; padding: 12px 16px 8px; }
+  .mock-cislo { font: 800 1.6rem/1 var(--nadpis); color: var(--akcent); }
+  .mock-zdroj { font: 500 0.75rem/1 var(--pismo); color: var(--slaby); border: 1px solid var(--okraj); border-radius: 5px; padding: 3px 6px; }
+  .ram { position: relative; width: 100%; aspect-ratio: 1600 / 1000; overflow: hidden; background: var(--pozadie); cursor: zoom-in; }
+  .galeria.jeden .ram { cursor: zoom-out; }
+  .javisko { position: absolute; left: 0; top: 0; width: 1600px; height: 1000px; transform-origin: 0 0; font-family: var(--pismo); }
+  .mock-popis { padding: 12px 16px 16px; }
+  .mock-popis ul { margin: 6px 0 0; padding-left: 18px; color: var(--tlmeny); font-size: 0.93rem; }
+  .mock-popis li { margin: 2px 0; }
+  .plus::marker { content: "+  "; color: var(--zelena); font-weight: 700; }
+  .minus::marker { content: "−  "; color: var(--cervena); font-weight: 700; }
+  .vyska { font: 500 0.8rem/1 var(--pismo); color: var(--slaby); margin-left: auto; white-space: nowrap; }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.92rem; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--okraj); vertical-align: top; }
+  th { font: 700 0.72rem/1.2 var(--pismo); letter-spacing: 0.08em; text-transform: uppercase; color: var(--slaby); }
+  td { color: var(--tlmeny); }
+  td:first-child { color: var(--text); font-weight: 500; white-space: nowrap; }
+  .ok { color: var(--zelena); } .zle { color: var(--cervena); } .stred { color: var(--akcent); }
+  .odporucanie { margin-top: 16px; padding: 14px 16px; border-left: 4px solid var(--zelena); background: var(--plocha); border-radius: 0 10px 10px 0; }
+  ol.otazky li { margin: 6px 0; color: var(--tlmeny); }
+
+  @media (max-width: 900px) {
+    .galeria, .zaklad { grid-template-columns: 1fr; }
+    td:first-child { white-space: normal; }
+  }
+
+  /* ---------- prvky mockupu (súradnice snímky 1600 × 1000) ---------- */
+  .m { position: absolute; }
+  .rez { position: absolute; left: 0; width: 1600px; background-repeat: no-repeat; }
+  .m-tag { font: 700 13px/1 var(--pismo); letter-spacing: 0.12em; text-transform: uppercase; color: var(--zelena); white-space: nowrap; }
+  .m-tag.su { color: var(--su); }
+  .m-txt { font: 400 15px/1.4 var(--pismo); color: var(--text); }
+  .m-txt.tlmeny { color: var(--tlmeny); }
+  .m-info { display: inline-grid; place-items: center; width: 20px; height: 20px; margin-left: 6px; border-radius: 50%; border: 1px solid var(--okraj-svetly); color: var(--tlmeny); font: 700 12px/1 var(--pismo); vertical-align: 1px; }
+  .m-btn { display: inline-flex; align-items: center; gap: 7px; min-height: 42px; padding: 0 15px; font: 500 15px/1 var(--pismo); color: var(--text); background: var(--plocha-3); border: 1px solid var(--okraj-svetly); border-radius: 9px; white-space: nowrap; }
+  .m-btn .cena { color: var(--slaby); font-size: 13px; }
+  .m-btn.tichy { background: rgb(20 17 14 / .6); border-color: var(--okraj); color: var(--tlmeny); }
+  .m-btn.mensi { min-height: 34px; padding: 0 11px; font-size: 14px; }
+  .m-naex { position: relative; display: inline-flex; align-items: center; min-height: 48px; padding: 0 20px; white-space: nowrap; font: 800 20px/1 var(--nadpis); letter-spacing: 0.04em; text-transform: uppercase; color: #fff4e2; background: var(--tehla-tmava); border: 2px solid var(--cervena); border-radius: 10px; box-shadow: 0 3px 0 #5e1b0f, 0 0 0 4px rgb(208 86 63 / 0.18); rotate: -2deg; }
+  .m-naex::after { content: ""; position: absolute; inset: 3px; border: 1px dashed rgb(255 244 226 / 0.45); border-radius: 7px; pointer-events: none; }
+  .m-naex.velka { min-height: 62px; padding: 0 30px; font-size: 27px; rotate: -4deg; }
+  .m-naex.mensi { min-height: 40px; padding: 0 14px; font-size: 17px; }
+  .m-naex small { font: 500 12px/1.2 var(--pismo); letter-spacing: 0; text-transform: none; color: #ffd9cc; }
+  .m-vrstva { display: inline-flex; align-items: center; gap: 7px; height: 30px; padding: 0 11px; font: 500 14px/1 var(--pismo); color: var(--tlmeny); background: var(--plocha-3); border: 1px solid var(--okraj); border-radius: 8px; white-space: nowrap; }
+  .m-vrstva .n { font-size: 12px; color: var(--slaby); background: var(--plocha); border-radius: 5px; padding: 3px 6px; }
+  .m-vrstva .n.nove { background: var(--akcent); color: var(--na-akcente); font-weight: 700; }
+  .h-btn { display: inline-flex; align-items: center; height: 32px; padding: 0 11px; font: 500 14px/1 var(--pismo); color: var(--tlmeny); border: 1px solid var(--okraj); border-radius: 8px; white-space: nowrap; }
+  .h-btn.cervene { color: var(--cervena-text); border-color: rgb(208 86 63 / .55); }
+  .h-btn.tichy { border-color: transparent; }
+  .bodky::after { content: "…"; }
+  .pilulka { height: 100%; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 0 18px; background: var(--plocha); border: 2px solid var(--zelena); border-radius: 999px; box-shadow: 0 4px 14px rgb(0 0 0 / .4); }
+  .pilulka.su { border-color: var(--su); }
+  .bodky-pitky { display: inline-flex; gap: 5px; }
+  .bodky-pitky i { width: 11px; height: 11px; border-radius: 50%; border: 2px solid var(--akcent); }
+  .bodky-pitky i.plna { background: var(--akcent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Pokyn v strede stola</h1>
+  <div class="podnadpis">NA EX! · herný stôl · 8 ďalších mockupov podľa 4 (pilulka hore, pult dole) a 8 (ovládač v strede) · Pitka 1/3 · 2026-10-21</div>
+  <p>
+    Z variantov 4 a 8 som vzal to, čo majú spoločné: <b>všetko je súmerné okolo lokality v strede stola</b>
+    a pokyn s tlačidlami sedí na <b>hranách stola</b> alebo priamo <b>pod lokalitou</b>, takže NA EX! je v strede.
+    Hlavička webu (ovládanie partie), pás fáz (Šenok · Lokality · Log) a rohy (Ruka, Odhodené) sú rovnaké ako v predošlých mockupoch.
+  </p>
+  <div class="zaklad">
+    <div><span class="stitok">Zo 4 · Pilulka hore, pult dole</span>Pokyn na hornej hrane stola, tlačidlá ako pult na dolnej hrane. Stôl rastie málo.</div>
+    <div><span class="stitok">Z 8 · Ovládač v strede</span>Veta a tlačidlá pod lokalitou, NA EX! presne v strede stola, súmerne s pilulkou „Tvoj ťah“.</div>
+  </div>
+
+  <div class="ovladanie">
+    <div class="skupina" id="ov-stav"><span>Stav</span>
+      <button data-v="moj">Tvoj ťah</button>
+      <button data-v="caka">Čakáš na súpera</button>
+    </div>
+    <div class="skupina" id="ov-mriezka"><span>Zobrazenie</span>
+      <button data-v="dva">2 vedľa seba</button>
+      <button data-v="jeden">1 na šírku</button>
+    </div>
+    <span style="color:var(--slaby);font-size:.85rem">Klik na mockup ho zväčší.</span>
+  </div>
+
+  <div class="galeria" id="galeria"></div>
+
+  <h2>Porovnanie</h2>
+  <table>
+    <thead><tr><th>Mockup</th><th>Stôl vyšší o</th><th>Pokyn a tlačidlá spolu</th><th>NA EX! v strede</th><th>Dlhší pokyn</th><th>Mobil</th></tr></thead>
+    <tbody id="tabulka"></tbody>
+  </table>
+
+  <div class="odporucanie">
+    <h3>Odporúčam 6 · Ovládač Pitky, s výberom karty z 8</h3>
+    <p style="margin:6px 0 0">
+      Rozvíja tvoju obľúbenú 8, ale je takmer zadarmo: riadok „Pitka 1 z 3 ●○○ … kto začína“ nad stolom zmizne,
+      lebo to isté povie ovládač. Stôl je tak vyšší iba o 14 px. Celý ťah je na jednom mieste pod lokalitou:
+      kde v kole si, čo robiť, ako to urobiť, a NA EX! v strede.
+      Zo <b>8 · Výber karty v ovládači</b> si vezmi dvojkrokový ťah: najprv klik na kartu, potom NA EX! s jej menom.
+      Ak chceš stôl úplne bez zmeny výšky, je tu <b>5 · Kapsula dole</b>.
+    </p>
+  </div>
+
+  <h2>Otázky</h2>
+  <ol class="otazky">
+    <li>Ktoré z týchto ôsmich, prípadne aký spoj (napr. 6 + výber karty z 8)?</li>
+    <li>Smie riadok s priebehom Pitky nad stolom zmiznúť, ak jeho obsah prevezme ovládač (mockup 6)?</li>
+    <li>Pečiatka NA EX! na hrane stola (2) je výraznejšia než dnes. Nie je už priveľká?</li>
+    <li>Keď čakáš na súpera, má byť ovládač v strede prázdny, alebo má ukazovať, čo práve robí súper (ako tu)?</li>
+  </ol>
+</main>
+
+<script>
+  const OBR = "dizajn-pokyn-bar-20261021-1639/zaklad-stol-pitka.jpg";
+  const Y = 712; // spodok línie, tesne nad spodným okrajom stola
+  const RUKA = 850;
+  const PILULKA_Y = 221; // pilulka „Tvoj ťah“ na hornej hrane stola
+  const LOKALITA_X = 800; // stred stĺpca lokality
+  const stav = { stav: "moj", mriezka: "dva" };
+
+  const rez = (odY, vyska, naY) =>
+    vyska <= 0 ? "" : `<div class="rez" style="top:${naY}px;height:${vyska}px;background-image:url('${OBR}');background-position:0 ${-odY}px"></div>`;
+  const el = (x, y, w, h, obsah, styl = "") =>
+    `<div class="m" style="left:${x}px;top:${y}px;${w === null ? "" : `width:${w}px;`}${h === null ? "" : `height:${h}px;`}${styl}">${obsah}</div>`;
+  // Prvok vystredený na x (napr. pod lokalitou).
+  const stred = (x, y, w, h, obsah, styl = "") => el(x - w / 2, y, w, h, obsah, styl);
+
+  // Pruh čistej plsti (riadky 712–724) natiahnutý na výšku F.
+  const vypln = (y, F) => {
+    const s = F / 12;
+    return el(0, y, 1600, F, "", `background-image:url('${OBR}');background-repeat:no-repeat;background-size:1600px ${1000 * s}px;background-position:0 ${-712 * s}px`);
+  };
+
+  // Podklad: stôl sa predĺži o F; voliteľne sa vystrihne riadok priebehu Pitky nad stolom (128–214).
+  function podklad(F, bezRiadkuPitky) {
+    const odober = bezRiadkuPitky ? 86 : 0;
+    let h = rez(0, 128, 0);
+    h += rez(128 + odober, Y - 128 - odober, 128);
+    const y = Y - odober;
+    if (F > 0) h += vypln(y, F);
+    h += rez(Y, RUKA - y - F, y + F);
+    h += rez(RUKA, 1000 - RUKA, RUKA);
+    return { html: h, dy: -odober };
+  }
+
+  function spolocne(caka, dy, bezPilulky) {
+    let h = "";
+    h += el(800, 14, 535, 36,
+      `<div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;height:100%">
+        <span style="font:700 12px/1 var(--pismo);letter-spacing:.12em;color:var(--akcent);margin-right:4px">PARTIA 65X7</span>
+        <span style="font:500 14px/1 var(--pismo);color:var(--cervena-text);margin-right:2px">○ Dizajn 2 odpojený</span>
+        <span class="h-btn">kontumačná výhra</span><span class="h-btn cervene">vzdať sa</span><span class="h-btn tichy">odísť</span>
+      </div>`);
+    h += el(1140, 66, 438, 38, "", "background:#282119");
+    h += el(1150, 66, 422, 38,
+      `<div style="display:flex;justify-content:flex-end;align-items:center;gap:7px;height:100%">
+        <span class="m-vrstva">Šenok <span class="n">0</span></span><span class="m-vrstva">Lokality <span class="n">4</span></span><span class="m-vrstva">Log <span class="n nove">3</span></span>
+      </div>`);
+    if (caka && !bezPilulky) {
+      h += stred(LOKALITA_X, PILULKA_Y + dy, 240, 30, `<div class="pilulka su" style="font:700 14px/1 var(--pismo);letter-spacing:.12em;color:var(--su)">NA ŤAHU: DIZAJN 2</div>`);
+    }
+    return h;
+  }
+
+  const VETA = "Daj NA EX na kartu so značkou, alebo Pitku ukonči.";
+  const SUPER = `Na ťahu je <b>Dizajn 2</b><span class="bodky"></span>`;
+  const NAPOSLEDY = `naposledy: NA EX na tvojho Pijana`;
+  const cig = (m) => `<span class="m-btn tichy${m ? " mensi" : ""}">🚬 3 ▾</span>`;
+  const hotovo = (m) => `<span class="m-btn${m ? " mensi" : ""}">hotovo</span>`;
+  const naex = (trieda = "") => `<span class="m-naex ${trieda}">NA EX!</span>`;
+  const pitka = (n = 1) => `<span class="bodky-pitky">${[1, 2, 3].map((i) => `<i class="${i <= n ? "plna" : ""}"></i>`).join("")}</span>`;
+
+  // Rozšírená pilulka na hornej hrane stola (zo 4).
+  function hornaPilulka(caka, dy, sirka = 660) {
+    return stred(LOKALITA_X, PILULKA_Y - 2 + dy, sirka, 34,
+      `<div class="pilulka${caka ? " su" : ""}">
+        ${caka ? `<span class="m-tag su">Pitka 1/3 · čakáš</span><span class="m-txt">${SUPER}</span>` : `<span class="m-tag">● Pitka 1/3 · tvoj ťah</span><span class="m-txt" style="white-space:nowrap">${VETA}<span class="m-info">i</span></span>`}
+      </div>`);
+  }
+
+  const VARIANTY = [
+    {
+      nazov: "Pilulka a pult s NA EX! v strede",
+      zdroj: "4 + 8",
+      F: 40,
+      popis: "Zo 4: pokyn v pilulke hore, pult na spodnej hrane. Z 8: NA EX! je v strede pultu, presne pod lokalitou. Cigarety vľavo, hotovo vpravo.",
+      plus: ["Stôl rastie iba o 40 px.", "NA EX! je v osi stola: lokalita, pod ňou NA EX!.", "Hore je, čo robiť, dole je, čím to urobiť."],
+      minus: ["Pokyn a tlačidlá sú od seba vzdialené na výšku stola.", "Do pilulky sa zmestí iba jedna veta."],
+      tab: ["40 px", "stred:hore / dole", "ok:áno", "zle:jedna veta", "ok:áno"],
+      kresli(caka, dy) {
+        let h = hornaPilulka(caka, dy);
+        h += stred(LOKALITA_X, Y + 5, 470, 62,
+          `<div style="height:100%;display:flex;align-items:center;justify-content:center;gap:16px;padding:0 16px;background:var(--plocha);border:2px solid var(--plst-okraj);border-radius:16px;box-shadow:0 6px 18px rgb(0 0 0 / .45)">
+            ${caka ? `<span class="m-txt tlmeny">${NAPOSLEDY}</span>` : cig() + naex() + hotovo()}
+          </div>`);
+        return h;
+      },
+    },
+    {
+      nazov: "Pečiatka na hrane",
+      zdroj: "4",
+      F: 40,
+      popis: "NA EX! je veľká pečiatka „pritlačená“ na spodnú hranu stola v strede, napoly na plsti. Hotovo a cigarety sú ako jazýčky na tej istej hrane.",
+      plus: ["NA EX! je hlavná postava stola, rozvíja to, čo sa ti na ňom páči.", "Nevyzerá to ako ovládací panel, ale ako súčasť stola."],
+      minus: ["Pečiatka je výrazná aj vtedy, keď NA EX! dať nechceš.", "Väčšia pečiatka znamená aj väčšie riziko omylu (potvrdzovací krok ostáva)."],
+      tab: ["40 px", "stred:hore / dole", "ok:najviac", "zle:jedna veta", "ok:áno"],
+      kresli(caka, dy) {
+        let h = hornaPilulka(caka, dy);
+        if (caka) {
+          h += stred(LOKALITA_X, Y + 12, 360, 40, `<div class="pilulka su"><span class="m-txt tlmeny">${NAPOSLEDY}</span></div>`);
+          return h;
+        }
+        const jazyk = (obsah, x) =>
+          stred(x, Y + 15, 150, 44, `<div style="height:100%;display:grid;place-items:center;background:var(--plocha);border:2px solid var(--plst-okraj);border-radius:12px;box-shadow:0 5px 14px rgb(0 0 0 / .45)">${obsah}</div>`);
+        h += jazyk(`<span class="m-txt">🚬 3 ▾</span>`, LOKALITA_X - 225);
+        h += jazyk(`<span class="m-txt">hotovo</span>`, LOKALITA_X + 225);
+        h += stred(LOKALITA_X, Y - 4, 240, 74, `<div style="height:100%;display:grid;place-items:center">${naex("velka")}</div>`);
+        return h;
+      },
+    },
+    {
+      nazov: "Pätka lokality",
+      zdroj: "8",
+      F: 64,
+      popis: "Stĺpec lokality (svetlejší pás v strede) pokračuje až dolu a na jeho konci sú tlačidlá: NA EX! je doslova „pod lokalitou“. Pokyn je v pilulke hore.",
+      plus: ["Jasný vzťah: ťah sa robí na lokalite, ovládač patrí k nej.", "Úzke (iba šírka stĺpca), takže obe strany stola ostanú voľné."],
+      minus: ["Stĺpec je úzky (≈210 px), tlačidlá musia ísť pod seba alebo byť menšie.", "Pri lokalite otočenej o 180° to nič nemení, iba to môže pôsobiť preplnene."],
+      tab: ["64 px", "stred:hore / dole", "ok:áno", "zle:jedna veta", "ok:áno"],
+      kresli(caka, dy) {
+        let h = hornaPilulka(caka, dy);
+        h += el(695, Y - 4, 210, 64 + 8, "", "background:rgb(233 173 69 / .07);border-radius:0 0 12px 12px");
+        h += stred(LOKALITA_X, Y + 4, 210, 58,
+          caka
+            ? `<div style="height:100%;display:grid;place-items:center;text-align:center" class="m-txt tlmeny">${NAPOSLEDY}</div>`
+            : `<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px">${naex("mensi")}<span style="display:flex;gap:6px">${cig(true)}${hotovo(true)}</span></div>`,
+          "transform:scale(.95)");
+        return h;
+      },
+    },
+    {
+      nazov: "Kapsula hore",
+      zdroj: "4",
+      F: 0,
+      popis: "Celý ťah je v jednej kapsule na hornej hrane stola: fáza, veta, cigarety, hotovo a NA EX!. Dolná hrana ostáva čistá.",
+      plus: ["Stôl nerastie ani o pixel.", "Pokyn a tlačidlá sú spolu, na jednom mieste.", "Je to prvé, čo uvidíš pri pohľade na stôl."],
+      minus: ["Kapsula zakryje kúsok popisov strán („Na parkete“, „Pred vchodom“). Treba ich posunúť nižšie.", "NA EX! je ďaleko od ruky."],
+      tab: ["0 px", "ok:áno", "ok:áno", "zle:jedna veta", "stred:dva riadky"],
+      kresli(caka, dy) {
+        return stred(LOKALITA_X, PILULKA_Y - 14 + dy, 1080, 56,
+          `<div class="pilulka${caka ? " su" : ""}" style="justify-content:space-between;padding:0 6px 0 22px">
+            ${caka ? `<span class="m-tag su">Pitka 1/3 · čakáš</span><span class="m-txt" style="flex:1">${SUPER} <span style="color:var(--slaby)">· ${NAPOSLEDY}</span></span>` : `<span class="m-tag">● Pitka 1/3 · tvoj ťah</span><span class="m-txt" style="flex:1">${VETA}<span class="m-info">i</span></span><span style="display:flex;gap:8px;align-items:center">${cig(true)}${hotovo(true)}${naex("mensi")}</span>`}
+          </div>`);
+      },
+    },
+    {
+      nazov: "Kapsula dole",
+      zdroj: "4",
+      F: 50,
+      popis: "Pilulka „Tvoj ťah“ hore ostane ako dnes, iba ukazuje, kto je na ťahu. Pokyn a všetky tlačidlá sú v jednej kapsule na spodnej hrane stola.",
+      plus: ["Pokyn a tlačidlá spolu, blízko ruky.", "Horná pilulka zostane krátka a čitateľná.", "Stôl rastie iba o 50 px."],
+      minus: ["Kapsula je široká (≈1000 px), pri úzkom okne pôjde na dva riadky.", "NA EX! nie je v strede, ale na konci."],
+      tab: ["50 px", "ok:áno", "stred:vpravo", "stred:1–2 vety", "stred:dva riadky"],
+      kresli(caka, dy) {
+        return stred(LOKALITA_X, Y + 4, 1000, 60,
+          `<div class="pilulka${caka ? " su" : ""}" style="border-radius:18px;justify-content:space-between;padding:0 8px 0 22px">
+            ${caka ? `<span class="m-tag su">Pitka 1/3</span><span class="m-txt" style="flex:1">${SUPER} <span style="color:var(--slaby)">· ${NAPOSLEDY}</span></span>` : `<span class="m-tag">● Pitka 1/3</span><span class="m-txt" style="flex:1">${VETA}<span class="m-info">i</span></span><span style="display:flex;gap:10px;align-items:center">${cig()}${hotovo()}${naex()}</span>`}
+          </div>`);
+      },
+    },
+    {
+      nazov: "Ovládač Pitky",
+      zdroj: "8",
+      F: 100,
+      bezRiadkuPitky: true,
+      bezPilulky: true,
+      popis: "Riadok „Pitka 1 z 3 ●○○ · 1. ty začínaš · 2. Dizajn 2 čaká“ nad stolom zmizne a jeho obsah prevezme ovládač v strede: kde v Pitke si, kto je na ťahu, čo robiť a tlačidlá.",
+      plus: ["Stôl je vyšší iba o 14 px, lebo riadok nad ním zmizol.", "Celý ťah je na jednom mieste: priebeh, pokyn, tlačidlá.", "NA EX! v strede pod lokalitou, ako v 8."],
+      minus: ["Info o tom, kto začína ďalšiu Pitku, sa presunie do ovládača (menej miesta).", "Najväčšia prestavba z ôsmich."],
+      tab: ["+14 px (100 − 86)", "ok:áno", "ok:áno", "ok:2 vety", "ok:áno"],
+      kresli(caka, dy) {
+        const y = Y + dy;
+        // Horná pilulka už nehovorí „Tvoj ťah“, ale kto je na ťahu — prekrytie pôvodnej.
+        let h = stred(LOKALITA_X, PILULKA_Y + dy, 240, 30,
+          `<div class="pilulka${caka ? " su" : ""}" style="font:700 14px/1 var(--pismo);letter-spacing:.12em;color:${caka ? "var(--su)" : "var(--zelena)"}">${caka ? "NA ŤAHU: DIZAJN 2" : "TVOJ ŤAH"}</div>`);
+        h += stred(LOKALITA_X, y + 4, 900, 92,
+          `<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px">
+            <div style="display:flex;gap:12px;align-items:center">
+              <span class="m-tag" style="color:var(--akcent)">Pitka 1 z 3</span>${pitka(1)}
+              <span class="m-txt" style="color:var(--slaby)">·</span>
+              ${caka ? `<span class="m-txt">${SUPER} <span style="color:var(--slaby)">· ${NAPOSLEDY}</span></span>` : `<span class="m-txt">${VETA}<span class="m-info">i</span></span>`}
+            </div>
+            <div style="display:flex;gap:16px;align-items:center">
+              ${caka ? `<span class="m-txt tlmeny" style="font-size:14px">ďalšiu Pitku začína Dizajn 2 · ďalšie Zhromaždenie: limit 3 : 3</span>` : cig() + naex() + hotovo()}
+            </div>
+          </div>`);
+        return h;
+      },
+    },
+    {
+      nazov: "Výčapný pult",
+      zdroj: "4 + 8",
+      F: 56,
+      popis: "Drevený pult široký ako línia kariet sedí na spodnej hrane stola. Vľavo je pokyn, v strede pod lokalitou NA EX!, vpravo hotovo a cigarety.",
+      plus: ["Krčmová metafora: pult, na ktorý „búchneš“ NA EX!.", "Pult je široký ako línia, takže drží v stĺpcoch strán aj stredu."],
+      minus: ["Drevená textúra je ďalšia grafika (a ďalšia farba v schémach).", "Pri krátkej línii je pult úzky a veta sa zalomí."],
+      tab: ["56 px", "ok:áno", "ok:áno", "stred:1–2 vety", "stred:dva riadky"],
+      kresli(caka, dy) {
+        const drevo = "background:linear-gradient(180deg,#6b4428 0%,#55351f 45%,#43291a 100%);border:1px solid #2a190e;box-shadow:inset 0 2px 0 rgb(255 220 170 / .25), 0 8px 18px rgb(0 0 0 / .5)";
+        return stred(LOKALITA_X, Y + 4, 1040, 64,
+          `<div style="height:100%;display:grid;grid-template-columns:1fr 210px 1fr;align-items:center;border-radius:10px;${drevo}">
+            <span style="padding:0 18px;display:flex;flex-direction:column;gap:4px">${caka ? `<span class="m-tag su" style="color:#ffb59a">Pitka 1/3 · čakáš</span><span class="m-txt" style="font-size:14px">${SUPER}</span>` : `<span class="m-tag" style="color:#b9f0b0">● Pitka 1/3 · tvoj ťah</span><span class="m-txt" style="font-size:14px">${VETA}</span>`}</span>
+            <span style="display:grid;place-items:center">${caka ? "" : naex()}</span>
+            <span style="display:flex;gap:8px;justify-content:flex-end;padding-right:14px">${caka ? `<span class="m-txt" style="font-size:14px;color:#e8d6bd">${NAPOSLEDY}</span>` : cig() + hotovo()}</span>
+          </div>`);
+      },
+    },
+    {
+      nazov: "Výber karty v ovládači",
+      zdroj: "8",
+      F: 100,
+      popis: "Ovládač z 8 v druhom kroku ťahu: klikol si na svojho Pijana, karta svieti a NA EX! hovorí, na čo ide a čo spraví. Vedľa je „zrušiť“.",
+      plus: ["Dvojkrokový ťah je na jednom mieste: výber na stole, potvrdenie pod lokalitou.", "Tlačidlo hovorí sloveso aj predmet aj následok, takže chýb je menej.", "Dobre to nadväzuje na to, ako NA EX! funguje dnes (náhľad)."],
+      minus: ["Stôl rastie o 100 px.", "Ovládač mení tvar podľa kroku. Treba plynulý prechod."],
+      tab: ["100 px", "ok:áno", "ok:áno", "ok:2 vety + náhľad", "ok:áno"],
+      kresli(caka, dy) {
+        if (caka) {
+          return stred(LOKALITA_X, Y + 6, 800, 88,
+            `<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px">
+              <div style="display:flex;gap:12px;align-items:center"><span class="m-tag su">Pitka 1/3 · čakáš</span><span class="m-txt">${SUPER}</span></div>
+              <span class="m-txt tlmeny" style="font-size:14px">${NAPOSLEDY} — odpovedať môžeš kartou alebo vlastným NA EX</span>
+            </div>`);
+        }
+        // Vybraná karta na stole (tvoj Pijan).
+        let h = el(289, 381, 205, 308, "", "border:3px solid var(--akcent);border-radius:12px;box-shadow:0 0 0 6px rgb(233 173 69 / .25), 0 0 30px rgb(233 173 69 / .45)");
+        h += el(330, 356, null, 24, `<span style="display:inline-block;padding:5px 10px;border-radius:6px;background:var(--akcent);color:var(--na-akcente);font:700 12px/1 var(--pismo);letter-spacing:.08em">VYBRANÁ</span>`);
+        h += stred(LOKALITA_X, Y + 4, 900, 92,
+          `<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px">
+            <div style="display:flex;gap:12px;align-items:center"><span class="m-tag">● Pitka 1/3 · krok 2 z 2</span><span class="m-txt">NA EX na <b>Pijana</b> zruší jeho 2 aktívne akcie a zdvojí neaktívne · pečeň +1</span></div>
+            <div style="display:flex;gap:14px;align-items:center">
+              <span class="m-btn tichy mensi">zrušiť</span>
+              <span class="m-naex">NA EX na Pijana</span>
+              <span class="m-btn tichy mensi" style="opacity:.5">hotovo</span>
+            </div>
+          </div>`);
+        return h;
+      },
+    },
+  ];
+
+  function vykresli() {
+    const caka = stav.stav === "caka";
+    const g = document.getElementById("galeria");
+    g.className = stav.mriezka === "jeden" ? "galeria jeden" : "galeria";
+    g.innerHTML = VARIANTY.map((v, i) => {
+      const p = podklad(v.F, v.bezRiadkuPitky === true);
+      const cisto = v.F - (v.bezRiadkuPitky ? 86 : 0);
+      return `
+      <article class="mock">
+        <div class="mock-hlava"><span class="mock-cislo">${i + 1}</span><h3>${v.nazov}</h3><span class="mock-zdroj">z ${v.zdroj}</span><span class="vyska">stôl ${cisto >= 0 ? "+" : "−"}${Math.abs(cisto)} px</span></div>
+        <div class="ram"><div class="javisko">${p.html}${spolocne(caka, p.dy, v.bezPilulky === true)}${v.kresli(caka, p.dy)}</div></div>
+        <div class="mock-popis">
+          <p>${v.popis}</p>
+          <ul>${v.plus.map((t) => `<li class="plus">${t}</li>`).join("")}${v.minus.map((t) => `<li class="minus">${t}</li>`).join("")}</ul>
+        </div>
+      </article>`;
+    }).join("");
+    for (const r of g.querySelectorAll(".ram")) {
+      r.addEventListener("click", () => {
+        stav.mriezka = stav.mriezka === "jeden" ? "dva" : "jeden";
+        vykresli();
+        r.scrollIntoView?.({ block: "center" });
+      });
+    }
+    mierka();
+    for (const [id, kluc] of [["ov-stav", "stav"], ["ov-mriezka", "mriezka"]]) {
+      for (const b of document.querySelectorAll(`#${id} button`)) b.setAttribute("aria-pressed", String(b.dataset.v === stav[kluc]));
+    }
+  }
+
+  function mierka() {
+    for (const r of document.querySelectorAll(".ram")) r.firstElementChild.style.transform = `scale(${r.clientWidth / 1600})`;
+  }
+
+  document.getElementById("tabulka").innerHTML = VARIANTY.map(
+    (v, i) =>
+      `<tr><td>${i + 1} · ${v.nazov}</td>${v.tab
+        .map((b) => {
+          const [trieda, text] = b.includes(":") ? b.split(/:(.*)/s) : ["", b];
+          return `<td class="${trieda}">${text}</td>`;
+        })
+        .join("")}</tr>`,
+  ).join("");
+
+  for (const [id, kluc] of [["ov-stav", "stav"], ["ov-mriezka", "mriezka"]]) {
+    document.getElementById(id).addEventListener("click", (e) => {
+      const b = e.target.closest("button");
+      if (b === null) return;
+      stav[kluc] = b.dataset.v;
+      vykresli();
+    });
+  }
+  for (const cast of location.hash.slice(1).split("-")) {
+    if (cast === "caka" || cast === "moj") stav.stav = cast;
+    if (cast === "jeden" || cast === "dva") stav.mriezka = cast;
+  }
+  new ResizeObserver(mierka).observe(document.body);
+  vykresli();
+</script>
+</body>
+</html>

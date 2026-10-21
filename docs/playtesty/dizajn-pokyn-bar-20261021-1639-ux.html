@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UX návrh — pás pokynov nad rukou (pokyn-bar-20261021-1639)</title>
+<style>
+:root{--bg:#14110e;--pl:#1e1914;--pl2:#2a231c;--tx:#f1e8d8;--sl:#b9ab95;--ja:#e9ad45;--te:#d0563f;--ze:#7cbf74;--mo:#6fb3d2;--ok:#3a3128;--wf:#3b342c;--wf2:#4a4239}
+@media (prefers-color-scheme: light){:root{--bg:#f7f2ea;--pl:#fffaf2;--pl2:#efe6d8;--tx:#221a12;--sl:#5d5245;--ja:#8a5a00;--te:#a8331f;--ze:#2f7a28;--mo:#1d6b8f;--ok:#d9cdb9;--wf:#e3dccf;--wf2:#d2c8b8}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:24px 16px 64px}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;line-height:1.25}
+h1{font-size:1.9rem;margin:.2em 0 .3em}
+h2{font-size:1.45rem;margin:2.2em 0 .6em;border-bottom:1px solid var(--ok);padding-bottom:.25em}
+h3{font-size:1.15rem;margin:1.4em 0 .4em}
+h4{margin:.8em 0 .3em}
+a{color:var(--ja)}
+a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible{outline:3px solid var(--ja);outline-offset:2px}
+code{font-size:.88em;overflow-wrap:anywhere}
+.meta{color:var(--sl);font-size:.93rem}
+.verdikt{background:var(--pl);border-left:4px solid var(--ja);padding:12px 16px;border-radius:6px}
+.mriezka{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.dlazdica{background:var(--pl);border:1px solid var(--ok);border-radius:8px;padding:12px 14px}
+.dlazdica b{color:var(--ja)}
+.cislo{font:700 2rem/1.1 Georgia,serif;color:var(--ja);display:block}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{text-align:left;vertical-align:top;padding:8px 8px;border-bottom:1px solid var(--ok)}
+th{color:var(--sl);font-weight:600}
+.tab-obal{overflow-x:auto}
+.z{display:inline-block;min-width:1.7em;text-align:center;border-radius:4px;padding:0 .3em;font-weight:700;color:#14110e}
+.z4{background:#e0644c}.z3{background:#e9ad45}.z2{background:#c8b98f}.z1{background:#8f8574}.z0{background:#7cbf74}
+.stitok{display:inline-block;font-size:.78rem;border:1px solid var(--ok);border-radius:999px;padding:0 .55em;margin:0 .2em .2em 0;color:var(--sl)}
+.stitok.mala{border-color:var(--ze);color:var(--ze)}
+.stitok.stredna{border-color:var(--ja);color:var(--ja)}
+.stitok.velka{border-color:var(--te);color:var(--te)}
+.stitok.vyhra{border-color:var(--ze);color:var(--ze);font-weight:700}
+.stitok.odvazny{border-color:var(--te);color:var(--te);font-weight:700}
+.ano{color:var(--ze);font-weight:600}.nie{color:var(--te);font-weight:600}.cast{color:var(--ja);font-weight:600}
+.filtre{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 12px}
+.filtre button{min-height:44px;padding:0 14px;border-radius:6px;border:1px solid var(--ok);background:var(--pl);color:var(--tx);font:inherit;cursor:pointer}
+.filtre button[aria-pressed="true"]{background:var(--ja);color:#14110e;border-color:var(--ja)}
+figure{margin:12px 0 18px;background:var(--pl);border:1px solid var(--ok);border-radius:8px;padding:8px}
+figure img{max-width:100%;height:auto;display:block;border-radius:4px}
+figure.uzka img{max-width:390px;margin:0 auto}
+figcaption{font-size:.88rem;color:var(--sl);padding:6px 4px 0}
+.dve{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+@media (max-width:760px){.dve{grid-template-columns:1fr}}
+.tok{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+@media (max-width:700px){.tok{grid-template-columns:1fr}}
+.tok>div{background:var(--pl2);border:1px solid var(--ok);border-radius:8px;padding:10px 14px}
+.tok h4{margin:.2em 0 .4em;font-size:1rem}
+.tok ol{margin:0;padding-left:1.3em}
+.pred h4{color:var(--te)}.po h4{color:var(--ze)}
+.navrh{background:var(--pl);border:1px solid var(--ok);border-radius:10px;padding:4px 18px 16px;margin:18px 0}
+.navrh>h3{margin-top:.9em}
+.navrh dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:8px 0}
+.navrh dt{color:var(--sl);font-weight:600}
+.navrh dd{margin:0}
+@media (max-width:600px){.navrh dl{grid-template-columns:1fr}.navrh dt{margin-top:6px}}
+.vyber{display:flex;align-items:center;gap:10px;min-height:44px;margin:6px 0 0;font-weight:600}
+.vyber input{width:22px;height:22px}
+details{margin:8px 0}
+summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:600}
+.wf{background:var(--wf);border:1px dashed var(--sl);border-radius:8px;padding:10px;margin:10px 0;font-size:.9rem;color:var(--tx)}
+.wf .titul{font-size:.78rem;color:var(--sl);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.wf .r{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:6px 0}
+.wf .b{background:var(--wf2);border-radius:6px;padding:6px 10px}
+.wf .b.hl{outline:2px solid var(--ja)}
+.wf .b.nov{outline:2px dashed var(--mo)}
+.wf .b.tl{color:var(--sl)}
+.wf .b.rast{flex:1 1 220px}
+.wf .b.zle{outline:2px solid var(--te)}
+.wf .tlac{display:inline-flex;align-items:center;gap:4px;background:var(--wf2);border:1px solid var(--sl);border-radius:6px;padding:4px 12px;min-height:34px}
+.wf .tlac.hl{background:var(--ja);color:#14110e;border-color:var(--ja)}
+.wf .tlac.tiche{background:transparent}
+.wf .tlac small{color:inherit;opacity:.75}
+.wf .peciatka{display:inline-flex;align-items:center;min-height:40px;padding:4px 16px;border:2px solid var(--te);border-radius:8px;background:#7a2a1a;color:#fff4e2;font:800 1rem/1 Georgia,serif;letter-spacing:.04em;text-transform:uppercase;transform:rotate(-2deg);box-shadow:0 3px 0 #3d1209;outline:1px dashed rgba(255,244,226,.5);outline-offset:-5px}
+.wf .nadpis{font-weight:800;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ze)}
+.wf small{color:var(--sl)}
+.wf .karta{display:inline-flex;align-items:flex-end;justify-content:center;width:54px;height:76px;border-radius:6px;background:var(--wf2);border:1px solid var(--sl);font-size:.7rem;padding:3px;text-align:center}
+.wf .karta.velka{width:96px;height:134px}
+.wf .karta.hl{outline:2px solid var(--ja)}
+.wf .karta.nov{outline:2px dashed var(--mo)}
+.wf .mob{max-width:300px;margin:0 auto;border:2px solid var(--sl);border-radius:18px;padding:10px 8px}
+.wf .bublina{position:relative;display:inline-block;background:var(--pl);border:2px solid var(--mo);border-radius:10px;padding:8px 12px;max-width:340px}
+.wf .bublina::after{content:"";position:absolute;left:28px;bottom:-10px;border:8px solid transparent;border-top-color:var(--mo);border-bottom:0}
+.wf .zona{border:2px dashed var(--ze);border-radius:8px;padding:6px 12px;color:var(--ze)}
+.mikro{border-left:3px solid var(--mo);padding:2px 12px;margin:6px 0;font-style:italic}
+.pozn{font-size:.9rem;color:var(--sl)}
+.skok{position:absolute;left:-999px}.skok:focus{left:16px;top:8px;background:var(--ja);color:#14110e;padding:6px 10px;z-index:9}
+nav.obsah ol{columns:2;column-gap:28px;padding-left:1.2em}
+@media (max-width:600px){nav.obsah ol{columns:1}}
+svg{max-width:100%;height:auto}
+svg text{fill:var(--tx);font:12px system-ui,sans-serif}
+svg .sl{fill:var(--sl)}
+svg .blok{fill:var(--wf2);stroke:var(--sl);stroke-width:1}
+svg .aktiv{fill:var(--ja);fill-opacity:.28;stroke:var(--ja);stroke-width:2}
+svg .pevne{fill:var(--mo);fill-opacity:.25;stroke:var(--mo)}
+svg .zle{fill:var(--te);fill-opacity:.22;stroke:var(--te);stroke-width:2}
+svg .ciara{stroke:var(--sl);stroke-width:1.5;fill:none}
+svg .sipka{fill:var(--sl)}
+.vzor{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));margin:10px 0}
+.vzor>div{background:var(--pl2);border:1px solid var(--ok);border-left:4px solid var(--ze);border-radius:8px;padding:10px 12px}
+.vzor>div.slabe{border-left-color:var(--te)}
+.zadanie{width:100%;min-height:140px;background:var(--pl2);color:var(--tx);border:1px solid var(--ok);border-radius:6px;padding:8px;font:13px/1.5 ui-monospace,Consolas,monospace}
+.akcie-vyberu{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.akcie-vyberu button{min-height:44px;padding:0 16px;border-radius:6px;border:1px solid var(--ja);background:var(--ja);color:#14110e;font:inherit;font-weight:700;cursor:pointer}
+</style>
+</head>
+<body>
+<a class="skok" href="#navrhy">Preskočiť na návrhy</a>
+<main>
+<header>
+<p class="meta">UX návrh · id <code>pokyn-bar-20261021-1639</code> · naex-ux · 21. 10. 2026 · vzhľad rieši súbežný UI návrh <a href="dizajn-pokyn-bar-20261021-1639-ui.html">dizajn-pokyn-bar-20261021-1639-ui.html</a> · nadväzuje na <a href="dizajn-hra-20261021-1240-ux.html">dizajn-hra-20261021-1240-ux.html</a> (jeho N1 a N3 pridali do pásu udalosti a potvrdenia; tu sa ich počet znižuje)</p>
+<h1>Pás pokynov: jedno miesto na päť rôznych úloh</h1>
+<p><strong>Cieľ:</strong> pás nad rukou v partii (<code>/hra</code>). Kód: <code>apps/web/src/hra/HernaPlocha.tsx</code>, kde je obsah pásu vo funkcii <code>pokyn</code> (r. 1755–2590, ≈ 33 stavov, 38 tlačidiel), vykreslenie na r. 3654–3690 a udalosti na r. 3175. Štýly sú v <code>hra.css</code> (<code>.pokyn</code> r. 1404, pečiatka NA EX! r. 1656, orezanie na 2 riadky r. 3745). Prejdené na partii <code>playtest/20261021-143916</code> (TSSM, Dizajn 1 vs. Dizajn 2) od voľby cieľa po výber NA EX v Pitke 1/2, na 1600 × 1000, 1280 × 800 a 390 × 844. Stavy, ku ktorým partia nedošla (patronát, Vízia, bitka), sú zmapované z kódu a označené.</p>
+<p><strong>Čo Michala trápi:</strong> „Nepáči sa mi tento bar nad kartami. Neviem, či tam patrí… mnoho vecí sa do neho tlačí počas hry.“ Tlačidlo <strong>NA EX!</strong> sa mu naopak páči („ten je top“).</p>
+<div class="mriezka">
+<div class="dlazdica"><b>Kto:</b> hráč na ťahu, ktorý potrebuje vedieť, čo teraz. Hráč, ktorý čaká, chce vedieť, na koho a na čo čaká. Nováčik číta celý text, skúsený hráč iba nadpis a tlačidlá.</div>
+<div class="dlazdica"><b>Úlohy pásu dnes:</b> (1) navigácia do vrstiev Šenok, Lokality a Log; (2) stav „čí ťah, aká fáza“; (3) pokyn „čo teraz“ aj s výkladom pravidiel; (4) akcie ťahu a náhľad ich následkov; (5) udalosti: chyba, účet Pitky, posledný ťah súpera. Pri niektorých krokoch k tomu (6) výber kariet priamo v páse.</div>
+<div class="dlazdica"><span class="cislo">4 z 8</span>fáz, ktoré som prešiel, majú hlavnú akciu <em>mimo</em> pásu (cieľ kola, stavba, branie, návrh na stole). Pás ich napriek tomu opisuje a často zakrýva práve miesto, na ktoré ukazuje.</div>
+</div>
+<p class="verdikt"><strong>Verdikt.</strong> Na tomto mieste má pás zmysel ako <strong>pult pre akcie, ktoré sa týkajú ruky a Pitky</strong>. Patrí sem NA EX!, hotovo, pasovať a fajčiť. Ako miesto pre všetko ostatné sem nepatrí. Pokyn „čo teraz“ má byť tam, kde sa ťahá, navigácia patrí k pripnutej časovej osi hore a udalosti na stôl. Dnes pás zakrýva miesto ťahu (U1) a orezáva text práve tam, kde je cena (U2). Pri braní zo šenku navyše hovorí o tlačidle, ktoré v ňom nie je (U3). Ako prvé odporúčam <a href="#n1">N1 Jedna veta, nič orezané</a>, potom spolu <a href="#n2">N2</a> a <a href="#n3">N3 Pult podľa NA EX!</a>. Spolu z pásu spravia pult s jedným riadkom.</p>
+<nav class="obsah" aria-label="Obsah">
+<ol>
+<li><a href="#mapa">Čo pás nesie vo všetkých fázach</a></li>
+<li><a href="#toky">Toky dnes (snímky)</a></li>
+<li><a href="#naex">Prečo funguje NA EX!</a></li>
+<li><a href="#signaly">Signály z playtestov</a></li>
+<li><a href="#audit">Audit použiteľnosti</a></li>
+<li><a href="#rozdelenie">Kam patrí ktorá úloha</a></li>
+<li><a href="#navrhy">Návrhy N1–N5</a></li>
+<li><a href="#poradie">Odporúčané poradie</a></li>
+<li><a href="#otazky">Otázky do playtestu a na Michala</a></li>
+</ol>
+</nav>
+</header>
+
+<section aria-labelledby="mapa">
+<h2 id="mapa">1. Čo pás nesie vo všetkých fázach</h2>
+<p>Pás má päť častí: <strong>udalosti</strong> (riadok navrchu, ak niečo je), <strong>vrstvy</strong> (Šenok · Lokality · Log s počtami, pulzovaním „treba“ a cieľom na vrátenie karty ťahaním), <strong>nadpis</strong> fázy, <strong>text</strong> a <strong>tlačidlá</strong>. Text je orezaný na dva riadky (<code>hra.css:3745–3751</code>). Počty znakov sú odhad z reťazcov v kóde.</p>
+<div class="filtre" role="group" aria-label="Filtrovať tabulku podľa fázy">
+<button type="button" data-faza="vsetko" aria-pressed="true">Všetko</button>
+<button type="button" data-faza="pred">Pred bitkou (cieľ, draft)</button>
+<button type="button" data-faza="zhrom">Zhromaždenie</button>
+<button type="button" data-faza="pitka">Pitka</button>
+<button type="button" data-faza="bitka">Bitka a koniec</button>
+</div>
+<p class="pozn" id="mapa-stav" aria-live="polite">Zobrazené všetky stavy (21).</p>
+<div class="tab-obal">
+<table id="mapa-tab">
+<caption class="pozn" style="text-align:left">Stĺpec „Patrí do pásu?“: <span class="ano">áno</span> = hráč to potrebuje práve pri ruke, <span class="cast">čiastočne</span> = rozhodnutie áno, výklad alebo výber nie, <span class="nie">nie</span> = akcia je inde alebo ide o duplikát.</caption>
+<thead><tr><th>Stav</th><th>Text v páse</th><th>Tlačidlá v páse</th><th>Kde je skutočná akcia</th><th>To isté inde</th><th>Patrí do pásu?</th></tr></thead>
+<tbody>
+<tr data-faza="pred zhrom pitka bitka"><td>Čakáš (5 variantov: všeobecné, branie, stavba, patronát, Vízia) <code>:1774–1834</code></td><td>≈ 30–110 zn., „Na ťahu je …“</td><td>0</td><td>—</td><td>„Na ťahu je …“ pri stole, fáza v časovej osi, „Berie …“ v paneli</td><td><span class="cast">čiastočne</span>: stav áno, ale stačí jeden riadok hore</td></tr>
+<tr data-faza="pred"><td>Cieľ kola, bez návrhu <code>:1834</code></td><td>„Klikni na lokalitu v paneli Cieľ kola.“ a k tomu pulzuje „Lokality“</td><td>0</td><td>panel Cieľ kola nad stolom (alebo vrstva Lokality)</td><td>hlavička panela: „Klikni na lokalitu, o ktorú sa chceš biť.“</td><td><span class="nie">nie</span>: duplikát a pulzovanie mu protirečí</td></tr>
+<tr data-faza="pred"><td>Cieľ kola s návrhom <code>:1836</code></td><td>≈ 120 zn. + ikony akcií hrán</td><td>0</td><td>stôl: ← späť, otočiť ↻, potvrdiť</td><td>„klik = otočiť“ pri lokalite</td><td><span class="cast">čiastočne</span>: ikony strán áno, ale k lokalite</td></tr>
+<tr data-faza="pred"><td>Patronát, ponuka <code>:1890</code> (podľa kódu)</td><td>≈ 430 zn., tri vety pravidiel</td><td>1 tlačidlo na každého staršieho s cenou + „neberiem“</td><td>pás aj klik na staršieho hore</td><td>akcia „vziať do ruky“ pri staršom</td><td><span class="cast">čiastočne</span>: rozhodnutie áno, pravidlá nie</td></tr>
+<tr data-faza="pred"><td>Patronát, výber karty <code>:1856</code> (podľa kódu)</td><td>≈ 330 zn. + karty kandidátov 84 px s „výhra x:y“</td><td>iný starší, vziať do ruky −cig.</td><td>pás</td><td>—</td><td><span class="cast">čiastočne</span>: výber kariet patrí do väčšieho panela</td></tr>
+<tr data-faza="pred"><td>Stavba šenku <code>:1919</code></td><td>≈ 300 zn.</td><td>0</td><td>panel Stavba (zóny, „potvrdiť“ v pätičke)</td><td>hlavička panela („4 na Smetisko, 4 do Šenku“) aj pätička</td><td><span class="nie">nie</span>: duplikát</td></tr>
+<tr data-faza="pred"><td>Branie zo šenku <code>:1930</code></td><td>≈ 200 zn., „… a daj ‚hotovo‘ (1 karta = 1 cigaretu, 2 karty = 3 cigarety)“</td><td>0</td><td>panel Branie, „hotovo“ a „už neťahám“ sú v pätičke</td><td>tá istá cena v hlavičke panela (<code>:2965</code>)</td><td><span class="nie">nie</span>: duplikát a hovorí o tlačidle, ktoré v páse nie je</td></tr>
+<tr data-faza="zhrom"><td>Zhromaždenie, začiatok <code>:1994</code></td><td>≈ 330 zn., orezané „Ďalšie karty v to…“</td><td>fajčiť −1, pasovať +n cig.</td><td>ruka → „+“ na konci strany na stole</td><td>pás kola: limit a sloty</td><td><span class="ano">áno</span> pre pasovať a fajčiť, návod stačí raz</td></tr>
+<tr data-faza="zhrom"><td>Zhromaždenie, potvrdenie pasu <code>:1974</code></td><td>jedna otázka</td><td>ešte vykladám, pasovať</td><td>pás</td><td>—</td><td><span class="ano">áno</span></td></tr>
+<tr data-faza="zhrom"><td>Zhromaždenie, návrh, výber miesta, ťahanie <code>:2018</code>, <code>:1675</code></td><td>zoznam ťahu, cena v poldeci, chyba, spoje</td><td>fajčiť</td><td>stôl: vrátiť do ruky, potvrdiť (<code>:1688</code>)</td><td>návrh leží na stole</td><td><span class="cast">čiastočne</span>: náhľad patrí k „potvrdiť“</td></tr>
+<tr data-faza="pitka"><td>Pitka, predvolený stav <code>:2346</code></td><td>≈ 150–250 zn. (kto začína, prečo NA EX nejde, limit ďalšieho kola)</td><td>až 9: fajčiť, výkup, doliať, nový poldeci, Poštárka +1/+2, Starosta, hotovo, NA EX!</td><td>pás a stôl (cieľ NA EX)</td><td>dlaždica Cigarety na doske (doliať −2, nový −5, <code>:3444</code>), stoličky (poradie)</td><td><span class="ano">áno</span>, tu je pás najsilnejší</td></tr>
+<tr data-faza="pitka"><td>Pitka, výber NA EX <code>:2114</code></td><td>≈ 330 zn., orezané „pečeň +1 hneď a…“, nad pásom plávajúci zoznam možností</td><td>zrušiť, „NA EX na &lt;karta&gt;“</td><td>pás a stôl</td><td>—</td><td><span class="ano">áno</span>, toto je vzor</td></tr>
+<tr data-faza="pitka"><td>Pitka, potvrdenie „hotovo“ <code>:2282</code></td><td>jedna otázka</td><td>ešte nie, skončiť Pitku</td><td>pás</td><td>—</td><td><span class="ano">áno</span></td></tr>
+<tr data-faza="pitka"><td>Odpoveď na NA EX <code>:2090</code></td><td>≈ 200 zn.</td><td>bez odpovede</td><td>ruka → stôl</td><td>stoličky („odpovedá na NA EX“)</td><td><span class="ano">áno</span></td></tr>
+<tr data-faza="pitka"><td>Vízia <code>:2060</code> (podľa kódu)</td><td>karta 72 px + ≈ 200 zn.</td><td>zahodiť, do ruky</td><td>pás</td><td>—</td><td><span class="cast">čiastočne</span>: rozhodnutie áno, karta je malá</td></tr>
+<tr data-faza="pitka"><td>Starosta, Zberný dvor <code>:2196</code>, <code>:2219</code> (podľa kódu)</td><td>1 veta + karty šrotu 72 px</td><td>zrušiť, šenok</td><td>pás a vrstva Šenok</td><td>—</td><td><span class="cast">čiastočne</span></td></tr>
+<tr data-faza="bitka"><td>Pohoršenie, prebytok <code>:2492</code>, <code>:2504</code></td><td>≈ 170 zn., „Klikni na staršieho hore …“</td><td>0</td><td>panel starších hore (stránka sa tam posunie)</td><td>náhľad posunu pri každom staršom</td><td><span class="nie">nie</span>: pokyn patrí do hlavičky starších</td></tr>
+<tr data-faza="bitka"><td>Benzínka <code>:2432</code></td><td>≈ 170 zn.</td><td>0</td><td>stôl: „zahodiť n/m“</td><td>—</td><td><span class="nie">nie</span></td></tr>
+<tr data-faza="bitka"><td>Veštica, Cintorín, Exekútor <code>:2441–2490</code> (podľa kódu)</td><td>1–2 vety, pri Cintoríne karty 84 px</td><td>balíčky a vymeniť / nič / jedno tlačidlo na každý Nástroj</td><td>vrstva Veštica alebo pás</td><td>—</td><td><span class="cast">čiastočne</span></td></tr>
+<tr data-faza="bitka"><td>Priznaná Cirhóza: Liečba, Pohreb <code>:2525–2580</code></td><td>1 veta</td><td>preskočiť, Liečba, Pohreb / zrušiť, späť na šenok, potvrdiť</td><td>partia na stole a vrstva Šenok</td><td>—</td><td><span class="ano">áno</span></td></tr>
+<tr data-faza="bitka"><td>Koniec hry <code>:1756</code></td><td>dôvod, body, Frajerina</td><td>späť do lobby</td><td>okno KoniecHry</td><td>to isté okno</td><td><span class="nie">nie</span>: duplikát okna</td></tr>
+</tbody>
+</table>
+</div>
+<p class="pozn">Vo všetkých stavoch je navyše riadok udalostí (chyba ťahu, účet Pitky, posledný ťah súpera, <code>:3175</code>) a tri tlačidlá vrstiev (<code>:3656</code>). V Pitke je teda v páse naraz až 12 ovládacích prvkov.</p>
+</section>
+
+<section aria-labelledby="toky">
+<h2 id="toky">2. Toky dnes</h2>
+<p>Snímky „po načítaní“ sú stránka v polohe 0. Pri zmene fázy sa stránka sama posunie k miestu ťahu (<code>HernaPlocha.tsx:1039</code>), takže prekrytie panela je pri hraní menšie ako na snímke. Pás s rukou je však vždy pripnutý dole a zakrýva spodných ≈ 200 px okna. Červený riadok „Ťah neprešiel: Pripojenie prevzal iný tab“ na snímkach 4 a 5 vznikol tým, že nástroj na snímky prevzal spojenie hráča. Kód však chybu ukáže presne takto, preto ho ponechávam ako ukážku, ako udalosti zväčšia pás.</p>
+
+<h3>Tok A: Voľba cieľa kola</h3>
+<figure><img src="dizajn-pokyn-bar-20261021-1639/01-ciel-kola.jpg" width="1200" height="278" alt="Panel Cieľ kola s piatimi lokalitami, cez ich spodok s názvami leží pás: Šenok 0, Lokality 5 žlto zvýraznené, Log, CIEĽ KOLA, Klikni na lokalitu v paneli Cieľ kola."><figcaption>01 · Pás leží cez názvy lokalít v paneli a opakuje vetu z hlavičky panela. „Lokality“ pulzuje (<code>treba</code>, <code>:2592</code>), hoci text posiela hráča do panela. Michal to videl ako „otvorené“, v skutočnosti ide o výzvu otvoriť vrstvu. K tej istej úlohe teda vedú dve cesty.</figcaption></figure>
+
+<h3>Tok B: Stavba a branie zo šenku</h3>
+<div class="dve">
+<figure><img src="dizajn-pokyn-bar-20261021-1639/02-stavba.jpg" width="1200" height="270" alt="Panel Stavba šenku: zóny Smetisko a Šenok s miestami potiahni sem, cez ne leží pás s dvojriadkovým textom o stavbe."><figcaption>02 · Stavba: pás zakrýva miesta „potiahni sem“ v oboch zónach. Text ≈ 300 znakov opakuje hlavičku panela („4 na Smetisko, 4 do Šenku“).</figcaption></figure>
+<figure><img src="dizajn-pokyn-bar-20261021-1639/03-branie.jpg" width="1200" height="270" alt="Panel Branie zo šenku, karta Presbiter už leží v ruke ako návrh, pás hovorí: klikni na 1 alebo 2 karty a daj hotovo. Tlačidlo hotovo nie je vidieť."><figcaption>03 · Branie po kliknutí na kartu: karta je v ruke ako návrh a pás ďalej píše „… a daj ‚hotovo‘“. Tlačidlo „hotovo −1 cig.“ je v pätičke panela pod rukou (<code>:3004</code>), v páse nie je. Cena 1/3 cigarety je na obrazovke dvakrát.</figcaption></figure>
+</div>
+
+<h3>Tok C: Zhromaždenie, vyložiť kartu</h3>
+<div class="dve">
+<figure><img src="dizajn-pokyn-bar-20261021-1639/04-zhromazdenie-orezane.jpg" width="1200" height="270" alt="Stôl v Zhromaždení, pás leží cez stôl, text končí slovami Ďalšie karty v to s tromi bodkami."><figcaption>04 · Začiatok Zhromaždenia: text končí „Ďalšie karty v to…“. Orezaná je práve informácia, že ďalšia karta stojí plný poldeci (limit −1, pečeň +1). Pás zároveň leží cez „+“ na konci strany, ktoré text žiada kliknúť.</figcaption></figure>
+<figure><img src="dizajn-pokyn-bar-20261021-1639/05-navrh-potvrdit-hore.jpg" width="1000" height="625" alt="Celá obrazovka: hore pod časovou osou tlačidlá vrátiť do ruky a potvrdiť, v strede odhad bitky a dosky, dole pás so zoznamom ťahu a tlačidlom fajčiť."><figcaption>05 · Návrh je hotový. „potvrdiť“ je pri stole (Michalovo rozhodnutie 2026-10-20, <code>:1688</code>), po posune je úplne hore. Pás dole opisuje ten istý ťah a ponúka len „fajčiť“. Popis ťahu a tlačidlo, ktoré ho potvrdí, delí celá výška okna.</figcaption></figure>
+</div>
+
+<h3>Tok D: Pitka a NA EX</h3>
+<figure><img src="dizajn-pokyn-bar-20261021-1639/06-pitka-1280.jpg" width="1100" height="241" alt="Pás v Pitke pri šírke 1280: dva riadky, text Začínaš Pitku, skupina cigarety 4 s tlačidlami fajčiť, doliať poldeci, nový poldeci, ďalej hotovo so zámkom a červená pečiatka NA EX!"><figcaption>06 · Pitka pri 1280 × 800: pás má dva riadky a sedem ovládacích prvkov. Hierarchia funguje: „hotovo“ je tiché so zámkom a NA EX! je pečiatka. Doliať a nový poldeci sú však aj na doske (<code>:3444</code>) a s Poštárkou a Starostom pribudnú ďalšie tri tlačidlá.</figcaption></figure>
+<figure><img src="dizajn-pokyn-bar-20261021-1639/07-naex-vyber.jpg" width="1200" height="300" alt="Výber NA EX: nad pásom dve karty možností s náhľadom bitky a kliatob, prekrývajú pás kola so stoličkami. V páse je text orezaný na pečeň +1 hneď a, vpravo tlačidlá zrušiť a pečiatka NA EX NA DIEVČINA NA VYDAJ."><figcaption>07 · Po stlačení NA EX!: možnosti s náhľadom „bitka 2:0 → 2:0, kliatby …“ sú výborné, pečiatka sa zmení na „NA EX na Dievčina na vydaj“ a hneď vedľa je „zrušiť“. Plávajúci zoznam však zakryje stoličky (kto začína, kto skončil) a text v páse sa oreže na „pečeň +1 hneď a…“. Cena teda nie je vidieť práve pred nevratným krokom.</figcaption></figure>
+
+<h3>Tok E: Telefón 390 × 844</h3>
+<figure class="uzka"><img src="dizajn-pokyn-bar-20261021-1639/08-mobil-pitka.jpg" width="390" height="844" alt="Telefón v Pitke: pás zaberá spodnú štvrtinu, vrstvy, PITKA 1/2, text orezaný na dva riadky, menu cigarety, hotovo a NA EX!, ruka je pod pásom skoro celá skrytá."><figcaption>08 · Telefón: pás má ≈ 230 px (27 % výšky), text sa oreže po dvoch riadkoch („… aj vlastný…“) a ruka je pod ním skoro celá skrytá. Cigarety sú v jednom menu, čo na telefóne funguje a môže byť vzorom aj pre desktop.</figcaption></figure>
+<p class="pozn">Bitku (Pohoršenie) som v tejto partii nedosiahol. Na snímke z predchádzajúceho návrhu (<code>playtest/dizajn/hra-20261021-1240/111936-hrac2-ux-bitka-dole.png</code>) pás píše „Klikni na staršieho hore“ a starší sú o obrazovku vyššie. Text pokynu sa odvtedy nezmenil (<code>:2499</code>).</p>
+</section>
+
+<section aria-labelledby="naex">
+<h2 id="naex">3. Prečo funguje NA EX! a čo z neho vziať</h2>
+<p>Tlačidlo je v <code>HernaPlocha.tsx:2408</code> (predvolený stav) a <code>:2181</code> (potvrdenie), štýl v <code>hra.css:1656–1708</code>. Funguje preto, lebo spája šesť vecí, z ktorých každá je dobrá prax:</p>
+<div class="vzor">
+<div><strong>1. Sloveso, ktoré je zároveň názov hry.</strong> Jedno slovo a výkrik, ktorý by v krčme povedal každý (zhoda so svetom hráča). Netreba ho čítať, stačí ho spoznať.</div>
+<div><strong>2. Výlučný tvar.</strong> Červená tehla, náklon −2°, vnútorný prerušovaný okraj, 3D tieň. Nič iné v hre tak nevyzerá, takže je jasné, že toto je hlavný ťah. Hneď vedľa je „hotovo“ zámerne tiché so zámkom (UI N4).</div>
+<div><strong>3. Stále miesto.</strong> Vždy úplne vpravo. Ruka ho nájde bez hľadania (konzistencia, Fitts) a má aspoň 44 px (WCAG 2.5.8).</div>
+<div><strong>4. Dva kroky s náhľadom.</strong> Prvý klik nič nespraví, len ukáže možnosti s „bitka pred → po ▲▼“ a kliatbami. Druhý klik ťah potvrdí. Nevratný ťah sa tak dá skontrolovať bez dialógového okna.</div>
+<div><strong>5. Štítok s predmetom.</strong> Po výbere je na tlačidle „NA EX na Dievčina na vydaj“, teda sloveso aj predmet. Pred potvrdením je presne vidieť, čo sa stane. „zrušiť“ je hneď vedľa.</div>
+<div><strong>6. Pri nemožnosti povie prečo.</strong> Napríklad „Nemáš plný poldeci (doliať: 2 cigarety)“ alebo „Kostol: nikto nesmie dať NA EX“ (<code>dovodBezNaex</code>, <code>:2244</code>), v texte aj v <code>title</code>. Pohyb pri hover a stlačení, s ohľadom na <code>prefers-reduced-motion</code>.</div>
+<div class="slabe"><strong>Slabina A:</strong> cena NA EX je v texte pásu, ktorý sa oreže. Na tlačidle nie je. Pri iných tlačidlách (pasovať +3 cig., doliať −2) je cena na tlačidle, pri NA EX práve nie.</div>
+<div class="slabe"><strong>Slabina B:</strong> dôvod nedostupnosti je v texte, ktorý sa môže orezať, a v <code>title</code>, ktorý na dotyku nevidno. Plávajúci výber zakryje stoličky.</div>
+</div>
+<p><strong>Vzor pre ostatné akcie (používajú ho N1 a N3):</strong> jedno hlavné sloveso na stálom mieste vpravo, na štítku sloveso aj predmet aj cena, nevratná akcia v dvoch krokoch s náhľadom a „zrušiť“ hneď vedľa, pri nemožnosti viditeľný dôvod. <strong>Vzhľad pečiatky však ostane len pre NA EX!</strong> Keby pečiatku dostala každá fáza, prestala by znamenať „toto je ten ťah“.</p>
+</section>
+
+<section aria-labelledby="signaly">
+<h2 id="signaly">4. Signály z playtestov a spätnej väzby</h2>
+<div class="tab-obal">
+<table>
+<thead><tr><th>Signál</th><th>Zdroj</th><th>Čo hovorí o páse</th></tr></thead>
+<tbody>
+<tr><td>„Ruka + lišta Šenok/Lokality/Log sú fixne cez spodok a prekrývajú stôl“</td><td>sledovateľ 20261011-101224 (V2, V7, odporúčanie 1)</td><td>Prekrytie je najstaršia a najčastejšia výhrada.</td></tr>
+<tr><td>„Dock (Šenok/Lokality/Log + pokyn) leží cez stôl a skrýva spodné časti kariet v línii“</td><td>sledovateľ 20261011-125943</td><td>To isté a s návrhom „spodný odsadzovač“, ktorý sa medzitým urobil (<code>--pokyn-h</code>). Pás však stále prekrýva panely nad stolom.</td></tr>
+<tr><td>„Panel pokynov … prekrýva štítok TVOJA STRANA a hornú časť stola“, „na mobile orezaný“</td><td>sledovateľ 20261011-183315</td><td>Prekrytie a mobil.</td></tr>
+<tr><td>„Pás pokynov mení obsah, no zakrýva karty“, „pás pokynov v Pitke prekrýva líniu“</td><td>sledovateľ 20261012-055944 (V5)</td><td>Prekrytie v Pitke.</td></tr>
+<tr><td>„Pokyn v lište vždy popisuje čo robiť“ (7/10)</td><td>sledovateľ 20261011-101224 (V6), 125943, 101447</td><td>Pozitívum: jedna veta „čo teraz“ pomáha a treba ju zachovať. Ide len o to, kde je a aká je dlhá.</td></tr>
+<tr><td>„V Pitke mi klient NA EX na Pušku vôbec neponúkol … nikde sa to nepíše“</td><td>spätná väzba #16</td><td>Dôvod nedostupnosti musí byť vidieť. Dnes ho pás píše (<code>dovodBezNaex</code>), ale môže sa orezať.</td></tr>
+<tr><td>„Klient to nikde nevyznačuje … NA EX míňa poldeci aj na ďalšie kolo“</td><td>spätná väzba #15</td><td>Cena NA EX sa už píše, ale na snímke 07 je orezaná. Patrí na tlačidlo.</td></tr>
+</tbody>
+</table>
+</div>
+<p class="pozn">Od ľudí (nie od AI) zatiaľ na webe spätná väzba k pásu nie je. AI playtesteri hrajú cez textového klienta, takže pás nevidia. Dôkazy o ňom sú preto snímky, hodnotenia sledovateľa a kód.</p>
+</section>
+
+<section aria-labelledby="audit">
+<h2 id="audit">5. Audit použiteľnosti</h2>
+<p>Závažnosť podľa Nielsena: 4 = ťah sa nedá urobiť, 3 = veľký problém pri bežnom ťahu, 2 = menší, 1 = kozmetika, 0 = funguje (pre porovnanie).</p>
+<div class="filtre" role="group" aria-label="Filtrovať audit podľa závažnosti">
+<button type="button" data-z="vsetko" aria-pressed="true">Všetko (14)</button>
+<button type="button" data-z="3">3 · veľký</button>
+<button type="button" data-z="2">2 · menší</button>
+<button type="button" data-z="1">1 · kozmetika</button>
+<button type="button" data-z="0">0 · funguje</button>
+</div>
+<p class="pozn" id="audit-stav" aria-live="polite">Zobrazené všetky body (14).</p>
+<div class="tab-obal">
+<table id="audit-tab">
+<thead><tr><th>#</th><th>Problém</th><th>Heuristika</th><th>Záv.</th><th>Dôkaz</th><th>Koho, ako často</th><th>Návrh</th></tr></thead>
+<tbody>
+<tr data-z="3"><td>U1</td><td>Pás leží cez miesto, na ktoré pokyn ukazuje: lokality v paneli, zóny stavby, „+“ na konci strany, návrh na stole.</td><td>Viditeľnosť stavu, prevencia chýb</td><td><span class="z z3">3</span></td><td>snímky 01, 02, 04; 5 hodnotení sledovateľa (2026-10-11/12)</td><td>každý hráč, skoro každý ťah na 1600 × 1000 aj menšom</td><td>N2, N4</td></tr>
+<tr data-z="3"><td>U2</td><td>Text je orezaný na 2 riadky a vypadne práve cena alebo následok: „Ďalšie karty v to…“, „pečeň +1 hneď a…“, na telefóne skoro každý pokyn.</td><td>Viditeľnosť následkov, prevencia chýb</td><td><span class="z z3">3</span></td><td>snímky 04, 07, 08; <code>hra.css:3745–3751</code></td><td>každý, kto neprečíta zvyšok inde; pred nevratným krokom</td><td>N1</td></tr>
+<tr data-z="3"><td>U3</td><td>Pás hovorí o tlačidle, ktoré v ňom nie je („daj hotovo“ pri braní). Pri návrhu na stole opisuje ťah, ale „potvrdiť“ je o výšku okna vyššie.</td><td>Konzistencia, rozpoznanie namiesto pamätania</td><td><span class="z z3">3</span></td><td>snímky 03, 05; <code>:1934</code>, <code>:1688</code>, <code>:3004</code></td><td>každé branie zo šenku, každý ťah v Zhromaždení</td><td>N1, N3</td></tr>
+<tr data-z="3"><td>U4</td><td>Telefón: pás zaberá ≈ 27 % výšky, ruka je pod ním skrytá a text sa oreže po dvoch riadkoch.</td><td>Mobil a dotyk</td><td><span class="z z3">3</span></td><td>snímka 08; <code>ux-ciel-mob</code>, <code>ux-zhrom-mob</code></td><td>každý hráč na telefóne</td><td>N1, N2, N3</td></tr>
+<tr data-z="2"><td>U5</td><td>Pokyn ukazuje na miesto mimo obrazovky a nedá cestu: „v paneli Cieľ kola“, „Klikni na staršieho hore“, „Smetisko (vľavo …)“.</td><td>Rozpoznanie, pomoc a navigácia</td><td><span class="z z2">2</span></td><td><code>:1834</code>, <code>:2499</code>, <code>:1923</code>; posun pri zmene fázy pomáha, ale len raz (<code>:1039</code>)</td><td>keď hráč odroluje alebo čaká na súpera</td><td>N1, N4</td></tr>
+<tr data-z="2"><td>U6</td><td>Protichodné signály pri voľbe cieľa: pulzuje „Lokality“ (vrstva s „umiestniť na stôl“), ale text posiela do panela. K tej istej úlohe vedú dve cesty.</td><td>Konzistencia</td><td><span class="z z2">2</span></td><td>snímka 01; <code>:2592–2598</code>, <code>:3522</code></td><td>každé kolo na ťahu pri voľbe cieľa</td><td>N1</td></tr>
+<tr data-z="2"><td>U7</td><td>Tá istá informácia je na 2 až 4 miestach: pokyn v hlavičke panela aj v páse, „Pitka 1/2“ v osi, v páse kola aj v páse, doliať a nový poldeci na doske aj v páse, cena šenku dvakrát.</td><td>Minimalizmus</td><td><span class="z z2">2</span></td><td>snímky 01–03, 06; <code>:2965</code>, <code>:3444</code></td><td>stále</td><td>N1, N3, N4</td></tr>
+<tr data-z="2"><td>U8</td><td>V Pitke je v páse naraz až 9 tlačidiel ťahu a 3 vrstvy. Pri šírke 1280 má pás dva riadky.</td><td>Kognitívna záťaž (Hick)</td><td><span class="z z2">2</span></td><td>snímka 06; <code>:2302–2420</code></td><td>každá Pitka, viac s Poštárkou a Starostom</td><td>N3</td></tr>
+<tr data-z="2"><td>U9</td><td>Pás vysvetľuje pravidlá pri každom ťahu: patronát ≈ 430 znakov, stavba ≈ 300, NA EX ≈ 330. Skúsený hráč to nepotrebuje a nováčik to aj tak nedočíta, lebo text sa oreže.</td><td>Efektívnosť pre skúsených, minimalizmus</td><td><span class="z z2">2</span></td><td><code>:1893</code>, <code>:1923</code>, <code>:2132</code></td><td>stále</td><td>N1, N5</td></tr>
+<tr data-z="2"><td>U10</td><td>Výber kariet priamo v páse (kandidáti patronátu 84 px, Vízia 72 px, šrot, Cintorín): malé karty, pás narastie a odtlačí stôl. <em>Podľa kódu, nedosiahnuté v partii.</em></td><td>Čitateľnosť, rozloženie</td><td><span class="z z2">2</span></td><td><code>:1866</code>, <code>:2063</code>, <code>:2225</code>, <code>:2472</code></td><td>pri patronáte a efektoch kariet</td><td>N4</td></tr>
+<tr data-z="2"><td>U11</td><td>Plávajúci výber NA EX zakryje stoličky (kto začína, kto skončil, posledné slovo) práve v chvíli, keď sa o NA EX rozhoduje.</td><td>Viditeľnosť stavu</td><td><span class="z z2">2</span></td><td>snímka 07; <code>hra.css:2214</code></td><td>každé NA EX</td><td>N3</td></tr>
+<tr data-z="2"><td>U12</td><td>Prístupnosť: pás nie je pomenovaná oblasť. Zmena „čo teraz“ ani „Tvoj ťah“ sa neohlási (<code>aria-live</code> majú len posledný ťah súpera a stoličky). Dôvody pri cigaretách sú len v <code>title</code>.</td><td>WCAG 4.1.3, 1.3.1, mobil (hover)</td><td><span class="z z2">2</span></td><td><code>:3654</code>, <code>:3194</code>, <code>:2307–2340</code></td><td>čítačka, klávesnica, dotyk</td><td>N2, N3</td></tr>
+<tr data-z="1"><td>U13</td><td>Udalosti (chyba, účet Pitky, posledný ťah súpera) pridajú do pásu riadok, pás sa zdvihne a zakryje ďalší kus stola. Chyba sa ukáže dole, aj keď zlyhalo tlačidlo na stole.</td><td>Viditeľnosť, pomoc pri chybách</td><td><span class="z z1">1</span></td><td>snímky 04, 05 (pozri poznámku v Tokoch); <code>:3175</code></td><td>po každej Pitke a súperovom ťahu</td><td>N2</td></tr>
+<tr data-z="0"><td>U14</td><td>NA EX!, potvrdenie pasu a „hotovo“ v páse: dvojkrok bez dialógového okna, štítok so slovesom a predmetom, tiché nevratné tlačidlo so zámkom.</td><td>Prevencia chýb, kontrola</td><td><span class="z z0">0</span></td><td>snímky 06, 07; <code>:1974</code>, <code>:2282</code></td><td>funguje, zachovať</td><td>vzor pre N3</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section aria-labelledby="rozdelenie">
+<h2 id="rozdelenie">6. Kam patrí ktorá úloha</h2>
+<p>Pás dnes robí päť vecí naraz. Každá má na obrazovke prirodzenejšie miesto, kde ju hráč hľadá a kde je blízko k tomu, čoho sa týka:</p>
+<svg viewBox="0 0 900 360" role="img" aria-labelledby="sv1t sv1d">
+<title id="sv1t">Rozdelenie úloh pásu pokynov</title>
+<desc id="sv1d">Vľavo pás dnes s piatimi úlohami. Šípky vedú: navigácia Šenok, Lokality, Log a stav čí ťah do pripnutej časovej osi hore; pokyn čo teraz do hlavičky aktívnej plochy; akcie ruky a Pitky ostávajú v pulte nad rukou; potvrdenie návrhu ostáva pri stole; udalosti idú na okraj stola; výber kariet do výberového panela.</desc>
+<defs><marker id="hr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="sipka"/></marker></defs>
+<text x="20" y="24" class="sl">Pás dnes</text>
+<rect x="20" y="36" width="270" height="44" class="zle" rx="6"/><text x="32" y="63">1 · Šenok · Lokality · Log</text>
+<rect x="20" y="88" width="270" height="44" class="zle" rx="6"/><text x="32" y="115">2 · čí ťah, fáza (nadpis, farba)</text>
+<rect x="20" y="140" width="270" height="44" class="zle" rx="6"/><text x="32" y="167">3 · pokyn „čo teraz“ + pravidlá</text>
+<rect x="20" y="192" width="270" height="44" class="zle" rx="6"/><text x="32" y="219">4 · akcie ťahu + náhľad</text>
+<rect x="20" y="244" width="270" height="44" class="zle" rx="6"/><text x="32" y="271">5 · udalosti (chyba, účet, súper)</text>
+<rect x="20" y="296" width="270" height="44" class="zle" rx="6"/><text x="32" y="323">6 · výber kariet (patronát, Vízia…)</text>
+<text x="560" y="24" class="sl">Kam (návrhy)</text>
+<rect x="560" y="36" width="320" height="56" class="pevne" rx="6"/><text x="572" y="58">Časová os hore (pripnutá)</text><text x="572" y="78" class="sl">Šenok · Lokality · Log · ● Tvoj ťah — N2</text>
+<rect x="560" y="102" width="320" height="56" class="aktiv" rx="6"/><text x="572" y="124">Hlavička aktívnej plochy</text><text x="572" y="144" class="sl">panel cieľa, stavby, starší, stôl — N4</text>
+<rect x="560" y="168" width="320" height="56" class="aktiv" rx="6"/><text x="572" y="190">Pult nad rukou (1 riadok)</text><text x="572" y="210" class="sl">Zhromaždenie, Pitka: NA EX!, hotovo — N3</text>
+<rect x="560" y="234" width="320" height="56" class="pevne" rx="6"/><text x="572" y="256">Okraj stola „čo sa stalo“</text><text x="572" y="276" class="sl">súperov ťah, účet Pitky; chyba pri tlačidle — N2</text>
+<rect x="560" y="300" width="320" height="56" class="blok" rx="6"/><text x="572" y="322">Výberový panel (vrstva)</text><text x="572" y="342" class="sl">veľké karty, potvrdenie v pätičke — N4</text>
+<path d="M290 58 C420 58 440 64 556 64" class="ciara" marker-end="url(#hr)"/>
+<path d="M290 110 C420 110 440 70 556 70" class="ciara" marker-end="url(#hr)"/>
+<path d="M290 162 C420 162 440 130 556 130" class="ciara" marker-end="url(#hr)"/>
+<path d="M290 214 C420 214 440 196 556 196" class="ciara" marker-end="url(#hr)"/>
+<path d="M290 266 C420 266 440 262 556 262" class="ciara" marker-end="url(#hr)"/>
+<path d="M290 318 C420 318 440 328 556 328" class="ciara" marker-end="url(#hr)"/>
+</svg>
+<p class="pozn">Potvrdenie návrhu (cieľ, vyloženie, Benzínka) ostáva pri stole podľa rozhodnutia z 2026-10-20. Pult naň len ukáže alebo ho zrkadlí (otázka 2).</p>
+</section>
+
+<section aria-labelledby="navrhy">
+<h2 id="navrhy">7. Návrhy</h2>
+<p>N1 je samostatná rýchla úprava. N2 a N3 spolu zmenia pás na pult. N4 a N5 sú odvážnejšie alternatívy, každá z inej strany. Zaškrtni, čo chceš implementovať. Dole sa výber dá skopírovať ako zadanie.</p>
+
+<article class="navrh" id="n1" aria-labelledby="n1h">
+<h3 id="n1h">N1 · Jedna veta, nič orezané <span class="stitok vyhra">rýchla výhra</span> <span class="stitok mala">malá</span></h3>
+<p><strong>Rieši:</strong> U2, U3, U5, U6, časť U4, U7 a U9. Pás ostáva tam, kde je, ale prestane kričať a klamať.</p>
+<ul>
+<li><strong>Pokyn = jedna veta do ≈ 80 znakov.</strong> Výklad pravidiel ide do „ⓘ ako to funguje“ (rozbaľovanie <code>&lt;details&gt;</code> alebo popover nad pásom, ovládateľné klikom aj klávesnicou, nie hover).</li>
+<li><strong>Cena a následok sú na tlačidle, nie v texte</strong>, rovnako ako pri NA EX: „NA EX na Dievčinu · −1 poldeci“, „pasovať · +3 cig.“. Orezanie na dva riadky sa potom môže zrušiť, lebo veta sa zmestí.</li>
+<li><strong>Ukazovák namiesto opisu.</strong> Keď je cieľ mimo pásu, veta končí tlačidlom-odkazom „↑ k cieľu kola“, „↑ k starším“, „↑ potvrdiť na stole“. Odkaz posunie stránku (<code>scrollIntoView</code>) a presunie fokus na cieľ.</li>
+<li><strong>Nesľubovať tlačidlo, ktoré v páse nie je.</strong> Pri braní „Klikni na 1–2 karty v šenku. ↑ hotovo v paneli“, nie „daj hotovo“.</li>
+<li><strong>Bez pulzovania „Lokality“ pri voľbe cieľa</strong> (<code>treba</code>, <code>:2592</code>). Lokality sa volia v paneli a vrstva ostáva na prezeranie.</li>
+<li><strong>Bez duplikátov</strong> v stavoch, kde panel už hovorí to isté (stavba, branie): pás ukáže len nadpis a odkaz.</li>
+</ul>
+<div class="tok">
+<div class="pred"><h4>Pred: zistiť cenu ďalšej karty v Zhromaždení</h4><ol><li>Prečítať dva riadky pásu.</li><li>Text končí „Ďalšie karty v to…“.</li><li>Rozšíriť okno, alebo hľadať v Pravidlách, alebo to skúsiť a čítať chybu.</li></ol></div>
+<div class="po"><h4>Po</h4><ol><li>Veta: „Polož kartu na + na konci strany, alebo pasuj.“</li><li>Cena je na mieste „+“ a v náhľade ťahu: „ďalšia karta −1 poldeci“. Výklad je v ⓘ jedným klikom.</li></ol></div>
+</div>
+<div class="wf" aria-label="Drôtený model N1, pás pred a po">
+<div class="titul">Pred · Zhromaždenie</div>
+<div class="r"><span class="b tl">Šenok 8 · Lokality 4 · Log</span><span class="nadpis">Zhromaždenie</span><small>limit 3</small><span class="b rast zle">Potiahni kartu z ruky na stôl, alebo klikni na + na konci strany — vysunú sa karty, ktoré sa tam spoja. Alebo pasuj do Pitky (cigareta za každú nevyloženú kartu). Ďalšie karty v to…</span><span class="tlac">fajčiť <small>−1 cig.</small></span><span class="tlac">pasovať <small>+3 cig.</small></span></div>
+<div class="titul">Po · Zhromaždenie</div>
+<div class="r"><span class="b tl">Šenok 8 · Lokality 4 · Log</span><span class="nadpis">Zhromaždenie</span><small>limit 3</small><span class="b rast hl">Polož kartu na <b>+</b> na konci strany, alebo pasuj. <span class="tlac tiche">ⓘ ako</span></span><span class="tlac">fajčiť <small>−1 cig.</small></span><span class="tlac">pasovať <small>+3 cig.</small></span></div>
+<div class="titul">Po · Voľba cieľa / Branie / Pohoršenie</div>
+<div class="r"><span class="nadpis">Cieľ kola</span><span class="b rast">Vyber lokalitu, o ktorú sa biješ. <span class="tlac nov">↑ k cieľu kola</span></span></div>
+<div class="r"><span class="nadpis">Branie zo šenku</span><span class="b rast">Klikni na 1–2 karty v šenku. <span class="tlac nov">↑ hotovo v paneli</span></span></div>
+<div class="r"><span class="nadpis">Pohoršenie</span><small>zostáva 1</small><span class="b rast">Posuň marker staršieho k súperovi. <span class="tlac nov">↑ k starším</span></span></div>
+<div class="titul">Po · výber NA EX</div>
+<div class="r"><span class="nadpis">Pitka 1/2</span><span class="b rast">Vyber kartu, na ktorú dáš NA EX. <span class="tlac tiche">ⓘ čo robí NA EX</span></span><span class="tlac">zrušiť</span><span class="peciatka">NA EX na Dievčinu · −1 poldeci</span></div>
+</div>
+<h4>Mikrocopy</h4>
+<div class="tab-obal"><table>
+<thead><tr><th>Stav</th><th>Dnes</th><th>Návrh</th></tr></thead>
+<tbody>
+<tr><td>Cieľ kola</td><td>Klikni na lokalitu v paneli Cieľ kola.</td><td>Vyber lokalitu, o ktorú sa biješ. [↑ k cieľu kola]</td></tr>
+<tr><td>Stavba</td><td>Daj 4 karty na Smetisko (vľavo — naspodok …) a 4 karty do Šenku (vpravo — …): potiahni kartu … pravým klikom. (≈ 300 zn.)</td><td>4 na Smetisko, 4 do Šenku. [↑ k stavbe] [ⓘ]</td></tr>
+<tr><td>Branie</td><td>Tvoj ťah — klikni na 1 alebo 2 karty v šenku … a daj „hotovo“ (…), alebo už neťahaj. Limit vykladania: 3.</td><td>Ber 1–2 karty, alebo už neťahaj. [↑ hotovo v paneli]</td></tr>
+<tr><td>Patronát</td><td>Starší, ktorý ti prejavuje priazeň … odhodíš poldeci. (≈ 430 zn.)</td><td>Môžeš si vziať staršieho, ktorý ti prejavuje priazeň. [ⓘ ako patronát funguje]</td></tr>
+<tr><td>Pitka bez NA EX</td><td>Fajči, doliať či kúp poldeci — potom hotovo. Nemáš plný poldeci (doliať: 2 cigarety).</td><td>NA EX teraz nejde: nemáš plný poldeci. Dolej za 2 cig., alebo skonči.</td></tr>
+<tr><td>Pohoršenie</td><td>Klikni na staršieho hore — marker sa posunie k súperovi: on dostane priazeň, starší sa začne báť teba (…). Zamknuté markery sa nedajú.</td><td>Posuň marker staršieho k súperovi. [↑ k starším] [ⓘ]</td></tr>
+</tbody></table></div>
+<dl>
+<dt>Prístupnosť</dt><dd>ⓘ je <code>&lt;button aria-expanded&gt;</code> a obsah je pod pásom v DOM. Odkaz „↑ …“ presunie fokus na nadpis cieľa (<code>tabindex="-1"</code>). Pás dostane <code>role="region" aria-label="Čo teraz"</code>. Vetu pokynu ohlási <code>aria-live="polite"</code> len pri zmene nadpisu, nie pri každom pohybe myšou.</dd>
+<dt>Náročnosť</dt><dd><span class="stitok mala">malá</span>: texty a jedno nové tlačidlo-odkaz. Bez zmeny rozloženia.</dd>
+<dt>Súbory</dt><dd><code>HernaPlocha.tsx</code> (funkcia <code>pokyn</code> r. 1755–2590, <code>treba</code> r. 2592), <code>hra.css</code> (orezanie r. 3745–3751).</dd>
+<dt>Ako overiť</dt><dd>Snímky každej fázy na 1600, 1280 a 390: v páse nesmú byť „…“. V playteste sa opýtať: „Vedel si, koľko ťa stojí ďalšia karta v Zhromaždení, skôr než si ju položil?“ Sledovať, či hráč použije „↑“ odkazy.</dd>
+</dl>
+<label class="vyber"><input type="checkbox" data-navrh="N1 · Jedna veta, nič orezané (malá): pokyn = 1 veta, výklad do ⓘ, cena na tlačidle, odkazy ↑ k cieľu, bez pulzu Lokality, bez duplikátov."> Vybrať N1</label>
+</article>
+
+<article class="navrh" id="n2" aria-labelledby="n2h">
+<h3 id="n2h">N2 · Navigácia hore, udalosti na stôl <span class="stitok mala">malá</span> – <span class="stitok stredna">stredná</span></h3>
+<p><strong>Rieši:</strong> U1 (pás je o tretinu nižší), U12, U13, časť U4. Z pásu sa vyberú dve úlohy, ktoré nesúvisia s rukou.</p>
+<ul>
+<li><strong>Šenok · Lokality · Log do časovej osi hore</strong> (<code>hra-hlava</code>, <code>:3217</code>), medzi priebeh kola a stav spojenia. Os je pripnutá, takže sú stále po ruke. Počty a bodka „nové v logu“ ostávajú.</li>
+<li><strong>„● Tvoj ťah / Čakáš na …“ ako čip v osi</strong> s <code>aria-live="polite"</code>. Čítačka tak zmenu ťahu ohlási a nadpis v páse ju nemusí opakovať farbou.</li>
+<li><strong>Vrátenie karty ťahaním:</strong> keď hráč ťahá kartu zo šenku alebo lokalitu, nad rukou sa ukáže dočasná zóna „↩ pusti sem: späť do šenku“ (dnes je to tlačidlo vo vrstve, <code>ciel-zona</code>). Pravý klik a „vrátiť“ ostávajú.</li>
+<li><strong>Udalosti na okraj stola:</strong> „↺ Dizajn 1 vyložil Milujúcu manželku · Pitka 1 vyhodnotená: ty nič · Dizajn 1 +2 Dlh“ je riadok tesne nad líniou, kde hráč aj tak pozerá (rovnako ako účet bitky, UX N3). <strong>Chyba ťahu</strong> sa ukáže pri tlačidle, ktoré zlyhalo: na stole pri „potvrdiť“, v pulte pri pulte.</li>
+<li><strong>Telefón:</strong> vrstvy ako tri ikony 44 × 44 px vľavo v riadku pultu alebo v menu ☰ v osi. O tom rozhodne UI.</li>
+</ul>
+<div class="tok">
+<div class="pred"><h4>Pred: čo urobil súper</h4><ol><li>Pás dole ukáže malým modrým písmom „↺ …“ v riadku udalostí. Pás sa zdvihne o riadok.</li><li>Ak riadok prehliadne, otvorí „Log“ (nový riadok je oranžový).</li><li>Zavrie vrstvu.</li></ol></div>
+<div class="po"><h4>Po</h4><ol><li>Riadok „↺ …“ je na okraji stola, kde sa ťah stal, a karta v línii krátko svieti.</li><li>Log je hore v osi pre podrobnosti.</li></ol></div>
+</div>
+<div class="wf" aria-label="Drôtený model N2">
+<div class="titul">Časová os (pripnutá hore)</div>
+<div class="r"><span class="b">TSSM</span><span class="b">Kolo 1 · lokalita 1/5</span><span class="b rast tl">Voľba cieľa › Draft › <b>Zhromaždenie</b> › Pitka › Bitka</span><span class="tlac nov">Šenok 8</span><span class="tlac nov">Lokality 4</span><span class="tlac nov">Log ●3</span><span class="b hl">● Tvoj ťah</span><span class="tlac tiche">vzdať sa</span><span class="tlac tiche">odísť</span></div>
+<div class="titul">Okraj stola</div>
+<div class="r"><span class="b rast nov">↺ Dizajn 1 vyložil Milujúcu manželku → svoja strana · spoj Povera + Poldeci</span></div>
+<div class="titul">Pás nad rukou (bez vrstiev a udalostí)</div>
+<div class="r"><span class="nadpis">Zhromaždenie</span><small>limit 3</small><span class="b rast">Polož kartu na + na konci strany, alebo pasuj.</span><span class="tlac">fajčiť <small>−1</small></span><span class="tlac">pasovať <small>+3 cig.</small></span></div>
+<div class="titul">Počas ťahania karty zo šenku</div>
+<div class="r"><span class="zona">↩ pusti sem: späť do šenku</span><span class="karta">ruka</span><span class="karta">ruka</span><span class="karta nov">ťahaná</span></div>
+</div>
+<dl>
+<dt>Prístupnosť</dt><dd>Tlačidlá vrstiev majú <code>aria-expanded</code> a <code>aria-controls</code>. Riadok „čo sa stalo“ má <code>role="status"</code>. Chyba má <code>role="alert"</code> a fokus sa vráti na tlačidlo, ktoré zlyhalo.</dd>
+<dt>Náročnosť</dt><dd><span class="stitok stredna">malá až stredná</span>: presun prvkov a nová dočasná zóna pri ťahaní.</dd>
+<dt>Súbory</dt><dd><code>HernaPlocha.tsx</code> (hlavička r. 3217, vrstvy r. 3656–3679, udalosti r. 3175–3198, stôl r. 3400), <code>useTahanie.ts</code> (cieľ vrátenia), <code>hra.css</code> (<code>.hra-hlava</code>, <code>.pokyn-vrstvy</code>).</dd>
+<dt>Ako overiť</dt><dd>Zmerať výšku pásu pred a po (dnes 46 až 110 px). Playtest: „Kde si sa pozrel, čo urobil súper?“ Sledovať, či hráč vráti kartu do šenku ťahaním aj bez tlačidla.</dd>
+</dl>
+<label class="vyber"><input type="checkbox" data-navrh="N2 · Navigácia hore, udalosti na stôl (malá–stredná): Šenok/Lokality/Log a ● Tvoj ťah do časovej osi, dočasná zóna na vrátenie pri ťahaní, súperov ťah a účet Pitky na okraj stola, chyba pri tlačidle."> Vybrať N2</label>
+</article>
+
+<article class="navrh" id="n3" aria-labelledby="n3h">
+<h3 id="n3h">N3 · Pult podľa NA EX! <span class="stitok stredna">stredná</span></h3>
+<p><strong>Rieši:</strong> U3, U8, U11, U12 a časť U7. Z pásu sa stane <em>pult</em> s pevnou skladbou, ktorý berie vzor z NA EX!:</p>
+<div class="wf" aria-label="Skladba pultu">
+<div class="r"><span class="b hl">[stav: fáza · limit]</span><span class="b rast">[jedna veta „čo teraz“ ⓘ]</span><span class="b">[vedľajšie ▾]</span><span class="b">[🔒 nevratné, tiché]</span><span class="b hl">[HLAVNÉ SLOVESO s predmetom a cenou]</span></div>
+</div>
+<ul>
+<li><strong>Vpravo je vždy jedno hlavné sloveso</strong> na tom istom mieste ako NA EX!. Štítok obsahuje sloveso, predmet a cenu. Pečiatku dostane len NA EX!, ostatné hlavné akcie sú <code>tlacidlo-hlavne</code>.</li>
+<li><strong>Vedľajšie akcie do jedného menu „Cigarety 4 ▾“</strong> aj na desktope, ako je to dnes na telefóne (<code>:2369</code>): fajčiť, doliať, nový poldeci, výkup, Poštárka, Starosta. Pitka tak namiesto až 9 tlačidiel ukáže 3. Doliať a nový poldeci zostanú aj na doske.</li>
+<li><strong>Nevratné akcie (pasovať, hotovo) majú dva kroky v pulte</strong> ako dnes: „ešte nie“ a potvrdenie, bez dialógového okna.</li>
+<li><strong>Kde je návrh na stole</strong> (vyloženie, cieľ), pult ukáže súhrn a buď odkaz „↑ potvrdiť na stole“, alebo zrkadlové tlačidlo „Vyložiť Milujúcu manželku“ (otázka 2).</li>
+<li><strong>Výber NA EX</strong> sa otvorí nad pultom, ale stoličky (kto začína, posledné slovo) sa skopírujú do hlavičky výberu: „Začínaš · súper ešte odpovie“.</li>
+<li><strong>Pult sa zobrazí len vtedy, keď má čo ponúknuť</strong> (Zhromaždenie, Pitka, odpoveď na NA EX, Vízia, Liečba). V ostatných fázach z neho ostane tenký riadok so stavom a odkazom „↑“ alebo nič (pri N4).</li>
+</ul>
+<div class="tab-obal"><table>
+<thead><tr><th>Fáza</th><th>Hlavné sloveso (vpravo)</th><th>Nevratné, tiché</th><th>Vedľajšie (▾)</th></tr></thead>
+<tbody>
+<tr><td>Zhromaždenie bez návrhu</td><td>— (ťah je ťahaním na stôl)</td><td>pasovať · +3 cig.</td><td>Cigarety ▾: fajčiť</td></tr>
+<tr><td>Zhromaždenie s návrhom</td><td>Vyložiť Milujúcu manželku · −0 poldeci (zrkadlo stola, otázka 2)</td><td>vrátiť do ruky</td><td>Cigarety ▾</td></tr>
+<tr><td>Pitka</td><td><b>NA EX!</b> → „NA EX na Dievčinu · −1 poldeci“</td><td>🔒 hotovo</td><td>Cigarety 4 ▾: fajčiť, doliať, nový poldeci, výkup, Poštárka, Starosta</td></tr>
+<tr><td>Odpoveď na NA EX</td><td>Odpovedať Pijanom (po položení)</td><td>bez odpovede</td><td>—</td></tr>
+<tr><td>Vízia</td><td>Do ruky: Pijan</td><td>zahodiť navždy</td><td>—</td></tr>
+<tr><td>Priznaná Cirhóza</td><td>Liečba / Pohreb</td><td>preskočiť</td><td>—</td></tr>
+</tbody></table></div>
+<div class="tok">
+<div class="pred"><h4>Pred: Pitka, dolej poldeci a daj NA EX</h4><ol><li>Prejsť očami 7 až 9 tlačidiel v 1–2 riadkoch.</li><li>Nájsť „doliať poldeci −2“ (v skupine cigariet, stlmené) a kliknúť.</li><li>NA EX! → výber karty (stoličky zakryté).</li><li>„NA EX na …“ (cena v texte orezaná).</li></ol></div>
+<div class="po"><h4>Po</h4><ol><li>Pult: „NA EX teraz nejde: nemáš plný poldeci. Dolej za 2 cig.“ Hneď vedľa je „Cigarety 4 ▾ → doliať“ (alebo dlaždica na doske).</li><li>NA EX! → výber karty, hlavička výberu „Začínaš · súper ešte odpovie“.</li><li>„NA EX na Dievčinu · −1 poldeci“.</li></ol></div>
+</div>
+<div class="wf" aria-label="Drôtený model N3, pult v Pitke a v Zhromaždení">
+<div class="titul">Pult · Pitka (desktop)</div>
+<div class="r"><span class="nadpis">Pitka 1/2</span><small>začínaš</small><span class="b rast">Daj NA EX na kartu so značkou, alebo Pitku ukonči. <span class="tlac tiche">ⓘ</span></span><span class="tlac">Cigarety 4 ▾</span><span class="tlac">🔒 hotovo</span><span class="peciatka">NA EX!</span></div>
+<div class="titul">Pult · Pitka · otvorené Cigarety ▾</div>
+<div class="r"><span class="b" style="display:grid;gap:4px"><span class="tlac">fajčiť · −1 → +1 karta</span><span class="tlac hl">doliať poldeci · −2</span><span class="tlac">nový poldeci · −5</span><span class="tlac">Poštárka +2 · +1 Dlh</span></span></div>
+<div class="titul">Pult · Zhromaždenie s návrhom (variant so zrkadlom)</div>
+<div class="r"><span class="nadpis">Zhromaždenie</span><small>limit 3</small><span class="b rast">Milujúca manželka → tvoja strana · spoj Povera + Poldeci</span><span class="tlac">vrátiť do ruky</span><span class="tlac hl">Vyložiť · bez poldeci</span></div>
+<div class="titul">Telefón</div>
+<div class="mob"><div class="r"><span class="nadpis">Pitka 1/2</span><small>začínaš</small></div><div class="r"><span class="b rast">Daj NA EX, alebo skonči. <span class="tlac tiche">ⓘ</span></span></div><div class="r"><span class="tlac">Cig. 4 ▾</span><span class="tlac">🔒 hotovo</span><span class="peciatka">NA EX!</span></div></div>
+</div>
+<dl>
+<dt>Prístupnosť</dt><dd>Menu „Cigarety ▾“ je <code>&lt;button aria-haspopup="menu" aria-expanded&gt;</code> s ovládaním šípkami a Esc. Nedostupná položka nie je <code>disabled</code> bez vysvetlenia: má <code>aria-disabled</code> a viditeľný dôvod („treba 2 cig.“). Všetky ciele majú aspoň 44 px a poradie fokusu je zľava doprava, hlavné sloveso je posledné.</dd>
+<dt>Náročnosť</dt><dd><span class="stitok stredna">stredná</span>: zjednotenie tlačidiel všetkých stavov do jednej skladby a nové menu.</dd>
+<dt>Súbory</dt><dd><code>HernaPlocha.tsx</code> (rozhranie <code>Pokyn</code> r. 134 dostane polia <code>hlavna</code>, <code>nevratna</code>, <code>vedlajsie</code> namiesto voľného <code>tlacidla</code>; Pitka r. 2302–2420; <code>stolTlacidla</code> r. 1689), <code>hra.css</code> (<code>.pokyn-tlacidla</code>, <code>.cigarety-menu</code>).</dd>
+<dt>Ako overiť</dt><dd>Čas od „Tvoj ťah“ po prvý klik v Pitke (pred a po). Playtest: „Našiel si doliatie poldeci, keď si ho potreboval?“ Sledovať, či niekto omylom nepasuje alebo neskončí Pitku.</dd>
+</dl>
+<label class="vyber"><input type="checkbox" data-navrh="N3 · Pult podľa NA EX! (stredná): pevná skladba stav · veta · vedľajšie ▾ · nevratné · hlavné sloveso s predmetom a cenou; Cigarety ▾ aj na desktope; stoličky v hlavičke výberu NA EX; pečiatka len pre NA EX!."> Vybrať N3</label>
+</article>
+
+<article class="navrh" id="n4" aria-labelledby="n4h">
+<h3 id="n4h">N4 · Pokyn tam, kde sa ťahá <span class="stitok odvazny">odvážnejší smer</span> <span class="stitok stredna">stredná</span> – <span class="stitok velka">veľká</span></h3>
+<p><strong>Rieši:</strong> U1, U5, U7 a U10 od základu. Odpoveď na otázku „patrí tam?“: <strong>pokyn nie</strong>. Globálny pás pokynov zmizne a každá aktívna plocha nesie svoj pokyn a svoje potvrdenie. Na tom už dnes stoja panely cieľa, stavby a brania (hlavička a pätička) aj tlačidlá na stole. Dole ostane len ruka a pult z N3, ktorý sa ukáže len v Zhromaždení a Pitke.</p>
+<ul>
+<li><strong>Cieľ kola, stavba, branie:</strong> pokyn je v hlavičke panela (dnes už je), potvrdenie v pätičke. Pätička je pripnutá k spodku panela a nikdy nie je pod rukou (<code>position: sticky; bottom: var(--ruka-h)</code>).</li>
+<li><strong>Pohoršenie a prebytok:</strong> hlavička panela starších sa zmení na „POHORŠENIE · zostáva 1 · klikni na staršieho, marker ide k súperovi“ a zvýrazní klikateľných starších.</li>
+<li><strong>Zhromaždenie:</strong> stôl má nad líniou „● Tvoj ťah · vylož kartu na + alebo pasuj“ (dnes tam je len „Tvoj ťah“, <code>:3404</code>).</li>
+<li><strong>Výber kariet</strong> (patronát, Vízia, Zberný dvor, Cintorín) sa otvorí ako <strong>výberový panel</strong>, rovnako ako vrstvy Šenok a Veštica: karty 150 px namiesto 72–84 px, náhľad „výhra x:y“ pod kartou a hlavné sloveso v pätičke („Vziať Farára · −2 cig.“).</li>
+</ul>
+<svg viewBox="0 0 900 300" role="img" aria-labelledby="sv2t sv2d">
+<title id="sv2t">Rozloženie obrazovky pred a po N4</title>
+<desc id="sv2d">Vľavo dnes: časová os, starší, panel fázy, stôl, dosky a dole pripnutý pás s rukou, ktorý prekrýva panel. Vpravo po N4: časová os s vrstvami a stavom, panel fázy s vlastnou hlavičkou pokynu a pripnutou pätičkou s potvrdením, stôl s riadkom čo sa stalo a dole len ruka s tenkým pultom v Pitke.</desc>
+<text x="20" y="18" class="sl">Dnes</text>
+<rect x="20" y="26" width="400" height="22" class="pevne" rx="4"/><text x="30" y="41">časová os</text>
+<rect x="20" y="54" width="400" height="40" class="blok" rx="4"/><text x="30" y="78">skóre + starší</text>
+<rect x="20" y="100" width="400" height="70" class="aktiv" rx="4"/><text x="30" y="122">panel fázy (pokyn v hlavičke)</text><text x="30" y="160" class="sl">pätička „potvrdiť / hotovo“</text>
+<rect x="20" y="176" width="400" height="50" class="blok" rx="4"/><text x="30" y="205">stôl</text>
+<rect x="60" y="150" width="320" height="34" class="zle" rx="6"/><text x="70" y="171">PÁS: vrstvy · nadpis · text · tlačidlá</text>
+<rect x="20" y="230" width="400" height="60" class="zle" rx="4"/><text x="30" y="262">ruka (pripnutá)</text>
+<text x="480" y="18" class="sl">Po N4</text>
+<rect x="480" y="26" width="400" height="22" class="pevne" rx="4"/><text x="490" y="41">os · Šenok Lokality Log · ● Tvoj ťah</text>
+<rect x="480" y="54" width="400" height="40" class="blok" rx="4"/><text x="490" y="78">skóre + starší (pokyn v hlavičke pri Pohoršení)</text>
+<rect x="480" y="100" width="400" height="56" class="aktiv" rx="4"/><text x="490" y="122">panel fázy: ● pokyn v hlavičke</text>
+<rect x="480" y="134" width="400" height="22" class="aktiv" rx="4"/><text x="490" y="149">pätička pripnutá nad rukou: potvrdiť</text>
+<rect x="480" y="162" width="400" height="22" class="pevne" rx="4"/><text x="490" y="177">↺ čo sa stalo</text>
+<rect x="480" y="186" width="400" height="40" class="blok" rx="4"/><text x="490" y="210">stôl</text>
+<rect x="480" y="230" width="400" height="22" class="aktiv" rx="4"/><text x="490" y="245">pult (len Zhromaždenie, Pitka)</text>
+<rect x="480" y="254" width="400" height="36" class="blok" rx="4"/><text x="490" y="276">ruka</text>
+</svg>
+<div class="tok">
+<div class="pred"><h4>Pred: Pohoršenie</h4><ol><li>Stránka sa posunie k starším, pás dole píše „Klikni na staršieho hore …“.</li><li>Hráč číta pás dole a potom hľadá hore.</li><li>Prejde myšou nad starších a číta náhľad.</li><li>Klikne.</li></ol></div>
+<div class="po"><h4>Po</h4><ol><li>Hlavička starších: „POHORŠENIE · zostáva 1 · klikni na staršieho“. Klikateľní svietia.</li><li>Prejde myšou nad starších a číta náhľad.</li><li>Klikne.</li></ol></div>
+</div>
+<div class="wf" aria-label="Drôtený model N4">
+<div class="titul">Panel starších pri Pohoršení</div>
+<div class="r"><span class="nadpis" style="color:var(--ja)">Pohoršenie · zostáva 1</span><span class="b rast">Klikni na staršieho: marker ide k súperovi. <span class="tlac tiche">ⓘ</span></span></div>
+<div class="r"><span class="karta hl">Farár<br>4→5</span><span class="karta hl">Krčmárka<br>4→5</span><span class="karta">Starosta<br>🔒</span><span class="karta hl">Poštárka<br>4→5</span><small>… body ty ±0, súper ±0 · do žltej ešte 1 krok</small></div>
+<div class="titul">Výberový panel · Patronát</div>
+<div class="r"><span class="b rast"><b>Patronát · Farár</b>: ktorá karta pôjde lícom dole na scorecard? <span class="tlac tiche">ⓘ ako patronát funguje</span></span></div>
+<div class="r"><span class="karta velka hl">Pijan<br><small>výhra 6:2</small></span><span class="karta velka">Dievčina<br><small>výhra 5:2</small></span><span class="karta velka">Manželka<br><small>výhra 5:3</small></span></div>
+<div class="r"><span class="b rast tl">teraz 3:3 · pri prehre 3:5 · súper dostane 2 Pohoršenia</span><span class="tlac">iný starší</span><span class="tlac hl">Vziať Farára · −2 cig.</span></div>
+</div>
+<dl>
+<dt>Prístupnosť</dt><dd>Každá aktívna plocha je <code>section</code> s <code>aria-labelledby</code> na hlavičku pokynu. Pri zmene fázy sa fokus presunie na hlavičku (a stránka na ňu posunie, ako dnes). Výberový panel je <code>dialog</code> s pascou fokusu a Esc = zrušiť.</dd>
+<dt>Náročnosť</dt><dd><span class="stitok velka">stredná až veľká</span>: väčšina hlavičiek už existuje. Nový je výberový panel a pripnutá pätička a s nimi treba prerobiť stavy patronátu, Vízie a efektov.</dd>
+<dt>Súbory</dt><dd><code>HernaPlocha.tsx</code> (<code>cielPanel</code> r. 2801, <code>draftPanel</code> r. 2857, hlavička starších, <code>stolTlacidla</code> r. 1689, <code>pokyn</code> r. 1755), <code>Vrstva.tsx</code> (výberový panel), <code>hra.css</code>.</dd>
+<dt>Ako overiť</dt><dd>Počet rolovaní za ťah a čas do prvého kliku pri Pohoršení a patronáte. Playtest: „Kde si hľadal, čo máš urobiť?“ Pozor na čakanie: bez pásu musí byť „Čakáš na Dizajn 1“ jasné z osi (N2).</dd>
+</dl>
+<label class="vyber"><input type="checkbox" data-navrh="N4 · Pokyn tam, kde sa ťahá (stredná–veľká): globálny pás zmizne, pokyn v hlavičke aktívnej plochy, pripnutá pätička s potvrdením, výberový panel pre patronát/Víziu/šrot/Cintorín s veľkými kartami; dole len ruka + pult v Zhromaždení a Pitke."> Vybrať N4</label>
+</article>
+
+<article class="navrh" id="n5" aria-labelledby="n5h">
+<h3 id="n5h">N5 · Nápoveda pri cieli a skúsený režim <span class="stitok odvazny">odvážnejší smer</span> <span class="stitok velka">veľká</span></h3>
+<p><strong>Rieši:</strong> U9 a časť U1 a U5 z druhej strany. Pás je preplnený preto, lebo slúži dvom ľuďom naraz: nováčikovi, ktorý potrebuje výklad, a skúsenému hráčovi, ktorému stačí sloveso. N5 ich oddelí.</p>
+<ul>
+<li><strong>Bublina pri cieli:</strong> pri prvom stretnutí s krokom (prvé Zhromaždenie, prvá Pitka, prvý patronát) sa výklad ukáže ako bublina so šípkou na miesto ťahu („+“, staršieho, Smetisko). Má tlačidlá „Rozumiem“ a „Viac nevysvetľuj“.</li>
+<li><strong>Režim nápovedy v profile:</strong> plná (bubliny a ⓘ), krátka (len veta v pulte), vypnutá (len stav a tlačidlá). Predvolene plná pre prvé 3 partie, potom krátka. Hra si to pamätá v profile na serveri.</li>
+<li><strong>Skúsený hráč</strong> potom vidí iba pult z N3: stav, hlavné sloveso a NA EX!.</li>
+</ul>
+<div class="wf" aria-label="Drôtený model N5">
+<div class="titul">Prvé Zhromaždenie · režim plná</div>
+<div class="r"><span class="bublina">Sem polož kartu. Z ruky sa vysunú tie, ktoré sa tu spoja. Druhá karta v tom istom ťahu stojí plný poldeci.<br><span class="tlac">Rozumiem</span> <span class="tlac tiche">Viac nevysvetľuj</span></span></div>
+<div class="r"><span class="karta">Pijan</span><span class="karta">lokalita</span><span class="karta nov">+</span></div>
+<div class="titul">To isté · režim krátka</div>
+<div class="r"><span class="nadpis">Zhromaždenie</span><small>limit 3</small><span class="b rast">Polož kartu na +, alebo pasuj.</span><span class="tlac">Cig. ▾</span><span class="tlac">pasovať · +3</span></div>
+<div class="titul">Profil</div>
+<div class="r"><span class="b">Nápoveda v hre:</span><span class="tlac hl">plná</span><span class="tlac">krátka</span><span class="tlac">vypnutá</span></div>
+</div>
+<dl>
+<dt>Prístupnosť</dt><dd>Bublina je <code>role="dialog"</code> bez modálnosti (nezamyká stránku) a cieľ na ňu odkazuje cez <code>aria-describedby</code>. Esc ju zavrie. Nesmie zakryť cieľ, umiestňuje sa nad ním. Pri <code>prefers-reduced-motion</code> sa neanimuje.</dd>
+<dt>Náročnosť</dt><dd><span class="stitok velka">veľká</span>: nové umiestňovanie bubliny, nastavenie v profile a obsah bublín pre ≈ 15 krokov.</dd>
+<dt>Súbory</dt><dd><code>HernaPlocha.tsx</code>, <code>stranky/Profil</code> (nastavenie), server (pole v profile), <code>hra.css</code>.</dd>
+<dt>Ako overiť</dt><dd>Partia s človekom, ktorý hrá prvýkrát: koľko bublín zavrie bez čítania a či sa pýta na pravidlá menej ako dnes. Skúsený hráč: či si zapne „krátka“.</dd>
+</dl>
+<label class="vyber"><input type="checkbox" data-navrh="N5 · Nápoveda pri cieli a skúsený režim (veľká): výklad ako bublina pri mieste ťahu pri prvom stretnutí, režim nápovedy plná/krátka/vypnutá v profile."> Vybrať N5</label>
+</article>
+
+<section aria-labelledby="vyberh">
+<h3 id="vyberh">Výber</h3>
+<p class="pozn" id="vyber-stav" aria-live="polite">Nič nie je vybrané.</p>
+<textarea class="zadanie" id="zadanie" readonly aria-label="Zadanie z vybraných návrhov"></textarea>
+<div class="akcie-vyberu"><button type="button" id="kopiruj">Skopírovať ako zadanie</button><span class="pozn" id="kopiruj-stav" aria-live="polite"></span></div>
+</section>
+</section>
+
+<section aria-labelledby="poradie">
+<h2 id="poradie">8. Odporúčané poradie</h2>
+<ol>
+<li><strong>N1 Jedna veta, nič orezané</strong> <span class="stitok mala">malá</span>. Hneď, nezávisí od ničoho a opraví orezanú cenu, sľúbené tlačidlo a pulzovanie. Michal uvidí, koľko pásu ubudne už len zo skrátenia textov.</li>
+<li><strong>N2 + N3 spolu</strong> <span class="stitok stredna">stredná</span>. Z pásu sa stane jednoriadkový pult s NA EX! vpravo. Najprv rozhodni otázky 1 až 4.</li>
+<li><strong>N4</strong> <span class="stitok velka">stredná až veľká</span>, ak po N2 a N3 playtest ukáže, že hráči stále hľadajú, čo robiť, alebo sa ťahá cez pult. Nadväzuje na UI N5 a UX N2 z návrhu 1240 („stôl v strede“).</li>
+<li><strong>N5</strong> <span class="stitok velka">veľká</span>, keď prídu prví noví hráči-ľudia. Dovtedy stačí ⓘ z N1.</li>
+</ol>
+<p><strong>Súvis s UI návrhom:</strong> vzhľad pultu, ikony vrstiev v osi a farby stavov rieši <a href="dizajn-pokyn-bar-20261021-1639-ui.html">UI návrh</a>. Tento návrh určuje, čo v pulte je a kedy. Pečiatku NA EX! obaja zachovávame.</p>
+</section>
+
+<section aria-labelledby="otazky">
+<h2 id="otazky">9. Otázky do playtestu a na Michala</h2>
+<h3>Na Michala</h3>
+<ol>
+<li><strong>Vrstvy hore:</strong> môžu Šenok, Lokality a Log prejsť do pripnutej časovej osi? Vrátenie karty ťahaním na tlačidlo by nahradila dočasná zóna nad rukou.</li>
+<li><strong>Potvrdenie:</strong> 2026-10-20 si dal „potvrdiť“ k stolu. Má ho pult zrkadliť („Vyložiť Milujúcu manželku“), alebo len ukázať odkaz „↑ potvrdiť na stole“?</li>
+<li><strong>Pečiatka:</strong> ostane červená pečiatka len pre NA EX!? Odporúčam áno, aby si zachovala význam.</li>
+<li><strong>Cigarety:</strong> na desktope do jedného menu „Cigarety ▾“, ako na telefóne? Alebo nechať doliatie a nový poldeci len na doske a vyhodiť ich z pultu?</li>
+<li><strong>Pravidlá v hre:</strong> stačí výklad za ⓘ (s odkazom do Pravidiel a glosára), alebo má nováčik vidieť celý text bez kliknutia (N5)?</li>
+<li><strong>Režim nápovedy:</strong> chceš rozlišovať nováčika a skúseného hráča (N5)?</li>
+</ol>
+<h3>Do playtestu (s človekom, nie AI, lebo AI pás nevidí)</h3>
+<ul>
+<li>„Kde si hľadal, čo máš teraz urobiť?“ Sledovať, kam pozrie najprv: dole na pás, alebo na panel či stôl.</li>
+<li>„Vedel si pred potvrdením, koľko ťa ťah stojí?“ Pri druhej karte v Zhromaždení a pri NA EX.</li>
+<li>Počet rolovaní za ťah a čas od „Tvoj ťah“ po prvý klik, pred a po N1 až N3.</li>
+<li>Pri braní zo šenku: nájde hráč „hotovo“ bez rolovania?</li>
+<li>Pýta sa hráč na tlačidlo NA EX!? (Kontrola: má byť zrozumiteľné bez výkladu.)</li>
+</ul>
+</section>
+<p class="pozn">Pracovné snímky a poznámky: <code>playtest/dizajn/pokyn-bar-20261021-1639/</code> (mimo gitu). Kód webu sa v tomto návrhu nemenil.</p>
+</main>
+<script>
+(function(){
+  function filtruj(tlacidla, riadky, atr, stav, popis){
+    tlacidla.forEach(function(b){
+      b.addEventListener('click', function(){
+        tlacidla.forEach(function(x){ x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+        var v = b.getAttribute(atr), n = 0;
+        riadky.forEach(function(r){
+          var hodnoty = (r.getAttribute(atr) || '').split(' ');
+          var ukaz = v === 'vsetko' || hodnoty.indexOf(v) >= 0;
+          r.hidden = !ukaz; if (ukaz) n++;
+        });
+        stav.textContent = popis(v, n);
+      });
+    });
+  }
+  filtruj(Array.prototype.slice.call(document.querySelectorAll('[data-faza]')).filter(function(e){return e.tagName==='BUTTON';}),
+    Array.prototype.slice.call(document.querySelectorAll('#mapa-tab tbody tr')), 'data-faza', document.getElementById('mapa-stav'),
+    function(v,n){ return v === 'vsetko' ? 'Zobrazené všetky stavy (' + n + ').' : 'Zobrazené stavy: ' + n + '.'; });
+  filtruj(Array.prototype.slice.call(document.querySelectorAll('button[data-z]')),
+    Array.prototype.slice.call(document.querySelectorAll('#audit-tab tbody tr')), 'data-z', document.getElementById('audit-stav'),
+    function(v,n){ return v === 'vsetko' ? 'Zobrazené všetky body (' + n + ').' : 'Závažnosť ' + v + ': ' + n + ' bodov.'; });
+  var boxy = Array.prototype.slice.call(document.querySelectorAll('input[data-navrh]'));
+  var zad = document.getElementById('zadanie'), st = document.getElementById('vyber-stav');
+  function obnov(){
+    var vyb = boxy.filter(function(b){ return b.checked; }).map(function(b){ return '- ' + b.getAttribute('data-navrh'); });
+    zad.value = vyb.length ? 'Implementuj z návrhu docs/playtesty/dizajn-pokyn-bar-20261021-1639-ux.html:\n' + vyb.join('\n') : '';
+    st.textContent = vyb.length ? 'Vybrané: ' + vyb.length + '.' : 'Nič nie je vybrané.';
+  }
+  boxy.forEach(function(b){ b.addEventListener('change', obnov); });
+  document.getElementById('kopiruj').addEventListener('click', function(){
+    var s = document.getElementById('kopiruj-stav');
+    if (!zad.value) { s.textContent = 'Najprv vyber aspoň jeden návrh.'; return; }
+    var hotovo = function(){ s.textContent = 'Skopírované.'; };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(zad.value).then(hotovo, function(){ zad.select(); s.textContent = 'Označené — skopíruj Ctrl+C.'; });
+    } else { zad.select(); s.textContent = 'Označené — skopíruj Ctrl+C.'; }
+  });
+  obnov();
+})();
+</script>
+</body>
+</html>

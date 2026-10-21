@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hrana stola</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Bitter:wght@700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --pozadie: #14110e;
+    --plocha: #1e1914;
+    --plocha-2: #28211a;
+    --plocha-3: #332a21;
+    --okraj: #3d3229;
+    --okraj-svetly: #57483a;
+    --text: #f1e8d8;
+    --tlmeny: #b6a790;
+    --slaby: #8b7d6a;
+    --akcent: #e9ad45;
+    --akcent-tmavy: #b9802a;
+    --na-akcente: #2b1b03;
+    --cervena: #d0563f;
+    --cervena-text: #e5735c;
+    --tehla-tmava: #a8341f;
+    --zelena: #7cbf74;
+    --ja: #5cc0cf;
+    --su: #e0805f;
+    --plst-okraj: #5caa6a;
+    --krem: #f1ece2;
+    --nadpis: "Bitter", Georgia, serif;
+    --pismo: Roboto, "Segoe UI", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--pozadie); color: var(--text); font: 400 15px/1.5 var(--pismo); }
+  main { max-width: 1400px; margin: 0 auto; padding: 32px 16px 80px; }
+  h1 { font: 800 2rem/1.15 var(--nadpis); margin: 0 0 6px; }
+  h2 { font: 800 1.35rem/1.2 var(--nadpis); margin: 48px 0 12px; }
+  h3 { font: 700 1.15rem/1.3 var(--nadpis); margin: 0; }
+  p { margin: 0 0 10px; color: var(--tlmeny); }
+  b, strong { color: var(--text); }
+  .podnadpis { color: var(--slaby); font-size: 0.9rem; margin-bottom: 18px; }
+
+  .ovladanie { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; gap: 10px 24px; align-items: center; padding: 12px 0; background: var(--pozadie); border-bottom: 1px solid var(--okraj); margin-top: 24px; }
+  .skupina { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .skupina > span { font: 700 0.7rem/1 var(--pismo); letter-spacing: 0.1em; text-transform: uppercase; color: var(--slaby); margin-right: 4px; }
+  .skupina button { font: 500 0.88rem/1 var(--pismo); color: var(--tlmeny); background: var(--plocha); border: 1px solid var(--okraj); border-radius: 8px; padding: 8px 11px; cursor: pointer; min-height: 36px; }
+  .skupina button:hover { color: var(--text); border-color: var(--okraj-svetly); }
+  .skupina button[aria-pressed="true"] { color: var(--na-akcente); background: var(--akcent); border-color: var(--akcent); font-weight: 700; }
+
+  .galeria { display: flex; flex-direction: column; gap: 26px; margin-top: 18px; }
+  .mock { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; overflow: hidden; }
+  .vyrezy { display: grid; grid-template-columns: 700fr 400fr; gap: 0; border-top: 1px solid var(--okraj); }
+  .vyrezy > .vyrez + .vyrez { border-left: 1px solid var(--okraj); }
+  .mock-dole { display: grid; grid-template-columns: 1.1fr 1fr; gap: 0 28px; }
+  .ram { position: relative; width: 100%; aspect-ratio: 1600 / 1000; overflow: hidden; background: var(--pozadie); }
+  .javisko { position: absolute; left: 0; top: 0; width: 1600px; height: 1000px; transform-origin: 0 0; font-family: var(--pismo); }
+  .vyrez { display: block; width: 100%; overflow: hidden; position: relative; background: var(--pozadie); }
+  .mock-popis { padding: 18px; border-top: 1px solid var(--okraj); }
+  .mock-cislo { font: 800 2.4rem/1 var(--nadpis); color: var(--akcent); display: block; margin-bottom: 6px; }
+  .mock-popis ul { margin: 10px 0 0; padding-left: 18px; color: var(--tlmeny); font-size: 0.93rem; }
+  .mock-popis li { margin: 3px 0; }
+  .lisi { margin-top: 12px; padding: 10px 12px; border-radius: 8px; background: var(--plocha-2); font-size: 0.88rem; color: var(--tlmeny); }
+  .lisi b { color: var(--akcent); font-weight: 700; }
+  .plus::marker { content: "+  "; color: var(--zelena); font-weight: 700; }
+  .minus::marker { content: "−  "; color: var(--cervena); font-weight: 700; }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.92rem; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--okraj); vertical-align: middle; }
+  th { font: 700 0.72rem/1.2 var(--pismo); letter-spacing: 0.08em; text-transform: uppercase; color: var(--slaby); }
+  td { color: var(--tlmeny); }
+  td:first-child { color: var(--text); font-weight: 500; }
+
+  /* ikony — porovnanie */
+  .ikony-mriezka { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px; }
+  .ikony-box { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 16px; }
+  .ikony-rad { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; }
+  .ikona-vzor { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 8px; width: 118px; min-height: 104px; padding: 10px 6px; border: 1px solid var(--okraj); border-radius: 10px; background: var(--plocha-2); text-align: center; font-size: 0.78rem; color: var(--slaby); line-height: 1.25; }
+  .ikona-vzor .obr { display: grid; place-items: center; height: 48px; }
+  .ikona-vzor.novy { border-color: var(--zelena); background: rgb(124 191 116 / .07); }
+  .ikona-vzor b { display: block; color: var(--tlmeny); font-weight: 500; }
+  .sipka { align-self: center; font: 800 1.6rem/1 var(--nadpis); color: var(--zelena); padding: 0 4px; }
+  .karta-pikto { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 7px; background: #fff; border: 2px solid #c9a6d6; }
+
+  @media (max-width: 1000px) {
+    .mock-dole { grid-template-columns: 1fr; }
+    .ikony-mriezka { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- prvky mockupu (súradnice snímky 1600 × 1000) ---------- */
+  .m { position: absolute; }
+  .rez { position: absolute; left: 0; width: 1600px; background-repeat: no-repeat; }
+  .m-tag { font: 700 13px/1 var(--pismo); letter-spacing: 0.12em; text-transform: uppercase; color: var(--zelena); white-space: nowrap; }
+  .m-tag.su { color: var(--su); }
+  .m-txt { font: 400 15px/1.4 var(--pismo); color: var(--text); white-space: nowrap; }
+  .m-naex { position: relative; display: inline-flex; align-items: center; min-height: 62px; padding: 0 30px; white-space: nowrap; font: 800 27px/1 var(--nadpis); letter-spacing: 0.04em; text-transform: uppercase; color: #fff4e2; background: var(--tehla-tmava); border: 2px solid var(--cervena); border-radius: 10px; box-shadow: 0 3px 0 #5e1b0f, 0 0 0 4px rgb(208 86 63 / 0.18), 0 10px 24px rgb(0 0 0 / .5); rotate: -4deg; }
+  .m-naex::after { content: ""; position: absolute; inset: 3px; border: 1px dashed rgb(255 244 226 / 0.45); border-radius: 7px; pointer-events: none; }
+  .m-vrstva { display: inline-flex; align-items: center; gap: 7px; height: 30px; padding: 0 11px; font: 500 14px/1 var(--pismo); color: var(--tlmeny); background: var(--plocha-3); border: 1px solid var(--okraj); border-radius: 8px; white-space: nowrap; }
+  .m-vrstva .n { font-size: 12px; color: var(--slaby); background: var(--plocha); border-radius: 5px; padding: 3px 6px; }
+  .m-vrstva .n.nove { background: var(--akcent); color: var(--na-akcente); font-weight: 700; }
+  .h-btn { display: inline-flex; align-items: center; height: 32px; padding: 0 11px; font: 500 14px/1 var(--pismo); color: var(--tlmeny); border: 1px solid var(--okraj); border-radius: 8px; white-space: nowrap; }
+  .h-btn.cervene { color: var(--cervena-text); border-color: rgb(208 86 63 / .55); }
+  .h-btn.tichy { border-color: transparent; }
+  .bodky::after { content: "…"; }
+  .pilulka { height: 100%; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 0 18px; background: var(--plocha); border: 2px solid var(--zelena); border-radius: 999px; box-shadow: 0 4px 14px rgb(0 0 0 / .4); }
+  .pilulka.su { border-color: var(--su); }
+  .bublina { position: absolute; padding: 7px 10px; background: #0f0c0a; color: var(--text); border: 1px solid var(--okraj-svetly); border-radius: 7px; font: 400 13px/1.3 var(--pismo); white-space: nowrap; box-shadow: 0 6px 16px rgb(0 0 0 / .6); }
+  .bublina::after { content: ""; position: absolute; left: 50%; top: 100%; translate: -50% 0; border: 6px solid transparent; border-top-color: #0f0c0a; }
+
+  /* zásoba (počet cigariet pred tlačidlami) */
+  .zasoba { display: inline-flex; flex-direction: column; align-items: center; gap: 3px; padding: 0 6px; font: 800 22px/1 var(--nadpis); color: var(--text); }
+  .zasoba small { font: 700 10px/1 var(--pismo); letter-spacing: .12em; text-transform: uppercase; color: var(--slaby); }
+
+  /* 1 · pečiatky */
+  .pec { position: relative; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; width: 128px; height: 66px; color: #2b2116; background: #e8dfcc; border: 2px solid #b8a887; border-radius: 9px; box-shadow: 0 3px 0 #8f8572, 0 10px 20px rgb(0 0 0 / .45); font: 800 13px/1 var(--nadpis); letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; }
+  .pec::after { content: ""; position: absolute; inset: 3px; border: 1px dashed rgb(43 33 22 / .4); border-radius: 6px; pointer-events: none; }
+  .pec .r { display: flex; align-items: center; gap: 6px; }
+  .pec .cena { font: 800 14px/1 var(--nadpis); color: #8a2a1a; display: inline-flex; align-items: center; gap: 3px; }
+  .pec.ne { background: transparent; color: #8b7d6a; border: 2px dashed #6b5d4b; box-shadow: none; }
+  .pec.ne::after { display: none; }
+  .pec.ne .cena { color: #8b7d6a; }
+  .pec-kon { position: relative; display: inline-flex; align-items: center; min-height: 58px; padding: 0 26px; white-space: nowrap; font: 800 21px/1 var(--nadpis); letter-spacing: 0.08em; text-transform: uppercase; color: var(--akcent); background: #2a2114; border: 2px solid var(--akcent-tmavy); border-radius: 10px; box-shadow: 0 3px 0 #120d07, 0 10px 22px rgb(0 0 0 / .5); rotate: 2deg; }
+  .pec-kon::after { content: ""; position: absolute; inset: 3px; border: 1px dashed rgb(233 173 69 / .45); border-radius: 7px; }
+  /* 2 · zásuvky */
+  .zasuvky { display: flex; height: 100%; background: linear-gradient(180deg, #24301f, #1b2418); border: 2px solid var(--plst-okraj); border-top: 0; border-radius: 0 0 14px 14px; box-shadow: 0 8px 18px rgb(0 0 0 / .45); overflow: hidden; }
+  .zasuvka { display: flex; align-items: center; gap: 8px; padding: 0 16px; font: 500 15px/1 var(--pismo); color: var(--text); white-space: nowrap; }
+  .zasuvka + .zasuvka { border-left: 1px solid rgb(92 170 106 / .35); }
+  .zasuvka .cena { display: inline-flex; align-items: center; gap: 3px; padding: 3px 7px; border-radius: 6px; background: rgb(233 173 69 / .16); color: var(--akcent); font: 700 13px/1 var(--pismo); }
+  .zasuvka.ne { color: #6f7a69; }
+  .zasuvka.ne .cena { background: transparent; color: #6f7a69; text-decoration: line-through; }
+  .zasuvka.pocet { color: var(--tlmeny); font-weight: 700; background: rgb(0 0 0 / .18); }
+  .zasuvky.kon .zasuvka { color: var(--akcent); font-weight: 700; padding: 0 22px; }
+  /* 3 · žetóny */
+  .zeton { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 96px; }
+  .zeton-kruh { position: relative; width: 62px; height: 62px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 35% 30%, #3e3326, #231c15 70%); border: 3px solid var(--okraj-svetly); box-shadow: inset 0 0 0 4px #1a140f, inset 0 0 0 5px rgb(233 173 69 / .35), 0 8px 18px rgb(0 0 0 / .55); }
+  .zeton-kruh .cena { position: absolute; right: -10px; top: -8px; min-width: 30px; height: 24px; padding: 0 5px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 2px; background: var(--akcent); color: var(--na-akcente); font: 800 13px/1 var(--pismo); box-shadow: 0 2px 6px rgb(0 0 0 / .5); }
+  .zeton > span { font: 700 11px/1.15 var(--pismo); letter-spacing: .06em; text-transform: uppercase; color: var(--tlmeny); background: rgb(20 17 14 / .8); padding: 4px 7px; border-radius: 5px; text-align: center; white-space: nowrap; }
+  .zeton.ne .zeton-kruh { background: transparent; border-style: dashed; border-color: #5a4f42; box-shadow: none; }
+  .zeton.ne .zeton-kruh svg { opacity: .35; }
+  .zeton.ne .zeton-kruh .cena { background: var(--plocha-3); color: var(--slaby); }
+  .zeton.ne > span { color: var(--slaby); }
+  .zeton.kon .zeton-kruh { border-color: var(--akcent-tmavy); box-shadow: inset 0 0 0 4px #1a140f, inset 0 0 0 5px rgb(233 173 69 / .6), 0 8px 18px rgb(0 0 0 / .55); }
+  .zeton.kon > span { color: var(--akcent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Hrana stola</h1>
+  <div class="podnadpis">NA EX! · herný stôl · 3 mockupy na výber + jednotné ikony cigariet a poldeci · Pitka 1/3 · 2026-10-21</div>
+  <p>
+    Na spodnej hrane stola je <b>vľavo, zarovnané k ľavému okraju, samostatné tlačidlo pre každý nákup za cigarety</b> (jeden klik namiesto dvoch),
+    <b>NA EX! v strede</b> (iba keď je vybraná karta) a <b>KONČÍM zarovnané k pravému okraju</b>.
+    Čo sa práve urobiť nedá, je <b>sivé</b> a pri prechode myšou povie prečo.
+    V partii na snímke máš 3 cigarety, 2 plné poldece a 0 vypitých, preto je <b>doliať</b> sivé (nemáš čo doliať) a <b>nový poldeci</b> tiež (stojí 5).
+    Všetky ikony sú už <b>jednotné</b>, viď druhá časť.
+  </p>
+
+  <div class="ovladanie">
+    <div class="skupina" id="ov-stav"><span>Stav</span>
+      <button data-v="nic">Tvoj ťah · nič nevybraté</button>
+      <button data-v="vybrana">Tvoj ťah · vybraný Pijan</button>
+      <button data-v="caka">Čakáš na súpera</button>
+    </div>
+    <div class="skupina" id="ov-dvor"><span>Lokalita</span>
+      <button data-v="nie">Kultúrny dom</button>
+      <button data-v="ano">Zberný dvor (+ výkup zo šrotu)</button>
+    </div>
+  </div>
+
+  <div class="galeria" id="galeria"></div>
+
+  <h2>V čom sa líšia</h2>
+  <table>
+    <thead><tr><th></th><th>Nákupy za cigarety</th><th>Sivé (nedá sa)</th><th>KONČÍM</th><th>Výška pod stolom</th></tr></thead>
+    <tbody>
+      <tr><td>1 · Pečiatky</td><td>papierové pečiatky: ikona, názov, cena</td><td>nevypálená pečiatka: iba prerušovaný obrys</td><td>jantárová pečiatka</td><td>≈ 40 px</td></tr>
+      <tr><td>2 · Zásuvky</td><td>jedna zásuvka z hrany stola rozdelená na priehradky, vpredu počet cigariet</td><td>sivý text a prečiarknutá cena</td><td>samostatná zásuvka vpravo</td><td>≈ 46 px</td></tr>
+      <tr><td>3 · Žetóny</td><td>okrúhle žetóny s ikonou, cena ako odznak, názov pod žetónom</td><td>prázdny prerušovaný žetón, vybledlá ikona</td><td>žetón s pohárikom hore dnom</td><td>≈ 60 px</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Jednotné ikony cigariet a poldeci</h2>
+  <p>
+    Dnes má cigareta v hre <b>štyri rôzne podoby</b> a poldeci <b>tri</b>. Návrh: jediný zdroj sú <b>piktogramy z kariet</b>
+    (sú vytlačené na kartách, hráč ich pozná už z ruky). Rovnaké ikony potom použije panel hráča, tlačidlá, ceny, log, pravidlá aj značka NA EX na karte.
+    Farba hovorí stav: krémová cigareta, jantárový plný poldeci, sivý vypitý.
+  </p>
+  <div class="ikony-mriezka">
+    <div class="ikony-box">
+      <h3>Cigareta</h3>
+      <div class="ikony-rad" id="ikony-cig"></div>
+    </div>
+    <div class="ikony-box">
+      <h3>Poldeci</h3>
+      <div class="ikony-rad" id="ikony-pold"></div>
+    </div>
+  </div>
+  <table style="margin-top:16px">
+    <thead><tr><th>Kde</th><th>Dnes</th><th>Po zjednotení</th></tr></thead>
+    <tbody>
+      <tr><td>Karta (akcie na hranách)</td><td>piktogram z tlačového PDF</td><td>bez zmeny — je to vzor</td></tr>
+      <tr><td>Panel hráča (Cigarety, Poldeci)</td><td>vlastné SVG: vodorovný pásik, lichobežníkový pohárik</td><td>piktogram z karty, poldece jantárové alebo sivé</td></tr>
+      <tr><td>Značka NA EX na karte v línii</td><td>emoji 🥃</td><td>piktogram poldeci</td></tr>
+      <tr><td>Ceny v tlačidlách a v logu</td><td>text „−2“, „cig.“</td><td>„−2“ a malý piktogram cigarety</td></tr>
+      <tr><td>Spätná väzba (cigareta ako „páči sa mi“)</td><td>vlastné SVG s dymom</td><td>môže ostať (iný význam), alebo piktogram z karty</td></tr>
+      <tr><td>Domov (dlaždica Hra)</td><td>emoji 🥃</td><td>piktogram poldeci</td></tr>
+    </tbody>
+  </table>
+</main>
+
+<script>
+  // Piktogramy z kariet — skopírované z apps/web/src/karta/ikony.ts (súradnice 0..100).
+  const CIG_D = "M41.38 6.5C43.15 11.33 62.28 17.97 71.87 19C64.63 20.54 61.51 21.06 60.63 25.25C58.08 37.44 98.03 37.06 83.23 54.98C96.73 51.9 94.55 32.29 86.34 29.62C81.02 27.9 73.89 27.34 77.01 22.13C80.83 17.46 95.99 11.92 85.13 6.5L41.38 6.5M3.12 57.28L3.12 69.78L20.11 69.78L20.11 57.28L3.12 57.28M23.63 57.28L23.63 69.78L77.14 69.78L77.14 57.28L23.63 57.28M80.66 57.28L80.66 69.78L83.78 69.78L83.78 57.28L80.66 57.28M87.3 57.28L87.3 69.78L90.62 69.78L90.62 57.28L87.3 57.28";
+  const POLD_D = "M51.53 2.14C42.08 2.14 33.53 3.27 27.18 5.17C24.01 6.12 21.39 7.25 19.43 8.64C17.47 10.03 16.01 11.84 16.01 14.06C16.01 14.29 16.03 14.51 16.06 14.73L16.03 14.73L16.22 16.73L22.64 83.06L22.65 83.06C22.75 84.88 24.04 86.21 25.59 87.2C27.18 88.22 29.24 89.04 31.73 89.73C36.71 91.12 43.39 91.96 50.76 91.96C58.14 91.96 64.81 91.12 69.79 89.73C72.28 89.04 74.35 88.22 75.94 87.2C77.49 86.21 78.78 84.9 78.91 83.1L78.91 83.1L86.58 16.77L86.67 15.97C86.91 15.37 87.05 14.73 87.05 14.06C87.05 11.84 85.59 10.03 83.63 8.64C81.67 7.25 79.05 6.12 75.88 5.17C69.54 3.27 60.98 2.14 51.53 2.14L51.53 2.14M51.53 5.79C60.69 5.79 68.98 6.92 74.83 8.67C77.76 9.55 80.07 10.59 81.52 11.62C82.97 12.64 83.4 13.49 83.4 14.06C83.4 14.63 82.97 15.47 81.52 16.49C80.07 17.52 77.76 18.57 74.83 19.44C68.98 21.19 60.69 22.32 51.53 22.32C42.37 22.32 34.09 21.19 28.23 19.44C25.31 18.57 22.99 17.52 21.54 16.49C20.1 15.47 19.66 14.63 19.66 14.06C19.66 13.49 20.1 12.64 21.54 11.62C22.99 10.59 25.31 9.55 28.23 8.67C34.09 6.92 42.37 5.79 51.53 5.79L51.53 5.79M20.2 19.99C22.06 21.14 24.41 22.11 27.18 22.94C33.53 24.84 42.08 25.97 51.53 25.97C58.19 25.97 64.4 25.41 69.71 24.41L68.93 39.3C63.95 38.38 57.77 37.84 51.09 37.84C37.63 37.84 26.24 40.05 22.44 43.1L20.2 19.99L20.2 19.99M82.51 20.2L79.85 43.19C79.02 42.49 77.77 41.83 76.2 41.23L78 22.25C79.71 21.64 81.22 20.96 82.51 20.2L82.51 20.2M79.31 47.88L77.45 63.99C76.67 65.76 75.35 67.31 73.61 68.64L75.4 49.72C77.02 49.16 78.35 48.54 79.31 47.88L79.31 47.88M22.91 47.9C27.11 50.77 38.14 52.82 51.09 52.82C57.5 52.82 63.43 52.32 68.3 51.46L67.22 72.01C52.77 77.3 28.72 74.79 24.43 63.68L22.91 47.9L22.91 47.9";
+  const cigIkona = (v = 24, farba = "var(--krem)") => `<svg viewBox="0 0 100 100" width="${v}" height="${v}" aria-hidden="true"><path d="${CIG_D}" fill="${farba}"/></svg>`;
+  const poldIkona = (v = 24, farba = "var(--akcent)") => `<svg viewBox="0 0 100 100" width="${v}" height="${v}" aria-hidden="true"><path d="${POLD_D}" fill="${farba}"/></svg>`;
+  const poldPlus = (v = 24, farba = "var(--akcent)") =>
+    `<span style="position:relative;display:inline-grid;place-items:center">${poldIkona(v, farba)}<b style="position:absolute;right:-7px;bottom:-4px;font:800 ${Math.round(v * 0.55)}px/1 var(--pismo);color:${farba}">+</b></span>`;
+  const poldHoreDnom = (v = 30, farba = "var(--akcent)") => `<span style="display:inline-grid;rotate:180deg">${poldIkona(v, farba)}</span>`;
+  const srotIkona = (v = 24, farba = "var(--krem)") =>
+    `<svg viewBox="0 0 24 24" width="${v}" height="${v}" aria-hidden="true" fill="none" stroke="${farba}" stroke-width="2" stroke-linejoin="round"><rect x="4" y="3" width="11" height="15" rx="2"/><rect x="9" y="7" width="11" height="14" rx="2" fill="${farba}" fill-opacity=".25"/></svg>`;
+  const cena = (n, farba) => `<span class="cena">−${n}${cigIkona(14, farba ?? "currentColor")}</span>`;
+
+  const OBR = "dizajn-pokyn-bar-20261021-1639/zaklad-stol-pitka.jpg";
+  const Y = 712;
+  const RUKA = 850;
+  const F = 40;
+  const HRANA = 727 + F;
+  const PILULKA_Y = 221;
+  const STRED = 800;
+  const LAVO = 40; // ľavý okraj tlačidiel (stôl začína na x = 20)
+  const PRAVO = 1560; // pravý okraj tlačidiel (stôl končí na x = 1580)
+  const stav = { stav: "nic", dvor: "nie" };
+
+  const rez = (odY, vyska, naY) =>
+    vyska <= 0 ? "" : `<div class="rez" style="top:${naY}px;height:${vyska}px;background-image:url('${OBR}');background-position:0 ${-odY}px"></div>`;
+  const el = (x, y, w, h, obsah, styl = "") =>
+    `<div class="m" style="left:${x}px;top:${y}px;${w === null ? "" : `width:${w}px;`}${h === null ? "" : `height:${h}px;`}${styl}">${obsah}</div>`;
+  const stred = (x, y, w, h, obsah, styl = "") => el(x - w / 2, y, w, h, obsah, styl);
+  const vypln = (y, f) => {
+    const s = f / 12;
+    return el(0, y, 1600, f, "", `background-image:url('${OBR}');background-repeat:no-repeat;background-size:1600px ${1000 * s}px;background-position:0 ${-712 * s}px`);
+  };
+  const G = 56;
+  const podklad = () =>
+    rez(0, Y, 0) + vypln(Y, F) + rez(Y, 16, Y + F) + el(0, Y + F + 16, 1600, G, "", "background:var(--pozadie)") +
+    rez(Y + 16, RUKA - Y - F - 16 - G, Y + F + 16 + G) + rez(RUKA, 1000 - RUKA, RUKA);
+  // Riadok zarovnaný na hranu stola: `kde` = "l" (od ľavého okraja), "p" (k pravému), "s" (na stred).
+  const naHranu = (kde, x, h, obsah, posun = 0) => {
+    const zarovnaj = kde === "l" ? "flex-start" : kde === "p" ? "flex-end" : "center";
+    const lavo = kde === "l" ? x : kde === "p" ? x - 760 : x - 380;
+    return el(lavo, HRANA - h / 2 + posun, 760, h, `<div style="height:100%;display:flex;align-items:center;justify-content:${zarovnaj};gap:10px">${obsah}</div>`);
+  };
+
+  const VETA = {
+    nic: `Klikni na kartu so značkou NA EX, alebo Pitku ukonči.`,
+    vybrana: `<b>Pijan:</b> NA EX zruší 2 aktívne akcie a zdvojí neaktívne · pečeň +1`,
+    caka: `Na ťahu je <b>Dizajn 2</b><span class="bodky"></span> <span style="color:var(--slaby)">· naposledy: NA EX na tvojho Pijana</span>`,
+  };
+
+  function spolocne(s) {
+    let h = el(800, 14, 535, 36,
+      `<div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;height:100%">
+        <span style="font:700 12px/1 var(--pismo);letter-spacing:.12em;color:var(--akcent);margin-right:4px">PARTIA 65X7</span>
+        <span style="font:500 14px/1 var(--pismo);color:var(--cervena-text);margin-right:2px">○ Dizajn 2 odpojený</span>
+        <span class="h-btn">kontumačná výhra</span><span class="h-btn cervene">vzdať sa</span><span class="h-btn tichy">odísť</span>
+      </div>`);
+    h += el(1140, 66, 438, 38, "", "background:#282119");
+    h += el(1150, 66, 422, 38,
+      `<div style="display:flex;justify-content:flex-end;align-items:center;gap:7px;height:100%">
+        <span class="m-vrstva">Šenok <span class="n">0</span></span><span class="m-vrstva">Lokality <span class="n">4</span></span><span class="m-vrstva">Log <span class="n nove">3</span></span>
+      </div>`);
+    const caka = s === "caka";
+    h += stred(STRED, PILULKA_Y - 4, 860, 38,
+      `<div class="pilulka${caka ? " su" : ""}">${caka ? `<span class="m-tag su">Pitka 1/3 · čakáš</span>` : `<span class="m-tag">● Pitka 1/3 · tvoj ťah</span>`}<span class="m-txt">${VETA[s]}</span></div>`);
+    if (s === "vybrana") {
+      h += el(289, 381, 205, 308, "", "border:3px solid var(--akcent);border-radius:12px;box-shadow:0 0 0 6px rgb(233 173 69 / .25), 0 0 30px rgb(233 173 69 / .45)");
+      h += el(330, 356, null, 24, `<span style="display:inline-block;padding:5px 10px;border-radius:6px;background:var(--akcent);color:var(--na-akcente);font:700 12px/1 var(--pismo);letter-spacing:.08em">VYBRANÁ</span>`);
+      h += naHranu("s", STRED, 80,
+        `<span class="m-naex">NA EX!<span title="zrušiť výber" style="position:absolute;right:-14px;top:-14px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--plocha);border:1px solid var(--okraj-svetly);color:var(--text);font:700 14px/1 var(--pismo);rotate:4deg">✕</span></span>`);
+    }
+    return h;
+  }
+
+  // Nákupy za cigarety v partii na snímke: 3 cigarety, 2 plné a 0 vypitých poldecov.
+  function nakupy(dvor) {
+    const n = [
+      { id: "fajcit", nazov: "fajčiť", ikona: (v, f) => cigIkona(v, f), cena: 1, ne: null },
+      { id: "doliat", nazov: "doliať", ikona: (v, f) => poldIkona(v, f ?? "var(--akcent)"), cena: 2, ne: "Nemáš vypitý poldeci, ktorý by sa dal doliať." },
+      { id: "novy", nazov: "nový poldeci", ikona: (v, f) => poldPlus(v, f ?? "var(--akcent)"), cena: 5, ne: "Stokársky barter stojí 5 cigariet, máš 3." },
+    ];
+    if (dvor) n.push({ id: "vykup", nazov: "výkup zo šrotu", ikona: (v, f) => srotIkona(v, f), cena: 1, ne: null });
+    return n;
+  }
+
+  const VARIANTY = [
+    {
+      nazov: "Pečiatky",
+      popis: "Každý nákup je malá papierová pečiatka: ikona, názov a cena. Čo sa nedá, je „nevypálená“ pečiatka, teda iba prerušovaný obrys bez farby. KONČÍM je jantárová pečiatka pri pravom okraji stola.",
+      plus: ["Celá hrana stola hovorí jazykom NA EX!.", "Nevypálená pečiatka je čitateľná aj bez farby, takže nezáleží na farbosleposti."],
+      minus: ["Tri až štyri papierové pečiatky sú svetlé a ťahajú oko.", "Najširšie: so Zberným dvorom siaha takmer k stredu."],
+      lisi: "<b>tvar:</b> pečiatky · <b>sivé:</b> nevypálený obrys · <b>počet cigariet:</b> v prvej pečiatke",
+      kresli(s, dvor) {
+        const moj = s !== "caka";
+        const pecate = nakupy(dvor)
+          .map((a) => {
+            const ne = !moj || a.ne !== null;
+            const farba = ne ? "#8b7d6a" : a.id === "fajcit" || a.id === "vykup" ? "#2b2116" : "#a8641a";
+            return `<span class="pec${ne ? " ne" : ""}"><span class="r">${a.ikona(22, farba)}${cena(a.cena)}</span>${a.nazov}</span>`;
+          })
+          .join("");
+        let h = naHranu("l", LAVO, 80, `<span class="zasoba">3<small>cigarety</small></span>${pecate}`);
+        h += naHranu("p", PRAVO, 80, `<span class="pec-kon"${moj ? "" : ' style="opacity:.4"'}>končím</span>`);
+        if (s === "nic") h += bublina(LAVO + 80 + 2 * 138 + 64, "Stokársky barter stojí 5 cigariet, máš 3.", 46);
+        return h;
+      },
+    },
+    {
+      nazov: "Zásuvky",
+      popis: "Nákupy sú priehradky jednej zásuvky, ktorá visí zo spodnej hrany stola, vo farbe plste. Vpredu je počet cigariet. Čo sa nedá, má sivý text a prečiarknutú cenu. KONČÍM je samostatná zásuvka pri pravom okraji.",
+      plus: ["Najtichšie a najúspornejšie: jeden pás, žiadne predmety navyše.", "Počet cigariet a ceny sú v jednom riadku, takže sa dá ľahko porátať, na čo máš."],
+      minus: ["Zásuvka visí pod hranou, takže pod stolom treba medzeru.", "Prečiarknutá cena môže vyzerať ako zľava."],
+      lisi: "<b>tvar:</b> priehradky zásuvky · <b>sivé:</b> sivý text, prečiarknutá cena · <b>počet cigariet:</b> prvá priehradka",
+      kresli(s, dvor) {
+        const moj = s !== "caka";
+        const priehradky = nakupy(dvor)
+          .map((a) => {
+            const ne = !moj || a.ne !== null;
+            return `<span class="zasuvka${ne ? " ne" : ""}">${a.ikona(20, ne ? "#6f7a69" : undefined)} ${a.nazov} ${cena(a.cena)}</span>`;
+          })
+          .join("");
+        let h = el(LAVO, HRANA - 1, null, 48, `<div class="zasuvky"><span class="zasuvka pocet">${cigIkona(20, "var(--tlmeny)")} 3</span>${priehradky}</div>`);
+        h += el(PRAVO - 170, HRANA - 1, 170, 48, `<div class="zasuvky kon" style="justify-content:center${moj ? "" : ";opacity:.45"}"><span class="zasuvka">${poldHoreDnom(18, "var(--akcent)")} končím</span></div>`);
+        if (s === "nic") h += bublina(LAVO + 470, "Nemáš vypitý poldeci, ktorý by sa dal doliať.", 58, true);
+        return h;
+      },
+    },
+    {
+      nazov: "Žetóny",
+      popis: "Nákupy sú okrúhle žetóny s ikonou. Cena je odznak na žetóne, názov pod ním. Čo sa nedá, je prázdny prerušovaný žetón s vybledlou ikonou. KONČÍM je žetón s pohárikom hore dnom pri pravom okraji.",
+      plus: ["Najstručnejšie a najrýchlejšie na pochopenie: ikona, cena, hotovo.", "Žetóny sú okrúhle, takže sa nepletú s kartami ani s pečiatkou NA EX!."],
+      minus: ["Najvyššie (žetón a pod ním názov), pod stolom treba ≈ 60 px.", "Ikony sa treba naučiť, prvé partie pomôžu názvy pod žetónmi."],
+      lisi: "<b>tvar:</b> okrúhle žetóny · <b>sivé:</b> prázdny prerušovaný žetón · <b>počet cigariet:</b> pred žetónmi",
+      kresli(s, dvor) {
+        const moj = s !== "caka";
+        const zetony = nakupy(dvor)
+          .map((a) => {
+            const ne = !moj || a.ne !== null;
+            return `<div class="zeton${ne ? " ne" : ""}"><div class="zeton-kruh">${a.ikona(30)}${cena(a.cena, "var(--na-akcente)")}</div><span>${a.nazov}</span></div>`;
+          })
+          .join("");
+        let h = naHranu("l", LAVO, 110, `<span class="zasoba" style="margin-top:-24px">3<small>cigarety</small></span>${zetony}`, 18);
+        h += naHranu("p", PRAVO, 110, `<div class="zeton kon"${moj ? "" : ' style="opacity:.4"'}><div class="zeton-kruh">${poldHoreDnom(30)}</div><span>končím</span></div>`, 18);
+        if (s === "nic") h += bublina(LAVO + 80 + 2 * 106 + 48, "Stokársky barter stojí 5 cigariet, máš 3.", 40);
+        return h;
+      },
+    },
+  ];
+
+  // Bublina „prečo sa to nedá“ nad sivým tlačidlom (ako pri prechode myšou).
+  function bublina(x, text, nad, dole = false) {
+    return dole
+      ? `<div class="bublina" style="left:${x}px;top:${HRANA + nad}px;translate:-50% 0">${text}</div>`
+      : `<div class="bublina" style="left:${x}px;top:${HRANA - nad - 34}px;translate:-50% 0">${text}</div>`;
+  }
+
+  function vykresli() {
+    const s = stav.stav;
+    const dvor = stav.dvor === "ano";
+    const g = document.getElementById("galeria");
+    g.innerHTML = VARIANTY.map((v, i) => {
+      const scena = `${podklad()}${spolocne(s)}${v.kresli(s, dvor)}`;
+      return `
+      <article class="mock">
+        <div class="ram"><div class="javisko">${scena}</div></div>
+        <div class="vyrezy">
+          ${VYREZY.map(([x0, x1, t]) => `<div class="vyrez" data-vyrez="${x0},${x1}" style="aspect-ratio:${x1 - x0} / 230"><div class="javisko">${scena}</div><span style="position:absolute;left:10px;top:8px;font:700 11px/1 var(--pismo);letter-spacing:.1em;text-transform:uppercase;color:var(--na-akcente);background:var(--akcent);padding:4px 7px;border-radius:5px">${t}</span></div>`).join("")}
+        </div>
+        <div class="mock-popis">
+          <div style="display:flex;align-items:baseline;gap:12px"><span class="mock-cislo" style="display:inline">${i + 1}</span><h3>${v.nazov}</h3></div>
+          <div class="mock-dole">
+            <div><p style="margin-top:8px">${v.popis}</p><div class="lisi">${v.lisi}</div></div>
+            <ul>${v.plus.map((t) => `<li class="plus">${t}</li>`).join("")}${v.minus.map((t) => `<li class="minus">${t}</li>`).join("")}</ul>
+          </div>
+        </div>
+      </article>`;
+    }).join("");
+    mierka();
+    for (const [id, kluc] of [["ov-stav", "stav"], ["ov-dvor", "dvor"]]) {
+      for (const b of document.querySelectorAll(`#${id} button`)) b.setAttribute("aria-pressed", String(b.dataset.v === stav[kluc]));
+    }
+  }
+
+  // Dva zväčšené výrezy hrany stola: ľavá skupina (nákupy) a pravý okraj (KONČÍM).
+  const VYREZY = [[20, 720, "zväčšené · ľavá strana"], [1180, 1580, "zväčšené · pravá strana"]];
+  function mierka() {
+    for (const r of document.querySelectorAll(".ram")) r.firstElementChild.style.transform = `scale(${r.clientWidth / 1600})`;
+    for (const r of document.querySelectorAll("[data-vyrez]")) {
+      const [x0, x1] = r.dataset.vyrez.split(",").map(Number);
+      const k = r.clientWidth / (x1 - x0);
+      r.firstElementChild.style.transform = `scale(${k}) translate(${-x0}px, ${-(HRANA - 120)}px)`;
+    }
+  }
+
+  // Porovnanie ikon: dnes vs. po zjednotení.
+  const vzor = (obr, text, novy = false) => `<div class="ikona-vzor${novy ? " novy" : ""}"><div class="obr">${obr}</div><span>${text}</span></div>`;
+  const dnesCigPanel = `<svg viewBox="0 0 44 12" width="44" height="12"><rect x="3" y="2.5" width="27" height="7" rx="1" fill="#f1ece2"/><rect x="30" y="2.5" width="11" height="7" rx="1" fill="#d58a3e"/><rect x="0.5" y="2.5" width="3" height="7" rx="1" fill="#e5735c"/></svg>`;
+  const dnesCigSV = `<svg viewBox="0 0 40 20" width="44" height="22"><path d="M4.5 10c-2-2.2 1.6-3.2 0-5.4S6 1.4 4.5 0" fill="none" stroke="#8b7d6a" stroke-width="1.2"/><rect x="6" y="11" width="23" height="8" rx="1.2" fill="#f1ece2"/><rect x="29" y="11" width="10" height="8" rx="1.2" fill="#d58a3e"/><rect x="3" y="11" width="3.4" height="8" rx="1.2" fill="#e5735c"/></svg>`;
+  const dnesPoldPanel = `<svg viewBox="0 0 24 32" width="24" height="32"><path d="M4.1 10h15.8l-1.6 18.6H5.7z" fill="#e9ad45"/><path d="M2.5 2.5h19l-2.4 27.5H4.9z" fill="rgba(255,255,255,.07)" stroke="#e6dccb" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
+  const naKarte = (ikona) => `<span class="karta-pikto">${ikona}</span>`;
+  document.getElementById("ikony-cig").innerHTML =
+    vzor(naKarte(cigIkona(34, "#1a1a1a")), "<b>karta</b>piktogram") +
+    vzor(dnesCigPanel, "<b>panel hráča</b>vlastné SVG") +
+    vzor(dnesCigSV, "<b>Spätná väzba</b>SVG s dymom") +
+    vzor(`<span style="font-size:30px">🚬</span>`, "<b>text, mockupy</b>emoji, „cig.“") +
+    `<span class="sipka">→</span>` +
+    vzor(`<span style="display:flex;gap:10px;align-items:center">${cigIkona(34)}<span style="position:relative;display:inline-grid">${cigIkona(34, "#8b7d6a")}<i style="position:absolute;left:-2px;right:-2px;top:50%;height:3px;background:var(--cervena);rotate:-30deg"></i></span></span>`, "<b>všade</b>piktogram z karty · zákaz fajčenia", true);
+  document.getElementById("ikony-pold").innerHTML =
+    vzor(naKarte(poldIkona(34, "#1a1a1a")), "<b>karta</b>piktogram") +
+    vzor(dnesPoldPanel, "<b>panel hráča</b>vlastné SVG") +
+    vzor(`<span style="font-size:30px">🥃</span>`, "<b>značka NA EX, Domov</b>emoji") +
+    `<span class="sipka">→</span>` +
+    vzor(`<span style="display:flex;gap:8px;align-items:flex-end">${poldIkona(34)}${poldIkona(34, "#6b5d4b")}${poldPlus(30)}</span>`, "<b>všade</b>plný · vypitý · nový", true);
+
+  for (const [id, kluc] of [["ov-stav", "stav"], ["ov-dvor", "dvor"]]) {
+    document.getElementById(id).addEventListener("click", (e) => {
+      const b = e.target.closest("button");
+      if (b === null) return;
+      stav[kluc] = b.dataset.v;
+      vykresli();
+    });
+  }
+  for (const cast of location.hash.slice(1).split("-")) {
+    if (["nic", "vybrana", "caka"].includes(cast)) stav.stav = cast;
+    if (cast === "dvor") stav.dvor = "ano";
+  }
+  new ResizeObserver(mierka).observe(document.body);
+  vykresli();
+</script>
+</body>
+</html>

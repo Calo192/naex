@@ -19,30 +19,44 @@ import type {
 import { KONSTANTY, battleOutcome, textNeresti as neresti, jeCielLokalita, limitBuduceKolo, limitZhromazdenia } from "@naex/core";
 import type { Sada } from "@naex/tvorba";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
+import { IKONY } from "../karta/ikony.ts";
 import { useTip, type TipObsah } from "../karta/Tip.tsx";
 import { Avatar } from "../komponenty.tsx";
 import type { HracInfo } from "./useHra.ts";
 
 // ---- ikony zdrojov -----------------------------------------------------------
 
-/** Poldeci ako pohárik: plný s jantárovou pálenkou, vypitý prázdny. */
-export function IkonaPoldeci({ plny }: { readonly plny: boolean }) {
+// Cigareta a poldeci majú v celej hre jednu podobu — piktogram z karty
+// (Michal 2026-10-21); stav hovorí farba: plný jantárový, vypitý sivý.
+const piktogram = (kluc: "Cigareta" | "Poldeci"): ReactNode =>
+  IKONY[kluc].map((c, i) => <path key={i} d={c.d} fillRule={c.evenOdd ? "evenodd" : "nonzero"} />);
+
+export function IkonaPoldeci({ plny = true, novy = false }: { readonly plny?: boolean; readonly novy?: boolean }) {
   return (
-    <svg className={`ikona-poldeci ${plny ? "plny" : "vypity"}`} viewBox="0 0 24 32" aria-hidden="true">
-      {plny && <path className="palenka" d="M4.1 10h15.8l-1.6 18.6H5.7z" />}
-      <path className="pohar" d="M2.5 2.5h19l-2.4 27.5H4.9z" />
-      <path className="odlesk" d="M6 6l1.3 20" />
+    <svg className={`ikona-poldeci ${plny ? "plny" : "vypity"}${novy ? " novy" : ""}`} viewBox="0 0 100 100" aria-hidden="true">
+      {piktogram("Poldeci")}
+      {novy && <path className="plus" d="M78 62v34M61 79h34" />}
     </svg>
   );
 }
 
-export function IkonaCigareta() {
+export function IkonaCigareta({ zakaz = false }: { readonly zakaz?: boolean }) {
   return (
-    <svg className="ikona-cigareta" viewBox="0 0 44 12" aria-hidden="true">
-      <rect className="tabak" x="3" y="2.5" width="27" height="7" rx="1" />
-      <rect className="filter" x="30" y="2.5" width="11" height="7" rx="1" />
-      <rect className="ohen" x="0.5" y="2.5" width="3" height="7" rx="1" />
+    <svg className={`ikona-cigareta${zakaz ? " zakaz" : ""}`} viewBox="0 0 100 100" aria-hidden="true">
+      {piktogram("Cigareta")}
+      {zakaz && <path className="preskrt" d="M10 92L90 8" />}
     </svg>
+  );
+}
+
+/** Cena v cigaretách: „−2“ a malá cigareta. */
+export function CenaCigariet({ n, znamienko = "−" }: { readonly n: number; readonly znamienko?: "−" | "+" }) {
+  return (
+    <span className="cena-cig">
+      {znamienko}
+      {n}
+      <IkonaCigareta />
+    </span>
   );
 }
 
