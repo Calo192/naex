@@ -37,6 +37,10 @@ export interface Pouzivatel {
   readonly lupa: number;
   /** Hlasitosť hudby počas partie v percentách (0 = vypnutá). */
   readonly hudba: number;
+  /** Hlasitosť hlášok majstra Melichara v partii proti počítaču v percentách (0 = vypnuté). */
+  readonly melichar: number;
+  /** Pri koľkých percentách hráčových ťahov sa Melichar ozve (MELICHAR_FREKVENCIA_OD – 100). */
+  readonly melicharFrekvencia: number;
   /** Účet AI agenta — jeho spätná väzba je na webe označená a predvolene skrytá. */
   readonly ai: boolean;
   /** Farebná schéma webu (id zo zoznamu klienta); null = predvolená. */
@@ -65,9 +69,21 @@ export function overSchemu(v: unknown): string {
 
 export const HUDBA_PREDVOLENA = 30;
 
-/** Hlasitosť hudby z requestu — celé percentá 0 – 100. */
-export function overHlasitost(v: unknown): number {
-  if (typeof v !== "number" || !Number.isFinite(v) || v < 0 || v > 100) throw new ChybaVstupu("Hlasitosť hudby musí byť 0 až 100 %.");
+/** Hlasitosť hudby (aj hlášok) z requestu — celé percentá 0 – 100. */
+export function overHlasitost(v: unknown, co = "hudby"): number {
+  if (typeof v !== "number" || !Number.isFinite(v) || v < 0 || v > 100) throw new ChybaVstupu(`Hlasitosť ${co} musí byť 0 až 100 %.`);
+  return Math.round(v);
+}
+
+export const MELICHAR_PREDVOLENY = 70;
+export const MELICHAR_FREKVENCIA_OD = 5;
+export const MELICHAR_FREKVENCIA_PREDVOLENA = 25;
+
+/** Frekvencia hlášok z requestu — vypína ich hlasitosť 0, preto najmenej MELICHAR_FREKVENCIA_OD. */
+export function overFrekvenciu(v: unknown): number {
+  if (typeof v !== "number" || !Number.isFinite(v) || v < MELICHAR_FREKVENCIA_OD || v > 100) {
+    throw new ChybaVstupu(`Frekvencia hlášok musí byť ${MELICHAR_FREKVENCIA_OD} až 100 %.`);
+  }
   return Math.round(v);
 }
 
@@ -172,6 +188,9 @@ export class Ucty {
       rola: rolaZDb(r.rola),
       lupa: r.lupa === null || r.lupa === undefined ? LUPA_PREDVOLENA : Number(r.lupa),
       hudba: r.hudba === null || r.hudba === undefined ? HUDBA_PREDVOLENA : Number(r.hudba),
+      melichar: r.melichar === null || r.melichar === undefined ? MELICHAR_PREDVOLENY : Number(r.melichar),
+      melicharFrekvencia:
+        r.melichar_frekvencia === null || r.melichar_frekvencia === undefined ? MELICHAR_FREKVENCIA_PREDVOLENA : Number(r.melichar_frekvencia),
       ai: Number(r.ai) === 1,
       schema: typeof r.schema === "string" ? r.schema : null,
     };
@@ -179,7 +198,7 @@ export class Ucty {
 
   podlaId(id: number): Pouzivatel | null {
     return this.riadok(
-      this.db.prepare("SELECT id, login, meno, avatar, rola, lupa, hudba, ai, schema FROM pouzivatelia WHERE id = ?").get(id) as
+      this.db.prepare("SELECT id, login, meno, avatar, rola, lupa, hudba, melichar, melichar_frekvencia, ai, schema FROM pouzivatelia WHERE id = ?").get(id) as
         | Record<string, unknown>
         | undefined,
     );
@@ -252,11 +271,23 @@ export class Ucty {
 
   upravProfil(
     id: number,
-    zmeny: { meno?: string; avatar?: string | null; lupa?: number; hudba?: number; schema?: string },
+    zmeny: {
+      meno?: string;
+      avatar?: string | null;
+      lupa?: number;
+      hudba?: number;
+      melichar?: number;
+      melicharFrekvencia?: number;
+      schema?: string;
+    },
   ): Pouzivatel | null {
     if (zmeny.meno !== undefined) this.db.prepare("UPDATE pouzivatelia SET meno = ? WHERE id = ?").run(zmeny.meno, id);
     if (zmeny.lupa !== undefined) this.db.prepare("UPDATE pouzivatelia SET lupa = ? WHERE id = ?").run(zmeny.lupa, id);
     if (zmeny.hudba !== undefined) this.db.prepare("UPDATE pouzivatelia SET hudba = ? WHERE id = ?").run(zmeny.hudba, id);
+    if (zmeny.melichar !== undefined) this.db.prepare("UPDATE pouzivatelia SET melichar = ? WHERE id = ?").run(zmeny.melichar, id);
+    if (zmeny.melicharFrekvencia !== undefined) {
+      this.db.prepare("UPDATE pouzivatelia SET melichar_frekvencia = ? WHERE id = ?").run(zmeny.melicharFrekvencia, id);
+    }
     if (zmeny.schema !== undefined) this.db.prepare("UPDATE pouzivatelia SET schema = ? WHERE id = ?").run(zmeny.schema, id);
     if (zmeny.avatar !== undefined) this.db.prepare("UPDATE pouzivatelia SET avatar = ? WHERE id = ?").run(zmeny.avatar, id);
     return this.podlaId(id);

@@ -3855,6 +3855,49 @@ button.pecat-zrusit {
   }
 }
 
+/* ---- hláška majstra Melichara v partii proti počítaču (2026-10-21) ----
+ * Pod oznamom skladby, aby sa neprekrývali; zmizne, keď dohovorí. */
+
+.melichar-titulok {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  z-index: 950;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  max-width: calc(100vw - 32px);
+  padding: 8px 16px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--plocha-2) 94%, transparent);
+  border: 1px solid var(--akcent);
+  box-shadow: var(--tien);
+  color: var(--text);
+  font-size: 0.95rem;
+  pointer-events: none;
+  translate: -50% 0;
+  animation: melichar-titulok 0.25s ease;
+}
+
+.melichar-meno {
+  flex: none;
+  color: var(--akcent);
+  font-weight: 700;
+}
+
+@keyframes melichar-titulok {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .melichar-titulok {
+    animation: none;
+  }
+}
+
 /* ---- výhľad Pitky na doske: pečeň a zadĺženie „po Pitke“ (2026-10-21) ----
  * Šrafa = čo pripíšu karty na stole; červená = cez prah (Cirhóza / Dlh). */
 

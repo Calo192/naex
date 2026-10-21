@@ -9,7 +9,8 @@
     "start": "node --experimental-strip-types --env-file-if-exists=../../.env src/index.ts",
     "build": "tsc --build",
     "kniznica": "node --experimental-strip-types src/kniznica.ts",
-    "hudba": "node --experimental-strip-types --no-warnings src/hudba-import.ts"
+    "hudba": "node --experimental-strip-types --no-warnings src/hudba-import.ts",
+    "melichar": "node --experimental-strip-types --no-warnings src/hudba-import.ts --melichar"
   },
   "dependencies": {
     "@naex/core": "*",

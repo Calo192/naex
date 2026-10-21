@@ -106,6 +106,27 @@ docker compose exec naex node --experimental-strip-types --no-warnings packages/
 Skladby sú v `/data/hudba` (zväzok, prežijú aktualizáciu); denná záloha ich
 nekopíruje — originály sú na Suno. Server ich netreba reštartovať.
 
+### 5c. Hlášky majstra Melichara
+
+V partii proti počítaču po hráčovom ťahu občas zaznie krátka hláška majstra
+Melichara (hlasitosť a frekvenciu si hráč nastaví v profile, predvolene 70 %
+a pri 25 % ťahov). Import funguje ako pri hudbe — priečinok je celá sada,
+text hlášky na obrazovke je názov súboru bez poradového čísla
+(`03_No_toto_je_marha.mp3` → „No toto je marha“).
+
+```bash
+# lokálne
+npm run melichar -- "data/majster_melichar"
+# produkcia — z tvojho počítača
+scp -r data/majster_melichar ubuntu@IP_SERVERA:/tmp/melichar
+# na serveri
+cd /opt/naex/deploy
+docker compose cp /tmp/melichar naex:/tmp/melichar
+docker compose exec naex node --experimental-strip-types --no-warnings packages/server/src/hudba-import.ts --melichar /tmp/melichar
+```
+
+Hlášky sú v `/data/melichar`; originály drž v `data/majster_melichar`.
+
 ### 6. Zálohy
 
 Dennú zálohu databázy a obrázkov (4:00) nastaví `deploy/nahraj.sh` sám

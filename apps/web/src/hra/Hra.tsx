@@ -1,7 +1,7 @@
 // Herná časť (/hra): lobby → čakáreň → partia. Len pre prihlásených.
 
-import { useEffect, useState } from "react";
-import type { DlzkaHry } from "@naex/core";
+import { useCallback, useEffect, useState } from "react";
+import type { Command, DlzkaHry } from "@naex/core";
 import { ALL_DLZKY, DLZKY_HRY, NAZOV_DLZKY, PREDVOLENA_DLZKA } from "@naex/core";
 import { api } from "../lib/api.ts";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
@@ -9,6 +9,7 @@ import { useUcet } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { HernaPlocha } from "./HernaPlocha.tsx";
 import { HudbaPartie } from "./Hudba.tsx";
+import { MelicharTitulok, useMelichar } from "./Melichar.tsx";
 import { useHra } from "./useHra.ts";
 import "./hra.css";
 
@@ -153,6 +154,18 @@ export function Hra() {
   const { ja, nacitane } = useUcet();
   const hra = useHra(ja !== null);
 
+  // Majster Melichar komentuje len partie proti počítaču — ľudia si nadávajú sami.
+  const melichar = useMelichar(hra.view !== null && hra.hraci.some((h) => h?.bot === true));
+  const { cmd: posliCmd } = hra;
+  const { ozvi } = melichar;
+  const cmd = useCallback(
+    (c: Command) => {
+      ozvi(c);
+      posliCmd(c);
+    },
+    [ozvi, posliCmd],
+  );
+
   // Odkaz /hra?kod=ABCD rovno pripojí do miestnosti.
   const { pripojene, miestnost, pripoj } = hra;
   useEffect(() => {
@@ -234,6 +247,7 @@ export function Hra() {
   return (
     <>
     <HudbaPartie />
+    <MelicharTitulok titulok={melichar.titulok} />
     <HernaPlocha
       view={hra.view}
       data={hra.data}
@@ -245,7 +259,7 @@ export function Hra() {
       zrusChybu={hra.zrusChybu}
       superPripojeny={hra.superPripojeny}
       kod={m.code}
-      cmd={hra.cmd}
+      cmd={cmd}
       opustit={hra.odid}
       frajerina={hra.frajerina}
       kontumacia={hra.kontumacia}

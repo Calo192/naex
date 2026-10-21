@@ -211,6 +211,10 @@ function migruj(db: Db): void {
   if (!ucty.some((c) => c.name === "ai")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN ai INTEGER NOT NULL DEFAULT 0");
   // Farebná schéma webu (Michal 2026-10-21); NULL = predvolená Krčma.
   if (!ucty.some((c) => c.name === "schema")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN schema TEXT");
+  // Hlášky majstra Melichara v partii proti počítaču (Michal 2026-10-21): hlasitosť
+  // a frekvencia v percentách; NULL = predvolené.
+  if (!ucty.some((c) => c.name === "melichar")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN melichar INTEGER");
+  if (!ucty.some((c) => c.name === "melichar_frekvencia")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN melichar_frekvencia INTEGER");
   // Verdikt overenia návrhu ďalším playtestom (Michal 2026-10-21).
   const navrhy = db.prepare("PRAGMA table_info(navrhy)").all() as { name: string }[];
   if (!navrhy.some((c) => c.name === "verdikt")) db.exec("ALTER TABLE navrhy ADD COLUMN verdikt TEXT NOT NULL DEFAULT ''");

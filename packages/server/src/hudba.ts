@@ -1,7 +1,8 @@
 // Hudba počas partie (Michal 2026-10-20): skladby z playlistu NaEx – PLEBS na Suno.
 // Suno stream šifruje a MP3 dá len vlastníkovi skladby, preto ich Michal stiahne
 // zo Suno a hudba-import.ts ich nahrá do <data>/hudba/ — hudbu servíruje
-// vlastný server, nie odkaz na Suno.
+// vlastný server, nie odkaz na Suno. Rovnako sa servírujú hlášky majstra
+// Melichara (Michal 2026-10-21), len z adresára <data>/melichar/.
 
 import { createReadStream, existsSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
@@ -26,6 +27,22 @@ export const TYP_ZVUKU: Readonly<Record<string, string>> = {
   wav: "audio/wav",
 };
 
+/**
+ * Bez núl na začiatku súboru. Hlášky majstra Melichara ich majú pred prvým
+ * MP3 rámcom stovky — prehliadač ich preskočí, rozpoznanie typu nie.
+ */
+export function bezUvodnychNul(buf: Buffer): Buffer {
+  let i = 0;
+  while (i < buf.length && buf[i] === 0) i++;
+  return i === 0 ? buf : buf.subarray(i);
+}
+
+/** Text hlášky z názvu súboru: „03_no_toto_je_marha“ → „No toto je marha“. */
+export function nazovHlasky(meno: string): string {
+  const text = meno.replace(/^\d+[_\s-]*/, "").replace(/_+/g, " ").trim();
+  return text.charAt(0).toLocaleUpperCase("sk") + text.slice(1);
+}
+
 /** Prípona podľa prvých bajtov, nie podľa názvu súboru. */
 export function priponaZvuku(buf: Buffer): string | null {
   if (buf.length < 12) return null;
@@ -42,8 +59,9 @@ const SUBOR_RE = /^([0-9a-f]{40})\.([a-z0-9]{2,4})$/;
 export class Hudba {
   readonly adresar: string;
 
-  constructor(dataDir: string) {
-    this.adresar = join(dataDir, "hudba");
+  /** podadresar: „hudba“ (skladby) alebo „melichar“ (hlášky). */
+  constructor(dataDir: string, podadresar = "hudba") {
+    this.adresar = join(dataDir, podadresar);
   }
 
   /** Skladby v poradí zoznamu. Číta sa zakaždým — import beží aj popri serveri. */
@@ -68,7 +86,7 @@ export class Hudba {
   }
 
   /**
-   * GET /hudba/<id>.<prípona> — s Range, bez neho Safari zvuk neprehrá a ostatné
+   * GET /hudba/<id>.<prípona> (hlášky /melichar/…) — s Range, bez neho Safari zvuk neprehrá a ostatné
    * prehliadače nevedia pretáčať. Id je hash obsahu, cache môže byť trvalá.
    */
   posli(subor: string, req: IncomingMessage, res: ServerResponse): void {

@@ -16,6 +16,10 @@ export interface Skladba {
 const PAUZA_MS = 10_000;
 const OZNAM_MS = 4_500;
 
+/** Udalosť na window (detail: boolean) — kým hovorí majster Melichar, hudba hrá tichšie. */
+export const TLMENIE_HUDBY = "naex:tlmenie-hudby";
+const TLMENA_HLASITOST = 0.3;
+
 let zoznam: Promise<readonly Skladba[]> | null = null;
 
 /** Zoznam skladieb — načíta sa raz za návštevu; po chybe sa skúsi znova nabudúce. */
@@ -36,7 +40,7 @@ export const urlSkladby = (s: Skladba): string => `/hudba/${s.subor}`;
 export const hlasitostZvuku = (percenta: number): number => Math.min(1, Math.max(0, percenta / 100)) ** 2;
 
 /** Zamiešané poradie; nové kolo nezačne skladbou, ktorá práve dohrala. */
-function zamiesaj(skladby: readonly Skladba[], posledna: string | null): Skladba[] {
+export function zamiesaj(skladby: readonly Skladba[], posledna: string | null): Skladba[] {
   const rad = [...skladby];
   for (let i = rad.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -51,15 +55,23 @@ export function HudbaPartie() {
   const zapnuta = hlasitost > 0;
   const audio = useRef<HTMLAudioElement | null>(null);
   const [oznam, setOznam] = useState<{ readonly kluc: number; readonly nazov: string } | null>(null);
+  const [tlmena, setTlmena] = useState(false);
+  const hlasitostTeraz = hlasitostZvuku(hlasitost) * (tlmena ? TLMENA_HLASITOST : 1);
 
   useEffect(() => {
-    if (audio.current !== null) audio.current.volume = hlasitostZvuku(hlasitost);
-  }, [hlasitost]);
+    const zmena = (e: Event): void => setTlmena(e instanceof CustomEvent && e.detail === true);
+    window.addEventListener(TLMENIE_HUDBY, zmena);
+    return () => window.removeEventListener(TLMENIE_HUDBY, zmena);
+  }, []);
+
+  useEffect(() => {
+    if (audio.current !== null) audio.current.volume = hlasitostTeraz;
+  }, [hlasitostTeraz]);
 
   useEffect(() => {
     if (!zapnuta) return;
     const a = new Audio();
-    a.volume = hlasitostZvuku(hlasitost);
+    a.volume = hlasitostTeraz;
     audio.current = a;
     let zive = true;
     let rad: Skladba[] = [];

@@ -4,10 +4,23 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { api, mediaUrl } from "../lib/api.ts";
 import { nacitajObrazok, stvorec } from "../lib/obrazky.ts";
 import { Odkaz, chod, useTitulok } from "../lib/router.tsx";
-import { HUDBA_PREDVOLENA, LUPA_DO, LUPA_OD, LUPA_PREDVOLENA, NAZOV_UROVNE, jeSpravca, useUcet, type Pouzivatel } from "../lib/ucet.tsx";
+import {
+  HUDBA_PREDVOLENA,
+  LUPA_DO,
+  LUPA_OD,
+  LUPA_PREDVOLENA,
+  MELICHAR_FREKVENCIA_OD,
+  MELICHAR_FREKVENCIA_PREDVOLENA,
+  MELICHAR_PREDVOLENY,
+  NAZOV_UROVNE,
+  jeSpravca,
+  useUcet,
+  type Pouzivatel,
+} from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Pole } from "../komponenty.tsx";
 import { MojeStatistiky } from "./Statistiky.tsx";
 import { hlasitostZvuku, nacitajSkladby, urlSkladby } from "../hra/Hudba.tsx";
+import { nacitajHlasky, urlHlasky } from "../hra/Melichar.tsx";
 import { SCHEMY, aktualnaSchema, pouziSchemu } from "../lib/schemy.ts";
 
 /** Kam sa vrátiť po prihlásení (?spat=/hra). */
@@ -210,6 +223,44 @@ export function Profil() {
     });
     ukazka.current = a;
     setUkazkaHra(s.nazov);
+    a.play().catch(chyba);
+  };
+
+  // Hlášky majstra Melichara v partii proti počítaču (Michal 2026-10-21) — hlasitosť
+  // a frekvencia sa ukladajú ako hudba, chvíľu po pohnutí.
+  const [melichar, setMelichar] = useState(ja?.melichar ?? MELICHAR_PREDVOLENY);
+  const [frekvencia, setFrekvencia] = useState(ja?.melicharFrekvencia ?? MELICHAR_FREKVENCIA_PREDVOLENA);
+  const ulozenyMelichar = ja?.melichar ?? MELICHAR_PREDVOLENY;
+  const ulozenaFrekvencia = ja?.melicharFrekvencia ?? MELICHAR_FREKVENCIA_PREDVOLENA;
+  useEffect(() => {
+    if (melichar === ulozenyMelichar && frekvencia === ulozenaFrekvencia) return;
+    const t = setTimeout(() => {
+      api
+        .patch<{ pouzivatel: Pouzivatel }>("/profil", { melichar, melicharFrekvencia: frekvencia })
+        .then((r) => nastav(r.pouzivatel))
+        .catch(chyba);
+    }, 400);
+    return () => clearTimeout(t);
+  }, [melichar, frekvencia, ulozenyMelichar, ulozenaFrekvencia]);
+
+  const [ukazkaHlasky, setUkazkaHlasky] = useState<string | null>(null);
+  const hlaskaUkazky = useRef<HTMLAudioElement | null>(null);
+  useEffect(() => () => hlaskaUkazky.current?.pause(), []);
+  const vyskusajHlasku = async (): Promise<void> => {
+    hlaskaUkazky.current?.pause();
+    const hlasky = await nacitajHlasky();
+    const h = hlasky[Math.floor(Math.random() * hlasky.length)];
+    if (h === undefined) {
+      setSprava({ druh: "chyba", text: "Hlášky majstra Melichara na serveri zatiaľ nie sú." });
+      return;
+    }
+    const a = new Audio(urlHlasky(h));
+    a.volume = hlasitostZvuku(melichar);
+    a.addEventListener("ended", () => {
+      if (hlaskaUkazky.current === a) setUkazkaHlasky(null);
+    });
+    hlaskaUkazky.current = a;
+    setUkazkaHlasky(h.nazov);
     a.play().catch(chyba);
   };
 
@@ -468,6 +519,60 @@ export function Profil() {
             {ukazkaHra === null ? "Vyskúšať" : "Zastaviť ukážku"}
           </button>
           {ukazkaHra !== null && <span className="tlmene">♪ {ukazkaHra}</span>}
+        </div>
+      </div>
+
+      <div className="panel">
+        <h3>Majster Melichar</h3>
+        <p className="tlmene" style={{ marginTop: 0 }}>
+          V partii proti počítaču občas po tvojom ťahu utrúsi hlášku — nie práve najslušnejšiu. Ukladá sa samo.
+        </p>
+        <Pole
+          label={melichar === 0 ? "Hlasitosť: vypnutý" : `Hlasitosť: ${melichar} %`}
+          pomoc="Úplne vľavo Melichar mlčí. Kým hovorí, hudba sa stíši."
+        >
+          <input
+            type="range"
+            className="posuvnik-lupy"
+            min={0}
+            max={100}
+            step={5}
+            value={melichar}
+            onChange={(e) => setMelichar(Number(e.target.value))}
+            aria-valuetext={melichar === 0 ? "vypnutý" : `${melichar} %`}
+          />
+        </Pole>
+        <div className="posuvnik-stupnica" aria-hidden="true">
+          <span>vypnutý</span>
+          <span>50 %</span>
+          <span>100 %</span>
+        </div>
+        <Pole
+          label={`Frekvencia: pri ${frekvencia} % ťahov`}
+          pomoc="Ako často sa ozve. Na NA EX! dvakrát ochotnejšie a po hláške si vždy chvíľu oddýchne."
+        >
+          <input
+            type="range"
+            className="posuvnik-lupy"
+            min={MELICHAR_FREKVENCIA_OD}
+            max={100}
+            step={5}
+            value={frekvencia}
+            onChange={(e) => setFrekvencia(Number(e.target.value))}
+            disabled={melichar === 0}
+            aria-valuetext={`pri ${frekvencia} % ťahov`}
+          />
+        </Pole>
+        <div className="posuvnik-stupnica" aria-hidden="true">
+          <span>zriedka</span>
+          <span>každý druhý ťah</span>
+          <span>stále</span>
+        </div>
+        <div className="riadok-tlacidiel" style={{ marginTop: 12 }}>
+          <button type="button" className="tlacidlo-male" onClick={() => void vyskusajHlasku()} disabled={melichar === 0}>
+            Vyskúšať
+          </button>
+          {ukazkaHlasky !== null && <span className="tlmene">„{ukazkaHlasky}“</span>}
         </div>
       </div>
       </div>

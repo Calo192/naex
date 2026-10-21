@@ -177,6 +177,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   const media = new Media(db, dataDir);
   const avatary = new Avatary(media, teraz());
   const hudba = new Hudba(dataDir);
+  const melichar = new Hudba(dataDir, "melichar");
   ucty.pouziPredvoleneAvatary(() => avatary.nahodny());
   const obsah = new Obsah(db, media);
   const archiv = new Archiv(db);
@@ -239,6 +240,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           media,
           predvoleneAvatary: avatary.hracov,
           hudba,
+          melichar,
           archiv,
           nazory,
           playtesty,
@@ -264,6 +266,10 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     }
     if (url.pathname.startsWith("/hudba/")) {
       hudba.posli(url.pathname.slice("/hudba/".length), req, res);
+      return;
+    }
+    if (url.pathname.startsWith("/melichar/")) {
+      melichar.posli(url.pathname.slice("/melichar/".length), req, res);
       return;
     }
     if (url.pathname.startsWith("/playtesty/")) {

@@ -12,7 +12,7 @@ import { ALL_PODMIENKY, dostupneDlzky } from "@naex/core";
 import type { KartaNavrh, Pozicia, StranaNavrhu, AkciaDef, KlucoveSlovo, Kategoria, BodovaciaKarta, IkonaBodovania, Nastavenia } from "@naex/tvorba";
 import { exportTxt, importTxt, slug, PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
 import type { Pouzivatel, Ucty } from "./auth.ts";
-import { ChybaVstupu, cookieOdhlasenia, cookieRelacie, overHesloVstup, overLogin, overHlasitost, overLupu, overMeno, overSchemu, citajCookie, jeSpravca } from "./auth.ts";
+import { ChybaVstupu, cookieOdhlasenia, cookieRelacie, overFrekvenciu, overHesloVstup, overLogin, overHlasitost, overLupu, overMeno, overSchemu, citajCookie, jeSpravca } from "./auth.ts";
 import type { DruhMedia, Media } from "./media.ts";
 import type { Hudba } from "./hudba.ts";
 import type { Obsah } from "./obsah.ts";
@@ -48,6 +48,8 @@ export interface ApiKontext {
   readonly predvoleneAvatary: readonly string[];
   /** Hudba počas partie (skladby z playlistu na Suno). */
   readonly hudba: Hudba;
+  /** Hlášky majstra Melichara v partii proti počítaču. */
+  readonly melichar: Hudba;
   readonly archiv: Archiv;
   readonly nazory: Nazory;
   readonly playtesty: Playtesty;
@@ -318,6 +320,8 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
           ...(b.meno !== undefined ? { meno: overMeno(b.meno) } : {}),
           ...(b.lupa !== undefined ? { lupa: overLupu(b.lupa) } : {}),
           ...(b.hudba !== undefined ? { hudba: overHlasitost(b.hudba) } : {}),
+          ...(b.melichar !== undefined ? { melichar: overHlasitost(b.melichar, "hlášok") } : {}),
+          ...(b.melicharFrekvencia !== undefined ? { melicharFrekvencia: overFrekvenciu(b.melicharFrekvencia) } : {}),
           ...(b.schema !== undefined ? { schema: overSchemu(b.schema) } : {}),
         }),
       });
@@ -339,6 +343,8 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
 
     // Michal 2026-10-19: namiesto vlastnej fotky si hráč vyberie jednu z trosiek.
     if (r === "GET /hudba") return ok({ skladby: ctx.hudba.zoznam() });
+
+    if (r === "GET /melichar") return ok({ hlasky: ctx.melichar.zoznam() });
 
     if (r === "GET /avatary") return ok({ avatary: ctx.predvoleneAvatary });
 
