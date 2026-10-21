@@ -66,7 +66,7 @@ Všetko z koreňa repozitára; `A` = `node --experimental-strip-types --no-warni
 | `A zaloha "<poznámka>"`, `A obnov <zaloha> <id…>` / `--vsetky` | záloha a návrat návrhov |
 | `A zmaz <id> --potvrdene` | zmaže návrh (len so súhlasom) |
 | **Rebalans a kontrola** | |
-| `A karty-v-partiach [--od N] [--playtesty]` | štatistiky kariet z odohraných partií na webe (a z databáz playtestov): zo šenku, vyložená, podstrčená, NA EX, v bitke, výhry, ⌀ aktívnych akcií, ⌀ tuhé, ⌀ kliatbové |
+| `A karty-v-partiach [--od N] [--ludia] [--playtesty]` | štatistiky kariet z odohraných partií na webe (a z databáz playtestov): zo šenku, vyložená, podstrčená, NA EX, v bitke, výhry, ⌀ aktívnych akcií, ⌀ tuhé, ⌀ kliatbové; `--zivy --ludia` = ostré partie ľudí bez AI účtov |
 | `A texty` | kontrola textov efektov: spúšťač, interpunkcia, chýbajúca diakritika, zmenený text implementovaného efektu, nový efekt = manual |
 | `A zmienky <id>` | kde sa karta spomína v PRAVIDLÁCH, na stránkach webu, v inštrukciách agentov a v jadre |
 | `A starsi` | starší (ich karty a efekty), bodovacie karty a body za podmienky |
@@ -225,8 +225,14 @@ Cieľ: karta, ktorú hráči nikdy nechcú, alebo ktorá sama rozhoduje bitky,
 sa dostane bližšie k ostatným — s **čo najmenšou zmenou**.
 
 1. **Dôkazy, nie dojem.** Zbieraj:
-   - **čísla z partií**: `A karty-v-partiach --playtesty` (karta, ktorú nikto
-     neberie zo šenku ani nevykladá, alebo ktorá má vysoké ⌀ tuhé a výhry),
+   - **čísla z ostrých partií ľudí**: `A karty-v-partiach --zivy --ludia`
+     (živý web, bez partií s AI účtom; `--od <verzia>` = len od sady, ktorej sa
+     rebalans týka) — karta, ktorú nikto neberie zo šenku ani nevykladá, alebo
+     ktorá má vysoké ⌀ tuhé a výhry. Ľudské čísla majú prednosť pred AI; pod
+     ~20 partiami ich ber ako náznak (nástroj to vypíše),
+   - **čísla z AI partií**: `A karty-v-partiach --playtesty` (lokálny web
+     + databázy playtestov) — porovnaj s ľuďmi; karta silná len u AI je skôr
+     otázka štýlu playtesterov než balansu,
    - reporty `docs/playtesty/*.html` (časť Karty: silné/slabé), zmeny a ich
      výsledky v `docs/playtesty/zmeny-pravidiel.html`, `vyvoj-znamok.html`,
    - surové podklady `playtest/<id>/hrac*/feedback.md` (sekcia Karty),

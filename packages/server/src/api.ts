@@ -638,7 +638,7 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     // Štatistiky kariet z odohraných partií (rebalans); ?od=<verzia sady>.
     if (sub === "GET /statistiky-kariet") {
       const od = query.get("od");
-      return ok(ctx.archiv.statistikyKariet(od === null || od === "" ? null : Math.round(num(Number(od), 0, 1e9, "Verzia"))));
+      return ok(ctx.archiv.statistikyKariet(od === null || od === "" ? null : Math.round(num(Number(od), 0, 1e9, "Verzia")), query.get("ludia") === "1"));
     }
     // Reporty playtestov: zoznam a token na ich izolované zobrazenie (/playtesty/<token>/…).
     if (sub === "GET /playtesty") return ok({ token: ctx.playtesty.token(teraz), reporty: ctx.playtesty.zoznam() });

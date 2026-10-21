@@ -238,12 +238,18 @@ export class Archiv {
 
   /**
    * Štatistiky kariet zo všetkých partií so zápisom kariet (od verzie sady
-   * `odVerzie`, ak je daná) — podklad pre rebalans v tvorcovi.
+   * `odVerzie`, ak je daná) — podklad pre rebalans v tvorcovi. `lenLudia`
+   * vynechá partie s AI účtom (protihráč agent): rebalans má stáť na tom,
+   * ako hrajú ľudia, nie na dojmoch AI.
    */
-  statistikyKariet(odVerzie: number | null = null): { partie: number; karty: StatistikyKariet } {
+  statistikyKariet(odVerzie: number | null = null, lenLudia = false): { partie: number; karty: StatistikyKariet } {
     const rows = this.db
-      .prepare("SELECT karty FROM partie WHERE karty IS NOT NULL AND (? IS NULL OR verzia_sady >= ?)")
-      .all(odVerzie, odVerzie) as { karty: string }[];
+      .prepare(
+        `SELECT karty FROM partie p WHERE karty IS NOT NULL AND (? IS NULL OR verzia_sady >= ?)
+           AND (? = 0 OR NOT EXISTS (
+             SELECT 1 FROM partie_hraci h JOIN pouzivatelia u ON u.id = h.pouzivatel WHERE h.partia = p.id AND u.ai = 1))`,
+      )
+      .all(odVerzie, odVerzie, lenLudia ? 1 : 0) as { karty: string }[];
     let karty: StatistikyKariet = {};
     for (const r of rows) karty = scitajStatistikyKariet(karty, normalizujStatistikyKariet(JSON.parse(r.karty) as unknown));
     return { partie: rows.length, karty };

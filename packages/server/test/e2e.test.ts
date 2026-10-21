@@ -30,7 +30,8 @@ describe("E2E — celá partia cez server", () => {
     const kod = a.privitanie.code;
     expect(kod).toBeDefined();
 
-    const b = new Robot(server.port, (await registruj(server.port)).cookie);
+    const hracB = await registruj(server.port);
+    const b = new Robot(server.port, hracB.cookie);
     await b.otvorene();
     const cakajA = a.novyStav();
     const cakajB = b.novyStav();
@@ -74,6 +75,20 @@ describe("E2E — celá partia cez server", () => {
       expect(i, "partia sa nezapísala do archívu").toBeLessThan(49);
       await new Promise((res) => setTimeout(res, 20));
     }
+
+    // Len ľudia (?ludia=1): partia s AI účtom (agent protihráč) sa do rebalansu nepočíta.
+    const pocet = async (q: string) =>
+      ((await (await fetch(`http://127.0.0.1:${server.port}/api/admin/statistiky-kariet${q}`, { headers: { cookie: admin } })).json()) as { partie: number }).partie;
+    expect(await pocet("?ludia=1")).toBe(1);
+    const idB = ((await (await fetch(`http://127.0.0.1:${server.port}/api/ja`, { headers: { cookie: hracB.cookie } })).json()) as { pouzivatel: { id: number } }).pouzivatel.id;
+    const ai = await fetch(`http://127.0.0.1:${server.port}/api/admin/pouzivatelia/${idB}`, {
+      method: "PATCH",
+      headers: { cookie: admin, "content-type": "application/json", "x-naex": "1" },
+      body: JSON.stringify({ ai: true }),
+    });
+    expect(ai.status).toBe(200);
+    expect(await pocet("?ludia=1")).toBe(0);
+    expect(await pocet("")).toBe(1);
 
     a.zavri();
     b.zavri();

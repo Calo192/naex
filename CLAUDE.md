@@ -117,7 +117,7 @@ tools/               import z tlačového PDF, piktogramy akcií
                        starej verzii bota z iného worktree); vypíše, ktoré ťahy bot používa
   bot/strategickost.ts meranie strategickosti — podklad agenta naex-strateg (skill naex-strategia)
   admin/               nástroje agenta naex-admin (admin API, rebalans, štýl ilustrácií,
-                       nahrávanie reportov a návrhov, avatary AI účtov, prehlad, server-stav)
+                       nahrávanie reportov a návrhov, avatary AI účtov, linka, server-stav)
   playtest/            klient AI playtesterov; hraci.json = 6 postáv (štýl, zameranie),
                        turnus.ts = 1–3 partie naraz s náhodnými dvojicami,
                        tahak.md = ťahák pravidiel AI hráčov (jediné miesto, čísla stráži test)

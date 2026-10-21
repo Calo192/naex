@@ -11,7 +11,7 @@ Rýchly prehľad bez agentov a bez partie — pár volaní API a gitu.
 1. Pozbieraj:
    ```bash
    git fetch origin --quiet
-   node --experimental-strip-types --no-warnings tools/admin/admin.ts prehlad --zivy
+   node --experimental-strip-types --no-warnings tools/admin/admin.ts linka --zivy
    ```
    Príkaz vypíše skupiny: **čaká na Michala** (návrhy na rozhodnutie, nezabraté
    návrhy, Prijímač roadmapy, nové názory ľudí na Spätnej väzbe), **čaká na

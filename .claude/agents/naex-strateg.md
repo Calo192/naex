@@ -62,8 +62,11 @@ Pri playteste s parametrom **max** potom spolupracuješ s navrhárom (časť
   `R/hra.json` (po partii smieš, napr. na overenie rozdania). Ak už existuje
   report spisovateľa `docs/playtesty/<id>.html`, nadviaž naň a neopakuj ho.
   Staršie relácie v `playtest/*/` sú tiež podklad.
-- Štatistiky z ostrých partií na webe, ak sú v zadaní (agent naex-admin ich vie
-  vytiahnuť) — inak ich nehľadaj.
+- Štatistiky kariet z ostrých partií ľudí na živom webe:
+  `node --experimental-strip-types --no-warnings tools/admin/admin.ts karty-v-partiach --zivy --ludia`
+  (bez partií s AI účtom; `--od <verzia sady>`). Je to jediný zdroj o tom, ako
+  hrajú ľudia — kde sa líši od bota a playtesterov (karta, ktorú ľudia nikdy
+  neberú, hoci bot áno), povedz to. Pod ~20 partiami len náznak.
 
 ## Meranie
 

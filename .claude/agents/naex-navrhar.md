@@ -89,6 +89,10 @@ je v časti „Spolupráca so stratégom“.
   `packages/core/src/` (`constants.ts`, `engine.ts`, `bot.ts`), klient
   `apps/web/src/hra/` pri bodoch o rozhraní.
 - Kritériá hodnotenia: `tools/playtest/kriteria.md`.
+- **Ostré partie ľudí** pri bodoch o kartách a balanse:
+  `$A karty-v-partiach --zivy --ludia` (štatistiky kariet bez partií s AI
+  účtom). Číslo od ľudí váži viac ako dojem AI playtestera; pod ~20 partiami
+  len náznak — povedz to v dôkazoch.
 
 ## Postup
 

@@ -19,7 +19,8 @@
 //   zaloha [poznamka]             celý obsah tvorcu do admin-agent/zalohy/
 //   obnov <zaloha.json> <id>…     vráti návrhy kariet zo zálohy (všetky: --vsetky)
 // Rebalans a kontrola
-//   karty-v-partiach [--od N] [--playtesty]   štatistiky kariet z odohraných partií (web, playtesty)
+//   karty-v-partiach [--od N] [--ludia] [--playtesty]   štatistiky kariet z odohraných partií (web, playtesty);
+//                                 --ludia = len partie bez AI účtu (rebalans podľa ľudí: --zivy --ludia)
 //   texty                         kontrola textov efektov (spúšťač, preklepy, zmenený implementovaný efekt)
 //   zmienky <id>                  kde v pravidlách, webe a inštrukciách agentov sa karta spomína
 //   starsi                        starší, ich karty a bodovacie karty s bodmi za podmienky
@@ -61,7 +62,7 @@
 //                                 organizátor playtestu: overene | nezabralo (--vysledok = verdikt: čo playtest ukázal)
 // Server a prehľad
 //   server-stav [--json]          nasadená verzia (commit) a rozohrané partie — pred nasadením (skill naex-nasad)
-//   prehlad                       čo čaká na Michala, Developera a nasadenie (skill naex-stav); s --zivy aj nenasadené commity
+//   linka                         čo čaká na Michala, Developera a nasadenie (skill naex-stav); s --zivy aj nenasadené commity
 // Roadmapa (stránka Vývoj → Roadmapa, Michal 2026-10-21)
 //   roadmapa [stlpec] [--json]    poradie položiek; stĺpce prijimac | teraz | dalej | potom | neskor | hotove
 //                                 Developer berie schválené návrhy v poradí stĺpca Teraz zhora
@@ -548,9 +549,13 @@ async function main(): Promise<void> {
       const o = await obsah();
       const nazov = (id: string) => o.karty.find((k) => k.id === id)?.nazov ?? id;
       const od = hodnota("--od");
-      const web = await api<{ partie: number; karty: StatistikyKariet }>("GET", `/admin/statistiky-kariet${od === undefined ? "" : `?od=${od}`}`);
+      const ludia = prep.has("--ludia");
+      const q = [...(od === undefined ? [] : [`od=${od}`]), ...(ludia ? ["ludia=1"] : [])].join("&");
+      const web = await api<{ partie: number; karty: StatistikyKariet }>("GET", `/admin/statistiky-kariet${q === "" ? "" : `?${q}`}`);
       let karty = web.karty;
-      let popis = `Web ${url}: ${web.partie} partií${od === undefined ? "" : ` od sady v${od}`}.`;
+      let popis = `Web ${url}: ${web.partie} partií${ludia ? " ľudí (bez AI účtov)" : ""}${od === undefined ? "" : ` od sady v${od}`}.`;
+      // Pod ~20 partií je rozptyl kariet väčší než rozdiel medzi nimi — čísla sú len náznak.
+      if (web.partie < 20) popis += " Málo partií — ber to ako náznak, nie dôkaz.";
       if (prep.has("--playtesty")) {
         const p = statistikyPlaytestov();
         karty = scitajStatistikyKariet(karty, p.karty);
@@ -897,7 +902,7 @@ async function main(): Promise<void> {
       break;
     }
 
-    case "prehlad": {
+    case "linka": {
       // Ranný prehľad celej linky (skill naex-stav): kto na čom čaká.
       const { spawnSync } = await import("node:child_process");
       const git = (...a: string[]): string => {
