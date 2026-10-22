@@ -586,6 +586,8 @@
 
 .sb-pata {
   display: flex;
+  /* Posuvník, percentá a skratky sa do 600 px nezmestia — skratky prejdú pod (UI inšpekcia U12). */
+  flex-wrap: wrap;
   align-items: center;
   gap: 12px;
   flex: none;

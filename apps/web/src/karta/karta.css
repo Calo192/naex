@@ -223,7 +223,8 @@
 
 .kl-nasobok {
   position: absolute;
-  right: calc(-4 * var(--pt));
+  /* −4 pt odrezala hrana karty (overflow plochy, UI inšpekcia U13). */
+  right: calc(-1 * var(--pt));
   top: calc(-4 * var(--pt));
   padding: calc(0.6 * var(--pt)) calc(2 * var(--pt));
   border-radius: 99px;

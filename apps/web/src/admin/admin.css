@@ -200,6 +200,9 @@
 }
 
 .spat {
+  display: inline-block;
+  /* Cieľ aspoň 24 px (UI inšpekcia U18) — mal 22. */
+  padding: 3px 0;
   font-size: 0.88rem;
   text-decoration: none;
   /* Cieľ kliknutia aspoň 24 px (WCAG 2.5.8, UI inšpekcia U18). */
