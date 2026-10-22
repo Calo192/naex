@@ -5,7 +5,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ClientState, Command, DlzkaHry, Event, GameData } from "@naex/core";
-import { loadGameData } from "@naex/core";
+import { kariet, loadGameData } from "@naex/core";
 import eldersJson from "@naex/core/data/elders.json";
 import scorecardsJson from "@naex/core/data/scorecards.json";
 import type { Sada } from "@naex/tvorba";
@@ -84,9 +84,10 @@ function textUdalosti(e: Event, mena: readonly string[]): string | null {
   const meno = (p: number) => mena[p] ?? `Hráč ${p + 1}`;
   switch (e.type) {
     case "log":
-      return e.text.replace(/Hráč ([12])/g, (_, n: string) => meno(Number(n) - 1));
+      // Aj „hráč 2“ uprostred vety (Hrobár, Svokra…) — inak ostalo „hráč 2 si berie 1 cigaretu“.
+      return e.text.replace(/[Hh]ráč ([12])/g, (_, n: string) => meno(Number(n) - 1));
     case "tahal":
-      return `${meno(e.hrac)} ťahá ${e.pocet} kariet.`;
+      return `${meno(e.hrac)} ťahá ${kariet(e.pocet)}.`;
     case "manualEfekt":
       return `⚠ EFEKT (vyhodnoťte ručne): ${e.nazov} — ${e.text}`;
     case "bitkaVysledok":
