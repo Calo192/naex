@@ -10,7 +10,10 @@ hlásia jemu a medzi sebou si píšu cez `SendMessage` (adresát = meno z `ListA
 | New features  | nové funkcie, roadmapa                            | `F:\Projects\naex-features`   | 8789 / 5175                      |
 | UX/UI         | dizajn a jeho implementácia v klientovi           | `F:\Projects\naex-ui`         | 8790 / 5176                      |
 | Admin         | karty v tvorcovi, ilustrácie (Leonardo), rebalans | `F:\Projects\naex-admin`      | 8791 / 5177                      |
-| Playtesting   | playtesty, návrhy, rozhodca, stratég              | `F:\Projects\naex-playtest`   | 8792 / 5178 (playtest servery si volia porty samy) |
+| Playtesting   | playtesty, návrhy, rozhodca, stratég              | `F:\Projects\naex-playtest`   | 8792 / 5178 (servery playtestu: od 8800 vyššie) |
+
+Porty 8780–8799 a 5170–5199 patria dev serverom sessions, 8800+ dočasným
+serverom playtestov (`tools/playtest/turnus.ts`).
 
 ## Zdroje, o ktoré sa nebiť
 
