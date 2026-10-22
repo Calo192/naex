@@ -596,6 +596,39 @@ textarea {
   }
 }
 
+/* Počas partie patrí hlavička ovládaniu hry (Melichar, soundboard, vzdať sa,
+   odísť) — navigácia je vždy za hamburgerom, na každej šírke (Michal 2026-10-22,
+   návrh C). Ovládanie partie sa vkladá portálom do #hlavicka-hra. */
+.hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .hamburger {
+  display: flex;
+}
+
+.hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .navigacia {
+  display: none;
+  position: absolute;
+  top: 64px;
+  left: 0;
+  right: 0;
+  flex: none;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 16px 16px;
+  background: var(--plocha);
+  border-bottom: 1px solid var(--okraj);
+}
+
+.hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .navigacia a {
+  padding: 12px 14px;
+}
+
+.hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .navigacia.otvorena {
+  display: flex;
+}
+
+.hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .hlavicka-hra {
+  margin-left: auto;
+}
+
 @media (min-width: 1101px) and (max-width: 1400px) {
   .hlavicka-vnutro {
     gap: 16px;
