@@ -256,8 +256,8 @@ describe("Benzínka, Dievčina na vydaj a Krčmárka pri bitke", () => {
       s = apply(sada2, s, { type: s.faza === "zhromazdenie" ? "pass" : "skipNaex" }, naTahu(s)!).state;
     }
     s = dohrajBitku(sada2, s);
-    // 1 aktívna akcia → 1 Dlh; Exekútor (mimo ohrozenia) spáli ďalší.
-    expect(s.hraci[0].priznane.filter((k) => k.defId === "dlh")).toHaveLength(1);
+    // 1 aktívna akcia → 1 Dlh; Exekútor mimo ohrozenia už nepáli (Michal 2026-10-22).
+    expect(s.hraci[0].priznane.filter((k) => k.defId === "dlh")).toHaveLength(2);
     const vsetky = [...s.hraci[0].odhadzovaci, ...s.hraci[0].doberaci, ...s.hraci[0].ruka].map((x) => x.uid);
     expect(vsetky).not.toContain(d.uid);
     expect(vsetky).toContain(n.uid);

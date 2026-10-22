@@ -2523,12 +2523,8 @@ function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
       const dlhy = pocetKariet(s.hraci[p] as PlayerState, "dlh", "priznane");
       const vysledok = exekutorCheck(dlhy + urad.zlava, priazen(data, s as GameState, "EXEKUTOR", p));
       if (vysledok === "mimoOhrozenia") {
-        // Hráč mimo ohrozenia spáli 1 priznaný Dlh (PRAVIDLA §8.1).
-        const idx = s.hraci[p].priznane.findIndex((k) => k.defId === "dlh");
-        if (idx !== -1) {
-          hrac(s, p).priznane.splice(idx, 1);
-          events.push({ type: "log", text: `Hráč ${p + 1} páli 1 priznaný Dlh.` });
-        }
+        // Dlh sa sám nepáli (Michal 2026-10-22, návrh #4 B) — pália ho len
+        // Robota, Dievčina na vydaj, Niekoho stryná a Veľmi smútiaca vdova.
         b.exekutorHotovy[p] = true;
       } else {
         const nastroje = najdiNastroje(s as GameState, data, p);

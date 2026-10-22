@@ -135,7 +135,7 @@ describe("verejný dlh a Cirhóza navrch balíčka (Michal 2026-10-21)", () => {
     const zaciatok = naTahu(s)!;
     s = apply(sada, s, { type: "skipNaex" }, zaciatok).state;
     const { state, events } = apply(sada, s, { type: "skipNaex" }, naTahu(s)!);
-    // Bitka po Pitke sa rozbehne v tom istom ťahu a Exekútor spáli 1 priznaný Dlh — rátaj z logu.
+    // Bitka po Pitke sa rozbehne v tom istom ťahu (Robota by Dlh spálila) — rátaj z logu.
     const priznaneDlhy = events.filter((e) => e.type === "log" && e.text.startsWith("Hráč 1 získava Dlh — hneď sa priznáva")).length;
     expect(nahlad[0].dlhy).toBeGreaterThan(0);
     expect(priznaneDlhy).toBe(nahlad[0].dlhy);
@@ -155,6 +155,20 @@ describe("verejný dlh a Cirhóza navrch balíčka (Michal 2026-10-21)", () => {
     };
     const dlhSaRata = v.starsi.some((e) => bodyTeraz(sada, bezDlhov).starsi.find((x) => x.elderId === e.elderId)?.body[0] !== bodyTeraz(sada, v).starsi.find((x) => x.elderId === e.elderId)?.body[0]);
     if (dlhSaRata) expect(bodyTeraz(sada, bezDlhov).spolu[0]).toBeGreaterThan(pred);
+  });
+
+  it("Dlh sa sám nepáli — kto exekúcii nečelí, priznané Dlhy si nechá (Michal 2026-10-22)", () => {
+    const s0 = setupGame(sada, 77);
+    const dlh = (uid: number): CardInstance => ({ uid, defId: "dlh", leftLayout: 0, rightLayout: 0 });
+    const sDlhmi: GameState = {
+      ...s0,
+      hraci: [{ ...s0.hraci[0], priznane: [dlh(900001), dlh(900002)] }, s0.hraci[1]],
+    };
+    let s = vPitke(sDlhmi, [[{ card: instanceFor(sada, "piticka", P4, P4), playedBy: 0 }], []]);
+    s = apply(sada, s, { type: "skipNaex" }, naTahu(s)!).state;
+    const { state, events } = apply(sada, s, { type: "skipNaex" }, naTahu(s)!);
+    expect(events.some((e) => e.type === "log" && e.text.includes("páli"))).toBe(false);
+    expect(state.hraci[0].priznane.filter((k) => k.defId === "dlh").map((k) => k.uid)).toEqual([900001, 900002]);
   });
 });
 

@@ -680,7 +680,9 @@ Ak `priznané_dlhy ≥ prah`, hráč **musí** odovzdať kartu s tagom Nástroj
 (z ruky, balíčka alebo Dedičstva) — inak **okamžite prehráva a hra sa končí**.
 Ak Nástroj odovzdá, **polovica priznaných dlhov zhorí** (nadol).
 
-Hráč, ktorý exekúcii **nečelí**, spáli 1 priznaný Dlh.
+Kto exekúcii **nečelí**, Dlh **nepáli** (Michal 2026-10-22 — predtým spálil
+1 priznaný Dlh v každej bitke). Priznané Dlhy pália len Robota, Dievčina na
+vydaj, Niekoho stryná a Veľmi smútiaca vdova.
 
 ### 2. Pohoršenie
 

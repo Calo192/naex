@@ -465,7 +465,7 @@ const KAPITOLY: readonly Kapitola[] = [
         <ol>
           <li><strong>Robota:</strong> ešte pred kontrolou prahu spáliš za každú aktívnu Robotu 1 priznaný Dlh.</li>
           <li>Ak priznané Dlhy dosiahnu prah (základ 10), musíš odovzdať Nástroj — inak okamžite prehrávaš.</li>
-          <li>Ak Nástroj odovzdáš, polovica Dlhov zhorí (nadol). Kto exekúcii nečelí, spáli 1 priznaný Dlh.</li>
+          <li>Ak Nástroj odovzdáš, polovica Dlhov zhorí (nadol). Inak sa Dlh sám nepáli — pália ho len Robota, Dievčina na vydaj, Niekoho stryná a Veľmi smútiaca vdova.</li>
         </ol>
       </>
     ),
