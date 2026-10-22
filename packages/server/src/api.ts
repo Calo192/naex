@@ -8,7 +8,7 @@
 
 import type { IncomingMessage, ServerResponse } from "node:http";
 import type { DlzkaHry, Podmienka } from "@naex/core";
-import { ALL_PODMIENKY, dostupneDlzky } from "@naex/core";
+import { ALL_PODMIENKY, dostupneDlzky, prazdneStatistiky } from "@naex/core";
 import type { KartaNavrh, Pozicia, StranaNavrhu, AkciaDef, KlucoveSlovo, Kategoria, BodovaciaKarta, IkonaBodovania, Nastavenia } from "@naex/tvorba";
 import { exportTxt, importTxt, slug, PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
 import type { Pouzivatel, Rola, Ucty } from "./auth.ts";
@@ -527,7 +527,17 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       const pohlad = id === p.id ? "vlastny" : jeSpravca(p.rola) ? "spravca" : "cudzi";
       const profil = ctx.archiv.profil(id, pohlad, p.id);
       if (profil === null) throw new ChybaVstupu("Taký hráč neexistuje.", 404);
-      return ok(profil);
+      // Súhrn: cudzí len z partií s ľuďmi, bez silných a slabých stránok, a vôbec nie,
+      // keď si ho hráč skryl (hodnotenie ostáva viditeľné) — Michal 2026-10-22.
+      const cudzi = pohlad === "cudzi";
+      const f = cudzi ? "ludia" : (query.get("filter") ?? "ludia");
+      if (!(FILTRE_PARTII as readonly string[]).includes(f)) throw new ChybaVstupu("Filter: ludia, boti alebo spolu.");
+      const suhrnSkryty = ciel.skrytySuhrn;
+      if (cudzi && suhrnSkryty) {
+        // Skrytý súhrn: ani staré súčty štatistík (pole statistiky) cudziemu nepošleme.
+        return ok({ ...profil, statistiky: prazdneStatistiky(), casSpolu: 0, suhrnSkryty, suhrn: null });
+      }
+      return ok({ ...profil, suhrnSkryty, suhrn: ctx.profily.suhrn(id, f as FilterPartii, !cudzi) });
     }
 
     if (r === "GET /rebricek") {

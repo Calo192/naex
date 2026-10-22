@@ -8,6 +8,8 @@ import type { BodyTeraz, KoloKroniky, StatistikyHraca } from "@naex/core";
 import { POVAHY, normalizujStatistiky } from "@naex/core";
 import type { Db } from "./db.ts";
 import type { Vysledok } from "./frajerina.ts";
+import type { PartiaSuhrnu, Suhrn } from "./suhrn.ts";
+import { PARTII_NA_PRIEMER, priemeryHraca, spocitajSuhrn } from "./suhrn.ts";
 
 export type FilterPartii = "ludia" | "boti" | "spolu";
 export const FILTRE_PARTII: readonly FilterPartii[] = ["ludia", "boti", "spolu"];
@@ -226,5 +228,44 @@ export class Profily {
       zaverecne: kronika.zaverecne ?? null,
       menaStarsich: kronika.menaStarsich ?? {},
     };
+  }
+
+  /** Posledné partie hráča pre súhrn (najnovšia prvá); vzdané sa rátajú (Michal 2026-10-22). */
+  private partieSuhrnu(id: number, filter: FilterPartii, pocet: number): PartiaSuhrnu[] {
+    const riadky = this.db
+      .prepare(
+        `SELECT ja.vysledok, ja.body, ja.statistiky, on_.body AS super_body, on_.statistiky AS super_statistiky
+         FROM partie_hraci ja
+         JOIN partie p ON p.id = ja.partia
+         JOIN partie_hraci on_ ON on_.partia = ja.partia AND on_.miesto != ja.miesto
+         WHERE ja.pouzivatel = ? ${sqlFiltra(filter)}
+         ORDER BY p.id DESC
+         LIMIT ?`,
+      )
+      .all(id, pocet) as { vysledok: Vysledok; body: number | null; statistiky: string; super_body: number | null; super_statistiky: string }[];
+    const st = (json: string): StatistikyHraca => {
+      try {
+        return normalizujStatistiky(JSON.parse(json));
+      } catch {
+        return normalizujStatistiky(null);
+      }
+    };
+    return riadky.map((r) => ({ vysledok: r.vysledok, body: r.body, superBody: r.super_body, ja: st(r.statistiky), super: st(r.super_statistiky) }));
+  }
+
+  /**
+   * Súhrn hráča z posledných `okno` partií. Porovnanie s hráčmi: ľudia (nie AI)
+   * s aspoň PARTII_NA_PRIEMER partiami s ľuďmi, bez partií s botmi.
+   */
+  suhrn(id: number, filter: FilterPartii, sStrankami: boolean, okno = 20): Suhrn {
+    const ludia = this.db
+      .prepare(
+        `SELECT ja.pouzivatel AS id FROM partie_hraci ja JOIN partie p ON p.id = ja.partia JOIN pouzivatelia u ON u.id = ja.pouzivatel
+         WHERE p.s_botom = 0 AND u.ai = 0 AND ja.pouzivatel != ?
+         GROUP BY ja.pouzivatel HAVING COUNT(*) >= ?`,
+      )
+      .all(id, PARTII_NA_PRIEMER) as { id: number }[];
+    const populacia = ludia.map((u) => priemeryHraca(this.partieSuhrnu(u.id, "ludia", okno)));
+    return spocitajSuhrn(this.partieSuhrnu(id, filter, okno), populacia, sStrankami);
   }
 }

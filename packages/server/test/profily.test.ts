@@ -89,6 +89,24 @@ describe("profily — zoznam a detail partie", () => {
     expect(preSpravcu.data.partie[0]?.super.id).toBe(idAi);
   });
 
+  it("súhrn: vlastník so stránkami, cudzí len z partií s ľuďmi a bez stránok, skrytý súhrn cudzí nedostane", async () => {
+    const jano = (await registruj(server.port)).cookie;
+    const eva = (await registruj(server.port)).cookie;
+    const idJano = await idHraca(jano);
+    await partiaSoVzdanim(jano, eva);
+    type Profil = { suhrnSkryty: boolean; suhrn: { partii: number; metriky: { kluc: string; lepsie: string; popis: string }[]; silne: unknown[] } | null; statistiky: { partie: number } };
+    const vlastny = await volaj<Profil>(jano, "GET", `/hraci/${idJano}?filter=spolu`);
+    expect(vlastny.data.suhrn?.partii).toBe(1);
+    expect(vlastny.data.suhrn?.metriky.find((m) => m.kluc === "vyhry")).toMatchObject({ lepsie: "viac" });
+    const cudzi = await volaj<Profil>(eva, "GET", `/hraci/${idJano}?filter=boti`);
+    expect(cudzi.data.suhrn?.partii).toBe(1);
+    expect(cudzi.data.suhrn?.silne).toEqual([]);
+    expect((await volaj(jano, "PATCH", "/profil", { skrytySuhrn: true })).status).toBe(200);
+    const skryty = await volaj<Profil>(eva, "GET", `/hraci/${idJano}`);
+    expect(skryty.data).toMatchObject({ suhrnSkryty: true, suhrn: null, statistiky: { partie: 0 } });
+    expect((await volaj<Profil>(jano, "GET", `/hraci/${idJano}`)).data.suhrn?.partii).toBe(1);
+  });
+
   it("skryť môj súhrn sa uloží a vráti v /api/ja", async () => {
     const ja = (await registruj(server.port)).cookie;
     expect((await volaj<{ pouzivatel: { skrytySuhrn: boolean } }>(ja, "GET", "/ja")).data.pouzivatel.skrytySuhrn).toBe(false);
