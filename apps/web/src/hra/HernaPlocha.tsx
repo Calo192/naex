@@ -449,18 +449,32 @@ export function HernaPlocha({
   const zobrazenieSkore = useUcet().ja?.skore ?? "dlazdice";
   // Klávesové skratky v partii (Michal 2026-10-22, roadmapa #19) — vypínač v profile.
   const skratky = useSkratky(useUcet().ja?.skratky !== false && view.koniec === null);
-  const [ucetOtvoreny, setUcetOtvoreny] = useState(false);
+  // Poloha účtu vo viditeľnej časti okna (Michal 2026-10-22: klik na Body pri mojom bare
+  // otvoril účet hore pod súperovým barom, mimo obrazovky) — pod osou kola, nad tlačidlami kroku a rukou.
+  const [ucetPoloha, setUcetPoloha] = useState<{ readonly top: number; readonly maxH: number } | null>(null);
+  const ucetOtvoreny = ucetPoloha !== null;
+  const setUcetOtvoreny = (o: boolean): void => setUcetPoloha(o ? polohaUcetu() : null);
+  const polohaUcetu = (): { readonly top: number; readonly maxH: number } => {
+    const hlava = document.querySelector(".hra-hlava")?.getBoundingClientRect().bottom ?? 0;
+    const ruka = document.querySelector(".ruka")?.getBoundingClientRect().top ?? window.innerHeight;
+    const hrana = document.querySelector(".stol-hrana .hrana-rad")?.getBoundingClientRect();
+    // Tlačidlá kroku nad rukou nesmie prekryť; keď sú vyššie, než sa účet zmestí, berie sa len ruka.
+    let dole = ruka - 8;
+    if (hrana !== undefined && hrana.height > 0 && hrana.top > hlava + 260 && hrana.top < dole) dole = hrana.top - 8;
+    const top = Math.max(8, hlava + 8);
+    return { top, maxH: Math.max(200, dole - top) };
+  };
   const idUcetu = useId();
   useEffect(() => {
     if (!ucetOtvoreny) return;
     const klaves = (e: KeyboardEvent): void => {
-      if (e.key === "Escape") setUcetOtvoreny(false);
+      if (e.key === "Escape") setUcetPoloha(null);
     };
     window.addEventListener("keydown", klaves);
     return () => window.removeEventListener("keydown", klaves);
   }, [ucetOtvoreny]);
   const ucetBaru =
-    zobrazenieSkore === "dlazdice" ? undefined : { otvoreny: ucetOtvoreny, prepni: () => setUcetOtvoreny((o) => !o), id: idUcetu };
+    zobrazenieSkore === "dlazdice" ? undefined : { otvoreny: ucetOtvoreny, prepni: () => setUcetOtvoreny(!ucetOtvoreny), id: idUcetu };
   const mierkaLupyScorecardu = Math.max(1.6, SIRKA_SCORECARDU_V_LUPE / sirkaScorecardu);
   const lokalitaRef = useRef<HTMLDivElement>(null);
   // Línia môže byť dlhá — lokalitu drž v strede pohľadu.
@@ -3699,9 +3713,9 @@ export function HernaPlocha({
           menoStarsieho={menoStarsieho}
           ucet={ucetBaru}
         />
-        {/* Účet leží cez starších (kotva bez výšky) — stôl pri otvorení neposkočí. */}
-        {ucetBaru !== undefined && ucetOtvoreny && (
-          <div className="ucet-kotva" id={idUcetu}>
+        {/* Účet leží nad stolom vo viditeľnej časti okna (position: fixed) — stôl pri otvorení neposkočí. */}
+        {ucetBaru !== undefined && ucetPoloha !== null && (
+          <div className="ucet-kotva" id={idUcetu} style={{ top: ucetPoloha.top, maxHeight: ucetPoloha.maxH }}>
             <KrcmovyUcet
               body={body}
               data={data}

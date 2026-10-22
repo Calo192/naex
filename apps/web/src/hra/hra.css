@@ -4365,16 +4365,19 @@ button.auto-hotovo-odkaz {
  * Leží cez starších (kotva bez výšky), papier sú obrátené tokeny —
  * pozadie je farba textu, text farba pozadia. */
 .ucet-kotva {
-  position: relative;
-  height: 0;
+  position: fixed;
+  left: 0;
+  right: 0;
   z-index: 40;
+  display: flex;
+  justify-content: center;
+  overflow-y: auto;
+  pointer-events: none;
 }
 
 .krcmovy-ucet {
-  position: absolute;
-  top: 6px;
-  left: 50%;
-  translate: -50% 0;
+  position: relative;
+  pointer-events: auto;
   width: min(680px, calc(100vw - 32px));
   color: var(--pozadie);
   font-size: 0.86rem;
@@ -4689,4 +4692,56 @@ button.auto-hotovo-odkaz {
 .skratky-napoveda p {
   margin: 0;
   font-size: 0.78rem;
+}
+
+/* ---- dlaždice v bare s pevnou výškou: text sa nikdy neoreže v polovici riadku ----
+ * Michal 2026-10-22 („nevidno celý text“): každý riadok pod číslom je jeden riadok,
+ * dlhší sa skráti trojbodkou (celé znenie je v nápovede), prúžky a čísla sú v rade s číslom. */
+.doska .zdroj {
+  gap: 1px;
+  padding: 6px 9px;
+}
+
+.doska .zdroj-hodnota {
+  min-height: 0;
+  flex-wrap: nowrap;
+}
+
+.doska .zdroj-pod,
+.doska .rd-vypocet,
+.doska .rd-druhy,
+.doska .rd-stupen-nazov {
+  line-height: 1.25;
+  min-width: 0;
+}
+
+.doska .zdroj-pod > *,
+.doska .zdroj-pod > :is(span, b) {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.doska .rd-vypocet {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Prúžok nerestí vedľa čísla Absťáku. */
+.doska .zdroj-abstak .zdroj-hodnota .neresti-pruh {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  align-self: center;
+}
+
+/* Body: porovnanie najviac na dva riadky. */
+.doska .zdroj-body .zdroj-pod {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }

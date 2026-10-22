@@ -108,14 +108,14 @@ function NerestiPruh({ z }: { readonly z: StavZavislosti }) {
 function vyhladAbstaku(z: StavZavislosti, ja: boolean): { text: string; trieda: string } {
   switch (z.vyhlad) {
     case "zaklad":
-      return { text: "1. kolo nastaví základ", trieda: "" };
+      return { text: "1. kolo = základ", trieda: "" };
     case "ziska":
-      return { text: `hrozí +1 · chýba ${neresti(z.doBezpecia)}`, trieda: "zly" };
+      return { text: `hrozí +1 · chýba ${z.doBezpecia}`, trieda: "zly" };
     case "zbavi":
-      return { text: `${ja ? "zbavíš" : "zbaví"} sa 1 na konci kola`, trieda: "dobry" };
+      return { text: `${ja ? "zbavíš" : "zbaví"} sa 1`, trieda: "dobry" };
     case "nic":
       return z.doZbavenia > 0
-        ? { text: `bez zmeny · ešte ${neresti(z.doZbavenia)} = −1`, trieda: "" }
+        ? { text: `bez zmeny · +${z.doZbavenia} = −1`, trieda: "" }
         : { text: "bez zmeny", trieda: "" };
   }
 }
@@ -130,10 +130,14 @@ function ZdrojAbstak({ z, ja }: { readonly z: StavZavislosti; readonly ja: boole
       trieda={`zdroj-abstak ${z.vyhlad === "ziska" ? "varovanie" : ""} ${z.abstaky > 0 ? "ma-abstak" : ""}`}
       ikona={<IkonaAbstak />}
       hodnota={
-        <span className="velke-cislo">
-          {z.abstaky}
-          {z.ubera > 0 && <small className="abstak-ubera"> −{z.ubera} tuhé</small>}
-        </span>
+        <>
+          <span className="velke-cislo">
+            {z.abstaky}
+            {z.ubera > 0 && <small className="abstak-ubera"> −{z.ubera} tuhé</small>}
+          </span>
+          {/* Prúžok vedľa čísla — bar má pevnú výšku, pod číslom sú len dva krátke riadky. */}
+          <NerestiPruh z={z} />
+        </>
       }
       pod={
         <>
@@ -141,7 +145,6 @@ function ZdrojAbstak({ z, ja }: { readonly z: StavZavislosti; readonly ja: boole
             neresti {z.teraz}
             {z.vyhlad !== "zaklad" && <> / minule {z.minule}</>}
           </span>
-          <NerestiPruh z={z} />
           <span className={`abstak-vyhlad ${vyhlad.trieda}`}>{vyhlad.text}</span>
         </>
       }
