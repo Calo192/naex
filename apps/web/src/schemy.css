@@ -352,3 +352,14 @@
   --tma: 0.3;
   color-scheme: light;
 }
+
+/* Odvodené tokeny (Dielňa, 2026-10-22) — platia vo všetkých schémach, lebo sa
+   skladajú z tokenov schémy. Okraj formulárových polí má aspoň 3 : 1 (--okraj-svetly
+   má len ≈ 2 : 1); stavy návrhov majú v texte čipu ešte prímes --text. */
+:root {
+  --okraj-pola: color-mix(in oklab, var(--okraj-svetly) 65%, var(--tlmeny));
+  --stav-novy: var(--info);
+  --stav-hlasovanie: var(--akcent);
+  --stav-schvaleny: var(--zelena);
+  --stav-zamietnuty: var(--cervena-text);
+}

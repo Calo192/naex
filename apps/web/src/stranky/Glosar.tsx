@@ -6,7 +6,12 @@ import type { KartaNavrh, Vzhlad } from "@naex/tvorba";
 import { farbaKarty, variant, variantyKarty } from "@naex/tvorba";
 import { KartaLico } from "../karta/KartaLico.tsx";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
-import { useTitulok } from "../lib/router.tsx";
+import { Odkaz, useTitulok } from "../lib/router.tsx";
+import { api } from "../lib/api.ts";
+import { KartyZalozky } from "../dielna/Dielna.tsx";
+
+/** Autor karty z Dielne; „prerobena“ = tvorca ju po prevzatí zmenil, vtedy „nápad: X“. */
+type AutoriKariet = Readonly<Record<string, { readonly meno: string; readonly prerobena: boolean; readonly navrh: number }>>;
 import { useSada, vzhladSady } from "../lib/sada.tsx";
 import { Hlaska, Nacitavanie } from "../komponenty.tsx";
 
@@ -37,7 +42,17 @@ function SipkyVariantov({ v, pocet, nastav }: { readonly v: number; readonly poc
   );
 }
 
-function Detail({ karta, vzhlad, zavri }: { readonly karta: KartaNavrh; readonly vzhlad: Vzhlad; readonly zavri: () => void }) {
+function Detail({
+  karta,
+  vzhlad,
+  zavri,
+  autor,
+}: {
+  readonly karta: KartaNavrh;
+  readonly vzhlad: Vzhlad;
+  readonly zavri: () => void;
+  readonly autor: AutoriKariet[string] | undefined;
+}) {
   const varianty = useMemo(() => variantyKarty(karta), [karta]);
   const [v, setV] = useState(0);
   const roz = variant(varianty, v);
@@ -73,6 +88,14 @@ function Detail({ karta, vzhlad, zavri }: { readonly karta: KartaNavrh; readonly
         <div className="glosar-detail-info">
           <h2 style={{ color: farba }}>{karta.nazov}</h2>
           <p className="glosar-tagy">{karta.tagy.join(" · ")}</p>
+          {autor !== undefined && (
+            <p className="glosar-autor">
+              <span className="odznak odznak-dielna">✦ Dielňa</span>{" "}
+              <Odkaz href={`/karty/dielna/${autor.navrh}`}>
+                {autor.prerobena ? "nápad" : "autor"}: {autor.meno}
+              </Odkaz>
+            </p>
+          )}
           {karta.efekt !== "" && <p className="glosar-efekt">{karta.efekt}</p>}
           <h3>Akcie na karte</h3>
           {akcie.length === 0 ? (
@@ -109,6 +132,11 @@ function Detail({ karta, vzhlad, zavri }: { readonly karta: KartaNavrh; readonly
               ? `Karta existuje v ${varianty.pocet} variantoch — líšia sa pozíciou akcií. Šípky (aj ← →) ich prepínajú.`
               : "Karta má jediné rozloženie akcií."}
           </p>
+          <p>
+            <Odkaz href={`/karty/dielna/novy?zaklad=${encodeURIComponent(karta.id)}`} className="tlacidlo tlacidlo-male">
+              Navrhnúť úpravu v Dielni
+            </Odkaz>
+          </p>
         </div>
       </div>
     </div>
@@ -123,6 +151,13 @@ export function Glosar() {
   const [sirka, setSirka] = useState(() => (window.innerWidth < 600 ? 200 : 240));
   const [varianty, setVarianty] = useState<Readonly<Record<string, number>>>({});
   const [detail, setDetail] = useState<KartaNavrh | null>(null);
+  const [autori, setAutori] = useState<AutoriKariet>({});
+  useEffect(() => {
+    api
+      .get<{ autori: AutoriKariet }>("/dielna/autori")
+      .then((r) => setAutori(r.autori))
+      .catch(() => undefined);
+  }, []);
 
   if (chyba !== null) return <Hlaska>{chyba}</Hlaska>;
   if (sada === null) return <Nacitavanie />;
@@ -139,6 +174,7 @@ export function Glosar() {
     <div className="glosar">
       <header className="stranka-hlava">
         <h1>Karty</h1>
+        <KartyZalozky aktivna="karty" />
         <p className="tlmene">
           {sada.karty.length} kariet hry. Prejdi myšou ponad <strong>ikonu akcie</strong>, tučný spúšťač alebo pojem v
           kurzíve — zobrazí sa, čo robí. Klikni na kartu pre detail.
@@ -198,7 +234,7 @@ export function Glosar() {
         </ul>
       </section>
 
-      {detail !== null && <Detail karta={detail} vzhlad={vzhlad} zavri={() => setDetail(null)} />}
+      {detail !== null && <Detail karta={detail} vzhlad={vzhlad} zavri={() => setDetail(null)} autor={autori[detail.id]} />}
     </div>
   );
 }

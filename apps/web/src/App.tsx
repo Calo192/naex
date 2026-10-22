@@ -18,6 +18,7 @@ import { Rebricek } from "./stranky/Rebricek.tsx";
 import { SpatnaVazba } from "./stranky/SpatnaVazba.tsx";
 import { Vyvoj } from "./stranky/Vyvoj.tsx";
 import { Novinky } from "./stranky/Novinky.tsx";
+import { Dielna } from "./dielna/Dielna.tsx";
 import { Admin } from "./admin/Admin.tsx";
 import { Hraci } from "./stranky/Hraci.tsx";
 import { Playtest } from "./playtest/Playtest.tsx";
@@ -69,6 +70,8 @@ export function App() {
   const hrac = /^\/hrac\/(\d+)$/.exec(cesta);
   if (hrac !== null) return <Layout siroky>{chranene(<HracProfil id={Number(hrac[1])} />)}</Layout>;
   if (cesta === "/profil") return <Layout siroky>{chranene(<Profil />)}</Layout>;
+  // Dielňa je záložka stránky Karty (Michal 2026-10-22); čítať smie každý.
+  if (cesta === "/karty/dielna" || cesta.startsWith("/karty/dielna/")) return <Layout siroky><Dielna cesta={cesta} /></Layout>;
 
   const stranka: ReactNode =
     cesta === "/" ? <Domov />

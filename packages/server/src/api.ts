@@ -446,6 +446,8 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       // Obrázky knižnice na čítanie pre editor Dielne (nahrávať smie len správca).
       if (r === "GET /dielna/kniznica") return ok({ media: ctx.media.zoznam("kniznica").map((m) => ({ id: m.id, nazov: m.nazov })) });
       if (r === "GET /dielna/autori") return ok({ autori: ctx.dielna.autoriKariet() });
+      // Značka pri Kartách: koľko rozhodnutí o mojich návrhoch som ešte nevidel.
+      if (r === "GET /dielna/znacka") return ok({ pocet: ja === null ? 0 : ctx.dielna.noveRozhodnutia(ja) });
       if (r === "POST /dielna") return ok({ id: ctx.dielna.vytvor(prihlaseny(), await citajJson(req), teraz) }, 201);
       if (metoda === "DELETE" && casti[2] === "komentare" && casti.length === 4) {
         ctx.dielna.zmazKomentar(prihlaseny(), Number(casti[3]));
