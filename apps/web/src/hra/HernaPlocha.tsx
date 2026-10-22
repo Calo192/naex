@@ -103,7 +103,6 @@ import { Vrstva as VrstvaPanel } from "./Vrstva.tsx";
 import { BitkaPanel, CenaCigariet, HracDoska, IkonaCigareta, IkonaPoldeci, PriebehKola, type VyhladPitky } from "./Panely.tsx";
 import { RozpisBodov } from "./RozpisBodov.tsx";
 import { StavkaBitky } from "./StavkaBitky.tsx";
-import { Scoreboard } from "./Scoreboard.tsx";
 import { Scorecard, StavStarsieho, UCINOK_PRIAZNE } from "./Scorecard.tsx";
 import type { HracInfo, ZmenyFrajeriny } from "./useHra.ts";
 import { useBezNaexVBitke, useOdlozenyPrikaz } from "./usePohodlie.ts";
@@ -357,6 +356,11 @@ export function HernaPlocha({
   const stavim = view.faza === "draft" && draft?.krok === "stavba";
   // Živý odhad záverečného bodovania — hráč musí stále vidieť, za čo dostane body.
   const body = useMemo(() => bodyTeraz(data, view), [data, view]);
+  /** Meno staršieho (karty na ukazovateli) — rozpis bodov v bare hráča. */
+  const menoStarsieho = (id: string): string => {
+    const e = view.starsi.find((x) => x.elderId === id);
+    return e === undefined ? id : menoKarty(e.karta.defId);
+  };
   const [akoBodovanie, setAkoBodovanie] = useState(false);
   // Šírka okna — na mobile menšia ruka a predvolene zbalení starší.
   const [sirkaOkna, setSirkaOkna] = useState(() => (typeof window === "undefined" ? 1600 : window.innerWidth));
@@ -3553,16 +3557,22 @@ export function HernaPlocha({
         )}
 
       <div className="plocha">
-        {/* Scoreboard nad staršími (Michal 2026-10-18): body po milníkoch, kto má za čo koľko. */}
-        <Scoreboard
+        {/* Súperi sedia oproti sebe (Michal 2026-10-22): súperov bar hore, tvoj pod stolom;
+            scoreboard nad staršími zanikol — body sú v bare hráča. */}
+        <HracDoska
+          view={view}
+          p={super_}
+          info={hraci[super_]}
+          prahy={prahy(super_)}
+          zavislost={zavislost(super_)}
+          menoKarty={menoKarty}
+          popisKarty={popisKarty}
+          vyhlad={vyhladPitky(super_)}
+          cenaDlhu={cenyKliatob[super_].dlh}
           body={body}
           data={data}
-          ja={ja}
-          menoSupera={menoHraca(super_)}
-          menoStarsieho={(id) => {
-            const e = view.starsi.find((x) => x.elderId === id);
-            return e === undefined ? id : menoKarty(e.karta.defId);
-          }}
+          mena={[menoHraca(0), menoHraca(1)]}
+          menoStarsieho={menoStarsieho}
         />
         {/* Starší hore — mimo dosahu ruky, aby sa ich lupa nebila s lupou kariet v ruke. */}
         <section className="starsi-panel" ref={starsiPanelRef}>
@@ -3721,41 +3731,32 @@ export function HernaPlocha({
             {hranaStola}
           </div>
 
+          <HracDoska
+            view={view}
+            p={ja}
+            info={hraci[ja]}
+            prahy={prahy(ja)}
+            zavislost={zavislost(ja)}
+            menoKarty={menoKarty}
+            popisKarty={popisKarty}
+            vyhlad={vyhladPitky(ja)}
+            cenaDlhu={cenyKliatob[ja].dlh}
+            obchodCigariet={{
+              mozno: somNaTahu && view.faza === "pitka" && view.pitkaStav?.reakcia === null && view.koniec === null,
+              doliat: () => cmd({ type: "refillPoldeci" }),
+              novy: () => cmd({ type: "barter" }),
+              cenaBarteru: barterCena(data, view, ja),
+            }}
+            body={body}
+            data={data}
+            mena={[menoHraca(0), menoHraca(1)]}
+            menoStarsieho={menoStarsieho}
+          />
+
           {bitkaPanel}
 
           {odkladacieZony.length > 0 && <div className="odkladanie">{odkladacieZony}</div>}
 
-          {/* Obaja hráči na jednej úrovni: ty vľavo, súper vpravo (zrkadlovo). */}
-          <div className="dosky">
-            <HracDoska
-              view={view}
-              p={ja}
-              info={hraci[ja]}
-              prahy={prahy(ja)}
-              zavislost={zavislost(ja)}
-              menoKarty={menoKarty}
-              popisKarty={popisKarty}
-              vyhlad={vyhladPitky(ja)}
-              cenaDlhu={cenyKliatob[ja].dlh}
-              obchodCigariet={{
-                mozno: somNaTahu && view.faza === "pitka" && view.pitkaStav?.reakcia === null && view.koniec === null,
-                doliat: () => cmd({ type: "refillPoldeci" }),
-                novy: () => cmd({ type: "barter" }),
-                cenaBarteru: barterCena(data, view, ja),
-              }}
-            />
-            <HracDoska
-              view={view}
-              p={super_}
-              info={hraci[super_]}
-              prahy={prahy(super_)}
-              zavislost={zavislost(super_)}
-              menoKarty={menoKarty}
-              popisKarty={popisKarty}
-              vyhlad={vyhladPitky(super_)}
-              cenaDlhu={cenyKliatob[super_].dlh}
-            />
-          </div>
         </div>
 
       </div>

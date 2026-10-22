@@ -4,12 +4,14 @@
 // Zásada: každé číslo, od ktorého závisí rozhodnutie (poldeci, cigarety,
 // pečeň, dlhy, poškodenie), je veľké, pomenované a vždy na tom istom mieste.
 
-import { useEffect, useRef, type ReactNode, type RefObject } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode, type RefObject } from "react";
 import type {
   Action,
   ActionSums,
+  BodyTeraz,
   ClientState,
   DamageResult,
+  GameData,
   NahladPitkyHraca,
   PlayerId,
   RozpisPoskodenia,
@@ -23,6 +25,8 @@ import { IKONY } from "../karta/ikony.ts";
 import { useTip, type TipObsah } from "../karta/Tip.tsx";
 import { Avatar } from "../komponenty.tsx";
 import type { HracInfo } from "./useHra.ts";
+import { RozpisDlazdice } from "./RozpisDlazdice.tsx";
+import { znamienko as znamienkoBodov } from "./Scorecard.tsx";
 
 // ---- ikony zdrojov -----------------------------------------------------------
 
@@ -332,15 +336,58 @@ export interface HracDoskaProps {
   readonly obchodCigariet?:
     | { readonly mozno: boolean; readonly doliat: () => void; readonly novy: () => void; readonly cenaBarteru: number }
     | undefined;
+  /** Body „keby hra skončila teraz“ — dlaždica Body a jej rozpis (Michal 2026-10-22, scoreboard zanikol). */
+  readonly body: BodyTeraz;
+  readonly data: GameData;
+  /** Mená oboch hráčov podľa miesta. */
+  readonly mena: readonly [string, string];
+  readonly menoStarsieho: (elderId: string) => string;
+}
+
+/** „o 12 pred Tetou“ / „o 3 za Tetou“ / „rovnako“ — dlaždica Body. */
+function porovnanieBodov(moje: number, jeho: number, menoJeho: string): string {
+  if (moje === jeho) return `rovnako ako ${menoJeho}`;
+  return `o ${Math.abs(moje - jeho)} ${moje > jeho ? "pred" : "za"} · ${menoJeho} ${znamienkoBodov(jeho)}`;
 }
 
 /**
- * Doska hráča. Obe dosky sú v jednom rade — tvoja vľavo, súperova vpravo
- * a zrkadlovo: od stredu obrazovky poldeci, cigarety, Absťák… smerom
- * k portrétu na okraji (Michal 2026-10-20). Bez bubliniek so stavom — kto je
- * na ťahu, ukazuje stôl a pokyn, NA EX vidno na poldeci.
+ * Bar hráča (Michal 2026-10-22, dizajn stol-oproti-b2-20261022-1030): súperi
+ * sedia oproti sebe — súperov bar je nad staršími, tvoj pod stolom, oba
+ * v jednom rade a zrkadlovo (tvoj: portrét · Dlhy … Poldeci · Body · Karty,
+ * súperov presne obrátene; poradie dáva mriežka v hra.css). Klik na Body
+ * vymení šesť zdrojov za šesť dlaždíc rozpisu bodov v tých istých stĺpcoch —
+ * výška baru sa nemení. Bez bubliniek so stavom — kto je na ťahu, ukazuje
+ * stôl a pokyn, NA EX vidno na poldeci.
  */
-export function HracDoska({ view, p, info, prahy, zavislost, menoKarty, popisKarty, vyhlad, cenaDlhu, obchodCigariet }: HracDoskaProps) {
+export function HracDoska({
+  view,
+  p,
+  info,
+  prahy,
+  zavislost,
+  menoKarty,
+  popisKarty,
+  vyhlad,
+  cenaDlhu,
+  obchodCigariet,
+  body,
+  data,
+  mena,
+  menoStarsieho,
+}: HracDoskaProps) {
+  const [rozpis, setRozpis] = useState(false);
+  const bodyRef = useRef<HTMLButtonElement>(null);
+  const idRozpisu = useId();
+  useEffect(() => {
+    if (!rozpis) return;
+    const klaves = (e: KeyboardEvent): void => {
+      if (e.key !== "Escape") return;
+      setRozpis(false);
+      bodyRef.current?.focus();
+    };
+    window.addEventListener("keydown", klaves);
+    return () => window.removeEventListener("keydown", klaves);
+  }, [rozpis]);
   const hrac = view.hraci[p];
   const ja = p === view.ja;
   const meno = info?.meno ?? `Hráč ${p + 1}`;
@@ -364,7 +411,7 @@ export function HracDoska({ view, p, info, prahy, zavislost, menoKarty, popisKar
   for (let i = 0; i < hrac.poldeciVypite; i++) poldeci.push(<IkonaPoldeci key={`v${i}`} plny={false} />);
 
   return (
-    <section className={`doska ${ja ? "moja" : "superova"} ${naTahu ? "na-tahu" : ""}`} aria-label={`Hráč ${meno}`}>
+    <section className={`doska ${ja ? "moja" : "superova"} ${naTahu ? "na-tahu" : ""} ${rozpis ? "s-rozpisom" : ""}`} aria-label={`Hráč ${meno}`}>
       <div className="doska-hrac">
         <Avatar meno={meno} avatar={info?.avatar ?? null} velkost={60} />
         <div>
@@ -380,9 +427,38 @@ export function HracDoska({ view, p, info, prahy, zavislost, menoKarty, popisKar
             }
             frajerina={info?.frajerina}
           />
+          {/* Kliatby a Dedičstvo v jednom riadku pod menom — bar má pevnú výšku. */}
+          {(hrac.priznane.length > 0 || hrac.dedicstvo.length > 0 || kliatby.dlh + kliatby.cirhoza > 0) && (
+            <span className="doska-oblast">
+              {kliatby.dlh + kliatby.cirhoza > 0 && (
+                <span
+                  className="cip kliatba"
+                  title={
+                    ja
+                      ? "Tvoje nepriznané kliatby v ruke a v balíčkoch — na konci hry uberajú body."
+                      : "Súperove nepriznané kliatby — počet sa ráta z toho, čo sa ukázalo na stole (vznik, priznanie, zahodenie). Ktoré karty a kde ležia, nevidíš. Už sú odpočítané v jeho bodoch."
+                  }
+                >
+                  nepriznané{kliatby.cirhoza > 0 && ` · Cirhóza ×${kliatby.cirhoza}`}
+                  {kliatby.dlh > 0 && ` · Dlh ×${kliatby.dlh}`}
+                </span>
+              )}
+              {hrac.priznane.length > 0 && (
+                <span className="cip" title={`Priznané: ${hrac.priznane.map((k) => menoKarty(k.defId)).join(", ")}`}>
+                  priznané {hrac.priznane.length}
+                </span>
+              )}
+              {hrac.dedicstvo.length > 0 && (
+                <span className="cip nastroj" title={hrac.dedicstvo.map((k) => `${menoKarty(k.defId)}: ${popisKarty(k.defId)}`).join(" · ")}>
+                  Dedičstvo: {hrac.dedicstvo.map((k) => menoKarty(k.defId)).join(", ")}
+                </span>
+              )}
+            </span>
+          )}
         </div>
       </div>
 
+      {/* display: contents — dlaždice sú priamo v mriežke baru (poradie v hra.css). */}
       <div className="doska-zdroje">
         <Zdroj
           nazov="Poldeci"
@@ -611,46 +687,38 @@ export function HracDoska({ view, p, info, prahy, zavislost, menoKarty, popisKar
             ),
           }}
         />
+        <button
+          ref={bodyRef}
+          type="button"
+          className={`zdroj zdroj-body ${body.spolu[p] > 0 ? "plus" : body.spolu[p] < 0 ? "minus" : ""}`}
+          aria-expanded={rozpis}
+          aria-controls={idRozpisu}
+          title={rozpis ? "Späť na zdroje (Esc)" : "Rozpis bodov — za čo koľko (keby hra skončila teraz)"}
+          onClick={() => setRozpis((r) => !r)}
+        >
+          <span className="zdroj-nazov">Body {rozpis ? "▴" : "▾"}</span>
+          <span className="zdroj-hodnota">
+            <span className="velke-cislo">{znamienkoBodov(body.spolu[p])}</span>
+          </span>
+          <span className="zdroj-pod">{porovnanieBodov(body.spolu[p], body.spolu[p === 0 ? 1 : 0], mena[p === 0 ? 1 : 0])}</span>
+        </button>
+        {rozpis && (
+          <div className="doska-rozpis" id={idRozpisu} role="group" aria-label={`Rozpis bodov — ${meno}`}>
+            <RozpisDlazdice body={body} data={data} p={p} ja={view.ja} mena={mena} menoStarsieho={menoStarsieho} zrkadlo={!ja} />
+            <button
+              type="button"
+              className="rozpis-spat"
+              onClick={() => {
+                setRozpis(false);
+                bodyRef.current?.focus();
+              }}
+            >
+              ← späť na zdroje <kbd>Esc</kbd>
+            </button>
+          </div>
+        )}
       </div>
 
-      {(hrac.priznane.length > 0 || hrac.dedicstvo.length > 0 || kliatby.dlh + kliatby.cirhoza > 0) && (
-        <div className="doska-oblast">
-          {kliatby.dlh + kliatby.cirhoza > 0 && (
-            <span
-              className="oblast-skupina nepriznane"
-              title={
-                ja
-                  ? "Tvoje nepriznané kliatby v ruke a v balíčkoch — na konci hry uberajú body."
-                  : "Súperove nepriznané kliatby — počet sa ráta z toho, čo sa ukázalo na stole (vznik, priznanie, zahodenie). Ktoré karty a kde ležia, nevidíš. Už sú odpočítané v jeho bodoch."
-              }
-            >
-              <span className="oblast-nazov">nepriznané</span>
-              {kliatby.cirhoza > 0 && <span className="cip kliatba">Cirhóza ×{kliatby.cirhoza}</span>}
-              {kliatby.dlh > 0 && <span className="cip kliatba">Dlh ×{kliatby.dlh}</span>}
-            </span>
-          )}
-          {hrac.priznane.length > 0 && (
-            <span className="oblast-skupina">
-              <span className="oblast-nazov">priznané</span>
-              {hrac.priznane.map((k) => (
-                <span key={k.uid} className={`cip kliatba ${k.defId === "abstak" ? "abstak" : ""}`} title={popisKarty(k.defId)}>
-                  {menoKarty(k.defId)}
-                </span>
-              ))}
-            </span>
-          )}
-          {hrac.dedicstvo.length > 0 && (
-            <span className="oblast-skupina">
-              <span className="oblast-nazov">dedičstvo</span>
-              {hrac.dedicstvo.map((k) => (
-                <span key={k.uid} className="cip nastroj" title={popisKarty(k.defId)}>
-                  {menoKarty(k.defId)}
-                </span>
-              ))}
-            </span>
-          )}
-        </div>
-      )}
     </section>
   );
 }

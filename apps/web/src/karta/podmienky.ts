@@ -10,7 +10,7 @@ export const NAZOV_PODMIENKY: Record<Podmienka, string> = {
   starsi: "Získaní starší",
   cigarety: "Zvyšné cigarety",
   cirhoza: "Nepriznaná cirhóza",
-  dlh: "Nepriznaný dlh",
+  dlh: "Dlhy",
 };
 
 function b(n: number): string {

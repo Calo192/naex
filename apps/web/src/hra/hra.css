@@ -248,25 +248,24 @@
 
 /* ---- doska hráča: zdroje veľkými číslami ---- */
 
-/* Obe dosky v jednom rade: tvoja vľavo, súperova vpravo a zrkadlovo —
-   avatar pri vonkajšom okraji, zdroje smerom k stredu stola. */
-.dosky {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 12px;
-}
-
+/* Bar hráča (Michal 2026-10-22, dizajn stol-oproti-b2-20261022-1030): súperi
+   sedia oproti sebe — súperov bar nad staršími, tvoj pod stolom. Jeden rad
+   s pevnou výškou: tvoj portrét · Dlhy · Zadĺženie · Pečeň · Absťák ·
+   Cigarety · Poldeci · Body · Karty, súperov presne obrátene. Rozpis bodov
+   vymení šesť zdrojov za šesť dlaždíc v tých istých stĺpcoch — výška sa nemení. */
 .doska {
   --farba: var(--ja);
   --farba-tmava: var(--ja-tmava);
+  --bar-h: 132px;
+  --ident: minmax(170px, 230px);
+  position: relative;
   display: grid;
-  /* Meno a značky majú pevný strop — radšej sa zalomia značky, než by sa
-     zdroje rozpadli do dvoch radov a doska narástla do výšky. */
-  grid-template-columns: minmax(150px, 220px) minmax(0, 1fr);
-  grid-template-areas: "hrac zdroje" "oblast oblast";
-  align-items: center;
-  gap: 10px 16px;
-  padding: 10px 14px;
+  grid-template-columns: var(--ident) repeat(6, minmax(0, 1fr)) minmax(0, 1.08fr) minmax(0, 0.9fr);
+  grid-template-rows: minmax(0, 1fr);
+  align-items: stretch;
+  height: var(--bar-h);
+  gap: 6px;
+  padding: 8px 12px;
   border-radius: 14px;
   background: linear-gradient(90deg, var(--farba-tmava), var(--plocha) 45%);
   border: 1px solid color-mix(in srgb, var(--farba) 35%, var(--okraj));
@@ -276,8 +275,7 @@
 .doska.superova {
   --farba: var(--su);
   --farba-tmava: var(--su-tmava);
-  grid-template-columns: minmax(0, 1fr) minmax(150px, 220px);
-  grid-template-areas: "zdroje hrac" "oblast oblast";
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.08fr) repeat(6, minmax(0, 1fr)) var(--ident);
   background: linear-gradient(270deg, var(--farba-tmava), var(--plocha) 45%);
   border-left-width: 1px;
   border-right: 5px solid var(--farba);
@@ -292,12 +290,259 @@
   justify-content: flex-end;
 }
 
-.doska.superova .doska-zdroje {
-  direction: ltr;
-}
-
 .doska.superova .doska-oblast {
   justify-content: flex-end;
+}
+
+/* Dlaždice zdrojov aj rozpisu ležia priamo v mriežke baru. */
+.doska-zdroje,
+.doska-rozpis {
+  display: contents;
+}
+
+.doska-hrac,
+.doska-zdroje > *,
+.doska-rozpis > .rozpis-dlazdica {
+  grid-row: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.doska.moja .doska-hrac { grid-column: 1; }
+.doska.moja .zdroj-dlhy { grid-column: 2; }
+.doska.moja .zdroj-zadlzenie { grid-column: 3; }
+.doska.moja .zdroj-pecen { grid-column: 4; }
+.doska.moja .zdroj-abstak { grid-column: 5; }
+.doska.moja .zdroj-cigarety { grid-column: 6; }
+.doska.moja .zdroj-poldeci { grid-column: 7; }
+.doska.moja .zdroj-body { grid-column: 8; }
+.doska.moja .zdroj-karty { grid-column: 9; }
+
+.doska.superova .zdroj-karty { grid-column: 1; }
+.doska.superova .zdroj-body { grid-column: 2; }
+.doska.superova .zdroj-poldeci { grid-column: 3; }
+.doska.superova .zdroj-cigarety { grid-column: 4; }
+.doska.superova .zdroj-abstak { grid-column: 5; }
+.doska.superova .zdroj-pecen { grid-column: 6; }
+.doska.superova .zdroj-zadlzenie { grid-column: 7; }
+.doska.superova .zdroj-dlhy { grid-column: 8; }
+.doska.superova .doska-hrac { grid-column: 9; }
+
+/* Rozpis bodov: šesť zdrojov ustúpi šiestim dlaždiciam (RozpisDlazdice ich zrkadlí sám). */
+.doska.s-rozpisom .doska-zdroje > .zdroj:not(.zdroj-body, .zdroj-karty) {
+  display: none;
+}
+
+.doska.moja .rozpis-dlazdica:nth-child(1) { grid-column: 2; }
+.doska.moja .rozpis-dlazdica:nth-child(2) { grid-column: 3; }
+.doska.moja .rozpis-dlazdica:nth-child(3) { grid-column: 4; }
+.doska.moja .rozpis-dlazdica:nth-child(4) { grid-column: 5; }
+.doska.moja .rozpis-dlazdica:nth-child(5) { grid-column: 6; }
+.doska.moja .rozpis-dlazdica:nth-child(6) { grid-column: 7; }
+.doska.superova .rozpis-dlazdica:nth-child(1) { grid-column: 3; }
+.doska.superova .rozpis-dlazdica:nth-child(2) { grid-column: 4; }
+.doska.superova .rozpis-dlazdica:nth-child(3) { grid-column: 5; }
+.doska.superova .rozpis-dlazdica:nth-child(4) { grid-column: 6; }
+.doska.superova .rozpis-dlazdica:nth-child(5) { grid-column: 7; }
+.doska.superova .rozpis-dlazdica:nth-child(6) { grid-column: 8; }
+
+.rozpis-dlazdica {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 9px 7px;
+  border-radius: 10px;
+  background: color-mix(in srgb, #000 calc(var(--tma) * 28%), transparent);
+  border: 1px solid color-mix(in srgb, var(--lesk) 6%, transparent);
+  border-top: 3px solid var(--okraj-svetly);
+  cursor: help;
+  outline: none;
+}
+
+.rozpis-dlazdica.plus {
+  border-top-color: var(--zelena);
+}
+
+.rozpis-dlazdica.minus {
+  border-top-color: var(--cervena);
+}
+
+.rozpis-dlazdica.neaktivna {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.rozpis-dlazdica:hover,
+.rozpis-dlazdica:focus-visible {
+  background: color-mix(in srgb, var(--lesk) 6%, transparent);
+}
+
+.rd-nazov {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tlmeny);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rd-body {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.rd-cislo {
+  font: 800 1.9rem/1 var(--nadpis);
+  font-variant-numeric: tabular-nums;
+}
+
+.rd-cislo.plus,
+.rd-stupen b.plus {
+  color: var(--zelena);
+}
+
+.rd-cislo.minus,
+.rd-stupen b.minus {
+  color: var(--cervena-text);
+}
+
+.rd-cislo.nula,
+.rd-stupen b.nula {
+  color: var(--slaby-text);
+}
+
+.rd-druhy {
+  font-size: 0.74rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rd-druhy.ja {
+  color: var(--ja);
+}
+
+.rd-druhy.su {
+  color: var(--su);
+}
+
+.rd-druhy.nula,
+.rd-stupen.nula {
+  color: var(--slaby-text);
+}
+
+.rd-vypocet {
+  font-size: 0.74rem;
+  color: var(--slaby-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.rd-stupne {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  font-size: 0.7rem;
+}
+
+.rd-stupen {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  outline: none;
+}
+
+.rd-stupen-nazov {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rd-stupen i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.rd-stupen .zona-1 {
+  background: var(--akcent-svetly);
+}
+
+.rd-stupen .zona-2 {
+  background: var(--akcent);
+}
+
+.rd-stupen .zona-3 {
+  background: var(--cervena);
+}
+
+/* Body: tlačidlo, ktoré prepína zdroje a rozpis. */
+button.zdroj-body {
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  border-top: 3px solid var(--akcent);
+}
+
+button.zdroj-body.plus .velke-cislo {
+  color: var(--zelena);
+}
+
+button.zdroj-body.minus .velke-cislo {
+  color: var(--cervena-text);
+}
+
+button.zdroj-body[aria-expanded="true"] {
+  background: var(--akcent);
+}
+
+button.zdroj-body[aria-expanded="true"] .zdroj-nazov,
+button.zdroj-body[aria-expanded="true"] .zdroj-pod,
+button.zdroj-body[aria-expanded="true"] .velke-cislo {
+  color: var(--na-akcente);
+}
+
+/* „← späť“ je záložka na hrane baru smerom k stolu — výšku baru nemení. */
+.rozpis-spat {
+  position: absolute;
+  left: 50%;
+  translate: -50% 0;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--akcent);
+  background: var(--plocha-2);
+  color: var(--text);
+  font: 600 0.78rem/1.2 var(--pismo);
+  cursor: pointer;
+}
+
+.doska.moja .rozpis-spat {
+  top: -13px;
+}
+
+.doska.superova .rozpis-spat {
+  bottom: -13px;
+}
+
+.rozpis-spat kbd {
+  font-size: 0.68rem;
+  padding: 0 4px;
+  border: 1px solid var(--okraj-svetly);
+  border-radius: 4px;
+  color: var(--tlmeny);
 }
 
 .doska.na-tahu {
@@ -307,7 +552,6 @@
 }
 
 .doska-hrac {
-  grid-area: hrac;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -367,17 +611,6 @@
    Stabilná mriežka (dizajn hra-nezrovnalosti-20261021-1229, UI N5): rovnako
    široké bunky v rovnakom poradí na oboch doskách — dlaždice neskáču do
    schodov podľa dĺžky textu; súper má poradie zrkadlovo (direction). */
-.doska-zdroje {
-  grid-area: zdroje;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(124px, 1fr));
-  gap: 6px;
-  direction: rtl;
-}
-
-.doska-zdroje > * {
-  direction: ltr;
-}
 
 .doska-rola {
   display: inline-flex;
@@ -675,11 +908,24 @@
   cursor: help;
 }
 
+/* Kliatby a Dedičstvo pod menom — jeden riadok, podrobnosti v titulku. */
 .doska-oblast {
-  grid-area: oblast;
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px 16px;
+  flex-wrap: nowrap;
+  gap: 4px;
+  margin-top: 4px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.doska-oblast .cip {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.68rem;
+  cursor: help;
 }
 
 .oblast-skupina,
@@ -1900,18 +2146,6 @@ button:disabled .cena {
 }
 
 @media (max-width: 760px) {
-  .doska,
-  .doska.superova {
-    grid-template-columns: 1fr;
-    grid-template-areas: "hrac" "zdroje" "oblast";
-  }
-
-  .doska-zdroje,
-  .doska.superova .doska-zdroje {
-    direction: ltr;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .bitka-panel {
     grid-template-columns: 1fr;
   }
@@ -2975,119 +3209,6 @@ button.dlzka-volba.aktivna {
 .obchod-cigariet button:not(:disabled) {
   border-color: var(--akcent);
   color: var(--akcent);
-}
-
-/* Scoreboard nad staršími (Michal 2026-10-18): body po bodovacích milníkoch.
-   Michal 2026-10-19: názov v strede, body po stranách (ty vľavo, súper vpravo),
-   väčšie písmo; prejdenie myšou ukáže rozpis po starších. */
-.scoreboard {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 8px;
-}
-
-.sb-milnik {
-  flex: 1 1 190px;
-  display: grid;
-  grid-template-columns: minmax(42px, auto) 1fr minmax(42px, auto);
-  align-items: center;
-  gap: 6px;
-  padding: 7px 10px;
-  border: 1px solid color-mix(in srgb, var(--lesk) 10%, transparent);
-  border-bottom: 3px solid transparent;
-  border-radius: 8px;
-  background: color-mix(in srgb, #000 calc(var(--tma) * 22%), transparent);
-  cursor: help;
-}
-
-.sb-milnik:hover,
-.sb-milnik:focus-visible {
-  background: color-mix(in srgb, var(--lesk) 6%, transparent);
-  outline: none;
-}
-
-.sb-milnik.ja {
-  border-bottom-color: var(--ja);
-}
-
-.sb-milnik.su {
-  border-bottom-color: var(--su);
-}
-
-.sb-stred {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  min-width: 0;
-}
-
-.sb-nazov {
-  font-weight: 700;
-  font-size: 14px;
-  line-height: 1.2;
-}
-
-.sb-pravidlo {
-  color: var(--tlmeny);
-  font-size: 12px;
-}
-
-.sb-strana {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.1;
-}
-
-.sb-strana b {
-  font-size: 21px;
-  font-variant-numeric: tabular-nums;
-}
-
-.sb-strana small {
-  color: var(--tlmeny);
-  font-size: 11px;
-}
-
-/* Nuly stlmené — farbu hráča má len nenulová hodnota (UI N1). */
-.sb-strana b.nula,
-.sb-strana small.nula {
-  color: var(--slaby-text) !important;
-  font-weight: 500;
-}
-
-.sb-ja {
-  align-items: flex-start;
-}
-
-.sb-su {
-  align-items: flex-end;
-  text-align: right;
-}
-
-.sb-ja b {
-  color: var(--ja);
-}
-
-.sb-su b {
-  color: var(--su);
-}
-
-.sb-spolu {
-  flex: 0 1 210px;
-  background: color-mix(in srgb, var(--akcent) 10%, transparent);
-  cursor: default;
-}
-
-.sb-spolu .sb-strana b {
-  font-size: 25px;
-}
-
-.sb-prazdny {
-  color: var(--tlmeny);
-  font-size: 12px;
-  align-self: center;
 }
 
 /* Voľba cieľa na stole (Michal 2026-10-19): lokality v paneli namiesto stavby
@@ -4204,4 +4325,18 @@ button.auto-hotovo-odkaz {
   text-decoration: underline;
   font: inherit;
   cursor: pointer;
+}
+
+/* Zóny strachu: tri stupne v jednej dlaždici — menšie číslo, nech sa zmestia do výšky baru. */
+.rozpis-dlazdica.skupina {
+  gap: 1px;
+}
+
+.rozpis-dlazdica.skupina .rd-cislo {
+  font-size: 1.35rem;
+}
+
+.rozpis-dlazdica.skupina .rd-stupne {
+  font-size: 0.66rem;
+  line-height: 1.2;
 }
