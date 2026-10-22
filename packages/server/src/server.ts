@@ -19,6 +19,7 @@ import type { Sada } from "@naex/tvorba";
 import {
   DLZKY_HRY,
   IllegalCommandError,
+  VERZIA_PRAVIDIEL,
   POVAHY,
   PREDVOLENA_DLZKA,
   apply,
@@ -103,6 +104,9 @@ interface Room {
   zaciatok: number;
   /** Štatistiky rozohranej partie — zapisujú sa po každom ťahu. */
   statistiky: DvojicaStatistik | null;
+  /** Seed partie a jej príkazy [miesto, príkaz] — do archívu pre budúci prehrávač (Michal 2026-10-22). */
+  seed: number | null;
+  readonly prikazy: [PlayerId, Command][];
   /** Čas a príkazy po fázach (roadmapa #9) — ukladá sa aj pri partii s botom. */
   tempo: StavTempa | null;
   /** Štatistiky kariet rozohranej partie (pre tvorcu kariet). */
@@ -445,6 +449,8 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           state: null,
           zaciatok: 0,
           statistiky: null,
+          seed: null,
+          prikazy: [],
           tempo: null,
           statistikyKariet: {},
           vysledok: null,
@@ -463,7 +469,8 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           // Offline protihráč sedí hneď — partia začína bez čakania.
           const povaha = POVAHY.find((p) => p.id === room.botPovaha);
           room.hraci[1] = { id: BOT_ID, meno: povaha?.meno ?? "Štamgast", avatar: avatary.bota(room.botPovaha), frajerina: 0, pohlavie: null, ai: false };
-          room.state = setupGame(room.data, randomInt(2 ** 31), { lokalit: DLZKY_HRY[room.dlzka] });
+          room.seed = randomInt(2 ** 31);
+          room.state = setupGame(room.data, room.seed, { lokalit: DLZKY_HRY[room.dlzka] });
           room.zaciatok = teraz();
           room.statistiky = noveStatistiky();
           room.tempo = noveTempo(room.zaciatok);
@@ -496,7 +503,8 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         // (usadit práve zmenil room.hraci — TS si pamätá starý stav)
         const [h0, h1] = room.hraci as readonly (HracVMiestnosti | null)[];
         if (h0 != null && h1 != null && room.state === null) {
-          room.state = setupGame(room.data, randomInt(2 ** 31), { lokalit: DLZKY_HRY[room.dlzka] });
+          room.seed = randomInt(2 ** 31);
+          room.state = setupGame(room.data, room.seed, { lokalit: DLZKY_HRY[room.dlzka] });
           room.zaciatok = teraz();
           room.statistiky = noveStatistiky();
           room.tempo = noveTempo(room.zaciatok);
@@ -587,6 +595,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     const pred = room.state;
     if (pred === null) return;
     const result = apply(room.data, pred, cmd, seat);
+    room.prikazy.push([seat, cmd]);
     room.state = result.state;
     room.lastActivity = teraz();
     if (room.tempo !== null) room.tempo = zapisPrikaz(room.tempo, fazaPrikazu(pred), seat, room.lastActivity, result.events);
@@ -598,7 +607,8 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     // partia s botom sa pritom do archívu ani štatistík nezapíše.
     if (dohrata) for (const h of room.hraci) if (h !== null && h.id !== BOT_ID) ucty.povysPoPartii(h.id, prava.nastavenie().postup);
     // Partie proti botovi nejdú do archívu — Frajerina a rebríček sú medzi ľuďmi.
-    if (pred.koniec === null && result.state.koniec !== null && room.bot === null) zapisDoArchivu(room, result.state, cmd.type !== "vzdat");
+    // Do archívu ide každá partia, aj s botom (Michal 2026-10-22) — Frajerinu mení len hodnotená partia ľudí.
+    if (pred.koniec === null && result.state.koniec !== null) zapisDoArchivu(room, result.state, cmd.type !== "vzdat");
     if (pred.koniec === null && result.state.koniec !== null) zapisTempo(room, result.state, cmd.type !== "vzdat");
     naplanujBota(room);
   };
@@ -669,10 +679,17 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         kola: koniec.kolo,
         verziaSady: room.sada.verzia,
         dohrata,
-        hraci: [h0.id, h1.id],
+        hraci: [room.bot === 0 ? null : h0.id, room.bot === 1 ? null : h1.id],
+        sBotom: room.bot !== null,
+        botPovaha: room.bot === null ? null : room.botPovaha,
+        dlzka: room.dlzka,
+        verziaJadra: verzia === null ? "dev" : `${verzia.commit}${verzia.necommitnute ? "+zmeny" : ""}`,
+        verziaPravidiel: VERZIA_PRAVIDIEL,
+        seed: room.seed,
+        prikazy: room.prikazy,
         // Hodnotená (Frajerina) len keď na to majú právo obaja a nehrá človek proti AI
-        // playtesterovi (Michal 2026-10-22) — inak archív a štatistiky bez zmeny Frajeriny.
-        hodnotena: h0.ai === h1.ai && [h0.id, h1.id].every((id) => {
+        // playtesterovi ani botovi (Michal 2026-10-22) — inak archív a štatistiky bez zmeny Frajeriny.
+        hodnotena: room.bot === null && h0.ai === h1.ai && [h0.id, h1.id].every((id) => {
           const u = ucty.podlaId(id);
           return u !== null && prava.smie(u, "hodnotene_partie");
         }),
@@ -680,6 +697,8 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         statistiky: uzavriStatistiky(room.data, room.statistiky, koniec),
         statistikyKariet: room.statistikyKariet,
       });
+      // Partia s botom Frajerinu nemení — správa o nej sa neposiela.
+      if (room.bot !== null) return;
       room.vysledok = zmeny;
       h0.frajerina = zmeny[0].po;
       h1.frajerina = zmeny[1].po;

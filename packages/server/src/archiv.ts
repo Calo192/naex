@@ -30,8 +30,21 @@ export interface ZaznamPartie {
   readonly verziaSady: number | null;
   /** Dohratá podľa pravidiel (nie vzdaná ani kontumovaná). */
   readonly dohrata: boolean;
-  /** Id používateľov na miestach 0 a 1. */
-  readonly hraci: readonly [number, number];
+  /** Id používateľov na miestach 0 a 1; null = offline protihráč (bot). */
+  readonly hraci: readonly [number | null, number | null];
+  /** Partia proti botovi (Michal 2026-10-22: archivuje sa, Frajerinu nemení). */
+  readonly sBotom?: boolean;
+  readonly botPovaha?: string | null;
+  readonly dlzka?: string | null;
+  /** Commit buildu servera (VERZIA.json) — prehrávač vie partiu prehrať len na tom istom jadre. */
+  readonly verziaJadra?: string | null;
+  /** Značka verzie pravidiel (VERZIA_PRAVIDIEL z jadra). */
+  readonly verziaPravidiel?: string | null;
+  readonly seed?: number | null;
+  /** Príkazy partie v poradí: [miesto, príkaz]. */
+  readonly prikazy?: readonly unknown[] | null;
+  /** Záznam po kolách (bitkách) z jadra. */
+  readonly kronika?: unknown;
   /** Mení Frajerinu — false, keď jeden z hráčov nemá právo na hodnotené partie (predvolene true). */
   readonly hodnotena?: boolean;
   readonly body: readonly [number, number] | null;
@@ -126,12 +139,22 @@ export class Archiv {
   /** Uloží dohranú partiu a prepočíta Frajerinu oboch hráčov (jedna transakcia). */
   zapis(z: ZaznamPartie): { id: number; zmeny: [ZmenaFrajeriny, ZmenaFrajeriny] } {
     return transakcia(this.db, () => {
-      const pred = [this.frajerina(z.hraci[0]), this.frajerina(z.hraci[1])] as const;
-      const hodnotena = z.hodnotena !== false;
+      const stav = (id: number | null): StavFrajeriny => (id === null ? { hodnota: 0, najvyssia: 0, partie: 0, vyhry: 0, prehry: 0, remizy: 0 } : this.frajerina(id));
+      const pred = [stav(z.hraci[0]), stav(z.hraci[1])] as const;
+      const hodnotena = z.hodnotena !== false && z.sBotom !== true && z.hraci[0] !== null && z.hraci[1] !== null;
       const po: readonly [number, number] = hodnotena ? novaFrajerina([pred[0].hodnota, pred[1].hodnota], z.vitaz) : [pred[0].hodnota, pred[1].hodnota];
       const r = this.db
-        .prepare("INSERT INTO partie (kod, zaciatok, koniec, vitaz, dovod, kola, verzia_sady, dohrata, karty) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
-        .run(z.kod, z.zaciatok, z.koniec, z.vitaz, z.dovod, z.kola, z.verziaSady, z.dohrata ? 1 : 0, z.statistikyKariet === undefined ? null : JSON.stringify(z.statistikyKariet));
+        .prepare(
+          `INSERT INTO partie (kod, zaciatok, koniec, vitaz, dovod, kola, verzia_sady, dohrata, karty, s_botom, bot_povaha, dlzka, verzia_jadra, verzia_pravidiel, seed, prikazy, kronika)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        )
+        .run(
+          z.kod, z.zaciatok, z.koniec, z.vitaz, z.dovod, z.kola, z.verziaSady, z.dohrata ? 1 : 0,
+          z.statistikyKariet === undefined ? null : JSON.stringify(z.statistikyKariet),
+          z.sBotom === true ? 1 : 0, z.botPovaha ?? null, z.dlzka ?? null, z.verziaJadra ?? null, z.verziaPravidiel ?? null, z.seed ?? null,
+          z.prikazy === undefined || z.prikazy === null ? null : JSON.stringify(z.prikazy),
+          z.kronika === undefined ? null : JSON.stringify(z.kronika),
+        );
       const id = Number(r.lastInsertRowid);
       for (const miesto of [0, 1] as const) {
         const vysledok = vysledokPre(z.vitaz, miesto);
@@ -143,6 +166,8 @@ export class Archiv {
         const f = pred[miesto];
         // Nehodnotená partia ostane v archíve a štatistikách, Frajerinu nemení.
         if (!hodnotena) continue;
+        const kto = z.hraci[miesto];
+        if (kto === null) continue;
         this.db
           .prepare(
             `INSERT INTO frajerina (pouzivatel, hodnota, najvyssia, partie, vyhry, prehry, remizy) VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -150,7 +175,7 @@ export class Archiv {
                vyhry = excluded.vyhry, prehry = excluded.prehry, remizy = excluded.remizy`,
           )
           .run(
-            z.hraci[miesto],
+            kto,
             po[miesto],
             Math.max(f.najvyssia, po[miesto]),
             f.partie + 1,
@@ -199,7 +224,7 @@ export class Archiv {
          JOIN partie p ON p.id = ja.partia
          JOIN partie_hraci on_ ON on_.partia = ja.partia AND on_.miesto != ja.miesto
          LEFT JOIN pouzivatelia s ON s.id = on_.pouzivatel
-         WHERE ja.pouzivatel = ?
+         WHERE ja.pouzivatel = ? AND p.s_botom = 0
          ORDER BY p.id`,
       )
       .all(pouzivatel) as {
@@ -276,7 +301,7 @@ export class Archiv {
       historia,
       statistiky,
       casSpolu,
-      bilancia: { ludia: bilancia(riadky), boti: bilancia([]) },
+      bilancia: { ludia: bilancia(riadky), boti: bilancia(this.vysledkySBotom(pouzivatel)) },
       forma: riadky.slice(-5).reverse().map((r) => r.vysledok),
       vyDvaja: cudzi && volajuci !== null ? bilancia(riadky.filter((r) => r.super_id === volajuci).map((r) => ({ vysledok: otoc[r.vysledok] }))) : null,
       // Zoznam partií a súperov len vlastník a správca.
@@ -294,7 +319,7 @@ export class Archiv {
   statistikyKariet(odVerzie: number | null = null, lenLudia = false): { partie: number; karty: StatistikyKariet } {
     const rows = this.db
       .prepare(
-        `SELECT karty FROM partie p WHERE karty IS NOT NULL AND (? IS NULL OR verzia_sady >= ?)
+        `SELECT karty FROM partie p WHERE karty IS NOT NULL AND p.s_botom = 0 AND (? IS NULL OR verzia_sady >= ?)
            AND (? = 0 OR NOT EXISTS (
              SELECT 1 FROM partie_hraci h JOIN pouzivatelia u ON u.id = h.pouzivatel WHERE h.partia = p.id AND u.ai = 1))`,
       )
@@ -302,6 +327,13 @@ export class Archiv {
     let karty: StatistikyKariet = {};
     for (const r of rows) karty = scitajStatistikyKariet(karty, normalizujStatistikyKariet(JSON.parse(r.karty) as unknown));
     return { partie: rows.length, karty };
+  }
+
+  /** Výsledky partií hráča proti botovi (archivujú sa od 2026-10-22). */
+  private vysledkySBotom(pouzivatel: number): { vysledok: Vysledok }[] {
+    return this.db
+      .prepare("SELECT ja.vysledok FROM partie_hraci ja JOIN partie p ON p.id = ja.partia WHERE ja.pouzivatel = ? AND p.s_botom = 1")
+      .all(pouzivatel) as { vysledok: Vysledok }[];
   }
 
   /** Rebríček Frajeriny; AI playtesterov vidí len správca (Michal 2026-10-22). */
