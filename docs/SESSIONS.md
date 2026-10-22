@@ -11,6 +11,12 @@ hlásia jemu a medzi sebou si píšu cez `SendMessage` (adresát = meno z `ListA
 | UX/UI         | dizajn a jeho implementácia v klientovi           | `F:\Projects\naex-ui`         | 8790 / 5176                      |
 | Admin         | karty v tvorcovi, ilustrácie (Leonardo), rebalans | `F:\Projects\naex-admin`      | 8791 / 5177                      |
 | Playtesting   | playtesty, návrhy, rozhodca, stratég              | `F:\Projects\naex-playtest`   | 8792 / 5178 (servery playtestu: od 8800 vyššie) |
+| UI Inspector  | UI inšpekcia (`/naex-ui-inspektor`), len hľadá chyby | `F:\Projects\naex-inspektor` (detached origin/master) | 8793 / 5179                      |
+
+Reštart Claude Code môže sessions premenovať (2026-10-22: `naex-46` = Leader,
+`naex-0c` = Admin, `naex-91` = New features, `naex-f6` = Playtesting,
+`naex-d9` = UX/UI, `naex-90` = Bugfixing). Rolu určuje worktree a rozrobená
+práca, nie meno — pri pochybnosti sa session najprv ohlási Leaderovi.
 
 Porty 8780–8799 a 5170–5199 patria dev serverom sessions, 8800+ dočasným
 serverom playtestov (`tools/playtest/turnus.ts`).
