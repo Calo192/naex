@@ -18,6 +18,7 @@ import type { ActionSums, CardInstance, CenyKliatob, ClientState, Command, Elder
 import {
   stavZavislosti,
   textNeresti,
+  jeCoTahat,
   kartyZaPas,
   KONSTANTY,
   STUPNICA_ZONY,
@@ -585,7 +586,7 @@ function moznosti(v: ClientState): string[] {
     case "zhromazdenie": {
       const z = v.zhromazdenieStav;
       c({ type: "pass" }, `pasovať (do Pitky už nevykladáš, súper vykladá sám; dostaneš ${v.zhromazdenieStav === null ? 0 : kartyZaPas(v.zhromazdenieStav, ja) * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU} cig. — cigaretu za každú kartu, ktorú si ešte smel vyložiť; na Zastávke len z vlastného limitu)`);
-      if (v.hraci[ja].cigarety > 0 && !zakazFajcit(v))
+      if (v.hraci[ja].cigarety > 0 && !zakazFajcit(v) && jeCoTahat(v.hraci[ja].doberaciPocet, v.hraci[ja].odhadzovaci.length))
         c({ type: "smoke", pocet: 1 }, `vyfajč 1 cigaretu (máš ${v.hraci[ja].cigarety}) — hneď si doberieš kartu; ťah ti neskončí`);
       if (zakazFajcit(v)) out.push("(Benzínka: nikto nesmie fajčiť)");
       if (zakazVypit(v)) out.push("(Kostol: nikto nesmie vypiť — v ťahu len jedna karta)");
@@ -669,7 +670,7 @@ function moznosti(v: ClientState): string[] {
       if (mamKartu("starosta") && pk?.starosta[ja] !== true && h.cigarety > 0) {
         out.push(`{"type":"starosta","rukaUid":U,"senokUid":S}   — Starosta: za 1 cigaretu vymeň kartu z ruky (U) za kartu zo šenku (S)`);
       }
-      if (h.cigarety > 0 && !zakazFajcit(v)) c({ type: "smoke", pocet: 1 }, "vyfajč 1 cigaretu — hneď si doberieš kartu (ťah nekončí)");
+      if (h.cigarety > 0 && !zakazFajcit(v) && jeCoTahat(h.doberaciPocet, h.odhadzovaci.length)) c({ type: "smoke", pocet: 1 }, "vyfajč 1 cigaretu — hneď si doberieš kartu (ťah nekončí)");
       // Zberný dvor (Michal 2026-10-20): raz za Pitku za cigaretu karta z odhadzovacieho balíčka.
       if (vykupZoSrotu(v) && pk?.vykup?.[ja] !== true && h.cigarety >= KONSTANTY.EFEKT.ZBERNY_DVOR_CENA) {
         for (const k of h.odhadzovaci) c({ type: "vykup", uid: k.uid }, `Zberný dvor: výkup zo šrotu za ${KONSTANTY.EFEKT.ZBERNY_DVOR_CENA} cigaretu — ${popisKarty(k)} z odhadzovacieho balíčka do ruky (raz za Pitku)`);
