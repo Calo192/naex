@@ -200,6 +200,21 @@ CREATE TABLE IF NOT EXISTS tempo_partii (
   fazy TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS tempo_partii_koniec ON tempo_partii(koniec);
+
+-- Novinky (Michal 2026-10-22): zmeny, ktoré sú už na živom webe, pre hráčov.
+-- datum = deň zmeny (RRRR-MM-DD); odkaz = cesta na webe alebo ''.
+CREATE TABLE IF NOT EXISTS novinky (
+  id INTEGER PRIMARY KEY,
+  datum TEXT NOT NULL,
+  kategoria TEXT NOT NULL,
+  nadpis TEXT NOT NULL,
+  text TEXT NOT NULL,
+  odkaz TEXT NOT NULL DEFAULT '',
+  autor INTEGER REFERENCES pouzivatelia(id) ON DELETE SET NULL,
+  vytvorena INTEGER NOT NULL,
+  upravena INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS novinky_datum ON novinky(datum);
 `;
 
 export function otvorDb(cesta: string): Db {

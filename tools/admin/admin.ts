@@ -68,6 +68,12 @@
 //   roadmapa [stlpec] [--json]    poradie položiek; stĺpce prijimac | teraz | dalej | potom | neskor | hotove
 //                                 Developer berie schválené návrhy v poradí stĺpca Teraz zhora
 //   roadmapa-pridaj <subor.json>  nová položka do Prijímača ({nazov, kratko, preco, hotovo, oblast, narocnost, zdroj})
+// Novinky (stránka /novinky, Michal 2026-10-22) — píšu sa až po nasadení na živý web
+//   novinky [--json]              všetky novinky, najnovšie hore
+//   novinka-pridaj <subor.json>   nová novinka alebo pole noviniek
+//                                 ({datum RRRR-MM-DD, kategoria pravidla|karty|dizajn|web|opravy, nadpis, text, odkaz?})
+//   novinka-uprav <id> <subor.json>   zmení len polia zo súboru
+//   novinka-zmaz <id> --potvrdene zmaže novinku
 // Avatary AI účtov (Leonardo.Ai, v štýle avatarov offline protihráčov)
 //   avatar-generuj <kluc> "<námet po anglicky>" [--seed N]   jedno kolo (2 obrázky) do admin-agent/avatary/<kluc>/
 //
@@ -91,6 +97,15 @@ import { prehladTempa } from "./tempo.ts";
 
 export const MENO_AGENTA = "Admin";
 export const PRACOVNY = "admin-agent";
+
+interface Novinka {
+  readonly id: number;
+  readonly datum: string;
+  readonly kategoria: string;
+  readonly nadpis: string;
+  readonly text: string;
+  readonly odkaz: string;
+}
 
 interface ObsahTvorcu {
   readonly karty: readonly KartaNavrh[];
@@ -988,6 +1003,44 @@ async function main(): Promise<void> {
       const telo = { ...(JSON.parse(readFileSync(subor, "utf8")) as Record<string, unknown>), stlpec: "prijimac" };
       const r = await api<{ id: number }>("POST", "/roadmapa", telo);
       console.log(`Položka #${r.id} je v Prijímači — ${url}/vyvoj/roadmapa`);
+      break;
+    }
+
+    case "novinky": {
+      const { novinky } = await api<{ novinky: Novinka[] }>("GET", "/novinky");
+      if (prep.has("--json")) console.log(JSON.stringify(novinky, null, 2));
+      else if (novinky.length === 0) console.log("Zatiaľ žiadne novinky.");
+      else for (const n of novinky) console.log(`#${n.id}  ${n.datum}  ${n.kategoria.padEnd(8)} ${n.nadpis}${n.odkaz === "" ? "" : `  → ${n.odkaz}`}`);
+      break;
+    }
+
+    case "novinka-pridaj": {
+      const subor = arg[0];
+      if (subor === undefined || !existsSync(subor)) throw new Error("Použitie: novinka-pridaj <novinka.json> (objekt alebo pole objektov)");
+      const zoSuboru = JSON.parse(readFileSync(subor, "utf8")) as unknown;
+      for (const telo of Array.isArray(zoSuboru) ? zoSuboru : [zoSuboru]) {
+        const { novinka } = await api<{ novinka: Novinka }>("POST", "/admin/novinky", telo);
+        console.log(`Novinka #${novinka.id} (${novinka.datum}, ${novinka.kategoria}) — ${novinka.nadpis}`);
+      }
+      console.log(`${url}/novinky`);
+      break;
+    }
+
+    case "novinka-uprav": {
+      const id = Number(arg[0]);
+      const subor = arg[1];
+      if (!Number.isInteger(id) || subor === undefined || !existsSync(subor)) throw new Error("Použitie: novinka-uprav <id> <zmeny.json> (len polia, ktoré meníš)");
+      const { novinka } = await api<{ novinka: Novinka }>("PATCH", `/admin/novinky/${id}`, JSON.parse(readFileSync(subor, "utf8")));
+      console.log(`Novinka #${novinka.id} upravená: ${novinka.datum}, ${novinka.kategoria} — ${novinka.nadpis}`);
+      break;
+    }
+
+    case "novinka-zmaz": {
+      const id = Number(arg[0]);
+      if (!Number.isInteger(id)) throw new Error("Použitie: novinka-zmaz <id> --potvrdene");
+      if (!potvrdene) throw new Error("Zmazanie novinky treba potvrdiť: --potvrdene.");
+      await api("DELETE", `/admin/novinky/${id}`);
+      console.log(`Novinka #${id} zmazaná.`);
       break;
     }
 
