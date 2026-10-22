@@ -381,7 +381,7 @@ Na **Liberála** NA EX dať nemožno, na súperovho **Anonymného alkoholika** t
 nie (jeho susedov nechráni, Michal 2026-10-22). Na kartu, na ktorej **už poldeci leží**
 (cez NA EX), sa ďalšie NA EX dať nedá (Michal 2026-10-22, dopísané podľa hry).
 Na **Krčme** hráč s plným poldeci (a kartou, kam ho dať) musí NA EX dať, inak
-Pitku neskončí.
+Pitku neskončí; prah Cirhózy je tam zato obom o 2 vyšší (Michal 2026-10-22).
 
 **NA EX na kartu pri lokalite** ruší a zdvojuje len akcie tej karty — akcie
 **hrany lokality** v páre s ňou ostávajú, ako boli (dostane ich hráč s prevahou
@@ -1058,7 +1058,7 @@ platí v kole, keď je lokalita cieľom. Všetkých 14 je v zverejnenej sade.
 
 | Lokalita | Kedy | Efekt |
 |---|---|---|
-| Krčma | Pitka | Kto má plný poldeci a Občana či Starešinu v línii (vlastného či súperovho), musí dať NA EX — bez neho Pitku neskončí. |
+| Krčma | Pitka | Kto má plný poldeci a Občana či Starešinu v línii (vlastného či súperovho), musí dať NA EX — bez neho Pitku neskončí. Prah Cirhózy je v kole o Krčmu obom o 2 vyšší (sčíta sa s Alkoholikom a Nealkom). (Michal 2026-10-22, roadmapa #16 — povinné NA EX s Poldeci hrany dávalo skoro istú Cirhózu.) |
 | Kostol | Zhromaždenie, Pitka | Nikto nesmie vypiť (v ťahu teda len jedna karta) ani dať NA EX. (Predtým karta za Vieru.) |
 | Benzínka | Zhromaždenie, Pitka | Nikto nesmie fajčiť. (Predtým spálenie Občanov a prepadnutie lokality.) |
 | Zastávka | Zhromaždenie | Spoločný limit vykladania pre oboch = súčet limitov oboch hráčov; každé vyloženie a Vypiť ho míňa obom. **Pas** dá cigarety najviac za **vlastný** limit hráča mínus to, čo v tomto Zhromaždení sám vyložil a vypil — nie za spoločnú zásobu (Michal 2026-10-22). (Predtým limit 2.) |

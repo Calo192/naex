@@ -44,7 +44,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   prvý**; v Pitke začína obranca — jeho „hotovo“ je nevratné a zapíše sa
   do logu, útočník potom má **posledné slovo** (2026-10-21).
 - **Lokality (2026-10-20)** — efekt platí v kole o ňu: Krčma (s plným
-  poldeci povinné NA EX), Kostol (nikto nevypije ani nedá NA EX — v ťahu
+  poldeci povinné NA EX; prah Cirhózy obom +2), Kostol (nikto nevypije ani nedá NA EX — v ťahu
   1 karta), Benzínka (nikto nefajčí), Zastávka (spoločný limit = súčet
   limitov; pas dá cigarety len za tvoj vlastný zvyšok limitu), Lesná cesta (+1 tuhé za tvojho Občana/Zviera/Starešinu v súperovom kraji, max +2),
   Ihrisko (+2 tuhé za každý kraj, kde máš viac svojich Občanov, Zvierat a Starešinov), Zberný
