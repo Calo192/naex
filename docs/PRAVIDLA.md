@@ -392,7 +392,9 @@ svojej alebo súperovej strany. Limit vykladania nemíňa; kto nemá kartu, ktor
 smie vyložiť, neodpovedá. Potom je na ťahu znova ten, kto NA EX dal.
 Striedavo: keď neskôr NA EX dá aj druhý hráč, prvý má tiež jednu odpoveď.
 Cieľ: spárovať neaktívne akcie karty s NA EX — tie sa tým stanú aktívnymi
-a NA EX ich zruší. Počas odpovede sa nefajčí ani nedáva NA EX.
+a NA EX ich zruší. Počas odpovede sa nefajčí ani nedáva NA EX. Odpoveď je
+bežné vyloženie: smie zmeniť **prevahu v kraji** aj **počet Pitiek** (Michal
+2026-10-22, dopísané podľa hry).
 
 Poldeci **ostáva jeho**: do bitky sa ráta do JEHO limitu, pri bitke sa vypije.
 
@@ -666,7 +668,9 @@ nové cigarety = Cigarety (+ sila Fajčiara v 1. Pitke bitky o lokalitu) − sú
 **Fajčenie** (Michal 2026-10-16): na svojom ťahu v Zhromaždení aj v Pitke
 smie hráč vyfajčiť cigaretu — hneď si dobere kartu, ťah mu neskončí, ráta
 sa to ako nerest. Cigarety sa prenášajú z kola na kolo. V Zhromaždení sa za
-hráča, ktorý nemá čo vyložiť, pasuje aj vtedy, keď má cigarety.
+hráča, ktorý nemá čo vyložiť, pasuje aj vtedy, keď má cigarety. Keď sú
+doberací aj odhadzovací balíček prázdne, **fajčiť sa nedá** — cigareta by
+nedala kartu (Michal 2026-10-22).
 
 Po vyhodnotení Pitky sa **pečeň aj zadĺženie oboch hráčov vynulujú**
 (Michal 2026-10-16) — zvyšok pod prahom sa do ďalšej Pitky neprenáša.
@@ -1083,7 +1087,7 @@ Všetky efekty tlačovej sady engine vyhodnocuje automaticky (playtest
 
 | Karta | Výklad |
 |---|---|
-| Dievčina na vydaj | Pri bitke sa zahodí (po bitke sa spáli, nevráti sa) a jej majiteľ spáli toľko **priznaných** Dlhov, koľko mala aktívnych akcií (s násobkami — aj s tými, ktoré zdvojilo NA EX, vlastné či súperovo; Michal 2026-10-22). |
+| Dievčina na vydaj | Pri bitke sa zahodí (po bitke sa spáli, nevráti sa) a jej majiteľ spáli toľko **priznaných** Dlhov, koľko mala aktívnych akcií (s násobkami — aj s tými, ktoré zdvojilo NA EX, vlastné či súperovo; Michal 2026-10-22). Jej akcie v bitke, v ktorej sa zahodí, ešte **platia** (Michal 2026-10-22, dopísané podľa hry). |
 | Hrobár | Keď súper zahodí kartu z ruky, z línie alebo z vrchu balíčka (efektom, Víziou; nie návratom po bitke ani vlastnou Veľmi smútiacou vdovou), majiteľ Hrobára dostane cigaretu za každú. |
 | Anonymný alkoholik | Súper jeho majiteľa naňho nedá NA EX — ani keď je podstrčený na súperovu stranu. Majiteľ smie. Karty vedľa neho nechráni. Bráni len novému NA EX; poldeci, ktorý už na ňom leží, ostáva. (Michal 2026-10-18, zúžené 2026-10-19 a 2026-10-22 — predtým chránil aj majiteľove karty vedľa seba) |
 | Krčmárka | Pri bitke: ak hráč nemá Absťák a v tomto kole nedal NA EX, vypitý poldeci sa mu otočí na plný (automaticky). |

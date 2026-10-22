@@ -50,7 +50,7 @@ const SLOVNIK: readonly { readonly tema: string; readonly popis: string; readonl
       ["Útočník / Obranca", "Útočník prehral poslednú bitku: berie zo šenku prvý a vykladá prvý. Obranca vyberá a natáča cieľ kola."],
       ["Šenok", "Ponuka kariet lícom nahor, ktorú hráči postavia v drafte; vidia ju obaja."],
       ["Vypiť", "Otočiť plný poldeci na vypitý: v Zhromaždení tak zaplatíš každú ďalšiu kartu v tom istom ťahu — limit −1, pečeň +1 (vyhodnotí sa v najbližšej Pitke), ráta sa ako nerest."],
-      ["Fajčiť", "Vyfajčiť cigaretu = hneď si dobrať kartu. Na svojom ťahu v Zhromaždení aj v Pitke; ťah to neukončí."],
+      ["Fajčiť", "Vyfajčiť cigaretu = hneď si dobrať kartu. Na svojom ťahu v Zhromaždení aj v Pitke; ťah to neukončí. Keď nemáš z čoho ťahať (prázdny doberací aj odhadzovací balíček), fajčiť sa nedá."],
       ["Stokársky barter", "Počas Pitky: za 5 cigariet nový plný poldeci (s priazňou Lakomca menej)."],
       ["Doliatie", "Počas Pitky: za 2 cigarety otočíš vypitý poldeci späť na plný (nie s Vínkom v Dedičstve)."],
       ["Náhrada", "Hráč nahradí kartu z množiny určenej efektom."],
@@ -289,13 +289,15 @@ const KAPITOLY: readonly Kapitola[] = [
           hráčov a koľko Cirhóz a Dlhov z toho bude a za koľko bodov. NA EX môže zmeniť aj počet Pitiek. Pamätaj: poldeci sa pri bitke vypije, takže
           v ďalšom kole ti chýba (na začiatku kola sa doleje len jeden vypitý). Hra ti pri NA EX ukáže, aký limit budeš mať
           v ďalšom kole. Na Liberála NA EX dať nemožno, ani na kartu, na ktorej už poldeci leží. NA EX na kartu pri lokalite
-          mení len akcie tej karty — akcie hrany lokality ostávajú. Dievčina na vydaj ráta aj akcie, ktoré jej zdvojilo NA EX.
+          mení len akcie tej karty — akcie hrany lokality ostávajú. Dievčina na vydaj ráta aj akcie, ktoré jej zdvojilo NA EX, a jej
+          akcie v bitke, v ktorej sa zahodí, ešte platia.
         </p>
         <h3>Odpoveď na NA EX</h3>
         <p>
           Keď súper dá NA EX, môžeš <strong>hneď vyložiť jednu kartu</strong> z ruky na koniec svojej alebo jeho strany —
           limit vykladania to nemíňa. Najlepšie tak, aby si spároval neaktívne akcie jeho karty: tým sa stanú aktívnymi
-          a NA EX ich zruší. Keď potom NA EX dáš ty, súper má tiež jednu odpoveď.
+          a NA EX ich zruší. Keď potom NA EX dáš ty, súper má tiež jednu odpoveď. Odpoveď je bežné vyloženie — smie zmeniť
+          prevahu v kraji aj počet Pitiek.
         </p>
         <h3>Viac kariet v jednom ťahu (Vypiť)</h3>
         <p>
