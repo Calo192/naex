@@ -759,9 +759,8 @@ sekere kopí. Remíza nemení roly (útočník ostáva útočníkom), patronát 
 vyrieši ako prehra (staršieho späť, bolestné). Pri **remíze v poslednej
 bitke** niet najbližšej bitky — lokalita aj všetko na sekere **prepadne**. Kto
 poslednú bitku **vyhrá**, berie lokalitu aj celú sekeru ako v každej inej
-bitke (Michal 2026-10-22, spresnené po názore #24). Benzínka sa
-neprepadá na sekeru: jej lokalita prepadne ako doteraz a víťaz (ak je) si
-vezme len sekeru.
+bitke (Michal 2026-10-22, spresnené po názore #24). Benzínka už lokalitu
+neprepadá (od 2026-10-20 len zakazuje fajčiť, §14) — berie ju víťaz ako každú inú.
 
 Víťaz rozdelí prebytočné poškodenie medzi starších. Každý pridelený bod posunie
 marker o 1 **smerom k porazenému**. Smie prideliť aj viac bodov tomu istému
