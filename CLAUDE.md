@@ -77,6 +77,11 @@ Hráči hodnotia v Spätnej väzbe, AI playtesteri po partii `web.ts znamky`
 (história: `tools/playtest/znamky-import.ts`). Návštevník je hráčom po prvej
 dohratej partii, aj proti botovi (do štatistík sa partie s botom nerátajú).
 
+Verejná stránka **Novinky** (`/novinky`, Michal 2026-10-22): zmeny, ktoré sa
+týkajú hráčov (pravidlá, karty, dizajn, web, opravy). Spravuje ju agent
+naex-admin (`admin.ts novinka-pridaj`) — novinka sa píše až po nasadení na
+živý web, pre hráča, nie pre vývojára.
+
 ## Konvencie
 
 - **Doménové pojmy po slovensky**: `Partia`, `poldeci`, `zhromazdenie`,
