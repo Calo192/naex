@@ -5146,3 +5146,34 @@ button.auto-hotovo-odkaz {
   margin-top: 2px;
   font-weight: 600;
 }
+
+/* Prehrávač partie (roadmapa #18): ovládanie krokov v hlavičke namiesto vzdania a odchodu. */
+.prehravac-ovladanie {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.prehravac-ovladanie .tlacidlo-male {
+  min-width: 36px;
+  min-height: 32px;
+}
+
+.prehravac-hraj[aria-pressed="true"] {
+  background: var(--akcent);
+  color: var(--na-akcente);
+}
+
+.prehravac-posuvnik {
+  width: 180px;
+  accent-color: var(--akcent);
+}
+
+.prehravac-krok {
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.85rem;
+}

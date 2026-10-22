@@ -60,6 +60,18 @@ export function DetailPartie({ id }: { readonly id: number }) {
       zive = false;
     };
   }, [id]);
+  // Prehrávač ponúkne len partia, ktorú server vie prehrať (rovnaká verzia jadra a sady).
+  const [prehratelna, setPrehratelna] = useState<{ readonly dostupny: boolean; readonly dovod: string | null } | null>(null);
+  useEffect(() => {
+    let zive = true;
+    api
+      .get<{ dostupny: boolean; dovod: string | null }>(`/partie/${id}/kroky`)
+      .then((k) => zive && setPrehratelna(k))
+      .catch(() => undefined);
+    return () => {
+      zive = false;
+    };
+  }, [id]);
   const data = useMemo(() => (sada === null ? null : loadGameData(sada.cardsJson, eldersJson, sada.scorecardsJson ?? scorecardsJson)), [sada]);
 
   if (chyba !== null) {
@@ -109,6 +121,17 @@ export function DetailPartie({ id }: { readonly id: number }) {
           {d.verziaPravidiel !== null && ` · pravidlá ${d.verziaPravidiel}`}
           {` · ${d.dovod}`}
         </p>
+        {prehratelna !== null && (
+          <div className="detail-prehrat">
+            {prehratelna.dostupny ? (
+              <Odkaz href={`/partia/${id}/prehravac`} className="tlacidlo tlacidlo-hlavne">
+                ▶ Prehrať partiu
+              </Odkaz>
+            ) : (
+              <span className="tlmene">Prehrávač: {prehratelna.dovod}</span>
+            )}
+          </div>
+        )}
       </section>
 
       {bodyPo.length > 1 && (

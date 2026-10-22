@@ -101,7 +101,7 @@ export interface HraHook {
 
 const KLUC = "naex.miestnost";
 
-function textUdalosti(e: Event, mena: readonly string[], rody: readonly [Rod, Rod]): string | null {
+export function textUdalosti(e: Event, mena: readonly string[], rody: readonly [Rod, Rod]): string | null {
   const meno = (p: number) => mena[p] ?? `Hráč ${p + 1}`;
   switch (e.type) {
     case "log":

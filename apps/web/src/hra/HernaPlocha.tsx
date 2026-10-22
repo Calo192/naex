@@ -282,6 +282,8 @@ export interface HernaPlochaProps {
   readonly kontumacia?: () => void;
   /** Ovládanie navyše v hlavičke webu pred menom súpera (soundboard Melichara). */
   readonly vHlavicke?: ReactNode;
+  /** Prehrávač dohratej partie (roadmapa #18): ovládanie krokov nahradí v hlavičke spojenie, vzdanie a odchod. */
+  readonly prehravanie?: ReactNode;
 }
 
 /** Názvy fáz pre titulok karty prehliadača. */
@@ -332,6 +334,7 @@ export function HernaPlocha({
   frajerina = null,
   kontumacia,
   vHlavicke,
+  prehravanie,
 }: HernaPlochaProps) {
   DATA = data;
   const ja = view.ja;
@@ -2080,7 +2083,7 @@ export function HernaPlocha({
         ),
         tlacidla: (
           <button className="tlacidlo-hlavne" onClick={opustit}>
-            späť do lobby
+            {prehravanie === undefined ? "späť do lobby" : "späť na detail partie"}
           </button>
         ),
       };
@@ -3701,7 +3704,8 @@ export function HernaPlocha({
       className="hra"
       style={{ "--ruka-w": `${sirkaVRuke}px`, "--hlavicka-h": `${vyskaHlavicky}px` } as CSSProperties}
     >
-      {view.koniec !== null && !koniecZavrety && (
+      {/* V prehrávači výsledok ukáže detail partie — okno konca s hodnotením a lobby tam nepatrí. */}
+      {view.koniec !== null && !koniecZavrety && prehravanie === undefined && (
         <KoniecHry
           rodJa={rodHracaP(ja)}
           rody={[rodHracaP(0), rodHracaP(1)]}
@@ -3715,7 +3719,7 @@ export function HernaPlocha({
         />
       )}
       <header className="hra-hlava">
-        <span className="kod" title="kód miestnosti — pošli súperovi">
+        <span className="kod" title={prehravanie === undefined ? "kód miestnosti — pošli súperovi" : "číslo partie v archíve"}>
           {kod}
         </span>
         <PriebehKola view={view} onBitka={ucetBitky !== null && view.kolo === ucetBitky.kolo + 1 ? () => setUcetBitkyZavrety(false) : undefined} />
@@ -3761,6 +3765,8 @@ export function HernaPlocha({
       {slotHlavicky !== null &&
         createPortal(
           <div className="hlavicka-partia">
+            {prehravanie ?? (
+              <>
             {vHlavicke}
             <span className={`spojenie ${superPripojeny ? "online" : "offline"}`}>
               {superPripojeny ? `● ${menoHraca(super_)}` : `○ ${menoHraca(super_)} odpojený`}
@@ -3798,6 +3804,8 @@ export function HernaPlocha({
             >
               {view.koniec === null ? "odísť" : "opustiť hru"}
             </button>
+              </>
+            )}
           </div>,
           slotHlavicky,
         )}
