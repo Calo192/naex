@@ -216,6 +216,11 @@ export interface VyhladPitky {
   /** Body jednej kliatby navyše pri dnešných scorecardoch (záporné). */
   readonly cenaCirhozy: number;
   readonly cenaDlhu: number;
+  /**
+   * Nové Dlhy z Pitiek kola po najbližšej bitke (návrh #1 B): koľko ich bitka
+   * najviac spáli (Robota, Dievčina na vydaj) a koľko z nich ostane.
+   */
+  readonly dlhyBitka: { readonly pali: number; readonly ostane: number };
 }
 
 function bodov(n: number): string {
@@ -230,6 +235,7 @@ function TextVyhladu({
   opakovane,
   dalsiePitky,
   vPitke,
+  bitka,
 }: {
   readonly kliatby: number;
   readonly meno: string;
@@ -237,15 +243,23 @@ function TextVyhladu({
   readonly opakovane: number;
   readonly dalsiePitky: number;
   readonly vPitke: boolean;
+  /** Dlh: čo spáli najbližšia bitka — body sa rátajú len za Dlhy, ktoré ostanú. */
+  readonly bitka?: { readonly pali: number; readonly ostane: number };
 }) {
+  const vsetky = kliatby + opakovane * dalsiePitky;
   return (
     <>
       <span className={`vyhlad ${kliatby > 0 ? "zly" : ""}`}>
-        {vPitke ? "po Pitke" : "v Pitke"}: {kliatby > 0 ? `${meno} ×${kliatby} · ${bodov(kliatby * cena)}` : "nič"}
+        {vPitke ? "po Pitke" : "v Pitke"}: {kliatby > 0 ? `${meno} ×${kliatby}${bitka === undefined ? ` · ${bodov(kliatby * cena)}` : ""}` : "nič"}
       </span>
       {dalsiePitky > 0 && opakovane > 0 && (
         <span className="vyhlad zly">
           a v {dalsiePitky === 1 ? "ďalšej Pitke" : `ďalších ${dalsiePitky} Pitkách`} znova ×{opakovane}
+        </span>
+      )}
+      {bitka !== undefined && vsetky > 0 && (
+        <span className={`vyhlad ${bitka.ostane > 0 ? "zly" : ""}`}>
+          {bitka.pali > 0 ? `bitka spáli až ${bitka.pali} → ostane ×${bitka.ostane}` : `po bitke ostanú ×${bitka.ostane}`} · {bodov(bitka.ostane * cena)}
         </span>
       )}
     </>
@@ -529,6 +543,7 @@ export function HracDoska({ view, p, info, prahy, zavislost, menoKarty, popisKar
                   opakovane={Math.floor(v.zadlzenieZoStola / v.prahDlhu)}
                   dalsiePitky={vyhlad.dalsiePitky}
                   vPitke={vyhlad.vPitke}
+                  bitka={vyhlad.dlhyBitka}
                 />
               )}
             </>

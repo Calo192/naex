@@ -14,7 +14,7 @@
 import { appendFileSync, mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import WebSocket from "ws";
-import type { ActionSums, CardInstance, ClientState, Command, ElderState, Event, GameData, GameState, PlayerId, Slot, VerejnyStav } from "@naex/core";
+import type { ActionSums, CardInstance, CenyKliatob, ClientState, Command, ElderState, Event, GameData, GameState, PlayerId, Slot, VerejnyStav } from "@naex/core";
 import {
   stavZavislosti,
   textNeresti,
@@ -29,6 +29,8 @@ import {
   pohorsenieMozne,
   bodyTeraz,
   cenaKliatby,
+  kliatbyNahladu,
+  svokraZaNaex,
   cenaPrebytku,
   nahladPitky,
   favourStarsieho,
@@ -251,23 +253,24 @@ function cenaNaexText(v: ClientState, uid: number): string {
   ];
   const h = v.hraci;
   const hraci: ClientState["hraci"] = ja === 0 ? [{ ...h[0], pecen: h[0].pecen + 1 }, h[1]] : [h[0], { ...h[1], pecen: h[1].pecen + 1 }];
-  const pred = nahladPitky(DATA, v);
-  const po = nahladPitky(DATA, { ...v, strany, hraci });
   const dalsie = Math.max(0, v.pitkyCelkom - v.pitkaCislo);
+  const ceny = ([0, 1] as const).map((p) => ({ cirhoza: cenaKliatby(DATA, v, p, "cirhoza"), dlh: cenaKliatby(DATA, v, p, "dlh") })) as [CenyKliatob, CenyKliatob];
+  // Ten istý výpočet ako náhľad na webe: Dlh po najbližšej bitke (Robota, Dievčina na vydaj).
+  const kliatby = kliatbyNahladu(DATA, v, { ...v, strany, hraci }, dalsie, ceny);
   const pre = (p: PlayerId): string => {
-    const a = pred[p];
-    const b = po[p];
-    const c = b.cirhozy - a.cirhozy + (Math.floor(b.pecenZoStola / b.prahPecene) - Math.floor(a.pecenZoStola / a.prahPecene)) * dalsie;
-    const d = b.dlhy - a.dlhy + (Math.floor(b.zadlzenieZoStola / b.prahDlhu) - Math.floor(a.zadlzenieZoStola / a.prahDlhu)) * dalsie;
+    const k = kliatby[p];
+    const c = k.cirhozy + k.dalejCirhozy;
+    const d = k.dlhy + k.dalejDlhy;
     if (c === 0 && d === 0) return "nič";
-    const body = c * cenaKliatby(DATA, v, p, "cirhoza") + d * cenaKliatby(DATA, v, p, "dlh");
-    return `${c !== 0 ? `Cirhóza ${c > 0 ? "+" : "−"}${Math.abs(c)} ` : ""}${d !== 0 ? `Dlh ${d > 0 ? "+" : "−"}${Math.abs(d)} ` : ""}(${body < 0 ? "−" : "+"}${Math.abs(body)} b)`;
+    const poBitke = d !== k.dlhyPoBitke ? ` → po bitke ${k.dlhyPoBitke} (Robota či Dievčina na vydaj spáli)` : "";
+    return `${c !== 0 ? `Cirhóza ${c > 0 ? "+" : "−"}${Math.abs(c)} (priznaná body neuberie, súper za ňu +1 tuhé v každej bitke) ` : ""}${d !== 0 ? `Dlh ${d > 0 ? "+" : "−"}${Math.abs(d)}${poBitke} ` : ""}(${k.body < 0 ? "−" : "+"}${Math.abs(k.body)} b)`;
   };
+  const svokra = svokraZaNaex(DATA, v, ja, v.hraci[ja].cigarety);
   const abstaky = v.ruka.filter((k) => k.defId === "abstak").length;
   const stol: VerejnyStav = { ciel: v.ciel, ovladnute: v.ovladnute, strany, starsi: v.starsi, hraci: v.hraci };
   const d0 = poskodenieBitky(DATA, v, evaluateLine(DATA, lineState(v)).sums, ja === 0 ? [abstaky, 0] : [0, abstaky]);
   const d1 = poskodenieBitky(DATA, stol, evaluateLine(DATA, { ...lineState(v), strany }).sums, ja === 0 ? [abstaky, 0] : [0, abstaky]);
-  return `; bitka (tuhé) ${d0.tuhe[ja]}:${d0.tuhe[su]} → ${d1.tuhe[ja]}:${d1.tuhe[su]}; kliatby z tejto a ďalších Pitiek kola (NA EX leží do bitky): ty ${pre(ja)}, súper ${pre(su)}`;
+  return `; bitka (tuhé) ${d0.tuhe[ja]}:${d0.tuhe[su]} → ${d1.tuhe[ja]}:${d1.tuhe[su]}; kliatby z tejto a ďalších Pitiek kola (NA EX leží do bitky): ty ${pre(ja)}, súper ${pre(su)}${svokra > 0 ? `; Svokra ti ukradne ${svokra} cig.` : ""}; súper má v ruke ${v.hraci[su].rukaPocet} kariet a smie odpovedať jednou`;
 }
 
 function vykresli(v: ClientState, mena: readonly string[]): string {

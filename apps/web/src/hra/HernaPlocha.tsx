@@ -37,7 +37,10 @@ import {
   battleOutcome,
   cenaPrebytku,
   prebytokNaRozdelenie,
+  kliatbyNahladu,
   nahladPitky,
+  svokraZaNaex,
+  vyhladDlhov,
   cieleVykladania,
   cielLokalitaId,
   evaluateLine,
@@ -78,7 +81,7 @@ import {
   stranyLokality,
   vydesil,
 } from "@naex/core";
-import type { ActionSums, GameState, NahladVylozenia, PolozkaVykladania, Slot, StranaLinie } from "@naex/core";
+import type { ActionSums, GameState, KliatbyNahladu, NahladVylozenia, PolozkaVykladania, Slot, StranaLinie } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
 import type { Sada } from "@naex/tvorba";
@@ -714,8 +717,21 @@ export function HernaPlocha({
     [data, view],
   );
   const dalsiePitky = Math.max(0, view.pitkyCelkom - (view.faza === "pitka" ? view.pitkaCislo : view.pitkaCislo + 1));
+  // Dlhy po najbližšej bitke (návrh #1 B): z nových prežijú len tie, ktoré
+  // Robota a Dievčina na vydaj nespália — rovnaký stôl ako výhľad Pitky.
+  const dlhyBitka = useMemo(() => {
+    if (nahladyPitky === null || stol.ciel === null) return null;
+    const h = view.hraci;
+    const hraci: ClientState["hraci"] =
+      ja === 0 ? [{ ...h[0], pecen: h[0].pecen + vypijemVTahu }, h[1]] : [h[0], { ...h[1], pecen: h[1].pecen + vypijemVTahu }];
+    const v = vyhladDlhov(data, { ciel: stol.ciel, ovladnute: view.ovladnute, strany: stol.strany, starsi: view.starsi, hraci, lokalitaOtocena: otocenaTeraz, vizia: view.vizia }, dalsiePitky);
+    return ([0, 1] as const).map((p) => {
+      const teraz = view.hraci[p].priznane.filter((k) => k.defId === "dlh").length;
+      return { pali: v[p].kapacita, ostane: v[p].poBitke - Math.max(0, teraz - v[p].kapacita) };
+    }) as [VyhladPitky["dlhyBitka"], VyhladPitky["dlhyBitka"]];
+  }, [nahladyPitky, stol, view, ja, vypijemVTahu, data, otocenaTeraz, dalsiePitky]);
   const vyhladPitky = (p: PlayerId): VyhladPitky | null =>
-    nahladyPitky === null
+    nahladyPitky === null || dlhyBitka === null
       ? null
       : {
           nahlad: nahladyPitky[p],
@@ -723,6 +739,7 @@ export function HernaPlocha({
           dalsiePitky,
           cenaCirhozy: cenyKliatob[p].cirhoza,
           cenaDlhu: cenyKliatob[p].dlh,
+          dlhyBitka: dlhyBitka[p],
         };
 
   // Prečo na kartu NA EX nejde — hráč to vidí pri karte (dizajn hra-20261021-1240, UX N4).
@@ -734,26 +751,37 @@ export function HernaPlocha({
       return `NA EX len na Občana alebo Starešinu${def.tags.includes("Nástroj") ? " — toto je Nástroj" : ""}.`;
     return "Anonymný alkoholik: na neho NA EX dať nemôžeš.";
   };
+  /**
+   * Kliatby z náhľadu NA EX či odpovede: Cirhóza s oboma cenami (nepriznaná
+   * body, priznaná +1 tuhé súperovi), Dlh po najbližšej bitke (návrh #1 B).
+   */
+  const textKliatob = (k: KliatbyNahladu): string => {
+    const znak = (n: number): string => `${n > 0 ? "+" : "−"}${Math.abs(n)}`;
+    const cirhozy = k.cirhozy + k.dalejCirhozy;
+    const dlhy = k.dlhy + k.dalejDlhy;
+    const casti: string[] = [];
+    if (cirhozy !== 0) casti.push(`${znak(cirhozy)}× Cirhóza${cirhozy > 0 ? " (priznaná body neuberie, súper za ňu +1 tuhé v každej bitke)" : ""}`);
+    if (dlhy !== 0) casti.push(`${znak(dlhy)}× Dlh${dlhy !== k.dlhyPoBitke ? ` → po bitke ${k.dlhyPoBitke === 0 ? "nič" : znak(k.dlhyPoBitke)} (spáli Robota či Dievčina)` : ""}`);
+    if (k.dalejCirhozy !== 0 || k.dalejDlhy !== 0) casti.push("vrátane ďalších Pitiek kola");
+    return `${casti.length === 0 ? "nič" : casti.join(", ")}${k.body !== 0 ? ` · ${k.body > 0 ? "+" : "−"}${Math.abs(k.body)} b` : ""}`;
+  };
   // Možnosť NA EX pod myšou či fokusom — tá istá karta svieti na stole.
   const [zvyraznenaNaex, setZvyraznenaNaex] = useState<number | null>(null);
 
   // Náhľad NA EX s celou cenou (dizajn hra-nezrovnalosti-20261021-1229, UI N4 + UX N3):
   // bitka pred a po, zmeny OBOCH hráčov, vzorec násobkov na karte, kliatby
-  // z tejto aj ďalších Pitiek kola a ich cena v bodoch.
+  // z tejto aj ďalších Pitiek kola a ich cena v bodoch. Dlh ráta po najbližšej
+  // bitke (Robota, Dievčina na vydaj — kliatbyNahladu, návrh #1 B).
   const nahladNaex = useMemo(() => {
-    interface KliatbyNaex {
-      readonly cirhozy: number;
-      readonly dlhy: number;
-      readonly dalej: number;
-      readonly body: number;
-    }
     const out = new Map<
       number,
       {
         readonly tuhe: readonly [number, number];
         readonly zmeny: readonly [string[], string[]];
         readonly vzorec: readonly string[];
-        readonly kliatby: readonly [KliatbyNaex, KliatbyNaex];
+        readonly kliatby: readonly [KliatbyNahladu, KliatbyNahladu];
+        /** Koľko cigariet mi za toto NA EX ukradnú súperove Svokry. */
+        readonly svokra: number;
         readonly majitel: PlayerId;
         readonly strana: PlayerId;
         readonly pozicia: number;
@@ -794,28 +822,26 @@ export function HernaPlocha({
           vzorec.push(`${nazov(akcia)} ${z.hodnota}${dovody.length > 0 ? ` (${dovody.join(" · ")})` : ""}`);
         }
       }
-      // Kliatby: NA EX pripíše pečeň +1 tomu, kto ho dal, a zmení línie — porovnaj výhľad Pitky pred a po.
+      // Kliatby: NA EX pripíše pečeň +1 tomu, kto ho dal, a zmení línie — porovnaj stôl pred a po.
       const h = view.hraci;
       const hraci: ClientState["hraci"] = ja === 0 ? [{ ...h[0], pecen: h[0].pecen + 1 }, h[1]] : [h[0], { ...h[1], pecen: h[1].pecen + 1 }];
-      const po = nahladPitky(data, { ciel: stol.ciel, ovladnute: view.ovladnute, strany, starsi: view.starsi, hraci, lokalitaOtocena: view.lokalitaOtocena, vizia: view.vizia });
-      const kliatby = ([0, 1] as const).map((p): KliatbyNaex => {
-        const a = nahladyPitky[p];
-        const b = po[p];
-        const cirhozy = b.cirhozy - a.cirhozy;
-        const dlhy = b.dlhy - a.dlhy;
-        const dalejC = (Math.floor(b.pecenZoStola / b.prahPecene) - Math.floor(a.pecenZoStola / a.prahPecene)) * dalsiePitky;
-        const dalejD = (Math.floor(b.zadlzenieZoStola / b.prahDlhu) - Math.floor(a.zadlzenieZoStola / a.prahDlhu)) * dalsiePitky;
-        return {
-          cirhozy,
-          dlhy,
-          dalej: dalejC + dalejD,
-          body: (cirhozy + dalejC) * cenyKliatob[p].cirhoza + (dlhy + dalejD) * cenyKliatob[p].dlh,
-        };
-      }) as [KliatbyNaex, KliatbyNaex];
-      out.set(uid, { tuhe: d.tuhe, zmeny, vzorec, kliatby, majitel: placed.playedBy, strana, pozicia: index + 1 });
+      const pred = { ciel: stol.ciel, ovladnute: view.ovladnute, strany: view.strany, starsi: view.starsi, hraci: view.hraci, lokalitaOtocena: view.lokalitaOtocena, vizia: view.vizia };
+      const kliatby = kliatbyNahladu(data, pred, { ...pred, strany, hraci }, dalsiePitky, cenyKliatob);
+      const svokra = svokraZaNaex(data, view, ja, view.hraci[ja].cigarety);
+      out.set(uid, { tuhe: d.tuhe, zmeny, vzorec, kliatby, svokra, majitel: placed.playedBy, strana, pozicia: index + 1 });
     }
     return out;
   }, [mode.typ, naexCiele, data, view, stol, lineEval, odhad, ja, sada, nahladyPitky, cenyKliatob, dalsiePitky]);
+
+  // Náhľad odpovede na NA EX (návrh #1 B): ten istý ako pri NA EX — bitka pred
+  // a po navrhnutej karte a kliatby oboch hráčov po Pitke.
+  const nahladOdpovede = useMemo(() => {
+    if (!reagujem || odhad === null || stol.ciel === null || !vylozenia.some((x) => x.ciel === "vlastna" || x.ciel === "superova")) return null;
+    const mojeAbstaky = view.ruka.filter((k) => k.defId === "abstak").length;
+    const bezOdpovede = poskodenieBitky(data, view, evaluateLine(data, lineState(view)).sums, ja === 0 ? [mojeAbstaky, 0] : [0, mojeAbstaky]);
+    const pred = { ciel: stol.ciel, ovladnute: view.ovladnute, strany: view.strany, starsi: view.starsi, hraci: view.hraci, lokalitaOtocena: view.lokalitaOtocena, vizia: view.vizia };
+    return { pred: bezOdpovede.tuhe, kliatby: kliatbyNahladu(data, pred, { ...pred, strany: stol.strany }, dalsiePitky, cenyKliatob) };
+  }, [reagujem, odhad, stol, vylozenia, view, data, ja, dalsiePitky, cenyKliatob]);
 
   // Náhľad vyloženia na koniec strany (playtest 20261017-164450: ktorá hrana
   // sa spáruje, hráči zisťovali skúškou) — počas ťahania aj v návrhu.
@@ -2239,6 +2265,12 @@ export function HernaPlocha({
                         {" "}· {nahladSpojov.spoj} · ty: {nahladSpojov.ja} · {menoHraca(super_)}: {nahladSpojov.su}
                       </span>
                     )}
+                    {nahladOdpovede !== null && odhad !== null && (
+                      <span className="tlmene">
+                        {" "}· bitka {nahladOdpovede.pred[ja]}:{nahladOdpovede.pred[super_]} → <b>{odhad.tuhe[ja]}:{odhad.tuhe[super_]}</b> · kliatby — ty:{" "}
+                        {textKliatob(nahladOdpovede.kliatby[ja])} · {menoHraca(super_)}: {textKliatob(nahladOdpovede.kliatby[super_])}
+                      </span>
+                    )}
                     {textVolbyMiesta !== null && <> · {textVolbyMiesta}</>}
                   </>
                 ),
@@ -2456,14 +2488,6 @@ export function HernaPlocha({
         const vybranaUid = mode.typ === "naexCiel" ? mode.uid : null;
         const vybrana = vybranaUid === null ? undefined : nahladNaex.get(vybranaUid);
         const menoVybranej = vybranaUid === null ? "" : menoKarty(view.strany.flat().find((pl) => pl.card.uid === vybranaUid)?.card.defId ?? "");
-        const textKliatob = (k: { readonly cirhozy: number; readonly dlhy: number; readonly dalej: number; readonly body: number }): string => {
-          const casti: string[] = [];
-          if (k.cirhozy !== 0) casti.push(`${k.cirhozy > 0 ? "+" : "−"}${Math.abs(k.cirhozy)}× Cirhóza`);
-          if (k.dlhy !== 0) casti.push(`${k.dlhy > 0 ? "+" : "−"}${Math.abs(k.dlhy)}× Dlh`);
-          const teraz2 = casti.length === 0 ? "nič" : casti.join(", ");
-          const dalej = k.dalej !== 0 ? ` · v ďalších Pitkách kola znova ${k.dalej > 0 ? "+" : "−"}${Math.abs(k.dalej)}` : "";
-          return `${teraz2}${dalej}${k.body !== 0 ? ` · ${k.body > 0 ? "+" : "−"}${Math.abs(k.body)} b` : ""}`;
-        };
         const textVyberu =
           vybrana === undefined || odhad === null ? null : (
             <span className="naex-vyber-text">
@@ -2480,8 +2504,10 @@ export function HernaPlocha({
               {vybrana.zmeny[super_].length > 0 ? vybrana.zmeny[super_].join(", ") : "bez zmeny"}
               <span className="tlmene">
                 {" "}
-                · kliatby: {textKliatob(vybrana.kliatby[ja])} · pečeň +1 · v ďalšom kole limit{" "}
-                {limitPo === limitBez ? `ostane ${limitBez}` : `${limitPo} namiesto ${limitBez}`}
+                · kliatby — ty: {textKliatob(vybrana.kliatby[ja])} · {menoHraca(super_)}: {textKliatob(vybrana.kliatby[super_])} · pečeň +1
+                {vybrana.svokra > 0 && <> · Svokra ti ukradne {vybrana.svokra} cig.</>} · v ďalšom kole limit{" "}
+                {limitPo === limitBez ? `ostane ${limitBez}` : `${limitPo} namiesto ${limitBez}`} · platí, ak {menoHraca(super_)} neodpovie (v ruke má{" "}
+                {view.hraci[super_].rukaPocet} {view.hraci[super_].rukaPocet === 1 ? "kartu" : view.hraci[super_].rukaPocet >= 2 && view.hraci[super_].rukaPocet <= 4 ? "karty" : "kariet"})
               </span>
             </span>
           );
