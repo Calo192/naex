@@ -18,7 +18,7 @@ function naZastavke(seed: number): GameState {
   s = apply(data, s, { type: "chooseLocation", uid: zastavka.uid, otocena: false }, (1 - s.utocnik) as PlayerId).state;
   while (s.draftStav?.krok === "stavba") {
     for (const p of [0, 1] as const) {
-      const b = s.draftStav.balicky[p];
+      const b = s.draftStav!.balicky[p];
       const cmd: Command = { type: "stavbaSenku", doSenku: b.slice(0, b.length / 2).map((k) => k.uid), odhod: b.slice(b.length / 2).map((k) => k.uid) };
       s = apply(data, s, cmd, p).state;
     }

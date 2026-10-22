@@ -22,14 +22,17 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   stojí plný poldeci** (Vypiť: limit −1, pečeň +1, nerest) — dve karty za sebou
   potrebujú limit aspoň 3. V klientovi príkaz
   `{"type":"tah","kroky":[…]}` (priznania, potom karty a pred každou okrem
-  poslednej `{"type":"vypit"}`), alebo jednotlivé `place` / `vypit`.
+  poslednej `{"type":"vypit"}` — pri dvoch kartách **vypit, karta, karta**; „karta,
+  vypit, karta“ server odmietne), alebo jednotlivé `place` / `vypit`.
 - **Pitky:** Pitiek v bitke = **1 + menší počet aktivovaných akcií lokality**
-  z jej dvoch strán (1–4). Pred každou
+  z jej dvoch strán (1–4); Odpor na hrane lokality sa ráta, akcia hrany zrušená
+  Odporom karty nie. Pred každou
   Pitkou je Zhromaždenie. Počet sa mení s líniou — výpis ho ukazuje. „Ešte
   jednu!“ už neexistuje.
 - **Prevaha (2026-10-20):** akcie hrany lokality dostane, kto má v tej
   polovici línie (kraji) **viac svojich Občanov, Zvierat a Starešinov** (Nástroje a Cirhóza nie); pri rovnosti
-  majiteľ karty pri lokalite. Jedna podstrčená karta hranu neukradne. Kraje
+  hráč, ktorého karta v tom kraji leží hneď pri lokalite (vyložená ako prvá) — nie
+  „majiteľ lokality“. Jedna podstrčená karta hranu neukradne. Kraje
   majú mená podľa lokality (Krčma: pri výčape / pri dverách). **Pasca**
   (Dedičstvo): každé súperovo Zviera v línii mu uberie 1 tuhé.
   Nové karty (po zverejnení): **Presbiter** — sám proti súperovej prevahe
@@ -42,7 +45,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 - **Lokality (2026-10-20)** — efekt platí v kole o ňu: Krčma (s plným
   poldeci povinné NA EX), Kostol (nikto nevypije ani nedá NA EX — v ťahu
   1 karta), Benzínka (nikto nefajčí), Zastávka (spoločný limit = súčet
-  limitov), Lesná cesta (+1 tuhé za tvojho Občana/Zviera/Starešinu v súperovom kraji, max +2),
+  limitov; pas dá cigarety len za tvoj vlastný zvyšok limitu), Lesná cesta (+1 tuhé za tvojho Občana/Zviera/Starešinu v súperovom kraji, max +2),
   Ihrisko (+2 tuhé za každý kraj, kde máš viac svojich Občanov, Zvierat a Starešinov), Zberný
   dvor (raz za Pitku `vykup`: cigareta → karta z odhadzovacieho do ruky),
   Most (len na vlastnú stranu), Cintorín (porazený `cintorin`: Nástroj
@@ -80,7 +83,9 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   karte aktívne akcie a zdvojí neaktívne; akcie sa rátajú majiteľovi karty.
   Pečeň +1 je tvoja. Súper smie hneď odpovedať jednou kartou mimo limitu
   (`place` / `bezReakcie`). Nie na Liberála, nie na súperovho Anonymného
-  alkoholika a jeho susedov. Svokra súpera ti za NA EX zoberie 2 cigarety.
+  alkoholika a jeho susedov, nie na kartu, na ktorej už poldeci leží. NA EX na kartu
+  pri lokalite mení len akcie karty, akcie hrany lokality ostávajú. Dievčina na vydaj
+  ráta aj akcie zdvojené cez NA EX. Svokra súpera ti za NA EX zoberie 2 cigarety.
   Krčma vynúti NA EX. Násobky sa **násobia** (NA EX × Silná žena = ×4, aj Dlh
   a Poškodenie pečene) a NA EX leží na karte do bitky — vyhodnotí sa v každej
   Pitke kola. Každá možnosť `naex` v stave ukazuje cenu: bitku pred a po

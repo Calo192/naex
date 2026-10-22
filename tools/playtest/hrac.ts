@@ -356,7 +356,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
   const prevaha = prevahaStran(DATA, v.strany);
   const nazovKraja = (p: PlayerId): string => (kraje[p] === null ? (p === ja ? "tvoja strana" : "súperova strana") : `kraj „${kraje[p]}“ (${p === ja ? "tvoja strana" : "súperova strana"})`);
   out.push(
-    `PREVAHA: akcie hrany lokality dostane, kto má v tom kraji viac svojich Občanov, Zvierat a Starešinov (Nástroje a Cirhóza nie; pri rovnosti majiteľ karty pri lokalite). ${nazovKraja(ja)}: ${prevaha[ja] === null ? "prázdna" : kto(prevaha[ja])}; ${nazovKraja(su)}: ${prevaha[su] === null ? "prázdna" : kto(prevaha[su])}.`,
+    `PREVAHA: akcie hrany lokality dostane, kto má v tom kraji viac svojich Občanov, Zvierat a Starešinov (Nástroje a Cirhóza nie; pri rovnosti ten, koho karta v kraji leží hneď pri lokalite — vyložená ako prvá). ${nazovKraja(ja)}: ${prevaha[ja] === null ? "prázdna" : kto(prevaha[ja])}; ${nazovKraja(su)}: ${prevaha[su] === null ? "prázdna" : kto(prevaha[su])}.`,
   );
   const majitel = (p: PlayerId) => (p === ja ? "TVOJA karta" : "SÚPEROVA karta");
   const moja = [...v.strany[ja]].reverse();

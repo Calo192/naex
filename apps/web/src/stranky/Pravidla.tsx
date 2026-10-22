@@ -28,7 +28,7 @@ const SLOVNIK: readonly { readonly tema: string; readonly popis: string; readonl
       ["Kraj", "Meno polovice línie podľa hrany lokality — každá lokalita má vlastné (Krčma: pri výčape a pri dverách)."],
       [
         "Prevaha",
-        "V kraji ju má, kto tam má viac svojich Občanov, Zvierat a Starešinov (Nástroje ani Cirhóza sa nerátajú); pri rovnosti majiteľ karty pri lokalite. Hráč s prevahou dostane akcie hrany lokality v tom kraji.",
+        "V kraji ju má, kto tam má viac svojich Občanov, Zvierat a Starešinov (Nástroje ani Cirhóza sa nerátajú); pri rovnosti hráč, ktorého karta v tom kraji leží hneď pri lokalite (vyložená ako prvá). Hráč s prevahou dostane akcie hrany lokality v tom kraji.",
       ],
       ["Partia", "Všetky tvoje karty v línii — tie natočené k tebe, nech ležia na ktorejkoľvek strane."],
       ["Vnútorná hrana", "Hrana karty obrátená k lokalite; ňou sa karta páruje so susedom bližšie k stredu."],
@@ -288,7 +288,8 @@ const KAPITOLY: readonly Kapitola[] = [
           bitky, takže sa vyhodnotí v každej Pitke kola. Pred potvrdením ti hra ukáže náhľad: bitku pred a po, zmeny oboch
           hráčov a koľko Cirhóz a Dlhov z toho bude a za koľko bodov. NA EX môže zmeniť aj počet Pitiek. Pamätaj: poldeci sa pri bitke vypije, takže
           v ďalšom kole ti chýba (na začiatku kola sa doleje len jeden vypitý). Hra ti pri NA EX ukáže, aký limit budeš mať
-          v ďalšom kole. Na Liberála NA EX dať nemožno.
+          v ďalšom kole. Na Liberála NA EX dať nemožno, ani na kartu, na ktorej už poldeci leží. NA EX na kartu pri lokalite
+          mení len akcie tej karty — akcie hrany lokality ostávajú. Dievčina na vydaj ráta aj akcie, ktoré jej zdvojilo NA EX.
         </p>
         <h3>Odpoveď na NA EX</h3>
         <p>
@@ -300,7 +301,8 @@ const KAPITOLY: readonly Kapitola[] = [
         <p>
           V Zhromaždení môžeš na svojom ťahu vyložiť aj viac kariet. Prvá je zadarmo, <strong>každá ďalšia ťa stojí plný
           poldeci</strong> — vypiješ ho: limit vykladania hneď klesne o 1, pečeň +1 (vyhodnotí sa v najbližšej Pitke) a ráta sa
-          to ako nerest. Dve karty za sebou teda potrebujú limit aspoň 3. Súper medzitým nezareaguje.
+          to ako nerest. Dve karty za sebou teda potrebujú limit aspoň 3. Súper medzitým nezareaguje. Poradie je{" "}
+          <strong>Vypiť, karta, karta</strong> — bez vypitia prvá karta ťah ukončí.
         </p>
         <p className="zvyraznene">
           V hre kartu potiahneš na stôl — je to len návrh. Ďalšia karta v tom istom ťahu dostane výrazný štítok{" "}
@@ -347,8 +349,8 @@ const KAPITOLY: readonly Kapitola[] = [
           Podstrčená karta sa so súperovými susedmi páruje normálne: aktivuje im akcie na spoji (tie dostane súper) a svoje
           akcie boduje pre teba. Pošli mu <strong>sabotéra</strong> — tvoj Odpor mu zruší akciu, ktorú potreboval, a zaberieš mu
           koniec strany. Akcie hrany <strong>lokality</strong> dostane hráč s <strong>prevahou</strong> v tej polovici línie —
-          kto tam má viac svojich <strong>Občanov, Zvierat a Starešinov</strong> (Nástroje a Cirhóza sa nerátajú; pri rovnosti majiteľ karty pri
-          lokalite). Polovice línie sa volajú
+          kto tam má viac svojich <strong>Občanov, Zvierat a Starešinov</strong> (Nástroje a Cirhóza sa nerátajú; pri rovnosti hráč, ktorého karta
+          v tom kraji leží hneď pri lokalite — vyložená ako prvá). Polovice línie sa volajú
           podľa lokality — <strong>kraje</strong>, napr. v Krčme „pri výčape“ a „pri dverách“. Rovnako akcie <strong>Nástroja</strong> dostane majiteľ karty, s ktorou Nástroj
           tvorí spoj.
         </p>
@@ -577,7 +579,8 @@ const KAPITOLY: readonly Kapitola[] = [
         </p>
         <p className="zvyraznene">
           <strong>Koľko Pitiek:</strong> 1 + menší z počtov aktivovaných akcií lokality na jej dvoch stranách. Akciu lokality
-          aktivuje karta, ktorá s ňou tvorí spoj. Ak tvoja karta aktivuje 3 akcie lokality a súperova 1, pijú sa{" "}
+          aktivuje karta, ktorá s ňou tvorí spoj; Odpor na hrane lokality sa ráta, akcia hrany zrušená Odporom karty nie. Ak tvoja
+          karta aktivuje 3 akcie lokality a súperova 1, pijú sa{" "}
           <strong>2 Pitky</strong>; ak niekto pri lokalite nič neaktivuje, len 1. Pred každou Pitkou je Zhromaždenie (limit sa
           ráta nanovo). Počet sa počas kola mení s líniou — začatá Pitka sa vždy dopije.
         </p>
@@ -608,7 +611,7 @@ const KAPITOLY: readonly Kapitola[] = [
             <tr><td>Krčma</td><td>Pitka</td><td>Kto má plný poldeci a kam ho dať, musí dať NA EX.</td></tr>
             <tr><td>Kostol</td><td>Zhromaždenie, Pitka</td><td>Nikto nesmie vypiť (v ťahu len jedna karta) ani dať NA EX.</td></tr>
             <tr><td>Benzínka</td><td>Zhromaždenie, Pitka</td><td>Nikto nesmie fajčiť.</td></tr>
-            <tr><td>Zastávka</td><td>Zhromaždenie</td><td>Spoločný limit vykladania pre oboch = súčet vašich limitov.</td></tr>
+            <tr><td>Zastávka</td><td>Zhromaždenie</td><td>Spoločný limit vykladania pre oboch = súčet vašich limitov. Pas dá cigarety len za tvoj vlastný zvyšok limitu.</td></tr>
             <tr><td>Lesná cesta</td><td>Bitka</td><td>+1 tuhé za každého tvojho Občana, Zviera či Starešinu v súperovom kraji, najviac +2.</td></tr>
             <tr><td>Ihrisko</td><td>Bitka</td><td>V každom kraji +2 tuhé tomu, kto tam má viac svojich Občanov, Zvierat a Starešinov — spolu až +4.</td></tr>
             <tr><td>Zberný dvor</td><td>Pitka</td><td>Raz za Pitku za cigaretu karta z tvojho odhadzovacieho balíčka do ruky.</td></tr>

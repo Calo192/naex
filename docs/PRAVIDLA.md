@@ -293,8 +293,9 @@ indexe**. Každá aktívna akcia sa počíta samostatne.
   `docs/playtesty/strategia-strany-20261020.html`): hranu lokality aktivuje
   karta, ktorá s ňou tvorí spoj, no jej akcie dostane hráč, ktorý má v tej
   polovici línie **viac svojich Občanov, Zvierat a Starešinov** (Nástroje, Cirhóza ani iné karty sa
-  nerátajú); pri rovnosti
-  majiteľ karty pri lokalite. Jedna podstrčená karta teda hranu neukradne —
+  nerátajú); pri rovnosti hráč, ktorého karta v tom kraji leží **hneď pri
+  lokalite** (vyložená ako prvá) — nie „majiteľ lokality“ (Michal 2026-10-22,
+  len znenie). Jedna podstrčená karta teda hranu neukradne —
   treba v kraji prevládnuť. Natočenie lokality (volí obranca) určuje, ktorá
   hrana leží pri ktorej polovici.
 - **Kraje:** polovice línie sa volajú podľa hrán lokality — každá lokalita
@@ -376,8 +377,14 @@ Akcie karty po NA EX sa rátajú jej majiteľovi: na súperovej karte mu zruší
 aktívne akcie, ale zdvojíš mu neaktívne. Svokra: za každé tvoje NA EX ti
 majiteľ Svokry ukradne 2 cigarety (Michal 2026-10-19).
 Na **Liberála** NA EX dať nemožno; na súperovho **Anonymného alkoholika** ani
-na súperove karty vedľa neho tiež nie. Na **Krčme** hráč s plným poldeci (a kartou,
-kam ho dať) musí NA EX dať, inak Pitku neskončí.
+na súperove karty vedľa neho tiež nie. Na kartu, na ktorej **už poldeci leží**
+(cez NA EX), sa ďalšie NA EX dať nedá (Michal 2026-10-22, dopísané podľa hry).
+Na **Krčme** hráč s plným poldeci (a kartou, kam ho dať) musí NA EX dať, inak
+Pitku neskončí.
+
+**NA EX na kartu pri lokalite** ruší a zdvojuje len akcie tej karty — akcie
+**hrany lokality** v páre s ňou ostávajú, ako boli (dostane ich hráč s prevahou
+v kraji; Michal 2026-10-22, dopísané podľa hry).
 
 **Odpoveď na NA EX** (Michal 2026-10-12, playtest 20261012-055944): hneď po
 súperovom NA EX smie druhý hráč vyložiť **jednu kartu z ruky** na koniec
@@ -405,7 +412,9 @@ poldeci na vypitý**. Od 2026-10-19 sa Vypiť nehrá samostatným tlačidlom —
 v ťahu jednoducho vyloží viac kariet a **každá ďalšia karta po prvej stojí
 plný poldeci** (pred ňou sa vypije). Klient posiela celý ťah naraz (príkaz
 `tah`: priznania, potom karty a pred každou okrem poslednej Vypiť); server ho
-vykoná celý, alebo vôbec. Za každé vypitie:
+vykoná celý, alebo vôbec. **Poradie:** Vypiť ide pred kartu, po ktorej chce
+hráč pokračovať — pri dvoch kartách **Vypiť, karta, karta**; „karta, Vypiť,
+karta“ nejde, prvá karta ťah ukončí (Michal 2026-10-22, dopísané podľa hry). Za každé vypitie:
 
 - jeho **ďalšie vyloženie neukončí ťah** — zahrá dve karty (priznania,
   Nástroje) za sebou, súper medzitým nereaguje,
@@ -551,6 +560,8 @@ Pitiek v bitke = **1 + menší z počtov aktivovaných akcií karty v strede**
 (lokalita) na jej dvoch stranách (Michal
 2026-10-19; „Ešte jednu!“ zrušené). Akciu lokality aktivuje karta, ktorá s ňou
 tvorí spoj; ráta sa každá aktívna akcia hrany (aj Odpor či Posilnenie v páre).
+**Odpor na hrane lokality** sa ráta ako jej aktívna akcia; akcia hrany, ktorú
+zrušil **Odpor karty** v páre, sa neráta (Michal 2026-10-22, dopísané podľa hry).
 Príklad: hráč A aktivuje 3 akcie lokality, hráč B 1 → **2 Pitky**; kto pri
 lokalite nič neaktivuje, bitka má 1 Pitku. Pred každou Pitkou je Zhromaždenie
 (limit sa ráta nanovo, začína útočník). Počet sa prepočítava s líniou počas
@@ -1007,7 +1018,8 @@ klient ukazuje neresti oboch hráčov a výhľad (`stavZavislosti`).
 |---|---|
 | Línia | celý rad kariet v kole; lokalita v strede |
 | Strana / kraj | polovica línie od lokality — tvoja a súperova; kraj je jej meno podľa hrany lokality (Krčma: pri výčape / pri dverách) |
-| Prevaha | v kraji ju má, kto tam má viac svojich Občanov, Zvierat a Starešinov (Nástroje, Cirhóza nie); pri rovnosti majiteľ karty pri lokalite; dostane akcie hrany lokality v tom kraji |
+| Prevaha | v kraji ju má, kto tam má viac svojich Občanov, Zvierat a Starešinov (Nástroje, Cirhóza nie); pri rovnosti hráč, ktorého karta v tom kraji leží hneď pri lokalite (vyložená ako prvá); dostane akcie hrany lokality v tom kraji |
+| Útočník / obranca | útočník je **porazený z minulej bitky** (v prvom kole určený pri príprave, pri remíze ostáva) — berie zo šenku prvý, vykladá prvý a v Pitke má posledné slovo; jeho výhody slúžia na dobiehanie. Obranca je víťaz minulej bitky — volí a natáča cieľ, Pitku začína |
 | Partia | všetky karty natočené k hráčovi (jeho karty), na ktorejkoľvek strane |
 | Vypiť | otočiť plný poldeci na vypitý: limit −1, pečeň +1, ďalšia karta v tom istom ťahu |
 | Šenok | ponuka kariet lícom nahor; obaja vidia, čo berú |
@@ -1035,7 +1047,7 @@ platí v kole, keď je lokalita cieľom. Všetkých 14 je v zverejnenej sade.
 | Krčma | Pitka | Kto má plný poldeci a Občana či Starešinu v línii (vlastného či súperovho), musí dať NA EX — bez neho Pitku neskončí. |
 | Kostol | Zhromaždenie, Pitka | Nikto nesmie vypiť (v ťahu teda len jedna karta) ani dať NA EX. (Predtým karta za Vieru.) |
 | Benzínka | Zhromaždenie, Pitka | Nikto nesmie fajčiť. (Predtým spálenie Občanov a prepadnutie lokality.) |
-| Zastávka | Zhromaždenie | Spoločný limit vykladania pre oboch = súčet limitov oboch hráčov; každé vyloženie a Vypiť ho míňa obom. (Predtým limit 2.) |
+| Zastávka | Zhromaždenie | Spoločný limit vykladania pre oboch = súčet limitov oboch hráčov; každé vyloženie a Vypiť ho míňa obom. **Pas** dá cigarety najviac za **vlastný** limit hráča mínus to, čo v tomto Zhromaždení sám vyložil a vypil — nie za spoločnú zásobu (Michal 2026-10-22). (Predtým limit 2.) |
 | Lesná cesta | Bitka | +1 tuhé za každého svojho Občana, Zviera či Starešinu v súperovom kraji, najviac +2. |
 | Ihrisko | Bitka | V každom kraji +2 tuhé tomu, kto tam má viac svojich Občanov, Zvierat a Starešinov (pri rovnosti nikto) — z oboch krajov teda až +4. |
 | Zberný dvor | Pitka | Raz za Pitku: za 1 cigaretu karta z vlastného odhadzovacieho balíčka do ruky (cigareta je nerest ako pri barteri). |
@@ -1064,7 +1076,7 @@ Všetky efekty tlačovej sady engine vyhodnocuje automaticky (playtest
 
 | Karta | Výklad |
 |---|---|
-| Dievčina na vydaj | Pri bitke sa zahodí (po bitke sa spáli, nevráti sa) a jej majiteľ spáli toľko **priznaných** Dlhov, koľko mala aktívnych akcií (s násobkami). |
+| Dievčina na vydaj | Pri bitke sa zahodí (po bitke sa spáli, nevráti sa) a jej majiteľ spáli toľko **priznaných** Dlhov, koľko mala aktívnych akcií (s násobkami — aj s tými, ktoré zdvojilo NA EX, vlastné či súperovo; Michal 2026-10-22). |
 | Hrobár | Keď súper zahodí kartu z ruky, z línie alebo z vrchu balíčka (efektom, Víziou; nie návratom po bitke ani vlastnou Veľmi smútiacou vdovou), majiteľ Hrobára dostane cigaretu za každú. |
 | Anonymný alkoholik | Súper jeho majiteľa nedá NA EX na neho ani na majiteľove karty vedľa neho na tej istej strane línie. Majiteľ smie; súperove karty nechráni, ani keď je podstrčený na súperovu stranu. Bráni len novému NA EX; poldeci, ktorý už na susedovi leží, ostáva. Prvé karty oboch strán susedia s lokalitou, nie navzájom. (Michal 2026-10-18, zúžené 2026-10-19) |
 | Krčmárka | Pri bitke: ak hráč nemá Absťák a v tomto kole nedal NA EX, vypitý poldeci sa mu otočí na plný (automaticky). |
