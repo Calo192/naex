@@ -3529,6 +3529,17 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna.nemoze:hover > .kl {
   justify-content: center;
   margin-top: 8px;
   padding: 0 16px;
+  pointer-events: none;
+}
+
+/* Hrana je prilepená nad rukou, takže udalosti ležia nad kartami línie či
+   pokynom stavby — bez podkladu sa text miešal s kartou pod ním (1600 px). */
+.stol-hrana .pokyn-udalosti > * {
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: var(--plocha);
+  border: 1px solid var(--okraj);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
   pointer-events: auto;
 }
 
@@ -4317,8 +4328,9 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:focus-visible > .kl {
 
 /* Menej klikov (roadmapa #9 B): „do konca bitky bez NA EX“ a jeho zrušenie sú odkazy v texte Pitky. */
 button.auto-hotovo-odkaz {
-  padding: 0;
-  min-height: 0;
+  /* Odkaz v texte, ale cieľ aspoň 24 px (WCAG 2.5.8) — bol 21 px. */
+  padding: 2px 0;
+  min-height: 24px;
   color: var(--akcent);
   background: none;
   border: 0;
