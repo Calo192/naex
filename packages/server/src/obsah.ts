@@ -102,6 +102,8 @@ export class Obsah {
   private readonly elders: unknown;
   private readonly scorecardsPredvolene: unknown;
   private cache: { sada: Sada; data: GameData } | null = null;
+  /** Herné dáta starších sád pre prehrávač partie (sada sa po zverejnení nemení). */
+  private readonly dataSad = new Map<number, GameData>();
 
   private readonly db: Db;
   private readonly media: Media;
@@ -491,6 +493,27 @@ export class Obsah {
     const sada: Sada = { ...ulozena, scorecardsJson: { ...scorecards, body } };
     this.cache = { sada, data: loadGameData(sada.cardsJson, this.elders, sada.scorecardsJson) };
     return this.cache;
+  }
+
+  /**
+   * Herné dáta zverejnenej sady `verzia` — prehrávač partie (roadmapa #18) prehrá
+   * partiu na tej sade, na ktorej sa hrala. null = sada neexistuje alebo ju jadro nenačíta.
+   */
+  dataSady(verzia: number): GameData | null {
+    const v = this.dataSad.get(verzia);
+    if (v !== undefined) return v;
+    const r = this.db.prepare("SELECT data FROM sady WHERE verzia = ?").get(verzia) as { data: string } | undefined;
+    if (r === undefined) return null;
+    const ulozena = JSON.parse(r.data) as Omit<Sada, "verzia">;
+    const body = (this.scorecardsPredvolene as { body: unknown }).body;
+    const scorecards = { ...((ulozena.scorecardsJson ?? this.scorecardsPredvolene) as Record<string, unknown>), body };
+    try {
+      const data = loadGameData(ulozena.cardsJson, this.elders, scorecards);
+      this.dataSad.set(verzia, data);
+      return data;
+    } catch {
+      return null;
+    }
   }
 
   /**

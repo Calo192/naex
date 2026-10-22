@@ -57,6 +57,7 @@ import { TempoPartii, fazaPrikazu, noveTempo, zapisPrikaz } from "./tempo.ts";
 import type { Pravo } from "./prava.ts";
 import { POPIS_PRAVA, Prava } from "./prava.ts";
 import { Profily } from "./profily.ts";
+import { Prehravac } from "./prehravac.ts";
 import { Nazory } from "./nazory.ts";
 import { Playtesty } from "./playtesty.ts";
 import { Navrhy } from "./navrhy.ts";
@@ -256,6 +257,9 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   const spusteny = teraz();
   const suborVerzie = fileURLToPath(new URL("../../../VERZIA.json", import.meta.url));
   const verzia = existsSync(suborVerzie) ? (JSON.parse(readFileSync(suborVerzie, "utf8")) as StavServera["verzia"]) : null;
+  // Verzia jadra, ktorú nesie archivovaná partia — prehrávač prehrá len partie z tej istej.
+  const verziaJadra = verzia === null ? "dev" : `${verzia.commit}${verzia.necommitnute ? "+zmeny" : ""}`;
+  const prehravac = new Prehravac(db, obsah, verziaJadra);
   const stavServera = (): StavServera => {
     const bezi = [...rooms.values()].filter((r) => r.state !== null && r.state.koniec === null);
     const cakajuce = [...rooms.values()].filter((r) => r.state === null).length;
@@ -297,6 +301,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           tempoPartii,
           prava,
           profily,
+          prehravac,
           nazory,
           playtesty,
           navrhy,
@@ -710,7 +715,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         sBotom: room.bot !== null,
         botPovaha: room.bot === null ? null : room.botPovaha,
         dlzka: room.dlzka,
-        verziaJadra: verzia === null ? "dev" : `${verzia.commit}${verzia.necommitnute ? "+zmeny" : ""}`,
+        verziaJadra,
         verziaPravidiel: VERZIA_PRAVIDIEL,
         seed: room.seed,
         prikazy: room.prikazy,

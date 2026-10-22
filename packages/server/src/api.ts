@@ -21,6 +21,7 @@ import type { TempoPartii } from "./tempo.ts";
 import type { Prava } from "./prava.ts";
 import type { FilterPartii, Profily } from "./profily.ts";
 import { FILTRE_PARTII } from "./profily.ts";
+import type { Prehravac } from "./prehravac.ts";
 import { POPIS_PRAVA, PRAVA, RANKY_HRACOV, jeRankHraca } from "./prava.ts";
 import type { KategoriaNazoru, Nazory, Triedenie } from "./nazory.ts";
 import type { Playtesty } from "./playtesty.ts";
@@ -65,6 +66,8 @@ export interface ApiKontext {
   readonly prava: Prava;
   /** Zoznam a detail partií pre profily (Michal 2026-10-22). */
   readonly profily: Profily;
+  /** Prehrávač partie zo seedu a príkazov (roadmapa #18). */
+  readonly prehravac: Prehravac;
   readonly nazory: Nazory;
   readonly playtesty: Playtesty;
   /** Návrhy zlepšení z playtestov a rozhodnutia o nich (sekcia Playtest). */
@@ -506,6 +509,24 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       const od = Math.max(0, Math.floor(Number(query.get("od") ?? 0)) || 0);
       const limit = Math.min(100, Math.max(1, Math.floor(Number(query.get("limit") ?? 20)) || 20));
       return ok(ctx.profily.partieHraca(id, f as FilterPartii, od, limit, jeSpravca(p.rola)));
+    }
+    // Prehrávač partie (roadmapa #18): účastník len zo svojho miesta, správca si ho vyberie, cudzí 404.
+    if (metoda === "GET" && casti[1] === "partie" && casti[3] === "kroky" && casti.length === 4) {
+      const p = prihlaseny();
+      const zoznam = ctx.prehravac.kroky(Number(casti[2]), p.id, jeSpravca(p.rola));
+      if (zoznam === null) throw new ChybaVstupu("Taká partia neexistuje.", 404);
+      return ok(zoznam);
+    }
+    if (metoda === "GET" && casti[1] === "partie" && casti[3] === "krok" && casti.length === 5) {
+      const p = prihlaseny();
+      const n = Number(casti[4]);
+      if (!Number.isInteger(n) || n < 0) throw new ChybaVstupu("Krok: celé číslo od 0.");
+      const m = query.get("miesto");
+      if (m !== null && m !== "0" && m !== "1") throw new ChybaVstupu("Miesto: 0 alebo 1.");
+      const krok = ctx.prehravac.krok(Number(casti[2]), n, p.id, jeSpravca(p.rola), m === null ? null : (Number(m) as 0 | 1));
+      if (krok === null) throw new ChybaVstupu("Taká partia neexistuje.", 404);
+      if ("chyba" in krok) throw new ChybaVstupu(krok.chyba, 409);
+      return ok(krok);
     }
     // Detail partie: účastník (svoja strana plná, súperova verejná) a správca.
     if (metoda === "GET" && casti[1] === "partie" && casti.length === 3) {
