@@ -377,6 +377,22 @@ textarea {
   background: var(--plocha-3);
 }
 
+/* Počet noviniek od poslednej návštevy Noviniek (2026-10-22). */
+.nav-znacka {
+  display: inline-block;
+  min-width: 1.35em;
+  margin-left: 6px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--akcent);
+  color: var(--na-akcente);
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.35em;
+  text-align: center;
+  vertical-align: 0.1em;
+}
+
 .ucet {
   position: relative;
   display: flex;
@@ -475,6 +491,22 @@ textarea {
   height: 2px;
   background: var(--text);
   border-radius: 2px;
+}
+
+/* Na mobile je navigácia schovaná — nové novinky prezradí bodka na hamburgeri. */
+.hamburger.ma-novinky {
+  position: relative;
+}
+
+.hamburger.ma-novinky::after {
+  content: "";
+  position: absolute;
+  top: 9px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--akcent);
 }
 
 .obsah {

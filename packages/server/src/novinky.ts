@@ -115,4 +115,19 @@ export class Novinky {
     this.jedna(id);
     this.db.prepare("DELETE FROM novinky WHERE id = ?").run(id);
   }
+
+  /** Koľko noviniek pribudlo po čase `od` — značka pri odkaze v navigácii. */
+  pocetOd(od: number): number {
+    return (this.db.prepare("SELECT COUNT(*) AS n FROM novinky WHERE vytvorena > ?").get(od) as { n: number }).n;
+  }
+
+  /** Kedy hráč naposledy otvoril Novinky; kým ich neotvoril, ráta sa od registrácie (staré novinky nie sú „nové“). */
+  videne(pouzivatel: number): number {
+    const r = this.db.prepare("SELECT COALESCE(novinky_videne, vytvoreny) AS t FROM pouzivatelia WHERE id = ?").get(pouzivatel) as { t: number } | undefined;
+    return r === undefined ? 0 : Number(r.t);
+  }
+
+  oznacVidene(pouzivatel: number, teraz: number): void {
+    this.db.prepare("UPDATE pouzivatelia SET novinky_videne = ? WHERE id = ?").run(teraz, pouzivatel);
+  }
 }

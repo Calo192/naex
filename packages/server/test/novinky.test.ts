@@ -12,7 +12,10 @@ interface Novinka {
   nadpis: string;
   text: string;
   odkaz: string;
+  vytvorena: number;
 }
+
+const chvila = (): Promise<void> => new Promise((r) => setTimeout(r, 5));
 
 let server: GameServer;
 let zmaz: () => Promise<void>;
@@ -98,5 +101,32 @@ describe("novinky", () => {
     expect((await zoznam()).some((n) => n.id === id)).toBe(false);
     expect((await volaj("DELETE", `/admin/novinky/${id}`, admin)).status).toBe(404);
     expect((await volaj("PATCH", "/admin/novinky/9999", admin, { nadpis: "X" })).status).toBe(404);
+  });
+
+  it("počet nových: prihlásenému od poslednej návštevy (predtým od registrácie), návštevníkovi od času z prehliadača", async () => {
+    const pocet = async (cookie: string | null, od?: string): Promise<number> =>
+      ((await (await volaj("GET", `/novinky/nove${od === undefined ? "" : `?od=${od}`}`, cookie)).json()) as { pocet: number }).pocet;
+
+    await chvila();
+    const novy = (await registruj(server.port)).cookie;
+    // Staré novinky nie sú pre nového hráča „nové“.
+    expect(await pocet(novy)).toBe(0);
+    await chvila();
+    await volaj("POST", "/admin/novinky", admin, { ...ZAKLAD, nadpis: "Čerstvá" });
+    expect(await pocet(novy)).toBe(1);
+
+    const { videne } = (await (await volaj("GET", "/novinky", novy)).json()) as { videne: number | null };
+    expect(typeof videne).toBe("number");
+    expect((await (await volaj("GET", "/novinky", null)).json()) as { videne: unknown }).toMatchObject({ videne: null });
+    expect((await volaj("POST", "/novinky/videne", null)).status).toBe(401);
+    await chvila();
+    expect((await volaj("POST", "/novinky/videne", novy)).status).toBe(200);
+    expect(await pocet(novy)).toBe(0);
+
+    const cerstva = (await zoznam()).find((n) => n.nadpis === "Čerstvá") as Novinka;
+    expect(await pocet(null)).toBe(0);
+    expect(await pocet(null, "abc")).toBe(0);
+    expect(await pocet(null, String(cerstva.vytvorena - 1))).toBe(1);
+    expect(await pocet(null, String(cerstva.vytvorena))).toBe(0);
   });
 });

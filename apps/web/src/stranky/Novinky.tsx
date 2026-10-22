@@ -1,10 +1,11 @@
 // Novinky (Michal 2026-10-22): čo sa v hre a na webe zmenilo, napísané pre
 // hráča. Verejné aj pre návštevníkov; píše ich správca (agent Admin), až keď
 // je zmena na živom webe. Značka „nové“ = pribudla od poslednej návštevy
-// tejto stránky (pamätá si to prehliadač).
+// tejto stránky (prihlásenému to pamätá server, návštevníkovi prehliadač).
 
 import { useEffect, useMemo, useState } from "react";
 import { api } from "../lib/api.ts";
+import { NOVINKY_VIDENE, citajVidene, ulozVidene } from "../lib/novinky.ts";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { Hlaska, Nacitavanie } from "../komponenty.tsx";
 import "./novinky.css";
@@ -20,26 +21,6 @@ interface Novinka {
   readonly text: string;
   readonly odkaz: string;
   readonly vytvorena: number;
-}
-
-const KLUC_VIDENE = "naex.novinkyVidene";
-
-/** Kedy hráč naposledy videl novinky (čas najnovšej z nich); null = prvá návšteva alebo bez úložiska. */
-function citajVidene(): number | null {
-  try {
-    const v = Number(localStorage.getItem(KLUC_VIDENE));
-    return Number.isFinite(v) && v > 0 ? v : null;
-  } catch {
-    return null;
-  }
-}
-
-function ulozVidene(cas: number): void {
-  try {
-    localStorage.setItem(KLUC_VIDENE, String(cas));
-  } catch {
-    // Súkromné okno či zakázané úložisko — značka „nové“ len nebude fungovať.
-  }
 }
 
 const textOdkazu = (odkaz: string): string =>
@@ -58,16 +39,23 @@ export function Novinky() {
   const [novinky, setNovinky] = useState<readonly Novinka[] | null>(null);
   const [chyba, setChyba] = useState<string | null>(null);
   const [filter, setFilter] = useState<Kategoria | null>(null);
-  // Prečíta sa raz pri otvorení — kým je stránka otvorená, značky ostanú.
-  const [videne] = useState(citajVidene);
+  // Zistí sa raz pri otvorení — kým je stránka otvorená, značky ostanú.
+  const [videne, setVidene] = useState<number | null>(null);
 
   useEffect(() => {
     api
-      .get<{ novinky: Novinka[] }>("/novinky")
+      .get<{ novinky: Novinka[]; videne: number | null }>("/novinky")
       .then((r) => {
         setNovinky(r.novinky);
-        const najnovsia = Math.max(0, ...r.novinky.map((n) => n.vytvorena));
-        if (najnovsia > 0) ulozVidene(najnovsia);
+        if (r.videne !== null) {
+          setVidene(r.videne);
+          api.post("/novinky/videne").catch(() => undefined);
+        } else {
+          setVidene(citajVidene());
+          const najnovsia = Math.max(0, ...r.novinky.map((n) => n.vytvorena));
+          if (najnovsia > 0) ulozVidene(najnovsia);
+        }
+        window.dispatchEvent(new Event(NOVINKY_VIDENE));
       })
       .catch((e: unknown) => setChyba(e instanceof Error ? e.message : String(e)));
   }, []);
