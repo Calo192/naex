@@ -17,6 +17,7 @@ import type { DruhMedia, Media } from "./media.ts";
 import type { Hudba } from "./hudba.ts";
 import type { Obsah } from "./obsah.ts";
 import type { Archiv } from "./archiv.ts";
+import type { TempoPartii } from "./tempo.ts";
 import type { KategoriaNazoru, Nazory, Triedenie } from "./nazory.ts";
 import type { Playtesty } from "./playtesty.ts";
 import type { Navrhy } from "./navrhy.ts";
@@ -51,6 +52,8 @@ export interface ApiKontext {
   /** Hlášky majstra Melichara v partii proti počítaču. */
   readonly melichar: Hudba;
   readonly archiv: Archiv;
+  /** Čas a príkazy po fázach každej dohratej partie (roadmapa #9). */
+  readonly tempoPartii: TempoPartii;
   readonly nazory: Nazory;
   readonly playtesty: Playtesty;
   /** Návrhy zlepšení z playtestov a rozhodnutia o nich (sekcia Playtest). */
@@ -641,6 +644,8 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     }
 
     if (sub === "GET /pouzivatelia") return ok({ pouzivatelia: ctx.ucty.zoznam() });
+    // Tempo partií — kde ide čas (roadmapa #9, admin.ts tempo).
+    if (sub === "GET /tempo") return ok({ partie: ctx.tempoPartii.zoznam() });
     // Štatistiky kariet z odohraných partií (rebalans); ?od=<verzia sady>.
     if (sub === "GET /statistiky-kariet") {
       const od = query.get("od");

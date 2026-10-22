@@ -51,6 +51,7 @@
 //   stav <id-nazoru> <stav>       nove | prijate | planovane | hotove | zamietnute
 //   playtesty                     reporty playtestov
 //   pouzivatelia                  účty na webe
+//   tempo [--json]                koľko trvajú partie a kde ide čas (fázy, príkazy) — roadmapa #9
 //   ucet                          prihlási agenta (prvýkrát založí a povýši účet)
 //   avatar <subor>                avatar účtu Admin (AI)
 // Playtest (sekcia Playtest na webe — reporty a návrhy, Michal 2026-10-21)
@@ -85,6 +86,8 @@ import { nacitajEnv, prihlasAgenta, webUrl } from "../playtest/web.ts";
 import { MAX_KOL_NA_KARTU, generuj, nacitajZaznam } from "./leonardo.ts";
 import type { Sila } from "./leonardo.ts";
 import { MODEL, REFERENCIE, cestyReferencii, kategoriaPodlaTagov, zostavPrompt } from "./styl.ts";
+import type { PartiaTempa } from "./tempo.ts";
+import { prehladTempa } from "./tempo.ts";
 
 export const MENO_AGENTA = "Admin";
 export const PRACOVNY = "admin-agent";
@@ -985,6 +988,13 @@ async function main(): Promise<void> {
       const telo = { ...(JSON.parse(readFileSync(subor, "utf8")) as Record<string, unknown>), stlpec: "prijimac" };
       const r = await api<{ id: number }>("POST", "/roadmapa", telo);
       console.log(`Položka #${r.id} je v Prijímači — ${url}/vyvoj/roadmapa`);
+      break;
+    }
+
+    case "tempo": {
+      const { partie } = await api<{ partie: PartiaTempa[] }>("GET", "/admin/tempo");
+      if (prep.has("--json")) console.log(JSON.stringify(partie, null, 2));
+      else console.log(prehladTempa(partie));
       break;
     }
 

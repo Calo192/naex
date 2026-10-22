@@ -46,6 +46,8 @@ import type { OtvorenaHra, StavServera } from "./api.ts";
 import { spracujApi } from "./api.ts";
 import type { ZmenaFrajeriny } from "./archiv.ts";
 import { Archiv } from "./archiv.ts";
+import type { StavTempa } from "./tempo.ts";
+import { TempoPartii, fazaPrikazu, noveTempo, zapisPrikaz } from "./tempo.ts";
 import { Nazory } from "./nazory.ts";
 import { Playtesty } from "./playtesty.ts";
 import { Navrhy } from "./navrhy.ts";
@@ -94,6 +96,8 @@ interface Room {
   zaciatok: number;
   /** Štatistiky rozohranej partie — zapisujú sa po každom ťahu. */
   statistiky: DvojicaStatistik | null;
+  /** Čas a príkazy po fázach (roadmapa #9) — ukladá sa aj pri partii s botom. */
+  tempo: StavTempa | null;
   /** Štatistiky kariet rozohranej partie (pre tvorcu kariet). */
   statistikyKariet: StatistikyKariet;
   /** Zmena Frajeriny po dohraní (partia je už v archíve). */
@@ -181,6 +185,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   ucty.pouziPredvoleneAvatary(() => avatary.nahodny());
   const obsah = new Obsah(db, media);
   const archiv = new Archiv(db);
+  const tempoPartii = new TempoPartii(db);
   const nazory = new Nazory(db);
   const playtesty = new Playtesty(opts.playtestyDir ?? fileURLToPath(new URL("../../../docs/playtesty", import.meta.url)), join(dataDir, "playtesty"));
   const navrhy = new Navrhy(db);
@@ -242,6 +247,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           hudba,
           melichar,
           archiv,
+          tempoPartii,
           nazory,
           playtesty,
           navrhy,
@@ -404,6 +410,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           state: null,
           zaciatok: 0,
           statistiky: null,
+          tempo: null,
           statistikyKariet: {},
           vysledok: null,
           odpojenyOd: [null, null],
@@ -423,6 +430,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           room.state = setupGame(room.data, randomInt(2 ** 31), { lokalit: DLZKY_HRY[room.dlzka] });
           room.zaciatok = teraz();
           room.statistiky = noveStatistiky();
+          room.tempo = noveTempo(room.zaciatok);
         }
         usadit(ws, room, 0);
         if (protiBotovi) naplanujBota(room);
@@ -454,6 +462,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           room.state = setupGame(room.data, randomInt(2 ** 31), { lokalit: DLZKY_HRY[room.dlzka] });
           room.zaciatok = teraz();
           room.statistiky = noveStatistiky();
+          room.tempo = noveTempo(room.zaciatok);
           room.statistikyKariet = {};
           broadcast(room, [{ type: "log", text: `Hra začína: ${h0.meno} proti ${h1.meno}.` }]);
         }
@@ -518,6 +527,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     const result = apply(room.data, pred, cmd, seat);
     room.state = result.state;
     room.lastActivity = teraz();
+    if (room.tempo !== null) room.tempo = zapisPrikaz(room.tempo, fazaPrikazu(pred), seat, room.lastActivity, result.events);
     if (room.statistiky !== null) room.statistiky = zapisTah(room.statistiky, pred, cmd, seat, result.state, result.events);
     room.statistikyKariet = zapisTahKariet(room.statistikyKariet, pred, cmd, seat, result.events);
     broadcast(room, result.events);
@@ -527,6 +537,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     if (dohrata) for (const h of room.hraci) if (h !== null && h.id !== BOT_ID) ucty.povysPoPartii(h.id);
     // Partie proti botovi nejdú do archívu — Frajerina a rebríček sú medzi ľuďmi.
     if (pred.koniec === null && result.state.koniec !== null && room.bot === null) zapisDoArchivu(room, result.state, cmd.type !== "vzdat");
+    if (pred.koniec === null && result.state.koniec !== null) zapisTempo(room, result.state, cmd.type !== "vzdat");
     naplanujBota(room);
   };
 
@@ -562,6 +573,25 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     if (room.botTimer !== null) clearTimeout(room.botTimer);
     room.botTimer = null;
     rooms.delete(room.code);
+  };
+
+  const zapisTempo = (room: Room, koniec: GameState, dohrata: boolean): void => {
+    if (room.tempo === null) return;
+    try {
+      tempoPartii.zapis({
+        kod: room.code,
+        zaciatok: room.zaciatok,
+        koniec: room.tempo.posledny,
+        dlzka: room.dlzka,
+        sBotom: room.bot !== null,
+        ai: room.hraci.some((h) => h !== null && h.id !== BOT_ID && ucty.podlaId(h.id)?.ai === true),
+        dohrata,
+        kola: koniec.kolo,
+        tempo: room.tempo,
+      });
+    } catch (err) {
+      console.error("Tempo partie sa nepodarilo zapísať:", err);
+    }
   };
 
   const zapisDoArchivu = (room: Room, koniec: GameState, dohrata: boolean): void => {

@@ -181,6 +181,25 @@ CREATE TABLE IF NOT EXISTS roadmapa (
   dokoncena INTEGER
 );
 CREATE INDEX IF NOT EXISTS roadmapa_stlpec ON roadmapa(stlpec, poradie);
+
+-- Tempo partií (roadmapa #9, Michal 2026-10-22): čas a príkazy po fázach,
+-- aj partie s botom a vzdané. fazy = JSON { faza: { prikazy: [p0, p1], ms: [p0, p1] } }.
+CREATE TABLE IF NOT EXISTS tempo_partii (
+  id INTEGER PRIMARY KEY,
+  kod TEXT NOT NULL,
+  zaciatok INTEGER NOT NULL,
+  koniec INTEGER NOT NULL,
+  dlzka TEXT NOT NULL,
+  s_botom INTEGER NOT NULL,
+  ai INTEGER NOT NULL,
+  dohrata INTEGER NOT NULL,
+  kola INTEGER NOT NULL,
+  bitky INTEGER NOT NULL,
+  pitky INTEGER NOT NULL,
+  prikazy INTEGER NOT NULL,
+  fazy TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS tempo_partii_koniec ON tempo_partii(koniec);
 `;
 
 export function otvorDb(cesta: string): Db {

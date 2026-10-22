@@ -78,6 +78,19 @@ describe("offline protihráč na serveri", () => {
       partie: number;
     };
     expect(r.partie).toBe(0);
+    // Tempo sa však uloží aj pri partii s botom (roadmapa #9): fázy, príkazy, čas.
+    const t = (await (await fetch(`http://127.0.0.1:${server.port}/api/admin/tempo`, { headers: { cookie: admin } })).json()) as {
+      partie: { sBotom: boolean; ai: boolean; dohrata: boolean; prikazy: number; pitky: number; bitky: number; fazy: Record<string, { prikazy: number[]; ms: number[] }> }[];
+    };
+    expect(t.partie).toHaveLength(1);
+    const p = t.partie[0]!;
+    expect(p).toMatchObject({ sBotom: true, ai: false, dohrata: true });
+    expect(p.bitky).toBeGreaterThan(0);
+    expect(p.pitky).toBeGreaterThanOrEqual(p.bitky);
+    const fazy = Object.values(p.fazy);
+    expect(fazy.reduce((s, f) => s + f.prikazy[0]! + f.prikazy[1]!, 0)).toBe(p.prikazy);
+    expect(fazy.reduce((s, f) => s + f.prikazy[0]!, 0)).toBeGreaterThanOrEqual(tahov);
+    expect(Object.keys(p.fazy)).toEqual(expect.arrayContaining(["zhromazdenie", "pitka"]));
     a.zavri();
   }, 120_000);
 
