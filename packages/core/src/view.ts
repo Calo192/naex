@@ -28,6 +28,7 @@ import { cenaDedicstva, mozeHrat, najdiNastroje, naTahu } from "./engine.ts";
 import { MARKER_STRED, posunMarker, priazenHraca, priazenSila } from "./elders.ts";
 import type { MarkerPos } from "./elders.ts";
 import type { DamageResult } from "./battle.ts";
+import { partiaHraca } from "./effects.ts";
 
 export interface HracVerejne {
   readonly rukaPocet: number;
@@ -401,5 +402,84 @@ export function nahladPosunuMarkera(
     zmena: [po[0] - pred[0], po[1] - pred[1]],
     priazen: priazenHraca(posunuty),
     sila: priazenSila(posunuty),
+  };
+}
+
+/** Stávka bitky z pohľadu `view.ja` — o koľko sa pohne rozdiel bodov (ja − súper). */
+export interface StavkaBitky {
+  /** Prebytok, s ktorým sa ráta výhra aj prehra. */
+  readonly prebytok: number;
+  /** Výhra s týmto prebytkom: lokalita (aj zo sekery) a posuny markerov k súperovi. */
+  readonly vyhra: number;
+  /** Prehra s týmto prebytkom — súper rozdelí prebytok proti mne (záporné číslo). */
+  readonly prehra: number;
+  /** Len v poslednej bitke: najviac, čo môže súper získať (prebytok 1 – 5); inak null. */
+  readonly superNajviac: number | null;
+}
+
+/** Prebytok, pre ktorý sa ukazuje stávka bitky (návrh 3 A z playtestu 20261021-143600). */
+export const STAVKA_PREBYTOK = 3;
+const STAVKA_PREBYTOK_NAJVIAC = 5;
+
+/**
+ * Ako sa pohne rozdiel bodov (vitaz − porazený), keď `vitaz` vyhrá bitku
+ * s prebytkom `prebytok`. Víťaz rozdeľuje prebytok hltavo — každý posun tam,
+ * kde mu najviac pridá (to isté bodyTeraz ako náhľad posunu markera);
+ * porazený dostane cigaretu za každého posunutého staršieho (§8.4).
+ * Pohoršenia ani patronát nerieši — platia bez ohľadu na výsledok, resp.
+ * súperova karta pri patronáte je skrytá. Preto „≈“.
+ */
+function zmenaPoVyhre(data: GameData, view: ClientState, vitaz: PlayerId, prebytok: number): number {
+  const porazeny: PlayerId = vitaz === 0 ? 1 : 0;
+  const rozdiel = (v: ClientState): number => {
+    const b = bodyTeraz(data, v).spolu;
+    return b[vitaz] - b[porazeny];
+  };
+  const lokalita = view.ciel?.typ === "lokalita" ? view.ciel.lokalita : null;
+  const ziskane = [...(lokalita === null ? [] : [lokalita]), ...view.naSekeru.filter((k) => k.uid !== lokalita?.uid)];
+  let v: ClientState = { ...view, ovladnute: [...view.ovladnute, ...ziskane.map((karta) => ({ karta, hrac: vitaz }))] };
+  // Miňištrant vo víťazovej partii zdraží každý posun (§8.4).
+  const cena = 1 + partiaHraca(view, vitaz).filter((pl) => pl.card.defId === "ministrant").length;
+  const posunute = new Set<string>();
+  for (let zostava = prebytok; zostava >= cena; zostava -= cena) {
+    let najlepsi: { readonly v: ClientState; readonly hodnota: number; readonly elderId: string } | null = null;
+    for (const e of v.starsi) {
+      const marker = posunMarker(e, porazeny, false);
+      if (marker === null) continue;
+      const po: ClientState = { ...v, starsi: v.starsi.map((x) => (x.elderId === e.elderId ? { ...x, marker } : x)) };
+      const hodnota = rozdiel(po);
+      if (najlepsi === null || hodnota > najlepsi.hodnota) najlepsi = { v: po, hodnota, elderId: e.elderId };
+    }
+    if (najlepsi === null) break;
+    v = najlepsi.v;
+    posunute.add(najlepsi.elderId);
+  }
+  const hraci: [HracVerejne, HracVerejne] = [v.hraci[0], v.hraci[1]];
+  hraci[porazeny] = { ...hraci[porazeny], cigarety: hraci[porazeny].cigarety + posunute.size };
+  return rozdiel({ ...v, hraci }) - rozdiel(view);
+}
+
+/**
+ * Stávka bitky (Michal 2026-10-22, návrh 3 A): čo hráč získa výhrou a stratí
+ * prehrou s prebytkom STAVKA_PREBYTOK, a pred poslednou bitkou, koľko najviac
+ * môže súper získať. Rozdiel bodov ja − súper, ten istý výpočet ako bodyTeraz.
+ */
+export function stavkaBitky(data: GameData, view: ClientState, prebytok = STAVKA_PREBYTOK): StavkaBitky | null {
+  if (view.ciel?.typ !== "lokalita" || view.koniec !== null) return null;
+  const ja = view.ja;
+  const super_: PlayerId = ja === 0 ? 1 : 0;
+  const posledna = view.lokalityVHre.length === 0;
+  let superNajviac: number | null = null;
+  if (posledna) {
+    for (let n = 1; n <= STAVKA_PREBYTOK_NAJVIAC; n++) {
+      const zisk = zmenaPoVyhre(data, view, super_, n);
+      if (superNajviac === null || zisk > superNajviac) superNajviac = zisk;
+    }
+  }
+  return {
+    prebytok,
+    vyhra: zmenaPoVyhre(data, view, ja, prebytok),
+    prehra: -zmenaPoVyhre(data, view, super_, prebytok),
+    superNajviac,
   };
 }

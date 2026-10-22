@@ -2767,6 +2767,26 @@ button.dlzka-volba.aktivna {
   color: var(--text);
 }
 
+/* Stávka bitky (návrh 3 A): koľko bodov sa prevráti výhrou a prehrou. */
+.stavka-bitky {
+  font-size: 0.85rem;
+  color: var(--text);
+  cursor: help;
+}
+
+.stavka-nazov {
+  color: var(--tlmeny);
+}
+
+.stavka-plus {
+  color: var(--zelena);
+}
+
+.stavka-minus,
+.stavka-posledna b {
+  color: var(--cervena-text);
+}
+
 @media (max-width: 760px) {
   .stavba-rad {
     grid-template-columns: 1fr 1fr;

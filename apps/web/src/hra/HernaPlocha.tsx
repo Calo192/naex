@@ -70,6 +70,7 @@ import {
   priazenHraca,
   priazenSila,
   scorecardStarsieho,
+  stavkaBitky,
   stavZavislosti,
   stranyLokality,
   vydesil,
@@ -84,6 +85,7 @@ import { LUPA_PREDVOLENA, useUcet } from "../lib/ucet.tsx";
 import { Vrstva as VrstvaPanel } from "./Vrstva.tsx";
 import { BitkaPanel, CenaCigariet, HracDoska, IkonaCigareta, IkonaPoldeci, PriebehKola, type VyhladPitky } from "./Panely.tsx";
 import { RozpisBodov } from "./RozpisBodov.tsx";
+import { StavkaBitky } from "./StavkaBitky.tsx";
 import { Scoreboard } from "./Scoreboard.tsx";
 import { Scorecard, StavStarsieho, UCINOK_PRIAZNE } from "./Scorecard.tsx";
 import type { HracInfo, ZmenyFrajeriny } from "./useHra.ts";
@@ -674,6 +676,11 @@ export function HernaPlocha({
   // ktoré navrhnutý ťah vypije.
   const otocenaTeraz = lokalitaNavrh?.otocena ?? view.lokalitaOtocena;
   const vypijemVTahu = plan?.poldeci ?? 0;
+  // Stávka bitky (návrh 3 A): v pásme kola a pri potvrdení pasu.
+  const stavka = useMemo(
+    () => (view.faza === "zhromazdenie" || view.faza === "pitka" ? stavkaBitky(data, view) : null),
+    [data, view],
+  );
   const nahladyPitky = useMemo(() => {
     if (view.koniec !== null || (view.faza !== "zhromazdenie" && view.faza !== "pitka") || stol.ciel === null) return null;
     const h = view.hraci;
@@ -2050,9 +2057,17 @@ export function HernaPlocha({
             return {
               nadpis,
               text: (
-                <strong>
-                  Pasovať? Do Pitky už nevyložíš ani jednu kartu, {menoHraca(super_)} vykladá sám. Dostaneš {cigariet(zaPas)}.
-                </strong>
+                <>
+                  <strong>
+                    Pasovať? Do Pitky už nevyložíš ani jednu kartu, {menoHraca(super_)} vykladá sám. Dostaneš {cigariet(zaPas)}.
+                  </strong>
+                  {stavka !== null && (
+                    <>
+                      <br />
+                      <StavkaBitky stavka={stavka} />
+                    </>
+                  )}
+                </>
               ),
               vpravo: (
                 <>
@@ -3156,6 +3171,7 @@ export function HernaPlocha({
           {limityDalej}
         </span>
         {stolicky}
+        {stavka !== null && <StavkaBitky stavka={stavka} />}
         {view.faza === "zhromazdenie" && (
           <span className="pas-limit">
             {sloty(ja)}
