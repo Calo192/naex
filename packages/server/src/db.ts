@@ -215,6 +215,50 @@ CREATE TABLE IF NOT EXISTS novinky (
   upravena INTEGER NOT NULL
 );
 CREATE INDEX IF NOT EXISTS novinky_datum ON novinky(datum);
+
+-- Dielňa (Michal 2026-10-22): návrhy kariet od hráčov. data = obsah návrhu (JSON),
+-- zaklad_karta = podoba upravovanej karty v čase návrhu, prevzate = obsah pri
+-- schválení (podľa neho glosár pozná, či admin kartu prerobil).
+CREATE TABLE IF NOT EXISTS dielna_navrhy (
+  id INTEGER PRIMARY KEY,
+  autor INTEGER NOT NULL REFERENCES pouzivatelia(id) ON DELETE CASCADE,
+  typ TEXT NOT NULL,
+  zaklad TEXT,
+  zaklad_karta TEXT,
+  data TEXT NOT NULL,
+  stav TEXT NOT NULL,
+  dovod TEXT NOT NULL DEFAULT '',
+  skryty INTEGER NOT NULL DEFAULT 0,
+  karta_id TEXT,
+  prevzate TEXT,
+  vytvoreny INTEGER NOT NULL,
+  upraveny INTEGER NOT NULL,
+  odoslany INTEGER,
+  posudeny INTEGER,
+  posudil INTEGER,
+  autor_videne INTEGER
+);
+CREATE INDEX IF NOT EXISTS dielna_navrhy_autor ON dielna_navrhy(autor, stav);
+CREATE TABLE IF NOT EXISTS dielna_cigarety (
+  navrh INTEGER NOT NULL REFERENCES dielna_navrhy(id) ON DELETE CASCADE,
+  pouzivatel INTEGER NOT NULL REFERENCES pouzivatelia(id) ON DELETE CASCADE,
+  cas INTEGER NOT NULL,
+  PRIMARY KEY (navrh, pouzivatel)
+);
+CREATE TABLE IF NOT EXISTS dielna_komentare (
+  id INTEGER PRIMARY KEY,
+  navrh INTEGER NOT NULL REFERENCES dielna_navrhy(id) ON DELETE CASCADE,
+  autor INTEGER NOT NULL REFERENCES pouzivatelia(id) ON DELETE CASCADE,
+  text TEXT NOT NULL,
+  vytvoreny INTEGER NOT NULL
+);
+CREATE TABLE IF NOT EXISTS dielna_nahlasenia (
+  navrh INTEGER NOT NULL REFERENCES dielna_navrhy(id) ON DELETE CASCADE,
+  pouzivatel INTEGER NOT NULL REFERENCES pouzivatelia(id) ON DELETE CASCADE,
+  dovod TEXT NOT NULL,
+  cas INTEGER NOT NULL,
+  PRIMARY KEY (navrh, pouzivatel)
+);
 `;
 
 export function otvorDb(cesta: string): Db {

@@ -25,6 +25,8 @@ import type { Playtesty } from "./playtesty.ts";
 import type { Navrhy } from "./navrhy.ts";
 import type { Roadmapa } from "./roadmapa.ts";
 import type { Novinky } from "./novinky.ts";
+import type { Dielna } from "./dielna.ts";
+import { KRABICKA, MAX_OTVORENYCH } from "./dielna.ts";
 import type { Hodnotenia } from "./znamky.ts";
 import { overKategoriu as overKategoriuNazoru } from "./nazory.ts";
 
@@ -67,6 +69,8 @@ export interface ApiKontext {
   readonly roadmapa: Roadmapa;
   /** Novinky pre hráčov — verejné, píše správca. */
   readonly novinky: Novinky;
+  /** Dielňa — návrhy kariet od hráčov, hlasovanie cigaretami, posudok správcu. */
+  readonly dielna: Dielna;
   /** Známky hry podľa 12 kritérií a ich vývoj v čase. */
   readonly hodnotenia: Hodnotenia;
   readonly teraz: () => number;
@@ -426,6 +430,64 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     if (r === "POST /novinky/videne") {
       ctx.novinky.oznacVidene(prihlaseny().id, teraz);
       return ok({ ok: true });
+    }
+
+    // ----- Dielňa: čítanie verejné, písanie podľa práva navrhovat_karty -----
+    if (casti[1] === "dielna") {
+      if (r === "GET /dielna") {
+        return ok({
+          navrhy: ctx.dielna.zoznam(ja, teraz),
+          krabicka: KRABICKA,
+          maxOtvorenych: MAX_OTVORENYCH,
+          smiem: ja !== null && ctx.prava.smie(ja, "navrhovat_karty"),
+          noveRozhodnutia: ja === null ? 0 : ctx.dielna.noveRozhodnutia(ja),
+        });
+      }
+      // Obrázky knižnice na čítanie pre editor Dielne (nahrávať smie len správca).
+      if (r === "GET /dielna/kniznica") return ok({ media: ctx.media.zoznam("kniznica").map((m) => ({ id: m.id, nazov: m.nazov })) });
+      if (r === "GET /dielna/autori") return ok({ autori: ctx.dielna.autoriKariet() });
+      // Značka pri Kartách: koľko rozhodnutí o mojich návrhoch som ešte nevidel.
+      if (r === "GET /dielna/znacka") return ok({ pocet: ja === null ? 0 : ctx.dielna.noveRozhodnutia(ja) });
+      if (r === "POST /dielna") return ok({ id: ctx.dielna.vytvor(prihlaseny(), await citajJson(req), teraz) }, 201);
+      if (metoda === "DELETE" && casti[2] === "komentare" && casti.length === 4) {
+        ctx.dielna.zmazKomentar(prihlaseny(), Number(casti[3]));
+        return ok({ ok: true });
+      }
+      const id = Number(casti[2]);
+      if (!Number.isInteger(id)) throw new ChybaVstupu("Neznáma cesta.", 404);
+      const akcia = casti.length === 3 ? "" : (casti[3] ?? "");
+      if (casti.length > 4) throw new ChybaVstupu("Neznáma cesta.", 404);
+      if (metoda === "GET" && akcia === "") {
+        const d = ctx.dielna.detail(ja, id, teraz);
+        if (ja !== null && d.autor.id === ja.id) ctx.dielna.videl(ja, id, teraz);
+        return ok({ navrh: d });
+      }
+      const p = prihlaseny();
+      if (metoda === "PATCH" && akcia === "") {
+        ctx.dielna.uprav(p, id, await citajJson(req), teraz);
+        return ok({ ok: true });
+      }
+      if (metoda === "DELETE" && akcia === "") {
+        ctx.dielna.zmaz(p, id);
+        return ok({ ok: true });
+      }
+      if (metoda === "POST" && akcia === "odoslat") {
+        ctx.dielna.odosli(p, id, teraz);
+        return ok({ ok: true });
+      }
+      if ((metoda === "PUT" || metoda === "DELETE") && akcia === "cigareta") return ok({ cigarety: ctx.dielna.cigareta(p, id, metoda === "PUT", teraz) });
+      if (metoda === "POST" && akcia === "komentare") return ok({ id: ctx.dielna.komentuj(p, id, (await citajJson(req)).text, teraz) }, 201);
+      if (metoda === "POST" && akcia === "nahlasit") {
+        ctx.dielna.nahlas(p, id, (await citajJson(req)).dovod, teraz);
+        return ok({ ok: true });
+      }
+      if (metoda === "GET" && akcia === "nahlasenia") return ok({ nahlasenia: ctx.dielna.nahlasenia(p, id) });
+      if (metoda === "POST" && akcia === "skryt") {
+        ctx.dielna.skry(p, id, (await citajJson(req)).skryty === true);
+        return ok({ ok: true });
+      }
+      if (metoda === "POST" && akcia === "posudok") return ok(ctx.dielna.posud(p, id, await citajJson(req), teraz));
+      throw new ChybaVstupu("Neznáma cesta.", 404);
     }
 
     // ----- profily hráčov a rebríček (pre prihlásených) -----------------

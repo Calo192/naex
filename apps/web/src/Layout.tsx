@@ -50,6 +50,28 @@ function useNoveNovinky(cesta: string, nacitane: boolean, prihlaseny: boolean): 
   return cesta === "/novinky" ? 0 : pocet;
 }
 
+/** Koľko rozhodnutí o mojich návrhoch v Dielni som ešte nevidel — značka pri Kartách. */
+function useDielnaZnacka(cesta: string, prihlaseny: boolean): number {
+  const [pocet, setPocet] = useState(0);
+  useEffect(() => {
+    if (!prihlaseny) {
+      setPocet(0);
+      return;
+    }
+    let zive = true;
+    api
+      .get<{ pocet: number }>("/dielna/znacka")
+      .then((r) => {
+        if (zive) setPocet(r.pocet);
+      })
+      .catch(() => undefined);
+    return () => {
+      zive = false;
+    };
+  }, [cesta, prihlaseny]);
+  return pocet;
+}
+
 /** siroky = do 1600 px; plna = celé okno pod hlavičkou bez posúvania stránky a bez pätičky (pravidlá). */
 export function Layout({
   children,
@@ -66,6 +88,7 @@ export function Layout({
   const [mobilne, setMobilne] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const noveNovinky = useNoveNovinky(cesta, nacitane, ja !== null);
+  const dielna = useDielnaZnacka(cesta, nacitane && ja !== null);
 
   useEffect(() => {
     setMenu(false);
@@ -90,8 +113,8 @@ export function Layout({
             NA EX!
           </Odkaz>
           <button
-            className={noveNovinky > 0 ? "hamburger ma-novinky" : "hamburger"}
-            aria-label={noveNovinky > 0 ? "Menu (nové novinky)" : "Menu"}
+            className={noveNovinky > 0 || dielna > 0 ? "hamburger ma-novinky" : "hamburger"}
+            aria-label={noveNovinky > 0 ? "Menu (nové novinky)" : dielna > 0 ? "Menu (nové rozhodnutie v Dielni)" : "Menu"}
             aria-expanded={mobilne}
             onClick={() => setMobilne(!mobilne)}
           >
@@ -108,6 +131,11 @@ export function Layout({
                 {n.href === "/novinky" && noveNovinky > 0 && (
                   <span className="nav-znacka" aria-label={`${noveNovinky} ${noveNovinky === 1 ? "nová" : noveNovinky < 5 ? "nové" : "nových"}`}>
                     {noveNovinky > 9 ? "9+" : noveNovinky}
+                  </span>
+                )}
+                {n.href === "/karty" && dielna > 0 && (
+                  <span className="nav-znacka" title="Nové rozhodnutie o tvojom návrhu v Dielni" aria-label="nové rozhodnutie v Dielni">
+                    {dielna > 9 ? "9+" : dielna}
                   </span>
                 )}
               </Odkaz>

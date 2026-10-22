@@ -1,0 +1,519 @@
+/* Dielňa (2026-10-22, dizajn dielna-20261022-1421): stôl návrhov, detail, editor.
+   Farby len cez tokeny (schemy.css: --okraj-pola a stavy --stav-*), všetkých 10 schém funguje samo. */
+
+.karty-zalozky {
+  display: flex;
+  gap: 4px;
+  margin: 4px 0 14px;
+  border-bottom: 1px solid var(--okraj);
+}
+
+.karty-zalozky a {
+  padding: 8px 16px;
+  color: var(--tlmeny);
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+}
+
+.karty-zalozky a:hover {
+  color: var(--text);
+}
+
+.karty-zalozky a.aktivna {
+  color: var(--text);
+  border-bottom-color: var(--akcent);
+}
+
+.dielna {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.dielna-ovladanie,
+.dielna-filtre {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+}
+
+.dielna-filtre {
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.dielna-triedenie {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.dielna-triedenie select {
+  width: auto;
+}
+
+.dielna-pocet {
+  opacity: 0.65;
+  font-size: 0.8em;
+}
+
+.tlacidlo.zakazane {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.dielna-nove-rozhodnutie {
+  border-color: var(--akcent);
+  color: var(--text);
+}
+
+/* ---- stav návrhu: ikona + text + farba (farba nikdy nie je jediný nosič) ---- */
+
+.stav-navrhu {
+  --stav: var(--tlmeny);
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.5;
+  padding: 1px 9px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--stav) 50%, transparent);
+  background: color-mix(in srgb, var(--stav) 14%, transparent);
+  color: color-mix(in srgb, var(--stav) 72%, var(--text));
+}
+
+.stav-hlasovanie {
+  --stav: var(--stav-hlasovanie);
+}
+.stav-koncept,
+.stav-archiv {
+  --stav: var(--tlmeny);
+}
+.stav-vratene {
+  --stav: var(--stav-novy);
+}
+.stav-zamietnute {
+  --stav: var(--stav-zamietnuty);
+}
+.stav-v_tvorcovi,
+.stav-v_hre {
+  --stav: var(--stav-schvaleny);
+}
+
+.odznak-dielna {
+  color: var(--akcent);
+  border-color: color-mix(in srgb, var(--akcent) 45%, transparent);
+}
+
+/* ---- stôl návrhov ---- */
+
+.dielna-stol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.dielna-polozka {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 16px;
+  align-items: center;
+  padding: 12px 16px 12px 12px;
+  border-left: 4px solid var(--okraj-pola);
+}
+
+.dielna-polozka.pas-hlasovanie {
+  border-left-color: var(--stav-hlasovanie);
+}
+.dielna-polozka.pas-v_tvorcovi,
+.dielna-polozka.pas-v_hre {
+  border-left-color: var(--stav-schvaleny);
+}
+.dielna-polozka.pas-zamietnute {
+  border-left-color: var(--stav-zamietnuty);
+}
+.dielna-polozka.pas-vratene {
+  border-left-color: var(--stav-novy);
+}
+
+.dielna-polozka-karta {
+  display: block;
+  line-height: 0;
+}
+
+.dielna-polozka-text {
+  min-width: 0;
+}
+
+.dielna-polozka-text h2 {
+  margin: 4px 0 2px;
+  font-size: 1.15rem;
+}
+
+.dielna-polozka-text h2 a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.dielna-polozka-text h2 a:hover {
+  text-decoration: underline;
+}
+
+.dielna-znacky {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.dielna-typ {
+  font-size: 0.8rem;
+  color: var(--tlmeny);
+}
+
+.dielna-efekt {
+  margin: 2px 0;
+  font-size: 0.92rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.dielna-meta {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  align-items: center;
+}
+
+.dielna-autor {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.dielna-cigarety {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 64px;
+  color: var(--tlmeny);
+  font-size: 0.78rem;
+}
+
+.dielna-cigarety strong {
+  font-size: 1.6rem;
+  color: var(--text);
+  line-height: 1.1;
+}
+
+.dielna-cigarety.krabicka strong {
+  color: var(--akcent);
+}
+
+.dielna-krabicka {
+  margin-top: 2px;
+  padding: 0 6px;
+  border-radius: 4px;
+  background: var(--akcent);
+  color: var(--na-akcente);
+  font-weight: 700;
+}
+
+.dielna-prazdne {
+  padding: 32px 0;
+  text-align: center;
+}
+
+.dielna-karta-chyba {
+  aspect-ratio: 54 / 80;
+  display: grid;
+  place-items: center;
+  border: 1px dashed var(--okraj-pola);
+  border-radius: 8px;
+  color: var(--tlmeny);
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+/* ---- detail ---- */
+
+.dielna-detail-mriezka {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 28px;
+  align-items: start;
+  margin-bottom: 24px;
+}
+
+.dielna-detail-info h1 {
+  margin: 6px 0 4px;
+}
+
+.dielna-podnadpis {
+  font-size: 1.05rem;
+  margin: 18px 0 8px;
+}
+
+.dielna-detail-info .legenda {
+  margin-bottom: 14px;
+}
+
+.dielna-editor-form .cipy {
+  margin-top: 12px;
+}
+
+.dielna-hlas {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin: 14px 0;
+}
+
+.dielna-hlas .cigareta-tlacidlo {
+  min-height: 52px;
+  padding: 8px 18px;
+  font-size: 1.1rem;
+}
+
+.dielna-dovod {
+  margin: 12px 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--okraj-pola);
+  background: var(--plocha-2);
+}
+
+.dielna-dovod.dovod-zamietnute {
+  border-color: color-mix(in srgb, var(--stav-zamietnuty) 55%, transparent);
+}
+
+.dielna-dovod.dovod-vratene {
+  border-color: color-mix(in srgb, var(--stav-novy) 55%, transparent);
+}
+
+.dielna-dovod.dovod-v_tvorcovi {
+  border-color: color-mix(in srgb, var(--stav-schvaleny) 55%, transparent);
+}
+
+.dielna-rozdiel,
+.dielna-posudok,
+.dielna-komentare,
+.dielna-nahlasit {
+  margin-top: 24px;
+}
+
+.dielna-rozdiel-karty {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+}
+
+.dielna-rozdiel-karty figure {
+  margin: 0;
+  text-align: center;
+}
+
+.dielna-sipka {
+  font-size: 2rem;
+  color: var(--tlmeny);
+}
+
+.dielna-zmeny {
+  margin: 12px 0 0;
+  padding-left: 20px;
+}
+
+.dielna-podobne {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.dielna-podobne li {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.dielna-nahlasenia {
+  margin: 0 0 12px;
+  padding-left: 20px;
+}
+
+.dielna-komentare-zoznam {
+  list-style: none;
+  margin: 0 0 14px;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.dielna-komentare-zoznam li {
+  padding: 10px 14px;
+}
+
+.dielna-komentare-zoznam p {
+  margin: 0 0 4px;
+}
+
+/* ---- editor ---- */
+
+.dielna-pole {
+  display: grid;
+  gap: 6px;
+  margin: 12px 0 0;
+}
+
+.dielna-pole > span {
+  font-size: 0.9rem;
+}
+
+.dielna input,
+.dielna textarea,
+.dielna select {
+  border-color: var(--okraj-pola);
+}
+
+.dielna-editor-mriezka {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 24px;
+  align-items: start;
+}
+
+.dielna-editor-form {
+  display: grid;
+  gap: 14px;
+}
+
+.dielna-editor-form h2 {
+  margin: 0 0 10px;
+  font-size: 1.05rem;
+}
+
+.dielna-editor-nahlad {
+  position: sticky;
+  top: 80px;
+}
+
+.dielna-strany {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.dielna-strana {
+  border: 1px solid var(--okraj-pola);
+  border-radius: 10px;
+  padding: 8px 12px 12px;
+  margin: 0;
+}
+
+.dielna-pozicia {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 8px;
+  align-items: center;
+  margin-top: 6px;
+}
+
+.dielna-kniznica-mriezka {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: 8px;
+  max-height: 340px;
+  overflow-y: auto;
+}
+
+.dielna-kniznica-mriezka button {
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  overflow: hidden;
+  line-height: 0;
+  background: none;
+}
+
+.dielna-kniznica-mriezka button.vybrany {
+  border-color: var(--akcent);
+}
+
+.dielna-kniznica-mriezka img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.dielna-vybrany-obrazok {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.dielna-kniznica input[type="search"] {
+  margin-top: 10px;
+}
+
+.dielna-editor-tlacidla {
+  position: sticky;
+  bottom: 0;
+  padding: 10px 0;
+  background: var(--pozadie);
+}
+
+/* ---- mobil ---- */
+
+@media (max-width: 760px) {
+  .dielna-polozka {
+    grid-template-columns: auto 1fr;
+  }
+
+  .dielna-cigarety {
+    grid-column: 2;
+    flex-direction: row;
+    gap: 6px;
+    justify-content: flex-start;
+  }
+
+  .dielna-cigarety strong {
+    font-size: 1.1rem;
+  }
+
+  .dielna-detail-mriezka,
+  .dielna-editor-mriezka {
+    grid-template-columns: 1fr;
+  }
+
+  .dielna-detail-karta {
+    justify-self: center;
+  }
+
+  /* Na mobile je náhľad karty hore, aby bol vidno pri úprave akcií. */
+  .dielna-editor-nahlad {
+    order: -1;
+    position: static;
+    justify-self: center;
+  }
+
+  .dielna-strany {
+    grid-template-columns: 1fr;
+  }
+}

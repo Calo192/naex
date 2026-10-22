@@ -59,6 +59,7 @@ import { Playtesty } from "./playtesty.ts";
 import { Navrhy } from "./navrhy.ts";
 import { Roadmapa } from "./roadmapa.ts";
 import { Novinky } from "./novinky.ts";
+import { Dielna } from "./dielna.ts";
 import { Hodnotenia } from "./znamky.ts";
 import { titul } from "./frajerina.ts";
 
@@ -222,6 +223,17 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   const roadmapa = new Roadmapa(db);
   roadmapa.naplnAkTreba(fileURLToPath(new URL("../seed/roadmapa.json", import.meta.url)), teraz());
   const novinky = new Novinky(db);
+  const dielna = new Dielna(db, prava, {
+    sada: () => obsah.aktualnaSada().sada,
+    kartaTvorcu: (id) => obsah.karty.jeden(id),
+    ulozKartuTvorcu: (k) => obsah.ulozKartu(k),
+    predvoleneRozmery: () => obsah.nastavenia(),
+    jeObrazok: (id) => {
+      const z = /^[0-9a-f]{40}$/.test(id) ? media.zaznam(id) : null;
+      return z !== null && (z.druh === "kniznica" || z.druh === "karta");
+    },
+    doRoadmapy: (ja, polozka, cas) => roadmapa.pridaj(ja, polozka, cas),
+  });
   const hodnotenia = new Hodnotenia(db, prava);
   obsah.naplnAkTreba(teraz());
   obsah.naplnBodovanieAkTreba(teraz());
@@ -285,6 +297,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           navrhy,
           roadmapa,
           novinky,
+          dielna,
           hodnotenia,
           teraz,
           bezpecneCookie: opts.bezpecneCookie ?? false,
