@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
-import type { ClientState, ElderState, GameState } from "../src/index.ts";
+import type { ClientState, ElderState, GameState, MarkerPos } from "../src/index.ts";
 import { apply, bodyTeraz, loadGameData, nahladPosunuMarkera, nahladPosunuPrebytkom, posunMarker, setupGame, viewFor } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
@@ -15,7 +15,7 @@ const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 function vPrebytku(seed: number, zostava: number): GameState {
   const s0 = setupGame(data, seed);
   // Rôzne pozície markerov — v neutráli by podmienky (aj cigarety) nebodovali.
-  const stred = (e: ElderState, i: number): ElderState => ({ ...e, marker: [1, 2, 3, 5, 6, 7, 2, 6][(i + seed) % 8]!, markerZaciatokKola: 4 });
+  const stred = (e: ElderState, i: number): ElderState => ({ ...e, marker: ([1, 2, 3, 5, 6, 7, 2, 6] as const)[(i + seed) % 8] as MarkerPos, markerZaciatokKola: 4 });
   return {
     ...s0,
     faza: "bitka",
