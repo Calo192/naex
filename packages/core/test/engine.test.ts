@@ -82,11 +82,11 @@ function smoke(seed: number, kontrolaFiltrovania: boolean): { state: GameState; 
 }
 
 describe("M6 — setup", () => {
-  it("hra sa rozdá: 10 štartovacích kariet, z toho 5 na ruke, šenok prázdny, poldeci 3, cigarety 3", () => {
+  it("hra sa rozdá: 7 štartovacích kariet, z toho 5 na ruke, šenok prázdny, poldeci 2, cigarety 3", () => {
     const state = setupGame(data, 42);
     for (const p of [0, 1] as const) {
       expect(state.hraci[p].ruka.length).toBe(5);
-      expect(state.hraci[p].doberaci.length).toBe(5);
+      expect(state.hraci[p].doberaci.length).toBe(2);
     }
     expect(state.senok.length).toBe(0);
     expect(state.starsi.length).toBe(8);

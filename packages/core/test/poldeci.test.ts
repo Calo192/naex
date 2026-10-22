@@ -48,7 +48,8 @@ function koniecBitky(poldeci: readonly [readonly [number, number], readonly [num
     strany: [[], []],
     hraci: [
       { ...s0.hraci[0], ruka, poldeciPlne: poldeci[0][0], poldeciVypite: poldeci[0][1] },
-      { ...s0.hraci[1], ruka: [], poldeciPlne: poldeci[1][0], poldeciVypite: poldeci[1][1] },
+      // 7 štartoviek (Michal 2026-10-22): doberací doplnený na 5, aby balíček neklesol pod 5.
+      { ...s0.hraci[1], ruka: [], doberaci: [...s0.hraci[1].doberaci, inst("pijan"), inst("pijan"), inst("pijan")], poldeciPlne: poldeci[1][0], poldeciVypite: poldeci[1][1] },
     ],
     ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
     lokalityVHre: s0.lokalityVHre.slice(1),

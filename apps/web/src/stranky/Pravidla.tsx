@@ -536,7 +536,7 @@ const KAPITOLY: readonly Kapitola[] = [
       <>
         <p>
           Zvoľte dĺžku hry — vyberte 5 lokalít (krátka hra), 7 (stredná) alebo 11 (dlhá). Rozmiestnite 8 starších, markery do stredu. Každý
-          hráč zamieša svojich 10 štartovacích kariet (Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj) do
+          hráč zamieša svojich 7 štartovacích kariet (3 Pijani, 2 Miňištranti, Milujúca manželka, Dievčina na vydaj) do
           doberacieho balíčka a dobere si <strong>5 kariet do ruky</strong>. K tomu <strong>3 cigarety a 2 plné poldeci</strong>.
         </p>
         <p className="zvyraznene">

@@ -317,7 +317,8 @@ uzavrel Michal 2026-10-22 (roadmapa #11); odpovede sú v PRAVIDLA.md.
 6. ~~**Absťák** — čo presne sa počíta ako „nerest"?~~ Pitie aj fajčenie, platby
    za šenok, Dedičstvo a Starostu nie (§12).
 7. ~~**Štartovacia ruka** — ako sa 10 kariet delí medzi 4 typy štartoviek?~~
-   Vyriešené (Michal 2026-10-18): obaja 4 Pijan, 2 Miňištrant, 2 Milujúca
+   Vyriešené (Michal 2026-10-22, roadmapa #8): 7 kariet — 3 Pijan, 2 Miňištrant,
+   1 Milujúca manželka, 1 Dievčina na vydaj. Predtým (2026-10-18): 4 Pijan, 2 Miňištrant, 2 Milujúca
    manželka, 2 Dievčina na vydaj; tieto druhy nie sú v spoločnom balíčku ani v šenku.
 8. ~~**Lokality** — v `cards.json` je len **7**.~~ Vyriešené (Michal 2026-10-20):
    sada má 14 lokalít; krátka 5, stredná 7, dlhá 11 bitiek, dlhá hra sa dá zvoliť.

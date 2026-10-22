@@ -37,7 +37,10 @@ function vPatronate(zona: 1 | 2 | 3, uprav: (s: GameState, u: PlayerId) => GameS
   const obcan = inst("pijan");
   const marker = naPolovici(u, zona);
   const hraci = s0.hraci.map((h, i) =>
-    i === u ? { ...h, ruka: [obcan, inst("noviny")], cigarety: 3 } : { ...h, ruka: [inst("pijan")] },
+    // 7 štartoviek (Michal 2026-10-22): doberací doplnený na 5, aby balíček neklesol pod 5.
+    i === u
+      ? { ...h, ruka: [obcan, inst("noviny")], cigarety: 3, doberaci: [...h.doberaci, inst("pijan"), inst("pijan"), inst("pijan")] }
+      : { ...h, ruka: [inst("pijan")], doberaci: [...h.doberaci, inst("pijan"), inst("pijan"), inst("pijan")] },
   ) as unknown as GameState["hraci"];
   const s: GameState = {
     ...s0,

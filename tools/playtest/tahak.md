@@ -8,7 +8,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 
 - **Dĺžka hry** = počet lokalít (krátka 5, stredná 7, dlhá 11). Výpis klienta
   ukazuje, o koľko lokalít sa hrá a koľko je ovládnutých.
-- **Štart:** 5 kariet v ruke, 2 plné poldeci, 3 cigarety (Michal 2026-10-20).
+- **Štart:** 7 štartoviek (3 Pijan, 2 Miňištrant, 1 Milujúca manželka, 1 Dievčina na vydaj;
+  Michal 2026-10-22); 5 kariet v ruke, 2 plné poldeci, 3 cigarety.
 - **Každú kartu** môžeš vyložiť na koniec **svojej aj súperovej strany**
   (`target` `vlastna` / `superova`). Karta **patrí tomu, kto ju zahral** — akcie
   aj efekty sa rátajú majiteľovi, nech leží kdekoľvek. Podstrčený „sabotér"

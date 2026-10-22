@@ -983,8 +983,9 @@ Michala 2026-10-11).
   (pravidlá v3). Dlhú hru možno zvoliť, až keď má zverejnená sada aspoň
   11 lokalít — `data/cards.json` ich má 14 (Michal 2026-10-20).
 - 8 starších, markery do stredu na 0.
-- Každý hráč: **10 štartovacích kariet** — 4 Pijan, 2 Miňištrant, 2 Milujúca
-  manželka, 2 Dievčina na vydaj (v rôznych variáciách; Michal 2026-10-18).
+- Každý hráč: **7 štartovacích kariet** — 3 Pijan, 2 Miňištrant, 1 Milujúca
+  manželka, 1 Dievčina na vydaj (v rôznych variáciách; Michal 2026-10-22 —
+  predtým 10: 4/2/2/2, roadmapa #8).
   Tieto druhy nie sú v spoločnom balíčku ani v šenku. Zamiešajú sa do jeho
   **doberacieho balíčka** a hráč si dobere **5 kariet do ruky** (pravidlá v3).
 - Každý hráč začína s **3 cigaretami**, **2 nevypitými poldeci** (Michal 2026-10-20; predtým 3),

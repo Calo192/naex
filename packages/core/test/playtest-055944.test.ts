@@ -184,7 +184,8 @@ describe("limit ruky zrušený (Michal 2026-10-19)", () => {
       ...s0,
       faza: "bitka",
       strany: [[], [lezi(hrobar, 1)]],
-      hraci: [{ ...s0.hraci[0], ruka }, { ...s0.hraci[1], cigarety: 0, ruka: [] }],
+      // 7 štartoviek (Michal 2026-10-22): doberací doplnený na 5, aby balíček neklesol pod 5.
+      hraci: [{ ...s0.hraci[0], ruka }, { ...s0.hraci[1], cigarety: 0, ruka: [], doberaci: [...s0.hraci[1].doberaci, inst("pijan"), inst("pijan"), inst("pijan")] }],
       ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
       lokalityVHre: s0.lokalityVHre.slice(1),
       bitkaStav: bitka({ krok: "liecba", caka: 0, liecbaHotova: [false, true] }),

@@ -11,6 +11,10 @@ const tahak = readFileSync(new URL("../../../tools/playtest/tahak.md", import.me
 describe("ťahák AI hráčov sedí s constants.ts", () => {
   it.each([
     ["dĺžky hry", `krátka ${DLZKY_HRY.kratka}, stredná ${DLZKY_HRY.stredna}, dlhá ${DLZKY_HRY.dlha}`],
+    [
+      "štartovky",
+      `${Object.values(KONSTANTY.START_RUKA).reduce((a, b) => a + b, 0)} štartoviek (${KONSTANTY.START_RUKA["pijan"]} Pijan, ${KONSTANTY.START_RUKA["ministrant"]} Miňištrant, ${KONSTANTY.START_RUKA["milujuca_manzelka"]} Milujúca manželka, ${KONSTANTY.START_RUKA["dievcina_na_vydaj"]} Dievčina na vydaj`,
+    ],
     ["štart", `${KONSTANTY.VELKOST_RUKY} kariet v ruke, ${KONSTANTY.START_POLDECI} plné poldeci, ${KONSTANTY.START_CIGARETY} cigarety`],
     ["karty po bitke", `dobereš **${KONSTANTY.KARTY_PO_BITKE} karty**`],
     ["cena šenku", `1 karta za ${KONSTANTY.CENA_SENKU[1]} cigaretu, 2 karty za ${KONSTANTY.CENA_SENKU[2]} cigarety`],

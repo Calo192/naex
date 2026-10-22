@@ -16,18 +16,18 @@ const inst = (defId: string): CardInstance => ({ uid: ++uidSeq, defId, leftLayou
 describe("štartovacie karty", () => {
   const STARTOVKY = ["pijan", "ministrant", "milujuca_manzelka", "dievcina_na_vydaj"];
 
-  it("obaja začínajú s 4 Pijanmi, 2 Miňištrantmi, 2 Manželkami a 2 Dievčinami", () => {
+  it("obaja začínajú so 7 štartovkami: 3 Pijani, 2 Miňištranti, Manželka a Dievčina (Michal 2026-10-22)", () => {
     const s = setupGame(data, 7);
     for (const p of [0, 1] as const) {
       const vsetky = [...s.hraci[p].ruka, ...s.hraci[p].doberaci];
       const pocet = (id: string) => vsetky.filter((k) => k.defId === id).length;
-      expect(vsetky).toHaveLength(10);
-      expect(pocet("pijan")).toBe(4);
+      expect(vsetky).toHaveLength(7);
+      expect(pocet("pijan")).toBe(3);
       expect(pocet("ministrant")).toBe(2);
-      expect(pocet("milujuca_manzelka")).toBe(2);
-      expect(pocet("dievcina_na_vydaj")).toBe(2);
+      expect(pocet("milujuca_manzelka")).toBe(1);
+      expect(pocet("dievcina_na_vydaj")).toBe(1);
     }
-    expect(KONSTANTY.START_RUKA).toEqual({ pijan: 4, ministrant: 2, milujuca_manzelka: 2, dievcina_na_vydaj: 2 });
+    expect(KONSTANTY.START_RUKA).toEqual({ pijan: 3, ministrant: 2, milujuca_manzelka: 1, dievcina_na_vydaj: 1 });
   });
 
   it("v spoločnom balíčku (a teda v šenku) štartovky nie sú", () => {

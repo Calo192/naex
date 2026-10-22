@@ -21,14 +21,17 @@ export const KONSTANTY = {
   START_CIGARETY: 3,
 
   /**
-   * Štartovací balíček každého hráča (Michal 2026-10-18). Tieto štyri druhy
-   * sú výhradne štartovacie — v spoločnom balíčku ani v šenku nie sú.
+   * Štartovací balíček každého hráča: 7 kariet (Michal 2026-10-22, roadmapa #8;
+   * predtým 10 = 4/2/2/2). Slabé štartovky majú hráča hnať do šenku a skôr
+   * ustúpiť silnejším kartám; 5 by hráča nechalo hneď na hranici prehry
+   * (balíček pod 5) a s jedným Miňištrantom bez cigariet na šenok. Tieto štyri
+   * druhy sú výhradne štartovacie — v spoločnom balíčku ani v šenku nie sú.
    */
   START_RUKA: {
-    pijan: 4,
+    pijan: 3,
     ministrant: 2,
-    milujuca_manzelka: 2,
-    dievcina_na_vydaj: 2,
+    milujuca_manzelka: 1,
+    dievcina_na_vydaj: 1,
   } as Readonly<Record<string, number>>,
 
   /**

@@ -142,8 +142,9 @@ na jednom mieste v kóde (odkazy v zátvorkách). Michal ich všetky potvrdil
    „Alkoholik: 2 + priazeň“. Michal 2026-10-12 rozhodol 3 + priazeň
    (`constants.ts`). Prah Dlhu (zadĺženie z akcií Dlh) je 2 + sila Úžerníka
    (Michal 2026-10-20).
-7. **Štartovacia ruka** — 4× Pijan, 2× Miňištrant, 2× Milujúca
-   manželka, 2× Dievčina na vydaj (Michal 2026-10-18; `KONSTANTY.START_RUKA`).
+7. **Štartovacia ruka** — 3× Pijan, 2× Miňištrant, 1× Milujúca
+   manželka, 1× Dievčina na vydaj (Michal 2026-10-22, predtým 4/2/2/2;
+   `KONSTANTY.START_RUKA`).
 8. **Lokality** — dĺžka hry = počet bitiek o lokalitu: krátka 5, stredná 7,
    dlhá 11 (`DLZKY_HRY`); sada má 14 lokalít.
 9. **Šenok** — v každom kole sa stavia z toľkých kariet, koľko je
@@ -213,7 +214,7 @@ a `packages/core/data/scorecards.json`. Michal ich potvrdil 2026-10-22
   lokality, získaného staršieho, cigarety, nepriznanej cirhózy (pravidlá
   udávajú len −1 za dlh); kladné za kus platia až od oranžovej zóny. Rozloženie podmienok je z KartyAI,
   scorecardy sa starším rozdávajú náhodne (rozhodnutie Michala 2026-10-11),
-- rozdelenie **štartovacej ruky** (4/2/2/2) a počet **kópií kariet**
+- rozdelenie **štartovacej ruky** (3/2/1/1) a počet **kópií kariet**
   v spoločnom balíčku (2).
 
 ## Zdroje

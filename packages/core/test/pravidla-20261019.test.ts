@@ -151,7 +151,10 @@ describe("Pitky = 1 + menší počet aktivovaných akcií lokality (Michal 2026-
 describe("ruka: +2 karty po bitke, žiadny limit ruky (Michal 2026-10-19)", () => {
   it("po bitke si každý dobere 2 karty, veľkú ruku nikto neodhadzuje", () => {
     const ruka = Array.from({ length: 9 }, () => inst("pijan"));
-    const s = predKoncomBitky(40, (st) => sHracom(sHracom(st, 0, { ruka }), 1, { ruka: [] }));
+    // 7 štartoviek (Michal 2026-10-22): doberací doplnený na 5, aby balíček neklesol pod 5.
+    const s = predKoncomBitky(40, (st) =>
+      sHracom(sHracom(st, 0, { ruka }), 1, { ruka: [], doberaci: [...st.hraci[1].doberaci, inst("pijan"), inst("pijan"), inst("pijan")] }),
+    );
     const po = apply(data, s, { type: "skipLiecba" }, 0).state;
     expect(po.faza).toBe("volbaCiela");
     expect(po.hraci[0].ruka).toHaveLength(9 + KONSTANTY.KARTY_PO_BITKE);
@@ -216,6 +219,8 @@ describe("Milujúca manželka: Absťák aj pri rovnakom počte nerestí", () => 
     const zaklad = (manzelky: number): GameState =>
       predKoncomBitky(44, (st) =>
         sHracom(st, 0, {
+          // 7 štartoviek: aby bolo z čoho ťahať za Absťák aj po bitke.
+          doberaci: [...st.hraci[0].doberaci, inst("pijan"), inst("pijan"), inst("pijan")],
           nerestiMinuleKolo: 2,
           nerestiTotoKolo: 2,
           priznane: Array.from({ length: manzelky }, () => inst("milujuca_manzelka")),
