@@ -2503,11 +2503,22 @@ export function HernaPlocha({
           ) : (
             textVyberu ?? (
               <>
-                {bezNaex.zapnute && (
+                {/* Prepínač je odkaz v texte, nie pečiatka — na hrane by prekryl popis kraja (UX/UI, 1600×1000). */}
+                {bezNaex.zapnute ? (
                   <>
                     <strong>Do konca bitky končíš Pitky sám, bez NA EX.</strong>{" "}
-                    <button className="auto-hotovo-zrusit" onClick={bezNaex.vypni}>
+                    <button className="auto-hotovo-odkaz" onClick={bezNaex.vypni}>
                       zrušiť
+                    </button>{" "}
+                  </>
+                ) : (
+                  <>
+                    <button
+                      className="auto-hotovo-odkaz"
+                      title="Hra za teba v každej ďalšej Pitke tejto bitky ťukne „končím“ — bez NA EX, bez fajčenia. Na súperovo NA EX odpovedáš sám."
+                      onClick={bezNaex.zapni}
+                    >
+                      do konca bitky bez NA EX
                     </button>{" "}
                   </>
                 )}
@@ -2529,22 +2540,7 @@ export function HernaPlocha({
           ),
           vlavo: nakupy,
           stred: naexStred,
-          vpravo: krcma ? (
-            koncim
-          ) : (
-            <>
-              {!bezNaex.zapnute && (
-                <button
-                  className="pecat pecat-tichy"
-                  title="Hra za teba v každej ďalšej Pitke tejto bitky ťukne „končím“ — bez NA EX, bez fajčenia. Na súperovo NA EX odpovedáš sám."
-                  onClick={bezNaex.zapni}
-                >
-                  do konca bitky bez NA EX
-                </button>
-              )}
-              {koncim}
-            </>
-          ),
+          vpravo: koncim,
         };
       }
 

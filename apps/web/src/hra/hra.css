@@ -4194,8 +4194,8 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:focus-visible > .kl {
   }
 }
 
-/* Menej klikov (roadmapa #9 B): „do konca bitky bez NA EX“ sa ruší odkazom v texte Pitky. */
-button.auto-hotovo-zrusit {
+/* Menej klikov (roadmapa #9 B): „do konca bitky bez NA EX“ a jeho zrušenie sú odkazy v texte Pitky. */
+button.auto-hotovo-odkaz {
   padding: 0;
   min-height: 0;
   color: var(--akcent);
