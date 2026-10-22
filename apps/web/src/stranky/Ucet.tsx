@@ -9,6 +9,7 @@ import {
   LUPA_DO,
   LUPA_OD,
   LUPA_PREDVOLENA,
+  MELICHAR_FREKVENCIA_DO,
   MELICHAR_FREKVENCIA_OD,
   MELICHAR_FREKVENCIA_PREDVOLENA,
   MELICHAR_PREDVOLENY,
@@ -243,7 +244,6 @@ export function Profil() {
     return () => clearTimeout(t);
   }, [melichar, frekvencia, ulozenyMelichar, ulozenaFrekvencia]);
 
-  const [ukazkaHlasky, setUkazkaHlasky] = useState<string | null>(null);
   const hlaskaUkazky = useRef<HTMLAudioElement | null>(null);
   useEffect(() => () => hlaskaUkazky.current?.pause(), []);
   const vyskusajHlasku = async (): Promise<void> => {
@@ -256,11 +256,7 @@ export function Profil() {
     }
     const a = new Audio(urlHlasky(h));
     a.volume = hlasitostZvuku(melichar);
-    a.addEventListener("ended", () => {
-      if (hlaskaUkazky.current === a) setUkazkaHlasky(null);
-    });
     hlaskaUkazky.current = a;
-    setUkazkaHlasky(h.nazov);
     a.play().catch(chyba);
   };
 
@@ -525,11 +521,11 @@ export function Profil() {
       <div className="panel">
         <h3>Majster Melichar</h3>
         <p className="tlmene" style={{ marginTop: 0 }}>
-          V partii proti počítaču občas po tvojom ťahu utrúsi hlášku — nie práve najslušnejšiu. Ukladá sa samo.
+          V partii proti počítaču občas utrúsi hlášku, keď dáš NA EX! alebo vyložíš kartu — nie práve najslušnejšiu. Ukladá sa samo.
         </p>
         <Pole
           label={melichar === 0 ? "Hlasitosť: vypnutý" : `Hlasitosť: ${melichar} %`}
-          pomoc="Úplne vľavo Melichar mlčí. Kým hovorí, hudba sa stíši."
+          pomoc="Úplne vľavo Melichar mlčí."
         >
           <input
             type="range"
@@ -549,13 +545,13 @@ export function Profil() {
         </div>
         <Pole
           label={`Frekvencia: pri ${frekvencia} % ťahov`}
-          pomoc="Ako často sa ozve. Na NA EX! dvakrát ochotnejšie a po hláške si vždy chvíľu oddýchne."
+          pomoc={`Ako často sa ozve. Na NA EX! dvakrát ochotnejšie, ale nikdy pri viac než ${MELICHAR_FREKVENCIA_DO} % ťahov, a po hláške si vždy chvíľu oddýchne.`}
         >
           <input
             type="range"
             className="posuvnik-lupy"
             min={MELICHAR_FREKVENCIA_OD}
-            max={100}
+            max={MELICHAR_FREKVENCIA_DO}
             step={5}
             value={frekvencia}
             onChange={(e) => setFrekvencia(Number(e.target.value))}
@@ -565,14 +561,13 @@ export function Profil() {
         </Pole>
         <div className="posuvnik-stupnica" aria-hidden="true">
           <span>zriedka</span>
-          <span>každý druhý ťah</span>
-          <span>stále</span>
+          <span>každý tretí ťah</span>
+          <span>{MELICHAR_FREKVENCIA_DO} %</span>
         </div>
         <div className="riadok-tlacidiel" style={{ marginTop: 12 }}>
           <button type="button" className="tlacidlo-male" onClick={() => void vyskusajHlasku()} disabled={melichar === 0}>
             Vyskúšať
           </button>
-          {ukazkaHlasky !== null && <span className="tlmene">„{ukazkaHlasky}“</span>}
         </div>
       </div>
       </div>

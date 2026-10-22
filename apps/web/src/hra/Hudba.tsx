@@ -16,10 +16,6 @@ export interface Skladba {
 const PAUZA_MS = 10_000;
 const OZNAM_MS = 4_500;
 
-/** Udalosť na window (detail: boolean) — kým hovorí majster Melichar, hudba hrá tichšie. */
-export const TLMENIE_HUDBY = "naex:tlmenie-hudby";
-const TLMENA_HLASITOST = 0.3;
-
 let zoznam: Promise<readonly Skladba[]> | null = null;
 
 /** Zoznam skladieb — načíta sa raz za návštevu; po chybe sa skúsi znova nabudúce. */
@@ -55,23 +51,15 @@ export function HudbaPartie() {
   const zapnuta = hlasitost > 0;
   const audio = useRef<HTMLAudioElement | null>(null);
   const [oznam, setOznam] = useState<{ readonly kluc: number; readonly nazov: string } | null>(null);
-  const [tlmena, setTlmena] = useState(false);
-  const hlasitostTeraz = hlasitostZvuku(hlasitost) * (tlmena ? TLMENA_HLASITOST : 1);
 
   useEffect(() => {
-    const zmena = (e: Event): void => setTlmena(e instanceof CustomEvent && e.detail === true);
-    window.addEventListener(TLMENIE_HUDBY, zmena);
-    return () => window.removeEventListener(TLMENIE_HUDBY, zmena);
-  }, []);
-
-  useEffect(() => {
-    if (audio.current !== null) audio.current.volume = hlasitostTeraz;
-  }, [hlasitostTeraz]);
+    if (audio.current !== null) audio.current.volume = hlasitostZvuku(hlasitost);
+  }, [hlasitost]);
 
   useEffect(() => {
     if (!zapnuta) return;
     const a = new Audio();
-    a.volume = hlasitostTeraz;
+    a.volume = hlasitostZvuku(hlasitost);
     audio.current = a;
     let zive = true;
     let rad: Skladba[] = [];

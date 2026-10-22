@@ -9,7 +9,7 @@ import { useUcet } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { HernaPlocha } from "./HernaPlocha.tsx";
 import { HudbaPartie } from "./Hudba.tsx";
-import { MelicharTitulok, useMelichar } from "./Melichar.tsx";
+import { useMelichar } from "./Melichar.tsx";
 import { useHra } from "./useHra.ts";
 import "./hra.css";
 
@@ -155,9 +155,8 @@ export function Hra() {
   const hra = useHra(ja !== null);
 
   // Majster Melichar komentuje len partie proti počítaču — ľudia si nadávajú sami.
-  const melichar = useMelichar(hra.view !== null && hra.hraci.some((h) => h?.bot === true));
+  const { ozvi } = useMelichar(hra.view !== null && hra.hraci.some((h) => h?.bot === true));
   const { cmd: posliCmd } = hra;
-  const { ozvi } = melichar;
   const cmd = useCallback(
     (c: Command) => {
       ozvi(c);
@@ -247,7 +246,6 @@ export function Hra() {
   return (
     <>
     <HudbaPartie />
-    <MelicharTitulok titulok={melichar.titulok} />
     <HernaPlocha
       view={hra.view}
       data={hra.data}
