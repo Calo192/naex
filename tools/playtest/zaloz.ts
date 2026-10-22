@@ -60,7 +60,8 @@ if (!existsSync("apps/web/dist/index.html")) {
   process.exit(1);
 }
 
-const port = await volnyPort(8790);
+// Od 8800 — nižšie porty majú dev servery súbežných sessions (docs/SESSIONS.md).
+const port = await volnyPort(8800);
 const log = openSync(join(relacia, "server.log"), "a");
 const server = spawn(process.execPath, ["--experimental-strip-types", "--no-warnings", "packages/server/src/index.ts"], {
   env: { ...process.env, PORT: String(port), NAEX_DATA: dataDir, NAEX_ADMIN_HESLO: "" },
