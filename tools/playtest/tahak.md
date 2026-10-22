@@ -65,7 +65,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   nedobereš) a na konci hry uberá body **aj priznaný**; Dlh podstrčený do balíčka
   (Vychovávateľka) sa pri dobratí prizná sám. Nová **Cirhóza ide navrch tvojho
   doberacieho balíčka**; priznáš ju, keď chceš, ale kartu za ňu **nedobereš** a súper za každú
-  priznanú dostane v bitke +1 tuhé (nepriznaná −2 body na konci). Počet súperových
+  priznanú dostane v bitke +1 tuhé (nepriznaná −2 za každú aktívnu podmienku pečeň na konci). Počet súperových
   nepriznaných kliatob je verejný (stav ho ukazuje), body súpera sú presné. Dlh sa sám nepáli (2026-10-22) — spáli ho len Robota,
   Dievčina na vydaj, Niekoho stryná a Veľmi smútiaca vdova; Milujúca manželka
   a Absťák kartu dajú. Kliatba do línie nepatrí (len Milujúca manželka). Priznanie nemíňa
@@ -101,7 +101,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   jeden Absťák odíde.
 - **Bodovanie:** každá aktívna podmienka scorecardu boduje obom hráčom; za kus
   lokality a získaní starší 2, cigarety 1 za každé 3, mínus každý Dlh (aj
-  priznaný) a nepriznané Cirhózy; Znepokojenie / Strach / Vydesenie za každého staršieho, ktorý sa
+  priznaný) a nepriznané Cirhózy — vždy za každú aktívnu podmienku zvlášť, skutočnú
+  hodnotu teda určuje rozdanie scorecardov (lokalita bežne 12–18 b, Dlh −4 až −7); Znepokojenie / Strach / Vydesenie za každého staršieho, ktorý sa
   ťa bojí. Marker určuje **priazeň** (komu je posunutý) a koho sa starší bojí.
 - **Priazeň** sila 1 / 2 / 3 podľa zóny; väčšina dáva 2 × sila. Úžerník: prah
   Dlhu 2 + sila (3 / 4 / 5); Fajčiar +1 / +2 / +3 cigarety v 1. Pitke.

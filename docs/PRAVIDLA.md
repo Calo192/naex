@@ -466,8 +466,12 @@ hracej oblasti.
 
 | | Nepriznaná | Priznaná |
 |---|---|---|
-| Dlh | −1 bod na konci hry | body neuberá; **ráta sa k prahu Exekútora**; povery proti nej udelia mäkké poškodenie; pri priznaní hráč **dobere kartu** |
-| Cirhóza | −2 body na konci hry | body neuberá; **súper za ňu v bitke +1 tuhé**; dá sa liečiť / použiť pri Pohrebe; kartu za priznanie **nedostaneš** |
+| Dlh | nový Dlh sa hneď prizná (§12) | **−1 za každú aktívnu podmienku bankovky** na konci hry (aj priznaný); **ráta sa k prahu Exekútora**; povery proti nemu udelia mäkké poškodenie |
+| Cirhóza | **−2 za každú aktívnu podmienku pečeň** na konci hry | body neuberá; **súper za ňu v bitke +1 tuhé**; dá sa liečiť / použiť pri Pohrebe; kartu za priznanie **nedostaneš** |
+
+Skutočnú cenu kliatby určuje **rozdanie scorecardov**: každá aktívna podmienka
+boduje zvlášť, takže Dlh môže stáť −4 až −7 a Cirhóza −2 až −8 bodov (§10;
+Michal 2026-10-22, návrh 2 A — predtým tu stálo „−1 / −2 body“).
 
 **Dedičstvo** — Nástroje sa namiesto priznania vykladajú do hracej oblasti ako
 Dedičstvo a uplatňuje sa ich pasívny efekt `Dedičstvo`. Poldeci sa na Nástroje
@@ -935,10 +939,13 @@ Scorecardy sa starším **rozdajú náhodne** pri príprave hry a scorecard urč
 | pečeň | nepriznaná cirhóza | za kus (záporné) |
 | bankovky | každý dlh — aj priznaný (Michal 2026-10-21) | za kus (−1) |
 
-Za kus: ovládnutá lokalita **2**, získaný starší **2**, cigareta **1**
-(Michal 2026-10-12 — predtým 3/3/1; Veterinár dal v playteste 20261012-055944
-sám 24 bodov). Nepriznaná Cirhóza −2, Dlh −1 (aj priznaný — verejný dlh, §12). Znepokojenie **1**,
-Strach **2**, Vydesenie **3**.
+Za kus a **za každú aktívnu podmienku** daného typu: ovládnutá lokalita **+2**,
+získaný starší **+2**, cigareta **+1** (Michal 2026-10-12 — predtým 3/3/1;
+Veterinár dal v playteste 20261012-055944 sám 24 bodov), nepriznaná Cirhóza
+**−2** (podmienka pečeň), Dlh **−1** (podmienka bankovky, aj priznaný — verejný
+dlh, §12). Znepokojenie **1**, Strach **2**, Vydesenie **3**. **Skutočnú hodnotu
+určuje rozdanie scorecardov** — pri šiestich aktívnych podmienkach smerovník
+stojí každá ovládnutá lokalita 6 × 2 = 12 b (v playteste 12 až 18 b), Dlh −4 až −7 (Michal 2026-10-22, návrh 2 A).
 
 **Zónové podmienky** sa pozerajú na **všetkých 8 starších** vrátane toho,
 na ktorého scorecarde ležia. Za každého staršieho, ktorý sa hráča bojí na

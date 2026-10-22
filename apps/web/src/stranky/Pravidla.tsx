@@ -491,7 +491,7 @@ const KAPITOLY: readonly Kapitola[] = [
           <strong>2</strong> + sila Úžerníka získaš kartu Dlh — teda dve akcie Dlh v jednej Pitke sú karta Dlh — a po Pitke sa vynuluje. Dlhy, ktoré karta dáva priamo (napr. Liečba), idú rovno.
           Viac Pitiek v bitke znamená viac pečene aj Dlhov.
         </p>
-        <p>Každá tvoja <strong>priznaná</strong> Cirhóza ti v bitke pridáva 1 tuhé poškodenie, akoby ti ho udelil súper. Viera ju znižuje. Nepriznaná uberá na konci hry 2 body.</p>
+        <p>Každá tvoja <strong>priznaná</strong> Cirhóza ti v bitke pridáva 1 tuhé poškodenie, akoby ti ho udelil súper. Viera ju znižuje. Nepriznaná uberá na konci hry −2 za každú aktívnu podmienku „pečeň“ — skutočnú cenu určuje rozdanie scorecardov.</p>
         <p>
           <strong>Liečba:</strong> spáľ priznanú Cirhózu a svojho Závislého z línie, získaj 1 Dlh a vyber si kartu zo šenku.{" "}
           <strong>Pohreb:</strong> spáľ priznanú Cirhózu a ľubovoľnú svoju kartu z línie.
@@ -703,7 +703,8 @@ const KAPITOLY: readonly Kapitola[] = [
         <p>
           Inak po poslednej bitke o lokalitu sa bodujú scorecardy. Každá aktívna podmienka boduje{" "}
           <strong>obom hráčom</strong>, nech je marker staršieho kdekoľvek: za kusy — ovládnuté lokality (2), získaných
-          starších (2), zvyšné cigarety (1 za každé 3), mínus za každý Dlh — aj priznaný (−1) a za nepriznané Cirhózy (−2). Znepokojenie (1), Strach (2)
+          starších (2), zvyšné cigarety (1 za každé 3), mínus za každý Dlh — aj priznaný (−1) a za nepriznané Cirhózy (−2), vždy za každú
+          aktívnu podmienku zvlášť. Skutočnú hodnotu lokality či Dlhu teda určuje rozdanie scorecardov (lokalita bežne 12 – 18 b). Znepokojenie (1), Strach (2)
           a Vydesenie (3) dávajú body za každého staršieho v hre (aj toho na tomto scorecarde), ktorý sa ťa bojí aspoň na
           tú úroveň; pri jednom staršom sa ráta len najvyššia splnená. Príklad: Farár má aktívne Znepokojenie a Strach,
           jeden starší sa ťa bojí na úrovni 1, druhý na 2 a sám Farár na 3 — z Farára máš 1 + 2 + 2 = 5 bodov.
