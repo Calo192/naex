@@ -88,6 +88,7 @@ import {
   scorecardStarsieho,
   stavKraja,
   stavkaBitky,
+  hodnotaLokality,
   stavZavislosti,
   stranyLokality,
   vydesil,
@@ -1380,6 +1381,20 @@ export function HernaPlocha({
         {moznosti.obsah ?? karta(props)}
         {moznosti.stitok}
       </div>
+    );
+  };
+  // Hodnota lokality (Michal 2026-10-22): štítok cez kartu pri výbere cieľa a vo vrstve Lokality.
+  // Pri voľbe cieľa aj so sekerou — víťaz bitky ju berie spolu s cieľom.
+  const stitokHodnoty = (k: CardInstance): ReactNode => {
+    const sSekerou = view.faza === "volbaCiela" && view.naSekeru.length > 0;
+    const h = hodnotaLokality(data, view, k, sSekerou);
+    return (
+      <span
+        className="hodnota-lokality"
+        title={`Ovládnutie${sSekerou ? " (aj so sekerou)" : ""} by ti dnes pridalo ${h[ja]} b, súperovi ${h[super_]} b — podľa rozdania scorecardov, každá aktívna podmienka „lokality“ zvlášť.`}
+      >
+        +{h[ja]} b ty · +{h[super_]} b {menoHraca(super_)}
+      </span>
     );
   };
   const aktivneCiele: ReadonlySet<string> = tahanie === null ? new Set() : cieleZdroja(tahanie.zdroj);
@@ -3056,7 +3071,9 @@ export function HernaPlocha({
                   ? () => setNavrh({ typ: "lokalita", uid: k.uid, otocena: lokalitaNavrh?.otocena ?? ja === 1 })
                   : undefined,
               };
-              return volimLokalitu ? sLupou(props, { obsah: tahatelna(z, karta(props)), zdroj: z }) : sLupou(props);
+              return volimLokalitu
+                ? sLupou(props, { obsah: tahatelna(z, karta(props)), zdroj: z, stitok: stitokHodnoty(k) })
+                : sLupou(props, { stitok: stitokHodnoty(k) });
             })}
         </div>
         {view.naSekeru.length > 0 && (
@@ -3861,6 +3878,7 @@ export function HernaPlocha({
                   obsah: tahatelna(z, karta(props)),
                   zdroj: z,
                   odstran: vyberLokality === k.uid ? () => setVyberLokality(null) : undefined,
+                  stitok: stitokHodnoty(k),
                 });
               })}
           </div>

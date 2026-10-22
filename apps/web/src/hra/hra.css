@@ -4340,3 +4340,19 @@ button.auto-hotovo-odkaz {
   font-size: 0.66rem;
   line-height: 1.2;
 }
+
+/* Hodnota lokality (Michal 2026-10-22): koľko bodov by ovládnutie dnes pridalo. */
+.hodnota-lokality {
+  position: absolute;
+  left: 50%;
+  bottom: -10px;
+  transform: translateX(-50%);
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--akcent);
+  color: var(--na-akcente);
+  font-size: 0.68rem;
+  font-weight: 800;
+  white-space: nowrap;
+  pointer-events: none;
+}
