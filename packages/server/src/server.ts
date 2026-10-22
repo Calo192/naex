@@ -14,12 +14,15 @@ import { randomInt } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { join, normalize, extname, resolve } from "node:path";
 import { WebSocketServer, WebSocket } from "ws";
-import type { Command, DlzkaHry, DvojicaStatistik, Event, GameData, GameState, PlayerId, Pohlavie, StatistikyKariet } from "@naex/core";
+import type { Command, DlzkaHry, DvojicaStatistik, Event, GameData, GameState, PlayerId, Pohlavie, StatistikyKariet, StavKroniky } from "@naex/core";
 import type { Sada } from "@naex/tvorba";
 import {
   DLZKY_HRY,
   IllegalCommandError,
   VERZIA_PRAVIDIEL,
+  doplnNaexZKroniky,
+  novaKronika,
+  zapisDoKroniky,
   POVAHY,
   PREDVOLENA_DLZKA,
   apply,
@@ -107,6 +110,8 @@ interface Room {
   /** Seed partie a jej príkazy [miesto, príkaz] — do archívu pre budúci prehrávač (Michal 2026-10-22). */
   seed: number | null;
   readonly prikazy: [PlayerId, Command][];
+  /** Záznam po kolách (kronika z jadra) — do archívu pre detail partie a súhrn. */
+  kronika: StavKroniky | null;
   /** Čas a príkazy po fázach (roadmapa #9) — ukladá sa aj pri partii s botom. */
   tempo: StavTempa | null;
   /** Štatistiky kariet rozohranej partie (pre tvorcu kariet). */
@@ -451,6 +456,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           statistiky: null,
           seed: null,
           prikazy: [],
+          kronika: null,
           tempo: null,
           statistikyKariet: {},
           vysledok: null,
@@ -474,6 +480,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           room.zaciatok = teraz();
           room.statistiky = noveStatistiky();
           room.tempo = noveTempo(room.zaciatok);
+          room.kronika = novaKronika(room.state);
         }
         usadit(ws, room, 0);
         if (protiBotovi) naplanujBota(room);
@@ -508,6 +515,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           room.zaciatok = teraz();
           room.statistiky = noveStatistiky();
           room.tempo = noveTempo(room.zaciatok);
+          room.kronika = novaKronika(room.state);
           room.statistikyKariet = {};
           broadcast(room, [{ type: "log", text: `Hra začína: ${h0.meno} proti ${h1.meno}.` }]);
         }
@@ -596,6 +604,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     if (pred === null) return;
     const result = apply(room.data, pred, cmd, seat);
     room.prikazy.push([seat, cmd]);
+    if (room.kronika !== null) room.kronika = zapisDoKroniky(room.data, room.kronika, pred, cmd, seat, result.state, result.events);
     room.state = result.state;
     room.lastActivity = teraz();
     if (room.tempo !== null) room.tempo = zapisPrikaz(room.tempo, fazaPrikazu(pred), seat, room.lastActivity, result.events);
@@ -687,6 +696,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         verziaPravidiel: VERZIA_PRAVIDIEL,
         seed: room.seed,
         prikazy: room.prikazy,
+        kronika: room.kronika?.kola ?? null,
         // Hodnotená (Frajerina) len keď na to majú právo obaja a nehrá človek proti AI
         // playtesterovi ani botovi (Michal 2026-10-22) — inak archív a štatistiky bez zmeny Frajeriny.
         hodnotena: room.bot === null && h0.ai === h1.ai && [h0.id, h1.id].every((id) => {
@@ -694,7 +704,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           return u !== null && prava.smie(u, "hodnotene_partie");
         }),
         body: koniec.koniec.body,
-        statistiky: uzavriStatistiky(room.data, room.statistiky, koniec),
+        statistiky: doplnNaexZKroniky(uzavriStatistiky(room.data, room.statistiky, koniec), room.kronika?.kola ?? []),
         statistikyKariet: room.statistikyKariet,
       });
       // Partia s botom Frajerinu nemení — správa o nej sa neposiela.

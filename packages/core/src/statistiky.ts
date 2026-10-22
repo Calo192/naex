@@ -75,6 +75,23 @@ export interface StatistikyHraca {
   /** Najviac bodov v jednej partii (pri súčte maximum). */
   readonly najviacBodov: number;
   readonly bodyPodla: Readonly<Partial<Record<Podmienka, number>>>;
+
+  // ---- štatistiky v2 (Michal 2026-10-22, profily): staršie partie ich nemajú — partieV2 hovorí, z koľkých partií sú.
+  readonly partieV2: number;
+  /** Pasy v Zhromaždení a cigarety, ktoré za ne hráč dostal. */
+  readonly pasy: number;
+  readonly cigaretyZaPas: number;
+  /** Karty vzaté zo šenku a cigarety, ktoré za ne zaplatil. */
+  readonly senokKarty: number;
+  readonly cigaretySenok: number;
+  /** NA EX, ktoré po súperovej odpovedi zlepšilo bitku v hráčov prospech, a koľko NA EX sa dalo posúdiť. */
+  readonly naexUspesne: number;
+  readonly naexHodnotene: number;
+  /** Odpovede kartou na súperovo NA EX. */
+  readonly odpovedeNaNaex: number;
+  /** Na konci partie: Dlhy (všetky, aj priznané) a zvyšné cigarety. */
+  readonly dlhyNaKonci: number;
+  readonly zvysneCigarety: number;
 }
 
 export type DvojicaStatistik = readonly [StatistikyHraca, StatistikyHraca];
@@ -126,6 +143,16 @@ export function prazdneStatistiky(): StatistikyHraca {
     body: 0,
     najviacBodov: 0,
     bodyPodla: {},
+    partieV2: 0,
+    pasy: 0,
+    cigaretyZaPas: 0,
+    senokKarty: 0,
+    cigaretySenok: 0,
+    naexUspesne: 0,
+    naexHodnotene: 0,
+    odpovedeNaNaex: 0,
+    dlhyNaKonci: 0,
+    zvysneCigarety: 0,
   };
 }
 
@@ -280,10 +307,20 @@ function zapisJedneho(
         case "patronat":
           s.bitkyOStarsich += 1;
           break;
+        case "pass":
+          s.pasy += 1;
+          s.cigaretyZaPas += Math.max(0, hPo.cigarety - hPred.cigarety);
+          break;
+        case "draftBer":
+          s.senokKarty += c.uids.length;
+          s.cigaretySenok += Math.max(0, hPred.cigarety - hPo.cigarety);
+          break;
         default:
           break;
       }
     }
+    // Odpoveď kartou na súperovo NA EX (vyloženie mimo limitu v Pitke).
+    if (cmd.type === "place" && pred.faza === "pitka" && pred.pitkaStav?.reakcia === p) s.odpovedeNaNaex += 1;
   }
 
   // ---- udalosti
@@ -345,6 +382,12 @@ export function uzavriStatistiky(data: GameData, stat: DvojicaStatistik, koniec:
     const p = i as PlayerId;
     const s = { ...st, akcie: { ...st.akcie }, bodyPodla: { ...st.bodyPodla } } as Mut;
     s.kola = koniec.kolo;
+    s.partieV2 = 1;
+    s.zvysneCigarety = koniec.hraci[p].cigarety;
+    {
+      const h = koniec.hraci[p];
+      s.dlhyNaKonci = [...h.ruka, ...h.doberaci, ...h.odhadzovaci, ...h.priznane].filter((k) => k.defId === "dlh").length;
+    }
     s.lokalityOvladnute = koniec.ovladnute.filter((o) => o.hrac === p).length;
     s.starsiVydeseni = koniec.starsi.filter((e) => vydesil(e as ElderState, p)).length;
     if (bodovana) {
