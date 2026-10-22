@@ -167,7 +167,8 @@ majú prednosť pred staršími odsekmi — rozbory `docs/playtesty/strategia-kl
 - **Remíza na sekeru** (§8.4): pri **rovnakom tuhom** poškodení nevyhrá nikto —
   lokalita ide **na sekeru** a vezme si ju víťaz najbližšej bitky spolu s jej
   lokalitou. Útočník ostáva útočníkom, patronát sa vyrieši ako prehra
-  (bolestné). V **poslednej bitke** lokality na sekere prepadnú. Stupeň
+  (bolestné). Pri **remíze v poslednej bitke** lokality na sekere prepadnú;
+  kto poslednú bitku vyhrá, berie lokalitu aj celú sekeru. Stupeň
   „rozhodne celkové“ zanikol — celkové určuje už len prebytok.
 - **Pitka nahlas** (§7): obranca začína, útočník má **posledné slovo**;
   „hotovo“ je nevratné a zapíše sa do logu. Zadĺženie a pečeň dávajú kartu za
@@ -755,8 +756,10 @@ playtesteri ako „rozhoduje stolička“): pri rovnakom tuhom poškodení lokal
 **nezíska nikto**. Leží vedľa ďalšieho cieľa **na sekere** a víťaz najbližšej
 bitky si ju vezme spolu s lokalitou, o ktorú sa bil; viac remíz po sebe sa na
 sekere kopí. Remíza nemení roly (útočník ostáva útočníkom), patronát sa
-vyrieši ako prehra (staršieho späť, bolestné). V **poslednej bitke** niet
-najbližšej bitky — lokalita aj všetko na sekere **prepadne**. Benzínka sa
+vyrieši ako prehra (staršieho späť, bolestné). Pri **remíze v poslednej
+bitke** niet najbližšej bitky — lokalita aj všetko na sekere **prepadne**. Kto
+poslednú bitku **vyhrá**, berie lokalitu aj celú sekeru ako v každej inej
+bitke (Michal 2026-10-22, spresnené po názore #24). Benzínka sa
 neprepadá na sekeru: jej lokalita prepadne ako doteraz a víťaz (ak je) si
 vezme len sekeru.
 

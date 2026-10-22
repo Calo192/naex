@@ -676,7 +676,8 @@ const KAPITOLY: readonly Kapitola[] = [
         <li><strong>Poškodenie</strong> — Viera a Povera sa vyrušia, tuhé znižuje Viera a Absťáky, mäkké po strop dlhu.</li>
         <li>
           <strong>Výsledok</strong> — vyhráva vyššie TUHÉ. Pri <strong>rovnakom tuhom nevyhrá nikto</strong>: lokalita ide{" "}
-          <strong>na sekeru</strong> a vezme si ju víťaz najbližšej bitky spolu s tou, o ktorú sa bije (v poslednej bitke prepadne);
+          <strong>na sekeru</strong> a vezme si ju víťaz najbližšej bitky spolu s tou, o ktorú sa bije — aj v poslednej bitke; prepadne len pri
+          remíze v poslednej bitke;
           útočník ostáva útočníkom. Prebytok rozdeľuje hráč s vyšším CELKOVÝM — aj pri remíze v tuhom.
         </li>
         <li><strong>Cigarety za prebytok</strong> — hráč, proti ktorému sa prebytok rozdeľoval, dostane 1 cigaretu za každého staršieho, ktorého marker sa posunul (viac posunov toho istého = 1 cigareta).</li>

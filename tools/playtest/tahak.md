@@ -121,7 +121,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   Pohoršenia ho však prenesú najviac cez **dve hranice zón** (pravá sivá → ľavá
   oranžová áno) a nikdy nie na krajnú pozíciu (okrem Novín).
 - **Remíza (na sekeru, 2026-10-21):** pri rovnakom tuhom nevyhrá nikto —
-  lokalita ide **na sekeru** a vezme si ju víťaz najbližšej bitky (v poslednej
-  bitke prepadne); útočník ostáva, patronát = prehra. Celkové určuje už len prebytok. **Ohlásené vydesenie:** polovicu starších treba
+  lokalita ide **na sekeru** a vezme si ju víťaz najbližšej bitky; víťaz
+  poslednej bitky berie aj celú sekeru, len pri remíze v poslednej bitke prepadne; útočník ostáva, patronát = prehra. Celkové určuje už len prebytok. **Ohlásené vydesenie:** polovicu starších treba
   udržať do konca ďalšieho kola. **Cigarety za prebytok** dostane ten, proti
   komu sa prebytok delil.
