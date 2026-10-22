@@ -1306,7 +1306,8 @@ export function HernaPlocha({
     const triedy = trieda === undefined ? ["tahatelna"] : ["tahatelna", trieda];
     if (moze) triedy.push("chytitelna");
     if (ide) triedy.push("tahana");
-    if (z.navrh) triedy.push("navrh");
+    // Nie „navrh“ — tú triedu má karta návrhu v sekcii Playtest (margin 14px) a CSS je spoločné.
+    if (z.navrh) triedy.push("navrhnuta");
     if (nahraditelna) triedy.push(poradie ? "poradie-ciel" : "nahraditelna");
     if (nahraditelna && nadCielom(ciel)) triedy.push("nad-cielom");
     // Kam karta v ruke padne: doprava za cieľ, doľava pred neho.

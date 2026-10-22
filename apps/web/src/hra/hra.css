@@ -1176,7 +1176,7 @@ body.tahanie-aktivne * {
   opacity: 0.3;
 }
 
-.tahatelna.navrh > .kl {
+.tahatelna.navrhnuta > .kl {
   outline: 2px dashed var(--akcent);
   outline-offset: 3px;
   box-shadow: 0 0 22px color-mix(in srgb, var(--akcent) 35%, transparent);
