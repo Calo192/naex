@@ -388,6 +388,12 @@
   white-space: nowrap;
 }
 
+/* Kolá sa posúvajú do strany — zalomené bunky boli vysoké ako obrazovka. */
+.kola-tabulka th,
+.kola-tabulka td {
+  white-space: nowrap;
+}
+
 .kola-tabulka tr.vyhra th {
   box-shadow: inset 3px 0 0 var(--zelena);
 }
@@ -523,12 +529,7 @@
     grid-column: 1 / -1;
   }
 
-  /* Kolá a účet sa na mobile posúvajú do strany — zalomené bunky boli vysoké ako obrazovka. */
-  .kola-tabulka th,
-  .kola-tabulka td {
-    white-space: nowrap;
-  }
-
+  /* Účet sa na mobile posúva do strany. */
   .priebeh-kolo {
     font-size: 24px;
   }
@@ -542,4 +543,8 @@
     flex: none;
     min-width: 540px;
   }
+}
+
+.detail-prehrat {
+  grid-column: 1 / -1;
 }
