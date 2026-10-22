@@ -61,7 +61,6 @@ export interface BitkaVerejne {
   /** Koľko hraníc zón už Pohoršenia hráča prekročili s markerom (kľúč `hráč:elderId`). */
   readonly pohorsenieHranice: Readonly<Record<string, number>>;
   readonly benzinkaZostava: readonly [number, number];
-  readonly lokalitaPrepadne: boolean;
   /** Karty v línii, ktoré sa po bitke spália (Dievčina na vydaj). */
   readonly spalit: readonly number[];
 }
@@ -249,7 +248,6 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
             pohorsenieZostava: bitka.pohorsenieZostava,
             pohorsenieHranice: bitka.pohorsenieHranice,
             benzinkaZostava: bitka.benzinkaZostava,
-            lokalitaPrepadne: bitka.lokalitaPrepadne,
             spalit: bitka.spalit,
           },
     volbyExekutor:
