@@ -1,5 +1,5 @@
 {
- "source": "tvorca kariet 2026-10-21T14:19:04.145Z",
+ "source": "tvorca kariet 2026-10-22T12:27:12.520Z",
  "actions": [
   "Cigareta",
   "Dlh",
@@ -453,7 +453,7 @@
    "tags": [
     "Kliatba"
    ],
-   "effect_text": "Bitka: Obdržíš od súpera dodatočnú ranu.",
+   "effect_text": "Bitka: Ak je priznaná, súper má +1 tuhé poškodenie. Nepriznaná uberá body na konci hry.",
    "triggers": [
     "Bitka"
    ],
@@ -1566,7 +1566,7 @@
     "Žena",
     "Chlap"
    ],
-   "effect_text": "Furt: Dvojnásobný efekt jeho akcií ak je v partii rovnaký počet pohlaví. Furt: Nevie dať NA EX.",
+   "effect_text": "Furt: Ak je v tvojej partii rovnako žien a chlapov, jeho akcie sa rátajú dvakrát. Furt: Nedá sa naň dať NA EX.",
    "triggers": [
     "Furt"
    ],
@@ -1576,7 +1576,6 @@
      3
     ],
     "actions": {
-     "Cigareta": 1,
      "Pohoršenie": 1
     }
    },
@@ -1586,8 +1585,7 @@
      1
     ],
     "actions": {
-     "Cigareta": 1,
-     "Pohoršenie": 1
+     "Cigareta": 1
     }
    },
    "permutations": {
@@ -1605,7 +1603,7 @@
     "Závislý",
     "Žena"
    ],
-   "effect_text": "Bitka: Zahoď túto kartu, zahoď toľko dlhov zo stola, koľko mala táto karta aktívnych akcií.",
+   "effect_text": "Bitka: Zahoď túto kartu a spáľ toľko svojich priznaných Dlhov, koľko mala aktívnych akcií.",
    "triggers": [
     "Bitka"
    ],
@@ -1934,7 +1932,7 @@
    "tags": [
     "Lokalita"
    ],
-   "effect_text": "Pitka: Ak máš plný poldeci, musíš dať NA EX.",
+   "effect_text": "Pitka: Ak máš plný poldeci a máš ho kam dať, musíš dať NA EX. Prah Cirhózy je tu o 2 vyšší.",
    "triggers": [
     "Pitka"
    ],
@@ -2132,7 +2130,7 @@
    "tags": [
     "Zviera"
    ],
-   "effect_text": "Furt: Za každý pár akcií na spoji Psa so súperovou kartou dáš v bitke +1 tuhé poškodenie. Nesmie byť v partii s iným zvieraťom.",
+   "effect_text": "Furt: Ak leží na tvojej strane, za každý pár akcií na spoji Psa so súperovou kartou dáš v bitke +1 tuhé poškodenie. Nesmie byť v partii s iným zvieraťom.",
    "triggers": [
     "Furt"
    ],
@@ -2439,7 +2437,7 @@
     "Závislý",
     "Chlap"
    ],
-   "effect_text": "Furt: Na neho ani na tvoje karty v jeho okolí nesmie súper dať NA EX.",
+   "effect_text": "Furt: Na neho nesmie súper dať NA EX.",
    "triggers": [
     "Furt"
    ],
@@ -2541,7 +2539,7 @@
    "tags": [
     "Lokalita"
    ],
-   "effect_text": "Bitka: Prah Exekútora je o 4 nižší a každá aktívna Robota zahodí 2 priznané Dlhy.",
+   "effect_text": "Bitka: Prah Exekútora je o 4 nižší a každá aktívna Robota spáli 2 priznané Dlhy.",
    "triggers": [
     "Bitka"
    ],
@@ -2645,7 +2643,7 @@
    "tags": [
     "Lokalita"
    ],
-   "effect_text": "Bitka: Pohoršenie smie posunúť ten istý marker aj cez viac než dve hranice zón.",
+   "effect_text": "Bitka: Pohoršenie nemá limit dvoch hraníc zón (na krajnú pozíciu stále nie).",
    "triggers": [
     "Bitka"
    ],
