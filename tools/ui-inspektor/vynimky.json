@@ -1,0 +1,16 @@
+[
+  {
+    "selektor": ".kl-pas, .kl-nazov, .kl-tagy",
+    "typ": "nizky-kontrast",
+    "dovod": "Biely názov a tagy na farebnom páse karty sú dizajn karty (inšpekcia 20261022-2106, U05).",
+    "datum": "2026-10-22",
+    "rozhodol": "Michal"
+  },
+  {
+    "selektor": ".kl-efekt",
+    "typ": "nizky-kontrast",
+    "dovod": "Text efektu karty a pojmy v ňom sú dizajn karty (inšpekcia 20261022-2106, U14).",
+    "datum": "2026-10-22",
+    "rozhodol": "Michal"
+  }
+]
