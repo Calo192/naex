@@ -59,52 +59,55 @@ export function KlucoveSlova() {
         </div>
       </section>
 
-      <table className="tabulka slova-tabulka">
-        <thead>
-          <tr>
-            <th>Slovo</th>
-            <th>Tučné</th>
-            <th>Kurzíva</th>
-            <th>Nový riadok</th>
-            <th>Ďalšie tvary (čiarkou)</th>
-            <th>Popis pre hráča</th>
-            <th />
-          </tr>
-        </thead>
-        <tbody>
-          {zoznam.map((k, i) => (
-            <tr key={i}>
-              <td>
-                <input value={k.slovo} onChange={(e) => zmen(i, { slovo: e.target.value })} aria-label="Slovo" />
-              </td>
-              <td>
-                <input type="checkbox" checked={k.tucne} onChange={(e) => zmen(i, { tucne: e.target.checked })} aria-label="Tučné" />
-              </td>
-              <td>
-                <input type="checkbox" checked={k.kurziva} onChange={(e) => zmen(i, { kurziva: e.target.checked })} aria-label="Kurzíva" />
-              </td>
-              <td>
-                <input type="checkbox" checked={k.novyRiadok} onChange={(e) => zmen(i, { novyRiadok: e.target.checked })} aria-label="Nový riadok" />
-              </td>
-              <td>
-                <input
-                  value={k.tvary.join(", ")}
-                  onChange={(e) => zmen(i, { tvary: e.target.value.split(",").map((t) => t.trim()) })}
-                  aria-label="Tvary"
-                />
-              </td>
-              <td>
-                <input value={k.popis} onChange={(e) => zmen(i, { popis: e.target.value })} aria-label="Popis" />
-              </td>
-              <td>
-                <button className="tlacidlo-male tlacidlo-jemne" onClick={() => setZoznam(zoznam.filter((_, j) => j !== i))} aria-label="Odstrániť">
-                  ✕
-                </button>
-              </td>
+      {/* Šesť stĺpcov so vstupmi sa na telefóne posúva vo vlastnom kontajneri. */}
+      <div className="tabulka-obal">
+        <table className="tabulka slova-tabulka">
+          <thead>
+            <tr>
+              <th>Slovo</th>
+              <th>Tučné</th>
+              <th>Kurzíva</th>
+              <th>Nový riadok</th>
+              <th>Ďalšie tvary (čiarkou)</th>
+              <th>Popis pre hráča</th>
+              <th />
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {zoznam.map((k, i) => (
+              <tr key={i}>
+                <td>
+                  <input value={k.slovo} onChange={(e) => zmen(i, { slovo: e.target.value })} aria-label="Slovo" />
+                </td>
+                <td>
+                  <input type="checkbox" checked={k.tucne} onChange={(e) => zmen(i, { tucne: e.target.checked })} aria-label="Tučné" />
+                </td>
+                <td>
+                  <input type="checkbox" checked={k.kurziva} onChange={(e) => zmen(i, { kurziva: e.target.checked })} aria-label="Kurzíva" />
+                </td>
+                <td>
+                  <input type="checkbox" checked={k.novyRiadok} onChange={(e) => zmen(i, { novyRiadok: e.target.checked })} aria-label="Nový riadok" />
+                </td>
+                <td>
+                  <input
+                    value={k.tvary.join(", ")}
+                    onChange={(e) => zmen(i, { tvary: e.target.value.split(",").map((t) => t.trim()) })}
+                    aria-label="Tvary"
+                  />
+                </td>
+                <td>
+                  <input value={k.popis} onChange={(e) => zmen(i, { popis: e.target.value })} aria-label="Popis" />
+                </td>
+                <td>
+                  <button className="tlacidlo-male tlacidlo-jemne" onClick={() => setZoznam(zoznam.filter((_, j) => j !== i))} aria-label="Odstrániť">
+                    ✕
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       <button onClick={() => setZoznam([...zoznam, { slovo: "", tucne: false, kurziva: true, novyRiadok: false, tvary: [], popis: "" }])}>
         + Pridať slovo
       </button>

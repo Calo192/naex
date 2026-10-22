@@ -1024,7 +1024,8 @@ code {
 
 .kategorie {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  /* min(): na 360 px telefóne by 330 px stĺpec pretiekol. */
+  grid-template-columns: repeat(auto-fill, minmax(min(330px, 100%), 1fr));
   gap: 10px;
 }
 

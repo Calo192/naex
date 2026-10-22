@@ -387,6 +387,15 @@
   scroll-snap-type: x proximity;
 }
 
+/* Mobil: stĺpce pod sebou (Teraz navrchu) namiesto 4,5 obrazovky do strany. */
+@media (max-width: 600px) {
+  .rm-tabula {
+    grid-auto-flow: row;
+    grid-auto-columns: auto;
+    overflow-x: visible;
+  }
+}
+
 .rm-stlpec {
   background: var(--plocha);
   border: 1px solid var(--okraj);
@@ -445,8 +454,9 @@
 .rm-zbal {
   background: none;
   border: 0;
-  padding: 0;
-  margin-top: 6px;
+  padding: 4px 0;
+  min-height: 24px;
+  margin-top: 2px;
   color: var(--slaby-text);
   font-size: 0.82rem;
   text-decoration: underline;
