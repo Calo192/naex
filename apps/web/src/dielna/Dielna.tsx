@@ -63,6 +63,18 @@ function Autor({ a }: { readonly a: NavrhDielne["autor"] }) {
   );
 }
 
+/** Úzke okno (ako zlom v dielna.css) — editor vtedy ukáže plávajúci náhľad. */
+function useMobil(): boolean {
+  const [mobil, setMobil] = useState(() => window.matchMedia("(max-width: 760px)").matches);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 760px)");
+    const zmena = (): void => setMobil(mq.matches);
+    mq.addEventListener("change", zmena);
+    return () => mq.removeEventListener("change", zmena);
+  }, []);
+  return mobil;
+}
+
 const PRAVIDLO_LUDI = "Žiadne karty o skutočných súkromných ľuďoch (susedia, známi, spolužiaci) — také návrhy správca skryje.";
 
 // ---------------------------------------------------------------------------
@@ -808,7 +820,18 @@ function Editor({ id, zaklad, sada }: { readonly id: number | null; readonly zak
   const [s, setS] = useState<StavEditora | null>(null);
   const [chyba, setChyba] = useState<string | null>(null);
   const [uklada, setUklada] = useState(false);
+  const mobil = useMobil();
+  const [zvacseny, setZvacseny] = useState(false);
   const ukaz = (e: unknown) => setChyba(e instanceof Error ? e.message : String(e));
+
+  useEffect(() => {
+    if (!zvacseny) return;
+    const esc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setZvacseny(false);
+    };
+    document.addEventListener("keydown", esc);
+    return () => document.removeEventListener("keydown", esc);
+  }, [zvacseny]);
 
   useEffect(() => {
     if (id !== null) {
@@ -1003,10 +1026,28 @@ function Editor({ id, zaklad, sada }: { readonly id: number | null; readonly zak
             )}
           </div>
         </form>
-        <aside className="dielna-editor-nahlad" aria-label="Náhľad karty">
-          <NahladKarty karta={kartaZNavrhu(obsah, zakladK)} vzhlad={vzhlad} sirka={260} />
+        {/* Na mobile je náhľad malá karta plávajúca vpravo dole — ostane na očiach
+            aj pri úprave akcií; klik ju zväčší. */}
+        <aside className={mobil ? "dielna-editor-nahlad plavajuci" : "dielna-editor-nahlad"} aria-label="Náhľad karty">
+          {mobil ? (
+            <button type="button" className="dielna-nahlad-mini" onClick={() => setZvacseny(true)} aria-label="Zväčšiť náhľad karty">
+              <NahladKarty karta={kartaZNavrhu(obsah, zakladK)} vzhlad={vzhlad} sirka={76} bezPopisov />
+            </button>
+          ) : (
+            <NahladKarty karta={kartaZNavrhu(obsah, zakladK)} vzhlad={vzhlad} sirka={260} />
+          )}
         </aside>
       </div>
+      {mobil && zvacseny && (
+        <div className="modal" onClick={() => setZvacseny(false)} role="dialog" aria-modal="true" aria-label="Náhľad karty">
+          <div className="modal-obsah dielna-nahlad-velky" onClick={(e) => e.stopPropagation()}>
+            <button type="button" className="modal-zavriet tlacidlo-jemne" onClick={() => setZvacseny(false)} aria-label="Zavrieť">
+              ✕
+            </button>
+            <NahladKarty karta={kartaZNavrhu(obsah, zakladK)} vzhlad={vzhlad} sirka={Math.min(300, window.innerWidth - 64)} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

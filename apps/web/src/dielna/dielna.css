@@ -479,6 +479,17 @@
   background: var(--pozadie);
 }
 
+/* Zväčšený náhľad z plávajúcej karty: ✕ nad kartou, nie pod ňou. */
+.modal-obsah.dielna-nahlad-velky {
+  display: grid;
+  justify-items: center;
+  padding-top: 56px;
+}
+
+.dielna-nahlad-velky .modal-zavriet {
+  z-index: 2;
+}
+
 /* ---- mobil ---- */
 
 @media (max-width: 760px) {
@@ -506,11 +517,30 @@
     justify-self: center;
   }
 
-  /* Na mobile je náhľad karty hore, aby bol vidno pri úprave akcií. */
-  .dielna-editor-nahlad {
-    order: -1;
-    position: static;
-    justify-self: center;
+  /* Na mobile plávajúca malá karta vpravo dole (nad lepkavými tlačidlami
+     editora), aby bol náhľad vidno aj pri úprave akcií; klik ju zväčší. */
+  .dielna-editor-nahlad.plavajuci {
+    position: fixed;
+    top: auto;
+    right: 12px;
+    /* Nad lepkavými tlačidlami editora (na mobile sú pod sebou). */
+    bottom: 128px;
+    z-index: 30;
+  }
+
+  .dielna-nahlad-mini {
+    padding: 0;
+    border: none;
+    background: none;
+    line-height: 0;
+    border-radius: 6px;
+    box-shadow: var(--tien);
+  }
+
+
+  /* Plávajúca karta nesmie zakryť koniec formulára. */
+  .dielna-editor-form {
+    padding-bottom: 130px;
   }
 
   .dielna-strany {
