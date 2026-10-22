@@ -3212,6 +3212,18 @@ button.dlzka-volba.aktivna {
   color: var(--su);
 }
 
+/* Rovnosť v kraji a počet kariet na prebitie (návrh 5 A) — vlastný riadok, aby sa zalomil. */
+.kraj-rovnost {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: normal;
+  color: var(--tlmeny);
+}
+
 /* ---- výber miesta klikom (Michal 2026-10-20) ----
  * Úzke miesto na konci strany; po kliknutí sa z ruky vysunú karty,
  * ktoré tam vytvoria spoj. Stlmené sa dajú položiť bez spoja. */
@@ -4011,6 +4023,20 @@ button.pecat-zrusit {
   grid-column: 2;
   color: var(--akcent);
   font-weight: 700;
+}
+
+/* Verejné zdroje pri stoličke (návrh 5 A): plné poldeci a karty v ruke. */
+.stolicka-zdroje {
+  grid-column: 2;
+  font-size: 0.78rem;
+  color: var(--slaby-text);
+}
+
+/* Kto v Pitke začne a kto má posledné slovo — vidno už v Zhromaždení (návrh 5 A). */
+.pas-poradie {
+  font-size: 0.85rem;
+  color: var(--tlmeny);
+  cursor: help;
 }
 
 /* ---- pás pokynov: udalosti, cigarety, hotovo (UI N4, UX N1/N3) ---- */

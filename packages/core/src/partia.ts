@@ -203,6 +203,39 @@ export function silaVKraji(data: GameData, strana: readonly PlacedCard[]): [numb
   return pocet;
 }
 
+/** Prevaha v jednom kraji tak, ako ju treba ukázať hráčom (návrh 5 A). */
+export interface StavKraja {
+  /** Sila hráča 0 a 1 (Dvojčatá za dvoch). */
+  readonly pocet: readonly [number, number];
+  /** Majiteľ karty hneď pri lokalite — rozhoduje rovnosť. */
+  readonly priLokalite: PlayerId | null;
+  readonly prevaha: PlayerId | null;
+  readonly rovnost: boolean;
+  /**
+   * Koľko Občanov, Zvierat či Starešinov musí do kraja dať hráč bez prevahy,
+   * aby ju prebral (pri rovnosti vyhráva karta pri lokalite, preto o 1 viac).
+   * null pri prázdnom kraji.
+   */
+  readonly naPrebitie: number | null;
+}
+
+/**
+ * Stav prevahy v kraji (Michal 2026-10-22, návrh 5 A z playtestu
+ * 20261021-143600): hráči čítali „majiteľ karty pri lokalite“ ako majiteľa
+ * lokality — rozhranie preto ukazuje rovnosť a koľko kariet treba na prebitie.
+ */
+export function stavKraja(data: GameData, strana: readonly PlacedCard[]): StavKraja {
+  const pocet = silaVKraji(data, strana);
+  const priLokalite = strana[0]?.playedBy ?? null;
+  const prevaha = kto(pocet, priLokalite);
+  const rovnost = priLokalite !== null && pocet[0] === pocet[1];
+  if (prevaha === null) return { pocet, priLokalite, prevaha, rovnost, naPrebitie: null };
+  const druhy: PlayerId = prevaha === 0 ? 1 : 0;
+  // Pri rovnosti berie hranu karta pri lokalite — kto ju nemá, potrebuje o 1 viac.
+  const naPrebitie = pocet[prevaha] - pocet[druhy] + (priLokalite === druhy ? 0 : 1);
+  return { pocet, priLokalite, prevaha, rovnost, naPrebitie };
+}
+
 /** Prevaha v kraji pri strane hráča 0 a 1 — kto dostane akcie príslušnej hrany lokality. */
 export function prevahaStran(data: GameData, strany: readonly [readonly PlacedCard[], readonly PlacedCard[]]): [PlayerId | null, PlayerId | null] {
   return [kto(silaVKraji(data, strany[0]), strany[0][0]?.playedBy ?? null), kto(silaVKraji(data, strany[1]), strany[1][0]?.playedBy ?? null)];

@@ -72,6 +72,7 @@ import {
   priazenHraca,
   priazenSila,
   scorecardStarsieho,
+  stavKraja,
   stavkaBitky,
   stavZavislosti,
   stranyLokality,
@@ -201,6 +202,15 @@ function pravyKlik(fn: (() => void) | undefined): ((e: React.MouseEvent) => void
 
 function kariet(n: number): string {
   return n === 1 ? "1 kartu" : n >= 2 && n <= 4 ? `${n} karty` : `${n} kariet`;
+}
+
+/** Nominatív — „súper: 2 plné poldeci · 3 karty v ruke“. */
+function plnePoldeci(n: number): string {
+  return n === 1 ? "1 plný poldeci" : n >= 2 && n <= 4 ? `${n} plné poldeci` : `${n} plných poldeci`;
+}
+
+function kartyNom(n: number): string {
+  return n === 1 ? "1 karta" : n >= 2 && n <= 4 ? `${n} karty` : `${n} kariet`;
 }
 
 function cigariet(n: number): string {
@@ -1666,6 +1676,31 @@ export function HernaPlocha({
   const kto = (p: PlayerId | null): string => (p === null ? "nikto" : p === ja ? "ty" : menoHraca(p));
   const tipKraja = (p: PlayerId): string =>
     `Prevaha: akcie tejto hrany dostane, kto má v tomto kraji viac svojich Občanov, Zvierat a Starešinov (Nástroje a Cirhóza sa nerátajú); pri rovnosti majiteľ karty pri lokalite. Teraz: ${kto(prevaha[p])}.`;
+  // Rovnosť a prebitie (návrh 5 A): hráči čítali „majiteľ karty pri lokalite“
+  // ako majiteľa lokality a nevedeli, koľko kariet treba na prebratie hrany.
+  const rovnostKraja = (p: PlayerId): ReactNode => {
+    const s = stavKraja(data, stol.strany[p]);
+    if (stredKarta === null || s.prevaha === null || s.naPrebitie === null) return null;
+    const druhy: PlayerId = s.prevaha === 0 ? 1 : 0;
+    const zs = view.faza === "zhromazdenie" ? view.zhromazdenieStav : null;
+    return (
+      <span className="kraj-rovnost">
+        {s.rovnost && (
+          <>
+            rovnosť {s.pocet[ja]} : {s.pocet[super_]} →{" "}
+            {s.prevaha === ja ? "hranu máš ty (tvoja karta leží pri lokalite)" : `hranu má ${menoHraca(s.prevaha)} (súperova karta leží pri lokalite)`} ·{" "}
+          </>
+        )}
+        na prebitie {druhy === ja ? "potrebuješ" : `${menoHraca(druhy)} potrebuje`} {kariet(s.naPrebitie)}
+        {zs !== null && (
+          <>
+            {" "}
+            · vyloží ešte: ty {zs.pasoval[ja] ? 0 : zs.zostavaLimit[ja]}, {menoHraca(super_)} {zs.pasoval[super_] ? 0 : zs.zostavaLimit[super_]}
+          </>
+        )}
+      </span>
+    );
+  };
   const popisKraja = (p: PlayerId, smer: "vlavo" | "vpravo") => {
     const nazov = krajStrany(p) ?? (p === ja ? "tvoja strana" : `strana — ${menoHraca(p)}`);
     return (
@@ -1674,6 +1709,7 @@ export function HernaPlocha({
         {nazov}
         {stredKarta !== null && <span className={`kraj-prevaha ${prevaha[p] === ja ? "moja" : prevaha[p] === null ? "" : "superova"}`}> · prevaha: {kto(prevaha[p])}</span>}
         {smer === "vpravo" ? " →" : ""}
+        {rovnostKraja(p)}
       </span>
     );
   };
@@ -2791,6 +2827,7 @@ export function HernaPlocha({
           cenaPrebytku({ strany: view.strany } as unknown as GameState, 1),
         ]}
         prebytokNaRozdelenie={prebytokNaRozdelenie(view, battleOutcome(b?.damage ?? odhad))}
+        utocnik={`útočník: ${view.utocnik === ja ? "ty" : menoHraca(view.utocnik)} — ${view.kolo === 1 ? "v 1. kole náhodne" : "porazený z minulej bitky (remíza roly nemení)"}`}
       />
     );
 
@@ -3180,11 +3217,22 @@ export function HernaPlocha({
                   {p === ja ? "ty" : menoHraca(p)} · {i === 0 ? "obranca, začína" : "útočník"}
                 </span>
                 <span className="stolicka-stav">{stav}</span>
+                {/* Verejné zdroje (návrh 5 A): kto ešte môže dať NA EX a čím odpovedať. */}
+                <span className="stolicka-zdroje">
+                  {plnePoldeci(view.hraci[p].poldeciPlne)} · {kartyNom(view.hraci[p].rukaPocet)} v ruke
+                </span>
                 {posledne && <span className="stolicka-posledne">{p === ja ? "posledné slovo máš ty" : "má posledné slovo"}</span>}
               </li>
             );
           })}
         </ol>
+      ) : null;
+    // Poradie Pitky vopred (návrh 5 A): hráči posledné slovo útočníka cítili ako „stoličku“.
+    const poradiePitky =
+      view.faza === "zhromazdenie" ? (
+        <span className="pas-poradie" title="Pitku začína obranca; keď dá „hotovo“, hrá útočník a má posledné slovo.">
+          {obranca === ja ? `v Pitke začínaš ty, posledné slovo má ${menoHraca(super_)}` : `v Pitke začne ${menoHraca(super_)}, posledné slovo máš ty`}
+        </span>
       ) : null;
     const limityDalej =
       view.faza === "pitka" && aktualna < n ? (
@@ -3217,6 +3265,7 @@ export function HernaPlocha({
           {limityDalej}
         </span>
         {stolicky}
+        {poradiePitky}
         {stavka !== null && <StavkaBitky stavka={stavka} />}
         {view.faza === "zhromazdenie" && (
           <span className="pas-limit">
