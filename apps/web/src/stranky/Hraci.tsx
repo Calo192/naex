@@ -1,18 +1,18 @@
-// Hráči a úrovne účtov (admin / subadmin / hráč / návštevník) — správa účtov,
-// od 2026-10-21 mimo Tvorby (Michal: hráči v tvorbe kariet nemajú čo robiť).
-// Zoznam vidí admin aj subadmin; úroveň mení len admin a admin je len jeden.
+// Hráči, ranky a práva — správa účtov, od 2026-10-21 mimo Tvorby (Michal:
+// hráči v tvorbe kariet nemajú čo robiť). Ranky (Michal 2026-10-22): návštevník
+// → Poldeci → Deci → Sedmička mení admin aj subadmin, subadmina len admin.
 
 import { useEffect, useState } from "react";
 import { api } from "../lib/api.ts";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
-import { NAZOV_UROVNE, useUcet, type Pouzivatel, type Rola } from "../lib/ucet.tsx";
+import { NAZOV_UROVNE, RANKY_HRACOV, useUcet, type Pouzivatel, type Rola } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
+import { RankyPrava } from "./RankyPrava.tsx";
 
-type Riadok = Pouzivatel & { readonly vytvoreny: number; readonly dohrate: number };
+type Riadok = Pouzivatel & { readonly vytvoreny: number; readonly dohrate: number; readonly rolaRucne?: boolean };
 
-/** Úrovne, ktoré smie admin nastaviť (admina nikto ďalší nedostane). */
-const NASTAVITELNE: readonly Rola[] = ["subadmin", "hrac", "navstevnik"];
-const FILTRE: readonly (Rola | "ai")[] = ["admin", "subadmin", "hrac", "navstevnik", "ai"];
+const FILTRE: readonly (Rola | "ai")[] = ["admin", "subadmin", "sedmicka", "deci", "hrac", "navstevnik", "ai"];
+const jeRankHraca = (r: Rola): boolean => RANKY_HRACOV.includes(r);
 
 export function Hraci() {
   useTitulok("Hráči — správa");
@@ -22,6 +22,9 @@ export function Hraci() {
   const [hladat, setHladat] = useState("");
   const [filter, setFilter] = useState<Rola | "ai" | null>(null);
   const somAdmin = ja?.rola === "admin";
+  // Rank nastaví admin každému okrem admina (aj subadmina), subadmin len hráčom a len medzi hráčskymi rankami.
+  const nastavitelne: readonly Rola[] = somAdmin ? ["subadmin", ...[...RANKY_HRACOV].reverse()] : [...RANKY_HRACOV].reverse();
+  const smiemMenit = (p: Riadok): boolean => p.rola !== "admin" && (somAdmin || jeRankHraca(p.rola));
 
   const nacitaj = () =>
     void api
@@ -30,7 +33,7 @@ export function Hraci() {
       .catch((e: unknown) => setChyba(e instanceof Error ? e.message : String(e)));
   useEffect(nacitaj, []);
 
-  const uprav = async (p: Riadok, zmena: { rola?: Rola; ai?: boolean }) => {
+  const uprav = async (p: Riadok, zmena: { rola?: Rola; ai?: boolean; automaticky?: true }) => {
     try {
       await api.patch(`/admin/pouzivatelia/${p.id}`, zmena);
       nacitaj();
@@ -50,12 +53,13 @@ export function Hraci() {
       <header className="hraci-hlavicka">
         <h1>Hráči</h1>
         <p className="tlmene">
-          Nový účet je návštevník (hrá a číta spätnú väzbu); po prvej dohratej partii (aj proti botovi) sa sám stane hráčom. Subadmin smie
-          to isté čo admin okrem zmeny úrovní. Účty AI agentov (playtesteri, protihráč) majú značku AI — ich spätnú väzbu web predvolene
-          skrýva. {somAdmin ? "Úroveň a značku AI meníš priamo v tabuľke." : "Úrovne mení len admin."}
+          Nový účet je návštevník; po prvej dohratej partii (aj proti počítaču) je z neho Poldeci, potom Deci a Sedmička podľa partií
+          s ľuďmi. Rank nastavený ručne (značka „ručne“) automatika nemení, kým ho nevrátiš na automatický. Účty AI agentov majú značku AI
+          — ich spätnú väzbu web predvolene skrýva. {somAdmin ? "Rank aj značku AI meníš v tabuľke." : "Hráčske ranky meníš v tabuľke; subadminov a značku AI mení len admin."}
         </p>
       </header>
       {chyba !== null && <Hlaska>{chyba}</Hlaska>}
+      <RankyPrava poZmene={nacitaj} />
       <div className="hraci-ovladanie">
         <input type="search" placeholder="Hľadať meno alebo login…" value={hladat} onChange={(e) => setHladat(e.target.value)} aria-label="Hľadať hráča" />
         <div className="cipy" role="group" aria-label="Filter podľa úrovne">
@@ -76,7 +80,7 @@ export function Hraci() {
               <th>Hráč</th>
               <th>Registrácia</th>
               <th className="cislo">Dohraté</th>
-              <th>Úroveň</th>
+              <th>Rank</th>
               <th>AI</th>
             </tr>
           </thead>
@@ -95,14 +99,24 @@ export function Hraci() {
                 <td>{new Date(p.vytvoreny).toLocaleDateString("sk")}</td>
                 <td className="cislo">{p.dohrate}</td>
                 <td>
-                  {somAdmin && p.rola !== "admin" ? (
-                    <select value={p.rola} onChange={(e) => void uprav(p, { rola: e.target.value as Rola })} aria-label={`Úroveň ${p.meno}`}>
-                      {NASTAVITELNE.map((r) => (
-                        <option key={r} value={r}>
-                          {NAZOV_UROVNE[r]}
-                        </option>
-                      ))}
-                    </select>
+                  {smiemMenit(p) ? (
+                    <span className="hraci-rank">
+                      <select value={p.rola} onChange={(e) => void uprav(p, { rola: e.target.value as Rola })} aria-label={`Rank ${p.meno}`}>
+                        {nastavitelne.map((r) => (
+                          <option key={r} value={r}>
+                            {NAZOV_UROVNE[r]}
+                          </option>
+                        ))}
+                      </select>
+                      {p.rolaRucne === true && jeRankHraca(p.rola) && (
+                        <>
+                          <span className="odznak" title="Rank nastavil správca — automatický postup ho nemení.">ručne</span>
+                          <button onClick={() => void uprav(p, { automaticky: true })} title="Prepočítať rank podľa pravidiel postupu">
+                            automaticky
+                          </button>
+                        </>
+                      )}
+                    </span>
                   ) : (
                     <span className={p.rola === "admin" || p.rola === "subadmin" ? "odznak odznak-admin" : "odznak"}>{NAZOV_UROVNE[p.rola]}</span>
                   )}

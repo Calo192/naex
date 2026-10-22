@@ -966,3 +966,43 @@ button.cip.aktivny {
 .hraci-prazdne {
   padding: 16px 4px;
 }
+
+/* ---- Ranky a práva (Michal 2026-10-22) — matica rank × právo nad tabuľkou hráčov ---- */
+
+.ranky-prava {
+  border: 1px solid var(--okraj);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.ranky-prava summary {
+  cursor: pointer;
+}
+
+.ranky-postup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin: 10px 0;
+}
+
+.ranky-postup input[type="number"] {
+  width: 5em;
+}
+
+.ranky-matica td:not(:first-child),
+.ranky-matica th:not(:first-child) {
+  text-align: center;
+}
+
+.ranky-matica .ranky-spravca {
+  color: var(--tlmeny);
+  opacity: 0.6;
+}
+
+.hraci-rank {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}

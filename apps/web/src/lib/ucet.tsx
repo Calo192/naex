@@ -4,15 +4,41 @@ import { createContext, useCallback, useContext, useEffect, useState, type React
 import { api } from "./api.ts";
 import { aktualnaSchema, pouziSchemu } from "./schemy.ts";
 
-/** Úroveň účtu (Michal 2026-10-12) — práva overuje server, tu len podľa nej kreslíme. */
-export type Rola = "admin" | "subadmin" | "hrac" | "navstevnik";
+/**
+ * Úroveň účtu — práva overuje server, tu len podľa nej kreslíme. Hráčske ranky
+ * (Michal 2026-10-22): návštevník → Poldeci (kľúč „hrac“) → Deci → Sedmička.
+ */
+export type Rola = "admin" | "subadmin" | "sedmicka" | "deci" | "hrac" | "navstevnik";
 
 export const NAZOV_UROVNE: Readonly<Record<Rola, string>> = {
   admin: "admin",
   subadmin: "subadmin",
-  hrac: "hráč",
+  sedmicka: "Sedmička",
+  deci: "Deci",
+  hrac: "Poldeci",
   navstevnik: "návštevník",
 };
+
+/** Hráčske ranky od najnižšieho — tým sa prideľujú práva. */
+export const RANKY_HRACOV: readonly Rola[] = ["navstevnik", "hrac", "deci", "sedmicka"];
+
+/** Práva rankov (server/prava.ts); kľúče pozná server, klient podľa nich len skrýva. */
+export type Pravo =
+  | "hrat_bot"
+  | "hrat_ludia"
+  | "sukromne_miestnosti"
+  | "hodnotene_partie"
+  | "melichar_soundboard"
+  | "spatna_vazba_pisat"
+  | "spatna_vazba_reagovat"
+  | "hodnotit_hru"
+  | "profily_inych"
+  | "vlastna_fotka"
+  | "reporty_playtestov"
+  | "navrhovat_karty";
+
+/** Má prihlásený používateľ právo? Bez zoznamu (starý server) áno — server aj tak overí. */
+export const maPravo = (ja: Pick<Pouzivatel, "prava"> | null, pravo: Pravo): boolean => ja !== null && (ja.prava === undefined || ja.prava.includes(pravo));
 
 /** Admin a subadmin: správa hráčov, tvorba kariet, mazanie cudzích príspevkov. */
 export const jeSpravca = (rola: Rola): boolean => rola === "admin" || rola === "subadmin";
@@ -25,6 +51,8 @@ export interface Pouzivatel {
   readonly rola: Rola;
   /** Dohraté partie — posiela ho len /api/ja. */
   readonly dohrate?: number;
+  /** Práva ranku — posiela ich len /api/ja. */
+  readonly prava?: readonly Pravo[];
   /** Zväčšenie karty (ruka pod myšou, inde klikom) v percentách (150 – 400, predvolene 200). */
   readonly lupa?: number;
   /** Hlasitosť hudby počas partie v percentách (0 = vypnutá, predvolene 30). */
