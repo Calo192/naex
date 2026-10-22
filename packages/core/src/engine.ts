@@ -2147,6 +2147,14 @@ function cmdStarosta(
  * v Zhromaždení aj v Pitke, keď je hráč na ťahu, a ťah to neukončí.
  * Cigarety sa prenášajú z kola na kolo.
  */
+/**
+ * Fajčenie dáva kartu z doberacieho balíčka (s premiešaním odhadzovacieho).
+ * Keď sú oba prázdne, cigareta by sa minula naprázdno — príkaz je neplatný.
+ */
+export function jeCoTahat(doberaci: number, odhadzovaci: number): boolean {
+  return doberaci + odhadzovaci > 0;
+}
+
 function cmdSmoke(s: MutState, cmd: { pocet: number }, p: PlayerId, events: Event[]): void {
   const pitka = s.pitkaStav;
   const vPitke = s.faza === "pitka" && pitka !== null && pitka.reakcia === null;
@@ -2154,6 +2162,7 @@ function cmdSmoke(s: MutState, cmd: { pocet: number }, p: PlayerId, events: Even
   need(!zakazFajcit(s as GameState), "Benzínka: nikto nesmie fajčiť.");
   need(cmd.pocet > 0 && Number.isInteger(cmd.pocet), "Počet cigariet musí byť kladný.");
   need(s.hraci[p].cigarety >= cmd.pocet, "Toľko cigariet nemáš.");
+  need(jeCoTahat(s.hraci[p].doberaci.length, s.hraci[p].odhadzovaci.length), "Nemáš z čoho ťahať — doberací aj odhadzovací balíček sú prázdne.");
   hrac(s, p).cigarety -= cmd.pocet;
   hrac(s, p).nerestiTotoKolo += cmd.pocet;
   const tahane = tahaj(s, p, cmd.pocet, events);
@@ -3428,6 +3437,11 @@ function zaverecneBodovanie(s: MutState, data: GameData, events: Event[]): void 
 // ---------------------------------------------------------------------------
 // Legálne príkazy (pre klienta aj smoke test)
 
+function mozeFajcit(state: GameState, p: PlayerId): boolean {
+  const h = state.hraci[p];
+  return h.cigarety > 0 && !zakazFajcit(state) && jeCoTahat(h.doberaci.length, h.odhadzovaci.length);
+}
+
 export function legalCommands(data: GameData, state: GameState, p: PlayerId): Command[] {
   if (!mozeHrat(state, p)) return [];
   const out: Command[] = [];
@@ -3485,8 +3499,9 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
       // ťah neodovzdáva, tomu vypitie tiež nepridá).
       const doLinie = vylozenia.some((c) => c.type === "place" && c.target !== "priznanie");
       if (doLinie && state.hraci[p].poldeciPlne > 0 && !z.pasoval[p] && !zakazVypit(state)) out.push({ type: "vypit" });
-      // Fajčiť (karta za cigaretu) smie hráč kedykoľvek na svojom ťahu — okrem Benzínky.
-      if (state.hraci[p].cigarety > 0 && !zakazFajcit(state)) out.push({ type: "smoke", pocet: 1 });
+      // Fajčiť (karta za cigaretu) smie hráč kedykoľvek na svojom ťahu — okrem Benzínky
+      // a keď nemá z čoho ťahať.
+      if (mozeFajcit(state, p)) out.push({ type: "smoke", pocet: 1 });
       out.push(...vylozenia);
       break;
     }
@@ -3524,7 +3539,7 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
           for (const z of state.senok) out.push({ type: "starosta", rukaUid: k.uid, senokUid: z.uid });
         }
       }
-      if (state.hraci[p].cigarety > 0 && !zakazFajcit(state)) out.push({ type: "smoke", pocet: 1 });
+      if (mozeFajcit(state, p)) out.push({ type: "smoke", pocet: 1 });
       if (vykupZoSrotu(state) && pitka.vykup?.[p] !== true && state.hraci[p].cigarety >= KONSTANTY.EFEKT.ZBERNY_DVOR_CENA) {
         for (const k of state.hraci[p].odhadzovaci) out.push({ type: "vykup", uid: k.uid });
       }

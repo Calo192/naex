@@ -41,6 +41,7 @@ import type {
 import {
   KONSTANTY,
   STUPNICA_ZONY,
+  jeCoTahat,
   kartyZaPas,
   bodyTeraz,
   cenaKliatby,
@@ -2160,7 +2161,13 @@ export function HernaPlocha({
               ikona: <IkonaCigareta zakaz={zakazFajcit(view)} />,
               nazov: "fajčiť",
               cena: 1,
-              dovod: zakazFajcit(view) ? "Benzínka: nikto nesmie fajčiť." : view.hraci[ja].cigarety === 0 ? "Nemáš cigaretu." : null,
+              dovod: zakazFajcit(view)
+                ? "Benzínka: nikto nesmie fajčiť."
+                : view.hraci[ja].cigarety === 0
+                  ? "Nemáš cigaretu."
+                  : !jeCoTahat(view.hraci[ja].doberaciPocet, view.hraci[ja].odhadzovaci.length)
+                    ? "Nemáš z čoho ťahať — doberací aj odhadzovací balíček sú prázdne."
+                    : null,
               tip: "Fajčiť: za cigaretu si hneď doberieš kartu. Ťah ti neskončí, ráta sa ako nerest.",
               akcia: () => cmd({ type: "smoke", pocet: 1 }),
             })}
@@ -2443,7 +2450,13 @@ export function HernaPlocha({
               ikona: <IkonaCigareta zakaz={zakazFajcit(view)} />,
               nazov: "fajčiť",
               cena: 1,
-              dovod: zakazFajcit(view) ? "Benzínka: nikto nesmie fajčiť." : cig === 0 ? "Nemáš cigaretu." : null,
+              dovod: zakazFajcit(view)
+                ? "Benzínka: nikto nesmie fajčiť."
+                : cig === 0
+                  ? "Nemáš cigaretu."
+                  : !jeCoTahat(hracJa.doberaciPocet, hracJa.odhadzovaci.length)
+                    ? "Nemáš z čoho ťahať — doberací aj odhadzovací balíček sú prázdne."
+                    : null,
               tip: "Fajčiť: za cigaretu si hneď doberieš kartu. Ráta sa ako nerest.",
               akcia: () => cmd({ type: "smoke", pocet: 1 }),
             })}
