@@ -12,6 +12,7 @@ import { HudbaPartie } from "./Hudba.tsx";
 import { useMelichar } from "./Melichar.tsx";
 import { Soundboard } from "./Soundboard.tsx";
 import { useHra } from "./useHra.ts";
+import { useNepodporovaneZariadenie } from "./zariadenie.ts";
 import "./hra.css";
 
 interface OtvorenaHra {
@@ -150,10 +151,44 @@ function Lobby({
   );
 }
 
+/** Mobil a úzke okno: hra sa tu zatiaľ hrať nedá (Michal 2026-10-22), zvyšok webu áno. */
+function NepodporovaneZariadenie({ dovod }: { readonly dovod: "dotyk" | "uzke" }) {
+  return (
+    <div className="formular-stred panel" style={{ textAlign: "center" }}>
+      <h1>Tu sa NA EX! zatiaľ hrať nedá</h1>
+      {dovod === "dotyk" ? (
+        <p>
+          Herný stôl potrebuje širokú obrazovku a myš. Otvor NA EX! na počítači alebo na tablete na šírku — rozohraná partia ťa tam
+          počká.
+        </p>
+      ) : (
+        <p>Okno je na herný stôl príliš úzke. Roztiahni ho aspoň na 900 px a hra sa ukáže — rozohraná partia ťa počká.</p>
+      )}
+      <p className="tlmene">Kým sa hra dostane aj na mobil, môžeš si tu čítať:</p>
+      <div className="riadok-tlacidiel" style={{ justifyContent: "center" }}>
+        <Odkaz href="/pravidla" className="tlacidlo tlacidlo-hlavne">
+          Pravidlá
+        </Odkaz>
+        <Odkaz href="/karty" className="tlacidlo">
+          Karty
+        </Odkaz>
+        <Odkaz href="/novinky" className="tlacidlo">
+          Novinky
+        </Odkaz>
+        <Odkaz href="/profil" className="tlacidlo">
+          Profil
+        </Odkaz>
+      </div>
+    </div>
+  );
+}
+
 export function Hra() {
   useTitulok("Hrať");
   const { ja, nacitane } = useUcet();
-  const hra = useHra(ja !== null);
+  const nepodporovane = useNepodporovaneZariadenie();
+  // Na nepodporovanom zariadení sa ani nepripája — po roztiahnutí okna sa pripojí a vráti do partie.
+  const hra = useHra(ja !== null && nepodporovane === null);
 
   // Majster Melichar komentuje len partie proti počítaču — ľudia si nadávajú sami.
   const { ozvi } = useMelichar(hra.view !== null && hra.hraci.some((h) => h?.bot === true));
@@ -176,6 +211,7 @@ export function Hra() {
     }
   }, [pripojene, miestnost, pripoj]);
 
+  if (nepodporovane !== null) return <NepodporovaneZariadenie dovod={nepodporovane} />;
   if (!nacitane) return <Nacitavanie />;
   if (ja === null) {
     return (
