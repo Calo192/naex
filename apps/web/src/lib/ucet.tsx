@@ -37,7 +37,22 @@ export interface Pouzivatel {
   readonly ai?: boolean;
   /** Farebná schéma webu (lib/schemy.ts); null = predvolená. */
   readonly schema?: string | null;
+  /** Zobrazenie skóre v partii (ZOBRAZENIA_SKORE); chýba = dlaždice. */
+  readonly skore?: ZobrazenieSkore;
 }
+
+/**
+ * Zobrazenie skóre v partii (Michal 2026-10-22): po kliku na Body rozpis
+ * bodov ako dlaždice v bare hráča, alebo krčmový účet cez starších —
+ * spoločný, alebo dva proti sebe. Server pozná tie isté id (auth.ts).
+ */
+export const ZOBRAZENIA_SKORE = [
+  { id: "dlazdice", nazov: "Dlaždice podmienok", popis: "Bar hráča sa prepne na šesť dlaždíc — lokality, starší, cigarety, zóny strachu, Dlhy, Cirhóza." },
+  { id: "spolocny", nazov: "Spoločný účet", popis: "Krčmový účet cez starších: ty vľavo, súper vpravo, podmienka v strede." },
+  { id: "dva", nazov: "Dva účty", popis: "Dva krčmové účty proti sebe — súperov zhora, tvoj zdola." },
+] as const;
+export type ZobrazenieSkore = (typeof ZOBRAZENIA_SKORE)[number]["id"];
+export const SKORE_PREDVOLENE: ZobrazenieSkore = "dlazdice";
 
 export const LUPA_OD = 150;
 export const LUPA_DO = 400;

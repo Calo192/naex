@@ -51,6 +51,18 @@ describe("nastavenia profilu", () => {
     expect(((await volaj("GET", "/ja", cookie)).data.pouzivatel as { schema: string }).schema).toBe("noc");
   });
 
+  it("zobrazenie skóre (Michal 2026-10-22): predvolene dlaždice, uloží sa len známa voľba", async () => {
+    const { cookie } = await registruj(server.port);
+    expect(((await volaj("GET", "/ja", cookie)).data.pouzivatel as { skore: string }).skore).toBe("dlazdice");
+
+    const ok = await volaj("PATCH", "/profil", cookie, { skore: "dva" });
+    expect(ok.status).toBe(200);
+    expect((ok.data.pouzivatel as { skore: string }).skore).toBe("dva");
+
+    for (const zle of ["", "tabulka", 2, null]) expect((await volaj("PATCH", "/profil", cookie, { skore: zle })).status).toBe(400);
+    expect(((await volaj("GET", "/ja", cookie)).data.pouzivatel as { skore: string }).skore).toBe("dva");
+  });
+
   it("hráč si vyberie predvolený avatar, cudzie médium nie", async () => {
     const { cookie } = await registruj(server.port);
     const zoznam = (await volaj("GET", "/avatary", cookie)).data.avatary as string[];

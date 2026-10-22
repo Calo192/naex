@@ -45,6 +45,8 @@ export interface Pouzivatel {
   readonly ai: boolean;
   /** Farebná schéma webu (id zo zoznamu klienta); null = predvolená. */
   readonly schema: string | null;
+  /** Ako sa v partii ukáže rozpis bodov (ZOBRAZENIA_SKORE). */
+  readonly skore: ZobrazenieSkore;
 }
 
 export const LUPA_OD = 150;
@@ -62,6 +64,19 @@ export function overLupu(v: unknown): number {
  * Farebná schéma z requestu. Zoznam schém pozná len klient (apps/web/src/lib/schemy.ts) —
  * neznáme id prehliadač ignoruje a ukáže predvolenú, preto stačí overiť tvar.
  */
+/**
+ * Zobrazenie skóre v partii (Michal 2026-10-22): rozpis bodov ako dlaždice
+ * v bare hráča, spoločný krčmový účet, alebo dva účty proti sebe.
+ */
+export const ZOBRAZENIA_SKORE = ["dlazdice", "spolocny", "dva"] as const;
+export type ZobrazenieSkore = (typeof ZOBRAZENIA_SKORE)[number];
+export const SKORE_PREDVOLENE: ZobrazenieSkore = "dlazdice";
+
+export function overSkore(v: unknown): ZobrazenieSkore {
+  if (!ZOBRAZENIA_SKORE.includes(v as ZobrazenieSkore)) throw new ChybaVstupu("Neznáme zobrazenie skóre.");
+  return v as ZobrazenieSkore;
+}
+
 export function overSchemu(v: unknown): string {
   if (typeof v !== "string" || !/^[a-z]{2,20}$/.test(v)) throw new ChybaVstupu("Neznáma farebná schéma.");
   return v;
@@ -197,12 +212,13 @@ export class Ucty {
           : Math.min(MELICHAR_FREKVENCIA_DO, Number(r.melichar_frekvencia)),
       ai: Number(r.ai) === 1,
       schema: typeof r.schema === "string" ? r.schema : null,
+      skore: ZOBRAZENIA_SKORE.includes(r.skore as ZobrazenieSkore) ? (r.skore as ZobrazenieSkore) : SKORE_PREDVOLENE,
     };
   }
 
   podlaId(id: number): Pouzivatel | null {
     return this.riadok(
-      this.db.prepare("SELECT id, login, meno, avatar, rola, lupa, hudba, melichar, melichar_frekvencia, ai, schema FROM pouzivatelia WHERE id = ?").get(id) as
+      this.db.prepare("SELECT id, login, meno, avatar, rola, lupa, hudba, melichar, melichar_frekvencia, ai, schema, skore FROM pouzivatelia WHERE id = ?").get(id) as
         | Record<string, unknown>
         | undefined,
     );
@@ -283,6 +299,7 @@ export class Ucty {
       melichar?: number;
       melicharFrekvencia?: number;
       schema?: string;
+      skore?: ZobrazenieSkore;
     },
   ): Pouzivatel | null {
     if (zmeny.meno !== undefined) this.db.prepare("UPDATE pouzivatelia SET meno = ? WHERE id = ?").run(zmeny.meno, id);
@@ -293,6 +310,7 @@ export class Ucty {
       this.db.prepare("UPDATE pouzivatelia SET melichar_frekvencia = ? WHERE id = ?").run(zmeny.melicharFrekvencia, id);
     }
     if (zmeny.schema !== undefined) this.db.prepare("UPDATE pouzivatelia SET schema = ? WHERE id = ?").run(zmeny.schema, id);
+    if (zmeny.skore !== undefined) this.db.prepare("UPDATE pouzivatelia SET skore = ? WHERE id = ?").run(zmeny.skore, id);
     if (zmeny.avatar !== undefined) this.db.prepare("UPDATE pouzivatelia SET avatar = ? WHERE id = ?").run(zmeny.avatar, id);
     return this.podlaId(id);
   }

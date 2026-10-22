@@ -15,6 +15,7 @@
 
 import {
   useEffect,
+  useId,
   useMemo,
   useRef,
   useState,
@@ -95,6 +96,7 @@ import {
 import type { ActionSums, GameState, KliatbyNahladu, NahladVylozenia, PolozkaVykladania, Slot, StranaLinie } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
+import { KrcmovyUcet } from "./KrcmovyUcet.tsx";
 import type { Sada } from "@naex/tvorba";
 import { HernaKarta, posunVzpriamenej, vzhladKarty, type HernaKartaProps } from "./HernaKarta.tsx";
 import { Lupa, maxMierkaLupy } from "./Lupa.tsx";
@@ -426,6 +428,20 @@ export function HernaPlocha({
   const sirkaScorecardu = Math.min(maliStarsi ? SIRKA_SCORECARDU_MALA : SIRKA_SCORECARDU_MAX, Math.max(minScorecardu, Math.floor((sirkaRadu - (vRade - 1) * MEDZERA_SCORECARDOV) / vRade)));
   // Zväčšenie karty (lupa a ruka) podľa nastavenia v profile.
   const mierkaLupy = (useUcet().ja?.lupa ?? LUPA_PREDVOLENA) / 100;
+  // Zobrazenie skóre (preferencia v profile, Michal 2026-10-22): dlaždice v bare, alebo krčmový účet cez starších.
+  const zobrazenieSkore = useUcet().ja?.skore ?? "dlazdice";
+  const [ucetOtvoreny, setUcetOtvoreny] = useState(false);
+  const idUcetu = useId();
+  useEffect(() => {
+    if (!ucetOtvoreny) return;
+    const klaves = (e: KeyboardEvent): void => {
+      if (e.key === "Escape") setUcetOtvoreny(false);
+    };
+    window.addEventListener("keydown", klaves);
+    return () => window.removeEventListener("keydown", klaves);
+  }, [ucetOtvoreny]);
+  const ucetBaru =
+    zobrazenieSkore === "dlazdice" ? undefined : { otvoreny: ucetOtvoreny, prepni: () => setUcetOtvoreny((o) => !o), id: idUcetu };
   const mierkaLupyScorecardu = Math.max(1.6, SIRKA_SCORECARDU_V_LUPE / sirkaScorecardu);
   const lokalitaRef = useRef<HTMLDivElement>(null);
   // Línia môže byť dlhá — lokalitu drž v strede pohľadu.
@@ -3577,7 +3593,23 @@ export function HernaPlocha({
           data={data}
           mena={[menoHraca(0), menoHraca(1)]}
           menoStarsieho={menoStarsieho}
+          ucet={ucetBaru}
         />
+        {/* Účet leží cez starších (kotva bez výšky) — stôl pri otvorení neposkočí. */}
+        {ucetBaru !== undefined && ucetOtvoreny && (
+          <div className="ucet-kotva" id={idUcetu}>
+            <KrcmovyUcet
+              body={body}
+              data={data}
+              ja={ja}
+              mena={[menoHraca(0), menoHraca(1)]}
+              menoStarsieho={menoStarsieho}
+              kolo={view.kolo}
+              dva={zobrazenieSkore === "dva"}
+              onZavri={() => setUcetOtvoreny(false)}
+            />
+          </div>
+        )}
         {/* Starší hore — mimo dosahu ruky, aby sa ich lupa nebila s lupou kariet v ruke. */}
         <section className="starsi-panel" ref={starsiPanelRef}>
           <h3>
@@ -3755,6 +3787,7 @@ export function HernaPlocha({
             data={data}
             mena={[menoHraca(0), menoHraca(1)]}
             menoStarsieho={menoStarsieho}
+            ucet={ucetBaru}
           />
 
           {bitkaPanel}

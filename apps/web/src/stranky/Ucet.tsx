@@ -14,9 +14,12 @@ import {
   MELICHAR_FREKVENCIA_PREDVOLENA,
   MELICHAR_PREDVOLENY,
   NAZOV_UROVNE,
+  SKORE_PREDVOLENE,
+  ZOBRAZENIA_SKORE,
   jeSpravca,
   useUcet,
   type Pouzivatel,
+  type ZobrazenieSkore,
 } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Pole } from "../komponenty.tsx";
 import { MojeStatistiky } from "./Statistiky.tsx";
@@ -271,6 +274,16 @@ export function Profil() {
       .catch(chyba);
   };
 
+  // Zobrazenie skóre v partii (Michal 2026-10-22) — uloží sa v účte.
+  const [skore, setSkore] = useState<ZobrazenieSkore>(ja?.skore ?? SKORE_PREDVOLENE);
+  const vyberSkore = (id: ZobrazenieSkore): void => {
+    setSkore(id);
+    api
+      .patch<{ pouzivatel: Pouzivatel }>("/profil", { skore: id })
+      .then((r) => nastav(r.pouzivatel))
+      .catch(chyba);
+  };
+
   // Výber z predvolených avatarov (Michal 2026-10-19) — kto nechce nahrávať fotku.
   const [galeria, setGaleria] = useState<readonly string[] | null>(null);
   const [galeriaOtvorena, setGaleriaOtvorena] = useState(false);
@@ -441,6 +454,19 @@ export function Profil() {
             </button>
           ))}
         </div>
+      </section>
+      <section className="panel preferencie" aria-labelledby="preferencie-nadpis">
+        <h3 id="preferencie-nadpis">Preferencie</h3>
+        <fieldset className="skore-volby">
+          <legend>Zobrazenie skóre v partii — po kliknutí na Body v bare hráča</legend>
+          {ZOBRAZENIA_SKORE.map((z) => (
+            <label key={z.id} className={z.id === skore ? "skore-volba zvolena" : "skore-volba"}>
+              <input type="radio" name="skore" value={z.id} checked={z.id === skore} onChange={() => vyberSkore(z.id)} />
+              <span className="skore-nazov">{z.nazov}</span>
+              <span className="skore-popis">{z.popis}</span>
+            </label>
+          ))}
+        </fieldset>
       </section>
       <div className="profil-nastavenia">
       <form className="panel" onSubmit={(e) => void ulozMeno(e)}>
