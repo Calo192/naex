@@ -62,6 +62,7 @@ import {
   nahladVylozenia,
   naexCieleVLinii,
   posunMarker,
+  navrhPrebytku,
   printedSides,
   poskodenieBitky,
   rozpisPoskodenia,
@@ -90,6 +91,7 @@ import { StavkaBitky } from "./StavkaBitky.tsx";
 import { Scoreboard } from "./Scoreboard.tsx";
 import { Scorecard, StavStarsieho, UCINOK_PRIAZNE } from "./Scorecard.tsx";
 import type { HracInfo, ZmenyFrajeriny } from "./useHra.ts";
+import { useBezNaexVBitke, useOdlozenyPrikaz } from "./usePohodlie.ts";
 import { useTahanie } from "./useTahanie.ts";
 import "./hra.css";
 
@@ -435,7 +437,7 @@ export function HernaPlocha({
   useEffect(() => setNavrh(null), [klucTahu]);
   // Nevratné kroky s inline potvrdením (dizajn UX N1): „hotovo“ v Pitke, keď
   // ním hráč vzdáva možné NA EX, a „pasovať“, keď ešte môže vykladať.
-  const [potvrdenie, setPotvrdenie] = useState<"hotovo" | "pas" | null>(null);
+  const [potvrdenie, setPotvrdenie] = useState<"hotovo" | null>(null);
   useEffect(() => setPotvrdenie(null), [klucTahu, view.pitkaCislo]);
   useEffect(() => {
     if (potvrdenie === null && mode.typ !== "naexCiel") return;
@@ -944,6 +946,10 @@ export function HernaPlocha({
     setNavrh(null);
     setVyberLokality(null);
   };
+  // Menej klikov (roadmapa #9 B): logika je v usePohodlie a v jadre (pohodlie.ts).
+  const bezNaex = useBezNaexVBitke(view, posli);
+  const odlozenyPas = useOdlozenyPrikaz(posli, `${klucTahu}|${vylozenia.length}`); // potiahnutá karta pas zruší
+  const navrhRozdelenia = navrhPrebytku(data, view);
 
   // ---- čo sa práve stalo (dizajn hra-20261021-1240, UX N3) -------------------
   // Keď môj ťah skončí, zapamätá sa línia a dĺžka logu. Keď som znova na ťahu,
@@ -2055,13 +2061,13 @@ export function HernaPlocha({
           const zaPas = (view.zhromazdenieStav === null ? 0 : kartyZaPas(view.zhromazdenieStav, ja)) * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU;
           // Pas je nevratný: potvrdenie len keď ešte niečo vyložiť môžem (UX N1, U10).
           const mozemVylozit = zostava > 0 && [...moznostiMiesta.values()].some((m) => m.karty.size > 0);
-          if (potvrdenie === "pas") {
+          if (odlozenyPas.caka !== null) {
             return {
               nadpis,
               text: (
                 <>
                   <strong>
-                    Pasovať? Do Pitky už nevyložíš ani jednu kartu, {menoHraca(super_)} vykladá sám. Dostaneš {cigariet(zaPas)}.
+                    Pasuješ do Pitky — dostaneš {cigariet(zaPas)}, {menoHraca(super_)} potom vykladá sám. Vrátiť to môžeš ešte {odlozenyPas.zostavaS} s.
                   </strong>
                   {stavka !== null && (
                     <>
@@ -2073,11 +2079,8 @@ export function HernaPlocha({
               ),
               vpravo: (
                 <>
-                  <button className="pecat pecat-tichy" onClick={() => setPotvrdenie(null)} autoFocus>
-                    ešte vykladám
-                  </button>
-                  <button className="pecat pecat-koncim" onClick={() => posli({ type: "pass" })}>
-                    pasovať <CenaCigariet n={zaPas} znamienko="+" />
+                  <button className="pecat pecat-tichy" onClick={odlozenyPas.vrat} autoFocus>
+                    vrátiť · ešte vykladám
                   </button>
                 </>
               ),
@@ -2099,7 +2102,7 @@ export function HernaPlocha({
               <button
                 className="pecat pecat-koncim"
                 title="Do Pitky už nevykladáš, súper vykladá sám. Za každú kartu, ktorú si ešte smel vyložiť, dostaneš cigaretu."
-                onClick={() => (mozemVylozit ? setPotvrdenie("pas") : posli({ type: "pass" }))}
+                onClick={() => (mozemVylozit ? odlozenyPas.spusti({ type: "pass" }) : posli({ type: "pass" }))}
               >
                 pasovať <CenaCigariet n={zaPas} znamienko="+" />
               </button>
@@ -2461,6 +2464,14 @@ export function HernaPlocha({
           ) : (
             textVyberu ?? (
               <>
+                {bezNaex.zapnute && (
+                  <>
+                    <strong>Do konca bitky končíš Pitky sám, bez NA EX.</strong>{" "}
+                    <button className="auto-hotovo-zrusit" onClick={bezNaex.vypni}>
+                      zrušiť
+                    </button>{" "}
+                  </>
+                )}
                 {kontext}
                 {dovodBezNaex !== null ? (
                   <>
@@ -2479,7 +2490,22 @@ export function HernaPlocha({
           ),
           vlavo: nakupy,
           stred: naexStred,
-          vpravo: koncim,
+          vpravo: krcma ? (
+            koncim
+          ) : (
+            <>
+              {!bezNaex.zapnute && (
+                <button
+                  className="pecat pecat-tichy"
+                  title="Hra za teba v každej ďalšej Pitke tejto bitky ťukne „končím“ — bez NA EX, bez fajčenia. Na súperovo NA EX odpovedáš sám."
+                  onClick={bezNaex.zapni}
+                >
+                  do konca bitky bez NA EX
+                </button>
+              )}
+              {koncim}
+            </>
+          ),
         };
       }
 
@@ -2577,8 +2603,23 @@ export function HernaPlocha({
                 ) : (
                   "Posun stojí 1."
                 )}
+                {navrhRozdelenia !== null && (
+                  <span className="tlmene">
+                    {" "}
+                    Alebo celý prebytok naraz podľa bodov: {navrhRozdelenia.kroky.map((id) => menoKarty(view.starsi.find((e) => e.elderId === id)?.karta.defId ?? id)).join(", ")}.
+                  </span>
+                )}
               </>
             ),
+            ...(navrhRozdelenia === null
+              ? {}
+              : {
+                  vpravo: (
+                    <button className="pecat pecat-koncim" title="Posunie markery podľa návrhu vedľa — ten istý výpočet ako náhľad bodov pri staršom." onClick={() => posli(navrhRozdelenia.prikaz)}>
+                      rozdeliť naraz
+                    </button>
+                  ),
+                }),
           };
         }
         if (b.krok === "liecba") {
