@@ -14,6 +14,7 @@ import {
   computeDamage,
   elderScore,
   freshElder,
+  legalCommands,
   loadGameData,
   naTahu,
   parseScorecards,
@@ -376,6 +377,64 @@ describe("§14 Efekty kariet — výklad", () => {
     expect(zahodil.hraci[1].cigarety).toBe(pred + 1);
     const vzal = apply(sada, s, { type: "vizia", vziat: true }, 0).state;
     expect(vzal.hraci[1].cigarety).toBe(pred);
+  });
+
+  it("§14 Hrobár: keď súper Pohrebom spáli svoju kartu z línie, majiteľ Hrobára dostane cigaretu (rozhodca #9)", () => {
+    const karta = inst("pijan");
+    const cirhoza = inst("cirhoza");
+    const s = predKoncomBitky(62, (x) => sHracom({ ...x, strany: [[lezi(karta, 0)], [lezi(inst("hrobar"), 1)]] }, 0, { priznane: [cirhoza] }));
+    const pred = s.hraci[1].cigarety;
+    const po = apply(data, s, { type: "pohreb", cirhozaUid: cirhoza.uid, kartaUid: karta.uid }, 0).state;
+    expect(po.hraci[1].cigarety).toBe(pred + 1);
+  });
+
+  it("§14 Hrobár: keď súper Liečbou spáli svojho Závislého z línie, majiteľ Hrobára dostane cigaretu (rozhodca #9)", () => {
+    const zavisly = inst("pijan");
+    const zoSenku = inst("noviny");
+    const cirhoza = inst("cirhoza");
+    const s = predKoncomBitky(63, (x) =>
+      sHracom({ ...x, strany: [[lezi(zavisly, 0)], [lezi(inst("hrobar"), 1)]], senok: [zoSenku] }, 0, { priznane: [cirhoza] }),
+    );
+    const pred = s.hraci[1].cigarety;
+    const po = apply(data, s, { type: "liecba", cirhozaUid: cirhoza.uid, zavislyUid: zavisly.uid, senokUid: zoSenku.uid }, 0).state;
+    expect(po.hraci[1].cigarety).toBe(pred + 1);
+  });
+
+  it("§14 Hrobár: vlastný Pohreb majiteľovi Hrobára cigaretu nedá", () => {
+    const karta = inst("pijan");
+    const cirhoza = inst("cirhoza");
+    const s = predKoncomBitky(64, (x) => sHracom({ ...x, strany: [[lezi(karta, 0), lezi(inst("hrobar"), 0)], []] }, 0, { priznane: [cirhoza] }));
+    const pred = [s.hraci[0].cigarety, s.hraci[1].cigarety];
+    const po = apply(data, s, { type: "pohreb", cirhozaUid: cirhoza.uid, kartaUid: karta.uid }, 0).state;
+    expect([po.hraci[0].cigarety, po.hraci[1].cigarety]).toEqual(pred);
+  });
+
+  function sPostarkou(seed: number, h: Partial<PlayerState>): GameState {
+    const s = vPitke(data, seed, [[lezi(inst("postarka"), 0)], []]);
+    return sHracom({ ...s, pitkaStav: pitkaStav(0) }, 0, { priznane: [], ...h });
+  }
+
+  it("§14 Poštárka: s prázdnym doberacím aj odhadzovacím balíčkom sa nepoužije a Dlh nedá (rozhodca #8)", () => {
+    const s = sPostarkou(61, { doberaci: [], odhadzovaci: [] });
+    expect(legalCommands(data, s, 0).some((c) => c.type === "postarka")).toBe(false);
+    expect(() => apply(data, s, { type: "postarka", pocet: 2 }, 0)).toThrow();
+  });
+
+  it("§14 Poštárka: kto dobral aspoň jednu kartu, získa 1 Dlh — aj keď chcel dve", () => {
+    const karta = inst("pijan");
+    const s = sPostarkou(61, { doberaci: [karta], odhadzovaci: [] });
+    expect(legalCommands(data, s, 0).some((c) => c.type === "postarka")).toBe(true);
+    const po = apply(data, s, { type: "postarka", pocet: 2 }, 0).state;
+    expect(po.hraci[0].ruka.map((k) => k.uid)).toContain(karta.uid);
+    expect(po.hraci[0].priznane.filter((k) => k.defId === "dlh")).toHaveLength(1);
+  });
+
+  it("§14 Poštárka: balíček len s Dlhmi — Dlhy sa samy priznajú, do ruky nič, Dlh z Poštárky nepribudne", () => {
+    const s = sPostarkou(61, { doberaci: [inst("dlh")], odhadzovaci: [] });
+    const ruka = s.hraci[0].ruka.length;
+    const po = apply(data, s, { type: "postarka", pocet: 1 }, 0).state;
+    expect(po.hraci[0].ruka).toHaveLength(ruka);
+    expect(po.hraci[0].priznane.filter((k) => k.defId === "dlh")).toHaveLength(1);
   });
 
   it("§14 Dievčina na vydaj: pri bitke spáli toľko priznaných Dlhov, koľko má aktívnych akcií, a jej akcie v tej bitke ešte platia", () => {

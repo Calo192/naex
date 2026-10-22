@@ -2521,7 +2521,8 @@ export function HernaPlocha({
         const cenaBarteru = barterCena(data, view, ja);
         const mamEfekt = (defId: string): boolean =>
           [...view.strany[0], ...view.strany[1]].some((pl) => pl.playedBy === ja && pl.card.defId === defId);
-        const postarka = mamEfekt("postarka") && pitkaSt?.postarka[ja] !== true;
+        const postarka =
+          mamEfekt("postarka") && pitkaSt?.postarka[ja] !== true && jeCoTahat(hracJa.doberaciPocet, hracJa.odhadzovaci.length);
         const starosta = mamEfekt("starosta") && pitkaSt?.starosta[ja] !== true && hracJa.cigarety > 0;
         // Vínko (Michal 2026-10-19): s ním sa poldeci za cigarety nedolieva.
         const vinko = hracJa.dedicstvo.some((k) => k.defId === "vinko");

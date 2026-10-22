@@ -155,7 +155,7 @@ export const DLZKY_HRY = { kratka: 5, stredna: 7, dlha: 11 } as const;
  * 2026-10-22) — profily podľa nej oddelia partie hrané na iných pravidlách.
  * Zmeň (dátum zmeny) vždy, keď sa mení správanie pravidiel v jadre.
  */
-export const VERZIA_PRAVIDIEL = "2026-10-22";
+export const VERZIA_PRAVIDIEL = "2026-10-23";
 export type DlzkaHry = keyof typeof DLZKY_HRY;
 export const ALL_DLZKY: readonly DlzkaHry[] = ["kratka", "stredna", "dlha"];
 export const PREDVOLENA_DLZKA: DlzkaHry = "stredna";

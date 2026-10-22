@@ -335,6 +335,13 @@ uzavrel Michal 2026-10-22 (roadmapa #11); odpovede sú v PRAVIDLA.md.
 9. ~~**Šenok** — čo sa stane, keď sa minie spoločný doberací balíček?~~ Šenok sa
    zmenšuje až na nulu, hra beží ďalej bez trestu (§7).
 
+**Otázky k pravidlám v4** (na rozhodnutie pri prepise PRAVIDLA.md, roadmapa #12):
+
+12. **NA EX na kartu, ktorej akciu zrušil Odpor suseda** — zdvojí NA EX aj
+   akciu zrušenú Odporom (neaktívna → ×2), alebo ostáva zrušená? Hra ju
+   nechá zrušenú (`partia.ts`: NA EX mení len akcie cieľovej karty, zrušenie
+   Odporom ostáva); PRAVIDLA §4 a §5 to nehovoria. Rozhodca 2026-10-22, dopad malý.
+
 ---
 
 ## Neznáme hodnoty (nie sú v pravidlách, sú na komponentoch)

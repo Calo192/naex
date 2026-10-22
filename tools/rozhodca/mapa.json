@@ -1543,10 +1543,13 @@
     {
       "id": "14.karta.hrobar-pohreb",
       "paragraf": "14. Efekty kariet — výklad › Karty",
-      "pravidlo": "Či je spálenie karty z línie Pohrebom či Liečbou „zahodenie z línie“, za ktoré dostane súperov Hrobár cigaretu.",
-      "stav": "nejasne",
-      "testy": [],
-      "poznamka": "Kód (engine.ts, cmdPohreb, cmdLiecba) Hrobára nespúšťa. Test čítania B: playtest/rozhodca/20261022-214942/14-karty-hrobar-pohreb.test.ts. Návrh rozhodca-hrobar-pohreb v docs/playtesty/navrhy-rozhodca-20261022-214942.json."
+      "pravidlo": "Spálenie karty z línie Pohrebom či Liečbou je zahodenie z línie — súperov Hrobár dostane cigaretu (Michal 2026-10-22, rozhodca #9).",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/pravidla-bitka.test.ts › §14 Hrobár: keď súper Pohrebom spáli svoju kartu z línie, majiteľ Hrobára dostane cigaretu (rozhodca #9)",
+        "packages/core/test/pravidla-bitka.test.ts › §14 Hrobár: keď súper Liečbou spáli svojho Závislého z línie, majiteľ Hrobára dostane cigaretu (rozhodca #9)",
+        "packages/core/test/pravidla-bitka.test.ts › §14 Hrobár: vlastný Pohreb majiteľovi Hrobára cigaretu nedá"
+      ]
     },
     {
       "id": "14.karta.anonymny-alkoholik",
@@ -1630,12 +1633,14 @@
     {
       "id": "14.karta.postarka",
       "paragraf": "14. Efekty kariet — výklad › Karty",
-      "pravidlo": "Poštárka: v Pitke raz smie majiteľ dobrať 1 až 2 karty; Dlh získa, len ak naozaj dobral.",
-      "stav": "chyba-v-hre",
+      "pravidlo": "Poštárka: v Pitke raz smie majiteľ dobrať 1 až 2 karty; Dlh získa, len ak naozaj dobral do ruky; s prázdnym doberacím aj odhadzovacím balíčkom sa použiť nedá (Michal 2026-10-22, rozhodca #8).",
+      "stav": "pokryte",
       "testy": [
-        "packages/core/test/playtest-055944.test.ts › Poštárka dober navyše s Dlhom; Starosta vymení kartu za cigaretu"
-      ],
-      "poznamka": "engine.ts, cmdPostarka: Dlh pridá aj vtedy, keď sa z prázdneho balíčka nedobrala žiadna karta. Padnutý test playtest/rozhodca/20261022-214942/14-karty-postarka-dlh-len-ak-dobral.test.ts. Návrh rozhodca-postarka-dlh v docs/playtesty/navrhy-rozhodca-20261022-214942.json."
+        "packages/core/test/playtest-055944.test.ts › Poštárka dober navyše s Dlhom; Starosta vymení kartu za cigaretu",
+        "packages/core/test/pravidla-bitka.test.ts › §14 Poštárka: s prázdnym doberacím aj odhadzovacím balíčkom sa nepoužije a Dlh nedá (rozhodca #8)",
+        "packages/core/test/pravidla-bitka.test.ts › §14 Poštárka: kto dobral aspoň jednu kartu, získa 1 Dlh — aj keď chcel dve",
+        "packages/core/test/pravidla-bitka.test.ts › §14 Poštárka: balíček len s Dlhmi — Dlhy sa samy priznajú, do ruky nič, Dlh z Poštárky nepribudne"
+      ]
     },
     {
       "id": "14.karta.presbiter-dvojcata",

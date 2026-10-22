@@ -469,7 +469,8 @@ function maEfekt(s: MutState, data: GameData, p: PlayerId, defId: string): boole
 
 /**
  * Hrobár: keď súper zahodí kartu (z ruky alebo z línie, efektom či limitom
- * ruky — nie návratom po bitke), majiteľ Hrobára si dobere cigaretu za kus.
+ * ruky, aj Pohrebom či Liečbou — nie návratom po bitke), majiteľ Hrobára si
+ * dobere cigaretu za kus.
  */
 function poZahodeni(s: MutState, data: GameData, p: PlayerId, pocet: number, events: Event[]): void {
   if (pocet <= 0) return;
@@ -2109,11 +2110,14 @@ function cmdPostarka(s: MutState, data: GameData, cmd: { pocet: number }, p: Pla
   need(!pitka.postarka[p], "Poštárku si v tejto Pitke už použil.");
   const najviac = KONSTANTY.EFEKT.POSTARKA_KARTY;
   need(Number.isInteger(cmd.pocet) && cmd.pocet >= 1 && cmd.pocet <= najviac, `Dobrať smieš 1 až ${najviac} kariet.`);
+  // Rozhodca #8 (Michal 2026-10-22): Dlh len za naozaj dobratú kartu — naprázdno sa Poštárka nepoužije.
+  need(jeCoTahat(s.hraci[p].doberaci.length, s.hraci[p].odhadzovaci.length), "Nemáš z čoho ťahať — doberací aj odhadzovací balíček sú prázdne.");
   pitka.postarka[p] = true;
-  tahaj(s, p, cmd.pocet, events);
-  const dlhy = KONSTANTY.EFEKT.POSTARKA_DLHY;
+  const dobrate = tahaj(s, p, cmd.pocet, events);
+  // Balíček mohol mať len Dlhy (samy sa priznajú) — do ruky nič, Dlh z Poštárky nie.
+  const dlhy = dobrate.length > 0 ? KONSTANTY.EFEKT.POSTARKA_DLHY : 0;
   for (let i = 0; i < dlhy; i++) pridajKliatbu(s, data, p, "dlh", events);
-  events.push({ type: "log", text: `Poštárka: hráč ${p + 1} ${rodovo(p, "dobral", "dobrala", "doberá")} ${kariet(cmd.pocet)} a ${pocet(dlhy, "Dlh", "Dlhy", "Dlhov")}.` });
+  events.push({ type: "log", text: `Poštárka: hráč ${p + 1} ${rodovo(p, "dobral", "dobrala", "doberá")} ${kariet(dobrate.length)}${dlhy > 0 ? ` a ${pocet(dlhy, "Dlh", "Dlhy", "Dlhov")}` : ""}.` });
 }
 
 /** starosta (Pitka): za cigaretu vymeň kartu z ruky za kartu zo šenku. */
@@ -3126,6 +3130,8 @@ function cmdLiecba(
     type: "log",
     text: `Hráč ${p + 1} sa lieči: ${rodovo(p, "spálil", "spálila", "páli")} Cirhózu a ${defOf(data, zavisly.card).name}, berie kartu zo šenku.`,
   });
+  // Rozhodca #9 (Michal 2026-10-22): spálenie karty z línie je zahodenie — súperov Hrobár dostane cigaretu.
+  poZahodeni(s, data, p, 1, events);
   b.liecbaHotova[p] = true;
   b.caka = null;
   pokracujBitku(s, data, events);
@@ -3154,6 +3160,7 @@ function cmdPohreb(
     type: "log",
     text: `Hráč ${p + 1} robí Pohreb: ${rodovo(p, "spálil", "spálila", "páli")} Cirhózu a ${defOf(data, pochovana.card).name}.`,
   });
+  poZahodeni(s, data, p, 1, events);
   b.liecbaHotova[p] = true;
   b.caka = null;
   pokracujBitku(s, data, events);
@@ -3522,7 +3529,12 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
       // Krčma: kým je NA EX možné a poldeci plný, skončiť Pitku sa nedá.
       if (!krcmaVyzaduje(data, state, p)) out.push({ type: "skipNaex" });
       for (const uid of moznostiNaex(data, state, p)) out.push({ type: "naex", uid });
-      if (!pitka.postarka[p] && efektHraca(state, p, "postarka") && !efektPotlaceny(data, state, p, "postarka")) {
+      if (
+        !pitka.postarka[p] &&
+        efektHraca(state, p, "postarka") &&
+        !efektPotlaceny(data, state, p, "postarka") &&
+        jeCoTahat(state.hraci[p].doberaci.length, state.hraci[p].odhadzovaci.length)
+      ) {
         for (let n = 1; n <= KONSTANTY.EFEKT.POSTARKA_KARTY; n++) out.push({ type: "postarka", pocet: n });
       }
       if (

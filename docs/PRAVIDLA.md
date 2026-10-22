@@ -177,6 +177,14 @@ majú prednosť pred staršími odsekmi — rozbory `docs/playtesty/strategia-kl
   súper (každý vznik, priznanie aj zahodenie je vo verejnom logu); body súpera
   sú presné. Ktoré karty a kde ležia, sa neposiela.
 
+**Opravy po rozhodcovi (rozhodnutia Michala 2026-10-22, návrhy rozhodcu #8 a #9
+v sekcii Playtest):**
+
+- **Poštárka** sa s prázdnym doberacím aj odhadzovacím balíčkom použiť nedá
+  a Dlh dá len vtedy, keď hráč naozaj dobral kartu do ruky (§14).
+- **Pohreb a Liečba sú zahodenie z línie** (§8.6): za spálenú kartu z línie
+  dostane súperov Hrobár cigaretu (§14). Cirhóza spomedzi priznaných sa neráta.
+
 > Otvorené otázky z `docs/BRIEF.md` uzavrel Michal 2026-10-22 (roadmapa #11).
 > Čo pravidlá nehovoria, nedopĺňaj potichu — spýtaj sa a zapíš to sem.
 
@@ -798,6 +806,9 @@ kartami v línii** (svojou partiou, na ktorejkoľvek strane):
   získaj 1 Dlh a po Preskúmaní si vyber jednu kartu zo šenku.
 - **Pohreb** — spáľ priznanú Cirhózu a ľubovoľnú svoju kartu z línie.
 
+Spálená karta z línie je pri Liečbe aj Pohrebe **zahodenie** — súperov Hrobár
+za ňu dostane cigaretu (Michal 2026-10-22, rozhodca #9).
+
 ### 6a. Cintorín
 
 Len pri bitke o Cintorín (Michal 2026-10-20): porazený smie dať jeden Nástroj
@@ -1091,7 +1102,7 @@ Všetky efekty tlačovej sady engine vyhodnocuje automaticky (playtest
 | Karta | Výklad |
 |---|---|
 | Dievčina na vydaj | Pri bitke sa zahodí (po bitke sa spáli, nevráti sa) a jej majiteľ spáli toľko **priznaných** Dlhov, koľko mala aktívnych akcií (s násobkami — aj s tými, ktoré zdvojilo NA EX, vlastné či súperovo; Michal 2026-10-22). Jej akcie v bitke, v ktorej sa zahodí, ešte **platia** (Michal 2026-10-22, dopísané podľa hry). |
-| Hrobár | Keď súper zahodí kartu z ruky, z línie alebo z vrchu balíčka (efektom, Víziou; nie návratom po bitke ani vlastnou Veľmi smútiacou vdovou), majiteľ Hrobára dostane cigaretu za každú. |
+| Hrobár | Keď súper zahodí kartu z ruky, z línie alebo z vrchu balíčka (efektom, Víziou, aj Pohrebom či Liečbou — §8.6, Michal 2026-10-22; nie návratom po bitke ani vlastnou Veľmi smútiacou vdovou), majiteľ Hrobára dostane cigaretu za každú. |
 | Anonymný alkoholik | Súper jeho majiteľa naňho nedá NA EX — ani keď je podstrčený na súperovu stranu. Majiteľ smie. Karty vedľa neho nechráni. Bráni len novému NA EX; poldeci, ktorý už na ňom leží, ostáva. (Michal 2026-10-18, zúžené 2026-10-19 a 2026-10-22 — predtým chránil aj majiteľove karty vedľa seba) |
 | Krčmárka | Pri bitke: ak hráč nemá Absťák a v tomto kole nedal NA EX, vypitý poldeci sa mu otočí na plný (automaticky). |
 | Liberál | Ak je v partii majiteľa rovnako žien a chlapov (Liberál sa neráta), jeho aktívne akcie sa rátajú dvakrát. NA EX naň dať nemožno. |
@@ -1101,7 +1112,7 @@ Všetky efekty tlačovej sady engine vyhodnocuje automaticky (playtest
 | Pes | Furt (Michal 2026-10-20, sada v12): za každý pár akcií na spoji Psa so súperovou kartou — z ktorejkoľvek strany Psa, rátajú sa aj páry zrušené Odporom či NA EX (karty sú spojené) — dá majiteľ Psa v bitke +1 tuhé poškodenie, ale len keď Pes leží na strane svojho majiteľa; podstrčený na súperovu stranu nedá nič (Michal 2026-10-22). Na Psa sa smie podstrčiť (predtým strážil koniec strany). Nesmie byť v partii s iným zvieraťom. Akcie: vľavo 1 Rana, vpravo 2 Rany. |
 | Pijan | Ak má Žena v jeho okolí aktívnu akciu Poldeci, súper majiteľa Pijana dostane +1 Ranu. |
 | Policajtka | Furt: súperove Pohoršenia proti majiteľovi neplatia (Michal 2026-10-18; Autorita — Praudovravec súpera ju umlčí). |
-| Poštárka | V Pitke raz: majiteľ smie dobrať 1 až 2 karty; ak dobral, získa 1 Dlh. |
+| Poštárka | V Pitke raz: majiteľ smie dobrať 1 až 2 karty; ak dobral aspoň jednu do ruky, získa 1 Dlh. S prázdnym doberacím aj odhadzovacím balíčkom sa použiť nedá (Michal 2026-10-22, rozhodca #8). |
 | Presbiter | Bitka (Michal 2026-10-20): ak v jeho kraji nemá majiteľ iného Občana, Zviera ani Starešinu a súper tam má prevahu, súper má o toľko Viery menej, koľko má Presbiter aktívnych akcií (s násobkami Posilnenia a NA EX). Ráta sa počet Vier pred rušením s Poverou, najviac na 0. Funguje aj podstrčený do súperovho kraja. Autorita — súperov Praudovravec ho umlčí. |
 | Dvojčatá | Furt (Michal 2026-10-20): do prevahy sa rátajú za dvoch. Na Ihrisko, Lesnú cestu a podmienku „sám“ Presbitera nie (tam sa rátajú karty). |
 | Praudovravec | Autority v **súperovej** partii neuplatňujú efekt (Michal 2026-10-18; predtým v tvojej). |

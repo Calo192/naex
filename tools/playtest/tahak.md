@@ -75,6 +75,10 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 - **Vízia:** na konci Pitky za každú aktívnu Víziu uvidíš vrchnú kartu svojho
   balíčka — `{"type":"vizia","vziat":true}` do ruky, alebo `false` = zahodiť
   (navždy z hry; balíček pod 5 kariet = prehra).
+- **Hrobár a Poštárka (2026-10-22):** keď zahodíš kartu — efektom, Víziou, aj
+  Pohrebom či Liečbou po bitke —, súperov Hrobár dostane cigaretu za každú.
+  Poštárka dá Dlh len za naozaj dobratú kartu; s prázdnym doberacím aj
+  odhadzovacím balíčkom sa použiť nedá.
 - **Dedičstvo** (Nástroj do hracej oblasti, `target` `dedicstvo`): cena rastie
   pre oboch spolu — 1., 2., 3. Nástroj v hre stojí 1, 2, 3 cigarety. Efekt
   Nástroja platí **len v Dedičstve**.
