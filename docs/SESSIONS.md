@@ -30,14 +30,11 @@ serverom playtestov (`tools/playtest/turnus.ts`).
    worktree vlastná (vlastná SQLite) — pri prvom štarte sa naseeduje.
 2. **Porty.** Dev server púšťaj s vlastnými portami z tabuľky:
    `PORT=8788 NAEX_WEB_PORT=5174 npm run dev` (PowerShell: `$env:PORT=8788; $env:NAEX_WEB_PORT=5174; npm run dev`).
-3. **master a push (Michal 2026-10-23: sessions mergujú samy).** Hotovú vetvu
-   session dostane do `master` sama: `git fetch` → rebase na `origin/master` →
-   `npm test`, `npm run typecheck`, `npm run build` → `git push origin HEAD:master`
-   (len fast-forward, **nikdy** `--force`). Zámkom je git sám: keď medzitým
-   pushla iná session, push zlyhá — rebasni znova, pretestuj, pushni. Potom
-   **jedna veta** Leaderovi (vetva, čo mení). Leader nasadzuje a pri
-   konflikte rozhodne, čia zmena má prednosť. Výnimka: vetvu, ktorá mení
-   pravidlá, sadu kariet alebo `cards.json`, najprv ohlás Leaderovi.
+3. **master a push.** Do `master` merguje **len Leader** (Michal 2026-10-23,
+   po tom, čo auto režim sessions push blokuje). Session vetvu len commitne
+   (repozitár je spoločný, Leader ju vidí aj nepushnutú): rebase na
+   `origin/master`, `npm test`, `npm run typecheck`, `npm run build`, potom
+   **jedna veta** Leaderovi: meno vetvy a čo mení. Push sa neskúša.
 4. **Živý web.** Nasadzuje len Leader (`/naex-nasad`). Kto chce niečo na živý
    web, povie Leaderovi.
 5. **Zdieľané súbory s vysokým rizikom konfliktu** — kto ich ide meniť, najprv
