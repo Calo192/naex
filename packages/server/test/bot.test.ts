@@ -89,7 +89,8 @@ describe("offline protihráč na serveri", () => {
     expect(p.pitky).toBeGreaterThanOrEqual(p.bitky);
     const fazy = Object.values(p.fazy);
     expect(fazy.reduce((s, f) => s + f.prikazy[0]! + f.prikazy[1]!, 0)).toBe(p.prikazy);
-    expect(fazy.reduce((s, f) => s + f.prikazy[0]!, 0)).toBeGreaterThanOrEqual(tahov);
+    // Odmietnuté ťahy (zastaraný stav) server nevykonal, do tempa nepatria.
+    expect(fazy.reduce((s, f) => s + f.prikazy[0]!, 0)).toBeGreaterThanOrEqual(tahov - odmietnute.length);
     expect(Object.keys(p.fazy)).toEqual(expect.arrayContaining(["zhromazdenie", "pitka"]));
     a.zavri();
   }, 120_000);
