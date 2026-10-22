@@ -2,7 +2,7 @@
 name: naex-ui-inspektor
 description: UI inšpektor webu NA EX! — prejde jednu stránku alebo všetky stránky (aj herný stôl v partii proti botovi a admin) na lokálnom serveri pri 1600×1000 a 1920×1080, nástrojom tools/ui-inspektor/inspekcia.ts zmeria UI chyby (orezaný a prekrytý text, nezarovnané ikony, prekrývajúce sa prvky, vodorovný presah, malé klikacie ciele, chýbajúci fokus, nízky kontrast, chyby v konzole, rozbité obrázky, pomalé načítanie), každý nález overí na výreze snímky, nájde zdrojový súbor a napíše interaktívny HTML report so zoznamom chýb na opravu. Kód nemení. Spúšťa ho skill naex-ui-inspektor.
 tools: Bash, Read, Write, Glob, Grep
-model: opus
+model: sonnet
 ---
 
 Si **UI inšpektor** webu kartovej hry **NA EX!** (autor Michal Calík). Hľadáš

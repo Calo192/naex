@@ -30,10 +30,14 @@ serverom playtestov (`tools/playtest/turnus.ts`).
    worktree vlastná (vlastná SQLite) — pri prvom štarte sa naseeduje.
 2. **Porty.** Dev server púšťaj s vlastnými portami z tabuľky:
    `PORT=8788 NAEX_WEB_PORT=5174 npm run dev` (PowerShell: `$env:PORT=8788; $env:NAEX_WEB_PORT=5174; npm run dev`).
-3. **master a push.** Do `master` merguje **len Leader** (alebo ten, komu Leader
-   dá „zámok merge“ správou). Pred žiadosťou o merge: rebase na `origin/master`,
-   `npm test`, `npm run typecheck`, `npm run build`. Pošli Leaderovi meno vetvy
-   a jednu vetu, čo mení.
+3. **master a push (Michal 2026-10-23: sessions mergujú samy).** Hotovú vetvu
+   session dostane do `master` sama: `git fetch` → rebase na `origin/master` →
+   `npm test`, `npm run typecheck`, `npm run build` → `git push origin HEAD:master`
+   (len fast-forward, **nikdy** `--force`). Zámkom je git sám: keď medzitým
+   pushla iná session, push zlyhá — rebasni znova, pretestuj, pushni. Potom
+   **jedna veta** Leaderovi (vetva, čo mení). Leader nasadzuje a pri
+   konflikte rozhodne, čia zmena má prednosť. Výnimka: vetvu, ktorá mení
+   pravidlá, sadu kariet alebo `cards.json`, najprv ohlás Leaderovi.
 4. **Živý web.** Nasadzuje len Leader (`/naex-nasad`). Kto chce niečo na živý
    web, povie Leaderovi.
 5. **Zdieľané súbory s vysokým rizikom konfliktu** — kto ich ide meniť, najprv
@@ -56,3 +60,21 @@ serverom playtestov (`tools/playtest/turnus.ts`).
 - Rozhodnutia, ktoré patria Michalovi, idú cez Leadera — sessions sa Michala
   nepýtajú priamo.
 - Prvý riadok správy = samostatná veta, o čo ide.
+- **Správy Leaderovi najviac 3–5 riadkov** (Michal 2026-10-23 — šetrí tokeny).
+  Podrobnosti patria do commitu, reportu alebo súboru, v správe len cesta.
+
+## Šetrenie tokenov (Michal 2026-10-23)
+
+- **Odovzdanie.** Každá session vedie `F:\Projects\handoff\<rola>.md` (mimo
+  gitu, najviac ~30 riadkov): rola, worktree a vetva, čo je hotové, čo
+  rozrobené, ďalší krok, otvorené otázky. Aktualizuj ho pri každom dokončení
+  úlohy. Po `/clear` alebo reštarte ho session prečíta ako prvé (spolu s týmto
+  súborom) a pokračuje.
+- **`/clear` a `/compact`** píše Michal do okna session (príkazy sa nedajú
+  poslať správou). Leader mu povie, ktorá session je v pokoji a dá sa vyčistiť
+  (`/clear`), a ktorá potrebuje kontext, ale je dlhá (`/compact`). Pred
+  `/clear` musí byť odovzdanie aktuálne.
+- **Playtest** predvolene 1 partia s reportom; `max` len pred veľkým
+  rozhodnutím (napr. pred zmrazením pravidiel).
+- **Modely agentov:** UI inšpektor, spisovateľ reportov a AI playtesteri bežia
+  na Sonnete; dizajnéri, stratég, navrhár, rozhodca a Developer na Opuse.

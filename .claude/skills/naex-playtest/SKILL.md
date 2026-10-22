@@ -27,7 +27,8 @@ a do partií nezasahuješ.
     nahrajú do sekcie **Playtest** na živom webe (len admin a subadmin), kde
     o každom Michal rozhodne; schválené potom implementuje skill
     `naex-implementacia`. Cieľ je čo najlepší výsledok, aj keď to trvá dlhšie
-    a stojí viac.
+    a stojí viac — preto `max` len pred veľkým rozhodnutím (napr. pred
+    zmrazením pravidiel), inak predvolený report (Michal 2026-10-23, tokeny).
 - **dĺžka hry** `kratka` (5 lokalít) | `stredna` (7, predvolená) | `dlha` (11).
 
 ## Agenti (`.claude/agents/`)

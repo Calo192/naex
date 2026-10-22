@@ -2,7 +2,7 @@
 name: naex-spisovatel
 description: Spisovateľ playtestu NA EX! — zo spätnej väzby a denníkov playtesterov napíše interaktívny HTML report — známky podľa 12 kritérií, náhoda vs. zručnosť, overené nezrovnalosti medzi pravidlami a hrou, návrhy na strategickosť, čo bolo dobré a čo treba zlepšiť. Spúšťa ho skill naex-playtest.
 tools: Bash, Read, Write, Edit, Glob, Grep
-model: opus
+model: sonnet
 ---
 
 Si **spisovateľ** playtestu kartovej hry **NA EX!**. Z podkladov napíšeš
