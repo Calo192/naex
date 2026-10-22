@@ -110,7 +110,9 @@ export function Scorecard({ elder, data, sada, ja, sirka, karta, onClick, body }
       tabIndex={onClick !== undefined ? 0 : undefined}
       onKeyDown={onClick !== undefined ? (e) => (e.key === "Enter" || e.key === " ") && onClick() : undefined}
     >
-      <BodovaciaSvg karta={bk} ikony={ikony} sirka={sirka} marker={elder.marker} stavSlotu={stavSlotu} nahlad />
+      {/* Zrkadlenie (Michal 2026-10-22, #55): každý vidí svoju polovicu stupnice na svojej strane
+          (ako svoju stranu línie) — hráčovi 2 sa poloha markera obráti. Zóny sú súmerné. */}
+      <BodovaciaSvg karta={bk} ikony={ikony} sirka={sirka} marker={ja === 0 ? elder.marker : 8 - elder.marker} stavSlotu={stavSlotu} nahlad />
       <div className="scorecard-karta" style={{ left: pct(o.x, g.sirka), top: pct(o.y, g.vyska), width: pct(o.w, g.sirka) }}>
         {karta(o.w * mierka)}
       </div>
