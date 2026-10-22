@@ -1066,14 +1066,21 @@ export function apply(
   const events: Event[] = [];
 
   if (cmd.type === "tah") {
-    // Atomicky: pri chybe ktoréhokoľvek kroku sa nevykoná nič.
-    need(state.faza === "zhromazdenie", "Celý ťah naraz sa hrá len v Zhromaždení.");
+    // Atomicky: pri chybe ktoréhokoľvek kroku sa nevykoná nič. Okrem Zhromaždenia
+    // aj celý prebytok jedným klikom (roadmapa #9 B, Michal 2026-10-22).
+    const prebytok = state.faza === "bitka" && state.bitkaStav?.krok === "prebytok";
+    need(state.faza === "zhromazdenie" || prebytok, "Celý ťah naraz sa hrá len v Zhromaždení alebo pri prebytku.");
     need(cmd.kroky.length > 0, "Ťah je prázdny.");
     let st = state;
     const vsetky: Event[] = [];
     for (const k of cmd.kroky) {
-      need(k.type === "place" || k.type === "vypit", "V ťahu smú byť len vyloženia a Vypiť.");
-      need(st.faza === "zhromazdenie" && naTahu(st) === hracId, "Ťah sa skončil skôr, než si vyložil všetky karty.");
+      if (prebytok) {
+        need(k.type === "prebytok", "Pri prebytku smú byť v ťahu len posuny markerov.");
+        need(st.faza === "bitka" && st.bitkaStav?.krok === "prebytok" && st.bitkaStav.caka === hracId, "Prebytok sa minul skôr, než si posunul všetky markery.");
+      } else {
+        need(k.type === "place" || k.type === "vypit", "V ťahu smú byť len vyloženia a Vypiť.");
+        need(st.faza === "zhromazdenie" && naTahu(st) === hracId, "Ťah sa skončil skôr, než si vyložil všetky karty.");
+      }
       const r = apply(data, st, k, hracId);
       st = r.state;
       vsetky.push(...r.events);

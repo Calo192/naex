@@ -16,6 +16,7 @@ export * from "./battle.ts";
 export * from "./elders.ts";
 export * from "./effects.ts";
 export * from "./engine.ts";
+export * from "./pohodlie.ts";
 export * from "./view.ts";
 export * from "./zavislost.ts";
 export * from "./statistiky.ts";

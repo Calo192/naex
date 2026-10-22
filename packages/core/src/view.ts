@@ -437,14 +437,40 @@ function zmenaPoVyhre(data: GameData, view: ClientState, vitaz: PlayerId, prebyt
   };
   const lokalita = view.ciel?.typ === "lokalita" ? view.ciel.lokalita : null;
   const ziskane = [...(lokalita === null ? [] : [lokalita]), ...view.naSekeru.filter((k) => k.uid !== lokalita?.uid)];
-  let v: ClientState = { ...view, ovladnute: [...view.ovladnute, ...ziskane.map((karta) => ({ karta, hrac: vitaz }))] };
+  const poLokalite: ClientState = { ...view, ovladnute: [...view.ovladnute, ...ziskane.map((karta) => ({ karta, hrac: vitaz }))] };
   // Miňištrant vo víťazovej partii zdraží každý posun (§8.4).
   const cena = 1 + partiaHraca(view, vitaz).filter((pl) => pl.card.defId === "ministrant").length;
-  const posunute = new Set<string>();
+  const { kroky, view: v } = hltavyPrebytok(data, poLokalite, vitaz, prebytok, cena);
+  const hraci: [HracVerejne, HracVerejne] = [v.hraci[0], v.hraci[1]];
+  hraci[porazeny] = { ...hraci[porazeny], cigarety: hraci[porazeny].cigarety + new Set(kroky).size };
+  return rozdiel({ ...v, hraci }) - rozdiel(view);
+}
+
+/**
+ * Hltavé rozdelenie prebytku: `drzi` posúva markery k súperovi a každý posun
+ * dá tam, kde rozdielu bodov (drzi − súper, bodyTeraz) najviac pridá — aj keď je
+ * najlepší posun záporný, prebytok sa rozdeliť musí. Vráti poradie starších
+ * (posuny po jednom, starší sa môže opakovať) a stav po nich. Stávka bitky
+ * z toho počíta zisk výhry, klient návrh rozdelenia na jeden klik (roadmapa #9 B).
+ */
+export function hltavyPrebytok(
+  data: GameData,
+  view: ClientState,
+  drzi: PlayerId,
+  prebytok: number,
+  cena: number,
+): { readonly kroky: readonly string[]; readonly view: ClientState } {
+  const super_: PlayerId = drzi === 0 ? 1 : 0;
+  const rozdiel = (v: ClientState): number => {
+    const b = bodyTeraz(data, v).spolu;
+    return b[drzi] - b[super_];
+  };
+  let v = view;
+  const kroky: string[] = [];
   for (let zostava = prebytok; zostava >= cena; zostava -= cena) {
     let najlepsi: { readonly v: ClientState; readonly hodnota: number; readonly elderId: string } | null = null;
     for (const e of v.starsi) {
-      const marker = posunMarker(e, porazeny, false);
+      const marker = posunMarker(e, super_, false);
       if (marker === null) continue;
       const po: ClientState = { ...v, starsi: v.starsi.map((x) => (x.elderId === e.elderId ? { ...x, marker } : x)) };
       const hodnota = rozdiel(po);
@@ -452,11 +478,9 @@ function zmenaPoVyhre(data: GameData, view: ClientState, vitaz: PlayerId, prebyt
     }
     if (najlepsi === null) break;
     v = najlepsi.v;
-    posunute.add(najlepsi.elderId);
+    kroky.push(najlepsi.elderId);
   }
-  const hraci: [HracVerejne, HracVerejne] = [v.hraci[0], v.hraci[1]];
-  hraci[porazeny] = { ...hraci[porazeny], cigarety: hraci[porazeny].cigarety + posunute.size };
-  return rozdiel({ ...v, hraci }) - rozdiel(view);
+  return { kroky, view: v };
 }
 
 /**
