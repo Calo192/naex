@@ -11,9 +11,10 @@ import { Ucty, type Pouzivatel } from "../src/auth.ts";
 import { otvorDb } from "../src/db.ts";
 import { Navrhy } from "../src/navrhy.ts";
 import { Roadmapa } from "../src/roadmapa.ts";
+import { Prava } from "../src/prava.ts";
 import { Hodnotenia, MIN_LUDI, denZ, priemery } from "../src/znamky.ts";
 import type { GameServer } from "../src/server.ts";
-import { TEST_ADMIN, nastavUroven, prihlas, registruj, testovaciServer } from "./pomocnik.ts";
+import { TEST_ADMIN, nastavUroven, prihlas, pravaBezNavstevnika, registruj, testovaciServer } from "./pomocnik.ts";
 
 function docasnaDb() {
   const dir = mkdtempSync(join(tmpdir(), "naex-znamky-"));
@@ -84,7 +85,9 @@ describe("hodnotenia — ukladanie a vývoj", () => {
     const { db, ucet, zmaz } = docasnaDb();
     try {
       const h = new Hodnotenia(db);
-      expect(() => h.uloz(ucet("navstevnik"), { znamky: { zabava: 5 } }, T0)).toThrow(/prvú partiu/);
+      // Predvolene smie hodnotiť každý; bez práva hodnotit_hru (matica) návštevník nie.
+      new Prava(db).uloz({ rola: "admin" } as Parameters<Prava["uloz"]>[0], { matica: { hodnotit_hru: ["hrac", "deci", "sedmicka"] } });
+      expect(() => h.uloz(ucet("navstevnik"), { znamky: { zabava: 5 } }, T0)).toThrow(/nemá právo/);
       const ja = ucet();
       h.uloz(ja, { znamky: { zabava: 5 } }, T0);
       h.uloz(ja, { znamky: { zabava: 7, tempo: 3 } }, T0 + 60_000);
@@ -276,6 +279,7 @@ describe("známky a roadmapa — API", () => {
 
   it("verejný vývoj bez prihlásenia neobsahuje nikoho meno ani id", async () => {
     const admin = await prihlas(server.port, TEST_ADMIN.login, TEST_ADMIN.heslo);
+    await pravaBezNavstevnika(server.port, admin);
     const hraci: string[] = [];
     for (let i = 0; i < 3; i++) {
       const { cookie } = await registruj(server.port, `hodnotitel${i}`);

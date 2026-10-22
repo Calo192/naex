@@ -51,6 +51,21 @@ export async function prihlas(port: number, login: string, heslo: string): Promi
 }
 
 /** Admin nastaví úroveň účtu s danou cookie (napr. návštevníka spraví hráčom). */
+/**
+ * Matica práv ako pred rankami (Michal 2026-10-22 predvolene dovolil všetko):
+ * písať, reagovať a hodnotiť smie až Poldeci. `false` vráti všetko všetkým.
+ */
+export async function pravaBezNavstevnika(port: number, adminCookie: string, zapnut = true): Promise<void> {
+  const vsetci = ["navstevnik", "hrac", "deci", "sedmicka"];
+  const ranky = zapnut ? vsetci.slice(1) : vsetci;
+  const res = await fetch(`http://127.0.0.1:${port}/api/admin/prava`, {
+    method: "PUT",
+    headers: { "content-type": "application/json", "x-naex": "1", cookie: adminCookie },
+    body: JSON.stringify({ matica: { spatna_vazba_pisat: ranky, spatna_vazba_reagovat: ranky, hodnotit_hru: ranky } }),
+  });
+  if (res.status !== 200) throw new Error(`zmena práv zlyhala: ${res.status} ${await res.text()}`);
+}
+
 export async function nastavUroven(port: number, adminCookie: string, cookie: string, rola: string): Promise<void> {
   const hlavicky = { "content-type": "application/json", "x-naex": "1" };
   const ja = (await (await fetch(`http://127.0.0.1:${port}/api/ja`, { headers: { cookie } })).json()) as { pouzivatel: { id: number } };

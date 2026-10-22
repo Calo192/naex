@@ -6,7 +6,8 @@
 
 import type { Db } from "./db.ts";
 import type { Pouzivatel } from "./auth.ts";
-import { ChybaVstupu, jeSpravca, smiePisat } from "./auth.ts";
+import { ChybaVstupu, jeSpravca } from "./auth.ts";
+import { Prava } from "./prava.ts";
 
 export const KATEGORIE = ["pravidla", "karty", "hranie", "web", "chyba", "napad", "ine"] as const;
 export type KategoriaNazoru = (typeof KATEGORIE)[number];
@@ -75,7 +76,11 @@ export function overStav(v: unknown): StavNazoru {
 export class Nazory {
   private readonly db: Db;
 
-  constructor(db: Db) {
+  /** Kto smie písať, komentovať a dávať cigarety — matica práv rankov (Michal 2026-10-22). */
+  private readonly prava: Prava;
+
+  constructor(db: Db, prava: Prava = new Prava(db)) {
+    this.prava = prava;
     this.db = db;
   }
 
@@ -147,7 +152,7 @@ export class Nazory {
   }
 
   pridaj(ja: Pouzivatel, kategoria: unknown, text: unknown, teraz: number): number {
-    smiePisat(ja);
+    this.prava.vyzaduj(ja, "spatna_vazba_pisat");
     const k = overKategoriu(kategoria);
     const t = overText(text, MAX_NAZOR, "Názor");
     this.brzda("nazory", ja.id, teraz, LIMIT_NAZOROV);
@@ -187,7 +192,7 @@ export class Nazory {
   }
 
   komentuj(ja: Pouzivatel, nazor: number, text: unknown, teraz: number): number {
-    smiePisat(ja);
+    this.prava.vyzaduj(ja, "spatna_vazba_reagovat");
     this.autorNazoru(nazor);
     const t = overText(text, MAX_KOMENTAR, "Komentár");
     this.brzda("nazory_komentare", ja.id, teraz, LIMIT_KOMENTAROV);
@@ -203,7 +208,7 @@ export class Nazory {
 
   /** Dá alebo vezme cigaretu; vracia nový počet cigariet. */
   cigareta(ja: Pouzivatel, druh: "nazor" | "komentar", id: number, dat: boolean): number {
-    smiePisat(ja);
+    this.prava.vyzaduj(ja, "spatna_vazba_reagovat");
     const autor = druh === "nazor" ? this.autorNazoru(id) : this.autorKomentara(id);
     if (autor === ja.id) throw new ChybaVstupu("Sám sebe cigaretu nedáš — to by bolo fajčenie na dlh.");
     const [tabulka, stlpec] = druh === "nazor" ? ["cigarety_nazorov", "nazor"] : ["cigarety_komentarov", "komentar"];

@@ -48,7 +48,8 @@ import type { ZmenaFrajeriny } from "./archiv.ts";
 import { Archiv } from "./archiv.ts";
 import type { StavTempa } from "./tempo.ts";
 import { TempoPartii, fazaPrikazu, noveTempo, zapisPrikaz } from "./tempo.ts";
-import { Prava } from "./prava.ts";
+import type { Pravo } from "./prava.ts";
+import { POPIS_PRAVA, Prava } from "./prava.ts";
 import { Nazory } from "./nazory.ts";
 import { Playtesty } from "./playtesty.ts";
 import { Navrhy } from "./navrhy.ts";
@@ -195,14 +196,20 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   const archiv = new Archiv(db);
   const tempoPartii = new TempoPartii(db);
   const prava = new Prava(db);
+  /** Keď používateľ právo nemá, pošle mu chybu a vráti true (ws príkaz sa nevykoná). */
+  const bezPrava = (ws: WebSocket, ja: Pouzivatel, pravo: Pravo): boolean => {
+    if (prava.smie(ja, pravo)) return false;
+    sendError(ws, `Na toto tvoj rank nemá právo: ${POPIS_PRAVA[pravo]}.`);
+    return true;
+  };
   ucty.prepocitajRanky(prava.nastavenie().postup);
-  const nazory = new Nazory(db);
+  const nazory = new Nazory(db, prava);
   const playtesty = new Playtesty(opts.playtestyDir ?? fileURLToPath(new URL("../../../docs/playtesty", import.meta.url)), join(dataDir, "playtesty"));
   const navrhy = new Navrhy(db);
   const roadmapa = new Roadmapa(db);
   roadmapa.naplnAkTreba(fileURLToPath(new URL("../seed/roadmapa.json", import.meta.url)), teraz());
   const novinky = new Novinky(db);
-  const hodnotenia = new Hodnotenia(db);
+  const hodnotenia = new Hodnotenia(db, prava);
   obsah.naplnAkTreba(teraz());
   obsah.naplnBodovanieAkTreba(teraz());
   obsah.premenujZrusenePriazne(teraz());
@@ -408,6 +415,9 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       case "create": {
         const { sada, data } = obsah.aktualnaSada();
         const protiBotovi = msg.bot === true;
+        // Práva rankov (Michal 2026-10-22): proti botovi, proti ľuďom, súkromná miestnosť.
+        if (bezPrava(ws, ja, protiBotovi ? "hrat_bot" : "hrat_ludia")) return;
+        if (!protiBotovi && msg.verejna !== true && bezPrava(ws, ja, "sukromne_miestnosti")) return;
         const dlzka = msg.dlzka ?? PREDVOLENA_DLZKA;
         if (!dostupneDlzky(data).includes(dlzka)) {
           sendError(ws, `Na túto dĺžku hry nemá sada dosť lokalít (má ${data.lokality.length}).`);
@@ -467,6 +477,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           sendError(ws, room.state !== null || room.hraci[1] !== null ? "Miestnosť je plná." : "V tejto miestnosti nehráš.");
           return;
         }
+        if (bezPrava(ws, ja, "hrat_ludia")) return;
         const seat: PlayerId = room.hraci[0] === null ? 0 : 1;
         usadit(ws, room, seat);
         // Dvaja hráči → hra začína.
@@ -538,6 +549,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           sendError(ws, "Hlášky Melichara púšťa len hráč rozohranej partie.");
           return;
         }
+        if (bezPrava(ws, ja, "melichar_soundboard")) return;
         const hlaska = melichar.hlasky().find((h) => h.id === msg.id);
         if (hlaska === undefined) {
           sendError(ws, "Takú hlášku majster Melichar nepozná.");
@@ -646,6 +658,11 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         verziaSady: room.sada.verzia,
         dohrata,
         hraci: [h0.id, h1.id],
+        // Hodnotená (Frajerina) len keď na to majú právo obaja — inak sa partia archivuje bez zmeny Frajeriny.
+        hodnotena: [h0.id, h1.id].every((id) => {
+          const u = ucty.podlaId(id);
+          return u !== null && prava.smie(u, "hodnotene_partie");
+        }),
         body: koniec.koniec.body,
         statistiky: uzavriStatistiky(room.data, room.statistiky, koniec),
         statistikyKariet: room.statistikyKariet,

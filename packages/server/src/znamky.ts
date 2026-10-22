@@ -12,6 +12,7 @@
 import type { Db } from "./db.ts";
 import type { Pouzivatel } from "./auth.ts";
 import { ChybaVstupu, jeSpravca } from "./auth.ts";
+import { Prava } from "./prava.ts";
 
 export interface Kriterium {
   readonly kluc: string;
@@ -126,13 +127,17 @@ export function priemery(hodnotitelia: readonly Hodnotitel[]): Omit<BodVyvoja, "
 export class Hodnotenia {
   private readonly db: Db;
 
-  constructor(db: Db) {
+  /** Kto smie hodnotiť — matica práv rankov (Michal 2026-10-22); AI agent vždy. */
+  private readonly prava: Prava;
+
+  constructor(db: Db, prava: Prava = new Prava(db)) {
+    this.prava = prava;
     this.db = db;
   }
 
-  /** Hodnotiť smie každý hráč (po prvej dohratej partii), správca a AI agent; návštevník nie. */
+  /** Hodnotiť smie rank s právom hodnotit_hru, správca a AI agent. */
   smie(ja: Pouzivatel): boolean {
-    return ja.rola !== "navstevnik" || ja.ai;
+    return this.prava.smie(ja, "hodnotit_hru");
   }
 
   /** Posledné známky hráča (bez importovaných z playtestov). */
@@ -149,7 +154,7 @@ export class Hodnotenia {
    * správca — import známok z playtestu s časom partie.
    */
   uloz(ja: Pouzivatel, telo: Record<string, unknown>, teraz: number): { cas: number } {
-    if (!this.smie(ja)) throw new ChybaVstupu("Hru hodnotí hráč — návštevníkom si, kým nedohráš prvú partiu (stačí aj proti botovi).", 403);
+    if (!this.smie(ja)) throw new ChybaVstupu("Na hodnotenie hry tvoj rank nemá právo.", 403);
     const znamky = overZnamky(telo.znamky);
     const importuje = telo.zdroj !== undefined || telo.cas !== undefined;
     if (importuje && !ja.ai && !jeSpravca(ja.rola)) throw new ChybaVstupu("Zdroj a čas hodnotenia posiela len AI agent.", 403);

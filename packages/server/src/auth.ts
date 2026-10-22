@@ -24,13 +24,6 @@ export function jeSpravca(rola: Rola): boolean {
   return rola === "admin" || rola === "subadmin";
 }
 
-/** Spätnú väzbu (názory, komentáre, cigarety) píšu hráči a správcovia, návštevník len číta. */
-export function smiePisat(ja: { readonly rola: Rola }): void {
-  if (ja.rola === "navstevnik") {
-    throw new ChybaVstupu("Návštevník spätnú väzbu len číta — písať môžeš po prvej dohratej partii (stačí aj proti botovi).", 403);
-  }
-}
-
 const rolaZDb = (v: unknown): Rola => (UROVNE.includes(v as Rola) ? (v as Rola) : "navstevnik");
 
 export interface Pouzivatel {

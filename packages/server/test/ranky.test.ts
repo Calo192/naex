@@ -12,7 +12,7 @@ import { Ucty } from "../src/auth.ts";
 import { otvorDb } from "../src/db.ts";
 import { PRAVA, PREDVOLENE_PRAVA, Prava, rankPodlaPartii } from "../src/prava.ts";
 import type { GameServer } from "../src/server.ts";
-import { TEST_ADMIN, nastavUroven, prihlas, registruj, testovaciServer } from "./pomocnik.ts";
+import { Klient, TEST_ADMIN, nastavUroven, prihlas, registruj, testovaciServer } from "./pomocnik.ts";
 
 function docasnaDb(): { db: ReturnType<typeof otvorDb>; zmaz: () => void } {
   const dir = mkdtempSync(join(tmpdir(), "naex-ranky-"));
@@ -174,5 +174,116 @@ describe("ranky a práva — API", () => {
     expect(nacitane.data).toMatchObject({ postup: { deci: 10, sedmicka: 30 }, ranky: ["navstevnik", "hrac", "deci", "sedmicka"] });
     // Späť na predvolené, aby ostatné testy servera nič nezdedili.
     await volaj(admin, "PUT", "/admin/prava", { matica: { hodnotit_hru: ["navstevnik", "hrac", "deci", "sedmicka"] } });
+  });
+
+  /** Odoberie návštevníkovi jedno právo, spustí kontrolu a vráti ho. */
+  const bezPrava = async (admin: string, pravo: string, kontrola: () => Promise<void>): Promise<void> => {
+    expect((await volaj(admin, "PUT", "/admin/prava", { matica: { [pravo]: ["hrac", "deci", "sedmicka"] } })).status).toBe(200);
+    try {
+      await kontrola();
+    } finally {
+      await volaj(admin, "PUT", "/admin/prava", { matica: { [pravo]: ["navstevnik", "hrac", "deci", "sedmicka"] } });
+    }
+  };
+
+  it("server vynúti každé právo: hra, Melichar, profily, rebríček, fotka, reporty, Spätná väzba, hodnotenie", async () => {
+    const admin = await prihlas(server.port, TEST_ADMIN.login, TEST_ADMIN.heslo);
+    const n = (await registruj(server.port)).cookie;
+    const iny = (await registruj(server.port)).cookie;
+    const idIneho = await idUctu(iny);
+    // Druhý hráč je Poldeci — práva sa odoberajú len návštevníkovi.
+    await nastavUroven(server.port, admin, iny, "hrac");
+    const ws = async (cookie: string): Promise<Klient> => {
+      const k = new Klient(server.port, cookie);
+      await k.otvorene();
+      return k;
+    };
+    const chyba = async (k: Klient): Promise<string> => String((await k.cakaj("error")).text);
+
+    // Predvolene smie návštevník všetko (Michal 2026-10-22).
+    expect((await volaj(n, "GET", `/hraci/${idIneho}`)).status).toBe(200);
+    expect((await volaj(n, "GET", "/playtesty")).status).toBe(200);
+
+    await bezPrava(admin, "hrat_bot", async () => {
+      const k = await ws(n);
+      k.posli({ type: "create", bot: true });
+      expect(await chyba(k)).toMatch(/proti počítaču/);
+      k.zavri();
+    });
+    await bezPrava(admin, "sukromne_miestnosti", async () => {
+      const k = await ws(n);
+      k.posli({ type: "create" });
+      expect(await chyba(k)).toMatch(/súkromné/);
+      k.posli({ type: "create", verejna: true });
+      await k.cakaj("privitanie");
+      k.zavri();
+    });
+    await bezPrava(admin, "hrat_ludia", async () => {
+      const k = await ws(n);
+      k.posli({ type: "create", verejna: true });
+      expect(await chyba(k)).toMatch(/proti ľuďom/);
+      const zakladatel = await ws(iny);
+      zakladatel.posli({ type: "create" });
+      const { code } = await zakladatel.cakaj("privitanie");
+      k.posli({ type: "join", code });
+      expect(await chyba(k)).toMatch(/proti ľuďom/);
+      k.zavri();
+      zakladatel.zavri();
+    });
+    await bezPrava(admin, "melichar_soundboard", async () => {
+      const a = await ws(iny);
+      const b = await ws(n);
+      a.posli({ type: "create" });
+      const { code } = await a.cakaj("privitanie");
+      b.posli({ type: "join", code });
+      await b.cakaj("state");
+      b.posli({ type: "melichar", id: "hocico" });
+      expect(await chyba(b)).toMatch(/Melichara/);
+      a.zavri();
+      b.zavri();
+    });
+    await bezPrava(admin, "profily_inych", async () => {
+      expect((await volaj(n, "GET", `/hraci/${idIneho}`)).status).toBe(403);
+      expect((await volaj(n, "GET", `/hraci/${await idUctu(n)}`)).status).toBe(200);
+      expect((await volaj(n, "GET", "/rebricek")).status).toBe(403);
+    });
+    await bezPrava(admin, "vlastna_fotka", async () => {
+      expect((await volaj(n, "PUT", "/profil/avatar", {})).status).toBe(403);
+    });
+    await bezPrava(admin, "reporty_playtestov", async () => {
+      expect((await volaj(n, "GET", "/playtesty")).status).toBe(403);
+      expect((await volaj(admin, "GET", "/playtesty")).status).toBe(200);
+    });
+    await bezPrava(admin, "spatna_vazba_pisat", async () => {
+      expect((await volaj(n, "POST", "/nazory", { kategoria: "ine", text: "Návštevník bez práva píše." })).status).toBe(403);
+    });
+    await bezPrava(admin, "hodnotit_hru", async () => {
+      expect((await volaj(n, "PUT", "/znamky", { znamky: { zabava: 5 } })).status).toBe(403);
+    });
+   }, 30_000);
+});
+
+describe("hodnotené partie", () => {
+  it("nehodnotená partia ide do archívu, ale Frajerinu nemení", () => {
+    const { db, zmaz } = docasnaDb();
+    try {
+      const ucty = new Ucty(db, { login: "Admin", heslo: null });
+      const archiv = new Archiv(db);
+      const a = ucty.registruj("jano", "tajneheslo", "Jano", 1);
+      const b = ucty.registruj("eva", "tajneheslo", "Eva", 1);
+      const { zmeny } = archiv.zapis({
+        kod: "TEST", zaciatok: 0, koniec: 1, vitaz: 0, dovod: "Odohrala sa posledná bitka o lokalitu.",
+        kola: 3, verziaSady: null, dohrata: true, hraci: [a.id, b.id], hodnotena: false, body: null,
+        statistiky: [prazdneStatistiky(), prazdneStatistiky()],
+      });
+      expect(zmeny.map((z) => z.po - z.pred)).toEqual([0, 0]);
+      expect(archiv.frajerina(a.id).partie).toBe(0);
+      expect(ucty.dohrate(a.id)).toBe(1);
+      partie(archiv, [a.id, b.id], 1);
+      expect(archiv.frajerina(a.id).partie).toBe(1);
+      expect(archiv.frajerina(a.id).hodnota).toBeGreaterThan(archiv.frajerina(b.id).hodnota);
+    } finally {
+      zmaz();
+    }
   });
 });

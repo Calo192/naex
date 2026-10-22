@@ -3,7 +3,7 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { GameServer } from "../src/server.ts";
 import { FRAJERINA_START, novaFrajerina, ocakavanyVysledok, titul } from "../src/frajerina.ts";
-import { Klient, TEST_ADMIN, nastavUroven, prihlas, registruj, testovaciServer } from "./pomocnik.ts";
+import { Klient, TEST_ADMIN, nastavUroven, prihlas, pravaBezNavstevnika, registruj, testovaciServer } from "./pomocnik.ts";
 
 let server: GameServer;
 let zmaz: () => Promise<void>;
@@ -158,8 +158,10 @@ describe("spätná väzba", () => {
     const autor = (await registruj(server.port)).cookie;
     const iny = (await registruj(server.port)).cookie;
     const admin = await prihlas(server.port, TEST_ADMIN.login, TEST_ADMIN.heslo);
-    // Nový účet je návštevník — spätnú väzbu len číta.
+    // Keď návštevníkovi matica práv písanie odoberie, spätnú väzbu len číta (predvolene smie všetko).
+    await pravaBezNavstevnika(server.port, admin);
     expect((await volaj(autor, "POST", "/nazory", { kategoria: "pravidla", text: "Návštevník skúša písať." })).status).toBe(403);
+    await pravaBezNavstevnika(server.port, admin, false);
     await nastavUroven(server.port, admin, autor, "hrac");
     await nastavUroven(server.port, admin, iny, "hrac");
 

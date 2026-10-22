@@ -11,7 +11,7 @@ import { Ucty, hashHesla } from "../src/auth.ts";
 import { otvorDb } from "../src/db.ts";
 import { PREDVOLENE_PRAVA } from "../src/prava.ts";
 import type { GameServer } from "../src/server.ts";
-import { TEST_ADMIN, nastavUroven, prihlas, registruj, testovaciServer } from "./pomocnik.ts";
+import { TEST_ADMIN, nastavUroven, prihlas, pravaBezNavstevnika, registruj, testovaciServer } from "./pomocnik.ts";
 
 const ADMIN = { login: "Admin", heslo: "testovacie-heslo-admina" };
 
@@ -135,13 +135,16 @@ describe("úrovne účtov — API", () => {
     expect((await volaj(admin, "PATCH", `/admin/pouzivatelia/${idHraca}`, { rola: "admin" })).status).toBe(400);
     expect((await volaj(admin, "PATCH", `/admin/pouzivatelia/${idAdmina}`, { rola: "hrac" })).status).toBe(400);
 
-    // Návštevník číta, ale nepíše ani nedáva cigarety.
+    // Návštevník bez práv na reakcie číta, ale nekomentuje ani nedáva cigarety.
+    await pravaBezNavstevnika(server.port, admin);
     const nazor = await volaj(hrac, "POST", "/nazory", { kategoria: "ine", text: "Hráčov názor na skúšku." });
     expect(nazor.status).toBe(201);
     const id = nazor.data.id as number;
     expect((await volaj(navstevnik, "GET", "/nazory")).status).toBe(200);
     expect((await volaj(navstevnik, "POST", `/nazory/${id}/komentare`, { text: "Návštevník komentuje." })).status).toBe(403);
     expect((await volaj(navstevnik, "PUT", `/nazory/${id}/cigareta`)).status).toBe(403);
+    await pravaBezNavstevnika(server.port, admin, false);
+    expect((await volaj(navstevnik, "PUT", `/nazory/${id}/cigareta`)).status).toBe(200);
 
     // Príznak AI nastavuje len admin; autor názoru ho nesie, aby ho klient vedel skryť.
     expect((await volaj(sub, "PATCH", `/admin/pouzivatelia/${idHraca}`, { ai: true })).status).toBe(403);

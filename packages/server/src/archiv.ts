@@ -32,6 +32,8 @@ export interface ZaznamPartie {
   readonly dohrata: boolean;
   /** Id používateľov na miestach 0 a 1. */
   readonly hraci: readonly [number, number];
+  /** Mení Frajerinu — false, keď jeden z hráčov nemá právo na hodnotené partie (predvolene true). */
+  readonly hodnotena?: boolean;
   readonly body: readonly [number, number] | null;
   readonly statistiky: DvojicaStatistik;
   /** Štatistiky kariet partie (podklad pre rebalans). */
@@ -104,7 +106,8 @@ export class Archiv {
   zapis(z: ZaznamPartie): { id: number; zmeny: [ZmenaFrajeriny, ZmenaFrajeriny] } {
     return transakcia(this.db, () => {
       const pred = [this.frajerina(z.hraci[0]), this.frajerina(z.hraci[1])] as const;
-      const po = novaFrajerina([pred[0].hodnota, pred[1].hodnota], z.vitaz);
+      const hodnotena = z.hodnotena !== false;
+      const po: readonly [number, number] = hodnotena ? novaFrajerina([pred[0].hodnota, pred[1].hodnota], z.vitaz) : [pred[0].hodnota, pred[1].hodnota];
       const r = this.db
         .prepare("INSERT INTO partie (kod, zaciatok, koniec, vitaz, dovod, kola, verzia_sady, dohrata, karty) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
         .run(z.kod, z.zaciatok, z.koniec, z.vitaz, z.dovod, z.kola, z.verziaSady, z.dohrata ? 1 : 0, z.statistikyKariet === undefined ? null : JSON.stringify(z.statistikyKariet));
@@ -117,6 +120,8 @@ export class Archiv {
           )
           .run(id, miesto, z.hraci[miesto], vysledok, z.body?.[miesto] ?? null, pred[miesto].hodnota, po[miesto], JSON.stringify(z.statistiky[miesto]));
         const f = pred[miesto];
+        // Nehodnotená partia ostane v archíve a štatistikách, Frajerinu nemení.
+        if (!hodnotena) continue;
         this.db
           .prepare(
             `INSERT INTO frajerina (pouzivatel, hodnota, najvyssia, partie, vyhry, prehry, remizy) VALUES (?, ?, ?, ?, ?, ?, ?)

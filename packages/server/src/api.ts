@@ -350,6 +350,8 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
 
     if (r === "PUT /profil/avatar") {
       const p = prihlaseny();
+      // Vlastná fotka podľa práva ranku; predvolený avatar si vyberie každý.
+      ctx.prava.vyzaduj(p, "vlastna_fotka");
       const buf = await citajTelo(req, AVATAR_LIMIT);
       const m = ctx.media.uloz(buf, "avatar", `avatar-${p.id}`, teraz, ["image/jpeg", "image/png", "image/webp"]);
       return ok({ pouzivatel: ctx.ucty.upravProfil(p.id, { avatar: m.id }) });
@@ -427,16 +429,24 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
 
     // ----- profily hráčov a rebríček (pre prihlásených) -----------------
     if (metoda === "GET" && casti[1] === "hraci" && casti.length === 3) {
-      prihlaseny();
+      const p = prihlaseny();
       const id = Number(casti[2]);
+      // Vlastný profil vidí každý; cudzie podľa práva ranku.
+      if (id !== p.id) ctx.prava.vyzaduj(p, "profily_inych");
       const profil = Number.isInteger(id) ? ctx.archiv.profil(id) : null;
       if (profil === null) throw new ChybaVstupu("Taký hráč neexistuje.", 404);
       return ok(profil);
     }
 
     if (r === "GET /rebricek") {
-      prihlaseny();
+      ctx.prava.vyzaduj(prihlaseny(), "profily_inych");
       return ok({ hraci: ctx.archiv.rebricek() });
+    }
+
+    // Reporty playtestov pre ranky s právom (správcovia ich majú aj v /admin/playtesty).
+    if (r === "GET /playtesty") {
+      ctx.prava.vyzaduj(prihlaseny(), "reporty_playtestov");
+      return ok({ token: ctx.playtesty.token(teraz), reporty: ctx.playtesty.zoznam() });
     }
 
     // ----- spätná väzba --------------------------------------------------
