@@ -3476,10 +3476,12 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna.nemoze:hover > .kl {
   padding-bottom: 40px;
 }
 
+/* Nad rukou (z-index 25): zväčšená karta v ruke inak prekryla „potvrdiť“ a klik
+   padol na kartu (Bugfixing 2026-10-22). Hrana sama klik neberie, len tlačidlá. */
 .stol-hrana {
   position: sticky;
   bottom: calc(var(--ruka-h) - 8px);
-  z-index: 3;
+  z-index: 26;
   margin-top: -34px;
   pointer-events: none;
 }
