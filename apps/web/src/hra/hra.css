@@ -1433,13 +1433,35 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:hover > .kl {
     0 24px 50px rgba(0, 0, 0, 0.7);
 }
 
-/* Susedia uhnú o polovicu prírastku šírky zväčšenej karty. */
-body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:has(~ .tahatelna:hover) {
-  transform: translateX(calc(var(--ruka-w) * (var(--lupa-ruky, 2) - 1) / -2 - 6px));
+/* Susedia uhnú o polovicu prírastku šírky zväčšenej karty (harmonika nižšie). */
+.ruka-rad {
+  --harmonika-posun: calc(var(--ruka-w) * (var(--lupa-ruky, 2) - 1) / 2 + 6px);
 }
 
-body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:hover ~ .tahatelna {
-  transform: translateX(calc(var(--ruka-w) * (var(--lupa-ruky, 2) - 1) / 2 + 6px));
+/* ---- harmonika: susedia zväčšenej karty uhnú do strán ----
+ * Michal 2026-10-22: zväčšenie pri prejdení myšou všade, nielen v ruke.
+ * Ruka zväčšuje kartu na mieste (:hover, .harmonika-hover); stôl, vrstvy
+ * a starší cez lupu — aktívnu kartu tam označí trieda .harmonika-aktivna
+ * a posun (--harmonika-posun) nastaví HernaPlocha podľa veľkosti lupy.
+ * .harmonika-skupiny posúva celé skupiny (línia: moja strana · lokalita · súper). */
+
+.harmonika > *,
+.harmonika-skupiny > * {
+  transition: transform 0.15s ease;
+}
+
+/* :has() sa nedá vnoriť — aktívna je sama položka radu, alebo je v nej. */
+body:not(.tahanie-aktivne) .harmonika > :has(~ .harmonika-aktivna),
+body:not(.tahanie-aktivne) .harmonika > :has(~ * .harmonika-aktivna),
+body:not(.tahanie-aktivne) .harmonika-hover > :has(~ :is(:hover, :focus-visible)),
+body:not(.tahanie-aktivne) .harmonika-skupiny > :has(~ * .harmonika-aktivna) {
+  transform: translateX(calc(-1 * var(--harmonika-posun, 0px)));
+}
+
+body:not(.tahanie-aktivne) .harmonika > :is(.harmonika-aktivna, :has(.harmonika-aktivna)) ~ *,
+body:not(.tahanie-aktivne) .harmonika-hover > :is(:hover, :focus-visible) ~ *,
+body:not(.tahanie-aktivne) .harmonika-skupiny > :has(.harmonika-aktivna) ~ * {
+  transform: translateX(var(--harmonika-posun, 0px));
 }
 
 /* ---- pás pokynov nad rukou: vrstvy · čo robiť · tlačidlá ťahu ----
@@ -3773,43 +3795,21 @@ button.pecat-zrusit {
   }
 }
 
-/* ---- zväčšenie klikom (Michal 2026-10-20: pod myšou len karty v ruke) ---- */
+/* ---- zväčšenie pri prejdení myšou (Michal 2026-10-22; predtým klikom) ---- */
 .s-lupou {
   position: relative;
 }
 
-.s-lupou.klik-lupa {
-  cursor: zoom-in;
+.s-lupou:focus-visible {
+  outline: 2px solid var(--akcent);
+  outline-offset: 2px;
+  border-radius: 6px;
 }
 
-.lupa-tlacidlo {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  z-index: 4;
-  display: grid;
-  place-items: center;
-  width: 26px;
-  height: 26px;
-  padding: 0;
-  border-radius: 50%;
-  border: 1px solid var(--akcent);
-  background: color-mix(in srgb, var(--pozadie) 85%, transparent);
-  font-size: 0.8rem;
-  line-height: 1;
-  cursor: zoom-in;
-  opacity: 0;
-  transition: opacity 0.12s ease;
-}
-
-.s-lupou:hover > .lupa-tlacidlo,
-.lupa-tlacidlo:focus-visible {
-  opacity: 1;
-}
-
+/* Dotyk nemá hover — tam kartu zväčší ťuknutie. */
 @media (hover: none) {
-  .lupa-tlacidlo {
-    opacity: 0.85;
+  .s-lupou {
+    cursor: zoom-in;
   }
 }
 

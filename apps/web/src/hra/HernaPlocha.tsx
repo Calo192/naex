@@ -13,7 +13,17 @@
 // Zhromaždení celý ťah naraz (Michal 2026-10-19): každá ďalšia karta v tom
 // istom ťahu stojí plný poldeci a rozhranie to výrazne ukazuje.
 
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type FocusEvent as ReactFocusEvent,
+  type MouseEvent as ReactMouseEvent,
+  type PointerEvent as ReactPointerEvent,
+  type ReactNode,
+} from "react";
 import { createPortal } from "react-dom";
 import type {
   CardInstance,
@@ -1247,7 +1257,11 @@ export function HernaPlocha({
   const { tahanie, zacni, duchRef } = useTahanie(pusti);
 
   // ---- lupa nad kartami na stole a vo vrstvách ----------------------------
-  const [lupa, setLupa] = useState<{ readonly kluc: string; readonly rect: DOMRect } | null>(null);
+  // Michal 2026-10-22: karta sa zväčší pri prejdení myšou (predtým klikom) a susedia
+  // v tom istom rade uhnú do strán ako v ruke (harmonika v hra.css). Klik ostáva
+  // herným akciám — lupa leží nad kartou a klik na ňu urobí to isté ako na kartu.
+  // zFokusu: lupu otvoril fokus z klávesnice, zavrie ju jeho strata.
+  const [lupa, setLupa] = useState<{ readonly kluc: string; readonly rect: DOMRect; readonly zFokusu?: boolean } | null>(null);
   // Čo je pod lupou v tomto prekreslení — lupa kreslí vždy živý stav.
   const lupaKarty = new Map<
     string,
@@ -1258,25 +1272,57 @@ export function HernaPlocha({
       readonly odstran?: (() => void) | undefined;
     }
   >();
-  /** Zväčší kartu pod prvkom `el` (klik — Michal 2026-10-20: pod myšou len ruka). */
-  const otvorLupu = (kluc: string, el: Element | null | undefined): void => {
-    if (tahanie === null && el != null) setLupa({ kluc, rect: el.getBoundingClientRect() });
+  /** Zväčší kartu pod prvkom `el` (myš, fokus, na dotyku ťuknutie). */
+  const otvorLupu = (kluc: string, el: Element | null | undefined, zFokusu = false): void => {
+    if (tahanie === null && el != null) setLupa({ kluc, rect: el.getBoundingClientRect(), zFokusu });
   };
-  /** Karta, ktorej klik niečo robí, sa zväčší cez malé tlačidlo v rohu. */
-  const tlacidloLupy = (kluc: string, selektor: string): ReactNode => (
-    <button
-      type="button"
-      className="lupa-tlacidlo"
-      title="zväčšiť kartu"
-      aria-label="zväčšiť kartu"
-      onClick={(e) => {
-        e.stopPropagation();
-        otvorLupu(kluc, e.currentTarget.parentElement?.querySelector(selektor));
-      }}
-    >
-      🔍
-    </button>
-  );
+  const casovacLupy = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const lupaZavreta = useRef<{ readonly kluc: string; readonly cas: number } | null>(null);
+  const zavriLupu = (): void => {
+    if (lupa !== null) lupaZavreta.current = { kluc: lupa.kluc, cas: Date.now() };
+    setLupa(null);
+  };
+  useEffect(() => () => clearTimeout(casovacLupy.current), []);
+  // Susedia uhnú o polovicu prírastku šírky lupy (harmonika v hra.css).
+  useEffect(() => {
+    if (lupa === null) return;
+    const lk = lupaKarty.get(lupa.kluc);
+    const mierka = Math.min(lk?.mierka ?? mierkaLupy, maxMierkaLupy(lupa.rect));
+    document.body.style.setProperty("--harmonika-posun", `${Math.round((lupa.rect.width * (mierka - 1)) / 2 + 6)}px`);
+    return () => {
+      document.body.style.removeProperty("--harmonika-posun");
+    };
+    // lupaKarty sa skladá pri každom kreslení — stačí kľúč a poloha lupy.
+  }, [lupa, mierkaLupy]);
+  /**
+   * Udalosti prvku, ktorý sa pri prejdení myšou zväčší. Lupa sa otvorí až po
+   * krátkej chvíli (pri prechode cez rad by blikala); hneď po zavretí inej
+   * lupy bez čakania, nech sa dá rad prechádzať plynulo. Kartu, z ktorej lupy
+   * myš práve odišla, znova neotvorí, kým myš neopustí jej miesto.
+   */
+  const ONESKORENIE_LUPY_MS = 150;
+  const nadLupou = (kluc: string, najdi: (el: HTMLElement) => Element | null, fokus: boolean) => ({
+    tabIndex: fokus ? 0 : undefined,
+    onPointerEnter: (e: ReactPointerEvent<HTMLElement>): void => {
+      if (e.pointerType !== "mouse" || tahanie !== null) return;
+      const z = lupaZavreta.current;
+      if (z?.kluc === kluc) return;
+      const el = e.currentTarget;
+      clearTimeout(casovacLupy.current);
+      const plynulo = z !== null && Date.now() - z.cas < 300;
+      casovacLupy.current = setTimeout(() => otvorLupu(kluc, najdi(el)), plynulo ? 0 : ONESKORENIE_LUPY_MS);
+    },
+    onPointerLeave: (): void => {
+      clearTimeout(casovacLupy.current);
+      if (lupaZavreta.current?.kluc === kluc) lupaZavreta.current = { kluc: "", cas: lupaZavreta.current.cas };
+    },
+    onFocus: (e: ReactFocusEvent<HTMLElement>): void => {
+      if (e.currentTarget.matches(":focus-visible")) otvorLupu(kluc, najdi(e.currentTarget), true);
+    },
+    onBlur: (): void => setLupa((l) => (l?.kluc === kluc && l.zFokusu === true ? null : l)),
+    // Dotyk nemá prejdenie myšou — kartu bez akcie zväčší ťuknutie.
+    onClick: jeDotyk && fokus ? (e: ReactMouseEvent<HTMLElement>) => otvorLupu(kluc, najdi(e.currentTarget)) : undefined,
+  });
   /** Vzpriamená karta leží nižšie — ilustrácie susedov sú v jednej výške (viď posunVzpriamenej). */
   const posunVLinii = (defId: string, otocena: boolean): number =>
     otocena ? 0 : posunVzpriamenej(sada, data, defId, sirkaVLinii);
@@ -1312,20 +1358,20 @@ export function HernaPlocha({
     const render = (sirka: number): ReactNode => karta({ ...props, otocena: false, sirka });
     lupaKarty.set(kluc, { render, ...(moznosti.zdroj === undefined ? {} : { zdroj: moznosti.zdroj }), odstran: moznosti.odstran });
     const maAkciu = props.onClick !== undefined;
-    const triedy = ["s-lupou", maAkciu ? "ma-akciu" : "klik-lupa"];
+    const triedy = ["s-lupou", maAkciu ? "ma-akciu" : "", lupa?.kluc === kluc ? "harmonika-aktivna" : ""];
     if (moznosti.trieda !== undefined) triedy.push(moznosti.trieda);
     return (
       <div
         key={moznosti.kluc ?? uid}
-        className={triedy.join(" ")}
+        className={triedy.filter((x) => x !== "").join(" ")}
         style={moznosti.vLinii === true ? { marginTop: posunVLinii(props.karta.defId, props.otocena === true) } : undefined}
         title={moznosti.titul}
-        onClick={maAkciu ? undefined : (e) => otvorLupu(kluc, e.currentTarget.querySelector(".kl"))}
+        // Karta s akciou je fokusovateľná sama; ostatné dostanú tabIndex kvôli klávesnici.
+        {...nadLupou(kluc, (el) => el.querySelector(".kl"), !maAkciu)}
         onContextMenu={pravyKlik(moznosti.odstran)}
       >
         {moznosti.obsah ?? karta(props)}
         {moznosti.stitok}
-        {maAkciu && tlacidloLupy(kluc, ".kl")}
       </div>
     );
   };
@@ -2939,7 +2985,7 @@ export function HernaPlocha({
         <span className="stavba-zona-nazov">
           {nazov} <small>{karty.length}/{kapacita}</small>
         </span>
-        <span className="stavba-zona-karty">
+        <span className="stavba-zona-karty harmonika">
           {karty.map((k) => {
             const z: Zdroj = { karta: k, odkial: "stavba", navrh: false };
             // Pravý klik vráti kartu zo zóny späť do balíčka.
@@ -2978,7 +3024,7 @@ export function HernaPlocha({
                 : "Klikni na lokalitu, o ktorú sa chceš biť."}
           </span>
         </header>
-        <div className="draft-karty volba-ciela-karty">
+        <div className="harmonika draft-karty volba-ciela-karty">
           {view.lokalityVHre.length === 0 && <span className="popis">Žiadne lokality v hre.</span>}
           {view.lokalityVHre
             .filter((k) => k.uid !== lokalitaNavrh?.karta.uid)
@@ -3038,7 +3084,7 @@ export function HernaPlocha({
           <div className="stavba-rad">
             {zonaStavby(SMETISKO, "Smetisko", "naspodok spoločného balíčka · súper ich neuvidí", volba.odhod, krokSt.odhod)}
             <div
-              className={zonaTriedy(BALICEK_STAVBY, "stavba-balicek")}
+              className={zonaTriedy(BALICEK_STAVBY, "stavba-balicek harmonika")}
               data-ciel={jeCiel(BALICEK_STAVBY) ? BALICEK_STAVBY : undefined}
             >
               {zvysok.map((k) => {
@@ -3107,7 +3153,7 @@ export function HernaPlocha({
           {view.senok.length > 0 && (
             <div className="stavba-senok-zatial">
               <span className="oblast-nazov">v šenku zatiaľ · {view.senok.length}</span>
-              <div className="draft-karty">{view.senok.map((k) => sLupou({ karta: k, sirka: Math.round(sirkaDraftu * 0.7) }))}</div>
+              <div className="harmonika draft-karty">{view.senok.map((k) => sLupou({ karta: k, sirka: Math.round(sirkaDraftu * 0.7) }))}</div>
             </div>
           )}
         </section>
@@ -3138,7 +3184,7 @@ export function HernaPlocha({
             </span>
           </span>
         </header>
-        <div className="draft-karty branie-karty">
+        <div className="harmonika draft-karty branie-karty">
           {view.senok.length === 0 && <span className="popis">Šenok je prázdny.</span>}
           {view.senok
             .filter((k) => !zoSenku.some((x) => x.uid === k.uid))
@@ -3566,7 +3612,7 @@ export function HernaPlocha({
               </button>
             </p>
           )}
-          <div className="scorecardy" ref={scorecardyRef} style={{ gap: MEDZERA_SCORECARDOV }}>
+          <div className="scorecardy harmonika" ref={scorecardyRef} style={{ gap: MEDZERA_SCORECARDOV }}>
             {starsiNaMobile.map((elder) => {
               const k = klikStarsi(elder);
               const kluc = `s${elder.elderId}`;
@@ -3592,13 +3638,12 @@ export function HernaPlocha({
                   className={`scorecard-obal ${mozniPatronati.length > 0 ? (k !== undefined ? "vyzvat" : "nedostupny") : ""} ${patronElder !== null ? "v-patronate" : ""}`}
                   style={{ flex: `1 1 ${sirkaScorecardu}px`, minWidth: sirkaScorecardu }}
                 >
-                  {/* Klik zväčší; ak klik na staršieho niečo robí (bitka, Pohoršenie), zväčší ho tlačidlo 🔍. */}
+                  {/* Zväčší sa pri prejdení myšou; klik na staršieho ostáva akcii (bitka, Pohoršenie). */}
                   <div
-                    className={`s-lupou ${k !== undefined ? "ma-akciu" : "klik-lupa"}`}
-                    onClick={k !== undefined ? undefined : (e) => otvorLupu(kluc, e.currentTarget.querySelector(".scorecard"))}
+                    className={["s-lupou", k !== undefined ? "ma-akciu" : "", lupa?.kluc === kluc ? "harmonika-aktivna" : ""].filter((x) => x !== "").join(" ")}
+                    {...nadLupou(kluc, (el) => el.querySelector(".scorecard"), k === undefined)}
                   >
                     {sirkaRadu > 0 && scorecard(sirkaScorecardu)}
-                    {k !== undefined && tlacidloLupy(kluc, ".scorecard")}
                   </div>
                   <StavStarsieho
                     elder={elder}
@@ -3642,22 +3687,22 @@ export function HernaPlocha({
               </strong>
               {pokyn?.text !== undefined && <span className="pilulka-text">{pokyn.text}</span>}
             </div>
-            <div className="linia" ref={liniaRef}>
+            <div className="linia harmonika-skupiny" ref={liniaRef}>
               <div className="linia-skupina moja">
                 {popisKraja(ja, "vlavo")}
-                <div className="partia-rad">{radStrany(ja)}</div>
+                <div className="partia-rad harmonika">{radStrany(ja)}</div>
               </div>
               <div className="linia-skupina lokalita" ref={lokalitaRef}>
                 <span className="partia-popis">
                   {lokalita !== null || lokalitaNavrh !== null ? "lokalita" : "cieľ kola"}
                 </span>
-                <div className="partia-rad">{stredLinie}</div>
+                <div className="partia-rad harmonika">{stredLinie}</div>
                 {popisStranStredu}
                 {lokalitaNavrh !== null && tahanie === null && <span className="otocit-tip">klik = otočiť</span>}
               </div>
               <div className="linia-skupina superova">
                 {popisKraja(super_, "vpravo")}
-                <div className="partia-rad">{radStrany(super_)}</div>
+                <div className="partia-rad harmonika">{radStrany(super_)}</div>
               </div>
             </div>
             {hranaStola}
@@ -3731,7 +3776,7 @@ export function HernaPlocha({
             ) : undefined
           }
         >
-          <div className="vrstva-karty">
+          <div className="vrstva-karty harmonika">
             {view.senok.length === 0 && <span className="popis">Šenok je prázdny.</span>}
             {view.senok.map((k) => {
               const z: Zdroj = { karta: k, odkial: "senok", navrh: false };
@@ -3782,7 +3827,7 @@ export function HernaPlocha({
             ) : undefined
           }
         >
-          <div className="vrstva-karty">
+          <div className="vrstva-karty harmonika">
             {view.lokalityVHre.length === 0 && <span className="popis">Žiadne lokality v hre.</span>}
             {view.lokalityVHre
               .filter((k) => k.uid !== lokalitaNavrh?.karta.uid)
@@ -3844,7 +3889,7 @@ export function HernaPlocha({
           {(["moj", "jeho"] as const).map((kto) => (
             <div key={kto}>
               <span className="oblast-nazov">{kto === "moj" ? "tvoj balíček" : `balíček – ${menoHraca(super_)}`}</span>
-              <div className="vrstva-karty">
+              <div className="vrstva-karty harmonika">
                 {(view.volbaVestica?.[kto] ?? []).map((k, i) => {
                   const v = mode.typ === "vestica" ? mode : null;
                   const vybrana = v !== null && (kto === "moj" ? v.moja === i : v.jeho === i);
@@ -3875,7 +3920,7 @@ export function HernaPlocha({
           skryta={tahanie !== null}
           onZavri={() => setVrstva(null)}
         >
-          <div className="vrstva-karty">
+          <div className="vrstva-karty harmonika">
             {hJa.odhadzovaci.length === 0 && <span className="popis">Zatiaľ nič.</span>}
             {hJa.odhadzovaci.map((k) => sLupou({ karta: k, sirka: SIRKA_VO_VRSTVE }))}
           </div>
@@ -3914,7 +3959,7 @@ export function HernaPlocha({
         >
           odhodené<b>{hJa.odhadzovaci.length}</b>
         </button>
-        <div className="ruka-rad">
+        <div className="ruka-rad harmonika-hover">
           {ruka
             .filter((k) => !vylozenia.some((x) => x.karta.uid === k.uid))
             .map((k) => {
@@ -3998,7 +4043,7 @@ export function HernaPlocha({
           <Lupa
             rect={lupa.rect}
             mierka={lk.mierka ?? mierkaLupy}
-            onZavri={() => setLupa(null)}
+            onZavri={zavriLupu}
             onPointerDown={chytit ? (e) => zacni(z, e, lupa.rect.width) : undefined}
             onOdstran={lk.odstran}
           >

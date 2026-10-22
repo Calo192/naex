@@ -2,8 +2,10 @@
 // nastavenia hráča v profile (150 – 400 %, predvolene 200 %),
 // nad všetkým ostatným.
 //
-// Otvára sa klikom (Michal 2026-10-20: zväčšovanie pod myšou všade otravovalo —
-// pod myšou sa zväčšujú len karty v ruke). Línia aj vrstvy sa posúvajú
+// Otvára sa pri prejdení myšou s krátkym oneskorením a susedia uhnú do strán
+// (Michal 2026-10-22: klik na zväčšenie bol otravný; 2026-10-20 sa naopak
+// zväčšovalo klikom), klávesnicou fokusom, na dotyku ťuknutím — viď nadLupou
+// v HernaPlocha. Línia aj vrstvy sa posúvajú
 // (overflow), takže zväčšenie priamo v nich by orezali. Lupa je preto portál
 // s pevnou polohou, vystredený na pôvodnú kartu a celý ju prekrýva — dá sa
 // ňou prejsť na akcie zväčšenej karty. Zavrie sa klikom (na kartu s akciou
