@@ -176,8 +176,15 @@ textarea:focus {
 
 input[type="checkbox"],
 input[type="radio"] {
-  width: auto;
+  width: 18px;
+  height: 18px;
   accent-color: var(--akcent);
+}
+
+/* Posuvník aspoň 24 px vysoký (WCAG 2.5.8), na dotyk 44 px — predtým 16 px.
+   Dúhový posuvník tvorcu (.duha) má vlastnú výšku. */
+input[type="range"]:not(.duha) {
+  min-height: 24px;
 }
 
 input[type="range"] {
@@ -192,6 +199,12 @@ input[type="color"] {
   padding: 2px;
   height: 38px;
   width: 52px;
+}
+
+@media (pointer: coarse) {
+  input[type="range"]:not(.duha) {
+    min-height: 44px;
+  }
 }
 
 textarea {
@@ -324,6 +337,8 @@ textarea {
   color: var(--text);
   text-decoration: none;
   letter-spacing: 0.01em;
+  white-space: nowrap;
+  flex: none;
 }
 
 .logo-pohar {
@@ -340,10 +355,12 @@ textarea {
   display: flex;
   gap: 4px;
   flex: 1;
+  min-width: 0;
 }
 
 .navigacia a {
   padding: 8px 14px;
+  white-space: nowrap;
   border-radius: 8px;
   color: var(--tlmeny);
   text-decoration: none;
@@ -442,7 +459,11 @@ textarea {
 .hamburger {
   display: none;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 4px;
+  min-width: 44px;
+  min-height: 44px;
   padding: 10px;
   background: none;
   border: none;
@@ -505,7 +526,10 @@ textarea {
   font-size: 0.82rem;
 }
 
-@media (max-width: 760px) {
+/* Riadok odkazov sa zmestí až nad 1100 px; pod tým (mobil, tablet, malý
+   notebook) je navigácia v menu — predtým až pod 760 px a 761–1100 px sa
+   odkazy zalamovali a hlavička pretekala (tlačidlo účtu mimo obrazovky). */
+@media (max-width: 1100px) {
   .hlavicka-vnutro {
     gap: 12px;
   }
@@ -521,9 +545,14 @@ textarea {
     left: 0;
     right: 0;
     flex-direction: column;
+    gap: 2px;
     padding: 10px 16px 16px;
     background: var(--plocha);
     border-bottom: 1px solid var(--okraj);
+  }
+
+  .navigacia a {
+    padding: 12px 14px;
   }
 
   .navigacia.otvorena {
@@ -533,7 +562,19 @@ textarea {
   .ucet {
     margin-left: auto;
   }
+}
 
+@media (min-width: 1101px) and (max-width: 1400px) {
+  .hlavicka-vnutro {
+    gap: 16px;
+  }
+
+  .navigacia a {
+    padding: 8px 10px;
+  }
+}
+
+@media (max-width: 760px) {
   /* Ovládanie partie sa na úzkej hlavičke nezmestí vedľa loga — ide do vlastného riadku. */
   .hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) {
     flex-wrap: wrap;
@@ -687,7 +728,7 @@ textarea {
   top: 50%;
   z-index: calc(2 - var(--i) * var(--i));
   transform: translate(calc(-50% + var(--i) * var(--roztiahnutie)), calc(-50% + var(--i) * var(--i) * 18px))
-    rotate(calc(var(--i) * var(--uhol)));
+    rotate(calc(var(--i) * var(--uhol))) scale(var(--mierka, 1));
   transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
@@ -755,6 +796,21 @@ textarea {
 
   .tri-casti {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Mobil: vejár troch 250 px kariet mal ≈ 560 px a posúval stránku do strany. */
+@media (max-width: 600px) {
+  .hero-vejar {
+    height: 280px;
+    overflow: clip;
+  }
+
+  .vejar-pozicia,
+  .hero-vejar:hover .vejar-pozicia {
+    --mierka: 0.6;
+    --roztiahnutie: 34%;
+    --uhol: 9deg;
   }
 }
 
