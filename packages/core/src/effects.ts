@@ -256,11 +256,16 @@ interface PoldeciHraca {
  * kartu zo šenku).
  */
 export function limitZhromazdenia(state: StavPoldeci, p: PlayerId, zmenaPoldeci = 0): number {
-  const vlastny = (q: PlayerId, zmena: number): number =>
-    limitVykladania({ poldeciPlne: Math.max(0, state.hraci[q].poldeciPlne + zmena) }, state.strany, q) + limitBonus(state, q);
   // Zastávka: spoločný limit oboch — súčet ich limitov.
-  if (spolocnyLimit(state)) return vlastny(0, p === 0 ? zmenaPoldeci : 0) + vlastny(1, p === 1 ? zmenaPoldeci : 0);
-  return vlastny(p, zmenaPoldeci);
+  if (spolocnyLimit(state)) {
+    return vlastnyLimitZhromazdenia(state, 0, p === 0 ? zmenaPoldeci : 0) + vlastnyLimitZhromazdenia(state, 1, p === 1 ? zmenaPoldeci : 0);
+  }
+  return vlastnyLimitZhromazdenia(state, p, zmenaPoldeci);
+}
+
+/** Limit hráča bez Zastávky — na Zastávke z neho platí pas (Michal 2026-10-22). */
+export function vlastnyLimitZhromazdenia(state: StavPoldeci, p: PlayerId, zmenaPoldeci = 0): number {
+  return limitVykladania({ poldeciPlne: Math.max(0, state.hraci[p].poldeciPlne + zmenaPoldeci) }, state.strany, p) + limitBonus(state, p);
 }
 
 /**

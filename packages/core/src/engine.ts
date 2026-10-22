@@ -62,6 +62,7 @@ import {
   jeEfektManual,
   lenVlastnaStrana,
   limitZhromazdenia,
+  vlastnyLimitZhromazdenia,
   naexZaPitku,
   pohorsenieBezLimitu,
   pohorseniaNeplatia,
@@ -141,6 +142,16 @@ export interface ZhromazdenieStav {
   readonly navyse: readonly [number, number];
   /** Zastávka: limit je spoločný — každé vyloženie či vypitie ho uberie obom. */
   readonly spolocny?: boolean;
+  /**
+   * Zastávka: zvyšok vlastného limitu hráča (jeho limit mínus čo sám vyložil
+   * a vypil). Pas platí cigarety najviac z neho, nie zo spoločnej zásoby.
+   */
+  readonly vlastny?: readonly [number, number];
+}
+
+/** Za koľko kariet dostane hráč cigarety, keď teraz pasuje (§7; Zastávka §14). */
+export function kartyZaPas(z: Pick<ZhromazdenieStav, "zostavaLimit" | "vlastny">, p: PlayerId): number {
+  return Math.min(z.zostavaLimit[p], z.vlastny?.[p] ?? z.zostavaLimit[p]);
 }
 
 export interface PitkaStav {
@@ -1587,6 +1598,9 @@ function zacniZhromazdenie(s: MutState, data: GameData, events: Event[], zacina:
     navyse: [0, 0],
     // Zastávka: obaja čerpajú zo spoločného limitu (súčet ich limitov).
     spolocny: spolocnyLimit(s as GameState),
+    ...(spolocnyLimit(s as GameState)
+      ? { vlastny: [vlastnyLimitZhromazdenia(s as GameState, 0), vlastnyLimitZhromazdenia(s as GameState, 1)] as [number, number] }
+      : {}),
   };
   manualEfekty(s, data, "Zhromaždenie", events);
 }
@@ -1860,6 +1874,7 @@ function nastupEfekt(
 /** Uberie z limitu vykladania; na Zastávke zo spoločného limitu obom. */
 function uberLimit(z: DeepMutable<ZhromazdenieStav>, p: PlayerId, n: number): void {
   for (const q of z.spolocny === true ? ([0, 1] as const) : [p]) z.zostavaLimit[q] = Math.max(0, z.zostavaLimit[q] - n);
+  if (z.vlastny !== undefined) z.vlastny[p] = Math.max(0, z.vlastny[p] - n);
 }
 
 function cmdPass(s: MutState, data: GameData, p: PlayerId, events: Event[]): void {
@@ -1870,13 +1885,14 @@ function cmdPass(s: MutState, data: GameData, p: PlayerId, events: Event[]): voi
   z.navyse[p] = 0;
   // Pas (Michal 2026-10-20): cigareta za každú kartu, ktorú hráč ešte smel
   // vyložiť — aj keď pasuje hra za neho. Do Pitky už nehrá, súper vykladá sám.
-  const ziska = z.zostavaLimit[p] * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU;
+  const karty = kartyZaPas(z, p);
+  const ziska = karty * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU;
   hrac(s, p).cigarety += ziska;
   events.push({
     type: "log",
     text:
       ziska > 0
-        ? `Hráč ${p + 1} pasuje do Pitky a za ${z.zostavaLimit[p]} ${z.zostavaLimit[p] === 1 ? "nevyloženú kartu" : z.zostavaLimit[p] <= 4 ? "nevyložené karty" : "nevyložených kariet"} dostáva ${ziska} ${ziska === 1 ? "cigaretu" : ziska <= 4 ? "cigarety" : "cigariet"}.`
+        ? `Hráč ${p + 1} pasuje do Pitky a za ${karty} ${karty === 1 ? "nevyloženú kartu" : karty <= 4 ? "nevyložené karty" : "nevyložených kariet"} dostáva ${ziska} ${ziska === 1 ? "cigaretu" : ziska <= 4 ? "cigarety" : "cigariet"}.`
         : `Hráč ${p + 1} pasuje do Pitky.`,
   });
   posunTahZhromazdenia(s, data, p, events);

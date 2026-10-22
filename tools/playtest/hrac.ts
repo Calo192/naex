@@ -18,6 +18,7 @@ import type { ActionSums, CardInstance, ClientState, Command, ElderState, Event,
 import {
   stavZavislosti,
   textNeresti,
+  kartyZaPas,
   KONSTANTY,
   STUPNICA_ZONY,
   battleOutcome,
@@ -580,7 +581,7 @@ function moznosti(v: ClientState): string[] {
     }
     case "zhromazdenie": {
       const z = v.zhromazdenieStav;
-      c({ type: "pass" }, `pasovať (do Pitky už nevykladáš, súper vykladá sám; dostaneš ${v.zhromazdenieStav?.zostavaLimit[ja] ?? 0} cig. — cigaretu za každú kartu, ktorú si ešte smel vyložiť)`);
+      c({ type: "pass" }, `pasovať (do Pitky už nevykladáš, súper vykladá sám; dostaneš ${v.zhromazdenieStav === null ? 0 : kartyZaPas(v.zhromazdenieStav, ja) * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU} cig. — cigaretu za každú kartu, ktorú si ešte smel vyložiť; na Zastávke len z vlastného limitu)`);
       if (v.hraci[ja].cigarety > 0 && !zakazFajcit(v))
         c({ type: "smoke", pocet: 1 }, `vyfajč 1 cigaretu (máš ${v.hraci[ja].cigarety}) — hneď si doberieš kartu; ťah ti neskončí`);
       if (zakazFajcit(v)) out.push("(Benzínka: nikto nesmie fajčiť)");

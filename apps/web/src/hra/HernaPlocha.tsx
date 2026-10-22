@@ -31,6 +31,7 @@ import type {
 import {
   KONSTANTY,
   STUPNICA_ZONY,
+  kartyZaPas,
   bodyTeraz,
   cenaKliatby,
   battleOutcome,
@@ -2050,7 +2051,7 @@ export function HernaPlocha({
         // Celý ťah naraz (Michal 2026-10-19): karty sa ťahajú na stôl ako návrh,
         // každá ďalšia stojí plný poldeci, server dostane ťah až po „potvrdiť“ na stole.
         if (vylozenia.length === 0 || plan === null) {
-          const zaPas = (view.zhromazdenieStav?.zostavaLimit[ja] ?? 0) * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU;
+          const zaPas = (view.zhromazdenieStav === null ? 0 : kartyZaPas(view.zhromazdenieStav, ja)) * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU;
           // Pas je nevratný: potvrdenie len keď ešte niečo vyložiť môžem (UX N1, U10).
           const mozemVylozit = zostava > 0 && [...moznostiMiesta.values()].some((m) => m.karty.size > 0);
           if (potvrdenie === "pas") {
