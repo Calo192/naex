@@ -12,7 +12,7 @@ import { ALL_PODMIENKY, dostupneDlzky } from "@naex/core";
 import type { KartaNavrh, Pozicia, StranaNavrhu, AkciaDef, KlucoveSlovo, Kategoria, BodovaciaKarta, IkonaBodovania, Nastavenia } from "@naex/tvorba";
 import { exportTxt, importTxt, slug, PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
 import type { Pouzivatel, Rola, Ucty } from "./auth.ts";
-import { ChybaVstupu, cookieOdhlasenia, cookieRelacie, overFrekvenciu, overHesloVstup, overLogin, overHlasitost, overLupu, overMeno, overSchemu, overSkore, overPrepinac, citajCookie, jeSpravca } from "./auth.ts";
+import { ChybaVstupu, cookieOdhlasenia, cookieRelacie, overFrekvenciu, overHesloVstup, overLogin, overHlasitost, overLupu, overMeno, overSchemu, overSkore, overPrepinac, overPohlavie, citajCookie, jeSpravca } from "./auth.ts";
 import type { DruhMedia, Media } from "./media.ts";
 import type { Hudba } from "./hudba.ts";
 import type { Obsah } from "./obsah.ts";
@@ -337,6 +337,7 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
           ...(b.schema !== undefined ? { schema: overSchemu(b.schema) } : {}),
           ...(b.skore !== undefined ? { skore: overSkore(b.skore) } : {}),
           ...(b.skratky !== undefined ? { skratky: overPrepinac(b.skratky, "Klávesové skratky") } : {}),
+          ...(b.pohlavie !== undefined ? { pohlavie: overPohlavie(b.pohlavie) } : {}),
         }),
       });
     }

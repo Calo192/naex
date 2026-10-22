@@ -14,7 +14,7 @@
 import { appendFileSync, mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import WebSocket from "ws";
-import type { ActionSums, CardInstance, CenyKliatob, ClientState, Command, ElderState, Event, GameData, GameState, PlayerId, Slot, VerejnyStav } from "@naex/core";
+import type { ActionSums, CardInstance, CenyKliatob, ClientState, Command, ElderState, Event, GameData, GameState, PlayerId, Pohlavie, Rod, Slot, VerejnyStav } from "@naex/core";
 import {
   stavZavislosti,
   textNeresti,
@@ -30,6 +30,7 @@ import {
   pohorsenieMozne,
   bodyTeraz,
   cenaKliatby,
+  rozlozRod,
   kliatbyNahladu,
   svokraZaNaex,
   cenaPrebytku,
@@ -142,8 +143,10 @@ async function pripoj(): Promise<Spojenie> {
       zacata = m.started === true;
     }
     if (m.type === "hraci") {
-      const h = m.hraci as ({ meno: string } | null)[];
+      const h = m.hraci as ({ meno: string; bot?: boolean; pohlavie?: Pohlavie | null } | null)[];
       h.forEach((x, i) => x !== null && (mena[i] = x.meno));
+      // Tvary hlášok podľa rodu hráčov (Michal 2026-10-22) — motor ich značí {N:muž|žena|neutrálne}.
+      h.forEach((x, i) => (rodyHracov[i] = x?.bot === true ? "bot" : (x?.pohlavie ?? null)));
     }
     if (m.type === "state") fronta.push({ typ: "state", view: m.view as ClientState, events: m.events as Event[] });
     if (m.type === "error") fronta.push({ typ: "error", text: String(m.text) });
@@ -283,7 +286,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
     `=== Kolo ${v.kolo}, fáza ${v.faza}${v.faza === "pitka" ? ` ${v.pitkaCislo}/${v.pitkyCelkom}` : ""}${v.faza === "zhromazdenie" ? ` (pred Pitkou ${v.pitkaCislo + 1}/${v.pitkyCelkom})` : ""}${v.vizia !== null ? " (VÍZIA)" : ""}${v.bitkaStav?.krok ? ` (krok ${v.bitkaStav.krok})` : ""} — na ťahu: ${v.draftStav?.krok === "stavba" ? "obaja naraz (stavba šenku)" : kto(v.naTahu)} ===`,
   );
   if (v.koniec !== null) {
-    out.push(`KONIEC HRY: vyhral ${kto(v.koniec.vitaz)}. ${v.koniec.dovod}${v.koniec.body ? ` Body: ty ${v.koniec.body[ja]}, súper ${v.koniec.body[su]}.` : ""}`);
+    out.push(`KONIEC HRY: vyhral ${kto(v.koniec.vitaz)}. ${rozlozRod(v.koniec.dovod, rodyHracov)}${v.koniec.body ? ` Body: ty ${v.koniec.body[ja]}, súper ${v.koniec.body[su]}.` : ""}`);
   }
   out.push(
     `Ty si ${mena[ja]} (${v.utocnik === ja ? "útočník — zo šenku berieš prvý a vykladáš prvý" : "obranca — vyberáš a natáčaš cieľ kola, zo šenku berieš aj vykladáš druhý"}), súper ${mena[su]}. Hrá sa o ${v.lokalitCelkom} lokalít, ovládnutých ${v.ovladnute.length}${v.prepadnute.length > 0 ? `, prepadnutých ${v.prepadnute.length}` : ""}. Limit ruky nie je; po každej bitke si každý dobere ${KONSTANTY.KARTY_PO_BITKE} karty. Ďalší Nástroj do Dedičstva stojí ${v.cenaDedicstva} cig. (cena rastie pre oboch). Pitiek v bitke = 1 + menší počet aktivovaných akcií karty v strede (z dvoch strán).`,
@@ -754,11 +757,14 @@ function moznosti(v: ClientState): string[] {
 
 // ---- udalosti -----------------------------------------------------------------------
 
+/** Rod hráčov z miestnosti — pre tvary hlášok motora. */
+const rodyHracov: [Rod, Rod] = [null, null];
+
 function textUdalosti(e: Event, mena: readonly string[], ja: PlayerId): string | null {
   const m = (p: number) => (p === ja ? "ty" : (mena[p] ?? `Hráč ${p + 1}`));
   switch (e.type) {
     case "log":
-      return e.text;
+      return rozlozRod(e.text, rodyHracov);
     case "faza":
       return `— fáza: ${e.faza}`;
     case "tahal":
@@ -770,7 +776,7 @@ function textUdalosti(e: Event, mena: readonly string[], ja: PlayerId): string |
     case "bitkaVysledok":
       return `Bitka: tuhé ${e.damage.tuhe[ja]}:${e.damage.tuhe[ja === 0 ? 1 : 0]} (ty:súper), celkové ${e.damage.celkove[ja]}:${e.damage.celkove[ja === 0 ? 1 : 0]} — vyhráva ${e.vitaz === null ? "nikto" : m(e.vitaz)}${e.prebytok > 0 ? `, prebytok ${e.prebytok}${e.prebytokNaRozdelenie < e.prebytok ? ` (po Puške ${e.prebytokNaRozdelenie})` : ""}` : ""}.`;
     case "koniec":
-      return `KONIEC: vyhral ${e.vitaz === null ? "nikto (remíza)" : m(e.vitaz)}. ${e.dovod}${e.body ? ` Body ${e.body[0]}:${e.body[1]} (hráč 1 : hráč 2).` : ""}`;
+      return `KONIEC: vyhral ${e.vitaz === null ? "nikto (remíza)" : m(e.vitaz)}. ${rozlozRod(e.dovod, rodyHracov)}${e.body ? ` Body ${e.body[0]}:${e.body[1]} (hráč 1 : hráč 2).` : ""}`;
     default:
       return null;
   }

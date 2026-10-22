@@ -21,6 +21,7 @@ import {
   parseScorecards,
   rngInt,
   rngSeed,
+  rozlozRod,
   setupGame,
   viewFor,
 } from "../src/index.ts";
@@ -182,8 +183,8 @@ describe("náhľad Pitky = vyhodnotenie (Michal 2026-10-21)", () => {
         if (!posledny) return;
         const nahlad = nahladPitky(data, pred);
         for (const p of [0, 1] as const) {
-          const cirhozy = events.filter((e) => e.type === "log" && e.text === `Hráč ${p + 1} dosiahol prah pečene (${nahlad[p].prahPecene}) — Cirhóza.`).length;
-          const dlhy = events.filter((e) => e.type === "log" && e.text === `Hráč ${p + 1} dosiahol prah dlhu (${nahlad[p].prahDlhu}) — Dlh.`).length;
+          const cirhozy = events.filter((e) => e.type === "log" && rozlozRod(e.text, ["muz", "muz"]) === `Hráč ${p + 1} dosiahol prah pečene (${nahlad[p].prahPecene}) — Cirhóza.`).length;
+          const dlhy = events.filter((e) => e.type === "log" && rozlozRod(e.text, ["muz", "muz"]) === `Hráč ${p + 1} dosiahol prah dlhu (${nahlad[p].prahDlhu}) — Dlh.`).length;
           expect(cirhozy).toBe(nahlad[p].cirhozy);
           expect(dlhy).toBe(nahlad[p].dlhy);
           // Účet Pitky pre klienta hovorí to isté.

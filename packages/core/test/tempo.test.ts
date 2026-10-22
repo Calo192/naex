@@ -6,7 +6,7 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, GameState, PlacedCard, PlayerId } from "../src/index.ts";
-import { KONSTANTY, apply, buildGameData, legalCommands, loadGameData, setupGame } from "../src/index.ts";
+import { KONSTANTY, apply, buildGameData, legalCommands, loadGameData, rozlozRod, setupGame } from "../src/index.ts";
 import { EMPTY, instanceFor, makeDef } from "./helpers.ts";
 
 const zaklad = loadGameData(cardsJson, eldersJson, scorecardsJson);
@@ -102,6 +102,7 @@ describe("prah Dlhu a Cirhózy", () => {
     const dlhy = events.filter((e) => e.type === "log" && e.text.startsWith("Hráč 1 získava Dlh — hneď sa priznáva")).length;
     expect(dlhy).toBe(1);
     expect(state.hraci[0].zadlzenie).toBe(0);
-    expect(events).toContainEqual({ type: "log", text: "Hráč 1 dosiahol prah dlhu (2) — Dlh." });
+    const texty = events.flatMap((e) => (e.type === "log" ? [rozlozRod(e.text, ["zena", null])] : []));
+    expect(texty).toContain("Hráč 1 dosiahla prah dlhu (2) — Dlh.");
   });
 });

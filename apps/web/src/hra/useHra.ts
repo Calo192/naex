@@ -4,8 +4,8 @@
 // pošle rejoin s kódom z localStorage a hráč pokračuje, kde prestal.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { ClientState, Command, DlzkaHry, Event, GameData } from "@naex/core";
-import { kariet, loadGameData } from "@naex/core";
+import type { ClientState, Command, DlzkaHry, Event, GameData, Pohlavie, Rod } from "@naex/core";
+import { kariet, loadGameData, rozlozRod } from "@naex/core";
 import eldersJson from "@naex/core/data/elders.json";
 import scorecardsJson from "@naex/core/data/scorecards.json";
 import type { Sada } from "@naex/tvorba";
@@ -18,6 +18,25 @@ export interface HracInfo {
   readonly titul?: string;
   /** Offline protihráč (počítač) — nemá účet ani Frajerinu. */
   readonly bot?: boolean;
+  /** Pohlavie z profilu pre tvary hlášok; chýba/null = neuvádza. */
+  readonly pohlavie?: Pohlavie | null;
+}
+
+/** Rod hráča v hláškach (Michal 2026-10-22): bot, pohlavie z profilu, alebo neuvedené. */
+export function rodHraca(h: HracInfo | null | undefined): Rod {
+  return h?.bot === true ? "bot" : (h?.pohlavie ?? null);
+}
+
+/** Meno vo vete — bot je „Bot Teta Gizka“ (Michal 2026-10-22: „Bot … skončil“). */
+export function menoVoVete(h: HracInfo | null | undefined, p: number): string {
+  if (h === null || h === undefined) return `Hráč ${p + 1}`;
+  return h.bot === true ? `Bot ${h.meno}` : h.meno;
+}
+
+/** Hláška motora pre človeka: tvary rodu podľa hráčov a mená namiesto „Hráč N“. */
+export function textHlasky(text: string, mena: readonly string[], rody: readonly [Rod, Rod]): string {
+  // Aj „hráč 2“ uprostred vety (Hrobár, Svokra…) — inak ostalo „hráč 2 si berie 1 cigaretu“.
+  return rozlozRod(text, rody).replace(/[Hh]ráč ([12])/g, (_, n: string) => mena[Number(n) - 1] ?? `Hráč ${n}`);
 }
 
 /** Zmena Frajeriny po dohraní partie (index = miesto hráča). */
@@ -80,12 +99,11 @@ export interface HraHook {
 
 const KLUC = "naex.miestnost";
 
-function textUdalosti(e: Event, mena: readonly string[]): string | null {
+function textUdalosti(e: Event, mena: readonly string[], rody: readonly [Rod, Rod]): string | null {
   const meno = (p: number) => mena[p] ?? `Hráč ${p + 1}`;
   switch (e.type) {
     case "log":
-      // Aj „hráč 2“ uprostred vety (Hrobár, Svokra…) — inak ostalo „hráč 2 si berie 1 cigaretu“.
-      return e.text.replace(/[Hh]ráč ([12])/g, (_, n: string) => meno(Number(n) - 1));
+      return textHlasky(e.text, mena, rody);
     case "tahal":
       return `${meno(e.hrac)} ťahá ${kariet(e.pocet)}.`;
     case "manualEfekt":
@@ -93,7 +111,9 @@ function textUdalosti(e: Event, mena: readonly string[]): string | null {
     case "bitkaVysledok":
       return `Bitka: tuhé ${e.damage.tuhe[0]}:${e.damage.tuhe[1]}, celkové ${e.damage.celkove[0]}:${e.damage.celkove[1]} — ${e.vitaz === null ? "remíza, lokalita ide na sekeru" : `vyhráva ${meno(e.vitaz)}`}${e.prebytok > 0 ? `, prebytok ${e.prebytok}` : ""}.`;
     case "koniec":
-      return e.body === null ? `KONIEC: ${e.dovod}` : `KONIEC: ${e.dovod} Body ${e.body[0]}:${e.body[1]}.`;
+      return e.body === null
+        ? `KONIEC: ${textHlasky(e.dovod, mena, rody)}`
+        : `KONIEC: ${textHlasky(e.dovod, mena, rody)} Body ${e.body[0]}:${e.body[1]}.`;
     default:
       return null;
   }
@@ -112,7 +132,9 @@ export function useHra(aktivne: boolean): HraHook {
   const [melichar, setMelichar] = useState<HlaskaVPartii | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const menaRef = useRef<string[]>([]);
-  menaRef.current = hraci.map((h, i) => h?.meno ?? `Hráč ${i + 1}`);
+  menaRef.current = hraci.map((h, i) => menoVoVete(h, i));
+  const rodyRef = useRef<[Rod, Rod]>([null, null]);
+  rodyRef.current = [rodHraca(hraci[0]), rodHraca(hraci[1])];
 
   const connect = useCallback(() => {
     const proto = location.protocol === "https:" ? "wss" : "ws";
@@ -138,13 +160,13 @@ export function useHra(aktivne: boolean): HraHook {
           setHraci(msg.hraci);
           break;
         case "historia":
-          setLog(msg.events.map((e) => textUdalosti(e, menaRef.current)).filter((t): t is string => t !== null).slice(-250));
+          setLog(msg.events.map((e) => textUdalosti(e, menaRef.current, rodyRef.current)).filter((t): t is string => t !== null).slice(-250));
           break;
         case "state":
           setView(msg.view);
           setMiestnost((m) => (m === null || m.started ? m : { ...m, started: true }));
           setLog((stary) => {
-            const nove = msg.events.map((e) => textUdalosti(e, menaRef.current)).filter((t): t is string => t !== null);
+            const nove = msg.events.map((e) => textUdalosti(e, menaRef.current, rodyRef.current)).filter((t): t is string => t !== null);
             return [...stary, ...nove].slice(-250);
           });
           if (msg.events.length > 0) setUdalosti((u) => ({ id: u.id + 1, events: msg.events }));

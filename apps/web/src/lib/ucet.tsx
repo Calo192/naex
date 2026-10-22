@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { api } from "./api.ts";
 import { aktualnaSchema, pouziSchemu } from "./schemy.ts";
+import type { Pohlavie } from "@naex/core";
 
 /**
  * Úroveň účtu — práva overuje server, tu len podľa nej kreslíme. Hráčske ranky
@@ -69,6 +70,8 @@ export interface Pouzivatel {
   readonly skore?: ZobrazenieSkore;
   /** Klávesové skratky v partii (K, P, N, Esc, ?); chýba = zapnuté. */
   readonly skratky?: boolean;
+  /** Pohlavie pre tvary hlášok v partii; null/chýba = neuvádza (neutrálne hlášky). */
+  readonly pohlavie?: Pohlavie | null;
 }
 
 /**

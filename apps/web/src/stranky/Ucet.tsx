@@ -23,6 +23,14 @@ import {
   type ZobrazenieSkore,
 } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Pole } from "../komponenty.tsx";
+import type { Pohlavie } from "@naex/core";
+
+/** Pohlavie v profile (Michal 2026-10-22) — súper ho vidí len v tvare hlášok. */
+const VOLBY_POHLAVIA: readonly { readonly id: Pohlavie | null; readonly nazov: string; readonly popis: string }[] = [
+  { id: "muz", nazov: "Muž", popis: "„{meno} skončil bez NA EX.“" },
+  { id: "zena", nazov: "Žena", popis: "„{meno} skončila bez NA EX.“" },
+  { id: null, nazov: "Neuvádzať", popis: "„{meno}: koniec bez NA EX.“" },
+];
 import { MojeStatistiky } from "./Statistiky.tsx";
 import { hlasitostZvuku, nacitajSkladby, urlSkladby } from "../hra/Hudba.tsx";
 import { nacitajHlasky, urlHlasky } from "../hra/Melichar.tsx";
@@ -295,6 +303,16 @@ export function Profil() {
       .catch(chyba);
   };
 
+  // Pohlavie pre tvary hlášok v partii (Michal 2026-10-22) — voliteľné, inak neutrálne hlášky.
+  const [pohlavie, setPohlavie] = useState<Pohlavie | null>(ja?.pohlavie ?? null);
+  const vyberPohlavie = (p: Pohlavie | null): void => {
+    setPohlavie(p);
+    api
+      .patch<{ pouzivatel: Pouzivatel }>("/profil", { pohlavie: p })
+      .then((r) => nastav(r.pouzivatel))
+      .catch(chyba);
+  };
+
   // Výber z predvolených avatarov (Michal 2026-10-19) — kto nechce nahrávať fotku.
   const [galeria, setGaleria] = useState<readonly string[] | null>(null);
   const [galeriaOtvorena, setGaleriaOtvorena] = useState(false);
@@ -487,6 +505,16 @@ export function Profil() {
             nefungujú; M a 1–4 sú hlášky Melichara.
           </span>
         </label>
+        <fieldset className="skore-volby">
+          <legend>Ako o tebe písať v hláškach partie</legend>
+          {VOLBY_POHLAVIA.map((v) => (
+            <label key={v.id ?? "nie"} className={v.id === pohlavie ? "skore-volba zvolena" : "skore-volba"}>
+              <input type="radio" name="pohlavie" checked={v.id === pohlavie} onChange={() => vyberPohlavie(v.id)} />
+              <span className="skore-nazov">{v.nazov}</span>
+              <span className="skore-popis">{v.popis.replace("{meno}", ja.meno)}</span>
+            </label>
+          ))}
+        </fieldset>
       </section>
       <div className="profil-nastavenia">
       <form className="panel" onSubmit={(e) => void ulozMeno(e)}>

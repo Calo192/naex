@@ -257,6 +257,8 @@ function migruj(db: Db): void {
   if (!ucty.some((c) => c.name === "melichar_frekvencia")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN melichar_frekvencia INTEGER");
   // Kedy hráč naposledy otvoril Novinky — značka v navigácii (Michal 2026-10-22); NULL = od registrácie.
   if (!ucty.some((c) => c.name === "novinky_videne")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN novinky_videne INTEGER");
+  // Pohlavie pre tvary hlášok v partii (Michal 2026-10-22): muz / zena; NULL = neuvádza (neutrálne hlášky).
+  if (!ucty.some((c) => c.name === "pohlavie")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN pohlavie TEXT");
   // Verdikt overenia návrhu ďalším playtestom (Michal 2026-10-21).
   const navrhy = db.prepare("PRAGMA table_info(navrhy)").all() as { name: string }[];
   if (!navrhy.some((c) => c.name === "verdikt")) db.exec("ALTER TABLE navrhy ADD COLUMN verdikt TEXT NOT NULL DEFAULT ''");

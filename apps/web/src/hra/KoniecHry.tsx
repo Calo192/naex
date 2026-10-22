@@ -2,11 +2,12 @@
 // zmena Frajeriny a návrat do lobby. Kým bol koniec len riadok v páse
 // pokynov, hráči ho prehliadli a nevedeli, odkiaľ body sú.
 
-import type { ClientState, GameData, PlayerId } from "@naex/core";
-import { bodyTeraz } from "@naex/core";
+import type { ClientState, GameData, PlayerId, Rod } from "@naex/core";
+import { bodyTeraz, tvar } from "@naex/core";
 import { Odkaz } from "../lib/router.tsx";
 import { RozpisBodov } from "./RozpisBodov.tsx";
 import type { ZmenyFrajeriny } from "./useHra.ts";
+import { textHlasky } from "./useHra.ts";
 
 export interface KoniecHryProps {
   readonly view: ClientState;
@@ -16,15 +17,24 @@ export interface KoniecHryProps {
   readonly frajerina: ZmenyFrajeriny | null;
   readonly onZavri: () => void;
   readonly opustit: () => void;
+  /** Rod hráča pre „Vyhral(a) si!“ (Michal 2026-10-22); chýba = neutrálne. */
+  readonly rodJa?: Rod;
+  /** Rody oboch hráčov pre dôvod konca („Eva udržala…“); chýba = neutrálne. */
+  readonly rody?: readonly [Rod, Rod];
 }
 
-export function KoniecHry({ view, data, mena, menoKarty, frajerina, onZavri, opustit }: KoniecHryProps) {
+export function KoniecHry({ view, data, mena, menoKarty, frajerina, onZavri, opustit, rodJa = null, rody = [null, null] }: KoniecHryProps) {
   const koniec = view.koniec;
   if (koniec === null) return null;
   const ja = view.ja;
   const su: PlayerId = ja === 0 ? 1 : 0;
-  const nadpis = koniec.vitaz === null ? "Remíza" : koniec.vitaz === ja ? "Vyhral si!" : "Prehral si";
-  const dovod = koniec.dovod.replace(/Hráč ([12])/g, (_, n: string) => mena[Number(n) - 1] ?? `Hráč ${n}`);
+  const nadpis =
+    koniec.vitaz === null
+      ? "Remíza"
+      : koniec.vitaz === ja
+        ? tvar(rodJa, "Vyhral si!", "Vyhrala si!", "Výhra!")
+        : tvar(rodJa, "Prehral si", "Prehrala si", "Prehra");
+  const dovod = textHlasky(koniec.dovod, mena, rody);
   // Rozpis po starších tým istým bodovaním ako na konci hry — súperove
   // nepriznané kliatby pozná view z verejného počtu, takže sa sčíta na
   // koniec.body (playtest 20261021-041728: predtým dva rôzne súčty v jednom okne).

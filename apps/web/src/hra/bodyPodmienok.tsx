@@ -14,7 +14,7 @@ export const PORADIE_PODMIENOK: readonly Podmienka[] = ["lokality", "starsi", "c
 /** Za čo podmienka dáva kusy — prvý riadok nápovedy. */
 export const ZA_CO: Readonly<Record<Podmienka, string>> = {
   lokality: "Za každú ovládnutú lokalitu (vyhraná bitka o lokalitu).",
-  starsi: "Za každého staršieho, ktorého si získal patronátom (vyhral si bitku, keď si ho mal v ruke).",
+  starsi: "Za každého staršieho získaného patronátom (vyhratá bitka, keď bol tvojou kartou v ruke).",
   cigarety: `Za každé ${KONSTANTY.CIGARIET_NA_KUS} cigarety, ktoré ti ostanú na konci hry.`,
   znepokojenie: "Za každého staršieho, ktorý sa ťa bojí aspoň na úrovni 1 (marker v žltej zóne na súperovej polovici).",
   strach: "Za každého staršieho, ktorý sa ťa bojí aspoň na úrovni 2 (oranžová zóna).",

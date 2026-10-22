@@ -3,7 +3,7 @@
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { Action, Podmienka, StatistikyHraca } from "@naex/core";
-import { ALL_PODMIENKY } from "@naex/core";
+import { ALL_PODMIENKY, rozlozRod } from "@naex/core";
 import { api } from "../lib/api.ts";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { useSada } from "../lib/sada.tsx";
@@ -338,7 +338,7 @@ function PoslednePartie({ partie }: { readonly partie: readonly PartiaVProfile[]
           {partie.map((p) => {
             const d = p.frajerina.po - p.frajerina.pred;
             return (
-              <tr key={p.id} title={p.dovod}>
+              <tr key={p.id} title={rozlozRod(p.dovod, [null, null])}>
                 <td>
                   <span className={`vysledok ${p.vysledok}`}>{TEXT_VYSLEDKU[p.vysledok]}</span>
                 </td>
@@ -348,7 +348,7 @@ function PoslednePartie({ partie }: { readonly partie: readonly PartiaVProfile[]
                     {p.super.id === null ? p.super.meno : <Odkaz href={`/hrac/${p.super.id}`}>{p.super.meno}</Odkaz>}
                     <span className="tlmene frajerina-mala">({p.super.frajerina})</span>
                   </span>
-                  <span className="dovod">{p.dovod}</span>
+                  <span className="dovod">{rozlozRod(p.dovod, [null, null])}</span>
                 </td>
                 <td className="cislo">{p.body === null ? <span className="tlmene">—</span> : `${p.body[0]} : ${p.body[1]}`}</td>
                 <td className="cislo">
