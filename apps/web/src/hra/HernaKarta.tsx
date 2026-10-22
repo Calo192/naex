@@ -9,7 +9,7 @@
 import type { CardInstance, CardLineEval, GameData } from "@naex/core";
 import { printedSides } from "@naex/core";
 import type { KartaNavrh, RozlozenieStrany, Sada } from "@naex/tvorba";
-import { PREDVOLENE_NASTAVENIA, geometriaKarty } from "@naex/tvorba";
+import { PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
 import { KartaLico, type SlotStav } from "../karta/KartaLico.tsx";
 import { vzhladSady } from "../lib/sada.tsx";
 
@@ -30,26 +30,6 @@ export function vzhladKarty(sada: Sada, data: GameData, defId: string): KartaNav
     prava: { blokovane: [], akcie: {}, povolene: {} },
     upravene: 0,
   };
-}
-
-/**
- * O koľko px nižšie leží v línii karta, ktorá je voči divákovi vzpriamená.
- * Otočená karta má ilustráciu (a sloty) dole, vzpriamená hore — aby sa na
- * spoji stretli priľahlé akcie, ilustrácie musia byť v jednej výške a názov
- * s popisom vytŕčajú: otočenej hore, vzpriamenej dole.
- */
-export function posunVzpriamenej(sada: Sada, data: GameData, defId: string, sirka: number): number {
-  const k = vzhladKarty(sada, data, defId);
-  const g = geometriaKarty({ ...k, maTagy: k.tagy.length > 0 });
-  const prvy = g.slotyLave[0];
-  const posledny = g.slotyLave[g.slotyLave.length - 1];
-  // Sloty sú symetrické okolo stredu ilustrácie: otočením sa slot s hornou
-  // hranou y dostane na výšku H − (y_posledny + s) a posun to vyrovná.
-  const posun =
-    prvy === undefined || posledny === undefined
-      ? g.vyska - g.obrazok.h
-      : g.vyska - (prvy.y + posledny.y + posledny.h);
-  return (posun * sirka) / g.sirka;
 }
 
 export interface HernaKartaProps {

@@ -1311,10 +1311,15 @@ button.zdroj-body[aria-expanded="true"] .velke-cislo {
   border-radius: 14px;
 }
 
+/* Rovný rad (Michal 2026-10-22): popisy nad stranami a nad lokalitou sú rôzne
+   vysoké — skupiny zdieľajú riadky mriežky (subgrid), takže karty všetkých troch
+   majú spoločnú hornú aj spodnú hranu. Krajné 1fr stĺpce robia to, čo predtým
+   auto okraje: voľné miesto ide po krajoch, strany ostanú pri lokalite. */
 .linia {
-  display: flex;
-  align-items: stretch;
-  gap: 0;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto auto auto 1fr;
+  grid-template-rows: auto auto auto;
   overflow-x: auto;
   padding: 22px 14px 18px;
   border-radius: 18px;
@@ -1358,18 +1363,54 @@ button.zdroj-body[aria-expanded="true"] .velke-cislo {
 }
 
 .linia-skupina {
-  display: flex;
-  flex-direction: column;
-  flex: none;
+  display: grid;
+  grid-row: 1 / span 3;
+  grid-template-rows: subgrid;
+  align-content: start;
 }
 
 .linia-skupina.moja {
-  align-items: flex-end;
-  margin-left: auto;
+  grid-column: 2;
+  justify-items: end;
+}
+
+.linia-skupina.lokalita {
+  grid-column: 3;
 }
 
 .linia-skupina.superova {
-  margin-right: auto;
+  grid-column: 4;
+  justify-items: start;
+}
+
+/* Spojnice párov akcií na spojoch (SpojeLinie.tsx). Počas lupy sa karty
+   rozostúpia (harmonika) — čiary by viseli vo vzduchu, tak sa skryjú. */
+.spoje-linie {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 4;
+  transition: opacity 0.12s ease;
+}
+
+.spoje-linie line {
+  stroke: var(--akcent-svetly);
+  stroke-width: 3;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 2px var(--tma));
+}
+
+.spoje-linie line.zrusena {
+  stroke: var(--cervena);
+  stroke-dasharray: 4 5;
+}
+
+.linia:has(.harmonika-aktivna) > .spoje-linie,
+body.tahanie-aktivne .spoje-linie {
+  opacity: 0;
 }
 
 .linia-skupina.lokalita {
