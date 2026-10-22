@@ -1182,9 +1182,9 @@ export function HernaPlocha({
       view.faza === "volbaCiela"
         ? cielPanelRef.current
         : view.faza === "draft"
-          ? (draftPanelRef.current ?? starsiPanelRef.current)
+          ? (draftPanelRef.current ?? liniaObalRef.current)
           : view.faza === "bitka" && (krok === "pohorsenie" || krok === "prebytok")
-            ? starsiPanelRef.current
+            ? liniaObalRef.current
             : liniaObalRef.current;
     if (el === null) return;
     const r = el.getBoundingClientRect();
@@ -2817,7 +2817,7 @@ export function HernaPlocha({
                 Pohoršenie <small>zostáva {b.pohorsenieZostava[ja]}</small>
               </>
             ),
-            text: "Klikni na staršieho hore — marker sa posunie k súperovi: on dostane priazeň, starší sa začne báť teba (zónové body, cesta k vydeseniu). Zamknuté markery sa nedajú.",
+            text: "Klikni na staršieho po boku stola — marker sa posunie k súperovi: on dostane priazeň, starší sa začne báť teba (zónové body, cesta k vydeseniu). Zamknuté markery sa nedajú.",
           };
         }
         if (b.krok === "prebytok") {
@@ -2831,7 +2831,7 @@ export function HernaPlocha({
             ),
             text: (
               <>
-                Klikni na staršieho hore — marker ide k súperovi (on priazeň, teba sa starší začne báť).{" "}
+                Klikni na staršieho po boku stola — marker ide k súperovi (on priazeň, teba sa starší začne báť).{" "}
                 {cenaPosunu > 1 ? (
                   <strong>Posun ťa stojí {cenaPosunu} (Miňištrant v tvojej partii).</strong>
                 ) : (
@@ -3436,6 +3436,26 @@ export function HernaPlocha({
   );
 
   // ---- pás kola: koľko Pitiek a koľko kariet kto vykladá -------------------
+  // Súhrn starších (Michal 2026-10-22, #55 kus 3): v páse kola, aby na 1366 × 768 bolo vidno viac zo stĺpcov.
+  const starsiSuhrn = (
+    <span className="pas-starsi">
+      <span
+        className={`vydeseni-pocet ${vydeseni[super_] >= prahVyd - 1 ? "hrozba" : ""}`}
+        title={`Kto vydesí ${prahVyd} starších (krajná červená pozícia) a udrží ich do konca ďalšieho kola, vyhrá.`}
+      >
+        vydesení <b className="moje">ty {vydeseni[ja]}/{prahVyd}</b> · <b className="superove">{menoHraca(super_)} {vydeseni[super_]}/{prahVyd}</b>
+      </span>
+      <span className="body-teraz" title="Záverečné bodovanie, keby hra skončila teraz">
+        body teraz <b className="moje">ty {body.spolu[ja]}</b> ·{" "}
+        <b className="superove" title="Súperove nepriznané kliatby sú už odpočítané — ich počet je z toho, čo sa ukázalo na stole.">
+          {menoHraca(super_)} {body.spolu[super_]}
+        </b>
+      </span>
+      <button type="button" className="tlacidlo-male tlacidlo-jemne" onClick={() => setAkoBodovanie(!akoBodovanie)} aria-expanded={akoBodovanie}>
+        {akoBodovanie ? "skryť rozpis" : "rozpis bodov"}
+      </button>
+    </span>
+  );
   const pasKola = ((): ReactNode => {
     if (view.koniec !== null || view.ciel === null) return null;
     if (view.faza !== "zhromazdenie" && view.faza !== "pitka" && view.faza !== "bitka") return null;
@@ -3532,13 +3552,7 @@ export function HernaPlocha({
               <span key={i} className={i + 1 < aktualna || view.faza === "bitka" ? "bodka hotova" : i + 1 === aktualna ? "bodka teraz" : "bodka"} />
             ))}
           </span>
-          <span className="pas-pozn">
-            {view.faza === "zhromazdenie"
-              ? "počet Pitiek môže pribudnúť, keď sa aktivujú akcie lokality"
-              : n === 1
-                ? "1 Pitka — potom bitka"
-                : `${n} Pitky — po každej ďalšie Zhromaždenie`}
-          </span>
+          {view.faza !== "zhromazdenie" && <span className="pas-pozn">{n === 1 ? "1 Pitka — potom bitka" : `${n} Pitky — po každej ďalšie Zhromaždenie`}</span>}
           {limityDalej}
         </span>
         {stolicky}
@@ -3550,6 +3564,7 @@ export function HernaPlocha({
             {sloty(super_)}
           </span>
         )}
+        {starsiSuhrn}
       </div>
     );
   })();
@@ -3825,28 +3840,8 @@ export function HernaPlocha({
           {draftPanel}
           {pasKola}
           {/* Starší po bokoch stola (Michal 2026-10-22, #55 variant B) — nad stolom ostáva len ich súhrn. */}
-          <section className="starsi-panel starsi-info" ref={starsiPanelRef}>
-            <h3>
-              <span>
-                Starší{" "}
-                <span className="h3-pozn">{/* Stupnica je zrkadlová (Michal 2026-10-22) — tvoja polovica je vždy vľavo. */}tvoja strana ← → súperova</span>
-              </span>
-              <span
-                className={`vydeseni-pocet ${vydeseni[super_] >= prahVyd - 1 ? "hrozba" : ""}`}
-                title={`Kto vydesí ${prahVyd} starších (krajná červená pozícia) a udrží ich do konca ďalšieho kola, vyhrá.`}
-              >
-                vydesení: <b className="moje">ty {vydeseni[ja]}/{prahVyd}</b> · <b className="superove">{menoHraca(super_)} {vydeseni[super_]}/{prahVyd}</b>
-              </span>
-              <span className="body-teraz" title="Záverečné bodovanie, keby hra skončila teraz">
-                body teraz: <b className="moje">ty {body.spolu[ja]}</b> ·{" "}
-                <b className="superove" title="Súperove nepriznané kliatby sú už odpočítané — ich počet je z toho, čo sa ukázalo na stole.">
-                  {menoHraca(super_)} {body.spolu[super_]}
-                </b>
-                <button type="button" className="tlacidlo-male tlacidlo-jemne" onClick={() => setAkoBodovanie(!akoBodovanie)} aria-expanded={akoBodovanie}>
-                  {akoBodovanie ? "skryť rozpis" : "rozpis bodov"}
-                </button>
-              </span>
-            </h3>
+          {pasKola === null && <div className="starsi-info-samostatne">{starsiSuhrn}</div>}
+          <section className="starsi-info" ref={starsiPanelRef} hidden={!akoBodovanie}>
             {akoBodovanie && (
               <div className="ako-bodovanie">
                 <p>
@@ -3870,7 +3865,7 @@ export function HernaPlocha({
                 />
               </div>
             )}
-        </section>
+          </section>
           {/* Farba stola hovorí, čí je ťah: zelená = tvoj, sivá = čakáš. */}
           <div
             ref={liniaObalRef}

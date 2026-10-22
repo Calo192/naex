@@ -354,7 +354,12 @@ export function DlazdicaStarsieho({
         ))}
       </span>
       {stitok}
-      {akcia !== undefined && <span className="ds-akcia">{akcia}</span>}
+      {/* Celý náhľad posunu je v titulku — v dlaždici najviac dva riadky, nech stĺpec nenarastie. */}
+      {akcia !== undefined && (
+        <span className="ds-akcia" title={akcia}>
+          {akcia}
+        </span>
+      )}
     </div>
   );
 }
