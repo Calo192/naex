@@ -4,7 +4,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { api } from "../lib/api.ts";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
-import { jeSpravca, useUcet, type Pouzivatel } from "../lib/ucet.tsx";
+import { jeSpravca, maPravo, useUcet, type Pouzivatel } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { tvar } from "./Statistiky.tsx";
 import { HodnotenieHry } from "./HodnotenieHry.tsx";
@@ -112,7 +112,7 @@ export function TlacidloCigarety({
   readonly navstevnik?: boolean;
 }) {
   const popis = navstevnik
-    ? "Cigarety dávajú hráči — hráčom si po prvej dohratej partii."
+    ? "Cigarety tvoj rank zatiaľ dávať nesmie."
     : vlastne
     ? "Sám sebe cigaretu nedáš."
     : moja
@@ -199,7 +199,7 @@ function KomentarPolozka({ k, ja, obnov, chyba }: { readonly k: Komentar; readon
         </div>
         <p className="nazor-text">{k.text}</p>
         <div className="nazor-akcie">
-          <TlacidloCigarety pocet={stav.pocet} moja={stav.moja} vlastne={k.autor.id === ja.id} prepni={prepni} navstevnik={ja.rola === "navstevnik"} />
+          <TlacidloCigarety pocet={stav.pocet} moja={stav.moja} vlastne={k.autor.id === ja.id} prepni={prepni} navstevnik={!maPravo(ja, "spatna_vazba_reagovat")} />
           {(k.autor.id === ja.id || jeSpravca(ja.rola)) && (
             <PotvrdTlacidlo
               text="zmazať"
@@ -237,7 +237,8 @@ function NazorKarta({
   useEffect(() => setCig({ pocet: n.cigarety, moja: n.mojaCigareta }), [n.cigarety, n.mojaCigareta]);
   const moj = n.autor.id === ja.id;
   const admin = jeSpravca(ja.rola);
-  const pise = ja.rola !== "navstevnik";
+  // Komentáre a cigarety podľa práva ranku (Michal 2026-10-22).
+  const pise = maPravo(ja, "spatna_vazba_reagovat");
 
   const prepniCigaretu = () => {
     const dat = !cig.moja;
@@ -467,11 +468,11 @@ export function SpatnaVazba() {
       </header>
 
       {chyba !== null && <Hlaska>{chyba}</Hlaska>}
-      <HodnotenieHry smiePisat={ja.rola !== "navstevnik" || ja.ai === true} />
-      {ja.rola === "navstevnik" ? (
+      <HodnotenieHry smiePisat={maPravo(ja, "hodnotit_hru") || ja.ai === true} />
+      {!maPravo(ja, "spatna_vazba_pisat") ? (
         <p className="panel tlmene">
-          Ako <strong>návštevník</strong> spätnú väzbu zatiaľ len čítaš. Písať názory, komentovať, dávať cigarety a hodnotiť hru môžeš po prvej
-          dohratej partii — stačí aj proti botovi. Vtedy sa staneš hráčom.
+          Tvoj rank spätnú väzbu zatiaľ len číta. Písať názory môžeš na vyššom ranku — prvý (Poldeci) dostaneš po prvej dohratej
+          partii, stačí aj proti počítaču.
         </p>
       ) : (
         <NovyNazor pridany={obnov} chyba={ukazChybu} />

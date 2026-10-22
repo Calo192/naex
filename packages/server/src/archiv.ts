@@ -81,6 +81,8 @@ export interface RiadokRebricka extends StavFrajeriny {
   readonly id: number;
   readonly meno: string;
   readonly avatar: string | null;
+  /** Úroveň účtu — rebríček ukazuje rank (Poldeci, Deci, Sedmička). */
+  readonly rola: string;
   readonly titul: string;
   readonly provizorna: boolean;
 }
@@ -263,13 +265,13 @@ export class Archiv {
   rebricek(limit = 100): RiadokRebricka[] {
     const riadky = this.db
       .prepare(
-        `SELECT f.pouzivatel AS id, u.meno, u.avatar, f.hodnota, f.najvyssia, f.partie, f.vyhry, f.prehry, f.remizy
+        `SELECT f.pouzivatel AS id, u.meno, u.avatar, u.rola, f.hodnota, f.najvyssia, f.partie, f.vyhry, f.prehry, f.remizy
          FROM frajerina f JOIN pouzivatelia u ON u.id = f.pouzivatel
          WHERE f.partie > 0
          ORDER BY f.hodnota DESC, f.partie DESC, u.id
          LIMIT ?`,
       )
-      .all(limit) as { id: number; meno: string; avatar: string | null; hodnota: number; najvyssia: number; partie: number; vyhry: number; prehry: number; remizy: number }[];
+      .all(limit) as { id: number; meno: string; avatar: string | null; rola: string; hodnota: number; najvyssia: number; partie: number; vyhry: number; prehry: number; remizy: number }[];
     // Rovnaká Frajerina = rovnaké poradie (ako v šachových rebríčkoch).
     let poradie = 0;
     let predosla = Number.POSITIVE_INFINITY;

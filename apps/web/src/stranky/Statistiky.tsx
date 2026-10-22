@@ -7,7 +7,7 @@ import { ALL_PODMIENKY } from "@naex/core";
 import { api } from "../lib/api.ts";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { useSada } from "../lib/sada.tsx";
-import { useUcet } from "../lib/ucet.tsx";
+import { NAZOV_UROVNE, RANKY_HRACOV, useUcet, type Rola } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { IkonaPodmienky } from "../karta/IkonaPodmienky.tsx";
@@ -616,6 +616,9 @@ export function HracProfil({ id }: { readonly id: number }) {
             <span className="odznak">{profil.frajerina.titul}</span>
             {profil.hrac.rola === "admin" && <span className="odznak odznak-admin">tvorca hry</span>}
             {profil.hrac.rola === "subadmin" && <span className="odznak">subadmin</span>}
+            {RANKY_HRACOV.includes(profil.hrac.rola as Rola) && (
+              <span className="odznak" title="Rank hráča — návštevník, Poldeci, Deci, Sedmička">{NAZOV_UROVNE[profil.hrac.rola as Rola]}</span>
+            )}
             <span>v krčme od {clenOd}</span>
           </div>
           {vlastny && (

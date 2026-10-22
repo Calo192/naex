@@ -4,18 +4,18 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { api } from "./lib/api.ts";
 import { NOVINKY_VIDENE, citajVidene } from "./lib/novinky.ts";
 import { Odkaz, chod, useCesta } from "./lib/router.tsx";
-import { NAZOV_UROVNE, jeSpravca, useUcet } from "./lib/ucet.tsx";
+import { NAZOV_UROVNE, jeSpravca, maPravo, useUcet, type Pravo } from "./lib/ucet.tsx";
 import { Avatar } from "./komponenty.tsx";
 
-const NAVIGACIA: readonly { readonly href: string; readonly text: string; readonly admin?: boolean }[] = [
+const NAVIGACIA: readonly { readonly href: string; readonly text: string; readonly admin?: boolean; readonly pravo?: Pravo }[] = [
   { href: "/pravidla", text: "Pravidlá" },
   { href: "/karty", text: "Karty" },
   { href: "/hra", text: "Hrať" },
-  { href: "/rebricek", text: "Rebríček" },
+  { href: "/rebricek", text: "Rebríček", pravo: "profily_inych" },
   { href: "/spatna-vazba", text: "Spätná väzba" },
   { href: "/novinky", text: "Novinky" },
   { href: "/vyvoj", text: "Vývoj" },
-  { href: "/playtest", text: "Playtest", admin: true },
+  { href: "/playtest", text: "Playtest", pravo: "reporty_playtestov" },
   { href: "/admin", text: "Tvorba", admin: true },
 ];
 
@@ -100,7 +100,9 @@ export function Layout({
             <span />
           </button>
           <nav className={mobilne ? "navigacia otvorena" : "navigacia"}>
-            {NAVIGACIA.filter((n) => n.admin !== true || (ja !== null && jeSpravca(ja.rola))).map((n) => (
+            {NAVIGACIA.filter(
+              (n) => (n.admin !== true || (ja !== null && jeSpravca(ja.rola))) && (n.pravo === undefined || ja === null || maPravo(ja, n.pravo)),
+            ).map((n) => (
               <Odkaz key={n.href} href={n.href} className={cesta === n.href || cesta.startsWith(`${n.href}/`) ? "aktivna" : undefined}>
                 {n.text}
                 {n.href === "/novinky" && noveNovinky > 0 && (
@@ -144,11 +146,13 @@ export function Layout({
                     <Odkaz href="/hra" role="menuitem">
                       Hrať
                     </Odkaz>
+                    {maPravo(ja, "reporty_playtestov") && (
+                      <Odkaz href="/playtest" role="menuitem">
+                        Playtest
+                      </Odkaz>
+                    )}
                     {jeSpravca(ja.rola) && (
                       <>
-                        <Odkaz href="/playtest" role="menuitem">
-                          Playtest
-                        </Odkaz>
                         <Odkaz href="/admin" role="menuitem">
                           Tvorba kariet
                         </Odkaz>

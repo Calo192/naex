@@ -31,7 +31,7 @@ export function Reporty({ subor }: { readonly subor: string | null }) {
   // Token platí 2 hodiny — pri každom otvorení sekcie či reportu sa načíta nový.
   useEffect(() => {
     api
-      .get<{ token: string; reporty: Report[] }>("/admin/playtesty")
+      .get<{ token: string; reporty: Report[] }>("/playtesty")
       .then(setData)
       .catch((e: unknown) => setChyba(e instanceof Error ? e.message : String(e)));
   }, [subor]);

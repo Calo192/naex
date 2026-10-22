@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../lib/api.ts";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
-import { useUcet } from "../lib/ucet.tsx";
+import { NAZOV_UROVNE, RANKY_HRACOV, useUcet, type Rola } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { CisloFrajeriny, tvar } from "./Statistiky.tsx";
 import "./statistiky.css";
@@ -13,6 +13,7 @@ interface RiadokRebricka {
   readonly id: number;
   readonly meno: string;
   readonly avatar: string | null;
+  readonly rola?: Rola;
   readonly hodnota: number;
   readonly najvyssia: number;
   readonly partie: number;
@@ -90,7 +91,10 @@ export function Rebricek() {
                       <Avatar meno={h.meno} avatar={h.avatar} velkost={34} />
                       <span>
                         <strong>{h.meno}</strong>
-                        <span className="tlmene">{h.titul}</span>
+                        <span className="tlmene">
+                          {h.titul}
+                          {h.rola !== undefined && RANKY_HRACOV.includes(h.rola) && h.rola !== "navstevnik" && ` · ${NAZOV_UROVNE[h.rola]}`}
+                        </span>
                       </span>
                     </Odkaz>
                   </td>

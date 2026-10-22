@@ -17,6 +17,7 @@ import {
   SKORE_PREDVOLENE,
   ZOBRAZENIA_SKORE,
   jeSpravca,
+  maPravo,
   useUcet,
   type Pouzivatel,
   type ZobrazenieSkore,
@@ -370,7 +371,7 @@ export function Profil() {
           </div>
           {ja.rola === "navstevnik" && (
             <p className="tlmene" style={{ margin: "6px 0 0" }}>
-              Hráčom sa staneš po prvej dohratej partii, aj proti botovi. Hráč píše spätnú väzbu a hodnotí hru.
+              Rank Poldeci dostaneš po prvej dohratej partii, aj proti počítaču; Deci a Sedmičku po ďalších partiách s ľuďmi.
             </p>
           )}
           <p style={{ margin: "6px 0 0" }}>
@@ -388,9 +389,11 @@ export function Profil() {
                 e.target.value = "";
               }}
             />
-            <button className="tlacidlo-male" onClick={() => subor.current?.click()} disabled={nahrava}>
-              {nahrava ? "Nahrávam…" : ja.avatar === null ? "Nahrať fotku" : "Zmeniť fotku"}
-            </button>
+            {maPravo(ja, "vlastna_fotka") && (
+              <button className="tlacidlo-male" onClick={() => subor.current?.click()} disabled={nahrava}>
+                {nahrava ? "Nahrávam…" : ja.avatar === null ? "Nahrať fotku" : "Zmeniť fotku"}
+              </button>
+            )}
             <button className="tlacidlo-male" onClick={otvorGaleriu} aria-expanded={galeriaOtvorena}>
               {galeriaOtvorena ? "Zavrieť výber" : "Vybrať avatara"}
             </button>

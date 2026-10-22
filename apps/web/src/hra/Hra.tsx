@@ -5,7 +5,7 @@ import type { Command, DlzkaHry } from "@naex/core";
 import { ALL_DLZKY, DLZKY_HRY, NAZOV_DLZKY, PREDVOLENA_DLZKA } from "@naex/core";
 import { api } from "../lib/api.ts";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
-import { useUcet } from "../lib/ucet.tsx";
+import { maPravo, useUcet } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { HernaPlocha } from "./HernaPlocha.tsx";
 import { HudbaPartie } from "./Hudba.tsx";
@@ -36,6 +36,7 @@ function Lobby({
   readonly pripoj: (kod: string) => void;
   readonly chyba: string | null;
 }) {
+  const { ja } = useUcet();
   const [kod, setKod] = useState("");
   const [hry, setHry] = useState<readonly OtvorenaHra[] | null>(null);
   const [dostupne, setDostupne] = useState<readonly DlzkaHry[]>([PREDVOLENA_DLZKA]);
@@ -91,12 +92,18 @@ function Lobby({
               );
             })}
           </div>
-          <div className="riadok-tlacidiel">
-            <button className="tlacidlo-hlavne" onClick={() => zaloz(false, dlzka)}>
-              Súkromná hra s kódom
-            </button>
-            <button onClick={() => zaloz(true, dlzka)}>Verejná hra</button>
-          </div>
+          {maPravo(ja, "hrat_ludia") ? (
+            <div className="riadok-tlacidiel">
+              {maPravo(ja, "sukromne_miestnosti") && (
+                <button className="tlacidlo-hlavne" onClick={() => zaloz(false, dlzka)}>
+                  Súkromná hra s kódom
+                </button>
+              )}
+              <button onClick={() => zaloz(true, dlzka)}>Verejná hra</button>
+            </div>
+          ) : (
+            <p className="tlmene">Hrať proti ľuďom tvoj rank zatiaľ nesmie.</p>
+          )}
           <h2 style={{ marginTop: 28 }}>Proti počítaču</h2>
           <p className="tlmene">
             Pri stole ťa čaká jeden z troch počítačových súperov — vyvážený Štamgast, rabiátor Rapavý Fero alebo vypočítavá Teta Gizka.
@@ -104,7 +111,9 @@ function Lobby({
             hneď a do Frajeriny sa neráta.
           </p>
           <div className="riadok-tlacidiel">
-            <button onClick={() => zaloz(false, dlzka, true)}>Hrať proti počítaču</button>
+            <button onClick={() => zaloz(false, dlzka, true)} disabled={!maPravo(ja, "hrat_bot")}>
+              Hrať proti počítaču
+            </button>
           </div>
           <h2 style={{ marginTop: 28 }}>Mám kód</h2>
           <form
@@ -299,7 +308,7 @@ export function Hra() {
       frajerina={hra.frajerina}
       kontumacia={hra.kontumacia}
       vHlavicke={
-        hra.view.koniec === null && (
+        hra.view.koniec === null && maPravo(ja, "melichar_soundboard") && (
           <Soundboard
             ja={m.seat}
             menoSupera={hra.hraci[m.seat === 0 ? 1 : 0]?.meno ?? "Súper"}

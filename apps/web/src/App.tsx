@@ -7,7 +7,7 @@ import type { ReactNode } from "react";
 import { Layout } from "./Layout.tsx";
 import { Nacitavanie } from "./komponenty.tsx";
 import { Odkaz, useCesta } from "./lib/router.tsx";
-import { jeSpravca, useUcet } from "./lib/ucet.tsx";
+import { jeSpravca, maPravo, useUcet } from "./lib/ucet.tsx";
 import { Domov } from "./stranky/Domov.tsx";
 import { Glosar } from "./stranky/Glosar.tsx";
 import { Pravidla } from "./stranky/Pravidla.tsx";
@@ -56,7 +56,10 @@ export function App() {
     return obsah;
   };
 
-  if (cesta === "/playtest" || cesta.startsWith("/playtest/")) return <Layout siroky>{chranene(<Playtest cesta={cesta} />, true)}</Layout>;
+  // Reporty playtestov vidí aj rank s právom (Michal 2026-10-22); návrhy len správca (Playtest to rozlíši).
+  if (cesta === "/playtest" || cesta.startsWith("/playtest/")) {
+    return <Layout siroky>{chranene(<Playtest cesta={cesta} />, !maPravo(ja, "reporty_playtestov"))}</Layout>;
+  }
   if (cesta.startsWith("/admin")) return <Layout siroky>{chranene(<Admin cesta={cesta} />, true)}</Layout>;
   if (cesta === "/hraci") return <Layout siroky>{chranene(<Hraci />, true)}</Layout>;
   if (cesta === "/hra") return <Layout siroky><Hra /></Layout>;
