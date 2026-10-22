@@ -247,6 +247,8 @@ function migruj(db: Db): void {
   if (!ucty.some((c) => c.name === "schema")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN schema TEXT");
   // Zobrazenie skóre v partii (Michal 2026-10-22): dlazdice / spolocny / dva; NULL = dlaždice.
   if (!ucty.some((c) => c.name === "skore")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN skore TEXT");
+  // Klávesové skratky v partii (Michal 2026-10-22, roadmapa #19): 0 = vypnuté, NULL = zapnuté.
+  if (!ucty.some((c) => c.name === "skratky")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN skratky INTEGER");
   // Hlášky majstra Melichara v partii proti počítaču (Michal 2026-10-21): hlasitosť
   // a frekvencia v percentách; NULL = predvolené.
   if (!ucty.some((c) => c.name === "melichar")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN melichar INTEGER");

@@ -47,6 +47,8 @@ export interface Pouzivatel {
   readonly schema: string | null;
   /** Ako sa v partii ukáže rozpis bodov (ZOBRAZENIA_SKORE). */
   readonly skore: ZobrazenieSkore;
+  /** Klávesové skratky v partii (K, P, N, Esc, ?) — predvolene zapnuté. */
+  readonly skratky: boolean;
 }
 
 export const LUPA_OD = 150;
@@ -71,6 +73,11 @@ export function overLupu(v: unknown): number {
 export const ZOBRAZENIA_SKORE = ["dlazdice", "spolocny", "dva"] as const;
 export type ZobrazenieSkore = (typeof ZOBRAZENIA_SKORE)[number];
 export const SKORE_PREDVOLENE: ZobrazenieSkore = "dlazdice";
+
+export function overPrepinac(v: unknown, co: string): boolean {
+  if (typeof v !== "boolean") throw new ChybaVstupu(`${co}: zapnuté alebo vypnuté.`);
+  return v;
+}
 
 export function overSkore(v: unknown): ZobrazenieSkore {
   if (!ZOBRAZENIA_SKORE.includes(v as ZobrazenieSkore)) throw new ChybaVstupu("Neznáme zobrazenie skóre.");
@@ -213,12 +220,13 @@ export class Ucty {
       ai: Number(r.ai) === 1,
       schema: typeof r.schema === "string" ? r.schema : null,
       skore: ZOBRAZENIA_SKORE.includes(r.skore as ZobrazenieSkore) ? (r.skore as ZobrazenieSkore) : SKORE_PREDVOLENE,
+      skratky: r.skratky === null || r.skratky === undefined ? true : Number(r.skratky) === 1,
     };
   }
 
   podlaId(id: number): Pouzivatel | null {
     return this.riadok(
-      this.db.prepare("SELECT id, login, meno, avatar, rola, lupa, hudba, melichar, melichar_frekvencia, ai, schema, skore FROM pouzivatelia WHERE id = ?").get(id) as
+      this.db.prepare("SELECT id, login, meno, avatar, rola, lupa, hudba, melichar, melichar_frekvencia, ai, schema, skore, skratky FROM pouzivatelia WHERE id = ?").get(id) as
         | Record<string, unknown>
         | undefined,
     );
@@ -300,6 +308,7 @@ export class Ucty {
       melicharFrekvencia?: number;
       schema?: string;
       skore?: ZobrazenieSkore;
+      skratky?: boolean;
     },
   ): Pouzivatel | null {
     if (zmeny.meno !== undefined) this.db.prepare("UPDATE pouzivatelia SET meno = ? WHERE id = ?").run(zmeny.meno, id);
@@ -311,6 +320,7 @@ export class Ucty {
     }
     if (zmeny.schema !== undefined) this.db.prepare("UPDATE pouzivatelia SET schema = ? WHERE id = ?").run(zmeny.schema, id);
     if (zmeny.skore !== undefined) this.db.prepare("UPDATE pouzivatelia SET skore = ? WHERE id = ?").run(zmeny.skore, id);
+    if (zmeny.skratky !== undefined) this.db.prepare("UPDATE pouzivatelia SET skratky = ? WHERE id = ?").run(zmeny.skratky ? 1 : 0, id);
     if (zmeny.avatar !== undefined) this.db.prepare("UPDATE pouzivatelia SET avatar = ? WHERE id = ?").run(zmeny.avatar, id);
     return this.podlaId(id);
   }
