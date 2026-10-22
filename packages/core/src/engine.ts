@@ -2009,9 +2009,8 @@ function cmdNaex(
 
   // svokra: každá Svokra súpera mu za toto NA EX ukradne cigaretu (Michal
   // 2026-10-18 — nahradila zákaz NA EX, ochranu teraz nesie Anonymný alkoholik).
-  if (maEfekt(s, data, opp, "svokra")) {
-    const svokry = Math.max(1, partiaHraca(s as GameState, opp).filter((pl) => pl.card.defId === "svokra").length);
-    const ukradne = Math.min(s.hraci[p].cigarety, svokry * KONSTANTY.EFEKT.SVOKRA_CIGARETY);
+  {
+    const ukradne = svokraZaNaex(data, s, p, s.hraci[p].cigarety);
     if (ukradne > 0) {
       hrac(s, p).cigarety -= ukradne;
       hrac(s, opp).cigarety += ukradne;
@@ -2381,6 +2380,48 @@ function dokonciPitku(s: MutState, data: GameData, events: Event[]): void {
 // ---------------------------------------------------------------------------
 // Bitka
 
+/** Súčet násobkov aktívnych akcií karty v línii (Dievčina na vydaj). */
+function aktivneAkcieKarty(vyhodnotenie: LineEval, uid: number): number {
+  const ev = vyhodnotenie.cards.get(uid);
+  return ev === undefined ? 0 : [...ev.left, ...ev.right].reduce((a, x) => a + (x?.stav === "aktivna" ? x.nasobok : 0), 0);
+}
+
+/** Koľko priznaných Dlhov spáli Robota v kroku Exekútora (na Obecnom úrade 2 za kus). */
+function robotaPali(s: VerejnyStav, sums: ActionSums): number {
+  return (sums.Robota ?? 0) * exekutorLokality(s).robota;
+}
+
+/**
+ * Koľko priznaných Dlhov najviac spáli najbližšia bitka — Dievčina na vydaj
+ * na jej začiatku a Robota v kroku Exekútora; Dlh sa sám nepáli (návrh #4 B).
+ * Ten istý výpočet ako zacniBitku a pokracujBitku, aby náhľad ceny Dlhu
+ * sedel s hrou (návrh „Náhľady sľubujú inú cenu“, #1 B). Benzínku a odovzdaný
+ * Nástroj nepredvída.
+ */
+export function paleneDlhyVBitke(
+  data: GameData,
+  s: VerejnyStav & { readonly lokalitaOtocena: boolean },
+  vyhodnotenie: LineEval = evaluateLine(data, lineState(s)),
+): readonly [number, number] {
+  const pre = (p: PlayerId): number => {
+    let n = robotaPali(s, vyhodnotenie.sums[p]);
+    for (const placed of partiaHraca(s, p)) {
+      if (placed.card.defId !== "dievcina_na_vydaj" || efektPotlaceny(data, s, p, "dievcina_na_vydaj")) continue;
+      n += aktivneAkcieKarty(vyhodnotenie, placed.card.uid);
+    }
+    return n;
+  };
+  return [pre(0), pre(1)];
+}
+
+/** svokra: koľko cigariet súperove Svokry ukradnú hráčovi p za jeho NA EX — pre motor aj náhľad. */
+export function svokraZaNaex(data: GameData, s: VerejnyStav, p: PlayerId, cigarety: number): number {
+  const opp = opponentOf(p);
+  if (!efektHraca(s, opp, "svokra") || efektPotlaceny(data, s, opp, "svokra")) return 0;
+  const svokry = Math.max(1, partiaHraca(s, opp).filter((pl) => pl.card.defId === "svokra").length);
+  return Math.min(cigarety, svokry * KONSTANTY.EFEKT.SVOKRA_CIGARETY);
+}
+
 function zacniBitku(s: MutState, data: GameData, events: Event[]): void {
   s.faza = "bitka";
   events.push({ type: "faza", faza: "bitka" });
@@ -2419,9 +2460,7 @@ function zacniBitku(s: MutState, data: GameData, events: Event[]): void {
     // Dlhov majiteľa, koľko mala aktívnych akcií.
     for (const placed of partiaHraca(s as GameState, p)) {
       if (placed.card.defId !== "dievcina_na_vydaj" || efektPotlaceny(data, s as GameState, p, "dievcina_na_vydaj")) continue;
-      const ev = vyhodnotenie.cards.get(placed.card.uid);
-      const aktivne =
-        ev === undefined ? 0 : [...ev.left, ...ev.right].reduce((a, x) => a + (x?.stav === "aktivna" ? x.nasobok : 0), 0);
+      const aktivne = aktivneAkcieKarty(vyhodnotenie, placed.card.uid);
       let zostava = aktivne;
       while (zostava > 0) {
         const idx = s.hraci[p].priznane.findIndex((k) => k.defId === "dlh");
@@ -2531,7 +2570,7 @@ function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
       // Verejný dlh (2026-10-21): predtým ho odhodila do balíčka, odkiaľ by sa
       // pri dobratí znova priznal — teraz z hry zmizne.
       const urad = exekutorLokality(s as GameState);
-      for (let r = (b.sums[p].Robota ?? 0) * urad.robota; r > 0; r--) {
+      for (let r = robotaPali(s, b.sums[p] as ActionSums); r > 0; r--) {
         const idx = s.hraci[p].priznane.findIndex((k) => k.defId === "dlh");
         if (idx === -1) break;
         hrac(s, p).priznane.splice(idx, 1);
