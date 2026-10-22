@@ -418,6 +418,17 @@ export function HernaPlocha({
     });
   };
   const liniaRef = useRef<HTMLDivElement>(null);
+  // Lepiaca hrana stola má zmysel, len keď je línia nad rukou aspoň trochu vidno.
+  // Keď stôl leží skoro celý pod okrajom okna, hrana by sa vysunula cez pilulku
+  // pokynu a pás kola (Pitka na 1600 × 1000) — vtedy ostane na stole.
+  const [liniaVidno, setLiniaVidno] = useState(true);
+  useEffect(() => {
+    const el = liniaRef.current;
+    if (el === null || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(([z]) => setLiniaVidno(z?.isIntersecting ?? true), { rootMargin: "0px 0px -320px 0px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
   // Šírka scorecardu sa ráta z dostupnej šírky riadku — karta staršieho
   // v rámčeku potrebuje rozmer v px, CSS percentá tu nestačia.
   const scorecardyRef = useRef<HTMLDivElement>(null);
@@ -3550,7 +3561,8 @@ export function HernaPlocha({
     !maHranaTlacidla && pokynUdalosti === null ? null : (
       // V drafte sa hrana neprilepí nad ruku: stôl leží pod draftom a pri posúvaní
       // by zakrývala karty draftu a pokyn; potvrdenie je aj tak v draft paneli.
-      <div className={view.faza === "draft" ? "stol-hrana neprilepena" : "stol-hrana"}>
+      // Ani keď z línie nad rukou nie je nič vidno (liniaVidno).
+      <div className={view.faza === "draft" || !liniaVidno ? "stol-hrana neprilepena" : "stol-hrana"}>
         {pokynUdalosti}
         {maHranaTlacidla && (
           <div className="hrana-rad">
