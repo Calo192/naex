@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Profily hráčov — súhrn návrhu</title>
+<style>
+:root{--bg:#14110e;--pl:#1e1914;--pl2:#2a231c;--tx:#f1e8d8;--sl:#b9ab95;--ja:#e9ad45;--te:#e0644c;--ze:#7cbf74;--ok:#3a3128}
+@media (prefers-color-scheme: light){:root{--bg:#f7f2ea;--pl:#fffaf2;--pl2:#efe6d8;--tx:#221a12;--sl:#5d5245;--ja:#8a5a00;--te:#a8331f;--ze:#2f7a28;--ok:#d9cdb9}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:980px;margin:0 auto;padding:24px 16px 64px}
+h1,h2{font-family:Georgia,"Times New Roman",serif;line-height:1.25}
+h1{font-size:1.8rem;margin:.2em 0 .3em}
+h2{font-size:1.35rem;margin:2em 0 .6em;border-bottom:1px solid var(--ok);padding-bottom:.25em}
+a{color:var(--ja)}
+a:focus-visible,summary:focus-visible{outline:3px solid var(--ja);outline-offset:2px}
+code{font-size:.88em;overflow-wrap:anywhere}
+.meta{color:var(--sl);font-size:.93rem}
+.mriezka{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.dlazdica{background:var(--pl);border:1px solid var(--ok);border-radius:8px;padding:14px 16px}
+.dlazdica h3{margin:0 0 .3em;font-size:1.05rem}
+.dlazdica a.hlavny{display:inline-flex;align-items:center;min-height:44px;font-weight:700}
+.pozor{background:var(--pl);border-left:4px solid var(--te);padding:12px 16px;border-radius:6px}
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+th,td{text-align:left;vertical-align:top;padding:8px;border-bottom:1px solid var(--ok)}
+th{color:var(--sl);font-weight:600}
+.tab-obal{overflow-x:auto}
+ol.otazky>li{margin:.5em 0}
+.odp{color:var(--sl);font-size:.92rem}
+.stitok{display:inline-block;font-size:.78rem;border:1px solid var(--ok);border-radius:999px;padding:0 .55em;color:var(--sl);white-space:nowrap}
+</style>
+</head>
+<body>
+<main>
+<p class="meta">Návrh dizajnu · profily-20261022-1409 · 22. 10. 2026 · kód webu sa nemenil</p>
+<h1>Profily hráčov a podrobné štatistiky</h1>
+<p>Michalovo zadanie spracovali dvaja dizajnéri naraz. UI dizajnér pripravil interaktívny mock všetkých obrazoviek pre desktop aj mobil, UX dizajnér toky, maticu „kto čo vidí“, výber metrík a dátový model. Táto stránka ich spája. Implementácia príde až po Michalovom rozhodnutí.</p>
+
+<div class="mriezka">
+  <div class="dlazdica">
+    <h3>UI mock (interaktívny)</h3>
+    <p>Šesť obrazoviek: vlastný profil, cudzí profil, pohľad správcu na AI playtestera, detail partie, súhrn 20 partií a vstupné body. Prepína sa desktop/mobil 390 px, ľudia/boti/spolu a stav hráča (skúsený, začiatočník, nový).</p>
+    <a class="hlavny" href="dizajn-profily-20261022-1409-ui.html">Otvoriť UI mock →</a>
+  </div>
+  <div class="dlazdica">
+    <h3>UX návrh</h3>
+    <p>Toky a vstupné body, matica viditeľnosti, výber metrík (čo hráča učí a čo je šum), dátový model s tabuľkou polí a päť návrhov s drôtenými modelmi.</p>
+    <a class="hlavny" href="dizajn-profily-20261022-1409-ux.html">Otvoriť UX návrh →</a>
+  </div>
+</div>
+
+<h2>Čo platí už dnes</h2>
+<div class="pozor">
+  <p><b>Každý prihlásený vidí profil kohokoľvek, aj AI playtesterov, vrátane ich posledných 25 partií.</b> Server pri profile kontroluje len prihlásenie (<code>packages/server/src/api.ts:411</code>) a AI účty sú v rebríčku medzi ľuďmi (<code>archiv.ts</code>, <code>rebricek</code>). Michalovo zadanie chce AI profily pred hráčmi skryť, preto je prvým návrhom „strážca viditeľnosti“ na serveri.</p>
+  <p>Na živom webe je zatiaľ 0 archivovaných partií ľudí a partie s botom sa do archívu nezapisujú (<code>server.ts:573</code>). Nový hráč má preto prázdny profil. Stav „0–5 partií“ je dnes najčastejší a mock mu dáva vlastný dizajn „Prvých päť poldecí“.</p>
+</div>
+
+<h2>Kto čo vidí (zhoda UI a UX)</h2>
+<div class="tab-obal"><table>
+<thead><tr><th>Kto sa pozerá</th><th>Vlastný profil</th><th>Cudzí človek</th><th>AI playtester</th><th>Bot</th></tr></thead>
+<tbody>
+<tr><td>Neprihlásený</td><td>—</td><td>nič</td><td>nič</td><td>nič</td></tr>
+<tr><td>Návštevník, hráč</td><td>všetko vrátane detailu partií</td><td>Frajerina a jej krivka, bilancia, forma, „vy dvaja“, súhrn len z partií s ľuďmi. Bez detailu partií.</td><td>skrytý (server vráti 404, meno bez odkazu)</td><td>profil nemá (meno a povaha)</td></tr>
+<tr><td>Subadmin, admin</td><td>všetko</td><td>všetko vrátane detailu partií</td><td>všetko, s pásom „Skrytý profil“</td><td>profil nemá</td></tr>
+</tbody></table></div>
+<p class="meta">Všetko vynucuje server: nové endpointy pre profil, partie hráča a detail partie a príznak profilu v správe o hráčoch vo websockete. Skryť to len v rozhraní nestačí (CLAUDE.md, pravidlo 2).</p>
+
+<h2>Dátový model v jednom odseku</h2>
+<p>Dnes sa pri konci partie dvoch ľudí zapíše riadok do <code>partie</code> (časy, víťaz, dôvod, kolá, <code>verzia_sady</code>, <code>karty</code> = štatistiky kariet za oboch spolu) a dva riadky do <code>partie_hraci</code> (výsledok, body, Frajerina pred a po a <code>statistiky</code> = JSON <code>StatistikyHraca</code> s asi 45 súhrnnými poľami). <code>tempo_partii</code> ukladá čas po fázach aj pre partie s botom, ale bez väzby na hráča. Neukladá sa nič po kolách, ani seed, príkazy či verzia jadra, takže staré partie sa nedajú prehrať ani dopočítať. Minimálne rozšírenie má päť krokov. (1) Archivovať aj partie s botom (<code>s_botom</code>, <code>bot_povaha</code>, bot s <code>pouzivatel NULL</code>), Frajerina sa pri nich nemení a rebríček ich filtruje. (2) Pridať <code>partie.dlzka</code> a <code>partie.verzia_jadra</code>. (3) <code>StatistikyHraca</code> verzie 2 s pasmi, šenkom, cigaretami podľa účelu, úspešnosťou NA EX (odhad bitky pred NA EX a po odpovedi), Dlhmi na konci a kartami hráča. (4) Nové pole <code>partie.kola</code> s riadkom za každú bitku: lokalita, útočník, Pitky, tuhé a mäkké oboch, víťaz alebo sekera, prebytok, NA EX, pas, šenok, patronát a body oboch po bitke. Všetko sa odvodí čisto v <code>packages/core</code> z udalostí a stavu, rovnako ako dnešné <code>zapisTah</code>. (5) Voliteľne <code>seed</code> a <code>prikazy</code> na budúci replay (asi 20–50 kB na partiu), ktorý však funguje len pri rovnakej <code>verzia_jadra</code>. Keďže partií ľudí je zatiaľ nula, dôležité je zapnúť zber čo najskôr. Dátovú časť vie pripraviť session New features.</p>
+
+<h2>Odporúčané poradie</h2>
+<div class="tab-obal"><table>
+<thead><tr><th>#</th><th>Krok</th><th>Zdroj</th><th>Náročnosť</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Strážca viditeľnosti: AI profil len pre správcov, detail partií len vlastníkovi a správcovi, AI mimo rebríčka hráča</td><td>UX N1</td><td><span class="stitok">malá</span></td></tr>
+<tr><td>2</td><td>Zber dát: archív partií s botom, štatistiky v2, záznam po kolách (bez nového rozhrania, aby sa dáta začali zbierať)</td><td>UX N3, dátová časť</td><td><span class="stitok">stredná</span></td></tr>
+<tr><td>3</td><td>Rýchle opravy dnešnej stránky Štatistiky: kontrast pod AA (<code>statistiky.css:8</code>, <code>:440</code>), tokeny, šípky lepšie/horšie</td><td>UI N1</td><td><span class="stitok">malá</span></td></tr>
+<tr><td>4</td><td>Nový profil: hlavička, záložky, nastavenia oddelené na <code>/profil</code>, stav nového hráča, karta hráča (na stole, pri názore, v rebríčku)</td><td>UI N2 + N3, UX N2</td><td><span class="stitok">stredná</span></td></tr>
+<tr><td>5</td><td>Súhrn 20 partií s porovnaním a 2 + 2 silnými a slabými stránkami (najprv nad dnešnými metrikami, nové pribudnú zo zberu)</td><td>UI N4, UX N4</td><td><span class="stitok">stredná</span></td></tr>
+<tr><td>6</td><td>Detail partie: priebeh bodov po bitkách, tabuľka bitiek, záverečné bodovanie ako krčmový účet</td><td>UI N5, UX N3</td><td><span class="stitok">veľká</span></td></tr>
+<tr><td>7</td><td>Prehrávanie partie ťah po ťahu (len pri rovnakej verzii jadra)</td><td>UX N5</td><td><span class="stitok">veľká</span></td></tr>
+</tbody></table></div>
+
+<h2>Kde sa UI a UX líšia</h2>
+<ul>
+<li><b>Zoznam partií na cudzom profile.</b> UI ho ukazuje bez odkazov (so zámkom a vysvetlením), UX ho na cudzom profile nedáva vôbec, len formu z 5 posledných výsledkov. Rozhodne Michal (otázka 3).</li>
+<li><b>Od koľkých partií ukazovať čísla.</b> UI odomyká priemery od 3 partií a silné a slabé stránky od 5. UX ukazuje čísla už od 1. partie s počtom, stránky od 5 a trend od 10. Zhodujú sa, že silné a slabé stránky sú najviac 2 + 2 a až od 5 partií.</li>
+<li><b>Na odchod zo stola si treba dať pozor.</b> UX upozorňuje, že prechod z <code>/hra</code> zatvorí spojenie (<code>useHra.ts:200</code>) a po 3 minútach hrozí kontumácia. Karta hráča na stole je preto nemodálna bublina a celý profil sa otvorí v novej karte.</li>
+</ul>
+
+<h2>Otázky pre Michala</h2>
+<ol class="otazky">
+<li>Má cudzí hráč vidieť silné a slabé stránky súpera? <span class="odp">UI aj UX odporúčajú nie, sú len pre vlastníka a správcov.</span></li>
+<li>Má profil vidieť aj neprihlásený návštevník webu? <span class="odp">Návrh: nie.</span></li>
+<li>Na cudzom profile zoznam výsledkov partií bez odkazu (UI), alebo len formu z 5 posledných výsledkov (UX)?</li>
+<li>Prahy: čísla od 1. partie s počtom, alebo až od 3? Silné a slabé stránky od 5, trend od 10?</li>
+<li>Porovnávať s kým? Predvolene so súpermi v tých istých partiách. Priemer hráčov až od určitého počtu ľudí (UI: 3 hráči, UX: 10 ľudí s 5+ partiami), bez AI a bez partií s botmi? Proti všetkým, alebo proti podobnému pásmu Frajeriny?</li>
+<li>Čo je „úspešný NA EX“? <span class="odp">Návrh UX: NA EX, ktorý po odpovedi súpera zlepšil odhad bitky v prospech hráča.</span></li>
+<li>AI playtesteri vo Frajerine: skryť úplne, alebo nechať bez odkazu? Ráta sa partia človeka proti AI do jeho Frajeriny?</li>
+<li>Vidí účastník v detaile partie aj súperove čísla, ktoré boli verejné na stole? <span class="odp">UX odporúča áno.</span></li>
+<li>Dá sa súhrn alebo celý profil skryť pred ostatnými?</li>
+<li>Miešať v súhrne partie naprieč verziami pravidiel, alebo ich oddeliť (napr. značkou verzie)?</li>
+<li>Ukladať seed, príkazy a verziu jadra už teraz kvôli budúcemu prehrávaniu partie?</li>
+<li>Rátať vzdané partie do metrík? Ukázať na cudzom profile počet partií s botmi?</li>
+<li>Detail partie ako krčmový účet (odvážnejší smer, posilňuje identitu hry), alebo strohá tabuľka?</li>
+</ol>
+</main>
+</body>
+</html>
