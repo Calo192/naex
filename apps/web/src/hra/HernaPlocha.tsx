@@ -103,7 +103,8 @@ import { KoniecHry } from "./KoniecHry.tsx";
 import { KrcmovyUcet } from "./KrcmovyUcet.tsx";
 import { SkratkyNapoveda, useSkratky } from "./skratky.tsx";
 import type { Sada } from "@naex/tvorba";
-import { HernaKarta, posunVzpriamenej, vzhladKarty, type HernaKartaProps } from "./HernaKarta.tsx";
+import { HernaKarta, vzhladKarty, type HernaKartaProps } from "./HernaKarta.tsx";
+import { SpojeLinie } from "./SpojeLinie.tsx";
 import { Lupa, maxMierkaLupy } from "./Lupa.tsx";
 import { LUPA_PREDVOLENA, useUcet } from "../lib/ucet.tsx";
 import { Vrstva as VrstvaPanel } from "./Vrstva.tsx";
@@ -1432,11 +1433,10 @@ export function HernaPlocha({
       onClick: jeDotyk && fokus ? (e: ReactMouseEvent<HTMLElement>) => otvorLupu(kluc, najdi(e.currentTarget)) : undefined,
     };
   };
-  /** Vzpriamená karta leží nižšie — ilustrácie susedov sú v jednej výške (viď posunVzpriamenej). */
-  const posunVLinii = (defId: string, otocena: boolean): number =>
-    otocena ? 0 : posunVzpriamenej(sada, data, defId, sirkaVLinii);
-  const vLinii = (obsah: ReactNode, defId: string, otocena: boolean, kluc?: number): ReactNode => (
-    <div key={kluc} className="v-linii" style={{ marginTop: posunVLinii(defId, otocena) }}>
+  // Línia je rovný rad (Michal 2026-10-22) — vzpriamená karta už neleží nižšie
+  // kvôli spoju; páry akcií na spoji ukazujú spojnice (SpojeLinie).
+  const vLinii = (obsah: ReactNode, kluc?: number): ReactNode => (
+    <div key={kluc} className="v-linii">
       {obsah}
     </div>
   );
@@ -1444,7 +1444,7 @@ export function HernaPlocha({
    * Karta, ktorá sa klikom zväčší (narovnaná, aby sa dala čítať). Ak klik
    * na kartu niečo robí (výber, NA EX…), zväčší ju tlačidlo v rohu.
    * `obsah` nahradí holú kartu (napr. ťahateľným obalom), `zdroj` dovolí
-   * chytiť ju aj zo zväčšenej kópie, `vLinii` ju posunie ako v línii,
+   * chytiť ju aj zo zväčšenej kópie,
    * `odstran` je pravý klik (aj na zväčšenú kópiu).
    */
   const sLupou = (
@@ -1452,7 +1452,6 @@ export function HernaPlocha({
     moznosti: {
       readonly obsah?: ReactNode;
       readonly zdroj?: Zdroj;
-      readonly vLinii?: boolean;
       readonly kluc?: number;
       readonly trieda?: string | undefined;
       readonly odstran?: (() => void) | undefined;
@@ -1475,7 +1474,6 @@ export function HernaPlocha({
       <div
         key={moznosti.kluc ?? uid}
         className={triedy.filter((x) => x !== "").join(" ")}
-        style={moznosti.vLinii === true ? { marginTop: posunVLinii(props.karta.defId, props.otocena === true) } : undefined}
         title={moznosti.titul}
         // Karta s akciou je fokusovateľná sama; ostatné dostanú tabIndex kvôli klávesnici.
         {...nadLupou(kluc, (el) => el.querySelector(".kl"), !maAkciu)}
@@ -1653,7 +1651,6 @@ export function HernaPlocha({
           spoj: spojPre(uid),
         },
         {
-          vLinii: true,
           trieda: [
             naexMozny && naexCiele.has(uid) ? "naex-mozny" : "",
             mode.typ === "naexCiel" && !naexCiele.has(uid) ? "naex-nie" : "",
@@ -1711,7 +1708,7 @@ export function HernaPlocha({
         undefined,
         vrat,
       );
-      return sLupou(props, { obsah, zdroj: z, vLinii: true, kluc: -100 - x.karta.uid, odstran: vrat });
+      return sLupou(props, { obsah, zdroj: z, kluc: -100 - x.karta.uid, odstran: vrat });
     });
     const volne = tahanie === null ? miestoNaKlik(p, ciel) : miestoNaKonci(p, ciel);
     if (navrhnute.length === 0) return volne;
@@ -1751,7 +1748,7 @@ export function HernaPlocha({
         </span>
       );
     const m = miesto(ciel, popis, sirkaVLinii);
-    return m === null ? null : vLinii(m, tahanie?.zdroj.karta.defId ?? "", false, -2);
+    return m === null ? null : vLinii(m, -2);
   };
   /** Úzke miesto na konci strany: klik vysunie z ruky karty, ktoré sa tu spoja. */
   const miestoNaKlik = (p: PlayerId, ciel: StranaLinie): ReactNode => {
@@ -1787,15 +1784,13 @@ export function HernaPlocha({
           {!moze ? (m.dovod ?? "nedá sa") : vybrane ? "vyber z ruky" : sSpojom > 0 ? `spoj: ${sSpojom}` : "bez spoja"}
         </span>
       </button>,
-      "",
-      true,
       -3,
     );
   };
   const radStrany = (p: PlayerId): ReactNode => {
     const koniec = koniecStrany(p);
     const karty = view.strany[p].length === 0 ? null : kartyStrany(p);
-    if (koniec === null && karty === null) return vLinii(<span className="prazdna">prázdna</span>, "", false);
+    if (koniec === null && karty === null) return vLinii(<span className="prazdna">prázdna</span>);
     // Tvoja partia vedie od lokality doľava, jej koniec je teda vľavo.
     return p === ja ? (
       <>
@@ -1932,7 +1927,7 @@ export function HernaPlocha({
         otocena: view.lokalitaOtocena !== (ja === 1),
         eval: lineEval.cards.get(lokalita.uid) ?? null,
         spoj: spojPre(lokalita.uid),
-      }, { vLinii: true });
+      });
     }
     // Návrh lokality je bez lupy — klik ju otáča a narovnaná lupa by to skryla.
     if (lokalitaNavrh !== null) {
@@ -1951,16 +1946,12 @@ export function HernaPlocha({
           undefined,
           () => setNavrh(null),
         ),
-        lokalitaNavrh.karta.defId,
-        lokalitaNavrhOtocena,
       );
     }
     return vLinii(
       miesto("lokalita", "polož lokalitu sem", sirkaVLinii) ?? (
         <span className="prazdna lokalita-miesto">vyberá sa…</span>
       ),
-      tahanie?.zdroj.karta.defId ?? "",
-      false,
     );
   })();
 
@@ -3914,6 +3905,7 @@ export function HernaPlocha({
                 {popisKraja(super_, "vpravo")}
                 <div className="partia-rad harmonika">{radStrany(super_)}</div>
               </div>
+              <SpojeLinie liniaRef={liniaRef} />
             </div>
             {stlpecStarsich(view.starsi.slice(4), "vpravo")}
             </div>
