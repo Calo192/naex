@@ -46,4 +46,8 @@ export const api = {
   del: <T>(cesta: string) => volaj<T>("DELETE", cesta),
 };
 
-export const mediaUrl = (id: string): string => `/media/${id}`;
+/**
+ * `nahlad` = menšia kópia na zobrazenie, ak ju obrázok má (server ju vyberie;
+ * inak pošle originál). Lupa a tlač berú originál.
+ */
+export const mediaUrl = (id: string, nahlad = false): string => `/media/${id}${nahlad ? "?n" : ""}`;

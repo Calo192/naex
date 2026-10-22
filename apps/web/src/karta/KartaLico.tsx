@@ -162,8 +162,9 @@ export function KartaLico(props: KartaLicoProps) {
             <img src={obrazok} alt="" draggable={false} />
           ) : karta.obrazok !== null && !bezObrazka ? (
             <img
-              src={mediaUrl(sirkaPx <= 260 ? karta.obrazok.nahlad : karta.obrazok.plny)}
-              {...(tlac ? {} : { srcSet: `${mediaUrl(karta.obrazok.nahlad)} 512w, ${mediaUrl(karta.obrazok.plny)} 1024w`, sizes: `${Math.round(sirkaPx)}px` })}
+              src={mediaUrl(sirkaPx <= 260 ? karta.obrazok.nahlad : karta.obrazok.plny, !tlac && sirkaPx <= 260)}
+              // ?n: náhľad karty niekedy ukazuje na plný obrázok (seed bez @512) — server pošle menšiu kópiu, ak ju má.
+              {...(tlac ? {} : { srcSet: `${mediaUrl(karta.obrazok.nahlad, true)} 512w, ${mediaUrl(karta.obrazok.plny)} 1024w`, sizes: `${Math.round(sirkaPx)}px` })}
               alt=""
               loading={tlac ? "eager" : "lazy"}
               draggable={false}

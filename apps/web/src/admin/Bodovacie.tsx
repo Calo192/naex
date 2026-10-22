@@ -11,7 +11,7 @@ import { mediaUrl } from "../lib/api.ts";
 import { nacitajObrazok, stvorec } from "../lib/obrazky.ts";
 import { useTitulok } from "../lib/router.tsx";
 import { Hlaska, Pole } from "../komponenty.tsx";
-import { nahrajMedia, noveId, useAdmin } from "./stav.tsx";
+import { nahrajMedia, nahrajNahlad, noveId, useAdmin } from "./stav.tsx";
 import { AdminHlava } from "./spolocne.tsx";
 
 import { BodovaciaSvg } from "../karta/BodovaciaSvg.tsx";
@@ -140,8 +140,11 @@ function Editor({ povodna, zavri }: { readonly povodna: BodovaciaKarta; readonly
               if (f === undefined) return;
               void (async () => {
                 try {
-                  const blob = await stvorec(await nacitajObrazok(f), 1400);
-                  setB({ ...b, pozadie: await nahrajMedia(blob, "pozadie", f.name) });
+                  const img = await nacitajObrazok(f);
+                  const id = await nahrajMedia(await stvorec(img, 1400), "pozadie", f.name);
+                  // Na stole sa kreslí 240 px — náhľad namiesto 1400 px originálu.
+                  await nahrajNahlad(id, img);
+                  setB({ ...b, pozadie: id });
                 } catch (err) {
                   setChyba(err instanceof Error ? err.message : String(err));
                 }

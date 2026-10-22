@@ -630,6 +630,14 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       const buf = await citajTelo(req, MEDIA_LIMIT);
       return ok(ctx.media.uloz(buf, druh, query.get("nazov") ?? "", teraz, typy), 201);
     }
+    // Náhľady veľkých obrázkov (Michal 2026-10-22): zoznam bez náhľadu a nahratie
+    // menšej kópie, ktorú vyrobí prehliadač admina (Tvorba → Prehľad).
+    if (sub === "GET /media-bez-nahladu") return ok({ media: ctx.media.bezNahladu() });
+    if (metoda === "PUT" && casti[2] === "media" && casti[4] === "nahlad" && casti.length === 5) {
+      if (!/^[0-9a-f]{40}$/.test(id)) throw new ChybaVstupu("Neplatné id obrázka.");
+      const buf = await citajTelo(req, MEDIA_LIMIT);
+      return ok(ctx.media.nastavNahlad(id, buf, teraz));
+    }
     if (sub === "GET /media") {
       const druh = (query.get("druh") ?? "kniznica") as DruhMedia;
       return ok({ media: ctx.media.zoznam(druh) });

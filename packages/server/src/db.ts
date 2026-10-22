@@ -249,6 +249,10 @@ function migruj(db: Db): void {
   ];
   for (const [meno, typ] of novePartie) if (!stlpce.some((c) => c.name === meno)) db.exec(`ALTER TABLE partie ADD COLUMN ${meno} ${typ}`);
   // Zväčšenie karty pri prejdení myšou v percentách (Michal 2026-10-19); NULL = predvolené.
+  // Náhľad média (Michal 2026-10-22, rýchlosť živého webu): menšia kópia, ktorú
+  // vyrobí prehliadač admina — /media/<id>?n ju pošle namiesto originálu.
+  const mediaStlpce = db.prepare("PRAGMA table_info(media)").all() as { name: string }[];
+  if (!mediaStlpce.some((c) => c.name === "nahlad")) db.exec("ALTER TABLE media ADD COLUMN nahlad TEXT");
   const ucty = db.prepare("PRAGMA table_info(pouzivatelia)").all() as { name: string }[];
   if (!ucty.some((c) => c.name === "lupa")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN lupa INTEGER");
   // Hlasitosť hudby počas partie v percentách (Michal 2026-10-20); NULL = predvolená.

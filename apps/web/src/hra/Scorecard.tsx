@@ -110,7 +110,7 @@ export function Scorecard({ elder, data, sada, ja, sirka, karta, onClick, body }
       tabIndex={onClick !== undefined ? 0 : undefined}
       onKeyDown={onClick !== undefined ? (e) => (e.key === "Enter" || e.key === " ") && onClick() : undefined}
     >
-      <BodovaciaSvg karta={bk} ikony={ikony} sirka={sirka} marker={elder.marker} stavSlotu={stavSlotu} />
+      <BodovaciaSvg karta={bk} ikony={ikony} sirka={sirka} marker={elder.marker} stavSlotu={stavSlotu} nahlad />
       <div className="scorecard-karta" style={{ left: pct(o.x, g.sirka), top: pct(o.y, g.vyska), width: pct(o.w, g.sirka) }}>
         {karta(o.w * mierka)}
       </div>

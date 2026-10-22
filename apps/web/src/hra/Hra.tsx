@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import type { Command, DlzkaHry } from "@naex/core";
 import { ALL_DLZKY, DLZKY_HRY, NAZOV_DLZKY, PREDVOLENA_DLZKA } from "@naex/core";
-import { api } from "../lib/api.ts";
+import { api, mediaUrl } from "../lib/api.ts";
+import { useSada } from "../lib/sada.tsx";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { maPravo, useUcet } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
@@ -37,6 +38,17 @@ function Lobby({
   readonly chyba: string | null;
 }) {
   const { ja } = useUcet();
+  const { sada } = useSada();
+  // Scorecardy sú na stole hneď po štarte — ich náhľady sa stiahnu už v lobby
+  // (Michal 2026-10-22: pri prázdnej cache bol stôl 5 – 8 s tmavý).
+  useEffect(() => {
+    for (const b of sada?.bodovacie ?? []) {
+      if (b.pozadie === null) continue;
+      const img = new Image();
+      img.fetchPriority = "low";
+      img.src = mediaUrl(b.pozadie, true);
+    }
+  }, [sada]);
   const [kod, setKod] = useState("");
   const [hry, setHry] = useState<readonly OtvorenaHra[] | null>(null);
   const [dostupne, setDostupne] = useState<readonly DlzkaHry[]>([PREDVOLENA_DLZKA]);

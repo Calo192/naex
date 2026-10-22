@@ -4,7 +4,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { AkciaDef, BodovaciaKarta, IkonaBodovania, KartaNavrh, Kategoria, KlucoveSlovo, Nastavenia, Vzhlad } from "@naex/tvorba";
 import { chybyNavrhu, neznameAkcie } from "@naex/tvorba";
-import { api } from "../lib/api.ts";
+import { api, mediaUrl } from "../lib/api.ts";
+import { nacitajObrazok, zmensene } from "../lib/obrazky.ts";
 
 export interface AdminObsah {
   readonly karty: readonly KartaNavrh[];
@@ -186,4 +187,35 @@ export function noveId(predpona: string): string {
 export async function nahrajMedia(blob: Blob, druh: "karta" | "ikona" | "kniznica" | "pozadie", nazov: string): Promise<string> {
   const r = await api.post<{ id: string }>(`/admin/media?druh=${druh}&nazov=${encodeURIComponent(nazov)}`, blob, blob.type || "application/octet-stream");
   return r.id;
+}
+
+/** Šírka náhľadu: scorecard na stole má 240 px, na 2× displeji 480. */
+export const STRANA_NAHLADU = 512;
+
+/** Náhľad média (Michal 2026-10-22) — menšia kópia, ktorú /media/<id>?n pošle na stôl. */
+export async function nahrajNahlad(id: string, img: HTMLImageElement): Promise<void> {
+  const blob = await zmensene(img, STRANA_NAHLADU);
+  await api.put(`/admin/media/${id}/nahlad`, blob, blob.type);
+}
+
+/**
+ * Doplní náhľady veľkým obrázkom, ktoré ich nemajú (pozadia scorecardov,
+ * staré ilustrácie). Server obrázky dekódovať nevie, preto to robí prehliadač.
+ * `priebeh` dostane počet hotových a všetkých.
+ */
+export async function doplnNahlady(priebeh: (hotovo: number, spolu: number) => void): Promise<{ readonly hotovo: number; readonly chyby: number }> {
+  const { media } = await api.get<{ media: { id: string }[] }>("/admin/media-bez-nahladu");
+  let hotovo = 0;
+  let chyby = 0;
+  priebeh(0, media.length);
+  for (const m of media) {
+    try {
+      await nahrajNahlad(m.id, await nacitajObrazok(mediaUrl(m.id)));
+      hotovo++;
+    } catch {
+      chyby++;
+    }
+    priebeh(hotovo + chyby, media.length);
+  }
+  return { hotovo, chyby };
 }

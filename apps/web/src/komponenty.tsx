@@ -14,7 +14,7 @@ export function Avatar({ meno, avatar, velkost = 40 }: { readonly meno: string; 
   let h = 0;
   for (const ch of meno) h = (h * 31 + ch.charCodeAt(0)) % 360;
   return avatar !== null ? (
-    <img className="avatar" src={mediaUrl(avatar)} alt="" width={velkost} height={velkost} style={{ width: velkost, height: velkost }} />
+    <img className="avatar" src={mediaUrl(avatar, true)} alt="" width={velkost} height={velkost} style={{ width: velkost, height: velkost }} />
   ) : (
     <span
       className="avatar avatar-inicialy"

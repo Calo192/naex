@@ -18,7 +18,16 @@ export interface MediaZaznam {
   readonly nazov: string;
   readonly velkost: number;
   readonly vytvorene: number;
+  /** Id menšej kópie na zobrazenie (/media/<id>?n); null = nemá. */
+  readonly nahlad?: string | null;
 }
+
+/**
+ * Od tejto veľkosti má obrázok mať náhľad (Michal 2026-10-22): pozadia
+ * scorecardov mali 350 – 600 kB a na stole sa kreslia 240 px široké.
+ * Menšie súbory (náhľady kariet 512 px ≈ 70 kB, avatary) ostávajú, ako sú.
+ */
+export const PRAH_NAHLADU = 150 * 1024;
 
 const PRIPONA: Record<string, string> = {
   "image/jpeg": "jpg",
@@ -86,17 +95,46 @@ export class Media {
     return this.db.prepare("SELECT * FROM media WHERE druh = ? ORDER BY vytvorene DESC, nazov").all(druh) as unknown as MediaZaznam[];
   }
 
-  /** GET /media/<id> — nemenné súbory s dlhou cache. */
-  posli(id: string, res: ServerResponse): void {
-    const z = /^[0-9a-f]{40}$/.test(id) ? this.zaznam(id) : null;
+  /**
+   * Náhľad pre veľký obrázok — menšia kópia, ktorú vyrobí prehliadač admina
+   * (server obrázky dekódovať nevie a knižnicu nepridávame). Uloží sa ako
+   * ďalšie médium a originál naň ukazuje.
+   */
+  nastavNahlad(id: string, buf: Buffer, teraz: number): MediaZaznam {
+    const povodny = this.zaznam(id);
+    if (povodny === null) throw new ChybaVstupu("Taký obrázok nie je.", 404);
+    if (povodny.typ === "image/svg+xml") throw new ChybaVstupu("SVG náhľad nepotrebuje.");
+    const n = this.uloz(buf, povodny.druh, `${povodny.nazov}@nahlad`, teraz, ["image/jpeg", "image/webp"]);
+    if (n.velkost >= povodny.velkost) throw new ChybaVstupu("Náhľad musí byť menší ako originál.");
+    this.db.prepare("UPDATE media SET nahlad = ? WHERE id = ?").run(n.id, id);
+    return n;
+  }
+
+  /** Veľké obrázky bez náhľadu — tie doplní tlačidlo v Tvorbe. */
+  bezNahladu(): MediaZaznam[] {
+    return this.db
+      .prepare("SELECT * FROM media WHERE nahlad IS NULL AND typ != 'image/svg+xml' AND velkost > ? AND nazov NOT LIKE '%@nahlad' ORDER BY velkost DESC")
+      .all(PRAH_NAHLADU) as unknown as MediaZaznam[];
+  }
+
+  /**
+   * GET /media/<id> — nemenné súbory s dlhou cache. S `nahlad` (…?n) pošle
+   * menšiu kópiu, ak ju obrázok má. Veľký obrázok bez nej ide s krátkou cache,
+   * aby si prehliadač náhľad stiahol, keď ho admin doplní.
+   */
+  posli(idAlebo: string, res: ServerResponse, nahlad = false): void {
+    const povodny = /^[0-9a-f]{40}$/.test(idAlebo) ? this.zaznam(idAlebo) : null;
+    const maNahlad = nahlad && povodny?.nahlad != null;
+    const z = maNahlad ? this.zaznam(povodny?.nahlad ?? "") : povodny;
     const cesta = z === null ? null : join(this.adresar, `${z.id}.${PRIPONA[z.typ]}`);
     if (z === null || cesta === null || !existsSync(cesta)) {
       res.writeHead(404).end();
       return;
     }
+    const docasne = nahlad && !maNahlad && z.velkost > PRAH_NAHLADU && z.typ !== "image/svg+xml";
     res.writeHead(200, {
       "content-type": z.typ,
-      "cache-control": "public, max-age=31536000, immutable",
+      "cache-control": docasne ? "public, max-age=3600" : "public, max-age=31536000, immutable",
       "x-content-type-options": "nosniff",
       // SVG otvorené priamo nesmie spustiť nič.
       "content-security-policy": "default-src 'none'; style-src 'unsafe-inline'; sandbox",

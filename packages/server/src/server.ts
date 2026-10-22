@@ -295,7 +295,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       return;
     }
     if (url.pathname.startsWith("/media/")) {
-      media.posli(url.pathname.slice("/media/".length), res);
+      media.posli(url.pathname.slice("/media/".length), res, url.searchParams.has("n"));
       return;
     }
     if (url.pathname.startsWith("/hudba/")) {

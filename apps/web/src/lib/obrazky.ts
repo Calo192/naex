@@ -15,6 +15,28 @@ export async function nacitajObrazok(zdroj: Blob | string): Promise<HTMLImageEle
 }
 
 /**
+ * Celý obrázok zmenšený tak, aby dlhšia strana mala najviac `strana` px —
+ * náhľad na zobrazenie (Michal 2026-10-22). WebP, ak ho prehliadač vie
+ * zapísať (inak by vrátil PNG — väčšie), inak JPEG.
+ */
+export async function zmensene(img: HTMLImageElement, strana: number, kvalita = 0.8): Promise<Blob> {
+  const mierka = Math.min(1, strana / Math.max(img.naturalWidth, img.naturalHeight));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(1, Math.round(img.naturalWidth * mierka));
+  canvas.height = Math.max(1, Math.round(img.naturalHeight * mierka));
+  const ctx = canvas.getContext("2d");
+  if (ctx === null) throw new Error("Prehliadač nevie kresliť do canvasu.");
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  const doBlobu = (typ: string): Promise<Blob | null> => new Promise((resolve) => canvas.toBlob(resolve, typ, kvalita));
+  const webp = await doBlobu("image/webp");
+  if (webp !== null && webp.type === "image/webp") return webp;
+  const jpeg = await doBlobu("image/jpeg");
+  if (jpeg === null) throw new Error("Obrázok sa nepodarilo uložiť.");
+  return jpeg;
+}
+
+/**
  * Štvorcový výrez (stred, alebo zadaný posun 0..1) zmenšený na `strana` px.
  * Menší obrázok sa nezväčšuje.
  */

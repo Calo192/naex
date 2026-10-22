@@ -23,6 +23,7 @@ export function BodovaciaSvg({
   onSlot,
   marker,
   stavSlotu,
+  nahlad = false,
 }: {
   readonly karta: BodovaciaKarta;
   readonly ikony: readonly IkonaBodovania[];
@@ -33,6 +34,8 @@ export function BodovaciaSvg({
   /** Pozícia markera na stupnici (0..8, zľava). */
   readonly marker?: number;
   readonly stavSlotu?: (strana: "lava" | "prava", i: number) => StavSlotuBodovania | null;
+  /** Pozadie ako náhľad (scorecardy na stole) — originál má až 600 kB. */
+  readonly nahlad?: boolean;
 }) {
   const g = geometriaBodovacej(karta);
   const o = g.odtlacok;
@@ -93,7 +96,7 @@ export function BodovaciaSvg({
       </defs>
       <rect width={g.sirka} height={g.vyska} fill="#374151" />
       {karta.pozadie !== null && (
-        <image href={mediaUrl(karta.pozadie)} width={g.sirka} height={g.vyska} preserveAspectRatio="xMidYMid slice" clipPath={`url(#bk-${karta.id})`} />
+        <image href={mediaUrl(karta.pozadie, nahlad)} width={g.sirka} height={g.vyska} preserveAspectRatio="xMidYMid slice" clipPath={`url(#bk-${karta.id})`} />
       )}
       <rect x={o.x} y={o.y} width={o.w} height={o.h} fill="none" stroke={karta.farba ?? "#94a3b8"} strokeWidth={0.5 * 2.835} />
       {sloty("lava")}

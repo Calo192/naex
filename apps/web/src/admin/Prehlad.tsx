@@ -1,15 +1,54 @@
 // Prehľad tvorcu: stav návrhov oproti zverejnenej sade a zverejnenie.
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { kontrolaTextov, variantyKarty } from "@naex/tvorba";
 import { api } from "../lib/api.ts";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { useSada } from "../lib/sada.tsx";
 import { Hlaska } from "../komponenty.tsx";
-import { problemyNavrhov, useAdmin, zmeneneOdZverejnenia } from "./stav.tsx";
+import { doplnNahlady, problemyNavrhov, useAdmin, zmeneneOdZverejnenia } from "./stav.tsx";
 import { AdminHlava, Ikona } from "./spolocne.tsx";
 
 const kariet = (n: number) => (n === 1 ? "karta" : n >= 2 && n <= 4 ? "karty" : "kariet");
+
+/**
+ * Náhľady veľkých obrázkov (Michal 2026-10-22): pozadia scorecardov a staré
+ * ilustrácie mali 350 – 600 kB a pri prázdnej cache sa stôl načítal 5 – 8 s.
+ * Server obrázky zmenšiť nevie — urobí to tento prehliadač a nahrá náhľady.
+ */
+function NahladyObrazkov() {
+  const [bezNahladu, setBezNahladu] = useState<number | null>(null);
+  const [priebeh, setPriebeh] = useState<{ hotovo: number; spolu: number } | null>(null);
+  const [vysledok, setVysledok] = useState<string | null>(null);
+  useEffect(() => {
+    api
+      .get<{ media: unknown[] }>("/admin/media-bez-nahladu")
+      .then((r) => setBezNahladu(r.media.length))
+      .catch(() => setBezNahladu(null));
+  }, []);
+  if (bezNahladu === null || (bezNahladu === 0 && vysledok === null)) return null;
+  const spusti = (): void => {
+    setVysledok(null);
+    void doplnNahlady((hotovo, spolu) => setPriebeh({ hotovo, spolu })).then((r) => {
+      setPriebeh(null);
+      setBezNahladu(r.chyby);
+      setVysledok(r.chyby === 0 ? `Hotovo — ${r.hotovo} náhľadov.` : `Hotovo ${r.hotovo}, nepodarilo sa ${r.chyby}.`);
+    });
+  };
+  return (
+    <section className="panel">
+      <h2>Náhľady obrázkov</h2>
+      <p className="tlmene">
+        Veľké obrázky bez náhľadu: <strong>{bezNahladu}</strong>. Na stole sa kreslia malé — náhľad (512 px) ich načíta rýchlejšie; lupa a tlač
+        berú originál.
+      </p>
+      {vysledok !== null && <Hlaska druh={bezNahladu === 0 ? "ok" : "chyba"}>{vysledok}</Hlaska>}
+      <button className="tlacidlo-hlavne" disabled={priebeh !== null || bezNahladu === 0} onClick={spusti}>
+        {priebeh === null ? "Doplniť náhľady" : `Robím náhľady… ${priebeh.hotovo}/${priebeh.spolu}`}
+      </button>
+    </section>
+  );
+}
 
 export function Prehlad() {
   useTitulok("Tvorba kariet");
@@ -174,6 +213,8 @@ export function Prehlad() {
           <strong>v{obsah.zverejnenaVerzia}</strong>
         </div>
       </div>
+
+      <NahladyObrazkov />
 
       <section className="panel">
         <h2>História sád</h2>
