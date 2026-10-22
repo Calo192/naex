@@ -1,6 +1,6 @@
 // Pes (Michal 2026-10-20): už nestráži koniec strany. Za každý pár akcií na
 // spoji Psa so súperovou kartou — z ktorejkoľvek strany Psa, aj zrušený Odporom
-// či NA EX — dá majiteľ Psa v bitke +1 tuhé.
+// či NA EX — dá majiteľ Psa v bitke +1 tuhé; od 2026-10-22 len na jeho vlastnej strane.
 
 import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
@@ -40,6 +40,14 @@ describe("Pes: +1 tuhé za každý pár akcií na spoji so súperovou kartou", (
 
   it("súperove karty z oboch strán Psa sa sčítajú (vnútorná hrana má 2 Rany)", () => {
     expect(spojePsa(sd, [[], [obcan(0), pes(1), obcan(0)]])).toEqual([0, 3]);
+  });
+
+  it("podstrčený na súperovu stranu nedá nič (Michal 2026-10-22)", () => {
+    // Pes hráča 0 na strane hráča 1 medzi kartami hráča 1 — páry sú, bonus nie.
+    expect(spojePsa(sd, [[], [obcan(1), pes(0), obcan(1)]])).toEqual([0, 0]);
+    expect(spojePsa(sd, [[pes(1), obcan(0)], []])).toEqual([0, 0]);
+    // Na vlastnej strane ráta aj kartu, ktorú mu súper podstrčil.
+    expect(spojePsa(sd, [[pes(0), obcan(1)], [obcan(1), pes(0)]])).toEqual([1, 0]);
   });
 
   it("vlastná karta vedľa Psa nič nedá", () => {

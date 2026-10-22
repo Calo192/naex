@@ -1976,7 +1976,7 @@ function cmdNaex(
     "NA EX smie len na Občana alebo Starešinu.",
   );
   need(def.id !== "liberal", "Liberál: na neho NA EX dať nemožno.");
-  need(!chraneneAlkoholikom(s.strany[kde.strana], kde.index, p), "Anonymný alkoholik: na neho ani na karty jeho majiteľa vedľa neho NA EX dať nemôžeš.");
+  need(!chraneneAlkoholikom(s.strany[kde.strana], kde.index, p), "Anonymný alkoholik: na neho NA EX dať nemôžeš.");
 
   hrac(s, p).poldeciPlne -= 1;
   placed.naexBy = p;
@@ -2029,7 +2029,7 @@ function cmdNaex(
 
 /**
  * NA EX hráča p — Občania a Starešinovia v línii (vlastní aj súperovi) bez
- * poldeci, nie Liberál ani Anonymný alkoholik a jeho susedia.
+ * poldeci, nie Liberál ani súperov Anonymný alkoholik.
  */
 export function moznostiNaex(data: GameData, state: GameState, p: PlayerId): number[] {
   const pitka = state.pitkaStav;
@@ -2052,19 +2052,13 @@ export function naexCieleVLinii(data: GameData, strany: readonly (readonly Place
 }
 
 /**
- * anonymny_alkoholik (Michal 2026-10-19): súper jeho majiteľa nedá NA EX na
- * neho ani na majiteľove karty vedľa neho na tej istej strane. Majiteľ smie;
- * súperove karty nechráni. Prvé karty strán susedia s lokalitou, nie navzájom.
+ * anonymny_alkoholik: súper jeho majiteľa naňho nedá NA EX; majiteľ smie.
+ * Susedov nechráni (Michal 2026-10-22; od 2026-10-19 chránil aj majiteľove
+ * karty vedľa seba).
  */
 function chraneneAlkoholikom(strana: readonly PlacedCard[], i: number, p: PlayerId): boolean {
   const ciel = strana[i];
-  if (ciel === undefined) return false;
-  for (let j = i - 1; j <= i + 1; j++) {
-    const alk = strana[j];
-    if (alk?.card.defId !== "anonymny_alkoholik" || alk.playedBy === p) continue;
-    if (j === i || ciel.playedBy === alk.playedBy) return true;
-  }
-  return false;
+  return ciel?.card.defId === "anonymny_alkoholik" && ciel.playedBy !== p;
 }
 
 /** krcma: kto má plný poldeci (a kam ho dať), musí dať NA EX. */

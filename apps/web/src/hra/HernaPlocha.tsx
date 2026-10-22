@@ -717,7 +717,7 @@ export function HernaPlocha({
     if (pl.card.defId === "liberal") return "Liberál: na neho NA EX dať nemožno.";
     if (def !== undefined && !def.tags.includes("Občan") && !def.tags.includes("Starešina"))
       return `NA EX len na Občana alebo Starešinu${def.tags.includes("Nástroj") ? " — toto je Nástroj" : ""}.`;
-    return "Anonymný alkoholik: na neho ani na karty jeho majiteľa vedľa neho NA EX dať nemôžeš.";
+    return "Anonymný alkoholik: na neho NA EX dať nemôžeš.";
   };
   // Možnosť NA EX pod myšou či fokusom — tá istá karta svieti na stole.
   const [zvyraznenaNaex, setZvyraznenaNaex] = useState<number | null>(null);
@@ -2261,7 +2261,7 @@ export function HernaPlocha({
           : hracJa.poldeciPlne === 0
             ? "Nemáš plný poldeci (doliať: 2 cigarety)."
             : naexCiele.size === 0
-              ? "NA EX ide len na Občana či Starešinu v línii (nie Nástroj, nie Liberál, nie k Anonymnému alkoholikovi)."
+              ? "NA EX ide len na Občana či Starešinu v línii (nie Nástroj, nie Liberál, nie na súperovho Anonymného alkoholika)."
               : null;
         const krcma = view.ciel?.lokalita?.defId === "krcma" && dovodBezNaex === null;
         const postarkaKarty = KONSTANTY.EFEKT.POSTARKA_KARTY;
