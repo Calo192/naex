@@ -519,6 +519,19 @@ export function HernaPlocha({
   // Nová fáza, ťah alebo krok bitky — starý návrh už neplatí.
   const klucTahu = `${view.kolo}|${view.faza}|${view.naTahu}|${view.bitkaStav?.krok ?? ""}|${draft?.krok ?? ""}|${draft?.balicekPocet[ja] ?? ""}`;
   useEffect(() => setNavrh(null), [klucTahu]);
+  // Pokyn ťahu (pilulka na stole, v drafte pätička šenku) nesmie pri novom ťahu
+  // ostať pod pripnutou rukou (UI inšpekcia U04) — stránka sa posunie len
+  // toľko, aby bol nad rukou; keď ho hráč vidí, nehýbe sa.
+  useEffect(() => {
+    if (!somNaTahu) return;
+    const ciel = document.querySelector<HTMLElement>(view.faza === "draft" ? ".draft-paticka" : ".linia-stav");
+    if (ciel === null) return;
+    const ruka = document.querySelector<HTMLElement>(".ruka")?.getBoundingClientRect().height ?? 0;
+    const dole = window.innerHeight - ruka;
+    const r = ciel.getBoundingClientRect();
+    if (r.top > 0 && r.bottom > dole) window.scrollBy({ top: r.bottom - dole + 12, behavior: "smooth" });
+    // Len pri novom ťahu — nie pri každom prekreslení.
+  }, [klucTahu, somNaTahu]);
   // Nevratné kroky s inline potvrdením (dizajn UX N1): „hotovo“ v Pitke, keď
   // ním hráč vzdáva možné NA EX, a „pasovať“, keď ešte môže vykladať.
   const [potvrdenie, setPotvrdenie] = useState<"hotovo" | null>(null);

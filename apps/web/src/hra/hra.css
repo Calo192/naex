@@ -168,6 +168,12 @@
   background: var(--akcent);
 }
 
+/* Aktuálny krok mení pri fokuse len pozadie, ktoré prepíše — fokus z klávesnice nebolo vidno (UI inšpekcia U07). */
+.priebeh-kola li.aktualny:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: -3px;
+}
+
 .hra > .chyba {
   padding: 10px 14px;
   border-radius: 10px;
@@ -241,7 +247,8 @@
 }
 
 .zly {
-  color: var(--cervena);
+  /* --cervena-text je na text (5,8 : 1); --cervena mala 4,2 : 1 (UI inšpekcia U17). */
+  color: var(--cervena-text);
 }
 
 .tlmeny {
@@ -519,6 +526,8 @@ button.zdroj-body[aria-expanded="true"] .velke-cislo {
   left: 50%;
   translate: -50% 0;
   z-index: 3;
+  /* Cieľ aspoň 24 px (UI inšpekcia U18) — mal 23. */
+  min-height: 24px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -557,6 +566,12 @@ button.zdroj-body[aria-expanded="true"] .velke-cislo {
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
+}
+
+/* Meno a čipy sa smú zúžiť — inak „priznané 2“ súperovej (zrkadlenej) dosky pretieklo doľava a orezalo sa (UI inšpekcia U02). */
+.doska-hrac > div {
+  flex: 1;
   min-width: 0;
 }
 
@@ -1283,7 +1298,7 @@ button.zdroj-body[aria-expanded="true"] .velke-cislo {
   margin-left: 4px;
   font-weight: 600;
   letter-spacing: 0.04em;
-  color: var(--slaby);
+  color: var(--slaby-text);
 }
 
 .pilulka-text strong,
@@ -1745,7 +1760,8 @@ body:not(.tahanie-aktivne) .harmonika-skupiny > :has(.harmonika-aktivna) ~ * {
 
 .cena {
   font-size: 0.78rem;
-  color: var(--slaby);
+  /* --slaby mal na tlačidle 3,5 : 1 (UI inšpekcia U16). */
+  color: var(--tlmeny);
 }
 
 button:disabled .cena {
@@ -2001,8 +2017,9 @@ button:disabled .cena {
 }
 
 .scorecard-odznak.plus {
-  background: #1f9d55;
-  color: #fff;
+  /* Biela na #1f9d55 mala 3,5 : 1 (UI inšpekcia U06); tokeny schémy dajú ≈ 8,6 : 1 aj vo svetlých schémach. */
+  background: var(--zelena);
+  color: var(--pozadie);
 }
 
 .scorecard-odznak.minus {
@@ -2474,6 +2491,15 @@ button.dlzka-volba.aktivna {
 .s-lupou.naex-mozny > div > .kl {
   outline: 2px dashed var(--akcent);
   outline-offset: 2px;
+}
+
+/* Čiarkovaný obrys prebil globálny fokus — vybranú kartu z klávesnice nebolo vidno (UI inšpekcia U08). */
+.s-lupou.naex-mozny:focus-visible > .kl,
+.s-lupou.naex-mozny:focus-visible > div > .kl,
+.s-lupou.naex-mozny > .kl:focus-visible,
+.s-lupou.naex-mozny > div > .kl:focus-visible {
+  outline-style: solid;
+  outline-width: 3px;
 }
 
 .s-lupou.naex-mozny::before {
@@ -4621,10 +4647,11 @@ button.auto-hotovo-odkaz {
 }
 
 /* Hodnota lokality (Michal 2026-10-22): koľko bodov by ovládnutie dnes pridalo. */
+/* Nad kartou (na ilustrácii) — pod ňou zakrýval posledný riadok efektu lokality (UI inšpekcia U03). */
 .hodnota-lokality {
   position: absolute;
   left: 50%;
-  bottom: -10px;
+  top: -10px;
   transform: translateX(-50%);
   padding: 1px 8px;
   border-radius: 999px;
@@ -4717,8 +4744,9 @@ button.auto-hotovo-odkaz {
   min-width: 0;
 }
 
-.doska .zdroj-pod > *,
-.doska .zdroj-pod > :is(span, b) {
+/* Obchod cigariet sa zalamuje, nie oreže — inak „nový poldeci −5“ zmizlo za „…“ (UI inšpekcia U01). */
+.doska .zdroj-pod > :not(.obchod-cigariet),
+.doska .zdroj-pod > :is(span, b):not(.obchod-cigariet) {
   display: block;
   max-width: 100%;
   overflow: hidden;
