@@ -1,0 +1,302 @@
+[
+  {
+    "id": "U01",
+    "zavaznost": "vysoka",
+    "typ": "orezany-text",
+    "stranky": [
+      "/hra (vlastná doska hráča, všetky fázy)"
+    ],
+    "kde": "1600×1000 (pri 1920×1080 sa zmestí)",
+    "zdroj": "apps/web/src/hra/hra.css:4718, apps/web/src/hra/Panely.tsx:521",
+    "popis": "Na dlaždici Cigarety sa z dvoch tlačidiel obchodu vidí len „doliať −2“; tlačidlo „nový poldeci −5“ je skryté za trojbodkou „…“ a nedá sa naň kliknúť.",
+    "pricina": "Pravidlo .doska .zdroj-pod > * (0,2,0) prepíše display: inline-flex a flex-wrap zo .obchod-cigariet (hra.css:3198) na display: block + white-space: nowrap + overflow: hidden, takže druhé tlačidlo sa nezalomí, ale oreže.",
+    "navrh": "Vyňať .obchod-cigariet z pravidla (napr. .doska .zdroj-pod > :not(.obchod-cigariet)) alebo mu dať vyššiu špecifickosť s display: inline-flex; flex-wrap: wrap; white-space: normal.",
+    "vyrez": "ui-inspekcia-20261022-2106/U01-obchod-cigariet.png",
+    "nasielNastroj": true
+  },
+  {
+    "id": "U02",
+    "zavaznost": "vysoka",
+    "typ": "orezany-text",
+    "stranky": [
+      "/hra (súperova doska, keď má priznané kliatby a Dedičstvo; overené na konci hry)"
+    ],
+    "kde": "1600×1000 aj 1920×1080",
+    "zdroj": "apps/web/src/hra/hra.css:554, apps/web/src/hra/Panely.tsx:427",
+    "popis": "Pri súperovom mene sa čip „priznané 2“ oreže zľava na „ané 2“. Riadok čipov je širší ako miesto vedľa avatara a súperova doska je zrkadlená (row-reverse), preto pretečie doľava.",
+    "pricina": "Vnútorný <div> v .doska-hrac nemá min-width: 0, preto sa nezmenší a čipy (.doska-oblast, hra.css:912) sa neskrátia trojbodkou. Pretečenie potom oreže .doska-hrac s overflow: hidden (hra.css:303–310). Nástroj to nahlásil ako orezaný .doska-meno.",
+    "navrh": "Dať .doska-hrac > div { min-width: 0; flex: 1 } — čipy sa potom skrátia trojbodkou (celý text je v title), prípadne čipy zalomiť pod meno.",
+    "vyrez": "ui-inspekcia-20261022-2106/U02-cip-priznane.png",
+    "nasielNastroj": true
+  },
+  {
+    "id": "U03",
+    "zavaznost": "vysoka",
+    "typ": "prekryty-text",
+    "stranky": [
+      "/hra [výber cieľa]",
+      "/hra [vrstva Lokality]"
+    ],
+    "kde": "1600×1000 aj 1920×1080",
+    "zdroj": "apps/web/src/hra/hra.css:4622, apps/web/src/hra/HernaPlocha.tsx:1479",
+    "popis": "Štítok hodnoty lokality „+8 b · súper +8“ leží cez spodok karty a zakrýva posledný riadok jej efektu (napr. Zberný dvor „…zo svojho odhadzovacieho balíčka“, Krčma „Prah Cirhózy je tu o 2 vyšší“). Text efektu sa tak nedá dočítať práve vtedy, keď sa podľa neho volí cieľ.",
+    "pricina": ".hodnota-lokality je position: absolute; bottom: -10px — štítok je vysoký asi 22 px, takže 12 px z neho prekrýva textové pole karty.",
+    "navrh": "Posunúť štítok pod kartu (bottom: -24px a pod kartou nechať miesto) alebo ho dať nad kartu či na pás s názvom.",
+    "vyrez": "ui-inspekcia-20261022-2106/U03-hodnota-lokality.png",
+    "nasielNastroj": true
+  },
+  {
+    "id": "U04",
+    "zavaznost": "stredna",
+    "typ": "prekryty-text",
+    "stranky": [
+      "/hra [stavba a branie zo šenku]",
+      "/hra [Zhromaždenie, Pitka]"
+    ],
+    "kde": "1600×1000 aj 1920×1080, pri otvorení stola (bez posunu)",
+    "zdroj": "apps/web/src/hra/hra.css:1571, apps/web/src/hra/hra.css:1248",
+    "popis": "Ruka prilepená k spodnému okraju okna zakrýva pokyn ťahu na hornej hrane stola („Tvoj ťah — klikni na … alebo už …“) a pätičku šenku („Beriete striedavo, kým obaja neprestanete…“). Text vidno, až keď hráč posunie stránku; pri 1600×1000 je pod rukou skoro celý stôl.",
+    "pricina": ".ruka je position: fixed; bottom: 0; z-index: 25 (asi 150 px). Pokyn (.linia-stav) je v toku stránky hneď pod šenkom a staršími, takže pri posune 0 padne do pásu ruky. Nástroj prekryvy s pevnými vrstvami preskakuje, preto ide o ručný nález.",
+    "navrh": "Pri zmene fázy alebo ťahu posunúť stránku tak, aby bol pokyn nad rukou (scrollIntoView s okrajom --ruka-h), alebo dať pokyn ako lepiacu pilulku nad ruku (sticky bottom: var(--ruka-h)).",
+    "vyrez": "ui-inspekcia-20261022-2106/U04-ruka-zakryva-pokyn.png",
+    "nasielNastroj": false
+  },
+  {
+    "id": "U05",
+    "zavaznost": "stredna",
+    "typ": "nizky-kontrast",
+    "stranky": [
+      "/hra (všetky fázy)",
+      "/karty",
+      "/admin/karty",
+      "/admin/tlac"
+    ],
+    "kde": "1600×1000 aj 1920×1080",
+    "zdroj": "apps/web/src/karta/karta.css:53",
+    "popis": "Biely názov karty a tagy na farebnom páse majú pri svetlých farbách kategórií kontrast 2,08–3,30 : 1 (Kliatba 2,08, Pamätník 2,29, Nástroj 2,37, Lokalita 2,42, Občan 3,30). V glosári sú názvy 17 px, takže to vidno výrazne.",
+    "pricina": ".kl-pas má color: #fff na background: var(--farba); farby kategórií (Farby a rozmery v tvorcovi) sú svetlé pastelové.",
+    "navrh": "Farbu písma na páse voliť podľa jasu --farba (tmavé písmo na svetlom páse), alebo bielemu textu pridať tmavý tieň či obrys (text-shadow 0 1px 2px rgba(0,0,0,.6)).",
+    "vyrez": "ui-inspekcia-20261022-2106/U05-pas-karty.png",
+    "nasielNastroj": true
+  },
+  {
+    "id": "U06",
+    "zavaznost": "stredna",
+    "typ": "nizky-kontrast",
+    "stranky": [
+      "/hra (scorecardy starších, všetky fázy)"
+    ],
+    "kde": "1600×1000 aj 1920×1080",
+    "zdroj": "apps/web/src/hra/hra.css:2001",
+    "popis": "Zelený odznak bodov „+1“ / „+12“ na ikone scorecardu má biele 9 px písmo na #1f9d55 — kontrast 3,49 : 1.",
+    "pricina": ".scorecard-odznak.plus { background: #1f9d55; color: #fff } — pevná farba mimo tokenov schémy.",
+    "navrh": "Stmaviť pozadie (napr. #157a41, ≈ 5 : 1) alebo použiť tmavé písmo; farbu dať do tokenu schemy.css.",
+    "vyrez": "ui-inspekcia-20261022-2106/U06-scorecard-odznak.png",
+    "nasielNastroj": true
+  },
+  {
+    "id": "U07",
+    "zavaznost": "stredna",
+    "typ": "bez-fokusu",
+    "stranky": [
+      "/hra (časová os kola, všetky fázy)"
+    ],
+    "kde": "1600×1000 aj 1920×1080",
+    "zdroj": "apps/web/src/hra/hra.css:164",
+    "popis": "Aktuálny krok na časovej osi kola (žltý „Draft“, „Pitka 1 z 3“…) sa pri fokuse z klávesnice nijako nezmení — kroky majú nápovedu a sú zastávkou Tabu.",
+    "pricina": ".priebeh-kola li má outline: none (hra.css:127) a fokus ukazuje len zmenou pozadia (hra.css:131); .priebeh-kola li.aktualny je v súbore neskôr s rovnakou špecifickosťou a pozadie prepíše.",
+    "navrh": "Pridať .priebeh-kola li.aktualny:focus-visible { outline: 2px solid var(--text); outline-offset: -3px } (alebo vnútorný box-shadow).",
+    "vyrez": "ui-inspekcia-20261022-2106/U07-krok-kola.png",
+    "nasielNastroj": true
+  },
+  {
+    "id": "U08",
+    "zavaznost": "stredna",
+    "typ": "bez-fokusu",
+    "stranky": [
+      "/hra [Pitka, môj ťah — karty, na ktoré sa dá dať NA EX]"
+    ],
+    "kde": "1600×1000 aj 1920×1080",
+    "zdroj": "apps/web/src/hra/hra.css:2471",
+    "popis": "Karta, na ktorú sa dá dať NA EX, má stále prerušovaný žltý obrys. Pri fokuse z klávesnice ostane rovnaký, takže nevidno, ktorá karta je vybraná.",
+    "pricina": ".s-lupou.naex-mozny > .kl { outline: 2px dashed var(--akcent) } (0,3,0) prebije globálne :focus-visible (styles.css:71).",
+    "navrh": "Doplniť .s-lupou.naex-mozny > .kl:focus-visible { outline-style: solid; outline-width: 3px } alebo fokus ukázať zdvihnutím ako pri hoveri.",
+    "vyrez": "ui-inspekcia-20261022-2106/U08-naex-karta.png",
+    "nasielNastroj": true
+  },
+  {
+    "id": "U09",
+    "zavaznost": "stredna",
+    "typ": "bez-fokusu",
+    "stranky": [
+      "/profil (4 posuvníky)",
+      "/karty",
+      "/hra [soundboard Melichar — hlasitosť]",
+      "/admin/nastavenia",
+      "/admin/tlac",
+      "/admin/karty/nova"
+    ],
+    "kde": "1600×1000 aj 1920×1080",
+    "zdroj": "apps/web/src/styles.css:169, apps/web/src/styles.css:191",
+    "popis": "Posuvníky (input type=range) nemajú žiadny viditeľný fokus: obrys, rámik ani tieň sa pri fokuse z klávesnice nezmení.",
+    "pricina": "input:focus nastaví outline: none a fokus ukazuje rámikom a tieňom; input[type=range] ďalej v súbore (rovnaká špecifickosť) dá border: none a box-shadow: none, takže nezostane nič.",
+    "navrh": "Pridať input[type=range]:focus-visible { outline: 2px solid var(--akcent); outline-offset: 4px }.",
+    "vyrez": "ui-inspekcia-20261022-2106/U09-posuvnik.png",
+    "nasielNastroj": true
+  },
+  {
+    "id": "U10",
+    "zavaznost": "stredna",
+    "typ": "bez-fokusu",
+    "stranky": [
+      "/admin/karty/nova",
+      "/admin/karty/:id (tvorca karty)"
+    ],
+    "kde": "1600×1000 aj 1920×1080",
+    "zdroj": "apps/web/src/admin/admin.css:756, apps/web/src/admin/Tvorca.tsx:48",
+    "popis": "Pole „pridať tag…“ v tvorcovi nemá pri fokuse žiadnu zmenu — rámik je na obale .tagy-vstup a ten sa pri fokuse nezvýrazní.",
+    "pricina": ".tagy-vstup input { border: none; box-shadow: none !important } a input:focus má outline: none; obal nemá :focus-within.",
+    "navrh": "Pridať .tagy-vstup:focus-within { border-color: var(--akcent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--akcent) 18%, transparent) }.",
+    "vyrez": "ui-inspekcia-20261022-2106/U10-tag-pole.png",
+    "nasielNastroj": true
+  },
+  {
+    "id": "U11",
+    "zavaznost": "stredna",
+    "typ": "rozbity-vzhlad",
+    "stranky": [
+      "/admin/nastavenia (Farby kategórií — posuvník odtieňa)"
+    ],
+    "kde": "1600×1000 aj 1920×1080",
+    "zdroj": "apps/web/src/styles.css:191, apps/web/src/admin/admin.css:718",
+    "popis": "Pri dúhovom posuvníku odtieňa chýba dúhová stopa — vidno len biely kruh na prázdnom pozadí, takže admin nevidí, aký odtieň vyberá. Posuvník je navyše 14 px vysoký (cieľ 130 × 14 px).",
+    "pricina": "input[type=range] { background: none } (0,1,1) prebije .duha { background: linear-gradient(…) } (0,1,0). Vypočítané background-image je „none“.",
+    "navrh": "Zvýšiť špecifickosť: input[type=range].duha { background: linear-gradient(…) }, prípadne .duha vylúčiť z input[type=range] ako pri min-height (:not(.duha)); výšku cieľa zväčšiť paddingom.",
+    "vyrez": "ui-inspekcia-20261022-2106/U11-duha.png",
+    "nasielNastroj": true
+  },
+  {
+    "id": "U12",
+    "zavaznost": "stredna",
+    "typ": "presah",
+    "stranky": [
+      "/hra [soundboard majstra Melichara]"
+    ],
+    "kde": "1600×1000 aj 1920×1080 (panel má pevnú šírku 600 px)",
+    "zdroj": "apps/web/src/hra/soundboard.css:587, apps/web/src/hra/soundboard.css:616",
+    "popis": "Obsah päty soundboardu je širší ako panel: posledné slovo skratiek „Esc zavrie“ sa dotýka pravého rámu a vnútorný okraj 14 px úplne zmizne.",
+    "pricina": ".sb-pata je flex bez zalomenia; posuvník (150 px), percentá a rad skratiek spolu presahujú 600 px − 2 × 14 px, takže rad pretečie cez padding.",
+    "navrh": "Dať .sb-pata { flex-wrap: wrap } (skratky prejdú pod posuvník), alebo skrátiť posuvník na ~110 px, alebo zmenšiť medzery medzi skratkami.",
+    "vyrez": "ui-inspekcia-20261022-2106/U12-soundboard-pata.png",
+    "nasielNastroj": false
+  },
+  {
+    "id": "U13",
+    "zavaznost": "nizka",
+    "typ": "orezany-text",
+    "stranky": [
+      "/hra [Pitka a ďalej — karta po NA EX, odznak „×2“ na slote]"
+    ],
+    "kde": "1600×1000 aj 1920×1080",
+    "zdroj": "apps/web/src/karta/karta.css:224, apps/web/src/karta/karta.css:19",
+    "popis": "Odznak násobku „×2“ pri slote na pravej hrane karty presahuje kartu a jeho okraj (asi 2 px) odreže hrana karty.",
+    "pricina": ".kl-nasobok má right: calc(-4 * var(--pt)) a .kl-plocha má overflow: hidden.",
+    "navrh": "Pri slotoch na pravej strane dať odznak dovnútra (right: 0 alebo left: -4pt), prípadne right: -1pt.",
+    "vyrez": "ui-inspekcia-20261022-2106/U13-nasobok.png",
+    "nasielNastroj": true
+  },
+  {
+    "id": "U14",
+    "zavaznost": "nizka",
+    "typ": "nizky-kontrast",
+    "stranky": [
+      "/hra (všetky fázy)",
+      "/karty",
+      "/admin/karty",
+      "/admin/tlac"
+    ],
+    "kde": "1600×1000 aj 1920×1080",
+    "zdroj": "apps/web/src/karta/karta.css:102",
+    "popis": "Text efektu na bielom poli karty a pojmy („Dedičstvo:“, „Bitka:“, „zahoď“) majú kontrast 3,99–4,24 : 1, čo je tesne pod 4,5 : 1.",
+    "pricina": "color: color-mix(in srgb, var(--farba) 74%, #000) — pri svetlých farbách kategórií je zmes ešte príliš svetlá.",
+    "navrh": "Stmaviť zmes na 62–65 % farby (alebo pridať #000 podľa jasu farby), aby vychádzalo ≥ 4,5 : 1.",
+    "vyrez": "ui-inspekcia-20261022-2106/U14-efekt-karty.png",
+    "nasielNastroj": true
+  },
+  {
+    "id": "U15",
+    "zavaznost": "nizka",
+    "typ": "nizky-kontrast",
+    "stranky": [
+      "/hra [Zhromaždenie — pilulka „ZHROMAŽDENIE LIMIT 3“]"
+    ],
+    "kde": "1600×1000 aj 1920×1080",
+    "zdroj": "apps/web/src/hra/hra.css:1280",
+    "popis": "Malé „LIMIT 3“ v nadpise pokynu má kontrast 4,35 : 1 (11 px).",
+    "pricina": ".pilulka-nadpis small { color: var(--slaby) }.",
+    "navrh": "Použiť var(--slaby-text) alebo var(--tlmeny).",
+    "vyrez": "ui-inspekcia-20261022-2106/U15-limit.png",
+    "nasielNastroj": true
+  },
+  {
+    "id": "U16",
+    "zavaznost": "nizka",
+    "typ": "nizky-kontrast",
+    "stranky": [
+      "/hra [patronát — tlačidlo staršieho]"
+    ],
+    "kde": "1600×1000 aj 1920×1080",
+    "zdroj": "apps/web/src/hra/hra.css:1744",
+    "popis": "Cena v tlačidle patronátu („−1 cigaretu, súper +3 Pohoršení“) má kontrast 3,51 : 1 (12 px).",
+    "pricina": ".cena { color: var(--slaby) } na pozadí tlačidla.",
+    "navrh": "Pre .cena v aktívnom tlačidle použiť var(--tlmeny).",
+    "vyrez": "ui-inspekcia-20261022-2106/U16-cena.png",
+    "nasielNastroj": true
+  },
+  {
+    "id": "U17",
+    "zavaznost": "nizka",
+    "typ": "nizky-kontrast",
+    "stranky": [
+      "/hra [koniec hry — popisy pod staršími]"
+    ],
+    "kde": "1600×1000 aj 1920×1080",
+    "zdroj": "apps/web/src/hra/hra.css:241",
+    "popis": "Červené „prebudený pre súpera“ pod staršími má kontrast 4,22 : 1 (12 px).",
+    "pricina": ".zly { color: var(--cervena) } (#d0563f) na tmavej ploche.",
+    "navrh": "Použiť var(--cervena-text) (#e5735c), ktorý je na text určený.",
+    "vyrez": "ui-inspekcia-20261022-2106/U17-prebudeny.png",
+    "nasielNastroj": true
+  },
+  {
+    "id": "U18",
+    "zavaznost": "nizka",
+    "typ": "maly-ciel",
+    "stranky": [
+      "/hra [rozpis bodov — „← späť na zdroje“]",
+      "/admin/karty/nova [„← Karty“]"
+    ],
+    "kde": "1600×1000 aj 1920×1080",
+    "zdroj": "apps/web/src/hra/hra.css:515, apps/web/src/admin/admin.css:202",
+    "popis": "Dve tlačidlá na návrat sú vysoké 23 px a 22 px, teda tesne pod 24 px.",
+    "pricina": ".rozpis-spat má padding 3px 12px; .spat je blokový odkaz bez paddingu.",
+    "navrh": "Dať min-height: 24px (alebo padding o 1–2 px väčší).",
+    "vyrez": "ui-inspekcia-20261022-2106/U18-maly-ciel.png",
+    "nasielNastroj": true
+  },
+  {
+    "id": "U19",
+    "zavaznost": "nizka",
+    "typ": "nezarovnanie",
+    "stranky": [
+      "/profil [Majster Melichar, Hudba počas partie]"
+    ],
+    "kde": "1600×1000 aj 1920×1080",
+    "zdroj": "apps/web/src/stranky/Ucet.tsx:615, apps/web/src/styles.css:1022",
+    "popis": "Stupnica posuvníka („vypnutý · 50 % · 100 %“) nie je pod posuvníkom, ale až pod textom nápovedy. Na karte Melichara sa preto lepí na nadpis ďalšieho posuvníka „Frekvencia…“ a nie je jasné, ku ktorému patrí.",
+    "pricina": "<div className=\"posuvnik-stupnica\"> je v JSX až za poľom s pomoc=…, ktoré vykreslí nápovedu hneď pod posuvník; .posuvnik-stupnica nemá spodný okraj.",
+    "navrh": "Stupnicu dať hneď pod posuvník (pred nápovedu) a medzi skupinami nechať margin-bottom ≥ 12 px.",
+    "vyrez": "ui-inspekcia-20261022-2106/U19-stupnica.png",
+    "nasielNastroj": false
+  }
+]
