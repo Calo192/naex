@@ -21,6 +21,7 @@ import {
   useState,
   type CSSProperties,
   type FocusEvent as ReactFocusEvent,
+  type KeyboardEvent as ReactKeyboardEvent,
   type MouseEvent as ReactMouseEvent,
   type PointerEvent as ReactPointerEvent,
   type ReactNode,
@@ -108,7 +109,7 @@ import { Vrstva as VrstvaPanel } from "./Vrstva.tsx";
 import { BitkaPanel, CenaCigariet, HracDoska, IkonaCigareta, IkonaPoldeci, PriebehKola, type VyhladPitky } from "./Panely.tsx";
 import { RozpisBodov } from "./RozpisBodov.tsx";
 import { StavkaBitky } from "./StavkaBitky.tsx";
-import { Scorecard, StavStarsieho, UCINOK_PRIAZNE } from "./Scorecard.tsx";
+import { DlazdicaStarsieho, Scorecard, StavStarsieho, UCINOK_PRIAZNE, pomerScorecardu } from "./Scorecard.tsx";
 import type { HracInfo, ZmenyFrajeriny } from "./useHra.ts";
 import { menoVoVete, rodHraca, textHlasky } from "./useHra.ts";
 import { useBezNaexVBitke, useOdlozenyPrikaz } from "./usePohodlie.ts";
@@ -207,6 +208,8 @@ const KLUC_MALI_STARSI = "naex.malyStarsi";
 const SIRKA_PRE_JEDEN_RAD = 1000;
 /** V lupe má scorecard zhruba túto šírku (px), nech je okno akékoľvek. */
 const SIRKA_SCORECARDU_V_LUPE = 460;
+/** Šírka dlaždice staršieho po boku stola (CSS .stlpec-starsich). */
+const SIRKA_DLAZDICE_STARSIEHO = 176;
 
 /** Pravý klik = odstrániť / zrušiť (Michal 2026-10-20) — bez kontextovej ponuky prehliadača. */
 function pravyKlik(fn: (() => void) | undefined): ((e: React.MouseEvent) => void) | undefined {
@@ -3364,6 +3367,74 @@ export function HernaPlocha({
     );
   })();
 
+  // ---- starší po bokoch stola (Michal 2026-10-22, #55 variant B) ----------------
+  // Poradie je pevné (1–4 vľavo, 5–8 vpravo), nie podľa markera — nič neskáče.
+  // Plný scorecard je v lupe: kotva má tvar scorecardu, lupa ju zväčší na SIRKA_SCORECARDU_V_LUPE.
+  const stlpecStarsich = (starsi: readonly ElderState[], strana: "vlavo" | "vpravo"): ReactNode => (
+    <div className={`stlpec-starsich ${strana}`} aria-label={strana === "vlavo" ? "Starší 1–4" : "Starší 5–8"}>
+      {starsi.map((elder) => {
+        const k = klikStarsi(elder);
+        const kluc = `s${elder.elderId}`;
+        const patronIdx = view.patronat.findIndex((x) => x?.elderId === elder.elderId);
+        const patronElder = patronIdx === -1 ? null : (patronIdx as PlayerId);
+        const bodyStarsieho = body.starsi.find((b) => b.elderId === elder.elderId);
+        const scorecard = (sirka: number): ReactNode => (
+          <Scorecard
+            elder={elder}
+            data={data}
+            sada={sada}
+            ja={ja}
+            sirka={sirka}
+            karta={(s) => karta({ karta: elder.karta, sirka: s })}
+            onClick={k?.klik}
+            body={bodyStarsieho}
+          />
+        );
+        lupaKarty.set(kluc, { render: (s) => scorecard(s), mierka: SIRKA_SCORECARDU_V_LUPE / SIRKA_DLAZDICE_STARSIEHO });
+        return (
+          <div
+            key={elder.elderId}
+            className={[
+              "s-lupou",
+              "scorecard-obal",
+              k !== undefined ? "ma-akciu vyzvat" : mozniPatronati.length > 0 ? "nedostupny" : "",
+              patronElder !== null ? "v-patronate" : "",
+              lupa?.kluc === kluc ? "harmonika-aktivna" : "",
+            ]
+              .filter((x) => x !== "")
+              .join(" ")}
+            {...nadLupou(kluc, (el) => el.querySelector(".kotva-lupy-starsieho"), k === undefined)}
+            {...(k === undefined
+              ? {}
+              : { role: "button", tabIndex: 0, onClick: k.klik, onKeyDown: (e: ReactKeyboardEvent<HTMLElement>) => (e.key === "Enter" || e.key === " ") && k.klik() })}
+          >
+            <span
+              className="kotva-lupy-starsieho"
+              aria-hidden="true"
+              style={{ height: SIRKA_DLAZDICE_STARSIEHO * pomerScorecardu(sada, data, elder) }}
+            />
+            <DlazdicaStarsieho
+              elder={elder}
+              data={data}
+              ja={ja}
+              meno={menoKarty(elder.karta.defId)}
+              body={bodyStarsieho}
+              karta={(s) => karta({ karta: elder.karta, sirka: s })}
+              akcia={k?.akcia}
+              stitok={
+                patronElder === null ? undefined : (
+                  <span className="ds-patronat">
+                    {patronElder === ja ? "v tvojej ruke" : `v ruke: ${menoHraca(patronElder)}`} · +{view.patronat[patronElder]?.pohorsenia ?? 0} Pohoršení
+                  </span>
+                )
+              }
+            />
+          </div>
+        );
+      })}
+    </div>
+  );
+
   // ---- pás kola: koľko Pitiek a koľko kariet kto vykladá -------------------
   const pasKola = ((): ReactNode => {
     if (view.koniec !== null || view.ciel === null) return null;
@@ -3744,119 +3815,6 @@ export function HernaPlocha({
           </div>
         )}
         {/* Starší hore — mimo dosahu ruky, aby sa ich lupa nebila s lupou kariet v ruke. */}
-        <section className="starsi-panel" ref={starsiPanelRef}>
-          <h3>
-            <span>
-              Starší{" "}
-              <span className="h3-pozn">{/* Stupnica je zrkadlová (Michal 2026-10-22) — tvoja polovica je vždy vľavo. */}tvoja strana ← → súperova</span>
-            </span>
-            <span
-              className={`vydeseni-pocet ${vydeseni[super_] >= prahVyd - 1 ? "hrozba" : ""}`}
-              title={`Kto vydesí ${prahVyd} starších (krajná červená pozícia) a udrží ich do konca ďalšieho kola, vyhrá.`}
-            >
-              vydesení: <b className="moje">ty {vydeseni[ja]}/{prahVyd}</b> · <b className="superove">{menoHraca(super_)} {vydeseni[super_]}/{prahVyd}</b>
-            </span>
-            <span className="body-teraz" title="Záverečné bodovanie, keby hra skončila teraz">
-              body teraz: <b className="moje">ty {body.spolu[ja]}</b> ·{" "}
-              <b className="superove" title="Súperove nepriznané kliatby sú už odpočítané — ich počet je z toho, čo sa ukázalo na stole.">
-                {menoHraca(super_)} {body.spolu[super_]}
-              </b>
-              <button type="button" className="tlacidlo-male tlacidlo-jemne" onClick={() => setAkoBodovanie(!akoBodovanie)} aria-expanded={akoBodovanie}>
-                {akoBodovanie ? "skryť rozpis" : "rozpis bodov"}
-              </button>
-              <button type="button" className="tlacidlo-male tlacidlo-jemne" onClick={prepniMalychStarsich} aria-pressed={maliStarsi}>
-                {maliStarsi ? "zväčšiť" : "zmenšiť"}
-              </button>
-            </span>
-          </h3>
-          {akoBodovanie && (
-            <div className="ako-bodovanie">
-              <p>
-                <b>★ Body</b> dáva každý scorecard <b>obom hráčom</b>: boduje každá <b>aktívna podmienka</b> (svieti — karta
-                staršieho má pri nej akciu), na ktorejkoľvek strane. Číslo pri ikone = koľko z nej máš ty. Lokality, získaní starší
-                a cigarety za kus, nepriznané Dlhy a Cirhózy mínus za kus. Znepokojenie / Strach / Vydesenie dávajú body za každého
-                staršieho v hre, ktorý sa ťa bojí aspoň na tú úroveň.
-              </p>
-              <p>
-                <b>♥ Priazeň</b> (počas hry) má hráč, ku ktorému je marker posunutý — dáva výhodu podľa scorecardu. Starší sa vtedy
-                bojí toho druhého: posunúť marker k súperovi mu dá priazeň, ale tebe strach staršieho do zónových podmienok.
-              </p>
-              <RozpisBodov
-                body={body}
-                starsi={view.starsi}
-                data={data}
-                ja={ja}
-                menoSupera={menoHraca(super_)}
-                menoKarty={menoKarty}
-                nadpis="Keby hra skončila teraz"
-              />
-            </div>
-          )}
-          {mobil && maliStarsi && (
-            <p className="starsi-mobil">
-              {starsiNaMobile.length === view.starsi.length
-                ? "Všetci starší."
-                : starsiNaMobile.length === 0
-                  ? "Všetci starší sú v neutrále."
-                  : `Starší mimo neutrálu (${starsiNaMobile.length} z ${view.starsi.length}).`}{" "}
-              <button type="button" className="tlacidlo-male tlacidlo-jemne" onClick={prepniMalychStarsich}>
-                ukázať všetkých
-              </button>
-            </p>
-          )}
-          <div className="scorecardy harmonika" ref={scorecardyRef} style={{ gap: MEDZERA_SCORECARDOV }}>
-            {starsiNaMobile.map((elder) => {
-              const k = klikStarsi(elder);
-              const kluc = `s${elder.elderId}`;
-              // Patronát: starší je v ruke patróna, na scorecarde leží karta lícom dole.
-              const patronIdx = view.patronat.findIndex((x) => x?.elderId === elder.elderId);
-              const patronElder = patronIdx === -1 ? null : (patronIdx as PlayerId);
-              const scorecard = (sirka: number): ReactNode => (
-                <Scorecard
-                  elder={elder}
-                  data={data}
-                  sada={sada}
-                  ja={ja}
-                  sirka={sirka}
-                  karta={(s) => karta({ karta: elder.karta, sirka: s })}
-                  onClick={k?.klik}
-                  body={body.starsi.find((b) => b.elderId === elder.elderId)}
-                />
-              );
-              lupaKarty.set(kluc, { render: (s) => scorecard(s), mierka: mierkaLupyScorecardu });
-              return (
-                <div
-                  key={elder.elderId}
-                  className={`scorecard-obal ${mozniPatronati.length > 0 ? (k !== undefined ? "vyzvat" : "nedostupny") : ""} ${patronElder !== null ? "v-patronate" : ""}`}
-                  style={{ flex: `1 1 ${sirkaScorecardu}px`, minWidth: sirkaScorecardu }}
-                >
-                  {/* Zväčší sa pri prejdení myšou; klik na staršieho ostáva akcii (bitka, Pohoršenie). */}
-                  <div
-                    className={["s-lupou", k !== undefined ? "ma-akciu" : "", lupa?.kluc === kluc ? "harmonika-aktivna" : ""].filter((x) => x !== "").join(" ")}
-                    {...nadLupou(kluc, (el) => el.querySelector(".scorecard"), k === undefined)}
-                  >
-                    {sirkaRadu > 0 && scorecard(sirkaScorecardu)}
-                  </div>
-                  <StavStarsieho
-                    elder={elder}
-                    data={data}
-                    ja={ja}
-                    meno={menoKarty(elder.karta.defId)}
-                    body={body.starsi.find((b) => b.elderId === elder.elderId)}
-                    akcia={k?.akcia}
-                  />
-                  {patronElder !== null && (
-                    <p className="patronat-stitok">
-                      {patronElder === ja ? "v tvojej ruke" : `v ruke: ${menoHraca(patronElder)}`} · lícom dole{" "}
-                      {patronElder === ja && view.mojaNahrada !== null ? menoKarty(view.mojaNahrada.defId) : "karta"} · súperovi +
-                      {view.patronat[patronElder]?.pohorsenia ?? 0} Pohoršení
-                    </p>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </section>
         <div className="stred">
           {/* Stôl je hneď pod staršími — pás pokynov a ruka ho neprekryjú
               (playtest 20261012-055944); dosky hráčov sú pod ním. */}
@@ -3866,6 +3824,53 @@ export function HernaPlocha({
           {cielPanel}
           {draftPanel}
           {pasKola}
+          {/* Starší po bokoch stola (Michal 2026-10-22, #55 variant B) — nad stolom ostáva len ich súhrn. */}
+          <section className="starsi-panel starsi-info" ref={starsiPanelRef}>
+            <h3>
+              <span>
+                Starší{" "}
+                <span className="h3-pozn">{/* Stupnica je zrkadlová (Michal 2026-10-22) — tvoja polovica je vždy vľavo. */}tvoja strana ← → súperova</span>
+              </span>
+              <span
+                className={`vydeseni-pocet ${vydeseni[super_] >= prahVyd - 1 ? "hrozba" : ""}`}
+                title={`Kto vydesí ${prahVyd} starších (krajná červená pozícia) a udrží ich do konca ďalšieho kola, vyhrá.`}
+              >
+                vydesení: <b className="moje">ty {vydeseni[ja]}/{prahVyd}</b> · <b className="superove">{menoHraca(super_)} {vydeseni[super_]}/{prahVyd}</b>
+              </span>
+              <span className="body-teraz" title="Záverečné bodovanie, keby hra skončila teraz">
+                body teraz: <b className="moje">ty {body.spolu[ja]}</b> ·{" "}
+                <b className="superove" title="Súperove nepriznané kliatby sú už odpočítané — ich počet je z toho, čo sa ukázalo na stole.">
+                  {menoHraca(super_)} {body.spolu[super_]}
+                </b>
+                <button type="button" className="tlacidlo-male tlacidlo-jemne" onClick={() => setAkoBodovanie(!akoBodovanie)} aria-expanded={akoBodovanie}>
+                  {akoBodovanie ? "skryť rozpis" : "rozpis bodov"}
+                </button>
+              </span>
+            </h3>
+            {akoBodovanie && (
+              <div className="ako-bodovanie">
+                <p>
+                  <b>★ Body</b> dáva každý scorecard <b>obom hráčom</b>: boduje každá <b>aktívna podmienka</b> (svieti — karta
+                  staršieho má pri nej akciu), na ktorejkoľvek strane. Číslo pri ikone = koľko z nej máš ty. Lokality, získaní starší
+                  a cigarety za kus, nepriznané Dlhy a Cirhózy mínus za kus. Znepokojenie / Strach / Vydesenie dávajú body za každého
+                  staršieho v hre, ktorý sa ťa bojí aspoň na tú úroveň.
+                </p>
+                <p>
+                  <b>♥ Priazeň</b> (počas hry) má hráč, ku ktorému je marker posunutý — dáva výhodu podľa scorecardu. Starší sa vtedy
+                  bojí toho druhého: posunúť marker k súperovi mu dá priazeň, ale tebe strach staršieho do zónových podmienok.
+                </p>
+                <RozpisBodov
+                  body={body}
+                  starsi={view.starsi}
+                  data={data}
+                  ja={ja}
+                  menoSupera={menoHraca(super_)}
+                  menoKarty={menoKarty}
+                  nadpis="Keby hra skončila teraz"
+                />
+              </div>
+            )}
+        </section>
           {/* Farba stola hovorí, čí je ťah: zelená = tvoj, sivá = čakáš. */}
           <div
             ref={liniaObalRef}
@@ -3879,6 +3884,8 @@ export function HernaPlocha({
               </strong>
               {pokyn?.text !== undefined && <span className="pilulka-text">{pokyn.text}</span>}
             </div>
+            <div className="stol-plst">
+            {stlpecStarsich(view.starsi.slice(0, 4), "vlavo")}
             <div className="linia harmonika-skupiny" ref={liniaRef}>
               <div className="linia-skupina moja">
                 {popisKraja(ja, "vlavo")}
@@ -3896,6 +3903,8 @@ export function HernaPlocha({
                 {popisKraja(super_, "vpravo")}
                 <div className="partia-rad harmonika">{radStrany(super_)}</div>
               </div>
+            </div>
+            {stlpecStarsich(view.starsi.slice(4), "vpravo")}
             </div>
             {hranaStola}
           </div>

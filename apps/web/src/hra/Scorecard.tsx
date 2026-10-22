@@ -20,7 +20,7 @@ import {
   urovenPodmienky,
 } from "@naex/core";
 import type { BodovaciaKarta, IkonaBodovania, Sada } from "@naex/tvorba";
-import { geometriaBodovacej, PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
+import { FARBY_STUPNICE, geometriaBodovacej, PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
 import { BodovaciaSvg, type StavSlotuBodovania } from "../karta/BodovaciaSvg.tsx";
 import { IkonaPodmienky } from "../karta/IkonaPodmienky.tsx";
 import { NAZOV_PODMIENKY, POZN_ZONOVYCH, popisPodmienky } from "../karta/podmienky.ts";
@@ -287,6 +287,74 @@ export function StavStarsieho({
       {prebudeny !== null && <span className={prebudeny === ja ? "dobry" : "zly"}>prebudený pre {kto(prebudeny)}</span>}
       {akcia !== undefined && <span className="starsi-akcia">{akcia}</span>}
       {tip}
+    </div>
+  );
+}
+
+/** Pomer výška / šírka scorecardu — lupa dlaždice staršieho má tvar plného scorecardu. */
+export function pomerScorecardu(sada: Sada, data: GameData, elder: ElderState): number {
+  const g = geometriaBodovacej(vzhladScorecardu(sada, data, scorecardStarsieho(data, elder).id).karta);
+  return g.vyska / g.sirka;
+}
+
+/**
+ * Dlaždica staršieho po boku stola (Michal 2026-10-22, #55 variant B): karta,
+ * meno, priazeň, body a stupnica so zrkadlovým markerom (tvoja polovica vľavo).
+ * Plný scorecard je v lupe pri prejdení myšou; klik ostáva akcii (Pohoršenie,
+ * prebytok, patronát).
+ */
+export function DlazdicaStarsieho({
+  elder,
+  data,
+  ja,
+  meno,
+  body,
+  karta,
+  akcia,
+  stitok,
+}: {
+  readonly elder: ElderState;
+  readonly data: GameData;
+  readonly ja: PlayerId;
+  readonly meno: string;
+  readonly body: BodyStarsieho | undefined;
+  readonly karta: (sirka: number) => ReactNode;
+  readonly akcia?: string | undefined;
+  /** Riadok navyše (patronát). */
+  readonly stitok?: ReactNode;
+}) {
+  const priazen = priazenHraca(elder);
+  const sila = priazenSila(elder);
+  const obavany = obavanyHrac(elder);
+  const sc = scorecardStarsieho(data, elder);
+  const su = (ja === 0 ? 1 : 0) as PlayerId;
+  // Zrkadlenie ako na scorecarde: tvoja polovica vľavo.
+  const poloha = ja === 0 ? elder.marker : 8 - elder.marker;
+  const vydeseny = STUPNICA_ZONY[elder.marker] === 3;
+  return (
+    <div className={`dlazdica-starsieho${vydeseny ? " vydeseny" : ""}`}>
+      <div className="ds-hlava">
+        <span className="ds-karta">{karta(34)}</span>
+        <span className="ds-texty">
+          <strong className="ds-meno">{meno}</strong>
+          <span className="ds-riadok">
+            <span className={`ds-priazen ${priazen === null ? "" : priazen === ja ? "moja" : "superova"}`} title={`Priazeň: ${sc.nazov}`}>
+              ♥ {priazen === null ? "—" : `${priazen === ja ? "ty" : "súper"} +${sila}`}
+            </span>
+            <span className="ds-body" title="Body z tohto scorecardu, keby hra skončila teraz (ty · súper)">
+              ★ <b className="moje">{znamienko(body?.body[ja] ?? 0)}</b> · {znamienko(body?.body[su] ?? 0)}
+            </span>
+          </span>
+        </span>
+        {vydeseny && <span className="ds-vydeseny">vydesený</span>}
+      </div>
+      <span className="ds-stupnica" aria-label={`Marker: ${poloha < 4 ? "tvoja polovica" : poloha > 4 ? "súperova polovica" : "stred"}${obavany === null ? "" : `, bojí sa ${obavany === ja ? "teba" : "súpera"}`}`}>
+        {FARBY_STUPNICE.map((f, i) => (
+          <i key={i} className={i === poloha ? "marker" : undefined} style={{ background: f }} />
+        ))}
+      </span>
+      {stitok}
+      {akcia !== undefined && <span className="ds-akcia">{akcia}</span>}
     </div>
   );
 }

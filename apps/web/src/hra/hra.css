@@ -195,14 +195,16 @@
   min-width: 0;
 }
 
-.plocha > section {
+.plocha > section,
+.starsi-info {
   padding: 12px;
   border-radius: 12px;
   background: var(--plocha);
   border: 1px solid var(--okraj);
 }
 
-.plocha > section h3 {
+.plocha > section h3,
+.starsi-info h3 {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
@@ -4744,4 +4746,201 @@ button.auto-hotovo-odkaz {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* ---- starší po bokoch stola (Michal 2026-10-22, #55 variant B) ----
+ * Plsť stola: stĺpec 4 starších · línia · stĺpec 4 starších. Stĺpce sú neutrálne
+ * (bez farby strany), farbu nesie len marker, priazeň a body. */
+.stol-plst {
+  display: grid;
+  grid-template-columns: 176px minmax(0, 1fr) 176px;
+  gap: 10px;
+  padding: 12px 10px 10px;
+  border-radius: 18px;
+  background:
+    radial-gradient(ellipse at center, var(--stol-svetlo), transparent 70%),
+    var(--stol);
+  border: 2px solid var(--stol-okraj);
+  box-shadow: inset 0 2px 24px rgba(0, 0, 0, 0.45);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.stol-plst > .linia {
+  background: none;
+  border: 0;
+  box-shadow: none;
+  padding-left: 0;
+  padding-right: 0;
+  min-width: 0;
+}
+
+.stlpec-starsich {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 22px;
+}
+
+.stlpec-starsich > .scorecard-obal {
+  position: relative;
+  border-radius: 10px;
+}
+
+/* Kotva lupy: tvar plného scorecardu, vystredená na dlaždici. */
+.kotva-lupy-starsieho {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  translate: 0 -50%;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.dlazdica-starsieho {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 7px 8px 8px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--pozadie) 72%, transparent);
+  border: 1px solid var(--okraj);
+  font-size: 0.78rem;
+}
+
+.dlazdica-starsieho.vydeseny {
+  border-color: var(--cervena);
+}
+
+.scorecard-obal.vyzvat .dlazdica-starsieho {
+  border-color: var(--akcent);
+  box-shadow: 0 0 0 1px var(--akcent), 0 0 14px color-mix(in srgb, var(--akcent) 35%, transparent);
+  cursor: pointer;
+}
+
+.scorecard-obal.nedostupny .dlazdica-starsieho {
+  opacity: 0.5;
+}
+
+.ds-hlava {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.ds-karta {
+  flex: none;
+  width: 34px;
+}
+
+.ds-texty {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ds-meno {
+  font: 700 0.88rem/1.15 var(--nadpis);
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ds-riadok {
+  display: flex;
+  gap: 6px;
+  white-space: nowrap;
+  color: var(--tlmeny);
+}
+
+.ds-priazen.moja,
+.ds-body .moje {
+  color: var(--ja);
+}
+
+.ds-priazen.superova {
+  color: var(--su);
+}
+
+.ds-vydeseny {
+  position: absolute;
+  top: -12px;
+  right: -4px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--cervena);
+  color: #fff;
+  font-size: 0.66rem;
+  font-weight: 700;
+}
+
+/* Stupnica: tvoja polovica vľavo (zrkadlová, rovnako ako na scorecarde). */
+.ds-stupnica {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 3px;
+  align-items: center;
+}
+
+.ds-stupnica i {
+  display: block;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  opacity: 0.85;
+}
+
+.ds-stupnica i.marker {
+  opacity: 1;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #111;
+}
+
+.ds-akcia {
+  color: var(--akcent);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.ds-patronat {
+  color: var(--akcent-svetly);
+  font-size: 0.72rem;
+}
+
+/* Súhrn starších nad stolom: jeden riadok. */
+.starsi-info {
+  padding: 6px 12px;
+}
+
+.starsi-info h3 {
+  margin: 0;
+}
+
+/* Dlaždice v plnej šírke stĺpca (pôvodný .scorecard-obal centroval scorecard). */
+.stlpec-starsich > .scorecard-obal {
+  align-items: stretch;
+  gap: 0;
+}
+
+.stlpec-starsich .dlazdica-starsieho {
+  width: 100%;
+}
+
+/* Miesto pre hranu stola (tlačidlá kroku) pod stĺpcami — inak by prekryla spodných starších. */
+.linia-obal.s-hranou .stol-plst {
+  padding-bottom: 48px;
+}
+
+.linia-obal.s-hranou .stol-plst > .linia {
+  padding-bottom: 18px;
+}
+
+.stred > .starsi-info {
+  padding: 6px 12px;
+}
+
+/* Tlačidlá hrany nad líniou, nie nad stĺpcami starších (inak by ich prilepená hrana zakryla). */
+.stol-plst ~ .stol-hrana .hrana-rad {
+  padding: 0 calc(176px + 22px);
 }
