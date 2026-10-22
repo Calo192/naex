@@ -7,7 +7,7 @@ import { join } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createGameServer, type GameServer } from "../src/server.ts";
-import { bezUvodnychNul, nazovHlasky, priponaZvuku } from "../src/hudba.ts";
+import { TRVANIE_HLASKY_NEZNAME_MS, bezUvodnychNul, nazovHlasky, priponaZvuku } from "../src/hudba.ts";
 import { registruj, TEST_ADMIN } from "./pomocnik.ts";
 
 const ID = "a".repeat(40);
@@ -102,7 +102,8 @@ describe("hudba počas partie", () => {
 describe("hlášky majstra Melichara", () => {
   it("zoznam a súbory idú z vlastného adresára", async () => {
     const r = (await (await fetch(url("/api/melichar"))).json()) as { hlasky: unknown[] };
-    expect(r.hlasky).toEqual([{ id: ID, nazov: "No toto je marha", subor: `${ID}.mp3` }]);
+    // Súbor bez MP3 rámcov — dĺžka sa nedá zistiť, ráta sa s predvolenou.
+    expect(r.hlasky).toEqual([{ id: ID, nazov: "No toto je marha", subor: `${ID}.mp3`, trvanieMs: TRVANIE_HLASKY_NEZNAME_MS }]);
     const subor = await fetch(url(`/melichar/${ID}.mp3`));
     expect(subor.status).toBe(200);
     expect(subor.headers.get("content-type")).toBe("audio/mpeg");

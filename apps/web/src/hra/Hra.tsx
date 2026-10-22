@@ -10,6 +10,7 @@ import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { HernaPlocha } from "./HernaPlocha.tsx";
 import { HudbaPartie } from "./Hudba.tsx";
 import { useMelichar } from "./Melichar.tsx";
+import { Soundboard } from "./Soundboard.tsx";
 import { useHra } from "./useHra.ts";
 import "./hra.css";
 
@@ -261,6 +262,16 @@ export function Hra() {
       opustit={hra.odid}
       frajerina={hra.frajerina}
       kontumacia={hra.kontumacia}
+      vHlavicke={
+        hra.view.koniec === null && (
+          <Soundboard
+            ja={m.seat}
+            menoSupera={hra.hraci[m.seat === 0 ? 1 : 0]?.meno ?? "Súper"}
+            udalost={hra.melichar}
+            pusti={hra.pustiMelichara}
+          />
+        )
+      }
     />
     </>
   );

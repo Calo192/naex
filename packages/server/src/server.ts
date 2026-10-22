@@ -119,7 +119,12 @@ interface Room {
    * hráč už dostal (eventsFor), aby log prežil obnovenie stránky.
    */
   readonly historia: [Event[], Event[]];
+  /** Odkedy smie hráč pustiť ďalšiu hlášku Melichara zo soundboardu (čas v ms). */
+  readonly melicharVolnyOd: [number, number];
 }
+
+/** Po dohraní vlastnej hlášky musí hráč ešte chvíľu počkať (Michal 2026-10-22). */
+export const MELICHAR_PAUZA_MS = 2_000;
 
 /** Koľko udalostí histórie si miestnosť pamätá na jedno miesto. */
 const HISTORIA_MAX = 600;
@@ -143,7 +148,8 @@ type ClientMsg =
   | { type: "rejoin"; code: string }
   | { type: "leave" }
   | { type: "kontumacia" }
-  | { type: "cmd"; cmd: Command };
+  | { type: "cmd"; cmd: Command }
+  | { type: "melichar"; id: string };
 
 interface SocketInfo {
   readonly pouzivatel: Pouzivatel;
@@ -424,6 +430,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           botPovaha: POVAHY[randomInt(POVAHY.length)]?.id ?? "stamgast",
           botTimer: null,
           historia: [[], []],
+          melicharVolnyOd: [0, 0],
         };
         rooms.set(room.code, room);
         if (protiBotovi) {
@@ -516,6 +523,30 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           return;
         }
         vykonaj(room, { type: "vzdat", kontumacia: true }, super_);
+        break;
+      }
+      case "melichar": {
+        // Soundboard (Michal 2026-10-22): hlášku pustí len hráč rozohranej partie,
+        // počujú ju obaja. Kým jeho vlastná hrá a 2 s po nej, ďalšiu nepustí;
+        // súperova ho neblokuje. Bot soundboard nepoužíva.
+        const { room, seat } = info;
+        if (room === null || seat === null || room.state === null) {
+          sendError(ws, "Hlášky Melichara púšťa len hráč rozohranej partie.");
+          return;
+        }
+        const hlaska = melichar.hlasky().find((h) => h.id === msg.id);
+        if (hlaska === undefined) {
+          sendError(ws, "Takú hlášku majster Melichar nepozná.");
+          return;
+        }
+        const t = teraz();
+        const caka = room.melicharVolnyOd[seat] - t;
+        if (caka > 0) {
+          sendError(ws, `Majster Melichar ešte nedohovoril — ďalšiu hlášku pustíš o ${Math.ceil(caka / 1000)} s.`);
+          return;
+        }
+        room.melicharVolnyOd[seat] = t + hlaska.trvanieMs + MELICHAR_PAUZA_MS;
+        for (const s of room.sockets) if (s !== null) send(s, { type: "melichar", id: hlaska.id, seat, trvanieMs: hlaska.trvanieMs });
         break;
       }
       default:

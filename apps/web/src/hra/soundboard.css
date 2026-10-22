@@ -1,0 +1,647 @@
+/* Soundboard majstra Melichara (dizajn soundboard-20261022-0934, variant B):
+ * tlačidlo v hlavičke webu ako .hlava-vrstva, nemodálny panel-cenník 600 px,
+ * bublina pod menom súpera. Farby len z tokenov schemy.css. */
+
+.sb {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin-right: 4px;
+}
+
+.sb-spust {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 30px;
+  padding: 0 11px 0 6px;
+  font: 500 0.86rem/1 var(--pismo);
+  color: var(--tlmeny);
+  background: transparent;
+  border: 1px solid var(--okraj);
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.sb-spust:hover,
+.sb-spust[aria-expanded="true"] {
+  background: var(--plocha-3);
+  border-color: var(--okraj-svetly);
+  color: var(--text);
+}
+
+.sb[data-ja="moja"] .sb-spust {
+  border-color: var(--ja);
+  color: var(--text);
+}
+
+.sb-ik {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+
+.sb-ik svg {
+  width: 20px;
+  height: 20px;
+}
+
+.sb-ticho {
+  width: 14px;
+  height: 14px;
+  color: var(--slaby-text);
+}
+
+/* Odpočet 2 s — prstenec sa vyprázdňuje. */
+.sb .prstenec {
+  --p: 1;
+  display: grid;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: conic-gradient(var(--ja) calc(var(--p) * 1turn), color-mix(in srgb, var(--ja) 18%, transparent) 0);
+  -webkit-mask: radial-gradient(circle, transparent 6px, #000 6.5px);
+  mask: radial-gradient(circle, transparent 6px, #000 6.5px);
+}
+
+/* Súperova hláška — bodka na tlačidle. */
+.sb-bodka {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--su);
+  box-shadow: 0 0 0 2px var(--pozadie);
+  animation: sb-pulz 1s ease-in-out infinite;
+}
+
+@keyframes sb-pulz {
+  50% {
+    transform: scale(0.7);
+    opacity: 0.7;
+  }
+}
+
+/* Bublina pod menom súpera: kto hovorí, nie čo. */
+.sb-super {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: calc(100% + 4px);
+  z-index: 3;
+  display: none;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 11px 4px 9px;
+  border-radius: 999px;
+  font: 500 0.78rem/1.2 var(--pismo);
+  color: var(--text);
+  white-space: nowrap;
+  background: var(--su-tmava);
+  border: 1px solid var(--su);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+  animation: sb-vyskoc 0.18s ease-out;
+}
+
+.sb[data-super="1"] .sb-super {
+  display: inline-flex;
+}
+
+.sb-super::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 14px;
+  width: 10px;
+  height: 10px;
+  rotate: 45deg;
+  background: var(--su-tmava);
+  border-left: 1px solid var(--su);
+  border-top: 1px solid var(--su);
+}
+
+.sb-super .meno {
+  color: var(--su);
+  font-weight: 700;
+}
+
+/* Vlny (zvuk hrá) — tvar nesie význam aj bez farby. */
+.sb .vlny {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 14px;
+}
+
+.sb .vlny i {
+  display: block;
+  width: 3px;
+  height: 100%;
+  border-radius: 2px;
+  background: currentColor;
+  animation: sb-vlna 0.9s ease-in-out infinite;
+}
+
+.sb .vlny i:nth-child(1) {
+  animation-delay: -0.2s;
+}
+
+.sb .vlny i:nth-child(2) {
+  animation-delay: -0.5s;
+}
+
+.sb .vlny i:nth-child(3) {
+  animation-delay: -0.1s;
+}
+
+.sb .vlny i:nth-child(4) {
+  animation-delay: -0.7s;
+}
+
+@keyframes sb-vlna {
+  0%,
+  100% {
+    transform: scaleY(0.3);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.sb-spust .vlny,
+.sb[data-ja="moja"] .sb-stav .vlny {
+  color: var(--ja);
+}
+
+.sb-super .vlny,
+.sb[data-ja="pripravene"] .sb-stav .vlny {
+  color: var(--su);
+}
+
+/* ---- panel (nemodálny, zarovnaný k pravému okraju tlačidla) ---- */
+.sb-panel {
+  position: absolute;
+  top: calc(100% + 14px);
+  right: 0;
+  z-index: 4;
+  width: 600px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 220px);
+  display: flex;
+  flex-direction: column;
+  white-space: normal;
+  background: var(--plocha);
+  border: 1px solid var(--okraj-svetly);
+  border-radius: 14px;
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(0, 0, 0, 0.35);
+  transform-origin: calc(100% - 50px) 0;
+  animation: sb-rozbal 0.18s ease-out;
+}
+
+.sb-panel::before {
+  content: "";
+  position: absolute;
+  top: -7px;
+  right: 46px;
+  width: 12px;
+  height: 12px;
+  rotate: 45deg;
+  background: var(--plocha);
+  border-left: 1px solid var(--okraj-svetly);
+  border-top: 1px solid var(--okraj-svetly);
+}
+
+@keyframes sb-rozbal {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+}
+
+@keyframes sb-vyskoc {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+.sb-hlava {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 10px 10px 14px;
+  border-radius: 14px 14px 0 0;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--akcent) 11%, transparent), transparent);
+}
+
+.sb-medailon {
+  width: 38px;
+  height: 38px;
+  flex: none;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--akcent);
+  background: color-mix(in oklab, var(--akcent-tmavy) 24%, var(--pozadie));
+  border: 2px solid var(--akcent-tmavy);
+  box-shadow: inset 0 0 0 2px var(--pozadie);
+}
+
+.sb-medailon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.sb-hlava h2 {
+  margin: 0;
+  font: 800 1.12rem/1.15 var(--nadpis);
+  letter-spacing: 0.01em;
+}
+
+.sb-hlava p {
+  margin: 1px 0 0;
+  font-size: 0.8rem;
+  color: var(--slaby-text);
+}
+
+.sb-zavriet {
+  margin-left: auto;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--tlmeny);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.sb-zavriet:hover {
+  background: var(--plocha-3);
+  color: var(--text);
+  border-color: var(--okraj);
+}
+
+/* Pás stavu: vždy rovnako vysoký, nech panel neskáče. */
+.sb-stav {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  flex: none;
+  padding: 0 14px;
+  font-size: 0.84rem;
+  color: var(--slaby-text);
+  border-top: 1px solid var(--okraj);
+  border-bottom: 1px solid var(--okraj);
+  background: color-mix(in srgb, var(--pozadie) 45%, transparent);
+}
+
+.sb[data-ja="moja"] .sb-stav,
+.sb[data-ja="odpocet"] .sb-stav {
+  color: var(--ja);
+}
+
+.sb[data-ja="pripravene"][data-super="1"] .sb-stav {
+  color: var(--su);
+}
+
+.sb-cas {
+  margin-left: auto;
+  font: 700 0.84rem/1 var(--pismo);
+  font-variant-numeric: tabular-nums;
+}
+
+.sb-pas {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  height: 3px;
+  background: var(--ja);
+  border-radius: 0 3px 3px 0;
+}
+
+/* Klik počas hrania či odpočtu nič nespustí, len zatrasie pásom stavu. */
+.sb-stav.trasie {
+  animation: sb-trasie 0.28s ease;
+}
+
+.sb-stav.trasie2 {
+  animation: sb-trasie2 0.28s ease;
+}
+
+@keyframes sb-trasie {
+  25% {
+    transform: translateX(-4px);
+  }
+  50% {
+    transform: translateX(4px);
+  }
+  75% {
+    transform: translateX(-2px);
+  }
+}
+
+@keyframes sb-trasie2 {
+  25% {
+    transform: translateX(-4px);
+  }
+  50% {
+    transform: translateX(4px);
+  }
+  75% {
+    transform: translateX(-2px);
+  }
+}
+
+.sb-stlmene {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  font-size: 0.8rem;
+  color: var(--tlmeny);
+  background: color-mix(in srgb, var(--info) 8%, transparent);
+  border-bottom: 1px solid var(--okraj);
+}
+
+.sb-stlmene button {
+  margin-left: auto;
+  flex: none;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 7px;
+  cursor: pointer;
+  font: 500 0.8rem/1 var(--pismo);
+  color: var(--text);
+  background: var(--plocha-2);
+  border: 1px solid var(--okraj-svetly);
+}
+
+/* Telo: krčmový cenník v dvoch stĺpcoch — na 1366 × 768 bez posúvania. */
+.sb-telo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px 14px 12px;
+  overflow-y: auto;
+}
+
+.sb-prazdne {
+  margin: 0;
+  color: var(--slaby-text);
+  font-size: 0.85rem;
+}
+
+.sb-skupina {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 16px;
+}
+
+.sb-skupina legend {
+  float: left;
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  width: 100%;
+  padding: 0 8px 5px;
+  margin-bottom: 3px;
+  border-bottom: 1px solid var(--okraj);
+  font: 800 0.72rem/1.2 var(--pismo);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--akcent);
+}
+
+.sb-skupina legend .citat {
+  font: italic 400 0.8rem/1.2 var(--pismo);
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--slaby-text);
+}
+
+.sb-situacia {
+  margin-left: auto;
+  font: 400 0.74rem/1.2 var(--pismo);
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--slaby-text);
+}
+
+.sb-hlaska {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  width: 100%;
+  min-height: 32px;
+  padding: 6px 6px 6px 8px;
+  margin: 0;
+  font: 500 0.9rem/1.3 var(--pismo);
+  color: var(--text);
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease,
+    color 0.12s ease,
+    transform 0.08s ease;
+}
+
+.sb-hlaska.dlha {
+  grid-column: 1 / -1;
+}
+
+.sb-hlaska .hr-ik {
+  flex: none;
+  width: 14px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  color: var(--slaby);
+}
+
+.sb-hlaska .hr-ik svg {
+  width: 9px;
+  height: 10px;
+}
+
+.sb-hlaska .hr-ik .vlny {
+  height: 12px;
+}
+
+.sb-hlaska .hr-ik .vlny i {
+  width: 2px;
+}
+
+.sb-hlaska .hr-text {
+  min-width: 0;
+}
+
+.sb-hlaska .hr-bodky {
+  flex: 1 1 12px;
+  min-width: 12px;
+  height: 1px;
+  margin-bottom: 6px;
+  border-bottom: 2px dotted color-mix(in srgb, var(--okraj-svetly) 85%, transparent);
+}
+
+.sb kbd {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
+  font: 700 0.72rem/1 var(--pismo);
+  color: var(--tlmeny);
+  background: var(--pozadie);
+  border: 1px solid var(--okraj-svetly);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+}
+
+.sb-hlaska:hover:not([aria-disabled="true"]) {
+  background: var(--plocha-3);
+  border-color: var(--okraj);
+}
+
+.sb-hlaska:hover:not([aria-disabled="true"]) .hr-text {
+  color: var(--akcent-svetly);
+}
+
+.sb-hlaska:hover:not([aria-disabled="true"]) .hr-ik {
+  color: var(--akcent);
+}
+
+.sb-hlaska:hover:not([aria-disabled="true"]) kbd {
+  color: var(--text);
+  border-color: var(--akcent-tmavy);
+}
+
+.sb-hlaska:active:not([aria-disabled="true"]) {
+  transform: translateY(1px);
+}
+
+.sb-hlaska:focus-visible {
+  outline: 2px solid var(--akcent);
+  outline-offset: 0;
+}
+
+.sb-hlaska[aria-disabled="true"] {
+  cursor: not-allowed;
+  color: var(--slaby);
+}
+
+.sb-hlaska[aria-disabled="true"]:not(.hraje) .hr-ik {
+  opacity: 0.35;
+}
+
+.sb-hlaska[aria-disabled="true"] .hr-bodky {
+  opacity: 0.45;
+}
+
+.sb-hlaska[aria-disabled="true"] kbd {
+  opacity: 0.55;
+}
+
+/* Moja práve hrá: tyrkysová ako „ty“ na celom stole + vlny namiesto ▶. */
+.sb-hlaska.hraje {
+  color: var(--text);
+  cursor: default;
+  background: color-mix(in srgb, var(--ja-tmava) 85%, transparent);
+  border-color: color-mix(in srgb, var(--ja) 60%, transparent);
+  box-shadow: inset 3px 0 0 var(--ja);
+}
+
+.sb-hlaska.hraje .hr-ik {
+  color: var(--ja);
+}
+
+.sb-hlaska.hraje kbd {
+  opacity: 1;
+  color: var(--ja);
+  border-color: var(--ja);
+}
+
+.sb-pata {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: none;
+  padding: 9px 14px 11px;
+  border-top: 1px solid var(--okraj);
+  font-size: 0.8rem;
+  color: var(--slaby-text);
+}
+
+.sb-pata label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--tlmeny);
+}
+
+.sb-pata input[type="range"] {
+  width: 150px;
+  accent-color: var(--akcent);
+}
+
+.sb-pata output {
+  min-width: 3.4em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+.sb-pata .skratky {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.sb-pata .skratky kbd {
+  min-width: 20px;
+  height: 20px;
+  font-size: 0.68rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sb .vlny i {
+    animation: none;
+  }
+  .sb-panel,
+  .sb-super,
+  .sb-stav.trasie,
+  .sb-stav.trasie2,
+  .sb-bodka {
+    animation: none;
+  }
+}
+
+/* Hra na mobile nie je podporovaná (Michal 2026-10-22) — soundboard tam netreba. */
+@media (max-width: 760px) {
+  .sb {
+    display: none;
+  }
+}

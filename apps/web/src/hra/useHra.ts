@@ -40,7 +40,17 @@ type ServerMsg =
   | { type: "historia"; events: Event[] }
   | { type: "superPripojeny"; connected: boolean }
   | { type: "frajerina"; zmeny: ZmenyFrajeriny }
+  /** Hláška majstra Melichara zo soundboardu — server ju posiela obom hráčom. */
+  | { type: "melichar"; id: string; seat: 0 | 1; trvanieMs: number }
   | { type: "error"; text: string };
+
+/** Pustená hláška Melichara; n rastie, aby sa tá istá hláška dala pustiť znova. */
+export interface HlaskaVPartii {
+  readonly n: number;
+  readonly id: string;
+  readonly seat: 0 | 1;
+  readonly trvanieMs: number;
+}
 
 export interface HraHook {
   readonly pripojene: boolean;
@@ -54,6 +64,10 @@ export interface HraHook {
   readonly chyba: string | null;
   readonly superPripojeny: boolean;
   readonly frajerina: ZmenyFrajeriny | null;
+  /** Posledná hláška Melichara pustená v partii (ktorýmkoľvek hráčom). */
+  readonly melichar: HlaskaVPartii | null;
+  /** Pustí hlášku zo soundboardu — server overí pauzu a pošle ju obom. */
+  pustiMelichara(id: string): void;
   /** Nová hra; bot = proti offline protihráčovi (počítač), začína hneď. */
   zaloz(verejna: boolean, dlzka: DlzkaHry, bot?: boolean): void;
   pripoj(code: string): void;
@@ -94,6 +108,7 @@ export function useHra(aktivne: boolean): HraHook {
   const [chyba, setChyba] = useState<string | null>(null);
   const [superPripojeny, setSuperPripojeny] = useState(true);
   const [frajerina, setFrajerina] = useState<ZmenyFrajeriny | null>(null);
+  const [melichar, setMelichar] = useState<HlaskaVPartii | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const menaRef = useRef<string[]>([]);
   menaRef.current = hraci.map((h, i) => h?.meno ?? `Hráč ${i + 1}`);
@@ -138,6 +153,9 @@ export function useHra(aktivne: boolean): HraHook {
           break;
         case "frajerina":
           setFrajerina(msg.zmeny);
+          break;
+        case "melichar":
+          setMelichar((h) => ({ n: (h?.n ?? 0) + 1, id: msg.id, seat: msg.seat, trvanieMs: msg.trvanieMs }));
           break;
         case "error":
           // Rozohraná partia zanikla (napr. reštart servera — miestnosti žijú
@@ -201,6 +219,8 @@ export function useHra(aktivne: boolean): HraHook {
     chyba,
     superPripojeny,
     frajerina,
+    melichar,
+    pustiMelichara: useCallback((id: string) => posli({ type: "melichar", id }), [posli]),
     zaloz: useCallback((verejna: boolean, dlzka: DlzkaHry, bot = false) => posli({ type: "create", verejna, dlzka, bot }), [posli]),
     pripoj: useCallback((code: string) => posli({ type: "join", code: code.trim().toUpperCase() }), [posli]),
     cmd: useCallback((command: Command) => posli({ type: "cmd", cmd: command }), [posli]),

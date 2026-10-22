@@ -246,6 +246,8 @@ export interface HernaPlochaProps {
   /** Zmena Frajeriny po dohraní (príde zo servera po zápise do archívu). */
   readonly frajerina?: ZmenyFrajeriny | null;
   readonly kontumacia?: () => void;
+  /** Ovládanie navyše v hlavičke webu pred menom súpera (soundboard Melichara). */
+  readonly vHlavicke?: ReactNode;
 }
 
 /** Názvy fáz pre titulok karty prehliadača. */
@@ -295,6 +297,7 @@ export function HernaPlocha({
   opustit,
   frajerina = null,
   kontumacia,
+  vHlavicke,
 }: HernaPlochaProps) {
   DATA = data;
   const ja = view.ja;
@@ -3378,6 +3381,7 @@ export function HernaPlocha({
       {slotHlavicky !== null &&
         createPortal(
           <div className="hlavicka-partia">
+            {vHlavicke}
             <span className={`spojenie ${superPripojeny ? "online" : "offline"}`}>
               {superPripojeny ? `● ${menoHraca(super_)}` : `○ ${menoHraca(super_)} odpojený`}
             </span>

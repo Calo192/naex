@@ -9,8 +9,8 @@ import { api } from "../lib/api.ts";
 import { MELICHAR_FREKVENCIA_DO, MELICHAR_FREKVENCIA_PREDVOLENA, MELICHAR_PREDVOLENY, useUcet } from "../lib/ucet.tsx";
 import { hlasitostZvuku, zamiesaj, type Skladba } from "./Hudba.tsx";
 
-/** Hláška má rovnaký tvar ako skladba — nazov je jej text. */
-export type HlaskaMelichara = Skladba;
+/** Hláška má rovnaký tvar ako skladba — nazov je jej text; trvanieMs pre soundboard. */
+export type HlaskaMelichara = Skladba & { readonly trvanieMs?: number };
 
 /** Po hláške aspoň chvíľu ticho, nech jedna nenadväzuje na druhú. */
 const TICHO_MS = 4_000;
