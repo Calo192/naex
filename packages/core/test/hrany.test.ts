@@ -7,7 +7,7 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, LineState, PlacedCard, PlayerId, StranaLinie } from "../src/index.ts";
-import { evaluateLine, hranyZPohladu, loadGameData, nahladVylozenia, printedSides, stranyLokality } from "../src/index.ts";
+import { evaluateLine, hranyZPohladu, loadGameData, nahladVylozenia, printedSides, stranyLokality, zadlzenieZLinie } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -78,9 +78,13 @@ describe("náhľad vyloženia sedí s vyhodnotením línie", () => {
       }
 
       const pred = evaluateLine(data, line);
+      // Dlh ako ho pripíše Pitka — Finančná poradkyňa ho posiela súperovi (zadlzenieZLinie).
+      const dlhPred = zadlzenieZLinie(data, line, pred);
+      const dlhPo = zadlzenieZLinie(data, { strany: p === 0 ? [nova, []] : [[], nova] }, po);
       for (const h of [0, 1] as const) {
-        for (const a of new Set([...Object.keys(pred.sums[h]), ...Object.keys(po.sums[h])]) as Set<keyof (typeof po.sums)[0]>) {
-          expect((n.zmeny[h][a] ?? 0)).toBe((po.sums[h][a] ?? 0) - (pred.sums[h][a] ?? 0));
+        for (const a of new Set([...Object.keys(pred.sums[h]), ...Object.keys(po.sums[h]), "Dlh"]) as Set<keyof (typeof po.sums)[0]>) {
+          const cakane = a === "Dlh" ? dlhPo[h] - dlhPred[h] : (po.sums[h][a] ?? 0) - (pred.sums[h][a] ?? 0);
+          expect(n.zmeny[h][a] ?? 0, `${karta.defId} ${h} ${a}`).toBe(cakane);
         }
       }
     }
