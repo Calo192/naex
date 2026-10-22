@@ -484,6 +484,20 @@ export function hltavyPrebytok(
 }
 
 /**
+ * Hodnota lokality (Michal 2026-10-22): o koľko bodov si každý hráč polepší,
+ * keď lokalitu ovládne — podľa dnešného rozdania scorecardov, každá aktívna
+ * podmienka „lokality“ zvlášť (ten istý výpočet ako bodyTeraz). So `sSekerou`
+ * aj lokality na sekere, ktoré víťaz bitky berie spolu s cieľom.
+ */
+export function hodnotaLokality(data: GameData, view: ClientState, karta: CardInstance, sSekerou = false): readonly [number, number] {
+  const ziskane = [karta, ...(sSekerou ? view.naSekeru.filter((k) => k.uid !== karta.uid) : [])];
+  const teraz = bodyTeraz(data, view).spolu;
+  const pre = (p: PlayerId): number =>
+    bodyTeraz(data, { ...view, ovladnute: [...view.ovladnute, ...ziskane.map((k) => ({ karta: k, hrac: p }))] }).spolu[p] - teraz[p];
+  return [pre(0), pre(1)];
+}
+
+/**
  * Stávka bitky (Michal 2026-10-22, návrh 3 A): čo hráč získa výhrou a stratí
  * prehrou s prebytkom STAVKA_PREBYTOK, a pred poslednou bitkou, koľko najviac
  * môže súper získať. Rozdiel bodov ja − súper, ten istý výpočet ako bodyTeraz.
