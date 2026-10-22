@@ -1463,9 +1463,9 @@ export function HernaPlocha({
     return (
       <span
         className="hodnota-lokality"
-        title={`Ovládnutie${sSekerou ? " (aj so sekerou)" : ""} by ti dnes pridalo ${h[ja]} b, súperovi ${h[super_]} b — podľa rozdania scorecardov, každá aktívna podmienka „lokality“ zvlášť.`}
+        title={`Ovládnutie${sSekerou ? " (aj so sekerou)" : ""} by ti dnes pridalo ${h[ja]} b, ${menoHraca(super_)} ${h[super_]} b — podľa rozdania scorecardov, každá aktívna podmienka „lokality“ zvlášť.`}
       >
-        +{h[ja]} b ty · +{h[super_]} b {menoHraca(super_)}
+        +{h[ja]} b · súper +{h[super_]}
       </span>
     );
   };
