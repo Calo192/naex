@@ -431,8 +431,10 @@ export class Dielna {
         nazov: zaklad.nazov,
         tagy: zaklad.tagy,
         efekt: zaklad.efekt,
-        lava: stranaZPozicii(poziciZoStrany(zaklad.lava)),
-        prava: stranaZPozicii(poziciZoStrany(zaklad.prava)),
+        // Strany ostanú, ako sú (aj s viacerými rozloženiami); pevné pozície
+        // dostanú, až keď ich autor v editore zmení.
+        lava: zaklad.lava,
+        prava: zaklad.prava,
         obrazok: zaklad.obrazok?.plny ?? null,
       };
     }
