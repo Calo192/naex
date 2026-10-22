@@ -2957,7 +2957,8 @@ export function HernaPlocha({
         }
       }
     }
-    return ` · ${elder.marker} → ${novy} (${zonaPred === zonaPo ? zonaPo : `${zonaPred} → ${zonaPo}`}) · body ty ${zn(n.zmena[ja])}, súper ${zn(n.zmena[super_])}${doZony} · ${priazen}`;
+    // Bez čísel pozícií (Michal 2026-10-22): hráč 2 vidí stupnicu zrkadlovo, „4 → 5“ by mu klamalo.
+    return ` · k ${menoHraca(super_)}: ${zonaPred} → ${zonaPo} · body ty ${zn(n.zmena[ja])}, súper ${zn(n.zmena[super_])}${doZony} · ${priazen}`;
   };
   const klikStarsi = (elder: ElderState): { readonly akcia: string; readonly klik: () => void } | undefined => {
     if (!somNaTahu) return undefined;
@@ -3512,7 +3513,21 @@ export function HernaPlocha({
                 .join(" · ")}
             </li>
           )}
-          {ucetBitky.posuny.length > 0 && <li>Posuny: {ucetBitky.posuny.map((x) => `${x.meno} ${x.pred} → ${x.po}`).join(" · ")}</li>}
+          {ucetBitky.posuny.length > 0 && (
+            <li>
+              Posuny:{" "}
+              {ucetBitky.posuny
+                .map((x) => {
+                  // Nižší index = polovica hráča 1 (miesto 0); smer, nie čísla — stupnica je zrkadlová.
+                  const k: PlayerId = x.po < x.pred ? 0 : 1;
+                  const zPred = ZONA[STUPNICA_ZONY[x.pred] ?? 0];
+                  const zPo = ZONA[STUPNICA_ZONY[x.po] ?? 0];
+                  const zony = zPred === zPo ? zPo : `${zPred} → ${zPo}`;
+                  return `${x.meno} k ${k === ja ? "tebe" : menoHraca(k)} ${Math.abs(x.po - x.pred) > 1 ? `o ${Math.abs(x.po - x.pred)} ` : ""}(${zony})`;
+                })
+                .join(" · ")}
+            </li>
+          )}
           <li>
             Body: ty {ucetBitky.body.pred[ja]} → <b>{ucetBitky.body.po[ja]}</b> · {menoHraca(super_)} {ucetBitky.body.pred[super_]} →{" "}
             <b>{ucetBitky.body.po[super_]}</b>
@@ -3733,7 +3748,7 @@ export function HernaPlocha({
           <h3>
             <span>
               Starší{" "}
-              <span className="h3-pozn">{ja === 0 ? "tvoja strana ← → súperova" : "súperova strana ← → tvoja"}</span>
+              <span className="h3-pozn">{/* Stupnica je zrkadlová (Michal 2026-10-22) — tvoja polovica je vždy vľavo. */}tvoja strana ← → súperova</span>
             </span>
             <span
               className={`vydeseni-pocet ${vydeseni[super_] >= prahVyd - 1 ? "hrozba" : ""}`}
