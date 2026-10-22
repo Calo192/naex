@@ -13,7 +13,7 @@ import type { GameState } from "./engine.ts";
 import type { ElderState } from "./elders.ts";
 import { prebudenyPre } from "./elders.ts";
 import type { CardInstance } from "./types.ts";
-import type { PlacedCard } from "./partia.ts";
+import type { LineEval, PlacedCard } from "./partia.ts";
 import { rataSaDoPrevahy, spojePsa } from "./partia.ts";
 import { limitVykladania } from "./player.ts";
 import { KONSTANTY } from "./constants.ts";
@@ -137,7 +137,7 @@ export function partiaHraca(state: { readonly strany: VerejnyStav["strany"] }, p
 }
 
 /** Hráč p má v línii kartu defId (natočenú k sebe, v ktorejkoľvek partii). */
-export function vPartii(state: VerejnyStav, p: PlayerId, defId: string): boolean {
+export function vPartii(state: Pick<VerejnyStav, "strany">, p: PlayerId, defId: string): boolean {
   return partiaHraca(state, p).some((pl) => pl.card.defId === defId);
 }
 
@@ -159,10 +159,35 @@ export function efektHraca(state: VerejnyStav, p: PlayerId, defId: string): bool
  * 2026-10-18; predtým v tvojej). Kontroluje sa pri každom efekte karty
  * s tagom Autorita, ktorej majiteľom je hráč p.
  */
-export function efektPotlaceny(data: GameData, state: VerejnyStav, p: PlayerId, defId: string): boolean {
+export function efektPotlaceny(data: GameData, state: Pick<VerejnyStav, "strany">, p: PlayerId, defId: string): boolean {
   const def = data.cards.get(defId);
   if (def === undefined || !def.tags.includes("Autorita" as Tag)) return false;
   return vPartii(state, opponentOf(p), "praudovravec");
+}
+
+/**
+ * Zadĺženie z aktívnych akcií Dlh v línii, [hráč 0, hráč 1]. financna_poradkyna
+ * (Michal 2026-10-18): Dlh z jej akcií dostáva súper, nie jej majiteľ. Jeden
+ * výpočet pre Pitku (prirastkyPitky) aj náhľad vyloženia (nahladVylozenia) —
+ * náhľad ho predtým pripísal majiteľovi (playtest 2026-10-22).
+ */
+export function zadlzenieZLinie(data: GameData, state: Pick<VerejnyStav, "strany">, vyhodnotenie: LineEval): readonly [number, number] {
+  const poradkynaDlhy = [0, 0] as [number, number];
+  for (const p of [0, 1] as const) {
+    for (const placed of partiaHraca(state, p)) {
+      if (placed.card.defId !== "financna_poradkyna" || efektPotlaceny(data, state, p, "financna_poradkyna")) continue;
+      const ev = vyhodnotenie.cards.get(placed.card.uid);
+      if (ev === undefined) continue;
+      for (const strana of [ev.left, ev.right]) {
+        for (const slot of strana) {
+          if (slot?.action === "Dlh" && slot.stav === "aktivna") poradkynaDlhy[p] += slot.nasobok;
+        }
+      }
+    }
+  }
+  const sums = vyhodnotenie.sums;
+  const pre = (p: PlayerId): number => Math.max(0, (sums[p].Dlh ?? 0) - poradkynaDlhy[p]) + poradkynaDlhy[opponentOf(p)];
+  return [pre(0), pre(1)];
 }
 
 // ---------------------------------------------------------------------------

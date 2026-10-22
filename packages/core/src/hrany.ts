@@ -14,8 +14,9 @@
 import type { CardInstance, PlayerId, Slot } from "./types.ts";
 import type { GameData } from "./data.ts";
 import { defOf, printedSides } from "./data.ts";
-import type { ActionSums, LineState, PlacedCard } from "./partia.ts";
+import type { ActionSums, LineEval, LineState, PlacedCard } from "./partia.ts";
 import { evaluateLine, spojVznikne } from "./partia.ts";
+import { zadlzenieZLinie } from "./effects.ts";
 
 export interface HranyZPohladu {
   readonly lava: readonly Slot[];
@@ -118,10 +119,15 @@ export function nahladVylozenia(
     }
   }
 
-  const pred = evaluateLine(data, line);
   const nova: readonly PlacedCard[] = [...strana, { card: karta, playedBy: ja }];
   const strany: LineState["strany"] = p === 0 ? [nova, line.strany[1]] : [line.strany[0], nova];
-  const po = evaluateLine(data, { ...line, strany });
+  // Dlh tak, ako ho pripíše Pitka — Finančná poradkyňa ho posiela súperovi.
+  const sumy = (s: LineState["strany"], ev: LineEval): readonly [ActionSums, ActionSums] => {
+    const z = zadlzenieZLinie(data, { strany: s }, ev);
+    return [{ ...ev.sums[0], Dlh: z[0] }, { ...ev.sums[1], Dlh: z[1] }];
+  };
+  const pred = sumy(line.strany, evaluateLine(data, line));
+  const po = sumy(strany, evaluateLine(data, { ...line, strany }));
 
   return {
     vnutorna,
@@ -129,7 +135,7 @@ export function nahladVylozenia(
     vnutornaVytlacena: naMojej ? "right" : "left",
     sused,
     pary,
-    zmeny: [rozdiel(pred.sums[0], po.sums[0]), rozdiel(pred.sums[1], po.sums[1])],
+    zmeny: [rozdiel(pred[0], po[0]), rozdiel(pred[1], po[1])],
   };
 }
 

@@ -74,6 +74,7 @@ import {
   zakazFajcit,
   zakazNaex,
   zakazVypit,
+  zadlzenieZLinie,
   vDedicstve,
   partiaHraca,
   vPartii,
@@ -643,24 +644,8 @@ export function prirastkyPitky(
   vyhodnotenie: LineEval = evaluateLine(data, lineState(s)),
 ): PrirastkyPitky {
   const sums = vyhodnotenie.sums;
-  const poradkynaDlhy = [0, 0] as [number, number];
-  for (const p of [0, 1] as const) {
-    for (const placed of partiaHraca(s, p)) {
-      if (placed.card.defId !== "financna_poradkyna") continue;
-      if (efektPotlaceny(data, s, p, "financna_poradkyna")) continue;
-      const ev = vyhodnotenie.cards.get(placed.card.uid);
-      if (ev === undefined) continue;
-      for (const strana of [ev.left, ev.right]) {
-        for (const slot of strana) {
-          if (slot?.action === "Dlh" && slot.stav === "aktivna") poradkynaDlhy[p] += slot.nasobok;
-        }
-      }
-    }
-  }
-  // financna_poradkyna (Michal 2026-10-18): Dlh z jej akcií dostáva súper, nie jej majiteľ.
-  const zadlzenie = ([0, 1] as const).map((p) => Math.max(0, (sums[p].Dlh ?? 0) - poradkynaDlhy[p]) + poradkynaDlhy[opponentOf(p)]);
   return {
-    zadlzenie: [zadlzenie[0] ?? 0, zadlzenie[1] ?? 0],
+    zadlzenie: zadlzenieZLinie(data, s, vyhodnotenie),
     poskodeniePecene: [sums[0].PoškodeniePečene ?? 0, sums[1].PoškodeniePečene ?? 0],
     poldeci: [sums[0].Poldeci ?? 0, sums[1].Poldeci ?? 0],
   };
