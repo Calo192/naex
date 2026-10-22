@@ -1,8 +1,10 @@
 // UI inšpekcia webu NA EX! — headless Chrome prejde stránky a priamo v nich
-// zmeria UI chyby: orezaný a prekrytý text, nezarovnané ikony, prekryvy,
-// vodorovný presah, malé klikacie ciele, chýbajúci fokus, nízky kontrast,
-// chyby v konzole, rozbité obrázky a pomalé načítanie. Výsledok je JSON
-// s nálezmi a výrezy snímok — overí ich a report napíše agent naex-ui-inspektor.
+// zmeria UI chyby: orezaný a prekrytý text, nezarovnané ikony a rady (schody
+// kariet v línii), prekryvy, vodorovný presah, malé klikacie ciele, chýbajúci
+// fokus, nízky kontrast, chyby v konzole, rozbité obrázky a pomalé načítanie.
+// Výsledok je JSON s nálezmi a výrezy snímok — overí ich a report napíše agent
+// naex-ui-inspektor. Akceptované výnimky (Michalove „je to dizajn“) sú vo
+// vynimky.json — nehlásia sa, len sa spočítajú.
 //
 //   node --experimental-strip-types --no-warnings tools/ui-inspektor/inspekcia.ts [cesta …] [--rozlisenia 1600x1000,1920x1080]
 //        [--url http://localhost:8793] [--relacia R --hrac 1] [--klik selektor]… [--stav nazov] [--vystup priečinok]
@@ -102,6 +104,7 @@ interface Nalez {
   selektor: string;
   text: string;
   box: { x: number; y: number; w: number; h: number };
+  skrol?: number;
   detail: string;
   vyrez?: string;
   pocet?: number;
@@ -111,14 +114,18 @@ interface Vysledok {
   stav: string;
   rozlisenie: string;
   snimka: string;
+  /** Snímky po obrazovkách zhora nadol (prvá = snimka). */
+  snimky: string[];
   nacitanieMs: number;
   nalezy: Nalez[];
+  /** Nálezy vyradené podľa vynimky.json (selektor výnimky → počet). */
+  vyradene: Record<string, number>;
 }
 
 // Meranie v stránke — beží v prehliadači, preto ako text. Vracia nálezy so súradnicami
 // na celej stránke (box) — z nich sa potom robia výrezy.
 const MERANIE = String.raw`(async () => {
-  const W = innerWidth, H = innerHeight, nalezy = [];
+  const W = innerWidth, H = innerHeight, nalezy = [], VYNIMKY = __VYNIMKY__, vyradene = {};
   const viditelny = (el) => {
     const s = getComputedStyle(el);
     if (s.display === 'none' || s.visibility === 'hidden' || Number(s.opacity) < 0.05) return false;
@@ -141,7 +148,12 @@ const MERANIE = String.raw`(async () => {
   };
   const text = (el) => (el.innerText || el.getAttribute('aria-label') || el.getAttribute('alt') || el.getAttribute('title') || '').trim().replace(/\s+/g, ' ').slice(0, 90);
   const box = (r) => ({ x: Math.round(r.left + scrollX), y: Math.round(r.top + scrollY), w: Math.round(r.width), h: Math.round(r.height) });
-  const pridaj = (typ, zavaznost, el, detail, r) => nalezy.push({ typ, zavaznost, selektor: popis(el), text: text(el), box: box(r || el.getBoundingClientRect()), detail });
+  // skrol = posun okna pri meraní: pevné vrstvy (ruka, lišta) sedia na výreze len pri ňom.
+  const pridaj = (typ, zavaznost, el, detail, r) => {
+    const v = VYNIMKY.find((v) => v.typ === typ && el.closest(v.selektor));
+    if (v) vyradene[v.selektor] = (vyradene[v.selektor] || 0) + 1;
+    else nalezy.push({ typ, zavaznost, selektor: popis(el), text: text(el), box: box(r || el.getBoundingClientRect()), skrol: Math.round(scrollY), detail });
+  };
   const vsetky = [...document.body.querySelectorAll('*')].filter(viditelny);
   const maText = (el) => [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());
   const skryva = (s) => /hidden|clip/.test(s.overflowX + ' ' + s.overflowY);
@@ -158,25 +170,46 @@ const MERANIE = String.raw`(async () => {
     for (let e = el; e; e = e.parentElement) if (/fixed|sticky/.test(getComputedStyle(e).position)) return true;
     return false;
   };
+  // Modálne vrstvy a vyskakovacie panely zakrývajú stránku pod sebou zámerne.
+  const MODALY = '[role=dialog],dialog,.vrstva,.koniec-vrstva,.sb-panel,.skratky-napoveda';
+  const modal = (el) => el.closest(MODALY);
+  // Obdĺžnik samotného obsahu: blok býva širší než text v ňom (meno zarovnané doprava).
+  const obsahRect = (el) => { const rg = document.createRange(); rg.selectNodeContents(el); return rg.getBoundingClientRect(); };
+  const vycnieva = (r, p) => Math.max(p.left - r.left, r.right - p.right, p.top - r.top, r.bottom - p.bottom);
 
   // 1. Orezaný text: obsah je väčší než box so skrytým pretečením, alebo text vytŕča z predka, ktorý ho skryje.
+  const orezane = new Set();
   for (const el of vsetky.filter(maText)) {
     const s = getComputedStyle(el);
     const sirsi = el.scrollWidth > el.clientWidth + 1, vyssi = el.scrollHeight > el.clientHeight + 1;
     if ((sirsi || vyssi) && (skryva(s) || s.textOverflow === 'ellipsis')) {
       const trojbodka = s.textOverflow === 'ellipsis' || (s.webkitLineClamp && s.webkitLineClamp !== 'none');
+      if (!trojbodka) {
+        // Pretečie potomok (čip vedľa mena), nie text tohto prvku — nahlási sa potomok.
+        const er = el.getBoundingClientRect();
+        const deti = [...el.querySelectorAll('*')].filter((d) => maText(d) && viditelny(d) && vycnieva(obsahRect(d), er) > 2);
+        if (deti.length > 0) {
+          for (const d of deti.slice(0, 3)) {
+            orezane.add(d);
+            pridaj('orezany-text', 'vysoka', d, 'text vytŕča o ' + Math.round(vycnieva(obsahRect(d), er)) + ' px z ' + popis(el) + ', ktorý pretečenie skrýva');
+          }
+          continue;
+        }
+      }
       pridaj(trojbodka ? 'skrateny-text' : 'orezany-text', trojbodka ? 'nizka' : 'vysoka', el,
         'obsah ' + el.scrollWidth + '×' + el.scrollHeight + ' px, box ' + el.clientWidth + '×' + el.clientHeight + ' px' + (trojbodka ? ', trojbodka' : ''));
       continue;
     }
-    const r = el.getBoundingClientRect();
+    if (orezane.has(el)) continue;
+    const r = obsahRect(el);
     for (let p = el.parentElement; p && p !== document.body; p = p.parentElement) {
       const ps = getComputedStyle(p);
       if (/auto|scroll/.test(ps.overflowX + ' ' + ps.overflowY)) break;
       if (!skryva(ps)) continue;
-      const pr = p.getBoundingClientRect();
-      const presah = Math.max(pr.left - r.left, r.right - pr.right, pr.top - r.top, r.bottom - pr.bottom);
-      if (presah > 2 && presah < r.height + r.width) pridaj('orezany-text', 'vysoka', el, 'text vytŕča o ' + Math.round(presah) + ' px z ' + popis(p) + ', ktorý pretečenie skrýva');
+      const presah = vycnieva(r, p.getBoundingClientRect());
+      // Predok, ktorý text celý obsahuje, ho neoreže — orezať ho môže až niektorý vyšší (zrkadlená doska).
+      if (presah <= 2) continue;
+      if (presah < r.height + r.width) pridaj('orezany-text', 'vysoka', el, 'text vytŕča o ' + Math.round(presah) + ' px z ' + popis(p) + ', ktorý pretečenie skrýva');
       break;
     }
   }
@@ -228,6 +261,8 @@ const MERANIE = String.raw`(async () => {
         if (!hore || el.contains(hore) || hore.contains(el)) return null;
         // Label nad vlastným inputom a podobné väzby nie sú prekryv.
         if (hore.closest('label') && hore.closest('label').contains(el)) return null;
+        const m = modal(hore);
+        if (m && !m.contains(el)) return null;
         return hore;
       };
       let hore = zakryva(cx, cy);
@@ -248,25 +283,43 @@ const MERANIE = String.raw`(async () => {
   await new Promise((ok) => setTimeout(ok, 150));
 
   // 4. Prekrývajúci sa text: listové textové prvky, ktorých riadky (getClientRects — inline text
-  // má obdĺžnik na každý riadok) sa pretínajú. Natočené prvky (vejár kariet) a lepiace či pevné
-  // vrstvy (hlavička) sa prekrývajú zámerne, tie sa vynechajú.
+  // má obdĺžnik na každý riadok) sa pretínajú. Natočené prvky (vejár kariet) sa prekrývajú zámerne
+  // a modálna vrstva zakrýva stránku zámerne — porovnáva sa len text v tej istej vrstve.
   const listy = vsetky.filter(maText).filter((el) => el.children.length === 0 || [...el.children].every((c) => !maText(c)))
-    .filter((el) => !natoceny(el) && !plavajuci(el)).slice(0, 1500);
-  const rr = listy.map((el) => [...el.getClientRects()].filter((r) => r.width > 1 && r.height > 1));
+    .filter((el) => !natoceny(el)).slice(0, 1500);
+  const riadky = (el) => [...el.getClientRects()].filter((r) => r.width > 1 && r.height > 1);
+  const rr = listy.map(riadky);
+  const pevne = listy.map(plavajuci), modaly = listy.map(modal);
+  const zasah = (ra, rb) => {
+    for (const a of ra) for (const b of rb) {
+      const sx = Math.min(a.right, b.right) - Math.max(a.left, b.left), sy = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+      if (sx > 2 && sy > 2 && sx * sy >= Math.min(a.width * a.height, b.width * b.height) * 0.3) return { a, b };
+    }
+    return null;
+  };
+  const pridajPrekryv = (i, j, { a, b }) => {
+    const r = { left: Math.min(a.left, b.left), top: Math.min(a.top, b.top), width: Math.max(a.right, b.right) - Math.min(a.left, b.left), height: Math.max(a.bottom, b.bottom) - Math.min(a.top, b.top) };
+    pridaj('prekryty-text', 'vysoka', listy[i], 'text sa prekrýva s ' + popis(listy[j]) + ' („' + text(listy[j]).slice(0, 40) + '“)', r);
+  };
+  const naOverenie = [];
   for (let i = 0; i < listy.length; i++) {
     for (let j = i + 1; j < listy.length; j++) {
-      if (listy[i].contains(listy[j]) || listy[j].contains(listy[i])) continue;
-      let zasah = null;
-      for (const a of rr[i]) for (const b of rr[j]) {
-        const sx = Math.min(a.right, b.right) - Math.max(a.left, b.left), sy = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
-        if (sx > 2 && sy > 2 && sx * sy >= Math.min(a.width * a.height, b.width * b.height) * 0.3) zasah = { a, b };
-      }
-      if (!zasah) continue;
-      const { a, b } = zasah;
-      const r = { left: Math.min(a.left, b.left), top: Math.min(a.top, b.top), width: Math.max(a.right, b.right) - Math.min(a.left, b.left), height: Math.max(a.bottom, b.bottom) - Math.min(a.top, b.top) };
-      pridaj('prekryty-text', 'vysoka', listy[i], 'text sa prekrýva s ' + popis(listy[j]) + ' („' + text(listy[j]).slice(0, 40) + '“)', r);
+      if (modaly[i] !== modaly[j] || listy[i].contains(listy[j]) || listy[j].contains(listy[i])) continue;
+      const z = zasah(rr[i], rr[j]);
+      if (!z) continue;
+      if (pevne[i] !== pevne[j]) naOverenie.push([i, j]);
+      else pridajPrekryv(i, j, z);
     }
   }
+  // Pevná vrstva (ruka, lišta) nad textom stránky: chyba, len ak text nejde odrolovať spod nej.
+  for (const [i, j] of naOverenie.slice(0, 100)) {
+    (pevne[i] ? listy[j] : listy[i]).scrollIntoView({ block: 'center', behavior: 'instant' });
+    await new Promise((ok) => setTimeout(ok, 80));
+    const z = zasah(riadky(listy[i]), riadky(listy[j]));
+    if (z) pridajPrekryv(i, j, z);
+  }
+  scrollTo({ top: 0, behavior: 'instant' });
+  await new Promise((ok) => setTimeout(ok, 150));
 
   // 5. Nezarovnané ikony: ikona vedľa textu v jednom riadku má iný zvislý stred.
   const ikony = vsetky.filter((el) => (el.tagName === 'svg' || el.tagName === 'IMG' || /ikon|icon|piktogram/i.test(el.className && el.className.baseVal !== undefined ? el.className.baseVal : el.className)) && el.getBoundingClientRect().width <= 64);
@@ -276,6 +329,8 @@ const MERANIE = String.raw`(async () => {
     if (!rodic) continue;
     for (const n of rodic.childNodes) {
       if (n === ik) continue;
+      // Odznak položený absolútne (×2 na karte) nie je text v riadku ikony.
+      if (n.nodeType === 1 && /absolute|fixed/.test(getComputedStyle(n).position)) continue;
       let rt = null;
       if (n.nodeType === 3 && n.textContent.trim()) { const rg = document.createRange(); rg.selectNodeContents(n); rt = rg.getBoundingClientRect(); }
       else if (n.nodeType === 1 && maText(n) && viditelny(n) && !n.querySelector('svg,img')) rt = n.getBoundingClientRect();
@@ -320,17 +375,93 @@ const MERANIE = String.raw`(async () => {
     if (pomer < prah) pridaj('nizky-kontrast', pomer < prah - 1 ? 'stredna' : 'nizka', el, 'kontrast ' + pomer.toFixed(2) + ' : 1, treba ' + prah + ' : 1 (písmo ' + Math.round(velkost) + ' px)');
   }
 
-  // 7. Rozbité obrázky.
+  // 7. Nezarovnaný rad: prvky rovnakého typu (tag + prvá trieda) vedľa seba v jednom flex či grid
+  // rade, ktoré nesedia ani hornou, ani spodnou hranou, ani stredom (schody kariet v línii).
+  // Nemusia byť súrodenci — karty línie sú každá v inom stĺpci s inak vysokým popisom.
+  const typy = new Map();
+  for (const el of vsetky) {
+    // Len dlaždice (karty, obaly) — text a polia formulára v rôznych paneloch nemusia lícovať.
+    if (!el.classList.length || /^(TD|TH|TR|TBODY|LI|OPTION|LABEL|P|SPAN|A|BUTTON|INPUT|H[1-6])$/.test(el.tagName)) continue;
+    const s = getComputedStyle(el);
+    if (s.display === 'inline' || /absolute|fixed/.test(s.position) || natoceny(el)) continue;
+    const r = el.getBoundingClientRect();
+    if (r.width < 24 || r.height < 24) continue;
+    // Typ = tag, prvá trieda a prvé dieťa: obal .s-lupou nesie kartu aj scorecard.
+    const d = el.firstElementChild;
+    const k = el.tagName + '.' + el.classList[0] + '>' + (d ? d.tagName + '.' + (d.classList[0] || '') : '');
+    if (!typy.has(k)) typy.set(k, []);
+    typy.get(k).push([el, r]);
+  }
+  const vRade = (a, b) => {
+    // Najbližší spoločný predok musí byť vodorovný flex alebo grid, najviac 6 úrovní nad oboma.
+    const predkovia = new Map();
+    for (let e = a.parentElement, i = 1; e && i <= 6; e = e.parentElement, i++) predkovia.set(e, i);
+    for (let e = b.parentElement, i = 1; e && i <= 6; e = e.parentElement, i++) {
+      if (!predkovia.has(e)) continue;
+      const s = getComputedStyle(e);
+      return (/flex/.test(s.display) && /row/.test(s.flexDirection)) || /grid/.test(s.display) ? e : null;
+    }
+    return null;
+  };
+  const rady = new Map(), idRadu = new Map();
+  for (const prvky of typy.values()) {
+    if (prvky.length < 2 || prvky.length > 300) continue;
+    prvky.sort((x, y) => x[1].left - y[1].left);
+    for (let i = 0; i < prvky.length; i++) {
+      for (let j = i + 1; j < prvky.length; j++) {
+        const [a, ra] = prvky[i], [b, rb] = prvky[j];
+        const medzera = rb.left - ra.right;
+        if (medzera > Math.max(ra.width, rb.width) * 1.5) break;
+        if (medzera < -1 || a.contains(b) || b.contains(a) || modal(a) !== modal(b)) continue;
+        // Rovnaký typ, iná úloha (veľká karta línie a malá karta staršieho): aspoň jeden rozmer podobný.
+        const pomer = (x, y) => Math.min(x, y) / Math.max(x, y);
+        if (Math.max(pomer(ra.width, rb.width), pomer(ra.height, rb.height)) < 0.65) continue;
+        const spolu = Math.min(ra.bottom, rb.bottom) - Math.max(ra.top, rb.top);
+        if (spolu < Math.min(ra.height, rb.height) * 0.3) continue;
+        const odchylka = Math.min(Math.abs(ra.top - rb.top), Math.abs(ra.bottom - rb.bottom), Math.abs((ra.top + ra.bottom) / 2 - (rb.top + rb.bottom) / 2));
+        if (odchylka <= 4) continue;
+        const rad = vRade(a, b);
+        if (!rad) continue;
+        // Stĺpec kanbanu: v stĺpci radu sú prvky toho typu pod sebou, rad netvoria.
+        const stlpec = (x, rx) => {
+          let c = x;
+          while (c.parentElement && c.parentElement !== rad) c = c.parentElement;
+          return prvky.some(([e, re]) => e !== x && c.contains(e) && !e.contains(x) && !x.contains(e) && (re.top >= rx.bottom - 1 || re.bottom <= rx.top + 1));
+        };
+        if (stlpec(a, ra) || stlpec(b, rb)) continue;
+        if (!idRadu.has(rad)) idRadu.set(rad, idRadu.size);
+        const k = a.tagName + '.' + a.classList[0] + '|' + idRadu.get(rad);
+        const z = rady.get(k) || { el: a, rad, odchylka: 0, l: ra.left, t: Math.min(ra.top, rb.top), r: rb.right, b: Math.max(ra.bottom, rb.bottom), n: new Set() };
+        z.odchylka = Math.max(z.odchylka, odchylka);
+        z.l = Math.min(z.l, ra.left); z.t = Math.min(z.t, ra.top, rb.top); z.r = Math.max(z.r, rb.right); z.b = Math.max(z.b, ra.bottom, rb.bottom);
+        z.n.add(a); z.n.add(b);
+        rady.set(k, z);
+      }
+    }
+  }
+  // Obal, karta v ňom a stĺpec nad ňou sú jeden schod — ostane najvnútornejší prvok.
+  const zoznamRadov = [...rady.values()];
+  const vnorene = (z) => zoznamRadov.some((z2) => z2 !== z && [...z.n].every((e) => [...z2.n].some((e2) => e !== e2 && e.contains(e2))));
+  for (const z of zoznamRadov.filter((z) => !vnorene(z))) {
+    pridaj('nezarovnany-rad', 'stredna', z.el, z.n.size + ' prvkov v rade ' + popis(z.rad) + ' nesedí hranou ani stredom, odchýlka až ' + Math.round(z.odchylka) + ' px',
+      { left: z.l, top: z.t, width: z.r - z.l, height: z.b - z.t });
+  }
+
+  // 8. Rozbité obrázky.
   for (const img of document.images) {
     if (img.complete && img.naturalWidth === 0 && img.getAttribute('src')) pridaj('rozbity-obrazok', 'vysoka', img, 'obrázok sa nenačítal: ' + img.getAttribute('src'));
   }
-  return nalezy;
+  return { nalezy, vyradene };
 })()`;
 
 // Fokus: Tab nastaví klávesnicový režim, potom sa porovná vzhľad prvku bez a s fokusom.
 const FOKUS = String.raw`(() => {
-  const vlastnosti = ['outlineStyle', 'outlineWidth', 'outlineColor', 'boxShadow', 'borderColor', 'backgroundColor', 'color', 'textDecorationLine'];
-  const otlacok = (el) => { const s = getComputedStyle(el); return vlastnosti.map((k) => s[k]).join('|'); };
+  const VYNIMKY = __VYNIMKY__;
+  const vlastnosti = ['outlineStyle', 'outlineWidth', 'outlineColor', 'boxShadow', 'borderColor', 'backgroundColor', 'color', 'textDecorationLine', 'zIndex', 'transform'];
+  const styl = (e) => { const s = getComputedStyle(e); return vlastnosti.map((k) => s[k]).join('|'); };
+  // Fokus sa často prejaví len na vnútornom prvku (karta v ruke mení .kl) alebo na obale cez
+  // :focus-within (pole tagov) — porovnajú sa aj priame deti a rodič.
+  const otlacok = (el) => [el.parentElement, el, ...[...el.children].slice(0, 6)].filter(Boolean).map(styl).join('#');
   const prvky = [...document.querySelectorAll('a[href],button,input:not([type=hidden]),select,textarea,summary,[tabindex]:not([tabindex="-1"])')]
     .filter((el) => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 && !el.disabled; }).slice(0, 80);
   const bez = [];
@@ -339,17 +470,22 @@ const FOKUS = String.raw`(() => {
     const pred = otlacok(el);
     el.focus({ preventScroll: true });
     if (document.activeElement !== el) continue;
-    if (otlacok(el) === pred) {
+    if (otlacok(el) === pred && !VYNIMKY.some((v) => v.typ === 'bez-fokusu' && el.closest(v.selektor))) {
       const r = el.getBoundingClientRect();
       bez.push({ selektor: (el.tagName.toLowerCase() + (el.className && typeof el.className === 'string' ? '.' + el.className.trim().split(/\s+/).slice(0, 3).join('.') : '')),
-        text: (el.innerText || el.getAttribute('aria-label') || '').trim().replace(/\s+/g, ' ').slice(0, 60), box: { x: Math.round(r.left + scrollX), y: Math.round(r.top + scrollY), w: Math.round(r.width), h: Math.round(r.height) } });
+        text: (el.innerText || el.getAttribute('aria-label') || '').trim().replace(/\s+/g, ' ').slice(0, 60), box: { x: Math.round(r.left + scrollX), y: Math.round(r.top + scrollY), w: Math.round(r.width), h: Math.round(r.height) }, skrol: Math.round(scrollY) });
     }
   }
   if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
   return bez;
 })()`;
 
+// Akceptované výnimky (Michalove rozhodnutia: „je to dizajn“) — nástroj ich nehlási, len spočíta.
+const vynimky = JSON.parse(readFileSync(join(import.meta.dirname, "vynimky.json"), "utf8")) as { selektor: string; typ: string }[];
 const vysledky: Vysledok[] = [];
+const chyby: { cesta: string; rozlisenie: string; chyba: string }[] = [];
+const zapis = () =>
+  writeFileSync(join(vystup, "nalezy.json"), JSON.stringify({ cas: new Date().toISOString(), zaklad, stav, stranky: vysledky, chyby }, null, 1));
 try {
   let ciel: { type: string; webSocketDebuggerUrl: string } | undefined;
   for (let i = 0; i < 40 && ciel === undefined; i++) {
@@ -376,7 +512,12 @@ try {
     }
     const p = m.params ?? {};
     const prazdny = { selektor: "konzola", text: "", box: { x: 0, y: 0, w: 0, h: 0 } };
-    if (m.method === "Runtime.exceptionThrown") {
+    if (m.method === "Page.javascriptDialogOpening") {
+      // Neobslúžený dialóg (beforeunload tvorcu karty) zastaví stránku aj ďalšie príkazy.
+      if (p.type !== "beforeunload") console.error(`dialóg ${String(p.type)}: ${String(p.message)}`);
+      poradie += 1;
+      ws.send(JSON.stringify({ id: poradie, method: "Page.handleJavaScriptDialog", params: { accept: true } }));
+    } else if (m.method === "Runtime.exceptionThrown") {
       const e = p.exceptionDetails as { text?: string; exception?: { description?: string } };
       udalosti.push({ ...prazdny, typ: "chyba-konzola", zavaznost: "vysoka", detail: (e.exception?.description ?? e.text ?? "výnimka").split("\n")[0] ?? "" });
     } else if (m.method === "Runtime.consoleAPICalled" && (p.type === "error" || p.type === "warning")) {
@@ -392,10 +533,20 @@ try {
     }
   });
   const posli = (method: string, params: Record<string, unknown> = {}) =>
-    new Promise<Record<string, unknown>>((ok) => {
+    new Promise<Record<string, unknown>>((ok, chyba) => {
       poradie += 1;
-      cakajuce.set(poradie, ok);
-      ws.send(JSON.stringify({ id: poradie, method, params }));
+      const cislo = poradie;
+      // Zaseknutý príkaz pokazí len jednu stránku, nie celý beh.
+      const casovac = setTimeout(() => {
+        cakajuce.delete(cislo);
+        chyba(new Error(`${method}: bez odpovede 60 s`));
+      }, 60_000);
+      cakajuce.set(cislo, (v) => {
+        clearTimeout(casovac);
+        cakajuce.delete(cislo);
+        ok(v);
+      });
+      ws.send(JSON.stringify({ id: cislo, method, params }));
     });
   const js = async <T>(expression: string): Promise<T> => {
     const r = await posli("Runtime.evaluate", { expression, awaitPromise: true, returnByValue: true });
@@ -416,65 +567,112 @@ try {
   for (const { w, h } of rozlisenia) {
     await posli("Emulation.setDeviceMetricsOverride", { width: w, height: h, deviceScaleFactor: 1, mobile: false });
     for (const cesta of zoznam) {
-      udalosti = [];
-      const start = Date.now();
-      await posli("Page.navigate", { url: `${zaklad}${cesta}` });
-      // Načítanie: dokument a všetky obrázky (najviac 15 s) — dlhé čakanie je samo nález.
-      for (let i = 0; i < 60; i++) {
-        await pockaj(250);
-        const hotovo = await js<boolean>("document.readyState === 'complete' && [...document.images].every((i) => i.complete)");
-        if (hotovo && Date.now() - start > 1200) break;
+      try {
+        await zmeraj(cesta, w, h);
+      } catch (e) {
+        console.error(`${cesta} ${w}x${h}: ${(e as Error).message}`);
+        chyby.push({ cesta, rozlisenie: `${w}x${h}`, chyba: (e as Error).message });
       }
-      const nacitanieMs = Date.now() - start;
-      await pockaj(600);
-      for (const klik of kliky) {
-        const ok = await js<string>(`(() => { const el = document.querySelector(${JSON.stringify(klik)}); if (!el) return 'nie'; el.click(); return 'ok'; })()`);
-        if (ok !== "ok") console.error(`--klik: ${klik} sa na ${cesta} nenašiel`);
-        await pockaj(900);
-      }
-      const nalezy = await js<Nalez[]>(MERANIE);
-      await posli("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
-      await posli("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
-      const bezFokusu = await js<{ selektor: string; text: string; box: Nalez["box"] }[]>(FOKUS);
-      for (const b of bezFokusu) nalezy.push({ ...b, typ: "bez-fokusu", zavaznost: "stredna", detail: "prvok pri fokuse z klávesnice nijako nezmení vzhľad" });
-      if (nacitanieMs > 4000) nalezy.push({ typ: "pomale-nacitanie", zavaznost: "stredna", selektor: "stránka", text: "", box: { x: 0, y: 0, w: 0, h: 0 }, detail: `stránka s obrázkami sa načítala za ${(nacitanieMs / 1000).toFixed(1)} s` });
-      nalezy.push(...udalosti);
-
-      // Rovnaký nález viackrát (typ + selektor + detail) = jeden s počtom.
-      const zlucene: Nalez[] = [];
-      for (const n of nalezy) {
-        const ten = zlucene.find((z) => z.typ === n.typ && z.selektor === n.selektor && z.detail === n.detail);
-        if (ten !== undefined) ten.pocet = (ten.pocet ?? 1) + 1;
-        else zlucene.push(n);
-      }
-      const vaha = { vysoka: 0, stredna: 1, nizka: 2 } as const;
-      zlucene.sort((a, b) => vaha[a.zavaznost] - vaha[b.zavaznost]);
-
-      const meno = `${cesta.replace(/^\/$/, "domov").replace(/^\//, "").replace(/[^a-z0-9]+/gi, "-")}-${stav}-${w}x${h}`;
-      const vyska = Math.min(12000, await js<number>("Math.max(document.documentElement.scrollHeight, document.body.scrollHeight)"));
-      const cela = await posli("Page.captureScreenshot", { format: "png", captureBeyondViewport: true, clip: { x: 0, y: 0, width: w, height: vyska, scale: 1 } });
-      const snimka = join(vystup, `${meno}.png`);
-      writeFileSync(snimka, Buffer.from(String(cela.data), "base64"));
-      // Výrezy: nález orámovaný červenou, okolo 40 px kontextu; najviac 40 na stránku.
-      let n = 0;
-      for (const z of zlucene) {
-        if (z.box.w === 0 || n >= 40) continue;
-        n += 1;
-        await js(`(() => { const d = document.createElement('div'); d.id = '__inspekcia'; Object.assign(d.style, { position: 'absolute', left: '${z.box.x - 2}px', top: '${z.box.y - 2}px', width: '${z.box.w + 4}px', height: '${z.box.h + 4}px', outline: '2px solid #ff2d55', zIndex: 2147483647, pointerEvents: 'none' }); document.body.appendChild(d); })()`);
-        const x = Math.max(0, z.box.x - 40), y = Math.max(0, z.box.y - 40);
-        const vyrez = await posli("Page.captureScreenshot", { format: "png", captureBeyondViewport: true, clip: { x, y, width: Math.min(w - x, z.box.w + 80), height: Math.min(vyska - y, Math.max(60, z.box.h + 80)), scale: 1 } });
-        await js("document.getElementById('__inspekcia')?.remove()");
-        z.vyrez = join(vystup, `${meno}-${String(n).padStart(2, "0")}-${z.typ}.png`);
-        writeFileSync(z.vyrez, Buffer.from(String(vyrez.data), "base64"));
-      }
-      vysledky.push({ cesta, stav, rozlisenie: `${w}x${h}`, snimka, nacitanieMs, nalezy: zlucene });
-      const sucet = (zav: string) => zlucene.filter((x) => x.zavaznost === zav).length;
-      console.log(`${cesta} ${w}x${h}: ${zlucene.length} nálezov (vysoká ${sucet("vysoka")}, stredná ${sucet("stredna")}, nízka ${sucet("nizka")}), načítanie ${(nacitanieMs / 1000).toFixed(1)} s`);
+      // Priebežne: aj zabitý alebo zaseknutý beh nechá, čo už zmeral.
+      zapis();
     }
   }
   ws.close();
+
+  async function zmeraj(cesta: string, w: number, h: number): Promise<void> {
+    udalosti = [];
+    const start = Date.now();
+    await posli("Page.navigate", { url: `${zaklad}${cesta}` });
+    // Načítanie: dokument a obrázky v okne (najviac 15 s) — dlhé čakanie je samo nález.
+    // Lenivé obrázky mimo okna sa načítajú až pri rolovaní, na tie sa nečaká.
+    for (let i = 0; i < 60; i++) {
+      await pockaj(250);
+      const hotovo = await js<boolean>(
+        "document.readyState === 'complete' && [...document.images].every((i) => { if (i.complete || i.loading !== 'lazy') return i.complete; const r = i.getBoundingClientRect(); return r.bottom < 0 || r.top > innerHeight || r.right < 0 || r.left > innerWidth; })",
+      );
+      if (hotovo && Date.now() - start > 1200) break;
+    }
+    const nacitanieMs = Date.now() - start;
+    await pockaj(600);
+    for (const klik of kliky) {
+      // Prvok sa môže vykresliť až po načítaní dát (hlavička partie) — čaká sa naň do 5 s.
+      let ok = "nie";
+      for (let i = 0; i < 20 && ok !== "ok"; i++) {
+        ok = await js<string>(`(() => { const el = document.querySelector(${JSON.stringify(klik)}); if (!el) return 'nie'; el.click(); return 'ok'; })()`);
+        if (ok !== "ok") await pockaj(250);
+      }
+      if (ok !== "ok") console.error(`--klik: ${klik} sa na ${cesta} do 5 s nenašiel`);
+      await pockaj(900);
+    }
+    const { nalezy, vyradene } = await js<{ nalezy: Nalez[]; vyradene: Record<string, number> }>(MERANIE.replace("__VYNIMKY__", JSON.stringify(vynimky)));
+    await posli("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
+    await posli("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
+    const bezFokusu = await js<{ selektor: string; text: string; box: Nalez["box"]; skrol: number }[]>(FOKUS.replace("__VYNIMKY__", JSON.stringify(vynimky)));
+    for (const b of bezFokusu) nalezy.push({ ...b, typ: "bez-fokusu", zavaznost: "stredna", detail: "prvok pri fokuse z klávesnice nijako nezmení vzhľad" });
+    if (nacitanieMs > 4000) nalezy.push({ typ: "pomale-nacitanie", zavaznost: "stredna", selektor: "stránka", text: "", box: { x: 0, y: 0, w: 0, h: 0 }, detail: `stránka s obrázkami sa načítala za ${(nacitanieMs / 1000).toFixed(1)} s` });
+    nalezy.push(...udalosti);
+
+    // Rovnaký nález viackrát (typ + selektor + detail) = jeden s počtom. Kontrast sa zlučuje podľa
+    // vlastných tried prvku a pomeru — tisíce pásov kariet sú pár príčin, nie tisíce chýb.
+    const kluc = (n: Nalez) =>
+      n.typ === "nizky-kontrast" ? `${n.typ}|${n.selektor.split(" > ").at(-1) ?? ""}|${n.detail}` : `${n.typ}|${n.selektor}|${n.detail}`;
+    const zlucene: Nalez[] = [];
+    const podlaKluca = new Map<string, Nalez>();
+    for (const n of nalezy) {
+      const ten = podlaKluca.get(kluc(n));
+      if (ten !== undefined) ten.pocet = (ten.pocet ?? 1) + 1;
+      else {
+        podlaKluca.set(kluc(n), n);
+        zlucene.push(n);
+      }
+    }
+    const vaha = { vysoka: 0, stredna: 1, nizka: 2 } as const;
+    zlucene.sort((a, b) => vaha[a.zavaznost] - vaha[b.zavaznost]);
+
+    // Snímky po obrazovkách v skutočnom okne: captureBeyondViewport by zväčšil okno a rozloženie
+    // závislé od vh (lepiaca hlavička, ruka) by sa na snímke posunulo.
+    const meno = `${cesta.replace(/^\/$/, "domov").replace(/^\//, "").replace(/[^a-z0-9]+/gi, "-")}-${stav}-${w}x${h}`;
+    const vyska = await js<number>("Math.max(document.documentElement.scrollHeight, document.body.scrollHeight)");
+    const posun = async (y: number) => {
+      const skutocny = await js<number>(`(document.documentElement.style.scrollBehavior = 'auto', scrollTo(0, ${y}), Math.round(scrollY))`);
+      await pockaj(150);
+      return skutocny;
+    };
+    const snimky: string[] = [];
+    for (let i = 0; i < Math.min(8, Math.ceil(vyska / h)); i++) {
+      await posun(i * h);
+      const obr = await posli("Page.captureScreenshot", { format: "png" });
+      const subor = join(vystup, i === 0 ? `${meno}.png` : `${meno}-${i + 1}.png`);
+      writeFileSync(subor, Buffer.from(String(obr.data), "base64"));
+      snimky.push(subor);
+    }
+    // Výrezy: nález orámovaný červenou, okolo 40 px kontextu; najviac 40 na stránku. Okno sa posunie
+    // tam, kde sa nález meral (pevné vrstvy), alebo tak, aby bol nález v okne.
+    let n = 0;
+    for (const z of zlucene) {
+      if (z.box.w === 0 || n >= 40) continue;
+      n += 1;
+      const skrol = z.skrol ?? 0;
+      const vOkne = z.box.y >= skrol && z.box.y + z.box.h <= skrol + h;
+      const y0 = await posun(vOkne ? skrol : Math.max(0, z.box.y - 40));
+      await js(`(() => { const d = document.createElement('div'); d.id = '__inspekcia'; Object.assign(d.style, { position: 'absolute', left: '${z.box.x - 2}px', top: '${z.box.y - 2}px', width: '${z.box.w + 4}px', height: '${z.box.h + 4}px', outline: '2px solid #ff2d55', zIndex: 2147483647, pointerEvents: 'none' }); document.body.appendChild(d); })()`);
+      const x = Math.max(0, z.box.x - 40), y = Math.max(y0, z.box.y - 40);
+      const vyrez = await posli("Page.captureScreenshot", {
+        format: "png",
+        clip: { x, y, width: Math.max(10, Math.min(w, z.box.x + z.box.w + 40) - x), height: Math.max(10, Math.min(y0 + h, z.box.y + z.box.h + 40) - y), scale: 1 },
+      });
+      await js("document.getElementById('__inspekcia')?.remove()");
+      z.vyrez = join(vystup, `${meno}-${String(n).padStart(2, "0")}-${z.typ}.png`);
+      writeFileSync(z.vyrez, Buffer.from(String(vyrez.data), "base64"));
+    }
+    await posun(0);
+    vysledky.push({ cesta, stav, rozlisenie: `${w}x${h}`, snimka: snimky[0] ?? "", snimky, nacitanieMs, nalezy: zlucene, vyradene });
+    const sucet = (zav: string) => zlucene.filter((x) => x.zavaznost === zav).length;
+    const vyr = Object.values(vyradene).reduce((a, b) => a + b, 0);
+    console.log(`${cesta} ${w}x${h}: ${zlucene.length} nálezov (vysoká ${sucet("vysoka")}, stredná ${sucet("stredna")}, nízka ${sucet("nizka")})${vyr > 0 ? `, výnimky ${vyr}` : ""}, načítanie ${(nacitanieMs / 1000).toFixed(1)} s`);
+  }
 } finally {
-  writeFileSync(join(vystup, "nalezy.json"), JSON.stringify({ cas: new Date().toISOString(), zaklad, stav, stranky: vysledky }, null, 1));
+  zapis();
   console.log(`Nálezy: ${join(vystup, "nalezy.json")}`);
   proc.kill();
   await pockaj(500);

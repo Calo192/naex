@@ -40,7 +40,11 @@ Zadanie ti povie **url** lokálneho servera (napr. `http://localhost:8793`),
    ```
    Bez ciest prejde všetky stránky (zoznam `STRANKY` v nástroji, aj admin —
    prihlási sa AI účtom „UI inšpektor (AI)“ so subadminom). Nástroj vypíše
-   súhrn po stránkach a uloží `nalezy.json`, celé snímky a výrezy.
+   súhrn po stránkach a po každej stránke dopíše `nalezy.json` (aj zabitý beh
+   nechá, čo zmeral; stránka, ktorá zlyhala, je v poli `chyby`). Snímky robí
+   po obrazovkách v skutočnom okne (`<meno>.png`, `<meno>-2.png` …), takže
+   lepiaca hlavička a pripnutá ruka sú na mieste ako u hráča. Na výrezy sa
+   spoľahni, vlastné snímky si netreba robiť.
 2. **Herný stôl** (ak je v cieli `/hra` alebo „všetky“): založ partiu proti botovi
    na vlastnom serveri playtestu:
    ```bash
@@ -53,7 +57,9 @@ Zadanie ti povie **url** lokálneho servera (napr. `http://localhost:8793`),
    `hrac.ts R 1 tah '<json>'`, na bota čakáš `hrac.ts R 1 cakaj 60`.
    Otvorené vrstvy zmeraj cez `--klik`: rozpis bodov (dlaždica Body),
    soundboard (tlačidlo Melichar), Log, zoznam skratiek „?“, Šenok, Lokality.
-   Nakoniec partiu zastav: `tools/playtest/ukonci.ts R`.
+   **Behy na stole púšťaj postupne, nikdy viac naraz** za toho istého hráča —
+   prehliadače si prevezmú pripojenie („Pripojenie prevzal iný tab“) a merania
+   sú neplatné. Nakoniec partiu zastav: `tools/playtest/ukonci.ts R`.
 3. **Over nálezy.** Prejdi `nalezy.json` všetkých behov, pozri výrezy, vyraď
    falošné. Rovnakú chybu na viacerých stránkach alebo rozlíšeniach zlúč do
    jednej (s výpisom, kde všade). Ku každej skutočnej nájdi **zdroj**: triedu
@@ -82,8 +88,18 @@ Zadanie ti povie **url** lokálneho servera (napr. `http://localhost:8793`),
 ## Typy nálezov nástroja
 
 `orezany-text`, `skrateny-text` (trojbodka), `prekryty-text`, `prekryty-prvok`,
-`nezarovnana-ikona`, `vodorovny-posun`, `mimo-okna`, `maly-ciel` (< 24 px),
+`nezarovnana-ikona`, `nezarovnany-rad` (dlaždice rovnakého typu vedľa seba vo
+flex/grid rade nesedia hranou ani stredom o > 4 px — napr. schody kariet v línii),
+`vodorovny-posun`, `mimo-okna`, `maly-ciel` (< 24 px),
 `bez-fokusu`, `nizky-kontrast` (WCAG AA 4,5 : 1, veľký text 3 : 1),
 `rozbity-obrazok`, `chyba-konzola`, `varovanie-konzola`, `chyba-siete`,
 `pomale-nacitanie` (> 4 s). Kontrast nástroj nemeria na obrázkovom pozadí;
 ak vidíš na výreze nečitateľný text na ilustrácii, pridaj ho ručne.
+
+## Akceptované výnimky
+
+`tools/ui-inspektor/vynimky.json` = čo Michal rozhodol nechať („je to dizajn“):
+`selektor` (CSS, platí aj pre potomkov), `typ` nálezu, `dovod`, `datum`,
+`rozhodol`. Nástroj také nálezy nehlási, len ich spočíta v `vyradene` pri
+stránke. V reporte ich uveď jedným riadkom („akceptované výnimky: N“) a znova
+ich nenavrhuj. Novú výnimku pridáva Leader po Michalovom rozhodnutí, nie ty.
