@@ -554,12 +554,12 @@ export function Profil() {
             onChange={(e) => setLupa(Number(e.target.value))}
             aria-valuetext={`${lupa} %`}
           />
+          <div className="posuvnik-stupnica" aria-hidden="true">
+            <span>{LUPA_OD} %</span>
+            <span>{LUPA_PREDVOLENA} %</span>
+            <span>{LUPA_DO} %</span>
+          </div>
         </Pole>
-        <div className="posuvnik-stupnica" aria-hidden="true">
-          <span>{LUPA_OD} %</span>
-          <span>{LUPA_PREDVOLENA} %</span>
-          <span>{LUPA_DO} %</span>
-        </div>
       </div>
 
       <div className="panel">
@@ -578,12 +578,12 @@ export function Profil() {
             onChange={(e) => setHudba(Number(e.target.value))}
             aria-valuetext={hudba === 0 ? "vypnutá" : `${hudba} %`}
           />
+          <div className="posuvnik-stupnica" aria-hidden="true">
+            <span>vypnutá</span>
+            <span>50 %</span>
+            <span>100 %</span>
+          </div>
         </Pole>
-        <div className="posuvnik-stupnica" aria-hidden="true">
-          <span>vypnutá</span>
-          <span>50 %</span>
-          <span>100 %</span>
-        </div>
         <div className="riadok-tlacidiel" style={{ marginTop: 12 }}>
           <button type="button" className="tlacidlo-male" onClick={() => void prepniUkazku()} disabled={hudba === 0 && ukazkaHra === null}>
             {ukazkaHra === null ? "Vyskúšať" : "Zastaviť ukážku"}
@@ -611,12 +611,12 @@ export function Profil() {
             onChange={(e) => setMelichar(Number(e.target.value))}
             aria-valuetext={melichar === 0 ? "vypnutý" : `${melichar} %`}
           />
+          <div className="posuvnik-stupnica" aria-hidden="true">
+            <span>vypnutý</span>
+            <span>50 %</span>
+            <span>100 %</span>
+          </div>
         </Pole>
-        <div className="posuvnik-stupnica" aria-hidden="true">
-          <span>vypnutý</span>
-          <span>50 %</span>
-          <span>100 %</span>
-        </div>
         <Pole
           label={`Frekvencia: pri ${frekvencia} % ťahov`}
           pomoc={`Ako často sa ozve. Na NA EX! dvakrát ochotnejšie, ale nikdy pri viac než ${MELICHAR_FREKVENCIA_DO} % ťahov, a po hláške si vždy chvíľu oddýchne.`}
@@ -632,12 +632,12 @@ export function Profil() {
             disabled={melichar === 0}
             aria-valuetext={`pri ${frekvencia} % ťahov`}
           />
+          <div className="posuvnik-stupnica" aria-hidden="true">
+            <span>zriedka</span>
+            <span>každý tretí ťah</span>
+            <span>{MELICHAR_FREKVENCIA_DO} %</span>
+          </div>
         </Pole>
-        <div className="posuvnik-stupnica" aria-hidden="true">
-          <span>zriedka</span>
-          <span>každý tretí ťah</span>
-          <span>{MELICHAR_FREKVENCIA_DO} %</span>
-        </div>
         <div className="riadok-tlacidiel" style={{ marginTop: 12 }}>
           <button type="button" className="tlacidlo-male" onClick={() => void vyskusajHlasku()} disabled={melichar === 0}>
             Vyskúšať
