@@ -50,4 +50,10 @@ export const api = {
  * `nahlad` = menšia kópia na zobrazenie, ak ju obrázok má (server ju vyberie;
  * inak pošle originál). Lupa a tlač berú originál.
  */
-export const mediaUrl = (id: string, nahlad = false): string => `/media/${id}${nahlad ? "?n" : ""}`;
+export const mediaUrl = (id: string, nahlad = false): string => `/media/${id}${nahlad ? `?n=${VERZIA_NAHLADOV}` : ""}`;
+
+/**
+ * Mení sa, keď sa zmení, čo ?n vracia — iná URL obíde prehliadače, ktoré majú
+ * starú odpoveď natrvalo (immutable). 2: náhľady kariet 320 px (2026-10-22).
+ */
+const VERZIA_NAHLADOV = 2;

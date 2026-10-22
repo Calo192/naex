@@ -40,6 +40,8 @@
 //   nahraj <subor> [druh]         nahrá obrázok (karta | kniznica | pozadie | ikona), vypíše id média
 //   stiahni <id-media> <subor>    stiahne obrázok z webu (napr. ilustráciu karty)
 //   kniznica                      obrázky v knižnici
+//   nahlady                       doplní náhľady veľkých obrázkov (headless Chrome, Tvorba → Prehľad) —
+//                                 po nasadení: nahlady --zivy (server obrázky sám nezmenší)
 // Zverejnenie
 //   overit                        nanečisto to, čo urobí zverejnenie, + karty zmenené od poslednej sady
 //   zverejni --potvrdene          zverejní VŠETKY návrhy ako novú sadu (len so súhlasom Michala)
@@ -94,6 +96,7 @@ import type { Sila } from "./leonardo.ts";
 import { MODEL, REFERENCIE, cestyReferencii, kategoriaPodlaTagov, zostavPrompt } from "./styl.ts";
 import type { PartiaTempa } from "./tempo.ts";
 import { prehladTempa } from "./tempo.ts";
+import { doplnNahladyCezChrome } from "./nahlady.ts";
 
 export const MENO_AGENTA = "Admin";
 export const PRACOVNY = "admin-agent";
@@ -474,6 +477,12 @@ async function main(): Promise<void> {
   };
 
   switch (prikaz) {
+    case "nahlady": {
+      const v = await doplnNahladyCezChrome(url, cookie);
+      console.log(`Náhľady na ${url}: čakalo ${v.cakalo}. ${v.text}`);
+      break;
+    }
+
     case "ucet":
       console.log(`Prihlásený ako „${meno}“ (subadmin) na ${url}.`);
       break;

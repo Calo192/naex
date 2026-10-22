@@ -39,7 +39,7 @@ function NahladyObrazkov() {
     <section className="panel">
       <h2>Náhľady obrázkov</h2>
       <p className="tlmene">
-        Veľké obrázky bez náhľadu: <strong>{bezNahladu}</strong>. Na stole sa kreslia malé — náhľad (512 px) ich načíta rýchlejšie; lupa a tlač
+        Veľké obrázky bez náhľadu: <strong>{bezNahladu}</strong>. Na stole sa kreslia malé — náhľad (karty 320 px, ostatné 512 px) ich načíta rýchlejšie; lupa a tlač
         berú originál.
       </p>
       {vysledok !== null && <Hlaska druh={bezNahladu === 0 ? "ok" : "chyba"}>{vysledok}</Hlaska>}

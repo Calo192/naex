@@ -30,6 +30,15 @@ async function nahraj(cesta: string, metoda: string, telo: Buffer, cookie = admi
 }
 
 describe("náhľady médií", () => {
+  it("náhľad karty (≈ 70 kB) dostane 320 px náhľad, iné obrázky tej veľkosti nie", async () => {
+    const karta = ((await (await nahraj("/admin/media?druh=karta&nazov=karta@512", "POST", jpeg(70))).json()) as { id: string }).id;
+    const pozadie = ((await (await nahraj("/admin/media?druh=pozadie&nazov=male", "POST", jpeg(70))).json()) as { id: string }).id;
+    const bez = (await (await fetch(url("/api/admin/media-bez-nahladu"), { headers: { cookie: admin } })).json()) as { media: { id: string; strana: number }[] };
+    expect(bez.media.find((m) => m.id === karta)?.strana).toBe(320);
+    expect(bez.media.some((m) => m.id === pozadie)).toBe(false);
+  });
+
+
   it("veľký obrázok bez náhľadu: ?n pošle originál s krátkou cache, po nahratí náhľadu náhľad natrvalo", async () => {
     const original = jpeg(300);
     const id = ((await (await nahraj("/admin/media?druh=pozadie&nazov=scorecard", "POST", original)).json()) as { id: string }).id;
@@ -55,11 +64,11 @@ describe("náhľady médií", () => {
   });
 
   it("malý obrázok ide s ?n natrvalo, náhľad väčší ako originál neprejde, hráč náhľad nahrať nesmie", async () => {
-    const maly = jpeg(30);
+    const maly = jpeg(20);
     const id = ((await (await nahraj("/admin/media?druh=karta&nazov=maly", "POST", maly)).json()) as { id: string }).id;
     expect((await fetch(url(`/media/${id}?n`))).headers.get("cache-control")).toContain("immutable");
 
-    expect((await nahraj(`/admin/media/${id}/nahlad`, "PUT", jpeg(60))).status).toBe(400);
+    expect((await nahraj(`/admin/media/${id}/nahlad`, "PUT", jpeg(40))).status).toBe(400);
     const { cookie } = await registruj(server.port);
     expect((await nahraj(`/admin/media/${id}/nahlad`, "PUT", jpeg(10), cookie)).status).toBe(403);
   });
