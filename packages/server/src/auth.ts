@@ -123,7 +123,7 @@ export function overFrekvenciu(v: unknown): number {
 
 /** Dohraté partie používateľa — poddotaz nad riadkom `pouzivatelia` (stĺpec id). */
 const DOHRATE_SQL = `SELECT COUNT(*) FROM partie_hraci ph JOIN partie pa ON pa.id = ph.partia
-  WHERE ph.pouzivatel = pouzivatelia.id AND pa.dohrata = 1`;
+  WHERE ph.pouzivatel = pouzivatelia.id AND pa.dohrata = 1 AND pa.s_botom = 0`;
 
 const COOKIE = "naex_sid";
 const PLATNOST_MS = 30 * 24 * 60 * 60 * 1000;

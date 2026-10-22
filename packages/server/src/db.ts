@@ -235,6 +235,19 @@ function migruj(db: Db): void {
   }
   // Štatistiky kariet partie (JSON z @naex/core) — staršie partie ich nemajú.
   if (!stlpce.some((c) => c.name === "karty")) db.exec("ALTER TABLE partie ADD COLUMN karty TEXT");
+  // Zber dát pre profily (Michal 2026-10-22): partie s botom (hráč bota má pouzivatel NULL),
+  // dĺžka, verzia jadra (commit) a pravidiel, seed + príkazy na budúci prehrávač, kronika po kolách.
+  const novePartie: readonly [string, string][] = [
+    ["s_botom", "INTEGER NOT NULL DEFAULT 0"],
+    ["bot_povaha", "TEXT"],
+    ["dlzka", "TEXT"],
+    ["verzia_jadra", "TEXT"],
+    ["verzia_pravidiel", "TEXT"],
+    ["seed", "INTEGER"],
+    ["prikazy", "TEXT"],
+    ["kronika", "TEXT"],
+  ];
+  for (const [meno, typ] of novePartie) if (!stlpce.some((c) => c.name === meno)) db.exec(`ALTER TABLE partie ADD COLUMN ${meno} ${typ}`);
   // Zväčšenie karty pri prejdení myšou v percentách (Michal 2026-10-19); NULL = predvolené.
   const ucty = db.prepare("PRAGMA table_info(pouzivatelia)").all() as { name: string }[];
   if (!ucty.some((c) => c.name === "lupa")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN lupa INTEGER");

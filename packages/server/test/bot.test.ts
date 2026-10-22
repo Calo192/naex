@@ -92,6 +92,17 @@ describe("offline protihráč na serveri", () => {
     // Odmietnuté ťahy (zastaraný stav) server nevykonal, do tempa nepatria.
     expect(fazy.reduce((s, f) => s + f.prikazy[0]!, 0)).toBeGreaterThanOrEqual(tahov - odmietnute.length);
     expect(Object.keys(p.fazy)).toEqual(expect.arrayContaining(["zhromazdenie", "pitka"]));
+
+    // Partia s botom je v archíve (Michal 2026-10-22): bilancia s botmi, Frajerina bez zmeny,
+    // dohraté partie s ľuďmi (ranky Deci a Sedmička) ju nerátajú.
+    const ja = (await (await fetch(`http://127.0.0.1:${server.port}/api/ja`, { headers: { cookie } })).json()) as { pouzivatel: { id: number; dohrate: number } };
+    expect(ja.pouzivatel.dohrate).toBe(0);
+    const profil = (await (await fetch(`http://127.0.0.1:${server.port}/api/hraci/${ja.pouzivatel.id}`, { headers: { cookie } })).json()) as {
+      bilancia: { ludia: { partie: number }; boti: { partie: number } };
+      frajerina: { hodnota: number; partie: number };
+    };
+    expect(profil.bilancia).toMatchObject({ ludia: { partie: 0 }, boti: { partie: 1 } });
+    expect(profil.frajerina).toMatchObject({ hodnota: 1200, partie: 0 });
     a.zavri();
   }, 120_000);
 
