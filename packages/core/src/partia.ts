@@ -275,6 +275,8 @@ export function spojVznikne(a: { readonly tags: readonly Tag[]; readonly stred: 
  * Pes (Michal 2026-10-20): za každý pár akcií na spoji Psa so súperovou
  * kartou (z ktorejkoľvek strany Psa) dá majiteľ Psa v bitke +1 tuhé.
  * Rátajú sa všetky spárované akcie, aj zrušené Odporom či NA EX — spojené sú.
+ * Len keď Pes leží na strane svojho majiteľa (Michal 2026-10-22) — podstrčený
+ * súperovi nedá nič.
  * Výsledok [hráč 0, hráč 1] = dodatočné tuhé majiteľa Psov.
  */
 export function spojePsa(data: GameData, strany: readonly [readonly PlacedCard[], readonly PlacedCard[]]): [number, number] {
@@ -292,8 +294,8 @@ export function spojePsa(data: GameData, strany: readonly [readonly PlacedCard[]
       let pary = 0;
       for (let k = 0; k < 4; k++) if (a.effRight[k] != null && b.effLeft[k] != null) pary++;
       // Pes vedľa súperovho Psa: každý dá svojmu majiteľovi.
-      if (a.defId === "pes") out[a.owner] += pary;
-      if (b.defId === "pes") out[b.owner] += pary;
+      if (a.defId === "pes" && a.owner === strana) out[a.owner] += pary;
+      if (b.defId === "pes" && b.owner === strana) out[b.owner] += pary;
     }
   }
   return out;

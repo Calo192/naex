@@ -98,7 +98,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   sarlatan: "impl", // Furt: Viera v okolí platí ako Vízia
   podvodnik: "impl", // Prehra: ukradni 2 cigarety
   cierna_macka: "impl", // Furt: tvoje Povery dávajú mäkké poškodenie aj bez súperových priznaných Dlhov
-  anonymny_alkoholik: "impl", // Furt: súper nedá NA EX na neho ani na tvoje karty vedľa neho
+  anonymny_alkoholik: "impl", // Furt: súper naňho nedá NA EX
   // Nové lokality (Michal 2026-10-20, docs/playtesty/navrh-lokality.html).
   most: "impl", // Zhromaždenie: karty len na vlastnú stranu
   cintorin: "impl", // Prehra: Nástroj z ruky do Dedičstva bez platenia
