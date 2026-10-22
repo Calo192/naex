@@ -879,9 +879,11 @@ export interface BitkaPanelProps {
   readonly cenaPosunuVitaza: readonly [number, number];
   /** Prebytok po zľave Pušky (prebytokNaRozdelenie) — toľko sa naozaj rozdelí. */
   readonly prebytokNaRozdelenie: number;
+  /** Kto útočí a prečo (návrh 5 A) — „útočník = porazený z minulej bitky“. */
+  readonly utocnik?: string;
 }
 
-export function BitkaPanel({ damage, sums, zdroje, rozpis, ja, vysledok, mena, sada, ciel, menoKarty, naSekeru, poslednaBitka, cenaPosunuVitaza, prebytokNaRozdelenie }: BitkaPanelProps) {
+export function BitkaPanel({ damage, sums, zdroje, rozpis, ja, vysledok, mena, sada, ciel, menoKarty, naSekeru, poslednaBitka, cenaPosunuVitaza, prebytokNaRozdelenie, utocnik }: BitkaPanelProps) {
   const su = (ja === 0 ? 1 : 0) as PlayerId;
   // Remíza (Michal 2026-10-21): pri rovnakom tuhom nevyhrá nikto — lokalita ide na sekeru (PRAVIDLA §8.4).
   const { vitaz, prebytok, prebytokDrzi } = battleOutcome(damage);
@@ -928,6 +930,7 @@ export function BitkaPanel({ damage, sums, zdroje, rozpis, ja, vysledok, mena, s
         <span className="bitka-nadpis">
           {vysledok ? "Výsledok bitky" : "Odhad bitky"} · {ciel}
         </span>
+        {utocnik !== undefined && <span className="bitka-pozn">{utocnik}</span>}
         {naSekeru.length > 0 && (
           <span className="bitka-sekera" title="Lokality z predošlých remíz — víťaz tejto bitky ich berie spolu s jej lokalitou.">
             ide o {vStavke + (vStavke === 1 ? " lokalitu" : vStavke <= 4 ? " lokality" : " lokalít")} · na sekere {naSekeru.join(", ")}
