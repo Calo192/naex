@@ -83,7 +83,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   karte aktívne akcie a zdvojí neaktívne; akcie sa rátajú majiteľovi karty.
   Pečeň +1 je tvoja. Súper smie hneď odpovedať jednou kartou mimo limitu
   (`place` / `bezReakcie`). Nie na Liberála, nie na súperovho Anonymného
-  alkoholika a jeho susedov, nie na kartu, na ktorej už poldeci leží. NA EX na kartu
+  alkoholika (jeho susedov nechráni), nie na kartu, na ktorej už poldeci leží. NA EX na kartu
   pri lokalite mení len akcie karty, akcie hrany lokality ostávajú. Dievčina na vydaj
   ráta aj akcie zdvojené cez NA EX. Svokra súpera ti za NA EX zoberie 2 cigarety.
   Krčma vynúti NA EX. Násobky sa **násobia** (NA EX × Silná žena = ×4, aj Dlh

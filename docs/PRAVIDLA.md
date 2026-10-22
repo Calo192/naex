@@ -376,8 +376,8 @@ aj súperovu**, na ktorejkoľvek strane — a položí na ňu jeden plný poldec
 Akcie karty po NA EX sa rátajú jej majiteľovi: na súperovej karte mu zrušíš
 aktívne akcie, ale zdvojíš mu neaktívne. Svokra: za každé tvoje NA EX ti
 majiteľ Svokry ukradne 2 cigarety (Michal 2026-10-19).
-Na **Liberála** NA EX dať nemožno; na súperovho **Anonymného alkoholika** ani
-na súperove karty vedľa neho tiež nie. Na kartu, na ktorej **už poldeci leží**
+Na **Liberála** NA EX dať nemožno, na súperovho **Anonymného alkoholika** tiež
+nie (jeho susedov nechráni, Michal 2026-10-22). Na kartu, na ktorej **už poldeci leží**
 (cez NA EX), sa ďalšie NA EX dať nedá (Michal 2026-10-22, dopísané podľa hry).
 Na **Krčme** hráč s plným poldeci (a kartou, kam ho dať) musí NA EX dať, inak
 Pitku neskončí.
@@ -1078,13 +1078,13 @@ Všetky efekty tlačovej sady engine vyhodnocuje automaticky (playtest
 |---|---|
 | Dievčina na vydaj | Pri bitke sa zahodí (po bitke sa spáli, nevráti sa) a jej majiteľ spáli toľko **priznaných** Dlhov, koľko mala aktívnych akcií (s násobkami — aj s tými, ktoré zdvojilo NA EX, vlastné či súperovo; Michal 2026-10-22). |
 | Hrobár | Keď súper zahodí kartu z ruky, z línie alebo z vrchu balíčka (efektom, Víziou; nie návratom po bitke ani vlastnou Veľmi smútiacou vdovou), majiteľ Hrobára dostane cigaretu za každú. |
-| Anonymný alkoholik | Súper jeho majiteľa nedá NA EX na neho ani na majiteľove karty vedľa neho na tej istej strane línie. Majiteľ smie; súperove karty nechráni, ani keď je podstrčený na súperovu stranu. Bráni len novému NA EX; poldeci, ktorý už na susedovi leží, ostáva. Prvé karty oboch strán susedia s lokalitou, nie navzájom. (Michal 2026-10-18, zúžené 2026-10-19) |
+| Anonymný alkoholik | Súper jeho majiteľa naňho nedá NA EX — ani keď je podstrčený na súperovu stranu. Majiteľ smie. Karty vedľa neho nechráni. Bráni len novému NA EX; poldeci, ktorý už na ňom leží, ostáva. (Michal 2026-10-18, zúžené 2026-10-19 a 2026-10-22 — predtým chránil aj majiteľove karty vedľa seba) |
 | Krčmárka | Pri bitke: ak hráč nemá Absťák a v tomto kole nedal NA EX, vypitý poldeci sa mu otočí na plný (automaticky). |
 | Liberál | Ak je v partii majiteľa rovnako žien a chlapov (Liberál sa neráta), jeho aktívne akcie sa rátajú dvakrát. NA EX naň dať nemožno. |
 | Milujúca manželka | Furt (kým je odhalená — v línii aj priznaná): majiteľ dostane Absťák aj pri **rovnakom** počte nerestí ako v predošlom kole; Manželky sa sčítavajú (dve = aj pri o 1 viac nerestiach). Zbavenie Absťáku sa nemení. (Michal 2026-10-19; predtým −1 cigareta v Pitke.) |
 | Kočovník | Dlh a Poškodenie pečene z jeho akcií dostáva hráč, na ktorého strane leží (Pecku a Poldeci jeho majiteľ). Limit vykladania míňa ako každá karta (Michal 2026-10-19 zrušil výnimku). |
 | Pasca | Dedičstvo: každé súperovo Zviera v línii (kdekoľvek, jeho karta) mu uberie 1 tuhé poškodenie (Michal 2026-10-20; predtým rušila prvú podstrčenú kartu). |
-| Pes | Furt (Michal 2026-10-20, sada v12): za každý pár akcií na spoji Psa so súperovou kartou — z ktorejkoľvek strany Psa, rátajú sa aj páry zrušené Odporom či NA EX (karty sú spojené) — dá majiteľ Psa v bitke +1 tuhé poškodenie. Na Psa sa smie podstrčiť (predtým strážil koniec strany). Nesmie byť v partii s iným zvieraťom. Akcie: vľavo 1 Rana, vpravo 2 Rany. |
+| Pes | Furt (Michal 2026-10-20, sada v12): za každý pár akcií na spoji Psa so súperovou kartou — z ktorejkoľvek strany Psa, rátajú sa aj páry zrušené Odporom či NA EX (karty sú spojené) — dá majiteľ Psa v bitke +1 tuhé poškodenie, ale len keď Pes leží na strane svojho majiteľa; podstrčený na súperovu stranu nedá nič (Michal 2026-10-22). Na Psa sa smie podstrčiť (predtým strážil koniec strany). Nesmie byť v partii s iným zvieraťom. Akcie: vľavo 1 Rana, vpravo 2 Rany. |
 | Pijan | Ak má Žena v jeho okolí aktívnu akciu Poldeci, súper majiteľa Pijana dostane +1 Ranu. |
 | Policajtka | Furt: súperove Pohoršenia proti majiteľovi neplatia (Michal 2026-10-18; Autorita — Praudovravec súpera ju umlčí). |
 | Poštárka | V Pitke raz: majiteľ smie dobrať 1 až 2 karty; ak dobral, získa 1 Dlh. |
