@@ -55,10 +55,13 @@ export function zapisTahKariet(stat: StatistikyKariet, pred: GameState, cmd: Com
       const defId = pred.senok.find((k) => k.uid === uid)?.defId;
       if (defId !== undefined) pridaj(out, defId, { zoSenku: 1 });
     }
-  } else if (cmd.type === "place") {
-    const defId = vRuke(pred, autor, cmd.uid);
-    if (defId !== undefined) {
-      const pole = cmd.target === "vlastna" ? "vylozene" : cmd.target === "superova" ? "podstrcene" : "priznane";
+  } else if (cmd.type === "place" || cmd.type === "tah") {
+    // Webový klient posiela celý ťah Zhromaždenia naraz (príkaz „tah“).
+    for (const c of cmd.type === "tah" ? cmd.kroky : [cmd]) {
+      if (c.type !== "place") continue;
+      const defId = vRuke(pred, autor, c.uid);
+      if (defId === undefined) continue;
+      const pole = c.target === "vlastna" ? "vylozene" : c.target === "superova" ? "podstrcene" : "priznane";
       pridaj(out, defId, { [pole]: 1 });
     }
   } else if (cmd.type === "naex") {

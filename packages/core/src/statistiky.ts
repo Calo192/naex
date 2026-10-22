@@ -231,55 +231,58 @@ function zapisJedneho(
   // ---- príkazy tohto hráča
   if (autor === p) {
     s.tahy += 1;
-    switch (cmd.type) {
-      case "place": {
-        const karta = kartaVRuke(pred, p, cmd.uid);
-        if (cmd.target === "priznanie") {
-          if (karta?.defId === "dlh") s.dlhyPriznane += 1;
-          if (karta?.defId === "cirhoza") s.cirhozyPriznane += 1;
-        } else if (cmd.target === "dedicstvo") {
-          s.dedicstvo += 1;
-        } else {
-          s.kartyVylozene += 1;
-          if (cmd.target === "superova") s.kartyDoSuperovej += 1;
+    // Celý ťah Zhromaždenia (príkaz „tah“) sa ráta ako jeden ťah, kroky po jednom.
+    for (const c of cmd.type === "tah" ? cmd.kroky : [cmd]) {
+      switch (c.type) {
+        case "place": {
+          const karta = kartaVRuke(pred, p, c.uid);
+          if (c.target === "priznanie") {
+            if (karta?.defId === "dlh") s.dlhyPriznane += 1;
+            if (karta?.defId === "cirhoza") s.cirhozyPriznane += 1;
+          } else if (c.target === "dedicstvo") {
+            s.dedicstvo += 1;
+          } else {
+            s.kartyVylozene += 1;
+            if (c.target === "superova") s.kartyDoSuperovej += 1;
+          }
+          break;
         }
-        break;
+        case "naex": {
+          s.naex += 1;
+          const naKarte = pred.strany.flatMap((x) => x).find((pl) => pl.card.uid === c.uid);
+          if (naKarte !== undefined && naKarte.playedBy !== p) s.naexNaSuperove += 1;
+          break;
+        }
+        case "smoke":
+          s.cigaretyVyfajcene += c.pocet;
+          break;
+        case "barter":
+          s.bartery += 1;
+          break;
+        case "refillPoldeci":
+          s.dolievania += 1;
+          break;
+        case "exekutorTool":
+          s.exekucie += 1;
+          break;
+        case "pohorsenie":
+          s.posunyPohorsenim += 1;
+          break;
+        case "prebytok":
+          s.posunyPrebytkom += 1;
+          break;
+        case "liecba":
+          s.liecby += 1;
+          break;
+        case "pohreb":
+          s.pohreby += 1;
+          break;
+        case "patronat":
+          s.bitkyOStarsich += 1;
+          break;
+        default:
+          break;
       }
-      case "naex": {
-        s.naex += 1;
-        const naKarte = pred.strany.flatMap((x) => x).find((pl) => pl.card.uid === cmd.uid);
-        if (naKarte !== undefined && naKarte.playedBy !== p) s.naexNaSuperove += 1;
-        break;
-      }
-      case "smoke":
-        s.cigaretyVyfajcene += cmd.pocet;
-        break;
-      case "barter":
-        s.bartery += 1;
-        break;
-      case "refillPoldeci":
-        s.dolievania += 1;
-        break;
-      case "exekutorTool":
-        s.exekucie += 1;
-        break;
-      case "pohorsenie":
-        s.posunyPohorsenim += 1;
-        break;
-      case "prebytok":
-        s.posunyPrebytkom += 1;
-        break;
-      case "liecba":
-        s.liecby += 1;
-        break;
-      case "pohreb":
-        s.pohreby += 1;
-        break;
-      case "patronat":
-        s.bitkyOStarsich += 1;
-        break;
-      default:
-        break;
     }
   }
 
