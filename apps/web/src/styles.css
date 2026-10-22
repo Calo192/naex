@@ -191,8 +191,19 @@ input[type="range"] {
   padding: 0;
   accent-color: var(--akcent);
   border: none;
-  background: none;
   box-shadow: none;
+}
+
+/* Dúhový posuvník (.duha) má stopu v pozadí — nesmie ju zmazať (UI inšpekcia U11). */
+input[type="range"]:not(.duha) {
+  background: none;
+}
+
+/* Fokus posuvníka: input:focus mu zruší obrys a box-shadow none by ho skryl
+   úplne — klávesnica by nevidela, kde je (UI inšpekcia U09). */
+input[type="range"]:focus-visible {
+  outline: 2px solid var(--akcent);
+  outline-offset: 3px;
 }
 
 input[type="color"] {
@@ -1024,6 +1035,8 @@ textarea {
   justify-content: space-between;
   color: var(--slaby);
   font-size: 0.8rem;
+  /* Stupnica patrí k posuvníku nad ňou, nie k nápovede pod ňou (U19). */
+  margin-top: -0.2rem;
 }
 
 /* Preferencie v profile (Michal 2026-10-22): zobrazenie skóre v partii. */
