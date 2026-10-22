@@ -11,13 +11,15 @@ import type { DlzkaHry, Podmienka } from "@naex/core";
 import { ALL_PODMIENKY, dostupneDlzky } from "@naex/core";
 import type { KartaNavrh, Pozicia, StranaNavrhu, AkciaDef, KlucoveSlovo, Kategoria, BodovaciaKarta, IkonaBodovania, Nastavenia } from "@naex/tvorba";
 import { exportTxt, importTxt, slug, PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
-import type { Pouzivatel, Ucty } from "./auth.ts";
+import type { Pouzivatel, Rola, Ucty } from "./auth.ts";
 import { ChybaVstupu, cookieOdhlasenia, cookieRelacie, overFrekvenciu, overHesloVstup, overLogin, overHlasitost, overLupu, overMeno, overSchemu, overSkore, overPrepinac, citajCookie, jeSpravca } from "./auth.ts";
 import type { DruhMedia, Media } from "./media.ts";
 import type { Hudba } from "./hudba.ts";
 import type { Obsah } from "./obsah.ts";
 import type { Archiv } from "./archiv.ts";
 import type { TempoPartii } from "./tempo.ts";
+import type { Prava } from "./prava.ts";
+import { POPIS_PRAVA, PRAVA, RANKY_HRACOV, jeRankHraca } from "./prava.ts";
 import type { KategoriaNazoru, Nazory, Triedenie } from "./nazory.ts";
 import type { Playtesty } from "./playtesty.ts";
 import type { Navrhy } from "./navrhy.ts";
@@ -55,6 +57,8 @@ export interface ApiKontext {
   readonly archiv: Archiv;
   /** Čas a príkazy po fázach každej dohratej partie (roadmapa #9). */
   readonly tempoPartii: TempoPartii;
+  /** Ranky a práva (Michal 2026-10-22) — matica rank × právo a pravidlá postupu. */
+  readonly prava: Prava;
   readonly nazory: Nazory;
   readonly playtesty: Playtesty;
   /** Návrhy zlepšení z playtestov a rozhodnutia o nich (sekcia Playtest). */
@@ -290,7 +294,9 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
   try {
     // ----- účet ----------------------------------------------------------
     // Počet dohratých partií — návštevník vidí, koľko mu chýba do úrovne hráč.
-    if (r === "GET /ja") return ok({ pouzivatel: ja === null ? null : { ...ja, dohrate: ctx.ucty.dohrate(ja.id) } });
+    if (r === "GET /ja") {
+      return ok({ pouzivatel: ja === null ? null : { ...ja, dohrate: ctx.ucty.dohrate(ja.id), prava: ctx.prava.zoznam(ja) } });
+    }
 
     if (r === "POST /registracia") {
       const b = await citajJson(req);
@@ -707,17 +713,34 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       }
     }
     if (sub === "GET /stav-servera") return ok(ctx.stavServera());
+    // Ranky a práva (Michal 2026-10-22): matica rank × právo a pravidlá postupu.
+    if (sub === "GET /prava") return ok({ ...ctx.prava.nastavenie(), prava: PRAVA, popis: POPIS_PRAVA, ranky: RANKY_HRACOV });
+    if (sub === "PUT /prava") {
+      const nove = ctx.prava.uloz(ja2, await citajJson(req));
+      ctx.ucty.prepocitajRanky(nove.postup);
+      return ok(nove);
+    }
     if (metoda === "PATCH" && casti[2] === "pouzivatelia" && casti.length === 4) {
-      if (ja2.rola !== "admin") throw new ChybaVstupu("Úroveň účtu mení len admin.", 403);
       const b = await citajJson(req);
-      // Admin je len jeden — nikoho ďalšieho na admina povýšiť nemožno.
-      if (b.rola !== undefined && b.rola !== "subadmin" && b.rola !== "hrac" && b.rola !== "navstevnik") throw new ChybaVstupu("Neznáma úroveň účtu.");
-      if (b.ai !== undefined && typeof b.ai !== "boolean") throw new ChybaVstupu("Príznak AI musí byť áno/nie.");
-      if (b.rola === undefined && b.ai === undefined) throw new ChybaVstupu("Chýba úroveň účtu alebo príznak AI.");
       const ciel = ctx.ucty.podlaId(Number(id));
       if (ciel === null) throw new ChybaVstupu("Taký účet neexistuje.", 404);
       if (ciel.rola === "admin") throw new ChybaVstupu("Úroveň admina sa nemení.");
-      if (b.rola !== undefined) ctx.ucty.nastavRolu(ciel.id, b.rola);
+      // Subadmin mení len hráčske ranky hráčov — nikoho nepovýši na správcu a správcov nemení.
+      if (ja2.rola !== "admin" && !jeRankHraca(ciel.rola)) throw new ChybaVstupu("Úroveň subadmina mení len admin.", 403);
+      if (b.rola !== undefined) {
+        // Admin je len jeden — nikoho ďalšieho na admina povýšiť nemožno.
+        const povolene: readonly unknown[] = ja2.rola === "admin" ? [...RANKY_HRACOV, "subadmin"] : RANKY_HRACOV;
+        if (!povolene.includes(b.rola)) {
+          if (ja2.rola !== "admin" && b.rola === "subadmin") throw new ChybaVstupu("Na subadmina povyšuje len admin.", 403);
+          throw new ChybaVstupu(b.rola === "admin" ? "Admin je len jeden." : "Neznáma úroveň účtu.");
+        }
+      }
+      if (b.automaticky !== undefined && b.automaticky !== true) throw new ChybaVstupu("Automatický rank: len true.");
+      if (b.ai !== undefined && typeof b.ai !== "boolean") throw new ChybaVstupu("Príznak AI musí byť áno/nie.");
+      if (b.ai !== undefined && ja2.rola !== "admin") throw new ChybaVstupu("Príznak AI mení len admin.", 403);
+      if (b.rola === undefined && b.ai === undefined && b.automaticky === undefined) throw new ChybaVstupu("Chýba úroveň účtu, automatický rank alebo príznak AI.");
+      if (b.rola !== undefined) ctx.ucty.nastavRolu(ciel.id, b.rola as Rola);
+      if (b.automaticky === true) ctx.ucty.automatickyRank(ciel.id, ctx.prava.nastavenie().postup);
       if (b.ai !== undefined) ctx.ucty.nastavAi(ciel.id, b.ai);
       return ok({ ok: true });
     }

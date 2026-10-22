@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS pouzivatelia (
   heslo TEXT NOT NULL,
   meno TEXT NOT NULL,
   avatar TEXT,
-  -- Úroveň účtu: admin | subadmin | hrac | navstevnik (Michal 2026-10-12).
+  -- Úroveň účtu: admin | subadmin | sedmicka | deci | hrac (Poldeci) | navstevnik (Michal 2026-10-22).
   rola TEXT NOT NULL DEFAULT 'navstevnik',
   vytvoreny INTEGER NOT NULL
 );
@@ -249,6 +249,8 @@ function migruj(db: Db): void {
   if (!ucty.some((c) => c.name === "skore")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN skore TEXT");
   // Klávesové skratky v partii (Michal 2026-10-22, roadmapa #19): 0 = vypnuté, NULL = zapnuté.
   if (!ucty.some((c) => c.name === "skratky")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN skratky INTEGER");
+  // Ranky (Michal 2026-10-22): 1 = rank nastavil správca ručne, automatický postup ho nemení.
+  if (!ucty.some((c) => c.name === "rola_rucne")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN rola_rucne INTEGER NOT NULL DEFAULT 0");
   // Hlášky majstra Melichara v partii proti počítaču (Michal 2026-10-21): hlasitosť
   // a frekvencia v percentách; NULL = predvolené.
   if (!ucty.some((c) => c.name === "melichar")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN melichar INTEGER");

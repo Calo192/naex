@@ -9,6 +9,7 @@ import { prazdneStatistiky } from "@naex/core";
 import { Archiv } from "../src/archiv.ts";
 import { Ucty, hashHesla } from "../src/auth.ts";
 import { otvorDb } from "../src/db.ts";
+import { PREDVOLENE_PRAVA } from "../src/prava.ts";
 import type { GameServer } from "../src/server.ts";
 import { TEST_ADMIN, nastavUroven, prihlas, registruj, testovaciServer } from "./pomocnik.ts";
 
@@ -38,11 +39,11 @@ describe("úrovne účtov — databáza", () => {
       expect(a.rola).toBe("navstevnik");
       partia(archiv, [a.id, b.id], false);
       expect(ucty.dohrate(a.id)).toBe(0);
-      expect(ucty.povysPoPartii(a.id)).toBe(true);
+      expect(ucty.povysPoPartii(a.id, PREDVOLENE_PRAVA.postup)).toBe(true);
       expect(ucty.podlaId(a.id)?.rola).toBe("hrac");
-      expect(ucty.povysPoPartii(a.id)).toBe(false);
+      expect(ucty.povysPoPartii(a.id, PREDVOLENE_PRAVA.postup)).toBe(false);
       ucty.nastavRolu(b.id, "subadmin");
-      expect(ucty.povysPoPartii(b.id)).toBe(false);
+      expect(ucty.povysPoPartii(b.id, PREDVOLENE_PRAVA.postup)).toBe(false);
       expect(ucty.podlaId(b.id)?.rola).toBe("subadmin");
     } finally {
       zmaz();

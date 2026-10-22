@@ -48,6 +48,7 @@ import type { ZmenaFrajeriny } from "./archiv.ts";
 import { Archiv } from "./archiv.ts";
 import type { StavTempa } from "./tempo.ts";
 import { TempoPartii, fazaPrikazu, noveTempo, zapisPrikaz } from "./tempo.ts";
+import { Prava } from "./prava.ts";
 import { Nazory } from "./nazory.ts";
 import { Playtesty } from "./playtesty.ts";
 import { Navrhy } from "./navrhy.ts";
@@ -193,6 +194,8 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   const obsah = new Obsah(db, media);
   const archiv = new Archiv(db);
   const tempoPartii = new TempoPartii(db);
+  const prava = new Prava(db);
+  ucty.prepocitajRanky(prava.nastavenie().postup);
   const nazory = new Nazory(db);
   const playtesty = new Playtesty(opts.playtestyDir ?? fileURLToPath(new URL("../../../docs/playtesty", import.meta.url)), join(dataDir, "playtesty"));
   const navrhy = new Navrhy(db);
@@ -256,6 +259,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           melichar,
           archiv,
           tempoPartii,
+          prava,
           nazory,
           playtesty,
           navrhy,
@@ -568,7 +572,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     const dohrata = pred.koniec === null && result.state.koniec !== null && cmd.type !== "vzdat";
     // Návštevník sa stáva hráčom po prvej dohratej partii proti človeku aj proti botovi (Michal 2026-10-21);
     // partia s botom sa pritom do archívu ani štatistík nezapíše.
-    if (dohrata) for (const h of room.hraci) if (h !== null && h.id !== BOT_ID) ucty.povysPoPartii(h.id);
+    if (dohrata) for (const h of room.hraci) if (h !== null && h.id !== BOT_ID) ucty.povysPoPartii(h.id, prava.nastavenie().postup);
     // Partie proti botovi nejdú do archívu — Frajerina a rebríček sú medzi ľuďmi.
     if (pred.koniec === null && result.state.koniec !== null && room.bot === null) zapisDoArchivu(room, result.state, cmd.type !== "vzdat");
     if (pred.koniec === null && result.state.koniec !== null) zapisTempo(room, result.state, cmd.type !== "vzdat");
