@@ -25,6 +25,7 @@ import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { IKONY } from "../karta/ikony.ts";
 import { useTip, type TipObsah } from "../karta/Tip.tsx";
 import { Avatar } from "../komponenty.tsx";
+import { KartaHraca } from "./KartaHraca.tsx";
 import type { HracInfo } from "./useHra.ts";
 import { RozpisDlazdice } from "./RozpisDlazdice.tsx";
 import { znamienko as znamienkoBodov } from "./Scorecard.tsx";
@@ -423,7 +424,9 @@ export function HracDoska({
   return (
     <section className={`doska ${ja ? "moja" : "superova"} ${naTahu ? "na-tahu" : ""} ${rozpis ? "s-rozpisom" : ""}`} aria-label={`Hráč ${meno}`}>
       <div className="doska-hrac">
-        <Avatar meno={meno} avatar={info?.avatar ?? null} velkost={60} />
+        <KartaHraca info={info} meno={meno} ja={ja}>
+          <Avatar meno={meno} avatar={info?.avatar ?? null} velkost={60} />
+        </KartaHraca>
         <div>
           <strong className="doska-meno">
             {meno} {ja && <span className="tlmene">(ty)</span>}

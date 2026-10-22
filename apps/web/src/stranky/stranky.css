@@ -1006,3 +1006,20 @@ button.cip.aktivny {
   align-items: center;
   gap: 6px;
 }
+
+/* Odkaz na štatistiky na stránke /profil — samotné sú na profile hráča. */
+.profil-odkaz-statistiky {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+}
+
+.profil-odkaz-statistiky h2 {
+  margin: 0 0 4px;
+}
+
+.profil-odkaz-statistiky p {
+  margin: 0;
+}

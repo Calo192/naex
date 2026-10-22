@@ -20,6 +20,8 @@ export interface HracInfo {
   readonly bot?: boolean;
   /** Pohlavie z profilu pre tvary hlášok; chýba/null = neuvádza. */
   readonly pohlavie?: Pohlavie | null;
+  /** Či sa dá otvoriť profil: bot nemá žiadny, AI playtester je hráčom skrytý. */
+  readonly profil?: "verejny" | "skryty" | "ziadny";
 }
 
 /** Rod hráča v hláškach (Michal 2026-10-22): bot, pohlavie z profilu, alebo neuvedené. */

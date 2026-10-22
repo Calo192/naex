@@ -13,7 +13,8 @@ import { Glosar } from "./stranky/Glosar.tsx";
 import { Pravidla } from "./stranky/Pravidla.tsx";
 import { Prihlasenie, Profil, Registracia } from "./stranky/Ucet.tsx";
 import { Hra } from "./hra/Hra.tsx";
-import { HracProfil } from "./stranky/Statistiky.tsx";
+import { HracProfil } from "./stranky/profil/Profil.tsx";
+import { DetailPartie } from "./stranky/profil/DetailPartie.tsx";
 import { Rebricek } from "./stranky/Rebricek.tsx";
 import { SpatnaVazba } from "./stranky/SpatnaVazba.tsx";
 import { Vyvoj } from "./stranky/Vyvoj.tsx";
@@ -69,6 +70,8 @@ export function App() {
   if (cesta === "/vyvoj" || cesta.startsWith("/vyvoj/")) return <Layout siroky><Vyvoj cesta={cesta} /></Layout>;
   const hrac = /^\/hrac\/(\d+)$/.exec(cesta);
   if (hrac !== null) return <Layout siroky>{chranene(<HracProfil id={Number(hrac[1])} />)}</Layout>;
+  const partia = /^\/partia\/(\d+)$/.exec(cesta);
+  if (partia !== null) return <Layout siroky>{chranene(<DetailPartie id={Number(partia[1])} />)}</Layout>;
   if (cesta === "/profil") return <Layout siroky>{chranene(<Profil />)}</Layout>;
   // Dielňa je záložka stránky Karty (Michal 2026-10-22); čítať smie každý.
   if (cesta === "/karty/dielna" || cesta.startsWith("/karty/dielna/")) return <Layout siroky><Dielna cesta={cesta} /></Layout>;

@@ -1,14 +1,12 @@
 // Štatistiky hráča: Frajerina (hodnotenie po vzore šachového Elo), jej vývoj,
 // bilancia partií a podrobné počítadlá z archívu dohraných partií.
 
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { Action, Podmienka, StatistikyHraca } from "@naex/core";
 import { ALL_PODMIENKY, rozlozRod } from "@naex/core";
-import { api } from "../lib/api.ts";
-import { Odkaz, useTitulok } from "../lib/router.tsx";
+import { Odkaz } from "../lib/router.tsx";
 import { useSada } from "../lib/sada.tsx";
-import { NAZOV_UROVNE, RANKY_HRACOV, useUcet, type Rola } from "../lib/ucet.tsx";
-import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
+import { Avatar } from "../komponenty.tsx";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { IkonaPodmienky } from "../karta/IkonaPodmienky.tsx";
 import { NAZOV_PODMIENKY } from "../karta/podmienky.ts";
@@ -48,7 +46,7 @@ interface PartiaVProfile {
   readonly super: HracVerejny & { readonly frajerina: number };
 }
 
-interface ProfilHraca {
+export interface ProfilHraca {
   readonly hrac: HracVerejny & { readonly id: number; readonly rola: string; readonly vytvoreny: number };
   readonly frajerina: Frajerina;
   readonly historia: readonly { readonly cas: number; readonly hodnota: number }[];
@@ -97,7 +95,7 @@ export function CisloFrajeriny({ f, velke = false }: { readonly f: Pick<Frajerin
   );
 }
 
-function BilanciaPruh({ vyhry, remizy, prehry }: { readonly vyhry: number; readonly remizy: number; readonly prehry: number }) {
+export function BilanciaPruh({ vyhry, remizy, prehry }: { readonly vyhry: number; readonly remizy: number; readonly prehry: number }) {
   const spolu = vyhry + remizy + prehry;
   if (spolu === 0) return null;
   const casti = [
@@ -128,7 +126,7 @@ function osY(min: number, max: number): { od: number; do_: number; ciary: number
 }
 
 /** Vývoj Frajeriny: čiara cez partie, nitkový kríž a tooltip pri prejdení myšou. */
-function GrafFrajeriny({ historia }: { readonly historia: ProfilHraca["historia"] }) {
+export function GrafFrajeriny({ historia }: { readonly historia: ProfilHraca["historia"] }) {
   const obal = useRef<HTMLDivElement>(null);
   const [sirka, setSirka] = useState(600);
   const [aktivny, setAktivny] = useState<number | null>(null);
@@ -551,84 +549,6 @@ export function Statistiky({ profil, vlastny }: { readonly profil: ProfilHraca; 
           </section>
         )}
       </div>
-    </div>
-  );
-}
-
-/** Načíta profil hráča z API; `obnov` sa zmení po dohraní ďalšej partie. */
-export function useProfil(id: number): { profil: ProfilHraca | null; chyba: string | null } {
-  const [profil, setProfil] = useState<ProfilHraca | null>(null);
-  const [chyba, setChyba] = useState<string | null>(null);
-  useEffect(() => {
-    let zive = true;
-    setProfil(null);
-    setChyba(null);
-    api
-      .get<ProfilHraca>(`/hraci/${id}`)
-      .then((p) => zive && setProfil(p))
-      .catch((e: unknown) => zive && setChyba(e instanceof Error ? e.message : String(e)));
-    return () => {
-      zive = false;
-    };
-  }, [id]);
-  return { profil, chyba };
-}
-
-/** Štatistiky prihláseného hráča na stránke /profil. */
-export function MojeStatistiky({ id }: { readonly id: number }) {
-  const { profil, chyba } = useProfil(id);
-  if (chyba !== null) return <Hlaska>{chyba}</Hlaska>;
-  if (profil === null) return <Nacitavanie text="Načítavam štatistiky…" />;
-  return <Statistiky profil={profil} vlastny />;
-}
-
-/** Verejný profil iného hráča (/hrac/:id). */
-export function HracProfil({ id }: { readonly id: number }) {
-  const { ja } = useUcet();
-  const { profil, chyba } = useProfil(id);
-  const meno = profil?.hrac.meno ?? "Hráč";
-  useTitulok(meno);
-  const vlastny = ja?.id === id;
-  const clenOd = useMemo(() => (profil === null ? "" : new Date(profil.hrac.vytvoreny).toLocaleDateString("sk-SK", { day: "numeric", month: "numeric", year: "numeric" })), [profil]);
-
-  if (chyba !== null) {
-    return (
-      <div className="formular-stred" style={{ textAlign: "center" }}>
-        <h1>Hráč sa nenašiel</h1>
-        <p className="tlmene">{chyba}</p>
-        <Odkaz href="/rebricek" className="tlacidlo">
-          Rebríček
-        </Odkaz>
-      </div>
-    );
-  }
-  if (profil === null) return <Nacitavanie />;
-
-  return (
-    <div className="profil profil-siroky">
-      <section className="panel profil-hlava">
-        <div className="profil-avatar">
-          <Avatar meno={profil.hrac.meno} avatar={profil.hrac.avatar} velkost={96} />
-        </div>
-        <div>
-          <h1 style={{ marginBottom: 4 }}>{profil.hrac.meno}</h1>
-          <div className="riadok-tlacidiel" style={{ color: "var(--slaby)" }}>
-            <span className="odznak">{profil.frajerina.titul}</span>
-            {profil.hrac.rola === "admin" && <span className="odznak odznak-admin">tvorca hry</span>}
-            {profil.hrac.rola === "subadmin" && <span className="odznak">subadmin</span>}
-            {RANKY_HRACOV.includes(profil.hrac.rola as Rola) && (
-              <span className="odznak" title="Rank hráča — návštevník, Poldeci, Deci, Sedmička">{NAZOV_UROVNE[profil.hrac.rola as Rola]}</span>
-            )}
-            <span>v krčme od {clenOd}</span>
-          </div>
-          {vlastny && (
-            <p style={{ marginTop: 10, marginBottom: 0 }}>
-              <Odkaz href="/profil">Upraviť profil</Odkaz>
-            </p>
-          )}
-        </div>
-      </section>
-      <Statistiky profil={profil} vlastny={vlastny} />
     </div>
   );
 }

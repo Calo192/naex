@@ -29,7 +29,8 @@ export interface KrcmovyUcetProps {
   readonly menoStarsieho: (elderId: string) => string;
   readonly kolo: number;
   readonly dva: boolean;
-  readonly onZavri: () => void;
+  /** Bez neho je účet záverečný (detail dohratej partie): nedá sa zavrieť a pečiatka hovorí výsledok. */
+  readonly onZavri?: () => void;
 }
 
 interface Riadok {
@@ -42,6 +43,8 @@ interface Riadok {
 const trieda = (b: number): string => (b > 0 ? "plus" : b < 0 ? "minus" : "nula");
 
 export function KrcmovyUcet({ body, data, ja, mena, menoStarsieho, kolo, dva, onZavri }: KrcmovyUcetProps) {
+  const zaverecny = onZavri === undefined;
+  const kedy = zaverecny ? `zatvorené po kole ${kolo}` : "keby sa teraz zatváralo";
   const su: PlayerId = ja === 0 ? 1 : 0;
   const podmienky = bodyPoPodmienkach(body);
   const riadky: Riadok[] = PORADIE_PODMIENOK.map((podmienka) => {
@@ -60,17 +63,19 @@ export function KrcmovyUcet({ body, data, ja, mena, menoStarsieho, kolo, dva, on
     const rozdiel = body.spolu[p] - body.spolu[o];
     return (
       <span className={`ucet-peciatka ${rozdiel >= 0 ? "vedie" : "chyba"}`}>
-        {rozdiel > 0 ? `vedie o ${rozdiel}` : rozdiel < 0 ? `chýba ${-rozdiel}` : "remíza"}
+        {rozdiel > 0 ? `${zaverecny ? "výhra" : "vedie"} o ${rozdiel}` : rozdiel < 0 ? `${zaverecny ? "prehra o" : "chýba"} ${-rozdiel}` : "remíza"}
       </span>
     );
   };
   const hlavicka = (nazov: string, sKolom: boolean) => (
     <header className="ucet-hlava">
-      <button type="button" className="ucet-spat" onClick={onZavri}>
-        ← späť
-      </button>
+      {onZavri !== undefined && (
+        <button type="button" className="ucet-spat" onClick={onZavri}>
+          ← späť
+        </button>
+      )}
       <strong>{nazov}</strong>
-      {sKolom && (
+      {sKolom && !zaverecny && (
         <span className="ucet-pozn">
           kolo {kolo} · <kbd>Esc</kbd> zavrie
         </span>
@@ -86,8 +91,8 @@ export function KrcmovyUcet({ body, data, ja, mena, menoStarsieho, kolo, dva, on
 
   if (!dva) {
     return (
-      <section className="krcmovy-ucet spolocny" role="dialog" aria-label="Účet — body, keby sa teraz zatváralo">
-        {hlavicka("Účet · keby sa teraz zatváralo", true)}
+      <section className="krcmovy-ucet spolocny" role={zaverecny ? "region" : "dialog"} aria-label={`Účet — body, ${kedy}`}>
+        {hlavicka(`Účet · ${kedy}`, true)}
         <div className="ucet-mena">
           <span className="ucet-meno ja">{mena[ja]} (ty)</span>
           <span className="ucet-meno su">{mena[su]}</span>
@@ -152,7 +157,7 @@ export function KrcmovyUcet({ body, data, ja, mena, menoStarsieho, kolo, dva, on
     </div>
   );
   return (
-    <section className="krcmovy-ucet dva" role="dialog" aria-label="Účty — body, keby sa teraz zatváralo">
+    <section className="krcmovy-ucet dva" role={zaverecny ? "region" : "dialog"} aria-label={`Účty — body, ${kedy}`}>
       {papier(su, false)}
       {papier(ja, true)}
     </section>
