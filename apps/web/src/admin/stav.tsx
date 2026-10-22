@@ -189,12 +189,15 @@ export async function nahrajMedia(blob: Blob, druh: "karta" | "ikona" | "kniznic
   return r.id;
 }
 
-/** Šírka náhľadu: scorecard na stole má 240 px, na 2× displeji 480. */
+/** Šírka náhľadu: scorecard na stole má 240 px, na 2× displeji 480; kartu určí server (320 px). */
 export const STRANA_NAHLADU = 512;
 
 /** Náhľad média (Michal 2026-10-22) — menšia kópia, ktorú /media/<id>?n pošle na stôl. */
-export async function nahrajNahlad(id: string, img: HTMLImageElement): Promise<void> {
-  const blob = await zmensene(img, STRANA_NAHLADU);
+export async function nahrajNahlad(id: string, img: HTMLImageElement, strana = STRANA_NAHLADU): Promise<void> {
+  await nahrajNahladBlob(id, await zmensene(img, strana));
+}
+
+export async function nahrajNahladBlob(id: string, blob: Blob): Promise<void> {
   await api.put(`/admin/media/${id}/nahlad`, blob, blob.type);
 }
 
@@ -204,13 +207,13 @@ export async function nahrajNahlad(id: string, img: HTMLImageElement): Promise<v
  * `priebeh` dostane počet hotových a všetkých.
  */
 export async function doplnNahlady(priebeh: (hotovo: number, spolu: number) => void): Promise<{ readonly hotovo: number; readonly chyby: number }> {
-  const { media } = await api.get<{ media: { id: string }[] }>("/admin/media-bez-nahladu");
+  const { media } = await api.get<{ media: { id: string; strana: number }[] }>("/admin/media-bez-nahladu");
   let hotovo = 0;
   let chyby = 0;
   priebeh(0, media.length);
   for (const m of media) {
     try {
-      await nahrajNahlad(m.id, await nacitajObrazok(mediaUrl(m.id)));
+      await nahrajNahlad(m.id, await nacitajObrazok(mediaUrl(m.id)), m.strana);
       hotovo++;
     } catch {
       chyby++;

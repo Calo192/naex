@@ -25,9 +25,22 @@ export interface MediaZaznam {
 /**
  * Od tejto veľkosti má obrázok mať náhľad (Michal 2026-10-22): pozadia
  * scorecardov mali 350 – 600 kB a na stole sa kreslia 240 px široké.
- * Menšie súbory (náhľady kariet 512 px ≈ 70 kB, avatary) ostávajú, ako sú.
+ * Menšie súbory (avatary) ostávajú, ako sú.
  */
 export const PRAH_NAHLADU = 150 * 1024;
+/** Ilustrácie kariet: náhľad 512 px (≈ 70 kB) sa na stole kreslí ≈ 117 px — aj ten dostane menší. */
+export const PRAH_NAHLADU_KARTY = 30 * 1024;
+
+/** Akú dlhú stranu má mať náhľad: kartu na stole 320 px, ostatné (scorecard 240 px) 512 px. */
+export function stranaNahladu(z: Pick<MediaZaznam, "druh">): number {
+  return z.druh === "karta" ? 320 : 512;
+}
+
+/** Obrázok, ktorý by mal mať náhľad (a kým ho nemá, ide cez ?n s krátkou cache). */
+function potrebujeNahlad(z: MediaZaznam): boolean {
+  if (z.typ === "image/svg+xml" || z.nazov.endsWith("@nahlad")) return false;
+  return z.velkost > (z.druh === "karta" ? PRAH_NAHLADU_KARTY : PRAH_NAHLADU);
+}
 
 const PRIPONA: Record<string, string> = {
   "image/jpeg": "jpg",
@@ -110,11 +123,10 @@ export class Media {
     return n;
   }
 
-  /** Veľké obrázky bez náhľadu — tie doplní tlačidlo v Tvorbe. */
-  bezNahladu(): MediaZaznam[] {
-    return this.db
-      .prepare("SELECT * FROM media WHERE nahlad IS NULL AND typ != 'image/svg+xml' AND velkost > ? AND nazov NOT LIKE '%@nahlad' ORDER BY velkost DESC")
-      .all(PRAH_NAHLADU) as unknown as MediaZaznam[];
+  /** Obrázky bez náhľadu, ktoré ho majú mať, aj so stranou náhľadu — doplní ich tlačidlo v Tvorbe. */
+  bezNahladu(): (MediaZaznam & { readonly strana: number })[] {
+    const vsetky = this.db.prepare("SELECT * FROM media WHERE nahlad IS NULL ORDER BY velkost DESC").all() as unknown as MediaZaznam[];
+    return vsetky.filter(potrebujeNahlad).map((z) => ({ ...z, strana: stranaNahladu(z) }));
   }
 
   /**
@@ -131,7 +143,7 @@ export class Media {
       res.writeHead(404).end();
       return;
     }
-    const docasne = nahlad && !maNahlad && z.velkost > PRAH_NAHLADU && z.typ !== "image/svg+xml";
+    const docasne = nahlad && !maNahlad && potrebujeNahlad(z);
     res.writeHead(200, {
       "content-type": z.typ,
       "cache-control": docasne ? "public, max-age=3600" : "public, max-age=31536000, immutable",

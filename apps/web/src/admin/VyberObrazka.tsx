@@ -7,7 +7,7 @@ import type { ObrazokKarty } from "@naex/tvorba";
 import { api, mediaUrl } from "../lib/api.ts";
 import { nacitajObrazok, stvorec } from "../lib/obrazky.ts";
 import { Hlaska, Nacitavanie } from "../komponenty.tsx";
-import { nahrajMedia, useAdmin } from "./stav.tsx";
+import { nahrajMedia, nahrajNahladBlob, useAdmin } from "./stav.tsx";
 
 interface MediaZaznam {
   readonly id: string;
@@ -15,8 +15,10 @@ interface MediaZaznam {
 }
 
 export async function ulozObrazokKarty(img: HTMLImageElement, posun: { x: number; y: number }, nazov: string): Promise<ObrazokKarty> {
-  const [plny, nahlad] = await Promise.all([stvorec(img, 1024, posun), stvorec(img, 512, posun, 0.84)]);
+  const [plny, nahlad, maly] = await Promise.all([stvorec(img, 1024, posun), stvorec(img, 512, posun, 0.84), stvorec(img, 320, posun, 0.8)]);
   const [p, n] = await Promise.all([nahrajMedia(plny, "karta", nazov), nahrajMedia(nahlad, "karta", `${nazov}@512`)]);
+  // Na stole sa karta kreslí ≈ 117 px — 320 px náhľad náhľadu (/media/<n>?n), Michal 2026-10-22.
+  await nahrajNahladBlob(n, maly);
   return { plny: p, nahlad: n };
 }
 
