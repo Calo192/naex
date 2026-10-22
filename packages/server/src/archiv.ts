@@ -64,8 +64,27 @@ export interface PartiaVProfile {
   readonly super: HracVerejny & { readonly frajerina: number };
 }
 
+/** Kto sa na profil pozerá (Michal 2026-10-22): vlastník, cudzí človek, správca. */
+export type PohladProfilu = "vlastny" | "cudzi" | "spravca";
+
+export interface Bilancia {
+  readonly partie: number;
+  readonly vyhry: number;
+  readonly prehry: number;
+  readonly remizy: number;
+}
+
 export interface ProfilHraca {
-  readonly hrac: HracVerejny & { readonly id: number; readonly rola: string; readonly vytvoreny: number };
+  readonly pohlad: PohladProfilu;
+  /** Profil AI playtestera — hráči ho nevidia; správca dostane pás „Skrytý profil“. */
+  readonly skryty: boolean;
+  readonly hrac: HracVerejny & { readonly id: number; readonly rola: string; readonly vytvoreny: number; readonly ai: boolean };
+  /** Bilancia podľa súpera: s ľuďmi a s botmi (počet partií s botmi vidí aj cudzí). */
+  readonly bilancia: { readonly ludia: Bilancia; readonly boti: Bilancia };
+  /** Výsledky 5 posledných partií s ľuďmi, najnovší prvý. */
+  readonly forma: readonly Vysledok[];
+  /** Len pri cudzom profile: bilancia toho, kto sa pozerá, proti tomuto hráčovi (z jeho pohľadu). */
+  readonly vyDvaja: Bilancia | null;
   readonly frajerina: StavFrajeriny & { readonly titul: string; readonly provizorna: boolean; readonly poradie: number | null };
   /** Vývoj Frajeriny od registrácie (prvý bod = štart). */
   readonly historia: readonly { readonly cas: number; readonly hodnota: number }[];
@@ -151,15 +170,23 @@ export class Archiv {
   }
 
   /** Poradie v rebríčku (1 = najlepší); hráč bez partie poradie nemá. */
-  private poradie(f: StavFrajeriny): number | null {
+  /** Poradie v rebríčku (1 = najlepší); hráč bez partie poradie nemá. AI účty sa rátajú len pre správcu. */
+  private poradie(f: StavFrajeriny, sAi: boolean): number | null {
     if (f.partie === 0) return null;
-    const r = this.db.prepare("SELECT COUNT(*) AS n FROM frajerina WHERE partie > 0 AND hodnota > ?").get(f.hodnota) as { n: number };
+    const r = this.db
+      .prepare("SELECT COUNT(*) AS n FROM frajerina f JOIN pouzivatelia u ON u.id = f.pouzivatel WHERE f.partie > 0 AND f.hodnota > ? AND (? = 1 OR u.ai = 0)")
+      .get(f.hodnota, sAi ? 1 : 0) as { n: number };
     return r.n + 1;
   }
 
-  profil(pouzivatel: number): ProfilHraca | null {
-    const u = this.db.prepare("SELECT id, meno, avatar, rola, vytvoreny FROM pouzivatelia WHERE id = ?").get(pouzivatel) as
-      | { id: number; meno: string; avatar: string | null; rola: string; vytvoreny: number }
+  /**
+   * Profil hráča podľa toho, kto sa pozerá (Michal 2026-10-22). Cudzí dostane
+   * hlavičku, Frajerinu, bilanciu, formu a vzájomnú bilanciu — nie zoznam partií
+   * ani súperov. Kto profil vidieť smie (AI len správca), rozhoduje volajúci.
+   */
+  profil(pouzivatel: number, pohlad: PohladProfilu = "vlastny", volajuci: number | null = null): ProfilHraca | null {
+    const u = this.db.prepare("SELECT id, meno, avatar, rola, vytvoreny, ai FROM pouzivatelia WHERE id = ?").get(pouzivatel) as
+      | { id: number; meno: string; avatar: string | null; rola: string; vytvoreny: number; ai: number }
       | undefined;
     if (u === undefined) return null;
     const f = this.frajerina(pouzivatel);
@@ -232,14 +259,29 @@ export class Archiv {
         super: { id: r.super_id, meno: r.super_meno ?? "zmazaný hráč", avatar: r.super_avatar, frajerina: r.super_frajerina },
       }));
 
+    const bilancia = (rs: readonly { vysledok: Vysledok }[]): Bilancia => ({
+      partie: rs.length,
+      vyhry: rs.filter((r) => r.vysledok === "vyhra").length,
+      prehry: rs.filter((r) => r.vysledok === "prehra").length,
+      remizy: rs.filter((r) => r.vysledok === "remiza").length,
+    });
+    // Z pohľadu volajúceho: jeho výhra je prehra tohto hráča.
+    const otoc: Record<Vysledok, Vysledok> = { vyhra: "prehra", prehra: "vyhra", remiza: "remiza" };
+    const cudzi = pohlad === "cudzi";
     return {
-      hrac: { id: u.id, meno: u.meno, avatar: u.avatar, rola: u.rola, vytvoreny: u.vytvoreny },
-      frajerina: { ...f, titul: titul(f.hodnota), provizorna: f.partie < PROVIZORNE_PARTIE, poradie: this.poradie(f) },
+      pohlad,
+      skryty: u.ai === 1,
+      hrac: { id: u.id, meno: u.meno, avatar: u.avatar, rola: u.rola, vytvoreny: u.vytvoreny, ai: u.ai === 1 },
+      frajerina: { ...f, titul: titul(f.hodnota), provizorna: f.partie < PROVIZORNE_PARTIE, poradie: this.poradie(f, pohlad === "spravca") },
       historia,
       statistiky,
       casSpolu,
-      partie,
-      superi: [...superi.values()].sort((a, b) => b.partie - a.partie).slice(0, 8),
+      bilancia: { ludia: bilancia(riadky), boti: bilancia([]) },
+      forma: riadky.slice(-5).reverse().map((r) => r.vysledok),
+      vyDvaja: cudzi && volajuci !== null ? bilancia(riadky.filter((r) => r.super_id === volajuci).map((r) => ({ vysledok: otoc[r.vysledok] }))) : null,
+      // Zoznam partií a súperov len vlastník a správca.
+      partie: cudzi ? [] : partie,
+      superi: cudzi ? [] : [...superi.values()].sort((a, b) => b.partie - a.partie).slice(0, 8),
     };
   }
 
@@ -262,16 +304,17 @@ export class Archiv {
     return { partie: rows.length, karty };
   }
 
-  rebricek(limit = 100): RiadokRebricka[] {
+  /** Rebríček Frajeriny; AI playtesterov vidí len správca (Michal 2026-10-22). */
+  rebricek(limit = 100, sAi = false): RiadokRebricka[] {
     const riadky = this.db
       .prepare(
         `SELECT f.pouzivatel AS id, u.meno, u.avatar, u.rola, f.hodnota, f.najvyssia, f.partie, f.vyhry, f.prehry, f.remizy
          FROM frajerina f JOIN pouzivatelia u ON u.id = f.pouzivatel
-         WHERE f.partie > 0
+         WHERE f.partie > 0 AND (? = 1 OR u.ai = 0)
          ORDER BY f.hodnota DESC, f.partie DESC, u.id
          LIMIT ?`,
       )
-      .all(limit) as { id: number; meno: string; avatar: string | null; rola: string; hodnota: number; najvyssia: number; partie: number; vyhry: number; prehry: number; remizy: number }[];
+      .all(sAi ? 1 : 0, limit) as { id: number; meno: string; avatar: string | null; rola: string; hodnota: number; najvyssia: number; partie: number; vyhry: number; prehry: number; remizy: number }[];
     // Rovnaká Frajerina = rovnaké poradie (ako v šachových rebríčkoch).
     let poradie = 0;
     let predosla = Number.POSITIVE_INFINITY;

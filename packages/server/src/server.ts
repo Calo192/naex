@@ -37,7 +37,7 @@ import {
 } from "@naex/core";
 import { otvorDb } from "./db.ts";
 import type { Pouzivatel } from "./auth.ts";
-import { Ucty } from "./auth.ts";
+import { Ucty, jeSpravca } from "./auth.ts";
 import { Media } from "./media.ts";
 import { Avatary } from "./avatary.ts";
 import { Hudba } from "./hudba.ts";
@@ -78,6 +78,8 @@ interface HracVMiestnosti {
   frajerina: number;
   /** Pohlavie z profilu pre tvary hlášok (nie je tajné); null = neuvádza. */
   pohlavie: Pohlavie | null;
+  /** Účet AI playtestera — hráčom skrytý profil aj Frajerina (Michal 2026-10-22). */
+  ai: boolean;
 }
 
 /** Účet offline protihráča neexistuje — id 0 SQLite nikdy nepridelí. */
@@ -329,15 +331,23 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     }
   };
 
+  // Profil: „ziadny“ (bot), „skryty“ (AI playtester pre hráča — bez Frajeriny), „verejny“.
+  // Rozhoduje server podľa toho, kto správu dostane (Michal 2026-10-22).
   const posliHracov = (room: Room): void => {
-    const hraci = room.hraci.map((h, i) =>
-      h === null
-        ? null
-        : i === room.bot
-          ? { meno: h.meno, avatar: h.avatar, bot: true }
-          : { id: h.id, meno: h.meno, avatar: h.avatar, frajerina: h.frajerina, titul: titul(h.frajerina), pohlavie: h.pohlavie },
-    );
-    for (const ws of room.sockets) if (ws !== null) send(ws, { type: "hraci", hraci });
+    for (const ws of room.sockets) {
+      if (ws === null) continue;
+      const spravca = (() => {
+        const u = infos.get(ws)?.pouzivatel;
+        return u !== undefined && jeSpravca(u.rola);
+      })();
+      const hraci = room.hraci.map((h, i) => {
+        if (h === null) return null;
+        if (i === room.bot) return { meno: h.meno, avatar: h.avatar, bot: true, profil: "ziadny" };
+        if (h.ai && !spravca) return { id: h.id, meno: h.meno, avatar: h.avatar, pohlavie: h.pohlavie, ai: true, profil: "skryty" };
+        return { id: h.id, meno: h.meno, avatar: h.avatar, frajerina: h.frajerina, titul: titul(h.frajerina), pohlavie: h.pohlavie, ai: h.ai, profil: "verejny" };
+      });
+      send(ws, { type: "hraci", hraci });
+    }
   };
 
   const oznamPripojenie = (room: Room, seat: PlayerId, connected: boolean): void => {
@@ -361,7 +371,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       stary.close();
     }
     const p = info.pouzivatel;
-    room.hraci[seat] = { id: p.id, meno: p.meno, avatar: p.avatar, frajerina: archiv.frajerina(p.id).hodnota, pohlavie: p.pohlavie };
+    room.hraci[seat] = { id: p.id, meno: p.meno, avatar: p.avatar, frajerina: archiv.frajerina(p.id).hodnota, pohlavie: p.pohlavie, ai: p.ai };
     room.sockets[seat] = ws;
     room.odpojenyOd[seat] = null;
     info.room = room;
@@ -452,7 +462,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         if (protiBotovi) {
           // Offline protihráč sedí hneď — partia začína bez čakania.
           const povaha = POVAHY.find((p) => p.id === room.botPovaha);
-          room.hraci[1] = { id: BOT_ID, meno: povaha?.meno ?? "Štamgast", avatar: avatary.bota(room.botPovaha), frajerina: 0, pohlavie: null };
+          room.hraci[1] = { id: BOT_ID, meno: povaha?.meno ?? "Štamgast", avatar: avatary.bota(room.botPovaha), frajerina: 0, pohlavie: null, ai: false };
           room.state = setupGame(room.data, randomInt(2 ** 31), { lokalit: DLZKY_HRY[room.dlzka] });
           room.zaciatok = teraz();
           room.statistiky = noveStatistiky();
@@ -660,8 +670,9 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         verziaSady: room.sada.verzia,
         dohrata,
         hraci: [h0.id, h1.id],
-        // Hodnotená (Frajerina) len keď na to majú právo obaja — inak sa partia archivuje bez zmeny Frajeriny.
-        hodnotena: [h0.id, h1.id].every((id) => {
+        // Hodnotená (Frajerina) len keď na to majú právo obaja a nehrá človek proti AI
+        // playtesterovi (Michal 2026-10-22) — inak archív a štatistiky bez zmeny Frajeriny.
+        hodnotena: h0.ai === h1.ai && [h0.id, h1.id].every((id) => {
           const u = ucty.podlaId(id);
           return u !== null && prava.smie(u, "hodnotene_partie");
         }),
