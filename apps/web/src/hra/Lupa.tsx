@@ -26,7 +26,8 @@ export interface LupaProps {
   /** Poloha pôvodnej karty na obrazovke. */
   readonly rect: DOMRect;
   readonly mierka: number;
-  readonly onZavri: () => void;
+  /** Zavretie; pri odchode myši s polohou kurzora — HernaPlocha tam môže hneď otvoriť susednú kartu. */
+  readonly onZavri: (kde?: { readonly x: number; readonly y: number }) => void;
   /** Karta sa dá chytiť aj zo zväčšenej kópie (lupa leží nad originálom). */
   readonly onPointerDown?: ((e: ReactPointerEvent<HTMLElement>) => void) | undefined;
   /** Pravý klik: to isté, čo pravý klik na pôvodnú kartu (napr. vrátiť návrh do ruky). */
@@ -54,7 +55,7 @@ export function Lupa({ rect, mierka: ziadana, onZavri, onPointerDown, onOdstran,
       e.clientX < left || e.clientX > left + w || e.clientY < top || e.clientY > top + h;
     // Dotyk nemá „odchod“ — tam lupu zavrie ťuknutie mimo.
     const pohyb = (e: PointerEvent): void => {
-      if (e.pointerType === "mouse" && mimo(e)) zavriRef.current();
+      if (e.pointerType === "mouse" && mimo(e)) zavriRef.current({ x: e.clientX, y: e.clientY });
     };
     const stlacenie = (e: PointerEvent): void => {
       if (mimo(e)) zavriRef.current();
