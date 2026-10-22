@@ -174,7 +174,7 @@ export function VyberObrazka({ nazov, zavri, vyber }: { readonly nazov: string; 
                         }
                       }}
                     >
-                      <img src={mediaUrl(m.hotovy?.nahlad ?? m.id)} alt="" loading="lazy" />
+                      <img src={mediaUrl(m.hotovy?.nahlad ?? m.id, true)} alt="" loading="lazy" />
                       <span>{m.nazov}</span>
                     </button>
                   ))}
@@ -197,7 +197,7 @@ export function VyberObrazka({ nazov, zavri, vyber }: { readonly nazov: string; 
                           .finally(() => setCaka(false));
                       }}
                     >
-                      <img src={mediaUrl(m.id)} alt="" loading="lazy" />
+                      <img src={mediaUrl(m.id, true)} alt="" loading="lazy" />
                       <span>{m.nazov.replace(/^.*\//, "").slice(0, 40)}</span>
                     </button>
                   ))}

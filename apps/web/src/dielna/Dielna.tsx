@@ -768,7 +768,7 @@ function Kniznica({ vybrany, vyber }: { readonly vybrany: string | null; readonl
   return (
     <div className="dielna-kniznica">
       <div className="riadok-tlacidiel">
-        {vybrany !== null && <img src={mediaUrl(vybrany)} alt="" className="dielna-vybrany-obrazok" />}
+        {vybrany !== null && <img src={mediaUrl(vybrany, true)} alt="" className="dielna-vybrany-obrazok" />}
         <button type="button" className="tlacidlo-male" onClick={() => setOtvorena(!otvorena)} aria-expanded={otvorena}>
           {otvorena ? "Zavrieť knižnicu" : vybrany === null ? "Vybrať z knižnice" : "Vybrať iný"}
         </button>
@@ -800,7 +800,7 @@ function Kniznica({ vybrany, vyber }: { readonly vybrany: string | null; readonl
                         setOtvorena(false);
                       }}
                     >
-                      <img src={mediaUrl(m.id)} alt={m.nazov} loading="lazy" />
+                      <img src={mediaUrl(m.id, true)} alt={m.nazov} loading="lazy" />
                     </button>
                   </li>
                 ))}

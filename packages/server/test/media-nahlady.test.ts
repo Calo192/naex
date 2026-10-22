@@ -36,6 +36,10 @@ describe("náhľady médií", () => {
     const bez = (await (await fetch(url("/api/admin/media-bez-nahladu"), { headers: { cookie: admin } })).json()) as { media: { id: string; strana: number }[] };
     expect(bez.media.find((m) => m.id === karta)?.strana).toBe(320);
     expect(bez.media.some((m) => m.id === pozadie)).toBe(false);
+    // Knižnica (mriežka v Dielni a tvorcovi, od 84 px) tiež malý náhľad.
+    const kniznica = ((await (await nahraj("/admin/media?druh=kniznica&nazov=ilustracia", "POST", jpeg(200))).json()) as { id: string }).id;
+    const potom = (await (await fetch(url("/api/admin/media-bez-nahladu"), { headers: { cookie: admin } })).json()) as { media: { id: string; strana: number }[] };
+    expect(potom.media.find((m) => m.id === kniznica)?.strana).toBe(320);
   });
 
 

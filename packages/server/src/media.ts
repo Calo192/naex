@@ -31,15 +31,18 @@ export const PRAH_NAHLADU = 150 * 1024;
 /** Ilustrácie kariet: náhľad 512 px (≈ 70 kB) sa na stole kreslí ≈ 117 px — aj ten dostane menší. */
 export const PRAH_NAHLADU_KARTY = 30 * 1024;
 
-/** Akú dlhú stranu má mať náhľad: kartu na stole 320 px, ostatné (scorecard 240 px) 512 px. */
+/** Ilustrácie kariet a knižnica (mriežky od 84 px, náhľad karty v Dielni) — malý náhľad. */
+const MALY_NAHLAD: readonly DruhMedia[] = ["karta", "kniznica"];
+
+/** Akú dlhú stranu má mať náhľad: karta a knižnica 320 px, ostatné (scorecard 240 px) 512 px. */
 export function stranaNahladu(z: Pick<MediaZaznam, "druh">): number {
-  return z.druh === "karta" ? 320 : 512;
+  return MALY_NAHLAD.includes(z.druh) ? 320 : 512;
 }
 
 /** Obrázok, ktorý by mal mať náhľad (a kým ho nemá, ide cez ?n s krátkou cache). */
 function potrebujeNahlad(z: MediaZaznam): boolean {
   if (z.typ === "image/svg+xml" || z.nazov.endsWith("@nahlad")) return false;
-  return z.velkost > (z.druh === "karta" ? PRAH_NAHLADU_KARTY : PRAH_NAHLADU);
+  return z.velkost > (MALY_NAHLAD.includes(z.druh) ? PRAH_NAHLADU_KARTY : PRAH_NAHLADU);
 }
 
 const PRIPONA: Record<string, string> = {
