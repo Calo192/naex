@@ -88,6 +88,7 @@ Zadanie ti povie **url** lokálneho servera (napr. `http://localhost:8793`),
 ## Typy nálezov nástroja
 
 `orezany-text`, `skrateny-text` (trojbodka), `prekryty-text`, `prekryty-prvok`,
+`prekryty-obsah` (ovládanie či text v plávajúcej vrstve cez cudziu kartu či obrázok),
 `nezarovnana-ikona`, `nezarovnany-rad` (dlaždice rovnakého typu vedľa seba vo
 flex/grid rade nesedia hranou ani stredom o > 4 px — napr. schody kariet v línii),
 `vodorovny-posun`, `mimo-okna`, `maly-ciel` (< 24 px),

@@ -204,7 +204,13 @@ const MERANIE = String.raw`(async () => {
     const r = obsahRect(el);
     for (let p = el.parentElement; p && p !== document.body; p = p.parentElement) {
       const ps = getComputedStyle(p);
-      if (/auto|scroll/.test(ps.overflowX + ' ' + ps.overflowY)) break;
+      if (/auto|scroll/.test(ps.overflowX + ' ' + ps.overflowY)) {
+        // Posuvný kontajner odroluje len doprava a dole — čo vytŕča doľava či hore, je stratené (popis kraja v línii).
+        const pr = p.getBoundingClientRect();
+        const vlavo = p.scrollLeft === 0 ? pr.left - r.left : 0, hore = p.scrollTop === 0 ? pr.top - r.top : 0;
+        if (Math.max(vlavo, hore) > 2 && Math.max(vlavo, hore) < r.width + r.height) pridaj('orezany-text', 'vysoka', el, 'text vytŕča o ' + Math.round(Math.max(vlavo, hore)) + ' px ' + (vlavo > hore ? 'doľava' : 'hore') + ' z posuvného ' + popis(p) + ', kam sa nedá doscrollovať');
+        break;
+      }
       if (!skryva(ps)) continue;
       const presah = vycnieva(r, p.getBoundingClientRect());
       // Predok, ktorý text celý obsahuje, ho neoreže — orezať ho môže až niektorý vyšší (zrkadlená doska).
@@ -297,9 +303,9 @@ const MERANIE = String.raw`(async () => {
     }
     return null;
   };
-  const pridajPrekryv = (i, j, { a, b }) => {
+  const pridajPrekryv = (i, j, { a, b }, zavaznost = 'vysoka', dovetok = '') => {
     const r = { left: Math.min(a.left, b.left), top: Math.min(a.top, b.top), width: Math.max(a.right, b.right) - Math.min(a.left, b.left), height: Math.max(a.bottom, b.bottom) - Math.min(a.top, b.top) };
-    pridaj('prekryty-text', 'vysoka', listy[i], 'text sa prekrýva s ' + popis(listy[j]) + ' („' + text(listy[j]).slice(0, 40) + '“)', r);
+    pridaj('prekryty-text', zavaznost, listy[i], 'text sa prekrýva s ' + popis(listy[j]) + ' („' + text(listy[j]).slice(0, 40) + '“)' + dovetok, r);
   };
   const naOverenie = [];
   for (let i = 0; i < listy.length; i++) {
@@ -307,16 +313,75 @@ const MERANIE = String.raw`(async () => {
       if (modaly[i] !== modaly[j] || listy[i].contains(listy[j]) || listy[j].contains(listy[i])) continue;
       const z = zasah(rr[i], rr[j]);
       if (!z) continue;
-      if (pevne[i] !== pevne[j]) naOverenie.push([i, j]);
+      if (pevne[i] !== pevne[j]) naOverenie.push([i, j, z]);
       else pridajPrekryv(i, j, z);
     }
   }
-  // Pevná vrstva (ruka, lišta) nad textom stránky: chyba, len ak text nejde odrolovať spod nej.
-  for (const [i, j] of naOverenie.slice(0, 100)) {
+  // Pevná vrstva (ruka, lišta) nad textom stránky: vysoká, ak text nejde odrolovať spod nej;
+  // stredná, ak ho zakrýva len pri otvorení stránky (herný stôl sa číta bez rolovania).
+  const priOtvoreni = [];
+  for (const [i, j, z0] of naOverenie.slice(0, 100)) {
     (pevne[i] ? listy[j] : listy[i]).scrollIntoView({ block: 'center', behavior: 'instant' });
     await new Promise((ok) => setTimeout(ok, 80));
     const z = zasah(riadky(listy[i]), riadky(listy[j]));
     if (z) pridajPrekryv(i, j, z);
+    else priOtvoreni.push([i, j, z0]);
+  }
+  scrollTo({ top: 0, behavior: 'instant' });
+  await new Promise((ok) => setTimeout(ok, 150));
+  for (const [i, j, z0] of priOtvoreni) pridajPrekryv(i, j, z0, 'stredna', ' pri otvorení stránky — odkryje sa až rolovaním');
+
+  // 4b. Prekrytý obsah: ovládací prvok alebo text v plávajúcej vrstve (absolute, fixed, sticky)
+  // leží cez cudzí obrázok či kartu (pečiatky obchodu cez kartu v línii). Odznak na vlastnej
+  // karte (vrstva do 3 úrovní nad obrázkom) je zámer.
+  const vrstvaPrvku = (el) => {
+    for (let e = el; e && e !== document.body; e = e.parentElement) if (/absolute|fixed|sticky/.test(getComputedStyle(e).position)) return e;
+    return null;
+  };
+  const obrazky = vsetky.filter((el) => {
+    if (natoceny(el)) return false;
+    const r = el.getBoundingClientRect();
+    if (/^(IMG|VIDEO|CANVAS)$/.test(el.tagName)) return r.width >= 24 && r.height >= 24;
+    return r.width >= 40 && r.height >= 40 && /url\(/.test(getComputedStyle(el).backgroundImage);
+  });
+  const vrchne = [...new Set([...interaktivne, ...listy])].filter((el) => !modal(el) && !el.closest('[role=tooltip]') && getComputedStyle(el).pointerEvents !== 'none');
+  const vyska = (b, a) => { let i = 0; for (let e = b; e && !e.contains(a); e = e.parentElement) i++; return i; };
+  const prekryteObsahy = [];
+  for (const a of vrchne) {
+    const vrstva = vrstvaPrvku(a);
+    if (!vrstva || vrstva === document.documentElement) continue;
+    const ra = a.getBoundingClientRect();
+    if (ra.width < 8 || ra.height < 8) continue;
+    for (const b of obrazky) {
+      if (vrstva.contains(b) || b.contains(a) || modal(b)) continue;
+      const rb = b.getBoundingClientRect();
+      const sx = Math.min(ra.right, rb.right) - Math.max(ra.left, rb.left), sy = Math.min(ra.bottom, rb.bottom) - Math.max(ra.top, rb.top);
+      if (sx < 8 || sy < 8 || sx * sy < ra.width * ra.height * 0.25) continue;
+      if (vyska(b, vrstva) <= 3) continue;
+      // Hore musí byť naozaj vrstva s prvkom (nie obrázok nad ňou).
+      const cx = Math.max(ra.left, rb.left) + sx / 2, cy = Math.max(ra.top, rb.top) + sy / 2;
+      if (cx < 0 || cy < 0 || cx > W || cy > H) continue;
+      const hore = document.elementFromPoint(cx, cy);
+      if (!hore || !vrstva.contains(hore)) continue;
+      prekryteObsahy.push([a, b, vrstva]);
+      break;
+    }
+  }
+  for (const [a, b, vrstva] of prekryteObsahy.slice(0, 40)) {
+    let zavaznost = 'vysoka', dovetok = '';
+    if (/fixed|sticky/.test(getComputedStyle(vrstva).position)) {
+      // Rovnako ako pri texte: dá sa obrázok spod vrstvy odrolovať?
+      b.scrollIntoView({ block: 'center', behavior: 'instant' });
+      await new Promise((ok) => setTimeout(ok, 80));
+      const ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
+      const stale = Math.min(ra.right, rb.right) - Math.max(ra.left, rb.left) > 8 && Math.min(ra.bottom, rb.bottom) - Math.max(ra.top, rb.top) > 8;
+      scrollTo({ top: 0, behavior: 'instant' });
+      await new Promise((ok) => setTimeout(ok, 80));
+      if (!stale) { zavaznost = 'stredna'; dovetok = ' pri otvorení stránky — odkryje sa až rolovaním'; }
+    }
+    const ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
+    const r = { left: Math.min(ra.left, rb.left), top: Math.min(ra.top, rb.top), width: Math.max(ra.right, rb.right) - Math.min(ra.left, rb.left), height: Math.max(ra.bottom, rb.bottom) - Math.min(ra.top, rb.top) };
+    pridaj('prekryty-obsah', zavaznost, a, 'leží cez ' + popis(b) + dovetok, r);
   }
   scrollTo({ top: 0, behavior: 'instant' });
   await new Promise((ok) => setTimeout(ok, 150));
