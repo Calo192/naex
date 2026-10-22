@@ -63,6 +63,14 @@ describe("nastavenia profilu", () => {
     expect(((await volaj("GET", "/ja", cookie)).data.pouzivatel as { skore: string }).skore).toBe("dva");
   });
 
+  it("klávesové skratky v partii (Michal 2026-10-22): predvolene zapnuté, vypínač len áno/nie", async () => {
+    const { cookie } = await registruj(server.port);
+    expect(((await volaj("GET", "/ja", cookie)).data.pouzivatel as { skratky: boolean }).skratky).toBe(true);
+    expect(((await volaj("PATCH", "/profil", cookie, { skratky: false })).data.pouzivatel as { skratky: boolean }).skratky).toBe(false);
+    for (const zle of [0, "nie", null]) expect((await volaj("PATCH", "/profil", cookie, { skratky: zle })).status).toBe(400);
+    expect(((await volaj("GET", "/ja", cookie)).data.pouzivatel as { skratky: boolean }).skratky).toBe(false);
+  });
+
   it("hráč si vyberie predvolený avatar, cudzie médium nie", async () => {
     const { cookie } = await registruj(server.port);
     const zoznam = (await volaj("GET", "/avatary", cookie)).data.avatary as string[];

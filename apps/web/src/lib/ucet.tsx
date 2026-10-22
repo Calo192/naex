@@ -39,6 +39,8 @@ export interface Pouzivatel {
   readonly schema?: string | null;
   /** Zobrazenie skóre v partii (ZOBRAZENIA_SKORE); chýba = dlaždice. */
   readonly skore?: ZobrazenieSkore;
+  /** Klávesové skratky v partii (K, P, N, Esc, ?); chýba = zapnuté. */
+  readonly skratky?: boolean;
 }
 
 /**

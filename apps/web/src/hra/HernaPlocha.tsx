@@ -98,6 +98,7 @@ import type { ActionSums, GameState, KliatbyNahladu, NahladVylozenia, PolozkaVyk
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
 import { KrcmovyUcet } from "./KrcmovyUcet.tsx";
+import { SkratkyNapoveda, useSkratky } from "./skratky.tsx";
 import type { Sada } from "@naex/tvorba";
 import { HernaKarta, posunVzpriamenej, vzhladKarty, type HernaKartaProps } from "./HernaKarta.tsx";
 import { Lupa, maxMierkaLupy } from "./Lupa.tsx";
@@ -431,6 +432,8 @@ export function HernaPlocha({
   const mierkaLupy = (useUcet().ja?.lupa ?? LUPA_PREDVOLENA) / 100;
   // Zobrazenie skóre (preferencia v profile, Michal 2026-10-22): dlaždice v bare, alebo krčmový účet cez starších.
   const zobrazenieSkore = useUcet().ja?.skore ?? "dlazdice";
+  // Klávesové skratky v partii (Michal 2026-10-22, roadmapa #19) — vypínač v profile.
+  const skratky = useSkratky(useUcet().ja?.skratky !== false && view.koniec === null);
   const [ucetOtvoreny, setUcetOtvoreny] = useState(false);
   const idUcetu = useId();
   useEffect(() => {
@@ -1942,7 +1945,7 @@ export function HernaPlocha({
         <>
           {navrat("← späť na výber", () => setNavrh(null))}
           <button onClick={() => setNavrh({ typ: "lokalita", uid: lokalitaNavrh.karta.uid, otocena: !lokalitaNavrh.otocena })}>otočiť ↻</button>
-          <button className="tlacidlo-hlavne" onClick={() => posli({ type: "chooseLocation", uid: lokalitaNavrh.karta.uid, otocena: lokalitaNavrh.otocena })}>
+          <button className="tlacidlo-hlavne" data-skratka="k" onClick={() => posli({ type: "chooseLocation", uid: lokalitaNavrh.karta.uid, otocena: lokalitaNavrh.otocena })}>
             potvrdiť
           </button>
         </>
@@ -1954,6 +1957,7 @@ export function HernaPlocha({
           {navrat("vrátiť do ruky", () => setNavrh(null))}
           <button
             className="tlacidlo-hlavne"
+            data-skratka="k"
             disabled={plan.chyba !== null}
             title={plan.chyba ?? undefined}
             onClick={() => posli({ type: "tah", kroky: plan.kroky })}
@@ -1967,7 +1971,7 @@ export function HernaPlocha({
       return (
         <>
           {navrat("vrátiť do ruky", () => setNavrh(null))}
-          <button className="tlacidlo-hlavne" onClick={() => posli({ type: "place", uid: vylozene.karta.uid, target: vylozene.ciel })}>
+          <button className="tlacidlo-hlavne" data-skratka="k" onClick={() => posli({ type: "place", uid: vylozene.karta.uid, target: vylozene.ciel })}>
             potvrdiť
           </button>
         </>
@@ -2294,6 +2298,7 @@ export function HernaPlocha({
             vpravo: (
               <button
                 className="pecat pecat-koncim"
+                data-skratka="p"
                 title="Do Pitky už nevykladáš, súper vykladá sám. Za každú kartu, ktorú si ešte smel vyložiť, dostaneš cigaretu."
                 onClick={() => (mozemVylozit ? odlozenyPas.spusti({ type: "pass" }) : posli({ type: "pass" }))}
               >
@@ -2506,7 +2511,7 @@ export function HernaPlocha({
                 <button className="pecat pecat-tichy" onClick={() => setPotvrdenie(null)} autoFocus>
                   ešte nie
                 </button>
-                <button className="pecat pecat-koncim" onClick={() => posli({ type: "skipNaex" })}>
+                <button className="pecat pecat-koncim" data-skratka="k" onClick={() => posli({ type: "skipNaex" })}>
                   skončiť Pitku
                 </button>
               </>
@@ -2601,6 +2606,7 @@ export function HernaPlocha({
         const koncim = (
           <button
             className="pecat pecat-koncim"
+            data-skratka="k"
             aria-disabled={krcma}
             title={
               krcma
@@ -2648,7 +2654,7 @@ export function HernaPlocha({
         const naexStred =
           vybranaUid === null || dovodBezNaex !== null ? undefined : (
             <span className="pecat-naex-obal">
-              <button className="tlacidlo-naex pecat-naex" title={`NA EX na ${menoVybranej} — súper smie hneď odpovedať jednou kartou.`} onClick={() => posli({ type: "naex", uid: vybranaUid })}>
+              <button className="tlacidlo-naex pecat-naex" data-skratka="n" title={`NA EX na ${menoVybranej} — súper smie hneď odpovedať jednou kartou.`} onClick={() => posli({ type: "naex", uid: vybranaUid })}>
                 NA EX!
               </button>
               <button className="pecat-zrusit" aria-label="Zrušiť výber" title="Zrušiť výber (aj pravý klik na stôl)" onClick={() => setMode({ typ: "ziadny" })}>
@@ -3237,7 +3243,7 @@ export function HernaPlocha({
                     ? `Hotovo? Zvyšok (${kariet(zvysok.length)}) podáš ${menoHraca(super_)}.`
                     : "Hotovo?"}
               </span>
-              <button className="tlacidlo-hlavne" disabled={!stavbaHotova} onClick={potvrdStavbu}>
+              <button className="tlacidlo-hlavne" data-skratka="k" disabled={!stavbaHotova} onClick={potvrdStavbu}>
                 potvrdiť
               </button>
             </footer>
@@ -3298,6 +3304,7 @@ export function HernaPlocha({
               <button onClick={() => setNavrh(null)}>vrátiť</button>
               <button
                 className="tlacidlo-hlavne"
+                data-skratka="k"
                 onClick={() => {
                   const uids = zoSenku.map((k) => k.uid);
                   setNoveZoSenku((n) => ({ kolo: view.kolo, uids: [...(n.kolo === view.kolo ? n.uids : []), ...uids] }));
@@ -3310,6 +3317,7 @@ export function HernaPlocha({
           ) : (
             <button
               className="tlacidlo-cigarety"
+              data-skratka="p"
               disabled={!somNaTahu}
               title={somNaTahu ? `Prestaneš brať zo šenku; v Zhromaždení vyložíš ${limitTeraz}.` : "Počkaj, kým budeš na ťahu."}
               onClick={() => posli({ type: "draftStop" })}
@@ -3585,7 +3593,20 @@ export function HernaPlocha({
               </button>
             );
           })}
+          {useUcet().ja?.skratky !== false && (
+            <button
+              type="button"
+              className={`hlava-vrstva hlava-skratky ${skratky.napoveda ? "otvorena" : ""}`}
+              aria-expanded={skratky.napoveda}
+              aria-keyshortcuts="?"
+              title="Klávesové skratky (?)"
+              onClick={skratky.prepniNapovedu}
+            >
+              ?
+            </button>
+          )}
         </div>
+        {skratky.napoveda && <SkratkyNapoveda onZavri={skratky.zavriNapovedu} />}
       </header>
       {slotHlavicky !== null &&
         createPortal(

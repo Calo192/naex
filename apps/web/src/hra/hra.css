@@ -4622,3 +4622,63 @@ button.auto-hotovo-odkaz {
   white-space: nowrap;
   pointer-events: none;
 }
+
+/* ---- klávesové skratky v partii (Michal 2026-10-22, roadmapa #19) ---- */
+.hlava-skratky {
+  min-width: 34px;
+  font-weight: 800;
+}
+
+.skratky-napoveda {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 8px;
+  z-index: 45;
+  width: 340px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--okraj-svetly);
+  background: var(--plocha);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.55);
+}
+
+.skratky-napoveda header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.skratky-napoveda dl {
+  display: grid;
+  gap: 4px;
+  margin: 0 0 8px;
+}
+
+.skratky-napoveda dl > div {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  align-items: center;
+}
+
+.skratky-napoveda dd {
+  margin: 0;
+  font-size: 0.86rem;
+}
+
+.skratky-napoveda kbd {
+  display: inline-block;
+  min-width: 24px;
+  padding: 1px 6px;
+  border: 1px solid var(--okraj-svetly);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: var(--pozadie);
+  font: 700 0.76rem/1.4 var(--pismo);
+  text-align: center;
+}
+
+.skratky-napoveda p {
+  margin: 0;
+  font-size: 0.78rem;
+}

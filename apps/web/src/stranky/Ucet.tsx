@@ -284,6 +284,16 @@ export function Profil() {
       .catch(chyba);
   };
 
+  // Klávesové skratky v partii (Michal 2026-10-22, roadmapa #19).
+  const [skratky, setSkratky] = useState(ja?.skratky !== false);
+  const prepniSkratky = (zapnute: boolean): void => {
+    setSkratky(zapnute);
+    api
+      .patch<{ pouzivatel: Pouzivatel }>("/profil", { skratky: zapnute })
+      .then((r) => nastav(r.pouzivatel))
+      .catch(chyba);
+  };
+
   // Výber z predvolených avatarov (Michal 2026-10-19) — kto nechce nahrávať fotku.
   const [galeria, setGaleria] = useState<readonly string[] | null>(null);
   const [galeriaOtvorena, setGaleriaOtvorena] = useState(false);
@@ -467,6 +477,13 @@ export function Profil() {
             </label>
           ))}
         </fieldset>
+        <label className="skratky-volba">
+          <input type="checkbox" checked={skratky} onChange={(e) => prepniSkratky(e.target.checked)} />
+          <span>
+            <b>Klávesové skratky v partii</b> — K končím / hotovo / potvrdiť, P pasovať, N NA EX!, Esc zrušiť, ? zoznam. Pri písaní do poľa
+            nefungujú; M a 1–4 sú hlášky Melichara.
+          </span>
+        </label>
       </section>
       <div className="profil-nastavenia">
       <form className="panel" onSubmit={(e) => void ulozMeno(e)}>
