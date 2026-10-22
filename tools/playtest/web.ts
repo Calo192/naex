@@ -204,7 +204,25 @@ export async function prihlasAgenta(url: string, meno: string, uroven: UrovenAge
   if (!r.ok) throw new Error(`Prihlásenie ${ucet.login} na ${url}: ${await r.text()}`);
   const cookie = (r.headers.get("set-cookie") ?? "").split(";")[0] ?? "";
   await zaradAgenta(url, cookie, uroven);
+  await nastavPohlaviePostavy(url, cookie, meno);
   return { ...ucet, cookie };
+}
+
+/** Postavy playtesterov majú pohlavie (hraci.json) — hlášky v partii sa podľa neho skloňujú (Michal 2026-10-22). */
+async function nastavPohlaviePostavy(url: string, cookie: string, meno: string): Promise<void> {
+  let postavy: readonly { readonly meno: string; readonly pohlavie?: "muz" | "zena" }[];
+  try {
+    postavy = (JSON.parse(readFileSync("tools/playtest/hraci.json", "utf8")) as { hraci: typeof postavy }).hraci;
+  } catch {
+    return;
+  }
+  const pohlavie = postavy.find((p) => p.meno === meno || menoAgenta(p.meno) === menoAgenta(meno))?.pohlavie;
+  if (pohlavie === undefined) return;
+  const ja = await volaj(url, "GET", "/ja", cookie);
+  const aktualne = ja.ok ? ((await ja.json()) as { pouzivatel: { pohlavie?: string | null } | null }).pouzivatel?.pohlavie : undefined;
+  if (aktualne === pohlavie) return;
+  const z = await volaj(url, "PATCH", "/profil", cookie, { pohlavie });
+  if (!z.ok) console.error(`(Pohlavie postavy „${meno}“ sa nepodarilo nastaviť: ${await z.text()})`);
 }
 
 export async function webDostupny(url: string): Promise<boolean> {

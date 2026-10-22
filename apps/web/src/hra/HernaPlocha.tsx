@@ -52,6 +52,7 @@ import {
   kliatbyNahladu,
   nahladPitky,
   svokraZaNaex,
+  tvar,
   vyhladDlhov,
   cieleVykladania,
   cielLokalitaId,
@@ -94,7 +95,7 @@ import {
   stranyLokality,
   vydesil,
 } from "@naex/core";
-import type { ActionSums, GameState, KliatbyNahladu, NahladVylozenia, PolozkaVykladania, Slot, StranaLinie } from "@naex/core";
+import type { ActionSums, GameState, KliatbyNahladu, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
 import { KrcmovyUcet } from "./KrcmovyUcet.tsx";
@@ -109,6 +110,7 @@ import { RozpisBodov } from "./RozpisBodov.tsx";
 import { StavkaBitky } from "./StavkaBitky.tsx";
 import { Scorecard, StavStarsieho, UCINOK_PRIAZNE } from "./Scorecard.tsx";
 import type { HracInfo, ZmenyFrajeriny } from "./useHra.ts";
+import { menoVoVete, rodHraca, textHlasky } from "./useHra.ts";
 import { useBezNaexVBitke, useOdlozenyPrikaz } from "./usePohodlie.ts";
 import { useTahanie } from "./useTahanie.ts";
 import "./hra.css";
@@ -328,7 +330,9 @@ export function HernaPlocha({
 }: HernaPlochaProps) {
   DATA = data;
   const ja = view.ja;
-  const menoHraca = (p: PlayerId): string => hraci[p]?.meno ?? `Hráč ${p + 1}`;
+  // Bot je vo vete „Bot Teta Gizka“; tvary podľa rodu hráča (Michal 2026-10-22).
+  const menoHraca = (p: PlayerId): string => menoVoVete(hraci[p], p);
+  const rodHracaP = (p: PlayerId): Rod => rodHraca(hraci[p]);
   const karta = (props: Omit<HernaKartaProps, "sada" | "data"> & { readonly key?: number }) => {
     const { key, ...rest } = props;
     return <HernaKarta key={key} sada={sada} data={data} {...rest} />;
@@ -2033,10 +2037,10 @@ export function HernaPlocha({
   const pokyn: Pokyn | null = (() => {
     if (view.koniec !== null) {
       return {
-        nadpis: view.koniec.vitaz === null ? "Remíza" : view.koniec.vitaz === ja ? "Vyhral si!" : "Prehral si",
+        nadpis: view.koniec.vitaz === null ? "Remíza" : view.koniec.vitaz === ja ? tvar(rodHracaP(ja), "Vyhral si!", "Vyhrala si!", "Výhra!") : tvar(rodHracaP(ja), "Prehral si", "Prehrala si", "Prehra"),
         text: (
           <>
-            {view.koniec.dovod.replace(/Hráč ([12])/g, (_, n: string) => menoHraca((Number(n) - 1) as PlayerId))}
+            {textHlasky(view.koniec.dovod, [menoHraca(0), menoHraca(1)], [rodHracaP(0), rodHracaP(1)])}
             {view.koniec.body !== null && ` Body ${view.koniec.body[ja]}:${view.koniec.body[super_]} (ty : ${menoHraca(super_)}).`}
             {frajerina !== null && <ZmenaFrajeriny pred={frajerina[ja].pred} po={frajerina[ja].po} />}
           </>
@@ -2064,7 +2068,7 @@ export function HernaPlocha({
         nadpis: "Stavba šenku",
         text: (
           <span className="cakanie-text">
-            Vybral si. Čakáš, kým <strong>{menoHraca(super_)}</strong> vyberie kartu do šenku
+            {tvar(rodHracaP(ja), "Vybral si.", "Vybrala si.", "Výber je hotový.")} Čakáš, kým <strong>{menoHraca(super_)}</strong> vyberie kartu do šenku
             <span className="bodky" aria-hidden="true" />
           </span>
         ),
@@ -2382,7 +2386,7 @@ export function HernaPlocha({
                 nadpis: "Odpoveď na NA EX",
                 text: textNahladuTahania ?? textVolbyMiesta ?? (
                   <>
-                    {menoHraca(super_)} dal NA EX — môžeš hneď vyložiť <strong>jednu kartu</strong> z ruky (limit nemíňa), napr. aby si
+                    {menoHraca(super_)} {tvar(rodHracaP(super_), "dal", "dala", "dáva")} NA EX — môžeš hneď vyložiť <strong>jednu kartu</strong> z ruky (limit nemíňa), napr. aby si
                     jeho neaktívne akcie spároval a NA EX ich zrušil. Potiahni ju na stôl, alebo klikni na <strong>+</strong> na konci strany.
                   </>
                 ),
@@ -2486,7 +2490,8 @@ export function HernaPlocha({
         const superNaex = (pitkaSt?.naexPocet?.[super_] ?? 0) > 0;
         const kontext = superSkoncil ? (
           <>
-            {menoHraca(super_)} skončil{superNaex ? "" : " bez NA EX"}. <strong>Si posledný</strong> — na tvoje NA EX už odpovie len jednou
+            {menoHraca(super_)} {tvar(rodHracaP(super_), "skončil", "skončila", "končí")}{superNaex ? "" : " bez NA EX"}.{" "}
+            <strong>{tvar(rodHracaP(ja), "Si posledný", "Si posledná", "Máš posledné slovo")}</strong> — na tvoje NA EX už odpovie len jednou
             kartou. Po tvojom „končím“ sa Pitka vyhodnotí.{" "}
           </>
         ) : zacinam ? (
@@ -2503,7 +2508,7 @@ export function HernaPlocha({
             nadpis,
             text: (
               <strong>
-                Skončiť bez NA EX? V tejto Pitke ho už nedáš a {menoHraca(super_)} bude hrať s vedomím, že si skončil — bude mať posledné slovo.
+                Skončiť bez NA EX? V tejto Pitke ho už nedáš a {menoHraca(super_)} bude hrať s vedomím, že {tvar(rodHracaP(ja), "si skončil", "si skončila", "končíš")} — bude mať posledné slovo.
               </strong>
             ),
             vpravo: (
@@ -2730,7 +2735,7 @@ export function HernaPlocha({
           const v = mode.typ === "vestica" ? mode : { moja: null, jeho: null };
           return {
             nadpis: "Veštica",
-            text: "Prehral si — vyber po jednej karte z oboch doberacích balíčkov, vymenia sa a balíčky sa zamiešajú.",
+            text: `${tvar(rodHracaP(ja), "Prehral si", "Prehrala si", "Bitka je prehratá")} — vyber po jednej karte z oboch doberacích balíčkov, vymenia sa a balíčky sa zamiešajú.`,
             tlacidla: (
               <>
                 <button onClick={() => setVrstva("vestica")}>balíčky</button>
@@ -2753,7 +2758,7 @@ export function HernaPlocha({
             text: (
               <span className="zberatel-text">
                 <span>
-                  Prehral si na Cintoríne: jeden Nástroj z ruky smieš dať do Dedičstva <strong>zadarmo</strong> (ďalšie Dedičstvo aj tak
+                  {tvar(rodHracaP(ja), "Prehral si na Cintoríne", "Prehrala si na Cintoríne", "Prehra na Cintoríne")}: jeden Nástroj z ruky smieš dať do Dedičstva <strong>zadarmo</strong> (ďalšie Dedičstvo aj tak
                   zdražie pre oboch). Klikni naň, alebo nič.
                 </span>
                 <span className="zberatel-ponuka">
@@ -2972,6 +2977,7 @@ export function HernaPlocha({
   const bitkaPanel =
     odhad === null || view.faza === "volbaCiela" || view.faza === "draft" || view.koniec !== null ? null : (
       <BitkaPanel
+        rodJa={rodHracaP(ja)}
         damage={b?.damage ?? odhad}
         sums={lineEval.sums}
         zdroje={lineEval.zdroje}
@@ -3005,12 +3011,14 @@ export function HernaPlocha({
         <div key={p} className={`hrozba-vydesenia ${p === ja ? "moja" : "superova"}`} role="alert">
           {p === ja ? (
             <>
-              <strong>Vydesil si {vydeseni[p]} starších!</strong> Ak ich udržíš do konca kola {kolo}, vyhráš.
+              <strong>
+                {tvar(rodHracaP(ja), "Vydesil si", "Vydesila si", "Máš vydesených")} {vydeseni[p]} starších!
+              </strong> Ak ich udržíš do konca kola {kolo}, vyhráš.
             </>
           ) : (
             <>
               <strong>
-                {menoHraca(p)} vydesil {vydeseni[p]} starších!
+                {menoHraca(p)} {tvar(rodHracaP(p), "vydesil", "vydesila", "desí")} {vydeseni[p]} starších!
               </strong>{" "}
               Ak ich udrží do konca kola {kolo}, vyhrá. Vráť niektorého do sivej — vydeseného staršieho si po šenku vezmi do ruky (patronát).
             </>
@@ -3174,7 +3182,7 @@ export function HernaPlocha({
             <span>
               {somNaTahu
                 ? `Tvoj balíček: ${kariet(draft.mojBalicek.length)} — ${krokSt.odhod} na Smetisko, ${krokSt.doSenku} do Šenku${podas > 0 ? `, zvyšok (${kariet(podas)}) podáš ${menoHraca(super_)}` : ""}.`
-                : `Vybral si — čakáš, kým vyberie ${menoHraca(super_)}.`}
+                : `${tvar(rodHracaP(ja), "Vybral si", "Vybrala si", "Výber je hotový")} — čakáš, kým vyberie ${menoHraca(super_)}.`}
             </span>
           </header>
           <div className="stavba-rad">
@@ -3351,7 +3359,11 @@ export function HernaPlocha({
             ))}
           </span>
           <span className="pas-text">
-            {zs.pasoval[p] ? "pasoval" : zostava === 0 ? "vyložil všetko" : `vyloží ešte ${kariet(zostava)}`}
+            {zs.pasoval[p]
+              ? tvar(rodHracaP(p), "pasoval", "pasovala", "pas")
+              : zostava === 0
+                ? tvar(rodHracaP(p), "vyložil všetko", "vyložila všetko", "všetko vyložené")
+                : `vyloží ešte ${kariet(zostava)}`}
           </span>
         </span>
       );
@@ -3368,7 +3380,7 @@ export function HernaPlocha({
             const naTahu = ps.naTahu === p && ps.reakcia === null && !ps.hotovy[p];
             const naex = (ps.naexPocet?.[p] ?? 0) > 0;
             const stav = ps.hotovy[p]
-              ? `✓ skončil${naex ? " po NA EX" : " bez NA EX"}`
+              ? `✓ ${tvar(rodHracaP(p), "skončil", "skončila", "koniec")}${naex ? " po NA EX" : " bez NA EX"}`
               : odpoveda
                 ? "odpovedá na NA EX"
                 : naTahu
@@ -3455,8 +3467,8 @@ export function HernaPlocha({
             {ucetBitky.vitaz === null
               ? `Bitka · ${ucetBitky.lokalita}: remíza`
               : ucetBitky.vitaz === ja
-                ? `Bitka · ${ucetBitky.lokalita}: vyhral si o ${Math.abs(ucetBitky.tuhe[0] - ucetBitky.tuhe[1])}`
-                : `Bitka · ${ucetBitky.lokalita}: prehral si o ${Math.abs(ucetBitky.tuhe[0] - ucetBitky.tuhe[1])}`}
+                ? `Bitka · ${ucetBitky.lokalita}: ${tvar(rodHracaP(ja), "vyhral si", "vyhrala si", "výhra")} o ${Math.abs(ucetBitky.tuhe[0] - ucetBitky.tuhe[1])}`
+                : `Bitka · ${ucetBitky.lokalita}: ${tvar(rodHracaP(ja), "prehral si", "prehrala si", "prehra")} o ${Math.abs(ucetBitky.tuhe[0] - ucetBitky.tuhe[1])}`}
           </strong>
           <button type="button" className="tlacidlo-male" onClick={() => setUcetBitkyZavrety(true)}>
             ďalej
@@ -3557,6 +3569,8 @@ export function HernaPlocha({
     >
       {view.koniec !== null && !koniecZavrety && (
         <KoniecHry
+          rodJa={rodHracaP(ja)}
+          rody={[rodHracaP(0), rodHracaP(1)]}
           view={view}
           data={data}
           mena={[menoHraca(0), menoHraca(1)]}

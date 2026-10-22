@@ -18,7 +18,8 @@ import type {
   StavZavislosti,
   ZdrojeAkcii,
 } from "@naex/core";
-import { KONSTANTY, battleOutcome, textNeresti as neresti, jeCielLokalita, limitBuduceKolo, limitZhromazdenia } from "@naex/core";
+import { KONSTANTY, battleOutcome, textNeresti as neresti, jeCielLokalita, limitBuduceKolo, limitZhromazdenia, tvar } from "@naex/core";
+import type { Rod } from "@naex/core";
 import type { Sada } from "@naex/tvorba";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { IKONY } from "../karta/ikony.ts";
@@ -976,9 +977,11 @@ export interface BitkaPanelProps {
   readonly prebytokNaRozdelenie: number;
   /** Kto útočí a prečo (návrh 5 A) — „útočník = porazený z minulej bitky“. */
   readonly utocnik?: string;
+  /** Rod hráča pre „Vyhral(a) si bitku“ (Michal 2026-10-22); chýba = neutrálne. */
+  readonly rodJa?: Rod;
 }
 
-export function BitkaPanel({ damage, sums, zdroje, rozpis, ja, vysledok, mena, sada, ciel, menoKarty, naSekeru, poslednaBitka, cenaPosunuVitaza, prebytokNaRozdelenie, utocnik }: BitkaPanelProps) {
+export function BitkaPanel({ damage, sums, zdroje, rozpis, ja, vysledok, mena, sada, ciel, menoKarty, naSekeru, poslednaBitka, cenaPosunuVitaza, prebytokNaRozdelenie, utocnik, rodJa = null }: BitkaPanelProps) {
   const su = (ja === 0 ? 1 : 0) as PlayerId;
   // Remíza (Michal 2026-10-21): pri rovnakom tuhom nevyhrá nikto — lokalita ide na sekeru (PRAVIDLA §8.4).
   const { vitaz, prebytok, prebytokDrzi } = battleOutcome(damage);
@@ -993,8 +996,8 @@ export function BitkaPanel({ damage, sums, zdroje, rozpis, ja, vysledok, mena, s
       ? `Remíza — ${coPriRemize}`
       : vysledok
         ? vyhravam
-          ? "Vyhral si bitku"
-          : "Prehral si bitku"
+          ? tvar(rodJa, "Vyhral si bitku", "Vyhrala si bitku", "Bitka je vyhratá")
+          : tvar(rodJa, "Prehral si bitku", "Prehrala si bitku", "Bitka je prehratá")
         : vyhravam
           ? `Vyhrávaš o ${rozdiel}`
           : `Prehrávaš o ${rozdiel}`;

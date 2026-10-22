@@ -26,6 +26,18 @@ async function volaj(metoda: string, cesta: string, cookie: string, telo?: unkno
 }
 
 describe("nastavenia profilu", () => {
+  it("pohlavie (Michal 2026-10-22): predvolene neuvedené, muz / zena / null, iné nie", async () => {
+    const { cookie } = await registruj(server.port);
+    expect(((await volaj("GET", "/ja", cookie)).data.pouzivatel as { pohlavie: string | null }).pohlavie).toBeNull();
+
+    const ok = await volaj("PATCH", "/profil", cookie, { pohlavie: "zena" });
+    expect(ok.status).toBe(200);
+    expect((ok.data.pouzivatel as { pohlavie: string }).pohlavie).toBe("zena");
+
+    for (const zle of ["žena", "iné", 1, ""]) expect((await volaj("PATCH", "/profil", cookie, { pohlavie: zle })).status).toBe(400);
+    expect(((await volaj("PATCH", "/profil", cookie, { pohlavie: null })).data.pouzivatel as { pohlavie: string | null }).pohlavie).toBeNull();
+  });
+
   it("zväčšenie lupy: predvolene 200 %, uloží sa v rozsahu 150 – 400 %", async () => {
     const { cookie } = await registruj(server.port);
     const ja = await volaj("GET", "/ja", cookie);
