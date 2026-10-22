@@ -4,6 +4,7 @@
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { DatabaseSync } from "node:sqlite";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createGameServer, type GameServer } from "../src/server.ts";
 import { bezUvodnychNul, nazovHlasky, priponaZvuku } from "../src/hudba.ts";
@@ -118,8 +119,8 @@ describe("hlášky majstra Melichara", () => {
     expect(nazovHlasky("Bez cisla")).toBe("Bez cisla");
   });
 
-  it("hlasitosť (predvolene 70 %, 0 = mlčí) a frekvencia (predvolene 25 %, 5 – 100 %)", async () => {
-    const { cookie } = await registruj(server.port);
+  it("hlasitosť (predvolene 70 %, 0 = mlčí) a frekvencia (predvolene 25 %, 5 – 60 %)", async () => {
+    const { cookie, login } = await registruj(server.port);
     const volaj = async (telo?: unknown) =>
       fetch(url("/api/" + (telo === undefined ? "ja" : "profil")), {
         method: telo === undefined ? "GET" : "PATCH",
@@ -134,10 +135,16 @@ describe("hlášky majstra Melichara", () => {
 
     expect(await nastavenie(await volaj())).toEqual({ melichar: 70, melicharFrekvencia: 25 });
     expect(await nastavenie(await volaj({ melichar: 0 }))).toEqual({ melichar: 0, melicharFrekvencia: 25 });
-    expect(await nastavenie(await volaj({ melichar: 40, melicharFrekvencia: 100 }))).toEqual({ melichar: 40, melicharFrekvencia: 100 });
-    for (const zle of [{ melichar: 101 }, { melicharFrekvencia: 0 }, { melicharFrekvencia: 150 }, { melicharFrekvencia: "často" }]) {
+    expect(await nastavenie(await volaj({ melichar: 40, melicharFrekvencia: 60 }))).toEqual({ melichar: 40, melicharFrekvencia: 60 });
+    for (const zle of [{ melichar: 101 }, { melicharFrekvencia: 0 }, { melicharFrekvencia: 61 }, { melicharFrekvencia: 100 }, { melicharFrekvencia: "často" }]) {
       expect((await volaj(zle)).status).toBe(400);
     }
-    expect(await nastavenie(await volaj())).toEqual({ melichar: 40, melicharFrekvencia: 100 });
+    expect(await nastavenie(await volaj())).toEqual({ melichar: 40, melicharFrekvencia: 60 });
+
+    // Frekvencia uložená pred stropom 60 % (Michal 2026-10-22) sa číta ako strop.
+    const db = new DatabaseSync(join(dir, "naex.sqlite"));
+    db.prepare("UPDATE pouzivatelia SET melichar_frekvencia = 100 WHERE login = ?").run(login);
+    db.close();
+    expect(await nastavenie(await volaj())).toEqual({ melichar: 40, melicharFrekvencia: 60 });
   });
 });

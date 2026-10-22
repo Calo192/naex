@@ -39,7 +39,7 @@ export interface Pouzivatel {
   readonly hudba: number;
   /** Hlasitosť hlášok majstra Melichara v partii proti počítaču v percentách (0 = vypnuté). */
   readonly melichar: number;
-  /** Pri koľkých percentách hráčových ťahov sa Melichar ozve (MELICHAR_FREKVENCIA_OD – 100). */
+  /** Pri koľkých percentách hráčových ťahov sa Melichar ozve (MELICHAR_FREKVENCIA_OD – MELICHAR_FREKVENCIA_DO). */
   readonly melicharFrekvencia: number;
   /** Účet AI agenta — jeho spätná väzba je na webe označená a predvolene skrytá. */
   readonly ai: boolean;
@@ -77,12 +77,14 @@ export function overHlasitost(v: unknown, co = "hudby"): number {
 
 export const MELICHAR_PREDVOLENY = 70;
 export const MELICHAR_FREKVENCIA_OD = 5;
+/** Najvyššia šanca hlášky (Michal 2026-10-22); staršie uložené hodnoty nad ňou sa čítajú ako ona. */
+export const MELICHAR_FREKVENCIA_DO = 60;
 export const MELICHAR_FREKVENCIA_PREDVOLENA = 25;
 
 /** Frekvencia hlášok z requestu — vypína ich hlasitosť 0, preto najmenej MELICHAR_FREKVENCIA_OD. */
 export function overFrekvenciu(v: unknown): number {
-  if (typeof v !== "number" || !Number.isFinite(v) || v < MELICHAR_FREKVENCIA_OD || v > 100) {
-    throw new ChybaVstupu(`Frekvencia hlášok musí byť ${MELICHAR_FREKVENCIA_OD} až 100 %.`);
+  if (typeof v !== "number" || !Number.isFinite(v) || v < MELICHAR_FREKVENCIA_OD || v > MELICHAR_FREKVENCIA_DO) {
+    throw new ChybaVstupu(`Frekvencia hlášok musí byť ${MELICHAR_FREKVENCIA_OD} až ${MELICHAR_FREKVENCIA_DO} %.`);
   }
   return Math.round(v);
 }
@@ -190,7 +192,9 @@ export class Ucty {
       hudba: r.hudba === null || r.hudba === undefined ? HUDBA_PREDVOLENA : Number(r.hudba),
       melichar: r.melichar === null || r.melichar === undefined ? MELICHAR_PREDVOLENY : Number(r.melichar),
       melicharFrekvencia:
-        r.melichar_frekvencia === null || r.melichar_frekvencia === undefined ? MELICHAR_FREKVENCIA_PREDVOLENA : Number(r.melichar_frekvencia),
+        r.melichar_frekvencia === null || r.melichar_frekvencia === undefined
+          ? MELICHAR_FREKVENCIA_PREDVOLENA
+          : Math.min(MELICHAR_FREKVENCIA_DO, Number(r.melichar_frekvencia)),
       ai: Number(r.ai) === 1,
       schema: typeof r.schema === "string" ? r.schema : null,
     };
