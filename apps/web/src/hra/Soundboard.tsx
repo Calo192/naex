@@ -76,39 +76,41 @@ const SKUPINY: readonly Skupina[] = [
   },
 ];
 
-const KLAVESY = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"];
+/**
+ * Kláves 1–4 pustí náhodnú hlášku z kategórie (Michal 2026-10-22; predtým mala
+ * každá hláška svoj kláves). Náhodu vyberá klient, server dostane konkrétne id.
+ */
+const KLAVESY_SKUPIN = ["1", "2", "3", "4"];
 
 interface Riadok {
   readonly hlaska: HlaskaMelichara;
   readonly text: string;
-  readonly klaves: string | null;
   readonly trvanieMs: number;
 }
 
-/** Hlášky zo servera v skupinách; nové hlášky, ktoré skupinu nemajú, idú do „Ďalšie“. */
-function zoskup(hlasky: readonly HlaskaMelichara[]): { readonly skupina: Skupina; readonly riadky: Riadok[] }[] {
+/** Hlášky zo servera v skupinách; nové hlášky, ktoré skupinu nemajú, idú do „Ďalšie“ (bez klávesu). */
+function zoskup(hlasky: readonly HlaskaMelichara[]): { readonly skupina: Skupina; readonly klaves: string | null; readonly riadky: Riadok[] }[] {
   const podlaNazvu = new Map(hlasky.map((h) => [h.nazov, h]));
   const pouzite = new Set<string>();
-  const out = SKUPINY.map((skupina) => ({
+  const out: { readonly skupina: Skupina; readonly klaves: string | null; readonly riadky: Riadok[] }[] = SKUPINY.map((skupina, i) => ({
     skupina,
+    klaves: KLAVESY_SKUPIN[i] ?? null,
     riadky: skupina.hlasky.flatMap((x) => {
       const h = podlaNazvu.get(x.nazov);
       if (h === undefined) return [];
       pouzite.add(h.id);
-      return [{ hlaska: h, text: x.text, klaves: null, trvanieMs: h.trvanieMs ?? TRVANIE_NEZNAME_MS }];
+      return [{ hlaska: h, text: x.text, trvanieMs: h.trvanieMs ?? TRVANIE_NEZNAME_MS }];
     }),
   }));
   const ostatne = hlasky.filter((h) => !pouzite.has(h.id));
   if (ostatne.length > 0) {
     out.push({
       skupina: { id: "dalsie", nazov: "Ďalšie", citat: "", situacia: "", hlasky: [] },
-      riadky: ostatne.map((h) => ({ hlaska: h, text: h.nazov, klaves: null, trvanieMs: h.trvanieMs ?? TRVANIE_NEZNAME_MS })),
+      klaves: null,
+      riadky: ostatne.map((h) => ({ hlaska: h, text: h.nazov, trvanieMs: h.trvanieMs ?? TRVANIE_NEZNAME_MS })),
     });
   }
-  let i = 0;
-  return out
-    .filter((s) => s.riadky.length > 0)
-    .map((s) => ({ ...s, riadky: s.riadky.map((r) => ({ ...r, klaves: KLAVESY[i++] ?? null })) }));
+  return out.filter((s) => s.riadky.length > 0);
 }
 
 function Vlny() {
@@ -164,7 +166,6 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
       zive = false;
     };
   }, []);
-  const riadky = skupiny.flatMap((s) => s.riadky);
 
   const [otvorene, setOtvorene] = useState(false);
   // Časy, nie stav — odpočet sa ráta z nich pri každom prekreslení.
@@ -221,6 +222,20 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
     setTeraz(t);
     pusti(r.hlaska.id);
   };
+  // Náhodná hláška z kategórie — nie tá istá dvakrát po sebe, ak je z čoho vyberať.
+  const poslednaVSkupine = useRef<Map<string, string>>(new Map());
+  const pustiNahodnu = (klaves: string): void => {
+    const s = skupiny.find((x) => x.klaves === klaves);
+    if (s === undefined) return;
+    const posledna = poslednaVSkupine.current.get(s.skupina.id);
+    const moznosti = s.riadky.length > 1 ? s.riadky.filter((x) => x.hlaska.id !== posledna) : s.riadky;
+    const r = moznosti[Math.floor(Math.random() * moznosti.length)];
+    if (r === undefined) return;
+    if (stav === "pripravene") poslednaVSkupine.current.set(s.skupina.id, r.hlaska.id);
+    pustiRiadok(r);
+  };
+  const pustiNahodnuRef = useRef(pustiNahodnu);
+  pustiNahodnuRef.current = pustiNahodnu;
 
   // Hlasitosť sa ukladá do profilu (to isté nastavenie ako v Profile), s malým oneskorením.
   useEffect(() => {
@@ -242,7 +257,8 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
     if (fokusNaTlacidlo) spust.current?.focus();
   }, []);
 
-  // M otvorí/zavrie (mimo polí formulára), Esc zavrie; klik mimo panel ho zavrie.
+  // M otvorí/zavrie, 1–4 pustí náhodnú hlášku z kategórie (aj pri zavretom paneli),
+  // Esc zavrie — nikdy pri písaní do poľa; klik mimo panel ho zavrie.
   useEffect(() => {
     const klaves = (e: KeyboardEvent): void => {
       const t = e.target;
@@ -251,6 +267,11 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
       if (e.key === "m" || e.key === "M") {
         e.preventDefault();
         setOtvorene((o) => !o);
+        return;
+      }
+      if (KLAVESY_SKUPIN.includes(e.key)) {
+        e.preventDefault();
+        pustiNahodnuRef.current(e.key);
         return;
       }
       if (e.key === "Escape" && otvorene) zavri(true);
@@ -273,12 +294,6 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
 
   const klavesVPaneli = (e: ReactKeyboardEvent<HTMLDivElement>): void => {
     if (e.ctrlKey || e.metaKey || e.altKey || e.target instanceof HTMLInputElement) return;
-    const r = riadky.find((x) => x.klaves === e.key.toUpperCase());
-    if (r !== undefined) {
-      e.preventDefault();
-      pustiRiadok(r);
-      return;
-    }
     const POSUN: Readonly<Record<string, number>> = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: 2, ArrowUp: -2 };
     const posun = POSUN[e.key];
     if (posun === undefined) return;
@@ -383,9 +398,14 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
           )}
           <div className="sb-telo">
             {skupiny.length === 0 && <p className="sb-prazdne">Hlášky sa načítavajú…</p>}
-            {skupiny.map(({ skupina, riadky: r }) => (
+            {skupiny.map(({ skupina, klaves, riadky: r }) => (
               <fieldset key={skupina.id} className="sb-skupina">
                 <legend>
+                  {klaves !== null && (
+                    <kbd className="sb-klaves-skupiny" title={`Kláves ${klaves}: náhodná hláška z tejto skupiny`}>
+                      {klaves}
+                    </kbd>
+                  )}
                   {skupina.nazov} {skupina.citat !== "" && <span className="citat">{skupina.citat}</span>}
                   {skupina.situacia !== "" && <span className="sb-situacia">{skupina.situacia}</span>}
                 </legend>
@@ -397,7 +417,6 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
                       type="button"
                       className={["sb-hlaska", x.text.length > 30 ? "dlha" : "", hraje ? "hraje" : ""].join(" ")}
                       aria-disabled={stav !== "pripravene" || undefined}
-                      aria-keyshortcuts={x.klaves ?? undefined}
                       onClick={() => pustiRiadok(x)}
                     >
                       <span className="hr-ik">
@@ -411,7 +430,6 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
                       </span>
                       <span className="hr-text">{x.text}</span>
                       <span className="hr-bodky" aria-hidden="true" />
-                      {x.klaves !== null && <kbd>{x.klaves}</kbd>}
                     </button>
                   );
                 })}
@@ -425,7 +443,7 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
             </label>
             <output>{hlasitost} %</output>
             <span className="skratky">
-              <kbd>M</kbd> otvorí · <kbd>Esc</kbd> zavrie
+              <kbd>M</kbd> otvorí · <kbd>1</kbd>–<kbd>4</kbd> náhodná · <kbd>Esc</kbd> zavrie
             </span>
           </div>
         </div>
