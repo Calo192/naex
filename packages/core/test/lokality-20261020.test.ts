@@ -243,7 +243,6 @@ describe("Cintorín: porazený dá Nástroj z ruky do Dedičstva zadarmo", () =>
       prebytokPosunute: [],
       liecbaHotova: [false, true],
       benzinkaZostava: [0, 0],
-      lokalitaPrepadne: false,
       spalit: [],
       vesticaHotova: true,
     };

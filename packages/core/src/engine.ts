@@ -208,8 +208,6 @@ export interface BitkaStav {
   readonly liecbaHotova: readonly [boolean, boolean];
   /** Benzínka: koľko svojich Občanov z línie má hráč ešte zahodiť. */
   readonly benzinkaZostava: readonly [number, number];
-  /** Benzínka: lokalitu nikto nevyhrá, prepadne. */
-  readonly lokalitaPrepadne: boolean;
   /** Karty z línie, ktoré sa po bitke spália namiesto návratu (Dievčina na vydaj). */
   readonly spalit: readonly number[];
   readonly vesticaHotova: boolean;
@@ -2454,7 +2452,6 @@ function zacniBitku(s: MutState, data: GameData, events: Event[]): void {
     prebytokPosunute: [],
     liecbaHotova: [false, false],
     benzinkaZostava: [0, 0],
-    lokalitaPrepadne: false,
     spalit: [],
     vesticaHotova: false,
   };
@@ -3225,15 +3222,12 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
   }
   s.strany = [[], []];
 
-  // Lokalitu si berie víťaz — po Benzínke ju nikto nevyhrá a prepadne.
+  // Lokalitu si berie víťaz (Benzínka ju od 2026-10-20 neprepadá, §8.4).
   // Remíza (Michal 2026-10-21): lokalita ide na sekeru, víťaz najbližšej
   // bitky si vezme aj ju; v poslednej bitke už niet komu, tak prepadne.
   const lokalita = cielLokalita(s as GameState);
   const poslednaBitka = s.lokalityVHre.length === 0;
-  if (lokalita !== null && b.lokalitaPrepadne) {
-    s.prepadnute.push(lokalita as DeepMutable<CardInstance>);
-    events.push({ type: "log", text: `Lokalitu ${defOf(data, lokalita).name} nikto nevyhral — prepadla.` });
-  } else if (lokalita !== null && vitaz === null && !poslednaBitka) {
+  if (lokalita !== null && vitaz === null && !poslednaBitka) {
     s.naSekeru.push(lokalita as DeepMutable<CardInstance>);
     events.push({
       type: "log",

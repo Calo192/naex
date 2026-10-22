@@ -77,8 +77,7 @@ describe("remíza na sekeru (Michal 2026-10-21)", () => {
         // Koniec bitky: cieľ kola zmizne (ak hra neskončila uprostred bitky).
         const lok = pred.ciel?.lokalita;
         if (lok == null || po.ciel !== null || vysledok === undefined && pred.bitkaStav === null) return;
-        const benzinka = events.some((e) => e.type === "log" && e.text.startsWith(`Lokalitu ${data.cards.get(lok.defId)?.name} nikto nevyhral`));
-        if (vitaz === null && !benzinka) {
+        if (vitaz === null) {
           remiz++;
           if (pred.lokalityVHre.length > 0) expect(po.naSekeru.map((k) => k.uid)).toContain(lok.uid);
           else expect(po.prepadnute.map((k) => k.uid)).toContain(lok.uid);

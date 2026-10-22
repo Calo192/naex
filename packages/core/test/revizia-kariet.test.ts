@@ -150,7 +150,6 @@ describe("cigarety porazenému za prebytok", () => {
         prebytokPosunute: [],
         liecbaHotova: [true, true],
         benzinkaZostava: [0, 0],
-        lokalitaPrepadne: false,
         spalit: [],
         vesticaHotova: true,
       },
