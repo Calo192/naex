@@ -542,7 +542,7 @@ export function Profil() {
         <h3>Zväčšenie kariet</h3>
         <Pole
           label={`Zväčšená karta: ${lupa} %`}
-          pomoc={`V hre sa karta v ruke zväčší, keď na ňu ukážeš myšou, ostatné karty (stôl, starší, lokality) keď na ne klikneš — na ${lupa} % (${LUPA_OD} – ${LUPA_DO} %). Ukladá sa samo.`}
+          pomoc={`V hre sa karta zväčší, keď na ňu ukážeš myšou (ruka, stôl, starší, lokality), susedia jej uhnú — na ${lupa} % (${LUPA_OD} – ${LUPA_DO} %). Ukladá sa samo.`}
         >
           <input
             type="range"
