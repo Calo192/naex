@@ -610,7 +610,7 @@ const KAPITOLY: readonly Kapitola[] = [
             <tr><th>Lokalita</th><th>Kedy</th><th>Efekt</th></tr>
           </thead>
           <tbody>
-            <tr><td>Krčma</td><td>Pitka</td><td>Kto má plný poldeci a kam ho dať, musí dať NA EX.</td></tr>
+            <tr><td>Krčma</td><td>Pitka</td><td>Kto má plný poldeci a kam ho dať, musí dať NA EX. Prah Cirhózy je tu obom o 2 vyšší.</td></tr>
             <tr><td>Kostol</td><td>Zhromaždenie, Pitka</td><td>Nikto nesmie vypiť (v ťahu len jedna karta) ani dať NA EX.</td></tr>
             <tr><td>Benzínka</td><td>Zhromaždenie, Pitka</td><td>Nikto nesmie fajčiť.</td></tr>
             <tr><td>Zastávka</td><td>Zhromaždenie</td><td>Spoločný limit vykladania pre oboch = súčet vašich limitov. Pas dá cigarety len za tvoj vlastný zvyšok limitu.</td></tr>

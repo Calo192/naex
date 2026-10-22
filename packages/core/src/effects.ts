@@ -58,7 +58,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   hasic: "impl", // Nástup: Pracujúci občan z odhadzovacieho do ruky
   hrobar: "impl", // Furt: cigareta, keď súper zahodí kartu
   ihrisko: "impl", // Bitka: v každom kraji +2 tuhé tomu, kto tam má viac svojich Občanov, Zvierat a Starešinov (Michal 2026-10-20)
-  krcma: "impl", // Pitka: s plným poldeci povinný NA EX (bez NA EX sa Pitka neskončí)
+  krcma: "impl", // Pitka: s plným poldeci povinný NA EX (bez NA EX sa Pitka neskončí); prah Cirhózy +2
   krcmarka: "impl", // Bitka: otočenie vypitého poldeci
   lesna_cesta: "impl", // Bitka: +1 tuhé za každého svojho Občana, Zviera či Starešinu v súperovom kraji, najviac 2 (Michal 2026-10-20)
   liberal: "impl", // Furt: 2× akcie pri rovnosti pohlaví; Furt: nevie NA EX
@@ -193,9 +193,15 @@ export function zadlzenieZLinie(data: GameData, state: Pick<VerejnyStav, "strany
 // ---------------------------------------------------------------------------
 // Háčiky — motor ich volá na presne určených miestach
 
-/** Prah Cirhózy navyše: nealko v Dedičstve hráča p (+2). */
+/**
+ * Prah Cirhózy navyše: nealko v Dedičstve hráča p (+2) a Krčma ako cieľ kola
+ * (+2 obom — povinné NA EX tam už neznamená istú Cirhózu, Michal 2026-10-22).
+ */
 export function prahCirhozyBonus(state: VerejnyStav, p: PlayerId): number {
-  return vDedicstve(state, p, "nealko") ? KONSTANTY.EFEKT.NEALKO_PRAH_CIRHOZY : 0;
+  return (
+    (vDedicstve(state, p, "nealko") ? KONSTANTY.EFEKT.NEALKO_PRAH_CIRHOZY : 0) +
+    (jeCielLokalita(state, "krcma") ? KONSTANTY.EFEKT.KRCMA_PRAH_CIRHOZY : 0)
+  );
 }
 
 /** vinko: počíta sa ako nevypitý poldeci navyše (limit vykladania +1). */

@@ -187,6 +187,21 @@ describe("Vínna pivnica, Jednota, Obecný úrad, Kultúrny dom", () => {
     expect(prahyHraca(data, vKole("obecny_urad"), 0).exekutor).toBe(prahyHraca(data, vKole("krcma"), 0).exekutor - KONSTANTY.EFEKT.URAD_PRAH_EXEKUTORA);
   });
 
+  it("Krčma: prah Cirhózy o 2 vyšší obom, povinné NA EX pri pečeni 2 Cirhózu nedá (Michal 2026-10-22)", () => {
+    const zaklad = prahyHraca(data, vKole("zberny_dvor"), 0).cirhoza;
+    expect(prahyHraca(data, vKole("krcma"), 0).cirhoza).toBe(zaklad + KONSTANTY.EFEKT.KRCMA_PRAH_CIRHOZY);
+    expect(prahyHraca(data, vKole("krcma"), 1).cirhoza).toBe(zaklad + KONSTANTY.EFEKT.KRCMA_PRAH_CIRHOZY);
+
+    // Pečeň 2 + NA EX (+1) = 3: inde Cirhóza, na Krčme nie.
+    const naex = (defId: string) => {
+      const pijan = inst("pijan");
+      const s = vPitke(defId, { poldeciPlne: 1, pecen: 2 }, [[na(pijan, 0)], []]);
+      return apply(data, s, { type: "naex", uid: pijan.uid }, 0).events.some((e) => e.type === "log" && /prah pečene/.test(e.text));
+    };
+    expect(naex("zberny_dvor")).toBe(true);
+    expect(naex("krcma")).toBe(false);
+  });
+
   it("Kultúrny dom: Pohoršenie bez limitu hraníc zón (Michal 2026-10-20)", () => {
     expect(pohorsenieBezLimitu(vKole("kulturny_dom"))).toBe(true);
     expect(pohorsenieBezLimitu(vKole("krcma"))).toBe(false);

@@ -604,7 +604,7 @@ function pridajPecen(
 /** Cirhóza za každý dosiahnutý prah pečene — počíta sa len počas Pitky. */
 function skontrolujPrahPecene(s: MutState, data: GameData, p: PlayerId, events: Event[]): void {
   const player = hrac(s, p);
-  // ihrisko (Furt) a nealko (Dedičstvo): prah Cirhózy je vyšší.
+  // nealko (Dedičstvo) a Krčma (cieľ kola): prah Cirhózy je vyšší.
   const prah =
     prahCirhozy(priazen(data, s as GameState, "ALKOHOLIK", p)) + prahCirhozyBonus(s as GameState, p);
   while (player.pecen >= prah) {
@@ -852,7 +852,7 @@ export function prahyHraca(
   p: PlayerId,
 ): { readonly cirhoza: number; readonly dlh: number; readonly exekutor: number; readonly priznaneDlhy: number } {
   return {
-    // ihrisko (Furt): prah Cirhózy je o 1 vyšší.
+    // nealko (Dedičstvo) a Krčma (cieľ kola): prah Cirhózy je vyšší.
     cirhoza: prahCirhozy(priazen(data, s, "ALKOHOLIK", p)) + prahCirhozyBonus(s, p),
     dlh: prahDlhu(priazen(data, s, "UZERNIK", p)),
     // obecny_urad: prah Exekútora je o 4 nižší.
