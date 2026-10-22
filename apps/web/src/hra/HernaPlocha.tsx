@@ -1300,9 +1300,43 @@ export function HernaPlocha({
   };
   const casovacLupy = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const lupaZavreta = useRef<{ readonly kluc: string; readonly cas: number } | null>(null);
-  const zavriLupu = (): void => {
+  // Ako nájsť kartu prvku s lupou (data-lupa) — pre prechod na susednú kartu.
+  const najdiLupu = new Map<string, (el: HTMLElement) => Element | null>();
+  /**
+   * Zavrie lupu. Keď z nej myš odišla na susednú kartu, otvorí hneď lupu tej
+   * karty — inak by sa susedia vrátili na miesto (harmonika) a karta pod
+   * myšou by uskočila (Bugfixing 2026-10-22, stavba šenku). Poloha novej lupy
+   * je tam, kde karta skončí, keď sa stane aktívnou: bez posunu harmoniky.
+   */
+  const zavriLupu = (kde?: { readonly x: number; readonly y: number }): void => {
     if (lupa !== null) lupaZavreta.current = { kluc: lupa.kluc, cas: Date.now() };
-    setLupa(null);
+    const dalsia = kde === undefined || tahanie !== null ? null : lupaPodMysou(kde.x, kde.y, lupa?.kluc ?? null);
+    setLupa(dalsia);
+  };
+  const lupaPodMysou = (x: number, y: number, terajsia: string | null): { readonly kluc: string; readonly rect: DOMRect } | null => {
+    const el = document
+      .elementsFromPoint(x, y)
+      .find(
+        (e): e is HTMLElement =>
+          e instanceof HTMLElement &&
+          e.dataset.lupa !== undefined &&
+          e.dataset.lupa !== terajsia &&
+          lupaKarty.has(e.dataset.lupa) &&
+          e.closest(".lupa") === null,
+      );
+    const kluc = el?.dataset.lupa;
+    const ciel = el === undefined || kluc === undefined ? null : (najdiLupu.get(kluc)?.(el) ?? null);
+    if (el === undefined || kluc === undefined || ciel === null) return null;
+    let posun = 0;
+    for (let a: HTMLElement | null = el; a !== null; a = a.parentElement) {
+      const rodic = a.parentElement;
+      if (rodic?.classList.contains("harmonika") === true || rodic?.classList.contains("harmonika-skupiny") === true) {
+        const t = getComputedStyle(a).transform;
+        if (t !== "none") posun += new DOMMatrixReadOnly(t).m41;
+      }
+    }
+    const r = ciel.getBoundingClientRect();
+    return { kluc, rect: new DOMRect(r.x - posun, r.y, r.width, r.height) };
   };
   useEffect(() => () => clearTimeout(casovacLupy.current), []);
   // Susedia uhnú o polovicu prírastku šírky lupy (harmonika v hra.css).
@@ -1323,28 +1357,32 @@ export function HernaPlocha({
    * myš práve odišla, znova neotvorí, kým myš neopustí jej miesto.
    */
   const ONESKORENIE_LUPY_MS = 150;
-  const nadLupou = (kluc: string, najdi: (el: HTMLElement) => Element | null, fokus: boolean) => ({
-    tabIndex: fokus ? 0 : undefined,
-    onPointerEnter: (e: ReactPointerEvent<HTMLElement>): void => {
-      if (e.pointerType !== "mouse" || tahanie !== null) return;
-      const z = lupaZavreta.current;
-      if (z?.kluc === kluc) return;
-      const el = e.currentTarget;
-      clearTimeout(casovacLupy.current);
-      const plynulo = z !== null && Date.now() - z.cas < 300;
-      casovacLupy.current = setTimeout(() => otvorLupu(kluc, najdi(el)), plynulo ? 0 : ONESKORENIE_LUPY_MS);
-    },
-    onPointerLeave: (): void => {
-      clearTimeout(casovacLupy.current);
-      if (lupaZavreta.current?.kluc === kluc) lupaZavreta.current = { kluc: "", cas: lupaZavreta.current.cas };
-    },
-    onFocus: (e: ReactFocusEvent<HTMLElement>): void => {
-      if (e.currentTarget.matches(":focus-visible")) otvorLupu(kluc, najdi(e.currentTarget), true);
-    },
-    onBlur: (): void => setLupa((l) => (l?.kluc === kluc && l.zFokusu === true ? null : l)),
-    // Dotyk nemá prejdenie myšou — kartu bez akcie zväčší ťuknutie.
-    onClick: jeDotyk && fokus ? (e: ReactMouseEvent<HTMLElement>) => otvorLupu(kluc, najdi(e.currentTarget)) : undefined,
-  });
+  const nadLupou = (kluc: string, najdi: (el: HTMLElement) => Element | null, fokus: boolean) => {
+    najdiLupu.set(kluc, najdi);
+    return {
+      "data-lupa": kluc,
+      tabIndex: fokus ? 0 : undefined,
+      onPointerEnter: (e: ReactPointerEvent<HTMLElement>): void => {
+        if (e.pointerType !== "mouse" || tahanie !== null) return;
+        const z = lupaZavreta.current;
+        if (z?.kluc === kluc) return;
+        const el = e.currentTarget;
+        clearTimeout(casovacLupy.current);
+        const plynulo = z !== null && Date.now() - z.cas < 300;
+        casovacLupy.current = setTimeout(() => otvorLupu(kluc, najdi(el)), plynulo ? 0 : ONESKORENIE_LUPY_MS);
+      },
+      onPointerLeave: (): void => {
+        clearTimeout(casovacLupy.current);
+        if (lupaZavreta.current?.kluc === kluc) lupaZavreta.current = { kluc: "", cas: lupaZavreta.current.cas };
+      },
+      onFocus: (e: ReactFocusEvent<HTMLElement>): void => {
+        if (e.currentTarget.matches(":focus-visible")) otvorLupu(kluc, najdi(e.currentTarget), true);
+      },
+      onBlur: (): void => setLupa((l) => (l?.kluc === kluc && l.zFokusu === true ? null : l)),
+      // Dotyk nemá prejdenie myšou — kartu bez akcie zväčší ťuknutie.
+      onClick: jeDotyk && fokus ? (e: ReactMouseEvent<HTMLElement>) => otvorLupu(kluc, najdi(e.currentTarget)) : undefined,
+    };
+  };
   /** Vzpriamená karta leží nižšie — ilustrácie susedov sú v jednej výške (viď posunVzpriamenej). */
   const posunVLinii = (defId: string, otocena: boolean): number =>
     otocena ? 0 : posunVzpriamenej(sada, data, defId, sirkaVLinii);
