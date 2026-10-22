@@ -3536,7 +3536,9 @@ export function HernaPlocha({
   const maHranaTlacidla = hranaVlavo !== null || hranaStred !== null || hranaVpravo !== null;
   const hranaStola =
     !maHranaTlacidla && pokynUdalosti === null ? null : (
-      <div className="stol-hrana">
+      // V drafte sa hrana neprilepí nad ruku: stôl leží pod draftom a pri posúvaní
+      // by zakrývala karty draftu a pokyn; potvrdenie je aj tak v draft paneli.
+      <div className={view.faza === "draft" ? "stol-hrana neprilepena" : "stol-hrana"}>
         {pokynUdalosti}
         {maHranaTlacidla && (
           <div className="hrana-rad">

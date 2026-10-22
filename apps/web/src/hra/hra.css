@@ -3484,6 +3484,12 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna.nemoze:hover > .kl {
   pointer-events: none;
 }
 
+/* Draft: hrana ostáva na stole, neprilepí sa nad ruku (zakrývala by draft). */
+.stol-hrana.neprilepena {
+  position: relative;
+  bottom: auto;
+}
+
 .hrana-rad {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
