@@ -58,6 +58,7 @@ import type { Pravo } from "./prava.ts";
 import { POPIS_PRAVA, Prava } from "./prava.ts";
 import { Profily } from "./profily.ts";
 import { Prehravac } from "./prehravac.ts";
+import { hashJadra } from "./verziaJadra.ts";
 import { Nazory } from "./nazory.ts";
 import { Playtesty } from "./playtesty.ts";
 import { Navrhy } from "./navrhy.ts";
@@ -257,8 +258,9 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   const spusteny = teraz();
   const suborVerzie = fileURLToPath(new URL("../../../VERZIA.json", import.meta.url));
   const verzia = existsSync(suborVerzie) ? (JSON.parse(readFileSync(suborVerzie, "utf8")) as StavServera["verzia"]) : null;
-  // Verzia jadra, ktorú nesie archivovaná partia — prehrávač prehrá len partie z tej istej.
-  const verziaJadra = verzia === null ? "dev" : `${verzia.commit}${verzia.necommitnute ? "+zmeny" : ""}`;
+  // Verzia jadra, ktorú nesie archivovaná partia: hash packages/core/src — prehrávač prehrá
+  // partiu, kým sa nezmení jadro (nie commit, ten sa mení pri každom nasadení).
+  const verziaJadra = hashJadra(fileURLToPath(new URL("../../core/src", import.meta.url)));
   const prehravac = new Prehravac(db, obsah, verziaJadra);
   const stavServera = (): StavServera => {
     const bezi = [...rooms.values()].filter((r) => r.state !== null && r.state.koniec === null);
