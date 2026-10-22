@@ -1,0 +1,867 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Soundboard majstra Melichara — UI mockup (soundboard-20261022-0934)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bitter:wght@700;800&family=Roboto:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet" />
+<style>
+/* Tokeny 1:1 zo schemy.css (Krčma) a styles.css — mockup nepridáva nové farby. */
+:root {
+  --pozadie: #14110e;
+  --plocha: #1e1914;
+  --plocha-2: #28211a;
+  --plocha-3: #332a21;
+  --okraj: #3d3229;
+  --okraj-svetly: #57483a;
+  --text: #f1e8d8;
+  --tlmeny: #b6a790;
+  --slaby: #8b7d6a;
+  --slaby-text: #9d8f7b;
+  --akcent: #e9ad45;
+  --akcent-tmavy: #b9802a;
+  --akcent-svetly: #ffd08a;
+  --na-akcente: #2b1b03;
+  --cervena: #d0563f;
+  --cervena-text: #e5735c;
+  --zelena: #7cbf74;
+  --info: #8fc3e0;
+  --ja: #5cc0cf;
+  --ja-tmava: #1d3b40;
+  --su: #e0805f;
+  --su-tmava: #43261d;
+  --hlavicka-webu: #16130f;
+  --t-xs: 0.75rem;
+  --t-s: 0.875rem;
+  --t-m: 1rem;
+  --t-l: 1.25rem;
+  --t-xl: 1.563rem;
+  --polomer: 12px;
+  --tien: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --nadpis: "Bitter", Georgia, serif;
+  --pismo: Roboto, "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font: 16px/1.55 var(--pismo);
+  color: var(--text);
+  background:
+    radial-gradient(ellipse 90% 60% at 50% -10%, color-mix(in srgb, var(--akcent) 13%, transparent), transparent 60%),
+    var(--pozadie);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3 { font-family: var(--nadpis); line-height: 1.2; margin: 0 0 0.5em; }
+a { color: var(--akcent); }
+:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+.obal { max-width: 1320px; margin: 0 auto; padding: 28px 24px 64px; }
+.malo { color: var(--slaby-text); font-size: var(--t-s); }
+
+/* ---------- hlavička dokumentu ---------- */
+.doc-hlava { display: grid; gap: 10px; margin-bottom: 22px; }
+.doc-hlava .stitok {
+  justify-self: start;
+  font: 800 0.72rem/1 var(--pismo); letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--akcent); padding: 6px 10px; border-radius: 999px;
+  background: color-mix(in oklab, var(--akcent-tmavy) 18%, var(--pozadie));
+}
+.doc-hlava h1 { font-size: clamp(1.7rem, 3vw, 2.3rem); margin: 0; }
+.verdikt {
+  max-width: 78ch; margin: 4px 0 0; padding: 14px 18px;
+  border-left: 3px solid var(--akcent); border-radius: 0 10px 10px 0;
+  background: var(--plocha); color: var(--text);
+}
+.meta { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: var(--t-s); color: var(--tlmeny); }
+
+/* ---------- ovládanie mockupu ---------- */
+.ovladanie {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px 22px;
+  padding: 10px 14px; margin: 0 -14px 14px;
+  background: color-mix(in srgb, var(--plocha-2) 94%, transparent);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--okraj); border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.35);
+}
+.ovl-skupina { display: flex; align-items: center; gap: 8px; }
+.ovl-skupina > span { font: 700 0.7rem/1.2 var(--pismo); letter-spacing: 0.1em; text-transform: uppercase; color: var(--slaby-text); }
+.segment { display: inline-flex; padding: 3px; gap: 2px; border-radius: 10px; background: var(--pozadie); border: 1px solid var(--okraj); }
+.segment button {
+  font: 500 0.85rem/1 var(--pismo); color: var(--tlmeny);
+  padding: 8px 11px; border-radius: 7px; border: 0; background: transparent; cursor: pointer; white-space: nowrap;
+}
+.segment button:hover { color: var(--text); background: var(--plocha-2); }
+.segment button[aria-pressed="true"] { color: var(--na-akcente); background: var(--akcent); font-weight: 700; }
+.ovl-tlacidlo {
+  font: 500 0.85rem/1 var(--pismo); color: var(--text); padding: 9px 12px; border-radius: 8px; cursor: pointer;
+  background: var(--plocha); border: 1px solid var(--okraj-svetly);
+}
+.ovl-tlacidlo:hover { border-color: var(--su); }
+.ovl-check { display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--tlmeny); cursor: pointer; }
+.ovl-check input { accent-color: var(--akcent); width: 16px; height: 16px; }
+.ovl-tip { flex-basis: 100%; margin: 0; font-size: 0.8rem; color: var(--slaby-text); }
+
+/* ---------- javisko: snímka stola + soundboard ---------- */
+.javisko-obal { position: relative; border-radius: 12px; overflow: hidden; border: 1px solid var(--okraj); box-shadow: var(--tien); background: #000; }
+.javisko { position: relative; transform-origin: 0 0; overflow: hidden; }
+.javisko > img.podklad { position: absolute; inset: 0; width: 100%; height: 100%; display: block; user-select: none; }
+.popis-javiska { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; margin: 8px 2px 0; font-size: 0.8rem; color: var(--slaby-text); }
+
+/* Tlačidlo Melichar v hlavičke webu — rovnaký jazyk ako .hlava-vrstva (os kola). */
+.sb-spust {
+  position: absolute; top: 16px; height: 30px; z-index: 49;
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 0 11px 0 6px;
+  font: 500 0.86rem/1 var(--pismo); color: var(--tlmeny);
+  background: transparent; border: 1px solid var(--okraj); border-radius: 8px;
+  cursor: pointer; white-space: nowrap;
+  transition: background .15s ease, border-color .15s ease, color .15s ease;
+}
+.sb-spust:hover { background: var(--plocha-3); color: var(--text); }
+.sb-spust[aria-expanded="true"] { background: var(--plocha-3); border-color: var(--okraj-svetly); color: var(--text); }
+.sb-spust .sb-ik { position: relative; width: 20px; height: 20px; display: grid; place-items: center; flex: none; }
+.sb-spust .sb-ik svg { width: 20px; height: 20px; }
+.sb-spust .sb-ik .vlny, .sb-spust .sb-ik .prstenec { display: none; }
+.sb-spust .sb-ticho { display: none; width: 14px; height: 14px; color: var(--slaby-text); }
+[data-stlmene="1"] .sb-spust .sb-ticho { display: block; }
+/* hrá moja */
+[data-ja="moja"] .sb-spust { border-color: var(--ja); color: var(--text); }
+[data-ja="moja"] .sb-spust .sb-ik svg.fuz { display: none; }
+[data-ja="moja"] .sb-spust .sb-ik .vlny { display: flex; }
+/* odpočet 2 s — prstenec sa vyprázdňuje */
+[data-ja="odpocet"] .sb-spust .sb-ik svg.fuz { display: none; }
+[data-ja="odpocet"] .sb-spust .sb-ik .prstenec { display: grid; }
+.prstenec {
+  --p: 1;
+  width: 20px; height: 20px; border-radius: 50%; place-items: center;
+  background: conic-gradient(var(--ja) calc(var(--p) * 1turn), color-mix(in srgb, var(--ja) 18%, transparent) 0);
+  -webkit-mask: radial-gradient(circle, transparent 6px, #000 6.5px);
+          mask: radial-gradient(circle, transparent 6px, #000 6.5px);
+}
+/* súperova hláška — bodka na tlačidle */
+.sb-bodka {
+  position: absolute; top: -4px; right: -4px; width: 10px; height: 10px; border-radius: 50%;
+  background: var(--su); box-shadow: 0 0 0 2px var(--hlavicka-webu);
+  display: none;
+}
+[data-super="1"] .sb-bodka { display: block; animation: pulz 1s ease-in-out infinite; }
+@keyframes pulz { 50% { transform: scale(.7); opacity: .7; } }
+
+/* Bublina pod menom súpera: kto hovorí, nie čo. */
+.sb-super {
+  position: absolute; top: 54px; z-index: 49;
+  display: none; align-items: center; gap: 7px;
+  padding: 4px 11px 4px 9px; border-radius: 999px;
+  font: 500 0.78rem/1.2 var(--pismo); color: var(--text); white-space: nowrap;
+  background: var(--su-tmava); border: 1px solid var(--su);
+  box-shadow: 0 6px 16px rgba(0,0,0,.45);
+  animation: vyskoc .18s ease-out;
+}
+.sb-super::before {
+  content: ""; position: absolute; top: -6px; left: 14px; width: 10px; height: 10px; rotate: 45deg;
+  background: var(--su-tmava); border-left: 1px solid var(--su); border-top: 1px solid var(--su);
+}
+.sb-super .meno { color: var(--su); font-weight: 700; }
+[data-super="1"] .sb-super { display: inline-flex; }
+
+/* Vlny (zvuk hrá) — tvar nesie význam aj bez farby. */
+.vlny { display: flex; align-items: center; gap: 2px; height: 14px; }
+.vlny i { display: block; width: 3px; height: 100%; border-radius: 2px; background: currentColor; transform-origin: 50% 50%; animation: vlna .9s ease-in-out infinite; }
+.vlny i:nth-child(1) { animation-delay: -.2s; }
+.vlny i:nth-child(2) { animation-delay: -.5s; }
+.vlny i:nth-child(3) { animation-delay: -.1s; }
+.vlny i:nth-child(4) { animation-delay: -.7s; }
+@keyframes vlna { 0%, 100% { transform: scaleY(.3); } 50% { transform: scaleY(1); } }
+.sb-spust .vlny { color: var(--ja); }
+.sb-super .vlny { color: var(--su); }
+
+/* ---------- panel soundboardu (nemodálny popover) ---------- */
+.sb-panel {
+  position: absolute; top: 56px; width: 600px; z-index: 48;
+  display: none; flex-direction: column;
+  background: var(--plocha);
+  border: 1px solid var(--okraj-svetly); border-radius: 14px;
+  box-shadow: 0 24px 60px rgba(0,0,0,.6), 0 0 0 1px rgba(0,0,0,.35);
+  transform-origin: calc(100% - 50px) 0;
+  animation: rozbal .18s ease-out;
+}
+[data-otvorene="1"] .sb-panel { display: flex; }
+.sb-panel::before {
+  content: ""; position: absolute; top: -7px; right: 46px; width: 12px; height: 12px; rotate: 45deg;
+  background: var(--plocha); border-left: 1px solid var(--okraj-svetly); border-top: 1px solid var(--okraj-svetly);
+}
+@keyframes rozbal { from { opacity: 0; transform: translateY(-6px) scale(.98); } }
+@keyframes vyskoc { from { opacity: 0; transform: translateY(-4px); } }
+
+.sb-hlava {
+  display: flex; align-items: center; gap: 12px; padding: 12px 10px 10px 14px;
+  border-radius: 14px 14px 0 0;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--akcent) 11%, transparent), transparent);
+}
+.sb-medailon {
+  width: 38px; height: 38px; flex: none; border-radius: 50%; display: grid; place-items: center;
+  color: var(--akcent);
+  background: color-mix(in oklab, var(--akcent-tmavy) 24%, var(--pozadie));
+  border: 2px solid var(--akcent-tmavy);
+  box-shadow: inset 0 0 0 2px var(--pozadie);
+}
+.sb-medailon svg { width: 24px; height: 24px; }
+.sb-hlava h2 { margin: 0; font: 800 1.12rem/1.15 var(--nadpis); letter-spacing: 0.01em; }
+.sb-hlava p { margin: 1px 0 0; font-size: 0.8rem; color: var(--slaby-text); }
+.sb-zavriet {
+  margin-left: auto; width: 32px; height: 32px; border-radius: 8px; border: 1px solid transparent;
+  background: transparent; color: var(--tlmeny); font-size: 1rem; cursor: pointer;
+}
+.sb-zavriet:hover { background: var(--plocha-3); color: var(--text); border-color: var(--okraj); }
+
+/* Pás stavu: vždy rovnako vysoký, nech panel neskáče. */
+.sb-stav {
+  position: relative; display: flex; align-items: center; gap: 8px;
+  height: 32px; padding: 0 14px;
+  font-size: 0.84rem; color: var(--slaby-text);
+  border-top: 1px solid var(--okraj); border-bottom: 1px solid var(--okraj);
+  background: color-mix(in srgb, var(--pozadie) 45%, transparent);
+}
+.sb-stav .vlny { display: none; }
+.sb-stav .sb-cas { margin-left: auto; font: 700 0.84rem/1 var(--pismo); font-variant-numeric: tabular-nums; }
+.sb-pas { position: absolute; left: 0; bottom: -1px; height: 3px; width: 0; background: var(--ja); border-radius: 0 3px 3px 0; }
+[data-ja="moja"] .sb-stav { color: var(--ja); }
+[data-ja="moja"] .sb-stav .vlny.ja { display: flex; color: var(--ja); }
+[data-ja="odpocet"] .sb-stav { color: var(--ja); }
+[data-ja="pripravene"][data-super="1"] .sb-stav { color: var(--su); }
+[data-ja="pripravene"][data-super="1"] .sb-stav .vlny.su { display: flex; color: var(--su); }
+.sb-stav.trasie { animation: trasie .28s ease; }
+@keyframes trasie { 25% { transform: translateX(-4px); } 50% { transform: translateX(4px); } 75% { transform: translateX(-2px); } }
+
+.sb-stlmene {
+  display: none; align-items: center; gap: 10px; padding: 8px 14px;
+  font-size: 0.8rem; color: var(--tlmeny);
+  background: color-mix(in srgb, var(--info) 8%, transparent); border-bottom: 1px solid var(--okraj);
+}
+[data-stlmene="1"] .sb-stlmene { display: flex; }
+.sb-stlmene button {
+  margin-left: auto; flex: none; height: 28px; padding: 0 10px; border-radius: 7px; cursor: pointer;
+  font: 500 0.8rem/1 var(--pismo); color: var(--text); background: var(--plocha-2); border: 1px solid var(--okraj-svetly);
+}
+
+/* Telo: krčmový cenník v dvoch stĺpcoch — na 1366 × 768 bez posúvania. */
+.sb-telo { display: flex; flex-direction: column; gap: 10px; padding: 10px 14px 12px; overflow-y: auto; }
+.sb-skupina { margin: 0; padding: 0; border: 0; min-width: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+.sb-skupina legend { float: left; grid-column: 1 / -1; }
+.sb-hlaska.dlha { grid-column: 1 / -1; }
+.sb-skupina legend {
+  display: flex; align-items: baseline; gap: 8px; width: 100%;
+  padding: 0 8px 5px; margin-bottom: 3px; border-bottom: 1px solid var(--okraj);
+  font: 800 0.72rem/1.2 var(--pismo); letter-spacing: 0.12em; text-transform: uppercase; color: var(--akcent);
+}
+.sb-situacia { margin-left: auto; font: 400 0.74rem/1.2 var(--pismo); letter-spacing: 0; text-transform: none; color: var(--slaby-text); }
+.sb-skupina legend .citat { font: italic 400 0.8rem/1.2 var(--pismo); letter-spacing: 0; text-transform: none; color: var(--slaby-text); }
+.sb-hlaska {
+  display: flex; align-items: flex-end; gap: 8px; width: 100%; min-height: 32px;
+  padding: 6px 6px 6px 8px; margin: 0;
+  font: 500 0.9rem/1.3 var(--pismo); color: var(--text); text-align: left;
+  background: transparent; border: 1px solid transparent; border-radius: 8px; cursor: pointer;
+  transition: background .12s ease, border-color .12s ease, color .12s ease, transform .08s ease;
+}
+.sb-hlaska .hr-ik { flex: none; width: 14px; height: 18px; display: grid; place-items: center; color: var(--slaby); }
+.sb-hlaska .hr-ik svg { width: 9px; height: 10px; }
+.sb-hlaska .hr-ik .vlny { display: none; height: 12px; }
+.sb-hlaska .hr-ik .vlny i { width: 2px; }
+.sb-hlaska .hr-text { min-width: 0; }
+.sb-hlaska .hr-bodky { flex: 1 1 12px; min-width: 12px; height: 1px; margin-bottom: 6px; border-bottom: 2px dotted color-mix(in srgb, var(--okraj-svetly) 85%, transparent); }
+kbd, .sb-hlaska kbd {
+  flex: none; display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 5px;
+  font: 700 0.72rem/1 var(--pismo); color: var(--tlmeny);
+  background: var(--pozadie); border: 1px solid var(--okraj-svetly); border-bottom-width: 2px; border-radius: 5px;
+}
+.sb-hlaska:hover:not([aria-disabled="true"]) { background: var(--plocha-3); border-color: var(--okraj); }
+.sb-hlaska:hover:not([aria-disabled="true"]) .hr-text { color: var(--akcent-svetly); }
+.sb-hlaska:hover:not([aria-disabled="true"]) .hr-ik { color: var(--akcent); }
+.sb-hlaska:hover:not([aria-disabled="true"]) kbd { color: var(--text); border-color: var(--akcent-tmavy); }
+.sb-hlaska:active:not([aria-disabled="true"]) { transform: translateY(1px); }
+.sb-hlaska:focus-visible { outline: 2px solid var(--akcent); outline-offset: 0; }
+.sb-hlaska[aria-disabled="true"] { cursor: not-allowed; color: var(--slaby); }
+.sb-hlaska[aria-disabled="true"]:not(.hraje) .hr-ik { opacity: .35; }
+.sb-hlaska[aria-disabled="true"] .hr-bodky { opacity: .45; }
+.sb-hlaska[aria-disabled="true"] kbd { opacity: .55; }
+/* Moja práve hrá: tyrkysová ako „ty“ na celom stole + vlny namiesto ▶. */
+.sb-hlaska.hraje, .sb-hlaska.hraje[aria-disabled="true"] {
+  color: var(--text); cursor: default;
+  background: color-mix(in srgb, var(--ja-tmava) 85%, transparent);
+  border-color: color-mix(in srgb, var(--ja) 60%, transparent);
+  box-shadow: inset 3px 0 0 var(--ja);
+}
+.sb-hlaska.hraje .hr-ik svg { display: none; }
+.sb-hlaska.hraje .hr-ik .vlny { display: flex; color: var(--ja); }
+.sb-hlaska.hraje kbd { opacity: 1; color: var(--ja); border-color: var(--ja); }
+.sb-hlaska.hraje .hr-bodky { opacity: .6; }
+
+.sb-pata {
+  display: flex; align-items: center; gap: 12px; padding: 9px 14px 11px;
+  border-top: 1px solid var(--okraj); font-size: 0.8rem; color: var(--slaby-text);
+}
+.sb-pata label { display: inline-flex; align-items: center; gap: 10px; color: var(--tlmeny); }
+.sb-pata input[type="range"] { width: 150px; accent-color: var(--akcent); }
+.sb-pata output { min-width: 3.4em; font-variant-numeric: tabular-nums; color: var(--text); }
+.sb-pata .skratky { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; }
+.sb-pata .skratky kbd { min-width: 20px; height: 20px; font-size: 0.68rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .vlny i { animation: none; }
+  .vlny i:nth-child(1) { transform: scaleY(.5); }
+  .vlny i:nth-child(2) { transform: scaleY(1); }
+  .vlny i:nth-child(3) { transform: scaleY(.7); }
+  .vlny i:nth-child(4) { transform: scaleY(.4); }
+  .sb-panel, .sb-super, .sb-stav.trasie, [data-super="1"] .sb-bodka { animation: none; }
+}
+
+/* ---------- sekcie pod javiskom ---------- */
+section { margin-top: 40px; }
+section > h2 { font-size: var(--t-xl); margin-bottom: 6px; }
+section > p.uvod { max-width: 78ch; color: var(--tlmeny); margin: 0 0 16px; }
+.mriezka { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.karta {
+  display: flex; flex-direction: column; gap: 10px; padding: 16px;
+  background: var(--plocha); border: 1px solid var(--okraj); border-radius: var(--polomer);
+}
+.karta.odporucane { border-color: var(--akcent-tmavy); box-shadow: 0 0 0 1px color-mix(in srgb, var(--akcent) 25%, transparent), var(--tien); }
+.karta h3 { margin: 0; font-size: 1.08rem; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.odznak {
+  font: 700 0.68rem/1 var(--pismo); letter-spacing: .08em; text-transform: uppercase;
+  padding: 4px 8px; border-radius: 999px; color: var(--na-akcente); background: var(--akcent);
+}
+.odznak.tichy { color: var(--tlmeny); background: var(--plocha-3); }
+.karta ul { margin: 0; padding-left: 1.1em; font-size: 0.88rem; color: var(--tlmeny); }
+.karta li { margin: 2px 0; }
+.karta li b { color: var(--text); font-weight: 500; }
+.plus::marker { content: "+  "; color: var(--zelena); font-weight: 700; }
+.minus::marker { content: "−  "; color: var(--cervena-text); font-weight: 700; }
+
+/* Malé schémy umiestnenia. */
+.mini { position: relative; aspect-ratio: 16 / 10; border-radius: 8px; overflow: hidden; background: var(--pozadie); border: 1px solid var(--okraj); }
+.mini > * { position: absolute; }
+.m-hdr { left: 0; right: 0; top: 0; height: 8%; background: var(--hlavicka-webu); border-bottom: 1px solid var(--okraj); }
+.m-logo { left: 4%; top: 2.4%; width: 7%; height: 3.2%; border-radius: 2px; background: var(--akcent); opacity: .8; }
+.m-nav { left: 14%; top: 3%; width: 26%; height: 2%; border-radius: 2px; background: repeating-linear-gradient(90deg, var(--tlmeny) 0 12%, transparent 12% 20%); opacity: .5; }
+.m-super { left: 68%; top: 2.6%; width: 7%; height: 2.8%; border-radius: 2px; background: var(--zelena); opacity: .75; }
+.m-ucet { left: 80%; top: 2%; width: 15%; height: 4%; border-radius: 3px; background: var(--plocha-3); }
+.m-os { left: 1.5%; right: 1.5%; top: 10%; height: 4.5%; border-radius: 0 0 4px 4px; background: var(--plocha-2); border: 1px solid var(--okraj); }
+.m-os-akt { left: 46%; top: 10.7%; width: 12%; height: 3.1%; background: var(--akcent); clip-path: polygon(0 0, 90% 0, 100% 50%, 90% 100%, 0 100%, 10% 50%); }
+.m-os-tl { top: 10.9%; height: 2.9%; width: 5%; border-radius: 2px; border: 1px solid var(--okraj-svetly); }
+.m-score { left: 1.5%; right: 1.5%; top: 16.5%; height: 15%; border-radius: 4px; background: repeating-linear-gradient(90deg, var(--plocha) 0 13.7%, transparent 13.7% 14.3%); }
+.m-starsi { left: 1.5%; right: 1.5%; top: 34%; height: 27%; border-radius: 4px; background: var(--plocha); border: 1px solid var(--okraj); }
+.m-starsi::after { content: ""; position: absolute; inset: 14% 2% 18%; background: repeating-linear-gradient(90deg, var(--plocha-3) 0 11.5%, transparent 11.5% 12.5%); border-radius: 3px; }
+.m-stol { left: 1.5%; right: 1.5%; top: 66%; height: 30%; border-radius: 6px; border: 1px solid color-mix(in srgb, var(--zelena) 55%, transparent); background: color-mix(in srgb, var(--zelena) 10%, var(--pozadie)); }
+.m-ruka { left: 30%; right: 30%; bottom: -3%; height: 17%; background: repeating-linear-gradient(90deg, #6d5c84 0 18.5%, transparent 18.5% 20.5%); border-radius: 3px; }
+.m-btn { height: 3.6%; border-radius: 3px; background: var(--akcent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--akcent) 35%, transparent); }
+.m-pop { border-radius: 4px; border: 1.5px solid var(--akcent); background: color-mix(in srgb, var(--plocha-2) 92%, transparent); box-shadow: 0 6px 14px rgba(0,0,0,.6); }
+.m-pop::before { content: ""; position: absolute; inset: 14% 6% 10%; background: repeating-linear-gradient(180deg, color-mix(in srgb, var(--tlmeny) 45%, transparent) 0 6%, transparent 6% 14%); -webkit-mask: linear-gradient(90deg, #000 0 46%, transparent 46% 54%, #000 54%); mask: linear-gradient(90deg, #000 0 46%, transparent 46% 54%, #000 54%); }
+.m-pop.ciarkovany { border-style: dashed; opacity: .75; }
+.m-ikonky { height: 3.6%; display: flex; gap: 3%; }
+.m-ikonky i { flex: none; height: 100%; aspect-ratio: 1; border-radius: 50%; background: var(--akcent); opacity: .85; }
+.m-modal { inset: 8% 0 0 0; background: rgba(10,8,6,.55); }
+.m-stitok { font: 700 9px/1 var(--pismo); color: var(--akcent-svetly); letter-spacing: .04em; white-space: nowrap; }
+
+/* Tabuľka skupín. */
+.skupiny { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.skupiny .karta h3 span { font: italic 400 0.9rem/1.2 var(--pismo); color: var(--slaby-text); }
+.skupiny ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.skupiny li { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; align-items: baseline; }
+.skupiny li kbd { grid-row: span 2; align-self: start; }
+.skupiny li .pov { font-size: 0.76rem; color: var(--slaby-text); font-family: ui-monospace, Consolas, monospace; }
+
+/* Hárok stavov tlačidla (skutočná veľkosť). */
+.harok { display: flex; flex-wrap: wrap; gap: 14px 22px; padding: 18px; background: var(--hlavicka-webu); border: 1px solid var(--okraj); border-radius: var(--polomer); }
+.harok figure { margin: 0; display: grid; gap: 8px; justify-items: start; }
+.harok figcaption { font-size: 0.78rem; color: var(--slaby-text); }
+.harok .vzorka { position: relative; height: 56px; min-width: 128px; }
+.harok .vzorka .sb-spust { left: 0; top: 4px; }
+.harok .vzorka .sb-super { top: 0; left: 0; position: relative; display: inline-flex; animation: none; margin-top: 10px; }
+
+table.tab { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+table.tab th, table.tab td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--okraj); vertical-align: top; }
+table.tab th { font: 700 0.72rem/1.2 var(--pismo); letter-spacing: .08em; text-transform: uppercase; color: var(--slaby-text); }
+table.tab td.cislo { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.vzor { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin-right: 6px; border: 1px solid rgba(255,255,255,.15); }
+
+.poradie { counter-reset: k; list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; max-width: 86ch; }
+.poradie li { counter-increment: k; position: relative; padding: 10px 14px 10px 48px; background: var(--plocha); border: 1px solid var(--okraj); border-radius: 10px; color: var(--tlmeny); }
+.poradie li::before { content: counter(k); position: absolute; left: 12px; top: 9px; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; font: 800 0.85rem/1 var(--nadpis); color: var(--na-akcente); background: var(--akcent); }
+.poradie li b { color: var(--text); }
+code { font-family: ui-monospace, Consolas, monospace; font-size: 0.86em; color: var(--akcent-svetly); background: var(--plocha-2); padding: 1px 5px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div class="obal">
+
+<header class="doc-hlava">
+  <span class="stitok">Dizajn · UI mockup</span>
+  <h1>Soundboard majstra Melichara na hernom stole</h1>
+  <div class="meta">
+    <span>id <code>soundboard-20261022-0934</code></span>
+    <span>cieľ: <code>/hra</code>, len desktop (1600 × 1000, 1366 × 768)</span>
+    <span>UX návrh: <a href="dizajn-soundboard-20261022-0934-ux.html">dizajn-soundboard-20261022-0934-ux.html</a></span>
+    <span>podklad: snímka partie <code>playtest/20261022-072949</code>, hráč 1, Zhromaždenie</span>
+  </div>
+  <p class="verdikt">
+    Soundboard patrí do <b>hlavičky webu, hneď vľavo od mena súpera</b> (UX variant B): je to reč k súperovi, nie herná
+    informácia, a hlavička je jediný pás, ktorý je vždy na očiach a na 1600 aj 1366 má voľno. Panel je nemodálny
+    krčmový <b>„cenník“ v dvoch stĺpcoch</b> (4 skupiny, 14 hlášok s klávesmi), zmestí sa na 1366 × 768 bez posúvania
+    a nezakryje ruku ani stôl. Stav (hrá moja / 2 s ticho / hrá súperova) nesie tlačidlo v hlavičke aj pás v paneli —
+    tvarom (vlny, prstenec), textom aj farbou ty/súper.
+  </p>
+</header>
+
+<div class="ovladanie" role="toolbar" aria-label="Ovládanie mockupu">
+  <div class="ovl-skupina"><span id="l-stav">Stav</span>
+    <div class="segment" role="group" aria-labelledby="l-stav" id="segStav">
+      <button type="button" data-stav="pripravene" aria-pressed="true">Pripravené</button>
+      <button type="button" data-stav="moja" aria-pressed="false">Hrá moja</button>
+      <button type="button" data-stav="odpocet" aria-pressed="false">Odpočet 2 s</button>
+      <button type="button" data-stav="superova" aria-pressed="false">Hrá súperova</button>
+    </div>
+  </div>
+  <div class="ovl-skupina"><span id="l-panel">Panel</span>
+    <div class="segment" role="group" aria-labelledby="l-panel" id="segPanel">
+      <button type="button" data-otv="1" aria-pressed="true">Otvorený</button>
+      <button type="button" data-otv="0" aria-pressed="false">Zavretý</button>
+    </div>
+  </div>
+  <div class="ovl-skupina"><span id="l-obr">Obrazovka</span>
+    <div class="segment" role="group" aria-labelledby="l-obr" id="segObr">
+      <button type="button" data-obr="1600" aria-pressed="true">1600 × 1000</button>
+      <button type="button" data-obr="1366" aria-pressed="false">1366 × 768</button>
+    </div>
+  </div>
+  <div class="ovl-skupina">
+    <label class="ovl-check"><input type="checkbox" id="chkMierka" /> skutočná veľkosť</label>
+    <label class="ovl-check"><input type="checkbox" id="chkTicho" /> Melichar u mňa stlmený</label>
+    <button type="button" class="ovl-tlacidlo" id="btnSuper">Súper pustí hlášku</button>
+  </div>
+  <p class="ovl-tip">Prepínač ukáže stav nehybne. <b>Klik na hlášku v paneli</b> prehrá celý cyklus naživo (bez zvuku): hrá moja → 2 s ticho → pripravené.
+    Klik počas hrania alebo ticha nič nepustí, len zatrasie pásom stavu; klik na stôl panel zavrie. Klávesy: <kbd>M</kbd> otvorí/zavrie, <kbd>Esc</kbd> zavrie, v paneli <kbd>1</kbd>–<kbd>0</kbd>, <kbd>Q</kbd> <kbd>W</kbd> <kbd>E</kbd> <kbd>R</kbd> a šípky. Stav sa dá poslať aj adresou, napr. <code>#stav=odpocet&amp;obr=1366</code>.</p>
+</div>
+
+<div class="javisko-obal" id="javiskoObal">
+  <div class="javisko" id="javisko" data-ja="pripravene" data-super="0" data-otvorene="1" data-stlmene="0">
+    <img class="podklad" id="podklad" src="dizajn-soundboard-20261022-0934/stol-1600.jpg" alt="Herný stôl počas Zhromaždenia na 1600 × 1000: hlavička webu, os kola, scorecardy, Starší, stôl a ruka." />
+
+    <button type="button" class="sb-spust" id="sbSpust" aria-expanded="true" aria-controls="sbPanel" title="Hlášky majstra Melichara (M)">
+      <span class="sb-ik" aria-hidden="true">
+        <svg class="fuz" viewBox="0 0 24 24" fill="none">
+          <path d="M3.5 5.5h17a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H11l-4.5 3.5V17.5h-3A1.5 1.5 0 0 1 2 16V7a1.5 1.5 0 0 1 1.5-1.5Z" stroke="var(--akcent)" stroke-width="1.6" stroke-linejoin="round"/>
+          <path d="M12 11.2c-1.2-1.7-3.3-2-4.6-.6-.6.7-1.5.8-2.2.2.3 1.9 2 3 3.7 2.6 1.3-.3 2.3-1.1 3.1-2.2Zm0 0c1.2-1.7 3.3-2 4.6-.6.6.7 1.5.8 2.2.2-.3 1.9-2 3-3.7 2.6-1.3-.3-2.3-1.1-3.1-2.2Z" fill="var(--akcent)"/>
+        </svg>
+        <span class="vlny"><i></i><i></i><i></i><i></i></span>
+        <span class="prstenec" id="sbPrstenec"></span>
+        <span class="sb-bodka"></span>
+      </span>
+      Melichar
+      <svg class="sb-ticho" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 6h2.5L8 3v10L4.5 10H2Z" fill="currentColor"/><path d="m10.5 6 4 4m0-4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </button>
+
+    <div class="sb-super" id="sbSuper" role="status">
+      <span class="vlny" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <span><span class="meno">Štamgast</span> púšťa Melichara<span id="sbSuperTicho"></span></span>
+    </div>
+
+    <div class="sb-panel" id="sbPanel" role="group" aria-label="Hlášky majstra Melichara">
+      <div class="sb-hlava">
+        <span class="sb-medailon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 11c-1.5-2.3-4.3-2.7-6-.8-.8.9-2 1-2.9.3.4 2.5 2.6 4 4.9 3.4 1.7-.4 3-1.5 4-2.9Zm0 0c1.5-2.3 4.3-2.7 6-.8.8.9 2 1 2.9.3-.4 2.5-2.6 4-4.9 3.4-1.7-.4-3-1.5-4-2.9Z" fill="currentColor"/></svg>
+        </span>
+        <div>
+          <h2>Majster Melichar</h2>
+          <p>počuje ťa aj súper</p>
+        </div>
+        <button type="button" class="sb-zavriet" id="sbZavriet" aria-label="Zavrieť hlášky (Esc)">✕</button>
+      </div>
+      <div class="sb-stav" id="sbStav">
+        <span class="vlny ja" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span class="vlny su" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span id="sbStavText">Vyber hlášku — kliknutím alebo klávesom.</span>
+        <span class="sb-cas" id="sbCas"></span>
+        <i class="sb-pas" id="sbPas"></i>
+      </div>
+      <div class="sb-stlmene">
+        <span>U teba je Melichar stlmený — súper hlášky počuje, ty nie.</span>
+        <button type="button" id="sbZapnut">Zapnúť zvuk</button>
+      </div>
+      <div class="sb-telo" id="sbTelo"></div>
+      <div class="sb-pata">
+        <label>Hlasitosť u teba <input type="range" id="sbHlas" min="0" max="100" value="70" /></label>
+        <output id="sbHlasOut" for="sbHlas">70 %</output>
+        <span class="skratky"><kbd>M</kbd> otvorí · <kbd>Esc</kbd> zavrie</span>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="popis-javiska">
+  <span id="popisObr">1600 × 1000 · tlačidlo vpravo končí 12 px pred „● Štamgast“, panel 600 px zarovnaný k jeho pravému okraju.</span>
+  <span>Snímka je skutočný stôl; prekreslené sú len tlačidlo, bublina a panel.</span>
+</div>
+
+<section id="harok">
+  <h2>Tlačidlo v hlavičke — stavy v skutočnej veľkosti</h2>
+  <p class="uvod">Vzhľad preberá <code>.hlava-vrstva</code> z osi kola (priehľadné, <code>--okraj</code>, <code>--tlmeny</code>), nech sa nebije s červeným „vzdať sa“.
+    Stav nikdy nenesie len farba: hrá = vlny, ticho = vyprázdňujúci sa prstenec, súper = bodka + bublina s textom.</p>
+  <div class="harok" id="harokObsah"></div>
+</section>
+
+<section id="varianty">
+  <h2>Varianty umiestnenia</h2>
+  <p class="uvod">Tri miesta, ktoré sú na desktope vždy na očiach. Schémy sú zmenšený stôl 1600 × 1000; jantárová = soundboard.</p>
+  <div class="mriezka">
+    <article class="karta odporucane">
+      <h3>B · Hlavička webu pri mene súpera <span class="odznak">odporúčam</span></h3>
+      <div class="mini" aria-hidden="true">
+        <div class="m-hdr"></div><div class="m-logo"></div><div class="m-nav"></div><div class="m-super"></div><div class="m-ucet"></div>
+        <div class="m-os"></div><div class="m-os-akt"></div>
+        <div class="m-os-tl" style="left:80%"></div><div class="m-os-tl" style="left:86%"></div><div class="m-os-tl" style="left:92%"></div>
+        <div class="m-score"></div><div class="m-starsi"></div><div class="m-stol"></div><div class="m-ruka"></div>
+        <div class="m-btn" style="left:60.5%;top:2.2%;width:6.5%"></div>
+        <div class="m-pop" style="left:32%;top:8.5%;width:35%;height:52%"></div>
+      </div>
+      <ul>
+        <li class="plus"><b>Pri mene súpera</b> — komu hovoríš a odkiaľ prišla jeho hláška je na jednom mieste.</li>
+        <li class="plus">Hlavička je vždy viditeľná a voľná (1600: x ≈ 780–1080, 1366: x ≈ 660–960).</li>
+        <li class="plus">Panel padá cez scorecardy a Starších — ruku, stôl ani pečiatky nezakryje.</li>
+        <li class="minus">Ďaleko od ruky (myš prejde ≈ 900 px); rieši to kláves <kbd>M</kbd> a skratky.</li>
+      </ul>
+    </article>
+    <article class="karta">
+      <h3>A · Štvrté tlačidlo v osi kola <span class="odznak tichy">nie</span></h3>
+      <div class="mini" aria-hidden="true">
+        <div class="m-hdr"></div><div class="m-logo"></div><div class="m-nav"></div><div class="m-super"></div><div class="m-ucet"></div>
+        <div class="m-os"></div><div class="m-os-akt"></div>
+        <div class="m-os-tl" style="left:74%"></div><div class="m-os-tl" style="left:80%"></div><div class="m-os-tl" style="left:86%"></div>
+        <div class="m-btn" style="left:92%;top:10.8%;width:5.5%;height:3.1%"></div>
+        <div class="m-score"></div><div class="m-starsi"></div><div class="m-stol"></div><div class="m-ruka"></div>
+        <div class="m-pop" style="left:62%;top:16%;width:35.5%;height:50%"></div>
+      </div>
+      <ul>
+        <li class="plus">Pri ostatných ovládačoch partie (Šenok · Lokality · Log), menej cesty myšou k stolu.</li>
+        <li class="minus">Susedia otvárajú <b>modálnu Vrstvu</b> cez celý stôl — nemodálny popover vedľa nich klame.</li>
+        <li class="minus">Na 1366 os kola už teraz tlačí fázy (Pitka, Bitka); ďalšie tlačidlo ich skráti.</li>
+        <li class="minus">Ťahaná karta sa na tieto tlačidlá púšťa (<code>ciel-zona</code>) — riziko omylu.</li>
+      </ul>
+    </article>
+    <article class="karta">
+      <h3>C · B + rýchla lišta skupín <span class="odznak tichy">neskôr</span></h3>
+      <div class="mini" aria-hidden="true">
+        <div class="m-hdr"></div><div class="m-logo"></div><div class="m-nav"></div><div class="m-super"></div><div class="m-ucet"></div>
+        <div class="m-os"></div><div class="m-os-akt"></div>
+        <div class="m-os-tl" style="left:80%"></div><div class="m-os-tl" style="left:86%"></div><div class="m-os-tl" style="left:92%"></div>
+        <div class="m-score"></div><div class="m-starsi"></div><div class="m-stol"></div><div class="m-ruka"></div>
+        <div class="m-ikonky" style="left:44%;top:2.2%;width:14%"><i></i><i></i><i></i><i></i></div>
+        <div class="m-btn" style="left:60.5%;top:2.2%;width:6.5%"></div>
+        <div class="m-pop ciarkovany" style="left:32%;top:8.5%;width:35%;height:52%"></div>
+      </div>
+      <ul>
+        <li class="plus">Jeden klik = náhodná hláška zo skupiny (Údiv, Na súpera, Smola, Pohoda), panel na výber konkrétnej.</li>
+        <li class="minus">4 ikony v hlavičke bez textu — význam sa treba naučiť; na 1366 je to tesne (300 px).</li>
+        <li class="minus">Pridá „hlasný“ prvok do pokojnej hlavičky. Až keď sa ukáže, že sa soundboard používa často.</li>
+      </ul>
+    </article>
+  </div>
+</section>
+
+<section id="skupiny">
+  <h2>Zoskupenie hlášok</h2>
+  <p class="uvod">Štyri skupiny podľa toho, <b>kedy</b> hlášku hráč pustí (odhad UX, Michal overí). Poradie skupín = poradie v paneli
+    (skupiny pod sebou, v každej hlášky v dvoch stĺpcoch, najdlhšia cez oba) a klávesov. Zobrazený text je s diakritikou; pod ním dnešný <code>nazov</code> zo <code>zoznam.json</code>.</p>
+  <div class="skupiny" id="skupinyObsah"></div>
+</section>
+
+<section id="ui-detaily">
+  <h2>Čo z toho je nové v UI</h2>
+  <table class="tab">
+    <thead><tr><th>Prvok</th><th>Tokeny a rozmery</th><th>Kontrast (WCAG 2.2)</th></tr></thead>
+    <tbody>
+      <tr><td>Tlačidlo <b>Melichar</b></td><td>ako <code>.hlava-vrstva</code>: výška 30 px, polomer 8, 0,86 rem; ikona bublina s fúzmi v <code>--akcent</code></td><td class="cislo">text <code>--tlmeny</code> na hlavičke 7,86 : 1</td></tr>
+      <tr><td>Panel (popover)</td><td>600 px, polomer 14, plná <code>--plocha</code> (stôl pod ňou nepresvitá), okraj <code>--okraj-svetly</code>, tieň ako <code>.vrstva-panel</code>; z-index 48 (nad osou kola 45 a Vrstvou 46)</td><td class="cislo">text <code>--text</code> 14,34 : 1</td></tr>
+      <tr><td>Riadok hlášky</td><td>min. 32 px, bodkovaný „cenníkový“ odkaz ku klávesu, hover <code>--plocha-3</code> + <code>--akcent-svetly</code></td><td class="cislo">hover 9,80 : 1 · kláves <code>--tlmeny</code> na <code>--pozadie</code> 7,99 : 1</td></tr>
+      <tr><td><span class="vzor" style="background:var(--ja)"></span>Hrá moja / ticho</td><td><code>--ja</code>, <code>--ja-tmava</code> — tá istá tyrkysová ako „ty“ na stole</td><td class="cislo"><code>--ja</code> na plochе 8,22 : 1 · text na <code>--ja-tmava</code> 9,86 : 1</td></tr>
+      <tr><td><span class="vzor" style="background:var(--su)"></span>Hrá súperova</td><td><code>--su</code>, <code>--su-tmava</code> — hrdzavá ako súper</td><td class="cislo"><code>--su</code> na ploche 6,16 : 1 · text na <code>--su-tmava</code> 11,26 : 1</td></tr>
+      <tr><td>Nepustiteľné riadky</td><td><code>--slaby</code>, bodky 45 %, kláves 55 %; kurzor <code>not-allowed</code>; dôvod v páse stavu</td><td class="cislo">4,35 : 1 (neaktívny prvok je výnimkou, aj tak čitateľné)</td></tr>
+      <tr><td>Pohyb</td><td>rozbalenie 180 ms, bublina 180 ms, vlny 0,9 s v slučke, zatrasenie 280 ms; pri <code>prefers-reduced-motion</code> statické vlny, bez animácií</td><td>—</td></tr>
+    </tbody>
+  </table>
+  <p class="malo">Nový token netreba. Jediná nová farba v mockupe, <code>--hlavicka-webu</code> (#16130f), je len pomocná pre ukážku — v kóde je to dnešné pozadie hlavičky webu.</p>
+</section>
+
+<section id="poradie">
+  <h2>Odporúčanie</h2>
+  <ol class="poradie">
+    <li><b>Teraz:</b> variant B — tlačidlo v hlavičke, panel-cenník, štyri stavy a bublina pri mene súpera (tento mockup).</li>
+    <li><b>Spolu s tým v dátach:</b> do <code>data/melichar/zoznam.json</code> polia <code>skupina</code>, <code>trvanieMs</code> a text s diakritikou (dáta, nie kód).</li>
+    <li><b>Neskôr podľa používania:</b> rýchla lišta skupín (C). Variant A neodporúčam.</li>
+  </ol>
+</section>
+
+<section id="otazky">
+  <h2>Otázky na Michala</h2>
+  <ol class="poradie">
+    <li><b>Texty s diakritikou</b> — sedia? Hlavne „Čil išla, keď najviac jebe“ a „hinta cigánska banda“ (v súbore sú bez diakritiky).</li>
+    <li><b>Skupiny</b> — Údiv / Na súpera / Smola / Pohoda: sedia významy, alebo hlášku presunúť?</li>
+    <li><b>Cenník, nie čipy</b> — riadky s bodkovaním ku klávesu (ako lístok na stene krčmy), skupiny pod sebou a v každej dva stĺpce. Panel je preto 600 px široký namiesto 360 px z UX, zato sa celý zmestí na 1366 × 768 bez posúvania a dlhé hlášky sa nelámu. Súhlas?</li>
+    <li><b>Zvýrazniť moju hrajúcu hlášku v paneli?</b> Mockup áno (tyrkysový riadok s vlnami — viem, čo som pustil). Súperovu nikdy, inak by panel prezradil jej názov.</li>
+  </ol>
+</section>
+
+</div>
+
+<script>
+(() => {
+  "use strict";
+  // Hlášky: poradie = poradie v paneli a klávesov. pov = nazov v zoznam.json, ms = odhad dĺžky.
+  const SKUPINY = [
+    { id: "udiv", nazov: "Údiv", citat: "„Čo to je?!“", situacia: "keď súper zahrá niečo nečakané", stlpec: 0, hlasky: [
+      { text: "No toto je marha", pov: "No toto je marha", ms: 1900 },
+      { text: "No teda, toto som nevideu", pov: "No teda toto som nevideu", ms: 1800 },
+      { text: "Boha", pov: "Boha", ms: 900 },
+    ] },
+    { id: "nasupera", nazov: "Na súpera", citat: "„Ty jeden…“", situacia: "keď ťa súper naštve", stlpec: 0, hlasky: [
+      { text: "Ty svina", pov: "Ty svina", ms: 1500 },
+      { text: "Bzdocha", pov: "Bzdocha", ms: 1600 },
+      { text: "Jebem ja tvojho boha", pov: "Jebem ja Tvojho boha", ms: 3600 },
+      { text: "Ale na kurvy to má", pov: "Ale na kurvy to ma", ms: 1900 },
+      { text: "To nebude mať rozum, hinta cigánska banda, nikdy", pov: "To nebude mat rozum hinta ciganska banda nikdy", ms: 3200 },
+    ] },
+    { id: "smola", nazov: "Smola", citat: "„Zas to isté“", situacia: "keď ti to nejde", stlpec: 1, hlasky: [
+      { text: "Ach, boha", pov: "Ach boha", ms: 2000 },
+      { text: "To zas bude vyzerať", pov: "To zas bude vyzerat", ms: 1500 },
+      { text: "Čil išla, keď najviac jebe", pov: "Cil isla ked najviac jebe", ms: 2000 },
+      { text: "Už mám v piči nervy zas", pov: "Uz mam v pici nervy zas", ms: 3700 },
+    ] },
+    { id: "pohoda", nazov: "Pohoda", citat: "„Toto je život“", situacia: "keď ti to vyšlo", stlpec: 1, hlasky: [
+      { text: "Toto je ŽIVOT", pov: "Toto je ZIVOT", ms: 1500 },
+      { text: "Keksy a kokotiny", pov: "Keksy a kokotiny", ms: 2700 },
+    ] },
+  ];
+  const KLAVESY = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "Q", "W", "E", "R"];
+  const TICHO_MS = 2000;
+  const OBRAZOVKY = {
+    1600: { w: 1600, h: 1000, img: "dizajn-soundboard-20261022-0934/stol-1600.jpg", menoX: 1084,
+            popis: "1600 × 1000 · tlačidlo končí 12 px pred „● Štamgast“, panel 600 px zarovnaný k jeho pravému okraju." },
+    1366: { w: 1366, h: 768, img: "dizajn-soundboard-20261022-0934/stol-1366.jpg", menoX: 967,
+            popis: "1366 × 768 · panel (≈ 490 px vysoký) končí nad rukou, posúvanie netreba." },
+  };
+  const $ = (id) => document.getElementById(id);
+  const javisko = $("javisko"), obal = $("javiskoObal"), spust = $("sbSpust"), panel = $("sbPanel");
+  const telo = $("sbTelo"), stav = $("sbStav"), stavText = $("sbStavText"), cas = $("sbCas"), pas = $("sbPas");
+  const prstenec = $("sbPrstenec"), bublina = $("sbSuper");
+
+  const hlasky = [];
+  let k = 0;
+  for (const s of SKUPINY) for (const h of s.hlasky) { h.kl = KLAVESY[k++]; h.skupina = s.id; hlasky.push(h); }
+
+  // --- panel: stĺpce, skupiny, riadky ---
+  const PLAY = '<svg viewBox="0 0 9 10" aria-hidden="true"><path d="M0 0.5v9l8.5-4.5z" fill="currentColor"/></svg>';
+  const VLNY = '<span class="vlny" aria-hidden="true"><i></i><i></i><i></i><i></i></span>';
+  for (const s of SKUPINY) {
+    const fs = document.createElement("fieldset");
+    fs.className = "sb-skupina";
+    fs.innerHTML = `<legend>${s.nazov} <span class="citat">${s.citat}</span><span class="sb-situacia">${s.situacia}</span></legend>`;
+    for (const h of s.hlasky) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = h.text.length > 30 ? "sb-hlaska dlha" : "sb-hlaska";
+      b.dataset.kl = h.kl;
+      b.setAttribute("aria-keyshortcuts", h.kl);
+      b.innerHTML = `<span class="hr-ik">${PLAY}${VLNY}</span><span class="hr-text">${h.text}</span><span class="hr-bodky" aria-hidden="true"></span><kbd>${h.kl}</kbd>`;
+      b.addEventListener("click", () => pusti(h, b));
+      h.el = b;
+      fs.appendChild(b);
+    }
+    telo.appendChild(fs);
+  }
+
+  // --- stav ---
+  let ja = "pripravene";   // pripravene | moja | odpocet
+  let superHra = false;
+  let hraje = null;         // hláška, ktorá práve hrá (moja)
+  let zostava = 0;          // ms do konca ticha
+  let otvorene = true, stlmene = false, obr = "1600", skutocna = false;
+  let tMoja = 0, tSuper = 0, raf = 0;
+
+  function vykresli() {
+    javisko.dataset.ja = ja;
+    javisko.dataset.super = superHra ? "1" : "0";
+    javisko.dataset.otvorene = otvorene ? "1" : "0";
+    javisko.dataset.stlmene = stlmene ? "1" : "0";
+    spust.setAttribute("aria-expanded", String(otvorene));
+    const zamknute = ja !== "pripravene";
+    for (const h of hlasky) {
+      h.el.classList.toggle("hraje", ja === "moja" && h === hraje);
+      if (zamknute) h.el.setAttribute("aria-disabled", "true"); else h.el.removeAttribute("aria-disabled");
+    }
+    // pás stavu
+    const sek = (zostava / 1000).toLocaleString("sk-SK", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    if (ja === "moja") { stavText.textContent = "Melichar hovorí za teba…"; cas.textContent = ""; pas.style.width = "0"; }
+    else if (ja === "odpocet") { stavText.textContent = "Chvíľu ticho…"; cas.textContent = sek + " s"; pas.style.width = (zostava / TICHO_MS * 100) + "%"; }
+    else if (superHra) { stavText.textContent = "Štamgast púšťa Melichara — môžeš odpovedať."; cas.textContent = ""; pas.style.width = "0"; }
+    else { stavText.textContent = "Vyber hlášku — kliknutím alebo klávesom."; cas.textContent = ""; pas.style.width = "0"; }
+    prstenec.style.setProperty("--p", String(ja === "odpocet" ? zostava / TICHO_MS : 1));
+    $("sbSuperTicho").textContent = stlmene ? " (stlmené)" : "";
+    spust.title = { pripravene: "Hlášky majstra Melichara (M)", moja: "Melichar hovorí za teba", odpocet: "Chvíľu ticho — o " + sek + " s môžeš znova" }[ja];
+    // segment
+    const seg = ja !== "pripravene" ? ja : superHra ? "superova" : "pripravene";
+    document.querySelectorAll("#segStav button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.stav === seg)));
+    document.querySelectorAll("#segPanel button").forEach((b) => b.setAttribute("aria-pressed", String((b.dataset.otv === "1") === otvorene)));
+  }
+
+  function zastavCas() { clearTimeout(tMoja); clearTimeout(tSuper); cancelAnimationFrame(raf); }
+
+  function pusti(h, el) {
+    if (ja !== "pripravene") {
+      stav.classList.remove("trasie"); void stav.offsetWidth; stav.classList.add("trasie");
+      return;
+    }
+    clearTimeout(tMoja); cancelAnimationFrame(raf);
+    ja = "moja"; hraje = h; vykresli();
+    el.focus();
+    tMoja = setTimeout(() => {
+      ja = "odpocet"; zostava = TICHO_MS;
+      const start = performance.now();
+      const krok = (t) => {
+        zostava = Math.max(0, TICHO_MS - (t - start));
+        if (zostava <= 0) { ja = "pripravene"; hraje = null; vykresli(); return; }
+        vykresli(); raf = requestAnimationFrame(krok);
+      };
+      vykresli(); raf = requestAnimationFrame(krok);
+    }, h.ms);
+  }
+
+  function nastavStav(s) {
+    zastavCas();
+    superHra = s === "superova";
+    ja = s === "superova" ? "pripravene" : s;
+    hraje = s === "moja" ? hlasky.find((h) => h.text === "Ty svina") : null;
+    zostava = s === "odpocet" ? 1200 : 0;
+    vykresli();
+  }
+
+  // --- ovládanie mockupu ---
+  document.querySelectorAll("#segStav button").forEach((b) => b.addEventListener("click", () => nastavStav(b.dataset.stav)));
+  document.querySelectorAll("#segPanel button").forEach((b) => b.addEventListener("click", () => { otvorene = b.dataset.otv === "1"; vykresli(); }));
+  document.querySelectorAll("#segObr button").forEach((b) => b.addEventListener("click", () => {
+    obr = b.dataset.obr;
+    document.querySelectorAll("#segObr button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    rozmiestni();
+  }));
+  $("chkMierka").addEventListener("change", (e) => { skutocna = e.target.checked; rozmiestni(); });
+  $("chkTicho").addEventListener("change", (e) => { stlmene = e.target.checked; vykresli(); });
+  $("sbZapnut").addEventListener("click", () => { stlmene = false; $("chkTicho").checked = false; vykresli(); });
+  $("btnSuper").addEventListener("click", () => {
+    clearTimeout(tSuper);
+    superHra = true; vykresli();
+    tSuper = setTimeout(() => { superHra = false; vykresli(); }, 2600);
+  });
+  spust.addEventListener("click", () => { otvorene = !otvorene; vykresli(); if (otvorene) prvaHlaska()?.focus(); });
+  $("sbZavriet").addEventListener("click", () => { otvorene = false; vykresli(); spust.focus(); });
+  // Klik mimo panel ho zavrie (light dismiss); pustenie hlášky ho nezatvára.
+  $("podklad").addEventListener("click", () => { if (otvorene) { otvorene = false; vykresli(); } });
+  const hlas = $("sbHlas");
+  hlas.addEventListener("input", () => { $("sbHlasOut").textContent = hlas.value + " %"; });
+
+  function prvaHlaska() { return (hraje ?? hlasky[0]).el; }
+
+  // Klávesnica: M otvorí/zavrie, Esc zavrie, v paneli skratky a šípky (roving).
+  document.addEventListener("keydown", (e) => {
+    const t = e.target;
+    if (t instanceof HTMLInputElement || t instanceof HTMLTextAreaElement || e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.key === "m" || e.key === "M") { otvorene = !otvorene; vykresli(); (otvorene ? prvaHlaska() : spust).focus(); e.preventDefault(); return; }
+    if (e.key === "Escape" && otvorene) { otvorene = false; vykresli(); spust.focus(); return; }
+    if (!otvorene || !panel.contains(t)) return;
+    const h = hlasky.find((x) => x.kl === e.key.toUpperCase());
+    if (h) { pusti(h, h.el); e.preventDefault(); return; }
+    const i = hlasky.findIndex((x) => x.el === t);
+    const POSUN = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: 2, ArrowUp: -2 };
+    if (i >= 0 && e.key in POSUN) {
+      const n = Math.min(hlasky.length - 1, Math.max(0, i + POSUN[e.key]));
+      hlasky[n].el.focus(); e.preventDefault();
+    }
+  });
+
+  // --- rozmiestnenie podľa obrazovky a mierka javiska ---
+  function rozmiestni() {
+    const o = OBRAZOVKY[obr];
+    $("podklad").src = o.img;
+    $("podklad").alt = `Herný stôl počas Zhromaždenia na ${o.w} × ${o.h}.`;
+    javisko.style.width = o.w + "px";
+    javisko.style.height = o.h + "px";
+    const pravy = o.w - (o.menoX - 12);           // tlačidlo končí 12 px pred menom súpera
+    spust.style.right = pravy + "px";
+    panel.style.right = pravy + "px";
+    panel.style.maxHeight = (o.h - 56 - 150) + "px"; // nad rukou
+    bublina.style.left = (o.menoX - 8) + "px";
+    $("popisObr").textContent = o.popis;
+    const s = skutocna ? 1 : Math.min(1, obal.parentElement.clientWidth / o.w);
+    javisko.style.transform = `scale(${s})`;
+    obal.style.width = skutocna ? "100%" : o.w * s + "px";
+    obal.style.height = o.h * s + "px";
+    obal.style.overflowX = skutocna ? "auto" : "hidden";
+  }
+  window.addEventListener("resize", rozmiestni);
+
+  // --- hárok stavov tlačidla (statické kópie) ---
+  const harok = $("harokObsah");
+  const VZORKY = [
+    ["pripravene", "0", "0", "0", "Pripravené"],
+    ["pripravene", "0", "1", "0", "Panel otvorený"],
+    ["moja", "0", "0", "0", "Hrá moja — vlny"],
+    ["odpocet", "0", "0", "0", "Odpočet 2 s — prstenec (60 %)"],
+    ["pripravene", "1", "0", "0", "Hrá súperova — bodka"],
+    ["pripravene", "0", "0", "1", "Stlmené u mňa"],
+  ];
+  for (const [j, sup, otv, tich, popis] of VZORKY) {
+    const f = document.createElement("figure");
+    const v = document.createElement("div");
+    v.className = "vzorka";
+    v.dataset.ja = j; v.dataset.super = sup; v.dataset.stlmene = tich;
+    const kopia = spust.cloneNode(true);
+    kopia.removeAttribute("id"); kopia.removeAttribute("aria-controls");
+    kopia.setAttribute("aria-expanded", otv === "1" ? "true" : "false");
+    kopia.tabIndex = -1;
+    kopia.querySelectorAll("[id]").forEach((x) => x.removeAttribute("id"));
+    const p = kopia.querySelector(".prstenec"); if (p) p.style.setProperty("--p", "0.6");
+    v.appendChild(kopia);
+    f.appendChild(v);
+    const c = document.createElement("figcaption"); c.textContent = popis; f.appendChild(c);
+    harok.appendChild(f);
+  }
+  const fb = document.createElement("figure");
+  const vb = document.createElement("div"); vb.className = "vzorka"; vb.dataset.super = "1";
+  const kb = bublina.cloneNode(true); kb.removeAttribute("id"); kb.removeAttribute("role");
+  kb.querySelectorAll("[id]").forEach((x) => x.removeAttribute("id"));
+  vb.appendChild(kb); fb.appendChild(vb);
+  const cb = document.createElement("figcaption"); cb.textContent = "Bublina pod menom súpera (názov hlášky nikdy)"; fb.appendChild(cb);
+  harok.appendChild(fb);
+
+  // --- karty skupín ---
+  const sk = $("skupinyObsah");
+  for (const s of SKUPINY) {
+    const a = document.createElement("article");
+    a.className = "karta";
+    a.innerHTML = `<h3>${s.nazov} <span>${s.citat}</span></h3><p class="malo" style="margin:0">${s.situacia}</p><ol>${s.hlasky.map((h) =>
+      `<li><kbd>${h.kl}</kbd><span>${h.text}</span><span class="pov">${h.pov}</span></li>`).join("")}</ol>`;
+    sk.appendChild(a);
+  }
+
+  const q = new URLSearchParams(location.hash.slice(1));
+  if (q.get("obr") === "1366") { obr = "1366"; document.querySelectorAll("#segObr button").forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.obr === "1366"))); }
+  if (q.get("panel") === "0") otvorene = false;
+  if (q.get("mierka") === "1") { skutocna = true; $("chkMierka").checked = true; }
+  if (q.get("ticho") === "1") { stlmene = true; $("chkTicho").checked = true; }
+  rozmiestni();
+  nastavStav(q.get("stav") ?? "pripravene");
+})();
+</script>
+</body>
+</html>

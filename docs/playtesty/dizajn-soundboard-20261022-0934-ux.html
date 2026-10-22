@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UX návrh — soundboard majstra Melichara (soundboard-20261022-0934)</title>
+<style>
+:root{--bg:#14110e;--pl:#1e1914;--pl2:#2a231c;--tx:#f1e8d8;--sl:#b9ab95;--ja:#e9ad45;--te:#d0563f;--ze:#7cbf74;--mo:#6fb3d2;--ok:#3a3128;--wf:#3b342c;--wf2:#4a4239}
+@media (prefers-color-scheme: light){:root{--bg:#f7f2ea;--pl:#fffaf2;--pl2:#efe6d8;--tx:#221a12;--sl:#5d5245;--ja:#8a5a00;--te:#a8331f;--ze:#2f7a28;--mo:#1d6b8f;--ok:#d9cdb9;--wf:#e3dccf;--wf2:#d2c8b8}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:24px 16px 64px}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;line-height:1.25}
+h1{font-size:1.9rem;margin:.2em 0 .3em}
+h2{font-size:1.45rem;margin:2.2em 0 .6em;border-bottom:1px solid var(--ok);padding-bottom:.25em}
+h3{font-size:1.15rem;margin:1.4em 0 .4em}
+a{color:var(--ja)}
+a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--ja);outline-offset:2px}
+code{font-size:.88em;overflow-wrap:anywhere}
+.meta{color:var(--sl);font-size:.93rem}
+.verdikt{background:var(--pl);border-left:4px solid var(--ja);padding:12px 16px;border-radius:6px}
+.mriezka{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.dlazdica{background:var(--pl);border:1px solid var(--ok);border-radius:8px;padding:12px 14px}
+.dlazdica b{color:var(--ja)}
+.cislo{font:700 2rem/1.1 Georgia,serif;color:var(--ja);display:block}
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+th,td{text-align:left;vertical-align:top;padding:8px 8px;border-bottom:1px solid var(--ok)}
+th{color:var(--sl);font-weight:600}
+.tab-obal{overflow-x:auto}
+.z{display:inline-block;min-width:1.7em;text-align:center;border-radius:4px;padding:0 .3em;font-weight:700;color:#14110e}
+.z4{background:#e0644c}.z3{background:#e9ad45}.z2{background:#c8b98f}.z1{background:#8f8574}
+.stitok{display:inline-block;font-size:.78rem;border:1px solid var(--ok);border-radius:999px;padding:0 .55em;margin:0 .2em .2em 0;color:var(--sl)}
+.stitok.mala{border-color:var(--ze);color:var(--ze)}
+.stitok.stredna{border-color:var(--ja);color:var(--ja)}
+.stitok.velka{border-color:var(--te);color:var(--te)}
+.stitok.odp{border-color:var(--ja);background:var(--ja);color:#14110e}
+.filtre{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 12px}
+.filtre button{min-height:44px;padding:0 14px;border-radius:6px;border:1px solid var(--ok);background:var(--pl);color:var(--tx);font:inherit;cursor:pointer}
+.filtre button[aria-pressed="true"]{background:var(--ja);color:#14110e;border-color:var(--ja)}
+figure{margin:12px 0 18px;background:var(--pl);border:1px solid var(--ok);border-radius:8px;padding:8px}
+figure img{max-width:100%;height:auto;display:block;border-radius:4px}
+.dve{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+@media (max-width:700px){.dve{grid-template-columns:1fr}}
+figcaption{font-size:.88rem;color:var(--sl);padding:6px 4px 0}
+.tok{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+@media (max-width:700px){.tok{grid-template-columns:1fr}}
+.tok>div{background:var(--pl2);border:1px solid var(--ok);border-radius:8px;padding:10px 14px}
+.tok h4{margin:.2em 0 .4em;font-size:1rem}
+.tok ol{margin:0;padding-left:1.3em}
+.pred h4{color:var(--te)}.po h4{color:var(--ze)}
+.navrh{background:var(--pl);border:1px solid var(--ok);border-radius:10px;padding:4px 18px 16px;margin:18px 0}
+.navrh>h3{margin-top:.9em}
+.navrh dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:8px 0}
+.navrh dt{color:var(--sl);font-weight:600}
+.navrh dd{margin:0}
+@media (max-width:600px){.navrh dl{grid-template-columns:1fr}.navrh dt{margin-top:6px}}
+details{margin:8px 0}
+summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:600}
+.wf{background:var(--wf);border:1px dashed var(--sl);border-radius:8px;padding:10px;margin:10px 0;font-size:.9rem;color:var(--tx)}
+.wf .r{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:6px 0}
+.wf .b{background:var(--wf2);border-radius:6px;padding:6px 10px}
+.wf .b.hl{outline:2px solid var(--ja)}
+.wf .b.nov{outline:2px dashed var(--mo)}
+.wf .b.tl{color:var(--sl)}
+.wf .b.rast{flex:1 1 auto}
+.wf .tlac{display:inline-flex;align-items:center;gap:6px;background:var(--wf2);border:1px solid var(--sl);border-radius:6px;padding:4px 10px;min-height:32px}
+.wf .tlac.hl{background:var(--ja);color:#14110e;border-color:var(--ja)}
+.wf .tlac.off{opacity:.5}
+.wf .kc{display:inline-block;min-width:1.4em;text-align:center;border:1px solid var(--sl);border-radius:4px;font:600 .72rem/1.3 ui-monospace,monospace;color:var(--sl)}
+.wf small{color:var(--sl)}
+.wf .pop{background:var(--pl);border:2px solid var(--mo);border-radius:10px;padding:8px 10px;max-width:420px;margin-left:auto}
+.wf .sk{border:0;margin:6px 0 2px;padding:0}
+.wf .sk legend{font-weight:700;font-size:.85rem;padding:0}
+.wf .sk legend small{font-weight:400}
+.wf .g{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px}
+.wf .pas{height:4px;border-radius:2px;background:var(--wf2);overflow:hidden;margin:4px 0}
+.wf .pas i{display:block;height:100%;background:var(--mo)}
+.mikro{border-left:3px solid var(--mo);padding:2px 12px;margin:6px 0;font-style:italic}
+.pozn{font-size:.9rem;color:var(--sl)}
+.skok{position:absolute;left:-999px}.skok:focus{left:16px;top:8px;background:var(--ja);color:#14110e;padding:6px 10px;z-index:9}
+nav.obsah ol{columns:2;column-gap:28px;padding-left:1.2em}
+@media (max-width:600px){nav.obsah ol{columns:1}}
+svg{max-width:100%;height:auto}
+svg text{fill:var(--tx);font:12px system-ui,sans-serif}
+svg .sl{fill:var(--sl)}
+svg .blok{fill:var(--wf2);stroke:var(--sl);stroke-width:1}
+svg .aktiv{fill:var(--ja);fill-opacity:.35;stroke:var(--ja);stroke-width:2}
+svg .pevne{fill:var(--mo);fill-opacity:.3;stroke:var(--mo)}
+svg .okno{fill:none;stroke:var(--te);stroke-width:2;stroke-dasharray:6 4}
+svg .ciara{stroke:var(--sl);stroke-width:1.5;fill:none}
+</style>
+</head>
+<body>
+<a class="skok" href="#navrhy">Preskočiť na návrhy</a>
+<main>
+<header>
+<p class="meta">UX návrh · id <code>soundboard-20261022-0934</code> · naex-ux · 22. 10. 2026 · vzhľad rieši súbežný UI návrh <a href="dizajn-soundboard-20261022-0934-ui.html">dizajn-soundboard-20261022-0934-ui.html</a> · kód sa nemenil</p>
+<h1>Soundboard majstra Melichara: hláška na klik, ťahu nezavadzia</h1>
+<p><strong>Cieľ:</strong> nová časť herného stola <code>/hra</code>, len desktop (1600 × 1000 a notebook 1366 × 768; mobil hra nepodporuje). Dnes hlášky púšťa sama hra, len v partii s botom (<code>apps/web/src/hra/Melichar.tsx</code>). Hudba je v <code>Hudba.tsx</code>, hlasitosť a frekvencia sú v profile (<code>stranky/Ucet.tsx:526</code>).</p>
+<div class="mriezka">
+<div class="dlazdica"><b>Kto:</b> dvaja ľudia pri partii cez internet, ktorí si chcú podpichnúť (dnes „ľudia si nadávajú sami“, <code>Hra.tsx:157</code>), a hráč proti botovi, ktorý si Melichara pustí pre zábavu.</div>
+<div class="dlazdica"><b>Úlohy:</b> (1) rýchlo zareagovať hláškou na súperov ťah, (2) vybrať hlášku podľa nálady, nie ju hľadať, (3) vedieť, kedy môžem pustiť ďalšiu a kto práve hovorí, (4) stlmiť Melichara, keď otravuje, a neodísť pritom od stola.</div>
+<div class="dlazdica"><span class="cislo">0,8–3,7 s</span>dĺžka 14 hlášok (odhad z MP3 hlavičiek, 96 kb/s). Celý cyklus jednej mojej hlášky aj s 2 s pauzou trvá najviac ≈ 5,7 s.</div>
+</div>
+<p class="verdikt"><strong>Verdikt.</strong> Soundboard patrí do <strong>hlavičky webu, hneď vedľa mena súpera</strong> (variant B), ako <strong>nemodálny panel</strong>, ktorý nezakryje ruku ani stôl a neblokuje ťah. Je to rozhovor so súperom, nie herná informácia, a to, že súper púšťa hlášku, sa ukáže pri jeho mene. Musí platiť pravidlo 2 s na klientovi aj na serveri, panel musí jasne ukazovať štyri stavy a hlasitosť sa musí dať zmeniť priamo v ňom. Inak hráč pri hlasitosti 0 klikne, nič nepočuje a myslí si, že soundboard je pokazený.</p>
+<p class="pozn">Krátke rozhodnutie pre UI mockup je v <code>playtest/dizajn/soundboard-20261022-0934/ux-rozhodnutie.md</code>. Tento report ho rozvádza a nič v ňom nemení.</p>
+<nav class="obsah" aria-label="Obsah">
+<ol>
+<li><a href="#toky">Toky dnes</a></li>
+<li><a href="#signaly">Signály</a></li>
+<li><a href="#audit">Audit a riziká</a></li>
+<li><a href="#umiestnenie">Umiestnenie: varianty A, B, C</a></li>
+<li><a href="#skupiny">Skupiny hlášok</a></li>
+<li><a href="#stavy">Stavy a pravidlo 2 s</a></li>
+<li><a href="#navrhy">Návrhy N1–N5</a></li>
+<li><a href="#poradie">Odporúčané poradie</a></li>
+<li><a href="#otazky">Otázky do playtestu a na Michala</a></li>
+</ol>
+</nav>
+</header>
+
+<section aria-labelledby="toky">
+<h2 id="toky">1. Toky dnes</h2>
+
+<h3>Tok A: hláška v partii s botom (púšťa ju hra, hráč ju nevyberá)</h3>
+<ol>
+<li>Hráč urobí ťah. S pravdepodobnosťou podľa frekvencie (predvolená 25 %, pri NA EX! dvojnásobná, <code>Melichar.tsx:25</code>) sa po 350 ms ozve náhodná hláška.</li>
+<li>Kým hovorí, hore v strede je titulok <em>„Majster Melichar: ‚…‘“</em> s názvom hlášky (<code>Melichar.tsx:139</code>, <code>:149</code>) a hudba sa stíši na 30 % (<code>Hudba.tsx:21</code>).</li>
+<li>Po hláške platí 4 s ticho (<code>Melichar.tsx:15</code>). Hráč hlášku nevyberá, nevie ju zopakovať a nemá ju ako zastaviť.</li>
+</ol>
+
+<h3>Tok B: partia dvoch ľudí</h3>
+<p>Melichar mlčí: <code>useMelichar</code> je zapnutý len vtedy, keď je jeden z hráčov bot (<code>Hra.tsx:158</code>). Súpera nemá čím podpichnúť, chat v hre nie je.</p>
+
+<h3>Tok C: stlmiť alebo zosilniť Melichara počas partie</h3>
+<ol>
+<li>Klik na <em>odísť</em> v hlavičke (partia beží ďalej) alebo na avatar.</li>
+<li>Profil, panel <em>Majster Melichar</em>, posuvník <em>Hlasitosť</em> (<code>Ucet.tsx:531</code>). Popis panelu hovorí „V partii proti počítaču…“, čo po zavedení soundboardu prestane platiť.</li>
+<li>Späť na <em>Hrať</em> a návrat do partie.</li>
+</ol>
+<p>To sú 3 až 4 kroky a hráč pri nich stratí pohľad na stôl. Kým bol Melichar len občasný komentátor, nevadilo to. Keď mu však hlášky bude púšťať súper, musí sa dať stlmiť rovno pri stole.</p>
+
+<h3>Kde je na stole miesto</h3>
+<div class="dve">
+<figure><img src="dizajn-soundboard-20261022-0934/stol-1600.jpg" alt="Herný stôl 1600 × 1000 vo fáze Zhromaždenie. Hore hlavička webu s navigáciou, vpravo ‚● Štamgast‘, ‚vzdať sa‘, ‚odísť‘ a meno hráča. Pod ňou os kola s tlačidlami Šenok, Lokality, Log, potom scorecardy, panel Starší a dole stôl s rukou." loading="lazy"><figcaption>1600 × 1000. V hlavičke je medzi „Vývoj“ a „● Štamgast“ voľný pás široký ≈ 300 px. Os kola je plná: fázy plus Šenok, Lokality a Log.</figcaption></figure>
+<figure><img src="dizajn-soundboard-20261022-0934/stol-1366.jpg" alt="Herný stôl 1366 × 768. Ruka s piatimi kartami prekrýva panel Zhromaždenia a pás pokynu; dolné rohy zaberajú Ruka, Fajčiť, Pasovať a Odhodené." loading="lazy"><figcaption>1366 × 768. Dolná tretina je preplnená: ruka prekrýva pás Zhromaždenia, v rohoch sú Ruka, Fajčiť, Pasovať a Odhodené. Na soundboard tam miesto nie je.</figcaption></figure>
+</div>
+<figure><img src="dizajn-soundboard-20261022-0934/ux-stol-1366-posunuty.png" alt="Ten istý stôl 1366 × 768 posunutý nižšie, na panely hráčov. Hlavička webu a os kola ostávajú pripnuté hore." loading="lazy"><figcaption>Po posunutí ostáva hlavička webu aj os kola pripnutá hore, takže tlačidlo soundboardu v hlavičke je vidno pri každej polohe stránky. Panel súpera s avatarom „Štamgast“ sa odroluje preč, preto indikátor súperovej hlášky nesmie byť len pri ňom.</figcaption></figure>
+</section>
+
+<section aria-labelledby="signaly">
+<h2 id="signaly">2. Signály</h2>
+<ul>
+<li><strong>Spätná väzba na živom webe:</strong> z 19 názorov (22. 10. 2026) sa ani jeden netýka zvuku ani Melichara. Hlášky sú nasadené od 21. 10., takže dáta zatiaľ nie sú. Toto je predpoklad, nie dôkaz.</li>
+<li><strong>Predošlý UX audit stola</strong> (<a href="dizajn-hra-20261021-1240-ux.html">dizajn-hra-20261021-1240-ux</a>, U9): „Hra nedá vedieť, že som na ťahu… nie je ani zvuk.“ Zvukový kanál dnes nenesie žiadnu hernú informáciu. Ak raz pribudne zvuk „si na ťahu“, nesmie sa pliesť s hláškami. Preto hlášky ostanú hlasom Melichara a herné zvuky budú iné.</li>
+<li><strong>Obsah hlášok je vulgárny.</strong> Profil to sám priznáva: „nie práve najslušnejšiu“ (<code>Ucet.tsx:528</code>). V partii dvoch ľudí ich súper dostane bez toho, aby si ich zapol. Odtiaľ požiadavka, aby sa dali stlmiť priamo pri stole (Nielsen: kontrola a sloboda).</li>
+<li><strong>Prehliadač nepustí zvuk pred prvou interakciou.</strong> Hudba to obchádza ďalším pokusom po prvom kliku (<code>Hudba.tsx:84–90</code>). Súperova hláška môže prísť skôr, než hráč klikol, a zaznie len indikátor.</li>
+</ul>
+</section>
+
+<section aria-labelledby="audit">
+<h2 id="audit">3. Audit a riziká</h2>
+<p>Soundboard je nová funkcia, preto ide o riziká návrhu, ktoré vyplývajú z dnešného kódu a zo zadania. Závažnosť je podľa Nielsena 0–4.</p>
+<div class="filtre" role="group" aria-label="Filtrovať podľa závažnosti">
+<button type="button" data-f="vsetko" aria-pressed="true">všetko</button>
+<button type="button" data-f="3" aria-pressed="false">3 a viac</button>
+<button type="button" data-f="2" aria-pressed="false">2</button>
+<button type="button" data-f="1" aria-pressed="false">1</button>
+</div>
+<div class="tab-obal">
+<table id="audit-tab">
+<thead><tr><th scope="col">#</th><th scope="col">Riziko / problém</th><th scope="col">Heuristika</th><th scope="col">Z.</th><th scope="col">Dôkaz</th></tr></thead>
+<tbody>
+<tr data-z="3"><td>U1</td><td>Keby soundboard použil existujúcu vrstvu (ako Šenok, Lokality, Log), zakryl by celý stôl a zablokoval ťah. Reakcia na súpera by stála ťah navyše: otvoriť, pustiť, zavrieť.</td><td>Efektívnosť, kontrola</td><td><span class="z z3">3</span></td><td><code>Vrstva.tsx:40–41</code> (<code>role="dialog" aria-modal="true"</code>, celá obrazovka)</td></tr>
+<tr data-z="3"><td>U2</td><td>Súper môže hlášky púšťať bez prestávky a druhý hráč ich nemá ako stlmiť bez odchodu od stola. Limit len v klientovi obíde upravený klient.</td><td>Kontrola a sloboda, prevencia chýb</td><td><span class="z z3">3</span></td><td>Hlasitosť je len v profile (<code>Ucet.tsx:531</code>); CLAUDE.md pravidlo 3: klient posiela zámery, server rozhoduje</td></tr>
+<tr data-z="3"><td>U3</td><td>Pri hlasitosti 0 dnes „Melichar mlčí“ a komponent sa vôbec nezapne. Ak to tak ostane, hráč s nulou klikne, nič nepočuje a nevie, či hlášku súper počul.</td><td>Viditeľnosť stavu</td><td><span class="z z3">3</span></td><td><code>Melichar.tsx:72</code> (<code>zapnuty = aktivny &amp;&amp; hlasitost &gt; 0</code>)</td></tr>
+<tr data-z="2"><td>U4</td><td>Názov hlášky sa pri prehrávaní nezobrazí (zadanie). Bez iného signálu hráč nevie, kto hovorí: súper, automatický Melichar, alebo jeho vlastná hláška s oneskorením. Nepočujúci a hráč so stlmeným zvukom nevedia o hláške vôbec.</td><td>Viditeľnosť stavu, WCAG 1.2.1</td><td><span class="z z2">2</span></td><td>Zadanie; dnešný titulok s názvom <code>Melichar.tsx:149–156</code></td></tr>
+<tr data-z="2"><td>U5</td><td>Pauza 2 s je neviditeľná. Klik počas nej „nič neurobí“ a pôsobí ako chyba.</td><td>Viditeľnosť stavu, pomoc pri chybách</td><td><span class="z z2">2</span></td><td>Zadanie (stavy pripravené, hrá moja, odpočet 2 s, hrá súperova)</td></tr>
+<tr data-z="2"><td>U6</td><td>V partii s botom by hovorili dva zdroje naraz, automatický Melichar a soundboard, a len jeden z nich ukazuje názov.</td><td>Konzistencia</td><td><span class="z z2">2</span></td><td><code>Hra.tsx:158</code>, <code>Melichar.tsx:120–144</code></td></tr>
+<tr data-z="2"><td>U7</td><td>Pauzu treba odpočítať aj vtedy, keď sa zvuk neprehrá (hlasitosť 0, chyba načítania, zablokovaný autoplay). Prehrávač vtedy nevydá udalosť <code>ended</code> v správny čas.</td><td>Prevencia chýb</td><td><span class="z z2">2</span></td><td><code>Melichar.tsx:102–103</code> (koniec sa berie z <code>ended</code>/<code>error</code>); <code>zoznam.json</code> nemá dĺžku</td></tr>
+<tr data-z="2"><td>U8</td><td>Ak sa v mojom paneli zvýrazní hláška, ktorú práve púšťa súper, prezradí to jej názov, a to zadanie zakazuje.</td><td>Konzistencia so zadaním</td><td><span class="z z2">2</span></td><td>Zadanie: „Názov hlášky sa pri prehrávaní nezobrazuje.“</td></tr>
+<tr data-z="2"><td>U9</td><td>Skratky jedným klávesom (M, číslice) by bez obmedzenia rušili písanie a čítačky.</td><td>WCAG 2.1.4</td><td><span class="z z2">2</span></td><td>Hra dnes nemá skratky okrem Esc (<code>HernaPlocha.tsx:442</code>, <code>:902</code>, <code>Vrstva.tsx:25</code>)</td></tr>
+<tr data-z="1"><td>U10</td><td>Názvy v <code>zoznam.json</code> sú bez diakritiky („Uz mam v pici nervy zas“, „Cil isla…“) a tak by sa aj zobrazili v soundboarde.</td><td>Zhoda so svetom</td><td><span class="z z1">1</span></td><td><code>data/melichar/zoznam.json</code></td></tr>
+<tr data-z="1"><td>U11</td><td>Odpojenému súperovi hláška nepríde a odosielateľ o tom nevie.</td><td>Viditeľnosť stavu</td><td><span class="z z1">1</span></td><td>Stav „○ … odpojený“ je v hlavičke (<code>HernaPlocha.tsx:3338–3340</code>)</td></tr>
+<tr data-z="1"><td>U12</td><td>Text v profile „V partii proti počítaču občas po tvojom ťahu utrúsi hlášku“ prestane platiť.</td><td>Zhoda so svetom</td><td><span class="z z1">1</span></td><td><code>Ucet.tsx:528</code></td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section aria-labelledby="umiestnenie">
+<h2 id="umiestnenie">4. Umiestnenie: varianty A, B, C</h2>
+<svg viewBox="0 0 683 384" role="img" aria-labelledby="sv1t sv1d">
+<title id="sv1t">Schéma stola 1366 × 768 s tromi miestami pre soundboard</title>
+<desc id="sv1d">Hlavička webu hore, pod ňou os kola, scorecardy, Starší a dole ruka. Variant A je štvrté tlačidlo v osi kola vpravo. Variant B je tlačidlo v hlavičke vľavo od mena súpera a panel padá pod ním doprava. Variant C sú štyri ikony skupín v hlavičke vedľa tlačidla B. Dolná zóna s rukou je prečiarknutá ako nevhodná.</desc>
+<rect class="blok" x="0" y="0" width="683" height="32"/>
+<text x="10" y="20">NA EX!  Pravidlá  Karty  Hrať  Rebríček  Spätná väzba  Vývoj</text>
+<rect class="aktiv" x="380" y="7" width="70" height="18" rx="4"/><text x="388" y="20">Melichar</text>
+<text x="482" y="20" class="sl">● Štamgast  vzdať sa  odísť</text>
+<rect class="pevne" x="330" y="7" width="44" height="18" rx="4"/><text x="333" y="20" font-size="10">C: 4×</text>
+<rect class="blok" x="10" y="40" width="663" height="22"/>
+<text x="20" y="55" class="sl">os kola: Kolo 1 · Voľba cieľa · Draft · Zhromaždenie · Pitka · Bitka</text>
+<rect class="okno" x="580" y="43" width="88" height="16"/><text x="584" y="55" font-size="10">A: + Melichar</text>
+<rect class="blok" x="10" y="70" width="663" height="70"/><text x="20" y="108" class="sl">scorecardy</text>
+<rect class="blok" x="10" y="146" width="663" height="150"/><text x="20" y="220" class="sl">Starší (8 kariet)</text>
+<rect x="268" y="34" width="210" height="232" rx="8" fill="var(--pl)" stroke="var(--ja)" stroke-width="2"/>
+<text x="280" y="54">B: panel Majster Melichar</text>
+<text x="280" y="74" class="sl">Údiv · Na súpera</text>
+<text x="280" y="92" class="sl">Smola · Pohoda</text>
+<text x="280" y="112" class="sl">14 tlačidiel v 2 stĺpcoch</text>
+<text x="280" y="250" class="sl">hlasitosť ▬▬▬○──</text>
+<rect class="blok" x="10" y="302" width="663" height="80"/>
+<text x="230" y="345" class="sl">stôl, pás pokynu, ruka (5–8 kariet)</text>
+<line x1="10" y1="302" x2="673" y2="382" stroke="var(--te)" stroke-width="1.5"/>
+<line x1="673" y1="302" x2="10" y2="382" stroke="var(--te)" stroke-width="1.5"/>
+</svg>
+<p class="pozn">Schéma je v polovičnej mierke 1366 × 768. Panel B (≈ 420 × 460 px skutočnej veľkosti) prekryje časť scorecardov a 2–3 staršie. Ruku, stôl ani pás pokynu neprekryje.</p>
+
+<div class="tab-obal">
+<table>
+<thead><tr><th scope="col">Variant</th><th scope="col">Kde</th><th scope="col">Za</th><th scope="col">Proti</th></tr></thead>
+<tbody>
+<tr><td><strong>B</strong> <span class="stitok odp">odporúčam</span></td><td>Hlavička webu, slot partie, vľavo od „● Štamgast“. Klik otvorí nemodálny panel zarovnaný doprava pod tlačidlom.</td><td>Je to rozhovor so súperom, preto patrí k jeho menu. Michal 21. 10. dal ovládanie partie do hlavičky (<code>HernaPlocha.tsx:3309</code>). Hlavička je pripnutá a ≈ 300 px voľná na oboch šírkach. Indikátor súperovej hlášky je tam, kam hráč pozerá pri otázke „kto to bol“.</td><td>K stolu je ďaleko, ak sa hýbe myšou. Riešia to klávesa M a to, že reakcia nie je časovo kritická.</td></tr>
+<tr><td><strong>A</strong></td><td>Štvrté tlačidlo v osi kola za Šenok, Lokality, Log.</td><td>Hráč tam už otvára panely. Je to bližšie k stolu.</td><td>Ostatné tlačidlá v osi kola otvárajú modálnu vrstvu cez celý stôl, soundboard by sa správal inak (U1). Os kola je na 1366 px plná. Miešala by sa herná informácia so zábavou.</td></tr>
+<tr><td><strong>C</strong> (doplnok k B)</td><td>V hlavičke navyše 4 ikony skupín: klik pustí náhodnú hlášku zo skupiny, šípka otvorí panel.</td><td>Reakcia na 1 klik namiesto 2, voľba len zo 4 (Hick).</td><td>Hráč nevyberie konkrétnu hlášku, a zadanie hovorí „podľa výberu“. Ikony musia byť zrozumiteľné bez textu. Viac v N5.</td></tr>
+<tr><td>Zamietnuté: dole pri ruke</td><td>Ľavý dolný roh pri Fajčiť/Ruka</td><td>Je to blízko k akcii.</td><td>Na 1366 × 768 tam miesto nie je (snímka vyššie). Hrozí omylom kliknutá hláška namiesto ťahu (Fitts naopak). Pri ťahaní kariet by panel prekážal.</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section aria-labelledby="skupiny">
+<h2 id="skupiny">5. Skupiny hlášok</h2>
+<p>Skupina má dve mená: krátky <strong>názov podľa nálady</strong> (do legendy) a <strong>situáciu</strong> (malým písmom). Hráč nehľadá slovo „rezignácia“, ale „súper mi práve dal NA EX“. Význam hlášok som odhadol len z textu, nahrávky som nepočul. Michal to overí (otázka O4).</p>
+<div class="tab-obal">
+<table>
+<thead><tr><th scope="col">Skupina</th><th scope="col">Situácia (podtitul)</th><th scope="col">Hlášky (zobrazený text s diakritikou)</th><th scope="col">Kláves</th></tr></thead>
+<tbody>
+<tr><td><strong>Údiv</strong></td><td>keď súper zahrá niečo nečakané</td><td>No toto je marha · No teda, toto som nevideu · Boha</td><td>1 2 3</td></tr>
+<tr><td><strong>Na súpera</strong></td><td>keď ťa súper naštve</td><td>Ty svina · Bzdocha · Jebem ja tvojho boha · Ale na kurvy to má · To nebude mať rozum, hinta cigánska banda, nikdy</td><td>4 5 6 7 8</td></tr>
+<tr><td><strong>Smola</strong></td><td>keď ti to nejde</td><td>Ach, boha · To zas bude vyzerať · Čil išla, keď najviac jebe · Už mám v piči nervy zas</td><td>9 0 Q W</td></tr>
+<tr><td><strong>Pohoda</strong></td><td>keď ti to vyšlo</td><td>Toto je ŽIVOT · Keksy a kokotiny</td><td>E R</td></tr>
+</tbody>
+</table>
+</div>
+<p>Poradie skupín zodpovedá tomu, ako často pravdepodobne prídu na rad. Reakcia na súpera je častejšia ako radosť z vlastného ťahu (je to odhad, overí ho počet pustení v playtestoch). „Nevideu“ a „čil“ ostávajú nárečovo, tak ako znejú v nahrávke.</p>
+<p><strong>Dáta, nie kód:</strong> do <code>data/melichar/zoznam.json</code> pridať ku každej hláške <code>skupina</code>, <code>poradie</code> a <code>trvanieMs</code>. Import (<code>npm run melichar</code>) by mal dĺžku vypočítať sám. Skupiny tak upraví Michal bez programátora.</p>
+</section>
+
+<section aria-labelledby="stavy">
+<h2 id="stavy">6. Stavy a pravidlo 2 s</h2>
+<svg viewBox="0 0 680 230" role="img" aria-labelledby="sv2t sv2d">
+<title id="sv2t">Stavový diagram soundboardu</title>
+<desc id="sv2d">Moja oblasť má tri stavy v kruhu: pripravené, po kliku hrá moja, po skončení odpočet 2 s, potom znova pripravené. Oddelená súbežná oblasť pre súpera: ticho a hrá súperova. Súperova oblasť nemá vplyv na moje tlačidlá.</desc>
+<rect class="aktiv" x="20" y="40" width="140" height="44" rx="10"/><text x="45" y="67">pripravené</text>
+<rect class="blok" x="260" y="40" width="140" height="44" rx="10"/><text x="285" y="67">hrá moja</text>
+<rect class="blok" x="500" y="40" width="160" height="44" rx="10"/><text x="520" y="67">odpočet 2 s</text>
+<path class="ciara" d="M160 56 H258" marker-end="url(#sip)"/><text x="170" y="48" class="sl">klik / kláves</text>
+<path class="ciara" d="M400 56 H498" marker-end="url(#sip)"/><text x="406" y="48" class="sl">koniec (trvanieMs)</text>
+<path class="ciara" d="M580 84 V120 H90 V86" marker-end="url(#sip)"/><text x="300" y="114" class="sl">po 2 s</text>
+<text x="20" y="20" class="sl">moja oblasť: tlačidlá hlášok sú aktívne len v stave pripravené</text>
+<rect class="pevne" x="20" y="160" width="140" height="44" rx="10"/><text x="58" y="187">súper ticho</text>
+<rect class="pevne" x="260" y="160" width="160" height="44" rx="10"/><text x="285" y="187">hrá súperova</text>
+<path class="ciara" d="M160 176 H258" marker-end="url(#sip)"/><text x="168" y="168" class="sl">správa zo servera</text>
+<path class="ciara" d="M340 204 V218 H90 V206" marker-end="url(#sip)"/>
+<text x="440" y="180" class="sl">súbežná oblasť: na moje tlačidlá</text>
+<text x="440" y="196" class="sl">nemá vplyv (smiem pustiť)</text>
+<defs><marker id="sip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--sl)"/></marker></defs>
+</svg>
+<div class="tab-obal">
+<table>
+<thead><tr><th scope="col">Stav</th><th scope="col">Tlačidlá hlášok</th><th scope="col">Tlačidlo „Melichar“ v hlavičke</th><th scope="col">Text v paneli</th><th scope="col">Čítačka</th></tr></thead>
+<tbody>
+<tr><td><strong>pripravené</strong></td><td>aktívne</td><td>bez značky</td><td>(nič, podtitul „počuje ťa aj súper“)</td><td>nič</td></tr>
+<tr><td><strong>hrá moja</strong></td><td>všetky <code>aria-disabled="true"</code> (nie <code>disabled</code>, fokus ostane na mieste), pustená je zvýraznená a má vlny</td><td>animované vlny</td><td>„Melichar hovorí za teba…“</td><td>nič (hráč klikol sám)</td></tr>
+<tr><td><strong>odpočet 2 s</strong></td><td><code>aria-disabled</code>, nad tlačidlami pás, ktorý sa 2 s míňa</td><td>prstenec, ktorý sa vyprázdňuje</td><td>„Chvíľu ticho…“</td><td>nič (2 s sú na hlásenie krátke)</td></tr>
+<tr><td><strong>hrá súperova</strong> (súbežne)</td><td><strong>aktívne</strong>, nič sa v nich nezvýrazní (U8)</td><td>bodka a vlny pri „● Štamgast“</td><td>v hlavičke pri mene: „púšťa Melichara“</td><td><code>aria-live="polite"</code>: „Štamgast pustil hlášku Melichara.“</td></tr>
+</tbody>
+</table>
+</div>
+<h3>Pravidlá</h3>
+<ul>
+<li><strong>Klik v stave „hrá moja“ alebo „odpočet“</strong> nič nepustí. Bez dialógu a bez chybovej hlášky, len pás odpočtu sa krátko zatrasie (pri <code>prefers-reduced-motion</code> sa len zvýrazní), aby bolo vidno, že klik prišiel.</li>
+<li><strong>Pauza 2 s sa ráta od konca mojej hlášky podľa <code>trvanieMs</code></strong>, nie podľa prehrávača (U7). Cyklus je rovnaký pri hlasitosti 0, pri chybe aj pri zablokovanom autoplayi, a súper ho dostane v rovnakom tempe.</li>
+<li><strong>Server rozhoduje.</strong> Klient pošle zámer <code>{type:"hlaska", id}</code>. Server overí, že <code>teraz ≥ koniec poslednej hlášky hráča + 2 s</code>, a rozošle <code>{type:"hlaska", id, seat}</code> obom. Panel sa zamkne hneď po kliku (optimisticky), zvuk zaznie po ozvene zo servera. Ak ozvena nepríde do 3 s, panel sa odomkne s textom „Melichar sa nedovolal. Skús znova.“ Toto je mimo <code>GameState</code>, nie je to ťah a nepatrí do logu partie.</li>
+<li><strong>Moja hláška počas súperovej:</strong> odporúčam, aby hrali cez seba, lebo je to krčma (otázka O1). Hudba je stíšená, kým hrá aspoň jedna.</li>
+<li><strong>Názov sa pri prehrávaní nezobrazí nikde</strong>: ani titulok, ani v hlavičke, ani zvýraznenie súperovej hlášky v paneli. Moja pustená hláška je v paneli zvýraznená, lebo ju hráč práve vybral (je to výber, nie titulok).</li>
+</ul>
+</section>
+
+<section aria-labelledby="navrhy">
+<h2 id="navrhy">7. Návrhy</h2>
+
+<article class="navrh" aria-labelledby="n1">
+<h3 id="n1">N1 — Panel „Majster Melichar“ v hlavičke pri súperovi <span class="stitok stredna">stredná</span> <span class="stitok odp">jadro</span></h3>
+<dl>
+<dt>Rieši</dt><dd>U1, U4, U8, U11; úlohy 1 a 2</dd>
+<dt>Otvorí</dt><dd>klik na <em>Melichar</em> alebo kláves <kbd>M</kbd>. Fokus ide na naposledy pustenú hlášku, pri prvom otvorení na prvú.</dd>
+<dt>Zatvorí</dt><dd>znova <em>Melichar</em> alebo <kbd>M</kbd>, <kbd>Esc</kbd> (fokus sa vráti na tlačidlo), ✕, klik mimo panelu. <strong>Pustenie hlášky panel nezatvorí</strong>, hráč môže hneď pokračovať v ťahu. Počas ťahania karty sa panel skryje ako vrstvy.</dd>
+<dt>Neprekáža ťahu</dt><dd>Panel je nemodálny: bez stmavenia, bez pasce fokusu a bez <code>aria-modal</code>. Leží len nad scorecardmi a Staršími a nikdy nie nad rukou, stolom ani pásom pokynu. Výška je obmedzená (≤ 460 px), takže na 1366 × 768 končí nad Zhromaždením.</dd>
+<dt>Dotknuté súbory</dt><dd><code>hra/HernaPlocha.tsx</code> (slot hlavičky ≈ 3335), nový <code>hra/Soundboard.tsx</code>, <code>hra/Melichar.tsx</code> (zdieľané prehrávanie), <code>hra/hra.css</code>, <code>hra/useHra.ts</code> (správa <code>hlaska</code>), <code>packages/server/src/server.ts</code> (<code>ClientMsg</code> ≈ 136), <code>data/melichar/zoznam.json</code></dd>
+</dl>
+<div class="tok">
+<div class="pred"><h4>Dnes (partia dvoch ľudí)</h4><ol><li>Hráč chce podpichnúť súpera.</li><li>Nemá ako. Melichar je len pri botovi a hlášku nevyberá hráč.</li></ol></div>
+<div class="po"><h4>Po N1</h4><ol><li><kbd>M</kbd> alebo klik na <em>Melichar</em>.</li><li>Klik na „Ty svina“ (alebo <kbd>4</kbd>). Zaznie u oboch.</li><li>Pokračuje v ťahu, panel môže ostať otvorený.</li></ol></div>
+</div>
+<p class="pozn">Drôtený model: hlavička 1366 px, panel otvorený, stav pripravené.</p>
+<div class="wf" aria-label="Drôtený model panelu v hlavičke">
+<div class="r"><span class="b tl">NA EX! · Pravidlá · Karty · Hrať · Rebríček · Spätná väzba · Vývoj</span><span class="b rast"></span><span class="tlac hl" aria-hidden="true">🔊 Melichar ▾</span><span class="b">● Štamgast</span><span class="tlac">vzdať sa</span><span class="b tl">odísť</span><span class="b">Stavka Test</span></div>
+<div class="pop">
+<div class="r"><strong>Majster Melichar</strong><small>počuje ťa aj súper</small><span class="b rast" style="background:none"></span><span class="tlac">✕</span></div>
+<fieldset class="sk"><legend>Údiv <small>· keď súper zahrá niečo nečakané</small></legend>
+<div class="g"><span class="tlac"><span class="kc">1</span>No toto je marha</span><span class="tlac"><span class="kc">2</span>No teda, toto som nevideu</span><span class="tlac"><span class="kc">3</span>Boha</span></div></fieldset>
+<fieldset class="sk"><legend>Na súpera <small>· keď ťa súper naštve</small></legend>
+<div class="g"><span class="tlac"><span class="kc">4</span>Ty svina</span><span class="tlac"><span class="kc">5</span>Bzdocha</span><span class="tlac"><span class="kc">6</span>Jebem ja tvojho boha</span><span class="tlac"><span class="kc">7</span>Ale na kurvy to má</span><span class="tlac" style="grid-column:1/-1"><span class="kc">8</span>To nebude mať rozum, hinta cigánska banda, nikdy</span></div></fieldset>
+<fieldset class="sk"><legend>Smola <small>· keď ti to nejde</small></legend>
+<div class="g"><span class="tlac"><span class="kc">9</span>Ach, boha</span><span class="tlac"><span class="kc">0</span>To zas bude vyzerať</span><span class="tlac"><span class="kc">Q</span>Čil išla, keď najviac jebe</span><span class="tlac"><span class="kc">W</span>Už mám v piči nervy zas</span></div></fieldset>
+<fieldset class="sk"><legend>Pohoda <small>· keď ti to vyšlo</small></legend>
+<div class="g"><span class="tlac"><span class="kc">E</span>Toto je ŽIVOT</span><span class="tlac"><span class="kc">R</span>Keksy a kokotiny</span></div></fieldset>
+<div class="r" style="margin-top:8px"><small>Hlasitosť</small><span class="b rast"><span class="pas" style="margin:0"><i style="width:70%"></i></span></span><small>70 %</small><span class="tlac">🔇</span></div>
+</div>
+</div>
+<p><strong>Mikrocopy</strong></p>
+<p class="mikro">Tlačidlo: „Melichar“ · title „Hlášky majstra Melichara (M)“</p>
+<p class="mikro">Hlavička panelu: „Majster Melichar“ · „počuje ťa aj súper“ (v partii s botom: „počuješ len ty“)</p>
+<p class="mikro">Súper odpojený: „Štamgast je odpojený, hlášku počuješ len ty.“</p>
+<dl>
+<dt>Prístupnosť</dt><dd>Tlačidlo má <code>aria-expanded</code> a <code>aria-controls</code>. Panel je <code>role="group"</code> s <code>aria-label="Hlášky majstra Melichara"</code>, skupiny sú <code>&lt;fieldset&gt;&lt;legend&gt;</code>. Tlačidlá sú vysoké ≥ 32 px (WCAG 2.5.8 žiada ≥ 24) a stav nie je daný len farbou (vlny, text).</dd>
+<dt>Ako overiť</dt><dd>V partii dvoch ľudí sledovať čas od začiatku partie do prvej hlášky bez návodu (cieľ: do 2 minút) a počet omylom zatvorených alebo prekážajúcich panelov. Otázka: „Prekážal ti panel Melichara pri ťahu? Kde si ho hľadal?“</dd>
+</dl>
+</article>
+
+<article class="navrh" aria-labelledby="n2">
+<h3 id="n2">N2 — Viditeľné stavy a pauza 2 s overená serverom <span class="stitok stredna">stredná</span> <span class="stitok odp">jadro</span></h3>
+<dl>
+<dt>Rieši</dt><dd>U2 (časť o serveri), U5, U7; úloha 3</dd>
+<dt>Čo</dt><dd>Stavový automat podľa časti 6. Dĺžka hlášky je v dátach (<code>trvanieMs</code>), server vynucuje 2 s, klient zamyká optimisticky a pri 3 s bez odpovede sa odomkne.</dd>
+<dt>Dotknuté súbory</dt><dd><code>packages/server/src/server.ts</code>, import hlášok (<code>npm run melichar</code>), <code>hra/Soundboard.tsx</code>, <code>hra/useHra.ts</code>, test servera na limit</dd>
+</dl>
+<div class="tok">
+<div class="pred"><h4>Bez N2</h4><ol><li>Hráč klikne druhýkrát počas pauzy.</li><li>Nič sa nestane a nevie prečo, tak klikne znova.</li><li>Upravený klient pošle 10 hlášok za sekundu.</li></ol></div>
+<div class="po"><h4>S N2</h4><ol><li>Po kliku sú tlačidlá stlmené, pustená hláška má vlny a nad nimi je „Melichar hovorí za teba…“.</li><li>Po dohraní pás 2 s „Chvíľu ticho…“.</li><li>Pás dobehne, tlačidlá ožijú. Server pustí ďalšiu najskôr po 2 s.</li></ol></div>
+</div>
+<p class="pozn">Drôtený model: tri stavy hornej časti panelu.</p>
+<div class="wf" aria-label="Drôtený model stavov">
+<div class="r"><span class="b" style="min-width:200px"><strong>pripravené</strong><br><small>počuje ťa aj súper</small></span>
+<span class="b" style="min-width:200px"><strong>hrá moja</strong><br><small>Melichar hovorí za teba…</small><br><span class="tlac hl">〰 Ty svina</span> <span class="tlac off">Bzdocha</span></span>
+<span class="b" style="min-width:200px"><strong>odpočet 2 s</strong><br><small>Chvíľu ticho…</small><span class="pas"><i style="width:45%"></i></span><span class="tlac off">Ty svina</span> <span class="tlac off">Bzdocha</span></span></div>
+<div class="r"><span class="b tl">hlavička pri súperovej hláške:</span><span class="tlac">🔊 Melichar •</span><span class="b nov">● Štamgast 〰 púšťa Melichara</span><span class="tlac">vzdať sa</span></div>
+</div>
+<dl>
+<dt>Prístupnosť</dt><dd>Stavy sú v <code>aria-disabled</code> a v texte panelu. Odpočet sa čítačkou nehlási. Animácie (vlny, pás) pri <code>prefers-reduced-motion</code> nahradí statická ikona a text.</dd>
+<dt>Ako overiť</dt><dd>AI playtester (nepočuje zvuk) pošle 5 zámerov <code>hlaska</code> za sebou: server smie pustiť len prvý a ďalší až po <code>trvanieMs + 2 s</code>. Ľudia: „Vedel si vždy, či môžeš pustiť ďalšiu hlášku?“</dd>
+</dl>
+</article>
+
+<article class="navrh" aria-labelledby="n3">
+<h3 id="n3">N3 — Hlasitosť priamo v paneli a čestné stlmenie <span class="stitok mala">malá</span> <span class="stitok odp">rýchla výhra</span></h3>
+<dl>
+<dt>Rieši</dt><dd>U2 (kontrola), U3, U4, U12; úloha 4</dd>
+<dt>Čo</dt><dd>
+<ul>
+<li>V päte panelu je posuvník <em>Hlasitosť</em>, ten istý ako v profile a ukladá sa tam (rovnaký mechanizmus „ukladá sa samo“). Vedľa neho je tlačidlo 🔇 / 🔊, ktoré prepína 0 a poslednú nenulovú hodnotu.</li>
+<li>Pri hlasitosti 0 tlačidlo v hlavičke ukáže „Melichar 🔇“. Panel funguje ďalej (súper počuje) a hore je riadok „U teba je Melichar stlmený: súper hlášky počuje, ty nie.“ s tlačidlom <em>Zapnúť zvuk</em>.</li>
+<li>Súperova hláška pri stlmení: indikátor v hlavičke sa ukáže aj tak, s dodatkom „(stlmené)“. Súper sa nedozvie, že som Melichara stlmil.</li>
+<li>Zablokovaný autoplay (hráč ešte neklikol): indikátor sa ukáže, zvuk zaznie až od ďalšej hlášky po kliku, rovnako ako hudba.</li>
+<li>Profil: text panelu zmeniť na „Hlášky si púšťaš sám tlačidlom Melichar pri stole a počuje ich aj súper. V partii s počítačom sa Melichar občas ozve aj sám.“</li>
+</ul></dd>
+<dt>Dotknuté súbory</dt><dd><code>hra/Soundboard.tsx</code>, <code>hra/Melichar.tsx:72</code> (hlasitosť 0 už nesmie znamenať „komponent vypnutý“), <code>stranky/Ucet.tsx:526–560</code>, <code>lib/ucet.tsx</code></dd>
+</dl>
+<div class="tok">
+<div class="pred"><h4>Dnes: stlmiť</h4><ol><li>odísť</li><li>Profil, posuvník</li><li>Hrať, návrat do partie</li></ol></div>
+<div class="po"><h4>Po N3: stlmiť</h4><ol><li><kbd>M</kbd>, potom 🔇 (alebo posuvník)</li></ol></div>
+</div>
+<p class="mikro">„U teba je Melichar stlmený: súper hlášky počuje, ty nie.“ · [Zapnúť zvuk]</p>
+<dl>
+<dt>Prístupnosť</dt><dd>Posuvník má <code>aria-valuetext</code> „vypnutý / 70 %“ ako v profile. Tlačidlo 🔇 má <code>aria-pressed</code> a text „Stlmiť Melichara“.</dd>
+<dt>Ako overiť</dt><dd>Koľko hráčov v partii dvoch ľudí Melichara stlmí a v ktorom kole. Ak viac ako tretina do 2. kola, hlášky otravujú a treba prísnejší limit (otázka O7).</dd>
+</dl>
+</article>
+
+<article class="navrh" aria-labelledby="n4">
+<h3 id="n4">N4 — Klávesnica a čítačka <span class="stitok mala">malá</span></h3>
+<dl>
+<dt>Rieši</dt><dd>U9; efektívnosť pre skúsených</dd>
+<dt>Čo</dt><dd>
+<ul>
+<li><kbd>M</kbd> otvorí alebo zatvorí panel. Nefunguje v <code>input</code>, <code>textarea</code> ani pri stlačenom Ctrl, Alt alebo Meta. V profile sa dá vypnúť pod Melicharom („Skratka M“), čo vyžaduje WCAG 2.1.4.</li>
+<li>V paneli sa šípkami presúva medzi hláškami (roving tabindex, Tab skočí z panelu von) a Enter alebo Medzera hlášku pustí.</li>
+<li>Číslice <kbd>1</kbd>–<kbd>9</kbd>, <kbd>0</kbd> a <kbd>Q</kbd> <kbd>W</kbd> <kbd>E</kbd> <kbd>R</kbd> fungujú <strong>len keď je fokus v paneli</strong>, takže nikdy nepustia hlášku omylom počas ťahu. Na tlačidle je keycap (vidno ho, netreba ho pamätať).</li>
+<li><code>aria-live="polite"</code> len pre súperovu hlášku. Vlastná sa nehlási, lebo hráč ju pustil sám.</li>
+</ul></dd>
+<dt>Dotknuté súbory</dt><dd><code>hra/Soundboard.tsx</code>, <code>stranky/Ucet.tsx</code>, <code>lib/ucet.tsx</code> (ak sa skratka ukladá)</dd>
+<dt>Ako overiť</dt><dd>Prejsť celý tok len klávesnicou: M, šípky, Enter, Esc, a pri tom kontrolovať poradie fokusu a návrat na tlačidlo. Čítačka (NVDA) musí pri súperovej hláške ohlásiť presne jednu vetu.</dd>
+</dl>
+</article>
+
+<article class="navrh" aria-labelledby="n5">
+<h3 id="n5">N5 — Odvážnejší smer: rýchle reakcie v hlavičke <span class="stitok stredna">stredná</span></h3>
+<dl>
+<dt>Rieši</dt><dd>Tempo: reakcia na 1 klik. Menej volieb naraz (4 namiesto 14).</dd>
+<dt>Čo</dt><dd>Vedľa tlačidla <em>Melichar</em> sú stále viditeľné 4 malé ikony skupín (údiv, na súpera, smola, pohoda). Klik pustí náhodnú hlášku zo skupiny, ktorá sa v tejto partii ešte neopakovala. Šípka ▾ otvorí plný panel N1 na výber konkrétnej. Pri hover a fokuse má ikona popis „Údiv: náhodná hláška“. Stavy z N2 platia aj pre ikony.</dd>
+<dt>Riziko</dt><dd>Zadanie hovorí „podľa výberu“ a náhoda zo skupiny je výber len napoly. Na 1366 px zaberie ≈ 140 px hlavičky. Ikony bez textu treba naučiť.</dd>
+<dt>Dotknuté súbory</dt><dd>ako N1, plus ikony skupín</dd>
+</dl>
+<div class="wf" aria-label="Drôtený model rýchlych reakcií">
+<div class="r"><span class="b tl">… Vývoj</span><span class="b rast"></span><span class="tlac" title="Údiv">😮</span><span class="tlac" title="Na súpera">🤬</span><span class="tlac" title="Smola">😩</span><span class="tlac" title="Pohoda">🍺</span><span class="tlac hl">Melichar ▾</span><span class="b">● Štamgast</span><span class="tlac">vzdať sa</span></div>
+<small>Ikony sú len zástupné, vzhľad rieši UI.</small>
+</div>
+<dl>
+<dt>Ako overiť</dt><dd>Spustiť až po N1 a N2. Ak playtest ukáže, že hráči panel otvárajú opakovane a púšťajú hlášky „hocijaké“, N5 skráti reakciu. Ak si vyberajú konkrétne hlášky, N5 netreba.</dd>
+</dl>
+</article>
+</section>
+
+<section aria-labelledby="poradie">
+<h2 id="poradie">8. Odporúčané poradie</h2>
+<ol>
+<li><strong>N1 + N2 + N3 naraz</strong> ako jedna dodávka. Soundboard bez stavov a bez stlmenia pri stole by v partii dvoch ľudí viac otravoval, ako bavil. N3 je najlacnejšia časť a rieši závažnosť 3 (U3).</li>
+<li><strong>N4</strong> v tom istom PR: je malá a skratka M je hlavná cesta pre hráča, ktorý drží myš pri ruke.</li>
+<li><strong>N5</strong> až po playteste, podľa toho, či hráči vyberajú konkrétne hlášky.</li>
+</ol>
+<p><strong>Michal rozhodne:</strong> O1 (cez seba áno/nie), O2 (automatický Melichar pri botovi) a O4 (skupiny) pred implementáciou. Ostatné môžu ostať na predvolenom riešení z tohto návrhu.</p>
+</section>
+
+<section aria-labelledby="otazky">
+<h2 id="otazky">9. Otázky</h2>
+<h3>Na Michala</h3>
+<ol>
+<li><strong>O1</strong> Keď súperova hláška ešte hrá a ja pustím svoju, majú hrať cez seba (odporúčam), alebo moja súperovu preruší?</li>
+<li><strong>O2</strong> Automatický Melichar v partii s botom: ostáva? Ak áno, navrhujem, aby mlčal, kým hrá akákoľvek hláška a 4 s po nej, a aby <strong>tiež prestal ukazovať titulok s názvom</strong> kvôli konzistencii so soundboardom (<code>Melichar.tsx:149</code>). Súhlasíš?</li>
+<li><strong>O3</strong> Má bot ako súper púšťať hlášky cez soundboard? Odporúčam nie: Melichar pri botovi je komentátor, nie hlas súpera.</li>
+<li><strong>O4</strong> Sedia skupiny a ich významy? Nahrávky som nepočul. Najmenej istý som si pri „Keksy a kokotiny“ (pohoda, alebo na súpera?) a „Toto je ŽIVOT“ (radosť, alebo irónia?).</li>
+<li><strong>O5</strong> Má soundboard fungovať aj na obrazovke konca partie, napríklad pre „Toto je ŽIVOT“ po výhre? A v čakárni pred začiatkom?</li>
+<li><strong>O6</strong> Smie indikátor súperovej hlášky ukázať <em>skupinu</em> (napr. „Štamgast: na súpera“)? Názov nie, ale nepočujúci a stlmení by vedeli aspoň náladu.</li>
+<li><strong>O7</strong> Stačí pravidlo 2 s, alebo chceš strop na partiu či kolo, ak sa ukáže, že hlášky otravujú?</li>
+<li><strong>O8</strong> Zobrazované texty: smú byť s diakritikou a interpunkciou, ako v tabuľke skupín (napr. „Čil išla, keď najviac jebe“)?</li>
+</ol>
+<h3>Do playtestu (ľudia; AI playtesteri overia len limit a stavy cez ws)</h3>
+<ul>
+<li>Za koľko minút hráč bez návodu pustil prvú hlášku? Našiel tlačidlo v hlavičke?</li>
+<li>Pustil niekto hlášku omylom alebo mu panel zakryl niečo, čo práve potreboval (napr. Starších)?</li>
+<li>Vedel vždy, kto práve hovorí, on, súper alebo automatický Melichar?</li>
+<li>Koľko hlášok sa pustí za partiu, v ktorých chvíľach (po NA EX!, po bitke) a z ktorých skupín? Ukáže to, či je poradie skupín správne a či treba N5.</li>
+<li>Stlmil niekto Melichara a kedy? Bol to súperov spam?</li>
+</ul>
+</section>
+</main>
+<script>
+(function(){
+  var tl=document.querySelectorAll('.filtre button');
+  var riadky=document.querySelectorAll('#audit-tab tbody tr');
+  tl.forEach(function(b){
+    b.addEventListener('click',function(){
+      var f=b.getAttribute('data-f');
+      tl.forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false');});
+      riadky.forEach(function(r){
+        var z=Number(r.getAttribute('data-z'));
+        var ukaz=f==='vsetko'||(f==='3'?z>=3:z===Number(f));
+        r.hidden=!ukaz;
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>
