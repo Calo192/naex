@@ -14,7 +14,7 @@ import { randomInt } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { join, normalize, extname, resolve } from "node:path";
 import { WebSocketServer, WebSocket } from "ws";
-import type { Command, DlzkaHry, DvojicaStatistik, Event, GameData, GameState, PlayerId, StatistikyKariet } from "@naex/core";
+import type { Command, DlzkaHry, DvojicaStatistik, Event, GameData, GameState, PlayerId, Pohlavie, StatistikyKariet } from "@naex/core";
 import type { Sada } from "@naex/tvorba";
 import {
   DLZKY_HRY,
@@ -76,6 +76,8 @@ interface HracVMiestnosti {
   meno: string;
   avatar: string | null;
   frajerina: number;
+  /** Pohlavie z profilu pre tvary hlášok (nie je tajné); null = neuvádza. */
+  pohlavie: Pohlavie | null;
 }
 
 /** Účet offline protihráča neexistuje — id 0 SQLite nikdy nepridelí. */
@@ -333,7 +335,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         ? null
         : i === room.bot
           ? { meno: h.meno, avatar: h.avatar, bot: true }
-          : { id: h.id, meno: h.meno, avatar: h.avatar, frajerina: h.frajerina, titul: titul(h.frajerina) },
+          : { id: h.id, meno: h.meno, avatar: h.avatar, frajerina: h.frajerina, titul: titul(h.frajerina), pohlavie: h.pohlavie },
     );
     for (const ws of room.sockets) if (ws !== null) send(ws, { type: "hraci", hraci });
   };
@@ -359,7 +361,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       stary.close();
     }
     const p = info.pouzivatel;
-    room.hraci[seat] = { id: p.id, meno: p.meno, avatar: p.avatar, frajerina: archiv.frajerina(p.id).hodnota };
+    room.hraci[seat] = { id: p.id, meno: p.meno, avatar: p.avatar, frajerina: archiv.frajerina(p.id).hodnota, pohlavie: p.pohlavie };
     room.sockets[seat] = ws;
     room.odpojenyOd[seat] = null;
     info.room = room;
@@ -450,7 +452,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         if (protiBotovi) {
           // Offline protihráč sedí hneď — partia začína bez čakania.
           const povaha = POVAHY.find((p) => p.id === room.botPovaha);
-          room.hraci[1] = { id: BOT_ID, meno: povaha?.meno ?? "Štamgast", avatar: avatary.bota(room.botPovaha), frajerina: 0 };
+          room.hraci[1] = { id: BOT_ID, meno: povaha?.meno ?? "Štamgast", avatar: avatary.bota(room.botPovaha), frajerina: 0, pohlavie: null };
           room.state = setupGame(room.data, randomInt(2 ** 31), { lokalit: DLZKY_HRY[room.dlzka] });
           room.zaciatok = teraz();
           room.statistiky = noveStatistiky();

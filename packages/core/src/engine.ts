@@ -49,7 +49,7 @@ import {
 } from "./elders.ts";
 import type { DlzkaHry } from "./constants.ts";
 import { ALL_DLZKY, DLZKY_HRY, KONSTANTY, PREDVOLENA_DLZKA } from "./constants.ts";
-import { cigariet, kariet, pocet } from "./jazyk.ts";
+import { cigariet, kariet, pocet, rodovo } from "./jazyk.ts";
 import {
   doliatieZakazane,
   bitkaMody,
@@ -540,7 +540,7 @@ function tahaj(s: MutState, p: PlayerId, pocet: number, events: Event[]): CardIn
   if (priznane > 0) {
     events.push({
       type: "log",
-      text: `Hráč ${p + 1} dobral ${priznane === 1 ? "Dlh — sám sa priznáva" : `${priznane} Dlhy — samy sa priznávajú`} a hráč za ${priznane === 1 ? "neho" : "ne"} ťahá ďalšiu kartu.`,
+      text: `Hráč ${p + 1} ${rodovo(p, "dobral", "dobrala", "doberá")} ${priznane === 1 ? "Dlh — sám sa priznáva" : `${priznane} Dlhy — samy sa priznávajú`} a hráč za ${priznane === 1 ? "neho" : "ne"} ťahá ďalšiu kartu.`,
     });
   }
   if (tahane.length > 0) {
@@ -609,7 +609,7 @@ function skontrolujPrahPecene(s: MutState, data: GameData, p: PlayerId, events: 
     player.pecen -= prah;
     pridajKliatbu(s, data, p, "cirhoza", events);
     s.cirhozyVKole[p] += 1;
-    events.push({ type: "log", text: `Hráč ${p + 1} dosiahol prah pečene (${prah}) — Cirhóza.` });
+    events.push({ type: "log", text: `Hráč ${p + 1} ${rodovo(p, "dosiahol", "dosiahla", "dosahuje")} prah pečene (${prah}) — Cirhóza.` });
   }
 }
 
@@ -622,7 +622,7 @@ function pridajZadlzenie(s: MutState, data: GameData, p: PlayerId, mnozstvo: num
   while (player.zadlzenie >= prah) {
     player.zadlzenie -= prah;
     pridajKliatbu(s, data, p, "dlh", events);
-    events.push({ type: "log", text: `Hráč ${p + 1} dosiahol prah dlhu (${prah}) — Dlh.` });
+    events.push({ type: "log", text: `Hráč ${p + 1} ${rodovo(p, "dosiahol", "dosiahla", "dosahuje")} prah dlhu (${prah}) — Dlh.` });
   }
 }
 
@@ -1246,7 +1246,7 @@ function cmdChooseLocation(
   s.lokalitaOtocena = cmd.otocena;
   events.push({
     type: "log",
-    text: `Hráč ${p + 1} vybral bitku o lokalitu ${defOf(data, karta).name}.`,
+    text: `Hráč ${p + 1} ${rodovo(p, "vybral", "vybrala", "vyberá")} bitku o lokalitu ${defOf(data, karta).name}.`,
   });
   s.faza = "draft";
   events.push({ type: "faza", faza: "draft" });
@@ -1323,7 +1323,7 @@ function cmdStavbaSenku(
     "Karta nie je v tvojom balíčku stavby.",
   );
   d.vyber[p] = { doSenku: [...cmd.doSenku], odhod: [...cmd.odhod] };
-  events.push({ type: "log", text: `Hráč ${p + 1} vybral karty do šenku.` });
+  events.push({ type: "log", text: `Hráč ${p + 1} ${rodovo(p, "vybral", "vybrala", "vyberá")} karty do šenku.` });
   const v0 = d.vyber[0];
   const v1 = d.vyber[1];
   if (v0 === null || v1 === null) return;
@@ -1406,7 +1406,7 @@ function cmdDraftStop(s: MutState, data: GameData, p: PlayerId, events: Event[])
   need(s.faza === "draft" && d !== null && d.krok === "beranie", "Teraz sa zo šenku neberie.");
   need(!d.hotovo[p], "Už nič neberieš.");
   d.hotovo[p] = true;
-  events.push({ type: "log", text: `Hráč ${p + 1} už neberie zo šenku (vzal ${d.noveKarty[p]}).` });
+  events.push({ type: "log", text: `Hráč ${p + 1} už neberie zo šenku (spolu ${d.noveKarty[p]}).` });
   dalsiVBerani(s, data, p, events);
 }
 
@@ -1549,7 +1549,7 @@ function vyriesPatronat(s: MutState, data: GameData, vitaz: PlayerId | null, eve
       elder.ziskal = p;
       events.push({
         type: "log",
-        text: `Patronát: hráč ${p + 1} vyhral a nechá si staršieho ${meno}; na scorecarde sa otáča ${defOf(data, pat.nahrada as CardInstance).name}.`,
+        text: `Patronát: hráč ${p + 1} ${rodovo(p, "vyhral", "vyhrala", "vyhráva")} a nechá si staršieho ${meno}; na scorecarde sa otáča ${defOf(data, pat.nahrada as CardInstance).name}.`,
       });
     } else {
       const uid = elder.karta.uid;
@@ -1564,7 +1564,7 @@ function vyriesPatronat(s: MutState, data: GameData, vitaz: PlayerId | null, eve
       else if (h.poldeciPlne > 0) h.poldeciPlne -= 1;
       events.push({
         type: "log",
-        text: `Patronát: hráč ${p + 1} prehral — ${meno} sa vracia na scorecard, karta lícom dole späť do ruky a hráč odhadzuje ${vypity ? "vypitý" : "plný"} poldeci (bolestné).`,
+        text: `Patronát: hráč ${p + 1} ${rodovo(p, "prehral", "prehrala", "prehráva")} — ${meno} sa vracia na scorecard, karta lícom dole späť do ruky a hráč odhadzuje ${vypity ? "vypitý" : "plný"} poldeci (bolestné).`,
       });
     }
   }
@@ -1800,7 +1800,7 @@ function nastupEfekt(
             hrac(s, p)[kde].splice(idx, 1);
             zostava--;
             if (kde === "ruka") zRuky++;
-            events.push({ type: "log", text: `Niekoho stryná: hráč ${p + 1} zahodil ${kliatba === "dlh" ? "Dlh" : "Cirhózu"}.` });
+            events.push({ type: "log", text: `Niekoho stryná: hráč ${p + 1} ${rodovo(p, "zahodil", "zahodila", "zahadzuje")} ${kliatba === "dlh" ? "Dlh" : "Cirhózu"}.` });
           }
         }
       }
@@ -1999,7 +1999,7 @@ function cmdNaex(
     if (ukradne > 0) {
       hrac(s, p).cigarety -= ukradne;
       hrac(s, opp).cigarety += ukradne;
-      events.push({ type: "log", text: `Svokra: hráč ${opp + 1} ukradol hráčovi ${p + 1} ${cigariet(ukradne)} za NA EX.` });
+      events.push({ type: "log", text: `Svokra: hráč ${opp + 1} ${rodovo(opp, "ukradol", "ukradla", "kradne")} hráčovi ${p + 1} ${cigariet(ukradne)} za NA EX.` });
     }
   }
 
@@ -2113,7 +2113,7 @@ function cmdPostarka(s: MutState, data: GameData, cmd: { pocet: number }, p: Pla
   tahaj(s, p, cmd.pocet, events);
   const dlhy = KONSTANTY.EFEKT.POSTARKA_DLHY;
   for (let i = 0; i < dlhy; i++) pridajKliatbu(s, data, p, "dlh", events);
-  events.push({ type: "log", text: `Poštárka: hráč ${p + 1} dobral ${cmd.pocet} kariet a ${dlhy} Dlhov.` });
+  events.push({ type: "log", text: `Poštárka: hráč ${p + 1} ${rodovo(p, "dobral", "dobrala", "doberá")} ${kariet(cmd.pocet)} a ${pocet(dlhy, "Dlh", "Dlhy", "Dlhov")}.` });
 }
 
 /** starosta (Pitka): za cigaretu vymeň kartu z ruky za kartu zo šenku. */
@@ -2139,7 +2139,7 @@ function cmdStarosta(
   pitka.starosta[p] = true;
   events.push({
     type: "log",
-    text: `Starosta: hráč ${p + 1} vymenil ${defOf(data, zRuky).name} za ${defOf(data, zoSenku).name} zo šenku.`,
+    text: `Starosta: hráč ${p + 1} ${rodovo(p, "vymenil", "vymenila", "vymieňa")} ${defOf(data, zRuky).name} za ${defOf(data, zoSenku).name} zo šenku.`,
   });
 }
 
@@ -2595,7 +2595,7 @@ function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
         const nastroje = najdiNastroje(s as GameState, data, p);
         if (nastroje.length === 0) {
           // Nedokáže čeliť exekúcii — okamžite prehráva (PRAVIDLA §1).
-          ukonciHru(s, data, opponentOf(p), `Hráč ${p + 1} nedokázal čeliť exekúcii.`, events);
+          ukonciHru(s, data, opponentOf(p), `Hráč ${p + 1} ${rodovo(p, "nedokázal", "nedokázala", "nedokáže")} čeliť exekúcii.`, events);
           return;
         }
         b.caka = p;
@@ -2728,7 +2728,7 @@ function cmdVestica(s: MutState, data: GameData, cmd: { moja: number; jeho: numb
   }
   events.push({
     type: "log",
-    text: `Veštica: hráč ${p + 1} vymenil ${defOf(data, a).name} za súperovu kartu ${defOf(data, c).name}.`,
+    text: `Veštica: hráč ${p + 1} ${rodovo(p, "vymenil", "vymenila", "vymieňa")} ${defOf(data, a).name} za súperovu kartu ${defOf(data, c).name}.`,
   });
   b.vesticaHotova = true;
   b.krok = "liecba";
@@ -2967,7 +2967,7 @@ function cmdExekutorTool(
   });
   events.push({
     type: "log",
-    text: `Hráč ${p + 1} odovzdal ${defOf(data, karta).name} exekútorovi, zhorela polovica priznaných dlhov.`,
+    text: `Hráč ${p + 1} ${rodovo(p, "odovzdal", "odovzdala", "odovzdáva")} ${defOf(data, karta).name} exekútorovi, zhorela polovica priznaných dlhov.`,
   });
   const bb = s.bitkaStav;
   if (bb !== null) bb.exekutorHotovy[p] = true;
@@ -3124,7 +3124,7 @@ function cmdLiecba(
   hrac(s, p).ruka.push(zoSenku as DeepMutable<CardInstance>);
   events.push({
     type: "log",
-    text: `Hráč ${p + 1} sa lieči: spálil Cirhózu a ${defOf(data, zavisly.card).name}, berie kartu zo šenku.`,
+    text: `Hráč ${p + 1} sa lieči: ${rodovo(p, "spálil", "spálila", "páli")} Cirhózu a ${defOf(data, zavisly.card).name}, berie kartu zo šenku.`,
   });
   b.liecbaHotova[p] = true;
   b.caka = null;
@@ -3152,7 +3152,7 @@ function cmdPohreb(
   const pochovana = s.strany[kde.strana].splice(kde.index, 1)[0] as PlacedCard;
   events.push({
     type: "log",
-    text: `Hráč ${p + 1} robí Pohreb: spálil Cirhózu a ${defOf(data, pochovana.card).name}.`,
+    text: `Hráč ${p + 1} robí Pohreb: ${rodovo(p, "spálil", "spálila", "páli")} Cirhózu a ${defOf(data, pochovana.card).name}.`,
   });
   b.liecbaHotova[p] = true;
   b.caka = null;
@@ -3190,7 +3190,7 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
   // vyherny_automat (Dedičstvo): Výhra = 2 cigarety, Prehra = 1 Dlh.
   if (vitaz !== null && vDedicstve(s as GameState, vitaz, "vyherny_automat")) {
     hrac(s, vitaz).cigarety += KONSTANTY.EFEKT.AUTOMAT_VYHRA_CIGARETY;
-    events.push({ type: "log", text: `Výherný automat: hráč ${vitaz + 1} vyhral ${KONSTANTY.EFEKT.AUTOMAT_VYHRA_CIGARETY} cigarety.` });
+    events.push({ type: "log", text: `Výherný automat: hráč ${vitaz + 1} ${rodovo(vitaz, "vyhral", "vyhrala", "vyhráva")} ${KONSTANTY.EFEKT.AUTOMAT_VYHRA_CIGARETY} cigarety.` });
   }
   if (porazeny !== null && vDedicstve(s as GameState, porazeny, "vyherny_automat")) {
     for (let i = 0; i < KONSTANTY.EFEKT.AUTOMAT_PREHRA_DLHY; i++) pridajKliatbu(s, data, porazeny, "dlh", events);
@@ -3201,7 +3201,7 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
     if (ukradne > 0) {
       hrac(s, vitaz).cigarety -= ukradne;
       hrac(s, porazeny).cigarety += ukradne;
-      events.push({ type: "log", text: `Podvodník: hráč ${porazeny + 1} ukradol ${cigariet(ukradne)}.` });
+      events.push({ type: "log", text: `Podvodník: hráč ${porazeny + 1} ${rodovo(porazeny, "ukradol", "ukradla", "kradne")} ${cigariet(ukradne)}.` });
     }
   }
 
@@ -3238,7 +3238,7 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
     events.push({ type: "log", text: `Remíza v poslednej bitke: lokalita ${defOf(data, lokalita).name} prepadla.` });
   } else if (lokalita !== null && vitaz !== null) {
     s.ovladnute.push({ karta: lokalita, hrac: vitaz } as DeepMutable<OvladnutaLokalita>);
-    events.push({ type: "log", text: `Hráč ${vitaz + 1} ovládol lokalitu ${defOf(data, lokalita).name}.` });
+    events.push({ type: "log", text: `Hráč ${vitaz + 1} ${rodovo(vitaz, "ovládol", "ovládla", "ovláda")} lokalitu ${defOf(data, lokalita).name}.` });
   }
   const zoSekery = lokalita === null ? [] : s.naSekeru.filter((k) => k.uid !== lokalita.uid);
   if (vitaz !== null && zoSekery.length > 0) {
@@ -3388,10 +3388,10 @@ function skontrolujVydesenie(s: MutState, data: GameData, events: Event[], konie
       s.ohlaseneVydesenie[p] = s.kolo;
       events.push({
         type: "log",
-        text: `Hráč ${p + 1} vydesil ${vydeseni} z ${vHre.length} starších! Ak ich udrží do konca ďalšieho kola, vyhrá.`,
+        text: `Hráč ${p + 1} ${rodovo(p, "vydesil", "vydesila", "desí")} ${vydeseni} z ${vHre.length} starších! Ak ich udrží do konca ďalšieho kola, vyhrá.`,
       });
     } else if (koniecKola && s.kolo > ohlasene) {
-      ukonciHru(s, data, p, `Hráč ${p + 1} udržal vydesených ${vydeseni} z ${vHre.length} starších.`, events);
+      ukonciHru(s, data, p, `Hráč ${p + 1} ${rodovo(p, "udržal", "udržala", "udržiava")} vydesených ${vydeseni} z ${vHre.length} starších.`, events);
       return;
     }
   }
