@@ -5005,3 +5005,102 @@ button.auto-hotovo-odkaz {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* Karta hráča (Michal 2026-10-22): nemodálna bublina pri avatare na doske. */
+.karta-hraca-kotva {
+  flex: none;
+  display: inline-flex;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+}
+
+.karta-hraca-kotva:hover,
+.karta-hraca-kotva[aria-expanded="true"] {
+  box-shadow: 0 0 0 3px var(--akcent);
+}
+
+.karta-hraca {
+  position: fixed;
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px 14px;
+  border: 1px solid var(--okraj-svetly);
+  border-top: 3px solid var(--akcent);
+  border-radius: 12px;
+  background: var(--plocha);
+  color: var(--text);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
+  font-size: 0.9rem;
+  animation: tip-in 0.12s ease-out;
+}
+
+.karta-hraca p {
+  margin: 0;
+}
+
+.karta-hraca-hlava {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.karta-hraca-hlava strong {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 1rem;
+}
+
+.karta-hraca-zavri {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--tlmeny);
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.karta-hraca-zavri:hover {
+  background: var(--plocha-2);
+  color: var(--text);
+}
+
+.karta-hraca-frajerina,
+.karta-hraca-riadok {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.karta-hraca-frajerina {
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--okraj);
+  font-weight: 600;
+}
+
+.karta-hraca .forma-stvorcek {
+  width: 22px;
+  height: 22px;
+  font-size: 0.7rem;
+}
+
+.karta-hraca-pocet {
+  font-size: 0.8rem;
+}
+
+.karta-hraca-odkaz {
+  align-self: flex-start;
+  margin-top: 2px;
+  font-weight: 600;
+}

@@ -31,7 +31,6 @@ const VOLBY_POHLAVIA: readonly { readonly id: Pohlavie | null; readonly nazov: s
   { id: "zena", nazov: "Žena", popis: "„{meno} skončila bez NA EX.“" },
   { id: null, nazov: "Neuvádzať", popis: "„{meno}: koniec bez NA EX.“" },
 ];
-import { MojeStatistiky } from "./Statistiky.tsx";
 import { hlasitostZvuku, nacitajSkladby, urlSkladby } from "../hra/Hudba.tsx";
 import { nacitajHlasky, urlHlasky } from "../hra/Melichar.tsx";
 import { SCHEMY, aktualnaSchema, pouziSchemu } from "../lib/schemy.ts";
@@ -393,7 +392,7 @@ export function Profil() {
             </p>
           )}
           <p style={{ margin: "6px 0 0" }}>
-            <Odkaz href={`/hrac/${ja.id}`}>Ako ma vidia ostatní</Odkaz>
+            <Odkaz href={`/hrac/${ja.id}`}>Moje štatistiky a partie</Odkaz>
           </p>
           <div className="profil-avatar-akcie">
             <input
@@ -454,7 +453,16 @@ export function Profil() {
         </section>
       )}
 
-      <MojeStatistiky id={ja.id} />
+      {/* Štatistiky sú na profile hráča (/hrac/:id) — tu len odkaz, nech nie sú na dvoch miestach. */}
+      <section className="panel profil-odkaz-statistiky">
+        <div>
+          <h2>Štatistiky</h2>
+          <p className="tlmene">Frajerina, forma, súhrn, silné a slabé stránky a história partií. Tam si vieš aj skryť súhrn pred ostatnými.</p>
+        </div>
+        <Odkaz href={`/hrac/${ja.id}`} className="tlacidlo tlacidlo-hlavne">
+          Otvoriť profil hráča
+        </Odkaz>
+      </section>
 
       <h2 className="profil-nastavenia-nadpis">Nastavenia účtu</h2>
       <section className="panel vzhlad-webu" aria-labelledby="vzhlad-webu-nadpis">

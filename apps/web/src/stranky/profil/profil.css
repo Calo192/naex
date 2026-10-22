@@ -1,0 +1,545 @@
+/* Profil hráča a detail partie (Michal 2026-10-22, dizajn profily-20261022-1409).
+ * Farby len z tokenov schemy.css; funguje aj na mobile (390 px). */
+
+.profil-hraca {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.profil-skryty-pas {
+  margin: 0;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px dashed var(--akcent);
+  color: var(--akcent-svetly);
+  background: color-mix(in srgb, var(--akcent) 10%, transparent);
+}
+
+.profil-hlavicka {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+}
+
+.profil-hlavicka h1 {
+  margin: 0 0 6px;
+}
+
+.profil-odznaky {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+}
+
+.profil-vlastne {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin-top: 10px;
+  font-size: 0.9rem;
+}
+
+.profil-prepinac {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--tlmeny);
+  cursor: pointer;
+}
+
+.profil-prepinac input {
+  accent-color: var(--akcent);
+}
+
+.profil-frajerina {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  text-align: right;
+}
+
+.profil-frajerina-nazov {
+  font: 700 0.72rem/1 var(--pismo);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tlmeny);
+}
+
+.profil-ovladanie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.zalozky {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--okraj);
+}
+
+.zalozka {
+  padding: 8px 14px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--tlmeny);
+  font: 600 0.95rem/1.2 var(--pismo);
+  cursor: pointer;
+}
+
+.zalozka.aktivna {
+  color: var(--text);
+  border-bottom-color: var(--akcent);
+}
+
+.profil-hraca .segment {
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  border-radius: 10px;
+  background: var(--pozadie);
+  border: 1px solid var(--okraj);
+}
+
+.profil-hraca .segment button {
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  color: var(--tlmeny);
+  font: 500 0.85rem/1 var(--pismo);
+  cursor: pointer;
+}
+
+.profil-hraca .segment button[aria-pressed="true"] {
+  background: var(--akcent);
+  color: var(--na-akcente);
+  font-weight: 700;
+}
+
+.profil-prehlad {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.profil-karta h2 {
+  margin: 0 0 10px;
+  font-size: 1.1rem;
+}
+
+.profil-karta-hlava {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px 14px;
+  margin-bottom: 10px;
+}
+
+.profil-karta-hlava h2 {
+  margin: 0;
+}
+
+.profil-karta-hlava .tlmene {
+  font-size: 0.82rem;
+}
+
+.profil-novy {
+  border-color: var(--akcent-tmavy);
+}
+
+/* Forma: štvorčeky výsledkov. */
+.forma {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.forma-stvorcek {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  font: 800 0.78rem/1 var(--pismo);
+  color: var(--text);
+  background: var(--plocha-3);
+}
+
+.forma-stvorcek.vyhra {
+  background: color-mix(in oklab, var(--zelena) 35%, var(--plocha));
+  color: var(--zelena-svetla);
+}
+
+.forma-stvorcek.prehra {
+  background: color-mix(in oklab, var(--cervena) 30%, var(--plocha));
+  color: var(--cervena-svetla);
+}
+
+/* Metriky. */
+.metriky-mriezka {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 10px;
+}
+
+.metrika {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--okraj);
+  background: var(--plocha-2);
+  cursor: help;
+}
+
+.metrika-hodnota {
+  font: 800 1.6rem/1.1 var(--nadpis);
+  color: var(--text);
+}
+
+.metrika-nazov {
+  font-weight: 600;
+}
+
+.metrika-zdroj {
+  font-size: 0.78rem;
+  color: var(--slaby-text);
+}
+
+.metrika-porovnanie {
+  font-size: 0.8rem;
+  color: var(--tlmeny);
+}
+
+.metrika-porovnanie.lepsie,
+.profil-hraca .dobre {
+  color: var(--zelena);
+}
+
+.metrika-porovnanie.horsie,
+.profil-hraca .zle {
+  color: var(--cervena-text);
+}
+
+/* Silné a slabé stránky. */
+.stranky-mriezka {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.stranky-nadpis {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+}
+
+.stranka-hraca {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border-left: 3px solid var(--okraj-svetly);
+  background: var(--plocha-2);
+}
+
+.stranka-hraca.dobra {
+  border-left-color: var(--zelena);
+}
+
+.stranka-hraca.zla {
+  border-left-color: var(--cervena);
+}
+
+/* Bilancia. */
+.bilancia-riadok {
+  display: grid;
+  grid-template-columns: minmax(90px, max-content) minmax(0, 1fr) minmax(120px, 1fr);
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.bilancia-nazov {
+  color: var(--tlmeny);
+  font-size: 0.85rem;
+}
+
+.profil-dva-stlpce {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 14px;
+}
+
+/* Zoznam partií. */
+.partie-zoznam,
+.superi-zoznam {
+  margin: 0 0 10px;
+  padding: 0;
+  list-style: none;
+}
+
+.partia-riadok {
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr) 70px 46px auto;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--okraj);
+}
+
+.partia-super {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.partia-super > span {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.partia-body {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.partia-frajerina.plus {
+  color: var(--zelena);
+}
+
+.partia-frajerina.minus {
+  color: var(--cervena-text);
+}
+
+.vysledok-stitok {
+  justify-self: start;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  background: var(--plocha-3);
+  color: var(--tlmeny);
+}
+
+.vysledok-stitok.vyhra {
+  background: color-mix(in oklab, var(--zelena) 30%, var(--plocha));
+  color: var(--zelena-svetla);
+}
+
+.vysledok-stitok.prehra {
+  background: color-mix(in oklab, var(--cervena) 28%, var(--plocha));
+  color: var(--cervena-svetla);
+}
+
+.superi-zoznam li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--okraj);
+}
+
+/* Tabuľky (súhrn, kolá). */
+.tabulka-obal {
+  overflow-x: auto;
+}
+
+.suhrn-tabulka {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.suhrn-tabulka th,
+.suhrn-tabulka td {
+  padding: 7px 8px;
+  border-bottom: 1px solid var(--okraj);
+  text-align: left;
+}
+
+.suhrn-tabulka thead th {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--slaby-text);
+}
+
+.suhrn-tabulka .cislo {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.kola-tabulka tr.vyhra th {
+  box-shadow: inset 3px 0 0 var(--zelena);
+}
+
+.kola-tabulka tr.prehra th {
+  box-shadow: inset 3px 0 0 var(--cervena);
+}
+
+/* Detail partie. */
+.detail-hlavicka {
+  grid-template-columns: 1fr 1fr;
+}
+
+.detail-hrac {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.detail-hrac > div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+}
+
+.detail-hrac.su {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+
+.detail-hrac.su > div {
+  align-items: flex-end;
+}
+
+.detail-meta {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.priebeh-bodov {
+  width: 100%;
+  height: auto;
+}
+
+.priebeh-nula {
+  stroke: var(--okraj-svetly);
+  stroke-dasharray: 4 4;
+}
+
+.priebeh-ja,
+.priebeh-su {
+  fill: none;
+  stroke-width: 2.5;
+}
+
+.priebeh-ja {
+  stroke: var(--ja);
+}
+
+.priebeh-su {
+  stroke: var(--su);
+}
+
+.priebeh-ja-bod {
+  fill: var(--ja);
+}
+
+.priebeh-su-bod {
+  fill: var(--su);
+}
+
+.priebeh-kolo {
+  fill: var(--slaby-text);
+  font-size: 11px;
+}
+
+.priebeh-legenda.ja {
+  color: var(--ja);
+  font-weight: 700;
+}
+
+.priebeh-legenda.su {
+  color: var(--su);
+  font-weight: 700;
+}
+
+.detail-ucet-obal {
+  display: flex;
+  justify-content: center;
+}
+
+@media (max-width: 760px) {
+  .profil-hlavicka {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .profil-frajerina {
+    grid-column: 1 / -1;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .profil-dva-stlpce,
+  .detail-hlavicka {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-hrac.su {
+    flex-direction: row;
+    text-align: left;
+  }
+
+  .detail-hrac.su > div {
+    align-items: flex-start;
+  }
+
+  .partia-riadok {
+    grid-template-columns: 62px minmax(0, 1fr) auto;
+  }
+
+  .partia-frajerina,
+  .partia-body {
+    display: none;
+  }
+
+  .bilancia-riadok {
+    grid-template-columns: 70px minmax(0, 1fr);
+  }
+
+  .bilancia-riadok .bilancia-pruh {
+    grid-column: 1 / -1;
+  }
+
+  /* Kolá a účet sa na mobile posúvajú do strany — zalomené bunky boli vysoké ako obrazovka. */
+  .kola-tabulka th,
+  .kola-tabulka td {
+    white-space: nowrap;
+  }
+
+  .priebeh-kolo {
+    font-size: 24px;
+  }
+
+  .detail-ucet-obal {
+    justify-content: flex-start;
+    overflow-x: auto;
+  }
+
+  .detail-ucet-obal .krcmovy-ucet {
+    flex: none;
+    min-width: 540px;
+  }
+}
