@@ -75,6 +75,7 @@ import {
   zakazFajcit,
   zakazNaex,
   nahladPosunuMarkera,
+  nahladPosunuPrebytkom,
   pohorsenieNaKraj,
   nahladVylozenia,
   naexCieleVLinii,
@@ -2939,7 +2940,8 @@ export function HernaPlocha({
   const ZONA = ["neutrál", "žltá", "oranžová", "červená"] as const;
   const DO_ZONY = ["neutrálu", "žltej", "oranžovej", "červenej"] as const;
   const popisPosunu = (elder: ElderState, cezPohorsenie: boolean, naKraj = false): string => {
-    const n = nahladPosunuMarkera(data, view, elder.elderId, super_, cezPohorsenie, naKraj);
+    // Prebytok: aj cigareta porazenému za prvý posun staršieho (§8.4) — nahladPosunuPrebytkom.
+    const n = cezPohorsenie ? nahladPosunuMarkera(data, view, elder.elderId, super_, true, naKraj) : nahladPosunuPrebytkom(data, view, elder.elderId);
     const novy = posunMarker(elder, super_, cezPohorsenie, naKraj);
     if (n === null || novy === null) return "";
     const zn = (x: number): string => (x > 0 ? `+${x}` : x < 0 ? `−${-x}` : "±0");
