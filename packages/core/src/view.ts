@@ -57,6 +57,8 @@ export interface BitkaVerejne {
   readonly vitaz: PlayerId | null;
   readonly prebytokDrzi: PlayerId | null;
   readonly prebytokZostava: number;
+  /** Starší, ktorých prebytok už posunul — za každého porazený raz dostane cigaretu (verejné). */
+  readonly prebytokPosunute: readonly string[];
   readonly pohorsenieZostava: readonly [number, number];
   /** Koľko hraníc zón už Pohoršenia hráča prekročili s markerom (kľúč `hráč:elderId`). */
   readonly pohorsenieHranice: Readonly<Record<string, number>>;
@@ -245,6 +247,7 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
             vitaz: bitka.vitaz,
             prebytokDrzi: bitka.prebytokDrzi,
             prebytokZostava: bitka.prebytokZostava,
+            prebytokPosunute: bitka.prebytokPosunute,
             pohorsenieZostava: bitka.pohorsenieZostava,
             pohorsenieHranice: bitka.pohorsenieHranice,
             benzinkaZostava: bitka.benzinkaZostava,
@@ -401,6 +404,28 @@ export function nahladPosunuMarkera(
     priazen: priazenHraca(posunuty),
     sila: priazenSila(posunuty),
   };
+}
+
+/**
+ * Náhľad jedného posunu prebytkom k porazenému: to isté ako nahladPosunuMarkera
+ * a navyše cigareta, ktorú porazený dostane za prvý posun každého staršieho
+ * (§8.4) — cigarety bodujú na scorecardoch. Spoločné pre web aj konzolový
+ * klient agentov (predtým ju neukazoval ani jeden).
+ */
+export function nahladPosunuPrebytkom(data: GameData, view: ClientState, elderId: string): NahladPosunu | null {
+  const drzi = view.bitkaStav?.prebytokDrzi ?? null;
+  if (drzi === null) return null;
+  const porazeny: PlayerId = drzi === 0 ? 1 : 0;
+  const n = nahladPosunuMarkera(data, view, elderId, porazeny, false);
+  if (n === null || (view.bitkaStav?.prebytokPosunute ?? []).includes(elderId)) return n;
+  const elder = view.starsi.find((e) => e.elderId === elderId);
+  const marker = elder === undefined ? null : posunMarker(elder, porazeny, false);
+  if (marker === null) return n;
+  const hraci: [HracVerejne, HracVerejne] = [view.hraci[0], view.hraci[1]];
+  hraci[porazeny] = { ...hraci[porazeny], cigarety: hraci[porazeny].cigarety + 1 };
+  const pred = bodyTeraz(data, view).spolu;
+  const po = bodyTeraz(data, { ...view, hraci, starsi: view.starsi.map((e) => (e.elderId === elderId ? { ...e, marker } : e)) }).spolu;
+  return { ...n, body: [po[0], po[1]], zmena: [po[0] - pred[0], po[1] - pred[1]] };
 }
 
 /** Stávka bitky z pohľadu `view.ja` — o koľko sa pohne rozdiel bodov (ja − súper). */

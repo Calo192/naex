@@ -46,6 +46,7 @@ import {
   lineState,
   loadGameData,
   nahladPosunuMarkera,
+  nahladPosunuPrebytkom,
   pohorsenieNaKraj,
   vykupZoSrotu,
   zakazFajcit,
@@ -715,10 +716,12 @@ function moznosti(v: ClientState): string[] {
       if (b?.krok === "exekutor") for (const o of v.volbyExekutor ?? []) c({ type: "exekutorTool", defId: o.defId, kde: o.kde }, `odovzdaj Exekútorovi ${meno(o.defId)} (${o.kde})`);
       // Len markery, ktoré sa naozaj dajú posunúť (krajná pozícia je zamknutá).
       const nahlad = (e: ElderState, cezPohorsenie: boolean, naKraj = false): string => {
-        const n = nahladPosunuMarkera(DATA, v, e.elderId, su, cezPohorsenie, naKraj);
+        // Ten istý výpočet ako web: prebytok ráta aj cigaretu porazenému (nahladPosunuPrebytkom).
+        const n = cezPohorsenie ? nahladPosunuMarkera(DATA, v, e.elderId, su, true, naKraj) : nahladPosunuPrebytkom(DATA, v, e.elderId);
         if (n === null) return "";
-        const zn = (x: number): string => (x > 0 ? `+${x}` : `${x}`);
-        return ` — NÁHĽAD: body spolu ty ${zn(n.zmena[ja])} (→ ${n.body[ja]}), súper ${zn(n.zmena[su])} (→ ${n.body[su]}); priazeň po posune: ${n.priazen === null ? "nikto" : `${n.priazen === ja ? "ty" : "súper"} sila ${n.sila}`}`;
+        const zn = (x: number): string => (x > 0 ? `+${x}` : x < 0 ? `${x}` : "±0");
+        // Zmena ako na webe; spolu po posune zvlášť — „0 (→ −2)“ sa čítalo ako zmena o −2.
+        return ` — NÁHĽAD: zmena bodov ty ${zn(n.zmena[ja])}, súper ${zn(n.zmena[su])} (spolu po posune ty ${n.body[ja]}, súper ${n.body[su]}); priazeň po posune: ${n.priazen === null ? "nikto" : `${n.priazen === ja ? "ty" : "súper"} sila ${n.sila}`}`;
       };
       if (b?.krok === "pohorsenie") {
         const naKraj = pohorsenieNaKraj(v, ja);
