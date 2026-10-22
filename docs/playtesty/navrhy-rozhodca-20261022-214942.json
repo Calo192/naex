@@ -1,0 +1,322 @@
+{
+  "davka": "20261022-214942",
+  "podklady": [],
+  "navrhy": [
+    {
+      "kluc": "rozhodca-postarka-dlh",
+      "nazov": "Poštárka dá Dlh, aj keď hráč nič nedobral",
+      "kritickost": "vysoka",
+      "oblast": "pravidlá",
+      "zdroj": "rozhodca",
+      "problem": "PRAVIDLA.md §14, Poštárka: „V Pitke raz: majiteľ smie dobrať 1 až 2 karty; ak dobral, získa 1 Dlh.“ Text karty: „Raz smieš dobrať až 2 karty navyše; získaš za to 1 Dlh.“\n\nHra dá Dlh vždy, keď hráč Poštárku použije — aj keď sú jeho doberací aj odhadzovací balíček prázdne a žiadnu kartu nedostal. Hráč tak zaplatí Dlh za nič.",
+      "pricina": "Kód: packages/core/src/engine.ts, funkcia cmdPostarka — po tahaj() pridá KONSTANTY.EFEKT.POSTARKA_DLHY Dlhov bez ohľadu na to, koľko kariet sa naozaj dobralo. legalCommands ponúka Poštárku aj pri prázdnych balíčkoch (pri fajčení sa to od 2026-10-22 neponúka — jeCoTahat).",
+      "prejav": "Neskoro v dlhej hre alebo pri malom balíčku: hráč s prázdnym doberacím aj odhadzovacím balíčkom klikne na Poštárku, nedostane nič a pribudne mu priznaný Dlh — mínus bod za každú aktívnu podmienku bankovky na konci hry a +1 k prahu Exekútora. V playtestoch sa zatiaľ nehlásilo, je to okrajový prípad.",
+      "dokazy": [
+        "PRAVIDLA.md §14 Karty, riadok Poštárka: „ak dobral, získa 1 Dlh“.",
+        "Padnutý test playtest/rozhodca/20261022-214942/14-karty-postarka-dlh-len-ak-dobral.test.ts › „§14 Poštárka: Dlh len ak hráč naozaj dobral — s prázdnym doberacím aj odhadzovacím balíčkom žiadny Dlh“ (hra dá 1 Dlh, pravidlo 0)."
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Opraviť hru podľa pravidiel",
+          "popis": "cmdPostarka pridá Dlh len vtedy, keď tahaj() vrátil aspoň jednu kartu. legalCommands neponúkne Poštárku (a cmdPostarka ju odmietne), keď hráč nemá z čoho ťahať (jeCoTahat — rovnako ako fajčenie). Náhľady, ktoré rátajú Dlh z Poštárky, sa riadia tým istým.",
+          "dopad": "Hráč nikdy nezaplatí Dlh za prázdne ťahanie. Balans sa inak nemení.",
+          "narocnost": "malá",
+          "odporucana": true
+        },
+        {
+          "kluc": "B",
+          "nazov": "Upraviť pravidlá podľa hry",
+          "popis": "PRAVIDLA.md §14, riadok Poštárka: „V Pitke raz: majiteľ smie dobrať 1 až 2 karty a získa 1 Dlh — aj keď z prázdneho balíčka nič nedobral.“ Rovnako text karty v tvorcovi.",
+          "dopad": "Nič sa neprogramuje; hráč musí sám vedieť, že pri prázdnom balíčku Poštárku nepoužije.",
+          "narocnost": "malá",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "A — sedí s textom karty („získaš za to“) aj s rozhodnutím Michala 2026-10-22, že fajčiť naprázdno sa nedá.",
+      "otazky": ["Opraviť hru (A), alebo dopísať pravidlo podľa hry (B)?"],
+      "overenie": ["Test packages/core/test/pravidla-bitka.test.ts › „§14 Poštárka: Dlh len ak hráč naozaj dobral — s prázdnym doberacím aj odhadzovacím balíčkom žiadny Dlh“ prechádza (Developer ho pridá z playtest/rozhodca/20261022-214942)."]
+    },
+    {
+      "kluc": "rozhodca-hrobar-pohreb",
+      "nazov": "Dostane Hrobár cigaretu, keď súper pochová kartu?",
+      "kritickost": "nizka",
+      "oblast": "pravidlá",
+      "zdroj": "rozhodca",
+      "problem": "PRAVIDLA.md §14, Hrobár: „Keď súper zahodí kartu z ruky, z línie alebo z vrchu balíčka (efektom, Víziou; nie návratom po bitke ani vlastnou Veľmi smútiacou vdovou), majiteľ Hrobára dostane cigaretu za každú.“ §8.6 Pohreb: „spáľ priznanú Cirhózu a ľubovoľnú svoju kartu z línie“; Liečba spáli svoju kartu Závislý z línie. §13: Zahodenie = odstrániť kartu z hry (spáliť).\n\nPravidlo sa dá čítať dvoma spôsobmi: (A) Pohreb a Liečba sú krok bitky, nie efekt — Hrobár nič nedostane; (B) spálenie karty z línie je zahodenie z línie — Hrobár dostane cigaretu. Hra robí A.",
+      "pricina": "Dve miesta pravidiel: §14 Hrobár (výpočet výnimiek neobsahuje Pohreb ani Liečbu) a §8.6 + §13 (spáliť = zahodiť). Kód: packages/core/src/engine.ts, cmdPohreb a cmdLiecba nevolajú poZahodeni (Dievčina na vydaj áno).",
+      "prejav": "Hráč s Hrobárom v línii, súper s priznanou Cirhózou: po bitke súper pochová kartu a Hrobár mlčí. V playtestoch sa to nehlásilo.",
+      "dokazy": [
+        "Test čítania B: playtest/rozhodca/20261022-214942/14-karty-hrobar-pohreb.test.ts › „§14 Hrobár: keď súper Pohrebom spáli svoju kartu z línie, majiteľ Hrobára dostane cigaretu“ — v hre padá (cigarety 3, čítanie B 4)."
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Pohreb a Liečba Hrobára nespúšťajú (ako hra teraz)",
+          "popis": "PRAVIDLA.md §14, riadok Hrobár: „Keď súper zahodí kartu z ruky, z línie alebo z vrchu balíčka efektom karty či Víziou, majiteľ Hrobára dostane cigaretu za každú. Nespúšťa sa návratom kariet po bitke, Pohrebom ani Liečbou, ani súperovou vlastnou Veľmi smútiacou vdovou.“ Kód sa nemení; Developer pridá test, že Pohreb Hrobára nespustí.",
+          "dopad": "Nič sa v hre nemení, text je jednoznačný.",
+          "narocnost": "malá",
+          "odporucana": true
+        },
+        {
+          "kluc": "B",
+          "nazov": "Pohreb a Liečba sú zahodenie z línie",
+          "popis": "cmdPohreb a cmdLiecba zavolajú poZahodeni(s, data, p, 1) za kartu spálenú z línie (Cirhóza spomedzi priznaných sa neráta). PRAVIDLA.md §14 Hrobár doplní: „aj Pohrebom či Liečbou (§8.6)“.",
+          "dopad": "Hrobár je o niečo silnejší proti hráčovi, ktorý sa lieči či pochováva; +1 cigareta za bitku najviac.",
+          "narocnost": "malá",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "A — Michal v posledných rozhodnutiach (2026-10-22) dopisoval pravidlá podľa hry; zmena nemá dopad na balans.",
+      "otazky": ["Má súperov Hrobár dostať cigaretu, keď hráč Pohrebom alebo Liečbou spáli svoju kartu z línie?"],
+      "overenie": ["Pri A: test „§14 Hrobár: Pohreb ani Liečba Hrobára nespúšťajú“ v packages/core/test/pravidla-bitka.test.ts prechádza; pri B prechádza test z playtest/rozhodca/20261022-214942/14-karty-hrobar-pohreb.test.ts."]
+    },
+    {
+      "kluc": "rozhodca-balicek-okamzite",
+      "nazov": "Kedy presne prehrá hráč s balíčkom pod 5 kariet",
+      "kritickost": "stredna",
+      "oblast": "pravidlá",
+      "zdroj": "rozhodca",
+      "problem": "PRAVIDLA.md §1, Podmienky konca: „Veľkosť balíčka hráča klesne pod 5 → okamžite prehráva“; „Veľkosť balíčka = doberací + odhadzovací + ruka. Priznané karty sa nerátajú.“\n\nKarty vyložené v línii sa do veľkosti nerátajú, takže doslovné „okamžite“ by trestalo už samotné vykladanie. Hra preto kontroluje balíček len po drafte a na konci kola (po návrate kariet z línie) — počas kola hráč s balíčkom pod 5 hrá ďalej a na konci kola má prednosť kontrola vydesenia. Pravidlo nehovorí, ktoré čítanie platí.",
+      "pricina": "§1 (slovo „okamžite“ a definícia veľkosti bez kariet v línii). Kód: packages/core/src/engine.ts, skontrolujBalicky volaný z dalsiVBerani (po drafte) a koniecBitky (po skontrolujVydesenie); komentár v dokonciPitku vysvetľuje prečo.",
+      "prejav": "Vízia zahodí kartu, Exekútor vezme Nástroj, Pohreb či Dievčina spália kartu — balíček klesne pod 5 uprostred kola, no hráč ešte dohrá bitku; ak na konci kola udrží vydesenie, vyhrá namiesto prehry.",
+      "dokazy": [
+        "PRAVIDLA.md §1, tabuľka Podmienky konca a veta pod ňou.",
+        "Test packages/core/test/pravidla-bitka.test.ts › „§1: balíček (doberací + odhadzovací + ruka) pod 5 kariet na konci kola znamená prehru; presne 5 nie“ prechádza (kontrola na konci kola).",
+        "Pravidlá na webe (apps/web/src/stranky/Pravidla.tsx): „Hra sa končí okamžite, keď … mu balíček klesne pod 5 kariet“."
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Kontrola po drafte a na konci kola (ako hra teraz)",
+          "popis": "PRAVIDLA.md §1, riadok tabuľky: „Veľkosť balíčka hráča je pod 5 po drafte alebo na konci kola (karty z línie sa už vrátili) | prehráva“. Pod tabuľku: „Na konci kola sa najprv vyhodnotí vydesenie, potom veľkosť balíčka.“ Rovnako text na webe (Pravidla.tsx).",
+          "dopad": "Žiadna zmena hry; text povie, kedy sa počíta.",
+          "narocnost": "malá",
+          "odporucana": true
+        },
+        {
+          "kluc": "B",
+          "nazov": "Okamžite, karty v línii sa rátajú",
+          "popis": "Veľkosť balíčka = doberací + odhadzovací + ruka + vlastné karty v línii; kontroluje sa po každom príkaze (aj uprostred bitky) a pri poklese pod 5 hra hneď skončí. Kód: skontrolujBalicky po každom apply, velkostBalicka ráta aj partiaHraca.",
+          "dopad": "Prísnejšie: hráč prehrá hneď po Vízii či exekúcii; vydesenie na konci kola ho už nezachráni.",
+          "narocnost": "stredná",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "A — sedí s tým, ako hra beží od začiatku, a s komentárom v kóde; B by menilo výsledky partií.",
+      "otazky": ["Platí kontrola po drafte a na konci kola (A), alebo okamžite s kartami v línii (B)?", "Ak A: má vydesenie na konci kola prednosť pred balíčkom pod 5?"],
+      "overenie": ["Pri A: test packages/core/test/pravidla-bitka.test.ts › „§1: balíček (doberací + odhadzovací + ruka) pod 5 kariet na konci kola znamená prehru; presne 5 nie“ prechádza a PRAVIDLA.md §1 hovorí, kedy sa kontroluje."]
+    },
+    {
+      "kluc": "rozhodca-viera-zaklad",
+      "nazov": "Tabuľka akcií ešte píše Viera „1 + priazeň“",
+      "kritickost": "stredna",
+      "oblast": "pravidlá",
+      "zdroj": "rozhodca",
+      "problem": "PRAVIDLA.md §3, riadok Viera: „znižuje súperovo tuhé poškodenie; základ 1 + priazeň“. Blok zmien 2026-10-20 a §9 (tabuľka priazní): „Veriaci: Viera navyše rovná sile (+1 / +2 / +3), hodnota Viery ostáva 1“.\n\nDokument si odporuje. Hra robí to, čo novší blok: hodnota Viery je 1, Veriaci pridá Vieru navyše.",
+      "pricina": "Dve miesta pravidiel: §3 tabuľka akcií (starý text) a úvodný blok 2026-10-20 + §9 Priazne. V kóde sú staré aj komentáre: packages/core/src/battle.ts (BattleSide.hodnotaViery „1 + priazeň Veriaceho“) a engine.ts (RozpisPoskodenia.hodnotaViery).",
+      "prejav": "Kto číta §3, ráta s Vierou 1 + priazeň (dve Viery s priazňou 4 = štít 10), hra dá štít 4. Rovnaký omyl stál za zmenou 2026-10-20.",
+      "dokazy": [
+        "PRAVIDLA.md §3 riadok Viera vs. blok „Zmeny 2026-10-20 večer“, bod Veriaci, a §9 Priazne, riadok Veriaci.",
+        "Test packages/core/test/pravidla-20261019.test.ts › „dve Viery s priazňou sily 2 uberú súperovi 4 tuhé, nie 10“ prechádza."
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Vrátiť hru na „1 + priazeň“",
+          "popis": "hodnotaViery() = 1 + priazeň Veriaceho, Viera navyše zrušiť (stav pred 2026-10-20).",
+          "dopad": "Ide proti rozhodnutiu Michala 2026-10-20 (štít 10 z dvoch Vier).",
+          "narocnost": "malá",
+          "odporucana": false
+        },
+        {
+          "kluc": "B",
+          "nazov": "Opraviť tabuľku §3 podľa novšieho bloku",
+          "popis": "PRAVIDLA.md §3, riadok Viera: „| Viera | `Viera` | znižuje súperovo tuhé poškodenie o 1 za kus; priazeň Veriaceho pridá Vieru navyše rovnú sile (+1 / +2 / +3); ruší sa s Poverou 1:1 |“. Developer opraví aj komentáre v battle.ts (BattleSide.hodnotaViery: „1 + Svätý text“) a engine.ts (RozpisPoskodenia.hodnotaViery).",
+          "dopad": "Hra sa nemení, dokument si prestane odporovať.",
+          "narocnost": "malá",
+          "odporucana": true
+        }
+      ],
+      "odporucanie": "B — sedí s rozhodnutím Michala 2026-10-20.",
+      "otazky": ["Súhlasíš s opravou textu §3 (B)?"],
+      "overenie": ["PRAVIDLA.md §3 uvádza pri Viere hodnotu 1 a Vieru navyše od Veriaceho; test packages/core/test/pravidla-20261019.test.ts › „dve Viery s priazňou sily 2 uberú súperovi 4 tuhé, nie 10“ prechádza."]
+    },
+    {
+      "kluc": "rozhodca-ciel-voli-obranca",
+      "nazov": "Odsek o drafte ešte píše, že lokalitu vyberá útočník",
+      "kritickost": "stredna",
+      "oblast": "pravidlá",
+      "zdroj": "rozhodca",
+      "problem": "PRAVIDLA.md §7, Bitka o lokalitu — draft: „Útočník vyberie lokalitu a natočí ju.“ Úvod §7 a rozhodnutie 2026-10-20: „Obranca vyberá a natáča cieľ kola“; §13: obranca „volí a natáča cieľ“.\n\nDokument si odporuje. Hra robí to, čo novší text: cieľ volí a natáča obranca.",
+      "pricina": "Dve miesta pravidiel: §7 úvod (2026-10-20) a prvá veta odseku „Bitka o lokalitu — draft“ (stav pred 2026-10-20). V kóde je starý aj komentár v packages/core/src/partia.ts (hlavička: „Lokalita je otočená podľa natočenia útočníkom“).",
+      "prejav": "Kto číta odsek o drafte, čaká, že lokalitu vyberie on ako útočník. Klient a pravidlá na webe (Pravidla.tsx, Panely.tsx) už píšu správne „Obranca vyberie lokalitu a natočí ju“.",
+      "dokazy": [
+        "PRAVIDLA.md §7 úvod vs. §7 „Bitka o lokalitu — draft“, prvá veta.",
+        "Test packages/core/test/pravidla-kolo.test.ts › „§7: cieľ kola vyberá a natáča obranca, útočník nie“ prechádza."
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Vrátiť voľbu cieľa útočníkovi",
+          "popis": "naTahu vo fáze volbaCiela vráti útočníka (stav pred 2026-10-20).",
+          "dopad": "Ide proti rozhodnutiu Michala 2026-10-20 (porazený nemal ako odpovedať na ohlásené vydesenie).",
+          "narocnost": "malá",
+          "odporucana": false
+        },
+        {
+          "kluc": "B",
+          "nazov": "Opraviť odsek o drafte",
+          "popis": "PRAVIDLA.md §7, „Bitka o lokalitu — draft“, prvá veta: „Obranca vyberie lokalitu a natočí ju (Michal 2026-10-20; predtým útočník).“ Developer opraví aj komentár v hlavičke packages/core/src/partia.ts („natočenia obrancom“).",
+          "dopad": "Hra sa nemení, dokument si prestane odporovať.",
+          "narocnost": "malá",
+          "odporucana": true
+        }
+      ],
+      "odporucanie": "B — sedí s rozhodnutím Michala 2026-10-20.",
+      "otazky": ["Súhlasíš s opravou textu (B)?"],
+      "overenie": ["PRAVIDLA.md §7 nikde nepíše, že cieľ volí útočník; test packages/core/test/pravidla-kolo.test.ts › „§7: cieľ kola vyberá a natáča obranca, útočník nie“ prechádza."]
+    },
+    {
+      "kluc": "rozhodca-stupnica-tabulka",
+      "nazov": "Tabuľka stupnice strachu má staré hodnoty 2-2-1",
+      "kritickost": "stredna",
+      "oblast": "pravidlá",
+      "zdroj": "rozhodca",
+      "problem": "PRAVIDLA.md §9, Stupnica strachu: veta „sila priazne 3-2-1-0-0-0-1-2-3 (Michal 2026-10-16; predtým 2-2-1-0-0-0-1-2-2)“, hneď pod ňou tabuľka s riadkom „Hodnota | 2 | 2 | 1 | 0 | 0 | 0 | 1 | 2 | 2“.\n\nDokument si odporuje v tom istom odseku. Hra robí 3-2-1-0-0-0-1-2-3.",
+      "pricina": "Dve miesta pravidiel: veta a tabuľka v §9 Stupnica strachu (tabuľka neprešla zmenou 2026-10-16). Kód: packages/core/src/elders.ts, STUPNICA_HODNOTY = [3, 2, 1, 0, 0, 0, 1, 2, 3].",
+      "prejav": "Kto číta tabuľku, ráta pri červenej zóne silu 2 (priazeň 4) namiesto 3 (priazeň 6) — napr. Exekútor 18 namiesto 22, Bitkár +4 namiesto +6.",
+      "dokazy": [
+        "PRAVIDLA.md §9 Stupnica strachu: veta vs. tabuľka.",
+        "Test packages/core/test/dobiehanie.test.ts › „bonus = 2 × sila podľa zóny na polovici hráča“ prechádza."
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Vrátiť hru na 2-2-1",
+          "popis": "STUPNICA_HODNOTY = [2, 2, 1, 0, 0, 0, 1, 2, 2] (stav pred 2026-10-16).",
+          "dopad": "Ide proti rozhodnutiu Michala 2026-10-16 (dobiehanie porazeného) a tabuľke priazní §9 (sila 1 / 2 / 3).",
+          "narocnost": "malá",
+          "odporucana": false
+        },
+        {
+          "kluc": "B",
+          "nazov": "Opraviť tabuľku",
+          "popis": "PRAVIDLA.md §9, tabuľka Stupnica strachu, riadok: „| Sila priazne | 3 | 2 | 1 | 0 | 0 | 0 | 1 | 2 | 3 |“.",
+          "dopad": "Hra sa nemení, dokument si prestane odporovať.",
+          "narocnost": "malá",
+          "odporucana": true
+        }
+      ],
+      "odporucanie": "B — sedí s rozhodnutím Michala 2026-10-16.",
+      "otazky": ["Súhlasíš s opravou tabuľky (B)?"],
+      "overenie": ["Tabuľka v PRAVIDLA.md §9 uvádza 3-2-1-0-0-0-1-2-3; test packages/core/test/dobiehanie.test.ts › „bonus = 2 × sila podľa zóny na polovici hráča“ prechádza."]
+    },
+    {
+      "kluc": "rozhodca-zberatel-zvysky",
+      "nazov": "Pravidlá ešte na dvoch miestach počítajú so Zberateľom",
+      "kritickost": "stredna",
+      "oblast": "pravidlá",
+      "zdroj": "rozhodca",
+      "problem": "Blok zmien 2026-10-20 a §8.6b: „Úžerník nahradil Zberateľa; prezeranie kariet po bitke zaniklo … Staré sady so Zberateľom či Očumovateľom sa načítajú ako Úžerník.“\n\nNo §9 Priazne ešte píše: „Zberateľ nahradil Očumovateľa (Michal 2026-10-12) … Staré sady s Očumovateľom sa načítajú ako Zberateľ.“ A §7 „Dobratie po bitke“ uvádza medzi zdrojmi kariet „Vízia, Zberateľ a efekty“. Dokument si odporuje; hra robí to, čo novší blok.",
+      "pricina": "Dve miesta pravidiel: §9 Priazne (odsek pod tabuľkou) a §7 Dobratie po bitke vs. úvodný blok 2026-10-20 a §8.6b. Kód: packages/core/src/types.ts, PRIAZNE_ALIAS { OCUMOVATEL: \"UZERNIK\", ZBERATEL: \"UZERNIK\" }.",
+      "prejav": "Kto číta §9, hľadá priazeň Zberateľa a prezeranie kariet po bitke, ktoré v hre nie sú.",
+      "dokazy": [
+        "PRAVIDLA.md §9 Priazne, odsek „Zberateľ nahradil Očumovateľa…“; §7 „Dobratie po bitke“, posledná veta; §8.6b.",
+        "Testy packages/core/test/pravidla-20261019.test.ts › „stará sada so Zberateľom alebo Očumovateľom sa načíta ako Úžerník“ a „po bitke sa už nič neprezerá — po Liečbe ide hra rovno do ďalšieho kola“ prechádzajú."
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Vrátiť Zberateľa",
+          "popis": "Obnoviť priazeň ZBERATEL a krok po bitke (prezri 2 / 4 / 6, vezmi 1 / 2 / 3) — stav pred 2026-10-20.",
+          "dopad": "Ide proti rozhodnutiu Michala 2026-10-20 (Úžerník, prah Dlhu).",
+          "narocnost": "stredná",
+          "odporucana": false
+        },
+        {
+          "kluc": "B",
+          "nazov": "Opraviť oba odseky",
+          "popis": "PRAVIDLA.md §9 Priazne, odsek pod tabuľkou: „Úžerník nahradil Zberateľa (Michal 2026-10-20) a ten Očumovateľa (2026-10-12): Preskúmanie používali len Policajtka a Veštica. Preskúmanie je pevne 5. Staré sady so Zberateľom či Očumovateľom sa načítajú ako Úžerník (§8.6b).“ §7 Dobratie po bitke, posledná veta: „Karty navyše dáva šenok, fajčenie (cigareta = karta hneď, na svojom ťahu v Zhromaždení aj v Pitke), priznanie kliatby, Vízia a efekty.“",
+          "dopad": "Hra sa nemení, dokument si prestane odporovať.",
+          "narocnost": "malá",
+          "odporucana": true
+        }
+      ],
+      "odporucanie": "B — sedí s rozhodnutím Michala 2026-10-20.",
+      "otazky": ["Súhlasíš s opravou textu (B)?"],
+      "overenie": ["PRAVIDLA.md mimo histórie zmien nespomína Zberateľa ako platnú priazeň ani zdroj kariet; test packages/core/test/pravidla-20261019.test.ts › „stará sada so Zberateľom alebo Očumovateľom sa načíta ako Úžerník“ prechádza."]
+    },
+    {
+      "kluc": "rozhodca-prebytok-drzi",
+      "nazov": "Prebytok nerozdeľuje vždy víťaz",
+      "kritickost": "stredna",
+      "oblast": "pravidlá",
+      "zdroj": "rozhodca",
+      "problem": "PRAVIDLA.md §8.4: vzorec „prebytok drží = vyššie CELKOVÉ poškodenie (aj pri remíze v tuhom)“ a odsek pod ním „Víťaz rozdelí prebytočné poškodenie medzi starších. Každý pridelený bod posunie marker o 1 smerom k porazenému.“\n\nKeď má porazený vyššie celkové (mäkké z Povier), alebo pri remíze v tuhom, prebytok podľa vzorca drží iný hráč než víťaz — veta o víťazovi tomu odporuje. Hra robí to, čo vzorec: prebytok rozdeľuje držiteľ smerom k svojmu súperovi.",
+      "pricina": "Dve miesta pravidiel v §8.4 (vzorec vs. odsek „Víťaz rozdelí…“); blok 2026-10-21: „celkové určuje už len prebytok“. Kód: packages/core/src/battle.ts, battleOutcome (prebytokDrzi), engine.ts cmdPrebytok.",
+      "prejav": "Pri remíze na sekeru alebo pri prehre s vysokým mäkkým poškodením hráči čakajú, že prebytok nemá kto rozdeliť (alebo ho rozdelí víťaz), hra ho dá hráčovi s vyšším celkovým. Odsek „Cigarety za prebytok“ to už pripúšťa („spravidla porazený“).",
+      "dokazy": [
+        "PRAVIDLA.md §8.4: vzorec vs. odsek „Víťaz rozdelí…“.",
+        "Test packages/core/test/battle.test.ts › „prebytok drží hráč s vyšším celkovým, aj keď bitku prehral“ prechádza."
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Prebytok len víťazovi",
+          "popis": "battleOutcome: prebytokDrzi = víťaz (pri remíze nikto), prebytok = rozdiel celkových len ak ho má víťaz vyšší.",
+          "dopad": "Ide proti bloku 2026-10-21; porazený s Poverami by prišiel o jediný spôsob, ako desiť.",
+          "narocnost": "malá",
+          "odporucana": false
+        },
+        {
+          "kluc": "B",
+          "nazov": "Opraviť vetu o rozdelení",
+          "popis": "PRAVIDLA.md §8.4, odsek pod remízou: „Prebytok rozdelí medzi starších hráč, ktorý ho drží (vyššie celkové poškodenie — spravidla víťaz, no aj porazený či pri remíze v tuhom). Každý pridelený bod posunie marker o 1 smerom k jeho súperovi. Smie prideliť aj viac bodov tomu istému staršiemu. Miňištrant vo víťazovej partii zdraží každý posun víťaza o 1; …“ (ďalej bez zmeny).",
+          "dopad": "Hra sa nemení, dokument si prestane odporovať.",
+          "narocnost": "malá",
+          "odporucana": true
+        }
+      ],
+      "odporucanie": "B — sedí s blokom 2026-10-21 (celkové určuje už len prebytok).",
+      "otazky": ["Súhlasíš s opravou textu (B)?"],
+      "overenie": ["PRAVIDLA.md §8.4 hovorí, že prebytok rozdeľuje jeho držiteľ; test packages/core/test/battle.test.ts › „prebytok drží hráč s vyšším celkovým, aj keď bitku prehral“ prechádza."]
+    },
+    {
+      "kluc": "rozhodca-limit-nula",
+      "nazov": "Pravidlo „limit 0 = prehra bitky“ nemôže nastať",
+      "kritickost": "stredna",
+      "oblast": "pravidlá",
+      "zdroj": "rozhodca",
+      "problem": "PRAVIDLA.md §5: „limit vykladania = plné poldeci + poldeci ležiace na kartách cez NA EX + 1“ a o pár riadkov nižšie „Limit 0 → hráč okamžite prehráva bitku.“\n\nPodľa vzorca je limit vždy aspoň 1, takže pravidlo sa nikdy neuplatní. Hra ho nemá. Pravidlá na webe ho však hráčom ukazujú („Ak je limit 0, okamžite prehrávaš bitku“).",
+      "pricina": "Dve miesta pravidiel v §5 (vzorec s +1 vs. riadok „Limit 0“ z pravidiel v11). Kód: packages/core/src/player.ts, limitVykladania (+1). Web: apps/web/src/stranky/Pravidla.tsx, odsek o limite.",
+      "prejav": "Hráči na webe čítajú, že pri limite 0 prehrajú bitku, a môžu kvôli tomu šetriť poldeci, hoci sa to stať nemôže.",
+      "dokazy": [
+        "PRAVIDLA.md §5, vzorec a riadok „Limit 0 → hráč okamžite prehráva bitku.“",
+        "apps/web/src/stranky/Pravidla.tsx: „Ak je limit 0, okamžite prehrávaš bitku.“",
+        "Test packages/core/test/poldeci.test.ts › „limitZhromazdenia = plné + NA EX na stole + 1, karta zo šenku ho zníži“ prechádza."
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Limit bez +1 a prehra pri nule",
+          "popis": "limitVykladania bez +1; hráč, ktorému na začiatku Zhromaždenia vyjde limit 0, bitku prehrá. Veľká zmena pravidiel.",
+          "dopad": "Silne trestá vypité poldeci; mení balans celej hry — vyžadovalo by turnaj a playtest.",
+          "narocnost": "stredná",
+          "odporucana": false
+        },
+        {
+          "kluc": "B",
+          "nazov": "Vyškrtnúť mŕtve pravidlo",
+          "popis": "PRAVIDLA.md §5: riadok „Limit 0 → hráč okamžite prehráva bitku.“ nahradiť „Limit je vždy aspoň 1 — aj bez plných poldeci hráč v Zhromaždení vyloží jednu kartu.“ To isté na webe v apps/web/src/stranky/Pravidla.tsx.",
+          "dopad": "Hra sa nemení; hráči nedostanú zavádzajúcu informáciu.",
+          "narocnost": "malá",
+          "odporucana": true
+        }
+      ],
+      "odporucanie": "B — sedí so vzorcom, ktorý Michal používa od pravidiel v3.",
+      "otazky": ["Vyškrtnúť riadok (B), alebo limit naozaj zmeniť (A)?"],
+      "overenie": ["PRAVIDLA.md §5 ani pravidlá na webe nespomínajú prehru pri limite 0; test packages/core/test/poldeci.test.ts › „limitZhromazdenia = plné + NA EX na stole + 1, karta zo šenku ho zníži“ prechádza."]
+    }
+  ]
+}
