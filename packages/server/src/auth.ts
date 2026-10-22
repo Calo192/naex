@@ -52,6 +52,8 @@ export interface Pouzivatel {
   readonly skratky: boolean;
   /** Pohlavie pre tvary hlášok („Eva skončila“); null = neuvádza, hlášky sú neutrálne. */
   readonly pohlavie: Pohlavie | null;
+  /** Súhrn štatistík skrytý pred ostatnými (Michal 2026-10-22). */
+  readonly skrytySuhrn: boolean;
 }
 
 export const LUPA_OD = 150;
@@ -274,12 +276,13 @@ export class Ucty {
       skore: ZOBRAZENIA_SKORE.includes(r.skore as ZobrazenieSkore) ? (r.skore as ZobrazenieSkore) : SKORE_PREDVOLENE,
       skratky: r.skratky === null || r.skratky === undefined ? true : Number(r.skratky) === 1,
       pohlavie: POHLAVIA.includes(r.pohlavie as Pohlavie) ? (r.pohlavie as Pohlavie) : null,
+      skrytySuhrn: Number(r.skryty_suhrn) === 1,
     };
   }
 
   podlaId(id: number): Pouzivatel | null {
     return this.riadok(
-      this.db.prepare("SELECT id, login, meno, avatar, rola, lupa, hudba, melichar, melichar_frekvencia, ai, schema, skore, skratky, pohlavie FROM pouzivatelia WHERE id = ?").get(id) as
+      this.db.prepare("SELECT id, login, meno, avatar, rola, lupa, hudba, melichar, melichar_frekvencia, ai, schema, skore, skratky, pohlavie, skryty_suhrn FROM pouzivatelia WHERE id = ?").get(id) as
         | Record<string, unknown>
         | undefined,
     );
@@ -363,6 +366,7 @@ export class Ucty {
       skore?: ZobrazenieSkore;
       skratky?: boolean;
       pohlavie?: Pohlavie | null;
+      skrytySuhrn?: boolean;
     },
   ): Pouzivatel | null {
     if (zmeny.meno !== undefined) this.db.prepare("UPDATE pouzivatelia SET meno = ? WHERE id = ?").run(zmeny.meno, id);
@@ -376,6 +380,7 @@ export class Ucty {
     if (zmeny.skore !== undefined) this.db.prepare("UPDATE pouzivatelia SET skore = ? WHERE id = ?").run(zmeny.skore, id);
     if (zmeny.skratky !== undefined) this.db.prepare("UPDATE pouzivatelia SET skratky = ? WHERE id = ?").run(zmeny.skratky ? 1 : 0, id);
     if (zmeny.pohlavie !== undefined) this.db.prepare("UPDATE pouzivatelia SET pohlavie = ? WHERE id = ?").run(zmeny.pohlavie, id);
+    if (zmeny.skrytySuhrn !== undefined) this.db.prepare("UPDATE pouzivatelia SET skryty_suhrn = ? WHERE id = ?").run(zmeny.skrytySuhrn ? 1 : 0, id);
     if (zmeny.avatar !== undefined) this.db.prepare("UPDATE pouzivatelia SET avatar = ? WHERE id = ?").run(zmeny.avatar, id);
     return this.podlaId(id);
   }

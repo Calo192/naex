@@ -20,6 +20,8 @@ import {
   DLZKY_HRY,
   IllegalCommandError,
   VERZIA_PRAVIDIEL,
+  bodyTeraz,
+  defOf,
   doplnNaexZKroniky,
   novaKronika,
   zapisDoKroniky,
@@ -54,6 +56,7 @@ import type { StavTempa } from "./tempo.ts";
 import { TempoPartii, fazaPrikazu, noveTempo, zapisPrikaz } from "./tempo.ts";
 import type { Pravo } from "./prava.ts";
 import { POPIS_PRAVA, Prava } from "./prava.ts";
+import { Profily } from "./profily.ts";
 import { Nazory } from "./nazory.ts";
 import { Playtesty } from "./playtesty.ts";
 import { Navrhy } from "./navrhy.ts";
@@ -209,6 +212,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   const archiv = new Archiv(db);
   const tempoPartii = new TempoPartii(db);
   const prava = new Prava(db);
+  const profily = new Profily(db);
   /** Keď používateľ právo nemá, pošle mu chybu a vráti true (ws príkaz sa nevykoná). */
   const bezPrava = (ws: WebSocket, ja: Pouzivatel, pravo: Pravo): boolean => {
     if (prava.smie(ja, pravo)) return false;
@@ -280,6 +284,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           archiv,
           tempoPartii,
           prava,
+          profily,
           nazory,
           playtesty,
           navrhy,
@@ -696,7 +701,12 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         verziaPravidiel: VERZIA_PRAVIDIEL,
         seed: room.seed,
         prikazy: room.prikazy,
-        kronika: room.kronika?.kola ?? null,
+        // Kronika: kolá a záverečné bodovanie (BodyTeraz z jadra, ten istý účet ako na stole) s menami starších.
+        kronika: {
+          kola: room.kronika?.kola ?? [],
+          zaverecne: bodyTeraz(room.data, viewFor(room.data, koniec, 0)),
+          menaStarsich: Object.fromEntries(koniec.starsi.map((e) => [e.elderId, defOf(room.data, e.karta).name])),
+        },
         // Hodnotená (Frajerina) len keď na to majú právo obaja a nehrá človek proti AI
         // playtesterovi ani botovi (Michal 2026-10-22) — inak archív a štatistiky bez zmeny Frajeriny.
         hodnotena: room.bot === null && h0.ai === h1.ai && [h0.id, h1.id].every((id) => {

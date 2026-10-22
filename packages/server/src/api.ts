@@ -19,6 +19,8 @@ import type { Obsah } from "./obsah.ts";
 import type { Archiv } from "./archiv.ts";
 import type { TempoPartii } from "./tempo.ts";
 import type { Prava } from "./prava.ts";
+import type { FilterPartii, Profily } from "./profily.ts";
+import { FILTRE_PARTII } from "./profily.ts";
 import { POPIS_PRAVA, PRAVA, RANKY_HRACOV, jeRankHraca } from "./prava.ts";
 import type { KategoriaNazoru, Nazory, Triedenie } from "./nazory.ts";
 import type { Playtesty } from "./playtesty.ts";
@@ -59,6 +61,8 @@ export interface ApiKontext {
   readonly tempoPartii: TempoPartii;
   /** Ranky a práva (Michal 2026-10-22) — matica rank × právo a pravidlá postupu. */
   readonly prava: Prava;
+  /** Zoznam a detail partií pre profily (Michal 2026-10-22). */
+  readonly profily: Profily;
   readonly nazory: Nazory;
   readonly playtesty: Playtesty;
   /** Návrhy zlepšení z playtestov a rozhodnutia o nich (sekcia Playtest). */
@@ -338,6 +342,7 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
           ...(b.skore !== undefined ? { skore: overSkore(b.skore) } : {}),
           ...(b.skratky !== undefined ? { skratky: overPrepinac(b.skratky, "Klávesové skratky") } : {}),
           ...(b.pohlavie !== undefined ? { pohlavie: overPohlavie(b.pohlavie) } : {}),
+          ...(b.skrytySuhrn !== undefined ? { skrytySuhrn: overPrepinac(b.skrytySuhrn, "Skryť môj súhrn") } : {}),
         }),
       });
     }
@@ -429,6 +434,26 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     }
 
     // ----- profily hráčov a rebríček (pre prihlásených) -----------------
+    // Partie hráča (Michal 2026-10-22): len vlastník a správca — ostatným 404, akoby neboli.
+    if (metoda === "GET" && casti[1] === "hraci" && casti[3] === "partie" && casti.length === 4) {
+      const p = prihlaseny();
+      const id = Number(casti[2]);
+      if (!Number.isInteger(id) || (id !== p.id && !jeSpravca(p.rola)) || ctx.ucty.podlaId(id) === null) throw new ChybaVstupu("Taký hráč neexistuje.", 404);
+      const f = query.get("filter") ?? "spolu";
+      if (!(FILTRE_PARTII as readonly string[]).includes(f)) throw new ChybaVstupu("Filter: ludia, boti alebo spolu.");
+      const od = Math.max(0, Math.floor(Number(query.get("od") ?? 0)) || 0);
+      const limit = Math.min(100, Math.max(1, Math.floor(Number(query.get("limit") ?? 20)) || 20));
+      return ok(ctx.profily.partieHraca(id, f as FilterPartii, od, limit, jeSpravca(p.rola)));
+    }
+    // Detail partie: účastník (svoja strana plná, súperova verejná) a správca.
+    if (metoda === "GET" && casti[1] === "partie" && casti.length === 3) {
+      const p = prihlaseny();
+      const id = Number(casti[2]);
+      const detail = Number.isInteger(id) ? ctx.profily.detail(id, p.id, jeSpravca(p.rola)) : null;
+      if (detail === null) throw new ChybaVstupu("Taká partia neexistuje.", 404);
+      return ok(detail);
+    }
+
     if (metoda === "GET" && casti[1] === "hraci" && casti.length === 3) {
       const p = prihlaseny();
       const id = Number(casti[2]);
