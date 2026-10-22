@@ -101,7 +101,7 @@ describe("archív partií a profil", () => {
       statistiky: { partie: number; tahy: number };
       partie: { vysledok: string; dovod: string; super: { id: number; meno: string }; frajerina: { pred: number; po: number } }[];
       superi: { id: number; vyhry: number }[];
-    }>(eva, "GET", `/hraci/${idJano}`);
+    }>(jano, "GET", `/hraci/${idJano}`);
     expect(profil.status).toBe(200);
     expect(profil.data.frajerina).toMatchObject({ hodnota: 1216, partie: 1, vyhry: 1, provizorna: true, poradie: 1 });
     expect(profil.data.historia.map((h) => h.hodnota)).toEqual([1200, 1216]);
@@ -110,6 +110,10 @@ describe("archív partií a profil", () => {
     expect(profil.data.partie[0]?.dovod).toContain("Partiu vzdáva");
     expect(profil.data.partie[0]?.super.id).toBe(idEva);
     expect(profil.data.superi[0]).toMatchObject({ id: idEva, vyhry: 1 });
+
+    // Cudzí (Michal 2026-10-22): bez zoznamu partií a súperov, s formou a bilanciou „vy dvaja“ z pohľadu volajúceho.
+    const cudzi = await volaj<{ pohlad: string; partie: unknown[]; superi: unknown[]; forma: string[]; vyDvaja: { partie: number; prehry: number } }>(eva, "GET", `/hraci/${idJano}`);
+    expect(cudzi.data).toMatchObject({ pohlad: "cudzi", partie: [], superi: [], forma: ["vyhra"], vyDvaja: { partie: 1, prehry: 1 } });
 
     // Odveta: Jano sa vzdá, Eva si polepší viac, než by získala proti rovnému.
     const odveta = await partiaSoVzdanim(jano, eva, 0);
@@ -130,6 +134,37 @@ describe("archív partií a profil", () => {
     // Nový hráč bez partií má štartovú Frajerinu a žiadne poradie.
     const p = await volaj<{ frajerina: { hodnota: number; poradie: number | null } }>(ja, "GET", `/hraci/${await idHraca(ja)}`);
     expect(p.data.frajerina).toMatchObject({ hodnota: 1200, poradie: null });
+  });
+
+  it("AI playtester je hráčom skrytý: profil 404, mimo rebríčka; partia človeka proti AI Frajerinu nemení", async () => {
+    const admin = await prihlas(server.port, TEST_ADMIN.login, TEST_ADMIN.heslo);
+    const clovek = (await registruj(server.port)).cookie;
+    const ai = (await registruj(server.port)).cookie;
+    const ai2 = (await registruj(server.port)).cookie;
+    const [idCloveka, idAi, idAi2] = [await idHraca(clovek), await idHraca(ai), await idHraca(ai2)];
+    for (const id of [idAi, idAi2]) expect((await volaj(admin, "PATCH", `/admin/pouzivatelia/${id}`, { ai: true })).status).toBe(200);
+
+    // Človek proti AI: partia sa zapíše, Frajerina sa nehne (Michal 2026-10-22).
+    const proti = await partiaSoVzdanim(clovek, ai, 1);
+    expect(proti.zmeny).toEqual([{ pred: FRAJERINA_START, po: FRAJERINA_START }, { pred: FRAJERINA_START, po: FRAJERINA_START }]);
+    // AI proti AI sa hodnotí — vidia ju len správcovia.
+    const medziAi = await partiaSoVzdanim(ai, ai2, 1);
+    expect(medziAi.zmeny[0]?.po).toBeGreaterThan(FRAJERINA_START);
+
+    expect((await volaj(clovek, "GET", `/hraci/${idAi}`)).status).toBe(404);
+    const preSpravcu = await volaj<{ pohlad: string; skryty: boolean }>(admin, "GET", `/hraci/${idAi}`);
+    expect(preSpravcu.status).toBe(200);
+    expect(preSpravcu.data).toMatchObject({ pohlad: "spravca", skryty: true });
+    expect((await volaj(ai, "GET", `/hraci/${idAi}`)).status).toBe(200);
+
+    const rebricekHraca = await volaj<{ hraci: { id: number }[] }>(clovek, "GET", "/rebricek");
+    expect(rebricekHraca.data.hraci.some((h) => h.id === idAi || h.id === idAi2)).toBe(false);
+    const rebricekSpravcu = await volaj<{ hraci: { id: number }[] }>(admin, "GET", "/rebricek");
+    expect(rebricekSpravcu.data.hraci.some((h) => h.id === idAi)).toBe(true);
+    // Človek má partiu v profile, ale Frajerinu bez zmeny.
+    const vlastny = await volaj<{ frajerina: { hodnota: number; partie: number }; statistiky: { partie: number } }>(clovek, "GET", `/hraci/${idCloveka}`);
+    expect(vlastny.data.frajerina).toMatchObject({ hodnota: FRAJERINA_START, partie: 0 });
+    expect(vlastny.data.statistiky.partie).toBe(1);
   });
 
   it("kontumácia: kým je súper pripojený, výhru si vyžiadať nemožno", async () => {

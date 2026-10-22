@@ -432,16 +432,21 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     if (metoda === "GET" && casti[1] === "hraci" && casti.length === 3) {
       const p = prihlaseny();
       const id = Number(casti[2]);
-      // Vlastný profil vidí každý; cudzie podľa práva ranku.
+      // Vlastný profil vidí každý; cudzie podľa práva ranku. AI playtester je
+      // hráčom skrytý — odpoveď sa nelíši od neexistujúceho účtu (Michal 2026-10-22).
       if (id !== p.id) ctx.prava.vyzaduj(p, "profily_inych");
-      const profil = Number.isInteger(id) ? ctx.archiv.profil(id) : null;
+      const ciel = Number.isInteger(id) ? ctx.ucty.podlaId(id) : null;
+      if (ciel === null || (ciel.ai && !jeSpravca(p.rola) && ciel.id !== p.id)) throw new ChybaVstupu("Taký hráč neexistuje.", 404);
+      const pohlad = id === p.id ? "vlastny" : jeSpravca(p.rola) ? "spravca" : "cudzi";
+      const profil = ctx.archiv.profil(id, pohlad, p.id);
       if (profil === null) throw new ChybaVstupu("Taký hráč neexistuje.", 404);
       return ok(profil);
     }
 
     if (r === "GET /rebricek") {
-      ctx.prava.vyzaduj(prihlaseny(), "profily_inych");
-      return ok({ hraci: ctx.archiv.rebricek() });
+      const p = prihlaseny();
+      ctx.prava.vyzaduj(p, "profily_inych");
+      return ok({ hraci: ctx.archiv.rebricek(100, jeSpravca(p.rola)) });
     }
 
     // Reporty playtestov pre ranky s právom (správcovia ich majú aj v /admin/playtesty).
