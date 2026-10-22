@@ -763,7 +763,7 @@ function textUdalosti(e: Event, mena: readonly string[], ja: PlayerId): string |
     case "manualEfekt":
       return `⚠ EFEKT, ktorý hra nevyhodnocuje automaticky: ${e.nazov} — ${e.text}`;
     case "bitkaVysledok":
-      return `Bitka: tuhé ${e.damage.tuhe[ja]}:${e.damage.tuhe[ja === 0 ? 1 : 0]} (ty:súper), celkové ${e.damage.celkove[ja]}:${e.damage.celkove[ja === 0 ? 1 : 0]} — vyhráva ${e.vitaz === null ? "nikto" : m(e.vitaz)}${e.prebytok > 0 ? `, prebytok ${e.prebytok}` : ""}.`;
+      return `Bitka: tuhé ${e.damage.tuhe[ja]}:${e.damage.tuhe[ja === 0 ? 1 : 0]} (ty:súper), celkové ${e.damage.celkove[ja]}:${e.damage.celkove[ja === 0 ? 1 : 0]} — vyhráva ${e.vitaz === null ? "nikto" : m(e.vitaz)}${e.prebytok > 0 ? `, prebytok ${e.prebytok}${e.prebytokNaRozdelenie < e.prebytok ? ` (po Puške ${e.prebytokNaRozdelenie})` : ""}` : ""}.`;
     case "koniec":
       return `KONIEC: vyhral ${e.vitaz === null ? "nikto (remíza)" : m(e.vitaz)}. ${e.dovod}${e.body ? ` Body ${e.body[0]}:${e.body[1]} (hráč 1 : hráč 2).` : ""}`;
     default:

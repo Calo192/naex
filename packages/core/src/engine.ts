@@ -29,7 +29,7 @@ import {
   textNeresti,
   velkostBalicka,
 } from "./player.ts";
-import type { BattleSide, DamageResult } from "./battle.ts";
+import type { BattleOutcome, BattleSide, DamageResult } from "./battle.ts";
 import { battleOutcome, computeDamage, dlhyPoExekucii, exekutorCheck } from "./battle.ts";
 import type { ElderState, MarkerPos } from "./elders.ts";
 import {
@@ -362,6 +362,8 @@ export type Event =
       /** null = remíza v tuhom: lokalita ide na sekeru. */
       readonly vitaz: PlayerId | null;
       readonly prebytok: number;
+      /** Prebytok po zľave Pušky — toľko držiteľ naozaj rozdelí. */
+      readonly prebytokNaRozdelenie: number;
       readonly prebytokDrzi: PlayerId | null;
       /** Karty v línii pri vyhodnotení (verejné) — štatistiky kariet pre tvorcu. */
       readonly karty: readonly KartaVBitke[];
@@ -2453,7 +2455,7 @@ function spalZLinie(
 }
 
 /** Súčty akcií a Pohoršenia z aktuálnej línie (Benzínka ju môže zmeniť). */
-function nastavSumy(s: MutState, data: GameData): void {
+function nastavSumy(s: MutState, data: GameData, events: Event[]): void {
   const b = s.bitkaStav;
   if (b === null) return;
   const sums = evaluateLine(data, lineState(s as GameState)).sums;
@@ -2461,11 +2463,24 @@ function nastavSumy(s: MutState, data: GameData): void {
   // Patronát: súper patróna dostane Pohoršenia navyše (o koľko marker išiel do
   // stredu) — strach, ktorý spôsobil, mu tak neprepadne (Michal 2026-10-20).
   const zPatronatu = (p: PlayerId): number => s.patronat[opponentOf(p)]?.pohorsenia ?? 0;
-  b.pohorsenieZostava = [
+  const pohorsenie = (p: PlayerId): number => {
+    const zLinie = sums[p].Pohoršenie ?? 0;
+    const spolu = zLinie + zPatronatu(p);
+    const proti = opponentOf(p);
+    if (spolu === 0) return 0;
     // policajtka: súperove Pohoršenia proti tebe neplatia — aj tie z patronátu.
-    pohorseniaNeplatia(data, s as GameState, 1) ? 0 : (sums[0].Pohoršenie ?? 0) + zPatronatu(0),
-    pohorseniaNeplatia(data, s as GameState, 0) ? 0 : (sums[1].Pohoršenie ?? 0) + zPatronatu(1),
-  ];
+    // Hlásiť, inak hráči tiché zrušenie považovali za chybu (playtest 20261021-143600).
+    if (pohorseniaNeplatia(data, s as GameState, proti)) {
+      const pat = zLinie === spolu ? "" : ` (${spolu - zLinie} z patronátu)`;
+      events.push({ type: "log", text: `Policajtka: ${spolu} Pohoršení hráča ${p + 1}${pat} proti hráčovi ${proti + 1} neplatí.` });
+      return 0;
+    }
+    if (efektHraca(s as GameState, proti, "policajtka")) {
+      events.push({ type: "log", text: `Praudovravec umlčal Policajtku hráča ${proti + 1} — Pohoršenia hráča ${p + 1} platia.` });
+    }
+    return spolu;
+  };
+  b.pohorsenieZostava = [pohorsenie(0), pohorsenie(1)];
 }
 
 /** Ženie bitku dopredu, kým nenarazí na rozhodnutie hráča alebo koniec. */
@@ -2486,7 +2501,7 @@ function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
       spalZLinie(s, data, p, obcania.map((o) => o.card.uid), "Benzínka", events);
       b.benzinkaZostava[p] = 0;
     }
-    nastavSumy(s, data);
+    nastavSumy(s, data, events);
     b.krok = "exekutor";
   }
 
@@ -2551,6 +2566,15 @@ function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
   if (b.krok === "prebytok") {
     while (b.prebytokZostava > 0 && b.prebytokDrzi !== null) {
       if (!existujeLegalnyPrebytok(s, b.prebytokDrzi)) {
+        // Hlásiť, inak hráči tiché prepadnutie považovali za chybu (playtest 20261021-143600).
+        const cena = cenaPosunuPrebytkom(s as GameState, b.prebytokDrzi);
+        events.push({
+          type: "log",
+          text:
+            b.prebytokZostava < cena
+              ? `Prebytok ${b.prebytokZostava} prepadol — posun markera stojí hráča ${b.prebytokDrzi + 1} ${cena} (Miňištrant).`
+              : `Prebytok ${b.prebytokZostava} prepadol — žiadny marker sa nedá posunúť k hráčovi ${opponentOf(b.prebytokDrzi) + 1}.`,
+        });
         b.prebytokZostava = 0;
         break;
       }
@@ -2916,6 +2940,15 @@ function cmdPohorsenie(
   pokracujBitku(s, data, events);
 }
 
+/**
+ * Prebytok, ktorý držiteľ naozaj rozdelí — puska (Dedičstvo): proti jej
+ * majiteľovi o 2 menší. Jeden výpočet pre bitku aj odhad bitky v klientovi.
+ */
+export function prebytokNaRozdelenie(s: VerejnyStav, outcome: BattleOutcome): number {
+  if (outcome.prebytokDrzi === null) return 0;
+  return Math.max(0, outcome.prebytok - prebytokProtiZlava(s, opponentOf(outcome.prebytokDrzi)));
+}
+
 /** Poškodenie + výsledok (PRAVIDLA §8.3–8.4) — čisto automatické. */
 function vyhodnotPoskodenie(s: MutState, data: GameData, events: Event[]): void {
   const b = s.bitkaStav;
@@ -2926,11 +2959,7 @@ function vyhodnotPoskodenie(s: MutState, data: GameData, events: Event[]): void 
   b.damage = damage as DeepMutable<DamageResult>;
   b.vitaz = outcome.vitaz;
   b.prebytokDrzi = outcome.prebytokDrzi;
-  // puska (Dedičstvo): prebytok, ktorý súper rozdeľuje proti jej majiteľovi, je o 2 menší.
-  b.prebytokZostava =
-    outcome.prebytokDrzi === null
-      ? 0
-      : Math.max(0, outcome.prebytok - prebytokProtiZlava(s as GameState, opponentOf(outcome.prebytokDrzi)));
+  b.prebytokZostava = prebytokNaRozdelenie(s, outcome);
   b.krok = "prebytok";
   events.push({
     type: "bitkaVysledok",
@@ -2938,9 +2967,16 @@ function vyhodnotPoskodenie(s: MutState, data: GameData, events: Event[]): void 
     sums: b.sums as readonly [ActionSums, ActionSums],
     vitaz: outcome.vitaz,
     prebytok: outcome.prebytok,
+    prebytokNaRozdelenie: b.prebytokZostava,
     prebytokDrzi: outcome.prebytokDrzi,
     karty: prispevkyKariet(lineState(s as GameState), evaluateLine(data, lineState(s as GameState))),
   });
+  if (outcome.prebytokDrzi !== null && b.prebytokZostava < outcome.prebytok) {
+    events.push({
+      type: "log",
+      text: `Puška hráča ${opponentOf(outcome.prebytokDrzi) + 1}: prebytok ${outcome.prebytok} → ${b.prebytokZostava}.`,
+    });
+  }
   manualEfekty(s, data, "Výhra", events);
   manualEfekty(s, data, "Prehra", events);
 }

@@ -33,7 +33,9 @@ import {
   STUPNICA_ZONY,
   bodyTeraz,
   cenaKliatby,
+  battleOutcome,
   cenaPrebytku,
+  prebytokNaRozdelenie,
   nahladPitky,
   cieleVykladania,
   cielLokalitaId,
@@ -266,6 +268,7 @@ interface UcetBitky {
   readonly tuhe: readonly [number, number];
   readonly vitaz: PlayerId | null;
   readonly prebytok: number;
+  readonly prebytokNaRozdelenie: number;
   readonly prebytokDrzi: PlayerId | null;
   readonly lokality: readonly { readonly meno: string; readonly komu: PlayerId | null; readonly ako: "ovladol" | "sekera" | "prepadla" }[];
   readonly posuny: readonly { readonly meno: string; readonly pred: number; readonly po: number }[];
@@ -1004,6 +1007,7 @@ export function HernaPlocha({
       tuhe: v?.damage.tuhe ?? [0, 0],
       vitaz: v?.vitaz ?? null,
       prebytok: v?.prebytok ?? 0,
+      prebytokNaRozdelenie: v?.prebytokNaRozdelenie ?? 0,
       prebytokDrzi: v?.prebytokDrzi ?? null,
       lokality,
       posuny,
@@ -2725,6 +2729,7 @@ export function HernaPlocha({
           cenaPrebytku({ strany: view.strany } as unknown as GameState, 0),
           cenaPrebytku({ strany: view.strany } as unknown as GameState, 1),
         ]}
+        prebytokNaRozdelenie={prebytokNaRozdelenie(view, battleOutcome(b?.damage ?? odhad))}
       />
     );
 
@@ -3182,7 +3187,7 @@ export function HernaPlocha({
           <li>
             Tuhé {ucetBitky.tuhe[ja]} : {ucetBitky.tuhe[super_]}
             {ucetBitky.prebytokDrzi !== null &&
-              ` · prebytok ${ucetBitky.prebytok} → ${ucetBitky.prebytokDrzi === ja ? "ty" : menoHraca(ucetBitky.prebytokDrzi)}`}
+              ` · prebytok ${ucetBitky.prebytok}${ucetBitky.prebytokNaRozdelenie < ucetBitky.prebytok ? ` − Puška = ${ucetBitky.prebytokNaRozdelenie}` : ""} → ${ucetBitky.prebytokDrzi === ja ? "ty" : menoHraca(ucetBitky.prebytokDrzi)}`}
           </li>
           {ucetBitky.lokality.length > 0 && (
             <li>

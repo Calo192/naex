@@ -877,9 +877,11 @@ export interface BitkaPanelProps {
   readonly poslednaBitka: boolean;
   /** Koľko stojí posun markera prebytkom, keby hráč bitku vyhral (Miňištrant); porazený platí 1. */
   readonly cenaPosunuVitaza: readonly [number, number];
+  /** Prebytok po zľave Pušky (prebytokNaRozdelenie) — toľko sa naozaj rozdelí. */
+  readonly prebytokNaRozdelenie: number;
 }
 
-export function BitkaPanel({ damage, sums, zdroje, rozpis, ja, vysledok, mena, sada, ciel, menoKarty, naSekeru, poslednaBitka, cenaPosunuVitaza }: BitkaPanelProps) {
+export function BitkaPanel({ damage, sums, zdroje, rozpis, ja, vysledok, mena, sada, ciel, menoKarty, naSekeru, poslednaBitka, cenaPosunuVitaza, prebytokNaRozdelenie }: BitkaPanelProps) {
   const su = (ja === 0 ? 1 : 0) as PlayerId;
   // Remíza (Michal 2026-10-21): pri rovnakom tuhom nevyhrá nikto — lokalita ide na sekeru (PRAVIDLA §8.4).
   const { vitaz, prebytok, prebytokDrzi } = battleOutcome(damage);
@@ -901,7 +903,7 @@ export function BitkaPanel({ damage, sums, zdroje, rozpis, ja, vysledok, mena, s
           : `Prehrávaš o ${rozdiel}`;
   // Prebytok: posun stojí 1, víťaza s Miňištrantom viac — koľko posunov z neho reálne bude.
   const cenaPosunu = prebytokDrzi === null ? 1 : prebytokDrzi === vitaz ? cenaPosunuVitaza[prebytokDrzi] : 1;
-  const posunov = Math.floor(prebytok / Math.max(1, cenaPosunu));
+  const posunov = Math.floor(prebytokNaRozdelenie / Math.max(1, cenaPosunu));
 
   const strana = (p: PlayerId, zarovnanie: "vlavo" | "vpravo") => (
     <StranaBitky
@@ -935,7 +937,7 @@ export function BitkaPanel({ damage, sums, zdroje, rozpis, ja, vysledok, mena, s
         <span className="bitka-pozn">
           {prebytokDrzi === null
             ? "prebytok: nikto"
-            : `prebytok ${prebytok} → ${prebytokDrzi === ja ? "tebe" : mena[su]} · ${posunov} ${posunov === 1 ? "posun" : posunov >= 2 && posunov <= 4 ? "posuny" : "posunov"} (posun stojí ${cenaPosunu}${cenaPosunu > 1 ? ", Miňištrant" : ""})`}
+            : `prebytok ${prebytok}${prebytokNaRozdelenie < prebytok ? ` − Puška = ${prebytokNaRozdelenie}` : ""} → ${prebytokDrzi === ja ? "tebe" : mena[su]} · ${posunov} ${posunov === 1 ? "posun" : posunov >= 2 && posunov <= 4 ? "posuny" : "posunov"} (posun stojí ${cenaPosunu}${cenaPosunu > 1 ? ", Miňištrant" : ""})`}
         </span>
         {!vysledok && rozdiel !== 0 && <span className="bitka-pozn tlmene">pri remíze: {coPriRemize}</span>}
         {!vysledok && <span className="bitka-pozn tlmene">podľa aktuálnej línie; súperove Absťáky v ruke nevidno</span>}
