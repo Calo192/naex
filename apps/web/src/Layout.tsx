@@ -1,6 +1,8 @@
 // Kostra stránky: hlavička s navigáciou (podľa roly) a obsah.
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { api } from "./lib/api.ts";
+import { NOVINKY_VIDENE, citajVidene } from "./lib/novinky.ts";
 import { Odkaz, chod, useCesta } from "./lib/router.tsx";
 import { NAZOV_UROVNE, jeSpravca, useUcet } from "./lib/ucet.tsx";
 import { Avatar } from "./komponenty.tsx";
@@ -17,6 +19,37 @@ const NAVIGACIA: readonly { readonly href: string; readonly text: string; readon
   { href: "/admin", text: "Tvorba", admin: true },
 ];
 
+/**
+ * Koľko noviniek pribudlo od poslednej návštevy stránky Novinky (roadmapa #20) —
+ * prihlásenému to ráta server, návštevníkovi od času uloženého v prehliadači.
+ * Zistí sa pri každom prechode na inú stránku; na Novinkách je 0.
+ */
+function useNoveNovinky(cesta: string, nacitane: boolean, prihlaseny: boolean): number {
+  const [pocet, setPocet] = useState(0);
+  useEffect(() => {
+    const zhasni = (): void => setPocet(0);
+    window.addEventListener(NOVINKY_VIDENE, zhasni);
+    return () => window.removeEventListener(NOVINKY_VIDENE, zhasni);
+  }, []);
+  useEffect(() => {
+    if (!nacitane || cesta === "/novinky") return;
+    const od = prihlaseny ? null : citajVidene();
+    // Návštevník, ktorý Novinky ešte neotvoril, značku nevidí — všetko by bolo „nové“.
+    if (!prihlaseny && od === null) return;
+    let zive = true;
+    api
+      .get<{ pocet: number }>(od === null ? "/novinky/nove" : `/novinky/nove?od=${od}`)
+      .then((r) => {
+        if (zive) setPocet(r.pocet);
+      })
+      .catch(() => undefined);
+    return () => {
+      zive = false;
+    };
+  }, [cesta, nacitane, prihlaseny]);
+  return cesta === "/novinky" ? 0 : pocet;
+}
+
 /** siroky = do 1600 px; plna = celé okno pod hlavičkou bez posúvania stránky a bez pätičky (pravidlá). */
 export function Layout({
   children,
@@ -32,6 +65,7 @@ export function Layout({
   const [menu, setMenu] = useState(false);
   const [mobilne, setMobilne] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const noveNovinky = useNoveNovinky(cesta, nacitane, ja !== null);
 
   useEffect(() => {
     setMenu(false);
@@ -55,7 +89,12 @@ export function Layout({
             <span className="logo-pohar" aria-hidden="true" />
             NA EX!
           </Odkaz>
-          <button className="hamburger" aria-label="Menu" aria-expanded={mobilne} onClick={() => setMobilne(!mobilne)}>
+          <button
+            className={noveNovinky > 0 ? "hamburger ma-novinky" : "hamburger"}
+            aria-label={noveNovinky > 0 ? "Menu (nové novinky)" : "Menu"}
+            aria-expanded={mobilne}
+            onClick={() => setMobilne(!mobilne)}
+          >
             <span />
             <span />
             <span />
@@ -64,6 +103,11 @@ export function Layout({
             {NAVIGACIA.filter((n) => n.admin !== true || (ja !== null && jeSpravca(ja.rola))).map((n) => (
               <Odkaz key={n.href} href={n.href} className={cesta === n.href || cesta.startsWith(`${n.href}/`) ? "aktivna" : undefined}>
                 {n.text}
+                {n.href === "/novinky" && noveNovinky > 0 && (
+                  <span className="nav-znacka" aria-label={`${noveNovinky} ${noveNovinky === 1 ? "nová" : noveNovinky < 5 ? "nové" : "nových"}`}>
+                    {noveNovinky > 9 ? "9+" : noveNovinky}
+                  </span>
+                )}
               </Odkaz>
             ))}
           </nav>

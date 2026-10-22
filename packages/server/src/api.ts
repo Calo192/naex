@@ -405,8 +405,18 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       throw new ChybaVstupu("Neznáma cesta.", 404);
     }
 
-    // Novinky čítajú aj návštevníci; zápis je v /admin/novinky.
-    if (r === "GET /novinky") return ok({ novinky: ctx.novinky.zoznam() });
+    // Novinky čítajú aj návštevníci; zápis je v /admin/novinky. Kedy ich kto
+    // naposledy videl, pamätá server len prihláseným — návštevník posiela `od`
+    // zo svojho prehliadača.
+    if (r === "GET /novinky") return ok({ novinky: ctx.novinky.zoznam(), videne: ja === null ? null : ctx.novinky.videne(ja.id) });
+    if (r === "GET /novinky/nove") {
+      const od = ja !== null ? ctx.novinky.videne(ja.id) : Number(query.get("od"));
+      return ok({ pocet: Number.isFinite(od) && od > 0 ? ctx.novinky.pocetOd(od) : 0 });
+    }
+    if (r === "POST /novinky/videne") {
+      ctx.novinky.oznacVidene(prihlaseny().id, teraz);
+      return ok({ ok: true });
+    }
 
     // ----- profily hráčov a rebríček (pre prihlásených) -----------------
     if (metoda === "GET" && casti[1] === "hraci" && casti.length === 3) {
