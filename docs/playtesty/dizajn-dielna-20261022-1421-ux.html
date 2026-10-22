@@ -1,0 +1,1019 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UX návrh — Dielňa: hráči navrhujú karty (dielna-20261022-1421)</title>
+<style>
+:root{--bg:#14110e;--pl:#1e1914;--pl2:#2a231c;--tx:#f1e8d8;--sl:#b9ab95;--ja:#e9ad45;--te:#e0644c;--ze:#7cbf74;--mo:#6fb3d2;--ok:#3a3128;--wf:#3b342c;--wf2:#4a4239;--wf3:#5a5146}
+@media (prefers-color-scheme: light){:root{--bg:#f7f2ea;--pl:#fffaf2;--pl2:#efe6d8;--tx:#221a12;--sl:#5d5245;--ja:#8a5a00;--te:#a8331f;--ze:#2f7a28;--mo:#1d6b8f;--ok:#d9cdb9;--wf:#e3dccf;--wf2:#d2c8b8;--wf3:#c2b7a5}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:1180px;margin:0 auto;padding:24px 16px 64px}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;line-height:1.25}
+h1{font-size:1.9rem;margin:.2em 0 .3em}
+h2{font-size:1.45rem;margin:2.2em 0 .6em;border-bottom:1px solid var(--ok);padding-bottom:.25em}
+h3{font-size:1.15rem;margin:1.4em 0 .4em}
+h4{font-size:1rem;margin:1em 0 .3em}
+a{color:var(--ja)}
+a:focus-visible,button:focus-visible,summary:focus-visible,select:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px solid var(--ja);outline-offset:2px}
+code{font-size:.88em;overflow-wrap:anywhere}
+.skok{position:absolute;left:-9999px}.skok:focus{left:16px;top:8px;background:var(--ja);color:#14110e;padding:8px 12px;border-radius:6px;z-index:9}
+.meta{color:var(--sl);font-size:.93rem}
+.verdikt{background:var(--pl);border-left:4px solid var(--ja);padding:12px 16px;border-radius:6px}
+.mriezka{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.dlazdica{background:var(--pl);border:1px solid var(--ok);border-radius:8px;padding:12px 14px}
+.dlazdica b{color:var(--ja)}
+.dlazdica ul{margin:.3em 0 0;padding-left:1.2em}
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+th,td{text-align:left;vertical-align:top;padding:8px;border-bottom:1px solid var(--ok)}
+th{color:var(--sl);font-weight:600}
+.tab-obal{overflow-x:auto}
+.z{display:inline-block;min-width:1.7em;text-align:center;border-radius:4px;padding:0 .3em;font-weight:700;color:#14110e}
+.z4{background:#e0644c}.z3{background:#e9ad45}.z2{background:#c8b98f}.z1{background:#8f8574}
+.stitok{display:inline-block;font-size:.78rem;border:1px solid var(--ok);border-radius:999px;padding:0 .55em;margin:0 .2em .2em 0;color:var(--sl)}
+.stitok.mala{border-color:var(--ze);color:var(--ze)}
+.stitok.stredna{border-color:var(--ja);color:var(--ja)}
+.stitok.velka{border-color:var(--te);color:var(--te)}
+.stitok.odp{border-color:var(--ze);color:var(--ze);font-weight:700}
+.filtre{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 12px}
+.filtre button{min-height:44px;padding:0 14px;border-radius:6px;border:1px solid var(--ok);background:var(--pl);color:var(--tx);font:inherit;cursor:pointer}
+.filtre button[aria-pressed="true"]{background:var(--ja);color:#14110e;border-color:var(--ja)}
+figure{margin:12px 0 18px;background:var(--pl);border:1px solid var(--ok);border-radius:8px;padding:8px}
+figure img{max-width:100%;height:auto;display:block;border-radius:4px}
+figure.uzka img{max-width:280px;margin:0 auto}
+figure.orez{max-height:640px;overflow:auto}
+.dve{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+@media (max-width:760px){.dve{grid-template-columns:1fr}}
+figcaption{font-size:.88rem;color:var(--sl);padding:6px 4px 0}
+.tok{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+@media (max-width:700px){.tok{grid-template-columns:1fr}}
+.tok>div{background:var(--pl2);border:1px solid var(--ok);border-radius:8px;padding:10px 14px}
+.tok ol{margin:0;padding-left:1.3em}
+.pred h4{color:var(--te)}.po h4{color:var(--ze)}
+.navrh{background:var(--pl);border:1px solid var(--ok);border-radius:10px;padding:4px 18px 16px;margin:18px 0}
+.navrh>h3{margin-top:.9em}
+.navrh dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:8px 0}
+.navrh dt{color:var(--sl);font-weight:600}
+.navrh dd{margin:0}
+@media (max-width:600px){.navrh dl{grid-template-columns:1fr}.navrh dt{margin-top:6px}}
+.rozh{background:var(--pl);border:1px solid var(--ok);border-radius:10px;padding:4px 18px 14px;margin:16px 0}
+.varianty{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.var{background:var(--pl2);border:1px solid var(--ok);border-radius:8px;padding:8px 12px}
+.var.odporucany{border:2px solid var(--ze)}
+.var h4{margin:.3em 0}
+details{margin:8px 0}
+summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:600}
+.citat{border-left:3px solid var(--mo);padding:4px 12px;margin:8px 0;color:var(--sl);font-style:italic}
+.pozn{font-size:.88rem;color:var(--sl)}
+.toc{columns:2 260px;background:var(--pl);border:1px solid var(--ok);border-radius:8px;padding:10px 16px 10px 34px}
+.toc li{margin:2px 0}
+/* drôtené modely */
+.wf{background:var(--wf);border:1px dashed var(--wf3);border-radius:8px;padding:12px;color:var(--tx);font-size:.9rem;line-height:1.4}
+.wf .blok{background:var(--wf2);border-radius:6px;padding:8px 10px;margin:6px 0}
+.wf .sivy{background:var(--wf2);border-radius:4px;height:10px;margin:6px 0}
+.wf .tl{display:inline-block;border:1px solid var(--sl);border-radius:6px;padding:4px 10px;margin:4px 4px 0 0;font-size:.85rem;background:transparent;color:var(--tx);font-family:inherit}
+.wf .tl.hl{background:var(--sl);color:var(--bg);font-weight:700}
+.wf .tl.nebezp{border-color:var(--te);color:var(--te)}
+.wf h5{margin:0 0 6px;font:700 1rem Georgia,serif}
+.wf h6{margin:8px 0 4px;font:700 .85rem system-ui,sans-serif;color:var(--sl);text-transform:uppercase;letter-spacing:.04em}
+.wf .male{font-size:.8rem;color:var(--sl)}
+.wf .cip{display:inline-block;border:1px solid var(--wf3);border-radius:999px;padding:2px 10px;margin:2px 3px 2px 0;font-size:.8rem}
+.wf .cip.on{background:var(--tx);color:var(--bg)}
+.wf .pole{border:1px solid var(--wf3);border-radius:6px;padding:6px 8px;margin:3px 0 8px;background:var(--wf)}
+.wf .chyba{border-left:3px solid var(--te);padding:4px 8px;margin:6px 0;font-size:.85rem}
+.wf .info{border-left:3px solid var(--mo);padding:4px 8px;margin:6px 0;font-size:.85rem}
+.wf .okk{border-left:3px solid var(--ze);padding:4px 8px;margin:6px 0;font-size:.85rem}
+.wf .stav{display:inline-block;font-size:.75rem;border-radius:4px;padding:0 6px;border:1px solid var(--sl)}
+.wf .r{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.wf .r.medzi{justify-content:space-between}
+.wf .lista{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--wf3);padding-bottom:6px;margin-bottom:8px}
+.wf .lista .tl{margin:0}
+.wf-desk{display:grid;gap:12px}
+.wf-dva{grid-template-columns:1.3fr 1fr}
+.wf-dva2{grid-template-columns:1fr 300px}
+@media (max-width:820px){.wf-dva,.wf-dva2{grid-template-columns:1fr}}
+.kmini{width:100%;aspect-ratio:54/80;border-radius:8px;background:var(--wf2);display:grid;grid-template-rows:56% 14% 30%;overflow:hidden;border:1px solid var(--wf3)}
+.kmini .il{position:relative;background:repeating-linear-gradient(45deg,var(--wf2) 0 8px,var(--wf3) 8px 16px)}
+.kmini .nz{background:var(--wf3);display:flex;align-items:center;justify-content:center;font:700 .8rem Georgia,serif;text-align:center;padding:2px}
+.kmini .ef{background:var(--wf);font-size:.62rem;padding:3px 5px;line-height:1.25;overflow:hidden}
+.kmini .sl{position:absolute;top:8%;bottom:8%;display:flex;flex-direction:column;justify-content:space-between;width:18%}
+.kmini .sl.l{left:4%}.kmini .sl.p{right:4%}
+.kmini .sl span{aspect-ratio:1;border-radius:4px;background:var(--tx);opacity:.85;font-size:.5rem;color:var(--bg);display:flex;align-items:center;justify-content:center;font-weight:700}
+.kmini .sl span.x{background:transparent;border:1px dashed var(--sl);opacity:.6}
+.kmini .sl span.z{background:transparent;opacity:0}
+.mrz{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.dlz{background:var(--wf2);border-radius:8px;padding:6px;font-size:.8rem}
+.dlz .kmini{margin-bottom:5px}
+.tel{max-width:390px;width:100%;margin:0 auto;border:2px solid var(--wf3);border-radius:22px;padding:10px 10px 14px;background:var(--wf);position:relative}
+.tel .hl-tel{display:flex;justify-content:space-between;align-items:center;font-weight:700;border-bottom:1px solid var(--wf3);padding-bottom:6px;margin-bottom:8px}
+.tel .spodna{position:sticky;bottom:0;background:var(--wf2);border-top:1px solid var(--wf3);margin:8px -10px -14px;padding:8px 10px;border-radius:0 0 20px 20px;display:flex;gap:6px}
+.tel .spodna .tl{flex:1;text-align:center;min-height:44px;display:flex;align-items:center;justify-content:center;margin:0}
+.tel .riadok-n{display:grid;grid-template-columns:64px 1fr;gap:8px;background:var(--wf2);border-radius:8px;padding:6px;margin:6px 0}
+.tel .riadok-n .kmini{width:64px}
+.lepkavy{position:sticky;top:0;z-index:1;background:var(--wf2);border-radius:8px;padding:6px;display:grid;grid-template-columns:44px 1fr auto;gap:8px;align-items:center}
+.lepkavy .kmini{width:44px}
+.ramik{display:grid;gap:14px;grid-template-columns:1fr minmax(260px,390px);align-items:start}
+@media (max-width:900px){.ramik{grid-template-columns:1fr}}
+.oznac{font-size:.75rem;color:var(--sl);text-transform:uppercase;letter-spacing:.05em;margin:0 0 4px}
+/* interaktívny editor strán */
+.demo{background:var(--pl2);border:1px solid var(--ok);border-radius:10px;padding:12px}
+.demo-strany{display:grid;gap:14px;grid-template-columns:1fr 1fr}
+@media (max-width:640px){.demo-strany{grid-template-columns:1fr}}
+.strana{background:var(--pl);border:1px solid var(--ok);border-radius:8px;padding:10px}
+.strana h4{margin:0 0 6px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.strana h4 small{font:400 .82rem system-ui,sans-serif;color:var(--sl)}
+.sloty{display:grid;gap:6px;margin:6px 0}
+.slot{display:flex;align-items:center;gap:10px;min-height:44px;border:1px solid var(--ok);border-radius:6px;background:var(--pl2);color:var(--tx);font:inherit;padding:0 10px;cursor:pointer;text-align:left}
+.slot[aria-pressed="true"]{background:repeating-linear-gradient(45deg,var(--pl2) 0 6px,var(--ok) 6px 12px);color:var(--sl)}
+.slot b{min-width:1.2em}
+.akcie-str{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.akc{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--ok);border-radius:999px;padding:2px 4px 2px 10px;background:var(--pl2)}
+.akc button{min-width:36px;min-height:36px;border-radius:999px;border:1px solid var(--ok);background:var(--pl);color:var(--tx);font:inherit;cursor:pointer}
+.akc button:disabled{opacity:.4;cursor:not-allowed}
+.demo select{min-height:44px;border-radius:6px;background:var(--pl);color:var(--tx);border:1px solid var(--ok);font:inherit;padding:0 8px;max-width:100%}
+.demo-stav{margin-top:10px;padding:8px 12px;border-radius:6px;background:var(--pl);border-left:4px solid var(--ze)}
+.demo-stav.zle{border-left-color:var(--te)}
+.spust{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.spust button{min-height:44px;padding:0 12px;border-radius:999px;border:1px solid var(--ok);background:var(--pl);color:var(--tx);font:inherit;cursor:pointer}
+.spust button[aria-pressed="true"]{background:var(--ja);color:#14110e;border-color:var(--ja)}
+.demo textarea{width:100%;min-height:72px;border-radius:6px;background:var(--pl);color:var(--tx);border:1px solid var(--ok);font:inherit;padding:8px}
+.svg-obal{overflow-x:auto;background:var(--pl);border:1px solid var(--ok);border-radius:8px;padding:8px}
+.svg-obal svg{display:block;min-width:720px;width:100%;height:auto}
+.svg-obal text{fill:var(--tx);font:13px system-ui,sans-serif}
+.svg-obal .uz{fill:var(--pl2);stroke:var(--sl);stroke-width:1.2}
+.svg-obal .uz.k{stroke:var(--ze);stroke-width:2}
+.svg-obal .uz.z{stroke:var(--te)}
+.svg-obal .ci{stroke:var(--sl);stroke-width:1.4;fill:none;marker-end:url(#sip)}
+.svg-obal .ci.d{stroke-dasharray:5 4}
+.svg-obal .lab{fill:var(--sl);font-size:11px}
+</style>
+</head>
+<body>
+<a class="skok" href="#obsah">Preskočiť na obsah</a>
+<main id="obsah">
+<p class="meta">NA EX! · UX návrh · id <code>dielna-20261022-1421</code> · 22. 10. 2026 · cieľ <code>/dielna</code> (nová sekcia) · vzhľad rieši
+<a href="dizajn-dielna-20261022-1421-ui.html">UI návrh (dizajn-dielna-20261022-1421-ui.html)</a></p>
+<h1>Dielňa: hráči navrhujú karty</h1>
+
+<div class="verdikt">
+<p><strong>Verdikt.</strong> Dielňa je kríženec dvoch vecí, ktoré web už má. Spätná väzba prináša cigarety a komentáre, tvorca kariet strany, pozície
+a varianty. Prebrať ich bez úprav nemožno. Tvorca je pre hráča príliš technický: tlač, mierky, „rozloženia“, chyby už na prázdnom formulári.
+Spätná väzba zase autorovi nepovie, čo sa s jeho príspevkom stalo, a stav mení bez odôvodnenia.</p>
+<p>Odporúčam tieto tri časti, prvé dve ako jedno MVP:</p>
+<ol>
+<li><strong>N2: Dielňa so zoznamom a detailom.</strong> Kartu tam vidno ako kartu, hlasuje sa cigaretou.</li>
+<li><strong>N3: editor s živým náhľadom.</strong> Chybám bráni vopred, nehlási ich až po kliknutí. Spúšťač sa vyberá čipom, strany majú 4 pozície,
+pozíciu treba zakryť, aby sa na ňu akcia nedala dať.</li>
+<li><strong>N4: životný cyklus.</strong> Patrí sem značka pre autora, dôvod zamietnutia a prevzatie do tvorcu jedným klikom aj s autorstvom.</li>
+</ol>
+<p>Ktoré Michal musí rozhodnúť sám, je v otázkach na konci (cena hlasu, odmena, limity, viditeľnosť, autorstvo).</p>
+</div>
+
+<nav aria-label="Obsah návrhu">
+<ol class="toc">
+<li><a href="#pouzivatelia">Používatelia a ich úlohy</a></li>
+<li><a href="#ia">Informačná architektúra a životný cyklus</a></li>
+<li><a href="#dnes">Čo už web má (východiská so snímkami)</a></li>
+<li><a href="#audit">Audit rizík</a></li>
+<li><a href="#toky">Toky troch rolí a chybové stavy</a></li>
+<li><a href="#rozhodnutia">Kľúčové rozhodnutia a varianty</a></li>
+<li><a href="#wf">Drôtené modely (desktop aj 390 px)</a></li>
+<li><a href="#navrhy">Návrhy N1–N5</a></li>
+<li><a href="#mikrocopy">Mikrocopy</a></li>
+<li><a href="#pristupnost">Prístupnosť a mobil</a></li>
+<li><a href="#poradie">Odporúčané poradie</a></li>
+<li><a href="#playtest">Otázky do playtestu</a></li>
+<li><a href="#otazky">Otázky pre Michala</a></li>
+</ol>
+</nav>
+
+<!-- ============================================================ -->
+<h2 id="pouzivatelia">1. Používatelia a ich úlohy</h2>
+<p>Navrhovať, hlasovať aj komentovať smie <strong>každý prihlásený</strong> (Michal cez koordinátora, 22. 10.). Osobitný príznak „navrhovať
+karty“ zatiaľ nie je. Ranky Poldeci / Deci / Sedmička rieši iná session; spomínam ich len pri limitoch.</p>
+<div class="mriezka">
+<div class="dlazdica"><b>Autor návrhu</b> (každý prihlásený)
+<ul>
+<li>Rýchlo zapíše nápad, aj na telefóne hneď po partii.</li>
+<li>Uvidí, ako bude karta vyzerať, a vie, že je platná.</li>
+<li>Rozpracovaný koncept nestratí.</li>
+<li>Dostane reakcie a upraví návrh podľa komentárov.</li>
+<li><strong>Dozvie sa výsledok aj dôvod</strong> a jeho meno zostane pri karte.</li>
+</ul></div>
+<div class="dlazdica"><b>Hlasujúci hráč</b>
+<ul>
+<li>Prezrie nové návrhy rýchlo, ako karty, nie ako text.</li>
+<li>Porovná ich s kartami, ktoré už v hre sú.</li>
+<li>Dá cigaretu dobrému návrhu.</li>
+<li>Upozorní na problém, napríklad „prisilné“ alebo „to už robí Svokra“.</li>
+<li>Vidí, ktoré návrhy ešte nehodnotil.</li>
+</ul></div>
+<div class="dlazdica"><b>Admin / subadmin</b>
+<ul>
+<li>Vidí frontu návrhov na posúdenie.</li>
+<li>Odhalí duplicity.</li>
+<li>Prevezme návrh do tvorcu bez prepisovania.</li>
+<li>Zamietne alebo vráti na úpravu s dôvodom.</li>
+<li>Moderuje komentáre.</li>
+<li>Vie, ktoré schválené karty ešte čakajú na naprogramovanie efektu.</li>
+</ul></div>
+<div class="dlazdica"><b>Návštevník bez účtu</b>
+<ul>
+<li>Číta zoznam a detail návrhov.</li>
+<li>Pri každej akcii (navrhnúť, cigareta, komentár) dostane výzvu na prihlásenie s návratom späť.</li>
+</ul></div>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="ia">2. Informačná architektúra a životný cyklus</h2>
+<h3>Cesty</h3>
+<div class="tab-obal"><table>
+<thead><tr><th>Cesta</th><th>Obsah</th><th>Kto</th></tr></thead>
+<tbody>
+<tr><td><code>/dielna</code></td><td>Zoznam návrhov. Záložky stavov: <em>Na hlasovanie · V tvorcovi · V hre · Zamietnuté · Moje</em>. Triedenie, filter druhu.</td><td>všetci (bez účtu len čítanie)</td></tr>
+<tr><td><code>/dielna/nova</code></td><td>Editor nového návrhu; po prvej zmene vznikne koncept a cesta sa zmení na <code>/dielna/&lt;id&gt;/upravit</code></td><td>prihlásený</td></tr>
+<tr><td><code>/dielna/&lt;id&gt;</code></td><td>Detail: karta s variantmi, cigareta, komentáre, história stavov. Správca tu má navyše panel posúdenia.</td><td>všetci; koncept len autor</td></tr>
+<tr><td><code>/dielna/&lt;id&gt;/upravit</code></td><td>Editor existujúceho návrhu (koncept alebo zverejnený)</td><td>autor</td></tr>
+<tr><td><code>/admin</code> → bočný panel <em>Z Dielne (n)</em></td><td>Fronta na posúdenie pre správcu. Odkazuje na detail v Dielni, nie na kópiu.</td><td>admin, subadmin</td></tr>
+</tbody></table></div>
+<p class="pozn">Vlastný router (<code>apps/web/src/lib/router.tsx</code>) zvládne parametrické cesty rovnako ako <code>/admin/karty/&lt;id&gt;</code>
+(<code>App.tsx:60</code>). Pozor: <code>/spatna-vazba</code> je za prihlásením (<code>App.tsx:77</code>, <code>chranene</code>).
+Dielňa musí byť verejná ako <code>/vyvoj</code>, inak návštevník nič neprečíta.</p>
+
+<h3>Životný cyklus návrhu</h3>
+<div class="svg-obal" role="img" aria-labelledby="zc-titul zc-popis">
+<svg viewBox="0 0 980 300" xmlns="http://www.w3.org/2000/svg">
+<title id="zc-titul">Stavy návrhu karty v Dielni</title>
+<desc id="zc-popis">Koncept, zverejnením Na hlasovanie. Odtiaľ správca: Prevzatá do tvorcu, potom V hre po zverejnení sady; alebo Zamietnutá s dôvodom; alebo Vrátená na úpravu, ktorá sa po úprave autorom vracia na hlasovanie. Autor môže návrh kedykoľvek stiahnuť. Duplicitu správca zlúči s iným návrhom.</desc>
+<defs><marker id="sip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#b9ab95"/></marker></defs>
+<rect class="uz" x="10" y="120" width="120" height="48" rx="8"/><text x="70" y="140" text-anchor="middle">Koncept</text><text x="70" y="157" text-anchor="middle" class="lab">vidí len autor</text>
+<rect class="uz" x="200" y="120" width="150" height="48" rx="8"/><text x="275" y="140" text-anchor="middle">Na hlasovanie</text><text x="275" y="157" text-anchor="middle" class="lab">cigarety, komentáre</text>
+<rect class="uz k" x="450" y="30" width="160" height="48" rx="8"/><text x="530" y="50" text-anchor="middle">V tvorcovi</text><text x="530" y="67" text-anchor="middle" class="lab">schválená, ladí sa</text>
+<rect class="uz k" x="700" y="30" width="160" height="48" rx="8"/><text x="780" y="50" text-anchor="middle">V hre</text><text x="780" y="67" text-anchor="middle" class="lab">od sady vNN</text>
+<rect class="uz" x="450" y="120" width="160" height="48" rx="8"/><text x="530" y="140" text-anchor="middle">Vrátená na úpravu</text><text x="530" y="157" text-anchor="middle" class="lab">čaká na autora</text>
+<rect class="uz z" x="450" y="210" width="160" height="48" rx="8"/><text x="530" y="230" text-anchor="middle">Zamietnutá</text><text x="530" y="247" text-anchor="middle" class="lab">s dôvodom</text>
+<rect class="uz" x="700" y="210" width="160" height="48" rx="8"/><text x="780" y="230" text-anchor="middle">Zlúčená s #n</text><text x="780" y="247" text-anchor="middle" class="lab">duplicita</text>
+<rect class="uz" x="200" y="230" width="150" height="40" rx="8"/><text x="275" y="255" text-anchor="middle">Stiahnutá autorom</text>
+<path class="ci" d="M130 144H198"/><text x="164" y="136" text-anchor="middle" class="lab">Zverejniť</text>
+<path class="ci" d="M350 132L448 62"/><text x="378" y="88" class="lab">Prevziať</text>
+<path class="ci" d="M610 54H698"/><text x="654" y="46" text-anchor="middle" class="lab">zverejnenie sady</text>
+<path class="ci" d="M350 144H448"/><text x="399" y="138" text-anchor="middle" class="lab">Vrátiť</text>
+<path class="ci d" d="M450 160C400 190 380 185 352 160"/><text x="400" y="196" text-anchor="middle" class="lab">autor upravil</text>
+<path class="ci" d="M350 158L448 226"/><text x="372" y="214" class="lab">Zamietnuť</text>
+<path class="ci" d="M610 234H698"/><text x="654" y="226" text-anchor="middle" class="lab">Zlúčiť</text>
+<path class="ci d" d="M275 168V228"/>
+</svg>
+</div>
+<p class="pozn">„V tvorcovi“ a „V hre“ sú zámerne dva stavy. Efekt novej karty treba naprogramovať v registri efektov jadra
+(<code>packages/core/src/effects.ts:40-44, :113</code>); bez toho beží v režime <em>manual</em> a motor ho len pripomína v logu.
+Ak autor uvidí „Schválená“, oprávnene čaká, že si kartu hneď zahrá. Stav <em>V hre</em> nastane sám, keď zverejnená sada obsahuje
+kartu s pôvodom v Dielni.</p>
+
+<!-- ============================================================ -->
+<h2 id="dnes">3. Čo už web má (východiská so snímkami)</h2>
+<p>Dielňa nemá predchodcu. Analyzoval som tri časti, z ktorých bude čerpať. Snímky sú z lokálneho servera worktree, účet „Dizajnér (AI)“.</p>
+<div class="dve">
+<figure><img src="dizajn-dielna-20261022-1421/ux-spatna-vazba.png" alt="Spätná väzba na desktope: úvod, karta Ohodnoť hru, formulár Napíš čo si myslíš so siedmimi kategóriami, filter a triedenie, prázdny zoznam." loading="lazy">
+<figcaption>Spätná väzba: vzor pre cigarety a komentáre. Formulár je nad zoznamom a stav nesie len značku, bez dôvodu.</figcaption></figure>
+<figure class="uzka"><img src="dizajn-dielna-20261022-1421/ux-spatna-vazba-mobil.png" alt="Spätná väzba na telefóne 390 px: celú prvú obrazovku zaberá úvod a karta Ohodnoť hru, zoznam názorov je až pod dvoma veľkými panelmi." loading="lazy">
+<figcaption>Na telefóne vidno zoznam až po dvoch obrazovkách. Dielňa má na mobile začínať zoznamom.</figcaption></figure>
+</div>
+<div class="dve">
+<figure class="orez"><img src="dizajn-dielna-20261022-1421/ux-tvorca-prazdny.png" alt="Tvorca novej karty: hneď po otvorení červená hláška Karta musí mať názov, sekcie Ilustrácia a farba, Rozmer a tlač, Ľavá a pravá strana so štyrmi pozíciami a zaškrtávaním blokovaná." loading="lazy">
+<figcaption>Prázdny tvorca hlási „1 chyba: Karta musí mať názov“ skôr, ako používateľ niečo urobí. Rozmer a tlač hráča nezaujímajú.</figcaption></figure>
+<figure class="orez"><img src="dizajn-dielna-20261022-1421/ux-tvorca-pijan.png" alt="Tvorca karty Pijan: tagy ako čipy, efekt, strany s počítadlami akcií, obmedzenia pozícií ikonami s nápisom len vybrané, vpravo náhľad karty a osem variantov." loading="lazy">
+<figcaption>Pijan v tvorcovi. Živý náhľad a varianty sú to najlepšie, čo sa dá prebrať. Obmedzenia pozícií („len vybrané“) a „rozloženia“ sú žargón tvorcu.</figcaption></figure>
+</div>
+<div class="dve">
+<figure class="uzka orez"><img src="dizajn-dielna-20261022-1421/ux-tvorca-mobil.png" alt="Tvorca karty Pijan na telefóne: náhľad karty na vrchu, strany s akciami až na úplnom spodku dlhej stránky." loading="lazy">
+<figcaption>Na telefóne je náhľad hore a strany asi 2 500 px nižšie. Kto mení akcie, nevidí kartu.</figcaption></figure>
+<figure><img src="dizajn-dielna-20261022-1421/ux-playtest-navrhy.png" alt="Sekcia Playtest – Návrhy: záložky Na rozhodnutie, Na implementáciu, Na overenie, Overené, Odložené, Zamietnuté, Všetky, každá s počtom." loading="lazy">
+<figcaption>Playtest → Návrhy: záložky stavov s počtami. Tento vzor odporúčam pre zoznam Dielne aj pre frontu správcu.</figcaption></figure>
+</div>
+
+<h3>Signály z kódu a playtestov</h3>
+<ul>
+<li><strong>Zakryté pozície sú taktika, nie detail.</strong> Hráči v playteste cenia „blokovanie prázdnym okrajom“:
+<span class="citat">„súper mi dal kartu Dlh bez akcií a zamkol celú moju stranu“</span>
+(<code>playtest/20261011-183315/hrac1/feedback.md</code> aj <code>hrac2</code>). Zjednodušený editor ich preto nesmie vynechať.
+Obmedzenia pozícií (<code>povolene</code>) vynechať môže; doladí ich admin.</li>
+<li><strong>Varianty hráči poznajú.</strong> Glosár <code>/karty</code> ukazuje „1 / 4“ a „jediný variant“, takže netreba vysvetľovať pojem
+„permutácia“. Stačí ukázať varianty tak isto.</li>
+<li><strong>Tagy sa v tvorcovi píšu voľným textom</strong> s nápovedou (<code>Tvorca.tsx:30-66</code>). Preklep „Obcan“ by vytvoril nový tag.
+Hra pozná pevný zoznam 15 tagov (<code>packages/core/src/types.ts</code>, <code>ALL_TAGS</code>).</li>
+<li><strong>Spúšťačov je 11</strong> (<code>ALL_TRIGGERS</code>) a každý má v kľúčových slovách popis pre hráča (<code>predvolene.ts:78-91</code>).
+Dajú sa ponúknuť ako čipy s vysvetlením.</li>
+<li><strong>Knižnica obrázkov je len pre správcu</strong>: <code>GET /api/admin/media</code> (<code>api.ts:610</code> za strážcom <code>api.ts:283</code>,
+volá ju <code>VyberObrazka.tsx:35</code>). Pre Dielňu treba čítanie knižnice pre prihlásených, inak ilustráciu z knižnice nevyberie.</li>
+<li><strong>Spätná väzba AI predvolene skrýva</strong> (<code>SpatnaVazba.tsx:68</code>, Michal 2026-10-21). Ak budú navrhovať aj AI playtesteri,
+treba rovnaký prepínač.</li>
+<li><strong>Hlasov bude málo a väčšina hlasujúcich sú zatiaľ AI.</strong> Lokálna databáza je prázdna (<code>web.ts nazory</code>:
+„Zatiaľ žiadne názory“). Výpis Spätnej väzby z inej session z 22. 10. (pravdepodobne živý web; sám som tam podľa zadania nešiel) má
+30 názorov a <strong>všetky sú od AI účtov</strong>. Zo 31 príspevkov má 16 nula cigariet, najviac je 5. Z toho plynie, že prah posúdenia
+podľa cigariet musí byť nízky alebo žiadny (Q7) a AI hlasy treba oddeliť (Q13).</li>
+<li><strong>O existujúcich kartách sa už diskutuje.</strong> Vo výpise sú návrhy úprav Liberála, Psa a Anonymného alkoholika a
+odpovede „↳ Potvrdzujem…“ s ďalšími číslami. Dielňa preto môže chcieť aj „úpravu karty v hre“, nielen novú kartu (Q15). Odpovede
+s dôkazmi sú vzor pre komentáre v detaile.</li>
+<li>Priamy dopyt ľudí po Dielni nie je doložený (<strong>odhad</strong>): ľudia v tom výpise nepísali vôbec.</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="audit">4. Audit rizík</h2>
+<p>Stránka ešte neexistuje, preto audit hodnotí, čo by sa preneslo z analógií alebo čo vyplýva zo zadania. Závažnosť je podľa Nielsena
+0–4 a hovorí, aké vážne by to bolo, keby Dielňa vznikla bez ošetrenia.</p>
+<div class="filtre" role="group" aria-label="Filter podľa závažnosti">
+<button type="button" data-f="vsetky" aria-pressed="true">Všetky</button>
+<button type="button" data-f="4" aria-pressed="false">4 katastrofa</button>
+<button type="button" data-f="3" aria-pressed="false">3 veľký</button>
+<button type="button" data-f="2" aria-pressed="false">2 malý</button>
+<button type="button" data-f="1" aria-pressed="false">1 kozmetika</button>
+</div>
+<p id="audit-pocet" class="pozn" aria-live="polite"></p>
+<div class="tab-obal"><table id="audit-tab">
+<thead><tr><th>#</th><th>Problém</th><th>Heuristika</th><th>Záv.</th><th>Dôkaz</th><th>Koho sa týka</th></tr></thead>
+<tbody>
+<tr data-z="4"><td>A1</td><td>Autor sa nedozvie výsledok. Stav sa mení bez upozornenia a bez dôvodu. Kto vložil hodinu do karty a dostane len „nebudeme robiť“, už nič nenavrhne.</td><td>Viditeľnosť stavu; pomoc pri chybách</td><td><span class="z z4">4</span></td><td><code>SpatnaVazba.tsx:290-305</code> (select stavu), <code>Layout.tsx:20-48</code> (značku má len Novinky)</td><td>každý autor, pri každom posúdení</td></tr>
+<tr data-z="3"><td>A2</td><td>„Schválená“ sa dá pochopiť ako „je v hre“, no efekt treba ešte naprogramovať a sadu zverejniť.</td><td>Zhoda so svetom; viditeľnosť stavu</td><td><span class="z z3">3</span></td><td><code>effects.ts:40-44, :113</code>; tvorca: „Hráči zmenu uvidia po zverejnení sady“ (<code>Tvorca.tsx:290</code>)</td><td>autori schválených kariet</td></tr>
+<tr data-z="3"><td>A3</td><td>Tvorca ukazuje chybu skôr, ako používateľ začne písať.</td><td>Prevencia chýb; estetika</td><td><span class="z z3">3</span></td><td>snímka <em>tvorca-prazdny</em>; <code>Tvorca.tsx:274, 352</code></td><td>každý nový návrh</td></tr>
+<tr data-z="3"><td>A4</td><td>Žargón a polia, ktoré hráč nepotrebuje: rozmer, mierky, kópie, farba, „rozloženia“, „len vybrané“.</td><td>Minimalizmus; zhoda so svetom</td><td><span class="z z3">3</span></td><td><code>Tvorca.tsx:131, 192-204, 383-450</code></td><td>každý autor</td></tr>
+<tr data-z="3"><td>A5</td><td>Na telefóne nevidno náhľad, keď sa menia akcie.</td><td>Viditeľnosť stavu</td><td><span class="z z3">3</span></td><td>snímka <em>tvorca-mobil</em></td><td>autori na mobile (podľa SV veľká časť, <strong>odhad</strong>)</td></tr>
+<tr data-z="3"><td>A6</td><td>Akcií viac ako voľných pozícií. Tvorca to hlási chybou, hoci sa tomu dá zabrániť.</td><td>Prevencia chýb</td><td><span class="z z3">3</span></td><td><code>varianty.ts</code> <code>chybyNavrhu</code>; v tvorcovi je „+“ vypnuté, ale zakrytím pozície sa dá stav pokaziť</td><td>autori</td></tr>
+<tr data-z="3"><td>A7</td><td>Efekt bez spúšťača: karta nevie, kedy platí, a admin ho musí domýšľať.</td><td>Prevencia chýb</td><td><span class="z z3">3</span></td><td>tvorca len radí „Začni spúšťačom“ (<code>Tvorca.tsx:375</code>)</td><td>autori, admin</td></tr>
+<tr data-z="3"><td>A8</td><td>Knižnica obrázkov nie je pre hráča dostupná.</td><td>(technická prekážka toku)</td><td><span class="z z3">3</span></td><td><code>api.ts:283, :609</code></td><td>každý, kto chce ilustráciu</td></tr>
+<tr data-z="2"><td>A9</td><td>Duplicity: dve rovnaké karty od dvoch autorov, alebo návrh, čo kopíruje kartu v hre. Spätná väzba nemá hľadanie.</td><td>Prevencia chýb; rozpoznanie</td><td><span class="z z2">2</span></td><td><code>SpatnaVazba.tsx:480-512</code> (len filter a triedenie)</td><td>hlasujúci, admin</td></tr>
+<tr data-z="2"><td>A10</td><td>Tagy voľným textom vedú k preklepom a vymysleným tagom.</td><td>Prevencia chýb; konzistencia</td><td><span class="z z2">2</span></td><td><code>Tvorca.tsx:30-66</code></td><td>autori</td></tr>
+<tr data-z="2"><td>A11</td><td>Úprava po hlasovaní: hlasujúci nevie, že návrh, ktorému dal cigaretu, sa zmenil.</td><td>Viditeľnosť stavu</td><td><span class="z z2">2</span></td><td>SV ukáže len „· upravené“ (<code>SpatnaVazba.tsx:282</code>)</td><td>hlasujúci</td></tr>
+<tr data-z="2"><td>A12</td><td>Na mobile je formulár nad zoznamom a k hlasovaniu sa treba doskrolovať.</td><td>Efektívnosť</td><td><span class="z z2">2</span></td><td>snímka <em>spatna-vazba-mobil</em></td><td>hlasujúci na telefóne</td></tr>
+<tr data-z="2"><td>A13</td><td>Cigareta a „zmazať“ sú malé ciele, asi 30 px (<code>button.tlacidlo-male</code>: 0,35 rem + 0,85 rem). WCAG 2.5.8 je splnené, odporúčaných 44 px nie.</td><td>Prístupnosť (2.5.8)</td><td><span class="z z2">2</span></td><td><code>styles.css:151-154</code></td><td>dotyk</td></tr>
+<tr data-z="2"><td>A14</td><td>Rovnaký názov ako karta v hre. Tvorca potichu pridá „_2“ do id.</td><td>Prevencia chýb</td><td><span class="z z2">2</span></td><td><code>Tvorca.tsx:286-287</code></td><td>admin pri prevzatí</td></tr>
+<tr data-z="1"><td>A15</td><td>Mazanie cez druhé kliknutie, ktoré po 4 s vyprší. Pri návrhu s hlasmi je lepšie vrátenie späť (undo).</td><td>Kontrola a sloboda</td><td><span class="z z1">1</span></td><td><code>SpatnaVazba.tsx:144-166</code></td><td>autor, admin</td></tr>
+<tr data-z="1"><td>A16</td><td>Nekonzistencia: v Spätnej väzbe návštevník (úroveň) nepíše, v Dielni smie navrhovať každý prihlásený.</td><td>Konzistencia</td><td><span class="z z1">1</span></td><td><code>SpatnaVazba.tsx:471-478</code>; rozhodnutie Michala 22. 10.</td><td>nový hráč</td></tr>
+</tbody></table></div>
+
+<!-- ============================================================ -->
+<h2 id="toky">5. Toky troch rolí</h2>
+
+<h3>5.1 Autor: od nápadu po výsledok</h3>
+<div class="tok">
+<div class="pred"><h4>Bez Dielne (dnes)</h4><ol>
+<li>Napíše nápad do Spätnej väzby, kategória „Karty“ alebo „Nápad“.</li>
+<li>Akcie opisuje slovami („vľavo Rana a Pecka, hore prázdne…“) a karta sa nedá nakresliť.</li>
+<li>Admin si ju ručne prepíše do tvorcu.</li>
+<li>Autor sa o výsledku dozvie, len ak sa sám vráti a všimne si zmenu značky.</li>
+</ol></div>
+<div class="po"><h4>S Dielňou (navrhnuté)</h4><ol>
+<li><em>Dielňa → Navrhnúť kartu</em>. Odkaz je aj z <code>/karty</code>, zo Spätnej väzby a z konca partie.</li>
+<li><strong>Názov a druh karty</strong> (Občan, Zviera, Nástroj…). Druh nastaví rozumné predvoľby, napríklad Nástroj → spúšťač Dedičstvo.</li>
+<li><strong>Strany</strong>: zakryje pozície, pridá akcie z ponuky s ikonami. Náhľad sa mení naživo a ukáže aj počet variantov.</li>
+<li><strong>Efekt</strong>: vyberie spúšťač čipom a dopíše text. Nová akcia sa dá opísať len ako textový nápad.</li>
+<li><strong>Ilustrácia</strong> (nepovinná): z knižnice, opísaná slovami, alebo žiadna.</li>
+<li>Koncept sa ukladá priebežne na server („Uložené pred chvíľou“), takže sa dá dokončiť inokedy aj na inom zariadení.</li>
+<li><strong>Zverejniť</strong>: kontrola ukáže chýbajúce povinné veci a podobné karty. Po zverejnení autor skončí na detaile s hláškou
+„Návrh je vonku. Dáme ti vedieť, keď ho niekto okomentuje.“</li>
+<li>Značka pri <em>Dielňa</em> ukáže nové komentáre a zmeny stavu. Autor upraví návrh; hlasujúci uvidia „upravené, pozri zmeny“.</li>
+<li>Výsledok: <em>V tvorcovi</em> (s vysvetlením, čo ďalej), <em>Vrátená na úpravu</em> (čo opraviť) alebo <em>Zamietnutá</em> (dôvod).
+Neskôr <em>V hre</em> a meno autora v glosári.</li>
+</ol></div>
+</div>
+
+<h3>5.2 Hlasujúci hráč</h3>
+<div class="tok">
+<div class="pred"><h4>Analógia v Spätnej väzbe</h4><ol>
+<li>Číta dlhý text a kartu si musí predstaviť.</li>
+<li>Dá cigaretu. Nevie, či návrh už videl a či sa odvtedy zmenil.</li>
+</ol></div>
+<div class="po"><h4>Dielňa</h4><ol>
+<li>Záložka <em>Na hlasovanie</em> zobrazí mriežku kariet ako v glosári. Triedenie podľa poradia <em>Neohodnotené</em> → <em>Najnovšie</em> →
+<em>Najviac cigariet</em> → <em>Najživšia diskusia</em>.</li>
+<li>Ťuk na kartu otvorí detail: veľká karta, šípky variantov, efekt s vysvetlivkami pojmov a panel „Podobné karty v hre“.</li>
+<li>Cigareta jedným ťukom (cieľ 44 px), vrátiteľná. Komentár; v odpovedi autora je značka „autor“.</li>
+<li>Šípka <em>Ďalší neohodnotený</em> v detaile umožní prejsť celú dávku bez návratu do zoznamu.</li>
+</ol></div>
+</div>
+
+<h3>5.3 Admin / subadmin pri schvaľovaní</h3>
+<div class="tok">
+<div class="pred"><h4>Bez Dielne</h4><ol>
+<li>Nájde nápad v Spätnej väzbe a v tvorcovi ho celý vytvorí ručne.</li>
+<li>Stav nastaví selectom bez dôvodu. Autorstvo sa stratí.</li>
+</ol></div>
+<div class="po"><h4>Dielňa</h4><ol>
+<li>V Tvorbe je v bočnom paneli <em>Z Dielne (4)</em>: fronta zoradená podľa cigariet a veku.</li>
+<li>Detail návrhu má navyše panel <strong>Posúdenie</strong>: podobné karty v hre a v Dielni, kontrolu platnosti a súhrn diskusie
+(počet cigariet, komentárov, posledná úprava).</li>
+<li><strong>Prevziať do tvorcu</strong>: zhrnutie toho, čo vznikne (id, názov, tagy, strany, efekt, ilustrácia alebo jej popis) →
+<em>Vytvoriť návrh karty</em>. Otvorí sa tvorca s pruhom „Z Dielne: návrh #14 od Jana“. Autor dostane upozornenie.</li>
+<li><strong>Vrátiť na úpravu</strong> alebo <strong>Zamietnuť</strong>: rýchle dôvody v čipoch plus text (povinný pri zamietnutí). Bez
+potvrdzovacieho dialógu; 10 s sa dá akcia vrátiť.</li>
+<li><strong>Zlúčiť s #n</strong> pri duplicite: cigarety a komentáre zostanú v pôvodnom návrhu a oba sa navzájom odkazujú.</li>
+</ol></div>
+</div>
+
+<h3>5.4 Chybové a hraničné stavy</h3>
+<div class="tab-obal"><table>
+<thead><tr><th>Situácia</th><th>Ako jej predísť</th><th>Ak predsa nastane</th></tr></thead>
+<tbody>
+<tr><td>Akcií viac ako voľných pozícií</td><td>„+“ je pri plnej strane vypnuté s vysvetlením. Zakryť pozíciu, ktorú by akcia potrebovala, nejde:
+tlačidlo povie „Najprv uber akciu, strana by mala 3 akcie na 2 miestach“.</td><td>Pri starom koncepte, keď sa zmenil zoznam akcií: červený
+okraj strany a hláška v kontrole s odkazom na stranu.</td></tr>
+<tr><td>Efekt bez spúšťača</td><td>Spúšťač sa vyberá čipom; text začína ním. Čip <em>Bez efektu</em> je výslovná voľba.</td><td>Ak autor spúšťač z textu zmaže:
+„Kedy efekt platí? Vyber spúšťač.“ Koncept sa uloží, zverejniť sa nedá.</td></tr>
+<tr><td>Názov už má karta v hre</td><td>Pri písaní názvu: „Kartu <em>Pijan</em> už hra má. Pozri ju · Premenuj návrh“.</td><td>Zverejniť nejde, kým sa názov nezmení.</td></tr>
+<tr><td>Podobný návrh v Dielni alebo karta v hre</td><td>Pred zverejnením panel „Podobné“ (rovnaký druh a väčšina akcií, alebo podobný názov či efekt), ako pri otázkach
+na Stack Overflow. Nič nezakazuje.</td><td>Admin zlúči alebo zamietne s dôvodom „duplicita“ a odkazom.</td></tr>
+<tr><td>Obe strany bez akcií</td><td>Mäkké varovanie: „Karta bez akcií je ako Kliatba. Naozaj?“</td><td>Zverejniť sa dá.</td></tr>
+<tr><td>Text efektu sa nezmestí na kartu</td><td>Náhľad pretečie viditeľne a pod ním je „Text je na kartu dlhý, skráť ho“ s počítadlom.</td><td>Admin môže zmenšiť písmo v tvorcovi.</td></tr>
+<tr><td>Nová, neexistujúca akcia</td><td>Do pozície sa dá len akcia z ponuky. Pole „Nápad na novú akciu“ je text (názov a čo robí).</td><td>Admin ju vidí v posúdení ako zvýraznenú poznámku.</td></tr>
+<tr><td>Strata práce (zatvorené okno, výpadok)</td><td>Priebežné ukladanie konceptu na server po 2 s nečinnosti a pri opustení poľa. Stav „Ukladám… / Uložené“.</td><td>Výpadok: „Neuložené, skúšam znova“; text ostane v poli.</td></tr>
+<tr><td>Príliš veľa návrhov naraz</td><td>Počítadlo „Máš 2 z 3 otvorených návrhov“ (limit rozhodne Michal). Brzda ako v SV.</td><td>„Najprv počkaj na posúdenie, alebo stiahni starší návrh.“ Text je krčmový, cesta von jasná.</td></tr>
+<tr><td>Návštevník bez účtu klikne na cigaretu</td><td>Tlačidlo ukazuje počet, popis „Cigarety dávajú prihlásení hráči“.</td><td>Výzva „Prihlás sa“ s návratom na ten istý návrh (<code>?spat=</code>, ako <code>App.tsx:29</code>).</td></tr>
+</tbody></table></div>
+
+<!-- ============================================================ -->
+<h2 id="rozhodnutia">6. Kľúčové rozhodnutia a varianty</h2>
+
+<div class="rozh"><h3>R1. Kde je Dielňa v navigácii</h3>
+<div class="varianty">
+<div class="var odporucany"><h4>A. Samostatná položka „Dielňa“ <span class="stitok odp">odporúčaný</span></h4>
+<p>Hráč má dnes v navigácii 7 položiek, toto bude ôsma (<code>Layout.tsx:10-20</code>), umiestnená za <em>Karty</em>. Značka
+ako pri Novinkách. Na mobile je v hamburgeri; bodka na hamburgeri už existuje (<code>ma-novinky</code>).</p></div>
+<div class="var"><h4>B. Záložka v Spätnej väzbe</h4>
+<p>Menej položiek, ale Dielňa sa schová. Spätná väzba je navyše za prihlásením, takže návštevník by návrhy nevidel.</p></div>
+</div>
+<p class="pozn">Nezávisle od voľby treba vstupy z kontextu: <code>/karty</code> („Chýba ti tu karta? Navrhni ju v Dielni“), kategórie
+<em>Karty</em> a <em>Nápad</em> v Spätnej väzbe a koniec partie.</p></div>
+
+<div class="rozh"><h3>R2. Editor: jedna stránka, alebo sprievodca</h3>
+<div class="varianty">
+<div class="var odporucany"><h4>A. Jedna stránka a živý náhľad <span class="stitok odp">odporúčaný</span></h4>
+<p>Sekcie Základ · Strany · Efekt · Ilustrácia · Kontrola. Desktop: formulár vľavo, náhľad vpravo, prilepený. Mobil: prilepený
+<strong>mini náhľad</strong> (44 px karta, názov, stav kontroly), ťukom sa zväčší. Vzťah „mením akciu → vidím kartu“ zostane viditeľný.</p></div>
+<div class="var"><h4>B. Sprievodca v 4 krokoch</h4>
+<p>Menej naraz, ale náhľad je oddelený od úprav. Krok späť kvôli jednej akcii je drahý. Polí je málo, preto sa sprievodca
+neoplatí.</p></div>
+</div></div>
+
+<div class="rozh"><h3>R3. Ako zadať akcie po stranách</h3>
+<p>Model karty v hre nemá pevné poradie akcií. Strana je <em>multimnožina akcií</em> plus zakryté pozície a hra z nej spraví všetky
+rozloženia (<code>packages/tvorba/src/varianty.ts</code>, PRAVIDLÁ §2).</p>
+<div class="varianty">
+<div class="var odporucany"><h4>A. Pozície zakryť, akcie pridať a varianty ukázať <span class="stitok odp">odporúčaný</span></h4>
+<p>Sedí s modelom. Ťuk na pozíciu ju zakryje alebo odkryje. Akcie sa pridávajú z ponuky s ikonou a popisom, počítadlo hlási
+„2 akcie · 3 voľné miesta“. Náhľad ukáže: „Hra z toho spraví 6 variantov, akcie sa v nich presúvajú po voľných miestach“. Obmedzenia
+pozícií doladí admin v tvorcovi. <a href="#demo-strany">Vyskúšaj si ukážku nižšie.</a></p></div>
+<div class="var"><h4>B. Pozície kresliť presne</h4>
+<p>Autor dá na každú pozíciu konkrétnu akciu. Je to intuitívne, no nesedí s modelom. Pri prevode by sa z obrázka museli vyrobiť
+zakryté pozície a obmedzenia a autor by bol prekvapený, že tlač má iné rozloženia. Hodí sa len pre lokality a starších (1 variant).</p></div>
+</div></div>
+
+<div class="rozh"><h3>R4. Efekt a spúšťač</h3>
+<div class="varianty">
+<div class="var odporucany"><h4>A. Spúšťač čipom, text za ním <span class="stitok odp">odporúčaný</span></h4>
+<p>11 čipov (Nástup, Furt, Bitka, Pitka, Zhromaždenie, Dedičstvo, Výhra, Prehra, Prestávka, Podpora, Exekúcia) s vysvetlením z kľúčových
+slov a čip <em>Bez efektu</em>. Viac spúšťačov ide cez „+ ďalší spúšťač“ (Výherný automat: „Dedičstvo: Výhra: … Prehra: …“).
+Efekt bez spúšťača tak vôbec nevznikne.</p></div>
+<div class="var"><h4>B. Voľný text a upozornenie</h4>
+<p>Pre skúsených rýchlejšie, ale chyba A7 zostáva a nováčik nevie, aké spúšťače existujú. Môže slúžiť ako „pokročilé písanie“
+popri A.</p></div>
+</div></div>
+
+<div class="rozh"><h3>R5. Tagy</h3>
+<div class="varianty">
+<div class="var odporucany"><h4>A. Druh karty a vlastnosti z pevného zoznamu <span class="stitok odp">odporúčaný</span></h4>
+<p>Druh je prepínač (Občan · Zviera · Nástroj, prípadne Lokalita, Starešina, Kliatba; o tom rozhodne Michal), vlastnosti sú zaškrtávacie
+čipy (Chlap, Žena, Pracujúci, Kriminál, Závislý, Zahraničný, Autorita, Influencer, Pamätník). Nový tag len ako nápad v texte.
+Druh určuje farbu náhľadu, poradie tagov sa rieši samo.</p></div>
+<div class="var"><h4>B. Voľný text s nápovedou (ako tvorca)</h4>
+<p>Flexibilné, ale preklepy a vymyslené tagy (A10) a autor nevie, že prvý tag určuje farbu.</p></div>
+</div></div>
+
+<div class="rozh"><h3>R6. Nová akcia, ktorú hra nepozná</h3>
+<div class="varianty">
+<div class="var odporucany"><h4>A. Len textové pole „Nápad na novú akciu“ <span class="stitok odp">odporúčaný</span></h4>
+<p>Presne podľa zadania. Názov a čo robí; v detaile sa zobrazí ako zvýraznený rámik pod kartou. Na pozíciu ju dať nemožno.</p></div>
+<div class="var"><h4>B. Zástupná pozícia „?“ na karte</h4>
+<p>Autor ukáže, kde by bola. Náhľad je vernejší, ale zástupná akcia sa ráta do pozícií a do variantov a vyžaduje osobitný
+kľúč (tvorca pozná „vlastné akcie“, ktoré sa nedajú zverejniť: <code>zverejnenie.ts</code> <code>neznameAkcie</code>). Zložitejšie
+bez veľkého zisku; skôr neskôr.</p></div>
+</div></div>
+
+<div class="rozh"><h3>R7. Úprava po hlasovaní</h3>
+<div class="varianty">
+<div class="var odporucany"><h4>A. Cigarety ostanú, zmeny sú viditeľné <span class="stitok odp">odporúčaný</span></h4>
+<p>Detail má „Upravené 2× · čo sa zmenilo“ s rozdielmi po poliach („Ľavá strana: Rana → Pecka“). Kto dal cigaretu
+pred úpravou, uvidí pri tlačidle „Zmenilo sa od tvojej cigarety“. Autora to netrestá za to, že počúva komentáre.</p></div>
+<div class="var"><h4>B. Väčšia zmena vynuluje cigarety</h4>
+<p>Férovejšie voči hlasujúcim, no autor sa bude úpravám vyhýbať. Je to pravidlo Dielne, rozhodne Michal (otázka Q5).</p></div>
+</div></div>
+
+<div class="rozh"><h3>R8. Upozornenia</h3>
+<div class="varianty">
+<div class="var odporucany"><h4>A. Číslo za „moje“, bodka za „nové“ <span class="stitok odp">odporúčaný</span></h4>
+<p>Číslo pri <em>Dielňa</em> = nové komentáre a zmeny stavu na mojich návrhoch a odpovede na moje komentáre. Bodka = pribudli
+návrhy od mojej poslednej návštevy. Správca má číslo fronty pri <em>Z Dielne</em> v Tvorbe, nie v hlavnej navigácii. Záložka
+<em>Moje</em> má pri návrhoch bodku „nové“.</p></div>
+<div class="var"><h4>B. Jedno číslo za všetko (ako Novinky)</h4>
+<p>Jednoduchšie, ale autorovi sa jeho dôležitá zmena stratí medzi cudzími návrhmi.</p></div>
+</div>
+<p class="pozn">E-mail web nemá. Upozornenia sú len na webe; či pridať aj e-mail, je otázka Q11.</p></div>
+
+<div class="rozh"><h3>R9. Kde posudzuje správca</h3>
+<div class="varianty">
+<div class="var odporucany"><h4>A. Panel v detaile Dielne a fronta v Tvorbe <span class="stitok odp">odporúčaný</span></h4>
+<p>Jedno miesto pravdy, správca vidí presne to, čo hráči, aj s diskusiou. Fronta v bočnom paneli Tvorby
+(<code>admin/Admin.tsx</code>) len odkazuje.</p></div>
+<div class="var"><h4>B. Celé posúdenie v Tvorbe</h4>
+<p>Bližšie k tvorcovi, ale diskusia by sa zdvojila a fronta skryla pred subadminom, ktorý v Tvorbe nepracuje.</p></div>
+</div></div>
+
+<!-- ============================================================ -->
+<h2 id="wf">7. Drôtené modely</h2>
+<p class="pozn">Sivé bloky, skutočné texty. Vzhľad, farby a typografiu rieši UI návrh. Mobilné modely majú šírku 390 px.</p>
+
+<h3>7.1 Zoznam návrhov</h3>
+<div class="ramik">
+<div><p class="oznac">Desktop</p>
+<div class="wf">
+<div class="r medzi"><h5>Dielňa</h5><span class="tl hl">+ Navrhnúť kartu</span></div>
+<p class="male">Tu hráči navrhujú nové karty. Daj cigaretu tým, ktoré by si chcel hrať. Najlepšie si tvorca hry vezme do tvorcu.</p>
+<div class="lista" role="presentation"><span class="tl hl">Na hlasovanie (12)</span><span class="tl">V tvorcovi (3)</span><span class="tl">V hre (1)</span><span class="tl">Zamietnuté (5)</span><span class="tl">Moje (2 ●)</span></div>
+<div class="r medzi"><span><span class="cip on">Všetky</span><span class="cip">Občania</span><span class="cip">Zvieratá</span><span class="cip">Nástroje</span><span class="cip">Lokality</span></span>
+<span class="male">Zoradiť: <span class="pole" style="display:inline-block;margin:0">neohodnotené ▾</span> · <label><input type="checkbox" disabled> aj od AI</label></span></div>
+<div class="mrz">
+<div class="dlz"><div class="kmini"><div class="il"><div class="sl l"><span class="x"></span><span>R</span><span>P</span><span class="x"></span></div><div class="sl p"><span>C</span><span class="z"></span><span>D</span><span class="z"></span></div></div><div class="nz">Bačova žena</div><div class="ef"><b>Furt:</b> Tvoje Zvieratá…</div></div>
+<b>Bačova žena</b><br><span class="male">Jano · pred 2 h</span><div class="r medzi"><span class="tl">🚬 7</span><span class="male">💬 4</span></div></div>
+<div class="dlz"><div class="kmini"><div class="il"><div class="sl l"><span>V</span><span class="z"></span><span class="z"></span><span class="x"></span></div><div class="sl p"><span class="x"></span><span>Ob</span><span class="z"></span><span>R</span></div></div><div class="nz">Kostolník</div><div class="ef"><b>Nástup:</b> Preskúmaj…</div></div>
+<b>Kostolník</b> <span class="stav">upravené</span><br><span class="male">Eva · včera</span><div class="r medzi"><span class="tl hl">🚬 12</span><span class="male">💬 9</span></div></div>
+<div class="dlz"><div class="kmini"><div class="il"><div class="sl l"><span>Pe</span><span class="z"></span><span class="z"></span><span class="z"></span></div><div class="sl p"><span class="z"></span><span>Pd</span><span class="z"></span><span class="z"></span></div></div><div class="nz">Traktor</div><div class="ef"><b>Dedičstvo:</b> …</div></div>
+<b>Traktor</b><br><span class="male">Fero · pred 3 dňami</span><div class="r medzi"><span class="tl">🚬 2</span><span class="male">💬 0</span></div></div>
+<div class="dlz"><div class="kmini"><div class="il"></div><div class="nz">Ujo z JRD</div><div class="ef">bez ilustrácie · popis</div></div>
+<b>Ujo z JRD</b><br><span class="male">Ty · koncept</span><div class="r medzi"><span class="tl">Dokončiť</span></div></div>
+</div>
+<p class="male">Prázdny stav záložky: „Zatiaľ tu nie je žiadny návrh. Máš nápad na kartu? <u>Navrhni prvú</u>.“ V záložke <em>Moje</em> bez návrhov:
+„Ešte si nič nenavrhol. Pozri, <u>ako vyzerá dobrý návrh</u>.“</p>
+</div></div>
+<div><p class="oznac">Mobil 390 px</p>
+<div class="tel">
+<div class="hl-tel"><span>NA EX!</span><span>☰●</span></div>
+<h5>Dielňa</h5>
+<div class="lista"><span class="tl hl">Na hlasovanie 12</span><span class="tl">Moje 2●</span><span class="tl">Ďalšie ▾</span></div>
+<div class="r medzi male"><span>Neohodnotené ▾</span><span>Druh: všetky ▾</span></div>
+<div class="riadok-n"><div class="kmini"><div class="il"></div><div class="nz" style="font-size:.5rem">Bačova</div><div class="ef"></div></div>
+<div><b>Bačova žena</b><br><span class="male">Občan · Žena · Jano · pred 2 h</span><br><span class="male"><b>Furt:</b> Tvoje Zvieratá v jej okolí…</span><div class="r medzi"><span class="tl" style="min-height:44px;min-width:64px">🚬 7</span><span class="male">💬 4</span></div></div></div>
+<div class="riadok-n"><div class="kmini"><div class="il"></div><div class="nz" style="font-size:.5rem">Kostolník</div><div class="ef"></div></div>
+<div><b>Kostolník</b> <span class="stav">upravené</span><br><span class="male">Občan · Eva · včera</span><br><span class="male"><b>Nástup:</b> Preskúmaj…</span><div class="r medzi"><span class="tl hl" style="min-height:44px;min-width:64px">🚬 12</span><span class="male">💬 9</span></div></div></div>
+<div class="spodna"><span class="tl hl">+ Navrhnúť kartu</span></div>
+</div>
+<p class="pozn">Zoznam je hneď na začiatku (A12). Primárna akcia je v palcovej zóne, cigareta má 44 px a dá sa dať bez otvorenia detailu.</p>
+</div>
+</div>
+
+<h3>7.2 Editor návrhu</h3>
+<div class="ramik">
+<div><p class="oznac">Desktop</p>
+<div class="wf">
+<div class="r medzi"><span class="male">← Dielňa</span><span class="male">Koncept · uložené pred chvíľou</span></div>
+<div class="wf-desk wf-dva2">
+<div>
+<h6>1 · Základ</h6>
+<span class="male">Názov karty</span><div class="pole">Bačova žena</div>
+<span class="male">Druh karty</span><div><span class="cip on">Občan</span><span class="cip">Zviera</span><span class="cip">Nástroj</span><span class="cip">Lokalita</span></div>
+<span class="male">Vlastnosti (nepovinné)</span><div><span class="cip">Chlap</span><span class="cip on">Žena ✓</span><span class="cip">Pracujúci</span><span class="cip">Kriminál</span><span class="cip">Závislý</span><span class="cip">…</span></div>
+<h6>2 · Strany</h6>
+<div class="r"><div class="blok" style="flex:1"><b>Ľavá</b> · 2 akcie · 2 voľné miesta<br><span class="male">0 zakrytá · 1 voľná · 2 voľná · 3 zakrytá</span><br><span class="cip">Rana −/+ 1</span><span class="cip">Pecka −/+ 1</span><span class="cip">+ akcia ▾</span></div>
+<div class="blok" style="flex:1"><b>Pravá</b> · 2 akcie · 4 voľné miesta<br><span class="male">všetky voľné</span><br><span class="cip">Cigareta 1</span><span class="cip">Dlh 1</span><span class="cip">+ akcia ▾</span></div></div>
+<h6>3 · Efekt</h6>
+<div><span class="cip">Nástup</span><span class="cip on">Furt</span><span class="cip">Bitka</span><span class="cip">Pitka</span><span class="cip">…</span><span class="cip">Bez efektu</span></div>
+<div class="pole"><b>Furt:</b> Tvoje Zvieratá v jej okolí sa rátajú do prevahy dvakrát.</div>
+<span class="male">+ ďalší spúšťač · 64 / 200 znakov</span>
+<details><summary class="male">Nápad na novú akciu (nepovinné)</summary><div class="pole male">Názov a čo by robila…</div></details>
+<h6>4 · Ilustrácia (nepovinné)</h6>
+<div><span class="cip on">Z knižnice</span><span class="cip">Opíšem slovami</span><span class="cip">Bez ilustrácie</span></div>
+<div class="blok male">[mriežka obrázkov · hľadať · „už na karte Pijan“ pri použitých]</div>
+<h6>5 · Kontrola</h6>
+<div class="okk">✓ Názov · ✓ Druh · ✓ Strany (24 variantov) · ✓ Efekt so spúšťačom</div>
+<div class="info">Podobné: <u>Pastier</u> (návrh, 4 🚬) · <u>Pes</u> (v hre). Ak ide o to isté, pridaj sa radšej do diskusie.</div>
+<div class="r"><span class="tl hl">Zverejniť návrh</span><span class="tl">Uložiť a zavrieť</span><span class="tl nebezp">Zahodiť koncept</span></div>
+</div>
+<div><div class="blok" style="position:sticky;top:0"><p class="male">Náhľad · variant 1 / 24 ‹ ›</p>
+<div class="kmini"><div class="il"><div class="sl l"><span class="x"></span><span>R</span><span>P</span><span class="x"></span></div><div class="sl p"><span>C</span><span class="z"></span><span>D</span><span class="z"></span></div></div><div class="nz">Bačova žena<br>Občan · Žena</div><div class="ef"><b>Furt:</b> Tvoje Zvieratá v jej okolí sa rátajú do <i>prevahy</i> dvakrát.</div></div>
+<p class="male">Hra z toho spraví 24 variantov: akcie sa v nich presúvajú po voľných miestach. <u>Ukázať všetky</u></p></div></div>
+</div></div></div>
+<div><p class="oznac">Mobil 390 px</p>
+<div class="tel">
+<div class="lepkavy"><div class="kmini"><div class="il"></div><div class="nz" style="font-size:.4rem">Bačova</div><div class="ef"></div></div><div><b>Bačova žena</b><br><span class="male">✓ všetko v poriadku · 24 variantov</span></div><span class="tl">Náhľad</span></div>
+<h6>2 · Strany</h6>
+<div class="blok"><b>Ľavá</b> · 2 akcie · 2 voľné miesta
+<div class="r" style="flex-direction:column;align-items:stretch;gap:4px;margin-top:4px"><span class="tl" style="min-height:44px">0 · zakrytá</span><span class="tl" style="min-height:44px">1 · voľná</span><span class="tl" style="min-height:44px">2 · voľná</span><span class="tl" style="min-height:44px">3 · zakrytá</span></div>
+<div style="margin-top:6px"><span class="cip">Rana − 1 +</span><span class="cip">Pecka − 1 +</span></div>
+<span class="tl" style="min-height:44px">+ Pridať akciu</span></div>
+<div class="blok male">Ťuk na „+ Pridať akciu“ otvorí spodný panel: zoznam 15 akcií s ikonou, názvom a jednou vetou popisu (napr. „Pecka: 2 tuhé poškodenia“).</div>
+<div class="spodna"><span class="tl">Uložiť</span><span class="tl hl">Zverejniť</span></div>
+</div>
+<p class="pozn">Prilepený mini náhľad drží väzbu „mením → vidím“ (A5). Nesmie zakryť pole vo fokuse (WCAG 2.2, 2.4.11), preto má najviac
+64 px a pri fokuse sa posunie scroll-padding.</p>
+</div>
+</div>
+
+<h4 id="demo-strany">Vyskúšaj: strany karty (odporúčaný variant R3-A)</h4>
+<div class="demo" id="demo">
+<div class="demo-strany">
+<div class="strana" data-strana="l"><h4>Ľavá strana <small class="sum" aria-live="polite"></small></h4>
+<p class="pozn" style="margin:0">Ťukni na pozíciu, aby si ju zakryl alebo odkryl.</p>
+<div class="sloty"></div>
+<div class="akcie-str"></div>
+<label><span class="pozn">Pridať akciu</span><br><select class="pridaj"></select></label>
+</div>
+<div class="strana" data-strana="p"><h4>Pravá strana <small class="sum" aria-live="polite"></small></h4>
+<p class="pozn" style="margin:0">Ťukni na pozíciu, aby si ju zakryl alebo odkryl.</p>
+<div class="sloty"></div>
+<div class="akcie-str"></div>
+<label><span class="pozn">Pridať akciu</span><br><select class="pridaj"></select></label>
+</div>
+</div>
+<div class="demo-stav" id="demo-stav" role="status" aria-live="polite"></div>
+<h4 style="margin-top:14px">Efekt</h4>
+<div class="spust" role="group" aria-label="Spúšťač efektu" id="spust"></div>
+<p class="pozn" id="spust-popis" aria-live="polite"></p>
+<label for="efekt" class="pozn">Text efektu</label>
+<textarea id="efekt" maxlength="200">Tvoje Zvieratá v jej okolí sa rátajú do prevahy dvakrát.</textarea>
+<p class="pozn" id="efekt-nahlad" aria-live="polite"></p>
+</div>
+
+<h3>7.3 Detail návrhu s hlasovaním a komentármi</h3>
+<div class="ramik">
+<div><p class="oznac">Desktop</p>
+<div class="wf">
+<div class="r medzi"><span class="male">← Na hlasovanie · návrh 4 z 12 · <u>Ďalší neohodnotený →</u></span><span class="stav">Na hlasovanie</span></div>
+<div class="wf-desk wf-dva">
+<div>
+<div class="kmini" style="max-width:260px"><div class="il"><div class="sl l"><span class="x"></span><span>R</span><span>P</span><span class="x"></span></div><div class="sl p"><span>C</span><span class="z"></span><span>D</span><span class="z"></span></div></div><div class="nz">Bačova žena</div><div class="ef"><b>Furt:</b> Tvoje Zvieratá v jej okolí sa rátajú do <i>prevahy</i> dvakrát.</div></div>
+<p class="male">variant 1 / 24 ‹ › · <u>Opis karty textom</u> (pre čítačku: „Ľavá strana: 0 zakrytá, 1 Rana, 2 Pecka, 3 zakrytá…“)</p>
+<div class="info"><b>Nápad na novú akciu:</b> „Dojenie: +1 cigareta, ak máš v partii Zviera.“ <span class="male">(akcia v hre nie je, je to len nápad)</span></div>
+<div class="blok male"><b>Ilustrácia:</b> opísaná slovami: „Statná žena s vedrom, v pozadí ovce a salaš“</div>
+</div>
+<div>
+<h5>Bačova žena</h5><p class="male">Občan · Žena · navrhol <u>Jano</u> · pred 2 h · upravené 1× <u>čo sa zmenilo</u></p>
+<div class="r"><span class="tl hl" style="min-height:44px">🚬 Dať cigaretu · 7</span><span class="male">Zmenilo sa od tvojej cigarety</span></div>
+<h6>Podobné karty</h6><div class="male">Pes (v hre) · Pastier (návrh, 4 🚬)</div>
+<h6>Autor dopĺňa</h6><div class="blok male">„Chcel som kartu, ktorá odmení Zvieratá bez toho, aby boli silnejšie v bitke.“</div>
+<h6>Komentáre (4)</h6>
+<div class="blok"><b>Eva</b> <span class="male">pred 1 h</span><br>Prevaha ×2 je silná s Psom. Možno len pre jedno Zviera? <span class="tl">🚬 3</span> <span class="tl">Odpovedať</span></div>
+<div class="blok"><b>Jano</b> <span class="stav">autor</span> <span class="male">pred 40 min</span><br>Dobrý bod, upravil som na „najviac jedno Zviera“. <span class="tl">🚬 1</span></div>
+<div class="pole male">Napíš komentár… (čo by si zmenil, s ktorou kartou to koliduje)</div>
+<p class="male">Autor: <u>Upraviť</u> · <u>Stiahnuť návrh</u></p>
+</div>
+</div></div></div>
+<div><p class="oznac">Mobil 390 px</p>
+<div class="tel">
+<div class="r medzi male"><span>← Dielňa</span><span>4 / 12 · Ďalší →</span></div>
+<div class="kmini" style="max-width:200px;margin:6px auto"><div class="il"></div><div class="nz">Bačova žena</div><div class="ef"><b>Furt:</b> …</div></div>
+<p class="male" style="text-align:center">‹ variant 1 / 24 ›</p>
+<h5>Bačova žena</h5><p class="male">Občan · Žena · Jano · pred 2 h</p>
+<div class="info male">Nápad na novú akciu: Dojenie…</div>
+<details><summary class="male">Podobné karty (2)</summary></details>
+<h6>Komentáre (4)</h6>
+<div class="blok male"><b>Eva</b>: Prevaha ×2 je silná s Psom…</div>
+<div class="spodna"><span class="tl hl">🚬 7</span><span class="tl">💬 Komentovať</span></div>
+</div>
+<p class="pozn">Cigareta a komentár sú v spodnej lište stále na dosah. Návštevník bez účtu vidí v lište „Prihlás sa a hlasuj“.</p>
+</div>
+</div>
+
+<h3>7.4 Pohľad správcu pri posudzovaní</h3>
+<div class="ramik">
+<div><p class="oznac">Desktop: panel Posúdenie v detaile (len admin a subadmin)</p>
+<div class="wf">
+<div class="blok"><div class="r medzi"><b>Posúdenie</b><span class="male">Fronta: 2 z 4 · <u>Ďalší →</u></span></div>
+<div class="r male"><span>🚬 7 (z toho 0 od AI)</span><span>· 💬 4</span><span>· zverejnené pred 2 h</span><span>· upravené 1×</span></div>
+<div class="okk male">✓ Platná karta (24 variantov) · ✓ spúšťač Furt · ✓ názov je voľný</div>
+<div class="info male">⚠ Nová akcia ako nápad: „Dojenie“. Do hry len po naprogramovaní.<br>⚠ Podobné: Pes (v hre), Pastier (návrh #9) → <u>Zlúčiť s #9</u></div>
+<div class="r"><span class="tl hl">Prevziať do tvorcu…</span><span class="tl">Vrátiť na úpravu…</span><span class="tl nebezp">Zamietnuť…</span></div>
+</div>
+<div class="blok"><b>Prevziať do tvorcu</b> <span class="male">(rozbalí sa na mieste, bez modálneho okna)</span>
+<div class="male">Vznikne návrh karty <code>bacova_zena</code> · Občan, Žena · strany ako v návrhu · efekt · ilustrácia: <i>len popis, treba vyrobiť</i></div>
+<span class="male">Názov v tvorcovi</span><div class="pole">Bačova žena</div>
+<label class="male"><input type="checkbox" checked disabled> Pridať úlohu „naprogramovať efekt“ do Prijímača roadmapy</label>
+<div class="r"><span class="tl hl">Vytvoriť návrh karty</span><span class="tl">Zrušiť</span></div>
+<div class="okk male">Hotovo. Návrh je v tvorcovi. <u>Otvoriť v tvorcovi</u> · <u>Vrátiť späť</u> (10 s)</div></div>
+<div class="blok"><b>Zamietnuť</b> <span class="male">dôvod uvidí autor aj ostatní</span>
+<div><span class="cip">Podobná karta už je</span><span class="cip on">Rozbije balans</span><span class="cip">Nedá sa jasne vyhodnotiť</span><span class="cip">Nesedí do sveta NA EX</span><span class="cip">Iné</span></div>
+<div class="pole male">S Psom a Pastierom dá prevaha ×2 istú lokalitu už v 2. kole. Skús bonus len za jedno Zviera.</div>
+<div class="r"><span class="tl nebezp">Zamietnuť s dôvodom</span><span class="tl">Radšej vrátiť na úpravu</span></div></div>
+</div>
+<p class="pozn">V tvorcovi (<code>Tvorca.tsx</code>) potom nad formulárom svieti pruh: „Z Dielne: návrh #14 od Jana · <u>diskusia</u>“. Uloženie
+v tvorcovi nemení návrh v Dielni, ten je odvtedy len na čítanie.</p>
+</div>
+<div><p class="oznac">Mobil 390 px</p>
+<div class="tel">
+<h5>Posúdenie</h5>
+<div class="okk male">✓ Platná · ✓ Furt · ✓ názov voľný</div>
+<details open><summary class="male">⚠ 2 upozornenia</summary><div class="male">Nová akcia „Dojenie“ · Podobné: Pes, Pastier</div></details>
+<div class="r" style="flex-direction:column;align-items:stretch"><span class="tl hl" style="min-height:44px">Prevziať do tvorcu…</span><span class="tl" style="min-height:44px">Vrátiť na úpravu…</span><span class="tl nebezp" style="min-height:44px">Zamietnuť…</span></div>
+<div class="spodna"><span class="tl">← Predošlý</span><span class="tl">Ďalší vo fronte →</span></div>
+</div>
+<p class="pozn">Na telefóne sa dá posúdiť a zamietnuť. Ladenie v tvorcovi zostáva na desktope; tvorca na mobile funguje, no je dlhý.</p>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="navrhy">8. Návrhy</h2>
+
+<article class="navrh"><h3>N1. Nápad na kartu v Spätnej väzbe (overenie dopytu) <span class="stitok mala">malá</span> <span class="stitok">rýchla výhra</span></h3>
+<dl>
+<dt>Rieši</dt><dd>Zistí, či hráči karty vôbec navrhujú, ešte pred stavbou Dielne. Čiastočne A1 (dôvod pri stave).</dd>
+<dt>Tok</dt><dd>Kategória <em>Nápad na kartu</em> v Spätnej väzbe predvyplní šablónu („Názov / Druh / Ľavá strana / Pravá strana / Spúšťač
+a efekt / Ilustrácia“). Pri stave <em>nebudeme robiť</em> povinné pole „prečo“.</dd>
+<dt>Mikrocopy</dt><dd>Šablóna: „Názov: … · Druh: Občan/Zviera/Nástroj · Vľavo: … · Vpravo: … · Efekt: Bitka: …“</dd>
+<dt>Prístupnosť</dt><dd>Šablóna je bežný text v textarea, čítačka ju prečíta.</dd>
+<dt>Súbory</dt><dd><code>stranky/SpatnaVazba.tsx</code>, <code>server/src/nazory.ts</code> (kategória, dôvod stavu)</dd>
+<dt>Ako overiť</dt><dd>Počet nápadov na kartu za 2 týždne; koľko z nich má obe strany zadané správne.</dd>
+</dl>
+<p class="pozn">Michal Dielňu chce, takže N1 má zmysel len ako most, kým N2 nie je hotový. Môže sa aj preskočiť.</p></article>
+
+<article class="navrh"><h3>N2. Dielňa MVP: zoznam, detail, cigarety a komentáre <span class="stitok stredna">stredná</span></h3>
+<dl>
+<dt>Rieši</dt><dd>A9 čiastočne, A12, A13; základná úloha hlasujúcich.</dd>
+<dt>Tok</dt><dd>Model 7.1 a 7.3: záložky stavov, mriežka kariet, detail s variantmi, cigareta (1 na hráča, vrátiteľná, vlastnému nie,
+rovnako ako <code>nazory.ts:205-213</code>), komentáre, triedenie <em>neohodnotené</em>, prepínač AI. Prihlásený navrhuje cez editor N3;
+v MVP stačí jeho základ.</dd>
+<dt>Mikrocopy</dt><dd>Prázdny stav: „Zatiaľ tu nie je žiadny návrh. Máš nápad na kartu? Navrhni prvú.“ Návštevník: „Návrhy čítaš ako
+hosť. Prihlás sa a navrhni vlastnú kartu.“</dd>
+<dt>Prístupnosť</dt><dd>Mriežka je zoznam <code>&lt;ul&gt;</code> s odkazmi na detail. Karta má textový opis strán. Cigareta má
+<code>aria-pressed</code> a počet v <code>aria-label</code> (už ju má <code>TlacidloCigarety</code>, <code>SpatnaVazba.tsx:101-142</code>)
+a na mobile cieľ 44 px.</dd>
+<dt>Súbory</dt><dd>nové <code>stranky/Dielna.tsx</code>, <code>server/src/dielna.ts</code> (tabuľky návrhov, cigariet, komentárov; vzor
+<code>nazory.ts</code>), <code>api.ts</code>, <code>App.tsx</code> (verejná cesta), <code>Layout.tsx</code> (položka a značka).
+Znovu použiť <code>TlacidloCigarety</code>, <code>KartaLico</code> a čítanie knižnice pre prihlásených.</dd>
+<dt>Ako overiť</dt><dd>Podiel hráčov, ktorí za týždeň dajú aspoň 1 cigaretu v Dielni. Či hlasujúci otvoria detail (kartu) alebo hlasujú zo
+zoznamu. Otázka do playtestu: „Pochopil si z náhľadu, čo karta robí?“</dd>
+</dl></article>
+
+<article class="navrh"><h3>N3. Editor s živým náhľadom, ktorý chybám bráni vopred <span class="stitok stredna">stredná</span></h3>
+<dl>
+<dt>Rieši</dt><dd>A3, A4, A5, A6, A7, A10, A14; rozhodnutia R2-A, R3-A, R4-A, R5-A, R6-A.</dd>
+<dt>Tok</dt><dd>Pred: 4 panely tvorcu, 20+ polí, chyba hneď na začiatku. Po: 5 sekcií (Základ, Strany, Efekt, Ilustrácia, Kontrola), asi 8
+rozhodnutí, z toho 4 povinné. Priebežné ukladanie konceptu. Kontrola sa ukáže až pri <em>Zverejniť</em> alebo po opustení poľa.
+Súhrn chýb hore odkazuje na polia (vzor GOV.UK). Panel „Podobné karty“ je pred zverejnením.</dd>
+<dt>Mikrocopy</dt><dd>Pozri <a href="#mikrocopy">sekciu 9</a>.</dd>
+<dt>Prístupnosť</dt><dd>Pozície sú tlačidlá s <code>aria-pressed</code> („Pozícia 0, zakrytá“). Počítadlá akcií majú
+<code>aria-live="polite"</code>. Čipy spúšťačov sú skupina tlačidiel s popisom. Žiadne ťahanie (2.5.7). Prilepený náhľad
+nezakryje fokus (2.4.11). Chyby sú povedané slovami, nielen farbou.</dd>
+<dt>Súbory</dt><dd>nové <code>stranky/DielnaEditor.tsx</code>. Z <code>@naex/tvorba</code> prebrať <code>variantyKarty</code>,
+<code>chybyNavrhu</code>, <code>spustaceVTexte</code>, <code>formatujEfekt</code>, <code>slug</code>. Server overí to isté
+(klient posiela zámer, server overuje, CLAUDE.md).</dd>
+<dt>Ako overiť</dt><dd>Podiel zverejnených návrhov, ktoré admin prevezme bez opravy strán. Medián času od otvorenia po zverejnenie.
+Otázka: „Vedel si, prečo má tvoja karta N variantov?“</dd>
+</dl></article>
+
+<article class="navrh"><h3>N4. Životný cyklus, upozornenia a pult správcu <span class="stitok stredna">stredná</span> až <span class="stitok velka">veľká</span></h3>
+<dl>
+<dt>Rieši</dt><dd>A1, A2, A11, A15; R7-A, R8-A, R9-A.</dd>
+<dt>Tok</dt><dd>Stavy podľa diagramu v časti 2. Panel Posúdenie (7.4). Prevzatie vytvorí <code>KartaNavrh</code> s predvoľbami
+z nastavení a s pôvodom <em>Dielňa #id, autor</em>. Dôvod pri vrátení a zamietnutí je povinný. Vrátenie späť do 10 s namiesto
+potvrdzovacieho dialógu. Značky R8-A. História stavov v detaile („22. 10. prevzatá do tvorcu · Michal“). Stav <em>V hre</em> sa nastaví
+pri zverejnení sady.</dd>
+<dt>Mikrocopy</dt><dd>Autorovi pri prevzatí: „Tvoja karta je v tvorcovi. Teraz ju doladíme a naprogramujeme efekt. V hre bude po
+zverejnení novej sady. Dáme vedieť.“</dd>
+<dt>Prístupnosť</dt><dd>Toast s „Vrátiť späť“ je <code>role="status"</code>, dostupný klávesnicou a nezmizne, kým je vo fokuse
+(2.2.1). Stav je text a ikona, nie len farba.</dd>
+<dt>Súbory</dt><dd><code>server/src/dielna.ts</code>, <code>admin/Admin.tsx</code> (fronta), <code>admin/Tvorca.tsx</code> (pruh pôvodu),
+<code>packages/tvorba/src/typy.ts</code> (voliteľné pole pôvodu v <code>KartaNavrh</code>), <code>zverejnenie.ts</code> (prechod do
+stavu <em>V hre</em>), <code>Layout.tsx</code> (značky), <code>stranky/Glosar.tsx</code> („navrhol …“), prípadne roadmapa (Prijímač).</dd>
+<dt>Ako overiť</dt><dd>Koľko autorov po vrátení návrh naozaj upraví. Koľko autorov po zamietnutí navrhne ďalšiu kartu. Otázka:
+„Vieš, v akom stave je tvoj návrh a prečo?“</dd>
+</dl></article>
+
+<article class="navrh"><h3>N5. Kolá Dielne s rozpočtom cigariet a odvodené návrhy <span class="stitok velka">veľká</span> <span class="stitok">odvážny smer</span></h3>
+<dl>
+<dt>Rieši</dt><dd>Zahltenie frontou a lacné hlasy: keď je cigareta zadarmo a bez limitu, nesie málo signálu (<strong>odhad</strong>).
+Rozhovor o kartách mení na spoluprácu.</dd>
+<dt>Tok</dt><dd>Dielňa beží v kolách (napríklad 2 týždne, téma kola „Zvieratá“). Každý hráč má na kolo rozpočet cigariet (napríklad 5), ukazuje sa
+„Zostávajú ti 3 cigarety“. Na konci kola idú 3 najlepšie návrhy správcovi; ostatné ostávajú v archíve a dajú sa poslať znovu.
+<strong>Odvodený návrh</strong> („Upraviť po svojom“) skopíruje cudzí návrh do konceptu s odkazom na pôvodný, takže z komentára
+„daj tam Ranu“ je hneď alternatíva, o ktorej sa dá hlasovať.</dd>
+<dt>Mikrocopy</dt><dd>„Kolo 3 · Téma: Zvieratá · končí o 5 dní · máš 3 cigarety“.</dd>
+<dt>Prístupnosť</dt><dd>Odpočet je text, nie animácia. Rozpočet hlási <code>aria-live</code>.</dd>
+<dt>Súbory</dt><dd>všetko z N2–N4 a navyše kolá a rozpočty na serveri</dd>
+<dt>Ako overiť</dt><dd>Porovnať 2 kolá s rozpočtom a 2 bez neho: rozptyl cigariet, počet komentárov na návrh, podiel prevzatých.
+Pravidlá kôl sú rozhodnutie Michala (Q1, Q4).</dd>
+</dl></article>
+
+<!-- ============================================================ -->
+<h2 id="mikrocopy">9. Mikrocopy</h2>
+<div class="tab-obal"><table>
+<thead><tr><th>Miesto</th><th>Text</th><th>Prečo</th></tr></thead>
+<tbody>
+<tr><td>Hlavné tlačidlo</td><td>„Navrhnúť kartu“</td><td>Sloveso a predmet; nie „Nový“ ani „+“.</td></tr>
+<tr><td>Úvod Dielne</td><td>„Tu hráči navrhujú nové karty. Daj cigaretu tým, ktoré by si chcel hrať. Najlepšie si tvorca hry vezme do tvorcu.“</td><td>Vysvetlí všetky tri úlohy jednou vetou na každú.</td></tr>
+<tr><td>Strana, počítadlo</td><td>„2 akcie · 3 voľné miesta“ / „Strana je plná. Odkry pozíciu alebo uber akciu.“</td><td>Namiesto „2/3 akcií · 3 rozloženia“ z tvorcu.</td></tr>
+<tr><td>Zakrytie nejde</td><td>„Túto pozíciu nezakryješ. Strana by mala 3 akcie na 2 miestach. Najprv uber akciu.“</td><td>Príčina a cesta von.</td></tr>
+<tr><td>Varianty</td><td>„Hra z toho spraví 6 variantov: akcie sa v nich presúvajú po voľných miestach.“ / „Jediný variant.“</td><td>Rovnaké slovo ako glosár.</td></tr>
+<tr><td>Efekt bez spúšťača</td><td>„Kedy efekt platí? Vyber spúšťač, napríklad Bitka alebo Furt.“</td><td>Otázka namiesto „chyba“.</td></tr>
+<tr><td>Duplicitný názov</td><td>„Kartu Pijan už hra má. Pozri ju alebo premenuj návrh.“</td><td>Odkaz von a riešenie.</td></tr>
+<tr><td>Podobné</td><td>„Podobné karty. Ak ide o to isté, pridaj sa radšej do ich diskusie.“</td><td>Smeruje bez zákazu.</td></tr>
+<tr><td>Uloženie</td><td>„Koncept · uložené pred chvíľou“ / „Neuložené, skúšam znova…“</td><td>Viditeľnosť stavu.</td></tr>
+<tr><td>Po zverejnení</td><td>„Návrh je vonku. Dáme ti vedieť, keď ho niekto okomentuje.“</td><td>Uzavrie úlohu a nastaví očakávanie.</td></tr>
+<tr><td>Limit</td><td>„Máš 3 otvorené návrhy z 3. Počkaj na posúdenie alebo stiahni niektorý starší.“</td><td>Krčmové „Daj si poldeci“ len pri brzde ako v SV, nie tu: tu ide o pravidlo.</td></tr>
+<tr><td>Prevzatá</td><td>„V tvorcovi: schválená, ladí sa. V hre bude po zverejnení novej sady.“</td><td>Rozdiel A2.</td></tr>
+<tr><td>Vrátená</td><td>„Tvorca hry ťa prosí o úpravu: …“ + tlačidlo „Upraviť návrh“</td><td>Dôvod a ďalší krok.</td></tr>
+<tr><td>Zamietnutá</td><td>„Tentoraz nie: Rozbije balans. S Psom a Pastierom…“ + „Navrhnúť inú kartu“</td><td>Úctivo, s dôvodom a cestou ďalej.</td></tr>
+<tr><td>Vlastná cigareta</td><td>„Sám sebe cigaretu nedáš.“</td><td>Už existuje (<code>SpatnaVazba.tsx:117</code>), konzistentné.</td></tr>
+<tr><td>Hosť</td><td>„Prihlás sa a hlasuj“ / „Prihlás sa a navrhni kartu“</td><td>Výzva v mieste akcie, s návratom.</td></tr>
+</tbody></table></div>
+
+<!-- ============================================================ -->
+<h2 id="pristupnost">10. Prístupnosť (WCAG 2.2 AA) a mobil</h2>
+<ul>
+<li><strong>Karta ako obrázok potrebuje text.</strong> K náhľadu patrí opis strán („Ľavá: 0 zakrytá, 1 Rana, 2 Pecka, 3 zakrytá“) a efekt
+ako text. Pojmy (prevaha, zahoď) majú vysvetlivku dostupnú fokusom, nielen hoverom (1.4.13). <code>KartaLico</code> už reaguje na
+<code>onFocus</code>.</li>
+<li><strong>Klávesnica a poradie fokusu:</strong> Základ → Strany → Efekt → Ilustrácia → Kontrola → Zverejniť. Po zverejnení ide fokus na
+nadpis detailu. Po kliknutí na chybu v súhrne ide fokus na pole.</li>
+<li><strong>2.4.11 Fokus nezakrytý</strong> (nové v 2.2): prilepený mini náhľad a spodná lišta na mobile potrebujú
+<code>scroll-padding</code>.</li>
+<li><strong>2.5.7 Pohyby ťahaním</strong> (nové v 2.2): editor nepoužíva drag and drop. Ak by sa raz pridal, len popri tlačidlách.</li>
+<li><strong>2.5.8 Veľkosť cieľa:</strong> minimum 24 px, na mobile cieliť na 44 px pri cigarete, pozíciách, čipoch a spodnej lište.</li>
+<li><strong>3.3.7 Opakované zadanie</strong> (nové v 2.2): pri vrátení na úpravu sa nič nezadáva znovu. Koncept a pôvodné hodnoty ostávajú.</li>
+<li><strong>Zmeny stavu</strong> (počet cigariet, ukladanie, počítadlá strán, toast „Vrátiť späť“) idú cez <code>role="status"</code>.</li>
+<li><strong>Bez závislosti na farbe:</strong> stav návrhu je text a ikona. Zakrytá pozícia má šrafovanie a slovo „zakrytá“.</li>
+<li><strong>Spodný panel s akciami</strong> (mobil) je dialóg s fokusom vo vnútri, zatvára sa Escape aj tlačidlom „Hotovo“.</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="poradie">11. Odporúčané poradie</h2>
+<ol>
+<li><strong>N2 a jadro N3 spolu ako MVP.</strong> Zoznam, detail, cigarety, komentáre a editor s R3-A, R4-A, R5-A a priebežným ukladaním.
+Prevencia chýb je lacná a bez nej by MVP opakovalo A3 až A7. Panel „Podobné“ môže prísť o týždeň neskôr.</li>
+<li><strong>N4</strong> hneď za tým, ideálne v tom istom nasadení ako prvé posudzovanie. Bez dôvodu a upozornenia (A1) prví autori
+odídu. Minimum: povinný dôvod, stav <em>V tvorcovi</em> s vysvetlením a značka pre autora.</li>
+<li><strong>N1</strong> len ak sa N2 odkladá o viac ako 2 týždne.</li>
+<li><strong>N5</strong> po mesiaci dát: keď bude návrhov veľa a hlasy rozdelené rovnomerne, alebo keď frontu zahltia AI či rovnaké
+nápady.</li>
+</ol>
+<p>Michal má rozhodnúť: pravidlá Dielne z otázok Q1–Q12 (hlavne Q1, Q2, Q3, Q7, ktoré menia model dát), a či druhy karty zahŕňajú Lokalitu,
+Starešinu a Kliatbu (Q9).</p>
+
+<!-- ============================================================ -->
+<h2 id="playtest">12. Otázky do playtestu</h2>
+<ul>
+<li>„Navrhni kartu, ktorá by ti v poslednej partii pomohla.“ Merať čas a sledovať, kde autor zaváha: strany, spúšťač, varianty.</li>
+<li>„Prečo má tvoja karta 6 variantov?“ Ak polovica nevie, posilniť vysvetlenie pri náhľade.</li>
+<li>„Prejdi 5 návrhov a daj cigaretu tým, ktoré by si hral.“ Otvára hráč detail, alebo hlasuje zo zoznamu? Použije „Ďalší neohodnotený“?</li>
+<li>„Tvoj návrh bol vrátený na úpravu. Čo urobíš?“ Nájde dôvod a tlačidlo „Upraviť návrh“ bez pomoci?</li>
+<li>„Je podľa teba karta ‚V tvorcovi‘ už v hre?“ Overenie A2.</li>
+<li>AI playtesteri: vedia z náhľadu a textového opisu presne zopakovať, čo karta robí? Je to dobrý test čitateľnosti opisu.</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="otazky">13. Otázky pre Michala</h2>
+<p class="pozn">To, že navrhovať, hlasovať a komentovať smie každý prihlásený, je rozhodnuté; tu sa to už nepýtam.</p>
+<ol>
+<li><strong>Q1 Cena hlasu.</strong> Je cigareta v Dielni zadarmo a bez limitu ako v Spätnej väzbe (1 na návrh, vrátiteľná), alebo má hráč
+rozpočet (napríklad 5 za týždeň či kolo, N5)? Majú hlasy podľa ranku (Poldeci / Deci / Sedmička) rôznu váhu, alebo sa radšej neváži?</li>
+<li><strong>Q2 Odmena autorovi.</strong> Čo dostane autor prevzatej karty a čo autor karty, ktorá je v hre? Meno na karte, odznak v profile,
+posun v ranku…</li>
+<li><strong>Q3 Autorstvo v hre.</strong> Kde sa zachová: v glosári („navrhol Jano“), na tlačenej karte malým písmom, v profile autora? Čo ak
+admin kartu prerobí na nepoznanie: spoluautorstvo, alebo len „podľa nápadu“?</li>
+<li><strong>Q4 Časové obmedzenie.</strong> Je hlasovanie otvorené natrvalo, alebo v kolách či s termínom (napríklad 14 dní, potom ide návrh
+na posúdenie alebo do archívu)?</li>
+<li><strong>Q5 Úprava po hlasovaní.</strong> Ostávajú cigarety po úprave (odporúčam), alebo sa pri zmene strán či efektu vynulujú?</li>
+<li><strong>Q6 Limity.</strong> Koľko otvorených návrhov smie mať autor naraz (návrh: Poldeci 2, Deci 3, Sedmička 5) a koľko konceptov?
+Má brzda byť ako v Spätnej väzbe (5 príspevkov za 10 minút)?</li>
+<li><strong>Q7 Prah posúdenia.</strong> Posudzuje správca každý návrh, alebo až od určitého počtu cigariet (napríklad 5)? Môže návrh bez hlasov
+po čase sám zapadnúť do archívu?</li>
+<li><strong>Q8 Viditeľnosť zamietnutých.</strong> Vidia zamietnuté návrhy všetci (aj s dôvodom, aby sa ostatní poučili), len autor, alebo
+sa po 30 dňoch archivujú? Smie autor zamietnutý návrh upraviť a poslať znovu?</li>
+<li><strong>Q9 Druhy kariet.</strong> Smú hráči navrhovať aj Lokality (kraje, počet Pitiek), Starešinov (scorecardy a hodnoty v
+<code>elders.json</code>) a Kliatby, alebo len Občanov, Zvieratá a Nástroje?</li>
+<li><strong>Q10 Ilustrácia.</strong> Stačí knižnica a slovný popis, alebo smie hráč nahrať vlastný obrázok? Nahrávanie znamená moderovanie a
+autorské práva. Má sa slovný popis po prevzatí automaticky použiť ako zadanie pre Leonardo?</li>
+<li><strong>Q11 Upozornenia.</strong> Stačia značky na webe, alebo chceš aj e-mail? Web e-mail zatiaľ neposiela.</li>
+<li><strong>Q12 Moderovanie.</strong> Kto smie skryť návrh či komentár (subadmin áno?) a môžu hráči nahlasovať? Čo s kartami o skutočných
+ľuďoch z dediny: zakázať výslovne v pravidlách Dielne?</li>
+<li><strong>Q13 AI účty.</strong> Smú AI playtesteri navrhovať a hlasovať? Ak áno, skryť ich predvolene ako v Spätnej väzbe a ich cigarety
+nerátať do prahu posúdenia?</li>
+<li><strong>Q14 Prevzatie a roadmapa.</strong> Má prevzatie do tvorcu samo založiť úlohu „naprogramovať efekt“ v Prijímači roadmapy, ako
+schválený návrh z Playtestu?</li>
+<li><strong>Q15 Len nové karty, alebo aj úpravy?</strong> Smie hráč v Dielni navrhnúť zmenu karty, ktorá už v hre je (napríklad „Liberál
+bez zdvojenia Cigarety“)? V UX by to bolo „Navrhnúť úpravu“ v glosári, ktoré predvyplní editor kartou z hry a ukáže rozdiel. Spätná
+väzba je dnes plná práve takých návrhov.</li>
+</ol>
+<p class="pozn">Pracovné poznámky: <code>playtest/dizajn/dielna-20261022-1421/ux-poznamky.md</code> (mimo gitu).</p>
+</main>
+
+<script>
+(function(){
+  // Filter auditu
+  var tl = document.querySelectorAll('.filtre button');
+  var pocet = document.getElementById('audit-pocet');
+  function filtruj(f){
+    var n = 0;
+    document.querySelectorAll('#audit-tab tbody tr').forEach(function(r){
+      var ok = f === 'vsetky' || r.getAttribute('data-z') === f;
+      r.hidden = !ok; if (ok) n++;
+    });
+    if (pocet) pocet.textContent = 'Zobrazených problémov: ' + n + '.';
+  }
+  tl.forEach(function(b){ b.addEventListener('click', function(){
+    tl.forEach(function(x){ x.setAttribute('aria-pressed', x===b ? 'true' : 'false'); });
+    filtruj(b.getAttribute('data-f'));
+  }); });
+  filtruj('vsetky');
+
+  // Ukážka editora strán: model = zakryté pozície + multimnožina akcií (ako packages/tvorba).
+  var AKCIE = ['Rana','Pecka','Petelica','Povera','Viera','Pohoršenie','Dlh','Poškodenie pečene','Obmedzenie','Cigareta','Vízia','Poldeci','Posilnenie','Odpor','Robota'];
+  var stav = { l: { zakryte: [0,3], akcie: { 'Rana':1, 'Pecka':1 } }, p: { zakryte: [], akcie: { 'Cigareta':1, 'Dlh':1 } } };
+  function fakt(n){ var r=1; for (var i=2;i<=n;i++) r*=i; return r; }
+  function pocetAkcii(s){ var n=0; for (var k in s.akcie) n+=s.akcie[k]; return n; }
+  function volne(s){ return 4 - s.zakryte.length; }
+  function rozlozenia(s){
+    var v = volne(s), n = pocetAkcii(s);
+    if (n > v) return 0;
+    var d = fakt(v - n);
+    for (var k in s.akcie) d *= fakt(s.akcie[k]);
+    return fakt(v) / d;
+  }
+  function tvar(n, a, b, c){ return n === 1 ? a : (n >= 2 && n <= 4 ? b : c); }
+  var hlaska = document.getElementById('demo-stav');
+  function vykresli(){
+    ['l','p'].forEach(function(kluc){
+      var s = stav[kluc];
+      var el = document.querySelector('.strana[data-strana="'+kluc+'"]');
+      var sloty = el.querySelector('.sloty'); sloty.innerHTML = '';
+      [0,1,2,3].forEach(function(p){
+        var zak = s.zakryte.indexOf(p) !== -1;
+        var b = document.createElement('button');
+        b.type = 'button'; b.className = 'slot';
+        b.setAttribute('aria-pressed', zak ? 'true' : 'false');
+        b.setAttribute('aria-label', 'Pozícia ' + p + ', ' + (zak ? 'zakrytá' : 'voľná') + '. Ťukni pre ' + (zak ? 'odkrytie.' : 'zakrytie.'));
+        b.innerHTML = '<b>' + p + '</b><span>' + (zak ? 'zakrytá' : 'voľná') + '</span>';
+        b.addEventListener('click', function(){
+          if (zak) { s.zakryte = s.zakryte.filter(function(x){ return x !== p; }); hlaska.dataset.sprava = ''; }
+          else if (pocetAkcii(s) > volne(s) - 1) {
+            hlaska.dataset.sprava = 'Túto pozíciu nezakryješ. Strana by mala ' + pocetAkcii(s) + ' ' + tvar(pocetAkcii(s),'akciu','akcie','akcií') + ' na ' + (volne(s)-1) + ' ' + tvar(volne(s)-1,'mieste','miestach','miestach') + '. Najprv uber akciu.';
+          } else { s.zakryte.push(p); s.zakryte.sort(); hlaska.dataset.sprava = ''; }
+          vykresli();
+          var nove = document.querySelectorAll('.strana[data-strana="'+kluc+'"] .slot')[p]; if (nove) nove.focus();
+        });
+        sloty.appendChild(b);
+      });
+      var ak = el.querySelector('.akcie-str'); ak.innerHTML = '';
+      var plna = pocetAkcii(s) >= volne(s);
+      Object.keys(s.akcie).forEach(function(a){
+        var span = document.createElement('span'); span.className = 'akc';
+        var t = document.createElement('span'); t.textContent = a + ' ' + s.akcie[a] + '×';
+        var minus = document.createElement('button'); minus.type='button'; minus.textContent='−'; minus.setAttribute('aria-label','Uber ' + a);
+        minus.addEventListener('click', function(){ s.akcie[a]--; if (s.akcie[a] <= 0) delete s.akcie[a]; hlaska.dataset.sprava=''; vykresli(); });
+        var plus = document.createElement('button'); plus.type='button'; plus.textContent='+'; plus.setAttribute('aria-label','Pridaj ' + a);
+        plus.disabled = plna; if (plna) plus.title = 'Strana je plná. Odkry pozíciu alebo uber akciu.';
+        plus.addEventListener('click', function(){ s.akcie[a]++; vykresli(); });
+        span.appendChild(t); span.appendChild(minus); span.appendChild(plus); ak.appendChild(span);
+      });
+      var sel = el.querySelector('.pridaj'); sel.innerHTML = '';
+      var o0 = document.createElement('option'); o0.value=''; o0.textContent = plna ? 'Strana je plná' : '+ vyber akciu…'; sel.appendChild(o0);
+      AKCIE.filter(function(a){ return !(a in s.akcie); }).forEach(function(a){ var o=document.createElement('option'); o.value=a; o.textContent=a; sel.appendChild(o); });
+      sel.disabled = plna;
+      sel.onchange = function(){ if (sel.value) { s.akcie[sel.value] = 1; vykresli(); } };
+      var n = pocetAkcii(s), v = volne(s);
+      el.querySelector('.sum').textContent = n + ' ' + tvar(n,'akcia','akcie','akcií') + ' · ' + v + ' ' + tvar(v,'voľné miesto','voľné miesta','voľných miest');
+    });
+    var rl = rozlozenia(stav.l), rp = rozlozenia(stav.p), spolu = rl * rp;
+    var sprava = hlaska.dataset.sprava || '';
+    hlaska.className = 'demo-stav' + (sprava ? ' zle' : '');
+    hlaska.textContent = sprava ? sprava : (spolu === 1 ? 'Jediný variant: akcie sú vždy na tých istých miestach.' :
+      'Hra z toho spraví ' + spolu + ' ' + tvar(spolu,'variant','varianty','variantov') + ' (vľavo ' + rl + ' × vpravo ' + rp + '): akcie sa v nich presúvajú po voľných miestach.');
+  }
+  vykresli();
+
+  // Ukážka spúšťačov (popisy z kľúčových slov tvorcu, predvolene.ts).
+  var SP = [['Nástup','Vyhodnotí sa pri zahraní karty.'],['Furt','Platí, kým je karta odhalená kdekoľvek v hracom priestore.'],['Bitka','Uplatní sa pri vyhodnotení bitky.'],['Pitka','Uplatní sa počas Pitky.'],['Zhromaždenie','Uplatní sa počas Zhromaždenia.'],['Dedičstvo','Pasívny bonus Nástroja, kým leží v tvojej hracej oblasti.'],['Výhra','Keď vyhráš bitku o lokalitu.'],['Prehra','Keď prehráš bitku o lokalitu.'],['Prestávka','Cez prestávku pred bitkou.'],['Podpora','Keď má karta v okolí presne 2 karty.'],['Exekúcia','Keď ťa navštívi Exekútor.'],['Bez efektu','Karta nemá efekt, len akcie.']];
+  var zvoleny = 'Furt';
+  var kont = document.getElementById('spust'), popis = document.getElementById('spust-popis'), ta = document.getElementById('efekt'), nah = document.getElementById('efekt-nahlad');
+  function nahlad(){
+    if (zvoleny === 'Bez efektu') { ta.disabled = true; nah.textContent = 'Na karte: (bez efektu)'; return; }
+    ta.disabled = false;
+    var t = ta.value.trim();
+    nah.textContent = t ? 'Na karte: ' + zvoleny + ': ' + t : 'Kedy efekt platí, už vieš. Teraz dopíš, čo robí.';
+  }
+  SP.forEach(function(s){
+    var b = document.createElement('button'); b.type='button'; b.textContent = s[0];
+    b.setAttribute('aria-pressed', s[0] === zvoleny ? 'true' : 'false');
+    b.addEventListener('click', function(){
+      zvoleny = s[0];
+      kont.querySelectorAll('button').forEach(function(x){ x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+      popis.textContent = s[0] + ': ' + s[1];
+      nahlad();
+    });
+    kont.appendChild(b);
+  });
+  popis.textContent = 'Furt: ' + SP[1][1];
+  ta.addEventListener('input', nahlad);
+  nahlad();
+})();
+</script>
+</body>
+</html>
