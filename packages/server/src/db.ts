@@ -320,6 +320,8 @@ function migruj(db: Db): void {
   if (!ucty.some((c) => c.name === "novinky_videne")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN novinky_videne INTEGER");
   // Pohlavie pre tvary hlášok v partii (Michal 2026-10-22): muz / zena; NULL = neuvádza (neutrálne hlášky).
   if (!ucty.some((c) => c.name === "pohlavie")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN pohlavie TEXT");
+  // Profil (Michal 2026-10-22): „skryť môj súhrn“ pred ostatnými; hodnotenie (Frajerina) ostáva viditeľné.
+  if (!ucty.some((c) => c.name === "skryty_suhrn")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN skryty_suhrn INTEGER NOT NULL DEFAULT 0");
   // Verdikt overenia návrhu ďalším playtestom (Michal 2026-10-21).
   const navrhy = db.prepare("PRAGMA table_info(navrhy)").all() as { name: string }[];
   if (!navrhy.some((c) => c.name === "verdikt")) db.exec("ALTER TABLE navrhy ADD COLUMN verdikt TEXT NOT NULL DEFAULT ''");
