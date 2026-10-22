@@ -645,3 +645,18 @@
     display: none;
   }
 }
+
+/* Kláves skupiny (1–4): náhodná hláška z nej (Michal 2026-10-22). */
+.sb-skupina legend .sb-klaves-skupiny {
+  min-width: 20px;
+  height: 20px;
+  font-size: 0.7rem;
+  letter-spacing: 0;
+  color: var(--akcent);
+  border-color: var(--akcent-tmavy);
+}
+
+.sb-pata label,
+.sb-pata .skratky {
+  white-space: nowrap;
+}
