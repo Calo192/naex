@@ -1791,7 +1791,8 @@ body:not(.tahanie-aktivne) .harmonika-skupiny > :has(.harmonika-aktivna) ~ * {
   line-height: 1.5;
   text-align: center;
   background: var(--plocha);
-  color: var(--slaby);
+  /* --slaby mal v hlavičke 4,35 : 1 (UI inšpekcia N6). */
+  color: var(--slaby-text);
 }
 
 .pocet.nove {

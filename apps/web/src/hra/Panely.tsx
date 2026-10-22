@@ -256,19 +256,26 @@ function TextVyhladu({
   readonly bitka?: { readonly pali: number; readonly ostane: number };
 }) {
   const vsetky = kliatby + opakovane * dalsiePitky;
+  // Riadky výhľadu sa v úzkej dlaždici skracujú trojbodkou — celé znenie je v titulku (UI inšpekcia N4).
+  const pitka = `${vPitke ? "po Pitke" : "v Pitke"}: ${kliatby > 0 ? `${meno} ×${kliatby}${bitka === undefined ? ` · ${bodov(kliatby * cena)}` : ""}` : "nič"}`;
+  const dalsie = `a v ${dalsiePitky === 1 ? "ďalšej Pitke" : `ďalších ${dalsiePitky} Pitkách`} znova ×${opakovane}`;
+  const poBitke =
+    bitka === undefined
+      ? ""
+      : `${bitka.pali > 0 ? `bitka spáli až ${bitka.pali} → ostane ×${bitka.ostane}` : `po bitke ostanú ×${bitka.ostane}`} · ${bodov(bitka.ostane * cena)}`;
   return (
     <>
-      <span className={`vyhlad ${kliatby > 0 ? "zly" : ""}`}>
-        {vPitke ? "po Pitke" : "v Pitke"}: {kliatby > 0 ? `${meno} ×${kliatby}${bitka === undefined ? ` · ${bodov(kliatby * cena)}` : ""}` : "nič"}
+      <span className={`vyhlad ${kliatby > 0 ? "zly" : ""}`} title={pitka}>
+        {pitka}
       </span>
       {dalsiePitky > 0 && opakovane > 0 && (
-        <span className="vyhlad zly">
-          a v {dalsiePitky === 1 ? "ďalšej Pitke" : `ďalších ${dalsiePitky} Pitkách`} znova ×{opakovane}
+        <span className="vyhlad zly" title={dalsie}>
+          {dalsie}
         </span>
       )}
       {bitka !== undefined && vsetky > 0 && (
-        <span className={`vyhlad ${bitka.ostane > 0 ? "zly" : ""}`}>
-          {bitka.pali > 0 ? `bitka spáli až ${bitka.pali} → ostane ×${bitka.ostane}` : `po bitke ostanú ×${bitka.ostane}`} · {bodov(bitka.ostane * cena)}
+        <span className={`vyhlad ${bitka.ostane > 0 ? "zly" : ""}`} title={poBitke}>
+          {poBitke}
         </span>
       )}
     </>
