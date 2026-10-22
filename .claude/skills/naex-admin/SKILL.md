@@ -1,6 +1,6 @@
 ---
 name: naex-admin
-description: Spustí agenta naex-admin — tvorba a úprava kariet NA EX! na webe (práva subadmina), ilustrácie generované v Leonardo.Ai (API) v štýle hry, rebalans slabých a silných kariet (štatistiky z ostrých partií, playtesty), kontrola textov a sady pred zverejnením, triedenie spätnej väzby. Použi, keď používateľ povie /naex-admin, „vytvor kartu", „uprav kartu", „karta je slabá/silná", „rebalans", „ilustrácia ku karte", „skontroluj sadu", „roztrieď spätnú väzbu".
+description: Spustí agenta naex-admin — tvorba a úprava kariet NA EX! na webe (práva subadmina), ilustrácie generované v Leonardo.Ai (API) v štýle hry, rebalans slabých a silných kariet (štatistiky z ostrých partií, playtesty), kontrola textov a sady pred zverejnením, triedenie spätnej väzby, stránka Novinky (zmeny pre hráčov po nasadení). Použi, keď používateľ povie /naex-admin, „vytvor kartu", „uprav kartu", „karta je slabá/silná", „rebalans", „ilustrácia ku karte", „skontroluj sadu", „roztrieď spätnú väzbu", „napíš novinky", „pridaj novinku".
 argument-hint: "<úloha, napr. nová karta Mlynár | rebalans Dievčiny | ilustrácia pre zberny_dvor | kontrola sady>"
 ---
 
@@ -24,6 +24,10 @@ prerozprávaš používateľovi. Karty sám neupravuješ.
    a ukáž vybraný obrázok. Viac kôl (`--navyse`) povoľ agentovi len
    s výslovným súhlasom používateľa. Ak chýba `NAEX_LEONARDO_KEY` v `.env`,
    agent len pripraví prompt.
+
+5. **Novinky** — agent ich píše na živý web (`--zivy`), len o zmenách, ktoré
+   už sú nasadené (po `/naex-nasad`) alebo zverejnené v sade. Pri úlohe
+   „novinky“ mu povedz, čo bolo nasadené (commity od poslednej novinky).
 
 Zverejnenie, návrat sady, mazanie a zmeny účtov robí agent len po súhlase
 používateľa.

@@ -22,6 +22,7 @@ import type { KategoriaNazoru, Nazory, Triedenie } from "./nazory.ts";
 import type { Playtesty } from "./playtesty.ts";
 import type { Navrhy } from "./navrhy.ts";
 import type { Roadmapa } from "./roadmapa.ts";
+import type { Novinky } from "./novinky.ts";
 import type { Hodnotenia } from "./znamky.ts";
 import { overKategoriu as overKategoriuNazoru } from "./nazory.ts";
 
@@ -60,6 +61,8 @@ export interface ApiKontext {
   readonly navrhy: Navrhy;
   /** Roadmapa hry — verejná, upravuje správca. */
   readonly roadmapa: Roadmapa;
+  /** Novinky pre hráčov — verejné, píše správca. */
+  readonly novinky: Novinky;
   /** Známky hry podľa 12 kritérií a ich vývoj v čase. */
   readonly hodnotenia: Hodnotenia;
   readonly teraz: () => number;
@@ -401,6 +404,9 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       throw new ChybaVstupu("Neznáma cesta.", 404);
     }
 
+    // Novinky čítajú aj návštevníci; zápis je v /admin/novinky.
+    if (r === "GET /novinky") return ok({ novinky: ctx.novinky.zoznam() });
+
     // ----- profily hráčov a rebríček (pre prihlásených) -----------------
     if (metoda === "GET" && casti[1] === "hraci" && casti.length === 3) {
       prihlaseny();
@@ -466,6 +472,19 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     const ja2 = spravca();
     const sub = `${metoda} /${casti.slice(2).join("/")}`;
     const id = casti[3] ?? "";
+
+    if (casti[2] === "novinky") {
+      if (sub === "POST /novinky") return ok({ novinka: ctx.novinky.pridaj(await citajJson(req), ja2.id, teraz) }, 201);
+      const n = Number(id);
+      if (casti.length === 4 && Number.isInteger(n)) {
+        if (metoda === "PATCH") return ok({ novinka: ctx.novinky.uprav(n, await citajJson(req), teraz) });
+        if (metoda === "DELETE") {
+          ctx.novinky.zmaz(n);
+          return ok({ ok: true });
+        }
+      }
+      throw new ChybaVstupu("Neznáma cesta.", 404);
+    }
 
     if (sub === "GET /obsah") {
       return ok({

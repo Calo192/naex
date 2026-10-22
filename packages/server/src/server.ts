@@ -52,6 +52,7 @@ import { Nazory } from "./nazory.ts";
 import { Playtesty } from "./playtesty.ts";
 import { Navrhy } from "./navrhy.ts";
 import { Roadmapa } from "./roadmapa.ts";
+import { Novinky } from "./novinky.ts";
 import { Hodnotenia } from "./znamky.ts";
 import { titul } from "./frajerina.ts";
 
@@ -191,6 +192,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   const navrhy = new Navrhy(db);
   const roadmapa = new Roadmapa(db);
   roadmapa.naplnAkTreba(fileURLToPath(new URL("../seed/roadmapa.json", import.meta.url)), teraz());
+  const novinky = new Novinky(db);
   const hodnotenia = new Hodnotenia(db);
   obsah.naplnAkTreba(teraz());
   obsah.naplnBodovanieAkTreba(teraz());
@@ -252,6 +254,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           playtesty,
           navrhy,
           roadmapa,
+          novinky,
           hodnotenia,
           teraz,
           bezpecneCookie: opts.bezpecneCookie ?? false,
