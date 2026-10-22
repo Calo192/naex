@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI inšpekcia 20261022-2106 — NA EX!</title>
+<style>
+:root { --pozadie:#14110e; --plocha:#1e1914; --plocha-2:#28211a; --plocha-3:#332a21; --okraj:#3d3229; --okraj-svetly:#57483a;
+  --text:#f1e8d8; --tlmeny:#b6a790; --slaby-text:#9d8f7b; --akcent:#e9ad45; --na-akcente:#2b1b03; --cervena:#d0563f; --cervena-text:#e5735c; --zelena:#7cbf74; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--pozadie); color:var(--text); font:15px/1.5 Roboto,"Segoe UI",system-ui,sans-serif; }
+main { max-width:1200px; margin:0 auto; padding:32px 20px 64px; }
+h1,h2 { font-family:Bitter,Georgia,serif; margin:0 0 8px; }
+h1 { font-size:2rem; } h1 span { color:var(--akcent); }
+h2 { font-size:1.3rem; margin-top:36px; }
+.meta { color:var(--tlmeny); margin:0 0 20px; }
+.meta code { color:var(--text); }
+.suhrn { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin:16px 0; }
+.dlazdica { background:var(--plocha); border:1px solid var(--okraj); border-radius:12px; padding:12px 14px; }
+.dlazdica b { display:block; font-size:1.8rem; font-family:Bitter,Georgia,serif; }
+.dlazdica.v b { color:var(--cervena-text); } .dlazdica.s b { color:var(--akcent); } .dlazdica.n b { color:var(--zelena); }
+.dlazdica small { color:var(--slaby-text); }
+.typy { color:var(--tlmeny); font-size:.9rem; }
+.filtre { position:sticky; top:0; z-index:2; background:var(--pozadie); padding:12px 0; display:flex; flex-wrap:wrap; gap:10px; align-items:center; border-bottom:1px solid var(--okraj); }
+.filtre label { color:var(--tlmeny); font-size:.85rem; display:flex; gap:6px; align-items:center; }
+select { background:var(--plocha-2); color:var(--text); border:1px solid var(--okraj-svetly); border-radius:8px; padding:6px 8px; font:inherit; }
+select:focus-visible, a:focus-visible { outline:2px solid var(--akcent); outline-offset:2px; }
+#pocet { margin-left:auto; color:var(--slaby-text); }
+.karta { display:grid; grid-template-columns:320px 1fr; gap:18px; background:var(--plocha); border:1px solid var(--okraj); border-left:5px solid var(--okraj-svetly); border-radius:12px; padding:16px; margin:14px 0; }
+.karta.z-vysoka { border-left-color:var(--cervena); } .karta.z-stredna { border-left-color:var(--akcent); } .karta.z-nizka { border-left-color:var(--zelena); }
+.vyrez { display:flex; align-items:center; justify-content:center; background:var(--pozadie); border-radius:8px; padding:6px; min-height:90px; }
+.vyrez img { max-width:100%; max-height:260px; border-radius:4px; }
+.telo header { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:6px; }
+.id { font-family:Bitter,Georgia,serif; font-weight:700; font-size:1.1rem; }
+.stitok { font-size:.75rem; padding:2px 9px; border-radius:99px; border:1px solid var(--okraj-svetly); color:var(--tlmeny); }
+.s-vysoka { background:var(--cervena); color:#fff; border-color:transparent; }
+.s-stredna { background:var(--akcent); color:var(--na-akcente); border-color:transparent; }
+.s-nizka { background:#2f4a2c; color:#cfe9c9; border-color:transparent; }
+.rucny { border-style:dashed; }
+.popis { margin:4px 0 10px; font-size:1.02rem; }
+dl { display:grid; grid-template-columns:80px 1fr; gap:4px 12px; margin:0; font-size:.92rem; }
+dt { color:var(--slaby-text); } dd { margin:0; }
+code { font-family:Consolas,monospace; font-size:.85rem; background:var(--plocha-2); padding:1px 5px; border-radius:4px; }
+.slaby { color:var(--slaby-text); font-size:.85rem; }
+ul.zoznam { columns:3 220px; color:var(--tlmeny); }
+table { border-collapse:collapse; width:100%; font-size:.92rem; }
+th,td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--okraj); vertical-align:top; }
+th { color:var(--slaby-text); font-weight:600; }
+.skryta { display:none; }
+@media (max-width:760px) { .karta { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<main>
+<h1>UI inšpekcia <span>20261022-2106</span></h1>
+<p class="meta">Dátum 22. 10. 2026 · commit <code>4f42a18</code> · lokálny server <code>http://localhost:8793</code> (herný stôl na vlastných serveroch playtestu) ·
+rozlíšenia 1600×1000 a 1920×1080 · 29 stránok webu + 15 stavov herného stola v dvoch partiách proti botovi · nástroj <code>tools/ui-inspektor/inspekcia.ts</code>, výsledky overené na výrezoch a v CSS.</p>
+
+<div class="suhrn">
+  <div class="dlazdica v"><b>3</b>vysoká<br><small>nedá sa prečítať ani kliknúť</small></div>
+  <div class="dlazdica s"><b>9</b>stredná<br><small>vidno, že je to zle</small></div>
+  <div class="dlazdica n"><b>7</b>nízka<br><small>drobnosti</small></div>
+  <div class="dlazdica"><b>541</b>vyradené ako zámer<br><small>+ 223 falošných poplachov nástroja</small></div>
+</div>
+<p class="typy">Podľa typu: orezany-text 3 · prekryty-text 2 · nizky-kontrast 6 · bez-fokusu 4 · rozbity-vzhlad 1 · presah 1 · maly-ciel 1 · nezarovnanie 1. Surové nálezy nástroja: 3 969 (so zlúčenými opakovaniami); overené chyby sú zlúčené naprieč stránkami, stavmi a rozlíšeniami.</p>
+
+<div class="filtre" role="group" aria-label="Filter">
+  <label>Stránka <select id="f-str"><option value="">všetky</option><option>/admin/karty</option><option>/admin/karty/:id</option><option>/admin/karty/nova</option><option>/admin/nastavenia</option><option>/admin/tlac</option><option>/hra</option><option>/karty</option><option>/profil</option></select></label>
+  <label>Typ <select id="f-typ"><option value="">všetky</option><option>orezany-text</option><option>prekryty-text</option><option>nizky-kontrast</option><option>bez-fokusu</option><option>rozbity-vzhlad</option><option>presah</option><option>maly-ciel</option><option>nezarovnanie</option></select></label>
+  <label>Závažnosť <select id="f-zav"><option value="">všetky</option><option value="vysoka">vysoká</option><option value="stredna">stredná</option><option value="nizka">nízka</option></select></label>
+  <span id="pocet"></span>
+</div>
+
+<section id="chyby">
+<article class="karta z-vysoka" data-zav="vysoka" data-typ="orezany-text" data-str="/hra">
+  <a class="vyrez" href="ui-inspekcia-20261022-2106/U01-obchod-cigariet.png" target="_blank"><img src="ui-inspekcia-20261022-2106/U01-obchod-cigariet.png" alt="výrez U01" loading="lazy"></a>
+  <div class="telo">
+    <header><span class="id">U01</span><span class="stitok s-vysoka">vysoká</span><span class="stitok typ">orezany-text</span></header>
+    <p class="popis">Na dlaždici Cigarety sa z dvoch tlačidiel obchodu vidí len „doliať −2“; tlačidlo „nový poldeci −5“ je skryté za trojbodkou „…“ a nedá sa naň kliknúť.</p>
+    <dl>
+      <dt>Kde</dt><dd>/hra (vlastná doska hráča, všetky fázy)<br><span class="slaby">1600×1000 (pri 1920×1080 sa zmestí)</span></dd>
+      <dt>Zdroj</dt><dd><code>apps/web/src/hra/hra.css:4718</code><br><code>apps/web/src/hra/Panely.tsx:521</code></dd>
+      <dt>Príčina</dt><dd>Pravidlo .doska .zdroj-pod &gt; * (0,2,0) prepíše display: inline-flex a flex-wrap zo .obchod-cigariet (hra.css:3198) na display: block + white-space: nowrap + overflow: hidden, takže druhé tlačidlo sa nezalomí, ale oreže.</dd>
+      <dt>Návrh</dt><dd>Vyňať .obchod-cigariet z pravidla (napr. .doska .zdroj-pod &gt; :not(.obchod-cigariet)) alebo mu dať vyššiu špecifickosť s display: inline-flex; flex-wrap: wrap; white-space: normal.</dd>
+    </dl>
+  </div>
+</article>
+<article class="karta z-vysoka" data-zav="vysoka" data-typ="orezany-text" data-str="/hra">
+  <a class="vyrez" href="ui-inspekcia-20261022-2106/U02-cip-priznane.png" target="_blank"><img src="ui-inspekcia-20261022-2106/U02-cip-priznane.png" alt="výrez U02" loading="lazy"></a>
+  <div class="telo">
+    <header><span class="id">U02</span><span class="stitok s-vysoka">vysoká</span><span class="stitok typ">orezany-text</span></header>
+    <p class="popis">Pri súperovom mene sa čip „priznané 2“ oreže zľava na „ané 2“. Riadok čipov je širší ako miesto vedľa avatara a súperova doska je zrkadlená (row-reverse), preto pretečie doľava.</p>
+    <dl>
+      <dt>Kde</dt><dd>/hra (súperova doska, keď má priznané kliatby a Dedičstvo; overené na konci hry)<br><span class="slaby">1600×1000 aj 1920×1080</span></dd>
+      <dt>Zdroj</dt><dd><code>apps/web/src/hra/hra.css:554</code><br><code>apps/web/src/hra/Panely.tsx:427</code></dd>
+      <dt>Príčina</dt><dd>Vnútorný &lt;div&gt; v .doska-hrac nemá min-width: 0, preto sa nezmenší a čipy (.doska-oblast, hra.css:912) sa neskrátia trojbodkou. Pretečenie potom oreže .doska-hrac s overflow: hidden (hra.css:303–310). Nástroj to nahlásil ako orezaný .doska-meno.</dd>
+      <dt>Návrh</dt><dd>Dať .doska-hrac &gt; div { min-width: 0; flex: 1 } — čipy sa potom skrátia trojbodkou (celý text je v title), prípadne čipy zalomiť pod meno.</dd>
+    </dl>
+  </div>
+</article>
+<article class="karta z-vysoka" data-zav="vysoka" data-typ="prekryty-text" data-str="/hra|/hra">
+  <a class="vyrez" href="ui-inspekcia-20261022-2106/U03-hodnota-lokality.png" target="_blank"><img src="ui-inspekcia-20261022-2106/U03-hodnota-lokality.png" alt="výrez U03" loading="lazy"></a>
+  <div class="telo">
+    <header><span class="id">U03</span><span class="stitok s-vysoka">vysoká</span><span class="stitok typ">prekryty-text</span></header>
+    <p class="popis">Štítok hodnoty lokality „+8 b · súper +8“ leží cez spodok karty a zakrýva posledný riadok jej efektu (napr. Zberný dvor „…zo svojho odhadzovacieho balíčka“, Krčma „Prah Cirhózy je tu o 2 vyšší“). Text efektu sa tak nedá dočítať práve vtedy, keď sa podľa neho volí cieľ.</p>
+    <dl>
+      <dt>Kde</dt><dd>/hra [výber cieľa]<br>/hra [vrstva Lokality]<br><span class="slaby">1600×1000 aj 1920×1080</span></dd>
+      <dt>Zdroj</dt><dd><code>apps/web/src/hra/hra.css:4622</code><br><code>apps/web/src/hra/HernaPlocha.tsx:1479</code></dd>
+      <dt>Príčina</dt><dd>.hodnota-lokality je position: absolute; bottom: -10px — štítok je vysoký asi 22 px, takže 12 px z neho prekrýva textové pole karty.</dd>
+      <dt>Návrh</dt><dd>Posunúť štítok pod kartu (bottom: -24px a pod kartou nechať miesto) alebo ho dať nad kartu či na pás s názvom.</dd>
+    </dl>
+  </div>
+</article>
+<article class="karta z-stredna" data-zav="stredna" data-typ="prekryty-text" data-str="/hra|/hra">
+  <a class="vyrez" href="ui-inspekcia-20261022-2106/U04-ruka-zakryva-pokyn.png" target="_blank"><img src="ui-inspekcia-20261022-2106/U04-ruka-zakryva-pokyn.png" alt="výrez U04" loading="lazy"></a>
+  <div class="telo">
+    <header><span class="id">U04</span><span class="stitok s-stredna">stredná</span><span class="stitok typ">prekryty-text</span><span class="stitok rucny">ručný nález</span></header>
+    <p class="popis">Ruka prilepená k spodnému okraju okna zakrýva pokyn ťahu na hornej hrane stola („Tvoj ťah — klikni na … alebo už …“) a pätičku šenku („Beriete striedavo, kým obaja neprestanete…“). Text vidno, až keď hráč posunie stránku; pri 1600×1000 je pod rukou skoro celý stôl.</p>
+    <dl>
+      <dt>Kde</dt><dd>/hra [stavba a branie zo šenku]<br>/hra [Zhromaždenie, Pitka]<br><span class="slaby">1600×1000 aj 1920×1080, pri otvorení stola (bez posunu)</span></dd>
+      <dt>Zdroj</dt><dd><code>apps/web/src/hra/hra.css:1571</code><br><code>apps/web/src/hra/hra.css:1248</code></dd>
+      <dt>Príčina</dt><dd>.ruka je position: fixed; bottom: 0; z-index: 25 (asi 150 px). Pokyn (.linia-stav) je v toku stránky hneď pod šenkom a staršími, takže pri posune 0 padne do pásu ruky. Nástroj prekryvy s pevnými vrstvami preskakuje, preto ide o ručný nález.</dd>
+      <dt>Návrh</dt><dd>Pri zmene fázy alebo ťahu posunúť stránku tak, aby bol pokyn nad rukou (scrollIntoView s okrajom --ruka-h), alebo dať pokyn ako lepiacu pilulku nad ruku (sticky bottom: var(--ruka-h)).</dd>
+    </dl>
+  </div>
+</article>
+<article class="karta z-stredna" data-zav="stredna" data-typ="nizky-kontrast" data-str="/hra|/karty|/admin/karty|/admin/tlac">
+  <a class="vyrez" href="ui-inspekcia-20261022-2106/U05-pas-karty.png" target="_blank"><img src="ui-inspekcia-20261022-2106/U05-pas-karty.png" alt="výrez U05" loading="lazy"></a>
+  <div class="telo">
+    <header><span class="id">U05</span><span class="stitok s-stredna">stredná</span><span class="stitok typ">nizky-kontrast</span></header>
+    <p class="popis">Biely názov karty a tagy na farebnom páse majú pri svetlých farbách kategórií kontrast 2,08–3,30 : 1 (Kliatba 2,08, Pamätník 2,29, Nástroj 2,37, Lokalita 2,42, Občan 3,30). V glosári sú názvy 17 px, takže to vidno výrazne.</p>
+    <dl>
+      <dt>Kde</dt><dd>/hra (všetky fázy)<br>/karty<br>/admin/karty<br>/admin/tlac<br><span class="slaby">1600×1000 aj 1920×1080</span></dd>
+      <dt>Zdroj</dt><dd><code>apps/web/src/karta/karta.css:53</code></dd>
+      <dt>Príčina</dt><dd>.kl-pas má color: #fff na background: var(--farba); farby kategórií (Farby a rozmery v tvorcovi) sú svetlé pastelové.</dd>
+      <dt>Návrh</dt><dd>Farbu písma na páse voliť podľa jasu --farba (tmavé písmo na svetlom páse), alebo bielemu textu pridať tmavý tieň či obrys (text-shadow 0 1px 2px rgba(0,0,0,.6)).</dd>
+    </dl>
+  </div>
+</article>
+<article class="karta z-stredna" data-zav="stredna" data-typ="nizky-kontrast" data-str="/hra">
+  <a class="vyrez" href="ui-inspekcia-20261022-2106/U06-scorecard-odznak.png" target="_blank"><img src="ui-inspekcia-20261022-2106/U06-scorecard-odznak.png" alt="výrez U06" loading="lazy"></a>
+  <div class="telo">
+    <header><span class="id">U06</span><span class="stitok s-stredna">stredná</span><span class="stitok typ">nizky-kontrast</span></header>
+    <p class="popis">Zelený odznak bodov „+1“ / „+12“ na ikone scorecardu má biele 9 px písmo na #1f9d55 — kontrast 3,49 : 1.</p>
+    <dl>
+      <dt>Kde</dt><dd>/hra (scorecardy starších, všetky fázy)<br><span class="slaby">1600×1000 aj 1920×1080</span></dd>
+      <dt>Zdroj</dt><dd><code>apps/web/src/hra/hra.css:2001</code></dd>
+      <dt>Príčina</dt><dd>.scorecard-odznak.plus { background: #1f9d55; color: #fff } — pevná farba mimo tokenov schémy.</dd>
+      <dt>Návrh</dt><dd>Stmaviť pozadie (napr. #157a41, ≈ 5 : 1) alebo použiť tmavé písmo; farbu dať do tokenu schemy.css.</dd>
+    </dl>
+  </div>
+</article>
+<article class="karta z-stredna" data-zav="stredna" data-typ="bez-fokusu" data-str="/hra">
+  <a class="vyrez" href="ui-inspekcia-20261022-2106/U07-krok-kola.png" target="_blank"><img src="ui-inspekcia-20261022-2106/U07-krok-kola.png" alt="výrez U07" loading="lazy"></a>
+  <div class="telo">
+    <header><span class="id">U07</span><span class="stitok s-stredna">stredná</span><span class="stitok typ">bez-fokusu</span></header>
+    <p class="popis">Aktuálny krok na časovej osi kola (žltý „Draft“, „Pitka 1 z 3“…) sa pri fokuse z klávesnice nijako nezmení — kroky majú nápovedu a sú zastávkou Tabu.</p>
+    <dl>
+      <dt>Kde</dt><dd>/hra (časová os kola, všetky fázy)<br><span class="slaby">1600×1000 aj 1920×1080</span></dd>
+      <dt>Zdroj</dt><dd><code>apps/web/src/hra/hra.css:164</code></dd>
+      <dt>Príčina</dt><dd>.priebeh-kola li má outline: none (hra.css:127) a fokus ukazuje len zmenou pozadia (hra.css:131); .priebeh-kola li.aktualny je v súbore neskôr s rovnakou špecifickosťou a pozadie prepíše.</dd>
+      <dt>Návrh</dt><dd>Pridať .priebeh-kola li.aktualny:focus-visible { outline: 2px solid var(--text); outline-offset: -3px } (alebo vnútorný box-shadow).</dd>
+    </dl>
+  </div>
+</article>
+<article class="karta z-stredna" data-zav="stredna" data-typ="bez-fokusu" data-str="/hra">
+  <a class="vyrez" href="ui-inspekcia-20261022-2106/U08-naex-karta.png" target="_blank"><img src="ui-inspekcia-20261022-2106/U08-naex-karta.png" alt="výrez U08" loading="lazy"></a>
+  <div class="telo">
+    <header><span class="id">U08</span><span class="stitok s-stredna">stredná</span><span class="stitok typ">bez-fokusu</span></header>
+    <p class="popis">Karta, na ktorú sa dá dať NA EX, má stále prerušovaný žltý obrys. Pri fokuse z klávesnice ostane rovnaký, takže nevidno, ktorá karta je vybraná.</p>
+    <dl>
+      <dt>Kde</dt><dd>/hra [Pitka, môj ťah — karty, na ktoré sa dá dať NA EX]<br><span class="slaby">1600×1000 aj 1920×1080</span></dd>
+      <dt>Zdroj</dt><dd><code>apps/web/src/hra/hra.css:2471</code></dd>
+      <dt>Príčina</dt><dd>.s-lupou.naex-mozny &gt; .kl { outline: 2px dashed var(--akcent) } (0,3,0) prebije globálne :focus-visible (styles.css:71).</dd>
+      <dt>Návrh</dt><dd>Doplniť .s-lupou.naex-mozny &gt; .kl:focus-visible { outline-style: solid; outline-width: 3px } alebo fokus ukázať zdvihnutím ako pri hoveri.</dd>
+    </dl>
+  </div>
+</article>
+<article class="karta z-stredna" data-zav="stredna" data-typ="bez-fokusu" data-str="/profil|/karty|/hra|/admin/nastavenia|/admin/tlac|/admin/karty/nova">
+  <a class="vyrez" href="ui-inspekcia-20261022-2106/U09-posuvnik.png" target="_blank"><img src="ui-inspekcia-20261022-2106/U09-posuvnik.png" alt="výrez U09" loading="lazy"></a>
+  <div class="telo">
+    <header><span class="id">U09</span><span class="stitok s-stredna">stredná</span><span class="stitok typ">bez-fokusu</span></header>
+    <p class="popis">Posuvníky (input type=range) nemajú žiadny viditeľný fokus: obrys, rámik ani tieň sa pri fokuse z klávesnice nezmení.</p>
+    <dl>
+      <dt>Kde</dt><dd>/profil (4 posuvníky)<br>/karty<br>/hra [soundboard Melichar — hlasitosť]<br>/admin/nastavenia<br>/admin/tlac<br>/admin/karty/nova<br><span class="slaby">1600×1000 aj 1920×1080</span></dd>
+      <dt>Zdroj</dt><dd><code>apps/web/src/styles.css:169</code><br><code>apps/web/src/styles.css:191</code></dd>
+      <dt>Príčina</dt><dd>input:focus nastaví outline: none a fokus ukazuje rámikom a tieňom; input[type=range] ďalej v súbore (rovnaká špecifickosť) dá border: none a box-shadow: none, takže nezostane nič.</dd>
+      <dt>Návrh</dt><dd>Pridať input[type=range]:focus-visible { outline: 2px solid var(--akcent); outline-offset: 4px }.</dd>
+    </dl>
+  </div>
+</article>
+<article class="karta z-stredna" data-zav="stredna" data-typ="bez-fokusu" data-str="/admin/karty/nova|/admin/karty/:id">
+  <a class="vyrez" href="ui-inspekcia-20261022-2106/U10-tag-pole.png" target="_blank"><img src="ui-inspekcia-20261022-2106/U10-tag-pole.png" alt="výrez U10" loading="lazy"></a>
+  <div class="telo">
+    <header><span class="id">U10</span><span class="stitok s-stredna">stredná</span><span class="stitok typ">bez-fokusu</span></header>
+    <p class="popis">Pole „pridať tag…“ v tvorcovi nemá pri fokuse žiadnu zmenu — rámik je na obale .tagy-vstup a ten sa pri fokuse nezvýrazní.</p>
+    <dl>
+      <dt>Kde</dt><dd>/admin/karty/nova<br>/admin/karty/:id (tvorca karty)<br><span class="slaby">1600×1000 aj 1920×1080</span></dd>
+      <dt>Zdroj</dt><dd><code>apps/web/src/admin/admin.css:756</code><br><code>apps/web/src/admin/Tvorca.tsx:48</code></dd>
+      <dt>Príčina</dt><dd>.tagy-vstup input { border: none; box-shadow: none !important } a input:focus má outline: none; obal nemá :focus-within.</dd>
+      <dt>Návrh</dt><dd>Pridať .tagy-vstup:focus-within { border-color: var(--akcent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--akcent) 18%, transparent) }.</dd>
+    </dl>
+  </div>
+</article>
+<article class="karta z-stredna" data-zav="stredna" data-typ="rozbity-vzhlad" data-str="/admin/nastavenia">
+  <a class="vyrez" href="ui-inspekcia-20261022-2106/U11-duha.png" target="_blank"><img src="ui-inspekcia-20261022-2106/U11-duha.png" alt="výrez U11" loading="lazy"></a>
+  <div class="telo">
+    <header><span class="id">U11</span><span class="stitok s-stredna">stredná</span><span class="stitok typ">rozbity-vzhlad</span></header>
+    <p class="popis">Pri dúhovom posuvníku odtieňa chýba dúhová stopa — vidno len biely kruh na prázdnom pozadí, takže admin nevidí, aký odtieň vyberá. Posuvník je navyše 14 px vysoký (cieľ 130 × 14 px).</p>
+    <dl>
+      <dt>Kde</dt><dd>/admin/nastavenia (Farby kategórií — posuvník odtieňa)<br><span class="slaby">1600×1000 aj 1920×1080</span></dd>
+      <dt>Zdroj</dt><dd><code>apps/web/src/styles.css:191</code><br><code>apps/web/src/admin/admin.css:718</code></dd>
+      <dt>Príčina</dt><dd>input[type=range] { background: none } (0,1,1) prebije .duha { background: linear-gradient(…) } (0,1,0). Vypočítané background-image je „none“.</dd>
+      <dt>Návrh</dt><dd>Zvýšiť špecifickosť: input[type=range].duha { background: linear-gradient(…) }, prípadne .duha vylúčiť z input[type=range] ako pri min-height (:not(.duha)); výšku cieľa zväčšiť paddingom.</dd>
+    </dl>
+  </div>
+</article>
+<article class="karta z-stredna" data-zav="stredna" data-typ="presah" data-str="/hra">
+  <a class="vyrez" href="ui-inspekcia-20261022-2106/U12-soundboard-pata.png" target="_blank"><img src="ui-inspekcia-20261022-2106/U12-soundboard-pata.png" alt="výrez U12" loading="lazy"></a>
+  <div class="telo">
+    <header><span class="id">U12</span><span class="stitok s-stredna">stredná</span><span class="stitok typ">presah</span><span class="stitok rucny">ručný nález</span></header>
+    <p class="popis">Obsah päty soundboardu je širší ako panel: posledné slovo skratiek „Esc zavrie“ sa dotýka pravého rámu a vnútorný okraj 14 px úplne zmizne.</p>
+    <dl>
+      <dt>Kde</dt><dd>/hra [soundboard majstra Melichara]<br><span class="slaby">1600×1000 aj 1920×1080 (panel má pevnú šírku 600 px)</span></dd>
+      <dt>Zdroj</dt><dd><code>apps/web/src/hra/soundboard.css:587</code><br><code>apps/web/src/hra/soundboard.css:616</code></dd>
+      <dt>Príčina</dt><dd>.sb-pata je flex bez zalomenia; posuvník (150 px), percentá a rad skratiek spolu presahujú 600 px − 2 × 14 px, takže rad pretečie cez padding.</dd>
+      <dt>Návrh</dt><dd>Dať .sb-pata { flex-wrap: wrap } (skratky prejdú pod posuvník), alebo skrátiť posuvník na ~110 px, alebo zmenšiť medzery medzi skratkami.</dd>
+    </dl>
+  </div>
+</article>
+<article class="karta z-nizka" data-zav="nizka" data-typ="orezany-text" data-str="/hra">
+  <a class="vyrez" href="ui-inspekcia-20261022-2106/U13-nasobok.png" target="_blank"><img src="ui-inspekcia-20261022-2106/U13-nasobok.png" alt="výrez U13" loading="lazy"></a>
+  <div class="telo">
+    <header><span class="id">U13</span><span class="stitok s-nizka">nízka</span><span class="stitok typ">orezany-text</span></header>
+    <p class="popis">Odznak násobku „×2“ pri slote na pravej hrane karty presahuje kartu a jeho okraj (asi 2 px) odreže hrana karty.</p>
+    <dl>
+      <dt>Kde</dt><dd>/hra [Pitka a ďalej — karta po NA EX, odznak „×2“ na slote]<br><span class="slaby">1600×1000 aj 1920×1080</span></dd>
+      <dt>Zdroj</dt><dd><code>apps/web/src/karta/karta.css:224</code><br><code>apps/web/src/karta/karta.css:19</code></dd>
+      <dt>Príčina</dt><dd>.kl-nasobok má right: calc(-4 * var(--pt)) a .kl-plocha má overflow: hidden.</dd>
+      <dt>Návrh</dt><dd>Pri slotoch na pravej strane dať odznak dovnútra (right: 0 alebo left: -4pt), prípadne right: -1pt.</dd>
+    </dl>
+  </div>
+</article>
+<article class="karta z-nizka" data-zav="nizka" data-typ="nizky-kontrast" data-str="/hra|/karty|/admin/karty|/admin/tlac">
+  <a class="vyrez" href="ui-inspekcia-20261022-2106/U14-efekt-karty.png" target="_blank"><img src="ui-inspekcia-20261022-2106/U14-efekt-karty.png" alt="výrez U14" loading="lazy"></a>
+  <div class="telo">
+    <header><span class="id">U14</span><span class="stitok s-nizka">nízka</span><span class="stitok typ">nizky-kontrast</span></header>
+    <p class="popis">Text efektu na bielom poli karty a pojmy („Dedičstvo:“, „Bitka:“, „zahoď“) majú kontrast 3,99–4,24 : 1, čo je tesne pod 4,5 : 1.</p>
+    <dl>
+      <dt>Kde</dt><dd>/hra (všetky fázy)<br>/karty<br>/admin/karty<br>/admin/tlac<br><span class="slaby">1600×1000 aj 1920×1080</span></dd>
+      <dt>Zdroj</dt><dd><code>apps/web/src/karta/karta.css:102</code></dd>
+      <dt>Príčina</dt><dd>color: color-mix(in srgb, var(--farba) 74%, #000) — pri svetlých farbách kategórií je zmes ešte príliš svetlá.</dd>
+      <dt>Návrh</dt><dd>Stmaviť zmes na 62–65 % farby (alebo pridať #000 podľa jasu farby), aby vychádzalo ≥ 4,5 : 1.</dd>
+    </dl>
+  </div>
+</article>
+<article class="karta z-nizka" data-zav="nizka" data-typ="nizky-kontrast" data-str="/hra">
+  <a class="vyrez" href="ui-inspekcia-20261022-2106/U15-limit.png" target="_blank"><img src="ui-inspekcia-20261022-2106/U15-limit.png" alt="výrez U15" loading="lazy"></a>
+  <div class="telo">
+    <header><span class="id">U15</span><span class="stitok s-nizka">nízka</span><span class="stitok typ">nizky-kontrast</span></header>
+    <p class="popis">Malé „LIMIT 3“ v nadpise pokynu má kontrast 4,35 : 1 (11 px).</p>
+    <dl>
+      <dt>Kde</dt><dd>/hra [Zhromaždenie — pilulka „ZHROMAŽDENIE LIMIT 3“]<br><span class="slaby">1600×1000 aj 1920×1080</span></dd>
+      <dt>Zdroj</dt><dd><code>apps/web/src/hra/hra.css:1280</code></dd>
+      <dt>Príčina</dt><dd>.pilulka-nadpis small { color: var(--slaby) }.</dd>
+      <dt>Návrh</dt><dd>Použiť var(--slaby-text) alebo var(--tlmeny).</dd>
+    </dl>
+  </div>
+</article>
+<article class="karta z-nizka" data-zav="nizka" data-typ="nizky-kontrast" data-str="/hra">
+  <a class="vyrez" href="ui-inspekcia-20261022-2106/U16-cena.png" target="_blank"><img src="ui-inspekcia-20261022-2106/U16-cena.png" alt="výrez U16" loading="lazy"></a>
+  <div class="telo">
+    <header><span class="id">U16</span><span class="stitok s-nizka">nízka</span><span class="stitok typ">nizky-kontrast</span></header>
+    <p class="popis">Cena v tlačidle patronátu („−1 cigaretu, súper +3 Pohoršení“) má kontrast 3,51 : 1 (12 px).</p>
+    <dl>
+      <dt>Kde</dt><dd>/hra [patronát — tlačidlo staršieho]<br><span class="slaby">1600×1000 aj 1920×1080</span></dd>
+      <dt>Zdroj</dt><dd><code>apps/web/src/hra/hra.css:1744</code></dd>
+      <dt>Príčina</dt><dd>.cena { color: var(--slaby) } na pozadí tlačidla.</dd>
+      <dt>Návrh</dt><dd>Pre .cena v aktívnom tlačidle použiť var(--tlmeny).</dd>
+    </dl>
+  </div>
+</article>
+<article class="karta z-nizka" data-zav="nizka" data-typ="nizky-kontrast" data-str="/hra">
+  <a class="vyrez" href="ui-inspekcia-20261022-2106/U17-prebudeny.png" target="_blank"><img src="ui-inspekcia-20261022-2106/U17-prebudeny.png" alt="výrez U17" loading="lazy"></a>
+  <div class="telo">
+    <header><span class="id">U17</span><span class="stitok s-nizka">nízka</span><span class="stitok typ">nizky-kontrast</span></header>
+    <p class="popis">Červené „prebudený pre súpera“ pod staršími má kontrast 4,22 : 1 (12 px).</p>
+    <dl>
+      <dt>Kde</dt><dd>/hra [koniec hry — popisy pod staršími]<br><span class="slaby">1600×1000 aj 1920×1080</span></dd>
+      <dt>Zdroj</dt><dd><code>apps/web/src/hra/hra.css:241</code></dd>
+      <dt>Príčina</dt><dd>.zly { color: var(--cervena) } (#d0563f) na tmavej ploche.</dd>
+      <dt>Návrh</dt><dd>Použiť var(--cervena-text) (#e5735c), ktorý je na text určený.</dd>
+    </dl>
+  </div>
+</article>
+<article class="karta z-nizka" data-zav="nizka" data-typ="maly-ciel" data-str="/hra|/admin/karty/nova">
+  <a class="vyrez" href="ui-inspekcia-20261022-2106/U18-maly-ciel.png" target="_blank"><img src="ui-inspekcia-20261022-2106/U18-maly-ciel.png" alt="výrez U18" loading="lazy"></a>
+  <div class="telo">
+    <header><span class="id">U18</span><span class="stitok s-nizka">nízka</span><span class="stitok typ">maly-ciel</span></header>
+    <p class="popis">Dve tlačidlá na návrat sú vysoké 23 px a 22 px, teda tesne pod 24 px.</p>
+    <dl>
+      <dt>Kde</dt><dd>/hra [rozpis bodov — „← späť na zdroje“]<br>/admin/karty/nova [„← Karty“]<br><span class="slaby">1600×1000 aj 1920×1080</span></dd>
+      <dt>Zdroj</dt><dd><code>apps/web/src/hra/hra.css:515</code><br><code>apps/web/src/admin/admin.css:202</code></dd>
+      <dt>Príčina</dt><dd>.rozpis-spat má padding 3px 12px; .spat je blokový odkaz bez paddingu.</dd>
+      <dt>Návrh</dt><dd>Dať min-height: 24px (alebo padding o 1–2 px väčší).</dd>
+    </dl>
+  </div>
+</article>
+<article class="karta z-nizka" data-zav="nizka" data-typ="nezarovnanie" data-str="/profil">
+  <a class="vyrez" href="ui-inspekcia-20261022-2106/U19-stupnica.png" target="_blank"><img src="ui-inspekcia-20261022-2106/U19-stupnica.png" alt="výrez U19" loading="lazy"></a>
+  <div class="telo">
+    <header><span class="id">U19</span><span class="stitok s-nizka">nízka</span><span class="stitok typ">nezarovnanie</span><span class="stitok rucny">ručný nález</span></header>
+    <p class="popis">Stupnica posuvníka („vypnutý · 50 % · 100 %“) nie je pod posuvníkom, ale až pod textom nápovedy. Na karte Melichara sa preto lepí na nadpis ďalšieho posuvníka „Frekvencia…“ a nie je jasné, ku ktorému patrí.</p>
+    <dl>
+      <dt>Kde</dt><dd>/profil [Majster Melichar, Hudba počas partie]<br><span class="slaby">1600×1000 aj 1920×1080</span></dd>
+      <dt>Zdroj</dt><dd><code>apps/web/src/stranky/Ucet.tsx:615</code><br><code>apps/web/src/styles.css:1022</code></dd>
+      <dt>Príčina</dt><dd>&lt;div className=&quot;posuvnik-stupnica&quot;&gt; je v JSX až za poľom s pomoc=…, ktoré vykreslí nápovedu hneď pod posuvník; .posuvnik-stupnica nemá spodný okraj.</dd>
+      <dt>Návrh</dt><dd>Stupnicu dať hneď pod posuvník (pred nápovedu) a medzi skupinami nechať margin-bottom ≥ 12 px.</dd>
+    </dl>
+  </div>
+</article></section>
+
+<h2>Stránky bez chýb</h2>
+<ul class="zoznam"><li>/</li><li>/pravidla</li><li>/novinky</li><li>/hra (lobby)</li><li>/rebricek</li><li>/spatna-vazba</li><li>/vyvoj</li><li>/vyvoj/roadmapa</li><li>/prihlasenie</li><li>/registracia</li><li>/playtest</li><li>/playtest/reporty</li><li>/hraci</li><li>/admin</li><li>/admin/akcie</li><li>/admin/bodovacie</li><li>/admin/kategorie</li><li>/admin/klucove-slova</li><li>/admin/obsah</li><li>/admin/sady</li><li>/admin/media</li><li>/admin/import-export</li><li>/admin/zverejnit</li></ul>
+<p class="slaby">/hrac/:id nástroj neprechádza (nie je v zozname STRANKY). /admin/klucove-slova mala len nálezy vyradené ako zámer.</p>
+
+<h2>Prejdené stavy herného stola</h2>
+<ul class="zoznam"><li>stavba šenku</li><li>branie zo šenku</li><li>vrstva Šenok</li><li>vrstva Lokality</li><li>vrstva Log</li><li>zoznam skratiek „?“</li><li>soundboard Melichar</li><li>rozpis bodov</li><li>Zhromaždenie (aj s kartami v línii)</li><li>Pitka — odpoveď na NA EX</li><li>Pitka — môj ťah (NA EX)</li><li>účet bitky (len vizuálne + meranie v stránke)</li><li>patronát</li><li>výber cieľa</li><li>koniec hry</li></ul>
+<p class="slaby">Bitku sa nepodarilo zmerať priamo — vyhodnotí sa sama hneď po poslednej Pitke. Účet bitky sa ukazuje len v okne, ktoré bolo otvorené počas bitky (po načítaní stránky chýba), preto bol zmeraný skriptom priamo v otvorenej stránke a skontrolovaný vizuálne; chyby nemá. Stav „vybraná karta v ruke“ sa nástrojom nedá vyvolať (výber ide cez pointer udalosti, nie cez click()).</p>
+
+<h2>Vyradené nálezy</h2>
+<table>
+<thead><tr><th>Druh</th><th>Typ</th><th>Počet</th><th>Prečo</th></tr></thead>
+<tbody>
+<tr><td>zámer</td><td>prekryty-prvok</td><td>445</td><td>prvky pod modálnou vrstvou (Šenok, Lokality, Log, koniec hry) alebo pod vyskakovacím panelom (soundboard, zoznam skratiek) — zámerné prekrytie</td></tr>
+<tr><td>zámer</td><td>maly-ciel</td><td>90</td><td>/admin/klucove-slova: políčka 18 × 18 px v bunkách tabuľky majú dosť voľného miesta okolo (výnimka WCAG 2.5.8 pre rozostup)</td></tr>
+<tr><td>zámer</td><td>maly-ciel</td><td>6</td><td>riadky stupňov v rozpise bodov (13 px) sú len nápoveda pri prejdení myšou, nie ovládací prvok</td></tr>
+<tr><td>falošný poplach</td><td>bez-fokusu</td><td>196</td><td>karty v ruke (.tahatelna) majú fokus (:focus-visible zdvihne a zväčší vnútornú .kl a nastaví z-index), nástroj však porovnáva len štýl samotného prvku a z-index nesleduje</td></tr>
+<tr><td>falošný poplach</td><td>nezarovnana-ikona</td><td>24</td><td>ikona slotu a vedľa nej absolútne umiestnený odznak „×2“ (.kl-nasobok) v rohu — nástroj ho berie ako text vedľa ikony</td></tr>
+<tr><td>falošný poplach</td><td>pomale-nacitanie</td><td>3</td><td>/karty a /admin/karty: lazy obrázky pod okrajom okna sa nenačítajú, kým sa k nim neposunie; nástroj čaká na complete všetkých obrázkov 15 s</td></tr>
+</tbody>
+</table>
+</main>
+<script>
+const f = { str: document.getElementById("f-str"), typ: document.getElementById("f-typ"), zav: document.getElementById("f-zav") };
+const karty = [...document.querySelectorAll(".karta")];
+function filtruj() {
+  let n = 0;
+  for (const k of karty) {
+    const ok = (!f.str.value || k.dataset.str.split("|").includes(f.str.value)) && (!f.typ.value || k.dataset.typ === f.typ.value) && (!f.zav.value || k.dataset.zav === f.zav.value);
+    k.classList.toggle("skryta", !ok);
+    if (ok) n++;
+  }
+  document.getElementById("pocet").textContent = n + " z " + karty.length + " chýb";
+}
+for (const s of Object.values(f)) s.addEventListener("change", filtruj);
+filtruj();
+</script>
+</body>
+</html>
