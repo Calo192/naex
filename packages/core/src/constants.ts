@@ -1,6 +1,5 @@
-// Herné konštanty. Hodnoty označené TODO nie sú v pravidlách v11 — sú
-// vytlačené na fyzických komponentoch a treba ich overiť podľa krabice.
-// Menia sa TU, kód sa meniť nemusí.
+// Herné konštanty. Menia sa TU, kód sa meniť nemusí. Hodnoty, ktoré pravidlá
+// v11 neudávali, potvrdil Michal 2026-10-22 (roadmapa #11).
 
 export const KONSTANTY = {
   /**
@@ -33,9 +32,9 @@ export const KONSTANTY = {
   } as Readonly<Record<string, number>>,
 
   /**
-   * TODO: overiť podľa komponentov — koľko kópií každej karty (Občan/Zviera/
-   * Nástroj) je v spoločnom doberacom balíčku. V tlači je každý variant
-   * samostatná karta; pre v1 berieme 2 kópie s náhodným variantom.
+   * Koľko kópií každej karty (Občan/Zviera/Nástroj) je v spoločnom doberacom
+   * balíčku, každá s náhodným variantom (Michal 2026-10-22): 2 kópie dajú
+   * 62 kariet — dlhej hre stačia a sada sa neriedi.
    */
   KOPIE_V_SPOLOCNOM_BALICKU: 2,
 

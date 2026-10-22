@@ -45,7 +45,7 @@ Caddy s HTTPS, ~6 € mesačne).
 packages/core/     jadro pravidiel — čistý TS, bez I/O, deterministické
   data/cards.json    východisková sada (z tlačového PDF, tools/import_print_pdf.py)
   data/elders.json   8 starších (len zoznam)
-  data/scorecards.json  8 scorecardov z KartyAI — podmienky; body PROVIZÓRNE
+  data/scorecards.json  8 scorecardov z KartyAI — podmienky a body
 packages/tvorba/   model tvorcu kariet — čistý TS (varianty, farby, geometria
                    karty, formát textu, export/import TXT)
 packages/server/   autoritatívny server: hra (ws), REST API, SQLite, médiá
@@ -116,7 +116,8 @@ Nová karta z tvorcu (neznáme id) beží automaticky v režime MANUAL.
 ## Rozhodnuté nejasnosti (otvorené otázky z BRIEF-u)
 
 Pravidlá v11 tieto veci nehovoria jednoznačne; správanie sa dá zmeniť
-na jednom mieste v kóde (odkazy v zátvorkách).
+na jednom mieste v kóde (odkazy v zátvorkách). Michal ich všetky potvrdil
+2026-10-22 (roadmapa #11).
 
 1. **Posilnenie + Posilnenie** na spoji → nič sa nedeje (`partia.ts`).
 2. **NA EX** je tá istá operácia na vlastnej aj súperovej karte: zruší
@@ -202,18 +203,18 @@ Rozhodnutia Michala, skúšobné. Prečo a čo sledovať je v
 
 Testy: `packages/core/test/tempo.test.ts`, `elders.test.ts`.
 
-## Hodnoty, ktoré treba doladiť podľa komponentov
+## Herné hodnoty mimo pravidiel v11
 
-Všetko na jednom mieste: `packages/core/src/constants.ts` (s TODO
-komentármi) a `packages/core/data/scorecards.json`:
+Všetko na jednom mieste: `packages/core/src/constants.ts`
+a `packages/core/data/scorecards.json`. Michal ich potvrdil 2026-10-22
+(roadmapa #11):
 
 - **body za podmienky scorecardov** — za zóny strachu (1/2/3) a za kus
   lokality, získaného staršieho, cigarety, nepriznanej cirhózy (pravidlá
-  udávajú len −1 za nepriznaný dlh); kladné za kus platia až od oranžovej
-  zóny. Rozloženie podmienok je z KartyAI,
+  udávajú len −1 za dlh); kladné za kus platia až od oranžovej zóny. Rozloženie podmienok je z KartyAI,
   scorecardy sa starším rozdávajú náhodne (rozhodnutie Michala 2026-10-11),
-- rozdelenie **štartovacej ruky** a počet **kópií kariet** v spoločnom
-  balíčku.
+- rozdelenie **štartovacej ruky** (4/2/2/2) a počet **kópií kariet**
+  v spoločnom balíčku (2).
 
 ## Zdroje
 

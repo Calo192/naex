@@ -70,8 +70,7 @@ packages/core/     jadro pravidiel — čistý TS, bez I/O
   data/cards.json    60 kariet: tagy, efekt, spúšťače, blokované pozície,
                      multimnožina akcií pre obe strany, počet permutácií
   data/elders.json   8 starších (len id)
-  data/scorecards.json  priazeň + bočné bodovacie pozície; body za podmienky
-                     sú PROVIZÓRNE, viď „Neznáme hodnoty"
+  data/scorecards.json  priazeň + bočné bodovacie pozície a body za podmienky
 packages/server/   autoritatívny server (Node + ws)
 apps/web/          klient (React + Vite)
 docs/PRAVIDLA.md   destilovaná špecifikácia pravidiel v11
@@ -300,21 +299,23 @@ Nasadzuj až po M8. Do vtedy stačí `npm run dev`.
 ## Otvorené otázky — spýtaj sa Michala, nehádaj potichu
 
 Pravidlá v11 tieto veci nehovoria jednoznačne. Ak sa rozhodneš sám, **napíš to
-do commitu a do README**, nech sa to dá ľahko prepnúť.
+do commitu a do README**, nech sa to dá ľahko prepnúť. Všetky doterajšie otázky
+uzavrel Michal 2026-10-22 (roadmapa #11); odpovede sú v PRAVIDLA.md.
 
-1. **Posilnenie proti Posilneniu** na spoji — nič, alebo niečo?
+1. ~~**Posilnenie proti Posilneniu** na spoji — nič, alebo niečo?~~ Nič sa nedeje (§4).
 2. ~~**NA EX** — je „ruší aktívne a zdvojnásobuje neaktívne" naozaj **tá istá**
    operácia na vlastnej aj súperovej karte?~~ Vyriešené (Michal 2026-10-18):
    áno, NA EX smie na vlastného aj súperovho Občana či Starešinu a operácia
    je tá istá (PRAVIDLA §5).
-3. **Podpora** — počíta sa lokalita ako karta v okolí?
-4. **Vzbura na lokalite** — aktivuje obe strany lokality, alebo len tú, ktorá
-   patrí do danej partie?
+3. ~~**Podpora** — počíta sa lokalita ako karta v okolí?~~ Áno (§4).
+4. ~~**Vzbura na lokalite** — aktivuje obe strany lokality, alebo len tú, ktorá
+   patrí do danej partie?~~ Len hranu lokality pri tom kraji (§4).
 5. ~~**Cirhóza v partii** — „Obdržíš od súpera dodatočnú ranu" znamená +1 tuhé
    pre súpera za každú Cirhózu v mojej línii?~~ Vyriešené (Michal 2026-10-20):
    kliatba do línie nepatrí; každá **priznaná** Cirhóza dá súperovi v každej
    bitke +1 tuhé (PRAVIDLA §8).
-6. **Absťák** — čo presne sa počíta ako „nerest"? Poldeci, cigarety, oboje?
+6. ~~**Absťák** — čo presne sa počíta ako „nerest"?~~ Pitie aj fajčenie, platby
+   za šenok, Dedičstvo a Starostu nie (§12).
 7. ~~**Štartovacia ruka** — ako sa 10 kariet delí medzi 4 typy štartoviek?~~
    Vyriešené (Michal 2026-10-18): obaja 4 Pijan, 2 Miňištrant, 2 Milujúca
    manželka, 2 Dievčina na vydaj; tieto druhy nie sú v spoločnom balíčku ani v šenku.
@@ -330,22 +331,24 @@ do commitu a do README**, nech sa to dá ľahko prepnúť.
    ochranu nesie nová karta Anonymný alkoholik): „Furt: Keď súper dá NA EX,
    ukradni mu 1 cigaretu.“ — od 2026-10-19 **2 cigarety**, dve Svokry 4.
    Implementované a zverejnené (sada v6).
-9. **Šenok** — čo sa stane, keď sa minie spoločný doberací balíček?
+9. ~~**Šenok** — čo sa stane, keď sa minie spoločný doberací balíček?~~ Šenok sa
+   zmenšuje až na nulu, hra beží ďalej bez trestu (§7).
 
 ---
 
 ## Neznáme hodnoty (nie sú v pravidlách, sú na komponentoch)
 
-Nechaj ich ako **konštanty na jednom mieste** s komentárom `TODO: overiť podľa
-komponentov`. Michal ich doplní z krabice.
+Všetky uzavrel Michal 2026-10-22 (roadmapa #11). Nové neznáme hodnoty daj ako
+**konštanty na jednom mieste** s komentárom `TODO` a spýtaj sa.
 
 - ~~`data/elders.json` — ktorý starší dáva ktorú **priazeň** a **bočné
   bodovacie pozície**.~~ Vyriešené: priazeň aj bodovacie podmienky nesie
   **scorecard**, ktorý starší dostane pri príprave hry náhodne
   (`data/scorecards.json`, prepísané z KartyAI 2026-07-13; §9, §10).
-- Body za **ovládnutú lokalitu**, za **získaného staršieho**, za **cigaretu**,
-  pokuta za **nepriznanú cirhózu**. Jediné, čo pravidlá udávajú, je
-  **−1 za nepriznaný dlh**.
+- ~~Body za **ovládnutú lokalitu**, za **získaného staršieho**, za **cigaretu**,
+  pokuta za **nepriznanú cirhózu**.~~ Finálne: lokalita 2, starší 2, cigarety
+  1 za trojicu, Cirhóza −2, Dlh −1 (`data/scorecards.json`).
+- ~~Počet kópií kariet v spoločnom balíčku.~~ 2 kópie (`constants.ts`).
 
 ---
 

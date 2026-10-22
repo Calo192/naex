@@ -14,7 +14,7 @@
   "      Lokality, starší a cigarety bodujú len od oranžovej zóny (prahPodmienky",
   "      v elders.ts, rozhodnutie Michala 2026-10-12). Lokality a starší dávajú",
   "      2 za kus (predtým 3) — Michal 2026-10-12 po playteste 20261012-055944.",
-  "      TODO: overiť podľa komponentov — jediné, čo pravidlá udávajú, je −1 za dlh."
+  "      Hodnoty sú finálne (Michal 2026-10-22, roadmapa #11)."
  ],
  "body": {
   "znepokojenie": 1,

@@ -176,8 +176,8 @@ majú prednosť pred staršími odsekmi — rozbory `docs/playtesty/strategia-kl
   súper (každý vznik, priznanie aj zahodenie je vo verejnom logu); body súpera
   sú presné. Ktoré karty a kde ležia, sa neposiela.
 
-> Miesta označené **[?]** sú nejednoznačné alebo v pravidlách chýbajú.
-> Neimplementuj ich potichu — pozri `docs/BRIEF.md`, sekcia „Otvorené otázky".
+> Otvorené otázky z `docs/BRIEF.md` uzavrel Michal 2026-10-22 (roadmapa #11).
+> Čo pravidlá nehovoria, nedopĺňaj potichu — spýtaj sa a zapíš to sem.
 
 ---
 
@@ -334,14 +334,15 @@ Po bitke sa karta vracia do odhadzovacieho balíčka svojho majiteľa.
 | X + Y (bežné akcie) | obe sa aktivujú, každá ×1 |
 | Posilnenie + X | X sa aktivuje ×2 |
 | Odpor + X | X je zrušená |
-| Odpor + Odpor | **Vzbura**: obe karty vyhodnotia všetky svoje inak neaktívne akcie ako aktívne |
+| Odpor + Odpor | **Vzbura**: obe karty vyhodnotia všetky svoje inak neaktívne akcie ako aktívne; lokalita len hranu pri tom kraji, nie obe (Michal 2026-10-22) |
 | Posilnenie + Odpor | neprepojené akcie aktivuje **iba karta s Odporom** |
-| Posilnenie + Posilnenie | **[?]** pravidlá nehovoria |
+| Posilnenie + Posilnenie | nič sa nedeje — niet čo zdvojnásobiť (Michal 2026-10-22) |
 
 ### Podpora
 
 Karta je *podporená*, ak sa v jej okolí nachádzajú **presne 2 karty**
-(t. j. má susedov z oboch strán). **[?]** Počíta sa lokalita ako karta?
+(t. j. má susedov z oboch strán). **Lokalita sa ráta ako sused** (Michal
+2026-10-22) — ako pri ostatných efektoch, ktoré sa pozerajú na okolie karty.
 
 ---
 
@@ -541,6 +542,8 @@ Nevzaté karty ostávajú v šenku do ďalšieho draftu (Starosta a Liečba z ne
 berú aj medzitým).
 Po braní sa šenok **doplní z vrchu spoločného balíčka na 8 kariet**
 (Michal 2026-10-20), aby Liečba, Starosta a iné efekty mali z čoho brať.
+Keď sa spoločný balíček minie, šenok sa už nedopĺňa a stavba sa zmenšuje
+až na nulu — hra beží ďalej bez trestu (Michal 2026-10-22).
 
 ### Počet Pitiek
 
@@ -936,7 +939,9 @@ neho Strach (Vydesenie aktívne nemá) → 1 + 2 + 2.
 na svojej strane a podľa zóny markera tohto staršieho; kladné za kus až od
 oranžovej zóny. Playtest proti človeku ukázal, že je to neintuitívne.)
 
-**[?]** Body za podmienky sú provizórne (`data/scorecards.json`, TODO).
+Body za podmienky sú v `data/scorecards.json`: znepokojenie 1, strach 2,
+vydesenie 3, lokalita 2, starší 2, cigarety 1 za trojicu, Cirhóza −2, Dlh −1
+(finálne, Michal 2026-10-22).
 
 ### Kategórie
 
@@ -985,7 +990,7 @@ na konci hry závisela od toho, či sa do konca dobrala — rozbor
 | **Cirhóza** | pri dosiahnutí prahu poškodenia pečene | v bitke pridáva tuhé poškodenie |
 | **Absťák** | keď hráč v kole skonzumuje **menej nerestí** než v predošlom (s Milujúcou manželkou aj rovnako, §14); vykladá sa **rovno priznaný** a hráč si zaň dobere kartu. Viac nerestí → jeden Absťák späť do zásoby; prvé kolo len nastaví základ | znižuje **tvoje** tuhé poškodenie (o 1 za kus) |
 
-**Nerest** (tak ju počíta motor; Michal ešte nepotvrdil): každý poldeci vypitý
+**Nerest** (Michal 2026-10-22): každý poldeci vypitý
 v Zhromaždení (ďalšia karta v ťahu), NA EX (poldeci sa vypije v bitke), každá
 vyfajčená cigareta, doliatie poldeci (2) a stokársky barter (za každú
 cigaretu). Platba za šenok, Dedičstvo a Starostu sa nepočíta, akcie Cigareta a
