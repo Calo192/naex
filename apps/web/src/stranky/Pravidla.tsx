@@ -50,7 +50,7 @@ const SLOVNIK: readonly { readonly tema: string; readonly popis: string; readonl
       ["Útočník / Obranca", "Útočník prehral poslednú bitku: berie zo šenku prvý a vykladá prvý. Obranca vyberá a natáča cieľ kola."],
       ["Šenok", "Ponuka kariet lícom nahor, ktorú hráči postavia v drafte; vidia ju obaja."],
       ["Vypiť", "Otočiť plný poldeci na vypitý: v Zhromaždení tak zaplatíš každú ďalšiu kartu v tom istom ťahu — limit −1, pečeň +1 (vyhodnotí sa v najbližšej Pitke), ráta sa ako nerest."],
-      ["Fajčiť", "Vyfajčiť cigaretu = hneď si dobrať kartu. Na svojom ťahu v Zhromaždení aj v Pitke; ťah to neukončí."],
+      ["Fajčiť", "Vyfajčiť cigaretu = hneď si dobrať kartu. Na svojom ťahu v Zhromaždení aj v Pitke; ťah to neukončí. Keď nemáš z čoho ťahať (prázdny doberací aj odhadzovací balíček), fajčiť sa nedá."],
       ["Stokársky barter", "Počas Pitky: za 5 cigariet nový plný poldeci (s priazňou Lakomca menej)."],
       ["Doliatie", "Počas Pitky: za 2 cigarety otočíš vypitý poldeci späť na plný (nie s Vínkom v Dedičstve)."],
       ["Náhrada", "Hráč nahradí kartu z množiny určenej efektom."],
@@ -289,13 +289,15 @@ const KAPITOLY: readonly Kapitola[] = [
           hráčov a koľko Cirhóz a Dlhov z toho bude a za koľko bodov. NA EX môže zmeniť aj počet Pitiek. Pamätaj: poldeci sa pri bitke vypije, takže
           v ďalšom kole ti chýba (na začiatku kola sa doleje len jeden vypitý). Hra ti pri NA EX ukáže, aký limit budeš mať
           v ďalšom kole. Na Liberála NA EX dať nemožno, ani na kartu, na ktorej už poldeci leží. NA EX na kartu pri lokalite
-          mení len akcie tej karty — akcie hrany lokality ostávajú. Dievčina na vydaj ráta aj akcie, ktoré jej zdvojilo NA EX.
+          mení len akcie tej karty — akcie hrany lokality ostávajú. Dievčina na vydaj ráta aj akcie, ktoré jej zdvojilo NA EX, a jej
+          akcie v bitke, v ktorej sa zahodí, ešte platia.
         </p>
         <h3>Odpoveď na NA EX</h3>
         <p>
           Keď súper dá NA EX, môžeš <strong>hneď vyložiť jednu kartu</strong> z ruky na koniec svojej alebo jeho strany —
           limit vykladania to nemíňa. Najlepšie tak, aby si spároval neaktívne akcie jeho karty: tým sa stanú aktívnymi
-          a NA EX ich zruší. Keď potom NA EX dáš ty, súper má tiež jednu odpoveď.
+          a NA EX ich zruší. Keď potom NA EX dáš ty, súper má tiež jednu odpoveď. Odpoveď je bežné vyloženie — smie zmeniť
+          prevahu v kraji aj počet Pitiek.
         </p>
         <h3>Viac kariet v jednom ťahu (Vypiť)</h3>
         <p>
@@ -491,7 +493,7 @@ const KAPITOLY: readonly Kapitola[] = [
           <strong>2</strong> + sila Úžerníka získaš kartu Dlh — teda dve akcie Dlh v jednej Pitke sú karta Dlh — a po Pitke sa vynuluje. Dlhy, ktoré karta dáva priamo (napr. Liečba), idú rovno.
           Viac Pitiek v bitke znamená viac pečene aj Dlhov.
         </p>
-        <p>Každá tvoja <strong>priznaná</strong> Cirhóza ti v bitke pridáva 1 tuhé poškodenie, akoby ti ho udelil súper. Viera ju znižuje. Nepriznaná uberá na konci hry 2 body.</p>
+        <p>Každá tvoja <strong>priznaná</strong> Cirhóza ti v bitke pridáva 1 tuhé poškodenie, akoby ti ho udelil súper. Viera ju znižuje. Nepriznaná uberá na konci hry −2 za každú aktívnu podmienku „pečeň“ — skutočnú cenu určuje rozdanie scorecardov.</p>
         <p>
           <strong>Liečba:</strong> spáľ priznanú Cirhózu a svojho Závislého z línie, získaj 1 Dlh a vyber si kartu zo šenku.{" "}
           <strong>Pohreb:</strong> spáľ priznanú Cirhózu a ľubovoľnú svoju kartu z línie.
@@ -703,7 +705,8 @@ const KAPITOLY: readonly Kapitola[] = [
         <p>
           Inak po poslednej bitke o lokalitu sa bodujú scorecardy. Každá aktívna podmienka boduje{" "}
           <strong>obom hráčom</strong>, nech je marker staršieho kdekoľvek: za kusy — ovládnuté lokality (2), získaných
-          starších (2), zvyšné cigarety (1 za každé 3), mínus za každý Dlh — aj priznaný (−1) a za nepriznané Cirhózy (−2). Znepokojenie (1), Strach (2)
+          starších (2), zvyšné cigarety (1 za každé 3), mínus za každý Dlh — aj priznaný (−1) a za nepriznané Cirhózy (−2), vždy za každú
+          aktívnu podmienku zvlášť. Skutočnú hodnotu lokality či Dlhu teda určuje rozdanie scorecardov (lokalita bežne 12 – 18 b). Znepokojenie (1), Strach (2)
           a Vydesenie (3) dávajú body za každého staršieho v hre (aj toho na tomto scorecarde), ktorý sa ťa bojí aspoň na
           tú úroveň; pri jednom staršom sa ráta len najvyššia splnená. Príklad: Farár má aktívne Znepokojenie a Strach,
           jeden starší sa ťa bojí na úrovni 1, druhý na 2 a sám Farár na 3 — z Farára máš 1 + 2 + 2 = 5 bodov.

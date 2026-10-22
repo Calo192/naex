@@ -392,7 +392,9 @@ svojej alebo súperovej strany. Limit vykladania nemíňa; kto nemá kartu, ktor
 smie vyložiť, neodpovedá. Potom je na ťahu znova ten, kto NA EX dal.
 Striedavo: keď neskôr NA EX dá aj druhý hráč, prvý má tiež jednu odpoveď.
 Cieľ: spárovať neaktívne akcie karty s NA EX — tie sa tým stanú aktívnymi
-a NA EX ich zruší. Počas odpovede sa nefajčí ani nedáva NA EX.
+a NA EX ich zruší. Počas odpovede sa nefajčí ani nedáva NA EX. Odpoveď je
+bežné vyloženie: smie zmeniť **prevahu v kraji** aj **počet Pitiek** (Michal
+2026-10-22, dopísané podľa hry).
 
 Poldeci **ostáva jeho**: do bitky sa ráta do JEHO limitu, pri bitke sa vypije.
 
@@ -466,8 +468,12 @@ hracej oblasti.
 
 | | Nepriznaná | Priznaná |
 |---|---|---|
-| Dlh | −1 bod na konci hry | body neuberá; **ráta sa k prahu Exekútora**; povery proti nej udelia mäkké poškodenie; pri priznaní hráč **dobere kartu** |
-| Cirhóza | −2 body na konci hry | body neuberá; **súper za ňu v bitke +1 tuhé**; dá sa liečiť / použiť pri Pohrebe; kartu za priznanie **nedostaneš** |
+| Dlh | nový Dlh sa hneď prizná (§12) | **−1 za každú aktívnu podmienku bankovky** na konci hry (aj priznaný); **ráta sa k prahu Exekútora**; povery proti nemu udelia mäkké poškodenie |
+| Cirhóza | **−2 za každú aktívnu podmienku pečeň** na konci hry | body neuberá; **súper za ňu v bitke +1 tuhé**; dá sa liečiť / použiť pri Pohrebe; kartu za priznanie **nedostaneš** |
+
+Skutočnú cenu kliatby určuje **rozdanie scorecardov**: každá aktívna podmienka
+boduje zvlášť, takže Dlh môže stáť −4 až −7 a Cirhóza −2 až −8 bodov (§10;
+Michal 2026-10-22, návrh 2 A — predtým tu stálo „−1 / −2 body“).
 
 **Dedičstvo** — Nástroje sa namiesto priznania vykladajú do hracej oblasti ako
 Dedičstvo a uplatňuje sa ich pasívny efekt `Dedičstvo`. Poldeci sa na Nástroje
@@ -662,7 +668,9 @@ nové cigarety = Cigarety (+ sila Fajčiara v 1. Pitke bitky o lokalitu) − sú
 **Fajčenie** (Michal 2026-10-16): na svojom ťahu v Zhromaždení aj v Pitke
 smie hráč vyfajčiť cigaretu — hneď si dobere kartu, ťah mu neskončí, ráta
 sa to ako nerest. Cigarety sa prenášajú z kola na kolo. V Zhromaždení sa za
-hráča, ktorý nemá čo vyložiť, pasuje aj vtedy, keď má cigarety.
+hráča, ktorý nemá čo vyložiť, pasuje aj vtedy, keď má cigarety. Keď sú
+doberací aj odhadzovací balíček prázdne, **fajčiť sa nedá** — cigareta by
+nedala kartu (Michal 2026-10-22).
 
 Po vyhodnotení Pitky sa **pečeň aj zadĺženie oboch hráčov vynulujú**
 (Michal 2026-10-16) — zvyšok pod prahom sa do ďalšej Pitky neprenáša.
@@ -935,10 +943,13 @@ Scorecardy sa starším **rozdajú náhodne** pri príprave hry a scorecard urč
 | pečeň | nepriznaná cirhóza | za kus (záporné) |
 | bankovky | každý dlh — aj priznaný (Michal 2026-10-21) | za kus (−1) |
 
-Za kus: ovládnutá lokalita **2**, získaný starší **2**, cigareta **1**
-(Michal 2026-10-12 — predtým 3/3/1; Veterinár dal v playteste 20261012-055944
-sám 24 bodov). Nepriznaná Cirhóza −2, Dlh −1 (aj priznaný — verejný dlh, §12). Znepokojenie **1**,
-Strach **2**, Vydesenie **3**.
+Za kus a **za každú aktívnu podmienku** daného typu: ovládnutá lokalita **+2**,
+získaný starší **+2**, cigareta **+1** (Michal 2026-10-12 — predtým 3/3/1;
+Veterinár dal v playteste 20261012-055944 sám 24 bodov), nepriznaná Cirhóza
+**−2** (podmienka pečeň), Dlh **−1** (podmienka bankovky, aj priznaný — verejný
+dlh, §12). Znepokojenie **1**, Strach **2**, Vydesenie **3**. **Skutočnú hodnotu
+určuje rozdanie scorecardov** — pri šiestich aktívnych podmienkach smerovník
+stojí každá ovládnutá lokalita 6 × 2 = 12 b (v playteste 12 až 18 b), Dlh −4 až −7 (Michal 2026-10-22, návrh 2 A).
 
 **Zónové podmienky** sa pozerajú na **všetkých 8 starších** vrátane toho,
 na ktorého scorecarde ležia. Za každého staršieho, ktorý sa hráča bojí na
@@ -1076,7 +1087,7 @@ Všetky efekty tlačovej sady engine vyhodnocuje automaticky (playtest
 
 | Karta | Výklad |
 |---|---|
-| Dievčina na vydaj | Pri bitke sa zahodí (po bitke sa spáli, nevráti sa) a jej majiteľ spáli toľko **priznaných** Dlhov, koľko mala aktívnych akcií (s násobkami — aj s tými, ktoré zdvojilo NA EX, vlastné či súperovo; Michal 2026-10-22). |
+| Dievčina na vydaj | Pri bitke sa zahodí (po bitke sa spáli, nevráti sa) a jej majiteľ spáli toľko **priznaných** Dlhov, koľko mala aktívnych akcií (s násobkami — aj s tými, ktoré zdvojilo NA EX, vlastné či súperovo; Michal 2026-10-22). Jej akcie v bitke, v ktorej sa zahodí, ešte **platia** (Michal 2026-10-22, dopísané podľa hry). |
 | Hrobár | Keď súper zahodí kartu z ruky, z línie alebo z vrchu balíčka (efektom, Víziou; nie návratom po bitke ani vlastnou Veľmi smútiacou vdovou), majiteľ Hrobára dostane cigaretu za každú. |
 | Anonymný alkoholik | Súper jeho majiteľa naňho nedá NA EX — ani keď je podstrčený na súperovu stranu. Majiteľ smie. Karty vedľa neho nechráni. Bráni len novému NA EX; poldeci, ktorý už na ňom leží, ostáva. (Michal 2026-10-18, zúžené 2026-10-19 a 2026-10-22 — predtým chránil aj majiteľove karty vedľa seba) |
 | Krčmárka | Pri bitke: ak hráč nemá Absťák a v tomto kole nedal NA EX, vypitý poldeci sa mu otočí na plný (automaticky). |

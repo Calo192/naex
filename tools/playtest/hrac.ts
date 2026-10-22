@@ -611,13 +611,13 @@ function moznosti(v: ClientState): string[] {
         const pr = prahyHraca(DATA, stol, ja);
         if (pr.priznaneDlhy + dlhyVRuke < pr.exekutor - 2)
           out.push(
-            `(Máš v ruke ${dlhyVRuke}× Dlh a od Exekútora si ďaleko (${pr.priznaneDlhy}/${pr.exekutor}): priznaním za každý Dlh hneď dobereš kartu, Dlh navždy zmizne z balíčka a na konci ti neuberie bod. Odhodený Dlh sa vráti do balíčka.)`,
+            `(Máš v ruke ${dlhyVRuke}× Dlh a od Exekútora si ďaleko (${pr.priznaneDlhy}/${pr.exekutor}): priznaním za každý Dlh hneď dobereš kartu, Dlh navždy zmizne z balíčka; body na konci uberá aj priznaný (−1 za každú aktívnu podmienku bankovky). Odhodený Dlh sa vráti do balíčka.)`,
           );
       }
       // Tamže: Jano držal 6 Cirhóz v ruke, takže Liečbu ani Pohreb nikdy nevidel.
       if (v.ruka.some((k) => k.defId === "cirhoza"))
         out.push(
-          "(Máš v ruke Cirhózu: zváž priznanie — nepriznaná uberá na konci 2 body, priznaná dá súperovi v každej bitke +1 tuhé, ale po bitke ti odomkne Liečbu alebo Pohreb (tie ju spália). Pohreb navždy spáli tvoju slabú kartu, ktorú si vyložil do línie; Liečba vymení tvojho Závislého z línie za kartu zo šenku.)",
+          "(Máš v ruke Cirhózu: zváž priznanie — nepriznaná uberá na konci −2 za každú aktívnu podmienku pečeň, priznaná dá súperovi v každej bitke +1 tuhé, ale po bitke ti odomkne Liečbu alebo Pohreb (tie ju spália). Pohreb navždy spáli tvoju slabú kartu, ktorú si vyložil do línie; Liečba vymení tvojho Závislého z línie za kartu zo šenku.)",
         );
       break;
     }

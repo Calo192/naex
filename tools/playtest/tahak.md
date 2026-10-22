@@ -60,12 +60,13 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   v šenku neplatí; `draftStop` ukončí branie.
 - **Ruka bez limitu:** po každej bitke si dobereš **2 karty**; nič neodhadzuješ.
   Karty navyše: šenok, fajčenie (`smoke`: cigareta = karta hneď, v Zhromaždení
-  aj v Pitke), priznanie kliatby, Vízia, efekty.
+  aj v Pitke; s prázdnym doberacím aj odhadzovacím balíčkom sa fajčiť nedá),
+  priznanie kliatby, Vízia, efekty.
 - **Kliatby (verejný dlh, 2026-10-21):** nový **Dlh sa hneď prizná** (kartu zaň
   nedobereš) a na konci hry uberá body **aj priznaný**; Dlh podstrčený do balíčka
   (Vychovávateľka) sa pri dobratí prizná sám. Nová **Cirhóza ide navrch tvojho
   doberacieho balíčka**; priznáš ju, keď chceš, ale kartu za ňu **nedobereš** a súper za každú
-  priznanú dostane v bitke +1 tuhé (nepriznaná −2 body na konci). Počet súperových
+  priznanú dostane v bitke +1 tuhé (nepriznaná −2 za každú aktívnu podmienku pečeň na konci). Počet súperových
   nepriznaných kliatob je verejný (stav ho ukazuje), body súpera sú presné. Dlh sa sám nepáli (2026-10-22) — spáli ho len Robota,
   Dievčina na vydaj, Niekoho stryná a Veľmi smútiaca vdova; Milujúca manželka
   a Absťák kartu dajú. Kliatba do línie nepatrí (len Milujúca manželka). Priznanie nemíňa
@@ -82,10 +83,10 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 - **NA EX na Občana alebo Starešinu v línii — svojho aj súperovho.** Zruší
   karte aktívne akcie a zdvojí neaktívne; akcie sa rátajú majiteľovi karty.
   Pečeň +1 je tvoja. Súper smie hneď odpovedať jednou kartou mimo limitu
-  (`place` / `bezReakcie`). Nie na Liberála, nie na súperovho Anonymného
+  (`place` / `bezReakcie`) — odpoveď smie zmeniť prevahu v kraji aj počet Pitiek. Nie na Liberála, nie na súperovho Anonymného
   alkoholika (jeho susedov nechráni), nie na kartu, na ktorej už poldeci leží. NA EX na kartu
   pri lokalite mení len akcie karty, akcie hrany lokality ostávajú. Dievčina na vydaj
-  ráta aj akcie zdvojené cez NA EX. Svokra súpera ti za NA EX zoberie 2 cigarety.
+  ráta aj akcie zdvojené cez NA EX; jej akcie v bitke, v ktorej sa zahodí, ešte platia. Svokra súpera ti za NA EX zoberie 2 cigarety.
   Krčma vynúti NA EX. Násobky sa **násobia** (NA EX × Silná žena = ×4, aj Dlh
   a Poškodenie pečene) a NA EX leží na karte do bitky — vyhodnotí sa v každej
   Pitke kola. Každá možnosť `naex` v stave ukazuje cenu: bitku pred a po
@@ -101,7 +102,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   jeden Absťák odíde.
 - **Bodovanie:** každá aktívna podmienka scorecardu boduje obom hráčom; za kus
   lokality a získaní starší 2, cigarety 1 za každé 3, mínus každý Dlh (aj
-  priznaný) a nepriznané Cirhózy; Znepokojenie / Strach / Vydesenie za každého staršieho, ktorý sa
+  priznaný) a nepriznané Cirhózy — vždy za každú aktívnu podmienku zvlášť, skutočnú
+  hodnotu teda určuje rozdanie scorecardov (lokalita bežne 12–18 b, Dlh −4 až −7); Znepokojenie / Strach / Vydesenie za každého staršieho, ktorý sa
   ťa bojí. Marker určuje **priazeň** (komu je posunutý) a koho sa starší bojí.
 - **Priazeň** sila 1 / 2 / 3 podľa zóny; väčšina dáva 2 × sila. Úžerník: prah
   Dlhu 2 + sila (3 / 4 / 5); Fajčiar +1 / +2 / +3 cigarety v 1. Pitke.
