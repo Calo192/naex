@@ -1352,12 +1352,14 @@ export function HernaPlocha({
       readonly titul?: string;
       /** Štítok cez kartu (napr. „nová“ pri súperovom ťahu). */
       readonly stitok?: ReactNode;
+      /** Bez lupy — na karte ležia tlačidlá (voľba zóny v šenku), lupa by ich zakryla. */
+      readonly bezLupy?: boolean;
     } = {},
   ): ReactNode => {
     const uid = props.karta.uid;
     const kluc = `k${uid}`;
     const render = (sirka: number): ReactNode => karta({ ...props, otocena: false, sirka });
-    lupaKarty.set(kluc, { render, ...(moznosti.zdroj === undefined ? {} : { zdroj: moznosti.zdroj }), odstran: moznosti.odstran });
+    if (moznosti.bezLupy !== true) lupaKarty.set(kluc, { render, ...(moznosti.zdroj === undefined ? {} : { zdroj: moznosti.zdroj }), odstran: moznosti.odstran });
     const maAkciu = props.onClick !== undefined;
     const triedy = ["s-lupou", maAkciu ? "ma-akciu" : "", lupa?.kluc === kluc ? "harmonika-aktivna" : ""];
     if (moznosti.trieda !== undefined) triedy.push(moznosti.trieda);
@@ -3144,6 +3146,8 @@ export function HernaPlocha({
                     </>,
                   ),
                   zdroj: z,
+                  // Lupa otvorená oneskorene po kliku by zakryla „→ Smetisko / → Šenok“ a klik by šiel na ňu.
+                  bezLupy: vybrana,
                 });
               })}
             </div>
