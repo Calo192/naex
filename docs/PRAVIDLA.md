@@ -26,10 +26,10 @@ poškodenie pečene.
 - **NA EX** smie hráč dať na Občana alebo Starešinu v línii — **vlastného aj
   súperovho** (§5, Michal 2026-10-18). **Vypiť** — v
   Zhromaždení otočí plný poldeci na vypitý a zahrá dve karty za sebou (§5).
-- **Ruka 5 kariet:** štartovacie karty sa zamiešajú do doberacieho balíčka,
-  hráč si dobere 5 a na začiatku každého kola si ruku **doplní na 5**
-  (väčšiu nezahadzuje). Nové kliatby (Dlh, Cirhóza) idú do **odhadzovacieho
-  balíčka**, nie do ruky (§11, §12).
+- **Ruka 5 kariet:** štartovacie karty sa zamiešajú do doberacieho balíčka
+  a hráč si dobere 5 (§11). Doplnenie na 5 nahradili **2 karty po bitke**
+  (Michal 2026-10-19). Nový **Dlh** sa hneď prizná, nová **Cirhóza** ide
+  navrch doberacieho balíčka (verejný dlh, Michal 2026-10-21, §12).
 
 **Zmeny po playteste 20261012-055944 (rozhodnutia Michala 2026-10-12,
 skúšobné — `docs/playtesty/zmeny-pravidiel.html`):**
@@ -950,12 +950,12 @@ Michala 2026-10-11).
 
 - Lokality podľa dĺžky hry: **5** krátka / **7** stredná / **11** dlhá
   (pravidlá v3). Dlhú hru možno zvoliť, až keď má zverejnená sada aspoň
-  11 lokalít — `data/cards.json` ich má 7.
+  11 lokalít — `data/cards.json` ich má 14 (Michal 2026-10-20).
 - 8 starších, markery do stredu na 0.
-- Každý hráč: **10 štartovacích kariet** — Pijan, Miňištrant, Milujúca
-  manželka, Dievčina na vydaj (v rôznych variáciách). Zamiešajú sa do jeho
+- Každý hráč: **10 štartovacích kariet** — 4 Pijan, 2 Miňištrant, 2 Milujúca
+  manželka, 2 Dievčina na vydaj (v rôznych variáciách; Michal 2026-10-18).
+  Tieto druhy nie sú v spoločnom balíčku ani v šenku. Zamiešajú sa do jeho
   **doberacieho balíčka** a hráč si dobere **5 kariet do ruky** (pravidlá v3).
-  **[?]** Presné rozdelenie 10 kariet medzi tie 4 typy pravidlá neuvádzajú.
 - Každý hráč začína s **3 cigaretami**, **2 nevypitými poldeci** (Michal 2026-10-20; predtým 3),
   0 dlhmi, 0 poškodením pečene, 0 absťákmi, počítadlom závislosti na 0.
 - Šenok je na začiatku prázdny — hráči ho postavia v prvom drafte (§7);
@@ -1021,8 +1021,7 @@ klient ukazuje neresti oboch hráčov a výhľad (`stavZavislosti`).
 
 14 lokalít — 7 prerobených a 7 nových (návrh `docs/playtesty/navrh-lokality.html`,
 voľba Michala 2026-10-20). Akcie na hranách určujú počet Pitiek (§7); efekt
-platí v kole, keď je lokalita cieľom. Nové lokality sú v tvorcovi ako návrhy
-a do hry prídu so zverejnením sady.
+platí v kole, keď je lokalita cieľom. Všetkých 14 je v zverejnenej sade.
 
 | Lokalita | Kedy | Efekt |
 |---|---|---|
@@ -1063,15 +1062,15 @@ Všetky efekty tlačovej sady engine vyhodnocuje automaticky (playtest
 | Anonymný alkoholik | Súper jeho majiteľa nedá NA EX na neho ani na majiteľove karty vedľa neho na tej istej strane línie. Majiteľ smie; súperove karty nechráni, ani keď je podstrčený na súperovu stranu. Bráni len novému NA EX; poldeci, ktorý už na susedovi leží, ostáva. Prvé karty oboch strán susedia s lokalitou, nie navzájom. (Michal 2026-10-18, zúžené 2026-10-19) |
 | Krčmárka | Pri bitke: ak hráč nemá Absťák a v tomto kole nedal NA EX, vypitý poldeci sa mu otočí na plný (automaticky). |
 | Liberál | Ak je v partii majiteľa rovnako žien a chlapov (Liberál sa neráta), jeho aktívne akcie sa rátajú dvakrát. NA EX naň dať nemožno. |
-| Milujúca manželka | Furt (kým je odhalená — v línii aj priznaná): majiteľ dostane Absťák aj pri **rovnakom** počte nerestí ako v predošlom kole; Manželky sa sčítavajú (dve = aj pri o 1 viac nerestiach). Zbavenie Absťáku sa nemení. (Michal 2026-10-19; predtým −1 cigareta v Pitke.) Text karty treba upraviť v tvorcovi. |
-| Kočovník | Dlh a Poškodenie pečene z jeho akcií dostáva hráč, na ktorého strane leží (Pecku a Poldeci jeho majiteľ). Limit vykladania míňa ako každá karta (Michal 2026-10-19 zrušil výnimku). Text karty treba upraviť v tvorcovi. |
+| Milujúca manželka | Furt (kým je odhalená — v línii aj priznaná): majiteľ dostane Absťák aj pri **rovnakom** počte nerestí ako v predošlom kole; Manželky sa sčítavajú (dve = aj pri o 1 viac nerestiach). Zbavenie Absťáku sa nemení. (Michal 2026-10-19; predtým −1 cigareta v Pitke.) |
+| Kočovník | Dlh a Poškodenie pečene z jeho akcií dostáva hráč, na ktorého strane leží (Pecku a Poldeci jeho majiteľ). Limit vykladania míňa ako každá karta (Michal 2026-10-19 zrušil výnimku). |
 | Pasca | Dedičstvo: každé súperovo Zviera v línii (kdekoľvek, jeho karta) mu uberie 1 tuhé poškodenie (Michal 2026-10-20; predtým rušila prvú podstrčenú kartu). |
 | Pes | Furt (Michal 2026-10-20, sada v12): za každý pár akcií na spoji Psa so súperovou kartou — z ktorejkoľvek strany Psa, rátajú sa aj páry zrušené Odporom či NA EX (karty sú spojené) — dá majiteľ Psa v bitke +1 tuhé poškodenie. Na Psa sa smie podstrčiť (predtým strážil koniec strany). Nesmie byť v partii s iným zvieraťom. Akcie: vľavo 1 Rana, vpravo 2 Rany. |
 | Pijan | Ak má Žena v jeho okolí aktívnu akciu Poldeci, súper majiteľa Pijana dostane +1 Ranu. |
 | Policajtka | Furt: súperove Pohoršenia proti majiteľovi neplatia (Michal 2026-10-18; Autorita — Praudovravec súpera ju umlčí). |
 | Poštárka | V Pitke raz: majiteľ smie dobrať 1 až 2 karty; ak dobral, získa 1 Dlh. |
-| Presbiter | Bitka (návrh, čaká na zverejnenie — Michal 2026-10-20): ak v jeho kraji nemá majiteľ iného Občana, Zviera ani Starešinu a súper tam má prevahu, súper má o toľko Viery menej, koľko má Presbiter aktívnych akcií (s násobkami Posilnenia a NA EX). Ráta sa počet Vier pred rušením s Poverou, najviac na 0. Funguje aj podstrčený do súperovho kraja. Autorita — súperov Praudovravec ho umlčí. |
-| Dvojčatá | Furt (návrh, čaká na zverejnenie): do prevahy sa rátajú za dvoch. Na Ihrisko, Lesnú cestu a podmienku „sám“ Presbitera nie (tam sa rátajú karty). |
+| Presbiter | Bitka (Michal 2026-10-20): ak v jeho kraji nemá majiteľ iného Občana, Zviera ani Starešinu a súper tam má prevahu, súper má o toľko Viery menej, koľko má Presbiter aktívnych akcií (s násobkami Posilnenia a NA EX). Ráta sa počet Vier pred rušením s Poverou, najviac na 0. Funguje aj podstrčený do súperovho kraja. Autorita — súperov Praudovravec ho umlčí. |
+| Dvojčatá | Furt (Michal 2026-10-20): do prevahy sa rátajú za dvoch. Na Ihrisko, Lesnú cestu a podmienku „sám“ Presbitera nie (tam sa rátajú karty). |
 | Praudovravec | Autority v **súperovej** partii neuplatňujú efekt (Michal 2026-10-18; predtým v tvojej). |
 | Silná nezávislá žena | Aktívne akcie tvojich kariet, ktoré s ňou susedia, sa rátajú dvakrát (lokalitu, kartu staršieho ani súperove karty nezdvojí). |
 | Starosta | V Pitke raz: za 1 cigaretu vymeň kartu z ruky za kartu zo šenku. |
@@ -1085,5 +1084,5 @@ Všetky efekty tlačovej sady engine vyhodnocuje automaticky (playtest
 | Veštica | Pri prehre: porazený si prezrie oba doberacie balíčky, vymení jednu svoju kartu za súperovu, potom sa oba balíčky zamiešajú. |
 | Vychovávateľka | Keď majiteľ dá NA EX, jeden jeho priznaný Dlh sa zamieša do súperovho **doberacieho balíčka** (Michal 2026-10-19 — predtým do ruky, kde by ho súper priznal a dobral si kartu). |
 | Veľmi smútiaca vdova | Nástup: odhalí sa vrchná karta súperovho doberacieho balíčka (prázdny sa doplní zamiešaním odhadzovacieho). Ak je to muž (tag Chlap), ide z hry a majiteľ Vdovy **zahodí** (z hry) 2 svoje Dlhy z ruky, odhadzovacieho balíčka alebo spomedzi priznaných (priznané od 2026-10-21 — nový Dlh je hneď priznaný). Log vždy oznámi odhalenú kartu. Hrobár sa za Dlhy nespúšťa. (Oprava 2026-10-19 — predtým sa Dlhy len odhodili a vrátili.) |
-| Vínko | Dedičstvo: ráta sa ako plný poldeci navyše (limit +1); majiteľ nesmie dolievať poldeci za cigarety. Stokársky barter je povolený (Michal 2026-10-19 — predtým zakazovalo barter). Text karty treba upraviť v tvorcovi. |
+| Vínko | Dedičstvo: ráta sa ako plný poldeci navyše (limit +1); majiteľ nesmie dolievať poldeci za cigarety. Stokársky barter je povolený (Michal 2026-10-19 — predtým zakazovalo barter). |
 | Zámočník | Aktívne akcie Nástrojov v jeho okolí sa rátajú dvakrát. |

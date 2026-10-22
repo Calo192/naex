@@ -127,25 +127,28 @@ na jednom mieste v kóde (odkazy v zátvorkách).
    dosahu: žiadny implementovaný efekt Podporu nepoužíva).
 4. **Vzbura na lokalite** aktivuje len stranu patriacu danej partii
    (`partia.ts`, `markVzbura`).
-5. **Cirhóza v partii** = +1 tuhé pre súpera za každú (`battle.ts`,
-   `cirhozaBonus`; veterinár ju znižuje).
+5. **Cirhóza** — každá **priznaná** Cirhóza dá súperovi v každej bitke
+   +1 tuhé (Michal 2026-10-20; predtým Cirhóza v línii) (`engine.ts`,
+   `cirhozaBonus`; Veterinár ho znižuje).
 6. **Absťák / neresti** — ako nerest sa počíta každý vypitý poldeci
    a každá minutá fyzická cigareta (fajčenie, refill, barter). Podľa
    pravidiel v2: menej než minulé kolo → Absťák rovno priznaný; viac →
    jeden Absťák späť do zásoby; prvé kolo len nastaví základ
    (`engine.ts`, `koniecBitky`).
-10. **Robota** odhadzuje priznaný Dlh do odhadzovacieho balíčka hráča
-   („odhodenie“ podľa pojmov), pred kontrolou prahu Exekútora.
+10. **Robota** spáli priznaný Dlh (z hry, Michal 2026-10-21; predtým ho
+   odhodila do balíčka), pred kontrolou prahu Exekútora (`engine.ts`).
 11. **Prah Cirhózy** — pravidlá v2 uvádzajú raz „základ 3“, inde
    „Alkoholik: 2 + priazeň“. Michal 2026-10-12 rozhodol 3 + priazeň
-   (`constants.ts`); zároveň pribudol prah Dlhu 2 (zadĺženie z akcií Hazard).
-7. **Štartovacia ruka** — 3× Pijan, 3× Miňištrant, 2× Milujúca
-   manželka, 2× Dievčina na vydaj (`constants.ts`, TODO overiť).
-8. **Lokality** — v hre sú 3 náhodné zo 7 (krátka hra;
-   `KONSTANTY.LOKALIT_V_HRE`).
-9. **Šenok** — dopĺňa sa na počet nenahradených starších na začiatku
-   kola; keď sa spoločný balíček minie, šenok sa už nedopĺňa
-   (`engine.ts`, `doplnSenok`).
+   (`constants.ts`). Prah Dlhu (zadĺženie z akcií Dlh) je 2 + sila Úžerníka
+   (Michal 2026-10-20).
+7. **Štartovacia ruka** — 4× Pijan, 2× Miňištrant, 2× Milujúca
+   manželka, 2× Dievčina na vydaj (Michal 2026-10-18; `KONSTANTY.START_RUKA`).
+8. **Lokality** — dĺžka hry = počet bitiek o lokalitu: krátka 5, stredná 7,
+   dlhá 11 (`DLZKY_HRY`); sada má 14 lokalít.
+9. **Šenok** — v každom kole sa stavia z toľkých kariet, koľko je
+   nenahradených starších (nadol na párne, najviac polovica spoločného
+   balíčka); po braní sa doplní z balíčka na 8. Keď sa spoločný balíček
+   minie, šenok sa zmenšuje až na nulu (`engine.ts`, `velkostStavby`).
 
 Ďalšie drobné rozhodnutia: prebytok rozdeľuje jeho **držiteľ** (vyššie
 celkové) smerom k súperovi; veľkosť balíčka sa kontroluje po drafte

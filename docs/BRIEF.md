@@ -67,10 +67,11 @@ prejde a klient sa zbuilduje (~61 kB gzip vrátane Reactu).
 
 ```
 packages/core/     jadro pravidiel — čistý TS, bez I/O
-  data/cards.json    50 kariet: tagy, efekt, spúšťače, blokované pozície,
+  data/cards.json    60 kariet: tagy, efekt, spúšťače, blokované pozície,
                      multimnožina akcií pre obe strany, počet permutácií
-  data/elders.json   8 starších — priazeň + bočné bodovacie pozície
-                     (hodnoty sú PROVIZÓRNE, viď „Neznáme hodnoty")
+  data/elders.json   8 starších (len id)
+  data/scorecards.json  priazeň + bočné bodovacie pozície; body za podmienky
+                     sú PROVIZÓRNE, viď „Neznáme hodnoty"
 packages/server/   autoritatívny server (Node + ws)
 apps/web/          klient (React + Vite)
 docs/PRAVIDLA.md   destilovaná špecifikácia pravidiel v11
@@ -302,25 +303,26 @@ Pravidlá v11 tieto veci nehovoria jednoznačne. Ak sa rozhodneš sám, **napí�
 do commitu a do README**, nech sa to dá ľahko prepnúť.
 
 1. **Posilnenie proti Posilneniu** na spoji — nič, alebo niečo?
-2. **NA EX** — je „ruší aktívne a zdvojnásobuje neaktívne" naozaj **tá istá**
-   operácia na vlastnej aj súperovej karte? (Text to tak číta, ale pravidlá
-   inde hovoria o „posilní vlastného / zneguje súperovho".)
+2. ~~**NA EX** — je „ruší aktívne a zdvojnásobuje neaktívne" naozaj **tá istá**
+   operácia na vlastnej aj súperovej karte?~~ Vyriešené (Michal 2026-10-18):
+   áno, NA EX smie na vlastného aj súperovho Občana či Starešinu a operácia
+   je tá istá (PRAVIDLA §5).
 3. **Podpora** — počíta sa lokalita ako karta v okolí?
 4. **Vzbura na lokalite** — aktivuje obe strany lokality, alebo len tú, ktorá
    patrí do danej partie?
-5. **Cirhóza v partii** — „Obdržíš od súpera dodatočnú ranu" znamená +1 tuhé
-   pre súpera za každú Cirhózu v mojej línii?
+5. ~~**Cirhóza v partii** — „Obdržíš od súpera dodatočnú ranu" znamená +1 tuhé
+   pre súpera za každú Cirhózu v mojej línii?~~ Vyriešené (Michal 2026-10-20):
+   kliatba do línie nepatrí; každá **priznaná** Cirhóza dá súperovi v každej
+   bitke +1 tuhé (PRAVIDLA §8).
 6. **Absťák** — čo presne sa počíta ako „nerest"? Poldeci, cigarety, oboje?
 7. ~~**Štartovacia ruka** — ako sa 10 kariet delí medzi 4 typy štartoviek?~~
    Vyriešené (Michal 2026-10-18): obaja 4 Pijan, 2 Miňištrant, 2 Milujúca
    manželka, 2 Dievčina na vydaj; tieto druhy nie sú v spoločnom balíčku ani v šenku.
-8. **Lokality** — v `cards.json` je len **7**. Pravidlá v3 (2026-10-11): krátka 5,
-   stredná 7, dlhá 11 lokalít; dlhá hra sa dá zvoliť, až keď sada bude mať
-   aspoň 11 lokalít (pridať v tvorcovi).
-10. **Kočovník** (pravidlá v3) — do súperovej partie smie každá karta, pôvodný
-   efekt stratil zmysel. **Navrhnutý efekt:** „Nástup: Keď nastúpi do súperovej
-   partie, nemíňa limit vykladania." Implementované v jadre; text karty treba
-   upraviť v tvorcovi, alebo efekt zmeniť.
+8. ~~**Lokality** — v `cards.json` je len **7**.~~ Vyriešené (Michal 2026-10-20):
+   sada má 14 lokalít; krátka 5, stredná 7, dlhá 11 bitiek, dlhá hra sa dá zvoliť.
+10. ~~**Kočovník** (pravidlá v3) — pôvodný efekt stratil zmysel.~~ Vyriešené
+   (Michal 2026-10-19): Kočovník míňa limit ako každá karta; efekt „Furt: Dlh
+   a Poškodenie pečene z jeho akcií dostáva hráč, na ktorého strane leží.“
 11. **Svokra** (pravidlá v3) — NA EX smie len na vlastné karty, pôvodný efekt
    („vráť súperovi jedno NA EX z tvojej karty“) stratil zmysel. **Nový efekt
    (rozhodnutie Michala 2026-10-11):** „Nástup: Súper v najbližšej Pitke nesmie
@@ -337,9 +339,10 @@ do commitu a do README**, nech sa to dá ľahko prepnúť.
 Nechaj ich ako **konštanty na jednom mieste** s komentárom `TODO: overiť podľa
 komponentov`. Michal ich doplní z krabice.
 
-- `data/elders.json` — ktorý starší dáva ktorú **priazeň** (8 starších,
-  8 priazní, priradenie nie je nikde) a **bočné bodovacie pozície**
-  (8 na staršieho: zóna + body). Súčasné hodnoty sú tematický odhad.
+- ~~`data/elders.json` — ktorý starší dáva ktorú **priazeň** a **bočné
+  bodovacie pozície**.~~ Vyriešené: priazeň aj bodovacie podmienky nesie
+  **scorecard**, ktorý starší dostane pri príprave hry náhodne
+  (`data/scorecards.json`, prepísané z KartyAI 2026-07-13; §9, §10).
 - Body za **ovládnutú lokalitu**, za **získaného staršieho**, za **cigaretu**,
   pokuta za **nepriznanú cirhózu**. Jediné, čo pravidlá udávajú, je
   **−1 za nepriznaný dlh**.
