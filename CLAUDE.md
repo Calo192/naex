@@ -99,7 +99,7 @@ dohratej partii, aj proti botovi (do štatistík sa partie s botom nerátajú).
 ```
 packages/core/       jadro pravidiel — čistý TS, bez I/O
   data/cards.json      60 kariet — kópia zverejnenej sady v15 (neupravuj ručne)
-  data/elders.json     8 starších; hodnoty sú PROVIZÓRNE, viď TODO
+  data/elders.json     8 starších; priazeň a body nesie scorecard (scorecards.json)
   src/bot.ts           offline protihráč (NPC: heuristiky + výpočet dopredu, žiadne
                        LLM); tri povahy (POVAHY) — Štamgast, Rapavý Fero, Teta
                        Gizka; server losuje. Skryté info pred výpočtom zamieša
