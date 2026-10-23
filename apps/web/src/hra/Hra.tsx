@@ -1,7 +1,7 @@
 // Herná časť (/hra): lobby → čakáreň → partia. Len pre prihlásených.
 
-import { useCallback, useEffect, useState } from "react";
-import type { Command, DlzkaHry } from "@naex/core";
+import { useEffect, useState } from "react";
+import type { DlzkaHry } from "@naex/core";
 import { ALL_DLZKY, DLZKY_HRY, NAZOV_DLZKY, PREDVOLENA_DLZKA } from "@naex/core";
 import { api, mediaUrl } from "../lib/api.ts";
 import { useSada } from "../lib/sada.tsx";
@@ -11,6 +11,7 @@ import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { HernaPlocha } from "./HernaPlocha.tsx";
 import { HudbaPartie } from "./Hudba.tsx";
 import { useMelichar } from "./Melichar.tsx";
+import { Momenty } from "./Momenty.tsx";
 import { Soundboard } from "./Soundboard.tsx";
 import { useHra } from "./useHra.ts";
 import { useNepodporovaneZariadenie } from "./zariadenie.ts";
@@ -221,15 +222,9 @@ export function Hra() {
   const hra = useHra(ja !== null && nepodporovane === null);
 
   // Majster Melichar komentuje len partie proti počítaču — ľudia si nadávajú sami.
-  const { ozvi } = useMelichar(hra.view !== null && hra.hraci.some((h) => h?.bot === true));
-  const { cmd: posliCmd } = hra;
-  const cmd = useCallback(
-    (c: Command) => {
-      ozvi(c);
-      posliCmd(c);
-    },
-    [ozvi, posliCmd],
-  );
+  // Ozve sa pri pečiatke momentu (Momenty), nie po každom ťahu (Michal 2026-10-23).
+  const { ozviMoment } = useMelichar(hra.view !== null && hra.hraci.some((h) => h?.bot === true));
+  const cmd = hra.cmd;
 
   // Odkaz /hra?kod=ABCD rovno pripojí do miestnosti.
   const { pripojene, miestnost, pripoj } = hra;
@@ -237,7 +232,10 @@ export function Hra() {
     const kod = new URLSearchParams(location.search).get("kod");
     if (kod !== null && pripojene && miestnost === null) {
       pripoj(kod);
-      history.replaceState(null, "", "/hra");
+      // Kód z adresy preč, ostatné parametre (napr. ukážka pečiatky) ostanú.
+      const zvysok = new URLSearchParams(location.search);
+      zvysok.delete("kod");
+      history.replaceState(null, "", zvysok.size > 0 ? `/hra?${zvysok}` : "/hra");
     }
   }, [pripojene, miestnost, pripoj]);
 
@@ -313,6 +311,7 @@ export function Hra() {
   return (
     <>
     <HudbaPartie />
+    <Momenty udalosti={hra.udalosti} ja={hra.view.ja} mena={hra.hraci.map((h, i) => h?.meno ?? `Hráč ${i + 1}`)} hovor={ozviMoment} />
     <HernaPlocha
       view={hra.view}
       data={hra.data}

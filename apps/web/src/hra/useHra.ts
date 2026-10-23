@@ -110,6 +110,8 @@ export function textUdalosti(e: Event, mena: readonly string[], rody: readonly [
       return `${meno(e.hrac)} ťahá ${kariet(e.pocet)}.`;
     case "manualEfekt":
       return `⚠ EFEKT (vyhodnoťte ručne): ${e.nazov} — ${e.text}`;
+    case "moment":
+      return `★ ${textHlasky(e.moment.popis, mena, rody)}`;
     case "bitkaVysledok":
       return `Bitka: tuhé ${e.damage.tuhe[0]}:${e.damage.tuhe[1]}, celkové ${e.damage.celkove[0]}:${e.damage.celkove[1]} — ${e.vitaz === null ? "remíza, lokalita ide na sekeru" : `vyhráva ${meno(e.vitaz)}`}${e.prebytok > 0 ? `, prebytok ${e.prebytok}` : ""}.`;
     case "koniec":

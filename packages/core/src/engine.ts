@@ -51,6 +51,7 @@ import type { DlzkaHry } from "./constants.ts";
 import { ALL_DLZKY, DLZKY_HRY, KONSTANTY, PREDVOLENA_DLZKA } from "./constants.ts";
 import { cigariet, kariet, pocet, rodovo } from "./jazyk.ts";
 import type { Rozdanie } from "./vyucba.ts";
+import type { Moment } from "./momenty.ts";
 import {
   doliatieZakazane,
   bitkaMody,
@@ -413,6 +414,8 @@ export type Event =
       readonly dlhy: readonly [number, number];
       readonly cigarety: readonly [number, number];
     }
+  /** Pečiatka momentu (momenty.ts) — verejná, rovnaká pre oboch; server ju pridá po príkaze. */
+  | { readonly type: "moment"; readonly moment: Moment }
   | {
       readonly type: "koniec";
       readonly vitaz: PlayerId | null;

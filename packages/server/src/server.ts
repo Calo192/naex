@@ -14,7 +14,7 @@ import { randomInt } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { join, normalize, extname, resolve } from "node:path";
 import { WebSocketServer, WebSocket } from "ws";
-import type { Command, DlzkaHry, DvojicaStatistik, Event, GameData, GameState, PlayerId, Pohlavie, ScenarVyucby, StatistikyKariet, StavKroniky } from "@naex/core";
+import type { Command, DlzkaHry, DvojicaStatistik, Event, GameData, GameState, PlayerId, Pohlavie, ScenarVyucby, StatistikyKariet, StavKroniky, StavMomentov } from "@naex/core";
 import type { Sada } from "@naex/tvorba";
 import {
   DLZKY_HRY,
@@ -33,7 +33,10 @@ import {
   legalCommands,
   loadGameData,
   mozeHrat,
+  momenty,
+  NOVE_MOMENTY,
   noveStatistiky,
+  obmedzMomenty,
   ocakavanyPrikaz,
   prehrajVyucbu,
   prikazZoScenara,
@@ -161,6 +164,8 @@ interface Room {
    * nejde do archívu, štatistík ani Frajeriny.
    */
   vyucba: { krok: number } | null;
+  /** Strop pečiatok momentov (Michal 2026-10-23): 1 za úsek kola, zlato 2 za partiu. */
+  momenty: StavMomentov;
 }
 
 /**
@@ -183,7 +188,7 @@ export const MELICHAR_PAUZA_MS = 2_000;
 /** Koľko udalostí histórie si miestnosť pamätá na jedno miesto. */
 const HISTORIA_MAX = 600;
 /** Udalosti, z ktorých klient skladá log — súkromné karty (kartyTahane) sa neukladajú. */
-const DO_HISTORIE: ReadonlySet<Event["type"]> = new Set(["log", "tahal", "manualEfekt", "bitkaVysledok", "koniec"]);
+const DO_HISTORIE: ReadonlySet<Event["type"]> = new Set(["log", "tahal", "manualEfekt", "bitkaVysledok", "moment", "koniec"]);
 
 /** Bez O/0/I/1 — kód sa diktuje cez telefón. */
 const ABECEDA = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
@@ -557,6 +562,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           botTimer: null,
           historia: [[], []],
           melicharVolnyOd: [0, 0],
+          momenty: NOVE_MOMENTY,
           vyucba: null,
         };
         rooms.set(room.code, room);
@@ -721,7 +727,10 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     if (room.tempo !== null) room.tempo = zapisPrikaz(room.tempo, fazaPrikazu(pred), seat, room.lastActivity, result.events);
     if (room.statistiky !== null) room.statistiky = zapisTah(room.statistiky, pred, cmd, seat, result.state, result.events);
     room.statistikyKariet = zapisTahKariet(room.statistikyKariet, pred, cmd, seat, result.events);
-    broadcast(room, result.events);
+    // Pečiatky momentov — z verejných zmien, rovnaké pre oboch (momenty.ts).
+    const strop = obmedzMomenty(momenty(room.data, pred, result.state, result.events), room.momenty, result.state);
+    room.momenty = strop.stav;
+    broadcast(room, [...result.events, ...strop.vybrane.map((moment): Event => ({ type: "moment", moment }))]);
     const dohrata = pred.koniec === null && result.state.koniec !== null && cmd.type !== "vzdat";
     // Návštevník sa stáva hráčom po prvej dohratej partii proti človeku aj proti botovi (Michal 2026-10-21);
     // partia s botom sa pritom do archívu ani štatistík nezapíše.
@@ -814,6 +823,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       botTimer: null,
       historia: [[], []],
       melicharVolnyOd: [0, 0],
+      momenty: NOVE_MOMENTY,
       vyucba: { krok },
     };
     rooms.set(room.code, room);

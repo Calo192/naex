@@ -1,12 +1,13 @@
-// Hlášky majstra Melichara (Michal 2026-10-21): v partii proti počítaču po
-// hráčovom NA EX! či vyložení karty občas utrúsi hlášku. Hlasitosť a frekvenciu
-// si hráč nastaví v profile (hlasitosť 0 = Melichar mlčí). Hudba hrá ďalej
+// Hlášky majstra Melichara (Michal 2026-10-21): v partii proti počítaču sa ozve
+// pri pečiatke momentu (Michal 2026-10-23, nápad 5) — už nie náhodne po NA EX —
+// hláškou zo skupiny podľa toho, komu sa moment stal: Pohoda, Smola, inak Údiv.
+// Hlasitosť si hráč nastaví v profile (0 = Melichar mlčí). Hudba hrá ďalej
 // rovnako nahlas a názov hlášky sa neukazuje (Michal 2026-10-22).
 
 import { useCallback, useEffect, useRef } from "react";
-import type { Command } from "@naex/core";
+import type { Moment, PlayerId } from "@naex/core";
 import { api } from "../lib/api.ts";
-import { MELICHAR_FREKVENCIA_DO, MELICHAR_FREKVENCIA_PREDVOLENA, MELICHAR_PREDVOLENY, useUcet } from "../lib/ucet.tsx";
+import { MELICHAR_PREDVOLENY, useUcet } from "../lib/ucet.tsx";
 import { hlasitostZvuku, zamiesaj, type Skladba } from "./Hudba.tsx";
 
 /** Hláška má rovnaký tvar ako skladba — nazov je jej text; trvanieMs pre soundboard. */
@@ -14,20 +15,40 @@ export type HlaskaMelichara = Skladba & { readonly trvanieMs?: number };
 
 /** Po hláške aspoň chvíľu ticho, nech jedna nenadväzuje na druhú. */
 const TICHO_MS = 4_000;
-/** Melichar reaguje s oneskorením, nie v tej istej chvíli ako klik. */
+/** Melichar reaguje s oneskorením, nie v tej istej chvíli ako pečiatka. */
 const ONESKORENIE_MS = 350;
 
-/** Vyloženie karty na stôl — do línie (aj odpoveď na NA EX) či do Dedičstva, nie priznanie. */
-const jeVylozenie = (c: Command): boolean => c.type === "place" && c.target !== "priznanie";
+/** Skupina hlášky k momentu: kto sa teší, kto sa ľutuje, alebo spoločný údiv. */
+export type SkupinaHlasky = "pohoda" | "smola" | "udiv";
 
 /**
- * Šanca, že sa Melichar ozve po príkaze: len po NA EX! (dvojnásobná) a po
- * vyložení karty, nikdy viac než MELICHAR_FREKVENCIA_DO (Michal 2026-10-22).
+ * Hlášky k momentom podľa názvu (Michal ich schváli). Smola je sebaľútosť, nie
+ * posmech — hlášky, ktoré by porazeného zosmiešňovali alebo urážali, k momentom
+ * nepatria. Hláška mimo zoznamu sa pri momente nepustí.
  */
-export function sancaHlasky(cmd: Command, frekvencia: number): number {
-  const kroky = cmd.type === "tah" ? cmd.kroky : [cmd];
-  const nasobok = kroky.some((k) => k.type === "naex") ? 2 : kroky.some(jeVylozenie) ? 1 : 0;
-  return Math.min(MELICHAR_FREKVENCIA_DO, frekvencia * nasobok) / 100;
+const SKUPINY: Readonly<Record<string, SkupinaHlasky>> = {
+  "toto je zivot": "pohoda",
+  "keksy a kokotiny": "pohoda",
+  "no teda toto som nevideu": "udiv",
+  "no toto je marha": "udiv",
+  "boha": "udiv",
+  "ach boha": "smola",
+  "uz mam v pici nervy zas": "smola",
+  "to zas bude vyzerat": "smola",
+  "jebem ja tvojho boha": "smola",
+};
+
+const kluc = (nazov: string): string => nazov.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+
+/** Skupina hlášky pre hráča `ja`: moment v jeho prospech = Pohoda, v súperov = Smola. */
+export function skupinaMomentu(moment: Moment, ja: PlayerId): SkupinaHlasky {
+  return moment.hrac === null ? "udiv" : moment.hrac === ja ? "pohoda" : "smola";
+}
+
+/** Hlášky danej skupiny; prázdna skupina → Údiv (nech Melichar nemlčí, keď chýba nahrávka). */
+export function hlaskySkupiny(hlasky: readonly HlaskaMelichara[], skupina: SkupinaHlasky): HlaskaMelichara[] {
+  const v = hlasky.filter((h) => SKUPINY[kluc(h.nazov)] === skupina);
+  return v.length > 0 || skupina === "udiv" ? v : hlasky.filter((h) => SKUPINY[kluc(h.nazov)] === "udiv");
 }
 
 let zoznam: Promise<readonly HlaskaMelichara[]> | null = null;
@@ -48,7 +69,6 @@ export const urlHlasky = (h: HlaskaMelichara): string => `/melichar/${h.subor}`;
 
 interface Hlas {
   readonly audio: HTMLAudioElement;
-  rad: HlaskaMelichara[];
   posledna: string | null;
   hovori: boolean;
   tichoDo: number;
@@ -56,15 +76,14 @@ interface Hlas {
   skoncil(): void;
 }
 
-/** aktivny = rozohraná partia proti počítaču. ozvi(cmd) volaj pri každom hráčovom príkaze. */
-export function useMelichar(aktivny: boolean): { readonly ozvi: (cmd: Command) => void } {
+/** aktivny = rozohraná partia proti počítaču. ozviMoment(skupina) volaj pri pečiatke momentu. */
+export function useMelichar(aktivny: boolean): { readonly ozviMoment: (skupina: SkupinaHlasky) => void } {
   const ja = useUcet().ja;
   const hlasitost = ja?.melichar ?? MELICHAR_PREDVOLENY;
-  const frekvencia = ja?.melicharFrekvencia ?? MELICHAR_FREKVENCIA_PREDVOLENA;
   const zapnuty = aktivny && hlasitost > 0;
   const hlas = useRef<Hlas | null>(null);
-  const nastavenie = useRef({ hlasitost, frekvencia });
-  nastavenie.current = { hlasitost, frekvencia };
+  const nastavenie = useRef({ hlasitost });
+  nastavenie.current = { hlasitost };
 
   useEffect(() => {
     if (hlas.current !== null) hlas.current.audio.volume = hlasitostZvuku(hlasitost);
@@ -75,7 +94,6 @@ export function useMelichar(aktivny: boolean): { readonly ozvi: (cmd: Command) =
     void nacitajHlasky();
     const h: Hlas = {
       audio: new Audio(),
-      rad: [],
       posledna: null,
       hovori: false,
       tichoDo: 0,
@@ -101,17 +119,15 @@ export function useMelichar(aktivny: boolean): { readonly ozvi: (cmd: Command) =
     };
   }, [zapnuty]);
 
-  const ozvi = useCallback((cmd: Command): void => {
+  const ozviMoment = useCallback((skupina: SkupinaHlasky): void => {
     const h = hlas.current;
     if (h === null || h.hovori || Date.now() < h.tichoDo) return;
-    if (Math.random() >= sancaHlasky(cmd, nastavenie.current.frekvencia)) return;
-    // Obsadené hneď — ďalší ťah počas oneskorenia už novú hlášku nespustí.
+    // Obsadené hneď — ďalší moment počas oneskorenia už novú hlášku nespustí.
     h.hovori = true;
     h.caka = setTimeout(() => {
       void nacitajHlasky().then((hlasky) => {
         if (hlas.current !== h) return;
-        if (h.rad.length === 0) h.rad = zamiesaj(hlasky, h.posledna);
-        const hlaska = h.rad.shift();
+        const hlaska = zamiesaj(hlaskySkupiny(hlasky, skupina), h.posledna)[0] as HlaskaMelichara | undefined;
         if (hlaska === undefined) {
           h.hovori = false;
           return;
@@ -124,5 +140,5 @@ export function useMelichar(aktivny: boolean): { readonly ozvi: (cmd: Command) =
     }, ONESKORENIE_MS);
   }, []);
 
-  return { ozvi };
+  return { ozviMoment };
 }
