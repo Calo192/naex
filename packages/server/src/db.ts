@@ -314,9 +314,9 @@ function migruj(db: Db): void {
   // Ranky (Michal 2026-10-22): 1 = rank nastavil správca ručne, automatický postup ho nemení.
   if (!ucty.some((c) => c.name === "rola_rucne")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN rola_rucne INTEGER NOT NULL DEFAULT 0");
   // Hlášky majstra Melichara v partii proti počítaču (Michal 2026-10-21): hlasitosť
-  // a frekvencia v percentách; NULL = predvolené.
+  // v percentách; NULL = predvolené. Stĺpec melichar_frekvencia v starších
+  // databázach sa od 2026-10-23 nečíta — Melichar sa ozve len pri momente.
   if (!ucty.some((c) => c.name === "melichar")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN melichar INTEGER");
-  if (!ucty.some((c) => c.name === "melichar_frekvencia")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN melichar_frekvencia INTEGER");
   // Výučba „Prvá hra“ (Michal 2026-10-23): koľko krokov scenára hráč prešiel
   // a či ju dokončil alebo preskočil (NULL = ešte nie).
   if (!ucty.some((c) => c.name === "vyucba_krok")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN vyucba_krok INTEGER NOT NULL DEFAULT 0");

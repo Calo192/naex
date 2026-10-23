@@ -108,11 +108,25 @@ nekopíruje — originály sú na Suno. Server ich netreba reštartovať.
 
 ### 5c. Hlášky majstra Melichara
 
-V partii proti počítaču po hráčovom ťahu občas zaznie krátka hláška majstra
-Melichara (hlasitosť a frekvenciu si hráč nastaví v profile, predvolene 70 %
-a pri 25 % ťahov). Import funguje ako pri hudbe — priečinok je celá sada,
-text hlášky na obrazovke je názov súboru bez poradového čísla
-(`03_No_toto_je_marha.mp3` → „No toto je marha“).
+V partii proti počítaču zaznie krátka hláška majstra Melichara, keď na stole
+dopadne pečiatka momentu (hlasitosť si hráč nastaví v profile, predvolene 70 %,
+0 = vypnutý). Import funguje ako pri hudbe — priečinok je celá sada, text
+hlášky je názov súboru bez poradového čísla (`03_No_toto_je_marha.mp3` →
+„No toto je marha“).
+
+Skupinu hlášky určuje podpriečinok (Michal 2026-10-23):
+
+```
+data/majster_melichar/
+  pohoda/   moment v prospech hráča (zvrat, výprask, záchrana…)
+  smola/    moment v prospech súpera — sebaľútosť, nie posmech
+  udiv/     moment, ktorý nepatrí nikomu (vzbura, bitka o všetko)
+  *.mp3     priamo v priečinku = len soundboard, pri momente sa nepustí
+```
+
+Ktorý moment pustí ktorú skupinu, určuje `HLASKY_MOMENTOV`
+v `packages/core/src/momenty.ts` (jediné miesto). Prázdna skupina sa nahradí
+údivom. Import vypíše počty v skupinách; neznámy podpriečinok ohlási.
 
 ```bash
 # lokálne

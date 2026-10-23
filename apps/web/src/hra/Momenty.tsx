@@ -5,9 +5,8 @@
 // Ukážka na snímky a UI inšpekciu: /hra?ukazka-momentu=zvrat (len vzhľad, na minútu).
 
 import { useEffect, useRef, useState } from "react";
-import type { Event, Moment, PlayerId, TypMomentu } from "@naex/core";
-import { MOMENTY } from "@naex/core";
-import { skupinaMomentu, type SkupinaHlasky } from "./Melichar.tsx";
+import type { Event, Moment, PlayerId, SkupinaHlasky, TypMomentu } from "@naex/core";
+import { MOMENTY, skupinaMomentu } from "@naex/core";
 import "./hra.css";
 
 /** Ako dlho pečiatka ostane na stole. */

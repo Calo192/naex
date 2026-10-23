@@ -40,8 +40,6 @@ export interface Pouzivatel {
   readonly hudba: number;
   /** Hlasitosť hlášok majstra Melichara v partii proti počítaču v percentách (0 = vypnuté). */
   readonly melichar: number;
-  /** Pri koľkých percentách hráčových ťahov sa Melichar ozve (MELICHAR_FREKVENCIA_OD – MELICHAR_FREKVENCIA_DO). */
-  readonly melicharFrekvencia: number;
   /** Účet AI agenta — jeho spätná väzba je na webe označená a predvolene skrytá. */
   readonly ai: boolean;
   /** Farebná schéma webu (id zo zoznamu klienta); null = predvolená. */
@@ -95,18 +93,6 @@ export function overHlasitost(v: unknown, co = "hudby"): number {
 }
 
 export const MELICHAR_PREDVOLENY = 70;
-export const MELICHAR_FREKVENCIA_OD = 5;
-/** Najvyššia šanca hlášky (Michal 2026-10-22); staršie uložené hodnoty nad ňou sa čítajú ako ona. */
-export const MELICHAR_FREKVENCIA_DO = 60;
-export const MELICHAR_FREKVENCIA_PREDVOLENA = 25;
-
-/** Frekvencia hlášok z requestu — vypína ich hlasitosť 0, preto najmenej MELICHAR_FREKVENCIA_OD. */
-export function overFrekvenciu(v: unknown): number {
-  if (typeof v !== "number" || !Number.isFinite(v) || v < MELICHAR_FREKVENCIA_OD || v > MELICHAR_FREKVENCIA_DO) {
-    throw new ChybaVstupu(`Frekvencia hlášok musí byť ${MELICHAR_FREKVENCIA_OD} až ${MELICHAR_FREKVENCIA_DO} %.`);
-  }
-  return Math.round(v);
-}
 
 /** Dohraté partie používateľa — poddotaz nad riadkom `pouzivatelia` (stĺpec id). */
 const DOHRATE_SQL = `SELECT COUNT(*) FROM partie_hraci ph JOIN partie pa ON pa.id = ph.partia
@@ -266,10 +252,6 @@ export class Ucty {
       lupa: r.lupa === null || r.lupa === undefined ? LUPA_PREDVOLENA : Number(r.lupa),
       hudba: r.hudba === null || r.hudba === undefined ? HUDBA_PREDVOLENA : Number(r.hudba),
       melichar: r.melichar === null || r.melichar === undefined ? MELICHAR_PREDVOLENY : Number(r.melichar),
-      melicharFrekvencia:
-        r.melichar_frekvencia === null || r.melichar_frekvencia === undefined
-          ? MELICHAR_FREKVENCIA_PREDVOLENA
-          : Math.min(MELICHAR_FREKVENCIA_DO, Number(r.melichar_frekvencia)),
       ai: Number(r.ai) === 1,
       schema: typeof r.schema === "string" ? r.schema : null,
       skratky: r.skratky === null || r.skratky === undefined ? true : Number(r.skratky) === 1,
@@ -280,7 +262,7 @@ export class Ucty {
 
   podlaId(id: number): Pouzivatel | null {
     return this.riadok(
-      this.db.prepare("SELECT id, login, meno, avatar, rola, lupa, hudba, melichar, melichar_frekvencia, ai, schema, skratky, pohlavie, skryty_suhrn FROM pouzivatelia WHERE id = ?").get(id) as
+      this.db.prepare("SELECT id, login, meno, avatar, rola, lupa, hudba, melichar, ai, schema, skratky, pohlavie, skryty_suhrn FROM pouzivatelia WHERE id = ?").get(id) as
         | Record<string, unknown>
         | undefined,
     );
@@ -359,7 +341,6 @@ export class Ucty {
       lupa?: number;
       hudba?: number;
       melichar?: number;
-      melicharFrekvencia?: number;
       schema?: string;
       skratky?: boolean;
       pohlavie?: Pohlavie | null;
@@ -370,9 +351,6 @@ export class Ucty {
     if (zmeny.lupa !== undefined) this.db.prepare("UPDATE pouzivatelia SET lupa = ? WHERE id = ?").run(zmeny.lupa, id);
     if (zmeny.hudba !== undefined) this.db.prepare("UPDATE pouzivatelia SET hudba = ? WHERE id = ?").run(zmeny.hudba, id);
     if (zmeny.melichar !== undefined) this.db.prepare("UPDATE pouzivatelia SET melichar = ? WHERE id = ?").run(zmeny.melichar, id);
-    if (zmeny.melicharFrekvencia !== undefined) {
-      this.db.prepare("UPDATE pouzivatelia SET melichar_frekvencia = ? WHERE id = ?").run(zmeny.melicharFrekvencia, id);
-    }
     if (zmeny.schema !== undefined) this.db.prepare("UPDATE pouzivatelia SET schema = ? WHERE id = ?").run(zmeny.schema, id);
     if (zmeny.skratky !== undefined) this.db.prepare("UPDATE pouzivatelia SET skratky = ? WHERE id = ?").run(zmeny.skratky ? 1 : 0, id);
     if (zmeny.pohlavie !== undefined) this.db.prepare("UPDATE pouzivatelia SET pohlavie = ? WHERE id = ?").run(zmeny.pohlavie, id);

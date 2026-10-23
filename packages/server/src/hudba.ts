@@ -7,6 +7,7 @@
 import { createReadStream, existsSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import type { IncomingMessage, ServerResponse } from "node:http";
+import { SKUPINY_HLASOK, type SkupinaHlasky } from "@naex/core";
 
 export interface Skladba {
   /** SHA-256 obsahu (40 znakov) — rovnaký súbor sa uloží len raz. */
@@ -21,6 +22,16 @@ export const ZOZNAM = "zoznam.json";
 /** Hláška majstra Melichara — s dĺžkou, podľa ktorej server stráži pauzu medzi hláškami. */
 export interface Hlaska extends Skladba {
   readonly trvanieMs: number;
+  /** Skupina k momentom podľa podpriečinka pri importe; bez nej len soundboard. */
+  readonly skupina?: SkupinaHlasky;
+}
+
+/** Skupina z prvého podpriečinka cesty (relatívnej k importovanému priečinku), inak undefined. */
+export function skupinaZCesty(relativna: string): SkupinaHlasky | undefined {
+  const casti = relativna.split(/[\\/]/);
+  if (casti.length < 2) return undefined;
+  const priecinok = (casti[0] ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  return SKUPINY_HLASOK.find((s) => s === priecinok);
 }
 
 /** Keď sa dĺžka zo súboru nedá zistiť (iný formát než MP3), ráta sa s touto. */
@@ -157,14 +168,16 @@ export class Hudba {
    */
   hlasky(): Hlaska[] {
     return this.zoznam().map((s) => {
-      const ulozene = (s as Partial<Hlaska>).trvanieMs;
-      if (typeof ulozene === "number" && ulozene > 0) return { id: s.id, nazov: s.nazov, subor: s.subor, trvanieMs: ulozene };
+      const { trvanieMs: ulozene, skupina } = s as Partial<Hlaska>;
+      const sk = SKUPINY_HLASOK.find((x) => x === skupina);
+      const zaklad = { id: s.id, nazov: s.nazov, subor: s.subor, ...(sk !== undefined ? { skupina: sk } : {}) };
+      if (typeof ulozene === "number" && ulozene > 0) return { ...zaklad, trvanieMs: ulozene };
       let trvanieMs = this.trvania.get(s.subor);
       if (trvanieMs === undefined) {
         trvanieMs = trvanieMp3(readFileSync(join(this.adresar, s.subor))) ?? TRVANIE_HLASKY_NEZNAME_MS;
         this.trvania.set(s.subor, trvanieMs);
       }
-      return { id: s.id, nazov: s.nazov, subor: s.subor, trvanieMs };
+      return { ...zaklad, trvanieMs };
     });
   }
 

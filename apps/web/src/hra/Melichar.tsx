@@ -1,54 +1,29 @@
 // Hlášky majstra Melichara (Michal 2026-10-21): v partii proti počítaču sa ozve
 // pri pečiatke momentu (Michal 2026-10-23, nápad 5) — už nie náhodne po NA EX —
 // hláškou zo skupiny podľa toho, komu sa moment stal: Pohoda, Smola, inak Údiv.
-// Hlasitosť si hráč nastaví v profile (0 = Melichar mlčí). Hudba hrá ďalej
+// Skupinu hlášky určuje jej priečinok pri importe, moment → skupinu
+// HLASKY_MOMENTOV v jadre. Hlasitosť si hráč nastaví v profile (0 = Melichar
+// mlčí; frekvencia nie je, ozve sa len pri momente). Hudba hrá ďalej
 // rovnako nahlas a názov hlášky sa neukazuje (Michal 2026-10-22).
 
 import { useCallback, useEffect, useRef } from "react";
-import type { Moment, PlayerId } from "@naex/core";
+import type { SkupinaHlasky } from "@naex/core";
 import { api } from "../lib/api.ts";
 import { MELICHAR_PREDVOLENY, useUcet } from "../lib/ucet.tsx";
 import { hlasitostZvuku, zamiesaj, type Skladba } from "./Hudba.tsx";
 
-/** Hláška má rovnaký tvar ako skladba — nazov je jej text; trvanieMs pre soundboard. */
-export type HlaskaMelichara = Skladba & { readonly trvanieMs?: number };
+/** Hláška má rovnaký tvar ako skladba — nazov je jej text; trvanieMs pre soundboard, skupina k momentom. */
+export type HlaskaMelichara = Skladba & { readonly trvanieMs?: number; readonly skupina?: SkupinaHlasky };
 
 /** Po hláške aspoň chvíľu ticho, nech jedna nenadväzuje na druhú. */
 const TICHO_MS = 4_000;
 /** Melichar reaguje s oneskorením, nie v tej istej chvíli ako pečiatka. */
 const ONESKORENIE_MS = 350;
 
-/** Skupina hlášky k momentu: kto sa teší, kto sa ľutuje, alebo spoločný údiv. */
-export type SkupinaHlasky = "pohoda" | "smola" | "udiv";
-
-/**
- * Hlášky k momentom podľa názvu (Michal ich schváli). Smola je sebaľútosť, nie
- * posmech — hlášky, ktoré by porazeného zosmiešňovali alebo urážali, k momentom
- * nepatria. Hláška mimo zoznamu sa pri momente nepustí.
- */
-const SKUPINY: Readonly<Record<string, SkupinaHlasky>> = {
-  "toto je zivot": "pohoda",
-  "keksy a kokotiny": "pohoda",
-  "no teda toto som nevideu": "udiv",
-  "no toto je marha": "udiv",
-  "boha": "udiv",
-  "ach boha": "smola",
-  "uz mam v pici nervy zas": "smola",
-  "to zas bude vyzerat": "smola",
-  "jebem ja tvojho boha": "smola",
-};
-
-const kluc = (nazov: string): string => nazov.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
-
-/** Skupina hlášky pre hráča `ja`: moment v jeho prospech = Pohoda, v súperov = Smola. */
-export function skupinaMomentu(moment: Moment, ja: PlayerId): SkupinaHlasky {
-  return moment.hrac === null ? "udiv" : moment.hrac === ja ? "pohoda" : "smola";
-}
-
 /** Hlášky danej skupiny; prázdna skupina → Údiv (nech Melichar nemlčí, keď chýba nahrávka). */
 export function hlaskySkupiny(hlasky: readonly HlaskaMelichara[], skupina: SkupinaHlasky): HlaskaMelichara[] {
-  const v = hlasky.filter((h) => SKUPINY[kluc(h.nazov)] === skupina);
-  return v.length > 0 || skupina === "udiv" ? v : hlasky.filter((h) => SKUPINY[kluc(h.nazov)] === "udiv");
+  const v = hlasky.filter((h) => h.skupina === skupina);
+  return v.length > 0 || skupina === "udiv" ? v : hlasky.filter((h) => h.skupina === "udiv");
 }
 
 let zoznam: Promise<readonly HlaskaMelichara[]> | null = null;

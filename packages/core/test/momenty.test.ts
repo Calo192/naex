@@ -6,7 +6,7 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { Command, Event, GameState, Moment, PlacedCard, PlayerId, StavMomentov } from "../src/index.ts";
-import { NOVE_MOMENTY, ZLATO_ZA_PARTIU, apply, buildGameData, legalCommands, loadGameData, momenty, naTahu, obmedzMomenty, rngInt, rngSeed, setupGame } from "../src/index.ts";
+import { HLASKY_MOMENTOV, MOMENTY, NOVE_MOMENTY, SKUPINY_HLASOK, ZLATO_ZA_PARTIU, apply, buildGameData, legalCommands, loadGameData, momenty, naTahu, obmedzMomenty, rngInt, rngSeed, setupGame, skupinaMomentu } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
 import { EMPTY, instanceFor, makeDef } from "./helpers.ts";
 
@@ -124,5 +124,20 @@ describe("momenty — nič neprezradia", () => {
       s = po;
     }
     expect(porovnanych).toBeGreaterThan(100);
+  });
+});
+
+describe("hlášky Melichara k momentom", () => {
+  it("každý moment má skupinu pre aj proti, moment bez hráča pustí obom tú istú", () => {
+    for (const typ of Object.keys(MOMENTY) as (keyof typeof MOMENTY)[]) {
+      expect(SKUPINY_HLASOK).toContain(HLASKY_MOMENTOV[typ].pre);
+      expect(SKUPINY_HLASOK).toContain(HLASKY_MOMENTOV[typ].proti);
+    }
+    const zvrat: Moment = { typ: "zvrat", ...MOMENTY.zvrat, hrac: 1, popis: "" };
+    expect(skupinaMomentu(zvrat, 1)).toBe("pohoda");
+    expect(skupinaMomentu(zvrat, 0)).toBe("smola");
+    const vzbura: Moment = { typ: "vzbura", ...MOMENTY.vzbura, hrac: null, popis: "" };
+    expect(skupinaMomentu(vzbura, 0)).toBe("udiv");
+    expect(skupinaMomentu(vzbura, 1)).toBe("udiv");
   });
 });

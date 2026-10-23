@@ -60,8 +60,6 @@ export interface Pouzivatel {
   readonly hudba?: number;
   /** Hlasitosť hlášok majstra Melichara v partii proti počítaču v percentách (0 = vypnuté, predvolene 70). */
   readonly melichar?: number;
-  /** Pri koľkých percentách hráčových ťahov sa Melichar ozve (5 – 60, predvolene 25). */
-  readonly melicharFrekvencia?: number;
   /** Účet AI agenta (nastavuje admin). */
   readonly ai?: boolean;
   /** Farebná schéma webu (lib/schemy.ts); null = predvolená. */
@@ -77,10 +75,6 @@ export const LUPA_DO = 400;
 export const LUPA_PREDVOLENA = 200;
 export const HUDBA_PREDVOLENA = 30;
 export const MELICHAR_PREDVOLENY = 70;
-export const MELICHAR_FREKVENCIA_OD = 5;
-/** Najvyššia šanca hlášky, aj na NA EX! (Michal 2026-10-22). */
-export const MELICHAR_FREKVENCIA_DO = 60;
-export const MELICHAR_FREKVENCIA_PREDVOLENA = 25;
 
 interface UcetKontext {
   readonly ja: Pouzivatel | null;

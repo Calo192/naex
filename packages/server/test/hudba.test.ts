@@ -4,13 +4,13 @@
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { DatabaseSync } from "node:sqlite";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createGameServer, type GameServer } from "../src/server.ts";
-import { TRVANIE_HLASKY_NEZNAME_MS, bezUvodnychNul, nazovHlasky, priponaZvuku } from "../src/hudba.ts";
+import { TRVANIE_HLASKY_NEZNAME_MS, bezUvodnychNul, nazovHlasky, priponaZvuku, skupinaZCesty } from "../src/hudba.ts";
 import { registruj, TEST_ADMIN } from "./pomocnik.ts";
 
 const ID = "a".repeat(40);
+const ID2 = "d".repeat(40);
 const OBSAH = Buffer.concat([Buffer.from("ID3"), Buffer.alloc(997, 7)]);
 
 let server: GameServer;
@@ -32,7 +32,15 @@ beforeAll(async () => {
   );
   mkdirSync(join(dir, "melichar"));
   writeFileSync(join(dir, "melichar", `${ID}.mp3`), OBSAH);
-  writeFileSync(join(dir, "melichar", "zoznam.json"), JSON.stringify([{ id: ID, nazov: "No toto je marha", subor: `${ID}.mp3` }]));
+  writeFileSync(join(dir, "melichar", `${ID2}.mp3`), OBSAH);
+  writeFileSync(
+    join(dir, "melichar", "zoznam.json"),
+    JSON.stringify([
+      { id: ID, nazov: "No toto je marha", subor: `${ID}.mp3`, skupina: "udiv" },
+      // Neznáma skupina sa zahodí — hláška ostane len na soundboarde.
+      { id: ID2, nazov: "Bzdocha", subor: `${ID2}.mp3`, skupina: "posmech" },
+    ]),
+  );
   server = await createGameServer({ port: 0, dataDir: dir, admin: TEST_ADMIN, staticDir: join(dir, "nic") });
 });
 
@@ -103,7 +111,10 @@ describe("hlášky majstra Melichara", () => {
   it("zoznam a súbory idú z vlastného adresára", async () => {
     const r = (await (await fetch(url("/api/melichar"))).json()) as { hlasky: unknown[] };
     // Súbor bez MP3 rámcov — dĺžka sa nedá zistiť, ráta sa s predvolenou.
-    expect(r.hlasky).toEqual([{ id: ID, nazov: "No toto je marha", subor: `${ID}.mp3`, trvanieMs: TRVANIE_HLASKY_NEZNAME_MS }]);
+    expect(r.hlasky).toEqual([
+      { id: ID, nazov: "No toto je marha", subor: `${ID}.mp3`, skupina: "udiv", trvanieMs: TRVANIE_HLASKY_NEZNAME_MS },
+      { id: ID2, nazov: "Bzdocha", subor: `${ID2}.mp3`, trvanieMs: TRVANIE_HLASKY_NEZNAME_MS },
+    ]);
     const subor = await fetch(url(`/melichar/${ID}.mp3`));
     expect(subor.status).toBe(200);
     expect(subor.headers.get("content-type")).toBe("audio/mpeg");
@@ -120,32 +131,33 @@ describe("hlášky majstra Melichara", () => {
     expect(nazovHlasky("Bez cisla")).toBe("Bez cisla");
   });
 
-  it("hlasitosť (predvolene 70 %, 0 = mlčí) a frekvencia (predvolene 25 %, 5 – 60 %)", async () => {
-    const { cookie, login } = await registruj(server.port);
+  it("import: skupina k momentom = podpriečinok (pohoda/, smola/, udiv/), inak len soundboard", () => {
+    expect(skupinaZCesty(join("pohoda", "toto_je_ZIVOT.mp3"))).toBe("pohoda");
+    expect(skupinaZCesty("smola/ach_boha.mp3")).toBe("smola");
+    expect(skupinaZCesty("Údiv/boha.mp3")).toBe("udiv");
+    expect(skupinaZCesty("udiv/vnorene/boha.mp3")).toBe("udiv");
+    expect(skupinaZCesty("bzdocha.mp3")).toBeUndefined();
+    expect(skupinaZCesty("posmech/bzdocha.mp3")).toBeUndefined();
+  });
+
+  it("hlasitosť (predvolene 70 %, 0 = mlčí); frekvencia už nie je", async () => {
+    const { cookie } = await registruj(server.port);
     const volaj = async (telo?: unknown) =>
       fetch(url("/api/" + (telo === undefined ? "ja" : "profil")), {
         method: telo === undefined ? "GET" : "PATCH",
         headers: { cookie, "x-naex": "1", "content-type": "application/json" },
         ...(telo === undefined ? {} : { body: JSON.stringify(telo) }),
       });
-    type Nastavenie = { melichar: number; melicharFrekvencia: number };
-    const nastavenie = async (res: Response): Promise<Nastavenie> => {
-      const { melichar, melicharFrekvencia } = ((await res.json()) as { pouzivatel: Nastavenie }).pouzivatel;
+    const nastavenie = async (res: Response): Promise<Record<string, unknown>> => {
+      const { melichar, melicharFrekvencia } = ((await res.json()) as { pouzivatel: Record<string, unknown> }).pouzivatel;
       return { melichar, melicharFrekvencia };
     };
 
-    expect(await nastavenie(await volaj())).toEqual({ melichar: 70, melicharFrekvencia: 25 });
-    expect(await nastavenie(await volaj({ melichar: 0 }))).toEqual({ melichar: 0, melicharFrekvencia: 25 });
-    expect(await nastavenie(await volaj({ melichar: 40, melicharFrekvencia: 60 }))).toEqual({ melichar: 40, melicharFrekvencia: 60 });
-    for (const zle of [{ melichar: 101 }, { melicharFrekvencia: 0 }, { melicharFrekvencia: 61 }, { melicharFrekvencia: 100 }, { melicharFrekvencia: "často" }]) {
-      expect((await volaj(zle)).status).toBe(400);
-    }
-    expect(await nastavenie(await volaj())).toEqual({ melichar: 40, melicharFrekvencia: 60 });
-
-    // Frekvencia uložená pred stropom 60 % (Michal 2026-10-22) sa číta ako strop.
-    const db = new DatabaseSync(join(dir, "naex.sqlite"));
-    db.prepare("UPDATE pouzivatelia SET melichar_frekvencia = 100 WHERE login = ?").run(login);
-    db.close();
-    expect(await nastavenie(await volaj())).toEqual({ melichar: 40, melicharFrekvencia: 60 });
+    expect(await nastavenie(await volaj())).toEqual({ melichar: 70, melicharFrekvencia: undefined });
+    expect(await nastavenie(await volaj({ melichar: 0 }))).toEqual({ melichar: 0, melicharFrekvencia: undefined });
+    // Starší klient ešte pošle frekvenciu — server ju potichu ignoruje (Michal 2026-10-23).
+    expect(await nastavenie(await volaj({ melichar: 40, melicharFrekvencia: 60 }))).toEqual({ melichar: 40, melicharFrekvencia: undefined });
+    expect((await volaj({ melichar: 101 })).status).toBe(400);
+    expect(await nastavenie(await volaj())).toEqual({ melichar: 40, melicharFrekvencia: undefined });
   });
 });

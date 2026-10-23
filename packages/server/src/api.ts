@@ -12,7 +12,7 @@ import { ALL_PODMIENKY, dostupneDlzky, prazdneStatistiky } from "@naex/core";
 import type { KartaNavrh, Pozicia, StranaNavrhu, AkciaDef, KlucoveSlovo, Kategoria, BodovaciaKarta, IkonaBodovania, Nastavenia } from "@naex/tvorba";
 import { exportTxt, importTxt, slug, PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
 import type { Pouzivatel, Rola, Ucty } from "./auth.ts";
-import { ChybaVstupu, cookieOdhlasenia, cookieRelacie, overFrekvenciu, overHesloVstup, overLogin, overHlasitost, overLupu, overMeno, overSchemu, overPrepinac, overPohlavie, citajCookie, jeSpravca } from "./auth.ts";
+import { ChybaVstupu, cookieOdhlasenia, cookieRelacie, overHesloVstup, overLogin, overHlasitost, overLupu, overMeno, overSchemu, overPrepinac, overPohlavie, citajCookie, jeSpravca } from "./auth.ts";
 import type { DruhMedia, Media } from "./media.ts";
 import type { Hudba } from "./hudba.ts";
 import type { Obsah } from "./obsah.ts";
@@ -371,7 +371,6 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
           ...(b.lupa !== undefined ? { lupa: overLupu(b.lupa) } : {}),
           ...(b.hudba !== undefined ? { hudba: overHlasitost(b.hudba) } : {}),
           ...(b.melichar !== undefined ? { melichar: overHlasitost(b.melichar, "hlášok") } : {}),
-          ...(b.melicharFrekvencia !== undefined ? { melicharFrekvencia: overFrekvenciu(b.melicharFrekvencia) } : {}),
           ...(b.schema !== undefined ? { schema: overSchemu(b.schema) } : {}),
           ...(b.skratky !== undefined ? { skratky: overPrepinac(b.skratky, "Klávesové skratky") } : {}),
           ...(b.pohlavie !== undefined ? { pohlavie: overPohlavie(b.pohlavie) } : {}),

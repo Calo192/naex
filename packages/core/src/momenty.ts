@@ -53,7 +53,37 @@ export const MOMENTY: Readonly<Record<TypMomentu, { readonly stupen: StupenMomen
   vyprask: { stupen: "bronz", nazov: "VÝPRASK" },
 };
 
-const PORADIE_STUPNOV: Readonly<Record<StupenMomentu, number>> = { bronz: 0, striebro: 1, zlato: 2 };
+/**
+ * Skupiny hlášok majstra Melichara. Skupina = podpriečinok pri importe
+ * (npm run melichar -- <priečinok>: pohoda/, smola/, udiv/); hláška mimo nich
+ * ostane len pre soundboard a pri momente sa nepustí.
+ */
+export const SKUPINY_HLASOK = ["pohoda", "smola", "udiv"] as const;
+export type SkupinaHlasky = (typeof SKUPINY_HLASOK)[number];
+
+/**
+ * Jediné miesto mapovania skupina → momenty: ktorú skupinu pustí moment tomu,
+ * komu sa stal v prospech (pre), a jeho súperovi (proti). Moment bez hráča
+ * (hrac null) pustí obom skupinu pre.
+ */
+export const HLASKY_MOMENTOV: Readonly<Record<TypMomentu, { readonly pre: SkupinaHlasky; readonly proti: SkupinaHlasky }>> = {
+  zvrat: { pre: "pohoda", proti: "smola" },
+  bomba: { pre: "pohoda", proti: "smola" },
+  zaverecna: { pre: "pohoda", proti: "smola" },
+  vzbura: { pre: "udiv", proti: "udiv" },
+  prebudenie: { pre: "pohoda", proti: "smola" },
+  zachranene: { pre: "pohoda", proti: "smola" },
+  bitkaOVsetko: { pre: "udiv", proti: "udiv" },
+  vyprask: { pre: "pohoda", proti: "smola" },
+};
+
+/** Skupina hlášky k momentu pre hráča ja. */
+export function skupinaMomentu(moment: Moment, ja: PlayerId): SkupinaHlasky {
+  const h = HLASKY_MOMENTOV[moment.typ];
+  return moment.hrac === null || moment.hrac === ja ? h.pre : h.proti;
+}
+
+const PORADIE_STUPNOV:Readonly<Record<StupenMomentu, number>> = { bronz: 0, striebro: 1, zlato: 2 };
 
 /** Prebytok od tejto hodnoty je Výprask. */
 export const VYPRASK_OD = 8;

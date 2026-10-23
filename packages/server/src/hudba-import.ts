@@ -7,6 +7,10 @@
 // Priečinok je celý playlist: skladby, ktoré v ňom už nie sú, sa zmažú.
 // Názov skladby = názov súboru (Suno ho pri stiahnutí pomenuje podľa skladby),
 // pri hláškach bez poradového čísla a s medzerami namiesto podčiarkovníkov.
+// Hlášky k momentom ležia v podpriečinkoch pohoda/, smola/ a udiv/ (skupina =
+// priečinok, Michal 2026-10-23; ktorý moment pustí ktorú skupinu, určuje
+// HLASKY_MOMENTOV v packages/core/src/momenty.ts). Hláška priamo v priečinku
+// alebo v inom podpriečinku ide len na soundboard.
 // Hláška má aj dĺžku (trvanieMs) — podľa nej server stráži pauzu medzi
 // hláškami zo soundboardu (Michal 2026-10-22); --doplnit ju dopíše hláškam
 // nahraným pred soundboardom bez pôvodného priečinka.
@@ -14,9 +18,10 @@
 
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
-import { basename, extname, join, resolve } from "node:path";
+import { basename, extname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { Hudba, TRVANIE_HLASKY_NEZNAME_MS, ZOZNAM, bezUvodnychNul, nazovHlasky, priponaZvuku, trvanieMp3, type Hlaska, type Skladba } from "./hudba.ts";
+import { SKUPINY_HLASOK } from "@naex/core";
+import { Hudba, TRVANIE_HLASKY_NEZNAME_MS, ZOZNAM, bezUvodnychNul, nazovHlasky, priponaZvuku, skupinaZCesty, trvanieMp3, type Hlaska, type Skladba } from "./hudba.ts";
 
 const PREPINACE = new Set(["--melichar", "--doplnit"]);
 const hlasky = process.argv.includes("--melichar");
@@ -66,7 +71,14 @@ for (const cesta of subory(priecinok)) {
   const subor = `${id}.${pripona}`;
   if (!existsSync(join(hudba.adresar, subor))) writeFileSync(join(hudba.adresar, subor), buf);
   const meno = basename(cesta, extname(cesta)).trim();
-  skladby.push(hlasky ? { id, nazov: nazovHlasky(meno), subor, trvanieMs: trvanie(buf) } : { id, nazov: meno, subor });
+  if (!hlasky) {
+    skladby.push({ id, nazov: meno, subor });
+    continue;
+  }
+  const rel = relative(priecinok, cesta);
+  const skupina = skupinaZCesty(rel);
+  if (skupina === undefined && rel !== basename(cesta)) console.warn(`${rel} — priečinok nie je skupina (${SKUPINY_HLASOK.join(", ")}), hláška bude len na soundboarde.`);
+  skladby.push({ id, nazov: nazovHlasky(meno), subor, trvanieMs: trvanie(buf), ...(skupina !== undefined ? { skupina } : {}) });
 }
 
 writeFileSync(join(hudba.adresar, ZOZNAM), JSON.stringify(skladby, null, 2));
@@ -74,4 +86,7 @@ const ostava = new Set(skladby.map((s) => s.subor));
 for (const f of readdirSync(hudba.adresar)) {
   if (f !== ZOZNAM && !ostava.has(f)) rmSync(join(hudba.adresar, f));
 }
-console.log(`${hlasky ? "Hlášky majstra Melichara" : "Hudba"}: ${skladby.length} v ${hudba.adresar}.`);
+if (hlasky) {
+  const pocty = [...SKUPINY_HLASOK, undefined].map((sk) => `${sk ?? "len soundboard"} ${skladby.filter((s) => (s as Hlaska).skupina === sk).length}`);
+  console.log(`Hlášky majstra Melichara: ${skladby.length} v ${hudba.adresar} — ${pocty.join(", ")}.`);
+} else console.log(`Hudba: ${skladby.length} v ${hudba.adresar}.`);
