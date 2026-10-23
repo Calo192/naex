@@ -3760,9 +3760,12 @@ export function HernaPlocha({
         />
       )}
       <header className="hra-hlava">
-        <span className="kod" title={prehravanie === undefined ? "kód miestnosti — pošli súperovi" : "číslo partie v archíve"}>
-          {kod}
-        </span>
+        {/* Kód miestnosti je v hlavičke webu (blok partie, Michal 2026-10-23); v prehrávači ostáva číslo partie tu. */}
+        {prehravanie !== undefined && (
+          <span className="kod" title="číslo partie v archíve">
+            {kod}
+          </span>
+        )}
         <PriebehKola view={view} onBitka={ucetBitky !== null && view.kolo === ucetBitky.kolo + 1 ? () => setUcetBitkyZavrety(false) : undefined} />
         {/* Šenok, Lokality a Log sú v osi kola (Michal 2026-10-21) — ovládanie partie je v hlavičke webu. */}
         <div className="hlava-vrstvy">
