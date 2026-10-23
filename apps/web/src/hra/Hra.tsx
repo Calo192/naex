@@ -56,6 +56,8 @@ function Lobby({
   // Uzávierka pred nasadením (Michal 2026-10-23): text oznamu zo servera, alebo null.
   const [uzavierka, setUzavierka] = useState<string | null>(null);
   const zavrete = uzavierka !== null;
+  // Vypnuté tlačidlo pri uzávierke povie prečo; hlavné nesmie ostať zlaté, akoby išlo (UI inšpekcia).
+  const preco = zavrete ? uzavierka : undefined;
 
   useEffect(() => {
     let zive = true;
@@ -112,11 +114,11 @@ function Lobby({
           {maPravo(ja, "hrat_ludia") ? (
             <div className="riadok-tlacidiel">
               {maPravo(ja, "sukromne_miestnosti") && (
-                <button className="tlacidlo-hlavne" onClick={() => zaloz(false, dlzka)} disabled={zavrete}>
+                <button className={zavrete ? undefined : "tlacidlo-hlavne"} onClick={() => zaloz(false, dlzka)} disabled={zavrete} title={preco}>
                   Súkromná hra s kódom
                 </button>
               )}
-              <button onClick={() => zaloz(true, dlzka)} disabled={zavrete}>
+              <button onClick={() => zaloz(true, dlzka)} disabled={zavrete} title={preco}>
                 Verejná hra
               </button>
             </div>
@@ -130,7 +132,7 @@ function Lobby({
             hneď a do Frajeriny sa neráta.
           </p>
           <div className="riadok-tlacidiel">
-            <button onClick={() => zaloz(false, dlzka, true)} disabled={!maPravo(ja, "hrat_bot") || zavrete}>
+            <button onClick={() => zaloz(false, dlzka, true)} disabled={!maPravo(ja, "hrat_bot") || zavrete} title={preco}>
               Hrať proti počítaču
             </button>
           </div>
@@ -166,7 +168,7 @@ function Lobby({
                       {popisDlzky(h.dlzka)} · čaká {Math.max(1, Math.round((Date.now() - h.vytvorena) / 60000))} min
                     </div>
                   </div>
-                  <button className="tlacidlo-hlavne tlacidlo-male" onClick={() => pripoj(h.kod)} disabled={zavrete}>
+                  <button className="tlacidlo-hlavne tlacidlo-male" onClick={() => pripoj(h.kod)} disabled={zavrete} title={preco}>
                     Hrať
                   </button>
                 </li>
