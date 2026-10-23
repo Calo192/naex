@@ -517,7 +517,9 @@
 
 /* ---- pult s pečiatkami skupín (Michal 2026-10-23) ----
  * Každá skupina je pečiatka v jej farbe (--farba z tokenu skupiny), mierne
- * nakrivo ako na pulte; pri buchnutí odtlačok, kým hrá, vlny namiesto ikony. */
+ * nakrivo ako na pulte; pri buchnutí odtlačok, kým hrá, vlny namiesto ikony.
+ * Text na pečiatke je farba skupiny primiešaná k --text (60 %) a pozadie sa
+ * v žiadnom stave nemení — tak drží 4.5:1 vo všetkých schémach (UI inšpekcia). */
 .sb-pult {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
@@ -538,7 +540,7 @@
   padding: 9px 10px 8px;
   text-align: left;
   color: var(--text);
-  background: color-mix(in oklab, var(--plocha-2) 86%, var(--farba));
+  background: color-mix(in srgb, var(--plocha-2) 86%, var(--farba));
   border: 3px double var(--farba);
   border-radius: 10px;
   box-shadow: 0 2px 0 rgba(0, 0, 0, calc(0.35 * var(--tma)));
@@ -555,7 +557,6 @@
 .sb-pecat:focus-visible {
   rotate: 0deg;
   translate: 0 -2px;
-  background: color-mix(in oklab, var(--plocha-2) 76%, var(--farba));
   box-shadow: 0 5px 0 rgba(0, 0, 0, calc(0.35 * var(--tma)));
 }
 
@@ -580,8 +581,7 @@
 
 .sb-pecat.hraje {
   rotate: 0deg;
-  background: color-mix(in oklab, var(--plocha-2) 70%, var(--farba));
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--farba) 45%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--farba) 55%, transparent);
 }
 
 .sb-pecat-hore {
@@ -614,7 +614,7 @@
 }
 
 .sb-pecat kbd {
-  color: var(--farba);
+  color: color-mix(in srgb, var(--farba) 60%, var(--text));
   border-color: color-mix(in srgb, var(--farba) 60%, var(--okraj-svetly));
 }
 
@@ -622,7 +622,7 @@
   font: 800 0.98rem/1.15 var(--nadpis);
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--farba);
+  color: color-mix(in srgb, var(--farba) 60%, var(--text));
 }
 
 .sb-pecat-citat {
@@ -633,7 +633,7 @@
 .sb-pecat-pocet {
   margin-top: auto;
   font: 500 0.72rem/1.2 var(--pismo);
-  color: var(--slaby-text);
+  color: color-mix(in srgb, var(--tlmeny) 75%, var(--text));
 }
 
 /* Odtlačok: kruh atramentu v farbe skupiny sa rozplynie od stredu. */

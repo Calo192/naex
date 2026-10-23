@@ -1,9 +1,11 @@
 // Hudba počas partie (Michal 2026-10-20): zoznam skladieb, súbory s Range
 // (Safari bez neho zvuk neprehrá) a hlasitosť v profile.
 
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createGameServer, type GameServer } from "../src/server.ts";
 import { TRVANIE_HLASKY_NEZNAME_MS, bezUvodnychNul, nacitajPriecinokHlasok, nazovHlasky, priponaZvuku, skupinaZDat } from "../src/hudba.ts";
@@ -168,12 +170,40 @@ describe("hlášky majstra Melichara", () => {
         ["udiv", "Údiv/vnorene/boha.mp3"],
       ]);
       const v = varovania.join("\n");
-      expect(v).toMatch(/_vyradene\/.*1 súborov/);
+      expect(v).toMatch(/_vyradene\/.*\(1 súbor\)/);
       expect(v).toMatch(/mimo\.mp3/);
       expect(v).toMatch(/kláves 1 už má iná skupina/);
       expect(v).toMatch(/nervy\/ — chýba skupina\.json/);
     } finally {
       rmSync(zdroj, { recursive: true, force: true });
+    }
+  });
+
+  it("import synchronizuje: hláška, ktorá v zdroji už nie je, zmizne zo zoznamu aj z disku (aj na produkcii)", () => {
+    const zdroj = mkdtempSync(join(tmpdir(), "naex-melichar-zdroj-"));
+    const data = mkdtempSync(join(tmpdir(), "naex-melichar-data-"));
+    // Stav po starom importe: hláška, ktorú Michal medzičasom zo zdroja zmazal.
+    const stara = `${"e".repeat(40)}.mp3`;
+    mkdirSync(join(data, "melichar"));
+    writeFileSync(join(data, "melichar", stara), OBSAH);
+    writeFileSync(join(data, "melichar", "zoznam.json"), JSON.stringify([{ id: "e".repeat(40), nazov: "Zmazaná", subor: stara }]));
+    mkdirSync(join(zdroj, "udiv"));
+    writeFileSync(join(zdroj, "udiv", "skupina.json"), JSON.stringify({ nazov: "Údiv", klaves: "1", nalady: ["udiv"] }));
+    writeFileSync(join(zdroj, "udiv", "aha.mp3"), OBSAH);
+    try {
+      execFileSync(process.execPath, ["--experimental-strip-types", "--no-warnings", fileURLToPath(new URL("../src/hudba-import.ts", import.meta.url)), "--melichar", zdroj], {
+        env: { ...process.env, NAEX_DATA: data, INIT_CWD: zdroj },
+        stdio: "pipe",
+      });
+      const zostalo = readdirSync(join(data, "melichar")).sort();
+      expect(zostalo).not.toContain(stara);
+      expect(zostalo.filter((f) => f.endsWith(".mp3"))).toHaveLength(1);
+      expect(zostalo).toEqual(expect.arrayContaining(["zoznam.json", "skupiny.json"]));
+      const zoznam = JSON.parse(readFileSync(join(data, "melichar", "zoznam.json"), "utf8")) as { nazov: string; skupina: string }[];
+      expect(zoznam.map((h) => [h.nazov, h.skupina])).toEqual([["Aha", "udiv"]]);
+    } finally {
+      rmSync(zdroj, { recursive: true, force: true });
+      rmSync(data, { recursive: true, force: true });
     }
   });
 

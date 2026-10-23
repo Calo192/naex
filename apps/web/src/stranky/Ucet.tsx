@@ -492,7 +492,7 @@ export function Profil() {
           <input type="checkbox" checked={skratky} onChange={(e) => prepniSkratky(e.target.checked)} />
           <span>
             <b>Klávesové skratky v partii</b> — K končím / hotovo / potvrdiť, P pasovať, N NA EX!, Esc zrušiť, ? zoznam. Pri písaní do poľa
-            nefungujú; M a 1–4 sú hlášky Melichara.
+            nefungujú; M otvorí pult Melichara a číslice na ňom buchnú pečiatkou.
           </span>
         </label>
         <fieldset className="skore-volby">
@@ -584,12 +584,9 @@ export function Profil() {
 
       <div className="panel">
         <h3>Majster Melichar</h3>
-        <p className="tlmene" style={{ marginTop: 0 }}>
-          V partii proti počítaču sa ozve, keď na stole dopadne pečiatka momentu (zvrat, výprask, záchrana…) — nie práve najslušnejšie. Ukladá sa samo.
-        </p>
         <Pole
           label={melichar === 0 ? "Hlasitosť: vypnutý" : `Hlasitosť: ${melichar} %`}
-          pomoc="Úplne vľavo Melichar mlčí."
+          pomoc="V partii proti počítaču sa ozve, keď na stole dopadne pečiatka momentu (zvrat, výprask, záchrana…) — nie práve najslušnejšie. Úplne vľavo mlčí. Ukladá sa samo."
         >
           <input
             type="range"

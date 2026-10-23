@@ -270,7 +270,10 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
     const posun = POSUN[e.key];
     if (posun === undefined) return;
     e.preventDefault();
-    tlacidla[Math.min(tlacidla.length - 1, Math.max(0, i + posun))]?.focus();
+    // Hore a dole len tam, kde pod či nad pečiatkou nejaká je — inak fokus ostane.
+    const ciel = i + posun;
+    if (Math.abs(posun) > 1 && (ciel < 0 || ciel >= tlacidla.length)) return;
+    tlacidla[Math.min(tlacidla.length - 1, Math.max(0, ciel))]?.focus();
   };
 
   const klavesy = (pult ?? []).flatMap((p) => (p.skupina.klaves === null ? [] : [p.skupina.klaves]));

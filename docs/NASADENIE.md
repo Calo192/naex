@@ -124,7 +124,7 @@ data/majster_melichar/
     skupina.json      názov, citát, ikona, farba, kláves, nálady momentov
     aha.mp3 …
   nervy/ bieda/ posmech/ vyhrazky/ reci/ pohoda/
-  _vyradene/          priečinok s „_“ sa nenahrá (etnické nadávky a pod.)
+  _na-posudenie/      priečinok s „_“ sa nenahrá (hláška, o ktorej sa ešte rozhoduje)
 ```
 
 `skupina.json`:
@@ -161,15 +161,20 @@ skupiny s počtom hlášok a všetko, čo vynechal.
 ```bash
 # lokálne
 npm run melichar -- "data/majster_melichar"
-# produkcia — z tvojho počítača
+# produkcia — z tvojho počítača (starý /tmp/melichar najprv preč, inak by sa nová sada vnorila do starej)
+ssh ubuntu@IP_SERVERA "rm -rf /tmp/melichar"
 scp -r data/majster_melichar ubuntu@IP_SERVERA:/tmp/melichar
 # na serveri
 cd /opt/naex/deploy
+docker compose exec naex rm -rf /tmp/melichar
 docker compose cp /tmp/melichar naex:/tmp/melichar
 docker compose exec naex node --experimental-strip-types --no-warnings packages/server/src/hudba-import.ts --melichar /tmp/melichar
 ```
 
 Hlášky sú v `/data/melichar`; originály drž v `data/majster_melichar`.
+Import **synchronizuje**: hláška, ktorá v zdroji už nie je (zmazaná alebo
+v priečinku s „_“), zmizne zo zoznamu aj z `/data/melichar` — zmazať hlášku
+z produkcie = zmazať ju zo zdroja a pustiť import. Reštart servera netreba.
 
 ### 6. Zálohy
 

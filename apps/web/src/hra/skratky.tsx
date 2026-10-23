@@ -2,7 +2,7 @@
 // hotovo / potvrdiť, P pasovať, N NA EX!, O tvoje karty, Esc zrušiť, ? zoznam skratiek.
 // Hlavné tlačidlo kroku nesie data-skratka — skratka ho len stlačí, takže
 // platia tie isté podmienky ako pri kliknutí (disabled, potvrdenie, Krčma).
-// M a 1–4 patria soundboardu Melichara. Vypínač je v profile (Preferencie).
+// M a číslice 1–9 patria pultu Melichara (kláves pečiatky je v skupina.json). Vypínač je v profile (Preferencie).
 
 import { useEffect, useState } from "react";
 
@@ -12,8 +12,8 @@ export const SKRATKY_V_PARTII: readonly { readonly klaves: string; readonly popi
   { klaves: "N", popis: "NA EX! na vybranú kartu" },
   { klaves: "O", popis: "tvoje karty: balíček, odhodené, priznané, Dedičstvo" },
   { klaves: "Esc", popis: "zrušiť výber · zavrieť" },
-  { klaves: "M", popis: "hlášky majstra Melichara" },
-  { klaves: "1–4", popis: "náhodná hláška zo skupiny" },
+  { klaves: "M", popis: "pult majstra Melichara" },
+  { klaves: "1–9", popis: "pečiatka Melichara s tým číslom — náhodná hláška zo skupiny" },
   { klaves: "?", popis: "tento zoznam" },
 ];
 

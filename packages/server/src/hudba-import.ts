@@ -9,7 +9,7 @@
 // pri hláškach bez poradového čísla a s medzerami namiesto podčiarkovníkov.
 // Hlášky ležia v priečinkoch skupín (Michal 2026-10-23): priečinok = skupina
 // na soundboarde, jeho skupina.json dá názov, ikonu, farbu, kláves a nálady
-// momentov (docs/NASADENIE.md 5c). Priečinok s „_“ na začiatku (_vyradene) sa
+// momentov (docs/NASADENIE.md 5c). Priečinok s „_“ na začiatku (_na-posudenie) sa
 // nenahrá. Do <data>/melichar/ ide zoznam.json (hlášky) a skupiny.json.
 // Hláška má aj dĺžku (trvanieMs) — podľa nej server stráži pauzu medzi
 // hláškami zo soundboardu (Michal 2026-10-22); --doplnit ju dopíše hláškam

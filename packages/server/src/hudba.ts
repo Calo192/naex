@@ -103,7 +103,7 @@ function* suboryVPriecinku(dir: string): Generator<string> {
 
 /**
  * Priečinok s hláškami: každý podpriečinok je skupina (jeho skupina.json ju
- * popíše), priečinok začínajúci „_“ (napr. _vyradene) sa vynechá a súbor mimo
+ * popíše), priečinok začínajúci „_“ (napr. _na-posudenie) sa vynechá a súbor mimo
  * skupiny tiež — hláška bez skupiny by sa na soundboarde nedala pustiť.
  * Skupiny sú zoradené podľa klávesu, potom podľa názvu; o kláves sa hlási
  * skôr abecedne prvý priečinok, ďalšia skupina s ním ostane len na klik.
@@ -119,7 +119,8 @@ export function nacitajPriecinokHlasok(priecinok: string): PriecinokHlasok {
       continue;
     }
     if (meno.startsWith("_") || meno.startsWith(".")) {
-      varovania.push(`${meno}/ — priečinok s „_“ sa nenahráva (${[...suboryVPriecinku(cesta)].length} súborov).`);
+      const n = [...suboryVPriecinku(cesta)].length;
+      varovania.push(`${meno}/ — priečinok s „_“ sa nenahráva (${n} ${n === 1 ? "súbor" : n >= 2 && n <= 4 ? "súbory" : "súborov"}).`);
       continue;
     }
     const id = idSkupiny(meno);
