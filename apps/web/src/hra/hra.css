@@ -4546,6 +4546,14 @@ button.auto-hotovo-odkaz {
     height: 100%;
   }
 
+  /* Riadok bitky preberá výšku pásu. Pás, ktorý sa zmestí do jedného riadku
+     (1920 × 1080: 41 px), bol nižší než súhrn s riadkom hrozby pod ním — hrozba
+     sa odrezala (UI inšpekcia, bugfix/hrozba). Pás má preto vždy výšku dvoch
+     riadkov, takže sa pri prepnutí ani pri objavení hrozby nič nepohne. */
+  .pas-kola-obal {
+    min-height: 64px;
+  }
+
   .bitka-panel.riadok .bitka-strana {
     gap: 10px;
     padding: 3px 12px;
