@@ -31,6 +31,8 @@ export interface KrokPocitadla {
   readonly zmena: number;
   /** Najvyšší násobok akcie na karte (2 = NA EX či Posilnenie) — počítadlo sa pri ňom roztrasie. */
   readonly nasobok: number;
+  /** Zrážka, ktorá už nemala čo ubrať — tuhé bolo na 0 (vyhodnotenie nejde pod 0). */
+  readonly naNule?: boolean;
 }
 
 export interface PocitadloBitky {
@@ -71,7 +73,14 @@ export function pocitadloBitky(data: GameData, stol: StolBitky, linia: LineEval,
   const rozpis = rozpisPoskodenia(data, stol, linia.sums, [0, 0]);
   for (const kto of [0, 1] as const) {
     for (const b of rozpis[kto].bonusy) kroky.push({ vlna: kartyVln + 1, kto, druh: "bonus", uid: null, zdroj: b.zdroj, zmena: b.hodnota, nasobok: 1 });
-    for (const z of rozpis[kto].zrazky) kroky.push({ vlna: kartyVln + 2, kto, druh: "zrazka", uid: null, zdroj: z.zdroj, zmena: -z.hodnota, nasobok: 1 });
+    // Vyhodnotenie zrazí tuhé najviac na 0 — zrážka uberie len to, čo ešte zostalo
+    // (UI inšpekcia: „Viera −2“ pri 0 a potom záhadné „ostatné +2“).
+    let zostava = kroky.filter((k) => k.kto === kto).reduce((s, k) => s + k.zmena, 0);
+    for (const z of rozpis[kto].zrazky) {
+      const ubere = Math.min(z.hodnota, Math.max(0, zostava));
+      zostava -= ubere;
+      kroky.push({ vlna: kartyVln + 2, kto, druh: "zrazka", uid: null, zdroj: z.zdroj, zmena: -ubere, nasobok: 1, ...(ubere === 0 ? { naNule: true } : {}) });
+    }
   }
   let vln = kartyVln + 3;
   for (const kto of [0, 1] as const) {

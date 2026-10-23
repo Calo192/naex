@@ -62,8 +62,10 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec }: Pocita
   const popis = (k: KrokPocitadla): string => {
     const z = k.zmena > 0 ? `+${k.zmena}` : `−${-k.zmena}`;
     if (k.druh === "karta") return `${z}${k.nasobok > 1 ? ` ×${k.nasobok}` : ""}`;
-    if (k.druh === "spolu") return `${k.zmena < 0 ? "skryté Absťáky / dno 0" : "ostatné"} ${z}`;
+    // „spolu“ dorovná, čo klient nevidí — súperove Absťáky v ruke.
+    if (k.druh === "spolu") return `${k.zmena < 0 ? "Absťáky v ruke" : "ostatné"} ${z}`;
     const meno = k.zdroj === null ? "" : (ZDROJ[k.zdroj] ?? menoKarty(k.zdroj));
+    if (k.naNule === true) return `🛡 ${meno} (už na 0)`;
     return `${k.druh === "zrazka" ? "🛡 " : ""}${meno} ${z}`;
   };
   const viditelne = hotovo ? p.kroky : p.kroky.filter((k) => k.vlna <= vlna);
