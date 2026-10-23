@@ -13,10 +13,9 @@ hlásia jemu a medzi sebou si píšu cez `SendMessage` (adresát = meno z `ListA
 | Playtesting   | playtesty, návrhy, rozhodca, stratég              | `F:\Projects\naex-playtest`   | 8792 / 5178 (servery playtestu: od 8800 vyššie) |
 | UI Inspector  | UI inšpekcia (`/naex-ui-inspektor`), len hľadá chyby | `F:\Projects\naex-inspektor` (detached origin/master) | 8793 / 5179                      |
 
-Reštart Claude Code môže sessions premenovať (2026-10-22: `naex-46` = Leader,
-`naex-0c` = Admin, `naex-91` = New features, `naex-f6` = Playtesting,
-`naex-d9` = UX/UI, `naex-90` = Bugfixing). Rolu určuje worktree a rozrobená
-práca, nie meno — pri pochybnosti sa session najprv ohlási Leaderovi.
+Reštart Claude Code sessions premenuje (`naex-xx`) a po `/clear` štartujú
+v hlavnom strome. Rolu neurčuje meno ani priečinok: session, ktorá ju nepozná,
+sa opýta Leadera, nič nemení a potom prejde do worktree svojej roly.
 
 Porty 8780–8799 a 5170–5199 patria dev serverom sessions, 8800+ dočasným
 serverom playtestov (`tools/playtest/turnus.ts`).
