@@ -415,6 +415,7 @@ export function Hra() {
         chybaVyucby={hra.chybaVyucby}
         odpovedz={hra.vyucbaOdpoved}
         rada={hra.radaVyucby}
+        pocitadloBezi={pocitadloBezi}
       />
     )}
     </>

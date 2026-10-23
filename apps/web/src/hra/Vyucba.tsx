@@ -273,7 +273,8 @@ function miestaBubliny(w: number, h: number): Obdlznik[] {
   // Hore na stole: vedľa nadpisov krajov býva prázdno (karty sú v strede).
   const hornyStol = plst === undefined ? hore : Math.min(dole, Math.max(hore, plst.top + 6));
   const xs = [12, window.innerWidth - 12 - w];
-  return [dole, hore, stred, hornyStol].flatMap((y, i) => xs.map((x, j) => ({ kluc: `${i}${j}`, x, y, w, h })));
+  // Miesto hneď pod osou kola nie — zakrylo bar súpera, pás kola aj pokyn (UI inšpekcia).
+  return [hornyStol, stred, dole].flatMap((y, i) => xs.map((x, j) => ({ kluc: `${i}${j}`, x, y, w, h })));
 }
 
 function skoreMiesta(o: Obdlznik, zvyraznene: readonly Obdlznik[]): number {
@@ -282,9 +283,10 @@ function skoreMiesta(o: Obdlznik, zvyraznene: readonly Obdlznik[]): number {
     sucet(zvyraznene, 50) +
     sucet(rectyPrvkov(".linia .partia-rad .kl"), 4) +
     sucet(rectyPrvkov(".stol-hrana .pecat, .stol-hrana button"), 20) +
-    sucet(rectyPrvkov(".linia-stav"), 2) +
+    sucet(rectyPrvkov(".linia-stav"), 4) +
+    sucet(rectyPrvkov(".pas-kola-obal"), 4) +
     sucet(rectyPrvkov(".miesto-volby"), 20) +
-    sucet(rectyPrvkov(".doska"), 1) +
+    sucet(rectyPrvkov(".doska"), 4) +
     sucet(rectyPrvkov(".ruka-rad .kl"), 1)
   );
 }
@@ -300,6 +302,7 @@ export function VyucbaStol({
   chybaVyucby,
   odpovedz,
   rada,
+  pocitadloBezi,
 }: {
   readonly stav: StavVyucby;
   readonly dalej: () => void;
@@ -315,6 +318,8 @@ export function VyucbaStol({
   readonly odpovedz: (index: number) => void;
   /** Rada Melichara po zlom ťahu v rozhodnutí (partia sa nezmenila). */
   readonly rada: string | null;
+  /** Beží Počítadlo bitky — bublina čaká, inak by ju prekrylo a Enter by preskočil krok (UI inšpekcia). */
+  readonly pocitadloBezi: boolean;
 }) {
   const krok = stav.krok;
   // Komentár k ťahu Štamgasta ostane v bubline nad ďalším krokom — len jeden (playtest: kopa odsekov).
@@ -460,7 +465,7 @@ export function VyucbaStol({
 
   // Enter = „ďalej“ v kroku bez ťahu, aj keď fokus ostal na karte či tlačidle po kliku myšou
   // (playtest: Enter po kliku nereagoval). Polia na písanie nechá tak.
-  const jeInfo = krok?.kto === "info" || (krok?.kto === "otazka" && vybrana?.spravna === true);
+  const jeInfo = !pocitadloBezi && (krok?.kto === "info" || (krok?.kto === "otazka" && vybrana?.spravna === true));
   useEffect(() => {
     if (!jeInfo) return;
     const klaves = (e: KeyboardEvent): void => {
@@ -477,10 +482,10 @@ export function VyucbaStol({
   // Po novom kroku bez ťahu fokus na „ďalej“ — Enter aj čítačka vedia, kde sú.
   const dalejRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
-    if (jeInfo) dalejRef.current?.focus({ preventScroll: true });
-  }, [krok?.id, jeInfo]);
+    if (jeInfo && poloha !== null) dalejRef.current?.focus({ preventScroll: true });
+  }, [krok?.id, jeInfo, poloha === null]);
 
-  const presun = (): void => setRucne((zvolene + 1) % 8);
+  const presun = (): void => setRucne((zvolene + 1) % 6);
   const percento = krok === null ? 100 : Math.round(((krok.index + 1) / krok.spolu) * 100);
 
   return (
@@ -489,7 +494,7 @@ export function VyucbaStol({
       <aside
         ref={bublinaRef}
         className={`vyucba-bublina ${krok?.kto ?? "hotovo"}`}
-        style={poloha === null ? { visibility: "hidden" } : { left: poloha.x, top: poloha.y }}
+        style={poloha === null || pocitadloBezi ? { visibility: "hidden" } : { left: poloha.x, top: poloha.y }}
         data-vyucba-bublina=""
         data-vyucba-krok={krok?.id ?? "hotovo"}
         aria-label="Majster Melichar"
@@ -510,7 +515,7 @@ export function VyucbaStol({
             ⇆ <span>presunúť</span>
           </button>
         </header>
-        <div className="vyucba-text" role="status" aria-live="polite">
+        <div className="vyucba-text" role="status" aria-live="polite" hidden={krok !== null && krok.melichar.trim() === "" && predtym === null && chyba === null && rada === null}>
           {chyba !== null && krok !== null && <p className="vyucba-chyba">{chyba}</p>}
           {rada !== null && krok !== null && <p className="vyucba-rada">{rada}</p>}
           {predtym !== null && <p className="vyucba-predtym">{predtym.melichar}</p>}
