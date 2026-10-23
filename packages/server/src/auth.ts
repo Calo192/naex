@@ -193,6 +193,22 @@ export class Ucty {
     return { krok: Number(r?.vyucba_krok ?? 0), stav };
   }
 
+  /** Prvá odpoveď hráča na kontrolnú otázku výučby — ďalšie pokusy sa nezapisujú. */
+  ulozOdpovedVyucby(id: number, krok: string, odpoved: number, spravna: boolean, cas: number): void {
+    this.db.prepare("INSERT OR IGNORE INTO vyucba_odpovede (pouzivatel, krok, odpoved, spravna, cas) VALUES (?, ?, ?, ?, ?)").run(id, krok, odpoved, spravna ? 1 : 0, cas);
+  }
+
+  /** Prehľad prvých odpovedí na otázky výučby: koľkí odpovedali a koľkí správne. */
+  odpovedeVyucby(): { krok: string; odpovedi: number; spravne: number }[] {
+    return (
+      this.db.prepare("SELECT krok, COUNT(*) AS odpovedi, SUM(spravna) AS spravne FROM vyucba_odpovede GROUP BY krok ORDER BY krok").all() as {
+        krok: string;
+        odpovedi: number;
+        spravne: number;
+      }[]
+    ).map((r) => ({ krok: r.krok, odpovedi: Number(r.odpovedi), spravne: Number(r.spravne) }));
+  }
+
   ulozVyucbu(id: number, krok: number, stav?: "hotova" | "preskocena" | null): void {
     if (stav === undefined) this.db.prepare("UPDATE pouzivatelia SET vyucba_krok = ? WHERE id = ?").run(krok, id);
     else this.db.prepare("UPDATE pouzivatelia SET vyucba_krok = ?, vyucba_stav = ? WHERE id = ?").run(krok, stav, id);

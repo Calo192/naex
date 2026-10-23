@@ -6,7 +6,7 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import scenarJson from "../data/vyucba/prva-hra.json";
-import type { CardInstance, Command, GameState, ScenarVyucby } from "../src/index.ts";
+import type { CardInstance, Command, GameState, ScenarVyucby, VolbaKroku } from "../src/index.ts";
 import {
   apply,
   defOf,
@@ -16,6 +16,7 @@ import {
   ocakavanyPrikaz,
   overScenar,
   porovnajSKrokom,
+  radaKVolbe,
   prehrajVyucbu,
   rngInt,
   rngSeed,
@@ -24,6 +25,7 @@ import {
   textChybyKroku,
   uidZOdkazu,
   zacniVyucbu,
+  zodpovedaVzoru,
   zhodnyPrikaz,
 } from "../src/index.ts";
 
@@ -201,5 +203,40 @@ describe("výučba — automatické kroky hráča (kto: auto)", () => {
     const iBot = scenar.kroky.findIndex((k) => k.kto === "bot");
     const zaBota: ScenarVyucby = { ...scenar, kroky: scenar.kroky.map((k, j) => (j === iBot ? { ...k, kto: "auto" as const } : k)) };
     expect(overScenar(data, zaBota)).not.toBeNull();
+  });
+});
+
+describe("výučba — kontrolné otázky a rozhodnutia (UX N2)", () => {
+  const otazka = (moznosti: { text: string; spravna: boolean; vysvetlenie: string }[], navyse: Record<string, unknown> = {}) =>
+    ({ id: "q-test", kto: "otazka" as const, melichar: "Čo dá spoj?", moznosti, ...navyse }) as ScenarVyucby["kroky"][number];
+  const sOtazkou = (krok: ScenarVyucby["kroky"][number]): ScenarVyucby => ({ ...scenar, kroky: [scenar.kroky[0] as ScenarVyucby["kroky"][number], krok, ...scenar.kroky.slice(1)] });
+  const dobre = [
+    { text: "Ranu", spravna: true, vysvetlenie: "Áno." },
+    { text: "Nič", spravna: false, vysvetlenie: "Nie." },
+  ];
+
+  it("otázka partiu nemení a overScenar stráži 2–3 možnosti, práve jednu správnu, bez príkazu", () => {
+    expect(overScenar(data, sOtazkou(otazka(dobre)))).toBeNull();
+    expect(JSON.stringify(prehrajVyucbu(data, sOtazkou(otazka(dobre)), 2))).toBe(JSON.stringify(prehrajVyucbu(data, scenar, 1)));
+    expect(overScenar(data, sOtazkou(otazka([dobre[0] as (typeof dobre)[number]])))).toMatch(/2 – 3 možnosti/);
+    expect(overScenar(data, sOtazkou(otazka(dobre.map((m) => ({ ...m, spravna: true })))))).toMatch(/práve jednu správnu/);
+    expect(overScenar(data, sOtazkou(otazka(dobre, { prikaz: { type: "pass" } })))).toMatch(/nemá mať prikaz/);
+    expect(overScenar(data, sOtazkou(otazka([...dobre, { text: "", spravna: false, vysvetlenie: "x" }])))).toMatch(/text aj vysvetlenie/);
+  });
+
+  it("rozhodnutie: zlý ťah dostane radu zo vzoru (len uvedené polia), inak všeobecnú; vzor nesmie sedieť na správny ťah", () => {
+    const i = scenar.kroky.findIndex((k) => k.kto === "hrac");
+    const krok = scenar.kroky[i] as ScenarVyucby["kroky"][number];
+    const state = prehrajVyucbu(data, scenar, i);
+    const spravny = ocakavanyPrikaz(scenar, state, i) as Command;
+    const volba: VolbaKroku = { kandidati: ["ruka:pijan"], zle: [{ prikaz: { type: "pass" }, text: "Ešte nepasuj." }], inak: "Skús inú kartu." };
+    expect(radaKVolbe(state, volba, { type: "pass" })).toBe("Ešte nepasuj.");
+    expect(radaKVolbe(state, volba, { type: "skipNaex" })).toBe("Skús inú kartu.");
+    expect(zodpovedaVzoru(state, spravny, { type: spravny.type })).toBe(true);
+    // Vzor iba s typom správneho ťahu sedí aj naň — overScenar to odhalí.
+    const zly: ScenarVyucby = { ...scenar, kroky: scenar.kroky.map((k, j) => (j === i ? { ...krok, volba: { ...volba, zle: [{ prikaz: { type: spravny.type }, text: "x" }] } } : k)) };
+    expect(overScenar(data, zly)).toMatch(/sedí aj na správny ťah/);
+    const ok: ScenarVyucby = { ...scenar, kroky: scenar.kroky.map((k, j) => (j === i ? { ...krok, volba } : k)) };
+    expect(overScenar(data, ok)).toBeNull();
   });
 });

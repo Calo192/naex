@@ -58,13 +58,20 @@ export interface KrokVyucby {
   readonly index: number;
   readonly spolu: number;
   readonly id: string;
-  /** hrac = čaká sa na ťah hráča, bot = ťahá Štamgast, info = len text a „ďalej“. */
-  /** auto = ťah hráča, ktorý hra spraví sama (ako ťah bota, s komentárom v bubline). */
-  readonly kto: "hrac" | "bot" | "info" | "auto";
+  /**
+   * hrac = čaká sa na ťah hráča, bot = ťahá Štamgast, info = len text a „ďalej“,
+   * auto = ťah hráča, ktorý hra spraví sama (ako ťah bota, s komentárom v bubline),
+   * otazka = kontrolná otázka (text je melichar, možnosti v moznosti).
+   */
+  readonly kto: "hrac" | "bot" | "info" | "auto" | "otazka";
   readonly melichar: string;
   /** Kľúče prvkov na zvýraznenie, napr. „bar:poldeci“, „ruka:hasic“ — v UI atribút data-vyucba. */
   readonly zvyraznit: readonly string[];
   readonly ocakava: Command | null;
+  /** Kontrolná otázka: 2–3 možnosti, práve jedna správna — klient overí sám; inak null. */
+  readonly moznosti: readonly { readonly text: string; readonly spravna: boolean; readonly vysvetlenie: string }[] | null;
+  /** Rozhodnutie: kandidáti na zvýraznenie (kľúče ako zvyraznit) namiesto očakávanej karty; inak null. */
+  readonly volba: { readonly kandidati: readonly string[] } | null;
 }
 
 /** Krok ťahu slovami (jadro popisKroku); uid = karta, ktorú treba zvýrazniť. */
@@ -98,6 +105,8 @@ type ServerMsg =
   | { type: "achievementySuhrn"; suhrn: SuhrnAchievementov }
   /** Zlý ťah vo výučbe: čo chýba a čo je navyše (text príde aj ako error). */
   | { type: "vyucbaChyba"; chybajuce: readonly PopisKrokuVyucby[]; navyse: readonly PopisKrokuVyucby[] }
+  /** Rozhodnutie vo výučbe: zlý ťah dostane radu Melichara namiesto chyby. */
+  | { type: "vyucbaRada"; text: string }
   | { type: "error"; text: string };
 
 /**
@@ -165,6 +174,10 @@ export interface HraHook {
   /** Súhrn achievementov po konci partie, inak null. */
   readonly suhrnAchievementov: SuhrnAchievementov | null;
   /** Posledný zlý ťah vo výučbe (čo chýba, čo je navyše); zmizne ďalším ťahom alebo zrusChybu. */
+  /** Rada Melichara po zlom ťahu v rozhodnutí; zmizne ďalším ťahom alebo zrusChybu. */
+  readonly radaVyucby: string | null;
+  /** Odpoveď na kontrolnú otázku (index možnosti) — server si zapíše prvú. */
+  vyucbaOdpoved(index: number): void;
   readonly chybaVyucby: { readonly chybajuce: readonly PopisKrokuVyucby[]; readonly navyse: readonly PopisKrokuVyucby[] } | null;
   /** Spustí výučbu (server pokračuje od uloženého kroku). */
   zalozVyucbu(): void;
@@ -219,6 +232,7 @@ export function useHra(aktivne: boolean): HraHook {
   const [achievementy, setAchievementy] = useState<{ readonly n: number; readonly zisky: readonly ZiskAchievementu[] }>({ n: 0, zisky: [] });
   const [suhrnAchievementov, setSuhrnAchievementov] = useState<SuhrnAchievementov | null>(null);
   const [chybaVyucby, setChybaVyucby] = useState<HraHook["chybaVyucby"]>(null);
+  const [radaVyucby, setRadaVyucby] = useState<string | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const menaRef = useRef<string[]>([]);
   menaRef.current = hraci.map((h, i) => menoVoVete(h, i));
@@ -258,6 +272,7 @@ export function useHra(aktivne: boolean): HraHook {
         case "state":
           setView(msg.view);
           setChybaVyucby(null);
+          setRadaVyucby(null);
           setMiestnost((m) => (m === null || m.started ? m : { ...m, started: true }));
           setLog((stary) => {
             const nove = msg.events.map((e) => textUdalosti(e, menaRef.current, rodyRef.current)).filter((t): t is string => t !== null);
@@ -282,6 +297,9 @@ export function useHra(aktivne: boolean): HraHook {
           break;
         case "achievementySuhrn":
           setSuhrnAchievementov(msg.suhrn);
+          break;
+        case "vyucbaRada":
+          setRadaVyucby(msg.text);
           break;
         case "vyucbaChyba":
           setChybaVyucby({ chybajuce: msg.chybajuce, navyse: msg.navyse });
@@ -355,6 +373,8 @@ export function useHra(aktivne: boolean): HraHook {
     pustiMelichara: useCallback((id: string) => posli({ type: "melichar", id }), [posli]),
     vyucba,
     chybaVyucby,
+    radaVyucby,
+    vyucbaOdpoved: useCallback((index: number) => posli({ type: "vyucbaOdpoved", index }), [posli]),
     zalozVyucbu: useCallback(() => posli({ type: "create", vyucba: true }), [posli]),
     vyucbaDalej: useCallback(() => posli({ type: "vyucbaDalej" }), [posli]),
     zaloz: useCallback((verejna: boolean, dlzka: DlzkaHry, bot = false) => posli({ type: "create", verejna, dlzka, bot }), [posli]),
@@ -376,6 +396,7 @@ export function useHra(aktivne: boolean): HraHook {
     zrusChybu: useCallback(() => {
       setChyba(null);
       setChybaVyucby(null);
+      setRadaVyucby(null);
     }, []),
   };
 }
