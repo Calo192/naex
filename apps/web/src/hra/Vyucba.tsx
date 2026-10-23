@@ -280,9 +280,10 @@ function skoreMiesta(o: Obdlznik, zvyraznene: readonly Obdlznik[]): number {
   const sucet = (r: readonly Obdlznik[], vaha: number): number => r.reduce((s, b) => s + prekrytie(o, b) * vaha, 0);
   return (
     sucet(zvyraznene, 50) +
-    sucet(rectyPrvkov(".linia .partia-rad .kl"), 2) +
-    sucet(rectyPrvkov(".stol-hrana .pecat, .stol-hrana button"), 6) +
+    sucet(rectyPrvkov(".linia .partia-rad .kl"), 4) +
+    sucet(rectyPrvkov(".stol-hrana .pecat, .stol-hrana button"), 20) +
     sucet(rectyPrvkov(".linia-stav"), 2) +
+    sucet(rectyPrvkov(".miesto-volby"), 20) +
     sucet(rectyPrvkov(".doska"), 1) +
     sucet(rectyPrvkov(".ruka-rad .kl"), 1)
   );
