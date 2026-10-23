@@ -1,6 +1,6 @@
 // Herná časť (/hra): lobby → čakáreň → partia. Len pre prihlásených.
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { DlzkaHry } from "@naex/core";
 import { ALL_DLZKY, DLZKY_HRY, NAZOV_DLZKY, PREDVOLENA_DLZKA } from "@naex/core";
 import { api, mediaUrl } from "../lib/api.ts";
@@ -229,7 +229,8 @@ export function Hra() {
 
   // Majster Melichar komentuje len partie proti počítaču — ľudia si nadávajú sami.
   // Ozve sa pri pečiatke momentu (Momenty), nie po každom ťahu (Michal 2026-10-23).
-  const { ozviMoment } = useMelichar(hra.view !== null && hra.hraci.some((h) => h?.bot === true));
+  // Vo výučbe Melichar hovorí v bubline — hlášky a pečiatky momentov by mu skákali do reči.
+  const { ozviMoment } = useMelichar(hra.view !== null && hra.vyucba === null && hra.hraci.some((h) => h?.bot === true));
   const cmd = hra.cmd;
   // Kým beží Počítadlo bitky, pečiatka momentu z bitky čaká (dohoda Bugfixing × New features).
   const [pocitadloBezi, setPocitadloBezi] = useState(false);
@@ -358,7 +359,9 @@ export function Hra() {
   return (
     <>
     <HudbaPartie />
-    <Momenty udalosti={hra.udalosti} ja={hra.view.ja} mena={hra.hraci.map((h, i) => h?.meno ?? `Hráč ${i + 1}`)} hovor={ozviMoment} pocitadloBezi={pocitadloBezi} />
+    {hra.vyucba === null && (
+      <Momenty udalosti={hra.udalosti} ja={hra.view.ja} mena={hra.hraci.map((h, i) => h?.meno ?? `Hráč ${i + 1}`)} hovor={ozviMoment} pocitadloBezi={pocitadloBezi} />
+    )}
     <HernaPlocha
       onPocitadlo={setPocitadloBezi}
       view={hra.view}
