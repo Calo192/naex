@@ -984,28 +984,49 @@ export interface HrozbaBitky {
   readonly kto: "ja" | "su";
   /** Krátko do riadku bitky: „Súper ešte môže: tuhé 0 : 8“. */
   readonly kratko: string;
+  /** Najkratšie, keď hrozbu majú obaja a idú do jedného riadku: „súper až 0 : 8“. */
+  readonly mini: string;
   /** Celé znenie (titulok): aj karta a prebytok. */
   readonly cele: string;
   readonly uid: number;
 }
 
-/** Riadky hrozby — v riadku bitky vedľa súhrnu, v celom paneli pod verdiktom. */
-function RiadkyHrozby({ hrozby, ukazHrozbu }: { readonly hrozby: readonly HrozbaBitky[] | undefined; readonly ukazHrozbu: ((uid: number | null) => void) | undefined }) {
+/**
+ * Riadky hrozby — v celom paneli pod verdiktom. V riadku bitky (pevná výška pásu)
+ * vždy jeden riadok: dve hrozby by sa doň nezmestili (UI inšpekcia, bugfix/hrozba),
+ * tak idú vedľa seba v najkratšom znení; celé je v titulku.
+ */
+function RiadkyHrozby({
+  hrozby,
+  ukazHrozbu,
+  jedenRiadok = false,
+}: {
+  readonly hrozby: readonly HrozbaBitky[] | undefined;
+  readonly ukazHrozbu: ((uid: number | null) => void) | undefined;
+  readonly jedenRiadok?: boolean;
+}) {
   if (hrozby === undefined || hrozby.length === 0) return null;
+  const cast = (h: HrozbaBitky, text: string) => (
+    <span
+      key={h.kto}
+      className={`hrozba-bitky ${h.kto}`}
+      title={h.cele}
+      onMouseEnter={() => ukazHrozbu?.(h.uid)}
+      onMouseLeave={() => ukazHrozbu?.(null)}
+    >
+      {text}
+    </span>
+  );
+  if (!jedenRiadok || hrozby.length === 1) return <>{hrozby.map((h) => cast(h, h.kratko))}</>;
   return (
-    <>
-      {hrozby.map((h) => (
-        <span
-          key={h.kto}
-          className={`hrozba-bitky ${h.kto}`}
-          title={h.cele}
-          onMouseEnter={() => ukazHrozbu?.(h.uid)}
-          onMouseLeave={() => ukazHrozbu?.(null)}
-        >
-          {h.kratko}
+    <span className="hrozba-bitky-riadok" title={hrozby.map((h) => h.cele).join("\n")}>
+      Ešte môže: {hrozby.map((h, i) => (
+        <span key={h.kto}>
+          {i > 0 && " · "}
+          {cast(h, h.mini)}
         </span>
       ))}
-    </>
+    </span>
   );
 }
 
@@ -1089,7 +1110,7 @@ export function BitkaPanel(props: BitkaPanelProps) {
       {stred !== undefined ? (
         <div className="bitka-stred">
           {stred}
-          <RiadkyHrozby hrozby={props.hrozby} ukazHrozbu={props.ukazHrozbu} />
+          <RiadkyHrozby hrozby={props.hrozby} ukazHrozbu={props.ukazHrozbu} jedenRiadok />
         </div>
       ) : (
         <div className="bitka-stred">

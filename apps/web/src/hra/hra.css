@@ -4647,6 +4647,19 @@ button.auto-hotovo-odkaz {
   cursor: help;
 }
 
+.hrozba-bitky-riadok {
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 0.78rem;
+  color: var(--tlmeny);
+}
+
+.hrozba-bitky-riadok .hrozba-bitky {
+  font-size: inherit;
+}
+
 .hrozba-bitky.su {
   color: var(--cervena-text);
 }
