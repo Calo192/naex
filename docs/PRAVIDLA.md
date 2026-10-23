@@ -385,6 +385,12 @@ majiteľ Svokry ukradne 2 cigarety (Michal 2026-10-19).
 Na **Liberála** NA EX dať nemožno, na súperovho **Anonymného alkoholika** tiež
 nie (jeho susedov nechráni, Michal 2026-10-22). Na kartu, na ktorej **už poldeci leží**
 (cez NA EX), sa ďalšie NA EX dať nedá (Michal 2026-10-22, dopísané podľa hry).
+NA EX sa dá len na kartu, ktorá má **aspoň jednu aktívnu a aspoň jednu
+neaktívnu akciu** (Michal 2026-10-23) — nie na kartu bez aktívnej akcie ani na
+kartu, ktorej sú aktívne všetky. Aktívna = spárovaná a nezrušená Odporom;
+rozhoduje stav v okamihu NA EX (odpoveď na NA EX už nič nemení). Platí aj pre
+Veterána. Výnimka: na súperovu skrytú **Záverečnú** sa NA EX dá vždy a skryté
+Záverečné sa do posúdenia susedov nerátajú — nič sa nesmie prezradiť.
 Na **Krčme** hráč s plným poldeci (a kartou, kam ho dať) musí NA EX dať, inak
 Pitku neskončí; prah Cirhózy je tam zato obom o 2 vyšší (Michal 2026-10-22).
 

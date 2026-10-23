@@ -4,7 +4,7 @@
 import { expect } from "vitest";
 import { WebSocket } from "ws";
 import type { ClientState, Command } from "@naex/core";
-import { cieleVykladania, cielLokalitaId, krokStavby, naexCieleVLinii, pohorsenieMozne, posunMarker, zablokovaneStrany } from "@naex/core";
+import { cieleVykladania, cielLokalitaId, krokStavby, lineState, naexCieleVLinii, pohorsenieMozne, posunMarker, zablokovaneStrany } from "@naex/core";
 import { loadDataFromDisk } from "../src/server.ts";
 
 /** Dáta sady pre pravidlá vykladania — robot ich pozná ako hráč (verejné karty). */
@@ -139,7 +139,7 @@ export class Robot {
         if (p?.reakcia === ja) return { type: "bezReakcie" };
         // Krčma: s plným poldeci treba dať NA EX — na vlastného Občana, inak na hocikoho v línii.
         if (view.ciel?.lokalita?.defId === "krcma" && p !== null && !p.naexPouzity[ja] && view.hraci[ja].poldeciPlne > 0) {
-          const ciele = new Set(naexCieleVLinii(DATA, view.strany, ja));
+          const ciele = new Set(naexCieleVLinii(DATA, lineState(view), ja));
           const linia = [...view.strany[0], ...view.strany[1]];
           const ciel = linia.find((pl) => pl.playedBy === ja && ciele.has(pl.card.uid)) ?? linia.find((pl) => ciele.has(pl.card.uid));
           if (ciel !== undefined) return { type: "naex", uid: ciel.card.uid };

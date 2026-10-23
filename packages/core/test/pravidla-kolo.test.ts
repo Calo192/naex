@@ -122,7 +122,8 @@ describe("§7 Pitka — obranca začína, útočník má posledné slovo (Michal
       ...s0,
       faza: "zhromazdenie",
       utocnik: 0,
-      strany: [[lezi(pijan0, 0)], [lezi(pijan1, 1)]],
+      // Pijani vo dvojiciach — NA EX len na kartu s aktívnou aj neaktívnou akciou (2026-10-23).
+      strany: [[lezi(pijan0, 0), lezi(inst("pijan"), 0)], [lezi(pijan1, 1), lezi(inst("pijan"), 1)]],
       pitkyCelkom: 1,
       pitkaCislo: 0,
       zhromazdenieStav: { naTahu: 0, zostavaLimit: [0, 0], pasoval: [false, true], navyse: [0, 0] },
@@ -240,10 +241,11 @@ describe("§5 NA EX na kartu pri lokalite a §14 NA EX na Veterána", () => {
 
   it("§5: na kartu, na ktorej už poldeci leží, ďalšie NA EX dať nedá — ani súper", () => {
     const pijan = inst("pijan");
-    const strany: GameState["strany"] = [[lezi(pijan, 0, 0)], [lezi(inst("pijan"), 1)]];
-    expect(naexCieleVLinii(data, strany, 0)).not.toContain(pijan.uid);
-    expect(naexCieleVLinii(data, strany, 1)).not.toContain(pijan.uid);
-    expect(naexCieleVLinii(data, strany, 1)).toHaveLength(1);
+    // Karty vo dvojiciach — NA EX len na kartu s aktívnou aj neaktívnou akciou (2026-10-23).
+    const linia = { lokalita: null, lokalitaOtocena: false, strany: [[lezi(pijan, 0, 0), lezi(inst("pijan"), 0)], [lezi(inst("pijan"), 1), lezi(inst("pijan"), 1)]] as GameState["strany"] };
+    expect(naexCieleVLinii(data, linia, 0)).not.toContain(pijan.uid);
+    expect(naexCieleVLinii(data, linia, 1)).not.toContain(pijan.uid);
+    expect(naexCieleVLinii(data, linia, 1)).toHaveLength(3);
   });
 
   it("§7 Počet Pitiek: Odpor na hrane lokality sa ráta ako jej aktívna akcia, hrana zrušená Odporom karty nie", () => {
@@ -383,10 +385,12 @@ describe("§7 Patronát — obmedzenia", () => {
     const { s, u, obcan } = vPatronate();
     const po = apply(data, s, { type: "patronat", elderId: s.starsi[0]!.elderId, uid: obcan.uid }, u).state;
     const starsi = po.starsi[0]!.karta;
-    const strany: GameState["strany"] = u === 0 ? [[lezi(starsi, 0)], []] : [[], [lezi(starsi, 1)]];
+    // Vedľa Pijana, nech má starší spárovanú aj voľnú akciu (NA EX od 2026-10-23 len vtedy).
+    const strany: GameState["strany"] = u === 0 ? [[lezi(starsi, 0), lezi(inst("pijan"), 0)], []] : [[], [lezi(starsi, 1), lezi(inst("pijan"), 1)]];
+    const linia = { lokalita: null, lokalitaOtocena: false, strany };
     expect(prevahaStran(data, strany)[u]).toBe(u);
-    expect(naexCieleVLinii(data, strany, u)).toContain(starsi.uid);
-    expect(naexCieleVLinii(data, strany, opponentOf(u))).toContain(starsi.uid);
+    expect(naexCieleVLinii(data, linia, u)).toContain(starsi.uid);
+    expect(naexCieleVLinii(data, linia, opponentOf(u))).toContain(starsi.uid);
   });
 
   it("§8.4: pri remíze sa patronát vyrieši ako prehra — starší späť na scorecard, náhrada do ruky, bolestné poldeci", () => {
@@ -519,7 +523,7 @@ describe("§3, §5 a §7 — doplnky prvého prechodu", () => {
 
   it("§5: pečeň z NA EX sa pripíše hneď tomu, kto NA EX dal — aj keď karta je súperova", () => {
     const pijan0 = inst("pijan");
-    const s = vPitke(data, 16, [[lezi(pijan0, 0)], []]);
+    const s = vPitke(data, 16, [[lezi(pijan0, 0), lezi(inst("pijan"), 0)], []]);
     const po = apply(data, s, { type: "naex", uid: pijan0.uid }, 1).state;
     expect(po.hraci[1].pecen).toBe(s.hraci[1].pecen + 1);
     expect(po.hraci[0].pecen).toBe(s.hraci[0].pecen);
@@ -541,9 +545,11 @@ describe("§3, §5 a §7 — doplnky prvého prechodu", () => {
     });
     s = sHracom(s, 0, { poldeciPlne: 1, poldeciVypite: 0, cigarety: 5 });
     // Útočník 0 dokúpi barterom poldeci v Pitke — v ďalšom Zhromaždení má limit 2 + 0 + 1.
-    s = apply(sada, s, { type: "skipNaex" }, 1).state;
+    // Obranca nemá kam dať NA EX (karty bez neaktívnej akcie) — jeho ťah hra prejde sama.
+    if (naTahu(s) === 1) s = apply(sada, s, { type: "skipNaex" }, 1).state;
     s = apply(sada, s, { type: "barter" }, 0).state;
-    s = apply(sada, s, { type: "skipNaex" }, 0).state;
+    // Po barteri mu ostane len „hotovo“ — aj to hra urobí sama.
+    if (s.faza === "pitka") s = apply(sada, s, { type: "skipNaex" }, 0).state;
     expect(s.faza).toBe("zhromazdenie");
     expect(s.zhromazdenieStav?.zostavaLimit[0]).toBe(2 + 0 + 1);
     expect(s.zhromazdenieStav?.naTahu).toBe(0);

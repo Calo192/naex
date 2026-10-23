@@ -352,6 +352,18 @@
       "poznamka": "Znenie opravené podľa rozhodcu #16 (Michal 2026-10-22, implementované 2026-10-23)."
     },
     {
+      "id": "5.naex.aktivna-aj-neaktivna",
+      "paragraf": "5. Poldeci a limit vykladania › NA EX",
+      "pravidlo": "NA EX len na kartu s aspoň 1 aktívnou a aspoň 1 neaktívnou akciou (aj Veterán); súperova skrytá Záverečná vždy a skryté Záverečné sa do posúdenia nerátajú (Michal 2026-10-23).",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/naex-podmienka.test.ts › nie na osamotenú kartu (žiadna aktívna) ani na kartu so všetkými akciami aktívnymi; na zmiešanú áno",
+        "packages/core/test/naex-podmienka.test.ts › Veterán výnimku nemá — so všetkými akciami aktívnymi naňho NA EX nejde",
+        "packages/core/test/naex-podmienka.test.ts › server NA EX na osamotenú kartu odmietne",
+        "packages/core/test/naex-podmienka.test.ts › sused, ktorého akciu páruje len skrytá Záverečná, nie je cieľom pre nikoho — server aj klient súpera vidia to isté"
+      ]
+    },
+    {
       "id": "5.naex.kedy",
       "paragraf": "5. Poldeci a limit vykladania › NA EX",
       "pravidlo": "NA EX len v Pitke, v základe najviac raz za Pitku (Vínna pivnica dvakrát).",

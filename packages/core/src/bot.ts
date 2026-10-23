@@ -566,7 +566,7 @@ function dohrajZhromazdenie(k: Kontext, s: GameState): GameState {
 function sNajlepsimNaex(k: Kontext, s: GameState, q: PlayerId, ostrost: number): number {
   let best = hodnotaStavu(k, s, ostrost);
   if (s.hraci[q].poldeciPlne <= 0) return best;
-  for (const uid of naexCieleVLinii(k.data, s.strany, q)) {
+  for (const uid of naexCieleVLinii(k.data, lineState(s), q)) {
     const cielena = (pl: PlacedCard, si: number): boolean => pl.card.uid === uid || (pl.zaverecna === true && uid === uidZaverecnej(si as PlayerId));
     const strany = s.strany.map((strana, si) => strana.map((pl) => (cielena(pl, si) ? { ...pl, naexBy: q } : pl))) as unknown as GameState["strany"];
     const h = s.hraci[q];

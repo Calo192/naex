@@ -48,7 +48,8 @@ describe("NA EX na vlastné aj súperove karty", () => {
     const podstrcena = lezi("ministrant", 0);
     const superova = lezi("pijan", 1);
     const puska = lezi("puska", 1);
-    const s = vPitke([[moja], [podstrcena, superova, puska]]);
+    // Moja karta so susedom — NA EX len na kartu s aktívnou aj neaktívnou akciou (2026-10-23).
+    const s = vPitke([[moja, lezi("pijan", 0)], [podstrcena, superova, puska]]);
     const naex = legalCommands(data, s, 0).filter((c) => c.type === "naex").map((c) => (c.type === "naex" ? c.uid : 0));
     expect(naex).toContain(moja.card.uid);
     expect(naex).toContain(podstrcena.card.uid);

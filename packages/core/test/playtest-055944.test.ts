@@ -107,7 +107,7 @@ describe("reakcia na NA EX", () => {
   it("súper smie hneď vyložiť jednu kartu mimo limitu, potom je na ťahu znova ten, kto NA EX dal", () => {
     const s0 = setupGame(data, 11);
     const moja = inst("pijan");
-    let s = vPitke(s0, [[lezi(moja, 0)], []]);
+    let s = vPitke(s0, [[lezi(moja, 0), lezi(inst("pijan"), 0)], []]);
     s = apply(data, s, { type: "naex", uid: moja.uid }, 0).state;
     expect(s.pitkaStav?.reakcia).toBe(1);
     expect(naTahu(s)).toBe(1);
@@ -125,7 +125,7 @@ describe("reakcia na NA EX", () => {
   it("bez kariet v ruke sa reakcia neponúka", () => {
     const s0 = setupGame(data, 12);
     const moja = inst("pijan");
-    let s = vPitke({ ...s0, hraci: [s0.hraci[0], { ...s0.hraci[1], ruka: [] }] }, [[lezi(moja, 0)], []]);
+    let s = vPitke({ ...s0, hraci: [s0.hraci[0], { ...s0.hraci[1], ruka: [] }] }, [[lezi(moja, 0), lezi(inst("pijan"), 0)], []]);
     s = apply(data, s, { type: "naex", uid: moja.uid }, 0).state;
     expect(s.pitkaStav?.reakcia).toBeNull();
     expect(naTahu(s)).toBe(0);
@@ -144,7 +144,7 @@ describe("Krčma vynúti NA EX", () => {
     const s0 = setupGame(data, 14);
     const krcma = inst("krcma");
     const moja = inst("pijan");
-    const s = { ...vPitke(s0, [[lezi(moja, 0)], []]), ciel: { typ: "lokalita" as const, lokalita: krcma } };
+    const s = { ...vPitke(s0, [[lezi(moja, 0), lezi(inst("pijan"), 0)], []]), ciel: { typ: "lokalita" as const, lokalita: krcma } };
     expect(legalCommands(data, s, 0)).not.toContainEqual({ type: "skipNaex" });
     expect(() => apply(data, s, { type: "skipNaex" }, 0)).toThrow(/Krčma/);
     // Bez poldeci povinnosť zaniká.

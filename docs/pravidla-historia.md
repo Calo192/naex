@@ -103,3 +103,10 @@ Hra sa nemení — text dobehol správanie jadra. Návrhy sú v sekcii Playtest.
   aspoň 1.
 - **Pijan (§14):** „Ak má Žena v jeho okolí aktívnu akciu Poldeci, súper majiteľa
   Pijana dostane +1 Ranu.“ → text karty „súper ti udelí 1 Ranu“ (Admin).
+
+## 2026-10-23.6 — NA EX len na kartu s aktívnou aj neaktívnou akciou (§5, Michal 2026-10-23)
+
+Nové obmedzenie, nič staré neprepisuje: predtým sa NA EX dalo na každého
+Občana či Starešinu bez poldeci (okrem Liberála a súperovho Anonymného
+alkoholika), aj na kartu bez jedinej spárovanej akcie alebo so všetkými
+akciami aktívnymi.

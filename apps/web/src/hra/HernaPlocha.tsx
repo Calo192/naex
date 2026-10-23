@@ -798,7 +798,7 @@ export function HernaPlocha({
   // NA EX na Občana alebo Starešinu v línii — vlastného aj súperovho (Michal 2026-10-18).
   // Súperova Záverečná lícom dole: NA EX na ňu smie vždy (cez náhradné uid, roadmapa #83).
   const naexCiele = useMemo(
-    () => new Set([...naexCieleVLinii(data, view.strany, ja), ...view.zaverecne.filter((z) => z.majitel !== ja && z.naexBy === null).map((z) => z.uid)]),
+    () => new Set([...naexCieleVLinii(data, lineState(view), ja), ...view.zaverecne.filter((z) => z.majitel !== ja && z.naexBy === null).map((z) => z.uid)]),
     [data, view.strany, view.zaverecne, ja],
   );
 

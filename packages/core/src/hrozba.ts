@@ -72,7 +72,7 @@ export function hrozbaNaex(
   const bitka = (s: StolBitky): DamageResult => poskodenieBitky(data, s, evaluateLine(data, lineState(s)).sums, abstakyVRuke);
   const teraz = hodnota(battleOutcome(bitka(stol)), p);
   let najlepsia: HrozbaNaex | null = null;
-  for (const uid of naexCieleVLinii(data, stol.strany, p)) {
+  for (const uid of naexCieleVLinii(data, lineState(stol), p)) {
     const strany = stol.strany.map((strana) => strana.map((pl) => (pl.card.uid === uid ? { ...pl, naexBy: p } : pl))) as unknown as StolBitky["strany"];
     const damage = bitka({ ...stol, strany });
     const vysledok = battleOutcome(damage);

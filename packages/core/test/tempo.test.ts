@@ -10,8 +10,11 @@ import { KONSTANTY, apply, buildGameData, legalCommands, loadGameData, rozlozRod
 import { EMPTY, instanceFor, makeDef } from "./helpers.ts";
 
 const zaklad = loadGameData(cardsJson, eldersJson, scorecardsJson);
-const dlznik = makeDef("dlznik", [null, "Dlh", null, null], EMPTY);
-const data = buildGameData(new Map([...zaklad.cards, [dlznik.id, dlznik]]), zaklad.elders, {
+// Dva Dlhy: jeden spáruje sused (aktívny), druhý ostane voľný — NA EX smie od
+// 2026-10-23 len na kartu s aktívnou aj neaktívnou akciou.
+const dlznik = makeDef("dlznik", [null, "Dlh", "Dlh", null], EMPTY);
+const sused = makeDef("sused", EMPTY, [null, "Viera", null, null]);
+const data = buildGameData(new Map([...zaklad.cards, [dlznik.id, dlznik], [sused.id, sused]]), zaklad.elders, {
   scorecards: zaklad.scorecards,
   body: zaklad.bodyPodmienok,
 });
@@ -88,10 +91,11 @@ describe("prah Dlhu a Cirhózy", () => {
   });
 
   it("dve akcie Dlh dajú jednu kartu Dlh a zadĺženie klesne na 0", () => {
-    const karta = instanceFor(data, "dlznik", [null, "Dlh", null, null], EMPTY);
+    const karta = instanceFor(data, "dlznik", [null, "Dlh", "Dlh", null], EMPTY);
     const lezi: PlacedCard = { card: karta, playedBy: 0 as PlayerId };
-    const s = vPitke([[lezi], []]);
-    // NA EX zdvojí neaktívny Dlh → 2 akcie Dlh.
+    const pri: PlacedCard = { card: instanceFor(data, "sused", EMPTY, [null, "Viera", null, null]), playedBy: 0 as PlayerId };
+    const s = vPitke([[], [pri, lezi]]);
+    // NA EX zruší spárovaný Dlh a zdvojí voľný → 2 akcie Dlh.
     const naex = apply(data, s, { type: "naex", uid: karta.uid }, 0).state;
     // Súper smie na NA EX odpovedať kartou — tu nechce.
     const bezReakcie = apply(data, naex, { type: "bezReakcie" }, 1).state;

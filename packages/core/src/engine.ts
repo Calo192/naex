@@ -2161,6 +2161,10 @@ function cmdNaex(
     );
     need(def.id !== "liberal", "Liberál: na neho NA EX dať nemožno.");
     need(!chraneneAlkoholikom(s.strany[kde.strana], kde.index, p), "Anonymný alkoholik: na neho NA EX dať nemôžeš.");
+    need(
+      naexMaZmysel(data, lineState(s as GameState)).has(placed.card.uid),
+      "NA EX smie len na kartu, ktorá má aspoň jednu aktívnu a aspoň jednu neaktívnu akciu.",
+    );
   }
 
   hrac(s, p).poldeciPlne -= 1;
@@ -2234,17 +2238,19 @@ export function moznostiNaex(data: GameData, state: GameState, p: PlayerId): num
   const pitka = state.pitkaStav;
   if (pitka === null || pitka.reakcia !== null || zakazNaex(state)) return [];
   if (pitka.naexPouzity[p] || state.hraci[p].poldeciPlne <= 0) return [];
-  return naexCieleVLinii(data, state.strany, p);
+  return naexCieleVLinii(data, lineState(state), p);
 }
 
 /**
  * Karty v línii, na ktoré smie hráč p dať NA EX — spoločné pre server aj klienta.
  * Súperova skrytá Záverečná ide vždy, a to náhradným uid (uidZaverecnej); klient
- * ju v strany nemá a doplní si ju zo zaverecne.
+ * ju v strany nemá a doplní si ju zo zaverecne. Ostatné musia mať aspoň jednu
+ * aktívnu a aspoň jednu neaktívnu akciu (naexMaZmysel, Michal 2026-10-23).
  */
-export function naexCieleVLinii(data: GameData, strany: readonly (readonly PlacedCard[])[], p: PlayerId): number[] {
+export function naexCieleVLinii(data: GameData, line: LineState, p: PlayerId): number[] {
   const out: number[] = [];
-  for (const [si, strana] of strany.entries()) {
+  const zmysel = naexMaZmysel(data, line);
+  for (const [si, strana] of line.strany.entries()) {
     for (const [i, placed] of strana.entries()) {
       if (placed.zaverecna === true) {
         if (placed.naexBy === undefined && placed.playedBy !== p) out.push(uidZaverecnej(si as PlayerId));
@@ -2252,8 +2258,25 @@ export function naexCieleVLinii(data: GameData, strany: readonly (readonly Place
       }
       if (placed.naexBy !== undefined || placed.card.defId === "liberal" || chraneneAlkoholikom(strana, i, p)) continue;
       const tags = defOf(data, placed.card).tags;
-      if (tags.includes("Občan") || tags.includes("Starešina")) out.push(placed.card.uid);
+      if ((tags.includes("Občan") || tags.includes("Starešina")) && zmysel.has(placed.card.uid)) out.push(placed.card.uid);
     }
+  }
+  return out;
+}
+
+/**
+ * Karty, na ktoré má NA EX zmysel (Michal 2026-10-23): aspoň jedna akcia
+ * aktívna (spárovaná a nezrušená Odporom) a aspoň jedna neaktívna — v okamihu
+ * NA EX, aj Veterán. Skryté Záverečné sa do vyhodnotenia nerátajú, inak by
+ * odmietnutie NA EX na ich suseda prezradilo, čo leží lícom dole.
+ */
+export function naexMaZmysel(data: GameData, line: LineState): ReadonlySet<number> {
+  const verejne = line.strany.map((strana) => strana.filter((pl) => pl.zaverecna !== true)) as unknown as LineState["strany"];
+  const ev = evaluateLine(data, { ...line, strany: verejne });
+  const out = new Set<number>();
+  for (const [uid, karta] of ev.cards) {
+    const sloty = [...karta.left, ...karta.right];
+    if (sloty.some((x) => x?.stav === "aktivna") && sloty.some((x) => x?.stav === "neaktivna")) out.add(uid);
   }
   return out;
 }

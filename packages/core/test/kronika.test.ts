@@ -48,7 +48,7 @@ function partia(seed: number, bot: boolean): { s: GameState; k: StavKroniky; sta
 }
 
 describe("kronika partie", () => {
-  for (const [seed, bot] of [[5, false], [9, false], [13, true]] as const) {
+  for (const [seed, bot] of [[5, false], [10, false], [13, true]] as const) {
     it(`seed ${seed}${bot ? " (bot)" : ""}: kolá, bitky, pasy, šenok, NA EX a body sedia`, () => {
       const { s, k, stat, vysledky } = partia(seed, bot);
       expect(s.koniec).not.toBeNull();

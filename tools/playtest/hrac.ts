@@ -684,7 +684,7 @@ function moznosti(v: ClientState): string[] {
       let naexMoznosti = 0;
       if (zakazNaex(v)) out.push("(Kostol: nikto nesmie dať NA EX)");
       if (pk?.naexPouzity[ja] !== true && h.poldeciPlne > 0 && !zakazNaex(v)) {
-        const ciele = new Set(naexCieleVLinii(DATA, v.strany, ja));
+        const ciele = new Set(naexCieleVLinii(DATA, lineState(v), ja));
         for (const p of [0, 1] as const) {
           for (const pl of v.strany[p]) {
             if (!ciele.has(pl.card.uid)) continue;
@@ -704,7 +704,7 @@ function moznosti(v: ClientState): string[] {
         }
       }
       if (pk?.naexPouzity[ja] === true) out.push("(NA EX si v tejto Pitke už dal)");
-      else if (naexMoznosti === 0 && !zakazNaex(v)) out.push("(NA EX ide len na Občana či Starešinu v línii bez poldeci — tvojho aj súperovho, nie Nástroj, nie Liberál, nie na súperovho Anonymného alkoholika — a len s plným poldeci)");
+      else if (naexMoznosti === 0 && !zakazNaex(v)) out.push("(NA EX ide len na Občana či Starešinu v línii, ktorý má aspoň 1 aktívnu a aspoň 1 neaktívnu akciu, bez poldeci — tvojho aj súperovho, nie Nástroj, nie Liberál, nie na súperovho Anonymného alkoholika — a len s plným poldeci)");
       const mamKartu = (defId: string) => [...v.strany[0], ...v.strany[1]].some((pl) => pl.playedBy === ja && pl.card.defId === defId && pl.zaverecna !== true);
       if (mamKartu("postarka") && pk?.postarka[ja] !== true) {
         for (let n = 1; n <= KONSTANTY.EFEKT.POSTARKA_KARTY; n++)
