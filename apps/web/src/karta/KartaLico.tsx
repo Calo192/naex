@@ -204,6 +204,10 @@ export function KartaLico(props: KartaLicoProps) {
         {props.hranaVnutorna !== undefined && [hrana("lava"), hrana("prava")]}
         {lava.map((k, i) => slot("lava", i, k))}
         {prava.map((k, i) => slot("prava", i, k))}
+        {/* Kotvy prvého a posledného slotu (aj prázdneho) — línia podľa nich zarovná akcie na spoji. */}
+        {[g.slotyLave[0], g.slotyLave[g.slotyLave.length - 1]].map(
+          (r, i) => r !== undefined && <span key={`kotva${i}`} className="kl-kotva" style={{ "--y": r.y + r.h / 2 } as CSSProperties} aria-hidden="true" />,
+        )}
         {props.odznaky !== undefined && <div className="kl-odznaky">{props.odznaky}</div>}
       </div>
       {tip}

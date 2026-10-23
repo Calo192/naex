@@ -144,6 +144,16 @@
     filter 0.15s ease;
 }
 
+/* Neviditeľná kotva slotu — línia podľa nej zarovná akcie na spoji (zarovnanieLinie.ts). */
+.kl-kotva {
+  position: absolute;
+  left: 0;
+  top: calc(var(--y) * var(--pt));
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
 /* Hrany karty v návrhu vyloženia: vnútorná (k lokalite) sa spáruje so
    susedom, vonkajšia ostáva voľná pre ďalšiu kartu. */
 .kl-hrana {

@@ -102,7 +102,7 @@ import { KoniecHry } from "./KoniecHry.tsx";
 import { SkratkyNapoveda, useSkratky } from "./skratky.tsx";
 import type { Sada } from "@naex/tvorba";
 import { HernaKarta, vzhladKarty, type HernaKartaProps } from "./HernaKarta.tsx";
-import { SpojeLinie } from "./SpojeLinie.tsx";
+import { useZarovnanieLinie } from "./zarovnanieLinie.ts";
 import { Lupa, maxMierkaLupy } from "./Lupa.tsx";
 import { LUPA_PREDVOLENA, useUcet } from "../lib/ucet.tsx";
 import { Vrstva as VrstvaPanel } from "./Vrstva.tsx";
@@ -428,6 +428,7 @@ export function HernaPlocha({
     });
   };
   const liniaRef = useRef<HTMLDivElement>(null);
+  useZarovnanieLinie(liniaRef);
   // Lepiaca hrana stola má zmysel, len keď je línia nad rukou aspoň trochu vidno.
   // Keď stôl leží skoro celý pod okrajom okna, hrana by sa vysunula cez pilulku
   // pokynu a pás kola (Pitka na 1600 × 1000) — vtedy ostane na stole.
@@ -1406,8 +1407,7 @@ export function HernaPlocha({
       onClick: jeDotyk && fokus ? (e: ReactMouseEvent<HTMLElement>) => otvorLupu(kluc, najdi(e.currentTarget)) : undefined,
     };
   };
-  // Línia je rovný rad (Michal 2026-10-22) — vzpriamená karta už neleží nižšie
-  // kvôli spoju; páry akcií na spoji ukazujú spojnice (SpojeLinie).
+  // Zvislý posun kariet, aby sa akcie na spoji stretli slot pri slote, ráta useZarovnanieLinie z DOM.
   const vLinii = (obsah: ReactNode, kluc?: number): ReactNode => (
     <div key={kluc} className="v-linii">
       {obsah}
@@ -3822,7 +3822,6 @@ export function HernaPlocha({
                 {popisKraja(super_, "vpravo")}
                 <div className="partia-rad harmonika">{radStrany(super_)}</div>
               </div>
-              <SpojeLinie liniaRef={liniaRef} />
             </div>
             {stlpecStarsich(view.starsi.slice(4), "vpravo")}
             </div>
