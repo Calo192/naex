@@ -180,6 +180,7 @@ export interface PitkaStav {
 
 export type BitkaKrok =
   | "benzinka"
+  | "kar"
   | "exekutor"
   | "pohorsenie"
   | "prebytok"
@@ -208,6 +209,8 @@ export interface BitkaStav {
   readonly pohrebHotovy: readonly [boolean, boolean];
   /** Benzínka: koľko svojich Občanov z línie má hráč ešte zahodiť. */
   readonly benzinkaZostava: readonly [number, number];
+  /** Kar: hráč už rozhodol, či zahodí nepriznanú Cirhózu z ruky. */
+  readonly karHotovy: readonly [boolean, boolean];
   /** Karty z línie, ktoré sa po bitke spália namiesto návratu (Dievčina na vydaj). */
   readonly spalit: readonly number[];
   readonly vesticaHotova: boolean;
@@ -328,6 +331,8 @@ export type Command =
   | { readonly type: "starosta"; readonly rukaUid: number; readonly senokUid: number }
   // Benzínka: vlastní Občania z línie, ktorí sa zahodia.
   | { readonly type: "benzinka"; readonly uids: readonly number[] }
+  // Kar (Bitka, roadmapa #80): zahoď jednu nepriznanú Cirhózu z ruky, alebo nič (uid null).
+  | { readonly type: "kar"; readonly uid: number | null }
   // Veštica (Prehra): poradové čísla v odhalených doberacích balíčkoch.
   | { readonly type: "vestica"; readonly moja: number; readonly jeho: number }
   // Vízia na konci Pitky: vrchnú kartu doberacieho balíčka do ruky (true), alebo zahodiť (false).
@@ -1133,6 +1138,9 @@ export function apply(
       break;
     case "starosta":
       cmdStarosta(s, data, cmd, hracId, events);
+      break;
+    case "kar":
+      cmdKar(s, data, cmd, hracId, events);
       break;
     case "benzinka":
       cmdBenzinka(s, data, cmd, hracId, events);
@@ -2618,6 +2626,7 @@ function zacniBitku(s: MutState, data: GameData, events: Event[]): void {
     prebytokPosunute: [],
     pohrebHotovy: [false, false],
     benzinkaZostava: [0, 0],
+    karHotovy: [false, false],
     spalit: [],
     vesticaHotova: false,
   };
@@ -2733,6 +2742,23 @@ function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
       b.benzinkaZostava[p] = 0;
     }
     nastavSumy(s, data, events);
+    b.krok = "kar";
+  }
+
+  // 0b. Kar (roadmapa #80): kto má v ruke nepriznanú Cirhózu, smie jednu zahodiť
+  // (obranca, potom útočník). Súperov Hrobár za to dostane cigaretu.
+  if (b.krok === "kar") {
+    if (jeCielLokalita(s as GameState, "kar")) {
+      for (const p of [obranca(s), s.utocnik]) {
+        if (b.karHotovy[p]) continue;
+        if (!s.hraci[p].ruka.some((k) => k.defId === "cirhoza")) {
+          b.karHotovy[p] = true;
+          continue;
+        }
+        b.caka = p;
+        return;
+      }
+    }
     b.krok = "exekutor";
   }
 
@@ -2860,6 +2886,20 @@ function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
     b.cintorinHotovy = true;
     koniecBitky(s, data, events);
   }
+}
+
+function cmdKar(s: MutState, data: GameData, cmd: { uid: number | null }, p: PlayerId, events: Event[]): void {
+  const b = s.bitkaStav;
+  need(s.faza === "bitka" && b !== null && b.krok === "kar" && b.caka === p, "Nečaká sa na Kar.");
+  if (cmd.uid !== null) {
+    const karta = s.hraci[p].ruka.find((k) => k.uid === cmd.uid);
+    need(karta !== undefined && karta.defId === "cirhoza", "Na Kare smieš zahodiť len nepriznanú Cirhózu z ruky.");
+    vezmiZRuky(s, p, cmd.uid);
+    events.push({ type: "log", text: `Kar: hráč ${p + 1} ${rodovo(p, "zahodil", "zahodila", "zahadzuje")} nepriznanú Cirhózu z ruky.` });
+    poZahodeni(s, data, p, 1, events);
+  }
+  b.karHotovy[p] = true;
+  pokracujBitku(s, data, events);
 }
 
 function cmdBenzinka(s: MutState, data: GameData, cmd: { uids: readonly number[] }, p: PlayerId, events: Event[]): void {
@@ -3735,7 +3775,11 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
       // apply prijme aj ľubovoľný iný výber správnej veľkosti).
       const okna = (uids: readonly number[], k: number): number[][] =>
         k <= 0 ? [[]] : Array.from({ length: Math.max(0, uids.length - k + 1) }, (_, i) => uids.slice(i, i + k));
-      if (b.krok === "benzinka") {
+      if (b.krok === "kar") {
+        out.push({ type: "kar", uid: null });
+        const cirhoza = state.hraci[p].ruka.find((k) => k.defId === "cirhoza");
+        if (cirhoza !== undefined) out.push({ type: "kar", uid: cirhoza.uid });
+      } else if (b.krok === "benzinka") {
         const obcania = obcaniaVLinii(state, data, p).map((o) => o.card.uid);
         for (const uids of okna(obcania, b.benzinkaZostava[p])) out.push({ type: "benzinka", uids });
       } else if (b.krok === "cintorin") {

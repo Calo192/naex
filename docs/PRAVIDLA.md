@@ -713,6 +713,10 @@ Krčmárka (otočí vypitý poldeci) a Dievčina na vydaj (spáli priznané Dlhy
 a seba) (§14). Stará Benzínka (spálenie Občanov a prepadnutie lokality) od
 2026-10-20 neplatí — Benzínka zakazuje fajčiť (§14, Lokality).
 
+**Kar** (roadmapa #80): po Krčmárke a Dievčine na vydaj sa každý hráč s nepriznanou
+Cirhózou v ruke rozhodne (obranca, potom útočník), či jednu zahodí — navždy
+z hry; súperov Hrobár za ňu dostane cigaretu.
+
 ### 1. Exekútor
 
 Najprv **Robota**: za každú aktívnu Robotu hráč **spáli** 1 priznaný Dlh
@@ -1083,7 +1087,8 @@ klient ukazuje neresti oboch hráčov a výhľad (`stavZavislosti`).
 
 14 lokalít — 7 prerobených a 7 nových (návrh `docs/playtesty/navrh-lokality.html`,
 voľba Michala 2026-10-20). Akcie na hranách určujú počet Pitiek (§7); efekt
-platí v kole, keď je lokalita cieľom. Všetkých 14 je v zverejnenej sade.
+platí v kole, keď je lokalita cieľom. Všetkých 14 je v zverejnenej sade;
+Kar (roadmapa #80) je v tvorcovi ako koncept a čaká na zverejnenie.
 
 | Lokalita | Kedy | Efekt |
 |---|---|---|
@@ -1096,6 +1101,7 @@ platí v kole, keď je lokalita cieľom. Všetkých 14 je v zverejnenej sade.
 | Zberný dvor | Pitka | Raz za Pitku: za 1 cigaretu karta z vlastného odhadzovacieho balíčka do ruky (cigareta je nerest ako pri barteri). |
 | Most | Zhromaždenie, Pitka | Karty sa smú vykladať len na vlastnú stranu — aj odpoveď na NA EX. |
 | Cintorín | Prehra | Porazený smie po Pohrebe dať jeden Nástroj z ruky do Dedičstva bez platenia; spoločná cena Dedičstva sa zvýši ako vždy. |
+| Kar | Bitka | Na začiatku bitky smie každý hráč (obranca, potom útočník) zahodiť jednu **nepriznanú** Cirhózu z ruky — navždy z hry; súperov Hrobár za ňu dostane cigaretu. Kraje „pri vdove“ (Viera, Povera) a „pri koláčoch“ (Poldeci, Rana). (Roadmapa #80, 2026-10-23.) |
 | Obecný úrad | Bitka | Prah Exekútora je o 4 nižší; každá Robota spáli 2 priznané Dlhy namiesto 1 (od 2026-10-21; predtým ich odhodila). |
 | Jednota | Pitka | Stokársky barter (nový poldeci) je o 1 cigaretu lacnejší. |
 | Kultúrny dom | Bitka | Pohoršenie nemá limit dvoch hraníc zón (na krajnú pozíciu stále nie). Predtým: ten istý marker viackrát — to je od 2026-10-20 bežné pravidlo. |

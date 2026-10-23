@@ -1009,6 +1009,13 @@ function bitka(v: Volba): Command | null {
         .sort((x, y) => hodnotaKarty(data, x.card) - hodnotaKarty(data, y.card));
       return { type: "benzinka", uids: obcania.slice(0, pocet).map((pl) => pl.card.uid) };
     }
+    case "kar": {
+      // Kar: nepriznaná Cirhóza na konci uberá body — zahodí ju, kým balíček
+      // neklesne nebezpečne blízko k prehre (pod 5 kariet).
+      const balicek = h.ruka.length + h.doberaci.length + h.odhadzovaci.length + partiaHraca(state, ja).length;
+      const zahod = v.legal.find((c) => c.type === "kar" && c.uid !== null);
+      return balicek > KONSTANTY.MIN_VELKOST_BALICKA + 2 && zahod !== undefined ? zahod : { type: "kar", uid: null };
+    }
     case "cintorin": {
       // Cintorín: zadarmo do Dedičstva najcennejší Nástroj z ruky.
       let best: Command | null = null;

@@ -414,6 +414,8 @@ describe("§7 Patronát — obmedzenia", () => {
           prebytokPosunute: [],
           pohrebHotovy: [false, true],
           benzinkaZostava: [0, 0],
+
+          karHotovy: [true, true],
           spalit: [],
           vesticaHotova: true,
         },

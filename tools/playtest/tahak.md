@@ -50,7 +50,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   limitov; pas dá cigarety len za tvoj vlastný zvyšok limitu), Lesná cesta (+1 tuhé za tvojho Občana/Zviera/Starešinu v súperovom kraji, max +2),
   Ihrisko (+2 tuhé za každý kraj, kde máš viac svojich Občanov, Zvierat a Starešinov), Zberný
   dvor (raz za Pitku `vykup`: cigareta → karta z odhadzovacieho do ruky),
-  Most (len na vlastnú stranu), Cintorín (porazený `cintorin`: Nástroj
+  Most (len na vlastnú stranu), Kar (na začiatku bitky `{"type":"kar","uid":…|null}`: zahoď
+  jednu nepriznanú Cirhózu z ruky, súperov Hrobár dostane cigaretu), Cintorín (porazený `cintorin`: Nástroj
   z ruky do Dedičstva zadarmo), Obecný úrad (prah Exekútora −4, Robota
   spáli 2 Dlhy), Jednota (barter −1), Kultúrny dom (Pohoršenie bez limitu
   dvoch hraníc zón), Vínna pivnica (NA EX 2× za Pitku), Družstvo (Pracujúci

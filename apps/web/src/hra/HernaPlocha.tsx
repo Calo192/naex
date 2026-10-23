@@ -2788,6 +2788,22 @@ export function HernaPlocha({
             ),
           };
         }
+        if (b.krok === "kar") {
+          // Kar (roadmapa #80): jednu nepriznanú Cirhózu z ruky smie hráč zahodiť.
+          const cirhoza = view.ruka.find((k) => k.defId === "cirhoza");
+          return {
+            nadpis: "Kar",
+            text: "Na Kare smieš zahodiť jednu nepriznanú Cirhózu z ruky — navždy z hry. Súperov Hrobár za ňu dostane cigaretu.",
+            tlacidla: (
+              <>
+                <button onClick={() => posli({ type: "kar", uid: null })}>nechať si ju</button>
+                <button className="tlacidlo-hlavne" disabled={cirhoza === undefined} onClick={() => cirhoza !== undefined && posli({ type: "kar", uid: cirhoza.uid })}>
+                  zahodiť Cirhózu
+                </button>
+              </>
+            ),
+          };
+        }
         if (b.krok === "cintorin") {
           // Cintorín (Michal 2026-10-20): porazený dá Nástroj z ruky do Dedičstva zadarmo.
           const nastroje = view.ruka.filter((k) => (data.cards.get(k.defId)?.tags ?? []).includes("Nástroj"));

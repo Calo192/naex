@@ -29,6 +29,8 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     prebytokPosunute: [],
     pohrebHotovy: [true, true],
     benzinkaZostava: [0, 0],
+
+    karHotovy: [true, true],
     spalit: [],
     vesticaHotova: true,
     ...b,

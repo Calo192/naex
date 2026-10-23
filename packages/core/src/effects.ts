@@ -110,6 +110,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   kulturny_dom: "impl", // Bitka: Pohoršenie bez limitu hraníc zón (na krajnú stále nie)
   vinna_pivnica: "impl", // Pitka: NA EX až dvakrát
   druzstvo: "impl", // Zhromaždenie: Pracujúci nemíňajú limit vykladania
+  kar: "impl", // Bitka: každý smie zahodiť jednu nepriznanú Cirhózu z ruky; súperov Hrobár dostane cigaretu (roadmapa #80)
 };
 
 export function jeEfektManual(defId: string): boolean {

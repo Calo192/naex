@@ -1174,6 +1174,17 @@
       ]
     },
     {
+      "id": "14.lokalita.kar",
+      "paragraf": "14. Efekty kariet — výklad › Lokality (Michal 2026-10-20)",
+      "pravidlo": "Kar: na začiatku bitky smie každý (obranca, potom útočník) zahodiť jednu nepriznanú Cirhózu z ruky; súperov Hrobár dostane cigaretu.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/kar.test.ts › bitka počká na obrancu, ktorý má v ruke Cirhózu; zahodená Cirhóza zmizne z hry a súperov Hrobár dostane cigaretu",
+        "packages/core/test/kar.test.ts › Cirhózu si hráč smie nechať; bez Cirhózy v ruke sa krok preskočí",
+        "packages/core/test/kar.test.ts › inde ako na Kare sa krok nekoná"
+      ]
+    },
+    {
       "id": "8.zberatel-zruseny",
       "paragraf": "8. Vyhodnotenie bitky — presné poradie › 6b. Zberateľ — zrušený",
       "pravidlo": "Krok Zberateľa po bitke zanikol; staré sady so Zberateľom či Očumovateľom sa načítajú ako Úžerník.",

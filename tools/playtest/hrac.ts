@@ -734,6 +734,12 @@ function moznosti(v: ClientState): string[] {
       if (b?.krok === "vestica") {
         out.push(`{"type":"vestica","moja":I,"jeho":J}   — Veštica: vymeň kartu I zo svojho doberacieho balíčka za kartu J zo súperovho (zoznamy vyššie); balíčky sa potom zamiešajú`);
       }
+      if (b?.krok === "kar") {
+        // Kar (roadmapa #80): nepriznaná Cirhóza z ruky preč — na konci by uberala body.
+        const cirhoza = v.ruka.find((k) => k.defId === "cirhoza");
+        if (cirhoza !== undefined) c({ type: "kar", uid: cirhoza.uid }, "Kar: zahoď jednu nepriznanú Cirhózu z ruky (navždy z hry; balíček sa zmenší — pod 5 kariet prehra; súperov Hrobár dostane cigaretu)");
+        c({ type: "kar", uid: null }, "Kar: Cirhózu si nechať");
+      }
       if (b?.krok === "cintorin") {
         // Cintorín (Michal 2026-10-20): porazený dá Nástroj z ruky do Dedičstva zadarmo.
         for (const k of v.ruka) {

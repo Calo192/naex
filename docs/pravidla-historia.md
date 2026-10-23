@@ -77,3 +77,7 @@ Staré znenie riadku §14:
 
 Nové pravidlo, nič staré nenahrádza: §7 Zhromaždenie › Záverečná a krok 8
 v poradí Pitky (otočenie Záverečných).
+
+## 2026-10-23.5 — lokalita Kar (roadmapa #80)
+
+Nové pravidlo, nič staré nenahrádza: §8.0 a riadok Kar v tabuľke lokalít §14.
