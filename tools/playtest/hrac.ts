@@ -40,6 +40,7 @@ import {
   cieleVykladania,
   cielLokalitaId,
   evaluateLine,
+  hrozbaNaex,
   barterCena,
   limitBuduceKolo,
   limitZhromazdenia,
@@ -402,6 +403,20 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
     out.push(
       `  → ${o.vitaz === null ? `REMÍZA — ${posledna ? "posledná bitka: lokalita (aj sekera) prepadne" : "lokalita ide na sekeru, berie ju víťaz najbližšej bitky"}` : o.vitaz === ja ? "vyhrávaš" : "prehrávaš"}. Pravidlo remízy: pri rovnakom tuhom nevyhrá nikto — lokalita na sekeru (v poslednej bitke prepadne), útočník ostáva; prebytok drží vyššie celkové.${sekera}`,
     );
+    // Hrozba na stole (Michal 2026-10-23): to isté, čo web ukáže v riadku bitky — najsilnejšie
+    // NA EX z kariet na stole, ruka sa neráta. Len keď mení víťaza alebo prebytok.
+    if (v.bitkaStav === null) {
+      const priebeh = { faza: v.faza, pitkaStav: v.pitkaStav, pitkaCislo: v.pitkaCislo, pitkyCelkom: v.pitkyCelkom, poldeciPlne: [v.hraci[0].poldeciPlne, v.hraci[1].poldeciPlne] as const };
+      for (const p of [su, ja]) {
+        const h = hrozbaNaex(DATA, { ...stol, lokalitaOtocena: v.lokalitaOtocena }, priebeh, p, ja === 0 ? [abstaky, 0] : [0, abstaky]);
+        const pl = h === null ? undefined : v.strany.flat().find((x) => x.card.uid === h.uid);
+        if (h === null || pl === undefined) continue;
+        const kto = h.vysledok.vitaz === null ? "remíza" : h.vysledok.vitaz === ja ? "vyhrávaš" : "prehrávaš";
+        out.push(
+          `  HROZBA NA STOLE: ${p === ja ? "ty ešte môžeš" : "súper ešte môže"} dať NA EX na ${meno(pl.card.defId)} [${h.uid}] → tuhé ty ${h.damage.tuhe[ja]} : súper ${h.damage.tuhe[su]}, ${kto}${h.vysledok.prebytokDrzi === null ? "" : `, prebytok ${h.vysledok.prebytok} → ${h.vysledok.prebytokDrzi === ja ? "tebe" : "súperovi"}`} (ruka sa neráta).`,
+        );
+      }
+    }
     // Patronát (Michal 2026-10-20): kto má staršieho v ruke, pri výhre si ho nechá, pri prehre odhodí poldeci.
     for (const p of [ja, su] as const) {
       const pat = v.patronat[p];

@@ -22,6 +22,7 @@ export * from "./kronika.ts";
 export * from "./prehravac.ts";
 export * from "./view.ts";
 export * from "./nahlady.ts";
+export * from "./hrozba.ts";
 export * from "./zavislost.ts";
 export * from "./statistiky.ts";
 export * from "./statistikyKariet.ts";

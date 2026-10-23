@@ -4506,6 +4506,14 @@ button.auto-hotovo-odkaz {
     height: 100%;
   }
 
+  /* Riadok bitky preberá výšku pásu. Pás, ktorý sa zmestí do jedného riadku
+     (1920 × 1080: 41 px), bol nižší než súhrn s riadkom hrozby pod ním — hrozba
+     sa odrezala (UI inšpekcia, bugfix/hrozba). Pás má preto vždy výšku dvoch
+     riadkov, takže sa pri prepnutí ani pri objavení hrozby nič nepohne. */
+  .pas-kola-obal {
+    min-height: 64px;
+  }
+
   .bitka-panel.riadok .bitka-strana {
     gap: 10px;
     padding: 3px 12px;
@@ -4593,6 +4601,45 @@ button.auto-hotovo-odkaz {
 
 .suhrn-bitky.prehravam > b {
   color: var(--cervena-text);
+}
+
+/* Hrozba na stole (Michal 2026-10-23): čo ešte zmení jedno NA EX z kariet na stole.
+   V riadku bitky vedľa súhrnu, v celom paneli pod verdiktom; celé znenie v titulku. */
+.hrozba-bitky {
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: help;
+}
+
+.hrozba-bitky-riadok {
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 0.78rem;
+  color: var(--tlmeny);
+}
+
+.hrozba-bitky-riadok .hrozba-bitky {
+  font-size: inherit;
+}
+
+.hrozba-bitky.su {
+  color: var(--cervena-text);
+}
+
+.hrozba-bitky.ja {
+  color: var(--zelena);
+}
+
+.s-lupou.hrozba-ciel > .kl,
+.s-lupou.hrozba-ciel > .tahatelna > .kl {
+  outline: 3px solid var(--akcent);
+  outline-offset: 2px;
 }
 
 .suhrn-bitky-nadpis {
