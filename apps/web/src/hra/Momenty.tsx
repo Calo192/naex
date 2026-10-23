@@ -12,8 +12,12 @@ import "./hra.css";
 
 /** Ako dlho pečiatka ostane na stole. */
 const NA_STOLE_MS = 3_200;
-/** Moment z bitky počká, kým dobehne výsledok bitky (Počítadlo bitky). */
-const PO_BITKE_MS = 4_000;
+/**
+ * Moment z bitky čaká na koniec Počítadla bitky (pocitadloBezi). Toľko mu dáme,
+ * kým sa Počítadlo rozbehne; keď sa nespustí vôbec (preskočené, bez animácií),
+ * pečiatka padne hneď po ňom.
+ */
+const ROZBEH_POCITADLA_MS = 150;
 /** Ukážka z adresy ostane dlhšie, nech ju stihne odfotiť nástroj. */
 const UKAZKA_MS = 60_000;
 
@@ -30,30 +34,46 @@ export interface MomentyProps {
   /** Mená hráčov podľa miesta — do popisu („Hráč N“ → meno). */
   readonly mena: readonly string[];
   readonly hovor: (skupina: SkupinaHlasky) => void;
+  /** Beží Počítadlo bitky — pečiatka z bitky počká, nech nepadne pod neho. */
+  readonly pocitadloBezi?: boolean;
 }
 
-export function Momenty({ udalosti, ja, mena, hovor }: MomentyProps) {
-  const [aktivny, setAktivny] = useState<{ readonly id: number; readonly moment: Moment } | null>(() => {
+type Aktivny = { readonly id: number; readonly moment: Moment };
+
+export function Momenty({ udalosti, ja, mena, hovor, pocitadloBezi = false }: MomentyProps) {
+  const [aktivny, setAktivny] = useState<Aktivny | null>(() => {
     const u = ukazkaZAdresy();
     return u === null ? null : { id: -1, moment: u };
   });
   // Časovače neruší nová správa zo servera (bot ťahá rýchlo) — len odchod zo stola.
   const casovace = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const [poBitke, setPoBitke] = useState<Aktivny | null>(null);
   const hovorRef = useRef(hovor);
   hovorRef.current = hovor;
+  const jaRef = useRef(ja);
+  jaRef.current = ja;
+
+  const ukaz = useRef((a: Aktivny): void => {
+    setAktivny(a);
+    hovorRef.current(skupinaMomentu(a.moment, jaRef.current));
+    casovace.current.push(setTimeout(() => setAktivny((x) => (x?.id === a.id ? null : x)), NA_STOLE_MS));
+  }).current;
 
   useEffect(() => {
     const moment = udalosti.events.flatMap((e) => (e.type === "moment" ? [e.moment] : [])).at(-1);
     if (moment === undefined) return;
-    const caka = udalosti.events.some((e) => e.type === "bitkaVysledok") ? PO_BITKE_MS : 0;
-    casovace.current.push(
-      setTimeout(() => {
-        setAktivny({ id: udalosti.id, moment });
-        hovorRef.current(skupinaMomentu(moment, ja));
-      }, caka),
-      setTimeout(() => setAktivny((a) => (a?.id === udalosti.id ? null : a)), caka + NA_STOLE_MS),
-    );
-  }, [udalosti, ja]);
+    if (udalosti.events.some((e) => e.type === "bitkaVysledok")) setPoBitke({ id: udalosti.id, moment });
+    else ukaz({ id: udalosti.id, moment });
+  }, [udalosti, ukaz]);
+
+  useEffect(() => {
+    if (poBitke === null || pocitadloBezi) return;
+    const t = setTimeout(() => {
+      setPoBitke(null);
+      ukaz(poBitke);
+    }, ROZBEH_POCITADLA_MS);
+    return () => clearTimeout(t);
+  }, [poBitke, pocitadloBezi, ukaz]);
 
   useEffect(() => {
     if (aktivny?.id === -1) casovace.current.push(setTimeout(() => setAktivny((a) => (a?.id === -1 ? null : a)), UKAZKA_MS));

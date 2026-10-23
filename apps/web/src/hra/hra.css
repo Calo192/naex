@@ -6276,6 +6276,18 @@ button.auto-hotovo-odkaz {
   }
 }
 
+/* Nízke okno: v Pitke pás kola posunie pokyn nadol — pečiatka nižšie a menej
+   naklonená, nech sa jej roh pokynu nedotkne (UI inšpekcia, 1366×650). */
+@media (max-height: 719px) {
+  .moment-vrstva {
+    padding-top: 46vh;
+  }
+
+  .moment-pecat {
+    rotate: -2deg;
+  }
+}
+
 /* Ukážka z adresy (?ukazka-momentu=…) neodchádza — kvôli snímkam a inšpekcii. */
 .moment-pecat.moment-ukazka {
   animation: moment-dopad 0.45s cubic-bezier(0.2, 1.4, 0.4, 1) both;
