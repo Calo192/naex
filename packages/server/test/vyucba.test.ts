@@ -75,15 +75,21 @@ describe("výučba „Prvá hra“", () => {
     const { cookie } = await registruj(server.port);
     const { k, prvy } = await zacni(cookie);
     // Krok 0 je text — príkaz neprejde.
+    expect((prvy.krok as KrokMsg).kto).toBe("info");
     k.posli({ type: "cmd", cmd: { type: "pass" } });
     expect(String((await k.cakaj("error")).text)).toMatch(/Melichar/);
-    k.posli({ type: "vyucbaDalej" });
-    const druhy = await k.cakaj("vyucba");
-    expect((druhy.krok as KrokMsg).kto).toBe("hrac");
+    // Texty pred prvým ťahom hráča preklikne „ďalej“.
+    let msg = prvy;
+    while ((msg.krok as KrokMsg).kto === "info") {
+      k.posli({ type: "vyucbaDalej" });
+      msg = await k.cakaj("vyucba");
+    }
+    const tah = msg.krok as KrokMsg;
+    expect(tah.kto).toBe("hrac");
     // Iný ťah než ten dovolený server odmietne a krok zopakuje.
     k.posli({ type: "cmd", cmd: { type: "pass" } });
     expect(String((await k.cakaj("error")).text)).toMatch(/Vo výučbe teraz urob toto/);
-    expect((await k.cakaj("vyucba")).krok).toMatchObject({ index: 1 });
+    expect((await k.cakaj("vyucba")).krok).toMatchObject({ index: tah.index });
     k.posli({ type: "vyucbaDalej" });
     expect(String((await k.cakaj("error")).text)).toMatch(/Teraz nie je čo potvrdiť/);
     k.zavri();

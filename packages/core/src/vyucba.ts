@@ -28,7 +28,10 @@ export interface Rozdanie {
   readonly seed: number;
   /** Lokality v poradí, v akom prídu do hry — ich počet je dĺžka hry. */
   readonly lokality: readonly string[];
-  /** Scorecard pre každého staršieho (elderId → id scorecardu); chýbajúci podľa seedu. */
+  /**
+   * Scorecard pre každého staršieho (elderId → priazeň, napr. „UZERNIK“, alebo
+   * id scorecardu); chýbajúci podľa seedu. Priazeň platí v každej sade.
+   */
   readonly scorecardy?: Readonly<Record<string, string>>;
   /** Útočník prvého kola. */
   readonly utocnik: PlayerId;
