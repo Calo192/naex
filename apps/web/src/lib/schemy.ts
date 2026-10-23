@@ -85,7 +85,7 @@ export const SCHEMY: readonly Schema[] = [
     popis: "Svetlá: slonovinový papier, sépia a okrová.",
     wada: "Ivory Buff · Sepia · Yellow Ocher",
     tmava: false,
-    nahlad: ["#f5ecd9", "#fef9ee", "#865100", "#312317"],
+    nahlad: ["#f5ecd9", "#fef9ee", "#723f00", "#312317"],
   },
   {
     id: "lan",
@@ -93,7 +93,7 @@ export const SCHEMY: readonly Schema[] = [
     popis: "Svetlá: chladné plátno, bridlicový text a slivková.",
     wada: "Pale Gull Gray · Dark Slate · Vinaceous",
     tmava: false,
-    nahlad: ["#e7eef4", "#f6f9fd", "#7b3d69", "#22272d"],
+    nahlad: ["#e7eef4", "#f6f9fd", "#70335f", "#22272d"],
   },
   // Michal 2026-10-23: zemité a krémové schémy, príjemné pre oči — bez jasnej bielej.
   {
