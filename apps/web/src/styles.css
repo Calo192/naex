@@ -634,8 +634,29 @@ textarea {
   }
 }
 
+/* Malý notebook (MacBook 13" s oknom ≈ 1440): 9 položiek menu aj blok partie sa zmestia
+   s tesnejšími medzerami — hamburger až pod 1400 px (Michal 2026-10-23). */
+@media (min-width: 1400px) and (max-width: 1499px) {
+  .hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) {
+    gap: 10px;
+    padding: 0 12px;
+  }
+
+  .hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .navigacia {
+    gap: 0;
+  }
+
+  .hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .navigacia a {
+    padding: 8px 6px;
+  }
+
+  .hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .ucet-meno {
+    display: none;
+  }
+}
+
 /* Užšie okno sa s blokom partie nezmestí — menu ide za hamburger (návrh C, 2026-10-22). */
-@media (max-width: 1499px) {
+@media (max-width: 1399px) {
   .hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .hamburger {
     display: flex;
   }
@@ -643,7 +664,7 @@ textarea {
   .hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .navigacia {
     display: none;
     position: absolute;
-    top: 64px;
+    top: 100%;
     left: 0;
     right: 0;
     flex: none;

@@ -210,10 +210,15 @@ const SIRKA_V_RUKE = 120;
 const SIRKA_V_RUKE_MOBIL = 72;
 /** Pod touto šírkou okna je rozloženie mobilné. */
 const MOBIL = 760;
+/** Výšky okna, pod ktorými sa stôl zhustí — rovnaké hranice má hra.css (@media max-height). */
+const NOTEBOOK = 920;
+const NIZKE_OKNO = 720;
 /** Partia je stredobod hry — karty 1,5× väčšie než pôvodných 132 px. */
 const SIRKA_V_LINII = 198;
 /** Dlhá línia sa zmenší na šírku stola, ale nie pod túto šírku karty. */
 const SIRKA_V_LINII_MIN = 96;
+/** Najmenšia karta v línii, keď ju zmenšuje výška stola (1366 × 650). */
+const SIRKA_V_LINII_NIZKA = 50;
 /** Miesto na klik na konci strany — zlomok šírky karty v línii. */
 const MIESTO_VOLBY = 0.42;
 /** Karty v šenku a lokalitách — väčšie než kedysi v bočnom paneli. */
@@ -221,9 +226,9 @@ const SIRKA_VO_VRSTVE = 150;
 /** Výška / šírka karty (54 × 80 mm) — výška línie určuje veľkosť kariet (Stôl bez scrollovania, #67). */
 const POMER_KARTY = 80 / 54;
 /** Čo línia zaberá okrem kariet: okraj, popisy strán, rezerva posuvníka. */
-const PRIDAVOK_LINIE = 92;
+const PRIDAVOK_LINIE = 74;
 /** Najmenší posun kariet akcia ku akcii (zlomok výšky karty), kým ho línia nezmeria. */
-const REZERVA_POSUNU = 0.4;
+const REZERVA_POSUNU = 0.3;
 
 /** Pravý klik = odstrániť / zrušiť (Michal 2026-10-20) — bez kontextovej ponuky prehliadača. */
 function pravyKlik(fn: (() => void) | undefined): ((e: React.MouseEvent) => void) | undefined {
@@ -396,15 +401,20 @@ export function HernaPlocha({
   const body = useMemo(() => bodyTeraz(data, view), [data, view]);
   // Šírka okna — na mobile menšia ruka a predvolene zbalení starší.
   const [sirkaOkna, setSirkaOkna] = useState(() => (typeof window === "undefined" ? 1600 : window.innerWidth));
+  const [vyskaOkna, setVyskaOkna] = useState(() => (typeof window === "undefined" ? 1000 : window.innerHeight));
   useEffect(() => {
-    const zmena = (): void => setSirkaOkna(window.innerWidth);
+    const zmena = (): void => {
+      setSirkaOkna(window.innerWidth);
+      setVyskaOkna(window.innerHeight);
+    };
     window.addEventListener("resize", zmena);
     return () => window.removeEventListener("resize", zmena);
   }, []);
   const mobil = sirkaOkna < MOBIL;
   // Dotyková obrazovka bez myši — kartu v ruke zväčší ťuknutie (hover tam nie je).
   const jeDotyk = useMemo(() => typeof window !== "undefined" && window.matchMedia?.("(hover: none)").matches === true, []);
-  const sirkaVRuke = mobil ? SIRKA_V_RUKE_MOBIL : SIRKA_V_RUKE;
+  // Nízky notebook (MacBook 14" ≈ 860 px, 13" s lištou ≈ 800, 1366 × 650): menšia ruka nechá výšku stolu.
+  const sirkaVRuke = mobil ? SIRKA_V_RUKE_MOBIL : vyskaOkna < NIZKE_OKNO ? 84 : vyskaOkna < NOTEBOOK ? 96 : SIRKA_V_RUKE;
   // Časová os kola sa lepí pod hlavičku webu — tá je tiež prilepená, preto jej výška.
   const [vyskaHlavicky, setVyskaHlavicky] = useState(0);
   useEffect(() => {
@@ -463,6 +473,32 @@ export function HernaPlocha({
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
+  // Voľba cieľa a draft ležia vo vrstve na stole: karty sa zväčšia na jej výšku.
+  // Réžia = všetko v paneli okrem kariet (hlavička, popisy, rad šenku zatiaľ bez kariet);
+  // zmeria sa po vykreslení a karty sa prepočítajú — ako rezerva posunu línie.
+  const [vrstvaFazyEl, setVrstvaFazyEl] = useState<HTMLDivElement | null>(null);
+  const [vyskaVrstvy, setVyskaVrstvy] = useState(0);
+  const [reziaDraftu, setReziaDraftu] = useState(140);
+  useEffect(() => {
+    if (vrstvaFazyEl === null) return;
+    const ro = new ResizeObserver(([z]) => setVyskaVrstvy(Math.floor(z?.contentRect.height ?? 0)));
+    ro.observe(vrstvaFazyEl);
+    return () => ro.disconnect();
+  }, [vrstvaFazyEl]);
+  useLayoutEffect(() => {
+    const panel = vrstvaFazyEl?.firstElementChild;
+    if (!(panel instanceof HTMLElement)) return;
+    const hore = panel.getBoundingClientRect().top;
+    let spodok = hore;
+    for (const c of panel.children) spodok = Math.max(spodok, c.getBoundingClientRect().bottom);
+    const obsah = spodok - hore + parseFloat(getComputedStyle(panel).paddingBottom);
+    let karty = 0;
+    for (const kl of panel.querySelectorAll<HTMLElement>(":is(.stavba-rad, .draft-karty:not(.stavba-senok-zatial *)) .kl, .stavba-zona-miesto")) karty = Math.max(karty, kl.offsetHeight);
+    const zatial = panel.querySelector<HTMLElement>(".stavba-senok-zatial .kl")?.offsetHeight ?? 0;
+    if (karty === 0) return;
+    const r = Math.round(obsah - karty - zatial);
+    if (Math.abs(r - reziaDraftu) > 3) setReziaDraftu(r);
+  });
   const [rezervaPosunu, setRezervaPosunu] = useState(REZERVA_POSUNU);
   useEffect(() => setRezervaPosunu(REZERVA_POSUNU), [view.kolo]);
   useLayoutEffect(() => {
@@ -487,13 +523,19 @@ export function HernaPlocha({
       (view.faza === "pitka" && view.pitkaStav?.reakcia === ja));
   // +2: karta v strede a voľné miesto na koniec strany pri vykladaní;
   // pri vykladaní ležia na oboch koncoch úzke miesta na klik (MIESTO_VOLBY).
-  const sirkaPodlaVysky = mobil || vyskaPlste === 0 ? SIRKA_V_LINII : Math.floor((vyskaPlste - PRIDAVOK_LINIE) / (POMER_KARTY * (1 + rezervaPosunu)));
+  // Pod NIZKE_OKNO skryje hra.css riadok „na prebitie“ a popis strán pod lokalitou.
+  const sirkaPodlaVysky = mobil || vyskaPlste === 0 ? SIRKA_V_LINII : Math.floor((vyskaPlste - PRIDAVOK_LINIE + (vyskaOkna < NIZKE_OKNO ? 2 : 0)) / (POMER_KARTY * (1 + rezervaPosunu)));
   const sirkaVLinii =
     sirkaLinie === 0
       ? Math.min(SIRKA_V_LINII, sirkaPodlaVysky)
-      : Math.max(
-          SIRKA_V_LINII_MIN,
-          Math.min(SIRKA_V_LINII, sirkaPodlaVysky, Math.floor((sirkaLinie - 60) / (pocetVLinii + 2 + (vykladam ? 2 * MIESTO_VOLBY : 0))) - 12),
+      : // Minimum platí pre šírku (dlhá línia sa radšej posúva); výška stola ho prebije —
+        // na nízkom notebooku sa karty inak orezali dole (Michal 2026-10-23).
+        Math.max(
+          SIRKA_V_LINII_NIZKA,
+          Math.min(
+            sirkaPodlaVysky,
+            Math.max(SIRKA_V_LINII_MIN, Math.min(SIRKA_V_LINII, Math.floor((sirkaLinie - 60) / (pocetVLinii + 2 + (vykladam ? 2 * MIESTO_VOLBY : 0))) - 12)),
+          ),
         );
   useEffect(() => {
     const l = liniaRef.current;
@@ -1836,11 +1878,12 @@ export function HernaPlocha({
     const sSpojom = [...m.karty.values()].filter((n) => n.pary.length > 0).length;
     const nazov = p === ja ? "na tvoju stranu" : "na súperovu stranu";
     const vyska = (sirkaVLinii * 80) / 54;
+    const sirkaMiesta = Math.round(sirkaVLinii * MIESTO_VOLBY);
     return vLinii(
       <button
         type="button"
         className={["miesto-volby", vybrane ? "vybrane" : "", moze ? "" : "zakazane"].join(" ")}
-        style={{ width: Math.round(sirkaVLinii * MIESTO_VOLBY), height: vyska }}
+        style={{ width: sirkaMiesta, height: vyska }}
         disabled={!moze}
         aria-pressed={vybrane}
         title={
@@ -1856,10 +1899,13 @@ export function HernaPlocha({
         <span className="mv-plus" aria-hidden="true">
           {moze ? "+" : "⊘"}
         </span>
-        {/* Prečo sa sem nedá — textom, nie len v title, ktorý na dotyku nevidno (UX N4, U13). */}
-        <span className={`mv-text ${moze ? "" : "mv-dovod"} ${!moze && m.kratko !== undefined ? "mv-kratko" : ""}`}>
-          {!moze ? (m.kratko ?? m.dovod ?? "nedá sa") : vybrane ? "vyber z ruky" : sSpojom > 0 ? `spoj: ${sSpojom}` : "bez spoja"}
-        </span>
+        {/* Prečo sa sem nedá — textom, nie len v title, ktorý na dotyku nevidno (UX N4, U13).
+            V úzkom mieste (malé karty na nízkom notebooku) by sa text lámal po písmenách — ostáva v title. */}
+        {sirkaMiesta >= 36 && (
+          <span className={`mv-text ${moze ? "" : "mv-dovod"} ${!moze && m.kratko !== undefined ? "mv-kratko" : ""}`}>
+            {!moze ? (m.kratko ?? m.dovod ?? "nedá sa") : vybrane ? "vyber z ruky" : sSpojom > 0 ? `spoj: ${sSpojom}` : "bez spoja"}
+          </span>
+        )}
       </button>,
       -3,
     );
@@ -3425,10 +3471,22 @@ export function HernaPlocha({
     );
 
   // ---- draft na stole (Michal 2026-10-16) ----------------------------------
-  // Na stole (#67) sa Smetisko a balíček zmestia do jedného radu: 12 miest na šírku, karta aj s popismi na výšku.
+  // Na stole (#67) sa Smetisko a balíček zmestia do jedného radu: 12 miest na šírku;
+  // na výšku karty vyplnia vrstvu stola bez réžie panelu (malý notebook, Michal 2026-10-23).
+  const radZatial = stavim && view.senok.length > 0 ? 0.7 : 0;
+  const miestDraftu = stavim ? 12 : Math.max(6, view.faza === "draft" ? view.senok.length : view.lokalityVHre.length);
   const sirkaDraftu = mobil
     ? 84
-    : Math.max(72, Math.min(118, sirkaLinie > 0 ? Math.floor((sirkaLinie - 140) / 12) - 8 : 118, vyskaPlste > 0 ? Math.floor((vyskaPlste - 170) / POMER_KARTY) : 118));
+    : Math.max(
+        56,
+        Math.min(
+          170,
+          // Na šírku: stavba má 12 miest (Smetisko + balíček), branie kariet šenku, voľba cieľa lokalít;
+          // 60 px okraje panelu a zón, 10 px medzera za každou kartou.
+          sirkaLinie > 0 ? Math.floor((sirkaLinie - 60) / miestDraftu) - 10 : 118,
+          vyskaVrstvy > 0 ? Math.floor((vyskaVrstvy - reziaDraftu) / (POMER_KARTY * (1 + radZatial))) : 118,
+        ),
+      );
   /** Zóna stavby šenku: karta v nej, alebo prázdne miesto s popisom. */
   const zonaStavby = (ciel: string, nazov: string, pozn: string, uids: readonly number[], kapacita: number): ReactNode => {
     if (kapacita <= 0) return null;
@@ -3449,7 +3507,7 @@ export function HernaPlocha({
               : sLupou({ karta: k, sirka: sirkaDraftu });
           })}
           {Array.from({ length: Math.max(0, kapacita - karty.length) }, (_, i) => (
-            <div key={`m${i}`} className="stavba-zona-miesto" style={{ width: sirkaDraftu, height: sirkaDraftu * 1.4 }}>
+            <div key={`m${i}`} className="stavba-zona-miesto" style={{ width: sirkaDraftu, height: Math.round(sirkaDraftu * POMER_KARTY) }}>
               potiahni sem kartu
             </div>
           ))}
@@ -3523,16 +3581,27 @@ export function HernaPlocha({
     if (stavim) {
       const odhod = somNaTahu ? odhodStavby : (draft.mojVyber?.odhod ?? []);
       const zvysok = draft.mojBalicek.filter((k) => !odhod.includes(k.uid));
+      const textStavby = !stavbaHotova
+        ? `Na Smetisku ${odhod.length} z ${krokSt.odhod}. Kartu zo Smetiska vrátiš klikom; na plné Smetisko ustúpi posledná.`
+        : `Hotovo? ${zvysnePojdu(zvysok.length).replace(/^z/, "Z")} do Šenku.`;
       return (
         <section ref={draftPanelRef} className={`draft-panel stavba ${somNaTahu ? "moj-tah" : "cakanie"}`} aria-label="Stavba šenku">
-          <header className="draft-hlava">
-            <strong>Stavba šenku</strong>
-            <span>
-              {somNaTahu
-                ? `Tvoj balíček: ${kariet(draft.mojBalicek.length)} — vyber ${kariet(krokSt.odhod)} na Smetisko, ${zvysnePojdu(krokSt.doSenku)} do Šenku.`
-                : `${tvar(rodHracaP(ja), "Vybral si", "Vybrala si", "Výber je hotový")} — čakáš, kým vyberie ${menoHraca(super_)}.`}
-            </span>
-          </header>
+          {/* Na stole nadpis aj čo robiť hovorí pilulka — panel má len „potvrdiť“ v rohu, hlavička
+              a pätička brali výšku kartám (malý notebook, Michal 2026-10-23). */}
+          {somNaTahu && !mobil ? (
+            <button className="tlacidlo-hlavne stavba-potvrd" data-skratka="k" disabled={!stavbaHotova} onClick={potvrdStavbu} title={textStavby}>
+              potvrdiť
+            </button>
+          ) : (
+            <header className="draft-hlava">
+              <strong>Stavba šenku</strong>
+              <span>
+                {somNaTahu
+                  ? `Tvoj balíček: ${kariet(draft.mojBalicek.length)} — vyber ${kariet(krokSt.odhod)} na Smetisko, ${zvysnePojdu(krokSt.doSenku)} do Šenku.`
+                  : `${tvar(rodHracaP(ja), "Vybral si", "Vybrala si", "Výber je hotový")} — čakáš, kým vyberie ${menoHraca(super_)}.`}
+              </span>
+            </header>
+          )}
           <div className="stavba-rad">
             {zonaStavby(SMETISKO, "Smetisko", "naspodok spoločného balíčka · súper ich neuvidí", odhod, krokSt.odhod)}
             <div
@@ -3550,13 +3619,9 @@ export function HernaPlocha({
               })}
             </div>
           </div>
-          {somNaTahu && (
+          {somNaTahu && mobil && (
             <footer className="draft-paticka">
-              <span>
-                {!stavbaHotova
-                  ? `Na Smetisku ${odhod.length} z ${krokSt.odhod}. Kartu zo Smetiska vrátiš klikom; na plné Smetisko ustúpi posledná.`
-                  : `Hotovo? ${zvysnePojdu(zvysok.length).replace(/^z/, "Z")} do Šenku.`}
-              </span>
+              <span>{textStavby}</span>
               <button className="tlacidlo-hlavne" data-skratka="k" disabled={!stavbaHotova} onClick={potvrdStavbu}>
                 potvrdiť
               </button>
@@ -3575,6 +3640,8 @@ export function HernaPlocha({
     const mam = draft.noveKarty[ja];
     const cig = view.hraci[ja].cigarety;
     const cena = KONSTANTY.CENA_SENKU[zoSenku.length] ?? 0;
+    const pravidloBrania =
+      "Beriete striedavo, kým obaja neprestanete; kto nemá cigaretu, prestane sám. Pitiek v bitke bude 1 + menší počet aktivovaných akcií lokality z dvoch strán.";
     return (
       <section ref={draftPanelRef} className={`draft-panel branie ${mozemBrat ? "moj-tah" : "cakanie"}`} aria-label="Branie zo šenku">
         <header className="draft-hlava">
@@ -3607,10 +3674,11 @@ export function HernaPlocha({
               return mozemBrat ? sLupou(props, { obsah: tahatelna(z, karta(props)), zdroj: z }) : sLupou(props);
             })}
         </div>
-        <footer className="draft-paticka">
+        {/* Na stole leží pätička v riadku hlavičky a vysvetlenie je v nápovede — karty dostanú výšku (malý notebook). */}
+        <footer className="draft-paticka" title={pravidloBrania}>
           <span className="tlmene">
             {zoSenku.length === 0
-              ? "Beriete striedavo, kým obaja neprestanete; kto nemá cigaretu, prestane sám. Pitiek v bitke bude 1 + menší počet aktivovaných akcií lokality z dvoch strán."
+              ? pravidloBrania
               : `Berieš ${zoSenku.map((k) => menoKarty(k.defId)).join(" a ")} za ${cigariet(cena)}.`}
           </span>
           {zoSenku.length > 0 ? (
@@ -4129,7 +4197,8 @@ export function HernaPlocha({
             className="pas-kola-obal"
             id={idOdhadu}
             ref={pasRef}
-            style={odhadOtvoreny && vyskaPasu > 0 ? { height: vyskaPasu } : undefined}
+            // Pod NIZKE_OKNO pás nemá výšku dvoch riadkov — riadok bitky s hrozbou by sa doň nezmestil.
+            style={odhadOtvoreny && vyskaPasu > 0 && vyskaOkna >= NIZKE_OKNO ? { height: vyskaPasu } : undefined}
           >
             {odhadOtvoreny && bitkaProps !== null && !mobil ? <BitkaPanel {...bitkaProps} stred={suhrnBitky} /> : pasKola}
           </div>
@@ -4169,7 +4238,11 @@ export function HernaPlocha({
                 <div className="partia-rad harmonika">{radStrany(super_)}</div>
               </div>
             </div>
-            {vrstvaFazy !== null && !starsiViditelni && <div className="vrstva-fazy">{vrstvaFazy}</div>}
+            {vrstvaFazy !== null && !starsiViditelni && (
+              <div className="vrstva-fazy" ref={setVrstvaFazyEl}>
+                {vrstvaFazy}
+              </div>
+            )}
             <div className="vrstva-starsich" id={idLinieStarsich} hidden={!starsiViditelni}>
               {starsiViditelni && (
                 <LiniaStarsich

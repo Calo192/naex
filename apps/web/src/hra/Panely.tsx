@@ -512,6 +512,8 @@ export function HracDoska({
   const limit = limitZhromazdenia(view, p);
   const buduci = limitBuduceKolo(view, p);
   const kto = ja ? "Máš" : "Má";
+  const doNovehoPoldeci =
+    hrac.cigarety >= KONSTANTY.BARTER_CENA ? "stačí na nový poldeci" : `${KONSTANTY.BARTER_CENA - hrac.cigarety} do nového poldeci`;
   const utoci = view.utocnik === p;
   const v = vyhlad?.nahlad ?? null;
   const pecenPo = v === null ? hrac.pecen : v.pecen + v.pecenZoStola;
@@ -598,7 +600,11 @@ export function HracDoska({
           }
           pod={
             <>
-              plné · {hrac.poldeciVypite} vypité{naexNaStole > 0 && ` · ${naexNaStole} na stole`} · <b>limit {limit}</b>
+              {/* Každý riadok vo vlastnom prvku — v úzkej dlaždici sa skráti trojbodkou, nezalomí (malý notebook). */}
+              <span>
+                plné · {hrac.poldeciVypite} vypité{naexNaStole > 0 && ` · ${naexNaStole} na stole`}
+              </span>
+              <b>limit {limit}</b>
             </>
           }
           tip={{
@@ -633,9 +639,12 @@ export function HracDoska({
           hodnota={<span className="velke-cislo">{hrac.cigarety}</span>}
           pod={
             obchodCigariet === undefined ? (
-              hrac.cigarety >= KONSTANTY.BARTER_CENA ? "stačí na nový poldeci" : `${KONSTANTY.BARTER_CENA - hrac.cigarety} do nového poldeci`
+              doNovehoPoldeci
             ) : (
-              <span className="obchod-cigariet">
+              <>
+                {/* Na nízkom okne sa tlačidlá do baru nezmestia — v Pitke sú aj pečiatkami na hrane stola. */}
+                <span className="obchod-text">{doNovehoPoldeci}</span>
+                <span className="obchod-cigariet">
                 <button
                   disabled={!obchodCigariet.mozno || hrac.cigarety < KONSTANTY.REFILL_CENA || hrac.poldeciVypite === 0}
                   title={
@@ -658,7 +667,8 @@ export function HracDoska({
                 >
                   nový poldeci −{obchodCigariet.cenaBarteru}
                 </button>
-              </span>
+                </span>
+              </>
             )
           }
           tip={{
