@@ -6,6 +6,8 @@
 //   NAEX_ADMIN_LOGIN     jeho prihlasovacie meno (predvolene Admin)
 //   NAEX_PLAYTESTY       priečinok s reportmi playtestov (predvolene <repo>/docs/playtesty)
 //   NAEX_SECURE_COOKIE   1 = cookie len cez HTTPS (nastav za reverse proxy)
+//   NAEX_VYUCBA          1 = výučba „Prvá hra“ aj pre hráčov pri vypnutom vypínači (dočasný server
+//                        playtestu výučby: nováčik má byť obyčajný návštevník, nie správca)
 
 import { fileURLToPath } from "node:url";
 import { createGameServer } from "./server.ts";
@@ -17,6 +19,7 @@ createGameServer({
   dataDir: process.env.NAEX_DATA ?? fileURLToPath(new URL("../../../data", import.meta.url)),
   admin: { login: process.env.NAEX_ADMIN_LOGIN ?? "Admin", heslo: process.env.NAEX_ADMIN_HESLO || null },
   bezpecneCookie: process.env.NAEX_SECURE_COOKIE === "1",
+  ...(process.env.NAEX_VYUCBA === "1" ? { vyucbaZapnuta: true } : {}),
   ...(process.env.NAEX_PLAYTESTY ? { playtestyDir: process.env.NAEX_PLAYTESTY } : {}),
 })
   .then((server) => {

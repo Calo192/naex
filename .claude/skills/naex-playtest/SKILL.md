@@ -1,7 +1,7 @@
 ---
 name: naex-playtest
-description: Spustí playtest hry NA EX! — 1 až 3 partie naraz, v každej dvaja AI playtesteri náhodne vybraní zo šiestich postáv s rôznym herným štýlom (poznajú všetky pravidlá, hrajú cez skutočný server bez znalosti súperovej ruky) a spätnú väzbu zverejnia na živom webe. Podľa parametra followup potom nič (min), spisovateľ napíše report zo všetkých partií (predvolene), alebo navyše stratég s navrhárom spoločne pripravia návrhy zmien, o ktorých Michal rozhoduje v sekcii Playtest na webe (max). Použi, keď používateľ povie /naex-playtest, „spusti playtest", „nech to zahrajú agenti", „otestuj hru agentmi".
-argument-hint: "[počet partií 1–3] [min|max] [kratka|stredna|dlha]"
+description: Spustí playtest hry NA EX! — 1 až 3 partie naraz, v každej dvaja AI playtesteri náhodne vybraní zo šiestich postáv s rôznym herným štýlom (poznajú všetky pravidlá, hrajú cez skutočný server bez znalosti súperovej ruky) a spätnú väzbu zverejnia na živom webe. Podľa parametra followup potom nič (min), spisovateľ napíše report zo všetkých partií (predvolene), alebo navyše stratég s navrhárom spoločne pripravia návrhy zmien, o ktorých Michal rozhoduje v sekcii Playtest na webe (max). S parametrom vyucba namiesto partie traja nováčikovia prejdú výučbu „Prvá hra“ v prehliadači. Použi, keď používateľ povie /naex-playtest, „spusti playtest", „nech to zahrajú agenti", „otestuj hru agentmi", „otestuj výučbu nováčikmi".
+argument-hint: "[počet partií 1–3] [min|max] [kratka|stredna|dlha] | vyucba [1–3]"
 ---
 
 # Playtest NA EX!
@@ -30,6 +30,9 @@ a do partií nezasahuješ.
     a stojí viac — preto `max` len pred veľkým rozhodnutím (napr. pred
     zmrazením pravidiel), inak predvolený report (Michal 2026-10-23, tokeny).
 - **dĺžka hry** `kratka` (5 lokalít) | `stredna` (7, predvolená) | `dlha` (11).
+- **`vyucba [1–3]`**: namiesto partie playtest výučby „Prvá hra“ s nováčikmi
+  v prehliadači (predvolene 3). Postup je v časti **Režim vyucba** nižšie,
+  kroky 1–10 vtedy neplatia.
 
 ## Agenti (`.claude/agents/`)
 
@@ -184,6 +187,47 @@ nezrovnalosti pravidiel a hry a navrhnú zmeny (`tools/playtest/kriteria.md`,
       možnosť, verdikt stratéga) a že po rozhodnutí ich implementuje
       `/naex-implementacia`; kľúčové čísla stratéga.
     Zmeny pravidiel sám nezavádzaj.
+
+## Režim vyucba — playtest výučby „Prvá hra“ (Michal 2026-10-23, roadmapa #85)
+
+Traja **nováčikovia** (`naex-novacik`, postavy v
+`tools/playtest/novacikovia.json`) prejdú naraz výučbu ako ľudia, ktorí hru
+nepoznajú: v headless Chrome so svojím rozlíšením (1920×1080, 1440×800,
+1366×650), zo snímok obrazovky, myšou a klávesnicou. Pravidlá ani ťahák
+nečítajú. Beží to na **lokálnom** dočasnom serveri (od :8800) s
+`NAEX_VYUCBA=1`, takže výučbu dostane obyčajný návštevník aj pri vypnutom
+vypínači `zverejnena`. Na živý web nič nejde.
+
+`V` = `node --experimental-strip-types --no-warnings tools/playtest/vyucba.ts`.
+
+1. Klient musí byť zbuildovaný z kódu, ktorý sa testuje
+   (`npm run build --workspace=@naex/web`), inak nováčikovia uvidia starú UI.
+   Over scenár: `node --experimental-strip-types --no-warnings tools/vyucba/prehraj.ts --ticho`
+   musí vypísať „Scenár sedí.“
+2. **Založ**: `$V zaloz [1–3]` vypíše reláciu `R` (`playtest/vyucba-<id>`),
+   port a nováčikov s rozlíšením. Prehliadače stoja na titulnej stránke,
+   každý účet je nový návštevník.
+3. **Spusti nováčikov naraz** (v jednej správe, `naex-novacik`,
+   `run_in_background: true`): „Relácia: R. Si nováčik N. Postava: <meno>,
+   kto: <kto>, ako: <ako>, zameranie: <zameranie>. Rozlíšenie: <š×v>.
+   Prejdi celú výučbu Prvá hra ako človek, ktorý hru nepozná, veď si denník
+   a napíš spätnú väzbu s testom pochopenia.“ Používateľovi povedz, kto
+   beží a že výučba trvá desiatky minút.
+4. **Čakaj**, kým sa ozvú všetci (nepolluj). Potom `$V R suhrn`
+   (zapíše `R/suhrn.json`) a `$V R ukonci`. Ak nováčik skončil predčasne,
+   zapíš prečo do `R/organizator.md`.
+5. **Report**: `naex-spisovatel` na pozadí: „Playtest výučby: relácia R.
+   Napíš report podľa šablóny tools/playtest/vyucba-report.md do
+   docs/playtesty/vyucba-<id>.html.“
+6. **Odovzdaj** Leaderovi (session Playtesting) alebo používateľovi: verdikt,
+   priemer V1–V10, skóre testu pochopenia, počet zaseknutí, tri hlavné
+   opravy a cestu k reportu. Report na živý web nahraj
+   (`admin.ts report-nahraj … --zivy`) len na pokyn.
+
+Nástroj hľadá prvky výučby v DOM podľa dohody s UX/UI:
+`[data-vyucba-bublina]` (s `data-vyucba-krok`) a `[data-vyucba-zvyraznene]`.
+Krok výučby a hlášky servera berie zo záznamu WebSocketu (strážca v
+`R/hrac<n>/zaznam/`), takže fungujú aj bez týchto atribútov.
 
 ## Poznámky
 
