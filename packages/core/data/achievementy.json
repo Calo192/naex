@@ -1,0 +1,1586 @@
+{
+  "verzia": 1,
+  "kategorie": [
+    {
+      "id": "bitka",
+      "nazov": "Bitka"
+    },
+    {
+      "id": "nerest",
+      "nazov": "Nerest"
+    },
+    {
+      "id": "naex",
+      "nazov": "NA EX a Záverečná"
+    },
+    {
+      "id": "linia",
+      "nazov": "Karty a línia"
+    },
+    {
+      "id": "starsi",
+      "nazov": "Starší"
+    },
+    {
+      "id": "ekonomika",
+      "nazov": "Ekonomika"
+    },
+    {
+      "id": "partie",
+      "nazov": "Partie"
+    },
+    {
+      "id": "bot",
+      "nazov": "Proti botovi"
+    },
+    {
+      "id": "kuriozity",
+      "nazov": "Kuriozity (tajné)"
+    }
+  ],
+  "achievementy": [
+    {
+      "id": "tazka-ruka",
+      "nazov": "Ťažká ruka",
+      "kategoria": "bitka",
+      "popis": "V jednej bitke udeľ aspoň {prah} tuhého.",
+      "metrika": "stat.tuheUdelene",
+      "rozsah": "bitka",
+      "prahy": [
+        8,
+        12,
+        16
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Pecka",
+      "zriedkavost": [
+        "bezne",
+        "nezvycajne",
+        "vzacne"
+      ],
+      "zdroj": "bitkaVysledok.damage.tuhe"
+    },
+    {
+      "id": "vyprask",
+      "nazov": "Výprask",
+      "kategoria": "bitka",
+      "popis": "Vyhraj bitku s prebytkom aspoň {prah}.",
+      "metrika": "prebytokBitky",
+      "rozsah": "bitka",
+      "prahy": [
+        6,
+        10,
+        14
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "podmienka:strach",
+      "zriedkavost": [
+        "bezne",
+        "nezvycajne",
+        "vzacne"
+      ],
+      "zdroj": "bitkaVysledok.prebytok, vitaz"
+    },
+    {
+      "id": "petelica-z-neba",
+      "nazov": "Petelica z neba",
+      "kategoria": "bitka",
+      "popis": "Maj v jednej bitke aspoň {prah} aktívne Petelice.",
+      "metrika": "akcia.Petelica",
+      "rozsah": "bitka",
+      "prahy": [
+        2,
+        3,
+        4
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Petelica",
+      "zriedkavost": [
+        "bezne",
+        "vzacne",
+        "legendarne"
+      ],
+      "zdroj": "bitkaVysledok.sums"
+    },
+    {
+      "id": "krcmovy-boxer",
+      "nazov": "Krčmový boxer",
+      "kategoria": "bitka",
+      "popis": "Vyhraj v jednej partii aspoň {prah} z jej bitiek.",
+      "metrika": "stat.bitkyVyhrane",
+      "rozsah": "partia",
+      "prahy": [
+        4,
+        5,
+        6
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Rana",
+      "zriedkavost": [
+        "bezne",
+        "nezvycajne",
+        "vzacne"
+      ],
+      "zdroj": "bitkaVysledok.vitaz"
+    },
+    {
+      "id": "bez-milosti",
+      "nazov": "Bez milosti",
+      "kategoria": "bitka",
+      "popis": "Vyhraj všetky bitky partie — spolu {prah}×.",
+      "metrika": "vsetkyBitkyVyhrane",
+      "rozsah": "kariera",
+      "prahy": [
+        1,
+        3,
+        10
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "podmienka:lokality",
+      "zriedkavost": [
+        "vzacne",
+        "legendarne",
+        "legendarne"
+      ],
+      "zdroj": "stat.bitky, stat.bitkyVyhrane na konci partie"
+    },
+    {
+      "id": "otocka",
+      "nazov": "Otočka",
+      "kategoria": "bitka",
+      "popis": "Vyhraj ako útočník (porazený z minulej bitky) spolu {prah} bitiek.",
+      "metrika": "stat.bitkyAkoUtocnikVyhrane",
+      "rozsah": "kariera",
+      "prahy": [
+        10,
+        50,
+        200
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Odpor",
+      "zriedkavost": [
+        "bezne",
+        "nezvycajne",
+        "vzacne"
+      ],
+      "zdroj": "bitkaVysledok.vitaz, utocnik"
+    },
+    {
+      "id": "komin",
+      "nazov": "Komín",
+      "kategoria": "nerest",
+      "popis": "Vyfajčené cigarety za jedno kolo: aspoň {prah}.",
+      "metrika": "stat.cigaretyVyfajcene",
+      "rozsah": "kolo",
+      "prahy": [
+        3,
+        5,
+        7
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Cigareta",
+      "zriedkavost": [
+        "nezvycajne",
+        "vzacne",
+        "legendarne"
+      ],
+      "zdroj": "príkaz smoke"
+    },
+    {
+      "id": "do-dna",
+      "nazov": "Do dna",
+      "kategoria": "nerest",
+      "popis": "Vypi do dna za jedno kolo aspoň {prah} poldeci.",
+      "metrika": "stat.poldeciVypite",
+      "rozsah": "kolo",
+      "prahy": [
+        2,
+        3,
+        4
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Poldeci",
+      "zriedkavost": [
+        "nezvycajne",
+        "vzacne",
+        "legendarne"
+      ],
+      "zdroj": "príkaz vypit (aj v ťahu)"
+    },
+    {
+      "id": "pecen-z-ocele",
+      "nazov": "Pečeň z ocele",
+      "kategoria": "nerest",
+      "popis": "Nazbieraj v jednej Pitke aspoň {prah} poškodenia pečene.",
+      "metrika": "stat.poskodeniePecene",
+      "rozsah": "pitka",
+      "prahy": [
+        5,
+        8,
+        11
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:PoškodeniePečene",
+      "zriedkavost": [
+        "bezne",
+        "nezvycajne",
+        "vzacne"
+      ],
+      "zdroj": "udalosť pecen"
+    },
+    {
+      "id": "ruzova-pecienka",
+      "nazov": "Ružová pečienka",
+      "kategoria": "nerest",
+      "popis": "Cirhózy získané v jednej partii: aspoň {prah}.",
+      "metrika": "stat.cirhozyZiskane",
+      "rozsah": "partia",
+      "prahy": [
+        4,
+        7,
+        11
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "podmienka:cirhoza",
+      "zriedkavost": [
+        "bezne",
+        "nezvycajne",
+        "vzacne"
+      ],
+      "zdroj": "pitkaVysledok.cirhozy"
+    },
+    {
+      "id": "traslave-ruky",
+      "nazov": "Trasľavé ruky",
+      "kategoria": "nerest",
+      "popis": "Absťáky v jednej partii: aspoň {prah}.",
+      "metrika": "stat.abstakyZiskane",
+      "rozsah": "partia",
+      "prahy": [
+        3,
+        4,
+        5
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Poldeci",
+      "zriedkavost": [
+        "nezvycajne",
+        "vzacne",
+        "legendarne"
+      ],
+      "zdroj": "priznané Absťáky (stav hráča)"
+    },
+    {
+      "id": "stokar",
+      "nazov": "Stokár",
+      "kategoria": "nerest",
+      "popis": "Kúp stokárskym barterom spolu {prah} poldeci.",
+      "metrika": "stat.bartery",
+      "rozsah": "kariera",
+      "prahy": [
+        1,
+        5,
+        20
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Poldeci",
+      "zriedkavost": [
+        "nezvycajne",
+        "vzacne",
+        "legendarne"
+      ],
+      "zdroj": "príkaz barter"
+    },
+    {
+      "id": "celozivotny-fajciar",
+      "nazov": "Celoživotný fajčiar",
+      "kategoria": "nerest",
+      "popis": "Vyfajči spolu {prah} cigariet.",
+      "metrika": "stat.cigaretyVyfajcene",
+      "rozsah": "kariera",
+      "prahy": [
+        50,
+        250,
+        1000
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Cigareta",
+      "zriedkavost": [
+        "bezne",
+        "nezvycajne",
+        "vzacne"
+      ],
+      "zdroj": "príkaz smoke"
+    },
+    {
+      "id": "na-ex",
+      "nazov": "Na ex!",
+      "kategoria": "naex",
+      "popis": "Daj spolu {prah}× NA EX.",
+      "metrika": "stat.naex",
+      "rozsah": "kariera",
+      "prahy": [
+        25,
+        150,
+        600
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Poldeci",
+      "zriedkavost": [
+        "bezne",
+        "nezvycajne",
+        "vzacne"
+      ],
+      "zdroj": "príkaz naex"
+    },
+    {
+      "id": "na-zdravie-suseda",
+      "nazov": "Na zdravie suseda",
+      "kategoria": "naex",
+      "popis": "Daj v jednej partii aspoň {prah}× NA EX na súperovu kartu.",
+      "metrika": "stat.naexNaSuperove",
+      "rozsah": "partia",
+      "prahy": [
+        3,
+        5,
+        7
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Poldeci",
+      "zriedkavost": [
+        "bezne",
+        "nezvycajne",
+        "vzacne"
+      ],
+      "zdroj": "príkaz naex, playedBy karty"
+    },
+    {
+      "id": "trafene",
+      "nazov": "Trafené!",
+      "kategoria": "naex",
+      "popis": "Daj v jednej partii aspoň {prah} NA EX, ktoré aj po súperovej odpovedi zlepšia bitku v tvoj prospech.",
+      "metrika": "naexUspech",
+      "rozsah": "partia",
+      "prahy": [
+        3,
+        5,
+        7
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Posilnenie",
+      "zriedkavost": [
+        "bezne",
+        "nezvycajne",
+        "vzacne"
+      ],
+      "zdroj": "kronika naex.uspech"
+    },
+    {
+      "id": "kontra",
+      "nazov": "Kontra",
+      "kategoria": "naex",
+      "popis": "Odpovedz v jednej partii kartou na súperovo NA EX aspoň {prah}×.",
+      "metrika": "stat.odpovedeNaNaex",
+      "rozsah": "partia",
+      "prahy": [
+        3,
+        5,
+        7
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Odpor",
+      "zriedkavost": [
+        "bezne",
+        "nezvycajne",
+        "vzacne"
+      ],
+      "zdroj": "vyloženie počas pitkaStav.reakcia"
+    },
+    {
+      "id": "bomba",
+      "nazov": "Bomba",
+      "kategoria": "naex",
+      "popis": "Odpáľ BOMBU ×4 (akcia so štvornásobkom) — spolu {prah}×.",
+      "metrika": "moment.bomba",
+      "rozsah": "kariera",
+      "prahy": [
+        1,
+        3,
+        10
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Posilnenie",
+      "zriedkavost": [
+        "vzacne",
+        "vzacne",
+        "legendarne"
+      ],
+      "zdroj": "udalosť moment (bomba)"
+    },
+    {
+      "id": "posledne-slovo",
+      "nazov": "Posledné slovo",
+      "kategoria": "naex",
+      "popis": "Otoč bitku posledným slovom (pečiatka ZVRAT!) — spolu {prah}×.",
+      "metrika": "moment.zvrat",
+      "rozsah": "kariera",
+      "prahy": [
+        3,
+        15,
+        50
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Pohoršenie",
+      "zriedkavost": [
+        "bezne",
+        "nezvycajne",
+        "vzacne"
+      ],
+      "zdroj": "udalosť moment (zvrat)"
+    },
+    {
+      "id": "zaverecna",
+      "nazov": "Záverečná",
+      "kategoria": "naex",
+      "popis": "Zahraj spolu {prah} kariet ako Záverečnú.",
+      "metrika": "zaverecne",
+      "rozsah": "kariera",
+      "prahy": [
+        10,
+        50,
+        200
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Vízia",
+      "zriedkavost": [
+        "bezne",
+        "nezvycajne",
+        "vzacne"
+      ],
+      "zdroj": "príkaz zaverecna"
+    },
+    {
+      "id": "eso-v-rukave",
+      "nazov": "Eso v rukáve",
+      "kategoria": "naex",
+      "popis": "Otoč bitku Záverečnou (pečiatka ZÁVEREČNÁ!) — spolu {prah}×.",
+      "metrika": "moment.zaverecna",
+      "rozsah": "kariera",
+      "prahy": [
+        1,
+        10,
+        40
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Vízia",
+      "zriedkavost": [
+        "nezvycajne",
+        "vzacne",
+        "legendarne"
+      ],
+      "zdroj": "udalosť moment (zaverecna)"
+    },
+    {
+      "id": "plny-stol",
+      "nazov": "Plný stôl",
+      "kategoria": "linia",
+      "popis": "Maj v línii pri vyhodnotení bitky aspoň {prah} svojich kariet.",
+      "metrika": "kartyVLinii",
+      "rozsah": "bitka",
+      "prahy": [
+        6,
+        8,
+        9
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Posilnenie",
+      "zriedkavost": [
+        "nezvycajne",
+        "vzacne",
+        "legendarne"
+      ],
+      "zdroj": "bitkaVysledok.karty (majitel)"
+    },
+    {
+      "id": "podstrkovac",
+      "nazov": "Podstrkovač",
+      "kategoria": "linia",
+      "popis": "Vylož v jednej partii aspoň {prah} kariet na súperovu stranu.",
+      "metrika": "stat.kartyDoSuperovej",
+      "rozsah": "partia",
+      "prahy": [
+        12,
+        16,
+        20
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Odpor",
+      "zriedkavost": [
+        "bezne",
+        "nezvycajne",
+        "vzacne"
+      ],
+      "zdroj": "príkaz place (target superova)"
+    },
+    {
+      "id": "pan-oboch-krajov",
+      "nazov": "Pán oboch krajov",
+      "kategoria": "linia",
+      "popis": "Maj prevahu v oboch krajoch lokality naraz — spolu v {prah} bitkách.",
+      "metrika": "obeHranyLokality",
+      "rozsah": "kariera",
+      "prahy": [
+        3,
+        15,
+        50
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "podmienka:lokality",
+      "zriedkavost": [
+        "nezvycajne",
+        "vzacne",
+        "legendarne"
+      ],
+      "zdroj": "prevaha krajov pri vyhodnotení bitky"
+    },
+    {
+      "id": "dlhy-vecer",
+      "nazov": "Dlhý večer",
+      "kategoria": "linia",
+      "popis": "Vyhraj v jednej partii bitky, ktoré mali spolu aspoň {prah} Pitiek.",
+      "metrika": "pitkyVyhratejBitky",
+      "rozsah": "partia",
+      "prahy": [
+        6,
+        9,
+        12
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Poldeci",
+      "zriedkavost": [
+        "nezvycajne",
+        "vzacne",
+        "legendarne"
+      ],
+      "zdroj": "pitkaVysledok v kole + bitkaVysledok.vitaz"
+    },
+    {
+      "id": "vzbura",
+      "nazov": "Vzbura",
+      "kategoria": "linia",
+      "popis": "Spôsob Vzburu (Odpor + Odpor na spoji) — spolu {prah}×.",
+      "metrika": "moment.vzbura",
+      "rozsah": "kariera",
+      "prahy": [
+        1,
+        5,
+        15
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Odpor",
+      "zriedkavost": [
+        "nezvycajne",
+        "vzacne",
+        "legendarne"
+      ],
+      "zdroj": "udalosť moment (vzbura)"
+    },
+    {
+      "id": "strasiak",
+      "nazov": "Strašiak",
+      "kategoria": "starsi",
+      "popis": "Vydesení starší na konci partie: aspoň {prah}.",
+      "metrika": "stat.starsiVydeseni",
+      "rozsah": "partia",
+      "prahy": [
+        1,
+        2,
+        3
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "podmienka:vydesenie",
+      "zriedkavost": [
+        "nezvycajne",
+        "vzacne",
+        "legendarne"
+      ],
+      "zdroj": "markery na konci partie (vydesil)"
+    },
+    {
+      "id": "budicek",
+      "nazov": "Budíček",
+      "kategoria": "starsi",
+      "popis": "Prebuď staršieho (marker na krajnej pozícii) — spolu {prah}×.",
+      "metrika": "moment.prebudenie",
+      "rozsah": "kariera",
+      "prahy": [
+        1,
+        5,
+        20
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "podmienka:vydesenie",
+      "zriedkavost": [
+        "nezvycajne",
+        "vzacne",
+        "legendarne"
+      ],
+      "zdroj": "udalosť moment (prebudenie)"
+    },
+    {
+      "id": "patron",
+      "nazov": "Patrón",
+      "kategoria": "starsi",
+      "popis": "Vezmi staršieho do ruky patronátom — spolu {prah}×.",
+      "metrika": "stat.bitkyOStarsich",
+      "rozsah": "kariera",
+      "prahy": [
+        3,
+        15,
+        50
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "podmienka:starsi",
+      "zriedkavost": [
+        "bezne",
+        "nezvycajne",
+        "vzacne"
+      ],
+      "zdroj": "príkaz patronat"
+    },
+    {
+      "id": "vazen-v-pivnici",
+      "nazov": "Väzeň v pivnici",
+      "kategoria": "starsi",
+      "popis": "Získaj staršieho patronátom (vyhraj s ním bitku) — spolu {prah}×.",
+      "metrika": "stat.starsiZiskani",
+      "rozsah": "kariera",
+      "prahy": [
+        1,
+        8,
+        30
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "podmienka:starsi",
+      "zriedkavost": [
+        "bezne",
+        "nezvycajne",
+        "vzacne"
+      ],
+      "zdroj": "patronát a bitkaVysledok.vitaz"
+    },
+    {
+      "id": "pohorsenie",
+      "nazov": "Pohoršenie",
+      "kategoria": "starsi",
+      "popis": "Posuň v jednej bitke Pohoršením markery spolu aspoň o {prah}.",
+      "metrika": "stat.posunyPohorsenim",
+      "rozsah": "bitka",
+      "prahy": [
+        3,
+        5,
+        7
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Pohoršenie",
+      "zriedkavost": [
+        "nezvycajne",
+        "vzacne",
+        "legendarne"
+      ],
+      "zdroj": "príkaz pohorsenie"
+    },
+    {
+      "id": "milacik-dediny",
+      "nazov": "Miláčik dediny",
+      "kategoria": "starsi",
+      "popis": "Maj naraz priazeň aspoň {prah} starších.",
+      "metrika": "priazneNaraz",
+      "rozsah": "partia",
+      "prahy": [
+        3,
+        5,
+        6
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "podmienka:znepokojenie",
+      "zriedkavost": [
+        "nezvycajne",
+        "vzacne",
+        "legendarne"
+      ],
+      "zdroj": "markery (priazenHraca) po každom ťahu"
+    },
+    {
+      "id": "zachranene",
+      "nazov": "Zachránené",
+      "kategoria": "starsi",
+      "popis": "Zmar súperovo ohlásené vydesenie patronátom — spolu {prah}×.",
+      "metrika": "moment.zachranene",
+      "rozsah": "kariera",
+      "prahy": [
+        1,
+        3,
+        10
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "podmienka:starsi",
+      "zriedkavost": [
+        "legendarne",
+        "legendarne",
+        "legendarne"
+      ],
+      "zdroj": "udalosť moment (zachranene)"
+    },
+    {
+      "id": "hroza-a-des",
+      "nazov": "Hrôza a des",
+      "kategoria": "starsi",
+      "popis": "Vyhraj partiu ohláseným vydesením — spolu {prah}×.",
+      "metrika": "vyhraVydesenim",
+      "rozsah": "kariera",
+      "prahy": [
+        1,
+        3,
+        10
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "podmienka:vydesenie",
+      "zriedkavost": [
+        "legendarne",
+        "legendarne",
+        "legendarne"
+      ],
+      "zdroj": "koniec.dovod (vydesenie)"
+    },
+    {
+      "id": "bohac",
+      "nazov": "Boháč",
+      "kategoria": "ekonomika",
+      "popis": "Maj naraz aspoň {prah} cigariet.",
+      "metrika": "najviacCigariet",
+      "rozsah": "partia",
+      "prahy": [
+        12,
+        20,
+        28
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Cigareta",
+      "zriedkavost": [
+        "nezvycajne",
+        "vzacne",
+        "legendarne"
+      ],
+      "zdroj": "hraci[p].cigarety po každom ťahu"
+    },
+    {
+      "id": "stamgast-senku",
+      "nazov": "Štamgast šenku",
+      "kategoria": "ekonomika",
+      "popis": "Vezmi v jednej partii zo šenku aspoň {prah} kariet.",
+      "metrika": "stat.senokKarty",
+      "rozsah": "partia",
+      "prahy": [
+        10,
+        13,
+        16
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "podmienka:cigarety",
+      "zriedkavost": [
+        "bezne",
+        "nezvycajne",
+        "vzacne"
+      ],
+      "zdroj": "príkaz draftBer"
+    },
+    {
+      "id": "dedic",
+      "nazov": "Dedič",
+      "kategoria": "ekonomika",
+      "popis": "Nástroje vyložené do Dedičstva: spolu {prah}.",
+      "metrika": "stat.dedicstvo",
+      "rozsah": "kariera",
+      "prahy": [
+        3,
+        15,
+        50
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Robota",
+      "zriedkavost": [
+        "nezvycajne",
+        "vzacne",
+        "legendarne"
+      ],
+      "zdroj": "príkaz place (target dedicstvo)"
+    },
+    {
+      "id": "exekutor-u-dveri",
+      "nazov": "Exekútor u dverí",
+      "kategoria": "ekonomika",
+      "popis": "Čeľ exekúcii a prežij ju (odovzdaj Nástroj) — spolu {prah}×.",
+      "metrika": "stat.exekucie",
+      "rozsah": "kariera",
+      "prahy": [
+        1,
+        3,
+        10
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Dlh",
+      "zriedkavost": [
+        "vzacne",
+        "legendarne",
+        "legendarne"
+      ],
+      "zdroj": "príkaz exekutorTool"
+    },
+    {
+      "id": "pas-za-gros",
+      "nazov": "Pas za groš",
+      "kategoria": "ekonomika",
+      "popis": "Dostaň v jednej partii za pasy aspoň {prah} cigariet.",
+      "metrika": "stat.cigaretyZaPas",
+      "rozsah": "partia",
+      "prahy": [
+        10,
+        18,
+        26
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Cigareta",
+      "zriedkavost": [
+        "nezvycajne",
+        "vzacne",
+        "legendarne"
+      ],
+      "zdroj": "príkaz pass, cigarety pred a po"
+    },
+    {
+      "id": "prva-runda",
+      "nazov": "Prvá runda",
+      "kategoria": "partie",
+      "popis": "Vyhrané partie: spolu {prah}.",
+      "metrika": "vyhra",
+      "rozsah": "kariera",
+      "prahy": [
+        1,
+        25,
+        100
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "podmienka:lokality",
+      "zriedkavost": [
+        "bezne",
+        "nezvycajne",
+        "vzacne"
+      ],
+      "zdroj": "koniec.vitaz (nie vzdaním)"
+    },
+    {
+      "id": "stamgast",
+      "nazov": "Štamgast",
+      "kategoria": "partie",
+      "popis": "Dohraj spolu {prah} partií.",
+      "metrika": "dohrataPartia",
+      "rozsah": "kariera",
+      "prahy": [
+        10,
+        50,
+        200
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Poldeci",
+      "zriedkavost": [
+        "bezne",
+        "nezvycajne",
+        "vzacne"
+      ],
+      "zdroj": "koniec (nie vzdaním)"
+    },
+    {
+      "id": "kto-vyhrava-plati",
+      "nazov": "Kto vyhráva, platí",
+      "kategoria": "partie",
+      "popis": "Výhry za sebou: {prah}.",
+      "metrika": "seriaVyhier",
+      "rozsah": "kariera",
+      "prahy": [
+        3,
+        5,
+        10
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Posilnenie",
+      "zriedkavost": [
+        "nezvycajne",
+        "vzacne",
+        "legendarne"
+      ],
+      "zdroj": "výsledky partií v poradí (server)"
+    },
+    {
+      "id": "majster-bodov",
+      "nazov": "Majster bodov",
+      "kategoria": "partie",
+      "popis": "Získaj v jednej partii aspoň {prah} bodov.",
+      "metrika": "stat.body",
+      "rozsah": "partia",
+      "prahy": [
+        80,
+        120,
+        160
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "podmienka:lokality",
+      "zriedkavost": [
+        "nezvycajne",
+        "vzacne",
+        "legendarne"
+      ],
+      "zdroj": "koniec.body"
+    },
+    {
+      "id": "na-hlavu",
+      "nazov": "Na hlavu",
+      "kategoria": "partie",
+      "popis": "Vyhraj partiu aspoň o {prah} bodov.",
+      "metrika": "rozdielBodov",
+      "rozsah": "partia",
+      "prahy": [
+        40,
+        80,
+        130
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Petelica",
+      "zriedkavost": [
+        "bezne",
+        "nezvycajne",
+        "vzacne"
+      ],
+      "zdroj": "koniec.body"
+    },
+    {
+      "id": "z-popola",
+      "nazov": "Z popola",
+      "kategoria": "partie",
+      "popis": "Vyhraj partiu, hoci si po niektorom kole prehrával aspoň o {prah} bodov.",
+      "metrika": "obrat",
+      "rozsah": "partia",
+      "prahy": [
+        20,
+        45,
+        75
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Odpor",
+      "zriedkavost": [
+        "nezvycajne",
+        "vzacne",
+        "legendarne"
+      ],
+      "zdroj": "kronika bodyPo po každom kole + koniec.vitaz"
+    },
+    {
+      "id": "maraton",
+      "nazov": "Maratón",
+      "kategoria": "partie",
+      "popis": "Vyhrané dlhé partie (11 lokalít): spolu {prah}.",
+      "metrika": "vyhra.dlha",
+      "rozsah": "kariera",
+      "prahy": [
+        1,
+        5,
+        20
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "podmienka:lokality",
+      "zriedkavost": [
+        "nezvycajne",
+        "vzacne",
+        "legendarne"
+      ],
+      "zdroj": "lokalitCelkom + koniec.vitaz"
+    },
+    {
+      "id": "kamarati-z-krcmy",
+      "nazov": "Kamaráti z krčmy",
+      "kategoria": "partie",
+      "popis": "Dohraj partiu s {prah} rôznymi ľuďmi.",
+      "metrika": "rozniSuperi",
+      "rozsah": "kariera",
+      "prahy": [
+        3,
+        10,
+        25
+      ],
+      "proti": "ludia",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "podmienka:znepokojenie",
+      "zriedkavost": [
+        "bezne",
+        "nezvycajne",
+        "vzacne"
+      ],
+      "zdroj": "partie_hraci (server)"
+    },
+    {
+      "id": "stamgast-pod-stolom",
+      "nazov": "Štamgast pod stolom",
+      "kategoria": "bot",
+      "popis": "Vyhraj nad Štamgastom spolu {prah}×.",
+      "metrika": "vyhraNad.stamgast",
+      "rozsah": "kariera",
+      "prahy": [
+        1,
+        5,
+        20
+      ],
+      "proti": "bot",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Rana",
+      "zriedkavost": [
+        "bezne",
+        "nezvycajne",
+        "vzacne"
+      ],
+      "zdroj": "partie.bot_povaha + koniec.vitaz"
+    },
+    {
+      "id": "fero-umlcany",
+      "nazov": "Rapavý Fero umlčaný",
+      "kategoria": "bot",
+      "popis": "Vyhraj nad Rapavým Ferom spolu {prah}×.",
+      "metrika": "vyhraNad.rapavy_fero",
+      "rozsah": "kariera",
+      "prahy": [
+        1,
+        5,
+        20
+      ],
+      "proti": "bot",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Pecka",
+      "zriedkavost": [
+        "bezne",
+        "nezvycajne",
+        "vzacne"
+      ],
+      "zdroj": "partie.bot_povaha + koniec.vitaz"
+    },
+    {
+      "id": "gizka-bez-reci",
+      "nazov": "Teta Gizka bez reči",
+      "kategoria": "bot",
+      "popis": "Vyhraj nad Tetou Gizkou spolu {prah}×.",
+      "metrika": "vyhraNad.teta_gizka",
+      "rozsah": "kariera",
+      "prahy": [
+        1,
+        5,
+        20
+      ],
+      "proti": "bot",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Petelica",
+      "zriedkavost": [
+        "bezne",
+        "nezvycajne",
+        "vzacne"
+      ],
+      "zdroj": "partie.bot_povaha + koniec.vitaz"
+    },
+    {
+      "id": "cela-krcma",
+      "nazov": "Celá krčma porazená",
+      "kategoria": "bot",
+      "popis": "Porazené povahy bota: {prah} z 3.",
+      "metrika": "porazenePovahy",
+      "rozsah": "kariera",
+      "prahy": [
+        1,
+        2,
+        3
+      ],
+      "proti": "bot",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "podmienka:lokality",
+      "zriedkavost": [
+        "bezne",
+        "nezvycajne",
+        "vzacne"
+      ],
+      "zdroj": "partie.bot_povaha + koniec.vitaz"
+    },
+    {
+      "id": "trening-u-melichara",
+      "nazov": "Tréning u Melichara",
+      "kategoria": "bot",
+      "popis": "Dohrané partie s botom: spolu {prah}.",
+      "metrika": "dohrataPartia",
+      "rozsah": "kariera",
+      "prahy": [
+        3,
+        15,
+        50
+      ],
+      "proti": "bot",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Viera",
+      "zriedkavost": [
+        "bezne",
+        "nezvycajne",
+        "vzacne"
+      ],
+      "zdroj": "koniec (nie vzdaním)"
+    },
+    {
+      "id": "abstinent",
+      "nazov": "Abstinent",
+      "kategoria": "kuriozity",
+      "popis": "Dohraj partiu bez jedinej neresti: nevypi, nefajči, nedaj NA EX, nedolievaj, nebarteruj — spolu {prah}×.",
+      "metrika": "bezNeresti",
+      "rozsah": "kariera",
+      "prahy": [
+        1,
+        3,
+        10
+      ],
+      "proti": "ludia",
+      "tajny": true,
+      "tajnyText": "Niekto tu pije len vodu…",
+      "piktogram": "akcia:Viera",
+      "zriedkavost": [
+        "vzacne",
+        "legendarne",
+        "legendarne"
+      ],
+      "zdroj": "stat.poldeciVypite, cigaretyVyfajcene, naex, dolievania, bartery = 0"
+    },
+    {
+      "id": "pecenovy-pastet",
+      "nazov": "Pečeňový paštét",
+      "kategoria": "kuriozity",
+      "popis": "Získaj v jednej Pitke aspoň {prah} Cirhózy.",
+      "metrika": "stat.cirhozyZiskane",
+      "rozsah": "pitka",
+      "prahy": [
+        2,
+        3,
+        4
+      ],
+      "proti": "ludia",
+      "tajny": true,
+      "tajnyText": "Aj pečeň má svoje hranice.",
+      "piktogram": "akcia:PoškodeniePečene",
+      "zriedkavost": [
+        "nezvycajne",
+        "vzacne",
+        "legendarne"
+      ],
+      "zdroj": "pitkaVysledok.cirhozy"
+    },
+    {
+      "id": "vlastny-gol",
+      "nazov": "Vlastný gól",
+      "kategoria": "kuriozity",
+      "popis": "Daj NA EX, ktoré ti po súperovej odpovedi bitku zhorší — spolu {prah}×.",
+      "metrika": "naexVlastnyGol",
+      "rozsah": "kariera",
+      "prahy": [
+        1,
+        5,
+        20
+      ],
+      "proti": "ludia",
+      "tajny": true,
+      "tajnyText": "Aj to sa stáva najlepším.",
+      "piktogram": "akcia:Poldeci",
+      "zriedkavost": [
+        "bezne",
+        "nezvycajne",
+        "vzacne"
+      ],
+      "zdroj": "kronika naex.uspech === false"
+    },
+    {
+      "id": "vsetko-na-sekeru",
+      "nazov": "Všetko na sekeru",
+      "kategoria": "kuriozity",
+      "popis": "Ukonči v jednej partii aspoň {prah} bitky remízou (lokalita na sekeru).",
+      "metrika": "remizaBitky",
+      "rozsah": "partia",
+      "prahy": [
+        2,
+        3,
+        4
+      ],
+      "proti": "ludia",
+      "tajny": true,
+      "tajnyText": "Ani jeden, ani druhý.",
+      "piktogram": "podmienka:lokality",
+      "zriedkavost": [
+        "nezvycajne",
+        "vzacne",
+        "legendarne"
+      ],
+      "zdroj": "bitkaVysledok.vitaz === null"
+    },
+    {
+      "id": "nasucho",
+      "nazov": "Nasucho",
+      "kategoria": "kuriozity",
+      "popis": "Vyhraj bitku bez jediného plného poldeci — spolu {prah}×.",
+      "metrika": "vyhraNasucho",
+      "rozsah": "kariera",
+      "prahy": [
+        3,
+        15,
+        50
+      ],
+      "proti": "ludia",
+      "tajny": true,
+      "tajnyText": "Na sucho sa bije najlepšie.",
+      "piktogram": "akcia:Poldeci",
+      "zriedkavost": [
+        "bezne",
+        "nezvycajne",
+        "vzacne"
+      ],
+      "zdroj": "poldeciPlne pred vyhodnotením + bitkaVysledok.vitaz"
+    },
+    {
+      "id": "prazdne-vrecka",
+      "nazov": "Prázdne vrecká",
+      "kategoria": "kuriozity",
+      "popis": "Vyhraj partiu s 0 cigaretami na konci — spolu {prah}×.",
+      "metrika": "vyhraPrazdneVrecka",
+      "rozsah": "kariera",
+      "prahy": [
+        1,
+        5,
+        20
+      ],
+      "proti": "ludia",
+      "tajny": true,
+      "tajnyText": "Posledná cigareta padla na víťazstvo.",
+      "piktogram": "akcia:Cigareta",
+      "zriedkavost": [
+        "nezvycajne",
+        "vzacne",
+        "legendarne"
+      ],
+      "zdroj": "hraci[p].cigarety na konci + koniec.vitaz"
+    },
+    {
+      "id": "stastie-v-nestasti",
+      "nazov": "Šťastie v nešťastí",
+      "kategoria": "kuriozity",
+      "popis": "Vyhraj partiu, hoci súper vyhral viac bitiek — spolu {prah}×.",
+      "metrika": "vyhraSMenejBitkami",
+      "rozsah": "kariera",
+      "prahy": [
+        1,
+        3,
+        10
+      ],
+      "proti": "ludia",
+      "tajny": true,
+      "tajnyText": "Bitky prehráš, vojnu vyhráš.",
+      "piktogram": "akcia:Odpor",
+      "zriedkavost": [
+        "vzacne",
+        "legendarne",
+        "legendarne"
+      ],
+      "zdroj": "stat.bitkyVyhrane oboch + koniec.vitaz"
+    },
+    {
+      "id": "exekutor-odisiel",
+      "nazov": "Exekútor odišiel s prázdnou",
+      "kategoria": "kuriozity",
+      "popis": "Vyhraj partiu, v ktorej si čelil exekúcii — spolu {prah}×.",
+      "metrika": "vyhraPoExekucii",
+      "rozsah": "kariera",
+      "prahy": [
+        1,
+        2,
+        5
+      ],
+      "proti": "ludia",
+      "tajny": true,
+      "tajnyText": "Klopal na dvere, ale…",
+      "piktogram": "akcia:Dlh",
+      "zriedkavost": [
+        "legendarne",
+        "legendarne",
+        "legendarne"
+      ],
+      "zdroj": "stat.exekucie > 0 + koniec.vitaz"
+    },
+    {
+      "id": "dlznik-roka",
+      "nazov": "Dlžník roka",
+      "kategoria": "kuriozity",
+      "popis": "Priznané Dlhy naraz: aspoň {prah}.",
+      "metrika": "najviacDlhov",
+      "rozsah": "partia",
+      "prahy": [
+        4,
+        5,
+        6
+      ],
+      "proti": "ludia",
+      "tajny": true,
+      "tajnyText": "Aj banka by sa zľakla.",
+      "piktogram": "akcia:Dlh",
+      "zriedkavost": [
+        "nezvycajne",
+        "vzacne",
+        "legendarne"
+      ],
+      "zdroj": "hraci[p].priznane (dlh) po každom ťahu"
+    },
+    {
+      "id": "zberatel-haraburdia",
+      "nazov": "Zberateľ haraburdia",
+      "kategoria": "kuriozity",
+      "popis": "Maj naraz v ruke aspoň {prah} kariet.",
+      "metrika": "najvacsiaRuka",
+      "rozsah": "partia",
+      "prahy": [
+        13,
+        15,
+        17
+      ],
+      "proti": "ludia",
+      "tajny": true,
+      "tajnyText": "Dačo sa ešte zíde.",
+      "piktogram": "akcia:Vízia",
+      "zriedkavost": [
+        "nezvycajne",
+        "vzacne",
+        "legendarne"
+      ],
+      "zdroj": "hraci[p].ruka po každom ťahu"
+    }
+  ],
+  "metriky": [
+    {
+      "id": "najvacsiaRuka",
+      "typ": "rekord",
+      "popis": "najviac kariet v ruke naraz (stav po ťahu)"
+    },
+    {
+      "id": "najviacCigariet",
+      "typ": "rekord",
+      "popis": "najviac cigariet naraz"
+    },
+    {
+      "id": "najviacDlhov",
+      "typ": "rekord",
+      "popis": "najviac priznaných Dlhov naraz"
+    },
+    {
+      "id": "priazneNaraz",
+      "typ": "rekord",
+      "popis": "koľko starších naraz prejavuje hráčovi priazeň (priazenHraca)"
+    },
+    {
+      "id": "kartyVLinii",
+      "typ": "rekord",
+      "popis": "hráčove karty v línii pri vyhodnotení bitky (bitkaVysledok.karty, majitel)"
+    },
+    {
+      "id": "obrat",
+      "typ": "rekord",
+      "popis": "najväčší bodový deficit po kole (bodyTeraz), z ktorého hráč partiu vyhral; inak 0"
+    },
+    {
+      "id": "seriaVyhier",
+      "typ": "rekord",
+      "popis": "najdlhšia séria výhier za sebou v počítaných partiách (kariéra)"
+    },
+    {
+      "id": "porazenePovahy",
+      "typ": "rekord",
+      "popis": "počet rôznych povah bota, nad ktorými hráč vyhral (kariéra)"
+    },
+    {
+      "id": "rozniSuperi",
+      "typ": "rekord",
+      "popis": "počet rôznych ľudských súperov v dohratých partiách (kariéra, server)"
+    },
+    {
+      "id": "pitkyVyhratejBitky",
+      "typ": "počítadlo",
+      "popis": "Pitky bitky, ktorú hráč vyhral (pri prehre 0)"
+    },
+    {
+      "id": "zaverecne",
+      "typ": "počítadlo",
+      "popis": "karty zahrané ako Záverečná (príkaz zaverecna, aj v ťahu)"
+    },
+    {
+      "id": "obeHranyLokality",
+      "typ": "počítadlo",
+      "popis": "bitka, v ktorej mal hráč prevahu v oboch krajoch lokality"
+    },
+    {
+      "id": "remizaBitky",
+      "typ": "počítadlo",
+      "popis": "bitka skončená remízou, lokalita na sekeru (obom)"
+    },
+    {
+      "id": "vyhraNasucho",
+      "typ": "počítadlo",
+      "popis": "vyhratá bitka bez plného poldeci pri vyhodnotení"
+    },
+    {
+      "id": "naexUspech",
+      "typ": "počítadlo",
+      "popis": "NA EX, ktoré po súperovej odpovedi zlepšilo bitku tomu, kto ho dal (kronika)"
+    },
+    {
+      "id": "naexVlastnyGol",
+      "typ": "počítadlo",
+      "popis": "NA EX s kronikou uspech === false"
+    },
+    {
+      "id": "vyhra.dlha",
+      "typ": "počítadlo",
+      "popis": "výhra v dlhej partii (aj vyhra.kratka, vyhra.stredna)"
+    },
+    {
+      "id": "vyhraVydesenim",
+      "typ": "počítadlo",
+      "popis": "výhra ohláseným vydesením"
+    },
+    {
+      "id": "vyhraSMenejBitkami",
+      "typ": "počítadlo",
+      "popis": "výhra partie, hoci súper vyhral viac bitiek"
+    },
+    {
+      "id": "vyhraPoExekucii",
+      "typ": "počítadlo",
+      "popis": "výhra v partii, v ktorej hráč čelil exekúcii"
+    },
+    {
+      "id": "vyhraPrazdneVrecka",
+      "typ": "počítadlo",
+      "popis": "výhra s 0 cigaretami na konci"
+    },
+    {
+      "id": "bezNeresti",
+      "typ": "počítadlo",
+      "popis": "dohratá partia bez vypitia, fajčenia, NA EX, doliatia a barteru"
+    },
+    {
+      "id": "vyhraNad.<povaha>",
+      "typ": "počítadlo",
+      "popis": "výhra nad botom danej povahy: stamgast, rapavy_fero, teta_gizka"
+    }
+  ]
+}
