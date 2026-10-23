@@ -214,12 +214,24 @@ function useZvyraznenie(kluce: readonly string[]): readonly Obdlznik[] {
   return obdlzniky;
 }
 
-/** Stmavenie stola okrem zvýraznených prvkov — kliky prechádzajú (pointer-events: none). */
-function Stmavenie({ obdlzniky }: { readonly obdlzniky: readonly Obdlznik[] }) {
-  if (obdlzniky.length === 0) return null;
+/**
+ * Stmavenie stola okrem zvýraznených prvkov. Kliky prechádzajú, len v kroku bez ťahu
+ * (blokovat) chytí stmavená plocha klik mimo zvýraznených dier (playtest: klik na okraj
+ * otvoril Karty). Diery sú v ceste s evenodd, takže zvýraznený prvok sa dá kliknúť.
+ */
+function Stmavenie({ obdlzniky, blokovat }: { readonly obdlzniky: readonly Obdlznik[]; readonly blokovat: boolean }) {
+  if (obdlzniky.length === 0 && !blokovat) return null;
   const okraj = 6;
+  const W = window.innerWidth;
+  const H = window.innerHeight;
+  const diery = obdlzniky.map((o) => {
+    const x = o.x - okraj;
+    const y = o.y - okraj;
+    return `M${x},${y}h${o.w + 2 * okraj}v${o.h + 2 * okraj}h${-(o.w + 2 * okraj)}Z`;
+  });
   return (
     <svg className="vyucba-stmavenie" aria-hidden="true" width="100%" height="100%">
+      {blokovat && <path className="vyucba-blok" d={`M0,0H${W}V${H}H0Z${diery.join("")}`} fillRule="evenodd" />}
       <defs>
         <mask id="vyucba-maska">
           <rect width="100%" height="100%" fill="white" />
@@ -228,113 +240,12 @@ function Stmavenie({ obdlzniky }: { readonly obdlzniky: readonly Obdlznik[] }) {
           ))}
         </mask>
       </defs>
-      <rect className="vyucba-tien" width="100%" height="100%" mask="url(#vyucba-maska)" />
+      {obdlzniky.length > 0 && <rect className="vyucba-tien" width="100%" height="100%" mask="url(#vyucba-maska)" />}
       {obdlzniky.map((o, i) => (
         <rect key={i} className="vyucba-obrys" x={o.x - okraj} y={o.y - okraj} width={o.w + 2 * okraj} height={o.h + 2 * okraj} rx={10} />
       ))}
     </svg>
   );
-}
-
-// ---- pokyn a chyba z očakávaného ťahu ------------------------------------------
-// Playtest výučby 20261023-161148 (#1, #3): prvá veta bubliny je pokyn, čo kliknúť;
-// pri odmietnutom ťahu bublina vymenuje, čo chýba. Oboje sa skladá z príkazu, ktorý
-// krok čaká — text Melichara ostáva vysvetlením.
-
-export interface MenaVyucby {
-  readonly karta: (uid: number) => string;
-  readonly starsi: (elderId: string) => string;
-}
-
-interface Polozka {
-  readonly uid: number;
-  readonly ciel: string;
-  readonly zaverecna: boolean;
-}
-
-const pole = (c: Command): Readonly<Record<string, unknown>> => c as unknown as Readonly<Record<string, unknown>>;
-
-/** Karty, ktoré ťah kladie (place a Záverečná), v poradí. */
-function polozky(c: Command | null): Polozka[] {
-  if (c === null) return [];
-  const kroky = c.type === "tah" ? (c.kroky as readonly Command[]) : [c];
-  return kroky.flatMap((k) => {
-    const o = pole(k);
-    return (k.type === "place" || k.type === "zaverecna") && typeof o.uid === "number"
-      ? [{ uid: o.uid, ciel: String(o.target ?? ""), zaverecna: k.type === "zaverecna" }]
-      : [];
-  });
-}
-
-function textCiela(p: Polozka): string {
-  if (p.zaverecna) return p.ciel === "vlastna" ? "ako Záverečnú na svoju stranu" : "ako Záverečnú na Štamgastovu stranu";
-  switch (p.ciel) {
-    case "vlastna":
-      return "na svoju stranu";
-    case "superova":
-      return "na Štamgastovu stranu";
-    case "dedicstvo":
-      return "do Dedičstva (na dlaždicu Karty)";
-    case "priznanie":
-      return "priznať (na dlaždicu Karty)";
-    default:
-      return "";
-  }
-}
-
-const zoznam = (x: readonly string[]): string => (x.length <= 1 ? (x[0] ?? "") : `${x.slice(0, -1).join(", ")} a ${x[x.length - 1] ?? ""}`);
-
-/** Krátky pokyn, čo urobiť, aby krok prešiel — null, keď sa z príkazu nedá povedať. */
-export function pokynZOcakavania(c: Command | null, m: MenaVyucby): string | null {
-  if (c === null) return null;
-  const o = pole(c);
-  const meno = (u: unknown): string => (typeof u === "number" ? m.karta(u) : "kartu");
-  const mena = (v: unknown): string[] => (Array.isArray(v) ? v.map(meno) : []);
-  switch (c.type) {
-    case "chooseLocation":
-      return `Klikni na lokalitu ${meno(o.uid)} a potvrď.`;
-    case "stavbaSenku":
-      return `Na Smetisko daj ${zoznam(mena(o.odhod))}, potom potvrdiť.`;
-    case "draftBer":
-      return `Zo šenku vezmi ${zoznam(mena(o.uids))} a daj hotovo.`;
-    case "draftStop":
-      return "Klikni „už neťahám“ (P).";
-    case "tah":
-    case "place":
-    case "zaverecna": {
-      const p = polozky(c);
-      if (p.length === 0) return null;
-      const casti = p.map((x) => `${m.karta(x.uid)} ${textCiela(x)}`);
-      const zav = p.some((x) => x.zaverecna) ? "Zapni pečiatku „záverečná“ a " : "";
-      if (c.type !== "tah") return `Polož ${casti[0] ?? ""}.`;
-      return p.length > 1
-        ? `${zav}${zav === "" ? "P" : "p"}olož ${zoznam(casti)} — všetky naraz, až potom potvrdiť.`
-        : `${zav}${zav === "" ? "P" : "p"}olož ${casti[0] ?? ""} a potvrď.`;
-    }
-    case "naex":
-      return `Klikni na ${meno(o.uid)} a daj NA EX! (N).`;
-    case "skipNaex":
-      return "Klikni „končím“ (K).";
-    case "pass":
-      return "Pasuj (P).";
-    case "smoke":
-      return "Klikni na pečiatku „fajčiť“.";
-    case "bezReakcie":
-      return "Klikni „bez odpovede“.";
-    case "prebytok":
-    case "pohorsenie":
-      return `Klikni na staršieho ${m.starsi(String(o.elderId))}.`;
-    case "patronat":
-      return `Klikni na ${m.starsi(String(o.elderId))}, vyber ${meno(o.uid)} a daj „vziať do ruky“.`;
-    case "bezPatronatu":
-      return "Klikni „neberiem“.";
-    case "pohreb":
-      return `Klikni „Pohreb“, potom na ${meno(o.kartaUid)}${typeof o.senokUid === "number" ? `, zo šenku vezmi ${meno(o.senokUid)}` : ""} a potvrď.`;
-    case "skipPohreb":
-      return "Klikni „preskočiť“.";
-    default:
-      return null;
-  }
 }
 
 // ---- umiestnenie bubliny ---------------------------------------------------------
@@ -359,13 +270,22 @@ function miestaBubliny(w: number, h: number): Obdlznik[] {
   const dole = Math.max(hore, window.innerHeight - h - 12);
   const plst = document.querySelector(".stol-plst")?.getBoundingClientRect();
   const stred = plst === undefined ? (hore + dole) / 2 : Math.min(dole, Math.max(hore, plst.top + (plst.height - h) / 2));
+  // Hore na stole: vedľa nadpisov krajov býva prázdno (karty sú v strede).
+  const hornyStol = plst === undefined ? hore : Math.min(dole, Math.max(hore, plst.top + 6));
   const xs = [12, window.innerWidth - 12 - w];
-  return [dole, hore, stred].flatMap((y, i) => xs.map((x, j) => ({ kluc: `${i}${j}`, x, y, w, h })));
+  return [dole, hore, stred, hornyStol].flatMap((y, i) => xs.map((x, j) => ({ kluc: `${i}${j}`, x, y, w, h })));
 }
 
 function skoreMiesta(o: Obdlznik, zvyraznene: readonly Obdlznik[]): number {
   const sucet = (r: readonly Obdlznik[], vaha: number): number => r.reduce((s, b) => s + prekrytie(o, b) * vaha, 0);
-  return sucet(zvyraznene, 50) + sucet(rectyPrvkov(".linia .partia-rad .kl"), 2) + sucet(rectyPrvkov(".doska"), 1) + sucet(rectyPrvkov(".ruka-rad .kl"), 1);
+  return (
+    sucet(zvyraznene, 50) +
+    sucet(rectyPrvkov(".linia .partia-rad .kl"), 2) +
+    sucet(rectyPrvkov(".stol-hrana .pecat, .stol-hrana button"), 6) +
+    sucet(rectyPrvkov(".linia-stav"), 2) +
+    sucet(rectyPrvkov(".doska"), 1) +
+    sucet(rectyPrvkov(".ruka-rad .kl"), 1)
+  );
 }
 
 export function VyucbaStol({
@@ -377,8 +297,6 @@ export function VyucbaStol({
   hratProtiPocitacu,
   menoBota,
   chybaVyucby,
-  menoKarty,
-  menoStarsieho,
 }: {
   readonly stav: StavVyucby;
   readonly dalej: () => void;
@@ -390,11 +308,8 @@ export function VyucbaStol({
   readonly menoBota: string;
   /** Čo zlému ťahu chýbalo a čo bolo navyše (server, vyucbaChyba) — karty sa zvýraznia. */
   readonly chybaVyucby: { readonly chybajuce: readonly PopisKrokuVyucby[]; readonly navyse: readonly PopisKrokuVyucby[] } | null;
-  readonly menoKarty: (uid: number) => string;
-  readonly menoStarsieho: (elderId: string) => string;
 }) {
   const krok = stav.krok;
-  const mena: MenaVyucby = { karta: menoKarty, starsi: menoStarsieho };
   // Komentár k ťahu Štamgasta ostane v bubline nad ďalším krokom — len jeden (playtest: kopa odsekov).
   const [predtym, setPredtym] = useState<KrokVyucby | null>(null);
   const minuly = useRef<KrokVyucby | null>(null);
@@ -440,7 +355,6 @@ export function VyucbaStol({
     return () => document.body.classList.remove("vyucba-bezi");
   }, []);
 
-  const pokyn = krok?.kto === "hrac" ? pokynZOcakavania(krok.ocakava, mena) : null;
   // Vetu „Takto nie — ešte chýba: …“ skladá server; po odmietnutí svietia len karty,
   // ktoré chýbajú alebo sú navyše (a potvrdenie), inak všetko, čo krok čaká.
   const zleKarty =
@@ -526,12 +440,18 @@ export function VyucbaStol({
     return () => window.removeEventListener("keydown", klaves);
   }, [jeInfo, dalej]);
 
-  const presun = (): void => setRucne((zvolene + 1) % 6);
+  // Po novom kroku bez ťahu fokus na „ďalej“ — Enter aj čítačka vedia, kde sú.
+  const dalejRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (jeInfo) dalejRef.current?.focus({ preventScroll: true });
+  }, [krok?.id, jeInfo]);
+
+  const presun = (): void => setRucne((zvolene + 1) % 8);
   const percento = krok === null ? 100 : Math.round(((krok.index + 1) / krok.spolu) * 100);
 
   return (
     <>
-      <Stmavenie obdlzniky={zvyraznene} />
+      <Stmavenie obdlzniky={zvyraznene} blokovat={krok?.kto === "info"} />
       <aside
         ref={bublinaRef}
         className={`vyucba-bublina ${krok?.kto ?? "hotovo"}`}
@@ -558,7 +478,6 @@ export function VyucbaStol({
         </header>
         <div className="vyucba-text" role="status" aria-live="polite">
           {chyba !== null && krok !== null && <p className="vyucba-chyba">{chyba}</p>}
-          {pokyn !== null && chyba === null && <p className="vyucba-pokyn">{pokyn}</p>}
           {predtym !== null && <p className="vyucba-predtym">{predtym.melichar}</p>}
           {krok !== null ? (
             krok.melichar.trim() !== "" && <p>{krok.melichar}</p>
@@ -577,7 +496,7 @@ export function VyucbaStol({
           ) : (
             <>
               {krok.kto === "info" && (
-                <button className="tlacidlo-hlavne vyucba-dalej" onClick={dalej} data-vyucba-dalej="">
+                <button ref={dalejRef} className="tlacidlo-hlavne vyucba-dalej" onClick={dalej} data-vyucba-dalej="">
                   ďalej <kbd>Enter</kbd>
                 </button>
               )}

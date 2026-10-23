@@ -1607,6 +1607,13 @@ button:disabled .cena {
   color: inherit;
 }
 
+/* Na zlatom hlavnom tlačidle tlmená farba nemala kontrast (1,18 : 1, dizajn výučby) — farba textu tlačidla. */
+.tlacidlo-hlavne .cena {
+  margin-left: 6px;
+  color: inherit;
+  opacity: 0.85;
+}
+
 /* ---- vrstva: šenok, lokality, log cez celú obrazovku ----
  * Pod rukou (ruka s pásom ostáva navrchu), nad stolom. */
 

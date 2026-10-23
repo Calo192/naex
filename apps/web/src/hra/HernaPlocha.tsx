@@ -324,6 +324,8 @@ export interface HernaPlochaProps {
   readonly onPocitadlo?: (bezi: boolean) => void;
   /** Výučba „Prvá hra“: okno konca partie neukazovať — záver povie Melichar v bubline. */
   readonly bezOknaKonca?: boolean;
+  /** Výučba: ťah, ktorý krok čaká — „potvrdiť“ sa odomkne, až keď na stole leží všetko z neho. */
+  readonly vyucbaOcakava?: Command | null;
 }
 
 /** Názvy fáz pre titulok karty prehliadača. */
@@ -377,6 +379,7 @@ export function HernaPlocha({
   prehravanie,
   onPocitadlo,
   bezOknaKonca,
+  vyucbaOcakava,
 }: HernaPlochaProps) {
   DATA = data;
   const ja = view.ja;
@@ -705,6 +708,28 @@ export function HernaPlocha({
   const zostavaTeraz = view.zhromazdenieStav?.zostavaLimit[ja] ?? 0;
   const planTahu = (polozky: readonly PolozkaVykladania[]) => planVykladania(data, view, ja, zostavaTeraz, polozky);
   const plan = view.faza === "zhromazdenie" ? planTahu(vylozenia) : null;
+  // Výučba (playtest 20261023-161148, návrh 1): ťah, ktorému ešte niečo chýba, sa nedá potvrdiť —
+  // inak ho server odmietol a hráč nevedel prečo. Rovnaká karta (defId) platí za tú zo scenára.
+  const chybaVoVyucbe = ((): string | null => {
+    if (vyucbaOcakava === undefined || vyucbaOcakava === null) return null;
+    const kroky = (vyucbaOcakava.type === "tah" ? vyucbaOcakava.kroky : [vyucbaOcakava]) as readonly Command[];
+    const ocakavane = kroky.flatMap((k) => {
+      if (k.type !== "place" && k.type !== "zaverecna") return [];
+      const defId = view.ruka.find((r) => r.uid === k.uid)?.defId;
+      return defId === undefined ? [] : [{ defId, ciel: k.target, zaverecna: k.type === "zaverecna" }];
+    });
+    const sedi = (o: (typeof ocakavane)[number], v: PolozkaVykladania): boolean =>
+      v.karta.defId === o.defId && v.ciel === o.ciel && o.zaverecna === (v.zaverecna === true);
+    const chyba = ocakavane.filter((o) => !vylozenia.some((v) => sedi(o, v)));
+    if (chyba.length === 0) return null;
+    const navyse = vylozenia.filter((v) => !ocakavane.some((o) => sedi(o, v)));
+    return [
+      `Ešte chýba: ${chyba.map((o) => menoKarty(o.defId)).join(", ")}.`,
+      navyse.length > 0 ? `${navyse.map((v) => menoKarty(v.karta.defId)).join(", ")} sem teraz nepatrí — vráť do ruky (pravý klik).` : "",
+    ]
+      .filter((x) => x !== "")
+      .join(" ");
+  })();
   /** Koľkatá karta do línie či do Dedičstva v ťahu (od 0) — od druhej stojí plný poldeci. */
   const poradieVTahu = (uid: number): number => vylozenia.filter((x) => x.ciel !== "priznanie").findIndex((x) => x.karta.uid === uid);
   const lokalitaNavrh = (() => {
@@ -2150,12 +2175,14 @@ export function HernaPlocha({
           <button
             className="tlacidlo-hlavne"
             data-skratka="k"
-            disabled={plan.chyba !== null}
-            title={plan.chyba ?? undefined}
+            disabled={plan.chyba !== null || chybaVoVyucbe !== null}
+            title={plan.chyba ?? chybaVoVyucbe ?? undefined}
             onClick={() => posli({ type: "tah", kroky: plan.kroky })}
           >
             potvrdiť{plan.poldeci > 0 && <span className="cena">−{plan.poldeci} poldeci</span>}
           </button>
+          {/* Výučba: prečo sa nedá potvrdiť, priamo pri tlačidle (nápoveda na dotyku nie je). */}
+          {chybaVoVyucbe !== null && plan.chyba === null && <span className="vyucba-zamok">{chybaVoVyucbe}</span>}
         </>
       );
     }

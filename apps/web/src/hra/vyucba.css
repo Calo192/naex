@@ -18,6 +18,26 @@
   pointer-events: none;
 }
 
+/* Výučba: dôvod zamknutého „potvrdiť“ vedľa tlačidla na hrane stola. */
+.vyucba-zamok {
+  align-self: center;
+  max-width: 260px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--akcent);
+  background: var(--plocha);
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 600;
+  pointer-events: auto;
+}
+
+/* Krok bez ťahu: klik mimo zvýraznenia nič neurobí (priehľadná plocha s dierami). */
+.vyucba-blok {
+  fill: transparent;
+  pointer-events: fill;
+}
+
 .vyucba-tien {
   fill: color-mix(in srgb, #000 55%, transparent);
 }
@@ -207,11 +227,17 @@ body.vyucba-bezi .oznamy-priazne {
   }
 }
 
-/* 1366 × 650: bublina užšia, avatar menší — zakrýva menej stola. */
+/* 1366 × 650: bublina širšia a nižšia — na nízkom stole sa zmestí vedľa kariet a nad
+   pečiatky na hrane (pri 300 px bola vysoká a vždy niečo prekryla). */
 @media (max-height: 719px) {
   .vyucba-bublina {
-    width: min(300px, calc(100vw - 32px));
-    padding: 8px 10px;
+    width: min(400px, calc(100vw - 32px));
+    gap: 4px;
+    padding: 6px 10px;
+  }
+
+  .vyucba-pata {
+    gap: 4px 10px;
   }
 
   .vyucba-hlava .vyucba-avatar {
