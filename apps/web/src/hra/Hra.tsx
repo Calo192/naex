@@ -1,6 +1,6 @@
 // Herná časť (/hra): lobby → čakáreň → partia. Len pre prihlásených.
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { DlzkaHry, NaladaMomentu } from "@naex/core";
 import { ALL_DLZKY, DLZKY_HRY, NAZOV_DLZKY, PREDVOLENA_DLZKA } from "@naex/core";
 import { api, mediaUrl } from "../lib/api.ts";
@@ -239,6 +239,27 @@ export function Hra() {
     // Len pri novom zisku (n), nie pri prekreslení.
   }, [hra.achievementy.n]);
   const cmd = hra.cmd;
+  // Mená kariet a starších pre pokyny výučby (uid → meno karty, elderId → meno staršieho).
+  const mena = useMemo(() => {
+    const karty = new Map<number, string>();
+    const starsi = new Map<string, string>();
+    if (hra.view === null || hra.data === null) return { karty, starsi };
+    const data = hra.data;
+    const prejdi = (x: unknown): void => {
+      if (Array.isArray(x)) {
+        for (const y of x) prejdi(y);
+        return;
+      }
+      if (x === null || typeof x !== "object") return;
+      const o = x as Readonly<Record<string, unknown>>;
+      if (typeof o.uid === "number" && typeof o.defId === "string") karty.set(o.uid, data.cards.get(o.defId)?.name ?? o.defId);
+      const karta = o.karta as { readonly defId?: unknown } | undefined;
+      if (typeof o.elderId === "string" && typeof karta?.defId === "string") starsi.set(o.elderId, data.cards.get(karta.defId)?.name ?? o.elderId);
+      for (const v of Object.values(o)) prejdi(v);
+    };
+    prejdi(hra.view);
+    return { karty, starsi };
+  }, [hra.view, hra.data]);
   // Kým beží Počítadlo bitky, pečiatka momentu z bitky čaká (dohoda Bugfixing × New features).
   const [pocitadloBezi, setPocitadloBezi] = useState(false);
 
@@ -410,6 +431,9 @@ export function Hra() {
           hra.zaloz(false, PREDVOLENA_DLZKA, true);
         }}
         menoBota={hra.hraci[1]?.meno ?? "Štamgast"}
+        chybaVyucby={hra.chybaVyucby}
+        menoKarty={(uid) => mena.karty.get(uid) ?? "kartu"}
+        menoStarsieho={(id) => mena.starsi.get(id) ?? id}
       />
     )}
     </>

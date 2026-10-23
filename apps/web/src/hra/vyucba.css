@@ -53,7 +53,10 @@
   padding: 12px 14px;
   border-radius: 16px;
   border: 2px solid var(--akcent);
+  /* Nepriehľadná — stôl pod ňou nesmie presvitať (playtest výučby). */
   background: var(--plocha);
+  background-clip: padding-box;
+  isolation: isolate;
   color: var(--text);
   box-shadow: 0 10px 30px color-mix(in srgb, #000 55%, transparent);
   transition: left 0.25s ease, top 0.25s ease;
@@ -102,11 +105,33 @@
 
 .vyucba-presun {
   flex: none;
-  min-width: 32px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   min-height: 32px;
-  padding: 0;
+  padding: 0 8px;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 0.95rem;
+}
+
+.vyucba-presun span {
+  font-size: 0.72rem;
+}
+
+/* Prvá veta: čo kliknúť (z príkazu, ktorý krok čaká). */
+.vyucba-text .vyucba-pokyn {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border-left: 3px solid var(--akcent);
+  background: color-mix(in srgb, var(--akcent) 12%, var(--plocha));
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* Počas výučby komentuje Melichar — pruhy udalostí a priazne na stole by ležali cez karty. */
+body.vyucba-bezi .pokyn-udalosti,
+body.vyucba-bezi .oznamy-priazne {
+  display: none;
 }
 
 .vyucba-text {

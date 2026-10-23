@@ -11,7 +11,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { Command } from "@naex/core";
 import { api } from "../lib/api.ts";
-import type { KrokVyucby, StavVyucby } from "./useHra.ts";
+import type { KrokVyucby, PopisKrokuVyucby, StavVyucby } from "./useHra.ts";
 import "./vyucba.css";
 
 /** Stav výučby účtu (GET /api/vyucba). */
@@ -236,33 +236,136 @@ function Stmavenie({ obdlzniky }: { readonly obdlzniky: readonly Obdlznik[] }) {
   );
 }
 
-type Roh = "vlavo-dole" | "vpravo-dole" | "vlavo-hore" | "vpravo-hore";
-const ROHY: readonly Roh[] = ["vlavo-dole", "vpravo-dole", "vlavo-hore", "vpravo-hore"];
+// ---- pokyn a chyba z očakávaného ťahu ------------------------------------------
+// Playtest výučby 20261023-161148 (#1, #3): prvá veta bubliny je pokyn, čo kliknúť;
+// pri odmietnutom ťahu bublina vymenuje, čo chýba. Oboje sa skladá z príkazu, ktorý
+// krok čaká — text Melichara ostáva vysvetlením.
 
-/**
- * Roh okna pre bublinu: dole nad rohom ruky (tam je len počítadlo balíčka a avatar
- * v bare), hore pod osou kola.
- */
-function obdlznikRohu(roh: Roh, w: number, h: number): Obdlznik {
-  const hore = (document.querySelector(".hra-hlava")?.getBoundingClientRect().bottom ?? 110) + 8;
-  const x = roh.startsWith("vlavo") ? 12 : window.innerWidth - 12 - w;
-  const y = roh.endsWith("hore") ? hore : Math.max(hore, window.innerHeight - h - 12);
-  return { kluc: roh, x, y, w, h };
+export interface MenaVyucby {
+  readonly karta: (uid: number) => string;
+  readonly starsi: (elderId: string) => string;
 }
+
+interface Polozka {
+  readonly uid: number;
+  readonly ciel: string;
+  readonly zaverecna: boolean;
+}
+
+const pole = (c: Command): Readonly<Record<string, unknown>> => c as unknown as Readonly<Record<string, unknown>>;
+
+/** Karty, ktoré ťah kladie (place a Záverečná), v poradí. */
+function polozky(c: Command | null): Polozka[] {
+  if (c === null) return [];
+  const kroky = c.type === "tah" ? (c.kroky as readonly Command[]) : [c];
+  return kroky.flatMap((k) => {
+    const o = pole(k);
+    return (k.type === "place" || k.type === "zaverecna") && typeof o.uid === "number"
+      ? [{ uid: o.uid, ciel: String(o.target ?? ""), zaverecna: k.type === "zaverecna" }]
+      : [];
+  });
+}
+
+function textCiela(p: Polozka): string {
+  if (p.zaverecna) return p.ciel === "vlastna" ? "ako Záverečnú na svoju stranu" : "ako Záverečnú na Štamgastovu stranu";
+  switch (p.ciel) {
+    case "vlastna":
+      return "na svoju stranu";
+    case "superova":
+      return "na Štamgastovu stranu";
+    case "dedicstvo":
+      return "do Dedičstva (na dlaždicu Karty)";
+    case "priznanie":
+      return "priznať (na dlaždicu Karty)";
+    default:
+      return "";
+  }
+}
+
+const zoznam = (x: readonly string[]): string => (x.length <= 1 ? (x[0] ?? "") : `${x.slice(0, -1).join(", ")} a ${x[x.length - 1] ?? ""}`);
+
+/** Krátky pokyn, čo urobiť, aby krok prešiel — null, keď sa z príkazu nedá povedať. */
+export function pokynZOcakavania(c: Command | null, m: MenaVyucby): string | null {
+  if (c === null) return null;
+  const o = pole(c);
+  const meno = (u: unknown): string => (typeof u === "number" ? m.karta(u) : "kartu");
+  const mena = (v: unknown): string[] => (Array.isArray(v) ? v.map(meno) : []);
+  switch (c.type) {
+    case "chooseLocation":
+      return `Klikni na lokalitu ${meno(o.uid)} a potvrď.`;
+    case "stavbaSenku":
+      return `Na Smetisko daj ${zoznam(mena(o.odhod))}, potom potvrdiť.`;
+    case "draftBer":
+      return `Zo šenku vezmi ${zoznam(mena(o.uids))} a daj hotovo.`;
+    case "draftStop":
+      return "Klikni „už neťahám“ (P).";
+    case "tah":
+    case "place":
+    case "zaverecna": {
+      const p = polozky(c);
+      if (p.length === 0) return null;
+      const casti = p.map((x) => `${m.karta(x.uid)} ${textCiela(x)}`);
+      const zav = p.some((x) => x.zaverecna) ? "Zapni pečiatku „záverečná“ a " : "";
+      if (c.type !== "tah") return `Polož ${casti[0] ?? ""}.`;
+      return p.length > 1
+        ? `${zav}${zav === "" ? "P" : "p"}olož ${zoznam(casti)} — všetky naraz, až potom potvrdiť.`
+        : `${zav}${zav === "" ? "P" : "p"}olož ${casti[0] ?? ""} a potvrď.`;
+    }
+    case "naex":
+      return `Klikni na ${meno(o.uid)} a daj NA EX! (N).`;
+    case "skipNaex":
+      return "Klikni „končím“ (K).";
+    case "pass":
+      return "Pasuj (P).";
+    case "smoke":
+      return "Klikni na pečiatku „fajčiť“.";
+    case "bezReakcie":
+      return "Klikni „bez odpovede“.";
+    case "prebytok":
+    case "pohorsenie":
+      return `Klikni na staršieho ${m.starsi(String(o.elderId))}.`;
+    case "patronat":
+      return `Klikni na ${m.starsi(String(o.elderId))}, vyber ${meno(o.uid)} a daj „vziať do ruky“.`;
+    case "bezPatronatu":
+      return "Klikni „neberiem“.";
+    case "pohreb":
+      return `Klikni „Pohreb“, potom na ${meno(o.kartaUid)}${typeof o.senokUid === "number" ? `, zo šenku vezmi ${meno(o.senokUid)}` : ""} a potvrď.`;
+    case "skipPohreb":
+      return "Klikni „preskočiť“.";
+    default:
+      return null;
+  }
+}
+
+// ---- umiestnenie bubliny ---------------------------------------------------------
 
 /** Plocha prekrytia dvoch obdĺžnikov. */
 const prekrytie = (a: Obdlznik, b: Obdlznik): number =>
   Math.max(0, Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x)) * Math.max(0, Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y));
 
+const rectyPrvkov = (sel: string): Obdlznik[] =>
+  [...document.querySelectorAll<HTMLElement>(sel)].map((el) => {
+    const r = el.getBoundingClientRect();
+    return { kluc: sel, x: r.left, y: r.top, w: r.width, h: r.height };
+  });
+
 /**
- * Chyba po zlom ťahu: čo je zle a ako to opraviť — nie celá hláška Melichara znova
- * (tú bublina už ukazuje). UI inšpekcia: „Takto nie“ samo nepovedalo, čo robiť.
+ * Miesta pre bublinu: rohy okna (pod osou kola a nad spodkom) a stred okraja stola,
+ * vľavo aj vpravo. Vyberie sa to, ktoré najmenej zakrýva zvýraznené prvky (veľmi),
+ * karty v línii a bary hráčov (playtest výučby: bublina zakryla Body a Farára).
  */
-function kratkaChyba(text: string, ocakava: Command | null): string {
-  if (!text.startsWith("Vo výučbe teraz urob toto:")) return text;
-  if (ocakava?.type === "stavbaSenku") return "Na Smetisko patria karty, ktoré svietia. Kartu zo Smetiska vrátiš klikom na ňu.";
-  if (ocakava?.type === "tah") return "Takto nie — polož karty, ktoré svietia, tam, kam hovorím. Kartu zo stola vrátiš pravým klikom.";
-  return "Takto nie — urob to, čo svieti na stole.";
+function miestaBubliny(w: number, h: number): Obdlznik[] {
+  const hore = (document.querySelector(".hra-hlava")?.getBoundingClientRect().bottom ?? 110) + 8;
+  const dole = Math.max(hore, window.innerHeight - h - 12);
+  const plst = document.querySelector(".stol-plst")?.getBoundingClientRect();
+  const stred = plst === undefined ? (hore + dole) / 2 : Math.min(dole, Math.max(hore, plst.top + (plst.height - h) / 2));
+  const xs = [12, window.innerWidth - 12 - w];
+  return [dole, hore, stred].flatMap((y, i) => xs.map((x, j) => ({ kluc: `${i}${j}`, x, y, w, h })));
+}
+
+function skoreMiesta(o: Obdlznik, zvyraznene: readonly Obdlznik[]): number {
+  const sucet = (r: readonly Obdlznik[], vaha: number): number => r.reduce((s, b) => s + prekrytie(o, b) * vaha, 0);
+  return sucet(zvyraznene, 50) + sucet(rectyPrvkov(".linia .partia-rad .kl"), 2) + sucet(rectyPrvkov(".doska"), 1) + sucet(rectyPrvkov(".ruka-rad .kl"), 1);
 }
 
 export function VyucbaStol({
@@ -273,6 +376,9 @@ export function VyucbaStol({
   prerusit,
   hratProtiPocitacu,
   menoBota,
+  chybaVyucby,
+  menoKarty,
+  menoStarsieho,
 }: {
   readonly stav: StavVyucby;
   readonly dalej: () => void;
@@ -282,18 +388,40 @@ export function VyucbaStol({
   readonly prerusit: () => void;
   readonly hratProtiPocitacu: () => void;
   readonly menoBota: string;
+  /** Čo zlému ťahu chýbalo a čo bolo navyše (server, vyucbaChyba) — karty sa zvýraznia. */
+  readonly chybaVyucby: { readonly chybajuce: readonly PopisKrokuVyucby[]; readonly navyse: readonly PopisKrokuVyucby[] } | null;
+  readonly menoKarty: (uid: number) => string;
+  readonly menoStarsieho: (elderId: string) => string;
 }) {
   const krok = stav.krok;
-  // Ťahy bota idú rýchlo za sebou — ich komentáre ostávajú v bubline až do ďalšieho kroku hráča.
-  const [predtym, setPredtym] = useState<readonly KrokVyucby[]>([]);
+  const mena: MenaVyucby = { karta: menoKarty, starsi: menoStarsieho };
+  // Komentár k ťahu Štamgasta ostane v bubline nad ďalším krokom — len jeden (playtest: kopa odsekov).
+  const [predtym, setPredtym] = useState<KrokVyucby | null>(null);
   const minuly = useRef<KrokVyucby | null>(null);
+  const predtymAuto = useRef<readonly string[] | null>(null);
   useEffect(() => {
     const m = minuly.current;
     if (krok !== null && m !== null && m.id === krok.id) return;
-    setPredtym((p) => (m !== null && (m.kto === "bot" || m.kto === "auto") && m.melichar.trim() !== "" ? [...p, m].slice(-3) : []));
+    setPredtym(m !== null && (m.kto === "bot" || m.kto === "auto") && m.melichar.trim() !== "" ? m : null);
     minuly.current = krok;
     zrusChybu();
     // Len pri zmene kroku — zrusChybu je stabilný (useCallback v useHra).
+  }, [krok?.id]);
+
+  // Pri novom kroku sa stôl vráti z pohľadu starších a zavrú sa vrstvy, ktoré krok
+  // nepotrebuje (playtest: po kroku Body ostali starší otvorení, Lokality zakryli bar).
+  useEffect(() => {
+    if (krok === null) return;
+    const kluceKroku = krok.zvyraznit;
+    const typ = krok.ocakava?.type ?? "";
+    const t = setTimeout(() => {
+      const starsich =
+        kluceKroku.some((k) => k === "bar:body" || k === "linia-starsich" || k.startsWith("starsi:")) || ["prebytok", "pohorsenie", "patronat", "bezPatronatu"].includes(typ);
+      if (!starsich) document.querySelector<HTMLElement>('[data-vyucba-prvok="body"][aria-pressed="true"]')?.click();
+      const vrstvu = kluceKroku.some((k) => k.startsWith("hlavicka:")) || typ === "pohreb" || typ === "patronat";
+      if (!vrstvu) document.querySelector<HTMLElement>(".vrstva:not(.skryta) .vrstva-zavriet")?.click();
+    }, 350);
+    return () => clearTimeout(t);
   }, [krok?.id]);
 
   // Hrozba na stole je v odhade bitky — keď ju krok ukazuje a odhad je zbalený, rozbalí sa raz.
@@ -305,26 +433,66 @@ export function VyucbaStol({
     return () => clearTimeout(t);
     // Len pri zmene kroku — hráč ho potom smie zbaliť.
   }, [krok?.id]);
-  const obdlzniky = useZvyraznenie(
-    krok === null ? [] : krok.kto === "hrac" ? [...new Set([...krok.zvyraznit, ...kluceZOcakavania(krok.ocakava), POTVRDIT])] : krok.zvyraznit,
-  );
 
-  // Bublina si vyberie roh stola, ktorý nezakrýva zvýraznené prvky; hráč ju smie presunúť.
+  // Pruhy udalostí a priazne na stole počas výučby nie — komentuje Melichar (playtest: ležali cez karty).
+  useEffect(() => {
+    document.body.classList.add("vyucba-bezi");
+    return () => document.body.classList.remove("vyucba-bezi");
+  }, []);
+
+  const pokyn = krok?.kto === "hrac" ? pokynZOcakavania(krok.ocakava, mena) : null;
+  // Vetu „Takto nie — ešte chýba: …“ skladá server; po odmietnutí svietia len karty,
+  // ktoré chýbajú alebo sú navyše (a potvrdenie), inak všetko, čo krok čaká.
+  const zleKarty =
+    chyba === null || chybaVyucby === null
+      ? []
+      : [...chybaVyucby.chybajuce, ...chybaVyucby.navyse].flatMap((x) => (x.uid === null ? [] : [`uid:${x.uid}`]));
+  const kluce =
+    krok === null
+      ? []
+      : krok.kto !== "hrac"
+        ? krok.zvyraznit
+        : zleKarty.length > 0
+          ? [...zleKarty, POTVRDIT]
+          : [...new Set([...krok.zvyraznit, ...kluceZOcakavania(krok.ocakava), POTVRDIT])];
+  // Po kroku, ktorý hra spravila za hráča (auto), svieti ešte chvíľu to, čo urobila (Navrhár).
+  const [dosvit, setDosvit] = useState<readonly string[]>([]);
+  useEffect(() => {
+    const m = predtymAuto.current;
+    predtymAuto.current = krok?.kto === "auto" ? krok.zvyraznit : null;
+    if (m === null || m.length === 0) return;
+    setDosvit(m);
+    const t = setTimeout(() => setDosvit([]), 1500);
+    return () => clearTimeout(t);
+  }, [krok?.id]);
+  const zvyraznene = useZvyraznenie(dosvit.length > 0 ? [...new Set([...dosvit, ...kluce])] : kluce);
+
+  // Bublina si vyberie miesto, ktoré najmenej zakrýva zvýraznené prvky, líniu a bary;
+  // keď ju hráč presunie (⇆), ostane tam do konca výučby.
   const bublinaRef = useRef<HTMLElement>(null);
-  const [roh, setRoh] = useState<Roh>("vlavo-dole");
-  const [rucne, setRucne] = useState<Roh | null>(null);
+  const [rucne, setRucne] = useState<number | null>(null);
   const [poloha, setPoloha] = useState<Obdlznik | null>(null);
+  const [zvolene, setZvolene] = useState(0);
   useLayoutEffect(() => {
     const el = bublinaRef.current;
     if (el === null) return;
-    const { offsetWidth: w, offsetHeight: h } = el;
-    // Roh, ktorý najmenej zakrýva zvýraznené prvky (pri rovnosti skôr ten v poradí);
-    // keď hráč bublinu presunul, ostane tam do konca výučby (UI inšpekcia).
-    const zakryva = (r: Roh): number => obdlzniky.reduce((sum, o) => sum + prekrytie(obdlznikRohu(r, w, h), o), 0);
-    const volny = rucne ?? ROHY.reduce((naj, r) => (zakryva(r) < zakryva(naj) ? r : naj), ROHY[0] ?? "vlavo-dole");
-    const p = obdlznikRohu(volny, w, h);
-    if (volny !== roh) setRoh(volny);
-    if (poloha === null || poloha.x !== p.x || poloha.y !== p.y) setPoloha(p);
+    const miesta = miestaBubliny(el.offsetWidth, el.offsetHeight);
+    let i = rucne ?? 0;
+    if (rucne === null) {
+      let naj = Number.POSITIVE_INFINITY;
+      miesta.forEach((o, j) => {
+        // Pri rovnakom skóre ostáva bublina, kde je (neskáče sem a tam).
+        const sk = skoreMiesta(o, zvyraznene) - (j === zvolene ? 1 : 0);
+        if (sk < naj) {
+          naj = sk;
+          i = j;
+        }
+      });
+    }
+    const p = miesta[i % miesta.length];
+    if (p === undefined) return;
+    if (i !== zvolene) setZvolene(i);
+    if (poloha === null || Math.abs(poloha.x - p.x) > 1 || Math.abs(poloha.y - p.y) > 1) setPoloha(p);
   });
   useEffect(() => {
     const zmena = (): void => setPoloha(null);
@@ -332,7 +500,7 @@ export function VyucbaStol({
     return () => window.removeEventListener("resize", zmena);
   }, []);
 
-  // Chyba zmizne pri ďalšom kliku na stole — hráč výber opravuje (UI inšpekcia).
+  // Chyba zmizne pri ďalšom kliku na stole — hráč výber opravuje.
   useEffect(() => {
     if (chyba === null) return;
     const zrus = (e: PointerEvent): void => {
@@ -342,14 +510,15 @@ export function VyucbaStol({
     return () => window.removeEventListener("pointerdown", zrus);
   }, [chyba, zrusChybu]);
 
-  // Enter = „ďalej“ pri krokoch bez ťahu (keď fokus nie je na inom tlačidle či poli).
+  // Enter = „ďalej“ v kroku bez ťahu, aj keď fokus ostal na karte či tlačidle po kliku myšou
+  // (playtest: Enter po kliku nereagoval). Polia na písanie nechá tak.
   const jeInfo = krok?.kto === "info";
   useEffect(() => {
     if (!jeInfo) return;
     const klaves = (e: KeyboardEvent): void => {
       if (e.key !== "Enter" || e.repeat) return;
       const t = e.target as HTMLElement | null;
-      if (t !== null && t !== document.body && t.closest("button, a, input, textarea, select, [role=button]") !== null) return;
+      if (t?.closest("input, textarea, select, [contenteditable=true]") != null) return;
       e.preventDefault();
       dalej();
     };
@@ -357,14 +526,12 @@ export function VyucbaStol({
     return () => window.removeEventListener("keydown", klaves);
   }, [jeInfo, dalej]);
 
-  const presun = (): void => {
-    const i = ROHY.indexOf(roh);
-    setRucne(ROHY[(i + 1) % ROHY.length] ?? "vlavo-dole");
-  };
+  const presun = (): void => setRucne((zvolene + 1) % 6);
+  const percento = krok === null ? 100 : Math.round(((krok.index + 1) / krok.spolu) * 100);
 
   return (
     <>
-      <Stmavenie obdlzniky={obdlzniky} />
+      <Stmavenie obdlzniky={zvyraznene} />
       <aside
         ref={bublinaRef}
         className={`vyucba-bublina ${krok?.kto ?? "hotovo"}`}
@@ -377,31 +544,27 @@ export function VyucbaStol({
           <img className="vyucba-avatar" src="/melichar.jpg" alt="" width={44} height={44} />
           <div className="vyucba-kto">
             <strong>Majster Melichar</strong>
-            {krok !== null && (
-              <span className="vyucba-postup" aria-label={`Krok ${krok.index + 1} z ${krok.spolu}`}>
-                <span className="vyucba-postup-pruh">
-                  <span style={{ width: `${Math.round(((krok.index + 1) / krok.spolu) * 100)}%` }} />
-                </span>
-                {krok.index + 1} / {krok.spolu}
+            {/* Percentá, nie „krok n / 70“ — ťahy Štamgasta sa spájajú a číslo by preskakovalo (playtest). */}
+            <span className="vyucba-postup" aria-label={`Výučba: ${percento} %`}>
+              <span className="vyucba-postup-pruh">
+                <span style={{ width: `${percento}%` }} />
               </span>
-            )}
+              {percento} %
+            </span>
           </div>
-          <button type="button" className="vyucba-presun" onClick={presun} title="Presunúť bublinu do iného rohu" aria-label="Presunúť bublinu">
-            ⇆
+          <button type="button" className="vyucba-presun" onClick={presun} title="Presunúť bublinu inam (ostane tam)">
+            ⇆ <span>presunúť</span>
           </button>
         </header>
         <div className="vyucba-text" role="status" aria-live="polite">
-          {predtym.map((p) => (
-            <p key={p.id} className="vyucba-predtym">
-              {p.melichar}
-            </p>
-          ))}
+          {chyba !== null && krok !== null && <p className="vyucba-chyba">{chyba}</p>}
+          {pokyn !== null && chyba === null && <p className="vyucba-pokyn">{pokyn}</p>}
+          {predtym !== null && <p className="vyucba-predtym">{predtym.melichar}</p>}
           {krok !== null ? (
             krok.melichar.trim() !== "" && <p>{krok.melichar}</p>
           ) : (
             <p>Výučbu máš za sebou! Teraz vieš všetko, čo treba. Zahraj si naostro — Štamgast a jeho kumpáni ťa čakajú.</p>
           )}
-          {chyba !== null && krok !== null && <p className="vyucba-chyba">{kratkaChyba(chyba, krok.ocakava)}</p>}
         </div>
         <footer className="vyucba-pata">
           {krok === null ? (

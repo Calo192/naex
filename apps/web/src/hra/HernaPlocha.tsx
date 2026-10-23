@@ -3718,7 +3718,12 @@ export function HernaPlocha({
               <span className="stavba-balicek-nazov">
                 do Šenku <small>{zvysok.length}/{krokSt.doSenku}</small>
               </span>
-              {zvysok.map((k) => {
+              {/* Karta, ktorá odišla na Smetisko, nechá po sebe prázdne miesto — ostatné neposkočia
+                  a ďalší klik trafí, kam hráč mieril (playtest výučby). */}
+              {draft.mojBalicek.map((k) => {
+                if (odhod.includes(k.uid)) {
+                  return <div key={`m${k.uid}`} className="stavba-prazdne" style={{ width: sirkaDraftu, height: Math.round(sirkaDraftu * POMER_KARTY) }} aria-hidden="true" />;
+                }
                 const z: Zdroj = { karta: k, odkial: "stavba", navrh: false };
                 if (!somNaTahu) return sLupou({ karta: k, sirka: sirkaDraftu });
                 const props = { karta: k, sirka: sirkaDraftu, onClick: () => doZonyStavby(k.uid, true) };
