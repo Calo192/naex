@@ -59,7 +59,8 @@ export interface KrokVyucby {
   readonly spolu: number;
   readonly id: string;
   /** hrac = čaká sa na ťah hráča, bot = ťahá Štamgast, info = len text a „ďalej“. */
-  readonly kto: "hrac" | "bot" | "info";
+  /** auto = ťah hráča, ktorý hra spraví sama (ako ťah bota, s komentárom v bubline). */
+  readonly kto: "hrac" | "bot" | "info" | "auto";
   readonly melichar: string;
   /** Kľúče prvkov na zvýraznenie, napr. „bar:poldeci“, „ruka:hasic“ — v UI atribút data-vyucba. */
   readonly zvyraznit: readonly string[];

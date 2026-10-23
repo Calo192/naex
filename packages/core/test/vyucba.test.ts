@@ -183,3 +183,23 @@ describe("výučba — zlý ťah povie, čo chýba (playtest výučby, návrh 1)
     expect(p.navyse.map((c) => c.uid)).toEqual([z.uid]);
   });
 });
+
+describe("výučba — automatické kroky hráča (kto: auto)", () => {
+  it("auto je príkaz hráča: scenár s ťahmi hráča ako auto prejde a skončí v tom istom stave", () => {
+    const auto: ScenarVyucby = { ...scenar, kroky: scenar.kroky.map((k) => (k.kto === "hrac" ? { ...k, kto: "auto" as const } : k)) };
+    expect(overScenar(data, auto)).toBeNull();
+    expect(JSON.stringify(prehrajVyucbu(data, auto, auto.kroky.length))).toBe(JSON.stringify(prehrajVyucbu(data, scenar, scenar.kroky.length)));
+    // Hráč auto krok neposiela — server ho nečaká.
+    const i = auto.kroky.findIndex((k) => k.kto === "auto");
+    expect(ocakavanyPrikaz(auto, prehrajVyucbu(data, auto, i), i)).toBeNull();
+  });
+
+  it("auto bez príkazu a auto namiesto ťahu bota scenár neprejde", () => {
+    const iHrac = scenar.kroky.findIndex((k) => k.kto === "hrac");
+    const bezPrikazu: ScenarVyucby = { ...scenar, kroky: scenar.kroky.map((k, j) => (j === iHrac ? { id: k.id, kto: "auto" as const, melichar: k.melichar } : k)) };
+    expect(overScenar(data, bezPrikazu)).toMatch(/auto bez príkazu/);
+    const iBot = scenar.kroky.findIndex((k) => k.kto === "bot");
+    const zaBota: ScenarVyucby = { ...scenar, kroky: scenar.kroky.map((k, j) => (j === iBot ? { ...k, kto: "auto" as const } : k)) };
+    expect(overScenar(data, zaBota)).not.toBeNull();
+  });
+});

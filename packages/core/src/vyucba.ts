@@ -52,8 +52,12 @@ export type PrikazScenara = Readonly<Record<string, unknown>> & { readonly type:
 
 export interface KrokVyucby {
   readonly id: string;
-  /** hrac = čaká sa na jediný dovolený príkaz človeka; bot = ťah bota; info = len text a „ďalej“. */
-  readonly kto: "hrac" | "bot" | "info";
+  /**
+   * hrac = čaká sa na jediný dovolený príkaz človeka; bot = ťah bota; info = len text a „ďalej“;
+   * auto = príkaz hráča, ktorý hra vykoná sama ako ťah bota (Navrhár 2026-10-23: kolo 2 bez
+   * opakovania toho, čo hráč už vie). prikaz je pri hrac, bot aj auto povinný.
+   */
+  readonly kto: "hrac" | "bot" | "info" | "auto";
   readonly prikaz?: PrikazScenara;
   /** Text majstra Melichara v bubline (môže byť prázdny pri ťahu bota). */
   readonly melichar: string;
@@ -77,6 +81,9 @@ export interface ScenarVyucby {
 /** Hráč človeka a bota vo výučbe. */
 export const VYUCBA_HRAC: PlayerId = 0;
 export const VYUCBA_BOT: PlayerId = 1;
+
+/** Za koho sa krok vykoná — auto je príkaz hráča, len ho zahrá hra. */
+export const ktoVykona = (krok: KrokVyucby): PlayerId => (krok.kto === "bot" ? VYUCBA_BOT : VYUCBA_HRAC);
 
 /** Pole príkazu, ktoré nesie uid karty (alebo zoznam uid). */
 const UID_POLIA = ["uid", "rukaUid", "senokUid", "cirhozaUid", "kartaUid"] as const;
@@ -170,7 +177,7 @@ export function vykonajKrok(data: GameData, scenar: ScenarVyucby, state: GameSta
   const krok = scenar.kroky[i];
   if (krok === undefined) throw new Error(`Scenár nemá krok ${i}.`);
   if (krok.kto === "info") return state;
-  const kto = krok.kto === "hrac" ? VYUCBA_HRAC : VYUCBA_BOT;
+  const kto = ktoVykona(krok);
   if (krok.prikaz === undefined) throw new Error(`Krok ${krok.id}: ${krok.kto} bez príkazu.`);
   const cmd = prikazZoScenara(state, kto, krok.prikaz);
   return apply(data, state, cmd, kto).state;
@@ -203,7 +210,8 @@ export function overScenar(data: GameData, scenar: ScenarVyucby): string | null 
   }
   for (const [i, krok] of scenar.kroky.entries()) {
     if (krok.kto === "info") continue;
-    const kto = krok.kto === "hrac" ? VYUCBA_HRAC : VYUCBA_BOT;
+    const kto = ktoVykona(krok);
+    if (krok.prikaz === undefined) return `Krok ${i} (${krok.id}): ${krok.kto} bez príkazu.`;
     try {
       const cmd = prikazZoScenara(state, kto, krok.prikaz ?? { type: "pass" });
       if (naTahu(state) !== kto && !(state.faza === "draft" && state.draftStav?.krok === "stavba")) {
