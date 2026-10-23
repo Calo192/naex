@@ -1,6 +1,6 @@
 ---
 name: naex-nasad
-description: Bezpečne nasadí NA EX! na živý web — overí, že master je na origine a prejde testami, typecheckom a buildom, ukáže, čo pôjde von (commity od posledného nasadenia, zmena sady kariet), počká, kým dohrajú rozohrané partie ľudí, nasadí čistý master cez deploy/nahraj.sh, overí živý web (smoke test) a označí, čo je na živom webe. Použi, keď používateľ povie /naex-nasad, „nasaď“, „nahraj na živý web“, „vydaj novú verziu“, „daj to na produkciu“.
+description: Bezpečne nasadí NA EX! na živý web — overí, že master je na origine a prejde testami, typecheckom a buildom, ukáže, čo pôjde von (commity od posledného nasadenia, zmena sady kariet), zapne uzávierku (nové partie nie), počká, kým dohrajú rozohrané partie ľudí aj s botmi, nasadí čistý master cez deploy/nahraj.sh, overí živý web (smoke test) a označí, čo je na živom webe. Použi, keď používateľ povie /naex-nasad, „nasaď“, „nahraj na živý web“, „vydaj novú verziu“, „daj to na produkciu“.
 argument-hint: "[--hned] (nasadiť aj počas rozohraných partií)"
 ---
 
@@ -45,12 +45,20 @@ Adresa a IP servera sú v `deploy/.env.produkcia` (`IP=`, `DOMENA=`; mimo gitu).
    nenasadzuj (docs/NASADENIE.md, „Karty na produkciu“). Ak nie je čo nasadiť,
    povedz to a skonči.
 
-4. **Rozohrané partie:** ak `server-stav` ukazuje partie ľudí (`ľudia` > 0)
-   a nemáš `--hned`, počkaj: kontroluj `$A server-stav --zivy` každých 5 minút
-   (Monitor / until-slučka, nie ručné pollovanie), najviac 45 minút. Partia,
-   v ktorej sa 30 minút neťahalo (posledný ťah), sa ráta ako opustená. Partie
-   s botom a čakajúce miestnosti nečakaj — len ich spomeň. Ak sa partie
-   nedohrajú do 45 minút, opýtaj sa používateľa, či nasadiť aj tak.
+4. **Uzávierka a rozohrané partie** (Michal 2026-10-23): ak nemáš `--hned`,
+   zapni uzávierku `$A uzavierka zapni --zivy`. Odteraz sa nedá založiť partia
+   ani pripojiť do novej miestnosti (ľudia, boti ani AI playtesteri); hráči
+   v lobby vidia oznam „Pripravujeme aktualizáciu hry…“, rozohrané partie bežia
+   ďalej. Potom čakaj na dohranie **všetkých** partií — aj s botom: kontroluj
+   `$A server-stav --zivy` každých 5 minút (Monitor / until-slučka, nie ručné
+   pollovanie), kým `aktívne` nie je 0, najviac 45 minút. Partia bez ťahu
+   30 minút sa ráta ako opustená (`opustené`) — na tú nečakaj, len ju spomeň;
+   čakajúce miestnosti tiež nie. Ak sa partie do 45 minút nedohrajú, opýtaj sa
+   používateľa, či nasadiť aj tak. Keď nasadenie nakoniec nepôjde, vypni
+   uzávierku `$A uzavierka vypni --zivy` — inak by hráči nemohli zakladať
+   partie až do reštartu. S `--hned` uzávierku nezapínaj, nasadzuj hneď.
+   Server nasadený pred uzávierkou (fa8cb6c a starší) príkaz nepozná — vtedy
+   čakaj len na partie ľudí ako predtým.
 
 5. **Nasaď** z worktree:
    ```bash
@@ -60,13 +68,14 @@ Adresa a IP servera sú v `deploy/.env.produkcia` (`IP=`, `DOMENA=`; mimo gitu).
    balíka zapíše `VERZIA.json` (commit, ktorý beží). Prepíše
    `deploy/.env.produkcia` vo worktree — skopíruj ho späť do hlavného stromu
    (`cp ../naex-nasadenie/deploy/.env.produkcia deploy/`), ak sa zmenil.
+   Reštart servera uzávierku sám zruší (je len v pamäti) — po nasadení ju nevypínaj.
    Na konci skript čaká na HTTPS; ak neodpovie, ukáž príkaz na logy, ktorý
    vypísal, a skonči s chybou.
 
 6. **Smoke test živého webu:**
    ```bash
    node --experimental-strip-types --no-warnings tools/playtest/web.ts dostupny --zivy
-   $A server-stav --zivy          # commit = origin/master, partie 0
+   $A server-stav --zivy          # commit = origin/master, partie 0, uzávierka vypnutá
    $A sady --zivy                 # pri novej sade: nová verzia je zverejnená
    ```
    a jedna stránka očami: `tools/playtest/snimka.ts web nasadenie --cesta / --url https://<DOMENA>`
@@ -76,7 +85,7 @@ Adresa a IP servera sú v `deploy/.env.produkcia` (`IP=`, `DOMENA=`; mimo gitu).
 
 7. **Uprac** `git worktree remove --force ../naex-nasadenie`.
 
-8. **Odovzdaj:** čo je teraz na živom webe (commit, 3–8 bodov zmien), či išla
+8. **Odovzdaj:** koľko minút trvala uzávierka a koľko opustených partií nasadenie zhodilo; čo je teraz na živom webe (commit, 3–8 bodov zmien), či išla
    nová sada kariet, koľko partií nasadenie zhodilo (ak `--hned`), výsledok
    smoke testu. Implementované návrhy teraz čakajú na overenie ďalším
    playtestom (`/naex-playtest`) — spomeň ich (`$A navrhy implementovane --zivy`).
