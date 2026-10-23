@@ -4469,28 +4469,68 @@ button.auto-hotovo-odkaz {
     text-overflow: ellipsis;
   }
 
-  .pas-kola-obal {
-    position: relative;
-  }
-
   .pas-kola .suhrn-bitky {
     display: inline-flex;
   }
 
-  /* Celý odhad bitky leží po kliku nad stolom — stôl pod ním neposkočí. */
-  .odhad-bitky {
-    display: none;
-    position: absolute;
-    top: calc(100% + 6px);
-    left: 0;
-    right: 0;
-    z-index: 30;
-    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
-    border-radius: 14px;
+  /* Riadok bitky namiesto pásu kola (Michal 2026-10-23): rovnaká výška ako pás,
+     ikona akcie s počtom vedľa seba, v strede súhrn — ďalší klik vráti pás. */
+  .pas-kola-obal > .bitka-panel.riadok {
+    height: 100%;
   }
 
-  .odhad-bitky.otvoreny {
-    display: block;
+  .bitka-panel.riadok .bitka-strana {
+    gap: 10px;
+    padding: 3px 12px;
+  }
+
+  .bitka-panel.riadok .bitka-suhrn {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 5px;
+  }
+
+  .bitka-panel.riadok .bitka-meno,
+  .bitka-panel.riadok .bitka-popis,
+  .bitka-panel.riadok .bitka-doplnok {
+    font-size: 0.7rem;
+  }
+
+  .bitka-panel.riadok .bitka-tuhe {
+    font-size: 1.5rem;
+  }
+
+  .bitka-panel.riadok .efekty {
+    flex-wrap: nowrap;
+    gap: 4px;
+    overflow: hidden;
+  }
+
+  .bitka-panel.riadok .efekt {
+    flex-direction: row;
+    gap: 3px;
+    min-width: 0;
+    padding: 2px 5px;
+  }
+
+  .bitka-panel.riadok .efekt-ikona {
+    width: 24px;
+    height: 24px;
+  }
+
+  .bitka-panel.riadok .efekt-hodnota {
+    font-size: 1rem;
+  }
+
+  .bitka-panel.riadok .bitka-stred {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 8px;
+  }
+
+  .bitka-panel.riadok .suhrn-bitky {
+    display: inline-flex;
   }
 }
 

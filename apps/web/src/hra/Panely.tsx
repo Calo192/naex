@@ -951,6 +951,11 @@ export interface BitkaPanelProps {
   readonly utocnik?: string;
   /** Rod hráča pre „Vyhral(a) si bitku“ (Michal 2026-10-22); chýba = neutrálne. */
   readonly rodJa?: Rod;
+  /**
+   * Riadok bitky nad stolom (Michal 2026-10-23): strany s akciami ostávajú, stred
+   * nahradí jednoriadkový súhrn — celý panel je po kliku na súhrn.
+   */
+  readonly stred?: ReactNode;
 }
 
 /** Verdikt a prebytok bitky — spoločné pre panel aj jeho jednoriadkový súhrn. */
@@ -994,7 +999,7 @@ export function SuhrnBitky(props: BitkaPanelProps & { readonly otvoreny: boolean
       aria-expanded={otvoreny}
       aria-controls={id}
       onClick={prepni}
-      title={otvoreny ? "Skryť rozpis bitky (Esc)" : "Rozpis bitky — akcie oboch strán, prebytok, sekera"}
+      title={otvoreny ? "Späť na pás kola (Esc)" : "Riadok bitky — tuhé a akcie oboch strán"}
     >
       <span className="suhrn-bitky-nadpis">{vysledok ? "Výsledok" : "Odhad"}</span>
       <b>{verdikt}</b>
@@ -1008,7 +1013,7 @@ export function SuhrnBitky(props: BitkaPanelProps & { readonly otvoreny: boolean
 }
 
 export function BitkaPanel(props: BitkaPanelProps) {
-  const { damage, sums, zdroje, rozpis, ja, vysledok, mena, sada, ciel, menoKarty, naSekeru, prebytokNaRozdelenie, utocnik } = props;
+  const { damage, sums, zdroje, rozpis, ja, vysledok, mena, sada, ciel, menoKarty, naSekeru, prebytokNaRozdelenie, utocnik, stred } = props;
   const { su, vitaz, prebytok, prebytokDrzi, rozdiel, vyhravam, vStavke, coPriRemize, verdikt, cenaPosunu, posunov } = verdiktBitky(props);
 
   const strana = (p: PlayerId, zarovnanie: "vlavo" | "vpravo") => (
@@ -1028,27 +1033,31 @@ export function BitkaPanel(props: BitkaPanelProps) {
   );
 
   return (
-    <section className={`bitka-panel ${vitaz === null ? "" : vyhravam ? "vyhravam" : "prehravam"}`} aria-label="Bitka">
+    <section className={`bitka-panel ${vitaz === null ? "" : vyhravam ? "vyhravam" : "prehravam"}${stred !== undefined ? " riadok" : ""}`} aria-label="Bitka">
       {strana(ja, "vlavo")}
-      <div className="bitka-stred">
-        <span className="bitka-nadpis">
-          {vysledok ? "Výsledok bitky" : "Odhad bitky"} · {ciel}
-        </span>
-        {utocnik !== undefined && <span className="bitka-pozn">{utocnik}</span>}
-        {naSekeru.length > 0 && (
-          <span className="bitka-sekera" title="Lokality z predošlých remíz — víťaz tejto bitky ich berie spolu s jej lokalitou.">
-            ide o {vStavke + (vStavke === 1 ? " lokalitu" : vStavke <= 4 ? " lokality" : " lokalít")} · na sekere {naSekeru.join(", ")}
+      {stred !== undefined ? (
+        <div className="bitka-stred">{stred}</div>
+      ) : (
+        <div className="bitka-stred">
+          <span className="bitka-nadpis">
+            {vysledok ? "Výsledok bitky" : "Odhad bitky"} · {ciel}
           </span>
-        )}
-        <span className="bitka-verdikt">{verdikt}</span>
-        <span className="bitka-pozn">
-          {prebytokDrzi === null
-            ? "prebytok: nikto"
-            : `prebytok ${prebytok}${prebytokNaRozdelenie < prebytok ? ` − Puška = ${prebytokNaRozdelenie}` : ""} → ${prebytokDrzi === ja ? "tebe" : mena[su]} · ${posunov} ${posunov === 1 ? "posun" : posunov >= 2 && posunov <= 4 ? "posuny" : "posunov"} (posun stojí ${cenaPosunu}${cenaPosunu > 1 ? ", Miňištrant" : ""})`}
-        </span>
-        {!vysledok && rozdiel !== 0 && <span className="bitka-pozn tlmene">pri remíze: {coPriRemize}</span>}
-        {!vysledok && <span className="bitka-pozn tlmene">podľa aktuálnej línie; súperove Absťáky v ruke nevidno</span>}
-      </div>
+          {utocnik !== undefined && <span className="bitka-pozn">{utocnik}</span>}
+          {naSekeru.length > 0 && (
+            <span className="bitka-sekera" title="Lokality z predošlých remíz — víťaz tejto bitky ich berie spolu s jej lokalitou.">
+              ide o {vStavke + (vStavke === 1 ? " lokalitu" : vStavke <= 4 ? " lokality" : " lokalít")} · na sekere {naSekeru.join(", ")}
+            </span>
+          )}
+          <span className="bitka-verdikt">{verdikt}</span>
+          <span className="bitka-pozn">
+            {prebytokDrzi === null
+              ? "prebytok: nikto"
+              : `prebytok ${prebytok}${prebytokNaRozdelenie < prebytok ? ` − Puška = ${prebytokNaRozdelenie}` : ""} → ${prebytokDrzi === ja ? "tebe" : mena[su]} · ${posunov} ${posunov === 1 ? "posun" : posunov >= 2 && posunov <= 4 ? "posuny" : "posunov"} (posun stojí ${cenaPosunu}${cenaPosunu > 1 ? ", Miňištrant" : ""})`}
+          </span>
+          {!vysledok && rozdiel !== 0 && <span className="bitka-pozn tlmene">pri remíze: {coPriRemize}</span>}
+          {!vysledok && <span className="bitka-pozn tlmene">podľa aktuálnej línie; súperove Absťáky v ruke nevidno</span>}
+        </div>
+      )}
       {strana(su, "vpravo")}
     </section>
   );

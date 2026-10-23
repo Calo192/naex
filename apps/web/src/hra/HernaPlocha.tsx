@@ -3163,9 +3163,19 @@ export function HernaPlocha({
           prebytokNaRozdelenie: prebytokNaRozdelenie(view, battleOutcome(b?.damage ?? odhad)),
           utocnik: `útočník: ${view.utocnik === ja ? "ty" : menoHraca(view.utocnik)} — ${view.kolo === 1 ? "v 1. kole náhodne" : "porazený z minulej bitky (remíza roly nemení)"}`,
         };
-  // Na počítači je odhad bitky v páse kola jedným riadkom a celý panel sa otvorí
-  // nad stolom (Stôl bez scrollovania, #67); na mobile leží pod pásom ako doteraz.
+  // Na počítači je odhad bitky v páse kola jedným riadkom; klik naň prepne ten istý pás
+  // na riadok bitky s akciami oboch strán (Michal 2026-10-23, ako bar hráča cez Body).
+  // Pás drží výšku, línia sa nepohne. Na mobile leží celý panel pod pásom ako doteraz.
   const [odhadOtvoreny, setOdhadOtvoreny] = useState(false);
+  const pasRef = useRef<HTMLDivElement>(null);
+  const [vyskaPasu, setVyskaPasu] = useState(0);
+  useEffect(() => {
+    const el = pasRef.current;
+    if (el === null || odhadOtvoreny) return;
+    const ro = new ResizeObserver(([z]) => setVyskaPasu(Math.round(z?.borderBoxSize[0]?.blockSize ?? 0)));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [odhadOtvoreny, bitkaProps === null]);
   const idOdhadu = useId();
   useEffect(() => {
     if (!odhadOtvoreny) return;
@@ -3175,12 +3185,7 @@ export function HernaPlocha({
     window.addEventListener("keydown", klaves);
     return () => window.removeEventListener("keydown", klaves);
   }, [odhadOtvoreny]);
-  const bitkaPanel =
-    bitkaProps === null ? null : (
-      <div className={`odhad-bitky${odhadOtvoreny ? " otvoreny" : ""}`} id={idOdhadu}>
-        <BitkaPanel {...bitkaProps} />
-      </div>
-    );
+  const bitkaPanel = bitkaProps === null || !mobil ? null : <BitkaPanel {...bitkaProps} />;
   const suhrnBitky =
     bitkaProps === null ? null : <SuhrnBitky {...bitkaProps} otvoreny={odhadOtvoreny} prepni={() => setOdhadOtvoreny((o) => !o)} id={idOdhadu} />;
 
@@ -3870,10 +3875,15 @@ export function HernaPlocha({
           {/* Na počítači ležia voľba cieľa a draft na stole (vrstvaFazy) — línia je vtedy prázdna. */}
           {mobil && cielPanel}
           {mobil && draftPanel}
-          <div className="pas-kola-obal">
-            {pasKola}
-            {bitkaPanel}
+          <div
+            className="pas-kola-obal"
+            id={idOdhadu}
+            ref={pasRef}
+            style={odhadOtvoreny && vyskaPasu > 0 ? { height: vyskaPasu } : undefined}
+          >
+            {odhadOtvoreny && bitkaProps !== null && !mobil ? <BitkaPanel {...bitkaProps} stred={suhrnBitky} /> : pasKola}
           </div>
+          {bitkaPanel}
           {/* Starší sú na stole po kliku na Body (#68) — nad stolom ostáva len ich súhrn. */}
           {pasKola === null && <div className="starsi-info-samostatne">{starsiSuhrn}</div>}
           {/* Farba stola hovorí, čí je ťah: zelená = tvoj, sivá = čakáš. */}
