@@ -209,6 +209,11 @@ const PRIDAVOK_LINIE = 92;
 /** Najmenší posun kariet akcia ku akcii (zlomok výšky karty), kým ho línia nezmeria. */
 const REZERVA_POSUNU = 0.4;
 
+/** Záložka na okraji stola pri ťahaní karty, ktorá smie do línie aj do hracej oblasti (#76). */
+const ZALOZKA_OBLASTI = "zalozka-oblasti";
+/** Ako dlho držať kartu nad záložkou, kým sa stôl prepne (mock hracej oblasti). */
+const DRZANIE_ZALOZKY_MS = 600;
+
 /** Pravý klik = odstrániť / zrušiť (Michal 2026-10-20) — bez kontextovej ponuky prehliadača. */
 function pravyKlik(fn: (() => void) | undefined): ((e: React.MouseEvent) => void) | undefined {
   return fn === undefined
@@ -1817,50 +1822,6 @@ export function HernaPlocha({
     );
   };
 
-  /** Priznanie a Dedičstvo — miesto mimo línie, len pre Kliatby a Nástroje. */
-  const odkladanie = (ciel: "priznanie" | "dedicstvo", nazov: string, pozn: string): ReactNode => {
-    const navrhnute = vylozenia.filter((x) => x.ciel === ciel);
-    const volne = miesto(
-      ciel,
-      ciel === "dedicstvo" && varovaniePoldeci !== null ? (
-        <>
-          {nazov}
-          {varovaniePoldeci}
-        </>
-      ) : (
-        nazov
-      ),
-      104,
-    );
-    if (navrhnute.length === 0 && volne === null) return null;
-    return (
-      <div className="odkladanie-zona" key={ciel}>
-        <span className="popis">{nazov}</span>
-        {navrhnute.map((x) =>
-          tahatelna(
-            { karta: x.karta, odkial: "ruka", navrh: true },
-            <>
-              {karta({ karta: x.karta, sirka: 104 })}
-              {stitokPoldeci(x.karta.uid)}
-            </>,
-            x.karta.uid,
-            NAHRADIT + x.karta.uid,
-            undefined,
-            () => vratDoRuky(x.karta.uid),
-          ),
-        )}
-        {volne}
-        <span className="odkladanie-pozn">{pozn}</span>
-      </div>
-    );
-  };
-  const odkladacieZony = [
-    odkladanie("priznanie", "priznať", "navždy z balíčka · nemíňa limit · za Cirhózu sa nedoberá · Cirhóza po bitke odomkne Liečbu a Pohreb"),
-    odkladanie("dedicstvo", "do Dedičstva", `pasívny efekt · teraz stojí ${cigariet(view.cenaDedicstva)} (cena rastie pre oboch) · nemíňa limit`),
-  ].filter(
-    (z) => z !== null,
-  );
-
   const lokalita = view.ciel?.lokalita ?? null;
   // Natočenie lokality je v ráme hráča 1 opačné.
   const lokalitaNavrhOtocena = lokalitaNavrh !== null && lokalitaNavrh.otocena !== (ja === 1);
@@ -3043,6 +3004,7 @@ export function HernaPlocha({
     setVysledokKroku(false);
   };
   const prepniStarsich = (p: PlayerId): void => {
+    setOblastOtvorena(false);
     if (krokStarsich !== null && !nahliadnutie) {
       setPohladStarsich((x) => (x === p ? null : p));
       return;
@@ -3491,8 +3453,211 @@ export function HernaPlocha({
 
   // Stôl bez scrollovania (#67): na počítači leží voľba cieľa a draft na stole namiesto
   // prázdnej línie. Lokalita na otočenie a potvrdenie je v línii — vtedy sa vráti línia.
+  // ---- hracia oblasť na stole (Michal 2026-10-23, #76) ----------------------
+  // Priznanie a Dedičstvo ležia na stole namiesto línie, ako línia starších: pri ťahaní
+  // kliatby či Nástroja, tlačidlom „Oblasť“ v bare a klávesom O. Karta len do oblasti
+  // (Cirhóza) prepne stôl hneď; s možnosťou línie sa ukáže záložka na pravom okraji stola.
+  const [oblastOtvorena, setOblastOtvorena] = useState(false);
+  const [vybranaDoOblasti, setVybranaDoOblasti] = useState<number | null>(null);
+  const [odchodZalozky, setOdchodZalozky] = useState(false);
+  useEffect(() => setVybranaDoOblasti(null), [klucTahu]);
+  useEffect(() => setOblastOtvorena(false), [view.faza, view.kolo]);
+  const idOblasti = useId();
+  const otvorOblast = (o: boolean): void => {
+    if (o) {
+      setPohladStarsich(null);
+      setVysledokKroku(false);
+    }
+    setOblastOtvorena(o);
+  };
+  const zavriOblast = (): void => {
+    setOblastOtvorena(false);
+    setVybranaDoOblasti(null);
+  };
+  /** Kam smie karta z ruky — rovnaké ciele ako pri ťahaní (planVykladania). */
+  const kamIde = (k: CardInstance): { readonly linia: boolean; readonly priznanie: boolean; readonly dedicstvo: boolean } => {
+    const c = cieleZdroja({ karta: k, odkial: "ruka", navrh: false });
+    return { linia: c.has("vlastna") || c.has("superova"), priznanie: c.has("priznanie"), dedicstvo: c.has("dedicstvo") };
+  };
+  const tahanaZRuky = tahanie !== null && tahanie.zdroj.odkial === "ruka" && !tahanie.zdroj.navrh ? tahanie.zdroj.karta : null;
+  const vybranaKarta = vybranaDoOblasti === null ? null : (ruka.find((k) => k.uid === vybranaDoOblasti) ?? null);
+  const kartaOblasti = tahanaZRuky ?? vybranaKarta;
+  const kamOblasti = kartaOblasti === null ? null : kamIde(kartaOblasti);
+  const doOblasti = kamOblasti !== null && (kamOblasti.priznanie || kamOblasti.dedicstvo);
+  useEffect(() => {
+    if (doOblasti && kamOblasti !== null && !kamOblasti.linia) otvorOblast(true);
+    // Len pri novej karte — inak by sa oblasť po zavretí hneď otvorila znova.
+  }, [kartaOblasti?.uid]);
+  const zalozkaOblasti = !mobil && doOblasti && kamOblasti !== null && kamOblasti.linia;
+  // Podržanie karty nad záložkou prepne stôl; potom treba zo záložky odísť, inak by sa prepínal dookola.
+  const nadZalozkou = tahanie?.ciel === ZALOZKA_OBLASTI;
+  useEffect(() => {
+    if (!nadZalozkou) {
+      setOdchodZalozky(false);
+      return;
+    }
+    if (odchodZalozky) return;
+    const t = setTimeout(() => {
+      otvorOblast(!oblastOtvorena);
+      setOdchodZalozky(true);
+    }, DRZANIE_ZALOZKY_MS);
+    return () => clearTimeout(t);
+  }, [nadZalozkou, odchodZalozky, oblastOtvorena]);
+  useEffect(() => {
+    if (!oblastOtvorena && vybranaDoOblasti === null) return;
+    const klaves = (e: KeyboardEvent): void => {
+      if (e.key !== "Escape" || vrstva !== null || lupa !== null) return;
+      zavriOblast();
+    };
+    window.addEventListener("keydown", klaves);
+    return () => window.removeEventListener("keydown", klaves);
+  }, [oblastOtvorena, vybranaDoOblasti, vrstva, lupa]);
+  const oblastViditelna = oblastOtvorena && !(krokStarsich !== null && starsiViditelni);
+  /** Klik na kartu v ruke (bez myši na ťahanie): karta → cieľ v oblasti. */
+  const vyberDoOblasti = (k: CardInstance): void => {
+    setMiestoVolby(null);
+    setVybranaDoOblasti(vybranaDoOblasti === k.uid ? null : k.uid);
+  };
+  const vylozDoOblasti = (ciel: "priznanie" | "dedicstvo"): void => {
+    if (vybranaKarta === null || !kamIde(vybranaKarta)[ciel]) return;
+    const bez = vylozenia.filter((x) => x.karta.uid !== vybranaKarta.uid).map((x) => ({ uid: x.karta.uid, ciel: x.ciel }));
+    setNavrh({ typ: "vylozenia", polozky: [...bez, { uid: vybranaKarta.uid, ciel }] });
+    setVybranaDoOblasti(null);
+  };
+  // Dve polovice pod hlavičkou: karta tak, aby sa zmestila na výšku stola.
+  const sirkaVOblasti = Math.max(44, Math.min(90, Math.floor(((vyskaPlste - 80) / 2 - 26) / POMER_KARTY)));
+  const kartyOblasti = (karty: readonly CardInstance[]): ReactNode => {
+    const podla = new Map<string, CardInstance[]>();
+    for (const k of karty) podla.set(k.defId, [...(podla.get(k.defId) ?? []), k]);
+    return [...podla.values()].map((ks) => {
+      const prva = ks[0];
+      if (prva === undefined) return null;
+      return (
+        <span key={prva.uid} className="ob-kus">
+          {sLupou({ karta: prva, sirka: sirkaVOblasti })}
+          {ks.length > 1 && <span className="ob-pocet">×{ks.length}</span>}
+        </span>
+      );
+    });
+  };
+  const navrhnuteVOblasti = (ciel: "priznanie" | "dedicstvo"): ReactNode =>
+    vylozenia
+      .filter((x) => x.ciel === ciel)
+      .map((x) =>
+        tahatelna(
+          { karta: x.karta, odkial: "ruka", navrh: true },
+          <>
+            {karta({ karta: x.karta, sirka: sirkaVOblasti })}
+            {stitokPoldeci(x.karta.uid)}
+          </>,
+          x.karta.uid,
+          NAHRADIT + x.karta.uid,
+          "ob-navrh",
+          () => vratDoRuky(x.karta.uid),
+        ),
+      );
+  const nepriznaneText = (p: PlayerId): string => {
+    const k = view.nepriznaneKliatby[p];
+    const casti = [k.cirhoza > 0 ? `Cirhóza ×${k.cirhoza}` : "", k.dlh > 0 ? `Dlh ×${k.dlh}` : ""].filter((x) => x !== "");
+    return casti.length === 0 ? "bez nepriznaných kliatob" : `nepriznané: ${casti.join(" · ")}`;
+  };
+  const ktoVOblasti = (p: PlayerId): ReactNode => (
+    <div className="ob-kto">
+      <b>{p === ja ? "Ty" : menoHraca(p)}</b>
+      <small>
+        {p === view.utocnik ? "útočník" : "obranca"} · {nepriznaneText(p)}
+      </small>
+    </div>
+  );
+  const zonaOblasti = (ciel: "priznanie" | "dedicstvo"): ReactNode => {
+    const mozne = jeCiel(ciel) || (vybranaKarta !== null && kamIde(vybranaKarta)[ciel]);
+    const chybaCigariet = ciel === "dedicstvo" && hJa.cigarety < view.cenaDedicstva;
+    return (
+      <div
+        className={zonaTriedy(ciel, `ob-skupina${mozne ? " mozne" : ""}`)}
+        data-ciel={jeCiel(ciel) ? ciel : undefined}
+        onClick={mozne && vybranaKarta !== null ? () => vylozDoOblasti(ciel) : undefined}
+      >
+        <span className="ob-nazov">
+          {ciel === "priznanie" ? "Tvoje priznané" : "Tvoje Dedičstvo"}
+          {ciel === "dedicstvo" && (
+            <span className="ob-cena">
+              ďalší stojí {cigariet(view.cenaDedicstva)} · máš {hJa.cigarety}
+            </span>
+          )}
+        </span>
+        <div className="ob-karty">
+          {kartyOblasti(ciel === "priznanie" ? hJa.priznane : hJa.dedicstvo)}
+          {navrhnuteVOblasti(ciel)}
+        </div>
+        <div className={`ob-miesto${mozne ? " mozne" : ""}${chybaCigariet ? " zamknute" : ""}`}>
+          {ciel === "priznanie" ? (
+            <>
+              <b>Pusti kliatbu — prizná sa</b>
+              <span>{kartaOblasti?.defId === "cirhoza" ? "za Cirhózu kartu nedostaneš" : "za priznanie dobereš kartu, za Cirhózu nie"} · nemíňa limit</span>
+            </>
+          ) : chybaCigariet ? (
+            <>
+              <b>Chýbajú cigarety</b>
+              <span>
+                do Dedičstva treba {view.cenaDedicstva}, máš {hJa.cigarety}
+              </span>
+            </>
+          ) : (
+            <>
+              <b>Pusti Nástroj — pasívny efekt</b>
+              <span>
+                −{cigariet(view.cenaDedicstva)}, ďalší potom {view.cenaDedicstva + 1} (cena rastie pre oboch)
+              </span>
+              {varovaniePoldeci}
+            </>
+          )}
+        </div>
+      </div>
+    );
+  };
+  const skupinaSupera = (nazov: string, karty: readonly CardInstance[]): ReactNode => (
+    <div className="ob-skupina">
+      <span className="ob-nazov">{nazov}</span>
+      <div className="ob-karty">{karty.length === 0 ? <span className="ob-prazdne">nič</span> : kartyOblasti(karty)}</div>
+    </div>
+  );
+  const hraciaOblastEl = !oblastViditelna ? null : (
+    <section className="hracia-oblast" id={idOblasti} aria-label="Hracia oblasť — priznané kliatby a Dedičstvo">
+      <div className="ob-hlava">
+        <strong>Hracia oblasť</strong>
+        <span>priznané kliatby a Dedičstvo — nemíňajú limit vykladania</span>
+        <button type="button" className="ls-tlacidlo ob-spat" onClick={zavriOblast}>
+          ← Línia <kbd>Esc</kbd>
+        </button>
+      </div>
+      <div className="ob-polovica superova">
+        {ktoVOblasti(super_)}
+        {skupinaSupera("Priznané", view.hraci[super_].priznane)}
+        {skupinaSupera("Dedičstvo", view.hraci[super_].dedicstvo)}
+      </div>
+      <div className="ob-polovica moja">
+        {ktoVOblasti(ja)}
+        {zonaOblasti("priznanie")}
+        {zonaOblasti("dedicstvo")}
+      </div>
+    </section>
+  );
+  const zalozkaOblastiEl = !zalozkaOblasti ? null : (
+    <button
+      type="button"
+      className={`ob-zalozka${nadZalozkou && !odchodZalozky ? " drzi" : ""}`}
+      data-ciel={ZALOZKA_OBLASTI}
+      aria-controls={idOblasti}
+      onClick={() => otvorOblast(!oblastOtvorena)}
+    >
+      <i className="ob-napln" aria-hidden="true" />
+      <span>{oblastOtvorena ? "Línia" : kamOblasti?.dedicstvo === true ? "Dedičstvo" : "Priznať"}</span>
+    </button>
+  );
+
   const vrstvaFazy: ReactNode = mobil ? null : cielPanel !== null && lokalitaNavrh === null ? cielPanel : draftPanel;
-  const liniaSkryta = starsiViditelni || vrstvaFazy !== null;
+  const liniaSkryta = starsiViditelni || vrstvaFazy !== null || oblastViditelna;
 
   // ---- pás kola: koľko Pitiek a koľko kariet kto vykladá -------------------
   // Súhrn starších (Michal 2026-10-22, #55 kus 3): v páse kola, aby na 1366 × 768 bolo vidno viac zo stĺpcov.
@@ -3874,6 +4039,7 @@ export function HernaPlocha({
           body={body}
           mena={[menoHraca(0), menoHraca(1)]}
           starsi={{ stlacene: starsiViditelni && krokStarsich === null && pohladLinie === super_, prepni: () => prepniStarsich(super_), id: idLinieStarsich }}
+          oblast={{ otvorena: oblastViditelna, prepni: () => otvorOblast(!oblastOtvorena), id: idOblasti }}
         />
         {/* Starší hore — mimo dosahu ruky, aby sa ich lupa nebila s lupou kariet v ruke. */}
         <div className="stred">
@@ -3929,7 +4095,7 @@ export function HernaPlocha({
                 <div className="partia-rad harmonika">{radStrany(super_)}</div>
               </div>
             </div>
-            {vrstvaFazy !== null && !starsiViditelni && <div className="vrstva-fazy">{vrstvaFazy}</div>}
+            {vrstvaFazy !== null && !starsiViditelni && !oblastViditelna && <div className="vrstva-fazy">{vrstvaFazy}</div>}
             <div className="vrstva-starsich" id={idLinieStarsich} hidden={!starsiViditelni}>
               {starsiViditelni && (
                 <LiniaStarsich
@@ -3949,6 +4115,8 @@ export function HernaPlocha({
                 />
               )}
             </div>
+            {hraciaOblastEl}
+            {zalozkaOblastiEl}
             {nahliadnutie && krokStarsich !== null && (
               <button type="button" className="ls-tlacidlo stol-navrat" onClick={() => setNahliadnutie(false)}>
                 ← späť na starších · {krokStarsich.nazov} <kbd>Esc</kbd>
@@ -3977,9 +4145,9 @@ export function HernaPlocha({
             body={body}
             mena={[menoHraca(0), menoHraca(1)]}
             starsi={{ stlacene: starsiViditelni && krokStarsich === null && pohladLinie === ja, prepni: () => prepniStarsich(ja), id: idLinieStarsich }}
+            oblast={{ otvorena: oblastViditelna, prepni: () => otvorOblast(!oblastOtvorena), id: idOblasti }}
           />
 
-          {odkladacieZony.length > 0 && <div className="odkladanie">{odkladacieZony}</div>}
 
         </div>
 
@@ -4247,7 +4415,9 @@ export function HernaPlocha({
                   ? () => setMode({ typ: "starosta", rukaUid: k.uid })
                   : naMiesto !== undefined
                     ? () => polozNaMiesto(k)
-                    : undefined;
+                    : vybraneMiesto === undefined && (kamIde(k).priznanie || kamIde(k).dedicstvo)
+                      ? () => vyberDoOblasti(k)
+                      : undefined;
               const nova = noveVRuke.includes(k.uid);
               const dobrata = !nova && dobrate.includes(k.uid);
               const pary = naMiesto?.pary ?? [];
@@ -4258,7 +4428,7 @@ export function HernaPlocha({
                   : { left: strana === "left" ? pary.map((x) => x.index) : [], right: strana === "right" ? pary.map((x) => x.index) : [] };
               const obsah = (
                 <>
-                  {karta({ karta: k, sirka: sirkaVRuke, vybrana, onClick, hranaVnutorna: strana, spoj })}
+                  {karta({ karta: k, sirka: sirkaVRuke, vybrana: vybrana || vybranaDoOblasti === k.uid, onClick, hranaVnutorna: strana, spoj })}
                   {nova && <span className="nova-stitok">zo šenku</span>}
                   {dobrata && <span className="nova-stitok">dobraná</span>}
                   {jeKartaPatronatu(k.uid) && <span className="nova-stitok">starší · patronát</span>}

@@ -736,7 +736,7 @@ button.zdroj-body[aria-pressed="true"] .velke-cislo {
   cursor: help;
 }
 
-/* Kliatby a Dedičstvo pod menom — jeden riadok, podrobnosti v titulku. */
+/* Tlačidlo hracej oblasti pod menom (#76) — jeden riadok. */
 .doska-oblast {
   display: flex;
   flex-wrap: nowrap;
@@ -744,16 +744,6 @@ button.zdroj-body[aria-pressed="true"] .velke-cislo {
   margin-top: 4px;
   min-width: 0;
   overflow: hidden;
-}
-
-.doska-oblast .cip {
-  flex: 0 1 auto;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 0.68rem;
-  cursor: help;
 }
 
 .oblast-skupina,
@@ -1385,28 +1375,6 @@ body.tahanie-aktivne * {
   text-align: center;
   font-size: 0.74rem;
   color: var(--akcent);
-}
-
-.odkladanie {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.odkladanie-zona {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: var(--plocha);
-  border: 1px solid var(--okraj);
-}
-
-.odkladanie-zona .popis {
-  font-size: 0.78rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
 .partia-popis {
@@ -2053,14 +2021,6 @@ button.dlzka-volba.aktivna {
   border-color: color-mix(in srgb, var(--akcent) 55%, transparent);
   color: var(--akcent);
   font-weight: 700;
-}
-
-.odkladanie-pozn {
-  max-width: 120px;
-  font-size: 0.68rem;
-  line-height: 1.3;
-  text-align: center;
-  color: var(--slaby);
 }
 
 /* ---- NA EX: náhľad účinku nad pásom pokynov ---------------------------------- */
@@ -4713,6 +4673,257 @@ button.auto-hotovo-odkaz {
   border: 0;
   background: none;
   padding: 8px 12px;
+}
+
+/* ---- hracia oblasť na stole (Michal 2026-10-23, #76) ----
+ * Priznané kliatby a Dedičstvo ako vrstva plste (ako línia starších): súperove hore,
+ * tvoje dole. Pás na pretiahnutie pod barom zanikol. */
+.hracia-oblast {
+  position: absolute;
+  inset: 22px 10px 10px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-right: 52px;
+  animation: ls-prichod 0.22s ease-out;
+}
+
+.linia-obal.s-hranou .hracia-oblast {
+  bottom: 48px;
+}
+
+.ob-hlava {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 26px;
+  font-size: 0.82rem;
+  color: var(--tlmeny);
+}
+
+.ob-hlava strong {
+  font: 800 0.8rem/1 var(--pismo);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--stol-stav);
+}
+
+.ob-spat {
+  margin-left: auto;
+}
+
+.ob-polovica {
+  flex: 1 1 0;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+}
+
+.ob-kto {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ob-kto b {
+  font: 700 0.95rem/1.2 var(--nadpis);
+}
+
+.ob-polovica.superova .ob-kto b {
+  color: var(--su);
+}
+
+.ob-polovica.moja .ob-kto b {
+  color: var(--ja);
+}
+
+.ob-kto small {
+  font-size: 0.72rem;
+  line-height: 1.3;
+  color: var(--slaby-text);
+}
+
+.ob-skupina {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 0;
+  padding: 18px 10px 6px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
+  background: color-mix(in srgb, #000 calc(var(--tma) * 22%), transparent);
+}
+
+.ob-skupina.mozne {
+  cursor: pointer;
+}
+
+.ob-skupina.ciel-zona {
+  border-color: var(--akcent);
+}
+
+.ob-nazov {
+  position: absolute;
+  top: 4px;
+  left: 10px;
+  font: 700 0.66rem/1 var(--pismo);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--slaby-text);
+  white-space: nowrap;
+}
+
+.ob-cena {
+  margin-left: 8px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--akcent-svetly);
+}
+
+.ob-karty {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ob-kus {
+  position: relative;
+  flex: none;
+}
+
+.ob-pocet {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  z-index: 1;
+  padding: 0 5px;
+  border-radius: 6px;
+  border: 1px solid var(--okraj-svetly);
+  background: var(--pozadie);
+  font: 800 0.7rem/1.4 var(--pismo);
+}
+
+.ob-prazdne {
+  font-size: 0.78rem;
+  color: var(--slaby);
+}
+
+.ob-miesto {
+  flex: 1;
+  align-self: stretch;
+  min-width: 150px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: 6px 12px;
+  border: 2px dashed color-mix(in srgb, var(--text) 22%, transparent);
+  border-radius: 10px;
+  font-size: 0.76rem;
+  line-height: 1.3;
+  color: var(--slaby-text);
+}
+
+.ob-miesto b {
+  font-size: 0.82rem;
+  color: var(--text);
+}
+
+.ob-miesto.mozne {
+  border-color: var(--akcent);
+  color: var(--tlmeny);
+  background: color-mix(in srgb, var(--akcent) 8%, transparent);
+}
+
+.ob-skupina.nad-cielom .ob-miesto {
+  background: color-mix(in srgb, var(--akcent) 22%, transparent);
+}
+
+.ob-miesto.zamknute {
+  border-color: color-mix(in srgb, var(--cervena) 60%, transparent);
+}
+
+/* Záložka na pravom okraji stola: podržaním karty sa stôl prepne (0,6 s, DRZANIE_ZALOZKY_MS). */
+.ob-zalozka {
+  position: absolute;
+  top: 40px;
+  bottom: 60px;
+  right: -2px;
+  z-index: 3;
+  width: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0;
+  border: 2px solid var(--akcent);
+  border-right: 0;
+  border-radius: 12px 0 0 12px;
+  background: var(--plocha-2);
+  color: var(--akcent-svetly);
+  font: 800 0.8rem/1.1 var(--pismo);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  cursor: pointer;
+}
+
+.ob-zalozka span {
+  position: relative;
+}
+
+.ob-napln {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 0;
+  background: color-mix(in srgb, var(--akcent) 40%, transparent);
+}
+
+.ob-zalozka.drzi .ob-napln {
+  height: 100%;
+  transition: height 0.6s linear;
+}
+
+/* Tlačidlo v bare hráča (miesto čipov pod menom). */
+.cip-oblast {
+  flex: 0 1 auto;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  border: 1px solid var(--okraj-svetly);
+  background: var(--plocha-2);
+  color: var(--text);
+  font: 600 0.72rem/1 var(--pismo);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.cip-oblast:hover,
+.cip-oblast[aria-pressed="true"] {
+  border-color: var(--akcent);
+  background: var(--akcent);
+  color: var(--na-akcente);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hracia-oblast {
+    animation: none;
+  }
 }
 
 /* Na stole nie je ruka cez obsah — pätka stavby ostáva pod kartami. */

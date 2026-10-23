@@ -1,5 +1,5 @@
 // Klávesové skratky v partii (Michal 2026-10-22, roadmapa #19): K končím /
-// hotovo / potvrdiť, P pasovať, N NA EX!, Esc zrušiť, ? zoznam skratiek.
+// hotovo / potvrdiť, P pasovať, N NA EX!, O hracia oblasť, Esc zrušiť, ? zoznam skratiek.
 // Hlavné tlačidlo kroku nesie data-skratka — skratka ho len stlačí, takže
 // platia tie isté podmienky ako pri kliknutí (disabled, potvrdenie, Krčma).
 // M a 1–4 patria soundboardu Melichara. Vypínač je v profile (Preferencie).
@@ -10,13 +10,14 @@ export const SKRATKY_V_PARTII: readonly { readonly klaves: string; readonly popi
   { klaves: "K", popis: "končím · hotovo · potvrdiť ťah" },
   { klaves: "P", popis: "pasovať (v šenku „už neťahám“)" },
   { klaves: "N", popis: "NA EX! na vybranú kartu" },
+  { klaves: "O", popis: "hracia oblasť — priznané a Dedičstvo" },
   { klaves: "Esc", popis: "zrušiť výber · zavrieť" },
   { klaves: "M", popis: "hlášky majstra Melichara" },
   { klaves: "1–4", popis: "náhodná hláška zo skupiny" },
   { klaves: "?", popis: "tento zoznam" },
 ];
 
-const STLACITELNE = new Set(["k", "p", "n"]);
+const STLACITELNE = new Set(["k", "p", "n", "o"]);
 
 /** Pri písaní do poľa (chat, meno…) skratky mlčia. */
 function pise(t: EventTarget | null): boolean {

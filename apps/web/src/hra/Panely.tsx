@@ -365,6 +365,8 @@ export interface HracDoskaProps {
    * neprepína. `stlacene`: línia práve ukazuje čísla tohto hráča.
    */
   readonly starsi: { readonly stlacene: boolean; readonly prepni: () => void; readonly id: string };
+  /** Hracia oblasť na stole (Michal 2026-10-23, #76): priznané a Dedičstvo — tlačidlo pod menom. */
+  readonly oblast: { readonly otvorena: boolean; readonly prepni: () => void; readonly id: string };
 }
 
 /** „o 12 pred Tetou“ / „o 3 za Tetou“ / „rovnako“ — dlaždica Body. */
@@ -395,6 +397,7 @@ export function HracDoska({
   body,
   mena,
   starsi,
+  oblast,
 }: HracDoskaProps) {
   const hrac = view.hraci[p];
   const ja = p === view.ja;
@@ -460,34 +463,20 @@ export function HracDoska({
             }
             frajerina={info?.frajerina}
           />
-          {/* Kliatby a Dedičstvo v jednom riadku pod menom — bar má pevnú výšku. */}
-          {(hrac.priznane.length > 0 || hrac.dedicstvo.length > 0 || kliatby.dlh + kliatby.cirhoza > 0) && (
-            <span className="doska-oblast">
-              {kliatby.dlh + kliatby.cirhoza > 0 && (
-                <span
-                  className="cip kliatba"
-                  title={
-                    ja
-                      ? "Tvoje nepriznané kliatby v ruke a v balíčkoch — na konci hry uberajú body."
-                      : "Súperove nepriznané kliatby — počet sa ráta z toho, čo sa ukázalo na stole (vznik, priznanie, zahodenie). Ktoré karty a kde ležia, nevidíš. Už sú odpočítané v jeho bodoch."
-                  }
-                >
-                  nepriznané{kliatby.cirhoza > 0 && ` · Cirhóza ×${kliatby.cirhoza}`}
-                  {kliatby.dlh > 0 && ` · Dlh ×${kliatby.dlh}`}
-                </span>
-              )}
-              {hrac.priznane.length > 0 && (
-                <span className="cip" title={`Priznané: ${hrac.priznane.map((k) => menoKarty(k.defId)).join(", ")}`}>
-                  priznané {hrac.priznane.length}
-                </span>
-              )}
-              {hrac.dedicstvo.length > 0 && (
-                <span className="cip nastroj" title={hrac.dedicstvo.map((k) => `${menoKarty(k.defId)}: ${popisKarty(k.defId)}`).join(" · ")}>
-                  Dedičstvo: {hrac.dedicstvo.map((k) => menoKarty(k.defId)).join(", ")}
-                </span>
-              )}
-            </span>
-          )}
+          {/* Priznané a Dedičstvo sú v hracej oblasti na stole (Michal 2026-10-23, #76) — tlačidlo ju otvorí, O je skratka. */}
+          <span className="doska-oblast">
+            <button
+              type="button"
+              className="cip-oblast"
+              aria-pressed={oblast.otvorena}
+              aria-controls={oblast.id}
+              data-skratka={ja ? "o" : undefined}
+              title={`Hracia oblasť — ${ja ? "tvoje" : "súperove"} priznané kliatby a Dedičstvo (O)${kliatby.dlh + kliatby.cirhoza > 0 ? ` · nepriznané: ${kliatby.dlh + kliatby.cirhoza}` : ""}`}
+              onClick={oblast.prepni}
+            >
+              ▤ {ja ? "Oblasť · " : ""}priznané {hrac.priznane.length} · Ded. {hrac.dedicstvo.length}
+            </button>
+          </span>
         </div>
       </div>
 
