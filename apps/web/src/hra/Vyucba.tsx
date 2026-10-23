@@ -275,7 +275,8 @@ function miestaBubliny(w: number, h: number): Obdlznik[] {
   const xs = [12, window.innerWidth - 12 - w];
   // Nad pečiatkami na hrane stola: spodok bubliny tesne nad nimi (inak siahla na „pasovať“).
   const hrana = [...document.querySelectorAll<HTMLElement>(".stol-hrana .pecat, .stol-hrana button")].map((el) => el.getBoundingClientRect().top).filter((t) => t > 0);
-  const nadHranou = hrana.length === 0 ? hornyStol : Math.max(hore, Math.min(...hrana) - h - 8);
+  // Nie nad hornú hranu stola — tam je pás kola a pokyn (UI inšpekcia).
+  const nadHranou = hrana.length === 0 ? hornyStol : Math.max(hornyStol, Math.min(...hrana) - h - 8);
   // Miesto hneď pod osou kola nie — zakrylo bar súpera, pás kola aj pokyn (UI inšpekcia).
   return [hornyStol, nadHranou, stred, dole].flatMap((y, i) => xs.map((x, j) => ({ kluc: `${i}${j}`, x, y, w, h })));
 }
