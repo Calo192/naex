@@ -18,6 +18,69 @@
   pointer-events: none;
 }
 
+/* Rada Melichara po zlej voľbe v rozhodnutí — nie chyba, partia sa nezmenila. */
+.vyucba-rada {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border-left: 3px solid var(--akcent);
+  background: color-mix(in srgb, var(--akcent) 14%, var(--plocha));
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* Kontrolná otázka: možnosti pod sebou, s klávesom 1–3. */
+.vyucba-moznosti {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 6px 0 4px;
+}
+
+.vyucba-moznost {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-height: 36px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  justify-content: flex-start;
+  text-align: left;
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+
+.vyucba-moznost kbd {
+  flex: none;
+  min-width: 1.5em;
+  padding: 0 4px;
+  border-radius: 4px;
+  border: 1px solid var(--okraj-svetly);
+  font: 700 0.75rem/1.5 var(--pismo);
+  text-align: center;
+}
+
+.vyucba-moznost.spravna {
+  border-color: var(--zelena);
+  background: color-mix(in srgb, var(--zelena) 18%, var(--plocha));
+}
+
+.vyucba-moznost.zla {
+  border-color: var(--cervena);
+  background: color-mix(in srgb, var(--cervena) 14%, var(--plocha));
+}
+
+.vyucba-vysvetlenie {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border-left: 3px solid var(--cervena);
+  background: color-mix(in srgb, var(--cervena) 10%, var(--plocha));
+}
+
+.vyucba-vysvetlenie.spravna {
+  border-left-color: var(--zelena);
+  background: color-mix(in srgb, var(--zelena) 12%, var(--plocha));
+}
+
 /* Výučba: dôvod zamknutého „potvrdiť“ vedľa tlačidla na hrane stola. */
 .vyucba-zamok {
   align-self: center;

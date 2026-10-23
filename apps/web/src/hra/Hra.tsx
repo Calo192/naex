@@ -378,7 +378,8 @@ export function Hra() {
       log={hra.log}
       udalosti={hra.udalosti}
       bezOknaKonca={hra.vyucba !== null}
-      vyucbaOcakava={hra.vyucba?.krok?.kto === "hrac" ? hra.vyucba.krok.ocakava : null}
+      // Pri rozhodnutí (volba) je správnych viac kandidátov — potvrdiť sa nezamyká.
+      vyucbaOcakava={hra.vyucba?.krok?.kto === "hrac" && hra.vyucba.krok.volba === null ? hra.vyucba.krok.ocakava : null}
       // Vo výučbe chybu ukazuje bublina Melichara.
       chyba={hra.vyucba !== null ? null : hra.chyba}
       zrusChybu={hra.zrusChybu}
@@ -412,6 +413,8 @@ export function Hra() {
         }}
         menoBota={hra.hraci[1]?.meno ?? "Štamgast"}
         chybaVyucby={hra.chybaVyucby}
+        odpovedz={hra.vyucbaOdpoved}
+        rada={hra.radaVyucby}
       />
     )}
     </>

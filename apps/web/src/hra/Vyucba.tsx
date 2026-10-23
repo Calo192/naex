@@ -297,6 +297,8 @@ export function VyucbaStol({
   hratProtiPocitacu,
   menoBota,
   chybaVyucby,
+  odpovedz,
+  rada,
 }: {
   readonly stav: StavVyucby;
   readonly dalej: () => void;
@@ -308,6 +310,10 @@ export function VyucbaStol({
   readonly menoBota: string;
   /** Čo zlému ťahu chýbalo a čo bolo navyše (server, vyucbaChyba) — karty sa zvýraznia. */
   readonly chybaVyucby: { readonly chybajuce: readonly PopisKrokuVyucby[]; readonly navyse: readonly PopisKrokuVyucby[] } | null;
+  /** Odpoveď na kontrolnú otázku (index možnosti) — server si zapíše prvú. */
+  readonly odpovedz: (index: number) => void;
+  /** Rada Melichara po zlom ťahu v rozhodnutí (partia sa nezmenila). */
+  readonly rada: string | null;
 }) {
   const krok = stav.krok;
   // Komentár k ťahu Štamgasta ostane v bubline nad ďalším krokom — len jeden (playtest: kopa odsekov).
@@ -368,7 +374,9 @@ export function VyucbaStol({
         ? krok.zvyraznit
         : zleKarty.length > 0
           ? [...zleKarty, POTVRDIT]
-          : [...new Set([...krok.zvyraznit, ...kluceZOcakavania(krok.ocakava), POTVRDIT])];
+          : krok.volba !== null
+            ? [...new Set([...krok.zvyraznit, ...krok.volba.kandidati, POTVRDIT])]
+            : [...new Set([...krok.zvyraznit, ...kluceZOcakavania(krok.ocakava), POTVRDIT])];
   // Po kroku, ktorý hra spravila za hráča (auto), svieti ešte chvíľu to, čo urobila (Navrhár).
   const [dosvit, setDosvit] = useState<readonly string[]>([]);
   useEffect(() => {
@@ -424,9 +432,34 @@ export function VyucbaStol({
     return () => window.removeEventListener("pointerdown", zrus);
   }, [chyba, zrusChybu]);
 
+  // Kontrolná otázka: vybraná možnosť (overuje klient); po správnej sa dá ísť ďalej.
+  const [odpoved, setOdpoved] = useState<number | null>(null);
+  useEffect(() => setOdpoved(null), [krok?.id]);
+  const moznosti = krok?.kto === "otazka" ? (krok.moznosti ?? []) : [];
+  const vybrana = odpoved === null ? undefined : moznosti[odpoved];
+  const vyber = useCallback(
+    (i: number) => {
+      if (moznosti[i] === undefined || vybrana?.spravna === true) return;
+      setOdpoved(i);
+      odpovedz(i);
+    },
+    [moznosti, vybrana, odpovedz],
+  );
+  useEffect(() => {
+    if (moznosti.length === 0) return;
+    const klaves = (e: KeyboardEvent): void => {
+      const i = Number(e.key) - 1;
+      if (!Number.isInteger(i) || i < 0 || i >= moznosti.length) return;
+      e.preventDefault();
+      vyber(i);
+    };
+    window.addEventListener("keydown", klaves);
+    return () => window.removeEventListener("keydown", klaves);
+  }, [moznosti, vyber]);
+
   // Enter = „ďalej“ v kroku bez ťahu, aj keď fokus ostal na karte či tlačidle po kliku myšou
   // (playtest: Enter po kliku nereagoval). Polia na písanie nechá tak.
-  const jeInfo = krok?.kto === "info";
+  const jeInfo = krok?.kto === "info" || (krok?.kto === "otazka" && vybrana?.spravna === true);
   useEffect(() => {
     if (!jeInfo) return;
     const klaves = (e: KeyboardEvent): void => {
@@ -451,7 +484,7 @@ export function VyucbaStol({
 
   return (
     <>
-      <Stmavenie obdlzniky={zvyraznene} blokovat={krok?.kto === "info"} />
+      <Stmavenie obdlzniky={zvyraznene} blokovat={krok?.kto === "info" || krok?.kto === "otazka"} />
       <aside
         ref={bublinaRef}
         className={`vyucba-bublina ${krok?.kto ?? "hotovo"}`}
@@ -478,11 +511,38 @@ export function VyucbaStol({
         </header>
         <div className="vyucba-text" role="status" aria-live="polite">
           {chyba !== null && krok !== null && <p className="vyucba-chyba">{chyba}</p>}
+          {rada !== null && krok !== null && <p className="vyucba-rada">{rada}</p>}
           {predtym !== null && <p className="vyucba-predtym">{predtym.melichar}</p>}
           {krok !== null ? (
             krok.melichar.trim() !== "" && <p>{krok.melichar}</p>
           ) : (
             <p>Výučbu máš za sebou! Teraz vieš všetko, čo treba. Zahraj si naostro — Štamgast a jeho kumpáni ťa čakajú.</p>
+          )}
+          {moznosti.length > 0 && (
+            <div className="vyucba-moznosti" role="group" aria-label="Možnosti odpovede">
+              {moznosti.map((m, i) => {
+                const stav = odpoved === i ? (m.spravna ? " spravna" : " zla") : "";
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    className={`vyucba-moznost${stav}`}
+                    onClick={() => vyber(i)}
+                    disabled={vybrana?.spravna === true && odpoved !== i}
+                    aria-pressed={odpoved === i}
+                  >
+                    <kbd>{i + 1}</kbd> {m.text}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+          {vybrana !== undefined && (
+            <p className={vybrana.spravna ? "vyucba-vysvetlenie spravna" : "vyucba-vysvetlenie zla"}>
+              <strong>{vybrana.spravna ? "Správne. " : "Nie celkom. "}</strong>
+              {vybrana.vysvetlenie}
+              {!vybrana.spravna && " Skús inú možnosť."}
+            </p>
           )}
         </div>
         <footer className="vyucba-pata">
@@ -495,7 +555,7 @@ export function VyucbaStol({
             </>
           ) : (
             <>
-              {krok.kto === "info" && (
+              {jeInfo && (
                 <button ref={dalejRef} className="tlacidlo-hlavne vyucba-dalej" onClick={dalej} data-vyucba-dalej="">
                   ďalej <kbd>Enter</kbd>
                 </button>
