@@ -29,7 +29,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     prebytokDrzi: null,
     prebytokZostava: 0,
     prebytokPosunute: [],
-    liecbaHotova: [true, true],
+    pohrebHotovy: [true, true],
     benzinkaZostava: [0, 0],
     spalit: [],
     vesticaHotova: true,
@@ -37,7 +37,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
   };
 }
 
-/** Stav pri Liečbe na konci bitky — skipLiecba posunie hru do ďalšieho kola. */
+/** Stav pri Pohrebe na konci bitky — skipPohreb posunie hru do ďalšieho kola. */
 function koniecBitky(poldeci: readonly [readonly [number, number], readonly [number, number]]): { s: GameState; ruka: CardInstance[] } {
   const s0 = setupGame(data, 21);
   const ruka = Array.from({ length: 8 }, () => inst("pijan"));
@@ -52,7 +52,7 @@ function koniecBitky(poldeci: readonly [readonly [number, number], readonly [num
     ],
     ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
     lokalityVHre: s0.lokalityVHre.slice(1),
-    bitkaStav: bitka({ krok: "liecba", caka: 0, liecbaHotova: [false, true] }),
+    bitkaStav: bitka({ krok: "pohreb", caka: 0, pohrebHotovy: [false, true] }),
   };
   return { s, ruka };
 }
@@ -61,7 +61,7 @@ describe("A1: nové kolo, jeden poldeci späť", () => {
   it("na začiatku kola sa každému doleje najviac POLDECI_NA_ZACIATKU_KOLA vypitých", () => {
     expect(KONSTANTY.POLDECI_NA_ZACIATKU_KOLA).toBe(1);
     const { s } = koniecBitky([[0, 2], [2, 0]]);
-    const r = apply(data, s, { type: "skipLiecba" }, 0);
+    const r = apply(data, s, { type: "skipPohreb" }, 0);
     expect(r.state.kolo).toBe(s.kolo + 1);
     // Hráč 1 mal oba vypité → jeden plný. Hráč 2 nemal čo doliať.
     expect([r.state.hraci[0].poldeciPlne, r.state.hraci[0].poldeciVypite]).toEqual([1, 1]);
@@ -73,7 +73,7 @@ describe("A1: nové kolo, jeden poldeci späť", () => {
   it("dolieva sa len vypitý poldeci — nový z ničoho nevznikne", () => {
     const { s } = koniecBitky([[1, 1], [0, 0]]);
     // Hráč 2 má 0 plných a 0 vypitých (napr. po strate poldeci) — nič nedostane.
-    const r = apply(data, s, { type: "skipLiecba" }, 0);
+    const r = apply(data, s, { type: "skipPohreb" }, 0);
     expect([r.state.hraci[0].poldeciPlne, r.state.hraci[0].poldeciVypite]).toEqual([2, 0]);
     expect([r.state.hraci[1].poldeciPlne, r.state.hraci[1].poldeciVypite]).toEqual([0, 0]);
   });

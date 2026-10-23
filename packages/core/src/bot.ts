@@ -1019,35 +1019,27 @@ function bitka(v: Volba): Command | null {
       });
       return { type: "vestica", moja, jeho: jehoI };
     }
-    case "liecba": {
-      // Pohreb preriedi balíček o slabú kartu; Liečba vymení Závislého za
-      // kartu zo šenku (za Dlh). Inak nič — priznaná Cirhóza neškodí.
+    case "pohreb": {
+      // Pohreb preriedi balíček o slabú kartu; za Závislého navyše vymení
+      // kartu za lepšiu zo šenku (balíček sa nezmenší). Inak nič — priznaná
+      // Cirhóza neškodí.
       const priemer = priemernaKarta(data, state, ja);
       const balicek = h.ruka.length + h.doberaci.length + h.odhadzovaci.length + partiaHraca(state, ja).length;
-      const prahy = prahyHraca(data, state, ja);
       let best: Command | null = null;
       let bestV = 0.5;
       for (const cmd of v.legal) {
-        if (cmd.type === "pohreb" && balicek >= 11) {
-          const karta = partiaHraca(state, ja).find((pl) => pl.card.uid === cmd.kartaUid)?.card;
-          if (karta === undefined) continue;
-          const zisk = priemer - hodnotaKarty(data, karta) - 0.3;
-          if (zisk > bestV) {
-            bestV = zisk;
-            best = cmd;
-          }
-        } else if (cmd.type === "liecba" && prahy.exekutor - prahy.priznaneDlhy > 4) {
-          const zavisly = partiaHraca(state, ja).find((pl) => pl.card.uid === cmd.zavislyUid)?.card;
-          const zoSenku = state.senok.find((x) => x.uid === cmd.senokUid);
-          if (zavisly === undefined || zoSenku === undefined) continue;
-          const zisk = hodnotaKarty(data, zoSenku) - hodnotaKarty(data, zavisly) - 1;
-          if (zisk > bestV) {
-            bestV = zisk;
-            best = cmd;
-          }
+        if (cmd.type !== "pohreb") continue;
+        const karta = partiaHraca(state, ja).find((pl) => pl.card.uid === cmd.kartaUid)?.card;
+        if (karta === undefined) continue;
+        const zoSenku = cmd.senokUid === undefined ? undefined : state.senok.find((x) => x.uid === cmd.senokUid);
+        if (zoSenku === undefined && balicek < 11) continue;
+        const zisk = (zoSenku === undefined ? priemer : hodnotaKarty(data, zoSenku)) - hodnotaKarty(data, karta) - 0.3;
+        if (zisk > bestV) {
+          bestV = zisk;
+          best = cmd;
         }
       }
-      return best ?? v.legal.find((c) => c.type === "skipLiecba") ?? null;
+      return best ?? v.legal.find((c) => c.type === "skipPohreb") ?? null;
     }
     default:
       return null;

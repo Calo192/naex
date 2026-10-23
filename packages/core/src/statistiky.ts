@@ -42,7 +42,7 @@ export interface StatistikyHraca {
   readonly poskodeniePecene: number;
   readonly cirhozyZiskane: number;
   readonly cirhozyPriznane: number;
-  readonly liecby: number;
+  /** Pohreby — od pravidiel v4 aj bývalé Liečby (zlúčené do Pohrebu, Michal 2026-10-23). */
   readonly pohreby: number;
 
   readonly dlhyZiskane: number;
@@ -117,7 +117,6 @@ export function prazdneStatistiky(): StatistikyHraca {
     poskodeniePecene: 0,
     cirhozyZiskane: 0,
     cirhozyPriznane: 0,
-    liecby: 0,
     pohreby: 0,
     dlhyZiskane: 0,
     dlhyPriznane: 0,
@@ -214,6 +213,8 @@ export function normalizujStatistiky(v: unknown): StatistikyHraca {
     akcie.Cigareta = (akcie.Cigareta ?? 0) + akcie.Cigaretka;
     delete akcie.Cigaretka;
   }
+  // Liečba sa v pravidlách v4 zlúčila do Pohrebu — staré partie sa zlúčia.
+  if (typeof o.liecby === "number" && Number.isFinite(o.liecby)) out.pohreby += o.liecby;
   out.akcie = akcie;
   out.bodyPodla = mapa(o.bodyPodla);
   return out;
@@ -297,9 +298,6 @@ function zapisJedneho(
           break;
         case "prebytok":
           s.posunyPrebytkom += 1;
-          break;
-        case "liecba":
-          s.liecby += 1;
           break;
         case "pohreb":
           s.pohreby += 1;

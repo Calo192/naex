@@ -1,7 +1,7 @@
 // Vyhodnotenie bitky — presné poradie z PRAVIDLA.md §8 (M4).
 //
 // Tu sú len ČISTÉ funkcie (Exekútor / poškodenie / výsledok). Kroky, ktoré
-// vyžadujú rozhodnutie hráča (Pohoršenie, rozdelenie prebytku, Liečba či
+// vyžadujú rozhodnutie hráča (Pohoršenie, rozdelenie prebytku,
 // Pohreb), motor v M6 len pripraví ako čakajúce rozhodnutia.
 
 import type { ActionSums } from "./partia.ts";

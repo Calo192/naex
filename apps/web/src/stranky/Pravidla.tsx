@@ -64,7 +64,6 @@ const SLOVNIK: readonly { readonly tema: string; readonly popis: string; readonl
       ["Cigareta", "Mena hry: platí šenok, Dedičstvo, doliatie a barter; vyfajčená cigareta = karta hneď. Na konci hry bod za každé 3."],
       ["Priznanie", "Vyloženie kliatby mimo línie do vlastnej hracej oblasti — natrvalo z balíčka; za priznanú kliatbu (okrem Cirhózy) si hneď dobereš kartu. Dlh sa prizná sám, keď si ho dobereš."],
       ["Tuhé / mäkké poškodenie", "Tuhé (Rana, Pecka, Petelica, Cirhóza) rozhoduje o víťazovi; mäkké (Povera) sa udeľuje do výšky súperovho priznaného dlhu."],
-      ["Podpora", "Karta je podporená, ak sú v jej okolí presne 2 karty."],
       ["Priazeň", "Výhoda od staršieho, ku ktorému je marker posunutý: sila 1 / 2 / 3 podľa zóny, účinok 2 × sila."],
     ],
   },
@@ -237,7 +236,7 @@ const KAPITOLY: readonly Kapitola[] = [
           <li>Ak Posilnenie ovplyvní Odpor, neprepojené akcie aktivuje iba karta s Odporom.</li>
         </ul>
         <p>
-          Efekty využívajú spúšťače (Furt, Nástup, Bitka, Pitka, Podpora…). Efekt karty pôsobí, kým je karta v línii —
+          Efekty využívajú spúšťače (Furt, Nástup, Bitka, Pitka…). Efekt karty pôsobí, kým je karta v línii —
           výnimkou sú prebudený starší a Nástroj, ktorého efekt platí <strong>len v Dedičstve</strong>.
         </p>
       </>
@@ -449,7 +448,7 @@ const KAPITOLY: readonly Kapitola[] = [
         <p>
           <strong>Zamknutá pozícia:</strong> na krajnú pozíciu sa dostaneš len z predposlednej, kde marker bol už na začiatku
           kola — nie viacerými posunmi naraz ani Pohoršením. Z krajnej pozície marker uvoľní len patronát. <strong>Prebudenie:</strong> keď vytlačíš marker na krajnú
-          červenú, efekt staršieho začne pôsobiť pre teba (okrem Nástupu a Podpory).
+          červenú, efekt staršieho začne pôsobiť pre teba (okrem Nástupu).
         </p>
       </>
     ),
@@ -490,13 +489,13 @@ const KAPITOLY: readonly Kapitola[] = [
         </p>
         <p>
           Podobne funguje <strong>zadĺženie</strong>: každá akcia <strong>Dlh</strong> v Pitke ho zvýši o 1, pri prahu{" "}
-          <strong>2</strong> + sila Úžerníka získaš kartu Dlh — teda dve akcie Dlh v jednej Pitke sú karta Dlh — a po Pitke sa vynuluje. Dlhy, ktoré karta dáva priamo (napr. Liečba), idú rovno.
+          <strong>2</strong> + sila Úžerníka získaš kartu Dlh — teda dve akcie Dlh v jednej Pitke sú karta Dlh — a po Pitke sa vynuluje. Dlhy, ktoré karta dáva priamo (napr. Poštárka), idú rovno.
           Viac Pitiek v bitke znamená viac pečene aj Dlhov.
         </p>
         <p>Každá tvoja <strong>priznaná</strong> Cirhóza ti v bitke pridáva 1 tuhé poškodenie, akoby ti ho udelil súper. Viera ju znižuje. Nepriznaná uberá na konci hry −2 za každú aktívnu podmienku „pečeň“ — skutočnú cenu určuje rozdanie scorecardov.</p>
         <p>
-          <strong>Liečba:</strong> spáľ priznanú Cirhózu a svojho Závislého z línie, získaj 1 Dlh a vyber si kartu zo šenku.{" "}
-          <strong>Pohreb:</strong> spáľ priznanú Cirhózu a ľubovoľnú svoju kartu z línie.
+          <strong>Pohreb:</strong> spáľ priznanú Cirhózu a ľubovoľnú svoju kartu z línie. Keď je spálená karta Závislý, smieš si
+          vziať jednu kartu zo šenku.
         </p>
       </>
     ),
@@ -683,8 +682,8 @@ const KAPITOLY: readonly Kapitola[] = [
         <li><strong>Cigarety za prebytok</strong> — hráč, proti ktorému sa prebytok rozdeľoval, dostane 1 cigaretu za každého staršieho, ktorého marker sa posunul (viac posunov toho istého = 1 cigareta).</li>
         <li><strong>Poldeci</strong> — poldeci z NA EX sa vypijú, aktívna akcia Poldeci otočí vypitý späť na plný.</li>
         <li><strong>Veštica</strong> — porazený s Vešticou vymení kartu medzi doberacími balíčkami.</li>
-        <li><strong>Liečba alebo Pohreb</strong> — s priznanou Cirhózou.</li>
-        <li><strong>Cintorín</strong> — len na Cintoríne: porazený smie dať Nástroj z ruky do Dedičstva zadarmo.</li>
+        <li><strong>Pohreb</strong> — s priznanou Cirhózou; za Závislého karta zo šenku.</li>
+        <li><strong>Cintorín</strong> — len na Cintoríne: porazený smie po Pohrebe dať Nástroj z ruky do Dedičstva zadarmo.</li>
         <li><strong>Patronát</strong> — víťaz si staršieho nechá, porazený patrón ho vráti na scorecard a odhodí poldeci.</li>
         <li><strong>Návrat kariet</strong> — do odhadzovacieho balíčka hráča, ktorý ich zahral.</li>
         <li><strong>Absťák</strong> — porovnanie nerestí kola s minulým (viď Závislosť).</li>

@@ -72,11 +72,13 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   Dievčina na vydaj, Niekoho stryná a Veľmi smútiaca vdova; Milujúca manželka
   a Absťák kartu dajú. Kliatba do línie nepatrí (len Milujúca manželka). Priznanie nemíňa
   limit ani neodovzdá ťah. Priznaný Dlh sa ráta k Exekútorovi.
+- **Pohreb (po bitke, s priznanou Cirhózou):** `pohreb` spáli Cirhózu a tvoju kartu
+  z línie; za Závislého smieš pridať `senokUid` = karta zo šenku do ruky. Liečba už nie je (v4).
 - **Vízia:** na konci Pitky za každú aktívnu Víziu uvidíš vrchnú kartu svojho
   balíčka — `{"type":"vizia","vziat":true}` do ruky, alebo `false` = zahodiť
   (navždy z hry; balíček pod 5 kariet = prehra).
 - **Hrobár a Poštárka (2026-10-22):** keď zahodíš kartu — efektom, Víziou, aj
-  Pohrebom či Liečbou po bitke —, súperov Hrobár dostane cigaretu za každú.
+  Pohrebom po bitke —, súperov Hrobár dostane cigaretu za každú.
   Poštárka dá Dlh len za naozaj dobratú kartu; s prázdnym doberacím aj
   odhadzovacím balíčkom sa použiť nedá.
 - **Dedičstvo** (Nástroj do hracej oblasti, `target` `dedicstvo`): cena rastie

@@ -93,7 +93,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     prebytokDrzi: null,
     prebytokZostava: 0,
     prebytokPosunute: [],
-    liecbaHotova: [true, true],
+    pohrebHotovy: [true, true],
     benzinkaZostava: [0, 0],
     spalit: [],
     vesticaHotova: true,
@@ -187,9 +187,9 @@ describe("limit ruky zrušený (Michal 2026-10-19)", () => {
       hraci: [{ ...s0.hraci[0], ruka }, { ...s0.hraci[1], cigarety: 0, ruka: [], doberaci: [...s0.hraci[1].doberaci, inst("pijan"), inst("pijan"), inst("pijan")] }],
       ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
       lokalityVHre: s0.lokalityVHre.slice(1),
-      bitkaStav: bitka({ krok: "liecba", caka: 0, liecbaHotova: [false, true] }),
+      bitkaStav: bitka({ krok: "pohreb", caka: 0, pohrebHotovy: [false, true] }),
     };
-    const po = apply(data, s, { type: "skipLiecba" }, 0).state;
+    const po = apply(data, s, { type: "skipPohreb" }, 0).state;
     expect(po.hraci[0].ruka.length).toBeGreaterThanOrEqual(8);
     expect(po.hraci[1].cigarety).toBe(0);
     expect(po.kolo).toBe(s0.kolo + 1);
@@ -347,7 +347,7 @@ describe("efekty v línii", () => {
     expect(sums[1].Rana).toBe(1);
   });
 
-  it("Veterán: podporený ženou vpravo stratí ľavé akcie, s influencerom v partii pravé", () => {
+  it("Veterán: s oboma susedmi a ženou vpravo stratí ľavé akcie, s influencerom v partii pravé", () => {
     expect(evaluateLine(sd, linia("chlapL", "veteran", "zena2")).sums[0].Rana).toBe(1 + 2);
     expect(evaluateLine(sd, linia("influencer", "veteran", "zena2")).sums[0].Rana).toBe(1 + 1);
   });
@@ -373,7 +373,7 @@ describe("Veštica — odhalené balíčky len tomu, kto vyberá", () => {
     expect(v1?.moj).toEqual(s.hraci[1].doberaci);
     expect(v1?.jeho).toEqual(s.hraci[0].doberaci);
     expect(viewFor(data, s, 0).volbaVestica).toBeNull();
-    expect(viewFor(data, { ...s, bitkaStav: bitka({ krok: "liecba", caka: 1 }) }, 1).volbaVestica).toBeNull();
+    expect(viewFor(data, { ...s, bitkaStav: bitka({ krok: "pohreb", caka: 1 }) }, 1).volbaVestica).toBeNull();
   });
 });
 

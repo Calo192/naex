@@ -1205,7 +1205,7 @@ export function PriebehKola({ view, onBitka }: { readonly view: ClientState; rea
           nikto: lokalita ide na sekeru a vezme si ju víťaz najbližšej bitky (prepadne len pri remíze v poslednej bitke). Víťaz ovládne lokalitu (aj
           tie zo sekery a staršieho, ak ho má v patronáte); kto má vyššie celkové, rozdelí prebytok — posúva markery starších.
           <span className="tip-riadok">
-            Potom Exekútor, Pohoršenie, Liečba… a každý si dobere {KONSTANTY.KARTY_PO_BITKE} karty. Porazený je v ďalšom kole
+            Potom Exekútor, Pohoršenie, Pohreb… a každý si dobere {KONSTANTY.KARTY_PO_BITKE} karty. Porazený je v ďalšom kole
             útočník.
           </span>
         </>

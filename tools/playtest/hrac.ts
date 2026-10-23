@@ -618,10 +618,10 @@ function moznosti(v: ClientState): string[] {
             `(Máš v ruke ${dlhyVRuke}× Dlh a od Exekútora si ďaleko (${pr.priznaneDlhy}/${pr.exekutor}): priznaním za každý Dlh hneď dobereš kartu, Dlh navždy zmizne z balíčka; body na konci uberá aj priznaný (−1 za každú aktívnu podmienku bankovky). Odhodený Dlh sa vráti do balíčka.)`,
           );
       }
-      // Tamže: Jano držal 6 Cirhóz v ruke, takže Liečbu ani Pohreb nikdy nevidel.
+      // Tamže: Jano držal 6 Cirhóz v ruke, takže Pohreb nikdy nevidel.
       if (v.ruka.some((k) => k.defId === "cirhoza"))
         out.push(
-          "(Máš v ruke Cirhózu: zváž priznanie — nepriznaná uberá na konci −2 za každú aktívnu podmienku pečeň, priznaná dá súperovi v každej bitke +1 tuhé, ale po bitke ti odomkne Liečbu alebo Pohreb (tie ju spália). Pohreb navždy spáli tvoju slabú kartu, ktorú si vyložil do línie; Liečba vymení tvojho Závislého z línie za kartu zo šenku.)",
+          "(Máš v ruke Cirhózu: zváž priznanie — nepriznaná uberá na konci −2 za každú aktívnu podmienku pečeň, priznaná dá súperovi v každej bitke +1 tuhé, ale po bitke ti odomkne Pohreb (ten ju spáli). Pohreb navždy spáli tvoju slabú kartu, ktorú si vyložil do línie; za Závislého si navyše vezmeš kartu zo šenku.)",
         );
       break;
     }
@@ -739,14 +739,14 @@ function moznosti(v: ClientState): string[] {
           c({ type: "prebytok", elderId: e.elderId }, `prebytok: posuň marker ${meno(e.karta.defId)} smerom k porazenému (súper dostane priazeň, starší sa začne báť teba)${nahlad(e, false)}`);
         }
       }
-      if (b?.krok === "liecba") {
-        c({ type: "skipLiecba" }, "preskočiť Liečbu/Pohreb");
+      if (b?.krok === "pohreb") {
+        c({ type: "skipPohreb" }, "preskočiť Pohreb");
         const cirhoza = v.hraci[ja].priznane.find((k) => k.defId === "cirhoza");
         if (cirhoza !== undefined) {
           for (const pl of [...v.strany[0], ...v.strany[1]].filter((x) => x.playedBy === ja)) {
             c({ type: "pohreb", cirhozaUid: cirhoza.uid, kartaUid: pl.card.uid }, `Pohreb: spáľ Cirhózu a ${meno(pl.card.defId)}`);
             if (DATA.cards.get(pl.card.defId)?.tags.includes("Závislý") === true)
-              for (const s of v.senok) c({ type: "liecba", cirhozaUid: cirhoza.uid, zavislyUid: pl.card.uid, senokUid: s.uid }, `Liečba: ${meno(pl.card.defId)} preč, zober ${meno(s.defId)} zo šenku`);
+              for (const s of v.senok) c({ type: "pohreb", cirhozaUid: cirhoza.uid, kartaUid: pl.card.uid, senokUid: s.uid }, `Pohreb Závislého: spáľ Cirhózu a ${meno(pl.card.defId)}, zober ${meno(s.defId)} zo šenku`);
           }
         }
       }

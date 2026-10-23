@@ -1,6 +1,6 @@
 {
   "pravidlaCommit": "176a053efbb0f05bf0ce00fe9a58c49a9d4a69ba",
-  "aktualizovane": "2026-10-22",
+  "aktualizovane": "2026-10-23",
   "pravidla": [
     {
       "id": "1.zaklad.dvaja-hraci",
@@ -289,12 +289,12 @@
       ]
     },
     {
-      "id": "4.podpora.lokalita-sused",
-      "paragraf": "4. Aktivácia akcií — jadro hry › Podpora",
-      "pravidlo": "Karta je podporená, keď má susedov z oboch strán; lokalita sa ráta ako sused.",
+      "id": "14.karta.veteran-lokalita",
+      "paragraf": "14. Efekty kariet — výklad › Karty",
+      "pravidlo": "Veterán: lokalita v strede sa ráta ako sused (oboch susedov a vpravo Žena → neplatia ľavé akcie).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-kolo.test.ts › §4 Podpora: lokalita sa ráta ako sused — Veterán medzi lokalitou a Ženou je podporený"
+        "packages/core/test/pravidla-kolo.test.ts › §14 Veterán: lokalita sa ráta ako sused — Veterán medzi lokalitou a Ženou stratí ľavé akcie"
       ]
     },
     {
@@ -641,7 +641,7 @@
       "pravidlo": "Odsek „Dobratie po bitke“ uvádza medzi zdrojmi kariet Zberateľa, ktorého krok po bitke zanikol 2026-10-20.",
       "stav": "chyba-v-pravidlach",
       "testy": [
-        "packages/core/test/pravidla-20261019.test.ts › po bitke sa už nič neprezerá — po Liečbe ide hra rovno do ďalšieho kola"
+        "packages/core/test/pravidla-20261019.test.ts › po bitke sa už nič neprezerá — po Pohrebe ide hra rovno do ďalšieho kola"
       ],
       "poznamka": "Súčasť návrhu rozhodca-zberatel-zvysky v docs/playtesty/navrhy-rozhodca-20261022-214942.json."
     },
@@ -1104,17 +1104,18 @@
       ]
     },
     {
-      "id": "8.liecba",
-      "paragraf": "8. Vyhodnotenie bitky — presné poradie › 6. Liečba alebo Pohreb",
-      "pravidlo": "Liečba: spáľ priznanú Cirhózu a svojho Závislého z línie, získaj 1 Dlh a kartu zo šenku.",
+      "id": "8.pohreb.zavisly",
+      "paragraf": "8. Vyhodnotenie bitky — presné poradie › 6. Pohreb",
+      "pravidlo": "Pohreb Závislého: hráč si smie navyše vziať jednu kartu zo šenku; bez Dlhu (pravidlá v4, Liečba zlúčená do Pohrebu). Kartu zo šenku dá len Závislý.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-bitka.test.ts › §8.6 Liečba: spáli priznanú Cirhózu a svojho Závislého z línie, hráč získa 1 Dlh a kartu zo šenku"
+        "packages/core/test/pravidla-bitka.test.ts › §8.6 Pohreb Závislého: spáli priznanú Cirhózu a Závislého z línie, hráč si smie vziať kartu zo šenku — bez Dlhu (v4)",
+        "packages/core/test/pravidla-bitka.test.ts › §8.6 Pohreb: kartu zo šenku dá len Závislý; Závislého smie pochovať aj bez nej"
       ]
     },
     {
       "id": "8.pohreb",
-      "paragraf": "8. Vyhodnotenie bitky — presné poradie › 6. Liečba alebo Pohreb",
+      "paragraf": "8. Vyhodnotenie bitky — presné poradie › 6. Pohreb",
       "pravidlo": "Pohreb: spáľ priznanú Cirhózu a ľubovoľnú svoju kartu z línie.",
       "stav": "pokryte",
       "testy": [
@@ -1127,7 +1128,7 @@
       "pravidlo": "Pri bitke o Cintorín porazený smie dať jeden Nástroj z ruky do Dedičstva zadarmo; cena Dedičstva sa zvýši.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/lokality-20261020.test.ts › po Liečbe čaká Cintorín na porazeného; Nástroj ide do Dedičstva bez cigariet a cena Dedičstva rastie",
+        "packages/core/test/lokality-20261020.test.ts › po Pohrebe čaká Cintorín na porazeného; Nástroj ide do Dedičstva bez cigariet a cena Dedičstva rastie",
         "packages/core/test/lokality-20261020.test.ts › bez Nástroja v ruke alebo inde sa Cintorín preskočí"
       ]
     },
@@ -1137,7 +1138,7 @@
       "pravidlo": "Krok Zberateľa po bitke zanikol; staré sady so Zberateľom či Očumovateľom sa načítajú ako Úžerník.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-20261019.test.ts › po bitke sa už nič neprezerá — po Liečbe ide hra rovno do ďalšieho kola",
+        "packages/core/test/pravidla-20261019.test.ts › po bitke sa už nič neprezerá — po Pohrebe ide hra rovno do ďalšieho kola",
         "packages/core/test/pravidla-20261019.test.ts › stará sada so Zberateľom alebo Očumovateľom sa načíta ako Úžerník"
       ]
     },
@@ -1221,7 +1222,7 @@
         "packages/core/test/elders.test.ts › z pozície 7 na začiatku kola sa dá na 8 → prebudenie pre tlačiaceho",
         "packages/core/test/pravidla-bitka.test.ts › §9 Prebudenie: efekt staršieho na krajnej pozícii (Bitka) sa uplatní pre vydesujúceho hráča"
       ],
-      "poznamka": "Nástup a Podpora sa pri prebudení neuplatnia — karta na ukazovateli sa nevykladá, Nástup sa spúšťa len vo vylozDoLinie."
+      "poznamka": "Nástup sa pri prebudení neuplatní — karta na ukazovateli sa nevykladá, Nástup sa spúšťa len vo vylozDoLinie."
     },
     {
       "id": "9.priazne.hodnoty",
@@ -1543,11 +1544,11 @@
     {
       "id": "14.karta.hrobar-pohreb",
       "paragraf": "14. Efekty kariet — výklad › Karty",
-      "pravidlo": "Spálenie karty z línie Pohrebom či Liečbou je zahodenie z línie — súperov Hrobár dostane cigaretu (Michal 2026-10-22, rozhodca #9).",
+      "pravidlo": "Spálenie karty z línie Pohrebom je zahodenie z línie — súperov Hrobár dostane cigaretu (Michal 2026-10-22, rozhodca #9).",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/pravidla-bitka.test.ts › §14 Hrobár: keď súper Pohrebom spáli svoju kartu z línie, majiteľ Hrobára dostane cigaretu (rozhodca #9)",
-        "packages/core/test/pravidla-bitka.test.ts › §14 Hrobár: keď súper Liečbou spáli svojho Závislého z línie, majiteľ Hrobára dostane cigaretu (rozhodca #9)",
+        "packages/core/test/pravidla-bitka.test.ts › §14 Hrobár: keď súper pochová Závislého a vezme kartu zo šenku, majiteľ Hrobára dostane cigaretu (rozhodca #9)",
         "packages/core/test/pravidla-bitka.test.ts › §14 Hrobár: vlastný Pohreb majiteľovi Hrobára cigaretu nedá"
       ]
     },
@@ -1729,11 +1730,11 @@
     {
       "id": "14.karta.sarlatan-veteran",
       "paragraf": "14. Efekty kariet — výklad › Karty",
-      "pravidlo": "Šarlatán: Viera v okolí sa ráta ako Vízia; Veterán: Influencer v partii vypne pravé, podporený Ženou vpravo ľavé akcie.",
+      "pravidlo": "Šarlatán: Viera v okolí sa ráta ako Vízia; Veterán: Influencer v partii vypne pravé, oba susedia a Žena vpravo ľavé akcie.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/playtest-055944.test.ts › Šarlatán: Viera v jeho okolí platí ako Vízia",
-        "packages/core/test/playtest-055944.test.ts › Veterán: podporený ženou vpravo stratí ľavé akcie, s influencerom v partii pravé"
+        "packages/core/test/playtest-055944.test.ts › Veterán: s oboma susedmi a ženou vpravo stratí ľavé akcie, s influencerom v partii pravé"
       ]
     },
     {

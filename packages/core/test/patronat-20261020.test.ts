@@ -74,7 +74,7 @@ function bitka(c: Partial<BitkaStav>): BitkaStav {
     prebytokDrzi: null,
     prebytokZostava: 0,
     prebytokPosunute: [],
-    liecbaHotova: [true, true],
+    pohrebHotovy: [true, true],
     benzinkaZostava: [0, 0],
     spalit: [],
     vesticaHotova: true,
@@ -183,7 +183,7 @@ describe("patronát — po bitke", () => {
       faza: "bitka",
       draftStav: null,
       hraci: st.hraci.map((h) => ({ ...h, poldeciPlne: 1, poldeciVypite: 1 })) as unknown as GameState["hraci"],
-      bitkaStav: bitka({ krok: "liecba", caka: 0, liecbaHotova: [false, true], vitaz, prebytokDrzi: vitaz }),
+      bitkaStav: bitka({ krok: "pohreb", caka: 0, pohrebHotovy: [false, true], vitaz, prebytokDrzi: vitaz }),
     };
     return { s: st, u, elderUid: elderKarta.uid, obcan };
   }
@@ -191,7 +191,7 @@ describe("patronát — po bitke", () => {
   it("výhra: starší ostáva patrónovi, karta lícom dole sa otáča na scorecarde", () => {
     for (const vLinii of [false, true]) {
       const { s, u, elderUid, obcan } = predKoncom(vPatronate(2).u, vLinii);
-      const po = apply(data, s, { type: "skipLiecba" }, 0).state;
+      const po = apply(data, s, { type: "skipPohreb" }, 0).state;
       const e = po.starsi[0]!;
       expect(e.karta).toEqual(obcan);
       expect(e.nahradeny).toBe(true);
@@ -207,7 +207,7 @@ describe("patronát — po bitke", () => {
     for (const vLinii of [false, true]) {
       const u0 = vPatronate(2).u;
       const { s, u, elderUid, obcan } = predKoncom(opponentOf(u0), vLinii);
-      const po = apply(data, s, { type: "skipLiecba" }, 0).state;
+      const po = apply(data, s, { type: "skipPohreb" }, 0).state;
       const e = po.starsi[0]!;
       expect(e.karta.uid).toBe(elderUid);
       expect(e.nahradeny).toBe(false);
@@ -226,7 +226,7 @@ describe("patronát — po bitke", () => {
     const st: GameState = {
       ...s,
       hraci: s.hraci.map((h, i) => (i === u ? { ...h, priznane: [...h.priznane, inst("cirhoza")] } : h)) as unknown as GameState["hraci"],
-      bitkaStav: bitka({ krok: "liecba", caka: u, liecbaHotova: [u === 1, u === 0], vitaz: 0 }),
+      bitkaStav: bitka({ krok: "pohreb", caka: u, pohrebHotovy: [u === 1, u === 0], vitaz: 0 }),
     };
     expect(legalCommands(data, st, u).some((c) => c.type === "pohreb" && c.kartaUid === elderUid)).toBe(false);
   });

@@ -173,7 +173,7 @@ export class Robot {
         }
         // Cintorín (Michal 2026-10-20): robot nič do Dedičstva nedáva.
         if (b.krok === "cintorin") return { type: "cintorin", uid: null };
-        return { type: "skipLiecba" };
+        return { type: "skipPohreb" };
       }
       default:
         throw new Error(`nečakaná fáza ${view.faza}`);

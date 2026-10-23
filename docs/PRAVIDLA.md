@@ -130,7 +130,7 @@ odsekmi vyššie):**
 - **Posledná šanca v šenku:** keď jeden prestane brať, druhý má už len jeden
   ťah (1 alebo 2 karty), potom branie končí (§7).
 - **Doplnenie šenku:** po braní sa šenok doplní z vrchu spoločného balíčka na
-  **8** kariet — pre Liečbu, Starostu a iné efekty (§7).
+  **8** kariet — pre Pohreb Závislého, Starostu a iné efekty (§7).
 - **Priznaná Cirhóza** dá súperovi v každej bitke +1 tuhé (predtým Cirhóza v línii) (§8).
 - **Veriaci:** Viera navyše rovná sile (+1 / +2 / +3), hodnota Viery ostáva 1 (§9).
 - **Náhrada staršieho** sa volí z kariet s viditeľným variantom akcií
@@ -182,7 +182,7 @@ v sekcii Playtest):**
 
 - **Poštárka** sa s prázdnym doberacím aj odhadzovacím balíčkom použiť nedá
   a Dlh dá len vtedy, keď hráč naozaj dobral kartu do ruky (§14).
-- **Pohreb a Liečba sú zahodenie z línie** (§8.6): za spálenú kartu z línie
+- **Pohreb je zahodenie z línie** (§8.6): za spálenú kartu z línie
   dostane súperov Hrobár cigaretu (§14). Cirhóza spomedzi priznaných sa neráta.
 
 > Otvorené otázky z `docs/BRIEF.md` uzavrel Michal 2026-10-22 (roadmapa #11).
@@ -348,12 +348,6 @@ Po bitke sa karta vracia do odhadzovacieho balíčka svojho majiteľa.
 | Posilnenie + Odpor | neprepojené akcie aktivuje **iba karta s Odporom** |
 | Posilnenie + Posilnenie | nič sa nedeje — niet čo zdvojnásobiť (Michal 2026-10-22) |
 
-### Podpora
-
-Karta je *podporená*, ak sa v jej okolí nachádzajú **presne 2 karty**
-(t. j. má susedov z oboch strán). **Lokalita sa ráta ako sused** (Michal
-2026-10-22) — ako pri ostatných efektoch, ktoré sa pozerajú na okolie karty.
-
 ---
 
 ## 5. Poldeci a limit vykladania
@@ -472,7 +466,7 @@ hracej oblasti.
   Výnimka je Milujúca manželka — je aj Občan a má akcie.
 - Cena: priznaný **Dlh** sa ráta k prahu Exekútora a súperove Povery proti
   nemu udelia mäkké poškodenie. Priznaná **Cirhóza** body neuberá a umožní
-  Liečbu či Pohreb, ale v každej bitke dá súperovi **+1 tuhé** (Michal 2026-10-20). Priznaná **Milujúca
+  Pohreb, ale v každej bitke dá súperovi **+1 tuhé** (Michal 2026-10-20). Priznaná **Milujúca
   manželka** naďalej posúva latku Absťáku (§14).
 
 | | Nepriznaná | Priznaná |
@@ -562,10 +556,10 @@ zadarmo. Kto nemá cigaretu, brať nemôže (hra za neho branie ukončí). Keď 
 prestane, druhý má už len **jednu poslednú šancu** (jeden ťah, Michal 2026-10-20 —
 predtým bral ďalej sám), potom branie končí. Prázdny šenok branie ukončí obom.
 
-Nevzaté karty ostávajú v šenku do ďalšieho draftu (Starosta a Liečba z neho
-berú aj medzitým).
+Nevzaté karty ostávajú v šenku do ďalšieho draftu (Starosta a Pohreb Závislého
+z neho berú aj medzitým).
 Po braní sa šenok **doplní z vrchu spoločného balíčka na 8 kariet**
-(Michal 2026-10-20), aby Liečba, Starosta a iné efekty mali z čoho brať.
+(Michal 2026-10-20), aby Pohreb Závislého, Starosta a iné efekty mali z čoho brať.
 Keď sa spoločný balíček minie, šenok sa už nedopĺňa a stavba sa zmenšuje
 až na nulu — hra beží ďalej bez trestu (Michal 2026-10-22).
 
@@ -797,22 +791,21 @@ leží na ktorejkoľvek strane.
 Porazený s Vešticou vo svojej partii si prezrie oba doberacie balíčky,
 vymení jednu svoju kartu za súperovu a oba balíčky sa zamiešajú (§14).
 
-### 6. Liečba alebo Pohreb
+### 6. Pohreb
 
-Každý hráč s **priznanou** Cirhózou smie vykonať jeden z úkonov so **svojimi
-kartami v línii** (svojou partiou, na ktorejkoľvek strane):
+Každý hráč s **priznanou** Cirhózou smie urobiť **Pohreb**: spáli priznanú
+Cirhózu a ľubovoľnú **svoju kartu z línie** (svojej partie, na ktorejkoľvek
+strane; nie staršieho z patronátu). Keď je spálená karta **Závislý**, smie si
+navyše vziať jednu kartu zo šenku do ruky (Michal 2026-10-23, pravidlá v4 —
+Pohreb zlúčil v sebe Liečbu).
 
-- **Liečba** — spáľ priznanú Cirhózu a svoju kartu s tagom Závislý z línie,
-  získaj 1 Dlh a po Preskúmaní si vyber jednu kartu zo šenku.
-- **Pohreb** — spáľ priznanú Cirhózu a ľubovoľnú svoju kartu z línie.
-
-Spálená karta z línie je pri Liečbe aj Pohrebe **zahodenie** — súperov Hrobár
-za ňu dostane cigaretu (Michal 2026-10-22, rozhodca #9).
+Spálená karta z línie je **zahodenie** — súperov Hrobár za ňu dostane
+cigaretu (Michal 2026-10-22, rozhodca #9).
 
 ### 6a. Cintorín
 
-Len pri bitke o Cintorín (Michal 2026-10-20): porazený smie dať jeden Nástroj
-z ruky do Dedičstva bez platenia; spoločná cena Dedičstva sa zvýši ako vždy.
+Len pri bitke o Cintorín (Michal 2026-10-20): porazený smie po Pohrebe dať
+jeden Nástroj z ruky do Dedičstva bez platenia; spoločná cena Dedičstva sa zvýši ako vždy.
 
 ### 6b. Zberateľ — zrušený
 
@@ -896,7 +889,7 @@ Keď hráč vytlačí marker na krajnú červenú pozíciu, **prebudí staršieh
 tej chvíle sa efekt karty staršieho uplatňuje **pre vydesujúceho hráča**, hoci
 karta leží na ukazovateli. Priazeň pritom ostáva súperovi.
 
-Spúšťače pri prebudení: **Nástup a Podpora sa NEuplatnia** (karta nie je
+Spúšťač pri prebudení: **Nástup sa NEuplatní** (karta nie je
 v línii). Furt, Bitka, Pitka, Prehra, Výhra a Zhromaždenie fungujú normálne
 a vzťahujú sa na vydesujúceho hráča.
 
@@ -1077,7 +1070,7 @@ platí v kole, keď je lokalita cieľom. Všetkých 14 je v zverejnenej sade.
 | Ihrisko | Bitka | V každom kraji +2 tuhé tomu, kto tam má viac svojich Občanov, Zvierat a Starešinov (pri rovnosti nikto) — z oboch krajov teda až +4. |
 | Zberný dvor | Pitka | Raz za Pitku: za 1 cigaretu karta z vlastného odhadzovacieho balíčka do ruky (cigareta je nerest ako pri barteri). |
 | Most | Zhromaždenie, Pitka | Karty sa smú vykladať len na vlastnú stranu — aj odpoveď na NA EX. |
-| Cintorín | Prehra | Porazený smie po Liečbe dať jeden Nástroj z ruky do Dedičstva bez platenia; spoločná cena Dedičstva sa zvýši ako vždy. |
+| Cintorín | Prehra | Porazený smie po Pohrebe dať jeden Nástroj z ruky do Dedičstva bez platenia; spoločná cena Dedičstva sa zvýši ako vždy. |
 | Obecný úrad | Bitka | Prah Exekútora je o 4 nižší; každá Robota spáli 2 priznané Dlhy namiesto 1 (od 2026-10-21; predtým ich odhodila). |
 | Jednota | Pitka | Stokársky barter (nový poldeci) je o 1 cigaretu lacnejší. |
 | Kultúrny dom | Bitka | Pohoršenie nemá limit dvoch hraníc zón (na krajnú pozíciu stále nie). Predtým: ten istý marker viackrát — to je od 2026-10-20 bežné pravidlo. |
@@ -1102,7 +1095,7 @@ Všetky efekty tlačovej sady engine vyhodnocuje automaticky (playtest
 | Karta | Výklad |
 |---|---|
 | Dievčina na vydaj | Pri bitke sa zahodí (po bitke sa spáli, nevráti sa) a jej majiteľ spáli toľko **priznaných** Dlhov, koľko mala aktívnych akcií (s násobkami — aj s tými, ktoré zdvojilo NA EX, vlastné či súperovo; Michal 2026-10-22). Jej akcie v bitke, v ktorej sa zahodí, ešte **platia** (Michal 2026-10-22, dopísané podľa hry). |
-| Hrobár | Keď súper zahodí kartu z ruky, z línie alebo z vrchu balíčka (efektom, Víziou, aj Pohrebom či Liečbou — §8.6, Michal 2026-10-22; nie návratom po bitke ani vlastnou Veľmi smútiacou vdovou), majiteľ Hrobára dostane cigaretu za každú. |
+| Hrobár | Keď súper zahodí kartu z ruky, z línie alebo z vrchu balíčka (efektom, Víziou, aj Pohrebom — §8.6, Michal 2026-10-22; nie návratom po bitke ani vlastnou Veľmi smútiacou vdovou), majiteľ Hrobára dostane cigaretu za každú. |
 | Anonymný alkoholik | Súper jeho majiteľa naňho nedá NA EX — ani keď je podstrčený na súperovu stranu. Majiteľ smie. Karty vedľa neho nechráni. Bráni len novému NA EX; poldeci, ktorý už na ňom leží, ostáva. (Michal 2026-10-18, zúžené 2026-10-19 a 2026-10-22 — predtým chránil aj majiteľove karty vedľa seba) |
 | Šofér | Furt (roadmapa #71, 2026-10-23): NA EX na kartu, ktorá so Šoférom susedí (vlastnú aj súperovu, na ktorejkoľvek strane Šoféra), **nezdvojí** jej neaktívne akcie — ostanú neaktívne; aktívne zruší ako vždy. Lokalitu v strede sa to netýka. NA EX na samotného Šoféra platí normálne. |
 | Ujo s fúrikom | Nástup (roadmapa #71, 2026-10-23): ak ho vyložíš (v Zhromaždení aj ako odpoveď na NA EX) vedľa karty s NA EX, táto karta sa vráti **svojmu majiteľovi** do ruky a Ujo sa posunie na jej miesto. Poldeci z nej sa vypije tomu, kto NA EX dal, ako v bitke (vypitý, nerest; pečeň už NA EX započítalo). |
@@ -1126,7 +1119,7 @@ Všetky efekty tlačovej sady engine vyhodnocuje automaticky (playtest
 | Čierna mačka | Majiteľove Povery spôsobujú mäkké poškodenie aj bez súperových priznaných Dlhov (bez stropu). |
 | Svokra | Kým leží v línii, každé NA EX súpera jej majiteľa — na hociktorú kartu, aj povinné na Krčme — mu zoberie 2 cigarety a dá ich majiteľovi Svokry; každá Svokra dve (Michal 2026-10-19). Bez cigarety nič. Praudovravec súpera ju umlčí (Autorita). Nahradila zákaz NA EX z pravidiel v3 (Michal 2026-10-18). |
 | Šarlatán | Viera kariet v jeho okolí sa ráta ako Vízia. |
-| Veterán | Ak je v partii majiteľa Influencer, neplatia jeho pravé akcie. Ak má oboch susedov a vpravo (z pohľadu majiteľa) je Žena, neplatia jeho ľavé akcie. |
+| Veterán | Ak je v partii majiteľa Influencer, neplatia jeho pravé akcie. Ak má oboch susedov a vpravo (z pohľadu majiteľa) je Žena, neplatia jeho ľavé akcie. Lokalita v strede sa ráta ako sused (Michal 2026-10-22). |
 | Veštica | Pri prehre: porazený si prezrie oba doberacie balíčky, vymení jednu svoju kartu za súperovu, potom sa oba balíčky zamiešajú. |
 | Vychovávateľka | Keď majiteľ dá NA EX, jeden jeho priznaný Dlh sa zamieša do súperovho **doberacieho balíčka** (Michal 2026-10-19 — predtým do ruky, kde by ho súper priznal a dobral si kartu). |
 | Veľmi smútiaca vdova | Nástup: odhalí sa vrchná karta súperovho doberacieho balíčka (prázdny sa doplní zamiešaním odhadzovacieho). Ak je to muž (tag Chlap), ide z hry a majiteľ Vdovy **zahodí** (z hry) 2 svoje Dlhy z ruky, odhadzovacieho balíčka alebo spomedzi priznaných (priznané od 2026-10-21 — nový Dlh je hneď priznaný). Log vždy oznámi odhalenú kartu. Hrobár sa za Dlhy nespúšťa. (Oprava 2026-10-19 — predtým sa Dlhy len odhodili a vrátili.) |

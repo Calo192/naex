@@ -242,10 +242,10 @@ describe("Lesná cesta a Ihrisko: tuhé za karty na stranách", () => {
 });
 
 describe("Cintorín: porazený dá Nástroj z ruky do Dedičstva zadarmo", () => {
-  function poLiecbe(defId: string, ruka: readonly CardInstance[]): GameState {
+  function poPohrebe(defId: string, ruka: readonly CardInstance[]): GameState {
     const s = vKole(defId);
     const bitka: BitkaStav = {
-      krok: "liecba",
+      krok: "pohreb",
       caka: 0,
       sums: [{}, {}],
       exekutorHotovy: [true, true],
@@ -256,7 +256,7 @@ describe("Cintorín: porazený dá Nástroj z ruky do Dedičstva zadarmo", () =>
       prebytokDrzi: null,
       prebytokZostava: 0,
       prebytokPosunute: [],
-      liecbaHotova: [false, true],
+      pohrebHotovy: [false, true],
       benzinkaZostava: [0, 0],
       spalit: [],
       vesticaHotova: true,
@@ -264,9 +264,9 @@ describe("Cintorín: porazený dá Nástroj z ruky do Dedičstva zadarmo", () =>
     return sHracom({ ...s, faza: "bitka", bitkaStav: bitka }, 0, { ruka, cigarety: 0 });
   }
 
-  it("po Liečbe čaká Cintorín na porazeného; Nástroj ide do Dedičstva bez cigariet a cena Dedičstva rastie", () => {
+  it("po Pohrebe čaká Cintorín na porazeného; Nástroj ide do Dedičstva bez cigariet a cena Dedičstva rastie", () => {
     const puska = inst("puska");
-    const s = apply(data, poLiecbe("cintorin", [puska, inst("pijan")]), { type: "skipLiecba" }, 0).state;
+    const s = apply(data, poPohrebe("cintorin", [puska, inst("pijan")]), { type: "skipPohreb" }, 0).state;
     expect(s.bitkaStav?.krok).toBe("cintorin");
     expect(s.bitkaStav?.caka).toBe(0);
     expect(legalCommands(data, s, 0)).toEqual(expect.arrayContaining([{ type: "cintorin", uid: puska.uid }, { type: "cintorin", uid: null }]));
@@ -278,9 +278,9 @@ describe("Cintorín: porazený dá Nástroj z ruky do Dedičstva zadarmo", () =>
   });
 
   it("bez Nástroja v ruke alebo inde sa Cintorín preskočí", () => {
-    const bez = apply(data, poLiecbe("cintorin", [inst("pijan")]), { type: "skipLiecba" }, 0).state;
+    const bez = apply(data, poPohrebe("cintorin", [inst("pijan")]), { type: "skipPohreb" }, 0).state;
     expect(bez.bitkaStav?.krok).not.toBe("cintorin");
-    const inde = apply(data, poLiecbe("krcma", [inst("puska")]), { type: "skipLiecba" }, 0).state;
+    const inde = apply(data, poPohrebe("krcma", [inst("puska")]), { type: "skipPohreb" }, 0).state;
     expect(inde.bitkaStav?.krok).not.toBe("cintorin");
   });
 });

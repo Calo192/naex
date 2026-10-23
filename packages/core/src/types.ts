@@ -89,7 +89,6 @@ export type Trigger =
   | "Výhra"
   | "Prehra"
   | "Prestávka"
-  | "Podpora"
   | "Exekúcia";
 
 export const ALL_TRIGGERS: readonly Trigger[] = [
@@ -102,7 +101,6 @@ export const ALL_TRIGGERS: readonly Trigger[] = [
   "Výhra",
   "Prehra",
   "Prestávka",
-  "Podpora",
   "Exekúcia",
 ];
 

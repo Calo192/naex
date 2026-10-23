@@ -124,8 +124,8 @@ na jednom mieste v kóde (odkazy v zátvorkách). Michal ich všetky potvrdil
    aktívne, zdvojnásobí neaktívne akcie cieľovej karty; dôsledky jej
    akcií na susedoch (Posilnenie ×2, zrušenie Odporom) ostávajú
    (`partia.ts`, `applyNaex`).
-3. **Podpora** — lokalita sa počíta ako karta v okolí (zatiaľ bez
-   dosahu: žiadny implementovaný efekt Podporu nepoužíva).
+3. **Podpora** — pojem aj spúšťač vypadli v pravidlách v4 (2026-10-23);
+   že sa lokalita ráta ako sused, ostalo pri Veteránovi (§14).
 4. **Vzbura na lokalite** aktivuje len stranu patriacu danej partii
    (`partia.ts`, `markVzbura`).
 5. **Cirhóza** — každá **priznaná** Cirhóza dá súperovi v každej bitke
@@ -155,8 +155,8 @@ na jednom mieste v kóde (odkazy v zátvorkách). Michal ich všetky potvrdil
 Ďalšie drobné rozhodnutia: prebytok rozdeľuje jeho **držiteľ** (vyššie
 celkové) smerom k súperovi; veľkosť balíčka sa kontroluje po drafte
 a na konci kola (nie uprostred, keď karty ležia v partiách); Vízia sa
-vyhodnocuje automaticky (zahodí kliatby z práve dobraných); Liečba
-berie kartu zo šenku priamo (zjednodušené Preskúmanie); barter berie
+vyhodnocuje automaticky (zahodí kliatby z práve dobraných); Pohreb
+Závislého berie kartu zo šenku priamo (Liečba sa v4 zlúčila do Pohrebu); barter berie
 len fyzické cigarety.
 
 ## Zmeny pravidiel po playteste 20261012-055944 (2026-10-12)
@@ -198,7 +198,7 @@ Rozhodnutia Michala, skúšobné. Prečo a čo sledovať je v
    `KONSTANTY.PRAH_CIRHOZY_ZAKLAD`).
 5. **Prah Dlhu 2** — akcie Hazard plnia počítadlo `zadlzenie` hráča
    (verejné, v hre ukazovateľ „Zadĺženie“); kartu Dlh hráč dostane až pri
-   prahu. Dlhy, ktoré dávajú efekty kariet priamo (Liečba, Výherný
+   prahu. Dlhy, ktoré dávajú efekty kariet priamo (Poštárka, Výherný
    automat), idú rovno (`engine.ts`, `pridajZadlzenie`;
    `KONSTANTY.PRAH_DLHU`). Ďalšie pravidlá k zadĺženiu pribudnú.
 

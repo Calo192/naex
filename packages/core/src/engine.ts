@@ -184,7 +184,7 @@ export type BitkaKrok =
   | "pohorsenie"
   | "prebytok"
   | "vestica"
-  | "liecba"
+  | "pohreb"
   | "cintorin";
 
 export interface BitkaStav {
@@ -205,7 +205,7 @@ export interface BitkaStav {
   readonly prebytokZostava: number;
   /** Starší posunutí prebytkom v tejto bitke — súper držiteľa za nich dostane cigarety. */
   readonly prebytokPosunute: readonly string[];
-  readonly liecbaHotova: readonly [boolean, boolean];
+  readonly pohrebHotovy: readonly [boolean, boolean];
   /** Benzínka: koľko svojich Občanov z línie má hráč ešte zahodiť. */
   readonly benzinkaZostava: readonly [number, number];
   /** Karty z línie, ktoré sa po bitke spália namiesto návratu (Dievčina na vydaj). */
@@ -326,14 +326,10 @@ export type Command =
   | { readonly type: "exekutorTool"; readonly defId: string; readonly kde: KartaZdroj }
   | { readonly type: "pohorsenie"; readonly elderId: string }
   | { readonly type: "prebytok"; readonly elderId: string }
-  | {
-      readonly type: "liecba";
-      readonly cirhozaUid: number;
-      readonly zavislyUid: number;
-      readonly senokUid: number;
-    }
-  | { readonly type: "pohreb"; readonly cirhozaUid: number; readonly kartaUid: number }
-  | { readonly type: "skipLiecba" }
+  // Pohreb (pravidlá v4 — zlúčil v sebe Liečbu): spáli priznanú Cirhózu a svoju
+  // kartu z línie; za Závislého smie hráč vziať kartu zo šenku (senokUid).
+  | { readonly type: "pohreb"; readonly cirhozaUid: number; readonly kartaUid: number; readonly senokUid?: number }
+  | { readonly type: "skipPohreb" }
   // Vypiť (pravidlá v3): v Zhromaždení otoč plný poldeci na vypitý — limit
   // klesne o 1, ale ďalšou kartou ťah nekončí (zahráš dve za sebou).
   | { readonly type: "vypit" }
@@ -469,7 +465,7 @@ function maEfekt(s: MutState, data: GameData, p: PlayerId, defId: string): boole
 
 /**
  * Hrobár: keď súper zahodí kartu (z ruky alebo z línie, efektom či limitom
- * ruky, aj Pohrebom či Liečbou — nie návratom po bitke), majiteľ Hrobára si
+ * ruky, aj Pohrebom — nie návratom po bitke), majiteľ Hrobára si
  * dobere cigaretu za kus.
  */
 function poZahodeni(s: MutState, data: GameData, p: PlayerId, pocet: number, events: Event[]): void {
@@ -1160,14 +1156,11 @@ export function apply(
     case "prebytok":
       cmdPrebytok(s, data, cmd, hracId, events);
       break;
-    case "liecba":
-      cmdLiecba(s, data, cmd, hracId, events);
-      break;
     case "pohreb":
       cmdPohreb(s, data, cmd, hracId, events);
       break;
-    case "skipLiecba":
-      cmdSkipLiecba(s, data, hracId, events);
+    case "skipPohreb":
+      cmdSkipPohreb(s, data, hracId, events);
       break;
   }
 
@@ -1214,8 +1207,8 @@ function dohrajNevyhnutne(data: GameData, s: MutState, events: Event[]): void {
     } else if (jedina?.type === "skipNaex") {
       events.push({ type: "log", text: `Hráč ${p + 1} nemá v Pitke čo urobiť.` });
       cmdSkipNaex(s, data, p, events);
-    } else if (jedina?.type === "skipLiecba") {
-      cmdSkipLiecba(s, data, p, events);
+    } else if (jedina?.type === "skipPohreb") {
+      cmdSkipPohreb(s, data, p, events);
     } else if (jedina?.type === "bezReakcie") {
       cmdBezReakcie(s, p, events);
     } else if (jedina?.type === "draftStop") {
@@ -1424,7 +1417,7 @@ function dalsiVBerani(s: MutState, data: GameData, p: PlayerId, events: Event[])
   s.pitkaCislo = 0;
   s.pitkyCelkom = 1;
   // Šenok sa po braní doplní z vrchu spoločného balíčka (Michal 2026-10-20) —
-  // Liečba, Starosta a iné efekty potom majú z čoho brať.
+  // Pohreb Závislého, Starosta a iné efekty potom majú z čoho brať.
   const doplnit = Math.min(Math.max(0, KONSTANTY.SENOK_PO_BRANI - s.senok.length), s.spolocnyBalicek.length);
   if (doplnit > 0) {
     s.senok.push(...s.spolocnyBalicek.splice(0, doplnit));
@@ -2475,7 +2468,7 @@ function zacniBitku(s: MutState, data: GameData, events: Event[]): void {
     prebytokDrzi: null,
     prebytokZostava: 0,
     prebytokPosunute: [],
-    liecbaHotova: [false, false],
+    pohrebHotovy: [false, false],
     benzinkaZostava: [0, 0],
     spalit: [],
     vesticaHotova: false,
@@ -2685,16 +2678,16 @@ function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
       return;
     }
     b.vesticaHotova = true;
-    b.krok = "liecba";
+    b.krok = "pohreb";
   }
 
-  // 6. Liečba / Pohreb (obranca, potom útočník).
-  if (b.krok === "liecba") {
+  // 6. Pohreb (obranca, potom útočník).
+  if (b.krok === "pohreb") {
     for (const p of [obranca(s), s.utocnik]) {
-      if (b.liecbaHotova[p]) continue;
+      if (b.pohrebHotovy[p]) continue;
       const maPriznanuCirhozu = s.hraci[p].priznane.some((k) => k.defId === "cirhoza");
       if (!maPriznanuCirhozu) {
-        b.liecbaHotova[p] = true;
+        b.pohrebHotovy[p] = true;
         continue;
       }
       b.caka = p;
@@ -2756,7 +2749,7 @@ function cmdVestica(s: MutState, data: GameData, cmd: { moja: number; jeho: numb
     text: `Veštica: hráč ${p + 1} ${rodovo(p, "vymenil", "vymenila", "vymieňa")} ${defOf(data, a).name} za súperovu kartu ${defOf(data, c).name}.`,
   });
   b.vesticaHotova = true;
-  b.krok = "liecba";
+  b.krok = "pohreb";
   pokracujBitku(s, data, events);
 }
 
@@ -3122,51 +3115,20 @@ function vypiPoldeci(s: MutState, data: GameData, events: Event[]): void {
   events.push({ type: "log", text: "Poldeci z NA EX sa vypili; aktívne akcie Poldeci otočili vypité." });
 }
 
-function cmdLiecba(
-  s: MutState,
-  data: GameData,
-  cmd: { cirhozaUid: number; zavislyUid: number; senokUid: number },
-  p: PlayerId,
-  events: Event[],
-): void {
-  const b = s.bitkaStav;
-  need(s.faza === "bitka" && b !== null && b.krok === "liecba" && b.caka === p, "Nečaká sa na Liečbu.");
-  const cirhozaIdx = s.hraci[p].priznane.findIndex(
-    (k) => k.uid === cmd.cirhozaUid && k.defId === "cirhoza",
-  );
-  need(cirhozaIdx !== -1, "Taká priznaná Cirhóza nie je.");
-  const kdeZavisly = najdiVLinii(s, cmd.zavislyUid);
-  const zavisly = kdeZavisly === null ? undefined : (s.strany[kdeZavisly.strana][kdeZavisly.index] as PlacedCard | undefined);
-  need(kdeZavisly !== null && zavisly !== undefined && zavisly.playedBy === p, "Závislý musí byť tvoja karta v línii.");
-  need(defOf(data, zavisly.card).tags.includes("Závislý"), "Karta nemá tag Závislý.");
-  const senokIdx = s.senok.findIndex((k) => k.uid === cmd.senokUid);
-  need(senokIdx !== -1, "Karta nie je v šenku.");
-
-  hrac(s, p).priznane.splice(cirhozaIdx, 1);
-  s.strany[kdeZavisly.strana].splice(kdeZavisly.index, 1);
-  pridajKliatbu(s, data, p, "dlh", events);
-  const zoSenku = s.senok.splice(senokIdx, 1)[0] as CardInstance;
-  hrac(s, p).ruka.push(zoSenku as DeepMutable<CardInstance>);
-  events.push({
-    type: "log",
-    text: `Hráč ${p + 1} sa lieči: ${rodovo(p, "spálil", "spálila", "páli")} Cirhózu a ${defOf(data, zavisly.card).name}, berie kartu zo šenku.`,
-  });
-  // Rozhodca #9 (Michal 2026-10-22): spálenie karty z línie je zahodenie — súperov Hrobár dostane cigaretu.
-  poZahodeni(s, data, p, 1, events);
-  b.liecbaHotova[p] = true;
-  b.caka = null;
-  pokracujBitku(s, data, events);
-}
-
+/**
+ * Pohreb (pravidlá v4, Michal 2026-10-23 — zlúčil v sebe Liečbu): spáľ
+ * priznanú Cirhózu a svoju kartu z línie. Keď je spálená karta Závislý,
+ * smieš si vziať jednu kartu zo šenku. Dlh a Preskúmanie Liečby zmizli.
+ */
 function cmdPohreb(
   s: MutState,
   data: GameData,
-  cmd: { cirhozaUid: number; kartaUid: number },
+  cmd: { cirhozaUid: number; kartaUid: number; senokUid?: number },
   p: PlayerId,
   events: Event[],
 ): void {
   const b = s.bitkaStav;
-  need(s.faza === "bitka" && b !== null && b.krok === "liecba" && b.caka === p, "Nečaká sa na Pohreb.");
+  need(s.faza === "bitka" && b !== null && b.krok === "pohreb" && b.caka === p, "Nečaká sa na Pohreb.");
   const cirhozaIdx = s.hraci[p].priznane.findIndex(
     (k) => k.uid === cmd.cirhozaUid && k.defId === "cirhoza",
   );
@@ -3174,23 +3136,32 @@ function cmdPohreb(
   const kde = najdiVLinii(s, cmd.kartaUid);
   need(kde !== null && s.strany[kde.strana][kde.index]?.playedBy === p, "Pochovať môžeš len svoju kartu v línii.");
   need(!jeKartaPatronatu(s as GameState, cmd.kartaUid), "Staršieho z patronátu pochovať nemožno.");
+  const senokIdx = cmd.senokUid === undefined ? -1 : s.senok.findIndex((k) => k.uid === cmd.senokUid);
+  if (cmd.senokUid !== undefined) {
+    const karta = s.strany[kde.strana][kde.index] as PlacedCard;
+    need(defOf(data, karta.card).tags.includes("Závislý"), "Kartu zo šenku dostaneš len za pochovaného Závislého.");
+    need(senokIdx !== -1, "Karta nie je v šenku.");
+  }
 
   hrac(s, p).priznane.splice(cirhozaIdx, 1);
   const pochovana = s.strany[kde.strana].splice(kde.index, 1)[0] as PlacedCard;
+  const zoSenku = senokIdx === -1 ? null : (s.senok.splice(senokIdx, 1)[0] as CardInstance);
+  if (zoSenku !== null) hrac(s, p).ruka.push(zoSenku as DeepMutable<CardInstance>);
   events.push({
     type: "log",
-    text: `Hráč ${p + 1} robí Pohreb: ${rodovo(p, "spálil", "spálila", "páli")} Cirhózu a ${defOf(data, pochovana.card).name}.`,
+    text: `Hráč ${p + 1} robí Pohreb: ${rodovo(p, "spálil", "spálila", "páli")} Cirhózu a ${defOf(data, pochovana.card).name}${zoSenku === null ? "" : ` a za Závislého ${rodovo(p, "vzal", "vzala", "berie")} zo šenku ${defOf(data, zoSenku).name}`}.`,
   });
+  // Rozhodca #9 (Michal 2026-10-22): spálenie karty z línie je zahodenie — súperov Hrobár dostane cigaretu.
   poZahodeni(s, data, p, 1, events);
-  b.liecbaHotova[p] = true;
+  b.pohrebHotovy[p] = true;
   b.caka = null;
   pokracujBitku(s, data, events);
 }
 
-function cmdSkipLiecba(s: MutState, data: GameData, p: PlayerId, events: Event[]): void {
+function cmdSkipPohreb(s: MutState, data: GameData, p: PlayerId, events: Event[]): void {
   const b = s.bitkaStav;
-  need(s.faza === "bitka" && b !== null && b.krok === "liecba" && b.caka === p, "Nečaká sa na Liečbu.");
-  b.liecbaHotova[p] = true;
+  need(s.faza === "bitka" && b !== null && b.krok === "pohreb" && b.caka === p, "Nečaká sa na Pohreb.");
+  b.pohrebHotovy[p] = true;
   b.caka = null;
   pokracujBitku(s, data, events);
 }
@@ -3622,22 +3593,17 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
             out.push({ type: "prebytok", elderId: elder.elderId });
           }
         }
-      } else if (b.krok === "liecba") {
-        out.push({ type: "skipLiecba" });
+      } else if (b.krok === "pohreb") {
+        out.push({ type: "skipPohreb" });
         const cirhozy = state.hraci[p].priznane.filter((k) => k.defId === "cirhoza");
         for (const cirhoza of cirhozy) {
           for (const placed of partiaHraca(state, p)) {
+            if (jeKartaPatronatu(state, placed.card.uid)) continue;
+            const pohreb = { type: "pohreb", cirhozaUid: cirhoza.uid, kartaUid: placed.card.uid } as const;
+            out.push(pohreb);
             if (defOf(data, placed.card).tags.includes("Závislý")) {
-              for (const zoSenku of state.senok) {
-                out.push({
-                  type: "liecba",
-                  cirhozaUid: cirhoza.uid,
-                  zavislyUid: placed.card.uid,
-                  senokUid: zoSenku.uid,
-                });
-              }
+              for (const zoSenku of state.senok) out.push({ ...pohreb, senokUid: zoSenku.uid });
             }
-            if (!jeKartaPatronatu(state, placed.card.uid)) out.push({ type: "pohreb", cirhozaUid: cirhoza.uid, kartaUid: placed.card.uid });
           }
         }
       }

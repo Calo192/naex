@@ -1,6 +1,6 @@
 // Rozhodca pravidiel (prvý prechod 2026-10-22): bitka a koniec hry podľa
 // PRAVIDLA.md §1, §3, §8, §10, §12 a §14 — Exekútor a Robota, poradie kroku
-// Poldeci, Liečba a Pohreb, návrat kariet, Absťák a neresti, body za kusy,
+// Poldeci, Pohreb, návrat kariet, Absťák a neresti, body za kusy,
 // efekty kariet. Očakávané hodnoty sú z textu pravidiel, nie z kódu.
 
 import { describe, expect, it } from "vitest";
@@ -88,7 +88,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     prebytokDrzi: null,
     prebytokZostava: 0,
     prebytokPosunute: [],
-    liecbaHotova: [true, true],
+    pohrebHotovy: [true, true],
     benzinkaZostava: [0, 0],
     spalit: [],
     vesticaHotova: true,
@@ -96,7 +96,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
   };
 }
 
-/** Bitka v kroku Liečby, čaká sa na hráča 0 — skipLiecba ju dokončí a začne ďalšie kolo. */
+/** Bitka v kroku Pohrebu, čaká sa na hráča 0 — skipPohreb ju dokončí a začne ďalšie kolo. */
 function predKoncomBitky(seed: number, uprav: (s: GameState) => GameState = (s) => s): GameState {
   const s0 = setupGame(data, seed);
   return uprav({
@@ -106,7 +106,7 @@ function predKoncomBitky(seed: number, uprav: (s: GameState) => GameState = (s) 
     strany: [[], []],
     ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
     lokalityVHre: s0.lokalityVHre.slice(1),
-    bitkaStav: bitka({ krok: "liecba", caka: 0, liecbaHotova: [false, true] }),
+    bitkaStav: bitka({ krok: "pohreb", caka: 0, pohrebHotovy: [false, true] }),
   });
 }
 
@@ -152,10 +152,10 @@ describe("§1 Podmienky konca", () => {
 
   it("§1: balíček (doberací + odhadzovací + ruka) pod 5 kariet na konci kola znamená prehru; presne 5 nie", () => {
     const styri = predKoncomBitky(44, (s) => sHracom(s, 1, { ruka: kusy(4, "pijan"), doberaci: [], odhadzovaci: [] }));
-    const po4 = apply(data, styri, { type: "skipLiecba" }, 0).state;
+    const po4 = apply(data, styri, { type: "skipPohreb" }, 0).state;
     expect(po4.koniec?.vitaz).toBe(0);
     const pat = predKoncomBitky(44, (s) => sHracom(s, 1, { ruka: kusy(3, "pijan"), doberaci: kusy(1, "pijan"), odhadzovaci: kusy(1, "pijan"), priznane: kusy(3, "dlh") }));
-    const po5 = apply(data, pat, { type: "skipLiecba" }, 0).state;
+    const po5 = apply(data, pat, { type: "skipPohreb" }, 0).state;
     expect(po5.koniec).toBeNull();
   });
 
@@ -165,9 +165,9 @@ describe("§1 Podmienky konca", () => {
       ohlaseneVydesenie: [1, null],
       starsi: s.starsi.map((e, i) => (i < n ? { ...e, marker: 8 as const, markerZaciatokKola: 8 as const } : e)),
     });
-    const udrzal = apply(data, predKoncomBitky(45, vydes(4)), { type: "skipLiecba" }, 0).state;
+    const udrzal = apply(data, predKoncomBitky(45, vydes(4)), { type: "skipPohreb" }, 0).state;
     expect(udrzal.koniec?.vitaz).toBe(0);
-    const stratil = apply(data, predKoncomBitky(45, vydes(3)), { type: "skipLiecba" }, 0).state;
+    const stratil = apply(data, predKoncomBitky(45, vydes(3)), { type: "skipPohreb" }, 0).state;
     expect(stratil.koniec).toBeNull();
     expect(stratil.ohlaseneVydesenie[0]).toBeNull();
   });
@@ -197,11 +197,11 @@ describe("§8.5 Poldeci v bitke", () => {
       [k("r_pold", P, 0), k("r_cig", C, 0, 0)],
     ];
     let s = vPitke(sada, 46, strany);
-    // Obom priznaná Cirhóza: bitka je remíza v tuhom (1 : 1) a zastaví sa na Liečbe.
+    // Obom priznaná Cirhóza: bitka je remíza v tuhom (1 : 1) a zastaví sa na Pohrebe.
     s = sHracom(s, 0, { poldeciPlne: 0, poldeciVypite: 0, priznane: [inst("cirhoza")], nerestiTotoKolo: 0 });
     s = sHracom(s, 1, { poldeciPlne: 1, poldeciVypite: 0, priznane: [inst("cirhoza")] });
     const st = doBitky(sada, s).state;
-    expect(st.bitkaStav?.krok).toBe("liecba");
+    expect(st.bitkaStav?.krok).toBe("pohreb");
     expect([st.hraci[0].poldeciPlne, st.hraci[0].poldeciVypite]).toEqual([1, 0]);
     expect([st.hraci[1].poldeciPlne, st.hraci[1].poldeciVypite]).toEqual([1, 0]);
     // §12: NA EX je nerest (poldeci sa vypije v bitke).
@@ -209,21 +209,38 @@ describe("§8.5 Poldeci v bitke", () => {
   });
 });
 
-// --- §8.6 Liečba a Pohreb, §8.7 Návrat kariet --------------------------------------------------
+// --- §8.6 Pohreb, §8.7 Návrat kariet ------------------------------------------------------------
 
-describe("§8.6 Liečba alebo Pohreb a §8.7 Návrat kariet", () => {
-  it("§8.6 Liečba: spáli priznanú Cirhózu a svojho Závislého z línie, hráč získa 1 Dlh a kartu zo šenku", () => {
+describe("§8.6 Pohreb a §8.7 Návrat kariet", () => {
+  it("§8.6 Pohreb Závislého: spáli priznanú Cirhózu a Závislého z línie, hráč si smie vziať kartu zo šenku — bez Dlhu (v4)", () => {
     const zavisly = inst("pijan");
     const zoSenku = inst("noviny");
     const cirhoza = inst("cirhoza");
     const s = predKoncomBitky(47, (x) => sHracom({ ...x, strany: [[lezi(zavisly, 0)], []], senok: [zoSenku] }, 0, { priznane: [cirhoza] }));
-    const po = apply(data, s, { type: "liecba", cirhozaUid: cirhoza.uid, zavislyUid: zavisly.uid, senokUid: zoSenku.uid }, 0).state;
+    const po = apply(data, s, { type: "pohreb", cirhozaUid: cirhoza.uid, kartaUid: zavisly.uid, senokUid: zoSenku.uid }, 0).state;
     const h = po.hraci[0];
     expect(h.priznane.some((k) => k.defId === "cirhoza")).toBe(false);
-    expect(h.priznane.filter((k) => k.defId === "dlh")).toHaveLength(1);
+    expect(h.priznane.filter((k) => k.defId === "dlh")).toHaveLength(0);
+    expect(po.senok.map((k) => k.uid)).not.toContain(zoSenku.uid);
     expect(h.ruka.map((k) => k.uid)).toContain(zoSenku.uid);
     expect(zony(h)).not.toContain(zavisly.uid);
     expect(zony(po.hraci[1])).not.toContain(zavisly.uid);
+  });
+
+  it("§8.6 Pohreb: kartu zo šenku dá len Závislý; Závislého smie pochovať aj bez nej", () => {
+    const nezavisly = inst("noviny");
+    const zavisly = inst("pijan");
+    const zoSenku = inst("hasic");
+    const cirhoza = inst("cirhoza");
+    const s = predKoncomBitky(47, (x) => sHracom({ ...x, strany: [[lezi(zavisly, 0), lezi(nezavisly, 0)], []], senok: [zoSenku] }, 0, { priznane: [cirhoza] }));
+    expect(() => apply(data, s, { type: "pohreb", cirhozaUid: cirhoza.uid, kartaUid: nezavisly.uid, senokUid: zoSenku.uid }, 0)).toThrow(/Závislého/);
+    const bez = apply(data, s, { type: "pohreb", cirhozaUid: cirhoza.uid, kartaUid: zavisly.uid }, 0).state;
+    expect(bez.hraci[0].ruka.map((k) => k.uid)).not.toContain(zoSenku.uid);
+    expect(bez.senok.map((k) => k.uid)).toContain(zoSenku.uid);
+    // Liečba ako samostatný úkon už nie je (pravidlá v4).
+    expect(legalCommands(data, s, 0).some((c) => (c.type as string) === "liecba")).toBe(false);
+    expect(legalCommands(data, s, 0)).toContainEqual({ type: "pohreb", cirhozaUid: cirhoza.uid, kartaUid: zavisly.uid, senokUid: zoSenku.uid });
+    expect(legalCommands(data, s, 0)).not.toContainEqual({ type: "pohreb", cirhozaUid: cirhoza.uid, kartaUid: nezavisly.uid, senokUid: zoSenku.uid });
   });
 
   it("§8.6 Pohreb: spáli priznanú Cirhózu a ľubovoľnú svoju kartu z línie — karta sa nevráti", () => {
@@ -239,7 +256,7 @@ describe("§8.6 Liečba alebo Pohreb a §8.7 Návrat kariet", () => {
     const moja = inst("pijan");
     const jeho = inst("pijan");
     const s = predKoncomBitky(49, (x) => ({ ...x, strany: [[lezi(jeho, 1)], [lezi(moja, 0)]] }));
-    const po = apply(data, s, { type: "skipLiecba" }, 0).state;
+    const po = apply(data, s, { type: "skipPohreb" }, 0).state;
     expect(zony(po.hraci[0])).toContain(moja.uid);
     expect(zony(po.hraci[1])).not.toContain(moja.uid);
     expect(zony(po.hraci[1])).toContain(jeho.uid);
@@ -290,7 +307,7 @@ describe("§12 Kliatby — Absťák a neresti", () => {
 
   it("§12: menej nerestí než v predošlom kole → Absťák rovno priznaný a hráč si zaň dobere kartu", () => {
     const s = sNerestami(2, 1);
-    const po = apply(data, s, { type: "skipLiecba" }, 0).state;
+    const po = apply(data, s, { type: "skipPohreb" }, 0).state;
     expect(po.hraci[0].priznane.filter((k) => k.defId === "abstak")).toHaveLength(1);
     // 1 karta za priznaný Absťák + 2 karty po bitke.
     expect(po.hraci[0].ruka).toHaveLength(s.hraci[0].ruka.length + 3);
@@ -298,9 +315,9 @@ describe("§12 Kliatby — Absťák a neresti", () => {
   });
 
   it("§12: rovnako nerestí (bez Milujúcej manželky) → nič; viac → jeden Absťák späť do zásoby", () => {
-    const rovnako = apply(data, sNerestami(2, 2), { type: "skipLiecba" }, 0).state;
+    const rovnako = apply(data, sNerestami(2, 2), { type: "skipPohreb" }, 0).state;
     expect(rovnako.hraci[0].priznane.some((k) => k.defId === "abstak")).toBe(false);
-    const viac = apply(data, sNerestami(2, 3, [inst("abstak"), inst("abstak")]), { type: "skipLiecba" }, 0).state;
+    const viac = apply(data, sNerestami(2, 3, [inst("abstak"), inst("abstak")]), { type: "skipPohreb" }, 0).state;
     expect(viac.hraci[0].priznane.filter((k) => k.defId === "abstak")).toHaveLength(1);
   });
 
@@ -388,7 +405,7 @@ describe("§14 Efekty kariet — výklad", () => {
     expect(po.hraci[1].cigarety).toBe(pred + 1);
   });
 
-  it("§14 Hrobár: keď súper Liečbou spáli svojho Závislého z línie, majiteľ Hrobára dostane cigaretu (rozhodca #9)", () => {
+  it("§14 Hrobár: keď súper pochová Závislého a vezme kartu zo šenku, majiteľ Hrobára dostane cigaretu (rozhodca #9)", () => {
     const zavisly = inst("pijan");
     const zoSenku = inst("noviny");
     const cirhoza = inst("cirhoza");
@@ -396,7 +413,7 @@ describe("§14 Efekty kariet — výklad", () => {
       sHracom({ ...x, strany: [[lezi(zavisly, 0)], [lezi(inst("hrobar"), 1)]], senok: [zoSenku] }, 0, { priznane: [cirhoza] }),
     );
     const pred = s.hraci[1].cigarety;
-    const po = apply(data, s, { type: "liecba", cirhozaUid: cirhoza.uid, zavislyUid: zavisly.uid, senokUid: zoSenku.uid }, 0).state;
+    const po = apply(data, s, { type: "pohreb", cirhozaUid: cirhoza.uid, kartaUid: zavisly.uid, senokUid: zoSenku.uid }, 0).state;
     expect(po.hraci[1].cigarety).toBe(pred + 1);
   });
 
@@ -471,7 +488,7 @@ describe("§9 Prebudenie a §10 záverečné bodovanie", () => {
 
   it("§10 Kategórie: na konci hry sú body len súčtom aktívnych podmienok scorecardov — plošné body nie sú", () => {
     const s = predKoncomBitky(57, (x) => ({ ...x, lokalityVHre: [] }));
-    const po = apply(data, s, { type: "skipLiecba" }, 0).state;
+    const po = apply(data, s, { type: "skipPohreb" }, 0).state;
     expect(po.koniec?.body).not.toBeNull();
     const ocakavane = [0, 1].map((p) => po.starsi.reduce((a, e) => a + elderScore(data, po, e).body[p]!, 0));
     expect(po.koniec?.body).toEqual(ocakavane);

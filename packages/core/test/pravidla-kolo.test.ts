@@ -217,9 +217,9 @@ describe("§5 Vypiť a §6 Priznanie a Dedičstvo v ťahu", () => {
   });
 });
 
-// --- §5 NA EX pri lokalite a §4 Podpora ------------------------------------------
+// --- §5 NA EX pri lokalite a §14 Veterán pri lokalite ------------------------------
 
-describe("§5 NA EX na kartu pri lokalite a §4 Podpora", () => {
+describe("§5 NA EX na kartu pri lokalite a §14 Veterán pri lokalite", () => {
   it("§5: NA EX na kartu pri lokalite ruší a zdvojuje len jej akcie — hrana lokality ostáva, ako bola", () => {
     const lok = makeDef("r_lok", ["Rana", null, null, null], EMPTY, { tags: ["Lokalita"] });
     const pri: Layout4 = ["Pecka", "Rana", null, null];
@@ -259,7 +259,7 @@ describe("§5 NA EX na kartu pri lokalite a §4 Podpora", () => {
     expect(ev.aktivneStredu).toEqual([1, 0]);
   });
 
-  it("§4 Podpora: lokalita sa ráta ako sused — Veterán medzi lokalitou a Ženou je podporený", () => {
+  it("§14 Veterán: lokalita sa ráta ako sused — Veterán medzi lokalitou a Ženou stratí ľavé akcie", () => {
     const R4: Layout4 = ["Rana", "Rana", "Rana", "Rana"];
     const lok = makeDef("r_lok_v", R4, R4, { tags: ["Lokalita"] });
     const veteran = makeDef("veteran", R4, R4, { tags: ["Občan", "Chlap"] });
@@ -398,7 +398,7 @@ describe("§7 Patronát — obmedzenia", () => {
         zhromazdenieStav: null,
         kolo: 2,
         bitkaStav: {
-          krok: "liecba",
+          krok: "pohreb",
           caka: 0,
           sums: [{}, {}],
           exekutorHotovy: [true, true],
@@ -409,7 +409,7 @@ describe("§7 Patronát — obmedzenia", () => {
           prebytokDrzi: null,
           prebytokZostava: 0,
           prebytokPosunute: [],
-          liecbaHotova: [false, true],
+          pohrebHotovy: [false, true],
           benzinkaZostava: [0, 0],
           spalit: [],
           vesticaHotova: true,
@@ -418,7 +418,7 @@ describe("§7 Patronát — obmedzenia", () => {
       u,
       { poldeciPlne: 2, poldeciVypite: 0 },
     );
-    const konec = apply(data, remiza, { type: "skipLiecba" }, 0).state;
+    const konec = apply(data, remiza, { type: "skipPohreb" }, 0).state;
     expect(konec.starsi[0]!.karta.uid).toBe(starsiUid);
     expect(konec.starsi[0]!.nahradeny).toBe(false);
     expect(konec.hraci[u].ruka.map((k) => k.uid)).toContain(obcan.uid);

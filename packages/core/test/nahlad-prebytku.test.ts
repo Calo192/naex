@@ -34,7 +34,7 @@ function vPrebytku(seed: number, zostava: number): GameState {
       prebytokDrzi: 0,
       prebytokZostava: zostava,
       prebytokPosunute: [],
-      liecbaHotova: [true, true],
+      pohrebHotovy: [true, true],
       benzinkaZostava: [0, 0],
       spalit: [],
       vesticaHotova: true,

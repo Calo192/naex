@@ -171,7 +171,7 @@ Balíčky, poldeci, cigarety, pečeň, závislosť, odvodené hodnoty
 
 Presné poradie z `PRAVIDLA.md §8`. Čisté funkcie
 (Exekútor / poškodenie / výsledok) oddelené od krokov, ktoré vyžadujú
-rozhodnutie hráča (Pohoršenie, Liečba/Pohreb) — tie motor len **pripraví**.
+rozhodnutie hráča (Pohoršenie, Pohreb) — tie motor len **pripraví**.
 
 **Hotovo, keď:**
 - Viera znižuje súperovo tuhé poškodenie o `1 + priazeň Veriaceho`,
@@ -307,7 +307,7 @@ uzavrel Michal 2026-10-22 (roadmapa #11); odpovede sú v PRAVIDLA.md.
    operácia na vlastnej aj súperovej karte?~~ Vyriešené (Michal 2026-10-18):
    áno, NA EX smie na vlastného aj súperovho Občana či Starešinu a operácia
    je tá istá (PRAVIDLA §5).
-3. ~~**Podpora** — počíta sa lokalita ako karta v okolí?~~ Áno (§4).
+3. ~~**Podpora** — počíta sa lokalita ako karta v okolí?~~ Áno. Pojem vypadol v pravidlách v4; platí pre Veterána (§14).
 4. ~~**Vzbura na lokalite** — aktivuje obe strany lokality, alebo len tú, ktorá
    patrí do danej partie?~~ Len hranu lokality pri tom kraji (§4).
 5. ~~**Cirhóza v partii** — „Obdržíš od súpera dodatočnú ranu" znamená +1 tuhé

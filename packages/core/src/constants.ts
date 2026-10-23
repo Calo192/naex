@@ -67,7 +67,7 @@ export const KONSTANTY = {
   CENA_SENKU: [0, 1, 3] as readonly number[],
   /**
    * Po braní sa šenok doplní z vrchu spoločného balíčka na toľkoto kariet
-   * (Michal 2026-10-20) — pre Liečbu, Starostu a iné efekty, ktoré z neho berú.
+   * (Michal 2026-10-20) — pre Pohreb Závislého, Starostu a iné efekty, ktoré z neho berú.
    */
   SENOK_PO_BRANI: 8,
   /**
@@ -156,7 +156,7 @@ export const DLZKY_HRY = { kratka: 5, stredna: 7, dlha: 11 } as const;
  * Zmeň (dátum zmeny) vždy, keď sa mení správanie pravidiel v jadre; druhá
  * zmena v ten istý deň dostane príponu „.2“ atď.
  */
-export const VERZIA_PRAVIDIEL = "2026-10-23.2";
+export const VERZIA_PRAVIDIEL = "2026-10-23.3";
 export type DlzkaHry = keyof typeof DLZKY_HRY;
 export const ALL_DLZKY: readonly DlzkaHry[] = ["kratka", "stredna", "dlha"];
 export const PREDVOLENA_DLZKA: DlzkaHry = "stredna";

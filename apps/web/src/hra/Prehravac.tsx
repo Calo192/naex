@@ -63,7 +63,7 @@ const NAZOV_TAHU: Readonly<Record<string, string>> = {
   exekutorTool: "Exekútor",
   pohorsenie: "Pohoršenie",
   prebytok: "rozdeľuje prebytok",
-  liecba: "liečba",
+  pohreb: "Pohreb",
 };
 
 const krokZAdresy = (): number => {
