@@ -1,0 +1,47 @@
+/* Achievement ako pivný podtácok (Podtacok.tsx). Farby kovu a kartónu sú súčasťou
+ * obrázka (ako ilustrácia karty), nie témy — v každej schéme rovnaké. */
+
+.podtacok {
+  display: block;
+  flex: none;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+}
+
+.podtacok-napis {
+  font: 800 14px/1 Georgia, serif;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.podtacok-piktogram path {
+  fill: #fff6e6;
+}
+
+.podtacok-otazniky {
+  font: 800 44px/1 Georgia, serif;
+  letter-spacing: 2px;
+  fill: #d9cfc3;
+}
+
+.podtacok-hviezda {
+  fill: rgba(0, 0, 0, 0.18);
+  stroke: rgba(80, 60, 30, 0.55);
+  stroke-width: 1.2;
+}
+
+.podtacok-hviezda.plna {
+  fill: #ffd85e;
+  stroke: #6e4c06;
+}
+
+.podtacok.neziskany {
+  filter: grayscale(1) brightness(0.62) drop-shadow(0 3px 5px rgba(0, 0, 0, 0.45));
+}
+
+.podtacok.tajny {
+  filter: brightness(0.75) drop-shadow(0 3px 5px rgba(0, 0, 0, 0.45));
+}
+
+.podtacok.tajny .podtacok-karton {
+  opacity: 0.55;
+}
