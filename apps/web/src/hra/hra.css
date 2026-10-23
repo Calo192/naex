@@ -5109,20 +5109,11 @@ button.auto-hotovo-odkaz {
 
 /* ---------- Doberací balíček (Michal 2026-10-23, dizajn U10) ----------
    Tlačidlo vľavo dole namiesto počtu v ruke (zrkadlo k „odhodené“) a vrstva
-   so zložením balíčka. Jeden blok — rozloženie stola mení UX/UI. */
-.balicek-nadpis {
-  padding: 4px 6px;
-  border: 1px solid transparent;
-  border-radius: 6px;
-  background: none;
-  cursor: pointer;
-  pointer-events: auto;
-}
-
-.balicek-nadpis:hover,
-.balicek-nadpis.otvorena {
-  border-color: var(--okraj);
-  color: var(--text);
+   so zložením balíčka. Jeden blok — rozloženie stola mení UX/UI.
+   Vzhľad je presne ten z .odhodene-nadpis (Michal), mení sa len strana. */
+.odhodene-nadpis.balicek-nadpis {
+  left: 12px;
+  right: auto;
 }
 
 .balicek-prehra {

@@ -4146,7 +4146,7 @@ export function HernaPlocha({
       >
         {/* Karty v ruke vidno hneď vedľa — dôležitejšie je, koľko ostáva v balíčku (dizajn U10). */}
         <button
-          className={`ruka-nadpis balicek-nadpis ${vrstva === "balicek" ? "otvorena" : ""}`}
+          className={`ruka-nadpis odhodene-nadpis balicek-nadpis ${vrstva === "balicek" ? "otvorena" : ""}`}
           title="Tvoj doberací balíček — karty podľa typu a mena"
           aria-expanded={vrstva === "balicek"}
           onClick={() => setVrstva(vrstva === "balicek" ? null : "balicek")}
