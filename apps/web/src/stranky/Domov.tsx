@@ -7,6 +7,7 @@ import { IkonaPoldeci } from "../hra/Panely.tsx";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { useSada, vzhladSady } from "../lib/sada.tsx";
 import { useUcet } from "../lib/ucet.tsx";
+import { rozpracovana, useVyucbaUctu } from "../hra/Vyucba.tsx";
 
 const VEJAR = ["pijan", "farar", "krcma"];
 
@@ -14,6 +15,7 @@ export function Domov() {
   useTitulok("");
   const { sada } = useSada();
   const { ja } = useUcet();
+  const { vyucba } = useVyucbaUctu(ja !== null);
   const karty = sada === null ? [] : VEJAR.map((id) => sada.karty.find((k) => k.id === id)).filter((k) => k !== undefined);
 
   return (
@@ -33,6 +35,12 @@ export function Domov() {
             <Odkaz href="/hra" className="tlacidlo tlacidlo-hlavne">
               {ja === null ? "Prihlás sa a hraj" : "Hrať teraz"}
             </Odkaz>
+            {/* Výučba pri stole (Michal 2026-10-23) — /hra?vyucba=1 ju rovno spustí. */}
+            {vyucba !== null && vyucba.dostupna && (
+              <Odkaz href="/hra?vyucba=1" className="tlacidlo" data-vyucba-vstup="titulka">
+                {rozpracovana(vyucba) ? "Pokračovať vo výučbe" : "Prvá hra — nauč sa hrať"}
+              </Odkaz>
+            )}
             <Odkaz href="/pravidla" className="tlacidlo">
               Naučiť sa pravidlá
             </Odkaz>

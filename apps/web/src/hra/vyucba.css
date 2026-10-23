@@ -1,0 +1,257 @@
+/* Výučba „Prvá hra“ (Michal 2026-10-23): bublina majstra Melichara, stmavenie stola
+ * okrem zvýraznených prvkov, vstup v lobby a ponuka pri prvom kliku na Hrať.
+ * Farby len z tokenov schemy.css. */
+
+.vyucba-avatar {
+  flex: none;
+  border-radius: 50%;
+  border: 2px solid var(--akcent);
+  object-fit: cover;
+  background: var(--plocha-3);
+}
+
+/* ---- stmavenie: tieň s dierami okolo zvýraznených prvkov, kliky prechádzajú ---- */
+.vyucba-stmavenie {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+}
+
+.vyucba-tien {
+  fill: color-mix(in srgb, #000 55%, transparent);
+}
+
+.vyucba-obrys {
+  fill: none;
+  stroke: var(--akcent);
+  stroke-width: 3;
+  animation: vyucba-pulz 1.4s ease-in-out infinite;
+}
+
+@keyframes vyucba-pulz {
+  50% {
+    stroke-opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vyucba-obrys {
+    animation: none;
+  }
+}
+
+/* ---- bublina Melichara ---- */
+.vyucba-bublina {
+  position: fixed;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: min(380px, calc(100vw - 32px));
+  max-height: calc(100dvh - 160px);
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 2px solid var(--akcent);
+  background: var(--plocha);
+  color: var(--text);
+  box-shadow: 0 10px 30px color-mix(in srgb, #000 55%, transparent);
+  transition: left 0.25s ease, top 0.25s ease;
+}
+
+.vyucba-hlava {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.vyucba-kto {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.vyucba-kto strong {
+  font: 700 1rem/1.2 var(--nadpis);
+}
+
+.vyucba-postup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.72rem;
+  color: var(--slaby-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.vyucba-postup-pruh {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--plocha-3);
+  overflow: hidden;
+}
+
+.vyucba-postup-pruh > span {
+  display: block;
+  height: 100%;
+  background: var(--akcent);
+}
+
+.vyucba-presun {
+  flex: none;
+  min-width: 32px;
+  min-height: 32px;
+  padding: 0;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.vyucba-text {
+  overflow-y: auto;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.vyucba-text p {
+  margin: 0 0 6px;
+}
+
+.vyucba-text p:last-child {
+  margin-bottom: 0;
+}
+
+/* Komentáre k ťahom Štamgasta pred aktuálnym krokom — menšie a tlmené. */
+.vyucba-text .vyucba-predtym {
+  font-size: 0.85rem;
+  color: var(--tlmeny);
+}
+
+.vyucba-chyba {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border-left: 3px solid var(--cervena);
+  background: color-mix(in srgb, var(--cervena) 14%, var(--plocha));
+  color: var(--cervena-text);
+  font-weight: 600;
+}
+
+.vyucba-pata {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.vyucba-dalej kbd {
+  margin-left: 6px;
+  padding: 0 5px;
+  border-radius: 4px;
+  font: 600 0.7rem/1.5 var(--pismo);
+  background: color-mix(in srgb, var(--na-akcente) 15%, transparent);
+}
+
+.vyucba-stav {
+  font-weight: 700;
+  color: var(--akcent-svetly);
+}
+
+.vyucba-caka {
+  color: var(--tlmeny);
+  font-weight: 600;
+}
+
+.vyucba-prerusit {
+  margin-left: auto;
+  font-size: 0.8rem;
+}
+
+/* Nízky notebook: menšia bublina, nech nezakryje pol stola. */
+@media (max-height: 919px) {
+  .vyucba-bublina {
+    width: min(340px, calc(100vw - 32px));
+    gap: 6px;
+    padding: 10px 12px;
+  }
+
+  .vyucba-text {
+    font-size: 0.88rem;
+    line-height: 1.4;
+  }
+}
+
+/* 1366 × 650: bublina užšia, avatar menší — zakrýva menej stola. */
+@media (max-height: 719px) {
+  .vyucba-bublina {
+    width: min(300px, calc(100vw - 32px));
+    padding: 8px 10px;
+  }
+
+  .vyucba-hlava .vyucba-avatar {
+    width: 34px;
+    height: 34px;
+  }
+
+  .vyucba-text {
+    font-size: 0.82rem;
+    line-height: 1.35;
+  }
+}
+
+/* ---- vstup v lobby ---- */
+.vyucba-vstup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 18px;
+  margin-bottom: 18px;
+  border-color: var(--akcent);
+}
+
+.vyucba-vstup > div {
+  flex: 1 1 320px;
+}
+
+.vyucba-vstup h2 {
+  margin: 0 0 4px;
+}
+
+.vyucba-vstup p {
+  margin: 0;
+}
+
+/* ---- ponuka pri prvom kliku na Hrať ---- */
+.vyucba-ponuka-zaves {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: color-mix(in srgb, #000 60%, transparent);
+}
+
+.vyucba-ponuka {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  max-width: 460px;
+  text-align: center;
+  border-color: var(--akcent);
+}
+
+.vyucba-ponuka h2,
+.vyucba-ponuka p {
+  margin: 0;
+}
+
+.vyucba-ponuka .riadok-tlacidiel {
+  justify-content: center;
+}
+
+.vyucba-ponuka-pozn {
+  font-size: 0.82rem;
+}

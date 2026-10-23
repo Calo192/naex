@@ -82,6 +82,8 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
       bezPopisov={bezPopisov ?? false}
       slotyBezFokusu
       spoj={spoj === undefined ? undefined : { lava: spoj.left, prava: spoj.right }}
+      idKarty={karta.defId}
+      uidKarty={karta.uid}
     />
   );
 }

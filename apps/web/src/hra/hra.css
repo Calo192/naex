@@ -1256,6 +1256,7 @@ button.zdroj-body[aria-pressed="true"] .velke-cislo {
 .linia .prazdna {
   display: grid;
   place-items: center;
+  box-sizing: border-box;
   width: 198px;
   min-height: calc(198px * 80 / 54);
   padding: 12px;
