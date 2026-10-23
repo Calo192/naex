@@ -21,6 +21,7 @@ import {
   PAUZA_ZAKLAD_MS,
   pauzaKrokuVyucby,
   porovnajSKrokom,
+  prelozKluceZvyraznenia,
   radaKVolbe,
   prehrajVyucbu,
   rngInt,
@@ -254,5 +255,21 @@ describe("výučba — pauza pred krokom, ktorý hra spraví sama (UI inšpekcia
     expect(pauzaKrokuVyucby(krok("auto", ""))).toBe(PAUZA_ZAKLAD_MS);
     expect(pauzaKrokuVyucby(krok("bot", "Štamgast ide do krčmy  a pije."))).toBe(PAUZA_ZAKLAD_MS + 6 * PAUZA_NA_SLOVO_MS);
     expect(pauzaKrokuVyucby(krok("auto", Array.from({ length: 200 }, () => "slovo").join(" ")))).toBe(PAUZA_NAJVIAC_MS);
+  });
+});
+
+describe("výučba — kľúče zvýraznenia „zóna:defId#n“ idú klientovi ako uid", () => {
+  it("#n sa preloží na uid:N podľa poradia v stave; ostatné kľúče a neexistujúca karta ostanú", () => {
+    const state = setupGame(data, 7);
+    const ruka = state.hraci[0].ruka;
+    const defId = ruka.find((k) => ruka.filter((x) => x.defId === k.defId).length >= 2)?.defId ?? (ruka[0]?.defId as string);
+    const druha = ruka.filter((k) => k.defId === defId)[1] ?? ruka.filter((k) => k.defId === defId)[0];
+    expect(prelozKluceZvyraznenia(state, [`ruka:${defId}#1`, `ruka:${defId}`, "bar:poldeci", "ruka:neexistuje#2"])).toEqual([
+      `uid:${ruka.find((k) => k.defId === defId)?.uid}`,
+      `ruka:${defId}`,
+      "bar:poldeci",
+      "ruka:neexistuje#2",
+    ]);
+    if (ruka.filter((k) => k.defId === defId).length >= 2) expect(prelozKluceZvyraznenia(state, [`ruka:${defId}#2`])).toEqual([`uid:${druha?.uid}`]);
   });
 });
