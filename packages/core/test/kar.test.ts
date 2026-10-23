@@ -1,7 +1,6 @@
 // Lokalita Kar (roadmapa #80, 2026-10-23): „Bitka: Každý hráč smie zahodiť jednu
 // nepriznanú Cirhózu z ruky. Súperov Hrobár za to dostane cigaretu.“ Kraje
-// „pri vdove“ a „pri koláčoch“ podľa konceptu Admina. Lokalita ešte nie je vo
-// zverejnenej sade (cards.json), test si ju pridá sám.
+// „pri vdove“ a „pri koláčoch“. Lokalita je vo zverejnenej sade v11 (cards.json).
 
 import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
@@ -10,18 +9,7 @@ import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, GameState, PlacedCard } from "../src/index.ts";
 import { apply, legalCommands, loadGameData, setupGame } from "../src/index.ts";
 
-const KAR = {
-  id: "kar",
-  index: 63,
-  name: "Kar",
-  tags: ["Lokalita"],
-  effect_text: "Bitka: Každý hráč smie zahodiť jednu nepriznanú Cirhózu z ruky. Súperov Hrobár za to dostane cigaretu.",
-  triggers: ["Bitka"],
-  left: { blocked: [0, 3], actions: { Viera: 1, Povera: 1 }, allowed: { "1": ["Viera"], "2": ["Povera"] }, name: "pri vdove" },
-  right: { blocked: [0, 3], actions: { Poldeci: 1, Rana: 1 }, allowed: { "1": ["Poldeci"], "2": ["Rana"] }, name: "pri koláčoch" },
-  permutations: { total: 1, left: 1, right: 1 },
-};
-const data = loadGameData({ ...cardsJson, cards: [...cardsJson.cards, KAR] }, eldersJson, scorecardsJson);
+const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
 let uidSeq = 50000;
 const inst = (defId: string): CardInstance => ({ uid: ++uidSeq, defId, leftLayout: 0, rightLayout: 0 });

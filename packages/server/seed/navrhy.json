@@ -598,5 +598,35 @@
   "mierkaIkon": 1.3,
   "kopie": 1,
   "obrazok": "dvojcata.jpg"
+ },
+ {
+  "id": "sofer",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "sofer.jpg"
+ },
+ {
+  "id": "kar",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "kar.jpg"
+ },
+ {
+  "id": "snubenica",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "snubenica.jpg"
  }
 ]

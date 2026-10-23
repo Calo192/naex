@@ -2,7 +2,7 @@
 // Šofér — Furt: NA EX na kartu vedľa neho nezdvojí jej neaktívne akcie,
 // aktívne zruší ako vždy. Snúbenica — Nástup: vyložená vedľa karty
 // s NA EX ju vráti jej majiteľovi do ruky a zaujme jej miesto.
-// Karty ešte nie sú vo zverejnenej sade (cards.json), test ich pridá sám.
+// Karty sú vo zverejnenej sade v11 (cards.json).
 
 import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
@@ -11,32 +11,7 @@ import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, GameState, PlacedCard, PlayerId } from "../src/index.ts";
 import { apply, evaluateLine, legalCommands, loadGameData, nahladVylozenia, setupGame, tahBota } from "../src/index.ts";
 
-// Akcie podľa Admina (tvorca, 2026-10-23).
-const NOVE = [
-  {
-    id: "sofer",
-    index: 61,
-    name: "Šofér",
-    tags: ["Občan", "Chlap"],
-    effect_text: "Furt: NA EX na kartu, ktorá s ním susedí, nezdvojí jej neaktívne akcie.",
-    triggers: ["Furt"],
-    left: { blocked: [0, 3], actions: { Poldeci: 1, Rana: 1 } },
-    right: { blocked: [0, 3], actions: { Cigareta: 1, PoškodeniePečene: 1 } },
-    permutations: { total: 4, left: 2, right: 2 },
-  },
-  {
-    id: "snubenica",
-    index: 62,
-    name: "Snúbenica",
-    tags: ["Občan", "Žena"],
-    effect_text: "Nástup: Ak ju vyložíš vedľa karty s NA EX, vráti tú kartu majiteľovi do ruky a zaujme jej miesto. Poldeci z tej karty vypije ten, kto dal NA EX.",
-    triggers: ["Nástup"],
-    left: { blocked: [0, 3], actions: { Robota: 1 } },
-    right: { blocked: [0, 1], actions: { Viera: 1, Dlh: 1 } },
-    permutations: { total: 4, left: 2, right: 2 },
-  },
-];
-const data = loadGameData({ ...cardsJson, cards: [...cardsJson.cards, ...NOVE] }, eldersJson, scorecardsJson);
+const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
 let uidSeq = 70000;
 const inst = (defId: string): CardInstance => ({ uid: ++uidSeq, defId, leftLayout: 0, rightLayout: 0 });
