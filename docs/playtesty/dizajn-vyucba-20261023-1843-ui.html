@@ -1,0 +1,898 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI návrh: výučba Prvá hra · vyucba-20261023-1843</title>
+<style>
+/* ---------- rám dokumentu (svetlá téma podľa systému) ---------- */
+:root {
+  --bg: #14110e; --pl: #1e1914; --pl2: #28211a; --ok: #3d3229; --tx: #f1e8d8; --tl: #b6a790; --sl: #9d8f7b;
+  --ak: #e9ad45; --ce: #e5735c; --ze: #7cbf74; --mo: #8fc3e0;
+  --serif: "Bitter", Georgia, "Times New Roman", serif;
+  --sans: Roboto, "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root { --bg: #f5efe5; --pl: #fffaf2; --pl2: #efe5d5; --ok: #d8c9b2; --tx: #2a2017; --tl: #5e4f3d; --sl: #6d5d49; --ak: #9a6510; --ce: #a8341f; --ze: #2f7a33; --mo: #285f93; color-scheme: light; }
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition-duration: 0s !important; animation: none !important; } }
+body { margin: 0; background: var(--bg); color: var(--tx); font: 16px/1.6 var(--sans); }
+main { max-width: 1180px; margin: 0 auto; padding: 24px 18px 80px; }
+h1, h2, h3, h4 { font-family: var(--serif); line-height: 1.2; }
+h1 { font-size: clamp(1.6rem, 3.6vw, 2.3rem); margin: 0 0 6px; }
+h2 { font-size: 1.5rem; margin: 48px 0 12px; padding-top: 8px; border-top: 1px solid var(--ok); }
+h3 { font-size: 1.2rem; margin: 0; }
+h4 { font-size: 1rem; margin: 18px 0 6px; }
+p { margin: 0 0 12px; max-width: 75ch; }
+ul, ol { max-width: 80ch; }
+li { margin-bottom: 4px; }
+a { color: var(--ak); text-underline-offset: 3px; }
+code { font: 0.86em/1.4 Consolas, "Cascadia Mono", monospace; background: var(--pl2); padding: 1px 5px; border-radius: 5px; overflow-wrap: anywhere; }
+pre { background: var(--pl2); border: 1px solid var(--ok); border-radius: 10px; padding: 10px 12px; overflow-x: auto; font: 0.82rem/1.5 Consolas, "Cascadia Mono", monospace; max-width: 100%; }
+:focus-visible { outline: 2px solid var(--ak); outline-offset: 2px; }
+.tl { color: var(--tl); }
+.meta { color: var(--tl); font-size: 0.95rem; }
+.verdikt { margin: 16px 0 0; padding: 14px 18px; border-left: 4px solid var(--ak); background: var(--pl); border-radius: 0 12px 12px 0; }
+.verdikt p { max-width: none; }
+.verdikt p:last-child { margin-bottom: 0; }
+nav.obsah { display: flex; flex-wrap: wrap; gap: 6px; margin: 18px 0 0; }
+nav.obsah a { padding: 8px 12px; min-height: 40px; display: inline-flex; align-items: center; border-radius: 999px; background: var(--pl); border: 1px solid var(--ok); text-decoration: none; color: var(--tx); font-size: 0.9rem; }
+nav.obsah a:hover { border-color: var(--ak); }
+.dlazdice { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 10px; margin: 16px 0 0; }
+.dl { background: var(--pl); border: 1px solid var(--ok); border-radius: 12px; padding: 10px 14px; }
+.dl b { display: block; font: 700 1.6rem/1.2 var(--serif); color: var(--ak); font-variant-numeric: tabular-nums; }
+.dl small { color: var(--tl); }
+
+/* galéria snímok */
+.galeria { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 14px; }
+.galeria figure { margin: 0; background: var(--pl); border: 1px solid var(--ok); border-radius: 12px; overflow: hidden; }
+.galeria img { display: block; width: 100%; height: auto; }
+.galeria figcaption { padding: 10px 12px; font-size: 0.88rem; color: var(--tl); }
+.galeria figcaption b { color: var(--tx); }
+
+/* tabuľky */
+.tab-obal { overflow-x: auto; border: 1px solid var(--ok); border-radius: 12px; }
+table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+table.audit { min-width: 680px; }
+th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--ok); }
+thead th { background: var(--pl2); font-size: 0.78rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--tl); }
+tbody tr:last-child td { border-bottom: none; }
+td.c { font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.filtre { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+.filtre button, .rezimy button, .ovl button { font: 600 0.88rem/1 var(--sans); padding: 10px 14px; min-height: 44px; border-radius: 9px; border: 1px solid var(--ok); background: var(--pl); color: var(--tx); cursor: pointer; }
+.filtre button[aria-pressed="true"], .rezimy button[aria-pressed="true"] { background: var(--ak); border-color: var(--ak); color: #2b1b03; }
+.zav { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; white-space: nowrap; }
+.zav.vysoka { background: #5a1f15; color: #ffc2b4; }
+.zav.stredna { background: #4a3510; color: #ffd98f; }
+.zav.nizka { background: #22312a; color: #b5e3b0; }
+.zav.vysoka::before { content: "▲ "; }
+.zav.stredna::before { content: "■ "; }
+.zav.nizka::before { content: "▼ "; }
+.stav-ok { color: var(--ze); font-weight: 700; }
+.stav-plati { color: var(--ce); font-weight: 700; }
+
+/* karty návrhov */
+.navrh { background: var(--pl); border: 1px solid var(--ok); border-radius: 16px; padding: 18px; margin: 22px 0; }
+.navrh.odvazny { border-color: var(--ak); }
+.navrh-hlava { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; margin-bottom: 8px; }
+.poradie { font: 800 1.6rem/1 var(--serif); color: var(--ak); font-variant-numeric: tabular-nums; }
+.stitky { display: flex; flex-wrap: wrap; gap: 6px; }
+.stitok { font-size: 0.78rem; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--ok); color: var(--tl); white-space: nowrap; }
+.stitok.n-mala { border-color: var(--ze); color: var(--ze); }
+.stitok.n-stredna { border-color: var(--ak); color: var(--ak); }
+.stitok.n-velka { border-color: var(--ce); color: var(--ce); }
+.rezimy { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 8px; }
+.porovnanie { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.porovnanie > .strana { min-width: 0; }
+.porovnanie[data-rezim="pred"] > .po, .porovnanie[data-rezim="po"] > .pred { display: none; }
+.porovnanie[data-rezim="pred"], .porovnanie[data-rezim="po"] { grid-template-columns: 1fr; }
+.strana-nadpis { font: 700 0.78rem/1 var(--sans); letter-spacing: 0.08em; text-transform: uppercase; color: var(--tl); margin: 0 0 8px; }
+.po .strana-nadpis { color: var(--ze); }
+.pred .strana-nadpis { color: var(--ce); }
+@media (max-width: 860px) { .porovnanie { grid-template-columns: 1fr; } }
+.ovl { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 0; }
+.ovl button { min-height: 40px; padding: 8px 12px; font-size: 0.82rem; }
+dl.detail { display: grid; grid-template-columns: 150px 1fr; gap: 6px 14px; margin: 14px 0 0; font-size: 0.93rem; }
+dl.detail dt { color: var(--tl); font-weight: 600; }
+dl.detail dd { margin: 0; }
+@media (max-width: 640px) { dl.detail { grid-template-columns: 1fr; } dl.detail dd { margin-bottom: 8px; } }
+.poradie-zoznam { counter-reset: p; list-style: none; padding: 0; }
+.poradie-zoznam li { counter-increment: p; position: relative; padding: 10px 14px 10px 54px; background: var(--pl); border: 1px solid var(--ok); border-radius: 12px; margin-bottom: 8px; max-width: none; }
+.poradie-zoznam li::before { content: counter(p); position: absolute; left: 14px; top: 8px; font: 800 1.4rem/1 var(--serif); color: var(--ak); }
+.otazky li { margin-bottom: 10px; }
+footer { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--ok); color: var(--tl); font-size: 0.9rem; }
+
+/* =====================================================================
+   UKÁŽKY — vždy tmavá krčma (tokeny zo apps/web/src/schemy.css, :root krcma),
+   bez ohľadu na tému dokumentu: ukazujú herný stôl.
+   ===================================================================== */
+.m, .drot {
+  --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --plocha-3: #332a21; --okraj: #3d3229; --okraj-svetly: #57483a;
+  --text: #f1e8d8; --tlmeny: #b6a790; --slaby-text: #9d8f7b; --akcent: #e9ad45; --akcent-tmavy: #b9802a; --akcent-svetly: #ffd08a;
+  --na-akcente: #2b1b03; --cervena: #d0563f; --cervena-text: #e5735c; --zelena: #7cbf74; --info: #8fc3e0;
+  --ja: #5cc0cf; --ja-tmava: #1d3b40; --su: #e0805f; --su-tmava: #43261d; --lesk: #ffffff;
+  /* NOVÝ token výučby: teplé svetlo lampy, odlíšené od jantáru herných stavov (návrh 4). */
+  --vyucba-svetlo: color-mix(in srgb, var(--lesk) 70%, var(--akcent));
+  --nadpis: "Bitter", Georgia, serif; --pismo: Roboto, "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark; color: var(--text); font-family: var(--pismo);
+  background: radial-gradient(120% 90% at 50% 30%, #23301f 0%, #172015 55%, #0f140d 100%);
+  border: 1px solid var(--okraj); border-radius: 14px; padding: 14px; position: relative; overflow: hidden;
+}
+.m * { box-sizing: border-box; }
+.m.plocha { background: var(--pozadie); }
+
+/* --- bublina dnes (vyucba.css 45–130) --- */
+.b { width: min(380px, 100%); border-radius: 16px; border: 2px solid var(--akcent); background: var(--plocha); padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 10px 30px rgba(0,0,0,.55); }
+.b-hlava { display: flex; align-items: center; gap: 10px; }
+.b-avatar { flex: none; width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--akcent); background: radial-gradient(circle at 40% 35%, #d9b98a 0 22%, #7b5a3a 23% 60%, #3a2a1c 61%); }
+.b-avatar.s { width: 26px; height: 26px; border-color: var(--su); background: radial-gradient(circle at 45% 35%, #c9a27a 0 25%, #5b4a3a 26% 62%, #2a201a 63%); }
+.b-kto { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.b-kto strong { font: 700 1rem/1.2 var(--nadpis); }
+.b-postup { display: flex; align-items: center; gap: 8px; font-size: .72rem; color: var(--slaby-text); font-variant-numeric: tabular-nums; }
+.b-pruh { flex: 1; height: 4px; border-radius: 2px; background: var(--plocha-3); overflow: hidden; }
+.b-pruh > span { display: block; height: 100%; background: var(--akcent); }
+.b-presun { flex: none; width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--okraj-svetly); background: var(--plocha-2); color: var(--text); display: grid; place-items: center; font-size: 1rem; }
+.b-text { font-size: .95rem; line-height: 1.45; }
+.b-text p { margin: 0 0 6px; max-width: none; }
+.b-text p:last-child { margin-bottom: 0; }
+.b-text .predtym { font-size: .85rem; color: var(--tlmeny); }
+.b-chyba { padding: 6px 10px; border-radius: 8px; border-left: 3px solid var(--cervena); background: color-mix(in srgb, var(--cervena) 14%, var(--plocha)); color: var(--cervena-text); font-weight: 600; }
+.b-pata { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.b-stav { font-weight: 700; color: var(--akcent-svetly); }
+.b-prerusit { margin-left: auto; font-size: .8rem; color: var(--tlmeny); background: none; border: 0; padding: 8px 4px; }
+.b.nizka { width: 300px; padding: 8px 10px; }
+.b.nizka .b-text { font-size: .82rem; line-height: 1.35; }
+.b.nizka .b-avatar { width: 34px; height: 34px; }
+
+/* --- bublina po (návrh 1) --- */
+.b2 { width: min(392px, 100%); border-radius: 16px; border: 2px solid var(--akcent); background: var(--plocha); display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,.55); overflow: hidden; }
+.b2-hlava { display: flex; align-items: center; gap: 10px; padding: 10px 12px 8px; }
+.b2-kap { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0; }
+.b2-kap strong { font: 700 .98rem/1.2 var(--nadpis); }
+.b2-kap small { font-size: .74rem; color: var(--slaby-text); }
+.bodky { display: flex; gap: 4px; flex-wrap: wrap; }
+.bodky i { width: 14px; height: 6px; border-radius: 3px; background: var(--plocha-3); }
+.bodky i.h { background: var(--akcent-tmavy); }
+.bodky i.t { background: var(--akcent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--akcent) 35%, transparent); }
+.b2-ikony { display: flex; gap: 6px; }
+.b2-ikony button, .b2-ikony span { min-width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--okraj-svetly); background: var(--plocha-2); color: var(--text); font: 600 .74rem/1 var(--pismo); display: inline-grid; place-items: center; padding: 0 8px; }
+.urob { margin: 0 10px; padding: 10px 12px; border-radius: 12px; background: color-mix(in srgb, var(--akcent) 12%, var(--plocha-2)); border: 1px solid color-mix(in srgb, var(--akcent) 45%, var(--okraj)); }
+.urob-stitok { font: 800 .68rem/1 var(--pismo); letter-spacing: .12em; color: var(--akcent-svetly); text-transform: uppercase; }
+.urob-veta { font: 700 1.04rem/1.35 var(--pismo); margin: 4px 0 8px; color: var(--text); }
+.ulohy { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.ulohy li { display: grid; grid-template-columns: 26px 1fr auto; align-items: center; gap: 8px; min-height: 36px; padding: 4px 8px 4px 4px; border-radius: 9px; background: var(--plocha); border: 1px solid var(--okraj); font-size: .9rem; margin: 0; }
+.ulohy .cis { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font: 800 .8rem/1 var(--pismo); background: var(--plocha-3); color: var(--tlmeny); font-variant-numeric: tabular-nums; }
+.ulohy li.teraz { border-color: var(--vyucba-svetlo); box-shadow: 0 0 0 2px color-mix(in srgb, var(--vyucba-svetlo) 30%, transparent); }
+.ulohy li.teraz .cis { background: var(--vyucba-svetlo); color: var(--na-akcente); }
+.ulohy li.hotovo { opacity: .78; }
+.ulohy li.hotovo .cis { background: var(--zelena); color: #10200d; }
+.ulohy li.hotovo .nazov { text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--text) 45%, transparent); }
+.ulohy li.zamk { color: var(--tlmeny); border-style: dashed; }
+.ulohy li.chyba { border-color: var(--cervena); background: color-mix(in srgb, var(--cervena) 14%, var(--plocha)); }
+.ulohy li.chyba .cis { background: var(--cervena); color: #fff; }
+.ulohy .pozn { font-size: .74rem; color: var(--tlmeny); white-space: nowrap; }
+.ulohy li.chyba .pozn { color: var(--cervena-text); font-weight: 700; white-space: normal; }
+.kc { display: inline-flex; align-items: center; gap: 5px; padding: 1px 8px 1px 3px; border-radius: 6px; background: var(--plocha-3); border: 1px solid var(--okraj-svetly); font-weight: 600; font-size: .86rem; white-space: nowrap; }
+.kc::before { content: ""; width: 12px; height: 16px; border-radius: 2px; background: linear-gradient(180deg, #8a6a4a 0 62%, var(--farba, #b05a8a) 62%); }
+.strana-ja { color: var(--ja); font-weight: 700; white-space: nowrap; }
+.strana-su { color: var(--su); font-weight: 700; white-space: nowrap; }
+.preco { padding: 10px 14px 4px; font-size: .9rem; line-height: 1.5; color: var(--text); }
+.preco b.lbl { font: 800 .68rem/1 var(--pismo); letter-spacing: .12em; color: var(--tlmeny); text-transform: uppercase; display: block; margin-bottom: 4px; }
+.preco p { margin: 0 0 6px; max-width: none; }
+.medzitym { margin: 6px 10px 0; padding: 6px 8px; display: flex; align-items: center; gap: 8px; border-radius: 10px; background: var(--plocha-2); border: 1px solid var(--okraj); font-size: .8rem; color: var(--tlmeny); min-height: 40px; }
+.medzitym b { color: var(--su); font-weight: 700; }
+.medzitym .viac { margin-left: auto; color: var(--tlmeny); background: none; border: 0; font: inherit; text-decoration: underline; cursor: pointer; min-height: 32px; }
+.b2-pata { display: flex; align-items: center; gap: 10px; padding: 10px 12px 12px; }
+.b2-pata .pocet { font: 700 .82rem/1 var(--pismo); color: var(--akcent-svetly); font-variant-numeric: tabular-nums; }
+
+/* pojmy (návrh 2) */
+.pojem { display: inline-flex; align-items: baseline; gap: 4px; padding: 0 5px 0 3px; border-radius: 6px; background: color-mix(in srgb, var(--info) 12%, transparent); border-bottom: 2px dotted var(--info); color: var(--text); font-weight: 600; cursor: help; white-space: nowrap; }
+.pojem svg { width: 14px; height: 14px; align-self: center; }
+.pojem.novy::after { content: "nové"; font: 800 .58rem/1 var(--pismo); letter-spacing: .06em; text-transform: uppercase; background: var(--info); color: #0d1b24; border-radius: 4px; padding: 2px 4px; align-self: center; }
+.def { margin: 4px 0 8px; padding: 8px 10px; border-radius: 9px; background: color-mix(in srgb, var(--info) 10%, var(--plocha-2)); border-left: 3px solid var(--info); font-size: .84rem; line-height: 1.45; }
+.def b { color: var(--info); }
+
+/* mapa kola */
+.mapa { display: flex; align-items: stretch; gap: 0; flex-wrap: wrap; margin: 6px 0 0; }
+.faza { position: relative; padding: 7px 7px; min-height: 44px; display: flex; flex-direction: column; justify-content: center; font: 600 .76rem/1.15 var(--pismo); color: var(--tlmeny); background: var(--plocha-2); border: 1px solid var(--okraj); margin: 0 -1px 4px 0; }
+.faza:first-child { border-radius: 10px 0 0 10px; }
+.faza:last-child { border-radius: 0 10px 10px 0; }
+.faza small { font-weight: 400; font-size: .66rem; color: var(--slaby-text); }
+.faza.hotova { color: var(--text); }
+.faza.hotova::after { content: "✓"; position: absolute; top: 3px; right: 5px; font-size: .66rem; color: var(--zelena); }
+.faza.tu { background: var(--akcent); color: var(--na-akcente); border-color: var(--akcent); }
+.faza.tu small { color: var(--na-akcente); }
+.faza.dvojka { background: repeating-linear-gradient(135deg, var(--plocha-2) 0 6px, var(--plocha-3) 6px 12px); }
+.si-tu { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); font: 800 .58rem/1 var(--pismo); background: var(--vyucba-svetlo); color: var(--na-akcente); padding: 2px 5px; border-radius: 4px; letter-spacing: .05em; white-space: nowrap; }
+.kapitola { margin: 10px; padding: 12px 14px; border-radius: 12px; background: linear-gradient(180deg, color-mix(in srgb, var(--akcent) 16%, var(--plocha-2)), var(--plocha-2)); border: 1px solid color-mix(in srgb, var(--akcent) 40%, var(--okraj)); }
+.kapitola h5 { font: 700 1.1rem/1.2 var(--nadpis); margin: 2px 0 6px; }
+.kapitola .ucis { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+
+/* scéna stola (návrh 4) */
+.scena { position: relative; width: 400px; max-width: none; height: 330px; margin: 0 auto; border-radius: 12px; overflow: hidden; }
+@media (max-width: 640px) { .scena { zoom: .78; } }
+.scena .stol { position: absolute; inset: 0 0 92px 0; border: 1px solid #3c5a39; border-radius: 12px; background: radial-gradient(90% 90% at 50% 40%, #2a3a26, #172015); }
+.scena .lbl { position: absolute; top: 10px; font: 800 .64rem/1 var(--pismo); letter-spacing: .08em; }
+.scena .crd { position: absolute; width: 62px; height: 88px; border-radius: 6px; border: 1px solid #00000066; background: linear-gradient(180deg, #6c5440 0 64%, var(--farba, #b05a8a) 64% 78%, #f3ead9 78%); box-shadow: 0 2px 6px rgba(0,0,0,.5); }
+.scena .crd span { position: absolute; left: 0; right: 0; top: 66%; text-align: center; font: 700 .52rem/1 var(--pismo); color: #fff; }
+.scena .slot { position: absolute; width: 40px; height: 88px; border: 2px dashed #4f7a4a; border-radius: 6px; display: grid; place-items: center; color: #7cbf74; font: 700 1rem/1 var(--pismo); }
+.scena .ruka { position: absolute; left: 0; right: 0; bottom: 0; height: 84px; display: flex; justify-content: center; gap: 8px; align-items: flex-end; }
+.scena .ruka .crd { position: relative; }
+.scena .btn { position: absolute; padding: 7px 12px; border-radius: 8px; font: 700 .74rem/1 var(--pismo); background: var(--akcent); color: var(--na-akcente); border: 0; }
+.scena .btn.zamk { background: var(--plocha-3); color: var(--tlmeny); }
+.scena .tile { position: absolute; padding: 6px 10px; border-radius: 8px; background: var(--plocha); border: 1px solid var(--okraj); font: 700 .66rem/1.3 var(--pismo); color: var(--tlmeny); }
+.scena .tile b { display: block; font: 800 1rem/1 var(--nadpis); color: var(--text); }
+.scena .tien { position: absolute; inset: 0; background: rgba(0,0,0,.55); pointer-events: none; }
+.scena .lit { z-index: 3; }
+.scena .obrys-dnes { outline: 3px solid var(--akcent); outline-offset: 4px; border-radius: 6px; animation: pulz 1.4s ease-in-out infinite; }
+.scena .obrys-luc { outline: 3px solid var(--vyucba-svetlo); outline-offset: 4px; border-radius: 6px; box-shadow: 0 0 0 9px color-mix(in srgb, var(--vyucba-svetlo) 18%, transparent), 0 0 26px 8px color-mix(in srgb, var(--vyucba-svetlo) 35%, transparent); }
+.scena .obrys-ciel { outline: 2px dashed var(--vyucba-svetlo); outline-offset: 4px; }
+.scena .znak { position: absolute; z-index: 5; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font: 800 .74rem/1 var(--pismo); background: var(--vyucba-svetlo); color: var(--na-akcente); box-shadow: 0 1px 4px rgba(0,0,0,.6); }
+.scena .znak.ok { background: var(--zelena); color: #10200d; }
+.scena .sem { position: absolute; z-index: 5; font: 800 .6rem/1 var(--pismo); letter-spacing: .06em; color: var(--na-akcente); background: var(--vyucba-svetlo); padding: 3px 5px; border-radius: 4px; }
+.scena svg.ciara { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+.scena .mini-b { position: absolute; z-index: 6; left: 10px; bottom: 96px; width: 170px; padding: 7px 9px; border-radius: 10px; border: 2px solid var(--akcent); background: var(--plocha); font-size: .66rem; line-height: 1.35; }
+.scena .mini-b b { color: var(--akcent-svetly); }
+@keyframes pulz { 50% { outline-color: color-mix(in srgb, var(--akcent) 35%, transparent); } }
+
+/* drôtený model 1366 × 650 */
+.drot { position: relative; aspect-ratio: 1366 / 650; width: 100%; border-radius: 10px; overflow: hidden; background: var(--pozadie); border: 1px solid var(--okraj); font: 600 .6rem/1.2 var(--pismo); color: var(--tlmeny); }
+.drot > div { position: absolute; border-radius: 4px; background: var(--plocha-2); border: 1px solid var(--okraj); display: grid; place-items: center; text-align: center; padding: 2px; }
+.drot .d-stol { background: #1d2a1b; border-color: #3c5a39; }
+.drot .d-b { background: var(--plocha); border: 2px solid var(--akcent); color: var(--text); place-items: start; padding: 6px; font-weight: 400; line-height: 1.3; }
+.drot .d-b b { color: var(--akcent-svetly); }
+.drot .kryje { background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--cervena) 30%, transparent) 0 6px, transparent 6px 12px); border: 1px dashed var(--cervena); }
+
+/* tlačidlo s cenou (návrh 5) */
+.tl-hl { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; min-height: 44px; border-radius: 10px; border: 0; background: var(--akcent); color: var(--na-akcente); font: 700 1rem/1 var(--pismo); }
+.tl-hl .cena { font-size: .78rem; color: var(--tlmeny); }
+.tl-hl .cena.po { color: var(--na-akcente); background: color-mix(in srgb, var(--na-akcente) 14%, transparent); padding: 3px 7px; border-radius: 6px; font-weight: 800; }
+
+/* bitka a účet (návrh 3) */
+.bitka { display: grid; gap: 10px; }
+.skore { justify-self: center; text-align: center; padding: 8px 18px; border-radius: 12px; border: 2px solid var(--akcent); background: var(--plocha); }
+.skore small { display: block; font: 800 .62rem/1 var(--pismo); letter-spacing: .1em; color: var(--tlmeny); }
+.skore b { font: 800 2rem/1.1 var(--nadpis); font-variant-numeric: tabular-nums; }
+.skore .ja { color: var(--ja); } .skore .su { color: var(--su); }
+.rad { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+.rad .crd2 { position: relative; width: 58px; height: 80px; border-radius: 6px; border: 1px solid #0006; background: linear-gradient(180deg, #6c5440 0 64%, var(--farba, #b05a8a) 64% 78%, #f3ead9 78%); opacity: .45; transition: opacity .2s, transform .2s; }
+.rad .crd2 span { position: absolute; left: 0; right: 0; top: 66%; text-align: center; font: 700 .5rem/1 var(--pismo); color: #fff; }
+.rad .crd2.su { transform: rotate(180deg); }
+.rad .crd2.su span { transform: rotate(180deg); }
+.rad .crd2.on { opacity: 1; outline: 3px solid var(--vyucba-svetlo); outline-offset: 2px; }
+.rad .crd2 em { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); font: 800 .62rem/1 var(--pismo); font-style: normal; padding: 3px 6px; border-radius: 999px; background: var(--ja-tmava); color: var(--ja); border: 1px solid var(--ja); white-space: nowrap; display: none; }
+.rad .crd2.su em { transform: translateX(-50%) rotate(180deg); background: var(--su-tmava); color: var(--su); border-color: var(--su); top: auto; bottom: -12px; }
+.rad .crd2.on em { display: block; }
+.titulok { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: 12px; background: var(--plocha); border: 2px solid var(--akcent); max-width: 440px; justify-self: center; font-size: .9rem; line-height: 1.45; }
+.titulok p { margin: 0; max-width: none; }
+.ucet { background: #f4ecdc; color: #2a2017; border-radius: 4px; padding: 16px 16px 20px; font: .86rem/1.5 Consolas, "Cascadia Mono", monospace; max-width: 330px; box-shadow: 0 6px 20px rgba(0,0,0,.5); position: relative; transform: rotate(-1.2deg); }
+.ucet::after { content: ""; position: absolute; left: 0; right: 0; bottom: -8px; height: 10px; background: linear-gradient(-45deg, transparent 6px, #f4ecdc 0) 0 0 / 12px 10px repeat-x, linear-gradient(45deg, transparent 6px, #f4ecdc 0) 0 0 / 12px 10px repeat-x; }
+.ucet h5 { font: 800 1rem/1.2 var(--nadpis); text-align: center; margin: 0 0 2px; letter-spacing: .04em; }
+.ucet .pod { text-align: center; font-size: .72rem; color: #6b5a45; margin-bottom: 8px; }
+.ucet .r { display: flex; gap: 6px; }
+.ucet .r span:nth-child(2) { flex: 1; border-bottom: 1px dotted #9a8a70; transform: translateY(-5px); }
+.ucet .r b { font-variant-numeric: tabular-nums; }
+.ucet .minus b { color: #a8341f; }
+.ucet hr { border: 0; border-top: 1px dashed #9a8a70; margin: 6px 0; }
+.ucet .spolu { font-weight: 800; font-size: 1rem; }
+.tacok { width: 250px; height: 250px; border-radius: 50%; background: radial-gradient(circle, #f1e3c4 0 58%, #c99a55 59% 61%, #f1e3c4 62% 92%, #b9802a 93%); color: #2a2017; position: relative; box-shadow: 0 6px 18px rgba(0,0,0,.5); flex: none; }
+.tacok .stred { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; font: 800 .9rem/1.1 var(--nadpis); }
+.tacok .stred small { display: block; font: 600 .62rem/1.2 var(--pismo); }
+.tacok .bod { position: absolute; width: 70px; margin-left: -35px; margin-top: -10px; text-align: center; font: 800 .62rem/1.1 var(--pismo); }
+.tacok .bod i { display: block; font-style: normal; font-weight: 400; font-size: .54rem; }
+.vies { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+.vies div { background: var(--plocha-2); border: 1px solid var(--okraj); border-radius: 10px; padding: 8px 10px; font-size: .8rem; line-height: 1.4; }
+.vies b { display: block; font: 700 .9rem/1.2 var(--nadpis); color: var(--akcent-svetly); margin-bottom: 2px; }
+.zaver { display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-start; justify-content: center; }
+.odstavec { font-size: .92rem; line-height: 1.5; }
+</style>
+</head>
+<body>
+<main>
+<header>
+  <p class="meta">UI dizajnér · 23. 10. 2026 · id <code>vyucba-20261023-1843</code> · kód <code>b3b99ff</code></p>
+  <h1>UI návrh: výučba „Prvá hra“ pri stole</h1>
+  <p class="meta">Cieľ: <code>/hra</code> v režime výučby: bublina majstra Melichara, zvýraznenie prvkov, pokrok a priebeh krokov
+    (<code>apps/web/src/hra/Vyucba.tsx</code>, <code>vyucba.css</code>, scenár <code>packages/core/data/vyucba/prva-hra.json</code>).
+    Súbežný návrh UX dizajnéra: <a href="dizajn-vyucba-20261023-1843-ux.html">dizajn-vyucba-20261023-1843-ux.html</a>.
+    Podklad: <a href="vyucba-20261023-161148.html">playtest výučby 20261023-161148</a> (3 nováčikovia, priemer 4,7, test pochopenia 8/24).</p>
+  <div class="verdikt">
+    <p><b>Verdikt.</b> Oprava CSS zabrala: bublina je nepriehľadná a stránka má štýly. Výučba však stále ukazuje <b>text namiesto úlohy</b>.
+      Pokyn býva v strede 50–140-slovného bloku, „potvrdiť“ sa rozsvieti hneď po prvej karte, kam kartu položiť nesvieti
+      a pojmy (Petelica, spoj, NA EX) nemajú na stole vizuálnu kotvu.</p>
+    <p>Najviac pochopenia pridá <b>bublina s úlohovým zoznamom</b> (prvý riadok = čo urobiť, odškrtáva sa) a <b>pojmy s ikonou spolu s mapou kola</b>.
+      Až potom výklad bitky a záverečný „účet“. Rýchla výhra na hodinu opraví hierarchiu bubliny a dve chyby CSS.</p>
+  </div>
+  <div class="dlazdice" aria-label="Súhrn">
+    <div class="dl"><b>18</b><small>vizuálnych problémov v audite (7 vysokých)</small></div>
+    <div class="dl"><b>5</b><small>návrhov, od 1 h po veľký redizajn</small></div>
+    <div class="dl"><b>1,18 : 1</b><small>kontrast ceny „−1 poldeci“ na hlavnom tlačidle</small></div>
+    <div class="dl"><b>4 × / 140 slov</b><small>najviac odsekov a slov v bubline naraz (krok 27)</small></div>
+  </div>
+  <nav class="obsah" aria-label="Obsah">
+    <a href="#stav">Súčasný stav</a><a href="#audit">Audit</a><a href="#n1">1 Úloha v bubline</a><a href="#n2">2 Pojmy a mapa kola</a>
+    <a href="#n3">3 Bitka a účet</a><a href="#n4">4 Reflektor</a><a href="#n5">5 Rýchla výhra</a><a href="#poradie">Poradie</a><a href="#otazky">Otázky</a>
+  </nav>
+</header>
+
+<section id="stav" aria-labelledby="h-stav">
+  <h2 id="h-stav">Súčasný stav</h2>
+  <p>Výučbu som prešiel naživo v prehliadači 1 relácie <code>playtest/vyucba-20261023-164303</code> (1920 × 1080) po krok 35 (rozdelenie prebytku).
+    Ten istý stav som odfotil aj v rozlíšení 1366 × 650 (Katkino rozlíšenie). Snímky sú zmenšené, originály v <code>hrac1/snimky/</code>.</p>
+
+  <h3>Čo z nálezov prvého kola ešte platí</h3>
+  <div class="tab-obal" style="margin:10px 0 18px">
+    <table>
+      <thead><tr><th>Nález z reportu 161148</th><th>Dnes</th><th>Dôkaz</th></tr></thead>
+      <tbody>
+        <tr><td>Stránka bez štýlov, bublina presvitá a text sa prelína</td><td class="stav-ok">opravené</td><td>snímka 002: bublina má plnú plochu <code>--plocha</code>, menu je štýlované</td></tr>
+        <tr><td>Staré odseky sa kopia v bubline</td><td class="stav-plati">platí</td><td>037: 4 odseky, ~140 slov; <code>Vyucba.tsx:293</code> drží až 3 komentáre bota</td></tr>
+        <tr><td>Bublina zakrýva zvýraznený prvok</td><td>väčšinou opravené</td><td>výber rohu (<code>Vyucba.tsx:317–328</code>) sa vyhne zvýrazneniu, ale nie tomu, o čom sa hovorí (bar, línia starších); 1366: 051/1366</td></tr>
+        <tr><td>Svieti Poldeci, ktoré sa nedá kliknúť (krok 17)</td><td class="stav-plati">platí</td><td>026: svieti Poldeci + Pijan + Hasič, cieľový slot nie</td></tr>
+        <tr><td>„Takto nie“ nepovie, čo chýba</td><td class="stav-plati">platí</td><td>028; <code>Vyucba.tsx:261–266</code></td></tr>
+        <tr><td>Po kroku 5 ostane pohľad starších otvorený</td><td class="stav-plati">platí</td><td>009: krok 6 nemá nič zvýraznené, cesta späť nesvieti</td></tr>
+        <tr><td>Dve tlačidlá „ďalej“, preskakujúce čísla krokov</td><td class="stav-plati">čísla platia</td><td>7 → 10 → 12 → 14 → 17 (kroky bota sa zlejú)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="galeria">
+    <figure><img src="dizajn-vyucba-20261023-1843/009-klik.jpg" alt="Krok 6: obrazovka starších ostala otvorená, nič nesvieti, bublina vľavo dole" width="1152" height="648" loading="lazy">
+      <figcaption><b>009 · krok 6</b>: po kroku 5 ostala línia starších. Jednota, ktorú treba vybrať, sa nenájde, preto nič nesvieti a cestu späť nič neukazuje.</figcaption></figure>
+    <figure><img src="dizajn-vyucba-20261023-1843/012-klik.jpg" alt="Krok 7: štyri karty svietia, Smetisko je v tieni, potvrdiť vpravo hore" width="1152" height="648" loading="lazy">
+      <figcaption><b>012 · krok 7</b>: svietia štyri karty (odkiaľ), Smetisko (kam) je v tieni. „potvrdiť“ je 1 700 px od bubliny.</figcaption></figure>
+    <figure><img src="dizajn-vyucba-20261023-1843/027-tahaj.jpg" alt="Krok 17: po položení Pijana svieti potvrdiť" width="1152" height="648" loading="lazy">
+      <figcaption><b>027 · krok 17</b>: po prvej karte sa rozsvieti „potvrdiť“ (<code>POTVRDIT</code> svieti vždy, <code>Vyucba.tsx:309</code>), hoci Hasič ešte chýba. Toto je pasca 15 odmietnutí.</figcaption></figure>
+    <figure><img src="dizajn-vyucba-20261023-1843/028-klik.jpg" alt="Krok 17: červená hláška Takto nie pod dlhým textom" width="1152" height="648" loading="lazy">
+      <figcaption><b>028 · krok 17</b>: „Takto nie“ prišlo pod 79 slov. Návrh sa celý vrátil do ruky a hláška nepovie, že chýba Hasič.</figcaption></figure>
+    <figure><img src="dizajn-vyucba-20261023-1843/037-pockaj.jpg" alt="Krok 27: bublina so štyrmi odsekmi a zväčšená karta Hasiča cez stôl" width="1152" height="648" loading="lazy">
+      <figcaption><b>037 · krok 27</b>: 4 odseky (~140 slov), pokyn „Priznaj ju“ je až v poslednom. Lupa Hasiča (z-index 900) leží cez stred stola.</figcaption></figure>
+    <figure><img src="dizajn-vyucba-20261023-1843/039-klik.jpg" alt="Krok 28: Cirhóza s jantárovým rámom dobranej karty vedľa zvýrazneného Pijana" width="1152" height="648" loading="lazy">
+      <figcaption><b>039 · krok 28</b>: prvá veta znie „Cirhózu zatiaľ nepriznávaj“. Cirhóza má jantárový rám „dobraná“, rovnaký ako svetlo výučby na Pijanovi.</figcaption></figure>
+    <figure><img src="dizajn-vyucba-20261023-1843/049-klik.jpg" alt="Krok 35: počítadlo bitky 7 : 0 prekrýva stmavenú bublinu" width="1152" height="648" loading="lazy">
+      <figcaption><b>049 · krok 35</b>: počítadlo bitky (z-index 850) prekryje bublinu (70). Tá už hlási „10 : 4“, kým počítadlo ukazuje 7 : 0.</figcaption></figure>
+    <figure><img src="dizajn-vyucba-20261023-1843/1366-krok35-prebytok.jpg" alt="1366 × 650: starší zbalení na tenké pásy, bublina kryje pravú tretinu" width="1161" height="553" loading="lazy">
+      <figcaption><b>1366 × 650 · krok 35</b>: starší sú zbalení na 40 px pásy bez markera, o ktorom Melichar hovorí. Bublina 300 × 430 px kryje pravú tretinu a staré odseky majú <i>väčšie</i> písmo než pokyn.</figcaption></figure>
+  </div>
+</section>
+
+<section id="audit" aria-labelledby="h-audit">
+  <h2 id="h-audit">Audit</h2>
+  <p class="tl">Kontrasty sú prepočítané pre schému Krčma (WCAG 2.2). „Videl som“ = snímka; „v kóde“ = súbor:riadok.</p>
+  <div class="filtre" role="group" aria-label="Filter podľa závažnosti">
+    <button type="button" data-f="vsetky" aria-pressed="true">Všetky (18)</button>
+    <button type="button" data-f="vysoka" aria-pressed="false">Vysoká (7)</button>
+    <button type="button" data-f="stredna" aria-pressed="false">Stredná (9)</button>
+    <button type="button" data-f="nizka" aria-pressed="false">Nízka (2)</button>
+  </div>
+  <div class="tab-obal">
+    <table class="audit" id="audit-tab">
+      <thead><tr><th>#</th><th>Závažnosť</th><th>Oblasť</th><th>Problém</th><th>Dôkaz</th><th>Návrh</th></tr></thead>
+      <tbody>
+        <tr data-z="vysoka"><td class="c">A1</td><td><span class="zav vysoka">vysoká</span></td><td>Stavy</td><td>„potvrdiť“ svieti po <b>prvej</b> karte viacdielneho ťahu a láka potvrdiť predčasne (kroky 17, 48, 58 = 15 odmietnutí).</td><td>027; <code>Vyucba.tsx:309</code> pridá <code>POTVRDIT</code> do každého kroku hráča</td><td>1, 4</td></tr>
+        <tr data-z="vysoka"><td class="c">A2</td><td><span class="zav vysoka">vysoká</span></td><td>Hierarchia</td><td>Pokyn nie je prvý: prvá veta je kontext („Limit máš tri karty…“) alebo zápor („Cirhózu zatiaľ nepriznávaj“). Dodo číta len prvú vetu.</td><td>026, 039; scenár k10, k21, k28</td><td>1</td></tr>
+        <tr data-z="vysoka"><td class="c">A3</td><td><span class="zav vysoka">vysoká</span></td><td>Hierarchia</td><td>Komentáre Štamgasta sa hromadia nad pokynom (až 4 odseky, ~140 slov). Aktuálny krok je dole a od starých sa líši len tónom (7,41 : 1 vs 14,34 : 1) a −0,1 rem.</td><td>037; <code>Vyucba.tsx:293</code>, <code>vyucba.css:127–130</code></td><td>1, 5</td></tr>
+        <tr data-z="vysoka"><td class="c">A4</td><td><span class="zav vysoka">vysoká</span></td><td>Zvýraznenie</td><td>Svieti len <b>odkiaľ</b> (karta), nikdy <b>kam</b>: slot pri Jednote, Smetisko, Štamgastova strana, Záverečná.</td><td>012, 026; <code>kluceZOcakavania</code> (<code>Vyucba.tsx:146–156</code>) cieľ nepozná</td><td>4</td></tr>
+        <tr data-z="vysoka"><td class="c">A5</td><td><span class="zav vysoka">vysoká</span></td><td>Responzivita</td><td>Pri 1366 × 650 bublina (300 × ~430 px) kryje pravú tretinu stola. Starší sú zbalení na 40 px pásy bez markera a ilustrácie.</td><td>1366-krok35; <code>vyucba.css:186–201</code></td><td>1</td></tr>
+        <tr data-z="vysoka"><td class="c">A6</td><td><span class="zav vysoka">vysoká</span></td><td>Obsah</td><td>Pojmy nemajú vizuálnu kotvu. Petelica, Rana, Viera a Pecka sú ikony na karte, text ich však s ikonou nespája. Pre stranu stola existujú tri názvy: „k tebe“, „PRI PULTE“ a „k súperovi“.</td><td>011, 020, 034; test pochopenia Q3–Q4: 0/3 vie, čo dá spoj</td><td>2</td></tr>
+        <tr data-z="vysoka"><td class="c">A7</td><td><span class="zav vysoka">vysoká</span></td><td>Orientácia</td><td>Keď sa prepne pohľad (Body → starší), zvýraznenie zmizne a nič neukáže cestu späť. V kroku 5 je línia starších, o ktorej Melichar hovorí, v tieni.</td><td>008, 009</td><td>4 (+ UX)</td></tr>
+        <tr data-z="stredna"><td class="c">A8</td><td><span class="zav stredna">stredná</span></td><td>Farby</td><td>Svetlo výučby má rovnaký jantár ako herné stavy (dobraná karta, výber, aktívna dlaždica). Akcent oproti akcent-tmavému má 1,70 : 1, takže sa nedajú rozlíšiť.</td><td>039 (Cirhóza „dobraná“), 003 (Lokality)</td><td>4</td></tr>
+        <tr data-z="stredna"><td class="c">A9</td><td><span class="zav stredna">stredná</span></td><td>Zvýraznenie</td><td>Viac prvkov svieti rovnako, bez poradia (k10: Poldeci, Pijan, Hasič; i-bar: 4 dlaždice s 5 pojmami).</td><td>005, 026</td><td>1, 4</td></tr>
+        <tr data-z="stredna"><td class="c">A10</td><td><span class="zav stredna">stredná</span></td><td>Rozloženie</td><td>Bublina je v rohu ďaleko od cieľa a nemá spojnicu. Medzi krokmi skáče po rohoch (krok 35 vpravo dole) a ⇆ nemá popis.</td><td>012, 051; <code>Vyucba.tsx:246–251</code></td><td>4</td></tr>
+        <tr data-z="stredna"><td class="c">A11</td><td><span class="zav stredna">stredná</span></td><td>Elevácia</td><td>Lupa (z 900) a počítadlo bitky (z 850) ležia nad bublinou (70) aj stmavením (60). Počas bitky bublina predbieha animáciu (hlási 10 : 4 pri 7 : 0).</td><td>031, 037, 049; <code>hra.css:1170</code>, <code>hra.css:6281</code>, <code>vyucba.css:47</code></td><td>3, 5</td></tr>
+        <tr data-z="stredna"><td class="c">A12</td><td><span class="zav stredna">stredná</span></td><td>Pokrok</td><td>„17 / 70“ skáče (7 → 10 → 12 → 14 → 17), pruh má 4 px a neukazuje, kde v kole hráč je. Fázová os hore nie je s výučbou prepojená.</td><td>020, 026; <code>Vyucba.tsx:381–386</code></td><td>2</td></tr>
+        <tr data-z="stredna"><td class="c">A13</td><td><span class="zav stredna">stredná</span></td><td>Obsah</td><td>Dva hlasy pokynov: pilulka hry („Klikni na lokalitu…“) a Melichar („ďalej“) naraz. Melichar vraví „neber (P)“, „Hotovo (K)“, „riadok Hrozba“, na obrazovke je „už neťahám“, „KONČÍM“, „Ešte môže:“.</td><td>002, 024, 034</td><td>1</td></tr>
+        <tr data-z="stredna"><td class="c">A14</td><td><span class="zav stredna">stredná</span></td><td>Kontrast</td><td>Cena na hlavnom tlačidle „−1 poldeci“ má <b>1,18 : 1</b> (<code>--tlmeny</code> na <code>--akcent</code>). Je to presne informácia, ktorá Martu prekvapila.</td><td>030; <code>hra.css:1600–1604</code></td><td>5</td></tr>
+        <tr data-z="stredna"><td class="c">A15</td><td><span class="zav stredna">stredná</span></td><td>Typografia</td><td>Pri výške ≤ 719 px majú staré odseky <b>väčšie</b> písmo (0,85 rem) ako pokyn (0,82 rem), lebo predtým má absolútnu veľkosť v rem.</td><td>1366-krok35; <code>vyucba.css:127–130</code> vs <code>197–200</code></td><td>5</td></tr>
+        <tr data-z="stredna"><td class="c">A16</td><td><span class="zav stredna">stredná</span></td><td>Vysvetlenie</td><td>Bitka a záver sú len text: 10 : 4 bez rozpisu (počítadlo existuje, Melichar ho nekomentuje), koniec je odsek so 6 + 3 číslami (i-koniec, 60 slov) a chýba zhrnutie naučeného.</td><td>049; scenár k27, i-koniec</td><td>3</td></tr>
+        <tr data-z="nizka"><td class="c">A17</td><td><span class="zav nizka">nízka</span></td><td>Komponenty</td><td>Päta kroku hráča ukazuje len „Tvoj ťah“, bez výzvy. Info krok „Klikni na Body“ má ako hlavné tlačidlo „ďalej“, teda dve hlavné akcie.</td><td>007</td><td>1</td></tr>
+        <tr data-z="nizka"><td class="c">A18</td><td><span class="zav nizka">nízka</span></td><td>Pohyb</td><td>Rozloženie skáče: rad „Do šenku“ sa po každej karte vycentruje, po výbere Záverečnej sa stôl posunie o ~38 px.</td><td>013–016, 041 → 042</td><td>UX / hra</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="navrhy" aria-labelledby="h-navrhy">
+  <h2 id="h-navrhy">Návrhy (zoradené podľa vplyvu na pochopenie hry)</h2>
+  <p>Ukážky používajú tokeny Krčmy a skutočné texty scenára. Pri každej si prepínačom vyberiete <b>pred</b>, <b>po</b> alebo obe vedľa seba (na mobile pod sebou).
+    Upravené formulácie v ukážkach sú ilustračné. Konečný text napíše navrhár scenára.</p>
+
+  <!-- =========================== NÁVRH 1 =========================== -->
+  <article class="navrh" id="n1" aria-labelledby="h-n1">
+    <div class="navrh-hlava"><span class="poradie">1</span><h3 id="h-n1">Bublina „Urob · Prečo · Medzitým“ s úlohovým zoznamom</h3>
+      <div class="stitky"><span class="stitok n-stredna">stredná · 1–2 dni</span><span class="stitok">rieši A1 A2 A3 A5 A9 A13 A17</span></div></div>
+    <p>Jedna myšlienka na krok a <b>prvý riadok je vždy čo urobiť</b>. Pod ním je očíslovaný zoznam úkonov, ktorý sa odškrtáva podľa toho, čo hráč položil.
+      Posledný úkon „potvrdiť“ je zamknutý, kým nie sú hotové predošlé. „Prečo“ má najviac dve vety. Komentáre Štamgasta sa zbalia do jedného riadku „Medzitým“.
+      Chyba sa neukáže ako nový odsek, ale priamo na chýbajúcom úkone.</p>
+    <div class="rezimy" role="group" aria-label="Zobrazenie ukážky 1"><button type="button" data-r="oba" aria-pressed="true">Vedľa seba</button><button type="button" data-r="pred" aria-pressed="false">Pred</button><button type="button" data-r="po" aria-pressed="false">Po</button></div>
+    <div class="porovnanie" data-rezim="oba">
+      <div class="strana pred"><p class="strana-nadpis">Pred: krok 17 (k10) po predčasnom potvrdení</p>
+        <div class="m plocha">
+          <div class="b">
+            <div class="b-hlava"><span class="b-avatar"></span><div class="b-kto"><strong>Majster Melichar</strong><span class="b-postup"><span class="b-pruh"><span style="width:24%"></span></span>17 / 70</span></div><span class="b-presun" aria-hidden="true">⇆</span></div>
+            <div class="b-text">
+              <p class="predtym">Zhromaždenie! Útočník vykladá prvý. Štamgast priložil Pijana k Jednote a na spoji sa stretli Poldeci a Pohoršenie na rovnakej výške. Akcia platí, len keď má na druhej strane spoja partnera.</p>
+              <p>Limit máš tri karty, lebo máš dva plné poldeci a k tomu jedna. Vypi do dna: limit ti klesne na dva, ale obe karty zahráš hneď za sebou. Pijana daj k Jednote, jeho Rana sa stretne s Cigaretou. Za neho Hasiča. Petelica mu ostane bez páru, to si zapamätaj.</p>
+              <p class="b-chyba">Takto nie — polož karty, ktoré svietia, tam, kam hovorím. Kartu zo stola vrátiš pravým klikom.</p>
+            </div>
+            <div class="b-pata"><span class="b-stav">Tvoj ťah</span><button class="b-prerusit" type="button" tabindex="-1">prerušiť výučbu</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="strana po"><p class="strana-nadpis">Po: ten istý krok, úloha hore</p>
+        <div class="m plocha">
+          <div class="b2" id="ukazka-uloha">
+            <div class="b2-hlava"><span class="b-avatar"></span>
+              <div class="b2-kap"><strong>Zhromaždenie 1</strong><small>Kapitola 3 zo 7 · úloha 1 z 3</small><span class="bodky" aria-hidden="true"><i class="h"></i><i class="t"></i><i></i></span></div>
+              <div class="b2-ikony"><span title="Slovník">Slovník 4</span><span aria-hidden="true">⇆</span></div></div>
+            <div class="urob">
+              <span class="urob-stitok">Urob</span>
+              <p class="urob-veta">Polož dve karty, potom potvrď oboch naraz.</p>
+              <ol class="ulohy" aria-label="Úlohy kroku">
+                <li data-u="1" class="teraz"><span class="cis">1</span><span class="nazov"><span class="kc" style="--farba:#b05a8a">Pijan</span> k Jednote, <span class="strana-ja">← k tebe</span></span><span class="pozn">ťahaj alebo klikni +</span></li>
+                <li data-u="2" class="zamk"><span class="cis">2</span><span class="nazov"><span class="kc" style="--farba:#c25d5d">Hasič</span> za Pijana</span><span class="pozn">−1 poldeci</span></li>
+                <li data-u="3" class="zamk"><span class="cis">3</span><span class="nazov">potvrdiť oboch naraz <kbd>K</kbd></span><span class="pozn">až po 1 a 2</span></li>
+              </ol>
+            </div>
+            <div class="preco"><b class="lbl">Prečo</b>
+              <p>Pijanova <span class="pojem">Rana</span> sa pri Jednote stretne s Cigaretou: to je <span class="pojem">spoj</span> a akcia platí. Hasičova Petelica pár nemá, využiješ ju v Pitke.</p></div>
+            <div class="medzitym"><span class="b-avatar s"></span><span><b>Štamgast</b> priložil Pijana k Jednote</span><button class="viac" type="button" tabindex="-1">viac</button></div>
+            <div class="b2-pata"><span class="pocet" id="pocet-uloh">0 z 3 hotové</span><button class="b-prerusit" type="button" tabindex="-1">prerušiť</button></div>
+          </div>
+        </div>
+        <div class="ovl" role="group" aria-label="Vyskúšaj ukážku">
+          <button type="button" id="u-dalej">Polož ďalšiu kartu</button>
+          <button type="button" id="u-chyba">Potvrď predčasne</button>
+          <button type="button" id="u-reset">Odznova</button>
+        </div>
+      </div>
+    </div>
+
+    <h4>Pri 1366 × 650: dok namiesto plávajúcej bubliny</h4>
+    <div class="porovnanie" data-rezim="oba">
+      <div class="strana pred"><p class="strana-nadpis">Pred: bublina pláva v rohu</p>
+        <div class="drot" aria-label="Drôtený model: bublina v pravom dolnom rohu kryje tretinu stola a starších">
+          <div style="left:1%;top:1%;width:98%;height:7%">hlavička · os kola</div>
+          <div style="left:1%;top:10%;width:98%;height:14%">bar Štamgasta</div>
+          <div class="d-stol" style="left:1%;top:26%;width:98%;height:46%">stôl / línia starších (zbalená na 40 px pásy)</div>
+          <div style="left:1%;top:74%;width:98%;height:13%">tvoj bar</div>
+          <div style="left:30%;top:89%;width:40%;height:10%">ruka (orezaná)</div>
+          <div class="kryje" style="left:77%;top:33%;width:22%;height:66%"></div>
+          <div class="d-b" style="left:77.5%;top:34%;width:21%;height:64%"><span><b>Majster Melichar</b> 35/70<br>4 odseky, pokyn v poslednom…</span></div>
+        </div>
+      </div>
+      <div class="strana po"><p class="strana-nadpis">Po: Melicharov stĺpec vľavo, stôl sa posunie</p>
+        <div class="drot" aria-label="Drôtený model: bublina ako stĺpec vľavo, stôl je užší, ale nezakrytý">
+          <div style="left:1%;top:1%;width:98%;height:7%">hlavička · os kola</div>
+          <div class="d-b" style="left:1%;top:10%;width:20%;height:89%"><span><b>Urob</b><br>① Farár ✓<br>② Farár<br>③ …<br><br>Prečo ▸<br>Medzitým ▸</span></div>
+          <div style="left:22%;top:10%;width:77%;height:14%">bar Štamgasta</div>
+          <div class="d-stol" style="left:22%;top:26%;width:77%;height:46%">stôl / línia starších (bez prekrytia)</div>
+          <div style="left:22%;top:74%;width:77%;height:13%">tvoj bar</div>
+          <div style="left:40%;top:89%;width:42%;height:10%">ruka</div>
+        </div>
+      </div>
+    </div>
+
+    <dl class="detail">
+      <dt>Štruktúra</dt><dd><code>header</code> (avatar · kapitola + bodky úloh · Slovník · ⇆), potom <code>.urob</code> (štítok, veta s pokynom do 12 slov, <code>ol.ulohy</code>), potom <code>.preco</code> (najviac 2 vety, pri výške ≤ 719 px zbalené) a <code>.medzitym</code> (1 riadok, „viac“ rozbalí komentáre bota). Päta má počítadlo „1 z 3 hotové“ a „prerušiť“. Pre <code>kto: "info"</code> sa zoznam nahradí jedným hlavným tlačidlom (napr. „Otvor Body“, ak text káže kliknúť).</dd>
+      <dt>Stavy úkonu</dt><dd><code>teraz</code> (rám <code>--vyucba-svetlo</code>, číslo na svetle), <code>hotovo</code> (zelené ✓, prečiarknuté, 150 ms prechod), <code>zamk</code> (prerušovaný okraj, <code>--tlmeny</code>), <code>chyba</code> (tehlová plocha, text „Chýba ešte Hasič“). Ikona a text, nie len farba.</dd>
+      <dt>Odkiaľ zoznam</dt><dd>Z dát: nové pole kroku <code>ulohy: [{ "text": "Pijan k Jednote", "kluc": "uid:N", "ciel": "slot:ja-pri-lokalite" }]</code> v <code>prva-hra.json</code>. Úkon je hotový, keď karta s <code>data-vyucba-uid</code> leží na stole mimo ruky. Kým pole chýba, zoznam sa dá odvodiť z <code>krok.ocakava.kroky</code> (<code>kluceZOcakavania</code>).</dd>
+      <dt>Rozmery a tokeny</dt><dd>Šírka 392 px (1920), 340 px (≤ 919 px výšky). Pokyn má 1,04 rem/700, prečo 0,9 rem, medzitým 0,8 rem. Rytmus 4/8 px, polomery 16/12/9. Nový token <code>--vyucba-svetlo</code> (návrh 4) a žiadne nové farby.</dd>
+      <dt>1366 × 650</dt><dd>Pri <code>@media (max-height: 719px)</code> sa bublina zmení na stĺpec <code>position: fixed; left: 0; top: hlavička; bottom: 0; width: 264px</code> a <code>.hra</code> dostane <code>padding-inline-start: 272px</code>. Nič sa nezakrýva a pozícia sa nemení. Lepšie, keď je stôl o 264 px užší, než keď je tretina skrytá.</dd>
+      <dt>Mobil</dt><dd>Spodný panel (bottom sheet) s viditeľným blokom „Urob“ (2 riadky). Prečo a medzitým sa rozbalia potiahnutím, ciele majú 44 px. Snímkou som to neoveril, stôl výučby som na telefóne nefotil.</dd>
+      <dt>Súbory</dt><dd><code>apps/web/src/hra/Vyucba.tsx</code> (VyucbaStol, nový <code>UlohyKroku</code>), <code>vyucba.css</code>, <code>packages/core/data/vyucba/prva-hra.json</code> (polia <code>pokyn</code>, <code>preco</code>, <code>ulohy</code>; píše navrhár scenára), typ <code>KrokVyucby</code> v <code>useHra.ts</code>.</dd>
+    </dl>
+  </article>
+
+  <!-- =========================== NÁVRH 2 =========================== -->
+  <article class="navrh" id="n2" aria-labelledby="h-n2">
+    <div class="navrh-hlava"><span class="poradie">2</span><h3 id="h-n2">Pojmy s ikonou pri prvom výskyte a mapa kola</h3>
+      <div class="stitky"><span class="stitok n-stredna">stredná · 1–2 dni + texty</span><span class="stitok">rieši A6 A12 · test Q2–Q4</span></div></div>
+    <p>Progresívne odhaľovanie: nový pojem sa v texte zobrazí ako čip s ikonou z karty a štítkom <b>nové</b>. Pri prvom výskyte sa pod odsekom rozbalí jedna veta definície,
+      pri ďalších výskytoch je to len čip s bublinkou. Čipy strán stola majú farby „ty“ a „súper“ (<code>--ja</code>, <code>--su</code>), rovnaké ako popisy strán na stole.
+      Namiesto „17 / 70“ ukazuje bublina <b>mapu kola</b> s miestom „si tu“. Na začiatku každej kapitoly je karta „Naučíš sa: …“ s 2–3 pojmami.</p>
+    <div class="rezimy" role="group" aria-label="Zobrazenie ukážky 2"><button type="button" data-r="oba" aria-pressed="true">Vedľa seba</button><button type="button" data-r="pred" aria-pressed="false">Pred</button><button type="button" data-r="po" aria-pressed="false">Po</button></div>
+    <div class="porovnanie" data-rezim="oba">
+      <div class="strana pred"><p class="strana-nadpis">Pred: krok 23 (k16), Pitka</p>
+        <div class="m plocha">
+          <div class="b">
+            <div class="b-hlava"><span class="b-avatar"></span><div class="b-kto"><strong>Majster Melichar</strong><span class="b-postup"><span class="b-pruh"><span style="width:33%"></span></span>23 / 70</span></div><span class="b-presun" aria-hidden="true">⇆</span></div>
+            <div class="b-text">
+              <p class="predtym">Štamgast pasuje tiež. Ide sa do Pitky.</p>
+              <p>Pitka! Začína obranca. Pozri riadok Hrozba na stole: NA EX na Hasiča dá 7 : 0. NA EX položí poldeci na kartu, jej aktívne akcie zruší a neaktívne zdvojí. Hasičova Petelica nemala pár, teraz udrie dvakrát. Vyber Hasiča a daj NA EX! (N).</p>
+            </div>
+            <div class="b-pata"><span class="b-stav">Tvoj ťah</span><button class="b-prerusit" type="button" tabindex="-1">prerušiť výučbu</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="strana po"><p class="strana-nadpis">Po: pojem s ikonou a mapa kola</p>
+        <div class="m plocha">
+          <div class="b2">
+            <div class="b2-hlava"><span class="b-avatar"></span>
+              <div class="b2-kap"><strong>Pitka 1</strong><small>Kolo 1 · lokalita Jednota</small></div>
+              <div class="b2-ikony"><button type="button" id="slovnik-tl" aria-expanded="false" aria-controls="slovnik">Slovník 6</button></div></div>
+            <div style="padding:6px 10px 2px">
+              <div class="mapa" aria-label="Mapa kola: si v Pitke 1">
+                <span class="faza hotova">Cieľ</span><span class="faza hotova">Šenok</span><span class="faza hotova">Zhrom. 1</span>
+                <span class="faza tu"><span class="si-tu">SI TU</span>Pitka 1</span><span class="faza dvojka">Zhrom. 2<small>+ Pitka 2</small></span><span class="faza">Bitka</span><span class="faza">Prebytok</span>
+              </div>
+            </div>
+            <div class="urob"><span class="urob-stitok">Urob</span>
+              <p class="urob-veta" style="margin-bottom:0">Vyber <span class="kc" style="--farba:#c25d5d">Hasiča</span> a daj <b>NA EX!</b> <kbd>N</kbd></p></div>
+            <div class="preco"><b class="lbl">Prečo</b>
+              <p><span class="pojem novy" tabindex="0">NA EX</span> zdvojí akcie bez páru. Hasičova
+                <span class="pojem" tabindex="0"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1l1.6 4.2L14 4l-2.6 3.4L15 10l-4.4.2L9 15 7.6 10.8 3 12l2.4-3.6L1 6l4.5-.4z" fill="#8fc3e0"/></svg>Petelica</span>
+                pár nemá, preto udrie dvakrát: 7 : 0.</p>
+              <p class="def"><b>NA EX</b>: položíš plný poldeci na kartu. Akcie, ktoré majú na spoji partnera, sa zrušia, a akcie bez páru sa zdvoja. Súper smie hneď odpovedať jednou kartou.</p>
+            </div>
+            <div id="slovnik" hidden style="margin:0 10px 6px;padding:8px 10px;border-radius:10px;background:var(--plocha-2);border:1px solid var(--okraj);font-size:.8rem;line-height:1.5">
+              <b style="color:var(--akcent-svetly)">Slovník (už vieš)</b><br>
+              <b>Poldeci</b>: pohár. Plné určujú limit (plné + 1) a dávaš ich pod NA EX.<br>
+              <b>Šenok</b>: spoločná ponuka kariet. 1 karta = 1 cigareta, 2 karty = 3.<br>
+              <b>Spoj</b>: miesto, kde sa stretnú dve karty. Akcia platí len s partnerom na druhej strane.<br>
+              <b>Strany</b>: <span class="strana-ja">← k tebe</span> a <span class="strana-su">k Štamgastovi →</span>, na stole „pri pulte“ a „pred obchodom“.<br>
+              <b>Petelica</b>: tri rany naraz.<br><b>NA EX</b>: (nové) pozri vyššie.
+            </div>
+            <div class="medzitym"><span class="b-avatar s"></span><span><b>Štamgast</b> pasuje, ide sa do Pitky</span><button class="viac" type="button" tabindex="-1">viac</button></div>
+            <div class="b2-pata"><span class="pocet">úloha 1 z 1</span><button class="b-prerusit" type="button" tabindex="-1">prerušiť</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h4>Karta kapitoly (na začiatku Zhromaždenia, namiesto info kroku)</h4>
+    <div class="m plocha" style="max-width:440px">
+      <div class="b2">
+        <div class="kapitola"><small class="tl" style="color:var(--tlmeny)">Kapitola 3 zo 7</small>
+          <h5>Zhromaždenie: vykladáš karty k lokalite</h5>
+          <div class="mapa" aria-hidden="true"><span class="faza hotova">Cieľ</span><span class="faza hotova">Šenok</span><span class="faza tu">Zhrom.</span><span class="faza">Pitka</span><span class="faza">Bitka</span></div>
+          <div class="ucis"><span class="pojem novy">limit</span><span class="pojem novy">spoj</span><span class="pojem novy">pas</span></div>
+        </div>
+        <div class="b2-pata"><button type="button" class="tl-hl" tabindex="-1">Poďme vykladať <kbd>Enter</kbd></button></div>
+      </div>
+    </div>
+
+    <dl class="detail">
+      <dt>Komponenty</dt><dd><code>Pojem</code> (čip: ikona z <code>karta/IkonaAkcie.tsx</code> + slovo + voliteľne „nové“; bodkované podčiarknutie <code>--info</code>, plocha <code>--info</code> 12 %). <code>MapaKola</code> (segmenty z <code>view.faza</code> a čísla Zhromaždenia/Pitky, „si tu“ na <code>--vyucba-svetlo</code>). <code>Slovnik</code> (zásuvka v bubline: pojmy, ktoré už padli).</dd>
+      <dt>Dáta</dt><dd>Značky v texte scenára, napr. <code>[[petelica]]</code> a <code>[[ja:k tebe]]</code>, a slovník na začiatku <code>prva-hra.json</code>: <code>"pojmy": { "petelica": { "nazov": "Petelica", "ikona": "&lt;kľúč akcie&gt;", "veta": "Tri rany naraz." } }</code>. Kapitoly sú pole <code>kapitola</code> pri kroku. Platí „dáta, nie kód“.</dd>
+      <dt>Kontrast</dt><dd><code>--info</code> na <code>--plocha</code> má 9,18 : 1, text <code>--ja</code> 8,22 : 1, <code>--su</code> 6,16 : 1. Strana má vždy aj šípku a slovo, nie len farbu.</dd>
+      <dt>Pohyb</dt><dd>Definícia sa rozbalí za 180 ms (výška a priehľadnosť). Pri <code>prefers-reduced-motion</code> sa objaví hneď.</dd>
+      <dt>1366 / mobil</dt><dd>Mapa kola sa zalomí do dvoch riadkov, na mobile ostane len „Pitka 1 · 4/7“ a tlačidlo mapy. Čipy sa nelámu (<code>white-space: nowrap</code>), riadok áno.</dd>
+      <dt>Súbory</dt><dd><code>Vyucba.tsx</code> (parser značiek, <code>Pojem</code>, <code>MapaKola</code>, <code>Slovnik</code>), <code>vyucba.css</code>, <code>prva-hra.json</code> (navrhár scenára), voliteľne zdieľané s <code>stranky/Glosar.tsx</code>.</dd>
+    </dl>
+  </article>
+
+  <!-- =========================== NÁVRH 3 =========================== -->
+  <article class="navrh odvazny" id="n3" aria-labelledby="h-n3">
+    <div class="navrh-hlava"><span class="poradie">3</span><h3 id="h-n3">Odvážny smer: Melichar vysvetľuje bitku po kartách a na konci vystaví účet</h3>
+      <div class="stitky"><span class="stitok n-velka">veľká · 3–4 dni</span><span class="stitok">rieši A11 A16 · test Q1, Q5 · posilňuje identitu</span></div></div>
+    <p>Učenie robením končí tým, čo sa vysvetlí. Počítadlo bitky už v hre je (<code>hra.css</code> ~6270). Výučba ho len <b>zastaví po každej karte</b> a Melichar
+      povie jednou vetou, odkiaľ číslo je. Hráč posúva klávesom Enter. Záver nie je odsek čísel, ale <b>krčmový účet</b> (bloček) s rozpisom 62 : −24
+      a <b>pivný tácok</b> so schémou kola. Tácok potom ostane v hre ako ťahák pod „?“.</p>
+    <div class="rezimy" role="group" aria-label="Zobrazenie ukážky 3"><button type="button" data-r="oba" aria-pressed="true">Vedľa seba</button><button type="button" data-r="pred" aria-pressed="false">Pred</button><button type="button" data-r="po" aria-pressed="false">Po</button></div>
+    <div class="porovnanie" data-rezim="oba">
+      <div class="strana pred"><p class="strana-nadpis">Pred: krok 35 (k27), bublina predbieha počítadlo</p>
+        <div class="m plocha">
+          <div class="bitka">
+            <div class="skore"><small>BITKA · TUHÉ</small><b><span class="ja">7</span> : <span class="su">0</span></b></div>
+            <div class="b" style="opacity:.45;justify-self:center">
+              <div class="b-text">
+                <p class="predtym">Pohoršenie: Štamgast posúva Starostu k tebe.</p>
+                <p>Starosta je v žltom na tvojej strane. Prejavuje ti priazeň Bitkára, a to sú +2 tuhé hneď v tejto bitke. Zároveň sa bojí Štamgasta, čo sú body pre neho. Bitka skončila 10 : 4, máš prebytok 6. Keby ste mali rovnako tuhého poškodenia, Jednota by išla na sekeru.</p>
+              </div>
+            </div>
+            <p class="tl" style="font-size:.8rem;text-align:center;margin:0">Bublina leží pod počítadlom (z-index 70 &lt; 850) a už hlási výsledok.</p>
+          </div>
+        </div>
+      </div>
+      <div class="strana po"><p class="strana-nadpis">Po: počítadlo s titulkom, krok po karte</p>
+        <div class="m">
+          <div class="bitka" id="bitka">
+            <div class="skore" aria-live="polite"><small>BITKA O JEDNOTU · TUHÉ</small><b><span class="ja" id="b-ja">0</span> : <span class="su" id="b-su">0</span></b></div>
+            <div class="rad" aria-hidden="true">
+              <div class="crd2" style="--farba:#c25d5d" data-i="0"><em>+6 = 3 × 2</em><span>Hasič</span></div>
+              <div class="crd2" style="--farba:#b05a8a" data-i="1"><em>+1</em><span>Pijan</span></div>
+              <div class="crd2" style="--farba:#b05a8a" data-i="2"><em>+1</em><span>Pijan</span></div>
+              <div class="crd2" style="--farba:#6a8f4a" data-i="3"><em>+2 priazeň</em><span>Starosta</span></div>
+              <div class="crd2 su" style="--farba:#6a8f4a" data-i="4"><em>+3</em><span>Recidivista</span></div>
+              <div class="crd2 su" style="--farba:#5a6a8a" data-i="5"><em>+2</em><span>Dvojčatá</span></div>
+              <div class="crd2 su" style="--farba:#b05a8a" data-i="6"><em>−1 Viera</em><span>Miňištrant</span></div>
+            </div>
+            <div class="titulok"><span class="b-avatar" style="width:34px;height:34px"></span><p id="b-veta">Bitka! Zrátame tuhé poškodenie, karta po karte. Kto má viac, berie Jednotu.</p></div>
+            <div class="ovl" style="justify-content:center"><button type="button" id="b-dalej">ďalej (Enter)</button><button type="button" id="b-reset">odznova</button></div>
+            <p class="tl" style="font-size:.74rem;text-align:center;margin:0;color:var(--tlmeny)">Poradie a čísla sú ilustračné. Skutočný rozpis dá počítadlo bitky z jadra.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h4>Záver: i-koniec dnes vs. účet a tácok</h4>
+    <div class="porovnanie" data-rezim="oba">
+      <div class="strana pred"><p class="strana-nadpis">Pred: krok 69, 60 slov a 9 čísel</p>
+        <div class="m plocha"><div class="b"><div class="b-text"><p>Koniec! Vyhral si 62 : −24. Lokality ti dali 28, vydesený Farár 12, Starosta z patronátu 8, strach 6, znepokojenie 4 a cigarety 4. Štamgast stratil 20 bodov za Dlhy a 16 za dve Cirhózy, cigarety mu vrátili 12. Každá aktívna podmienka na kartách starších sa ráta zvlášť, preto majú lokality takú cenu. Klikni na Body a pozri si rozpis.</p></div></div></div>
+      </div>
+      <div class="strana po"><p class="strana-nadpis">Po: účet u Melichara + „čo už vieš“</p>
+        <div class="m">
+          <div class="zaver">
+            <div class="ucet" role="table" aria-label="Účet: 62 bodov ty, mínus 24 Štamgast">
+              <h5>KRČMA U MELICHARA</h5><div class="pod">účet č. 1 · Prvá hra</div>
+              <div class="r"><span>Lokality</span><span></span><b>28</b></div>
+              <div class="r"><span>Vydesený Farár</span><span></span><b>12</b></div>
+              <div class="r"><span>Starosta (patronát)</span><span></span><b>8</b></div>
+              <div class="r"><span>Strach</span><span></span><b>6</b></div>
+              <div class="r"><span>Znepokojenie</span><span></span><b>4</b></div>
+              <div class="r"><span>Cigarety</span><span></span><b>4</b></div>
+              <hr><div class="r spolu"><span>Ty spolu</span><span></span><b>62</b></div>
+              <hr><div class="r minus"><span>Štamgast: Dlhy</span><span></span><b>−20</b></div>
+              <div class="r minus"><span>Štamgast: 2 Cirhózy</span><span></span><b>−16</b></div>
+              <div class="r"><span>Štamgast: cigarety</span><span></span><b>12</b></div>
+              <hr><div class="r spolu"><span>Štamgast spolu</span><span></span><b>−24</b></div>
+              <div class="pod" style="margin:8px 0 0">Na zdravie!</div>
+            </div>
+            <div class="tacok" aria-label="Pivný tácok: kolo v šiestich krokoch">
+              <div class="stred"><span>KOLO<small>dvakrát za partiu</small></span></div>
+              <span class="bod" style="left:50%;top:9%">1 Cieľ<i>obranca vyberie</i></span>
+              <span class="bod" style="left:79%;top:30%">2 Šenok<i>kúp za cigarety</i></span>
+              <span class="bod" style="left:79%;top:70%">3 Zhromaždenie<i>vylož do limitu</i></span>
+              <span class="bod" style="left:50%;top:90%">4 Pitka<i>NA EX, pi, fajči</i></span>
+              <span class="bod" style="left:21%;top:70%">5 Bitka<i>viac tuhých berie</i></span>
+              <span class="bod" style="left:21%;top:30%">6 Prebytok<i>posuň starších</i></span>
+            </div>
+          </div>
+          <h5 style="font:700 1rem var(--nadpis);margin:16px 0 8px">Čo už vieš</h5>
+          <div class="vies">
+            <div><b>Cieľ</b>Na konci viac bodov: lokality, vystrašení starší, cigarety.</div>
+            <div><b>Spoj</b>Akcia platí, len keď má na druhej strane partnera.</div>
+            <div><b>NA EX</b>Spoj zruší, akciu bez páru zdvojí.</div>
+            <div><b>Bitka</b>Kto má viac tuhých, berie lokalitu. Rovnosť ide na sekeru.</div>
+            <div><b>Starší</b>Prebytok ich posúva. Kto sa ťa bojí, dáva ti body.</div>
+          </div>
+          <div class="ovl" style="justify-content:center;margin-top:14px"><button type="button" class="tl-hl" tabindex="-1">Hrať proti Štamgastovi</button></div>
+        </div>
+      </div>
+    </div>
+    <dl class="detail">
+      <dt>Bitka</dt><dd>Výučba dostane prednosť: kým beží výučba, <code>.vyucba-bublina</code> má z-index 950 (nad počítadlom 850 a lupou 900). Bublina sa zmení na <b>titulok</b> pod radom kariet a počítadlo čaká na Enter po každej karte (dnes beží samo, „klik, Esc alebo medzerník preskočí“). Titulky sú pole <code>bitka: [{ "uid": N, "veta": "…" }]</code> v kroku k27 a k54.</dd>
+      <dt>Účet</dt><dd>Nový komponent <code>UcetVyucby</code> s číslami z bodovania jadra (nie z textu): papierová plocha <code>#f4ecdc</code> s textom <code>#2a2017</code> (13,6 : 1), mínusy v <code>--tehla-tmava</code> (5,6 : 1) a <code>tabular-nums</code>. Bloček je mierne natočený a má zúbkovaný spodok, žiadny obrázok.</dd>
+      <dt>Tácok</dt><dd>Jeden SVG/CSS komponent <code>TacokKola</code>: v ponuke výučby (schéma kola vopred), na začiatku každej kapitoly v malom a v hre pod „?“ ako ťahák. Je to identita krčmy, nie generický stepper.</dd>
+      <dt>Pohyb</dt><dd>Číslo skóre sa pri zmene na 200 ms zväčší (scale 1,15) a karta sa rozsvieti <code>--vyucba-svetlo</code>. Pri <code>prefers-reduced-motion</code> sa čísla len zmenia.</dd>
+      <dt>1366 / mobil</dt><dd>Rad kariet sa zmenší na 48 px a zalomí. Účet a tácok idú pod seba (tácok 180 px). Na telefóne je účet na celú šírku.</dd>
+      <dt>Súbory</dt><dd><code>Vyucba.tsx</code>, <code>vyucba.css</code>, <code>hra/HernaPlocha.tsx</code> a <code>hra.css</code> (počítadlo bitky: režim „krokuj“), <code>prva-hra.json</code> (titulky bitky, záver).</dd>
+    </dl>
+  </article>
+
+  <!-- =========================== NÁVRH 4 =========================== -->
+  <article class="navrh" id="n4" aria-labelledby="h-n4">
+    <div class="navrh-hlava"><span class="poradie">4</span><h3 id="h-n4">Reflektor s poradím, cieľom a spojnicou</h3>
+      <div class="stitky"><span class="stitok n-stredna">stredná · 1–2 dni</span><span class="stitok">rieši A1 A4 A7 A8 A9 A10 A11</span></div></div>
+    <p>Svetlo výučby dostane vlastnú farbu, <b>teplé svetlo lampy</b> (<code>--vyucba-svetlo</code> = 70 % <code>--lesk</code> + 30 % <code>--akcent</code>, #f8e6c7), aby sa nepletlo s jantárom herných stavov.
+      Zdroje dostanú <b>čísla</b> zhodné so zoznamom v bubline a aktuálny svieti najviac. <b>Cieľ</b> („sem“) má prerušovaný obrys. „potvrdiť“ ostane v tieni, kým nie sú hotové predošlé úkony.
+      Tenká spojnica vedie od bubliny k aktuálnemu prvku. Keď prvok nie je vidieť (iný pohľad), rozsvieti sa ovládanie, ktoré ho ukáže (napr. „← Späť na stôl“).</p>
+    <div class="rezimy" role="group" aria-label="Zobrazenie ukážky 4"><button type="button" data-r="oba" aria-pressed="true">Vedľa seba</button><button type="button" data-r="pred" aria-pressed="false">Pred</button><button type="button" data-r="po" aria-pressed="false">Po</button></div>
+    <div class="porovnanie" data-rezim="oba">
+      <div class="strana pred"><p class="strana-nadpis">Pred: krok 17 po položení Pijana</p>
+        <div class="m scena" aria-label="Schéma: rovnaké jantárové obrysy na Poldeci, Hasičovi a potvrdiť, cieľ nesvieti">
+          <div class="stol"></div>
+          <span class="lbl" style="left:18px;color:var(--ja)">← PRI PULTE</span><span class="lbl" style="right:18px;color:var(--su)">PRED OBCHODOM →</span>
+          <div class="slot" style="left:96px;top:44px">+</div>
+          <div class="crd" style="left:142px;top:44px;--farba:#b05a8a"><span>Pijan</span></div>
+          <div class="crd" style="left:210px;top:44px;--farba:#4f9a52"><span>Jednota</span></div>
+          <div class="crd" style="left:278px;top:44px;--farba:#b05a8a;transform:rotate(180deg)"></div>
+          <div class="tien"></div>
+          <button class="btn lit obrys-dnes" style="left:140px;top:180px" type="button" tabindex="-1">potvrdiť</button>
+          <div class="tile lit obrys-dnes" style="right:10px;top:186px">POLDECI<b>2</b></div>
+          <div class="ruka">
+            <div class="crd" style="--farba:#b05a8a"><span>Pijan</span></div>
+            <div class="crd" style="--farba:#b05a8a"><span>Miňištr.</span></div>
+            <div class="crd lit obrys-dnes" style="--farba:#c25d5d"><span>Hasič</span></div>
+            <div class="crd" style="--farba:#4f9a52"><span>Krabička</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="strana po"><p class="strana-nadpis">Po: ① hotové, ② svieti, „sem“, ③ zamknuté</p>
+        <div class="m scena" aria-label="Schéma: Hasič číslo 2 svieti teplým svetlom, cieľ je prerušovaný, potvrdiť je zamknuté">
+          <div class="stol"></div>
+          <span class="lbl" style="left:18px;color:var(--ja)">← PRI PULTE (ty)</span><span class="lbl" style="right:18px;color:var(--su)">PRED OBCHODOM →</span>
+          <div class="tien"></div>
+          <div class="slot lit obrys-ciel" style="left:96px;top:44px;border-color:transparent;color:var(--vyucba-svetlo)">+</div>
+          <span class="sem" style="left:92px;top:24px">SEM ②</span>
+          <div class="crd lit" style="left:142px;top:44px;--farba:#b05a8a"><span>Pijan</span></div>
+          <span class="znak ok" style="left:190px;top:34px">✓</span>
+          <div class="crd" style="left:210px;top:44px;--farba:#4f9a52"><span>Jednota</span></div>
+          <div class="crd" style="left:278px;top:44px;--farba:#b05a8a;transform:rotate(180deg)"></div>
+          <button class="btn zamk" style="left:140px;top:180px" type="button" tabindex="-1">③ potvrdiť</button>
+          <div class="tile" style="right:10px;top:186px">POLDECI<b>2</b></div>
+          <div class="ruka">
+            <div class="crd" style="--farba:#b05a8a"><span>Pijan</span></div>
+            <div class="crd" style="--farba:#b05a8a"><span>Miňištr.</span></div>
+            <div class="crd lit obrys-luc" style="--farba:#c25d5d"><span>Hasič</span></div>
+            <div class="crd" style="--farba:#4f9a52"><span>Krabička</span></div>
+          </div>
+          <span class="znak" style="left:194px;top:236px">2</span>
+          <svg class="ciara" viewBox="0 0 400 330" aria-hidden="true">
+            <defs><marker id="hrot" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#f8e6c7"/></marker></defs>
+            <path d="M300 182 C 300 215, 262 228, 244 246" fill="none" stroke="#f8e6c7" stroke-width="1.5"/>
+            <path d="M226 246 C 205 200, 150 190, 118 140" fill="none" stroke="#f8e6c7" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#hrot)"/>
+          </svg>
+          <div class="mini-b" style="left:auto;right:10px;top:136px;bottom:auto;width:150px"><b>② Hasič za Pijana</b><br>potom ③ potvrdiť</div>
+        </div>
+      </div>
+    </div>
+    <dl class="detail">
+      <dt>Token</dt><dd><b>Nový</b> <code>--vyucba-svetlo: color-mix(in srgb, var(--lesk) 70%, var(--akcent))</code>. Zmieša existujúce tokeny, takže funguje v každej z 10 schém (pravidlo „farby len cez tokeny zo schemy.css“). Proti stmavenému stolu má 14,5–15,9 : 1, text <code>--na-akcente</code> na ňom 13,6 : 1. Jantár ostáva herným stavom (vybraté, dobraná, aktívne).</dd>
+      <dt>Stmavenie</dt><dd><code>Stmavenie</code> (<code>Vyucba.tsx:218–237</code>) kreslí tri druhy obrysov: <code>teraz</code> (plná čiara 3 px + žiara, bez blikania; pulz len 1×), <code>ciel</code> (prerušovaná 2 px, štítok „SEM n“), <code>hotovo</code> (bez obrysu, zelený odznak ✓). Odznak s číslom (22 px kruh) je v ľavom hornom rohu prvku. Spojnica je SVG cesta v tej istej vrstve od hrany bubliny k <code>teraz</code>.</dd>
+      <dt>Logika viditeľnosti</dt><dd><code>POTVRDIT</code> sa pridá až vtedy, keď sú všetky úkony <code>hotovo</code> (dnes vždy, <code>Vyucba.tsx:309</code>). Cieľ sa doplní z nového <code>ciel</code> v <code>ulohy</code> (návrh 1) a sloty v <code>HernaPlocha.tsx</code> dostanú <code>data-vyucba="slot:ja-pri-lokalite"</code> a pod. Keď sa kľúč nenájde, zvýrazní sa náhradný kľúč z dát (<code>"ak-nevidno": "tlacidlo:spat-na-stol"</code>).</dd>
+      <dt>Vrstvy</dt><dd>Kým beží výučba, lupa sa nezobrazí nad zvýrazneným prvkom ani nad bublinou. Poradie z-index: stmavenie 940, bublina 950, lupa 900, počítadlo 850.</dd>
+      <dt>Bublina pri cieli</dt><dd>Keď je okolo prvku miesto (≥ bublina + 16 px), bublina sa ukotví vedľa neho so šípkou, inak ostane v doku alebo rohu. Ruka a bar sa nikdy nezakrývajú.</dd>
+      <dt>1366 / mobil</dt><dd>Na nízkej obrazovke je bublina v doku (návrh 1), takže spojnica je krátka. Na dotykovej obrazovke sa číslované odznaky zväčšia na 28 px.</dd>
+      <dt>Súbory</dt><dd><code>Vyucba.tsx</code> (Stmavenie, useZvyraznenie, výber rohu), <code>vyucba.css</code>, <code>hra/HernaPlocha.tsx</code> (<code>data-vyucba</code> na slotoch, Smetisku, Záverečnej), <code>hra.css</code> (lupa počas výučby).</dd>
+    </dl>
+  </article>
+
+  <!-- =========================== NÁVRH 5 =========================== -->
+  <article class="navrh" id="n5" aria-labelledby="h-n5">
+    <div class="navrh-hlava"><span class="poradie">5</span><h3 id="h-n5">Rýchla výhra (≈ 1 hodina): hierarchia bubliny a dve chyby CSS</h3>
+      <div class="stitky"><span class="stitok n-mala">malá · ≈ 1 h</span><span class="stitok">rieši A3 A14 A15 A11 (čiastočne)</span></div></div>
+    <p>Bez zmeny scenára a štruktúry: (a) aktuálny odsek ide <b>hore</b> so štítkom „Teraz“ a jantárovou čiarou, komentáre bota pod neho, menšie a zbalené na posledný jeden.
+      (b) <code>.vyucba-predtym</code> dostane veľkosť v <code>em</code>, takže už nikdy nebude väčšia ako pokyn. (c) cena na hlavnom tlačidle bude čitateľná.
+      (d) bublina počas výučby leží nad lupou.</p>
+    <div class="rezimy" role="group" aria-label="Zobrazenie ukážky 5"><button type="button" data-r="oba" aria-pressed="true">Vedľa seba</button><button type="button" data-r="pred" aria-pressed="false">Pred</button><button type="button" data-r="po" aria-pressed="false">Po</button></div>
+    <div class="porovnanie" data-rezim="oba">
+      <div class="strana pred"><p class="strana-nadpis">Pred: 1366 × 650, krok 35</p>
+        <div class="m plocha">
+          <div class="b nizka">
+            <div class="b-hlava"><span class="b-avatar"></span><div class="b-kto"><strong>Majster Melichar</strong><span class="b-postup"><span class="b-pruh"><span style="width:50%"></span></span>35 / 70</span></div><span class="b-presun" aria-hidden="true">⇆</span></div>
+            <div class="b-text">
+              <p class="predtym">Pohoršenie: Štamgast posúva Starostu k tebe.</p>
+              <p class="predtym">Starosta je v žltom na tvojej strane. Prejavuje ti priazeň Bitkára, a to sú +2 tuhé hneď v tejto bitke. Zároveň sa bojí Štamgasta, čo sú body pre neho. Bitka skončila 10 : 4, máš prebytok 6.</p>
+              <p><b>Víťaz rozdeľuje prebytok: každý bod posunie staršieho o krok k porazenému. Tvoj Miňištrant ti však posun zdražuje, každý stojí dva. Tlač Farára.</b></p>
+            </div>
+            <div class="b-pata"><span class="b-stav">Tvoj ťah</span><button class="b-prerusit" type="button" tabindex="-1">prerušiť výučbu</button></div>
+          </div>
+          <p style="margin:12px 0 4px;font-size:.8rem;color:var(--tlmeny)">Cena na tlačidle (1,18 : 1):</p>
+          <button type="button" class="tl-hl" tabindex="-1">potvrdiť <span class="cena">−1 poldeci</span></button>
+        </div>
+      </div>
+      <div class="strana po"><p class="strana-nadpis">Po: pokyn hore, staré zbalené</p>
+        <div class="m plocha">
+          <div class="b nizka">
+            <div class="b-hlava"><span class="b-avatar"></span><div class="b-kto"><strong>Majster Melichar</strong><span class="b-postup"><span class="b-pruh"><span style="width:50%"></span></span>35 / 70</span></div><span class="b-presun" aria-hidden="true">⇆</span></div>
+            <div class="b-text">
+              <p style="border-left:3px solid var(--akcent);padding-left:8px;font-size:1.06em"><span style="display:block;font:800 .62rem/1.4 var(--pismo);letter-spacing:.12em;color:var(--akcent-svetly)">TERAZ</span>Víťaz rozdeľuje prebytok: každý bod posunie staršieho o krok k porazenému. Tvoj Miňištrant ti však posun zdražuje, každý stojí dva. <b>Tlač Farára.</b></p>
+              <p class="predtym" style="font-size:.88em;border-top:1px solid var(--okraj);padding-top:6px">Predtým: Štamgast posúva Starostu k tebe … <u>ďalšie 2</u></p>
+            </div>
+            <div class="b-pata"><span class="b-stav">Tvoj ťah: klikni na Farára</span><button class="b-prerusit" type="button" tabindex="-1">prerušiť</button></div>
+          </div>
+          <p style="margin:12px 0 4px;font-size:.8rem;color:var(--tlmeny)">Cena na tlačidle (8,35 : 1):</p>
+          <button type="button" class="tl-hl" tabindex="-1">potvrdiť <span class="cena po">−1 poldeci</span></button>
+        </div>
+      </div>
+    </div>
+<pre>/* vyucba.css — 127: staré odseky relatívne k pokynu, pod ním */
+.vyucba-text { display: flex; flex-direction: column; }
+.vyucba-text &gt; p:not(.vyucba-predtym):not(.vyucba-chyba) { order: -1; border-left: 3px solid var(--akcent); padding-left: 8px; font-size: 1.06em; }
+.vyucba-text .vyucba-predtym { font-size: 0.88em; color: var(--tlmeny); }   /* bolo 0.85rem */
+.vyucba-text .vyucba-predtym:not(:last-of-type) { display: none; }          /* len posledný komentár */
+.vyucba-text .vyucba-predtym:first-of-type { border-top: 1px solid var(--okraj); padding-top: 6px; }
+.vyucba-bublina { z-index: 950; }                                          /* bolo 70; nad lupou (900) a počítadlom (850) */
+.vyucba-stmavenie { z-index: 940; }
+
+/* hra.css — 1600: cena na hlavnom tlačidle */
+.tlacidlo-hlavne .cena { color: var(--na-akcente); font-weight: 800; padding: 1px 6px; border-radius: 6px;
+  background: color-mix(in srgb, var(--na-akcente) 14%, transparent); }       /* 1,18 : 1 → 8,35 : 1 */</pre>
+    <dl class="detail">
+      <dt>Pozor</dt><dd>Poradie cez <code>order</code> je len dočasné: čítačka obrazovky číta DOM, takže pokyn ostane posledný. V návrhu 1 sa to vyrieši štruktúrou. „Tvoj ťah: klikni na Farára“ v päte potrebuje krátky text z kroku (pole <code>pokyn</code>). Bez neho ostane „Tvoj ťah“.</dd>
+      <dt>Dopad</dt><dd>1366 × 650: pokyn je prvý a najväčší, bublina nižšia o 1 odsek. 1920: tak isto. Mobil sa nemení.</dd>
+      <dt>Súbory</dt><dd><code>apps/web/src/hra/vyucba.css</code>, <code>apps/web/src/hra/hra.css</code> (1 pravidlo).</dd>
+    </dl>
+  </article>
+</section>
+
+<section id="poradie" aria-labelledby="h-poradie">
+  <h2 id="h-poradie">Odporúčané poradie implementácie</h2>
+  <ol class="poradie-zoznam">
+    <li><b>Návrh 5 (≈ 1 h)</b> hneď, ešte pred ďalším kolom playtestu: pokyn hore, chyby CSS, z-index. Lacné a zmeria, koľko dá samotná hierarchia.</li>
+    <li><b>Návrh 1 + časť návrhu 4</b> spolu: úlohový zoznam a „potvrdiť až po všetkých“, cieľ „sem“, číslované odznaky. Zdieľajú dáta <code>ulohy</code> a odstraňujú pascu 15 odmietnutí (cieľ: ≤ 1 odmietnutie na krok). Dok pre 1366 × 650 patrí sem.</li>
+    <li><b>Návrh 2</b> s prepisom textov scenára (navrhár): pojmy so značkami, mapa kola, karty kapitol. Mieri na test pochopenia (Q2–Q4), kde je dnes najväčšia strata.</li>
+    <li><b>Návrh 3</b> (bitka po kartách, účet, tácok): Q1 a Q5 a chuť hrať (V10). Tácok sa dá znovu použiť ako ťahák v bežnej hre.</li>
+    <li>Zvyšok návrhu 4 (spojnica, kotvenie bubliny pri cieli, náhradný kľúč pri inom pohľade) dorovnať podľa výsledku playtestu.</li>
+  </ol>
+  <p>Na ďalšie kolo (priemer ≥ 7, test ≥ 18/24) odporúčam body 1–3. Návrh 3 je najväčší skok v identite, ale bez 1 a 2 by vysvetľoval bitku hráčovi, ktorý ešte nevie, čo je spoj.</p>
+</section>
+
+<section id="otazky" aria-labelledby="h-otazky">
+  <h2 id="h-otazky">Otázky na Michala</h2>
+  <ol class="otazky">
+    <li><b>Vlastné svetlo výučby.</b> Smie mať výučba teplé biele „svetlo lampy“ (<code>--vyucba-svetlo</code>), odlíšené od jantáru herných stavov, alebo má všetko ostať jantárové?</li>
+    <li><b>Dok pri nízkych obrazovkách.</b> Je pri 1366 × 650 v poriadku, že sa stôl počas výučby zúži o 264 px (Melicharov stĺpec vľavo), namiesto plávajúcej bubliny cez stôl?</li>
+    <li><b>Polia scenára.</b> Súhlasíte s novými poliami v <code>prva-hra.json</code> (<code>pokyn</code>, <code>preco</code>, <code>ulohy</code>, <code>kapitola</code>, <code>pojmy</code>, značky <code>[[petelica]]</code>)? Texty by prepísal navrhár scenára.</li>
+    <li><b>Pivný tácok.</b> Má schéma kola na tácku ostať v hre ako trvalý ťahák pod „?“ aj mimo výučby?</li>
+    <li><b>Počítadlo bitky vo výučbe.</b> Smie čakať na Enter po každej karte (pomalšie, ale vysvetľuje), alebo má bežať samo s titulkami?</li>
+  </ol>
+</section>
+
+<footer>
+  <p>UI dizajnér (agent naex-dizajn), 23. 10. 2026. Snímky: relácia <code>playtest/vyucba-20261023-164303</code>, prehliadač 1 (1920 × 1080; snímka 1366 × 650 cez emuláciu rozlíšenia v tom istom prehliadači).
+    Pracovné poznámky: <code>playtest/dizajn/vyucba-20261023-1843/ui-poznamky.md</code>. Kód webu som nemenil.</p>
+</footer>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  // Filter auditu podľa závažnosti.
+  var fb = document.querySelectorAll(".filtre button");
+  var riadky = document.querySelectorAll("#audit-tab tbody tr");
+  Array.prototype.forEach.call(fb, function (b) {
+    b.addEventListener("click", function () {
+      var f = b.getAttribute("data-f");
+      Array.prototype.forEach.call(fb, function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      Array.prototype.forEach.call(riadky, function (r) { r.hidden = f !== "vsetky" && r.getAttribute("data-z") !== f; });
+    });
+  });
+
+  // Prepínač pred / po / vedľa seba pri každom návrhu.
+  Array.prototype.forEach.call(document.querySelectorAll(".rezimy"), function (sk) {
+    var navrh = sk.closest(".navrh");
+    var tl = sk.querySelectorAll("button");
+    Array.prototype.forEach.call(tl, function (b) {
+      b.addEventListener("click", function () {
+        var r = b.getAttribute("data-r");
+        Array.prototype.forEach.call(tl, function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+        Array.prototype.forEach.call(navrh.querySelectorAll(".porovnanie"), function (p) { p.setAttribute("data-rezim", r); });
+      });
+    });
+  });
+
+  // Ukážka 1: úlohový zoznam sa odškrtáva, predčasné potvrdenie ukáže, čo chýba.
+  var ulohy = document.querySelectorAll("#ukazka-uloha .ulohy li");
+  var pocet = document.getElementById("pocet-uloh");
+  var hotove = 0;
+  function kresli(chyba) {
+    Array.prototype.forEach.call(ulohy, function (li, i) {
+      li.className = i < hotove ? "hotovo" : i === hotove ? (chyba ? "chyba" : "teraz") : "zamk";
+      var cis = li.querySelector(".cis");
+      cis.textContent = i < hotove ? "✓" : String(i + 1);
+      var pozn = li.querySelector(".pozn");
+      if (!pozn.getAttribute("data-p")) pozn.setAttribute("data-p", pozn.textContent);
+      pozn.textContent = chyba && i === hotove ? "Chýba ešte toto. Polož, potom potvrď." : pozn.getAttribute("data-p");
+    });
+    pocet.textContent = hotove >= ulohy.length ? "Hotovo! Na zdravie." : hotove + " z " + ulohy.length + " hotové";
+  }
+  document.getElementById("u-dalej").addEventListener("click", function () { if (hotove < ulohy.length) hotove++; kresli(false); });
+  document.getElementById("u-chyba").addEventListener("click", function () { if (hotove < 2) kresli(true); });
+  document.getElementById("u-reset").addEventListener("click", function () { hotove = 0; kresli(false); });
+
+  // Ukážka 2: slovník v bubline.
+  var st = document.getElementById("slovnik-tl"), sl = document.getElementById("slovnik");
+  st.addEventListener("click", function () { var o = sl.hidden; sl.hidden = !o; st.setAttribute("aria-expanded", String(o)); });
+
+  // Ukážka 3: bitka po kartách s titulkom Melichara (ilustračné čísla).
+  var kroky = [
+    { ja: 6, su: 0, v: "Hasič: Petelica sú 3 rany, NA EX ich zdvojil. +6 pre teba." },
+    { ja: 7, su: 0, v: "Pijan pri Jednote: Rana so spojom. +1." },
+    { ja: 8, su: 0, v: "Záverečná sa otočila, ďalší Pijan. +1." },
+    { ja: 10, su: 0, v: "Starosta ti prejavuje priazeň Bitkára: +2 tuhé v tejto bitke." },
+    { ja: 10, su: 3, v: "Štamgast: Recidivista s Petelicou, 3 rany." },
+    { ja: 10, su: 5, v: "Jeho Dvojčatá po NA EX: +2." },
+    { ja: 10, su: 4, v: "Tvoj Miňištrant: Viera mu uberie 1. Výsledok 10 : 4, prebytok 6, Jednota je tvoja." }
+  ];
+  var bi = -1;
+  var karty = document.querySelectorAll("#bitka .crd2");
+  function bitka() {
+    var k = kroky[bi];
+    document.getElementById("b-ja").textContent = k ? k.ja : 0;
+    document.getElementById("b-su").textContent = k ? k.su : 0;
+    document.getElementById("b-veta").textContent = k ? k.v : "Bitka! Zrátame tuhé poškodenie, karta po karte. Kto má viac, berie Jednotu.";
+    Array.prototype.forEach.call(karty, function (c, i) { c.classList.toggle("on", i <= bi); });
+    document.getElementById("b-dalej").textContent = bi >= kroky.length - 1 ? "rozdeliť prebytok" : "ďalej (Enter) " + (bi + 2) + "/" + kroky.length;
+  }
+  document.getElementById("b-dalej").addEventListener("click", function () { if (bi < kroky.length - 1) bi++; bitka(); });
+  document.getElementById("b-reset").addEventListener("click", function () { bi = -1; bitka(); });
+})();
+</script>
+</body>
+</html>
