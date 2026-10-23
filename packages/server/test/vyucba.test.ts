@@ -6,13 +6,13 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Command } from "@naex/core";
 import type { GameServer } from "../src/server.ts";
 import type { Msg } from "./pomocnik.ts";
-import { Klient, TEST_ADMIN, registruj, testovaciServer } from "./pomocnik.ts";
+import { Klient, TEST_ADMIN, prihlas, registruj, testovaciServer } from "./pomocnik.ts";
 
 let server: GameServer;
 let zmaz: () => Promise<void>;
 
 beforeAll(async () => {
-  ({ server, zmaz } = await testovaciServer(TEST_ADMIN, { botPauzaMs: 0 }));
+  ({ server, zmaz } = await testovaciServer(TEST_ADMIN, { botPauzaMs: 0, vyucbaZapnuta: true }));
 });
 
 afterAll(async () => {
@@ -109,5 +109,31 @@ describe("výučba „Prvá hra“", () => {
     expect(await api(cookie, "GET", "/vyucba")).toMatchObject({ stav: "preskocena", ponuknut: false });
     await api(cookie, "POST", "/vyucba/znova");
     expect(await api(cookie, "GET", "/vyucba")).toMatchObject({ krok: 0, stav: null });
+  });
+});
+
+describe("výučba — vypínač (scenár nezverejnený)", () => {
+  it("kým nie je zverejnená, hráč ju nedostane ponúknutú ani nespustí; správca áno", async () => {
+    const { server: s, zmaz: z } = await testovaciServer(TEST_ADMIN, { botPauzaMs: 0 });
+    try {
+      const { cookie } = await registruj(s.port);
+      const ziadaj = async (c: string) => (await (await fetch(`http://127.0.0.1:${s.port}/api/vyucba`, { headers: { cookie: c } })).json()) as { dostupna: boolean; ponuknut: boolean };
+      expect(await ziadaj(cookie)).toMatchObject({ dostupna: false, ponuknut: false });
+      const k = new Klient(s.port, cookie);
+      await k.otvorene();
+      k.posli({ type: "create", vyucba: true });
+      expect(String((await k.cakaj("error")).text)).toMatch(/ešte nie je hotová/);
+      k.zavri();
+
+      const admin = await prihlas(s.port, TEST_ADMIN.login, TEST_ADMIN.heslo);
+      expect(await ziadaj(admin)).toMatchObject({ dostupna: true, ponuknut: false });
+      const a = new Klient(s.port, admin);
+      await a.otvorene();
+      a.posli({ type: "create", vyucba: true });
+      expect((await a.cakaj("vyucba")).krok).toMatchObject({ index: 0 });
+      a.zavri();
+    } finally {
+      await z();
+    }
   });
 });

@@ -110,6 +110,8 @@ export interface ApiKontext {
   readonly stavServera: () => StavServera;
   /** Počet krokov scenára výučby „Prvá hra“ (Michal 2026-10-23). */
   readonly vyucbaKrokov: number;
+  /** Vypínač výučby: false = hráčom sa nezobrazí (ponuka ani tlačidlo), správcom áno. */
+  readonly vyucbaPreHracov: boolean;
   /** Zapne alebo vypne uzávierku; vráti nový stav. */
   readonly nastavUzavierku: (zapnut: boolean) => Uzavierka | null;
 }
@@ -384,7 +386,9 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     if (r === "GET /vyucba") {
       const p = prihlaseny();
       const v = ctx.ucty.vyucba(p.id);
-      return ok({ krok: v.krok, spolu: ctx.vyucbaKrokov, stav: v.stav, ponuknut: v.stav === null && v.krok === 0 && p.rola === "navstevnik" });
+      // dostupna: či ukázať tlačidlo „Prvá hra“; kým je vypínač vypnutý, len správcom (skúšanie).
+      const dostupna = ctx.vyucbaPreHracov || jeSpravca(p.rola);
+      return ok({ krok: v.krok, spolu: ctx.vyucbaKrokov, stav: v.stav, dostupna, ponuknut: ctx.vyucbaPreHracov && v.stav === null && v.krok === 0 && p.rola === "navstevnik" });
     }
 
     if (r === "POST /vyucba/preskocit") {

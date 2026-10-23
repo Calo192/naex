@@ -232,6 +232,8 @@ export interface ServerOpts {
   readonly playtestyDir?: string;
   /** Pauza pred ťahom offline protihráča, aby ho človek stihol sledovať (predvolene 700 ms). */
   readonly botPauzaMs?: number;
+  /** Výučba pre všetkých bez ohľadu na vypínač v scenári (testy). */
+  readonly vyucbaZapnuta?: boolean;
 }
 
 export function createGameServer(opts: ServerOpts): Promise<GameServer> {
@@ -247,6 +249,8 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   ucty.pouziPredvoleneAvatary(() => avatary.nahodny());
   const obsah = new Obsah(db, media);
   const scenarVyucby = nacitajVyucbu();
+  /** Výučba je pre hráčov, až keď je scenár zverejnený; dovtedy ju spustí len správca. */
+  const vyucbaPreHracov = opts.vyucbaZapnuta ?? scenarVyucby.zverejnena === true;
   const archiv = new Archiv(db);
   const tempoPartii = new TempoPartii(db);
   const prava = new Prava(db);
@@ -364,6 +368,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           stavServera,
           nastavUzavierku,
           vyucbaKrokov: scenarVyucby.kroky.length,
+          vyucbaPreHracov,
         },
         req,
         res,
@@ -763,6 +768,10 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
 
   /** Nová výučba hráča `ja` — pokračuje od uloženého kroku (dokončená začne odznova). */
   const zalozVyucbu = (ws: WebSocket, ja: Pouzivatel): void => {
+    if (!vyucbaPreHracov && !jeSpravca(ja.rola)) {
+      sendError(ws, "Výučba „Prvá hra“ ešte nie je hotová.");
+      return;
+    }
     const { sada, data } = obsah.aktualnaSada();
     const ulozene = ucty.vyucba(ja.id);
     let krok = ulozene.stav === "hotova" || ulozene.krok >= scenarVyucby.kroky.length ? 0 : ulozene.krok;

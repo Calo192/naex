@@ -60,6 +60,12 @@ export interface KrokVyucby {
 export interface ScenarVyucby {
   readonly id: string;
   readonly nazov: string;
+  /**
+   * Vypínač (Michal 2026-10-23): kým nie je true, výučbu hráčom server
+   * neponúkne ani nespustí — len správcom na skúšanie. Zapne sa až s hotovým
+   * scenárom a UI.
+   */
+  readonly zverejnena?: boolean;
   readonly rozdanie: Rozdanie;
   readonly kroky: readonly KrokVyucby[];
 }

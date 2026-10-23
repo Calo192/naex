@@ -2,6 +2,7 @@
   "_comment": "Ukážkový scenár výučby (technika, New features 2026-10-23) — plný scenár píše Navrhár (docs/napady/vyucba-scenar.html). Karty: defId alebo defId/ľavý/pravý variant; v príkazoch odkazy zóna:defId#n. Overenie: tools/vyucba/prehraj.ts.",
   "id": "prva-hra",
   "nazov": "Prvá hra",
+  "zverejnena": false,
   "rozdanie": {
     "seed": 1,
     "lokality": [
