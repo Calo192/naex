@@ -320,6 +320,8 @@ export interface HernaPlochaProps {
   readonly vHlavicke?: ReactNode;
   /** Prehrávač dohratej partie (roadmapa #18): ovládanie krokov nahradí v hlavičke spojenie, vzdanie a odchod. */
   readonly prehravanie?: ReactNode;
+  /** Počítadlo bitky beží / skončilo — pečiatka momentu z bitky (Momenty) počká na jeho koniec. */
+  readonly onPocitadlo?: (bezi: boolean) => void;
 }
 
 /** Názvy fáz pre titulok karty prehliadača. */
@@ -371,6 +373,7 @@ export function HernaPlocha({
   kontumacia,
   vHlavicke,
   prehravanie,
+  onPocitadlo,
 }: HernaPlochaProps) {
   DATA = data;
   const ja = view.ja;
@@ -1174,6 +1177,8 @@ export function HernaPlocha({
   // Stôl je ten s líniou — keď bitka hneď skončila a línia už zmizla, predošlý pohľad.
   const [pocitadlo, setPocitadlo] = useState<{ readonly p: Pocitadlo; readonly stol: ClientState; readonly linia: LineEval } | null>(null);
   const koniecPocitadla = useCallback(() => setPocitadlo(null), []);
+  const pocitadloBezi = pocitadlo !== null;
+  useEffect(() => onPocitadlo?.(pocitadloBezi), [pocitadloBezi, onPocitadlo]);
   useEffect(() => {
     for (const e of udalosti?.events ?? []) {
       if (e.type === "pitkaVysledok") setUcetPitky({ kolo: view.kolo, pitka: e.pitka, cirhozy: e.cirhozy, dlhy: e.dlhy, cigarety: e.cigarety });
