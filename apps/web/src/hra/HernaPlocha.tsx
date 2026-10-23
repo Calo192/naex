@@ -227,6 +227,10 @@ const SIRKA_VO_VRSTVE = 150;
 const POMER_KARTY = 80 / 54;
 /** Čo línia zaberá okrem kariet: okraj, popisy strán, rezerva posuvníka. */
 const PRIDAVOK_LINIE = 74;
+/** To isté na nízkom okne (NOTEBOOK): jeden tenký riadok nadpisov, menšie okraje (hra.css). */
+const PRIDAVOK_NOTEBOOK = 38;
+/** Pod NIZKE_OKNO: spodný okraj línie leží pod hranou stola (hra.css). */
+const PRIDAVOK_NIZKE = 28;
 /** Najmenší posun kariet akcia ku akcii (zlomok výšky karty), kým ho línia nezmeria. */
 const REZERVA_POSUNU = 0.3;
 
@@ -523,8 +527,8 @@ export function HernaPlocha({
       (view.faza === "pitka" && view.pitkaStav?.reakcia === ja));
   // +2: karta v strede a voľné miesto na koniec strany pri vykladaní;
   // pri vykladaní ležia na oboch koncoch úzke miesta na klik (MIESTO_VOLBY).
-  // Pod NIZKE_OKNO skryje hra.css riadok „na prebitie“ a popis strán pod lokalitou.
-  const sirkaPodlaVysky = mobil || vyskaPlste === 0 ? SIRKA_V_LINII : Math.floor((vyskaPlste - PRIDAVOK_LINIE + (vyskaOkna < NIZKE_OKNO ? 2 : 0)) / (POMER_KARTY * (1 + rezervaPosunu)));
+  // Pod NOTEBOOK skryje hra.css riadok „na prebitie“ a popis strán pod lokalitou, nadpisy krajov sú tenšie.
+  const sirkaPodlaVysky = mobil || vyskaPlste === 0 ? SIRKA_V_LINII : Math.floor((vyskaPlste - (vyskaOkna < NIZKE_OKNO ? PRIDAVOK_NIZKE : vyskaOkna < NOTEBOOK ? PRIDAVOK_NOTEBOOK : PRIDAVOK_LINIE)) / (POMER_KARTY * (1 + rezervaPosunu)));
   const sirkaVLinii =
     sirkaLinie === 0
       ? Math.min(SIRKA_V_LINII, sirkaPodlaVysky)
@@ -4197,8 +4201,8 @@ export function HernaPlocha({
             className="pas-kola-obal"
             id={idOdhadu}
             ref={pasRef}
-            // Pod NIZKE_OKNO pás nemá výšku dvoch riadkov — riadok bitky s hrozbou by sa doň nezmestil.
-            style={odhadOtvoreny && vyskaPasu > 0 && vyskaOkna >= NIZKE_OKNO ? { height: vyskaPasu } : undefined}
+            // Pod NOTEBOOK pás nemá výšku dvoch riadkov — riadok bitky s hrozbou by sa doň nezmestil.
+            style={odhadOtvoreny && vyskaPasu > 0 && vyskaOkna >= NOTEBOOK ? { height: vyskaPasu } : undefined}
           >
             {odhadOtvoreny && bitkaProps !== null && !mobil ? <BitkaPanel {...bitkaProps} stred={suhrnBitky} /> : pasKola}
           </div>

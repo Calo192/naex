@@ -5906,32 +5906,44 @@ button.auto-hotovo-odkaz {
 }
 
 @media (min-width: 761px) and (max-height: 919px) {
-  /* Bar hráča nižší: riadky pod číslom ležia vedľa neho (číslo vľavo, text vpravo),
-     výšku určuje dlaždica Karty s tromi počtami. */
+  /* Bar hráča nižší: nadpis, číslo a dva riadky textu pod sebou ako na veľkom okne, len s
+     tesnejším riadkovaním (vedľa čísla mal text len ≈ 40 px a skracoval sa — UI inšpekcia). */
   .doska,
   .plocha > section.doska {
     --bar-h: 80px;
     padding-block: 4px;
   }
 
-  /* Dlaždice rozpisu bodov (bodova-dlazdica) majú vlastné rozloženie — ostávajú v stĺpci. */
-  .doska:not(.bodovy) .zdroj:not(.bodova-dlazdica),
-  .doska.bodovy :is(.zdroj-body, .zdroj-karty) {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    grid-template-rows: auto minmax(0, 1fr);
-    align-items: center;
-    gap: 1px 8px;
-    padding: 4px 8px;
+  .doska .zdroj {
+    gap: 0;
+    padding: 2px 8px;
   }
 
-  .doska .zdroj:not(.bodova-dlazdica) > .zdroj-nazov {
-    grid-column: 1 / -1;
+  .doska .zdroj-nazov {
+    font-size: 0.64rem;
+    line-height: 1.1;
   }
 
-  .doska .zdroj:not(.bodova-dlazdica) > .zdroj-hodnota {
-    grid-column: 1;
-    grid-row: 2;
+  .doska .zdroj-hodnota {
+    min-height: 0;
+    height: 24px;
+  }
+
+  .doska .zdroj-pod {
+    font-size: 0.7rem;
+    line-height: 1.2;
+    max-height: 2.4em;
+  }
+
+  /* Prúžok k prahu opakuje číslo „0 ▸ 2/2“ — v nízkom bare by zobral riadok textu. */
+  .doska .zdroj .zdroj-pod > .pruh {
+    display: none;
+  }
+
+  .doska .zdroj .zdroj-pod > .vyhlad {
+    margin-top: 0;
+    font-size: inherit;
+    line-height: inherit;
   }
 
   /* Meno, rola a nepriznané kliatby sa zmestia pod seba do nižšieho baru. */
@@ -5964,28 +5976,22 @@ button.auto-hotovo-odkaz {
     gap: 6px;
   }
 
-  /* Text vedľa čísla vyplní výšku riadku (prúžok nad ním ho posúval o pár px). */
-  .doska .zdroj:not(.bodova-dlazdica) > .zdroj-pod {
-    grid-column: 2;
-    grid-row: 2;
-    align-self: stretch;
-    justify-content: center;
-    max-height: none;
-  }
-
   /* Pod číslom len celé riadky; čo sa nezmestí, odpadne celé (nie v polovici). */
   .doska .zdroj-pod > * {
     flex-shrink: 0;
   }
 
   .doska .velke-cislo {
-    font-size: 1.55rem;
+    font-size: 1.4rem;
   }
 
   /* Karty: tri počty pod sebou, kliatby a náradie pod nimi — stĺpec ako predtým, hustejšie. */
   .doska .zdroj-karty {
-    display: flex;
     gap: 0;
+  }
+
+  .doska .zdroj-karty > .zdroj-hodnota {
+    height: auto;
   }
 
   .doska .karty-pocty {
@@ -6002,7 +6008,7 @@ button.auto-hotovo-odkaz {
     display: none;
   }
 
-  /* Tlačidlá obchodu cigariet sa vedľa čísla nezmestia — v Pitke sú pečiatkami na hrane stola. */
+  /* Tlačidlá obchodu cigariet sa do nízkeho baru nezmestia — v Pitke sú pečiatkami na hrane stola. */
   .doska .obchod-cigariet {
     display: none;
   }
@@ -6022,9 +6028,64 @@ button.auto-hotovo-odkaz {
     padding-block: 3px;
   }
 
-  /* Z karty v ruke trčí menej, stôl dostane výšku (pod myšou sa vysunie celá). */
-  .hra {
-    --ruka-skryte: calc(var(--ruka-kh) * 0.4);
+  /* Pás kola len taký vysoký ako jeho obsah — výška dvoch riadkov (bez poskakovania) je tu
+     drahá; riadok bitky má potom vlastnú výšku (HernaPlocha, NOTEBOOK). */
+  .pas-kola-obal {
+    min-height: 0;
+  }
+
+  /* Pokyn v jednom riadku nad stolom; celé znenie sa rozbalí pod myšou alebo pri fokuse
+     (cez stôl, nič neposunie). Pokyn s kartami (Patronát, Vízia…) ostáva celý v toku. */
+  /* :has() sa nedá vnoriť — pokyn s kartami leží v .linia-stav, stačí jeden :has(). */
+  .linia-obal:not(:has(.zberatel-ponuka, .vizia-karta)) {
+    padding-top: 22px;
+  }
+
+  .linia-stav:not(:has(.zberatel-ponuka, .vizia-karta)) {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    z-index: 30;
+    translate: -50% 0;
+    width: max-content;
+    margin: 0;
+    padding-block: 3px;
+  }
+
+  .linia-stav:not(:has(.zberatel-ponuka, .vizia-karta)) > .pilulka-text {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .linia-stav:not(:has(.zberatel-ponuka, .vizia-karta)):is(:hover, :focus-within) > .pilulka-text {
+    white-space: normal;
+  }
+
+  /* Nad líniou len tenký riadok nadpisov krajov; počet na prebitie a strany pod lokalitou
+     sú v nápovede kraja (PRIDAVOK_NOTEBOOK v HernaPlocha). */
+  .linia-obal .stol-plst {
+    padding-top: 6px;
+  }
+
+  .stol-plst > .linia {
+    padding-top: 6px;
+  }
+
+  .partia-popis {
+    margin-bottom: 2px;
+    font-size: 0.72rem;
+    white-space: nowrap;
+  }
+
+  /* Hore 4 px na štítok NA EX nad kartou, dole nič. */
+  .linia .partia-rad {
+    padding-block: 4px 0;
+  }
+
+  .kraj-rovnost,
+  .strany-stredu {
+    display: none;
   }
 
   /* Hrana stola zasahuje do línie o pár px viac — pod ňou je len spodný okraj línie. */
@@ -6060,7 +6121,7 @@ button.auto-hotovo-odkaz {
 
   /* Z karty v ruke trčí menej (celá sa vysunie pod myšou). */
   .hra {
-    --ruka-skryte: calc(var(--ruka-kh) * 0.45);
+    --ruka-skryte: calc(var(--ruka-kh) * 0.5);
   }
 
   /* Hrana stola leží cez spodok plste: karty v línii sú tu malé a línia krátka,
@@ -6069,16 +6130,9 @@ button.auto-hotovo-odkaz {
     padding-bottom: 10px;
   }
 
-  /* Počet na prebitie a popis strán pod lokalitou ostávajú v nápovede kraja — karty dostanú
-     ich výšku (PRIDAVOK v HernaPlocha je tu menší). */
-  .kraj-rovnost,
-  .strany-stredu {
-    display: none;
-  }
-
-  /* Pás kola len taký vysoký ako jeho obsah — výška dvoch riadkov (bez poskakovania) je tu drahá. */
-  .pas-kola-obal {
-    min-height: 0;
+  /* Spodok línie leží pod hranou stola (PRIDAVOK_NIZKE v HernaPlocha). */
+  .linia-obal .stol-plst > .linia {
+    padding-bottom: 4px;
   }
 
   /* Zaokrúhlenie výšky kariet by ukázalo zvislý posuvník línie. */
@@ -6091,7 +6145,11 @@ button.auto-hotovo-odkaz {
   }
 
   .doska .velke-cislo {
-    font-size: 1.35rem;
+    font-size: 1.3rem;
+  }
+
+  .doska .zdroj-hodnota {
+    height: 20px;
   }
 
   .linia-stav:not(:has(.zberatel-ponuka, .vizia-karta)) {
