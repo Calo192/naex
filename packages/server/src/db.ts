@@ -306,7 +306,8 @@ function migruj(db: Db): void {
   if (!ucty.some((c) => c.name === "ai")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN ai INTEGER NOT NULL DEFAULT 0");
   // Farebná schéma webu (Michal 2026-10-21); NULL = predvolená Krčma.
   if (!ucty.some((c) => c.name === "schema")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN schema TEXT");
-  // Zobrazenie skóre v partii (Michal 2026-10-22): dlazdice / spolocny / dva; NULL = dlaždice.
+  // Zobrazenie skóre v partii (Michal 2026-10-22) — od roadmapy #70 sú body len dlaždice
+  // a stĺpec sa nečíta; ostáva, aby staré databázy nemuseli meniť tabuľku.
   if (!ucty.some((c) => c.name === "skore")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN skore TEXT");
   // Klávesové skratky v partii (Michal 2026-10-22, roadmapa #19): 0 = vypnuté, NULL = zapnuté.
   if (!ucty.some((c) => c.name === "skratky")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN skratky INTEGER");

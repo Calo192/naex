@@ -63,16 +63,13 @@ describe("nastavenia profilu", () => {
     expect(((await volaj("GET", "/ja", cookie)).data.pouzivatel as { schema: string }).schema).toBe("noc");
   });
 
-  it("zobrazenie skóre (Michal 2026-10-22): predvolene dlaždice, uloží sa len známa voľba", async () => {
+  it("zobrazenie skóre už nie je voľba (roadmapa #70): body sú len dlaždice, server skore ignoruje", async () => {
     const { cookie } = await registruj(server.port);
-    expect(((await volaj("GET", "/ja", cookie)).data.pouzivatel as { skore: string }).skore).toBe("dlazdice");
+    expect((await volaj("GET", "/ja", cookie)).data.pouzivatel).not.toHaveProperty("skore");
 
     const ok = await volaj("PATCH", "/profil", cookie, { skore: "dva" });
     expect(ok.status).toBe(200);
-    expect((ok.data.pouzivatel as { skore: string }).skore).toBe("dva");
-
-    for (const zle of ["", "tabulka", 2, null]) expect((await volaj("PATCH", "/profil", cookie, { skore: zle })).status).toBe(400);
-    expect(((await volaj("GET", "/ja", cookie)).data.pouzivatel as { skore: string }).skore).toBe("dva");
+    expect(ok.data.pouzivatel).not.toHaveProperty("skore");
   });
 
   it("klávesové skratky v partii (Michal 2026-10-22): predvolene zapnuté, vypínač len áno/nie", async () => {

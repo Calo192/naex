@@ -15,7 +15,6 @@
 
 import {
   useEffect,
-  useId,
   useMemo,
   useRef,
   useState,
@@ -100,7 +99,6 @@ import {
 import type { ActionSums, GameState, KliatbyNahladu, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
-import { KrcmovyUcet } from "./KrcmovyUcet.tsx";
 import { SkratkyNapoveda, useSkratky } from "./skratky.tsx";
 import type { Sada } from "@naex/tvorba";
 import { HernaKarta, vzhladKarty, type HernaKartaProps } from "./HernaKarta.tsx";
@@ -457,36 +455,8 @@ export function HernaPlocha({
   const sirkaScorecardu = Math.min(maliStarsi ? SIRKA_SCORECARDU_MALA : SIRKA_SCORECARDU_MAX, Math.max(minScorecardu, Math.floor((sirkaRadu - (vRade - 1) * MEDZERA_SCORECARDOV) / vRade)));
   // Zväčšenie karty (lupa a ruka) podľa nastavenia v profile.
   const mierkaLupy = (useUcet().ja?.lupa ?? LUPA_PREDVOLENA) / 100;
-  // Zobrazenie skóre (preferencia v profile, Michal 2026-10-22): dlaždice v bare, alebo krčmový účet cez starších.
-  const zobrazenieSkore = useUcet().ja?.skore ?? "dlazdice";
   // Klávesové skratky v partii (Michal 2026-10-22, roadmapa #19) — vypínač v profile.
   const skratky = useSkratky(useUcet().ja?.skratky !== false && view.koniec === null);
-  // Poloha účtu vo viditeľnej časti okna (Michal 2026-10-22: klik na Body pri mojom bare
-  // otvoril účet hore pod súperovým barom, mimo obrazovky) — pod osou kola, nad tlačidlami kroku a rukou.
-  const [ucetPoloha, setUcetPoloha] = useState<{ readonly top: number; readonly maxH: number } | null>(null);
-  const ucetOtvoreny = ucetPoloha !== null;
-  const setUcetOtvoreny = (o: boolean): void => setUcetPoloha(o ? polohaUcetu() : null);
-  const polohaUcetu = (): { readonly top: number; readonly maxH: number } => {
-    const hlava = document.querySelector(".hra-hlava")?.getBoundingClientRect().bottom ?? 0;
-    const ruka = document.querySelector(".ruka")?.getBoundingClientRect().top ?? window.innerHeight;
-    const hrana = document.querySelector(".stol-hrana .hrana-rad")?.getBoundingClientRect();
-    // Tlačidlá kroku nad rukou nesmie prekryť; keď sú vyššie, než sa účet zmestí, berie sa len ruka.
-    let dole = ruka - 8;
-    if (hrana !== undefined && hrana.height > 0 && hrana.top > hlava + 260 && hrana.top < dole) dole = hrana.top - 8;
-    const top = Math.max(8, hlava + 8);
-    return { top, maxH: Math.max(200, dole - top) };
-  };
-  const idUcetu = useId();
-  useEffect(() => {
-    if (!ucetOtvoreny) return;
-    const klaves = (e: KeyboardEvent): void => {
-      if (e.key === "Escape") setUcetPoloha(null);
-    };
-    window.addEventListener("keydown", klaves);
-    return () => window.removeEventListener("keydown", klaves);
-  }, [ucetOtvoreny]);
-  const ucetBaru =
-    zobrazenieSkore === "dlazdice" ? undefined : { otvoreny: ucetOtvoreny, prepni: () => setUcetOtvoreny(!ucetOtvoreny), id: idUcetu };
   const mierkaLupyScorecardu = Math.max(1.6, SIRKA_SCORECARDU_V_LUPE / sirkaScorecardu);
   const lokalitaRef = useRef<HTMLDivElement>(null);
   // Línia môže byť dlhá — lokalitu drž v strede pohľadu.
@@ -3782,23 +3752,7 @@ export function HernaPlocha({
           data={data}
           mena={[menoHraca(0), menoHraca(1)]}
           menoStarsieho={menoStarsieho}
-          ucet={ucetBaru}
         />
-        {/* Účet leží nad stolom vo viditeľnej časti okna (position: fixed) — stôl pri otvorení neposkočí. */}
-        {ucetBaru !== undefined && ucetPoloha !== null && (
-          <div className="ucet-kotva" id={idUcetu} style={{ top: ucetPoloha.top, maxHeight: ucetPoloha.maxH }}>
-            <KrcmovyUcet
-              body={body}
-              data={data}
-              ja={ja}
-              mena={[menoHraca(0), menoHraca(1)]}
-              menoStarsieho={menoStarsieho}
-              kolo={view.kolo}
-              dva={zobrazenieSkore === "dva"}
-              onZavri={() => setUcetOtvoreny(false)}
-            />
-          </div>
-        )}
         {/* Starší hore — mimo dosahu ruky, aby sa ich lupa nebila s lupou kariet v ruke. */}
         <div className="stred">
           {/* Stôl je hneď pod staršími — pás pokynov a ruka ho neprekryjú
@@ -3895,7 +3849,6 @@ export function HernaPlocha({
             data={data}
             mena={[menoHraca(0), menoHraca(1)]}
             menoStarsieho={menoStarsieho}
-            ucet={ucetBaru}
           />
 
           {bitkaPanel}

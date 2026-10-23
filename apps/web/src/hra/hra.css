@@ -4460,57 +4460,16 @@ button.auto-hotovo-odkaz {
   line-height: 1.2;
 }
 
-/* ---- krčmový účet (Michal 2026-10-22, dizajn stol-oproti-c2-20261022-1030) ----
- * Leží cez starších (kotva bez výšky), papier sú obrátené tokeny —
- * pozadie je farba textu, text farba pozadia. */
-.ucet-kotva {
-  position: fixed;
-  left: 0;
-  right: 0;
-  z-index: 40;
-  display: flex;
-  justify-content: center;
-  overflow-y: auto;
-  pointer-events: none;
-}
-
+/* ---- krčmový účet — záverečné bodovanie v detaile partie (dizajn stol-oproti-c2-20261022-1030) ----
+ * Papier sú obrátené tokeny — pozadie je farba textu, text farba pozadia. */
 .krcmovy-ucet {
-  position: relative;
-  pointer-events: auto;
   width: min(680px, calc(100vw - 32px));
   color: var(--pozadie);
   font-size: 0.86rem;
-  animation: ucet-vyjdi 0.18s ease-out;
-}
-
-.krcmovy-ucet.dva {
-  width: min(900px, calc(100vw - 32px));
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.krcmovy-ucet.spolocny,
-.ucet-papier {
   padding: 12px 16px 14px;
   background: var(--text);
   border-radius: 4px;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
-}
-
-.ucet-papier.superov {
-  border-top: 4px solid var(--su);
-}
-
-.ucet-papier.moj {
-  border-top: 4px solid var(--ja);
-}
-
-@keyframes ucet-vyjdi {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
 }
 
 .ucet-hlava {
@@ -4525,29 +4484,6 @@ button.auto-hotovo-odkaz {
   font: 800 1.05rem/1.2 var(--nadpis);
   text-transform: uppercase;
   letter-spacing: 0.04em;
-}
-
-.ucet-spat {
-  padding: 3px 10px;
-  border: 0;
-  border-radius: 999px;
-  background: var(--pozadie);
-  color: var(--text);
-  font: 600 0.8rem/1.2 var(--pismo);
-  cursor: pointer;
-}
-
-.ucet-pozn {
-  margin-left: auto;
-  font-size: 0.76rem;
-  opacity: 0.7;
-}
-
-.ucet-pozn kbd {
-  padding: 0 4px;
-  border: 1px solid currentColor;
-  border-radius: 4px;
-  font-size: 0.7rem;
 }
 
 .ucet-mena {
@@ -4575,48 +4511,15 @@ button.auto-hotovo-odkaz {
   align-items: baseline;
   gap: 8px;
   padding: 3px 4px;
+  grid-template-columns: 70px 44px 1fr 44px 70px;
   border-radius: 4px;
   cursor: help;
 }
 
-.spolocny .ucet-riadok {
-  grid-template-columns: 70px 44px 1fr 44px 70px;
-}
-
-.spolocny .ucet-riadok > :nth-child(4),
-.spolocny .ucet-riadok > :nth-child(5) {
+.ucet-riadok > :nth-child(2),
+.ucet-riadok > :nth-child(4),
+.ucet-riadok > :nth-child(5) {
   text-align: right;
-}
-
-.spolocny .ucet-riadok > :nth-child(2) {
-  text-align: right;
-}
-
-.ucet-papier .ucet-riadok {
-  grid-template-columns: 1fr auto 44px;
-}
-
-.ucet-papier .ucet-riadok > :nth-child(3) {
-  text-align: right;
-}
-
-/* Tvoj účet vpravo: čísla pri strednej osi, podmienka pri vonkajšom okraji
-   (rtl obráti stĺpce, obsah buniek ostáva ltr). */
-.ucet-papier.zrkadlo .ucet-riadok {
-  direction: rtl;
-}
-
-.ucet-papier.zrkadlo .ucet-riadok > * {
-  direction: ltr;
-  text-align: right;
-}
-
-.ucet-papier.zrkadlo .ucet-riadok > :nth-child(3) {
-  text-align: left;
-}
-
-.ucet-riadok.nad {
-  background: color-mix(in srgb, var(--akcent) 30%, transparent);
 }
 
 .ucet-riadok.neaktivna {
@@ -4651,10 +4554,6 @@ button.auto-hotovo-odkaz {
   font-size: 0.78rem;
   opacity: 0.75;
   font-variant-numeric: tabular-nums;
-}
-
-.ucet-nazov {
-  font-weight: 600;
 }
 
 .ucet-sucet {
@@ -4709,12 +4608,6 @@ button.auto-hotovo-odkaz {
   margin: 8px 0 0;
   font-size: 0.72rem;
   opacity: 0.7;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .krcmovy-ucet {
-    animation: none;
-  }
 }
 
 /* Hodnota lokality (Michal 2026-10-22): koľko bodov by ovládnutie dnes pridalo. */

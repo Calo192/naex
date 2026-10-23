@@ -14,13 +14,10 @@ import {
   MELICHAR_FREKVENCIA_PREDVOLENA,
   MELICHAR_PREDVOLENY,
   NAZOV_UROVNE,
-  SKORE_PREDVOLENE,
-  ZOBRAZENIA_SKORE,
   jeSpravca,
   maPravo,
   useUcet,
   type Pouzivatel,
-  type ZobrazenieSkore,
 } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Pole } from "../komponenty.tsx";
 import type { Pohlavie } from "@naex/core";
@@ -282,16 +279,6 @@ export function Profil() {
       .catch(chyba);
   };
 
-  // Zobrazenie skóre v partii (Michal 2026-10-22) — uloží sa v účte.
-  const [skore, setSkore] = useState<ZobrazenieSkore>(ja?.skore ?? SKORE_PREDVOLENE);
-  const vyberSkore = (id: ZobrazenieSkore): void => {
-    setSkore(id);
-    api
-      .patch<{ pouzivatel: Pouzivatel }>("/profil", { skore: id })
-      .then((r) => nastav(r.pouzivatel))
-      .catch(chyba);
-  };
-
   // Klávesové skratky v partii (Michal 2026-10-22, roadmapa #19).
   const [skratky, setSkratky] = useState(ja?.skratky !== false);
   const prepniSkratky = (zapnute: boolean): void => {
@@ -496,16 +483,6 @@ export function Profil() {
       </section>
       <section className="panel preferencie" aria-labelledby="preferencie-nadpis">
         <h3 id="preferencie-nadpis">Preferencie</h3>
-        <fieldset className="skore-volby">
-          <legend>Zobrazenie skóre v partii — po kliknutí na Body v bare hráča</legend>
-          {ZOBRAZENIA_SKORE.map((z) => (
-            <label key={z.id} className={z.id === skore ? "skore-volba zvolena" : "skore-volba"}>
-              <input type="radio" name="skore" value={z.id} checked={z.id === skore} onChange={() => vyberSkore(z.id)} />
-              <span className="skore-nazov">{z.nazov}</span>
-              <span className="skore-popis">{z.popis}</span>
-            </label>
-          ))}
-        </fieldset>
         <label className="skratky-volba">
           <input type="checkbox" checked={skratky} onChange={(e) => prepniSkratky(e.target.checked)} />
           <span>

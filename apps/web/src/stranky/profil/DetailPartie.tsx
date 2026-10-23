@@ -1,6 +1,6 @@
 // Detail partie (Michal 2026-10-22): priebeh bodov po kolách, kolá a záverečné
-// bodovanie ako krčmový účet — ten istý ako počas hry (KrcmovyUcet). Vidí ho
-// účastník a správca; súperove skryté čísla server neposiela.
+// bodovanie ako krčmový účet (KrcmovyUcet). Vidí ho účastník a správca;
+// súperove skryté čísla server neposiela.
 
 import { useEffect, useMemo, useState } from "react";
 import { loadGameData, type PlayerId } from "@naex/core";
@@ -213,7 +213,6 @@ export function DetailPartie({ id }: { readonly id: number }) {
       {d.zaverecne !== null ? (
         <section className="profil-karta detail-ucet">
           <h2>Záverečné bodovanie</h2>
-          {/* Ten istý krčmový účet ako počas hry — bez onZavri je záverečný. */}
           <div className="detail-ucet-obal">
             <KrcmovyUcet
               body={d.zaverecne}
@@ -222,7 +221,6 @@ export function DetailPartie({ id }: { readonly id: number }) {
               mena={mena}
               menoStarsieho={(elderId) => d.menaStarsich[elderId] ?? elderId}
               kolo={d.kola.length}
-              dva={false}
             />
           </div>
         </section>

@@ -46,8 +46,6 @@ export interface Pouzivatel {
   readonly ai: boolean;
   /** Farebná schéma webu (id zo zoznamu klienta); null = predvolená. */
   readonly schema: string | null;
-  /** Ako sa v partii ukáže rozpis bodov (ZOBRAZENIA_SKORE). */
-  readonly skore: ZobrazenieSkore;
   /** Klávesové skratky v partii (K, P, N, Esc, ?) — predvolene zapnuté. */
   readonly skratky: boolean;
   /** Pohlavie pre tvary hlášok („Eva skončila“); null = neuvádza, hlášky sú neutrálne. */
@@ -67,26 +65,9 @@ export function overLupu(v: unknown): number {
   return Math.round(n);
 }
 
-/**
- * Farebná schéma z requestu. Zoznam schém pozná len klient (apps/web/src/lib/schemy.ts) —
- * neznáme id prehliadač ignoruje a ukáže predvolenú, preto stačí overiť tvar.
- */
-/**
- * Zobrazenie skóre v partii (Michal 2026-10-22): rozpis bodov ako dlaždice
- * v bare hráča, spoločný krčmový účet, alebo dva účty proti sebe.
- */
-export const ZOBRAZENIA_SKORE = ["dlazdice", "spolocny", "dva"] as const;
-export type ZobrazenieSkore = (typeof ZOBRAZENIA_SKORE)[number];
-export const SKORE_PREDVOLENE: ZobrazenieSkore = "dlazdice";
-
 export function overPrepinac(v: unknown, co: string): boolean {
   if (typeof v !== "boolean") throw new ChybaVstupu(`${co}: zapnuté alebo vypnuté.`);
   return v;
-}
-
-export function overSkore(v: unknown): ZobrazenieSkore {
-  if (!ZOBRAZENIA_SKORE.includes(v as ZobrazenieSkore)) throw new ChybaVstupu("Neznáme zobrazenie skóre.");
-  return v as ZobrazenieSkore;
 }
 
 /** Pohlavie z requestu — muz, zena, alebo null (neuvádzať). */
@@ -96,6 +77,10 @@ export function overPohlavie(v: unknown): Pohlavie | null {
   return v as Pohlavie;
 }
 
+/**
+ * Farebná schéma z requestu. Zoznam schém pozná len klient (apps/web/src/lib/schemy.ts) —
+ * neznáme id prehliadač ignoruje a ukáže predvolenú, preto stačí overiť tvar.
+ */
 export function overSchemu(v: unknown): string {
   if (typeof v !== "string" || !/^[a-z]{2,20}$/.test(v)) throw new ChybaVstupu("Neznáma farebná schéma.");
   return v;
@@ -273,7 +258,6 @@ export class Ucty {
           : Math.min(MELICHAR_FREKVENCIA_DO, Number(r.melichar_frekvencia)),
       ai: Number(r.ai) === 1,
       schema: typeof r.schema === "string" ? r.schema : null,
-      skore: ZOBRAZENIA_SKORE.includes(r.skore as ZobrazenieSkore) ? (r.skore as ZobrazenieSkore) : SKORE_PREDVOLENE,
       skratky: r.skratky === null || r.skratky === undefined ? true : Number(r.skratky) === 1,
       pohlavie: POHLAVIA.includes(r.pohlavie as Pohlavie) ? (r.pohlavie as Pohlavie) : null,
       skrytySuhrn: Number(r.skryty_suhrn) === 1,
@@ -282,7 +266,7 @@ export class Ucty {
 
   podlaId(id: number): Pouzivatel | null {
     return this.riadok(
-      this.db.prepare("SELECT id, login, meno, avatar, rola, lupa, hudba, melichar, melichar_frekvencia, ai, schema, skore, skratky, pohlavie, skryty_suhrn FROM pouzivatelia WHERE id = ?").get(id) as
+      this.db.prepare("SELECT id, login, meno, avatar, rola, lupa, hudba, melichar, melichar_frekvencia, ai, schema, skratky, pohlavie, skryty_suhrn FROM pouzivatelia WHERE id = ?").get(id) as
         | Record<string, unknown>
         | undefined,
     );
@@ -363,7 +347,6 @@ export class Ucty {
       melichar?: number;
       melicharFrekvencia?: number;
       schema?: string;
-      skore?: ZobrazenieSkore;
       skratky?: boolean;
       pohlavie?: Pohlavie | null;
       skrytySuhrn?: boolean;
@@ -377,7 +360,6 @@ export class Ucty {
       this.db.prepare("UPDATE pouzivatelia SET melichar_frekvencia = ? WHERE id = ?").run(zmeny.melicharFrekvencia, id);
     }
     if (zmeny.schema !== undefined) this.db.prepare("UPDATE pouzivatelia SET schema = ? WHERE id = ?").run(zmeny.schema, id);
-    if (zmeny.skore !== undefined) this.db.prepare("UPDATE pouzivatelia SET skore = ? WHERE id = ?").run(zmeny.skore, id);
     if (zmeny.skratky !== undefined) this.db.prepare("UPDATE pouzivatelia SET skratky = ? WHERE id = ?").run(zmeny.skratky ? 1 : 0, id);
     if (zmeny.pohlavie !== undefined) this.db.prepare("UPDATE pouzivatelia SET pohlavie = ? WHERE id = ?").run(zmeny.pohlavie, id);
     if (zmeny.skrytySuhrn !== undefined) this.db.prepare("UPDATE pouzivatelia SET skryty_suhrn = ? WHERE id = ?").run(zmeny.skrytySuhrn ? 1 : 0, id);

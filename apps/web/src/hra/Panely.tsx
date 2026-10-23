@@ -354,11 +354,6 @@ export interface HracDoskaProps {
   /** Mená oboch hráčov podľa miesta. */
   readonly mena: readonly [string, string];
   readonly menoStarsieho: (elderId: string) => string;
-  /**
-   * Zobrazenie skóre „účet“ (preferencia v profile): Body otvorí spoločný
-   * krčmový účet cez starších namiesto dlaždíc v bare. Bez neho dlaždice.
-   */
-  readonly ucet?: { readonly otvoreny: boolean; readonly prepni: () => void; readonly id: string } | undefined;
 }
 
 /** „o 12 pred Tetou“ / „o 3 za Tetou“ / „rovnako“ — dlaždica Body. */
@@ -391,7 +386,6 @@ export function HracDoska({
   data,
   mena,
   menoStarsieho,
-  ucet,
 }: HracDoskaProps) {
   const [rozpis, setRozpis] = useState(false);
   const bodyRef = useRef<HTMLButtonElement>(null);
@@ -711,18 +705,12 @@ export function HracDoska({
           ref={bodyRef}
           type="button"
           className={`zdroj zdroj-body ${body.spolu[p] > 0 ? "plus" : body.spolu[p] < 0 ? "minus" : ""}`}
-          aria-expanded={ucet?.otvoreny ?? rozpis}
-          aria-controls={ucet?.id ?? idRozpisu}
-          title={
-            (ucet?.otvoreny ?? rozpis)
-              ? ucet !== undefined
-                ? "Zavrieť účet (Esc)"
-                : "Späť na zdroje (Esc)"
-              : "Rozpis bodov — za čo koľko (keby hra skončila teraz)"
-          }
-          onClick={() => (ucet !== undefined ? ucet.prepni() : setRozpis((r) => !r))}
+          aria-expanded={rozpis}
+          aria-controls={idRozpisu}
+          title={rozpis ? "Späť na zdroje (Esc)" : "Rozpis bodov — za čo koľko (keby hra skončila teraz)"}
+          onClick={() => setRozpis((r) => !r)}
         >
-          <span className="zdroj-nazov">Body {(ucet?.otvoreny ?? rozpis) ? "▴" : "▾"}</span>
+          <span className="zdroj-nazov">Body {rozpis ? "▴" : "▾"}</span>
           <span className="zdroj-hodnota">
             <span className="velke-cislo">{znamienkoBodov(body.spolu[p])}</span>
           </span>
