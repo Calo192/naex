@@ -25,6 +25,7 @@ export * from "./vyucba.ts";
 export * from "./momenty.ts";
 export * from "./nahlady.ts";
 export * from "./hrozba.ts";
+export * from "./pocitadlo.ts";
 export * from "./zavislost.ts";
 export * from "./statistiky.ts";
 export * from "./statistikyKariet.ts";

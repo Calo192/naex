@@ -6267,6 +6267,229 @@ button.auto-hotovo-odkaz {
 @keyframes moment-odchod {
   to {
     opacity: 0;
+
+/* ---- Počítadlo bitky (Michal 2026-10-23): výsledok rastie po vlnách od lokality ----
+ * Vrstva nad stolom s vlastnou kópiou línie z okamihu bitky (PocitadloBitky.tsx):
+ * karta sa rozsvieti, príspevok vyletí, zdvojený sa roztrasie, víťazné číslo buchne.
+ * Klik kamkoľvek preskočí. */
+.pocitadlo-bitky {
+  position: fixed;
+  inset: 0;
+  z-index: 850;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  /* Skutočný stôl pod kópiou línie nesmie presvitať — mätie, ktorá línia je ktorá. */
+  background: color-mix(in srgb, var(--pozadie) 92%, transparent);
+  backdrop-filter: blur(3px);
+  cursor: pointer;
+  animation: pocitadlo-prichod 0.2s ease-out both;
+}
+
+.pocitadlo-scena {
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.pocitadlo-panel {
+  min-width: 240px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 24px 8px;
+  border-radius: 14px;
+  background: var(--plocha);
+  border: 2px solid var(--akcent);
+  box-shadow: 0 12px 40px color-mix(in srgb, #000 calc(var(--tma) * 55%), transparent);
+}
+
+.pocitadlo-nadpis,
+.pocitadlo-mena {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tlmeny);
+}
+
+.pocitadlo-cisla {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  font: 800 3rem/1 var(--nadpis);
+  font-variant-numeric: tabular-nums;
+}
+
+.pocitadlo-cisla .ja {
+  color: var(--ja);
+}
+
+.pocitadlo-cisla .su {
+  color: var(--su);
+}
+
+.pocitadlo-cisla .vyhra {
+  animation: pocitadlo-buch 0.5s ease-out;
+}
+
+.pocitadlo-dvojbodka {
+  color: var(--slaby-text);
+}
+
+.pocitadlo-rad {
+  max-width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 4px;
+  padding-top: 26px;
+}
+
+.pocitadlo-karta {
+  position: relative;
+  flex: none;
+  border-radius: 8px;
+  opacity: 0.55;
+  transition: opacity 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pocitadlo-karta.bola {
+  opacity: 0.85;
+}
+
+.pocitadlo-karta.svieti {
+  opacity: 1;
+  animation: pocitadlo-svit 0.4s ease-out both;
+}
+
+.pocitadlo-karta.svieti.ja {
+  box-shadow: 0 0 0 3px var(--ja), 0 0 22px 4px color-mix(in srgb, var(--ja) 55%, transparent);
+}
+
+.pocitadlo-karta.svieti.su {
+  box-shadow: 0 0 0 3px var(--su), 0 0 22px 4px color-mix(in srgb, var(--su) 55%, transparent);
+}
+
+.pocitadlo-prispevok {
+  position: absolute;
+  left: 50%;
+  top: -22px;
+  translate: -50% 0;
+  padding: 1px 9px;
+  border-radius: 99px;
+  font: 800 1.15rem/1.2 var(--nadpis);
+  white-space: nowrap;
+  background: var(--plocha);
+  border: 2px solid currentColor;
+  animation: pocitadlo-vylet 0.5s ease-out both;
+}
+
+.pocitadlo-prispevok.ja {
+  color: var(--ja);
+}
+
+.pocitadlo-prispevok.su {
+  color: var(--su);
+}
+
+/* Lokalita dá akcie obom — príspevok druhého hráča pod kartou. */
+.pocitadlo-prispevok + .pocitadlo-prispevok {
+  top: auto;
+  bottom: -22px;
+}
+
+.pocitadlo-prispevok.nasobok {
+  animation:
+    pocitadlo-vylet 0.5s ease-out both,
+    pocitadlo-otras 0.3s ease-in-out 0.2s 2;
+}
+
+.pocitadlo-pata {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding-top: 8px;
+}
+
+.pocitadlo-zoznam {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 10px;
+  max-width: 640px;
+}
+
+.pocitadlo-zoznam > span {
+  padding: 2px 10px;
+  border-radius: 99px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: var(--plocha);
+  border: 1px solid currentColor;
+  animation: pocitadlo-vylet 0.4s ease-out both;
+}
+
+.pocitadlo-zoznam .ja {
+  color: var(--ja);
+}
+
+.pocitadlo-zoznam .su {
+  color: var(--su);
+}
+
+.pocitadlo-verdikt {
+  font: 800 1.15rem/1.2 var(--nadpis);
+  color: var(--text);
+}
+
+.pocitadlo-tip {
+  font-size: 0.72rem;
+  color: var(--slaby-text);
+}
+
+@keyframes pocitadlo-prichod {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes pocitadlo-svit {
+  from {
+    scale: 0.96;
+  }
+  50% {
+    scale: 1.06;
+  }
+}
+
+@keyframes pocitadlo-vylet {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.7);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-6px) scale(1.12);
+  }
+}
+
+@keyframes pocitadlo-otras {
+  25% {
+    rotate: -7deg;
+  }
+  75% {
+    rotate: 7deg;
+  }
+}
+
+@keyframes pocitadlo-buch {
+  40% {
+    scale: 1.35;
   }
 }
 
@@ -6291,4 +6514,10 @@ button.auto-hotovo-odkaz {
 /* Ukážka z adresy (?ukazka-momentu=…) neodchádza — kvôli snímkam a inšpekcii. */
 .moment-pecat.moment-ukazka {
   animation: moment-dopad 0.45s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+
+  .pocitadlo-bitky,
+  .pocitadlo-bitky * {
+    animation: none !important;
+  }
 }

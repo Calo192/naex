@@ -14,6 +14,7 @@
 // istom ťahu stojí plný poldeci a rozhranie to výrazne ukazuje.
 
 import {
+  useCallback,
   useEffect,
   useId,
   useLayoutEffect,
@@ -37,8 +38,10 @@ import type {
   Event,
   GameData,
   KartaZdroj,
+  LineEval,
   PlacedCard,
   PlayerId,
+  PocitadloBitky as Pocitadlo,
   VerejnyStav,
 } from "@naex/core";
 import {
@@ -60,6 +63,7 @@ import {
   cieleVykladania,
   cielLokalitaId,
   evaluateLine,
+  pocitadloBitky,
   hrozbaNaex,
   krokStavby,
   planVykladania,
@@ -106,6 +110,7 @@ import type { ActionSums, GameState, KliatbyNahladu, MarkerPos, NahladVylozenia,
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
 import { LiniaStarsich, LupaStarsieho, type StarsiVLinii } from "./LiniaStarsich.tsx";
+import { PocitadloBitky } from "./PocitadloBitky.tsx";
 import { mediaUrl } from "../lib/api.ts";
 import { useStrazOdchodu } from "../lib/odchod.ts";
 import { skupinyBalicka } from "./doberaciBalicek.ts";
@@ -1165,10 +1170,22 @@ export function HernaPlocha({
   // vyhodnotenie komu pripísalo — inak to bolo len v logu a skóre skočilo bez súhrnu.
   const [ucetPitky, setUcetPitky] = useState<UcetPitky | null>(null);
   const vysledokBitky = useRef<Extract<Event, { type: "bitkaVysledok" }> | null>(null);
+  // Počítadlo bitky (Michal 2026-10-23): výsledok rastie po vlnách, kým ho hráč nepreskočí.
+  // Stôl je ten s líniou — keď bitka hneď skončila a línia už zmizla, predošlý pohľad.
+  const [pocitadlo, setPocitadlo] = useState<{ readonly p: Pocitadlo; readonly stol: ClientState; readonly linia: LineEval } | null>(null);
+  const koniecPocitadla = useCallback(() => setPocitadlo(null), []);
   useEffect(() => {
     for (const e of udalosti?.events ?? []) {
       if (e.type === "pitkaVysledok") setUcetPitky({ kolo: view.kolo, pitka: e.pitka, cirhozy: e.cirhozy, dlhy: e.dlhy, cigarety: e.cigarety });
-      if (e.type === "bitkaVysledok") vysledokBitky.current = e;
+      if (e.type === "bitkaVysledok") {
+        vysledokBitky.current = e;
+        const stol = view.ciel !== null && view.strany.some((s) => s.length > 0) ? view : (predoslyView.current ?? view);
+        const tlmene = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (!tlmene && stol.ciel !== null) {
+          const linia = evaluateLine(data, lineState(stol));
+          setPocitadlo({ p: pocitadloBitky(data, stol, linia, e.damage.tuhe), stol, linia });
+        }
+      }
     }
     // Len nové udalosti — view.kolo je to isté prekreslenie.
   }, [udalosti?.id]);
@@ -3166,7 +3183,9 @@ export function HernaPlocha({
     setVysledokKroku(false);
     setPohladStarsich(null);
   }, [potrebujemLiniu]);
-  const starsiViditelni = tahanie === null && (krokStarsich !== null ? !nahliadnutie : vysledokKroku || pohladStarsich !== null);
+  // Kým beží počítadlo bitky, stôl ukazuje líniu kariet (rozsvecujú sa), nie starších.
+  const starsiViditelni =
+    tahanie === null && pocitadlo === null && (krokStarsich !== null ? !nahliadnutie : vysledokKroku || pohladStarsich !== null);
   const pohladLinie = pohladStarsich ?? ja;
   // Bodový bar (Michal 2026-10-23): po kliku na Body ukážu oba bary body podľa podmienok;
   // späť sa prepnú spolu so stolom. Podmienka pod myšou zvýrazní starších v línii.
@@ -4656,6 +4675,30 @@ export function HernaPlocha({
           )}
         </div>
       </div>
+
+      {pocitadlo !== null &&
+        (() => {
+          // Línia z okamihu bitky, ako na stole: tvoja strana od lokality doľava, súperova doprava.
+          const { stol, linia } = pocitadlo;
+          const lok = stol.ciel?.lokalita ?? null;
+          const poradie = [
+            ...[...stol.strany[ja]].reverse(),
+            ...(lok === null ? [] : [{ card: lok, playedBy: null }]),
+            ...stol.strany[super_],
+          ];
+          const sirka = Math.max(56, Math.min(110, Math.floor((window.innerWidth - 120) / Math.max(1, poradie.length))));
+          const rad = poradie.map((pl) => ({
+            uid: pl.card.uid,
+            karta: karta({
+              karta: pl.card,
+              sirka,
+              otocena: pl.playedBy === null ? stol.lokalitaOtocena !== (ja === 1) : pl.playedBy !== ja,
+              eval: linia.cards.get(pl.card.uid) ?? null,
+              bezPopisov: true,
+            }),
+          }));
+          return <PocitadloBitky p={pocitadlo.p} ja={ja} mena={[menoHraca(0), menoHraca(1)]} menoKarty={menoKarty} rad={rad} onKoniec={koniecPocitadla} />;
+        })()}
 
       {/* Až tu — lupaKarty sa naplnia pri kreslení stola a vrstiev vyššie. */}
       {(() => {
