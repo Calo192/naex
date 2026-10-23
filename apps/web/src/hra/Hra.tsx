@@ -225,6 +225,8 @@ export function Hra() {
   // Ozve sa pri pečiatke momentu (Momenty), nie po každom ťahu (Michal 2026-10-23).
   const { ozviMoment } = useMelichar(hra.view !== null && hra.hraci.some((h) => h?.bot === true));
   const cmd = hra.cmd;
+  // Kým beží Počítadlo bitky, pečiatka momentu z bitky čaká (dohoda Bugfixing × New features).
+  const [pocitadloBezi, setPocitadloBezi] = useState(false);
 
   // Odkaz /hra?kod=ABCD rovno pripojí do miestnosti.
   const { pripojene, miestnost, pripoj } = hra;
@@ -311,8 +313,9 @@ export function Hra() {
   return (
     <>
     <HudbaPartie />
-    <Momenty udalosti={hra.udalosti} ja={hra.view.ja} mena={hra.hraci.map((h, i) => h?.meno ?? `Hráč ${i + 1}`)} hovor={ozviMoment} />
+    <Momenty udalosti={hra.udalosti} ja={hra.view.ja} mena={hra.hraci.map((h, i) => h?.meno ?? `Hráč ${i + 1}`)} hovor={ozviMoment} pocitadloBezi={pocitadloBezi} />
     <HernaPlocha
+      onPocitadlo={setPocitadloBezi}
       view={hra.view}
       data={hra.data}
       sada={m.sada}
