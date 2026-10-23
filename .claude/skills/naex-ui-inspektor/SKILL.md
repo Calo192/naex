@@ -1,6 +1,6 @@
 ---
 name: naex-ui-inspektor
-description: Spustí agenta naex-ui-inspektor — prejde jednu stránku webu NA EX! (parameter) alebo všetky stránky (bez parametra, aj herný stôl a admin) na lokálnom serveri pri 1600×1000 a 1920×1080 a nájde UI chyby (orezaný a prekrytý text, nezarovnané ikony, prekrývajúce sa prvky, presah, malé ciele, fokus, kontrast, konzola, rozbité obrázky), overí ich a napíše HTML report so zoznamom na opravu, ktorý pošle Leaderovi. Použi, keď používateľ povie /naex-ui-inspektor, „skontroluj UI“, „nájdi UI chyby“, „prejdi stránky“, „orezaný text“, „inšpekcia webu“.
+description: Spustí agenta naex-ui-inspektor — prejde jednu stránku webu NA EX! (parameter) alebo všetky stránky (bez parametra, aj herný stôl a admin) na lokálnom serveri pri 1920×1080, 1600×1000 a notebookoch (1512×860, 1440×800, 1366×650) a nájde UI chyby (orezaný a prekrytý text, nezarovnané ikony, prekrývajúce sa prvky, presah, malé ciele, fokus, kontrast, konzola, rozbité obrázky), overí ich a napíše HTML report so zoznamom na opravu, ktorý pošle Leaderovi. Použi, keď používateľ povie /naex-ui-inspektor, „skontroluj UI“, „nájdi UI chyby“, „prejdi stránky“, „orezaný text“, „inšpekcia webu“.
 argument-hint: "[stránka, napr. /profil alebo „Spätná väzba“ — bez parametra všetky]"
 ---
 

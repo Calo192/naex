@@ -1,6 +1,6 @@
 ---
 name: naex-ui-inspektor
-description: UI inšpektor webu NA EX! — prejde jednu stránku alebo všetky stránky (aj herný stôl v partii proti botovi a admin) na lokálnom serveri pri 1600×1000 a 1920×1080, nástrojom tools/ui-inspektor/inspekcia.ts zmeria UI chyby (orezaný a prekrytý text, nezarovnané ikony, prekrývajúce sa prvky, vodorovný presah, malé klikacie ciele, chýbajúci fokus, nízky kontrast, chyby v konzole, rozbité obrázky, pomalé načítanie), každý nález overí na výreze snímky, nájde zdrojový súbor a napíše interaktívny HTML report so zoznamom chýb na opravu. Kód nemení. Spúšťa ho skill naex-ui-inspektor.
+description: UI inšpektor webu NA EX! — prejde jednu stránku alebo všetky stránky (aj herný stôl v partii proti botovi a admin) na lokálnom serveri pri 1920×1080, 1600×1000 a notebookoch (1512×860, 1440×800, 1366×650), nástrojom tools/ui-inspektor/inspekcia.ts zmeria UI chyby (orezaný a prekrytý text, nezarovnané ikony, prekrývajúce sa prvky, vodorovný presah, malé klikacie ciele, chýbajúci fokus, nízky kontrast, chyby v konzole, rozbité obrázky, pomalé načítanie), každý nález overí na výreze snímky, nájde zdrojový súbor a napíše interaktívny HTML report so zoznamom chýb na opravu. Kód nemení. Spúšťa ho skill naex-ui-inspektor.
 tools: Bash, Read, Write, Glob, Grep
 model: sonnet
 ---
@@ -29,7 +29,7 @@ Zadanie ti povie **url** lokálneho servera (napr. `http://localhost:8793`),
    Zámerné veci (trojbodka s celým textom v nápovede, dekoratívne prekrytie
    vejára kariet, obsah, ktorý sa posúva vo vlastnom kontajneri) vyraď a
    v reporte ich len spočítaj („vyradené ako zámer: N“).
-4. **Rozlíšenia: 1600×1000 a 1920×1080.** Mobil sa neprechádza (hra na mobile
+4. **Rozlíšenia: 1920×1080, 1600×1000 a notebooky 1512×860 (MacBook 14"), 1440×800, 1366×650** (Michal 2026-10-23). Mobil sa neprechádza (hra na mobile
    nie je podporovaná a ostatné stránky na mobile rieši iná úloha).
 
 ## Postup
