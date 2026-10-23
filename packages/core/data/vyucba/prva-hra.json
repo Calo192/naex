@@ -103,7 +103,7 @@
     {
       "id": "i-kolo",
       "kto": "info",
-      "melichar": "Každé kolo má päť krokov. Obranca vyberie lokalitu. Obaja si kúpite karty zo šenku. V Zhromaždení striedavo vykladáte karty. V Pitke sa pije a dáva NA EX. Zhromaždenie a Pitka idú raz alebo dvakrát. Nakoniec bitka o lokalitu."
+      "melichar": "Každé kolo má päť krokov. Obranca vyberie lokalitu. Obaja si kúpite karty zo šenku. V Zhromaždení striedavo vykladáte karty. V Pitke sa pije a dáva NA EX. Zhromaždenie a Pitka idú raz až štyrikrát, podľa lokality. Nakoniec bitka o lokalitu."
     },
     {
       "id": "i-bar",
@@ -268,7 +268,7 @@
           }
         ]
       },
-      "melichar": "Štamgast pridal Dievčinu na vydaj. Má Pohoršenie, to uvidíš po bitke."
+      "melichar": "Štamgast pridal Dievčinu na vydaj. Má Pohoršenie a v bitke mu spáli Dlhy, uvidíš."
     },
     {
       "id": "k11",
@@ -371,7 +371,7 @@
       "prikaz": {
         "type": "skipNaex"
       },
-      "melichar": "Pitka sa vyhodnotí. Štamgastovi sa naplnilo zadĺženie, tak dostal Dlh, a ten berie body. Za Cigaretu Jednoty ste obaja dostali cigaretu."
+      "melichar": "Pitka sa vyhodnotí. Štamgast dostal Dlh, ten berie body. Ty máš cigaretu za Cigaretu Jednoty, on za Cigaretu na Dvojčatách."
     },
     {
       "id": "k20",
@@ -424,7 +424,7 @@
       "prikaz": {
         "type": "skipNaex"
       },
-      "melichar": "Štamgast skončil tiež. Ide sa do bitky."
+      "melichar": ""
     },
     {
       "id": "k25",
@@ -433,7 +433,7 @@
         "type": "pohorsenie",
         "elderId": "starosta"
       },
-      "melichar": "Najprv Pohoršenie: Štamgast posúva Starostu o krok k tebe."
+      "melichar": "Bitka! Dievčina na vydaj odišla z hry a spálila Štamgastove dva Dlhy, ako píše jej karta. Potom Pohoršenie: Starosta ide o krok k tebe."
     },
     {
       "id": "k26",
@@ -462,7 +462,7 @@
         "type": "prebytok",
         "elderId": "farar"
       },
-      "melichar": "Klikni na Farára. Víťaz rozdá prebytok 6: každý bod posunie staršieho o krok k porazenému a ten sa ťa začne báť. Tvoj Miňištrant však každý posun zdražuje na dva body.",
+      "melichar": "Klikni na Farára. Víťaz rozdá prebytok 6: každý bod posunie staršieho o krok k porazenému. Keď ho dotlačíš do žltej, začne sa ťa báť. Tvoj Miňištrant však každý posun zdražuje na dva body.",
       "zvyraznit": [
         "starsi:farar"
       ]
@@ -741,7 +741,7 @@
       "prikaz": {
         "type": "bezReakcie"
       },
-      "melichar": "Klikni bez odpovede. Každá tvoja karta by mu ten Dlh a pečeň spárovala a NA EX by ich zrušilo. Niekedy je najlepšia odpoveď žiadna.",
+      "melichar": "Klikni bez odpovede. Jeho Pijan je zovretý medzi Psom a Hasičom, tam už nič nespáruješ. A karta za Hasiča by spárovala jeho Petelicu a tvoje NA EX by ju zrušilo. Niekedy je najlepšia odpoveď žiadna.",
       "zvyraznit": [
         "tlacidlo:bez-odpovede"
       ]
@@ -867,7 +867,7 @@
     {
       "id": "i-koniec",
       "kto": "info",
-      "melichar": "Koniec a víťazstvo 59 : 11! Lokality ti dali 20 bodov, vydesený Farár 15, strach ďalších starších 12 a cigarety 12. Štamgasta stáli Dlhy 8 bodov. Rozpis je pod tlačidlom Body.",
+      "melichar": "Koniec a víťazstvo 59 : 11! Lokality ti dali 20 bodov, vydesený Farár 15, strach ďalších starších 12 a cigarety 12. Štamgast má 11: cigarety 16 a strach 3, mínus 8 za Dlhy. Rozpis je pod tlačidlom Body.",
       "zvyraznit": [
         "bar:body"
       ]
