@@ -2560,39 +2560,67 @@ button.dlzka-volba.aktivna {
   background: color-mix(in srgb, color-mix(in oklab, var(--zelena-ziariva) 68%, var(--pozadie)) 18%, var(--plocha-2));
 }
 
-.oznamy-priazne {
-  display: grid;
-  gap: 6px;
-}
-
-.oznam-priazne {
-  text-align: left;
-  padding: 8px 12px;
-  border-radius: 10px;
+/* Toast priazne (Michal 2026-10-23): pláva na hornej hrane stola vedľa pilulky
+   pokynu (alebo tesne pod ňou v pravom rohu), nemení rozloženie, jeden riadok —
+   celé znenie v titulku a v Logu. Polohu nastaví HernaPlocha podľa pilulky. */
+.toast-priazne {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  right: 12px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding: 5px 12px;
+  border-radius: 99px;
   border: 1px solid var(--okraj);
-  background: var(--plocha-2);
+  background: var(--plocha);
   color: var(--text);
   font: inherit;
-  font-size: 0.88rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: left;
   cursor: pointer;
-  animation: oznam-prichod 0.4s ease;
+  box-shadow: 0 6px 18px color-mix(in srgb, #000 calc(var(--tma) * 40%), transparent);
+  animation: toast-priazne 4s ease both;
 }
 
-.oznam-priazne.moja {
+.toast-priazne.moja {
   border-color: var(--ja);
-  box-shadow: inset 4px 0 0 var(--ja);
+  box-shadow: inset 4px 0 0 var(--ja), 0 6px 18px color-mix(in srgb, #000 calc(var(--tma) * 40%), transparent);
 }
 
-.oznam-priazne.superova {
-  border-color: color-mix(in srgb, var(--su) 60%, transparent);
-  box-shadow: inset 4px 0 0 var(--su);
+.toast-priazne.superova {
+  border-color: var(--su);
+  box-shadow: inset 4px 0 0 var(--su), 0 6px 18px color-mix(in srgb, #000 calc(var(--tma) * 40%), transparent);
 }
 
-@keyframes oznam-prichod {
-  from {
+.toast-priazne.moja > span {
+  color: var(--ja);
+}
+
+.toast-priazne.superova > span {
+  color: var(--su);
+}
+
+/* Príchod, 4 s na stole, odchod — zmizne sám (časovač v HernaPlocha ho potom odstráni). */
+@keyframes toast-priazne {
+  0% {
     opacity: 0;
     transform: translateY(-6px);
   }
+  8%,
+  88% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.log .log-priazen {
+  color: var(--akcent);
 }
 
 /* ---- pás kola: Pitky a limit vykladania nad stolom ---- */

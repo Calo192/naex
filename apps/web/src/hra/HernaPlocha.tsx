@@ -14,6 +14,7 @@
 // istom ťahu stojí plný poldeci a rozhranie to výrazne ukazuje.
 
 import {
+  Fragment,
   useCallback,
   useEffect,
   useId,
@@ -135,7 +136,7 @@ import {
   type VyhladPitky,
 } from "./Panely.tsx";
 import { StavkaBitky } from "./StavkaBitky.tsx";
-import { UCINOK_PRIAZNE } from "./Scorecard.tsx";
+import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
 import type { HracInfo, ZmenyFrajeriny } from "./useHra.ts";
 import { menoVoVete, rodHraca, textHlasky } from "./useHra.ts";
 import { useBezNaexVBitke, useOdlozenyPrikaz } from "./usePohodlie.ts";
@@ -3471,8 +3472,11 @@ export function HernaPlocha({
     });
 
   // Keď hráčovi pribudne priazeň (posun k nemu), povie mu to hra hneď aj s účinkom —
-  // v playteste 20261016-134912 to porazená nepochopila.
-  const [oznamyPriazne, setOznamyPriazne] = useState<readonly { readonly id: number; readonly komu: PlayerId; readonly text: string }[]>([]);
+  // v playteste 20261016-134912 to porazená nepochopila. Michal 2026-10-23: plávajúci
+  // toast na hornej hrane stola (nemení rozloženie), jeden naraz, 4 s; celé znenie
+  // ostáva v Logu (záznamy priazne sa doň vkladajú na klientovi — server ich nepíše).
+  const [toastPriazne, setToastPriazne] = useState<{ readonly id: number; readonly komu: PlayerId; readonly kratko: string; readonly cele: string } | null>(null);
+  const [priazneVLogu, setPriazneVLogu] = useState<readonly { readonly poLogu: number; readonly text: string }[]>([]);
   const predoslaPriazen = useRef<ReadonlyMap<string, { readonly komu: PlayerId | null; readonly sila: number }> | null>(null);
   const idOznamu = useRef(0);
   useEffect(() => {
@@ -3480,43 +3484,67 @@ export function HernaPlocha({
     const pred = predoslaPriazen.current;
     predoslaPriazen.current = teraz;
     if (pred === null) return;
-    const nove: { id: number; komu: PlayerId; text: string }[] = [];
+    const nove: { komu: PlayerId; kratko: string; cele: string }[] = [];
     for (const e of view.starsi) {
       const t = teraz.get(e.elderId);
       const p = pred.get(e.elderId);
       if (t === undefined || t.komu === null) continue;
       if (p !== undefined && p.komu === t.komu && p.sila >= t.sila) continue;
       const sc = scorecardStarsieho(data, e);
-      const ucinok = UCINOK_PRIAZNE[sc.favour](t.sila);
+      const meno = menoKarty(e.karta.defId);
       nove.push({
-        id: ++idOznamu.current,
         komu: t.komu,
-        text: `${t.komu === ja ? "Dostávaš" : `${menoHraca(t.komu)} dostáva`} priazeň ${menoKarty(e.karta.defId)} (${sc.nazov}) sily ${t.sila}: ${ucinok}`,
+        kratko: `${meno} ${t.komu === ja ? "ti dáva" : `dáva ${menoHraca(t.komu)}`} priazeň ${t.sila}: ${UCINOK_KRATKO[sc.favour](t.sila)}`,
+        cele: `${t.komu === ja ? "Dostávaš" : `${menoHraca(t.komu)} dostáva`} priazeň ${meno} (${sc.nazov}) sily ${t.sila}: ${UCINOK_PRIAZNE[sc.favour](t.sila)}`,
       });
     }
-    if (nove.length === 0) return;
-    setOznamyPriazne((o) => [...o, ...nove].slice(-6));
-    const ids = nove.map((n) => n.id);
-    const t = setTimeout(() => setOznamyPriazne((o) => o.filter((x) => !ids.includes(x.id))), 12000);
-    return () => clearTimeout(t);
-    // menoHraca a ja sú stále počas partie; stačí sledovať starších.
+    const posledny = nove[nove.length - 1];
+    if (posledny === undefined) return;
+    setPriazneVLogu((x) => [...x, ...nove.map((n) => ({ poLogu: log.length, text: `♥ ${n.cele}` }))]);
+    // Len jeden naraz — ďalší nahradí predošlý; viac naraz zhrnie „(+n)“, všetky sú v Logu.
+    setToastPriazne({
+      id: ++idOznamu.current,
+      komu: posledny.komu,
+      kratko: posledny.kratko + (nove.length > 1 ? ` (+${nove.length - 1})` : ""),
+      cele: nove.map((n) => n.cele).join("\n"),
+    });
+    // menoHraca, ja a log sú len na text; stačí sledovať starších.
   }, [view.starsi, data]);
-  const oznamyPriazneEl =
-    oznamyPriazne.length === 0 ? null : (
-      <div className="oznamy-priazne" aria-live="polite">
-        {oznamyPriazne.map((o) => (
-          <button
-            key={o.id}
-            type="button"
-            className={`oznam-priazne ${o.komu === ja ? "moja" : "superova"}`}
-            onClick={() => setOznamyPriazne((x) => x.filter((y) => y.id !== o.id))}
-            onContextMenu={pravyKlik(() => setOznamyPriazne((x) => x.filter((y) => y.id !== o.id)))}
-            title="Zavrieť (klik alebo pravý klik)"
-          >
-            <span aria-hidden="true">♥</span> {o.text}
-          </button>
-        ))}
-      </div>
+  useEffect(() => {
+    if (toastPriazne === null) return;
+    const t = setTimeout(() => setToastPriazne((x) => (x?.id === toastPriazne.id ? null : x)), 4000);
+    return () => clearTimeout(t);
+  }, [toastPriazne]);
+  // Poloha toastu: vedľa pilulky pokynu na hornej hrane stola, ak je tam miesto,
+  // inak tesne pod ňou v pravom rohu stola — nikdy nie cez bary, ruku, pokyn či karty.
+  const [polohaToastu, setPolohaToastu] = useState<CSSProperties | null>(null);
+  useLayoutEffect(() => {
+    if (toastPriazne === null) return;
+    const obal = liniaObalRef.current?.getBoundingClientRect();
+    const pilulka = liniaObalRef.current?.querySelector(".linia-stav")?.getBoundingClientRect();
+    if (obal === undefined || pilulka === undefined) return setPolohaToastu(null);
+    const vedla = obal.right - pilulka.right - 28;
+    setPolohaToastu(
+      vedla >= 200
+        ? { top: pilulka.top - obal.top + pilulka.height / 2, right: 12, maxWidth: vedla, translate: "0 -50%" }
+        : { top: pilulka.bottom - obal.top + 6, right: 12, maxWidth: Math.min(380, obal.width / 3) },
+    );
+  }, [toastPriazne]);
+  const toastPriazneEl =
+    toastPriazne === null ? null : (
+      <button
+        key={toastPriazne.id}
+        type="button"
+        className={`toast-priazne ${toastPriazne.komu === ja ? "moja" : "superova"}`}
+        style={polohaToastu ?? undefined}
+        role="status"
+        aria-live="polite"
+        title={`${toastPriazne.cele}\n(klik zavrie, celé znenie je v Logu)`}
+        onClick={() => setToastPriazne(null)}
+        onContextMenu={pravyKlik(() => setToastPriazne(null))}
+      >
+        <span aria-hidden="true">♥</span> {toastPriazne.kratko}
+      </button>
     );
 
   // ---- draft na stole (Michal 2026-10-16) ----------------------------------
@@ -4240,7 +4268,6 @@ export function HernaPlocha({
           {/* Stôl je hneď pod staršími — pás pokynov a ruka ho neprekryjú
               (playtest 20261012-055944); dosky hráčov sú pod ním. */}
           {hrozbaVydesenia}
-          {oznamyPriazneEl}
           {ucetBitkyEl}
           {/* Na počítači ležia voľba cieľa a draft na stole (vrstvaFazy) — línia je vtedy prázdna. */}
           {mobil && cielPanel}
@@ -4271,6 +4298,7 @@ export function HernaPlocha({
               </strong>
               {pokyn?.text !== undefined && <span className="pilulka-text">{pokyn.text}</span>}
             </div>
+            {toastPriazneEl}
             <div className={`stol-plst${liniaSkryta ? " linia-skryta" : ""}${starsiViditelni && krokStarsich !== null ? " krok-starsich" : ""}`} ref={plstRef}>
             {/* Línia kariet ostáva v DOM a drží výšku stola — línia starších leží nad ňou (#68). */}
             <div className="linia harmonika-skupiny" ref={liniaRef} inert={liniaSkryta} aria-hidden={liniaSkryta || undefined} data-vyucba="linia">
@@ -4606,10 +4634,25 @@ export function HernaPlocha({
           <div className="log">
             {log.length === 0 && <span className="popis">Zatiaľ žiadne záznamy — log sa zbiera od pripojenia.</span>}
             {log.map((riadok, i) => (
-              <div key={i} className={riadok.startsWith("⚠") ? "manual" : ""}>
-                {riadok}
-              </div>
+              <Fragment key={i}>
+                {/* Priazeň, ktorú oznámil toast, na mieste, kde pribudla. */}
+                {priazneVLogu
+                  .filter((p) => p.poLogu === i)
+                  .map((p, j) => (
+                    <div key={`p${j}`} className="log-priazen">
+                      {p.text}
+                    </div>
+                  ))}
+                <div className={riadok.startsWith("⚠") ? "manual" : ""}>{riadok}</div>
+              </Fragment>
             ))}
+            {priazneVLogu
+              .filter((p) => p.poLogu >= log.length)
+              .map((p, j) => (
+                <div key={`pk${j}`} className="log-priazen">
+                  {p.text}
+                </div>
+              ))}
           </div>
         </VrstvaPanel>
       )}
