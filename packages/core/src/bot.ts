@@ -401,9 +401,8 @@ function hodnotaZdrojov(k: Kontext, s: GameState, p: PlayerId): number {
   const h = s.hraci[p];
   const f = k.buducnost;
   let v = 0;
-  v += (1.0 * h.poldeciPlne + 0.35 * h.poldeciVypite) * f;
-  // Poldeci z NA EX sa ráta do limitu a po bitke ostane vypitý.
-  v += 0.35 * s.strany.flat().filter((pl) => pl.naexBy === p).length * f;
+  // Poldeci z NA EX limit nezvyšuje (v4), po bitke ostane vypitý ako ostatné.
+  v += (1.0 * h.poldeciPlne + 0.35 * (h.poldeciVypite + s.strany.flat().filter((pl) => pl.naexBy === p).length)) * f;
   v += 0.3 * h.cigarety * f;
   v += 0.3 * h.ruka.length * f;
   v *= k.povaha.zdroje;

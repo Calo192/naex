@@ -831,12 +831,6 @@ button.cip.aktivny {
   background: linear-gradient(180deg, transparent 25%, var(--akcent) 25%);
 }
 
-.pohar.naex {
-  background: linear-gradient(180deg, transparent 25%, var(--akcent) 25%);
-  box-shadow: 0 0 12px color-mix(in srgb, var(--akcent) 80%, transparent);
-  border-color: var(--akcent);
-}
-
 .pohar.vypity {
   opacity: 0.4;
   transform: rotate(180deg);

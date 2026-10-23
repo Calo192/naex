@@ -217,9 +217,9 @@ describe("§5 Vypiť a §6 Priznanie a Dedičstvo v ťahu", () => {
   });
 });
 
-// --- §5 NA EX pri lokalite a §14 Veterán pri lokalite ------------------------------
+// --- §5 NA EX pri lokalite a §14 NA EX na Veterána ----------------------------------
 
-describe("§5 NA EX na kartu pri lokalite a §14 Veterán pri lokalite", () => {
+describe("§5 NA EX na kartu pri lokalite a §14 NA EX na Veterána", () => {
   it("§5: NA EX na kartu pri lokalite ruší a zdvojuje len jej akcie — hrana lokality ostáva, ako bola", () => {
     const lok = makeDef("r_lok", ["Rana", null, null, null], EMPTY, { tags: ["Lokalita"] });
     const pri: Layout4 = ["Pecka", "Rana", null, null];
@@ -259,22 +259,25 @@ describe("§5 NA EX na kartu pri lokalite a §14 Veterán pri lokalite", () => {
     expect(ev.aktivneStredu).toEqual([1, 0]);
   });
 
-  it("§14 Veterán: lokalita sa ráta ako sused — Veterán medzi lokalitou a Ženou stratí ľavé akcie", () => {
+  it("§14 Veterán: NA EX naňho zdvojí jeho aktívne akcie a nezruší ich; neaktívne ostanú neaktívne (v4)", () => {
     const R4: Layout4 = ["Rana", "Rana", "Rana", "Rana"];
-    const lok = makeDef("r_lok_v", R4, R4, { tags: ["Lokalita"] });
+    const R2: Layout4 = ["Rana", "Rana", null, null];
     const veteran = makeDef("veteran", R4, R4, { tags: ["Občan", "Chlap"] });
-    const zena = makeDef("r_zena", EMPTY, EMPTY, { tags: ["Občan", "Žena"] });
-    const chlap = makeDef("r_chlap", EMPTY, EMPTY, { tags: ["Občan", "Chlap"] });
-    const sada = syntheticData([lok, veteran, zena, chlap]);
-    const lokalita = instanceFor(sada, "r_lok_v", R4, R4);
-    // Veterán hráča 1 leží pri lokalite na strane hráča 0 — vpravo z jeho pohľadu má druhého suseda.
-    const vet = instanceFor(sada, "veteran", R4, R4);
-    const vonkajsi = (defId: string): CardInstance => instanceFor(sada, defId, EMPTY, EMPTY);
-    const ev = (sused: string) => evaluateLine(sada, { lokalita, lokalitaOtocena: false, strany: [[lezi(vet, 1), lezi(vonkajsi(sused), 0)], []] });
-    const lave = (e: ReturnType<typeof ev>) => e.cards.get(vet.uid)!.left.map((x) => x?.stav);
-    // S mužom vpravo ľavé akcie (spárované s lokalitou) platia; so Ženou vpravo neplatia.
-    expect(lave(ev("r_chlap"))).toEqual(["aktivna", "aktivna", "aktivna", "aktivna"]);
-    expect(lave(ev("r_zena"))).toEqual(["zrusena", "zrusena", "zrusena", "zrusena"]);
+    const chlap = makeDef("r_chlap", EMPTY, R2, { tags: ["Občan", "Chlap"] });
+    const obcan = makeDef("r_obcan", R4, R4, { tags: ["Občan"] });
+    const sada = syntheticData([veteran, chlap, obcan]);
+    // Chlap vľavo spáruje dve ľavé Rany karty v strede; ostatné jej akcie sú neaktívne.
+    const ev = (defId: string, naex: boolean) => {
+      const stred = instanceFor(sada, defId, R4, R4);
+      const linia = evaluateLine(sada, { lokalita: null, lokalitaOtocena: false, strany: [[], [lezi(instanceFor(sada, "r_chlap", EMPTY, R2), 0), naex ? lezi(stred, 0, 1) : lezi(stred, 0)]] });
+      return { rana: linia.sums[0].Rana, stav: [...linia.cards.get(stred.uid)!.left, ...linia.cards.get(stred.uid)!.right].map((x) => x?.stav) };
+    };
+    expect(ev("veteran", false).rana).toBe(2 + 2);
+    // Veterán: 2 aktívne × 2, šesť neaktívnych ostane neaktívnych.
+    expect(ev("veteran", true).rana).toBe(2 + 4);
+    expect(ev("veteran", true).stav.filter((x) => x === "neaktivna")).toHaveLength(6);
+    // Bežný Občan pre porovnanie: aktívne zruší, neaktívne zdvojí.
+    expect(ev("r_obcan", true).rana).toBe(2 + 12);
   });
 });
 

@@ -124,8 +124,7 @@ na jednom mieste v kóde (odkazy v zátvorkách). Michal ich všetky potvrdil
    aktívne, zdvojnásobí neaktívne akcie cieľovej karty; dôsledky jej
    akcií na susedoch (Posilnenie ×2, zrušenie Odporom) ostávajú
    (`partia.ts`, `applyNaex`).
-3. **Podpora** — pojem aj spúšťač vypadli v pravidlách v4 (2026-10-23);
-   že sa lokalita ráta ako sused, ostalo pri Veteránovi (§14).
+3. **Podpora** — pojem aj spúšťač vypadli v pravidlách v4 (2026-10-23).
 4. **Vzbura na lokalite** aktivuje len stranu patriacu danej partii
    (`partia.ts`, `markVzbura`).
 5. **Cirhóza** — každá **priznaná** Cirhóza dá súperovi v každej bitke

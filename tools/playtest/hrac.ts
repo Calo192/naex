@@ -659,7 +659,7 @@ function moznosti(v: ClientState): string[] {
             const moja = pl.playedBy === ja;
             c(
               { type: "naex", uid: pl.card.uid },
-              `NA EX na ${moja ? "svoju" : "SÚPEROVU"} kartu ${meno(pl.card.defId)} (na ${p === ja ? "tvojej" : "súperovej"} strane) — zruší jej aktívne akcie, zdvojí neaktívne (rátajú sa ${moja ? "tebe" : "súperovi"}; násobky sa násobia, NA EX × Silná žena = ×4); pečeň +1 tebe, poldeci sa pri bitke vypije (v ďalšom kole limit ${limitBuduceKolo(v, ja, true) === limitBuduceKolo(v, ja) ? `ostane ${limitBuduceKolo(v, ja)}` : `${limitBuduceKolo(v, ja, true)} namiesto ${limitBuduceKolo(v, ja)}`}); súper smie hneď odpovedať jednou kartou${cenaNaexText(v, pl.card.uid)}`,
+              `NA EX na ${moja ? "svoju" : "SÚPEROVU"} kartu ${meno(pl.card.defId)} (na ${p === ja ? "tvojej" : "súperovej"} strane) — ${pl.card.defId === "veteran" ? "Veterán: zdvojí jeho aktívne akcie a nezruší ich, neaktívne nechá" : "zruší jej aktívne akcie, zdvojí neaktívne"} (rátajú sa ${moja ? "tebe" : "súperovi"}; násobky sa násobia, NA EX × Silná žena = ×4); pečeň +1 tebe, poldeci sa pri bitke vypije (v ďalšom kole limit ${limitBuduceKolo(v, ja, true) === limitBuduceKolo(v, ja) ? `ostane ${limitBuduceKolo(v, ja)}` : `${limitBuduceKolo(v, ja, true)} namiesto ${limitBuduceKolo(v, ja)}`}); súper smie hneď odpovedať jednou kartou${cenaNaexText(v, pl.card.uid)}`,
             );
           }
         }

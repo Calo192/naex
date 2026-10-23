@@ -1,12 +1,18 @@
 // M3 — stav hráča a odvodené hodnoty.
 
 import { describe, expect, it } from "vitest";
+import cardsJson from "../data/cards.json";
+import eldersJson from "../data/elders.json";
+import scorecardsJson from "../data/scorecards.json";
 import type { PlacedCard } from "../src/index.ts";
 import {
   freshPlayer,
   hodnotaViery,
   limitVykladania,
+  limitZhromazdenia,
+  loadGameData,
   prahCirhozy,
+  setupGame,
   prahExekutora,
   velkostBalicka,
 } from "../src/index.ts";
@@ -23,22 +29,22 @@ describe("M3 — limit vykladania", () => {
   it("2 plné poldeci na štarte → limit 3 (Michal 2026-10-20)", () => {
     const player = freshPlayer();
     expect(player.poldeciPlne).toBe(2);
-    expect(limitVykladania(player, [[], []], 0)).toBe(3);
+    expect(limitVykladania(player)).toBe(3);
   });
 
   it("po vypití jedného → limit 2", () => {
     const player = { ...freshPlayer(), poldeciPlne: 1, poldeciVypite: 1 };
-    expect(limitVykladania(player, [[], []], 0)).toBe(2);
+    expect(limitVykladania(player)).toBe(2);
   });
 
-  it("poldeci cez NA EX sa ráta majiteľovi poldeci, aj v súperovej partii", () => {
-    // Hráč 0 dal NA EX na kartu ležiacu v partii hráča 1: jeden plný poldeci
-    // sa presunul z jeho zásoby na kartu — limit má ostať 1 + 1 + 1 = 3.
-    const player = { ...freshPlayer(), poldeciPlne: 1 };
+  it("poldeci cez NA EX limit nezvyšuje — ani majiteľovi poldeci (pravidlá v4)", () => {
+    // Hráč 0 dal NA EX na kartu ležiacu v partii hráča 1: plný poldeci odišiel
+    // z jeho zásoby na kartu — limit je len 1 + 1 = 2 (do v4 bol 3).
+    const s0 = setupGame(loadGameData(cardsJson, eldersJson, scorecardsJson), 1);
     const strany: [PlacedCard[], PlacedCard[]] = [[], [placed(1, 0)]];
-    expect(limitVykladania(player, strany, 0)).toBe(3);
-    // Súperovi ten istý poldeci limit nezvyšuje.
-    expect(limitVykladania({ poldeciPlne: 2 }, strany, 1)).toBe(3); // 2 + 0 + 1
+    const s = { ...s0, strany, hraci: [{ ...s0.hraci[0], poldeciPlne: 1 }, { ...s0.hraci[1], poldeciPlne: 2 }] } as typeof s0;
+    expect(limitZhromazdenia(s, 0)).toBe(2);
+    expect(limitZhromazdenia(s, 1)).toBe(3);
   });
 
   it("priznané karty limit neovplyvňujú", () => {
@@ -47,7 +53,7 @@ describe("M3 — limit vykladania", () => {
       poldeciPlne: 2,
       priznane: [instanceFor(data, "obcan", EMPTY, EMPTY)],
     };
-    expect(limitVykladania(player, [[], []], 0)).toBe(3);
+    expect(limitVykladania(player)).toBe(3);
   });
 });
 

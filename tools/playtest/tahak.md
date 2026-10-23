@@ -14,7 +14,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   (`target` `vlastna` / `superova`). Karta **patrí tomu, kto ju zahral** — akcie
   aj efekty sa rátajú majiteľovi, nech leží kdekoľvek. Podstrčený „sabotér"
   s Odporom zruší súperovi akciu na spoji. Každá karta okrem Nástroja míňa limit
-  vykladania (aj Kočovník).
+  vykladania (aj Kočovník). **Limit = plné poldeci + 1** — poldeci na karte cez NA EX
+  sa neráta (v4), takže NA EX ti limit zníži o 1.
 - **Názvoslovie:** línia = celý rad; lokalita ju delí na dve **strany** (tvoja,
   súperova). **Tvoja partia** = všetky tvoje karty, na ktorejkoľvek strane.
   Akcie: Dlh, Poškodenie pečene, Poldeci, Cigareta (nie Hazard, Pečeň,
@@ -95,7 +96,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   pri lokalite mení len akcie karty, akcie hrany lokality ostávajú. Dievčina na vydaj
   ráta aj akcie zdvojené cez NA EX; jej akcie v bitke, v ktorej sa zahodí, ešte platia. Svokra súpera ti za NA EX zoberie 2 cigarety.
   Šofér: NA EX na kartu vedľa neho neaktívne akcie nezdvojí (aktívne zruší). Ujo s fúrikom
-  vyložený vedľa karty s NA EX (aj ako odpoveď) ju vráti majiteľovi do ruky a ľahne na jej miesto.
+  vyložený vedľa karty s NA EX (aj ako odpoveď) ju vráti majiteľovi do ruky a ľahne na jej miesto. Veterán (v4): NA EX mu aktívne akcie zdvojí
+  (nezruší), neaktívne nechá.
   Krčma vynúti NA EX. Násobky sa **násobia** (NA EX × Silná žena = ×4, aj Dlh
   a Poškodenie pečene) a NA EX leží na karte do bitky — vyhodnotí sa v každej
   Pitke kola. Každá možnosť `naex` v stave ukazuje cenu: bitku pred a po

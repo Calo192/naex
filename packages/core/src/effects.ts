@@ -80,7 +80,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   starosta: "impl", // Pitka: výmena karty za cigaretu
   svaty_text: "impl", // Dedičstvo: Viera chráni pred mäkkým
   veterinar: "impl", // Bitka: Cirhóza pridáva o zopár menej
-  veteran: "impl", // Bitka: pozičné vypínanie strán
+  veteran: "impl", // Furt: NA EX naňho aktívne akcie zdvojí (nezruší), neaktívne nezdvojí (partia.ts, Michal 2026-10-23)
   velmi_smutiaca_vdova: "impl", // Nástup: muž navrchu súperovho balíčka preč
   vestica: "impl", // Prehra: výmena kariet v balíčkoch
   vychovavatelka: "impl", // NA EX → tvoj priznaný Dlh do súperovho doberacieho balíčka (Michal 2026-10-19)
@@ -299,7 +299,7 @@ export function limitZhromazdenia(state: StavPoldeci, p: PlayerId, zmenaPoldeci 
 
 /** Limit hráča bez Zastávky — na Zastávke z neho platí pas (Michal 2026-10-22). */
 export function vlastnyLimitZhromazdenia(state: StavPoldeci, p: PlayerId, zmenaPoldeci = 0): number {
-  return limitVykladania({ poldeciPlne: Math.max(0, state.hraci[p].poldeciPlne + zmenaPoldeci) }, state.strany, p) + limitBonus(state, p);
+  return limitVykladania({ poldeciPlne: Math.max(0, state.hraci[p].poldeciPlne + zmenaPoldeci) }) + limitBonus(state, p);
 }
 
 /**

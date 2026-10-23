@@ -34,8 +34,9 @@ Pohreb.
 ### Spúšťač Podpora a pojem „podporená karta“ vypadli (§4, §9)
 
 Žiadna karta spúšťač Podpora nemala; pojem používal len text Veterána, ktorý
-§14 vykladá priamo („oboch susedov a vpravo Žena“). Pravidlo, že lokalita sa
-ráta ako sused, sa presunulo k Veteránovi (§14).
+§14 vykladal priamo („oboch susedov a vpravo Žena“). Keďže aj starý efekt
+Veterána vypadol (nižšie), pravidlo „lokalita sa ráta ako sused“ pre Podporu
+už netreba; okolie karty (§14) lokalitu v strede zahŕňa ako doteraz.
 
 Staré znenie §4:
 
@@ -49,3 +50,25 @@ Staré znenie vety v §9 Prebudenie:
 
 > Spúšťače pri prebudení: **Nástup a Podpora sa NEuplatnia** (karta nie je
 > v línii).
+
+### NA EX sa nepočíta do limitu vykladania (§5)
+
+Oslabenie NA EX: poldeci položený na kartu limit vykladania nezvyšuje.
+
+Staré znenie §5:
+
+> ```
+> limit vykladania = plné poldeci + poldeci ležiace na kartách cez NA EX + 1
+> ```
+>
+> - Poldeci položený cez NA EX sa ráta **až do bitky**, kde sa vypije.
+
+### Veterán — nový efekt (§14)
+
+Starý efekt (Influencer aj Žena vpravo) vypadol celý. NA EX na Veterána
+zdvojí jeho aktívne akcie a nezruší ich; neaktívne nezdvojí. V akciách má
+Pecku namiesto Petelice (karta v tvorcovi).
+
+Staré znenie riadku §14:
+
+> | Veterán | Ak je v partii majiteľa Influencer, neplatia jeho pravé akcie. Ak má oboch susedov a vpravo (z pohľadu majiteľa) je Žena, neplatia jeho ľavé akcie. |

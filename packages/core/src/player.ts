@@ -60,22 +60,12 @@ export function velkostBalicka(player: PlayerState): number {
 }
 
 /**
- * Limit vykladania = plné poldeci + poldeci ležiace na kartách cez NA EX + 1.
- * Poldeci na karte sa ráta MAJITEĽOVI poldeci, aj keď karta leží v súperovej
- * partii. Vypité poldeci a priznané karty limit neovplyvňujú (PRAVIDLA §5).
+ * Limit vykladania = plné poldeci + 1. Vypité poldeci, poldeci ležiace na
+ * kartách cez NA EX (pravidlá v4, Michal 2026-10-23 — oslabenie NA EX)
+ * a priznané karty limit neovplyvňujú (PRAVIDLA §5).
  */
-export function limitVykladania(
-  player: Pick<PlayerState, "poldeciPlne">,
-  strany: readonly [readonly PlacedCard[], readonly PlacedCard[]],
-  p: PlayerId,
-): number {
-  let naexPoldeci = 0;
-  for (const strana of strany) {
-    for (const placed of strana) {
-      if (placed.naexBy === p) naexPoldeci++;
-    }
-  }
-  return player.poldeciPlne + naexPoldeci + 1;
+export function limitVykladania(player: Pick<PlayerState, "poldeciPlne">): number {
+  return player.poldeciPlne + 1;
 }
 
 export function prahCirhozy(priazenAlkoholika: number): number {

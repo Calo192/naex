@@ -25,7 +25,7 @@
 //    na susedoch (Posilnenie ×2, Odpor zrušenie) ostávajú.
 //
 // Efekty kariet, ktoré závisia od polohy v línii (Liberál, Silná nezávislá
-// žena, Veterán, Zámočník, Šarlatán, Pijan), sa vyhodnocujú tu, po spojoch
+// žena, Zámočník, Šarlatán, Pijan), sa vyhodnocujú tu, po spojoch
 // a NA EX — „okolie“ karty sú jej susedia v línii (aj lokalita či starší
 // v strede). Výklad textov schválil Michal 2026-10-12.
 
@@ -411,9 +411,15 @@ function applyVzbura(elem: Elem): void {
 /**
  * NA EX: aktívne akcie karty zruší, neaktívne zdvojí. Šofér (Furt, roadmapa
  * #71): karte vedľa seba neaktívne nezdvojí — aktívne zruší ako vždy.
+ * Veterán (Furt, pravidlá v4, Michal 2026-10-23): naopak — jeho aktívne
+ * akcie NA EX zdvojí a nezruší, neaktívne ostanú neaktívne.
  */
 function applyNaex(elem: Elem, bezZdvojenia: boolean): void {
   if (elem.naexBy === undefined) return;
+  if (elem.defId === "veteran") {
+    zdvojAktivne(elem, "NA EX", "NA EX");
+    return;
+  }
   for (const side of [0, 1] as const) {
     const actions = side === 0 ? elem.effLeft : elem.effRight;
     for (let k = 0; k < 4; k++) {
@@ -431,23 +437,13 @@ function applyNaex(elem: Elem, bezZdvojenia: boolean): void {
   }
 }
 
-/** Aktívne akcie strany prestanú platiť (Veterán, Silná nezávislá žena). */
-function vypniStranu(elem: Elem, side: 0 | 1): void {
-  for (let k = 0; k < 4; k++) {
-    if (elem.stav[side]![k] === "aktivna") {
-      elem.stav[side]![k] = "zrusena";
-      elem.nasobok[side]![k] = 0;
-    }
-  }
-}
-
-/** Aktívne akcie karty sa rátajú dvakrát (Liberál, Zámočník pri Nástroji). */
-function zdvojAktivne(elem: Elem, zdroj: string): void {
+/** Aktívne akcie karty sa rátajú dvakrát (Liberál, Zámočník pri Nástroji, NA EX na Veterána). */
+function zdvojAktivne(elem: Elem, zdroj: string, dovod = `karta:${zdroj}`): void {
   for (const side of [0, 1] as const) {
     for (let k = 0; k < 4; k++) {
       if (elem.stav[side]![k] !== "aktivna") continue;
       elem.nasobok[side]![k] = (elem.nasobok[side]![k] as number) * 2;
-      elem.dovody[side]![k]!.push(`karta:${zdroj}`);
+      elem.dovody[side]![k]!.push(dovod);
     }
   }
 }
@@ -473,27 +469,6 @@ function kartoveEfekty(segments: readonly (readonly Elem[])[]): [number, number]
   }
   const karty = [...susedia.keys()].filter((e) => !e.isLokalita);
   const okolie = (e: Elem): Elem[] => (susedia.get(e) ?? [null, null]).filter((x): x is Elem => x !== null);
-  const ma = (e: Elem | null, tag: Tag): boolean => e !== null && e.tags.includes(tag);
-  // Vytlačená strana karty → strana v globálnom ráme (otočená karta ich má vymenené).
-  const efektivna = (e: Elem, vytlacena: 0 | 1): 0 | 1 => (e.rotated ? (vytlacena === 0 ? 1 : 0) : vytlacena);
-
-  for (const e of karty) {
-    const [vlavo, vpravo] = susedia.get(e) ?? [null, null];
-    switch (e.defId) {
-      case "veteran": {
-        // Influencer v partii majiteľa → neplatia pravé akcie.
-        const influencer = karty.some((x) => x !== e && x.owner === e.owner && x.tags.includes("Influencer"));
-        if (influencer) vypniStranu(e, efektivna(e, 1));
-        // Podporený (oba susedia) a vpravo z pohľadu majiteľa je Žena → neplatia ľavé akcie.
-        const pravySused = efektivna(e, 1) === 1 ? vpravo : vlavo;
-        if (vlavo !== null && vpravo !== null && ma(pravySused, "Žena")) vypniStranu(e, efektivna(e, 0));
-        break;
-      }
-      default:
-        break;
-    }
-  }
-
   for (const e of karty) {
     if (e.defId === "liberal") {
       // Dvojnásobný efekt jeho akcií, ak je v partii rovnako žien a chlapov (on sám sa neráta).

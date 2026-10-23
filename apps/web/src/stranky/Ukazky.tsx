@@ -272,26 +272,23 @@ export function UkazkaStupnice() {
   );
 }
 
-/** Limit vykladania = plné poldeci + poldeci s NA EX + 1. */
+/** Limit vykladania = plné poldeci + 1 (pravidlá v4: poldeci s NA EX sa neráta). */
 export function UkazkaLimitu() {
   const [plne, setPlne] = useState(2);
-  const [naex, setNaex] = useState(0);
   const [vypite, setVypite] = useState(0);
   return (
     <div className="ukazka">
       <div className="ukazka-hlava">Koľko kariet smieš vyložiť v tomto Zhromaždení?</div>
       <div className="limit-ovladanie">
         <Pocitadlo label="Plné poldeci" hodnota={plne} nastav={setPlne} />
-        <Pocitadlo label="Poldeci na kartách (NA EX)" hodnota={naex} nastav={setNaex} />
         <Pocitadlo label="Vypité poldeci" hodnota={vypite} nastav={setVypite} />
       </div>
       <div className="limit-pohare" aria-hidden="true">
         {Array.from({ length: plne }, (_, i) => <span key={`p${i}`} className="pohar plny" />)}
-        {Array.from({ length: naex }, (_, i) => <span key={`n${i}`} className="pohar naex" />)}
         {Array.from({ length: vypite }, (_, i) => <span key={`v${i}`} className="pohar vypity" />)}
       </div>
       <div className="ukazka-vysledok">
-        Limit vykladania = {plne} + {naex} + 1 = <strong>{plne + naex + 1}</strong> kariet. Vypité poldeci sa nerátajú.
+        Limit vykladania = {plne} + 1 = <strong>{plne + 1}</strong> kariet. Vypité poldeci ani poldeci na kartách cez NA EX sa nerátajú.
       </div>
     </div>
   );

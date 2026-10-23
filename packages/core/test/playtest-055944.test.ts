@@ -347,10 +347,6 @@ describe("efekty v línii", () => {
     expect(sums[1].Rana).toBe(1);
   });
 
-  it("Veterán: s oboma susedmi a ženou vpravo stratí ľavé akcie, s influencerom v partii pravé", () => {
-    expect(evaluateLine(sd, linia("chlapL", "veteran", "zena2")).sums[0].Rana).toBe(1 + 2);
-    expect(evaluateLine(sd, linia("influencer", "veteran", "zena2")).sums[0].Rana).toBe(1 + 1);
-  });
 });
 
 describe("Svätý text a Puška (Nástroje 2026-10-18)", () => {

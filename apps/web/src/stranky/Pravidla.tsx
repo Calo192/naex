@@ -278,7 +278,7 @@ const KAPITOLY: readonly Kapitola[] = [
         <p>
           Iba vo fáze NA EX v Pitke, v základe raz za Pitku. Vyberieš kartu v línii s tagom <strong>Občan</strong> alebo{" "}
           <strong>Starešina</strong> — <strong>svoju aj súperovu</strong> — a položíš na ňu plný poldeci. Poldeci ostáva tvoj
-          a vypije sa pri bitke; poškodenie pečene dostaneš ty.
+          a vypije sa pri bitke; poškodenie pečene dostaneš ty. Do limitu vykladania sa už neráta — NA EX ti limit zníži o 1.
         </p>
         <p className="zvyraznene">
           NA EX zdvojnásobí neaktívne akcie a zároveň zruší aktívne akcie karty. Akcie sa rátajú majiteľovi karty: na svojej
@@ -288,7 +288,7 @@ const KAPITOLY: readonly Kapitola[] = [
           hráčov a koľko Cirhóz a Dlhov z toho bude a za koľko bodov. NA EX môže zmeniť aj počet Pitiek. Pamätaj: poldeci sa pri bitke vypije, takže
           v ďalšom kole ti chýba (na začiatku kola sa doleje len jeden vypitý). Hra ti pri NA EX ukáže, aký limit budeš mať
           v ďalšom kole. Na Liberála NA EX dať nemožno, ani na kartu, na ktorej už poldeci leží. NA EX na kartu pri lokalite
-          mení len akcie tej karty — akcie hrany lokality ostávajú. Dievčina na vydaj ráta aj akcie, ktoré jej zdvojilo NA EX, a jej
+          mení len akcie tej karty — akcie hrany lokality ostávajú. Veterán je výnimka: NA EX mu aktívne akcie nezruší, ale zdvojí, a neaktívne nechá tak. Dievčina na vydaj ráta aj akcie, ktoré jej zdvojilo NA EX, a jej
           akcie v bitke, v ktorej sa zahodí, ešte platia.
         </p>
         <h3>Odpoveď na NA EX</h3>

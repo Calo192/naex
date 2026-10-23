@@ -289,25 +289,25 @@
       ]
     },
     {
-      "id": "14.karta.veteran-lokalita",
+      "id": "14.karta.veteran",
       "paragraf": "14. Efekty kariet — výklad › Karty",
-      "pravidlo": "Veterán: lokalita v strede sa ráta ako sused (oboch susedov a vpravo Žena → neplatia ľavé akcie).",
+      "pravidlo": "Veterán (v4): NA EX naňho zdvojí jeho aktívne akcie a nezruší ich; neaktívne nezdvojí.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-kolo.test.ts › §14 Veterán: lokalita sa ráta ako sused — Veterán medzi lokalitou a Ženou stratí ľavé akcie"
+        "packages/core/test/pravidla-kolo.test.ts › §14 Veterán: NA EX naňho zdvojí jeho aktívne akcie a nezruší ich; neaktívne ostanú neaktívne (v4)"
       ]
     },
     {
       "id": "5.limit.vzorec",
       "paragraf": "5. Poldeci a limit vykladania",
-      "pravidlo": "Limit vykladania = plné poldeci + poldeci na kartách cez NA EX + 1; vypité, priznané karty a Dedičstvo sa nerátajú.",
+      "pravidlo": "Limit vykladania = plné poldeci + 1; vypité, poldeci na kartách cez NA EX (v4), priznané karty a Dedičstvo sa nerátajú.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/player.test.ts › 2 plné poldeci na štarte → limit 3 (Michal 2026-10-20)",
         "packages/core/test/player.test.ts › po vypití jedného → limit 2",
-        "packages/core/test/player.test.ts › poldeci cez NA EX sa ráta majiteľovi poldeci, aj v súperovej partii",
+        "packages/core/test/player.test.ts › poldeci cez NA EX limit nezvyšuje — ani majiteľovi poldeci (pravidlá v4)",
         "packages/core/test/player.test.ts › priznané karty limit neovplyvňujú",
-        "packages/core/test/poldeci.test.ts › limitZhromazdenia = plné + NA EX na stole + 1, karta zo šenku ho zníži"
+        "packages/core/test/poldeci.test.ts › limitZhromazdenia = plné + 1 (NA EX na stole sa neráta, v4), karta zo šenku ho zníži"
       ]
     },
     {
@@ -345,7 +345,7 @@
       "pravidlo": "„Limit 0 → hráč okamžite prehráva bitku“ — podľa vzorca limitu (+1) limit nikdy nie je 0, pravidlo sa nedá uplatniť.",
       "stav": "chyba-v-pravidlach",
       "testy": [
-        "packages/core/test/poldeci.test.ts › limitZhromazdenia = plné + NA EX na stole + 1, karta zo šenku ho zníži"
+        "packages/core/test/poldeci.test.ts › limitZhromazdenia = plné + 1 (NA EX na stole sa neráta, v4), karta zo šenku ho zníži"
       ],
       "poznamka": "Kód pravidlo nemá (niet ako nastať). Návrh rozhodca-limit-nula v docs/playtesty/navrhy-rozhodca-20261022-214942.json."
     },
@@ -465,7 +465,7 @@
       "stav": "pokryte",
       "testy": [
         "packages/core/test/pravidla-kolo.test.ts › §5: pečeň z NA EX sa pripíše hneď tomu, kto NA EX dal — aj keď karta je súperova",
-        "packages/core/test/player.test.ts › poldeci cez NA EX sa ráta majiteľovi poldeci, aj v súperovej partii"
+        "packages/core/test/player.test.ts › poldeci cez NA EX limit nezvyšuje — ani majiteľovi poldeci (pravidlá v4)"
       ]
     },
     {
@@ -1728,13 +1728,12 @@
       ]
     },
     {
-      "id": "14.karta.sarlatan-veteran",
+      "id": "14.karta.sarlatan",
       "paragraf": "14. Efekty kariet — výklad › Karty",
-      "pravidlo": "Šarlatán: Viera v okolí sa ráta ako Vízia; Veterán: Influencer v partii vypne pravé, oba susedia a Žena vpravo ľavé akcie.",
+      "pravidlo": "Šarlatán: Viera v okolí sa ráta ako Vízia.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/playtest-055944.test.ts › Šarlatán: Viera v jeho okolí platí ako Vízia",
-        "packages/core/test/playtest-055944.test.ts › Veterán: s oboma susedmi a ženou vpravo stratí ľavé akcie, s influencerom v partii pravé"
+        "packages/core/test/playtest-055944.test.ts › Šarlatán: Viera v jeho okolí platí ako Vízia"
       ]
     },
     {

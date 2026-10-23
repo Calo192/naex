@@ -80,17 +80,17 @@ describe("A1: nové kolo, jeden poldeci späť", () => {
 });
 
 describe("E1: limit vykladania pred a po ťahu", () => {
-  it("limitZhromazdenia = plné + NA EX na stole + 1, karta zo šenku ho zníži", () => {
+  it("limitZhromazdenia = plné + 1 (NA EX na stole sa neráta, v4), karta zo šenku ho zníži", () => {
     const s0 = setupGame(data, 22);
     const s: GameState = {
       ...s0,
       strany: [[lezi(inst("pijan"), 0, 0)], []],
       hraci: [{ ...s0.hraci[0], poldeciPlne: 1, poldeciVypite: 0 }, s0.hraci[1]],
     };
-    expect(limitZhromazdenia(s, 0)).toBe(3);
-    expect(limitZhromazdenia(s, 0, -1)).toBe(2);
+    expect(limitZhromazdenia(s, 0)).toBe(2);
+    expect(limitZhromazdenia(s, 0, -1)).toBe(1);
     // Plné poldeci nejdú pod nulu.
-    expect(limitZhromazdenia(s, 0, -5)).toBe(2);
+    expect(limitZhromazdenia(s, 0, -5)).toBe(1);
   });
 
   it("Zastávka: spoločný limit = súčet limitov oboch; Vínko v Dedičstve pridá 1", () => {

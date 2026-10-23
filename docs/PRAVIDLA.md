@@ -353,11 +353,12 @@ Po bitke sa karta vracia do odhadzovacieho balíčka svojho majiteľa.
 ## 5. Poldeci a limit vykladania
 
 ```
-limit vykladania = plné poldeci + poldeci ležiace na kartách cez NA EX + 1
+limit vykladania = plné poldeci + 1
 ```
 
 - Vypité (otočené nadol) poldeci sa **nerátajú**.
-- Poldeci položený cez NA EX sa ráta **až do bitky**, kde sa vypije.
+- Poldeci položený cez NA EX sa do limitu **neráta** — odišiel zo zásoby na kartu
+  a pri bitke sa vypije (Michal 2026-10-23, pravidlá v4 — oslabenie NA EX).
 - Samotná akcia Poldeci sa do limitu nezapočítava — otáča poldeci až pri
   bitke, takže sa prejaví o kolo neskôr.
 - Priznané karty a Nástroje v Dedičstve sa do limitu nerátajú.
@@ -1119,7 +1120,7 @@ Všetky efekty tlačovej sady engine vyhodnocuje automaticky (playtest
 | Čierna mačka | Majiteľove Povery spôsobujú mäkké poškodenie aj bez súperových priznaných Dlhov (bez stropu). |
 | Svokra | Kým leží v línii, každé NA EX súpera jej majiteľa — na hociktorú kartu, aj povinné na Krčme — mu zoberie 2 cigarety a dá ich majiteľovi Svokry; každá Svokra dve (Michal 2026-10-19). Bez cigarety nič. Praudovravec súpera ju umlčí (Autorita). Nahradila zákaz NA EX z pravidiel v3 (Michal 2026-10-18). |
 | Šarlatán | Viera kariet v jeho okolí sa ráta ako Vízia. |
-| Veterán | Ak je v partii majiteľa Influencer, neplatia jeho pravé akcie. Ak má oboch susedov a vpravo (z pohľadu majiteľa) je Žena, neplatia jeho ľavé akcie. Lokalita v strede sa ráta ako sused (Michal 2026-10-22). |
+| Veterán | Furt (Michal 2026-10-23, pravidlá v4): NA EX na Veterána jeho **aktívne** akcie nezruší, ale **zdvojí** (aj Poldeci a Poškodenie pečene); neaktívne nezdvojí — ostanú neaktívne. |
 | Veštica | Pri prehre: porazený si prezrie oba doberacie balíčky, vymení jednu svoju kartu za súperovu, potom sa oba balíčky zamiešajú. |
 | Vychovávateľka | Keď majiteľ dá NA EX, jeden jeho priznaný Dlh sa zamieša do súperovho **doberacieho balíčka** (Michal 2026-10-19 — predtým do ruky, kde by ho súper priznal a dobral si kartu). |
 | Veľmi smútiaca vdova | Nástup: odhalí sa vrchná karta súperovho doberacieho balíčka (prázdny sa doplní zamiešaním odhadzovacieho). Ak je to muž (tag Chlap), ide z hry a majiteľ Vdovy **zahodí** (z hry) 2 svoje Dlhy z ruky, odhadzovacieho balíčka alebo spomedzi priznaných (priznané od 2026-10-21 — nový Dlh je hneď priznaný). Log vždy oznámi odhalenú kartu. Hrobár sa za Dlhy nespúšťa. (Oprava 2026-10-19 — predtým sa Dlhy len odhodili a vrátili.) |

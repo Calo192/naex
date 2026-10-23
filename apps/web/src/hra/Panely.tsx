@@ -406,7 +406,7 @@ export function HracDoska({
   const naTahu =
     view.koniec === null && (view.faza === "draft" && view.draftStav?.krok === "stavba" ? !view.draftStav.vybral[p] : view.naTahu === p);
   const naexNaStole = view.strany[0].concat(view.strany[1]).filter((pl) => pl.naexBy === p).length;
-  // Limit, s ktorým hráč vstupuje do Zhromaždenia (so Zastávkou, Vínkom a NA EX na stole).
+  // Limit, s ktorým hráč vstupuje do Zhromaždenia (so Zastávkou a Vínkom; NA EX na stole sa neráta).
   const limit = limitZhromazdenia(view, p);
   const buduci = limitBuduceKolo(view, p);
   const kto = ja ? "Máš" : "Má";
@@ -505,7 +505,7 @@ export function HracDoska({
                 <span className="tip-stav">
                   {jeCielLokalita(view, "zastavka")
                     ? `Limit vykladania: Zastávka — spoločný pre oboch, ${limit} (súčet limitov oboch hráčov)`
-                    : `Limit vykladania = plné + na stole + 1 = ${limit}`}
+                    : `Limit vykladania = plné + 1 = ${limit} (poldeci na stole cez NA EX sa neráta)`}
                 </span>
                 <span className="tip-riadok">
                   V ďalšom kole limit {buduci}: poldeci z NA EX sa pri bitke vypijú a na začiatku kola sa{" "}
@@ -513,7 +513,7 @@ export function HracDoska({
                 </span>
                 <span className="tip-riadok">
                   V Pitke položíš plný poldeci na Občana alebo Starešinu (NA EX!): zdvojnásobí neaktívne akcie
-                  karty a zruší jej aktívne. V Zhromaždení ťa plný poldeci stojí každá ďalšia karta v tom istom ťahu.
+                  karty a zruší jej aktívne; limit vykladania ti tým klesne o 1. V Zhromaždení ťa plný poldeci stojí každá ďalšia karta v tom istom ťahu.
                   Vypitý doleješ za {KONSTANTY.REFILL_CENA} cigarety (nie s Vínkom v Dedičstve), nový získaš barterom ({KONSTANTY.BARTER_CENA}{" "}
                   cigariet, s priazňou Lakomca menej).
                 </span>
