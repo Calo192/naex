@@ -327,6 +327,101 @@ function Zdroj({
   );
 }
 
+/** Dlaždica KARTY (Michal 2026-10-23, #76): stav a cieľ priznania či Dedičstva. */
+export interface KartyDlazdica {
+  readonly otvorena: boolean;
+  /** Otvorí vrstvu Karty (balíček, odhodené, priznané, Dedičstvo). */
+  readonly otvor: () => void;
+  /** Koľko kariet z ruky je v návrhu ťahu na priznanie či do Dedičstva. */
+  readonly navrhy: number;
+  /** Pri ťahaní (alebo vybranej) kliatbe či Nástroji je dlaždica cieľom. */
+  readonly ciel: {
+    readonly nazov: string;
+    readonly pozn: string;
+    /** Prečo karta sem teraz nesmie (napr. chýbajú cigarety). */
+    readonly zamknute: string | null;
+    readonly aktivny: boolean;
+    readonly nad: boolean;
+    readonly dataCiel: string | undefined;
+    readonly onKlik: (() => void) | undefined;
+  } | null;
+}
+
+function DlazdicaKariet({ hrac, ja, karty }: { readonly hrac: ClientState["hraci"][number]; readonly ja: boolean; readonly karty: KartyDlazdica }) {
+  const { tip: okno, ukaz, skry } = useTip();
+  const c = karty.ciel;
+  const tip: TipObsah = {
+    nadpis: "Karty",
+    text: (
+      <>
+        V ruke {hrac.rukaPocet}, v doberacom balíčku {hrac.doberaciPocet}, odhodených {hrac.odhadzovaci.length}; priznaných kliatob {hrac.priznane.length}, Nástrojov v Dedičstve {hrac.dedicstvo.length}.
+        <span className="tip-stav">
+          {ja ? "Klik (alebo O) ukáže balíček, odhodené, priznané a Dedičstvo. Kliatbu či Nástroj pustíš sem." : "Klik ukáže súperove priznané kliatby a Dedičstvo."}
+        </span>
+      </>
+    ),
+  };
+  const aktivuj = c?.onKlik ?? karty.otvor;
+  return (
+    <div
+      className={[
+        "zdroj zdroj-karty karty-dlazdica",
+        c !== null ? "ako-ciel" : "",
+        c?.aktivny === true ? "ciel-zona" : "",
+        c?.nad === true ? "nad-cielom" : "",
+        c?.zamknute != null ? "zamknuta" : "",
+        karty.otvorena ? "otvorena" : "",
+      ].join(" ")}
+      data-ciel={c?.dataCiel}
+      data-skratka={ja ? "o" : undefined}
+      role="button"
+      tabIndex={0}
+      aria-expanded={karty.otvorena}
+      aria-keyshortcuts={ja ? "O" : undefined}
+      onClick={aktivuj}
+      onKeyDown={(e) => {
+        if (e.key !== "Enter" && e.key !== " ") return;
+        e.preventDefault();
+        aktivuj();
+      }}
+      onMouseEnter={(e) => c === null && ukaz(e.currentTarget, tip)}
+      onMouseLeave={skry}
+    >
+      {c === null ? (
+        <>
+          <span className="zdroj-nazov">Karty ▾</span>
+          <span className="zdroj-hodnota">
+            <span className="karty-pocty">
+              <span>
+                <b>{hrac.rukaPocet}</b> ruka
+              </span>
+              <span>
+                <b>{hrac.doberaciPocet}</b> balíček
+              </span>
+              <span>
+                <b>{hrac.odhadzovaci.length}</b> odhodené
+              </span>
+            </span>
+          </span>
+          <span className="zdroj-pod karty-oblast">
+            kliatby {hrac.priznane.length} · náradie {hrac.dedicstvo.length}
+            {karty.navrhy > 0 && <b> · +{karty.navrhy} v ťahu</b>}
+          </span>
+        </>
+      ) : (
+        <>
+          <span className="zdroj-nazov">{c.zamknute !== null ? "sem teraz nie" : "pusti sem"}</span>
+          <span className="zdroj-hodnota">
+            <span className="velke-cislo karty-ciel">{c.nazov}</span>
+          </span>
+          <span className="zdroj-pod">{c.zamknute ?? c.pozn}</span>
+        </>
+      )}
+      {okno}
+    </div>
+  );
+}
+
 /** Rola hráča v kole pod menom — nenápadný riadok s nápovedou, nie bublina. */
 function Rola({ utoci, tip, frajerina }: { readonly utoci: boolean; readonly tip: TipObsah; readonly frajerina: number | undefined }) {
   const { tip: okno, ukaz, skry } = useTip();
@@ -365,8 +460,8 @@ export interface HracDoskaProps {
    * neprepína. `stlacene`: línia práve ukazuje čísla tohto hráča.
    */
   readonly starsi: { readonly stlacene: boolean; readonly prepni: () => void; readonly id: string };
-  /** Hracia oblasť na stole (Michal 2026-10-23, #76): priznané a Dedičstvo — tlačidlo pod menom. */
-  readonly oblast: { readonly otvorena: boolean; readonly prepni: () => void; readonly id: string };
+  /** Dlaždica KARTY: klik otvorí vrstvu Karty, pri ťahaní kliatby či Nástroja je cieľom (#76). */
+  readonly karty: KartyDlazdica;
 }
 
 /** „o 12 pred Tetou“ / „o 3 za Tetou“ / „rovnako“ — dlaždica Body. */
@@ -397,7 +492,7 @@ export function HracDoska({
   body,
   mena,
   starsi,
-  oblast,
+  karty,
 }: HracDoskaProps) {
   const hrac = view.hraci[p];
   const ja = p === view.ja;
@@ -463,20 +558,22 @@ export function HracDoska({
             }
             frajerina={info?.frajerina}
           />
-          {/* Priznané a Dedičstvo sú v hracej oblasti na stole (Michal 2026-10-23, #76) — tlačidlo ju otvorí, O je skratka. */}
-          <span className="doska-oblast">
-            <button
-              type="button"
-              className="cip-oblast"
-              aria-pressed={oblast.otvorena}
-              aria-controls={oblast.id}
-              data-skratka={ja ? "o" : undefined}
-              title={`Hracia oblasť — ${ja ? "tvoje" : "súperove"} priznané kliatby a Dedičstvo (O)${kliatby.dlh + kliatby.cirhoza > 0 ? ` · nepriznané: ${kliatby.dlh + kliatby.cirhoza}` : ""}`}
-              onClick={oblast.prepni}
-            >
-              ▤ {ja ? "Oblasť · " : ""}priznané {hrac.priznane.length} · Ded. {hrac.dedicstvo.length}
-            </button>
-          </span>
+          {/* Nepriznané kliatby pod menom; priznané a Dedičstvo sú v dlaždici KARTY (Michal 2026-10-23, #76). */}
+          {kliatby.dlh + kliatby.cirhoza > 0 && (
+            <span className="doska-oblast">
+              <span
+                className="cip kliatba"
+                title={
+                  ja
+                    ? "Tvoje nepriznané kliatby v ruke a v balíčkoch — na konci hry uberajú body."
+                    : "Súperove nepriznané kliatby — počet sa ráta z toho, čo sa ukázalo na stole (vznik, priznanie, zahodenie). Ktoré karty a kde ležia, nevidíš. Už sú odpočítané v jeho bodoch."
+                }
+              >
+                nepriznané{kliatby.cirhoza > 0 && ` · Cirhóza ×${kliatby.cirhoza}`}
+                {kliatby.dlh > 0 && ` · Dlh ×${kliatby.dlh}`}
+              </span>
+            </span>
+          )}
         </div>
       </div>
 
@@ -666,32 +763,7 @@ export function HracDoska({
             ),
           }}
         />
-        <Zdroj
-          nazov="Karty"
-          trieda="zdroj-karty"
-          hodnota={
-            <span className="karty-pocty">
-              <span>
-                <b>{hrac.rukaPocet}</b> ruka
-              </span>
-              <span>
-                <b>{hrac.doberaciPocet}</b> balíček
-              </span>
-              <span>
-                <b>{hrac.odhadzovaci.length}</b> odhodené
-              </span>
-            </span>
-          }
-          tip={{
-            nadpis: "Karty",
-            text: (
-              <>
-                V ruke {hrac.rukaPocet}, v doberacom balíčku {hrac.doberaciPocet}, odhodených {hrac.odhadzovaci.length}.
-                <span className="tip-stav">Keď doberací balíček klesne pod 5 kariet, hráč prehráva.</span>
-              </>
-            ),
-          }}
-        />
+        <DlazdicaKariet hrac={hrac} ja={ja} karty={karty} />
         <button
           type="button"
           className={`zdroj zdroj-body ${body.spolu[p] > 0 ? "plus" : body.spolu[p] < 0 ? "minus" : ""}${starsi.stlacene ? " stlacene" : ""}`}
