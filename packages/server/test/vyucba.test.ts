@@ -2,12 +2,16 @@
 // Štamgastovi — server pustí len príkaz kroku, bot hrá podľa skriptu, postup sa
 // ukladá k účtu a dohratie spraví z návštevníka hráča bez archívu a štatistík.
 
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import type { Command } from "@naex/core";
 import type { GameServer } from "../src/server.ts";
 import { nacitajVyucbu } from "../src/server.ts";
 import type { Msg } from "./pomocnik.ts";
 import { Klient, TEST_ADMIN, prihlas, registruj, testovaciServer } from "./pomocnik.ts";
+
+// Testy prechádzajú celú výučbu cez WebSocket (niektoré s vlastným serverom) — pri súbežnom
+// behu celej sady 5 s nestačí.
+vi.setConfig({ testTimeout: 60_000 });
 
 let server: GameServer;
 let zmaz: () => Promise<void>;
