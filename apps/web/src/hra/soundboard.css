@@ -416,7 +416,7 @@
   border: 1px solid var(--okraj-svetly);
 }
 
-/* Telo: krčmový cenník v dvoch stĺpcoch — na 1366 × 768 bez posúvania. */
+/* Telo: pult s pečiatkami — na 1366 × 650 bez posúvania. */
 .sb-telo {
   display: flex;
   flex-direction: column;
@@ -429,107 +429,6 @@
   margin: 0;
   color: var(--slaby-text);
   font-size: 0.85rem;
-}
-
-.sb-skupina {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  min-width: 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 16px;
-}
-
-.sb-skupina legend {
-  float: left;
-  grid-column: 1 / -1;
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  width: 100%;
-  padding: 0 8px 5px;
-  margin-bottom: 3px;
-  border-bottom: 1px solid var(--okraj);
-  font: 800 0.72rem/1.2 var(--pismo);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--akcent);
-}
-
-.sb-skupina legend .citat {
-  font: italic 400 0.8rem/1.2 var(--pismo);
-  letter-spacing: 0;
-  text-transform: none;
-  color: var(--slaby-text);
-}
-
-.sb-situacia {
-  margin-left: auto;
-  font: 400 0.74rem/1.2 var(--pismo);
-  letter-spacing: 0;
-  text-transform: none;
-  color: var(--slaby-text);
-}
-
-.sb-hlaska {
-  display: flex;
-  align-items: flex-end;
-  gap: 8px;
-  width: 100%;
-  min-height: 32px;
-  padding: 6px 6px 6px 8px;
-  margin: 0;
-  font: 500 0.9rem/1.3 var(--pismo);
-  color: var(--text);
-  text-align: left;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  cursor: pointer;
-  transition:
-    background 0.12s ease,
-    border-color 0.12s ease,
-    color 0.12s ease,
-    transform 0.08s ease;
-}
-
-.sb-hlaska.dlha {
-  grid-column: 1 / -1;
-}
-
-.sb-hlaska .hr-ik {
-  flex: none;
-  width: 14px;
-  height: 18px;
-  display: grid;
-  place-items: center;
-  color: var(--slaby);
-}
-
-.sb-hlaska .hr-ik svg {
-  width: 9px;
-  height: 10px;
-}
-
-.sb-hlaska .hr-ik .vlny {
-  height: 12px;
-}
-
-.sb-hlaska .hr-ik .vlny i {
-  width: 2px;
-}
-
-.sb-hlaska .hr-text {
-  min-width: 0;
-}
-
-.sb-hlaska .hr-bodky {
-  flex: 1 1 12px;
-  min-width: 12px;
-  height: 1px;
-  margin-bottom: 6px;
-  border-bottom: 2px dotted color-mix(in srgb, var(--okraj-svetly) 85%, transparent);
 }
 
 .sb kbd {
@@ -545,69 +444,6 @@
   border: 1px solid var(--okraj-svetly);
   border-bottom-width: 2px;
   border-radius: 5px;
-}
-
-.sb-hlaska:hover:not([aria-disabled="true"]) {
-  background: var(--plocha-3);
-  border-color: var(--okraj);
-}
-
-.sb-hlaska:hover:not([aria-disabled="true"]) .hr-text {
-  color: var(--akcent-svetly);
-}
-
-.sb-hlaska:hover:not([aria-disabled="true"]) .hr-ik {
-  color: var(--akcent);
-}
-
-.sb-hlaska:hover:not([aria-disabled="true"]) kbd {
-  color: var(--text);
-  border-color: var(--akcent-tmavy);
-}
-
-.sb-hlaska:active:not([aria-disabled="true"]) {
-  transform: translateY(1px);
-}
-
-.sb-hlaska:focus-visible {
-  outline: 2px solid var(--akcent);
-  outline-offset: 0;
-}
-
-.sb-hlaska[aria-disabled="true"] {
-  cursor: not-allowed;
-  color: var(--slaby);
-}
-
-.sb-hlaska[aria-disabled="true"]:not(.hraje) .hr-ik {
-  opacity: 0.35;
-}
-
-.sb-hlaska[aria-disabled="true"] .hr-bodky {
-  opacity: 0.45;
-}
-
-.sb-hlaska[aria-disabled="true"] kbd {
-  opacity: 0.55;
-}
-
-/* Moja práve hrá: tyrkysová ako „ty“ na celom stole + vlny namiesto ▶. */
-.sb-hlaska.hraje {
-  color: var(--text);
-  cursor: default;
-  background: color-mix(in srgb, var(--ja-tmava) 85%, transparent);
-  border-color: color-mix(in srgb, var(--ja) 60%, transparent);
-  box-shadow: inset 3px 0 0 var(--ja);
-}
-
-.sb-hlaska.hraje .hr-ik {
-  color: var(--ja);
-}
-
-.sb-hlaska.hraje kbd {
-  opacity: 1;
-  color: var(--ja);
-  border-color: var(--ja);
 }
 
 .sb-pata {
@@ -631,7 +467,7 @@
 }
 
 .sb-pata input[type="range"] {
-  width: 150px;
+  width: 120px;
   accent-color: var(--akcent);
 }
 
@@ -674,17 +510,234 @@
   }
 }
 
-/* Kláves skupiny (1–4): náhodná hláška z nej (Michal 2026-10-22). */
-.sb-skupina legend .sb-klaves-skupiny {
-  min-width: 20px;
-  height: 20px;
-  font-size: 0.7rem;
-  letter-spacing: 0;
-  color: var(--akcent);
-  border-color: var(--akcent-tmavy);
-}
-
 .sb-pata label,
 .sb-pata .skratky {
   white-space: nowrap;
+}
+
+/* ---- pult s pečiatkami skupín (Michal 2026-10-23) ----
+ * Každá skupina je pečiatka v jej farbe (--farba z tokenu skupiny), mierne
+ * nakrivo ako na pulte; pri buchnutí odtlačok, kým hrá, vlny namiesto ikony. */
+.sb-pult {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+  gap: 12px;
+  padding: 4px 2px 2px;
+}
+
+.sb-pecat {
+  --farba: var(--akcent);
+  --naklon: -1deg;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  min-height: 104px;
+  min-width: 0;
+  padding: 9px 10px 8px;
+  text-align: left;
+  color: var(--text);
+  background: color-mix(in oklab, var(--plocha-2) 86%, var(--farba));
+  border: 3px double var(--farba);
+  border-radius: 10px;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, calc(0.35 * var(--tma)));
+  rotate: var(--naklon);
+  cursor: pointer;
+  transition:
+    rotate 0.15s ease,
+    translate 0.15s ease,
+    background 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.sb-pecat:hover:not([aria-disabled="true"]),
+.sb-pecat:focus-visible {
+  rotate: 0deg;
+  translate: 0 -2px;
+  background: color-mix(in oklab, var(--plocha-2) 76%, var(--farba));
+  box-shadow: 0 5px 0 rgba(0, 0, 0, calc(0.35 * var(--tma)));
+}
+
+.sb-pecat:focus-visible {
+  outline: 2px solid var(--farba);
+  outline-offset: 3px;
+}
+
+.sb-pecat:active:not([aria-disabled="true"]) {
+  translate: 0 1px;
+  scale: 0.97;
+  box-shadow: none;
+}
+
+.sb-pecat[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+.sb-pecat[aria-disabled="true"]:not(.hraje) {
+  opacity: 0.55;
+}
+
+.sb-pecat.hraje {
+  rotate: 0deg;
+  background: color-mix(in oklab, var(--plocha-2) 70%, var(--farba));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--farba) 45%, transparent);
+}
+
+.sb-pecat-hore {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.sb-pecat-ik {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  color: var(--farba);
+}
+
+.sb-pecat-ik svg {
+  width: 28px;
+  height: 28px;
+}
+
+.sb-pecat-ik .vlny {
+  height: 18px;
+}
+
+.sb-ikona-text {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.sb-pecat kbd {
+  color: var(--farba);
+  border-color: color-mix(in srgb, var(--farba) 60%, var(--okraj-svetly));
+}
+
+.sb-pecat-nazov {
+  font: 800 0.98rem/1.15 var(--nadpis);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--farba);
+}
+
+.sb-pecat-citat {
+  font: italic 400 0.78rem/1.25 var(--pismo);
+  color: var(--tlmeny);
+}
+
+.sb-pecat-pocet {
+  margin-top: auto;
+  font: 500 0.72rem/1.2 var(--pismo);
+  color: var(--slaby-text);
+}
+
+/* Odtlačok: kruh atramentu v farbe skupiny sa rozplynie od stredu. */
+.sb-pecat-odtlacok {
+  position: absolute;
+  inset: -3px;
+  border-radius: 10px;
+  border: 3px solid var(--farba);
+  pointer-events: none;
+  animation: sb-odtlacok 0.5s ease-out both;
+}
+
+@keyframes sb-odtlacok {
+  from {
+    opacity: 0.9;
+    scale: 0.92;
+  }
+  to {
+    opacity: 0;
+    scale: 1.12;
+  }
+}
+
+/* Fúziky majstra Melichara sa pri hláške hýbu — polovice proti sebe. */
+.fuz .fuz-l,
+.fuz .fuz-p {
+  transform-box: view-box;
+  transform-origin: 12px 11px;
+}
+
+.fuz.hovori .fuz-l {
+  animation: sb-fuz-l 0.32s ease-in-out infinite alternate;
+}
+
+.fuz.hovori .fuz-p {
+  animation: sb-fuz-p 0.32s ease-in-out infinite alternate;
+}
+
+@keyframes sb-fuz-l {
+  from {
+    rotate: 6deg;
+  }
+  to {
+    rotate: -10deg;
+  }
+}
+
+@keyframes sb-fuz-p {
+  from {
+    rotate: -6deg;
+  }
+  to {
+    rotate: 10deg;
+  }
+}
+
+.sb[data-ja="moja"] .sb-ik .fuz {
+  color: var(--ja);
+}
+
+.sb-medailon {
+  width: 48px;
+  height: 48px;
+}
+
+.sb-medailon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.sb-medailon.hovori {
+  border-color: var(--akcent);
+  box-shadow:
+    inset 0 0 0 2px var(--pozadie),
+    0 0 0 3px color-mix(in srgb, var(--akcent) 25%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fuz.hovori .fuz-l,
+  .fuz.hovori .fuz-p,
+  .sb-pecat-odtlacok {
+    animation: none;
+  }
+  .sb-pecat {
+    transition: none;
+  }
+}
+
+/* Nízky notebook (1366 × 650): pečiatky bez citátu a panel takmer na výšku okna, nech sa celý pult zmestí bez posúvania. */
+@media (max-height: 719px) {
+  .sb-panel {
+    max-height: calc(100vh - 80px);
+  }
+
+  .sb-pult {
+    gap: 10px;
+  }
+
+  .sb-pecat {
+    min-height: 0;
+    padding: 7px 9px 6px;
+  }
+
+  .sb-pecat-citat {
+    display: none;
+  }
 }

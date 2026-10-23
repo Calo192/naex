@@ -109,24 +109,54 @@ nekopíruje — originály sú na Suno. Server ich netreba reštartovať.
 ### 5c. Hlášky majstra Melichara
 
 V partii proti počítaču zaznie krátka hláška majstra Melichara, keď na stole
-dopadne pečiatka momentu (hlasitosť si hráč nastaví v profile, predvolene 70 %,
-0 = vypnutý). Import funguje ako pri hudbe — priečinok je celá sada, text
-hlášky je názov súboru bez poradového čísla (`03_No_toto_je_marha.mp3` →
-„No toto je marha“).
+dopadne pečiatka momentu; hráči si ich púšťajú aj sami z pultu (soundboard).
+Hlasitosť si hráč nastaví v profile (predvolene 70 %, 0 = vypnutý). Import
+funguje ako pri hudbe — priečinok je celá sada, text hlášky je názov súboru
+bez poradového čísla (`03_No_toto_je_marha.mp3` → „No toto je marha“).
 
-Skupinu hlášky určuje podpriečinok (Michal 2026-10-23):
+Hlášky ležia v priečinkoch skupín (Michal 2026-10-23) — priečinok je skupina
+na soundboarde (pečiatka na Melicharovom pulte, kláves pustí náhodnú hlášku
+z nej) a podľa nej sa Melichar ozve pri momente:
 
 ```
 data/majster_melichar/
-  pohoda/   moment v prospech hráča (zvrat, výprask, záchrana…)
-  smola/    moment v prospech súpera — sebaľútosť, nie posmech
-  udiv/     moment, ktorý nepatrí nikomu (vzbura, bitka o všetko)
-  *.mp3     priamo v priečinku = len soundboard, pri momente sa nepustí
+  udiv/
+    skupina.json      názov, citát, ikona, farba, kláves, nálady momentov
+    aha.mp3 …
+  nervy/ bieda/ posmech/ vyhrazky/ reci/ pohoda/
+  _vyradene/          priečinok s „_“ sa nenahrá (etnické nadávky a pod.)
 ```
 
-Ktorý moment pustí ktorú skupinu, určuje `HLASKY_MOMENTOV`
-v `packages/core/src/momenty.ts` (jediné miesto). Prázdna skupina sa nahradí
-údivom. Import vypíše počty v skupinách; neznámy podpriečinok ohlási.
+`skupina.json`:
+
+```json
+{
+  "nazov": "Údiv",
+  "citat": "No teda, toto som nevideu",
+  "ikona": "vykricnik",
+  "farba": "info-silna",
+  "klaves": "1",
+  "nalady": ["udiv"]
+}
+```
+
+- **ikona**: `pivo`, `kladivo`, `minca`, `blesk`, `otaznik`, `vykricnik`,
+  `bublina`, `fuz` — alebo krátky text či emoji.
+- **farba**: token zo `schemy.css` bez `--` (`akcent`, `akcent-tmavy`,
+  `akcent-svetly`, `cervena`, `cervena-svetla`, `cervena-text`, `zelena`,
+  `zelena-svetla`, `info`, `info-silna`, `ja`, `tlmeny`, `text`); iná = akcent.
+- **klaves**: `1`–`9`, každý len raz (o kláves sa hlási abecedne prvý
+  priečinok); bez klávesu je pečiatka len na klik.
+- **nalady**: pri ktorých momentoch sa Melichar ozve hláškou zo skupiny —
+  `pohoda` (moment v prospech hráča), `smola` (v prospech súpera), `udiv`
+  (moment, ktorý nepatrí nikomu). Ktorý moment má akú náladu, určuje
+  `NALADY_MOMENTOV` v `packages/core/src/momenty.ts`. Keď skupina s náladou
+  chýba, ozve sa Údiv.
+
+**Nová hláška**: súbor do priečinka skupiny, import. **Nová skupina**: nový
+priečinok so `skupina.json`, import — pečiatka sa na pulte objaví sama.
+Súbor priamo v `majster_melichar/` (mimo skupiny) sa nenahrá. Import vypíše
+skupiny s počtom hlášok a všetko, čo vynechal.
 
 ```bash
 # lokálne

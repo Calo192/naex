@@ -54,19 +54,19 @@ export const MOMENTY: Readonly<Record<TypMomentu, { readonly stupen: StupenMomen
 };
 
 /**
- * Skupiny hlášok majstra Melichara. Skupina = podpriečinok pri importe
- * (npm run melichar -- <priečinok>: pohoda/, smola/, udiv/); hláška mimo nich
- * ostane len pre soundboard a pri momente sa nepustí.
+ * Nálada momentu pre Melicharovu hlášku. Ktoré skupiny hlášok (priečinky pri
+ * importe) k nálade patria, určujú dáta — pole nalady v skupina.json
+ * (npm run melichar, docs/NASADENIE.md 5c), nie kód.
  */
-export const SKUPINY_HLASOK = ["pohoda", "smola", "udiv"] as const;
-export type SkupinaHlasky = (typeof SKUPINY_HLASOK)[number];
+export const NALADY = ["pohoda", "smola", "udiv"] as const;
+export type NaladaMomentu = (typeof NALADY)[number];
 
 /**
- * Jediné miesto mapovania skupina → momenty: ktorú skupinu pustí moment tomu,
- * komu sa stal v prospech (pre), a jeho súperovi (proti). Moment bez hráča
- * (hrac null) pustí obom skupinu pre.
+ * Jediné miesto mapovania moment → nálada: akú náladu má moment pre toho, komu
+ * sa stal v prospech (pre), a pre jeho súpera (proti). Moment bez hráča
+ * (hrac null) má pre oboch náladu pre.
  */
-export const HLASKY_MOMENTOV: Readonly<Record<TypMomentu, { readonly pre: SkupinaHlasky; readonly proti: SkupinaHlasky }>> = {
+export const NALADY_MOMENTOV: Readonly<Record<TypMomentu, { readonly pre: NaladaMomentu; readonly proti: NaladaMomentu }>> = {
   zvrat: { pre: "pohoda", proti: "smola" },
   bomba: { pre: "pohoda", proti: "smola" },
   zaverecna: { pre: "pohoda", proti: "smola" },
@@ -77,10 +77,10 @@ export const HLASKY_MOMENTOV: Readonly<Record<TypMomentu, { readonly pre: Skupin
   vyprask: { pre: "pohoda", proti: "smola" },
 };
 
-/** Skupina hlášky k momentu pre hráča ja. */
-export function skupinaMomentu(moment: Moment, ja: PlayerId): SkupinaHlasky {
-  const h = HLASKY_MOMENTOV[moment.typ];
-  return moment.hrac === null || moment.hrac === ja ? h.pre : h.proti;
+/** Nálada momentu pre hráča ja. */
+export function naladaMomentu(moment: Moment, ja: PlayerId): NaladaMomentu {
+  const n = NALADY_MOMENTOV[moment.typ];
+  return moment.hrac === null || moment.hrac === ja ? n.pre : n.proti;
 }
 
 const PORADIE_STUPNOV:Readonly<Record<StupenMomentu, number>> = { bronz: 0, striebro: 1, zlato: 2 };

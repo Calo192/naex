@@ -422,7 +422,7 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     // Michal 2026-10-19: namiesto vlastnej fotky si hráč vyberie jednu z trosiek.
     if (r === "GET /hudba") return ok({ skladby: ctx.hudba.zoznam() });
 
-    if (r === "GET /melichar") return ok({ hlasky: ctx.melichar.hlasky() });
+    if (r === "GET /melichar") return ok({ hlasky: ctx.melichar.hlasky(), skupiny: ctx.melichar.skupiny() });
 
     if (r === "GET /avatary") return ok({ avatary: ctx.predvoleneAvatary });
 

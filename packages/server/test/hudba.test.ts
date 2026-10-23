@@ -6,7 +6,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createGameServer, type GameServer } from "../src/server.ts";
-import { TRVANIE_HLASKY_NEZNAME_MS, bezUvodnychNul, nazovHlasky, priponaZvuku, skupinaZCesty } from "../src/hudba.ts";
+import { TRVANIE_HLASKY_NEZNAME_MS, bezUvodnychNul, nacitajPriecinokHlasok, nazovHlasky, priponaZvuku, skupinaZDat } from "../src/hudba.ts";
 import { registruj, TEST_ADMIN } from "./pomocnik.ts";
 
 const ID = "a".repeat(40);
@@ -37,8 +37,16 @@ beforeAll(async () => {
     join(dir, "melichar", "zoznam.json"),
     JSON.stringify([
       { id: ID, nazov: "No toto je marha", subor: `${ID}.mp3`, skupina: "udiv" },
-      // Neznáma skupina sa zahodí — hláška ostane len na soundboarde.
-      { id: ID2, nazov: "Bzdocha", subor: `${ID2}.mp3`, skupina: "posmech" },
+      // Neplatné id skupiny sa zahodí.
+      { id: ID2, nazov: "Bzdocha", subor: `${ID2}.mp3`, skupina: "Zlá skupina!" },
+    ]),
+  );
+  writeFileSync(
+    join(dir, "melichar", "skupiny.json"),
+    JSON.stringify([
+      { id: "udiv", nazov: "Údiv", citat: "Boha", ikona: "vykricnik", farba: "info", klaves: "1", nalady: ["udiv", "zle"] },
+      // Skupina bez hlášok sa klientovi neposiela.
+      { id: "prazdna", nazov: "Prázdna", klaves: "2", nalady: [] },
     ]),
   );
   server = await createGameServer({ port: 0, dataDir: dir, admin: TEST_ADMIN, staticDir: join(dir, "nic") });
@@ -109,16 +117,18 @@ describe("hudba počas partie", () => {
 
 describe("hlášky majstra Melichara", () => {
   it("zoznam a súbory idú z vlastného adresára", async () => {
-    const r = (await (await fetch(url("/api/melichar"))).json()) as { hlasky: unknown[] };
+    const r = (await (await fetch(url("/api/melichar"))).json()) as { hlasky: unknown[]; skupiny: unknown[] };
     // Súbor bez MP3 rámcov — dĺžka sa nedá zistiť, ráta sa s predvolenou.
     expect(r.hlasky).toEqual([
       { id: ID, nazov: "No toto je marha", subor: `${ID}.mp3`, skupina: "udiv", trvanieMs: TRVANIE_HLASKY_NEZNAME_MS },
       { id: ID2, nazov: "Bzdocha", subor: `${ID2}.mp3`, trvanieMs: TRVANIE_HLASKY_NEZNAME_MS },
     ]);
+    expect(r.skupiny).toEqual([{ id: "udiv", nazov: "Údiv", citat: "Boha", ikona: "vykricnik", farba: "info", klaves: "1", nalady: ["udiv"] }]);
     const subor = await fetch(url(`/melichar/${ID}.mp3`));
     expect(subor.status).toBe(200);
     expect(subor.headers.get("content-type")).toBe("audio/mpeg");
     expect((await fetch(url("/melichar/zoznam.json"))).status).toBe(404);
+    expect((await fetch(url("/melichar/skupiny.json"))).status).toBe(404);
   });
 
   it("import: nuly pred prvým MP3 rámcom sa orežú, text hlášky z názvu súboru", () => {
@@ -129,15 +139,54 @@ describe("hlášky majstra Melichara", () => {
     expect(nazovHlasky("03_No_toto_je_marha")).toBe("No toto je marha");
     expect(nazovHlasky("07_toto_je_ZIVOT")).toBe("Toto je ZIVOT");
     expect(nazovHlasky("Bez cisla")).toBe("Bez cisla");
+    expect(nazovHlasky("1500_korun")).toBe("1500 korun");
   });
 
-  it("import: skupina k momentom = podpriečinok (pohoda/, smola/, udiv/), inak len soundboard", () => {
-    expect(skupinaZCesty(join("pohoda", "toto_je_ZIVOT.mp3"))).toBe("pohoda");
-    expect(skupinaZCesty("smola/ach_boha.mp3")).toBe("smola");
-    expect(skupinaZCesty("Údiv/boha.mp3")).toBe("udiv");
-    expect(skupinaZCesty("udiv/vnorene/boha.mp3")).toBe("udiv");
-    expect(skupinaZCesty("bzdocha.mp3")).toBeUndefined();
-    expect(skupinaZCesty("posmech/bzdocha.mp3")).toBeUndefined();
+  it("import: priečinok = skupina so skupina.json, „_“ a súbory mimo skupín sa vynechajú", () => {
+    const zdroj = mkdtempSync(join(tmpdir(), "naex-melichar-"));
+    const subor = (cesta: string, obsah: string | Buffer = OBSAH): void => {
+      mkdirSync(join(zdroj, cesta, ".."), { recursive: true });
+      writeFileSync(join(zdroj, cesta), obsah);
+    };
+    subor("Údiv/skupina.json", JSON.stringify({ nazov: "Údiv", ikona: "vykricnik", klaves: "1", nalady: ["udiv"] }));
+    subor("Údiv/aha.mp3");
+    subor("Údiv/vnorene/boha.mp3");
+    subor("nervy/kurva.mp3");
+    subor("druha/skupina.json", JSON.stringify({ nazov: "Druhá", klaves: "1" }));
+    subor("_vyradene/zla.mp3");
+    subor("mimo.mp3");
+    try {
+      const { skupiny, subory, varovania } = nacitajPriecinokHlasok(zdroj);
+      expect(skupiny.map((s) => [s.id, s.nazov, s.klaves])).toEqual([
+        ["druha", "Druhá", "1"],
+        ["nervy", "Nervy", null],
+        ["udiv", "Údiv", null],
+      ]);
+      expect(subory.map((s) => [s.skupina, s.cesta.slice(zdroj.length + 1).replace(/\\/g, "/")])).toEqual([
+        ["nervy", "nervy/kurva.mp3"],
+        ["udiv", "Údiv/aha.mp3"],
+        ["udiv", "Údiv/vnorene/boha.mp3"],
+      ]);
+      const v = varovania.join("\n");
+      expect(v).toMatch(/_vyradene\/.*1 súborov/);
+      expect(v).toMatch(/mimo\.mp3/);
+      expect(v).toMatch(/kláves 1 už má iná skupina/);
+      expect(v).toMatch(/nervy\/ — chýba skupina\.json/);
+    } finally {
+      rmSync(zdroj, { recursive: true, force: true });
+    }
+  });
+
+  it("skupina.json: chybné polia sa nahradia predvolenými, nálady len známe", () => {
+    expect(skupinaZDat("bieda-a-dlhy", { klaves: "0", nalady: ["smola", "radost"], ikona: 5 })).toEqual({
+      id: "bieda-a-dlhy",
+      nazov: "Bieda a dlhy",
+      citat: "",
+      ikona: "fuz",
+      farba: "akcent",
+      klaves: null,
+      nalady: ["smola"],
+    });
   });
 
   it("hlasitosť (predvolene 70 %, 0 = mlčí); frekvencia už nie je", async () => {

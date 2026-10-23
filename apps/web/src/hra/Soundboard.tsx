@@ -1,6 +1,9 @@
 // Soundboard majstra Melichara (Michal 2026-10-22, dizajn soundboard-20261022-0934,
 // variant B): hráč si v partii sám púšťa hlášky, počuje ich aj súper. Tlačidlo
-// je v hlavičke webu pri mene súpera, panel je nemodálny „krčmový cenník“.
+// je v hlavičke webu pri mene súpera, panel je nemodálny „krčmový pult“.
+// Od 2026-10-23 (Michal) je pult z pečiatok skupín: skupiny sú dáta (priečinok
+// pri importe + skupina.json: názov, ikona, farba, kláves), nová skupina sa
+// objaví sama. Kláves aj klik pustí náhodnú hlášku zo skupiny, nie poslednú.
 // Kým hrá vlastná hláška a 2 s po nej, ďalšiu nepustí (stráži to aj server);
 // súperova ho neblokuje. Názov hlášky sa pri prehrávaní neukazuje.
 
@@ -8,7 +11,7 @@ import { useCallback, useEffect, useId, useRef, useState, type CSSProperties, ty
 import { api } from "../lib/api.ts";
 import { MELICHAR_PREDVOLENY, useUcet, type Pouzivatel } from "../lib/ucet.tsx";
 import { hlasitostZvuku } from "./Hudba.tsx";
-import { nacitajHlasky, urlHlasky, type HlaskaMelichara } from "./Melichar.tsx";
+import { nacitajMelichara, urlHlasky, type HlaskaMelichara, type Melichar, type SkupinaMelichara } from "./Melichar.tsx";
 import type { HlaskaVPartii } from "./useHra.ts";
 import "./soundboard.css";
 
@@ -17,101 +20,21 @@ const TICHO_MS = 2_000;
 /** Keď zoznam dĺžku nemá (starý server), ráta sa s touto. */
 const TRVANIE_NEZNAME_MS = 5_000;
 
-interface Skupina {
-  readonly id: string;
-  readonly nazov: string;
-  readonly citat: string;
-  readonly situacia: string;
-  /** nazov = názov v zoznam.json, text = ako ho hráč vidí (s diakritikou). */
-  readonly hlasky: readonly { readonly nazov: string; readonly text: string }[];
+/** Farby skupín len z tokenov schemy.css — skupina.json nesmie vniesť vlastnú farbu. */
+const FARBY = new Set(["akcent", "akcent-tmavy", "akcent-svetly", "cervena", "cervena-svetla", "cervena-text", "zelena", "zelena-svetla", "info", "info-silna", "ja", "tlmeny", "text"]);
+const farbaSkupiny = (farba: string): string => `var(--${FARBY.has(farba) ? farba : "akcent"})`;
+
+interface Pecat {
+  readonly skupina: SkupinaMelichara;
+  readonly hlasky: readonly HlaskaMelichara[];
 }
 
-// Skupiny podľa významu (Michal 2026-10-22 ich schválil v mockupe).
-const SKUPINY: readonly Skupina[] = [
-  {
-    id: "udiv",
-    nazov: "Údiv",
-    citat: "„Čo to je?!“",
-    situacia: "keď súper zahrá niečo nečakané",
-    hlasky: [
-      { nazov: "No toto je marha", text: "No toto je marha" },
-      { nazov: "No teda toto som nevideu", text: "No teda, toto som nevideu" },
-      { nazov: "Boha", text: "Boha" },
-    ],
-  },
-  {
-    id: "nasupera",
-    nazov: "Na súpera",
-    citat: "„Ty jeden…“",
-    situacia: "keď ťa súper naštve",
-    hlasky: [
-      { nazov: "Ty svina", text: "Ty svina" },
-      { nazov: "Bzdocha", text: "Bzdocha" },
-      { nazov: "Jebem ja Tvojho boha", text: "Jebem ja tvojho boha" },
-      { nazov: "Ale na kurvy to ma", text: "Ale na kurvy to má" },
-      { nazov: "To nebude mat rozum hinta ciganska banda nikdy", text: "To nebude mať rozum, hinta cigánska banda, nikdy" },
-    ],
-  },
-  {
-    id: "smola",
-    nazov: "Smola",
-    citat: "„Zas to isté“",
-    situacia: "keď ti to nejde",
-    hlasky: [
-      { nazov: "Ach boha", text: "Ach, boha" },
-      { nazov: "To zas bude vyzerat", text: "To zas bude vyzerať" },
-      { nazov: "Cil isla ked najviac jebe", text: "Čil išla, keď najviac jebe" },
-      { nazov: "Uz mam v pici nervy zas", text: "Už mám v piči nervy zas" },
-    ],
-  },
-  {
-    id: "pohoda",
-    nazov: "Pohoda",
-    citat: "„Toto je život“",
-    situacia: "keď ti to vyšlo",
-    hlasky: [
-      { nazov: "Toto je ZIVOT", text: "Toto je ŽIVOT" },
-      { nazov: "Keksy a kokotiny", text: "Keksy a kokotiny" },
-    ],
-  },
-];
-
-/**
- * Kláves 1–4 pustí náhodnú hlášku z kategórie (Michal 2026-10-22; predtým mala
- * každá hláška svoj kláves). Náhodu vyberá klient, server dostane konkrétne id.
- */
-const KLAVESY_SKUPIN = ["1", "2", "3", "4"];
-
-interface Riadok {
-  readonly hlaska: HlaskaMelichara;
-  readonly text: string;
-  readonly trvanieMs: number;
+/** Skupiny v poradí zo servera (podľa klávesu), každá so svojimi hláškami; prázdne nie. */
+function pecate({ hlasky, skupiny }: Melichar): Pecat[] {
+  return skupiny.map((skupina) => ({ skupina, hlasky: hlasky.filter((h) => h.skupina === skupina.id) })).filter((p) => p.hlasky.length > 0);
 }
 
-/** Hlášky zo servera v skupinách; nové hlášky, ktoré skupinu nemajú, idú do „Ďalšie“ (bez klávesu). */
-function zoskup(hlasky: readonly HlaskaMelichara[]): { readonly skupina: Skupina; readonly klaves: string | null; readonly riadky: Riadok[] }[] {
-  const podlaNazvu = new Map(hlasky.map((h) => [h.nazov, h]));
-  const pouzite = new Set<string>();
-  const out: { readonly skupina: Skupina; readonly klaves: string | null; readonly riadky: Riadok[] }[] = SKUPINY.map((skupina, i) => ({
-    skupina,
-    klaves: KLAVESY_SKUPIN[i] ?? null,
-    riadky: skupina.hlasky.flatMap((x) => {
-      const h = podlaNazvu.get(x.nazov);
-      if (h === undefined) return [];
-      pouzite.add(h.id);
-      return [{ hlaska: h, text: x.text, trvanieMs: h.trvanieMs ?? TRVANIE_NEZNAME_MS }];
-    }),
-  }));
-  const ostatne = hlasky.filter((h) => !pouzite.has(h.id));
-  if (ostatne.length > 0) {
-    out.push({
-      skupina: { id: "dalsie", nazov: "Ďalšie", citat: "", situacia: "", hlasky: [] },
-      klaves: null,
-      riadky: ostatne.map((h) => ({ hlaska: h, text: h.nazov, trvanieMs: h.trvanieMs ?? TRVANIE_NEZNAME_MS })),
-    });
-  }
-  return out.filter((s) => s.riadky.length > 0);
-}
+const pocetHlasok = (n: number): string => (n === 1 ? "1 hláška" : n >= 2 && n <= 4 ? `${n} hlášky` : `${n} hlášok`);
 
 function Vlny() {
   return (
@@ -127,6 +50,45 @@ function Vlny() {
 /** Fúziky majstra Melichara (medailón v hlavičke panela aj tlačidlo v hlavičke webu). */
 const FUZ =
   "M12 11c-1.5-2.3-4.3-2.7-6-.8-.8.9-2 1-2.9.3.4 2.5 2.6 4 4.9 3.4 1.7-.4 3-1.5 4-2.9Zm0 0c1.5-2.3 4.3-2.7 6-.8.8.9 2 1 2.9.3-.4 2.5-2.6 4-4.9 3.4-1.7-.4-3-1.5-4-2.9Z";
+
+function Fuzy({ hovori }: { readonly hovori: boolean }) {
+  return (
+    <svg className={`fuz${hovori ? " hovori" : ""}`} viewBox="0 0 24 24" aria-hidden="true">
+      <path className="fuz-l" d={FUZ.split("Zm0 0")[0] + "Z"} fill="currentColor" />
+      <path className="fuz-p" d={"M12 11" + (FUZ.split("Zm0 0")[1] ?? "")} fill="currentColor" />
+    </svg>
+  );
+}
+
+/** Ikony skupín (skupina.json „ikona“); neznámy názov sa ukáže ako text — napr. emoji. */
+const IKONY: Readonly<Record<string, readonly string[]>> = {
+  pivo: ["M5 9h10v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2Z", "M15 12h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2", "M5 9c0-2 1.4-3 2.8-3 .7-1.4 2.2-2.2 3.8-1.8 1 .3 1.8 1 2.2 1.9 1.4 0 2.2 1 2.2 2.9", "M8.5 12v6M11.5 12v6"],
+  kladivo: ["M4.5 8.5 9 4l3.5 3.5L8 12Z", "m10.3 9.7 9.2 9.3", "m6.5 6.5-2-2"],
+  minca: ["M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z", "M14.6 9.2c-.4-1-1.4-1.6-2.6-1.6-1.5 0-2.6.8-2.6 2s1.1 1.6 2.6 2 2.6.9 2.6 2.1-1.1 2-2.6 2c-1.3 0-2.3-.6-2.7-1.6", "M12 6v1.6M12 16.4V18"],
+  blesk: ["M13.5 2.5 5 13.5h6.5l-1 8 8.5-11h-6.5Z"],
+  otaznik: ["M4 4.5h16v11.5h-9l-4.5 4v-4H4Z", "M9.8 8.6a2.3 2.3 0 1 1 3.2 2.1c-.6.3-1 .8-1 1.4v.4", "M12 14.6v.1"],
+  vykricnik: ["M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z", "M12 7.5v6", "M12 16.4v.1"],
+  bublina: ["M4 4.5h16v11.5h-9l-4.5 4v-4H4Z", "m7.5 11 2-2.5 2 2.5 2-2.5 2 2.5"],
+};
+
+function IkonaSkupiny({ ikona }: { readonly ikona: string }) {
+  const cesty = IKONY[ikona];
+  if (ikona === "fuz") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d={FUZ} fill="currentColor" />
+      </svg>
+    );
+  }
+  if (cesty === undefined) return <span className="sb-ikona-text" aria-hidden="true">{ikona}</span>;
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      {cesty.map((d) => (
+        <path key={d} d={d} />
+      ))}
+    </svg>
+  );
+}
 
 function IkonaTicho() {
   return (
@@ -157,11 +119,11 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
   const hlasitostRef = useRef(hlasitost);
   hlasitostRef.current = hlasitost;
 
-  const [skupiny, setSkupiny] = useState<ReturnType<typeof zoskup>>([]);
+  const [pult, setPult] = useState<Pecat[] | null>(null);
   useEffect(() => {
     let zive = true;
-    void nacitajHlasky().then((h) => {
-      if (zive) setSkupiny(zoskup(h));
+    void nacitajMelichara().then((m) => {
+      if (zive) setPult(pecate(m));
     });
     return () => {
       zive = false;
@@ -174,10 +136,14 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
   const [superDo, setSuperDo] = useState(0);
   const [teraz, setTeraz] = useState(() => Date.now());
   const [trasie, setTrasie] = useState(0);
+  /** Pečiatka, ktorou hráč naposledy buchol (kľúč animácie odtlačku). */
+  const [dopad, setDopad] = useState<{ readonly skupina: string; readonly n: number } | null>(null);
 
   const stav: Stav = moja === null || teraz >= moja.koniec + TICHO_MS ? "pripravene" : teraz < moja.koniec ? "moja" : "odpocet";
   const superHra = teraz < superDo;
   const zostava = moja === null ? 0 : Math.max(0, moja.koniec + TICHO_MS - teraz);
+  const hovori = stav === "moja" || superHra;
+  const skupinaMojej = stav === "moja" ? pult?.find((p) => p.hlasky.some((h) => h.id === moja?.id))?.skupina.id : undefined;
 
   // Hodiny bežia, len kým niečo hrá alebo sa odpočítava.
   const aktivne = stav !== "pripravene" || superHra;
@@ -202,7 +168,7 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
     else setSuperDo(t + udalost.trvanieMs);
     setTeraz(t);
     if (hlasitostRef.current === 0) return;
-    void nacitajHlasky().then((hlasky) => {
+    void nacitajMelichara().then(({ hlasky }) => {
       const h = hlasky.find((x) => x.id === udalost.id);
       if (h === undefined) return;
       const audio = new Audio(urlHlasky(h));
@@ -211,32 +177,32 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
     });
   }, [udalost, miesto]);
 
-  const zatras = (): void => setTrasie((x) => x + 1);
-  const pustiRiadok = (r: Riadok): void => {
+  // Náhodná hláška zo skupiny — nie tá istá dvakrát po sebe, ak je z čoho vyberať.
+  const poslednaVSkupine = useRef<Map<string, string>>(new Map());
+  const pustiSkupinu = (p: Pecat): void => {
     if (stav !== "pripravene") {
-      zatras();
+      setTrasie((x) => x + 1);
       return;
     }
+    const predtym = poslednaVSkupine.current.get(p.skupina.id);
+    const moznosti = p.hlasky.length > 1 ? p.hlasky.filter((h) => h.id !== predtym) : p.hlasky;
+    const h = moznosti[Math.floor(Math.random() * moznosti.length)];
+    if (h === undefined) return;
+    poslednaVSkupine.current.set(p.skupina.id, h.id);
     // Zamkne sa hneď po kliku — odpoveď servera čas len spresní.
     const t = Date.now();
-    setMoja({ id: r.hlaska.id, koniec: t + r.trvanieMs });
+    setMoja({ id: h.id, koniec: t + (h.trvanieMs ?? TRVANIE_NEZNAME_MS) });
     setTeraz(t);
-    pusti(r.hlaska.id);
+    setDopad((d) => ({ skupina: p.skupina.id, n: (d?.n ?? 0) + 1 }));
+    pusti(h.id);
   };
-  // Náhodná hláška z kategórie — nie tá istá dvakrát po sebe, ak je z čoho vyberať.
-  const poslednaVSkupine = useRef<Map<string, string>>(new Map());
-  const pustiNahodnu = (klaves: string): void => {
-    const s = skupiny.find((x) => x.klaves === klaves);
-    if (s === undefined) return;
-    const posledna = poslednaVSkupine.current.get(s.skupina.id);
-    const moznosti = s.riadky.length > 1 ? s.riadky.filter((x) => x.hlaska.id !== posledna) : s.riadky;
-    const r = moznosti[Math.floor(Math.random() * moznosti.length)];
-    if (r === undefined) return;
-    if (stav === "pripravene") poslednaVSkupine.current.set(s.skupina.id, r.hlaska.id);
-    pustiRiadok(r);
+  const pustiKlavesRef = useRef((_: string): boolean => false);
+  pustiKlavesRef.current = (klaves: string): boolean => {
+    const p = pult?.find((x) => x.skupina.klaves === klaves);
+    if (p === undefined) return false;
+    pustiSkupinu(p);
+    return true;
   };
-  const pustiNahodnuRef = useRef(pustiNahodnu);
-  pustiNahodnuRef.current = pustiNahodnu;
 
   // Hlasitosť sa ukladá do profilu (to isté nastavenie ako v Profile), s malým oneskorením.
   useEffect(() => {
@@ -258,8 +224,8 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
     if (fokusNaTlacidlo) spust.current?.focus();
   }, []);
 
-  // M otvorí/zavrie, 1–4 pustí náhodnú hlášku z kategórie (aj pri zavretom paneli),
-  // Esc zavrie — nikdy pri písaní do poľa; klik mimo panel ho zavrie.
+  // M otvorí/zavrie, kláves skupiny (1–9 zo skupina.json) pustí náhodnú hlášku
+  // aj pri zavretom paneli, Esc zavrie — nikdy pri písaní do poľa; klik mimo panel ho zavrie.
   useEffect(() => {
     const klaves = (e: KeyboardEvent): void => {
       const t = e.target;
@@ -270,9 +236,8 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
         setOtvorene((o) => !o);
         return;
       }
-      if (KLAVESY_SKUPIN.includes(e.key)) {
+      if (/^[1-9]$/.test(e.key) && pustiKlavesRef.current(e.key)) {
         e.preventDefault();
-        pustiNahodnuRef.current(e.key);
         return;
       }
       if (e.key === "Escape" && otvorene) zavri(true);
@@ -288,23 +253,27 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
     document.addEventListener("pointerdown", mimo);
     return () => document.removeEventListener("pointerdown", mimo);
   }, [otvorene]);
-  // Po otvorení fokus na prvú hlášku, aby šli skratky a šípky hneď.
+  // Po otvorení fokus na prvú pečiatku, aby šli šípky hneď.
   useEffect(() => {
-    if (otvorene) panel.current?.querySelector<HTMLButtonElement>(".sb-hlaska")?.focus();
+    if (otvorene) panel.current?.querySelector<HTMLButtonElement>(".sb-pecat")?.focus();
   }, [otvorene]);
 
-  const klavesVPaneli = (e: ReactKeyboardEvent<HTMLDivElement>): void => {
+  const sipky = (e: ReactKeyboardEvent<HTMLDivElement>): void => {
     if (e.ctrlKey || e.metaKey || e.altKey || e.target instanceof HTMLInputElement) return;
-    const POSUN: Readonly<Record<string, number>> = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: 2, ArrowUp: -2 };
-    const posun = POSUN[e.key];
-    if (posun === undefined) return;
-    const tlacidla = [...(panel.current?.querySelectorAll<HTMLButtonElement>(".sb-hlaska") ?? [])];
+    const tlacidla = [...(panel.current?.querySelectorAll<HTMLButtonElement>(".sb-pecat") ?? [])];
     const i = tlacidla.findIndex((b) => b === document.activeElement);
     if (i < 0) return;
+    // Stĺpcov je toľko, koľko pečiatok má prvý riadok mriežky.
+    const prvy = tlacidla[0]?.offsetTop;
+    const stlpcov = Math.max(1, tlacidla.filter((b) => b.offsetTop === prvy).length);
+    const POSUN: Readonly<Record<string, number>> = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: stlpcov, ArrowUp: -stlpcov };
+    const posun = POSUN[e.key];
+    if (posun === undefined) return;
     e.preventDefault();
     tlacidla[Math.min(tlacidla.length - 1, Math.max(0, i + posun))]?.focus();
   };
 
+  const klavesy = (pult ?? []).flatMap((p) => (p.skupina.klaves === null ? [] : [p.skupina.klaves]));
   const sek = (zostava / 1000).toLocaleString("sk-SK", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   const textStavu =
     stav === "moja"
@@ -313,8 +282,8 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
         ? "Chvíľu ticho…"
         : superHra
           ? `${menoSupera} púšťa Melichara — môžeš odpovedať.`
-          : "Vyber hlášku — kliknutím alebo klávesom.";
-  const titulok = stav === "moja" ? "Melichar hovorí za teba" : stav === "odpocet" ? `Chvíľu ticho — o ${sek} s môžeš znova` : "Hlášky majstra Melichara (M)";
+          : "Buchni pečiatkou — Melichar vyberie hlášku zo skupiny.";
+  const titulok = stav === "moja" ? "Melichar hovorí za teba" : stav === "odpocet" ? `Chvíľu ticho — o ${sek} s môžeš znova` : "Pult majstra Melichara (M)";
   const idPanela = useId();
 
   return (
@@ -330,15 +299,7 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
         onClick={() => setOtvorene((o) => !o)}
       >
         <span className="sb-ik" aria-hidden="true">
-          {stav === "moja" ? (
-            <Vlny />
-          ) : stav === "odpocet" ? (
-            <span className="prstenec" style={{ "--p": String(zostava / TICHO_MS) } as CSSProperties} />
-          ) : (
-            <svg className="fuz" viewBox="0 0 24 24">
-              <path d={FUZ} fill="currentColor" />
-            </svg>
-          )}
+          {stav === "odpocet" ? <span className="prstenec" style={{ "--p": String(zostava / TICHO_MS) } as CSSProperties} /> : <Fuzy hovori={hovori} />}
           {superHra && <span className="sb-bodka" />}
         </span>
         <span className="sb-nazov">Melichar</span>
@@ -358,18 +319,16 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
       </span>
 
       {otvorene && (
-        <div className="sb-panel" id={idPanela} ref={panel} role="group" aria-label="Hlášky majstra Melichara" onKeyDown={klavesVPaneli}>
+        <div className="sb-panel" id={idPanela} ref={panel} role="group" aria-label="Pult majstra Melichara" onKeyDown={sipky}>
           <div className="sb-hlava">
-            <span className="sb-medailon" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <path d={FUZ} fill="currentColor" />
-              </svg>
+            <span className={`sb-medailon${hovori ? " hovori" : ""}`} aria-hidden="true">
+              <Fuzy hovori={hovori} />
             </span>
             <div>
-              <h2>Majster Melichar</h2>
-              <p>počuje ťa aj súper</p>
+              <h2>Pult majstra Melichara</h2>
+              <p>buchni pečiatkou — počuje ťa aj súper</p>
             </div>
-            <button type="button" className="sb-zavriet" aria-label="Zavrieť hlášky (Esc)" onClick={() => zavri(true)}>
+            <button type="button" className="sb-zavriet" aria-label="Zavrieť pult (Esc)" onClick={() => zavri(true)}>
               ✕
             </button>
           </div>
@@ -389,44 +348,38 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
             </div>
           )}
           <div className="sb-telo">
-            {skupiny.length === 0 && <p className="sb-prazdne">Hlášky sa načítavajú…</p>}
-            {skupiny.map(({ skupina, klaves, riadky: r }) => (
-              <fieldset key={skupina.id} className="sb-skupina">
-                <legend>
-                  {klaves !== null && (
-                    <kbd className="sb-klaves-skupiny" title={`Kláves ${klaves}: náhodná hláška z tejto skupiny`}>
-                      {klaves}
-                    </kbd>
-                  )}
-                  {skupina.nazov} {skupina.citat !== "" && <span className="citat">{skupina.citat}</span>}
-                  {skupina.situacia !== "" && <span className="sb-situacia">{skupina.situacia}</span>}
-                </legend>
-                {r.map((x) => {
-                  const hraje = stav === "moja" && moja?.id === x.hlaska.id;
+            {pult === null && <p className="sb-prazdne">Hlášky sa načítavajú…</p>}
+            {pult !== null && pult.length === 0 && <p className="sb-prazdne">Majster Melichar dnes nemá čo povedať — hlášky na serveri nie sú.</p>}
+            {pult !== null && pult.length > 0 && (
+              <div className="sb-pult">
+                {pult.map((p, i) => {
+                  const { skupina } = p;
+                  const hraje = skupinaMojej === skupina.id;
                   return (
                     <button
-                      key={x.hlaska.id}
+                      key={skupina.id}
                       type="button"
-                      className={["sb-hlaska", x.text.length > 30 ? "dlha" : "", hraje ? "hraje" : ""].join(" ")}
+                      className={`sb-pecat${hraje ? " hraje" : ""}`}
+                      style={{ "--farba": farbaSkupiny(skupina.farba), "--naklon": `${i % 2 === 0 ? -1.5 : 1.2}deg` } as CSSProperties}
                       aria-disabled={stav !== "pripravene" || undefined}
-                      onClick={() => pustiRiadok(x)}
+                      aria-keyshortcuts={skupina.klaves ?? undefined}
+                      aria-label={`${skupina.nazov}: náhodná hláška${skupina.klaves !== null ? ` (kláves ${skupina.klaves})` : ""}`}
+                      onClick={() => pustiSkupinu(p)}
                     >
-                      <span className="hr-ik">
-                        {hraje ? (
-                          <Vlny />
-                        ) : (
-                          <svg viewBox="0 0 9 10" aria-hidden="true">
-                            <path d="M0 0.5v9l8.5-4.5z" fill="currentColor" />
-                          </svg>
-                        )}
+                      {/* Odtlačok pri buchnutí — nový kľúč animáciu spustí znova, tlačidlo ostane (fokus). */}
+                      {skupina.id === dopad?.skupina && <span key={dopad.n} className="sb-pecat-odtlacok" aria-hidden="true" />}
+                      <span className="sb-pecat-hore">
+                        <span className="sb-pecat-ik">{hraje ? <Vlny /> : <IkonaSkupiny ikona={skupina.ikona} />}</span>
+                        {skupina.klaves !== null && <kbd>{skupina.klaves}</kbd>}
                       </span>
-                      <span className="hr-text">{x.text}</span>
-                      <span className="hr-bodky" aria-hidden="true" />
+                      <span className="sb-pecat-nazov">{skupina.nazov}</span>
+                      {skupina.citat !== "" && <span className="sb-pecat-citat">„{skupina.citat}“</span>}
+                      <span className="sb-pecat-pocet">{pocetHlasok(p.hlasky.length)}</span>
                     </button>
                   );
                 })}
-              </fieldset>
-            ))}
+              </div>
+            )}
           </div>
           <div className="sb-pata">
             <label>
@@ -435,7 +388,21 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
             </label>
             <output>{hlasitost} %</output>
             <span className="skratky">
-              <kbd>M</kbd> otvorí · <kbd>1</kbd>–<kbd>4</kbd> náhodná · <kbd>Esc</kbd> zavrie
+              <kbd>M</kbd> otvorí
+              {klavesy.length > 0 && (
+                <>
+                  {" · "}
+                  <kbd>{klavesy[0]}</kbd>
+                  {klavesy.length > 1 && (
+                    <>
+                      –<kbd>{klavesy[klavesy.length - 1]}</kbd>
+                    </>
+                  )}{" "}
+                  pečiatka
+                </>
+              )}
+              {" · "}
+              <kbd>Esc</kbd> zavrie
             </span>
           </div>
         </div>

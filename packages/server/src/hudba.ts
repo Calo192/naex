@@ -4,10 +4,10 @@
 // vlastný server, nie odkaz na Suno. Rovnako sa servírujú hlášky majstra
 // Melichara (Michal 2026-10-21), len z adresára <data>/melichar/.
 
-import { createReadStream, existsSync, readFileSync, statSync } from "node:fs";
+import { createReadStream, existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import type { IncomingMessage, ServerResponse } from "node:http";
-import { SKUPINY_HLASOK, type SkupinaHlasky } from "@naex/core";
+import { NALADY, type NaladaMomentu } from "@naex/core";
 
 export interface Skladba {
   /** SHA-256 obsahu (40 znakov) — rovnaký súbor sa uloží len raz. */
@@ -22,16 +22,131 @@ export const ZOZNAM = "zoznam.json";
 /** Hláška majstra Melichara — s dĺžkou, podľa ktorej server stráži pauzu medzi hláškami. */
 export interface Hlaska extends Skladba {
   readonly trvanieMs: number;
-  /** Skupina k momentom podľa podpriečinka pri importe; bez nej len soundboard. */
-  readonly skupina?: SkupinaHlasky;
+  /** Skupina = priečinok pri importe (id zo SKUPINA_RE). */
+  readonly skupina?: string;
 }
 
-/** Skupina z prvého podpriečinka cesty (relatívnej k importovanému priečinku), inak undefined. */
-export function skupinaZCesty(relativna: string): SkupinaHlasky | undefined {
-  const casti = relativna.split(/[\\/]/);
-  if (casti.length < 2) return undefined;
-  const priecinok = (casti[0] ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
-  return SKUPINY_HLASOK.find((s) => s === priecinok);
+export const SKUPINY = "skupiny.json";
+/** Súbor so stránkou skupiny v jej priečinku pri importe. */
+export const SKUPINA = "skupina.json";
+
+/**
+ * Skupina hlášok (Michal 2026-10-23): priečinok pri importe, jeho skupina.json
+ * dá názov, ikonu, farbu, kláves na soundboarde a nálady momentov, pri ktorých
+ * sa Melichar ozve hláškou z nej. Kategórie sú dáta, nie kód.
+ */
+export interface SkupinaHlasok {
+  readonly id: string;
+  readonly nazov: string;
+  /** Krátka ukážková hláška pod názvom. */
+  readonly citat: string;
+  /** Ikona soundboardu (pivo, kladivo…) alebo krátky text / emoji. */
+  readonly ikona: string;
+  /** Farebný token zo schemy.css bez „--“ (akcent, cervena…); klient pustí len známe. */
+  readonly farba: string;
+  /** Kláves 1–9 na soundboarde; null = len klik. */
+  readonly klaves: string | null;
+  readonly nalady: readonly NaladaMomentu[];
+}
+
+/** Id skupiny = názov priečinka: malé písmená bez diakritiky, číslice a pomlčka. */
+export const SKUPINA_RE = /^[a-z0-9][a-z0-9-]{0,31}$/;
+const KLAVES_RE = /^[1-9]$/;
+
+export function idSkupiny(priecinok: string): string {
+  return priecinok
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 32);
+}
+
+const retazec = (v: unknown, max: number): string | null => (typeof v === "string" && v.trim() !== "" ? v.trim().slice(0, max) : null);
+
+/**
+ * Skupina z jej skupina.json (alebo bez neho — len id); chybné polia sa
+ * nahradia predvolenými, nech jeden preklep nezhodí celý import.
+ */
+export function skupinaZDat(id: string, data: unknown): SkupinaHlasok {
+  const o = (typeof data === "object" && data !== null ? data : {}) as Record<string, unknown>;
+  const nazov = retazec(o.nazov, 40) ?? id.charAt(0).toUpperCase() + id.slice(1).replace(/-/g, " ");
+  const klaves = typeof o.klaves === "string" && KLAVES_RE.test(o.klaves) ? o.klaves : null;
+  const nalady = Array.isArray(o.nalady) ? NALADY.filter((n) => (o.nalady as unknown[]).includes(n)) : [];
+  return {
+    id,
+    nazov,
+    citat: retazec(o.citat, 60) ?? "",
+    ikona: retazec(o.ikona, 12) ?? "fuz",
+    farba: retazec(o.farba, 24) ?? "akcent",
+    klaves,
+    nalady,
+  };
+}
+
+/** Hlášky z priečinka pri importe: skupiny a ich súbory, plus varovania pre človeka. */
+export interface PriecinokHlasok {
+  readonly skupiny: SkupinaHlasok[];
+  readonly subory: { readonly cesta: string; readonly skupina: string }[];
+  readonly varovania: string[];
+}
+
+function* suboryVPriecinku(dir: string): Generator<string> {
+  for (const meno of readdirSync(dir).sort((a, b) => a.localeCompare(b, "sk"))) {
+    const cesta = join(dir, meno);
+    if (statSync(cesta).isDirectory()) yield* suboryVPriecinku(cesta);
+    else if (meno !== SKUPINA) yield cesta;
+  }
+}
+
+/**
+ * Priečinok s hláškami: každý podpriečinok je skupina (jeho skupina.json ju
+ * popíše), priečinok začínajúci „_“ (napr. _vyradene) sa vynechá a súbor mimo
+ * skupiny tiež — hláška bez skupiny by sa na soundboarde nedala pustiť.
+ * Skupiny sú zoradené podľa klávesu, potom podľa názvu; o kláves sa hlási
+ * skôr abecedne prvý priečinok, ďalšia skupina s ním ostane len na klik.
+ */
+export function nacitajPriecinokHlasok(priecinok: string): PriecinokHlasok {
+  const skupiny: SkupinaHlasok[] = [];
+  const subory: { cesta: string; skupina: string }[] = [];
+  const varovania: string[] = [];
+  for (const meno of readdirSync(priecinok).sort((a, b) => a.localeCompare(b, "sk"))) {
+    const cesta = join(priecinok, meno);
+    if (!statSync(cesta).isDirectory()) {
+      varovania.push(`${meno} — nie je v priečinku skupiny, vynechávam.`);
+      continue;
+    }
+    if (meno.startsWith("_") || meno.startsWith(".")) {
+      varovania.push(`${meno}/ — priečinok s „_“ sa nenahráva (${[...suboryVPriecinku(cesta)].length} súborov).`);
+      continue;
+    }
+    const id = idSkupiny(meno);
+    if (!SKUPINA_RE.test(id) || skupiny.some((s) => s.id === id)) {
+      varovania.push(`${meno}/ — z názvu sa nedá urobiť jedinečné id skupiny, vynechávam.`);
+      continue;
+    }
+    let data: unknown = {};
+    const popis = join(cesta, SKUPINA);
+    if (existsSync(popis)) {
+      try {
+        data = JSON.parse(readFileSync(popis, "utf8"));
+      } catch {
+        varovania.push(`${meno}/${SKUPINA} — nie je platný JSON, skupina dostane predvolený názov a ikonu.`);
+      }
+    } else varovania.push(`${meno}/ — chýba ${SKUPINA}, skupina dostane predvolený názov a ikonu.`);
+    let skupina = skupinaZDat(id, data);
+    if (skupina.klaves !== null && skupiny.some((s) => s.klaves === skupina.klaves)) {
+      varovania.push(`${meno}/ — kláves ${skupina.klaves} už má iná skupina, táto bude len na klik.`);
+      skupina = { ...skupina, klaves: null };
+    }
+    skupiny.push(skupina);
+    for (const s of suboryVPriecinku(cesta)) subory.push({ cesta: s, skupina: id });
+  }
+  const poradie = (k: string | null): number => (k === null ? 10 : Number(k));
+  skupiny.sort((a, b) => poradie(a.klaves) - poradie(b.klaves) || a.nazov.localeCompare(b.nazov, "sk"));
+  return { skupiny, subory, varovania };
 }
 
 /** Keď sa dĺžka zo súboru nedá zistiť (iný formát než MP3), ráta sa s touto. */
@@ -114,7 +229,8 @@ export function bezUvodnychNul(buf: Buffer): Buffer {
 
 /** Text hlášky z názvu súboru: „03_no_toto_je_marha“ → „No toto je marha“. */
 export function nazovHlasky(meno: string): string {
-  const text = meno.replace(/^\d+[_\s-]*/, "").replace(/_+/g, " ").trim();
+  // Poradové číslo má najviac dve cifry — „1500_korun“ je hláška o 1500 korunách.
+  const text = meno.replace(/^\d{1,2}[_\s-]+/, "").replace(/_+/g, " ").trim();
   return text.charAt(0).toLocaleUpperCase("sk") + text.slice(1);
 }
 
@@ -169,8 +285,7 @@ export class Hudba {
   hlasky(): Hlaska[] {
     return this.zoznam().map((s) => {
       const { trvanieMs: ulozene, skupina } = s as Partial<Hlaska>;
-      const sk = SKUPINY_HLASOK.find((x) => x === skupina);
-      const zaklad = { id: s.id, nazov: s.nazov, subor: s.subor, ...(sk !== undefined ? { skupina: sk } : {}) };
+      const zaklad = { id: s.id, nazov: s.nazov, subor: s.subor, ...(typeof skupina === "string" && SKUPINA_RE.test(skupina) ? { skupina } : {}) };
       if (typeof ulozene === "number" && ulozene > 0) return { ...zaklad, trvanieMs: ulozene };
       let trvanieMs = this.trvania.get(s.subor);
       if (trvanieMs === undefined) {
@@ -179,6 +294,23 @@ export class Hudba {
       }
       return { ...zaklad, trvanieMs };
     });
+  }
+
+  /** Skupiny hlášok z importu (skupiny.json) — len tie, ktoré majú aspoň jednu hlášku. */
+  skupiny(): SkupinaHlasok[] {
+    const cesta = join(this.adresar, SKUPINY);
+    if (!existsSync(cesta)) return [];
+    try {
+      const data = JSON.parse(readFileSync(cesta, "utf8")) as unknown;
+      if (!Array.isArray(data)) return [];
+      const s = new Set(this.hlasky().map((h) => h.skupina));
+      return data.flatMap((x) => {
+        const id = (x as { id?: unknown } | null)?.id;
+        return typeof id === "string" && SKUPINA_RE.test(id) && s.has(id) ? [skupinaZDat(id, x)] : [];
+      });
+    } catch {
+      return [];
+    }
   }
 
   /**

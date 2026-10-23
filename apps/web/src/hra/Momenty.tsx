@@ -5,8 +5,8 @@
 // Ukážka na snímky a UI inšpekciu: /hra?ukazka-momentu=zvrat (len vzhľad, na minútu).
 
 import { useEffect, useRef, useState } from "react";
-import type { Event, Moment, PlayerId, SkupinaHlasky, TypMomentu } from "@naex/core";
-import { MOMENTY, skupinaMomentu } from "@naex/core";
+import type { Event, Moment, NaladaMomentu, PlayerId, TypMomentu } from "@naex/core";
+import { MOMENTY, naladaMomentu } from "@naex/core";
 import "./hra.css";
 
 /** Ako dlho pečiatka ostane na stole. */
@@ -32,7 +32,7 @@ export interface MomentyProps {
   readonly ja: PlayerId;
   /** Mená hráčov podľa miesta — do popisu („Hráč N“ → meno). */
   readonly mena: readonly string[];
-  readonly hovor: (skupina: SkupinaHlasky) => void;
+  readonly hovor: (nalada: NaladaMomentu) => void;
   /** Beží Počítadlo bitky — pečiatka z bitky počká, nech nepadne pod neho. */
   readonly pocitadloBezi?: boolean;
 }
@@ -54,7 +54,7 @@ export function Momenty({ udalosti, ja, mena, hovor, pocitadloBezi = false }: Mo
 
   const ukaz = useRef((a: Aktivny): void => {
     setAktivny(a);
-    hovorRef.current(skupinaMomentu(a.moment, jaRef.current));
+    hovorRef.current(naladaMomentu(a.moment, jaRef.current));
     casovace.current.push(setTimeout(() => setAktivny((x) => (x?.id === a.id ? null : x)), NA_STOLE_MS));
   }).current;
 
