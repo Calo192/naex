@@ -148,7 +148,8 @@ const KAPITOLY: readonly Kapitola[] = [
             <strong>Vyhráš</strong>, ak vydesíš aspoň polovicu starších v hre a udržíš ich do konca nasledujúceho kola.
           </div>
           <div className="karticka karticka-zle">
-            <strong>Okamžite prehráš</strong>, ak nedokážeš čeliť exekúcii alebo tvoj balíček klesne pod 5 kariet.
+            <strong>Okamžite prehráš</strong>, ak nedokážeš čeliť exekúcii. <strong>Prehráš</strong> aj vtedy, keď máš po drafte alebo na
+            konci kola (karty z línie sa už vrátili) v balíčku menej ako 5 kariet — na konci kola sa najprv vyhodnotí vydesenie.
           </div>
           <div className="karticka">
             Inak hra končí <strong>po poslednej bitke o lokalitu</strong> (5, 7 alebo 11 podľa dĺžky hry) a rozhodnú body.
@@ -270,7 +271,7 @@ const KAPITOLY: readonly Kapitola[] = [
       <>
         <p>
           Poldeci určujú, koľko kariet smieš vyložiť počas jedného Zhromaždenia. Na začiatku hry máš <strong>2 plné poldeci</strong>.
-          Limit sa počíta nanovo na začiatku každého Zhromaždenia. Ak je limit 0, okamžite prehrávaš bitku. Na začiatku
+          Limit sa počíta nanovo na začiatku každého Zhromaždenia a je vždy aspoň 1 — aj bez plných poldeci vyložíš jednu kartu. Na začiatku
           každého kola sa ti <strong>jeden vypitý poldeci doleje sám</strong> — kto všetko minie, nezostane s limitom 1 do konca partie.
         </p>
         <UkazkaLimitu />
@@ -419,7 +420,7 @@ const KAPITOLY: readonly Kapitola[] = [
           priazeň teraz, ale tebe pribudne vystrašený starší.
         </p>
         <p>
-          Priazeň je hlavná protiváha pre toho, kto prehráva — víťaz bitky mu prebytkom posúva markery na jeho polovicu.
+          Priazeň je hlavná protiváha pre toho, kto prehráva — držiteľ prebytku (spravidla víťaz bitky) mu ním posúva markery na jeho polovicu.
           Sila je <strong>1 / 2 / 3</strong> podľa zóny (žltá, oranžová, červená) a väčšina priazní pridáva{" "}
           <strong>2 × sila</strong> (Fajčiar, Lakomec, Úžerník a Veriaci len silu).
         </p>
@@ -698,7 +699,7 @@ const KAPITOLY: readonly Kapitola[] = [
     obsah: () => (
       <>
         <p>
-          Hra sa končí okamžite, keď niekto nečelí exekúcii alebo mu balíček klesne pod 5 kariet (prehráva). Kto vydesí
+          Hra sa končí, keď niekto nečelí exekúcii (okamžite) alebo má po drafte či na konci kola balíček pod 5 kariet (prehráva). Kto vydesí
           polovicu starších, vyhrá, ak ich udrží do konca nasledujúceho kola — súper má jedno kolo na odpoveď (napríklad
           vziať si vydeseného staršieho do ruky — patronát vráti marker do stredu). Hra ohlásenie ukáže obom.
         </p>

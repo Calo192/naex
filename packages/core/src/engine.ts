@@ -821,7 +821,7 @@ export interface RozpisPoskodenia {
   readonly bonusy: readonly PolozkaRozpisu[];
   /** Tuhé menej (súperova nezrušená Viera, vlastné Absťáky) — hodnoty kladné. */
   readonly zrazky: readonly PolozkaRozpisu[];
-  /** Hodnota jednej mojej Viery (1 + priazeň Veriaceho + Svätý text). */
+  /** Hodnota jednej mojej Viery (1 + Svätý text); Veriaci pridáva Vieru navyše, nie hodnotu. */
   readonly hodnotaViery: number;
   /** Moja Viera, ktorú zrušili súperove Povery, a moje Povery zrušené súperovou Vierou. */
   readonly zrusenaViera: number;

@@ -81,3 +81,25 @@ v poradí Pitky (otočenie Záverečných).
 ## 2026-10-23.5 — lokalita Kar (roadmapa #80)
 
 Nové pravidlo, nič staré nenahrádza: §8.0 a riadok Kar v tabuľke lokalít §14.
+
+## 2026-10-23 — opravy znenia podľa rozhodcu #10–#16 (Michal 2026-10-22)
+
+Hra sa nemení — text dobehol správanie jadra. Návrhy sú v sekcii Playtest.
+
+- **#10 (§1):** „Veľkosť balíčka hráča klesne pod 5 | okamžite **prehráva**“ →
+  kontrola po drafte a na konci kola, vydesenie má prednosť.
+- **#11 (§3):** Viera „znižuje súperovo tuhé poškodenie; základ 1 + priazeň;
+  ruší sa s Poverou 1:1“ → hodnota 1 za kus, Veriaci pridá Vieru navyše.
+- **#12 (§7):** „Útočník vyberie lokalitu a **natočí ju**.“ → obranca.
+- **#13 (§9):** riadok tabuľky „Hodnota | 2 | 2 | 1 | 0 | 0 | 0 | 1 | 2 | 2“ →
+  „Sila priazne | 3 | 2 | 1 | 0 | 0 | 0 | 1 | 2 | 3“.
+- **#14 (§7, §9):** „…priznanie kliatby, Vízia, Zberateľ a efekty.“ a odsek
+  „**Zberateľ** nahradil Očumovateľa (Michal 2026-10-12) … Staré sady
+  s Očumovateľom sa načítajú ako Zberateľ.“ → Úžerník.
+- **#15 (§8.4):** „Víťaz rozdelí prebytočné poškodenie medzi starších. Každý
+  pridelený bod posunie marker o 1 **smerom k porazenému**.“ → držiteľ prebytku,
+  smerom k jeho súperovi.
+- **#16 (§5):** „**Limit 0 → hráč okamžite prehráva bitku.**“ → limit je vždy
+  aspoň 1.
+- **Pijan (§14):** „Ak má Žena v jeho okolí aktívnu akciu Poldeci, súper majiteľa
+  Pijana dostane +1 Ranu.“ → text karty „súper ti udelí 1 Ranu“ (Admin).

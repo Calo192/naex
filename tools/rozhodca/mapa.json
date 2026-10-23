@@ -44,10 +44,12 @@
     {
       "id": "1.koniec.balicek-okamzite",
       "paragraf": "1. Základ › Podmienky konca",
-      "pravidlo": "„Okamžite prehráva“ — pravidlo nehovorí, kedy počas kola sa veľkosť balíčka kontroluje (karty v línii sa do nej nerátajú).",
-      "stav": "nejasne",
-      "testy": [],
-      "poznamka": "Kód (engine.ts, skontrolujBalicky) kontroluje po drafte a na konci kola, vydesenie má na konci kola prednosť. Návrh rozhodca-balicek-okamzite v docs/playtesty/navrhy-rozhodca-20261022-214942.json."
+      "pravidlo": "Balíček (doberací + odhadzovací + ruka) pod 5 kariet po drafte alebo na konci kola = prehra; na konci kola má prednosť vydesenie.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/pravidla-bitka.test.ts › §1: balíček (doberací + odhadzovací + ruka) pod 5 kariet na konci kola znamená prehru; presne 5 nie"
+      ],
+      "poznamka": "Znenie opravené podľa rozhodcu #10 (Michal 2026-10-22, implementované 2026-10-23)."
     },
     {
       "id": "1.koniec.posledna-bitka",
@@ -74,7 +76,7 @@
       "pravidlo": "Variantov karty je rozloženia vľavo × vpravo; zhodné akcie sa nerozlišujú (Poldeci ×3 v 3 slotoch = 1).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/variants.test.ts › pre všetkých 60 kariet sedí ľavé × pravé s permutations",
+        "packages/core/test/variants.test.ts › pre všetkých 63 kariet sedí ľavé × pravé s permutations",
         "packages/core/test/variants.test.ts › zhodné akcie sa nepočítajú viackrát (Poldeci ×3 v 3 slotoch = 1)"
       ]
     },
@@ -109,13 +111,13 @@
     {
       "id": "3.akcie.viera-hodnota",
       "paragraf": "3. Akcie",
-      "pravidlo": "Viera znižuje súperovo tuhé poškodenie; hodnota Viery je 1 a Veriaci dáva Vieru navyše rovnú sile (blok 2026-10-20) — tabuľka §3 však píše „základ 1 + priazeň“.",
-      "stav": "chyba-v-pravidlach",
+      "pravidlo": "Viera znižuje súperovo tuhé o 1 za kus; Veriaci pridá Vieru navyše rovnú sile; ruší sa s Poverou 1:1.",
+      "stav": "pokryte",
       "testy": [
         "packages/core/test/pravidla-20261019.test.ts › dve Viery s priazňou sily 2 uberú súperovi 4 tuhé, nie 10",
         "packages/core/test/player.test.ts › prahy rastú s priazňou, hodnota Viery je 1 (Veriaci dáva Vieru navyše)"
       ],
-      "poznamka": "Kód robí to, čo blok 2026-10-20 a §9 (tabuľka priazní). Návrh rozhodca-viera-zaklad v docs/playtesty/navrhy-rozhodca-20261022-214942.json."
+      "poznamka": "Znenie opravené podľa rozhodcu #11 (Michal 2026-10-22, implementované 2026-10-23)."
     },
     {
       "id": "3.akcie.dlh-prah",
@@ -342,12 +344,12 @@
     {
       "id": "5.limit.nula",
       "paragraf": "5. Poldeci a limit vykladania",
-      "pravidlo": "„Limit 0 → hráč okamžite prehráva bitku“ — podľa vzorca limitu (+1) limit nikdy nie je 0, pravidlo sa nedá uplatniť.",
-      "stav": "chyba-v-pravidlach",
+      "pravidlo": "Limit vykladania je vždy aspoň 1 (plné poldeci + 1).",
+      "stav": "pokryte",
       "testy": [
         "packages/core/test/poldeci.test.ts › limitZhromazdenia = plné + 1 (NA EX na stole sa neráta, v4), karta zo šenku ho zníži"
       ],
-      "poznamka": "Kód pravidlo nemá (niet ako nastať). Návrh rozhodca-limit-nula v docs/playtesty/navrhy-rozhodca-20261022-214942.json."
+      "poznamka": "Znenie opravené podľa rozhodcu #16 (Michal 2026-10-22, implementované 2026-10-23)."
     },
     {
       "id": "5.naex.kedy",
@@ -638,22 +640,22 @@
     {
       "id": "7.kolo.zberatel-zdroj",
       "paragraf": "7. Priebeh kola",
-      "pravidlo": "Odsek „Dobratie po bitke“ uvádza medzi zdrojmi kariet Zberateľa, ktorého krok po bitke zanikol 2026-10-20.",
-      "stav": "chyba-v-pravidlach",
+      "pravidlo": "Karty navyše dáva šenok, fajčenie, priznanie kliatby, Vízia a efekty — Zberateľ už nie.",
+      "stav": "pokryte",
       "testy": [
         "packages/core/test/pravidla-20261019.test.ts › po bitke sa už nič neprezerá — po Pohrebe ide hra rovno do ďalšieho kola"
       ],
-      "poznamka": "Súčasť návrhu rozhodca-zberatel-zvysky v docs/playtesty/navrhy-rozhodca-20261022-214942.json."
+      "poznamka": "Znenie opravené podľa rozhodcu #14 (Michal 2026-10-22, implementované 2026-10-23)."
     },
     {
       "id": "7.draft.ciel-stary-text",
       "paragraf": "7. Priebeh kola › Bitka o lokalitu — draft",
-      "pravidlo": "Odsek „Bitka o lokalitu — draft“ píše „Útočník vyberie lokalitu a natočí ju“ — blok 2026-10-20 a úvod §7: cieľ volí a natáča obranca.",
-      "stav": "chyba-v-pravidlach",
+      "pravidlo": "Cieľ kola vyberá a natáča obranca (od 2026-10-20).",
+      "stav": "pokryte",
       "testy": [
         "packages/core/test/pravidla-kolo.test.ts › §7: cieľ kola vyberá a natáča obranca, útočník nie"
       ],
-      "poznamka": "Kód robí to, čo novší blok. Návrh rozhodca-ciel-voli-obranca v docs/playtesty/navrhy-rozhodca-20261022-214942.json."
+      "poznamka": "Znenie opravené podľa rozhodcu #12 (Michal 2026-10-22, implementované 2026-10-23)."
     },
     {
       "id": "7.draft.stavba",
@@ -1098,14 +1100,14 @@
     {
       "id": "8.vysledok.prebytok-drzi",
       "paragraf": "8. Vyhodnotenie bitky — presné poradie › 4. Výsledok",
-      "pravidlo": "Prebytok drží vyššie CELKOVÉ (aj pri remíze či prehre), prebytok = |rozdiel celkových| — veta „Víťaz rozdelí … smerom k porazenému“ tomu odporuje.",
-      "stav": "chyba-v-pravidlach",
+      "pravidlo": "Prebytok rozdelí hráč, ktorý ho drží (vyššie celkové — aj porazený či pri remíze v tuhom), smerom k svojmu súperovi.",
+      "stav": "pokryte",
       "testy": [
         "packages/core/test/battle.test.ts › prebytok drží hráč s vyšším celkovým, aj keď bitku prehral",
         "packages/core/test/battle.test.ts › pri remíze v celkovom poškodení nikto nezíska prebytok",
         "packages/core/test/revizia-kariet.test.ts › 1 cigareta za každého posunutého staršieho, viac posunov toho istého = 1"
       ],
-      "poznamka": "Kód robí to, čo vzorec a blok 2026-10-21. Návrh rozhodca-prebytok-drzi v docs/playtesty/navrhy-rozhodca-20261022-214942.json."
+      "poznamka": "Znenie opravené podľa rozhodcu #15 (Michal 2026-10-22, implementované 2026-10-23)."
     },
     {
       "id": "8.vysledok.minstrant",
@@ -1237,12 +1239,12 @@
     {
       "id": "9.stupnica.tabulka",
       "paragraf": "9. Starší › Stupnica strachu",
-      "pravidlo": "Tabuľka stupnice uvádza hodnoty 2-2-1-0-0-0-1-2-2 — odporuje vete nad ňou a bloku 2026-10-16 (3-2-1-0-0-0-1-2-3).",
-      "stav": "chyba-v-pravidlach",
+      "pravidlo": "Sila priazne na stupnici je 3-2-1-0-0-0-1-2-3.",
+      "stav": "pokryte",
       "testy": [
         "packages/core/test/dobiehanie.test.ts › bonus = 2 × sila podľa zóny na polovici hráča"
       ],
-      "poznamka": "Kód má 3-2-1…3 (elders.ts, STUPNICA_HODNOTY). Návrh rozhodca-stupnica-tabulka v docs/playtesty/navrhy-rozhodca-20261022-214942.json."
+      "poznamka": "Znenie opravené podľa rozhodcu #13 (Michal 2026-10-22, implementované 2026-10-23)."
     },
     {
       "id": "9.marker.priazen-strach",
@@ -1304,12 +1306,12 @@
     {
       "id": "9.priazne.zberatel-stary",
       "paragraf": "9. Starší › Priazne",
-      "pravidlo": "Odsek „Zberateľ nahradil Očumovateľa … staré sady s Očumovateľom sa načítajú ako Zberateľ“ odporuje bloku 2026-10-20 a §8.6b (Úžerník; staré sady → Úžerník).",
-      "stav": "chyba-v-pravidlach",
+      "pravidlo": "Úžerník nahradil Zberateľa (a ten Očumovateľa); staré sady sa načítajú ako Úžerník.",
+      "stav": "pokryte",
       "testy": [
         "packages/core/test/pravidla-20261019.test.ts › stará sada so Zberateľom alebo Očumovateľom sa načíta ako Úžerník"
       ],
-      "poznamka": "Kód robí to, čo novší blok (types.ts, PRIAZNE_ALIAS). Návrh rozhodca-zberatel-zvysky v docs/playtesty/navrhy-rozhodca-20261022-214942.json."
+      "poznamka": "Znenie opravené podľa rozhodcu #14 (Michal 2026-10-22, implementované 2026-10-23)."
     },
     {
       "id": "10.podmienka.aktivacia",
@@ -1395,7 +1397,7 @@
       "stav": "pokryte",
       "testy": [
         "packages/core/test/pravidla-kolo.test.ts › §11: dĺžka hry 5 / 7 / 11 lokalít; dlhá len so sadou, ktorá má aspoň 11 lokalít",
-        "packages/core/test/variants.test.ts › načíta 60 kariet, 8 starších, 14 lokalít, 8 nástrojov (sada v12, 2026-10-20)"
+        "packages/core/test/variants.test.ts › načíta 63 kariet, 8 starších, 15 lokalít, 8 nástrojov (sada v11 živého webu, 2026-10-23)"
       ]
     },
     {

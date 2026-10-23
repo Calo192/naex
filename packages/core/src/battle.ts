@@ -33,7 +33,7 @@ export interface BattleSide {
   readonly makkeNadDlhy?: number;
   /** Priazeň Bitkára, ak ju mám (inak 0) — tuhé poškodenie navyše. */
   readonly priazenBitkara: number;
-  /** Hodnota MOJEJ Viery = 1 + priazeň Veriaceho, ak ju mám. */
+  /** Hodnota jednej MOJEJ Viery = 1 + Svätý text (priazeň Veriaceho pridáva Vieru navyše, nie hodnotu). */
   readonly hodnotaViery: number;
 }
 

@@ -201,10 +201,12 @@ bijú sa o lokality, desia starších.
 |---|---|
 | Hráč vydesí aspoň polovicu starších (aj nahradených) a **udrží ich do konca nasledujúceho kola** (Michal 2026-10-16 — ohlásené vydesenie; súper má kolo na odpoveď, napr. patronát nad vydeseným starším — vráti marker do stredu) | **vyhráva** |
 | Hráč nedokáže čeliť exekúcii | okamžite **prehráva** |
-| Veľkosť balíčka hráča klesne pod 5 | okamžite **prehráva** |
+| Veľkosť balíčka hráča je pod 5 po drafte alebo na konci kola (karty z línie sa už vrátili) | **prehráva** |
 | Odohrá sa posledná bitka o lokalitu (5 / 7 / 11 podľa dĺžky hry) | spočítajú sa body |
 
 Veľkosť balíčka = doberací + odhadzovací + ruka. **Priznané karty sa nerátajú.**
+Na konci kola sa najprv vyhodnotí vydesenie, potom veľkosť balíčka (rozhodca #10,
+Michal 2026-10-22).
 
 ---
 
@@ -250,7 +252,7 @@ Tagy nemajú vlastné pravidlá, pokiaľ sa na ne neodkazuje efekt.
 | Petelica | `Petelica` | 3 tuhé poškodenie |
 | Povera | `Povera` | mäkké poškodenie do výšky súperovho **priznaného** dlhu; ruší sa s Vierou 1:1 |
 | Pohoršenie | `Pohoršenie` | posunie marker ľubovoľného staršieho o 1 k súperovi |
-| Viera | `Viera` | znižuje súperovo tuhé poškodenie; základ 1 + priazeň; ruší sa s Poverou 1:1 |
+| Viera | `Viera` | znižuje súperovo tuhé poškodenie o 1 za kus; priazeň Veriaceho pridá Vieru navyše rovnú sile (+1 / +2 / +3); ruší sa s Poverou 1:1 |
 | Dlh | `Dlh` | zvýši **zadĺženie** o 1; pri prahu (**2 + sila Úžerníka**, Michal 2026-10-20; predtým 1) vznikne karta Dlh |
 | Poškodenie pečene | `PoškodeniePečene` | pridá poškodenie pečene |
 | Obmedzenie | `Obmedzenie` | súper dostane v Pitke o 1 cigaretu menej (Michal 2026-10-16; predtým menej potiahnutí) |
@@ -368,7 +370,7 @@ limit vykladania = plné poldeci + 1
   hráčovi otočí **jeden vypitý poldeci na plný** (Michal 2026-10-16, playtest
   20261016-155120). Viac vypitých si treba doliať (cigarety, barter,
   akcia Poldeci, Krčmárka).
-- **Limit 0 → hráč okamžite prehráva bitku.**
+- Limit je vždy aspoň 1 — aj bez plných poldeci hráč v Zhromaždení vyloží jednu kartu (rozhodca #16).
 - Už vyložené karty sa nikdy nevracajú.
 
 ### NA EX
@@ -523,7 +525,7 @@ začiatku každého ďalšieho kola (po návrate kariet z bitky) si každý hrá
 dobere zo svojho doberacieho balíčka **2 karty**. Keď sa doberací balíček
 minie, zamieša sa odhadzovací. **Limit ruky nie je** — hráč smie mať kariet,
 koľko chce. Karty navyše dáva šenok, fajčenie (cigareta = karta hneď, na svojom
-ťahu v Zhromaždení aj v Pitke), priznanie kliatby, Vízia, Zberateľ a efekty.
+ťahu v Zhromaždení aj v Pitke), priznanie kliatby, Vízia a efekty.
 
 ```
 Voľba cieľa → Draft (stavba šenku, branie, patronát) → (Zhromaždenie → Pitka) × 1–4 → Bitka
@@ -531,7 +533,7 @@ Voľba cieľa → Draft (stavba šenku, branie, patronát) → (Zhromaždenie �
 
 ### Bitka o lokalitu — draft
 
-Útočník vyberie lokalitu a **natočí ju**. Nasleduje draft v dvoch krokoch
+Obranca vyberie lokalitu a **natočí ju** (Michal 2026-10-20; predtým útočník). Nasleduje draft v dvoch krokoch
 (Michal 2026-10-12 — predtým sa bralo z náhodne vyloženého šenku a útočník si
 vybral všetky tri karty naraz ako prvý; playtest 20261012-101447 sa sťažoval
 na „mŕtve“ karty v šenku a útočník vyhral 8 z 11 bitiek).
@@ -793,9 +795,10 @@ poslednú bitku **vyhrá**, berie lokalitu aj celú sekeru ako v každej inej
 bitke (Michal 2026-10-22, spresnené po názore #24). Benzínka už lokalitu
 neprepadá (od 2026-10-20 len zakazuje fajčiť, §14) — berie ju víťaz ako každú inú.
 
-Víťaz rozdelí prebytočné poškodenie medzi starších. Každý pridelený bod posunie
-marker o 1 **smerom k porazenému**. Smie prideliť aj viac bodov tomu istému
-staršiemu. Miňištrant vo víťazovej partii zdraží každý posun o 1; na posun,
+Prebytok rozdelí medzi starších hráč, ktorý ho drží (vyššie celkové poškodenie —
+spravidla víťaz, no aj porazený či pri remíze v tuhom). Každý pridelený bod posunie
+marker o 1 **smerom k jeho súperovi**. Smie prideliť aj viac bodov tomu istému
+staršiemu. Miňištrant vo víťazovej partii zdraží každý posun víťaza o 1; na posun,
 ktorý stojí viac, než zostáva prebytku, prebytok nestačí a prepadne
 (oprava 2026-10-16 — predtým sa dal zaplatiť aj neúplným zvyškom).
 
@@ -871,7 +874,7 @@ si nikto nevezme do ruky (patronát, §7).
 
 | Index | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
 |---|---|---|---|---|---|---|---|---|---|
-| Hodnota | 2 | 2 | 1 | 0 | 0 | 0 | 1 | 2 | 2 |
+| Sila priazne | 3 | 2 | 1 | 0 | 0 | 0 | 1 | 2 | 3 |
 | Zóna | červená | oranžová | žltá | sivá | sivá | sivá | žltá | oranžová | červená |
 | Názov | Vydesenie | Strach | Znepokojenie | Neutralita | | | Znepokojenie | Strach | Vydesenie |
 
@@ -939,9 +942,9 @@ aby vyvážil prehrávanie — prebytok posúva markery k porazenému). Sila 1 /
 | Exekútor | Prah Exekútora | 10 + 2 × priazeň | 14 / 18 / 22 |
 
 Priazeň staršieho určuje scorecard, na ktorom leží (rozdáva sa náhodne).
-**Zberateľ** nahradil Očumovateľa (Michal 2026-10-12): Preskúmanie používali
-len Policajtka a Veštica a jeho priazeň v hre nič nerobila. Preskúmanie je
-teraz pevne 5. Staré sady s Očumovateľom sa načítajú ako Zberateľ.
+Úžerník nahradil Zberateľa (Michal 2026-10-20) a ten Očumovateľa (2026-10-12):
+Preskúmanie používali len Policajtka a Veštica. Preskúmanie je pevne 5. Staré sady
+so Zberateľom či Očumovateľom sa načítajú ako Úžerník (§8.6b).
 
 **Trocha a Zopár zmizli** (Michal 2026-10-18, revízia kariet, variant A):
 každý efekt uvádza pevné číslo (Farár „ignoruj 2 súperove Povery“,
@@ -1136,7 +1139,7 @@ Všetky efekty tlačovej sady engine vyhodnocuje automaticky (playtest
 | Kočovník | Dlh a Poškodenie pečene z jeho akcií dostáva hráč, na ktorého strane leží (Pecku a Poldeci jeho majiteľ). Limit vykladania míňa ako každá karta (Michal 2026-10-19 zrušil výnimku). |
 | Pasca | Dedičstvo: každé súperovo Zviera v línii (kdekoľvek, jeho karta) mu uberie 1 tuhé poškodenie (Michal 2026-10-20; predtým rušila prvú podstrčenú kartu). |
 | Pes | Furt (Michal 2026-10-20, sada v12): za každý pár akcií na spoji Psa so súperovou kartou — z ktorejkoľvek strany Psa, rátajú sa aj páry zrušené Odporom či NA EX (karty sú spojené) — dá majiteľ Psa v bitke +1 tuhé poškodenie, ale len keď Pes leží na strane svojho majiteľa; podstrčený na súperovu stranu nedá nič (Michal 2026-10-22). Na Psa sa smie podstrčiť (predtým strážil koniec strany). Nesmie byť v partii s iným zvieraťom. Akcie: vľavo 1 Rana, vpravo 2 Rany. |
-| Pijan | Ak má Žena v jeho okolí aktívnu akciu Poldeci, súper majiteľa Pijana dostane +1 Ranu. |
+| Pijan | Bitka: ak má Žena v jeho okolí aktívnu akciu Poldeci, súper ti udelí 1 Ranu — majiteľ Pijana dostane od súpera +1 Ranu za každého takého Pijana (text karty Admin 2026-10-23; predtým „udelí ranu do vlastnej partie“, výsledok rovnaký). |
 | Policajtka | Furt: súperove Pohoršenia proti majiteľovi neplatia (Michal 2026-10-18; Autorita — Praudovravec súpera ju umlčí). |
 | Poštárka | V Pitke raz: majiteľ smie dobrať 1 až 2 karty; ak dobral aspoň jednu do ruky, získa 1 Dlh. S prázdnym doberacím aj odhadzovacím balíčkom sa použiť nedá (Michal 2026-10-22, rozhodca #8). |
 | Presbiter | Bitka (Michal 2026-10-20): ak v jeho kraji nemá majiteľ iného Občana, Zviera ani Starešinu a súper tam má prevahu, súper má o toľko Viery menej, koľko má Presbiter aktívnych akcií (s násobkami Posilnenia a NA EX). Ráta sa počet Vier pred rušením s Poverou, najviac na 0. Funguje aj podstrčený do súperovho kraja. Autorita — súperov Praudovravec ho umlčí. |

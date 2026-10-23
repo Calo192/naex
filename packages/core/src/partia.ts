@@ -11,7 +11,7 @@
 // natočená), nie partii, v ktorej leží — pravidlá v3, rozhodnutie Michala
 // 2026-10-11. Karta v súperovej partii tak aktivuje súperove akcie na
 // spojoch (tie dostane súper) a sama boduje pre svojho majiteľa.
-// Lokalita je otočená podľa natočenia útočníkom. Otočenie o 180°: ľavá
+// Lokalita je otočená podľa natočenia obrancom (volí a natáča cieľ, 2026-10-20). Otočenie o 180°: ľavá
 // a pravá strana sa vymenia a poradie indexov sa obráti (0↔3, 1↔2).
 //
 // Na spoji sa stretáva PRAVÁ strana ľavého prvku s ĽAVOU stranou pravého
