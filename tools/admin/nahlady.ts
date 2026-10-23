@@ -5,12 +5,10 @@
 // nie heslo cez stránku), klikne na tlačidlo a počká na výsledok.
 // Volá ho admin.ts nahlady [--zivy] — po nasadení na živý web.
 
-import { spawn } from "node:child_process";
-import { existsSync, mkdtempSync, rmSync } from "node:fs";
+import { existsSync } from "node:fs";
 import { createServer } from "node:net";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
 import WebSocket from "ws";
+import { spustiChrome } from "../docasne.ts";
 
 const pockaj = (ms: number) => new Promise((ok) => setTimeout(ok, ms));
 
@@ -52,10 +50,7 @@ export async function doplnNahladyCezChrome(url: string, cookie: string, limitMs
   const [meno, ...hodnota] = cookie.split("=");
   if (meno === undefined || hodnota.length === 0) throw new Error("Chýba cookie relácie agenta.");
   const cdpPort = await volnyPort();
-  const profil = mkdtempSync(join(tmpdir(), "naex-nahlady-"));
-  const proc = spawn(najdiChrome(), ["--headless=new", `--remote-debugging-port=${cdpPort}`, `--user-data-dir=${profil}`, "--window-size=1600,1000", "about:blank"], {
-    stdio: "ignore",
-  });
+  const prehliadac = spustiChrome(najdiChrome(), ["--headless=new", `--remote-debugging-port=${cdpPort}`, "--window-size=1600,1000", "about:blank"], "naex-nahlady-");
   try {
     let ciel: { type: string; webSocketDebuggerUrl: string } | undefined;
     for (let i = 0; i < 40 && ciel === undefined; i++) {
@@ -124,12 +119,6 @@ export async function doplnNahladyCezChrome(url: string, cookie: string, limitMs
     ws.close();
     return { cakalo, text };
   } finally {
-    proc.kill();
-    await pockaj(500);
-    try {
-      rmSync(profil, { recursive: true, force: true });
-    } catch {
-      // Chrome ešte drží súbory — dočasný priečinok upratá systém
-    }
+    prehliadac.zastav();
   }
 }

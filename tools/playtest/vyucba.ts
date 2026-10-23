@@ -39,6 +39,7 @@ import { appendFileSync, existsSync, mkdirSync, openSync, readdirSync, readFileS
 import { createServer } from "node:net";
 import { join, resolve } from "node:path";
 import WebSocket from "ws";
+import { upratStare, zmazPriecinok } from "../docasne.ts";
 
 interface Novacik {
   readonly kluc: string;
@@ -121,6 +122,15 @@ const chrome = (): string => {
   if (c === undefined) throw new Error("Nenašiel som Chrome ani Edge — nastav CHROME=<cesta>.");
   return c;
 };
+/**
+ * Profil prehliadača nováčika nie je záznam playtestu — po zastavení sa zmaže
+ * (Leader 2026-10-23: profily Chromu zaplnili disk). Chrome ho ešte chvíľu drží.
+ */
+function zmazProfil(dir: string): void {
+  // Ak ostane zamknutý, je v priečinku relácie (mimo %TEMP%).
+  zmazPriecinok(join(dir, "chrome"), 20);
+}
+
 /** Chrome spúšťa podprocesy — zastaviť treba celý strom. */
 function zabi(pid: number): void {
   if (process.platform === "win32") spawnSync("taskkill", ["/PID", String(pid), "/T", "/F"], { stdio: "ignore" });
@@ -223,6 +233,7 @@ async function zaloz(): Promise<void> {
   const id = new Date().toISOString().slice(0, 19).replace(/[-:]/g, "").replace("T", "-");
   const r = join("playtest", `vyucba-${id}`);
   mkdirSync(join(r, "server-data"), { recursive: true });
+  upratStare();
 
   // Od 8800 — nižšie porty majú dev servery súbežných sessions (docs/SESSIONS.md).
   const port = await volnyPort(8800);
@@ -238,6 +249,7 @@ async function zaloz(): Promise<void> {
   const zlyhanie = (err: unknown): never => {
     console.error(`CHYBA: ${err instanceof Error ? err.message : String(err)}`);
     for (const p of pidy) zabi(p);
+    for (let n = 1; n <= pocet; n++) zmazProfil(priecinokHraca(r, n));
     process.exit(1);
   };
   process.on("uncaughtException", zlyhanie);
@@ -260,13 +272,14 @@ async function zaloz(): Promise<void> {
   for (const [i, postava] of poradie.entries()) {
     const n = i + 1;
     const dir = priecinokHraca(r, n);
-    for (const d of ["snimky", "zaznam", "chrome"]) mkdirSync(join(dir, d), { recursive: true });
+    for (const d of ["snimky", "zaznam", "chrome/tmp"]) mkdirSync(join(dir, d), { recursive: true });
     const [sirka = 1600, vyska = 1000] = postava.rozlisenie.split("x").map(Number);
     const cdpPort = await nahodnyPort();
     const ch = spawn(
       chrome(),
       ["--headless=new", `--remote-debugging-port=${cdpPort}`, `--user-data-dir=${resolve(dir, "chrome")}`, `--window-size=${sirka},${vyska}`, "--mute-audio", "--no-first-run", "--no-default-browser-check", "about:blank"],
-      { detached: true, stdio: "ignore", windowsHide: true },
+      // Chromove dočasné súbory (scoped_dir*) do profilu, nie do %TEMP% — zmiznú s ním.
+      { detached: true, stdio: "ignore", windowsHide: true, env: { ...process.env, TEMP: resolve(dir, "chrome", "tmp"), TMP: resolve(dir, "chrome", "tmp") } },
     );
     ch.unref();
     if (ch.pid !== undefined) pidy.push(ch.pid);
@@ -593,7 +606,8 @@ function ukonci(): void {
     zabi(h.chromePid);
   }
   zabi(rel.serverPid);
-  console.log(`Playtest výučby ${rel.id}: prehliadače a server (pid ${rel.serverPid}) zastavené. Dáta ostávajú v ${r}.`);
+  for (const h of rel.hraci) zmazProfil(priecinokHraca(r, h.n));
+  console.log(`Playtest výučby ${rel.id}: prehliadače a server (pid ${rel.serverPid}) zastavené, profily prehliadačov zmazané. Dáta ostávajú v ${r}.`);
 }
 
 if (volne[0] === "zaloz") await zaloz();

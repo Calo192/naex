@@ -48,6 +48,14 @@ serverom playtestov (`tools/playtest/turnus.ts`).
 7. **Ťažké výpočty** (turnaje botov, `strategickost.ts` ≈ 8 min, 3 playtesty
    naraz) ohlás Leaderovi pred spustením; naraz beží najviac jeden.
 8. **Leonardo.Ai kredit** používa Admin (a UX/UI po dohode s Leaderom).
+9. **Disk C a %TEMP%** (Leader 2026-10-23 — disk sa dvakrát zaplnil na 0 GB
+   profilmi headless Chromu). Headless Chrome aj vo vlastných skriptoch
+   v scratchpade spúšťaj cez `spustiChrome` z `tools/docasne.ts` (profil
+   a Chromove `scoped_dir*` v jednom priečinku, zmaže sa vo `finally`, pri páde
+   aj Ctrl+C) a `zastav()` volaj vo `finally`. Iné dočasné priečinky nástrojov
+   s predponou `naex-` cez `docasnyPriecinok`. Zvyšky staršie ako 2 h upratuje
+   každý nástroj a `npm test` pri štarte; ručne
+   `node --experimental-strip-types --no-warnings tools/docasne.ts`.
 
 ## Komunikácia
 

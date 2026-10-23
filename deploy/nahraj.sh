@@ -22,7 +22,11 @@ CIEL="$POUZIVATEL@$IP"
 SSH=(ssh -i "$KLUC" -o StrictHostKeyChecking=accept-new "$CIEL")
 
 cd "$(dirname "$0")/.."
-ARCHIV="$(mktemp -d)/naex.tgz"
+# Archív aj výstup do jedného dočasného priečinka, ktorý trap zmaže vždy — aj pri chybe
+# (predtým v %TEMP% ostával 50–60 MB naex.tgz po každom nasadení).
+DOCASNY="$(mktemp -d)"
+ARCHIV="$DOCASNY/naex.tgz"
+VYSTUP="$DOCASNY/vystup.txt"
 # Čo presne beží na serveri (GET /api/admin/stav-servera) — skill naex-stav
 # podľa toho vie, ktoré commity ešte nie sú nasadené.
 NECOMMITNUTE=false
@@ -30,7 +34,7 @@ NECOMMITNUTE=false
 printf '{"commit":"%s","vetva":"%s","necommitnute":%s,"nahrate":"%s"}\n' \
   "$(git rev-parse HEAD 2>/dev/null || echo "?")" "$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "?")" \
   "$NECOMMITNUTE" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > VERZIA.json
-trap 'rm -f VERZIA.json' EXIT
+trap 'rm -f VERZIA.json; rm -rf "$DOCASNY"' EXIT
 echo "Balím pracovnú kópiu…"
 tar -czf "$ARCHIV" \
   --exclude=./node_modules --exclude='./*/*/node_modules' --exclude='./*/*/dist' \
@@ -43,7 +47,6 @@ echo "Posielam na $CIEL…"
 scp -i "$KLUC" -o StrictHostKeyChecking=accept-new "$ARCHIV" "$CIEL:/tmp/naex.tgz"
 
 HESLO_NOVE="$(openssl rand -base64 18 | tr -d '/+=' | cut -c1-20)"
-VYSTUP="$(mktemp)"
 "${SSH[@]}" "sudo bash -s" <<SKRIPT | tee "$VYSTUP"
 set -euo pipefail
 if ! command -v docker >/dev/null; then
@@ -75,7 +78,6 @@ docker image prune -f >/dev/null
 SKRIPT
 
 # Kópia nastavení servera (heslo admina) sem, mimo gitu — vždy tá platná.
-rm -f "$VYSTUP"
 { echo "IP=$IP"; echo "NAEX_ADMIN_LOGIN=Admin"; "${SSH[@]}" "sudo cat /opt/naex/deploy/.env"; } > deploy/.env.produkcia
 echo "Heslo admina je v deploy/.env.produkcia (mimo gitu)."
 

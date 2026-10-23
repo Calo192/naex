@@ -22,12 +22,11 @@
 // Pozn.: prehliadač na pár sekúnd prevezme hráčovo spojenie so serverom;
 // konzolový klient playtestera sa pripojí znova sám.
 
-import { spawn } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createServer } from "node:net";
-import { tmpdir } from "node:os";
 import { join } from "node:path";
 import WebSocket from "ws";
+import { spustiChrome } from "../docasne.ts";
 import { prihlasAgenta, webUrl } from "./web.ts";
 
 const args = process.argv.slice(2);
@@ -121,10 +120,7 @@ function volnyPort(): Promise<number> {
 }
 
 const cdpPort = await volnyPort();
-const profil = mkdtempSync(join(tmpdir(), "naex-snimka-"));
-const proc = spawn(chrome, [`--headless=new`, `--remote-debugging-port=${cdpPort}`, `--user-data-dir=${profil}`, `--window-size=${sirka},${vyska}`, "--hide-scrollbars", "about:blank"], {
-  stdio: "ignore",
-});
+const prehliadac = spustiChrome(chrome, [`--headless=new`, `--remote-debugging-port=${cdpPort}`, `--window-size=${sirka},${vyska}`, "--hide-scrollbars", "about:blank"], "naex-snimka-");
 const pockaj = (ms: number) => new Promise((ok) => setTimeout(ok, ms));
 
 try {
@@ -210,11 +206,5 @@ try {
   ws.close();
   console.log(subory.join("\n"));
 } finally {
-  proc.kill();
-  await pockaj(500);
-  try {
-    rmSync(profil, { recursive: true, force: true });
-  } catch {
-    // Chrome ešte drží súbory — dočasný priečinok upratá systém
-  }
+  prehliadac.zastav();
 }

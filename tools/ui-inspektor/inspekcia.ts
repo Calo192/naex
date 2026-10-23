@@ -16,12 +16,11 @@
 // na iný než localhost odmietne ísť bez --aj-zivy. --schema meria web vo farebnej
 // schéme (id z apps/web/src/lib/schemy.ts) — kontrast novej schémy sa inak overiť nedá.
 
-import { spawn } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createServer } from "node:net";
-import { tmpdir } from "node:os";
 import { join } from "node:path";
 import WebSocket from "ws";
+import { spustiChrome } from "../docasne.ts";
 import { prihlasAgenta } from "../playtest/web.ts";
 
 /** Všetky stránky webu (apps/web/src/App.tsx a admin/). /hrac/:id sa doplní podľa účtu. */
@@ -97,8 +96,7 @@ const volnyPort = (): Promise<number> =>
   });
 const pockaj = (ms: number) => new Promise((ok) => setTimeout(ok, ms));
 const cdpPort = await volnyPort();
-const profil = mkdtempSync(join(tmpdir(), "naex-inspekcia-"));
-const proc = spawn(chrome, ["--headless=new", `--remote-debugging-port=${cdpPort}`, `--user-data-dir=${profil}`, "--hide-scrollbars", "about:blank"], { stdio: "ignore" });
+const prehliadac = spustiChrome(chrome, ["--headless=new", `--remote-debugging-port=${cdpPort}`, "--hide-scrollbars", "about:blank"], "naex-inspekcia-");
 
 interface Nalez {
   typ: string;
@@ -744,11 +742,5 @@ try {
 } finally {
   zapis();
   console.log(`Nálezy: ${join(vystup, "nalezy.json")}`);
-  proc.kill();
-  await pockaj(500);
-  try {
-    rmSync(profil, { recursive: true, force: true });
-  } catch {
-    // Chrome ešte drží súbory — dočasný priečinok upratá systém
-  }
+  prehliadac.zastav();
 }
