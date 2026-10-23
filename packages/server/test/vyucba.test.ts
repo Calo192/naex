@@ -179,3 +179,61 @@ describe("výučba — automatické kroky hráča (kto: auto)", () => {
     }
   });
 });
+
+describe("výučba — kontrolné otázky a rozhodnutia (UX N2)", () => {
+  it("otázka: odpoveď sa zapíše len prvá, „ďalej“ ju posunie; rozhodnutie: zlý ťah dostane radu, nie chybu", async () => {
+    const zaklad = nacitajVyucbu();
+    const iHrac = zaklad.kroky.findIndex((k) => k.kto === "hrac");
+    const kroky = zaklad.kroky.map((k, j) =>
+      j === iHrac ? { ...k, volba: { kandidati: ["ruka:pijan"], zle: [{ prikaz: { type: "pass" as const }, text: "Ešte nepasuj." }], inak: "Skús inú kartu." } } : k,
+    );
+    const otazka = {
+      id: "q-spoj",
+      kto: "otazka" as const,
+      melichar: "Čo dá spoj?",
+      moznosti: [
+        { text: "Ranu", spravna: false, vysvetlenie: "Nie celkom." },
+        { text: "Cigaretu", spravna: true, vysvetlenie: "Áno." },
+      ],
+    };
+    const scenar = { ...zaklad, kroky: [kroky[0] as (typeof kroky)[number], otazka, ...kroky.slice(1)] };
+    const { server: s, zmaz: zmazQ } = await testovaciServer(TEST_ADMIN, { botPauzaMs: 0, vyucbaZapnuta: true, scenarVyucby: scenar });
+    try {
+      const { cookie } = await registruj(s.port);
+      const k = new Klient(s.port, cookie);
+      await k.otvorene();
+      k.posli({ type: "create", vyucba: true });
+      let msg = await k.cakaj("vyucba");
+      k.posli({ type: "vyucbaDalej" });
+      msg = await k.cakaj("vyucba");
+      const q = msg.krok as KrokMsg & { moznosti: { spravna: boolean }[] | null };
+      expect(q).toMatchObject({ kto: "otazka", melichar: "Čo dá spoj?" });
+      expect(q.moznosti).toHaveLength(2);
+      // Najprv zle, potom dobre — zapíše sa len prvá odpoveď.
+      k.posli({ type: "vyucbaOdpoved", index: 0 });
+      k.posli({ type: "vyucbaOdpoved", index: 1 });
+      k.posli({ type: "vyucbaOdpoved", index: 7 });
+      expect(String((await k.cakaj("error")).text)).toMatch(/nie je otázka/);
+      k.posli({ type: "vyucbaDalej" });
+      msg = await k.cakaj("vyucba");
+      expect((msg.krok as KrokMsg).index).toBe(2);
+      const admin = await prihlas(s.port, TEST_ADMIN.login, TEST_ADMIN.heslo as string);
+      const odp = (await (await fetch(`http://127.0.0.1:${s.port}/api/admin/vyucba/odpovede`, { headers: { cookie: admin } })).json()) as { odpovede: unknown[] };
+      expect(odp.odpovede).toEqual([{ krok: "q-spoj", odpovedi: 1, spravne: 0 }]);
+
+      // Do rozhodnutia: info preklikať, potom zlý ťah → rada, žiadna chyba.
+      while ((msg.krok as KrokMsg).kto !== "hrac") {
+        if ((msg.krok as KrokMsg).kto === "info") k.posli({ type: "vyucbaDalej" });
+        msg = await k.cakaj("vyucba");
+      }
+      expect((msg.krok as { volba: unknown }).volba).toEqual({ kandidati: ["ruka:pijan"] });
+      k.posli({ type: "cmd", cmd: { type: "pass" } });
+      expect((await k.cakaj("vyucbaRada")).text).toBe("Ešte nepasuj.");
+      k.posli({ type: "cmd", cmd: { type: "skipNaex" } });
+      expect((await k.cakaj("vyucbaRada")).text).toBe("Skús inú kartu.");
+      k.zavri();
+    } finally {
+      await zmazQ();
+    }
+  });
+});

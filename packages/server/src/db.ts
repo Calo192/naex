@@ -259,6 +259,15 @@ CREATE TABLE IF NOT EXISTS dielna_nahlasenia (
   cas INTEGER NOT NULL,
   PRIMARY KEY (navrh, pouzivatel)
 );
+-- Kontrolné otázky výučby (Michal 2026-10-23, UX N2): prvá odpoveď hráča na otázku — metrika.
+CREATE TABLE IF NOT EXISTS vyucba_odpovede (
+  pouzivatel INTEGER NOT NULL REFERENCES pouzivatelia(id) ON DELETE CASCADE,
+  krok TEXT NOT NULL,
+  odpoved INTEGER NOT NULL,
+  spravna INTEGER NOT NULL,
+  cas INTEGER NOT NULL,
+  PRIMARY KEY (pouzivatel, krok)
+);
 -- Achievementy (Michal 2026-10-23): získané ranky, súčty kariéry a množiny „rôznych“
 -- (povahy, súperi) — rátané od spustenia, nič spätne. proti = ludia | bot | vsetky.
 CREATE TABLE IF NOT EXISTS achievementy_zisky (

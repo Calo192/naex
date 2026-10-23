@@ -393,6 +393,12 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       return ok({ krok: v.krok, spolu: ctx.vyucbaKrokov, stav: v.stav, dostupna, ponuknut: ctx.vyucbaPreHracov && v.stav === null && v.krok === 0 && p.rola === "navstevnik" });
     }
 
+    // Prvé odpovede na kontrolné otázky výučby (metrika pre Navrhára, Michal 2026-10-23).
+    if (r === "GET /admin/vyucba/odpovede") {
+      spravca();
+      return ok({ odpovede: ctx.ucty.odpovedeVyucby() });
+    }
+
     if (r === "POST /vyucba/preskocit") {
       const p = prihlaseny();
       ctx.ucty.ulozVyucbu(p.id, ctx.ucty.vyucba(p.id).krok, "preskocena");

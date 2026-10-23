@@ -20,6 +20,8 @@ import {
   DLZKY_HRY,
   IllegalCommandError,
   ktoVykona,
+  radaKVolbe,
+  type MoznostOtazky,
   VERZIA_PRAVIDIEL,
   bodyTeraz,
   defOf,
@@ -181,10 +183,14 @@ export interface KrokVyucbyKlient {
   readonly index: number;
   readonly spolu: number;
   readonly id: string;
-  readonly kto: "hrac" | "bot" | "info" | "auto";
+  readonly kto: "hrac" | "bot" | "info" | "auto" | "otazka";
   readonly melichar: string;
   readonly zvyraznit: readonly string[];
   readonly ocakava: Command | null;
+  /** Kontrolná otázka: možnosti (klient overí sám); inak null. */
+  readonly moznosti: readonly MoznostOtazky[] | null;
+  /** Rozhodnutie hráča: kandidáti na zvýraznenie namiesto očakávanej karty; inak null. */
+  readonly volba: { readonly kandidati: readonly string[] } | null;
 }
 
 /** Po dohraní vlastnej hlášky musí hráč ešte chvíľu počkať (Michal 2026-10-22). */
@@ -209,6 +215,7 @@ function novyKod(rooms: Map<string, Room>): string {
 type ClientMsg =
   | { type: "create"; verejna?: boolean; dlzka?: DlzkaHry; bot?: boolean; vyucba?: boolean }
   | { type: "vyucbaDalej" }
+  | { type: "vyucbaOdpoved"; index: number }
   | { type: "join"; code: string }
   | { type: "rejoin"; code: string }
   | { type: "leave" }
@@ -672,6 +679,18 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         }
         break;
       }
+      case "vyucbaOdpoved": {
+        // Kontrolná otázka: klient overí odpoveď sám, server si zapíše prvú (metrika).
+        const room = info.room;
+        const k = room?.vyucba == null ? undefined : scenarVyucby.kroky[room.vyucba.krok];
+        const moznost = k?.kto === "otazka" && Number.isInteger(msg.index) ? k.moznosti?.[msg.index] : undefined;
+        if (k === undefined || moznost === undefined) {
+          sendError(ws, "Teraz nie je otázka, na ktorú sa dá odpovedať.");
+          return;
+        }
+        ucty.ulozOdpovedVyucby(ja.id, k.id, msg.index, moznost.spravna, teraz());
+        break;
+      }
       case "vyucbaDalej": {
         // Výučba: krok bez príkazu (len text Melichara) hráč potvrdí tlačidlom „ďalej“.
         const room = info.room;
@@ -679,7 +698,8 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           sendError(ws, "Nie si vo výučbe.");
           return;
         }
-        if (scenarVyucby.kroky[room.vyucba.krok]?.kto !== "info") {
+        const kto = scenarVyucby.kroky[room.vyucba.krok]?.kto;
+        if (kto !== "info" && kto !== "otazka") {
           sendError(ws, "Teraz nie je čo potvrdiť — urob ťah, ktorý ukazuje majster Melichar.");
           return;
         }
@@ -868,7 +888,17 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     } catch (err) {
       console.error("Scenár výučby: krok", k.id, err);
     }
-    return { index: i, spolu: scenarVyucby.kroky.length, id: k.id, kto: k.kto, melichar: k.melichar, zvyraznit: k.zvyraznit ?? [], ocakava };
+    return {
+      index: i,
+      spolu: scenarVyucby.kroky.length,
+      id: k.id,
+      kto: k.kto,
+      melichar: k.melichar,
+      zvyraznit: k.zvyraznit ?? [],
+      ocakava,
+      moznosti: k.kto === "otazka" ? (k.moznosti ?? []) : null,
+      volba: k.volba === undefined ? null : { kandidati: k.volba.kandidati },
+    };
   };
 
   const posliVyucbu = (room: Room): void => {
@@ -916,6 +946,12 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     // Zlý alebo neúplný ťah: povedať, čo chýba a čo je navyše (playtest výučby, návrh 1);
     // rovnaká karta (defId aj variant) prejde a vykoná sa krok zo scenára.
     const porovnanie = porovnajSKrokom(room.data, room.state, cmd, ocakava);
+    // Rozhodnutie: zlý ťah dostane radu Melichara, nie chybu (UX N2).
+    if (!porovnanie.zhoda && k.volba !== undefined) {
+      send(ws, { type: "vyucbaRada", text: radaKVolbe(room.state, k.volba, cmd) });
+      posliVyucbu(room);
+      return;
+    }
     if (!porovnanie.zhoda) {
       sendError(ws, textChybyKroku(porovnanie));
       send(ws, { type: "vyucbaChyba", chybajuce: porovnanie.chybajuce, navyse: porovnanie.navyse });

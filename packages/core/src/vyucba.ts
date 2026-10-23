@@ -50,6 +50,24 @@ export interface Rozdanie {
  */
 export type PrikazScenara = Readonly<Record<string, unknown>> & { readonly type: Command["type"] };
 
+/** Možnosť kontrolnej otázky (Michal 2026-10-23, UX N2): 2–3 možnosti, práve jedna správna. */
+export interface MoznostOtazky {
+  readonly text: string;
+  readonly spravna: boolean;
+  readonly vysvetlenie: string;
+}
+
+/**
+ * Rozhodnutie hráča v kroku „hrac“: UI zvýrazní kandidátov namiesto očakávanej
+ * karty a zlý ťah dostane radu Melichara (zle podľa vzoru, inak) — nie chybu.
+ * Vzor porovná len uvedené polia; odkazy „zóna:defId“ ako v prikaz.
+ */
+export interface VolbaKroku {
+  readonly kandidati: readonly string[];
+  readonly zle?: readonly { readonly prikaz: PrikazScenara; readonly text: string }[];
+  readonly inak: string;
+}
+
 export interface KrokVyucby {
   readonly id: string;
   /**
@@ -57,7 +75,11 @@ export interface KrokVyucby {
    * auto = príkaz hráča, ktorý hra vykoná sama ako ťah bota (Navrhár 2026-10-23: kolo 2 bez
    * opakovania toho, čo hráč už vie). prikaz je pri hrac, bot aj auto povinný.
    */
-  readonly kto: "hrac" | "bot" | "info" | "auto";
+  readonly kto: "hrac" | "bot" | "info" | "auto" | "otazka";
+  /** Pri otázke (text otázky je melichar). */
+  readonly moznosti?: readonly MoznostOtazky[];
+  /** Pri kroku hráča, ktorý je rozhodnutím. */
+  readonly volba?: VolbaKroku;
   readonly prikaz?: PrikazScenara;
   /** Text majstra Melichara v bubline (môže byť prázdny pri ťahu bota). */
   readonly melichar: string;
@@ -176,7 +198,7 @@ export interface StavVyucby {
 export function vykonajKrok(data: GameData, scenar: ScenarVyucby, state: GameState, i: number): GameState {
   const krok = scenar.kroky[i];
   if (krok === undefined) throw new Error(`Scenár nemá krok ${i}.`);
-  if (krok.kto === "info") return state;
+  if (krok.kto === "info" || krok.kto === "otazka") return state;
   const kto = ktoVykona(krok);
   if (krok.prikaz === undefined) throw new Error(`Krok ${krok.id}: ${krok.kto} bez príkazu.`);
   const cmd = prikazZoScenara(state, kto, krok.prikaz);
@@ -209,6 +231,11 @@ export function overScenar(data: GameData, scenar: ScenarVyucby): string | null 
     return `Rozdanie: ${(e as Error).message}`;
   }
   for (const [i, krok] of scenar.kroky.entries()) {
+    if (krok.kto === "otazka") {
+      const chyba = chybaOtazky(krok);
+      if (chyba !== null) return `Krok ${i} (${krok.id}): ${chyba}`;
+      continue;
+    }
     if (krok.kto === "info") continue;
     const kto = ktoVykona(krok);
     if (krok.prikaz === undefined) return `Krok ${i} (${krok.id}): ${krok.kto} bez príkazu.`;
@@ -221,6 +248,10 @@ export function overScenar(data: GameData, scenar: ScenarVyucby): string | null 
       // Stavba šenku a ťah naraz sa medzi legálnymi nevymenúvajú všetky — overí ich apply.
       if (cmd.type !== "stavbaSenku" && cmd.type !== "tah" && !legal.some((l) => zhodnyPrikaz(l, cmd))) {
         return `Krok ${i} (${krok.id}): ${JSON.stringify(cmd)} nie je legálny ťah.`;
+      }
+      if (krok.volba !== undefined) {
+        const chyba = chybaVolby(state, krok.volba, cmd);
+        if (chyba !== null) return `Krok ${i} (${krok.id}): ${chyba}`;
       }
       state = apply(data, state, cmd, kto).state;
     } catch (e) {
@@ -359,4 +390,63 @@ export function textChybyKroku(p: PorovnanieSKrokom): string {
   if (p.chybajuce.length > 0) casti.push(`ešte chýba: ${p.chybajuce.map((x) => x.popis).join(", ")}`);
   if (p.navyse.length > 0) casti.push(`toto teraz nie: ${p.navyse.map((x) => x.popis).join(", ")}`);
   return casti.length === 0 ? "Takto nie — urob to, čo svieti na stole." : `Takto nie — ${casti.join("; ")}.`;
+}
+
+// ---------------------------------------------------------------------------
+// Kontrolné otázky a rozhodnutia (Michal 2026-10-23, UX N2)
+
+function chybaOtazky(krok: KrokVyucby): string | null {
+  const m = krok.moznosti ?? [];
+  if (krok.prikaz !== undefined) return "otázka nemá mať prikaz";
+  if (m.length < 2 || m.length > 3) return "otázka má mať 2 – 3 možnosti";
+  if (m.filter((x) => x.spravna === true).length !== 1) return "otázka má mať práve jednu správnu možnosť";
+  if (m.some((x) => typeof x.text !== "string" || x.text.trim() === "" || typeof x.vysvetlenie !== "string" || x.vysvetlenie.trim() === "")) {
+    return "každá možnosť potrebuje text aj vysvetlenie";
+  }
+  return null;
+}
+
+function chybaVolby(state: GameState, volba: VolbaKroku, spravny: Command): string | null {
+  if (!Array.isArray(volba.kandidati) || volba.kandidati.length === 0) return "rozhodnutie potrebuje kandidátov";
+  if (typeof volba.inak !== "string" || volba.inak.trim() === "") return "rozhodnutie potrebuje text inak";
+  for (const z of volba.zle ?? []) {
+    if (zodpovedaVzoru(state, spravny, z.prikaz)) return `vzor zlého ťahu „${z.text}“ sedí aj na správny ťah`;
+  }
+  return null;
+}
+
+/** Krok ťahu zodpovedá vzoru: každé pole vzoru sa zhoduje (karty podľa podpisu). */
+function krokZodpoveda(state: GameState, krok: Command, vzor: Command): boolean {
+  const k = krok as unknown as Record<string, unknown>;
+  for (const [pole, v] of Object.entries(vzor as unknown as Record<string, unknown>)) {
+    const x = k[pole];
+    if ((UID_POLIA as readonly string[]).includes(pole) && typeof v === "number") {
+      if (typeof x !== "number" || podpis(state, x) !== podpis(state, v)) return false;
+    } else if ((UID_ZOZNAMY as readonly string[]).includes(pole) && Array.isArray(v)) {
+      if (!Array.isArray(x) || JSON.stringify((x as number[]).map((u) => podpis(state, u)).sort()) !== JSON.stringify((v as number[]).map((u) => podpis(state, u)).sort())) return false;
+    } else if (JSON.stringify(x) !== JSON.stringify(v)) return false;
+  }
+  return true;
+}
+
+/**
+ * Zodpovedá príkaz vzoru zlého ťahu? Vzor „tah“: každý jeho krok musí byť
+ * v ťahu; iný vzor stačí, keď sedí na niektorý krok ťahu.
+ */
+export function zodpovedaVzoru(state: GameState, prikaz: Command, vzorScenara: PrikazScenara): boolean {
+  let vzor: Command;
+  try {
+    vzor = prikazZoScenara(state, VYUCBA_HRAC, vzorScenara);
+  } catch {
+    // Vzor menuje kartu, ktorá v stave nie je — na tento ťah nesedí.
+    return false;
+  }
+  const kroky = krokyPrikazu(prikaz);
+  if (vzor.type === "tah" && Array.isArray(vzor.kroky)) return vzor.kroky.every((v) => kroky.some((k) => krokZodpoveda(state, k, v)));
+  return kroky.some((k) => krokZodpoveda(state, k, vzor));
+}
+
+/** Rada Melichara k zlému ťahu v rozhodnutí: text prvého sediaceho vzoru, inak všeobecná. */
+export function radaKVolbe(state: GameState, volba: VolbaKroku, prikaz: Command): string {
+  return (volba.zle ?? []).find((z) => zodpovedaVzoru(state, prikaz, z.prikaz))?.text ?? volba.inak;
 }
