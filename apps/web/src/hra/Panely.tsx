@@ -971,6 +971,42 @@ export interface BitkaPanelProps {
    * nahradí jednoriadkový súhrn — celý panel je po kliku na súhrn.
    */
   readonly stred?: ReactNode;
+  /**
+   * Hrozba na stole (Michal 2026-10-23): o koľko ešte súper (a ty) môže otočiť bitku
+   * jedným NA EX z toho, čo leží na stole — ruka sa nepočíta. Len keď mení výsledok.
+   */
+  readonly hrozby?: readonly HrozbaBitky[];
+  /** Prejdenie myšou po riadku hrozby zvýrazní kartu v línii (null = koniec). */
+  readonly ukazHrozbu?: (uid: number | null) => void;
+}
+
+export interface HrozbaBitky {
+  readonly kto: "ja" | "su";
+  /** Krátko do riadku bitky: „Súper ešte môže: tuhé 0 : 8“. */
+  readonly kratko: string;
+  /** Celé znenie (titulok): aj karta a prebytok. */
+  readonly cele: string;
+  readonly uid: number;
+}
+
+/** Riadky hrozby — v riadku bitky vedľa súhrnu, v celom paneli pod verdiktom. */
+function RiadkyHrozby({ hrozby, ukazHrozbu }: { readonly hrozby: readonly HrozbaBitky[] | undefined; readonly ukazHrozbu: ((uid: number | null) => void) | undefined }) {
+  if (hrozby === undefined || hrozby.length === 0) return null;
+  return (
+    <>
+      {hrozby.map((h) => (
+        <span
+          key={h.kto}
+          className={`hrozba-bitky ${h.kto}`}
+          title={h.cele}
+          onMouseEnter={() => ukazHrozbu?.(h.uid)}
+          onMouseLeave={() => ukazHrozbu?.(null)}
+        >
+          {h.kratko}
+        </span>
+      ))}
+    </>
+  );
 }
 
 /** Verdikt a prebytok bitky — spoločné pre panel aj jeho jednoriadkový súhrn. */
@@ -1014,7 +1050,7 @@ export function SuhrnBitky(props: BitkaPanelProps & { readonly otvoreny: boolean
       aria-expanded={otvoreny}
       aria-controls={id}
       onClick={prepni}
-      title={otvoreny ? "Späť na pás kola (Esc)" : "Riadok bitky — tuhé a akcie oboch strán"}
+      title={[otvoreny ? "Späť na pás kola (Esc)" : "Riadok bitky — tuhé a akcie oboch strán", ...(props.hrozby ?? []).map((h) => h.cele)].join("\n")}
     >
       <span className="suhrn-bitky-nadpis">{vysledok ? "Výsledok" : "Odhad"}</span>
       <b>{verdikt}</b>
@@ -1051,7 +1087,10 @@ export function BitkaPanel(props: BitkaPanelProps) {
     <section className={`bitka-panel ${vitaz === null ? "" : vyhravam ? "vyhravam" : "prehravam"}${stred !== undefined ? " riadok" : ""}`} aria-label="Bitka">
       {strana(ja, "vlavo")}
       {stred !== undefined ? (
-        <div className="bitka-stred">{stred}</div>
+        <div className="bitka-stred">
+          {stred}
+          <RiadkyHrozby hrozby={props.hrozby} ukazHrozbu={props.ukazHrozbu} />
+        </div>
       ) : (
         <div className="bitka-stred">
           <span className="bitka-nadpis">
@@ -1064,6 +1103,7 @@ export function BitkaPanel(props: BitkaPanelProps) {
             </span>
           )}
           <span className="bitka-verdikt">{verdikt}</span>
+          <RiadkyHrozby hrozby={props.hrozby} ukazHrozbu={props.ukazHrozbu} />
           <span className="bitka-pozn">
             {prebytokDrzi === null
               ? "prebytok: nikto"

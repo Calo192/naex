@@ -60,6 +60,7 @@ import {
   cieleVykladania,
   cielLokalitaId,
   evaluateLine,
+  hrozbaNaex,
   krokStavby,
   planVykladania,
   barterCena,
@@ -114,7 +115,18 @@ import { useZarovnanieLinie } from "./zarovnanieLinie.ts";
 import { Lupa, maxMierkaLupy } from "./Lupa.tsx";
 import { LUPA_PREDVOLENA, useUcet } from "../lib/ucet.tsx";
 import { Vrstva as VrstvaPanel } from "./Vrstva.tsx";
-import { BitkaPanel, CenaCigariet, HracDoska, IkonaCigareta, IkonaPoldeci, PriebehKola, SuhrnBitky, type BitkaPanelProps, type VyhladPitky } from "./Panely.tsx";
+import {
+  BitkaPanel,
+  CenaCigariet,
+  HracDoska,
+  IkonaCigareta,
+  IkonaPoldeci,
+  PriebehKola,
+  SuhrnBitky,
+  type BitkaPanelProps,
+  type HrozbaBitky,
+  type VyhladPitky,
+} from "./Panely.tsx";
 import { StavkaBitky } from "./StavkaBitky.tsx";
 import { UCINOK_PRIAZNE } from "./Scorecard.tsx";
 import type { HracInfo, ZmenyFrajeriny } from "./useHra.ts";
@@ -684,7 +696,7 @@ export function HernaPlocha({
 
   // Stôl tak, ako by vyzeral po potvrdení návrhu — z neho sa ráta živé
   // zvýraznenie spojov aj odhad bitky.
-  const { stol, lineEval, odhad, rozpis } = useMemo(() => {
+  const { stol, lineEval, odhad, rozpis, hrozby } = useMemo(() => {
     let strany = view.strany;
     let hraci = view.hraci;
     for (const x of vylozenia) {
@@ -707,7 +719,20 @@ export function HernaPlocha({
     const abstakyVRuke: [number, number] = ja === 0 ? [mojeAbstaky, 0] : [0, mojeAbstaky];
     const odhad = ciel === null ? null : poskodenieBitky(data, stol, lineEval.sums, abstakyVRuke);
     const rozpis = rozpisPoskodenia(data, stol, lineEval.sums, abstakyVRuke);
-    return { stol, lineEval, odhad, rozpis };
+    // Hrozba na stole: najsilnejšie NA EX každého z vás z kariet na stole (bez ruky).
+    const priebeh = {
+      faza: view.faza,
+      pitkaStav: view.pitkaStav,
+      pitkaCislo: view.pitkaCislo,
+      pitkyCelkom: view.pitkyCelkom,
+      poldeciPlne: [view.hraci[0].poldeciPlne, view.hraci[1].poldeciPlne] as const,
+    };
+    const stolBitky = { ...stol, lokalitaOtocena: lokalitaNavrh?.otocena ?? view.lokalitaOtocena };
+    const hrozby =
+      ciel === null || view.bitkaStav !== null
+        ? ([null, null] as const)
+        : ([hrozbaNaex(data, stolBitky, priebeh, 0, abstakyVRuke), hrozbaNaex(data, stolBitky, priebeh, 1, abstakyVRuke)] as const);
+    return { stol, lineEval, odhad, rozpis, hrozby };
     // vylozene a lokalitaNavrh sú odvodené len z navrh a view.
   }, [data, view, navrh, somNaTahu]);
 
@@ -815,6 +840,8 @@ export function HernaPlocha({
   };
   // Možnosť NA EX pod myšou či fokusom — tá istá karta svieti na stole.
   const [zvyraznenaNaex, setZvyraznenaNaex] = useState<number | null>(null);
+  // Karta z riadku hrozby (prejdenie myšou) — v línii sa zvýrazní.
+  const [ukazHrozbu, setUkazHrozbu] = useState<number | null>(null);
 
   // Náhľad NA EX s celou cenou (dizajn hra-nezrovnalosti-20261021-1229, UI N4 + UX N3):
   // bitka pred a po, zmeny OBOCH hráčov, vzorec násobkov na karte, kliatby
@@ -1668,6 +1695,7 @@ export function HernaPlocha({
             mode.typ === "naexCiel" && !naexCiele.has(uid) ? "naex-nie" : "",
             naexBy !== undefined ? "naex-dany" : "",
             nova ? "nova-superova" : "",
+            ukazHrozbu === uid ? "hrozba-ciel" : "",
           ]
             .join(" ")
             .trim() || undefined,
@@ -3140,6 +3168,21 @@ export function HernaPlocha({
     return def === undefined ? defId : `${def.name}: ${def.effectText}`;
   };
   const b = view.bitkaStav;
+  // Hrozba na stole do riadku bitky: súperova prvá (to je to prekvapenie z posledného slova, #35).
+  const najdiVLinii = (uid: number) => view.strany.flat().find((pl) => pl.card.uid === uid);
+  const textHrozby = (kto: "ja" | "su"): HrozbaBitky | null => {
+    const h = hrozby[kto === "ja" ? ja : super_];
+    if (h === null) return null;
+    const pl = najdiVLinii(h.uid);
+    // Názov karty sa neskloňuje — „na svoju kartu Svokra“.
+    const karta = pl === undefined ? "kartu" : `${pl.playedBy === h.hrac ? (kto === "ja" ? "svoju" : "jeho") : kto === "ja" ? "jeho" : "tvoju"} kartu ${menoKarty(pl.card.defId)}`;
+    const tuhe = `tuhé ${h.damage.tuhe[ja]} : ${h.damage.tuhe[super_]}`;
+    const v = h.vysledok;
+    const prebytok = v.prebytokDrzi === null ? "" : ` · prebytok ${v.prebytok} → ${v.prebytokDrzi === ja ? "tebe" : menoHraca(super_)}`;
+    const kdo = kto === "ja" ? "Ty ešte môžeš" : `${menoHraca(super_)} ešte môže`;
+    return { kto, uid: h.uid, kratko: `${kto === "ja" ? "Ty ešte môžeš" : "Súper ešte môže"}: ${tuhe}${v.prebytokDrzi === null ? "" : ` · prebytok ${v.prebytok} → ${v.prebytokDrzi === ja ? "ty" : "súper"}`}`, cele: `${kdo} dať NA EX na ${karta}: ${tuhe}${prebytok} (z kariet na stole, ruka sa neráta).` };
+  };
+  const hrozbyBitky = (["su", "ja"] as const).map(textHrozby).filter((h): h is HrozbaBitky => h !== null);
   // Odhad bitky len keď ho hráči ovplyvnia — v Zhromaždení, Pitke a bitke;
   // pri voľbe cieľa a v drafte mätie (Michal 2026-10-20).
   const bitkaProps: BitkaPanelProps | null =
@@ -3165,6 +3208,8 @@ export function HernaPlocha({
           ],
           prebytokNaRozdelenie: prebytokNaRozdelenie(view, battleOutcome(b?.damage ?? odhad)),
           utocnik: `útočník: ${view.utocnik === ja ? "ty" : menoHraca(view.utocnik)} — ${view.kolo === 1 ? "v 1. kole náhodne" : "porazený z minulej bitky (remíza roly nemení)"}`,
+          hrozby: b?.damage != null ? [] : hrozbyBitky,
+          ukazHrozbu: setUkazHrozbu,
         };
   // Na počítači je odhad bitky v páse kola jedným riadkom; klik naň prepne ten istý pás
   // na riadok bitky s akciami oboch strán (Michal 2026-10-23, ako bar hráča cez Body).

@@ -4635,6 +4635,32 @@ button.auto-hotovo-odkaz {
   color: var(--cervena-text);
 }
 
+/* Hrozba na stole (Michal 2026-10-23): čo ešte zmení jedno NA EX z kariet na stole.
+   V riadku bitky vedľa súhrnu, v celom paneli pod verdiktom; celé znenie v titulku. */
+.hrozba-bitky {
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: help;
+}
+
+.hrozba-bitky.su {
+  color: var(--cervena-text);
+}
+
+.hrozba-bitky.ja {
+  color: var(--zelena);
+}
+
+.s-lupou.hrozba-ciel > .kl,
+.s-lupou.hrozba-ciel > .tahatelna > .kl {
+  outline: 3px solid var(--akcent);
+  outline-offset: 2px;
+}
+
 .suhrn-bitky-nadpis {
   font-size: 0.68rem;
   font-weight: 700;
