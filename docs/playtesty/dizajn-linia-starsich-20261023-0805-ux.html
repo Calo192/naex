@@ -1,0 +1,748 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UX návrh: línia starších na mieste línie kariet (linia-starsich-20261023-0805)</title>
+<style>
+:root{--bg:#14110e;--pl:#1e1914;--pl2:#2a231c;--tx:#f1e8d8;--sl:#b9ab95;--ja:#e9ad45;--te:#e0644c;--ze:#7cbf74;--mo:#6fb3d2;--ok:#3a3128;--wf:#3b342c;--wf2:#4a4239;--wf3:#5a5146;--wft:#e2d8c6}
+@media (prefers-color-scheme: light){:root{--bg:#f7f2ea;--pl:#fffaf2;--pl2:#efe6d8;--tx:#221a12;--sl:#5d5245;--ja:#8a5a00;--te:#a8331f;--ze:#2f7a28;--mo:#1d6b8f;--ok:#d9cdb9;--wf:#e6dfd3;--wf2:#d0c6b6;--wf3:#bfb3a1;--wft:#2d251c}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:1200px;margin:0 auto;padding:24px 16px 64px}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;line-height:1.25}
+h1{font-size:1.9rem;margin:.2em 0 .3em}
+h2{font-size:1.45rem;margin:2.2em 0 .6em;border-bottom:1px solid var(--ok);padding-bottom:.25em}
+h3{font-size:1.15rem;margin:1.4em 0 .4em}
+h4{font-size:1rem;margin:1em 0 .3em}
+a{color:var(--ja)}
+a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--ja);outline-offset:2px}
+code{font-size:.88em;overflow-wrap:anywhere}
+kbd{border:1px solid var(--sl);border-bottom-width:2px;border-radius:4px;padding:0 .35em;font-size:.85em}
+.meta{color:var(--sl);font-size:.93rem}
+.verdikt{background:var(--pl);border-left:4px solid var(--ja);padding:12px 16px;border-radius:6px}
+.mriezka{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.dlazdica{background:var(--pl);border:1px solid var(--ok);border-radius:8px;padding:12px 14px}
+.dlazdica b{color:var(--ja)}
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+th,td{text-align:left;vertical-align:top;padding:8px;border-bottom:1px solid var(--ok)}
+th{color:var(--sl);font-weight:600}
+.tab-obal{overflow-x:auto}
+.z{display:inline-block;min-width:1.7em;text-align:center;border-radius:4px;padding:0 .3em;font-weight:700;color:#14110e}
+.z4{background:#e0644c}.z3{background:#e9ad45}.z2{background:#c8b98f}.z1{background:#8f8574}.z0{background:#6b6358}
+.stitok{display:inline-block;font-size:.78rem;border:1px solid var(--ok);border-radius:999px;padding:0 .55em;margin:0 .2em .2em 0;color:var(--sl)}
+.stitok.mala{border-color:var(--ze);color:var(--ze)}
+.stitok.stredna{border-color:var(--ja);color:var(--ja)}
+.stitok.velka{border-color:var(--te);color:var(--te)}
+.stitok.odpor{background:var(--ja);color:#14110e;border-color:var(--ja);font-weight:700}
+.filtre{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 12px}
+.filtre button{min-height:44px;padding:0 14px;border-radius:6px;border:1px solid var(--ok);background:var(--pl);color:var(--tx);font:inherit;cursor:pointer}
+.filtre button[aria-pressed="true"]{background:var(--ja);color:#14110e;border-color:var(--ja)}
+figure{margin:12px 0 18px;background:var(--pl);border:1px solid var(--ok);border-radius:8px;padding:8px}
+figure img{max-width:100%;height:auto;display:block;border-radius:4px}
+figcaption{font-size:.88rem;color:var(--sl);padding:6px 4px 0}
+.dve{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+@media (max-width:860px){.dve{grid-template-columns:1fr}}
+.tok{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+@media (max-width:700px){.tok{grid-template-columns:1fr}}
+.tok>div{background:var(--pl2);border:1px solid var(--ok);border-radius:8px;padding:10px 14px}
+.tok ol{margin:0;padding-left:1.3em}
+.pred h4{color:var(--te)}.po h4{color:var(--ze)}
+.navrh{background:var(--pl);border:1px solid var(--ok);border-radius:10px;padding:4px 18px 16px;margin:18px 0}
+.navrh.odporucany{border:2px solid var(--ja)}
+.navrh>h3{margin-top:.9em}
+.navrh dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:8px 0}
+.navrh dt{color:var(--sl);font-weight:600}
+.navrh dd{margin:0}
+@media (max-width:600px){.navrh dl{grid-template-columns:1fr}.navrh dt{margin-top:6px}}
+details{margin:8px 0}
+summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:600}
+.citat{border-left:3px solid var(--mo);padding:4px 12px;margin:8px 0;color:var(--sl);font-style:italic}
+.pozn{font-size:.88rem;color:var(--sl)}
+.skok{position:absolute;left:-999px}.skok:focus{left:16px;top:8px;background:var(--ja);color:#14110e;padding:6px 10px;z-index:9}
+nav.obsah ol{columns:2;column-gap:28px;padding-left:1.2em}
+@media (max-width:600px){nav.obsah ol{columns:1}}
+.pravidla-toku{counter-reset:r;list-style:none;padding:0}
+.pravidla-toku>li{counter-increment:r;background:var(--pl2);border:1px solid var(--ok);border-radius:8px;padding:8px 12px 8px 44px;margin:0 0 8px;position:relative}
+.pravidla-toku>li::before{content:"R" counter(r);position:absolute;left:10px;top:8px;font-weight:700;color:var(--ja)}
+.svg-obal{background:var(--pl);border:1px solid var(--ok);border-radius:8px;padding:8px;overflow-x:auto}
+.svg-obal svg{display:block;min-width:760px;width:100%;height:auto}
+
+/* ---------- drôtené modely (súradnice v px obrazovky, JS ich zmenší na šírku stránky) ---------- */
+.wf{position:relative;width:100%;background:var(--wf);border:2px solid var(--wf2);border-radius:8px;overflow:auto;margin:6px 0}
+.wf>.pl{position:relative;transform-origin:0 0;color:var(--wft);font:13px/1.3 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wf.zmenseny{overflow:hidden}
+.x{position:absolute;background:var(--wf2);border-radius:6px;padding:4px 8px;overflow:hidden}
+.x.ciara{background:transparent;border:1.5px dashed var(--wf3)}
+.x.stol{background:color-mix(in srgb,var(--wf2) 55%,var(--wf));border:2px solid var(--wf3);border-radius:14px;padding:0}
+.rad{display:flex;gap:6px;align-items:stretch;height:100%}
+.t{background:var(--wf3);border-radius:5px;padding:3px 6px;flex:1;min-width:0;font-size:12px;line-height:1.25}
+.t b{display:block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;opacity:.8}
+.t .v{font-size:20px;font-weight:700}
+.t.on{outline:3px solid var(--wft);outline-offset:-3px}
+.t.hl{box-shadow:inset 0 0 0 2px var(--wft)}
+.karta{background:var(--wf3);border-radius:6px;display:flex;align-items:flex-end;justify-content:center;font-size:11px;padding:3px}
+.pil{position:absolute;left:50%;transform:translateX(-50%);background:var(--wf);border:2px solid var(--wft);border-radius:12px;padding:3px 14px;text-align:center;font-size:13px;white-space:nowrap}
+.pil strong{letter-spacing:.06em;text-transform:uppercase;font-size:11px;margin-right:6px}
+.taby{position:absolute;display:flex;gap:0;border:1.5px solid var(--wft);border-radius:8px;overflow:hidden;font-size:12px}
+.taby span{padding:3px 10px}
+.taby span.akt{background:var(--wft);color:var(--wf);font-weight:700}
+.odz{display:inline-block;background:var(--wft);color:var(--wf);border-radius:999px;padding:0 5px;font-size:10px;font-weight:700;margin-left:4px}
+.stup{display:flex;gap:2px;align-items:center}
+.stup i{display:block;width:10px;height:10px;border-radius:50%;background:#8e8473}
+.stup i.z1{background:#a59a86}.stup i.z2{background:#776d5e}.stup i.z3{background:#544b40}
+.stup i.m{outline:2.5px solid var(--wft);outline-offset:1px;background:var(--wft)}
+.stup i.duch{outline:2px dashed var(--wft);outline-offset:1px}
+.stup.velka i{width:14px;height:14px}
+.sl{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.sl span{background:var(--wf);border-radius:3px;font-size:9px;text-align:center;padding:1px 0;opacity:.55}
+.sl span.a{opacity:1;box-shadow:inset 0 0 0 1px var(--wft)}
+.ciel{outline:3px solid var(--wft);outline-offset:-1px}
+.stlm{opacity:.5}
+.nahlad{background:var(--wf);border:1.5px solid var(--wft);border-radius:5px;padding:2px 4px;font-size:11px;line-height:1.25}
+.sc{background:var(--wf3);border-radius:6px;position:absolute;padding:4px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px}
+.sc .ob{background:var(--wf2);border-radius:4px;width:52%;flex:1;display:flex;align-items:flex-end;justify-content:center;font-weight:700;font-size:11px;padding-bottom:3px}
+.sc .ik{position:absolute;top:8px;display:flex;flex-direction:column;gap:3px}
+.sc .ik i{display:block;width:12px;height:12px;border-radius:3px;background:var(--wf);opacity:.55}
+.sc .ik i.a{opacity:1;box-shadow:inset 0 0 0 1.5px var(--wft)}
+.vrstva-nahladu{position:absolute;left:4px;right:4px;bottom:40px;background:color-mix(in srgb,var(--wf) 88%,transparent);border:1.5px solid var(--wft);border-radius:5px;padding:2px 4px;font-size:10.5px;line-height:1.25}
+.pasy{position:absolute;top:0;bottom:0;border-left:1px dashed var(--wf3)}
+.tab-riadok{display:grid;align-items:center;gap:8px;height:26px;font-size:12px;border-bottom:1px solid var(--wf3);padding:0 6px}
+.tab-riadok.hl{font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;opacity:.85;height:22px}
+.tab-riadok .stup i{width:16px;height:16px}
+.leg{font-size:.85rem;color:var(--sl);margin:2px 0 14px}
+.stup b.hr{display:block;width:2px;height:12px;background:var(--wft);opacity:.55;margin:0 1px}
+.stup.velka b.hr{height:18px}
+</style>
+</head>
+<body>
+<a class="skok" href="#obsah">Preskočiť na obsah</a>
+<main id="obsah">
+
+<p class="meta">UX návrh · id <code>linia-starsich-20261023-0805</code> · 23. 10. 2026 · roadmapa #68 a #69 (kontext #67, #70) · vzhľad rieši <a href="dizajn-linia-starsich-20261023-0805-ui.html">UI návrh (dizajn-linia-starsich-20261023-0805-ui.html)</a></p>
+<h1>Línia starších na mieste línie kariet</h1>
+
+<p><b>Cieľ:</b> celý herný stôl <code>/hra</code> (#67 + #68 + #69). Hlavný výstup je interaktívne HTML UI dizajnéra s variantmi; tento dokument rieši ich <b>toky a použiteľnosť</b>. Starší (scorecardy, markery priazne, stupnice strachu, body po starších) sa podľa #68 ukážu <b>namiesto línie kariet</b> — na klik na Body v bare hráča a samy pri krokoch Pohoršenie, prebytok a patronát. K tomu nové počítadlo doberacieho balíčka vľavo dole. Cieľové rozlíšenia sú <b>1600×1000 a 1920×1080</b>, všetko bez posúvania. Pracovný strom <code>naex-ui</code>, vetva <code>ui/body-dlazdice</code> (f61c703).</p>
+
+<div class="mriezka">
+  <div class="dlazdica"><b>Používateľ</b><br>Hráč počas partie (dvaja, dva prehliadače), na obrazovke 1600×1000 až 1920×1080. Často začiatočník, ktorý ešte nechápe, že posun staršieho k súperovi dáva súperovi priazeň a <i>tebe</i> strach do bodov.</div>
+  <div class="dlazdica"><b>Úlohy (jobs to be done)</b><ol style="margin:4px 0 0;padding-left:1.2em"><li>Zistiť, prečo mám (a súper má) toľko bodov.</li><li>V kroku vybrať staršieho a vedieť, čo mi to dá.</li><li>Patronát: vybrať staršieho a kartu na scorecard.</li><li>Vidieť, čo súper urobil so staršími.</li><li>Počas Pitky nestratiť prehľad bez kliku.</li><li>Vedieť, čo mi ešte ostalo v balíčku a ako blízko som k prehre „balíček pod 5“.</li></ol></div>
+  <div class="dlazdica"><b>Ako som to skúmal</b><br>Kód (<code>HernaPlocha.tsx</code>, <code>Scorecard.tsx</code>, <code>Panely.tsx</code>, <code>RozpisDlazdice.tsx</code>, <code>skratky.tsx</code>), vlastná partia proti botovi (<code>playtest/20261023-060721</code>) až po Pohoršenie a patronát, snímky pri 1366, 1600 a 1920, názory z webu a nezrovnalosti AI hráčov.</div>
+</div>
+
+<h2 id="verdikt">Verdikt</h2>
+<p class="verdikt">Presunúť starších na miesto línie kariet je dobrý ťah. Dnes je v kroku Pohoršenie aj pri 1600 a 1920 rozhodujúce číslo náhľadu („Fero −11“) odrezané a spodní starší sú pod rukou. Riziko #68 je inde: starší sú v tejto hre <b>cennejší než lokalita</b>, a keď ich skryjeme, hráč prestane vidieť, čo s nimi robí súper. Preto návrh stojí na dvoch spoločných pravidlách — N1 (prepínač, „Späť na stôl“, signály bez kliku a <b>stôl s pevnou výškou</b>, aby pri prepínaní ani pri rozostupe kariet nič neskákalo) a N2 (kroky so staršími a návrat) — a na jednom z troch vzhľadov línie. Ako vzhľad odporúčam <b>variant B – dlaždice so stupnicou</b>: plné scorecardy (variant A) majú pri 1600 ikony okolo 13 px, pri 1920 okolo 16 px. Doberací balíček (N6) je malá zmena s jednou bezpečnostnou podmienkou: zoraďovať treba na serveri.</p>
+
+<nav class="obsah" aria-label="Obsah">
+<ol>
+<li><a href="#rozhodnutia">Východisko: rozhodnutia #67 – #70</a></li>
+<li><a href="#toky">Toky dnes</a></li>
+<li><a href="#signaly">Signály z playtestov a spätnej väzby</a></li>
+<li><a href="#audit">Audit použiteľnosti</a></li>
+<li><a href="#novy-tok">Nový tok: stavy stola</a></li>
+<li><a href="#n1">N1 Prepínač stola a signály bez kliku</a></li>
+<li><a href="#n2">N2 Kroky so staršími, náhľad a návrat</a></li>
+<li><a href="#rozpocet">Rozpočet výšky bez posúvania</a></li>
+<li><a href="#n3">N3 Variant A — rad scorecardov</a></li>
+<li><a href="#n4">N4 Variant B — dlaždice so stupnicou</a></li>
+<li><a href="#n5">N5 Variant C — tabuľa stupníc</a></li>
+<li><a href="#n6">N6 Doberací balíček vľavo dole</a></li>
+<li><a href="#poradie">Odporúčané poradie</a></li>
+<li><a href="#otazky">Otázky do playtestu a na Michala</a></li>
+</ol>
+</nav>
+
+<h2 id="rozhodnutia">Východisko: rozhodnutia #67 – #70</h2>
+<ul>
+<li><b>Rozloženie</b> — súper hore, ty dole, línia kariet v strede. Ruka a doplnky (Log, Šenok, Lokality, Melichar, ?) ostávajú ako dnes.</li>
+<li><b>#68</b> — starší nie sú predvolene viditeľní. Klik na Body v bare hráča (alebo súpera) <b>nahradí</b> líniu kariet líniou starších. Späť: znova Body, tlačidlo <b>„Späť na stôl“</b> alebo <kbd>Esc</kbd>. Pri krokoch, kde sa klikne na staršieho (Pohoršenie, prebytok, patronát), sa línia starších ukáže sama a po kroku sa vráti línia kariet. Starší po bokoch (#55 B) zanikajú.</li>
+<li><b>#69</b> — línia starších ukáže priazeň oboch hráčov, patronát, body za starších a Pohoršenie s hranicami zón.</li>
+<li><b>#70</b> — body sú len dlaždice v bare hráča (Spoločný účet a Dva účty zrušené).</li>
+<li><b>#67</b> — línia, ruka a oba bary na jednej obrazovke bez posúvania pri <b>1600×1000 a 1920×1080</b> (1366×768 už netreba).</li>
+<li><b>Línia kariet nie je v jednej úrovni</b> — karty sa posúvajú nahor a nadol, aby sa spárované akcie stretli slot pri slote (bez spojníc). Línia je preto vyššia o najväčší posun. „Línia rovno“ (a41b8d7) Michal 23. 10. odmietol, opravu robí Bugfixing. Pozri <a href="#rozpocet">rozpočet výšky</a>.</li>
+<li><b>Doberací balíček</b> — číslo „Ruka“ vľavo dole nahradí počet kariet v doberacom balíčku (zrkadlo k „odhodené“ vpravo). Klik ukáže karty balíčka zoradené podľa mena, poradie ostáva tajné.</li>
+</ul>
+<p class="pozn">Snímky v časti „Toky dnes“ sú aj z 1366×768, kde sú problémy najviditeľnejšie. To isté (orezaný náhľad, spodok pod rukou) platí aj pri 1600 a 1920 — pozri snímky 1600.</p>
+
+<h2 id="toky">Toky dnes</h2>
+<p>Partia UX 1 proti botovi Rapavý Fero (krátka hra, 5 lokalít). Po 1. bitke bot rozdelil prebytok 7, v 2. kole som mal patronát a Pohoršenie.</p>
+
+<h3>Úloha 2: vybrať staršieho pri Pohoršení</h3>
+<div class="tok">
+<div class="pred"><h4>Dnes (1 klik, ale naslepo)</h4><ol>
+<li>Pilulka: „Klikni na staršieho po boku stola…“</li>
+<li>Hráč hľadá v dvoch stĺpcoch po 4. Pri 1366 vidí len Farára a Krčmárku vľavo, Hrobára a Autobusára vpravo — zvyšok je pod rukou, treba posúvať.</li>
+<li>Na dlaždici je náhľad orezaný na dva riadky: „posunúť k súperovi · k Bot Rapavý Fero: oranžová →…“. Body („ty ±0, súper −11“) a priazeň sú len v <code>title</code> — myšou po chvíli, dotykom vôbec.</li>
+<li>Klik → posun → hneď ďalšie kolo (stavba šenku), výsledok ostane len v účte bitky.</li>
+</ol></div>
+<div class="po"><h4>Čo hráč potrebuje</h4><ol>
+<li>Vidieť všetkých 8 naraz, bez posúvania.</li>
+<li>Pri každom staršom vidieť, koľko to dá jemu a koľko súperovi, a komu ostane priazeň.</li>
+<li>Vedieť, prečo niektorého nemôže vybrať (zámok).</li>
+<li>Po kliku vidieť výsledok skôr, než stôl prepne na nové kolo.</li>
+</ol></div>
+</div>
+<div class="dve">
+<figure><img src="dizajn-linia-starsich-20261023-0805/ux-pohorsenie-1366.jpg" alt="Pohoršenie pri 1366×768: vľavo Farár a Krčmárka, vpravo Hrobár a Autobusár, ďalší starší sú pod rukou; náhľad na dlaždici je orezaný." width="1366" height="768" loading="lazy"><figcaption>1366×768, krok Pohoršenie: viditeľní 4 z 8 starších, ruka prekrýva stôl, náhľad končí „oranžová →…“.</figcaption></figure>
+<figure><img src="dizajn-linia-starsich-20261023-0805/ux-pohorsenie-1600.jpg" alt="Pohoršenie pri 1600×1000: všetkých 8 dlaždíc svieti, náhľad každej je orezaný na zónu, body nevidno." width="1600" height="1000" loading="lazy"><figcaption>1600×1000: všetkých 8 svieti rovnako; rozhodujúci rozdiel (Farár a Starosta „Fero −11“, Poštárka „±0“) nevidno ani pri 1920.</figcaption></figure>
+</div>
+
+<h3>Úloha 3: patronát</h3>
+<div class="tok">
+<div class="pred"><h4>Dnes (3 kliky, pilulka narastie)</h4><ol>
+<li>Pilulka s dlhým vysvetlením (4 riadky), starší-kandidáti svietia po bokoch, tlačidlá s menami a „neberiem“ na hrane stola.</li>
+<li>Klik na staršieho → pilulka narastie o rad kariet z ruky (84 px), ktoré sú zároveň v ruke. Pod nimi „výhra 10:28“ bez legendy — čie je ktoré číslo?</li>
+<li>Klik na kartu → „vziať do ruky −1 cig.“</li>
+</ol></div>
+<div class="po"><h4>Pri 1366×768</h4><ol>
+<li>Druhý kandidát (Starosta) je pod rukou.</li>
+<li>„neberiem“ je mimo obrazovky — hráč nevidí, že patronát môže odmietnuť.</li>
+</ol></div>
+</div>
+<div class="dve">
+<figure><img src="dizajn-linia-starsich-20261023-0805/ux-patronat-1366.jpg" alt="Patronát pri 1366×768: Farár svieti, Starosta je napoly pod rukou, tlačidlá kroku nevidno." width="1366" height="768" loading="lazy"><figcaption>1366×768, patronát: Starosta pod rukou, „neberiem“ mimo obrazovky.</figcaption></figure>
+<figure><img src="dizajn-linia-starsich-20261023-0805/ux-patronat-krok2-1600.jpg" alt="Patronát, krok 2: pilulka obsahuje štyri karty z ruky s textom výhra 10:28 a podobne; stôl je odtlačený nadol." width="1600" height="1000" loading="lazy"><figcaption>Krok 2: karty z ruky zdvojené v pilulke, „výhra 10:28“ bez mien.</figcaption></figure>
+</div>
+
+<h3>Úloha 1: prečo mám toľko bodov</h3>
+<p>Dnes vedú k bodom <b>dve rôzne cesty</b>. Dlaždica Body v bare vymení zdroje za 6 dlaždíc rozpisu (po podmienkach). Tlačidlo „rozpis bodov“ v páse kola otvorí nad stolom textový panel s <code>RozpisBodov</code>. Body po starších sú len na dlaždiciach po bokoch („★ −4 · +3“, bez mien) a v lupe scorecardu.</p>
+<figure><img src="dizajn-linia-starsich-20261023-0805/ux-body-rozpis.jpg" alt="Klik na Body: v bare hráča 6 dlaždíc rozpisu; nad stolom v páse ostáva tlačidlo rozpis bodov; dlaždice starších po bokoch majú dvojice čísel bez mien." width="1600" height="1500" loading="lazy"><figcaption>Rozpis v bare (Cigarety +6, Dlhy −8, Cirhóza −4…) a súčasne tlačidlo „rozpis bodov“ v páse (vpravo hore) — dve vizualizácie tej istej veci.</figcaption></figure>
+
+<h3>Úloha 4: čo urobil súper so staršími</h3>
+<p>Bot po 1. bitke rozdelil prebytok 7 naraz. Oznámenie dostaneš len pri <i>zisku</i> priazne a zmizne o 12 s (<code>HernaPlocha.tsx:3044–3066</code>). Po mojom Pohoršení začalo hneď 3. kolo a jediná stopa je účet bitky: „Posuny: Farár k Bot Rapavý Fero (oranžová → žltá)“. Pri #68 navyše starší na stole nebudú — bez N2 sa hráč o posunoch dozvie len z tohto riadku.</p>
+<div class="dve">
+<figure><img src="dizajn-linia-starsich-20261023-0805/ux-po-bitke.jpg" alt="Po bitke: účet bitky s riadkom Posuny a hneď pod ním panel stavby šenku nového kola." width="1600" height="1000" loading="lazy"><figcaption>Po bitke: zmenu starších nesie len textový riadok „Posuny“, stôl je už v ďalšom kole.</figcaption></figure>
+<figure><img src="dizajn-linia-starsich-20261023-0805/ux-pitka-1366.jpg" alt="Pitka pri 1366×768: línia kariet je zúžená medzi dvoma stĺpcami starších a z polovice pod rukou." width="1366" height="768" loading="lazy"><figcaption>Pitka pri 1366: stĺpce starších (2 × 176 px) zužujú líniu kariet, a tá je aj tak napoly pod rukou. Toto rieši #68 spolu s #67.</figcaption></figure>
+</div>
+
+<h2 id="signaly">Signály z playtestov a spätnej väzby</h2>
+<ul>
+<li class="citat">„Posun starších je v tejto hre cennejší než lokalita.“ — Paragrafista Vilo (AI), názor #33: 6 posunov prebytkom = +44 b, súper ich jednou bitkou vrátil.</li>
+<li class="citat">„Starší, ktorý sa ťa bojí na oranžovej, 12 bodov… Toto som si musel poskladať zo scorecardov v 1. kole… Náhľady bodov pri patronáte, Pohoršení a prebytku boli pritom výborné.“ — Eva Stratégová (AI), názor #14. Pozn.: AI hráči čítajú náhľad z konzoly celý. V prehliadači je dnes orezaný.</li>
+<li class="citat">„Prebytok sa nedá odmietnuť… v zozname ťahov chýba koniec / preskočiť.“ — nezrovnalosti AI hráčov (viackrát) a názor #31. Je to otázka pravidiel, preto je <a href="#otazky">medzi otázkami</a>, nie v návrhoch.</li>
+<li>Oznamy priazne vznikli, lebo porazená v playteste 20261016-134912 nepochopila, že súper získal priazeň (komentár v <code>HernaPlocha.tsx:3039</code>). Bez starších na stole sa toto nepochopenie vráti, ak ho nič nenahradí.</li>
+</ul>
+
+<h2 id="audit">Audit použiteľnosti</h2>
+<p class="pozn">Závažnosť podľa Nielsena: 4 = katastrofa, 3 = veľký problém, 2 = menší, 1 = kozmetický. „#68“ označuje riziko, ktoré vznikne až skrytím starších.</p>
+<div class="filtre" role="group" aria-label="Filter podľa závažnosti">
+<button type="button" data-f="vsetko" aria-pressed="true">všetko</button>
+<button type="button" data-f="3" aria-pressed="false">3 a viac</button>
+<button type="button" data-f="2" aria-pressed="false">len 2</button>
+<button type="button" data-f="68" aria-pressed="false">riziká #68</button>
+</div>
+<div class="tab-obal">
+<table id="audit-tab">
+<caption class="pozn" style="text-align:left">Problémy, dôkaz a ktorý návrh ich rieši</caption>
+<thead><tr><th scope="col">#</th><th scope="col">Problém</th><th scope="col">Heuristika</th><th scope="col">Záv.</th><th scope="col">Dôkaz</th><th scope="col">Rieši</th></tr></thead>
+<tbody>
+<tr data-z="3"><td>U1</td><td>Náhľad posunu je orezaný na zónu, body a priazeň sú len v <code>title</code>. Rozhodnutie robí hráč bez čísla, na dotyku úplne naslepo.</td><td>Viditeľnosť stavu, prevencia chýb</td><td><span class="z z3">3</span></td><td>snímky 1366/1600/1920; <code>Scorecard.tsx:358–362</code>, <code>hra.css:4966</code> (line-clamp 2), text <code>HernaPlocha.tsx:2944</code></td><td>N2, N3–N5</td></tr>
+<tr data-z="3"><td>U2</td><td>Krok so staršími sa nezmestí: pri 1600×1000 sú Poštárka a Vychovávateľka napoly pod rukou a „neberiem“ pri patronáte je na spodnom okraji pod kartami ruky; pilulka patronátu (krok 2) odtlačí stôl o ďalších 130 px. Pri 1366 je vidno len 4 z 8.</td><td>Viditeľnosť, kontrola</td><td><span class="z z3">3</span></td><td>snímky Pohoršenie 1600, patronát krok 2 (1600), 1366</td><td>N2, N3–N5 (+ #67)</td></tr>
+<tr data-z="3" data-r="68"><td>U14</td><td>Skákanie rozloženia: línia kariet s rozostupom (posun kariet o sloty) je vyššia o najväčší posun a línia starších má inú výšku. Ak stôl nemá pevnú výšku, pri každom vyložení a pri prepnutí Body ⇄ starší poskočí môj bar aj ruka — a hráčovi utečie karta spod kurzora.</td><td>Konzistencia, prevencia chýb</td><td><span class="z z3">3</span></td><td>rozhodnutie o rozostupe (koordinátor 23. 10.); slot = 12,6 % výšky karty (<code>geometriaKarty</code>, sloty y 23/51/80/108 z 227)</td><td>N1, rozpočet</td></tr>
+<tr data-z="2"><td>U15</td><td>Titulok dlaždice Karty tvrdí „Keď doberací balíček klesne pod 5 kariet, hráč prehráva“. Pravidlo pritom ráta doberací + odhadzovací + ruku. S novým počítadlom balíčka vľavo dole by sa omyl ešte zosilnil.</td><td>Zhoda so svetom, pomoc</td><td><span class="z z2">2</span></td><td><code>Panely.tsx:699</code> vs. <code>PRAVIDLA.md</code> „Podmienky konca“ (veľkosť balíčka = doberací + odhadzovací + ruka)</td><td>N6</td></tr>
+<tr data-z="2"><td>U16</td><td>„RUKA 5“ vľavo dole opakuje to, čo hráč vidí (ruku), kým obsah vlastného balíčka nevidí nikde — musí si pamätať, čo do neho dal (stavba šenku, odhodené, zamiešanie).</td><td>Rozpoznanie namiesto pamätania</td><td><span class="z z2">2</span></td><td><code>HernaPlocha.tsx:4064–4066</code>; <code>view.ts:3–10</code> (balíček sa dnes neposiela)</td><td>N6</td></tr>
+<tr data-z="3" data-r="68"><td>U3</td><td>#68: keď súper posúva markery, hráč ich nevidí. Oznam príde len pri zisku priazne (12 s), účet bitky je text a stôl prepne na nové kolo.</td><td>Viditeľnosť stavu</td><td><span class="z z3">3</span></td><td><code>HernaPlocha.tsx:3044–3066</code>, snímka po bitke, názory #33 a #14</td><td>N2</td></tr>
+<tr data-z="3" data-r="68"><td>U4</td><td>#68: hráč nevie, že línia kariet je dočasne preč a kde je. Body v bare dnes vymieňa len vlastný bar, stôl sa nemení — model „Body = rozpis v bare“ si hráč už osvojil.</td><td>Viditeľnosť stavu, zhoda so svetom</td><td><span class="z z3">3</span></td><td><code>Panely.tsx:704–733</code> (Body ovláda len <code>rozpis</code> baru)</td><td>N1</td></tr>
+<tr data-z="2" data-r="68"><td>U5</td><td>#68: priazeň účinkuje v zdrojoch (prah Exekútora 18, barter −3), ale nikde nie je stopa, odkiaľ. Po skrytí starších nebude jasné, prečo má hráč „/18“.</td><td>Rozpoznanie namiesto pamätania</td><td><span class="z z2">2</span></td><td>snímka 1920 (Dlhy 2/18 bez zdroja); <code>UCINOK_PRIAZNE</code> v <code>Scorecard.tsx:175</code></td><td>N1</td></tr>
+<tr data-z="2"><td>U6</td><td>„★ −4 · +3“: čie je ktoré číslo, sa dá zistiť len z farby a poradia.</td><td>Zhoda so svetom, WCAG 1.4.1</td><td><span class="z z2">2</span></td><td><code>Scorecard.tsx:344–346</code></td><td>N3–N5</td></tr>
+<tr data-z="2"><td>U7</td><td>Dva vstupy k bodom s rôznou vizualizáciou: dlaždica Body (bar) a „rozpis bodov“ v páse (panel nad stolom).</td><td>Konzistencia</td><td><span class="z z2">2</span></td><td><code>HernaPlocha.tsx:3389</code> a <code>3768–3792</code>; <code>Panely.tsx:704</code></td><td>N1</td></tr>
+<tr data-z="2"><td>U8</td><td>Patronát krok 2 zdvojí karty z ruky v pilulke, pilulka narastie a odtlačí stôl; „výhra 10:28“ bez legendy.</td><td>Minimalizmus, zhoda so svetom</td><td><span class="z z2">2</span></td><td><code>HernaPlocha.tsx:2154–2158</code>, snímka krok 2</td><td>N2</td></tr>
+<tr data-z="2"><td>U9</td><td>Neklikateľný starší v kroku nepovie prečo (krajná pozícia, limit 2 hraníc zón, Pohoršenie na krajnú). Pilulka hovorí len „Zamknuté markery sa nedajú“.</td><td>Pomoc pri chybách</td><td><span class="z z2">2</span></td><td><code>HernaPlocha.tsx:2959–2966</code>, <code>2799</code></td><td>N2</td></tr>
+<tr data-z="2" data-r="68"><td>U10</td><td>Esc už dnes zatvára tri rôzne veci (rozpis v bare, zoznam skratiek, lupu) a každá ho počúva na <code>window</code>. Línia starších pridá štvrtú, preto treba určiť poradie.</td><td>Kontrola a sloboda</td><td><span class="z z2">2</span></td><td><code>Panely.tsx:393–402</code>, <code>skratky.tsx:45</code></td><td>N1</td></tr>
+<tr data-z="2" data-r="68"><td>U11</td><td>Stav „rozpis“ žije v každom bare zvlášť. #68 potrebuje jeden stav stola (karty / starší a z čieho pohľadu).</td><td>Konzistencia (implementácia)</td><td><span class="z z2">2</span></td><td><code>Panely.tsx:390</code></td><td>N1</td></tr>
+<tr data-z="2"><td>U12</td><td>Poloha markera má pre čítačku len „tvoja polovica / súperova / stred“ — chýba sila (zóna) a počet krokov.</td><td>WCAG 1.1.1, 1.4.1</td><td><span class="z z2">2</span></td><td><code>Scorecard.tsx:351</code></td><td>N3–N5</td></tr>
+<tr data-z="1"><td>U13</td><td>Mikrocopy „Klikni na staršieho po boku stola“ po #68 prestane platiť.</td><td>Zhoda so svetom</td><td><span class="z z1">1</span></td><td><code>HernaPlocha.tsx:2799</code>, <code>2813</code></td><td>N2</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="novy-tok">Nový tok: stavy stola</h2>
+<p>Stôl má dva pohľady — <b>línia kariet</b> (v ovládaní „Stôl“) a <b>Starší</b> — a jeden stav pre oboch hráčov v <code>HernaPlocha</code>. Pohľad Starší má tri dôvody: <i>prezeranie</i> (hráč si ho otvoril), <i>krok</i> (Pohoršenie, prebytok, patronát — u oboch hráčov) a <i>výsledok</i> (po poslednom posune, kým si ho hráč neprečíta).</p>
+<div class="svg-obal">
+<svg viewBox="0 0 980 330" role="img" aria-labelledby="svg-t svg-d">
+<title id="svg-t">Stavový diagram stola</title>
+<desc id="svg-d">Stôl prejde na Starší-prezeranie klikom na Body, klávesom S alebo záložkou; späť Body, Späť na stôl, Esc, S alebo potiahnutím karty z ruky. Z Kariet aj z prezerania prejde stôl na Starší-krok, keď začne Pohoršenie, prebytok alebo patronát, a to u oboch hráčov. Z kroku vedie nahliadnutie na stôl a späť. Po poslednom posune prejde na Starší-výsledok; z neho na stôl cez ďalej v účte bitky, Späť na stôl, Esc alebo keď treba líniu kariet.</desc>
+<defs><marker id="sip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+<g fill="none" stroke="currentColor" stroke-width="2" style="color:var(--sl)">
+<rect x="20" y="120" width="170" height="70" rx="12" style="stroke:var(--ja)"/>
+<rect x="300" y="20" width="200" height="70" rx="12"/>
+<rect x="300" y="220" width="200" height="70" rx="12" style="stroke:var(--te)"/>
+<rect x="610" y="220" width="200" height="70" rx="12"/>
+<rect x="610" y="20" width="200" height="70" rx="12" stroke-dasharray="6 4"/>
+<path d="M190 140 L300 60" marker-end="url(#sip)"/>
+<path d="M300 75 L190 160" marker-end="url(#sip)"/>
+<path d="M190 175 L300 250" marker-end="url(#sip)"/>
+<path d="M400 90 L400 220" marker-end="url(#sip)"/>
+<path d="M500 255 L610 255" marker-end="url(#sip)"/>
+<path d="M500 235 L620 90" marker-end="url(#sip)"/>
+<path d="M640 90 L520 225" marker-end="url(#sip)"/>
+<path d="M710 290 C 600 330, 140 330, 105 190" marker-end="url(#sip)"/>
+</g>
+<g font-family="system-ui,sans-serif" font-size="14" fill="currentColor" style="color:var(--tx)" text-anchor="middle">
+<text x="105" y="150" font-weight="700">Stôl</text><text x="105" y="170" font-size="12">línia kariet (predvolene)</text>
+<text x="400" y="50" font-weight="700">Starší · prezeranie</text><text x="400" y="70" font-size="12">body z pohľadu ty / súper</text>
+<text x="400" y="250" font-weight="700">Starší · krok</text><text x="400" y="270" font-size="12">Pohoršenie · prebytok · patronát</text>
+<text x="710" y="250" font-weight="700">Starší · výsledok</text><text x="710" y="270" font-size="12">zmeny zvýraznené</text>
+<text x="710" y="50" font-weight="700">Stôl · nahliadnutie</text><text x="710" y="70" font-size="12">krok beží ďalej</text>
+</g>
+<g font-family="system-ui,sans-serif" font-size="11.5" fill="currentColor" style="color:var(--sl)">
+<text x="150" y="88">Body · S · záložka</text>
+<text x="196" y="125">Body · Späť na stôl · Esc · S · ťah karty</text>
+<text x="200" y="232">krok začne (aj súperov)</text>
+<text x="408" y="160">krok začne</text>
+<text x="515" y="248">posledný posun</text>
+<text x="545" y="140">záložka Stôl</text>
+<text x="600" y="185">Starší · Esc</text>
+<text x="250" y="322">„ďalej“ v účte bitky · Späť na stôl · Esc · treba líniu kariet (cieľ kola, vykladanie)</text>
+</g>
+</svg>
+</div>
+
+<!-- ======================= N1 ======================= -->
+<h2 id="navrhy">Návrhy</h2>
+
+<section class="navrh" id="n1" aria-labelledby="n1-h">
+<h3 id="n1-h">N1 · Prepínač stola, „Späť na stôl“, pevná výška a signály bez kliku <span class="stitok mala">malá – stredná</span> <span class="stitok">rýchla výhra</span></h3>
+<dl>
+<dt>Rieši</dt><dd>U4, U5, U7, U10, U11, U14 — platí pre všetky varianty A/B/C.</dd>
+<dt>Myšlienka</dt><dd>Starší sú skrytí, no hráč ich nestratí. Vždy vidí, ktorý pohľad má stôl, dostane sa naspäť rovnakou cestou, akou prišiel, a to dôležité zo starších vidí aj bez kliku. Prepínanie pritom nepohne ničím okolo — ani barmi, ani rukou.</dd>
+</dl>
+<h4>Čo presne</h4>
+<ol>
+<li><b>Pevná výška stola</b> (U14). Plsť stola má výšku <i>línie kariet s rezervou na najväčší posun</i> (pozri <a href="#rozpocet">rozpočet</a>) a línia starších dostane presne ten istý box. Pri vyložení karty s posunom, pri prepnutí Body ⇄ starší ani pri automatickom kroku sa tak môj bar a ruka nepohnú. Ak sa línia kariet do rezervy nezmestí, zmenšia sa karty v línii — box nerastie. Je to podmienka, aby „bez posúvania“ platilo v každom stave.</li>
+<li><b>Tlačidlo „Späť na stôl“</b> (rozhodnutie Michala) v hlavičke línie starších, vľavo hore — tam, kde oko hľadá „späť“. Nesie aj skratku: „← Späť na stôl <kbd>Esc</kbd>“. V kroku (N2) sa mení na „Pozrieť stôl“, lebo krok neruší (R8).</li>
+<li><b>Súhrnný pás línie kariet</b> na spodnom okraji línie starších (jeden riadok, 24 px), aby hráč pri starších nestratil prehľad o stole: „Za plotom: 3 karty · prevaha ty | Zberný dvor | Pri váhe: 2 karty · prevaha Fero | odhad bitky 2 : 3“. Klik na pás = „Späť na stôl“.</li>
+<li><b>Záložky stola</b> (návrh, <a href="#otazky">otázka 5</a>) v ľavom hornom rohu plste: <code>[ Stôl 6 ] [ Starší ]</code> (6 = kariet v línii). Je to druhá cesta popri Body — objaví ju aj ten, kto Body nikdy nestlačí — a v každej chvíli ukazuje, kde je línia kariet. Pomenovanie „Stôl“ ladí s tlačidlom „Späť na stôl“. Záložky sú malé (24 px) a výšku stola nemenia. Ak ich Michal nechce, ich úlohu prevezme tlačidlo „Späť na stôl“ a súhrnný pás.</li>
+<li><b>Body v bare je prepínač</b> s <code>aria-pressed</code>. Stlačené Body: „Body ▴ · starší na stole“. Body súpera otvorí tú istú líniu z jeho pohľadu (jeho body vpredu). Druhé Body pri otvorenej línii pohľad <i>prepne</i>, rovnaké Body ho zavrie. Rozpis v bare (6 dlaždíc, #70) ostáva a línia starších ho dopĺňa: <b>bar = body podľa podmienok, stôl = body podľa starších</b>. Prejdenie myšou či fokus na dlaždici „Zóny strachu“ v bare zvýrazní tieto podmienky na všetkých starších na stole, a naopak.</li>
+<li><b>Hlavička línie starších</b> (jeden riadok): „← Späť na stôl <kbd>Esc</kbd> · Starší · body z pohľadu <u>ty</u> | Fero · priazeň: ty 3 · Fero 0 · vydesení ty 0/4 · Fero 0/4 · ⓘ“. Priazeň oboch hráčov a vydesení sú tu ako súčet (#69), pri každom staršom potom zvlášť.</li>
+<li><b>Návrat je vždy tou istou cestou</b>: Body, „Späť na stôl“, <kbd>Esc</kbd>, <kbd>S</kbd> (alebo záložka Stôl). Línia kariet sa vráti aj sama, keď ju hráč potrebuje: <b>začne ťahať kartu z ruky</b>, stlačí <kbd>N</kbd> (NA EX!) alebo <kbd>P</kbd> (pas). Stôl tak nikdy nezostane v pohľade, kde sa ťah nedá spraviť. Pri návrate ide fokus späť na prvok, ktorý starších otvoril (Body), a línia kariet je v tom istom stave ako predtým (žiadne zrušenie výberu miesta či NA EX).</li>
+<li><b>Zmena za chrbtom</b>: keď súper vyloží kartu alebo dá NA EX, kým máš otvorených starších, súhrnný pás a záložka Stôl dostanú odznak <code>+1</code> a pilulka povie „Fero vyložil Pijana na tvoju stranu — Späť na stôl (Esc)“. Keď prídeš na ťah v Zhromaždení alebo Pitke, „Späť na stôl“ jemne pulzuje. Za hráča sa tu neprepína — práve si číta.</li>
+<li><b>Jedna cesta k bodom</b>: tlačidlo „rozpis bodov“ v páse kola (<code>HernaPlocha.tsx:3389</code>) a panel <code>starsi-info</code> zrušiť. Text „Ako sa boduje“ (★/♥) presunúť do nápovedy hlavičky línie starších (ikona ⓘ).</li>
+<li><b>Signály bez kliku</b>:
+  <ul>
+  <li><b>♥ pri zdroji, kde priazeň účinkuje</b>: „DLHY 0/18 ♥“ (titulok: „Farár, priazeň sily 2: prah Exekútora 18 namiesto 10“), „nový poldeci −3 ♥ Starosta“, v odhade bitky „+2 tuhé ♥ Krčmárka“. Rieši U5 a učí, čo priazeň robí, presne tam, kde sa to prejaví.</li>
+  <li><b>Zmena bodov od bitky</b> na dlaždici Body: „+45 · ▼ 11 od bitky“, kým hráč neotvorí starších (potom zmizne). Hovorí: „starší sa pohli, pozri sa“.</li>
+  <li>Ostáva: ohlásené vydesenie (<code>role="alert"</code>), počet vydesených a „body teraz“ v páse a stávka bitky („výhra o 3 ≈ +26 b“).</li>
+  </ul></li>
+</ol>
+<h4>Tok pred → po (úloha 1: prečo mám toľko bodov)</h4>
+<div class="tok">
+<div class="pred"><h4>Dnes</h4><ol><li>Body → 6 dlaždíc v bare (podľa podmienok).</li><li>Body po starších: prečítať 8 dlaždíc „★ −4 · +3“ po bokoch, alebo prejsť myšou každého (lupa).</li><li>Alebo „rozpis bodov“ v páse → iný panel s textom.</li></ol></div>
+<div class="po"><h4>Po N1 (+ variant)</h4><ol><li>Body (alebo <kbd>S</kbd>) → bar: podmienky, stôl: 8 starších s bodmi „ty / Fero“; nič okolo sa nepohne.</li><li>Prejdenie podmienkou v bare → zvýraznia sa starší, ktorí ju bodujú.</li><li>Body / „Späť na stôl“ / <kbd>Esc</kbd> → línia kariet, fokus na Body.</li></ol></div>
+</div>
+<h4>Mikrocopy</h4>
+<ul>
+<li>Tlačidlo: „← Späť na stôl“ (+ <kbd>Esc</kbd>); v kroku „Pozrieť stôl“ a na stole potom „← Späť na starších“.</li>
+<li>Záložky (ak budú): „Stôl 6“, „Starší“. Titulok Starší: „Starší a body po starších (S)“.</li>
+<li>Body stlačené: „Body ▴“ s pomocným textom „starší na stole“; titulok „Späť na stôl (Esc)“.</li>
+<li>Súhrnný pás: „Za plotom 3 · prevaha ty │ Zberný dvor │ Pri váhe 2 · prevaha Fero │ odhad 2 : 3“.</li>
+<li>Pilulka pri zmene za chrbtom: „Fero vyložil Pijana na tvoju stranu — Späť na stôl (Esc)“.</li>
+<li>Titulok ♥: „♥ Farár (Exekútor, sila 2): prah Exekútora 18 namiesto 10. Priazeň máš, kým je marker na tvojej polovici.“</li>
+</ul>
+<h4>Prístupnosť</h4>
+<ul>
+<li>Body má <code>aria-pressed</code> a <code>aria-controls</code> na panel stola; „Späť na stôl“ je obyčajné <code>button</code> (prvé v poradí fokusu v línii starších). Ak budú záložky, tak <code>role="tablist"</code> s dvoma <code>tab</code> a stôl ako <code>tabpanel</code>, šípky ←/→.</li>
+<li>Po otvorení klikom alebo klávesom ide fokus na hlavičku línie (<code>tabindex="-1"</code>), po zatvorení späť na prvok, ktorý ju otvoril.</li>
+<li><b>Poradie Esc</b> (jeden spoločný poslucháč, nie štyri na <code>window</code>): lupa → zoznam skratiek → výber na stole → pohľad Starší (len pri prezeraní) → rozpis v bare.</li>
+<li><kbd>S</kbd> je voľné (<kbd>M</kbd> a <kbd>1–4</kbd> patria soundboardu); doplniť do <code>SKRATKY_V_PARTII</code>.</li>
+<li>Odznak „+1“ na záložke aj v texte pilulky (<code>aria-live="polite"</code> — pilulka ho už má).</li>
+</ul>
+<dl>
+<dt>Náročnosť</dt><dd>malá – stredná: stav stola presunúť z <code>HracDoska</code> do <code>HernaPlocha</code> (prop <code>pohladStola</code> a <code>onBody</code>), pevná výška plste, „Späť na stôl“, súhrnný pás, spoločný Esc, ♥ titulky v zdrojoch.</dd>
+<dt>Súbory</dt><dd><code>apps/web/src/hra/HernaPlocha.tsx</code>, <code>Panely.tsx</code> (HracDoska, Body), <code>RozpisDlazdice.tsx</code> (zvýraznenie), <code>skratky.tsx</code>, <code>hra.css</code></dd>
+<dt>Ako overiť</dt><dd>Snímky <code>snimka.ts</code> pri 1600×1000 a 1920×1080 pred a po kliku na Body: spodná hrana môjho baru a vrch ruky na rovnakom pixeli (U14). Päťsekundový test so snímkou v pohľade Starší: „Kde sú teraz tvoje karty a ako sa k nim vrátiš?“ (cieľ: 4 z 5 odpovedí „Späť na stôl / Esc / Body“). V playteste s ľuďmi sledovať, či niekto počas Pitky hľadá líniu kariet a nevie sa vrátiť. Pri ♥ sa opýtať: „Prečo máš do Exekútora 18?“</dd>
+</dl>
+</section>
+
+<!-- ======================= N2 ======================= -->
+<section class="navrh" id="n2" aria-labelledby="n2-h">
+<h3 id="n2-h">N2 · Kroky so staršími: automatické zobrazenie, náhľad a návrat <span class="stitok stredna">stredná</span></h3>
+<dl>
+<dt>Rieši</dt><dd>U1, U3, U8, U9, U13 — platí pre všetky varianty.</dd>
+<dt>Myšlienka</dt><dd>Kým sa hýbu markery — a je jedno, kto ich hýbe —, sú na stole u oboch hráčov starší. Dôsledok každej voľby je napísaný priamo pri staršom. Výsledok ostane na stole, kým si ho hráč neprečíta.</dd>
+</dl>
+<h4>Pravidlá toku</h4>
+<ol class="pravidla-toku">
+<li><b>Kedy sa línia starších ukáže sama:</b> keď začne krok Pohoršenie, prebytok alebo patronát — <b>u oboch hráčov</b>. Aktívny hráč vyberá, čakajúci sleduje. Hlavička línie (a záložka, ak bude) ukáže dôvod: „Starší · Pohoršenie“. Pilulka zostane jednoriadková. Prechod je mäkký (krátke prelínanie v tom istom boxe, nič sa neposúva), pri <code>prefers-reduced-motion</code> okamžitý. Ak mal hráč práve otvorenú lupu karty alebo ťahal kartu, prepne sa až po jej zatvorení či pustení.</li>
+<li><b>Čo je klikateľné:</b> len starší, ktorých možno vybrať. Majú rám „cieľ“, kurzor ruky a sú v poradí fokusu. Ostatní sú stlmení <b>so zámkom a dôvodom</b> („krajná pozícia“, „toto Pohoršenie už prešlo 2 hranice zón“, „patronát: priazeň aspoň žltá“). Stlmenie nie je len farba: zámok + text.</li>
+<li><b>Náhľad priamo na staršom</b>, celý a bez <code>title</code>: „k Ferovi: oranžová → žltá · <b>ty ±0 · Fero −11</b> · ♥ ty 2 → 1“. Pri ±0 aj „do žltej ešte 1 krok“ (existujúci text). Prejdenie myšou alebo fokus ukáže na stupnici <b>ducha markera</b> na cieľovej pozícii a v oboch baroch novú hodnotu Body („Fero 45 → 34“).</li>
+<li><b>Pohoršenie s hranicami zón</b> (#69): stupnica má viditeľné hranice zón (zárez medzi neutrálom a žltou, žltou a oranžovou, oranžovou a červenou). Pri každom staršom je počítadlo „hranice: 1 z 2“ — tvoje Pohoršenia posunú jeden marker v bitke najviac cez 2 hranice zón (<code>pohorsenieMozne</code>, <code>engine.ts:2916</code>) — a zámok pri vyčerpaní („🔒 už 2 hranice zón“). Na krajnú pozíciu Pohoršenie nesmie (okrem Novín), preto pri krajnej bodke stojí zámok s textom „🔒 na krajnú len s Novinami“. Na Kultúrnom dome limit neplatí — počítadlo sa vtedy skryje a hlavička povie „Kultúrny dom: bez limitu hraníc“.</li>
+<li><b>Prebytok „rozdeliť naraz“</b>: prejdenie myšou či fokus na tlačidle očísluje starších v poradí návrhu (①②③) a ukáže súčet „spolu ty +x · Fero −y“. Klik vykoná to isté, ale už to nie je slepé.</li>
+<li><b>Čakajúci hráč</b> vidí posuny naživo: marker sa presunie (≤ 300 ms, pri <code>prefers-reduced-motion</code> bez animácie) a pri staršom ostane stopa „← k tebe · ty +11“ až do konca kroku. Pilulka (<code>aria-live</code>) to zopakuje textom: „Fero posunul Farára k tebe: žltá → oranžová; ty +11.“ Oznamy priazne (12 s) tým nahradíme — stopa nezmizne, kým je krok na stole.</li>
+<li><b>Patronát</b> v línii starších: (1) klik na staršieho-kandidáta — pri ňom „−1 cig. · Fero +3 Pohoršenia · teraz ty 0 : Fero 40“. (2) Karty, ktoré smú ísť na scorecard, sa <b>v ruke</b> vysunú so štítkom „pri výhre ty 10 : Fero 28“, ostatné sa stlmia — rovnako ako dnes pri výbere miesta (<code>ruka volba-miesta</code>). Kartu stačí potiahnuť na scorecard alebo kliknúť. Kópia kariet v pilulke zanikne. (3) „vziať do ruky −1 cig.“ v strede hrany stola, „neberiem“ vpravo, „iný starší“ = klik na iného.</li>
+<li><b>Výsledok sa podrží</b>: po poslednom posune ostane línia starších so zvýraznenými zmenami (stopa + „ty +11 / Fero −3“) a s účtom bitky. Na stôl sa vráti na „ďalej“ v účte bitky, „Späť na stôl“, <kbd>Esc</kbd>, alebo sama, keď treba líniu kariet (umiestnenie cieľa kola, vykladanie v Zhromaždení). <b>Bez časovača</b> (WCAG 2.2.1). Na začiatku kola je línia kariet aj tak prázdna, takže podržanie nič nestojí.</li>
+<li><b>Nahliadnutie počas kroku</b>: v kroku sa „Späť na stôl“ mení na „Pozrieť stôl“ — ukáže líniu kariet a krok beží ďalej. Pilulka ostane („Pohoršenie · zostáva 1 — vyber staršieho“) a na stole je „← Späť na starších“. <kbd>Esc</kbd> v kroku krok nezruší (niet čo rušiť): zavrie len lupu alebo nahliadnutie.</li>
+</ol>
+<h4>Tok pred → po (úloha 2: Pohoršenie)</h4>
+<div class="tok">
+<div class="pred"><h4>Dnes</h4><ol><li>Hľadať v stĺpcoch, pri 1366 posúvať.</li><li>Myšou na každého a čakať na titulok (8 × hover), alebo hádať.</li><li>Klik → hneď nové kolo.</li></ol></div>
+<div class="po"><h4>Po N2</h4><ol><li>Stôl sám ukáže 8 starších v rade; pri každom je číslo „ty / Fero“.</li><li>Porovnať pohľadom (0 hoverov), prejdenie ukáže ducha markera a zmenu Body.</li><li>Klik → posun so stopou; účet bitky; „ďalej“ → karty.</li></ol></div>
+</div>
+<h4>Mikrocopy</h4>
+<ul>
+<li>Pilulka Pohoršenie: „<b>Pohoršenie · zostáva 1</b> — vyber staršieho. Marker pôjde k Ferovi: on dostane priazeň, teba sa začne báť.“</li>
+<li>Pilulka prebytok: „<b>Prebytok · zostáva 2</b> — vyber staršieho (posun stojí 1). Alebo rozdeľ naraz.“</li>
+<li>Čakajúci: „<b>Fero rozdeľuje prebytok</b> — sleduj starších.“</li>
+<li>Zámok: „🔒 krajná pozícia“ · „🔒 už 2 hranice zón“ · „🔒 priazeň len žltá a vyššie“.</li>
+<li>Patronát, štítok karty v ruke: „pri výhre ty 10 : Fero 28“ (mená, nie „10:28“).</li>
+</ul>
+<h4>Prístupnosť</h4>
+<ul>
+<li>V kroku sú klikateľní starší <code>button</code> s <code>aria-describedby</code> na náhľad; zamknutí majú <code>aria-disabled="true"</code> a dôvod v texte — fokusovateľní, aby čítačka prečítala prečo.</li>
+<li>Línia je jedna zastávka v poradí Tab; medzi staršími sa chodí šípkami ←/→ (roving tabindex, zľava doprava ako línia kariet). <kbd>Enter</kbd> = vybrať, <kbd>Home</kbd>/<kbd>End</kbd> = prvý / posledný.</li>
+<li>Pri automatickom zobrazení <b>nekradnúť fokus</b> čakajúcemu hráčovi. Aktívnemu presunúť fokus na prvého klikateľného staršieho len vtedy, keď bol fokus na <code>body</code> alebo na stole — nie z chatu ani z Melichara.</li>
+<li>Ciele aspoň 44 × 44 px (celá dlaždica či riadok staršieho), nie len marker.</li>
+</ul>
+<dl>
+<dt>Náročnosť</dt><dd>stredná: odvodenie pohľadu z <code>view.faza</code>/<code>bitkaStav.krok</code>/<code>draft.krok</code> pre oboch; náhľad z existujúceho <code>popisPosunu</code> (<code>HernaPlocha.tsx:2920</code>) rozdeliť na časti (zóna / body / priazeň) namiesto jedného reťazca; stopa posunov z rozdielu <code>view.starsi</code> (rovnako ako dnešné oznamy priazne); patronát cez existujúcu voľbu v ruke.</dd>
+<dt>Súbory</dt><dd><code>HernaPlocha.tsx</code> (klikStarsi, pokyn pre pohorsenie/prebytok/patronat, oznamy priazne, ucetBitky), <code>Scorecard.tsx</code>, <code>hra.css</code></dd>
+<dt>Ako overiť</dt><dd>(a) Snímky <code>snimka.ts …</code> pri 1600×1000 a 1920×1080 (predvolené a <code>--sirka 1920 --vyska 1080</code>) v kroku Pohoršenie a patronát: všetkých 8 starších, celý náhľad aj tlačidlá hrany bez posúvania. (b) V playteste s ľuďmi pred klikom na staršieho: „Koľko ti tento posun dá a koľko vezme súperovi?“ (cieľ: správne bez prejdenia myšou). (c) Po súperovom prebytku: „Ktorých starších Fero posunul a ku komu?“ (cieľ ≥ 80 % správne). (d) U AI hráčov sledovať v názoroch, či zmiznú vety ako „nevidím, čo sa medzitým zmenilo“.</dd>
+</dl>
+</section>
+
+<!-- ======================= Varianty ======================= -->
+<h2 id="rozpocet">Rozpočet výšky bez posúvania</h2>
+<p>Línia kariet má podľa rozhodnutia rozostup: karta sa posunie nahor či nadol, aby sa spárované akcie stretli slot pri slote. Sloty sú na karte vo výškach 23 / 51 / 80 / 108 z 227 (<code>geometriaKarty</code>), krok medzi nimi je teda <b>12,6 % výšky karty</b>. Spoj slotu 1 so slotom 4 posunie susednú kartu o 3 kroky = <b>38 % výšky karty</b>. Línia je o najväčší posun vyššia; keď sa posuny reťazia cez viac kariet jednej strany, môže byť aj viac.</p>
+<div class="tab-obal">
+<table>
+<caption class="pozn" style="text-align:left">Odhad (presné čísla určí UI návrh a Bugfixing). Ruka = viditeľná časť kariet v ruke.</caption>
+<thead><tr><th scope="col">Pás</th><th scope="col">1600×1000</th><th scope="col">1920×1080</th></tr></thead>
+<tbody>
+<tr><th scope="row">Hlavička webu + os kola</th><td>52 + 40</td><td>56 + 40</td></tr>
+<tr><th scope="row">Bar súpera</th><td>100</td><td>104</td></tr>
+<tr><th scope="row">Pás kola (Pitky, vydesení, body teraz)</th><td>28</td><td>28</td></tr>
+<tr><th scope="row"><b>Stôl — pevný box</b></th><td><b>450</b></td><td><b>500</b></td></tr>
+<tr><th scope="row">&nbsp;&nbsp;z toho hlavičky strán / hlavička línie starších</th><td>26</td><td>26</td></tr>
+<tr><th scope="row">&nbsp;&nbsp;línia s rezervou 38 %</th><td>384 → karta ≈ 278 px</td><td>434 → karta ≈ 314 px</td></tr>
+<tr><th scope="row">&nbsp;&nbsp;hrana stola (tlačidlá kroku) / súhrnný pás</th><td>40</td><td>40</td></tr>
+<tr><th scope="row">Môj bar</th><td>100</td><td>104</td></tr>
+<tr><th scope="row">Ruka (viditeľná časť)</th><td>230</td><td>248</td></tr>
+<tr><th scope="row">Spolu</th><td>1000</td><td>1080</td></tr>
+</tbody>
+</table>
+</div>
+<p><b>UX dôsledky:</b></p>
+<ol>
+<li><b>Box stola má pevnú výšku</b> = línia s rezervou na najväčší dovolený posun. Línia kariet aj línia starších v ňom ležia zvislo vystredené. Keď by rozostup prerástol rezervu (reťazenie posunov), <b>zmenšia sa karty v línii</b>, nie box. Inak by pri každom vyložení poskočila ruka a môj bar a hráčovi by karta, na ktorú mieri, utiekla spod kurzora (U14).</li>
+<li>Línia starších dostane rovnaký box a vyplní ho — pri 1600 je na starších ≈ 360 px výšky (bez hlavičky a súhrnného pásu), pri 1920 ≈ 410 px. To je viac, než majú dnes stĺpce po bokoch, takže v kroku sa zmestí celý náhľad.</li>
+<li>Rezerva sa v prázdnej línii (začiatok kola, draft) javí ako prázdna plsť. Práve tam sa po bitke podrží výsledok posunov (N2, R7) a v drafte tam leží panel stavby či šenku.</li>
+<li>Pilulka pokynu nesmie rásť do výšky: patronát (krok 2) dnes pridá rad kariet z ruky (+130 px). N2 R6 to presúva do ruky.</li>
+</ol>
+
+<h2 id="varianty">Tri varianty línie starších (#69)</h2>
+<p><b>Čo musí ukázať každý variant</b> (rozhodnutie #69): priazeň <b>oboch hráčov</b> (pri každom staršom „♥ ty +2“ alebo „♥ Fero +1“, v hlavičke súčet „priazeň ty 3 · Fero 0“), <b>patronát</b> („v ruke Fero · +3 Pohoršenia“, karta lícom dole na scorecarde — obsah karty súpera nevidno), <b>body za starších</b> (★ ty / Fero s menami) a <b>Pohoršenie s hranicami zón</b> (zárezy na stupnici, počítadlo „hranice 1 z 2“ v kroku, zámky).</p>
+<p>Všetky tri platia s N1 a N2. Drôtené modely sú v mierke obrazovky. Hore je <b>1920×1080</b> v pohľade <i>prezeranie</i> (otvorené cez Body, v bare rozpis, „Späť na stôl“ a súhrnný pás línie kariet), dole <b>1600×1000</b> v kroku <i>Pohoršenie</i>. Box stola má v oboch pohľadoch tú istú pevnú výšku podľa <a href="#rozpocet">rozpočtu</a>: 450 px pri 1600×1000, 500 px pri 1920×1080. Dáta sú zo skutočnej partie (UX 1 proti Rapavému Ferovi, 2. kolo pred Pohoršením).</p>
+<p class="leg">Legenda: kruhy stupnice — tmavšie = vyššia zóna (3 krajná, 0 stred), plný kruh s rámom = marker, prerušovaný rám = duch markera po posune. „ty“ je hráč, ktorý sa pozerá, a jeho polovica je vľavo (zrkadlenie z #55).</p>
+
+<!-- ======================= N3 Variant A ======================= -->
+<section class="navrh" id="n3" aria-labelledby="n3-h">
+<h3 id="n3-h">N3 · Variant A — rad scorecardov <span class="stitok mala">malá – stredná</span></h3>
+<dl>
+<dt>Rieši</dt><dd>U1, U2, U6, U12 (spolu s N2)</dd>
+<dt>Čo to je</dt><dd>Osem tlačených scorecardov vedľa seba (existujúci komponent <code>Scorecard</code> aj s odznakmi bodov pri podmienkach), pod každým pásik so slovami: „♥ ty +2 · ★ ty −4 · Fero +3“. V kroku leží náhľad cez obrázok karty staršieho (dolná polovica), lebo na ďalší riadok miesto nie je.</dd>
+<dt>Za</dt><dd>Hráč spozná fyzický scorecard z krabice; podmienky a body pri nich sú na mieste; najmenej novej práce.</dd>
+<dt>Proti</dt><dd>Scorecard je takmer štvorec (v/š ≈ 1,05) a ikona podmienky má 7 % šírky. Pri 1600 je scorecard ≈ 184 px a <b>ikona ≈ 13 px</b>, pri 1920 ≈ 223 px a ikona ≈ 16 px; odznaky bodov sú ešte menšie — bez lupy ťažko čitateľné. Náhľad zakryje obrázok, podľa ktorého hráč staršieho spoznáva.</dd>
+</dl>
+<h4>1920×1080 · prezeranie (Body)</h4>
+<div class="wf" data-w="1920" data-h="1080" role="group" aria-label="Drôtený model variantu A, 1920 krát 1080, prezeranie">
+<div class="pl" style="width:1920px;height:1080px">
+ <div class="x" style="left:0;top:0;width:1920px;height:56px;border-radius:0"><div class="rad" style="align-items:center"><b>NA EX!</b><span style="margin-left:auto">Melichar · ● Rapavý Fero · vzdať sa · odísť · UX 1 ☰</span></div></div>
+ <div class="x" style="left:20px;top:60px;width:1880px;height:36px"><div class="rad" style="align-items:center">HEGP · Kolo 2 · lokalita 2/5 <span style="margin-left:40px">Voľba cieľa › Draft › Z1 P1 ✓ › Z2 P2 ✓ › <b>Bitka</b></span><span style="margin-left:auto">Šenok 8 · Lokality 3 · Log · ?</span></div></div>
+ <div class="x" style="left:20px;top:100px;width:1880px;height:104px;padding:5px"><div class="rad"><div class="t"><b>Karty</b>3 ruka · 0 bal. · 3 odh.</div><div class="t"><b>Body ▾</b><span class="v">+45</span> o 51 pred</div><div class="t"><b>Poldeci</b><span class="v">2</span></div><div class="t"><b>Cigarety</b><span class="v">5</span></div><div class="t"><b>Absťák</b><span class="v">0</span></div><div class="t"><b>Pečeň</b><span class="v">0</span>/3</div><div class="t"><b>Zadĺženie</b><span class="v">0</span>/2</div><div class="t"><b>Dlhy</b><span class="v">0</span>/10</div><div class="t" style="flex:1.3"><b>Rapavý Fero</b>obranca</div></div></div>
+ <div class="x" style="left:20px;top:208px;width:1880px;height:28px"><div class="rad" style="align-items:center">Bitka po 2 Pitkách ●● · 2 Pitky — po každej ďalšie Zhromaždenie<span style="margin-left:auto">vydesení ty 0/4 · Fero 0/4 · body teraz ty −6 · Fero 45</span></div></div>
+ <div class="x stol" style="left:20px;top:240px;width:1880px;height:500px">
+  <div style="position:absolute;left:12px;top:8px;right:12px;display:flex;gap:14px;align-items:center;font-size:13px"><span class="taby" style="position:static"><span class="akt">← Späť na stôl <kbd>Esc</kbd></span></span><b>Starší</b><span>body z pohľadu <u>ty</u> | Fero</span><span>priazeň: ty 3 · Fero 0</span><span>vydesení ty 0/4 · Fero 0/4</span><span style="margin-left:auto">ⓘ ako sa boduje</span></div>
+  <div class="sc" style="left:12px;top:44px;width:223px;height:234px"><span class="ik" style="left:9px"><i class="a"></i><i class="a"></i><i class=""></i><i class=""></i></span><span class="ik" style="right:9px"><i class="a"></i><i class="a"></i><i class=""></i><i class=""></i></span><div class="ob">Farár</div><span class="stup velka"><i class="z3"></i><b class="hr" aria-hidden="true"></b><i class="z2 m"></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class=""></i><i class=""></i><i class=""></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z3"></i></span><span>Exekútor</span></div>
+  <div class="sc" style="left:245px;top:44px;width:223px;height:234px"><span class="ik" style="left:9px"><i class="a"></i><i class="a"></i><i class="a"></i><i class=""></i></span><span class="ik" style="right:9px"><i class="a"></i><i class=""></i><i class=""></i><i class=""></i></span><div class="ob">Krčmárka</div><span class="stup velka"><i class="z3"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z1 m"></i><b class="hr" aria-hidden="true"></b><i class=""></i><i class=""></i><i class=""></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z3"></i></span><span>Bitkár</span></div>
+  <div class="sc" style="left:478px;top:44px;width:223px;height:234px"><span class="ik" style="left:9px"><i class="a"></i><i class="a"></i><i class=""></i><i class="a"></i></span><span class="ik" style="right:9px"><i class=""></i><i class="a"></i><i class=""></i><i class=""></i></span><div class="ob">Starosta</div><span class="stup velka"><i class="z3"></i><b class="hr" aria-hidden="true"></b><i class="z2 m"></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class=""></i><i class=""></i><i class=""></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z3"></i></span><span>Lakomec</span></div>
+  <div class="sc" style="left:711px;top:44px;width:223px;height:234px"><span class="ik" style="left:9px"><i class="a"></i><i class=""></i><i class="a"></i><i class=""></i></span><span class="ik" style="right:9px"><i class=""></i><i class=""></i><i class=""></i><i class=""></i></span><div class="ob">Poštárka</div><span class="stup velka"><i class="z3"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class=""></i><i class=" m"></i><i class=""></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z3"></i></span><span>Veriaci</span></div>
+  <div class="sc" style="left:944px;top:44px;width:223px;height:234px"><span class="ik" style="left:9px"><i class="a"></i><i class="a"></i><i class=""></i><i class="a"></i></span><span class="ik" style="right:9px"><i class=""></i><i class=""></i><i class=""></i><i class=""></i></span><div class="ob">Hrobár</div><span class="stup velka"><i class="z3"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class=""></i><i class=" m"></i><i class=""></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z3"></i></span><span>Neprajník</span></div>
+  <div class="sc" style="left:1177px;top:44px;width:223px;height:234px"><span class="ik" style="left:9px"><i class="a"></i><i class="a"></i><i class="a"></i><i class="a"></i></span><span class="ik" style="right:9px"><i class=""></i><i class=""></i><i class=""></i><i class=""></i></span><div class="ob">Autobusár</div><span class="stup velka"><i class="z3"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class=""></i><i class=" m"></i><i class=""></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z3"></i></span><span>Alkoholik</span></div>
+  <div class="sc" style="left:1410px;top:44px;width:223px;height:234px"><span class="ik" style="left:9px"><i class="a"></i><i class="a"></i><i class="a"></i><i class="a"></i></span><span class="ik" style="right:9px"><i class=""></i><i class=""></i><i class=""></i><i class=""></i></span><div class="ob">Veterinár</div><span class="stup velka"><i class="z3"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class=""></i><i class=" m"></i><i class=""></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z3"></i></span><span>Fajčiar</span></div>
+  <div class="sc" style="left:1643px;top:44px;width:223px;height:234px"><span class="ik" style="left:9px"><i class="a"></i><i class="a"></i><i class="a"></i><i class="a"></i></span><span class="ik" style="right:9px"><i class=""></i><i class=""></i><i class=""></i><i class=""></i></span><div class="ob">Vychovávateľka</div><span class="stup velka"><i class="z3"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class=""></i><i class=" m"></i><i class=""></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z3"></i></span><span>Úžerník</span></div>
+  <div style="position:absolute;left:12px;top:286px;width:1856px;display:grid;grid-template-columns:repeat(8,223px);gap:10px;font-size:12px;line-height:1.35"><span>♥ ty +2: prah Exekútora 18 · bojí sa Fera (2)<br><b>★ ty −4 · Fero +3</b></span><span>♥ ty +1: +2 tuhé v bitke · bojí sa Fera (1)<br><b>★ ty 0 · Fero +12</b></span><span>♥ ty +2: barter za 3 · bojí sa Fera (2)<br><b>★ ty −2 · Fero +6</b></span><span>♥ nikto (+1 Viera)<br><b>★ ty 0 · Fero +4</b></span><span>♥ nikto (Povery +2)<br><b>★ ty −2 · Fero +5</b></span><span>♥ nikto (prah Cirhózy 5)<br><b>★ ty +3 · Fero +5</b></span><span>♥ nikto (+1 cig. v 1. Pitke)<br><b>★ ty +3 · Fero +6</b></span><span>♥ nikto (prah Dlhu 3)<br><b>★ ty −4 · Fero +4</b></span></div>
+  <div style="position:absolute;left:1643px;top:350px;width:223px;font-size:11px" class="nahlad">ukážka patronátu: „v ruke Fero · +3 Pohoršenia“ (lícom dole na scorecarde)</div>
+  <div class="x" style="left:12px;right:12px;bottom:8px;height:26px;font-size:12px;padding:4px 10px">Línia kariet: ← Za plotom 3 karty · prevaha ty │ Zberný dvor │ Pri váhe 2 karty · prevaha Fero → │ odhad bitky 2 : 3 <span style="float:right">klik = Späť na stôl</span></div>
+ </div>
+ <div class="x" style="left:20px;top:746px;width:1880px;height:104px;padding:5px"><div class="rad"><div class="t" style="flex:1.3"><b>UX 1 (ty)</b>útočník · nepriznané Cirhóza ×1</div><div class="t"><b>Lokality</b><span class="v">0</span> Fero +12</div><div class="t"><b>Starší</b><span class="v">0</span> Fero 0</div><div class="t"><b>Cigarety</b><span class="v">+6</span> Fero 0</div><div class="t hl"><b>Zóny strachu</b><span class="v">0</span> Fero +31</div><div class="t"><b>Dlhy</b><span class="v">−8</span></div><div class="t"><b>Cirhóza</b><span class="v">−4</span></div><div class="t on"><b>Body ▴</b><span class="v">−6</span> starší na stole</div><div class="t"><b>Karty</b>5 ruka · 0 bal. · 1 odh.</div></div></div>
+ <div class="x ciara" style="left:540px;top:856px;width:840px;height:224px"><div class="rad" style="gap:10px;align-items:flex-start"><div class="karta" style="width:158px;height:218px">Miňištrant</div><div class="karta" style="width:158px;height:218px">Milujúca manž.</div><div class="karta" style="width:158px;height:218px">Miňištrant</div><div class="karta" style="width:158px;height:218px">Cirhóza</div><div class="karta" style="width:158px;height:218px">Dvojčatá</div></div></div>
+ <div style="position:absolute;left:14px;top:1012px;font-size:11px">BALÍČEK ▸<br><b style="font-size:20px">0</b><br><span style="font-size:11px">spolu 6 · prehra pod 5</span></div>
+ <div style="position:absolute;right:14px;top:1012px;font-size:11px;text-align:right">ODHODENÉ ▸<br><b style="font-size:20px">1</b></div>
+</div></div>
+<h4>1600×1000 · krok Pohoršenie</h4>
+<div class="wf" data-w="1600" data-h="1000" role="group" aria-label="Drôtený model variantu A, 1600 krát 1000, krok Pohoršenie">
+<div class="pl" style="width:1600px;height:1000px">
+ <div class="x" style="left:0;top:0;width:1600px;height:52px;border-radius:0"><div class="rad" style="align-items:center"><b>NA EX!</b><span style="margin-left:auto">Melichar · ● Rapavý Fero · vzdať sa · odísť · UX 1 ☰</span></div></div>
+ <div class="x" style="left:20px;top:58px;width:1560px;height:36px"><div class="rad" style="align-items:center">HEGP · Kolo 2 · lokalita 2/5 <span style="margin-left:40px">… › Z2 P2 ✓ › <b>Bitka</b></span><span style="margin-left:auto">Šenok 8 · Lokality 3 · Log · ?</span></div></div>
+ <div class="x" style="left:20px;top:100px;width:1560px;height:100px;padding:5px"><div class="rad"><div class="t"><b>Karty</b>3 ruka</div><div class="t"><b>Body ▾</b><span class="v">+45</span> → 34 pri Farárovi</div><div class="t"><b>Poldeci</b><span class="v">2</span></div><div class="t"><b>Cigarety</b><span class="v">5</span></div><div class="t"><b>Absťák</b><span class="v">0</span></div><div class="t"><b>Pečeň</b><span class="v">0</span>/3</div><div class="t"><b>Zadĺženie</b><span class="v">0</span>/2</div><div class="t"><b>Dlhy</b><span class="v">0</span>/10</div><div class="t" style="flex:1.3"><b>Rapavý Fero</b>obranca</div></div></div>
+ <div class="x" style="left:20px;top:206px;width:1560px;height:28px"><div class="rad" style="align-items:center">Bitka po 2 Pitkách ●● <span style="margin-left:auto">vydesení ty 0/4 · Fero 0/4 · body teraz ty −6 · Fero 45</span></div></div>
+ <div class="x stol" style="left:20px;top:240px;width:1560px;height:450px">
+  <div class="taby" style="left:14px;top:8px"><span>Pozrieť stôl</span><span class="akt">Starší · Pohoršenie</span></div>
+  <div class="x" style="left:12px;right:12px;bottom:6px;height:24px;font-size:12px;padding:3px 10px">Línia kariet: Za plotom 3 · prevaha ty │ Zberný dvor │ Pri váhe 2 · prevaha Fero │ bitka 2 : 3 (výsledok)</div>
+  <div class="pil" style="top:6px"><strong>Pohoršenie · zostáva 1</strong>vyber staršieho — marker pôjde k Ferovi: on priazeň, teba sa začne báť</div>
+  <div class="sc ciel" style="left:12px;top:46px;width:184px;height:300px"><span class="ik" style="left:10px"><i class="a"></i><i></i><i class="a"></i><i></i></span><span class="ik" style="right:10px"><i class="a"></i><i></i><i class="a"></i><i></i></span><div class="ob">Farár</div><span class="stup velka"><i class="z3"></i><i class="z2 m"></i><i class="z1 duch"></i><i></i><i></i><i></i><i class="z1"></i><i class="z2"></i><i class="z3"></i></span><span>Exekútor</span><div class="vrstva-nahladu">k Ferovi: oranžová → žltá<br><b>ty ±0 · Fero −11</b><br>♥ ty 2 → 1</div></div>
+  <div class="sc ciel" style="left:204px;top:46px;width:184px;height:300px"><span class="ik" style="left:10px"><i></i><i class="a"></i><i></i><i class="a"></i></span><span class="ik" style="right:10px"><i class="a"></i><i></i><i></i><i class="a"></i></span><div class="ob">Krčmárka</div><span class="stup velka"><i class="z3"></i><i class="z2"></i><i class="z1 m"></i><i></i><i></i><i></i><i class="z1"></i><i class="z2"></i><i class="z3"></i></span><span>Bitkár</span><div class="vrstva-nahladu">žltá → neutrál<br><b>ty ±0 · Fero −3</b><br>♥ ty 1 → nikto</div></div>
+  <div class="sc ciel" style="left:396px;top:46px;width:184px;height:300px"><span class="ik" style="left:10px"><i class="a"></i><i class="a"></i><i></i><i></i></span><span class="ik" style="right:10px"><i></i><i class="a"></i><i></i><i class="a"></i></span><div class="ob">Starosta</div><span class="stup velka"><i class="z3"></i><i class="z2 m"></i><i class="z1"></i><i></i><i></i><i></i><i class="z1"></i><i class="z2"></i><i class="z3"></i></span><span>Lakomec</span><div class="vrstva-nahladu">oranžová → žltá<br><b>ty ±0 · Fero −11</b><br>♥ ty 2 → 1</div></div>
+  <div class="sc ciel" style="left:588px;top:46px;width:184px;height:300px"><span class="ik" style="left:10px"><i></i><i class="a"></i><i class="a"></i><i></i></span><span class="ik" style="right:10px"><i class="a"></i><i></i><i></i><i></i></span><div class="ob">Poštárka</div><span class="stup velka"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i></i><i class="m"></i><i></i><i class="z1"></i><i class="z2"></i><i class="z3"></i></span><span>Veriaci</span><div class="vrstva-nahladu">neutrál → neutrál<br><b>ty ±0 · Fero ±0</b><br>do žltej ešte 1 krok</div></div>
+  <div class="sc ciel" style="left:780px;top:46px;width:184px;height:300px"><span class="ik" style="left:10px"><i class="a"></i><i></i><i></i><i class="a"></i></span><span class="ik" style="right:10px"><i></i><i class="a"></i><i></i><i></i></span><div class="ob">Hrobár</div><span class="stup velka"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i></i><i class="m"></i><i></i><i class="z1"></i><i class="z2"></i><i class="z3"></i></span><span>Neprajník</span><div class="vrstva-nahladu">neutrál → neutrál<br><b>ty ±0 · Fero ±0</b><br>do žltej ešte 1 krok</div></div>
+  <div class="sc ciel" style="left:972px;top:46px;width:184px;height:300px"><span class="ik" style="left:10px"><i></i><i class="a"></i><i></i><i class="a"></i></span><span class="ik" style="right:10px"><i class="a"></i><i class="a"></i><i></i><i></i></span><div class="ob">Autobusár</div><span class="stup velka"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i></i><i class="m"></i><i></i><i class="z1"></i><i class="z2"></i><i class="z3"></i></span><span>Alkoholik</span><div class="vrstva-nahladu">neutrál → neutrál<br><b>ty ±0 · Fero ±0</b></div></div>
+  <div class="sc ciel" style="left:1164px;top:46px;width:184px;height:300px"><span class="ik" style="left:10px"><i class="a"></i><i></i><i class="a"></i><i></i></span><span class="ik" style="right:10px"><i></i><i></i><i class="a"></i><i></i></span><div class="ob">Veterinár</div><span class="stup velka"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i></i><i class="m"></i><i></i><i class="z1"></i><i class="z2"></i><i class="z3"></i></span><span>Fajčiar</span><div class="vrstva-nahladu">neutrál → neutrál<br><b>ty ±0 · Fero ±0</b></div></div>
+  <div class="sc ciel" style="left:1356px;top:46px;width:184px;height:300px"><span class="ik" style="left:10px"><i></i><i></i><i class="a"></i><i class="a"></i></span><span class="ik" style="right:10px"><i class="a"></i><i></i><i></i><i class="a"></i></span><div class="ob">Vychovávateľka</div><span class="stup velka"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i></i><i class="m"></i><i></i><i class="z1"></i><i class="z2"></i><i class="z3"></i></span><span>Úžerník</span><div class="vrstva-nahladu">neutrál → neutrál<br><b>ty ±0 · Fero ±0</b></div></div>
+  <div style="position:absolute;left:12px;top:354px;width:1536px;display:grid;grid-template-columns:repeat(8,184px);gap:8px;font-size:12px;line-height:1.3">
+   <span>♥ ty +2 · ★ ty −4 · Fero +3</span><span>♥ ty +1 · ★ ty 0 · Fero +12</span><span>♥ ty +2 · ★ ty −2 · Fero +6</span><span>★ ty 0 · Fero +4</span><span>★ ty −2 · Fero +5</span><span>★ ty +3 · Fero +5</span><span>★ ty +3 · Fero +6</span><span>★ ty −4 · Fero +4</span>
+  </div>
+   </div>
+ <div class="x" style="left:20px;top:696px;width:1560px;height:100px;padding:5px"><div class="rad"><div class="t" style="flex:1.3"><b>UX 1 (ty)</b>útočník</div><div class="t"><b>Dlhy</b><span class="v">2</span>/18 ♥</div><div class="t"><b>Zadĺženie</b><span class="v">0</span>/2</div><div class="t"><b>Pečeň</b><span class="v">0</span>/3</div><div class="t"><b>Absťák</b><span class="v">0</span></div><div class="t"><b>Cigarety</b><span class="v">5</span> nový poldeci −3 ♥</div><div class="t"><b>Poldeci</b><span class="v">2</span></div><div class="t"><b>Body ▾</b><span class="v">−6</span></div><div class="t"><b>Karty</b>5 · 1 · 1</div></div></div>
+ <div class="x ciara" style="left:380px;top:804px;width:840px;height:196px"><div class="rad" style="gap:10px;align-items:flex-start"><div class="karta" style="width:150px;height:190px">Miňištrant</div><div class="karta" style="width:150px;height:190px">Milujúca manž.</div><div class="karta" style="width:150px;height:190px">Miňištrant</div><div class="karta" style="width:150px;height:190px">Cirhóza</div><div class="karta" style="width:150px;height:190px">Dvojčatá</div></div></div>
+</div></div>
+<dl>
+<dt>Mikrocopy</dt><dd>Pásik pod scorecardom: „♥ ty +2 · bojí sa Fera“ / „★ ty −4 · Fero +3“ (mená namiesto poradia).</dd>
+<dt>Prístupnosť</dt><dd>Odznaky pri podmienkach sú pod 24 px → lupa zostáva nutná (prejdenie myšou aj fokus, <kbd>Enter</kbd> v prezeraní ju pripne). <code>aria-label</code> scorecardu: „Farár, Exekútor. Marker: oranžová na tvojej polovici (sila 2). Priazeň ty, bojí sa Fera. Body ty −4, Fero +3.“</dd>
+<dt>Náročnosť</dt><dd>malá – stredná (komponent <code>Scorecard</code> už je; pribudne pásik, vrstva náhľadu a rozmiestnenie).</dd>
+<dt>Súbory</dt><dd><code>HernaPlocha.tsx</code> (stlpecStarsich → liniaStarsich), <code>Scorecard.tsx</code>, <code>hra.css</code></dd>
+<dt>Ako overiť</dt><dd>Päťsekundový test pri 1600: „Za ktorú podmienku ti Farár berie body?“ — ak bez lupy odpovie menej ako polovica, variant A pri 1600 neobstál.</dd>
+</dl>
+</section>
+
+<!-- ======================= N4 Variant B ======================= -->
+<section class="navrh odporucany" id="n4" aria-labelledby="n4-h">
+<h3 id="n4-h">N4 · Variant B — dlaždice so stupnicou <span class="stitok stredna">stredná</span> <span class="stitok odpor">odporúčaný</span></h3>
+<dl>
+<dt>Rieši</dt><dd>U1, U2, U6, U12 (spolu s N2), čitateľnosť pri 1600</dd>
+<dt>Čo to je</dt><dd>Osem stĺpikov zľava doprava (ako karty v línii). Každý má: hlavičku (portrét 40 px, meno, scorecard), <b>veľkú stupnicu</b> (9 × 14 px) s menom zóny pod ňou, <b>mini-scorecard</b> — 4 + 4 podmienky ako ikony 20 px v dvoch stĺpcoch s bodmi pri aktívnych (rovnaké rozloženie ako na tlačenom scorecarde, takže ho hráč spozná) —, riadok ♥ s účinkom a riadok ★ s menami. V kroku sa dolná časť stĺpika vymení za náhľad. Plný scorecard je v lupe.</dd>
+<dt>Za</dt><dd>Čitateľné pri 1600 bez lupy (ikony 20 px, text 12 px); náhľad má vlastný priestor a nezakrýva portrét; stĺpik vyplní box stola (≈ 360 px pri 1600, ≈ 410 px pri 1920) bez prázdnych miest. Účinok priazne napísaný slovami („prah Exekútora 18“) učí hru.</dd>
+<dt>Proti</dt><dd>Nie je to „tá istá kartička“ ako v krabici. Najviac práce na vzhľade — to rieši UI návrh.</dd>
+</dl>
+<h4>1920×1080 · prezeranie (Body)</h4>
+<div class="wf" data-w="1920" data-h="1080" role="group" aria-label="Drôtený model variantu B, 1920 krát 1080, prezeranie">
+<div class="pl" style="width:1920px;height:1080px">
+ <div class="x" style="left:0;top:0;width:1920px;height:56px;border-radius:0"><div class="rad" style="align-items:center"><b>NA EX!</b><span style="margin-left:auto">Melichar · ● Rapavý Fero · vzdať sa · odísť · UX 1 ☰</span></div></div>
+ <div class="x" style="left:20px;top:60px;width:1880px;height:36px"><div class="rad" style="align-items:center">HEGP · Kolo 2 · lokalita 2/5 <span style="margin-left:40px">Voľba cieľa › Draft › Z1 P1 ✓ › Z2 P2 ✓ › <b>Bitka</b></span><span style="margin-left:auto">Šenok 8 · Lokality 3 · Log · ?</span></div></div>
+ <div class="x" style="left:20px;top:100px;width:1880px;height:104px;padding:5px"><div class="rad"><div class="t"><b>Karty</b>3 ruka · 0 bal. · 3 odh.</div><div class="t"><b>Body ▾</b><span class="v">+45</span> o 51 pred</div><div class="t"><b>Poldeci</b><span class="v">2</span></div><div class="t"><b>Cigarety</b><span class="v">5</span></div><div class="t"><b>Absťák</b><span class="v">0</span></div><div class="t"><b>Pečeň</b><span class="v">0</span>/3</div><div class="t"><b>Zadĺženie</b><span class="v">0</span>/2</div><div class="t"><b>Dlhy</b><span class="v">0</span>/10</div><div class="t" style="flex:1.3"><b>Rapavý Fero</b>obranca</div></div></div>
+ <div class="x" style="left:20px;top:208px;width:1880px;height:28px"><div class="rad" style="align-items:center">Bitka po 2 Pitkách ●● · 2 Pitky — po každej ďalšie Zhromaždenie<span style="margin-left:auto">vydesení ty 0/4 · Fero 0/4 · body teraz ty −6 · Fero 45</span></div></div>
+ <div class="x stol" style="left:20px;top:240px;width:1880px;height:500px">
+  <div style="position:absolute;left:12px;top:8px;right:12px;display:flex;gap:14px;align-items:center;font-size:13px"><span class="taby" style="position:static"><span class="akt">← Späť na stôl <kbd>Esc</kbd></span></span><b>Starší</b><span>body z pohľadu <u>ty</u> | Fero</span><span>priazeň: ty 3 · Fero 0</span><span>vydesení ty 0/4 · Fero 0/4</span><span style="margin-left:auto">ⓘ ako sa boduje</span></div>
+  <div style="position:absolute;left:12px;top:44px;width:1856px;display:grid;grid-template-columns:repeat(8,1fr);gap:10px">
+   <div class="x" style="position:relative;height:372px;display:flex;flex-direction:column;gap:6px;font-size:12.5px;padding:8px"><div><b style="font-size:14px">▢ Farár</b><br>Exekútor</div><span class="stup velka"><i class="z3"></i><b class="hr" aria-hidden="true"></b><i class="z2 m"></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class=""></i><i class=""></i><i class=""></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z3"></i></span><span>oranžová · tvoja</span><div class="sl"><span class="a">Lok +0</span><span class="a">Zn −2</span><span class="">Cig</span><span class="">Str</span><span class="a">Vy 0</span><span class="a">Dlh −2</span><span class="">Cir</span><span class="">St</span></div><span>♥ ty +2: prah Exekútora 18</span><span>bojí sa Fera (2)</span><span><b>★ ty −4 · Fero +3</b></span></div>
+   <div class="x" style="position:relative;height:372px;display:flex;flex-direction:column;gap:6px;font-size:12.5px;padding:8px"><div><b style="font-size:14px">▢ Krčmárka</b><br>Bitkár</div><span class="stup velka"><i class="z3"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z1 m"></i><b class="hr" aria-hidden="true"></b><i class=""></i><i class=""></i><i class=""></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z3"></i></span><span>žltá · tvoja</span><div class="sl"><span class="a">Zn 0</span><span class="a">Str 0</span><span class="a">St 0</span><span class="">Lok</span><span class="a">Cig 0</span><span class="">Cir</span><span class="">Dlh</span><span class="">Vy</span></div><span>♥ ty +1: +2 tuhé v bitke</span><span>bojí sa Fera (1)</span><span><b>★ ty 0 · Fero +12</b></span></div>
+   <div class="x" style="position:relative;height:372px;display:flex;flex-direction:column;gap:6px;font-size:12.5px;padding:8px"><div><b style="font-size:14px">▢ Starosta</b><br>Lakomec</div><span class="stup velka"><i class="z3"></i><b class="hr" aria-hidden="true"></b><i class="z2 m"></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class=""></i><i class=""></i><i class=""></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z3"></i></span><span>oranžová · tvoja</span><div class="sl"><span class="a">Zn −2</span><span class="a">Str 0</span><span class="">Lok</span><span class="a">Cir 0</span><span class="">Cig</span><span class="a">Dlh 0</span><span class="">St</span><span class="">Vy</span></div><span>♥ ty +2: barter za 3</span><span>bojí sa Fera (2)</span><span><b>★ ty −2 · Fero +6</b></span></div>
+   <div class="x" style="position:relative;height:372px;display:flex;flex-direction:column;gap:6px;font-size:12.5px;padding:8px"><div><b style="font-size:14px">▢ Poštárka</b><br>Veriaci</div><span class="stup velka"><i class="z3"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class=""></i><i class=" m"></i><i class=""></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z3"></i></span><span>stred · nikoho</span><div class="sl"><span class="a">Lok 0</span><span class="">Zn</span><span class="a">Vy 0</span><span class="">Cig</span><span class="">Str</span><span class="">Dlh</span><span class="">Cir</span><span class="">St</span></div><span>♥ nikto (+1 Viera)</span><span>&nbsp;</span><span><b>★ ty 0 · Fero +4</b></span></div>
+   <div class="x" style="position:relative;height:372px;display:flex;flex-direction:column;gap:6px;font-size:12.5px;padding:8px"><div><b style="font-size:14px">▢ Hrobár</b><br>Neprajník</div><span class="stup velka"><i class="z3"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class=""></i><i class=" m"></i><i class=""></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z3"></i></span><span>stred · nikoho</span><div class="sl"><span class="a">Vy 0</span><span class="a">Lok 0</span><span class="">Zn</span><span class="a">Cig −2</span><span class="">Str</span><span class="">Dlh</span><span class="">Cir</span><span class="">St</span></div><span>♥ nikto (Povery +2)</span><span>&nbsp;</span><span><b>★ ty −2 · Fero +5</b></span></div>
+   <div class="x" style="position:relative;height:372px;display:flex;flex-direction:column;gap:6px;font-size:12.5px;padding:8px"><div><b style="font-size:14px">▢ Autobusár</b><br>Alkoholik</div><span class="stup velka"><i class="z3"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class=""></i><i class=" m"></i><i class=""></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z3"></i></span><span>stred · nikoho</span><div class="sl"><span class="a">Zn 0</span><span class="a">Str 0</span><span class="a">Cir 0</span><span class="a">Dlh +3</span><span class="">Lok</span><span class="">Cig</span><span class="">St</span><span class="">Vy</span></div><span>♥ nikto (prah Cirhózy 5)</span><span>&nbsp;</span><span><b>★ ty +3 · Fero +5</b></span></div>
+   <div class="x" style="position:relative;height:372px;display:flex;flex-direction:column;gap:6px;font-size:12.5px;padding:8px"><div><b style="font-size:14px">▢ Veterinár</b><br>Fajčiar</div><span class="stup velka"><i class="z3"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class=""></i><i class=" m"></i><i class=""></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z3"></i></span><span>stred · nikoho</span><div class="sl"><span class="a">Cig +3</span><span class="a">Lok 0</span><span class="a">Zn 0</span><span class="a">St 0</span><span class="">Str</span><span class="">Dlh</span><span class="">Cir</span><span class="">Vy</span></div><span>♥ nikto (+1 cig. v 1. Pitke)</span><span>&nbsp;</span><span><b>★ ty +3 · Fero +6</b></span></div>
+   <div class="x" style="position:relative;height:372px;display:flex;flex-direction:column;gap:6px;font-size:12.5px;padding:8px"><div><b style="font-size:14px">▢ Vychovávateľka</b><br>Úžerník</div><span class="stup velka"><i class="z3"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class=""></i><i class=" m"></i><i class=""></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z3"></i></span><span>stred · nikoho</span><div class="sl"><span class="a">Lok 0</span><span class="a">Vy 0</span><span class="a">Zn 0</span><span class="a">St −4</span><span class="">Cig</span><span class="">Str</span><span class="">Dlh</span><span class="">Cir</span></div><span>♥ nikto (prah Dlhu 3)</span><span>&nbsp;</span><span><b>★ ty −4 · Fero +4</b></span><div class="nahlad" style="margin-top:auto">ukážka patronátu:<br>v ruke Fero · +3 Pohoršenia</div></div>
+  </div>
+  <div class="x" style="left:12px;right:12px;bottom:8px;height:26px;font-size:12px;padding:4px 10px">Línia kariet: ← Za plotom 3 karty · prevaha ty │ Zberný dvor │ Pri váhe 2 karty · prevaha Fero → │ odhad bitky 2 : 3 <span style="float:right">klik = Späť na stôl</span></div>
+ </div>
+ <div class="x" style="left:20px;top:746px;width:1880px;height:104px;padding:5px"><div class="rad"><div class="t" style="flex:1.3"><b>UX 1 (ty)</b>útočník · nepriznané Cirhóza ×1</div><div class="t"><b>Lokality</b><span class="v">0</span> Fero +12</div><div class="t"><b>Starší</b><span class="v">0</span> Fero 0</div><div class="t"><b>Cigarety</b><span class="v">+6</span> Fero 0</div><div class="t hl"><b>Zóny strachu</b><span class="v">0</span> Fero +31</div><div class="t"><b>Dlhy</b><span class="v">−8</span></div><div class="t"><b>Cirhóza</b><span class="v">−4</span></div><div class="t on"><b>Body ▴</b><span class="v">−6</span> starší na stole</div><div class="t"><b>Karty</b>5 ruka · 0 bal. · 1 odh.</div></div></div>
+ <div class="x ciara" style="left:540px;top:856px;width:840px;height:224px"><div class="rad" style="gap:10px;align-items:flex-start"><div class="karta" style="width:158px;height:218px">Miňištrant</div><div class="karta" style="width:158px;height:218px">Milujúca manž.</div><div class="karta" style="width:158px;height:218px">Miňištrant</div><div class="karta" style="width:158px;height:218px">Cirhóza</div><div class="karta" style="width:158px;height:218px">Dvojčatá</div></div></div>
+ <div style="position:absolute;left:14px;top:1012px;font-size:11px">BALÍČEK ▸<br><b style="font-size:20px">0</b><br><span style="font-size:11px">spolu 6 · prehra pod 5</span></div>
+ <div style="position:absolute;right:14px;top:1012px;font-size:11px;text-align:right">ODHODENÉ ▸<br><b style="font-size:20px">1</b></div>
+</div></div>
+<h4>1600×1000 · krok Pohoršenie</h4>
+<div class="wf" data-w="1600" data-h="1000" role="group" aria-label="Drôtený model variantu B, 1600 krát 1000, krok Pohoršenie">
+<div class="pl" style="width:1600px;height:1000px">
+ <div class="x" style="left:0;top:0;width:1600px;height:52px;border-radius:0"><div class="rad" style="align-items:center"><b>NA EX!</b><span style="margin-left:auto">Melichar · ● Rapavý Fero · vzdať sa · odísť · UX 1 ☰</span></div></div>
+ <div class="x" style="left:20px;top:58px;width:1560px;height:36px"><div class="rad" style="align-items:center">HEGP · Kolo 2 · lokalita 2/5 <span style="margin-left:40px">… › Z2 P2 ✓ › <b>Bitka</b></span><span style="margin-left:auto">Šenok 8 · Lokality 3 · Log · ?</span></div></div>
+ <div class="x" style="left:20px;top:100px;width:1560px;height:100px;padding:5px"><div class="rad"><div class="t"><b>Karty</b>3 ruka</div><div class="t hl"><b>Body ▾</b><span class="v">+45</span> → <b>34</b> (náhľad: Farár)</div><div class="t"><b>Poldeci</b><span class="v">2</span></div><div class="t"><b>Cigarety</b><span class="v">5</span></div><div class="t"><b>Absťák</b><span class="v">0</span></div><div class="t"><b>Pečeň</b><span class="v">0</span>/3</div><div class="t"><b>Zadĺženie</b><span class="v">0</span>/2</div><div class="t"><b>Dlhy</b><span class="v">0</span>/10</div><div class="t" style="flex:1.3"><b>Rapavý Fero</b>obranca</div></div></div>
+ <div class="x" style="left:20px;top:206px;width:1560px;height:28px"><div class="rad" style="align-items:center">Bitka po 2 Pitkách ●● <span style="margin-left:auto">vydesení ty 0/4 · Fero 0/4 · body teraz ty −6 · Fero 45</span></div></div>
+ <div class="x stol" style="left:20px;top:240px;width:1560px;height:450px">
+  <div class="taby" style="left:14px;top:8px"><span>Pozrieť stôl</span><span class="akt">Starší · Pohoršenie</span></div>
+  <div class="x" style="left:12px;right:12px;bottom:6px;height:24px;font-size:12px;padding:3px 10px">Línia kariet: Za plotom 3 · prevaha ty │ Zberný dvor │ Pri váhe 2 · prevaha Fero │ bitka 2 : 3 (výsledok)</div>
+  <div class="pil" style="top:6px"><strong>Pohoršenie · zostáva 1</strong>vyber staršieho — marker pôjde k Ferovi: on priazeň, teba sa začne báť</div>
+  <div style="position:absolute;left:12px;top:44px;width:1536px;display:grid;grid-template-columns:repeat(8,1fr);gap:9px">
+   <div class="x ciel" style="position:relative;height:392px;display:flex;flex-direction:column;gap:6px;font-size:12.5px;padding:8px"><div><b style="font-size:14px">▢ Farár</b><br>Exekútor</div><span class="stup velka"><i class="z3"></i><i class="z2 m"></i><i class="z1 duch"></i><i></i><i></i><i></i><i class="z1"></i><i class="z2"></i><i class="z3"></i></span><span>oranžová · tvoja</span><div class="sl"><span class="a">Lok +0</span><span class="a">Zn −2</span><span>Cig</span><span>Str</span><span class="a">Vy 0</span><span class="a">Dlh −2</span><span>Cir</span><span>St</span></div><span>♥ ty +2 · ★ ty −4 · Fero +3</span><div class="nahlad" style="margin-top:auto">k Ferovi: oranžová → žltá<br><b>ty ±0 · Fero −11</b><br>♥ ty 2 → 1</div></div>
+   <div class="x ciel" style="position:relative;height:392px;display:flex;flex-direction:column;gap:6px;font-size:12.5px;padding:8px"><div><b style="font-size:14px">▢ Krčmárka</b><br>Bitkár</div><span class="stup velka"><i class="z3"></i><i class="z2"></i><i class="z1 m"></i><i></i><i></i><i></i><i class="z1"></i><i class="z2"></i><i class="z3"></i></span><span>žltá · tvoja</span><div class="sl"><span class="a">Zn 0</span><span class="a">Str 0</span><span class="a">St 0</span><span>Lok</span><span class="a">Cig 0</span><span>Cir</span><span>Dlh</span><span>Vy</span></div><span>♥ ty +1 · ★ ty 0 · Fero +12</span><div class="nahlad" style="margin-top:auto">žltá → neutrál<br><b>ty ±0 · Fero −3</b><br>♥ ty 1 → nikto</div></div>
+   <div class="x ciel" style="position:relative;height:392px;display:flex;flex-direction:column;gap:6px;font-size:12.5px;padding:8px"><div><b style="font-size:14px">▢ Starosta</b><br>Lakomec</div><span class="stup velka"><i class="z3"></i><i class="z2 m"></i><i class="z1"></i><i></i><i></i><i></i><i class="z1"></i><i class="z2"></i><i class="z3"></i></span><span>oranžová · tvoja</span><div class="sl"><span class="a">Zn −2</span><span class="a">Str 0</span><span>Lok</span><span class="a">Cir 0</span><span>Cig</span><span class="a">Dlh 0</span><span>St</span><span>Vy</span></div><span>♥ ty +2 · ★ ty −2 · Fero +6</span><div class="nahlad" style="margin-top:auto">oranžová → žltá<br><b>ty ±0 · Fero −11</b><br>♥ ty 2 → 1</div></div>
+   <div class="x ciel" style="position:relative;height:392px;display:flex;flex-direction:column;gap:6px;font-size:12.5px;padding:8px"><div><b style="font-size:14px">▢ Poštárka</b><br>Veriaci</div><span class="stup velka"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i></i><i class="m"></i><i></i><i class="z1"></i><i class="z2"></i><i class="z3"></i></span><span>stred</span><div class="sl"><span class="a">Lok 0</span><span>Zn</span><span class="a">Vy 0</span><span>Cig</span><span>Str</span><span>Dlh</span><span>Cir</span><span>St</span></div><span>★ ty 0 · Fero +4</span><div class="nahlad" style="margin-top:auto">ostane neutrál<br><b>ty ±0 · Fero ±0</b><br>do žltej ešte 1 krok</div></div>
+   <div class="x ciel" style="position:relative;height:392px;display:flex;flex-direction:column;gap:6px;font-size:12.5px;padding:8px"><div><b style="font-size:14px">▢ Hrobár</b><br>Neprajník</div><span class="stup velka"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i></i><i class="m"></i><i></i><i class="z1"></i><i class="z2"></i><i class="z3"></i></span><span>stred</span><div class="sl"><span class="a">Vy 0</span><span class="a">Lok 0</span><span>Zn</span><span class="a">Cig −2</span><span>Str</span><span>Dlh</span><span>Cir</span><span>St</span></div><span>★ ty −2 · Fero +5</span><div class="nahlad" style="margin-top:auto">ostane neutrál<br><b>ty ±0 · Fero ±0</b><br>do žltej ešte 1 krok</div></div>
+   <div class="x ciel" style="position:relative;height:392px;display:flex;flex-direction:column;gap:6px;font-size:12.5px;padding:8px"><div><b style="font-size:14px">▢ Autobusár</b><br>Alkoholik</div><span class="stup velka"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i></i><i class="m"></i><i></i><i class="z1"></i><i class="z2"></i><i class="z3"></i></span><span>stred</span><div class="sl"><span class="a">Zn 0</span><span class="a">Str 0</span><span class="a">Cir 0</span><span class="a">Dlh +3</span><span>Lok</span><span>Cig</span><span>St</span><span>Vy</span></div><span>★ ty +3 · Fero +5</span><div class="nahlad" style="margin-top:auto">ostane neutrál<br><b>ty ±0 · Fero ±0</b><br>do žltej ešte 1 krok</div></div>
+   <div class="x ciel" style="position:relative;height:392px;display:flex;flex-direction:column;gap:6px;font-size:12.5px;padding:8px"><div><b style="font-size:14px">▢ Veterinár</b><br>Fajčiar</div><span class="stup velka"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i></i><i class="m"></i><i></i><i class="z1"></i><i class="z2"></i><i class="z3"></i></span><span>stred</span><div class="sl"><span class="a">Cig +3</span><span class="a">Lok 0</span><span class="a">Zn 0</span><span class="a">St 0</span><span>Str</span><span>Dlh</span><span>Cir</span><span>Vy</span></div><span>★ ty +3 · Fero +6</span><div class="nahlad" style="margin-top:auto">ostane neutrál<br><b>ty ±0 · Fero ±0</b><br>do žltej ešte 1 krok</div></div>
+   <div class="x stlm" style="position:relative;height:392px;display:flex;flex-direction:column;gap:6px;font-size:12.5px;padding:8px"><div><b style="font-size:14px">▢ Vychovávateľka</b><br>Úžerník</div><span class="stup velka"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i></i><i class="m"></i><i></i><i class="z1"></i><i class="z2"></i><i class="z3"></i></span><span>stred</span><div class="sl"><span class="a">Lok 0</span><span class="a">Vy 0</span><span class="a">Zn 0</span><span class="a">St −4</span><span>Cig</span><span>Str</span><span>Dlh</span><span>Cir</span></div><span>★ ty −4 · Fero +4</span><div class="nahlad" style="margin-top:auto">🔒 ukážka zámku:<br>„už 2 hranice zón týmto Pohoršením“</div></div>
+  </div>
+ </div>
+ <div class="x" style="left:20px;top:696px;width:1560px;height:100px;padding:5px"><div class="rad"><div class="t" style="flex:1.3"><b>UX 1 (ty)</b>útočník</div><div class="t"><b>Dlhy</b><span class="v">2</span>/18 ♥</div><div class="t"><b>Zadĺženie</b><span class="v">0</span>/2</div><div class="t"><b>Pečeň</b><span class="v">0</span>/3</div><div class="t"><b>Absťák</b><span class="v">0</span></div><div class="t"><b>Cigarety</b><span class="v">5</span> nový poldeci −3 ♥</div><div class="t"><b>Poldeci</b><span class="v">2</span></div><div class="t"><b>Body ▾</b><span class="v">−6</span> → −6</div><div class="t"><b>Karty</b>5 · 1 · 1</div></div></div>
+ <div class="x ciara" style="left:380px;top:804px;width:840px;height:196px"><div class="rad" style="gap:10px;align-items:flex-start"><div class="karta" style="width:150px;height:190px">Miňištrant</div><div class="karta" style="width:150px;height:190px">Milujúca manž.</div><div class="karta" style="width:150px;height:190px">Miňištrant</div><div class="karta" style="width:150px;height:190px">Cirhóza</div><div class="karta" style="width:150px;height:190px">Dvojčatá</div></div></div>
+</div></div>
+<p class="pozn">Fokus/prejdenie je na Farárovi: na stupnici duch markera (žltá), v bare súpera Body „+45 → 34“, v mojom bare „−6 → −6“. Vychovávateľka je v modeli zamknutá len pre ukážku zámku — v skutočnej partii sa dala vybrať.</p>
+<dl>
+<dt>Mikrocopy</dt><dd>Pod stupnicou zóna slovom („oranžová · tvoja“, „stred“), pretože farba sama nestačí. ♥ s účinkom slovami („prah Exekútora 18“), pri „nikto“ v zátvorke, čo by dal. ★ vždy s menami.</dd>
+<dt>Prístupnosť</dt><dd>Ikony podmienok 20 px s textom v lupe aj v <code>aria-label</code> („Strach: aktívna, ty 0, Fero +2“). Stupnica ako <code>role="img"</code> s popisom „marker: oranžová na tvojej polovici, sila 2, 1 krok od žltej“. Celý stĺpik je cieľ (≥ 140 × 250 px). Zóny rozlíšené aj tvarom (krajná pozícia má značku „vydesený“), nie len odtieňom (UI poznámka: žltá vs. neutrál 1,24 : 1).</dd>
+<dt>Náročnosť</dt><dd>stredná: nový komponent (namiesto <code>DlazdicaStarsieho</code>) z existujúcich dát — <code>podmienkyStarsieho</code>, <code>body.starsi</code>, <code>UCINOK_PRIAZNE</code>, <code>FARBY_STUPNICE</code>; lupa ostáva <code>Scorecard</code>.</dd>
+<dt>Súbory</dt><dd><code>Scorecard.tsx</code> (nová dlaždica), <code>HernaPlocha.tsx</code> (liniaStarsich), <code>hra.css</code></dd>
+<dt>Ako overiť</dt><dd>Päťsekundový test pri 1600 (snímka prezerania): „Ktorý starší sa bojí súpera a koľko ti dáva?“ a „Čo ti dáva Farárova priazeň?“. V playteste s ľuďmi merať čas od začiatku Pohoršenia po klik a či hráč vyberie staršieho s najväčším rozdielom (dá sa zistiť z logu a náhľadu).</dd>
+</dl>
+</section>
+
+<!-- ======================= N5 Variant C ======================= -->
+<section class="navrh" id="n5" aria-labelledby="n5-h">
+<h3 id="n5-h">N5 · Variant C — tabuľa stupníc <span class="stitok velka">stredná – veľká</span> <span class="stitok">odvážnejší smer</span></h3>
+<dl>
+<dt>Rieši</dt><dd>U1, U2, U3 (najlepšie zo všetkých: posuny sú vidno ako pohyb v jednej mriežke), U6, U12</dd>
+<dt>Čo to je</dt><dd>Starší ako <b>riadky</b>, stupnice zarovnané pod sebou do jednej mriežky 9 stĺpcov. Zóny tak tvoria zvislé pásy: <i>tvoja strana — stred — Fero</i>, presne ako strany línie kariet. Na prvý pohľad je jasné, koľko starších je na čej polovici a kto je blízko vydesenia (krajný stĺpec). Ďalšie stĺpce: ♥ s účinkom, ★ ty, ★ Fero, a posledný stĺpec slúži na náhľad v kroku alebo na stopu posunu. Podmienky scorecardu sa ukážu po rozbalení riadka alebo v lupe.</dd>
+<dt>Za</dt><dd>Najrýchlejší prehľad „kto vyhráva starších“; posuny čakajúci hráč vidí ako skok v mriežke; najviac miesta pre náhľad; ten istý vzhľad poslúži aj na mobile (riadky).</dd>
+<dt>Proti</dt><dd>Najďalej od fyzickej hry — scorecard ako predmet zmizne. Podmienky nie sú vidno bez rozbalenia, takže úloha 1 („prečo“) potrebuje o krok viac. Najviac nového kódu.</dd>
+</dl>
+<h4>1920×1080 · prezeranie (Body)</h4>
+<div class="wf" data-w="1920" data-h="1080" role="group" aria-label="Drôtený model variantu C, 1920 krát 1080, prezeranie">
+<div class="pl" style="width:1920px;height:1080px">
+ <div class="x" style="left:0;top:0;width:1920px;height:56px;border-radius:0"><div class="rad" style="align-items:center"><b>NA EX!</b><span style="margin-left:auto">Melichar · ● Rapavý Fero · vzdať sa · odísť · UX 1 ☰</span></div></div>
+ <div class="x" style="left:20px;top:60px;width:1880px;height:36px"><div class="rad" style="align-items:center">HEGP · Kolo 2 · lokalita 2/5 <span style="margin-left:40px">Voľba cieľa › Draft › Z1 P1 ✓ › Z2 P2 ✓ › <b>Bitka</b></span><span style="margin-left:auto">Šenok 8 · Lokality 3 · Log · ?</span></div></div>
+ <div class="x" style="left:20px;top:100px;width:1880px;height:104px;padding:5px"><div class="rad"><div class="t"><b>Karty</b>3 ruka · 0 bal. · 3 odh.</div><div class="t"><b>Body ▾</b><span class="v">+45</span> o 51 pred</div><div class="t"><b>Poldeci</b><span class="v">2</span></div><div class="t"><b>Cigarety</b><span class="v">5</span></div><div class="t"><b>Absťák</b><span class="v">0</span></div><div class="t"><b>Pečeň</b><span class="v">0</span>/3</div><div class="t"><b>Zadĺženie</b><span class="v">0</span>/2</div><div class="t"><b>Dlhy</b><span class="v">0</span>/10</div><div class="t" style="flex:1.3"><b>Rapavý Fero</b>obranca</div></div></div>
+ <div class="x" style="left:20px;top:208px;width:1880px;height:28px"><div class="rad" style="align-items:center">Bitka po 2 Pitkách ●● · 2 Pitky — po každej ďalšie Zhromaždenie<span style="margin-left:auto">vydesení ty 0/4 · Fero 0/4 · body teraz ty −6 · Fero 45</span></div></div>
+ <div class="x stol" style="left:20px;top:240px;width:1880px;height:500px">
+  <div style="position:absolute;left:12px;top:8px;right:12px;display:flex;gap:14px;align-items:center;font-size:13px"><span class="taby" style="position:static"><span class="akt">← Späť na stôl <kbd>Esc</kbd></span></span><b>Starší</b><span>body z pohľadu <u>ty</u> | Fero</span><span>priazeň: ty 3 · Fero 0</span><span>vydesení ty 0/4 · Fero 0/4</span><span style="margin-left:auto">ⓘ ako sa boduje</span></div>
+  <div style="position:absolute;left:12px;top:44px;width:1856px">
+   <div class="tab-riadok hl" style="grid-template-columns:210px 330px 300px 90px 90px 1fr;height:28px"><span>Starší · scorecard</span><span>♥ priazeň</span><span>← tvoja · stred · Fero →</span><span>★ ty</span><span>★ Fero</span><span>strach · podmienky (▸ rozbaliť)</span></div>
+   <div class="tab-riadok" style="grid-template-columns:210px 330px 300px 90px 90px 1fr;height:38px"><b>Farár · Exekútor</b><span>ty +2: prah Exekútora 18</span><span class="stup "><i class="z3"></i><b class="hr" aria-hidden="true"></b><i class="z2 m"></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class=""></i><i class=""></i><i class=""></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z3"></i></span><b>−4</b><span>+3</span><span>bojí sa Fera (2) · ▸ Lok, Zn, Vy, Dlh</span></div>
+   <div class="tab-riadok" style="grid-template-columns:210px 330px 300px 90px 90px 1fr;height:38px"><b>Krčmárka · Bitkár</b><span>ty +1: +2 tuhé v bitke</span><span class="stup "><i class="z3"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z1 m"></i><b class="hr" aria-hidden="true"></b><i class=""></i><i class=""></i><i class=""></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z3"></i></span><b>0</b><span>+12</span><span>bojí sa Fera (1) · ▸ Zn, Str, St, Cig</span></div>
+   <div class="tab-riadok" style="grid-template-columns:210px 330px 300px 90px 90px 1fr;height:38px"><b>Starosta · Lakomec</b><span>ty +2: barter za 3</span><span class="stup "><i class="z3"></i><b class="hr" aria-hidden="true"></b><i class="z2 m"></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class=""></i><i class=""></i><i class=""></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z3"></i></span><b>−2</b><span>+6</span><span>bojí sa Fera (2) · ▸ Zn, Str, Cir, Dlh</span></div>
+   <div class="tab-riadok" style="grid-template-columns:210px 330px 300px 90px 90px 1fr;height:38px"><b>Poštárka · Veriaci</b><span>nikto (+1 Viera)</span><span class="stup "><i class="z3"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class=""></i><i class=" m"></i><i class=""></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z3"></i></span><b>0</b><span>+4</span><span>▸ Lok, Vy</span></div>
+   <div class="tab-riadok" style="grid-template-columns:210px 330px 300px 90px 90px 1fr;height:38px"><b>Hrobár · Neprajník</b><span>nikto (Povery +2)</span><span class="stup "><i class="z3"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class=""></i><i class=" m"></i><i class=""></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z3"></i></span><b>−2</b><span>+5</span><span>▸ Vy, Lok, Cig</span></div>
+   <div class="tab-riadok" style="grid-template-columns:210px 330px 300px 90px 90px 1fr;height:38px"><b>Autobusár · Alkoholik</b><span>nikto (prah Cirhózy 5)</span><span class="stup "><i class="z3"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class=""></i><i class=" m"></i><i class=""></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z3"></i></span><b>+3</b><span>+5</span><span>▸ Zn, Str, Cir, Dlh</span></div>
+   <div class="tab-riadok" style="grid-template-columns:210px 330px 300px 90px 90px 1fr;height:38px"><b>Veterinár · Fajčiar</b><span>nikto (+1 cig. v 1. Pitke)</span><span class="stup "><i class="z3"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class=""></i><i class=" m"></i><i class=""></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z3"></i></span><b>+3</b><span>+6</span><span>▸ Cig, Lok, Zn, St</span></div>
+   <div class="tab-riadok" style="grid-template-columns:210px 330px 300px 90px 90px 1fr;height:38px"><b>Vychovávateľka · Úžerník</b><span>nikto (prah Dlhu 3)</span><span class="stup "><i class="z3"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class=""></i><i class=" m"></i><i class=""></i><b class="hr" aria-hidden="true"></b><i class="z1"></i><b class="hr" aria-hidden="true"></b><i class="z2"></i><b class="hr" aria-hidden="true"></b><i class="z3"></i></span><b>−4</b><span>+4</span><span>▸ Lok, Vy, Zn, St · <i>ukážka: v ruke Fero · +3 Pohoršenia</i></span></div>
+   <div class="tab-riadok" style="grid-template-columns:210px 330px 300px 90px 90px 1fr;height:34px;border-bottom:0"><span>spolu</span><span>priazeň ty 3 · Fero 0</span><span>tvoja 3 · stred 5 · Fero 0</span><b>−6</b><span>+45</span><span>vydesení ty 0/4 · Fero 0/4</span></div>
+  </div>
+  <div class="x" style="left:12px;right:12px;bottom:8px;height:26px;font-size:12px;padding:4px 10px">Línia kariet: ← Za plotom 3 karty · prevaha ty │ Zberný dvor │ Pri váhe 2 karty · prevaha Fero → │ odhad bitky 2 : 3 <span style="float:right">klik = Späť na stôl</span></div>
+ </div>
+ <div class="x" style="left:20px;top:746px;width:1880px;height:104px;padding:5px"><div class="rad"><div class="t" style="flex:1.3"><b>UX 1 (ty)</b>útočník · nepriznané Cirhóza ×1</div><div class="t"><b>Lokality</b><span class="v">0</span> Fero +12</div><div class="t"><b>Starší</b><span class="v">0</span> Fero 0</div><div class="t"><b>Cigarety</b><span class="v">+6</span> Fero 0</div><div class="t hl"><b>Zóny strachu</b><span class="v">0</span> Fero +31</div><div class="t"><b>Dlhy</b><span class="v">−8</span></div><div class="t"><b>Cirhóza</b><span class="v">−4</span></div><div class="t on"><b>Body ▴</b><span class="v">−6</span> starší na stole</div><div class="t"><b>Karty</b>5 ruka · 0 bal. · 1 odh.</div></div></div>
+ <div class="x ciara" style="left:540px;top:856px;width:840px;height:224px"><div class="rad" style="gap:10px;align-items:flex-start"><div class="karta" style="width:158px;height:218px">Miňištrant</div><div class="karta" style="width:158px;height:218px">Milujúca manž.</div><div class="karta" style="width:158px;height:218px">Miňištrant</div><div class="karta" style="width:158px;height:218px">Cirhóza</div><div class="karta" style="width:158px;height:218px">Dvojčatá</div></div></div>
+ <div style="position:absolute;left:14px;top:1012px;font-size:11px">BALÍČEK ▸<br><b style="font-size:20px">0</b><br><span style="font-size:11px">spolu 6 · prehra pod 5</span></div>
+ <div style="position:absolute;right:14px;top:1012px;font-size:11px;text-align:right">ODHODENÉ ▸<br><b style="font-size:20px">1</b></div>
+</div></div>
+<h4>1600×1000 · krok Pohoršenie (aktívny hráč, fokus na Farárovi)</h4>
+<div class="wf" data-w="1600" data-h="1000" role="group" aria-label="Drôtený model variantu C, 1600 krát 1000, krok Pohoršenie">
+<div class="pl" style="width:1600px;height:1000px">
+ <div class="x" style="left:0;top:0;width:1600px;height:52px;border-radius:0"><div class="rad" style="align-items:center"><b>NA EX!</b><span style="margin-left:auto">Melichar · ● Rapavý Fero · vzdať sa · odísť · UX 1 ☰</span></div></div>
+ <div class="x" style="left:20px;top:58px;width:1560px;height:36px"><div class="rad" style="align-items:center">HEGP · Kolo 2 · lokalita 2/5 <span style="margin-left:40px">… › Z2 P2 ✓ › <b>Bitka</b></span><span style="margin-left:auto">Šenok 8 · Lokality 3 · Log · ?</span></div></div>
+ <div class="x" style="left:20px;top:100px;width:1560px;height:100px;padding:5px"><div class="rad"><div class="t"><b>Karty</b>3 ruka</div><div class="t"><b>Body ▾</b><span class="v">+45</span></div><div class="t"><b>Poldeci</b><span class="v">2</span></div><div class="t"><b>Cigarety</b><span class="v">5</span></div><div class="t"><b>Absťák</b><span class="v">0</span></div><div class="t"><b>Pečeň</b><span class="v">0</span>/3</div><div class="t"><b>Zadĺženie</b><span class="v">0</span>/2</div><div class="t"><b>Dlhy</b><span class="v">0</span>/10</div><div class="t" style="flex:1.3"><b>Rapavý Fero</b>obranca</div></div></div>
+ <div class="x" style="left:20px;top:206px;width:1560px;height:28px"><div class="rad" style="align-items:center">Bitka po 2 Pitkách ●● <span style="margin-left:auto">vydesení ty 0/4 · Fero 0/4 · body teraz ty −6 · Fero 45</span></div></div>
+ <div class="x stol" style="left:20px;top:240px;width:1560px;height:450px">
+  <div class="taby" style="left:14px;top:8px"><span>Pozrieť stôl</span><span class="akt">Starší · Pohoršenie</span></div>
+  <div class="x" style="left:12px;right:12px;bottom:6px;height:24px;font-size:12px;padding:3px 10px">Línia kariet: Za plotom 3 · prevaha ty │ Zberný dvor │ Pri váhe 2 · prevaha Fero │ bitka 2 : 3 (výsledok)</div>
+  <div class="pil" style="top:6px"><strong>Pohoršenie · zostáva 1</strong>vyber riadok — marker pôjde k Ferovi; šípky ↑↓ a Enter</div>
+  <div style="position:absolute;left:12px;top:46px;width:1536px">
+   <div class="tab-riadok hl" style="grid-template-columns:170px 260px 260px 70px 70px 1fr;height:28px"><span>Starší · scorecard</span><span>♥ priazeň</span><span>← tvoja · stred · Fero →</span><span>★ ty</span><span>★ Fero</span><span>po posune k Ferovi</span></div>
+   <div class="tab-riadok ciel" style="grid-template-columns:170px 260px 260px 70px 70px 1fr;height:40px"><b>Farár · Exekútor</b><span>ty +2: prah Exekútora 18</span><span class="stup"><i class="z3"></i><i class="z2 m"></i><i class="z1 duch"></i><i></i><i></i><i></i><i class="z1"></i><i class="z2"></i><i class="z3"></i></span><b>−4</b><span>+3</span><span>oranžová → žltá · <b>ty ±0 · Fero −11</b> · ♥ ty 2 → 1</span></div>
+   <div class="tab-riadok" style="grid-template-columns:170px 260px 260px 70px 70px 1fr;height:40px"><b>Krčmárka · Bitkár</b><span>ty +1: +2 tuhé v bitke</span><span class="stup"><i class="z3"></i><i class="z2"></i><i class="z1 m"></i><i></i><i></i><i></i><i class="z1"></i><i class="z2"></i><i class="z3"></i></span><b>0</b><span>+12</span><span>žltá → neutrál · <b>ty ±0 · Fero −3</b> · ♥ nikto</span></div>
+   <div class="tab-riadok" style="grid-template-columns:170px 260px 260px 70px 70px 1fr;height:40px"><b>Starosta · Lakomec</b><span>ty +2: barter za 3</span><span class="stup"><i class="z3"></i><i class="z2 m"></i><i class="z1"></i><i></i><i></i><i></i><i class="z1"></i><i class="z2"></i><i class="z3"></i></span><b>−2</b><span>+6</span><span>oranžová → žltá · <b>ty ±0 · Fero −11</b> · ♥ ty 2 → 1</span></div>
+   <div class="tab-riadok" style="grid-template-columns:170px 260px 260px 70px 70px 1fr;height:40px"><b>Poštárka · Veriaci</b><span>nikto (+1 Viera)</span><span class="stup"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i></i><i class="m"></i><i></i><i class="z1"></i><i class="z2"></i><i class="z3"></i></span><b>0</b><span>+4</span><span>ostane neutrál · ty ±0 · Fero ±0 · do žltej 1 krok</span></div>
+   <div class="tab-riadok" style="grid-template-columns:170px 260px 260px 70px 70px 1fr;height:40px"><b>Hrobár · Neprajník</b><span>nikto (Povery +2)</span><span class="stup"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i></i><i class="m"></i><i></i><i class="z1"></i><i class="z2"></i><i class="z3"></i></span><b>−2</b><span>+5</span><span>ostane neutrál · ty ±0 · Fero ±0 · do žltej 1 krok</span></div>
+   <div class="tab-riadok" style="grid-template-columns:170px 260px 260px 70px 70px 1fr;height:40px"><b>Autobusár · Alkoholik</b><span>nikto (prah Cirhózy 5)</span><span class="stup"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i></i><i class="m"></i><i></i><i class="z1"></i><i class="z2"></i><i class="z3"></i></span><b>+3</b><span>+5</span><span>ostane neutrál · ty ±0 · Fero ±0 · do žltej 1 krok</span></div>
+   <div class="tab-riadok" style="grid-template-columns:170px 260px 260px 70px 70px 1fr;height:40px"><b>Veterinár · Fajčiar</b><span>nikto (+1 cig. v 1. Pitke)</span><span class="stup"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i></i><i class="m"></i><i></i><i class="z1"></i><i class="z2"></i><i class="z3"></i></span><b>+3</b><span>+6</span><span>ostane neutrál · ty ±0 · Fero ±0 · do žltej 1 krok</span></div>
+   <div class="tab-riadok stlm" style="grid-template-columns:170px 260px 260px 70px 70px 1fr;height:40px"><b>Vychováv. · Úžerník</b><span>nikto (prah Dlhu 3)</span><span class="stup"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i></i><i class="m"></i><i></i><i class="z1"></i><i class="z2"></i><i class="z3"></i></span><b>−4</b><span>+4</span><span>🔒 ukážka zámku: už 2 hranice zón týmto Pohoršením</span></div>
+  </div>
+ </div>
+ <div class="x" style="left:20px;top:696px;width:1560px;height:100px;padding:5px"><div class="rad"><div class="t" style="flex:1.3"><b>UX 1 (ty)</b>útočník</div><div class="t"><b>Dlhy</b><span class="v">2</span>/18 ♥</div><div class="t"><b>Zadĺženie</b><span class="v">0</span>/2</div><div class="t"><b>Pečeň</b><span class="v">0</span>/3</div><div class="t"><b>Absťák</b><span class="v">0</span></div><div class="t"><b>Cigarety</b><span class="v">5</span> nový poldeci −3 ♥</div><div class="t"><b>Poldeci</b><span class="v">2</span></div><div class="t"><b>Body ▾</b><span class="v">−6</span></div><div class="t"><b>Karty</b>5 · 1 · 1</div></div></div>
+ <div class="x ciara" style="left:380px;top:804px;width:840px;height:196px"><div class="rad" style="gap:10px;align-items:flex-start"><div class="karta" style="width:150px;height:190px">Miňištrant</div><div class="karta" style="width:150px;height:190px">Milujúca manž.</div><div class="karta" style="width:150px;height:190px">Miňištrant</div><div class="karta" style="width:150px;height:190px">Cirhóza</div><div class="karta" style="width:150px;height:190px">Dvojčatá</div></div></div>
+</div></div>
+<dl>
+<dt>Mikrocopy</dt><dd>Hlavička stupnice „← tvoja · stred · Fero →“, rovnako ako hlavičky strán línie kariet („← za plotom … pri váhe →“). Súhrnný riadok „tvoja 3 · stred 5 · Fero 0“.</dd>
+<dt>Prístupnosť</dt><dd>Sémantická tabuľka (<code>table</code>, <code>th scope</code>) alebo <code>role="grid"</code> v kroku; šípky ↑/↓ medzi riadkami, <kbd>Enter</kbd> vyberá, <kbd>→</kbd> rozbalí podmienky. Riadok 38–40 px (nad 24 px podľa WCAG 2.5.8; na dotyku 44 px). Čítačka prečíta riadok ako vetu.</dd>
+<dt>Náročnosť</dt><dd>stredná – veľká: nový komponent tabuľky a rozbalenie riadka; animácia skoku markera v mriežke.</dd>
+<dt>Súbory</dt><dd><code>HernaPlocha.tsx</code>, nový <code>apps/web/src/hra/TabulaStarsich.tsx</code>, <code>hra.css</code></dd>
+<dt>Ako overiť</dt><dd>Päťsekundový test: „Kto má viac starších na svojej strane?“ (C by mal vyhrať nad A aj B). A to isté ako pri B: „Prečo ti Farár berie 4 body?“ — tu sa ukáže cena za skryté podmienky.</dd>
+</dl>
+</section>
+
+<!-- ======================= N6 balíček ======================= -->
+<section class="navrh" id="n6" aria-labelledby="n6-h">
+<h3 id="n6-h">N6 · Doberací balíček vľavo dole <span class="stitok mala">malá</span> <span class="stitok">rýchla výhra</span></h3>
+<dl>
+<dt>Rieši</dt><dd>U15, U16 (rozhodnutie Michala: „Ruka“ vľavo dole → počet v doberacom balíčku, klik ukáže karty zoradené podľa mena)</dd>
+<dt>Myšlienka</dt><dd>Zrkadlo k „odhodené“ vpravo: dva rovnaké kraje ruky, každý otvorí svoju vrstvu. Hráč nemusí pamätať, čo do balíčka vložil, a vidí, ako blízko je k prehre.</dd>
+</dl>
+<h4>Tok pred → po</h4>
+<div class="tok">
+<div class="pred"><h4>Dnes</h4><ol><li>Vľavo dole „RUKA 5“ — to isté, čo hráč vidí v ruke; neklikateľné.</li><li>Obsah balíčka nevidno nikde; počet je v dlaždici Karty („2 balíček“).</li><li>Titulok Karty o prehre „doberací pod 5“ — nesprávne (U15).</li></ol></div>
+<div class="po"><h4>Po N6</h4><ol><li>Vľavo dole tlačidlo „BALÍČEK 7 ▸“, pod číslom „spolu 13 · prehra pod 5“.</li><li>Klik (alebo <kbd>B</kbd>) → vrstva „Doberací balíček · 7“ s kartami zoradenými podľa mena, rovnaké karty spolu „Miňištrant ×2“.</li><li><kbd>Esc</kbd> alebo klik mimo → zavrie, fokus späť na tlačidlo.</li></ol></div>
+</div>
+<h4>Detaily</h4>
+<ul>
+<li><b>Bezpečnosť (CLAUDE.md, pravidlo 2):</b> zoradiť treba <b>na serveri vo <code>viewFor</code></b> a poslať zoznam bez poradia (zoradený podľa mena, pri rovnakom mene podľa <code>defId</code>, nie podľa pozície). Zoradiť až v prehliadači nestačí — poradie by bolo v konzole. Zmení sa tým aj hranica v hlavičke <code>view.ts:3–10</code> („obsah ani poradie žiadneho doberacieho balíčka“ → <i>vlastného</i> obsah áno, poradie nie) a patrí k tomu test.</li>
+<li><b>Prehra pod 5</b>: pod číslom balíčka je „spolu N“ (doberací + odhadzovací + ruka, priznané sa nerátajú). Pri spolu ≤ 6 je text zvýraznený, nie len farbou („⚠ spolu 6 — pod 5 prehráš“). Titulok dlaždice Karty v bare opraviť podľa pravidla (U15).</li>
+<li><b>Kliatby v balíčku</b> (Cirhóza, Dlh) zoradiť medzi ostatnými podľa mena, ale so štítkom „kliatba“. Hráč ich tam má vidieť — sú jeho a dnes ich ráta „nepriznané Cirhóza ×1“ pod menom.</li>
+<li>Vrstva rovnaká ako „Odhodené“ (<code>VrstvaPanel</code>, karty s lupou); nadpis „Doberací balíček · 7 kariet“, podnadpis „zoradené podľa mena — poradie nevidíš ani ty“.</li>
+<li>Prázdny stav: „Balíček je prázdny — keď si budeš brať kartu, zamieša sa doň odhodených N.“</li>
+<li>Počas ťahania karty z ruky na stôl sa „BALÍČEK“ nesmie stať cieľom pustenia (dnes je ruka cieľom pri vracaní) — je to len pohľad.</li>
+</ul>
+<dl>
+<dt>Prístupnosť</dt><dd><code>button</code> s <code>aria-expanded</code> a menom „Doberací balíček, 7 kariet, spolu 13, prehra pod 5“; vrstva <code>role="dialog"</code> s nadpisom, fokus na nadpis, <kbd>Esc</kbd> zavrie. Skratka <kbd>B</kbd> je voľná (overiť s Melicharom). Cieľ ≥ 44 × 44 px.</dd>
+<dt>Mikrocopy</dt><dd>„BALÍČEK“ (nie „doberací“ — krátke, zrkadlo k „ODHODENÉ“); titulok „Tvoj doberací balíček — klik ukáže, čo v ňom je (poradie nie)“.</dd>
+<dt>Náročnosť</dt><dd>malá: pole v <code>HracVerejne</code> len pre <code>ja</code> (alebo samostatné pole v <code>ClientState</code>), test vo <code>view.test</code>, tlačidlo a vrstva v <code>HernaPlocha.tsx:4064–4074</code>.</dd>
+<dt>Súbory</dt><dd><code>packages/core/src/view.ts</code> (+ test), <code>apps/web/src/hra/HernaPlocha.tsx</code>, <code>Panely.tsx:699</code> (titulok), <code>hra.css</code></dd>
+<dt>Ako overiť</dt><dd>Test vo <code>viewFor</code>: zoznam je zoradený a nezávisí od poradia balíčka (dve partie s tým istým obsahom, iným poradím → rovnaký zoznam). V playteste: „Koľko kariet ti chýba do prehry?“ a „Máš ešte v balíčku Pijana?“.</dd>
+</dl>
+</section>
+
+<h2 id="poradie">Odporúčané poradie</h2>
+<ol>
+<li><b>N1 (aj s pevnou výškou stola) + N2 spolu s implementáciou #68.</b> Bez nich #68 skryje starších a nič ich nenahradí: hráč nebude vedieť, kde sú karty, ani čo súper urobil so staršími. Obidva sú nezávislé od vzhľadu, takže sa dajú postaviť aj na dnešnej <code>DlazdicaStarsieho</code>, kým sa dokončí #69.</li>
+<li><b>N4 (variant B) ako vzhľad #69.</b> Pri 1600 aj 1920 je čitateľný bez lupy a náhľad má vlastné miesto. Vzhľad dlaždice dorieši UI návrh.</li>
+<li>Ak Michal chce na stole <b>tlačené scorecardy</b>, tak N3 (variant A), ale so skúškou čitateľnosti pri 1600 — ikony okolo 13 px sú hranica.</li>
+<li><b>N5 (variant C)</b> nechať ako experiment po playteste B. Jeho silu (zarovnané stupnice, viditeľné posuny) sa oplatí vrátiť aj do mobilného stola.</li>
+<li><b>N6 (balíček)</b> kedykoľvek — je nezávislý, malý, len s testom vo <code>viewFor</code>.</li>
+</ol>
+<p class="pozn">Poradie úloh pre implementáciu: (1) spoločný stav stola, pevná výška boxu, „Späť na stôl“ a súhrnný pás, (2) automatické zobrazenie v krokoch a podržanie výsledku, (3) náhľad rozdelený na časti bez <code>title</code>, (4) patronát cez ruku, (5) vzhľad B, (6) ♥ pri zdrojoch a zmena Body od bitky, (7) balíček.</p>
+
+<h2 id="otazky">Otázky do playtestu a na Michala</h2>
+<h3>Do playtestu (s ľuďmi; AI hráči hrajú cez konzolu a vzhľad neoveria)</h3>
+<ul>
+<li>Pred klikom v Pohoršení / prebytku: „Koľko ti tento posun dá a koľko vezme súperovi?“ — vie odpovedať bez prejdenia myšou?</li>
+<li>Po súperovom prebytku: „Ktorých starších súper posunul a ku komu?“ (cieľ ≥ 80 % správne).</li>
+<li>Počas Pitky po otvorení starších: „Kde sú teraz tvoje karty?“ — a sleduj, či sa hráč vráti sám („Späť na stôl“, Esc, Body, ťahanie karty).</li>
+<li>„Koľko kariet ti chýba do prehry?“ a „Máš ešte v balíčku Pijana?“ — overí N6.</li>
+<li>„Prečo máš do Exekútora 18?“ — overí ♥ pri zdrojoch.</li>
+<li>Pri 1600×1000 a 1920×1080 automaticky: <code>snimka.ts …</code> a <code>snimka.ts … --sirka 1920 --vyska 1080</code> v kroku Pohoršenie a patronát — všetkých 8 starších aj tlačidlá kroku bez posúvania.</li>
+</ul>
+<h3>Na Michala</h3>
+<ol>
+<li><b>Čakajúci hráč:</b> má sa línia starších ukázať automaticky aj tomu, kto čaká, keď súper posúva markery (Pohoršenie, prebytok, patronát)? Odporúčam áno (R1, R5) — je to náhrada za starších, ktorí boli doteraz vždy na očiach.</li>
+<li><b>Návrat po kroku:</b> hneď po poslednom posune, alebo až po „ďalej“ v účte bitky / keď treba líniu kariet? Odporúčam podržať (R7), lebo inak stôl prepne na nové kolo skôr, než si hráč výsledok prečíta.</li>
+<li><b>„Nie sú predvolene viditeľní“:</b> sedí s #68, že bez kliku ostane ♥ pri zdrojoch, „▼ 11 od bitky“ na Body a súhrn vydesených? Línia starších sama sa bez kliku neukáže.</li>
+<li><b>Body súpera:</b> otvorí tú istú líniu s jeho bodmi vpredu (prepínač „ty | Fero“ v hlavičke) — súhlasíš? Alternatíva je otvoriť vždy rovnaký pohľad.</li>
+<li><b>Záložky stola „Stôl | Starší“</b> popri Body a „Späť na stôl“ — smú byť? Vstup je podľa rozhodnutia Body. Záložky by boli len orientácia a druhá cesta; bez nich ich úlohu prevezme „Späť na stôl“ a súhrnný pás línie kariet.</li>
+<li><b>Súhrnný pás línie kariet</b> (prevaha strán, odhad bitky) na spodku línie starších — súhlasíš? Je to jediné, čo zo stola ostane na očiach, kým hráč číta starších.</li>
+<li><b>Pevná výška stola:</b> keď rozostup kariet prerastie rezervu (reťazenie posunov), majú sa zmenšiť karty v línii (odporúčam), alebo smie stôl narásť a posunúť ruku? Treba to zladiť s opravou v Bugfixingu.</li>
+<li><b>Skratky <kbd>S</kbd></b> (starší) a <kbd>B</kbd> (balíček) — súhlas? (<kbd>M</kbd> a <kbd>1–4</kbd> má soundboard.)</li>
+<li><b>Balíček:</b> zoznam vlastného balíčka ide zo servera zoradený (inak by v konzole bolo poradie). Mení to bezpečnostnú hranicu vo <code>view.ts</code> z „obsah ani poradie“ na „vlastný obsah áno, poradie nie“ — potvrdzuješ? A má byť pri Cirhóze, o ktorej hráč vie, že leží navrchu (pravidlo „Cirhóza navrch“), poznámka „navrchu“? Bolo by to poradie, hoci verejne známe — odporúčam zatiaľ nie.</li>
+<li><b>Vzhľad:</b> B (odporúčaný), A (tlačené scorecardy) alebo C (tabuľa)?</li>
+<li><b>Pravidlo, nie návrh:</b> AI hráči opakovane chcú Pohoršenie či prebytok <i>nevyužiť</i> („chýba preskočiť“, názor #31 — Admin to poslal navrhárovi). Ak by sa pravidlo zmenilo, v kroku pribudne „bez posunu“ na hrane stola. Dnes sa nedá, preto tam nie je.</li>
+</ol>
+
+<p class="meta" style="margin-top:2em">Pracovné poznámky a všetky snímky: <code>playtest/dizajn/linia-starsich-20261023-0805/</code> (mimo gitu, <code>ux-poznamky.md</code>). Vlastná partia na fotenie: <code>playtest/20261023-060721</code> (po práci zastavená).</p>
+</main>
+<script>
+(function(){
+  // Drôtené modely sú v px obrazovky — zmenšia sa na šírku stránky.
+  var wfs=[].slice.call(document.querySelectorAll('.wf'));
+  function prepocitaj(){
+    wfs.forEach(function(el){
+      var w=+el.getAttribute('data-w'),h=+el.getAttribute('data-h'),pl=el.firstElementChild;
+      var s=Math.min(1,(el.clientWidth-4)/w);
+      pl.style.transform='scale('+s+')';
+      el.style.height=Math.ceil(h*s+4)+'px';
+      el.classList.add('zmenseny');
+    });
+  }
+  prepocitaj();
+  window.addEventListener('resize',prepocitaj);
+  // Filter auditu podľa závažnosti.
+  var tl=[].slice.call(document.querySelectorAll('.filtre button'));
+  var riadky=[].slice.call(document.querySelectorAll('#audit-tab tbody tr'));
+  tl.forEach(function(b){
+    b.addEventListener('click',function(){
+      tl.forEach(function(x){x.setAttribute('aria-pressed',String(x===b));});
+      var f=b.getAttribute('data-f');
+      riadky.forEach(function(r){
+        var z=+r.getAttribute('data-z');
+        var ok=f==='vsetko'||(f==='3'&&z>=3)||(f==='2'&&z===2)||(f==='68'&&r.getAttribute('data-r')==='68');
+        r.hidden=!ok;
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>
