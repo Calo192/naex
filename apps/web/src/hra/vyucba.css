@@ -182,6 +182,24 @@
   }
 }
 
+/* 1366 × 650: bublina užšia, avatar menší — zakrýva menej stola. */
+@media (max-height: 719px) {
+  .vyucba-bublina {
+    width: min(300px, calc(100vw - 32px));
+    padding: 8px 10px;
+  }
+
+  .vyucba-hlava .vyucba-avatar {
+    width: 34px;
+    height: 34px;
+  }
+
+  .vyucba-text {
+    font-size: 0.82rem;
+    line-height: 1.35;
+  }
+}
+
 /* ---- vstup v lobby ---- */
 .vyucba-vstup {
   display: flex;

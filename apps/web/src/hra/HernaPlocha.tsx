@@ -2346,6 +2346,7 @@ export function HernaPlocha({
                   <button onClick={zrus}>iný starší</button>
                   <button
                     className="tlacidlo-hlavne"
+                    data-vyucba="potvrdit"
                     disabled={vybrata === undefined}
                     onClick={() => vybrata !== undefined && posli({ type: "patronat", elderId: vybrany.elderId, uid: vybrata.uid })}
                   >
@@ -3080,6 +3081,7 @@ export function HernaPlocha({
                   <button onClick={() => posli({ type: "pohreb", cirhozaUid: mode.cirhozaUid, kartaUid: mode.kartaUid })}>bez karty zo šenku</button>
                   <button
                     className="tlacidlo-hlavne"
+                    data-vyucba="potvrdit"
                     disabled={vzata === undefined}
                     onClick={() =>
                       vzata !== undefined &&
@@ -4385,7 +4387,7 @@ export function HernaPlocha({
                     "Vyber jednu kartu."
                   )}
                 </span>
-                <button className="tlacidlo-hlavne" onClick={() => setVrstva(null)} disabled={zoSenku.length === 0}>
+                <button className="tlacidlo-hlavne" data-vyucba="potvrdit" onClick={() => setVrstva(null)} disabled={zoSenku.length === 0}>
                   vziať
                 </button>
               </>

@@ -118,8 +118,10 @@ const POTVRDIT = "potvrdit";
 
 /** Prvky stola ku kľúču zo scenára — priamo, alebo cez zónu (ruka, linia, bar…). */
 function prvkyKluca(kluc: string): HTMLElement[] {
-  // Hlavné tlačidlo na stole je vždy potvrdenie ťahu (potvrdiť, hotovo, vziať do ruky…).
-  if (kluc === POTVRDIT) return [...document.querySelectorAll<HTMLElement>(".hra button.tlacidlo-hlavne:not(:disabled)")];
+  // Potvrdenie ťahu: tlačidlá so skratkou K (potvrdiť, hotovo) a tie, ktoré si to označia (vziať do ruky).
+  if (kluc === POTVRDIT) {
+    return [...document.querySelectorAll<HTMLElement>('.hra button.tlacidlo-hlavne:is([data-skratka="k"], [data-vyucba="potvrdit"]):not(:disabled)')];
+  }
   // Karta z očakávaného ťahu (uid:N) — mimo zväčšenej kópie v lupe.
   if (kluc.startsWith("uid:")) {
     return [...document.querySelectorAll<HTMLElement>(`[data-vyucba-uid="${Number(kluc.slice(4))}"]`)].filter((el) => el.closest(".lupa") === null);
