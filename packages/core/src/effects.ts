@@ -99,6 +99,9 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   podvodnik: "impl", // Prehra: ukradni 2 cigarety
   cierna_macka: "impl", // Furt: tvoje Povery dávajú mäkké poškodenie aj bez súperových priznaných Dlhov
   anonymny_alkoholik: "impl", // Furt: súper naňho nedá NA EX
+  // Roadmapa #71 (2026-10-23).
+  sofer: "impl", // Furt: NA EX na susednú kartu nezdvojí jej neaktívne akcie (partia.ts)
+  ujo_s_furikom: "impl", // Nástup: vedľa karty s NA EX ju vráti majiteľovi do ruky a zaujme jej miesto
   // Nové lokality (Michal 2026-10-20, docs/playtesty/navrh-lokality.html).
   most: "impl", // Zhromaždenie: karty len na vlastnú stranu
   cintorin: "impl", // Prehra: Nástroj z ruky do Dedičstva bez platenia

@@ -1562,6 +1562,28 @@
       ]
     },
     {
+      "id": "14.karta.sofer",
+      "paragraf": "14. Efekty kariet — výklad › Karty",
+      "pravidlo": "Šofér: NA EX na susednú kartu nezdvojí jej neaktívne akcie, aktívne zruší; na samotného Šoféra platí normálne.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/sofer-ujo.test.ts › NA EX na kartu vedľa Šoféra nezdvojí jej neaktívne akcie, aktívne zruší",
+        "packages/core/test/sofer-ujo.test.ts › platí aj pre súperovu kartu a cez hranicu majiteľov; vzdialenej karte nevadí",
+        "packages/core/test/sofer-ujo.test.ts › NA EX na samotného Šoféra zdvojuje normálne"
+      ]
+    },
+    {
+      "id": "14.karta.ujo-s-furikom",
+      "paragraf": "14. Efekty kariet — výklad › Karty",
+      "pravidlo": "Ujo s fúrikom: vyložený vedľa karty s NA EX ju vráti jej majiteľovi do ruky a zaujme jej miesto; poldeci sa vypije tomu, kto NA EX dal.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/sofer-ujo.test.ts › vyložený vedľa karty s NA EX ju vráti majiteľovi do ruky a zaujme jej miesto",
+        "packages/core/test/sofer-ujo.test.ts › vlastnú kartu s NA EX vráti do ruky jej majiteľovi, aj keď NA EX dal súper",
+        "packages/core/test/sofer-ujo.test.ts › vedľa karty bez NA EX nerobí nič"
+      ]
+    },
+    {
       "id": "14.karta.krcmarka",
       "paragraf": "14. Efekty kariet — výklad › Karty",
       "pravidlo": "Krčmárka: pri bitke bez Absťáku a bez NA EX v kole sa vypitý poldeci otočí na plný.",

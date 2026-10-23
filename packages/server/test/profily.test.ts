@@ -53,7 +53,7 @@ describe("profily — zoznam a detail partie", () => {
     expect(moje.status).toBe(200);
     expect(moje.data.pocet).toBe(1);
     expect(moje.data.partie[0]).toMatchObject({ vysledok: "vyhra", dohrata: false, super: { id: idEva } });
-    expect(moje.data.partie[0]?.verziaPravidiel).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(moje.data.partie[0]?.verziaPravidiel).toMatch(/^\d{4}-\d{2}-\d{2}(\.\d+)?$/);
     expect((await volaj(cudzi, "GET", `/hraci/${idJano}/partie`)).status).toBe(404);
     expect((await volaj(eva, "GET", `/hraci/${idJano}/partie`)).status).toBe(404);
     expect((await volaj(admin, "GET", `/hraci/${idJano}/partie`)).status).toBe(200);

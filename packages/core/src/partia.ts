@@ -334,6 +334,18 @@ export function spojePsa(data: GameData, strany: readonly [readonly PlacedCard[]
   return out;
 }
 
+/**
+ * Ujo s fúrikom (Nástup, roadmapa #71): vyložený vedľa karty s NA EX ju vráti
+ * jej majiteľovi do ruky a zaujme jej miesto. `strana` je partia PRED
+ * vyložením Uja — jeho jediný sused je jej krajná karta. Vracia kartu, ktorá
+ * odíde, alebo null.
+ */
+export function ujoVracia(strana: readonly PlacedCard[], defId: string): PlacedCard | null {
+  if (defId !== "ujo_s_furikom") return null;
+  const krajna = strana[strana.length - 1];
+  return krajna !== undefined && krajna.naexBy !== undefined ? krajna : null;
+}
+
 /** Spoj medzi susedmi: pravá strana `a` proti ľavej strane `b`. */
 function resolveJunction(a: Elem, b: Elem): void {
   if (!spojVznikne({ tags: a.tags, stred: a.isLokalita }, { tags: b.tags, stred: b.isLokalita })) return;
@@ -396,7 +408,11 @@ function applyVzbura(elem: Elem): void {
   }
 }
 
-function applyNaex(elem: Elem): void {
+/**
+ * NA EX: aktívne akcie karty zruší, neaktívne zdvojí. Šofér (Furt, roadmapa
+ * #71): karte vedľa seba neaktívne nezdvojí — aktívne zruší ako vždy.
+ */
+function applyNaex(elem: Elem, bezZdvojenia: boolean): void {
   if (elem.naexBy === undefined) return;
   for (const side of [0, 1] as const) {
     const actions = side === 0 ? elem.effLeft : elem.effRight;
@@ -406,7 +422,7 @@ function applyNaex(elem: Elem): void {
       if (stav === "aktivna") {
         elem.stav[side]![k] = "zrusena";
         elem.nasobok[side]![k] = 0;
-      } else if (stav === "neaktivna") {
+      } else if (stav === "neaktivna" && !bezZdvojenia) {
         elem.stav[side]![k] = "aktivna";
         elem.nasobok[side]![k] = 2;
         elem.dovody[side]![k]!.push("NA EX");
@@ -567,7 +583,14 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
     }
   }
   for (const elem of elems) applyVzbura(elem);
-  for (const elem of elems) applyNaex(elem);
+  const vedlaSofera = new Set<Elem>();
+  for (const seg of segments) {
+    seg.forEach((e, i) => {
+      if (e.isLokalita || e.defId !== "sofer") return;
+      for (const sused of [seg[i - 1], seg[i + 1]]) if (sused !== undefined && !sused.isLokalita) vedlaSofera.add(sused);
+    });
+  }
+  for (const elem of elems) applyNaex(elem, vedlaSofera.has(elem));
   const ranyPijana = kartoveEfekty(segments);
 
   // Nástroj v línii (Michal 2026-10-19): akcie na spoji dostane majiteľ karty,
