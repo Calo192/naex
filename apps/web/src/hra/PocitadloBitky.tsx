@@ -65,8 +65,10 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec }: Pocita
     // „spolu“ dorovná, čo klient nevidí — súperove Absťáky v ruke.
     if (k.druh === "spolu") return `${k.zmena < 0 ? "Absťáky v ruke" : "ostatné"} ${z}`;
     const meno = k.zdroj === null ? "" : (ZDROJ[k.zdroj] ?? menoKarty(k.zdroj));
-    if (k.naNule === true) return `🛡 ${meno} (už na 0)`;
-    return `${k.druh === "zrazka" ? "🛡 " : ""}${meno} ${z}`;
+    // Štít len pri Viere súpera (obrana); Absťáky a pasca sú trest, nie obrana (UI inšpekcia).
+    const znak = k.druh !== "zrazka" ? "" : k.zdroj === "Viera" ? "🛡 " : "↓ ";
+    if (k.naNule === true) return `${znak}${meno} (už na 0)`;
+    return `${znak}${meno} ${z}`;
   };
   const viditelne = hotovo ? p.kroky : p.kroky.filter((k) => k.vlna <= vlna);
   // Bonusy, zrážky a dorovnanie ostávajú pod číslami, kým počítadlo beží.
