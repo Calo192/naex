@@ -25,6 +25,7 @@ import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { IKONY } from "../karta/ikony.ts";
 import { useTip, type TipObsah } from "../karta/Tip.tsx";
 import { Avatar } from "../komponenty.tsx";
+import { BodovyBar, type BodovyBarProps } from "./BodovyBar.tsx";
 import { KartaHraca } from "./KartaHraca.tsx";
 import type { HracInfo } from "./useHra.ts";
 import { znamienko as znamienkoBodov } from "./Scorecard.tsx";
@@ -462,6 +463,11 @@ export interface HracDoskaProps {
   readonly starsi: { readonly stlacene: boolean; readonly prepni: () => void; readonly id: string };
   /** Dlaždica KARTY: klik otvorí vrstvu Karty, pri ťahaní kliatby či Nástroja je cieľom (#76). */
   readonly karty: KartyDlazdica;
+  /**
+   * Bodový bar (Michal 2026-10-23): kým stôl ukazuje líniu starších po kliku na Body,
+   * šesť zdrojov nahradia dlaždice podmienok (zdroje skryje hra.css .doska.bodovy).
+   */
+  readonly bodovy?: Omit<BodovyBarProps, "p" | "body" | "mena"> | undefined;
 }
 
 /** „o 12 pred Tetou“ / „o 3 za Tetou“ / „rovnako“ — dlaždica Body. */
@@ -493,6 +499,7 @@ export function HracDoska({
   mena,
   starsi,
   karty,
+  bodovy,
 }: HracDoskaProps) {
   const hrac = view.hraci[p];
   const ja = p === view.ja;
@@ -540,7 +547,7 @@ export function HracDoska({
   for (let i = 0; i < hrac.poldeciVypite; i++) poldeci.push(<IkonaPoldeci key={`v${i}`} plny={false} />);
 
   return (
-    <section className={`doska ${ja ? "moja" : "superova"} ${naTahu ? "na-tahu" : ""}`} aria-label={`Hráč ${meno}`}>
+    <section className={`doska ${ja ? "moja" : "superova"} ${naTahu ? "na-tahu" : ""}${bodovy !== undefined ? " bodovy" : ""}`} aria-label={`Hráč ${meno}`}>
       <div className="doska-hrac">
         <KartaHraca info={info} meno={meno} ja={ja}>
           <Avatar meno={meno} avatar={info?.avatar ?? null} velkost={60} />
@@ -579,6 +586,7 @@ export function HracDoska({
 
       {/* display: contents — dlaždice sú priamo v mriežke baru (poradie v hra.css). */}
       <div className="doska-zdroje">
+        {bodovy !== undefined && <BodovyBar p={p} body={body} mena={mena} {...bodovy} />}
         <Zdroj
           nazov="Poldeci"
           trieda="zdroj-poldeci"

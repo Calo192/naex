@@ -37,6 +37,21 @@ export const UCINOK_PRIAZNE: Readonly<Record<Favour, (sila: number) => string>> 
   EXEKUTOR: (s) => `Prah Exekútora ${KONSTANTY.PRAH_EXEKUTORA_ZAKLAD + 2 * bonus(s)} namiesto ${KONSTANTY.PRAH_EXEKUTORA_ZAKLAD}.`,
 };
 
+/**
+ * Účinok priazne krátko do riadku scorecardu v línii (Michal 2026-10-23: má byť
+ * vidno vždy, aj keď priazeň nemá nikto — aby hráč videl, koho sa oplatí desiť).
+ */
+export const UCINOK_KRATKO: Readonly<Record<Favour, (sila: number) => string>> = {
+  UZERNIK: (s) => `prah Dlhu +${s}`,
+  LAKOMEC: (s) => `barter −${s} cig.`,
+  NEPRAJNIK: (s) => `Povery +${bonus(s)} nad Dlhy`,
+  BITKAR: (s) => `+${bonus(s)} tuhé v bitke`,
+  VERIACI: (s) => `+${s} ${s === 1 ? "Viera" : "Viery"} v bitke`,
+  FAJCIAR: (s) => `+${s} cig. v Pitke`,
+  ALKOHOLIK: (s) => `prah Cirhózy +${bonus(s)}`,
+  EXEKUTOR: (s) => `prah Exekútora +${2 * bonus(s)}`,
+};
+
 /** Bonus priazne danej sily (Michal 2026-10-16: dvojnásobný účinok). */
 function bonus(sila: number): number {
   return KONSTANTY.NASOBOK_PRIAZNE * sila;

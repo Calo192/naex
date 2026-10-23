@@ -102,10 +102,10 @@ import {
   stranyLokality,
   vydesil,
 } from "@naex/core";
-import type { ActionSums, GameState, KliatbyNahladu, MarkerPos, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie } from "@naex/core";
+import type { ActionSums, GameState, KliatbyNahladu, MarkerPos, NahladVylozenia, PolozkaVykladania, Podmienka, Rod, Slot, StranaLinie } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
-import { LiniaStarsich, type StarsiVLinii } from "./LiniaStarsich.tsx";
+import { LiniaStarsich, LupaStarsieho, type StarsiVLinii } from "./LiniaStarsich.tsx";
 import { mediaUrl } from "../lib/api.ts";
 import { useStrazOdchodu } from "../lib/odchod.ts";
 import { skupinyBalicka } from "./doberaciBalicek.ts";
@@ -3120,6 +3120,13 @@ export function HernaPlocha({
   }, [potrebujemLiniu]);
   const starsiViditelni = tahanie === null && (krokStarsich !== null ? !nahliadnutie : vysledokKroku || pohladStarsich !== null);
   const pohladLinie = pohladStarsich ?? ja;
+  // Bodový bar (Michal 2026-10-23): po kliku na Body ukážu oba bary body podľa podmienok;
+  // späť sa prepnú spolu so stolom. Podmienka pod myšou zvýrazní starších v línii.
+  const bodovyRezim = starsiViditelni && pohladStarsich !== null;
+  const [zvyraznenaPodmienka, setZvyraznenaPodmienka] = useState<Podmienka | null>(null);
+  useEffect(() => {
+    if (!bodovyRezim) setZvyraznenaPodmienka(null);
+  }, [bodovyRezim]);
   const zavriStarsich = (): void => {
     setPohladStarsich(null);
     setVysledokKroku(false);
@@ -3202,6 +3209,44 @@ export function HernaPlocha({
       vybrany: mode.typ === "patronat" && mode.elderId === e.elderId,
     };
   });
+  // Lupa staršieho mimo krokov (Michal 2026-10-23): plynulá ako pri kartách — tie isté
+  // lupaKarty a nadLupou; registruje sa tu, nie v LiniaStarsich, lebo lupa sa kreslí
+  // na konci tohto prekreslenia.
+  const lupyStarsich = new Map(
+    starsiVLinii.map((s) => {
+      const kluc = `st-${s.elder.elderId}`;
+      const pomer = (): number => {
+        const r = lupa?.kluc === kluc ? lupa.rect : doznieva?.kluc === kluc ? doznieva.rect : null;
+        return r === null || r.width === 0 ? 0.9 : r.height / r.width;
+      };
+      lupaKarty.set(kluc, {
+        render: (sirka) => (
+          <LupaStarsieho
+            s={s}
+            data={data}
+            ikony={sada.ikonyBodovania ?? []}
+            ja={ja}
+            mena={[menoHraca(0), menoHraca(1)]}
+            sirka={sirka}
+            vyska={sirka * pomer()}
+            karta={karta({ karta: s.elder.karta, sirka: Math.round(sirka * 0.4) })}
+          />
+        ),
+        mierka: Math.max(mierkaLupy, 2.4),
+      });
+      return [s.elder.elderId, nadLupou(kluc, (el) => el, true)] as const;
+    }),
+  );
+  const bodovyBar = bodovyRezim
+    ? {
+        data,
+        starsi: view.starsi,
+        ikony: sada.ikonyBodovania ?? [],
+        menoStarsieho: (e: ElderState) => menoKarty(e.karta.defId),
+        zvyraznena: zvyraznenaPodmienka,
+        zvyrazni: setZvyraznenaPodmienka,
+      }
+    : undefined;
   const idLinieStarsich = useId();
   const tlacidloLinieStarsich: ReactNode =
     krokStarsich !== null ? (
@@ -4065,6 +4110,7 @@ export function HernaPlocha({
           mena={[menoHraca(0), menoHraca(1)]}
           starsi={{ stlacene: starsiViditelni && krokStarsich === null && pohladLinie === super_, prepni: () => prepniStarsich(super_), id: idLinieStarsich }}
           karty={kartyDlazdica(super_)}
+          bodovy={bodovyBar}
         />
         {/* Starší hore — mimo dosahu ruky, aby sa ich lupa nebila s lupou kariet v ruke. */}
         <div className="stred">
@@ -4137,6 +4183,8 @@ export function HernaPlocha({
                   hraniceZon={krokMoj && krokStarsich?.typ === "pohorsenie" && !pohorsenieBezLimitu(view)}
                   zmenene={zmeneniStarsi}
                   tlacidlo={tlacidloLinieStarsich}
+                  zvyraznena={zvyraznenaPodmienka}
+                  lupa={(s) => lupyStarsich.get(s.elder.elderId) ?? {}}
                 />
               )}
             </div>
@@ -4169,6 +4217,7 @@ export function HernaPlocha({
             mena={[menoHraca(0), menoHraca(1)]}
             starsi={{ stlacene: starsiViditelni && krokStarsich === null && pohladLinie === ja, prepni: () => prepniStarsich(ja), id: idLinieStarsich }}
             karty={kartyDlazdica(ja)}
+            bodovy={bodovyBar}
           />
 
 

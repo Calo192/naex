@@ -5369,6 +5369,12 @@ button.auto-hotovo-odkaz {
   .ls-ucinok {
     display: none;
   }
+
+  /* Dlhý účinok ustúpil — krátky v jednom riadku ostáva (účinok priazne je vidno vždy).
+     Vyššia špecificita: základné pravidlo s display: none stojí v súbore neskôr. */
+  .ls-pata > .ls-ucinok-kratko {
+    display: block;
+  }
 }
 
 /* Mobil: stôl nemá pevnú výšku — línia starších je v toku ako vodorovný pás (UI, variant A). */
@@ -5600,4 +5606,173 @@ button.auto-hotovo-odkaz {
   color: var(--na-akcente);
   font: 800 0.8rem/1 var(--pismo);
   pointer-events: none;
+}
+
+/* ---- bodový bar (Michal 2026-10-23): po kliku na Body body podľa podmienok ----
+ * Šesť zdrojov ustúpi jednému prvku cez ich stĺpce; Body a Karty ostávajú. */
+.doska.bodovy :is(.zdroj-dlhy, .zdroj-zadlzenie, .zdroj-pecen, .zdroj-abstak, .zdroj-cigarety, .zdroj-poldeci) {
+  display: none;
+}
+
+.bodovy-bar {
+  grid-row: 1;
+  grid-column: 2 / span 6;
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--n, 6), minmax(0, 1fr));
+  gap: 6px;
+}
+
+.doska.superova .bodovy-bar {
+  grid-column: 3 / span 6;
+}
+
+.bodova-dlazdica {
+  min-width: 0;
+  overflow: hidden;
+  cursor: help;
+}
+
+.bodova-dlazdica .zdroj-hodnota .ikona-podmienky,
+.bodova-dlazdica .zdroj-hodnota .ikona-podmienky-text {
+  width: 28px;
+  height: 28px;
+  flex: none;
+  object-fit: contain;
+}
+
+.bodova-dlazdica.plus .velke-cislo {
+  color: var(--zelena);
+}
+
+.bodova-dlazdica.minus .velke-cislo {
+  color: var(--cervena-text);
+}
+
+.bodova-dlazdica.zvyraznena,
+.bodova-dlazdica:focus-visible {
+  border-color: var(--akcent);
+  box-shadow: 0 0 0 1px var(--akcent);
+}
+
+/* Podmienka z bodového baru pod myšou: svietia starší, u ktorých boduje, a podmienka sama. */
+.linia-starsich.so-zvyraznenim .ls-sc:not(.zvyrazneny) {
+  opacity: 0.42;
+}
+
+.ls-sc.zvyrazneny {
+  box-shadow: 0 0 0 2px var(--akcent);
+}
+
+.ls-podmienka.zvyraznena {
+  outline: 3px solid var(--akcent);
+  outline-offset: 1px;
+}
+
+/* Účinok priazne vždy (Michal 2026-10-23) — jeden riadok, celé znenie v titulku. */
+.ls-ucinok-kratko {
+  display: none;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--slaby-text);
+}
+
+/* Lupa staršieho: karta s akciami vľavo, scorecard a priazeň vpravo; písmo podľa šírky. */
+.lupa-starsieho {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.9em;
+  padding: 0.8em;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--plocha);
+  border: 2px solid var(--akcent);
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.lst-karta {
+  align-self: center;
+}
+
+.lst-info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45em;
+}
+
+.lst-info p {
+  margin: 0;
+}
+
+.lst-hlava b {
+  font: 800 1.25em/1.1 var(--nadpis);
+}
+
+.lst-sc,
+.lst-tlmene {
+  color: var(--slaby-text);
+}
+
+.lupa-starsieho .ls-stupnica {
+  height: 1.6em;
+}
+
+.lst-priazen.moja b {
+  color: var(--ja);
+}
+
+.lst-priazen.superova b {
+  color: var(--su);
+}
+
+.lst-vydesenie b {
+  color: var(--cervena-text);
+}
+
+.lst-podmienky {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.3em 0.9em;
+}
+
+.lst-podmienky li {
+  display: grid;
+  grid-template-columns: 1.4em minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5em;
+  color: var(--slaby-text);
+}
+
+.lst-podmienky li.aktivna {
+  color: var(--text);
+}
+
+.lst-podmienky .ikona-podmienky,
+.lst-podmienky .ikona-podmienky-text {
+  width: 1.4em;
+  height: 1.4em;
+  object-fit: contain;
+}
+
+.lst-podmienky li > span:nth-child(2) {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.lst-body {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.lst-spolu {
+  margin-top: auto !important;
+  font-weight: 700;
 }
