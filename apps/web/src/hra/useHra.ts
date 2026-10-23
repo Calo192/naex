@@ -84,7 +84,45 @@ type ServerMsg =
   | { type: "melichar"; id: string; seat: 0 | 1; trvanieMs: number }
   /** Výučba „Prvá hra“: aktuálny krok po každej zmene. */
   | { type: "vyucba"; krok: KrokVyucby | null; hotovo: boolean }
+  /** Achievement práve získaný — server ho posiela LEN tomuto hráčovi. */
+  | { type: "achievement"; zisk: ZiskAchievementu }
+  /** Na konci partie (aj po návrate do skončenej partie): získané a „chýbalo málo“. */
+  | { type: "achievementySuhrn"; suhrn: SuhrnAchievementov }
   | { type: "error"; text: string };
+
+/**
+ * Achievementy (Michal 2026-10-23) — tvar zo servera (packages/server/src/achievementy.ts).
+ * popis má dosadený prah ranku; rankov = počet ★ achievementu (1 – 3).
+ */
+export interface AchievementPreKlienta {
+  readonly id: string;
+  readonly nazov: string;
+  readonly popis: string;
+  readonly kategoria: string | null;
+  /** „akcia:<Akcia>“ alebo „podmienka:<podmienka>“ (ikony kariet), inak null. */
+  readonly piktogram: string | null;
+  readonly tajny: boolean;
+  readonly rankov: number;
+}
+
+/** Získaný rank — oznam v partii. vzacny = 3★ alebo tajný (Melichar sa ozve). */
+export interface ZiskAchievementu extends AchievementPreKlienta {
+  readonly rank: number;
+  readonly hodnota: number;
+  readonly vzacny: boolean;
+}
+
+/** „Chýbalo málo“: k ranku `rank` chýba prah − hodnota. */
+export interface PriblizenieAchievementu extends AchievementPreKlienta {
+  readonly rank: number;
+  readonly hodnota: number;
+  readonly prah: number;
+}
+
+export interface SuhrnAchievementov {
+  readonly ziskane: readonly ZiskAchievementu[];
+  readonly chybaloMalo: readonly PriblizenieAchievementu[];
+}
 
 /** Pustená hláška Melichara; n rastie, aby sa tá istá hláška dala pustiť znova. */
 export interface HlaskaVPartii {
@@ -112,6 +150,10 @@ export interface HraHook {
   pustiMelichara(id: string): void;
   /** Výučba „Prvá hra“ v tejto miestnosti, inak null. */
   readonly vyucba: StavVyucby | null;
+  /** Achievementy získané v tejto partii v poradí zisku; n rastie s každým novým (oznam). */
+  readonly achievementy: { readonly n: number; readonly zisky: readonly ZiskAchievementu[] };
+  /** Súhrn achievementov po konci partie, inak null. */
+  readonly suhrnAchievementov: SuhrnAchievementov | null;
   /** Spustí výučbu (server pokračuje od uloženého kroku). */
   zalozVyucbu(): void;
   /** Potvrdí krok výučby bez ťahu (len text Melichara). */
@@ -162,6 +204,8 @@ export function useHra(aktivne: boolean): HraHook {
   const [frajerina, setFrajerina] = useState<ZmenyFrajeriny | null>(null);
   const [melichar, setMelichar] = useState<HlaskaVPartii | null>(null);
   const [vyucba, setVyucba] = useState<StavVyucby | null>(null);
+  const [achievementy, setAchievementy] = useState<{ readonly n: number; readonly zisky: readonly ZiskAchievementu[] }>({ n: 0, zisky: [] });
+  const [suhrnAchievementov, setSuhrnAchievementov] = useState<SuhrnAchievementov | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const menaRef = useRef<string[]>([]);
   menaRef.current = hraci.map((h, i) => menoVoVete(h, i));
@@ -185,6 +229,8 @@ export function useHra(aktivne: boolean): HraHook {
         case "privitanie":
           setMiestnost({ code: msg.code, seat: msg.seat, started: msg.started, verejna: msg.verejna, dlzka: msg.dlzka, sada: msg.sada });
           setFrajerina(null);
+          setAchievementy({ n: 0, zisky: [] });
+          setSuhrnAchievementov(null);
           // Krok výučby príde hneď po privítaní — iná miestnosť výučbu nemá.
           setVyucba(null);
           localStorage.setItem(KLUC, msg.code);
@@ -216,6 +262,12 @@ export function useHra(aktivne: boolean): HraHook {
           break;
         case "vyucba":
           setVyucba({ krok: msg.krok, hotovo: msg.hotovo });
+          break;
+        case "achievement":
+          setAchievementy((a) => ({ n: a.n + 1, zisky: [...a.zisky, msg.zisk] }));
+          break;
+        case "achievementySuhrn":
+          setSuhrnAchievementov(msg.suhrn);
           break;
         case "error":
           // Rozohraná partia zanikla (napr. reštart servera — miestnosti žijú
@@ -281,6 +333,8 @@ export function useHra(aktivne: boolean): HraHook {
     superPripojeny,
     frajerina,
     melichar,
+    achievementy,
+    suhrnAchievementov,
     pustiMelichara: useCallback((id: string) => posli({ type: "melichar", id }), [posli]),
     vyucba,
     zalozVyucbu: useCallback(() => posli({ type: "create", vyucba: true }), [posli]),
@@ -298,6 +352,8 @@ export function useHra(aktivne: boolean): HraHook {
       setHraci([null, null]);
       setFrajerina(null);
       setVyucba(null);
+      setAchievementy({ n: 0, zisky: [] });
+      setSuhrnAchievementov(null);
     }, [posli]),
     zrusChybu: useCallback(() => setChyba(null), []),
   };

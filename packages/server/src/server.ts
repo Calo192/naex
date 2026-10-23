@@ -76,6 +76,7 @@ import { Novinky } from "./novinky.ts";
 import { Dielna } from "./dielna.ts";
 import { Hodnotenia } from "./znamky.ts";
 import { titul } from "./frajerina.ts";
+import { Achievementy, nacitajKatalog, type AchievementyMiestnosti } from "./achievementy.ts";
 
 // ---------------------------------------------------------------------------
 // Dáta z repozitára (testy jadra a nástroje ich používajú priamo)
@@ -166,6 +167,8 @@ interface Room {
   vyucba: { krok: number } | null;
   /** Strop pečiatok momentov (Michal 2026-10-23): 1 za úsek kola, zlato 2 za partiu. */
   momenty: StavMomentov;
+  /** Achievementy partie (Michal 2026-10-23); null = nič sa nezískava (výučba, ešte nezačala). */
+  achievementy: AchievementyMiestnosti | null;
 }
 
 /**
@@ -257,6 +260,13 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   /** Výučba je pre hráčov, až keď je scenár zverejnený; dovtedy ju spustí len správca. */
   const vyucbaPreHracov = opts.vyucbaZapnuta ?? scenarVyucby.zverejnena === true;
   const archiv = new Archiv(db);
+  // Katalóg achievementov (Navrhár, data/achievementy.json): chyba v ňom vypne achievementy, nie server.
+  let achievementy: Achievementy | null = null;
+  try {
+    achievementy = new Achievementy(db, nacitajKatalog());
+  } catch (err) {
+    console.error("Achievementy sú vypnuté — katalóg sa nedá načítať:", err);
+  }
   const tempoPartii = new TempoPartii(db);
   const prava = new Prava(db);
   const profily = new Profily(db);
@@ -355,6 +365,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           hudba,
           melichar,
           archiv,
+          achievementy,
           tempoPartii,
           prava,
           profily,
@@ -486,6 +497,8 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       send(ws, { type: "superPripojeny", connected: room.sockets[druhe] !== null || room.bot === druhe });
     }
     if (room.vysledok !== null) send(ws, { type: "frajerina", zmeny: room.vysledok });
+    const suhrn = room.achievementy?.hraci[seat]?.suhrn ?? null;
+    if (suhrn !== null) send(ws, { type: "achievementySuhrn", suhrn });
     if (room.vyucba !== null) posliVyucbu(room);
     oznamPripojenie(room, seat, true);
   };
@@ -564,6 +577,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           melicharVolnyOd: [0, 0],
           momenty: NOVE_MOMENTY,
           vyucba: null,
+          achievementy: null,
         };
         rooms.set(room.code, room);
         if (protiBotovi) {
@@ -578,6 +592,8 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           room.kronika = novaKronika(room.state);
         }
         usadit(ws, room, 0);
+        // Až po usadení — achievementy potrebujú účet hráča na mieste 0.
+        if (protiBotovi) zacniAchievementy(room);
         if (protiBotovi) naplanujBota(room);
         break;
       }
@@ -616,6 +632,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           room.tempo = noveTempo(room.zaciatok);
           room.kronika = novaKronika(room.state);
           room.statistikyKariet = {};
+          zacniAchievementy(room);
           broadcast(room, [{ type: "log", text: `Hra začína: ${h0.meno} proti ${h1.meno}.` }]);
         }
         break;
@@ -731,6 +748,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     const strop = obmedzMomenty(momenty(room.data, pred, result.state, result.events), room.momenty, result.state);
     room.momenty = strop.stav;
     broadcast(room, [...result.events, ...strop.vybrane.map((moment): Event => ({ type: "moment", moment }))]);
+    achievementyPoKroku(room, pred, cmd, seat, result.state, result.events);
     const dohrata = pred.koniec === null && result.state.koniec !== null && cmd.type !== "vzdat";
     // Návštevník sa stáva hráčom po prvej dohratej partii proti človeku aj proti botovi (Michal 2026-10-21);
     // partia s botom sa pritom do archívu ani štatistík nezapíše.
@@ -825,6 +843,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       melicharVolnyOd: [0, 0],
       momenty: NOVE_MOMENTY,
       vyucba: { krok },
+      achievementy: null,
     };
     rooms.set(room.code, room);
     const povaha = POVAHY.find((p) => p.id === "stamgast");
@@ -943,11 +962,48 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     }
   };
 
+  // ---- achievementy (Michal 2026-10-23) ----------------------------------------
+
+  /** Zisky z jednej partie — kód miestnosti sa opakuje, začiatok partie nie. */
+  const klucMiestnosti = (room: Room): string => `${room.code}:${room.zaciatok}`;
+
+  const zacniAchievementy = (room: Room): void => {
+    if (achievementy === null || room.vyucba !== null) return;
+    const ucet = (i: PlayerId): { id: number; ai: boolean } | null => {
+      const h = room.hraci[i];
+      return h === null || room.bot === i || h.id === BOT_ID ? null : { id: h.id, ai: h.ai };
+    };
+    try {
+      room.achievementy = achievementy.zacni([ucet(0), ucet(1)], room.bot === null ? null : room.botPovaha);
+    } catch (err) {
+      console.error("Achievementy partie sa nepodarilo založiť:", err);
+      room.achievementy = null;
+    }
+  };
+
+  /** Oznam o zisku ide LEN hráčovi, ktorý získal — súper ho nevidí. */
+  const achievementyPoKroku = (room: Room, pred: GameState, cmd: Command, seat: PlayerId, po: GameState, events: readonly Event[]): void => {
+    if (achievementy === null || room.achievementy === null || room.vyucba !== null) return;
+    try {
+      const { zisky, suhrny } = achievementy.poKroku(room.achievementy, room.data, pred, cmd, seat, po, events, klucMiestnosti(room), teraz());
+      for (const miesto of [0, 1] as const) {
+        const ws = room.sockets[miesto];
+        if (ws === null) continue;
+        for (const zisk of zisky[miesto]) send(ws, { type: "achievement", zisk });
+        const suhrn = suhrny[miesto];
+        if (suhrn !== null) send(ws, { type: "achievementySuhrn", suhrn });
+      }
+    } catch (err) {
+      // Achievementy nesmú zastaviť partiu.
+      console.error("Achievementy po ťahu zlyhali:", err);
+    }
+  };
+
   const zapisDoArchivu = (room: Room, koniec: GameState, dohrata: boolean): void => {
     const [h0, h1] = room.hraci;
     if (h0 === null || h1 === null || room.statistiky === null || koniec.koniec === null) return;
     try {
-      const { zmeny } = archiv.zapis({
+      const { id: partia, zmeny } = archiv.zapis({
         kod: room.code,
         zaciatok: room.zaciatok,
         koniec: teraz(),
@@ -980,6 +1036,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         statistiky: doplnNaexZKroniky(uzavriStatistiky(room.data, room.statistiky, koniec), room.kronika?.kola ?? []),
         statistikyKariet: room.statistikyKariet,
       });
+      if (room.achievementy !== null) achievementy?.priradPartiu(klucMiestnosti(room), partia);
       // Partia s botom Frajerinu nemení — správa o nej sa neposiela.
       if (room.bot !== null) return;
       room.vysledok = zmeny;

@@ -12,6 +12,7 @@ import { ALL_PODMIENKY, dostupneDlzky, prazdneStatistiky } from "@naex/core";
 import type { KartaNavrh, Pozicia, StranaNavrhu, AkciaDef, KlucoveSlovo, Kategoria, BodovaciaKarta, IkonaBodovania, Nastavenia } from "@naex/tvorba";
 import { exportTxt, importTxt, slug, PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
 import type { Pouzivatel, Rola, Ucty } from "./auth.ts";
+import type { Achievementy } from "./achievementy.ts";
 import { ChybaVstupu, cookieOdhlasenia, cookieRelacie, overHesloVstup, overLogin, overHlasitost, overLupu, overMeno, overSchemu, overPrepinac, overPohlavie, citajCookie, jeSpravca } from "./auth.ts";
 import type { DruhMedia, Media } from "./media.ts";
 import type { Hudba } from "./hudba.ts";
@@ -81,6 +82,8 @@ export interface ApiKontext {
   /** Hlášky majstra Melichara v partii proti počítaču. */
   readonly melichar: Hudba;
   readonly archiv: Archiv;
+  /** Achievementy (Michal 2026-10-23) — null, keď sa katalóg nepodarilo načítať. */
+  readonly achievementy: Achievementy | null;
   /** Čas a príkazy po fázach každej dohratej partie (roadmapa #9). */
   readonly tempoPartii: TempoPartii;
   /** Ranky a práva (Michal 2026-10-22) — matica rank × právo a pravidlá postupu. */
@@ -608,10 +611,16 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       if (!(FILTRE_PARTII as readonly string[]).includes(f)) throw new ChybaVstupu("Filter: ludia, boti alebo spolu.");
       const suhrnSkryty = ciel.skrytySuhrn;
       if (cudzi && suhrnSkryty) {
-        // Skrytý súhrn: ani staré súčty štatistík (pole statistiky) cudziemu nepošleme.
-        return ok({ ...profil, statistiky: prazdneStatistiky(), casSpolu: 0, suhrnSkryty, suhrn: null });
+        // Skrytý súhrn: ani staré súčty štatistík (pole statistiky) ani vitrínu achievementov cudziemu nepošleme.
+        return ok({ ...profil, statistiky: prazdneStatistiky(), casSpolu: 0, suhrnSkryty, suhrn: null, achievementy: null });
       }
-      return ok({ ...profil, suhrnSkryty, suhrn: ctx.profily.suhrn(id, f as FilterPartii, !cudzi) });
+      return ok({ ...profil, suhrnSkryty, suhrn: ctx.profily.suhrn(id, f as FilterPartii, !cudzi), achievementy: ctx.achievementy?.vitrina(id) ?? null });
+    }
+
+    // Vlastná vitrína achievementov (Michal 2026-10-23); cudzie sú v GET /hraci/:id.
+    if (r === "GET /achievementy") {
+      const p = prihlaseny();
+      return ok({ achievementy: ctx.achievementy?.vitrina(p.id) ?? null });
     }
 
     if (r === "GET /rebricek") {

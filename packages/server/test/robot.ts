@@ -24,6 +24,8 @@ export class Robot {
   /** Koľko stavov už prišlo — na čakanie bez pretekov so súperovým ťahom. */
   pocetStavov = 0;
   hraci: unknown = null;
+  /** Ostatné správy servera (achievementy, Frajerina…) v poradí príchodu. */
+  ostatne: { type: string; [k: string]: unknown }[] = [];
 
   constructor(port: number, cookie: string) {
     this.ws = new WebSocket(`ws://127.0.0.1:${port}/ws`, { headers: { cookie } });
@@ -53,6 +55,8 @@ export class Robot {
         // Odmietnutý ťah: stav nepríde — čakanie ukončíme hneď, test vypíše dôvod.
         this.cakajuci?.();
         this.cakajuci = null;
+      } else {
+        this.ostatne.push(msg);
       }
     });
   }

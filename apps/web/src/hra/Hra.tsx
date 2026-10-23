@@ -1,7 +1,7 @@
 // Herná časť (/hra): lobby → čakáreň → partia. Len pre prihlásených.
 
 import { useCallback, useEffect, useState } from "react";
-import type { DlzkaHry } from "@naex/core";
+import type { DlzkaHry, NaladaMomentu } from "@naex/core";
 import { ALL_DLZKY, DLZKY_HRY, NAZOV_DLZKY, PREDVOLENA_DLZKA } from "@naex/core";
 import { api, mediaUrl } from "../lib/api.ts";
 import { useSada } from "../lib/sada.tsx";
@@ -227,10 +227,17 @@ export function Hra() {
   // Na nepodporovanom zariadení sa ani nepripája — po roztiahnutí okna sa pripojí a vráti do partie.
   const hra = useHra(ja !== null && nepodporovane === null);
 
-  // Majster Melichar komentuje len partie proti počítaču — ľudia si nadávajú sami.
-  // Ozve sa pri pečiatke momentu (Momenty), nie po každom ťahu (Michal 2026-10-23).
-  // Vo výučbe Melichar hovorí v bubline — hlášky a pečiatky momentov by mu skákali do reči.
-  const { ozviMoment } = useMelichar(hra.view !== null && hra.vyucba === null && hra.hraci.some((h) => h?.bot === true));
+  // Majster Melichar komentuje momenty len v partii proti počítaču — ľudia si nadávajú sami.
+  // Ozve sa pri pečiatke momentu (Momenty), nie po každom ťahu (Michal 2026-10-23), a v každej
+  // partii pri vzácnom achievemente (3★ alebo tajný). Vo výučbe hovorí v bubline — mlčí.
+  const sBotom = hra.hraci.some((h) => h?.bot === true);
+  const { ozviMoment } = useMelichar(hra.view !== null && hra.vyucba === null);
+  const hovorPriMomente = useCallback((nalada: NaladaMomentu) => (sBotom ? ozviMoment(nalada) : undefined), [sBotom, ozviMoment]);
+  const posledny = hra.achievementy.zisky.at(-1);
+  useEffect(() => {
+    if (posledny?.vzacny === true) ozviMoment(posledny.tajny ? "udiv" : "pohoda");
+    // Len pri novom zisku (n), nie pri prekreslení.
+  }, [hra.achievementy.n]);
   const cmd = hra.cmd;
   // Kým beží Počítadlo bitky, pečiatka momentu z bitky čaká (dohoda Bugfixing × New features).
   const [pocitadloBezi, setPocitadloBezi] = useState(false);
@@ -360,7 +367,7 @@ export function Hra() {
     <>
     <HudbaPartie />
     {hra.vyucba === null && (
-      <Momenty udalosti={hra.udalosti} ja={hra.view.ja} mena={hra.hraci.map((h, i) => h?.meno ?? `Hráč ${i + 1}`)} hovor={ozviMoment} pocitadloBezi={pocitadloBezi} />
+      <Momenty udalosti={hra.udalosti} ja={hra.view.ja} mena={hra.hraci.map((h, i) => h?.meno ?? `Hráč ${i + 1}`)} hovor={hovorPriMomente} pocitadloBezi={pocitadloBezi} />
     )}
     <HernaPlocha
       onPocitadlo={setPocitadloBezi}

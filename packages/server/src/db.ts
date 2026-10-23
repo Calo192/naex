@@ -259,6 +259,33 @@ CREATE TABLE IF NOT EXISTS dielna_nahlasenia (
   cas INTEGER NOT NULL,
   PRIMARY KEY (navrh, pouzivatel)
 );
+-- Achievementy (Michal 2026-10-23): získané ranky, súčty kariéry a množiny „rôznych“
+-- (povahy, súperi) — rátané od spustenia, nič spätne. proti = ludia | bot | vsetky.
+CREATE TABLE IF NOT EXISTS achievementy_zisky (
+  pouzivatel INTEGER NOT NULL REFERENCES pouzivatelia(id) ON DELETE CASCADE,
+  achievement TEXT NOT NULL,
+  rank INTEGER NOT NULL,
+  ziskane INTEGER NOT NULL,
+  miestnost TEXT NOT NULL,
+  partia INTEGER,
+  PRIMARY KEY (pouzivatel, achievement, rank)
+);
+CREATE INDEX IF NOT EXISTS achievementy_zisky_miestnost ON achievementy_zisky(miestnost);
+CREATE TABLE IF NOT EXISTS achievementy_kariera (
+  pouzivatel INTEGER NOT NULL REFERENCES pouzivatelia(id) ON DELETE CASCADE,
+  proti TEXT NOT NULL,
+  kluc TEXT NOT NULL,
+  hodnota REAL NOT NULL,
+  aktualna REAL NOT NULL DEFAULT 0,
+  PRIMARY KEY (pouzivatel, proti, kluc)
+);
+CREATE TABLE IF NOT EXISTS achievementy_rozne (
+  pouzivatel INTEGER NOT NULL REFERENCES pouzivatelia(id) ON DELETE CASCADE,
+  proti TEXT NOT NULL,
+  kluc TEXT NOT NULL,
+  stitok TEXT NOT NULL,
+  PRIMARY KEY (pouzivatel, proti, kluc, stitok)
+);
 `;
 
 export function otvorDb(cesta: string): Db {
