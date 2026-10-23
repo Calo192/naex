@@ -252,6 +252,8 @@ export interface ServerOpts {
   readonly botPauzaMs?: number;
   /** Výučba pre všetkých bez ohľadu na vypínač v scenári (testy). */
   readonly vyucbaZapnuta?: boolean;
+  /** Achievementy bez ohľadu na vypínač v katalógu (testy). */
+  readonly achievementyZapnute?: boolean;
   /** Iný scenár výučby (testy); predvolene data/vyucba/prva-hra.json. */
   readonly scenarVyucby?: ScenarVyucby;
 }
@@ -273,9 +275,11 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   const vyucbaPreHracov = opts.vyucbaZapnuta ?? scenarVyucby.zverejnena === true;
   const archiv = new Archiv(db);
   // Katalóg achievementov (Navrhár, data/achievementy.json): chyba v ňom vypne achievementy, nie server.
+  // Kým katalóg nemá „zapnute“: true, achievementy sa nepočítajú, neukladajú ani neposielajú (Michal 2026-10-23).
   let achievementy: Achievementy | null = null;
   try {
-    achievementy = new Achievementy(db, nacitajKatalog());
+    const katalog = nacitajKatalog();
+    if (opts.achievementyZapnute ?? katalog.zapnute) achievementy = new Achievementy(db, katalog);
   } catch (err) {
     console.error("Achievementy sú vypnuté — katalóg sa nedá načítať:", err);
   }
