@@ -353,6 +353,152 @@
   color-scheme: light;
 }
 
+/* Šalvia — Sage Green · Olive Buff · Ochraceous Salmon (Michal 2026-10-23: zemité
+   a krémové, nič jasne biele). Krémovo-šalviové plochy, terakotový akcent. */
+:root[data-schema="salvia"] {
+  --graf-ludia: #00889e;
+  --graf-ai: #c2531c;
+  --pozadie: #e6e4d2;
+  --plocha: #efede0;
+  --plocha-2: #dfddc8;
+  --plocha-3: #d4d2bb;
+  --okraj: #c5c3aa;
+  --okraj-svetly: #a6a58b;
+  --text: #272a1f;
+  --tlmeny: #4f5341;
+  --slaby: #84876f;
+  --slaby-text: #5d6049;
+  --akcent: #974522;
+  --akcent-tmavy: #7e3819;
+  --akcent-svetly: #873d1d;
+  --na-akcente: #f6eedd;
+  --cervena: #b8452f;
+  --cervena-text: #a8321f;
+  --cervena-svetla: #9a2c1a;
+  --tehla-tmava: #a8341f;
+  --zelena: #256d2f;
+  --zelena-svetla: #2b6b36;
+  --zelena-ziariva: #2f9e4f;
+  --info: #2e5f86;
+  --info-silna: #3a76ad;
+  --ja: #006a77;
+  --ja-tmava: #d2ecee;
+  --su: #a3401d;
+  --su-tmava: #f5ddd2;
+  --lesk: #000000;
+  --tma: 0.3;
+  color-scheme: light;
+}
+
+/* Olivovník — Olive Buff · Olive Green · Cream Color. Teplý krémový papier,
+   olivový akcent, text farby surovej umbry. */
+:root[data-schema="olivovnik"] {
+  --graf-ludia: #00889e;
+  --graf-ai: #c2531c;
+  --pozadie: #eee6cf;
+  --plocha: #f5eedb;
+  --plocha-2: #e6dec4;
+  --plocha-3: #dcd3b6;
+  --okraj: #cec4a5;
+  --okraj-svetly: #b0a684;
+  --text: #2d2716;
+  --tlmeny: #574f39;
+  --slaby: #8b836a;
+  --slaby-text: #655d45;
+  --akcent: #56601a;
+  --akcent-tmavy: #454e11;
+  --akcent-svetly: #4b5414;
+  --na-akcente: #f7f1de;
+  --cervena: #b8452f;
+  --cervena-text: #a8321f;
+  --cervena-svetla: #9a2c1a;
+  --tehla-tmava: #a8341f;
+  --zelena: #256d2f;
+  --zelena-svetla: #2b6b36;
+  --zelena-ziariva: #2f9e4f;
+  --info: #2e5f86;
+  --info-silna: #3a76ad;
+  --ja: #006a77;
+  --ja-tmava: #d2ecee;
+  --su: #a3401d;
+  --su-tmava: #f5ddd2;
+  --lesk: #000000;
+  --tma: 0.3;
+  color-scheme: light;
+}
+
+/* Modrotlač — Dull Blue Violet · Cream Buff · Yellow Ocher. Krémové plátno
+   a tlmená indigová modrá ako pri modrotlači, okrový nádych plôch. */
+:root[data-schema="modrotlac"] {
+  --graf-ludia: #00889e;
+  --graf-ai: #c2531c;
+  --pozadie: #ebe4d3;
+  --plocha: #f3eee1;
+  --plocha-2: #e3dcc9;
+  --plocha-3: #d8d0bb;
+  --okraj: #c9c1aa;
+  --okraj-svetly: #aca48c;
+  --text: #212634;
+  --tlmeny: #4b5060;
+  --slaby: #82838a;
+  --slaby-text: #5a5d68;
+  --akcent: #3a5479;
+  --akcent-tmavy: #2c4263;
+  --akcent-svetly: #334b6d;
+  --na-akcente: #f5f0e4;
+  --cervena: #b8452f;
+  --cervena-text: #a8321f;
+  --cervena-svetla: #9a2c1a;
+  --tehla-tmava: #a8341f;
+  --zelena: #256d2f;
+  --zelena-svetla: #2b6b36;
+  --zelena-ziariva: #2f9e4f;
+  --info: #2e5f86;
+  --info-silna: #3a76ad;
+  --ja: #006a77;
+  --ja-tmava: #d2ecee;
+  --su: #a3401d;
+  --su-tmava: #f5ddd2;
+  --lesk: #000000;
+  --tma: 0.3;
+  color-scheme: light;
+}
+
+/* Terakota — Hays Russet · Sage Green · Ochraceous Buff. Tmavá pálená hlina,
+   šalviový akcent a krémový text; farby s herným významom ako v Krčme. */
+:root[data-schema="terakota"] {
+  --pozadie: #1a110d;
+  --plocha: #251812;
+  --plocha-2: #301f17;
+  --plocha-3: #3b271d;
+  --okraj: #472f23;
+  --okraj-svetly: #654434;
+  --text: #f0e6d6;
+  --tlmeny: #bba893;
+  --slaby: #8e7d6b;
+  --slaby-text: #a3917e;
+  --akcent: #b4c38f;
+  --akcent-tmavy: #889a63;
+  --akcent-svetly: #d6e2b5;
+  --na-akcente: #1c240f;
+  --cervena: #d0563f;
+  --cervena-text: #e5735c;
+  --cervena-svetla: #ff9d88;
+  --tehla-tmava: #a8341f;
+  --zelena: #7cbf74;
+  --zelena-svetla: #7fe39a;
+  --zelena-ziariva: #7dff9c;
+  --info: #8fc3e0;
+  --info-silna: #5aa9d6;
+  --ja: #5cc0cf;
+  --ja-tmava: #1d3b40;
+  --su: #e0805f;
+  --su-tmava: #43261d;
+  --lesk: #ffffff;
+  --tma: 1;
+  color-scheme: dark;
+}
+
 /* Odvodené tokeny (Dielňa, 2026-10-22) — platia vo všetkých schémach, lebo sa
    skladajú z tokenov schémy. Okraj formulárových polí má aspoň 3 : 1 (--okraj-svetly
    má len ≈ 2 : 1); stavy návrhov majú v texte čipu ešte prímes --text. */

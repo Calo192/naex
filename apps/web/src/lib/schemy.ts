@@ -95,6 +95,39 @@ export const SCHEMY: readonly Schema[] = [
     tmava: false,
     nahlad: ["#e7eef4", "#f6f9fd", "#7b3d69", "#22272d"],
   },
+  // Michal 2026-10-23: zemité a krémové schémy, príjemné pre oči — bez jasnej bielej.
+  {
+    id: "salvia",
+    nazov: "Šalvia",
+    popis: "Svetlá: krémová šalvia a pálená terakota.",
+    wada: "Sage Green · Olive Buff · Ochraceous Salmon",
+    tmava: false,
+    nahlad: ["#e6e4d2", "#efede0", "#974522", "#272a1f"],
+  },
+  {
+    id: "olivovnik",
+    nazov: "Olivovník",
+    popis: "Svetlá: teplý krémový papier, olivová a umbra.",
+    wada: "Olive Buff · Olive Green · Cream Color",
+    tmava: false,
+    nahlad: ["#eee6cf", "#f5eedb", "#56601a", "#2d2716"],
+  },
+  {
+    id: "modrotlac",
+    nazov: "Modrotlač",
+    popis: "Svetlá: krémové plátno a tlmená indigová.",
+    wada: "Dull Blue Violet · Cream Buff · Yellow Ocher",
+    tmava: false,
+    nahlad: ["#ebe4d3", "#f3eee1", "#3a5479", "#212634"],
+  },
+  {
+    id: "terakota",
+    nazov: "Terakota",
+    popis: "Tmavá pálená hlina a šalviová zelená.",
+    wada: "Hays Russet · Sage Green · Ochraceous Buff",
+    tmava: true,
+    nahlad: ["#1a110d", "#251812", "#b4c38f", "#f0e6d6"],
+  },
 ];
 
 const KLUC = "naex-schema";

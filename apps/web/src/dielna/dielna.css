@@ -1,5 +1,5 @@
 /* Dielňa (2026-10-22, dizajn dielna-20261022-1421): stôl návrhov, detail, editor.
-   Farby len cez tokeny (schemy.css: --okraj-pola a stavy --stav-*), všetkých 10 schém funguje samo. */
+   Farby len cez tokeny (schemy.css: --okraj-pola a stavy --stav-*), všetkých 14 schém funguje samo. */
 
 .karty-zalozky {
   display: flex;
