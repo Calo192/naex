@@ -123,7 +123,7 @@ data/majster_melichar/
   udiv/
     skupina.json      názov, citát, ikona, farba, kláves, nálady momentov
     aha.mp3 …
-  nervy/ bieda/ posmech/ vyhrazky/ reci/ pohoda/
+  nervy/ bieda/ urazky/ vyhrazky/ reci/ pohoda/
   _na-posudenie/      priečinok s „_“ sa nenahrá (hláška, o ktorej sa ešte rozhoduje)
 ```
 
