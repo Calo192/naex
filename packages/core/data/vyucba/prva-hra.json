@@ -424,7 +424,7 @@
       "prikaz": {
         "type": "skipNaex"
       },
-      "melichar": ""
+      "melichar": "Pitka sa vyhodnotí, Štamgast dostal druhý Dlh."
     },
     {
       "id": "k25",
@@ -433,7 +433,7 @@
         "type": "pohorsenie",
         "elderId": "starosta"
       },
-      "melichar": "Bitka! Dievčina na vydaj odišla z hry a spálila Štamgastove dva Dlhy, ako píše jej karta. Potom Pohoršenie: Starosta ide o krok k tebe."
+      "melichar": "Bitka! Dievčina na vydaj odišla z hry a spálila oba jeho Dlhy, ako píše jej karta. Pohoršenie: Starosta ide o krok k tebe."
     },
     {
       "id": "k26",
@@ -469,24 +469,24 @@
     },
     {
       "id": "k28",
-      "kto": "hrac",
+      "kto": "auto",
       "prikaz": {
         "type": "prebytok",
         "elderId": "farar"
       },
-      "melichar": "Ešte raz Farár.",
+      "melichar": "Hra za teba posúva Farára ďalej.",
       "zvyraznit": [
         "starsi:farar"
       ]
     },
     {
       "id": "k29",
-      "kto": "hrac",
+      "kto": "auto",
       "prikaz": {
         "type": "prebytok",
         "elderId": "farar"
       },
-      "melichar": "A do tretice. Farár je v oranžovom a bojí sa ťa na úrovni dva, to sú body. Jednota je tvoja.",
+      "melichar": "A do tretice. Farár je v oranžovom a bojí sa ťa na úrovni dva. Jednota je tvoja.",
       "zvyraznit": [
         "starsi:farar"
       ]
@@ -494,27 +494,27 @@
     {
       "id": "i-kolo2",
       "kto": "info",
-      "melichar": "Prvé kolo máš za sebou. Na začiatku nového kola si každý dobere dve karty a jeden vypitý poldeci sa sám doleje. Hore pod Log je všetko, čo sa stalo.",
+      "melichar": "Prvé kolo máš za sebou. Každý si dobral dve karty a jeden poldeci sa dolial. Bežné ťahy teraz spraví hra za teba. Hrá sa o Krčmu: kto má plný poldeci, musí v Pitke dať NA EX.",
       "zvyraznit": [
         "hlavicka:log"
       ]
     },
     {
       "id": "k30",
-      "kto": "hrac",
+      "kto": "auto",
       "prikaz": {
         "type": "chooseLocation",
         "uid": "lokality:krcma",
         "otocena": false
       },
-      "melichar": "Vyber Krčmu a potvrď ju, ako leží. Ako víťaz bitky si znova obranca. Krčma má zákon: kto má plný poldeci, musí v Pitke dať NA EX.",
+      "melichar": "Ako víťaz si znova obranca a hra vybrala Krčmu.",
       "zvyraznit": [
         "lokality:krcma"
       ]
     },
     {
       "id": "k31",
-      "kto": "hrac",
+      "kto": "auto",
       "prikaz": {
         "type": "stavbaSenku",
         "doSenku": [
@@ -530,7 +530,7 @@
           "stavba:financna_poradkyna"
         ]
       },
-      "melichar": "Ako minule: zvýraznené štyri karty daj na Smetisko a potvrď.",
+      "melichar": "",
       "zvyraznit": [
         "stavba"
       ]
@@ -568,14 +568,14 @@
     },
     {
       "id": "k34",
-      "kto": "hrac",
+      "kto": "auto",
       "prikaz": {
         "type": "draftBer",
         "uids": [
           "senok:hasic"
         ]
       },
-      "melichar": "Kúp Hasiča. Na Krčme sa ti jeho Petelica s povinným NA EX zíde.",
+      "melichar": "Hra ti kúpila Hasiča, ten sa zíde.",
       "zvyraznit": [
         "senok:hasic"
       ]
@@ -586,15 +586,15 @@
       "prikaz": {
         "type": "draftStop"
       },
-      "melichar": "Štamgast už nekupuje."
+      "melichar": ""
     },
     {
       "id": "k36",
-      "kto": "hrac",
+      "kto": "auto",
       "prikaz": {
         "type": "draftStop"
       },
-      "melichar": "Klikni už neťahám (P).",
+      "melichar": "",
       "zvyraznit": [
         "tlacidlo:pas"
       ]
@@ -609,11 +609,11 @@
     },
     {
       "id": "k38",
-      "kto": "hrac",
+      "kto": "auto",
       "prikaz": {
         "type": "bezPatronatu"
       },
-      "melichar": "Klikni neberiem. Kto má priazeň staršieho, smie si ho vziať do ruky ako kartu. Starosta by šiel, ale dnes ho necháme tak."
+      "melichar": ""
     },
     {
       "id": "k39",
@@ -685,11 +685,11 @@
     },
     {
       "id": "k44",
-      "kto": "hrac",
+      "kto": "auto",
       "prikaz": {
         "type": "pass"
       },
-      "melichar": "Klikni pasovať (P).",
+      "melichar": "Pasuješ.",
       "zvyraznit": [
         "tlacidlo:pas"
       ]
@@ -717,11 +717,11 @@
     },
     {
       "id": "k47",
-      "kto": "hrac",
+      "kto": "auto",
       "prikaz": {
         "type": "skipNaex"
       },
-      "melichar": "Klikni končím (K). Posledné slovo má útočník.",
+      "melichar": "",
       "zvyraznit": [
         "tlacidlo:hotovo"
       ]
@@ -764,11 +764,11 @@
     },
     {
       "id": "k52",
-      "kto": "hrac",
+      "kto": "auto",
       "prikaz": {
         "type": "pass"
       },
-      "melichar": "Klikni pasovať (P).",
+      "melichar": "Pasuješ.",
       "zvyraznit": [
         "tlacidlo:pas"
       ]
@@ -796,11 +796,11 @@
     },
     {
       "id": "k55",
-      "kto": "hrac",
+      "kto": "auto",
       "prikaz": {
         "type": "skipNaex"
       },
-      "melichar": "Klikni končím (K).",
+      "melichar": "",
       "zvyraznit": [
         "tlacidlo:hotovo"
       ]
@@ -830,36 +830,36 @@
     },
     {
       "id": "k58",
-      "kto": "hrac",
+      "kto": "auto",
       "prikaz": {
         "type": "prebytok",
         "elderId": "autobusar"
       },
-      "melichar": "Zvyšné body daj Autobusárovi.",
+      "melichar": "Zvyšné body idú Autobusárovi.",
       "zvyraznit": [
         "starsi:autobusar"
       ]
     },
     {
       "id": "k59",
-      "kto": "hrac",
+      "kto": "auto",
       "prikaz": {
         "type": "prebytok",
         "elderId": "autobusar"
       },
-      "melichar": "Ešte raz.",
+      "melichar": "",
       "zvyraznit": [
         "starsi:autobusar"
       ]
     },
     {
       "id": "k60",
-      "kto": "hrac",
+      "kto": "auto",
       "prikaz": {
         "type": "prebytok",
         "elderId": "autobusar"
       },
-      "melichar": "A posledný. Autobusár je v oranžovom, bojí sa ťa.",
+      "melichar": "Autobusár je v oranžovom, bojí sa ťa.",
       "zvyraznit": [
         "starsi:autobusar"
       ]
