@@ -4,7 +4,7 @@
 // Zásada: každé číslo, od ktorého závisí rozhodnutie (poldeci, cigarety,
 // pečeň, dlhy, poškodenie), je veľké, pomenované a vždy na tom istom mieste.
 
-import { useEffect, useId, useRef, useState, type ReactNode, type RefObject } from "react";
+import { useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import type {
   Action,
   ActionSums,
@@ -27,7 +27,6 @@ import { useTip, type TipObsah } from "../karta/Tip.tsx";
 import { Avatar } from "../komponenty.tsx";
 import { KartaHraca } from "./KartaHraca.tsx";
 import type { HracInfo } from "./useHra.ts";
-import { RozpisDlazdice } from "./RozpisDlazdice.tsx";
 import { znamienko as znamienkoBodov } from "./Scorecard.tsx";
 
 // ---- ikony zdrojov -----------------------------------------------------------
@@ -348,12 +347,15 @@ export interface HracDoskaProps {
   readonly obchodCigariet?:
     | { readonly mozno: boolean; readonly doliat: () => void; readonly novy: () => void; readonly cenaBarteru: number }
     | undefined;
-  /** Body „keby hra skončila teraz“ — dlaždica Body a jej rozpis (Michal 2026-10-22, scoreboard zanikol). */
+  /** Body „keby hra skončila teraz“ — dlaždica Body (Michal 2026-10-22, scoreboard zanikol). */
   readonly body: BodyTeraz;
-  readonly data: GameData;
   /** Mená oboch hráčov podľa miesta. */
   readonly mena: readonly [string, string];
-  readonly menoStarsieho: (elderId: string) => string;
+  /**
+   * Klik na Body prepne stôl na líniu starších (Michal 2026-10-23, #68) — bar sa
+   * neprepína. `stlacene`: línia práve ukazuje čísla tohto hráča.
+   */
+  readonly starsi: { readonly stlacene: boolean; readonly prepni: () => void; readonly id: string };
 }
 
 /** „o 12 pred Tetou“ / „o 3 za Tetou“ / „rovnako“ — dlaždica Body. */
@@ -367,8 +369,7 @@ function porovnanieBodov(moje: number, jeho: number, menoJeho: string): string {
  * sedia oproti sebe — súperov bar je nad staršími, tvoj pod stolom, oba
  * v jednom rade a zrkadlovo (tvoj: portrét · Dlhy … Poldeci · Body · Karty,
  * súperov presne obrátene; poradie dáva mriežka v hra.css). Klik na Body
- * vymení šesť zdrojov za šesť dlaždíc rozpisu bodov v tých istých stĺpcoch —
- * výška baru sa nemení. Bez bubliniek so stavom — kto je na ťahu, ukazuje
+ * ukáže na stole líniu starších s rozpisom bodov po starších. Bez bubliniek so stavom — kto je na ťahu, ukazuje
  * stôl a pokyn, NA EX vidno na poldeci.
  */
 export function HracDoska({
@@ -383,23 +384,9 @@ export function HracDoska({
   cenaDlhu,
   obchodCigariet,
   body,
-  data,
   mena,
-  menoStarsieho,
+  starsi,
 }: HracDoskaProps) {
-  const [rozpis, setRozpis] = useState(false);
-  const bodyRef = useRef<HTMLButtonElement>(null);
-  const idRozpisu = useId();
-  useEffect(() => {
-    if (!rozpis) return;
-    const klaves = (e: KeyboardEvent): void => {
-      if (e.key !== "Escape") return;
-      setRozpis(false);
-      bodyRef.current?.focus();
-    };
-    window.addEventListener("keydown", klaves);
-    return () => window.removeEventListener("keydown", klaves);
-  }, [rozpis]);
   const hrac = view.hraci[p];
   const ja = p === view.ja;
   const meno = info?.meno ?? `Hráč ${p + 1}`;
@@ -423,7 +410,7 @@ export function HracDoska({
   for (let i = 0; i < hrac.poldeciVypite; i++) poldeci.push(<IkonaPoldeci key={`v${i}`} plny={false} />);
 
   return (
-    <section className={`doska ${ja ? "moja" : "superova"} ${naTahu ? "na-tahu" : ""} ${rozpis ? "s-rozpisom" : ""}`} aria-label={`Hráč ${meno}`}>
+    <section className={`doska ${ja ? "moja" : "superova"} ${naTahu ? "na-tahu" : ""}`} aria-label={`Hráč ${meno}`}>
       <div className="doska-hrac">
         <KartaHraca info={info} meno={meno} ja={ja}>
           <Avatar meno={meno} avatar={info?.avatar ?? null} velkost={60} />
@@ -702,35 +689,19 @@ export function HracDoska({
           }}
         />
         <button
-          ref={bodyRef}
           type="button"
-          className={`zdroj zdroj-body ${body.spolu[p] > 0 ? "plus" : body.spolu[p] < 0 ? "minus" : ""}`}
-          aria-expanded={rozpis}
-          aria-controls={idRozpisu}
-          title={rozpis ? "Späť na zdroje (Esc)" : "Rozpis bodov — za čo koľko (keby hra skončila teraz)"}
-          onClick={() => setRozpis((r) => !r)}
+          className={`zdroj zdroj-body ${body.spolu[p] > 0 ? "plus" : body.spolu[p] < 0 ? "minus" : ""}${starsi.stlacene ? " stlacene" : ""}`}
+          aria-pressed={starsi.stlacene}
+          aria-controls={starsi.id}
+          title={starsi.stlacene ? "Späť na stôl (Esc)" : "Starší a body na stole — za čo koľko, keby hra skončila teraz"}
+          onClick={starsi.prepni}
         >
-          <span className="zdroj-nazov">Body {rozpis ? "▴" : "▾"}</span>
+          <span className="zdroj-nazov">Body {starsi.stlacene ? "▴" : "▾"}</span>
           <span className="zdroj-hodnota">
             <span className="velke-cislo">{znamienkoBodov(body.spolu[p])}</span>
           </span>
           <span className="zdroj-pod">{porovnanieBodov(body.spolu[p], body.spolu[p === 0 ? 1 : 0], mena[p === 0 ? 1 : 0])}</span>
         </button>
-        {rozpis && (
-          <div className="doska-rozpis" id={idRozpisu} role="group" aria-label={`Rozpis bodov — ${meno}`}>
-            <RozpisDlazdice body={body} data={data} p={p} ja={view.ja} mena={mena} menoStarsieho={menoStarsieho} zrkadlo={!ja} />
-            <button
-              type="button"
-              className="rozpis-spat"
-              onClick={() => {
-                setRozpis(false);
-                bodyRef.current?.focus();
-              }}
-            >
-              ← späť na zdroje <kbd>Esc</kbd>
-            </button>
-          </div>
-        )}
       </div>
 
     </section>
@@ -982,7 +953,8 @@ export interface BitkaPanelProps {
   readonly rodJa?: Rod;
 }
 
-export function BitkaPanel({ damage, sums, zdroje, rozpis, ja, vysledok, mena, sada, ciel, menoKarty, naSekeru, poslednaBitka, cenaPosunuVitaza, prebytokNaRozdelenie, utocnik, rodJa = null }: BitkaPanelProps) {
+/** Verdikt a prebytok bitky — spoločné pre panel aj jeho jednoriadkový súhrn. */
+function verdiktBitky({ damage, ja, vysledok, naSekeru, poslednaBitka, cenaPosunuVitaza, prebytokNaRozdelenie, rodJa = null }: BitkaPanelProps) {
   const su = (ja === 0 ? 1 : 0) as PlayerId;
   // Remíza (Michal 2026-10-21): pri rovnakom tuhom nevyhrá nikto — lokalita ide na sekeru (PRAVIDLA §8.4).
   const { vitaz, prebytok, prebytokDrzi } = battleOutcome(damage);
@@ -1005,6 +977,39 @@ export function BitkaPanel({ damage, sums, zdroje, rozpis, ja, vysledok, mena, s
   // Prebytok: posun stojí 1, víťaza s Miňištrantom viac — koľko posunov z neho reálne bude.
   const cenaPosunu = prebytokDrzi === null ? 1 : prebytokDrzi === vitaz ? cenaPosunuVitaza[prebytokDrzi] : 1;
   const posunov = Math.floor(prebytokNaRozdelenie / Math.max(1, cenaPosunu));
+  return { su, vitaz, prebytok, prebytokDrzi, rozdiel, vyhravam, vStavke, coPriRemize, verdikt, cenaPosunu, posunov };
+}
+
+/**
+ * Súhrn odhadu bitky v páse kola (Stôl bez scrollovania, #67): verdikt a tuhé
+ * v jednom riadku, celý panel s ikonami akcií ukáže klik.
+ */
+export function SuhrnBitky(props: BitkaPanelProps & { readonly otvoreny: boolean; readonly prepni: () => void; readonly id: string }) {
+  const { damage, ja, vysledok, otvoreny, prepni, id } = props;
+  const { su, vitaz, vyhravam, verdikt, prebytok, prebytokDrzi } = verdiktBitky(props);
+  return (
+    <button
+      type="button"
+      className={`suhrn-bitky ${vitaz === null ? "" : vyhravam ? "vyhravam" : "prehravam"}`}
+      aria-expanded={otvoreny}
+      aria-controls={id}
+      onClick={prepni}
+      title={otvoreny ? "Skryť rozpis bitky (Esc)" : "Rozpis bitky — akcie oboch strán, prebytok, sekera"}
+    >
+      <span className="suhrn-bitky-nadpis">{vysledok ? "Výsledok" : "Odhad"}</span>
+      <b>{verdikt}</b>
+      <span className="suhrn-bitky-tuhe">
+        tuhé {damage.tuhe[ja]} : {damage.tuhe[su]}
+        {prebytokDrzi !== null && ` · prebytok ${prebytok} → ${prebytokDrzi === ja ? "tebe" : props.mena[su]}`}
+      </span>
+      <span aria-hidden="true">{otvoreny ? "▴" : "▾"}</span>
+    </button>
+  );
+}
+
+export function BitkaPanel(props: BitkaPanelProps) {
+  const { damage, sums, zdroje, rozpis, ja, vysledok, mena, sada, ciel, menoKarty, naSekeru, prebytokNaRozdelenie, utocnik } = props;
+  const { su, vitaz, prebytok, prebytokDrzi, rozdiel, vyhravam, vStavke, coPriRemize, verdikt, cenaPosunu, posunov } = verdiktBitky(props);
 
   const strana = (p: PlayerId, zarovnanie: "vlavo" | "vpravo") => (
     <StranaBitky
