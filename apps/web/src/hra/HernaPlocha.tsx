@@ -4227,7 +4227,11 @@ export function HernaPlocha({
               <div className="linia-skupina lokalita" ref={lokalitaRef}>
                 <span
                   className="partia-popis"
-                  title={stranyStredu === null ? undefined : `Hrana k tebe: ${krajStrany(ja) ?? "k tebe"} · hrana k súperovi: ${krajStrany(super_) ?? "k súperovi"}`}
+                  title={
+                    stranyStredu === null || krajStrany(ja) === null || krajStrany(super_) === null
+                      ? undefined
+                      : `Hrana k tebe: ${krajStrany(ja)} · hrana k súperovi: ${krajStrany(super_)}`
+                  }
                 >
                   {lokalita !== null || lokalitaNavrh !== null ? "lokalita" : "cieľ kola"}
                 </span>

@@ -5879,6 +5879,12 @@ button.auto-hotovo-odkaz {
   display: none;
 }
 
+/* Pokyn sa dá zamerať klávesnicou (rozbalí sa) — fokus musí byť vidno. */
+.linia-stav:focus-visible {
+  outline: 2px solid var(--akcent);
+  outline-offset: 2px;
+}
+
 .vrstva-fazy > .draft-panel.stavba {
   position: relative;
   gap: 8px;
