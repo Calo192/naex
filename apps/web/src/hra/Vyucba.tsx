@@ -290,7 +290,7 @@ export function VyucbaStol({
   useEffect(() => {
     const m = minuly.current;
     if (krok !== null && m !== null && m.id === krok.id) return;
-    setPredtym((p) => (m !== null && m.kto === "bot" && m.melichar.trim() !== "" ? [...p, m].slice(-3) : []));
+    setPredtym((p) => (m !== null && (m.kto === "bot" || m.kto === "auto") && m.melichar.trim() !== "" ? [...p, m].slice(-3) : []));
     minuly.current = krok;
     zrusChybu();
     // Len pri zmene kroku — zrusChybu je stabilný (useCallback v useHra).
@@ -420,6 +420,7 @@ export function VyucbaStol({
               )}
               {krok.kto === "hrac" && <span className="vyucba-stav">Tvoj ťah</span>}
               {krok.kto === "bot" && <span className="vyucba-stav vyucba-caka">{menoBota} ťahá…</span>}
+              {krok.kto === "auto" && <span className="vyucba-stav vyucba-caka">Hra ťahá za teba…</span>}
               <button type="button" className="tlacidlo-jemne vyucba-prerusit" onClick={prerusit} title="Postup sa uloží — pokračuješ na stránke Hrať.">
                 prerušiť výučbu
               </button>

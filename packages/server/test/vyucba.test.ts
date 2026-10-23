@@ -5,6 +5,7 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Command } from "@naex/core";
 import type { GameServer } from "../src/server.ts";
+import { nacitajVyucbu } from "../src/server.ts";
 import type { Msg } from "./pomocnik.ts";
 import { Klient, TEST_ADMIN, prihlas, registruj, testovaciServer } from "./pomocnik.ts";
 
@@ -22,7 +23,7 @@ afterAll(async () => {
 interface KrokMsg {
   index: number;
   spolu: number;
-  kto: "hrac" | "bot" | "info";
+  kto: "hrac" | "bot" | "info" | "auto";
   melichar: string;
   zvyraznit: string[];
   ocakava: Command | null;
@@ -144,6 +145,37 @@ describe("výučba — vypínač (scenár nezverejnený)", () => {
       a.zavri();
     } finally {
       await z();
+    }
+  });
+});
+
+describe("výučba — automatické kroky hráča (kto: auto)", () => {
+  it("auto krok spraví server za hráča ako ťah bota — výučba prejde len s „ďalej“", async () => {
+    // Všetky ťahy hráča ako auto: hráč len číta a kliká „ďalej“.
+    const zaklad = nacitajVyucbu();
+    const scenar = { ...zaklad, kroky: zaklad.kroky.map((k) => (k.kto === "hrac" ? { ...k, kto: "auto" as const } : k)) };
+    const { server: s, zmaz: zmazAuto } = await testovaciServer(TEST_ADMIN, { botPauzaMs: 0, vyucbaZapnuta: true, scenarVyucby: scenar });
+    try {
+      const { cookie } = await registruj(s.port);
+      const k = new Klient(s.port, cookie);
+      await k.otvorene();
+      k.posli({ type: "create", vyucba: true });
+      let msg = await k.cakaj("vyucba");
+      const videne = new Set<string>();
+      for (let n = 0; n < 500 && msg.hotovo !== true; n++) {
+        const krok = msg.krok as KrokMsg;
+        videne.add(krok.kto);
+        // Auto krok čaká rovnako ako bot — nič neposielame; ocakava hráčovi nepríde.
+        if (krok.kto === "auto") expect(krok.ocakava).toBeNull();
+        if (krok.kto === "info") k.posli({ type: "vyucbaDalej" });
+        msg = await k.cakaj("vyucba");
+      }
+      expect(msg.hotovo).toBe(true);
+      expect(videne.has("auto")).toBe(true);
+      expect(videne.has("hrac")).toBe(false);
+      k.zavri();
+    } finally {
+      await zmazAuto();
     }
   });
 });

@@ -19,6 +19,7 @@ import type { Sada } from "@naex/tvorba";
 import {
   DLZKY_HRY,
   IllegalCommandError,
+  ktoVykona,
   VERZIA_PRAVIDIEL,
   bodyTeraz,
   defOf,
@@ -180,7 +181,7 @@ export interface KrokVyucbyKlient {
   readonly index: number;
   readonly spolu: number;
   readonly id: string;
-  readonly kto: "hrac" | "bot" | "info";
+  readonly kto: "hrac" | "bot" | "info" | "auto";
   readonly melichar: string;
   readonly zvyraznit: readonly string[];
   readonly ocakava: Command | null;
@@ -243,6 +244,8 @@ export interface ServerOpts {
   readonly botPauzaMs?: number;
   /** Výučba pre všetkých bez ohľadu na vypínač v scenári (testy). */
   readonly vyucbaZapnuta?: boolean;
+  /** Iný scenár výučby (testy); predvolene data/vyucba/prva-hra.json. */
+  readonly scenarVyucby?: ScenarVyucby;
 }
 
 export function createGameServer(opts: ServerOpts): Promise<GameServer> {
@@ -257,7 +260,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   const melichar = new Hudba(dataDir, "melichar");
   ucty.pouziPredvoleneAvatary(() => avatary.nahodny());
   const obsah = new Obsah(db, media);
-  const scenarVyucby = nacitajVyucbu();
+  const scenarVyucby = opts.scenarVyucby ?? nacitajVyucbu();
   /** Výučba je pre hráčov, až keď je scenár zverejnený; dovtedy ju spustí len správca. */
   const vyucbaPreHracov = opts.vyucbaZapnuta ?? scenarVyucby.zverejnena === true;
   const archiv = new Archiv(db);
@@ -898,7 +901,10 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       return;
     }
     if (k.kto !== "hrac") {
-      sendError(ws, k.kto === "info" ? "Najprv si prečítaj, čo hovorí majster Melichar, a klikni „ďalej“." : "Teraz ťahá Štamgast.");
+      sendError(
+        ws,
+        k.kto === "info" ? "Najprv si prečítaj, čo hovorí majster Melichar, a klikni „ďalej“." : k.kto === "auto" ? "Tento ťah spraví hra za teba — chvíľu počkaj." : "Teraz ťahá Štamgast.",
+      );
       return;
     }
     const ocakava = ocakavanyPrikaz(scenarVyucby, room.state, room.vyucba.krok);
@@ -926,20 +932,22 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     posunVyucbu(room);
   };
 
-  /** Ťah bota zo scenára po pauze (aby ho hráč stihol sledovať). */
+  /** Ťah bota a automatický ťah hráča (auto) zo scenára po pauze — aby ho hráč stihol sledovať. */
   const naplanujVyucbu = (room: Room): void => {
     if (room.vyucba === null || room.botTimer !== null || room.state === null) return;
-    if (scenarVyucby.kroky[room.vyucba.krok]?.kto !== "bot") return;
+    const ktoTahne = scenarVyucby.kroky[room.vyucba.krok]?.kto;
+    if (ktoTahne !== "bot" && ktoTahne !== "auto") return;
     room.botTimer = setTimeout(() => {
       room.botTimer = null;
       const state = room.state;
       if (state === null || room.vyucba === null || !rooms.has(room.code)) return;
       const krok = scenarVyucby.kroky[room.vyucba.krok];
-      if (krok?.kto !== "bot" || krok.prikaz === undefined) return;
+      if ((krok?.kto !== "bot" && krok?.kto !== "auto") || krok.prikaz === undefined) return;
+      const hrac = ktoVykona(krok);
       try {
-        vykonaj(room, prikazZoScenara(state, VYUCBA_BOT, krok.prikaz), VYUCBA_BOT);
+        vykonaj(room, prikazZoScenara(state, hrac, krok.prikaz), hrac);
       } catch (err) {
-        console.error("Scenár výučby: ťah bota neprešiel", krok.id, err);
+        console.error(`Scenár výučby: ${krok.kto === "auto" ? "automatický ťah hráča" : "ťah bota"} neprešiel`, krok.id, err);
         return;
       }
       posunVyucbu(room);
