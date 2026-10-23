@@ -60,6 +60,16 @@ serverom playtestov (`tools/playtest/turnus.ts`).
 - **Správy Leaderovi najviac 3–5 riadkov** (Michal 2026-10-23 — šetrí tokeny).
   Podrobnosti patria do commitu, reportu alebo súboru, v správe len cesta.
 
+## UI dizajn a UI inšpekcia (Michal 2026-10-23)
+
+UX/UI pred hlásením „hotové“ požiada UI Inspector o kontrolu svojej vetvy. Na
+svojich portoch pustí dev server, pošle Inspectorovi url, cesty a stavy stola
+a Inspector zmeria vetvu nástrojom `inspekcia.ts --url …` (len lokálny server).
+Nálezy Inspector posiela **priamo UX/UI**, nie Leaderovi. UX/UI opraví vysoké
+a stredné nálezy, a ak treba, kontrolu zopakuje. Leaderovi potom napíše vetvu
+a výsledok inšpekcie jednou vetou (napr. „inšpekcia: 0 vysokých, 0 stredných“).
+Rovnako postupuje Bugfixing pri UI opravách.
+
 ## Šetrenie tokenov (Michal 2026-10-23)
 
 - **Odovzdanie.** Každá session vedie `F:\Projects\handoff\<rola>.md` (mimo
