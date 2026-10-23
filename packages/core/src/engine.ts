@@ -1063,6 +1063,9 @@ export function setupZRozdania(data: GameData, r: Rozdanie): GameState {
     if (h.cigarety !== undefined) hrac(s, p).cigarety = h.cigarety;
   }
   if (r.spolocnyBalicek !== undefined) s.spolocnyBalicek = r.spolocnyBalicek.map(karta);
+  // Ďalšia náhoda (zamiešanie odhodených) len zo seedu scenára — nie zo stavu
+  // po bežnom rozdaní, ktorý závisí od počtu kariet v sade (sada v11 ho zmenila).
+  s.rng = rngSeed(r.seed);
   return s as GameState;
 }
 
