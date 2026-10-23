@@ -18,7 +18,8 @@ afterAll(async () => {
 
 interface Stav {
   verzia: unknown;
-  partie: { ludia: number; sBotom: number; cakajuce: number; poslednaAktivita: number | null };
+  partie: { ludia: number; sBotom: number; cakajuce: number; poslednaAktivita: number | null; aktivne: number; opustene: number };
+  uzavierka: unknown;
 }
 
 describe("stav servera", () => {
@@ -32,7 +33,8 @@ describe("stav servera", () => {
     const prazdny = (await (await stav(admin)).json()) as Stav;
     // Testovací (vývojový) server nemá VERZIA.json z nasadenia.
     expect(prazdny.verzia).toBeNull();
-    expect(prazdny.partie).toEqual({ ludia: 0, sBotom: 0, cakajuce: 0, poslednaAktivita: null });
+    expect(prazdny.partie).toEqual({ ludia: 0, sBotom: 0, cakajuce: 0, poslednaAktivita: null, aktivne: 0, opustene: 0 });
+    expect(prazdny.uzavierka).toBeNull();
 
     const ka = new Klient(server.port, a.cookie);
     await ka.otvorene();
@@ -45,7 +47,7 @@ describe("stav servera", () => {
     kb.posli({ type: "join", code: kod });
     await ka.cakaj("state");
     const bezi = ((await (await stav(admin)).json()) as Stav).partie;
-    expect(bezi).toMatchObject({ ludia: 1, sBotom: 0, cakajuce: 0 });
+    expect(bezi).toMatchObject({ ludia: 1, sBotom: 0, cakajuce: 0, aktivne: 1, opustene: 0 });
     expect(bezi.poslednaAktivita).not.toBeNull();
     ka.zavri();
     kb.zavri();

@@ -53,16 +53,20 @@ function Lobby({
   const [hry, setHry] = useState<readonly OtvorenaHra[] | null>(null);
   const [dostupne, setDostupne] = useState<readonly DlzkaHry[]>([PREDVOLENA_DLZKA]);
   const [dlzka, setDlzka] = useState<DlzkaHry>(PREDVOLENA_DLZKA);
+  // Uzávierka pred nasadením (Michal 2026-10-23): text oznamu zo servera, alebo null.
+  const [uzavierka, setUzavierka] = useState<string | null>(null);
+  const zavrete = uzavierka !== null;
 
   useEffect(() => {
     let zive = true;
     const nacitaj = () =>
       api
-        .get<{ hry: OtvorenaHra[]; dlzky: DlzkaHry[] }>("/hry/otvorene")
+        .get<{ hry: OtvorenaHra[]; dlzky: DlzkaHry[]; uzavierka: string | null }>("/hry/otvorene")
         .then((r) => {
           if (!zive) return;
           setHry(r.hry);
           setDostupne(r.dlzky);
+          setUzavierka(r.uzavierka);
         })
         .catch(() => zive && setHry([]));
     void nacitaj();
@@ -79,7 +83,8 @@ function Lobby({
         <h1>Hrať</h1>
         <p className="tlmene">Založ hru a pošli kamarátovi kód, alebo sa pridaj k niekomu, kto čaká na súpera.</p>
       </header>
-      {chyba !== null && <Hlaska>{chyba}</Hlaska>}
+      {uzavierka !== null && <Hlaska druh="info">{uzavierka}</Hlaska>}
+      {chyba !== null && chyba !== uzavierka && <Hlaska>{chyba}</Hlaska>}
       <div className="lobby">
         <section className="panel">
           <h2>Nová hra</h2>
@@ -107,11 +112,13 @@ function Lobby({
           {maPravo(ja, "hrat_ludia") ? (
             <div className="riadok-tlacidiel">
               {maPravo(ja, "sukromne_miestnosti") && (
-                <button className="tlacidlo-hlavne" onClick={() => zaloz(false, dlzka)}>
+                <button className="tlacidlo-hlavne" onClick={() => zaloz(false, dlzka)} disabled={zavrete}>
                   Súkromná hra s kódom
                 </button>
               )}
-              <button onClick={() => zaloz(true, dlzka)}>Verejná hra</button>
+              <button onClick={() => zaloz(true, dlzka)} disabled={zavrete}>
+                Verejná hra
+              </button>
             </div>
           ) : (
             <p className="tlmene">Hrať proti ľuďom tvoj rank zatiaľ nesmie.</p>
@@ -123,7 +130,7 @@ function Lobby({
             hneď a do Frajeriny sa neráta.
           </p>
           <div className="riadok-tlacidiel">
-            <button onClick={() => zaloz(false, dlzka, true)} disabled={!maPravo(ja, "hrat_bot")}>
+            <button onClick={() => zaloz(false, dlzka, true)} disabled={!maPravo(ja, "hrat_bot") || zavrete}>
               Hrať proti počítaču
             </button>
           </div>
@@ -146,7 +153,7 @@ function Lobby({
           {hry === null ? (
             <Nacitavanie />
           ) : hry.length === 0 ? (
-            <p className="tlmene">Práve nikto nečaká. Založ verejnú hru — zobrazí sa tu ostatným.</p>
+            <p className="tlmene">{zavrete ? "Práve nikto nečaká." : "Práve nikto nečaká. Založ verejnú hru — zobrazí sa tu ostatným."}</p>
           ) : (
             <ul className="otvorene-hry">
               {hry.map((h) => (
@@ -159,7 +166,7 @@ function Lobby({
                       {popisDlzky(h.dlzka)} · čaká {Math.max(1, Math.round((Date.now() - h.vytvorena) / 60000))} min
                     </div>
                   </div>
-                  <button className="tlacidlo-hlavne tlacidlo-male" onClick={() => pripoj(h.kod)}>
+                  <button className="tlacidlo-hlavne tlacidlo-male" onClick={() => pripoj(h.kod)} disabled={zavrete}>
                     Hrať
                   </button>
                 </li>

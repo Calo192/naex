@@ -46,8 +46,29 @@ export interface StavServera {
   readonly verzia: { readonly commit: string; readonly vetva: string; readonly necommitnute: boolean; readonly nahrate: string } | null;
   readonly spusteny: number;
   /** Rozohrané partie — reštart servera ich zhodí. */
-  readonly partie: { readonly ludia: number; readonly sBotom: number; readonly cakajuce: number; readonly poslednaAktivita: number | null };
+  readonly partie: {
+    readonly ludia: number;
+    readonly sBotom: number;
+    readonly cakajuce: number;
+    readonly poslednaAktivita: number | null;
+    /** Rozohrané s ťahom za posledných 30 min — na tieto nasadenie čaká; ostatné sú opustené. */
+    readonly aktivne: number;
+    readonly opustene: number;
+  };
+  /** Uzávierka pred nasadením (od kedy), alebo null. */
+  readonly uzavierka: Uzavierka | null;
 }
+
+/**
+ * Uzávierka pred nasadením (Michal 2026-10-23): nové partie ani pripojenie do novej
+ * miestnosti, rozohrané bežia ďalej. Len v pamäti servera — reštart (nasadenie) ju zruší.
+ */
+export interface Uzavierka {
+  readonly od: number;
+}
+
+/** Oznam hráčom počas uzávierky — v lobby aj ako chyba pri zakladaní partie. */
+export const OZNAM_UZAVIERKY = "Pripravujeme aktualizáciu hry — nové partie pôjdu založiť o chvíľu. Rozohrané partie dohrajte v pokoji.";
 
 export interface ApiKontext {
   readonly ucty: Ucty;
@@ -87,6 +108,8 @@ export interface ApiKontext {
   /** Po zverejnení novej sady — nové hry pobežia na nej. */
   readonly poZverejneni: () => void;
   readonly stavServera: () => StavServera;
+  /** Zapne alebo vypne uzávierku; vráti nový stav. */
+  readonly nastavUzavierku: (zapnut: boolean) => Uzavierka | null;
 }
 
 const JSON_LIMIT = 2 * 1024 * 1024;
@@ -395,7 +418,11 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
 
     if (r === "GET /hry/otvorene") {
       prihlaseny();
-      return ok({ hry: ctx.otvoreneHry(), dlzky: dostupneDlzky(ctx.obsah.aktualnaSada().data) });
+      return ok({
+        hry: ctx.otvoreneHry(),
+        dlzky: dostupneDlzky(ctx.obsah.aktualnaSada().data),
+        uzavierka: ctx.stavServera().uzavierka === null ? null : OZNAM_UZAVIERKY,
+      });
     }
 
     // ----- známky hry a roadmapa (verejné čítanie) -----------------------
@@ -854,6 +881,11 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       }
     }
     if (sub === "GET /stav-servera") return ok(ctx.stavServera());
+    if (sub === "PUT /uzavierka") {
+      const b = await citajJson(req);
+      if (typeof b.zapnut !== "boolean") throw new ChybaVstupu("Uzávierka: zapnut musí byť true alebo false.");
+      return ok({ uzavierka: ctx.nastavUzavierku(b.zapnut) });
+    }
     // Ranky a práva (Michal 2026-10-22): matica rank × právo a pravidlá postupu.
     if (sub === "GET /prava") return ok({ ...ctx.prava.nastavenie(), prava: PRAVA, popis: POPIS_PRAVA, ranky: RANKY_HRACOV });
     if (sub === "PUT /prava") {

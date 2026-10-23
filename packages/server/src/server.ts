@@ -48,8 +48,8 @@ import { Media } from "./media.ts";
 import { Avatary } from "./avatary.ts";
 import { Hudba } from "./hudba.ts";
 import { Obsah, nacitajElders, nacitajScorecards } from "./obsah.ts";
-import type { OtvorenaHra, StavServera } from "./api.ts";
-import { spracujApi } from "./api.ts";
+import type { OtvorenaHra, StavServera, Uzavierka } from "./api.ts";
+import { OZNAM_UZAVIERKY, spracujApi } from "./api.ts";
 import type { ZmenaFrajeriny } from "./archiv.ts";
 import { Archiv } from "./archiv.ts";
 import type { StavTempa } from "./tempo.ts";
@@ -94,6 +94,8 @@ interface HracVMiestnosti {
 
 /** Účet offline protihráča neexistuje — id 0 SQLite nikdy nepridelí. */
 const BOT_ID = 0;
+/** Partia bez ťahu tak dlho je opustená — nasadenie na ňu nečaká. */
+const OPUSTENA_PO_MS = 30 * 60_000;
 
 /** Ako dlho musí byť súper odpojený, kým si hráč môže vyžiadať kontumačnú výhru. */
 export const KONTUMACIA_PO_MS = 3 * 60 * 1000;
@@ -262,9 +264,13 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   // partiu, kým sa nezmení jadro (nie commit, ten sa mení pri každom nasadení).
   const verziaJadra = hashJadra(fileURLToPath(new URL("../../core/src", import.meta.url)));
   const prehravac = new Prehravac(db, obsah, verziaJadra);
+  // Uzávierka pred nasadením (Michal 2026-10-23) — len v pamäti, reštart ju zruší.
+  let uzavierka: Uzavierka | null = null;
   const stavServera = (): StavServera => {
     const bezi = [...rooms.values()].filter((r) => r.state !== null && r.state.koniec === null);
     const cakajuce = [...rooms.values()].filter((r) => r.state === null).length;
+    // Partia bez ťahu 30 min je opustená — nasadenie na ňu nečaká (skill naex-nasad).
+    const aktivne = bezi.filter((r) => teraz() - r.lastActivity < OPUSTENA_PO_MS).length;
     return {
       verzia,
       spusteny,
@@ -273,8 +279,15 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         sBotom: bezi.filter((r) => r.bot !== null).length,
         cakajuce,
         poslednaAktivita: bezi.length === 0 ? null : Math.max(...bezi.map((r) => r.lastActivity)),
+        aktivne,
+        opustene: bezi.length - aktivne,
       },
+      uzavierka,
     };
+  };
+  const nastavUzavierku = (zapnut: boolean): Uzavierka | null => {
+    uzavierka = zapnut ? (uzavierka ?? { od: teraz() }) : null;
+    return uzavierka;
   };
 
   const otvoreneHry = (): OtvorenaHra[] =>
@@ -316,6 +329,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           otvoreneHry,
           poZverejneni: () => undefined,
           stavServera,
+          nastavUzavierku,
         },
         req,
         res,
@@ -459,6 +473,11 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
 
     switch (msg.type) {
       case "create": {
+        // Uzávierka: nové partie nie (ľudia, boti ani AI playtesteri), rozohrané bežia.
+        if (uzavierka !== null) {
+          sendError(ws, OZNAM_UZAVIERKY);
+          return;
+        }
         const { sada, data } = obsah.aktualnaSada();
         const protiBotovi = msg.bot === true;
         // Práva rankov (Michal 2026-10-22): proti botovi, proti ľuďom, súkromná miestnosť.
@@ -526,6 +545,10 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         }
         if (msg.type === "rejoin" || room.state !== null || room.hraci[1] !== null) {
           sendError(ws, room.state !== null || room.hraci[1] !== null ? "Miestnosť je plná." : "V tejto miestnosti nehráš.");
+          return;
+        }
+        if (uzavierka !== null) {
+          sendError(ws, OZNAM_UZAVIERKY);
           return;
         }
         if (bezPrava(ws, ja, "hrat_ludia")) return;
