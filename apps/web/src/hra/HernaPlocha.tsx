@@ -14,7 +14,6 @@
 // istom ťahu stojí plný poldeci a rozhranie to výrazne ukazuje.
 
 import {
-  Fragment,
   useCallback,
   useEffect,
   useId,
@@ -1180,7 +1179,11 @@ export function HernaPlocha({
   // Počítadlo bitky (Michal 2026-10-23): výsledok rastie po vlnách, kým ho hráč nepreskočí.
   // Stôl je ten s líniou — keď bitka hneď skončila a línia už zmizla, predošlý pohľad.
   const [pocitadlo, setPocitadlo] = useState<{ readonly p: Pocitadlo; readonly stol: ClientState; readonly linia: LineEval } | null>(null);
-  const koniecPocitadla = useCallback(() => setPocitadlo(null), []);
+  const pocitadloAktivne = useRef(false);
+  const koniecPocitadla = useCallback(() => {
+    pocitadloAktivne.current = false;
+    setPocitadlo(null);
+  }, []);
   const pocitadloBezi = pocitadlo !== null;
   useEffect(() => onPocitadlo?.(pocitadloBezi), [pocitadloBezi, onPocitadlo]);
   useEffect(() => {
@@ -1192,6 +1195,7 @@ export function HernaPlocha({
         const tlmene = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
         if (!tlmene && stol.ciel !== null) {
           const linia = evaluateLine(data, lineState(stol));
+          pocitadloAktivne.current = true;
           setPocitadlo({ p: pocitadloBitky(data, stol, linia, e.damage.tuhe), stol, linia });
         }
       }
@@ -3473,12 +3477,25 @@ export function HernaPlocha({
 
   // Keď hráčovi pribudne priazeň (posun k nemu), povie mu to hra hneď aj s účinkom —
   // v playteste 20261016-134912 to porazená nepochopila. Michal 2026-10-23: plávajúci
-  // toast na hornej hrane stola (nemení rozloženie), jeden naraz, 4 s; celé znenie
-  // ostáva v Logu (záznamy priazne sa doň vkladajú na klientovi — server ich nepíše).
-  const [toastPriazne, setToastPriazne] = useState<{ readonly id: number; readonly komu: PlayerId; readonly kratko: string; readonly cele: string } | null>(null);
-  const [priazneVLogu, setPriazneVLogu] = useState<readonly { readonly poLogu: number; readonly text: string }[]>([]);
+  // toast na hornej hrane stola (nemení rozloženie), jeden naraz, 4 s; záznam píše
+  // do logu server (zaznamyPriazne v jadre), takže ostane aj po obnovení stránky.
+  type ToastPriazne = { readonly id: number; readonly komu: PlayerId; readonly zaklad: string; readonly pocet: number; readonly cele: string };
+  const [toastPriazne, setToastPriazne] = useState<ToastPriazne | null>(null);
   const predoslaPriazen = useRef<ReadonlyMap<string, { readonly komu: PlayerId | null; readonly sila: number }> | null>(null);
   const idOznamu = useRef(0);
+  // Počas Počítadla bitky by ho prekrylo — počká a jeho 4 s začnú až po ňom.
+  const toastCaka = useRef<ToastPriazne | null>(null);
+  // Ten istý text tesne po sebe (pohľad sa prekreslí s rovnakou zmenou) toast neobnoví.
+  const poslednyToast = useRef<{ readonly text: string; readonly kedy: number } | null>(null);
+  // Druhá priazeň tesne po prvej (ďalší krok tej istej bitky) by prvú prepísala skôr,
+  // než sa dá prečítať — zlúči sa do jedného toastu s „(+n)“.
+  const zobrazenyToast = useRef<{ readonly t: ToastPriazne; readonly od: number } | null>(null);
+  const zluc = (stary: ToastPriazne | null, novy: ToastPriazne): ToastPriazne =>
+    stary === null ? novy : { ...novy, pocet: stary.pocet + novy.pocet, cele: `${stary.cele}\n${novy.cele}` };
+  const ukazToast = (t: ToastPriazne | null): void => {
+    zobrazenyToast.current = t === null ? null : { t, od: performance.now() };
+    setToastPriazne(t);
+  };
   useEffect(() => {
     const teraz = new Map(view.starsi.map((e) => [e.elderId, { komu: priazenHraca(e), sila: priazenSila(e) }]));
     const pred = predoslaPriazen.current;
@@ -3500,16 +3517,22 @@ export function HernaPlocha({
     }
     const posledny = nove[nove.length - 1];
     if (posledny === undefined) return;
-    setPriazneVLogu((x) => [...x, ...nove.map((n) => ({ poLogu: log.length, text: `♥ ${n.cele}` }))]);
     // Len jeden naraz — ďalší nahradí predošlý; viac naraz zhrnie „(+n)“, všetky sú v Logu.
-    setToastPriazne({
-      id: ++idOznamu.current,
-      komu: posledny.komu,
-      kratko: posledny.kratko + (nove.length > 1 ? ` (+${nove.length - 1})` : ""),
-      cele: nove.map((n) => n.cele).join("\n"),
-    });
-    // menoHraca, ja a log sú len na text; stačí sledovať starších.
+    const kratko = posledny.kratko + (nove.length > 1 ? ` (+${nove.length - 1})` : "");
+    const teraz2 = performance.now();
+    if (poslednyToast.current !== null && poslednyToast.current.text === kratko && teraz2 - poslednyToast.current.kedy < 8000) return;
+    poslednyToast.current = { text: kratko, kedy: teraz2 };
+    const novy = { id: ++idOznamu.current, komu: posledny.komu, zaklad: posledny.kratko, pocet: nove.length, cele: nove.map((n) => n.cele).join("\n") };
+    const z = zobrazenyToast.current;
+    if (pocitadloAktivne.current) toastCaka.current = zluc(toastCaka.current, novy);
+    else ukazToast(z !== null && teraz2 - z.od < 1500 ? zluc(z.t, novy) : novy);
+    // menoHraca a ja sú len na text; stačí sledovať starších.
   }, [view.starsi, data]);
+  useEffect(() => {
+    if (pocitadloBezi || toastCaka.current === null) return;
+    ukazToast(toastCaka.current);
+    toastCaka.current = null;
+  }, [pocitadloBezi]);
   useEffect(() => {
     if (toastPriazne === null) return;
     const t = setTimeout(() => setToastPriazne((x) => (x?.id === toastPriazne.id ? null : x)), 4000);
@@ -3518,18 +3541,24 @@ export function HernaPlocha({
   // Poloha toastu: vedľa pilulky pokynu na hornej hrane stola, ak je tam miesto,
   // inak tesne pod ňou v pravom rohu stola — nikdy nie cez bary, ruku, pokyn či karty.
   const [polohaToastu, setPolohaToastu] = useState<CSSProperties | null>(null);
+  const toastJe = toastPriazne !== null;
   useLayoutEffect(() => {
-    if (toastPriazne === null) return;
-    const obal = liniaObalRef.current?.getBoundingClientRect();
-    const pilulka = liniaObalRef.current?.querySelector(".linia-stav")?.getBoundingClientRect();
-    if (obal === undefined || pilulka === undefined) return setPolohaToastu(null);
-    const vedla = obal.right - pilulka.right - 28;
-    setPolohaToastu(
-      vedla >= 200
-        ? { top: pilulka.top - obal.top + pilulka.height / 2, right: 12, maxWidth: vedla, translate: "0 -50%" }
-        : { top: pilulka.bottom - obal.top + 6, right: 12, maxWidth: Math.min(380, obal.width / 3) },
-    );
-  }, [toastPriazne]);
+    if (!toastJe) return;
+    const zmeraj = (): void => {
+      const obal = liniaObalRef.current?.getBoundingClientRect();
+      const pilulka = liniaObalRef.current?.querySelector(".linia-stav")?.getBoundingClientRect();
+      if (obal === undefined || pilulka === undefined) return setPolohaToastu(null);
+      const vedla = obal.right - pilulka.right - 28;
+      setPolohaToastu(
+        vedla >= 200
+          ? { top: pilulka.top - obal.top + pilulka.height / 2, right: 12, maxWidth: vedla, translate: "0 -50%" }
+          : { top: pilulka.bottom - obal.top + 6, right: 12, maxWidth: Math.min(380, obal.width / 3) },
+      );
+    };
+    zmeraj();
+    window.addEventListener("resize", zmeraj);
+    return () => window.removeEventListener("resize", zmeraj);
+  }, [toastJe, toastPriazne?.id]);
   const toastPriazneEl =
     toastPriazne === null ? null : (
       <button
@@ -3539,11 +3568,12 @@ export function HernaPlocha({
         style={polohaToastu ?? undefined}
         role="status"
         aria-live="polite"
-        title={`${toastPriazne.cele}\n(klik zavrie, celé znenie je v Logu)`}
-        onClick={() => setToastPriazne(null)}
-        onContextMenu={pravyKlik(() => setToastPriazne(null))}
+        title={`${toastPriazne.cele}\n(klik zavrie, záznam je v Logu)`}
+        onClick={() => ukazToast(null)}
+        onContextMenu={pravyKlik(() => ukazToast(null))}
       >
-        <span aria-hidden="true">♥</span> {toastPriazne.kratko}
+        <span aria-hidden="true">♥</span> {toastPriazne.zaklad}
+        {toastPriazne.pocet > 1 && ` (+${toastPriazne.pocet - 1})`}
       </button>
     );
 
@@ -4634,25 +4664,10 @@ export function HernaPlocha({
           <div className="log">
             {log.length === 0 && <span className="popis">Zatiaľ žiadne záznamy — log sa zbiera od pripojenia.</span>}
             {log.map((riadok, i) => (
-              <Fragment key={i}>
-                {/* Priazeň, ktorú oznámil toast, na mieste, kde pribudla. */}
-                {priazneVLogu
-                  .filter((p) => p.poLogu === i)
-                  .map((p, j) => (
-                    <div key={`p${j}`} className="log-priazen">
-                      {p.text}
-                    </div>
-                  ))}
-                <div className={riadok.startsWith("⚠") ? "manual" : ""}>{riadok}</div>
-              </Fragment>
+              <div key={i} className={riadok.startsWith("⚠") ? "manual" : riadok.startsWith("♥") ? "log-priazen" : ""}>
+                {riadok}
+              </div>
             ))}
-            {priazneVLogu
-              .filter((p) => p.poLogu >= log.length)
-              .map((p, j) => (
-                <div key={`pk${j}`} className="log-priazen">
-                  {p.text}
-                </div>
-              ))}
           </div>
         </VrstvaPanel>
       )}

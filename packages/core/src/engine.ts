@@ -46,6 +46,7 @@ import {
   vydesil,
   elderScore,
   favourStarsieho,
+  scorecardStarsieho,
 } from "./elders.ts";
 import type { DlzkaHry } from "./constants.ts";
 import { ALL_DLZKY, DLZKY_HRY, KONSTANTY, PREDVOLENA_DLZKA } from "./constants.ts";
@@ -1251,7 +1252,26 @@ export function apply(
 
   aktualizujPitky(s, data);
   dohrajNevyhnutne(data, s, events);
+  events.push(...zaznamyPriazne(data, state, s as GameState));
   return { state: s as GameState, events };
+}
+
+/**
+ * Záznam do logu, keď hráčovi pribudne priazeň staršieho (posun markera k nemu).
+ * Michal 2026-10-23: klient ju oznamuje toastom a celé znenie má byť v Logu —
+ * ako udalosť servera ostane aj po obnovení stránky (história miestnosti).
+ */
+export function zaznamyPriazne(data: GameData, pred: GameState, po: GameState): Event[] {
+  const out: Event[] = [];
+  for (const e of po.starsi) {
+    const komu = priazenHraca(e);
+    if (komu === null) continue;
+    const a = pred.starsi.find((x) => x.elderId === e.elderId);
+    const sila = priazenSila(e);
+    if (a !== undefined && priazenHraca(a) === komu && priazenSila(a) >= sila) continue;
+    out.push({ type: "log", text: `♥ Hráč ${komu + 1} dostáva priazeň ${defOf(data, e.karta).name} (${scorecardStarsieho(data, e).nazov}) sily ${sila}.` });
+  }
+  return out;
 }
 
 /**

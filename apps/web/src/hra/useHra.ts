@@ -265,6 +265,10 @@ export function useHra(aktivne: boolean): HraHook {
           break;
         case "hraci":
           setHraci(msg.hraci);
+          // História príde hneď za menami, ešte pred prekreslením — inak by Log po
+          // obnovení stránky písal „Hráč 1“ namiesto mena.
+          menaRef.current = msg.hraci.map((h, i) => menoVoVete(h, i));
+          rodyRef.current = [rodHraca(msg.hraci[0]), rodHraca(msg.hraci[1])];
           break;
         case "historia":
           setLog(msg.events.map((e) => textUdalosti(e, menaRef.current, rodyRef.current)).filter((t): t is string => t !== null).slice(-250));
