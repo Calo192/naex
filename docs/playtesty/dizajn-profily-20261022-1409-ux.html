@@ -1,0 +1,754 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UX návrh: profily hráčov a podrobné štatistiky (profily-20261022-1409)</title>
+<style>
+:root{--bg:#14110e;--pl:#1e1914;--pl2:#2a231c;--tx:#f1e8d8;--sl:#b9ab95;--ja:#e9ad45;--te:#e0644c;--ze:#7cbf74;--mo:#6fb3d2;--ok:#3a3128;--wf:#3b342c;--wf2:#4a4239;--wft:#d8cdbb}
+@media (prefers-color-scheme: light){:root{--bg:#f7f2ea;--pl:#fffaf2;--pl2:#efe6d8;--tx:#221a12;--sl:#5d5245;--ja:#8a5a00;--te:#a8331f;--ze:#2f7a28;--mo:#1d6b8f;--ok:#d9cdb9;--wf:#e6dfd3;--wf2:#d4cabb;--wft:#2d251c}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:1180px;margin:0 auto;padding:24px 16px 64px}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;line-height:1.25}
+h1{font-size:1.9rem;margin:.2em 0 .3em}
+h2{font-size:1.45rem;margin:2.2em 0 .6em;border-bottom:1px solid var(--ok);padding-bottom:.25em}
+h3{font-size:1.15rem;margin:1.4em 0 .4em}
+h4{font-size:1rem;margin:1em 0 .3em}
+a{color:var(--ja)}
+a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--ja);outline-offset:2px}
+code{font-size:.88em;overflow-wrap:anywhere}
+.meta{color:var(--sl);font-size:.93rem}
+.verdikt{background:var(--pl);border-left:4px solid var(--ja);padding:12px 16px;border-radius:6px}
+.mriezka{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.dlazdica{background:var(--pl);border:1px solid var(--ok);border-radius:8px;padding:12px 14px}
+.dlazdica b{color:var(--ja)}
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+th,td{text-align:left;vertical-align:top;padding:8px;border-bottom:1px solid var(--ok)}
+th{color:var(--sl);font-weight:600}
+.tab-obal{overflow-x:auto}
+.z{display:inline-block;min-width:1.7em;text-align:center;border-radius:4px;padding:0 .3em;font-weight:700;color:#14110e}
+.z4{background:#e0644c}.z3{background:#e9ad45}.z2{background:#c8b98f}.z1{background:#8f8574}.z0{background:#6b6358}
+.stitok{display:inline-block;font-size:.78rem;border:1px solid var(--ok);border-radius:999px;padding:0 .55em;margin:0 .2em .2em 0;color:var(--sl)}
+.stitok.mala{border-color:var(--ze);color:var(--ze)}
+.stitok.stredna{border-color:var(--ja);color:var(--ja)}
+.stitok.velka{border-color:var(--te);color:var(--te)}
+.filtre{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 12px}
+.filtre button{min-height:44px;padding:0 14px;border-radius:6px;border:1px solid var(--ok);background:var(--pl);color:var(--tx);font:inherit;cursor:pointer}
+.filtre button[aria-pressed="true"]{background:var(--ja);color:#14110e;border-color:var(--ja)}
+figure{margin:12px 0 18px;background:var(--pl);border:1px solid var(--ok);border-radius:8px;padding:8px}
+figure img{max-width:100%;height:auto;display:block;border-radius:4px}
+figure.uzka img{max-width:300px;margin:0 auto}
+.dve{display:grid;gap:12px;grid-template-columns:2fr 1fr}
+@media (max-width:760px){.dve{grid-template-columns:1fr}}
+figcaption{font-size:.88rem;color:var(--sl);padding:6px 4px 0}
+.tok{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+@media (max-width:700px){.tok{grid-template-columns:1fr}}
+.tok>div{background:var(--pl2);border:1px solid var(--ok);border-radius:8px;padding:10px 14px}
+.tok ol{margin:0;padding-left:1.3em}
+.pred h4{color:var(--te)}.po h4{color:var(--ze)}
+.navrh{background:var(--pl);border:1px solid var(--ok);border-radius:10px;padding:4px 18px 16px;margin:18px 0}
+.navrh>h3{margin-top:.9em}
+.navrh dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:8px 0}
+.navrh dt{color:var(--sl);font-weight:600}
+.navrh dd{margin:0}
+@media (max-width:600px){.navrh dl{grid-template-columns:1fr}.navrh dt{margin-top:6px}}
+details{margin:8px 0}
+summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:600}
+.citat{border-left:3px solid var(--mo);padding:4px 12px;margin:8px 0;color:var(--sl);font-style:italic}
+.pozn{font-size:.88rem;color:var(--sl)}
+.ano{color:var(--ze);font-weight:700}.nie{color:var(--te);font-weight:700}.cast{color:var(--ja);font-weight:700}
+.matica td,.matica th{text-align:left}
+.matica th[scope=row]{white-space:nowrap}
+.skok{position:absolute;left:-999px}.skok:focus{left:16px;top:8px;background:var(--ja);color:#14110e;padding:6px 10px;z-index:9}
+nav.obsah ol{columns:2;column-gap:28px;padding-left:1.2em}
+@media (max-width:600px){nav.obsah ol{columns:1}}
+
+/* ---------- drôtené modely ---------- */
+.wf-par{display:grid;gap:18px;grid-template-columns:minmax(0,1fr) 390px;align-items:start;margin:12px 0 20px}
+@media (max-width:1060px){.wf-par{grid-template-columns:1fr}}
+.zar{background:var(--wf);border:2px solid var(--wf2);border-radius:10px;padding:0;color:var(--wft);font-size:.86rem;line-height:1.4;overflow:hidden}
+.zar-mob{width:100%;max-width:390px;border-radius:22px;margin:0 auto}
+.zar-stitok{display:flex;justify-content:space-between;background:var(--wf2);padding:4px 10px;font-size:.75rem;color:var(--wft);letter-spacing:.03em}
+.zar-telo{padding:12px}
+.zar-mob .zar-telo{padding:10px}
+.wf-hlavicka{display:flex;align-items:center;gap:8px;background:var(--wf2);padding:6px 10px;font-weight:700}
+.wf-hlavicka .wf-menu{margin-left:auto;font-weight:400;opacity:.8}
+.b{background:var(--wf2);border-radius:6px;padding:8px 10px;margin:0 0 8px}
+.b.svetly{background:transparent;border:1.5px dashed var(--wf2)}
+.b h5{margin:0 0 4px;font-size:.92rem;font-family:Georgia,serif}
+.av{display:inline-block;width:44px;height:44px;border-radius:50%;background:#7a6f60;vertical-align:middle;flex:none}
+.av.m{width:30px;height:30px}.av.v{width:64px;height:64px}
+.riadok{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.riadok.medzera{justify-content:space-between}
+.velke{font-size:1.6rem;font-weight:800;font-family:Georgia,serif}
+.tl{display:inline-flex;align-items:center;min-height:32px;padding:0 10px;border:1.5px solid var(--wft);border-radius:6px;font-weight:600;font-size:.82rem;opacity:.95}
+.tl.hl{background:var(--wft);color:var(--wf)}
+.zar-mob .tl{min-height:44px}
+.seg{display:inline-flex;border:1.5px solid var(--wft);border-radius:7px;overflow:hidden}
+.seg span{padding:4px 10px;font-weight:600;font-size:.82rem}
+.seg span.on{background:var(--wft);color:var(--wf)}
+.zar-mob .seg{display:flex}.zar-mob .seg span{flex:1;text-align:center;padding:10px 4px}
+.taby{display:flex;gap:2px;border-bottom:2px solid var(--wf2);margin:6px 0 10px}
+.taby span{padding:6px 12px;font-weight:600}
+.taby span.on{border-bottom:3px solid var(--wft);margin-bottom:-2px}
+.zar-mob .taby{overflow-x:auto}.zar-mob .taby span{padding:12px 12px}
+.dva{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tri{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.zar-mob .dva,.zar-mob .tri{grid-template-columns:1fr}
+.pl{color:#7cbf74;font-weight:700}.mi{color:#e0644c;font-weight:700}
+@media (prefers-color-scheme: light){.pl{color:#2f7a28}.mi{color:#a8331f}}
+.n{opacity:.75;font-size:.78rem}
+.forma span{display:inline-block;width:22px;height:22px;border-radius:4px;text-align:center;font-weight:800;font-size:.75rem;line-height:22px;margin-right:2px;background:var(--wf);border:1px solid var(--wft)}
+.os{position:relative;height:12px;background:var(--wf);border-radius:3px;margin:3px 0}
+.os i{position:absolute;top:0;bottom:0;border-radius:3px;background:var(--wft)}
+.os i.ref{background:transparent;border-left:2px dashed #e9ad45;width:0}
+.os i.zap{background:#c1543f}
+.zdroj{display:grid;grid-template-columns:130px 1fr 92px;gap:8px;align-items:center;margin:4px 0}
+.zar-mob .zdroj{grid-template-columns:1fr 70px}.zar-mob .zdroj .os{grid-column:1/-1;order:3}
+.wf-tab{width:100%;border-collapse:collapse;font-size:.8rem}
+.wf-tab th,.wf-tab td{padding:5px 6px;border-bottom:1px solid var(--wf);color:var(--wft)}
+.wf-tab th{opacity:.8}
+.pop{position:relative;border:2px solid var(--wft);background:var(--wf);border-radius:8px;padding:10px;max-width:330px;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+.pop:before{content:"";position:absolute;top:-9px;right:46px;border:8px solid transparent;border-bottom-color:var(--wft);border-top:0}
+.banner{border:2px solid #e9ad45;border-radius:6px;padding:6px 10px;margin-bottom:8px}
+.zavrete{opacity:.85}
+.kolo{border:1.5px solid var(--wf);border-radius:6px;padding:8px;margin:0 0 6px;background:var(--wf2)}
+.kolo summary{min-height:44px;font-weight:600}
+svg text{font-family:system-ui,sans-serif}
+</style>
+</head>
+<body>
+<a class="skok" href="#obsah">Preskočiť na obsah</a>
+<main id="obsah">
+<p class="meta">UX návrh · id <code>profily-20261022-1409</code> · 22. 10. 2026 · nová funkcia (nie prerábka) · vizuálny mock tých istých obrazoviek: <a href="dizajn-profily-20261022-1409-ui.html">UI návrh (naex-ui)</a></p>
+<h1>Profily hráčov a podrobné štatistiky</h1>
+
+<div class="mriezka">
+  <div class="dlazdica"><b>Cieľ.</b> Každý hráč vidí, za čo v ktorej partii bodoval a v čom sa mu darí. Cudzí profil ukáže hodnotenie a súhrn. Správca vidí všetko, aj AI playtesterov.</div>
+  <div class="dlazdica"><b>Používatelia.</b> Hráč po partii (chce vedieť „prečo“), hráč dlhodobo („v čom sa zlepšujem“), hráč pri stole („kto je môj súper“), Michal a subadmin (diagnostika hráčov a AI playtesterov).</div>
+  <div class="dlazdica"><b>Rozsah.</b> Informačná architektúra a toky, kto čo vidí, výber metrík, dátový model, 5 návrhov s drôtenými modelmi pre desktop aj mobil (390 px), otázky na Michala.</div>
+</div>
+
+<h3>Verdikt</h3>
+<div class="verdikt">
+<p>Profil už existuje (<code>/hrac/:id</code>, <code>Statistiky.tsx</code>). Je to však <strong>súčet celej histórie</strong>: 45 čísel v 8 rovnocenných sekciách, bez porovnania, bez trendu, bez detailu partie. Hráč z neho nevyčíta, čo má urobiť inak. Navyše dnes <strong>každý prihlásený vidí každého</strong>, aj AI playtesterov a ich posledných 25 partií (<code>api.ts:411</code>). Nové zadanie to zakazuje, takže viditeľnosť treba vyriešiť na serveri ako prvú.</p>
+<p>Najviac hráča naučí <strong>Rozbor partie po bitkách</strong> (priebeh bodov, kto vyhral, NA EX a odpoveď, pas) a krátky <strong>súhrn posledných 20 partií</strong>, ktorý ukáže najviac 2 silné a 2 slabé stránky. Porovnávať treba hlavne so súpermi v tých istých partiách: priemer hráčov dnes neexistuje, na živom webe je 0 archivovaných partií ľudí. Údaje po kolách sa dnes neukladajú a spätne sa dopočítať nedajú. Ich zber treba zapnúť čo najskôr, kým je archív prázdny a nič sa nestratí.</p>
+</div>
+
+<nav class="obsah" aria-label="Obsah">
+<h3>Obsah</h3>
+<ol>
+<li><a href="#dnes">Čo je dnes a toky</a></li>
+<li><a href="#ia">Informačná architektúra a vstupné body</a></li>
+<li><a href="#matica">Kto čo vidí (matica)</a></li>
+<li><a href="#audit">Audit použiteľnosti</a></li>
+<li><a href="#metriky">Výber metrík a malé vzorky</a></li>
+<li><a href="#data">Dátový model</a></li>
+<li><a href="#navrhy">Návrhy N1 až N5 s drôtenými modelmi</a></li>
+<li><a href="#poradie">Odporúčané poradie</a></li>
+<li><a href="#otazky">Otázky do playtestu a na Michala</a></li>
+</ol>
+</nav>
+
+<!-- ============================================================ -->
+<h2 id="dnes">1. Čo je dnes a toky</h2>
+<p>Snímky sú zo servera tejto vetvy (<code>localhost:8800</code>, dočasná databáza bez dohratých partií). Profil s dátami sa preto nedá odfotiť. Opis plných stavov je z kódu.</p>
+
+<div class="dve">
+<figure>
+<img src="dizajn-profily-20261022-1409/ux-stol-super.png" alt="Herný stôl na desktope: v pravom hornom rohu meno súpera Dizajn 2, avatar, rola obranca a Frajerina 1200. Meno nie je odkaz.">
+<figcaption>Vstupný bod 1, herný stôl: súper vpravo hore (meno, avatar, rola, Frajerina 1200). Dnes to nie je odkaz (<code>Panely.tsx:416</code>).</figcaption>
+</figure>
+<figure class="uzka">
+<img src="dizajn-profily-20261022-1409/ux-stol-mobil.png" alt="Na mobile stránka Hrať hlási, že sa tu NA EX zatiaľ hrať nedá, a ponúka Pravidlá, Karty, Novinky a Profil.">
+<figcaption>Na mobile sa nehrá. Vstup z partie je teda len na desktope, mobil potrebuje históriu, Frajerinu a Spätnú väzbu.</figcaption>
+</figure>
+</div>
+<figure>
+<img src="dizajn-profily-20261022-1409/ux-profil-dnes.png" alt="Stránka Môj profil: hlavička s avatarom a odkazom Ako ma vidia ostatní, pod ňou Frajerina 1200? a prázdny stav, potom Nastavenia účtu s farebnými schémami.">
+<figcaption><code>/profil</code> dnes: nastavenia účtu a štatistiky na jednej stránke (<code>Ucet.tsx:335–415</code>). Prázdny stav naviguje dobre („Zahrať si partiu“). Partie s botom sa však do profilu nedostanú (<code>server.ts:573</code>), takže hráč, ktorý hral len s botom, tu vidí „Zatiaľ nemáš dohranú žiadnu partiu“.</figcaption>
+</figure>
+
+<h3>Hlavné úlohy a ich cena dnes</h3>
+<div class="tab-obal"><table>
+<thead><tr><th>Úloha (čo chce hráč dosiahnuť)</th><th>Dnes</th><th>Cena / slepá ulička</th></tr></thead>
+<tbody>
+<tr><td><strong>U1</strong> Po partii pochopiť, prečo vyhral alebo prehral</td><td>Okno konca hry: skóre, rozpis po starších, zmena Frajeriny (<code>KoniecHry.tsx</code>). Po zatvorení nič.</td><td>Slepá ulička. Riadok v „Posledné partie“ nie je klikateľný, dôvod je len v <code>title</code> (<code>Statistiky.tsx:337</code>). AI hráč si priebeh bodov po bitkách skladal ručne z logu (citát nižšie).</td></tr>
+<tr><td><strong>U2</strong> Zistiť, v čom sa zlepšuje a kde stráca</td><td>Súčty celej histórie v 8 sekciách, percentá bez počtu partií.</td><td>Musí si pamätať čísla z minula a porovnávať v hlave. Žiadny trend ani porovnanie (rozpoznanie vs. pamäť).</td></tr>
+<tr><td><strong>U3</strong> Pri stole zistiť, kto je súper</td><td>Meno, avatar, Frajerina v doske súpera.</td><td>Žiadny odkaz. Keby tam odkaz bol, odchod z <code>/hra</code> zatvorí spojenie (<code>useHra.ts:200</code>) a súper si po 3 minútach môže vyžiadať kontumáciu (<code>server.ts:83</code>).</td></tr>
+<tr><td><strong>U4</strong> Z Frajeriny alebo Spätnej väzby pozrieť človeka</td><td>Odkaz na <code>/hrac/:id</code> pri každom riadku aj autorovi (<code>Rebricek.tsx:89</code>, <code>SpatnaVazba.tsx:171</code>).</td><td>Funguje, ale vedie aj na AI playtesterov a ukáže všetko vrátane ich partií.</td></tr>
+<tr><td><strong>U5</strong> Správca: ako hrá konkrétny AI playtester, čo sa stalo v partii X</td><td><code>/hraci</code> → profil (súčty).</td><td>Detail partie neexistuje. Tempo (<code>tempo_partii</code>) nie je spárované s hráčom, len s kódom miestnosti.</td></tr>
+</tbody></table></div>
+<p class="citat">„Priebeh bodov: po K1 6 : 19, po K2 2 : 15, po K3 2 : 43, pred K4 2 : 52, po K4 25 : 39, po K5 49 : 18 (!) … Pred poslednou bitkou som viedol len o 8 bodov a posledná bitka rozhodla.“ (AI hráč, <code>playtest/20261022-065959-1/hrac1/feedback.md:4</code>, k tomu tabuľka bitiek s U/O a odpoveďou na NA EX v riadkoch 6–17)</p>
+<p class="citat">„chýba mi … história bitky (po <code>cakaj</code> ostanú len udalosti od posledného volania; log bitky som musel čítať z priebeh.log)“ (tamže, :35)</p>
+<p class="citat">„Pas je pasca pre všetkých, ktorí počítajú.“ (tamže, :24). Hráč chce vedieť, či sa mu rozhodnutie oplatilo, a na to potrebuje <em>pas a výsledok tej bitky</em>.</p>
+
+<!-- ============================================================ -->
+<h2 id="ia">2. Informačná architektúra a vstupné body</h2>
+<p>Navrhujem tri stránky a jednu kartu v hre. Profil je jedna stránka pre vlastný aj cudzí pohľad. Server podľa toho, kto sa pozerá, pošle viac alebo menej. Nastavenia účtu sa oddelia, aby profil nebol zmes „čo o mne vedia ostatní“ a „moje heslo a farby“.</p>
+
+<figure>
+<svg viewBox="0 0 1000 430" role="img" aria-labelledby="ia-t ia-d" style="width:100%;height:auto;display:block">
+<title id="ia-t">Mapa stránok profilu a vstupných bodov</title>
+<desc id="ia-d">Vstupné body herný stôl, koniec hry, Frajerina, Spätná väzba, menu a správa hráčov vedú na kartu súpera, rozbor partie alebo profil hráča. Profil má záložky Súhrn, Partie a Kronika. Z Partií sa ide na Rozbor partie. Nastavenia sú samostatná stránka.</desc>
+<defs><marker id="sip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#b9ab95"/></marker></defs>
+<g font-size="13" fill="#f1e8d8">
+<g fill="#2a231c" stroke="#b9ab95" stroke-width="1.5">
+<rect x="10" y="20" width="180" height="46" rx="8"/><rect x="10" y="86" width="180" height="46" rx="8"/><rect x="10" y="152" width="180" height="46" rx="8"/><rect x="10" y="218" width="180" height="46" rx="8"/><rect x="10" y="284" width="180" height="46" rx="8"/><rect x="10" y="350" width="180" height="46" rx="8"/>
+</g>
+<text x="22" y="48">Herný stôl (desktop)</text>
+<text x="22" y="114">Okno konca hry</text>
+<text x="22" y="180">Frajerina (rebríček)</text>
+<text x="22" y="246">Spätná väzba (autor)</text>
+<text x="22" y="312">Menu: Môj profil</text>
+<text x="22" y="378">Správa: Hráči (admin)</text>
+<g fill="#3b342c" stroke="#e9ad45" stroke-width="2">
+<rect x="300" y="14" width="220" height="58" rx="8"/>
+<rect x="300" y="160" width="250" height="150" rx="8"/>
+<rect x="680" y="70" width="300" height="80" rx="8"/>
+<rect x="680" y="340" width="300" height="56" rx="8"/>
+</g>
+<text x="312" y="38" font-weight="700">Karta súpera</text><text x="312" y="58" fill="#b9ab95">bublina, partia beží ďalej</text>
+<text x="312" y="184" font-weight="700">Profil hráča  /hrac/:id</text>
+<text x="312" y="208">· Súhrn (všetci, čo smú)</text>
+<text x="312" y="230">· Partie (vlastník, správca)</text>
+<text x="312" y="252">· Kronika (rekordy, súčty)</text>
+<text x="312" y="280" fill="#b9ab95">filter Ľudia / Boti / Spolu</text>
+<text x="312" y="298" fill="#b9ab95">v URL: ?filter=ludia</text>
+<text x="692" y="96" font-weight="700">Rozbor partie  /partia/:id</text>
+<text x="692" y="118">účastník (svoja strana) a správca</text>
+<text x="692" y="138" fill="#b9ab95">bitky po kolách, priebeh bodov</text>
+<text x="692" y="364" font-weight="700">Nastavenia  /profil</text>
+<text x="692" y="384" fill="#b9ab95">avatar, heslo, vzhľad, zvuk</text>
+<g stroke="#b9ab95" stroke-width="1.6" fill="none" marker-end="url(#sip)">
+<path d="M190 43 H298"/>
+<path d="M520 43 C600 43 560 190 552 200" stroke-dasharray="5 4"/>
+<path d="M190 109 C480 109 560 105 678 105"/>
+<path d="M190 175 H298"/>
+<path d="M190 241 H298"/>
+<path d="M190 307 H298"/>
+<path d="M190 373 C250 373 250 300 298 290"/>
+<path d="M550 230 C620 230 620 130 678 125"/>
+<path d="M550 290 C620 290 620 368 678 368"/>
+</g>
+<text x="545" y="80" fill="#b9ab95" font-size="12">„Celý profil“ v novej karte</text>
+<text x="580" y="254" fill="#b9ab95" font-size="12">riadok partie</text>
+<text x="575" y="330" fill="#b9ab95" font-size="12">len vlastník</text>
+</g>
+</svg>
+<figcaption>Mapa: plné šípky sú odkazy, prerušovaná vedie do novej karty prehliadača (partia beží ďalej). Okno konca hry vedie priamo na Rozbor partie, ktorý sa práve skončil.</figcaption>
+</figure>
+
+<h3>Cesty (vlastný router <code>apps/web/src/lib/router.tsx</code>, regexy ako dnes)</h3>
+<div class="tab-obal"><table>
+<thead><tr><th>Cesta</th><th>Obsah</th><th>Kto</th><th>Poznámka</th></tr></thead>
+<tbody>
+<tr><td><code>/hrac/:id</code></td><td>Profil: hlavička, Frajerina, záložka Súhrn</td><td>prihlásený; AI len správca</td><td>Dnešná stránka. „Ako ma vidia ostatní“ sa nahradí prepínačom <em>Zobraziť ako cudzí</em> na vlastnom profile.</td></tr>
+<tr><td><code>/hrac/:id/partie</code></td><td>Zoznam partií s filtrom</td><td>vlastník, správca</td><td>Ostatní túto záložku nevidia (nie je zamknutá, chýba úplne).</td></tr>
+<tr><td><code>/hrac/:id/kronika</code></td><td>Súčty za celú históriu, rekordy, súperi</td><td>vlastník, správca (cudzí: otázka O2)</td><td>Sem sa presunie väčšina dnešných 45 čísel.</td></tr>
+<tr><td><code>/partia/:id</code></td><td>Rozbor partie</td><td>účastník, správca</td><td>Partia je jedna, pohľady sú dva. Server pošle stranu podľa toho, kto sa pýta.</td></tr>
+<tr><td><code>/profil</code></td><td>Nastavenia účtu</td><td>prihlásený</td><td>V menu „Nastavenia“. Položka „Môj profil“ (<code>Layout.tsx:94</code>) povedie na <code>/hrac/:moje-id</code>.</td></tr>
+</tbody></table></div>
+
+<h3>Vstupné body</h3>
+<div class="tab-obal"><table>
+<thead><tr><th>Odkiaľ</th><th>Čo sa stane</th><th>Pravidlo</th></tr></thead>
+<tbody>
+<tr><td>Herný stôl: klik na meno alebo avatar súpera</td><td>Bublina „Karta súpera“ pri doske, nemodálna (N2)</td><td><strong>Nesmie opustiť <code>/hra</code>.</strong> Nezoberie fokus, keď súper ťahá, nezakryje pokyn ani tlačidlá ťahu. Odkaz „Celý profil“ otvorí novú kartu prehliadača.</td></tr>
+<tr><td>Okno konca hry</td><td>Nové tlačidlo „Rozbor partie“ vedľa „pozrieť stôl“</td><td>Hlavné tlačidlo ostane „späť do lobby“, rozbor je druhý.</td></tr>
+<tr><td>Môj profil → Partie</td><td>Riadok partie → Rozbor. Meno súpera → jeho profil.</td><td>Celý riadok je odkaz na rozbor, meno súpera je samostatný cieľ (44 px na mobile).</td></tr>
+<tr><td>Frajerina (rebríček)</td><td>Riadok → profil</td><td>AI účet: hráč ho nevidí, alebo vidí bez odkazu (otázka O4).</td></tr>
+<tr><td>Spätná väzba: meno autora</td><td>Profil autora</td><td>AI autor: meno a odznak AI <em>bez odkazu</em>.</td></tr>
+<tr><td>Správa → Hráči</td><td>Profil kohokoľvek, aj AI</td><td>Na AI profile je pás „Skrytý profil: hráči ho nevidia“.</td></tr>
+</tbody></table></div>
+
+<!-- ============================================================ -->
+<h2 id="matica">3. Kto čo vidí</h2>
+<p>Riadok je ten, kto sa pozerá. Stĺpec je, na koho profil sa pozerá. „Hráč“ znamená úroveň hráč a nižšie, teda aj prihlásený návštevník bez partie. Neprihlásený nevidí nič, ako dnes (<code>prihlaseny()</code>, <code>api.ts:412</code>).</p>
+<div class="tab-obal"><table class="matica">
+<thead><tr><th scope="col">Pozerá sa ↓ / na →</th><th scope="col">Vlastný profil</th><th scope="col">Cudzí človek</th><th scope="col">AI playtester</th><th scope="col">Bot</th></tr></thead>
+<tbody>
+<tr><th scope="row">Neprihlásený</th><td class="nie">nič (prihlás sa)</td><td class="nie">nič (otázka O8)</td><td class="nie">nič</td><td class="nie">nič</td></tr>
+<tr><th scope="row">Návštevník / hráč</th><td><span class="ano">všetko:</span> hlavička, Frajerina a graf, súhrn so silnými a slabými stránkami, filter Ľudia/Boti/Spolu, zoznam partií, rozbor každej partie, kronika</td><td><span class="cast">časť:</span> hlavička, Frajerina a graf, bilancia, forma (posledných 5 výsledkov), vzájomná bilancia „vy dvaja“, súhrn len z partií s ľuďmi. <span class="nie">Nie:</span> zoznam partií, rozbor, partie s botmi po jednom. Silné a slabé stránky: otázka O1.</td><td><span class="nie">nič.</span> Meno a odznak AI bez odkazu. API vráti 404 ako pri neexistujúcom účte.</td><td><span class="nie">nič</span> (bot nemá účet). V partii: meno a povaha. V mojich partiách: „Teta Gizka (bot)“ bez odkazu.</td></tr>
+<tr><th scope="row">Subadmin</th><td class="ano">všetko</td><td><span class="ano">všetko</span> ako vlastník, aj rozbory partií</td><td><span class="ano">všetko</span> + pás „Skrytý profil“</td><td class="nie">nič (štatistiky botov patria do Tvorby a <code>tools/bot/turnaj.ts</code>)</td></tr>
+<tr><th scope="row">Admin</th><td class="ano">všetko</td><td><span class="ano">všetko</span> + tempo partie a surové dáta (JSON)</td><td><span class="ano">všetko</span> + tempo a surové dáta</td><td class="nie">nič</td></tr>
+</tbody></table></div>
+
+<h3>Rozbor partie, ktorej sa hráč zúčastnil</h3>
+<p>Partia má dvoch účastníkov. Ak by „detail vidí len vlastník“ platil doslova, súper by nevidel ani rozbor partie, ktorú sám hral. Navrhujem: <strong>každý účastník vidí rozbor zo svojej strany</strong>, teda svoje plné štatistiky a z čísel súpera len to, čo bolo na stole verejné (výsledky bitiek, poškodenie, body, verejné počty kliatob, NA EX, pas, šenok). Súperove karty z ruky, Vízia ani výmena kariet zo Starostu sa nepošlú. Rozbor cudzej partie, v ktorej hráč nesedel, nedostane nikto okrem správcu. (Otázka O5.)</p>
+
+<h3>Ako to vynúti server (nie rozhranie)</h3>
+<ul>
+<li><code>GET /api/hraci/:id</code>: hlavička, Frajerina, súhrn (pre cudzieho len <code>filter=ludia</code>), vzájomná bilancia s volajúcim. Ak <code>ciel.ai && !jeSpravca(ja.rola)</code>, vráti <strong>404 „Taký hráč neexistuje.“</strong> To isté hlási neexistujúci účet, takže odpoveď neprezradí, že účet existuje.</li>
+<li><code>GET /api/hraci/:id/partie</code> a <code>/kronika</code>: len <code>ja.id === id</code> alebo správca. Inak 404.</li>
+<li><code>GET /api/partie/:id</code>: účastník dostane svoju stranu plnú a súperovu verejnú, správca obe plné a tempo. Inak 404. Súperova strana sa filtruje funkciou typu <code>verejneStatistiky()</code> v <code>packages/core</code> (rovnaká zásada ako <code>viewFor()</code>) a dostane test.</li>
+<li><code>GET /api/rebricek</code>: AI riadky pošle len správcovi (alebo s <code>ai: true</code> a bez <code>id</code>, podľa O4).</li>
+<li>Správa <code>hraci</code> vo websockete (<code>server.ts:319</code>) dostane pole <code>profil: "verejny" | "skryty" | "ziadny"</code>. Klient podľa neho vie, či kartu súpera vôbec otvoriť. Rozhodnutie robí server.</li>
+<li>Súhrn sa počíta na serveri. Klient cudzieho hráča nikdy nedostane riadky jednotlivých partií. <em>Riziko (odhad):</em> kto si súhrn cudzieho hráča stiahne pred jeho partiou a po nej, z rozdielu vyráta čísla poslednej partie. Partia je už dohratá, takže to nie je skrytá herná informácia. Ak to Michal chce zakázať, cudzí súhrn sa môže prepočítavať raz denne.</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="audit">4. Audit použiteľnosti</h2>
+<p>Závažnosť podľa Nielsena: 4 = katastrofa, 3 = veľký problém, 2 = menší, 1 = kozmetika, 0 = len poznámka.</p>
+<div class="filtre" role="group" aria-label="Filter auditu podľa závažnosti">
+<button type="button" data-f="vse" aria-pressed="true">Všetky</button>
+<button type="button" data-f="3" aria-pressed="false">3 a viac</button>
+<button type="button" data-f="2" aria-pressed="false">2</button>
+<button type="button" data-f="1" aria-pressed="false">1 a menej</button>
+</div>
+<p class="pozn" id="audit-pocet" aria-live="polite"></p>
+<div class="tab-obal"><table id="audit-tab">
+<thead><tr><th>#</th><th>Problém</th><th>Heuristika</th><th>Záv.</th><th>Dôkaz</th><th>Koho a ako často</th></tr></thead>
+<tbody>
+<tr data-z="4"><td>A1</td><td>Profil ktoréhokoľvek účtu, aj AI playtestera, dostane každý prihlásený, vrátane 25 posledných partií a súperov.</td><td>Prevencia chýb, súkromie (nové zadanie)</td><td><span class="z z4">4</span></td><td><code>api.ts:411–417</code> kontroluje len <code>prihlaseny()</code>. <code>archiv.ts profil()</code> vracia všetko.</td><td>Všetci, vždy. Nová funkcia bez opravy by porušila pravidlo „server nepošle, čo hráč nemá vidieť“.</td></tr>
+<tr data-z="3"><td>A2</td><td>AI playtesteri sú vo Frajerine medzi ľuďmi a dá sa na nich kliknúť.</td><td>Zhoda so svetom (rebríček ľudí), konzistencia</td><td><span class="z z3">3</span></td><td><code>archiv.ts rebricek()</code> nefiltruje <code>u.ai</code>. Odkaz v <code>Rebricek.tsx:89</code>.</td><td>Každý návštevník rebríčka, kým hrajú AI turnusy.</td></tr>
+<tr data-z="3"><td>A3</td><td>Partia sa nedá rozobrať. Riadok v zozname nie je odkaz, dôvod konca je len v <code>title</code>.</td><td>Viditeľnosť stavu, slepá ulička</td><td><span class="z z3">3</span></td><td><code>Statistiky.tsx:337</code>. Citát hráča o ručnej tabuľke bitiek (<code>feedback.md:4–17</code>).</td><td>Každý hráč po každej partii. Je to hlavná úloha U1.</td></tr>
+<tr data-z="3"><td>A4</td><td>Partie s botom sa do profilu nedostanú. Nový hráč, ktorý začína s botom, má prázdny profil.</td><td>Viditeľnosť stavu, prázdny stav klame</td><td><span class="z z3">3</span></td><td><code>server.ts:573</code> (<code>room.bot === null</code>). <code>Statistiky.tsx:399</code> hlási „Zatiaľ nemáš dohranú žiadnu partiu.“</td><td>Noví hráči. Odhad: väčšina prvých partií je s botom (súper nečaká).</td></tr>
+<tr data-z="3"><td>A5</td><td>Odkaz na súpera počas partie by hráča vytrhol zo stola: spojenie sa zavrie a po 3 min hrozí kontumácia.</td><td>Kontrola a sloboda, prevencia chýb</td><td><span class="z z3">3</span></td><td><code>useHra.ts:194–200</code>, <code>server.ts:83</code> (<code>KONTUMACIA_PO_MS</code>)</td><td>Každý, kto by klikol na súpera. Ide o návrhové obmedzenie pre vstup 1.</td></tr>
+<tr data-z="2"><td>A6</td><td>Profil je súčet celej histórie: 45 rovnocenných čísel v 8 sekciách, bez hierarchie a bez odpovede na otázku „čo mám robiť inak“.</td><td>Minimalizmus, kognitívna záťaž</td><td><span class="z z2">2</span></td><td><code>Statistiky.tsx:466–540</code> (Bodovanie, Bitky, Poškodenie, Pečeň, Povery, Dlhy, Neresti, Starší, Partie, Akcie)</td><td>Každý návštevník profilu. S rastúcou históriou sa čísla prestanú hýbať a nový návyk v nich zanikne.</td></tr>
+<tr data-z="2"><td>A7</td><td>Percentá bez počtu („vyhraných 100 %“ z 1 bitky) pôsobia ako fakt.</td><td>Zhoda so svetom, prevencia mylných záverov</td><td><span class="z z2">2</span></td><td><code>percento()</code> v <code>Statistiky.tsx:475–478</code>. Počet je len v <code>title</code>.</td><td>Noví hráči (1–5 partií), teda práve tí, čo sa učia.</td></tr>
+<tr data-z="2"><td>A8</td><td>Vysvetlivky sú len pri hovere (<code>title</code>). Na dotyku a pre čítačku nie sú.</td><td>WCAG 1.4.13, mobil</td><td><span class="z z2">2</span></td><td><code>Udaj</code> v <code>Statistiky.tsx:224</code>, <code>BilanciaPruh</code>, tabuľka partií</td><td>Mobil vždy. Michal žiada, aby stránky mimo hry fungovali na mobile.</td></tr>
+<tr data-z="2"><td>A9</td><td>Partie rôznej dĺžky (5/7/11 lokalít) sa sčítajú a delia „na partiu“, takže priemery sa nedajú porovnať.</td><td>Zhoda so svetom</td><td><span class="z z2">2</span></td><td><code>priemer(s.dlhyZiskane, s.partie)</code> v <code>Statistiky.tsx:515</code>. Dĺžka nie je v tabuľke <code>partie</code>, len v <code>tempo_partii.dlzka</code>.</td><td>Každý, kto hrá rôzne dĺžky.</td></tr>
+<tr data-z="2"><td>A10</td><td>Meno AI autora v Spätnej väzbe je odkaz. Po zavedení skrytia by viedol na 404.</td><td>Konzistencia, slepá ulička</td><td><span class="z z2">2</span></td><td><code>SpatnaVazba.tsx:171</code> (odkaz) vedľa odznaku AI (:175)</td><td>Čitatelia Spätnej väzby. AI píše časť názorov.</td></tr>
+<tr data-z="1"><td>A11</td><td>Nastavenia účtu a štatistiky sú na jednej stránke „Môj profil“. Vlastný profil má dve rôzne podoby (<code>/profil</code> a „Ako ma vidia ostatní“).</td><td>Konzistencia</td><td><span class="z z1">1</span></td><td><code>Ucet.tsx:354, 413, 415</code>, menu <code>Layout.tsx:94–99</code></td><td>Každý hráč. Mätie, ktorá podoba je „tá pravá“.</td></tr>
+<tr data-z="1"><td>A12</td><td>Pravidlá a sada sa menia takmer denne. Súčty miešajú partie podľa rôznych pravidiel bez označenia.</td><td>Viditeľnosť stavu</td><td><span class="z z1">1</span></td><td><code>partie.verzia_sady</code> sa ukladá, profil ho nepoužíva</td><td>Dlhodobí hráči. Dnes málo, neskôr viac.</td></tr>
+<tr data-z="0"><td>A13</td><td>Herný stôl sa na mobile nehrá, takže karta súpera je len desktopová.</td><td>(poznámka)</td><td><span class="z z0">0</span></td><td>snímka vyššie</td><td>Profil, rozbor a Frajerina musia byť plne mobilné.</td></tr>
+</tbody></table></div>
+
+<!-- ============================================================ -->
+<h2 id="metriky">5. Výber metrík: čo učí a čo je šum</h2>
+<p>Metrika má zmysel, keď hráč z nej pochopí, čo môže v ďalšej partii urobiť inak. Preto ju normujem <strong>na bitku (lokalitu)</strong>, nie na partiu: krátka hra má 5 bitiek, dlhá 11. Body sú výnimka, tie sa rátajú na bodovanú partiu a porovnávajú len s partiami rovnakej dĺžky.</p>
+
+<h3>Učiace metriky (Súhrn a Rozbor)</h3>
+<div class="tab-obal"><table>
+<thead><tr><th>Metrika</th><th>Čo hráča naučí</th><th>Definícia</th><th>Dáta dnes</th><th>Kde</th></tr></thead>
+<tbody>
+<tr><td><strong>Odkiaľ berieš body</strong></td><td>Kde body získava a kde ich necháva (lokality vs. strach starších vs. Dlhy)</td><td><code>bodyPodla</code>: lokality, starší (patronát), znepokojenie, strach, vydesenie, cigarety, −Cirhóza, −Dlhy. Na bodovanú partiu, ty vs. súper.</td><td class="ano">áno</td><td>Súhrn, Rozbor</td></tr>
+<tr><td><strong>Bitky ako útočník / obranca</strong></td><td>Či vie využiť rolu (útočník berie zo šenku prvý, obranca volí cieľ)</td><td>% vyhraných bitiek v každej role, s počtom</td><td class="ano">áno</td><td>Súhrn, Rozbor</td></tr>
+<tr><td><strong>Bilancia poškodenia na bitku</strong></td><td>Či stavia silnú líniu, alebo vyhráva tesne</td><td>tuhé + mäkké udelené − obdržané, na bitku</td><td class="cast">súčty áno, po bitkách nie</td><td>Súhrn, Rozbor</td></tr>
+<tr><td><strong>NA EX: úspešnosť</strong></td><td>Hlavná páka hry. Vyplatilo sa, alebo ho súper odpoveďou otočil?</td><td>Zmena odhadu bitky (rozdiel tuhého ja − on cez <code>poskodenieBitky</code>, <code>engine.ts:745</code>) pred NA EX a po súperovej odpovedi. „Vyplatilo sa“ = zlepšenie &gt; 0. K tomu: bitky vyhrané s mojím NA EX.</td><td class="nie">nie (len počet)</td><td>Súhrn, Rozbor</td></tr>
+<tr><td><strong>Odpoveď na NA EX</strong></td><td>Či vie trestať súperovo NA EX</td><td>Počet odpovedí a koľkokrát odpoveď otočila víťaza odhadu</td><td class="nie">nie</td><td>Rozbor, Súhrn</td></tr>
+<tr><td><strong>Pas</strong></td><td>„Pas je pasca“. Oplatí sa mi pas za cigarety?</td><td>Počet pasov, cigarety za pas, výsledok bitky po pase</td><td class="nie">nie</td><td>Rozbor, Súhrn</td></tr>
+<tr><td><strong>Dlhy</strong></td><td>Koľko bodov ho stoja Dlhy a či sa ich vie zbaviť</td><td>získané, zbavené, na konci a −body, na bitku</td><td class="cast">áno okrem „na konci“</td><td>Súhrn, Rozbor</td></tr>
+<tr><td><strong>Cirhózy a pečeň</strong></td><td>Riziko pitia</td><td>poškodenie pečene na bitku, Cirhózy získané/priznané, liečby, pohreby</td><td class="ano">áno</td><td>Súhrn, Rozbor</td></tr>
+<tr><td><strong>Starší</strong></td><td>Hra o strach (druhá cesta k víťazstvu)</td><td>vydesení na konci, patronáty, posuny prebytkom a Pohoršením</td><td class="ano">áno</td><td>Súhrn, Rozbor</td></tr>
+<tr><td><strong>Priebeh bodov a zlom</strong></td><td>Ktorá bitka partiu rozhodla, koľko sa preklopilo</td><td>body oboch po každej bitke (<code>bodyTeraz</code>, <code>view.ts:301</code>), zmena rozdielu</td><td class="nie">nie</td><td>Rozbor; v Súhrne „náskok pred poslednou bitkou udržaný x z n“</td></tr>
+<tr><td><strong>Ekonómia cigariet</strong></td><td>Kam tečú cigarety a koľko bodov dali zvyšné</td><td>získané; minuté na šenok, pas, barter, Dedičstvo, dolievanie, Starostu; zvyšné na konci</td><td class="cast">získané a minuté áno, účel nie</td><td>Rozbor</td></tr>
+<tr><td><strong>Šenok</strong></td><td>Či kupuje veľa, alebo málo kariet</td><td>karty a cigarety za šenok na kolo</td><td class="nie">nie (na hráča)</td><td>Rozbor</td></tr>
+<tr><td><strong>Tvoje karty</strong></td><td>S čím hrá a čo mu vyhráva</td><td>top 5 vyložených, zo šenku, cieľov NA EX; bitky vyhraté s kartou v línii</td><td class="nie">nie (<code>partie.karty</code> je za oboch spolu)</td><td>Rozbor, neskôr Súhrn</td></tr>
+</tbody></table></div>
+
+<h3>Šum: do Kroniky alebo len pre správcu</h3>
+<ul>
+<li><strong>Súčty za celú históriu</strong> (vyložených kariet 412, ťahov 1 893, pri stole spolu 31 h): kronika, pre radosť, nič neučia.</li>
+<li><strong>Rekordy</strong> (najväčší zásah, najviac bodov v partii): kronika.</li>
+<li><strong>Aktívne akcie po druhoch</strong> (Rana, Pecka, Petelica…): závisia od toho, čo prišlo do šenku. Patria do rebalansu v Tvorbe, nie hráčovi.</li>
+<li><strong>Ťahy na partiu</strong>: závisia od dĺžky a od toho, ako sa ráta „ťah“. Šum.</li>
+<li><strong>Bartery, dolievania, Povery účinné, karty do súperovej</strong>: len v Rozbore partie, v súhrne nie.</li>
+<li><strong>Tempo</strong> (čas na ťah, fázy): správca. Hráčovi nanajvýš „priemerná partia trvá 48 min“ v kronike.</li>
+</ul>
+
+<h3>Ako ukázať silné a slabé stránky bez záverov z 3 partií</h3>
+<div class="mriezka">
+<div class="dlazdica"><b>S čím porovnávať.</b> 1. <em>So súpermi v tých istých partiách</em> (párové porovnanie, rovnaké lokality a starší, funguje od prvej partie a aj s botmi). 2. <em>Výhry vs. prehry</em>: „keď vyhrávaš, máš 2,1 lokality, keď prehrávaš, 0,8“. 3. <em>S vlastným dlhodobým priemerom</em> pre trend. 4. <em>S priemerom hráčov</em> až keď existuje (návrh: aspoň 10 ľudí s 5+ partiami v rovnakej dĺžke hry). Inak sa ten stĺpec neukáže, aj s vysvetlením prečo.</div>
+<div class="dlazdica"><b>Prahy.</b> Súhrn ukazuje čísla od 1. partie, vždy s počtom („z 3 partií“). Silné a slabé stránky sa objavia od <b>5 partií</b> vo zvolenom filtri a sú označené „predbežné“, kým ich nie je 20. Trend (šípka) od <b>10 partií</b>: posledných 5 vs. predchádzajúce. (Prahy rozhodne Michal, otázka O3.)</div>
+<div class="dlazdica"><b>Kedy je rozdiel „stránka“.</b> Musí platiť všetko: rozdiel je prakticky veľký (body: aspoň 2 b na partiu, percentá: aspoň 10 p. b.), drží sa v aspoň 70 % partií (znamienkový test) a priemerný rozdiel je aspoň 2 smerodajné chyby. Ukáže sa najviac 2 silné a 2 slabé. Každá má dôkaz („v 15 z 20 partií“) a odkaz „Ukáž tie partie“.</div>
+<div class="dlazdica"><b>Tón.</b> Nie „si zlý v NA EX“, ale „Tu ťa to stojí: NA EX ti zlepšilo bitku v 9 z 24 prípadov, 6-krát ho súper otočil odpoveďou“. Krčmovo, ale presne: <em>Tu si frajer</em> a <em>Tu ťa to stojí</em>. Nikdy nie stránka bez čísla, z ktorého vznikla.</div>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="data">6. Dátový model</h2>
+<div class="verdikt">
+<p><strong>V jednom odseku.</strong> Dnes sa pri konci partie s dvoma ľuďmi (aj AI) zapíše riadok do <code>partie</code> (kód, časy, víťaz, dôvod, kolá, <code>verzia_sady</code>, <code>dohrata</code>, <code>karty</code> = štatistiky kariet za oboch hráčov spolu) a dva riadky do <code>partie_hraci</code> (výsledok, body, Frajerina pred a po, <code>statistiky</code> = JSON <code>StatistikyHraca</code> s asi 45 súhrnnými poľami zo <code>zapisTah</code>/<code>uzavriStatistiky</code>). <code>frajerina</code> drží aktuálny stav a <code>tempo_partii</code> čas po fázach aj pre partie s botom, ale bez väzby na hráča. Partie s botom sa do archívu nezapisujú (<code>server.ts:573</code>). Neukladá sa nič po kolách: seed, príkazy, udalosti, konečný stav ani verzia jadra. Bitky po kolách, úspešnosť NA EX, pas, šenok na hráča ani body súpera po bitkách teda nie sú. Vyloženia z príkazu „tah“ sa od 19. 10. do dnešnej opravy nerátali. Navrhujem <strong>minimálne rozšírenie</strong>: (1) archivovať aj partie s botom: <code>partie.s_botom</code> + <code>bot_povaha</code>, bot v <code>partie_hraci</code> s <code>pouzivatel NULL</code>, Frajerina sa nemení a rebríček filtruje <code>s_botom = 0</code>; (2) <code>partie.dlzka</code> a <code>partie.verzia_jadra</code> (commit buildu); (3) <code>StatistikyHraca</code> v2 s <code>v: 2</code> a novými skalármi (pasy, cigarety za pas, šenok karty a cigarety, minuté cigarety podľa účelu, NA EX zlepšenie a vyhraté s NA EX, odpovede na NA EX, zvyšné cigarety, Dlhy na konci, malá mapa <code>karty</code> defId → vyložené/zo šenku/NA EX); (4) nové pole <code>partie.kola</code> (JSON, jedno pre partiu, obe strany): pre každú bitku lokalita, útočník, počet Pitiek, tuhé a mäkké oboch, víťaz alebo sekera, prebytok a komu, zoznam NA EX (kto, na čiu kartu, odhad pred a po odpovedi), pas (kto, cigarety), šenok (karty, cigarety), patronát, kliatby v kole a <code>bodyPo</code> oboch. Všetko sa odvodí z udalostí a stavu v čistom kóde <code>packages/core</code> (rovnaký vzor ako <code>zapisTah</code>, bez I/O). Motor potrebuje nanajvýš jednu verejnú udalosť navyše. Voliteľne (5) <code>partie.seed</code> + <code>partie.prikazy</code> (JSON <code>[miesto, Command]</code>, odhad 20–50 kB na partiu) na budúci replay. Ten však funguje len s rovnakou verziou jadra, preto je potrebný (2). <strong>Staré partie sa dopočítať nedajú</strong> (chýbajú udalosti aj seed). Ostanú s <code>v: 1</code> a súhrn pri každej metrike ukáže, z koľkých partií je. Na živom webe je dnes 0 partií ľudí, takže na tom prakticky nezáleží. Dôležité je zapnúť zber čo najskôr.</p>
+</div>
+
+<details>
+<summary>Podrobne: polia, odkiaľ sa vezmú a čo sa nedá</summary>
+<div class="tab-obal"><table>
+<thead><tr><th>Nové pole</th><th>Zdroj v jadre</th><th>Staré partie</th></tr></thead>
+<tbody>
+<tr><td><code>kola[i].bodyPo</code></td><td><code>bodyTeraz</code> nad stavom po <code>bitkaVysledok</code> (čisté; na serveri nad plným stavom)</td><td>nedá sa</td></tr>
+<tr><td><code>kola[i].tuhe/makke/vitaz/prebytok</code></td><td>udalosť <code>bitkaVysledok</code> (už dnes)</td><td>nedá sa (dnes sa len sčítajú)</td></tr>
+<tr><td><code>kola[i].pitky</code>, <code>utocnik</code>, <code>lokalita</code></td><td><code>faza</code> udalosti, <code>pred.utocnik</code>, <code>state.ciel</code></td><td>nedá sa</td></tr>
+<tr><td><code>naex[].odhadPred/odhadPo</code></td><td><code>poskodenieBitky</code> pred príkazom <code>naex</code> a po ďalšom príkaze súpera (<code>place</code> v odpovedi alebo <code>bezReakcie</code>). Absťáky v ruke sú na serveri známe, zapisujú sa len do štatistík, nie klientovi.</td><td>nedá sa</td></tr>
+<tr><td><code>pasy</code>, <code>cigaretyZaPas</code></td><td>príkaz <code>pass</code> + rozdiel cigariet</td><td>nedá sa</td></tr>
+<tr><td><code>senokKarty</code>, <code>cigaretyZaSenok</code></td><td>príkaz <code>draftBer</code> (počet uid) + rozdiel cigariet</td><td>nedá sa</td></tr>
+<tr><td><code>cigaretyMinute</code> podľa účelu</td><td>typ príkazu, ktorý cigarety ubral (<code>draftBer</code>, <code>pass</code>, <code>barter</code>, <code>place</code> do Dedičstva, <code>refillPoldeci</code>, <code>starosta</code>, <code>vykup</code>, <code>smoke</code>)</td><td>len súčet (dnes <code>cigaretyMinute</code>)</td></tr>
+<tr><td><code>dlhyNaKonci</code>, <code>zvysneCigarety</code></td><td>konečný stav v <code>uzavriStatistiky</code></td><td>Dlhy nepriamo z <code>bodyPodla.dlh</code></td></tr>
+<tr><td><code>karty</code> (na hráča)</td><td>ako <code>zapisTahKariet</code>, len s rozlíšením hráča</td><td>nedá sa (dnes za oboch spolu)</td></tr>
+<tr><td><code>partie.dlzka</code></td><td><code>room.dlzka</code></td><td><strong>dá sa</strong>: join na <code>tempo_partii</code> podľa <code>kod</code> + <code>koniec</code> (kód sa môže opakovať, preto aj čas)</td></tr>
+<tr><td><code>partie.s_botom</code></td><td><code>room.bot</code></td><td>staré sú všetky bez bota</td></tr>
+<tr><td><code>tempo_partii.partia</code> (FK)</td><td>id z archívu pri zápise</td><td>dá sa párovať ako <code>dlzka</code></td></tr>
+</tbody></table></div>
+<p class="pozn">Pozor pri archivovaní partií s botom: <code>DOHRATE_SQL</code> (<code>auth.ts:93</code>) ráta dohraté partie z <code>partie_hraci</code>. Ak sa partie s botom začnú archivovať, povýšenie na hráča „aj po partii s botom“ (Michal 2026-10-21) sa zjednoduší, ale štatistiky webu a <code>/vyvoj</code>, ktoré čítajú <code>partie</code>, musia filtrovať <code>s_botom = 0</code> všade, kde dnes predpokladajú len ľudí (napr. <code>statistikyKariet(lenLudia)</code>).</p>
+</details>
+
+<!-- ============================================================ -->
+<h2 id="navrhy">7. Návrhy</h2>
+<p>Päť návrhov od rýchlej poistky po odvážny smer. Čísla v drôtených modeloch sú <strong>ilustračné</strong> (priebeh bodov v N3 je z playtestu 20261022-065959-1).</p>
+
+<!-- N1 -->
+<section class="navrh" id="n1" aria-labelledby="n1-h">
+<h3 id="n1-h">N1 · Strážca viditeľnosti <span class="stitok mala">malá</span> <span class="stitok">rýchla výhra · predpoklad všetkého</span></h3>
+<dl>
+<dt>Rieši</dt><dd>A1, A2, A10 a pripraví A5 (príznak profilu vo websockete).</dd>
+<dt>Čo</dt><dd>Pravidlá z matice na serveri (kapitola 3): AI profil 404 pre nesprávcu, zoznam partií a kronika len vlastníkovi a správcovi, AI mimo rebríčka hráča, príznak <code>profil</code> v správe <code>hraci</code>. Klient: meno AI autora a AI súpera bez odkazu, na AI profile pás pre správcu.</dd>
+</dl>
+<div class="tok">
+<div class="pred"><h4>Pred</h4><ol><li>Hráč klikne v rebríčku na „Dizajnér (AI)“.</li><li>Uvidí všetkých 45 čísel a 25 partií AI.</li></ol></div>
+<div class="po"><h4>Po</h4><ol><li>Hráč AI v rebríčku nevidí (alebo vidí bez odkazu, O4).</li><li>Priama adresa <code>/hrac/17</code> ukáže „Hráč sa nenašiel“ s tlačidlom na Frajerinu.</li><li>Subadmin na tej istej adrese vidí profil a pás „Skrytý profil“.</li></ol></div>
+</div>
+<h4>Drôtený model: profil AI očami subadmina (desktop) a meno AI autora v Spätnej väzbe (mobil)</h4>
+<div class="wf-par">
+<div class="zar" role="img" aria-label="Drôtený model: profil AI playtestera pre subadmina s pásom skrytého profilu">
+<div class="zar-stitok"><span>desktop · /hrac/17 · subadmin</span><span>N1</span></div>
+<div class="wf-hlavicka">NA EX! <span class="wf-menu">Pravidlá · Karty · Hrať · Frajerina · Spätná väzba · Playtest · Tvorba</span></div>
+<div class="zar-telo">
+<div class="banner"><strong>Skrytý profil.</strong> Dizajnér je AI playtester. Hráči tento profil nevidia, ty ho vidíš ako subadmin.</div>
+<div class="riadok"><span class="av v"></span><div><div class="velke">Dizajnér <span class="tl">AI</span></div><div class="n">v krčme od 12. 10. 2026 · 41 partií (len s AI a ľuďmi, bez botov)</div></div></div>
+<div class="b svetly" style="margin-top:10px">… ďalej rovnaký profil ako vlastný: Súhrn · Partie · Kronika, rozbory partií …</div>
+</div></div>
+<div class="zar zar-mob" role="img" aria-label="Drôtený model mobil: názor v Spätnej väzbe, meno AI autora bez odkazu">
+<div class="zar-stitok"><span>mobil 390 · /spatna-vazba</span><span>N1</span></div>
+<div class="zar-telo">
+<div class="b"><div class="riadok"><span class="av m"></span><strong>Rapavý tester</strong><span class="tl">AI</span></div><p style="margin:6px 0 0">„Pas za cigarety v K1 bol istý koniec bitky…“</p><div class="n">meno nie je odkaz · čítačka: „Rapavý tester, AI playtester“</div></div>
+<div class="b"><div class="riadok"><span class="av m"></span><u>Ferko z Dolnej</u></div><p style="margin:6px 0 0">„Na mobile sa mi nedá dať NA EX…“</p><div class="n">meno je odkaz na profil (cieľ 44 px)</div></div>
+</div></div>
+</div>
+<dl>
+<dt>Mikrocopy</dt><dd>404: „Hráč sa nenašiel. Možno zmenil meno, alebo tu nikdy nepil.“ + tlačidlo „Frajerina“. Pás: „Skrytý profil. Hráči ho nevidia, ty ho vidíš ako subadmin.“</dd>
+<dt>Prístupnosť</dt><dd>Odznak AI má textovú alternatívu („AI playtester“). Pás je obyčajný text, nie <code>role="alert"</code>.</dd>
+<dt>Súbory</dt><dd><code>packages/server/src/api.ts</code> (411–422), <code>archiv.ts</code> (<code>profil</code>, <code>rebricek</code>), <code>server.ts</code> (<code>posliHracov</code> :319), <code>apps/web/src/stranky/Rebricek.tsx</code>, <code>SpatnaVazba.tsx</code>, <code>Statistiky.tsx</code> (<code>HracProfil</code>), testy API.</dd>
+<dt>Ako overiť</dt><dd>Test API pre každú bunku matice (hráč → AI = 404, hráč → cudzí /partie = 404, subadmin → AI = 200). V playteste: AI playtester skúsi <code>web.ts</code> načítať profil iného AI a musí dostať 404.</dd>
+</dl>
+</section>
+
+<!-- N2 -->
+<section class="navrh" id="n2" aria-labelledby="n2-h">
+<h3 id="n2-h">N2 · Karta súpera pri stole <span class="stitok mala">malá až stredná</span></h3>
+<dl>
+<dt>Rieši</dt><dd>A5, úloha U3 („kto je môj súper“) bez rizika kontumácie.</dd>
+<dt>Čo</dt><dd>Meno a avatar súpera v doske (<code>Panely.tsx:416</code>) sa stanú tlačidlom. Otvorí sa nemodálna bublina pod doskou súpera: titul, Frajerina, bilancia s ľuďmi, forma, vzájomná bilancia „vy dvaja“ a odkaz „Celý profil“ do novej karty. Pri botovi: povaha a jedna veta o štýle. Pri AI (ak človek hrá proti AI agentovi): „AI playtester, profil je skrytý“.</dd>
+</dl>
+<div class="tok">
+<div class="pred"><h4>Pred</h4><ol><li>Hráč vidí „Dizajn 2 · obranca · 1200“.</li><li>Kto to je, nevie zistiť bez odchodu zo stola.</li><li>Ak odíde, spojenie spadne a po 3 min hrozí kontumácia.</li></ol></div>
+<div class="po"><h4>Po</h4><ol><li>Klik (alebo Enter) na meno súpera otvorí bublinu, stôl beží ďalej.</li><li>„Celý profil ↗“ otvorí novú kartu prehliadača.</li><li>Esc, klik mimo alebo opätovný klik bublinu zavrie, fokus sa vráti na meno.</li></ol></div>
+</div>
+<h4>Drôtený model (len desktop: na mobile sa nehrá)</h4>
+<div class="zar" role="img" aria-label="Drôtený model: doska súpera v pravom hornom rohu stola a pod ňou bublina karty súpera">
+<div class="zar-stitok"><span>desktop · /hra · počas Pitky</span><span>N2</span></div>
+<div class="zar-telo">
+<div class="riadok medzera b"><span>KARTY · BODY +5 · POLDECI 2 · CIGARETY 3 · … · DLHY 0/10</span><span class="riadok"><span style="text-align:right"><u><strong>Dizajn 2</strong></u> ▾<br><span class="n">obranca · 1200</span></span><span class="av"></span></span></div>
+<div style="display:flex;justify-content:flex-end">
+<div class="pop" aria-label="Karta súpera">
+<div class="riadok"><span class="av"></span><div><strong>Dizajn 2</strong><div class="n">Štamgast · Frajerina 1 342 · 7. miesto</div></div></div>
+<div style="margin:8px 0 4px">S ľuďmi: <span class="pl">12</span> – 2 – <span class="mi">9</span> <span class="n">(23 partií)</span></div>
+<div class="forma" aria-label="Forma: výhra, výhra, prehra, výhra, remíza"><span>V</span><span>V</span><span>P</span><span>V</span><span>R</span> <span class="n" style="border:0;background:none;width:auto">posledných 5</span></div>
+<div style="margin:8px 0">Vy dvaja: <strong>ty 2 – 0 – 1</strong> <span class="n">(3 partie)</span></div>
+<div class="riadok medzera"><span class="tl">Celý profil ↗</span><span class="n">otvorí sa v novej karte,<br>partia beží ďalej</span></div>
+</div></div>
+<div class="b svetly" style="margin-top:8px">STARŠÍ · scorecardy … (bublina ich prekryje len čiastočne a zavrie sa klikom kamkoľvek na stôl)</div>
+</div></div>
+<dl>
+<dt>Mikrocopy</dt><dd>Tlačidlo: meno súpera + „▾“, <code>aria-label="Karta hráča Dizajn 2"</code>. Odkaz: „Celý profil ↗“ s doplnkom „otvorí sa v novej karte, partia beží ďalej“. Bot: „Teta Gizka, offline protihráč. Hrá opatrne, šetrí poldeci. Boti nemajú profil, vaše partie nájdeš v Mojich partiách (filter Boti).“ AI: „AI playtester. Jeho profil je skrytý.“ Bez partií: „Prvá partia, Frajerina 1200?, vy dvaja ste ešte nehrali.“</dd>
+<dt>Prístupnosť</dt><dd>Nemodálny dialóg (<code>role="dialog"</code>, <code>aria-modal="false"</code>), <code>aria-expanded</code> na spúšťači. Fokus sa presunie do bubliny len po kliknutí používateľa, nikdy pri zmene stavu. Keď je hráč na ťahu, bublina ostane otvorená, ale nezachytáva klávesy ťahu (Esc ju zavrie, ďalšie skratky idú stolu). Odkaz <code>target="_blank" rel="noopener"</code> s textom o novej karte (WCAG 3.2.5).</dd>
+<dt>Náročnosť</dt><dd>Malá na klientovi. Na serveri jeden ľahký endpoint <code>GET /api/hraci/:id/karta</code> (hlavička + vzájomná bilancia), aby sa pri stole nepočítal celý súhrn.</dd>
+<dt>Súbory</dt><dd><code>apps/web/src/hra/Panely.tsx</code>, nová <code>hra/KartaSupera.tsx</code>, <code>hra/useHra.ts</code> (<code>HracInfo.profil</code>), <code>packages/server/src/server.ts</code>, <code>api.ts</code>, <code>archiv.ts</code>.</dd>
+<dt>Ako overiť</dt><dd>Playtest s ľuďmi: „Zistil si počas partie niečo o súperovi? Vyrušilo ťa to z ťahu?“ Sledovať, či niekto počas partie nezatvoril stôl (v logu odpojenie bez návratu).</dd>
+</dl>
+</section>
+
+<!-- N3 -->
+<section class="navrh" id="n3" aria-labelledby="n3-h">
+<h3 id="n3-h">N3 · Rozbor partie a zber dát po kolách <span class="stitok velka">stredná až veľká</span></h3>
+<dl>
+<dt>Rieši</dt><dd>A3, A4, A9, úlohy U1 a U5. Je to najväčší prínos pre učenie.</dd>
+<dt>Čo</dt><dd>Dátová časť: <code>StatistikyHraca</code> v2, <code>partie.kola</code>, archív partií s botom (kapitola 6). Stránka <code>/partia/:id</code>: hlavička, graf priebehu bodov, tabuľka bitiek, odkiaľ prišli body (ty vs. súper), kliatby a cigarety, tvoje karty. Vstup z okna konca hry a zo zoznamu partií.</dd>
+</dl>
+<div class="tok">
+<div class="pred"><h4>Pred</h4><ol><li>Koniec hry: skóre a rozpis po starších.</li><li>„Späť do lobby“, a tým rozbor končí.</li><li>Kto chce vedieť, ktorá bitka rozhodla, musí si ju pamätať.</li></ol></div>
+<div class="po"><h4>Po</h4><ol><li>Koniec hry: „Rozbor partie“.</li><li>Graf ukáže zlom (napr. K5: +45).</li><li>Riadok bitky povie prečo: tvoje NA EX na Hasiča +8, súperova odpoveď nestačila.</li><li>„Ďalšia partia“ alebo späť na profil.</li></ol></div>
+</div>
+<h4>Drôtený model: Rozbor partie</h4>
+<div class="wf-par">
+<div class="zar" role="img" aria-label="Drôtený model desktop: rozbor partie s grafom priebehu bodov a tabuľkou bitiek">
+<div class="zar-stitok"><span>desktop · /partia/482</span><span>N3</span></div>
+<div class="wf-hlavicka">NA EX! <span class="wf-menu">Pravidlá · Karty · Hrať · Frajerina · Spätná väzba</span></div>
+<div class="zar-telo">
+<div class="n">← Moje partie</div>
+<div class="riadok medzera" style="margin:6px 0 10px">
+<div><span class="velke">Výhra 87 : 49</span><div class="n">proti <u>Rapavý Ferko</u> (1 310) · stredná hra, 7 lokalít · 1 h 12 min · 22. 10. · sada v15</div><div>Frajerina 1 320 → <strong>1 336</strong> <span class="pl">+16</span> · Posledná bitka odohraná, rozhodli body.</div></div>
+<span class="tl hl">Zahrať znova</span></div>
+<div class="b"><h5>Priebeh bodov po bitkách</h5>
+<svg viewBox="0 0 560 150" style="width:100%;height:auto" aria-hidden="true">
+<g stroke="#8f8574" stroke-width="1"><line x1="30" y1="130" x2="550" y2="130"/><line x1="30" y1="10" x2="30" y2="130"/></g>
+<g font-size="11" fill="#d8cdbb"><text x="66" y="145">K1</text><text x="136" y="145">K2</text><text x="206" y="145">K3</text><text x="276" y="145">K4</text><text x="346" y="145">K5</text><text x="416" y="145">K6</text><text x="486" y="145">K7</text><text x="2" y="20">90</text><text x="6" y="130">0</text></g>
+<polyline fill="none" stroke="#e9ad45" stroke-width="3" points="70,121 140,127 210,127 280,96 350,65 420,79 490,15"/>
+<polyline fill="none" stroke="#6fb3d2" stroke-width="3" stroke-dasharray="6 4" points="70,105 140,110 210,74 280,79 350,107 420,89 490,65"/>
+<rect x="335" y="20" width="32" height="105" fill="#e9ad45" opacity=".12"/>
+<g font-size="11" fill="#d8cdbb"><text x="372" y="40">zlom K5: +45</text><text x="440" y="12">87 : 49</text></g>
+</svg>
+<div class="n">plná čiara ty · prerušovaná súper · tabuľka hodnôt je pod grafom pre čítačky</div></div>
+<div class="b"><h5>Bitky</h5>
+<table class="wf-tab"><thead><tr><th>Kolo</th><th>Lokalita</th><th>Ty</th><th>Poškodenie</th><th>Víťaz</th><th>NA EX</th><th>Pas</th><th>Body po</th></tr></thead>
+<tbody>
+<tr><td>K1</td><td>Obecný úrad</td><td>útočník</td><td>4 : 9</td><td>súper</td><td>súper: +5 cig.</td><td>ty (3 cig.)</td><td>6 : 19</td></tr>
+<tr><td>K2</td><td>Lesná cesta</td><td>útočník</td><td>8 : 11</td><td>súper</td><td>ty: 9:10 → 10:9, <span class="mi">súper odpovedal (Manželka) → 8:11</span></td><td>ty (3 cig.)</td><td>2 : 15</td></tr>
+<tr><td>K4</td><td>Most</td><td>útočník</td><td>9 : 6</td><td><strong>ty</strong></td><td>ty: Petelica <span class="pl">+3</span></td><td>–</td><td>25 : 39</td></tr>
+<tr><td>K5</td><td>Zberný dvor</td><td>obranca</td><td>17 : 14</td><td><strong>ty</strong></td><td>ty: Hasič <span class="pl">+8</span>, súper odpovedal, nestačilo</td><td>–</td><td>49 : 18</td></tr>
+<tr><td colspan="8" class="n">… K3, K6, K7 · celý riadok sa dá rozbaliť: Pitky, šenok, prebytok a posuny, kliatby v kole</td></tr>
+</tbody></table></div>
+<div class="dva">
+<div class="b"><h5>Odkiaľ prišli body</h5>
+<div class="zdroj"><span>Lokality (3)</span><div class="os"><i style="left:0;width:70%"></i></div><span>+36 : +48</span></div>
+<div class="zdroj"><span>Strach starších</span><div class="os"><i style="left:0;width:45%"></i></div><span>+38 : +9</span></div>
+<div class="zdroj"><span>Cigarety</span><div class="os"><i style="left:0;width:6%"></i></div><span>+2 : +6</span></div>
+<div class="zdroj"><span>Dlhy</span><div class="os"><i class="zap" style="left:0;width:4%"></i></div><span>0 : −6</span></div>
+</div>
+<div class="b"><h5>Kliatby a cigarety</h5>
+<div>Dlhy: vzniklo 6, zbavil si sa 6, na konci <strong>0</strong> <span class="n">(súper 0)</span></div>
+<div>Cigarety: +14 získané · šenok 5 · pas 6 · Dedičstvo 0 · zvyšné 3 <span class="n">(súper 10)</span></div>
+<div>Pečeň: 5 · Cirhózy 0</div></div>
+</div>
+<div class="b svetly"><strong>Len admin a subadmin:</strong> tempo po fázach · verzia jadra 0ca116c · <span class="tl">Stiahnuť JSON</span></div>
+</div></div>
+
+<div class="zar zar-mob" role="img" aria-label="Drôtený model mobil: rozbor partie s rozbaľovacími bitkami">
+<div class="zar-stitok"><span>mobil 390 · /partia/482</span><span>N3</span></div>
+<div class="zar-telo">
+<div class="n">← Moje partie</div>
+<div class="velke" style="margin-top:4px">Výhra 87 : 49</div>
+<div class="n">proti <u>Rapavý Ferko</u> · 7 lokalít · 1 h 12 min</div>
+<div>Frajerina 1 336 <span class="pl">+16</span></div>
+<div class="b" style="margin-top:8px"><h5>Priebeh bodov</h5>
+<svg viewBox="0 0 340 110" style="width:100%;height:auto" aria-hidden="true">
+<polyline fill="none" stroke="#e9ad45" stroke-width="3" points="20,100 65,105 110,105 155,80 200,55 245,66 290,12"/>
+<polyline fill="none" stroke="#6fb3d2" stroke-width="3" stroke-dasharray="6 4" points="20,88 65,92 110,62 155,66 200,88 245,73 290,55"/>
+<text x="210" y="40" font-size="11" fill="#d8cdbb">zlom K5</text></svg></div>
+<div class="kolo"><strong>K1 · Obecný úrad</strong> · prehra 4 : 9 ▸<div class="n">body po: 6 : 19 · pas (3 cig.)</div></div>
+<div class="kolo"><strong>K2 · Lesná cesta</strong> · prehra 8 : 11 ▾
+<div style="margin-top:6px">Ty útočník · 2 Pitky<br>Tvoje NA EX: 9:10 → 10:9<br><span class="mi">Súper odpovedal (Manželka) → 8:11</span><br>Body po: 2 : 15</div></div>
+<div class="kolo"><strong>K5 · Zberný dvor</strong> · výhra 17 : 14 ▸<div class="n">zlom partie: rozdiel +45</div></div>
+<div class="b"><h5>Odkiaľ prišli body</h5>
+<div class="zdroj"><span>Lokality</span><span>+36 : +48</span><div class="os"><i style="left:0;width:70%"></i></div></div>
+<div class="zdroj"><span>Strach starších</span><span>+38 : +9</span><div class="os"><i style="left:0;width:45%"></i></div></div></div>
+<div class="riadok"><span class="tl hl" style="flex:1;justify-content:center">Zahrať znova</span></div>
+</div></div>
+</div>
+<dl>
+<dt>Mikrocopy</dt><dd>Tlačidlo v okne konca: „Rozbor partie“. NA EX v riadku: „tvoje NA EX: 9:10 → 10:9; súper odpovedal (Manželka) → 8:11“. Pas: „pas (3 cig.)“. Remíza: „sekera, lokalitu berie víťaz ďalšej bitky“. Partia s botom: „proti Teta Gizka (bot) · Frajerina sa nemenila“. Stará partia (v1): „Táto partia je spred zápisu po kolách, rozbor bitiek nie je k dispozícii.“</dd>
+<dt>Prístupnosť</dt><dd>Graf má hneď pod sebou tabuľku hodnôt (alebo <code>&lt;details&gt;</code> „Tabuľka bodov“). Farba nie je jediný rozlišovač: ty plná čiara, súper prerušovaná, víťaz bitky slovom. Na mobile sú bitky <code>&lt;details&gt;</code> so <code>summary</code> 44 px. Tabuľka na desktope má <code>&lt;th scope&gt;</code>.</dd>
+<dt>Náročnosť</dt><dd>Stredná pre dáta (core <code>statistiky.ts</code> + testy, <code>archiv.ts</code>, migrácia <code>db.ts</code>), stredná pre stránku. Dáta sa oplatí nasadiť samostatne a hneď, stránka môže prísť neskôr.</dd>
+<dt>Súbory</dt><dd><code>packages/core/src/statistiky.ts</code> (+ test), prípadne <code>engine.ts</code> (verejná udalosť pre pas/šenok, ak rozdiel stavu nestačí), <code>packages/server/src/archiv.ts</code>, <code>db.ts</code>, <code>server.ts</code> (<code>zapisDoArchivu</code> aj pre bota), <code>api.ts</code>, nová <code>apps/web/src/stranky/Partia.tsx</code>, <code>hra/KoniecHry.tsx</code>, <code>App.tsx</code>.</dd>
+<dt>Ako overiť</dt><dd>Hráč po partii: „Ktorá bitka rozhodla partiu a prečo?“ Odpovie do 30 s z rozboru? AI playtester porovná svoju ručnú tabuľku bitiek (ako v <code>feedback.md</code>) s rozborom. Rozdiel = chyba v zápise.</dd>
+</dl>
+</section>
+
+<!-- N4 -->
+<section class="navrh" id="n4" aria-labelledby="n4-h">
+<h3 id="n4-h">N4 · Súhrn posledných 20: „Tu si frajer / Tu ťa to stojí“ <span class="stitok stredna">stredná</span></h3>
+<dl>
+<dt>Rieši</dt><dd>A6, A7, A8, A11, A12, úloha U2 a cudzí profil.</dd>
+<dt>Čo</dt><dd>Profil dostane záložky Súhrn · Partie · Kronika. Súhrn: filter Ľudia / Boti / Spolu, okno 20 partií, karta silných a slabých stránok podľa pravidiel z kapitoly 5, „Odkiaľ berieš body“ (ty vs. súperi), 6 kľúčových metrík s trendom a počtom. Dnešných 45 čísel sa presunie do Kroniky. Nastavenia odídu na <code>/profil</code>. Cudzí profil je ten istý súhrn, len z partií s ľuďmi, bez záložiek Partie a Kronika.</dd>
+</dl>
+<div class="tok">
+<div class="pred"><h4>Pred</h4><ol><li>Profil: 45 čísel za celú históriu.</li><li>Hráč hľadá, čo sa zmenilo od minula, a pamätá si to v hlave.</li><li>„100 % ako obranca“ po 1 bitke.</li></ol></div>
+<div class="po"><h4>Po</h4><ol><li>Profil: najprv 2 + 2 vety so svojím dôkazom.</li><li>Klik „Ukáž tie partie“ vyfiltruje zoznam.</li><li>Rozbor partie ukáže konkrétny moment.</li></ol></div>
+</div>
+<h4>Drôtený model: vlastný profil, Súhrn</h4>
+<div class="wf-par">
+<div class="zar" role="img" aria-label="Drôtený model desktop: vlastný profil so záložkou Súhrn, filtrom a kartou silných a slabých stránok">
+<div class="zar-stitok"><span>desktop · /hrac/12 (vlastný)</span><span>N4</span></div>
+<div class="wf-hlavicka">NA EX! <span class="wf-menu">… · Ferko ▾ (Môj profil · Nastavenia · Odhlásiť)</span></div>
+<div class="zar-telo">
+<div class="riadok medzera">
+<div class="riadok"><span class="av v"></span><div><div class="velke">Ferko z Dolnej</div><div class="n">Štamgast · v krčme od 14. 10. 2026</div></div></div>
+<div style="text-align:right"><div class="velke">1 342</div><div class="n">Frajerina · 7. miesto · najvyššia 1 380</div><div class="forma"><span>V</span><span>V</span><span>P</span><span>V</span><span>R</span></div></div>
+</div>
+<div class="taby" role="presentation"><span class="on">Súhrn</span><span>Partie (31)</span><span>Kronika</span><span style="margin-left:auto;font-weight:400" class="n">Zobraziť ako cudzí</span></div>
+<div class="riadok medzera" style="margin-bottom:8px"><span class="seg"><span class="on">Ľudia 23</span><span>Boti 8</span><span>Spolu 31</span></span><span class="n">posledných 20 partií · Frajerina sa ráta len z partií s ľuďmi</span></div>
+<div class="dva">
+<div class="b"><h5>Tu si frajer</h5>
+<p style="margin:4px 0"><strong>Lokality:</strong> +11,4 b na partiu, o 4,2 viac ako súperi v tých istých partiách. <span class="n">v 14 z 20 partií</span> <u>Ukáž tie partie</u></p>
+<p style="margin:4px 0"><strong>Obrana:</strong> ako obranca vyhrávaš 68 % bitiek <span class="n">(17 z 25)</span>.</p></div>
+<div class="b"><h5>Tu ťa to stojí</h5>
+<p style="margin:4px 0"><strong>Dlhy:</strong> −6,1 b na partiu, súperi −2,3. <span class="n">v 15 z 20 partií máš viac Dlhov</span> <u>Ukáž tie partie</u></p>
+<p style="margin:4px 0"><strong>NA EX:</strong> bitku ti zlepšilo v 9 z 24 prípadov, 6-krát ho súper otočil odpoveďou.</p></div>
+</div>
+<div class="b"><h5>Odkiaľ berieš body <span class="n">(na bodovanú partiu, stredná hra · ty / súperi · čiarka = tvoj dlhodobý priemer)</span></h5>
+<div class="zdroj"><span>Lokality</span><div class="os"><i style="left:0;width:58%"></i><i class="ref" style="left:50%"></i></div><span>11,4 / 7,2</span></div>
+<div class="zdroj"><span>Strach starších</span><div class="os"><i style="left:0;width:40%"></i><i class="ref" style="left:44%"></i></div><span>8,0 / 8,6</span></div>
+<div class="zdroj"><span>Starší (patronát)</span><div class="os"><i style="left:0;width:12%"></i><i class="ref" style="left:10%"></i></div><span>2,4 / 1,8</span></div>
+<div class="zdroj"><span>Cigarety</span><div class="os"><i style="left:0;width:8%"></i><i class="ref" style="left:8%"></i></div><span>1,6 / 2,9</span></div>
+<div class="zdroj"><span>Dlhy</span><div class="os"><i class="zap" style="left:0;width:30%"></i><i class="ref" style="left:22%"></i></div><span>−6,1 / −2,3</span></div>
+<div class="zdroj"><span>Cirhóza</span><div class="os"><i class="zap" style="left:0;width:6%"></i></div><span>−1,0 / −1,4</span></div>
+<div class="n">Priemer všetkých hráčov sa ukáže, keď bude aspoň 10 hráčov s 5 partiami (dnes 2).</div></div>
+<div class="tri">
+<div class="b"><h5>Bitky</h5>58 % vyhraných <span class="pl">↑</span><div class="n">útočník 47 % (16/34) · obranca 68 % (17/25)</div></div>
+<div class="b"><h5>Poškodenie na bitku</h5>+2,1 bilancia<div class="n">udelené 11,3 · obdržané 9,2</div></div>
+<div class="b"><h5>NA EX</h5>1,2 na partiu · 38 % vyplatených <span class="mi">↓</span><div class="n">60 % na súperove karty</div></div>
+<div class="b"><h5>Pas</h5>0,6 na partiu<div class="n">po pase si bitku vyhral 2 z 12</div></div>
+<div class="b"><h5>Starší</h5>2,1 vydesených na konci<div class="n">patronáty 1,2 na partiu</div></div>
+<div class="b"><h5>Náskok</h5>pred poslednou bitkou si viedol 9-krát, udržal 6</div>
+</div>
+</div></div>
+
+<div class="zar zar-mob" role="img" aria-label="Drôtený model mobil: vlastný profil, Súhrn so silnými a slabými stránkami">
+<div class="zar-stitok"><span>mobil 390 · /hrac/12</span><span>N4</span></div>
+<div class="zar-telo">
+<div class="riadok"><span class="av"></span><div><strong>Ferko z Dolnej</strong><div class="n">Štamgast · 7. miesto</div></div><div style="margin-left:auto;text-align:right"><div class="velke">1 342</div><div class="n">Frajerina</div></div></div>
+<div class="forma" style="margin:6px 0"><span>V</span><span>V</span><span>P</span><span>V</span><span>R</span></div>
+<div class="taby"><span class="on">Súhrn</span><span>Partie</span><span>Kronika</span></div>
+<div class="seg" style="margin-bottom:6px"><span class="on">Ľudia</span><span>Boti</span><span>Spolu</span></div>
+<div class="n" style="margin-bottom:8px">posledných 20 z 23 partií s ľuďmi</div>
+<div class="b"><h5>Tu si frajer</h5><p style="margin:2px 0"><strong>Lokality</strong> +11,4 b/partiu, súperi +7,2 <span class="n">· 14 z 20</span></p><p style="margin:2px 0"><strong>Obrana</strong> 68 % bitiek <span class="n">· 17 z 25</span></p></div>
+<div class="b"><h5>Tu ťa to stojí</h5><p style="margin:2px 0"><strong>Dlhy</strong> −6,1 b/partiu, súperi −2,3 <span class="n">· 15 z 20</span></p><p style="margin:2px 0"><strong>NA EX</strong> vyplatilo sa 9 z 24</p><div class="tl" style="margin-top:4px">Ukáž tie partie</div></div>
+<div class="b"><h5>Odkiaľ berieš body</h5>
+<div class="zdroj"><span>Lokality</span><span>11,4 / 7,2</span><div class="os"><i style="left:0;width:58%"></i></div></div>
+<div class="zdroj"><span>Strach starších</span><span>8,0 / 8,6</span><div class="os"><i style="left:0;width:40%"></i></div></div>
+<div class="zdroj"><span>Dlhy</span><span>−6,1 / −2,3</span><div class="os"><i class="zap" style="left:0;width:30%"></i></div></div>
+<div class="n">ďalšie 3 zdroje ▸</div></div>
+<div class="b"><h5>Bitky</h5>58 % vyhraných <span class="pl">↑</span><div class="n">útočník 47 % · obranca 68 %</div></div>
+</div></div>
+</div>
+
+<h4>Drôtený model: cudzí profil (hráč sa pozerá na iného človeka)</h4>
+<div class="wf-par">
+<div class="zar" role="img" aria-label="Drôtený model desktop: cudzí profil s hodnotením, vzájomnou bilanciou a súhrnom len z partií s ľuďmi">
+<div class="zar-stitok"><span>desktop · /hrac/31 (cudzí)</span><span>N4</span></div>
+<div class="zar-telo">
+<div class="riadok medzera">
+<div class="riadok"><span class="av v"></span><div><div class="velke">Rapavý Ferko</div><div class="n">Frajer · v krčme od 9. 10. 2026</div></div></div>
+<div style="text-align:right"><div class="velke">1 488</div><div class="n">Frajerina · 3. miesto</div><div class="forma"><span>V</span><span>P</span><span>V</span><span>V</span><span>V</span></div></div>
+</div>
+<div class="dva" style="margin-top:10px">
+<div class="b"><h5>S ľuďmi</h5><span class="pl">31</span> – 3 – <span class="mi">14</span> <span class="n">(48 partií, úspešnosť 68 %)</span></div>
+<div class="b"><h5>Vy dvaja</h5>ty <strong>1 – 0 – 2</strong> <span class="n">(3 partie, posledná 22. 10.)</span></div>
+</div>
+<div class="b"><h5>Súhrn <span class="n">· posledných 20 partií s ľuďmi</span></h5>
+<div class="zdroj"><span>Lokality</span><div class="os"><i style="left:0;width:62%"></i></div><span>12,1 b/partiu</span></div>
+<div class="zdroj"><span>Strach starších</span><div class="os"><i style="left:0;width:30%"></i></div><span>6,0</span></div>
+<div class="zdroj"><span>Dlhy</span><div class="os"><i class="zap" style="left:0;width:10%"></i></div><span>−2,0</span></div>
+<div class="n">Bitky 61 % · NA EX 1,6 na partiu · pas 0,2 na partiu</div></div>
+<div class="b svetly">Silné a slabé stránky súpera: <strong>otázka O1</strong>. Ak áno, rovnaká karta ako na vlastnom profile.</div>
+<p class="n" style="margin:0">Jednotlivé partie a ich rozbor vidí len Rapavý Ferko.</p>
+</div></div>
+<div class="zar zar-mob" role="img" aria-label="Drôtený model mobil: cudzí profil">
+<div class="zar-stitok"><span>mobil 390 · /hrac/31</span><span>N4</span></div>
+<div class="zar-telo">
+<div class="riadok"><span class="av"></span><div><strong>Rapavý Ferko</strong><div class="n">Frajer · 3. miesto</div></div><div style="margin-left:auto;text-align:right"><div class="velke">1 488</div></div></div>
+<div class="forma" style="margin:6px 0"><span>V</span><span>P</span><span>V</span><span>V</span><span>V</span></div>
+<div class="b"><h5>Vy dvaja</h5>ty 1 – 0 – 2 <span class="n">(3 partie)</span></div>
+<div class="b"><h5>S ľuďmi</h5>31 – 3 – 14 <span class="n">(48)</span></div>
+<div class="b"><h5>Súhrn · posledných 20</h5>
+<div class="zdroj"><span>Lokality</span><span>12,1</span><div class="os"><i style="left:0;width:62%"></i></div></div>
+<div class="zdroj"><span>Dlhy</span><span>−2,0</span><div class="os"><i class="zap" style="left:0;width:10%"></i></div></div>
+<div class="n">Bitky 61 % · NA EX 1,6/partiu</div></div>
+<p class="n">Jednotlivé partie vidí len hráč sám.</p>
+</div></div>
+</div>
+
+<h4>Stavy podľa počtu partií (vo zvolenom filtri)</h4>
+<div class="tab-obal"><table>
+<thead><tr><th>Partie</th><th>Čo Súhrn ukáže</th><th>Mikrocopy</th></tr></thead>
+<tbody>
+<tr><td>0</td><td>Prázdny stav s cestou von</td><td>„Ešte si nedohral partiu. S botom začneš hneď, súpera z mäsa a kostí nájdeš v Hrať.“ [Hrať s botom] [Nájsť súpera]. Pri filtri Ľudia a 0 partiách s ľuďmi, ale 4 s botmi: „S ľuďmi si ešte nehral. Tvoje 4 partie s botmi sú pod Boti.“</td></tr>
+<tr><td>1–4</td><td>Priemery s počtom, „Odkiaľ berieš body“ len ty vs. súper. Karta stránok je zamknutá.</td><td>„Silné a slabé stránky ukážeme po 5. partii. Máš 3: ●●●○○“</td></tr>
+<tr><td>5–19</td><td>Karta stránok s označením „predbežné“, bez trendov</td><td>„Predbežné, zo 7 partií. Ešte sa to môže otočiť.“</td></tr>
+<tr><td>20+</td><td>Plné okno, trendy (šípky) od 10 partií</td><td>Šípka má text pre čítačku: „zlepšenie oproti predchádzajúcim 15 partiám“.</td></tr>
+</tbody></table></div>
+<dl>
+<dt>Prístupnosť</dt><dd>Záložky sú odkazy na podcesty (<code>/hrac/12/partie</code>), nie ARIA tabs. Späť v prehliadači funguje a stav je v URL vrátane <code>?filter=</code>. Filter je skupina tlačidiel s <code>aria-pressed</code>; po zmene oznámi <code>aria-live="polite"</code>: „Súhrn zo 8 partií s botmi“. Žiadne informácie len v <code>title</code>: vysvetlivky sú <code>&lt;details&gt;</code> alebo text pod číslom. Šípky trendu majú slovo (zlepšenie/zhoršenie), nie len farbu.</dd>
+<dt>Súbory</dt><dd><code>apps/web/src/stranky/Statistiky.tsx</code> (rozdeliť na Súhrn, Kronika, Partie), <code>Ucet.tsx</code> (len nastavenia), <code>Layout.tsx</code> (menu), <code>App.tsx</code> (podcesty), <code>packages/server/src/archiv.ts</code> (nová <code>suhrn(id, filter, okno)</code>, výpočet stránok na serveri), čistá funkcia na stránky a prahy v <code>packages/core</code> alebo <code>server</code> (+ test na malé vzorky).</dd>
+<dt>Ako overiť</dt><dd>Hráč s 10+ partiami: „Prečítaj si Tu ťa to stojí. Súhlasíš? Čo urobíš v ďalšej partii inak?“ Overené, keď vie povedať konkrétny ťah. AI playtester po turnuse číta svoj súhrn (<code>web.ts profil</code>) a porovná ho so svojím dojmom v <code>feedback.md</code>.</dd>
+</dl>
+</section>
+
+<!-- N5 -->
+<section class="navrh" id="n5" aria-labelledby="n5-h">
+<h3 id="n5-h">N5 · Prehrávanie partie a kľúčové momenty <span class="stitok velka">veľká</span> <span class="stitok">odvážnejší smer</span></h3>
+<dl>
+<dt>Rieši</dt><dd>U1 do hĺbky, U5 (správca vidí presne, čo sa stalo pri chybe), budúce rozbory s trénerom bez AI (len heuristiky ako bot).</dd>
+<dt>Čo</dt><dd>Ukladať <code>seed</code>, <code>prikazy</code> a <code>verzia_jadra</code>. V rozbore pribudne časová os: posuvník po ťahoch, stôl z pohľadu hráča (<code>viewFor</code> nad prehratým stavom, takže súperova ruka ostane skrytá aj v replayi) a pri každej bitke „Kľúčové momenty“: najväčší zlom, NA EX, ktoré otočilo bitku, odpoveď, ktorá ho zrušila. Funguje len pre partie hrané na rovnakej verzii jadra. Starším sa ukáže len tabuľka z N3.</dd>
+</dl>
+<div class="tok">
+<div class="pred"><h4>Pred (s N3)</h4><ol><li>Rozbor povie, že K2 otočila súperova odpoveď Manželkou.</li><li>Ako vyzeral stôl, si hráč musí predstaviť.</li></ol></div>
+<div class="po"><h4>Po</h4><ol><li>Klik „Pozrieť moment“ pri K2.</li><li>Stôl v stave tesne pred odpoveďou, šípky ◀ ▶ po ťahoch.</li><li>„Späť na rozbor“.</li></ol></div>
+</div>
+<div class="zar" role="img" aria-label="Drôtený model: časová os prehrávania partie pod zmenšeným stolom">
+<div class="zar-stitok"><span>desktop · /partia/482/prehrat?tah=213</span><span>N5</span></div>
+<div class="zar-telo">
+<div class="b svetly" style="height:120px;display:flex;align-items:center;justify-content:center">stôl z tvojho pohľadu v ťahu 213 (K2, Pitka 2, súper odpovedá na NA EX)</div>
+<div class="riadok"><span class="tl">◀ ťah</span><div class="os" style="flex:1;height:16px"><i style="left:0;width:38%"></i></div><span class="tl">ťah ▶</span><span class="n">213 / 560</span></div>
+<div class="riadok" style="margin-top:6px"><span class="tl">K1</span><span class="tl hl">K2 · odpoveď na NA EX</span><span class="tl">K4</span><span class="tl">K5 · zlom +45</span><span class="tl">K7</span></div>
+</div></div>
+<dl>
+<dt>Riziko</dt><dd>Pravidlá sa menia takmer denne a replay na novom jadre dá iný výsledok. Riešenie: replay sa ponúkne len pri zhodnej <code>verzia_jadra</code>, inak text „Pravidlá sa odvtedy zmenili, ukážeme len tabuľku bitiek.“ Odhad: kým sa pravidlá neustália, replay bude dostupný hlavne pre čerstvé partie. Preto je to druhý krok, nie prvý.</dd>
+<dt>Prístupnosť</dt><dd>Posuvník je <code>input type=range</code> s popisom ťahu v <code>aria-valuetext</code>. Šípky klávesnice ◀ ▶. Zmena ťahu sa oznámi stručne cez <code>aria-live</code> („Ťah 213: Dizajn 2 vyložil Manželku“).</dd>
+<dt>Súbory</dt><dd><code>packages/server/src/archiv.ts</code>, <code>db.ts</code>, <code>server.ts</code> (zapisovať príkazy), build (commit do konštanty), nová stránka v <code>apps/web/src/stranky/</code>, opätovné použitie <code>hra/HernaPlocha.tsx</code> v režime iba na čítanie.</dd>
+<dt>Ako overiť</dt><dd>Správca: pri nahlásenej chybe („Chyba“ v Spätnej väzbe) nájde ťah do 2 min. Hráč: „Pomohol ti moment pochopiť, čo si mohol urobiť inak?“</dd>
+</dl>
+</section>
+
+<!-- ============================================================ -->
+<h2 id="poradie">8. Odporúčané poradie</h2>
+<ol>
+<li><strong>N1 Strážca viditeľnosti</strong> (malá). Bez neho nová funkcia porušuje maticu aj pravidlo projektu. Platí aj pre dnešný profil.</li>
+<li><strong>N3, dátová časť</strong>: <code>StatistikyHraca</code> v2, <code>partie.kola</code>, archív partií s botom, <code>dlzka</code>, <code>verzia_jadra</code>. Na rozdiel od rozhrania sa dáta nedajú dorobiť spätne. Každý deň bez zberu sú partie navždy bez rozboru. Ak Michal súhlasí, aj <code>seed</code> + <code>prikazy</code> (lacné, otvára N5). Session New features to vie pripraviť.</li>
+<li><strong>N3, stránka Rozbor partie</strong> + tlačidlo v okne konca hry. Hráč dostane odpoveď na najčastejšiu otázku hneď.</li>
+<li><strong>N4 Súhrn</strong> s prahmi pre malé vzorky. Zmysel má, keď majú hráči aspoň 5 partií, takže môže prísť o krok neskôr.</li>
+<li><strong>N2 Karta súpera</strong>. Malá, dá sa zaradiť kedykoľvek po N1.</li>
+<li><strong>N5 Prehrávanie</strong>, keď sa pravidlá ustália.</li>
+</ol>
+<p>Koordinácia s UI návrhom: vzhľad hlavičky profilu, kariet stránok a grafu rieši <a href="dizajn-profily-20261022-1409-ui.html">UI návrh</a>. Tento dokument určuje, čo na obrazovkách je, pre koho a v akom poradí.</p>
+
+<!-- ============================================================ -->
+<h2 id="otazky">9. Otázky</h2>
+<h3>Na Michala</h3>
+<ol>
+<li id="o1"><strong>O1.</strong> Má cudzí hráč vidieť aj <strong>silné a slabé stránky</strong> súpera? <em>Odporúčam nie</em>: súhrn áno, ale „Tu ťa to stojí“ je osobná rada a ako skauting súpera by menila tón krčmy. Ak áno, rovnaká karta, len v tretej osobe.</li>
+<li><strong>O2.</strong> Má cudzí vidieť <strong>Kroniku</strong> (rekordy, súčty, súperov)? A zoznam výsledkov partií bez rozboru (dátum, súper, výsledok)? <em>Navrhujem</em> len formu (5 posledných výsledkov) a vzájomnú bilanciu.</li>
+<li><strong>O3.</strong> Od koľkých partií ukazovať súhrn a stránky? <em>Navrhujem</em>: čísla od 1 s počtom, stránky od 5 (predbežné do 20), trend od 10.</li>
+<li><strong>O4.</strong> <strong>AI playtesteri vo Frajerine</strong>: skryť ich hráčom úplne, alebo nechať riadok s odznakom AI bez odkazu? A ráta sa partia človeka proti AI agentovi do jeho Frajeriny?</li>
+<li><strong>O5.</strong> Vidí účastník v rozbore svojej partie aj <strong>súperove čísla</strong> z tej partie (len verejné na stole)? <em>Odporúčam áno</em>, inak sa „ty vs. súper“ nedá ukázať.</li>
+<li><strong>O6.</strong> <strong>Súkromie</strong>: dá sa profil skryť? <em>Návrh</em>: prepínač v Nastaveniach „Skryť môj súhrn pred ostatnými“. Meno, Frajerina a forma ostanú, lebo rebríček je verejný v rámci prihlásených.</li>
+<li><strong>O7.</strong> Priemer hráčov: proti všetkým, alebo proti hráčom v podobnom pásme Frajeriny (±150)? A od koľkých hráčov ho ukazovať (návrh: 10 s 5+ partiami v rovnakej dĺžke hry)?</li>
+<li><strong>O8.</strong> Má profil (aspoň hlavičku a Frajerinu) vidieť aj <strong>neprihlásený</strong>, ako verejnú stránku <code>/vyvoj</code>? Dnes nie.</li>
+<li><strong>O9.</strong> Pravidlá sa menia takmer denne: miešať v súhrne partie naprieč verziami sady, alebo pridať prepínač „len aktuálne pravidlá“? <em>Navrhujem</em> miešať, ale v grafe trendu označiť zmenu verzie.</li>
+<li><strong>O10.</strong> Ukladať <strong>seed + príkazy + commit jadra</strong> už teraz (odhad 20–50 kB na partiu), aj keď replay (N5) príde neskôr?</li>
+<li><strong>O11.</strong> Vzdané a kontumované partie: do bilancie áno (ako dnes vo Frajerine), do metrík súhrnu len dohraté? A partie s botom v cudzom profile: ukázať aspoň počet („s botmi 14, 9–5“), alebo vôbec?</li>
+</ol>
+
+<h3>Do playtestu</h3>
+<ul>
+<li>Po partii (človek aj AI): „Otvor Rozbor partie. Ktorá bitka rozhodla a prečo?“ Sledovať čas do odpovede a či odpoveď sedí s ručnou tabuľkou AI hráča.</li>
+<li>„Prečítaj si Tu ťa to stojí. Súhlasíš? Čo urobíš inak v ďalšej partii?“ Overené, keď hráč pomenuje konkrétny ťah (napr. „menej pasov za cigarety“).</li>
+<li>Počas partie: „Pozrel si si súpera? Vyrušilo ťa to?“ V logu sledovať odpojenia počas partie.</li>
+<li>Na mobile: „Nájdi svoju poslednú prehru s človekom a zisti, koľko ťa stáli Dlhy.“ Počet ťukov a slepé uličky.</li>
+<li>Hráč so 3 partiami: „Čo ti profil hovorí?“ Nesmie vyvodiť záver, ktorý mu profil na 3 partiách nedáva.</li>
+</ul>
+
+<p class="pozn">Podklady: kód vetvy <code>dizajn/profily</code> (<code>apps/web/src/stranky/Statistiky.tsx</code>, <code>Ucet.tsx</code>, <code>Rebricek.tsx</code>, <code>SpatnaVazba.tsx</code>, <code>hra/Panely.tsx</code>, <code>hra/useHra.ts</code>, <code>hra/KoniecHry.tsx</code>, <code>packages/server/src/{api,archiv,server,db,tempo,frajerina,auth}.ts</code>, <code>packages/core/src/{statistiky,statistikyKariet,engine,view}.ts</code>), playtest <code>20261022-065959-1</code>, doplnenie od session New features (dáta). Pracovné poznámky: <code>playtest/dizajn/profily-20261022-1409/ux-poznamky.md</code>.</p>
+</main>
+<script>
+(function(){
+  var tl = document.querySelectorAll('.filtre button[data-f]');
+  var riadky = document.querySelectorAll('#audit-tab tbody tr');
+  var pocet = document.getElementById('audit-pocet');
+  function filtruj(f){
+    var n = 0;
+    riadky.forEach(function(r){
+      var z = Number(r.getAttribute('data-z'));
+      var ok = f === 'vse' || (f === '3' && z >= 3) || (f === '2' && z === 2) || (f === '1' && z <= 1);
+      r.hidden = !ok; if (ok) n++;
+    });
+    tl.forEach(function(b){ b.setAttribute('aria-pressed', String(b.getAttribute('data-f') === f)); });
+    pocet.textContent = 'Zobrazené problémy: ' + n + ' z ' + riadky.length + '.';
+  }
+  tl.forEach(function(b){ b.addEventListener('click', function(){ filtruj(b.getAttribute('data-f')); }); });
+  filtruj('vse');
+})();
+</script>
+</body>
+</html>
