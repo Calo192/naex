@@ -25,7 +25,7 @@ const KOREN_REPA = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 export function zakladDocasnych(): string {
   const env = process.env.NAEX_TMP;
   // Pokazená hodnota (napr. „F:\Projects\naex-tmp“ v JSON bez zdvojených lomiek → \n) sa ignoruje.
-  const z = env !== undefined && isAbsolute(env) && !/[\u0000-\u001f]/.test(env) ? env : resolve(KOREN_REPA, "..", "naex-tmp");
+  const z = env !== undefined && isAbsolute(env) && !/[\u0000-\u001f]/.test(env) ? resolve(env) : resolve(KOREN_REPA, "..", "naex-tmp");
   mkdirSync(z, { recursive: true });
   return z;
 }
