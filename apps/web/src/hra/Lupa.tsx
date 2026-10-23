@@ -12,7 +12,7 @@
 // akciu aj vykoná), pravým klikom, Esc, klikom mimo, odchodom myši alebo
 // keď sa niečo posunie (poloha by už nesedela).
 
-import { useEffect, useRef, type CSSProperties, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 
 const OKRAJ = 8;
@@ -46,7 +46,16 @@ export function Lupa({ rect, mierka: ziadana, onZavri, onPointerDown, onOdstran,
   // Hráč si zväčšenie volí v profile (až 400 %) — väčšie, než sa zmestí, nie.
   const mierka = Math.min(ziadana, maxMierkaLupy(rect));
   const w = rect.width * mierka;
-  const h = rect.height * mierka;
+  // Výška podľa obsahu (Michal 2026-10-23: lupa staršieho mala pevnú výšku a bola
+  // prázdna) — zmeria sa pred vykreslením; najmenej výška pôvodného prvku, aby ho lupa
+  // celý prekryla (inak by ju myš na ňom hneď zavrela). Karta má obsah presne v pomere.
+  const obsahRef = useRef<HTMLDivElement>(null);
+  const [vyskaObsahu, setVyskaObsahu] = useState<number | null>(null);
+  useLayoutEffect(() => {
+    const v = obsahRef.current?.offsetHeight ?? null;
+    if (v !== null && v !== vyskaObsahu) setVyskaObsahu(v);
+  });
+  const h = Math.max(rect.height, vyskaObsahu ?? rect.height * mierka);
   const cx = rect.left + rect.width / 2;
   const cy = rect.top + rect.height / 2;
   const left = Math.max(OKRAJ, Math.min(cx - w / 2, window.innerWidth - w - OKRAJ));
@@ -87,6 +96,7 @@ export function Lupa({ rect, mierka: ziadana, onZavri, onPointerDown, onOdstran,
 
   return createPortal(
     <div
+      ref={obsahRef}
       className={["lupa", onPointerDown !== undefined && !doznieva ? "chytitelna" : "", prechod ? "prechod" : "", doznieva ? "doznieva" : ""]
         .filter((t) => t !== "")
         .join(" ")}
