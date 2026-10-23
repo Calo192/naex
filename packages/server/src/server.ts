@@ -20,6 +20,7 @@ import {
   DLZKY_HRY,
   IllegalCommandError,
   ktoVykona,
+  pauzaKrokuVyucby,
   radaKVolbe,
   type MoznostOtazky,
   VERZIA_PRAVIDIEL,
@@ -971,8 +972,8 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   /** Ťah bota a automatický ťah hráča (auto) zo scenára po pauze — aby ho hráč stihol sledovať. */
   const naplanujVyucbu = (room: Room): void => {
     if (room.vyucba === null || room.botTimer !== null || room.state === null) return;
-    const ktoTahne = scenarVyucby.kroky[room.vyucba.krok]?.kto;
-    if (ktoTahne !== "bot" && ktoTahne !== "auto") return;
+    const najblizsi = scenarVyucby.kroky[room.vyucba.krok];
+    if (najblizsi === undefined || (najblizsi.kto !== "bot" && najblizsi.kto !== "auto")) return;
     room.botTimer = setTimeout(() => {
       room.botTimer = null;
       const state = room.state;
@@ -987,7 +988,8 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         return;
       }
       posunVyucbu(room);
-    }, opts.botPauzaMs ?? 700);
+      // Pauza podľa textu Melichara — hráč ho stihne prečítať a UI zvýrazniť, čo sa stane (testy: botPauzaMs).
+    }, opts.botPauzaMs ?? pauzaKrokuVyucby(najblizsi));
   };
 
 

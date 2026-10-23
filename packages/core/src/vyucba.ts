@@ -104,6 +104,24 @@ export interface ScenarVyucby {
 export const VYUCBA_HRAC: PlayerId = 0;
 export const VYUCBA_BOT: PlayerId = 1;
 
+/** Pauza pred ťahom bota bez komentára (ms). */
+export const PAUZA_TICHA_MS = 700;
+/** Pauza pred auto krokom a ťahom bota s komentárom: základ + čas na čítanie, najviac strop (UI inšpekcia). */
+export const PAUZA_ZAKLAD_MS = 1_800;
+export const PAUZA_NA_SLOVO_MS = 60;
+export const PAUZA_NAJVIAC_MS = 4_000;
+
+/**
+ * Ako dlho počkať pred krokom, ktorý hra spraví sama (bot, auto) — aby hráč
+ * stihol prečítať komentár a UI zvýrazniť, čo sa stane. Auto krok čaká vždy
+ * aspoň základ, aj bez textu.
+ */
+export function pauzaKrokuVyucby(krok: KrokVyucby): number {
+  const slov = krok.melichar.trim() === "" ? 0 : krok.melichar.trim().split(/\s+/).length;
+  if (krok.kto === "bot" && slov === 0) return PAUZA_TICHA_MS;
+  return Math.min(PAUZA_NAJVIAC_MS, PAUZA_ZAKLAD_MS + slov * PAUZA_NA_SLOVO_MS);
+}
+
 /** Za koho sa krok vykoná — auto je príkaz hráča, len ho zahrá hra. */
 export const ktoVykona = (krok: KrokVyucby): PlayerId => (krok.kto === "bot" ? VYUCBA_BOT : VYUCBA_HRAC);
 

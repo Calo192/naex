@@ -15,6 +15,11 @@ import {
   naTahu,
   ocakavanyPrikaz,
   overScenar,
+  PAUZA_NA_SLOVO_MS,
+  PAUZA_NAJVIAC_MS,
+  PAUZA_TICHA_MS,
+  PAUZA_ZAKLAD_MS,
+  pauzaKrokuVyucby,
   porovnajSKrokom,
   radaKVolbe,
   prehrajVyucbu,
@@ -238,5 +243,16 @@ describe("výučba — kontrolné otázky a rozhodnutia (UX N2)", () => {
     expect(overScenar(data, zly)).toMatch(/sedí aj na správny ťah/);
     const ok: ScenarVyucby = { ...scenar, kroky: scenar.kroky.map((k, j) => (j === i ? { ...krok, volba } : k)) };
     expect(overScenar(data, ok)).toBeNull();
+  });
+});
+
+describe("výučba — pauza pred krokom, ktorý hra spraví sama (UI inšpekcia)", () => {
+  const krok = (kto: "bot" | "auto", melichar: string) => ({ id: "x", kto, melichar, prikaz: { type: "pass" as const } });
+
+  it("bot bez textu 700 ms; s textom a auto 1800 ms + 60 ms na slovo, najviac 4 s", () => {
+    expect(pauzaKrokuVyucby(krok("bot", ""))).toBe(PAUZA_TICHA_MS);
+    expect(pauzaKrokuVyucby(krok("auto", ""))).toBe(PAUZA_ZAKLAD_MS);
+    expect(pauzaKrokuVyucby(krok("bot", "Štamgast ide do krčmy  a pije."))).toBe(PAUZA_ZAKLAD_MS + 6 * PAUZA_NA_SLOVO_MS);
+    expect(pauzaKrokuVyucby(krok("auto", Array.from({ length: 200 }, () => "slovo").join(" ")))).toBe(PAUZA_NAJVIAC_MS);
   });
 });
