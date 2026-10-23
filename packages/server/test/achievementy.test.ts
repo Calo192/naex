@@ -12,7 +12,7 @@ let server: GameServer;
 let zmaz: () => Promise<void>;
 
 beforeAll(async () => {
-  ({ server, zmaz } = await testovaciServer(TEST_ADMIN, { botPauzaMs: 0 }));
+  ({ server, zmaz } = await testovaciServer(TEST_ADMIN, { botPauzaMs: 0, achievementyZapnute: true }));
 });
 
 afterAll(async () => {
@@ -142,5 +142,37 @@ describe("achievementy na serveri", () => {
     const katalog = nacitajKatalog();
     for (const z of zisky(r)) expect(katalog.achievementy.find((x) => x.id === z.id)?.proti).not.toBe("ludia");
     r.zavri();
+  }, 120_000);
+});
+
+describe("achievementy — vypínač (Michal 2026-10-23)", () => {
+  it("kým katalóg nemá zapnute: true, partia nič nepošle ani neuloží a API vráti null", async () => {
+    expect(nacitajKatalog().zapnute).toBe(false);
+    const { server: s, zmaz: zmazVyp } = await testovaciServer(TEST_ADMIN, { botPauzaMs: 0 });
+    try {
+      const a = (await registruj(s.port)).cookie;
+      const r = new Robot(s.port, a);
+      await r.otvorene();
+      r.posli({ type: "create", bot: true });
+      await cakaj(() => r.view !== null, "začiatok");
+      for (let tahov = 0; ; tahov++) {
+        await cakaj(() => r.view?.koniec != null || r.view?.mozemHrat === true, "môj ťah");
+        if (r.view?.koniec != null) break;
+        const pred = r.pocetStavov;
+        r.posli({ type: "cmd", cmd: r.vyberTah() });
+        await cakaj(() => r.pocetStavov > pred || r.chyby.length > 0, "odpoveď");
+        if (r.chyby.length > 0) {
+          r.chyby.splice(0);
+          await cakaj(() => r.pocetStavov > pred, "nový stav");
+        }
+        expect(tahov).toBeLessThan(3000);
+      }
+      expect(r.ostatne.filter((m) => m.type === "achievement" || m.type === "achievementySuhrn")).toEqual([]);
+      const odpoved = (await (await fetch(`http://127.0.0.1:${s.port}/api/achievementy`, { headers: { cookie: a } })).json()) as { achievementy: unknown };
+      expect(odpoved.achievementy).toBeNull();
+      r.zavri();
+    } finally {
+      await zmazVyp();
+    }
   }, 120_000);
 });

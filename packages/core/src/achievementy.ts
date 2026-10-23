@@ -60,6 +60,11 @@ export interface Achievement {
 
 export interface KatalogAchievementov {
   readonly verzia: number;
+  /**
+   * Vypínač (Michal 2026-10-23): kým nie je true, server achievementy nepočíta,
+   * neukladá ani neposiela — zoznam a prahy čakajú na schválenie, UI chýba.
+   */
+  readonly zapnute: boolean;
   readonly kategorie: readonly { readonly id: string; readonly nazov: string }[];
   readonly achievementy: readonly Achievement[];
 }
@@ -410,7 +415,7 @@ export function nacitajAchievementy(json: unknown): KatalogAchievementov {
     });
   }
   if (chyby.length > 0) throw new Error(`achievementy.json:\n  ${chyby.join("\n  ")}`);
-  return { verzia: typeof o.verzia === "number" ? o.verzia : 1, kategorie, achievementy };
+  return { verzia: typeof o.verzia === "number" ? o.verzia : 1, zapnute: o.zapnute === true, kategorie, achievementy };
 }
 
 /** Rank pre hodnotu: koľko prahov dosiahla (0 = žiadny). */
