@@ -73,6 +73,10 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   Dievčina na vydaj, Niekoho stryná a Veľmi smútiaca vdova; Milujúca manželka
   a Absťák kartu dajú. Kliatba do línie nepatrí (len Milujúca manželka). Priznanie nemíňa
   limit ani neodovzdá ťah. Priznaný Dlh sa ráta k Exekútorovi.
+- **Záverečná (Zhromaždenie, za 1 cig.):** `{"type":"zaverecna","uid":…,"target":"vlastna"|"superova"}` —
+  karta lícom dole, míňa limit, potom už v Zhromaždení nevykladáš (bez cigariet za pas). Súper ju
+  nevidí, za ňu nepriloží (ani odpoveď na NA EX), NA EX na ňu smie len on (prejde vždy). Otočí
+  sa na konci Pitky — až vtedy Nástup a efekty ako Svokra.
 - **Pohreb (po bitke, s priznanou Cirhózou):** `pohreb` spáli Cirhózu a tvoju kartu
   z línie; za Závislého smieš pridať `senokUid` = karta zo šenku do ruky. Liečba už nie je (v4).
 - **Vízia:** na konci Pitky za každú aktívnu Víziu uvidíš vrchnú kartu svojho

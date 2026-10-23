@@ -50,6 +50,7 @@ import {
   prahVydesenia,
   prahyHraca,
   priazen,
+  uidZaverecnej,
   verejneAbstaky,
 } from "./engine.ts";
 
@@ -243,13 +244,25 @@ export function zahmliStav(state: GameState, ja: PlayerId, rng: RngState): [Game
   // Súperova karta lícom dole pri patronáte je tiež skrytá — ide do miešania.
   const jehoPatronat = state.patronat[su];
   const licomDole = jehoPatronat === null ? [] : [jehoPatronat.nahrada];
-  const [skryte, r1] = rngShuffle(r, poUid([...on.ruka, ...on.doberaci, ...licomDole]));
+  // Aj súperova skrytá Záverečná v línii — na jej miesto ide náhodná z jeho skrytých kariet.
+  const zaverecne = ([0, 1] as const).flatMap((strana) =>
+    state.strany[strana].flatMap((pl, index) => (pl.zaverecna === true && pl.playedBy === su ? [{ strana, index, karta: pl.card }] : [])),
+  );
+  const [skryte, r1] = rngShuffle(r, poUid([...on.ruka, ...on.doberaci, ...licomDole, ...zaverecne.map((z) => z.karta)]));
   const [mojBalicek, r2] = rngShuffle(r1, poUid(state.hraci[ja].doberaci));
   const [spolocny, r3] = rngShuffle(r2, poUid(state.spolocnyBalicek));
   const [seed, r4] = rngInt(r3, 2 ** 31);
   r = r4;
-  const zvysok = skryte.slice(licomDole.length);
+  const naZaverecne = skryte.slice(licomDole.length, licomDole.length + zaverecne.length);
+  const zvysok = skryte.slice(licomDole.length + zaverecne.length);
   const superHrac = { ...on, ruka: zvysok.slice(0, on.ruka.length), doberaci: zvysok.slice(on.ruka.length) };
+  const strany = state.strany.map((strana, si) =>
+    strana.map((pl, index) => {
+      const i = zaverecne.findIndex((z) => z.strana === si && z.index === index);
+      const karta = naZaverecne[i];
+      return i === -1 || karta === undefined ? pl : { ...pl, card: karta };
+    }),
+  ) as unknown as GameState["strany"];
   const mojHrac = { ...state.hraci[ja], doberaci: mojBalicek };
   const nahrada = skryte[0];
   const patronat: GameState["patronat"] =
@@ -265,6 +278,7 @@ export function zahmliStav(state: GameState, ja: PlayerId, rng: RngState): [Game
       spolocnyBalicek: spolocny,
       hraci: ja === 0 ? [mojHrac, superHrac] : [superHrac, mojHrac],
       patronat,
+      strany,
     },
     r,
   ];
@@ -553,7 +567,8 @@ function sNajlepsimNaex(k: Kontext, s: GameState, q: PlayerId, ostrost: number):
   let best = hodnotaStavu(k, s, ostrost);
   if (s.hraci[q].poldeciPlne <= 0) return best;
   for (const uid of naexCieleVLinii(k.data, s.strany, q)) {
-    const strany = s.strany.map((strana) => strana.map((pl) => (pl.card.uid === uid ? { ...pl, naexBy: q } : pl))) as unknown as GameState["strany"];
+    const cielena = (pl: PlacedCard, si: number): boolean => pl.card.uid === uid || (pl.zaverecna === true && uid === uidZaverecnej(si as PlayerId));
+    const strany = s.strany.map((strana, si) => strana.map((pl) => (cielena(pl, si) ? { ...pl, naexBy: q } : pl))) as unknown as GameState["strany"];
     const h = s.hraci[q];
     const hrac = { ...h, poldeciPlne: h.poldeciPlne - 1, pecen: h.pecen + 1, nerestiTotoKolo: h.nerestiTotoKolo + 1 };
     const po: GameState = { ...s, strany, hraci: q === 0 ? [hrac, s.hraci[1]] : [s.hraci[0], hrac] };
@@ -829,16 +844,23 @@ function zhromazdenie(v: Volba): Command | null {
       moznosti.push(cmd);
       continue;
     }
-    if (cmd.type !== "place" || (cmd.target !== "vlastna" && cmd.target !== "superova")) continue;
+    if ((cmd.type !== "place" && cmd.type !== "zaverecna") || (cmd.target !== "vlastna" && cmd.target !== "superova")) continue;
     const karta = h.ruka.find((x) => x.uid === cmd.uid);
     if (karta === undefined || jeKliatbaBezAkcii(data, karta)) continue;
-    const kluc = `${karta.defId}/${karta.leftLayout}/${karta.rightLayout}/${cmd.target}`;
+    const kluc = `${karta.defId}/${karta.leftLayout}/${karta.rightLayout}/${cmd.target}/${cmd.type}`;
     if (videne.has(kluc)) continue;
     videne.add(kluc);
     moznosti.push(cmd);
   }
-  return najlepsi(v, moznosti, (po) => hodnotaStavu(k, dohrajZhromazdenie(k, po), 0.9));
+  // Záverečná: blok súperovej odpovede na tej strane už dohrá dohrajZhromazdenie
+  // (súper za ňu nepriloží); utajenie karty do konca Pitky má malú cenu navyše.
+  const sZaverecnou = (po: GameState): number =>
+    po.strany.some((strana) => strana.some((pl) => pl.zaverecna === true && pl.playedBy === ja)) ? BONUS_ZAVERECNEJ * k.buducnost : 0;
+  return najlepsi(v, moznosti, (po) => hodnotaStavu(k, dohrajZhromazdenie(k, po), 0.9) + sZaverecnou(po));
 }
+
+/** Cena utajenia Záverečnej (súper nevie, čo odpovedať) — hrubý odhad. */
+const BONUS_ZAVERECNEJ = 0.25;
 
 /**
  * Koľko nerestí smie hráč v tomto kole mať bez toho, aby si zdvihol latku na

@@ -849,6 +849,47 @@
       ]
     },
     {
+      "id": "7.zaverecna.zahranie",
+      "paragraf": "7. Priebeh kola › Záverečná (roadmapa #83, Michal 2026-10-23)",
+      "pravidlo": "Záverečná: za 1 cigaretu karta lícom dole, míňa limit, hráč v Zhromaždení končí bez cigariet za pas; najviac jedna za Zhromaždenie.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/zaverecna.test.ts › stojí cigaretu, míňa limit a hráč v Zhromaždení končí — bez cigariet za pas",
+        "packages/core/test/zaverecna.test.ts › bez cigarety ani s vyčerpaným limitom sa zahrať nedá",
+        "packages/core/test/zaverecna.test.ts › planVykladania: Záverečná ako posledná karta ťahu, inak chyba"
+      ]
+    },
+    {
+      "id": "7.zaverecna.skryta",
+      "paragraf": "7. Priebeh kola › Záverečná (roadmapa #83, Michal 2026-10-23)",
+      "pravidlo": "Súper zo Záverečnej nevidí nič (viewFor); za ňu sa nedá priložiť, ani odpoveď na NA EX; bot ju nevidí.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/zaverecna.test.ts › súperov pohľad je rovnaký, nech je lícom dole akákoľvek karta",
+        "packages/core/test/zaverecna.test.ts › za ňu sa nedá priložiť — ani odpoveď na NA EX",
+        "packages/core/test/zaverecna.test.ts › bot nevidí súperovu Záverečnú: ťah sa nezmení, keď si vymení miesto s kartou v súperovej ruke"
+      ]
+    },
+    {
+      "id": "7.zaverecna.naex",
+      "paragraf": "7. Priebeh kola › Záverečná (roadmapa #83, Michal 2026-10-23)",
+      "pravidlo": "NA EX na Záverečnú smie len súper a prejde vždy; majiteľ nie.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/zaverecna.test.ts › súper smie aj na Nástroj či Liberála (vždy prejde), majiteľ nie"
+      ]
+    },
+    {
+      "id": "7.zaverecna.otocenie",
+      "paragraf": "7. Priebeh kola › Záverečná (roadmapa #83, Michal 2026-10-23)",
+      "pravidlo": "Záverečná sa otočí na konci Pitky; Nástup a efekty, ktoré by ju prezradili (Svokra), sa vyhodnotia až vtedy.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/zaverecna.test.ts › otočí sa a Nástup sa vyhodnotí až vtedy",
+        "packages/core/test/zaverecna.test.ts › Svokra lícom dole za NA EX súpera nekradne hneď — až pri otočení"
+      ]
+    },
+    {
       "id": "7.pitka.poradie-hracov",
       "paragraf": "7. Priebeh kola › Pitka — poradie vyhodnotenia",
       "pravidlo": "Pitku začína obranca; „hotovo“ je nevratné a v logu; útočník má posledné slovo.",

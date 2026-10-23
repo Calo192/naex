@@ -630,6 +630,28 @@ Končí, keď obaja odohrajú svoj limit alebo obaja pasujú. **Pas** (Michal
 a dostane 1 cigaretu za každú kartu, ktorú ešte smel vyložiť — aj keď pasuje
 hra za neho.
 
+### Záverečná (roadmapa #83, Michal 2026-10-23)
+
+Na svojom ťahu v Zhromaždení smie hráč za **1 cigaretu** zahrať kartu z ruky
+ako **Záverečnú** — lícom dole na koniec svojej alebo súperovej strany. Je to
+voliteľné a hráč tým v tomto Zhromaždení **končí s vykladaním** (ako pas, ale
+**bez cigariet za pas**); v jednom Zhromaždení teda najviac jedna.
+
+- Je to bežné vyloženie: **míňa limit** (Nástroj nie), smie byť aj ďalšou
+  kartou ťahu po Vypiť a platia pre ňu všetky pravidlá vykladania.
+- Kým leží lícom dole, **ráta sa normálne** — akcie, spoje, prevaha, tuhé.
+  Súper z nej nevidí nič (ani meno v logu); jej príspevok mu ostáva neznámy.
+- **Za ňu sa nedá priložiť** žiadna karta (ani odpoveď na NA EX), kým sa
+  neotočí — tá strana je dovtedy zablokovaná.
+- **NA EX** na ňu smie v Pitke dať len **súper** a prejde vždy (nekontroluje sa
+  tag, Liberál ani Anonymný alkoholik — odmietnutie by kartu prezradilo);
+  vyhodnotí sa ako na každej karte. Majiteľ na ňu NA EX dať nesmie.
+- **Otočí sa na konci Pitky**, ktorá nasleduje po jej Zhromaždení (pred
+  ďalším Zhromaždením alebo bitkou). Až vtedy sa vyhodnotí jej **Nástup**
+  a efekty mimo línie, ktoré by ju prezradili, napr. Svokra (cigarety za NA
+  EX súpera, ktoré medzitým padli), Vychovávateľka, Hrobár; Starostu
+  či Poštárku lícom dole použiť nemožno.
+
 **Nevyhnutné ťahy** (Michal 2026-10-12): keď hráč nemá inú možnosť než
 pasovať (v Zhromaždení), preskočiť NA EX (v Pitke) alebo Pohreb, hra ten ťah
 urobí za neho.
@@ -664,6 +686,8 @@ ako vyhodnotenie, `prirastkyPitky`).
    odhadzovacieho) a rozhodne: **do ruky**, alebo **zahodiť** (z hry; Hrobár
    súpera za to dostane cigaretu). Rozhoduje obranca, potom útočník; vrchnú
    kartu vidí len on.
+8. **Otočenie Záverečných** — karty lícom dole sa otočia; ich Nástup a
+   odložené efekty sa vyhodnotia teraz (§7 Zhromaždenie).
 
 ```
 nové cigarety = Cigarety (+ sila Fajčiara v 1. Pitke bitky o lokalitu) − súperove Obmedzenia (najmenej 0) + Cigorky v Dedičstve
@@ -1099,7 +1123,7 @@ Všetky efekty tlačovej sady engine vyhodnocuje automaticky (playtest
 | Hrobár | Keď súper zahodí kartu z ruky, z línie alebo z vrchu balíčka (efektom, Víziou, aj Pohrebom — §8.6, Michal 2026-10-22; nie návratom po bitke ani vlastnou Veľmi smútiacou vdovou), majiteľ Hrobára dostane cigaretu za každú. |
 | Anonymný alkoholik | Súper jeho majiteľa naňho nedá NA EX — ani keď je podstrčený na súperovu stranu. Majiteľ smie. Karty vedľa neho nechráni. Bráni len novému NA EX; poldeci, ktorý už na ňom leží, ostáva. (Michal 2026-10-18, zúžené 2026-10-19 a 2026-10-22 — predtým chránil aj majiteľove karty vedľa seba) |
 | Šofér | Furt (roadmapa #71, 2026-10-23): NA EX na kartu, ktorá so Šoférom susedí (vlastnú aj súperovu, na ktorejkoľvek strane Šoféra), **nezdvojí** jej neaktívne akcie — ostanú neaktívne; aktívne zruší ako vždy. Lokalitu v strede sa to netýka. NA EX na samotného Šoféra platí normálne. |
-| Ujo s fúrikom | Nástup (roadmapa #71, 2026-10-23): ak ho vyložíš (v Zhromaždení aj ako odpoveď na NA EX) vedľa karty s NA EX, táto karta sa vráti **svojmu majiteľovi** do ruky a Ujo sa posunie na jej miesto. Poldeci z nej sa vypije tomu, kto NA EX dal, ako v bitke (vypitý, nerest; pečeň už NA EX započítalo). |
+| Ujo s fúrikom | Nástup (roadmapa #71, 2026-10-23): ak ho vyložíš (v Zhromaždení aj ako odpoveď na NA EX) vedľa karty s NA EX, táto karta sa vráti **svojmu majiteľovi** do ruky a Ujo sa posunie na jej miesto. Poldeci z nej sa vypije tomu, kto NA EX dal, ako v bitke (vypitý, nerest; pečeň už NA EX započítalo; potvrdil Michal 2026-10-23). |
 | Krčmárka | Pri bitke: ak hráč nemá Absťák a v tomto kole nedal NA EX, vypitý poldeci sa mu otočí na plný (automaticky). |
 | Liberál | Ak je v partii majiteľa rovnako žien a chlapov (Liberál sa neráta), jeho aktívne akcie sa rátajú dvakrát. NA EX naň dať nemožno. |
 | Milujúca manželka | Furt (kým je odhalená — v línii aj priznaná): majiteľ dostane Absťák aj pri **rovnakom** počte nerestí ako v predošlom kole; Manželky sa sčítavajú (dve = aj pri o 1 viac nerestiach). Zbavenie Absťáku sa nemení. (Michal 2026-10-19; predtým −1 cigareta v Pitke.) |

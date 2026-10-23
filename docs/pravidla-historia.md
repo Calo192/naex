@@ -72,3 +72,8 @@ Pecku namiesto Petelice (karta v tvorcovi).
 Staré znenie riadku §14:
 
 > | Veterán | Ak je v partii majiteľa Influencer, neplatia jeho pravé akcie. Ak má oboch susedov a vpravo (z pohľadu majiteľa) je Žena, neplatia jeho ľavé akcie. |
+
+## 2026-10-23.4 — Záverečná (roadmapa #83, Michal 2026-10-23)
+
+Nové pravidlo, nič staré nenahrádza: §7 Zhromaždenie › Záverečná a krok 8
+v poradí Pitky (otočenie Záverečných).

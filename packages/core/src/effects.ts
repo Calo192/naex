@@ -139,9 +139,13 @@ export function partiaHraca(state: { readonly strany: VerejnyStav["strany"] }, p
   return [...state.strany[0], ...state.strany[1]].filter((pl) => pl.playedBy === p);
 }
 
-/** Hráč p má v línii kartu defId (natočenú k sebe, v ktorejkoľvek partii). */
+/**
+ * Hráč p má v línii odkrytú kartu defId (natočenú k sebe, v ktorejkoľvek
+ * partii). Skrytá Záverečná sa neráta — jej efekty mimo línie sa odložia na
+ * otočenie, inak by ju prezradili (Michal 2026-10-23).
+ */
 export function vPartii(state: Pick<VerejnyStav, "strany">, p: PlayerId, defId: string): boolean {
-  return partiaHraca(state, p).some((pl) => pl.card.defId === defId);
+  return partiaHraca(state, p).some((pl) => pl.card.defId === defId && pl.zaverecna !== true);
 }
 
 export function vDedicstve(state: VerejnyStav, p: PlayerId, defId: string): boolean {

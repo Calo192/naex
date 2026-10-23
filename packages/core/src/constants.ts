@@ -60,6 +60,8 @@ export const KONSTANTY = {
    * koľko kariet ešte smel vyložiť (zostávajúci limit), a hrá až v Pitke.
    */
   CIGARETY_ZA_PAS_NA_KARTU: 1,
+  /** Záverečná (roadmapa #83, Michal 2026-10-23): karta lícom dole za cigaretu. */
+  CENA_ZAVERECNEJ: 1,
   /**
    * Šenok (Michal 2026-10-19): hráč na ťahu berie 1 kartu za 1 cigaretu, alebo
    * 2 karty za 3 cigarety; poldeci sa v šenku neplatí. Index = počet kariet.
@@ -156,7 +158,7 @@ export const DLZKY_HRY = { kratka: 5, stredna: 7, dlha: 11 } as const;
  * Zmeň (dátum zmeny) vždy, keď sa mení správanie pravidiel v jadre; druhá
  * zmena v ten istý deň dostane príponu „.2“ atď.
  */
-export const VERZIA_PRAVIDIEL = "2026-10-23.3";
+export const VERZIA_PRAVIDIEL = "2026-10-23.4";
 export type DlzkaHry = keyof typeof DLZKY_HRY;
 export const ALL_DLZKY: readonly DlzkaHry[] = ["kratka", "stredna", "dlha"];
 export const PREDVOLENA_DLZKA: DlzkaHry = "stredna";

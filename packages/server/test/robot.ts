@@ -4,7 +4,7 @@
 import { expect } from "vitest";
 import { WebSocket } from "ws";
 import type { ClientState, Command } from "@naex/core";
-import { cieleVykladania, cielLokalitaId, krokStavby, naexCieleVLinii, pohorsenieMozne, posunMarker } from "@naex/core";
+import { cieleVykladania, cielLokalitaId, krokStavby, naexCieleVLinii, pohorsenieMozne, posunMarker, zablokovaneStrany } from "@naex/core";
 import { loadDataFromDisk } from "../src/server.ts";
 
 /** Dáta sady pre pravidlá vykladania — robot ich pozná ako hráč (verejné karty). */
@@ -126,7 +126,7 @@ export class Robot {
           );
           // Ako UI: len karta, ktorú pravidlá na tvoju stranu pustia (napr. Pes k zvieraťu nie).
           const karta = view.ruka.find(
-            (k) => !nastroje.has(k.defId) && cieleVykladania(DATA, view.strany, ja, k, zostava, true, cielLokalitaId(view)).includes("vlastna"),
+            (k) => !nastroje.has(k.defId) && cieleVykladania(DATA, view.strany, ja, k, zostava, true, cielLokalitaId(view), zablokovaneStrany(view)).includes("vlastna"),
           );
           if (karta !== undefined) return { type: "place", uid: karta.uid, target: "vlastna" };
         }

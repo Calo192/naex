@@ -39,6 +39,8 @@ function tajneUids(state: GameState, ja: PlayerId): number[] {
     ...state.hraci[ja].doberaci.slice(vidiVrch ? 1 : 0).map((k) => k.uid),
     ...state.hraci[super_].doberaci.map((k) => k.uid),
     ...state.spolocnyBalicek.map((k) => k.uid),
+    // Súperova skrytá Záverečná v línii (roadmapa #83).
+    ...state.strany.flat().filter((pl) => pl.zaverecna === true && pl.playedBy === super_).map((pl) => pl.card.uid),
     // Súperov balíček stavby šenku (jeho výber v kroku je jeho súčasťou).
     ...(state.draftStav?.balicky[super_] ?? []).map((k) => k.uid),
   ];

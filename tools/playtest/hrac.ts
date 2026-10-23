@@ -71,6 +71,7 @@ import {
   krajeStran,
   prevahaStran,
   vydesil,
+  zablokovaneStrany,
 } from "@naex/core";
 
 interface Relacia {
@@ -371,7 +372,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
   const moja = [...v.strany[ja]].reverse();
   for (const pl of moja)
     out.push(
-      kartaVLinii(pl.card, pl.playedBy !== ja, lineEval, ` [${majitel(pl.playedBy)} na tvojej strane${pl.naexBy !== undefined ? `, NA EX: ${kto(pl.naexBy)}` : ""}]`, [
+      kartaVLinii(pl.card, pl.playedBy !== ja, lineEval, ` [${majitel(pl.playedBy)} na tvojej strane${pl.zaverecna === true ? ", TVOJA ZÁVEREČNÁ lícom dole — súper ju nevidí" : ""}${pl.naexBy !== undefined ? `, NA EX: ${kto(pl.naexBy)}` : ""}]`, [
         "vonkajšia hrana",
         "vnútorná hrana (k lokalite)",
       ]),
@@ -382,11 +383,14 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
   } else out.push("  (stred línie — ešte nič)");
   for (const pl of v.strany[su])
     out.push(
-      kartaVLinii(pl.card, pl.playedBy !== ja, lineEval, ` [${majitel(pl.playedBy)} na súperovej strane${pl.naexBy !== undefined ? `, NA EX: ${kto(pl.naexBy)}` : ""}]`, [
+      kartaVLinii(pl.card, pl.playedBy !== ja, lineEval, ` [${majitel(pl.playedBy)} na súperovej strane${pl.zaverecna === true ? ", TVOJA ZÁVEREČNÁ lícom dole — súper ju nevidí" : ""}${pl.naexBy !== undefined ? `, NA EX: ${kto(pl.naexBy)}` : ""}]`, [
         "vnútorná hrana (k lokalite)",
         "vonkajšia hrana",
       ]),
     );
+  // Záverečná súpera (roadmapa #83): leží lícom dole na konci strany, nevieš čo to je.
+  for (const z of v.zaverecne.filter((x) => x.majitel !== ja))
+    out.push(`  [SÚPEROVA ZÁVEREČNÁ lícom dole na konci ${z.strana === ja ? "tvojej" : "súperovej"} strany${z.naexBy !== null ? `, NA EX: ${kto(z.naexBy)}` : ""} — nevieš, čo to je, ráta sa do bitky (v súčtoch nižšie chýba); za ňu sa nedá priložiť, otočí sa na konci Pitky]`);
 
   const sumy = (p: PlayerId) => Object.entries(lineEval.sums[p]).map(([a, n]) => `${a} ${n}`).join(", ") || "nič";
   out.push(`Tvoje aktívne akcie (tvoja partia + akcie lokality, ktoré aktivuje tvoja karta): ${sumy(ja)}`);
@@ -618,8 +622,11 @@ function moznosti(v: ClientState): string[] {
       }
       if (z !== null) {
         for (const k of v.ruka) {
-          for (const t of cieleVykladania(DATA, v.strany, ja, k, z.zostavaLimit[ja], v.hraci[ja].cigarety >= v.cenaDedicstva, cielLokalitaId(v)))
+          for (const t of cieleVykladania(DATA, v.strany, ja, k, z.zostavaLimit[ja], v.hraci[ja].cigarety >= v.cenaDedicstva, cielLokalitaId(v), zablokovaneStrany(v))) {
             c({ type: "place", uid: k.uid, target: t }, `vylož ${meno(k.defId)} → ${POPIS_CIELA[t]}${t === "vlastna" || t === "superova" ? popisVylozenia(v, k, t) : ""}`);
+            if (v.zaverecnaMozna && (t === "vlastna" || t === "superova"))
+              c({ type: "zaverecna", uid: k.uid, target: t }, `ZÁVEREČNÁ: ${meno(k.defId)} lícom dole → ${POPIS_CIELA[t]} za ${KONSTANTY.CENA_ZAVERECNEJ} cig.; súper ju nevidí do konca Pitky a za ňu nepriloží (ani odpoveď na NA EX), ty už v tomto Zhromaždení nevykladáš (bez cigariet za pas); Nástup až pri otočení`);
+          }
         }
       }
       // Playtest 20261012-101447: Dlhy v ruke nikto nepriznal, hoci bol od
@@ -655,7 +662,7 @@ function moznosti(v: ClientState): string[] {
         // Odpoveď na súperovo NA EX (Michal 2026-10-12): jedna karta mimo limitu.
         c({ type: "bezReakcie" }, "na súperovo NA EX neodpovedať");
         for (const k of v.ruka) {
-          for (const t of cieleVykladania(DATA, v.strany, ja, k, Number.POSITIVE_INFINITY, true, cielLokalitaId(v))) {
+          for (const t of cieleVykladania(DATA, v.strany, ja, k, Number.POSITIVE_INFINITY, true, cielLokalitaId(v), zablokovaneStrany(v))) {
             if (t === "vlastna" || t === "superova") {
               c({ type: "place", uid: k.uid, target: t }, `odpoveď na NA EX: vylož ${meno(k.defId)} → ${POPIS_CIELA[t]} (limit nemíňa)${popisVylozenia(v, k, t)}`);
             }
@@ -679,9 +686,15 @@ function moznosti(v: ClientState): string[] {
           }
         }
       }
+      if (pk?.naexPouzity[ja] !== true && h.poldeciPlne > 0 && !zakazNaex(v)) {
+        for (const z of v.zaverecne.filter((x) => x.majitel !== ja && x.naexBy === null)) {
+          naexMoznosti++;
+          c({ type: "naex", uid: z.uid }, `NA EX na SÚPEROVU ZÁVEREČNÚ lícom dole (${z.strana === ja ? "na tvojej" : "na súperovej"} strane) — nevieš, čo to je; prejde vždy, aktívne akcie zruší a neaktívne zdvojí ako pri každej karte; pečeň +1 tebe`);
+        }
+      }
       if (pk?.naexPouzity[ja] === true) out.push("(NA EX si v tejto Pitke už dal)");
       else if (naexMoznosti === 0 && !zakazNaex(v)) out.push("(NA EX ide len na Občana či Starešinu v línii bez poldeci — tvojho aj súperovho, nie Nástroj, nie Liberál, nie na súperovho Anonymného alkoholika — a len s plným poldeci)");
-      const mamKartu = (defId: string) => [...v.strany[0], ...v.strany[1]].some((pl) => pl.playedBy === ja && pl.card.defId === defId);
+      const mamKartu = (defId: string) => [...v.strany[0], ...v.strany[1]].some((pl) => pl.playedBy === ja && pl.card.defId === defId && pl.zaverecna !== true);
       if (mamKartu("postarka") && pk?.postarka[ja] !== true) {
         for (let n = 1; n <= KONSTANTY.EFEKT.POSTARKA_KARTY; n++)
           c({ type: "postarka", pocet: n }, `Poštárka: dober ${n} kariet navyše a získaj ${KONSTANTY.EFEKT.POSTARKA_DLHY} Dlh (hneď priznaný)`);

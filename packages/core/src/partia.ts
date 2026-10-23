@@ -39,6 +39,12 @@ export interface PlacedCard {
   readonly playedBy: PlayerId;
   /** Hráč, ktorého poldeci na karte leží cez NA EX (vlastník poldeci), ak nejaký. */
   readonly naexBy?: PlayerId;
+  /**
+   * Záverečná (roadmapa #83, Michal 2026-10-23): karta leží lícom dole do konca
+   * Pitky. Ráta sa normálne, súper ju však nevidí (viewFor) a za ňu sa nedá
+   * priložiť; efekty mimo línie a Nástup sa odložia na otočenie.
+   */
+  readonly zaverecna?: true;
 }
 
 export interface LineState {

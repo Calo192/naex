@@ -7,7 +7,8 @@
 // karta z Vízie a jeho karta lícom dole pri patronáte (náhrada staršieho).
 // Posielajú sa len počty (aj počet súperových nepriznaných kliatob — ten sa
 // dá odvodiť z verejného logu). Skryť kartu v rozhraní je bezcenné — filtruje
-// sa TU a testuje sa to.
+// sa TU a testuje sa to. Súperova skrytá Záverečná (lícom dole) v strany
+// vôbec nie je — súper dostane len jej stranu a náhradné uid (zaverecne).
 
 import type { CardInstance, Phase, PlayerId } from "./types.ts";
 import type { GameData } from "./data.ts";
@@ -24,7 +25,8 @@ import type {
   VyberStavby,
   ZhromazdenieStav,
 } from "./engine.ts";
-import { cenaDedicstva, mozeHrat, najdiNastroje, naTahu } from "./engine.ts";
+import { cenaDedicstva, mozeHrat, najdiNastroje, naTahu, uidZaverecnej } from "./engine.ts";
+import { KONSTANTY } from "./constants.ts";
 import { MARKER_STRED, posunMarker, priazenHraca, priazenSila } from "./elders.ts";
 import type { MarkerPos } from "./elders.ts";
 import type { DamageResult } from "./battle.ts";
@@ -88,6 +90,18 @@ export interface PatronatVerejne {
   readonly pohorsenia: number;
 }
 
+/**
+ * Skrytá Záverečná v línii (roadmapa #83). Majiteľ ju má aj v strany a tu
+ * jej skutočné uid; súper ju v strany nemá a uid je náhradné (uidZaverecnej) —
+ * cez neho na ňu dáva NA EX.
+ */
+export interface ZaverecnaVerejna {
+  readonly strana: PlayerId;
+  readonly majitel: PlayerId;
+  readonly uid: number;
+  readonly naexBy: PlayerId | null;
+}
+
 export interface ClientState {
   readonly ja: PlayerId;
   readonly faza: Phase;
@@ -117,6 +131,10 @@ export interface ClientState {
   readonly ciel: CielKola | null;
   readonly lokalitaOtocena: boolean;
   readonly strany: readonly [readonly PlacedCard[], readonly PlacedCard[]];
+  /** Skryté Záverečné — najviac jedna na stranu; za ňu sa nedá priložiť (zablokovaneStrany). */
+  readonly zaverecne: readonly ZaverecnaVerejna[];
+  /** Smiem teraz zahrať Záverečnú (Zhromaždenie, nepasoval som, mám cigaretu)? */
+  readonly zaverecnaMozna: boolean;
   readonly draftStav: DraftVerejne | null;
   readonly zhromazdenieStav: ZhromazdenieStav | null;
   readonly pitkaStav: PitkaStav | null;
@@ -215,6 +233,17 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
     const x = state.patronat[p];
     return x === null ? null : { elderId: x.elderId, pohorsenia: x.pohorsenia };
   };
+  // Záverečná súpera: v strany nie je, súper vie len, že na konci strany leží rub.
+  const skryta = (pl: PlacedCard): boolean => pl.zaverecna === true && pl.playedBy !== ja;
+  const skrySuperove = (strana: PlayerId): readonly PlacedCard[] =>
+    state.strany[strana].some(skryta) ? state.strany[strana].filter((pl) => !skryta(pl)) : state.strany[strana];
+  const zaverecne: ZaverecnaVerejna[] = [];
+  for (const strana of [0, 1] as const) {
+    for (const pl of state.strany[strana]) {
+      if (pl.zaverecna !== true) continue;
+      zaverecne.push({ strana, majitel: pl.playedBy, uid: skryta(pl) ? uidZaverecnej(strana) : pl.card.uid, naexBy: pl.naexBy ?? null });
+    }
+  }
   const d = state.draftStav;
   const bitka = state.bitkaStav;
   const mojaBitkovaVolba = bitka !== null && bitka.caka === ja;
@@ -241,7 +270,14 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
     starsi: state.starsi,
     ciel: state.ciel,
     lokalitaOtocena: state.lokalitaOtocena,
-    strany: state.strany,
+    strany: [skrySuperove(0), skrySuperove(1)],
+    zaverecne,
+    zaverecnaMozna:
+      state.faza === "zhromazdenie" &&
+      state.zhromazdenieStav !== null &&
+      mozeHrat(state, ja) &&
+      !state.zhromazdenieStav.pasoval[ja] &&
+      state.hraci[ja].cigarety >= KONSTANTY.CENA_ZAVERECNEJ,
     draftStav:
       d === null
         ? null
