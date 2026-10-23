@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hracia oblasť na stole</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bitter:wght@600;700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* Tokeny schémy Krčma (apps/web/src/schemy.css). */
+:root {
+  --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --plocha-3: #332a21;
+  --okraj: #3d3229; --okraj-svetly: #57483a; --text: #f1e8d8; --tlmeny: #b6a790;
+  --slaby: #8b7d6a; --slaby-text: #9d8f7b; --akcent: #e9ad45; --akcent-tmavy: #b9802a;
+  --akcent-svetly: #ffd08a; --na-akcente: #2b1b03; --cervena: #d0563f; --cervena-text: #e5735c;
+  --zelena: #7cbf74; --zelena-svetla: #7fe39a; --zelena-ziariva: #7dff9c; --info: #8fc3e0;
+  --ja: #5cc0cf; --ja-tmava: #1d3b40; --su: #e0805f; --su-tmava: #43261d;
+  --nadpis: "Bitter", Georgia, serif; --pismo: Roboto, "Segoe UI", system-ui, sans-serif;
+  /* Stôl na ťahu (hra.css .linia-obal.moj-tah). */
+  --stol: color-mix(in oklab, var(--zelena-ziariva) 15%, var(--pozadie));
+  --stol-okraj: color-mix(in oklab, var(--zelena-ziariva) 68%, var(--pozadie));
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 var(--pismo); }
+main { max-width: 1240px; margin: 0 auto; padding: 32px 16px 64px; }
+h1 { font: 800 2rem/1.2 var(--nadpis); margin: 0 0 8px; }
+h2 { font: 700 1.4rem/1.2 var(--nadpis); margin: 36px 0 10px; }
+p, li { color: var(--tlmeny); }
+b, strong { color: var(--text); }
+.uvod { max-width: 860px; }
+kbd { padding: 0 5px; border: 1px solid currentColor; border-radius: 4px; font: 600 0.8em/1.4 var(--pismo); }
+
+.volby { display: flex; flex-wrap: wrap; gap: 10px 26px; align-items: center; margin: 18px 0 12px; padding: 12px 16px; border: 1px solid var(--okraj); border-radius: 12px; background: var(--plocha); }
+.volby fieldset { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; border: 0; margin: 0; padding: 0; }
+.volby legend { float: left; margin-right: 8px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--slaby-text); }
+.volby button { padding: 6px 12px; border: 1px solid var(--okraj-svetly); border-radius: 8px; background: var(--plocha-2); color: var(--text); font: 500 0.88rem/1.2 var(--pismo); cursor: pointer; }
+.volby button[aria-pressed="true"] { border-color: var(--akcent); color: var(--akcent-svetly); }
+.pozn { font-size: 0.86rem; color: var(--slaby-text); margin: 8px 0 0; min-height: 1.4em; }
+
+.ramec-obal { position: relative; overflow: hidden; border: 1px solid var(--okraj-svetly); border-radius: 10px; }
+.okno { position: absolute; top: 0; left: 0; transform-origin: 0 0; overflow: hidden; background: var(--pozadie); user-select: none; }
+.okno > img.pozadie { position: absolute; inset: 0 auto auto 0; display: block; }
+
+/* ---- prekrytie ruky: vlastné karty, dajú sa ťahať a vybrať klikom ---- */
+.ruka { position: absolute; left: 0; right: 0; background: var(--pozadie); }
+.ruka-rad { position: absolute; left: 0; right: 0; top: 14px; display: flex; justify-content: center; gap: 8px; }
+.kl { position: relative; width: var(--w, 120px); aspect-ratio: 54 / 80; border-radius: 6px; overflow: hidden; background: #f3ead8; box-shadow: 0 4px 14px rgba(0,0,0,.5); cursor: grab; flex: none; }
+.kl img { position: absolute; left: 0; top: 0; width: 100%; height: 66%; object-fit: cover; pointer-events: none; }
+.kl .pas { position: absolute; left: 0; right: 0; top: 66%; padding: 2px 3px 1px; text-align: center; font: 700 calc(var(--w, 120px) * 0.075)/1.1 var(--pismo); color: #fff; }
+.kl .tagy { display: block; font-weight: 500; font-size: 0.72em; opacity: .9; }
+.kl .ef { position: absolute; left: 4%; right: 4%; top: 79%; font: 500 calc(var(--w, 120px) * 0.052)/1.2 var(--pismo); color: #3a3128; text-align: center; }
+.kl.kliatba .pas { background: #8b5aa6; }
+.kl.nastroj .pas { background: #3f9b86; }
+.kl.obcan .pas { background: #c0699a; }
+.kl.manzelka .pas { background: #5bb3b8; }
+.ruka-rad .kl:hover, .ruka-rad .kl.vybrana { transform: translateY(-14px); box-shadow: 0 0 0 2px var(--akcent), 0 16px 30px rgba(0,0,0,.7); }
+.ruka-rad .kl.tahana { opacity: .25; }
+.duch { position: absolute; z-index: 40; pointer-events: none; transform: translate(-50%, -60%) rotate(-4deg) scale(1.05); box-shadow: 0 0 0 2px var(--akcent), 0 24px 50px rgba(0,0,0,.75); }
+.kopka { position: absolute; bottom: 12px; display: flex; flex-direction: column; align-items: center; font: 700 0.7rem/1.2 var(--pismo); letter-spacing: .1em; text-transform: uppercase; color: var(--slaby); }
+.kopka b { font: 800 1.5rem/1.1 var(--nadpis); letter-spacing: 0; color: var(--text); }
+
+/* ---- tlačidlo oblasti v bare (miesto riadku čipov pod menom) ---- */
+.cip-oblast { position: absolute; z-index: 6; display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--okraj-svetly); background: var(--plocha-2); color: var(--text); font: 600 0.72rem/1 var(--pismo); cursor: pointer; white-space: nowrap; }
+.cip-oblast:hover, .cip-oblast[aria-pressed="true"] { border-color: var(--akcent); background: var(--akcent); color: var(--na-akcente); }
+.cip-oblast .k { color: var(--cervena-text); }
+.cip-oblast[aria-pressed="true"] .k { color: inherit; }
+.zakryt { position: absolute; z-index: 5; background: var(--plocha); border-radius: 8px; }
+
+/* ---- stôl: hracia oblasť ako vrstva plste (rovnako ako línia starších) ---- */
+.plst-ram { position: absolute; z-index: 4; border-radius: 18px; border: 2px solid var(--stol-okraj); pointer-events: none; transition: border-color .2s; }
+.plst-ram.ciel { border-color: var(--akcent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--akcent) 35%, transparent) inset; }
+.oblast { position: absolute; z-index: 5; display: none; flex-direction: column; gap: 6px; padding: 10px 60px 8px 14px; border-radius: 16px; background: radial-gradient(ellipse at center, color-mix(in srgb, var(--zelena-svetla) 8%, transparent), transparent 70%), var(--stol); animation: prichod .22s ease-out; }
+.oblast.otvorena { display: flex; }
+@keyframes prichod { from { opacity: 0; translate: 0 -10px; } }
+.ob-hlava { display: flex; align-items: center; gap: 12px; font-size: 0.82rem; color: var(--tlmeny); }
+.ob-hlava strong { font: 800 0.8rem/1 var(--pismo); letter-spacing: .12em; text-transform: uppercase; color: var(--zelena-svetla); }
+.ob-hlava .vpravo { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+.tl { display: inline-flex; align-items: center; gap: 6px; padding: 3px 12px; border-radius: 999px; border: 1px solid var(--akcent); background: var(--plocha-2); color: var(--text); font: 600 0.8rem/1.2 var(--pismo); cursor: pointer; }
+.tl:hover { background: var(--akcent); color: var(--na-akcente); }
+.polovica { flex: 1 1 0; min-height: 0; display: grid; grid-template-columns: 120px 1fr 1fr; gap: 12px; align-items: stretch; }
+.kto { display: flex; flex-direction: column; justify-content: center; gap: 2px; font: 700 0.9rem/1.2 var(--nadpis); }
+.kto small { font: 500 0.72rem/1.3 var(--pismo); color: var(--slaby-text); }
+.polovica.su .kto { color: var(--su); }
+.polovica.ja .kto { color: var(--ja); }
+.skupina { position: relative; display: flex; align-items: center; gap: 8px; min-width: 0; padding: 6px 10px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--text) 10%, transparent); background: color-mix(in srgb, #000 22%, transparent); }
+.skupina .nazov { position: absolute; top: 4px; left: 10px; font: 700 0.66rem/1 var(--pismo); letter-spacing: .1em; text-transform: uppercase; color: var(--slaby-text); }
+.skupina .karty { display: flex; gap: 6px; padding-top: 12px; align-items: flex-end; }
+.skupina .kl { --w: var(--wm, 58px); cursor: default; }
+.skupina .pocet { position: absolute; right: -6px; top: -6px; padding: 0 5px; border-radius: 6px; background: var(--pozadie); border: 1px solid var(--okraj-svetly); font: 800 0.7rem/1.4 var(--pismo); }
+.miesto { flex: 1; min-width: 150px; align-self: stretch; margin-top: 12px; display: flex; flex-direction: column; justify-content: center; gap: 2px; padding: 6px 12px; border: 2px dashed color-mix(in srgb, var(--text) 22%, transparent); border-radius: 10px; font-size: 0.76rem; line-height: 1.3; color: var(--slaby-text); }
+.miesto b { font-size: 0.82rem; }
+.miesto.mozne { border-color: var(--akcent); color: var(--tlmeny); background: color-mix(in srgb, var(--akcent) 8%, transparent); }
+.miesto.nad { background: color-mix(in srgb, var(--akcent) 22%, transparent); }
+.miesto.zamknute { border-color: color-mix(in srgb, var(--cervena) 60%, transparent); }
+.skupina.cena .nazov::after { content: attr(data-cena); margin-left: 8px; color: var(--akcent-svetly); letter-spacing: 0; text-transform: none; }
+.ob-pata { font-size: 0.74rem; color: var(--slaby-text); }
+
+/* Záložka na okraji stola pri ťahaní karty, ktorá smie aj do línie, aj do oblasti. */
+.zalozka { position: absolute; z-index: 8; display: none; align-items: center; justify-content: center; gap: 8px; width: 46px; padding: 14px 0; border-radius: 12px 0 0 12px; border: 2px solid var(--akcent); border-right: 0; background: var(--plocha-2); color: var(--akcent-svetly); font: 800 0.8rem/1.1 var(--pismo); letter-spacing: .06em; text-transform: uppercase; writing-mode: vertical-rl; transform: rotate(180deg); cursor: pointer; overflow: hidden; }
+.zalozka.ukazana { display: flex; }
+.zalozka .napln { position: absolute; inset: 0 0 auto 0; height: 0; background: color-mix(in srgb, var(--akcent) 40%, transparent); }
+.zalozka.drzi .napln { height: 100%; transition: height .6s linear; }
+.zalozka span { position: relative; }
+
+.toast { position: absolute; z-index: 30; left: 50%; translate: -50% 0; padding: 6px 16px; border-radius: 999px; border: 1px solid var(--okraj-svetly); background: var(--plocha-2); color: var(--text); font: 500 0.9rem/1.3 var(--pismo); box-shadow: 0 10px 30px rgba(0,0,0,.6); opacity: 0; transition: opacity .2s; pointer-events: none; }
+.toast.ukaz { opacity: 1; }
+
+.dva { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.karta-t { padding: 14px 18px; border-radius: 12px; border: 1px solid var(--okraj); background: var(--plocha); }
+.karta-t h3 { margin: 0 0 6px; font: 700 1.1rem/1.3 var(--nadpis); }
+table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--okraj); color: var(--tlmeny); vertical-align: top; }
+th { color: var(--text); }
+@media (max-width: 760px) { .dva { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Hracia oblasť na stole</h1>
+  <p class="uvod">Michal 23. 10.: dnešný pás na pretiahnutie pod barom je neintuitívny. Priznanie kliatob a Dedičstvo sa presúva na stôl — ako línia starších po kliku na Body. Pri ťahaní kliatby alebo Nástroja sa stôl prepne na <b>hraciu oblasť</b>: súperove priznané karty a Dedičstvo hore, tvoje dole, s cenou ďalšieho Dedičstva a s tým, či za priznanie dostaneš kartu. Karta sa pustí na stôl.</p>
+
+  <div class="volby" role="group" aria-label="Nastavenie mocku">
+    <fieldset><legend>Okno</legend>
+      <button type="button" data-r="1600" aria-pressed="true">1600 × 1000</button>
+      <button type="button" data-r="1920" aria-pressed="false">1920 × 1080</button>
+    </fieldset>
+    <fieldset><legend>Ukáž stav</legend>
+      <button type="button" data-s="linia">Línia (bežný stôl)</button>
+      <button type="button" data-s="cirhoza">Ťahám Cirhózu</button>
+      <button type="button" data-s="manzelka">Ťahám Manželku — záložka</button>
+      <button type="button" data-s="nastroj">Ťahám Nástroj nad oblasťou</button>
+      <button type="button" data-s="otvorena">Oblasť klikom (O)</button>
+    </fieldset>
+  </div>
+  <div class="ramec-obal" id="ramec"><div class="okno" id="okno"></div></div>
+  <p class="pozn" id="pozn">Ťahaj karty z ruky myšou. Cirhóza prepne stôl hneď; Milujúca manželka a Svätý text ukážu záložku na pravom okraji stola — podrž nad ňou kartu; na tom istom mieste je potom záložka „Línia“ späť. Klik na kartu ju vyberie, potom klik na cieľ. Klávesa <kbd>O</kbd> alebo tlačidlo v bare otvorí oblasť, <kbd>Esc</kbd> ju zavrie.</p>
+
+  <h2>Kedy sa stôl prepne</h2>
+  <table>
+    <thead><tr><th>Karta</th><th>Kam smie</th><th>Pri ťahaní</th></tr></thead>
+    <tbody>
+      <tr><td>Cirhóza (Kliatba)</td><td>len priznať</td><td>stôl sa hneď prepne na hraciu oblasť, svieti tvoje „Priznané“</td></tr>
+      <tr><td>Milujúca manželka (Kliatba aj Občan)</td><td>línia alebo priznať</td><td>ostáva línia; na pravom okraji stola záložka „Priznať“ — podržaním (0,6 s) sa stôl prepne, záložkou „Línia“ na tom istom mieste späť (po prepnutí treba zo záložky najprv odísť)</td></tr>
+      <tr><td>Nástroj (Svätý text, Nealko…)</td><td>línia alebo Dedičstvo</td><td>ako vyššie, záložka „Dedičstvo“; v oblasti cena ďalšieho Dedičstva a tvoje cigarety, bez cigariet miesto zamknuté s dôvodom</td></tr>
+      <tr><td>Občan, Zviera…</td><td>len línia</td><td>bez zmeny, záložka sa neukáže</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Bez ťahania</h2>
+  <div class="dva">
+    <section class="karta-t"><h3>Otvorenie</h3><p>Tlačidlo <b>„Oblasť · priznané · Dedičstvo“</b> v bare hráča (miesto dnešných čipov pod menom; súperovo v jeho bare) a klávesa <kbd>O</kbd> — dnes v partii nepoužitá (K, P, N, M, 1–4, ?, Esc). <kbd>Esc</kbd>, „← Línia“ alebo druhý klik oblasť zavrú. Nepriznané kliatby sú v oblasti v tvojej polovici aj s počtom.</p></section>
+    <section class="karta-t"><h3>Vyloženie klikom</h3><p>Klik na kartu v ruke ju vyberie (ako dnes). Kliatba bez inej možnosti prepne stôl hneď, Nástroj a Manželka ukážu záložku — klik na záložku prepne stôl, klik na miesto kartu vyloží. Dnešný pás pod barom zanikne.</p></section>
+  </div>
+</main>
+
+<script>
+(() => {
+  "use strict";
+  const KARTY = {
+    cirhoza: { nazov: "Cirhóza", tagy: "Kliatba", ef: "Ak je priznaná, súper má +1 tuhé.", trieda: "kliatba", kam: ["priznanie"] },
+    manzelka: { nazov: "Milujúca manželka", tagy: "Občan · Kliatba · Žena", ef: "Absťák aj pri rovnakom počte nerestí.", trieda: "manzelka", obr: "milujuca_manzelka", kam: ["linia", "priznanie"] },
+    svaty: { nazov: "Svätý text", tagy: "Nástroj", ef: "Dedičstvo: Viera o 1 vyššia.", trieda: "nastroj", obr: "svaty_text", kam: ["linia", "dedicstvo"] },
+    pijan: { nazov: "Pijan", tagy: "Občan · Závislý", ef: "Bitka: rana do vlastnej partie.", trieda: "obcan", kam: ["linia"] },
+    dlh: { nazov: "Dlh", tagy: "Kliatba", ef: "Exekútor pred dverami?", trieda: "kliatba" },
+    cigorky: { nazov: "Krabička cigariet", tagy: "Nástroj", ef: "Dedičstvo: +1 cigareta v Pitke.", trieda: "nastroj" },
+    nealko: { nazov: "Nealko", tagy: "Nástroj", ef: "Dedičstvo: prah Cirhózy +2.", trieda: "nastroj" },
+    vinko: { nazov: "Vínko", tagy: "Nástroj", ef: "Dedičstvo: plný poldeci navyše.", trieda: "nastroj" },
+  };
+  // Súradnice zo snímky (zmerané v partii, hra.css po #67).
+  const R = {
+    1600: { W: 1600, H: 1000, plst: [16, 381, 1568, 314], ruka: [0, 852, 1600, 148], ja: [33, 733], su: [1337, 129] },
+    1920: { W: 1920, H: 1080, plst: [16, 381, 1888, 394], ruka: [0, 932, 1920, 148], ja: [33, 813], su: [1657, 129] },
+  };
+  const S = { r: "1600", ruka: ["cirhoza", "manzelka", "svaty", "pijan"], mojePriznane: ["dlh", "dlh"], mojeDed: ["cigorky"], cig: 7, cenaDed: 3,
+    supPriznane: ["dlh", "manzelka"], supDed: ["nealko", "vinko"], oblast: false, tah: null, vybrana: null, zalozka: false };
+  const okno = document.getElementById("okno"), ramec = document.getElementById("ramec");
+  const obr = (id) => `dizajn-hracia-oblast-20261023-1100/${KARTY[id].obr ?? id}.jpg`;
+  const kl = (id, extra = "") => `<div class="kl ${KARTY[id].trieda} ${extra}" data-k="${id}"><img src="${obr(id)}" alt=""><span class="pas">${KARTY[id].nazov}<span class="tagy">${KARTY[id].tagy}</span></span><span class="ef">${KARTY[id].ef}</span></div>`;
+  const skupinaKariet = (ids) => {
+    const m = new Map(); ids.forEach((i) => m.set(i, (m.get(i) ?? 0) + 1));
+    return [...m].map(([i, n]) => `<span style="position:relative">${kl(i)}${n > 1 ? `<span class="pocet">×${n}</span>` : ""}</span>`).join("");
+  };
+  const dedPopis = () => `ďalší stojí ${S.cenaDed} cig. · máš ${S.cig}`;
+
+  const vykresli = () => {
+    const g = R[S.r];
+    const [px, py, pw, ph] = g.plst, [rx, ry, rw, rh] = g.ruka;
+    okno.style.width = g.W + "px"; okno.style.height = g.H + "px";
+    const wm = S.r === "1600" ? 52 : 62;
+    okno.innerHTML = `<img class="pozadie" src="dizajn-hracia-oblast-20261023-1100/stol-${S.r}.png" width="${g.W}" height="${g.H}" alt="">
+      <div class="plst-ram" id="ram" style="left:${px}px;top:${py}px;width:${pw}px;height:${ph}px"></div>
+      <section class="oblast" id="oblast" aria-label="Hracia oblasť" style="left:${px + 2}px;top:${py + 2}px;width:${pw - 4}px;height:${ph - 52}px;--wm:${wm}px">
+        <div class="ob-hlava"><strong>Hracia oblasť</strong><span>priznané kliatby a Dedičstvo — nemíňajú limit vykladania</span>
+          <span class="vpravo"><button class="tl" data-akcia="linia">← Línia <kbd>Esc</kbd></button></span></div>
+        <div class="polovica su"><div class="kto">Stol 2<small>obranca · nepriznané: Cirhóza ×1</small></div>
+          <div class="skupina"><span class="nazov">Priznané</span><div class="karty">${skupinaKariet(S.supPriznane)}</div></div>
+          <div class="skupina"><span class="nazov">Dedičstvo</span><div class="karty">${skupinaKariet(S.supDed)}</div></div></div>
+        <div class="polovica ja"><div class="kto">Ty<small>útočník · nepriznané: Cirhóza ×1</small></div>
+          <div class="skupina" data-ciel="priznanie"><span class="nazov">Tvoje priznané</span><div class="karty">${skupinaKariet(S.mojePriznane)}</div>
+            <div class="miesto" data-miesto="priznanie"><b>Pusti kliatbu — prizná sa</b><span>za Dlh a Manželku dobereš kartu, za Cirhózu nie</span></div></div>
+          <div class="skupina cena" data-ciel="dedicstvo"><span class="nazov" data-cena="${dedPopis()}">Tvoje Dedičstvo</span><div class="karty">${skupinaKariet(S.mojeDed)}</div>
+            <div class="miesto ${S.cig < S.cenaDed ? "zamknute" : ""}" data-miesto="dedicstvo"><b>${S.cig < S.cenaDed ? "Chýbajú cigarety" : "Pusti Nástroj — efekt platí hneď"}</b><span>${S.cig < S.cenaDed ? `do Dedičstva treba ${S.cenaDed}, máš ${S.cig}` : `−${S.cenaDed} cig., ďalší potom ${S.cenaDed + 1} (cena rastie pre oboch)`}</span></div></div></div>
+      </section>
+      <button class="zalozka" id="zal-oblast" style="left:${px + pw - 46}px;top:${py + 40}px;height:${ph - 100}px"><i class="napln"></i><span id="zal-text">Priznať</span></button>
+      <button class="zalozka" id="zal-linia" style="left:${px + pw - 46}px;top:${py + 40}px;height:${ph - 100}px"><i class="napln"></i><span>Línia</span></button>
+      <div class="zakryt" style="left:${g.ja[0] + 70}px;top:${g.ja[1] + 60}px;width:156px;height:30px"></div>
+      <button class="cip-oblast" data-akcia="prepni" style="left:${g.ja[0] + 72}px;top:${g.ja[1] + 63}px" title="Hracia oblasť — priznané a Dedičstvo (O)">▤ Oblasť · priznané 2 · Ded. 1</button>
+      <button class="cip-oblast" data-akcia="prepni" style="left:${g.su[0] + 4}px;top:${g.su[1] + 78}px" title="Hracia oblasť — súperove priznané a Dedičstvo (O)">▤ priznané 2 · Ded. 2</button>
+      <div class="ruka" style="left:${rx}px;top:${ry}px;width:${rw}px;height:${rh}px">
+        <span class="kopka" style="left:12px">balíček<b>1</b></span><span class="kopka" style="right:12px">odhodené<b>4</b></span>
+        <div class="ruka-rad">${S.ruka.map((id) => kl(id, `${S.vybrana === id ? "vybrana" : ""} ${S.tah?.id === id ? "tahana" : ""}`)).join("")}</div>
+      </div>
+      <div class="toast" id="toast" style="top:${py - 46}px"></div>`;
+    mierka(); napoj(); aplikuj();
+    document.querySelectorAll("[data-r]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.r === S.r)));
+  };
+
+  const mierkaRamca = () => Math.min(1, ramec.clientWidth / R[S.r].W);
+  const mierka = () => { const s = mierkaRamca(); okno.style.transform = `scale(${s})`; ramec.style.height = R[S.r].H * s + "px"; };
+  const karta = () => (S.tah ? KARTY[S.tah.id] : S.vybrana ? KARTY[S.vybrana] : null);
+  const aplikuj = () => {
+    const k = karta();
+    const dvojita = k !== null && k.kam.includes("linia") && k.kam.length > 1;
+    okno.querySelector("#oblast").classList.toggle("otvorena", S.oblast);
+    okno.querySelector("#ram").classList.toggle("ciel", S.oblast && k !== null);
+    okno.querySelector("#zal-oblast").classList.toggle("ukazana", dvojita && !S.oblast);
+    okno.querySelector("#zal-linia").classList.toggle("ukazana", dvojita && S.oblast);
+    okno.querySelector("#zal-text").textContent = k?.kam.includes("dedicstvo") ? "Dedičstvo" : "Priznať";
+    okno.querySelectorAll("[data-miesto]").forEach((m) => m.classList.toggle("mozne", k !== null && k.kam.includes(m.dataset.miesto) && !m.classList.contains("zamknute")));
+    okno.querySelectorAll(".cip-oblast").forEach((b) => b.setAttribute("aria-pressed", String(S.oblast)));
+  };
+  const toast = (t) => { const e = okno.querySelector("#toast"); e.textContent = t; e.classList.add("ukaz"); clearTimeout(toast.t); toast.t = setTimeout(() => e.classList.remove("ukaz"), 2600); };
+
+  // Vyloženie: priznanie, Dedičstvo, alebo línia (v mocku len hláška).
+  const vyloz = (id, ciel) => {
+    const k = KARTY[id];
+    if (!k.kam.includes(ciel)) return false;
+    if (ciel === "dedicstvo" && S.cig < S.cenaDed) { toast(`Do Dedičstva treba ${S.cenaDed} cigariet, máš ${S.cig}.`); return false; }
+    S.ruka = S.ruka.filter((x) => x !== id);
+    let sprava;
+    if (ciel === "priznanie") { S.mojePriznane.push(id); sprava = id === "cirhoza" ? "Cirhóza priznaná — za Cirhózu kartu nedostaneš." : `${k.nazov} priznaná — doberáš 1 kartu.`; }
+    else if (ciel === "dedicstvo") { S.mojeDed.push(id); S.cig -= S.cenaDed; sprava = `${k.nazov} v Dedičstve — −${S.cenaDed} cigarety, ďalší Nástroj stojí ${S.cenaDed + 1}.`; S.cenaDed++; }
+    else sprava = `${k.nazov} ide do línie (v mocku sa nevykladá).`;
+    S.vybrana = null;
+    // Po vyložení do oblasti stôl ostane, kým hráč nepotrebuje líniu (ako výsledok kroku starších).
+    vykresli();
+    toast(sprava);
+    return true;
+  };
+
+  let drz = null;
+  let cakajOdchod = false;
+  const zalozkaDrz = (el, naOblast) => {
+    if (drz?.el === el || cakajOdchod) return;
+    zalozkaPusti();
+    el.classList.add("drzi");
+    drz = { el, t: setTimeout(() => { S.oblast = naOblast; zalozkaPusti(); cakajOdchod = true; aplikuj(); }, 600) };
+  };
+  const zalozkaPusti = () => { if (!drz) return; drz.el.classList.remove("drzi"); clearTimeout(drz.t); drz = null; };
+
+  const napoj = () => {
+    okno.querySelectorAll(".ruka-rad .kl").forEach((el) => {
+      el.addEventListener("pointerdown", (e) => {
+        const id = el.dataset.k, s = mierkaRamca(), box = okno.getBoundingClientRect();
+        const start = { x: e.clientX, y: e.clientY };
+        let duch = null;
+        const pohyb = (ev) => {
+          if (!duch && Math.hypot(ev.clientX - start.x, ev.clientY - start.y) < 6) return;
+          if (!duch) {
+            S.tah = { id }; S.vybrana = null;
+            // Kliatba, ktorá smie len do oblasti, prepne stôl hneď.
+            if (KARTY[id].kam.length === 1 && KARTY[id].kam[0] !== "linia") S.oblast = true;
+            el.classList.add("tahana");
+            duch = document.createElement("div"); duch.className = `kl ${KARTY[id].trieda} duch`; duch.innerHTML = el.innerHTML; duch.style.setProperty("--w", "120px");
+            okno.appendChild(duch); aplikuj();
+          }
+          const x = (ev.clientX - box.left) / s, y = (ev.clientY - box.top) / s;
+          duch.style.left = x + "px"; duch.style.top = y + "px";
+          duch.style.display = "none";
+          const pod = document.elementFromPoint(ev.clientX, ev.clientY);
+          duch.style.display = "";
+          const zal = pod?.closest(".zalozka.ukazana");
+          if (zal) zalozkaDrz(zal, zal.id === "zal-oblast"); else { zalozkaPusti(); cakajOdchod = false; }
+          okno.querySelectorAll("[data-miesto]").forEach((m) => m.classList.toggle("nad", m.contains(pod) || m.parentElement.contains(pod)));
+        };
+        const koniec = (ev) => {
+          window.removeEventListener("pointermove", pohyb); window.removeEventListener("pointerup", koniec);
+          zalozkaPusti();
+          if (!duch) { S.vybrana = S.vybrana === id ? null : id; vykresli(); return; }
+          duch.remove();
+          const pod = document.elementFromPoint(ev.clientX, ev.clientY);
+          const skupina = pod?.closest("[data-ciel]");
+          const vPlsti = (() => { const g = R[S.r].plst, s2 = mierkaRamca(), x = (ev.clientX - box.left) / s2, y = (ev.clientY - box.top) / s2; return x > g[0] && x < g[0] + g[2] && y > g[1] && y < g[1] + g[3]; })();
+          S.tah = null;
+          if (S.oblast && skupina) vyloz(id, skupina.dataset.ciel) || vykresli();
+          else if (!S.oblast && vPlsti && KARTY[id].kam.includes("linia")) vyloz(id, "linia");
+          else vykresli();
+        };
+        window.addEventListener("pointermove", pohyb); window.addEventListener("pointerup", koniec);
+      });
+    });
+    okno.querySelectorAll("[data-ciel]").forEach((sk) => sk.addEventListener("click", () => { if (S.vybrana) vyloz(S.vybrana, sk.dataset.ciel); }));
+    okno.querySelector("#zal-oblast").addEventListener("click", () => { S.oblast = true; aplikuj(); });
+    okno.querySelector("#zal-linia").addEventListener("click", () => { S.oblast = false; aplikuj(); });
+    okno.querySelectorAll("[data-akcia=prepni]").forEach((b) => b.addEventListener("click", () => { S.oblast = !S.oblast; aplikuj(); }));
+    okno.querySelector("[data-akcia=linia]").addEventListener("click", () => { S.oblast = false; aplikuj(); });
+  };
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { S.oblast = false; S.vybrana = null; vykresli(); }
+    if (e.key.toLowerCase() === "o" && !e.ctrlKey && !e.metaKey) { S.oblast = !S.oblast; aplikuj(); }
+  });
+  document.querySelectorAll("[data-r]").forEach((b) => b.addEventListener("click", () => { S.r = b.dataset.r; vykresli(); }));
+  // Statické stavy na snímky a pre ľudí bez myši.
+  document.querySelectorAll("[data-s]").forEach((b) => b.addEventListener("click", () => {
+    const s = b.dataset.s;
+    S.tah = null; S.vybrana = null; S.oblast = false;
+    if (s === "cirhoza") { S.vybrana = "cirhoza"; S.oblast = true; }
+    if (s === "manzelka") S.vybrana = "manzelka";
+    if (s === "nastroj") { S.vybrana = "svaty"; S.oblast = true; }
+    if (s === "otvorena") S.oblast = true;
+    vykresli();
+  }));
+  new ResizeObserver(mierka).observe(ramec);
+  vykresli();
+})();
+</script>
+</body>
+</html>
