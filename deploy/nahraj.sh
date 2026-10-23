@@ -24,7 +24,11 @@ SSH=(ssh -i "$KLUC" -o StrictHostKeyChecking=accept-new "$CIEL")
 cd "$(dirname "$0")/.."
 # Archív aj výstup do jedného dočasného priečinka, ktorý trap zmaže vždy — aj pri chybe
 # (predtým v %TEMP% ostával 50–60 MB naex.tgz po každom nasadení).
-DOCASNY="$(mktemp -d)"
+# Na disk projektu, nie na C (Michal 2026-10-23): NAEX_TMP, inak ../naex-tmp vedľa repa.
+NAEX_TMP="${NAEX_TMP:-$(pwd)/../naex-tmp}"
+command -v cygpath >/dev/null && NAEX_TMP="$(cygpath -u "$NAEX_TMP")"
+mkdir -p "$NAEX_TMP"
+DOCASNY="$(mktemp -d "$NAEX_TMP/naex-nasad.XXXXXX")"
 ARCHIV="$DOCASNY/naex.tgz"
 VYSTUP="$DOCASNY/vystup.txt"
 # Čo presne beží na serveri (GET /api/admin/stav-servera) — skill naex-stav
