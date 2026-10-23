@@ -988,14 +988,15 @@ export function HernaPlocha({
     if (!vykladam) setMiestoVolby(null);
   }, [vykladam]);
   const moznostiMiesta = useMemo(() => {
-    const out = new Map<StranaLinie, { readonly karty: ReadonlyMap<number, NahladVylozenia>; readonly dovod: string | null }>();
+    // kratko: text na úzke miesto, kde by sa dlhé slová lámali v polovici; celý dôvod ostáva v title.
+    const out = new Map<StranaLinie, { readonly karty: ReadonlyMap<number, NahladVylozenia>; readonly dovod: string | null; readonly kratko?: string }>();
     if (!vykladam) return out;
     const volne = ruka.filter((k) => !vylozenia.some((x) => x.karta.uid === k.uid));
     const zablokovane = zablokovaneStrany(view);
     for (const c of ["vlastna", "superova"] as const) {
       // Za kartou lícom dole sa nedá priložiť — jadro by vrátilo len všeobecné „sem nemôžeš“.
       if (zablokovane[c === "vlastna" ? ja : super_]) {
-        out.set(c, { karty: new Map(), dovod: "Za Záverečnou až po jej otočení na konci Pitky." });
+        out.set(c, { karty: new Map(), dovod: "Za Záverečnou až po jej otočení na konci Pitky.", kratko: "až po Pitke" });
         continue;
       }
       const karty = new Map<number, NahladVylozenia>();
@@ -1690,11 +1691,6 @@ export function HernaPlocha({
       const stitky =
         nova || naexBy !== undefined || vybranaNaex || placed.zaverecna === true ? (
           <>
-            {placed.zaverecna === true && (
-              <span className="zaverecna-stitok" title="Tvoja Záverečná — súper ju nevidí a nevie, čo dáva; za ňu sa nedá priložiť. Otočí sa na konci Pitky.">
-                Záverečná · súper ju nevidí
-              </span>
-            )}
             {nova && (
               <span className="nova-stitok" title={`Vyložil ${menoHraca(super_)} v poslednom ťahu`}>
                 nová
@@ -1703,6 +1699,12 @@ export function HernaPlocha({
             {naexBy !== undefined && (
               <span className="naex-nad" title={`NA EX — poldeci hráča ${menoHraca(naexBy)}`}>
                 <IkonaPoldeci /> NA EX · {naexBy === ja ? "tvoj" : menoHraca(naexBy)}
+              </span>
+            )}
+            {/* Nad kartou ako NA EX — pod ňou zakrýval text efektu (UI inšpekcia); za štítkom NA EX sa posunie vyššie. */}
+            {placed.zaverecna === true && (
+              <span className="zaverecna-stitok" title="Tvoja Záverečná — súper ju nevidí a nevie, čo dáva; za ňu sa nedá priložiť. Otočí sa na konci Pitky.">
+                Záverečná · lícom dole
               </span>
             )}
             {vybranaNaex && <span className="vybrana-pod">vybraná</span>}
@@ -1851,8 +1853,8 @@ export function HernaPlocha({
           {moze ? "+" : "⊘"}
         </span>
         {/* Prečo sa sem nedá — textom, nie len v title, ktorý na dotyku nevidno (UX N4, U13). */}
-        <span className={`mv-text ${moze ? "" : "mv-dovod"}`}>
-          {!moze ? (m.dovod ?? "nedá sa") : vybrane ? "vyber z ruky" : sSpojom > 0 ? `spoj: ${sSpojom}` : "bez spoja"}
+        <span className={`mv-text ${moze ? "" : "mv-dovod"} ${!moze && m.kratko !== undefined ? "mv-kratko" : ""}`}>
+          {!moze ? (m.kratko ?? m.dovod ?? "nedá sa") : vybrane ? "vyber z ruky" : sSpojom > 0 ? `spoj: ${sSpojom}` : "bez spoja"}
         </span>
       </button>,
       -3,

@@ -4011,6 +4011,11 @@ button.pecat-zrusit {
   text-align: center;
 }
 
+/* Krátky dôvod (Záverečná) má krátke slová — nech sa nelámu v polovici (UI inšpekcia). */
+.mv-text.mv-kratko {
+  overflow-wrap: normal;
+}
+
 /* ---- ruka bez myši: fokus zväčší ako hover (UX N4) ---- */
 
 body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:focus-visible {
@@ -4789,7 +4794,7 @@ button.auto-hotovo-odkaz {
 .zaverecna-stitok {
   position: absolute;
   left: 50%;
-  bottom: -10px;
+  top: -10px;
   z-index: 2;
   translate: -50% 0;
   padding: 1px 8px;
@@ -4799,6 +4804,10 @@ button.auto-hotovo-odkaz {
   color: var(--akcent-svetly);
   font: 700 0.66rem/1.4 var(--pismo);
   white-space: nowrap;
+}
+
+.naex-nad ~ .zaverecna-stitok {
+  top: -34px;
 }
 
 /* Tvoja Záverečná: ty ju vidíš, súper len rub — jemne pruhovaná, aby bola na prvý pohľad iná. */
