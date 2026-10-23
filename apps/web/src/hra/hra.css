@@ -6268,6 +6268,8 @@ button.auto-hotovo-odkaz {
 @keyframes moment-odchod {
   to {
     opacity: 0;
+  }
+}
 
 /* ---- Počítadlo bitky (Michal 2026-10-23): výsledok rastie po vlnách od lokality ----
  * Vrstva nad stolom s vlastnou kópiou línie z okamihu bitky (PocitadloBitky.tsx):
@@ -6520,6 +6522,7 @@ button.auto-hotovo-odkaz {
   animation: moment-dopad 0.45s cubic-bezier(0.2, 1.4, 0.4, 1) both;
 }
 
+@media (prefers-reduced-motion: reduce) {
   .pocitadlo-bitky,
   .pocitadlo-bitky * {
     animation: none !important;
