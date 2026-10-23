@@ -1987,33 +1987,27 @@ export function HernaPlocha({
     `Prevaha: akcie tejto hrany dostane, kto má v tomto kraji viac svojich Občanov, Zvierat a Starešinov (Nástroje a Cirhóza sa nerátajú); pri rovnosti majiteľ karty pri lokalite. Teraz: ${kto(prevaha[p])}.`;
   // Rovnosť a prebitie (návrh 5 A): hráči čítali „majiteľ karty pri lokalite“
   // ako majiteľa lokality a nevedeli, koľko kariet treba na prebratie hrany.
-  const rovnostKraja = (p: PlayerId): ReactNode => {
+  // Ako reťazec aj pre nápovedu kraja — na nízkom okne riadok skryje hra.css (UI inšpekcia).
+  const textRovnostiKraja = (p: PlayerId): string | null => {
     const s = stavKraja(data, stol.strany[p]);
     if (stredKarta === null || s.prevaha === null || s.naPrebitie === null) return null;
     const druhy: PlayerId = s.prevaha === 0 ? 1 : 0;
     const zs = view.faza === "zhromazdenie" ? view.zhromazdenieStav : null;
-    return (
-      <span className="kraj-rovnost">
-        {s.rovnost && (
-          <>
-            rovnosť {s.pocet[ja]} : {s.pocet[super_]} →{" "}
-            {s.prevaha === ja ? "hranu máš ty (tvoja karta leží pri lokalite)" : `hranu má ${menoHraca(s.prevaha)} (súperova karta leží pri lokalite)`} ·{" "}
-          </>
-        )}
-        na prebitie {druhy === ja ? "potrebuješ" : `${menoHraca(druhy)} potrebuje`} {kariet(s.naPrebitie)}
-        {zs !== null && (
-          <>
-            {" "}
-            · vyloží ešte: ty {zs.pasoval[ja] ? 0 : zs.zostavaLimit[ja]}, {menoHraca(super_)} {zs.pasoval[super_] ? 0 : zs.zostavaLimit[super_]}
-          </>
-        )}
-      </span>
-    );
+    const rovnost = !s.rovnost
+      ? ""
+      : `rovnosť ${s.pocet[ja]} : ${s.pocet[super_]} → ${s.prevaha === ja ? "hranu máš ty (tvoja karta leží pri lokalite)" : `hranu má ${menoHraca(s.prevaha)} (súperova karta leží pri lokalite)`} · `;
+    const limit =
+      zs === null ? "" : ` · vyloží ešte: ty ${zs.pasoval[ja] ? 0 : zs.zostavaLimit[ja]}, ${menoHraca(super_)} ${zs.pasoval[super_] ? 0 : zs.zostavaLimit[super_]}`;
+    return `${rovnost}na prebitie ${druhy === ja ? "potrebuješ" : `${menoHraca(druhy)} potrebuje`} ${kariet(s.naPrebitie)}${limit}`;
+  };
+  const rovnostKraja = (p: PlayerId): ReactNode => {
+    const t = textRovnostiKraja(p);
+    return t === null ? null : <span className="kraj-rovnost">{t}</span>;
   };
   const popisKraja = (p: PlayerId, smer: "vlavo" | "vpravo") => {
     const nazov = krajStrany(p) ?? (p === ja ? "tvoja strana" : `strana — ${menoHraca(p)}`);
     return (
-      <span className="partia-popis" title={tipKraja(p)}>
+      <span className="partia-popis" title={[tipKraja(p), textRovnostiKraja(p)].filter((x) => x !== null).join(" ")}>
         {smer === "vlavo" ? "← " : ""}
         {nazov}
         {stredKarta !== null && <span className={`kraj-prevaha ${prevaha[p] === ja ? "moja" : prevaha[p] === null ? "" : "superova"}`}> · prevaha: {kto(prevaha[p])}</span>}
@@ -4216,7 +4210,8 @@ export function HernaPlocha({
             onContextMenu={pravyKlik(zrusVyberNaStole)}
           >
             {/* Pokyn je pilulka na hornej hrane stola (Michal 2026-10-21) — predtým pás nad rukou. */}
-            <div className="linia-stav" role="status" aria-live="polite">
+            {/* tabIndex: pokyn skrátený na jeden riadok sa rozbalí aj z klávesnice (fokus). */}
+            <div className="linia-stav" role="status" aria-live="polite" tabIndex={0}>
               <strong className="pilulka-nadpis">
                 {pokyn?.nadpis ?? (view.koniec !== null ? "Koniec hry" : somNaTahu ? "Tvoj ťah" : `Na ťahu je ${menoHraca(super_)}`)}
               </strong>
@@ -4230,7 +4225,10 @@ export function HernaPlocha({
                 <div className="partia-rad harmonika">{radStrany(ja)}</div>
               </div>
               <div className="linia-skupina lokalita" ref={lokalitaRef}>
-                <span className="partia-popis">
+                <span
+                  className="partia-popis"
+                  title={stranyStredu === null ? undefined : `Hrana k tebe: ${krajStrany(ja) ?? "k tebe"} · hrana k súperovi: ${krajStrany(super_) ?? "k súperovi"}`}
+                >
                   {lokalita !== null || lokalitaNavrh !== null ? "lokalita" : "cieľ kola"}
                 </span>
                 <div className="partia-rad harmonika">{stredLinie}</div>

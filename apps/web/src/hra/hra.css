@@ -5829,6 +5829,34 @@ button.auto-hotovo-odkaz {
     min-width: 0;
   }
 
+  /* Pokyn v jednom riadku nad stolom; celé znenie sa rozbalí pod myšou alebo pri fokuse
+     (cez stôl, nič neposunie). Pokyn s kartami (Patronát, Vízia…) ostáva celý v toku. */
+  /* :has() sa nedá vnoriť — pokyn s kartami leží v .linia-stav, stačí jeden :has(). */
+  .linia-obal:not(:has(.zberatel-ponuka, .vizia-karta)) {
+    padding-top: 22px;
+  }
+
+  .linia-stav:not(:has(.zberatel-ponuka, .vizia-karta)) {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    z-index: 30;
+    translate: -50% 0;
+    width: max-content;
+    margin: 0;
+    padding-block: 3px;
+  }
+
+  .linia-stav:not(:has(.zberatel-ponuka, .vizia-karta)) > .pilulka-text {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .linia-stav:not(:has(.zberatel-ponuka, .vizia-karta)):is(:hover, :focus-within, :focus) > .pilulka-text {
+    white-space: normal;
+  }
+
   /* Hrane stola stačí spodný okraj plste — 40 px línie navyše bola tá istá rezerva dvakrát
      (40 px ostáva na mobile, kde sa hrana lepí nad ruku). */
   .linia-obal.s-hranou .linia {
@@ -5844,6 +5872,10 @@ button.auto-hotovo-odkaz {
 
 /* Stavba na stole: „potvrdiť“ v pravom rohu panelu, v riadku s názvami Smetiska a Šenku. */
 .obchod-text {
+  display: none;
+}
+
+.stavka-kratke {
   display: none;
 }
 
@@ -6034,32 +6066,19 @@ button.auto-hotovo-odkaz {
     min-height: 0;
   }
 
-  /* Pokyn v jednom riadku nad stolom; celé znenie sa rozbalí pod myšou alebo pri fokuse
-     (cez stôl, nič neposunie). Pokyn s kartami (Patronát, Vízia…) ostáva celý v toku. */
-  /* :has() sa nedá vnoriť — pokyn s kartami leží v .linia-stav, stačí jeden :has(). */
-  .linia-obal:not(:has(.zberatel-ponuka, .vizia-karta)) {
-    padding-top: 22px;
+  /* Stávka bitky krátko (±3: +52 / −53 b), aby sa nezrezala uprostred čísel; poznámka
+     „1 Pitka — potom bitka“ opakuje „Pitka 1 z 1“. */
+  .stavka-dlhe,
+  .pas-kola .pas-pozn {
+    display: none;
   }
 
-  .linia-stav:not(:has(.zberatel-ponuka, .vizia-karta)) {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    z-index: 30;
-    translate: -50% 0;
-    width: max-content;
-    margin: 0;
-    padding-block: 3px;
+  .stavka-kratke {
+    display: inline;
   }
 
-  .linia-stav:not(:has(.zberatel-ponuka, .vizia-karta)) > .pilulka-text {
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-
-  .linia-stav:not(:has(.zberatel-ponuka, .vizia-karta)):is(:hover, :focus-within) > .pilulka-text {
-    white-space: normal;
+  .pas-kola > .stavka-bitky {
+    flex-shrink: 0;
   }
 
   /* Nad líniou len tenký riadok nadpisov krajov; počet na prebitie a strany pod lokalitou
