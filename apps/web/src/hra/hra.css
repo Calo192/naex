@@ -5359,19 +5359,14 @@ button.auto-hotovo-odkaz {
 }
 
 /* Nízky stôl (malé okno, veľa panelov nad ním): účinok priazne ustúpi portrétu. */
+/* Nízky stôl: dlhý účinok by sa orezal na jeden riadok (UI inšpekcia) — ustúpi krátkemu,
+   ktorý sa zmestí celý (celé znenie je v titulku). Vyššia špecificita: základné pravidlo
+   .ls-ucinok-kratko s display: none stojí v súbore neskôr. */
 @container linia-starsich (height < 330px) {
-  .ls-ucinok {
-    -webkit-line-clamp: 1;
-  }
-}
-
-@container linia-starsich (height < 250px) {
   .ls-ucinok {
     display: none;
   }
 
-  /* Dlhý účinok ustúpil — krátky v jednom riadku ostáva (účinok priazne je vidno vždy).
-     Vyššia špecificita: základné pravidlo s display: none stojí v súbore neskôr. */
   .ls-pata > .ls-ucinok-kratko {
     display: block;
   }
@@ -5738,8 +5733,7 @@ button.auto-hotovo-odkaz {
   padding: 0;
   list-style: none;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.3em 0.9em;
+  gap: 0.25em;
 }
 
 .lst-podmienky li {

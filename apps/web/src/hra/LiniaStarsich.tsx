@@ -273,7 +273,7 @@ function ScorecardVLinii({
             <span className={`superove ${triedaBodov(body?.body[su] ?? 0)}`}>súper {znamienko(body?.body[su] ?? 0)}</span>
           </span>
         )}
-        <span className="ls-ucinok">
+        <span className="ls-ucinok" title={ucinok.cely}>
           {priazen === null ? (
             <>
               <b>Priazeň</b> zatiaľ nikto — pri +1: {UCINOK_PRIAZNE[favourStarsieho(data, elder)](1)}
@@ -369,7 +369,7 @@ export function LupaStarsieho({
   const kto = (p: PlayerId): string => (p === ja ? "ty" : mena[p]);
   const poloha = (m: number): number => (ja === 0 ? m : 8 - m);
   return (
-    <div className="lupa-starsieho" style={{ width: sirka, height: vyska, fontSize: Math.max(10, sirka / 32) }}>
+    <div className="lupa-starsieho" style={{ width: sirka, height: vyska, fontSize: Math.max(10, sirka / 34) }}>
       <div className="lst-karta">{karta}</div>
       <div className="lst-info">
         <div className="lst-hlava">
