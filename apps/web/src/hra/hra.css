@@ -2126,7 +2126,8 @@ button.dlzka-volba.aktivna {
   outline-width: 3px;
 }
 
-.s-lupou.naex-mozny::before {
+.s-lupou.naex-mozny::before,
+.rub-zaverecnej.naex-mozny::before {
   content: "NA EX";
   position: absolute;
   top: -10px;
@@ -4730,6 +4731,110 @@ button.auto-hotovo-odkaz {
   border: 0;
   background: none;
   padding: 8px 12px;
+}
+
+/* ---- Záverečná (roadmapa #83, Michal 2026-10-23) ----
+ * Rub súperovej karty lícom dole na konci strany; tvoja Záverečná so štítkom. */
+.rub-zaverecnej {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 8px;
+  border: 2px solid var(--okraj-svetly);
+  background:
+    repeating-linear-gradient(45deg, color-mix(in srgb, var(--akcent) 14%, transparent) 0 6px, transparent 6px 12px),
+    var(--plocha-3);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  color: var(--text);
+  cursor: default;
+}
+
+.rub-zaverecnej.naex-mozny {
+  cursor: pointer;
+  outline: 2px dashed var(--akcent);
+  outline-offset: 2px;
+}
+
+.rub-zaverecnej.naex-mozny:focus-visible {
+  outline-style: solid;
+  outline-width: 3px;
+}
+
+.rub-zaverecnej.vybrana {
+  box-shadow: 0 0 0 3px var(--akcent), 0 4px 14px rgba(0, 0, 0, 0.5);
+}
+
+.rub-zaverecnej:disabled {
+  opacity: 1;
+}
+
+.rub-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--pozadie) 80%, transparent);
+  font: 800 0.8rem/1.1 var(--nadpis);
+  text-align: center;
+}
+
+.rub-text small {
+  font: 500 0.66rem/1.2 var(--pismo);
+  color: var(--tlmeny);
+}
+
+.zaverecna-stitok {
+  position: absolute;
+  left: 50%;
+  bottom: -10px;
+  z-index: 2;
+  translate: -50% 0;
+  padding: 1px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--akcent);
+  background: var(--plocha-2);
+  color: var(--akcent-svetly);
+  font: 700 0.66rem/1.4 var(--pismo);
+  white-space: nowrap;
+}
+
+/* Tvoja Záverečná: ty ju vidíš, súper len rub — jemne pruhovaná, aby bola na prvý pohľad iná. */
+.zaverecna-moja .kl::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: inherit;
+  background: repeating-linear-gradient(45deg, color-mix(in srgb, var(--akcent) 16%, transparent) 0 6px, transparent 6px 12px);
+}
+
+.ikona-rub {
+  display: inline-block;
+  width: 14px;
+  height: 20px;
+  border-radius: 3px;
+  border: 1.5px solid currentColor;
+  background: repeating-linear-gradient(45deg, currentColor 0 2px, transparent 2px 5px);
+}
+
+.pecat-nakup.stlacena {
+  border-color: var(--akcent);
+  background: color-mix(in srgb, var(--akcent) 24%, var(--plocha-2));
+  color: var(--akcent-svetly);
+}
+
+.zaverecna-text {
+  color: var(--akcent-svetly);
+}
+
+.bitka-skryta {
+  margin-left: 2px;
+  color: var(--akcent-svetly);
+  cursor: help;
 }
 
 /* ---- dlaždica KARTY (Michal 2026-10-23, #76) ----

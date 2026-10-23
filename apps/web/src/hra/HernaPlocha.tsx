@@ -83,6 +83,7 @@ import {
   pohorsenieNaKraj,
   nahladVylozenia,
   naexCieleVLinii,
+  zablokovaneStrany,
   posunMarker,
   navrhPrebytku,
   printedSides,
@@ -624,12 +625,19 @@ export function HernaPlocha({
   // tam, odkiaľ prišla, z návrhu potichu vypadne.
   // Reakcia na súperovo NA EX: jedna karta z ruky do línie mimo limitu.
   const reagujem = somNaTahu && view.faza === "pitka" && view.pitkaStav?.reakcia === ja;
+  // Záverečná (roadmapa #83): prepínač na hrane stola — posledná karta ťahu do línie pôjde
+  // lícom dole za cigaretu a potom už v tomto Zhromaždení nevykladám.
+  const [zaverecnaZapnuta, setZaverecnaZapnuta] = useState(false);
+  useEffect(() => setZaverecnaZapnuta(false), [klucTahu]);
   const vylozenia: readonly PolozkaVykladania[] = (() => {
     if (navrh?.typ !== "vylozenia" || !somNaTahu || !(view.faza === "zhromazdenie" || reagujem)) return [];
-    return navrh.polozky.flatMap((x) => {
+    const polozky = navrh.polozky.flatMap((x) => {
       const k = view.ruka.find((r) => r.uid === x.uid);
       return k === undefined ? [] : [{ karta: k, ciel: x.ciel }];
     });
+    if (!zaverecnaZapnuta || reagujem) return polozky;
+    const posledna = polozky.map((x) => x.ciel === "vlastna" || x.ciel === "superova").lastIndexOf(true);
+    return polozky.map((x, i) => (i === posledna ? { ...x, zaverecna: true as const } : x));
   })();
   /** Posledná navrhnutá karta (v odpovedi na NA EX jediná). */
   const vylozene: PolozkaVykladania | null = vylozenia[vylozenia.length - 1] ?? null;
@@ -740,7 +748,11 @@ export function HernaPlocha({
   }, [data, view, navrh, somNaTahu]);
 
   // NA EX na Občana alebo Starešinu v línii — vlastného aj súperovho (Michal 2026-10-18).
-  const naexCiele = useMemo(() => new Set(naexCieleVLinii(data, view.strany, ja)), [data, view.strany, ja]);
+  // Súperova Záverečná lícom dole: NA EX na ňu smie vždy (cez náhradné uid, roadmapa #83).
+  const naexCiele = useMemo(
+    () => new Set([...naexCieleVLinii(data, view.strany, ja), ...view.zaverecne.filter((z) => z.majitel !== ja && z.naexBy === null).map((z) => z.uid)]),
+    [data, view.strany, view.zaverecne, ja],
+  );
 
   // Kedy NA EX dať môžem — karty, ktoré ho prijmú, nesú v línii značku.
   const pitka = view.pitkaStav;
@@ -979,13 +991,19 @@ export function HernaPlocha({
     const out = new Map<StranaLinie, { readonly karty: ReadonlyMap<number, NahladVylozenia>; readonly dovod: string | null }>();
     if (!vykladam) return out;
     const volne = ruka.filter((k) => !vylozenia.some((x) => x.karta.uid === k.uid));
+    const zablokovane = zablokovaneStrany(view);
     for (const c of ["vlastna", "superova"] as const) {
+      // Za kartou lícom dole sa nedá priložiť — jadro by vrátilo len všeobecné „sem nemôžeš“.
+      if (zablokovane[c === "vlastna" ? ja : super_]) {
+        out.set(c, { karty: new Map(), dovod: "Za Záverečnou až po jej otočení na konci Pitky." });
+        continue;
+      }
       const karty = new Map<number, NahladVylozenia>();
       let dovod: string | null = null;
       for (const k of volne) {
         // Odpoveď na NA EX je jediná karta — nová nahradí navrhnutú, ráta sa teda bez nej.
         const chyba = reagujem
-          ? cieleVykladania(data, view.strany, ja, k, Number.POSITIVE_INFINITY, true, cielLokalitaId(view)).includes(c)
+          ? cieleVykladania(data, view.strany, ja, k, Number.POSITIVE_INFINITY, true, cielLokalitaId(view), zablokovaneStrany(view)).includes(c)
             ? null
             : "Sem žiadnu kartu z ruky vyložiť nesmieš."
           : planTahu([...vylozenia, { karta: k, ciel: c }]).chyba;
@@ -1256,7 +1274,7 @@ export function HernaPlocha({
       if (z.navrh) out.add("ruka");
     }
     if (z.odkial === "ruka" && reagujem) {
-      for (const c of cieleVykladania(data, view.strany, ja, z.karta, Number.POSITIVE_INFINITY, true, cielLokalitaId(view))) {
+      for (const c of cieleVykladania(data, view.strany, ja, z.karta, Number.POSITIVE_INFINITY, true, cielLokalitaId(view), zablokovaneStrany(view))) {
         if (c === "vlastna" || c === "superova") out.add(c);
       }
       if (z.navrh) out.add("ruka");
@@ -1670,8 +1688,13 @@ export function HernaPlocha({
       const naexBy = placed.naexBy;
       const vybranaNaex = mode.typ === "naexCiel" && mode.uid === uid;
       const stitky =
-        nova || naexBy !== undefined || vybranaNaex ? (
+        nova || naexBy !== undefined || vybranaNaex || placed.zaverecna === true ? (
           <>
+            {placed.zaverecna === true && (
+              <span className="zaverecna-stitok" title="Tvoja Záverečná — súper ju nevidí a nevie, čo dáva; za ňu sa nedá priložiť. Otočí sa na konci Pitky.">
+                Záverečná · súper ju nevidí
+              </span>
+            )}
             {nova && (
               <span className="nova-stitok" title={`Vyložil ${menoHraca(super_)} v poslednom ťahu`}>
                 nová
@@ -1702,6 +1725,7 @@ export function HernaPlocha({
             naexBy !== undefined ? "naex-dany" : "",
             nova ? "nova-superova" : "",
             ukazHrozbu === uid ? "hrozba-ciel" : "",
+            placed.zaverecna === true ? "zaverecna-moja" : "",
           ]
             .join(" ")
             .trim() || undefined,
@@ -1748,6 +1772,7 @@ export function HernaPlocha({
         <>
           {karta(props)}
           {stitokPoldeci(x.karta.uid)}
+          {x.zaverecna === true && <span className="zaverecna-stitok">Záverečná · lícom dole</span>}
         </>,
         undefined,
         NAHRADIT + x.karta.uid,
@@ -1833,19 +1858,53 @@ export function HernaPlocha({
       -3,
     );
   };
+  /** Súperova Záverečná lícom dole (roadmapa #83): rub na vonkajšom konci strany, NA EX na ňu prejde vždy. */
+  const rubZaverecnej = (p: PlayerId): ReactNode => {
+    const z = view.zaverecne.find((x) => x.strana === p && x.majitel !== ja);
+    if (z === undefined) return null;
+    const vybrana = mode.typ === "naexCiel" && mode.uid === z.uid;
+    // Ako karta v línii: značka, keď NA EX dať môžeš; klik rovno, alebo po pečiatke NA EX!.
+    const znacka = naexMozny && naexCiele.has(z.uid);
+    const klik = znacka && (naexPriamo || mode.typ === "naexCiel") ? () => setMode(vybrana ? { typ: "ziadny" } : { typ: "naexCiel", uid: z.uid }) : undefined;
+    return vLinii(
+      <button
+        type="button"
+        className={["rub-zaverecnej", znacka ? "naex-mozny" : "", vybrana ? "vybrana" : ""].join(" ")}
+        style={{ width: sirkaVLinii, height: (sirkaVLinii * 80) / 54 }}
+        disabled={klik === undefined}
+        onClick={klik}
+        title={`Záverečná ${menoHraca(super_)} lícom dole — nevieš, čo to je, ale ráta sa do bitky. Za ňu sa nedá priložiť, otočí sa na konci Pitky.${klik !== undefined ? " Klik: NA EX (prejde vždy)." : ""}`}
+      >
+        <span className="rub-text">
+          Záverečná
+          <small>lícom dole · otočí sa na konci Pitky</small>
+        </span>
+        {z.naexBy !== null && (
+          <span className="naex-nad">
+            <IkonaPoldeci /> NA EX · {z.naexBy === ja ? "tvoj" : menoHraca(z.naexBy)}
+          </span>
+        )}
+        {vybrana && <span className="vybrana-pod">vybraná</span>}
+      </button>,
+      -1000 - p,
+    );
+  };
   const radStrany = (p: PlayerId): ReactNode => {
     const koniec = koniecStrany(p);
     const karty = view.strany[p].length === 0 ? null : kartyStrany(p);
-    if (koniec === null && karty === null) return vLinii(<span className="prazdna">prázdna</span>);
-    // Tvoja partia vedie od lokality doľava, jej koniec je teda vľavo.
+    const rub = rubZaverecnej(p);
+    if (koniec === null && karty === null && rub === null) return vLinii(<span className="prazdna">prázdna</span>);
+    // Tvoja partia vedie od lokality doľava, jej koniec je teda vľavo; skrytá Záverečná leží na konci.
     return p === ja ? (
       <>
         {koniec}
+        {rub}
         {karty}
       </>
     ) : (
       <>
         {karty}
+        {rub}
         {koniec}
       </>
     );
@@ -2046,12 +2105,15 @@ export function HernaPlocha({
     readonly dovod: string | null;
     readonly tip: string;
     readonly akcia: () => void;
+    /** Prepínač (Záverečná) — stlačený stav. */
+    readonly stlacena?: boolean;
   }): ReactNode => (
     <button
       key={p.kluc}
       type="button"
-      className={`pecat pecat-nakup${p.dovod !== null ? " ne" : ""}`}
+      className={`pecat pecat-nakup${p.dovod !== null ? " ne" : ""}${p.stlacena === true ? " stlacena" : ""}`}
       aria-disabled={p.dovod !== null}
+      aria-pressed={p.stlacena}
       title={p.dovod ?? p.tip}
       onClick={() => {
         if (p.dovod === null) p.akcia();
@@ -2289,6 +2351,17 @@ export function HernaPlocha({
               tip: "Fajčiť: za cigaretu si hneď doberieš kartu. Ťah ti neskončí, ráta sa ako nerest.",
               akcia: () => cmd({ type: "smoke", pocet: 1 }),
             })}
+            {(view.zaverecnaMozna || zaverecnaZapnuta) &&
+              pecatNakupu({
+                kluc: "zaverecna",
+                ikona: <span className="ikona-rub" aria-hidden="true" />,
+                nazov: zaverecnaZapnuta ? "záverečná ✓" : "záverečná",
+                cena: KONSTANTY.CENA_ZAVERECNEJ,
+                dovod: null,
+                stlacena: zaverecnaZapnuta,
+                tip: `Záverečná: posledná karta ťahu do línie pôjde lícom dole za ${cigariet(KONSTANTY.CENA_ZAVERECNEJ)}. Súper ju nevidí do konca Pitky a za ňu nepriloží; ty už v tomto Zhromaždení nevykladáš (bez cigariet za pas).`,
+                akcia: () => setZaverecnaZapnuta(!zaverecnaZapnuta),
+              })}
           </>
         );
         // Celý ťah naraz (Michal 2026-10-19): karty sa ťahajú na stôl ako návrh,
@@ -2326,6 +2399,9 @@ export function HernaPlocha({
             nadpis,
             text: textNahladuTahania ?? textVolbyMiesta ?? (
               <>
+                {zaverecnaZapnuta && (
+                  <strong>Záverečná: polož kartu do línie — pôjde lícom dole a potom už nevykladáš. </strong>
+                )}
                 Potiahni kartu z ruky na stôl, alebo klikni na <strong>+</strong> na konci strany — vysunú sa karty, ktoré sa tam spoja. Alebo
                 pasuj do Pitky (cigareta za každú nevyloženú kartu).{" "}
                 <span className="tlmene">
@@ -2355,6 +2431,7 @@ export function HernaPlocha({
                 <span key={x.karta.uid} className="tah-polozka">
                   {i > 0 && " · "}
                   <strong>{menoKarty(x.karta.defId)}</strong> → {POPIS_CIELA[x.ciel]}
+                  {x.zaverecna === true && <b className="zaverecna-text"> · Záverečná lícom dole (−{cigariet(KONSTANTY.CENA_ZAVERECNEJ)})</b>}
                   {poradieVTahu(x.karta.uid) >= 1 && <b className="poldeci-text"> (−1 poldeci)</b>}
                 </span>
               ))}
@@ -2668,8 +2745,13 @@ export function HernaPlocha({
         // Vybraná karta (klik na kartu so značkou): pod kartou „vybraná“, v pilulke náhľad, na hrane pečiatka NA EX!.
         const vybranaUid = mode.typ === "naexCiel" ? mode.uid : null;
         const vybrana = vybranaUid === null ? undefined : nahladNaex.get(vybranaUid);
-        const menoVybranej = vybranaUid === null ? "" : menoKarty(view.strany.flat().find((pl) => pl.card.uid === vybranaUid)?.card.defId ?? "");
-        const textVyberu =
+        const naRub = vybranaUid !== null && view.zaverecne.some((z) => z.uid === vybranaUid);
+        const menoVybranej = naRub ? "súperovu Záverečnú" : vybranaUid === null ? "" : menoKarty(view.strany.flat().find((pl) => pl.card.uid === vybranaUid)?.card.defId ?? "");
+        const textVyberu = naRub ? (
+          <span className="naex-vyber-text">
+            <strong>NA EX na súperovu Záverečnú</strong> · nevieš, čo to je — prejde vždy, aktívne akcie zruší a neaktívne zdvojí ako pri každej karte · pečeň +1
+          </span>
+        ) :
           vybrana === undefined || odhad === null ? null : (
             <span className="naex-vyber-text">
               <strong>NA EX na {menoVybranej}</strong> · bitka {odhad.tuhe[ja]}:{odhad.tuhe[super_]} →{" "}
@@ -3184,6 +3266,7 @@ export function HernaPlocha({
             cenaPrebytku({ strany: view.strany } as unknown as GameState, 1),
           ],
           prebytokNaRozdelenie: prebytokNaRozdelenie(view, battleOutcome(b?.damage ?? odhad)),
+          skrytaSupera: b?.damage == null && view.zaverecne.some((z) => z.majitel !== ja),
           utocnik: `útočník: ${view.utocnik === ja ? "ty" : menoHraca(view.utocnik)} — ${view.kolo === 1 ? "v 1. kole náhodne" : "porazený z minulej bitky (remíza roly nemení)"}`,
           hrozby: b?.damage != null ? [] : hrozbyBitky,
           ukazHrozbu: setUkazHrozbu,

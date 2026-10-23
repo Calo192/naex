@@ -876,6 +876,7 @@ function StranaBitky({
   vitaz,
   zarovnanie,
   menoKarty,
+  skryta,
 }: {
   readonly meno: string;
   readonly tuhe: number;
@@ -888,6 +889,8 @@ function StranaBitky({
   readonly vitaz: boolean;
   readonly zarovnanie: "vlavo" | "vpravo";
   readonly menoKarty: (defId: string) => string;
+  /** Súperova Záverečná lícom dole — tuhé môže byť viac. */
+  readonly skryta?: boolean;
 }) {
   const akcia = (kluc: string) => sada.akcie.find((a) => a.kluc === kluc);
   const nazov = (kluc: string): string => akcia(kluc)?.nazov ?? kluc;
@@ -992,7 +995,16 @@ function StranaBitky({
         <span className="bitka-meno">{meno}</span>
         <Dlazdica
           trieda="efekt-tuhe"
-          ikona={<span className="bitka-tuhe">{tuhe}</span>}
+          ikona={
+            <span className="bitka-tuhe">
+              {tuhe}
+              {skryta === true && (
+                <span className="bitka-skryta" title="Záverečná lícom dole — jej príspevok nevidíš, môže byť aj viac.">
+                  ?
+                </span>
+              )}
+            </span>
+          }
           hodnota={<span className="bitka-popis">tuhé</span>}
           zmeny={[bonus, -zrazka]}
           tip={tipTuhe}
@@ -1039,6 +1051,8 @@ export interface BitkaPanelProps {
   readonly hrozby?: readonly HrozbaBitky[];
   /** Prejdenie myšou po riadku hrozby zvýrazní kartu v línii (null = koniec). */
   readonly ukazHrozbu?: (uid: number | null) => void;
+  /** Súper má v línii Záverečnú lícom dole — jeho tuhé je neisté (roadmapa #83). */
+  readonly skrytaSupera?: boolean;
 }
 
 export interface HrozbaBitky {
@@ -1123,7 +1137,7 @@ function verdiktBitky({ damage, ja, vysledok, naSekeru, poslednaBitka, cenaPosun
  * v jednom riadku, celý panel s ikonami akcií ukáže klik.
  */
 export function SuhrnBitky(props: BitkaPanelProps & { readonly otvoreny: boolean; readonly prepni: () => void; readonly id: string }) {
-  const { damage, ja, vysledok, otvoreny, prepni, id } = props;
+  const { damage, ja, vysledok, otvoreny, prepni, id, skrytaSupera } = props;
   const { su, vitaz, vyhravam, verdikt, prebytok, prebytokDrzi } = verdiktBitky(props);
   return (
     <button
@@ -1135,9 +1149,13 @@ export function SuhrnBitky(props: BitkaPanelProps & { readonly otvoreny: boolean
       title={[otvoreny ? "Späť na pás kola (Esc)" : "Riadok bitky — tuhé a akcie oboch strán", ...(props.hrozby ?? []).map((h) => h.cele)].join("\n")}
     >
       <span className="suhrn-bitky-nadpis">{vysledok ? "Výsledok" : "Odhad"}</span>
-      <b>{verdikt}</b>
+      <b>
+        {verdikt}
+        {skrytaSupera === true && !vysledok && " ?"}
+      </b>
       <span className="suhrn-bitky-tuhe">
         tuhé {damage.tuhe[ja]} : {damage.tuhe[su]}
+        {skrytaSupera === true && "?"}
         {prebytokDrzi !== null && ` · prebytok ${prebytok} → ${prebytokDrzi === ja ? "tebe" : props.mena[su]}`}
       </span>
       <span aria-hidden="true">{otvoreny ? "▴" : "▾"}</span>
@@ -1162,6 +1180,7 @@ export function BitkaPanel(props: BitkaPanelProps) {
       vitaz={vitaz === p}
       zarovnanie={zarovnanie}
       menoKarty={menoKarty}
+      skryta={p !== ja && props.skrytaSupera === true}
     />
   );
 
