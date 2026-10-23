@@ -2022,7 +2022,7 @@ button.dlzka-volba {
 .dlzka-volba.aktivna,
 button.dlzka-volba.aktivna {
   border-color: var(--akcent);
-  background: color-mix(in oklab, var(--akcent-tmavy) 25%, var(--pozadie));
+  background: var(--akcent-podklad);
   color: var(--akcent);
 }
 

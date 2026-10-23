@@ -499,11 +499,509 @@
   color-scheme: dark;
 }
 
+/* Les — Night Green · Sulphur Yellow (Michal 2026-10-23, 14 + 14 schém). */
+:root[data-schema="les"] {
+  --pozadie: #04120a;
+  --plocha: #061b10;
+  --plocha-2: #0e2318;
+  --plocha-3: #172c20;
+  --okraj: #24352b;
+  --okraj-svetly: #3d4c43;
+  --text: #f2ebd5;
+  --tlmeny: #b9b198;
+  --slaby: #86806c;
+  --slaby-text: #99927e;
+  --akcent: #e0cb62;
+  --akcent-tmavy: #ad9828;
+  --akcent-svetly: #f6e695;
+  --na-akcente: #201b01;
+  --cervena: #d0563f;
+  --cervena-text: #e5735c;
+  --cervena-svetla: #ff9d88;
+  --tehla-tmava: #a8341f;
+  --zelena: #7cbf74;
+  --zelena-svetla: #7fe39a;
+  --zelena-ziariva: #7dff9c;
+  --info: #8fc3e0;
+  --info-silna: #5aa9d6;
+  --ja: #5cc0cf;
+  --ja-tmava: #1d3b40;
+  --su: #e0805f;
+  --su-tmava: #43261d;
+  --lesk: #ffffff;
+  --tma: 1;
+  color-scheme: dark;
+}
+
+/* Mlynský náhon — Venice Green · Pale Lemon Yellow (Michal 2026-10-23, 14 + 14 schém). */
+:root[data-schema="mlyn"] {
+  --pozadie: #001211;
+  --plocha: #011b19;
+  --plocha-2: #062322;
+  --plocha-3: #0f2c2a;
+  --okraj: #1f3533;
+  --okraj-svetly: #394c4b;
+  --text: #e7eee5;
+  --tlmeny: #acb4aa;
+  --slaby: #7c827a;
+  --slaby-text: #8e948c;
+  --akcent: #d8cc84;
+  --akcent-tmavy: #a59952;
+  --akcent-svetly: #efe6ad;
+  --na-akcente: #1f1b01;
+  --cervena: #d0563f;
+  --cervena-text: #e5735c;
+  --cervena-svetla: #ff9d88;
+  --tehla-tmava: #a8341f;
+  --zelena: #7cbf74;
+  --zelena-svetla: #7fe39a;
+  --zelena-ziariva: #7dff9c;
+  --info: #8fc3e0;
+  --info-silna: #5aa9d6;
+  --ja: #5cc0cf;
+  --ja-tmava: #1d3b40;
+  --su: #e0805f;
+  --su-tmava: #43261d;
+  --lesk: #ffffff;
+  --tma: 1;
+  color-scheme: dark;
+}
+
+/* Súmrak — Dark Medici Blue · Coral Pink (Michal 2026-10-23, 14 + 14 schém). */
+:root[data-schema="sumrak"] {
+  --pozadie: #040f1a;
+  --plocha: #071725;
+  --plocha-2: #0f202e;
+  --plocha-3: #172837;
+  --okraj: #24323e;
+  --okraj-svetly: #3d4954;
+  --text: #f1e9e4;
+  --tlmeny: #b8afa9;
+  --slaby: #867f7a;
+  --slaby-text: #98918c;
+  --akcent: #f2a28c;
+  --akcent-tmavy: #bc715c;
+  --akcent-svetly: #fec3b2;
+  --na-akcente: #310e05;
+  --cervena: #d0563f;
+  --cervena-text: #e5735c;
+  --cervena-svetla: #ff9d88;
+  --tehla-tmava: #a8341f;
+  --zelena: #7cbf74;
+  --zelena-svetla: #7fe39a;
+  --zelena-ziariva: #7dff9c;
+  --info: #8fc3e0;
+  --info-silna: #5aa9d6;
+  --ja: #5cc0cf;
+  --ja-tmava: #1d3b40;
+  --su: #e0805f;
+  --su-tmava: #43261d;
+  --lesk: #ffffff;
+  --tma: 1;
+  color-scheme: dark;
+}
+
+/* Čučoriedky — Dark Tyrian Blue · Light Mauve (Michal 2026-10-23, 14 + 14 schém). */
+:root[data-schema="cucoriedky"] {
+  --pozadie: #0a0d1a;
+  --plocha: #101526;
+  --plocha-2: #181d2f;
+  --plocha-3: #202538;
+  --okraj: #2b303f;
+  --okraj-svetly: #434755;
+  --text: #eee8f2;
+  --tlmeny: #b5aeb9;
+  --slaby: #837e87;
+  --slaby-text: #959099;
+  --akcent: #d9b3dc;
+  --akcent-tmavy: #a682a9;
+  --akcent-svetly: #efd0f1;
+  --na-akcente: #280f2a;
+  --cervena: #d0563f;
+  --cervena-text: #e5735c;
+  --cervena-svetla: #ff9d88;
+  --tehla-tmava: #a8341f;
+  --zelena: #7cbf74;
+  --zelena-svetla: #7fe39a;
+  --zelena-ziariva: #7dff9c;
+  --info: #8fc3e0;
+  --info-silna: #5aa9d6;
+  --ja: #5cc0cf;
+  --ja-tmava: #1d3b40;
+  --su: #e0805f;
+  --su-tmava: #43261d;
+  --lesk: #ffffff;
+  --tma: 1;
+  color-scheme: dark;
+}
+
+/* Kováčska dielňa — Blackish Slate · Mars Orange (Michal 2026-10-23, 14 + 14 schém). */
+:root[data-schema="kovac"] {
+  --pozadie: #0a0f12;
+  --plocha: #11171b;
+  --plocha-2: #181f24;
+  --plocha-3: #21272c;
+  --okraj: #2c3135;
+  --okraj-svetly: #43484c;
+  --text: #f0eae3;
+  --tlmeny: #b7b0a8;
+  --slaby: #857f79;
+  --slaby-text: #97918b;
+  --akcent: #fd9c61;
+  --akcent-tmavy: #c66a2d;
+  --akcent-svetly: #ffc29f;
+  --na-akcente: #2e1101;
+  --cervena: #d0563f;
+  --cervena-text: #e5735c;
+  --cervena-svetla: #ff9d88;
+  --tehla-tmava: #a8341f;
+  --zelena: #7cbf74;
+  --zelena-svetla: #7fe39a;
+  --zelena-ziariva: #7dff9c;
+  --info: #8fc3e0;
+  --info-silna: #5aa9d6;
+  --ja: #5cc0cf;
+  --ja-tmava: #1d3b40;
+  --su: #e0805f;
+  --su-tmava: #43261d;
+  --lesk: #ffffff;
+  --tma: 1;
+  color-scheme: dark;
+}
+
+/* Marhuľa — Apricot Yellow · Peach Red. Krémové plochy, nikde čistá biela (Michal 2026-10-23, 14 + 14 schém). */
+:root[data-schema="marhula"] {
+  --graf-ludia: #00889e;
+  --graf-ai: #c2531c;
+  --pozadie: #f7e8cc;
+  --plocha: #fcf1dc;
+  --plocha-2: #efe0c5;
+  --plocha-3: #e8d8bb;
+  --okraj: #d6c9b1;
+  --okraj-svetly: #b6a992;
+  --text: #322317;
+  --tlmeny: #634e3e;
+  --slaby: #8f7c6e;
+  --slaby-text: #6f5c4f;
+  --akcent: #92371a;
+  --akcent-tmavy: #822807;
+  --akcent-svetly: #9c4023;
+  --na-akcente: #fbf6ee;
+  --cervena: #b8452f;
+  --cervena-text: #a8321f;
+  --cervena-svetla: #9a2c1a;
+  --tehla-tmava: #a8341f;
+  --zelena: #256d2f;
+  --zelena-svetla: #2b6b36;
+  --zelena-ziariva: #2f9e4f;
+  --info: #2e5f86;
+  --info-silna: #3a76ad;
+  --ja: #056875;
+  --ja-tmava: #d2ecee;
+  --su: #a3401d;
+  --su-tmava: #f5ddd2;
+  --lesk: #000000;
+  --tma: 0.3;
+  color-scheme: light;
+}
+
+/* Fialka — Grayish Lavender · Hydrangea Red. Krémové plochy, nikde čistá biela (Michal 2026-10-23, 14 + 14 schém). */
+:root[data-schema="fialka"] {
+  --graf-ludia: #00889e;
+  --graf-ai: #c2531c;
+  --pozadie: #eee6f7;
+  --plocha: #f6effc;
+  --plocha-2: #e6deef;
+  --plocha-3: #ded6e8;
+  --okraj: #cec7d6;
+  --okraj-svetly: #aea7b6;
+  --text: #2a2331;
+  --tlmeny: #574e61;
+  --slaby: #847c8d;
+  --slaby-text: #635b6b;
+  --akcent: #7a2f5d;
+  --akcent-tmavy: #6a204f;
+  --akcent-svetly: #833866;
+  --na-akcente: #f9f5fd;
+  --cervena: #b8452f;
+  --cervena-text: #a8321f;
+  --cervena-svetla: #9a2c1a;
+  --tehla-tmava: #a8341f;
+  --zelena: #256d2f;
+  --zelena-svetla: #2b6b36;
+  --zelena-ziariva: #2f9e4f;
+  --info: #2e5f86;
+  --info-silna: #3a76ad;
+  --ja: #056875;
+  --ja-tmava: #d2ecee;
+  --su: #a3401d;
+  --su-tmava: #f5ddd2;
+  --lesk: #000000;
+  --tma: 0.3;
+  color-scheme: light;
+}
+
+/* Mätový čaj — Ecru · Cobalt Green. Krémové plochy, nikde čistá biela (Michal 2026-10-23, 14 + 14 schém). */
+:root[data-schema="mata"] {
+  --graf-ludia: #00889e;
+  --graf-ai: #c2531c;
+  --pozadie: #e5edd5;
+  --plocha: #eff5e3;
+  --plocha-2: #dee6ce;
+  --plocha-3: #d6dec5;
+  --okraj: #c7ceb9;
+  --okraj-svetly: #a7ae9a;
+  --text: #1f2a1a;
+  --tlmeny: #485842;
+  --slaby: #778571;
+  --slaby-text: #566451;
+  --akcent: #266342;
+  --akcent-tmavy: #155534;
+  --akcent-svetly: #2d6a48;
+  --na-akcente: #f5f8ef;
+  --cervena: #b8452f;
+  --cervena-text: #a8321f;
+  --cervena-svetla: #9a2c1a;
+  --tehla-tmava: #a8341f;
+  --zelena: #256d2f;
+  --zelena-svetla: #2b6b36;
+  --zelena-ziariva: #2f9e4f;
+  --info: #2e5f86;
+  --info-silna: #3a76ad;
+  --ja: #006a77;
+  --ja-tmava: #d2ecee;
+  --su: #a3401d;
+  --su-tmava: #f5ddd2;
+  --lesk: #000000;
+  --tma: 0.3;
+  color-scheme: light;
+}
+
+/* Ruža — Cameo Pink · Old Rose. Krémové plochy, nikde čistá biela (Michal 2026-10-23, 14 + 14 schém). */
+:root[data-schema="ruza"] {
+  --graf-ludia: #00889e;
+  --graf-ai: #c2531c;
+  --pozadie: #fbe4df;
+  --plocha: #feeeeb;
+  --plocha-2: #f3dcd7;
+  --plocha-3: #ecd4cf;
+  --okraj: #dac5c1;
+  --okraj-svetly: #b9a6a1;
+  --text: #312128;
+  --tlmeny: #614b55;
+  --slaby: #8e7a82;
+  --slaby-text: #6d5a62;
+  --akcent: #8b3a44;
+  --akcent-tmavy: #7b2c37;
+  --akcent-svetly: #95434c;
+  --na-akcente: #fff4f2;
+  --cervena: #b8452f;
+  --cervena-text: #a8321f;
+  --cervena-svetla: #9a2c1a;
+  --tehla-tmava: #a8341f;
+  --zelena: #256d2f;
+  --zelena-svetla: #2b6b36;
+  --zelena-ziariva: #2f9e4f;
+  --info: #2e5f86;
+  --info-silna: #3a76ad;
+  --ja: #056875;
+  --ja-tmava: #d2ecee;
+  --su: #a13e1b;
+  --su-tmava: #f5ddd2;
+  --lesk: #000000;
+  --tma: 0.3;
+  color-scheme: light;
+}
+
+/* Piesok — Isabella Color · Burnt Sienna. Krémové plochy, nikde čistá biela (Michal 2026-10-23, 14 + 14 schém). */
+:root[data-schema="piesok"] {
+  --graf-ludia: #00889e;
+  --graf-ai: #c2531c;
+  --pozadie: #f5e9cc;
+  --plocha: #fbf2dc;
+  --plocha-2: #ede1c4;
+  --plocha-3: #e6d9bb;
+  --okraj: #d4cab1;
+  --okraj-svetly: #b4aa92;
+  --text: #2e2419;
+  --tlmeny: #5d5041;
+  --slaby: #8a7e71;
+  --slaby-text: #685d50;
+  --akcent: #8a3d1d;
+  --akcent-tmavy: #7a2f0c;
+  --akcent-svetly: #944626;
+  --na-akcente: #faf6ee;
+  --cervena: #b8452f;
+  --cervena-text: #a8321f;
+  --cervena-svetla: #9a2c1a;
+  --tehla-tmava: #a8341f;
+  --zelena: #256d2f;
+  --zelena-svetla: #2b6b36;
+  --zelena-ziariva: #2f9e4f;
+  --info: #2e5f86;
+  --info-silna: #3a76ad;
+  --ja: #006a77;
+  --ja-tmava: #d2ecee;
+  --su: #a3401d;
+  --su-tmava: #f5ddd2;
+  --lesk: #000000;
+  --tma: 0.3;
+  color-scheme: light;
+}
+
+/* Morská pena — Pale Blue · Peacock Blue. Krémové plochy, nikde čistá biela (Michal 2026-10-23, 14 + 14 schém). */
+:root[data-schema="pena"] {
+  --graf-ludia: #00889e;
+  --graf-ai: #c2531c;
+  --pozadie: #ddedee;
+  --plocha: #e9f5f5;
+  --plocha-2: #d5e6e6;
+  --plocha-3: #cddede;
+  --okraj: #bfcece;
+  --okraj-svetly: #a0aeae;
+  --text: #1d282e;
+  --tlmeny: #46555d;
+  --slaby: #76828a;
+  --slaby-text: #556168;
+  --akcent: #1f5f78;
+  --akcent-tmavy: #0b5169;
+  --akcent-svetly: #27667f;
+  --na-akcente: #eef9f9;
+  --cervena: #b8452f;
+  --cervena-text: #a8321f;
+  --cervena-svetla: #9a2c1a;
+  --tehla-tmava: #a8341f;
+  --zelena: #256d2f;
+  --zelena-svetla: #2b6b36;
+  --zelena-ziariva: #2f9e4f;
+  --info: #2e5f86;
+  --info-silna: #3a76ad;
+  --ja: #006a77;
+  --ja-tmava: #d2ecee;
+  --su: #a3401d;
+  --su-tmava: #f5ddd2;
+  --lesk: #000000;
+  --tma: 0.3;
+  color-scheme: light;
+}
+
+/* Káva s mliekom — Fawn · Vandyke Brown. Krémové plochy, nikde čistá biela (Michal 2026-10-23, 14 + 14 schém). */
+:root[data-schema="kava"] {
+  --graf-ludia: #00889e;
+  --graf-ai: #c2531c;
+  --pozadie: #f7e7d3;
+  --plocha: #fdf0e2;
+  --plocha-2: #efdfcc;
+  --plocha-3: #e8d7c3;
+  --okraj: #d6c8b7;
+  --okraj-svetly: #b6a898;
+  --text: #2f241d;
+  --tlmeny: #5e4f46;
+  --slaby: #8b7d75;
+  --slaby-text: #6a5d55;
+  --akcent: #5a3a26;
+  --akcent-tmavy: #4c2d19;
+  --akcent-svetly: #63422e;
+  --na-akcente: #fcf6ee;
+  --cervena: #b8452f;
+  --cervena-text: #a8321f;
+  --cervena-svetla: #9a2c1a;
+  --tehla-tmava: #a8341f;
+  --zelena: #256d2f;
+  --zelena-svetla: #2b6b36;
+  --zelena-ziariva: #2f9e4f;
+  --info: #2e5f86;
+  --info-silna: #3a76ad;
+  --ja: #056875;
+  --ja-tmava: #d2ecee;
+  --su: #a3401d;
+  --su-tmava: #f5ddd2;
+  --lesk: #000000;
+  --tma: 0.3;
+  color-scheme: light;
+}
+
+/* Jeseň — Ecru · Pompeian Red. Krémové plochy, nikde čistá biela (Michal 2026-10-23, 14 + 14 schém). */
+:root[data-schema="jesen"] {
+  --graf-ludia: #00889e;
+  --graf-ai: #c2531c;
+  --pozadie: #f3e9cf;
+  --plocha: #faf2de;
+  --plocha-2: #ebe1c7;
+  --plocha-3: #e4d9be;
+  --okraj: #d3cab3;
+  --okraj-svetly: #b3aa94;
+  --text: #2f2420;
+  --tlmeny: #5e4f49;
+  --slaby: #8a7d78;
+  --slaby-text: #6a5d59;
+  --akcent: #93332e;
+  --akcent-tmavy: #822420;
+  --akcent-svetly: #9d3c36;
+  --na-akcente: #faf7ee;
+  --cervena: #b8452f;
+  --cervena-text: #a8321f;
+  --cervena-svetla: #9a2c1a;
+  --tehla-tmava: #a8341f;
+  --zelena: #256d2f;
+  --zelena-svetla: #2b6b36;
+  --zelena-ziariva: #2f9e4f;
+  --info: #2e5f86;
+  --info-silna: #3a76ad;
+  --ja: #056875;
+  --ja-tmava: #d2ecee;
+  --su: #a3401d;
+  --su-tmava: #f5ddd2;
+  --lesk: #000000;
+  --tma: 0.3;
+  color-scheme: light;
+}
+
+/* Slnečnica — Pale Lemon Yellow · Dark Slate. Krémové plochy, nikde čistá biela (Michal 2026-10-23, 14 + 14 schém). */
+:root[data-schema="slnecnica"] {
+  --graf-ludia: #00889e;
+  --graf-ai: #c2531c;
+  --pozadie: #f0ebcc;
+  --plocha: #f7f3dd;
+  --plocha-2: #e8e3c5;
+  --plocha-3: #e0dbbc;
+  --okraj: #d0cbb1;
+  --okraj-svetly: #b0ac92;
+  --text: #21272e;
+  --tlmeny: #4b545c;
+  --slaby: #798189;
+  --slaby-text: #596067;
+  --akcent: #33506a;
+  --akcent-tmavy: #26425c;
+  --akcent-svetly: #3b5873;
+  --na-akcente: #f8f7ee;
+  --cervena: #b8452f;
+  --cervena-text: #a8321f;
+  --cervena-svetla: #9a2c1a;
+  --tehla-tmava: #a8341f;
+  --zelena: #256d2f;
+  --zelena-svetla: #2b6b36;
+  --zelena-ziariva: #2f9e4f;
+  --info: #2e5f86;
+  --info-silna: #3a76ad;
+  --ja: #006a77;
+  --ja-tmava: #d2ecee;
+  --su: #a3401d;
+  --su-tmava: #f5ddd2;
+  --lesk: #000000;
+  --tma: 0.3;
+  color-scheme: light;
+}
+
 /* Odvodené tokeny (Dielňa, 2026-10-22) — platia vo všetkých schémach, lebo sa
    skladajú z tokenov schémy. Okraj formulárových polí má aspoň 3 : 1 (--okraj-svetly
    má len ≈ 2 : 1); stavy návrhov majú v texte čipu ešte prímes --text. */
 :root {
   --okraj-pola: color-mix(in oklab, var(--okraj-svetly) 65%, var(--tlmeny));
+  /* Podklad pod textom farby --akcent (vybraná dĺžka hry, odznak admina): v tmavých
+     schémach 25 % tmavého akcentu, vo svetlých (--tma 0,3) slabší — inak mal text
+     akcentu len ≈ 4 : 1 (UI inšpekcia, 14 + 14 schém, 2026-10-23). */
+  --akcent-podklad: color-mix(in oklab, var(--akcent-tmavy) calc(25% * var(--tma)), var(--pozadie));
   --stav-novy: var(--info);
   --stav-hlasovanie: var(--akcent);
   --stav-schvaleny: var(--zelena);

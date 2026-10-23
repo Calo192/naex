@@ -822,7 +822,7 @@ textarea {
 }
 
 .odznak-admin {
-  background: color-mix(in oklab, var(--akcent-tmavy) 25%, var(--pozadie));
+  background: var(--akcent-podklad);
   color: var(--akcent);
   border-color: color-mix(in oklab, var(--akcent-tmavy) 56%, var(--pozadie));
 }
@@ -1012,6 +1012,20 @@ textarea {
    aby bolo vidno, ako bude vyzerať, ešte kým ju hráč nezvolí. */
 .vzhlad-webu {
   margin: 24px 0;
+}
+
+/* Dve skupiny schém s nadpisom: Tmavé a Svetlé (Michal 2026-10-23). */
+.schemy-skupina + .schemy-skupina {
+  margin-top: 20px;
+}
+
+.schemy-nadpis {
+  margin: 14px 0 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tlmeny);
 }
 
 .schemy-mriezka {

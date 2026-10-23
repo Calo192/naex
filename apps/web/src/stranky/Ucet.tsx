@@ -458,28 +458,37 @@ export function Profil() {
           Farby inšpirované knihou Sanza Wadu <i>A Dictionary of Color Combinations</i>. Mení sa len okolie — karty, farby
           hráčov a zóny starších ostávajú. Ukladá sa samo.
         </p>
-        <div className="schemy-mriezka">
-          {SCHEMY.map((s) => (
-            <button
-              key={s.id}
-              type="button"
-              className={s.id === schema ? "schema-volba zvolena" : "schema-volba"}
-              onClick={() => vyberSchemu(s.id)}
-              aria-pressed={s.id === schema}
-              title={s.wada}
-            >
-              <span className="schema-nahlad" style={{ background: s.nahlad[0] }} aria-hidden="true">
-                <span className="schema-nahlad-plocha" style={{ background: s.nahlad[1] }}>
-                  <span className="schema-nahlad-riadok" style={{ background: s.nahlad[3] }} />
-                  <span className="schema-nahlad-riadok kratky" style={{ background: s.nahlad[3] }} />
-                  <span className="schema-nahlad-tlacidlo" style={{ background: s.nahlad[2] }} />
-                </span>
-              </span>
-              <span className="schema-nazov">{s.nazov}</span>
-              <span className="schema-popis">{s.popis}</span>
-            </button>
-          ))}
-        </div>
+        {/* Dve skupiny, Tmavé a Svetlé, po 14 (Michal 2026-10-23). */}
+        {([
+          ["Tmavé", true],
+          ["Svetlé", false],
+        ] as const).map(([nadpis, tmava]) => (
+          <div key={nadpis} className="schemy-skupina">
+            <h4 className="schemy-nadpis">{nadpis}</h4>
+            <div className="schemy-mriezka">
+              {SCHEMY.filter((s) => s.tmava === tmava).map((s) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  className={s.id === schema ? "schema-volba zvolena" : "schema-volba"}
+                  onClick={() => vyberSchemu(s.id)}
+                  aria-pressed={s.id === schema}
+                  title={s.wada}
+                >
+                  <span className="schema-nahlad" style={{ background: s.nahlad[0] }} aria-hidden="true">
+                    <span className="schema-nahlad-plocha" style={{ background: s.nahlad[1] }}>
+                      <span className="schema-nahlad-riadok" style={{ background: s.nahlad[3] }} />
+                      <span className="schema-nahlad-riadok kratky" style={{ background: s.nahlad[3] }} />
+                      <span className="schema-nahlad-tlacidlo" style={{ background: s.nahlad[2] }} />
+                    </span>
+                  </span>
+                  <span className="schema-nazov">{s.nazov}</span>
+                  <span className="schema-popis">{s.popis}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
       </section>
       <section className="panel preferencie" aria-labelledby="preferencie-nadpis">
         <h3 id="preferencie-nadpis">Preferencie</h3>
