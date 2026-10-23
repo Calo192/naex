@@ -1620,20 +1620,20 @@
       "pravidlo": "Šofér: NA EX na susednú kartu nezdvojí jej neaktívne akcie, aktívne zruší; na samotného Šoféra platí normálne.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/sofer-ujo.test.ts › NA EX na kartu vedľa Šoféra nezdvojí jej neaktívne akcie, aktívne zruší",
-        "packages/core/test/sofer-ujo.test.ts › platí aj pre súperovu kartu a cez hranicu majiteľov; vzdialenej karte nevadí",
-        "packages/core/test/sofer-ujo.test.ts › NA EX na samotného Šoféra zdvojuje normálne"
+        "packages/core/test/sofer-snubenica.test.ts › NA EX na kartu vedľa Šoféra nezdvojí jej neaktívne akcie, aktívne zruší",
+        "packages/core/test/sofer-snubenica.test.ts › platí aj pre súperovu kartu a cez hranicu majiteľov; vzdialenej karte nevadí",
+        "packages/core/test/sofer-snubenica.test.ts › NA EX na samotného Šoféra zdvojuje normálne"
       ]
     },
     {
-      "id": "14.karta.ujo-s-furikom",
+      "id": "14.karta.snubenica",
       "paragraf": "14. Efekty kariet — výklad › Karty",
-      "pravidlo": "Ujo s fúrikom: vyložený vedľa karty s NA EX ju vráti jej majiteľovi do ruky a zaujme jej miesto; poldeci sa vypije tomu, kto NA EX dal.",
+      "pravidlo": "Snúbenica: vyložená vedľa karty s NA EX ju vráti jej majiteľovi do ruky a zaujme jej miesto; poldeci sa vypije tomu, kto NA EX dal.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/sofer-ujo.test.ts › vyložený vedľa karty s NA EX ju vráti majiteľovi do ruky a zaujme jej miesto",
-        "packages/core/test/sofer-ujo.test.ts › vlastnú kartu s NA EX vráti do ruky jej majiteľovi, aj keď NA EX dal súper",
-        "packages/core/test/sofer-ujo.test.ts › vedľa karty bez NA EX nerobí nič"
+        "packages/core/test/sofer-snubenica.test.ts › vyložená vedľa karty s NA EX ju vráti majiteľovi do ruky a zaujme jej miesto",
+        "packages/core/test/sofer-snubenica.test.ts › vlastnú kartu s NA EX vráti do ruky jej majiteľovi, aj keď NA EX dal súper",
+        "packages/core/test/sofer-snubenica.test.ts › vedľa karty bez NA EX nerobí nič"
       ]
     },
     {

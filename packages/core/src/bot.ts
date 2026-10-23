@@ -28,7 +28,7 @@ import { defOf, printedSides } from "./data.ts";
 import type { RngState } from "./rng.ts";
 import { rngInt, rngNext, rngSeed, rngShuffle } from "./rng.ts";
 import type { PlacedCard } from "./partia.ts";
-import { evaluateLine, ujoVracia } from "./partia.ts";
+import { evaluateLine, snubenicaVracia } from "./partia.ts";
 import { KONSTANTY } from "./constants.ts";
 import type { ElderState, MarkerPos } from "./elders.ts";
 import { MARKER_STRED, cenaPatronatu, elderScore, podmienkyStarsieho, strachZ, vydesil } from "./elders.ts";
@@ -179,7 +179,7 @@ const BONUS_EFEKTU: Readonly<Record<string, number>> = {
   cierna_macka: 0.5,
   pes: 0.3,
   sofer: 0.3,
-  ujo_s_furikom: 0.4,
+  snubenica: 0.4,
 };
 
 /** Hodnota Nástroja v Dedičstve (malá priazeň natrvalo). */
@@ -487,8 +487,8 @@ interface Vylozenie {
 function sKartou(strany: GameState["strany"], q: PlayerId, v: Vylozenie): GameState["strany"] {
   const p: PlayerId = v.kam === "vlastna" ? q : opponentOf(q);
   const nova: PlacedCard = { card: v.karta, playedBy: q };
-  // Ujo s fúrikom vedľa karty s NA EX ju pošle do ruky a ľahne na jej miesto.
-  const strana = ujoVracia(strany[p], v.karta.defId) === null ? strany[p] : strany[p].slice(0, -1);
+  // Snúbenica vedľa karty s NA EX ju pošle do ruky a ľahne na jej miesto.
+  const strana = snubenicaVracia(strany[p], v.karta.defId) === null ? strany[p] : strany[p].slice(0, -1);
   return p === 0 ? [[...strana, nova], strany[1]] : [strany[0], [...strana, nova]];
 }
 

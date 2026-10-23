@@ -341,13 +341,13 @@ export function spojePsa(data: GameData, strany: readonly [readonly PlacedCard[]
 }
 
 /**
- * Ujo s fúrikom (Nástup, roadmapa #71): vyložený vedľa karty s NA EX ju vráti
+ * Snúbenica (Nástup, roadmapa #71; do 2026-10-23 Ujo s fúrikom): vyložená vedľa karty s NA EX ju vráti
  * jej majiteľovi do ruky a zaujme jej miesto. `strana` je partia PRED
- * vyložením Uja — jeho jediný sused je jej krajná karta. Vracia kartu, ktorá
+ * vyložením Snúbenice — jej jediný sused je krajná karta strany. Vracia kartu, ktorá
  * odíde, alebo null.
  */
-export function ujoVracia(strana: readonly PlacedCard[], defId: string): PlacedCard | null {
-  if (defId !== "ujo_s_furikom") return null;
+export function snubenicaVracia(strana: readonly PlacedCard[], defId: string): PlacedCard | null {
+  if (defId !== "snubenica") return null;
   const krajna = strana[strana.length - 1];
   return krajna !== undefined && krajna.naexBy !== undefined ? krajna : null;
 }

@@ -16,7 +16,7 @@ import { defOf } from "./data.ts";
 import type { RngState } from "./rng.ts";
 import { rngInt, rngSeed, rngShuffle } from "./rng.ts";
 import type { ActionSums, KartaVBitke, LineEval, LineState, PlacedCard } from "./partia.ts";
-import { evaluateLine, prevahaStran, prispevkyKariet, ujoVracia } from "./partia.ts";
+import { evaluateLine, prevahaStran, prispevkyKariet, snubenicaVracia } from "./partia.ts";
 import { krajeStran } from "./hrany.ts";
 import type { PlayerState } from "./player.ts";
 import {
@@ -1889,12 +1889,12 @@ function nastupEfekt(
   }
   const opp = opponentOf(p);
   switch (defId) {
-    case "ujo_s_furikom": {
-      // Ujo leží na konci partie; sused s NA EX ide majiteľovi do ruky a Ujo
-      // sa posunie na jeho miesto. Poldeci z karty sa vypije ako v bitke —
+    case "snubenica": {
+      // Snúbenica leží na konci partie; sused s NA EX ide majiteľovi do ruky
+      // a ona sa posunie na jeho miesto. Poldeci z karty sa vypije ako v bitke —
       // NA EX už pečeň započítalo, nerest pripadne tomu, kto ho dal.
       const partia = s.strany[strana];
-      const vracia = ujoVracia(partia.slice(0, -1) as readonly PlacedCard[], defId);
+      const vracia = snubenicaVracia(partia.slice(0, -1) as readonly PlacedCard[], defId);
       if (vracia === null) break;
       partia.splice(partia.length - 2, 1);
       const majitel = vracia.playedBy;
@@ -1904,7 +1904,7 @@ function nastupEfekt(
       hrac(s, naexBy).nerestiTotoKolo += 1;
       events.push({
         type: "log",
-        text: `Ujo s fúrikom: ${defOf(data, vracia.card).name} s NA EX ide hráčovi ${majitel + 1} do ruky, Ujo zaujíma jej miesto (poldeci hráča ${naexBy + 1} je vypitý).`,
+        text: `Snúbenica: ${defOf(data, vracia.card).name} s NA EX ide hráčovi ${majitel + 1} do ruky, Snúbenica zaujíma jej miesto (poldeci hráča ${naexBy + 1} je vypitý).`,
       });
       break;
     }

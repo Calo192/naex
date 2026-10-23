@@ -100,8 +100,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   alkoholika (jeho susedov nechráni), nie na kartu, na ktorej už poldeci leží. NA EX na kartu
   pri lokalite mení len akcie karty, akcie hrany lokality ostávajú. Dievčina na vydaj
   ráta aj akcie zdvojené cez NA EX; jej akcie v bitke, v ktorej sa zahodí, ešte platia. Svokra súpera ti za NA EX zoberie 2 cigarety.
-  Šofér: NA EX na kartu vedľa neho neaktívne akcie nezdvojí (aktívne zruší). Ujo s fúrikom
-  vyložený vedľa karty s NA EX (aj ako odpoveď) ju vráti majiteľovi do ruky a ľahne na jej miesto. Veterán (v4): NA EX mu aktívne akcie zdvojí
+  Šofér: NA EX na kartu vedľa neho neaktívne akcie nezdvojí (aktívne zruší). Snúbenica
+  vyložená vedľa karty s NA EX (aj ako odpoveď) ju vráti majiteľovi do ruky a ľahne na jej miesto. Veterán (v4): NA EX mu aktívne akcie zdvojí
   (nezruší), neaktívne nechá.
   Krčma vynúti NA EX. Násobky sa **násobia** (NA EX × Silná žena = ×4, aj Dlh
   a Poškodenie pečene) a NA EX leží na karte do bitky — vyhodnotí sa v každej

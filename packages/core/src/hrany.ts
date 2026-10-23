@@ -15,7 +15,7 @@ import type { CardInstance, PlayerId, Slot } from "./types.ts";
 import type { GameData } from "./data.ts";
 import { defOf, printedSides } from "./data.ts";
 import type { ActionSums, LineEval, LineState, PlacedCard } from "./partia.ts";
-import { evaluateLine, spojVznikne, ujoVracia } from "./partia.ts";
+import { evaluateLine, spojVznikne, snubenicaVracia } from "./partia.ts";
 import { zadlzenieZLinie } from "./effects.ts";
 
 export interface HranyZPohladu {
@@ -96,8 +96,8 @@ export function nahladVylozenia(
   const vnutorna = naMojej ? moje.prava : moje.lava;
   const vonkajsia = naMojej ? moje.lava : moje.prava;
 
-  // Ujo s fúrikom vedľa karty s NA EX ju pošle do ruky a ľahne na jej miesto.
-  const strana = ujoVracia(line.strany[p], karta.defId) === null ? line.strany[p] : line.strany[p].slice(0, -1);
+  // Snúbenica vedľa karty s NA EX ju pošle do ruky a ľahne na jej miesto.
+  const strana = snubenicaVracia(line.strany[p], karta.defId) === null ? line.strany[p] : line.strany[p].slice(0, -1);
   const krajna = strana[strana.length - 1];
   let sused: SusedNaSpoji | null = null;
   if (krajna !== undefined) {

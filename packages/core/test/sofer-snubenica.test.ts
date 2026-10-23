@@ -1,6 +1,6 @@
-// Roadmapa #71 (2026-10-23): Šofér a Ujo s fúrikom.
+// Roadmapa #71 (2026-10-23): Šofér a Snúbenica (do 2026-10-23 Ujo s fúrikom).
 // Šofér — Furt: NA EX na kartu vedľa neho nezdvojí jej neaktívne akcie,
-// aktívne zruší ako vždy. Ujo s fúrikom — Nástup: vyložený vedľa karty
+// aktívne zruší ako vždy. Snúbenica — Nástup: vyložená vedľa karty
 // s NA EX ju vráti jej majiteľovi do ruky a zaujme jej miesto.
 // Karty ešte nie sú vo zverejnenej sade (cards.json), test ich pridá sám.
 
@@ -25,11 +25,11 @@ const NOVE = [
     permutations: { total: 4, left: 2, right: 2 },
   },
   {
-    id: "ujo_s_furikom",
+    id: "snubenica",
     index: 62,
-    name: "Ujo s fúrikom",
-    tags: ["Občan", "Chlap"],
-    effect_text: "Nástup: Ak ho vyložíš vedľa karty s NA EX, vráti ju majiteľovi do ruky a zaujme jej miesto.",
+    name: "Snúbenica",
+    tags: ["Občan", "Žena"],
+    effect_text: "Nástup: Ak ju vyložíš vedľa karty s NA EX, vráti tú kartu majiteľovi do ruky a zaujme jej miesto. Poldeci z tej karty vypije ten, kto dal NA EX.",
     triggers: ["Nástup"],
     left: { blocked: [0, 3], actions: { Robota: 1 } },
     right: { blocked: [0, 1], actions: { Viera: 1, Dlh: 1 } },
@@ -96,28 +96,28 @@ function poNaex(strany: GameState["strany"], rukaReagujuceho: CardInstance[]): G
   } as GameState;
 }
 
-describe("Ujo s fúrikom", () => {
-  it("vyložený vedľa karty s NA EX ju vráti majiteľovi do ruky a zaujme jej miesto", () => {
+describe("Snúbenica", () => {
+  it("vyložená vedľa karty s NA EX ju vráti majiteľovi do ruky a zaujme jej miesto", () => {
     const prvy = lezi("hasic", 0);
     const sNaex = lezi("pijan", 0, 0);
-    const ujo = inst("ujo_s_furikom");
-    const s = poNaex([[prvy, sNaex], []], [ujo]);
-    const { state, events } = apply(data, s, { type: "place", uid: ujo.uid, target: "superova" }, 1);
-    expect(state.strany[0].map((pl) => pl.card.uid)).toEqual([prvy.card.uid, ujo.uid]);
+    const snubenica = inst("snubenica");
+    const s = poNaex([[prvy, sNaex], []], [snubenica]);
+    const { state, events } = apply(data, s, { type: "place", uid: snubenica.uid, target: "superova" }, 1);
+    expect(state.strany[0].map((pl) => pl.card.uid)).toEqual([prvy.card.uid, snubenica.uid]);
     expect(state.strany[0][1]?.playedBy).toBe(1);
     // Karta ide majiteľovi (hráč 0), poldeci z nej je vypitý tomu, kto dal NA EX.
     expect(state.hraci[0].ruka.some((k) => k.uid === sNaex.card.uid)).toBe(true);
     expect(state.hraci[1].ruka.some((k) => k.uid === sNaex.card.uid)).toBe(false);
     expect(state.hraci[0].poldeciVypite).toBe(1);
     expect(state.hraci[0].nerestiTotoKolo).toBe(1);
-    expect(events.some((e) => e.type === "log" && e.text.startsWith("Ujo s fúrikom:"))).toBe(true);
+    expect(events.some((e) => e.type === "log" && e.text.startsWith("Snúbenica:"))).toBe(true);
   });
 
   it("vlastnú kartu s NA EX vráti do ruky jej majiteľovi, aj keď NA EX dal súper", () => {
     const sNaex = lezi("pijan", 1, 0);
-    const ujo = inst("ujo_s_furikom");
-    const state = apply(data, poNaex([[], [sNaex]], [ujo]), { type: "place", uid: ujo.uid, target: "vlastna" }, 1).state;
-    expect(state.strany[1].map((pl) => pl.card.uid)).toEqual([ujo.uid]);
+    const snubenica = inst("snubenica");
+    const state = apply(data, poNaex([[], [sNaex]], [snubenica]), { type: "place", uid: snubenica.uid, target: "vlastna" }, 1).state;
+    expect(state.strany[1].map((pl) => pl.card.uid)).toEqual([snubenica.uid]);
     expect(state.hraci[1].ruka.some((k) => k.uid === sNaex.card.uid)).toBe(true);
     expect(state.hraci[0].poldeciVypite).toBe(1);
   });
@@ -125,18 +125,18 @@ describe("Ujo s fúrikom", () => {
   it("vedľa karty bez NA EX nerobí nič", () => {
     const sNaex = lezi("pijan", 0, 0);
     const bez = lezi("hasic", 0);
-    const ujo = inst("ujo_s_furikom");
-    const state = apply(data, poNaex([[sNaex, bez], []], [ujo]), { type: "place", uid: ujo.uid, target: "superova" }, 1).state;
-    expect(state.strany[0].map((pl) => pl.card.uid)).toEqual([sNaex.card.uid, bez.card.uid, ujo.uid]);
+    const snubenica = inst("snubenica");
+    const state = apply(data, poNaex([[sNaex, bez], []], [snubenica]), { type: "place", uid: snubenica.uid, target: "superova" }, 1).state;
+    expect(state.strany[0].map((pl) => pl.card.uid)).toEqual([sNaex.card.uid, bez.card.uid, snubenica.uid]);
     expect(state.hraci[0].poldeciVypite).toBe(0);
   });
 
   it("náhľad vyloženia ráta s odchodom karty a novým susedom", () => {
     const prvy = lezi("hasic", 0);
     const sNaex = lezi("pijan", 0, 0);
-    const ujo = inst("ujo_s_furikom");
+    const snubenica = inst("snubenica");
     const line = { lokalita: null, lokalitaOtocena: false, strany: [[prvy, sNaex], []] as GameState["strany"] };
-    const n = nahladVylozenia(data, line, 1, ujo, "superova");
+    const n = nahladVylozenia(data, line, 1, snubenica, "superova");
     expect(n.sused?.karta.uid).toBe(prvy.card.uid);
     // Pijan s NA EX dával hráčovi 0 zdvojené akcie — po odchode ich niet.
     const pijanBezSuseda = sloty(line.strany, sNaex).filter((x) => x.nasobok > 0).length;
@@ -145,17 +145,17 @@ describe("Ujo s fúrikom", () => {
   });
 
   it("je medzi legálnymi odpoveďami na NA EX", () => {
-    const ujo = inst("ujo_s_furikom");
-    const s = poNaex([[lezi("pijan", 0, 0)], []], [ujo]);
-    expect(legalCommands(data, s, 1).some((c) => c.type === "place" && c.uid === ujo.uid)).toBe(true);
+    const snubenica = inst("snubenica");
+    const s = poNaex([[lezi("pijan", 0, 0)], []], [snubenica]);
+    expect(legalCommands(data, s, 1).some((c) => c.type === "place" && c.uid === snubenica.uid)).toBe(true);
   });
 });
 
 describe("bot", () => {
-  it("odpovie na NA EX Ujom, ktorý súperovi vezme kartu so zdvojenou Peckou", () => {
-    const ujo = inst("ujo_s_furikom");
-    const s = { ...poNaex([[lezi("policajtka", 0), lezi("svokra", 0, 0)], []], [ujo]), ciel: { typ: "lokalita", lokalita: inst("jednota") } } as GameState;
+  it("odpovie na NA EX Snúbenicou, ktorá súperovi vezme kartu so zdvojenou Peckou", () => {
+    const snubenica = inst("snubenica");
+    const s = { ...poNaex([[lezi("policajtka", 0), lezi("svokra", 0, 0)], []], [snubenica]), ciel: { typ: "lokalita", lokalita: inst("jednota") } } as GameState;
     const tah = tahBota(data, s, 1, 7);
-    expect(tah).toMatchObject({ type: "place", uid: ujo.uid });
+    expect(tah).toMatchObject({ type: "place", uid: snubenica.uid });
   });
 });
