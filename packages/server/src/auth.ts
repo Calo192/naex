@@ -198,6 +198,20 @@ export class Ucty {
    * Po dohratej partii (aj proti botovi): rank podľa pravidiel postupu — len
    * povyšuje, ručne nastavený rank a správcov nemení. Vracia, či sa zmenil.
    */
+  /** Postup výučby „Prvá hra“: krok scenára a či je dokončená alebo preskočená. */
+  vyucba(id: number): { krok: number; stav: "hotova" | "preskocena" | null } {
+    const r = this.db.prepare("SELECT vyucba_krok, vyucba_stav FROM pouzivatelia WHERE id = ?").get(id) as
+      | { vyucba_krok: number; vyucba_stav: string | null }
+      | undefined;
+    const stav = r?.vyucba_stav === "hotova" || r?.vyucba_stav === "preskocena" ? r.vyucba_stav : null;
+    return { krok: Number(r?.vyucba_krok ?? 0), stav };
+  }
+
+  ulozVyucbu(id: number, krok: number, stav?: "hotova" | "preskocena" | null): void {
+    if (stav === undefined) this.db.prepare("UPDATE pouzivatelia SET vyucba_krok = ? WHERE id = ?").run(krok, id);
+    else this.db.prepare("UPDATE pouzivatelia SET vyucba_krok = ?, vyucba_stav = ? WHERE id = ?").run(krok, stav, id);
+  }
+
   povysPoPartii(id: number, postup: PostupRankov): boolean {
     return this.povys(id, postup, true);
   }

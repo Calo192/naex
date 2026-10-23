@@ -317,6 +317,10 @@ function migruj(db: Db): void {
   // a frekvencia v percentách; NULL = predvolené.
   if (!ucty.some((c) => c.name === "melichar")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN melichar INTEGER");
   if (!ucty.some((c) => c.name === "melichar_frekvencia")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN melichar_frekvencia INTEGER");
+  // Výučba „Prvá hra“ (Michal 2026-10-23): koľko krokov scenára hráč prešiel
+  // a či ju dokončil alebo preskočil (NULL = ešte nie).
+  if (!ucty.some((c) => c.name === "vyucba_krok")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN vyucba_krok INTEGER NOT NULL DEFAULT 0");
+  if (!ucty.some((c) => c.name === "vyucba_stav")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN vyucba_stav TEXT");
   // Kedy hráč naposledy otvoril Novinky — značka v navigácii (Michal 2026-10-22); NULL = od registrácie.
   if (!ucty.some((c) => c.name === "novinky_videne")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN novinky_videne INTEGER");
   // Pohlavie pre tvary hlášok v partii (Michal 2026-10-22): muz / zena; NULL = neuvádza (neutrálne hlášky).

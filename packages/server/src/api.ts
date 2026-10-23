@@ -108,6 +108,8 @@ export interface ApiKontext {
   /** Po zverejnení novej sady — nové hry pobežia na nej. */
   readonly poZverejneni: () => void;
   readonly stavServera: () => StavServera;
+  /** Počet krokov scenára výučby „Prvá hra“ (Michal 2026-10-23). */
+  readonly vyucbaKrokov: number;
   /** Zapne alebo vypne uzávierku; vráti nový stav. */
   readonly nastavUzavierku: (zapnut: boolean) => Uzavierka | null;
 }
@@ -374,6 +376,28 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
           ...(b.skrytySuhrn !== undefined ? { skrytySuhrn: overPrepinac(b.skrytySuhrn, "Skryť môj súhrn") } : {}),
         }),
       });
+    }
+
+    // ----- výučba „Prvá hra“ (Michal 2026-10-23) ----------------------------
+    // Ponuka novému hráčovi pri prvom kliku na Hrať: návštevník, ktorý ju ešte
+    // nezačal, nedokončil ani nepreskočil. Partia samotná ide cez WebSocket.
+    if (r === "GET /vyucba") {
+      const p = prihlaseny();
+      const v = ctx.ucty.vyucba(p.id);
+      return ok({ krok: v.krok, spolu: ctx.vyucbaKrokov, stav: v.stav, ponuknut: v.stav === null && v.krok === 0 && p.rola === "navstevnik" });
+    }
+
+    if (r === "POST /vyucba/preskocit") {
+      const p = prihlaseny();
+      ctx.ucty.ulozVyucbu(p.id, ctx.ucty.vyucba(p.id).krok, "preskocena");
+      return ok({ ok: true });
+    }
+
+    // Začať odznova (aj po dokončení či preskočení).
+    if (r === "POST /vyucba/znova") {
+      const p = prihlaseny();
+      ctx.ucty.ulozVyucbu(p.id, 0, null);
+      return ok({ ok: true });
     }
 
     if (r === "POST /profil/heslo") {

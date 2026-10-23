@@ -50,6 +50,7 @@ import {
 import type { DlzkaHry } from "./constants.ts";
 import { ALL_DLZKY, DLZKY_HRY, KONSTANTY, PREDVOLENA_DLZKA } from "./constants.ts";
 import { cigariet, kariet, pocet, rodovo } from "./jazyk.ts";
+import type { Rozdanie } from "./vyucba.ts";
 import {
   doliatieZakazane,
   bitkaMody,
@@ -1015,6 +1016,49 @@ export function setupGame(data: GameData, seed: number, opts?: SetupOptions): Ga
   }
 
   // Šenok sa na začiatku nevykladá — postavia ho hráči v prvom drafte.
+  return s as GameState;
+}
+
+/**
+ * Pevné rozdanie výučby (Michal 2026-10-23): z bežného rozdania podľa seedu
+ * prepíše to, čo scenár určí — lokality v poradí, scorecardy, útočníka, ruky,
+ * doberacie balíčky a spoločný balíček. Karty dostanú nové uid a variant
+ * „defId/ľavý/pravý“ (predvolene 0/0), aby scenár presne vedel, kde sú akcie.
+ */
+export function setupZRozdania(data: GameData, r: Rozdanie): GameState {
+  if (r.lokality.length === 0) throw new Error("Rozdanie nemá žiadnu lokalitu.");
+  const s = structuredClone(setupGame(data, r.seed, { lokalit: r.lokality.length })) as MutState;
+  const karta = (ref: string): DeepMutable<CardInstance> => {
+    const [defId = "", l = "0", p = "0"] = ref.split("/");
+    const variants = data.variants.get(defId);
+    if (!data.cards.has(defId) || variants === undefined) throw new Error(`Rozdanie: neznáma karta „${defId}“.`);
+    const li = Number(l);
+    const ri = Number(p);
+    if (!(li >= 0 && li < variants.left.length && ri >= 0 && ri < variants.right.length)) {
+      throw new Error(`Rozdanie: karta „${defId}“ má ${variants.left.length}×${variants.right.length} variantov, nie ${li}/${ri}.`);
+    }
+    return { uid: s.nextUid++, defId, leftLayout: li, rightLayout: ri };
+  };
+  s.utocnik = r.utocnik;
+  s.lokalitCelkom = r.lokality.length;
+  s.lokalityVHre = r.lokality.map((id) => {
+    if (!(data.cards.get(id.split("/")[0] ?? "")?.tags ?? []).includes("Lokalita")) throw new Error(`Rozdanie: „${id}“ nie je lokalita.`);
+    return karta(id);
+  });
+  for (const elder of s.starsi) {
+    const sc = r.scorecardy?.[elder.elderId];
+    if (sc === undefined) continue;
+    if (!data.scorecards.some((x) => x.id === sc)) throw new Error(`Rozdanie: neznámy scorecard „${sc}“.`);
+    elder.scorecard = sc;
+  }
+  for (const p of [0, 1] as const) {
+    const h = r.hraci[p];
+    hrac(s, p).ruka = h.ruka.map(karta);
+    hrac(s, p).doberaci = h.doberaci.map(karta);
+    hrac(s, p).odhadzovaci = [];
+    if (h.cigarety !== undefined) hrac(s, p).cigarety = h.cigarety;
+  }
+  if (r.spolocnyBalicek !== undefined) s.spolocnyBalicek = r.spolocnyBalicek.map(karta);
   return s as GameState;
 }
 

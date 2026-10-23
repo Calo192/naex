@@ -1,0 +1,193 @@
+{
+  "_comment": "Ukážkový scenár výučby (technika, New features 2026-10-23) — plný scenár píše Navrhár (docs/napady/vyucba-scenar.html). Karty: defId alebo defId/ľavý/pravý variant; v príkazoch odkazy zóna:defId#n. Overenie: tools/vyucba/prehraj.ts.",
+  "id": "prva-hra",
+  "nazov": "Prvá hra",
+  "rozdanie": {
+    "seed": 1,
+    "lokality": [
+      "jednota",
+      "most"
+    ],
+    "utocnik": 1,
+    "hraci": [
+      {
+        "ruka": [
+          "pijan",
+          "pijan",
+          "ministrant",
+          "milujuca_manzelka",
+          "dievcina_na_vydaj"
+        ],
+        "doberaci": [
+          "pijan",
+          "ministrant"
+        ]
+      },
+      {
+        "ruka": [
+          "pijan",
+          "pijan",
+          "ministrant",
+          "milujuca_manzelka",
+          "dievcina_na_vydaj"
+        ],
+        "doberaci": [
+          "pijan",
+          "ministrant"
+        ]
+      }
+    ]
+  },
+  "kroky": [
+    {
+      "id": "uvod",
+      "kto": "info",
+      "melichar": "Vitaj v krčme! Ja som majster Melichar a naučím ťa NA EX!"
+    },
+    {
+      "id": "ciel",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "chooseLocation",
+        "uid": "lokality:jednota",
+        "otocena": false
+      },
+      "melichar": "Si obranca, tak vyberáš, o ktorú lokalitu sa bije. Vyber Jednotu.",
+      "zvyraznit": [
+        ".lokalita-volba"
+      ]
+    },
+    {
+      "id": "stavba",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "stavbaSenku",
+        "doSenku": [
+          "stavba:zivnostnik",
+          "stavba:svokra",
+          "stavba:financna_poradkyna",
+          "stavba:presbiter"
+        ],
+        "odhod": [
+          "stavba:svaty_text",
+          "stavba:policajtka",
+          "stavba:pasca",
+          "stavba:anonymny_alkoholik"
+        ]
+      },
+      "melichar": "Teraz staviaš šenok: štyri karty pôjdu do Šenku, štyri na Smetisko.",
+      "zvyraznit": [
+        ".stavba-senku"
+      ]
+    },
+    {
+      "id": "stavba-bot",
+      "kto": "bot",
+      "prikaz": {
+        "type": "stavbaSenku",
+        "doSenku": [
+          "stavba:veteran",
+          "stavba:zivnostnik",
+          "stavba:veteran#2",
+          "stavba:nealko"
+        ],
+        "odhod": [
+          "stavba:vyherny_automat",
+          "stavba:velmi_smutiaca_vdova",
+          "stavba:hasic",
+          "stavba:vestica"
+        ]
+      },
+      "melichar": ""
+    },
+    {
+      "id": "ber-bot",
+      "kto": "bot",
+      "prikaz": {
+        "type": "draftBer",
+        "uids": [
+          "senok:veteran"
+        ]
+      },
+      "melichar": "Štamgast si berie Veterána za cigaretu."
+    },
+    {
+      "id": "ber",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "draftBer",
+        "uids": [
+          "senok:svokra"
+        ]
+      },
+      "melichar": "Ty si vezmi Svokru — 1 karta za 1 cigaretu.",
+      "zvyraznit": [
+        "#senok"
+      ]
+    },
+    {
+      "id": "stop-bot",
+      "kto": "bot",
+      "prikaz": {
+        "type": "draftStop"
+      },
+      "melichar": ""
+    },
+    {
+      "id": "stop",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "draftStop"
+      },
+      "melichar": "Stačí. Ukonči branie."
+    },
+    {
+      "id": "vyloz-bot",
+      "kto": "bot",
+      "prikaz": {
+        "type": "place",
+        "uid": "ruka:veteran",
+        "target": "vlastna"
+      },
+      "melichar": "Útočník vykladá prvý. Štamgast dal Veterána na svoju stranu."
+    },
+    {
+      "id": "vyloz",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "place",
+        "uid": "ruka:pijan",
+        "target": "vlastna"
+      },
+      "melichar": "Teraz ty: polož Pijana na svoju stranu k lokalite.",
+      "zvyraznit": [
+        ".ruka",
+        ".stol-plst"
+      ]
+    },
+    {
+      "id": "pas-bot",
+      "kto": "bot",
+      "prikaz": {
+        "type": "pass"
+      },
+      "melichar": "Štamgast pasuje — za každú nevyloženú kartu dostane cigaretu."
+    },
+    {
+      "id": "pas",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "pass"
+      },
+      "melichar": "Aj ty pasuj, ideme do Pitky.",
+      "zvyraznit": [
+        ".pecat-koncim"
+      ]
+    },
+    {
+      "id": "koniec-ukazky",
+      "kto": "info",
+      "melichar": "Tu ukážkový scenár končí — plný napíše Navrhár."
+    }
+  ]
+}

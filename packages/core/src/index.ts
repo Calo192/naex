@@ -21,6 +21,7 @@ export * from "./pohodlie.ts";
 export * from "./kronika.ts";
 export * from "./prehravac.ts";
 export * from "./view.ts";
+export * from "./vyucba.ts";
 export * from "./nahlady.ts";
 export * from "./hrozba.ts";
 export * from "./zavislost.ts";
