@@ -102,7 +102,7 @@ export const SCHEMY: readonly Schema[] = [
     popis: "Svetlá: krémová šalvia a pálená terakota.",
     wada: "Sage Green · Olive Buff · Ochraceous Salmon",
     tmava: false,
-    nahlad: ["#e6e4d2", "#efede0", "#974522", "#272a1f"],
+    nahlad: ["#e6e4d2", "#efede0", "#7a2b00", "#272a1f"],
   },
   {
     id: "olivovnik",
@@ -110,7 +110,7 @@ export const SCHEMY: readonly Schema[] = [
     popis: "Svetlá: teplý krémový papier, olivová a umbra.",
     wada: "Olive Buff · Olive Green · Cream Color",
     tmava: false,
-    nahlad: ["#eee6cf", "#f5eedb", "#56601a", "#2d2716"],
+    nahlad: ["#eee6cf", "#f5eedb", "#424b00", "#2d2716"],
   },
   {
     id: "modrotlac",
@@ -118,7 +118,7 @@ export const SCHEMY: readonly Schema[] = [
     popis: "Svetlá: krémové plátno a tlmená indigová.",
     wada: "Dull Blue Violet · Cream Buff · Yellow Ocher",
     tmava: false,
-    nahlad: ["#ebe4d3", "#f3eee1", "#3a5479", "#212634"],
+    nahlad: ["#ebe4d3", "#f3eee1", "#2d466a", "#212634"],
   },
   {
     id: "terakota",
