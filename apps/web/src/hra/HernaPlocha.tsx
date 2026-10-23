@@ -322,6 +322,8 @@ export interface HernaPlochaProps {
   readonly prehravanie?: ReactNode;
   /** Počítadlo bitky beží / skončilo — pečiatka momentu z bitky (Momenty) počká na jeho koniec. */
   readonly onPocitadlo?: (bezi: boolean) => void;
+  /** Výučba „Prvá hra“: okno konca partie neukazovať — záver povie Melichar v bubline. */
+  readonly bezOknaKonca?: boolean;
 }
 
 /** Názvy fáz pre titulok karty prehliadača. */
@@ -374,6 +376,7 @@ export function HernaPlocha({
   vHlavicke,
   prehravanie,
   onPocitadlo,
+  bezOknaKonca,
 }: HernaPlochaProps) {
   DATA = data;
   const ja = view.ja;
@@ -1927,7 +1930,7 @@ export function HernaPlocha({
         </span>
         {/* Prečo sa sem nedá — textom, nie len v title, ktorý na dotyku nevidno (UX N4, U13).
             V úzkom mieste (malé karty na nízkom notebooku) by sa text lámal po písmenách — ostáva v title. */}
-        {sirkaMiesta >= 36 && (
+        {(moze || m.kratko !== undefined ? sirkaMiesta >= 36 : sirkaMiesta >= 72) && (
           <span className={`mv-text ${moze ? "" : "mv-dovod"} ${!moze && m.kratko !== undefined ? "mv-kratko" : ""}`}>
             {!moze ? (m.kratko ?? m.dovod ?? "nedá sa") : vybrane ? "vyber z ruky" : sSpojom > 0 ? `spoj: ${sSpojom}` : "bez spoja"}
           </span>
@@ -1971,7 +1974,14 @@ export function HernaPlocha({
     const koniec = koniecStrany(p);
     const karty = view.strany[p].length === 0 ? null : kartyStrany(p);
     const rub = rubZaverecnej(p);
-    if (koniec === null && karty === null && rub === null) return vLinii(<span className="prazdna">prázdna</span>);
+    // Prázdna strana má veľkosť karty v línii — pevných 198 px pretieklo nízky stôl (posuvník línie).
+    if (koniec === null && karty === null && rub === null) {
+      return vLinii(
+        <span className="prazdna" style={{ width: sirkaVLinii, minHeight: Math.round(sirkaVLinii * POMER_KARTY) }}>
+          prázdna
+        </span>,
+      );
+    }
     // Tvoja partia vedie od lokality doľava, jej koniec je teda vľavo; skrytá Záverečná leží na konci.
     return p === ja ? (
       <>
@@ -2032,7 +2042,12 @@ export function HernaPlocha({
       <span className="partia-popis" title={[tipKraja(p), textRovnostiKraja(p)].filter((x) => x !== null).join(" ")}>
         {smer === "vlavo" ? "← " : ""}
         {nazov}
-        {stredKarta !== null && <span className={`kraj-prevaha ${prevaha[p] === ja ? "moja" : prevaha[p] === null ? "" : "superova"}`}> · prevaha: {kto(prevaha[p])}</span>}
+        {stredKarta !== null && (
+          <span className={`kraj-prevaha ${prevaha[p] === ja ? "moja" : prevaha[p] === null ? "" : "superova"}`} data-vyucba="prevaha">
+            {" "}
+            · prevaha: {kto(prevaha[p])}
+          </span>
+        )}
         {smer === "vpravo" ? " →" : ""}
         {rovnostKraja(p)}
       </span>
@@ -2083,7 +2098,9 @@ export function HernaPlocha({
     }
     return vLinii(
       miesto("lokalita", "polož lokalitu sem", sirkaVLinii) ?? (
-        <span className="prazdna lokalita-miesto">vyberá sa…</span>
+        <span className="prazdna lokalita-miesto" style={{ width: sirkaVLinii, minHeight: Math.round(sirkaVLinii * POMER_KARTY) }}>
+          vyberá sa…
+        </span>
       ),
     );
   })();
@@ -2184,6 +2201,7 @@ export function HernaPlocha({
       key={p.kluc}
       type="button"
       className={`pecat pecat-nakup${p.dovod !== null ? " ne" : ""}${p.stlacena === true ? " stlacena" : ""}`}
+      data-vyucba={p.kluc === "zaverecna" ? "zaverecna" : `tlacidlo:${p.kluc}`}
       aria-disabled={p.dovod !== null}
       aria-pressed={p.stlacena}
       title={p.dovod ?? p.tip}
@@ -2486,6 +2504,7 @@ export function HernaPlocha({
               <button
                 className="pecat pecat-koncim"
                 data-skratka="p"
+                data-vyucba="tlacidlo:pas"
                 title="Do Pitky už nevykladáš, súper vykladá sám. Za každú kartu, ktorú si ešte smel vyložiť, dostaneš cigaretu."
                 onClick={() => (mozemVylozit ? odlozenyPas.spusti({ type: "pass" }) : posli({ type: "pass" }))}
               >
@@ -2574,7 +2593,11 @@ export function HernaPlocha({
                     jeho neaktívne akcie spároval a NA EX ich zrušil. Potiahni ju na stôl, alebo klikni na <strong>+</strong> na konci strany.
                   </>
                 ),
-                tlacidla: <button onClick={() => posli({ type: "bezReakcie" })}>bez odpovede</button>,
+                tlacidla: (
+                  <button data-vyucba="tlacidlo:bez-odpovede" onClick={() => posli({ type: "bezReakcie" })}>
+                    bez odpovede
+                  </button>
+                ),
               }
             : {
                 nadpis: "Odpoveď na NA EX",
@@ -2797,6 +2820,7 @@ export function HernaPlocha({
           <button
             className="pecat pecat-koncim"
             data-skratka="k"
+            data-vyucba="tlacidlo:hotovo"
             aria-disabled={krcma}
             title={
               krcma
@@ -2849,7 +2873,7 @@ export function HernaPlocha({
         const naexStred =
           vybranaUid === null || dovodBezNaex !== null ? undefined : (
             <span className="pecat-naex-obal">
-              <button className="tlacidlo-naex pecat-naex" data-skratka="n" title={`NA EX na ${menoVybranej} — súper smie hneď odpovedať jednou kartou.`} onClick={() => posli({ type: "naex", uid: vybranaUid })}>
+              <button className="tlacidlo-naex pecat-naex" data-skratka="n" data-vyucba="tlacidlo:naex" title={`NA EX na ${menoVybranej} — súper smie hneď odpovedať jednou kartou.`} onClick={() => posli({ type: "naex", uid: vybranaUid })}>
                 NA EX!
               </button>
               <button className="pecat-zrusit" aria-label="Zrušiť výber" title="Zrušiť výber (aj pravý klik na stôl)" onClick={() => setMode({ typ: "ziadny" })}>
@@ -3078,6 +3102,7 @@ export function HernaPlocha({
               <>
                 <button onClick={() => posli({ type: "skipPohreb" })}>preskočiť</button>
                 <button
+                  data-vyucba="pohreb"
                   disabled={cirhoza === undefined}
                   onClick={() => cirhoza !== undefined && setMode({ typ: "pohrebKarta", cirhozaUid: cirhoza.uid })}
                 >
@@ -3555,7 +3580,7 @@ export function HernaPlocha({
                 : "Klikni na lokalitu, o ktorú sa chceš biť."}
           </span>
         </header>
-        <div className="harmonika draft-karty volba-ciela-karty">
+        <div className="harmonika draft-karty volba-ciela-karty" data-vyucba="lokality">
           {view.lokalityVHre.length === 0 && <span className="popis">Žiadne lokality v hre.</span>}
           {view.lokalityVHre
             .filter((k) => k.uid !== lokalitaNavrh?.karta.uid)
@@ -3607,7 +3632,7 @@ export function HernaPlocha({
         ? `Na Smetisku ${odhod.length} z ${krokSt.odhod}. Kartu zo Smetiska vrátiš klikom; na plné Smetisko ustúpi posledná.`
         : `Hotovo? ${zvysnePojdu(zvysok.length).replace(/^z/, "Z")} do Šenku.`;
       return (
-        <section ref={draftPanelRef} className={`draft-panel stavba ${somNaTahu ? "moj-tah" : "cakanie"}`} aria-label="Stavba šenku">
+        <section ref={draftPanelRef} className={`draft-panel stavba ${somNaTahu ? "moj-tah" : "cakanie"}`} aria-label="Stavba šenku" data-vyucba="stavba">
           {/* Na stole nadpis aj čo robiť hovorí pilulka — panel má len „potvrdiť“ v rohu, hlavička
               a pätička brali výšku kartám (malý notebook, Michal 2026-10-23). */}
           {somNaTahu && !mobil ? (
@@ -3685,7 +3710,7 @@ export function HernaPlocha({
             </span>
           </span>
         </header>
-        <div className="harmonika draft-karty branie-karty">
+        <div className="harmonika draft-karty branie-karty" data-vyucba="senok">
           {view.senok.length === 0 && <span className="popis">Šenok je prázdny.</span>}
           {view.senok
             .filter((k) => !zoSenku.some((x) => x.uid === k.uid))
@@ -3722,6 +3747,7 @@ export function HernaPlocha({
             <button
               className="tlacidlo-cigarety"
               data-skratka="p"
+              data-vyucba="tlacidlo:pas"
               disabled={!somNaTahu}
               title={somNaTahu ? `Prestaneš brať zo šenku; v Zhromaždení vyložíš ${limitTeraz}.` : "Počkaj, kým budeš na ťahu."}
               onClick={() => posli({ type: "draftStop" })}
@@ -3952,7 +3978,7 @@ export function HernaPlocha({
   const zn = (x: number): string => (x > 0 ? `+${x}` : x < 0 ? `−${-x}` : "±0");
   const ucetBitkyEl =
     !ukazUcetBitky || ucetBitky === null ? null : (
-      <section className="ucet-bitky" aria-label={`Účet bitky — ${ucetBitky.lokalita}`}>
+      <section className="ucet-bitky" aria-label={`Účet bitky — ${ucetBitky.lokalita}`} data-vyucba="bitka-ucet">
         <header>
           <strong>
             {ucetBitky.vitaz === null
@@ -4074,7 +4100,7 @@ export function HernaPlocha({
       style={{ "--ruka-w": `${sirkaVRuke}px`, "--hlavicka-h": `${vyskaHlavicky}px` } as CSSProperties}
     >
       {/* V prehrávači výsledok ukáže detail partie — okno konca s hodnotením a lobby tam nepatrí. */}
-      {view.koniec !== null && !koniecZavrety && prehravanie === undefined && (
+      {view.koniec !== null && !koniecZavrety && prehravanie === undefined && bezOknaKonca !== true && (
         <KoniecHry
           rodJa={rodHracaP(ja)}
           rody={[rodHracaP(0), rodHracaP(1)]}
@@ -4112,6 +4138,7 @@ export function HernaPlocha({
                   ciel !== null && nadCielom(ciel) ? "nad-cielom" : "",
                 ].join(" ")}
                 data-ciel={ciel !== null && jeCiel(ciel) ? ciel : undefined}
+                data-vyucba={`hlavicka:${v}`}
                 onClick={() => setVrstva(vrstva === v ? null : v)}
               >
                 {v === "senok" ? "Šenok" : v === "lokality" ? "Lokality" : "Log"}
@@ -4125,6 +4152,7 @@ export function HernaPlocha({
               className={`hlava-vrstva hlava-skratky ${skratky.napoveda ? "otvorena" : ""}`}
               aria-expanded={skratky.napoveda}
               aria-keyshortcuts="?"
+              data-vyucba="hlavicka:skratky"
               title="Klávesové skratky (?)"
               onClick={skratky.prepniNapovedu}
             >
@@ -4243,7 +4271,7 @@ export function HernaPlocha({
             </div>
             <div className={`stol-plst${liniaSkryta ? " linia-skryta" : ""}${starsiViditelni && krokStarsich !== null ? " krok-starsich" : ""}`} ref={plstRef}>
             {/* Línia kariet ostáva v DOM a drží výšku stola — línia starších leží nad ňou (#68). */}
-            <div className="linia harmonika-skupiny" ref={liniaRef} inert={liniaSkryta} aria-hidden={liniaSkryta || undefined}>
+            <div className="linia harmonika-skupiny" ref={liniaRef} inert={liniaSkryta} aria-hidden={liniaSkryta || undefined} data-vyucba="linia">
               <div className="linia-skupina moja">
                 {popisKraja(ja, "vlavo")}
                 <div className="partia-rad harmonika">{radStrany(ja)}</div>
@@ -4261,7 +4289,11 @@ export function HernaPlocha({
                 </span>
                 <div className="partia-rad harmonika">{stredLinie}</div>
                 {popisStranStredu}
-                {lokalitaNavrh !== null && tahanie === null && <span className="otocit-tip">klik = otočiť</span>}
+                {lokalitaNavrh !== null && tahanie === null && (
+                  <span className="otocit-tip" data-vyucba="otocenie">
+                    klik = otočiť
+                  </span>
+                )}
               </div>
               <div className="linia-skupina superova">
                 {popisKraja(super_, "vpravo")}
@@ -4273,7 +4305,7 @@ export function HernaPlocha({
                 {vrstvaFazy}
               </div>
             )}
-            <div className="vrstva-starsich" id={idLinieStarsich} hidden={!starsiViditelni}>
+            <div className="vrstva-starsich" id={idLinieStarsich} hidden={!starsiViditelni} data-vyucba="linia-starsich">
               {starsiViditelni && (
                 <LiniaStarsich
                   starsi={starsiVLinii}
@@ -4605,7 +4637,7 @@ export function HernaPlocha({
         >
           odhodené<b>{hJa.odhadzovaci.length}</b>
         </button>
-        <div className="ruka-rad harmonika-hover">
+        <div className="ruka-rad harmonika-hover" data-vyucba="ruka">
           {ruka
             .filter((k) => !vylozenia.some((x) => x.karta.uid === k.uid))
             .map((k) => {

@@ -221,6 +221,7 @@ function ScorecardVLinii({
   return (
     <div
       className={`ls-sc${krokTrieda}${zmeneny ? " zmena" : ""}${zvyrazneny ? " zvyrazneny" : ""}`}
+      data-vyucba={`starsi:${s.elder.elderId}`}
       {...(klik === undefined
         ? { "aria-label": popisMarkera + (s.dovod !== undefined ? ` — ${s.dovod}` : ""), ...lupa }
         : {

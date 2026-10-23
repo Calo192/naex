@@ -53,6 +53,25 @@ export interface Miestnost {
   readonly sada: Sada;
 }
 
+/** Krok výučby „Prvá hra“ tak, ako ho posiela server (KrokVyucbyKlient v packages/server/src/server.ts). */
+export interface KrokVyucby {
+  readonly index: number;
+  readonly spolu: number;
+  readonly id: string;
+  /** hrac = čaká sa na ťah hráča, bot = ťahá Štamgast, info = len text a „ďalej“. */
+  readonly kto: "hrac" | "bot" | "info";
+  readonly melichar: string;
+  /** Kľúče prvkov na zvýraznenie, napr. „bar:poldeci“, „ruka:hasic“ — v UI atribút data-vyucba. */
+  readonly zvyraznit: readonly string[];
+  readonly ocakava: Command | null;
+}
+
+export interface StavVyucby {
+  /** null po poslednom kroku. */
+  readonly krok: KrokVyucby | null;
+  readonly hotovo: boolean;
+}
+
 type ServerMsg =
   | { type: "privitanie"; code: string; seat: 0 | 1; started: boolean; verejna: boolean; dlzka: DlzkaHry; sada: Sada }
   | { type: "hraci"; hraci: [HracInfo | null, HracInfo | null] }
@@ -63,6 +82,8 @@ type ServerMsg =
   | { type: "frajerina"; zmeny: ZmenyFrajeriny }
   /** Hláška majstra Melichara zo soundboardu — server ju posiela obom hráčom. */
   | { type: "melichar"; id: string; seat: 0 | 1; trvanieMs: number }
+  /** Výučba „Prvá hra“: aktuálny krok po každej zmene. */
+  | { type: "vyucba"; krok: KrokVyucby | null; hotovo: boolean }
   | { type: "error"; text: string };
 
 /** Pustená hláška Melichara; n rastie, aby sa tá istá hláška dala pustiť znova. */
@@ -89,6 +110,12 @@ export interface HraHook {
   readonly melichar: HlaskaVPartii | null;
   /** Pustí hlášku zo soundboardu — server overí pauzu a pošle ju obom. */
   pustiMelichara(id: string): void;
+  /** Výučba „Prvá hra“ v tejto miestnosti, inak null. */
+  readonly vyucba: StavVyucby | null;
+  /** Spustí výučbu (server pokračuje od uloženého kroku). */
+  zalozVyucbu(): void;
+  /** Potvrdí krok výučby bez ťahu (len text Melichara). */
+  vyucbaDalej(): void;
   /** Nová hra; bot = proti offline protihráčovi (počítač), začína hneď. */
   zaloz(verejna: boolean, dlzka: DlzkaHry, bot?: boolean): void;
   pripoj(code: string): void;
@@ -134,6 +161,7 @@ export function useHra(aktivne: boolean): HraHook {
   const [superPripojeny, setSuperPripojeny] = useState(true);
   const [frajerina, setFrajerina] = useState<ZmenyFrajeriny | null>(null);
   const [melichar, setMelichar] = useState<HlaskaVPartii | null>(null);
+  const [vyucba, setVyucba] = useState<StavVyucby | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const menaRef = useRef<string[]>([]);
   menaRef.current = hraci.map((h, i) => menoVoVete(h, i));
@@ -157,6 +185,8 @@ export function useHra(aktivne: boolean): HraHook {
         case "privitanie":
           setMiestnost({ code: msg.code, seat: msg.seat, started: msg.started, verejna: msg.verejna, dlzka: msg.dlzka, sada: msg.sada });
           setFrajerina(null);
+          // Krok výučby príde hneď po privítaní — iná miestnosť výučbu nemá.
+          setVyucba(null);
           localStorage.setItem(KLUC, msg.code);
           setChyba(null);
           break;
@@ -184,6 +214,9 @@ export function useHra(aktivne: boolean): HraHook {
         case "melichar":
           setMelichar((h) => ({ n: (h?.n ?? 0) + 1, id: msg.id, seat: msg.seat, trvanieMs: msg.trvanieMs }));
           break;
+        case "vyucba":
+          setVyucba({ krok: msg.krok, hotovo: msg.hotovo });
+          break;
         case "error":
           // Rozohraná partia zanikla (napr. reštart servera — miestnosti žijú
           // v pamäti). Inak by plocha ukazovala starý stav a každý ťah by
@@ -194,6 +227,7 @@ export function useHra(aktivne: boolean): HraHook {
             setView(null);
             setLog([]);
             setHraci([null, null]);
+            setVyucba(null);
             setChyba("Partia sa stratila — server sa medzitým reštartoval. Založ novú hru.");
             break;
           }
@@ -248,6 +282,9 @@ export function useHra(aktivne: boolean): HraHook {
     frajerina,
     melichar,
     pustiMelichara: useCallback((id: string) => posli({ type: "melichar", id }), [posli]),
+    vyucba,
+    zalozVyucbu: useCallback(() => posli({ type: "create", vyucba: true }), [posli]),
+    vyucbaDalej: useCallback(() => posli({ type: "vyucbaDalej" }), [posli]),
     zaloz: useCallback((verejna: boolean, dlzka: DlzkaHry, bot = false) => posli({ type: "create", verejna, dlzka, bot }), [posli]),
     pripoj: useCallback((code: string) => posli({ type: "join", code: code.trim().toUpperCase() }), [posli]),
     cmd: useCallback((command: Command) => posli({ type: "cmd", cmd: command }), [posli]),
@@ -260,6 +297,7 @@ export function useHra(aktivne: boolean): HraHook {
       setLog([]);
       setHraci([null, null]);
       setFrajerina(null);
+      setVyucba(null);
     }, [posli]),
     zrusChybu: useCallback(() => setChyba(null), []),
   };

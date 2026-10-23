@@ -311,6 +311,7 @@ function Zdroj({
   return (
     <div
       className={`zdroj ${trieda ?? ""}`}
+      data-vyucba-prvok={/zdroj-([a-z]+)/.exec(trieda ?? "")?.[1]}
       tabIndex={0}
       onMouseEnter={(e) => ukaz(e.currentTarget, tip)}
       onMouseLeave={skry}
@@ -375,6 +376,7 @@ function DlazdicaKariet({ hrac, ja, karty }: { readonly hrac: ClientState["hraci
       ].join(" ")}
       data-ciel={c?.dataCiel}
       data-skratka={ja ? "o" : undefined}
+      data-vyucba-prvok="karty"
       role="button"
       tabIndex={0}
       aria-expanded={karty.otvorena}
@@ -549,7 +551,11 @@ export function HracDoska({
   for (let i = 0; i < hrac.poldeciVypite; i++) poldeci.push(<IkonaPoldeci key={`v${i}`} plny={false} />);
 
   return (
-    <section className={`doska ${ja ? "moja" : "superova"} ${naTahu ? "na-tahu" : ""}${bodovy !== undefined ? " bodovy" : ""}`} aria-label={`Hráč ${meno}`}>
+    <section
+      className={`doska ${ja ? "moja" : "superova"} ${naTahu ? "na-tahu" : ""}${bodovy !== undefined ? " bodovy" : ""}`}
+      aria-label={`Hráč ${meno}`}
+      data-vyucba={ja ? "bar" : "bar-supera"}
+    >
       <div className="doska-hrac">
         <KartaHraca info={info} meno={meno} ja={ja}>
           <Avatar meno={meno} avatar={info?.avatar ?? null} velkost={60} />
@@ -787,6 +793,7 @@ export function HracDoska({
           className={`zdroj zdroj-body ${body.spolu[p] > 0 ? "plus" : body.spolu[p] < 0 ? "minus" : ""}${starsi.stlacene ? " stlacene" : ""}`}
           aria-pressed={starsi.stlacene}
           aria-controls={starsi.id}
+          data-vyucba-prvok="body"
           title={starsi.stlacene ? "Späť na stôl (Esc)" : "Starší a body na stole — za čo koľko, keby hra skončila teraz"}
           onClick={starsi.prepni}
         >
@@ -1112,7 +1119,7 @@ function RiadkyHrozby({
   );
   if (!jedenRiadok || hrozby.length === 1) return <>{hrozby.map((h) => cast(h, h.kratko))}</>;
   return (
-    <span className="hrozba-bitky-riadok" title={hrozby.map((h) => h.cele).join("\n")}>
+    <span className="hrozba-bitky-riadok" data-vyucba="hrozba" title={hrozby.map((h) => h.cele).join("\n")}>
       Ešte môže: {hrozby.map((h, i) => (
         <span key={h.kto}>
           {i > 0 && " · "}

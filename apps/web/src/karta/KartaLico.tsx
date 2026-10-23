@@ -52,6 +52,10 @@ export interface KartaLicoProps {
    */
   readonly slotyBezFokusu?: boolean;
   readonly className?: string;
+  /** Id karty pre výučbu (data-vyucba-karta) — zvýraznenie „ruka:pijan“ ju nájde v zóne ruky. */
+  readonly idKarty?: string;
+  /** Inštancia karty (data-vyucba-uid) — výučba zvýrazní presne kartu z očakávaného ťahu. */
+  readonly uidKarty?: number;
 }
 
 export function KartaLico(props: KartaLicoProps) {
@@ -142,6 +146,8 @@ export function KartaLico(props: KartaLicoProps) {
   return (
     <div
       className={triedy.join(" ")}
+      data-vyucba-karta={props.idKarty}
+      data-vyucba-uid={props.uidKarty}
       style={{
         "--farba": farba,
         "--w": g.sirka,

@@ -14,6 +14,7 @@ import { useMelichar } from "./Melichar.tsx";
 import { Momenty } from "./Momenty.tsx";
 import { Soundboard } from "./Soundboard.tsx";
 import { useHra } from "./useHra.ts";
+import { PonukaVyucby, useVyucbaUctu, VyucbaStol, VyucbaVLobby, type VyucbaUctu } from "./Vyucba.tsx";
 import { useNepodporovaneZariadenie } from "./zariadenie.ts";
 import "./hra.css";
 
@@ -33,10 +34,14 @@ function Lobby({
   zaloz,
   pripoj,
   chyba,
+  vyucba,
+  zacniVyucbu,
 }: {
   readonly zaloz: (verejna: boolean, dlzka: DlzkaHry, bot?: boolean) => void;
   readonly pripoj: (kod: string) => void;
   readonly chyba: string | null;
+  readonly vyucba: VyucbaUctu | null;
+  readonly zacniVyucbu: (odznova: boolean) => void;
 }) {
   const { ja } = useUcet();
   const { sada } = useSada();
@@ -88,6 +93,7 @@ function Lobby({
       </header>
       {uzavierka !== null && <Hlaska druh="info">{uzavierka}</Hlaska>}
       {chyba !== null && chyba !== uzavierka && <Hlaska>{chyba}</Hlaska>}
+      {vyucba !== null && vyucba.dostupna && !zavrete && <VyucbaVLobby vyucba={vyucba} zacni={zacniVyucbu} />}
       <div className="lobby">
         <section className="panel">
           <h2>Nová hra</h2>
@@ -228,8 +234,40 @@ export function Hra() {
   // Kým beží Počítadlo bitky, pečiatka momentu z bitky čaká (dohoda Bugfixing × New features).
   const [pocitadloBezi, setPocitadloBezi] = useState(false);
 
+  // Výučba „Prvá hra“: vstup v lobby, ponuka novému hráčovi a odkaz /hra?vyucba=1 z titulky.
+  const { vyucba: vyucbaUctu, obnov: obnovVyucbu } = useVyucbaUctu(ja !== null);
+  const [ponukaZavreta, setPonukaZavreta] = useState(false);
+  const { zalozVyucbu, odid } = hra;
+  const zacniVyucbu = useCallback(
+    (odznova: boolean) => {
+      setPonukaZavreta(true);
+      if (!odznova) {
+        zalozVyucbu();
+        return;
+      }
+      void api
+        .post("/vyucba/znova")
+        .then(() => zalozVyucbu())
+        .catch(() => zalozVyucbu());
+    },
+    [zalozVyucbu],
+  );
+  const preskocVyucbu = useCallback(() => {
+    setPonukaZavreta(true);
+    void api.post("/vyucba/preskocit").finally(obnovVyucbu);
+  }, [obnovVyucbu]);
+  const prerusVyucbu = useCallback(() => {
+    odid();
+    obnovVyucbu();
+  }, [odid, obnovVyucbu]);
+
   // Odkaz /hra?kod=ABCD rovno pripojí do miestnosti.
   const { pripojene, miestnost, pripoj } = hra;
+  useEffect(() => {
+    if (new URLSearchParams(location.search).get("vyucba") === null || !pripojene || miestnost !== null || vyucbaUctu === null) return;
+    history.replaceState(null, "", "/hra");
+    if (vyucbaUctu.dostupna) zacniVyucbu(vyucbaUctu.stav === "hotova");
+  }, [pripojene, miestnost, vyucbaUctu, zacniVyucbu]);
   useEffect(() => {
     const kod = new URLSearchParams(location.search).get("kod");
     if (kod !== null && pripojene && miestnost === null) {
@@ -262,7 +300,14 @@ export function Hra() {
   if (!hra.pripojene && hra.miestnost === null) return <Nacitavanie text="Pripájam sa na server…" />;
 
   const m = hra.miestnost;
-  if (m === null) return <Lobby zaloz={hra.zaloz} pripoj={hra.pripoj} chyba={hra.chyba} />;
+  if (m === null) {
+    return (
+      <>
+        <Lobby zaloz={hra.zaloz} pripoj={hra.pripoj} chyba={hra.chyba} vyucba={vyucbaUctu} zacniVyucbu={zacniVyucbu} />
+        {vyucbaUctu?.ponuknut === true && !ponukaZavreta && <PonukaVyucby zacni={() => zacniVyucbu(false)} preskoc={preskocVyucbu} />}
+      </>
+    );
+  }
 
   if (hra.view === null || hra.data === null) {
     const [h0, h1] = hra.hraci;
@@ -322,7 +367,9 @@ export function Hra() {
       hraci={hra.hraci}
       log={hra.log}
       udalosti={hra.udalosti}
-      chyba={hra.chyba}
+      bezOknaKonca={hra.vyucba !== null}
+      // Vo výučbe chybu ukazuje bublina Melichara.
+      chyba={hra.vyucba !== null ? null : hra.chyba}
       zrusChybu={hra.zrusChybu}
       superPripojeny={hra.superPripojeny}
       kod={m.code}
@@ -341,6 +388,20 @@ export function Hra() {
         )
       }
     />
+    {hra.vyucba !== null && (
+      <VyucbaStol
+        stav={hra.vyucba}
+        dalej={hra.vyucbaDalej}
+        chyba={hra.chyba}
+        zrusChybu={hra.zrusChybu}
+        prerusit={prerusVyucbu}
+        hratProtiPocitacu={() => {
+          prerusVyucbu();
+          hra.zaloz(false, PREDVOLENA_DLZKA, true);
+        }}
+        menoBota={hra.hraci[1]?.meno ?? "Štamgast"}
+      />
+    )}
     </>
   );
 }
