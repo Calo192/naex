@@ -144,6 +144,12 @@ export interface ClientState {
    */
   readonly mojeKliatbyVBalicku: { readonly dlh: number; readonly cirhoza: number };
   /**
+   * Zloženie MÔJHO doberacieho balíčka: defId a počet, zoradené podľa defId.
+   * Svoje karty hráč pozná, poradie je tajné — preto bez uid a nie v poradí
+   * balíčka (uid by prezradilo, ktorá inštancia kde leží). Súperov sa neposiela.
+   */
+  readonly mojBalicekZlozenie: readonly ZlozeniePolozka[];
+  /**
    * Nepriznané kliatby OBOCH hráčov spolu (ruka, doberací aj odhadzovací
    * balíček) — len počty (Michal 2026-10-21). Každý vznik, priznanie aj
    * zahodenie kliatby je vo verejnom logu, takže si ich hráč s dobrou pamäťou
@@ -161,6 +167,20 @@ export interface ClientState {
 export interface KliatbyHraca {
   readonly dlh: number;
   readonly cirhoza: number;
+}
+
+export interface ZlozeniePolozka {
+  readonly defId: string;
+  readonly pocet: number;
+}
+
+/** Karty zgrupené podľa defId a zoradené podľa neho — poradie vstupu sa stratí. */
+export function zlozenie(karty: readonly CardInstance[]): ZlozeniePolozka[] {
+  const pocty = new Map<string, number>();
+  for (const k of karty) pocty.set(k.defId, (pocty.get(k.defId) ?? 0) + 1);
+  return [...pocty]
+    .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+    .map(([defId, pocet]) => ({ defId, pocet }));
 }
 
 /** Nepriznané kliatby hráča — v ruke a v oboch balíčkoch. */
@@ -267,6 +287,7 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
       dlh: state.hraci[ja].doberaci.filter((k) => k.defId === "dlh").length,
       cirhoza: state.hraci[ja].doberaci.filter((k) => k.defId === "cirhoza").length,
     },
+    mojBalicekZlozenie: zlozenie(state.hraci[ja].doberaci),
     nepriznaneKliatby: [nepriznaneKliatbyHraca(state.hraci[0]), nepriznaneKliatbyHraca(state.hraci[1])],
     naSekeru: state.naSekeru,
     koniec: state.koniec,

@@ -100,6 +100,7 @@ import {
 import type { ActionSums, GameState, KliatbyNahladu, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
+import { skupinyBalicka } from "./doberaciBalicek.ts";
 import { SkratkyNapoveda, useSkratky } from "./skratky.tsx";
 import type { Sada } from "@naex/tvorba";
 import { HernaKarta, vzhladKarty, type HernaKartaProps } from "./HernaKarta.tsx";
@@ -158,7 +159,7 @@ const BALICEK_STAVBY = "balicekStavby";
  * Čo netreba mať na stole stále — otvára sa ako vrstva cez obrazovku.
  * „vestica“ ukazuje doberacie balíčky, ktoré hráčovi podľa karty odhalil server.
  */
-type Vrstva = "senok" | "lokality" | "log" | "vestica" | "odhodene";
+type Vrstva = "senok" | "lokality" | "log" | "vestica" | "odhodene" | "balicek";
 
 /**
  * Pokyn ťahu (Michal 2026-10-21): nadpis a text sú v pilulke na hornej hrane
@@ -4092,6 +4093,36 @@ export function HernaPlocha({
         </VrstvaPanel>
       )}
 
+      {vrstva === "balicek" && (
+        <VrstvaPanel
+          nazov={`Doberací balíček · ${hJa.doberaciPocet}`}
+          pozn="tvoje karty zoskupené podľa typu a mena — poradie v balíčku je tajné"
+          skryta={tahanie !== null}
+          onZavri={() => setVrstva(null)}
+        >
+          <p className="popis balicek-prehra">
+            Prehrávaš, keď ti v balíčku, odhodených a v ruke spolu ostane menej ako {KONSTANTY.MIN_VELKOST_BALICKA} kariet —
+            teraz ich máš {hJa.doberaciPocet + hJa.odhadzovaci.length + view.ruka.length}.
+          </p>
+          {hJa.doberaciPocet === 0 && <span className="popis">Balíček je prázdny — pri ďalšom ťahaní sa doň zamiešajú odhodené karty.</span>}
+          {skupinyBalicka(data, view.mojBalicekZlozenie).map((s) => (
+            <section key={s.nazov} className="balicek-skupina">
+              <h3>
+                {s.nazov} <b>{s.pocet}</b>
+              </h3>
+              <div className="vrstva-karty">
+                {s.karty.map((k) =>
+                  sLupou(
+                    { karta: k.karta, sirka: SIRKA_VO_VRSTVE },
+                    k.pocet > 1 ? { stitok: <span className="balicek-kusov">×{k.pocet}</span> } : {},
+                  ),
+                )}
+              </div>
+            </section>
+          ))}
+        </VrstvaPanel>
+      )}
+
       {vrstva === "log" && (
         <VrstvaPanel nazov="Log" skryta={tahanie !== null} onZavri={() => setVrstva(null)}>
           <div className="log">
@@ -4113,10 +4144,16 @@ export function HernaPlocha({
         data-ciel={jeCiel("ruka") ? "ruka" : undefined}
         style={{ "--lupa-ruky": mierkaLupy } as CSSProperties}
       >
-        <span className="ruka-nadpis">
-          ruka<b>{view.ruka.length}</b>
-        </span>
-        {/* Zrkadlo k „ruka“: odhadzovací balíček je verejný, klik ho ukáže. */}
+        {/* Karty v ruke vidno hneď vedľa — dôležitejšie je, koľko ostáva v balíčku (dizajn U10). */}
+        <button
+          className={`ruka-nadpis balicek-nadpis ${vrstva === "balicek" ? "otvorena" : ""}`}
+          title="Tvoj doberací balíček — karty podľa typu a mena"
+          aria-expanded={vrstva === "balicek"}
+          onClick={() => setVrstva(vrstva === "balicek" ? null : "balicek")}
+        >
+          balíček<b>{hJa.doberaciPocet}</b>
+        </button>
+        {/* Zrkadlo k „balíček“: odhadzovací balíček je verejný, klik ho ukáže. */}
         <button
           className={`ruka-nadpis odhodene-nadpis ${vrstva === "odhodene" ? "otvorena" : ""}`}
           title="Tvoj odhadzovací balíček"
