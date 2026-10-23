@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nápady NA EX! — dávka 1</title>
+<style>
+:root {
+  --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --okraj: #3d3229;
+  --text: #f1e8d8; --tlmeny: #b6a790;
+  --akcent: #e9ad45; --cervena: #d0563f; --zelena: #7cbf74; --modra: #8fb4e0;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #dccdb3;
+    --text: #2a2016; --tlmeny: #5e4f3b;
+    --akcent: #9a5d06; --cervena: #a83a26; --zelena: #356e2f; --modra: #2d5a8f;
+    color-scheme: light;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 system-ui, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 980px; margin: 0 auto; padding: 28px 16px 56px; }
+h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; line-height: 1.2; }
+h1 { font-size: clamp(1.7rem, 4vw, 2.3rem); margin: 0 0 10px; }
+h2 { font-size: 1.45rem; margin: 40px 0 14px; padding-bottom: 6px; border-bottom: 1px solid var(--okraj); }
+h3 { font-size: 1.15rem; margin: 0 0 8px; }
+p { margin: 0 0 10px; }
+a { color: var(--akcent); }
+:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+.uvod { color: var(--tlmeny); }
+.odporucane { background: var(--plocha); border: 1px solid var(--akcent); border-radius: 12px; padding: 14px 16px; margin: 18px 0; }
+.odporucane ol { margin: 6px 0 0; padding-left: 20px; }
+.odporucane li { margin-bottom: 6px; }
+.tab-obal { overflow-x: auto; }
+table.prehlad { width: 100%; border-collapse: collapse; font-size: .93rem; }
+table.prehlad th, table.prehlad td { padding: 8px 6px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--okraj); }
+table.prehlad thead th { border-bottom: 2px solid var(--okraj); }
+.znacka { display: inline-block; font-size: .78rem; border-radius: 999px; padding: 1px 9px; border: 1px solid currentColor; white-space: nowrap; margin: 0 4px 2px 0; }
+.z-pravidla { color: var(--cervena); }
+.z-karty { color: var(--zelena); }
+.z-ui { color: var(--modra); }
+.z-odp { color: var(--akcent); font-weight: 600; }
+.z-nar { color: var(--tlmeny); }
+.filter { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
+.filter button { border: 1px solid var(--okraj); background: var(--plocha-2); color: var(--text); border-radius: 999px; padding: 6px 13px; font: inherit; font-size: .88rem; cursor: pointer; }
+.filter button[aria-pressed="true"] { background: var(--text); color: var(--pozadie); border-color: var(--text); }
+ol.napady { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+ol.napady > li { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 14px 16px; }
+ol.napady > li.odp { border-left: 4px solid var(--akcent); }
+ol.napady > li[hidden] { display: none; }
+.cislo { color: var(--akcent); font-family: Georgia, serif; margin-right: 6px; }
+.znacky { margin: 0 0 10px; }
+dl.polozka { margin: 0; display: grid; grid-template-columns: 9.5em 1fr; gap: 6px 12px; }
+dl.polozka dt { color: var(--tlmeny); font-size: .88rem; padding-top: 2px; }
+dl.polozka dd { margin: 0; }
+dl.polozka ul { margin: 0; padding-left: 18px; }
+dl.polozka li { margin-bottom: 3px; }
+.priklad { background: var(--plocha-2); border-radius: 8px; padding: 8px 12px; }
+.karta { display: inline-block; background: var(--plocha-2); border: 1px solid var(--okraj); border-radius: 8px; padding: 8px 10px; margin: 4px 0; width: 100%; }
+.karta b { color: var(--akcent); }
+.karta small { color: var(--tlmeny); }
+details.viac { margin-top: 10px; }
+details.viac summary { cursor: pointer; color: var(--tlmeny); font-size: .9rem; }
+details.viac[open] summary { color: var(--text); }
+.blok { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 16px; }
+.blok ul { margin: 4px 0 0; padding-left: 18px; }
+.blok li { margin-bottom: 5px; }
+code { font-family: ui-monospace, Consolas, monospace; font-size: .86em; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+footer { margin-top: 40px; padding-top: 12px; border-top: 1px solid var(--okraj); color: var(--tlmeny); font-size: .9rem; }
+@media (max-width: 600px) {
+  dl.polozka { grid-template-columns: 1fr; }
+  dl.polozka dt { padding-top: 6px; }
+  table.prehlad { font-size: .84rem; }
+}
+</style>
+</head>
+<body>
+<main>
+
+<h1>Nápady pre NA EX! — dávka 1</h1>
+<p class="uvod">Navrhár, 23. 10. 2026. Osem nápadov, ktoré v hre ani v otvorených návrhoch zatiaľ nie sú, z toho dva na
+odstránenie či zjednodušenie pravidla. Podklady: report playtestu <code>docs/playtesty/20261022-065959.html</code>,
+37 názorov na stránke Spätná väzba (všetky od AI playtesterov, od ľudí zatiaľ nie je žiadny), rozbor stratéga
+<code>strategia-20261021-143600.html</code> a roadmapa na živom webe. Pri každom nápade je uvedené, či mení
+<span class="znacka z-pravidla">pravidlá</span>, len <span class="znacka z-karty">karty</span>, alebo
+<span class="znacka z-ui">UI a platformu</span>, lebo sa blíži zmrazenie pravidiel v4. Simulácie som nespúšťal.
+Overenie, ktoré pri nápade navrhujem, ohlásim Leaderovi vopred.</p>
+
+<section class="odporucane" aria-labelledby="h-odp">
+  <h2 id="h-odp" style="margin-top:0;border:0;padding:0">Odporúčané</h2>
+  <ol>
+    <li><b>Tri karty proti trom trikom</b> (nápad 1, karty, S–M). Bomba NA EX, podstrčený sabotér a posledné slovo
+      dostanú protihru kartou zo šenku. Pravidlá sa nemenia, takže sa to dá robiť aj po v4.</li>
+    <li><b>Runda na môj účet</b> (nápad 2, pravidlá, M). O posledné slovo v Pitke sa tajne dražia cigarety. Výhoda
+      stoličky, na ktorú sa sťažovali všetci štyria hráči, sa zmení na rozhodnutie a nadbytočné cigarety dostanú
+      cenu. Patrí do prvej dávky po v4, najprv meranie.</li>
+    <li><b>Absťák bez rebríka</b> (nápad 3, zjednodušenie pravidla, S). Pevná latka namiesto porovnania s minulým
+      kolom. Ubudne jedno pravidlo, ktoré si treba pamätať, a zmizne nútené pitie. Je dosť malé, aby sa stihlo ešte do v4.</li>
+  </ol>
+  <p style="margin:8px 0 0">Najväčší nápad je <b>Krstný otec</b> (nápad 4): tajný starší, na ktorom ti záleží viac.
+    Na koniec partie vráti neistotu a staršieho urobí rozhodnutím, nie číslom v tabuľke. Patrí do dávky po v4.</p>
+</section>
+
+<h2>Prehľad</h2>
+<div class="tab-obal">
+<table class="prehlad">
+  <thead><tr><th>#</th><th>Nápad</th><th>Mení</th><th>Náročnosť</th><th>Rieši</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td><a href="#n1">Tri karty proti trom trikom</a></td><td><span class="znacka z-karty">karty</span></td><td>S–M</td><td>bomba NA EX, sabotér, posledné slovo</td></tr>
+    <tr><td>2</td><td><a href="#n2">Runda na môj účet</a></td><td><span class="znacka z-pravidla">pravidlá</span></td><td>M</td><td>posledné slovo podľa stoličky, nadbytok cigariet</td></tr>
+    <tr><td>3</td><td><a href="#n3">Absťák bez rebríka</a></td><td><span class="znacka z-pravidla">pravidlá</span> zjednodušenie</td><td>S</td><td>rebrík nerestí, zrozumiteľnosť</td></tr>
+    <tr><td>4</td><td><a href="#n4">Krstný otec</a></td><td><span class="znacka z-pravidla">pravidlá</span></td><td>M</td><td>„politika je účtovníctvo“, rozhodnuté kolá K5–K7</td></tr>
+    <tr><td>5</td><td><a href="#n5">Exekútor zabaví lokalitu</a></td><td><span class="znacka z-pravidla">pravidlá</span> odstránenie</td><td>M</td><td>náhla prehra, mŕtve pravidlo</td></tr>
+    <tr><td>6</td><td><a href="#n6">Hodiny pri stole</a></td><td><span class="znacka z-ui">UI a platforma</span></td><td>M</td><td>tempo 5/10, čakanie na súpera</td></tr>
+    <tr><td>7</td><td><a href="#n7">Rozbor partie: tri najdrahšie rozhodnutia</a></td><td><span class="znacka z-ui">UI a platforma</span></td><td>M–L</td><td>zrozumiteľnosť 5/10, učenie</td></tr>
+    <tr><td>8</td><td><a href="#n8">Fígeľ: karta lícom dole</a></td><td><span class="znacka z-pravidla">pravidlá</span> nový typ karty</td><td>L</td><td>dominantné triky, blaf</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Nápady</h2>
+<div class="filter" role="group" aria-label="Filter podľa toho, čo nápad mení">
+  <button type="button" data-f="vsetko" aria-pressed="true">Všetko</button>
+  <button type="button" data-f="pravidla" aria-pressed="false">Pravidlá</button>
+  <button type="button" data-f="karty" aria-pressed="false">Karty</button>
+  <button type="button" data-f="ui" aria-pressed="false">UI a platforma</button>
+  <button type="button" data-f="odp" aria-pressed="false">Len odporúčané</button>
+</div>
+
+<ol class="napady">
+
+<!-- 1 -->
+<li id="n1" class="odp" data-typ="karty" data-odp="1">
+  <h3><span class="cislo">1</span>Tri karty proti trom trikom</h3>
+  <div class="znacky"><span class="znacka z-karty">karty</span><span class="znacka z-nar">S–M</span><span class="znacka z-odp">odporúčané</span></div>
+  <dl class="polozka">
+    <dt>Problém</dt>
+    <dd>Hráči opakovane opisujú tri ťahy, proti ktorým nemajú čím hrať:
+      <ul>
+        <li><b>bomba</b>: NA EX na vlastnú kartu s nepárovou Petelicou dá za jeden poldeci 6–9 tuhých (Šimon to volá
+          „víťazná recepta“, Hela „najsilnejší ťah hry“, názor #28),</li>
+        <li><b>posledné slovo</b> útočníka: rozhodlo 4 zo 14 bitiek a obranca „nemá čím odpovedať“ (#35, #36),</li>
+        <li><b>sabotér</b> podstrčený ku lokalite, ktorý prehodí prevahu v kraji (Dvojčatá, Kočovník, Živnostník).</li>
+      </ul>
+      Návrhy z playtestu na to menia jadro (NA EX, poradie v Pitke). Lacnejšia cesta je dať do sady protihru, ktorú si
+      hráč musí kúpiť v šenku a vedieť použiť.</dd>
+    <dt>Návrh</dt>
+    <dd>Tri nové karty so spúšťačmi, ktoré hra už pozná. Akcie navrhne Admin, mali by byť skôr slabé, lebo silu karty
+      nesie efekt.
+      <div class="karta"><b>Čašník</b> <small>Občan, Pracujúci, Chlap · proti bombe</small><br>
+        Furt: NA EX na kartu, ktorá s ním susedí, nezdvojí jej neaktívne akcie. Aktívne zruší ako vždy.</div>
+      <div class="karta"><b>Kibic</b> <small>Občan, Závislý, Chlap · proti poslednému slovu</small><br>
+        Pitka: Keď súper dá NA EX po tvojom „hotovo“, smieš odpovedať dvoma kartami namiesto jednej.</div>
+      <div class="karta"><b>Vyhadzovač</b> <small>Občan, Autorita, Chlap · proti sabotérovi</small><br>
+        Nástup: Súperovu kartu, ktorá s ním susedí na tvojej strane, vráť súperovi do ruky. Vyhadzovač sa posunie na jej miesto.</div>
+    </dd>
+    <dt>Ako by sa hral</dt>
+    <dd class="priklad">Fero má na konci svojej strany Hasiča s nepárovou Petelicou a čaká na posledné slovo. Jano mu
+      na koniec strany podstrčí <b>Čašníka</b>. Keď Čašník Petelicu spáruje, je aktívna a NA EX by ju zrušil. Keď ju
+      nespáruje, NA EX ju aj tak nezdvojí. Bomba je zneškodnená, no Jano za to zaplatil kartou v limite a Fero ešte
+      môže NA EX dať inam.<br>
+      Hela je obranca s <b>Kibicom</b> v línii. Šimon po jej „hotovo“ dá NA EX na vlastného Veterána (5 : 3 → 5 : 9).
+      Hela odpovie dvoma kartami: jednou spáruje Petelicu (NA EX ju zruší), druhou vráti prevahu v kraji. Výsledok 7 : 6.</dd>
+    <dt>Strategickosť a náhoda</dt>
+    <dd>Zručnosť: viac. Krytie a čítanie súperovej bomby sa stane plánom, nie náhodou. Silný ťah ostáva, ale stojí
+      pozornosť. Náhoda: o niečo viac, lebo protihra závisí od toho, čo príde do šenku. Pri dvoch kópiách každej
+      karty a verejnom šenku to hráč vidí a vie si ju vziať.</dd>
+    <dt>Čo zmeniť</dt>
+    <dd><ul>
+      <li><b>Karty:</b> 3 nové karty v tvorcovi (Admin), ilustrácie v Leonardo, výklad do §14.</li>
+      <li><b>Pravidlá:</b> nič. Kibic potrebuje v jadre možnosť dvoch odpovedí na NA EX (efekt karty, nie nové pravidlo).</li>
+      <li><b>Kód:</b> tri efekty v engine plus testy, náhľad NA EX musí poznať Čašníka a bot musí vedieť karty ohodnotiť.</li>
+    </ul></dd>
+    <dt>Riziká</dt>
+    <dd>Sada narastie o tri texty a zrozumiteľnosť je dnes 5/10. Čašník sa môže stať povinnou kartou, ktorú berie každý,
+      to ukáže štatistika kariet. Vyhadzovač je Autorita, takže ho súperov Praudovravec umlčí. To je zámer, protihra
+      na protihru.</dd>
+    <dt>Súvisí s</dt>
+    <dd>Report 065959, návrh 2 (bomba) a 1 (posledné slovo). Rieši ich bez zásahu do pravidiel a nevylučuje ich.
+      Roadmapa #15 (Karty, ktoré nikto nehrá).</dd>
+    <dt>Overenie</dt>
+    <dd>Turnaj botov so sadou s novými kartami (po tom, čo ich bot-tréner naučí bota): podiel bitiek rozhodnutých
+      jedným NA EX a ako často sa karty berú zo šenku.</dd>
+  </dl>
+</li>
+
+<!-- 2 -->
+<li id="n2" class="odp" data-typ="pravidla" data-odp="1">
+  <h3><span class="cislo">2</span>Runda na môj účet — dražba o posledné slovo</h3>
+  <div class="znacky"><span class="znacka z-pravidla">pravidlá</span><span class="znacka z-nar">M</span><span class="znacka z-odp">odporúčané</span></div>
+  <dl class="polozka">
+    <dt>Problém</dt>
+    <dd>Dva problémy naraz.
+      <ul>
+        <li>Posledné slovo v Pitke má vždy útočník. Všetci štyria hráči ho označili za výhodu stoličky a obranca o náskok
+          po Zhromaždení prišiel trikrát z troch (Jano).</li>
+        <li>Cigariet je nadbytok: P2 skončila 17 : 17 cigariet, Fero mal po K2 jedenásť a „nič nás netlačilo“ (#19). Tri
+          cigarety sú na konci jeden kus podmienky, teda pár bodov.</li>
+      </ul>
+      Stratég nameral, že u botov posledné slovo nerozhoduje veľa (presun na obrancu: útočník 54 → 53 % bitiek).
+      Ľudia a AI hráči ho však vnímajú ako nespravodlivosť a zmena by mala pridať rozhodnutie, nie iba presunúť výhodu.</dd>
+    <dt>Návrh</dt>
+    <dd>Po prvom Zhromaždení bitky a pred prvou Pitkou obaja hráči <b>naraz a tajne</b> ponúknu 0 až všetky svoje cigarety.
+      Kto ponúkne viac, svoju ponuku zaplatí a má <b>posledné slovo vo všetkých Pitkách</b> tejto bitky. Pitku začína
+      druhý hráč. Pri rovnosti, aj pri 0 : 0, má posledné slovo útočník ako dnes a nikto neplatí. Platba nie je
+      nerest (ako šenok). Na Kostole, kde sa NA EX nedáva, sa nedraží.</dd>
+    <dt>Ako by sa hral</dt>
+    <dd class="priklad">K4, Most. Po Zhromaždení vedie obranca Jano 6 : 4. Fero (útočník) má vlastného Recidivistu
+      s nepárovou Petelicou a s posledným slovom by NA EX dal 6 : 10. Jano to vidí a ponúkne 5 cigariet z 9, Fero
+      3 z 12. Jano zaplatí 5 a posledné slovo má on. Fero začína a dá NA EX na Recidivistu (6 : 10). Jano odpovie
+      kartou a potom dá NA EX na vlastného Presbitera, takže bitku vyhrá 11 : 10. Keby Fero ponúkol 6, bitka by bola jeho.</dd>
+    <dt>Strategickosť a náhoda</dt>
+    <dd>Zručnosť: viac. Hráč musí oceniť, koľko mu posledné slovo v tejto bitke prinesie, a odhadnúť súperovu
+      ponuku. Cigarety dostanú cenu, ktorá rastie s dôležitosťou bitky. Dobiehanie zostane, lebo porazený dostáva
+      cigarety za prebytok a pri rovnosti má posledné slovo útočník. Náhoda: bez zmeny.</dd>
+    <dt>Čo zmeniť</dt>
+    <dd><ul>
+      <li><b>Pravidlá:</b> §7 Pitka (kto začína a kto má posledné slovo), §13 Útočník / obranca.</li>
+      <li><b>Kód:</b> nová fáza „dražba“ v jadre (tajná voľba ako pri stavbe šenku, <code>viewFor</code> skryje
+        súperovu ponuku, kým neponúknu obaja, a test na to), bot potrebuje heuristiku ponuky (bot-tréner).</li>
+      <li><b>UI:</b> jedno políčko s číslom a „Ponúknuť“. Predvolená ponuka 0, takže kto nechce, klikne raz.</li>
+    </ul></dd>
+    <dt>Riziká</dt>
+    <dd>Jeden krok navyše v každej bitke, okolo 10 s. Bohatý hráč si môže posledné slovo kupovať stále, preto je
+      dražba raz za bitku, nie za každú Pitku. Pitka nahlas sa menila 21. 10., takže by sa menila znova (zmenilo by
+      sa však len to, kto hrá druhý, nie celý postup).</dd>
+    <dt>Súvisí s</dt>
+    <dd>Report 065959, návrh 1. Varianta (a), súčasné tajné NA EX, má tri kolízie (odpoveď striedavo, povinné NA EX na Krčme,
+      dva NA EX vo Vínnej pivnici). Dražba nemá ani jednu, lebo postup Pitky ostáva rovnaký. Názory #28 a #36.</dd>
+    <dt>Overenie</dt>
+    <dd>Variant vo worktree a <code>strategickost.ts</code> (≈ 8 min, ohlásim vopred): rebrík, podiel bitiek útočníka,
+      priemerné cigarety na konci partie. Bot musí vedieť ponúkať, inak meranie neplatí.</dd>
+  </dl>
+</li>
+
+<!-- 3 -->
+<li id="n3" class="odp" data-typ="pravidla" data-odp="1">
+  <h3><span class="cislo">3</span>Absťák bez rebríka</h3>
+  <div class="znacky"><span class="znacka z-pravidla">pravidlá</span><span class="znacka z-nar">S</span><span class="znacka z-odp">odporúčané</span><span class="znacka z-nar">zjednodušenie</span></div>
+  <dl class="polozka">
+    <dt>Problém</dt>
+    <dd>Absťák dostane hráč, keď má v kole menej nerestí než v predošlom (s Milujúcou manželkou aj pri rovnakom počte).
+      Vzniká rebrík: po jednom bohatom kole musí hráč v každom ďalšom piť a fajčiť aspoň toľko, aby nedostal trest.
+      Šimon platil 3 cigarety za kolo „nie preto, že chcel karty, ale aby sa vyhol trestu“ (#21). Pravidlo si treba
+      pamätať z minulého kola a Šimon ho v reporte uviedol medzi nejasnosťami.</dd>
+    <dt>Návrh</dt>
+    <dd>Pevná latka namiesto porovnania s minulým kolom:
+      <ul>
+        <li>Absťák dostaneš na konci kola, keď si v ňom mal <b>menej než 2 neresti</b>. Každá odhalená Milujúca manželka
+          zvýši latku o 1.</li>
+        <li>Kolo s aspoň <b>4 nerestami</b> (latka + 2) vráti jeden Absťák do zásoby.</li>
+        <li>Prvé kolo sa ráta ako každé iné, netreba „nastaviť základ“.</li>
+      </ul>
+      Čísla 2 a 4 sú návrh na overenie, nie hotová hodnota.</dd>
+    <dt>Ako by sa hral</dt>
+    <dd class="priklad">Dnes: Šimon v K2 vyfajčí 2 cigarety a dá 2 NA EX, má 4 neresti. V K3 ich teda potrebuje aspoň 4,
+      s Manželkou 5, inak dostane Absťák. Po zmene: latka je 2 (s Manželkou 3). V K3 vyfajčí jednu cigaretu a dá jeden
+      NA EX, Absťák nedostane. V K6 na Kostole (nesmie sa vypiť ani dať NA EX) nemá čo hrať, má 0 nerestí a dostane Absťák.
+      Kostol a Benzínka tak dostanú zuby.</dd>
+    <dt>Strategickosť a náhoda</dt>
+    <dd>Zručnosť: podobne. Rozhodnutie „oddýchnuť si za cenu Absťáku“ ostáva, ale je čitateľné kolo po kole. Zmizne
+      nútený výdavok, ktorý nie je voľbou. Náhoda: bez zmeny. Zrozumiteľnosť: viac, lebo netreba nič pamätať.</dd>
+    <dt>Čo zmeniť</dt>
+    <dd><ul>
+      <li><b>Pravidlá:</b> §12 Absťák, text a výklad Milujúcej manželky (§14).</li>
+      <li><b>Karty:</b> text Milujúcej manželky („Furt: tvoja latka Absťáku je o 1 vyššia“).</li>
+      <li><b>Kód:</b> porovnanie nerestí v engine, <code>stavZavislosti</code> (výhľad je jednoduchší), bot.</li>
+    </ul></dd>
+    <dt>Riziká</dt>
+    <dd>Absťák môže zoslabnúť, lebo dve neresti za kolo stoja len cigaretu a jedno NA EX. Preto treba merať, koľko
+      Absťákov na partiu padne dnes a koľko po zmene. Ak menej, latka 3.</dd>
+    <dt>Súvisí s</dt>
+    <dd>Názor #21 (Šimon navrhol priemer troch kôl, čo by pravidlo skôr skomplikovalo). Pravidlá v4 (stihne sa, ak sa
+      rozhodne pred zmrazením).</dd>
+    <dt>Overenie</dt>
+    <dd>Turnaj botov (<code>turnaj.ts</code>, krátky): Absťáky a neresti na hráča, cigarety na konci. Ohlásim vopred.</dd>
+  </dl>
+</li>
+
+<!-- 4 -->
+<li id="n4" data-typ="pravidla">
+  <h3><span class="cislo">4</span>Krstný otec — tajný starší, na ktorom ti záleží</h3>
+  <div class="znacky"><span class="znacka z-pravidla">pravidlá</span><span class="znacka z-nar">M</span></div>
+  <dl class="polozka">
+    <dt>Problém</dt>
+    <dd>Dve sťažnosti s jedným koreňom:
+      <ul>
+        <li>„Politika je účtovníctvo“ (Šimon): každý starší na úrovni 2 dá asi 13 b, nech je to ktorýkoľvek, takže sa vždy
+          tlačí ten najbližší.</li>
+        <li>Partia je rozhodnutá priskoro: P2 bola po K4 13 : 89, Šimon aj Hela hovoria „výsledok zjavný od K4“ a napätie
+          kleslo na 6,3. Body súpera sú presné a verejné, takže v K5–K7 obaja vedia, ako to dopadne.</li>
+      </ul></dd>
+    <dt>Návrh</dt>
+    <dd>Pri príprave dostane každý hráč tajne <b>2 karty starších</b> z ôsmich v hre (rôzne pre každého) a jedného si
+      vyberie za <b>krstného otca</b>. Súper nevie, ktorého. Na konci hry:
+      <ul>
+        <li>krstný otec sa ťa bojí na úrovni 2 (Strach): <b>+6 b</b>,</li>
+        <li>na úrovni 3 (Vydesenie) alebo si ho získal patronátom: <b>+10 b</b>.</li>
+      </ul>
+      Čísla sú návrh (asi polovica toho, čo dnes dá jeden starší v Strachu). Bodovanie bez strán sa nemení,
+      bonus sa len pripočíta.</dd>
+    <dt>Ako by sa hral</dt>
+    <dd class="priklad">Šimon dostane Farára a Krčmárku a tajne si vyberie Farára. Prebytok aj Pohoršenia dáva o niečo
+      častejšie na Farára a v K5 ho má na indexe 7 (Strach, +6). Hela si všimne, že Šimon tlačí Farára, aj keď je
+      lacnejší posun inde, a v K6 nad Farárom vezme patronát. Marker ide do stredu a Šimonov bonus zmizne. V K7 Šimon
+      blafuje tlakom na Hrobára, aby Hela minula patronát zle.</dd>
+    <dt>Strategickosť a náhoda</dt>
+    <dd>Zručnosť: viac. Vznikne dlhodobý plán, čítanie súpera (kam dáva prebytok) a blaf (tlačiť dvoch). Starší
+      prestanú byť zameniteľní. Náhoda: o niečo viac (ktorí dvaja starší ti prídu), voľba z dvoch ju tlmí. Napätie:
+      viac. Až 10 b na každého hráča ostáva do konca skrytých, takže vedenie o 20 b v K6 nie je isté víťazstvo.</dd>
+    <dt>Čo zmeniť</dt>
+    <dd><ul>
+      <li><b>Pravidlá:</b> §11 Príprava (rozdanie a voľba), §10 Bodovanie (bonus). §1 sa nemení, bonus sa do ohláseného vydesenia nepočíta.</li>
+      <li><b>Kód:</b> skrytá voľba v stave hry, <code>viewFor</code> ju súperovi nepošle do konca hry, test na to.
+        Bot: výber a váha pri rozdeľovaní prebytku.</li>
+      <li><b>UI:</b> karta krstného otca pri mojich bodoch, súperovi „krstný otec: ?“ a pri skóre súpera „+0 až +10“.</li>
+    </ul></dd>
+    <dt>Riziká</dt>
+    <dd>Skryté body uberú z presnosti náhľadu súperovho skóre, ktorú hráči oceňujú. Preto je bonus malý a ohraničený.
+      Pridá sa jeden krok pred hrou. Pri 2 na 2 (roadmapa Potom) treba doriešiť, či má krstného otca hráč alebo tím.</dd>
+    <dt>Súvisí s</dt>
+    <dd>Report 065959, návrh 12 (strach podľa konkrétneho staršieho). Ten mení bodovanie bez strán, Krstný otec ho
+      nechá a iba pridá bonus. Roadmapa #7 (Posledná bitka nerozhoduje celú partiu).</dd>
+    <dt>Overenie</dt>
+    <dd>Variant vo worktree: rozptyl „vedúci po K4 vyhrá“ (dnes 67 %) a rebrík. Ohlásim vopred.</dd>
+  </dl>
+</li>
+
+<!-- 5 -->
+<li id="n5" data-typ="pravidla">
+  <h3><span class="cislo">5</span>Exekútor zabaví lokalitu namiesto náhlej prehry</h3>
+  <div class="znacky"><span class="znacka z-pravidla">pravidlá</span><span class="znacka z-nar">M</span><span class="znacka z-nar">odstránenie</span></div>
+  <dl class="polozka">
+    <dt>Problém</dt>
+    <dd>Exekúcia má dnes dva stavy: buď sa nestane (v poslednom playteste nenastala, Dlhy sa vtedy ešte pálili; prah je 10 + 2 × priazeň priznaných Dlhov),
+      alebo hráč bez Nástroja <b>okamžite prehrá</b> uprostred partie. Hela ju uviedla medzi „zbytočnou zložitosťou,
+      ktorú nepoužila“. Od 22. 10. sa Dlh sám nepáli, takže prah sa začne dosahovať (Finančná poradkyňa a Kočovník
+      posielajú Dlhy súperovi). Náhla prehra by vtedy prišla ako blesk, najmä pre nového hráča.</dd>
+    <dt>Návrh</dt>
+    <dd>Keď priznané Dlhy dosiahnu prah, hráč vyberie jedno:
+      <ul>
+        <li>odovzdá Nástroj ako dnes (Záhradkár naďalej platí), alebo</li>
+        <li><b>exekútor zabaví jednu jeho ovládnutú lokalitu</b> a dá ju <b>na sekeru</b>. Vezme si ju víťaz najbližšej
+          bitky, v poslednej bitke pri remíze prepadne ako dnes.</li>
+      </ul>
+      Polovica Dlhov zhorí ako dnes. Kto nemá Nástroj ani lokalitu, natrvalo odhodí jeden poldeci (ako bolestné).
+      Riadok „nedokáže čeliť exekúcii — okamžite prehráva“ v §1 zmizne.</dd>
+    <dt>Ako by sa hral</dt>
+    <dd class="priklad">Jano má po K5 jedenásť priznaných Dlhov a prah 10, Nástroj nemá. Dnes by partia skončila. Po
+      zmene exekútor zabaví Most, ktorý Jano vyhral v K2, a dá ho na sekeru. Päť Dlhov zhorí. V K6 sa bojuje o Družstvo
+      aj Most naraz a Jano si Most môže vybojovať späť. Exekučná dražba ako v živote.</dd>
+    <dt>Strategickosť a náhoda</dt>
+    <dd>Zručnosť: podobne až viac. Zadĺženie sa stane rizikom, ktoré sa dá spočítať a vyvážiť, nie koncom hry.
+      Sekera dá súperovi bitku s dvojnásobnou stávkou, takže Dlh dostane skutočnú cenu. Náhoda: bez zmeny.</dd>
+    <dt>Čo zmeniť</dt>
+    <dd><ul>
+      <li><b>Pravidlá:</b> §1 Podmienky konca, §8.1 Exekútor, §8.4 Sekera (zabavená lokalita).</li>
+      <li><b>Kód:</b> <code>exekutorCheck</code> a krok Exekútora v engine, voľba hráča, testy. Bot: voľba Nástroj alebo lokalita.</li>
+      <li><b>UI:</b> výhľad „exekúcia: prah 10, máš 9“ pri Dlhoch, zabavená lokalita na sekere.</li>
+    </ul></dd>
+    <dt>Riziká</dt>
+    <dd>Bez náhlej prehry môže byť zadĺženie lacnejšie než dnes. Strata lokality za 10 b až 16 b a sekera pre súpera sú
+      však citeľné. Ak sa ukáže, že exekúcia ani po verejnom dlhu nenastáva, je poctivejšie Exekútora zrušiť celého.
+      To je väčší zásah, lebo Exekútor je priazeň scorecardu.</dd>
+    <dt>Súvisí s</dt>
+    <dd>Roadmapa #51 (Dlh sa vždy spáli, hotové), report 065959 (Hela: Exekútor a Dedičstvo nepoužité).</dd>
+    <dt>Overenie</dt>
+    <dd>Lacné: <code>turnaj.ts</code> s počítadlom <code>exekucie</code> zo <code>statistiky.ts</code>, koľko exekúcií padne po verejnom dlhu
+      na 100 partií. Ohlásim vopred. Ak skoro nula, rozhodne sa medzi týmto nápadom a úplným zrušením.</dd>
+  </dl>
+</li>
+
+<!-- 6 -->
+<li id="n6" data-typ="ui">
+  <h3><span class="cislo">6</span>Hodiny pri stole</h3>
+  <div class="znacky"><span class="znacka z-ui">UI a platforma</span><span class="znacka z-nar">M</span></div>
+  <dl class="polozka">
+    <dt>Problém</dt>
+    <dd>Tempo dostalo od všetkých štyroch hráčov zhodne 5/10. Partie trvali 54 a 88 minút, „súperka sa dlho
+      rozhodovala“ (Šimon), 30–50 krokov na kolo. Roadmapa #9 meria fázy a uberá kliky. Michal odmietol obmedziť
+      Pitky (varianta C), takže treba zrýchliť rozhodovanie, nie pravidlá.</dd>
+    <dt>Návrh</dt>
+    <dd>Voliteľné <b>hodiny</b> pri zakladaní partie s človekom: každý hráč má časovú banku (krátka 10 min, stredná
+      15 min, dlhá 22 min) a za každé rozhodnutie +5 s. Keď sa banka minie, má na každé rozhodnutie 15 s. Potom za neho
+      server urobí predvolený ťah: v Zhromaždení pas, v Pitke „hotovo“ bez NA EX, v šenku „prestať brať“, pri stavbe
+      šenku prvú polovicu. Neprehráva. Hodiny bežia len hráčovi, ktorý je na ťahu, a v bare vidno obe.</dd>
+    <dt>Ako by sa hral</dt>
+    <dd class="priklad">Hela v K3 premýšľa nad NA EX 90 s a jej čas klesne z 9:12 na 7:42. V K6 má 0:40 a hrá rýchlejšie.
+      Keď jej čas dôjde, každý ďalší krok má 15 s a pri nečinnosti hra povie „hotovo“ za ňu.</dd>
+    <dt>Strategickosť a náhoda</dt>
+    <dd>Pravidlá sa nemenia. Pridáva sa riadenie času ako v šachu: kde premýšľať a kde hrať rýchlo. Náhoda: žiadna.</dd>
+    <dt>Čo zmeniť</dt>
+    <dd><ul>
+      <li><b>Server:</b> časovač na partiu (jadro ostáva bez <code>Date.now()</code>, server po vypršaní pošle zámer ako klient),
+        stav pri odpojení (čas sa zastaví, keď je hráč offline do 60 s).</li>
+      <li><b>UI:</b> voľba pri zakladaní partie, dve hodiny v bare.</li>
+      <li><b>Pravidlá:</b> nič, nanajvýš poznámka v pravidlách webu.</li>
+    </ul></dd>
+    <dt>Riziká</dt>
+    <dd>Stres pre nových hráčov, preto voliteľné a predvolene vypnuté pre prvé partie. Pomalé pripojenie. Predvolený ťah
+      môže byť zlý (pas dáva cigarety, takže nie je trest navyše).</dd>
+    <dt>Súvisí s</dt>
+    <dd>Roadmapa #9 (Stredná partia do 60 minút), <code>tools/admin/tempo.ts</code> (merania, kde ide čas).</dd>
+    <dt>Overenie</dt>
+    <dd>Bez simulácie. Merať <code>tempo.ts</code> v partiách ľudí s hodinami a bez nich.</dd>
+  </dl>
+</li>
+
+<!-- 7 -->
+<li id="n7" data-typ="ui">
+  <h3><span class="cislo">7</span>Rozbor partie: tri najdrahšie rozhodnutia</h3>
+  <div class="znacky"><span class="znacka z-ui">UI a platforma</span><span class="znacka z-nar">M–L</span></div>
+  <dl class="polozka">
+    <dt>Problém</dt>
+    <dd>Zrozumiteľnosť 5/10 a „hĺbka plynie z trikov, nie z čitateľných rozhodnutí“ (Jano). Najcennejšia časť reportov je
+      sekcia „Čo by zmenil lepší hráč“ (Hela: „dokopy asi 30 b“), ľudský hráč však taký rozbor nedostane. Prvých 10
+      ľudských partií (roadmapa #13) rozhodne, či sa hráči vrátia.</dd>
+    <dt>Návrh</dt>
+    <dd>Po dohratej partii server prehrá partiu zo semienka a príkazov (zber dát už beží) a pri každom rozhodnutí hráča
+      nechá bota ohodnotiť jeho voľbu a najlepšiu alternatívu. Bot vidí len to, čo hráč (skryté informácie zamieša ako
+      dnes). Hráč dostane <b>tri rozhodnutia s najväčšou stratou odhadovaných bodov</b> a klikom ich otvorí v prehrávači
+      partie (#18) v danom momente.</dd>
+    <dt>Ako by sa hral</dt>
+    <dd class="priklad">Po partii Hela uvidí: 1. K2 Zhromaždenie, pas pri 3 : 1, bot by vyložil Recidivistu, odhad −14 b.
+      2. K5 Pitka, NA EX nedala na Finančnú poradkyňu (súperovi Dlh +6), −9 b. 3. K1 odpoveď Miňištrantom zdražila
+      súperov prebytok, −6 b.</dd>
+    <dt>Strategickosť a náhoda</dt>
+    <dd>Pravidlá sa nemenia. Hráči rýchlejšie pochopia, kde je zručnosť, takže hra pôsobí strategickejšie. Bot-tréner
+      navyše získa zoznam miest, kde ľudia hrajú lepšie než bot.</dd>
+    <dt>Čo zmeniť</dt>
+    <dd><ul>
+      <li><b>Server:</b> úloha po partii (výpočet môže bežať minúty), uloženie výsledku k partii.</li>
+      <li><b>Jadro:</b> nič nové, len bot a deterministické prehratie.</li>
+      <li><b>UI:</b> sekcia „Rozbor“ v detaile partie, odkaz do prehrávača.</li>
+    </ul></dd>
+    <dt>Riziká</dt>
+    <dd>Bot môže byť slabší než dobrý hráč a radiť zle, preto „bot by…“, nie „správne je…“. Záťaž servera na OVH, preto
+      jedna úloha naraz a len pre partie ľudí. Rozbor nesmie odhaliť nič, čo hráč počas partie nevidel. Po skončení
+      partie je to bezpečné, ale ruku súpera rozbor neukazuje.</dd>
+    <dt>Súvisí s</dt>
+    <dd>Roadmapa #14 (Prvá partia s nápovedou), #18 (Prehrávač partie), #13 (Prvých 10 ľudských partií).</dd>
+    <dt>Overenie</dt>
+    <dd>Bez simulácie. Na hotových partiách playtestu porovnať rozbor bota s tým, čo hráči sami označili za chyby.</dd>
+  </dl>
+</li>
+
+<!-- 8 -->
+<li id="n8" data-typ="pravidla karty">
+  <h3><span class="cislo">8</span>Fígeľ: nový typ karty, ktorá leží lícom dole</h3>
+  <div class="znacky"><span class="znacka z-pravidla">pravidlá</span><span class="znacka z-karty">nový typ karty</span><span class="znacka z-nar">L</span></div>
+  <dl class="polozka">
+    <dt>Problém</dt>
+    <dd>Hra je takmer celá spočítateľná. Hela: „hazard je takmer celý výpočet“, neistota je len v skrytej ruke.
+      To je silná stránka, no dominantné triky (bomba, posledné slovo, patronát z červenej zóny za 0 cigariet) sa preto
+      hrajú bez rizika. Chýba strach z toho, čo súper môže mať pripravené.</dd>
+    <dt>Návrh</dt>
+    <dd>Nový tag <b>Fígeľ</b>. Fígeľ sa v Zhromaždení vykladá <b>lícom dole pred seba</b> (nie do línie), stojí
+      1 cigaretu a míňa limit ako karta. Leží aj cez ďalšie kolá, kým nenastane jeho spúšťač. Potom sa odhalí,
+      vyhodnotí a ide do odhadzovacieho balíčka. Každý hráč má najviac jeden skrytý Fígeľ. Súper vidí, že leží, nie aký.
+      Tri karty na začiatok:
+      <div class="karta"><b>Riedené</b> <small>proti bombe</small><br>Keď súper dá NA EX, jeho NA EX nezdvojí neaktívne akcie (aktívne zruší).</div>
+      <div class="karta"><b>Udavač</b> <small>proti patronátu</small><br>Keď súper vezme patronát, zaplatí o 2 cigarety viac, inak patronát prepadne.</div>
+      <div class="karta"><b>Kamoš od vedľa</b> <small>proti prebytku</small><br>Keď súper rozdeľuje prebytok proti tebe, prvé 2 body prepadnú.</div>
+    </dd>
+    <dt>Ako by sa hral</dt>
+    <dd class="priklad">Šimon v K3 položí Fígeľ lícom dole. Hela má posledné slovo a bombu na Hasičovi, no ak je to
+      Riedené, jej poldeci prepadne naprázdno. Dá radšej NA EX na Šimonovu kartu, aby mu zrušila aktívne akcie, a vyhrá
+      tesnejšie. Šimon blafoval: bol to Udavač. V K5 Hela vezme patronát a zaplatí o 2 cigarety viac.</dd>
+    <dt>Strategickosť a náhoda</dt>
+    <dd>Zručnosť: viac. Pribudne blaf a hranie okolo neznámej hrozby, ako tajomstvá v Hearthstone. Náhoda: o niečo
+      viac, lebo pribudne skrytá informácia. Nápad 1 dáva tú istú protihru otvorene a lacnejšie.</dd>
+    <dt>Čo zmeniť</dt>
+    <dd><ul>
+      <li><b>Pravidlá:</b> nový odsek o Fígli (§6 vedľa Priznania a Dedičstva), tag v §2, výklad v §14.</li>
+      <li><b>Karty:</b> nový tag v tvorcovi, 3+ karty, ilustrácie, rub karty na stole.</li>
+      <li><b>Kód:</b> nové spúšťače „keď súper…“ v engine, <code>viewFor</code> skryje identitu (test), log „Hráč X položil Fígeľ“.
+        Bot musí hrať okolo neznámeho Fígľa (vzorkuje z nevidených kariet).</li>
+      <li><b>UI:</b> karta lícom dole pred hráčom, odhalenie pri spustení.</li>
+    </ul></dd>
+    <dt>Riziká</dt>
+    <dd>Zložitosť: nový typ karty pri zrozumiteľnosti 5/10. Bot s neznámou hrozbou hrá horšie. Ak sa ujme nápad 1,
+      Fígeľ nemusí byť potrebný. Preto je posledný.</dd>
+    <dt>Súvisí s</dt>
+    <dd>Report 065959, návrhy 1, 2 a 6, roadmapa #34 (Rozšírenie: Hody), kam by sa Fígeľ hodil ako novinka rozšírenia.</dd>
+    <dt>Overenie</dt>
+    <dd>Až po nápade 1. Turnaj botov so sadou s Fígľami, keď ich bot-tréner naučí bota.</dd>
+  </dl>
+</li>
+
+</ol>
+
+<h2>Čo som zvážil a nenavrhujem znova</h2>
+<div class="blok">
+  <ul>
+    <li><b>Súčasné tajné NA EX</b>: už je v návrhoch z playtestu (065959, návrh 1). Dražba (nápad 2) je ľahšia varianta
+      s tým istým cieľom.</li>
+    <li><b>Strop prebytku</b>: Michal 22. 10. odmietol (len stávka bitky v UI), bez nových dát nenavrhujem.</li>
+    <li><b>Limit ruky a mŕtve karty</b>: roadmapa #53, odložené až po v4.</li>
+    <li><b>Pohreb Cirhózy za cigarety</b> (#22) a <b>Dlh ako pôžička</b> (#29): v návrhoch čakajú na playtest novej verzie.</li>
+    <li><b>Strach podľa konkrétneho staršieho</b> (065959, návrh 12): mení bodovanie bez strán. Krstný otec (nápad 4) ide
+      po tom istom probléme bez tejto zmeny.</li>
+  </ul>
+</div>
+
+<h2>Simulácie, ktoré by som pustil (zatiaľ nespustené)</h2>
+<div class="blok">
+  <ul>
+    <li><b>Lacné, hneď:</b> <code>turnaj.ts</code> 100 partií, koľko exekúcií padne po verejnom dlhu (nápad 5), Absťáky
+      a neresti na hráča (nápad 3).</li>
+    <li><b>Drahšie:</b> <code>strategickost.ts</code> (≈ 8 min) pre dražbu (nápad 2) a Krstného otca (nápad 4). Potrebujú
+      variant vo worktree a bota, ktorý ich vie hrať (bot-tréner).</li>
+    <li>Každú simuláciu ohlásim Leaderovi pred spustením a naraz pobeží najviac jedna (docs/SESSIONS.md).</li>
+  </ul>
+</div>
+
+<footer>Navrhár NA EX!, vetva <code>navrhar/napady</code>. Pravidlá ani kód sa nemenili. O nápadoch rozhoduje Michal
+  cez Leadera, schválené idú do roadmapy.</footer>
+</main>
+<script>
+(function () {
+  var tlacidla = document.querySelectorAll('.filter button');
+  var napady = document.querySelectorAll('ol.napady > li');
+  tlacidla.forEach(function (b) {
+    b.addEventListener('click', function () {
+      var f = b.getAttribute('data-f');
+      tlacidla.forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+      napady.forEach(function (n) {
+        var typ = (n.getAttribute('data-typ') || '').split(' ');
+        var ukaz = f === 'vsetko' || (f === 'odp' ? n.getAttribute('data-odp') === '1' : typ.indexOf(f) >= 0);
+        n.hidden = !ukaz;
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>
