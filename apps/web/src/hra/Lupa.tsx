@@ -32,10 +32,14 @@ export interface LupaProps {
   readonly onPointerDown?: ((e: ReactPointerEvent<HTMLElement>) => void) | undefined;
   /** Pravý klik: to isté, čo pravý klik na pôvodnú kartu (napr. vrátiť návrh do ruky). */
   readonly onOdstran?: (() => void) | undefined;
+  /** Lupa sa preniesla zo susednej karty — jemnejší nástup. */
+  readonly prechod?: boolean;
+  /** Lupa, ktorú myš opustila: len doznieva (zmenší sa a zmizne), udalosti neberie. */
+  readonly doznieva?: boolean;
   readonly children: ReactNode;
 }
 
-export function Lupa({ rect, mierka: ziadana, onZavri, onPointerDown, onOdstran, children }: LupaProps) {
+export function Lupa({ rect, mierka: ziadana, onZavri, onPointerDown, onOdstran, prechod = false, doznieva = false, children }: LupaProps) {
   const zavriRef = useRef(onZavri);
   zavriRef.current = onZavri;
 
@@ -49,6 +53,7 @@ export function Lupa({ rect, mierka: ziadana, onZavri, onPointerDown, onOdstran,
   const top = Math.max(OKRAJ, Math.min(cy - h / 2, window.innerHeight - h - OKRAJ));
 
   useEffect(() => {
+    if (doznieva) return;
     // Hranice z vypočítanej polohy, nie z DOM — počas animácie je lupa
     // ešte menšia a myš pri okraji by ju hneď zavrela.
     const mimo = (e: PointerEvent): boolean =>
@@ -78,13 +83,16 @@ export function Lupa({ rect, mierka: ziadana, onZavri, onPointerDown, onOdstran,
       window.removeEventListener("resize", zavri);
       window.removeEventListener("blur", zavri);
     };
-  }, [left, top, w, h]);
+  }, [left, top, w, h, doznieva]);
 
   return createPortal(
     <div
-      className={onPointerDown !== undefined ? "lupa chytitelna" : "lupa"}
+      className={["lupa", onPointerDown !== undefined && !doznieva ? "chytitelna" : "", prechod ? "prechod" : "", doznieva ? "doznieva" : ""]
+        .filter((t) => t !== "")
+        .join(" ")}
+      aria-hidden={doznieva || undefined}
       style={{ left, top, width: w, transformOrigin: `${cx - left}px ${cy - top}px` } as CSSProperties}
-      onPointerDown={onPointerDown}
+      onPointerDown={doznieva ? undefined : onPointerDown}
       onDragStart={(e) => e.preventDefault()}
       // Klik na kartu s akciou ju najprv vykoná (bublá z karty), potom lupa zmizne.
       onClick={() => zavriRef.current()}

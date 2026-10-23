@@ -15,6 +15,7 @@
 
 import {
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -220,6 +221,9 @@ function pravyKlik(fn: (() => void) | undefined): ((e: React.MouseEvent) => void
         fn();
       };
 }
+
+/** Dĺžka doznievania lupy po odchode myši — rovnaká ako animácia .lupa.doznieva v hra.css. */
+const DOZNIEVANIE_LUPY_MS = 160;
 
 function kariet(n: number): string {
   return n === 1 ? "1 kartu" : n >= 2 && n <= 4 ? `${n} karty` : `${n} kariet`;
@@ -1307,7 +1311,16 @@ export function HernaPlocha({
   // v tom istom rade uhnú do strán ako v ruke (harmonika v hra.css). Klik ostáva
   // herným akciám — lupa leží nad kartou a klik na ňu urobí to isté ako na kartu.
   // zFokusu: lupu otvoril fokus z klávesnice, zavrie ju jeho strata.
-  const [lupa, setLupa] = useState<{ readonly kluc: string; readonly rect: DOMRect; readonly zFokusu?: boolean } | null>(null);
+  // prechod: lupa sa preniesla zo susednej karty — nastúpi jemnejšie (bez skoku zo 50 %).
+  const [lupa, setLupa] = useState<{ readonly kluc: string; readonly rect: DOMRect; readonly zFokusu?: boolean; readonly prechod?: boolean } | null>(null);
+  // Lupa, ktorú myš práve opustila, chvíľu doznieva (Michal 2026-10-23: prechod z karty
+  // na kartu „trhal“ — stará lupa zmizla naraz a nová skočila na miesto).
+  const [doznieva, setDoznieva] = useState<{ readonly kluc: string; readonly rect: DOMRect } | null>(null);
+  useEffect(() => {
+    if (doznieva === null) return;
+    const t = setTimeout(() => setDoznieva(null), DOZNIEVANIE_LUPY_MS);
+    return () => clearTimeout(t);
+  }, [doznieva]);
   // Čo je pod lupou v tomto prekreslení — lupa kreslí vždy živý stav.
   const lupaKarty = new Map<
     string,
@@ -1319,8 +1332,8 @@ export function HernaPlocha({
     }
   >();
   /** Zväčší kartu pod prvkom `el` (myš, fokus, na dotyku ťuknutie). */
-  const otvorLupu = (kluc: string, el: Element | null | undefined, zFokusu = false): void => {
-    if (tahanie === null && el != null) setLupa({ kluc, rect: el.getBoundingClientRect(), zFokusu });
+  const otvorLupu = (kluc: string, el: Element | null | undefined, zFokusu = false, prechod = false): void => {
+    if (tahanie === null && el != null) setLupa({ kluc, rect: bezPosunuHarmoniky(el), zFokusu, prechod });
   };
   const casovacLupy = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const lupaZavreta = useRef<{ readonly kluc: string; readonly cas: number } | null>(null);
@@ -1334,25 +1347,18 @@ export function HernaPlocha({
    */
   const zavriLupu = (kde?: { readonly x: number; readonly y: number }): void => {
     if (lupa !== null) lupaZavreta.current = { kluc: lupa.kluc, cas: Date.now() };
-    const dalsia = kde === undefined || tahanie !== null ? null : lupaPodMysou(kde.x, kde.y, lupa?.kluc ?? null);
-    setLupa(dalsia);
+    const dalsia = kde === undefined || tahanie !== null || lupa === null ? null : lupaPodMysou(kde.x, kde.y, lupa);
+    // Pri odchode myši stará lupa dozneje; pri kliku, Esc či ťahaní zmizne hneď.
+    if (lupa !== null && kde !== undefined && tahanie === null) setDoznieva({ kluc: lupa.kluc, rect: lupa.rect });
+    setLupa(dalsia === null ? null : { ...dalsia, prechod: true });
   };
-  const lupaPodMysou = (x: number, y: number, terajsia: string | null): { readonly kluc: string; readonly rect: DOMRect } | null => {
-    const el = document
-      .elementsFromPoint(x, y)
-      .find(
-        (e): e is HTMLElement =>
-          e instanceof HTMLElement &&
-          e.dataset.lupa !== undefined &&
-          e.dataset.lupa !== terajsia &&
-          lupaKarty.has(e.dataset.lupa) &&
-          e.closest(".lupa") === null,
-      );
-    const kluc = el?.dataset.lupa;
-    const ciel = el === undefined || kluc === undefined ? null : (najdiLupu.get(kluc)?.(el) ?? null);
-    if (el === undefined || kluc === undefined || ciel === null) return null;
+  /**
+   * Poloha karty, keď sa stane aktívnou: bez posunu harmoniky. Počas uhýbania
+   * susedov je karta v pohybe a jej okamžitá poloha by lupu postavila vedľa.
+   */
+  const bezPosunuHarmoniky = (ciel: Element): DOMRect => {
     let posun = 0;
-    for (let a: HTMLElement | null = el; a !== null; a = a.parentElement) {
+    for (let a: Element | null = ciel; a !== null; a = a.parentElement) {
       const rodic = a.parentElement;
       if (rodic?.classList.contains("harmonika") === true || rodic?.classList.contains("harmonika-skupiny") === true) {
         const t = getComputedStyle(a).transform;
@@ -1360,11 +1366,41 @@ export function HernaPlocha({
       }
     }
     const r = ciel.getBoundingClientRect();
-    return { kluc, rect: new DOMRect(r.x - posun, r.y, r.width, r.height) };
+    return new DOMRect(r.x - posun, r.y, r.width, r.height);
+  };
+  /**
+   * Karta, na ktorú myš odišla z lupy. Susedia uhýbajú o kúsok viac, než lupa
+   * narástla, takže medzi lupou a susedom je medzera — keby lupa v nej zhasla,
+   * susedia by sa vrátili a hneď znova uhli (blikanie). Preto sa hľadá aj kúsok
+   * ďalej v smere pohybu.
+   */
+  const lupaPodMysou = (
+    x: number,
+    y: number,
+    terajsia: { readonly kluc: string; readonly rect: DOMRect },
+  ): { readonly kluc: string; readonly rect: DOMRect } | null => {
+    const smer = Math.sign(x - (terajsia.rect.left + terajsia.rect.width / 2));
+    for (const d of [0, 8, 16, 24]) {
+      const el = document
+        .elementsFromPoint(x + smer * d, y)
+        .find(
+          (e): e is HTMLElement =>
+            e instanceof HTMLElement &&
+            e.dataset.lupa !== undefined &&
+            e.dataset.lupa !== terajsia.kluc &&
+            lupaKarty.has(e.dataset.lupa) &&
+            e.closest(".lupa") === null,
+        );
+      const kluc = el?.dataset.lupa;
+      const ciel = el === undefined || kluc === undefined ? null : (najdiLupu.get(kluc)?.(el) ?? null);
+      if (kluc !== undefined && ciel !== null) return { kluc, rect: bezPosunuHarmoniky(ciel) };
+    }
+    return null;
   };
   useEffect(() => () => clearTimeout(casovacLupy.current), []);
-  // Susedia uhnú o polovicu prírastku šírky lupy (harmonika v hra.css).
-  useEffect(() => {
+  // Susedia uhnú o polovicu prírastku šírky lupy (harmonika v hra.css) — pred
+  // vykreslením, aby sa susedia nepohli najprv o starý posun.
+  useLayoutEffect(() => {
     if (lupa === null) return;
     const lk = lupaKarty.get(lupa.kluc);
     const mierka = Math.min(lk?.mierka ?? mierkaLupy, maxMierkaLupy(lupa.rect));
@@ -1374,6 +1410,23 @@ export function HernaPlocha({
     };
     // lupaKarty sa skladá pri každom kreslení — stačí kľúč a poloha lupy.
   }, [lupa, mierkaLupy]);
+  // Uhnuté skupiny línie môžu presiahnuť jej šírku. Línia, ktorá sa v pokoji
+  // neposúva, by vtedy ukázala vodorovný posuvník (skok výšky stola) a prichytenie
+  // lokality do stredu by ju posunulo — udalosť scroll lupu zavrela, preto lupa
+  // pri prechode myšou „trhala“ (Michal 2026-10-23). Kým je lupa otvorená, línia
+  // si drží stav z pokoja (hra.css .linia.lupa-v-pokoji).
+  const liniaVPokoji = useRef<boolean | null>(null);
+  useLayoutEffect(() => {
+    const l = liniaRef.current;
+    if (l === null) return;
+    if (lupa === null) {
+      liniaVPokoji.current = null;
+      l.classList.remove("lupa-v-pokoji");
+      return;
+    }
+    if (liniaVPokoji.current === null) liniaVPokoji.current = l.scrollWidth <= l.clientWidth;
+    l.classList.toggle("lupa-v-pokoji", liniaVPokoji.current);
+  }, [lupa]);
   /**
    * Udalosti prvku, ktorý sa pri prejdení myšou zväčší. Lupa sa otvorí až po
    * krátkej chvíli (pri prechode cez rad by blikala); hneď po zavretí inej
@@ -1393,7 +1446,7 @@ export function HernaPlocha({
         const el = e.currentTarget;
         clearTimeout(casovacLupy.current);
         const plynulo = z !== null && Date.now() - z.cas < 300;
-        casovacLupy.current = setTimeout(() => otvorLupu(kluc, najdi(el)), plynulo ? 0 : ONESKORENIE_LUPY_MS);
+        casovacLupy.current = setTimeout(() => otvorLupu(kluc, najdi(el), false, plynulo), plynulo ? 0 : ONESKORENIE_LUPY_MS);
       },
       onPointerLeave: (): void => {
         clearTimeout(casovacLupy.current);
@@ -4147,13 +4200,26 @@ export function HernaPlocha({
 
       {/* Až tu — lupaKarty sa naplnia pri kreslení stola a vrstiev vyššie. */}
       {(() => {
+        // Doznievajúca lupa pod novou — len obraz, myš ani klik neberie.
+        const lk = doznieva === null || doznieva.kluc === lupa?.kluc ? undefined : lupaKarty.get(doznieva.kluc);
+        if (doznieva === null || lk === undefined) return null;
+        return (
+          <Lupa key={`doznieva-${doznieva.kluc}`} rect={doznieva.rect} mierka={lk.mierka ?? mierkaLupy} onZavri={() => setDoznieva(null)} doznieva>
+            {lk.render(doznieva.rect.width * Math.min(lk.mierka ?? mierkaLupy, maxMierkaLupy(doznieva.rect)))}
+          </Lupa>
+        );
+      })()}
+      {(() => {
         const lk = lupa === null || tahanie !== null ? undefined : lupaKarty.get(lupa.kluc);
         if (lupa === null || lk === undefined) return null;
         const z = lk.zdroj;
         const chytit = z !== undefined && cieleZdroja(z).size > 0;
         return (
           <Lupa
+            // Nový kľúč = nová lupa s nástupom; stará pod ňou dozneje.
+            key={lupa.kluc}
             rect={lupa.rect}
+            prechod={lupa.prechod === true}
             mierka={lk.mierka ?? mierkaLupy}
             onZavri={zavriLupu}
             onPointerDown={chytit ? (e) => zacni(z, e, lupa.rect.width) : undefined}
