@@ -273,8 +273,11 @@ function miestaBubliny(w: number, h: number): Obdlznik[] {
   // Hore na stole: vedľa nadpisov krajov býva prázdno (karty sú v strede).
   const hornyStol = plst === undefined ? hore : Math.min(dole, Math.max(hore, plst.top + 6));
   const xs = [12, window.innerWidth - 12 - w];
+  // Nad pečiatkami na hrane stola: spodok bubliny tesne nad nimi (inak siahla na „pasovať“).
+  const hrana = [...document.querySelectorAll<HTMLElement>(".stol-hrana .pecat, .stol-hrana button")].map((el) => el.getBoundingClientRect().top).filter((t) => t > 0);
+  const nadHranou = hrana.length === 0 ? hornyStol : Math.max(hore, Math.min(...hrana) - h - 8);
   // Miesto hneď pod osou kola nie — zakrylo bar súpera, pás kola aj pokyn (UI inšpekcia).
-  return [hornyStol, stred, dole].flatMap((y, i) => xs.map((x, j) => ({ kluc: `${i}${j}`, x, y, w, h })));
+  return [hornyStol, nadHranou, stred, dole].flatMap((y, i) => xs.map((x, j) => ({ kluc: `${i}${j}`, x, y, w, h })));
 }
 
 function skoreMiesta(o: Obdlznik, zvyraznene: readonly Obdlznik[]): number {
@@ -285,7 +288,8 @@ function skoreMiesta(o: Obdlznik, zvyraznene: readonly Obdlznik[]): number {
     sucet(rectyPrvkov(".stol-hrana .pecat, .stol-hrana button"), 20) +
     sucet(rectyPrvkov(".linia-stav"), 4) +
     sucet(rectyPrvkov(".pas-kola-obal"), 4) +
-    sucet(rectyPrvkov(".miesto-volby"), 20) +
+    // Miesto na konci strany je cieľ ťahu — rovnako dôležité ako zvýraznené prvky.
+    sucet(rectyPrvkov(".miesto-volby"), 50) +
     sucet(rectyPrvkov(".doska"), 4) +
     sucet(rectyPrvkov(".ruka-rad .kl"), 1)
   );
@@ -485,7 +489,7 @@ export function VyucbaStol({
     if (jeInfo && poloha !== null) dalejRef.current?.focus({ preventScroll: true });
   }, [krok?.id, jeInfo, poloha === null]);
 
-  const presun = (): void => setRucne((zvolene + 1) % 6);
+  const presun = (): void => setRucne((zvolene + 1) % 8);
   const percento = krok === null ? 100 : Math.round(((krok.index + 1) / krok.spolu) * 100);
 
   return (

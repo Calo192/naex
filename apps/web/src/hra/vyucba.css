@@ -315,8 +315,6 @@ body.vyucba-bezi .oznamy-priazne {
   }
 
   .vyucba-text {
-    max-height: 7.2em;
-    overflow-y: auto;
     font-size: 0.82rem;
     line-height: 1.35;
   }
