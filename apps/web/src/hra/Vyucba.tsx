@@ -94,7 +94,7 @@ export function PonukaVyucby({ zacni, preskoc }: { readonly zacni: () => void; r
           </button>
           <button onClick={preskoc}>Preskočiť, poznám pravidlá</button>
         </div>
-        <p className="tlmene vyucba-ponuka-pozn">Výučbu nájdeš aj neskôr na stránke Hrať.</p>
+        <p className="tlmene vyucba-ponuka-pozn">Výučbu nájdeš kedykoľvek hore na tejto stránke.</p>
       </div>
     </div>
   );
@@ -254,9 +254,15 @@ function obdlznikRohu(roh: Roh, w: number, h: number): Obdlznik {
 const prekrytie = (a: Obdlznik, b: Obdlznik): number =>
   Math.max(0, Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x)) * Math.max(0, Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y));
 
-/** Text chyby zo servera bez zopakovania celej hlášky Melichara (tú bublina už ukazuje). */
-function kratkaChyba(text: string): string {
-  return text.startsWith("Vo výučbe teraz urob toto:") ? "Takto nie — urob, čo hovorím vyššie." : text;
+/**
+ * Chyba po zlom ťahu: čo je zle a ako to opraviť — nie celá hláška Melichara znova
+ * (tú bublina už ukazuje). UI inšpekcia: „Takto nie“ samo nepovedalo, čo robiť.
+ */
+function kratkaChyba(text: string, ocakava: Command | null): string {
+  if (!text.startsWith("Vo výučbe teraz urob toto:")) return text;
+  if (ocakava?.type === "stavbaSenku") return "Na Smetisko patria karty, ktoré svietia. Kartu zo Smetiska vrátiš klikom na ňu.";
+  if (ocakava?.type === "tah") return "Takto nie — polož karty, ktoré svietia, tam, kam hovorím. Kartu zo stola vrátiš pravým klikom.";
+  return "Takto nie — urob to, čo svieti na stole.";
 }
 
 export function VyucbaStol({
@@ -312,10 +318,10 @@ export function VyucbaStol({
     const el = bublinaRef.current;
     if (el === null) return;
     const { offsetWidth: w, offsetHeight: h } = el;
-    const poradie = rucne !== null ? [rucne, ...ROHY.filter((r) => r !== rucne)] : ROHY;
-    // Roh, ktorý najmenej zakrýva zvýraznené prvky (pri rovnosti skôr ten v poradí).
+    // Roh, ktorý najmenej zakrýva zvýraznené prvky (pri rovnosti skôr ten v poradí);
+    // keď hráč bublinu presunul, ostane tam do konca výučby (UI inšpekcia).
     const zakryva = (r: Roh): number => obdlzniky.reduce((sum, o) => sum + prekrytie(obdlznikRohu(r, w, h), o), 0);
-    const volny = poradie.reduce((naj, r) => (zakryva(r) < zakryva(naj) ? r : naj), poradie[0] ?? "vlavo-dole");
+    const volny = rucne ?? ROHY.reduce((naj, r) => (zakryva(r) < zakryva(naj) ? r : naj), ROHY[0] ?? "vlavo-dole");
     const p = obdlznikRohu(volny, w, h);
     if (volny !== roh) setRoh(volny);
     if (poloha === null || poloha.x !== p.x || poloha.y !== p.y) setPoloha(p);
@@ -325,6 +331,16 @@ export function VyucbaStol({
     window.addEventListener("resize", zmena);
     return () => window.removeEventListener("resize", zmena);
   }, []);
+
+  // Chyba zmizne pri ďalšom kliku na stole — hráč výber opravuje (UI inšpekcia).
+  useEffect(() => {
+    if (chyba === null) return;
+    const zrus = (e: PointerEvent): void => {
+      if ((e.target as HTMLElement | null)?.closest("[data-vyucba-bublina]") === null) zrusChybu();
+    };
+    window.addEventListener("pointerdown", zrus);
+    return () => window.removeEventListener("pointerdown", zrus);
+  }, [chyba, zrusChybu]);
 
   // Enter = „ďalej“ pri krokoch bez ťahu (keď fokus nie je na inom tlačidle či poli).
   const jeInfo = krok?.kto === "info";
@@ -385,7 +401,7 @@ export function VyucbaStol({
           ) : (
             <p>Výučbu máš za sebou! Teraz vieš všetko, čo treba. Zahraj si naostro — Štamgast a jeho kumpáni ťa čakajú.</p>
           )}
-          {chyba !== null && krok !== null && <p className="vyucba-chyba">{kratkaChyba(chyba)}</p>}
+          {chyba !== null && krok !== null && <p className="vyucba-chyba">{kratkaChyba(chyba, krok.ocakava)}</p>}
         </div>
         <footer className="vyucba-pata">
           {krok === null ? (
