@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Playtest výučby, kolo 2 — 20261023-183417 — NA EX!</title>
+<style>
+:root{--pozadie:#14110e;--plocha:#1e1914;--plocha2:#28211a;--okraj:#3d3229;--okraj2:#57483a;--text:#f1e8d8;--tlm:#b6a790;--slaby:#9d8f7b;--akcent:#e9ad45;--naakc:#2b1b03;--cerv:#d0563f;--cervt:#e5735c;--zel:#7cbf74;--zlta:#e9ad45}
+@media (prefers-color-scheme:light){:root{--pozadie:#faf5ea;--plocha:#fffdf7;--plocha2:#f1e8d4;--okraj:#d9ccb2;--okraj2:#b8a784;--text:#2a2118;--tlm:#5c4f3d;--slaby:#6b5d49;--akcent:#9a5f00;--naakc:#fff;--cerv:#b03a25;--cervt:#a8321e;--zel:#2f6f2a;--zlta:#9a5f00}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--pozadie);color:var(--text);font:15px/1.55 "Segoe UI",system-ui,Roboto,sans-serif}
+main{max-width:1180px;margin:0 auto;padding:28px 18px 64px}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;margin:0 0 8px}
+h1{font-size:2rem}h1 span{color:var(--akcent)}h2{font-size:1.4rem;margin-top:44px;border-bottom:1px solid var(--okraj);padding-bottom:6px}h3{font-size:1.1rem;margin-top:22px}
+a{color:var(--akcent)}
+a:focus-visible,summary:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible,th[tabindex]:focus-visible{outline:2px solid var(--akcent);outline-offset:2px}
+.meta{color:var(--tlm)}
+code{font-family:Consolas,monospace;font-size:.85rem;background:var(--plocha2);padding:1px 5px;border-radius:4px}
+.dlazdice{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:14px 0}
+.dl{background:var(--plocha);border:1px solid var(--okraj);border-radius:12px;padding:12px 14px}
+.dl b{display:block;font-size:1.8rem;font-family:Georgia,serif;color:var(--akcent)}
+.dl small{color:var(--slaby)}
+.verdikt{background:var(--plocha);border:1px solid var(--okraj);border-left:6px solid var(--akcent);border-radius:12px;padding:14px 18px}
+.verdikt ol{margin:8px 0 0;padding-left:20px}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--okraj);vertical-align:top}
+th{color:var(--tlm);font-weight:600}
+.scroll{overflow-x:auto}
+.pruh{display:inline-block;width:60px;height:8px;border-radius:4px;background:linear-gradient(90deg,var(--akcent) var(--v),var(--plocha2) var(--v));border:1px solid var(--okraj2);margin-right:8px;vertical-align:middle}
+details summary{cursor:pointer;list-style:none}
+details summary::-webkit-details-marker{display:none}
+details p{margin:6px 0 2px;font-size:.88rem;color:var(--tlm)}
+th[tabindex]{cursor:pointer}
+.st small{display:block;color:var(--tlm);margin-top:2px}
+.st-s b{color:var(--zel)}.st-c b{color:var(--zlta)}.st-z b,.st-n b{color:var(--cervt)}
+.m{text-align:center;font-weight:700;min-width:44px}
+.m-g{background:rgba(124,191,116,.22)}.m-z{background:rgba(233,173,69,.32)}.m-c{background:rgba(208,86,63,.5)}.m-n{color:var(--slaby)}
+.t{max-width:380px}
+.filtre{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:10px 0}
+.filtre label{display:flex;gap:6px;align-items:center;color:var(--tlm)}
+select{background:var(--plocha2);color:var(--text);border:1px solid var(--okraj2);border-radius:8px;padding:5px 8px;font:inherit}
+.karta{background:var(--plocha);border:1px solid var(--okraj);border-left:5px solid var(--okraj2);border-radius:12px;padding:14px 16px;margin:12px 0}
+.karta.v{border-left-color:var(--cerv)}.karta.s{border-left-color:var(--akcent)}.karta.n{border-left-color:var(--zel)}
+.stitok{display:inline-block;font-size:.75rem;padding:2px 9px;border-radius:99px;border:1px solid var(--okraj2);color:var(--tlm);margin-right:6px}
+.stitok.scen{background:var(--akcent);color:var(--naakc);border-color:transparent}.stitok.ui{background:var(--cerv);color:#fff;border-color:transparent}.stitok.hra{background:#3d5a8a;color:#fff;border-color:transparent}
+.karta dl{display:grid;grid-template-columns:110px 1fr;gap:4px 12px;margin:8px 0 0}
+.karta dt{color:var(--slaby)}.karta dd{margin:0}
+figure{margin:12px 0}figure img{max-width:100%;height:auto;border-radius:8px;border:1px solid var(--okraj)}figcaption{color:var(--slaby);font-size:.85rem}
+.sn{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.pata{margin-top:48px;color:var(--slaby);border-top:1px solid var(--okraj);padding-top:14px}
+@media (max-width:640px){.karta dl{grid-template-columns:1fr}}
+
+
+.ciel{background:var(--plocha);border:1px solid var(--okraj);border-left:6px solid var(--okraj2);border-radius:12px;padding:12px 16px}
+.ciel.ano{border-left-color:var(--zel)}.ciel.nie{border-left-color:var(--cerv)}.ciel.pol{border-left-color:var(--akcent)}
+.ciel b.v{font-family:Georgia,serif;font-size:1.6rem}
+.ano b.v{color:var(--zel)}.nie b.v{color:var(--cervt)}.pol b.v{color:var(--akcent)}
+.stav{font-weight:700;text-transform:uppercase;font-size:.78rem;letter-spacing:.04em}
+.d-hore{color:var(--zel);font-weight:700}.d-dole{color:var(--cervt);font-weight:700}
+.ciele{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:14px 0}
+td.num,th.num{text-align:center}
+</style>
+</head>
+<body>
+<main>
+<h1>Playtest výučby <span>Prvá hra</span>, kolo 2 · 20261023-183417</h1>
+<p class="meta">Tri AI nováčikovia (bez znalosti pravidiel) prešli výučbu „Prvá hra“ (scenár v3, 83 krokov s kontrolnými otázkami a rozhodnutiami, nové UI výučby) proti Štamgastovi na lokálnom serveri, kód <code>e482a2d</code>. Hodnotí sa, či sa z výučby dá naučiť hrať; 12 herných kritérií ani strategickosť sa nehodnotia. Predošlé kolo: <a href="vyucba-20261023-161148.html">report 1. kola</a>.</p>
+
+<h2>1. Verdikt</h2>
+<div class="verdikt">
+<p><strong>Áno po opravách, ale cieľ 2. kola nie je splnený (dva z troch cieľov nesplnené, tretí splnený s výhradou).</strong> Výučba sa oproti 1. kolu výrazne zlepšila: priemer V1–V10 vzrástol zo 4,7 na <b>6,3</b>, test pochopenia z 8 na <b>14/24</b> úplne správnych odpovedí, odmietnutia servera zo 15 na 2 a všetci traja dokončili všetkých 83 krokov za 11–13 minút. K cieľu (priemer ≥ 7, test ≥ 18/24) však chýba 0,7 bodu a 4 odpovede. Najslabšie zostáva to, čo bolo slabé aj minule: bublina zakrýva stôl, starší nik nepochopil a kroky, kde si hráč „vyberá sám“, sú hádanky.</p>
+<ol>
+<li><strong>Starší a cieľ hry sa nenaučili</strong> (otázky 1 a 6: 0 z 6 odpovedí úplne správne; otázka 8 „čo by som urobil inak“ tiež 0 z 3). Chýba veta o okamžitej výhre vydesením, jasný smer markera a ukážka „kto sa koho bojí“; kroky starších sú navyše prekryté bublinou a polovica z nich beží automaticky.</li>
+<li><strong>Bublina Melichara zakrýva presne to, o čom hovorí</strong> (3 z 3: Smetisko v kroku 6, starší v krokoch 39–43, 60–62 a 79, šenok, spodok Farára) a dĺžka automatických krokov (47–55, 62–64, 72–73, 77–78) nedovolí text prečítať. Bublina sa vyhýba len zvýrazneným prvkom, nie miestam, o ktorých práve hovorí.</li>
+<li><strong>Krok 31 („Polož Miňištranta… vyber sám“) zasekol všetkých troch</strong> (9–12 akcií, 75–100 s, najdlhší krok výučby): dve rovnaké karty v ruke sa líšia výškou ikony Viery, svietia obe a správna je len jedna, a to na súperovu stranu. Ťahanie kariet na „+“ pri súperovi navyše v jednom rozlíšení mlčky nezabralo (viď 7).</li>
+</ol>
+</div>
+
+<h2>2. Porovnanie s 1. kolom a splnenie cieľa</h2>
+<p>1. kolo: relácia <code>playtest/vyucba-20261023-161148</code> (scenár 70 krokov, kód <code>1f1bcc3</code>, rozbitý CSS). Rovnaká trojica postáv, test sa hodnotil podľa <code>docs/PRAVIDLA.md</code> rovnako prísne: „správne“ = zodpovedané bez podstatnej chyby a bez medzery, ktorú v 1. kole označili ako chýbajúcu.</p>
+<div class="ciele">
+<div class="ciel nie"><span class="stav">Nesplnené</span><br><b class="v">6,3 z 10</b><br>Cieľ 1: priemer V1–V10 ≥ 7. Chýba 0,7. Katka 7,1 (cieľ by splnila sama), Dodo 6,4, Marta 5,4. Aj keby Marta dosiahla 7,0, priemer by bol 6,8 — zlepšiť sa musia aspoň dvaja z troch.</div>
+<div class="ciel nie"><span class="stav">Nesplnené</span><br><b class="v">14 z 24</b><br>Cieľ 2: test ≥ 18/24 úplne správne (1. kolo 8/24). Päť úplne správnych odpovedí mali Katka a Dodo, štyri Marta; zvyšok „čiastočne“, nik „zle“ ani „nevie“. Pri miernejšom čítaní (otázka 1 bez okamžitej výhry, otázka 2 u Marty s „Pitka raz až dvakrát“, otázka 8 u Katky) by to bolo 19/24, teda na hrane — ale prísna hranica z 1. kola dáva 14.</div>
+<div class="ciel pol"><span class="stav">Splnené s výhradou</span><br><b class="v">0 / 2 / 0</b><br>Cieľ 3: najviac 1 odmietnutie servera na krok. Katka 0, Marta 0, Dodo 2, obe na kroku 56 (<code>k40</code>): zámerne klikol 2× na svietiace PASOVAŤ („Takto nie — ešte chýba: polož kartu „Miňištrant“ na svoju stranu línie; toto teraz nie: pasuj.“). Formálne 2 na kroku, vecne 0 nezámerných (1. kolo 7/6/2).</div>
+</div>
+<p><strong>Pozor na to, čo toto číslo neukazuje:</strong> odmietnutia servera nemerajú zaseknutie. Krok 31 mal 12/10/9 akcií bez jedinej hlášky servera, lebo zlé voľby ošetruje klient (náhľad, rada Melichara), nie server. Marta si k testu napísala „z 7 otázok som vedela 1, 2, 5, 7“: odpovedala na všetkých 8 otázok (8. „čo by som urobila inak“ do počtu nezarátala); podľa kontroly proti pravidlám vedela úplne 3, 4, 5, 7 (otázky 3 a 4 podcenila, 2 nadhodnotila).</p>
+
+<h3>Známky V1–V10: kolo 1 → kolo 2</h3>
+<div class="scroll"><table>
+<thead><tr><th>Kritérium</th><th class="num">Katka</th><th class="num">Dodo</th><th class="num">Marta</th><th class="num">Priemer 1. kolo</th><th class="num">Priemer 2. kolo</th><th class="num">Zmena</th></tr></thead>
+<tbody><tr><th scope="row">V1 Pochopenie hry</th><td class="num">4 → <b>7</b></td><td class="num">4 → <b>6</b></td><td class="num">4 → <b>6</b></td><td class="num">4,0</td><td class="num"><b>6,3</b></td><td class="num"><span class="d-hore">+2,3</span></td></tr><tr><th scope="row">V2 Jasnosť pokynov</th><td class="num">5 → <b>8</b></td><td class="num">4 → <b>7</b></td><td class="num">6 → <b>5</b></td><td class="num">5,0</td><td class="num"><b>6,7</b></td><td class="num"><span class="d-hore">+1,7</span></td></tr><tr><th scope="row">V3 Vysvetlenie „prečo“</th><td class="num">3 → <b>8</b></td><td class="num">5 → <b>7</b></td><td class="num">5 → <b>5</b></td><td class="num">4,3</td><td class="num"><b>6,7</b></td><td class="num"><span class="d-hore">+2,3</span></td></tr><tr><th scope="row">V4 Bublina Melichara</th><td class="num">4 → <b>6</b></td><td class="num">3 → <b>6</b></td><td class="num">3 → <b>4</b></td><td class="num">3,3</td><td class="num"><b>5,3</b></td><td class="num"><span class="d-hore">+2,0</span></td></tr><tr><th scope="row">V5 Zvýraznenie</th><td class="num">5 → <b>7</b></td><td class="num">6 → <b>6</b></td><td class="num">7 → <b>6</b></td><td class="num">6,0</td><td class="num"><b>6,3</b></td><td class="num"><span class="d-hore">+0,3</span></td></tr><tr><th scope="row">V6 Ovládanie</th><td class="num">4 → <b>7</b></td><td class="num">4 → <b>6</b></td><td class="num">5 → <b>6</b></td><td class="num">4,3</td><td class="num"><b>6,3</b></td><td class="num"><span class="d-hore">+2,0</span></td></tr><tr><th scope="row">V7 Tempo a dĺžka</th><td class="num">5 → <b>7</b></td><td class="num">4 → <b>6</b></td><td class="num">5 → <b>5</b></td><td class="num">4,7</td><td class="num"><b>6,0</b></td><td class="num"><span class="d-hore">+1,3</span></td></tr><tr><th scope="row">V8 Tón a postava Melichara</th><td class="num">6 → <b>7</b></td><td class="num">7 → <b>8</b></td><td class="num">7 → <b>8</b></td><td class="num">6,7</td><td class="num"><b>7,7</b></td><td class="num"><span class="d-hore">+1,0</span></td></tr><tr><th scope="row">V9 Čitateľnosť stola</th><td class="num">3 → <b>6</b></td><td class="num">4 → <b>5</b></td><td class="num">4 → <b>3</b></td><td class="num">3,7</td><td class="num"><b>4,7</b></td><td class="num"><span class="d-hore">+1,0</span></td></tr><tr><th scope="row">V10 Chuť hrať</th><td class="num">5 → <b>8</b></td><td class="num">5 → <b>7</b></td><td class="num">6 → <b>6</b></td><td class="num">5,3</td><td class="num"><b>7,0</b></td><td class="num"><span class="d-hore">+1,7</span></td></tr><tr><th scope="row">Priemer V1–V10</th><td class="num">4,4 → <b>7,1</b></td><td class="num">4,6 → <b>6,4</b></td><td class="num">5,2 → <b>5,4</b></td><td class="num"><b>4,7</b></td><td class="num"><b>6,3</b></td><td class="num"><span class="d-hore">+1,6</span></td></tr></tbody></table></div>
+<p>Najviac vzrástli V1 pochopenie a V3 „prečo“ (obe +2,3), potom V4 bublina a V6 ovládanie (+2,0); najmenej V5 zvýraznenie (+0,3), V8 tón a V9 čitateľnosť stola (obe +1,0). V9 (4,7) a V4 (5,3) sú najnižšie a V9 ťahá najmä Marta (3 pri rozlíšení 1920×1080, kde sú karty malé).</p>
+
+<h3>Test pochopenia po otázkach: kolo 1 → kolo 2</h3>
+<p>S = úplne správne, Č = čiastočne; poradie Katka, Dodo, Marta. Dôvody sú v sekcii 5.</p>
+<div class="scroll"><table>
+<thead><tr><th>Otázka</th><th class="num">1. kolo</th><th class="num">2. kolo</th><th class="num">Zmena</th></tr></thead>
+<tbody><tr><th scope="row">1 Cieľ hry</th><td class="num">S Č Č (1/3)</td><td class="num">Č Č Č (<b>0/3</b>)</td><td class="num"><span class="d-dole">-1</span></td></tr><tr><th scope="row">2 Priebeh kola</th><td class="num">S Č Č (1/3)</td><td class="num">S S Č (<b>2/3</b>)</td><td class="num"><span class="d-hore">+1</span></td></tr><tr><th scope="row">3 Zhromaždenie</th><td class="num">Č Č Č (0/3)</td><td class="num">S S S (<b>3/3</b>)</td><td class="num"><span class="d-hore">+3</span></td></tr><tr><th scope="row">4 Pitka a NA EX</th><td class="num">Č S Č (1/3)</td><td class="num">S S S (<b>3/3</b>)</td><td class="num"><span class="d-hore">+2</span></td></tr><tr><th scope="row">5 Bitka</th><td class="num">Č S S (2/3)</td><td class="num">S S S (<b>3/3</b>)</td><td class="num"><span class="d-hore">+1</span></td></tr><tr><th scope="row">6 Starší</th><td class="num">Č Č Č (0/3)</td><td class="num">Č Č Č (<b>0/3</b>)</td><td class="num"><span class="">0</span></td></tr><tr><th scope="row">7 Poldeci a cigarety</th><td class="num">S S S (3/3)</td><td class="num">S S S (<b>3/3</b>)</td><td class="num"><span class="">0</span></td></tr><tr><th scope="row">8 Čo by urobil inak</th><td class="num">Č Č Č (0/3)</td><td class="num">Č Č Č (<b>0/3</b>)</td><td class="num"><span class="">0</span></td></tr><tr><th scope="row">Spolu</th><td class="num"><b>8/24</b></td><td class="num"><b>14/24</b></td><td class="num"><span class="d-hore">+6</span></td></tr></tbody></table></div>
+
+<h3>Ostatné ukazovatele</h3>
+<div class="scroll"><table>
+<thead><tr><th>Ukazovateľ</th><th>1. kolo</th><th>2. kolo</th></tr></thead>
+<tbody>
+<tr><th scope="row">Kroky scenára</th><td>70</td><td>83</td></tr>
+<tr><th scope="row">Dĺžka (Katka / Dodo / Marta)</th><td>16,7 / 11,8 / 11,6 min</td><td>11,1 / 12,5 / 12,8 min</td></tr>
+<tr><th scope="row">Akcie</th><td>162 / 140 / 113</td><td>113 / 126 / 111</td></tr>
+<tr><th scope="row">Odmietnutia servera</th><td>7 / 6 / 2 (až 6× na kroku 17)</td><td>0 / 2 / 0</td></tr>
+<tr><th scope="row">Najdlhší krok</th><td>krok 17: 265 s, 40 akcií (Katka)</td><td>krok 31: 75 / 100 / 83 s, 12 / 10 / 9 akcií</td></tr>
+<tr><th scope="row">Sebahodnotenie „koľko viem“</th><td>všetci ~35 %</td><td>65 % / 60 % / 55 %</td></tr>
+<tr><th scope="row">Kontrolné otázky počas výučby (správne napoprvé)</th><td>nebolo</td><td>Katka 4/4, Dodo 4/4, Marta 3/4 (preklik číslom)</td></tr>
+<tr><th scope="row">Rozhodnutia „vyber sám“ správne napoprvé</th><td>nebolo</td><td>krok 31: 0/3, krok 65: 0/3 (Dodo zámerne), krok 70: 2/3, krok 74: 3/3</td></tr>
+</tbody></table></div>
+
+<h3>Čo z 1. kola je opravené</h3>
+<div class="scroll"><table>
+<thead><tr><th>Nález z 1. kola</th><th>Stav v 2. kole</th></tr></thead>
+<tbody>
+<tr><td>Rozbitý CSS (3/3)</td><td>Opravené, nikto ho nehlásil.</td></tr>
+<tr><td>Potvrdenie viacerých kariet naraz (15 chýb servera, kroky 17, 48, 58)</td><td>Opravené: ťah po jednej karte, 2 odmietnutia (obe zámerné), nik sa na tom nezasekol.</td></tr>
+<tr><td>Bublina presvitá, 133 slov naraz</td><td>Opravené: najdlhšia bublina má 38 slov, nikto nehlásil presvitanie. Ostáva zakrývanie (3/3).</td></tr>
+<tr><td>Chýbajúce zvýraznenie a pokyn (kroky 43, 50)</td><td>Už sa nehlási. Nové: zvýraznenie baru v kroku 4 nesvieti (Dodo, Marta), ikona Viery nie je zvýraznená (Katka, Dodo, Marta).</td></tr>
+<tr><td>Obrazovka starších ostane otvorená, Smetisko sa posúva</td><td>Nehlásené. Nové: tooltip staršieho visí (Katka, Dodo), rozpadnutý popup (Marta).</td></tr>
+<tr><td>Husté kroky a pojmy bez vysvetlenia</td><td>Čiastočne: texty sú kratšie, ale poldeci, šenok, Smetisko, tuhé, prebytok, Dlh, Absťák, Pohoršenie, „vydesený“ sa stále použijú skôr, než sa vysvetlia (3/3, najviac Marta).</td></tr>
+<tr><td>Dĺžka a tempo</td><td>83 krokov za 12 minút; druhé kolo „hra ťahá za teba“ ocenili Katka aj Dodo, Marta ho nestíha čítať.</td></tr>
+</tbody></table></div>
+
+<h2>3. Nováčikovia</h2>
+<div class="scroll"><table>
+<thead><tr><th>Postava</th><th>Rozlíšenie</th><th>Dokončil</th><th>Dĺžka</th><th>Akcií</th><th>Chyby servera</th><th>Test (úplne správne)</th><th>Sebahodnotenie</th></tr></thead>
+<tbody>
+<tr><th scope="row">Katka Stolová — projektová manažérka, systematická (zameranie: pochopenie hry)</th><td>1366×650</td><td>áno, 83 z 83</td><td>11,1 min</td><td>113</td><td>0</td><td>5 z 8</td><td>65 %</td></tr>
+<tr><th scope="row">Dodo Skipper — študent, netrpezlivý (zameranie: ovládanie a tempo)</th><td>1440×800</td><td>áno, 83 z 83</td><td>12,5 min</td><td>126</td><td>2 (obe na kroku 56, zámerné)</td><td>5 z 8</td><td>60 %</td></tr>
+<tr><th scope="row">Marta Prvýkrát — učiteľka na dôchodku, poctivá (zameranie: zrozumiteľnosť textu)</th><td>1920×1080</td><td>áno, 83 z 83</td><td>12,8 min</td><td>111</td><td>0</td><td>4 z 8</td><td>55 %</td></tr>
+</tbody></table></div>
+<p class="meta">Dĺžka = od prvej po poslednú akciu v <code>akcie.jsonl</code>. „Krok N“ = index + 1 v <code>suhrn.json</code> (krok 31 = <code>k21</code>). Na partiu s človekom si netrúfol nikto, na bota Katka a Dodo áno, Marta „po ďalšej partii s botom a s vnukom po boku“.</p>
+
+<h2>4. Známky V1–V10</h2>
+<div class="dlazdice">
+<div class="dl"><b>6,3</b>celkový priemer V1–V10 (1. kolo 4,7)</div>
+<div class="dl"><b>7,1</b>Katka (1366×650)</div>
+<div class="dl"><b>6,4</b>Dodo (1440×800)</div>
+<div class="dl"><b>5,4</b>Marta (1920×1080)</div>
+</div>
+<p class="meta">Kritériá V1–V10 sú v <code>.claude/agents/naex-novacik.md</code>. Kliknutím na bunku sa rozbalí zdôvodnenie, kliknutím na „Priemer“ sa riadky zoradia.</p>
+<div class="scroll"><table id="znamky">
+<thead><tr><th>Kritérium</th><th>Katka</th><th>Dodo</th><th>Marta</th><th tabindex="0" role="button" aria-label="Zoradiť podľa priemeru">Priemer ▾</th></tr></thead>
+<tbody><tr><th scope="row">V1 Pochopenie hry</th><td><details><summary><span class="pruh" style="--v:70%"></span><b>7</b></summary><p><em>Katka:</em> Slučku a „prečo“ NA EX (krok 28) chápem; ikony akcií (Rana/Viera/Petelica) a absťák/zadlženie som sa nenaučila rozlišovať.</p></details></td><td><details><summary><span class="pruh" style="--v:60%"></span><b>6</b></summary><p><em>Dodo:</em> Základná slučka sedí, ale starší a pečeň/Absťák zostali hmlisté.</p></details></td><td><details><summary><span class="pruh" style="--v:60%"></span><b>6</b></summary><p><em>Marta:</em> Na konci viem cieľ, poradie kola, NA EX aj bitku. Chýba istota pri starších a bodovaní (kroky 39–44, 77–79).</p></details></td><td data-v="6.333333333333333"><b>6,3</b></td></tr><tr><th scope="row">V2 Jasnosť pokynov</th><td><details><summary><span class="pruh" style="--v:80%"></span><b>8</b></summary><p><em>Katka:</em> Takmer vždy bolo jasné čo, kam; krok 31 (Miňištrant „vyber sám“) ma zasekol na 12 akcií.</p></details></td><td><details><summary><span class="pruh" style="--v:70%"></span><b>7</b></summary><p><em>Dodo:</em> Pokyn vždy konkrétny (Hasič, Miňištrant), ale kroky 31, 57, 70 ma zasekli.</p></details></td><td><details><summary><span class="pruh" style="--v:50%"></span><b>5</b></summary><p><em>Marta:</em> Väčšina je jasná („Klikni na Farára“, „Polož Hasiča ku Krčme“). Krok 31 a 70 boli hádanky bez návodu.</p></details></td><td data-v="6.666666666666667"><b>6,7</b></td></tr><tr><th scope="row">V3 Vysvetlenie „prečo“</th><td><details><summary><span class="pruh" style="--v:80%"></span><b>8</b></summary><p><em>Katka:</em> Krok 28 (cena NA EX = pečeň) a odpoveď o Farárovi boli výborné; „Skončiť Pitku“, „Vrátiť“ a smer markera starších vysvetlené nie.</p></details></td><td><details><summary><span class="pruh" style="--v:70%"></span><b>7</b></summary><p><em>Dodo:</em> „NA EX nie je zadarmo“, „Petelica bez páru sa zíde“ super; Smetisko a Absťák bez dôvodu.</p></details></td><td><details><summary><span class="pruh" style="--v:50%"></span><b>5</b></summary><p><em>Marta:</em> Dobre: prečo NA EX nie je zadarmo (28). Slabo: prečo pasujem (20), prečo „odpovedať kartou“ (62–65, 74).</p></details></td><td data-v="6.666666666666667"><b>6,7</b></td></tr><tr><th scope="row">V4 Bublina Melichara</th><td><details><summary><span class="pruh" style="--v:60%"></span><b>6</b></summary><p><em>Katka:</em> Čitateľná, ale na krokoch 6 (Smetisko), 39 (starší) a 79 (rozpis bodov) zakrýva presne to, o čom hovorí; krok 75 je hustý.</p></details></td><td><details><summary><span class="pruh" style="--v:60%"></span><b>6</b></summary><p><em>Dodo:</em> Čitateľná, no zakrýva Smetisko, šenok, starších; lupa kariet ju prekrýva (kroky 40, 74).</p></details></td><td><details><summary><span class="pruh" style="--v:40%"></span><b>4</b></summary><p><em>Marta:</em> Text je čitateľný, ale bublina sa pohybuje, často zakrýva starších, Farára (krok 40) alebo moje lišty; pri rýchlych krokoch (47–55, 62–64) som nestihla čítať.</p></details></td><td data-v="5.333333333333333"><b>5,3</b></td></tr><tr><th scope="row">V5 Zvýraznenie</th><td><details><summary><span class="pruh" style="--v:70%"></span><b>7</b></summary><p><em>Katka:</em> Karty a tlačidlá svietia presne; občas dve zvýraznenia naraz (karta + Pasovať, krok 57) a ikona Viery nie je zvýraznená vôbec.</p></details></td><td><details><summary><span class="pruh" style="--v:60%"></span><b>6</b></summary><p><em>Dodo:</em> Karty fungujú; PASOVAŤ svieti, keď ho nemám klikať; zvýraznenie baru v kroku 4 chýbalo.</p></details></td><td><details><summary><span class="pruh" style="--v:60%"></span><b>6</b></summary><p><em>Marta:</em> Tlačidlá a karty (Pasovať, Končím, NA EX!) fungujú výborne. „Pozri sa na Body“ (39, 79) bez zvýraznenia; dva zvýraznené Miňištranty bez vysvetlenia.</p></details></td><td data-v="6.333333333333333"><b>6,3</b></td></tr><tr><th scope="row">V6 Ovládanie</th><td><details><summary><span class="pruh" style="--v:70%"></span><b>7</b></summary><p><em>Katka:</em> Ťahanie na „+“ a náhľad v pásiku je skvelý; potvrdzovanie pasu/končím/Skončiť Pitku sú 2–3 kliky.</p></details></td><td><details><summary><span class="pruh" style="--v:60%"></span><b>6</b></summary><p><em>Dodo:</em> Skratky P/K/N/Enter/1–3 výborné. Kladenie na súperovu stranu je skryté a drag tam mlčky zlyhá; karty sa posúvajú pod myšou.</p></details></td><td><details><summary><span class="pruh" style="--v:60%"></span><b>6</b></summary><p><em>Marta:</em> Klik na kartu a „+“ fungoval; ťahanie z ruky zlyhalo pri Hasičovi (krok 18, 2×). Zlý ťah výučba opravila vecne.</p></details></td><td data-v="6.333333333333333"><b>6,3</b></td></tr><tr><th scope="row">V7 Tempo a dĺžka</th><td><details><summary><span class="pruh" style="--v:70%"></span><b>7</b></summary><p><em>Katka:</em> 83 krokov je dosť, ale „hra ťahá za teba“ od 2. kola je dobrý ťah; čakanie na Štamgasta 3–5 s opakovane.</p></details></td><td><details><summary><span class="pruh" style="--v:60%"></span><b>6</b></summary><p><em>Dodo:</em> 83 krokov, 126 akcií; na začiatku nuda z textu, v druhom kole automatika ušetrila čas.</p></details></td><td><details><summary><span class="pruh" style="--v:50%"></span><b>5</b></summary><p><em>Marta:</em> 83 krokov je veľa, hoci vtipných. Úvod (1–4) štyri odseky bez akcie, stred (46–56) beží sám príliš rýchlo, druhé kolo opakuje prvé.</p></details></td><td data-v="6"><b>6,0</b></td></tr><tr><th scope="row">V8 Tón a postava Melichara</th><td><details><summary><span class="pruh" style="--v:70%"></span><b>7</b></summary><p><em>Katka:</em> Vecný, trochu suchý; humor je skromný („Štamgast sa z toho vyspí“). Chýba osobnosť.</p></details></td><td><details><summary><span class="pruh" style="--v:80%"></span><b>8</b></summary><p><em>Dodo:</em> Stručný, vtipný („Štamgast sa vyspí“), reaguje na zlé ťahy konkrétne.</p></details></td><td><details><summary><span class="pruh" style="--v:80%"></span><b>8</b></summary><p><em>Marta:</em> Krčma, Štamgast, „Na zdravie!“. Sympatické, neotravné. Drobnosť: mužské „Vedel si?“ v kroku 82 oproti ženskému „Vyhrala si“.</p></details></td><td data-v="7.666666666666667"><b>7,7</b></td></tr><tr><th scope="row">V9 Čitateľnosť stola</th><td><details><summary><span class="pruh" style="--v:60%"></span><b>6</b></summary><p><em>Katka:</em> Veľa čísel a pásov naraz (poldeci, pečeň, absťák, zadlženie, dlhy, odhad, vydesenie); krok 1 vysvetlil len cieľ, nie pohľad na stôl.</p></details></td><td><details><summary><span class="pruh" style="--v:50%"></span><b>5</b></summary><p><em>Dodo:</em> Veľa pásov hore (odhad, ±3, vydesenie), 8 starších s ikonami bez vysvetlenia; skóre +23/+11 nejasné.</p></details></td><td><details><summary><span class="pruh" style="--v:30%"></span><b>3</b></summary><p><em>Marta:</em> Veľa čísel a panelov naraz, text na kartách ~8 px nečitateľný, súperove karty hore nohami, pokyn hore orezaný trojbodkou, obrazovka starších preplnená drobným písmom.</p></details></td><td data-v="4.666666666666667"><b>4,7</b></td></tr><tr><th scope="row">V10 Chuť hrať</th><td><details><summary><span class="pruh" style="--v:80%"></span><b>8</b></summary><p><em>Katka:</em> Víťazstvo 45:11 je motivujúce a chcem skúsiť sama; partia s človekom bude hustejšia.</p></details></td><td><details><summary><span class="pruh" style="--v:70%"></span><b>7</b></summary><p><em>Dodo:</em> Rýchle NA EX a víťazstvo 45:11 bavili; chcem skúsiť bota.</p></details></td><td><details><summary><span class="pruh" style="--v:60%"></span><b>6</b></summary><p><em>Marta:</em> Chcela by som to skúsiť s vnukom pre humor a obrázky; obávam sa množstva pravidiel.</p></details></td><td data-v="7"><b>7,0</b></td></tr></tbody></table></div>
+<p>Zhodli sa na najlepšom: <b>tón Melichara (V8: 7/8/8)</b> a „prečo“ pri NA EX (krok 28); na najslabšom: <b>čitateľnosť stola (V9: 6/5/3)</b> a <b>bublina (V4: 6/6/4)</b>. Rozišli sa v jasnosti pokynov (V2: Katka 8, Marta 5): Katka na kroku 31 vyriešila hádanku po 12 akciách pomocou náhľadu v pásiku, Marta po 9 a označila ju spolu s krokom 70 za „hádanky bez návodu“. Marta (poctivá pomalá čitateľka, 1920×1080) je o 1–2 body pod ostatnými v bubline (4), tempe (5) a čitateľnosti stola (3); Katka (systematická) hodnotí najlepšie, jej zameranie je pochopenie, a to sa jej darilo (V3 8). Dodo (netrpezlivý) oceňuje skratky P/K/N/Enter/1–3 a trpí tam, kde chýbajú (drag na súperovu stranu).</p>
+
+<h2>5. Test pochopenia</h2>
+<p>Odpovede sú overené proti <code>docs/PRAVIDLA.md</code> (§1, §5, §7, §8, §9, §10) rovnakým meradlom ako v 1. kole. Spolu: <b>14 správne, 10 čiastočne, 0 zle, 0 nevie z 24</b> (1. kolo 8 / 16 / 0 / 0). Nikto neodpovedal zle; chýbajú len medzery, ktoré sú rovnaké u všetkých troch.</p>
+<div class="scroll"><table>
+<thead><tr><th>Otázka</th><th>Katka</th><th>Dodo</th><th>Marta</th></tr></thead>
+<tbody><tr><th scope="row">1 Cieľ hry</th><td class="st st-c"><b>čiastočne</b><small>body: lokality, starší („ktorých vydesím“), cigarety, Dlhy a Cirhóza berú; okamžitú výhru vydesením nespomenula</small></td><td class="st st-c"><b>čiastočne</b><small>body správne; okamžitú výhru vydesením nespomenul, ako sa body rátajú nevie</small></td><td class="st st-c"><b>čiastočne</b><small>body správne; vydesenie a ako sa body rátajú nespomenula</small></td></tr><tr><th scope="row">2 Priebeh kola</th><td class="st st-s"><b>správne</b><small>cieľ → šenok → Zhromaždenie → Pitka → ďalšie Z/P podľa lokality → bitka → prebytok</small></td><td class="st st-s"><b>správne</b><small>cieľ → draft → Zhromaždenie → Pitka (1–4×) → bitka → prebytok starším</small></td><td class="st st-c"><b>čiastočne</b><small>poradie správne, ale „Pitka raz až dvakrát“ (správne 1–4, §7)</small></td></tr><tr><th scope="row">3 Zhromaždenie</th><td class="st st-s"><b>správne</b><small>striedavo vykladá, spoj v rovnakej výške platí, osamotená akcia nie, limit plné poldeci + 1, pas = cigareta</small></td><td class="st st-s"><b>správne</b><small>striedavo vľavo/vpravo, spojené platia a osamotené nič, pasovanie za cigarety</small></td><td class="st st-s"><b>správne</b><small>vľavo/vpravo, spoj v rovnakej výške, pas za cigaretu, limit plné + 1</small></td></tr><tr><th scope="row">4 Pitka a NA EX</th><td class="st st-s"><b>správne</b><small>NA EX = plný poldeci na kartu, zruší spojené a zdvojí osamotené; pečeň → Cirhóza; Krčma núti; súper odpovie kartou</small></td><td class="st st-s"><b>správne</b><small>NA EX zruší spojené a zdvojí osamotené; stojí poldeci, plní pečeň; Krčma povinné</small></td><td class="st st-s"><b>správne</b><small>NA EX zruší spojené a zdvojí osamotené; stojí poldeci a plní pečeň → Cirhóza</small></td></tr><tr><th scope="row">5 Bitka</th><td class="st st-s"><b>správne</b><small>tuhé (Rana 1, Pecka 2, Petelica 3), viac berie lokalitu, rovnosť = sekera; nevie Dlhy/Pohoršenie</small></td><td class="st st-s"><b>správne</b><small>viac tuhého vyhrá, rovnosť = sekera, prebytok starším</small></td><td class="st st-s"><b>správne</b><small>tuhé z platných akcií, viac berie, rovnosť = sekera</small></td></tr><tr><th scope="row">6 Starší</th><td class="st st-c"><b>čiastočne</b><small>marker, prebytok posúva, žltá/oranžová/červená → strach; „dá mi body“; smer markera si nepamätá</small></td><td class="st st-c"><b>čiastočne</b><small>víťaz tlačí marker k porazenému, strach → body, súper priazeň; ako prebytok → kroky nevie</small></td><td class="st st-c"><b>čiastočne</b><small>8 autorít so stupnicou, strach dáva body, súperovi priazeň; kedy je „vydesený“ nevie</small></td></tr><tr><th scope="row">7 Poldeci a cigarety</th><td class="st st-s"><b>správne</b><small>poldeci = limit a NA EX; cigarety = šenok, fajčenie, nový poldeci, body</small></td><td class="st st-s"><b>správne</b><small>poldeci = limit a NA EX; cigarety = šenok, fajčenie, nový poldeci</small></td><td class="st st-s"><b>správne</b><small>poldeci = limit a čím sa platí NA EX; cigarety = šenok, fajčenie, pas</small></td></tr><tr><th scope="row">8 Čo by urobil inak</th><td class="st st-c"><b>čiastočne</b><small>pozorne na pečeň, rôzne lokality, ktorého staršieho dotlačiť — všeobecné, bez vlastného plánu</small></td><td class="st st-c"><b>čiastočne</b><small>nedávať NA EX bez rozmyslu na pečeň, skúsiť Smetisko a patronát; polovica odpovede o čítaní</small></td><td class="st st-c"><b>čiastočne</b><small>čítať karty, sledovať pečeň, nebyť pasívna; „vlastnú taktiku zatiaľ neviem“</small></td></tr></tbody></table></div>
+<h3>Prečo sú otázky 1, 6 a 8 stále „čiastočne“</h3>
+<ul>
+<li><strong>1 Cieľ hry (0/3):</strong> všetci uviedli body z lokalít, starších a cigariet a že Dlhy a Cirhóza body berú — to je správne. V 1. kole sa „správne“ udelilo len za zmienku o <em>okamžitej výhre vydesením aspoň polovice starších a udržaním do konca nasledujúceho kola</em> (§1), takže tu je to „čiastočne“. Scenár v3 túto vetu <em>neobsahuje vôbec</em> (<code>i-ciel</code>, <code>i-zhrnutie</code>), preto ju nemohol nikto vedieť: oprava je jedna veta.</li>
+<li><strong>6 Starší (0/3):</strong> všetci vedia „marker, prebytok posúva, strach dáva body, súperovi priazeň“. Nik nevie smer („k súperovi“ = jemu priazeň a staršieho sa bojím ja), úrovne strachu (žltá 1, oranžová 2, červená 3, §9) ani kedy je starší „vydesený“. Zjednodušenie výučby „koho sa starší bojí, ten za neho dostane body“ nie je chyba (zónové podmienky scorecardov, §10), ale ďalšie scorecardové podmienky (lokality, cigarety, Dlhy) boduje <em>obom</em> hráčom — to výučba nepovie. Kroky 40–43 sú zároveň tie, ktoré bublina zakrýva a v ktorých hra za hráča posúva marker sama (kroky 41–42).</li>
+<li><strong>8 Čo by som urobil inak (0/3):</strong> nik nemá vlastný plán. Odpovede sú „sledovala by som pečeň“, „skúsila by som iné lokality“, „čítať karty“. Výučba končí zhrnutím pravidiel (kroky 80–81), nie plánom do prvej partie.</li>
+<li><strong>Otázka 2 u Marty:</strong> napísala „Pitka raz až dvakrát podľa lokality“; správne 1–4 (§7), a výučba v kroku 3 hovorí „raz až štyrikrát“.</li>
+</ul>
+<h3>Čo výučba naučila spoľahlivo</h3>
+<ul>
+<li>Zhromaždenie (3/3; v 1. kole 0/3): spoj v rovnakej výške platí, osamotená akcia nie, limit = plné poldeci + 1, pas za cigaretu. Pomohla kontrolná otázka v kroku 16 (3/3 správne napoprvé).</li>
+<li>Pitka a NA EX (3/3; v 1. kole 1/3): zruší spojené, zdvojí osamotené, stojí poldeci a plní pečeň. Krok 28 „NA EX nie je zadarmo“ ocenili všetci.</li>
+<li>Bitka (3/3) a poldeci/cigarety (3/3), priebeh kola (2/3).</li>
+</ul>
+<h3>Čo nenaučila nikoho</h3>
+<ul>
+<li>Okamžitú výhru vydesením, smer a úrovne strachu starších, čo je „prebytok“ (spomenie sa v kroku 37 a vysvetlí až v 40; Marta), Dlh/Absťák/Pohoršenie (Katka, Dodo, Marta všetci v „čo chýba“), ako sa body rátajú na konci (rozpis v kroku 79 je vo vete s 8 číslami).</li>
+</ul>
+
+<h2>6. Mapa krokov</h2>
+<p>Bunka = jasnosť z denníka (1–5; „–“ = bez záznamu; denníky spájajú susedné kroky, takže hodnota platí pre celý rozsah, ±1 krok). Zelená: bez chyby, ≤ 3 akcie, žltá: chyba servera alebo viac ako 3 akcie, červená ⚠: zaseknutie podľa denníka, sivá: krok bez akcie hráča (informačný alebo automatický). Kurzor nad bunkou ukáže akcie, chyby a sekundy.</p>
+<div class="filtre"><label><input type="checkbox" id="len-prob"> Len problémové kroky</label></div>
+<div class="scroll"><table id="mapa">
+<thead><tr><th>Krok</th><th>id</th><th>Melichar</th><th>Katka</th><th>Dodo</th><th>Marta</th></tr></thead>
+<tbody>
+<tr data-p="0"><td>1</td><td><code>i-vitaj</code></td><td class="t">Vitaj v krčme! Som majster Melichar. Zahráš si so Štamgastom…</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">5</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">5</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">5</td></tr>
+<tr data-p="0"><td>2</td><td><code>i-ciel</code></td><td class="t">Vyhrá ten, kto má na konci viac bodov. Body dávajú vybojovan…</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">4</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">4</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">3</td></tr>
+<tr data-p="0"><td>3</td><td><code>i-kolo</code></td><td class="t">Kolo je bitka o jednu lokalitu. Obranca vyberie cieľ, obaja …</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">3</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">3</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">3</td></tr>
+<tr data-p="0"><td>4</td><td><code>i-bar</code></td><td class="t">Dole je tvoj bar. Plné poldeci určujú, koľko kariet vyložíš:…</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">4</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">3</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">3</td></tr>
+<tr data-p="1"><td>5</td><td><code>k0</code></td><td class="t">Vyber Jednotu a potvrď ju, ako leží. Si obranca a ten cieľ v…</td><td class="m m-g" title="2 akcií, 0 chýb servera, 6 s">4</td><td class="m m-z" title="4 akcií, 0 chýb servera, 16 s">4</td><td class="m m-g" title="2 akcií, 0 chýb servera, 10 s">3</td></tr>
+<tr data-p="1"><td>6</td><td><code>k1</code></td><td class="t">Zvýraznené štyri karty (Puška, Policajtka, Podvodník, Záhrad…</td><td class="m m-z" title="5 akcií, 0 chýb servera, 14 s">3</td><td class="m m-z" title="6 akcií, 0 chýb servera, 21 s">4</td><td class="m m-z" title="5 akcií, 0 chýb servera, 15 s">2</td></tr>
+<tr data-p="0"><td>7</td><td><code>k2</code></td><td class="t">(krok Štamgasta / hry bez textu)</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td></tr>
+<tr data-p="0"><td>8</td><td><code>k3</code></td><td class="t">Útočník kupuje prvý. Karta stojí cigaretu. Štamgast si kúpil…</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td></tr>
+<tr data-p="0"><td>9</td><td><code>k4</code></td><td class="t">Kúp Hasiča. Má Petelicu. Rana je 1 tuhé poškodenie, Pecka 2 …</td><td class="m m-g" title="2 akcií, 0 chýb servera, 10 s">3</td><td class="m m-g" title="2 akcií, 0 chýb servera, 12 s">3</td><td class="m m-g" title="2 akcií, 0 chýb servera, 11 s">3</td></tr>
+<tr data-p="0"><td>10</td><td><code>k5</code></td><td class="t">Štamgast kúpil Recidivistu, aj on má Petelicu.</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">5</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td></tr>
+<tr data-p="0"><td>11</td><td><code>k6</code></td><td class="t">Klikni už neťahám (P). Ostatné cigarety si nechaj, zídu sa.</td><td class="m m-g" title="1 akcií, 0 chýb servera, 6 s">4</td><td class="m m-g" title="1 akcií, 0 chýb servera, 4 s">5</td><td class="m m-g" title="1 akcií, 0 chýb servera, 6 s">4</td></tr>
+<tr data-p="0"><td>12</td><td><code>k7</code></td><td class="t">(krok Štamgasta / hry bez textu)</td><td class="m m-n" title="bez akcie hráča (automatický krok)">–</td><td class="m m-n" title="bez akcie hráča (automatický krok)">5</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td></tr>
+<tr data-p="0"><td>13</td><td><code>k8</code></td><td class="t">Zhromaždenie: striedavo vykladáte karty k lokalite, útočník …</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td></tr>
+<tr data-p="0"><td>14</td><td><code>i-spoj</code></td><td class="t">Pozri, ako Štamgast priložil Pijana k Jednote. Na hranách ka…</td><td class="m m-g" title="1 akcií, 0 chýb servera, 6 s">4</td><td class="m m-g" title="1 akcií, 0 chýb servera, 7 s">4</td><td class="m m-g" title="1 akcií, 0 chýb servera, 9 s">3</td></tr>
+<tr data-p="0"><td>15</td><td><code>k9</code></td><td class="t">Polož Pijana k Jednote a potvrď. Jeho Rana sa na spoji stret…</td><td class="m m-g" title="2 akcií, 0 chýb servera, 4 s">5</td><td class="m m-g" title="2 akcií, 0 chýb servera, 5 s">4</td><td class="m m-g" title="2 akcií, 0 chýb servera, 6 s">4</td></tr>
+<tr data-p="0"><td>16</td><td><code>q-spoj</code></td><td class="t">Prečo Pijanova Rana platí?</td><td class="m m-g" title="2 akcií, 0 chýb servera, 9 s">5</td><td class="m m-g" title="2 akcií, 0 chýb servera, 8 s">5</td><td class="m m-g" title="2 akcií, 0 chýb servera, 5 s">5</td></tr>
+<tr data-p="0"><td>17</td><td><code>k10</code></td><td class="t">Štamgast pridal Dievčinu na vydaj. Má Pohoršenie a v bitke m…</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td></tr>
+<tr data-p="1"><td>18</td><td><code>k11</code></td><td class="t">Polož Hasiča za Pijana a potvrď. Jeho Petelica tam nemá pár,…</td><td class="m m-g" title="2 akcií, 0 chýb servera, 11 s">4</td><td class="m m-z" title="4 akcií, 0 chýb servera, 29 s">4</td><td class="m m-c" title="5 akcií, 0 chýb servera, 40 s">2 ⚠</td></tr>
+<tr data-p="0"><td>19</td><td><code>k12</code></td><td class="t">(krok Štamgasta / hry bez textu)</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td></tr>
+<tr data-p="0"><td>20</td><td><code>k13</code></td><td class="t">Klikni pasovať (P). Za každú kartu, ktorú by si ešte smel vy…</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">4</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">3</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">3</td></tr>
+<tr data-p="0"><td>21</td><td><code>k14</code></td><td class="t">Štamgast pasuje tiež.</td><td class="m m-n" title="bez akcie hráča (automatický krok)">–</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td><td class="m m-n" title="bez akcie hráča (automatický krok)">2</td></tr>
+<tr data-p="0"><td>22</td><td><code>i-pitka</code></td><td class="t">Pitka! Teraz sa pije. Najsilnejší ťah je NA EX: položíš plný…</td><td class="m m-g" title="1 akcií, 0 chýb servera, 8 s">3</td><td class="m m-g" title="1 akcií, 0 chýb servera, 6 s">3</td><td class="m m-g" title="1 akcií, 0 chýb servera, 10 s">2</td></tr>
+<tr data-p="0"><td>23</td><td><code>k15</code></td><td class="t">Vyber Hasiča a daj NA EX (N). Jeho Petelica nemá partnera, t…</td><td class="m m-g" title="2 akcií, 0 chýb servera, 5 s">4</td><td class="m m-g" title="2 akcií, 0 chýb servera, 1 s">5</td><td class="m m-g" title="2 akcií, 0 chýb servera, 5 s">3</td></tr>
+<tr data-p="0"><td>24</td><td><code>k16</code></td><td class="t">Na NA EX smie súper hneď odpovedať jednou kartou. Štamgast v…</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td></tr>
+<tr data-p="0"><td>25</td><td><code>k17</code></td><td class="t">Vyfajči jednu cigaretu: hneď si dobereš kartu z balíčka. Faj…</td><td class="m m-g" title="1 akcií, 0 chýb servera, 7 s">4</td><td class="m m-g" title="1 akcií, 0 chýb servera, 5 s">4</td><td class="m m-g" title="1 akcií, 0 chýb servera, 6 s">4</td></tr>
+<tr data-p="0"><td>26</td><td><code>k18</code></td><td class="t">Klikni končím (K). Pitku začína obranca a útočník má posledn…</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">4</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">4</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">4</td></tr>
+<tr data-p="0"><td>27</td><td><code>k19</code></td><td class="t">Pitka sa vyhodnotí. Štamgast dostal Dlh, ten berie body. Ty …</td><td class="m m-n" title="bez akcie hráča (automatický krok)">5</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td></tr>
+<tr data-p="0"><td>28</td><td><code>i-cena</code></td><td class="t">NA EX nie je zadarmo. Poldeci sa v bitke vypije a v ďalšom k…</td><td class="m m-g" title="1 akcií, 0 chýb servera, 15 s">5</td><td class="m m-g" title="1 akcií, 0 chýb servera, 6 s">4</td><td class="m m-g" title="1 akcií, 0 chýb servera, 7 s">4</td></tr>
+<tr data-p="0"><td>29</td><td><code>q-naex</code></td><td class="t">Na akú kartu sa NA EX oplatí?</td><td class="m m-g" title="2 akcií, 0 chýb servera, 6 s">4</td><td class="m m-g" title="2 akcií, 0 chýb servera, 6 s">5</td><td class="m m-g" title="2 akcií, 0 chýb servera, 7 s">4</td></tr>
+<tr data-p="0"><td>30</td><td><code>k20</code></td><td class="t">Pitky sú dnes dve, takže ešte jedno Zhromaždenie. Štamgast p…</td><td class="m m-n" title="bez akcie hráča (automatický krok)">–</td><td class="m m-n" title="bez akcie hráča (automatický krok)">2</td><td class="m m-n" title="bez akcie hráča (automatický krok)">2</td></tr>
+<tr data-p="1"><td>31</td><td><code>k21</code></td><td class="t">Polož Miňištranta tak, aby jeho Viera znížila Štamgastovi tu…</td><td class="m m-c" title="12 akcií, 0 chýb servera, 75 s">2 ⚠</td><td class="m m-c" title="10 akcií, 0 chýb servera, 100 s">2 ⚠</td><td class="m m-c" title="9 akcií, 0 chýb servera, 83 s">2 ⚠</td></tr>
+<tr data-p="0"><td>32</td><td><code>k22</code></td><td class="t">Klikni pasovať (P).</td><td class="m m-g" title="1 akcií, 0 chýb servera, 7 s">3</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">3</td><td class="m m-g" title="1 akcií, 0 chýb servera, 6 s">4</td></tr>
+<tr data-p="0"><td>33</td><td><code>k23</code></td><td class="t">Klikni končím (K). Ďalšie NA EX dnes netreba.</td><td class="m m-g" title="2 akcií, 0 chýb servera, 12 s">3</td><td class="m m-g" title="2 akcií, 0 chýb servera, 18 s">3</td><td class="m m-g" title="2 akcií, 0 chýb servera, 14 s">3</td></tr>
+<tr data-p="0"><td>34</td><td><code>k24</code></td><td class="t">Pitka sa vyhodnotí, Štamgast dostal druhý Dlh.</td><td class="m m-g" title="0 akcií, 0 chýb servera, 0 s">2</td><td class="m m-n" title="bez akcie hráča (automatický krok)">2</td><td class="m m-g" title="0 akcií, 0 chýb servera, 0 s">1</td></tr>
+<tr data-p="0"><td>35</td><td><code>k25</code></td><td class="t">Bitka! Dievčina na vydaj odišla z hry a spálila oba jeho Dlh…</td><td class="m m-n" title="bez akcie hráča (automatický krok)">2</td><td class="m m-g" title="0 akcií, 0 chýb servera, 0 s">2</td><td class="m m-n" title="bez akcie hráča (automatický krok)">1</td></tr>
+<tr data-p="0"><td>36</td><td><code>k26</code></td><td class="t">A ešte raz. Starosta je teraz v žltom pri tebe a pomáha ti: …</td><td class="m m-n" title="bez akcie hráča (automatický krok)">2</td><td class="m m-n" title="bez akcie hráča (automatický krok)">2</td><td class="m m-n" title="bez akcie hráča (automatický krok)">1</td></tr>
+<tr data-p="0"><td>37</td><td><code>i-bitka</code></td><td class="t">Bitka 9 : 3 pre teba. Ty: Hasič s NA EX 6, Pijan 1 a Bitkár …</td><td class="m m-g" title="1 akcií, 0 chýb servera, 7 s">4</td><td class="m m-g" title="1 akcií, 0 chýb servera, 8 s">2</td><td class="m m-g" title="1 akcií, 0 chýb servera, 10 s">2</td></tr>
+<tr data-p="0"><td>38</td><td><code>q-bitka</code></td><td class="t">Ty máš spojenú Ranu a Pecku, Štamgast Petelicu. Ako dopadne …</td><td class="m m-g" title="2 akcií, 0 chýb servera, 10 s">3</td><td class="m m-g" title="2 akcií, 0 chýb servera, 6 s">4</td><td class="m m-g" title="3 akcií, 0 chýb servera, 16 s">4</td></tr>
+<tr data-p="0"><td>39</td><td><code>i-starsi</code></td><td class="t">Starší sú osem dedinských autorít. Marker pri každom ukazuje…</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">3</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">3</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">3</td></tr>
+<tr data-p="0"><td>40</td><td><code>k27</code></td><td class="t">Klikni na Farára. Víťaz rozdá prebytok 6: každý bod posunie …</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">3</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">3</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">3</td></tr>
+<tr data-p="0"><td>41</td><td><code>k28</code></td><td class="t">Hra za teba posúva Farára ďalej.</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td></tr>
+<tr data-p="0"><td>42</td><td><code>k29</code></td><td class="t">A do tretice. Farár je v oranžovom a bojí sa ťa na úrovni dv…</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-g" title="0 akcií, 0 chýb servera, 0 s">3</td><td class="m m-n" title="bez akcie hráča (automatický krok)">2</td></tr>
+<tr data-p="0"><td>43</td><td><code>q-starsi</code></td><td class="t">Farár je teraz posunutý k Štamgastovi. Čo z toho máš?</td><td class="m m-g" title="2 akcií, 0 chýb servera, 26 s">4</td><td class="m m-g" title="2 akcií, 0 chýb servera, 7 s">3</td><td class="m m-g" title="3 akcií, 0 chýb servera, 28 s">2</td></tr>
+<tr data-p="0"><td>44</td><td><code>i-kolo2</code></td><td class="t">Prvé kolo je tvoje. Platia len spojené akcie. V bitke vyhrá …</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">4</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">5</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">5</td></tr>
+<tr data-p="0"><td>45</td><td><code>i-kolo2b</code></td><td class="t">Druhé kolo. Každý si dobral dve karty a jeden poldeci sa dol…</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">4</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">4</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">3</td></tr>
+<tr data-p="0"><td>46</td><td><code>k30</code></td><td class="t">Ako víťaz si znova obranca a hra vybrala Krčmu.</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">2</td></tr>
+<tr data-p="0"><td>47</td><td><code>k31</code></td><td class="t">(krok Štamgasta / hry bez textu)</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">2</td></tr>
+<tr data-p="0"><td>48</td><td><code>k32</code></td><td class="t">(krok Štamgasta / hry bez textu)</td><td class="m m-g" title="0 akcií, 0 chýb servera, 0 s">3</td><td class="m m-g" title="0 akcií, 0 chýb servera, 0 s">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">2</td></tr>
+<tr data-p="0"><td>49</td><td><code>k33</code></td><td class="t">Štamgast si kúpil Psa.</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-g" title="0 akcií, 0 chýb servera, 0 s">2</td></tr>
+<tr data-p="0"><td>50</td><td><code>k34</code></td><td class="t">Hra ti kúpila Hasiča, ten sa zíde.</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">2</td></tr>
+<tr data-p="0"><td>51</td><td><code>k35</code></td><td class="t">(krok Štamgasta / hry bez textu)</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">2</td></tr>
+<tr data-p="0"><td>52</td><td><code>k36</code></td><td class="t">(krok Štamgasta / hry bez textu)</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td></tr>
+<tr data-p="0"><td>53</td><td><code>k37</code></td><td class="t">(krok Štamgasta / hry bez textu)</td><td class="m m-g" title="0 akcií, 0 chýb servera, 0 s">3</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td></tr>
+<tr data-p="0"><td>54</td><td><code>k38</code></td><td class="t">(krok Štamgasta / hry bez textu)</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td><td class="m m-g" title="0 akcií, 0 chýb servera, 0 s">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td></tr>
+<tr data-p="0"><td>55</td><td><code>k39</code></td><td class="t">Zhromaždenie. Štamgast priložil Psa ku Krčme.</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-g" title="0 akcií, 0 chýb servera, 0 s">3</td></tr>
+<tr data-p="1"><td>56</td><td><code>k40</code></td><td class="t">Polož Miňištranta ku Krčme a potvrď. Jeho akcia sa spáruje s…</td><td class="m m-g" title="2 akcií, 0 chýb servera, 9 s">4</td><td class="m m-z" title="4 akcií, 2 chýb servera, 31 s">4</td><td class="m m-g" title="3 akcií, 0 chýb servera, 7 s">3</td></tr>
+<tr data-p="0"><td>57</td><td><code>k41</code></td><td class="t">Štamgast pridal Pijana: 4 : 3.</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">2</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td></tr>
+<tr data-p="1"><td>58</td><td><code>k42</code></td><td class="t">Polož Hasiča na koniec Štamgastovej strany a potvrď. Jeho Pe…</td><td class="m m-g" title="2 akcií, 0 chýb servera, 15 s">4</td><td class="m m-c" title="7 akcií, 0 chýb servera, 40 s">2 ⚠</td><td class="m m-g" title="3 akcií, 0 chýb servera, 18 s">4</td></tr>
+<tr data-p="0"><td>59</td><td><code>k43</code></td><td class="t">(krok Štamgasta / hry bez textu)</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td></tr>
+<tr data-p="0"><td>60</td><td><code>k44</code></td><td class="t">Pasuješ.</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td></tr>
+<tr data-p="0"><td>61</td><td><code>k45</code></td><td class="t">Vyber Hasiča a daj NA EX (N). Na Krčme musíš. Petelica bez p…</td><td class="m m-g" title="2 akcií, 0 chýb servera, 10 s">4</td><td class="m m-g" title="2 akcií, 0 chýb servera, 6 s">4</td><td class="m m-g" title="2 akcií, 0 chýb servera, 13 s">4</td></tr>
+<tr data-p="0"><td>62</td><td><code>k46</code></td><td class="t">(krok Štamgasta / hry bez textu)</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td></tr>
+<tr data-p="0"><td>63</td><td><code>k47</code></td><td class="t">(krok Štamgasta / hry bez textu)</td><td class="m m-g" title="0 akcií, 0 chýb servera, 0 s">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td></tr>
+<tr data-p="0"><td>64</td><td><code>k48</code></td><td class="t">Krčma núti aj Štamgasta: NA EX na vlastného Pijana. Pridá mu…</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-g" title="0 akcií, 0 chýb servera, 0 s">3</td></tr>
+<tr data-p="1"><td>65</td><td><code>k49</code></td><td class="t">Štamgast dal NA EX na vlastného Pijana. Smieš odpovedať jedn…</td><td class="m m-g" title="3 akcií, 0 chýb servera, 17 s">3</td><td class="m m-g" title="3 akcií, 0 chýb servera, 19 s">4</td><td class="m m-z" title="4 akcií, 0 chýb servera, 18 s">3</td></tr>
+<tr data-p="0"><td>66</td><td><code>k50</code></td><td class="t">Pitka sa vyhodnotí. Štamgast má ďalší Dlh.</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td></tr>
+<tr data-p="0"><td>67</td><td><code>k51</code></td><td class="t">(krok Štamgasta / hry bez textu)</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td></tr>
+<tr data-p="0"><td>68</td><td><code>k52</code></td><td class="t">Polož druhého Miňištranta k sebe na koniec a potvrď. Jeho Vi…</td><td class="m m-g" title="2 akcií, 0 chýb servera, 12 s">4</td><td class="m m-g" title="2 akcií, 0 chýb servera, 16 s">4</td><td class="m m-g" title="3 akcií, 0 chýb servera, 17 s">4</td></tr>
+<tr data-p="0"><td>69</td><td><code>k53</code></td><td class="t">Pasuješ.</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td></tr>
+<tr data-p="1"><td>70</td><td><code>k54</code></td><td class="t">Krčma ťa núti znova, máš plný poldeci. Na ktorú svoju kartu …</td><td class="m m-z" title="5 akcií, 0 chýb servera, 21 s">3</td><td class="m m-c" title="6 akcií, 0 chýb servera, 29 s">3 ⚠</td><td class="m m-g" title="2 akcií, 0 chýb servera, 15 s">3</td></tr>
+<tr data-p="0"><td>71</td><td><code>k55</code></td><td class="t">(krok Štamgasta / hry bez textu)</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td></tr>
+<tr data-p="0"><td>72</td><td><code>k56</code></td><td class="t">(krok Štamgasta / hry bez textu)</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td></tr>
+<tr data-p="0"><td>73</td><td><code>k57</code></td><td class="t">Krčma núti aj Štamgasta. Dal NA EX na tvojho prvého Miňištra…</td><td class="m m-g" title="0 akcií, 0 chýb servera, 0 s">3</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td><td class="m m-g" title="0 akcií, 0 chýb servera, 0 s">3</td></tr>
+<tr data-p="0"><td>74</td><td><code>k58</code></td><td class="t">Štamgast dal NA EX na tvojho Miňištranta. Odpovieš kartou, a…</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">3</td><td class="m m-g" title="1 akcií, 0 chýb servera, 8 s">3</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">3</td></tr>
+<tr data-p="0"><td>75</td><td><code>k59</code></td><td class="t">Pitka sa vyhodnotí. Tebe pretiekla pečeň a prišla Cirhóza, t…</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td></tr>
+<tr data-p="0"><td>76</td><td><code>k60</code></td><td class="t">Klikni na Farára. Stál na predposlednom mieste od začiatku k…</td><td class="m m-g" title="1 akcií, 0 chýb servera, 4 s">3</td><td class="m m-g" title="1 akcií, 0 chýb servera, 5 s">3</td><td class="m m-g" title="1 akcií, 0 chýb servera, 6 s">3</td></tr>
+<tr data-p="0"><td>77</td><td><code>k61</code></td><td class="t">Zvyšné body idú Autobusárovi.</td><td class="m m-g" title="0 akcií, 0 chýb servera, 0 s">3</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td></tr>
+<tr data-p="0"><td>78</td><td><code>k62</code></td><td class="t">Autobusár je v žltom a začína sa ťa báť. Dva Miňištranty zdr…</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td><td class="m m-n" title="bez akcie hráča (automatický krok)">4</td><td class="m m-n" title="bez akcie hráča (automatický krok)">3</td></tr>
+<tr data-p="0"><td>79</td><td><code>i-koniec</code></td><td class="t">Koniec a víťazstvo 45 : 11! Lokality 20, vydesený Farár 15, …</td><td class="m m-g" title="1 akcií, 0 chýb servera, 6 s">3</td><td class="m m-g" title="1 akcií, 0 chýb servera, 6 s">4</td><td class="m m-g" title="1 akcií, 0 chýb servera, 8 s">3</td></tr>
+<tr data-p="0"><td>80</td><td><code>i-zhrnutie</code></td><td class="t">Toto si zober do prvej partie. Cieľ: vyhrávaj lokality a str…</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">4</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">4</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">4</td></tr>
+<tr data-p="0"><td>81</td><td><code>i-zhrnutie2</code></td><td class="t">V Pitke daj NA EX na kartu so silnou akciou bez partnera, al…</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">4</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">4</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">4</td></tr>
+<tr data-p="0"><td>82</td><td><code>i-vedel-si</code></td><td class="t">Vedel si? Hra má toho viac: za plný poldeci zahráš dve karty…</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">4</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">4</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">3</td></tr>
+<tr data-p="0"><td>83</td><td><code>i-dovidenia</code></td><td class="t">To je celá krčma. Štamgast sa z toho vyspí. Teraz sa skús po…</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">4</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">4</td><td class="m m-g" title="1 akcií, 0 chýb servera, 0 s">5</td></tr>
+
+</tbody></table></div>
+
+<h2>7. Zaseknutia</h2>
+<div class="karta v"><h3>Krok 31 · <code>k21</code> — Miňištrant tak, aby Viera znížila Štamgastovi tuhé <span class="stitok scen">scenár</span><span class="stitok ui">UI výučby</span><span class="stitok hra">hra?</span></h3>
+<dl>
+<dt>Chcel</dt><dd>Podľa Melichara položiť Miňištranta (kam, má vybrať sám).</dd>
+<dt>Stalo sa</dt><dd>3 z 3 hádali: Katka 12 akcií / 75 s, Dodo 10 / 100 s, Marta 9 / 83 s, <strong>bez jedinej hlášky servera</strong>. Skúšali súperovu stranu, vlastnú stranu aj druhý Miňištrant; „Skús toho druhého“ prišlo až po potvrdení nesprávnej karty (Dodo snímka 056) a Marte spomínalo Recidivistu, hoci kartu dala na svoju stranu. Dodo: <em>„dve takmer rovnaké karty Miňištrant v ruke bez vysvetlenia rozdielu“</em>, Katka: <em>„ikonu Viery nikto nezvýraznil“</em>.</dd>
+<dt>Príčina</dt><dd>Scenár: <code>volba.kandidati</code> je <code>["ruka:ministrant"]</code>, takže svietia obe kópie, ale správna je len <code>ruka:ministrant#2</code> a cieľ <code>superova</code>. Text neprezrádza ani stranu, ani výšku ikony („Kam ho dáš? Vyber sám“), hoci Viera, spoj a „výška“ sa dovtedy nikde nevysvetlili. UI: ikona Viery a „+“ pri Štamgastovi nesvietia. Hra: drag na súperovu stranu viď nižšie.</dd>
+<dt>Oprava</dt><dd>Kandidát len <code>#2</code>; zvýrazniť jeho ikonu Viery a miesto „+“ za Recidivistom; prvá veta: „Polož Miňištranta s Vierou nižšie za Štamgastovho Recidivistu — tam sa Viera spojí s jeho Dlhom a zníži mu tuhé.“ Rozhodnutie zostane, ale kritérium musí byť v texte (inak je to hádanka, nie rozhodnutie).</dd>
+</dl>
+<figure><img src="vyucba-20261023-183417/dodo-048-tahanie.png" alt="Dodo tiahne Miňištranta na plus pri súperovi, po pustení sa nič nestalo" loading="lazy"><figcaption>Dodo, snímka 048: po ťahaní z ruky na „+“ vpravo (súperova strana) sa nič nestalo; v ruke svietia obe kópie Miňištranta.</figcaption></figure>
+<figure><img src="vyucba-20261023-183417/dodo-056-vlastna-strana.png" alt="Dodo položil Miňištranta na vlastnú stranu, vľavo je náhľad spoja Cigareta a Posilnenie" loading="lazy"><figcaption>Dodo, snímka 056: ťahanie na vlastnú stranu funguje (náhľad „spoj: Cigareta + Posilnenie“), rada „Skús toho druhého“ je pri bubline.</figcaption></figure>
+</div>
+
+<div class="karta v"><h3>Ťahanie karty na „+“ mlčky nezabralo — kroky 18, 31, 58 <span class="stitok hra">chyba hry (nepotvrdená)</span><span class="stitok ui">UI výučby</span></h3>
+<dl>
+<dt>Kto a kde</dt><dd>Dodo (1440×800): <strong>0 zo 4</strong> ťahaní na súperovu stranu (krok 18 raz, krok 31 trikrát); funguje len klik na „+“ a potom na kartu. Marta (1920×1080): 2 z 2 ťahaní na <em>vlastnú</em> stranu v kroku 18 nezabrali (od okraja ruky, y=1000 a y=960), kliknutie na „+“ a kartu zabralo; vlastné ťahanie v kroku 15 zabralo. Katka (1366×650): ťahanie na súperovu stranu <strong>zabralo</strong> v kroku 31 (karta 867,574 → 992,343 potvrdená, krok pokročil) aj v kroku 58 (913,574 → 886,344).</dd>
+<dt>Kód klienta</dt><dd>Cieľ na súperovej strane existuje: <code>HernaPlocha.tsx</code> — <code>cieleZdroja</code> pridá každý cieľ z <code>CIELE_VYKLADANIA</code> (<code>vlastna</code>, <code>superova</code>, …), ktorý prejde <code>planTahu</code>; <code>koniecStrany(super_)</code> pri ťahaní vykreslí <code>miestoNaKonci</code> s <code>data-ciel="superova"</code>; <code>pusti</code> ho prijme (<code>jeCielVykladania</code>). Cieľ sa hľadá cez <code>document.elementFromPoint</code> pri <code>pointerup</code> (<code>useTahanie.ts</code>). Keď cieľ nie je povolený, <code>pusti</code> kartu ticho vráti (<code>if (ciel === null || !cieleZdroja(z).has(ciel)) return;</code>) — preto „mlčky“.</dd>
+<dt>Záver</dt><dd><strong>Nie je to len obmedzenie nástroja</strong> (ten istý CDP „ťahaj“ — stlačenie, 15 posunov, pustenie — zabral u Katky aj na súperovu stranu) <strong>a nie je to chýbajúci cieľ v kóde</strong>. Je to buď chyba hry závislá od rozloženia, alebo kombinácia nástroja s rozložením. Podozrenia (neoverené): pri začatí ťahania sa úzke „+“ (<code>miestoNaKlik</code>) nahradí plným miestom na kartu (<code>miestoNaKonci</code>) a línia sa preusporiada, Dodo opisuje <em>„po drag-and-drop posúva „+“ miesta“</em> a <em>„karty sa posúvajú pod myšou“</em> (hover zdvihne kartu v prekrytej ruke, takže stlačenie myši môže zasiahnuť inú kartu než zamýšľanú). Treba reprodukovať na 1440×800 v kroku 31 a pri zlyhaní zobraziť hlášku „Tu to nejde — klikni na „+“ a potom na kartu“ namiesto ticha. Pre ľudského hráča je ticho horšie ako samotné zlyhanie.</dd>
+</dl>
+</div>
+
+<div class="karta s"><h3>Krok 58 · <code>k42</code> — Hasič na koniec Štamgastovej strany <span class="stitok ui">UI výučby</span></h3>
+<dl>
+<dt>Stalo sa</dt><dd>Dodo 7 akcií / 40 s (klik na kartu, klik na „+“, drag): <em>„chcel som ťahať, ale na súperovu stranu funguje len klik „+“ a potom klik karty (opačné poradie než som skúšal)“</em>; hint je len v pruhu hore. Marta 3 akcie, Katka 2.</dd>
+<dt>Oprava</dt><dd>Prvá veta bubliny pri prvom kladení na súperovu stranu (krok 31): „Na súperovu stranu: klikni na „+“ pri Štamgastovi, potom na kartu; alebo kartu potiahni.“ Hint z pruhu hore patrí do bubliny, kam sa pozerá aj Melichar.</dd>
+</dl></div>
+
+<div class="karta s"><h3>Krok 70 · <code>k54</code> — NA EX, „na ktorú svoju kartu? Vyber sám“ <span class="stitok scen">scenár</span><span class="stitok ui">UI výučby</span></h3>
+<dl>
+<dt>Stalo sa</dt><dd>Dodo 6 akcií / 29 s, 3 pokusy (Miňištrant vpravo → zle, „Pijan“ → zle, Miňištrant vľavo → správne); karty sa pri hover posunuli, takže klik zasiahol susednú. Katka 5 akcií / 21 s: <em>„vybrala podľa náhľadu hore (13:4 → 13:2 ▲), bez neho by som hádala“</em>. Marta správne napoprvé, tiež podľa náhľadu. Melichar pri zlej voľbe Dodovi povedal vecne („Viera je spojená, NA EX by ju zrušilo: 13:5“) — to dodo označil za najlepšiu hlášku.</dd>
+<dt>Oprava</dt><dd>Doplniť kritérium do textu: „NA EX zdvojí akcie bez partnera a zruší spojené. Hľadaj kartu, ktorej Viera nemá partnera.“ Náhľad „13:4 → 13:2 ▲“ je zachrana, ale je v malom písme v pásiku; zväčšiť a spraviť súčasťou bubliny.</dd>
+</dl></div>
+
+<div class="karta s"><h3>Krok 33 · <code>k23</code> — „Skončiť Pitku“ po „Končím“ <span class="stitok scen">scenár</span><span class="stitok ui">UI výučby</span></h3>
+<dl>
+<dt>Stalo sa</dt><dd>Po stlačení K (Končím) vyskočí potvrdenie „Skončiť bez NA EX? … EŠTE NIE / SKONČIŤ PITKU“, no bublina ďalej hovorí „Klikni končím (K). Ďalšie NA EX dnes netreba“ (Dodo snímka 067, Marta, Katka: „tretí potvrdzovací klik“). Marta chvíľu váhala.</dd>
+<dt>Oprava</dt><dd>Text kroku: „Klikni končím a potvrď „Skončiť Pitku“ — ďalšie NA EX dnes netreba, lebo je to druhá Pitka a už máš čo si chcel.“ Zvýrazniť „Skončiť Pitku“ po otvorení potvrdenia.</dd>
+</dl>
+<figure><img src="vyucba-20261023-183417/dodo-067-skoncit-pitku.png" alt="Pruh hore pýta potvrdenie Skončiť bez NA EX, bublina stále hovorí Klikni končím" loading="lazy"><figcaption>Dodo, snímka 067: potvrdenie „Skončiť Pitku“ je v pruhu hore a pri tlačidlách, bublina o ňom mlčí.</figcaption></figure>
+</div>
+
+<div class="karta s"><h3>Krok 18 · <code>k11</code> — Hasič za Pijana <span class="stitok ui">UI výučby</span></h3>
+<dl>
+<dt>Stalo sa</dt><dd>Marta 5 akcií / 40 s: ťahanie z ruky na „+“ nezabralo 2× („+“ svietilo, karta sa nepoložila), pomohol klik na „+“ a potom na kartu; <em>„nováčik by to nevedel, ak by nezačal klikať“</em>. Dodo 4 akcie / 29 s (zámerne zlá strana → hláška „Ešte chýba…, nepatrí“ pri lupe, Melichar mlčal).</dd>
+<dt>Oprava</dt><dd>Viď „Ťahanie karty na „+“ mlčky nezabralo“ vyššie. V scenári text „za Pijana“ nepovie, na ktorú stranu — doplniť „na tvoju stranu, vľavo od Pijana“.</dd>
+</dl></div>
+
+<div class="karta s"><h3>Kroky 65 a 74 · <code>k49</code>, <code>k58</code> — „Odpovieš kartou, alebo nie? Vyber sám“ <span class="stitok scen">scenár</span></h3>
+<dl>
+<dt>Stalo sa</dt><dd>Krok 65: Katka a Marta zvolili „bez odpovede“ (viedli 12:5), Dodo zámerne; Melichar odpovedal „Tu sa odpoveď oplatí: tvoj Pijan k Miňištrantovi spojí Ranu aj Vieru. Skús to.“ — najlepšia reakcia na chybu podľa Doda; Katka: otázka „Oplatí sa?“ <em>„bola retorická a vedela odpoveď“</em>; Marta: <em>„nevysvetlilo prečo je to lepšie (čo som stratila)“</em>. Krok 74: všetci správne napoprvé (bez odpovede), Melichar nekomentoval — dobré.</dd>
+<dt>Oprava</dt><dd>Do rady po zlom ťahu pridať číslo: „Bez odpovede zostane 12:5, s Pijanom 12:3 — tuhé súpera klesne o 2.“ (čo hráč stratil, nie len čo má urobiť).</dd>
+</dl></div>
+
+<div class="karta n"><h3>Krok 43 · <code>q-starsi</code> — otázka o Farárovi <span class="stitok scen">scenár</span></h3>
+<dl>
+<dt>Stalo sa</dt><dd>Katka 26 s, Marta 28 s (Marta omylom kliklo na možnosť 1 — číslo z výpisu, nie z obrazovky — a výučba ju „pekne opravila“). Marta: <em>„„posunutý k Štamgastovi“ pôsobí tak, že ho dostal Štamgast“</em> — oproti „sa ťa bojí“. Smer markera je zdroj najväčšieho mätenia (Katka aj Marta).</dd>
+</dl></div>
+
+<h2>8. UI a UX</h2>
+<p class="meta">Počet nováčikov, čo to hlásili, je v zátvorke; pozorovania sú z ich denníkov a snímok. Rozlíšenia: Katka 1366×650, Dodo 1440×800, Marta 1920×1080.</p>
+
+<h3>Bublina Melichara zakrýva to, o čom hovorí (3/3)</h3>
+<p>Smetisko v kroku 6 (Katka 007–013, Dodo 010–016, Marta), poslednú kartu šenku v kroku 9 (Dodo 018), prvých dvoch starších pri „Starší sú…“ v kroku 39 (Katka 067, Dodo 069), starších vpravo pri rozpise v kroku 79 (Katka 108), spodok Farára so stupnicou markera v kroku 40 (Marta), Marta aj panel pečene a lišty. <strong>Príčina v kóde:</strong> <code>skoreMiesta</code> v <code>Vyucba.tsx</code> vyhýba bublinu len zvýrazneným prvkom (váha 50), kartám v línii, pečiatkam a lištám; Smetisko, šenok ani línia starších do skóre nepatria, pokiaľ ich krok nemá v <code>zvyraznit</code>. Bublina má na výber len osem pevných miest (rohy a okraje stola), pri 650 px výšky málo. Marta sa k tomu omylom dotkla tlačidla „presunúť“ (je prvé v poradí a blízko odpovedí; snímky 060, 065), čím bublina prekryla popup Vychovávateľky a pruh „PREBYTOK ZOSTÁVA 6“.</p>
+<figure><img src="vyucba-20261023-183417/katka-010-smetisko.png" alt="Bublina Melichara prekrýva ľavé sloty Smetiska" loading="lazy"><figcaption>Katka, snímka 010 (1366×650): bublina zakrýva ľavé sloty Smetiska, na ktoré má hráč položiť štyri karty.</figcaption></figure>
+<figure><img src="vyucba-20261023-183417/katka-067-starsi.png" alt="Bublina prekrýva prvých dvoch starších pri kroku Starší sú osem dedinských autorít" loading="lazy"><figcaption>Katka, snímka 067: „Starší sú osem dedinských autorít“ — bublina zakrýva prvých dvoch z nich a text hovorí „Pozri sa na Body“ bez zvýraznenia.</figcaption></figure>
+
+<h3>Automatické kroky a tempo čítania (Marta, Dodo)</h3>
+<p>Kroky 7, 12, 19, 34–35, 42, 47–55, 62–64, 72–73, 77–78 prebehnú samé; Marta: <em>„kroky 47–50 prebehli samé behom pár sekúnd — nič som nemohla prečítať“</em>, Dodo: <em>„kroky 47–49 preleteli bez možnosti prečítať (len 3 s čakanie), nevidel som, čo sa kúpilo a čo bolo na Smetisku“</em>. Bublina medzitým hovorí len „Hra ťahá za teba…“ (kroky 61–62 prázdna) a mení sa. Katka to naopak ocenila („príjemne uvoľnilo“). Rozpor sa dá zjednotiť: automatika áno, ale s jedným „ďalej“ na zhrnutie a s textom, čo hra spravila a prečo.</p>
+
+<h3>Zvýraznenia (3/3)</h3>
+<ul>
+<li>Krok 4 „Dole je tvoj bar“: scenár zvýrazňuje <code>bar:poldeci</code> a <code>bar:cigarety</code>, ale na snímke (Dodo 005) nič nesvieti a bublina je vľavo hore, ďaleko od baru (Dodo, Marta; Katka dodáva, že nesvieti ani pásik fáz). Potvrdené snímkou.</li>
+<li>Ikona Viery na hrane karty Miňištranta nie je zvýraznená (3/3), a pritom je celé rozhodnutie v kroku 31 o nej.</li>
+<li>PASOVAŤ svieti naraz s kartou, ktorú treba položiť (Katka krok 57, Dodo 51–56 a snímky 083, 089), takže nováčik klikne naň (Dodo klikol zámerne a dostal 2 odmietnutia).</li>
+<li>„Pozri sa na Body“ v krokoch 39 a 79 bez zvýraznenia (Marta, Dodo).</li>
+<li>V kroku 75 zvýraznená „Milujúca manželka“ bez vysvetlenia (Marta).</li>
+</ul>
+
+<h3>Lupa, tooltipy a rozpadnutý popup (3/3)</h3>
+<ul>
+<li>Lupa karty pod myšou ostáva visieť a zakrýva stôl alebo bublinu (Dodo 023, 037, 074, 089, 117; Marta 079 — Krčma cez stred stola); po zmiznutí lupy sa „+“ posunú (Dodo).</li>
+<li>Tooltip staršieho (Vychovávateľka) visí v pravom hornom rohu cez Štamgastove staty a tlačidlá (Katka 063; Dodo kroky 39–40: „nedá sa prečítať Posun ťa stojí 2“).</li>
+<li><strong>Rozpadnutý popup staršieho</strong> (Marta 075, 1920×1080): vľavo na okraji obrazovky stĺpec slov pod sebou („Farár… Lakomec… súper +2: barter… Bojí sa teba…“), cez bublinu a panel pečene. Chyba vykresľovania, objavila sa v krokoch 52–56 (Zhromaždenie 2. kola) — pravdepodobne tooltip bez šírky; reprodukovať pri 1920×1080 po otvorení a zatvorení starších.</li>
+</ul>
+<figure><img src="vyucba-20261023-183417/marta-075-popup.png" alt="Úzky stĺpec s textom po slovách pod sebou na ľavom okraji, cez bublinu Melichara" loading="lazy"><figcaption>Marta, snímka 075: rozpadnutý popup staršieho na ľavom okraji, cez bublinu a panel pečene.</figcaption></figure>
+
+<h3>Čitateľnosť stola (Marta 3, Dodo 5, Katka 6)</h3>
+<ul>
+<li>Text na kartách ~8 px a na kartách starších ~11 px je pri 1920×1080 nečitateľný (Marta 013, 019, 043, 060, 065); súperove karty hore nohami (Marta).</li>
+<li>Pokyn v pruhu hore sa orezáva trojbodkou („…nevylož…“, „Alebo celý prebytok nar…“; Marta aj Katka).</li>
+<li>Veľa čísel naraz: ODHAD, ±3, prevaha, prebytok, spoj, vydesenie, Absťák, zadlženie (3/3); pás „Odhad: Remíza — lokalita na sekeru“ je od začiatku bez vysvetlenia (Katka, Dodo); skóre „+23 / +11“ a „o 12 za“ nejasné (Dodo 076, Marta).</li>
+<li>Dolný rad kariet v ruke je pri 650 px odrezaný (Katka).</li>
+</ul>
+
+<h3>Ovládanie</h3>
+<ul>
+<li>Skratky P, K, N, Enter, 1–3: <strong>najlepšia vec výučby</strong> (Dodo); Katka oceňuje náhľad „spoj: Viera + Dlh · ty: Viera +1“ a „→ 13:2 ▲“ v pásiku.</li>
+<li>Pasovať: po kliku „Vrátiť · ešte vykladám“ s odpočtom 4 s je zbytočný medzikrok (Katka 030, Dodo, Marta); Melichar o tom mlčí. Potvrdzovanie pasu/končím/Skončiť Pitku = 2–3 kliky.</li>
+<li>Zlý klik je bezpečný (otočenie lokality, PASOVAŤ, NA EX na zlú kartu, „bez odpovede“ — vždy sa dalo vrátiť), no Melichar zareagoval len pri NA EX a Viere, nie pri otočení lokality alebo zlej strane (Dodo).</li>
+</ul>
+
+<h2>9. Dĺžka a tempo</h2>
+<ul>
+<li>Celkový čas 11,1 / 12,5 / 12,8 min pri 83 krokoch (1. kolo 70 krokov, 16,7 / 11,8 / 11,6). Dĺžku „primeranú“ nazvala Katka, Marta asi na 60 %, Dodo „83 krokov je dlho pre netrpezlivého“.</li>
+<li>Najdlhšie kroky: 31 (75 / 100 / 83 s), 58 (Dodo 40 s), 18 (Marta 40 s, Dodo 29 s), 43 (Katka 26 s, Marta 28 s), 70 (Katka 21 s, Dodo 29 s), 65 (Katka 17 s, Marta 18 s). Všetko sú kroky, kde sa niečo hádalo (nie čítalo).</li>
+<li><strong>Úvod 1–4:</strong> štyri odseky bez akcie, Dodo stláčal Enter bez čítania, Marta „až do kroku 45 nechápala poldeci“. Najdlhšie bubliny: kroky 28 (38 slov), 37 (37), 75 (37), 81 (37), 2 (37), 80 (36), 3 (35) — nikde viac než 40.</li>
+<li><strong>Kroky 34–37 (vyhodnotenie Pitky, bitka, starší)</strong> sú zhluk (Dodo: „potrebovali by pauzu“): Pohoršenie, Dlhy, priazeň Bitkára, tuhé a prebytok v štyroch krokoch za sebou, do toho prvý pohľad na 8 starších.</li>
+<li><strong>Druhé kolo (45–79)</strong> je pre Martu „opakovanie prvého“, pre Katku a Doda výhoda. Zhrnutia (80–82) sú trojité (Marta).</li>
+<li>Čakanie na Štamgasta 3–5 s opakovane (Katka), Dodo ~3 s × 15.</li>
+</ul>
+
+<h2>10. Melichar</h2>
+<ul>
+<li><strong>Tón:</strong> všetci traja ho ocenili (V8 7 / 8 / 8): „krčmový, neotravný, oslovuje priamo“. Katka: „trochu suchý, chýba osobnosť“.</li>
+<li><strong>Najlepšie hlášky:</strong> „NA EX nie je zadarmo… Je to obchod, silnejšia bitka za pečeň.“ (krok 28; Katka), „To je celá krčma. Štamgast sa z toho vyspí.“ (Dodo, Marta), „Tu sa odpoveď oplatí: tvoj Pijan k Miňištrantovi spojí Ranu aj Vieru. Skús to.“ (Dodo), „Viera je spojená, NA EX by ju zrušilo: 13:5“ (Dodo).</li>
+<li><strong>Najhoršie:</strong> číselný výpis bitky „Hasič s NA EX 6, Pijan 1 a Bitkár 2, hrana Krčmy 2…“ (krok 75; 3/3), „Starosta je teraz v žltom pri tebe a pomáha ti: priazeň Bitkára, +2 tuhé.“ (krok 36; Marta), dlhé vety v krokoch 3 a 79 so zhlukom pojmov (Dodo, Marta).</li>
+<li><strong>Rod:</strong> „Vedel si?“ v kroku 82 je mužské, kým herné texty používajú „Vyhrala si“ (Marta). Katka: „cigarety 12“ v rozpise v kroku 79 nesedí s panelom (10/13) — je to body za cigarety, nie počet, ale to text nepovie.</li>
+</ul>
+
+<h2>11. Čo chýba a čo je navyše</h2>
+<ul>
+<li><strong>Chýba (3/3):</strong> slovo pred použitím — poldeci (pohárik; Marta pochopila v kroku 45), šenok, Smetisko a prečo ho treba, tuhé, prebytok, „vydesený“, Absťák a Dlh (celý čas na paneli, nikdy vysvetlené), Pohoršenie, Dedičstvo.</li>
+<li><strong>Chýba (Katka, Dodo, Marta po jednom):</strong> legenda ikon na hranách (Rana/Pecka/Petelica/Viera, kde je ktorá výška; Katka, Dodo), prečo pasovanie dáva cigaretu a kedy ho chcem (Marta, Katka), ktorá hrana lokality je „moja“ (Katka, Marta), že NA EX sa dá len raz za Pitku (Katka), smer markera starších (3/3), prečo hra vybrala za hráča nákup v 2. kole (Katka).</li>
+<li><strong>Chýba nikomu nezmieňované, ale pravidlá ho majú:</strong> okamžitá výhra vydesením (§1) a plán do prvej partie.</li>
+<li><strong>Navyše:</strong> dlhý úvod 1–4 bez ukážky (Dodo, Marta), rozpis bodov vo vete v kroku 79 (Dodo, Marta), opakovanie NA EX a Pitky v 2. kole (Marta), trojité zhrnutia na konci (Marta), potvrdzovanie pasu/končím viackrát (Katka).</li>
+</ul>
+
+<h2>12. Opravy pre ďalšie kolo (cieľ nesplnený)</h2>
+<p>Zoradené podľa toho, ako zdvihnú chýbajúce čísla: <strong>priemer V1–V10 o 0,7</strong> (z 6,3 na 7,0; hlavne Dodo a Marta) a <strong>test o 4 odpovede</strong> (z 14 na 18; kandidáti sú otázky 1, 6 a 8, kde je 0 z 3, a otázka 2 u Marty). Odhady vplyvu sú úsudok spisovateľa, nie meranie.</p>
+<div class="filtre"><label>Druh <select id="f-druh"><option value="">všetky</option><option>scenár</option><option>UI</option><option>hra</option></select></label></div>
+<div id="navrhy">
+
+<h3>SCENÁR (Navrhár scenára)</h3>
+<div class="karta v" data-druh="scenár"><h3>S1. Starší od základu, pomaly, s kontrolou <span class="stitok scen">scenár</span></h3>
+<p><b>Kroky:</b> 39 (<code>i-starsi</code>), 40–42 (<code>k27–k29</code>), 43 (<code>q-starsi</code>), 76–79 (<code>k60</code>, <code>k61</code>, <code>k62</code>, <code>i-koniec</code>). <b>Vplyv:</b> test otázka 6 (až +3), V1, V9; všetci traja označili starších za najhmlistejšie.</p>
+<p><b>Návrh:</b> (1) Krok 39 rozdeliť na dva: „Starší je osem. Každý má marker na stupnici — žltá, oranžová, červená, čím ďalej, tým väčší strach.“ a „Marker posúvaš k súperovi — on dostane od staršieho priazeň (malý bonus) a starší sa bojí teba. Keď sa ťa starší bojí, pridá ti body.“ (2) Kroky 41–42 nenechať hrať za hráča: nech klikne aspoň dva posuny sám (hra za teba posunula Farára 3× po jedinom kliknutí, nik nevedel prečo). (3) Pridať druhú otázku po q-starsi: „Starší je v oranžovom pri Štamgastovi. Koho sa bojí?“ (4) Rozpis bodov v kroku 79 rozdeliť na dve vety: najprv „z čoho“ (lokality, starší, cigarety), potom čo si zobrať. Overiť proti §9–§10: „strach dáva body“ platí cez zónové podmienky; ostatné podmienky scorecardu boduje obom.</p>
+<p><b>Kto:</b> Navrhár scenára; zvýraznenie starších a nezakrývanie rieši U1. <b>Náročnosť:</b> stredná.</p></div>
+
+<div class="karta v" data-druh="scenár"><h3>S2. Cieľ a plán do prvej partie <span class="stitok scen">scenár</span></h3>
+<p><b>Kroky:</b> 2 (<code>i-ciel</code>), 80–81 (<code>i-zhrnutie</code>, <code>i-zhrnutie2</code>). <b>Vplyv:</b> test otázka 1 (+3) a otázka 8 (až +3), V1, V10.</p>
+<p><b>Návrh:</b> (1) Do <code>i-ciel</code> alebo zhrnutia jedna veta: „Alebo vydesíš polovicu starších a udržíš ich do konca ďalšieho kola — vyhráš hneď.“ (§1). (2) V zhrnutí „Tvoj plán do prvej partie“: tri konkrétne tipy z hry, ktorú práve odohrali (napr. „Prvú bitku vyhraj spojmi, NA EX dávaj len na kartu s Petelicou bez páru, pečeň nechaj pod prahom, jedného staršieho dotlač do červenej“). (3) Zhrnutia 80–82 spojiť do dvoch krokov (Marta: trojité).</p>
+<p><b>Kto:</b> Navrhár scenára. <b>Náročnosť:</b> malá.</p></div>
+
+<div class="karta v" data-druh="scenár"><h3>S3. Najprv slovo, potom použitie <span class="stitok scen">scenár</span></h3>
+<p><b>Kroky:</b> 3–4 (poldeci, tuhé, šenok), 6 (Smetisko, šenok), 9 (Rana/Pecka/Petelica), 17 (Pohoršenie, Dlh), 25 (Absťák), 28 (pečeň, Cirhóza), 36–37 (prebytok), 76 (vydesený). <b>Vplyv:</b> V3 (Marta 5), V1, V9, test otázky 2 a 6.</p>
+<p><b>Návrh:</b> pri každom prvom výskyte jedna veta: „Poldeci je pohárik; plný ti dáva kartu navyše aj NA EX.“ (krok 4), „Šenok je spoločná ponuka kariet, kupuješ ich za cigarety.“ (krok 6), „Smetisko je odkladanie, ktoré súper neuvidí.“, „Tuhé je sila v bitke.“, „Prebytok = o koľko si vyhral bitku, tým posúvaš starších.“ A jedna veta „Čo ignorovať“ v kroku 4: „Absťák a Dlh na paneli zatiaľ nevšímaj, vysvetlím pri bitke.“ — Marta aj Katka ich vidia od kroku 1 a nikto nevie čo sú.</p>
+<p><b>Kto:</b> Navrhár scenára. <b>Náročnosť:</b> malá až stredná (≈ 10 viet, bubliny zostanú pod 40 slov).</p></div>
+
+<div class="karta v" data-druh="scenár UI"><h3>S4. Rozhodnutia: kritérium v texte a správny kandidát <span class="stitok scen">scenár</span></h3>
+<p><b>Kroky:</b> 31 (<code>k21</code>), 70 (<code>k54</code>), 65 (<code>k49</code>). <b>Vplyv:</b> V2 (Marta 5, Dodo 7), V5, V6, najdlhšie kroky výučby.</p>
+<p><b>Návrh:</b> viď „Krok 31“ a „Krok 70“ v sekcii 7: kandidát len <code>#2</code>, strana v texte, kritérium („Viera sa spojí s Dlhom na Štamgastovej hrane — hľadaj ikonu na tej istej výške“). Pri zlom ťahu povedať, čo hráč stratil (číslo).</p>
+<p><b>Kto:</b> Navrhár scenára (text, kandidáti), UX/UI (zvýraznenie ikony Viery). <b>Náročnosť:</b> malá.</p></div>
+
+<div class="karta s" data-druh="scenár"><h3>S5. Automatické kroky s „ďalej“ a krátkym textom <span class="stitok scen">scenár</span></h3>
+<p><b>Kroky:</b> 47–55, 62–64, 72–73, 77–78. <b>Vplyv:</b> V7 a V4 (Marta 5/4), V1; Dodo a Marta nestihli čítať.</p>
+<p><b>Návrh:</b> miesto desiatich prelietavých krokov dve zhrnutia „Hra za teba: zvolila Krčmu a kúpila Hasiča, lebo… [dôvod]“ s tlačidlom „ďalej“ (Enter); čo hra spravila, ukázať svietením 1,5 s (už je v kóde ako <code>dosvit</code>).</p>
+<p><b>Kto:</b> Navrhár scenára. <b>Náročnosť:</b> stredná.</p></div>
+
+<div class="karta s" data-druh="scenár"><h3>S6. Text „Skončiť Pitku“, pas a „Vrátiť“ <span class="stitok scen">scenár</span></h3>
+<p><b>Kroky:</b> 20, 32, 33 (<code>k13</code>, <code>k22</code>, <code>k23</code>). <b>Vplyv:</b> V2, V6 (3/3 hlásili zbytočné klikanie).</p>
+<p><b>Návrh:</b> „Klikni pasovať. Hra ti dá 4 s na vrátenie — nechaj ho vyprchať.“; krok 33 viď sekcia 7; vysvetliť prečo pasovať (jedna cigareta za nevyloženú kartu).</p>
+<p><b>Kto:</b> Navrhár scenára. <b>Náročnosť:</b> malá.</p></div>
+
+<div class="karta n" data-druh="scenár"><h3>S7. Drobnosti <span class="stitok scen">scenár</span></h3>
+<p>Skrátiť úvod 1–4 na dva kroky alebo pridať ukážku baru (Dodo, Marta); „Vedel si?“ → rodovo neutrálne („Chceš vedieť viac?“, krok 82); vysvetliť „cigarety 12“ v rozpise ako body; skrátiť číselné výpisy v krokoch 36, 37, 75 na dve vety (3/3); ukázať, ktorá hrana lokality je „moja“ (Katka, Marta). <b>Kto:</b> Navrhár scenára. <b>Náročnosť:</b> malá.</p></div>
+
+<h3>UI (UX/UI a Developer)</h3>
+<div class="karta v" data-druh="UI"><h3>U1. Bublina nesmie zakrývať, o čom hovorí <span class="stitok ui">UI výučby</span></h3>
+<p><b>Kroky:</b> 6, 9, 39–43, 60–62, 79. <b>Vplyv:</b> V4 (priemer 5,3), V9, V1; 3/3.</p>
+<p><b>Návrh:</b> do <code>skoreMiesta</code> (<code>Vyucba.tsx</code>) pridať Smetisko, šenok a líniu starších s vysokou váhou vtedy, keď sa ich týka text kroku (alebo ich pridať do <code>zvyraznit</code> v scenári); tlačidlo „presunúť“ oddialiť od možností odpovede a dať mu popisku; pri automatických krokoch bublinu nepresúvať (Marta).</p>
+<p><b>Kto:</b> UX/UI. <b>Náročnosť:</b> stredná.</p></div>
+
+<div class="karta v" data-druh="hra UI"><h3>U2. Ťahanie na „+“ pri súperovi a hlášky pri zlyhaní <span class="stitok hra">chyba hry (nepotvrdená)</span></h3>
+<p><b>Kroky:</b> 18, 31, 58. <b>Vplyv:</b> V6, V2, najdlhší krok výučby. <b>Návrh:</b> reprodukovať zlyhanie ťahania na 1440×800 (Dodo) a 1920×1080 (Marta) vlastným CDP ťahaním; po začatí ťahania neposúvať cieľové miesto pod kurzorom a pri pustení mimo cieľa ukázať hlášku („Sem nejde — klikni na „+“, potom na kartu“); lupu zrušiť pri začatí ťahania. <b>Kto:</b> Developer + UX/UI. <b>Náročnosť:</b> stredná.</p></div>
+
+<div class="karta s" data-druh="UI"><h3>U3. Zvýraznenia, ktoré chýbajú alebo sú naviac <span class="stitok ui">UI výučby</span></h3>
+<p><b>Kroky:</b> 4 (bar nesvieti), 31 (ikona Viery), 39 a 79 („Body“), 56–57 (PASOVAŤ svieti s kartou), 75. <b>Vplyv:</b> V5 (priemer 6,3), V2. <b>Návrh:</b> zvýrazniť to, čo bublina pomenúva; na krok, kde sa pasuje, zvýrazniť PASOVAŤ, inde ho nesvietiť; po otvorení potvrdenia „Skončiť Pitku“ ho zvýrazniť. <b>Kto:</b> UX/UI. <b>Náročnosť:</b> malá.</p></div>
+
+<div class="karta s" data-druh="UI"><h3>U4. Čitateľnosť stola pre veľké rozlíšenie <span class="stitok ui">UI výučby</span></h3>
+<p><b>Kroky:</b> celá hra, najmä 36–43 a 60–62. <b>Vplyv:</b> V9 (Marta 3), V1. <b>Návrh:</b> viac textu kariet a starších čitateľného bez lupy pri 1920×1080 (alebo automatické zväčšenie karty, o ktorej hovorí krok), neorezávať pokyn v hornom pruhu, vo výučbe skryť ODHAD, ±3 a vydesenie, kým o nich nehovorí Melichar (Katka, Dodo, Marta). <b>Kto:</b> UX/UI. <b>Náročnosť:</b> stredná až veľká.</p></div>
+
+<div class="karta s" data-druh="UI"><h3>U5. Rozpadnutý popup a visiace tooltipy <span class="stitok ui">UI výučby</span></h3>
+<p><b>Kroky:</b> 55 (Marta 075), 37–40 (Katka 063, Dodo). <b>Vplyv:</b> V9, V4; chyby vykresľovania. <b>Návrh:</b> popup staršieho dať minimálnu šírku a zatvoriť ho pri zmene kroku; lupu a tooltip zavrieť pri pohybe myši mimo karty. <b>Kto:</b> Developer. <b>Náročnosť:</b> malá.</p></div>
+
+<div class="karta n" data-druh="UI"><h3>U6. Pas: odpočet „Vrátiť“ <span class="stitok ui">UI výučby</span></h3>
+<p>Vo výučbe pasovanie hneď bez 4 s odpočtu alebo vysvetliť odpočet (3/3 ho zbytočne klikali alebo čakali). <b>Kto:</b> UX/UI. <b>Náročnosť:</b> malá.</p></div>
+</div>
+
+<p class="pata">AI nováčikovia (Katka, Dodo, Marta) hrali výučbu proti Štamgastovi cez skutočný server bez znalosti pravidiel; tento report je jedno kolo s tromi nováčikmi, každý nováčik je jeden údaj.</p>
+
+</main>
+<script>
+(function(){
+var cb=document.getElementById("len-prob"),rows=document.querySelectorAll("#mapa tbody tr");
+cb.addEventListener("change",function(){rows.forEach(function(r){r.hidden=cb.checked&&r.dataset.p!=="1";});});
+var sel=document.getElementById("f-druh");
+sel.addEventListener("change",function(){document.querySelectorAll("#navrhy .karta").forEach(function(k){k.hidden=!!sel.value&&k.dataset.druh.indexOf(sel.value)<0;});});
+var th=document.querySelector("#znamky thead th[tabindex]"),tb=document.querySelector("#znamky tbody"),dir=-1;
+function sort(){dir=-dir;var r=Array.prototype.slice.call(tb.rows);r.sort(function(a,b){return dir*(parseFloat(a.cells[4].dataset.v)-parseFloat(b.cells[4].dataset.v));});r.forEach(function(x){tb.appendChild(x);});}
+th.addEventListener("click",sort);th.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();sort();}});
+})();
+</script>
+</body>
+</html>
