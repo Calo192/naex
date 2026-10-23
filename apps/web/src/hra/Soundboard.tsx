@@ -124,8 +124,9 @@ function Vlny() {
   );
 }
 
+/** Fúziky majstra Melichara (medailón v hlavičke panela aj tlačidlo v hlavičke webu). */
 const FUZ =
-  "M12 11.2c-1.2-1.7-3.3-2-4.6-.6-.6.7-1.5.8-2.2.2.3 1.9 2 3 3.7 2.6 1.3-.3 2.3-1.1 3.1-2.2Zm0 0c1.2-1.7 3.3-2 4.6-.6.6.7 1.5.8 2.2.2-.3 1.9-2 3-3.7 2.6-1.3-.3-2.3-1.1-3.1-2.2Z";
+  "M12 11c-1.5-2.3-4.3-2.7-6-.8-.8.9-2 1-2.9.3.4 2.5 2.6 4 4.9 3.4 1.7-.4 3-1.5 4-2.9Zm0 0c1.5-2.3 4.3-2.7 6-.8.8.9 2 1 2.9.3-.4 2.5-2.6 4-4.9 3.4-1.7-.4-3-1.5-4-2.9Z";
 
 function IkonaTicho() {
   return (
@@ -334,19 +335,13 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
           ) : stav === "odpocet" ? (
             <span className="prstenec" style={{ "--p": String(zostava / TICHO_MS) } as CSSProperties} />
           ) : (
-            <svg className="fuz" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M3.5 5.5h17a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H11l-4.5 3.5V17.5h-3A1.5 1.5 0 0 1 2 16V7a1.5 1.5 0 0 1 1.5-1.5Z"
-                stroke="var(--akcent)"
-                strokeWidth="1.6"
-                strokeLinejoin="round"
-              />
-              <path d={FUZ} fill="var(--akcent)" />
+            <svg className="fuz" viewBox="0 0 24 24">
+              <path d={FUZ} fill="currentColor" />
             </svg>
           )}
           {superHra && <span className="sb-bodka" />}
         </span>
-        Melichar
+        <span className="sb-nazov">Melichar</span>
         {stlmene && <IkonaTicho />}
       </button>
 
@@ -367,10 +362,7 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
           <div className="sb-hlava">
             <span className="sb-medailon" aria-hidden="true">
               <svg viewBox="0 0 24 24">
-                <path
-                  d="M12 11c-1.5-2.3-4.3-2.7-6-.8-.8.9-2 1-2.9.3.4 2.5 2.6 4 4.9 3.4 1.7-.4 3-1.5 4-2.9Zm0 0c1.5-2.3 4.3-2.7 6-.8.8.9 2 1 2.9.3-.4 2.5-2.6 4-4.9 3.4-1.7-.4-3-1.5-4-2.9Z"
-                  fill="currentColor"
-                />
+                <path d={FUZ} fill="currentColor" />
               </svg>
             </span>
             <div>

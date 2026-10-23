@@ -10,16 +10,19 @@
 }
 
 .sb-spust {
+  position: relative;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 7px;
-  height: 30px;
-  padding: 0 11px 0 6px;
+  width: 34px;
+  height: 34px;
+  padding: 0;
   font: 500 0.86rem/1 var(--pismo);
   color: var(--tlmeny);
   background: transparent;
   border: 1px solid var(--okraj);
-  border-radius: 8px;
+  border-radius: 50%;
   cursor: pointer;
   white-space: nowrap;
   transition:
@@ -52,6 +55,29 @@
 .sb-ik svg {
   width: 20px;
   height: 20px;
+}
+
+.sb-ik .fuz {
+  width: 24px;
+  height: 24px;
+  color: var(--akcent);
+}
+
+/* Názov je v titulku tlačidla — viditeľne len ikona (hlavička B). */
+.sb-nazov {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Stlmené: malý reproduktor v rohu ikony. */
+.sb-spust .sb-ticho {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
 }
 
 .sb-ticho {

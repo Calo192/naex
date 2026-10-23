@@ -607,37 +607,53 @@ textarea {
   }
 }
 
-/* Počas partie patrí hlavička ovládaniu hry (Melichar, soundboard, vzdať sa,
-   odísť) — navigácia je vždy za hamburgerom, na každej šírke (Michal 2026-10-22,
-   návrh C). Ovládanie partie sa vkladá portálom do #hlavicka-hra. */
-.hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .hamburger {
-  display: flex;
+/* Počas partie (Michal 2026-10-23, hlavička B): hlavička na celú šírku okna, všetky
+   položky menu vedľa seba a za nimi blok partie (portál do #hlavicka-hra). Klik na menu
+   sa najprv opýta, či hráč partiu opúšťa (Layout, OdchodZPartie). */
+.hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) {
+  max-width: none;
+  gap: 16px;
 }
 
 .hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .navigacia {
-  display: none;
-  position: absolute;
-  top: 64px;
-  left: 0;
-  right: 0;
-  flex: none;
-  flex-direction: column;
   gap: 2px;
-  padding: 10px 16px 16px;
-  background: var(--plocha);
-  border-bottom: 1px solid var(--okraj);
 }
 
 .hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .navigacia a {
-  padding: 12px 14px;
+  padding: 8px 12px;
 }
 
-.hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .navigacia.otvorena {
-  display: flex;
-}
+/* Užšie okno sa s blokom partie nezmestí — menu ide za hamburger (návrh C, 2026-10-22). */
+@media (max-width: 1499px) {
+  .hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .hamburger {
+    display: flex;
+  }
 
-.hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .hlavicka-hra {
-  margin-left: auto;
+  .hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .navigacia {
+    display: none;
+    position: absolute;
+    top: 64px;
+    left: 0;
+    right: 0;
+    flex: none;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 16px 16px;
+    background: var(--plocha);
+    border-bottom: 1px solid var(--okraj);
+  }
+
+  .hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .navigacia a {
+    padding: 12px 14px;
+  }
+
+  .hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .navigacia.otvorena {
+    display: flex;
+  }
+
+  .hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .hlavicka-hra {
+    margin-left: auto;
+  }
 }
 
 @media (min-width: 1101px) and (max-width: 1400px) {
@@ -677,6 +693,56 @@ textarea {
   .obsah {
     padding: 24px 16px 48px;
   }
+}
+
+/* ---- Odísť z partie? (Michal 2026-10-23) ---------------------------------- */
+.odchod-zaves {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 18vh 16px 16px;
+  background: rgba(8, 6, 4, 0.62);
+  animation: modal-in 0.15s ease-out;
+}
+
+.odchod-dialog {
+  width: min(520px, 100%);
+  padding: 22px 24px 20px;
+  border-radius: 14px;
+  background: var(--plocha-2);
+  border: 1px solid var(--okraj-svetly);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
+}
+
+.odchod-dialog h2 {
+  margin: 0 0 8px;
+  font: 700 1.3rem/1.25 var(--nadpis);
+}
+
+.odchod-dialog p {
+  margin: 0 0 6px;
+  color: var(--tlmeny);
+}
+
+.odchod-dialog b {
+  color: var(--text);
+}
+
+.odchod-kod {
+  font: 700 0.95rem/1 var(--nadpis);
+  letter-spacing: 0.1em;
+  color: var(--akcent);
+}
+
+.odchod-tlacidla {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
 }
 
 /* ---- autentifikácia a profil ------------------------------------------- */

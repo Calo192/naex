@@ -1,8 +1,9 @@
 // Kostra stránky: hlavička s navigáciou (podľa roly) a obsah.
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
 import { api } from "./lib/api.ts";
 import { NOVINKY_VIDENE, citajVidene } from "./lib/novinky.ts";
+import { useStrazenaPartia } from "./lib/odchod.ts";
 import { Odkaz, chod, useCesta } from "./lib/router.tsx";
 import { NAZOV_UROVNE, jeSpravca, maPravo, useUcet, type Pravo } from "./lib/ucet.tsx";
 import { Avatar } from "./komponenty.tsx";
@@ -72,6 +73,53 @@ function useDielnaZnacka(cesta: string, prihlaseny: boolean): number {
   return pocet;
 }
 
+/**
+ * Odísť z partie? (Michal 2026-10-23) — klik na položku menu počas partie. Partia
+ * beží ďalej; predvolené (fokus, Esc, klik mimo) je zostať.
+ */
+function OdchodZPartie({ kod, nazov, onZostat, onOdist }: { readonly kod: string; readonly nazov: string; readonly onZostat: () => void; readonly onOdist: () => void }) {
+  const zostatRef = useRef<HTMLButtonElement>(null);
+  const zostat = useRef(onZostat);
+  zostat.current = onZostat;
+  useEffect(() => {
+    zostatRef.current?.focus();
+    // Zachytené skôr než Esc hernej plochy (línia starších, lupa…).
+    const klaves = (e: KeyboardEvent): void => {
+      if (e.key !== "Escape") return;
+      e.stopPropagation();
+      zostat.current();
+    };
+    window.addEventListener("keydown", klaves, true);
+    return () => window.removeEventListener("keydown", klaves, true);
+  }, []);
+  return (
+    <div className="odchod-zaves" onClick={onZostat}>
+      <div
+        className="odchod-dialog"
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="odchod-nadpis"
+        aria-describedby="odchod-text"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2 id="odchod-nadpis">Odísť z partie?</h2>
+        <p id="odchod-text">
+          Partia beží ďalej — nie je to vzdanie sa. Vrátiš sa do nej cez <b>Hrať</b> alebo kódom miestnosti <span className="odchod-kod">{kod}</span>.
+        </p>
+        <p>Súper medzitým čaká; po 3 minútach bez teba si môže vyžiadať kontumačnú výhru.</p>
+        <div className="odchod-tlacidla">
+          <button type="button" onClick={onOdist}>
+            {nazov}
+          </button>
+          <button type="button" className="tlacidlo-hlavne" ref={zostatRef} onClick={onZostat}>
+            Zostať v partii
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /** siroky = do 1600 px; plna = celé okno pod hlavičkou bez posúvania stránky a bez pätičky (pravidlá). */
 export function Layout({
   children,
@@ -89,6 +137,23 @@ export function Layout({
   const menuRef = useRef<HTMLDivElement>(null);
   const noveNovinky = useNoveNovinky(cesta, nacitane, ja !== null);
   const dielna = useDielnaZnacka(cesta, nacitane && ja !== null);
+  const strazenaPartia = useStrazenaPartia();
+  const [odchod, setOdchod] = useState<{ readonly href: string | null; readonly nazov: string } | null>(null);
+  // Klik na odkaz v hlavičke (menu, logo, účet) počas partie zachytí dialóg — ovládanie
+  // partie (#hlavicka-hra) a „Hrať“ nie. Ctrl/stredné tlačidlo otvárajú novú kartu ďalej.
+  const strazOdchodu = (e: ReactMouseEvent<HTMLElement>): void => {
+    if (strazenaPartia === null || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const ciel = (e.target as Element).closest<HTMLElement>("a[href], [data-odchod]");
+    if (ciel === null || ciel.closest("#hlavicka-hra") !== null) return;
+    const href = ciel.getAttribute("href");
+    if (href === "/hra" || href === cesta) return;
+    e.preventDefault();
+    e.stopPropagation();
+    setMenu(false);
+    setMobilne(false);
+    const nazov = ciel.dataset.odchod ?? `Odísť na ${ciel.dataset.nazov ?? ciel.firstChild?.textContent?.trim() ?? "inú stránku"}`;
+    setOdchod({ href, nazov });
+  };
 
   useEffect(() => {
     setMenu(false);
@@ -106,9 +171,9 @@ export function Layout({
 
   return (
     <div className="aplikacia">
-      <header className="hlavicka">
+      <header className="hlavicka" onClickCapture={strazOdchodu}>
         <div className="hlavicka-vnutro">
-          <Odkaz href="/" className="logo" aria-label="NA EX! — domov">
+          <Odkaz href="/" className="logo" aria-label="NA EX! — domov" data-nazov="úvodnú stránku">
             <span className="logo-pohar" aria-hidden="true" />
             NA EX!
           </Odkaz>
@@ -191,6 +256,7 @@ export function Layout({
                     )}
                     <button
                       role="menuitem"
+                      data-odchod="Odhlásiť sa"
                       onClick={() => {
                         void odhlas().then(() => chod("/"));
                       }}
@@ -204,6 +270,19 @@ export function Layout({
           </div>
         </div>
       </header>
+      {odchod !== null && strazenaPartia !== null && (
+        <OdchodZPartie
+          kod={strazenaPartia}
+          nazov={odchod.nazov}
+          onZostat={() => setOdchod(null)}
+          onOdist={() => {
+            const href = odchod.href;
+            setOdchod(null);
+            if (href === null) void odhlas().then(() => chod("/"));
+            else chod(href);
+          }}
+        />
+      )}
       <main className={plna ? "obsah obsah-plna" : siroky ? "obsah obsah-siroky" : "obsah"}>{children}</main>
       <footer className={plna ? "paticka paticka-skryta" : "paticka"}>
         <span>NA EX! — kartová hra pre dvoch · © Michal Calík</span>

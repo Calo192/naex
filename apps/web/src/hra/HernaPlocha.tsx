@@ -105,6 +105,7 @@ import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
 import { LiniaStarsich, type StarsiVLinii } from "./LiniaStarsich.tsx";
 import { mediaUrl } from "../lib/api.ts";
+import { useStrazOdchodu } from "../lib/odchod.ts";
 import { skupinyBalicka } from "./doberaciBalicek.ts";
 import { SkratkyNapoveda, useSkratky } from "./skratky.tsx";
 import type { Sada } from "@naex/tvorba";
@@ -397,6 +398,8 @@ export function HernaPlocha({
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
+  // Kým partia beží, klik na menu v hlavičke sa najprv opýta (Michal 2026-10-23); prehrávač nestráži.
+  useStrazOdchodu(view.koniec === null && prehravanie === undefined, kod);
   // Ovládanie partie (spojenie, kontumácia, vzdať sa, odísť) je v hlavičke webu — Layout má preň miesto.
   const [slotHlavicky, setSlotHlavicky] = useState<HTMLElement | null>(null);
   useEffect(() => {
@@ -3805,20 +3808,24 @@ export function HernaPlocha({
           <div className="hlavicka-partia">
             {prehravanie ?? (
               <>
-            {vHlavicke}
-            <span className={`spojenie ${superPripojeny ? "online" : "offline"}`}>
-              {superPripojeny ? `● ${menoHraca(super_)}` : `○ ${menoHraca(super_)} odpojený`}
+            {/* Blok partie (Michal 2026-10-23, hlavička B): kód miestnosti, súper, Melichar, vzdať sa, odísť. */}
+            <span className="partia-kod" title="Kód miestnosti — vrátiš sa ním do partie alebo ho pošli súperovi">
+              {kod}
             </span>
-            {/* Kontumácia patrí k stavu „odpojený“, ktorý ju umožňuje (dizajn UI N1). */}
-            {view.koniec === null && !superPripojeny && kontumacia !== undefined && (
-              <button
-                className="opustit tlacidlo-male"
-                onClick={kontumacia}
-                title="Súper je odpojený. Po 3 minútach si môžeš vyžiadať kontumačnú výhru."
-              >
-                kontumačná výhra
-              </button>
-            )}
+            <span className={`partia-super ${superPripojeny ? "online" : "offline"}`}>
+              <span className="spojenie">{superPripojeny ? `● ${menoHraca(super_)}` : `○ ${menoHraca(super_)} odpojený`}</span>
+              {/* Kontumácia patrí k stavu „odpojený“, ktorý ju umožňuje (dizajn UI N1). */}
+              {view.koniec === null && !superPripojeny && kontumacia !== undefined && (
+                <button
+                  className="opustit tlacidlo-male"
+                  onClick={kontumacia}
+                  title="Súper je odpojený. Po 3 minútach si môžeš vyžiadať kontumačnú výhru."
+                >
+                  kontumačná výhra
+                </button>
+              )}
+            </span>
+            {vHlavicke}
             {view.koniec === null && (
               <button
                 className={`opustit tlacidlo-male tlacidlo-nebezpecne ${potvrdVzdanie ? "potvrdit" : ""}`}
