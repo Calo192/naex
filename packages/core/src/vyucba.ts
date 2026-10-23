@@ -165,6 +165,22 @@ export function uidZOdkazu(state: GameState, kto: PlayerId, odkaz: string): numb
   return karta.uid;
 }
 
+/**
+ * Kľúče na zvýraznenie pre klienta: „zóna:defId#n“ → „uid:N“ (UX/UI 2026-10-23 —
+ * poradie kariet v ruke si hráč mení lokálne, klient #n nevie preložiť). Ostatné
+ * kľúče ostávajú; odkaz na kartu, ktorá v zóne nie je, tiež.
+ */
+export function prelozKluceZvyraznenia(state: GameState, kluce: readonly string[]): string[] {
+  return kluce.map((k) => {
+    if (!/^[a-zA-Z]+:[a-z_]+#\d+$/.test(k)) return k;
+    try {
+      return `uid:${uidZOdkazu(state, VYUCBA_HRAC, k)}`;
+    } catch {
+      return k;
+    }
+  });
+}
+
 /** Príkaz scenára → skutočný príkaz jadra (odkazy na karty preložené na uid). */
 export function prikazZoScenara(state: GameState, kto: PlayerId, p: PrikazScenara): Command {
   const out: Record<string, unknown> = { ...p };

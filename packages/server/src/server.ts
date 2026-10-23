@@ -21,6 +21,7 @@ import {
   IllegalCommandError,
   ktoVykona,
   pauzaKrokuVyucby,
+  prelozKluceZvyraznenia,
   radaKVolbe,
   type MoznostOtazky,
   VERZIA_PRAVIDIEL,
@@ -899,10 +900,10 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       id: k.id,
       kto: k.kto,
       melichar: k.melichar,
-      zvyraznit: k.zvyraznit ?? [],
+      zvyraznit: prelozKluceZvyraznenia(room.state, k.zvyraznit ?? []),
       ocakava,
       moznosti: k.kto === "otazka" ? (k.moznosti ?? []) : null,
-      volba: k.volba === undefined ? null : { kandidati: k.volba.kandidati },
+      volba: k.volba === undefined ? null : { kandidati: prelozKluceZvyraznenia(room.state, k.volba.kandidati) },
     };
   };
 
