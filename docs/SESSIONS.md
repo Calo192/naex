@@ -12,7 +12,7 @@ hlásia jemu a medzi sebou si píšu cez `SendMessage` (adresát = meno z `ListA
 | Admin         | karty v tvorcovi, ilustrácie (Leonardo), rebalans | `F:\Projects\naex-admin`      | 8791 / 5177                      |
 | Playtesting   | playtesty, návrhy, rozhodca, stratég              | `F:\Projects\naex-playtest`   | 8792 / 5178 (servery playtestu: od 8800 vyššie) |
 | UI Inspector  | UI inšpekcia (`/naex-ui-inspektor`), len hľadá chyby | `F:\Projects\naex-inspektor` (detached origin/master) | 8793 / 5179                      |
-| Navrhár       | nové nápady do hry (karty, skórovanie, pravidlá, čo odstrániť), kód nemení | `F:Projects
+| Navrhár       | nové nápady do hry (karty, skórovanie, pravidlá, čo odstrániť), kód nemení | `F:\Projects
 aex-navrhar`  | 8794 / 5180                      |
 
 Reštart Claude Code sessions premenuje (`naex-xx`) a po `/clear` štartujú
