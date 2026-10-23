@@ -1332,6 +1332,16 @@ button.zdroj-body[aria-expanded="true"] .velke-cislo {
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
+/* Počas lupy (HernaPlocha, liniaVPokoji): bez prichytenia a bez posuvníka,
+   ktorý by priniesli len uhnuté karty harmoniky. */
+.linia:has(.harmonika-aktivna) {
+  scroll-snap-type: none;
+}
+
+.linia.lupa-v-pokoji {
+  overflow-x: hidden;
+}
+
 .moj-tah .linia {
   box-shadow:
     inset 0 2px 24px rgba(0, 0, 0, 0.45),
@@ -1359,6 +1369,33 @@ button.zdroj-body[aria-expanded="true"] .velke-cislo {
   from {
     transform: scale(0.5);
     opacity: 0.4;
+  }
+}
+
+/* Prechod na susednú kartu (Michal 2026-10-23: „trhalo“): nová lupa nastúpi
+   z blízkej veľkosti a stará pod ňou dozneje — žiadny skok ani prázdny okamih.
+   Dĺžka doznievania = DOZNIEVANIE_LUPY_MS v HernaPlocha. */
+.lupa.prechod {
+  animation: lupa-prechod 0.16s ease-out;
+}
+
+.lupa.doznieva {
+  z-index: 899;
+  pointer-events: none;
+  animation: lupa-doznieva 0.16s ease-in forwards;
+}
+
+@keyframes lupa-prechod {
+  from {
+    transform: scale(0.86);
+    opacity: 0;
+  }
+}
+
+@keyframes lupa-doznieva {
+  to {
+    transform: scale(0.8);
+    opacity: 0;
   }
 }
 
