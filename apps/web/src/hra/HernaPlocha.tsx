@@ -238,6 +238,8 @@ function pravyKlik(fn: (() => void) | undefined): ((e: React.MouseEvent) => void
 
 /** Dĺžka doznievania lupy po odchode myši — rovnaká ako animácia .lupa.doznieva v hra.css. */
 const DOZNIEVANIE_LUPY_MS = 160;
+/** Šírka lupy staršieho z bodového baru — vojde sa aj na notebook 1366 × 650 a neprekryje celý stôl. */
+const SIRKA_LUPY_STARSIEHO = 400;
 
 function kariet(n: number): string {
   return n === 1 ? "1 kartu" : n >= 2 && n <= 4 ? `${n} karty` : `${n} kariet`;
@@ -1362,6 +1364,8 @@ export function HernaPlocha({
     {
       readonly render: (sirka: number) => ReactNode;
       readonly mierka?: number;
+      /** Lupa nad prvkom, nie cez neho (starší v rade — susedia ostanú voľní). */
+      readonly nad?: boolean;
       readonly zdroj?: Zdroj;
       readonly odstran?: (() => void) | undefined;
     }
@@ -3215,10 +3219,9 @@ export function HernaPlocha({
   const lupyStarsich = new Map(
     starsiVLinii.map((s) => {
       const kluc = `st-${s.elder.elderId}`;
-      const pomer = (): number => {
-        const r = lupa?.kluc === kluc ? lupa.rect : doznieva?.kluc === kluc ? doznieva.rect : null;
-        return r === null || r.width === 0 ? 0.9 : r.height / r.width;
-      };
+      // Lupa staršieho má pevnú šírku (obsah je text, nie zväčšená dlaždica); výšku si zmeria Lupa.
+      const r = lupa?.kluc === kluc ? lupa.rect : doznieva?.kluc === kluc ? doznieva.rect : null;
+      const mierka = r === null || r.width === 0 ? 2.4 : Math.min(3, Math.max(1.6, SIRKA_LUPY_STARSIEHO / r.width));
       lupaKarty.set(kluc, {
         render: (sirka) => (
           <LupaStarsieho
@@ -3228,11 +3231,11 @@ export function HernaPlocha({
             ja={ja}
             mena={[menoHraca(0), menoHraca(1)]}
             sirka={sirka}
-            vyska={sirka * pomer()}
-            karta={karta({ karta: s.elder.karta, sirka: Math.round(sirka * 0.4) })}
+            karta={karta({ karta: s.elder.karta, sirka: Math.round(sirka * 0.26) })}
           />
         ),
-        mierka: Math.max(mierkaLupy, 2.4),
+        mierka,
+        nad: true,
       });
       return [s.elder.elderId, nadLupou(kluc, (el) => el, true)] as const;
     }),
@@ -4581,7 +4584,7 @@ export function HernaPlocha({
         const lk = doznieva === null || doznieva.kluc === lupa?.kluc ? undefined : lupaKarty.get(doznieva.kluc);
         if (doznieva === null || lk === undefined) return null;
         return (
-          <Lupa key={`doznieva-${doznieva.kluc}`} rect={doznieva.rect} mierka={lk.mierka ?? mierkaLupy} onZavri={() => setDoznieva(null)} doznieva>
+          <Lupa key={`doznieva-${doznieva.kluc}`} rect={doznieva.rect} mierka={lk.mierka ?? mierkaLupy} onZavri={() => setDoznieva(null)} doznieva nad={lk.nad === true}>
             {lk.render(doznieva.rect.width * Math.min(lk.mierka ?? mierkaLupy, maxMierkaLupy(doznieva.rect)))}
           </Lupa>
         );
@@ -4597,6 +4600,7 @@ export function HernaPlocha({
             key={lupa.kluc}
             rect={lupa.rect}
             prechod={lupa.prechod === true}
+            nad={lk.nad === true}
             mierka={lk.mierka ?? mierkaLupy}
             onZavri={zavriLupu}
             onPointerDown={chytit ? (e) => zacni(z, e, lupa.rect.width) : undefined}

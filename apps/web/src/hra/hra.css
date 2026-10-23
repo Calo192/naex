@@ -5674,29 +5674,33 @@ button.auto-hotovo-odkaz {
   color: var(--slaby-text);
 }
 
-/* Lupa staršieho: karta s akciami vľavo, scorecard a priazeň vpravo; písmo podľa šírky. */
+/* Lupa staršieho (Michal 2026-10-23): výška podľa obsahu, karta hore vedľa textu,
+   podmienky 4 + 4 ako na scorecarde. Písmo pevné — lupa má pevnú šírku. */
 .lupa-starsieho {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 0.9em;
-  padding: 0.8em;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
   border-radius: 12px;
   background: var(--plocha);
   border: 2px solid var(--akcent);
   color: var(--text);
+  font-size: 0.8rem;
   line-height: 1.3;
 }
 
-.lst-karta {
-  align-self: center;
+.lst-vrch {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 10px;
 }
 
 .lst-info {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.45em;
+  gap: 4px;
 }
 
 .lst-info p {
@@ -5704,16 +5708,15 @@ button.auto-hotovo-odkaz {
 }
 
 .lst-hlava b {
-  font: 800 1.25em/1.1 var(--nadpis);
+  font: 800 1.15rem/1.1 var(--nadpis);
 }
 
-.lst-sc,
 .lst-tlmene {
   color: var(--slaby-text);
 }
 
 .lupa-starsieho .ls-stupnica {
-  height: 1.6em;
+  height: 18px;
 }
 
 .lst-priazen.moja b {
@@ -5729,18 +5732,24 @@ button.auto-hotovo-odkaz {
 }
 
 .lst-podmienky {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2px 12px;
+}
+
+.lst-podmienky ul {
   margin: 0;
   padding: 0;
   list-style: none;
   display: grid;
-  gap: 0.25em;
+  gap: 2px;
 }
 
 .lst-podmienky li {
   display: grid;
-  grid-template-columns: 1.4em minmax(0, 1fr) auto;
+  grid-template-columns: 18px minmax(0, 1fr) auto;
   align-items: center;
-  gap: 0.5em;
+  gap: 6px;
   color: var(--slaby-text);
 }
 
@@ -5750,12 +5759,12 @@ button.auto-hotovo-odkaz {
 
 .lst-podmienky .ikona-podmienky,
 .lst-podmienky .ikona-podmienky-text {
-  width: 1.4em;
-  height: 1.4em;
+  width: 18px;
+  height: 18px;
   object-fit: contain;
 }
 
-.lst-podmienky li > span:nth-child(2) {
+.lst-nazov {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -5767,6 +5776,6 @@ button.auto-hotovo-odkaz {
 }
 
 .lst-spolu {
-  margin-top: auto !important;
+  margin: 0;
   font-weight: 700;
 }

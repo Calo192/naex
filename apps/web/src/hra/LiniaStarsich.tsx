@@ -334,9 +334,10 @@ export function ucinokPriazne(data: GameData, elder: ElderState): { readonly kra
 }
 
 /**
- * Lupa staršieho (Michal 2026-10-23): zväčšený scorecard s kartou staršieho a jej
- * akciami, čo robí jeho priazeň a kto ju získa pri vydesení. Výška = výška lupy
- * (pomer dlaždice v línii), písmo sa škáluje so šírkou.
+ * Lupa staršieho (Michal 2026-10-23): karta staršieho s akciami, stupnica, priazeň,
+ * strach a kto priazeň získa pri vydesení; pod tým podmienky 4 + 4 ako na scorecarde
+ * (ľavá a pravá strana) s bodmi ty / súper a súčet. Výška podľa obsahu (Lupa ju zmeria),
+ * dlhé znenia sú v titulkoch.
  */
 export function LupaStarsieho({
   s,
@@ -345,7 +346,6 @@ export function LupaStarsieho({
   ja,
   mena,
   sirka,
-  vyska,
   karta,
 }: {
   readonly s: StarsiVLinii;
@@ -354,8 +354,7 @@ export function LupaStarsieho({
   readonly ja: PlayerId;
   readonly mena: readonly [string, string];
   readonly sirka: number;
-  readonly vyska: number;
-  /** Karta staršieho s akciami (HernaKarta) v šírke ≈ 36 % lupy. */
+  /** Karta staršieho s akciami (HernaKarta) v šírke ≈ 26 % lupy — výška ako text vedľa nej. */
   readonly karta: ReactNode;
 }) {
   const { elder, body } = s;
@@ -366,45 +365,52 @@ export function LupaStarsieho({
   const sila = priazenSila(elder);
   const obavany = obavanyHrac(elder);
   const uroven = STUPNICA_ZONY[elder.marker];
-  const kto = (p: PlayerId): string => (p === ja ? "ty" : mena[p]);
   const poloha = (m: number): number => (ja === 0 ? m : 8 - m);
+  const podmienky = podmienkyStarsieho(data, elder);
+  const bodyPodmienky = (p: (typeof podmienky)[number], h: PlayerId): number =>
+    body?.polozky[h].find((x) => x.strana === p.strana && x.index === p.index)?.body ?? 0;
+  const strana = (str: "lava" | "prava"): ReactNode =>
+    podmienky
+      .filter((p) => p.strana === str)
+      .sort((a, b) => a.index - b.index)
+      .map((p) => (
+        <li
+          key={`${p.strana}${p.index}`}
+          className={p.aktivna ? "aktivna" : ""}
+          title={`${NAZOV_PODMIENKY[p.podmienka]} — ${p.aktivna ? `ty ${znamienko(bodyPodmienky(p, ja))} · ${mena[su]} ${znamienko(bodyPodmienky(p, su))}` : "neaktívna, karta na ukazovateli tu nemá akciu"}`}
+        >
+          <IkonaPodmienky podmienka={p.podmienka} ikony={ikony} />
+          <span className="lst-nazov">{KRATKO_PODMIENKA[p.podmienka]}</span>
+          <span className="lst-body">{p.aktivna ? `${znamienko(bodyPodmienky(p, ja))} / ${znamienko(bodyPodmienky(p, su))}` : "—"}</span>
+        </li>
+      ));
   return (
-    <div className="lupa-starsieho" style={{ width: sirka, height: vyska, fontSize: Math.max(10, sirka / 34) }}>
-      <div className="lst-karta">{karta}</div>
-      <div className="lst-info">
-        <div className="lst-hlava">
-          <b>{s.meno}</b> <span className="lst-sc">· scorecard {sc.nazov}</span>
+    <div className="lupa-starsieho" style={{ width: sirka }}>
+      <div className="lst-vrch">
+        <div className="lst-karta">{karta}</div>
+        <div className="lst-info">
+          <div className="lst-hlava">
+            <b>{s.meno}</b> <span className="lst-tlmene">· {sc.nazov}</span>
+          </div>
+          <Stupnica marker={poloha(elder.marker)} ciel={null} priazen={priazen === null ? null : priazen === ja ? "ja" : "su"} hranice={false} />
+          <p className={`lst-priazen ${priazen === null ? "" : priazen === ja ? "moja" : "superova"}`} title={UCINOK_PRIAZNE[fav](sila > 0 ? sila : 1)}>
+            <b>♥ {priazen === null ? "nikto" : `${priazen === ja ? "ty" : "súper"} +${sila}`}:</b> {UCINOK_KRATKO[fav](sila > 0 ? sila : 1)}
+            {sila === 0 && <span className="lst-tlmene"> (pri +1)</span>}
+          </p>
+          <p>{obavany === null ? "Nikoho sa nebojí." : `Bojí sa ${obavany === ja ? "teba" : "súpera"} · ${NAZOV_ZONY[uroven]}`}</p>
+          <p className="lst-vydesenie" title={`Vydesíš ho ty → priazeň +3 dostane ${mena[su]}: ${UCINOK_PRIAZNE[fav](3)} Vydesí ho ${mena[su]} → dostaneš ju ty.`}>
+            <b>Vydesíš</b> → súper +3 ({UCINOK_KRATKO[fav](3)}) · <b>vydesí súper</b> → ty +3
+          </p>
         </div>
-        <Stupnica marker={poloha(elder.marker)} ciel={null} priazen={priazen === null ? null : priazen === ja ? "ja" : "su"} hranice={false} />
-        <p className={`lst-priazen ${priazen === null ? "" : priazen === ja ? "moja" : "superova"}`}>
-          <b>♥ {priazen === null ? "Priazeň zatiaľ nikto" : `${priazen === ja ? "Tvoja" : `${mena[priazen]} má`} priazeň +${sila}`}:</b> {UCINOK_PRIAZNE[fav](sila > 0 ? sila : 1)}
-          {sila === 0 && <span className="lst-tlmene"> (pri +1)</span>}
-        </p>
-        <p>
-          {obavany === null ? "Nikoho sa nebojí (neutrál)." : `Bojí sa ${obavany === ja ? "teba" : mena[obavany]} — ${NAZOV_ZONY[uroven]} zóna, úroveň ${uroven}.`}
-        </p>
-        <p className="lst-vydesenie">
-          <b>Pri vydesení:</b> vydesíš ho ty → priazeň +3 dostane {mena[su]} ({UCINOK_KRATKO[fav](3)}); vydesí ho {mena[su]} → dostaneš ju ty.
-        </p>
-        <p className="lst-tlmene">Podmienky · body ty / {mena[su]}</p>
-        <ul className="lst-podmienky" aria-label="Podmienky scorecardu — body ty / súper">
-          {podmienkyStarsieho(data, elder).map((p) => {
-            const b = (h: PlayerId) => body?.polozky[h].find((x) => x.strana === p.strana && x.index === p.index)?.body ?? 0;
-            return (
-              <li key={`${p.strana}${p.index}`} className={p.aktivna ? "aktivna" : ""}>
-                <IkonaPodmienky podmienka={p.podmienka} ikony={ikony} />
-                <span title={NAZOV_PODMIENKY[p.podmienka]}>{KRATKO_PODMIENKA[p.podmienka]}</span>
-                <span className="lst-body" title={p.aktivna ? `ty ${znamienko(b(ja))} · ${kto(su)} ${znamienko(b(su))}` : "neaktívna — karta na ukazovateli tu nemá akciu"}>
-                  {p.aktivna ? `${znamienko(b(ja))} / ${znamienko(b(su))}` : "—"}
-                </span>
-              </li>
-            );
-          })}
-        </ul>
-        <p className="lst-spolu">
-          ★ tento starší: ty {znamienko(body?.body[ja] ?? 0)} · {mena[su]} {znamienko(body?.body[su] ?? 0)}
-        </p>
       </div>
+      <div className="lst-podmienky" aria-label={`Podmienky scorecardu — body ty / ${mena[su]}`}>
+        <ul>{strana("lava")}</ul>
+        <ul>{strana("prava")}</ul>
+      </div>
+      <p className="lst-spolu">
+        ★ tento starší: ty {znamienko(body?.body[ja] ?? 0)} · súper {znamienko(body?.body[su] ?? 0)}
+        <span className="lst-tlmene"> · podmienky ty / súper</span>
+      </p>
     </div>
   );
 }
