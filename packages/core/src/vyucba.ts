@@ -6,6 +6,7 @@
 
 import type { CardInstance, PlayerId } from "./types.ts";
 import type { GameData } from "./data.ts";
+import { defOf } from "./data.ts";
 import type { Command, GameState } from "./engine.ts";
 import { apply, legalCommands, naTahu, setupZRozdania } from "./engine.ts";
 
@@ -219,4 +220,135 @@ export function overScenar(data: GameData, scenar: ScenarVyucby): string | null 
     }
   }
   return null;
+}
+
+// ---------------------------------------------------------------------------
+// Zlý ťah vo výučbe: čo chýba a čo je navyše (playtest výučby 20261023-161148,
+// návrh 1 — server odmietal čiastočný viackartový ťah bez vysvetlenia).
+
+/** Krok príkazu tak, ako ho treba povedať hráčovi; uid = karta na zvýraznenie. */
+export interface PopisKroku {
+  readonly typ: Command["type"];
+  readonly popis: string;
+  readonly uid: number | null;
+}
+
+export interface PorovnanieSKrokom {
+  /** Ťah zodpovedá kroku (aj s inou, no rovnakou kartou — rovnaké defId a variant). */
+  readonly zhoda: boolean;
+  readonly chybajuce: readonly PopisKroku[];
+  readonly navyse: readonly PopisKroku[];
+}
+
+/** Všetky karty v hre, ktoré môže príkaz menovať. */
+function kartaPodlaUid(state: GameState, uid: number): CardInstance | null {
+  const zony: (readonly CardInstance[])[] = [state.senok, state.lokalityVHre, ...(state.draftStav?.balicky ?? [])];
+  for (const h of state.hraci) zony.push(h.ruka, h.doberaci, h.odhadzovaci, h.priznane);
+  for (const strana of state.strany) zony.push(strana.map((pl) => pl.card));
+  for (const z of zony) {
+    const k = z.find((x) => x.uid === uid);
+    if (k !== undefined) return k;
+  }
+  return null;
+}
+
+const menoKarty = (data: GameData, state: GameState, uid: number): string => {
+  const k = kartaPodlaUid(state, uid);
+  return k === null ? "?" : defOf(data, k).name;
+};
+
+/** Karta bez uid: dve karty s rovnakým podpisom sú vo výučbe zameniteľné. */
+const podpis = (state: GameState, uid: number): string => {
+  const k = kartaPodlaUid(state, uid);
+  return k === null ? `uid:${uid}` : `${k.defId}/${k.leftLayout}/${k.rightLayout}`;
+};
+
+/** Kroky príkazu („tah“ = jeho kroky, inak príkaz sám). */
+const krokyPrikazu = (c: Command): readonly Command[] => (c.type === "tah" ? c.kroky : [c]);
+
+/** Kľúč kroku na porovnanie: uid nahradené podpisom karty, zoznamy zoradené. */
+function klucKroku(state: GameState, c: Command): string {
+  const o: Record<string, unknown> = { ...c };
+  for (const pole of UID_POLIA) if (typeof o[pole] === "number") o[pole] = podpis(state, o[pole] as number);
+  for (const pole of UID_ZOZNAMY) if (Array.isArray(o[pole])) o[pole] = (o[pole] as number[]).map((u) => podpis(state, u)).sort();
+  return JSON.stringify(Object.keys(o).sort().reduce<Record<string, unknown>>((acc, k) => ((acc[k] = o[k]), acc), {}));
+}
+
+const KAM: Readonly<Record<string, string>> = {
+  vlastna: "na svoju stranu línie",
+  superova: "na súperovu stranu línie",
+  priznanie: "medzi priznané",
+  dedicstvo: "do Dedičstva",
+};
+
+/** Krok slovami pre hráča — „polož kartu „Hasič“ na svoju stranu línie“, „vypi poldeci“. */
+export function popisKroku(data: GameData, state: GameState, c: Command): PopisKroku {
+  const uid = "uid" in c && typeof c.uid === "number" ? c.uid : null;
+  const karta = uid === null ? null : kartaPodlaUid(state, uid);
+  const nazov = karta === null ? "kartu, ktorá svieti" : `kartu „${defOf(data, karta).name}“`;
+  const ciel = "target" in c && typeof c.target === "string" ? (KAM[c.target] ?? "") : "";
+  const popis = ((): string => {
+    switch (c.type) {
+      case "place":
+        return `polož ${nazov} ${ciel}`.trim();
+      case "zaverecna":
+        return `zahraj ${nazov} lícom dole ako Záverečnú`;
+      case "naex":
+        return `daj NA EX! na ${nazov}`;
+      case "vypit":
+        return "vypi poldeci (Vypiť)";
+      case "pass":
+        return "pasuj";
+      case "skipNaex":
+        return "bez NA EX!";
+      case "draftStop":
+        return "klikni Už neťahám";
+      case "draftBer":
+        return `vezmi zo šenku ${c.uids.map((u) => `„${menoKarty(data, state, u)}“`).join(", ")}`;
+      case "chooseLocation":
+        return `vyber ${nazov}`;
+      default:
+        return "urob ťah, ktorý svieti";
+    }
+  })();
+  return { typ: c.type, popis, uid };
+}
+
+/**
+ * Porovná ťah hráča s krokom scenára po krokoch (poradie nerozhoduje). Pri
+ * stavbe šenku porovná karty na Smetisku. Karty s rovnakým defId a variantom
+ * sú zameniteľné — server potom vykoná krok zo scenára.
+ */
+export function porovnajSKrokom(data: GameData, state: GameState, prijaty: Command, ocakava: Command): PorovnanieSKrokom {
+  if (prijaty.type === "stavbaSenku" && ocakava.type === "stavbaSenku") {
+    const chce = ocakava.doSenku.map((u) => ({ k: podpis(state, u), u }));
+    const dal = prijaty.doSenku.map((u) => ({ k: podpis(state, u), u }));
+    const zostava = [...dal];
+    const chybajuce: PopisKroku[] = [];
+    for (const c of chce) {
+      const i = zostava.findIndex((d) => d.k === c.k);
+      if (i >= 0) zostava.splice(i, 1);
+      else chybajuce.push({ typ: "stavbaSenku", popis: `daj na Smetisko aj „${menoKarty(data, state, c.u)}“`, uid: c.u });
+    }
+    const navyse = zostava.map((d): PopisKroku => ({ typ: "stavbaSenku", popis: `„${menoKarty(data, state, d.u)}“ na Smetisko nepatrí`, uid: d.u }));
+    return { zhoda: chybajuce.length === 0 && navyse.length === 0, chybajuce, navyse };
+  }
+  const zostava = krokyPrikazu(prijaty).map((c) => ({ c, k: klucKroku(state, c) }));
+  const chybajuce: PopisKroku[] = [];
+  for (const c of krokyPrikazu(ocakava)) {
+    const k = klucKroku(state, c);
+    const i = zostava.findIndex((x) => x.k === k);
+    if (i >= 0) zostava.splice(i, 1);
+    else chybajuce.push(popisKroku(data, state, c));
+  }
+  const navyse = zostava.map((x) => popisKroku(data, state, x.c));
+  return { zhoda: chybajuce.length === 0 && navyse.length === 0, chybajuce, navyse };
+}
+
+/** Veta pre hráča zo zlého ťahu: čo ešte chýba a čo v tomto kroku nerobiť. */
+export function textChybyKroku(p: PorovnanieSKrokom): string {
+  const casti: string[] = [];
+  if (p.chybajuce.length > 0) casti.push(`ešte chýba: ${p.chybajuce.map((x) => x.popis).join(", ")}`);
+  if (p.navyse.length > 0) casti.push(`toto teraz nie: ${p.navyse.map((x) => x.popis).join(", ")}`);
+  return casti.length === 0 ? "Takto nie — urob to, čo svieti na stole." : `Takto nie — ${casti.join("; ")}.`;
 }

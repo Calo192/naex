@@ -14,10 +14,12 @@ import {
   naTahu,
   ocakavanyPrikaz,
   overScenar,
+  porovnajSKrokom,
   prehrajVyucbu,
   rngInt,
   rngSeed,
   setupZRozdania,
+  textChybyKroku,
   uidZOdkazu,
   zacniVyucbu,
   zhodnyPrikaz,
@@ -121,5 +123,54 @@ describe("výučba — porovnanie príkazov", () => {
     expect(zhodnyPrikaz({ type: "tah", kroky: [place] }, place)).toBe(true);
     expect(zhodnyPrikaz({ type: "draftBer", uids: [3, 1] }, { type: "draftBer", uids: [1, 3] })).toBe(true);
     expect(zhodnyPrikaz(place, { type: "place", uid: 5, target: "superova" })).toBe(false);
+  });
+});
+
+describe("výučba — zlý ťah povie, čo chýba (playtest výučby, návrh 1)", () => {
+  const krok = (id: string): number => scenar.kroky.findIndex((k) => k.id === id);
+
+  it("k10: len Pijan bez Hasiča a bez Vypiť — chýba Hasič aj Vypiť, nič navyše", () => {
+    const i = krok("k10");
+    const state = prehrajVyucbu(data, scenar, i);
+    const ocakava = ocakavanyPrikaz(scenar, state, i) as Command & { type: "tah" };
+    const pijan = ocakava.kroky.find((c) => c.type === "place") as Command;
+    const p = porovnajSKrokom(data, state, { type: "tah", kroky: [pijan] }, ocakava);
+    expect(p.zhoda).toBe(false);
+    expect(p.navyse).toEqual([]);
+    expect(p.chybajuce.map((x) => x.popis)).toEqual(["vypi poldeci (Vypiť)", "polož kartu „Hasič“ na svoju stranu línie"]);
+    expect(p.chybajuce[1]?.uid).toEqual(expect.any(Number));
+    expect(textChybyKroku(p)).toBe("Takto nie — ešte chýba: vypi poldeci (Vypiť), polož kartu „Hasič“ na svoju stranu línie.");
+  });
+
+  it("celý ťah v inom poradí prejde; karta na zlé miesto je navyše aj chýba", () => {
+    const i = krok("k10");
+    const state = prehrajVyucbu(data, scenar, i);
+    const ocakava = ocakavanyPrikaz(scenar, state, i) as Command & { type: "tah" };
+    expect(porovnajSKrokom(data, state, { type: "tah", kroky: [...ocakava.kroky].reverse() }, ocakava).zhoda).toBe(true);
+    const zle = ocakava.kroky.map((c) => (c.type === "place" ? { ...c, target: "superova" as const } : c));
+    const p = porovnajSKrokom(data, state, { type: "tah", kroky: zle }, ocakava);
+    expect(p.zhoda).toBe(false);
+    expect(p.navyse.map((x) => x.popis)).toContain("polož kartu „Pijan“ na súperovu stranu línie");
+    expect(p.chybajuce.map((x) => x.popis)).toContain("polož kartu „Pijan“ na svoju stranu línie");
+  });
+
+  it("rovnaká karta (defId aj variant) je zameniteľná, Pijan s iným rozložením akcií nie", () => {
+    const i = krok("k50");
+    const state = prehrajVyucbu(data, scenar, i);
+    const ocakava = ocakavanyPrikaz(scenar, state, i) as Command & { type: "tah" };
+    const chcem = ocakava.kroky[0] as Command & { type: "place" };
+    const karta = (u: number) => state.hraci[0].ruka.find((k) => k.uid === u);
+    const iny = state.hraci[0].ruka.find((k) => k.defId === "pijan" && k.uid !== chcem.uid);
+    expect(iny).toBeDefined();
+    const zameni = iny?.leftLayout === karta(chcem.uid)?.leftLayout && iny?.rightLayout === karta(chcem.uid)?.rightLayout;
+    const p = porovnajSKrokom(data, state, { type: "tah", kroky: [{ ...chcem, uid: iny?.uid ?? -1 }] }, ocakava);
+    expect(p.zhoda).toBe(zameni);
+    if (!zameni) expect(p.chybajuce[0]?.uid).toBe(chcem.uid);
+    // Tá istá karta pod iným uid v kópii stavu (zameniteľná) prejde.
+    const kopia: GameState = {
+      ...state,
+      hraci: [{ ...state.hraci[0], ruka: state.hraci[0].ruka.map((k) => (k.uid === iny?.uid ? { ...k, leftLayout: karta(chcem.uid)?.leftLayout ?? 0, rightLayout: karta(chcem.uid)?.rightLayout ?? 0 } : k)) }, state.hraci[1]],
+    };
+    expect(porovnajSKrokom(data, kopia, { type: "tah", kroky: [{ ...chcem, uid: iny?.uid ?? -1 }] }, ocakava).zhoda).toBe(true);
   });
 });
