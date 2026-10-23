@@ -2721,6 +2721,35 @@ button.dlzka-volba.aktivna {
   text-align: center;
 }
 
+/* Pokyn a „potvrdiť“ stavby sa prilepia nad ruku — pod pripnutou rukou ich
+   pri otvorení stola nebolo vidno (UI inšpekcia N5), ako hrana stola. */
+.draft-panel.stavba .draft-paticka {
+  position: sticky;
+  bottom: calc(var(--ruka-h) + 8px);
+  z-index: 26;
+  margin: 0 -16px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  background: inherit;
+}
+
+/* Balíček stavby je zároveň Šenok — názov na vlastnom riadku nad kartami. */
+.stavba-balicek-nazov {
+  flex-basis: 100%;
+  text-align: center;
+  font: 800 0.95rem/1.1 var(--pismo);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--akcent);
+}
+
+.stavba-balicek-nazov small {
+  margin-left: 6px;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--slaby-text);
+}
+
 /* Stavba: Smetisko | tvoj balíček | Šenok. */
 .stavba-rad {
   display: grid;

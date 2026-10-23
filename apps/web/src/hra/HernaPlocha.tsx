@@ -153,7 +153,6 @@ const NAHRADIT = "nahradit:";
 const PORADIE = "poradie:";
 /** Zóny stavby šenku (Michal 2026-10-16): vľavo Smetisko, vpravo Šenok. */
 const SMETISKO = "smetisko";
-const SENOK_STAVBA = "senokStavba";
 const BALICEK_STAVBY = "balicekStavby";
 
 /**
@@ -226,6 +225,11 @@ function pravyKlik(fn: (() => void) | undefined): ((e: React.MouseEvent) => void
 
 function kariet(n: number): string {
   return n === 1 ? "1 kartu" : n >= 2 && n <= 4 ? `${n} karty` : `${n} kariet`;
+}
+
+/** Podmet so slovesom — „zvyšné 4 karty pôjdu“, „zvyšných 5 kariet pôjde“. */
+function zvysnePojdu(n: number): string {
+  return n === 1 ? "zvyšná 1 karta pôjde" : n >= 2 && n <= 4 ? `zvyšné ${n} karty pôjdu` : `zvyšných ${n} kariet pôjde`;
 }
 
 /** Nominatív — „súper: 2 plné poldeci · 3 karty v ruke“. */
@@ -550,27 +554,24 @@ export function HernaPlocha({
     window.addEventListener("keydown", klaves);
     return () => window.removeEventListener("keydown", klaves);
   }, [potvrdenie, mode.typ]);
-  // Stavba šenku: karty do Šenku a na Smetisko (naspodok spoločného balíčka)
-  // z môjho balíčka — po dvoch (Michal 2026-10-19), ťahaním do zón, kým hráč nepotvrdí.
-  const [stavba, setStavba] = useState<{ readonly doSenku: readonly number[]; readonly odhod: readonly number[] }>({ doSenku: [], odhod: [] });
-  useEffect(() => setStavba({ doSenku: [], odhod: [] }), [klucTahu]);
+  // Stavba šenku (Michal 2026-10-22): hráč vyberie len karty na Smetisko
+  // (naspodok spoločného balíčka) — zvyšok balíčka ide do Šenku sám, triediť
+  // do dvoch zón netreba. Koľko na Smetisko, určuje jadro (krokStavby: polovica
+  // nadol — pri 8 kartách 4, pri menšom balíčku menej). Server dostane celé rozdelenie.
+  const [odhodStavby, setOdhodStavby] = useState<readonly number[]>([]);
+  useEffect(() => setOdhodStavby([]), [klucTahu]);
   const krokSt = krokStavby(draft?.krok === "stavba" ? draft.mojBalicek.length : 0);
-  /** Karta do zóny (null = späť do balíčka); v plnej zóne ustúpi posledná karta. */
-  const doZonyStavby = (uid: number, zona: "doSenku" | "odhod" | null): void =>
-    setStavba((v) => {
-      const bez = { doSenku: v.doSenku.filter((u) => u !== uid), odhod: v.odhod.filter((u) => u !== uid) };
-      if (zona === null) return bez;
-      const kapacita = zona === "doSenku" ? krokSt.doSenku : krokSt.odhod;
-      if (kapacita <= 0) return v;
-      const miesto = bez[zona].length >= kapacita ? bez[zona].slice(0, kapacita - 1) : bez[zona];
-      return { ...bez, [zona]: [...miesto, uid] };
+  /** Karta na Smetisko (alebo späť do balíčka); na plné Smetisko ustúpi posledná karta. */
+  const doZonyStavby = (uid: number, naSmetisko: boolean): void =>
+    setOdhodStavby((v) => {
+      const bez = v.filter((u) => u !== uid);
+      if (!naSmetisko || krokSt.odhod <= 0) return bez;
+      return [...(bez.length >= krokSt.odhod ? bez.slice(0, krokSt.odhod - 1) : bez), uid];
     });
-  const stavbaHotova = stavba.doSenku.length === krokSt.doSenku && stavba.odhod.length === krokSt.odhod;
-  // Stavba bez ťahania (WCAG 2.5.7, dizajn UX N4): klik na kartu ponúkne „→ Smetisko“ a „→ Šenok“.
-  const [vyberStavby, setVyberStavby] = useState<number | null>(null);
-  useEffect(() => setVyberStavby(null), [klucTahu]);
+  const doSenkuStavby = (draft?.mojBalicek ?? []).filter((k) => !odhodStavby.includes(k.uid)).map((k) => k.uid);
+  const stavbaHotova = odhodStavby.length === krokSt.odhod && doSenkuStavby.length === krokSt.doSenku;
   const potvrdStavbu = (): void => {
-    if (stavbaHotova) posli({ type: "stavbaSenku", doSenku: stavba.doSenku, odhod: stavba.odhod });
+    if (stavbaHotova) posli({ type: "stavbaSenku", doSenku: doSenkuStavby, odhod: odhodStavby });
   };
 
   // Limit Zhromaždenia na jeho začiatku — pás nad stolom z neho ukazuje,
@@ -1248,8 +1249,7 @@ export function HernaPlocha({
     if (!somNaTahu || view.koniec !== null) return out;
     if (z.odkial === "stavba" && stavim) {
       if (krokSt.odhod > 0) out.add(SMETISKO);
-      if (krokSt.doSenku > 0) out.add(SENOK_STAVBA);
-      if (stavba.doSenku.includes(z.karta.uid) || stavba.odhod.includes(z.karta.uid)) out.add(BALICEK_STAVBY);
+      if (odhodStavby.includes(z.karta.uid)) out.add(BALICEK_STAVBY);
     }
     const zs = view.zhromazdenieStav;
     if (z.odkial === "ruka" && view.faza === "zhromazdenie" && zs !== null && !zs.pasoval[ja]) {
@@ -1296,7 +1296,7 @@ export function HernaPlocha({
       return;
     }
     if (z.odkial === "stavba") {
-      doZonyStavby(z.karta.uid, ciel === SMETISKO ? "odhod" : ciel === SENOK_STAVBA ? "doSenku" : null);
+      doZonyStavby(z.karta.uid, ciel === SMETISKO);
       return;
     }
     if (z.odkial === "ruka") {
@@ -2238,9 +2238,9 @@ export function HernaPlocha({
             nadpis: "Stavba šenku",
             text: (
               <>
-                Daj {kariet(krokSt.odhod)} na <strong>Smetisko</strong> (vľavo — naspodok spoločného balíčka, súper ich neuvidí) a{" "}
-                {kariet(krokSt.doSenku)} do <strong>Šenku</strong> (vpravo — uvidia ich obaja): potiahni kartu, alebo na ňu klikni a vyber
-                zónu. Vyberáte naraz, nič si nepodávate. Kartu zo zóny vrátiš pravým klikom.
+                Vyber {kariet(krokSt.odhod)} na <strong>Smetisko</strong> (naspodok spoločného balíčka, súper ich neuvidí) — klikni na
+                kartu alebo ju potiahni. {zvysnePojdu(krokSt.doSenku).replace(/^z/, "Z")} do <strong>Šenku</strong> (uvidia ich obaja).
+                Vyberáte naraz; kartu zo Smetiska vrátiš klikom.
               </>
             ),
           };
@@ -3129,13 +3129,11 @@ export function HernaPlocha({
         <span className="stavba-zona-karty harmonika">
           {karty.map((k) => {
             const z: Zdroj = { karta: k, odkial: "stavba", navrh: false };
-            // Pravý klik vráti kartu zo zóny späť do balíčka.
-            const spat = (): void => doZonyStavby(k.uid, null);
+            // Klik (aj pravý) vráti kartu zo Smetiska späť do balíčka.
+            const spat = (): void => doZonyStavby(k.uid, false);
+            const props = { karta: k, sirka: sirkaDraftu, onClick: spat };
             return somNaTahu
-              ? sLupou(
-                  { karta: k, sirka: sirkaDraftu },
-                  { obsah: tahatelna(z, karta({ karta: k, sirka: sirkaDraftu }), k.uid, undefined, undefined, spat), zdroj: z, odstran: spat },
-                )
+              ? sLupou(props, { obsah: tahatelna(z, karta(props), k.uid, undefined, undefined, spat), zdroj: z, odstran: spat })
               : sLupou({ karta: k, sirka: sirkaDraftu });
           })}
           {Array.from({ length: Math.max(0, kapacita - karty.length) }, (_, i) => (
@@ -3211,84 +3209,41 @@ export function HernaPlocha({
   const draftPanel = ((): ReactNode => {
     if (draft === null || view.faza !== "draft" || view.koniec !== null) return null;
     if (stavim) {
-      const volba = somNaTahu ? stavba : (draft.mojVyber ?? { doSenku: [], odhod: [] });
-      const zvysok = draft.mojBalicek.filter((k) => !volba.doSenku.includes(k.uid) && !volba.odhod.includes(k.uid));
-      const podas = draft.mojBalicek.length - krokSt.doSenku - krokSt.odhod;
+      const odhod = somNaTahu ? odhodStavby : (draft.mojVyber?.odhod ?? []);
+      const zvysok = draft.mojBalicek.filter((k) => !odhod.includes(k.uid));
       return (
         <section ref={draftPanelRef} className={`draft-panel stavba ${somNaTahu ? "moj-tah" : "cakanie"}`} aria-label="Stavba šenku">
           <header className="draft-hlava">
             <strong>Stavba šenku</strong>
             <span>
               {somNaTahu
-                ? `Tvoj balíček: ${kariet(draft.mojBalicek.length)} — ${krokSt.odhod} na Smetisko, ${krokSt.doSenku} do Šenku${podas > 0 ? `, zvyšok (${kariet(podas)}) podáš ${menoHraca(super_)}` : ""}.`
+                ? `Tvoj balíček: ${kariet(draft.mojBalicek.length)} — vyber ${kariet(krokSt.odhod)} na Smetisko, ${zvysnePojdu(krokSt.doSenku)} do Šenku.`
                 : `${tvar(rodHracaP(ja), "Vybral si", "Vybrala si", "Výber je hotový")} — čakáš, kým vyberie ${menoHraca(super_)}.`}
             </span>
           </header>
           <div className="stavba-rad">
-            {zonaStavby(SMETISKO, "Smetisko", "naspodok spoločného balíčka · súper ich neuvidí", volba.odhod, krokSt.odhod)}
+            {zonaStavby(SMETISKO, "Smetisko", "naspodok spoločného balíčka · súper ich neuvidí", odhod, krokSt.odhod)}
             <div
               className={zonaTriedy(BALICEK_STAVBY, "stavba-balicek harmonika")}
               data-ciel={jeCiel(BALICEK_STAVBY) ? BALICEK_STAVBY : undefined}
             >
+              <span className="stavba-balicek-nazov">
+                do Šenku <small>{zvysok.length}/{krokSt.doSenku}</small>
+              </span>
               {zvysok.map((k) => {
                 const z: Zdroj = { karta: k, odkial: "stavba", navrh: false };
                 if (!somNaTahu) return sLupou({ karta: k, sirka: sirkaDraftu });
-                const vybrana = vyberStavby === k.uid;
-                const props = { karta: k, sirka: sirkaDraftu, vybrana, onClick: () => setVyberStavby(vybrana ? null : k.uid) };
-                const volby = vybrana ? (
-                  <span className="stavba-volby">
-                    {krokSt.odhod > 0 && (
-                      <button
-                        type="button"
-                        className="tlacidlo-male"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          doZonyStavby(k.uid, "odhod");
-                          setVyberStavby(null);
-                        }}
-                      >
-                        → Smetisko {volba.odhod.length}/{krokSt.odhod}
-                      </button>
-                    )}
-                    {krokSt.doSenku > 0 && (
-                      <button
-                        type="button"
-                        className="tlacidlo-male"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          doZonyStavby(k.uid, "doSenku");
-                          setVyberStavby(null);
-                        }}
-                      >
-                        → Šenok {volba.doSenku.length}/{krokSt.doSenku}
-                      </button>
-                    )}
-                  </span>
-                ) : null;
-                return sLupou(props, {
-                  obsah: tahatelna(
-                    z,
-                    <>
-                      {karta(props)}
-                      {volby}
-                    </>,
-                  ),
-                  zdroj: z,
-                  // Lupa otvorená oneskorene po kliku by zakryla „→ Smetisko / → Šenok“ a klik by šiel na ňu.
-                  bezLupy: vybrana,
-                });
+                const props = { karta: k, sirka: sirkaDraftu, onClick: () => doZonyStavby(k.uid, true) };
+                return sLupou(props, { obsah: tahatelna(z, karta(props)), zdroj: z });
               })}
             </div>
-            {zonaStavby(SENOK_STAVBA, "Šenok", "uvidia ich obaja · berie sa z neho", volba.doSenku, krokSt.doSenku)}
           </div>
           {somNaTahu && (
             <footer className="draft-paticka">
               <span>
                 {!stavbaHotova
-                  ? "Kartu zo zóny vrátiš pravým klikom alebo potiahnutím späť do balíčka; do plnej zóny ustúpi posledná."
-                  : zvysok.length > 0
-                    ? `Hotovo? Zvyšok (${kariet(zvysok.length)}) podáš ${menoHraca(super_)}.`
-                    : "Hotovo?"}
+                  ? `Na Smetisku ${odhod.length} z ${krokSt.odhod}. Kartu zo Smetiska vrátiš klikom; na plné Smetisko ustúpi posledná.`
+                  : `Hotovo? ${zvysnePojdu(zvysok.length).replace(/^z/, "Z")} do Šenku.`}
               </span>
               <button className="tlacidlo-hlavne" data-skratka="k" disabled={!stavbaHotova} onClick={potvrdStavbu}>
                 potvrdiť
