@@ -7,13 +7,14 @@
 // vynimky.json — nehlásia sa, len sa spočítajú.
 //
 //   node --experimental-strip-types --no-warnings tools/ui-inspektor/inspekcia.ts [cesta …] [--rozlisenia 1600x1000,1920x1080]
-//        [--url http://localhost:8793] [--relacia R --hrac 1] [--klik selektor]… [--stav nazov] [--vystup priečinok]
+//        [--url http://localhost:8793] [--relacia R --hrac 1] [--klik selektor]… [--stav nazov] [--schema id] [--vystup priečinok]
 //
 // Bez ciest prejde všetky stránky (STRANKY nižšie, aj admin); /hra s --relacia
 // odfotí partiu daného hráča (relácia z tools/playtest/zaloz.ts), inak lobby.
 // --klik klikne pred meraním na prvok (dá sa zopakovať), --stav pomenuje stav
 // stránky v nálezoch (napr. „pitka“). Michal 2026-10-22: len lokálny server —
-// na iný než localhost odmietne ísť bez --aj-zivy.
+// na iný než localhost odmietne ísť bez --aj-zivy. --schema meria web vo farebnej
+// schéme (id z apps/web/src/lib/schemy.ts) — kontrast novej schémy sa inak overiť nedá.
 
 import { spawn } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -37,7 +38,7 @@ const volba = (k: string): string | undefined => {
   const i = args.indexOf(k);
   return i < 0 ? undefined : args[i + 1];
 };
-const sHodnotou = new Set(["--rozlisenia", "--url", "--relacia", "--hrac", "--klik", "--stav", "--vystup"]);
+const sHodnotou = new Set(["--rozlisenia", "--url", "--relacia", "--hrac", "--klik", "--stav", "--schema", "--vystup"]);
 // Git Bash (MSYS) prepíše „/pravidla" na „C:/Program Files/Git/pravidla" — vrátime pôvodnú cestu.
 const cestaZArg = (a: string): string => {
   const msys = /^[A-Za-z]:[\\/].*?[\\/]Git([\\/].*)$/.exec(a);
@@ -48,7 +49,8 @@ const cesty = args.filter((a, i) => !a.startsWith("--") && !sHodnotou.has(args[i
 const relacia = volba("--relacia");
 const hrac = volba("--hrac") ?? "1";
 const kliky = args.flatMap((a, i) => (args[i - 1] === "--klik" ? [a] : []));
-const stav = volba("--stav") ?? (kliky.length > 0 ? "klik" : "zaklad");
+const schema = volba("--schema");
+const stav = volba("--stav") ?? (kliky.length > 0 ? "klik" : schema ?? "zaklad");
 const rozlisenia = (volba("--rozlisenia") ?? "1600x1000,1920x1080").split(",").map((r) => {
   const [w, h] = r.split("x").map(Number);
   if (w === undefined || h === undefined || !(w > 0) || !(h > 0)) throw new Error(`Zlé rozlíšenie: ${r}`);
@@ -626,7 +628,10 @@ try {
   // Prihlásenie: cookie relácie platí pre všetky ďalšie stránky.
   await posli("Page.navigate", { url: `${zaklad}/` });
   await pockaj(1500);
-  const ls = miestnost === null ? "" : `localStorage.setItem('naex.miestnost',${JSON.stringify(miestnost)});`;
+  // Schému číta public/schema.js pri načítaní stránky, preto ide do localStorage ešte pred meraním.
+  const ls =
+    (miestnost === null ? "" : `localStorage.setItem('naex.miestnost',${JSON.stringify(miestnost)});`) +
+    (schema === undefined ? "" : `localStorage.setItem('naex-schema',${JSON.stringify(schema)});`);
   await js(`fetch('/api/prihlasenie',{method:'POST',headers:{'content-type':'application/json','x-naex':'1'},body:JSON.stringify(${JSON.stringify(prihlasenie)})}).then(r=>{${ls}return r.status})`);
 
   for (const { w, h } of rozlisenia) {
