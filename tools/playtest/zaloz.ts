@@ -19,6 +19,7 @@ import { existsSync, mkdirSync, openSync, writeFileSync } from "node:fs";
 import { createServer } from "node:net";
 import { join, resolve } from "node:path";
 import WebSocket from "ws";
+import { nastavDocasneEnv } from "../docasne.ts";
 
 const protiBotovi = process.argv.includes("--bot");
 const iId = process.argv.indexOf("--id");
@@ -59,6 +60,9 @@ if (!existsSync("apps/web/dist/index.html")) {
   console.error("Chýba zbuildovaný klient (apps/web/dist) — spusti najprv: npm run build --workspace=@naex/web");
   process.exit(1);
 }
+
+// Dočasné súbory servera na disk projektu, nie na C (Michal 2026-10-23) — server zdedí TEMP.
+nastavDocasneEnv();
 
 // Od 8800 — nižšie porty majú dev servery súbežných sessions (docs/SESSIONS.md).
 const port = await volnyPort(8800);

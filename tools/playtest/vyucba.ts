@@ -39,7 +39,7 @@ import { appendFileSync, existsSync, mkdirSync, openSync, readdirSync, readFileS
 import { createServer } from "node:net";
 import { join, resolve } from "node:path";
 import WebSocket from "ws";
-import { upratStare, zmazPriecinok } from "../docasne.ts";
+import { nastavDocasneEnv, upratStare, zmazPriecinok } from "../docasne.ts";
 
 interface Novacik {
   readonly kluc: string;
@@ -233,6 +233,7 @@ async function zaloz(): Promise<void> {
   const id = new Date().toISOString().slice(0, 19).replace(/[-:]/g, "").replace("T", "-");
   const r = join("playtest", `vyucba-${id}`);
   mkdirSync(join(r, "server-data"), { recursive: true });
+  nastavDocasneEnv();
   upratStare();
 
   // Od 8800 — nižšie porty majú dev servery súbežných sessions (docs/SESSIONS.md).

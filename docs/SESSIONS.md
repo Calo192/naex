@@ -56,6 +56,13 @@ serverom playtestov (`tools/playtest/turnus.ts`).
    s predponou `naex-` cez `docasnyPriecinok`. Zvyšky staršie ako 2 h upratuje
    každý nástroj a `npm test` pri štarte; ručne
    `node --experimental-strip-types --no-warnings tools/docasne.ts`.
+   Všetko dočasné patrí na disk projektu, nie na C (Michal 2026-10-23):
+   `F:\Projects\naex-tmp` (`NAEX_TMP`, inak `<koreň repa>/../naex-tmp`).
+   `.claude/settings.json` nastaví TEMP/TMP/NAEX_TMP sessions po reštarte;
+   kód sa naň nespolieha — `tools/docasne.ts` berie základ zo `zakladDocasnych()`,
+   `nastavDocasneEnv()` presmeruje TEMP/TMP procesu a jeho detí (vitest.config,
+   zaloz.ts, vyucba.ts) a `deploy/nahraj.sh` robí mktemp do NAEX_TMP. Vo vlastnom
+   skripte bez týchto funkcií nastav deťom `TEMP`/`TMP` na NAEX_TMP sám.
 
 ## Komunikácia
 
