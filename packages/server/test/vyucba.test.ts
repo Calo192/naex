@@ -23,10 +23,11 @@ afterAll(async () => {
 interface KrokMsg {
   index: number;
   spolu: number;
-  kto: "hrac" | "bot" | "info" | "auto";
+  kto: "hrac" | "bot" | "info" | "auto" | "otazka";
   melichar: string;
   zvyraznit: string[];
   ocakava: Command | null;
+  moznosti?: { text: string; spravna: boolean; vysvetlenie: string }[] | null;
 }
 
 const api = async <T>(cookie: string, metoda: string, cesta: string): Promise<T> =>
@@ -39,12 +40,18 @@ async function zacni(cookie: string): Promise<{ k: Klient; prvy: Msg }> {
   return { k, prvy: await k.cakaj("vyucba") };
 }
 
+/** Krok bez ťahu: pri otázke správna odpoveď (zapíše sa ako prvá), potom „ďalej“ — ako pri texte. */
+function potvrd(k: Klient, krok: KrokMsg): void {
+  if (krok.kto === "otazka") k.posli({ type: "vyucbaOdpoved", index: (krok.moznosti ?? []).findIndex((m) => m.spravna) });
+  if (krok.kto === "info" || krok.kto === "otazka") k.posli({ type: "vyucbaDalej" });
+}
+
 /** Odohrá kroky výučby, kým nie je hotová alebo kým neprejde `max` krokov. */
 async function hraj(k: Klient, msg: Msg, max = Number.POSITIVE_INFINITY): Promise<Msg> {
   for (let n = 0; n < max && msg.hotovo !== true; n++) {
     const krok = msg.krok as KrokMsg;
-    if (krok.kto === "info") k.posli({ type: "vyucbaDalej" });
-    else if (krok.kto === "hrac") k.posli({ type: "cmd", cmd: krok.ocakava });
+    if (krok.kto === "hrac") k.posli({ type: "cmd", cmd: krok.ocakava });
+    else potvrd(k, krok);
     msg = await k.cakaj("vyucba");
   }
   return msg;
@@ -167,7 +174,7 @@ describe("výučba — automatické kroky hráča (kto: auto)", () => {
         videne.add(krok.kto);
         // Auto krok čaká rovnako ako bot — nič neposielame; ocakava hráčovi nepríde.
         if (krok.kto === "auto") expect(krok.ocakava).toBeNull();
-        if (krok.kto === "info") k.posli({ type: "vyucbaDalej" });
+        potvrd(k, krok);
         msg = await k.cakaj("vyucba");
       }
       expect(msg.hotovo).toBe(true);
