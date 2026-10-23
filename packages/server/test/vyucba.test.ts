@@ -87,8 +87,12 @@ describe("výučba „Prvá hra“", () => {
     const tah = msg.krok as KrokMsg;
     expect(tah.kto).toBe("hrac");
     // Iný ťah než ten dovolený server odmietne a krok zopakuje.
+    // Hráč sa dozvie, čo chýba a čo je navyše — aj v tvare pre UI (playtest výučby, návrh 1).
     k.posli({ type: "cmd", cmd: { type: "pass" } });
-    expect(String((await k.cakaj("error")).text)).toMatch(/Vo výučbe teraz urob toto/);
+    expect(String((await k.cakaj("error")).text)).toMatch(/^Takto nie — .*toto teraz nie: pasuj/);
+    const chyba = await k.cakaj("vyucbaChyba");
+    expect(chyba.navyse).toEqual([{ typ: "pass", popis: "pasuj", uid: null }]);
+    expect((chyba.chybajuce as unknown[]).length).toBeGreaterThan(0);
     expect((await k.cakaj("vyucba")).krok).toMatchObject({ index: tah.index });
     k.posli({ type: "vyucbaDalej" });
     expect(String((await k.cakaj("error")).text)).toMatch(/Teraz nie je čo potvrdiť/);

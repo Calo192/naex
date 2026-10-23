@@ -66,6 +66,13 @@ export interface KrokVyucby {
   readonly ocakava: Command | null;
 }
 
+/** Krok ťahu slovami (jadro popisKroku); uid = karta, ktorú treba zvýrazniť. */
+export interface PopisKrokuVyucby {
+  readonly typ: Command["type"];
+  readonly popis: string;
+  readonly uid: number | null;
+}
+
 export interface StavVyucby {
   /** null po poslednom kroku. */
   readonly krok: KrokVyucby | null;
@@ -88,6 +95,8 @@ type ServerMsg =
   | { type: "achievement"; zisk: ZiskAchievementu }
   /** Na konci partie (aj po návrate do skončenej partie): získané a „chýbalo málo“. */
   | { type: "achievementySuhrn"; suhrn: SuhrnAchievementov }
+  /** Zlý ťah vo výučbe: čo chýba a čo je navyše (text príde aj ako error). */
+  | { type: "vyucbaChyba"; chybajuce: readonly PopisKrokuVyucby[]; navyse: readonly PopisKrokuVyucby[] }
   | { type: "error"; text: string };
 
 /**
@@ -154,6 +163,8 @@ export interface HraHook {
   readonly achievementy: { readonly n: number; readonly zisky: readonly ZiskAchievementu[] };
   /** Súhrn achievementov po konci partie, inak null. */
   readonly suhrnAchievementov: SuhrnAchievementov | null;
+  /** Posledný zlý ťah vo výučbe (čo chýba, čo je navyše); zmizne ďalším ťahom alebo zrusChybu. */
+  readonly chybaVyucby: { readonly chybajuce: readonly PopisKrokuVyucby[]; readonly navyse: readonly PopisKrokuVyucby[] } | null;
   /** Spustí výučbu (server pokračuje od uloženého kroku). */
   zalozVyucbu(): void;
   /** Potvrdí krok výučby bez ťahu (len text Melichara). */
@@ -206,6 +217,7 @@ export function useHra(aktivne: boolean): HraHook {
   const [vyucba, setVyucba] = useState<StavVyucby | null>(null);
   const [achievementy, setAchievementy] = useState<{ readonly n: number; readonly zisky: readonly ZiskAchievementu[] }>({ n: 0, zisky: [] });
   const [suhrnAchievementov, setSuhrnAchievementov] = useState<SuhrnAchievementov | null>(null);
+  const [chybaVyucby, setChybaVyucby] = useState<HraHook["chybaVyucby"]>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const menaRef = useRef<string[]>([]);
   menaRef.current = hraci.map((h, i) => menoVoVete(h, i));
@@ -244,6 +256,7 @@ export function useHra(aktivne: boolean): HraHook {
           break;
         case "state":
           setView(msg.view);
+          setChybaVyucby(null);
           setMiestnost((m) => (m === null || m.started ? m : { ...m, started: true }));
           setLog((stary) => {
             const nove = msg.events.map((e) => textUdalosti(e, menaRef.current, rodyRef.current)).filter((t): t is string => t !== null);
@@ -268,6 +281,9 @@ export function useHra(aktivne: boolean): HraHook {
           break;
         case "achievementySuhrn":
           setSuhrnAchievementov(msg.suhrn);
+          break;
+        case "vyucbaChyba":
+          setChybaVyucby({ chybajuce: msg.chybajuce, navyse: msg.navyse });
           break;
         case "error":
           // Rozohraná partia zanikla (napr. reštart servera — miestnosti žijú
@@ -337,6 +353,7 @@ export function useHra(aktivne: boolean): HraHook {
     suhrnAchievementov,
     pustiMelichara: useCallback((id: string) => posli({ type: "melichar", id }), [posli]),
     vyucba,
+    chybaVyucby,
     zalozVyucbu: useCallback(() => posli({ type: "create", vyucba: true }), [posli]),
     vyucbaDalej: useCallback(() => posli({ type: "vyucbaDalej" }), [posli]),
     zaloz: useCallback((verejna: boolean, dlzka: DlzkaHry, bot = false) => posli({ type: "create", verejna, dlzka, bot }), [posli]),
@@ -355,6 +372,9 @@ export function useHra(aktivne: boolean): HraHook {
       setAchievementy({ n: 0, zisky: [] });
       setSuhrnAchievementov(null);
     }, [posli]),
-    zrusChybu: useCallback(() => setChyba(null), []),
+    zrusChybu: useCallback(() => {
+      setChyba(null);
+      setChybaVyucby(null);
+    }, []),
   };
 }

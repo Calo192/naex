@@ -38,12 +38,13 @@ import {
   noveStatistiky,
   obmedzMomenty,
   ocakavanyPrikaz,
+  porovnajSKrokom,
   prehrajVyucbu,
   prikazZoScenara,
   setupGame,
+  textChybyKroku,
   VYUCBA_BOT,
   VYUCBA_HRAC,
-  zhodnyPrikaz,
   tahBota,
   uzavriStatistiky,
   viewFor,
@@ -901,8 +902,17 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       return;
     }
     const ocakava = ocakavanyPrikaz(scenarVyucby, room.state, room.vyucba.krok);
-    if (ocakava === null || !zhodnyPrikaz(cmd, ocakava)) {
+    if (ocakava === null) {
       sendError(ws, `Vo výučbe teraz urob toto: ${k.melichar}`);
+      posliVyucbu(room);
+      return;
+    }
+    // Zlý alebo neúplný ťah: povedať, čo chýba a čo je navyše (playtest výučby, návrh 1);
+    // rovnaká karta (defId aj variant) prejde a vykoná sa krok zo scenára.
+    const porovnanie = porovnajSKrokom(room.data, room.state, cmd, ocakava);
+    if (!porovnanie.zhoda) {
+      sendError(ws, textChybyKroku(porovnanie));
+      send(ws, { type: "vyucbaChyba", chybajuce: porovnanie.chybajuce, navyse: porovnanie.navyse });
       posliVyucbu(room);
       return;
     }
