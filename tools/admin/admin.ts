@@ -64,7 +64,8 @@
 //   navrh <id> <stav> [--vysledok "text"]   Developer: rozpracovane | implementovane (+ čo spravil, commit) | spat
 //                                 organizátor playtestu: overene | nezabralo (--vysledok = verdikt: čo playtest ukázal)
 // Server a prehľad
-//   server-stav [--json]          nasadená verzia (commit) a rozohrané partie — pred nasadením (skill naex-nasad)
+//   server-stav [--json]          nasadená verzia (commit), rozohrané partie a uzávierka — pred nasadením (skill naex-nasad)
+//   uzavierka zapni|vypni|stav    uzávierka pred nasadením: nové partie nie, rozohrané dohrajú (reštart ju zruší)
 //   linka                         čo čaká na Michala, Developera a nasadenie (skill naex-stav); s --zivy aj nenasadené commity
 // Roadmapa (stránka Vývoj → Roadmapa, Michal 2026-10-21)
 //   roadmapa [stlpec] [--json]    poradie položiek; stĺpce prijimac | teraz | dalej | potom | neskor | hotove
@@ -328,7 +329,15 @@ const REFERENCIE_AVATARA = ["stamgast", "rapavy_fero", "teta_gizka"].map((b) => 
 interface StavServeraCli {
   readonly verzia: { readonly commit: string; readonly vetva: string; readonly necommitnute: boolean; readonly nahrate: string } | null;
   readonly spusteny: number;
-  readonly partie: { readonly ludia: number; readonly sBotom: number; readonly cakajuce: number; readonly poslednaAktivita: number | null };
+  readonly partie: {
+    readonly ludia: number;
+    readonly sBotom: number;
+    readonly cakajuce: number;
+    readonly poslednaAktivita: number | null;
+    readonly aktivne: number;
+    readonly opustene: number;
+  };
+  readonly uzavierka: { readonly od: number } | null;
 }
 
 function vypisStavServera(s: StavServeraCli): void {
@@ -344,7 +353,15 @@ function vypisStavServera(s: StavServeraCli): void {
     `  Rozohrané partie: ${p.ludia} ľudia proti sebe, ${p.sBotom} s botom; čakajúce miestnosti: ${p.cakajuce}` +
       (p.poslednaAktivita === null ? "" : `; posledný ťah ${Math.round((Date.now() - p.poslednaAktivita) / 60000)} min dozadu`),
   );
-  if (p.ludia + p.sBotom > 0) console.log("  Reštart servera (nasadenie) tieto partie zhodí.");
+  if (p.ludia + p.sBotom > 0) {
+    console.log(`  Z toho aktívne (ťah za posledných 30 min): ${p.aktivne}, opustené: ${p.opustene}.`);
+    console.log("  Reštart servera (nasadenie) tieto partie zhodí.");
+  }
+  console.log(
+    s.uzavierka === null
+      ? "  Uzávierka: vypnutá — nové partie sa dajú zakladať."
+      : `  Uzávierka: ZAPNUTÁ od ${kedy(s.uzavierka.od)} — nové partie nie, rozohrané dohrajú; reštart ju zruší.`,
+  );
 }
 
 function rozober(argv: readonly string[]): { poz: string[]; prep: Map<string, string | true> } {
@@ -916,6 +933,18 @@ async function main(): Promise<void> {
       const vysledok = hodnota("--vysledok");
       await api("PATCH", `/admin/navrhy/${id}`, { stav, ...(vysledok === undefined ? {} : { vysledok }) });
       console.log(`Návrh #${id}: ${stav}.`);
+      break;
+    }
+
+    case "uzavierka": {
+      const co = arg[0] ?? "stav";
+      if (co === "zapni" || co === "vypni") {
+        const r = await api<{ uzavierka: { od: number } | null }>("PUT", "/admin/uzavierka", { zapnut: co === "zapni" });
+        console.log(r.uzavierka === null ? "Uzávierka vypnutá — nové partie sa dajú zakladať." : "Uzávierka zapnutá — nové partie nie, rozohrané dohrajú.");
+      } else if (co !== "stav") {
+        throw new Error("Použitie: uzavierka zapni|vypni|stav");
+      }
+      vypisStavServera(await api<StavServeraCli>("GET", "/admin/stav-servera"));
       break;
     }
 
