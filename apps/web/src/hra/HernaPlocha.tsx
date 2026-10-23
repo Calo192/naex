@@ -15,6 +15,7 @@
 
 import {
   useEffect,
+  useId,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -42,6 +43,7 @@ import type {
 } from "@naex/core";
 import {
   KONSTANTY,
+  MARKER_STRED,
   STUPNICA_ZONY,
   jeCoTahat,
   kartyZaPas,
@@ -68,6 +70,7 @@ import {
   kandidatiNaNahradu,
   nahladPatronatu,
   patronatMozny,
+  pohorsenieBezLimitu,
   pohorsenieMozne,
   prevahaStran,
   krajeStran,
@@ -97,9 +100,11 @@ import {
   stranyLokality,
   vydesil,
 } from "@naex/core";
-import type { ActionSums, GameState, KliatbyNahladu, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie } from "@naex/core";
+import type { ActionSums, GameState, KliatbyNahladu, MarkerPos, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
+import { LiniaStarsich, type StarsiVLinii } from "./LiniaStarsich.tsx";
+import { mediaUrl } from "../lib/api.ts";
 import { skupinyBalicka } from "./doberaciBalicek.ts";
 import { SkratkyNapoveda, useSkratky } from "./skratky.tsx";
 import type { Sada } from "@naex/tvorba";
@@ -108,10 +113,9 @@ import { useZarovnanieLinie } from "./zarovnanieLinie.ts";
 import { Lupa, maxMierkaLupy } from "./Lupa.tsx";
 import { LUPA_PREDVOLENA, useUcet } from "../lib/ucet.tsx";
 import { Vrstva as VrstvaPanel } from "./Vrstva.tsx";
-import { BitkaPanel, CenaCigariet, HracDoska, IkonaCigareta, IkonaPoldeci, PriebehKola, type VyhladPitky } from "./Panely.tsx";
-import { RozpisBodov } from "./RozpisBodov.tsx";
+import { BitkaPanel, CenaCigariet, HracDoska, IkonaCigareta, IkonaPoldeci, PriebehKola, SuhrnBitky, type BitkaPanelProps, type VyhladPitky } from "./Panely.tsx";
 import { StavkaBitky } from "./StavkaBitky.tsx";
-import { DlazdicaStarsieho, Scorecard, StavStarsieho, UCINOK_PRIAZNE, pomerScorecardu } from "./Scorecard.tsx";
+import { UCINOK_PRIAZNE } from "./Scorecard.tsx";
 import type { HracInfo, ZmenyFrajeriny } from "./useHra.ts";
 import { menoVoVete, rodHraca, textHlasky } from "./useHra.ts";
 import { useBezNaexVBitke, useOdlozenyPrikaz } from "./usePohodlie.ts";
@@ -197,20 +201,12 @@ const SIRKA_V_LINII_MIN = 96;
 const MIESTO_VOLBY = 0.42;
 /** Karty v šenku a lokalitách — väčšie než kedysi v bočnom paneli. */
 const SIRKA_VO_VRSTVE = 150;
-/** Scorecardy starších nad stolom; výška vyplýva z pomeru strán. */
-const MEDZERA_SCORECARDOV = 10;
-/** Najväčšia šírka scorecardu — starší sú hore a nesmú odtlačiť stôl pod ruku; detail ukáže lupa. */
-// Michal 2026-10-18: na širokej obrazovke boli starší malí a ďaleko od seba.
-const SIRKA_SCORECARDU_MAX = 240;
-/** Zbalený rad starších — stupnica s markerom ostáva čitateľná, detail ukáže lupa. */
-const SIRKA_SCORECARDU_MALA = 96;
-const KLUC_MALI_STARSI = "naex.malyStarsi";
-/** Pod touto šírkou riadku sa scorecardy zalomia na dva rady po štyroch. */
-const SIRKA_PRE_JEDEN_RAD = 1000;
-/** V lupe má scorecard zhruba túto šírku (px), nech je okno akékoľvek. */
-const SIRKA_SCORECARDU_V_LUPE = 460;
-/** Šírka dlaždice staršieho po boku stola (CSS .stlpec-starsich). */
-const SIRKA_DLAZDICE_STARSIEHO = 176;
+/** Výška / šírka karty (54 × 80 mm) — výška línie určuje veľkosť kariet (Stôl bez scrollovania, #67). */
+const POMER_KARTY = 80 / 54;
+/** Čo línia zaberá okrem kariet: okraj, popisy strán, rezerva posuvníka. */
+const PRIDAVOK_LINIE = 92;
+/** Najmenší posun kariet akcia ku akcii (zlomok výšky karty), kým ho línia nezmeria. */
+const REZERVA_POSUNU = 0.4;
 
 /** Pravý klik = odstrániť / zrušiť (Michal 2026-10-20) — bez kontextovej ponuky prehliadača. */
 function pravyKlik(fn: (() => void) | undefined): ((e: React.MouseEvent) => void) | undefined {
@@ -379,12 +375,6 @@ export function HernaPlocha({
   const stavim = view.faza === "draft" && draft?.krok === "stavba";
   // Živý odhad záverečného bodovania — hráč musí stále vidieť, za čo dostane body.
   const body = useMemo(() => bodyTeraz(data, view), [data, view]);
-  /** Meno staršieho (karty na ukazovateli) — rozpis bodov v bare hráča. */
-  const menoStarsieho = (id: string): string => {
-    const e = view.starsi.find((x) => x.elderId === id);
-    return e === undefined ? id : menoKarty(e.karta.defId);
-  };
-  const [akoBodovanie, setAkoBodovanie] = useState(false);
   // Šírka okna — na mobile menšia ruka a predvolene zbalení starší.
   const [sirkaOkna, setSirkaOkna] = useState(() => (typeof window === "undefined" ? 1600 : window.innerWidth));
   useEffect(() => {
@@ -396,16 +386,6 @@ export function HernaPlocha({
   // Dotyková obrazovka bez myši — kartu v ruke zväčší ťuknutie (hover tam nie je).
   const jeDotyk = useMemo(() => typeof window !== "undefined" && window.matchMedia?.("(hover: none)").matches === true, []);
   const sirkaVRuke = mobil ? SIRKA_V_RUKE_MOBIL : SIRKA_V_RUKE;
-  // Hráč si môže rad starších zmenšiť, aby mal stôl vyššie (zapamätá sa v prehliadači).
-  const [maliStarsi, setMaliStarsi] = useState(() => {
-    try {
-      const ulozene = localStorage.getItem(KLUC_MALI_STARSI);
-      if (ulozene !== null) return ulozene === "1";
-    } catch {
-      // bez úložiska rozhodne šírka okna
-    }
-    return typeof window !== "undefined" && window.innerWidth < MOBIL;
-  });
   // Časová os kola sa lepí pod hlavičku webu — tá je tiež prilepená, preto jej výška.
   const [vyskaHlavicky, setVyskaHlavicky] = useState(0);
   useEffect(() => {
@@ -422,16 +402,6 @@ export function HernaPlocha({
   useEffect(() => {
     setSlotHlavicky(document.getElementById("hlavicka-hra"));
   }, []);
-  const prepniMalychStarsich = (): void => {
-    setMaliStarsi((m) => {
-      try {
-        localStorage.setItem(KLUC_MALI_STARSI, m ? "0" : "1");
-      } catch {
-        // bez úložiska sa voľba len nezapamätá
-      }
-      return !m;
-    });
-  };
   const liniaRef = useRef<HTMLDivElement>(null);
   useZarovnanieLinie(liniaRef);
   // Lepiaca hrana stola má zmysel, len keď je línia nad rukou aspoň trochu vidno.
@@ -445,25 +415,10 @@ export function HernaPlocha({
     io.observe(el);
     return () => io.disconnect();
   }, []);
-  // Šírka scorecardu sa ráta z dostupnej šírky riadku — karta staršieho
-  // v rámčeku potrebuje rozmer v px, CSS percentá tu nestačia.
-  const scorecardyRef = useRef<HTMLDivElement>(null);
-  const [sirkaRadu, setSirkaRadu] = useState(0);
-  useEffect(() => {
-    const el = scorecardyRef.current;
-    if (el === null) return;
-    const ro = new ResizeObserver(([z]) => setSirkaRadu(Math.floor(z?.contentRect.width ?? 0)));
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-  const vRade = sirkaRadu >= SIRKA_PRE_JEDEN_RAD ? 8 : 4;
-  const minScorecardu = maliStarsi ? SIRKA_SCORECARDU_MALA : 120;
-  const sirkaScorecardu = Math.min(maliStarsi ? SIRKA_SCORECARDU_MALA : SIRKA_SCORECARDU_MAX, Math.max(minScorecardu, Math.floor((sirkaRadu - (vRade - 1) * MEDZERA_SCORECARDOV) / vRade)));
   // Zväčšenie karty (lupa a ruka) podľa nastavenia v profile.
   const mierkaLupy = (useUcet().ja?.lupa ?? LUPA_PREDVOLENA) / 100;
   // Klávesové skratky v partii (Michal 2026-10-22, roadmapa #19) — vypínač v profile.
   const skratky = useSkratky(useUcet().ja?.skratky !== false && view.koniec === null);
-  const mierkaLupyScorecardu = Math.max(1.6, SIRKA_SCORECARDU_V_LUPE / sirkaScorecardu);
   const lokalitaRef = useRef<HTMLDivElement>(null);
   // Línia môže byť dlhá — lokalitu drž v strede pohľadu.
   const pocetVLinii = view.strany[0].length + view.strany[1].length;
@@ -476,6 +431,33 @@ export function HernaPlocha({
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
+  // Výška stola (#67): stôl dostane, čo ostane z okna, a karty sa zmenšia tak, aby sa
+  // línia zmestila aj s posunom akcia ku akcii — ten línia zmeria po zarovnaní.
+  const plstRef = useRef<HTMLDivElement>(null);
+  const [vyskaPlste, setVyskaPlste] = useState(0);
+  useEffect(() => {
+    const el = plstRef.current;
+    if (el === null) return;
+    const ro = new ResizeObserver(([z]) => setVyskaPlste(Math.floor(z?.contentRect.height ?? 0)));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  const [rezervaPosunu, setRezervaPosunu] = useState(REZERVA_POSUNU);
+  useEffect(() => setRezervaPosunu(REZERVA_POSUNU), [view.kolo]);
+  useLayoutEffect(() => {
+    const l = liniaRef.current;
+    if (l === null) return;
+    let posun = 0;
+    let vyska = 0;
+    for (const el of l.querySelectorAll<HTMLElement>(".partia-rad > *")) {
+      posun = Math.max(posun, parseFloat(el.style.marginTop) || 0);
+      const kl = el.querySelector<HTMLElement>(".kl");
+      if (kl !== null) vyska = Math.max(vyska, kl.offsetHeight);
+    }
+    if (vyska === 0) return;
+    const r = Math.ceil((posun / vyska) * 20) / 20;
+    if (r > rezervaPosunu) setRezervaPosunu(r);
+  });
   // Kladiem kartu z ruky do línie: v Zhromaždení (kým nepasujem) alebo v odpovedi na NA EX.
   const vykladam =
     somNaTahu &&
@@ -484,12 +466,13 @@ export function HernaPlocha({
       (view.faza === "pitka" && view.pitkaStav?.reakcia === ja));
   // +2: karta v strede a voľné miesto na koniec strany pri vykladaní;
   // pri vykladaní ležia na oboch koncoch úzke miesta na klik (MIESTO_VOLBY).
+  const sirkaPodlaVysky = mobil || vyskaPlste === 0 ? SIRKA_V_LINII : Math.floor((vyskaPlste - PRIDAVOK_LINIE) / (POMER_KARTY * (1 + rezervaPosunu)));
   const sirkaVLinii =
     sirkaLinie === 0
-      ? SIRKA_V_LINII
+      ? Math.min(SIRKA_V_LINII, sirkaPodlaVysky)
       : Math.max(
           SIRKA_V_LINII_MIN,
-          Math.min(SIRKA_V_LINII, Math.floor((sirkaLinie - 60) / (pocetVLinii + 2 + (vykladam ? 2 * MIESTO_VOLBY : 0))) - 12),
+          Math.min(SIRKA_V_LINII, sirkaPodlaVysky, Math.floor((sirkaLinie - 60) / (pocetVLinii + 2 + (vykladam ? 2 * MIESTO_VOLBY : 0))) - 12),
         );
   useEffect(() => {
     const l = liniaRef.current;
@@ -1157,7 +1140,6 @@ export function HernaPlocha({
   const cielPanelRef = useRef<HTMLElement>(null);
   const draftPanelRef = useRef<HTMLElement>(null);
   const liniaObalRef = useRef<HTMLDivElement>(null);
-  const starsiPanelRef = useRef<HTMLElement>(null);
   const posledneRolovanie = useRef(0);
   useEffect(() => {
     const zaznamenaj = (): void => {
@@ -2850,7 +2832,7 @@ export function HernaPlocha({
                 Pohoršenie <small>zostáva {b.pohorsenieZostava[ja]}</small>
               </>
             ),
-            text: "Klikni na staršieho po boku stola — marker sa posunie k súperovi: on dostane priazeň, starší sa začne báť teba (zónové body, cesta k vydeseniu). Zamknuté markery sa nedajú.",
+            text: "Klikni na staršieho — marker sa posunie k súperovi: on dostane priazeň, starší sa začne báť teba (zónové body, cesta k vydeseniu). Pri zamknutom je dôvod.",
           };
         }
         if (b.krok === "prebytok") {
@@ -2864,7 +2846,7 @@ export function HernaPlocha({
             ),
             text: (
               <>
-                Klikni na staršieho po boku stola — marker ide k súperovi (on priazeň, teba sa starší začne báť).{" "}
+                Klikni na staršieho — marker ide k súperovi (on priazeň, teba sa starší začne báť).{" "}
                 {cenaPosunu > 1 ? (
                   <strong>Posun ťa stojí {cenaPosunu} (Miňištrant v tvojej partii).</strong>
                 ) : (
@@ -3022,12 +3004,132 @@ export function HernaPlocha({
     return undefined;
   };
 
-  // Na mobile v zbalenom rade len starší, na ktorých záleží: mimo neutrálu
-  // alebo práve klikateľní (bitka o staršieho, Pohoršenie, prebytok).
-  const starsiNaMobile =
-    mobil && maliStarsi
-      ? view.starsi.filter((e) => STUPNICA_ZONY[e.marker] > 0 || klikStarsi(e) !== undefined)
-      : view.starsi;
+  // ---- línia starších na mieste línie kariet (Michal 2026-10-23, #68 + #69 variant A) ----
+  // Krok na staršom ukáže líniu obom hráčom; čakajúci si smie nahliadnuť na stôl.
+  const bs = view.bitkaStav;
+  const krokStarsich: { readonly nazov: string; readonly kto: PlayerId; readonly typ: "pohorsenie" | "prebytok" | "patronat" } | null =
+    view.koniec !== null
+      ? null
+      : view.faza === "bitka" && bs !== null && bs.caka !== null && (bs.krok === "pohorsenie" || bs.krok === "prebytok")
+        ? { nazov: bs.krok === "pohorsenie" ? "Pohoršenie" : "Prebytok", kto: bs.caka, typ: bs.krok }
+        : view.faza === "draft" && draft?.krok === "patronat"
+          ? { nazov: "Patronát", kto: draft.naTahu, typ: "patronat" }
+          : null;
+  const klucKroku = krokStarsich === null ? null : `${view.kolo}-${krokStarsich.typ}-${krokStarsich.kto}`;
+  /** Čie čísla línia zvýrazní (Body hráča alebo súpera); null = línia kariet. */
+  const [pohladStarsich, setPohladStarsich] = useState<PlayerId | null>(null);
+  const [nahliadnutie, setNahliadnutie] = useState(false);
+  // Výsledok kroku ostane na stole, kým ho hráč nezavrie alebo nepotrebuje líniu kariet — bez časovača (UX, Michal 2026-10-23).
+  const [vysledokKroku, setVysledokKroku] = useState(false);
+  const predoslyKrok = useRef<string | null>(null);
+  useEffect(() => {
+    setVysledokKroku(predoslyKrok.current !== null && klucKroku === null);
+    setNahliadnutie(false);
+    predoslyKrok.current = klucKroku;
+  }, [klucKroku]);
+  const potrebujemLiniu = somNaTahu && (vykladam || view.faza === "zhromazdenie" || view.faza === "pitka" || view.faza === "volbaCiela");
+  useEffect(() => {
+    if (!potrebujemLiniu) return;
+    setVysledokKroku(false);
+    setPohladStarsich(null);
+  }, [potrebujemLiniu]);
+  const starsiViditelni = tahanie === null && (krokStarsich !== null ? !nahliadnutie : vysledokKroku || pohladStarsich !== null);
+  const pohladLinie = pohladStarsich ?? ja;
+  const zavriStarsich = (): void => {
+    setPohladStarsich(null);
+    setVysledokKroku(false);
+  };
+  const prepniStarsich = (p: PlayerId): void => {
+    if (krokStarsich !== null && !nahliadnutie) {
+      setPohladStarsich((x) => (x === p ? null : p));
+      return;
+    }
+    setNahliadnutie(false);
+    if (starsiViditelni && pohladLinie === p) zavriStarsich();
+    else {
+      setVysledokKroku(false);
+      setPohladStarsich(p);
+    }
+  };
+  useEffect(() => {
+    if (!starsiViditelni && !nahliadnutie) return;
+    const klaves = (e: KeyboardEvent): void => {
+      if (e.key !== "Escape" || vrstva !== null || lupa !== null) return;
+      // Esc krok nezruší (UX): v kroku vráti z nahliadnutia späť na starších.
+      if (nahliadnutie) setNahliadnutie(false);
+      else if (krokStarsich === null) zavriStarsich();
+    };
+    window.addEventListener("keydown", klaves);
+    return () => window.removeEventListener("keydown", klaves);
+  }, [starsiViditelni, nahliadnutie, vrstva, lupa, krokStarsich === null]);
+  // Starší, ktorým sa práve pohol marker — v línii bliknú.
+  const markeryPred = useRef<ReadonlyMap<string, number> | null>(null);
+  const [zmeneniStarsi, setZmeneniStarsi] = useState<ReadonlySet<string>>(new Set());
+  useEffect(() => {
+    const teraz = new Map(view.starsi.map((e) => [e.elderId, e.marker]));
+    const pred = markeryPred.current;
+    markeryPred.current = teraz;
+    if (pred === null) return;
+    const zmena = new Set(view.starsi.filter((e) => pred.get(e.elderId) !== e.marker).map((e) => e.elderId));
+    if (zmena.size === 0) return;
+    setZmeneniStarsi(zmena);
+    const t = setTimeout(() => setZmeneniStarsi(new Set()), 1600);
+    return () => clearTimeout(t);
+  }, [view.starsi]);
+  const krokMoj = krokStarsich !== null && krokStarsich.kto === ja && somNaTahu;
+  const naKrajPohorsenia = pohorsenieNaKraj(view, ja);
+  /** Prečo sa na staršieho v mojom kroku nedá kliknúť — textom namiesto len vyblednutia (UI U12). */
+  const zamokStarsieho = (e: ElderState): string | undefined => {
+    if (!krokMoj || krokStarsich === null) return undefined;
+    if (krokStarsich.typ === "patronat") {
+      if (view.patronat.some((x) => x?.elderId === e.elderId)) return "v patronáte";
+      if (priazenHraca(e) !== ja) return "bez tvojej priazne";
+      if (e.nahradeny) return "náhrada — do ruky sa nedá";
+      if (hJa.cigarety < cenaPatronatu(e).cigarety) return "málo cigariet";
+      return kandidatiPatronatu.length === 0 ? "nemáš v ruke Občana ani Zviera" : "nedá sa vziať";
+    }
+    const pohorsenie = krokStarsich.typ === "pohorsenie";
+    if (posunMarker(e, super_, pohorsenie, pohorsenie && naKrajPohorsenia) !== null) return pohorsenie ? "už 2 hranice zón" : undefined;
+    if (e.marker === 0 || e.marker === 8) return "už na krajnej pozícii";
+    return pohorsenie ? "krajnú pozíciu Pohoršenie nedosiahne" : "na krajnú len z predposlednej od začiatku kola";
+  };
+  const starsiVLinii: StarsiVLinii[] = view.starsi.map((e) => {
+    const klik = klikStarsi(e);
+    const obrazok = vzhladKarty(sada, data, e.karta.defId).obrazok;
+    const iPatron = view.patronat.findIndex((x) => x?.elderId === e.elderId);
+    const pohorsenie = krokStarsich?.typ === "pohorsenie";
+    const ciel: MarkerPos | null =
+      !krokMoj || krokStarsich === null
+        ? null
+        : krokStarsich.typ === "patronat"
+          ? MARKER_STRED
+          : posunMarker(e, super_, pohorsenie, pohorsenie && naKrajPohorsenia);
+    return {
+      elder: e,
+      meno: menoKarty(e.karta.defId),
+      obrazok: obrazok === null ? null : mediaUrl(obrazok.nahlad),
+      body: body.starsi.find((x) => x.elderId === e.elderId),
+      klik,
+      ciel,
+      dovod: klik === undefined ? zamokStarsieho(e) : undefined,
+      hranice: pohorsenie && krokStarsich !== null ? (bs?.pohorsenieHranice[`${krokStarsich.kto}:${e.elderId}`] ?? 0) : undefined,
+      patron: iPatron === -1 ? null : { kto: iPatron as PlayerId, pohorsenia: view.patronat[iPatron]?.pohorsenia ?? 0 },
+      vybrany: mode.typ === "patronat" && mode.elderId === e.elderId,
+    };
+  });
+  const idLinieStarsich = useId();
+  const tlacidloLinieStarsich: ReactNode =
+    krokStarsich !== null ? (
+      krokMoj ? null : (
+        <button type="button" className="ls-tlacidlo" onClick={() => setNahliadnutie(true)} title="Krok nezruší — vráti sa klikom alebo Esc">
+          pozrieť stôl
+        </button>
+      )
+    ) : (
+      <button type="button" className="ls-tlacidlo" onClick={zavriStarsich}>
+        ← {vysledokKroku && pohladStarsich === null ? "ďalej na stôl" : "Späť na stôl"} <kbd>Esc</kbd>
+      </button>
+    );
   const prahy = (p: PlayerId) => prahyHraca(data, stol, p);
   const zavislost = (p: PlayerId) => stavZavislosti(data, { ...stol, kolo: view.kolo, hraci: view.hraci }, p);
   const popisKarty = (defId: string): string => {
@@ -3037,30 +3139,50 @@ export function HernaPlocha({
   const b = view.bitkaStav;
   // Odhad bitky len keď ho hráči ovplyvnia — v Zhromaždení, Pitke a bitke;
   // pri voľbe cieľa a v drafte mätie (Michal 2026-10-20).
+  const bitkaProps: BitkaPanelProps | null =
+    odhad === null || view.faza === "volbaCiela" || view.faza === "draft" || view.koniec !== null
+      ? null
+      : {
+          rodJa: rodHracaP(ja),
+          damage: b?.damage ?? odhad,
+          sums: lineEval.sums,
+          zdroje: lineEval.zdroje,
+          rozpis,
+          menoKarty,
+          ja,
+          vysledok: b?.damage != null,
+          mena: [menoHraca(0), menoHraca(1)],
+          sada,
+          ciel: lokalita !== null ? `o ${menoKarty(lokalita.defId)}` : "",
+          naSekeru: view.naSekeru.map((k) => menoKarty(k.defId)),
+          poslednaBitka: view.lokalityVHre.length === 0,
+          cenaPosunuVitaza: [
+            cenaPrebytku({ strany: view.strany } as unknown as GameState, 0),
+            cenaPrebytku({ strany: view.strany } as unknown as GameState, 1),
+          ],
+          prebytokNaRozdelenie: prebytokNaRozdelenie(view, battleOutcome(b?.damage ?? odhad)),
+          utocnik: `útočník: ${view.utocnik === ja ? "ty" : menoHraca(view.utocnik)} — ${view.kolo === 1 ? "v 1. kole náhodne" : "porazený z minulej bitky (remíza roly nemení)"}`,
+        };
+  // Na počítači je odhad bitky v páse kola jedným riadkom a celý panel sa otvorí
+  // nad stolom (Stôl bez scrollovania, #67); na mobile leží pod pásom ako doteraz.
+  const [odhadOtvoreny, setOdhadOtvoreny] = useState(false);
+  const idOdhadu = useId();
+  useEffect(() => {
+    if (!odhadOtvoreny) return;
+    const klaves = (e: KeyboardEvent): void => {
+      if (e.key === "Escape") setOdhadOtvoreny(false);
+    };
+    window.addEventListener("keydown", klaves);
+    return () => window.removeEventListener("keydown", klaves);
+  }, [odhadOtvoreny]);
   const bitkaPanel =
-    odhad === null || view.faza === "volbaCiela" || view.faza === "draft" || view.koniec !== null ? null : (
-      <BitkaPanel
-        rodJa={rodHracaP(ja)}
-        damage={b?.damage ?? odhad}
-        sums={lineEval.sums}
-        zdroje={lineEval.zdroje}
-        rozpis={rozpis}
-        menoKarty={menoKarty}
-        ja={ja}
-        vysledok={b?.damage != null}
-        mena={[menoHraca(0), menoHraca(1)]}
-        sada={sada}
-        ciel={lokalita !== null ? `o ${menoKarty(lokalita.defId)}` : ""}
-        naSekeru={view.naSekeru.map((k) => menoKarty(k.defId))}
-        poslednaBitka={view.lokalityVHre.length === 0}
-        cenaPosunuVitaza={[
-          cenaPrebytku({ strany: view.strany } as unknown as GameState, 0),
-          cenaPrebytku({ strany: view.strany } as unknown as GameState, 1),
-        ]}
-        prebytokNaRozdelenie={prebytokNaRozdelenie(view, battleOutcome(b?.damage ?? odhad))}
-        utocnik={`útočník: ${view.utocnik === ja ? "ty" : menoHraca(view.utocnik)} — ${view.kolo === 1 ? "v 1. kole náhodne" : "porazený z minulej bitky (remíza roly nemení)"}`}
-      />
+    bitkaProps === null ? null : (
+      <div className={`odhad-bitky${odhadOtvoreny ? " otvoreny" : ""}`} id={idOdhadu}>
+        <BitkaPanel {...bitkaProps} />
+      </div>
     );
+  const suhrnBitky =
+    bitkaProps === null ? null : <SuhrnBitky {...bitkaProps} otvoreny={odhadOtvoreny} prepni={() => setOdhadOtvoreny((o) => !o)} id={idOdhadu} />;
 
   // ---- vydesenie a priazeň (Michal 2026-10-16) -----------------------------
   const prahVyd = prahVydesenia(view);
@@ -3140,7 +3262,10 @@ export function HernaPlocha({
     );
 
   // ---- draft na stole (Michal 2026-10-16) ----------------------------------
-  const sirkaDraftu = mobil ? 84 : 118;
+  // Na stole (#67) sa Smetisko a balíček zmestia do jedného radu: 12 miest na šírku, karta aj s popismi na výšku.
+  const sirkaDraftu = mobil
+    ? 84
+    : Math.max(72, Math.min(118, sirkaLinie > 0 ? Math.floor((sirkaLinie - 140) / 12) - 8 : 118, vyskaPlste > 0 ? Math.floor((vyskaPlste - 170) / POMER_KARTY) : 118));
   /** Zóna stavby šenku: karta v nej, alebo prázdne miesto s popisom. */
   const zonaStavby = (ciel: string, nazov: string, pozn: string, uids: readonly number[], kapacita: number): ReactNode => {
     if (kapacita <= 0) return null;
@@ -3356,73 +3481,10 @@ export function HernaPlocha({
     );
   })();
 
-  // ---- starší po bokoch stola (Michal 2026-10-22, #55 variant B) ----------------
-  // Poradie je pevné (1–4 vľavo, 5–8 vpravo), nie podľa markera — nič neskáče.
-  // Plný scorecard je v lupe: kotva má tvar scorecardu, lupa ju zväčší na SIRKA_SCORECARDU_V_LUPE.
-  const stlpecStarsich = (starsi: readonly ElderState[], strana: "vlavo" | "vpravo"): ReactNode => (
-    <div className={`stlpec-starsich ${strana}`} aria-label={strana === "vlavo" ? "Starší 1–4" : "Starší 5–8"}>
-      {starsi.map((elder) => {
-        const k = klikStarsi(elder);
-        const kluc = `s${elder.elderId}`;
-        const patronIdx = view.patronat.findIndex((x) => x?.elderId === elder.elderId);
-        const patronElder = patronIdx === -1 ? null : (patronIdx as PlayerId);
-        const bodyStarsieho = body.starsi.find((b) => b.elderId === elder.elderId);
-        const scorecard = (sirka: number): ReactNode => (
-          <Scorecard
-            elder={elder}
-            data={data}
-            sada={sada}
-            ja={ja}
-            sirka={sirka}
-            karta={(s) => karta({ karta: elder.karta, sirka: s })}
-            onClick={k?.klik}
-            body={bodyStarsieho}
-          />
-        );
-        lupaKarty.set(kluc, { render: (s) => scorecard(s), mierka: SIRKA_SCORECARDU_V_LUPE / SIRKA_DLAZDICE_STARSIEHO });
-        return (
-          <div
-            key={elder.elderId}
-            className={[
-              "s-lupou",
-              "scorecard-obal",
-              k !== undefined ? "ma-akciu vyzvat" : mozniPatronati.length > 0 ? "nedostupny" : "",
-              patronElder !== null ? "v-patronate" : "",
-              lupa?.kluc === kluc ? "harmonika-aktivna" : "",
-            ]
-              .filter((x) => x !== "")
-              .join(" ")}
-            {...nadLupou(kluc, (el) => el.querySelector(".kotva-lupy-starsieho"), k === undefined)}
-            {...(k === undefined
-              ? {}
-              : { role: "button", tabIndex: 0, onClick: k.klik, onKeyDown: (e: ReactKeyboardEvent<HTMLElement>) => (e.key === "Enter" || e.key === " ") && k.klik() })}
-          >
-            <span
-              className="kotva-lupy-starsieho"
-              aria-hidden="true"
-              style={{ height: SIRKA_DLAZDICE_STARSIEHO * pomerScorecardu(sada, data, elder) }}
-            />
-            <DlazdicaStarsieho
-              elder={elder}
-              data={data}
-              ja={ja}
-              meno={menoKarty(elder.karta.defId)}
-              body={bodyStarsieho}
-              karta={(s) => karta({ karta: elder.karta, sirka: s })}
-              akcia={k?.akcia}
-              stitok={
-                patronElder === null ? undefined : (
-                  <span className="ds-patronat">
-                    {patronElder === ja ? "v tvojej ruke" : `v ruke: ${menoHraca(patronElder)}`} · +{view.patronat[patronElder]?.pohorsenia ?? 0} Pohoršení
-                  </span>
-                )
-              }
-            />
-          </div>
-        );
-      })}
-    </div>
-  );
+  // Stôl bez scrollovania (#67): na počítači leží voľba cieľa a draft na stole namiesto
+  // prázdnej línie. Lokalita na otočenie a potvrdenie je v línii — vtedy sa vráti línia.
+  const vrstvaFazy: ReactNode = mobil ? null : cielPanel !== null && lokalitaNavrh === null ? cielPanel : draftPanel;
+  const liniaSkryta = starsiViditelni || vrstvaFazy !== null;
 
   // ---- pás kola: koľko Pitiek a koľko kariet kto vykladá -------------------
   // Súhrn starších (Michal 2026-10-22, #55 kus 3): v páse kola, aby na 1366 × 768 bolo vidno viac zo stĺpcov.
@@ -3434,15 +3496,6 @@ export function HernaPlocha({
       >
         vydesení <b className="moje">ty {vydeseni[ja]}/{prahVyd}</b> · <b className="superove">{menoHraca(super_)} {vydeseni[super_]}/{prahVyd}</b>
       </span>
-      <span className="body-teraz" title="Záverečné bodovanie, keby hra skončila teraz">
-        body teraz <b className="moje">ty {body.spolu[ja]}</b> ·{" "}
-        <b className="superove" title="Súperove nepriznané kliatby sú už odpočítané — ich počet je z toho, čo sa ukázalo na stole.">
-          {menoHraca(super_)} {body.spolu[super_]}
-        </b>
-      </span>
-      <button type="button" className="tlacidlo-male tlacidlo-jemne" onClick={() => setAkoBodovanie(!akoBodovanie)} aria-expanded={akoBodovanie}>
-        {akoBodovanie ? "skryť rozpis" : "rozpis bodov"}
-      </button>
     </span>
   );
   const pasKola = ((): ReactNode => {
@@ -3547,6 +3600,7 @@ export function HernaPlocha({
         {stolicky}
         {poradiePitky}
         {stavka !== null && <StavkaBitky stavka={stavka} />}
+        {suhrnBitky}
         {view.faza === "zhromazdenie" && (
           <span className="pas-limit">
             {sloty(ja)}
@@ -3803,9 +3857,8 @@ export function HernaPlocha({
           vyhlad={vyhladPitky(super_)}
           cenaDlhu={cenyKliatob[super_].dlh}
           body={body}
-          data={data}
           mena={[menoHraca(0), menoHraca(1)]}
-          menoStarsieho={menoStarsieho}
+          starsi={{ stlacene: starsiViditelni && krokStarsich === null && pohladLinie === super_, prepni: () => prepniStarsich(super_), id: idLinieStarsich }}
         />
         {/* Starší hore — mimo dosahu ruky, aby sa ich lupa nebila s lupou kariet v ruke. */}
         <div className="stred">
@@ -3814,36 +3867,15 @@ export function HernaPlocha({
           {hrozbaVydesenia}
           {oznamyPriazneEl}
           {ucetBitkyEl}
-          {cielPanel}
-          {draftPanel}
-          {pasKola}
-          {/* Starší po bokoch stola (Michal 2026-10-22, #55 variant B) — nad stolom ostáva len ich súhrn. */}
+          {/* Na počítači ležia voľba cieľa a draft na stole (vrstvaFazy) — línia je vtedy prázdna. */}
+          {mobil && cielPanel}
+          {mobil && draftPanel}
+          <div className="pas-kola-obal">
+            {pasKola}
+            {bitkaPanel}
+          </div>
+          {/* Starší sú na stole po kliku na Body (#68) — nad stolom ostáva len ich súhrn. */}
           {pasKola === null && <div className="starsi-info-samostatne">{starsiSuhrn}</div>}
-          <section className="starsi-info" ref={starsiPanelRef} hidden={!akoBodovanie}>
-            {akoBodovanie && (
-              <div className="ako-bodovanie">
-                <p>
-                  <b>★ Body</b> dáva každý scorecard <b>obom hráčom</b>: boduje každá <b>aktívna podmienka</b> (svieti — karta
-                  staršieho má pri nej akciu), na ktorejkoľvek strane. Číslo pri ikone = koľko z nej máš ty. Lokality, získaní starší
-                  a cigarety za kus, nepriznané Dlhy a Cirhózy mínus za kus. Znepokojenie / Strach / Vydesenie dávajú body za každého
-                  staršieho v hre, ktorý sa ťa bojí aspoň na tú úroveň.
-                </p>
-                <p>
-                  <b>♥ Priazeň</b> (počas hry) má hráč, ku ktorému je marker posunutý — dáva výhodu podľa scorecardu. Starší sa vtedy
-                  bojí toho druhého: posunúť marker k súperovi mu dá priazeň, ale tebe strach staršieho do zónových podmienok.
-                </p>
-                <RozpisBodov
-                  body={body}
-                  starsi={view.starsi}
-                  data={data}
-                  ja={ja}
-                  menoSupera={menoHraca(super_)}
-                  menoKarty={menoKarty}
-                  nadpis="Keby hra skončila teraz"
-                />
-              </div>
-            )}
-          </section>
           {/* Farba stola hovorí, čí je ťah: zelená = tvoj, sivá = čakáš. */}
           <div
             ref={liniaObalRef}
@@ -3857,9 +3889,9 @@ export function HernaPlocha({
               </strong>
               {pokyn?.text !== undefined && <span className="pilulka-text">{pokyn.text}</span>}
             </div>
-            <div className="stol-plst">
-            {stlpecStarsich(view.starsi.slice(0, 4), "vlavo")}
-            <div className="linia harmonika-skupiny" ref={liniaRef}>
+            <div className={`stol-plst${liniaSkryta ? " linia-skryta" : ""}${starsiViditelni && krokStarsich !== null ? " krok-starsich" : ""}`} ref={plstRef}>
+            {/* Línia kariet ostáva v DOM a drží výšku stola — línia starších leží nad ňou (#68). */}
+            <div className="linia harmonika-skupiny" ref={liniaRef} inert={liniaSkryta} aria-hidden={liniaSkryta || undefined}>
               <div className="linia-skupina moja">
                 {popisKraja(ja, "vlavo")}
                 <div className="partia-rad harmonika">{radStrany(ja)}</div>
@@ -3877,7 +3909,31 @@ export function HernaPlocha({
                 <div className="partia-rad harmonika">{radStrany(super_)}</div>
               </div>
             </div>
-            {stlpecStarsich(view.starsi.slice(4), "vpravo")}
+            {vrstvaFazy !== null && !starsiViditelni && <div className="vrstva-fazy">{vrstvaFazy}</div>}
+            <div className="vrstva-starsich" id={idLinieStarsich} hidden={!starsiViditelni}>
+              {starsiViditelni && (
+                <LiniaStarsich
+                  starsi={starsiVLinii}
+                  data={data}
+                  ikony={sada.ikonyBodovania ?? []}
+                  ja={ja}
+                  pohlad={pohladLinie}
+                  mena={[menoHraca(0), menoHraca(1)]}
+                  vydeseni={vydeseni}
+                  prahVydesenia={prahVyd}
+                  spolu={body.spolu}
+                  krok={krokMoj && krokStarsich !== null ? krokStarsich.nazov : null}
+                  hraniceZon={krokMoj && krokStarsich?.typ === "pohorsenie" && !pohorsenieBezLimitu(view)}
+                  zmenene={zmeneniStarsi}
+                  tlacidlo={tlacidloLinieStarsich}
+                />
+              )}
+            </div>
+            {nahliadnutie && krokStarsich !== null && (
+              <button type="button" className="ls-tlacidlo stol-navrat" onClick={() => setNahliadnutie(false)}>
+                ← späť na starších · {krokStarsich.nazov} <kbd>Esc</kbd>
+              </button>
+            )}
             </div>
             {hranaStola}
           </div>
@@ -3899,12 +3955,9 @@ export function HernaPlocha({
               cenaBarteru: barterCena(data, view, ja),
             }}
             body={body}
-            data={data}
             mena={[menoHraca(0), menoHraca(1)]}
-            menoStarsieho={menoStarsieho}
+            starsi={{ stlacene: starsiViditelni && krokStarsich === null && pohladLinie === ja, prepni: () => prepniStarsich(ja), id: idLinieStarsich }}
           />
-
-          {bitkaPanel}
 
           {odkladacieZony.length > 0 && <div className="odkladanie">{odkladacieZony}</div>}
 

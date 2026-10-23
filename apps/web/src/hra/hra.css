@@ -201,16 +201,14 @@
   min-width: 0;
 }
 
-.plocha > section,
-.starsi-info {
+.plocha > section {
   padding: 12px;
   border-radius: 12px;
   background: var(--plocha);
   border: 1px solid var(--okraj);
 }
 
-.plocha > section h3,
-.starsi-info h3 {
+.plocha > section h3 {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
@@ -303,15 +301,13 @@
   justify-content: flex-end;
 }
 
-/* Dlaždice zdrojov aj rozpisu ležia priamo v mriežke baru. */
-.doska-zdroje,
-.doska-rozpis {
+/* Dlaždice zdrojov ležia priamo v mriežke baru. */
+.doska-zdroje {
   display: contents;
 }
 
 .doska-hrac,
-.doska-zdroje > *,
-.doska-rozpis > .rozpis-dlazdica {
+.doska-zdroje > * {
   grid-row: 1;
   min-width: 0;
   min-height: 0;
@@ -338,162 +334,7 @@
 .doska.superova .zdroj-dlhy { grid-column: 8; }
 .doska.superova .doska-hrac { grid-column: 9; }
 
-/* Rozpis bodov: šesť zdrojov ustúpi šiestim dlaždiciam (RozpisDlazdice ich zrkadlí sám). */
-.doska.s-rozpisom .doska-zdroje > .zdroj:not(.zdroj-body, .zdroj-karty) {
-  display: none;
-}
-
-.doska.moja .rozpis-dlazdica:nth-child(1) { grid-column: 2; }
-.doska.moja .rozpis-dlazdica:nth-child(2) { grid-column: 3; }
-.doska.moja .rozpis-dlazdica:nth-child(3) { grid-column: 4; }
-.doska.moja .rozpis-dlazdica:nth-child(4) { grid-column: 5; }
-.doska.moja .rozpis-dlazdica:nth-child(5) { grid-column: 6; }
-.doska.moja .rozpis-dlazdica:nth-child(6) { grid-column: 7; }
-.doska.superova .rozpis-dlazdica:nth-child(1) { grid-column: 3; }
-.doska.superova .rozpis-dlazdica:nth-child(2) { grid-column: 4; }
-.doska.superova .rozpis-dlazdica:nth-child(3) { grid-column: 5; }
-.doska.superova .rozpis-dlazdica:nth-child(4) { grid-column: 6; }
-.doska.superova .rozpis-dlazdica:nth-child(5) { grid-column: 7; }
-.doska.superova .rozpis-dlazdica:nth-child(6) { grid-column: 8; }
-
-.rozpis-dlazdica {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 6px 9px 7px;
-  border-radius: 10px;
-  background: color-mix(in srgb, #000 calc(var(--tma) * 28%), transparent);
-  border: 1px solid color-mix(in srgb, var(--lesk) 6%, transparent);
-  border-top: 3px solid var(--okraj-svetly);
-  cursor: help;
-  outline: none;
-}
-
-.rozpis-dlazdica.plus {
-  border-top-color: var(--zelena);
-}
-
-.rozpis-dlazdica.minus {
-  border-top-color: var(--cervena);
-}
-
-.rozpis-dlazdica.neaktivna {
-  opacity: 0.6;
-  cursor: default;
-}
-
-.rozpis-dlazdica:hover,
-.rozpis-dlazdica:focus-visible {
-  background: color-mix(in srgb, var(--lesk) 6%, transparent);
-}
-
-.rd-nazov {
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--tlmeny);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.rd-body {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 6px;
-}
-
-.rd-cislo {
-  font: 800 1.9rem/1 var(--nadpis);
-  font-variant-numeric: tabular-nums;
-}
-
-.rd-cislo.plus,
-.rd-stupen b.plus {
-  color: var(--zelena);
-}
-
-.rd-cislo.minus,
-.rd-stupen b.minus {
-  color: var(--cervena-text);
-}
-
-.rd-cislo.nula,
-.rd-stupen b.nula {
-  color: var(--slaby-text);
-}
-
-.rd-druhy {
-  font-size: 0.74rem;
-  font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.rd-druhy.ja {
-  color: var(--ja);
-}
-
-.rd-druhy.su {
-  color: var(--su);
-}
-
-.rd-druhy.nula,
-.rd-stupen.nula {
-  color: var(--slaby-text);
-}
-
-.rd-vypocet {
-  font-size: 0.74rem;
-  color: var(--slaby-text);
-  font-variant-numeric: tabular-nums;
-}
-
-.rd-stupne {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  font-size: 0.7rem;
-}
-
-.rd-stupen {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  outline: none;
-}
-
-.rd-stupen-nazov {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.rd-stupen i {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex: none;
-}
-
-.rd-stupen .zona-1 {
-  background: var(--akcent-svetly);
-}
-
-.rd-stupen .zona-2 {
-  background: var(--akcent);
-}
-
-.rd-stupen .zona-3 {
-  background: var(--cervena);
-}
-
-/* Body: tlačidlo, ktoré prepína zdroje a rozpis. */
+/* Body: tlačidlo, ktoré prepína stôl na líniu starších (#68). */
 button.zdroj-body {
   font: inherit;
   color: inherit;
@@ -510,50 +351,14 @@ button.zdroj-body.minus .velke-cislo {
   color: var(--cervena-text);
 }
 
-button.zdroj-body[aria-expanded="true"] {
+button.zdroj-body[aria-pressed="true"] {
   background: var(--akcent);
 }
 
-button.zdroj-body[aria-expanded="true"] .zdroj-nazov,
-button.zdroj-body[aria-expanded="true"] .zdroj-pod,
-button.zdroj-body[aria-expanded="true"] .velke-cislo {
+button.zdroj-body[aria-pressed="true"] .zdroj-nazov,
+button.zdroj-body[aria-pressed="true"] .zdroj-pod,
+button.zdroj-body[aria-pressed="true"] .velke-cislo {
   color: var(--na-akcente);
-}
-
-/* „← späť“ je záložka na hrane baru smerom k stolu — výšku baru nemení. */
-.rozpis-spat {
-  position: absolute;
-  left: 50%;
-  translate: -50% 0;
-  z-index: 3;
-  /* Cieľ aspoň 24 px (UI inšpekcia U18) — mal 23. */
-  min-height: 24px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 3px 12px;
-  border-radius: 999px;
-  border: 1px solid var(--akcent);
-  background: var(--plocha-2);
-  color: var(--text);
-  font: 600 0.78rem/1.2 var(--pismo);
-  cursor: pointer;
-}
-
-.doska.moja .rozpis-spat {
-  top: -13px;
-}
-
-.doska.superova .rozpis-spat {
-  bottom: -13px;
-}
-
-.rozpis-spat kbd {
-  font-size: 0.68rem;
-  padding: 0 4px;
-  border: 1px solid var(--okraj-svetly);
-  border-radius: 4px;
-  color: var(--tlmeny);
 }
 
 .doska.na-tahu {
@@ -1993,94 +1798,6 @@ button:disabled .cena {
   }
 }
 
-/* ---- starší na scorecardoch (Scorecard.tsx) ----
- * Pre oboch hráčov rovnako, nohami nadol. */
-
-/* Celá šírka riadku; šírku jedného scorecardu ráta HernaPlocha (ResizeObserver). */
-.scorecardy {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-}
-
-.scorecard-obal {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-}
-
-.scorecard {
-  position: relative;
-  flex: none;
-  border-radius: 6px;
-  overflow: hidden;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
-  transition: box-shadow 0.15s ease;
-}
-
-.scorecard > .bodovacia-svg {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-.scorecard.klikatelny {
-  cursor: pointer;
-  box-shadow:
-    0 0 0 2px var(--akcent),
-    0 0 18px color-mix(in srgb, var(--akcent) 35%, transparent);
-}
-
-.scorecard-karta {
-  position: absolute;
-  display: flex;
-}
-
-.scorecard-slot {
-  position: absolute;
-  cursor: help;
-}
-
-/* Tvoje body z aktívnej podmienky — číslo priamo na ikone. */
-.scorecard-odznak {
-  position: absolute;
-  bottom: -26%;
-  min-width: 1.6em;
-  padding: 0 0.25em;
-  border-radius: 999px;
-  font-weight: 800;
-  line-height: 1.35;
-  text-align: center;
-  pointer-events: none;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-}
-
-/* Odznak smeruje ku karte — scorecard má overflow: hidden. */
-.scorecard-odznak.lava {
-  right: -34%;
-}
-
-.scorecard-odznak.prava {
-  left: -34%;
-}
-
-.scorecard-odznak.plus {
-  /* Biela na #1f9d55 mala 3,5 : 1 (UI inšpekcia U06); tokeny schémy dajú ≈ 8,6 : 1 aj vo svetlých schémach. */
-  background: var(--zelena);
-  color: var(--pozadie);
-}
-
-.scorecard-odznak.minus {
-  background: #c0392b;
-  color: #fff;
-}
-
-.scorecard-odznak.nula {
-  background: #3a3f47;
-  color: #cbd5e1;
-}
-
 /* Rozpis bodov: starší × podmienka × ty / súper. */
 .rozpis-bodov {
   width: 100%;
@@ -2146,35 +1863,6 @@ button:disabled .cena {
 .rozpis-bodov tfoot > tr > * {
   border-top: 2px solid var(--okraj);
   font-weight: 700;
-}
-
-.lupa > .scorecard {
-  box-shadow: 0 0 0 2px var(--akcent, var(--akcent));
-}
-
-.scorecard-stav {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: baseline;
-  gap: 2px 8px;
-  max-width: 100%;
-  font-size: 0.78rem;
-  line-height: 1.35;
-  text-align: center;
-}
-
-.scorecard-stav strong {
-  font-size: 0.88rem;
-}
-
-.scorecard-priazen {
-  color: var(--slaby);
-}
-
-.starsi-akcia {
-  font-weight: 700;
-  color: var(--akcent);
 }
 
 .ikona-podmienky {
@@ -2352,95 +2040,6 @@ button.dlzka-volba.aktivna {
   border-color: var(--akcent);
   background: color-mix(in oklab, var(--akcent-tmavy) 25%, var(--pozadie));
   color: var(--akcent);
-}
-
-/* ---- starší: priazeň (♥, počas hry) vs. strach a body (★, koniec hry) ---- */
-
-.starsi-riadok {
-  display: inline-block;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  /* V zmenšenom rade sa text skráti — celý je v tooltipe. */
-  padding: 0 6px;
-  border-radius: 999px;
-  border: 1px solid var(--okraj);
-  color: var(--tlmeny);
-  white-space: nowrap;
-  cursor: help;
-}
-
-.starsi-riadok.priazen.moja {
-  border-color: color-mix(in srgb, var(--ja) 55%, transparent);
-  color: var(--ja);
-}
-
-.starsi-riadok.priazen.superova {
-  border-color: color-mix(in srgb, var(--su) 55%, transparent);
-  color: var(--su);
-}
-
-.starsi-riadok.strach {
-  color: var(--text);
-}
-
-.starsi-riadok.strach b.moje {
-  color: var(--ja);
-}
-
-.starsi-riadok.boji-sa {
-  font-size: 0.72rem;
-  border-style: dashed;
-}
-
-.starsi-riadok.boji-sa.moja {
-  color: var(--ja);
-}
-
-.starsi-riadok.boji-sa.superova {
-  color: var(--su);
-}
-
-/* Zalomí sa do šírky telefónu — predtým stránka pretekala na 461 px (UI N1). */
-.body-teraz {
-  display: inline-flex;
-  flex-wrap: wrap;
-  white-space: normal;
-  min-width: 0;
-  align-items: center;
-  gap: 6px;
-  font-weight: 400;
-  font-size: 0.78rem;
-  letter-spacing: 0;
-  text-transform: none;
-  color: var(--tlmeny);
-}
-
-.body-teraz b.moje {
-  color: var(--ja);
-}
-
-.body-teraz b.superove {
-  color: var(--su);
-}
-
-.ako-bodovanie {
-  display: grid;
-  gap: 6px;
-  margin: -2px 0 12px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  background: color-mix(in srgb, #000 calc(var(--tma) * 22%), transparent);
-  font-size: 0.85rem;
-  color: var(--tlmeny);
-}
-
-.ako-bodovanie p {
-  margin: 0;
-}
-
-.ako-bodovanie b {
-  color: var(--text);
 }
 
 .znacka.body {
@@ -3327,20 +2926,6 @@ button.dlzka-volba.aktivna {
   cursor: pointer;
 }
 
-.scorecard-obal {
-  transition: filter 0.2s ease, opacity 0.2s ease;
-}
-
-.scorecard-obal.nedostupny {
-  filter: grayscale(1) brightness(0.75);
-  opacity: 0.75;
-}
-
-.scorecard-obal.vyzvat .scorecard {
-  cursor: pointer;
-  box-shadow: 0 0 0 2px var(--akcent), 0 10px 26px rgba(0, 0, 0, 0.5);
-}
-
 /* ---- Celý ťah naraz: ďalšia karta stojí poldeci (Michal 2026-10-19) ---------- */
 
 .poldeci-stitok {
@@ -4061,11 +3646,6 @@ button.pecat-zrusit {
 
 /* ---- Patronát (Michal 2026-10-20): starší v ruke patróna ---------------------- */
 
-.scorecard-obal.v-patronate .scorecard {
-  opacity: 0.55;
-  filter: saturate(0.6);
-}
-
 .patronat-stitok {
   margin: 4px 0 0;
   padding: 2px 8px;
@@ -4453,20 +4033,6 @@ button.auto-hotovo-odkaz {
   cursor: pointer;
 }
 
-/* Zóny strachu: tri stupne v jednej dlaždici — menšie číslo, nech sa zmestia do výšky baru. */
-.rozpis-dlazdica.skupina {
-  gap: 1px;
-}
-
-.rozpis-dlazdica.skupina .rd-cislo {
-  font-size: 1.35rem;
-}
-
-.rozpis-dlazdica.skupina .rd-stupne {
-  font-size: 0.66rem;
-  line-height: 1.2;
-}
-
 /* ---- krčmový účet — záverečné bodovanie v detaile partie (dizajn stol-oproti-c2-20261022-1030) ----
  * Papier sú obrátené tokeny — pozadie je farba textu, text farba pozadia. */
 .krcmovy-ucet {
@@ -4707,10 +4273,7 @@ button.auto-hotovo-odkaz {
   flex-wrap: nowrap;
 }
 
-.doska .zdroj-pod,
-.doska .rd-vypocet,
-.doska .rd-druhy,
-.doska .rd-stupen-nazov {
+.doska .zdroj-pod {
   line-height: 1.25;
   min-width: 0;
 }
@@ -4720,12 +4283,6 @@ button.auto-hotovo-odkaz {
 .doska .zdroj-pod > :is(span, b):not(.obchod-cigariet) {
   display: block;
   max-width: 100%;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.doska .rd-vypocet {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -4747,13 +4304,242 @@ button.auto-hotovo-odkaz {
   overflow: hidden;
 }
 
-/* ---- starší po bokoch stola (Michal 2026-10-22, #55 variant B) ----
- * Plsť stola: stĺpec 4 starších · línia · stĺpec 4 starších. Stĺpce sú neutrálne
- * (bez farby strany), farbu nesie len marker, priazeň a body. */
+/* ---- stôl bez scrollovania (Michal 2026-10-23, #67) ----
+ * Na počítači zaberá partia presne okno pod hlavičkou webu: súperov bar, stôl,
+ * tvoj bar a ruka pod sebou; stôl dostane zvyšok výšky a karty v línii sa
+ * zmenšia podľa neho (HernaPlocha, sirkaPodlaVysky). Ruka je v toku stránky,
+ * nie fixed cez stôl — spodok kariet schová okraj obsahu, nie okna. */
+@media (min-width: 761px) {
+  .obsah:has(> .hra) {
+    flex: none;
+    height: calc(100dvh - 65px);
+    padding: 8px 16px 0;
+    overflow: hidden;
+  }
+
+  .obsah:has(> .hra) + .paticka {
+    display: none;
+  }
+
+  .hra {
+    height: 100%;
+    gap: 8px;
+    padding-bottom: 0;
+  }
+
+  .hra-hlava {
+    position: static;
+  }
+
+  .plocha {
+    flex: 1 1 0;
+    min-height: 0;
+    gap: 8px;
+  }
+
+  .stred {
+    flex: 1 1 0;
+    min-height: 0;
+    gap: 8px;
+  }
+
+  .linia-obal {
+    flex: 1 1 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .linia-obal > .stol-plst {
+    flex: 1 1 0;
+    min-height: 0;
+  }
+
+  .stol-plst > .linia {
+    height: 100%;
+  }
+
+  .ruka {
+    position: relative;
+    flex: none;
+    margin: 0 -16px;
+  }
+
+  /* Výška pre stôl: bary, pás kola a odhad bitky sú nižšie, nič z nich nezmizlo
+     (podrobnosti ostávajú v nápovedách). */
+  .doska {
+    --bar-h: 118px;
+    padding-block: 6px;
+  }
+
+  .pas-kola {
+    flex-wrap: nowrap;
+    gap: 6px 18px;
+    padding: 4px 12px;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .pas-kola > * {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .pas-stolicky {
+    flex-wrap: nowrap;
+  }
+
+  .stolicka {
+    padding: 3px 10px;
+  }
+
+  .stolicka-zdroje {
+    display: none;
+  }
+
+  /* Pás kola v jednom riadku: dlhé poznámky sa skrátia, súhrn bitky a poradie nie. */
+  .pas-pitky {
+    flex-wrap: nowrap;
+  }
+
+  .pas-pitky .pas-pozn {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .pas-kola > .pas-stolicky,
+  .pas-kola > .suhrn-bitky {
+    flex-shrink: 0;
+  }
+
+  .stolicka {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    min-height: 0;
+  }
+
+  .stolicka-poradie {
+    font-size: 1rem;
+  }
+
+  .pas-starsi {
+    flex-wrap: nowrap;
+  }
+
+  /* Účet bitky v jednom riadku — položky za sebou, celé znenie v nápovede riadku. */
+  .ucet-bitky {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 4px 12px;
+  }
+
+  .ucet-bitky header {
+    display: contents;
+  }
+
+  .ucet-bitky header > strong {
+    flex: none;
+  }
+
+  .ucet-bitky header > button {
+    order: 2;
+    flex: none;
+  }
+
+  .ucet-bitky ul {
+    order: 1;
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .ucet-bitky li {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .pas-kola-obal {
+    position: relative;
+  }
+
+  .pas-kola .suhrn-bitky {
+    display: inline-flex;
+  }
+
+  /* Celý odhad bitky leží po kliku nad stolom — stôl pod ním neposkočí. */
+  .odhad-bitky {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    z-index: 30;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
+    border-radius: 14px;
+  }
+
+  .odhad-bitky.otvoreny {
+    display: block;
+  }
+}
+
+/* Súhrn odhadu bitky v páse kola (#67) — len na počítači, mobil má celý panel. */
+.suhrn-bitky {
+  display: none;
+  align-items: baseline;
+  gap: 8px;
+  padding: 3px 12px;
+  border: 1px solid var(--okraj-svetly);
+  border-radius: 999px;
+  background: var(--plocha);
+  color: var(--tlmeny);
+  font: 500 0.82rem/1.3 var(--pismo);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.suhrn-bitky:hover,
+.suhrn-bitky[aria-expanded="true"] {
+  border-color: var(--akcent);
+}
+
+.suhrn-bitky > b {
+  font: 800 1rem/1.2 var(--nadpis);
+  color: var(--text);
+}
+
+.suhrn-bitky.vyhravam > b {
+  color: var(--zelena);
+}
+
+.suhrn-bitky.prehravam > b {
+  color: var(--cervena-text);
+}
+
+.suhrn-bitky-nadpis {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--akcent);
+}
+
+/* ---- plsť stola: línia kariet a nad ňou línia starších (#68) ---- */
 .stol-plst {
-  display: grid;
-  grid-template-columns: 176px minmax(0, 1fr) 176px;
-  gap: 10px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
   padding: 12px 10px 10px;
   border-radius: 18px;
   background:
@@ -4768,180 +4554,541 @@ button.auto-hotovo-odkaz {
   background: none;
   border: 0;
   box-shadow: none;
-  padding-left: 0;
-  padding-right: 0;
   min-width: 0;
+  transition: opacity 0.2s ease, translate 0.2s ease, filter 0.2s ease;
 }
 
-.stlpec-starsich {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding-top: 22px;
+/* Prechod: karty klesnú a zmiznú, starší prídu zhora (UI, spoločné prvky). */
+.stol-plst.linia-skryta > .linia {
+  opacity: 0;
+  translate: 0 14px;
+  filter: blur(3px);
 }
 
-.stlpec-starsich > .scorecard-obal {
-  position: relative;
-  border-radius: 10px;
-}
-
-/* Kotva lupy: tvar plného scorecardu, vystredená na dlaždici. */
-.kotva-lupy-starsieho {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  translate: 0 -50%;
-  visibility: hidden;
-  pointer-events: none;
-}
-
-.dlazdica-starsieho {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  padding: 7px 8px 8px;
-  border-radius: 10px;
-  background: color-mix(in srgb, var(--pozadie) 72%, transparent);
-  border: 1px solid var(--okraj);
-  font-size: 0.78rem;
-}
-
-.dlazdica-starsieho.vydeseny {
-  border-color: var(--cervena);
-}
-
-.scorecard-obal.vyzvat .dlazdica-starsieho {
+/* Krok na staršom (Pohoršenie, prebytok, patronát): jantárový okraj plste. */
+.stol-plst.krok-starsich {
   border-color: var(--akcent);
-  box-shadow: 0 0 0 1px var(--akcent), 0 0 14px color-mix(in srgb, var(--akcent) 35%, transparent);
-  cursor: pointer;
 }
 
-.scorecard-obal.nedostupny .dlazdica-starsieho {
-  opacity: 0.5;
-}
-
-.ds-hlava {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  min-width: 0;
-}
-
-.ds-karta {
-  flex: none;
-  width: 34px;
-}
-
-.ds-texty {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.ds-meno {
-  font: 700 0.88rem/1.15 var(--nadpis);
-  color: var(--text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.ds-riadok {
-  display: flex;
-  gap: 6px;
-  white-space: nowrap;
-  color: var(--tlmeny);
-}
-
-.ds-priazen.moja,
-.ds-body .moje {
-  color: var(--ja);
-}
-
-.ds-priazen.superova {
-  color: var(--su);
-}
-
-.ds-vydeseny {
-  position: absolute;
-  top: -12px;
-  right: -4px;
-  padding: 0 6px;
-  border-radius: 999px;
-  background: var(--cervena);
-  color: #fff;
-  font-size: 0.66rem;
-  font-weight: 700;
-}
-
-/* Stupnica: tvoja polovica vľavo (zrkadlová, rovnako ako na scorecarde). */
-.ds-stupnica {
-  display: grid;
-  grid-template-columns: repeat(9, 1fr);
-  gap: 3px;
-  align-items: center;
-}
-
-.ds-stupnica i {
-  display: block;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  opacity: 0.85;
-}
-
-.ds-stupnica i.marker {
-  opacity: 1;
-  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #111;
-}
-
-.ds-akcia {
-  color: var(--akcent);
-  font-weight: 600;
-  line-height: 1.25;
-}
-
-.ds-patronat {
-  color: var(--akcent-svetly);
-  font-size: 0.72rem;
-}
-
-/* Súhrn starších nad stolom: jeden riadok. */
-.starsi-info {
-  padding: 6px 12px;
-}
-
-.starsi-info h3 {
-  margin: 0;
-}
-
-/* Dlaždice v plnej šírke stĺpca (pôvodný .scorecard-obal centroval scorecard). */
-.stlpec-starsich > .scorecard-obal {
-  align-items: stretch;
-  gap: 0;
-}
-
-.stlpec-starsich .dlazdica-starsieho {
-  width: 100%;
-}
-
-/* Miesto pre hranu stola (tlačidlá kroku) pod stĺpcami — inak by prekryla spodných starších. */
 .linia-obal.s-hranou .stol-plst {
   padding-bottom: 48px;
 }
 
-.linia-obal.s-hranou .stol-plst > .linia {
-  padding-bottom: 18px;
+.vrstva-starsich {
+  position: absolute;
+  inset: 26px 10px 10px;
+  container: linia-starsich / size;
 }
 
-.stred > .starsi-info {
-  padding: 6px 12px;
+.linia-obal.s-hranou .vrstva-starsich {
+  bottom: 48px;
 }
 
-/* Tlačidlá hrany nad líniou, nie nad stĺpcami starších (inak by ich prilepená hrana zakryla). */
-.stol-plst ~ .stol-hrana .hrana-rad {
-  padding: 0 calc(176px + 22px);
+.vrstva-starsich[hidden] {
+  display: none;
+}
+
+/* Voľba cieľa a draft na stole (#67) — panel bez vlastného rámu, plsť je rám. */
+.vrstva-fazy {
+  position: absolute;
+  inset: 22px 10px 10px;
+  overflow: auto;
+}
+
+.linia-obal.s-hranou .vrstva-fazy {
+  bottom: 48px;
+}
+
+.vrstva-fazy > .draft-panel {
+  min-height: 100%;
+  align-content: start;
+  border: 0;
+  background: none;
+  padding: 8px 12px;
+}
+
+/* Na stole nie je ruka cez obsah — pätka stavby ostáva pod kartami. */
+.vrstva-fazy .draft-panel.stavba .draft-paticka {
+  position: static;
+  margin: 0;
+}
+
+.linia-starsich {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  animation: ls-prichod 0.22s ease-out 0.06s backwards;
+}
+
+@keyframes ls-prichod {
+  from {
+    opacity: 0;
+    translate: 0 -12px;
+  }
+}
+
+.ls-hlava {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 26px;
+  font-size: 0.8rem;
+  color: var(--tlmeny);
+}
+
+.ls-hlava b.moje,
+.ls-priazne.moje > b {
+  color: var(--ja);
+}
+
+.ls-hlava b.superove,
+.ls-priazne.superove > b {
+  color: var(--su);
+}
+
+.ls-priazne {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ls-priazne.superove {
+  text-align: right;
+}
+
+.ls-suhrn,
+.ls-nahlad {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+.ls-nahlad {
+  padding: 2px 12px;
+  border: 1px solid var(--akcent);
+  border-radius: 999px;
+  color: var(--text);
+  background: var(--plocha);
+}
+
+.ls-nahlad > b {
+  color: var(--akcent-svetly);
+}
+
+.ls-tlmene {
+  color: var(--slaby-text);
+}
+
+.ls-oddel {
+  margin: 0 8px;
+}
+
+.ls-tlacidlo {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 26px;
+  padding: 2px 12px;
+  border: 1px solid var(--akcent);
+  border-radius: 999px;
+  background: var(--plocha-2);
+  color: var(--text);
+  font: 600 0.8rem/1.2 var(--pismo);
+  cursor: pointer;
+}
+
+.ls-tlacidlo:hover,
+.ls-tlacidlo:focus-visible {
+  background: var(--akcent);
+  color: var(--na-akcente);
+}
+
+.ls-tlacidlo kbd {
+  padding: 0 4px;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  opacity: 0.8;
+}
+
+/* Návrat z nahliadnutia počas kroku — vľavo hore na plsti. */
+.stol-navrat {
+  position: absolute;
+  top: 26px;
+  left: 14px;
+  z-index: 3;
+}
+
+.ls-rad {
+  flex: 1 1 0;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 8px;
+}
+
+/* Scorecard v línii: obrátené tokeny ako papier by svietili — ostáva plocha dlaždice. */
+.ls-sc {
+  --ikona: clamp(18px, 2.05cqw, 34px);
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 7px 7px;
+  border-radius: 10px;
+  background: var(--plocha);
+  border: 1px solid var(--okraj);
+  overflow: hidden;
+  transition: border-color 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ls-sc.klik {
+  cursor: pointer;
+  border: 2px solid var(--akcent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--akcent) 22%, transparent);
+}
+
+.ls-sc.klik.nahl,
+.ls-sc.klik:focus-visible,
+.ls-sc.vybrany {
+  outline: none;
+  border-color: var(--akcent-svetly);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--akcent) 45%, transparent);
+}
+
+.ls-sc.nedost {
+  opacity: 0.45;
+}
+
+.ls-sc.zmena {
+  animation: ls-zmena 1.2s ease-out;
+}
+
+@keyframes ls-zmena {
+  0%,
+  40% {
+    box-shadow: 0 0 0 4px var(--akcent);
+  }
+}
+
+.ls-sc-hlava {
+  flex: none;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.ls-meno {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font: 700 clamp(0.74rem, 1.1cqw, 0.95rem) / 1.2 var(--nadpis);
+  color: var(--text);
+}
+
+.ls-poradie {
+  flex: none;
+  font-size: 0.66rem;
+  color: var(--slaby-text);
+}
+
+.ls-telo {
+  flex: 1 1 0;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: var(--ikona) minmax(0, 1fr) var(--ikona);
+  gap: 4px;
+}
+
+.ls-podmienky {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  gap: 2px;
+  min-height: 0;
+}
+
+.ls-podmienka {
+  position: relative;
+  width: var(--ikona);
+  max-height: var(--ikona);
+  aspect-ratio: 1;
+  flex: 0 1 auto;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+  opacity: 0.35;
+}
+
+/* Aktívna podmienka = plný čip, nie farba hráča (UI U8: azúrová znamenala aj „moja“). */
+.ls-podmienka.aktivna {
+  background: var(--text);
+  opacity: 1;
+}
+
+.ls-podmienka .ikona-podmienky {
+  width: 82%;
+  height: 82%;
+  object-fit: contain;
+}
+
+.ls-podmienka.aktivna .ikona-podmienky {
+  filter: invert(1);
+}
+
+.ls-odznak {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+  padding: 0 3px;
+  border-radius: 6px;
+  font: 800 0.62rem/1.25 var(--pismo);
+  font-variant-numeric: tabular-nums;
+  background: var(--pozadie);
+  border: 1px solid var(--okraj-svetly);
+}
+
+.ls-odznak.plus {
+  color: var(--zelena);
+}
+
+.ls-odznak.minus {
+  color: var(--cervena-text);
+}
+
+.ls-portret {
+  position: relative;
+  min-height: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--plocha-2);
+}
+
+.ls-portret img,
+.ls-portret-prazdny {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 20%;
+}
+
+/* Pečiatka „vydesený“ ako krčmová pečiatka (Michal 2026-10-23). */
+.ls-peciatka {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  translate: -50% 0;
+  rotate: -8deg;
+  padding: 1px 6px;
+  border: 2px solid currentColor;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--pozadie) 70%, transparent);
+  font: 800 0.6rem/1.3 var(--pismo);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--cervena-text);
+}
+
+.ls-patron {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 2px 4px;
+  font: 700 0.6rem/1.25 var(--pismo);
+  text-align: center;
+  color: var(--text);
+  background: color-mix(in srgb, var(--pozadie) 82%, transparent);
+}
+
+/* Schodová stupnica: výška segmentu = úroveň zóny (UI U5 — zóny nielen odtieňom). */
+.ls-stupnica {
+  --seg: calc(100% / 9);
+  flex: none;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 18px;
+}
+
+.ls-stupnica i {
+  flex: 1;
+  height: calc(5px + var(--z) * 4px);
+  border-radius: 2px;
+}
+
+.ls-stupnica em {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  left: calc(var(--b) * var(--seg) - 1px);
+  border-left: 2px dashed var(--akcent);
+}
+
+/* Marker: tmavý disk s prstencom farby toho, kto má priazeň (UI U4 — 15 : 1). */
+.ls-marker {
+  position: absolute;
+  bottom: -1px;
+  left: calc((var(--p) + 0.5) * var(--seg));
+  width: 15px;
+  height: 15px;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: var(--pozadie);
+  border: 3px solid var(--slaby-text);
+  box-shadow: 0 0 0 1px var(--text);
+}
+
+.ls-marker.ja {
+  border-color: var(--ja);
+}
+
+.ls-marker.su {
+  border-color: var(--su);
+}
+
+/* Duch: kam marker posun dostane. */
+.ls-marker.duch {
+  background: none;
+  border: 2px dashed var(--akcent);
+  box-shadow: none;
+}
+
+.ls-pata {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  font-size: 0.7rem;
+  line-height: 1.3;
+  color: var(--tlmeny);
+}
+
+.ls-priazen,
+.ls-body {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ls-priazen.moja {
+  color: var(--ja);
+}
+
+.ls-priazen.superova {
+  color: var(--su);
+}
+
+.ls-body {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ls-body .moje {
+  color: var(--ja);
+}
+
+.ls-body .superove {
+  color: var(--su);
+}
+
+/* Zvýraznené sú čísla hráča, ktorého Body línia ukazuje. */
+.ls-body > span {
+  opacity: 0.6;
+}
+
+.linia-starsich:not(.pohlad-su) .ls-body .moje,
+.linia-starsich.pohlad-su .ls-body .superove {
+  font-weight: 800;
+  opacity: 1;
+}
+
+.ls-dovod {
+  font-style: italic;
+  color: var(--akcent-svetly);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ls-ucinok {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: var(--slaby-text);
+}
+
+.ls-ucinok b {
+  color: var(--tlmeny);
+}
+
+/* Nízky stôl (malé okno, veľa panelov nad ním): účinok priazne ustúpi portrétu. */
+@container linia-starsich (height < 330px) {
+  .ls-ucinok {
+    -webkit-line-clamp: 1;
+  }
+}
+
+@container linia-starsich (height < 250px) {
+  .ls-ucinok {
+    display: none;
+  }
+}
+
+/* Mobil: stôl nemá pevnú výšku — línia starších je v toku ako vodorovný pás (UI, variant A). */
+@media (max-width: 760px) {
+  .stol-plst.linia-skryta > .linia {
+    display: none;
+  }
+
+  .vrstva-starsich {
+    position: static;
+    height: 420px;
+  }
+
+  .ls-hlava {
+    flex-wrap: wrap;
+  }
+
+  .ls-rad {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+
+  .ls-sc {
+    flex: none;
+    width: 40%;
+    scroll-snap-align: start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stol-plst > .linia,
+  .linia-starsich,
+  .ls-sc {
+    transition: none;
+    animation: none;
+  }
 }
 
 /* #55 kus 3: súhrn starších na konci pásu kola (jeden riadok). */
@@ -4964,17 +5111,6 @@ button.auto-hotovo-odkaz {
   display: flex;
   justify-content: flex-end;
   padding: 4px 12px;
-}
-
-.stred > .starsi-info[hidden] {
-  display: none;
-}
-
-.ds-akcia {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 
 /* Karta hráča (Michal 2026-10-22): nemodálna bublina pri avatare na doske. */
