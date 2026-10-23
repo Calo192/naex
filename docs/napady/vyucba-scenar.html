@@ -1,0 +1,1194 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prvá hra — scenár výučby</title>
+<style>
+:root {
+  --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --okraj: #3d3229;
+  --text: #f1e8d8; --tlmeny: #b6a790;
+  --akcent: #e9ad45; --cervena: #d0563f; --zelena: #7cbf74; --modra: #8fb4e0;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #dccdb3;
+    --text: #2a2016; --tlmeny: #5e4f3b;
+    --akcent: #9a5d06; --cervena: #a83a26; --zelena: #356e2f; --modra: #2d5a8f;
+    color-scheme: light;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 system-ui, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 980px; margin: 0 auto; padding: 28px 16px 56px; }
+h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; line-height: 1.2; }
+h1 { font-size: clamp(1.7rem, 4vw, 2.3rem); margin: 0 0 10px; }
+h2 { font-size: 1.45rem; margin: 40px 0 14px; padding-bottom: 6px; border-bottom: 1px solid var(--okraj); }
+p { margin: 0 0 10px; }
+a { color: var(--akcent); }
+:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+.uvod { color: var(--tlmeny); }
+.blok { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 16px; margin: 0 0 14px; }
+.blok.hlavny { border-color: var(--akcent); }
+.blok ul, .blok ol { margin: 4px 0 0; padding-left: 20px; }
+.blok li { margin-bottom: 5px; }
+.znacka { display: inline-block; font-size: .76rem; border-radius: 999px; padding: 1px 8px; border: 1px solid currentColor; white-space: nowrap; margin: 0 4px 3px 0; }
+.z-hrac { color: var(--zelena); font-weight: 600; }
+.z-bot { color: var(--cervena); font-weight: 600; }
+.z-info { color: var(--modra); font-weight: 600; }
+.z-uci { color: var(--tlmeny); }
+.filter { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
+.filter button { border: 1px solid var(--okraj); background: var(--plocha-2); color: var(--text); border-radius: 999px; padding: 6px 13px; font: inherit; font-size: .88rem; cursor: pointer; }
+.filter button[aria-pressed="true"] { background: var(--text); color: var(--pozadie); border-color: var(--text); }
+ol.kroky { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+li.krok { background: var(--plocha); border: 1px solid var(--okraj); border-left: 4px solid var(--okraj); border-radius: 10px; padding: 10px 14px; }
+li.krok.hrac { border-left-color: var(--zelena); }
+li.krok.bot { border-left-color: var(--cervena); }
+li.krok.info { border-left-color: var(--modra); }
+li.krok[hidden] { display: none; }
+.hlava { margin: 0 0 6px; }
+.cislo { font-family: Georgia, serif; color: var(--akcent); font-weight: 700; margin-right: 8px; }
+.hlava code { margin-right: 8px; }
+.akcia { margin: 0 0 6px; }
+.odhad { font-size: .82rem; color: var(--akcent); border: 1px solid var(--akcent); border-radius: 6px; padding: 0 6px; margin-left: 4px; white-space: nowrap; }
+blockquote.melichar { margin: 0 0 6px; background: var(--plocha-2); border-radius: 12px 12px 12px 2px; padding: 8px 12px; }
+.kto-hovori { display: block; font-size: .76rem; text-transform: uppercase; letter-spacing: .05em; color: var(--akcent); }
+.zvyr { font-size: .84rem; color: var(--tlmeny); margin: 0 0 4px; }
+details summary { cursor: pointer; color: var(--tlmeny); font-size: .88rem; }
+details[open] summary { color: var(--text); }
+dl.stav { margin: 8px 0 0; display: grid; grid-template-columns: 8.5em 1fr; gap: 4px 12px; font-size: .9rem; }
+dl.stav dt { color: var(--tlmeny); }
+dl.stav dd { margin: 0; overflow-wrap: anywhere; }
+.linia { font-family: ui-monospace, Consolas, monospace; font-size: .84rem; }
+.tl { color: var(--tlmeny); font-size: .85em; }
+ul.log { font-size: .85rem; color: var(--tlmeny); margin: 8px 0 0; padding-left: 18px; }
+code { font-family: ui-monospace, Consolas, monospace; font-size: .84em; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+.tab-obal { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+th, td { padding: 6px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--okraj); }
+thead th { border-bottom: 2px solid var(--okraj); }
+tr.chyba td { color: var(--cervena); }
+footer { margin-top: 40px; padding-top: 12px; border-top: 1px solid var(--okraj); color: var(--tlmeny); font-size: .9rem; }
+@media (max-width: 600px) { dl.stav { grid-template-columns: 1fr; } dl.stav dt { padding-top: 4px; } }
+</style>
+</head>
+<body>
+<main>
+<h1>Prvá hra — scenár výučby</h1>
+<p class="uvod">Navrhár, 23. 10. 2026. Naskriptovaná partia nového hráča proti botovi Štamgast so sprievodcom
+Majstrom Melicharom: dve kolá (Jednota, Krčma), asi 15 minút, a na konci ukážka bodovania. Každý ťah je v scenári
+pevný, hra zvýrazní, čo má hráč urobiť, a iný ťah nedovolí. 70 krokov: 32 hráča, 28 Štamgasta, 10 informačných.</p>
+
+<div class="blok hlavny">
+  <p><b>Overené v jadre.</b> Rozdanie je reálne a celý scenár prejde jadrom až do konca hry. Nástroj New features
+  <code>tools/vyucba/prehraj.ts</code> hlási „Scenár sedí“ a partia končí <b>62 : −24</b> pre hráča. Strojová verzia
+  je <code>docs/napady/vyucba-prva-hra.json</code> v tvare <code>ScenarVyucby</code> z vetvy <code>features/vyucba</code>
+  a nahradí ukážku <code>packages/core/data/vyucba/prva-hra.json</code>.</p>
+  <p style="margin:0">Kľúče v riadku „zvýrazniť“ sú návrh. Ich mapovanie na <code>[data-vyucba]</code> dohodne New features s UX/UI.</p>
+</div>
+
+<h2>Príbeh partie v skratke</h2>
+<div class="blok">
+  <ol>
+    <li><b>Úvod (5 info krokov):</b> cieľ hry, bar (Poldeci, Cigarety, Pečeň, Zadĺženie), dlaždica Karty, Body a línia starších.</li>
+    <li><b>Kolo 1, Jednota.</b> Hráč je obranca: vyberie a natočí cieľ, postaví šenok a kúpi Hasiča a Krabičku.
+      Vypije a zahrá Pijana s Hasičom. Štamgast mu podstrčí Dvojčatá, ale rovnosť prevahy drží hráčov Pijan.
+      Krabička ide do Dedičstva. V Pitke hráč dá NA EX na Hasiča (bomba 7 : 0), Štamgast odpovie Recidivistom.
+      Vznikne prvý Dlh (Štamgastovi) a prvá Cirhóza (hráčovi). V druhom Zhromaždení hráč prizná Manželku (dobere si
+      Cirhózu) a zahrá Záverečnú. V Pitke si zafajčí a na Štamgastovo NA EX odpovie Miňištrantom. Bitka: Dievčina
+      Štamgastovi spáli Dlhy a jeho Pohoršenia dajú hráčovi priazeň Starostu (+2 tuhé). Hráč vyhrá 10 : 4 a prebytkom
+      zatlačí Farára do oranžovej. Miňištrant mu pritom posun zdraží.</li>
+    <li><b>Kolo 2, Krčma.</b> Hráč je znova obranca. Šetrí cigarety a vezme si Starostu do patronátu. Prizná Cirhózu
+      a Starostu priloží ku Krčme. Krčma ho donúti dať NA EX (10 : 4), Štamgast zakryje len Poldeci. Štamgastovo vynútené
+      NA EX hráč zámerne nechá bez odpovede a Štamgast za to dostane Dlhy a Cirhózu (Exekútor 5/10). Hráč vyhrá 11 : 7,
+      prebytkom vydesí Farára (prebudenie), pochová Cirhózu s Pijanom a nechá si Starostu.</li>
+    <li><b>Koniec:</b> Absťák a rozpis bodov. Hráč má 62 bodov: lokality 28, vydesenie 12, starší 8, strach 6,
+      znepokojenie 4, cigarety 4. Štamgast má −24: Dlhy −20, Cirhózy −16, cigarety +12.</li>
+  </ol>
+</div>
+
+<h2>Rozdanie</h2>
+<div class="blok">
+  <p class="tl" style="margin:0 0 6px">Varianty kariet sú v tvare ľavý/pravý (index rozloženia akcií). Štartovacie karty sú
+  podľa pravidiel: 3 Pijani, 2 Miňištranti, Milujúca manželka a Dievčina na vydaj, z toho 5 v ruke a 2 v balíčku.</p>
+  <dl class="stav">
+ <dt>Lokality</dt><dd>Jednota, Krčma (2 bitky, potom bodovanie)</dd>
+ <dt>Útočník K1</dt><dd>Štamgast (hráč je obranca a volí cieľ)</dd>
+ <dt>Ruka hráča</dt><dd>Pijan <span class="tl">1/0</span>, Pijan <span class="tl">0/2</span>, Miňištrant <span class="tl">0/0</span>, Milujúca manželka <span class="tl">0/0</span>, Dievčina na vydaj <span class="tl">0/0</span></dd>
+ <dt>Balíček hráča</dt><dd>Miňištrant <span class="tl">2/0</span>, Pijan <span class="tl">0/1</span> (zhora)</dd>
+ <dt>Ruka Štamgasta</dt><dd>Pijan <span class="tl">0/0</span>, Pijan <span class="tl">1/1</span>, Miňištrant <span class="tl">0/0</span>, Milujúca manželka <span class="tl">0/0</span>, Dievčina na vydaj <span class="tl">0/0</span></dd>
+ <dt>Balíček Štamgasta</dt><dd>Pijan <span class="tl">0/2</span>, Miňištrant <span class="tl">1/1</span></dd>
+ <dt>Starší</dt><dd>Farár na Lakomec, Krčmárka na Exekútor, Starosta na Bitkár, Poštárka na Veriaci, Hrobár na Alkoholik, Autobusár na Fajčiar, Veterinár na Neprajník, Vychovávateľka na Úžerník</dd>
+ <dt>Spoločný balíček</dt><dd>Hasič, Krabička cigariet, Pes, Puška, Policajtka, Podvodník, Záhradkár, Svokra, Dvojčatá, Recidivista, Niekoho stryná, Presbiter, Veterán, Živnostník, Čierna mačka, Veštica, Pasca, Nealko, Vínko, Noviny, Veterán, Kočovník, Zámočník, Liberál, Šarlatán, Praudovravec, Finančná poradkyňa, Veľmi smútiaca vdova, Silná, nezávislá žena, Pes, Hasič, Živnostník, Svokra, Presbiter, Veštica, Čierna mačka <span class="tl">(zhora: 8 stavba hráča K1, 8 stavba Štamgasta K1, 4 doplnenie, 8 + 8 stavba K2; zvyšok doplnenie)</span></dd>
+ <dt>Seed</dt><dd>7 (zamiešanie odhodených pred dobratím v K2: hráč dostane Pijana a Pijana)</dd>
+</dl>
+</div>
+
+<h2>Kroky</h2>
+<div class="filter" role="group" aria-label="Filter krokov">
+  <button type="button" data-f="vsetko" aria-pressed="true">Všetko</button>
+  <button type="button" data-f="hrac" aria-pressed="false">Ťahy hráča</button>
+  <button type="button" data-f="bot" aria-pressed="false">Ťahy Štamgasta</button>
+  <button type="button" data-f="info" aria-pressed="false">Info</button>
+  <button type="button" id="rozbal" aria-pressed="false">Rozbaliť stôl</button>
+</div>
+<p class="tl">V riadku Línia je hráčova strana vľavo, lokalita medzi ‖ ‖ a Štamgastova strana vpravo. ˢ = karta Štamgasta (aj podstrčená na hráčovu stranu), ♦ = na karte leží NA EX. Markery: 0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta. Odhad je tuhé poškodenie hráč : Štamgast po kroku.</p>
+<h3>Úvod a kolo 1 — Jednota</h3>
+<ol class="kroky">
+<li class="krok info" id="i-vitaj" data-kto="info">
+  <div class="hlava"><span class="cislo">1</span><span class="znacka z-info">Info</span><code>i-vitaj</code><span class="znacka z-uci">úvod</span></div>
+  
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Vitaj v krčme! Som majster Melichar. Zahráš si so Štamgastom: on hrá, ako mu ja našepkám, a ty, ako ti poviem ja. Dve kolá, asi pätnásť minút, a budeš vedieť viac než pol dediny.</blockquote>
+  
+  <details><summary>Stôl po kroku</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">prázdna</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Pijan, Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj<br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 3 · balíček 2 · odhodené 0</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 3 · balíček 2 · odhodené 0</span></dd>
+    
+    
+    
+  </dl></details>
+</li>
+<li class="krok info" id="i-ciel" data-kto="info">
+  <div class="hlava"><span class="cislo">2</span><span class="znacka z-info">Info</span><code>i-ciel</code><span class="znacka z-uci">cieľ hry</span><span class="znacka z-uci">pohľad Lokality</span></div>
+  
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Vyhráva, kto má na konci viac bodov. Body dávajú vybojované lokality, starší, ktorí sa ťa boja, a zvyšné cigarety. Dlhy a Cirhózy body berú. Dnes sa hrá o dve lokality, Jednotu a Krčmu. Nájdeš ich pod tlačidlom Lokality.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>hlavicka:lokality</code></p>
+  <details><summary>Stôl po kroku</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">prázdna</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Pijan, Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj<br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 3 · balíček 2 · odhodené 0</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 3 · balíček 2 · odhodené 0</span></dd>
+    
+    
+    
+  </dl></details>
+</li>
+<li class="krok info" id="i-bar" data-kto="info">
+  <div class="hlava"><span class="cislo">3</span><span class="znacka z-info">Info</span><code>i-bar</code><span class="znacka z-uci">zdroje v bare</span><span class="znacka z-uci">limit vykladania</span></div>
+  
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Dole je tvoj bar. Poldeci máš dva plné a limit vykladania je počet plných poldeci plus jedna. Cigarety máš tri: platíš nimi šenok, Dedičstvo a fajčenie. Pečeň a Zadĺženie sa plnia v Pitke, a keď pretečú, príde Cirhóza alebo Dlh. Hore je Štamgastov bar, ten istý, len zrkadlovo.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>bar:poldeci</code> <code>bar:cigarety</code> <code>bar:pecen</code> <code>bar:zadlzenie</code></p>
+  <details><summary>Stôl po kroku</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">prázdna</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Pijan, Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj<br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 3 · balíček 2 · odhodené 0</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 3 · balíček 2 · odhodené 0</span></dd>
+    
+    
+    
+  </dl></details>
+</li>
+<li class="krok info" id="i-karty" data-kto="info">
+  <div class="hlava"><span class="cislo">4</span><span class="znacka z-info">Info</span><code>i-karty</code><span class="znacka z-uci">dlaždica Karty (ruka, balíček, odhodené)</span></div>
+  
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Dlaždica Karty: v ruke máš päť kariet, v balíčku dve a odhodených nula. Klik alebo kláves O ukáže balíček, odhodené, priznané karty aj Dedičstvo.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>bar:karty</code></p>
+  <details><summary>Stôl po kroku</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">prázdna</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Pijan, Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj<br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 3 · balíček 2 · odhodené 0</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 3 · balíček 2 · odhodené 0</span></dd>
+    
+    
+    
+  </dl></details>
+</li>
+<li class="krok info" id="i-body" data-kto="info">
+  <div class="hlava"><span class="cislo">5</span><span class="znacka z-info">Info</span><code>i-body</code><span class="znacka z-uci">pohľad Body a línia starších</span><span class="znacka z-uci">priazeň a strach</span></div>
+  
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Klikni na Body. Namiesto kariet uvidíš líniu starších: osem dedinských autorít, každá na svojej bodovacej karte. Marker ukazuje, komu starší prejavuje priazeň a koho sa bojí. Strach dáva body tomu, koho sa bojí. Späť na stôl sa dostaneš klikom na Body alebo klávesom Esc.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>bar:body</code></p>
+  <details><summary>Stôl po kroku</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">prázdna</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Pijan, Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj<br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 3 · balíček 2 · odhodené 0</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 3 · balíček 2 · odhodené 0</span></dd>
+    
+    
+    
+  </dl></details>
+</li>
+<li class="krok hrac" id="k0" data-kto="hrac">
+  <div class="hlava"><span class="cislo">6</span><span class="znacka z-hrac">Hráč</span><code>k0</code><span class="znacka z-uci">voľba cieľa a natočenie</span><span class="znacka z-uci">kraje lokality</span><span class="znacka z-uci">obranca a útočník</span></div>
+  <p class="akcia"><b>Hráč:</b> vyberie cieľ Jednota, neotočený</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Ty si obranca, tak cieľ kola vyberáš ty. Vezmi Jednotu a nechaj ju, ako leží: Cigareta smeruje k tebe, Pohoršenie k Štamgastovi. Natočenie určí, ktorá hrana lokality pôjde do ktorého kraja.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>lokality:jednota</code> <code>otocenie</code></p>
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">  ‖ Jednota ‖  </dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Pijan, Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj<br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 3 · balíček 2 · odhodené 0</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 3 · balíček 2 · odhodené 0</span></dd>
+    
+    <dt>Stavba hráča</dt><dd>Hasič, Krabička cigariet, Pes, Puška, Policajtka, Podvodník, Záhradkár, Svokra</dd>
+    
+  </dl><ul class="log"><li>Hráč 1 {1:vybral|vybrala|vyberá} bitku o lokalitu Jednota.</li><li>Stavba šenku: každý hráč dostáva 8 kariet zo spoločného balíčka.</li></ul></details>
+</li>
+<li class="krok hrac" id="k1" data-kto="hrac">
+  <div class="hlava"><span class="cislo">7</span><span class="znacka z-hrac">Hráč</span><code>k1</code><span class="znacka z-uci">stavba šenku</span></div>
+  <p class="akcia"><b>Hráč:</b> do šenku Hasič, Krabička cigariet, Pes, Svokra · naspodok Puška, Policajtka, Podvodník, Záhradkár</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Stavba šenku. Z ôsmich kariet dáš štyri na pult do šenku a štyri pod pult. Čo dáš na pult, môže kúpiť aj Štamgast. Hasiča a Krabičku chceme my, tak nech idú na pult.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>stavba</code></p>
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">  ‖ Jednota ‖  </dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Pijan, Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj<br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 3 · balíček 2 · odhodené 0</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 3 · balíček 2 · odhodené 0</span></dd>
+    
+    <dt>Stavba hráča</dt><dd>Hasič, Krabička cigariet, Pes, Puška, Policajtka, Podvodník, Záhradkár, Svokra</dd>
+    
+  </dl><ul class="log"><li>Hráč 1 {1:vybral|vybrala|vyberá} karty do šenku.</li></ul></details>
+</li>
+<li class="krok bot" id="k2" data-kto="bot">
+  <div class="hlava"><span class="cislo">8</span><span class="znacka z-bot">Štamgast</span><code>k2</code><span class="znacka z-uci">stavba šenku</span><span class="znacka z-uci">pohľad Šenok</span></div>
+  <p class="akcia"><b>Štamgast:</b> do šenku Dvojčatá, Recidivista, Niekoho stryná, Presbiter · naspodok Veterán, Živnostník, Čierna mačka, Veštica</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Štamgast vyberal naraz s tebou. Teraz vidíte obaja celý šenok, je v ňom osem kariet. Pozri sa naň tlačidlom Šenok hore.</blockquote>
+  
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">  ‖ Jednota ‖  </dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Pijan, Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj<br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 3 · balíček 2 · odhodené 0</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 3 · balíček 2 · odhodené 0</span></dd>
+    <dt>Šenok</dt><dd>Hasič, Krabička cigariet, Pes, Svokra, Dvojčatá, Recidivista, Niekoho stryná, Presbiter</dd>
+    
+    
+  </dl><ul class="log"><li>Hráč 2 {2:vybral|vybrala|vyberá} karty do šenku.</li><li>Do šenku: Hasič (hráč 1), Krabička cigariet (hráč 1), Pes (hráč 1), Svokra (hráč 1), Dvojčatá (hráč 2), Recidivista (hráč 2), Niekoho stryná (hráč 2), Presbiter (hráč 2).</li><li>Šenok je postavený (8 kariet). Berie sa striedavo, začína útočník: 1 karta za 1 cigaretu, 2 karty za 3 cigarety.</li></ul></details>
+</li>
+<li class="krok bot" id="k3" data-kto="bot">
+  <div class="hlava"><span class="cislo">9</span><span class="znacka z-bot">Štamgast</span><code>k3</code><span class="znacka z-uci">branie zo šenku</span></div>
+  <p class="akcia"><b>Štamgast:</b> berie zo šenku Dvojčatá (1 cigareta)</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Útočník berie prvý. Jedna karta stojí cigaretu, dve stoja tri. Štamgast si vzal Dvojčatá, ešte uvidíš načo.</blockquote>
+  
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">  ‖ Jednota ‖  </dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Pijan, Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj<br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 3 · balíček 2 · odhodené 0</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj, Dvojčatá <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 2 · balíček 2 · odhodené 0</span></dd>
+    <dt>Šenok</dt><dd>Hasič, Krabička cigariet, Pes, Svokra, Recidivista, Niekoho stryná, Presbiter</dd>
+    
+    
+  </dl><ul class="log"><li>Hráč 2 berie zo šenku Dvojčatá za 1 cigaretu.</li></ul></details>
+</li>
+<li class="krok hrac" id="k4" data-kto="hrac">
+  <div class="hlava"><span class="cislo">10</span><span class="znacka z-hrac">Hráč</span><code>k4</code><span class="znacka z-uci">branie zo šenku</span></div>
+  <p class="akcia"><b>Hráč:</b> berie zo šenku Hasič (1 cigareta)</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Vezmi Hasiča. Má Petelicu, to sú tri rany naraz.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>senok:hasic</code></p>
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">  ‖ Jednota ‖  </dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Pijan, Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj, Hasič<br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 2 · balíček 2 · odhodené 0</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj, Dvojčatá <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 2 · balíček 2 · odhodené 0</span></dd>
+    <dt>Šenok</dt><dd>Krabička cigariet, Pes, Svokra, Recidivista, Niekoho stryná, Presbiter</dd>
+    
+    
+  </dl><ul class="log"><li>Hráč 1 berie zo šenku Hasič za 1 cigaretu.</li></ul></details>
+</li>
+<li class="krok bot" id="k5" data-kto="bot">
+  <div class="hlava"><span class="cislo">11</span><span class="znacka z-bot">Štamgast</span><code>k5</code><span class="znacka z-uci">branie zo šenku</span></div>
+  <p class="akcia"><b>Štamgast:</b> berie zo šenku Recidivista (1 cigareta)</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Štamgast vzal Recidivistu. Aj ten má Petelicu.</blockquote>
+  
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">  ‖ Jednota ‖  </dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Pijan, Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj, Hasič<br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 2 · balíček 2 · odhodené 0</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj, Dvojčatá, Recidivista <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 1 · balíček 2 · odhodené 0</span></dd>
+    <dt>Šenok</dt><dd>Krabička cigariet, Pes, Svokra, Niekoho stryná, Presbiter</dd>
+    
+    
+  </dl><ul class="log"><li>Hráč 2 berie zo šenku Recidivista za 1 cigaretu.</li></ul></details>
+</li>
+<li class="krok hrac" id="k6" data-kto="hrac">
+  <div class="hlava"><span class="cislo">12</span><span class="znacka z-hrac">Hráč</span><code>k6</code><span class="znacka z-uci">branie zo šenku</span></div>
+  <p class="akcia"><b>Hráč:</b> berie zo šenku Krabička cigariet (1 cigareta)</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>A teraz Krabičku cigariet. Je to Nástroj: neskôr ju dáš do Dedičstva a v každej Pitke ti dá cigaretu navyše.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>senok:cigorky</code></p>
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">  ‖ Jednota ‖  </dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Pijan, Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj, Hasič, Krabička cigariet<br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 1 · balíček 2 · odhodené 0</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj, Dvojčatá, Recidivista <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 1 · balíček 2 · odhodené 0</span></dd>
+    <dt>Šenok</dt><dd>Pes, Svokra, Niekoho stryná, Presbiter</dd>
+    
+    
+  </dl><ul class="log"><li>Hráč 1 berie zo šenku Krabička cigariet za 1 cigaretu.</li></ul></details>
+</li>
+<li class="krok bot" id="k7" data-kto="bot">
+  <div class="hlava"><span class="cislo">13</span><span class="znacka z-bot">Štamgast</span><code>k7</code><span class="znacka z-uci">branie zo šenku</span><span class="znacka z-uci">posledná šanca v šenku</span></div>
+  <p class="akcia"><b>Štamgast:</b> už neberie zo šenku</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Štamgast už brať nechce. Kto prestane, tomu druhému ostáva už len jeden ťah.</blockquote>
+  
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">  ‖ Jednota ‖  </dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Pijan, Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj, Hasič, Krabička cigariet<br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 1 · balíček 2 · odhodené 0</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj, Dvojčatá, Recidivista <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 1 · balíček 2 · odhodené 0</span></dd>
+    <dt>Šenok</dt><dd>Pes, Svokra, Niekoho stryná, Presbiter</dd>
+    
+    
+  </dl><ul class="log"><li>Hráč 2 už neberie zo šenku (spolu 2).</li></ul></details>
+</li>
+<li class="krok hrac" id="k8" data-kto="hrac">
+  <div class="hlava"><span class="cislo">14</span><span class="znacka z-hrac">Hráč</span><code>k8</code><span class="znacka z-uci">branie zo šenku</span><span class="znacka z-uci">doplnenie šenku</span></div>
+  <p class="akcia"><b>Hráč:</b> už neberie zo šenku</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Posledná cigareta sa ti ešte zíde, tak už neber (P). Šenok sa doplní z balíčka na osem kariet.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>tlacidlo:pas</code></p>
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">  ‖ Jednota ‖  </dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Pijan, Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj, Hasič, Krabička cigariet<br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 1 · balíček 2 · odhodené 0</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj, Dvojčatá, Recidivista <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 1 · balíček 2 · odhodené 0</span></dd>
+    <dt>Šenok</dt><dd>Pes, Svokra, Niekoho stryná, Presbiter, Pasca, Nealko, Vínko, Noviny</dd>
+    
+    
+  </dl><ul class="log"><li>Hráč 1 už neberie zo šenku (spolu 2).</li><li>Šenok sa dopĺňa z vrchu spoločného balíčka na 8 kariet (+4).</li></ul></details>
+</li>
+<li class="krok info" id="i-skratky" data-kto="info">
+  <div class="hlava"><span class="cislo">15</span><span class="znacka z-info">Info</span><code>i-skratky</code><span class="znacka z-uci">skratky a ?</span></div>
+  
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Ešte skratky: K znamená končím či hotovo, P pas, N NA EX, O tvoje karty a Esc zruší výber. Otáznik hore ukáže celý zoznam.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>hlavicka:skratky</code></p>
+  <details><summary>Stôl po kroku</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">  ‖ Jednota ‖  </dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Pijan, Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj, Hasič, Krabička cigariet<br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 1 · balíček 2 · odhodené 0</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj, Dvojčatá, Recidivista <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 1 · balíček 2 · odhodené 0</span></dd>
+    <dt>Šenok</dt><dd>Pes, Svokra, Niekoho stryná, Presbiter, Pasca, Nealko, Vínko, Noviny</dd>
+    
+    
+  </dl></details>
+</li>
+<li class="krok bot" id="k9" data-kto="bot">
+  <div class="hlava"><span class="cislo">16</span><span class="znacka z-bot">Štamgast</span><code>k9</code><span class="znacka z-uci">vykladanie</span><span class="znacka z-uci">spoje</span></div>
+  <p class="akcia"><b>Štamgast:</b> vyloží Pijan na svoju stranu</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Zhromaždenie! Útočník vykladá prvý. Štamgast priložil Pijana k Jednote a na spoji sa stretli Poldeci a Pohoršenie na rovnakej výške. Akcia platí, len keď má na druhej strane spoja partnera.</blockquote>
+  
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">  ‖ Jednota ‖  Pijanˢ</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Pijan, Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj, Hasič, Krabička cigariet<br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 1 · balíček 2 · odhodené 0</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj, Dvojčatá, Recidivista <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 1 · balíček 2 · odhodené 0</span></dd>
+    <dt>Šenok</dt><dd>Pes, Svokra, Niekoho stryná, Presbiter, Pasca, Nealko, Vínko, Noviny</dd>
+    
+    
+  </dl><ul class="log"><li>Hráč 2 vykladá Pijan do svojej partie.</li></ul></details>
+</li>
+<li class="krok hrac" id="k10" data-kto="hrac">
+  <div class="hlava"><span class="cislo">17</span><span class="znacka z-hrac">Hráč</span><code>k10</code><span class="znacka z-uci">Vypiť</span><span class="znacka z-uci">spoje</span><span class="znacka z-uci">limit vykladania</span><span class="znacka z-uci">nerest</span></div>
+  <p class="akcia"><b>Hráč:</b> Vypiť → vyloží Pijan na svoju stranu → vyloží Hasič na svoju stranu <span class="odhad">odhad 2 : 0</span></p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Limit máš tri karty, lebo máš dva plné poldeci a k tomu jedna. Vypi do dna: limit ti klesne na dva, ale obe karty zahráš hneď za sebou. Pijana daj k Jednote, jeho Rana sa stretne s Cigaretou. Za neho Hasiča. Petelica mu ostane bez páru, to si zapamätaj.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>bar:poldeci</code> <code>ruka:pijan</code> <code>ruka:hasic</code></p>
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Hasič · Pijan  ‖ Jednota ‖  Pijanˢ</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj, Krabička cigariet<br><span class="tl">poldeci 1 plné / 1 vypité · cigarety 1 · balíček 2 · odhodené 0</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj, Dvojčatá, Recidivista <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 1 · balíček 2 · odhodené 0</span></dd>
+    <dt>Šenok</dt><dd>Pes, Svokra, Niekoho stryná, Presbiter, Pasca, Nealko, Vínko, Noviny</dd>
+    
+    
+  </dl><ul class="log"><li>Hráč 1 pije do dna — zahrá ďalšiu kartu hneď, limit mu klesá na 2.</li><li>Hráč 1 vykladá Pijan do svojej partie.</li><li>Hráč 1 vykladá Hasič do svojej partie.</li></ul></details>
+</li>
+<li class="krok bot" id="k11" data-kto="bot">
+  <div class="hlava"><span class="cislo">18</span><span class="znacka z-bot">Štamgast</span><code>k11</code><span class="znacka z-uci">strany a podstrčenie</span><span class="znacka z-uci">prevaha</span><span class="znacka z-uci">rovnosť prevahy</span><span class="znacka z-uci">Posilnenie</span></div>
+  <p class="akcia"><b>Štamgast:</b> vyloží Dvojčatá na súperovu stranu <span class="odhad">odhad 2 : 0</span></p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Štamgast ti podstrčil Dvojčatá na tvoju stranu. Karta ostáva jeho, jej akcie bodujú jemu. Do prevahy sa Dvojčatá rátajú za dvoch, takže v tvojom kraji je to 2 : 2. Pri rovnosti berie akcie hrany ten, koho karta leží hneď pri lokalite, a to je tvoj Pijan. A tvoj Hasič mu ešte posilnil Dlh. Posilnenie zdvojí, čo sa s ním spáruje, aj súperovi.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>linia:dvojcata</code> <code>prevaha</code></p>
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Dvojčatáˢ · Hasič · Pijan  ‖ Jednota ‖  Pijanˢ</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj, Krabička cigariet<br><span class="tl">poldeci 1 plné / 1 vypité · cigarety 1 · balíček 2 · odhodené 0</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj, Recidivista <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 1 · balíček 2 · odhodené 0</span></dd>
+    <dt>Šenok</dt><dd>Pes, Svokra, Niekoho stryná, Presbiter, Pasca, Nealko, Vínko, Noviny</dd>
+    
+    
+  </dl><ul class="log"><li>Hráč 2 vykladá Dvojčatá do súperovej partie.</li></ul></details>
+</li>
+<li class="krok hrac" id="k12" data-kto="hrac">
+  <div class="hlava"><span class="cislo">19</span><span class="znacka z-hrac">Hráč</span><code>k12</code><span class="znacka z-uci">Dedičstvo</span><span class="znacka z-uci">dlaždica Karty ako cieľ</span></div>
+  <p class="akcia"><b>Hráč:</b> vyloží Krabička cigariet do Dedičstva</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Limit máš minutý, ale Nástroj do Dedičstva limit nemíňa. Pusti Krabičku na dlaždicu Karty. Prvý Nástroj v hre stojí cigaretu, ďalší už dve.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>ruka:cigorky</code> <code>bar:karty</code></p>
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Dvojčatáˢ · Hasič · Pijan  ‖ Jednota ‖  Pijanˢ</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj<br><span class="tl">poldeci 1 plné / 1 vypité · cigarety 0 · balíček 2 · odhodené 0 · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj, Recidivista <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 1 · balíček 2 · odhodené 0</span></dd>
+    <dt>Šenok</dt><dd>Pes, Svokra, Niekoho stryná, Presbiter, Pasca, Nealko, Vínko, Noviny</dd>
+    
+    
+  </dl><ul class="log"><li>Hráč 1 vykladá Krabička cigariet do Dedičstva za 1 cigaretu (ďalšie Dedičstvo stojí 2).</li></ul></details>
+</li>
+<li class="krok bot" id="k13" data-kto="bot">
+  <div class="hlava"><span class="cislo">20</span><span class="znacka z-bot">Štamgast</span><code>k13</code><span class="znacka z-uci">Pohoršenie</span></div>
+  <p class="akcia"><b>Štamgast:</b> vyloží Dievčina na vydaj na svoju stranu <span class="odhad">odhad 2 : 0</span></p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Štamgast pridal Dievčinu na vydaj, to je jeho druhé Pohoršenie. Pohoršenie posúva staršieho smerom k súperovi, teda k tebe. Uvidíš po bitke.</blockquote>
+  
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Dvojčatáˢ · Hasič · Pijan  ‖ Jednota ‖  Pijanˢ · Dievčina na vydajˢ</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj<br><span class="tl">poldeci 1 plné / 1 vypité · cigarety 0 · balíček 2 · odhodené 0 · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka, Recidivista <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 1 · balíček 2 · odhodené 0</span></dd>
+    <dt>Šenok</dt><dd>Pes, Svokra, Niekoho stryná, Presbiter, Pasca, Nealko, Vínko, Noviny</dd>
+    
+    
+  </dl><ul class="log"><li>Hráč 2 vykladá Dievčina na vydaj do svojej partie.</li></ul></details>
+</li>
+<li class="krok hrac" id="k14" data-kto="hrac">
+  <div class="hlava"><span class="cislo">21</span><span class="znacka z-hrac">Hráč</span><code>k14</code><span class="znacka z-uci">pas</span></div>
+  <p class="akcia"><b>Hráč:</b> pasuje</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Viac nevyložíš, tak pasuj (P). Pas dáva cigaretu za každú kartu, ktorú by si ešte smel vyložiť. Dnes je to nula.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>tlacidlo:pas</code></p>
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Dvojčatáˢ · Hasič · Pijan  ‖ Jednota ‖  Pijanˢ · Dievčina na vydajˢ</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj<br><span class="tl">poldeci 1 plné / 1 vypité · cigarety 0 · balíček 2 · odhodené 0 · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka, Recidivista <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 1 · balíček 2 · odhodené 0</span></dd>
+    <dt>Šenok</dt><dd>Pes, Svokra, Niekoho stryná, Presbiter, Pasca, Nealko, Vínko, Noviny</dd>
+    
+    
+  </dl><ul class="log"><li>Hráč 1 pasuje do Pitky.</li></ul></details>
+</li>
+<li class="krok bot" id="k15" data-kto="bot">
+  <div class="hlava"><span class="cislo">22</span><span class="znacka z-bot">Štamgast</span><code>k15</code><span class="znacka z-uci">pas</span></div>
+  <p class="akcia"><b>Štamgast:</b> pasuje</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Štamgast pasuje tiež. Ide sa do Pitky.</blockquote>
+  
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Dvojčatáˢ · Hasič · Pijan  ‖ Jednota ‖  Pijanˢ · Dievčina na vydajˢ</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj<br><span class="tl">poldeci 1 plné / 1 vypité · cigarety 0 · balíček 2 · odhodené 0 · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka, Recidivista <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 1 · balíček 2 · odhodené 0</span></dd>
+    <dt>Šenok</dt><dd>Pes, Svokra, Niekoho stryná, Presbiter, Pasca, Nealko, Vínko, Noviny</dd>
+    
+    
+  </dl><ul class="log"><li>Hráč 2 pasuje do Pitky.</li><li>Pitka 1/2.</li></ul></details>
+</li>
+<li class="krok hrac" id="k16" data-kto="hrac">
+  <div class="hlava"><span class="cislo">23</span><span class="znacka z-hrac">Hráč</span><code>k16</code><span class="znacka z-uci">Pitka</span><span class="znacka z-uci">NA EX</span><span class="znacka z-uci">bomba (neaktívne akcie)</span><span class="znacka z-uci">hrozba na stole</span></div>
+  <p class="akcia"><b>Hráč:</b> NA EX na Hasič <span class="odhad">odhad 7 : 0</span></p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Pitka! Začína obranca. Pozri riadok Hrozba na stole: NA EX na Hasiča dá 7 : 0. NA EX položí poldeci na kartu, jej aktívne akcie zruší a neaktívne zdvojí. Hasičova Petelica nemala pár, teraz udrie dvakrát. Vyber Hasiča a daj NA EX! (N).</blockquote>
+  <p class="zvyr">zvýrazniť: <code>hrozba</code> <code>linia:hasic</code> <code>tlacidlo:naex</code></p>
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Dvojčatáˢ · Hasič♦ · Pijan  ‖ Jednota ‖  Pijanˢ · Dievčina na vydajˢ</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj<br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 0 · balíček 2 · odhodené 0 · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka, Recidivista <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 1 · balíček 2 · odhodené 0</span></dd>
+    <dt>Šenok</dt><dd>Pes, Svokra, Niekoho stryná, Presbiter, Pasca, Nealko, Vínko, Noviny</dd>
+    
+    
+  </dl><ul class="log"><li>Hráč 1 dáva NA EX na svoju kartu Hasič.</li><li>Hráč 2 smie na NA EX odpovedať jednou kartou.</li></ul></details>
+</li>
+<li class="krok bot" id="k17" data-kto="bot">
+  <div class="hlava"><span class="cislo">24</span><span class="znacka z-bot">Štamgast</span><code>k17</code><span class="znacka z-uci">odpoveď na NA EX</span></div>
+  <p class="akcia"><b>Štamgast:</b> vyloží Recidivista na svoju stranu <span class="odhad">odhad 7 : 3</span></p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Na NA EX smie súper hneď odpovedať jednou kartou mimo limitu. Štamgast vyložil Recidivistu s Petelicou. 7 : 3. Ty už nemáš čím hrať, tak za teba hra povie hotovo.</blockquote>
+  
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Dvojčatáˢ · Hasič♦ · Pijan  ‖ Jednota ‖  Pijanˢ · Dievčina na vydajˢ · Recidivistaˢ</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj<br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 0 · balíček 2 · odhodené 0 · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 1 · balíček 2 · odhodené 0</span></dd>
+    <dt>Šenok</dt><dd>Pes, Svokra, Niekoho stryná, Presbiter, Pasca, Nealko, Vínko, Noviny</dd>
+    
+    
+  </dl><ul class="log"><li>Hráč 2 vykladá Recidivista do svojej partie.</li><li>Hráč 1 nemá v Pitke čo urobiť.</li><li>Hráč 1 končí svoju časť Pitky. Na ťahu je hráč 2 — má posledné slovo.</li></ul></details>
+</li>
+<li class="krok bot" id="k18" data-kto="bot">
+  <div class="hlava"><span class="cislo">25</span><span class="znacka z-bot">Štamgast</span><code>k18</code><span class="znacka z-uci">posledné slovo</span><span class="znacka z-uci">vyhodnotenie Pitky</span><span class="znacka z-uci">Dlh</span><span class="znacka z-uci">Cirhóza</span></div>
+  <p class="akcia"><b>Štamgast:</b> hotovo</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Útočník má posledné slovo, ale Štamgast si poldeci šetrí. Pitka sa vyhodnotí: Štamgastovi pretieklo zadĺženie, takže má dva Dlhy, hneď priznané. Tebe Vypiť, NA EX a Pijan naplnili pečeň a prišla Cirhóza. Leží navrchu tvojho balíčka. Jednota a Krabička ti dali dve cigarety.</blockquote>
+  
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Dvojčatáˢ · Hasič♦ · Pijan  ‖ Jednota ‖  Pijanˢ · Dievčina na vydajˢ · Recidivistaˢ</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj<br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 2 · balíček 3 · odhodené 0 · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 1 · balíček 2 · odhodené 0 · priznané: Dlh, Dlh</span></dd>
+    <dt>Šenok</dt><dd>Pes, Svokra, Niekoho stryná, Presbiter, Pasca, Nealko, Vínko, Noviny</dd>
+    
+    
+  </dl><ul class="log"><li>Hráč 2 končí svoju časť Pitky bez NA EX — Pitka sa vyhodnotí.</li><li>Hráč 2 získava Dlh — hneď sa priznáva (na konci hry uberá body aj priznaný).</li><li>Hráč 2 {2:dosiahol|dosiahla|dosahuje} prah dlhu (2) — Dlh.</li><li>Hráč 2 získava Dlh — hneď sa priznáva (na konci hry uberá body aj priznaný).</li><li>Hráč 2 {2:dosiahol|dosiahla|dosahuje} prah dlhu (2) — Dlh.</li><li>Hráč 1 získava Cirhózu — ide navrch jeho doberacieho balíčka.</li><li>Hráč 1 {1:dosiahol|dosiahla|dosahuje} prah pečene (3) — Cirhóza.</li><li>Hráč 1 získava 2 cigarety.</li><li>Hráč 2: po Pitke sa pečeň (1) a zadĺženie (0) vynulovali.</li></ul></details>
+</li>
+<li class="krok bot" id="k19" data-kto="bot">
+  <div class="hlava"><span class="cislo">26</span><span class="znacka z-bot">Štamgast</span><code>k19</code><span class="znacka z-uci">pas</span></div>
+  <p class="akcia"><b>Štamgast:</b> pasuje</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Druhé Zhromaždenie. Štamgast pasuje a za tri nevyložené karty berie tri cigarety. Do Pitky už nevyloží nič.</blockquote>
+  
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Dvojčatáˢ · Hasič♦ · Pijan  ‖ Jednota ‖  Pijanˢ · Dievčina na vydajˢ · Recidivistaˢ</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj<br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 2 · balíček 3 · odhodené 0 · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 4 · balíček 2 · odhodené 0 · priznané: Dlh, Dlh</span></dd>
+    <dt>Šenok</dt><dd>Pes, Svokra, Niekoho stryná, Presbiter, Pasca, Nealko, Vínko, Noviny</dd>
+    
+    
+  </dl><ul class="log"><li>Hráč 2 pasuje do Pitky a za 3 nevyložené karty dostáva 3 cigarety.</li></ul></details>
+</li>
+<li class="krok hrac" id="k20" data-kto="hrac">
+  <div class="hlava"><span class="cislo">27</span><span class="znacka z-hrac">Hráč</span><code>k20</code><span class="znacka z-uci">priznanie</span></div>
+  <p class="akcia"><b>Hráč:</b> prizná Milujúca manželka</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Milujúca manželka je Občan aj kliatba. Priznaj ju, pusti ju na dlaždicu Karty. Priznanie nemíňa limit a dostaneš za neho kartu. No pozri, dobral si práve tú Cirhózu, čo ležala navrchu.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>ruka:milujuca_manzelka</code> <code>bar:karty</code></p>
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Dvojčatáˢ · Hasič♦ · Pijan  ‖ Jednota ‖  Pijanˢ · Dievčina na vydajˢ · Recidivistaˢ</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Pijan, Miňištrant, Dievčina na vydaj, Cirhóza<br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 2 · balíček 2 · odhodené 0 · priznané: Milujúca manželka · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 4 · balíček 2 · odhodené 0 · priznané: Dlh, Dlh</span></dd>
+    <dt>Šenok</dt><dd>Pes, Svokra, Niekoho stryná, Presbiter, Pasca, Nealko, Vínko, Noviny</dd>
+    
+    
+  </dl><ul class="log"><li>Hráč 1 priznáva kartu Milujúca manželka a doberá si kartu.</li></ul></details>
+</li>
+<li class="krok hrac" id="k21" data-kto="hrac">
+  <div class="hlava"><span class="cislo">28</span><span class="znacka z-hrac">Hráč</span><code>k21</code><span class="znacka z-uci">Záverečná</span><span class="znacka z-uci">Cirhóza</span></div>
+  <p class="akcia"><b>Hráč:</b> Záverečná: Pijan lícom dole na svoju stranu (1 cigareta) <span class="odhad">odhad 8 : 4</span></p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Cirhózu zatiaľ nepriznávaj, priznaná by dala Štamgastovi ranu navyše v každej bitke. Posledné miesto zahraj ako Záverečnú: Pijan pôjde za cigaretu lícom dole. Štamgast nevidí, čo to je, a nič za ňu nepriloží. Otočí sa na konci Pitky.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>ruka:pijan</code> <code>zaverecna</code></p>
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Pijan · Dvojčatáˢ · Hasič♦ · Pijan  ‖ Jednota ‖  Pijanˢ · Dievčina na vydajˢ · Recidivistaˢ</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Miňištrant, Dievčina na vydaj, Cirhóza<br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 1 · balíček 2 · odhodené 0 · priznané: Milujúca manželka · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 4 · balíček 2 · odhodené 0 · priznané: Dlh, Dlh</span></dd>
+    <dt>Šenok</dt><dd>Pes, Svokra, Niekoho stryná, Presbiter, Pasca, Nealko, Vínko, Noviny</dd>
+    
+    
+  </dl><ul class="log"><li>Hráč 1 hrá Záverečnú lícom dole do svojej partie.</li><li>Pitka 2/2.</li></ul></details>
+</li>
+<li class="krok hrac" id="k22" data-kto="hrac">
+  <div class="hlava"><span class="cislo">29</span><span class="znacka z-hrac">Hráč</span><code>k22</code><span class="znacka z-uci">fajčenie</span></div>
+  <p class="akcia"><b>Hráč:</b> fajčí 1 cigaretu (karta z balíčka)</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Poldeci už nemáš, ale cigaretu áno. Vyfajč ju a hneď si dobereš kartu. Fajčiť sa dá v Zhromaždení aj v Pitke, a ráta sa to ako nerest, rovnako ako pitie.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>bar:cigarety</code> <code>tlacidlo:fajcit</code></p>
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Pijan · Dvojčatáˢ · Hasič♦ · Pijan  ‖ Jednota ‖  Pijanˢ · Dievčina na vydajˢ · Recidivistaˢ</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Miňištrant, Dievčina na vydaj, Cirhóza, Miňištrant<br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 0 · balíček 1 · odhodené 0 · priznané: Milujúca manželka · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 4 · balíček 2 · odhodené 0 · priznané: Dlh, Dlh</span></dd>
+    <dt>Šenok</dt><dd>Pes, Svokra, Niekoho stryná, Presbiter, Pasca, Nealko, Vínko, Noviny</dd>
+    
+    
+  </dl><ul class="log"><li>Hráč 1 fajčí 1 cigaretu a doberá si 1 kartu.</li><li>Hráč 1 nemá v Pitke čo urobiť.</li><li>Hráč 1 končí svoju časť Pitky bez NA EX. Na ťahu je hráč 2 — má posledné slovo.</li></ul></details>
+</li>
+<li class="krok bot" id="k23" data-kto="bot">
+  <div class="hlava"><span class="cislo">30</span><span class="znacka z-bot">Štamgast</span><code>k23</code><span class="znacka z-uci">posledné slovo</span><span class="znacka z-uci">NA EX</span><span class="znacka z-uci">hrozba na stole</span></div>
+  <p class="akcia"><b>Štamgast:</b> NA EX na Dvojčatá <span class="odhad">odhad 8 : 5</span></p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Teraz má Štamgast posledné slovo: NA EX na vlastné Dvojčatá. Zruší im Dlh a zdvojí rany. Hrozba na stole ťa na to upozornila. Aj ty však smieš odpovedať.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>hrozba</code></p>
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Pijan · Dvojčatáˢ♦ · Hasič♦ · Pijan  ‖ Jednota ‖  Pijanˢ · Dievčina na vydajˢ · Recidivistaˢ</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Miňištrant, Dievčina na vydaj, Cirhóza, Miňištrant<br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 0 · balíček 1 · odhodené 0 · priznané: Milujúca manželka · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 1 plné / 0 vypité · cigarety 4 · balíček 2 · odhodené 0 · priznané: Dlh, Dlh</span></dd>
+    <dt>Šenok</dt><dd>Pes, Svokra, Niekoho stryná, Presbiter, Pasca, Nealko, Vínko, Noviny</dd>
+    
+    
+  </dl><ul class="log"><li>Hráč 2 dáva NA EX na svoju kartu Dvojčatá (na súperovej strane).</li><li>Hráč 1 smie na NA EX odpovedať jednou kartou.</li></ul></details>
+</li>
+<li class="krok hrac" id="k24" data-kto="hrac">
+  <div class="hlava"><span class="cislo">31</span><span class="znacka z-hrac">Hráč</span><code>k24</code><span class="znacka z-uci">odpoveď na NA EX</span><span class="znacka z-uci">Viera</span></div>
+  <p class="akcia"><b>Hráč:</b> vyloží Miňištrant (2.) na súperovu stranu <span class="odhad">odhad 8 : 4</span></p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Tvoju stranu blokuje Záverečná, tak Miňištranta daj na Štamgastovu stranu k Recidivistovi. Jeho Viera sa spáruje, a Viera znižuje súperovo tuhé poškodenie. 8 : 4.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>ruka:ministrant</code></p>
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Pijan · Dvojčatáˢ♦ · Hasič♦ · Pijan  ‖ Jednota ‖  Pijanˢ · Dievčina na vydajˢ · Recidivistaˢ · Miňištrant</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Miňištrant, Dievčina na vydaj, Cirhóza<br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 0 · balíček 1 · odhodené 0 · priznané: Milujúca manželka · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 1 plné / 0 vypité · cigarety 4 · balíček 2 · odhodené 0 · priznané: Dlh, Dlh</span></dd>
+    <dt>Šenok</dt><dd>Pes, Svokra, Niekoho stryná, Presbiter, Pasca, Nealko, Vínko, Noviny</dd>
+    
+    
+  </dl><ul class="log"><li>Hráč 1 vykladá Miňištrant do súperovej partie.</li></ul></details>
+</li>
+<li class="krok bot" id="k25" data-kto="bot">
+  <div class="hlava"><span class="cislo">32</span><span class="znacka z-bot">Štamgast</span><code>k25</code><span class="znacka z-uci">otočenie Záverečnej</span><span class="znacka z-uci">bitka a jej účet</span><span class="znacka z-uci">Dievčina na vydaj</span></div>
+  <p class="akcia"><b>Štamgast:</b> hotovo</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Pitka sa vyhodnotí a Záverečná sa otočí, je to Pijan. A potom bitka. Dievčina na vydaj si vzala Štamgastove dva Dlhy so sebou. Vydala sa, dlhy zmizli.</blockquote>
+  
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Pijan · Dvojčatáˢ♦ · Hasič♦ · Pijan  ‖ Jednota ‖  Pijanˢ · Dievčina na vydajˢ · Recidivistaˢ · Miňištrant</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Miňištrant, Dievčina na vydaj, Cirhóza<br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 2 · balíček 1 · odhodené 0 · priznané: Milujúca manželka · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 1 plné / 0 vypité · cigarety 6 · balíček 2 · odhodené 0 · priznané: Dlh</span></dd>
+    <dt>Šenok</dt><dd>Pes, Svokra, Niekoho stryná, Presbiter, Pasca, Nealko, Vínko, Noviny</dd>
+    
+    
+  </dl><ul class="log"><li>Hráč 2 končí svoju časť Pitky — Pitka sa vyhodnotí.</li><li>Hráč 2 získava Dlh — hneď sa priznáva (na konci hry uberá body aj priznaný).</li><li>Hráč 2 {2:dosiahol|dosiahla|dosahuje} prah dlhu (2) — Dlh.</li><li>Hráč 1 získava 2 cigarety.</li><li>Hráč 2 získava 2 cigarety.</li><li>Záverečná hráča 1 sa otáča: Pijan.</li><li>Hráč 1: po Pitke sa pečeň (1) a zadĺženie (0) vynulovali.</li><li>Hráč 2: po Pitke sa pečeň (2) a zadĺženie (1) vynulovali.</li><li>Dievčina na vydaj: hráč 2 ju zahadzuje a s ňou 2 priznaných Dlhov.</li></ul></details>
+</li>
+<li class="krok bot" id="k26" data-kto="bot">
+  <div class="hlava"><span class="cislo">33</span><span class="znacka z-bot">Štamgast</span><code>k26</code><span class="znacka z-uci">Pohoršenie</span></div>
+  <p class="akcia"><b>Štamgast:</b> Pohoršenie: Starosta o krok k súperovi</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Pohoršenie: Štamgast posúva Starostu k tebe.</blockquote>
+  
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Pijan · Dvojčatáˢ♦ · Hasič♦ · Pijan  ‖ Jednota ‖  Pijanˢ · Dievčina na vydajˢ · Recidivistaˢ · Miňištrant</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Miňištrant, Dievčina na vydaj, Cirhóza<br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 2 · balíček 1 · odhodené 0 · priznané: Milujúca manželka · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 1 plné / 0 vypité · cigarety 6 · balíček 2 · odhodené 0 · priznané: Dlh</span></dd>
+    <dt>Šenok</dt><dd>Pes, Svokra, Niekoho stryná, Presbiter, Pasca, Nealko, Vínko, Noviny</dd>
+    
+    <dt>Markery</dt><dd>Starosta 3 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Pohoršenie: marker staršieho starosta sa posúva k hráčovi 1.</li></ul></details>
+</li>
+<li class="krok bot" id="k27" data-kto="bot">
+  <div class="hlava"><span class="cislo">34</span><span class="znacka z-bot">Štamgast</span><code>k27</code><span class="znacka z-uci">Pohoršenie</span><span class="znacka z-uci">priazeň a strach</span><span class="znacka z-uci">bitka a jej účet</span><span class="znacka z-uci">sekera (zmienka)</span></div>
+  <p class="akcia"><b>Štamgast:</b> Pohoršenie: Starosta o krok k súperovi <span class="odhad">odhad bitka 10 : 4, prebytok 6</span></p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Starosta je v žltom na tvojej strane. Prejavuje ti priazeň Bitkára, a to sú +2 tuhé hneď v tejto bitke. Zároveň sa bojí Štamgasta, čo sú body pre neho. Bitka skončila 10 : 4, máš prebytok 6. Keby ste mali rovnako tuhého poškodenia, Jednota by išla na sekeru.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>linia-starsich</code> <code>bitka-ucet</code></p>
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Pijan · Dvojčatáˢ♦ · Hasič♦ · Pijan  ‖ Jednota ‖  Pijanˢ · Dievčina na vydajˢ · Recidivistaˢ · Miňištrant</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Miňištrant, Dievčina na vydaj, Cirhóza<br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 2 · balíček 1 · odhodené 0 · priznané: Milujúca manželka · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 1 plné / 0 vypité · cigarety 6 · balíček 2 · odhodené 0 · priznané: Dlh</span></dd>
+    <dt>Šenok</dt><dd>Pes, Svokra, Niekoho stryná, Presbiter, Pasca, Nealko, Vínko, Noviny</dd>
+    
+    <dt>Markery</dt><dd>Starosta 2 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Pohoršenie: marker staršieho starosta sa posúva k hráčovi 1.</li></ul></details>
+</li>
+<li class="krok hrac" id="k28" data-kto="hrac">
+  <div class="hlava"><span class="cislo">35</span><span class="znacka z-hrac">Hráč</span><code>k28</code><span class="znacka z-uci">prebytok</span><span class="znacka z-uci">Miňištrant</span></div>
+  <p class="akcia"><b>Hráč:</b> prebytok: Farár o krok k porazenému</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Víťaz rozdeľuje prebytok: každý bod posunie staršieho o krok k porazenému. Tvoj Miňištrant ti však posun zdražuje, každý stojí dva. Tlač Farára.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>starsi:farar</code></p>
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Pijan · Dvojčatáˢ♦ · Hasič♦ · Pijan  ‖ Jednota ‖  Pijanˢ · Dievčina na vydajˢ · Recidivistaˢ · Miňištrant</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Miňištrant, Dievčina na vydaj, Cirhóza<br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 2 · balíček 1 · odhodené 0 · priznané: Milujúca manželka · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 1 plné / 0 vypité · cigarety 6 · balíček 2 · odhodené 0 · priznané: Dlh</span></dd>
+    <dt>Šenok</dt><dd>Pes, Svokra, Niekoho stryná, Presbiter, Pasca, Nealko, Vínko, Noviny</dd>
+    
+    <dt>Markery</dt><dd>Farár 5, Starosta 2 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Prebytok: marker staršieho farar sa posúva k hráčovi 2.</li></ul></details>
+</li>
+<li class="krok hrac" id="k29" data-kto="hrac">
+  <div class="hlava"><span class="cislo">36</span><span class="znacka z-hrac">Hráč</span><code>k29</code><span class="znacka z-uci">prebytok</span></div>
+  <p class="akcia"><b>Hráč:</b> prebytok: Farár o krok k porazenému</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Ešte raz Farár.</blockquote>
+  
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Pijan · Dvojčatáˢ♦ · Hasič♦ · Pijan  ‖ Jednota ‖  Pijanˢ · Dievčina na vydajˢ · Recidivistaˢ · Miňištrant</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Miňištrant, Dievčina na vydaj, Cirhóza<br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 2 · balíček 1 · odhodené 0 · priznané: Milujúca manželka · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 1 plné / 0 vypité · cigarety 6 · balíček 2 · odhodené 0 · priznané: Dlh</span></dd>
+    <dt>Šenok</dt><dd>Pes, Svokra, Niekoho stryná, Presbiter, Pasca, Nealko, Vínko, Noviny</dd>
+    
+    <dt>Markery</dt><dd>Farár 6, Starosta 2 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Prebytok: marker staršieho farar sa posúva k hráčovi 2.</li></ul></details>
+</li>
+<li class="krok hrac" id="k30" data-kto="hrac">
+  <div class="hlava"><span class="cislo">37</span><span class="znacka z-hrac">Hráč</span><code>k30</code><span class="znacka z-uci">prebytok</span><span class="znacka z-uci">cigarety za prebytok</span><span class="znacka z-uci">dobratie po bitke</span></div>
+  <p class="akcia"><b>Hráč:</b> prebytok: Farár o krok k porazenému</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Farár je v oranžovom. Bojí sa ťa na úrovni dva a to sú body pre teba. Štamgast dostal jeho priazeň a cigaretu ako útechu. Jednota je tvoja. Každý si dobral dve karty a jeden vypitý poldeci sa ti dolial.</blockquote>
+  
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">prázdna</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Miňištrant, Dievčina na vydaj, Cirhóza, Pijan, Pijan<br><span class="tl">poldeci 1 plné / 1 vypité · cigarety 2 · balíček 3 · odhodené 0 · priznané: Milujúca manželka · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka, Pijan, Miňištrant <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 7 · balíček 0 · odhodené 3 · priznané: Dlh</span></dd>
+    <dt>Šenok</dt><dd>Pes, Svokra, Niekoho stryná, Presbiter, Pasca, Nealko, Vínko, Noviny</dd>
+    
+    <dt>Markery</dt><dd>Farár 7, Starosta 2 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Prebytok: marker staršieho farar sa posúva k hráčovi 2.</li><li>Poldeci z NA EX sa vypili; aktívne akcie Poldeci otočili vypité.</li><li>Hráč 2 dostáva 1 cigaretu za posunutých starších.</li><li>Hráč 1 {1:ovládol|ovládla|ovláda} lokalitu Jednota.</li><li>Základ závislosti: hráč 1 mal v kole 3 neresti, hráč 2 1 nerest. Kto bude mať v ďalšom kole menej, dostane Absťák.</li><li>Kolo 2: útočí hráč 2.</li><li>Hráč 1 si na začiatku kola dolieva 1 poldeci.</li><li>Hráč 1 si po bitke doberá 2 karty.</li><li>Hráč 2 si po bitke doberá 2 karty.</li></ul></details>
+</li>
+<li class="krok info" id="i-log" data-kto="info">
+  <div class="hlava"><span class="cislo">38</span><span class="znacka z-info">Info</span><code>i-log</code><span class="znacka z-uci">pohľad Log</span><span class="znacka z-uci">pohľad Body a línia starších</span></div>
+  
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Prvé kolo máš za sebou a vedieš 11 : 7. Hore pod tlačidlom Log je všetko, čo sa stalo, aj čo urobil Štamgast. Body ukazujú, ktorý starší ti koľko dáva.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>hlavicka:log</code> <code>bar:body</code></p>
+  <details><summary>Stôl po kroku</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">prázdna</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Miňištrant, Dievčina na vydaj, Cirhóza, Pijan, Pijan<br><span class="tl">poldeci 1 plné / 1 vypité · cigarety 2 · balíček 3 · odhodené 0 · priznané: Milujúca manželka · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka, Pijan, Miňištrant <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 7 · balíček 0 · odhodené 3 · priznané: Dlh</span></dd>
+    <dt>Šenok</dt><dd>Pes, Svokra, Niekoho stryná, Presbiter, Pasca, Nealko, Vínko, Noviny</dd>
+    
+    <dt>Markery</dt><dd>Farár 7, Starosta 2 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl></details>
+</li>
+</ol>
+<h3>Kolo 2 — Krčma a koniec</h3>
+<ol class="kroky">
+<li class="krok hrac" id="k31" data-kto="hrac">
+  <div class="hlava"><span class="cislo">39</span><span class="znacka z-hrac">Hráč</span><code>k31</code><span class="znacka z-uci">voľba cieľa a natočenie</span><span class="znacka z-uci">efekt lokality (Krčma)</span></div>
+  <p class="akcia"><b>Hráč:</b> vyberie cieľ Krčma, neotočený</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Vyhral si, takže si znova obranca a vyberáš. Ostala Krčma a tá má svoj zákon: kto má plný poldeci a kam ho dať, musí dať NA EX. Prah Cirhózy je tu zato o dva vyšší. Nechaj ju tak, aby Rana a Pecka smerovali k tebe.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>lokality:krcma</code></p>
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">  ‖ Krčma ‖  </dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Miňištrant, Dievčina na vydaj, Cirhóza, Pijan, Pijan<br><span class="tl">poldeci 1 plné / 1 vypité · cigarety 2 · balíček 3 · odhodené 0 · priznané: Milujúca manželka · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka, Pijan, Miňištrant <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 7 · balíček 0 · odhodené 3 · priznané: Dlh</span></dd>
+    
+    <dt>Stavba hráča</dt><dd>Veterán, Kočovník, Zámočník, Liberál, Šarlatán, Praudovravec, Finančná poradkyňa, Veľmi smútiaca vdova</dd>
+    <dt>Markery</dt><dd>Farár 7, Starosta 2 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Hráč 1 {1:vybral|vybrala|vyberá} bitku o lokalitu Krčma.</li><li>Zo šenku ide naspodok balíčka 8 nevzatých kariet.</li><li>Stavba šenku: každý hráč dostáva 8 kariet zo spoločného balíčka.</li></ul></details>
+</li>
+<li class="krok hrac" id="k32" data-kto="hrac">
+  <div class="hlava"><span class="cislo">40</span><span class="znacka z-hrac">Hráč</span><code>k32</code><span class="znacka z-uci">stavba šenku</span></div>
+  <p class="akcia"><b>Hráč:</b> do šenku Veterán, Zámočník, Liberál, Šarlatán · naspodok Kočovník, Praudovravec, Finančná poradkyňa, Veľmi smútiaca vdova</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Znova stavba šenku. Tentoraz nebudeme kupovať, cigarety pôjdu inam. Na pult daj štyri karty, ktoré Štamgastovi veľmi nepomôžu.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>stavba</code></p>
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">  ‖ Krčma ‖  </dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Miňištrant, Dievčina na vydaj, Cirhóza, Pijan, Pijan<br><span class="tl">poldeci 1 plné / 1 vypité · cigarety 2 · balíček 3 · odhodené 0 · priznané: Milujúca manželka · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka, Pijan, Miňištrant <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 7 · balíček 0 · odhodené 3 · priznané: Dlh</span></dd>
+    
+    <dt>Stavba hráča</dt><dd>Veterán, Kočovník, Zámočník, Liberál, Šarlatán, Praudovravec, Finančná poradkyňa, Veľmi smútiaca vdova</dd>
+    <dt>Markery</dt><dd>Farár 7, Starosta 2 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Hráč 1 {1:vybral|vybrala|vyberá} karty do šenku.</li></ul></details>
+</li>
+<li class="krok bot" id="k33" data-kto="bot">
+  <div class="hlava"><span class="cislo">41</span><span class="znacka z-bot">Štamgast</span><code>k33</code><span class="znacka z-uci">stavba šenku</span></div>
+  <p class="akcia"><b>Štamgast:</b> do šenku Pes, Hasič, Živnostník, Svokra · naspodok Silná, nezávislá žena, Presbiter, Veštica, Čierna mačka</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Štamgast vybral svoje štyri.</blockquote>
+  
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">  ‖ Krčma ‖  </dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Miňištrant, Dievčina na vydaj, Cirhóza, Pijan, Pijan<br><span class="tl">poldeci 1 plné / 1 vypité · cigarety 2 · balíček 3 · odhodené 0 · priznané: Milujúca manželka · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka, Pijan, Miňištrant <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 7 · balíček 0 · odhodené 3 · priznané: Dlh</span></dd>
+    <dt>Šenok</dt><dd>Veterán, Zámočník, Liberál, Šarlatán, Pes, Hasič, Živnostník, Svokra</dd>
+    
+    <dt>Markery</dt><dd>Farár 7, Starosta 2 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Hráč 2 {2:vybral|vybrala|vyberá} karty do šenku.</li><li>Do šenku: Veterán (hráč 1), Zámočník (hráč 1), Liberál (hráč 1), Šarlatán (hráč 1), Pes (hráč 2), Hasič (hráč 2), Živnostník (hráč 2), Svokra (hráč 2).</li><li>Šenok je postavený (8 kariet). Berie sa striedavo, začína útočník: 1 karta za 1 cigaretu, 2 karty za 3 cigarety.</li></ul></details>
+</li>
+<li class="krok bot" id="k34" data-kto="bot">
+  <div class="hlava"><span class="cislo">42</span><span class="znacka z-bot">Štamgast</span><code>k34</code><span class="znacka z-uci">branie zo šenku</span></div>
+  <p class="akcia"><b>Štamgast:</b> berie zo šenku Pes (1 cigareta)</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Útočník berie prvý: Štamgast si kúpil Psa.</blockquote>
+  
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">  ‖ Krčma ‖  </dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Miňištrant, Dievčina na vydaj, Cirhóza, Pijan, Pijan<br><span class="tl">poldeci 1 plné / 1 vypité · cigarety 2 · balíček 3 · odhodené 0 · priznané: Milujúca manželka · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka, Pijan, Miňištrant, Pes <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 6 · balíček 0 · odhodené 3 · priznané: Dlh</span></dd>
+    <dt>Šenok</dt><dd>Veterán, Zámočník, Liberál, Šarlatán, Hasič, Živnostník, Svokra</dd>
+    
+    <dt>Markery</dt><dd>Farár 7, Starosta 2 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Hráč 2 berie zo šenku Pes za 1 cigaretu.</li></ul></details>
+</li>
+<li class="krok hrac" id="k35" data-kto="hrac">
+  <div class="hlava"><span class="cislo">43</span><span class="znacka z-hrac">Hráč</span><code>k35</code><span class="znacka z-uci">branie zo šenku</span></div>
+  <p class="akcia"><b>Hráč:</b> už neberie zo šenku</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Ty šetríš. Dve cigarety budeš o chvíľu potrebovať.</blockquote>
+  
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">  ‖ Krčma ‖  </dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Miňištrant, Dievčina na vydaj, Cirhóza, Pijan, Pijan<br><span class="tl">poldeci 1 plné / 1 vypité · cigarety 2 · balíček 3 · odhodené 0 · priznané: Milujúca manželka · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka, Pijan, Miňištrant, Pes <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 6 · balíček 0 · odhodené 3 · priznané: Dlh</span></dd>
+    <dt>Šenok</dt><dd>Veterán, Zámočník, Liberál, Šarlatán, Hasič, Živnostník, Svokra</dd>
+    
+    <dt>Markery</dt><dd>Farár 7, Starosta 2 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Hráč 1 už neberie zo šenku (spolu 0).</li></ul></details>
+</li>
+<li class="krok bot" id="k36" data-kto="bot">
+  <div class="hlava"><span class="cislo">44</span><span class="znacka z-bot">Štamgast</span><code>k36</code><span class="znacka z-uci">branie zo šenku</span></div>
+  <p class="akcia"><b>Štamgast:</b> už neberie zo šenku</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Štamgast skončil s branim.</blockquote>
+  
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">  ‖ Krčma ‖  </dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Miňištrant, Dievčina na vydaj, Cirhóza, Pijan, Pijan<br><span class="tl">poldeci 1 plné / 1 vypité · cigarety 2 · balíček 3 · odhodené 0 · priznané: Milujúca manželka · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka, Pijan, Miňištrant, Pes <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 6 · balíček 0 · odhodené 3 · priznané: Dlh</span></dd>
+    <dt>Šenok</dt><dd>Veterán, Zámočník, Liberál, Šarlatán, Hasič, Živnostník, Svokra, Puška</dd>
+    
+    <dt>Markery</dt><dd>Farár 7, Starosta 2 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Hráč 2 už neberie zo šenku (spolu 1).</li><li>Šenok sa dopĺňa z vrchu spoločného balíčka na 8 kariet (+1).</li></ul></details>
+</li>
+<li class="krok bot" id="k37" data-kto="bot">
+  <div class="hlava"><span class="cislo">45</span><span class="znacka z-bot">Štamgast</span><code>k37</code><span class="znacka z-uci">patronát</span></div>
+  <p class="akcia"><b>Štamgast:</b> patronát nevyužije</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Patronát! Kto má priazeň staršieho, smie si ho vziať do ruky. Štamgast by mohol vziať Farára, ale nechal ho tak.</blockquote>
+  
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">  ‖ Krčma ‖  </dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Miňištrant, Dievčina na vydaj, Cirhóza, Pijan, Pijan<br><span class="tl">poldeci 1 plné / 1 vypité · cigarety 2 · balíček 3 · odhodené 0 · priznané: Milujúca manželka · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka, Pijan, Miňištrant, Pes <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 6 · balíček 0 · odhodené 3 · priznané: Dlh</span></dd>
+    <dt>Šenok</dt><dd>Veterán, Zámočník, Liberál, Šarlatán, Hasič, Živnostník, Svokra, Puška</dd>
+    
+    <dt>Markery</dt><dd>Farár 7, Starosta 2 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Hráč 2 si staršieho do ruky neberie.</li></ul></details>
+</li>
+<li class="krok hrac" id="k38" data-kto="hrac">
+  <div class="hlava"><span class="cislo">46</span><span class="znacka z-hrac">Hráč</span><code>k38</code><span class="znacka z-uci">patronát</span></div>
+  <p class="akcia"><b>Hráč:</b> patronát: Starosta do ruky, na scorecard lícom dole Miňištrant (cigarety podľa zóny)</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Starosta ti prejavuje priazeň, tak si ho vezmi. Na jeho miesto daj lícom dole Miňištranta a marker ide do stredu. Platíš dve cigarety a Štamgast dostane v bitke dve Pohoršenia navyše. Ak bitku vyhráš, Starosta je tvoj aj s bodmi. Ak prehráš, vrátiš ho a odhodíš poldeci.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>starsi:starosta</code> <code>ruka:ministrant</code></p>
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">  ‖ Krčma ‖  </dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Dievčina na vydaj, Cirhóza, Pijan, Pijan, Starosta<br><span class="tl">poldeci 1 plné / 1 vypité · cigarety 0 · balíček 3 · odhodené 0 · priznané: Milujúca manželka · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Pijan, Miňištrant, Milujúca manželka, Pijan, Miňištrant, Pes <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 2 plné / 0 vypité · cigarety 6 · balíček 0 · odhodené 3 · priznané: Dlh</span></dd>
+    <dt>Šenok</dt><dd>Veterán, Zámočník, Liberál, Šarlatán, Hasič, Živnostník, Svokra, Puška</dd>
+    
+    <dt>Markery</dt><dd>Farár 7 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Patronát: hráč 1 si berie do ruky staršieho Starosta, na scorecard kladie kartu lícom dole a marker dáva do stredu (platí 2 cigarety). Súper dostane v bitke 2 Pohoršenia.</li></ul></details>
+</li>
+<li class="krok bot" id="k39" data-kto="bot">
+  <div class="hlava"><span class="cislo">47</span><span class="znacka z-bot">Štamgast</span><code>k39</code><span class="znacka z-uci">Vypiť</span></div>
+  <p class="akcia"><b>Štamgast:</b> Vypiť → vyloží Pes na svoju stranu → vyloží Pijan na svoju stranu <span class="odhad">odhad 0 : 3</span></p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Štamgast vypil a zahral dve karty naraz: Psa a Pijana.</blockquote>
+  
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">  ‖ Krčma ‖  Pesˢ · Pijanˢ</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Dievčina na vydaj, Cirhóza, Pijan, Pijan, Starosta<br><span class="tl">poldeci 1 plné / 1 vypité · cigarety 0 · balíček 3 · odhodené 0 · priznané: Milujúca manželka · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Miňištrant, Milujúca manželka, Pijan, Miňištrant <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 1 plné / 1 vypité · cigarety 6 · balíček 0 · odhodené 3 · priznané: Dlh</span></dd>
+    <dt>Šenok</dt><dd>Veterán, Zámočník, Liberál, Šarlatán, Hasič, Živnostník, Svokra, Puška</dd>
+    
+    <dt>Markery</dt><dd>Farár 7 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Hráč 2 pije do dna — zahrá ďalšiu kartu hneď, limit mu klesá na 2.</li><li>Hráč 2 vykladá Pes do svojej partie.</li><li>Hráč 2 vykladá Pijan do svojej partie.</li></ul></details>
+</li>
+<li class="krok hrac" id="k40" data-kto="hrac">
+  <div class="hlava"><span class="cislo">48</span><span class="znacka z-hrac">Hráč</span><code>k40</code><span class="znacka z-uci">priznanie</span><span class="znacka z-uci">Cirhóza</span><span class="znacka z-uci">Starešina v línii</span></div>
+  <p class="akcia"><b>Hráč:</b> prizná Cirhóza → vyloží Starosta na svoju stranu <span class="odhad">odhad 2 : 4</span></p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Teraz Cirhózu priznaj. Nepriznaná by ťa na konci stála body, priznaná dá Štamgastovi ranu navyše, no po bitke ju pochováš. A Starostu daj ku Krčme. Starešina sa ráta do prevahy a smie naňho ísť NA EX.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>ruka:cirhoza</code> <code>bar:karty</code> <code>ruka:starosta</code></p>
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Starosta  ‖ Krčma ‖  Pesˢ · Pijanˢ</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Dievčina na vydaj, Pijan, Pijan<br><span class="tl">poldeci 1 plné / 1 vypité · cigarety 0 · balíček 3 · odhodené 0 · priznané: Milujúca manželka, Cirhóza · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Miňištrant, Milujúca manželka, Pijan, Miňištrant <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 1 plné / 1 vypité · cigarety 6 · balíček 0 · odhodené 3 · priznané: Dlh</span></dd>
+    <dt>Šenok</dt><dd>Veterán, Zámočník, Liberál, Šarlatán, Hasič, Živnostník, Svokra, Puška</dd>
+    
+    <dt>Markery</dt><dd>Farár 7 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Hráč 1 priznáva kartu Cirhóza.</li><li>Hráč 1 vykladá Starosta do svojej partie.</li></ul></details>
+</li>
+<li class="krok bot" id="k41" data-kto="bot">
+  <div class="hlava"><span class="cislo">49</span><span class="znacka z-bot">Štamgast</span><code>k41</code><span class="znacka z-uci">pas</span></div>
+  <p class="akcia"><b>Štamgast:</b> pasuje</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Štamgast pasuje.</blockquote>
+  
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Starosta  ‖ Krčma ‖  Pesˢ · Pijanˢ</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Dievčina na vydaj, Pijan, Pijan<br><span class="tl">poldeci 1 plné / 1 vypité · cigarety 0 · balíček 3 · odhodené 0 · priznané: Milujúca manželka, Cirhóza · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Miňištrant, Milujúca manželka, Pijan, Miňištrant <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 1 plné / 1 vypité · cigarety 6 · balíček 0 · odhodené 3 · priznané: Dlh</span></dd>
+    <dt>Šenok</dt><dd>Veterán, Zámočník, Liberál, Šarlatán, Hasič, Živnostník, Svokra, Puška</dd>
+    
+    <dt>Markery</dt><dd>Farár 7 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Hráč 2 pasuje do Pitky.</li></ul></details>
+</li>
+<li class="krok hrac" id="k42" data-kto="hrac">
+  <div class="hlava"><span class="cislo">50</span><span class="znacka z-hrac">Hráč</span><code>k42</code><span class="znacka z-uci">pas</span></div>
+  <p class="akcia"><b>Hráč:</b> pasuje</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Pasuj aj ty. Za kartu, ktorú si ešte smel vyložiť, dostaneš cigaretu.</blockquote>
+  
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Starosta  ‖ Krčma ‖  Pesˢ · Pijanˢ</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Dievčina na vydaj, Pijan, Pijan<br><span class="tl">poldeci 1 plné / 1 vypité · cigarety 1 · balíček 3 · odhodené 0 · priznané: Milujúca manželka, Cirhóza · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Miňištrant, Milujúca manželka, Pijan, Miňištrant <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 1 plné / 1 vypité · cigarety 6 · balíček 0 · odhodené 3 · priznané: Dlh</span></dd>
+    <dt>Šenok</dt><dd>Veterán, Zámočník, Liberál, Šarlatán, Hasič, Živnostník, Svokra, Puška</dd>
+    
+    <dt>Markery</dt><dd>Farár 7 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Hráč 1 pasuje do Pitky a za 1 nevyloženú kartu dostáva 1 cigaretu.</li><li>Pitka 1/2.</li></ul></details>
+</li>
+<li class="krok hrac" id="k43" data-kto="hrac">
+  <div class="hlava"><span class="cislo">51</span><span class="znacka z-hrac">Hráč</span><code>k43</code><span class="znacka z-uci">NA EX</span><span class="znacka z-uci">efekt lokality (Krčma)</span><span class="znacka z-uci">bomba (neaktívne akcie)</span></div>
+  <p class="akcia"><b>Hráč:</b> NA EX na Starosta <span class="odhad">odhad 10 : 4</span></p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Krčma ťa núti: máš plný poldeci, takže NA EX musíš dať. Daj ho na Starostu, jeho Pecky nemajú pár. 10 : 4.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>linia:starosta</code> <code>tlacidlo:naex</code></p>
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Starosta♦  ‖ Krčma ‖  Pesˢ · Pijanˢ</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Dievčina na vydaj, Pijan, Pijan<br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 1 · balíček 3 · odhodené 0 · priznané: Milujúca manželka, Cirhóza · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Miňištrant, Milujúca manželka, Pijan, Miňištrant <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 1 plné / 1 vypité · cigarety 6 · balíček 0 · odhodené 3 · priznané: Dlh</span></dd>
+    <dt>Šenok</dt><dd>Veterán, Zámočník, Liberál, Šarlatán, Hasič, Živnostník, Svokra, Puška</dd>
+    
+    <dt>Markery</dt><dd>Farár 7 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Hráč 1 dáva NA EX na svoju kartu Starosta.</li><li>Hráč 2 smie na NA EX odpovedať jednou kartou.</li></ul></details>
+</li>
+<li class="krok bot" id="k44" data-kto="bot">
+  <div class="hlava"><span class="cislo">52</span><span class="znacka z-bot">Štamgast</span><code>k44</code><span class="znacka z-uci">odpoveď na NA EX</span></div>
+  <p class="akcia"><b>Štamgast:</b> vyloží Pijan na súperovu stranu <span class="odhad">odhad 10 : 4</span></p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Štamgast odpovedal Pijanom k Starostovi: spároval mu Poldeci a NA EX ho zrušil. Pecky ti však nechal.</blockquote>
+  
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Pijanˢ · Starosta♦  ‖ Krčma ‖  Pesˢ · Pijanˢ</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Dievčina na vydaj, Pijan, Pijan<br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 1 · balíček 3 · odhodené 0 · priznané: Milujúca manželka, Cirhóza · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Miňištrant, Milujúca manželka, Miňištrant <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 1 plné / 1 vypité · cigarety 6 · balíček 0 · odhodené 3 · priznané: Dlh</span></dd>
+    <dt>Šenok</dt><dd>Veterán, Zámočník, Liberál, Šarlatán, Hasič, Živnostník, Svokra, Puška</dd>
+    
+    <dt>Markery</dt><dd>Farár 7 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Hráč 2 vykladá Pijan do súperovej partie.</li></ul></details>
+</li>
+<li class="krok hrac" id="k45" data-kto="hrac">
+  <div class="hlava"><span class="cislo">53</span><span class="znacka z-hrac">Hráč</span><code>k45</code><span class="znacka z-uci">posledné slovo</span></div>
+  <p class="akcia"><b>Hráč:</b> hotovo</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Hotovo (K). Je to nevratné, posledné slovo má útočník.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>tlacidlo:hotovo</code></p>
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Pijanˢ · Starosta♦  ‖ Krčma ‖  Pesˢ · Pijanˢ</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Dievčina na vydaj, Pijan, Pijan<br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 1 · balíček 3 · odhodené 0 · priznané: Milujúca manželka, Cirhóza · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Miňištrant, Milujúca manželka, Miňištrant <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 1 plné / 1 vypité · cigarety 6 · balíček 0 · odhodené 3 · priznané: Dlh</span></dd>
+    <dt>Šenok</dt><dd>Veterán, Zámočník, Liberál, Šarlatán, Hasič, Živnostník, Svokra, Puška</dd>
+    
+    <dt>Markery</dt><dd>Farár 7 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Hráč 1 končí svoju časť Pitky. Na ťahu je hráč 2 — má posledné slovo.</li></ul></details>
+</li>
+<li class="krok bot" id="k46" data-kto="bot">
+  <div class="hlava"><span class="cislo">54</span><span class="znacka z-bot">Štamgast</span><code>k46</code><span class="znacka z-uci">NA EX</span><span class="znacka z-uci">efekt lokality (Krčma)</span></div>
+  <p class="akcia"><b>Štamgast:</b> NA EX na Pijan (2.) <span class="odhad">odhad 10 : 6</span></p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Krčma núti aj jeho. NA EX na vlastného Pijana: o dve rany viac, ale aj dvojnásobný Dlh a pečeň.</blockquote>
+  
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Pijanˢ · Starosta♦  ‖ Krčma ‖  Pesˢ · Pijanˢ♦</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Dievčina na vydaj, Pijan, Pijan<br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 1 · balíček 3 · odhodené 0 · priznané: Milujúca manželka, Cirhóza · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Miňištrant, Milujúca manželka, Miňištrant <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 6 · balíček 0 · odhodené 3 · priznané: Dlh</span></dd>
+    <dt>Šenok</dt><dd>Veterán, Zámočník, Liberál, Šarlatán, Hasič, Živnostník, Svokra, Puška</dd>
+    
+    <dt>Markery</dt><dd>Farár 7 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Hráč 2 dáva NA EX na svoju kartu Pijan.</li><li>Hráč 1 smie na NA EX odpovedať jednou kartou.</li></ul></details>
+</li>
+<li class="krok hrac" id="k47" data-kto="hrac">
+  <div class="hlava"><span class="cislo">55</span><span class="znacka z-hrac">Hráč</span><code>k47</code><span class="znacka z-uci">odpoveď na NA EX</span></div>
+  <p class="akcia"><b>Hráč:</b> na NA EX neodpovedá</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Odpovedať by si mohol, ale každá tvoja karta by mu ten Dlh a pečeň spárovala a NA EX by ich zrušil. Nechaj ho piť. Niekedy je najlepšia odpoveď žiadna.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>tlacidlo:bez-odpovede</code></p>
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Pijanˢ · Starosta♦  ‖ Krčma ‖  Pesˢ · Pijanˢ♦</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Dievčina na vydaj, Pijan, Pijan<br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 1 · balíček 3 · odhodené 0 · priznané: Milujúca manželka, Cirhóza · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Miňištrant, Milujúca manželka, Miňištrant <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 6 · balíček 0 · odhodené 3 · priznané: Dlh</span></dd>
+    <dt>Šenok</dt><dd>Veterán, Zámočník, Liberál, Šarlatán, Hasič, Živnostník, Svokra, Puška</dd>
+    
+    <dt>Markery</dt><dd>Farár 7 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Hráč 1 na NA EX neodpovedá.</li></ul></details>
+</li>
+<li class="krok bot" id="k48" data-kto="bot">
+  <div class="hlava"><span class="cislo">56</span><span class="znacka z-bot">Štamgast</span><code>k48</code><span class="znacka z-uci">Dlh</span><span class="znacka z-uci">Cirhóza</span><span class="znacka z-uci">Exekútor</span></div>
+  <p class="akcia"><b>Štamgast:</b> hotovo</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>No vidíš: dva Dlhy a Cirhóza. Štamgast má priznané už tri Dlhy, pozri jeho dlaždicu Dlhy. Pri desiatich príde Exekútor a buď mu odovzdá Nástroj, alebo hneď prehrá.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>bar-supera:dlhy</code></p>
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Pijanˢ · Starosta♦  ‖ Krčma ‖  Pesˢ · Pijanˢ♦</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Dievčina na vydaj, Pijan, Pijan<br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 2 · balíček 3 · odhodené 0 · priznané: Milujúca manželka, Cirhóza · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Miňištrant, Milujúca manželka, Miňištrant <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 7 · balíček 1 · odhodené 3 · priznané: Dlh, Dlh, Dlh</span></dd>
+    <dt>Šenok</dt><dd>Veterán, Zámočník, Liberál, Šarlatán, Hasič, Živnostník, Svokra, Puška</dd>
+    
+    <dt>Markery</dt><dd>Farár 7 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Hráč 2 končí svoju časť Pitky — Pitka sa vyhodnotí.</li><li>Hráč 2 získava Dlh — hneď sa priznáva (na konci hry uberá body aj priznaný).</li><li>Hráč 2 {2:dosiahol|dosiahla|dosahuje} prah dlhu (2) — Dlh.</li><li>Hráč 2 získava Dlh — hneď sa priznáva (na konci hry uberá body aj priznaný).</li><li>Hráč 2 {2:dosiahol|dosiahla|dosahuje} prah dlhu (2) — Dlh.</li><li>Hráč 2 získava Cirhózu — ide navrch jeho doberacieho balíčka.</li><li>Hráč 2 {2:dosiahol|dosiahla|dosahuje} prah pečene (5) — Cirhóza.</li><li>Hráč 1 získava 1 cigaretu.</li><li>Hráč 2 získava 1 cigaretu.</li><li>Hráč 1: po Pitke sa pečeň (1) a zadĺženie (0) vynulovali.</li><li>Hráč 2: po Pitke sa pečeň (1) a zadĺženie (0) vynulovali.</li></ul></details>
+</li>
+<li class="krok bot" id="k49" data-kto="bot">
+  <div class="hlava"><span class="cislo">57</span><span class="znacka z-bot">Štamgast</span><code>k49</code><span class="znacka z-uci">vykladanie</span></div>
+  <p class="akcia"><b>Štamgast:</b> pasuje</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Štamgast pasuje.</blockquote>
+  
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Pijanˢ · Starosta♦  ‖ Krčma ‖  Pesˢ · Pijanˢ♦</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Dievčina na vydaj, Pijan, Pijan<br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 2 · balíček 3 · odhodené 0 · priznané: Milujúca manželka, Cirhóza · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Miňištrant, Milujúca manželka, Miňištrant <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 8 · balíček 1 · odhodené 3 · priznané: Dlh, Dlh, Dlh</span></dd>
+    <dt>Šenok</dt><dd>Veterán, Zámočník, Liberál, Šarlatán, Hasič, Živnostník, Svokra, Puška</dd>
+    
+    <dt>Markery</dt><dd>Farár 7 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Hráč 2 pasuje do Pitky a za 1 nevyloženú kartu dostáva 1 cigaretu.</li></ul></details>
+</li>
+<li class="krok hrac" id="k50" data-kto="hrac">
+  <div class="hlava"><span class="cislo">58</span><span class="znacka z-hrac">Hráč</span><code>k50</code><span class="znacka z-uci">vykladanie</span></div>
+  <p class="akcia"><b>Hráč:</b> vyloží Pijan (2.) na svoju stranu <span class="odhad">odhad 11 : 7</span></p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Vylož ešte Pijana, po bitke sa ti zíde. Potom za teba hra pasuje sama.</blockquote>
+  
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Pijan · Pijanˢ · Starosta♦  ‖ Krčma ‖  Pesˢ · Pijanˢ♦</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Dievčina na vydaj, Pijan<br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 2 · balíček 3 · odhodené 0 · priznané: Milujúca manželka, Cirhóza · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Miňištrant, Milujúca manželka, Miňištrant <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 8 · balíček 1 · odhodené 3 · priznané: Dlh, Dlh, Dlh</span></dd>
+    <dt>Šenok</dt><dd>Veterán, Zámočník, Liberál, Šarlatán, Hasič, Živnostník, Svokra, Puška</dd>
+    
+    <dt>Markery</dt><dd>Farár 7 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Hráč 1 vykladá Pijan do svojej partie.</li><li>Hráč 1 už nemá čo vyložiť.</li><li>Hráč 1 pasuje do Pitky.</li><li>Pitka 2/2.</li></ul></details>
+</li>
+<li class="krok hrac" id="k51" data-kto="hrac">
+  <div class="hlava"><span class="cislo">59</span><span class="znacka z-hrac">Hráč</span><code>k51</code><span class="znacka z-uci">efekt staršieho</span><span class="znacka z-uci">doliatie poldeci</span></div>
+  <p class="akcia"><b>Hráč:</b> hotovo</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Starosta má efekt: v Pitke za cigaretu vymení kartu z ruky za kartu zo šenku. Za dve cigarety by si si mohol doliať poldeci, lenže Krčma by ťa potom donútila dať NA EX. Daj hotovo (K).</blockquote>
+  <p class="zvyr">zvýrazniť: <code>tlacidlo:hotovo</code></p>
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Pijan · Pijanˢ · Starosta♦  ‖ Krčma ‖  Pesˢ · Pijanˢ♦</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Dievčina na vydaj, Pijan<br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 2 · balíček 3 · odhodené 0 · priznané: Milujúca manželka, Cirhóza · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Miňištrant, Milujúca manželka, Miňištrant <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 8 · balíček 1 · odhodené 3 · priznané: Dlh, Dlh, Dlh</span></dd>
+    <dt>Šenok</dt><dd>Veterán, Zámočník, Liberál, Šarlatán, Hasič, Živnostník, Svokra, Puška</dd>
+    
+    <dt>Markery</dt><dd>Farár 7 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Hráč 1 končí svoju časť Pitky bez NA EX. Na ťahu je hráč 2 — má posledné slovo.</li></ul></details>
+</li>
+<li class="krok bot" id="k52" data-kto="bot">
+  <div class="hlava"><span class="cislo">60</span><span class="znacka z-bot">Štamgast</span><code>k52</code><span class="znacka z-uci">vyhodnotenie Pitky</span></div>
+  <p class="akcia"><b>Štamgast:</b> hotovo</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Štamgast skončil. Dostal ďalšie dva Dlhy, má ich už päť, a k tomu druhú Cirhózu. A teraz bitka.</blockquote>
+  
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Pijan · Pijanˢ · Starosta♦  ‖ Krčma ‖  Pesˢ · Pijanˢ♦</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Dievčina na vydaj, Pijan<br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 3 · balíček 3 · odhodené 0 · priznané: Milujúca manželka, Cirhóza · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Miňištrant, Milujúca manželka, Miňištrant <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 9 · balíček 2 · odhodené 3 · priznané: Dlh, Dlh, Dlh, Dlh, Dlh</span></dd>
+    <dt>Šenok</dt><dd>Veterán, Zámočník, Liberál, Šarlatán, Hasič, Živnostník, Svokra, Puška</dd>
+    
+    <dt>Markery</dt><dd>Farár 7 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Hráč 2 končí svoju časť Pitky bez NA EX — Pitka sa vyhodnotí.</li><li>Hráč 2 získava Dlh — hneď sa priznáva (na konci hry uberá body aj priznaný).</li><li>Hráč 2 {2:dosiahol|dosiahla|dosahuje} prah dlhu (2) — Dlh.</li><li>Hráč 2 získava Dlh — hneď sa priznáva (na konci hry uberá body aj priznaný).</li><li>Hráč 2 {2:dosiahol|dosiahla|dosahuje} prah dlhu (2) — Dlh.</li><li>Hráč 2 získava Cirhózu — ide navrch jeho doberacieho balíčka.</li><li>Hráč 2 {2:dosiahol|dosiahla|dosahuje} prah pečene (5) — Cirhóza.</li><li>Hráč 1 získava 1 cigaretu.</li><li>Hráč 2 získava 1 cigaretu.</li><li>Hráč 1: po Pitke sa pečeň (1) a zadĺženie (0) vynulovali.</li></ul></details>
+</li>
+<li class="krok bot" id="k53" data-kto="bot">
+  <div class="hlava"><span class="cislo">61</span><span class="znacka z-bot">Štamgast</span><code>k53</code><span class="znacka z-uci">Pohoršenie</span><span class="znacka z-uci">patronát</span></div>
+  <p class="akcia"><b>Štamgast:</b> Pohoršenie: Hrobár o krok k súperovi</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Dve Pohoršenia z patronátu. Štamgast tlačí Hrobára k tebe, aby sa bál jeho.</blockquote>
+  
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Pijan · Pijanˢ · Starosta♦  ‖ Krčma ‖  Pesˢ · Pijanˢ♦</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Dievčina na vydaj, Pijan<br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 3 · balíček 3 · odhodené 0 · priznané: Milujúca manželka, Cirhóza · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Miňištrant, Milujúca manželka, Miňištrant <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 9 · balíček 2 · odhodené 3 · priznané: Dlh, Dlh, Dlh, Dlh, Dlh</span></dd>
+    <dt>Šenok</dt><dd>Veterán, Zámočník, Liberál, Šarlatán, Hasič, Živnostník, Svokra, Puška</dd>
+    
+    <dt>Markery</dt><dd>Farár 7, Hrobár 3 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Pohoršenie: marker staršieho hrobar sa posúva k hráčovi 1.</li></ul></details>
+</li>
+<li class="krok bot" id="k54" data-kto="bot">
+  <div class="hlava"><span class="cislo">62</span><span class="znacka z-bot">Štamgast</span><code>k54</code><span class="znacka z-uci">Pohoršenie</span><span class="znacka z-uci">bitka a jej účet</span></div>
+  <p class="akcia"><b>Štamgast:</b> Pohoršenie: Vychovávateľka o krok k súperovi <span class="odhad">odhad bitka 11 : 7, prebytok 4</span></p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>A Vychovávateľku tiež. Bitka skončila 11 : 7, prebytok je 4 a Miňištrant je teraz na scorecarde, nič ti nezdraží.</blockquote>
+  
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Pijan · Pijanˢ · Starosta♦  ‖ Krčma ‖  Pesˢ · Pijanˢ♦</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Dievčina na vydaj, Pijan<br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 3 · balíček 3 · odhodené 0 · priznané: Milujúca manželka, Cirhóza · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Miňištrant, Milujúca manželka, Miňištrant <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 9 · balíček 2 · odhodené 3 · priznané: Dlh, Dlh, Dlh, Dlh, Dlh</span></dd>
+    <dt>Šenok</dt><dd>Veterán, Zámočník, Liberál, Šarlatán, Hasič, Živnostník, Svokra, Puška</dd>
+    
+    <dt>Markery</dt><dd>Farár 7, Hrobár 3, Vychovávateľka 3 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Pohoršenie: marker staršieho vychovavatelka sa posúva k hráčovi 1.</li></ul></details>
+</li>
+<li class="krok hrac" id="k55" data-kto="hrac">
+  <div class="hlava"><span class="cislo">63</span><span class="znacka z-hrac">Hráč</span><code>k55</code><span class="znacka z-uci">vydesenie a prebudenie</span></div>
+  <p class="akcia"><b>Hráč:</b> prebytok: Farár o krok k porazenému</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Farár stál na predposlednom mieste už od začiatku kola, takže ho smieš vytlačiť na kraj. Je vydesený! Prebudil sa pre teba a jeho efekt teraz platí tebe. Kto vydesí polovicu starších a udrží ich do konca ďalšieho kola, vyhrá hneď.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>starsi:farar</code></p>
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Pijan · Pijanˢ · Starosta♦  ‖ Krčma ‖  Pesˢ · Pijanˢ♦</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Dievčina na vydaj, Pijan<br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 3 · balíček 3 · odhodené 0 · priznané: Milujúca manželka, Cirhóza · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Miňištrant, Milujúca manželka, Miňištrant <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 9 · balíček 2 · odhodené 3 · priznané: Dlh, Dlh, Dlh, Dlh, Dlh</span></dd>
+    <dt>Šenok</dt><dd>Veterán, Zámočník, Liberál, Šarlatán, Hasič, Živnostník, Svokra, Puška</dd>
+    
+    <dt>Markery</dt><dd>Farár 8, Hrobár 3, Vychovávateľka 3 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Prebytok: marker staršieho farar sa posúva k hráčovi 2.</li></ul></details>
+</li>
+<li class="krok hrac" id="k56" data-kto="hrac">
+  <div class="hlava"><span class="cislo">64</span><span class="znacka z-hrac">Hráč</span><code>k56</code><span class="znacka z-uci">prebytok</span></div>
+  <p class="akcia"><b>Hráč:</b> prebytok: Autobusár o krok k porazenému</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Zvyšné tri body daj Autobusárovi.</blockquote>
+  
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Pijan · Pijanˢ · Starosta♦  ‖ Krčma ‖  Pesˢ · Pijanˢ♦</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Dievčina na vydaj, Pijan<br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 3 · balíček 3 · odhodené 0 · priznané: Milujúca manželka, Cirhóza · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Miňištrant, Milujúca manželka, Miňištrant <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 9 · balíček 2 · odhodené 3 · priznané: Dlh, Dlh, Dlh, Dlh, Dlh</span></dd>
+    <dt>Šenok</dt><dd>Veterán, Zámočník, Liberál, Šarlatán, Hasič, Živnostník, Svokra, Puška</dd>
+    
+    <dt>Markery</dt><dd>Farár 8, Hrobár 3, Autobusár 5, Vychovávateľka 3 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Prebytok: marker staršieho autobusar sa posúva k hráčovi 2.</li></ul></details>
+</li>
+<li class="krok hrac" id="k57" data-kto="hrac">
+  <div class="hlava"><span class="cislo">65</span><span class="znacka z-hrac">Hráč</span><code>k57</code><span class="znacka z-uci">prebytok</span></div>
+  <p class="akcia"><b>Hráč:</b> prebytok: Autobusár o krok k porazenému</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Ešte raz.</blockquote>
+  
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Pijan · Pijanˢ · Starosta♦  ‖ Krčma ‖  Pesˢ · Pijanˢ♦</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Dievčina na vydaj, Pijan<br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 3 · balíček 3 · odhodené 0 · priznané: Milujúca manželka, Cirhóza · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Miňištrant, Milujúca manželka, Miňištrant <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 0 plné / 1 vypité · cigarety 9 · balíček 2 · odhodené 3 · priznané: Dlh, Dlh, Dlh, Dlh, Dlh</span></dd>
+    <dt>Šenok</dt><dd>Veterán, Zámočník, Liberál, Šarlatán, Hasič, Živnostník, Svokra, Puška</dd>
+    
+    <dt>Markery</dt><dd>Farár 8, Hrobár 3, Autobusár 6, Vychovávateľka 3 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Prebytok: marker staršieho autobusar sa posúva k hráčovi 2.</li></ul></details>
+</li>
+<li class="krok hrac" id="k58" data-kto="hrac">
+  <div class="hlava"><span class="cislo">66</span><span class="znacka z-hrac">Hráč</span><code>k58</code><span class="znacka z-uci">prebytok</span></div>
+  <p class="akcia"><b>Hráč:</b> prebytok: Autobusár o krok k porazenému</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>A posledný. Autobusár je v oranžovom, bojí sa ťa.</blockquote>
+  
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">Pijan · Pijanˢ · Starosta  ‖ Krčma ‖  Pesˢ · Pijanˢ</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Dievčina na vydaj, Pijan<br><span class="tl">poldeci 0 plné / 2 vypité · cigarety 3 · balíček 3 · odhodené 0 · priznané: Milujúca manželka, Cirhóza · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Miňištrant, Milujúca manželka, Miňištrant <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 1 plné / 1 vypité · cigarety 9 · balíček 2 · odhodené 3 · priznané: Dlh, Dlh, Dlh, Dlh, Dlh</span></dd>
+    <dt>Šenok</dt><dd>Veterán, Zámočník, Liberál, Šarlatán, Hasič, Živnostník, Svokra, Puška</dd>
+    
+    <dt>Markery</dt><dd>Farár 8, Hrobár 3, Autobusár 7, Vychovávateľka 3 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Prebytok: marker staršieho autobusar sa posúva k hráčovi 2.</li><li>Poldeci z NA EX sa vypili; aktívne akcie Poldeci otočili vypité.</li></ul></details>
+</li>
+<li class="krok hrac" id="k59" data-kto="hrac">
+  <div class="hlava"><span class="cislo">67</span><span class="znacka z-hrac">Hráč</span><code>k59</code><span class="znacka z-uci">Pohreb</span><span class="znacka z-uci">patronát</span></div>
+  <p class="akcia"><b>Hráč:</b> Pohreb: spáli priznanú Cirhóza a Pijan z línie, zo šenku si vezme Hasič</p>
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Pohreb: spáliš priznanú Cirhózu a jednu svoju kartu z línie. Pijan je Závislý, tak si navyše vezmeš kartu zo šenku, napríklad Hasiča. Balíček máš čistejší.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>pohreb</code></p>
+  <details><summary>Stôl po kroku a log</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">prázdna</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Dievčina na vydaj, Pijan, Hasič, Miňištrant<br><span class="tl">poldeci 0 plné / 2 vypité · cigarety 3 · balíček 2 · odhodené 1 · priznané: Milujúca manželka, Absťák · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Miňištrant, Milujúca manželka, Miňištrant <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 1 plné / 1 vypité · cigarety 11 · balíček 2 · odhodené 6 · priznané: Dlh, Dlh, Dlh, Dlh, Dlh</span></dd>
+    <dt>Šenok</dt><dd>Veterán, Zámočník, Liberál, Šarlatán, Živnostník, Svokra, Puška</dd>
+    
+    <dt>Markery</dt><dd>Farár 8, Hrobár 3, Autobusár 7, Vychovávateľka 3 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl><ul class="log"><li>Hráč 1 robí Pohreb: {1:spálil|spálila|páli} Cirhózu a Pijan a za Závislého {1:vzal|vzala|berie} zo šenku Hasič.</li><li>Hráč 2 dostáva 2 cigarety za posunutých starších.</li><li>Patronát: hráč 1 {1:vyhral|vyhrala|vyhráva} a nechá si staršieho Starosta; na scorecarde sa otáča Miňištrant.</li><li>Hráč 1 {1:ovládol|ovládla|ovláda} lokalitu Krčma.</li><li>Hráč 1 získava Absťák: v kole mal 1 nerest, v predošlom 3 neresti (Milujúca manželka: Absťák aj pri 3 neresti). Každý Absťák mu v bitke uberie 1 tuhé. Za priznaný Absťák si doberá kartu.</li></ul></details>
+</li>
+<li class="krok info" id="i-abstak" data-kto="info">
+  <div class="hlava"><span class="cislo">68</span><span class="znacka z-info">Info</span><code>i-abstak</code><span class="znacka z-uci">Absťák</span></div>
+  
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Ešte jedna vec. Na konci kola si dostal Absťák: v tomto kole si mal menej nerestí ako v predošlom, a s priznanou Milujúcou manželkou to platí aj pri rovnakom počte. Neresti sú pitie, NA EX a fajčenie. V dlhšej partii by ti v každej ďalšej bitke ubral jednu ranu. Pozri dlaždicu Absťák.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>bar:abstak</code></p>
+  <details><summary>Stôl po kroku</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">prázdna</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Dievčina na vydaj, Pijan, Hasič, Miňištrant<br><span class="tl">poldeci 0 plné / 2 vypité · cigarety 3 · balíček 2 · odhodené 1 · priznané: Milujúca manželka, Absťák · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Miňištrant, Milujúca manželka, Miňištrant <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 1 plné / 1 vypité · cigarety 11 · balíček 2 · odhodené 6 · priznané: Dlh, Dlh, Dlh, Dlh, Dlh</span></dd>
+    <dt>Šenok</dt><dd>Veterán, Zámočník, Liberál, Šarlatán, Živnostník, Svokra, Puška</dd>
+    
+    <dt>Markery</dt><dd>Farár 8, Hrobár 3, Autobusár 7, Vychovávateľka 3 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl></details>
+</li>
+<li class="krok info" id="i-koniec" data-kto="info">
+  <div class="hlava"><span class="cislo">69</span><span class="znacka z-info">Info</span><code>i-koniec</code><span class="znacka z-uci">bodovanie na konci</span><span class="znacka z-uci">bodový bar</span></div>
+  
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>Koniec! Vyhral si 62 : −24. Lokality ti dali 28, vydesený Farár 12, Starosta z patronátu 8, strach 6, znepokojenie 4 a cigarety 4. Štamgast stratil 20 bodov za Dlhy a 16 za dve Cirhózy, cigarety mu vrátili 12. Každá aktívna podmienka na kartách starších sa ráta zvlášť, preto majú lokality takú cenu. Klikni na Body a pozri si rozpis.</blockquote>
+  <p class="zvyr">zvýrazniť: <code>bar:body</code></p>
+  <details><summary>Stôl po kroku</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">prázdna</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Dievčina na vydaj, Pijan, Hasič, Miňištrant<br><span class="tl">poldeci 0 plné / 2 vypité · cigarety 3 · balíček 2 · odhodené 1 · priznané: Milujúca manželka, Absťák · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Miňištrant, Milujúca manželka, Miňištrant <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 1 plné / 1 vypité · cigarety 11 · balíček 2 · odhodené 6 · priznané: Dlh, Dlh, Dlh, Dlh, Dlh</span></dd>
+    <dt>Šenok</dt><dd>Veterán, Zámočník, Liberál, Šarlatán, Živnostník, Svokra, Puška</dd>
+    
+    <dt>Markery</dt><dd>Farár 8, Hrobár 3, Autobusár 7, Vychovávateľka 3 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl></details>
+</li>
+<li class="krok info" id="i-dovidenia" data-kto="info">
+  <div class="hlava"><span class="cislo">70</span><span class="znacka z-info">Info</span><code>i-dovidenia</code></div>
+  
+  <blockquote class="melichar"><span class="kto-hovori">Melichar</span>To je celá krčma. Štamgast sa z toho vyspí. Teraz sa skús postaviť niekomu naozajstnému, alebo botovi bez mojej nápovedy. Na zdravie!</blockquote>
+  
+  <details><summary>Stôl po kroku</summary><dl class="stav">
+    <dt>Línia</dt><dd class="linia">prázdna</dd>
+    <dt>Hráč</dt><dd><b>ruka:</b> Dievčina na vydaj, Pijan, Hasič, Miňištrant<br><span class="tl">poldeci 0 plné / 2 vypité · cigarety 3 · balíček 2 · odhodené 1 · priznané: Milujúca manželka, Absťák · Dedičstvo: Krabička cigariet</span></dd>
+    <dt>Štamgast</dt><dd><b>ruka:</b> Miňištrant, Milujúca manželka, Miňištrant <span class="tl">(hráč ju nevidí)</span><br><span class="tl">poldeci 1 plné / 1 vypité · cigarety 11 · balíček 2 · odhodené 6 · priznané: Dlh, Dlh, Dlh, Dlh, Dlh</span></dd>
+    <dt>Šenok</dt><dd>Veterán, Zámočník, Liberál, Šarlatán, Živnostník, Svokra, Puška</dd>
+    
+    <dt>Markery</dt><dd>Farár 8, Hrobár 3, Autobusár 7, Vychovávateľka 3 <span class="tl">(0 = kraj hráča, 4 = stred, 8 = kraj Štamgasta)</span></dd>
+  </dl></details>
+</li>
+</ol>
+
+<h2>Pokrytie mechaník</h2>
+<div class="tab-obal">
+<table>
+  <thead><tr><th>Mechanika (zo zadania)</th><th>Kroky</th></tr></thead>
+  <tbody>
+<tr class=""><td>zdroje v bare</td><td><a href="#i-bar">i-bar</a></td></tr>
+<tr class=""><td>dlaždica Karty (ruka, balíček, odhodené)</td><td><a href="#i-karty">i-karty</a></td></tr>
+<tr class=""><td>cieľ hry</td><td><a href="#i-ciel">i-ciel</a></td></tr>
+<tr class=""><td>voľba cieľa a natočenie</td><td><a href="#k0">k0</a>, <a href="#k31">k31</a></td></tr>
+<tr class=""><td>stavba šenku</td><td><a href="#k1">k1</a>, <a href="#k2">k2</a>, <a href="#k32">k32</a>, <a href="#k33">k33</a></td></tr>
+<tr class=""><td>branie zo šenku</td><td><a href="#k3">k3</a>, <a href="#k4">k4</a>, <a href="#k5">k5</a>, <a href="#k6">k6</a>, <a href="#k7">k7</a>, <a href="#k8">k8</a>, <a href="#k34">k34</a>, <a href="#k35">k35</a>, <a href="#k36">k36</a></td></tr>
+<tr class=""><td>vykladanie</td><td><a href="#k9">k9</a>, <a href="#k49">k49</a>, <a href="#k50">k50</a></td></tr>
+<tr class=""><td>spoje</td><td><a href="#k9">k9</a>, <a href="#k10">k10</a></td></tr>
+<tr class=""><td>strany a podstrčenie</td><td><a href="#k11">k11</a></td></tr>
+<tr class=""><td>prevaha</td><td><a href="#k11">k11</a></td></tr>
+<tr class=""><td>Vypiť</td><td><a href="#k10">k10</a>, <a href="#k39">k39</a></td></tr>
+<tr class=""><td>Záverečná</td><td><a href="#k21">k21</a></td></tr>
+<tr class=""><td>Pitka</td><td><a href="#k16">k16</a></td></tr>
+<tr class=""><td>NA EX</td><td><a href="#k16">k16</a>, <a href="#k23">k23</a>, <a href="#k43">k43</a>, <a href="#k46">k46</a></td></tr>
+<tr class=""><td>odpoveď na NA EX</td><td><a href="#k17">k17</a>, <a href="#k24">k24</a>, <a href="#k44">k44</a>, <a href="#k47">k47</a></td></tr>
+<tr class=""><td>priznanie</td><td><a href="#k20">k20</a>, <a href="#k40">k40</a></td></tr>
+<tr class=""><td>Dedičstvo</td><td><a href="#k12">k12</a></td></tr>
+<tr class=""><td>fajčenie</td><td><a href="#k22">k22</a></td></tr>
+<tr class=""><td>bitka a jej účet</td><td><a href="#k25">k25</a>, <a href="#k27">k27</a>, <a href="#k54">k54</a></td></tr>
+<tr class=""><td>pohľad Body a línia starších</td><td><a href="#i-body">i-body</a>, <a href="#i-log">i-log</a></td></tr>
+<tr class=""><td>bodový bar</td><td><a href="#i-koniec">i-koniec</a></td></tr>
+<tr class=""><td>priazeň a strach</td><td><a href="#i-body">i-body</a>, <a href="#k27">k27</a></td></tr>
+<tr class=""><td>vydesenie a prebudenie</td><td><a href="#k55">k55</a></td></tr>
+<tr class=""><td>patronát</td><td><a href="#k37">k37</a>, <a href="#k38">k38</a>, <a href="#k53">k53</a>, <a href="#k59">k59</a></td></tr>
+<tr class=""><td>Pohoršenie</td><td><a href="#k13">k13</a>, <a href="#k26">k26</a>, <a href="#k27">k27</a>, <a href="#k53">k53</a>, <a href="#k54">k54</a></td></tr>
+<tr class=""><td>Dlh</td><td><a href="#k18">k18</a>, <a href="#k48">k48</a></td></tr>
+<tr class=""><td>Cirhóza</td><td><a href="#k18">k18</a>, <a href="#k21">k21</a>, <a href="#k40">k40</a>, <a href="#k48">k48</a></td></tr>
+<tr class=""><td>Exekútor</td><td><a href="#k48">k48</a></td></tr>
+<tr class=""><td>pohľad Šenok</td><td><a href="#k2">k2</a></td></tr>
+<tr class=""><td>pohľad Lokality</td><td><a href="#i-ciel">i-ciel</a></td></tr>
+<tr class=""><td>pohľad Log</td><td><a href="#i-log">i-log</a></td></tr>
+<tr class=""><td>skratky a ?</td><td><a href="#i-skratky">i-skratky</a></td></tr>
+  </tbody>
+</table>
+</div>
+<div class="blok" style="margin-top:12px">
+  <p><b>Navyše oproti zadaniu:</b> limit vykladania, kraje lokality, obranca a útočník, posledná šanca v šenku, doplnenie šenku, nerest, rovnosť prevahy, Posilnenie, dlaždica Karty ako cieľ, pas, bomba (neaktívne akcie), hrozba na stole, posledné slovo, vyhodnotenie Pitky, Viera, otočenie Záverečnej, Dievčina na vydaj, sekera (zmienka), prebytok, Miňištrant, cigarety za prebytok, dobratie po bitke, efekt lokality (Krčma), Starešina v línii, efekt staršieho, doliatie poldeci, Pohreb, Absťák, bodovanie na konci.</p>
+  <p style="margin:0"><b>Len spomenuté alebo vynechané:</b> sekera (Melichar ju spomenie pri bitke v kole 1), ohlásené
+  vydesenie (spomenuté pri Farárovi), Vízia, stokársky barter, Poštárka a Veštica. Exekútor sa ukáže na Štamgastovej dlaždici
+  Dlhy (5/10) s vysvetlením. Skutočnú exekúciu by bolo treba hrať na desiatich priznaných Dlhoch.</p>
+</div>
+
+<footer>Navrhár NA EX!, vetva <code>navrhar/napady</code>. Scenár je overený nad master po pravidlách v4 (NA EX mimo limitu,
+Pohreb zlúčil Liečbu) a nástrojom z <code>features/vyucba</code> (1292481).</footer>
+</main>
+<script>
+(function () {
+  var tl = document.querySelectorAll('.filter button[data-f]');
+  var kroky = document.querySelectorAll('li.krok');
+  tl.forEach(function (b) {
+    b.addEventListener('click', function () {
+      var f = b.getAttribute('data-f');
+      tl.forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+      kroky.forEach(function (k) { k.hidden = !(f === 'vsetko' || k.getAttribute('data-kto') === f); });
+    });
+  });
+  var rb = document.getElementById('rozbal');
+  rb.addEventListener('click', function () {
+    var on = rb.getAttribute('aria-pressed') !== 'true';
+    rb.setAttribute('aria-pressed', on ? 'true' : 'false');
+    document.querySelectorAll('li.krok details').forEach(function (d) { d.open = on; });
+  });
+})();
+</script>
+</body>
+</html>
