@@ -16,6 +16,7 @@ import { join } from "node:path";
 import WebSocket from "ws";
 import type { ActionSums, CardInstance, CenyKliatob, ClientState, Command, ElderState, Event, GameData, GameState, PlayerId, Pohlavie, Rod, Slot, VerejnyStav } from "@naex/core";
 import {
+  jeKartaPatronatu,
   stavZavislosti,
   textNeresti,
   jeCoTahat,
@@ -101,6 +102,16 @@ const ucet = ucetHraca;
 const mojDir = join(relaciaDir, `hrac${hracArg}`);
 mkdirSync(mojDir, { recursive: true });
 const eldersJson = JSON.parse(readFileSync("packages/core/data/elders.json", "utf8")) as unknown;
+
+/** Akuzatív — „dober 1 kartu“, „2 karty“, „5 kariet“. */
+function kariet(n: number): string {
+  return n === 1 ? "1 kartu" : n >= 2 && n <= 4 ? `${n} karty` : `${n} kariet`;
+}
+
+/** Nominatív — „súperov balíček: 1 karta / 3 karty / 5 kariet“. */
+function kartyNom(n: number): string {
+  return n === 1 ? "1 karta" : n >= 2 && n <= 4 ? `${n} karty` : `${n} kariet`;
+}
 
 function zapis(text: string): void {
   appendFileSync(join(mojDir, "priebeh.log"), `[${new Date().toISOString()}] ${text}\n`);
@@ -277,7 +288,7 @@ function cenaNaexText(v: ClientState, uid: number): string {
   const stol: VerejnyStav = { ciel: v.ciel, ovladnute: v.ovladnute, strany, starsi: v.starsi, hraci: v.hraci };
   const d0 = poskodenieBitky(DATA, v, evaluateLine(DATA, lineState(v)).sums, ja === 0 ? [abstaky, 0] : [0, abstaky]);
   const d1 = poskodenieBitky(DATA, stol, evaluateLine(DATA, { ...lineState(v), strany }).sums, ja === 0 ? [abstaky, 0] : [0, abstaky]);
-  return `; bitka (tuhé) ${d0.tuhe[ja]}:${d0.tuhe[su]} → ${d1.tuhe[ja]}:${d1.tuhe[su]}; kliatby z tejto a ďalších Pitiek kola (NA EX leží do bitky): ty ${pre(ja)}, súper ${pre(su)}${svokra > 0 ? `; Svokra ti ukradne ${svokra} cig.` : ""}; súper má v ruke ${v.hraci[su].rukaPocet} kariet a smie odpovedať jednou`;
+  return `; bitka (tuhé) ${d0.tuhe[ja]}:${d0.tuhe[su]} → ${d1.tuhe[ja]}:${d1.tuhe[su]}; kliatby z tejto a ďalších Pitiek kola (NA EX leží do bitky): ty ${pre(ja)}, súper ${pre(su)}${svokra > 0 ? `; Svokra ti ukradne ${svokra} cig.` : ""}; súper má v ruke ${kariet(v.hraci[su].rukaPocet)} a smie odpovedať jednou`;
 }
 
 function vykresli(v: ClientState, mena: readonly string[]): string {
@@ -327,7 +338,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
     const d = v.draftStav;
     if (d.krok === "stavba") {
       out.push(
-        `STAVBA ŠENKU (naraz): ty ${d.vybral[ja] ? "si už vybral" : "vyberáš"}, súper ${d.vybral[su] ? "už vybral" : "vyberá"}; súperov balíček ${d.balicekPocet[su]} kariet (nevidíš ho).`,
+        `STAVBA ŠENKU (naraz): ty ${d.vybral[ja] ? "si už vybral" : "vyberáš"}, súper ${d.vybral[su] ? "už vybral" : "vyberá"}; súperov balíček: ${kartyNom(d.balicekPocet[su])} (nevidíš ho).`,
       );
       out.push(`TVOJ BALÍČEK STAVBY (${d.mojBalicek.length}):`);
       for (const k of d.mojBalicek) out.push(`  ${popisKarty(k)}`);
@@ -597,7 +608,7 @@ function moznosti(v: ClientState): string[] {
       const cig = v.hraci[ja].cigarety;
       c(
         { type: "draftStop" },
-        `prestaň brať — máš ${mam} nových kariet, v Zhromaždení vyložíš ${limitZhromazdenia(v, ja)}${ds.hotovo[su] ? "" : "; súper potom má už len jeden posledný ťah"}`,
+        `prestaň brať — nových kariet máš ${mam}, v Zhromaždení vyložíš ${limitZhromazdenia(v, ja)}${ds.hotovo[su] ? "" : "; súper potom má už len jeden posledný ťah"}`,
       );
       for (const k of v.senok) {
         if (cig >= (KONSTANTY.CENA_SENKU[1] ?? 1)) c({ type: "draftBer", uids: [k.uid] }, `vezmi zo šenku ${meno(k.defId)} za ${KONSTANTY.CENA_SENKU[1]} cigaretu (máš ${cig})`);
@@ -697,10 +708,10 @@ function moznosti(v: ClientState): string[] {
       const mamKartu = (defId: string) => [...v.strany[0], ...v.strany[1]].some((pl) => pl.playedBy === ja && pl.card.defId === defId && pl.zaverecna !== true);
       if (mamKartu("postarka") && pk?.postarka[ja] !== true) {
         for (let n = 1; n <= KONSTANTY.EFEKT.POSTARKA_KARTY; n++)
-          c({ type: "postarka", pocet: n }, `Poštárka: dober ${n} kariet navyše a získaj ${KONSTANTY.EFEKT.POSTARKA_DLHY} Dlh (hneď priznaný)`);
+          c({ type: "postarka", pocet: n }, `Poštárka: dober ${kariet(n)} navyše a získaj ${KONSTANTY.EFEKT.POSTARKA_DLHY} Dlh (hneď priznaný)`);
       }
       if (mamKartu("starosta") && pk?.starosta[ja] !== true && h.cigarety > 0) {
-        out.push(`{"type":"starosta","rukaUid":U,"senokUid":S}   — Starosta: za 1 cigaretu vymeň kartu z ruky (U) za kartu zo šenku (S)`);
+        out.push(`{"type":"starosta","rukaUid":U,"senokUid":S}   — Starosta: za 1 cigaretu vymeň kartu z ruky (U) za kartu zo šenku (S); staršieho z patronátu do šenku nedáš`);
       }
       if (h.cigarety > 0 && !zakazFajcit(v) && jeCoTahat(h.doberaciPocet, h.odhadzovaci.length)) c({ type: "smoke", pocet: 1 }, "vyfajč 1 cigaretu — hneď si doberieš kartu (ťah nekončí)");
       // Zberný dvor (Michal 2026-10-20): raz za Pitku za cigaretu karta z odhadzovacieho balíčka.
@@ -777,7 +788,8 @@ function moznosti(v: ClientState): string[] {
         c({ type: "skipPohreb" }, "preskočiť Pohreb");
         const cirhoza = v.hraci[ja].priznane.find((k) => k.defId === "cirhoza");
         if (cirhoza !== undefined) {
-          for (const pl of [...v.strany[0], ...v.strany[1]].filter((x) => x.playedBy === ja)) {
+          // Len ťahy, ktoré motor prijme: staršieho z patronátu pochovať nemožno (Navrhár 2026-10-23).
+          for (const pl of [...v.strany[0], ...v.strany[1]].filter((x) => x.playedBy === ja && !jeKartaPatronatu(v, x.card.uid))) {
             c({ type: "pohreb", cirhozaUid: cirhoza.uid, kartaUid: pl.card.uid }, `Pohreb: spáľ Cirhózu a ${meno(pl.card.defId)}`);
             if (DATA.cards.get(pl.card.defId)?.tags.includes("Závislý") === true)
               for (const s of v.senok) c({ type: "pohreb", cirhozaUid: cirhoza.uid, kartaUid: pl.card.uid, senokUid: s.uid }, `Pohreb Závislého: spáľ Cirhózu a ${meno(pl.card.defId)}, zober ${meno(s.defId)} zo šenku`);
@@ -805,7 +817,7 @@ function textUdalosti(e: Event, mena: readonly string[], ja: PlayerId): string |
     case "faza":
       return `— fáza: ${e.faza}`;
     case "tahal":
-      return `${m(e.hrac)} ťahá ${e.pocet} kariet.`;
+      return `${e.hrac === ja ? "ty ťaháš" : `${m(e.hrac)} ťahá`} ${kariet(e.pocet)}.`;
     case "kartyTahane":
       return `Dobral si: ${e.karty.map((k) => `#${k.uid} ${meno(k.defId)}`).join(", ")}`;
     case "manualEfekt":

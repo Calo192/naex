@@ -1545,7 +1545,11 @@ export function moznyPatronat(data: GameData, state: GameState, p: PlayerId): El
 }
 
 /** Je karta s týmto uid práve karta staršieho, ktorého má niekto v patronáte? */
-export function jeKartaPatronatu(state: Pick<GameState, "patronat" | "starsi">, uid: number): boolean {
+// Štruktúrny typ: rovnako sa pýta server (GameState) aj klient agentov (ClientState).
+export function jeKartaPatronatu(
+  state: { readonly patronat: readonly ({ readonly elderId: string } | null)[]; readonly starsi: readonly ElderState[] },
+  uid: number,
+): boolean {
   return state.patronat.some((x) => x !== null && state.starsi.find((e) => e.elderId === x.elderId)?.karta.uid === uid);
 }
 
