@@ -3813,7 +3813,7 @@ export function HernaPlocha({
               {kod}
             </span>
             <span className={`partia-super ${superPripojeny ? "online" : "offline"}`}>
-              <span className="spojenie">{superPripojeny ? `● ${menoHraca(super_)}` : `○ ${menoHraca(super_)} odpojený`}</span>
+              <span className="spojenie" title={menoHraca(super_)}>{superPripojeny ? `● ${menoHraca(super_)}` : `○ ${menoHraca(super_)} odpojený`}</span>
               {/* Kontumácia patrí k stavu „odpojený“, ktorý ju umožňuje (dizajn UI N1). */}
               {view.koniec === null && !superPripojeny && kontumacia !== undefined && (
                 <button

@@ -3614,6 +3614,13 @@ button.pecat-zrusit {
   border-color: color-mix(in srgb, var(--cervena) 55%, transparent);
 }
 
+/* Dlhé meno súpera sa skráti — blok partie nesmie vytlačiť menu (celé meno je v nápovede). */
+.partia-super .spojenie {
+  max-width: 13em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .partia-super.online .spojenie {
   color: var(--zelena);
 }

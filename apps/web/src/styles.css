@@ -623,6 +623,17 @@ textarea {
   padding: 8px 12px;
 }
 
+/* 1500–1699 px: menu tesnejšie a účet len avatarom — inak blok partie prekryje „Tvorbu“ (UI inšpekcia). */
+@media (min-width: 1500px) and (max-width: 1699px) {
+  .hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .navigacia a {
+    padding: 8px 8px;
+  }
+
+  .hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .ucet-meno {
+    display: none;
+  }
+}
+
 /* Užšie okno sa s blokom partie nezmestí — menu ide za hamburger (návrh C, 2026-10-22). */
 @media (max-width: 1499px) {
   .hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .hamburger {
