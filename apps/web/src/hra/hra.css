@@ -4744,6 +4744,11 @@ button.auto-hotovo-odkaz {
   background: var(--plocha-3);
 }
 
+/* Popisy na dlaždici o odtieň svetlejšie — 12 px potrebuje kontrast 4,5 : 1 (UI inšpekcia). */
+.karty-dlazdica .zdroj-pod {
+  color: color-mix(in srgb, var(--tlmeny) 75%, var(--text));
+}
+
 .karty-oblast {
   white-space: nowrap;
   overflow: hidden;
