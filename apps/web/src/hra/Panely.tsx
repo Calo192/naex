@@ -235,16 +235,8 @@ function bodov(n: number): string {
   return n === 0 ? "0 b" : `${n > 0 ? "+" : "−"}${Math.abs(n)} b`;
 }
 
-/** Riadok pod počítadlom: „po Pitke: Cirhóza ×1 · −4 b“ a čo príde v ďalších Pitkách. */
-function TextVyhladu({
-  kliatby,
-  meno,
-  cena,
-  opakovane,
-  dalsiePitky,
-  vPitke,
-  bitka,
-}: {
+/** Čo vstupuje do výhľadu Pitky pod Pečeňou či Zadĺžením. */
+interface VstupVyhladu {
   readonly kliatby: number;
   readonly meno: string;
   readonly cena: number;
@@ -253,32 +245,49 @@ function TextVyhladu({
   readonly vPitke: boolean;
   /** Dlh: čo spáli najbližšia bitka — body sa rátajú len za Dlhy, ktoré ostanú. */
   readonly bitka?: { readonly pali: number; readonly ostane: number };
-}) {
-  const vsetky = kliatby + opakovane * dalsiePitky;
-  // Riadky výhľadu sa v úzkej dlaždici skracujú trojbodkou — celé znenie je v titulku (UI inšpekcia N4).
-  const pitka = `${vPitke ? "po Pitke" : "v Pitke"}: ${kliatby > 0 ? `${meno} ×${kliatby}${bitka === undefined ? ` · ${bodov(kliatby * cena)}` : ""}` : "nič"}`;
-  const dalsie = `a v ${dalsiePitky === 1 ? "ďalšej Pitke" : `ďalších ${dalsiePitky} Pitkách`} znova ×${opakovane}`;
+}
+
+function pitkyKratko(n: number): string {
+  return n === 1 ? "ďalšia Pitka" : n >= 2 && n <= 4 ? `ďalšie ${n} Pitky` : `ďalších ${n} Pitiek`;
+}
+
+/**
+ * Výhľad Pitky: v dlaždici najviac dva krátke riadky, celé znenie do nápovedy
+ * (Michal 2026-10-23: tri riadky sa do baru s pevnou výškou nezmestili, text
+ * sa orezal a číslo prekrylo nadpis).
+ */
+function vyhladPitky(x: VstupVyhladu): { readonly kratke: readonly { readonly text: string; readonly zly: boolean }[]; readonly cele: readonly string[] } {
+  const vsetky = x.kliatby + x.opakovane * x.dalsiePitky;
+  const pitka = `${x.vPitke ? "po Pitke" : "v Pitke"}: ${x.kliatby > 0 ? `${x.meno} ×${x.kliatby}${x.bitka === undefined ? ` · ${bodov(x.kliatby * x.cena)}` : ""}` : "nič"}`;
+  const dalsie = x.dalsiePitky > 0 && x.opakovane > 0 ? `a v ${x.dalsiePitky === 1 ? "ďalšej Pitke" : `ďalších ${x.dalsiePitky} Pitkách`} znova ×${x.opakovane}` : null;
   const poBitke =
-    bitka === undefined
-      ? ""
-      : `${bitka.pali > 0 ? `bitka spáli až ${bitka.pali} → ostane ×${bitka.ostane}` : `po bitke ostanú ×${bitka.ostane}`} · ${bodov(bitka.ostane * cena)}`;
+    x.bitka === undefined || vsetky === 0
+      ? null
+      : `${x.bitka.pali > 0 ? `bitka spáli až ${x.bitka.pali} → ostane ×${x.bitka.ostane}` : `po bitke ostanú ×${x.bitka.ostane}`} · ${bodov(x.bitka.ostane * x.cena)}`;
+  const kratke = [{ text: pitka, zly: x.kliatby > 0 }];
+  // Druhý riadok: Dlh — čo ostane po bitke (zahŕňa aj ďalšie Pitky); Cirhóza — ďalšie Pitky.
+  if (x.bitka !== undefined && poBitke !== null) kratke.push({ text: `po bitke ×${x.bitka.ostane} · ${bodov(x.bitka.ostane * x.cena)}`, zly: x.bitka.ostane > 0 });
+  else if (dalsie !== null) kratke.push({ text: `${pitkyKratko(x.dalsiePitky)}: ×${x.opakovane}`, zly: true });
+  return { kratke, cele: [pitka, dalsie, poBitke].filter((t): t is string => t !== null) };
+}
+
+/** Riadky výhľadu pod počítadlom (krátke; celé v nápovede dlaždice). */
+function TextVyhladu({ x }: { readonly x: VstupVyhladu }) {
   return (
     <>
-      <span className={`vyhlad ${kliatby > 0 ? "zly" : ""}`} title={pitka}>
-        {pitka}
-      </span>
-      {dalsiePitky > 0 && opakovane > 0 && (
-        <span className="vyhlad zly" title={dalsie}>
-          {dalsie}
+      {vyhladPitky(x).kratke.map((r) => (
+        <span key={r.text} className={`vyhlad ${r.zly ? "zly" : ""}`}>
+          {r.text}
         </span>
-      )}
-      {bitka !== undefined && vsetky > 0 && (
-        <span className={`vyhlad ${bitka.ostane > 0 ? "zly" : ""}`} title={poBitke}>
-          {poBitke}
-        </span>
-      )}
+      ))}
     </>
   );
+}
+
+/** Celý výhľad Pitky v nápovede dlaždice — dlaždica ukáže len skrátené riadky. */
+function TipVyhladu({ x }: { readonly x: VstupVyhladu | null }) {
+  if (x === null) return null;
+  return <span className="tip-stav">{vyhladPitky(x).cele.join(" · ")}.</span>;
 }
 
 /** Zdroj na doske; nápoveda sa ukáže pri prejdení myšou (ako tooltipy kariet). */
@@ -402,6 +411,29 @@ export function HracDoska({
   const v = vyhlad?.nahlad ?? null;
   const pecenPo = v === null ? hrac.pecen : v.pecen + v.pecenZoStola;
   const zadlzeniePo = v === null ? hrac.zadlzenie : v.zadlzenie + v.zadlzenieZoStola;
+  const vyhladPecene: VstupVyhladu | null =
+    vyhlad === null || v === null
+      ? null
+      : {
+          kliatby: v.cirhozy,
+          meno: "Cirhóza",
+          cena: vyhlad.cenaCirhozy,
+          opakovane: Math.floor(v.pecenZoStola / v.prahPecene),
+          dalsiePitky: vyhlad.dalsiePitky,
+          vPitke: vyhlad.vPitke,
+        };
+  const vyhladZadlzenia: VstupVyhladu | null =
+    vyhlad === null || v === null
+      ? null
+      : {
+          kliatby: v.dlhy,
+          meno: "Dlh",
+          cena: vyhlad.cenaDlhu,
+          opakovane: Math.floor(v.zadlzenieZoStola / v.prahDlhu),
+          dalsiePitky: vyhlad.dalsiePitky,
+          vPitke: vyhlad.vPitke,
+          bitka: vyhlad.dlhyBitka,
+        };
   const kliatby = view.nepriznaneKliatby[p];
   const priznaneDlhy = hrac.priznane.filter((k) => k.defId === "dlh").length;
 
@@ -565,22 +597,14 @@ export function HracDoska({
           pod={
             <>
               <Pruh hodnota={hrac.pecen} pribudne={v?.pecenZoStola ?? 0} prah={prahy.cirhoza} />
-              {vyhlad !== null && v !== null && (
-                <TextVyhladu
-                  kliatby={v.cirhozy}
-                  meno="Cirhóza"
-                  cena={vyhlad.cenaCirhozy}
-                  opakovane={Math.floor(v.pecenZoStola / v.prahPecene)}
-                  dalsiePitky={vyhlad.dalsiePitky}
-                  vPitke={vyhlad.vPitke}
-                />
-              )}
+              {vyhladPecene !== null && <TextVyhladu x={vyhladPecene} />}
             </>
           }
           tip={{
             nadpis: "Poškodenie pečene",
             text: (
               <>
+                <TipVyhladu x={vyhladPecene} />
                 {hrac.pecen} z {prahy.cirhoza}
                 {v !== null && v.pecenZoStola > 0 && `, karty na stole pripíšu ${v.pecenZoStola} → ${pecenPo}`}. Vyhodnocuje sa len v Pitke: za
                 každý celý prah vzniká Cirhóza (ide navrch doberacieho balíčka; priznaná dá súperovi v bitke +1 tuhé poškodenie) a{" "}
@@ -612,23 +636,14 @@ export function HracDoska({
           pod={
             <>
               <Pruh hodnota={hrac.zadlzenie} pribudne={v?.zadlzenieZoStola ?? 0} prah={prahy.dlh} />
-              {vyhlad !== null && v !== null && (
-                <TextVyhladu
-                  kliatby={v.dlhy}
-                  meno="Dlh"
-                  cena={vyhlad.cenaDlhu}
-                  opakovane={Math.floor(v.zadlzenieZoStola / v.prahDlhu)}
-                  dalsiePitky={vyhlad.dalsiePitky}
-                  vPitke={vyhlad.vPitke}
-                  bitka={vyhlad.dlhyBitka}
-                />
-              )}
+              {vyhladZadlzenia !== null && <TextVyhladu x={vyhladZadlzenia} />}
             </>
           }
           tip={{
             nadpis: "Zadĺženie",
             text: (
               <>
+                <TipVyhladu x={vyhladZadlzenia} />
                 {hrac.zadlzenie} z {prahy.dlh}
                 {v !== null && v.zadlzenieZoStola > 0 && `, karty na stole pripíšu ${v.zadlzenieZoStola} → ${zadlzeniePo}`}. Za každý celý prah
                 vzniká karta Dlh — <b>hneď sa prizná</b> a na konci hry uberá body aj priznaný.
