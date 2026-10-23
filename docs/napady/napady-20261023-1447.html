@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nápady NA EX! — dávka 3</title>
+<style>
+:root {
+  --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --okraj: #3d3229;
+  --text: #f1e8d8; --tlmeny: #b6a790;
+  --akcent: #e9ad45; --cervena: #d0563f; --zelena: #7cbf74; --modra: #8fb4e0;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #dccdb3;
+    --text: #2a2016; --tlmeny: #5e4f3b;
+    --akcent: #9a5d06; --cervena: #a83a26; --zelena: #356e2f; --modra: #2d5a8f;
+    color-scheme: light;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 system-ui, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 980px; margin: 0 auto; padding: 28px 16px 56px; }
+h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; line-height: 1.2; }
+h1 { font-size: clamp(1.7rem, 4vw, 2.3rem); margin: 0 0 10px; }
+h2 { font-size: 1.45rem; margin: 40px 0 14px; padding-bottom: 6px; border-bottom: 1px solid var(--okraj); }
+h3 { font-size: 1.15rem; margin: 0 0 8px; }
+p { margin: 0 0 10px; }
+a { color: var(--akcent); }
+:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+.uvod { color: var(--tlmeny); }
+.odporucane { background: var(--plocha); border: 1px solid var(--akcent); border-radius: 12px; padding: 14px 16px; margin: 18px 0; }
+.odporucane ol { margin: 6px 0 0; padding-left: 20px; }
+.odporucane li { margin-bottom: 6px; }
+.tab-obal { overflow-x: auto; }
+table.prehlad { width: 100%; border-collapse: collapse; font-size: .93rem; }
+table.prehlad th, table.prehlad td { padding: 8px 6px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--okraj); }
+table.prehlad thead th { border-bottom: 2px solid var(--okraj); }
+.znacka { display: inline-block; font-size: .78rem; border-radius: 999px; padding: 1px 9px; border: 1px solid currentColor; white-space: nowrap; margin: 0 4px 2px 0; }
+.z-pravidla { color: var(--cervena); }
+.z-karty { color: var(--zelena); }
+.z-ui { color: var(--modra); }
+.z-odp { color: var(--akcent); font-weight: 600; }
+.z-nar { color: var(--tlmeny); }
+.z-cast { color: var(--text); background: var(--plocha-2); border-color: var(--okraj); }
+table.momenty td:first-child { font-weight: 600; }
+.filter { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
+.filter button { border: 1px solid var(--okraj); background: var(--plocha-2); color: var(--text); border-radius: 999px; padding: 6px 13px; font: inherit; font-size: .88rem; cursor: pointer; }
+.filter button[aria-pressed="true"] { background: var(--text); color: var(--pozadie); border-color: var(--text); }
+ol.napady { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+ol.napady > li { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 14px 16px; }
+ol.napady > li.odp { border-left: 4px solid var(--akcent); }
+ol.napady > li[hidden] { display: none; }
+.cislo { color: var(--akcent); font-family: Georgia, serif; margin-right: 6px; }
+.znacky { margin: 0 0 10px; }
+dl.polozka { margin: 0; display: grid; grid-template-columns: 9.5em 1fr; gap: 6px 12px; }
+dl.polozka dt { color: var(--tlmeny); font-size: .88rem; padding-top: 2px; }
+dl.polozka dd { margin: 0; }
+dl.polozka ul { margin: 0; padding-left: 18px; }
+dl.polozka li { margin-bottom: 3px; }
+.priklad { background: var(--plocha-2); border-radius: 8px; padding: 8px 12px; }
+.karta { display: inline-block; background: var(--plocha-2); border: 1px solid var(--okraj); border-radius: 8px; padding: 8px 10px; margin: 4px 0; width: 100%; }
+.karta b { color: var(--akcent); }
+.karta small { color: var(--tlmeny); }
+details.viac { margin-top: 10px; }
+details.viac summary { cursor: pointer; color: var(--tlmeny); font-size: .9rem; }
+details.viac[open] summary { color: var(--text); }
+.blok { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 16px; }
+.blok ul { margin: 4px 0 0; padding-left: 18px; }
+.blok li { margin-bottom: 5px; }
+code { font-family: ui-monospace, Consolas, monospace; font-size: .86em; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+footer { margin-top: 40px; padding-top: 12px; border-top: 1px solid var(--okraj); color: var(--tlmeny); font-size: .9rem; }
+@media (max-width: 600px) {
+  dl.polozka { grid-template-columns: 1fr; }
+  dl.polozka dt { padding-top: 6px; }
+  table.prehlad { font-size: .84rem; }
+}
+</style>
+<body>
+<main>
+
+<h1>Nápady pre NA EX! — dávka 3: „No teda, toto som nevideu!“</h1>
+<p class="uvod">Navrhár, 23. 10. 2026. Zadanie od Michala: dopamínové momenty, teda chvíle, ktoré si hráč pamätá ešte po
+partii. Sedem nápadov, štyri mechanické a tri prezentačné. Melichar tú vetu mimochodom už má: hláška
+„No teda, toto som nevideu“ je v soundboarde v skupine <i>Údiv</i>. Dnes sa však ozve náhodne po NA EX alebo po
+vyložení karty, nie vtedy, keď sa niečo naozaj stalo. Podklady sú pravidlá, sada v10 (<code>cards.json</code>),
+Účet bitky, pečiatky na hrane stola, Prehrávač (#18) a roadmapa. Frekvencie som odhadol skriptom nad sadou
+(dvojice strán kariet, nie celé partie). Turnaje som nespúšťal. Zamietnuté nápady z dávok 1 a 2 neopakujem. Pri každom
+nápade je uvedené, či mení <span class="znacka z-pravidla">pravidlá</span>, <span class="znacka z-karty">karty</span>,
+alebo len <span class="znacka z-ui">UI</span>.</p>
+
+<h2>Štyri zásady dobrého momentu</h2>
+<div class="blok">
+  <ul>
+    <li><b>Zaslúžený.</b> Moment vznikne z rozhodnutia hráča, nie z ťahania kariet. Hráč si povie „to som spravil ja“, nie „mal som šťastie“.</li>
+    <li><b>Viditeľný dopredu.</b> Súper ho vidí prichádzať a môže ho rozbiť. Napätie tak rastie už pred momentom, nie až v ňom.</li>
+    <li><b>Vzácny a odstupňovaný.</b> Čím zriedkavejší, tým hlasnejší: bronz, striebro, zlato. Keby pečiatka padala po každej karte, nikto by si ju nevšimol.</li>
+    <li><b>Neprevráti partiu.</b> Odmena platí v jednej bitke, nie natrvalo. Nesmie ísť proti dobiehaniu porazeného ani proti #7 (posledná bitka nemá rozhodnúť celú partiu).</li>
+  </ul>
+</div>
+
+<section class="odporucane" aria-labelledby="h-odp">
+  <h2 id="h-odp" style="margin-top:0;border:0;padding:0">Odporúčané</h2>
+  <ol>
+    <li><b>Počítadlo bitky</b> (nápad 6, UI, M). Výsledok bitky nebude skákať naraz, hráč ho uvidí rásť ako v Balatre.
+      Prejaví sa v každej bitke a balans nemení.</li>
+    <li><b>Pečiatky momentov s Melicharom</b> (nápad 5, UI, M). Spoločný základ všetkých momentov: jadro ich rozpozná, stôl ich
+      oznámi a Melichar sa ozve vtedy, keď je na to dôvod.</li>
+    <li><b>Zladená reťaz</b> (nápad 1, pravidlá, M). Mechanický „jackpot“ za presne poskladanú líniu. Súper ho vidí a môže ho
+      rozbiť NA EX. Pred zavedením ho treba zmerať turnajom.</li>
+  </ol>
+</section>
+
+<h2>Prehľad</h2>
+<div class="tab-obal">
+<table class="prehlad">
+  <thead><tr><th>#</th><th>Nápad</th><th>Druh</th><th>Mení</th><th>Ako často</th><th>Náročnosť</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td><a href="#n1">Zladená reťaz</a></td><td>mechanický</td><td><span class="znacka z-pravidla">pravidlá</span></td><td>reťaz 2: párkrát za partiu; reťaz 3: raz za niekoľko partií</td><td>M</td></tr>
+    <tr><td>2</td><td><a href="#n2">Krčmová bitka (Výtržník)</a></td><td>mechanický</td><td><span class="znacka z-karty">karty</span></td><td>legendárne, raz za 10 a viac partií</td><td>S–M</td></tr>
+    <tr><td>3</td><td><a href="#n3">Na zdravie! Dokonalá odpoveď</a></td><td>mechanický</td><td><span class="znacka z-pravidla">pravidlá</span></td><td>raz za 1–3 partie</td><td>S</td></tr>
+    <tr><td>4</td><td><a href="#n4">Flek! Zdvojenie stávky ako v mariáši</a></td><td>mechanický</td><td><span class="znacka z-pravidla">pravidlá</span></td><td>najviac 2× za partiu, zvrat po „beriem“ raz za niekoľko partií</td><td>M–L</td></tr>
+    <tr><td>5</td><td><a href="#n5">Pečiatky momentov s Melicharom</a></td><td>prezentačný</td><td><span class="znacka z-ui">UI</span></td><td>2–5 za partiu, zlatá raz za niekoľko partií</td><td>M</td></tr>
+    <tr><td>6</td><td><a href="#n6">Počítadlo bitky</a></td><td>prezentačný</td><td><span class="znacka z-ui">UI</span></td><td>každá bitka</td><td>M</td></tr>
+    <tr><td>7</td><td><a href="#n7">Moment partie: znova a s odkazom</a></td><td>prezentačný</td><td><span class="znacka z-ui">UI a platforma</span></td><td>raz za partiu</td><td>S–M</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Nápady</h2>
+<div class="filter" role="group" aria-label="Filter nápadov">
+  <button type="button" data-f="vsetko" aria-pressed="true">Všetko</button>
+  <button type="button" data-f="mech" aria-pressed="false">Mechanické</button>
+  <button type="button" data-f="prez" aria-pressed="false">Prezentačné</button>
+  <button type="button" data-f="pravidla" aria-pressed="false">Pravidlá</button>
+  <button type="button" data-f="karty" aria-pressed="false">Karty</button>
+  <button type="button" data-f="ui" aria-pressed="false">UI</button>
+  <button type="button" data-f="odp" aria-pressed="false">Len odporúčané</button>
+</div>
+
+<ol class="napady">
+
+<!-- 1 -->
+<li id="n1" class="odp" data-typ="mech pravidla" data-odp="1">
+  <h3><span class="cislo">1</span>Zladená reťaz: línia, v ktorej nič nevisí</h3>
+  <div class="znacky"><span class="znacka z-cast">mechanický</span><span class="znacka z-pravidla">pravidlá</span><span class="znacka z-nar">M</span><span class="znacka z-odp">odporúčané</span></div>
+  <dl class="polozka">
+    <dt>Moment</dt>
+    <dd>Hráč priloží kartu a všetky akcie na oboch stranách spoja do seba zapadnú. Na stole sa rozsvieti zlatý šev
+      a hneď vedľa ďalší. „Celá moja strana hrá.“</dd>
+    <dt>Návrh</dt>
+    <dd>Spoj dvoch kariet <b>tej istej partie</b> je <b>zladený</b>, keď sa na ňom spárujú všetky akcie oboch hrán (žiadna
+      neostane bez páru), párov je aspoň 2 a žiadny Odpor tam nezruší akciu. Vzbura a Posilnenie sa rátajú ako pár.
+      <ul>
+        <li><b>Reťaz 2</b> (dva zladené spoje za sebou, prostredná karta je zladená na oboch hranách): majiteľ +2 tuhé v bitke.</li>
+        <li><b>Reťaz 3</b>: +5 tuhé.</li>
+      </ul>
+      Reťaz preruší spoj s lokalitou, so súperovou kartou alebo s Nástrojom. Ráta sa v bitke (§8.3) podľa línie po NA EX.
+      NA EX zruší aktívne akcie karty, takže jej spoje prestanú byť zladené a reťaz sa pretrhne.</dd>
+    <dt>Ako by sa hral</dt>
+    <dd class="priklad">Jano má v kraji pri výčape Záhradkára a Živnostníka, spojených tromi pármi, a nič nevisí. Do ruky
+      mu príde Šarlatán, ktorého ľavá hrana presne sadne na vonkajšiu hranu Živnostníka. Náhľad pri vyložení ukáže
+      „zladený spoj, reťaz 2 (+2 tuhé)“. Fero to vidí a v Pitke dá NA EX na Živnostníka. Zruší mu tým tri aktívne akcie
+      a pretrhne reťaz, ale vlastnú bombu na Hasičovi už nepoloží. Musí sa rozhodnúť, čo je drahšie.</dd>
+    <dt>Ako často</dt>
+    <dd>Odhad zo sady v10: zladená je asi 7 % náhodných dvojíc strán hráčskych kariet, s tromi pármi 2 %. Hráč si vyberá
+      z ruky aj z oboch koncov, takže jeden zladený spoj postaví často. Reťaz 2 odhadujem párkrát za partiu, reťaz 3
+      raz za niekoľko partií. Presné čísla dá až turnaj.</dd>
+    <dt>Balans a strategickosť</dt>
+    <dd>Zručnosť: viac. Pri skladaní línie pribudne otázka „čo ostane visieť“ popri „čo sa aktivuje“ a súper má nové
+      rozhodnutie, či NA EX použije na pretrhnutie reťaze. Náhoda: o niečo viac, lebo záleží na tom, čo príde do ruky.
+      Reťaz je však na stole celý čas a dá sa jej brániť. Bonus platí len v jednej bitke. Riziko: zvýhodní hráča
+      s veľkou rukou (#53).</dd>
+    <dt>Čo zmeniť</dt>
+    <dd><ul>
+      <li><b>Pravidlá:</b> §4 (pojem zladený spoj), §8.3 (tuhé za reťaz), ťahák AI hráčov.</li>
+      <li><b>Kód:</b> čistá funkcia v jadre s testom, náhľad spoja pred vyložením, výhľad bitky a bot.</li>
+      <li><b>UI:</b> zlatý šev na zladenom spoji a číslo reťaze pri kraji.</li>
+    </ul></dd>
+    <dt>Riziká</dt>
+    <dd>Ak bude reťaz 2 padať skoro v každej bitke, +2 a +5 budú rozhodovať tesné bitky príliš často. Potom začať s +1 a +3.
+      Pravidlo musí jednoznačne povedať, čo je pár (Posilnenie + X áno, Odpor + X nie, Vzbura áno).</dd>
+    <dt>Inšpirácia</dt>
+    <dd>Balatro (ruka, ktorá sadne celá), domino a Carcassonne (dokonalé priloženie), Slay the Spire (balíček, ktorý sa
+      zrazu zladí).</dd>
+    <dt>Overenie</dt>
+    <dd>Turnaj botov, keď ich bot-tréner naučí reťaz: koľko reťazí 2 a 3 padne na partiu a o koľko častejšie vyhrá bitku
+      ten, kto ju má.</dd>
+  </dl>
+</li>
+
+<!-- 2 -->
+<li id="n2" data-typ="mech karty">
+  <h3><span class="cislo">2</span>Krčmová bitka: Výtržník a dve Vzbury naraz</h3>
+  <div class="znacky"><span class="znacka z-cast">mechanický</span><span class="znacka z-karty">karty</span><span class="znacka z-nar">S–M</span></div>
+  <dl class="polozka">
+    <dt>Moment</dt>
+    <dd>Na jednej karte sa stretnú dve Vzbury a kraj vybuchne. Všetky karty v ňom zahrajú naplno, tvoje aj súperove.
+      Toto je „wombo combo“, ktoré sa skladá tri kolá a padne raz za dlhý čas.</dd>
+    <dt>Návrh</dt>
+    <dd>Nová karta (akcie dotiahne Admin):
+      <div class="karta"><b>Výtržník</b> <small>Občan, Kriminál, Chlap</small><br>
+        Vľavo Odpor (slot 1) a Rana, vpravo Odpor (slot 0 alebo 2) a Pecka.<br>
+        Furt: Keď tvorí Vzburu na oboch hranách, vypukne <b>Krčmová bitka</b>: všetky karty v jeho kraji (oboch hráčov,
+        nie lokalita) vyhodnotia všetky inak neaktívne akcie ako aktívne.</div>
+      Sloty sú zvolené tak, aby ľavý Odpor sedel na Veteránov pravý Odpor (slot 1) a pravý na ľavý Odpor Recidivistu
+      (slot 0 – 1) alebo Praudovravca (slot 2). Na súperovej strane sa karty otáčajú, takže kombinácií je viac.</dd>
+    <dt>Ako by sa hral</dt>
+    <dd class="priklad">Šimon má v kraji pod mostom Veterána a priloží k nemu Výtržníka, čím vznikne prvá Vzbura. Hela
+      vidí, čo hrozí: Šimonovi stačí priložiť k Výtržníkovi Recidivistu. Koniec strany by zablokovala podstrčenou
+      kartou alebo Záverečnou, lenže má v limite poslednú kartu a potrebuje ju vo vlastnom kraji. Nechá to tak.
+      Šimon priloží Recidivistu a kraj vybuchne. Zahrajú naplno aj dve Heline karty s Petelicou, ktoré tam podstrčila
+      skôr, takže Šimon vyhrá len o 2.</dd>
+    <dt>Ako často</dt>
+    <dd>Vzbura dnes vznikne na 0,1 % náhodných dvojíc strán, dve na jednej karte prakticky nikdy. S Výtržníkom treba tri
+      konkrétne karty v jednom kraji s presne sediacimi slotmi. Legendárne: odhadom raz za 10 a viac partií, keď na to
+      niekto cielene hrá. Tak to má byť, je to zlatý moment.</dd>
+    <dt>Balans a strategickosť</dt>
+    <dd>Zručnosť: viac. Kombo sa skladá cez 2–3 Zhromaždenia a prvá Vzbura je na stole, takže súper má čas odpovedať:
+      podstrčenou kartou alebo Záverečnou na koniec strany, NA EX na Výtržníka (zruší jeho aktívne Odpory, tým aj
+      Vzbury) alebo vlastnými kartami v kraji, ktoré z výbuchu tiež budú mať. Výbuch zasiahne oboch, takže výhra nie je istá. Náhoda: len to, či príde tretia karta.</dd>
+    <dt>Čo zmeniť</dt>
+    <dd><ul>
+      <li><b>Karty:</b> 1 nová karta, ilustrácia a výklad v §14. Pravidlá sa nemenia, ide o efekt karty.</li>
+      <li><b>Kód:</b> Furt v aktivácii (vyhodnotiť po Vzburách, len raz a ďalej sa nereťazí), test, bot.</li>
+      <li><b>UI:</b> kraj sa rozsvieti a otrasie, pečiatka „Krčmová bitka“ (nápad 5).</li>
+    </ul></dd>
+    <dt>Riziká</dt>
+    <dd>Treba určiť poradie s NA EX. Po výbuchu v kraji nie je nič neaktívne, takže NA EX tam len ruší, a to je zaujímavé.
+      Výbuch nesmie prejsť cez lokalitu do druhého kraja. Michal musí potvrdiť, že NA EX na Výtržníka Vzbury zruší.</dd>
+    <dt>Inšpirácia</dt>
+    <dd>Hearthstone a Magic (kombo z troch kusov, ktoré súper vidí prichádzať), Inscryption (obeta, ktorá zrazu oživí celý rad).</dd>
+    <dt>Overenie</dt>
+    <dd>Turnaj tu nemá zmysel, moment je príliš vzácny. Stačí test jadra a jeden playtest so sadou, kde je Výtržník v hre.</dd>
+  </dl>
+</li>
+
+<!-- 3 -->
+<li id="n3" data-typ="mech pravidla">
+  <h3><span class="cislo">3</span>Na zdravie! Dokonalá odpoveď na NA EX</h3>
+  <div class="znacky"><span class="znacka z-cast">mechanický</span><span class="znacka z-pravidla">pravidlá</span><span class="znacka z-nar">S</span></div>
+  <dl class="polozka">
+    <dt>Moment</dt>
+    <dd>Súper dá posledným slovom NA EX na svoju bombu a ty odpovieš jedinou kartou, ktorá spáruje všetky jej neaktívne
+      akcie. Bomba nedá nič, na stole buchne „Na zdravie!“ a ty si pripiješ.</dd>
+    <dt>Návrh</dt>
+    <dd>Keď odpoveď na NA EX (§5) spáruje <b>všetky</b> neaktívne akcie karty s NA EX, takže NA EX nezdvojí nič, je to
+      <b>Na zdravie!</b>: odpovedajúci si hneď otočí jeden vypitý poldeci na plný. Ak vypitý nemá, dostane 2 cigarety
+      (cena doliatia). Karta musí mať pred odpoveďou aspoň 2 neaktívne akcie, inak by to bolo príliš ľahké.</dd>
+    <dt>Ako by sa hral</dt>
+    <dd class="priklad">Fero dá NA EX na vlastného Pijana na konci strany. Neaktívne sú tam Rana a Poldeci, ktoré by sa
+      zdvojili. Hela má v ruke kartu, ktorej hrana má akcie presne v tých slotoch. Priloží ju, oba páry sa aktivujú, NA EX
+      ich zruší a Pijan nedá nič. Hele sa doleje poldeci. Nabudúce dá Fero NA EX radšej na kartu vnútri strany.</dd>
+    <dt>Ako často</dt>
+    <dd>Dokonalá odpoveď je možná len na kartu na konci strany (vnútorné karty majú susedov pevne) a len s kartou, ktorá
+      presne sedí. Odhadom niekoľko percent NA EX, teda raz za 1–3 partie.</dd>
+    <dt>Balans a strategickosť</dt>
+    <dd>Zručnosť: viac na oboch stranách. Odpovedajúci hľadá presnú kartu a dávajúci sa učí dávať NA EX tam, kde sa
+      dokonale odpovedať nedá (vnútri strany, za Záverečnou, vedľa Šoféra). NA EX práve oslabilo #82, preto je odmena
+      malá, jeden poldeci. Hlavnou výhrou je zneškodnená bomba. Náhoda: žiadna.</dd>
+    <dt>Čo zmeniť</dt>
+    <dd><ul>
+      <li><b>Pravidlá:</b> jedna veta v §5 Odpoveď na NA EX.</li>
+      <li><b>Kód:</b> kontrola pri odpovedi, udalosť, náhľad (karta v ruke, ktorá to dokáže, dostane značku), bot.</li>
+      <li><b>UI:</b> pečiatka a cinknutie pohárov.</li>
+    </ul></dd>
+    <dt>Riziká</dt>
+    <dd>NA EX na krajnú kartu sa ešte o kúsok oslabí. Ak playtest ukáže, že sa naň prestane dávať, odmenu zrušiť a nechať
+      len pečiatku, teda čisto prezentačný variant.</dd>
+    <dt>Inšpirácia</dt>
+    <dd>Parry v Sekiro a Hollow Knight (presné načasovanie je odmenené), Counterspell v Magicu.</dd>
+    <dt>Overenie</dt>
+    <dd>V ďalšom playteste: koľkokrát padne Na zdravie a aký je podiel NA EX na krajnú kartu pred zmenou a po nej.</dd>
+  </dl>
+</li>
+
+<!-- 4 -->
+<li id="n4" data-typ="mech pravidla">
+  <h3><span class="cislo">4</span>Flek! Zdvojenie stávky ako v mariáši</h3>
+  <div class="znacky"><span class="znacka z-cast">mechanický</span><span class="znacka z-pravidla">pravidlá</span><span class="znacka z-nar">M–L</span></div>
+  <dl class="polozka">
+    <dt>Moment</dt>
+    <dd>Hráč si je istý bitkou, buchne po stole a povie „Flek!“. Súper odpovie „beriem“ a posledným slovom bitku otočí.
+      Alebo karty pustí a zachráni si kožu. Obidve chvíle sa pamätajú.</dd>
+    <dt>Návrh</dt>
+    <dd>Raz za partiu smie každý hráč na svojom ťahu v Pitke (pred „hotovo“) dať <b>Flek</b>. Súper hneď volí:
+      <ul>
+        <li><b>Beriem:</b> prebytok tejto bitky sa zdvojí pre toho, kto ho bude držať, teda aj pre súpera, ak bitku otočí.
+          Kto dal Flek, tým súperovi otvorí Pitku: súper smie hrať ešte raz, aj keď už povedal „hotovo“.</li>
+        <li><b>Pustím:</b> rozohraná Pitka sa dopije a ďalšie sa nehrajú. Bitku vyhrá ten, kto dal Flek, dostane lokalitu
+          aj sekeru, ale prebytok sa nerozdeľuje. Pohoršenia a ostatné kroky bitky prebehnú normálne.</li>
+      </ul>
+      V poslednej bitke Flek nie je (#7).</dd>
+    <dt>Ako by sa hral</dt>
+    <dd class="priklad">V K4 vedie Jano vo výhľade 9 : 4. Hrozba na stole ukazuje, že Fero zo stola dobehne najviac na 9 : 8,
+      a tak Jano dá Flek. Lenže Fero má na konci strany Záverečnú lícom dole a tú Janov výhľad nezapočíta. Fero povie
+      „beriem“ a dá NA EX na svoju Svokru. Na konci Pitky sa Záverečná otočí a je 9 : 11. Fero rozdeľuje dvojnásobný prebytok 4 a Melichar zahlási „No teda, toto som nevideu“.
+      Keby Fero nemal nič, karty by pustil a Jano by vzal lokalitu bez prebytku.</dd>
+    <dt>Ako často</dt>
+    <dd>Najviac dvakrát za partiu (každý raz), zvrat po „beriem“ odhadom raz za niekoľko partií. Pustené bitky končia bez
+      prebytku, takže partia je s Flekom skôr vyrovnanejšia.</dd>
+    <dt>Balans a strategickosť</dt>
+    <dd>Zručnosť: viac. Rozhoduje odhad súperovej ruky, blaf (Flek aj bez istoty, aby súper pustil) a cena pustenia. Nie je to
+      náhoda, rozhodujú obaja. Pustenie neznamená nabaľovanie, porazený príde o lokalitu, ale nie o markery. Pre útočníka
+      s posledným slovom by bol Flek po súperovom „hotovo“ takmer bez rizika. Preto Flek otvára Pitku súperovi.</dd>
+    <dt>Čo zmeniť</dt>
+    <dd><ul>
+      <li><b>Pravidlá:</b> §7 Pitka (Flek, beriem, pustím) a §8.4 (prebytok ×2, pustená bitka).</li>
+      <li><b>Kód:</b> nový príkaz a stav (kto už Flek dal), bot (beriem alebo pustím podľa výhľadu a hrozby na stole),
+        log, klient agentov a ťahák.</li>
+      <li><b>UI:</b> tlačidlo Flek pri „hotovo“, dialóg pre súpera, pečiatka.</li>
+    </ul></dd>
+    <dt>Riziká</dt>
+    <dd>Pitka je už teraz hustá (zrozumiteľnosť 5/10) a toto je ďalšie rozhodnutie v nej. Dvojnásobný prebytok vie spraviť
+      veľký švih, preto len raz za partiu a nie v poslednej bitke. Prekrýva sa s dražbou posledného slova (#74, po v4),
+      keďže obe menia Pitku. Michal by si mal vybrať jedno.</dd>
+    <dt>Inšpirácia</dt>
+    <dd>Flek a re v mariáši, zdvojovacia kocka v backgammone, truco. Slovenský stôl to pozná, takže pravidlo netreba dlho
+      vysvetľovať.</dd>
+    <dt>Overenie</dt>
+    <dd>Variant pravidiel vo worktree a bot, ktorý vie Flek dať a odpovedať naň. Potom <code>strategickost.ts</code>: či
+      zručnosť rastie a či sa nezväčšil rozptyl výsledku partie.</dd>
+  </dl>
+</li>
+
+<!-- 5 -->
+<li id="n5" class="odp" data-typ="prez ui" data-odp="1">
+  <h3><span class="cislo">5</span>Pečiatky momentov s Melicharom</h3>
+  <div class="znacky"><span class="znacka z-cast">prezentačný</span><span class="znacka z-ui">UI</span><span class="znacka z-nar">M</span><span class="znacka z-odp">odporúčané</span></div>
+  <dl class="polozka">
+    <dt>Moment</dt>
+    <dd>Keď sa niečo naozaj stane, stôl to povie nahlas. Na hranu stola dopadne pečiatka („ZVRAT!“, „BOMBA ×4“,
+      „ZACHRÁNENÉ“), cinkne pohár a Melichar zahlási „No teda, toto som nevideu“.</dd>
+    <dt>Návrh</dt>
+    <dd>Jadro dostane čistú funkciu <code>momenty(pred, po, udalosti)</code>. Z verejných zmien stavu rozpozná momenty
+      a dá im stupeň: bronz, striebro alebo zlato. Server ich pošle obom ako udalosť. Klient ukáže pečiatku na hrane stola
+      (pečiatky už existujú), pustí zvuk podľa stupňa a Melicharovu hlášku zo skupiny podľa toho, komu sa moment stal:
+      <i>Údiv</i>, <i>Pohoda</i> alebo <i>Smola</i>. Melichar sa tak už neozve náhodne po každom NA EX, ale len pri momente.
+      Strop: najviac 1 pečiatka za Pitku, zlato najviac 2 za partiu.
+      <div class="tab-obal" style="margin-top:8px">
+      <table class="prehlad momenty">
+        <thead><tr><th>Moment</th><th>Kedy</th><th>Stupeň</th><th>Ako často</th></tr></thead>
+        <tbody>
+          <tr><td>Zvrat posledným slovom</td><td>víťaz vo výhľade bitky sa zmení po poslednom NA EX alebo odpovedi</td><td>striebro</td><td>1–2 za partiu (#35: Hela pri 77 : 9)</td></tr>
+          <tr><td>Bomba ×4</td><td>akcia so súčinom násobkov aspoň 4 (NA EX × Silná žena, Veterán)</td><td>striebro</td><td>raz za niekoľko partií</td></tr>
+          <tr><td>Záverečná to otočila</td><td>po otočení Záverečnej sa zmení víťaz výhľadu</td><td>striebro</td><td>raz za niekoľko partií</td></tr>
+          <tr><td>Vzbura</td><td>Odpor + Odpor na spoji</td><td>bronz</td><td>zriedka (0,1 % spojov)</td></tr>
+          <tr><td>Exekútor odišiel naprázdno</td><td>hráč nad prahom odovzdá Nástroj, alebo ho Robota či Dievčina dostane tesne pod prah</td><td>striebro</td><td>zriedka</td></tr>
+          <tr><td>Prebudenie</td><td>marker na krajnej pozícii, starší sa prebudí</td><td>striebro</td><td>raz za niekoľko partií</td></tr>
+          <tr><td>Zachránené</td><td>ohlásené vydesenie zmarené patronátom</td><td>zlato</td><td>vzácne</td></tr>
+          <tr><td>Bitka o všetko</td><td>na sekere ležia aspoň 2 lokality (oznam pred bitkou)</td><td>striebro</td><td>zriedka</td></tr>
+          <tr><td>Výprask</td><td>prebytok aspoň 8</td><td>bronz</td><td>párkrát za partiu</td></tr>
+          <tr><td>Z tejto dávky</td><td>reťaz 3, Krčmová bitka, Na zdravie!, Flek a jeho otočenie</td><td>striebro až zlato</td><td>podľa nápadov 1–4</td></tr>
+        </tbody>
+      </table>
+      </div></dd>
+    <dt>Ako by sa hral</dt>
+    <dd class="priklad">V K6 dá útočník posledným slovom NA EX na vlastnú Svokru a výhľad sa zmení z 0 : 4 na 0 : 8. Na hranu
+      stola dopadne strieborná pečiatka „Zvrat posledným slovom“. Útočník počuje hlášku zo skupiny <i>Pohoda</i>
+      („Toto je ŽIVOT“), obranca zo skupiny <i>Smola</i> („Ach, boha“). Pečiatka zároveň pomenuje trik, ktorý si hráč
+      zapamätá.</dd>
+    <dt>Ako často</dt>
+    <dd>2–5 pečiatok za partiu, zlatá raz za niekoľko partií. Zabezpečia to stupne a strop.</dd>
+    <dt>Balans a strategickosť</dt>
+    <dd>Pravidlá sa nemenia. Pečiatka dáva tvaru hry mená, a to pomáha zrozumiteľnosti (5/10). Pravidlo 2 platí aj tu:
+      moment sa počíta len z verejných vecí, Záverečná až po otočení a ruka nikdy. Treba na to test.</dd>
+    <dt>Čo zmeniť</dt>
+    <dd><ul>
+      <li><b>Jadro:</b> <code>momenty.ts</code> (čisté, deterministické) a testy, aj test, že moment nič neprezradí.</li>
+      <li><b>Server:</b> udalosť <code>moment</code> v logu, ktorú použije aj nápad 7.</li>
+      <li><b>Klient:</b> pečiatka, 3 krátke zvuky (cinknutie pohárov, buchnutie po stole, „ooo“ krčmy; súvisí s #19),
+        Melichar podľa momentu. V partii s ľuďmi hrá hláška len tomu, kto ju má zapnutú v profile. V profile je
+        vypínač pečiatok aj zvuku.</li>
+      <li><b>Voliteľne:</b> Michal nahrá pár nových hlášok k momentom („Flek!“, „Na zdravie!“, „Zachránil si sa“),
+        ktoré sa importujú cez <code>npm run melichar</code>.</li>
+    </ul></dd>
+    <dt>Riziká</dt>
+    <dd>Prehnané oslavy otravujú, preto strop a žiadna pečiatka za bežné veci. Pri <code>prefers-reduced-motion</code> bez
+      animácie. Hláška nesmie porazeného zosmiešňovať: <i>Smola</i> je sebaľútosť, nie posmech.</dd>
+    <dt>Inšpirácia</dt>
+    <dd>Balatro (efekty rastú so skóre), bojové hry („COUNTER!“, „PERFECT“), Peggle (Óda na radosť pri poslednej guli),
+      Hearthstone (emotikony a „Well played“).</dd>
+    <dt>Overenie</dt>
+    <dd>Playtest s ľuďmi: či hráči spomenú momenty v spätnej väzbe a ako sa pohnú známky zábavy a napätia (12 kritérií).</dd>
+  </dl>
+</li>
+
+<!-- 6 -->
+<li id="n6" class="odp" data-typ="prez ui" data-odp="1">
+  <h3><span class="cislo">6</span>Počítadlo bitky: výsledok, ktorý rastie</h3>
+  <div class="znacky"><span class="znacka z-cast">prezentačný</span><span class="znacka z-ui">UI</span><span class="znacka z-nar">M</span><span class="znacka z-odp">odporúčané</span></div>
+  <dl class="polozka">
+    <dt>Moment</dt>
+    <dd>Dnes sa výsledok bitky objaví naraz v Účte bitky. S počítadlom ho hráč vidí rásť: Rana +1, Pecka +2, NA EX ×2…
+      Pri ×4 sa číslo roztrasie a pri Viere súpera narazí na štít.</dd>
+    <dt>Návrh</dt>
+    <dd>Pri vyhodnotení bitky 3–5 sekúnd: karty v línii sa rozsvecujú od lokality von. Pri každej vyletí jej príspevok
+      k tuhému (+1, +2, +3, ×2, ×4 s otrasom), Bitkár a Cirhóza pribudnú ako žetóny a Viera súpera ako štít, ktorý číslo
+      zrazí. Nakoniec sa obe čísla stretnú a víťazná strana buchne. Potom nasleduje Účet bitky ako dnes. Klik alebo medzerník
+      animáciu preskočí, pri <code>prefers-reduced-motion</code> sa hneď ukáže výsledok.</dd>
+    <dt>Ako by sa hral</dt>
+    <dd class="priklad">Hela prehráva 4 : 6. Počítadlo dôjde k jej Silnej žene vedľa karty s NA EX: Pecka ×4 a na Helinej
+      strane 4 → 12. Fero má ešte Vieru, ale štít zrazí len 2 a je to 10 : 6. Hráč vidí presne, ktorá karta bitku
+      rozhodla.</dd>
+    <dt>Ako často</dt>
+    <dd>V každej bitke (5 / 7 / 11 za partiu). Je to základná vrstva, na ktorú sa nabaľujú ostatné momenty: pri zlatej
+      pečiatke je efekt väčší.</dd>
+    <dt>Balans a strategickosť</dt>
+    <dd>Na hru nemá vplyv. Zrozumiteľnosť: lepšia, hráč vidí, odkiaľ výsledok prišiel, a nemusí to hľadať v logu.</dd>
+    <dt>Čo zmeniť</dt>
+    <dd><ul>
+      <li><b>Jadro:</b> rozpis tuhého po kartách a násobkoch (čistý, ten istý výpočet ako vyhodnotenie), ak ho ešte nevracia.
+        Rozpis vznikne z verejnej línie, preto ho môžu dostať obaja.</li>
+      <li><b>Klient:</b> animácia v <code>HernaPlocha</code> pred Účtom bitky. Prehrávač (#18) ju môže prehrať tiež.</li>
+    </ul></dd>
+    <dt>Riziká</dt>
+    <dd>Zdržanie: partia má trvať do 60 minút (#9). Pri 4 sekundách na bitku je to pri 7 bitkách pol minúty a dá sa
+      preskočiť. Server na animáciu nečaká, obaja ju vidia naraz.</dd>
+    <dt>Inšpirácia</dt>
+    <dd>Balatro (počítadlo chips × mult), Slay the Spire (čísla poškodenia), Peggle.</dd>
+    <dt>Overenie</dt>
+    <dd>Playtest výučby (nováčikovia) a s ľuďmi: či rozumejú, prečo bitku prehrali.</dd>
+  </dl>
+</li>
+
+<!-- 7 -->
+<li id="n7" data-typ="prez ui" data-odp="0">
+  <h3><span class="cislo">7</span>Moment partie: znova a s odkazom</h3>
+  <div class="znacky"><span class="znacka z-cast">prezentačný</span><span class="znacka z-ui">UI a platforma</span><span class="znacka z-nar">S–M</span></div>
+  <dl class="polozka">
+    <dt>Moment</dt>
+    <dd>Po partii: „Moment partie: K5, Fero otočil 9 : 4 na 9 : 11 posledným slovom.“ Jeden klik a hráč to vidí ešte
+      raz, aj s pečiatkou. Odkaz pošle kamarátovi.</dd>
+    <dt>Návrh</dt>
+    <dd>Na obrazovke konca hry bude karta <b>Moment partie</b>: najsilnejší moment z detektora (nápad 5), krátky popis
+      a tlačidlo <i>Pozri znova</i>. Prehrávač (#18) otvorí krok pred momentom a sám prehrá 2–4 kroky s pečiatkou.
+      Odkaz <code>?krok=n</code> už existuje. V profile pribudne zbierka <i>Moje momenty</i>, ktorá nadväzuje na Úspechy
+      (#38) a Partiu týždňa (#32), kde Admin vyberá z momentov týždňa.</dd>
+    <dt>Ako by sa hral</dt>
+    <dd class="priklad">Hela prehrala, ale moment partie je jej: „Zachránené: patronátom nad Farárom zmarila ohlásené
+      vydesenie.“ Pozrie si ho znova a pošle odkaz Ferovi.</dd>
+    <dt>Ako často</dt>
+    <dd>Raz za partiu. Nejaký moment je skoro vždy, zlatý len vtedy, keď naozaj padol.</dd>
+    <dt>Balans a strategickosť</dt>
+    <dd>Na hru nemá vplyv. Hráči majú dôvod vrátiť sa a ukázať partiu ďalej, a to je pre komunitu viac ako ďalšia funkcia.</dd>
+    <dt>Čo zmeniť</dt>
+    <dd><ul>
+      <li><b>Server:</b> momenty partie uložené s číslom kroku (z udalostí z nápadu 5).</li>
+      <li><b>Klient:</b> karta na obrazovke konca hry, automatické prehrávanie v Prehrávači a zbierka v profile.</li>
+    </ul></dd>
+    <dt>Riziká</dt>
+    <dd>Bez detektora (nápad 5) nie je čo ukázať, preto ide až po ňom. Prehrávač ukazuje partiu z miesta účastníka.
+      Neúčastník by potreboval pohľad bez rúk (divácky režim, #37), dovtedy je odkaz len pre účastníkov. Rozbor partie
+      (#73) ukazuje najdrahšie chyby a toto najkrajšie chvíle. Najlepšie ako dve záložky jednej obrazovky.</dd>
+    <dt>Inšpirácia</dt>
+    <dd>Overwatch (Play of the Game), Rocket League (replay gólu), Lichess a Chess.com (brilantný ťah „!!“).</dd>
+    <dt>Overenie</dt>
+    <dd>Koľko hráčov si moment pozrie znova a koľko odkazov sa otvorí.</dd>
+  </dl>
+</li>
+
+</ol>
+
+<h2>Čo som zvážil a nenavrhujem</h2>
+<div class="blok">
+  <ul>
+    <li><b>Štvorka</b> (spoj so štyrmi pármi ako jackpot): stranu so štyrmi akciami má v sade len Kočovník, takže by
+      skoro nikdy nenastala. Nahradila ju Zladená reťaz.</li>
+    <li><b>Číha</b> (Záverečná ako pasca, ktorá sa otočí, keď súper splní podmienku): silný moment ako tajomstvá
+      v Hearthstone, ale je to Fígeľ (#75, po v4) postavený na Záverečnej. Patrí k #75, keď príde na rad.</li>
+    <li><b>Lavína strachu</b> (vydesenie potiahne susedných starších): reťazová reakcia, ktorá by však zosilnila
+      nabaľovanie víťaza.</li>
+    <li><b>Jackpot z náhody</b> (výhra z Výherného automatu, šťastná karta zo šenku): čistá náhoda bez rozhodnutia.</li>
+    <li><b>Bonus za zvrat v poslednej bitke</b>: ide proti #7.</li>
+    <li><b>Zamietnuté v dávkach 1 a 2</b> (Absťák s pevnou latkou, Krstný otec, Exekútor zabaví lokalitu, Spáč pod stolom,
+      Handrár, Tanečná zábava, Fašiangy) neopakujem.</li>
+  </ul>
+</div>
+
+<h2>Simulácie, ktoré by som pustil (zatiaľ nespustené)</h2>
+<div class="blok">
+  <ul>
+    <li>Frekvencie v tomto dokumente sú zo statického prepočtu nad <code>cards.json</code> (všetky rozloženia dvojíc strán
+      hráčskych kariet, bez lokalít, Nástrojov a kliatob), nie z partií.</li>
+    <li><b>Po naučení bota:</b> turnaj s reťazou (nápad 1). Flek (nápad 4) potrebuje variant pravidiel, bota
+      a <code>strategickost.ts</code>.</li>
+    <li>Každú simuláciu ohlásim Leaderovi pred spustením.</li>
+  </ul>
+</div>
+
+<footer>Navrhár NA EX!, vetva <code>navrhar/napady</code>. Pravidlá ani kód sa nemenili. O nápadoch rozhoduje Michal
+  cez Leadera, schválené idú do roadmapy.</footer>
+</main>
+<script>
+(function () {
+  var tlacidla = document.querySelectorAll('.filter button');
+  var napady = document.querySelectorAll('ol.napady > li');
+  tlacidla.forEach(function (b) {
+    b.addEventListener('click', function () {
+      var f = b.getAttribute('data-f');
+      tlacidla.forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+      napady.forEach(function (n) {
+        var typ = (n.getAttribute('data-typ') || '').split(' ');
+        var ukaz = f === 'vsetko' || (f === 'odp' ? n.getAttribute('data-odp') === '1' : typ.indexOf(f) >= 0);
+        n.hidden = !ukaz;
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>
