@@ -45,7 +45,10 @@ npm run dev          # server :8787 + klient :5173 (heslo admina: .env, NAEX_ADM
 npm start            # produkcia: server + zbuildovaný klient :8787
 npm run kniznica -- "docs/NA EX/NA EX"   # obrázky do knižnice tvorcu
 npm run hudba -- "<priečinok s MP3>"     # hudba počas partie (stiahnutá zo Suno) do data/hudba
-npm run melichar -- "data/majster_melichar"   # hlášky majstra Melichara (partia s botom) do data/melichar
+npm run melichar -- "data/majster_melichar"   # hlášky Melichara: priečinok = skupina na pulte (skupina.json: názov,
+                     # ikona, farba, kláves, nálady momentov); nová hláška = súbor do priečinka, nová skupina =
+                     # nový priečinok + skupina.json; „_“ sa nenahrá; import synchronizuje (docs/NASADENIE.md 5c).
+                     # Hlášky s etnickými nadávkami sa nepridávajú (Michal 2026-10-23)
 node --experimental-strip-types --no-warnings tools/admin/admin.ts <príkaz>   # nástroje agenta naex-admin
                      # ilustrácie: Leonardo.Ai API, kľúč NAEX_LEONARDO_KEY v .env (stojí API kredit);
                      # Michal 2026-10-21: na AKÝKOĽVEK nový obrázok smieš Leonardo použiť bez pýtania
