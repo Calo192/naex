@@ -36,10 +36,15 @@ export interface LupaProps {
   readonly prechod?: boolean;
   /** Lupa, ktorú myš opustila: len doznieva (zmenší sa a zmizne), udalosti neberie. */
   readonly doznieva?: boolean;
+  /**
+   * Lupa nad prvkom, nie cez neho (lupa staršieho, UI inšpekcia 2026-10-23): susedia
+   * v rade ostanú voľní pre myš. Otvorená ostáva, kým je myš na lupe alebo na prvku.
+   */
+  readonly nad?: boolean;
   readonly children: ReactNode;
 }
 
-export function Lupa({ rect, mierka: ziadana, onZavri, onPointerDown, onOdstran, prechod = false, doznieva = false, children }: LupaProps) {
+export function Lupa({ rect, mierka: ziadana, onZavri, onPointerDown, onOdstran, prechod = false, doznieva = false, nad = false, children }: LupaProps) {
   const zavriRef = useRef(onZavri);
   zavriRef.current = onZavri;
 
@@ -55,18 +60,25 @@ export function Lupa({ rect, mierka: ziadana, onZavri, onPointerDown, onOdstran,
     const v = obsahRef.current?.offsetHeight ?? null;
     if (v !== null && v !== vyskaObsahu) setVyskaObsahu(v);
   });
-  const h = Math.max(rect.height, vyskaObsahu ?? rect.height * mierka);
+  const h = nad ? (vyskaObsahu ?? rect.height * mierka) : Math.max(rect.height, vyskaObsahu ?? rect.height * mierka);
   const cx = rect.left + rect.width / 2;
   const cy = rect.top + rect.height / 2;
   const left = Math.max(OKRAJ, Math.min(cx - w / 2, window.innerWidth - w - OKRAJ));
-  const top = Math.max(OKRAJ, Math.min(cy - h / 2, window.innerHeight - h - OKRAJ));
+  // Nad prvkom (dotýka sa jeho hornej hrany); keď hore nie je miesto, pod ním.
+  const top = nad
+    ? rect.top - h >= OKRAJ
+      ? rect.top - h
+      : Math.min(rect.bottom, window.innerHeight - h - OKRAJ)
+    : Math.max(OKRAJ, Math.min(cy - h / 2, window.innerHeight - h - OKRAJ));
 
   useEffect(() => {
     if (doznieva) return;
     // Hranice z vypočítanej polohy, nie z DOM — počas animácie je lupa
     // ešte menšia a myš pri okraji by ju hneď zavrela.
-    const mimo = (e: PointerEvent): boolean =>
-      e.clientX < left || e.clientX > left + w || e.clientY < top || e.clientY > top + h;
+    const mimoLupy = (e: PointerEvent): boolean => e.clientX < left || e.clientX > left + w || e.clientY < top || e.clientY > top + h;
+    const mimoPrvku = (e: PointerEvent): boolean =>
+      e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom;
+    const mimo = (e: PointerEvent): boolean => mimoLupy(e) && (!nad || mimoPrvku(e));
     // Dotyk nemá „odchod“ — tam lupu zavrie ťuknutie mimo.
     const pohyb = (e: PointerEvent): void => {
       if (e.pointerType === "mouse" && mimo(e)) zavriRef.current({ x: e.clientX, y: e.clientY });
@@ -92,7 +104,7 @@ export function Lupa({ rect, mierka: ziadana, onZavri, onPointerDown, onOdstran,
       window.removeEventListener("resize", zavri);
       window.removeEventListener("blur", zavri);
     };
-  }, [left, top, w, h, doznieva]);
+  }, [left, top, w, h, doznieva, nad, rect]);
 
   return createPortal(
     <div
