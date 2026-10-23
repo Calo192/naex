@@ -10,7 +10,7 @@
 // „Rozhodnuté nejasnosti“) a označené v komentároch ako [R#].
 
 import type { CardDef, CardInstance, Phase, PlayerId, Tag } from "./types.ts";
-import { opponentOf } from "./types.ts";
+import { opponentOf, priazenZKluca } from "./types.ts";
 import type { GameData } from "./data.ts";
 import { defOf } from "./data.ts";
 import type { RngState } from "./rng.ts";
@@ -1046,10 +1046,14 @@ export function setupZRozdania(data: GameData, r: Rozdanie): GameState {
     return karta(id);
   });
   for (const elder of s.starsi) {
-    const sc = r.scorecardy?.[elder.elderId];
-    if (sc === undefined) continue;
-    if (!data.scorecards.some((x) => x.id === sc)) throw new Error(`Rozdanie: neznámy scorecard „${sc}“.`);
-    elder.scorecard = sc;
+    const ref = r.scorecardy?.[elder.elderId];
+    if (ref === undefined) continue;
+    // Scorecard podľa id, alebo podľa priazne (UZERNIK…) — id sa medzi sadami
+    // líšia (tvorca má „ocumovatel“, jadro „zberatel“), priazeň nie.
+    const priazen = priazenZKluca(ref);
+    const sc = data.scorecards.find((x) => x.id === ref) ?? data.scorecards.find((x) => priazen !== null && x.favour === priazen);
+    if (sc === undefined) throw new Error(`Rozdanie: neznámy scorecard „${ref}“.`);
+    elder.scorecard = sc.id;
   }
   for (const p of [0, 1] as const) {
     const h = r.hraci[p];
@@ -1059,6 +1063,9 @@ export function setupZRozdania(data: GameData, r: Rozdanie): GameState {
     if (h.cigarety !== undefined) hrac(s, p).cigarety = h.cigarety;
   }
   if (r.spolocnyBalicek !== undefined) s.spolocnyBalicek = r.spolocnyBalicek.map(karta);
+  // Ďalšia náhoda (zamiešanie odhodených) len zo seedu scenára — nie zo stavu
+  // po bežnom rozdaní, ktorý závisí od počtu kariet v sade (sada v11 ho zmenila).
+  s.rng = rngSeed(r.seed);
   return s as GameState;
 }
 

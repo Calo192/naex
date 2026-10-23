@@ -1,194 +1,933 @@
 {
-  "_comment": "Ukážkový scenár výučby (technika, New features 2026-10-23) — plný scenár píše Navrhár (docs/napady/vyucba-scenar.html). Karty: defId alebo defId/ľavý/pravý variant; v príkazoch odkazy zóna:defId#n. Overenie: tools/vyucba/prehraj.ts.",
   "id": "prva-hra",
   "nazov": "Prvá hra",
   "zverejnena": false,
   "rozdanie": {
-    "seed": 1,
+    "seed": 15,
     "lokality": [
-      "jednota",
-      "most"
+      "jednota/0/0",
+      "krcma/0/0"
     ],
+    "scorecardy": {
+      "farar": "LAKOMEC",
+      "krcmarka": "EXEKUTOR",
+      "starosta": "BITKAR",
+      "postarka": "VERIACI",
+      "hrobar": "ALKOHOLIK",
+      "autobusar": "FAJCIAR",
+      "veterinar": "NEPRAJNIK",
+      "vychovavatelka": "UZERNIK"
+    },
     "utocnik": 1,
     "hraci": [
       {
         "ruka": [
-          "pijan",
-          "pijan",
-          "ministrant",
-          "milujuca_manzelka",
-          "dievcina_na_vydaj"
+          "pijan/1/0",
+          "pijan/0/2",
+          "ministrant/0/0",
+          "milujuca_manzelka/0/0",
+          "dievcina_na_vydaj/0/0"
         ],
         "doberaci": [
-          "pijan",
-          "ministrant"
+          "ministrant/2/0",
+          "pijan/0/1"
         ]
       },
       {
         "ruka": [
-          "pijan",
-          "pijan",
-          "ministrant",
-          "milujuca_manzelka",
-          "dievcina_na_vydaj"
+          "pijan/0/0",
+          "pijan/1/1",
+          "ministrant/0/0",
+          "milujuca_manzelka/0/0",
+          "dievcina_na_vydaj/0/0"
         ],
         "doberaci": [
-          "pijan",
-          "ministrant"
+          "pijan/0/2",
+          "ministrant/1/1"
         ]
       }
+    ],
+    "spolocnyBalicek": [
+      "hasic/0/0",
+      "cigorky/0/0",
+      "pes/0/0",
+      "puska/0/0",
+      "policajtka/0/0",
+      "podvodnik/0/0",
+      "zahradkar/0/0",
+      "svokra/0/0",
+      "dvojcata/0/0",
+      "recidivista/0/0",
+      "niekoho_stryna/0/0",
+      "presbiter/0/0",
+      "veteran/0/0",
+      "zivnostnik/0/0",
+      "cierna_macka/0/0",
+      "vestica/0/0",
+      "pasca/0/0",
+      "nealko/0/0",
+      "vinko/0/0",
+      "noviny/0/0",
+      "veteran/0/0",
+      "kocovnik/0/0",
+      "zamocnik/0/0",
+      "liberal/0/0",
+      "sarlatan/0/0",
+      "praudovravec/0/0",
+      "financna_poradkyna/0/0",
+      "velmi_smutiaca_vdova/0/0",
+      "silna_nezavisla_zena/0/0",
+      "pes/0/0",
+      "hasic/1/1",
+      "zivnostnik/0/0",
+      "svokra/0/0",
+      "presbiter/0/0",
+      "vestica/0/0",
+      "cierna_macka/0/0"
     ]
   },
   "kroky": [
     {
-      "id": "uvod",
+      "id": "i-vitaj",
       "kto": "info",
-      "melichar": "Vitaj v krčme! Ja som majster Melichar a naučím ťa NA EX!"
+      "melichar": "Vitaj v krčme! Som majster Melichar. Zahráš si so Štamgastom: on hrá, ako mu ja našepkám, a ty, ako ti poviem ja. Dve kolá, asi pätnásť minút, a budeš vedieť viac než pol dediny."
     },
     {
-      "id": "ciel",
+      "id": "i-ciel",
+      "kto": "info",
+      "melichar": "Vyhráva, kto má na konci viac bodov. Body dávajú vybojované lokality, starší, ktorí sa ťa boja, a zvyšné cigarety. Dlhy a Cirhózy body berú. Dnes sa hrá o dve lokality, Jednotu a Krčmu. Nájdeš ich pod tlačidlom Lokality.",
+      "zvyraznit": [
+        "hlavicka:lokality"
+      ]
+    },
+    {
+      "id": "i-bar",
+      "kto": "info",
+      "melichar": "Dole je tvoj bar. Poldeci máš dva plné a limit vykladania je počet plných poldeci plus jedna. Cigarety máš tri: platíš nimi šenok, Dedičstvo a fajčenie. Pečeň a Zadĺženie sa plnia v Pitke, a keď pretečú, príde Cirhóza alebo Dlh. Hore je Štamgastov bar, ten istý, len zrkadlovo.",
+      "zvyraznit": [
+        "bar:poldeci",
+        "bar:cigarety",
+        "bar:pecen",
+        "bar:zadlzenie"
+      ]
+    },
+    {
+      "id": "i-karty",
+      "kto": "info",
+      "melichar": "Dlaždica Karty: v ruke máš päť kariet, v balíčku dve a odhodených nula. Klik alebo kláves O ukáže balíček, odhodené, priznané karty aj Dedičstvo.",
+      "zvyraznit": [
+        "bar:karty"
+      ]
+    },
+    {
+      "id": "i-body",
+      "kto": "info",
+      "melichar": "Klikni na Body. Namiesto kariet uvidíš líniu starších: osem dedinských autorít, každá na svojej bodovacej karte. Marker ukazuje, komu starší prejavuje priazeň a koho sa bojí. Strach dáva body tomu, koho sa bojí. Späť na stôl sa dostaneš klikom na Body alebo klávesom Esc.",
+      "zvyraznit": [
+        "bar:body"
+      ]
+    },
+    {
+      "id": "k0",
       "kto": "hrac",
       "prikaz": {
         "type": "chooseLocation",
         "uid": "lokality:jednota",
         "otocena": false
       },
-      "melichar": "Si obranca, tak vyberáš, o ktorú lokalitu sa bije. Vyber Jednotu.",
+      "melichar": "Ty si obranca, tak cieľ kola vyberáš ty. Vezmi Jednotu a nechaj ju, ako leží: Cigareta smeruje k tebe, Pohoršenie k Štamgastovi. Natočenie určí, ktorá hrana lokality pôjde do ktorého kraja.",
       "zvyraznit": [
-        ".lokalita-volba"
+        "lokality:jednota",
+        "otocenie"
       ]
     },
     {
-      "id": "stavba",
+      "id": "k1",
       "kto": "hrac",
       "prikaz": {
         "type": "stavbaSenku",
         "doSenku": [
-          "stavba:zivnostnik",
-          "stavba:svokra",
-          "stavba:financna_poradkyna",
-          "stavba:presbiter"
+          "stavba:hasic",
+          "stavba:cigorky",
+          "stavba:pes",
+          "stavba:svokra"
         ],
         "odhod": [
-          "stavba:svaty_text",
+          "stavba:puska",
           "stavba:policajtka",
-          "stavba:pasca",
-          "stavba:anonymny_alkoholik"
+          "stavba:podvodnik",
+          "stavba:zahradkar"
         ]
       },
-      "melichar": "Teraz staviaš šenok: štyri karty pôjdu do Šenku, štyri na Smetisko.",
+      "melichar": "Stavba šenku. Z ôsmich kariet dáš štyri na pult do šenku a štyri pod pult. Čo dáš na pult, môže kúpiť aj Štamgast. Hasiča a Krabičku chceme my, tak nech idú na pult.",
       "zvyraznit": [
-        ".stavba-senku"
+        "stavba"
       ]
     },
     {
-      "id": "stavba-bot",
+      "id": "k2",
       "kto": "bot",
+      "prikaz": {
+        "type": "stavbaSenku",
+        "doSenku": [
+          "stavba:dvojcata",
+          "stavba:recidivista",
+          "stavba:niekoho_stryna",
+          "stavba:presbiter"
+        ],
+        "odhod": [
+          "stavba:veteran",
+          "stavba:zivnostnik",
+          "stavba:cierna_macka",
+          "stavba:vestica"
+        ]
+      },
+      "melichar": "Štamgast vyberal naraz s tebou. Teraz vidíte obaja celý šenok, je v ňom osem kariet. Pozri sa naň tlačidlom Šenok hore."
+    },
+    {
+      "id": "k3",
+      "kto": "bot",
+      "prikaz": {
+        "type": "draftBer",
+        "uids": [
+          "senok:dvojcata"
+        ]
+      },
+      "melichar": "Útočník berie prvý. Jedna karta stojí cigaretu, dve stoja tri. Štamgast si vzal Dvojčatá, ešte uvidíš načo."
+    },
+    {
+      "id": "k4",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "draftBer",
+        "uids": [
+          "senok:hasic"
+        ]
+      },
+      "melichar": "Vezmi Hasiča. Má Petelicu, to sú tri rany naraz.",
+      "zvyraznit": [
+        "senok:hasic"
+      ]
+    },
+    {
+      "id": "k5",
+      "kto": "bot",
+      "prikaz": {
+        "type": "draftBer",
+        "uids": [
+          "senok:recidivista"
+        ]
+      },
+      "melichar": "Štamgast vzal Recidivistu. Aj ten má Petelicu."
+    },
+    {
+      "id": "k6",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "draftBer",
+        "uids": [
+          "senok:cigorky"
+        ]
+      },
+      "melichar": "A teraz Krabičku cigariet. Je to Nástroj: neskôr ju dáš do Dedičstva a v každej Pitke ti dá cigaretu navyše.",
+      "zvyraznit": [
+        "senok:cigorky"
+      ]
+    },
+    {
+      "id": "k7",
+      "kto": "bot",
+      "prikaz": {
+        "type": "draftStop"
+      },
+      "melichar": "Štamgast už brať nechce. Kto prestane, tomu druhému ostáva už len jeden ťah."
+    },
+    {
+      "id": "k8",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "draftStop"
+      },
+      "melichar": "Posledná cigareta sa ti ešte zíde, tak už neber (P). Šenok sa doplní z balíčka na osem kariet.",
+      "zvyraznit": [
+        "tlacidlo:pas"
+      ]
+    },
+    {
+      "id": "i-skratky",
+      "kto": "info",
+      "melichar": "Ešte skratky: K znamená končím či hotovo, P pas, N NA EX, O tvoje karty a Esc zruší výber. Otáznik hore ukáže celý zoznam.",
+      "zvyraznit": [
+        "hlavicka:skratky"
+      ]
+    },
+    {
+      "id": "k9",
+      "kto": "bot",
+      "prikaz": {
+        "type": "tah",
+        "kroky": [
+          {
+            "type": "place",
+            "uid": "ruka:pijan",
+            "target": "vlastna"
+          }
+        ]
+      },
+      "melichar": "Zhromaždenie! Útočník vykladá prvý. Štamgast priložil Pijana k Jednote a na spoji sa stretli Poldeci a Pohoršenie na rovnakej výške. Akcia platí, len keď má na druhej strane spoja partnera."
+    },
+    {
+      "id": "k10",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "tah",
+        "kroky": [
+          {
+            "type": "vypit"
+          },
+          {
+            "type": "place",
+            "uid": "ruka:pijan",
+            "target": "vlastna"
+          },
+          {
+            "type": "place",
+            "uid": "ruka:hasic",
+            "target": "vlastna"
+          }
+        ]
+      },
+      "melichar": "Limit máš tri karty, lebo máš dva plné poldeci a k tomu jedna. Vypi do dna: limit ti klesne na dva, ale obe karty zahráš hneď za sebou. Pijana daj k Jednote, jeho Rana sa stretne s Cigaretou. Za neho Hasiča. Petelica mu ostane bez páru, to si zapamätaj.",
+      "zvyraznit": [
+        "bar:poldeci",
+        "ruka:pijan",
+        "ruka:hasic"
+      ]
+    },
+    {
+      "id": "k11",
+      "kto": "bot",
+      "prikaz": {
+        "type": "tah",
+        "kroky": [
+          {
+            "type": "place",
+            "uid": "ruka:dvojcata",
+            "target": "superova"
+          }
+        ]
+      },
+      "melichar": "Štamgast ti podstrčil Dvojčatá na tvoju stranu. Karta ostáva jeho, jej akcie bodujú jemu. Do prevahy sa Dvojčatá rátajú za dvoch, takže v tvojom kraji je to 2 : 2. Pri rovnosti berie akcie hrany ten, koho karta leží hneď pri lokalite, a to je tvoj Pijan. A tvoj Hasič mu ešte posilnil Dlh. Posilnenie zdvojí, čo sa s ním spáruje, aj súperovi.",
+      "zvyraznit": [
+        "linia:dvojcata",
+        "prevaha"
+      ]
+    },
+    {
+      "id": "k12",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "tah",
+        "kroky": [
+          {
+            "type": "place",
+            "uid": "ruka:cigorky",
+            "target": "dedicstvo"
+          }
+        ]
+      },
+      "melichar": "Limit máš minutý, ale Nástroj do Dedičstva limit nemíňa. Pusti Krabičku na dlaždicu Karty. Prvý Nástroj v hre stojí cigaretu, ďalší už dve.",
+      "zvyraznit": [
+        "ruka:cigorky",
+        "bar:karty"
+      ]
+    },
+    {
+      "id": "k13",
+      "kto": "bot",
+      "prikaz": {
+        "type": "tah",
+        "kroky": [
+          {
+            "type": "place",
+            "uid": "ruka:dievcina_na_vydaj",
+            "target": "vlastna"
+          }
+        ]
+      },
+      "melichar": "Štamgast pridal Dievčinu na vydaj, to je jeho druhé Pohoršenie. Pohoršenie posúva staršieho smerom k súperovi, teda k tebe. Uvidíš po bitke."
+    },
+    {
+      "id": "k14",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "pass"
+      },
+      "melichar": "Viac nevyložíš, tak pasuj (P). Pas dáva cigaretu za každú kartu, ktorú by si ešte smel vyložiť. Dnes je to nula.",
+      "zvyraznit": [
+        "tlacidlo:pas"
+      ]
+    },
+    {
+      "id": "k15",
+      "kto": "bot",
+      "prikaz": {
+        "type": "pass"
+      },
+      "melichar": "Štamgast pasuje tiež. Ide sa do Pitky."
+    },
+    {
+      "id": "k16",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "naex",
+        "uid": "linia:hasic"
+      },
+      "melichar": "Pitka! Začína obranca. Pozri riadok Hrozba na stole: NA EX na Hasiča dá 7 : 0. NA EX položí poldeci na kartu, jej aktívne akcie zruší a neaktívne zdvojí. Hasičova Petelica nemala pár, teraz udrie dvakrát. Vyber Hasiča a daj NA EX! (N).",
+      "zvyraznit": [
+        "hrozba",
+        "linia:hasic",
+        "tlacidlo:naex"
+      ]
+    },
+    {
+      "id": "k17",
+      "kto": "bot",
+      "prikaz": {
+        "type": "place",
+        "uid": "ruka:recidivista",
+        "target": "vlastna"
+      },
+      "melichar": "Na NA EX smie súper hneď odpovedať jednou kartou mimo limitu. Štamgast vyložil Recidivistu s Petelicou. 7 : 3. Ty už nemáš čím hrať, tak za teba hra povie hotovo."
+    },
+    {
+      "id": "k18",
+      "kto": "bot",
+      "prikaz": {
+        "type": "skipNaex"
+      },
+      "melichar": "Útočník má posledné slovo, ale Štamgast si poldeci šetrí. Pitka sa vyhodnotí: Štamgastovi pretieklo zadĺženie, takže má dva Dlhy, hneď priznané. Tebe Vypiť, NA EX a Pijan naplnili pečeň a prišla Cirhóza. Leží navrchu tvojho balíčka. Jednota a Krabička ti dali dve cigarety."
+    },
+    {
+      "id": "k19",
+      "kto": "bot",
+      "prikaz": {
+        "type": "pass"
+      },
+      "melichar": "Druhé Zhromaždenie. Štamgast pasuje a za tri nevyložené karty berie tri cigarety. Do Pitky už nevyloží nič."
+    },
+    {
+      "id": "k20",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "tah",
+        "kroky": [
+          {
+            "type": "place",
+            "uid": "ruka:milujuca_manzelka",
+            "target": "priznanie"
+          }
+        ]
+      },
+      "melichar": "Milujúca manželka je Občan aj kliatba. Priznaj ju, pusti ju na dlaždicu Karty. Priznanie nemíňa limit a dostaneš za neho kartu. No pozri, dobral si práve tú Cirhózu, čo ležala navrchu.",
+      "zvyraznit": [
+        "ruka:milujuca_manzelka",
+        "bar:karty"
+      ]
+    },
+    {
+      "id": "k21",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "tah",
+        "kroky": [
+          {
+            "type": "zaverecna",
+            "uid": "ruka:pijan",
+            "target": "vlastna"
+          }
+        ]
+      },
+      "melichar": "Cirhózu zatiaľ nepriznávaj, priznaná by dala Štamgastovi ranu navyše v každej bitke. Posledné miesto zahraj ako Záverečnú: Pijan pôjde za cigaretu lícom dole. Štamgast nevidí, čo to je, a nič za ňu nepriloží. Otočí sa na konci Pitky.",
+      "zvyraznit": [
+        "ruka:pijan",
+        "zaverecna"
+      ]
+    },
+    {
+      "id": "k22",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "smoke",
+        "pocet": 1
+      },
+      "melichar": "Poldeci už nemáš, ale cigaretu áno. Vyfajč ju a hneď si dobereš kartu. Fajčiť sa dá v Zhromaždení aj v Pitke, a ráta sa to ako nerest, rovnako ako pitie.",
+      "zvyraznit": [
+        "bar:cigarety",
+        "tlacidlo:fajcit"
+      ]
+    },
+    {
+      "id": "k23",
+      "kto": "bot",
+      "prikaz": {
+        "type": "naex",
+        "uid": "linia:dvojcata"
+      },
+      "melichar": "Teraz má Štamgast posledné slovo: NA EX na vlastné Dvojčatá. Zruší im Dlh a zdvojí rany. Hrozba na stole ťa na to upozornila. Aj ty však smieš odpovedať.",
+      "zvyraznit": [
+        "hrozba"
+      ]
+    },
+    {
+      "id": "k24",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "place",
+        "uid": "ruka:ministrant#2",
+        "target": "superova"
+      },
+      "melichar": "Tvoju stranu blokuje Záverečná, tak Miňištranta daj na Štamgastovu stranu k Recidivistovi. Jeho Viera sa spáruje, a Viera znižuje súperovo tuhé poškodenie. 8 : 4.",
+      "zvyraznit": [
+        "ruka:ministrant"
+      ]
+    },
+    {
+      "id": "k25",
+      "kto": "bot",
+      "prikaz": {
+        "type": "skipNaex"
+      },
+      "melichar": "Pitka sa vyhodnotí a Záverečná sa otočí, je to Pijan. A potom bitka. Dievčina na vydaj si vzala Štamgastove dva Dlhy so sebou. Vydala sa, dlhy zmizli."
+    },
+    {
+      "id": "k26",
+      "kto": "bot",
+      "prikaz": {
+        "type": "pohorsenie",
+        "elderId": "starosta"
+      },
+      "melichar": "Pohoršenie: Štamgast posúva Starostu k tebe."
+    },
+    {
+      "id": "k27",
+      "kto": "bot",
+      "prikaz": {
+        "type": "pohorsenie",
+        "elderId": "starosta"
+      },
+      "melichar": "Starosta je v žltom na tvojej strane. Prejavuje ti priazeň Bitkára, a to sú +2 tuhé hneď v tejto bitke. Zároveň sa bojí Štamgasta, čo sú body pre neho. Bitka skončila 10 : 4, máš prebytok 6. Keby ste mali rovnako tuhého poškodenia, Jednota by išla na sekeru.",
+      "zvyraznit": [
+        "linia-starsich",
+        "bitka-ucet"
+      ]
+    },
+    {
+      "id": "k28",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "prebytok",
+        "elderId": "farar"
+      },
+      "melichar": "Víťaz rozdeľuje prebytok: každý bod posunie staršieho o krok k porazenému. Tvoj Miňištrant ti však posun zdražuje, každý stojí dva. Tlač Farára.",
+      "zvyraznit": [
+        "starsi:farar"
+      ]
+    },
+    {
+      "id": "k29",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "prebytok",
+        "elderId": "farar"
+      },
+      "melichar": "Ešte raz Farár."
+    },
+    {
+      "id": "k30",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "prebytok",
+        "elderId": "farar"
+      },
+      "melichar": "Farár je v oranžovom. Bojí sa ťa na úrovni dva a to sú body pre teba. Štamgast dostal jeho priazeň a cigaretu ako útechu. Jednota je tvoja. Každý si dobral dve karty a jeden vypitý poldeci sa ti dolial."
+    },
+    {
+      "id": "i-log",
+      "kto": "info",
+      "melichar": "Prvé kolo máš za sebou a vedieš 11 : 7. Hore pod tlačidlom Log je všetko, čo sa stalo, aj čo urobil Štamgast. Body ukazujú, ktorý starší ti koľko dáva.",
+      "zvyraznit": [
+        "hlavicka:log",
+        "bar:body"
+      ]
+    },
+    {
+      "id": "k31",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "chooseLocation",
+        "uid": "lokality:krcma",
+        "otocena": false
+      },
+      "melichar": "Vyhral si, takže si znova obranca a vyberáš. Ostala Krčma a tá má svoj zákon: kto má plný poldeci a kam ho dať, musí dať NA EX. Prah Cirhózy je tu zato o dva vyšší. Nechaj ju tak, aby Rana a Pecka smerovali k tebe.",
+      "zvyraznit": [
+        "lokality:krcma"
+      ]
+    },
+    {
+      "id": "k32",
+      "kto": "hrac",
       "prikaz": {
         "type": "stavbaSenku",
         "doSenku": [
           "stavba:veteran",
-          "stavba:zivnostnik",
-          "stavba:veteran#2",
-          "stavba:nealko"
+          "stavba:zamocnik",
+          "stavba:liberal",
+          "stavba:sarlatan"
         ],
         "odhod": [
-          "stavba:vyherny_automat",
-          "stavba:velmi_smutiaca_vdova",
-          "stavba:hasic",
-          "stavba:vestica"
+          "stavba:kocovnik",
+          "stavba:praudovravec",
+          "stavba:financna_poradkyna",
+          "stavba:velmi_smutiaca_vdova"
         ]
       },
-      "melichar": ""
-    },
-    {
-      "id": "ber-bot",
-      "kto": "bot",
-      "prikaz": {
-        "type": "draftBer",
-        "uids": [
-          "senok:veteran"
-        ]
-      },
-      "melichar": "Štamgast si berie Veterána za cigaretu."
-    },
-    {
-      "id": "ber",
-      "kto": "hrac",
-      "prikaz": {
-        "type": "draftBer",
-        "uids": [
-          "senok:svokra"
-        ]
-      },
-      "melichar": "Ty si vezmi Svokru — 1 karta za 1 cigaretu.",
+      "melichar": "Znova stavba šenku. Tentoraz nebudeme kupovať, cigarety pôjdu inam. Na pult daj štyri karty, ktoré Štamgastovi veľmi nepomôžu.",
       "zvyraznit": [
-        "#senok"
+        "stavba"
       ]
     },
     {
-      "id": "stop-bot",
+      "id": "k33",
       "kto": "bot",
       "prikaz": {
-        "type": "draftStop"
+        "type": "stavbaSenku",
+        "doSenku": [
+          "stavba:pes",
+          "stavba:hasic",
+          "stavba:zivnostnik",
+          "stavba:svokra"
+        ],
+        "odhod": [
+          "stavba:silna_nezavisla_zena",
+          "stavba:presbiter",
+          "stavba:vestica",
+          "stavba:cierna_macka"
+        ]
       },
-      "melichar": ""
+      "melichar": "Štamgast vybral svoje štyri."
     },
     {
-      "id": "stop",
+      "id": "k34",
+      "kto": "bot",
+      "prikaz": {
+        "type": "draftBer",
+        "uids": [
+          "senok:pes"
+        ]
+      },
+      "melichar": "Útočník berie prvý: Štamgast si kúpil Psa."
+    },
+    {
+      "id": "k35",
       "kto": "hrac",
       "prikaz": {
         "type": "draftStop"
       },
-      "melichar": "Stačí. Ukonči branie."
+      "melichar": "Ty šetríš. Dve cigarety budeš o chvíľu potrebovať."
     },
     {
-      "id": "vyloz-bot",
+      "id": "k36",
       "kto": "bot",
       "prikaz": {
-        "type": "place",
-        "uid": "ruka:veteran",
-        "target": "vlastna"
+        "type": "draftStop"
       },
-      "melichar": "Útočník vykladá prvý. Štamgast dal Veterána na svoju stranu."
+      "melichar": "Štamgast skončil s branim."
     },
     {
-      "id": "vyloz",
+      "id": "k37",
+      "kto": "bot",
+      "prikaz": {
+        "type": "bezPatronatu"
+      },
+      "melichar": "Patronát! Kto má priazeň staršieho, smie si ho vziať do ruky. Štamgast by mohol vziať Farára, ale nechal ho tak."
+    },
+    {
+      "id": "k38",
       "kto": "hrac",
+      "prikaz": {
+        "type": "patronat",
+        "elderId": "starosta",
+        "uid": "ruka:ministrant"
+      },
+      "melichar": "Starosta ti prejavuje priazeň, tak si ho vezmi. Na jeho miesto daj lícom dole Miňištranta a marker ide do stredu. Platíš dve cigarety a Štamgast dostane v bitke dve Pohoršenia navyše. Ak bitku vyhráš, Starosta je tvoj aj s bodmi. Ak prehráš, vrátiš ho a odhodíš poldeci.",
+      "zvyraznit": [
+        "starsi:starosta",
+        "ruka:ministrant"
+      ]
+    },
+    {
+      "id": "k39",
+      "kto": "bot",
+      "prikaz": {
+        "type": "tah",
+        "kroky": [
+          {
+            "type": "vypit"
+          },
+          {
+            "type": "place",
+            "uid": "ruka:pes",
+            "target": "vlastna"
+          },
+          {
+            "type": "place",
+            "uid": "ruka:pijan",
+            "target": "vlastna"
+          }
+        ]
+      },
+      "melichar": "Štamgast vypil a zahral dve karty naraz: Psa a Pijana."
+    },
+    {
+      "id": "k40",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "tah",
+        "kroky": [
+          {
+            "type": "place",
+            "uid": "ruka:cirhoza",
+            "target": "priznanie"
+          },
+          {
+            "type": "place",
+            "uid": "ruka:starosta",
+            "target": "vlastna"
+          }
+        ]
+      },
+      "melichar": "Teraz Cirhózu priznaj. Nepriznaná by ťa na konci stála body, priznaná dá Štamgastovi ranu navyše, no po bitke ju pochováš. A Starostu daj ku Krčme. Starešina sa ráta do prevahy a smie naňho ísť NA EX.",
+      "zvyraznit": [
+        "ruka:cirhoza",
+        "bar:karty",
+        "ruka:starosta"
+      ]
+    },
+    {
+      "id": "k41",
+      "kto": "bot",
+      "prikaz": {
+        "type": "pass"
+      },
+      "melichar": "Štamgast pasuje."
+    },
+    {
+      "id": "k42",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "pass"
+      },
+      "melichar": "Pasuj aj ty. Za kartu, ktorú si ešte smel vyložiť, dostaneš cigaretu."
+    },
+    {
+      "id": "k43",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "naex",
+        "uid": "linia:starosta"
+      },
+      "melichar": "Krčma ťa núti: máš plný poldeci, takže NA EX musíš dať. Daj ho na Starostu, jeho Pecky nemajú pár. 10 : 4.",
+      "zvyraznit": [
+        "linia:starosta",
+        "tlacidlo:naex"
+      ]
+    },
+    {
+      "id": "k44",
+      "kto": "bot",
       "prikaz": {
         "type": "place",
         "uid": "ruka:pijan",
-        "target": "vlastna"
+        "target": "superova"
       },
-      "melichar": "Teraz ty: polož Pijana na svoju stranu k lokalite.",
+      "melichar": "Štamgast odpovedal Pijanom k Starostovi: spároval mu Poldeci a NA EX ho zrušil. Pecky ti však nechal."
+    },
+    {
+      "id": "k45",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "skipNaex"
+      },
+      "melichar": "Hotovo (K). Je to nevratné, posledné slovo má útočník.",
       "zvyraznit": [
-        ".ruka",
-        ".stol-plst"
+        "tlacidlo:hotovo"
       ]
     },
     {
-      "id": "pas-bot",
+      "id": "k46",
+      "kto": "bot",
+      "prikaz": {
+        "type": "naex",
+        "uid": "linia:pijan#2"
+      },
+      "melichar": "Krčma núti aj jeho. NA EX na vlastného Pijana: o dve rany viac, ale aj dvojnásobný Dlh a pečeň."
+    },
+    {
+      "id": "k47",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "bezReakcie"
+      },
+      "melichar": "Odpovedať by si mohol, ale každá tvoja karta by mu ten Dlh a pečeň spárovala a NA EX by ich zrušil. Nechaj ho piť. Niekedy je najlepšia odpoveď žiadna.",
+      "zvyraznit": [
+        "tlacidlo:bez-odpovede"
+      ]
+    },
+    {
+      "id": "k48",
+      "kto": "bot",
+      "prikaz": {
+        "type": "skipNaex"
+      },
+      "melichar": "No vidíš: dva Dlhy a Cirhóza. Štamgast má priznané už tri Dlhy, pozri jeho dlaždicu Dlhy. Pri desiatich príde Exekútor a buď mu odovzdá Nástroj, alebo hneď prehrá.",
+      "zvyraznit": [
+        "bar-supera:dlhy"
+      ]
+    },
+    {
+      "id": "k49",
       "kto": "bot",
       "prikaz": {
         "type": "pass"
       },
-      "melichar": "Štamgast pasuje — za každú nevyloženú kartu dostane cigaretu."
+      "melichar": "Štamgast pasuje."
     },
     {
-      "id": "pas",
+      "id": "k50",
       "kto": "hrac",
       "prikaz": {
-        "type": "pass"
+        "type": "tah",
+        "kroky": [
+          {
+            "type": "place",
+            "uid": "ruka:pijan#2",
+            "target": "vlastna"
+          }
+        ]
       },
-      "melichar": "Aj ty pasuj, ideme do Pitky.",
+      "melichar": "Vylož ešte Pijana, po bitke sa ti zíde. Potom za teba hra pasuje sama."
+    },
+    {
+      "id": "k51",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "skipNaex"
+      },
+      "melichar": "Starosta má efekt: v Pitke za cigaretu vymení kartu z ruky za kartu zo šenku. Za dve cigarety by si si mohol doliať poldeci, lenže Krčma by ťa potom donútila dať NA EX. Daj hotovo (K).",
       "zvyraznit": [
-        ".pecat-koncim"
+        "tlacidlo:hotovo"
       ]
     },
     {
-      "id": "koniec-ukazky",
+      "id": "k52",
+      "kto": "bot",
+      "prikaz": {
+        "type": "skipNaex"
+      },
+      "melichar": "Štamgast skončil. Dostal ďalšie dva Dlhy, má ich už päť, a k tomu druhú Cirhózu. A teraz bitka."
+    },
+    {
+      "id": "k53",
+      "kto": "bot",
+      "prikaz": {
+        "type": "pohorsenie",
+        "elderId": "hrobar"
+      },
+      "melichar": "Dve Pohoršenia z patronátu. Štamgast tlačí Hrobára k tebe, aby sa bál jeho."
+    },
+    {
+      "id": "k54",
+      "kto": "bot",
+      "prikaz": {
+        "type": "pohorsenie",
+        "elderId": "vychovavatelka"
+      },
+      "melichar": "A Vychovávateľku tiež. Bitka skončila 11 : 7, prebytok je 4 a Miňištrant je teraz na scorecarde, nič ti nezdraží."
+    },
+    {
+      "id": "k55",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "prebytok",
+        "elderId": "farar"
+      },
+      "melichar": "Farár stál na predposlednom mieste už od začiatku kola, takže ho smieš vytlačiť na kraj. Je vydesený! Prebudil sa pre teba a jeho efekt teraz platí tebe. Kto vydesí polovicu starších a udrží ich do konca ďalšieho kola, vyhrá hneď.",
+      "zvyraznit": [
+        "starsi:farar"
+      ]
+    },
+    {
+      "id": "k56",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "prebytok",
+        "elderId": "autobusar"
+      },
+      "melichar": "Zvyšné tri body daj Autobusárovi."
+    },
+    {
+      "id": "k57",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "prebytok",
+        "elderId": "autobusar"
+      },
+      "melichar": "Ešte raz."
+    },
+    {
+      "id": "k58",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "prebytok",
+        "elderId": "autobusar"
+      },
+      "melichar": "A posledný. Autobusár je v oranžovom, bojí sa ťa."
+    },
+    {
+      "id": "k59",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "pohreb",
+        "cirhozaUid": "priznane:cirhoza",
+        "kartaUid": "linia:pijan",
+        "senokUid": "senok:hasic"
+      },
+      "melichar": "Pohreb: spáliš priznanú Cirhózu a jednu svoju kartu z línie. Pijan je Závislý, tak si navyše vezmeš kartu zo šenku, napríklad Hasiča. Balíček máš čistejší.",
+      "zvyraznit": [
+        "pohreb"
+      ]
+    },
+    {
+      "id": "i-abstak",
       "kto": "info",
-      "melichar": "Tu ukážkový scenár končí — plný napíše Navrhár."
+      "melichar": "Ešte jedna vec. Na konci kola si dostal Absťák: v tomto kole si mal menej nerestí ako v predošlom, a s priznanou Milujúcou manželkou to platí aj pri rovnakom počte. Neresti sú pitie, NA EX a fajčenie. V dlhšej partii by ti v každej ďalšej bitke ubral jednu ranu. Pozri dlaždicu Absťák.",
+      "zvyraznit": [
+        "bar:abstak"
+      ]
+    },
+    {
+      "id": "i-koniec",
+      "kto": "info",
+      "melichar": "Koniec! Vyhral si 62 : −24. Lokality ti dali 28, vydesený Farár 12, Starosta z patronátu 8, strach 6, znepokojenie 4 a cigarety 4. Štamgast stratil 20 bodov za Dlhy a 16 za dve Cirhózy, cigarety mu vrátili 12. Každá aktívna podmienka na kartách starších sa ráta zvlášť, preto majú lokality takú cenu. Klikni na Body a pozri si rozpis.",
+      "zvyraznit": [
+        "bar:body"
+      ]
+    },
+    {
+      "id": "i-dovidenia",
+      "kto": "info",
+      "melichar": "To je celá krčma. Štamgast sa z toho vyspí. Teraz sa skús postaviť niekomu naozajstnému, alebo botovi bez mojej nápovedy. Na zdravie!"
     }
   ]
 }

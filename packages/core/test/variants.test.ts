@@ -9,10 +9,10 @@ import { cardVariants, loadGameData, sideLayouts } from "../src/index.ts";
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
 describe("M1 — načítanie dát", () => {
-  it("načíta 60 kariet, 8 starších, 14 lokalít, 8 nástrojov (sada v12, 2026-10-20)", () => {
-    expect(data.cards.size).toBe(60);
+  it("načíta 63 kariet, 8 starších, 15 lokalít, 8 nástrojov (sada v11 živého webu, 2026-10-23)", () => {
+    expect(data.cards.size).toBe(63);
     expect(data.elders.size).toBe(8);
-    expect(data.lokality.length).toBe(14);
+    expect(data.lokality.length).toBe(15);
     expect(data.nastroje.length).toBe(8);
     expect(data.staresinovia.length).toBe(8);
   });
@@ -27,7 +27,7 @@ describe("M1 — načítanie dát", () => {
 });
 
 describe("M1 — generovanie variantov", () => {
-  it("pre všetkých 60 kariet sedí ľavé × pravé s permutations", () => {
+  it("pre všetkých 63 kariet sedí ľavé × pravé s permutations", () => {
     for (const def of data.cards.values()) {
       const v = cardVariants(def);
       expect(v.left.length, `${def.id} vľavo`).toBe(def.permutations.left);

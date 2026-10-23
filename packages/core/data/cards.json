@@ -1,5 +1,5 @@
 {
- "source": "tvorca kariet 2026-10-22T12:27:12.520Z",
+ "source": "tvorca kariet 2026-10-23T11:57:58.864Z",
  "actions": [
   "Cigareta",
   "Dlh",
@@ -1207,9 +1207,9 @@
     "Pamätník",
     "Chlap"
    ],
-   "effect_text": "Bitka: Ak je influencer v partii, neplatia jeho pravé akcie. Ak je podporený ženou vpravo od neho, neplatia jeho ľavé akcie.",
+   "effect_text": "Furt: NA EX na neho jeho aktívne akcie nezruší, ale zdvojí. Neaktívne nezdvojí.",
    "triggers": [
-    "Bitka"
+    "Furt"
    ],
    "left": {
     "blocked": [
@@ -1227,17 +1227,17 @@
     ],
     "actions": {
      "Odpor": 1,
-     "Petelica": 1
+     "Pecka": 1
     },
     "allowed": {
      "1": [
       "Odpor"
      ],
      "2": [
-      "Petelica"
+      "Pecka"
      ],
      "3": [
-      "Petelica"
+      "Pecka"
      ]
     }
    },
@@ -2813,7 +2813,7 @@
    "tags": [
     "Lokalita"
    ],
-   "effect_text": "Prehra: Smieš vyložiť jeden Nástroj z ruky do Dedičstva bez platenia.",
+   "effect_text": "Prehra: Po Pohrebe smieš vyložiť jeden Nástroj z ruky do Dedičstva bez platenia.",
    "triggers": [
     "Prehra"
    ],
@@ -2924,6 +2924,136 @@
     "actions": {
      "Cigareta": 1,
      "Rana": 1
+    }
+   },
+   "permutations": {
+    "total": 4,
+    "left": 2,
+    "right": 2
+   }
+  },
+  {
+   "id": "sofer",
+   "index": 61,
+   "name": "Šofér",
+   "tags": [
+    "Občan",
+    "Chlap"
+   ],
+   "effect_text": "Furt: NA EX na kartu, ktorá s ním susedí, nezdvojí jej neaktívne akcie.",
+   "triggers": [
+    "Furt"
+   ],
+   "left": {
+    "blocked": [
+     0,
+     3
+    ],
+    "actions": {
+     "Poldeci": 1,
+     "Rana": 1
+    }
+   },
+   "right": {
+    "blocked": [
+     0,
+     3
+    ],
+    "actions": {
+     "Cigareta": 1,
+     "PoškodeniePečene": 1
+    }
+   },
+   "permutations": {
+    "total": 4,
+    "left": 2,
+    "right": 2
+   }
+  },
+  {
+   "id": "kar",
+   "index": 62,
+   "name": "Kar",
+   "tags": [
+    "Lokalita"
+   ],
+   "effect_text": "Bitka: Každý hráč smie zahodiť jednu nepriznanú Cirhózu z ruky. Súperov Hrobár za to dostane cigaretu.",
+   "triggers": [
+    "Bitka"
+   ],
+   "left": {
+    "blocked": [
+     0,
+     3
+    ],
+    "actions": {
+     "Povera": 1,
+     "Viera": 1
+    },
+    "allowed": {
+     "1": [
+      "Viera"
+     ],
+     "2": [
+      "Povera"
+     ]
+    },
+    "name": "pri vdove"
+   },
+   "right": {
+    "blocked": [
+     0,
+     3
+    ],
+    "actions": {
+     "Poldeci": 1,
+     "Rana": 1
+    },
+    "allowed": {
+     "1": [
+      "Poldeci"
+     ],
+     "2": [
+      "Rana"
+     ]
+    },
+    "name": "pri koláčoch"
+   },
+   "permutations": {
+    "total": 1,
+    "left": 1,
+    "right": 1
+   }
+  },
+  {
+   "id": "snubenica",
+   "index": 63,
+   "name": "Snúbenica",
+   "tags": [
+    "Občan",
+    "Žena"
+   ],
+   "effect_text": "Nástup: Ak ju vyložíš vedľa karty s NA EX, vráti tú kartu majiteľovi do ruky a zaujme jej miesto. Poldeci z tej karty vypije ten, kto dal NA EX.",
+   "triggers": [
+    "Nástup"
+   ],
+   "left": {
+    "blocked": [
+     0,
+     3
+    ],
+    "actions": {
+     "Robota": 1
+    }
+   },
+   "right": {
+    "blocked": [
+     0,
+     1
+    ],
+    "actions": {
+     "Dlh": 1,
+     "Viera": 1
     }
    },
    "permutations": {
