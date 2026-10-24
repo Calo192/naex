@@ -222,8 +222,14 @@ const NIZKE_OKNO = 720;
 const SIRKA_V_LINII = 198;
 /** Dlhá línia sa zmenší na šírku stola, ale nie pod túto šírku karty. */
 const SIRKA_V_LINII_MIN = 96;
-/** Najmenšia karta v línii, keď ju zmenšuje výška stola (1366 × 650). */
-const SIRKA_V_LINII_NIZKA = 50;
+/**
+ * Najmenšia čitateľná karta v línii. Bežné rozlíšenia ju neprekročia (1366 × 650 so
+ * 7 kartami ≈ 84 px, 1440 × 800 so zoomom 125 % ≈ 79 px); menšie okno či zoom 150 %
+ * prepne stôl na scroll (Michal 2026-10-24).
+ */
+const SIRKA_CITATELNA = 72;
+/** Ako dlho musí karta ostať pod SIRKA_CITATELNA, kým stôl prejde na scroll. */
+const ONESKORENIE_SCROLLU_MS = 200;
 /** Miesto na klik na konci strany — zlomok šírky karty v línii. */
 const MIESTO_VOLBY = 0.42;
 /** Karty v šenku a lokalitách — väčšie než kedysi v bočnom paneli. */
@@ -602,14 +608,31 @@ export function HernaPlocha({
   // +2: karta v strede a voľné miesto na koniec strany pri vykladaní;
   // pri vykladaní ležia na oboch koncoch úzke miesta na klik (MIESTO_VOLBY).
   // Pod NOTEBOOK skryje hra.css riadok „na prebitie“ a popis strán pod lokalitou, nadpisy krajov sú tenšie.
-  const sirkaPodlaVysky = mobil || vyskaPlste === 0 ? SIRKA_V_LINII : Math.floor((vyskaPlste - (vyskaOkna < NIZKE_OKNO ? PRIDAVOK_NIZKE : vyskaOkna < NOTEBOOK ? PRIDAVOK_NOTEBOOK : PRIDAVOK_LINIE)) / (POMER_KARTY * (1 + rezervaPosunu)));
+  // Stôl so scrollom (Michal 2026-10-24): keď by karty v línii klesli pod čitateľnú
+  // veľkosť (malé okno, zoom 150 %), partia prestane byť na výšku okna, karty ostanú
+  // SIRKA_CITATELNA a stránka sa scrolluje. Výška stola sa vtedy riadi kartami — preto
+  // každá zmena okna (aj zoom) vráti stôl na výšku okna a premeria ho; na scroll prejde,
+  // až keď karta ostane pod minimom chvíľu (prvé rozloženie po načítaní ešte skáče).
+  const [stolScroll, setStolScroll] = useState(false);
+  useEffect(() => setStolScroll(false), [sirkaOkna, vyskaOkna]);
+  const sirkaPodlaVysky = stolScroll
+    ? SIRKA_CITATELNA
+    : mobil || vyskaPlste === 0
+      ? SIRKA_V_LINII
+      : Math.floor((vyskaPlste - (vyskaOkna < NIZKE_OKNO ? PRIDAVOK_NIZKE : vyskaOkna < NOTEBOOK ? PRIDAVOK_NOTEBOOK : PRIDAVOK_LINIE)) / (POMER_KARTY * (1 + rezervaPosunu)));
+  useEffect(() => {
+    if (mobil || stolScroll || vyskaPlste === 0 || sirkaPodlaVysky >= SIRKA_CITATELNA) return;
+    const t = setTimeout(() => setStolScroll(true), ONESKORENIE_SCROLLU_MS);
+    return () => clearTimeout(t);
+  }, [mobil, stolScroll, vyskaPlste, sirkaPodlaVysky]);
   const sirkaVLinii =
     sirkaLinie === 0
       ? Math.min(SIRKA_V_LINII, sirkaPodlaVysky)
       : // Minimum platí pre šírku (dlhá línia sa radšej posúva); výška stola ho prebije —
-        // na nízkom notebooku sa karty inak orezali dole (Michal 2026-10-23).
+        // na nízkom notebooku sa karty inak orezali dole (Michal 2026-10-23) — no nie pod
+        // čitateľnú veľkosť: tam už stôl prejde na scroll.
         Math.max(
-          SIRKA_V_LINII_NIZKA,
+          SIRKA_CITATELNA,
           Math.min(
             sirkaPodlaVysky,
             Math.max(SIRKA_V_LINII_MIN, Math.min(SIRKA_V_LINII, Math.floor((sirkaLinie - 60) / (pocetVLinii + 2 + (vykladam ? 2 * MIESTO_VOLBY : 0))) - 12)),
@@ -4327,7 +4350,7 @@ export function HernaPlocha({
 
   return (
     <div
-      className="hra"
+      className={stolScroll ? "hra stol-scroll" : "hra"}
       style={{ "--ruka-w": `${sirkaVRuke}px`, "--hlavicka-h": `${vyskaHlavicky}px` } as CSSProperties}
     >
       {/* V prehrávači výsledok ukáže detail partie — okno konca s hodnotením a lobby tam nepatrí. */}

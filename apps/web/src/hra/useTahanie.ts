@@ -25,6 +25,8 @@ const PRAH = 6;
 const OKRAJ_POSUVU = 70;
 /** Koľko plochy ducha musí cieľ prekryť, keď ho kurzor minie. */
 const MIN_PREKRYTIE = 0.15;
+/** Do akej vzdialenosti (px) od kurzora sa cieľ ešte chytí, keď ho nič iné nenašlo. */
+const BLIZKO = 28;
 
 function cielNa(x: number, y: number, duch: HTMLElement | null): string | null {
   const el = document.elementFromPoint(x, y);
@@ -37,6 +39,10 @@ function cielNa(x: number, y: number, duch: HTMLElement | null): string | null {
   const d = duch.getBoundingClientRect();
   let naj: string | null = null;
   let max = MIN_PREKRYTIE * d.width * d.height;
+  // Nakoniec cieľ tesne vedľa kurzora: karta v ruke je pod myšou zväčšená, duch potom
+  // visí nad kurzorom a pri malých kartách (stôl so scrollom, 72 px) prekrytie nestačí.
+  let najblizsi: string | null = null;
+  let vzdialenost = BLIZKO;
   for (const c of document.querySelectorAll<HTMLElement>("[data-ciel]")) {
     if (duch.contains(c)) continue;
     const r = c.getBoundingClientRect();
@@ -45,8 +51,13 @@ function cielNa(x: number, y: number, duch: HTMLElement | null): string | null {
       max = p;
       naj = c.dataset.ciel ?? null;
     }
+    const v = Math.hypot(Math.max(r.left - x, 0, x - r.right), Math.max(r.top - y, 0, y - r.bottom));
+    if (v < vzdialenost) {
+      vzdialenost = v;
+      najblizsi = c.dataset.ciel ?? null;
+    }
   }
-  return naj;
+  return naj ?? najblizsi;
 }
 
 /** `bod` = kde kurzor kartu pustil. */

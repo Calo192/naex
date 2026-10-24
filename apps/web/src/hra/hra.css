@@ -4447,6 +4447,38 @@ button.auto-hotovo-odkaz {
   overflow: hidden;
 }
 
+/* ---- stôl so scrollom (Michal 2026-10-24) ----
+ * Keď by karty v línii klesli pod čitateľnú veľkosť (HernaPlocha SIRKA_CITATELNA:
+ * malé okno, zoom 150 %), partia nie je na výšku okna: stôl má výšku podľa kariet
+ * a stránka sa scrolluje. Ruka ostáva prilepená dole, aby sa z nej dalo ťahať
+ * na stôl aj pri posunutej stránke. Zhustenie barov a pásu ostáva. */
+@media (min-width: 761px) {
+  /* Do strán sa orezáva ako na výšku okna (bar pri úzkom okne presahuje), nadol nie. */
+  .obsah:has(> .hra.stol-scroll) {
+    height: auto;
+    min-height: calc(100dvh - 65px);
+    overflow-x: clip;
+    overflow-y: visible;
+  }
+
+  .hra.stol-scroll {
+    height: auto;
+  }
+
+  .hra.stol-scroll :is(.plocha, .stred, .linia-obal, .linia-obal > .stol-plst) {
+    flex: none;
+  }
+
+  .hra.stol-scroll .stol-plst > .linia {
+    height: auto;
+  }
+
+  .hra.stol-scroll .ruka {
+    position: sticky;
+    bottom: 0;
+  }
+}
+
 /* ---- stôl bez scrollovania (Michal 2026-10-23, #67) ----
  * Na počítači zaberá partia presne okno pod hlavičkou webu: súperov bar, stôl,
  * tvoj bar a ruka pod sebou; stôl dostane zvyšok výšky a karty v línii sa
