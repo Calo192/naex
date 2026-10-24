@@ -50,7 +50,7 @@ export interface LiniaStarsichProps {
   readonly spolu: readonly [number, number];
   /** Krok na staršom, ktorý línia práve ukazuje (Pohoršenie…) — inak null. */
   readonly krok: string | null;
-  /** Pri Pohoršení svietia hranice zón (§8.2: najviac 2 na marker). */
+  /** Pri Pohoršení svietia hranice zón (§9.2: najviac 2 na marker). */
   readonly hraniceZon: boolean;
   /** Starší, ktorých posun sa práve zmenil (blikne po kroku). */
   readonly zmenene: ReadonlySet<string>;

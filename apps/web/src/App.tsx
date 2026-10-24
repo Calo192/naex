@@ -66,7 +66,7 @@ export function App() {
   if (cesta.startsWith("/admin")) return <Layout siroky>{chranene(<Admin cesta={cesta} />, true)}</Layout>;
   if (cesta === "/hraci") return <Layout siroky>{chranene(<Hraci />, true)}</Layout>;
   if (cesta === "/hra") return <Layout siroky><Hra /></Layout>;
-  if (cesta === "/pravidla") return <Layout plna><Pravidla /></Layout>;
+  if (cesta === "/pravidla") return <Layout siroky><Pravidla /></Layout>;
   // Vývoj hry a roadmapa sú verejné (Michal 2026-10-21); upravuje ich správca.
   if (cesta === "/vyvoj" || cesta.startsWith("/vyvoj/")) return <Layout siroky><Vyvoj cesta={cesta} /></Layout>;
   const hrac = /^\/hrac\/(\d+)$/.exec(cesta);

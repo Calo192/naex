@@ -20,7 +20,7 @@ export function vypocetPodmienky(p: BodPodmienky, bodyZaKus: number): string {
 
 /**
  * Čo priazeň danej sily (1 / 2 / 3) dáva — bonus je NASOBOK_PRIAZNE × sila
- * (Michal 2026-10-16: dvojnásobný účinok). PRAVIDLA §9.
+ * (Michal 2026-10-16: dvojnásobný účinok). PRAVIDLA §10.
  */
 export const UCINOK_PRIAZNE: Readonly<Record<Favour, (sila: number) => string>> = {
   // Michal 2026-10-20: Úžerník nahradil Zberateľa — prah Dlhu + sila (bez dvojnásobku).

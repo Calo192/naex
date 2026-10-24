@@ -1,7 +1,7 @@
 // Interaktívne ukážky k pravidlám — počítajú presne to isté jadro, na
 // ktorom beží hra (evaluateLine, computeDamage, battleOutcome).
 
-import { useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { CardInstance, GameData, LineEval, PlayerId } from "@naex/core";
 import { STUPNICA_HODNOTY, STUPNICA_ZONY, battleOutcome, computeDamage, evaluateLine, loadGameData } from "@naex/core";
 import eldersJson from "@naex/core/data/elders.json";
@@ -81,11 +81,23 @@ export function UkazkaSpajania({ sada }: { readonly sada: Sada }) {
   const [idB, setIdB] = useState(hracie.find((k) => k.id === "zivnostnik")?.id ?? hracie[1]?.id ?? "");
   const [vA, setVA] = useState(0);
   const [vB, setVB] = useState(0);
+  // Šírka kariet z miesta v stĺpci textu, nie z okna — inak pretekajú (UI dizajn 2026-10-24).
+  const spojRef = useRef<HTMLDivElement>(null);
+  const [miesto, setMiesto] = useState(480);
+  useLayoutEffect(() => {
+    const el = spojRef.current;
+    if (el === null) return;
+    const ro = new ResizeObserver(() => setMiesto(el.clientWidth));
+    ro.observe(el);
+    setMiesto(el.clientWidth);
+    return () => ro.disconnect();
+  }, []);
+  const sirka = Math.max(120, Math.min(230, (miesto - 16) / 2));
   const kA = hracie.find((k) => k.id === idA);
   const kB = hracie.find((k) => k.id === idB);
   const a = kA === undefined ? null : instancia(kA, vA, 1);
   const b = kB === undefined ? null : instancia(kB, vB, 2);
-  if (kA === undefined || kB === undefined || a === null || b === null) return null;
+  if (kA === undefined || kB === undefined || a === null || b === null) return <div className="ukazka-spoj" ref={spojRef} />;
 
   const ev = evaluateLine(data, {
     lokalita: null,
@@ -95,12 +107,11 @@ export function UkazkaSpajania({ sada }: { readonly sada: Sada }) {
     strany: [[{ card: b.inst, playedBy: 0 }, { card: a.inst, playedBy: 0 }], []],
   });
   const sumy = Object.entries(ev.sums[0]).filter(([, n]) => (n ?? 0) > 0);
-  const sirka = Math.min(230, (window.innerWidth - 80) / 2);
 
   return (
     <div className="ukazka">
       <div className="ukazka-hlava">Vyskúšaj si to: vyber dve karty a sleduj, čo sa na spoji aktivuje.</div>
-      <div className="ukazka-spoj">
+      <div className="ukazka-spoj" ref={spojRef}>
         <div className="ukazka-karta">
           <VolbaKarty karty={hracie} id={idA} setId={setIdA} v={vA} setV={setVA} />
           <KartaLico karta={kA} lava={a.lava} prava={a.prava} vzhlad={vzhlad} sirka={sirka} sloty={slotyZEval(ev, 1)} />
@@ -110,7 +121,7 @@ export function UkazkaSpajania({ sada }: { readonly sada: Sada }) {
           <KartaLico karta={kB} lava={b.lava} prava={b.prava} vzhlad={vzhlad} sirka={sirka} sloty={slotyZEval(ev, 2)} />
         </div>
       </div>
-      <div className="ukazka-vysledok">
+      <div className="ukazka-vysledok" aria-live="polite">
         {sumy.length === 0 ? (
           <span>Na spoji sa nič nestretlo — skús iný variant (šípky) alebo inú kartu.</span>
         ) : (
@@ -174,9 +185,9 @@ export function UkazkaBitky() {
   return (
     <div className="ukazka">
       <div className="ukazka-hlava">Kalkulačka bitky — nastav aktívne akcie oboch hráčov.</div>
-      <div className="bitka-strany">
+      <div className="ukazka-bitka-strany">
         {([0, 1] as const).map((p) => (
-          <div key={p} className="bitka-strana">
+          <div key={p} className="ukazka-bitka-strana">
             <h4>{MENA[p]}</h4>
             <Pocitadlo label="Rana (1)" hodnota={s[p].Rana} nastav={(n) => nastav(p, "Rana", n)} />
             <Pocitadlo label="Pecka (2)" hodnota={s[p].Pecka} nastav={(n) => nastav(p, "Pecka", n)} />
@@ -188,7 +199,7 @@ export function UkazkaBitky() {
           </div>
         ))}
       </div>
-      <div className="bitka-vysledok">
+      <div className="ukazka-bitka-vysledok">
         <div>
           <span className="tlmene">Zvyšná Viera / Povera po vyrušení</span>
           <strong>
@@ -214,7 +225,7 @@ export function UkazkaBitky() {
           </strong>
         </div>
       </div>
-      <div className="ukazka-vysledok">
+      <div className="ukazka-vysledok" aria-live="polite">
         {o.vitaz === null ? (
           <>
             <strong>Remíza</strong> v tuhom — lokalitu nezíska nikto, ide na sekeru a vezme si ju víťaz najbližšej bitky.
@@ -255,7 +266,7 @@ export function UkazkaStupnice() {
         <span>← tvoja polovica</span>
         <span>súperova polovica →</span>
       </div>
-      <div className="ukazka-vysledok">
+      <div className="ukazka-vysledok" aria-live="polite">
         {strana === null ? (
           <>Marker je v sivej zóne (<strong>Neutralita</strong>) — starší nikomu nedáva priazeň a nikoho sa nebojí.</>
         ) : (
@@ -287,7 +298,7 @@ export function UkazkaLimitu() {
         {Array.from({ length: plne }, (_, i) => <span key={`p${i}`} className="pohar plny" />)}
         {Array.from({ length: vypite }, (_, i) => <span key={`v${i}`} className="pohar vypity" />)}
       </div>
-      <div className="ukazka-vysledok">
+      <div className="ukazka-vysledok" aria-live="polite">
         Limit vykladania = {plne} + 1 = <strong>{plne + 1}</strong> kariet. Vypité poldeci ani poldeci na kartách cez NA EX sa nerátajú.
       </div>
     </div>
