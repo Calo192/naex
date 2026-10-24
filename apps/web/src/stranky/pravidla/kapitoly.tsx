@@ -231,7 +231,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <H3 id="senok-stavba">Stavba šenku</H3>
         <p>
           Nevzaté karty zo starého šenku idú naspodok spoločného balíčka. Potom si každý zo spoločného balíčka vezme toľko kariet,
-          koľko je v hre nenahradených starších (na začiatku 8). Obaja naraz a tajne dáte <strong>polovicu do šenku</strong> a
+          koľko je v hre nenahradených starších (zaokrúhlené nadol na párne číslo; na začiatku 8). Obaja naraz a tajne dáte <strong>polovicu do šenku</strong> a
           polovicu na <P k="smetisko">Smetisko</P> — naspodok balíčka. Nič si nepodávate; pri 8 kartách 4 + 4 a šenok má 8 kariet.
         </p>
         <H3 id="senok-branie">Branie zo šenku</H3>

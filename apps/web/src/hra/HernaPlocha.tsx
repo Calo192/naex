@@ -1852,7 +1852,7 @@ export function HernaPlocha({
     return undefined;
   };
 
-  // Línia z pohľadu hráča (PRAVIDLA §4): tvoja strana vedie od lokality
+  // Línia z pohľadu hráča (PRAVIDLA §6): tvoja strana vedie od lokality
   // doľava, súperova doprava — karty sa dotýkajú presne tak, ako sa
   // vyhodnocujú spoje. Karta je otočená, ak ju zahral ten druhý z vás
   // (súperove vlastné karty sú voči tebe nohami hore).
@@ -3240,7 +3240,7 @@ export function HernaPlocha({
   const ZONA = ["neutrál", "žltá", "oranžová", "červená"] as const;
   const DO_ZONY = ["neutrálu", "žltej", "oranžovej", "červenej"] as const;
   const popisPosunu = (elder: ElderState, cezPohorsenie: boolean, naKraj = false): string => {
-    // Prebytok: aj cigareta porazenému za prvý posun staršieho (§8.4) — nahladPosunuPrebytkom.
+    // Prebytok: aj cigareta porazenému za prvý posun staršieho (§9.4) — nahladPosunuPrebytkom.
     const n = cezPohorsenie ? nahladPosunuMarkera(data, view, elder.elderId, super_, true, naKraj) : nahladPosunuPrebytkom(data, view, elder.elderId);
     const novy = posunMarker(elder, super_, cezPohorsenie, naKraj);
     if (n === null || novy === null) return "";
