@@ -15,6 +15,14 @@ export const STYL =
   "Slovak village atmosphere with cluttered worn details. Square composition, main subject centered. " +
   "No text, no letters, no logos, no watermark, no frame, no border.";
 
+/** Pás nad kapitolou pravidiel (Michal 2026-10-24): ten istý štýl, široká scéna; orezá sa na 2,5 : 1. */
+export const STYL_PASU = STYL.replace(
+  "Square composition, main subject centered.",
+  "Wide panoramic banner composition, the scene spread across the whole width, nothing important near the top and bottom edges. Full bleed: the artwork fills the entire canvas to every edge — " +
+    "no letterbox bars, no white margin, no panel border, no signature. No signs or labels with writing anywhere.",
+);
+export const REFERENCIE_PASU = ["krcma", "pijan", "svokra"];
+
 export const REFERENCIE: Readonly<Record<string, readonly string[]>> = {
   obcan: ["svokra", "pijan", "hasic"],
   staresina: ["krcmarka", "veterinar", "autobusar"],

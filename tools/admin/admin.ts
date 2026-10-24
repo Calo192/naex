@@ -35,6 +35,8 @@
 //   generuj <id> [--pocet 1|2] [--sila LOW|MID|HIGH] [--seed N] [--navyse]
 //                                 jedno kolo v Leonarde (Nano Banana, 1024²) — stojí kredit!
 //                                 najviac 3 kolá na kartu; --navyse len so súhlasom Michala
+//   pas-generuj <kluc> "<námet>" [--sila LOW|MID|HIGH] [--seed N]
+//                                 pás nad kapitolou pravidiel (1536×672, orež na 2,5 : 1) — stojí kredit!
 //   leonardo                      kolá generovania a cena po kartách
 //   obrazok <id-karty> <subor>    ilustrácia do knižnice aj ku karte
 //   nahraj <subor> [druh]         nahrá obrázok (karta | kniznica | pozadie | ikona), vypíše id média
@@ -94,7 +96,7 @@ import { chybyNavrhu, doCardsJson, doScorecardsJson, kontrolaTextov, neznameAkci
 import { nacitajEnv, prihlasAgenta, webUrl } from "../playtest/web.ts";
 import { MAX_KOL_NA_KARTU, generuj, nacitajZaznam } from "./leonardo.ts";
 import type { Sila } from "./leonardo.ts";
-import { MODEL, REFERENCIE, cestyReferencii, kategoriaPodlaTagov, zostavPrompt } from "./styl.ts";
+import { MODEL, REFERENCIE, REFERENCIE_PASU, STYL_PASU, cestyReferencii, kategoriaPodlaTagov, zostavPrompt } from "./styl.ts";
 import type { PartiaTempa } from "./tempo.ts";
 import { prehladTempa } from "./tempo.ts";
 import { doplnNahladyCezChrome } from "./nahlady.ts";
@@ -433,6 +435,37 @@ async function main(): Promise<void> {
     console.log(`Kolo ${kolo.kolo}/${MAX_KOL_NA_KARTU} avatara ${kluc} (cena ${kolo.cena ?? "neuvedená"}):`);
     for (const f of kolo.subory) console.log(`  ${f}`);
     console.log("\nPozri ich (Read) a najlepší nastav: web.ts avatar --ako \"<meno>\" <subor> (Admin: admin.ts avatar <subor>).");
+    return;
+  }
+
+  if (prikaz === "pas-generuj") {
+    const [kluc, namet] = arg;
+    if (kluc === undefined || namet === undefined || !/^[a-z0-9-]{2,40}$/.test(kluc)) {
+      throw new Error('Použitie: pas-generuj <kluc> "<námet po anglicky>" [--sila LOW|MID|HIGH] [--seed N]');
+    }
+    nacitajEnv();
+    const sila = (hodnota("--sila") ?? "LOW").toUpperCase();
+    if (sila !== "LOW" && sila !== "MID" && sila !== "HIGH") throw new Error("--sila je LOW, MID alebo HIGH.");
+    const adr = join(PRACOVNY, "pravidla", kluc);
+    mkdirSync(adr, { recursive: true });
+    const prompt = `${namet.trim().replace(/\.$/, "")}. ${STYL_PASU}`;
+    const referencie = REFERENCIE_PASU.map((id) => join("packages/server/seed/karty", `${id}.jpg`));
+    writeFileSync(join(adr, "zadanie.json"), `${JSON.stringify({ prompt, kategoria: "pas", referencie }, null, 2)}\n`);
+    const seed = hodnota("--seed");
+    // 21:9 je najširší pomer Nano Banana; pás 2,5 : 1 sa z neho vyreže.
+    const kolo = await generuj({
+      id: `pás ${kluc}`,
+      adr,
+      pracovny: PRACOVNY,
+      pocet: 2,
+      sila: sila as Sila,
+      navyse: prep.has("--navyse"),
+      sirka: 1536,
+      vyska: 672,
+      ...(seed === undefined ? {} : { seed: Number(seed) }),
+    });
+    console.log(`Kolo ${kolo.kolo}/${MAX_KOL_NA_KARTU} pásu ${kluc} (cena ${kolo.cena ?? "neuvedená"}):`);
+    for (const f of kolo.subory) console.log(`  ${f}`);
     return;
   }
 
