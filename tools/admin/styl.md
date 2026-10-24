@@ -33,9 +33,11 @@ vyčnievala.
 - **Bez skutočných osôb a značiek** — žiadne podobizne známych ľudí, žiadne
   skutočné logá či produkty.
 - **Dym — pevné pravidlo** (Michal 2026-10-24, platí pre každý obrázok, karty
-  aj pásy): dym smie ísť **len z horiacej cigarety, z cigarety v popolníku
-  alebo z úst postavy, ktorá ho vyfukuje**. Nikdy z ucha, chrbta, vlasov,
-  oblečenia ani len tak zo vzduchu. Model to rád porušuje — zadymená krčma mu
+  aj pásy): dym smie ísť **len zo skutočného zdroja, ktorý dym prirodzene
+  robí**: horiaca cigareta, cigareta v popolníku, ústa postavy, ktorá ho
+  vyfukuje, komín, výfuk, oheň alebo požiar (komín a oheň povolil Michal
+  2026-10-24). Nikdy z miest bez zdroja: oči, uši, prázdne ruky, chrbát, vlasy,
+  oblečenie ani len tak zo vzduchu. Model to rád porušuje — zadymená krčma mu
   stačí ako dôvod. Ak scéna fajčenie nepotrebuje, napíš do námetu „nobody is
   smoking, no smoke anywhere“.
 - **Ruky** v jednoduchých prirodzených polohách, päť prstov. Žiadne pretláčanie,
@@ -112,8 +114,9 @@ Pred použitím si každý návrh pozri (Read na súbor) a over:
 2. Motív je v strede a prežije orez do karty (54 × 80 mm, ilustrácia v hornej časti).
 3. Žiadny text, logo, rám, ani deformované ruky či tváre. Ruky a prsty si
    pozri pri plnej veľkosti (pri pochybnosti zväčšený výrez).
-4. **Dym**: každý obláčik musí viesť k cigarete, popolníku alebo k ústam.
-   Dym z chrbta, hlavy či zo vzduchu = zlý obrázok, generuj znova.
+4. **Dym**: každý obláčik musí viesť k skutočnému zdroju (cigareta, popolník,
+   ústa, komín, výfuk, oheň). Dym z očí, prázdnych rúk, chrbta, hlavy či zo
+   vzduchu = zlý obrázok, generuj znova.
 5. **Predmety**: spočítaj uchá kríglov (jedno), pohárov (žiadne), hrdlá fliaš
    (jedno) a prsty (päť) — aj na poličkách v pozadí. Pri pochybnosti zväčšený
    výrez.

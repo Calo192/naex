@@ -60,8 +60,10 @@ Katalóg je `tools/admin/styly.json`: id, názov, stav, popis, vzory.
 
 ## Pevné pravidlá obrazu
 
-1. Dym len z **cigarety, z popolníka s cigaretou alebo z úst** postavy, ktorá
-   ho vyfukuje. Nikdy z ucha, chrbta, vlasov ani zo vzduchu.
+1. Dym len zo **skutočného zdroja, ktorý dym prirodzene robí**: cigareta,
+   popolník s cigaretou, ústa postavy, ktorá ho vyfukuje, komín, výfuk, oheň
+   alebo požiar (Michal 2026-10-24). Nikdy z miest bez zdroja: oči, uši, prázdne
+   ruky, chrbát, vlasy, oblečenie ani len tak zo vzduchu.
 2. **Žiadne zložité polohy rúk** (pretláčanie, prepletené prsty).
 3. **Predmety fyzikálne správne**: krígeľ má jedno ucho, pohár žiadne, fľaša
    jedno hrdlo, ruka päť prstov. Postavy sa navzájom líšia, nie sú klony.
