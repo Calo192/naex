@@ -31,7 +31,8 @@
 //
 // Prvky výučby v DOM (dohoda s UX/UI): [data-vyucba-bublina] = bublina
 // Melichara (s data-vyucba-krok = id kroku), [data-vyucba-zvyraznene] =
-// zvýraznený prvok (hodnota = kľúč zo scenára, napr. „ruka:hasic“).
+// zvýraznený prvok (hodnota = kľúč zo scenára, napr. „ruka:hasic“), [data-vyucba-zmena] =
+// čo sa po ťahu Štamgasta či hry za hráča práve zmenilo.
 
 import { spawn, spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
@@ -416,13 +417,18 @@ const OBRAZOVKA = String.raw`(() => {
     const r = el.getBoundingClientRect();
     return { kluc: el.getAttribute('data-vyucba-zvyraznene') || '', text: text(el), x: Math.round(r.left + r.width / 2), y: Math.round(r.top + r.height / 2) };
   });
+  // Čo sa po ťahu Štamgasta či hry zmenilo — svieti prerušovane, nie je to pokyn.
+  const zmenene = [...document.querySelectorAll('[data-vyucba-zmena]')].filter(viditelny).map((el) => {
+    const r = el.getBoundingClientRect();
+    return { kluc: el.getAttribute('data-vyucba-zmena') || '', text: text(el), x: Math.round(r.left + r.width / 2), y: Math.round(r.top + r.height / 2) };
+  });
   // Toasty a hlášky: role=alert / status (aria-live).
   const hlasky = [...document.querySelectorAll('[role=alert],[role=status],[aria-live]')].filter(viditelny).map(text).filter((t) => t.length > 0);
   return {
     url: location.pathname,
     titulok: document.title,
     bublina: bublina && viditelny(bublina) ? { text: (bublina.innerText || '').trim(), krok: bublina.getAttribute('data-vyucba-krok') } : null,
-    zvyraznene, hlasky, prvky,
+    zvyraznene, zmenene, hlasky, prvky,
     skrol: Math.round(scrollY), vyskaStranky: document.documentElement.scrollHeight,
   };
 })()`;
@@ -431,6 +437,7 @@ interface Obrazovka {
   titulok: string;
   bublina: { text: string; krok: string | null } | null;
   zvyraznene: { kluc: string; text: string; x: number; y: number }[];
+  zmenene: { kluc: string; text: string; x: number; y: number }[];
   hlasky: string[];
   prvky: Prvok[];
   skrol: number;
@@ -559,6 +566,7 @@ async function akcia(): Promise<void> {
   if (stav.index !== null && stav.spolu !== null) out.push(`Výučba: ${stav.hotovo ? "dokončená" : `krok ${stav.index + 1} z ${stav.spolu}`}`);
   if (obr.bublina !== null) out.push(`Bublina Melichara: „${obr.bublina.text}“`);
   if (obr.zvyraznene.length > 0) out.push(`Zvýraznené: ${obr.zvyraznene.map((z) => `${z.text || z.kluc} @ ${z.x},${z.y}`).join(" · ")}`);
+  if (obr.zmenene.length > 0) out.push(`Práve sa zmenilo (svieti prerušovane): ${obr.zmenene.map((z) => `${z.text || z.kluc} @ ${z.x},${z.y}`).join(" · ")}`);
   for (const t of obr.hlasky) out.push(`Hláška na obrazovke: „${t}“`);
   for (const c of noveChyby) out.push(`Hláška servera: „${c.text}“`);
   for (const c of novaKonzola) out.push(`(chyba v konzole prehliadača: ${c.text})`);

@@ -337,6 +337,78 @@ body.vyucba-bezi:not(.vyucba-body) .zdroj-body .zdroj-pod {
   visibility: hidden;
 }
 
+/* ---- čitateľnosť stola vo výučbe (playtest výučby kolo 4, U1; V9 4,3) ---- */
+
+/* Súperove karty ležia hore nohami (3/3 nováčikov): otočená ostáva plocha s obrázkom a akciami
+   (hrany sa tak párujú ako na stole), názov a text sa otočia späť, nech sa čítajú rovno. */
+body.vyucba-bezi .kl-otocena > .kl-plocha > :is(.kl-pas, .kl-efekt) {
+  transform: rotate(180deg);
+}
+
+/* Stávku bitky (±3: +19 / −21 b) scenár nevysvetľuje — ukáže sa, až keď o nej Melichar hovorí. */
+body.vyucba-bezi:not(.vyucba-stavka) .pas-kola .stavka-bitky {
+  display: none;
+}
+
+/* Účet minulej bitky (tuhé, posuny, body) vyrozprával Melichar; na 1366 × 650 pridal riadok,
+   stôl prešiel na scroll a stránka sa odroľovala (Katka, krok 53). */
+body.vyucba-bezi .ucet-bitky {
+  display: none;
+}
+
+/* Pás kola vo výučbe nekončí trojbodkou („Zhromažde…“, „prehra o …“, 3/3): zalomí sa do dvoch
+   riadkov. Na 1920 × 1080 má pás výšku dvoch riadkov aj tak; nižšie poznámky pásu skrýva hra.css. */
+@media (min-width: 761px) {
+  /* Užšie medzery: na 1440 × 800 sa Pitka s odhadom zmestí do riadku, druhý riadok berie výšku kartám. */
+  body.vyucba-bezi .pas-kola {
+    flex-wrap: wrap;
+    gap: 2px 10px;
+    white-space: normal;
+    overflow: visible;
+  }
+
+  body.vyucba-bezi .pas-kola > *,
+  body.vyucba-bezi .pas-pitky .pas-pozn {
+    overflow: visible;
+    text-overflow: clip;
+  }
+
+  body.vyucba-bezi .pas-pitky,
+  body.vyucba-bezi .pas-stolicky {
+    flex-wrap: wrap;
+  }
+}
+
+/* Na nízkom okne (1366 × 650) by počet vydesených zalomil pás do druhého riadku a karty línie by
+   klesli pod čitateľnú veľkosť (stôl so scrollom). Vydesených ukazujú stupnice starších a Melichar. */
+@media (min-width: 761px) and (max-height: 719px) {
+  body.vyucba-bezi .pas-kola .pas-starsi {
+    display: none;
+  }
+}
+
+/* Najdrobnejšie popisy v paneli starších (poradie, odznak +1) aspoň 11 px. */
+body.vyucba-bezi :is(.ls-poradie, .ls-odznak) {
+  font-size: max(11px, 1em);
+}
+
+/* Čo sa po ťahu Štamgasta či hry zmenilo: prerušovaný obrys bez pulzu — nie je to pokyn klikni. */
+.vyucba-obrys.zmena {
+  stroke: var(--akcent-svetly);
+  stroke-dasharray: 9 6;
+  animation: none;
+}
+
+/* Štítok ťahu bez textu Melichara („Bot Štamgast pasuje…“) — čo sa práve stalo. */
+.vyucba-stitok {
+  padding: 4px 10px;
+  border-radius: 8px;
+  border-left: 3px solid var(--okraj-svetly);
+  background: var(--plocha-2);
+  color: var(--tlmeny);
+  font-size: 0.88em;
+}
+
 /* Pokyn na stole celý (playtest U4: trojbodka orezala „Alebo celý prebytok naraz…“) — vo výučbe
    leží v toku nad plsťou a zalomí sa, nič neprekryje. Na nízkom okne (1366 × 650) by druhý riadok
    zmenšil karty línie pod 75 px — tam ostáva v riadku, celé znenie pod myšou. */
