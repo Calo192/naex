@@ -346,6 +346,7 @@ button.cip.aktivny {
   display: flex;
   justify-content: space-between;
   width: 100%;
+  min-height: 24px;
   padding: 4px 0;
   border: 0;
   background: none;
