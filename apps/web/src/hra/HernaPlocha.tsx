@@ -136,7 +136,7 @@ import {
 } from "./Panely.tsx";
 import { StavkaBitky } from "./StavkaBitky.tsx";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
-import type { HracInfo, ZmenyFrajeriny } from "./useHra.ts";
+import type { HracInfo, SuhrnAchievementov, ZmenyFrajeriny } from "./useHra.ts";
 import { menoVoVete, rodHraca, textHlasky } from "./useHra.ts";
 import { useBezNaexVBitke, useOdlozenyPrikaz } from "./usePohodlie.ts";
 import { useTahanie } from "./useTahanie.ts";
@@ -358,6 +358,8 @@ export interface HernaPlochaProps {
   readonly opustit: () => void;
   /** Zmena Frajeriny po dohraní (príde zo servera po zápise do archívu). */
   readonly frajerina?: ZmenyFrajeriny | null;
+  /** Achievementy z partie (súhrn po konci) — okno konca ich ukáže. */
+  readonly achievementy?: SuhrnAchievementov | null;
   readonly kontumacia?: () => void;
   /** Ovládanie navyše v hlavičke webu pred menom súpera (soundboard Melichara). */
   readonly vHlavicke?: ReactNode;
@@ -419,6 +421,7 @@ export function HernaPlocha({
   cmd,
   opustit,
   frajerina = null,
+  achievementy = null,
   kontumacia,
   vHlavicke,
   prehravanie,
@@ -4331,6 +4334,7 @@ export function HernaPlocha({
           mena={[menoHraca(0), menoHraca(1)]}
           menoKarty={menoKarty}
           frajerina={frajerina}
+          achievementy={achievementy ?? null}
           onZavri={() => setKoniecZavrety(true)}
           opustit={opustit}
         />

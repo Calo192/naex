@@ -14,6 +14,7 @@ import { useMelichar } from "./Melichar.tsx";
 import { Momenty } from "./Momenty.tsx";
 import { Soundboard } from "./Soundboard.tsx";
 import { useHra } from "./useHra.ts";
+import { OznamZiskov } from "../achievementy/VPartii.tsx";
 import { PonukaVyucby, useVyucbaUctu, VyucbaStol, VyucbaVLobby, type VyucbaUctu } from "./Vyucba.tsx";
 import { useNepodporovaneZariadenie } from "./zariadenie.ts";
 import "./hra.css";
@@ -366,6 +367,7 @@ export function Hra() {
   return (
     <>
     <HudbaPartie />
+    {hra.vyucba === null && <OznamZiskov zisky={hra.achievementy.zisky} />}
     {hra.vyucba === null && (
       <Momenty udalosti={hra.udalosti} ja={hra.view.ja} mena={hra.hraci.map((h, i) => h?.meno ?? `Hráč ${i + 1}`)} hovor={hovorPriMomente} pocitadloBezi={pocitadloBezi} />
     )}
@@ -389,6 +391,7 @@ export function Hra() {
       cmd={cmd}
       opustit={hra.odid}
       frajerina={hra.frajerina}
+      achievementy={hra.suhrnAchievementov}
       kontumacia={hra.kontumacia}
       vHlavicke={
         hra.view.koniec === null && maPravo(ja, "melichar_soundboard") && (

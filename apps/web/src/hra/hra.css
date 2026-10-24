@@ -2221,10 +2221,12 @@ button.dlzka-volba.aktivna {
 }
 
 /* Obrazovka konca hry. */
+/* Nad hlavičkou webu (50) a lištou fáz (45) — s achievementmi je okno vysoké a jeho vrch
+   s nadpisom bol pod nimi (UI inšpekcia 2026-10-24). */
 .koniec-vrstva {
   position: fixed;
   inset: 0;
-  z-index: 40;
+  z-index: 55;
   display: flex;
   align-items: center;
   justify-content: center;

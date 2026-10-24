@@ -2,11 +2,13 @@
 // zmena Frajeriny a návrat do lobby. Kým bol koniec len riadok v páse
 // pokynov, hráči ho prehliadli a nevedeli, odkiaľ body sú.
 
+import { useEffect, useRef } from "react";
 import type { ClientState, GameData, PlayerId, Rod } from "@naex/core";
 import { bodyTeraz, tvar } from "@naex/core";
 import { Odkaz } from "../lib/router.tsx";
 import { RozpisBodov } from "./RozpisBodov.tsx";
-import type { ZmenyFrajeriny } from "./useHra.ts";
+import { SuhrnPoPartii } from "../achievementy/VPartii.tsx";
+import type { SuhrnAchievementov, ZmenyFrajeriny } from "./useHra.ts";
 import { textHlasky } from "./useHra.ts";
 
 export interface KoniecHryProps {
@@ -15,6 +17,8 @@ export interface KoniecHryProps {
   readonly mena: readonly [string, string];
   readonly menoKarty: (defId: string) => string;
   readonly frajerina: ZmenyFrajeriny | null;
+  /** Získané achievementy a „chýbalo málo“ (príde zo servera po konci). */
+  readonly achievementy?: SuhrnAchievementov | null;
   readonly onZavri: () => void;
   readonly opustit: () => void;
   /** Rod hráča pre „Vyhral(a) si!“ (Michal 2026-10-22); chýba = neutrálne. */
@@ -23,8 +27,12 @@ export interface KoniecHryProps {
   readonly rody?: readonly [Rod, Rod];
 }
 
-export function KoniecHry({ view, data, mena, menoKarty, frajerina, onZavri, opustit, rodJa = null, rody = [null, null] }: KoniecHryProps) {
+export function KoniecHry({ view, data, mena, menoKarty, frajerina, achievementy = null, onZavri, opustit, rodJa = null, rody = [null, null] }: KoniecHryProps) {
   const koniec = view.koniec;
+  // Fokus na „späť do lobby“ bez posunu — autoFocus vyroloval vysoké okno nadol a výsledok
+  // hore hráč nevidel (UI inšpekcia 2026-10-24).
+  const lobbyRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => lobbyRef.current?.focus({ preventScroll: true }), [koniec === null]);
   if (koniec === null) return null;
   const ja = view.ja;
   const su: PlayerId = ja === 0 ? 1 : 0;
@@ -77,13 +85,14 @@ export function KoniecHry({ view, data, mena, menoKarty, frajerina, onZavri, opu
             {Math.abs(zmena.po - zmena.pred)})
           </p>
         )}
+        {achievementy !== null && <SuhrnPoPartii suhrn={achievementy} />}
         <div className="koniec-tlacidla">
           <button onClick={onZavri}>pozrieť stôl</button>
           {/* Hodnotenie hry tými istými kritériami ako AI playtesteri (Michal 2026-10-21). */}
           <Odkaz href="/spatna-vazba#hodnotenie" className="tlacidlo">
             ohodnotiť hru
           </Odkaz>
-          <button className="tlacidlo-hlavne" onClick={opustit} autoFocus>
+          <button ref={lobbyRef} className="tlacidlo-hlavne" onClick={opustit}>
             späť do lobby
           </button>
         </div>
