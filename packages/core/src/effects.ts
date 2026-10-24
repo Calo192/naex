@@ -54,7 +54,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   dievcina_na_vydaj: "impl", // Bitka: zahodenie + dlhy podľa aktívnych akcií
   dlh: "native", // Bitka: krok Exekútora
   farar: "impl", // Bitka: ignoruj 2 súperove Povery
-  financna_poradkyna: "impl", // Prestávka: Dlh z jej akcií dostáva súper, nie jej majiteľ (Michal 2026-10-18)
+  financna_poradkyna: "impl", // Pitka: Dlh z jej akcií dostáva súper, nie jej majiteľ (Michal 2026-10-18; spúšťač z Prestávky 2026-10-24)
   hasic: "impl", // Nástup: Pracujúci občan z odhadzovacieho do ruky
   hrobar: "impl", // Furt: cigareta, keď súper zahodí kartu
   ihrisko: "impl", // Bitka: v každom kraji +2 tuhé tomu, kto tam má viac svojich Občanov, Zvierat a Starešinov (Michal 2026-10-20)
