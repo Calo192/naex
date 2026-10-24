@@ -100,3 +100,11 @@ Rovnako postupuje Bugfixing pri UI opravách.
   rozhodnutím (napr. pred zmrazením pravidiel).
 - **Modely agentov:** UI inšpektor, spisovateľ reportov a AI playtesteri bežia
   na Sonnete; dizajnéri, stratég, navrhár, rozhodca a Developer na Opuse.
+  Sessions UI Inspector, Admin a Navrhár stačí na Sonnete (`/model sonnet`,
+  Michal 2026-10-24).
+- **Kontext je najdrahší** (meranie Leadera 2026-10-24: 97 % spotreby je
+  opakované čítanie kontextu, nie výstup). Snímky obrazovky nečítaj v hlavnej
+  session — ostanú v kontexte a čítajú sa pri každom ďalšom kroku. Pošli ich
+  pomocnému agentovi (Sonnet) a od neho si vezmi len text nálezov.
+- **Inšpekcia:** jedno kolo a jedna kontrola opráv. Ďalšie kolo len pri novom
+  vysokom náleze.
