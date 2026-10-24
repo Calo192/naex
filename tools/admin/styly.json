@@ -27,6 +27,39 @@
         "tools/admin/styly/noir-podvodnik.jpg"
       ],
       "poznamka": "Michalovi sa páči (2026-10-24), celú sadu zatiaľ netreba. Prvý obrázok: Podvodník."
+    },
+    {
+      "id": "akvarel",
+      "nazov": "Akvarelová karikatúra",
+      "stav": "skusobny",
+      "popis": "Akvarel s voľnými rozpitými škvrnami, ceruzková kresba, karikované tváre, svetlý papier presvitá. Generovať bez referencií, z textového opisu postavy.",
+      "vzory": [
+        "tools/admin/styly/akvarel-veterinar.jpg",
+        "tools/admin/styly/akvarel-silna-zena.jpg"
+      ],
+      "poznamka": "Michal 2026-10-24: páči sa, skúšobný."
+    },
+    {
+      "id": "socplagat",
+      "nazov": "Socialistický plagát",
+      "stav": "skusobny",
+      "popis": "Plagát v štýle socialistickej propagandy 50.–80. rokov: ploché sýte farby (červená, okrová, čierna), hrdinské pózy, zjednodušené tvary, bez textu. Generovať bez referencií, z textového opisu postavy.",
+      "vzory": [
+        "tools/admin/styly/socplagat-veterinar.jpg",
+        "tools/admin/styly/socplagat-silna-zena.jpg"
+      ],
+      "poznamka": "Michal 2026-10-24: páči sa, skúšobný."
+    },
+    {
+      "id": "popart",
+      "nazov": "Pop-art",
+      "stav": "skusobny",
+      "popis": "Pop-art: hrubé kontúry, rastrové bodky, sýte ploché farby, komiksová dramatickosť, bez textu a symbolov ako $. Generovať bez referencií, z textového opisu postavy.",
+      "vzory": [
+        "tools/admin/styly/popart-veterinar.jpg",
+        "tools/admin/styly/popart-silna-zena.jpg"
+      ],
+      "poznamka": "Michal 2026-10-24: páči sa, skúšobný."
     }
   ]
 }
