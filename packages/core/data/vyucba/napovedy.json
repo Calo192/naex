@@ -1,0 +1,261 @@
+{
+  "id": "prva-partia",
+  "nazov": "Nápovedy Melichara v prvej partii",
+  "verzia": 1,
+  "zverejnena": false,
+  "popis": "Krátka výučba (prva-hra.json, 1 kolo) učí len Zhromaždenie a spoje, Pitku s NA EX, bitku a starších. Zvyšok povie Melichar v partii proti botovi, keď sa vec objaví prvýkrát. Každá nápoveda raz za účet, dá sa vypnúť. Špecifikácia: docs/napady/napovedy-prva-partia.html. Spúšťač sa počíta z pohľadu hráča (viewFor), nikdy zo skrytých vecí súpera.",
+  "nastavenia": {
+    "kde": "partia proti botovi; nie vo výučbe (TODO Michal: aj prvá partia dvoch ľudí?)",
+    "dokedy": "kým nie je každá nápoveda ukázaná alebo kým ich hráč nevypne (TODO Michal: alebo len prvá partia)",
+    "razZaUcet": true,
+    "najviacNaraz": 1,
+    "kolizia": "pri viacerých naraz sa ukáže tá s najnižším poradím; ostatné ostanú neukázané a spustia sa pri ďalšom výskyte",
+    "caka": "počas Počítadla bitky, ťahu súpera a hlášky Melichara (momenty) bublina čaká",
+    "vypinac": "tlačidlo „vypnúť nápovedy“ v bubline a prepínač v profile; „rozumiem“ zavrie jednu"
+  },
+  "napovedy": [
+    {
+      "id": "stavba-senku",
+      "poradie": 1,
+      "uroven": "A",
+      "spustac": {
+        "kedy": "prvá stavba šenku v partii, hráč ešte nevybral",
+        "podmienka": "view.faza === \"draft\" && view.draftStav.krok === \"stavba\" && môj balíček stavby nie je prázdny",
+        "jadro": ["packages/core/src/engine.ts:129 DraftStav.krok", "docs/PRAVIDLA.md §5 Stavba šenku"]
+      },
+      "melichar": "Šenok staviate ty a súper naraz: štyri karty daj do šenku, štyri na Smetisko. Na Smetisko patria tie, ktoré nechceš dať súperovi, neuvidí ich.",
+      "zvyraznit": ["stavba"]
+    },
+    {
+      "id": "rola",
+      "poradie": 2,
+      "uroven": "A",
+      "spustac": {
+        "kedy": "začiatok prvého kola partie (voľba cieľa)",
+        "podmienka": "view.faza === \"volbaCiela\" && view.kolo === 1",
+        "variant": "utocnik, keď view.utocnik === ja, inak obranca",
+        "jadro": ["packages/core/src/engine.ts:240 GameState.utocnik", "docs/PRAVIDLA.md §4 Útočník a obranca"]
+      },
+      "melichar": {
+        "utocnik": "Si útočník: kupuješ a kladieš prvý. Dnes rozhodol žreb, odteraz je útočníkom ten, kto prehrá bitku.",
+        "obranca": "Si obranca: vyberáš lokalitu a Pitku začínaš ty. Dnes rozhodol žreb, odteraz je obrancom ten, kto vyhrá bitku."
+      },
+      "zvyraznit": ["os-kola"]
+    },
+    {
+      "id": "odpoved-naex",
+      "poradie": 3,
+      "uroven": "A",
+      "spustac": {
+        "kedy": "súper dal NA EX a hráč smie odpovedať kartou",
+        "podmienka": "view.pitkaStav.reakcia === ja",
+        "jadro": ["packages/core/src/engine.ts:174 PitkaStav.reakcia", "docs/PRAVIDLA.md §7 Odpoveď na NA EX"]
+      },
+      "melichar": "Súper dal NA EX a ty smieš hneď položiť jednu kartu. Keď ňou spojíš akciu bez partnera na karte s NA EX, NA EX ju zruší namiesto zdvojenia.",
+      "zvyraznit": ["tlacidlo:bez-odpovede"]
+    },
+    {
+      "id": "pocet-pitiek",
+      "poradie": 4,
+      "uroven": "A",
+      "spustac": {
+        "kedy": "počet Pitiek v kole prvýkrát stúpol na 2 a viac (po vyložení karty)",
+        "podmienka": "pred.pitkyCelkom < 2 && po.pitkyCelkom >= 2",
+        "jadro": ["packages/core/src/engine.ts:1282 pocetPitiek", "packages/core/src/engine.ts:266 GameState.pitkyCelkom", "docs/PRAVIDLA.md §7 Počet Pitiek"]
+      },
+      "melichar": "Pitka sa dnes zopakuje: obaja máte pri lokalite spojenú jej akciu. Pred každou ďalšou Pitkou je nové Zhromaždenie.",
+      "zvyraznit": ["os-kola"]
+    },
+    {
+      "id": "zadlzenie",
+      "poradie": 5,
+      "uroven": "A",
+      "spustac": {
+        "kedy": "výhľad Pitky prvýkrát ukáže hráčovi zadĺženie",
+        "podmienka": "nahladPitky(view)[ja].zadlzenie > 0",
+        "jadro": ["packages/core/src/engine.ts:700 nahladPitky", "packages/core/src/engine.ts:873 prahyHraca (dlh)", "docs/PRAVIDLA.md §8 Zadĺženie a Dlh"]
+      },
+      "melichar": "Akcia Dlh ti plní zadĺženie v bare. Keď dosiahne číslo za lomkou, dostaneš kartu Dlh.",
+      "zvyraznit": ["bar:zadlzenie"]
+    },
+    {
+      "id": "dlh",
+      "poradie": 6,
+      "uroven": "A",
+      "spustac": {
+        "kedy": "hráč dostal prvú kartu Dlh",
+        "podmienka": "udalosť pitkaVysledok s dlhy[ja] > 0, alebo pribudol Dlh medzi mojimi priznanými",
+        "jadro": ["packages/core/src/engine.ts:412 Event pitkaVysledok", "docs/PRAVIDLA.md §11 Kliatby"]
+      },
+      "melichar": "Prvý Dlh! Leží medzi priznanými kartami a na konci hry ti zoberie body.",
+      "zvyraznit": ["bar:dlhy"]
+    },
+    {
+      "id": "pas-cigarety",
+      "poradie": 7,
+      "uroven": "A",
+      "spustac": {
+        "kedy": "hráč je v Zhromaždení na ťahu, už vyložil kartu a ešte mu ostal limit",
+        "podmienka": "view.faza === \"zhromazdenie\" && naTahu === ja && v tomto Zhromaždení som vyložil kartu && kartyZaPas(view.zhromazdenie, ja) >= 1",
+        "jadro": ["packages/core/src/engine.ts:158 kartyZaPas", "docs/PRAVIDLA.md §6 Pas a koniec Zhromaždenia"]
+      },
+      "melichar": "Pasovať sa oplatí aj skôr: za každú kartu, ktorú si ešte smel vyložiť, dostaneš cigaretu.",
+      "zvyraznit": ["tlacidlo:pas"]
+    },
+    {
+      "id": "lokalita-pravidlo",
+      "poradie": 8,
+      "uroven": "A",
+      "spustac": {
+        "kedy": "prvé kolo o lokalitu, ktorej pravidlo mení základný ťah",
+        "podmienka": "view.ciel.lokalita.defId v [krcma, kostol, benzinka, zastavka, most, vinna_pivnica, druzstvo], prvé také kolo",
+        "doplnit": "{lokalita} = názov karty, {efekt} = effect_text z cards.json",
+        "jadro": ["packages/core/src/engine.ts:258 GameState.ciel", "docs/PRAVIDLA.md §15 Lokality"]
+      },
+      "melichar": "{lokalita} má vlastné pravidlo a platí celé kolo: {efekt}",
+      "zvyraznit": ["linia:{lokalita}"]
+    },
+    {
+      "id": "body",
+      "poradie": 9,
+      "uroven": "A",
+      "spustac": {
+        "kedy": "po prvej bitke partie, keď sa skončí rozdeľovanie prebytku",
+        "podmienka": "pred.kolo === 1 && po.kolo === 2, alebo prvý koniec bitky",
+        "jadro": ["packages/core/src/view.ts:359 bodyTeraz", "docs/PRAVIDLA.md §14 Bodovanie"]
+      },
+      "melichar": "Body v bare ukazujú, koľko by si mal, keby hra skončila teraz. Klikni na ne a uvidíš, čo ti dáva ktorý starší.",
+      "zvyraznit": ["bar:body"]
+    },
+    {
+      "id": "pohorsenie",
+      "poradie": 10,
+      "uroven": "A",
+      "spustac": {
+        "kedy": "prvý krok Pohoršenia v bitke",
+        "podmienka": "view.bitkaStav.krok === \"pohorsenie\"",
+        "variant": "moje, keď view.bitkaStav.caka === ja, inak superove",
+        "jadro": ["packages/core/src/engine.ts:188 BitkaKrok pohorsenie", "packages/core/src/engine.ts:2860 pohorseniaVBitke", "docs/PRAVIDLA.md §9.2 Pohoršenie"]
+      },
+      "melichar": {
+        "moje": "Tvoje Pohoršenie posunie jedného staršieho o krok k súperovi, aj keď bitku prehráš. Vyber ktorého.",
+        "superove": "Súperovo Pohoršenie posúva staršieho k tebe, aj keď bitku prehrá. Ten starší sa potom bojí jeho."
+      },
+      "zvyraznit": ["linia-starsich"]
+    },
+    {
+      "id": "abstak",
+      "poradie": 11,
+      "uroven": "A",
+      "spustac": {
+        "kedy": "od druhého kola prvýkrát hrozí Absťák; ak výhľad nestihne, pri prvom Absťáku",
+        "podmienka": "stavZavislosti(view, ja).vyhlad === \"ziska\" na mojom ťahu, alebo pribudol Absťák medzi mojimi priznanými",
+        "jadro": ["packages/core/src/zavislost.ts:52 stavZavislosti", "docs/PRAVIDLA.md §8 Nerest a Absťák"]
+      },
+      "melichar": "Pozor na Absťák: kto v kole pije a fajčí menej ako v predošlom, dostane ho. Každý Absťák ti v bitke uberie 1 tuhé.",
+      "zvyraznit": ["bar:abstak"]
+    },
+    {
+      "id": "cirhoza",
+      "poradie": 12,
+      "uroven": "A",
+      "spustac": {
+        "kedy": "hráč má prvýkrát v ruke Cirhózu",
+        "podmienka": "view.hraci[ja].ruka obsahuje defId \"cirhoza\"",
+        "jadro": ["packages/core/src/engine.ts:412 Event pitkaVysledok (cirhozy)", "docs/PRAVIDLA.md §11 Priznanie"]
+      },
+      "melichar": "V ruke máš Cirhózu z pretečenej pečene. Nepriznaná ti na konci berie body, priznaná nie, no súper za ňu dostane v každej bitke 1 tuhé.",
+      "zvyraznit": ["ruka:cirhoza"]
+    },
+    {
+      "id": "priazen",
+      "poradie": 13,
+      "uroven": "B",
+      "spustac": {
+        "kedy": "starší sa prvýkrát dostal na hráčovu polovicu do žltej alebo ďalej",
+        "podmienka": "marker staršieho na mojej polovici v zóne 1–3 (sila priazne pre mňa > 0)",
+        "doplnit": "{starsi} = meno staršieho, {elderId}",
+        "jadro": ["packages/core/src/engine.ts:449 priazen", "docs/PRAVIDLA.md §10 Dvojaká úloha markera"]
+      },
+      "melichar": "{starsi} je na tvojej polovici a prejavuje ti priazeň: malý bonus podľa jeho podložky. Bojí sa zato súpera.",
+      "zvyraznit": ["starsi:{elderId}"]
+    },
+    {
+      "id": "prevaha",
+      "poradie": 14,
+      "uroven": "B",
+      "spustac": {
+        "kedy": "v jednom kraji prvýkrát ležia karty oboch hráčov a kraj tvorí spoj s lokalitou",
+        "podmienka": "strana línie s kartami oboch playedBy a s aktivovanou akciou hrany lokality",
+        "jadro": ["packages/core/src/partia.ts:249 prevahaStran", "docs/PRAVIDLA.md §6 Prevaha a akcie lokality"]
+      },
+      "melichar": "Akcie lokality v kraji dostane, kto tam má viac svojich Občanov, Zvierat a Starešinov. Pri rovnosti ten, koho karta leží pri lokalite.",
+      "zvyraznit": ["prevaha"]
+    },
+    {
+      "id": "patronat",
+      "poradie": 15,
+      "uroven": "B",
+      "spustac": {
+        "kedy": "hráč smie prvýkrát vziať staršieho do patronátu",
+        "podmienka": "view.draftStav.krok === \"patronat\" && hráč má aspoň jedného staršieho, ktorého smie vziať (moznyPatronat)",
+        "jadro": ["packages/core/src/engine.ts:1555 moznyPatronat", "packages/core/src/view.ts:409 nahladPatronatu", "docs/PRAVIDLA.md §10 Patronát"]
+      },
+      "melichar": "Starší, ktorý ti prejavuje priazeň, smie ísť s tebou do bitky: za cigarety si ho vezmeš do ruky. Keď bitku prehráš, vráti sa a stratíš poldeci.",
+      "zvyraznit": ["linia-starsich"]
+    },
+    {
+      "id": "vydesenie",
+      "poradie": 16,
+      "uroven": "B",
+      "spustac": {
+        "kedy": "prvý vydesený starší v partii (marker na krajnej červenej)",
+        "podmienka": "marker staršieho prvýkrát na indexe 0 alebo 8",
+        "variant": "moje, keď sa starší bojí mňa, inak superove",
+        "jadro": ["packages/core/src/engine.ts:3711 prahVydesenia", "packages/core/src/engine.ts:286 ohlaseneVydesenie", "docs/PRAVIDLA.md §1 Podmienky konca"]
+      },
+      "melichar": {
+        "moje": "Vydesený starší! Kto vydesí štyroch a udrží ich do konca ďalšieho kola, vyhrá hneď.",
+        "superove": "Súper ti vydesil staršieho. Keď ich vydesí štyroch a udrží ich do konca ďalšieho kola, vyhrá hneď."
+      },
+      "zvyraznit": ["linia-starsich"]
+    },
+    {
+      "id": "dedicstvo",
+      "poradie": 17,
+      "uroven": "B",
+      "spustac": {
+        "kedy": "hráč má prvýkrát Nástroj v ruke a je na ťahu v Zhromaždení",
+        "podmienka": "view.faza === \"zhromazdenie\" && naTahu === ja && ruka obsahuje kartu s tagom Nástroj",
+        "doplnit": "{karta} = názov Nástroja, {defId}",
+        "jadro": ["packages/core/src/engine.ts:1874 cenaDedicstva", "docs/PRAVIDLA.md §12 Dedičstvo"]
+      },
+      "melichar": "{karta} je Nástroj. Môžeš ho dať do Dedičstva za cigarety a jeho efekt potom platí do konca hry.",
+      "zvyraznit": ["ruka:{defId}"]
+    },
+    {
+      "id": "exekutor",
+      "poradie": 18,
+      "uroven": "B",
+      "spustac": {
+        "kedy": "priznané Dlhy hráča sa prvýkrát priblížia k prahu Exekútora",
+        "podmienka": "prahyHraca(view, ja).priznaneDlhy >= prahyHraca(view, ja).exekutor - 2 (rovnako ako varovanie v bare)",
+        "jadro": ["packages/core/src/engine.ts:873 prahyHraca", "apps/web/src/hra/Panely.tsx:769 varovanie Dlhov", "docs/PRAVIDLA.md §11 Exekútor"]
+      },
+      "melichar": "Priznaných Dlhov je veľa. Keď dosiahnu číslo za lomkou, v bitke príde Exekútor: odovzdáš mu Nástroj, alebo prehráš.",
+      "zvyraznit": ["bar:dlhy"]
+    },
+    {
+      "id": "zaverecna",
+      "poradie": 19,
+      "uroven": "B",
+      "spustac": {
+        "kedy": "od druhého kola, prvý ťah hráča v Zhromaždení, keď smie zahrať Záverečnú",
+        "podmienka": "view.kolo >= 2 && naTahu === ja && príkaz zaverecna je legálny (aspoň 1 cigareta, ešte nepasoval)",
+        "jadro": ["packages/core/src/engine.ts:1185 príkaz zaverecna", "docs/PRAVIDLA.md §13 Záverečná"]
+      },
+      "melichar": "Za cigaretu smieš zahrať kartu lícom dole ako Záverečnú, súper nevie, čo to je. Po nej už v tomto Zhromaždení nič nevyložíš.",
+      "zvyraznit": ["zaverecna"]
+    }
+  ]
+}
