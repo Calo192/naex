@@ -631,6 +631,9 @@ export function HernaPlocha({
       : Math.floor((vyskaPlste - (vyskaOkna < NIZKE_OKNO ? PRIDAVOK_NIZKE : vyskaOkna < NOTEBOOK ? PRIDAVOK_NOTEBOOK : PRIDAVOK_LINIE)) / (POMER_KARTY * (1 + rezervaPosunu)));
   useEffect(() => {
     if (mobil || stolScroll || vyskaPlste === 0 || sirkaPodlaVysky >= SIRKA_CITATELNA) return;
+    // Skrytá línia (starší, voľba cieľa, draft): plsť zmenší pokyn s kartami (patronát),
+    // nie karty línie — scroll by plsť zrazil na pár px (UI inšpekcia 20261024-nahlad, N1).
+    if (plstRef.current?.classList.contains("linia-skryta") === true) return;
     const t = setTimeout(() => setStolScroll(true), ONESKORENIE_SCROLLU_MS);
     return () => clearTimeout(t);
   }, [mobil, stolScroll, vyskaPlste, sirkaPodlaVysky]);
@@ -1051,6 +1054,24 @@ export function HernaPlocha({
     if (poh.length > 0) casti.push(`Pohoršenia: ${poh.join(", ")}`);
     const makke = hraci.filter((p) => d[p].makke !== 0).map((p) => `${kto(p)} ${znak(d[p].makke)}`);
     if (makke.length > 0) casti.push(`mäkké: ${makke.join(", ")}`);
+    return casti.length === 0 ? null : casti.join(" · ");
+  };
+  /**
+   * Cena NA EX skrátene pre jeden riadok pokynu (UI inšpekcia 20261024-nahlad, N3):
+   * body z kliatob, cigarety, Pohoršenia a mäkké — podrobnosti sú v rozbalenom pokyne.
+   */
+  const kratkaCena = (k: readonly [KliatbyNahladu, KliatbyNahladu], d: readonly [DopadyNahladu, DopadyNahladu]): string | null => {
+    const znak = (n: number): string => `${n > 0 ? "+" : "−"}${Math.abs(n)}`;
+    const kto = (p: PlayerId): string => (p === ja ? "ty" : "súper");
+    const hraci = [ja, super_] as const;
+    const casti = [
+      ...hraci.filter((p) => k[p].body !== 0).map((p) => `${kto(p)} ${znak(k[p].body)} b`),
+      ...hraci.filter((p) => d[p].cigarety !== 0).map((p) => `${kto(p)} ${znak(d[p].cigarety)} cig`),
+      ...hraci
+        .filter((p) => d[p].pohorsenia !== 0)
+        .map((p) => `${kto(p)} ${d[p].pohorsenia > 0 ? "+" : "−"}${pocet(Math.abs(d[p].pohorsenia), "Pohoršenie", "Pohoršenia", "Pohoršení")}`),
+      ...hraci.filter((p) => d[p].makke !== 0).map((p) => `${kto(p)} mäkké ${znak(d[p].makke)}`),
+    ];
     return casti.length === 0 ? null : casti.join(" · ");
   };
   // Možnosť NA EX pod myšou či fokusom — tá istá karta svieti na stole.
@@ -2555,7 +2576,7 @@ export function HernaPlocha({
                   <span className="zberatel-ponuka">
                     {kandidatiPatronatu.map((k) => (
                       <span key={k.uid} className="nahrada-kandidat">
-                        {karta({ karta: k, sirka: 84, vybrana: mode.uid === k.uid, onClick: () => setMode({ typ: "patronat", elderId: vybrany.elderId, uid: k.uid }) })}
+                        {karta({ karta: k, sirka: vyskaOkna < NIZKE_OKNO ? 56 : 72, vybrana: mode.uid === k.uid, onClick: () => setMode({ typ: "patronat", elderId: vybrany.elderId, uid: k.uid }) })}
                         <small>výhra {b2(nahladPatronatu(data, view, vybrany.elderId, k).vyhra)}</small>
                       </span>
                     ))}
@@ -3082,6 +3103,7 @@ export function HernaPlocha({
                 : vybrana.tuhe[ja] - vybrana.tuhe[super_] < odhad.tuhe[ja] - odhad.tuhe[super_]
                   ? "▼"
                   : "="}{" "}
+              {kratkaCena(vybrana.kliatby, vybrana.dopady) !== null && <>· cena: <b>{kratkaCena(vybrana.kliatby, vybrana.dopady)}</b> </>}
               · ty: {vybrana.zmeny[ja].length > 0 ? vybrana.zmeny[ja].join(", ") : "bez zmeny"} · {menoHraca(super_)}:{" "}
               {vybrana.zmeny[super_].length > 0 ? vybrana.zmeny[super_].join(", ") : "bez zmeny"}
               <span className="tlmene">
