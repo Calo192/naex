@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pravidlá — nová osnova</title>
+<style>
+:root {
+  --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --okraj: #3d3229;
+  --text: #f1e8d8; --tlmeny: #b6a790; --akcent: #e9ad45; --cervena: #e07a62; --zelena: #7cbf74; --modra: #8fb4e0;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root { --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #dccdb3; --text: #2a2016; --tlmeny: #5e4f3b;
+    --akcent: #9a5d06; --cervena: #a83a26; --zelena: #356e2f; --modra: #2d5a8f; color-scheme: light; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.5 system-ui, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 860px; margin: 0 auto; padding: 22px 16px 48px; }
+h1, h2 { font-family: Georgia, "Times New Roman", serif; line-height: 1.2; }
+h1 { font-size: clamp(1.6rem, 5vw, 2.1rem); margin: 0 0 8px; }
+h2 { font-size: 1.3rem; margin: 32px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--okraj); }
+p { margin: 0 0 10px; }
+.uvod { color: var(--tlmeny); }
+.odp { background: var(--plocha); border: 1px solid var(--akcent); border-radius: 12px; padding: 12px 16px; }
+.odp ol { margin: 4px 0 0; padding-left: 20px; } .odp li { margin-bottom: 4px; }
+.cast { color: var(--akcent); font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; margin: 22px 0 8px; font-weight: 600; }
+ol.kap { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; counter-reset: k; }
+ol.kap li { counter-increment: k; background: var(--plocha); border: 1px solid var(--okraj); border-radius: 10px; padding: 10px 12px 10px 48px; position: relative; }
+ol.kap li::before { content: counter(k); position: absolute; left: 12px; top: 9px; width: 26px; height: 26px; border-radius: 50%; background: var(--plocha-2); color: var(--akcent); font: 600 .95rem/26px Georgia, serif; text-align: center; }
+ol.kap b { font-size: 1.02rem; }
+.naucí { display: block; margin: 2px 0 4px; }
+.tagy { display: flex; flex-wrap: wrap; gap: 4px; }
+.t { font-size: .74rem; border-radius: 999px; padding: 0 8px; background: var(--plocha-2); color: var(--tlmeny); border: 1px solid var(--okraj); }
+.t.u { color: var(--modra); border-color: currentColor; background: transparent; }
+.obal { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+th, td { text-align: left; vertical-align: top; padding: 6px; border-bottom: 1px solid var(--okraj); }
+thead th { border-bottom: 2px solid var(--okraj); }
+td.n { white-space: nowrap; color: var(--akcent); font-weight: 600; }
+details { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 10px; padding: 8px 12px; margin: 8px 0; }
+details summary { cursor: pointer; font-weight: 600; }
+details[open] summary { margin-bottom: 8px; }
+.roz { margin: 0; padding-left: 18px; } .roz li { margin-bottom: 8px; }
+.roz small { color: var(--tlmeny); display: block; }
+code { font-family: ui-monospace, Consolas, monospace; font-size: .84em; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+.z { color: var(--cervena); font-weight: 600; }
+footer { margin-top: 32px; color: var(--tlmeny); font-size: .85rem; border-top: 1px solid var(--okraj); padding-top: 10px; }
+</style>
+</head>
+<body>
+<main>
+<h1>Pravidlá — nová osnova</h1>
+<p class="uvod">Navrhár, 24. 10. 2026, na schválenie Michalom. Pravidlá dnes začínajú slovníkom 30 pojmov a idú podľa
+tém. Návrh: jedna stránka v poradí, v akom plynie partia, rovnako ako učí Melichar vo výučbe.</p>
+
+<div class="odp">
+  <b>Odporúčam</b>
+  <ol>
+    <li><b>Tri časti:</b> Rýchly štart (4 kapitoly), Kolo krok za krokom (6), Podrobnosti (5). Spolu 15 kapitol a slovník.</li>
+    <li><b>Slovník až na konci.</b> Pojem v texte je podčiarknutý a vysvetlí sa pod myšou alebo dotykom.</li>
+    <li><b>Najprv opraviť 10 rozporov</b> so živou hrou (dole). Napr. Záverečná na stránke chýba úplne a Absťák sa podľa
+      stránky zbaví na Lesnej ceste, čo jadro nerobí.</li>
+  </ol>
+</div>
+
+<h2>Osnova stránky Pravidlá</h2>
+
+<div class="cast">A · Rýchly štart</div>
+<ol class="kap">
+  <li><b>Čo je NA EX!</b><span class="naucí">Dvaja hráči, dedina a krčma, bijú sa o lokality a desia starších. Hra je karikatúra.</span>
+    <span class="tagy"><span class="t">hráč</span><span class="t">lokalita</span><span class="t">starší</span></span></li>
+  <li><b>Ako sa vyhráva</b><span class="naucí">Body za lokality, strach starších a cigarety, mínus Dlhy a Cirhózy. Okamžitá výhra vydesením, prehra exekúciou alebo balíčkom pod 5.</span>
+    <span class="tagy"><span class="t">body</span><span class="t">vydesenie</span><span class="t">exekúcia</span></span></li>
+  <li><b>Čo máš pred sebou</b><span class="naucí">Ruka, balíček a bar: poldeci, cigarety, pečeň, zadĺženie. Karta: akcie po stranách, tagy, efekt.</span>
+    <span class="tagy"><span class="t">poldeci</span><span class="t">cigareta</span><span class="t">akcia</span><span class="t">tag</span><span class="t">efekt</span></span></li>
+  <li><b>Kolo v piatich krokoch a príprava</b><span class="naucí">Cieľ → šenok → Zhromaždenie a Pitka 1–4× → bitka → po bitke. Štart: 7 kariet, 5 v ruke, 2 poldeci, 3 cigarety.</span>
+    <span class="tagy"><span class="t">kolo</span><span class="t">útočník / obranca</span><span class="t">dĺžka hry</span></span></li>
+</ol>
+
+<div class="cast">B · Kolo krok za krokom</div>
+<ol class="kap" start="5" style="counter-reset: k 4">
+  <li><b>Cieľ a šenok</b><span class="naucí">Obranca vyberie a natočí lokalitu. Stavba šenku a Smetisko, branie 1 karta za 1 cigaretu, 2 za 3.</span>
+    <span class="tagy"><span class="t">šenok</span><span class="t">Smetisko</span><span class="t">natočenie</span><span class="t">kraj</span></span></li>
+  <li><b>Zhromaždenie: kladenie a spoje</b><span class="naucí">Línia, dve strany, spoj na rovnakej výške. Akcia bez partnera nerobí nič. Limit = plné poldeci + 1, pas za cigarety, prevaha v kraji.</span>
+    <span class="tagy"><span class="t u">UkazkaSpajania</span><span class="t u">UkazkaLimitu</span><span class="t">línia</span><span class="t">spoj</span><span class="t">partia</span><span class="t">limit</span><span class="t">pas</span><span class="t">prevaha</span></span></li>
+  <li><b>Pitka a NA EX</b><span class="naucí">Obranca začína, útočník má posledné slovo. NA EX zruší spojené a zdvojí osamotené akcie (karta musí mať oboje). Odpoveď, fajčenie, doliatie, počet Pitiek.</span>
+    <span class="tagy"><span class="t">NA EX</span><span class="t">odpoveď</span><span class="t">fajčenie</span><span class="t">doliatie</span><span class="t">Pitka</span></span></li>
+  <li><b>Cena pitia</b><span class="naucí">Pečeň a zadĺženie žijú v Pitke: za každý celý prah Cirhóza alebo Dlh. Nerest a Absťák.</span>
+    <span class="tagy"><span class="t">pečeň</span><span class="t">Cirhóza</span><span class="t">Dlh</span><span class="t">nerest</span><span class="t">Absťák</span></span></li>
+  <li><b>Bitka</b><span class="naucí">Tuhé (Rana 1, Pecka 2, Petelica 3) proti Viere, mäkké z Povier. Viac tuhého berie lokalitu, remíza ide na sekeru. Kroky bitky v poradí.</span>
+    <span class="tagy"><span class="t u">UkazkaBitky</span><span class="t">tuhé</span><span class="t">mäkké</span><span class="t">Viera</span><span class="t">sekera</span></span></li>
+  <li><b>Starší a prebytok</b><span class="naucí">Stupnica strachu. Posun k súperovi dá jemu priazeň a tebe strach, teda body. Pohoršenie, vydesenie, prebudenie, patronát.</span>
+    <span class="tagy"><span class="t u">UkazkaStupnice</span><span class="t">prebytok</span><span class="t">priazeň</span><span class="t">strach</span><span class="t">Pohoršenie</span><span class="t">patronát</span></span></li>
+</ol>
+
+<div class="cast">C · Podrobnosti</div>
+<ol class="kap" start="11" style="counter-reset: k 10">
+  <li><b>Kliatby a priznanie</b><span class="naucí">Dlh, Cirhóza, Absťák, Milujúca manželka. Priznanie, Exekútor a Robota, Pohreb.</span>
+    <span class="tagy"><span class="t">kliatba</span><span class="t">priznanie</span><span class="t">Exekútor</span><span class="t">Pohreb</span></span></li>
+  <li><b>Nástroje a Dedičstvo</b><span class="naucí">Nástroj v línii len pri Občanovi, akcie dostane majiteľ spoja. Dedičstvo za rastúcu cenu.</span>
+    <span class="tagy"><span class="t">Nástroj</span><span class="t">Dedičstvo</span></span></li>
+  <li><b>Pokročilé ťahy</b><span class="naucí">Vypiť a viac kariet naraz, Záverečná lícom dole, podstrčenie (sabotér), Posilnenie, Odpor, Vzbura.</span>
+    <span class="tagy"><span class="t">Vypiť</span><span class="t">Záverečná</span><span class="t">podstrčenie</span><span class="t">Vzbura</span></span></li>
+  <li><b>Lokality</b><span class="naucí">Tabuľka všetkých 15 lokalít (aj Kar) a čo menia v kole, keď sa o ne bije.</span>
+    <span class="tagy"><span class="t">kraj</span></span></li>
+  <li><b>Bodovanie na konci</b><span class="naucí">Scorecardy: každá aktívna podmienka boduje obom. Príklad s Farárom a prečo lokalita bežne stojí 12–18 bodov.</span>
+    <span class="tagy"><span class="t">scorecard</span><span class="t">podmienka</span></span></li>
+</ol>
+<p style="margin-top:10px"><b>Slovník</b> na konci: abecedne, každý pojem jednou vetou. Tie isté vety sa ukážu pod myšou v texte.
+Kľúčové slová z kariet (tučné a kurzívou) ostávajú ako dnes, len presunuté sem.</p>
+
+<h2>PRAVIDLA.md: starý § → nový §</h2>
+<p class="uvod">Rovnaké poradie ako stránka. História zmien (úvod r. 1–190 a 112 poznámok „Michal …; predtým …“) ide do
+<code>docs/PRAVIDLA-historia.md</code>. Podľa tejto tabuľky sa prečísluje mapa rozhodcu.</p>
+<div class="obal"><table>
+  <thead><tr><th>Nový §</th><th>Obsah</th><th>Zo starého</th></tr></thead>
+  <tbody>
+    <tr><td class="n">§1</td><td>Cieľ a koniec hry</td><td>§1</td></tr>
+    <tr><td class="n">§2</td><td>Karta, akcie, tagy, varianty</td><td>§2, §3</td></tr>
+    <tr><td class="n">§3</td><td>Príprava hry</td><td>§11</td></tr>
+    <tr><td class="n">§4</td><td>Priebeh kola, útočník a obranca, dobratie po bitke</td><td>§7 úvod</td></tr>
+    <tr><td class="n">§5</td><td>Cieľ a draft (stavba šenku, branie)</td><td>§7 draft</td></tr>
+    <tr><td class="n">§6</td><td>Zhromaždenie: línia, spoje, modifikátory, limit, pas</td><td>§4, §5 limit, §7 Zhromaždenie</td></tr>
+    <tr><td class="n">§7</td><td>Pitka: poradie, NA EX, odpoveď, fajčenie, doliatie, barter, počet Pitiek</td><td>§5 NA EX a doplnenie, §7 Pitka a počet Pitiek</td></tr>
+    <tr><td class="n">§8</td><td>Pečeň, zadĺženie, nerest a Absťák</td><td>§7 Pitka kroky 2–3, §12 Absťák</td></tr>
+    <tr><td class="n">§9</td><td>Bitka: kroky v poradí</td><td>§8.0–§8.5b, §8.7</td></tr>
+    <tr><td class="n">§10</td><td>Starší, priazne, patronát</td><td>§9, §7 patronát, §8.6d</td></tr>
+    <tr><td class="n">§11</td><td>Kliatby, priznanie, Exekútor, Pohreb, Cintorín</td><td>§6 priznanie, §12, §8.1, §8.6, §8.6a</td></tr>
+    <tr><td class="n">§12</td><td>Nástroje a Dedičstvo</td><td>§6 Dedičstvo</td></tr>
+    <tr><td class="n">§13</td><td>Pokročilé ťahy: Vypiť, Záverečná, podstrčenie</td><td>§5 Vypiť, §7 Záverečná, §4 sabotér</td></tr>
+    <tr><td class="n">§14</td><td>Bodovanie</td><td>§10</td></tr>
+    <tr><td class="n">§15</td><td>Lokality</td><td>§14 Lokality</td></tr>
+    <tr><td class="n">§16</td><td>Výklad kariet</td><td>§14 Karty</td></tr>
+    <tr><td class="n">§17</td><td>Slovník</td><td>§13</td></tr>
+    <tr><td class="n">—</td><td>vypustiť (do histórie)</td><td>úvod r. 1–190, §8.6b Zberateľ</td></tr>
+  </tbody>
+</table></div>
+
+<h2>Audit: rozpory so živou hrou</h2>
+<p class="uvod">Overené proti jadru (VERZIA_PRAVIDIEL 2026-10-23.6), <code>cards.json</code> a ťaháku. Kód hry som nemenil.</p>
+
+<details open>
+<summary>Stránka Pravidlá — 10 rozporov</summary>
+<ol class="roz">
+  <li><span class="z">Záverečná chýba úplne.</span> Hra ju má (príkaz <code>zaverecna</code>, <code>engine.ts:325</code>, PRAVIDLA §7 r. 641).</li>
+  <li><span class="z">Absťák „sa zbavíš NA EX na Lesnej ceste“</span> (<code>Pravidla.tsx:525</code>). Lesná cesta dáva len +1 tuhé za kartu v súperovom kraji
+    (<code>effects.ts:384–386</code>), Absťák nemaže.</li>
+  <li><span class="z">„Každá ďalšia karta musí vytvoriť aspoň jedno spojenie“</span> (<code>Pravidla.tsx:333</code>). Jadro to nekontroluje
+    (<code>cmdPlace</code>, <code>engine.ts:1716</code>), karta smie ležať aj bez spoja.</li>
+  <li><span class="z">NA EX bez nového pravidla</span> (<code>Pravidla.tsx:280</code>): karta musí mať aspoň 1 aktívnu a 1 neaktívnu akciu
+    (<code>engine.ts:2189</code>, PRAVIDLA §5 r. 389). Chýba aj Anonymný alkoholik.</li>
+  <li><span class="z">Lokalita Kar chýba</span> v tabuľke (<code>Pravidla.tsx:606–627</code>) aj v krokoch bitky (<code>:673</code>). V sade je
+    (15 lokalít v <code>cards.json</code>, ťahák r. 53).</li>
+  <li><span class="z">„Priznaná Cirhóza sa dá liečiť“</span> (<code>Pravidla.tsx:363</code>). Liečba zanikla, je len Pohreb (<code>engine.ts:3428</code>).</li>
+  <li><span class="z">Karta za priznanie</span> (<code>Pravidla.tsx:362–364</code>): text mieša dve veci. Za nový Dlh z prahu kartu nedobereš,
+    za Dlh dobratý z balíčka ťaháš náhradu (ťahák r. 68–70).</li>
+  <li><span class="z">„Viera: základ 1, upraviteľné priazňou“</span> (<code>Pravidla.tsx:260</code>). Veriaci pridáva Vieru navyše, hodnotu Viery mení
+    len Svätý text v Dedičstve (<code>engine.ts:805</code>).</li>
+  <li><span class="z">„Server dostane ťah po hotovo“</span> (<code>Pravidla.tsx:312</code>). Tlačidlo na stole je „potvrdiť“.</li>
+  <li><span class="z">Slovník 30 pojmov je 2. kapitola</span> z 18. Nováčik ho číta skôr, než vie, čo je kolo.</li>
+</ol>
+</details>
+
+<details>
+<summary>PRAVIDLA.md — 7 rozporov</summary>
+<ol class="roz">
+  <li>Úvod <b>r. 1–190</b> je história zmien s „prednosťou pred staršími odsekmi“. Obsahuje aj už neplatné veci (r. 43 limit ruky
+    a Zberateľ, r. 92 prezeranie kariet). Čitateľ nevie, čo platí.</li>
+  <li><b>§6 r. 469</b> „za priznanú kliatbu dobereš kartu — za Dlh…“ proti <b>§12 r. 1042</b> „nový Dlh… kartu zaň nedobere“.
+    Jadro platí podľa §12.</li>
+  <li><b>§11 r. 1026</b> „cards.json ich má 14“, má ich 15.</li>
+  <li><b>§14 r. 1097–1100</b> „14 lokalít… Kar čaká na zverejnenie“. Kar je v sade.</li>
+  <li><b>§7 r. 587</b> „návrh 14 lokalít“, je ich 15.</li>
+  <li><b>§11 r. 1027</b> „markery do stredu na 0“. Marker začína na indexe 4 (§9).</li>
+  <li><b>§8.6b r. 848–853</b> „Zberateľ — zrušený“ a r. 951–953 sú mŕtve odseky.</li>
+</ol>
+</details>
+
+<footer>Navrhár NA EX!, vetva <code>navrhar/pravidla-osnova</code>. Kód stránky ani pravidlá som nemenil, prepis robí
+technika po schválení osnovy.</footer>
+</main>
+</body>
+</html>
