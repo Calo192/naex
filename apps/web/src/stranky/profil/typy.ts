@@ -2,6 +2,7 @@
 // Čo kto vidí, rozhoduje server (Michal 2026-10-22) — klient len kreslí.
 
 import type { BodyTeraz, KoloKroniky, StatistikyHraca } from "@naex/core";
+import type { VitrinaApi } from "../../achievementy/data.ts";
 import type { ProfilHraca } from "../Statistiky.tsx";
 
 export type Vysledok = "vyhra" | "prehra" | "remiza";
@@ -58,6 +59,8 @@ export type ProfilApi = ProfilHraca & {
   readonly vyDvaja: Bilancia | null;
   readonly suhrnSkryty: boolean;
   readonly suhrn: Suhrn | null;
+  /** Vitrína achievementov; null, kým nie sú zapnuté alebo keď si cudzí hráč skryl súhrn. */
+  readonly achievementy?: VitrinaApi | null;
 };
 
 export interface SuperVPartii extends HracVerejny {

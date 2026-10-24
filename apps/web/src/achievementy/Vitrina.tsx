@@ -1,6 +1,5 @@
 // Vitrína achievementov (Profil a verejný profil hráča): podtácky v mriežke, získané farebne
-// s dátumom, nezískané sivo s postupom, filter podľa kategórie. Dáta dostane hotové —
-// napojenie na /api/achievementy príde, keď Michal schváli zoznam (tvar od New features).
+// s dátumom, nezískané sivo s postupom, filter podľa kategórie. Dáta z API prevedie data.ts.
 
 import { useMemo, useState } from "react";
 import { HVIEZDY_RANKU, NAZOV_RANKU, Podtacok, type RankPodtacka } from "./Podtacok.tsx";
@@ -20,8 +19,10 @@ export interface PolozkaVitriny {
   readonly rankCiela: RankPodtacka;
   /** Kedy získal najvyšší rank (ms), null = nezískaný. */
   readonly ziskane: number | null;
-  /** Postup k ďalšiemu ranku, ak sa dá merať. */
-  readonly postup: { readonly hodnota: number; readonly prah: number } | null;
+  /** Postup k ďalšiemu ranku (kariérne achievementy); pri sérii aj aktuálna séria. */
+  readonly postup: { readonly hodnota: number; readonly prah: number; readonly aktualna?: number | null } | null;
+  /** Vzácnosť získaného ranku („vzácne“), bežné null. */
+  readonly vzacnost?: string | null;
 }
 
 export interface KategoriaVitriny {
@@ -44,7 +45,8 @@ export function Vitrina({
   const [filter, setFilter] = useState<string | null>(null);
   const ziskanych = polozky.filter((p) => p.rank !== null).length;
   const viditelne = useMemo(() => {
-    const sila = (p: PolozkaVitriny): number => (p.rank === null ? 0 : HVIEZDY_RANKU[p.rank]);
+    // Skrytý tajný („???“) až na konci — medzi získanými a ostatnými rozbíjal poličky.
+    const sila = (p: PolozkaVitriny): number => (p.rank === null ? (p.tajny ? -1 : 0) : HVIEZDY_RANKU[p.rank]);
     // Získané prvé, potom podľa ranku a mena — vitrína vyzerá ako police s trofejami.
     return polozky
       .filter((p) => (filter === null || p.kategoria === filter) && (vlastna || p.rank !== null))
@@ -75,25 +77,28 @@ export function Vitrina({
           {viditelne.map((p) => {
             const ziskany = p.rank !== null;
             const skryty = p.tajny && !ziskany;
+            const postup = vlastna && p.postup !== null ? p.postup : null;
             return (
               <li key={p.id} className={ziskany ? "ziskany" : "neziskany"}>
                 <Podtacok rank={p.rank ?? p.rankCiela} ikona={p.ikona} obrazok={p.obrazok} nazov={p.nazov} ziskany={ziskany} tajny={p.tajny} velkost={120} />
                 <strong>{skryty ? "???" : p.nazov}</strong>
-                <span className="vitrina-popis">{skryty ? "Tajný achievement — ukáže sa, až keď ho získaš." : p.popis}</span>
-                {ziskany && p.rank !== null && p.ziskane !== null ? (
+                {/* Tajný bez zisku: nápoveda zo servera (tajnyText), inak všeobecná veta. */}
+                <span className="vitrina-popis">{skryty && p.popis === "???" ? "Tajný achievement — ukáže sa, až keď ho získaš." : p.popis}</span>
+                {ziskany && p.rank !== null && (
                   <small className="vitrina-meta">
-                    {NAZOV_RANKU[p.rank]} · získané {datum(p.ziskane)}
+                    {NAZOV_RANKU[p.rank]}
+                    {p.ziskane !== null && <> · získané {datum(p.ziskane)}</>}
+                    {p.vzacnost != null && <> · {p.vzacnost}</>}
                   </small>
-                ) : (
-                  vlastna &&
-                  p.postup !== null && (
-                    <small className="vitrina-meta">
-                      <span className="vitrina-postup" aria-hidden="true">
-                        <i style={{ width: `${Math.min(100, Math.round((p.postup.hodnota / Math.max(1, p.postup.prah)) * 100))}%` }} />
-                      </span>
-                      {p.postup.hodnota} / {p.postup.prah}
-                    </small>
-                  )
+                )}
+                {postup !== null && (
+                  <small className="vitrina-meta">
+                    <span className="vitrina-postup" aria-hidden="true">
+                      <i style={{ width: `${Math.min(100, Math.round((postup.hodnota / Math.max(1, postup.prah)) * 100))}%` }} />
+                    </span>
+                    {ziskany ? `k ďalšiemu: ${postup.hodnota} / ${postup.prah}` : `${postup.hodnota} / ${postup.prah}`}
+                    {postup.aktualna != null && <> · teraz {postup.aktualna}</>}
+                  </small>
                 )}
               </li>
             );

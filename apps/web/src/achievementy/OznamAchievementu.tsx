@@ -12,6 +12,8 @@ const NA_STOLE_MS = 4_000;
 export interface ZiskVOzname {
   /** Jedinečný kľúč zisku (id achievementu + rank). */
   readonly kluc: string;
+  /** Id achievementu — vyšší rank toho istého v rade nahradí nižší, čo ešte nebol na stole. */
+  readonly id?: string;
   readonly nazov: string;
   readonly rank: RankPodtacka;
   readonly tajny: boolean;
@@ -27,7 +29,15 @@ export function OznamAchievementu({ zisky }: { readonly zisky: readonly ZiskVOzn
     const nove = zisky.filter((z) => !ukazane.current.has(z.kluc));
     if (nove.length === 0) return;
     for (const z of nove) ukazane.current.add(z.kluc);
-    setRad((r) => [...r, ...nove]);
+    setRad((r) => {
+      let out = [...r];
+      for (const z of nove) {
+        // Prvý v rade je práve na stole — ten ostáva; čakajúci nižší rank toho istého zmizne.
+        out = out.filter((x, i) => i === 0 || z.id === undefined || x.id !== z.id);
+        out.push(z);
+      }
+      return out;
+    });
   }, [zisky]);
   const teraz = rad[0];
   useEffect(() => {
@@ -44,6 +54,7 @@ export function OznamAchievementu({ zisky }: { readonly zisky: readonly ZiskVOzn
         <b>{teraz.nazov}</b>
         <span>
           {teraz.tajny ? "tajný achievement" : "achievement"} · {NAZOV_RANKU[teraz.rank]} {hviezdy}
+          {rad.length > 1 && <> · ďalšie {rad.length - 1}</>}
         </span>
       </div>
     </div>

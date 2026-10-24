@@ -6,7 +6,8 @@ import type { ClientState, GameData, PlayerId, Rod } from "@naex/core";
 import { bodyTeraz, tvar } from "@naex/core";
 import { Odkaz } from "../lib/router.tsx";
 import { RozpisBodov } from "./RozpisBodov.tsx";
-import type { ZmenyFrajeriny } from "./useHra.ts";
+import { SuhrnPoPartii } from "../achievementy/VPartii.tsx";
+import type { SuhrnAchievementov, ZmenyFrajeriny } from "./useHra.ts";
 import { textHlasky } from "./useHra.ts";
 
 export interface KoniecHryProps {
@@ -15,6 +16,8 @@ export interface KoniecHryProps {
   readonly mena: readonly [string, string];
   readonly menoKarty: (defId: string) => string;
   readonly frajerina: ZmenyFrajeriny | null;
+  /** Získané achievementy a „chýbalo málo“ (príde zo servera po konci). */
+  readonly achievementy?: SuhrnAchievementov | null;
   readonly onZavri: () => void;
   readonly opustit: () => void;
   /** Rod hráča pre „Vyhral(a) si!“ (Michal 2026-10-22); chýba = neutrálne. */
@@ -23,7 +26,7 @@ export interface KoniecHryProps {
   readonly rody?: readonly [Rod, Rod];
 }
 
-export function KoniecHry({ view, data, mena, menoKarty, frajerina, onZavri, opustit, rodJa = null, rody = [null, null] }: KoniecHryProps) {
+export function KoniecHry({ view, data, mena, menoKarty, frajerina, achievementy = null, onZavri, opustit, rodJa = null, rody = [null, null] }: KoniecHryProps) {
   const koniec = view.koniec;
   if (koniec === null) return null;
   const ja = view.ja;
@@ -77,6 +80,7 @@ export function KoniecHry({ view, data, mena, menoKarty, frajerina, onZavri, opu
             {Math.abs(zmena.po - zmena.pred)})
           </p>
         )}
+        {achievementy !== null && <SuhrnPoPartii suhrn={achievementy} />}
         <div className="koniec-tlacidla">
           <button onClick={onZavri}>pozrieť stôl</button>
           {/* Hodnotenie hry tými istými kritériami ako AI playtesteri (Michal 2026-10-21). */}

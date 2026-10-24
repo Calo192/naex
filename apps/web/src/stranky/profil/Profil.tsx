@@ -25,9 +25,10 @@ import {
   type RiadokPartie,
   type Vysledok,
 } from "./typy.ts";
+import { PoslednePodtacky, VitrinaHraca } from "../../achievementy/VitrinaHraca.tsx";
 import "./profil.css";
 
-type Zalozka = "prehlad" | "suhrn" | "partie";
+type Zalozka = "prehlad" | "suhrn" | "partie" | "achievementy";
 
 /** Štyri čísla do Prehľadu — zvyšok je v záložke Súhrn. */
 const HLAVNE_METRIKY = ["vyhry", "body", "lokality", "bitkyVyhrane"];
@@ -251,6 +252,7 @@ export function HracProfil({ id }: { readonly id: number }) {
   const metriky = profil.suhrn?.metriky ?? [];
   const hlavne = HLAVNE_METRIKY.flatMap((k) => metriky.filter((m) => m.kluc === k));
   const nova = profil.bilancia.ludia.partie + profil.bilancia.boti.partie === 0;
+  const vitrina = profil.achievementy;
 
   return (
     <div className="profil-hraca">
@@ -296,6 +298,7 @@ export function HracProfil({ id }: { readonly id: number }) {
               ["prehlad", "Prehľad"],
               ["suhrn", "Súhrn"],
               ...(plny ? ([["partie", "Partie"]] as const) : []),
+              ...(vitrina != null ? ([["achievementy", "Achievementy"]] as const) : []),
             ] as const
           ).map(([k, nazov]) => (
             <button key={k} type="button" className={zalozka === k ? "zalozka aktivna" : "zalozka"} aria-pressed={zalozka === k} onClick={() => setZalozka(k)}>
@@ -376,6 +379,7 @@ export function HracProfil({ id }: { readonly id: number }) {
               </section>
             )
           )}
+          {vitrina != null && <PoslednePodtacky vitrina={vitrina} vlastna={vlastny} vsetky={() => setZalozka("achievementy")} />}
           <SilneSlabe profil={profil} />
           <section className="panel profil-karta">
             <h2>Bilancia</h2>
@@ -471,6 +475,12 @@ export function HracProfil({ id }: { readonly id: number }) {
             </details>
           )}
         </div>
+      )}
+
+      {zalozka === "achievementy" && vitrina != null && (
+        <section className="panel profil-karta">
+          <VitrinaHraca vitrina={vitrina} vlastna={vlastny} />
+        </section>
       )}
 
       {zalozka === "partie" && plny && (

@@ -193,3 +193,87 @@
   height: 100%;
   background: var(--tlmeny);
 }
+
+/* ---- rad podtáckov: karta v Prehľade profilu a okno konca partie ---- */
+/* 6 × 88 px + medzery sa zmestí do okna konca (640 px) — šiesty sa nezalomí sám do riadku. */
+.podtacky-rad {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.podtacky-rad li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 88px;
+  text-align: center;
+}
+
+.podtacky-rad li > span {
+  font: 700 0.82rem/1.2 var(--nadpis);
+}
+
+.podtacky-rad li > small {
+  font-size: 0.72rem;
+}
+
+/* ---- súhrn achievementov v okne konca partie ---- */
+.koniec-achievementy {
+  margin: 14px 0 4px;
+  padding-top: 12px;
+  border-top: 1px solid var(--okraj);
+}
+
+.koniec-achievementy h3 {
+  margin: 0 0 10px;
+  font-size: 1rem;
+  color: var(--akcent-svetly);
+}
+
+.koniec-achievementy h3:not(:first-child) {
+  margin-top: 14px;
+}
+
+.chybalo-malo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.85rem;
+  line-height: 1.35;
+}
+
+.chybalo-malo li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chybalo-malo li > .podtacok {
+  flex: none;
+}
+
+/* Nízky notebook: okno konca je nízke — menšie podtácky, nech sa zmestí s tlačidlami. */
+@media (max-height: 919px) {
+  .koniec-achievementy .podtacky-rad li {
+    width: 84px;
+  }
+
+  .koniec-achievementy .podtacky-rad .podtacok {
+    width: 64px;
+    height: 64px;
+  }
+
+  /* Nápis po obvode je pri 64 px nečitateľný (Michal: od 88 px) — názov je pod podtáckom. */
+  .koniec-achievementy .podtacky-rad .podtacok-napis {
+    display: none;
+  }
+}

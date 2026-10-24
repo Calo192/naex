@@ -1,6 +1,7 @@
 // Ukážka UI achievementov na snímky a UI inšpekciu (/achievementy/ukazka): vitrína a oznam
-// s vymyslenými dátami. Kým Michal neschváli zoznam a API nie je napojené, je to jediné
-// miesto, kde komponenty bežia; po napojení ukážku zmažeme.
+// s vymyslenými dátami. API je napojené (profil, okno konca, oznam v partii), ale kým má
+// katalóg „zapnute“: false, je to jediné miesto, kde sa dá oznam pozrieť bez partie;
+// zmažeme ju, keď sa achievementy zapnú.
 
 import { useState } from "react";
 import { useSada } from "../lib/sada.tsx";
