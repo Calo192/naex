@@ -218,7 +218,7 @@ body.vyucba-bezi .ruka-rad > .tahatelna:not(:hover) > .kl[data-vyucba-zvyraznene
 }
 
 /* Počas výučby komentuje Melichar — pruhy udalostí a priazne na stole by ležali cez karty. */
-body.vyucba-bezi .pokyn-udalosti,
+body.vyucba-bezi .pokyn-udalosti:not(.pokyn-tahania),
 body.vyucba-bezi .oznamy-priazne {
   display: none;
 }

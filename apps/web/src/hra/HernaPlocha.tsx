@@ -1397,12 +1397,21 @@ export function HernaPlocha({
     return out;
   };
 
-  const pusti = (z: Zdroj, ciel: string | null): void => {
+  const pusti = (z: Zdroj, ciel: string | null, bod: { readonly x: number; readonly y: number }): void => {
     // Karta ťahaná zo zväčšenej kópie — lupa by po pustení visela na starom mieste.
     setLupa(null);
     setMiestoVolby(null);
-    // Mimo povoleného miesta sa karta vráti tam, kde bola.
-    if (ciel === null || !cieleZdroja(z).has(ciel)) return;
+    setChybaTahania(null);
+    // Mimo povoleného miesta sa karta vráti tam, kde bola. Keď ju hráč chcel vyložiť,
+    // povie to hláška — ticho bolo horšie než samo zlyhanie (playtest výučby 2026-10-23).
+    // Pustenie späť nad ruku je zrušenie, to hlášku nepotrebuje.
+    if (ciel === null || !cieleZdroja(z).has(ciel)) {
+      const vykladal = z.odkial === "ruka" && !z.navrh && [...cieleZdroja(z)].some((c) => jeCielVykladania(c) || c.startsWith(NAHRADIT));
+      if (vykladal && document.elementFromPoint(bod.x, bod.y)?.closest(".ruka") == null) {
+        setChybaTahania("Karta sa nepoložila — pusti ju na zvýraznené miesto, alebo klikni na „+“ na konci strany a potom na kartu.");
+      }
+      return;
+    }
     if (ciel.startsWith(PORADIE)) {
       const kam = ciel.slice(PORADIE.length);
       presunVRuke(z.karta.uid, kam === "koniec" ? null : Number(kam));
@@ -1442,6 +1451,8 @@ export function HernaPlocha({
     }
   };
 
+  const [chybaTahania, setChybaTahania] = useState<string | null>(null);
+  useEffect(() => setChybaTahania(null), [klucTahu]);
   const { tahanie, zacni, duchRef } = useTahanie(pusti);
 
   // ---- lupa nad kartami na stole a vo vrstvách ----------------------------
@@ -4131,6 +4142,18 @@ export function HernaPlocha({
     };
     return `Pitka ${ucetPitky.pitka} vyhodnotená · ty: ${za(ja)} · ${menoHraca(super_)}: ${za(super_)}`;
   })();
+  // Vlastný pás: výučba pruh udalostí schová (komentuje Melichar), túto hlášku nie.
+  const pokynTahania =
+    chybaTahania === null || chyba !== null ? null : (
+      <div className="pokyn-udalosti pokyn-tahania">
+        <span className="pokyn-chyba" role="alert">
+          ⚠ {chybaTahania}
+          <button type="button" className="tlacidlo-male" onClick={() => setChybaTahania(null)}>
+            OK
+          </button>
+        </span>
+      </div>
+    );
   const pokynUdalosti =
     chyba === null && poslednySuperov.length === 0 && textUctuPitky === null ? null : (
       <div className="pokyn-udalosti">
@@ -4170,11 +4193,12 @@ export function HernaPlocha({
     );
   const maHranaTlacidla = hranaVlavo !== null || hranaStred !== null || hranaVpravo !== null;
   const hranaStola =
-    !maHranaTlacidla && pokynUdalosti === null ? null : (
+    !maHranaTlacidla && pokynUdalosti === null && pokynTahania === null ? null : (
       // V drafte sa hrana neprilepí nad ruku: stôl leží pod draftom a pri posúvaní
       // by zakrývala karty draftu a pokyn; potvrdenie je aj tak v draft paneli.
       // Ani keď z línie nad rukou nie je nič vidno (liniaVidno).
       <div className={view.faza === "draft" || !liniaVidno ? "stol-hrana neprilepena" : "stol-hrana"}>
+        {pokynTahania}
         {pokynUdalosti}
         {maHranaTlacidla && (
           <div className="hrana-rad">

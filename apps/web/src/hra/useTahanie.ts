@@ -23,13 +23,34 @@ export interface Tahanie<Z> {
 const PRAH = 6;
 /** Pri okraji línie sa línia sama posúva — koniec dlhej partie môže byť mimo. */
 const OKRAJ_POSUVU = 70;
+/** Koľko plochy ducha musí cieľ prekryť, keď ho kurzor minie. */
+const MIN_PREKRYTIE = 0.15;
 
-function cielNa(x: number, y: number): string | null {
+function cielNa(x: number, y: number, duch: HTMLElement | null): string | null {
   const el = document.elementFromPoint(x, y);
-  return el?.closest<HTMLElement>("[data-ciel]")?.dataset.ciel ?? null;
+  const pod = el?.closest<HTMLElement>("[data-ciel]")?.dataset.ciel;
+  if (pod !== undefined || duch === null) return pod ?? null;
+  // Kurzor cieľ minul, hoci karta naň dopadla: úzke „+“ sa pri štarte ťahania
+  // rozšíri na celé miesto a stred „+“ potom leží na hrane susednej karty
+  // (playtest výučby 2026-10-23: ťah na „+“ mlčky nezabral). Rozhodne cieľ,
+  // ktorý ťahaná karta prekrýva najviac.
+  const d = duch.getBoundingClientRect();
+  let naj: string | null = null;
+  let max = MIN_PREKRYTIE * d.width * d.height;
+  for (const c of document.querySelectorAll<HTMLElement>("[data-ciel]")) {
+    if (duch.contains(c)) continue;
+    const r = c.getBoundingClientRect();
+    const p = Math.max(0, Math.min(d.right, r.right) - Math.max(d.left, r.left)) * Math.max(0, Math.min(d.bottom, r.bottom) - Math.max(d.top, r.top));
+    if (p > max) {
+      max = p;
+      naj = c.dataset.ciel ?? null;
+    }
+  }
+  return naj;
 }
 
-export function useTahanie<Z>(pusti: (zdroj: Z, ciel: string | null) => void) {
+/** `bod` = kde kurzor kartu pustil. */
+export function useTahanie<Z>(pusti: (zdroj: Z, ciel: string | null, bod: { readonly x: number; readonly y: number }) => void) {
   const [tahanie, setTahanie] = useState<Tahanie<Z> | null>(null);
   const duchRef = useRef<HTMLDivElement>(null);
   const pustiRef = useRef(pusti);
@@ -56,7 +77,7 @@ export function useTahanie<Z>(pusti: (zdroj: Z, ciel: string | null) => void) {
     let snimka = 0;
 
     const prekresli = (): void => {
-      const novy = cielNa(bod.x, bod.y);
+      const novy = cielNa(bod.x, bod.y, duchRef.current);
       if (duchRef.current !== null) {
         duchRef.current.style.transform = `translate(${bod.x - dx}px, ${bod.y - dy}px)`;
       }
@@ -100,7 +121,9 @@ export function useTahanie<Z>(pusti: (zdroj: Z, ciel: string | null) => void) {
     const koniec = (ev: PointerEvent): void => {
       if (ev.pointerId !== id) return;
       const bolo = bezi;
-      const kam = bezi && ev.type === "pointerup" ? cielNa(ev.clientX, ev.clientY) : null;
+      // Duch sa ešte meria tu — uprat ho zhasne.
+      if (bezi && duchRef.current !== null) duchRef.current.style.transform = `translate(${ev.clientX - dx}px, ${ev.clientY - dy}px)`;
+      const kam = bezi && ev.type === "pointerup" ? cielNa(ev.clientX, ev.clientY, duchRef.current) : null;
       uprat();
       if (!bolo) return;
       // Po pustení pošle prehliadač ešte click — nesmie z neho byť klik
@@ -111,7 +134,7 @@ export function useTahanie<Z>(pusti: (zdroj: Z, ciel: string | null) => void) {
       };
       window.addEventListener("click", zahod, { capture: true, once: true });
       setTimeout(() => window.removeEventListener("click", zahod, { capture: true }), 0);
-      pustiRef.current(zdroj, kam);
+      pustiRef.current(zdroj, kam, { x: ev.clientX, y: ev.clientY });
     };
 
     const uprat = (): void => {
