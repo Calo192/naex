@@ -148,13 +148,11 @@ interface Poloha {
   /** Index aktívnej kapitoly; KAPITOLY.length = slovník. */
   readonly kapitola: number;
   readonly podkapitola: string | null;
-  /** Ako ďaleko je čitateľ (0–1). */
-  readonly pokrok: number;
 }
 
 /** Kde čitateľ je — posledná kapitola a podkapitola, ktorej začiatok prešiel pod hlavičku. */
 function usePoloha(): Poloha {
-  const [poloha, setPoloha] = useState<Poloha>({ kapitola: 0, podkapitola: null, pokrok: 0 });
+  const [poloha, setPoloha] = useState<Poloha>({ kapitola: 0, podkapitola: null });
   useEffect(() => {
     let raf = 0;
     const zmeraj = (): void => {
@@ -169,9 +167,7 @@ function usePoloha(): Poloha {
       for (const h of sekcie[kapitola]?.querySelectorAll<HTMLElement>("h3[id]") ?? []) {
         if (h.getBoundingClientRect().top <= hranica) podkapitola = h.id;
       }
-      const vyska = document.documentElement.scrollHeight - window.innerHeight;
-      const pokrok = vyska <= 0 ? 1 : Math.min(1, window.scrollY / vyska);
-      setPoloha((p) => (p.kapitola === kapitola && p.podkapitola === podkapitola && Math.abs(p.pokrok - pokrok) < 0.005 ? p : { kapitola, podkapitola, pokrok }));
+      setPoloha((p) => (p.kapitola === kapitola && p.podkapitola === podkapitola ? p : { kapitola, podkapitola }));
     };
     const naScroll = (): void => {
       if (raf === 0) raf = requestAnimationFrame(zmeraj);
@@ -417,7 +413,11 @@ export function Pravidla() {
   }, []);
 
   const aktivna = KAPITOLY[poloha.kapitola];
-  const percent = Math.round(poloha.pokrok * 100);
+  // Pokrok podľa kapitoly, nie podľa posunu stránky — „6 / 15“ a pruh 40 % (Leader 2026-10-24:
+  // percento z posunu pri kapitole 6 ukazovalo 25 % a mátlo).
+  const vSlovniku = poloha.kapitola >= KAPITOLY.length;
+  const kdeSom = vSlovniku ? "Slovník" : `${poloha.kapitola + 1} / ${KAPITOLY.length}`;
+  const percent = vSlovniku ? 100 : Math.round(((poloha.kapitola + 1) / KAPITOLY.length) * 100);
 
   return (
     <PojmyPravidiel>
@@ -426,7 +426,7 @@ export function Pravidla() {
           <div className="pravidla-bok-hlava">
             <h2>Pravidlá</h2>
             <span className="tlmene">
-              {Math.min(poloha.kapitola + 1, KAPITOLY.length)} / {KAPITOLY.length} · {percent} %
+              {kdeSom}
             </span>
           </div>
           <div className="pravidla-pokrok" aria-hidden="true">
@@ -440,7 +440,7 @@ export function Pravidla() {
         <div className="pravidla-lista">
           <button type="button" ref={listaRef} onClick={() => setMobilObsah(true)} aria-expanded={mobilObsah}>
             <span className="pravidla-lista-cislo">
-              {poloha.kapitola < KAPITOLY.length ? `${poloha.kapitola + 1} / ${KAPITOLY.length}` : "A–Z"}
+              {vSlovniku ? "A–Z" : kdeSom}
             </span>
             <span className="pravidla-lista-nazov">{aktivna?.nazov ?? "Slovník"}</span>
             <span aria-hidden="true">▾</span>
