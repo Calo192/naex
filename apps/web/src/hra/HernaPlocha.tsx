@@ -550,7 +550,13 @@ export function HernaPlocha({
   // zmeria sa po vykreslení a karty sa prepočítajú — ako rezerva posunu línie.
   const [vrstvaFazyEl, setVrstvaFazyEl] = useState<HTMLDivElement | null>(null);
   const [vyskaVrstvy, setVyskaVrstvy] = useState(0);
-  const [reziaDraftu, setReziaDraftu] = useState(140);
+  // Réžia v rámci kroku len rastie: keď sa rad kariet pri úzkom okne zalomí,
+  // réžia skočí, karty sa zmenšia, rad sa odlomí a réžia klesne — pri voľnom
+  // nastavovaní sa to točilo donekonečna (React #185 pod ≈ 1300 px, Bugfixing
+  // 2026-10-24). Nový krok alebo iný rozmer vrstvy či línie (okno, zoom) začne
+  // meranie odznova — až po prepočte rozloženia, inak by ostala réžia z menšieho okna.
+  const [reziaDraftu, setReziaDraftu] = useState(0);
+  useEffect(() => setReziaDraftu(0), [view.faza, draft?.krok, vyskaVrstvy, sirkaLinie]);
   useEffect(() => {
     if (vrstvaFazyEl === null) return;
     const ro = new ResizeObserver(([z]) => setVyskaVrstvy(Math.floor(z?.contentRect.height ?? 0)));
@@ -569,7 +575,7 @@ export function HernaPlocha({
     const zatial = panel.querySelector<HTMLElement>(".stavba-senok-zatial .kl")?.offsetHeight ?? 0;
     if (karty === 0) return;
     const r = Math.round(obsah - karty - zatial);
-    if (Math.abs(r - reziaDraftu) > 3) setReziaDraftu(r);
+    if (r > reziaDraftu + 3) setReziaDraftu(r);
   });
   const [rezervaPosunu, setRezervaPosunu] = useState(REZERVA_POSUNU);
   useEffect(() => setRezervaPosunu(REZERVA_POSUNU), [view.kolo]);
