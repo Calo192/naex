@@ -17,6 +17,11 @@
   fill: #fff6e6;
 }
 
+/* Ikona podmienky (biela na čiernom) — tmavé pozadie splynie so stredom, biela svieti ako piktogram akcie. */
+.podtacok-obrazok {
+  mix-blend-mode: screen;
+}
+
 .podtacok-otazniky {
   font: 800 44px/1 Georgia, serif;
   letter-spacing: 2px;
@@ -44,4 +49,147 @@
 
 .podtacok.tajny .podtacok-karton {
   opacity: 0.55;
+}
+
+/* ---- oznam v partii: pilulka v pravom hornom rohu stola, nič neblokuje ---- */
+.oznam-achievementu {
+  position: fixed;
+  top: calc(var(--hlavicka-h, 64px) + 56px);
+  right: 16px;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: min(340px, calc(100vw - 32px));
+  padding: 6px 14px 6px 6px;
+  border-radius: 999px;
+  border: 2px solid var(--akcent);
+  background: var(--plocha);
+  color: var(--text);
+  box-shadow: 0 8px 20px color-mix(in srgb, #000 50%, transparent);
+  pointer-events: none;
+  animation: oznam-achievementu 4s ease-in-out both;
+}
+
+.oznam-achievementu b {
+  display: block;
+  font: 700 0.92rem/1.2 var(--nadpis);
+}
+
+.oznam-achievementu span {
+  font-size: 0.76rem;
+  color: var(--tlmeny);
+}
+
+@keyframes oznam-achievementu {
+  0% {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+  10%,
+  85% {
+    transform: none;
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .oznam-achievementu {
+    animation: none;
+  }
+}
+
+/* ---- vitrína v Profile a na verejnom profile ---- */
+.vitrina-hlava {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.vitrina-hlava h2 {
+  margin: 0;
+}
+
+.vitrina-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0 16px;
+}
+
+.vitrina-filter button {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+}
+
+.vitrina-filter button.aktivna {
+  border-color: var(--akcent);
+  background: var(--akcent);
+  color: var(--na-akcente);
+}
+
+.vitrina-mriezka {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vitrina-mriezka li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 10px 12px;
+  border-radius: 14px;
+  border: 1px solid var(--okraj);
+  background: var(--plocha);
+  text-align: center;
+}
+
+.vitrina-mriezka li strong {
+  font: 700 0.98rem/1.25 var(--nadpis);
+}
+
+.vitrina-popis {
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: var(--tlmeny);
+}
+
+.vitrina-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--akcent-svetly);
+}
+
+.vitrina-mriezka li.neziskany .vitrina-meta {
+  color: var(--slaby-text);
+}
+
+.vitrina-postup {
+  display: block;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--plocha-3);
+  overflow: hidden;
+}
+
+.vitrina-postup > i {
+  display: block;
+  height: 100%;
+  background: var(--tlmeny);
 }

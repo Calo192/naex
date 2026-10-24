@@ -21,6 +21,7 @@ import { SpatnaVazba } from "./stranky/SpatnaVazba.tsx";
 import { Vyvoj } from "./stranky/Vyvoj.tsx";
 import { Novinky } from "./stranky/Novinky.tsx";
 import { Dielna } from "./dielna/Dielna.tsx";
+import { UkazkaAchievementov } from "./achievementy/Ukazka.tsx";
 import { Admin } from "./admin/Admin.tsx";
 import { Hraci } from "./stranky/Hraci.tsx";
 import { Playtest } from "./playtest/Playtest.tsx";
@@ -76,6 +77,8 @@ export function App() {
   const prehravac = /^\/partia\/(\d+)\/prehravac$/.exec(cesta);
   if (prehravac !== null) return <Layout siroky>{chranene(<Prehravac id={Number(prehravac[1])} />)}</Layout>;
   if (cesta === "/profil") return <Layout siroky>{chranene(<Profil />)}</Layout>;
+  // Ukážka UI achievementov na snímky a inšpekciu, kým nie je napojené API (len správca).
+  if (cesta === "/achievementy/ukazka") return <Layout siroky>{chranene(<UkazkaAchievementov />, true)}</Layout>;
   // Dielňa je záložka stránky Karty (Michal 2026-10-22); čítať smie každý.
   if (cesta === "/karty/dielna" || cesta.startsWith("/karty/dielna/")) return <Layout siroky><Dielna cesta={cesta} /></Layout>;
 

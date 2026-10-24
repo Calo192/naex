@@ -38,8 +38,13 @@ const HVIEZDA = "M0,-10 L2.9,-3.1 10,-3.1 4.3,1.4 6.5,9 0,4.6 -6.5,9 -4.3,1.4 -1
 
 export interface PodtacokProps {
   readonly rank: RankPodtacka;
-  /** Kľúč piktogramu z hry (Rana, Petelica, Poldeci, Cigareta …); neznámy = začiatočné písmeno názvu. */
-  readonly ikona: string;
+  /**
+   * Piktogram: „akcia:<Akcia>“ (cesty z karta/ikony.ts), samotná akcia (Rana, Petelica…), alebo
+   * null; ikonu podmienky („podmienka:…“) dá obrazok (nahraté ikony bodovania). Bez nej začiatočné písmeno.
+   */
+  readonly ikona: string | null;
+  /** URL obrázka piktogramu (ikona podmienky zo sady) — prednosť pred ikona. */
+  readonly obrazok?: string | null;
   readonly nazov: string;
   readonly ziskany: boolean;
   /** Tajný a nezískaný: „???“ bez názvu a piktogramu. */
@@ -48,11 +53,12 @@ export interface PodtacokProps {
   readonly velkost?: number;
 }
 
-export function Podtacok({ rank, ikona, nazov, ziskany, tajny = false, velkost = 120 }: PodtacokProps) {
+export function Podtacok({ rank, ikona, obrazok = null, nazov, ziskany, tajny = false, velkost = 120 }: PodtacokProps) {
   const id = useId().replace(/:/g, "");
   const skryty = tajny && !ziskany;
   const f = FARBY[skryty ? "tajny" : rank];
-  const cesty = (IKONY as Readonly<Record<string, readonly { d: string; evenOdd: boolean }[]>>)[ikona];
+  const kluc = ikona?.startsWith("akcia:") ? ikona.slice(6) : ikona;
+  const cesty = kluc === null ? undefined : (IKONY as Readonly<Record<string, readonly { d: string; evenOdd: boolean }[]>>)[kluc];
   const napis = velkost >= NAPIS_OD;
   const hviezdy = HVIEZDY_RANKU[rank];
   return (
@@ -76,6 +82,10 @@ export function Podtacok({ rank, ikona, nazov, ziskany, tajny = false, velkost =
           <stop offset="1" stopColor={f.tmavy} />
         </linearGradient>
         {napis && <path id={`${id}o`} d="M35,100 A65,65 0 0,1 165,100" />}
+        {/* Ikony bodovania sú biele na čiernom štvorci — orezané na stredový kruh, štvorec zmizne v jeho tme. */}
+        <clipPath id={`${id}c`}>
+          <circle cx="100" cy="100" r={napis ? 47 : 56} />
+        </clipPath>
       </defs>
       <path className="podtacok-karton" d={OKRAJ} fill={`url(#${id}k)`} />
       <circle cx="100" cy="100" r="86" fill="none" stroke={`url(#${id}m)`} strokeWidth="11" />
@@ -93,6 +103,17 @@ export function Podtacok({ rank, ikona, nazov, ziskany, tajny = false, velkost =
         <text className="podtacok-otazniky" x="100" y={napis ? 114 : 118} textAnchor="middle">
           ???
         </text>
+      ) : obrazok !== null ? (
+        <image
+          className="podtacok-obrazok"
+          href={obrazok}
+          x={napis ? 62 : 52}
+          y={napis ? 58 : 52}
+          width={napis ? 76 : 96}
+          height={napis ? 76 : 96}
+          preserveAspectRatio="xMidYMid meet"
+          clipPath={`url(#${id}c)`}
+        />
       ) : cesty !== undefined ? (
         <g className="podtacok-piktogram" transform={napis ? "translate(64 60) scale(0.72)" : "translate(57 55) scale(0.86)"}>
           {cesty.map((c, i) => (
@@ -109,7 +130,7 @@ export function Podtacok({ rank, ikona, nazov, ziskany, tajny = false, velkost =
           <path
             key={k}
             className={`podtacok-hviezda${k < hviezdy ? " plna" : ""}`}
-            transform={`translate(${100 + (k - 1) * 20} ${k === 1 ? 168 : 165}) scale(0.82)`}
+            transform={`translate(${100 + (k - 1) * 24} ${k === 1 ? 171 : 167}) scale(1.05)`}
             d={HVIEZDA}
           />
         ))}
