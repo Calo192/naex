@@ -164,6 +164,11 @@
   color: var(--tlmeny);
 }
 
+/* Päta karty (rank, dátum, postup) dole — popis má 1 až 3 riadky, päty v rade sa zrovnajú. */
+.vitrina-mriezka li > .vitrina-meta:first-of-type {
+  margin-top: auto;
+}
+
 .vitrina-meta {
   display: flex;
   flex-direction: column;

@@ -34,6 +34,20 @@ const OKRAJ = (() => {
   return `${d}Z`;
 })();
 
+/**
+ * Nápis po obvode: oblúk má ~204 jednotiek, bezpečne sa zmestí 176 (konce oblúka sú pri
+ * prstenci). Pri 14 px verzálkach s rozostupom 2 px je to ~12,5 na znak — dlhší názov dostane
+ * menšie písmo a natvrdo dĺžku oblúka (UI inšpekcia: „CELÁ KRČMA PORAZENÁ“ sa orezal z oboch strán).
+ */
+const NAPIS_DLZKA = 176;
+const NAPIS_ZNAK = 12.5;
+
+function rozmerNapisu(text: string): { readonly fontSize: number; readonly textLength?: number } {
+  const dlzka = text.length * NAPIS_ZNAK;
+  if (dlzka <= NAPIS_DLZKA) return { fontSize: 14 };
+  return { fontSize: Math.max(10, Math.floor((14 * NAPIS_DLZKA) / dlzka)), textLength: NAPIS_DLZKA };
+}
+
 const HVIEZDA = "M0,-10 L2.9,-3.1 10,-3.1 4.3,1.4 6.5,9 0,4.6 -6.5,9 -4.3,1.4 -10,-3.1 -2.9,-3.1Z";
 
 export interface PodtacokProps {
@@ -60,6 +74,8 @@ export function Podtacok({ rank, ikona, obrazok = null, nazov, ziskany, tajny = 
   const kluc = ikona?.startsWith("akcia:") ? ikona.slice(6) : ikona;
   const cesty = kluc === null ? undefined : (IKONY as Readonly<Record<string, readonly { d: string; evenOdd: boolean }[]>>)[kluc];
   const napis = velkost >= NAPIS_OD;
+  const textNapisu = skryty ? "TAJNÝ" : nazov;
+  const rozmer = rozmerNapisu(textNapisu);
   const hviezdy = HVIEZDY_RANKU[rank];
   return (
     <svg
@@ -93,9 +109,13 @@ export function Podtacok({ rank, ikona, obrazok = null, nazov, ziskany, tajny = 
       <circle cx="100" cy="100" r={napis ? 49 : 58} fill={f.tmavy} />
       <circle cx="100" cy="100" r={napis ? 49 : 58} fill="none" stroke={`url(#${id}m)`} strokeWidth="3" />
       {napis && (
-        <text className="podtacok-napis" fill={f.tmavy} textAnchor="middle">
-          <textPath href={`#${id}o`} startOffset="50%">
-            {skryty ? "TAJNÝ" : nazov}
+        <text className="podtacok-napis" fill={f.tmavy} textAnchor="middle" style={{ fontSize: rozmer.fontSize }}>
+          <textPath
+            href={`#${id}o`}
+            startOffset="50%"
+            {...(rozmer.textLength === undefined ? {} : { textLength: rozmer.textLength, lengthAdjust: "spacingAndGlyphs" })}
+          >
+            {textNapisu}
           </textPath>
         </text>
       )}
