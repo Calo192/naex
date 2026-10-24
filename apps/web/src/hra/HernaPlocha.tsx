@@ -380,6 +380,11 @@ export interface HernaPlochaProps {
   readonly bezOknaKonca?: boolean;
   /** Výučba „Prvá hra“ beží — pas bez odpočtu na vrátenie, „končím“ bez druhého potvrdenia. */
   readonly vyucba?: boolean;
+  /**
+   * Výučba: id kroku, ktorý po ťahu čaká na „ďalej“ s textom Melichara. Bitka, ktorú jeho ťah
+   * spustil, sa prehrá až po zmene kroku — inak bežala pod textom, ktorý sa nedal prečítať (U3).
+   */
+  readonly zadrzBitku?: string | null;
   /** Výučba: ťah, ktorý krok čaká — „potvrdiť“ sa odomkne, až keď na stole leží všetko z neho. */
   readonly vyucbaOcakava?: Command | null;
 }
@@ -438,6 +443,7 @@ export function HernaPlocha({
   bezOknaKonca,
   vyucbaOcakava,
   vyucba,
+  zadrzBitku = null,
 }: HernaPlochaProps) {
   DATA = data;
   const ja = view.ja;
@@ -1338,12 +1344,22 @@ export function HernaPlocha({
         if (!tlmene && stol.ciel !== null) {
           const linia = evaluateLine(data, lineState(stol));
           pocitadloAktivne.current = true;
-          setPocitadlo({ p: pocitadloBitky(data, stol, linia, e.damage.tuhe), stol, linia });
+          const novy = { p: pocitadloBitky(data, stol, linia, e.damage.tuhe), stol, linia };
+          if (zadrzBitku === null) setPocitadlo(novy);
+          else setOdlozeneBitky({ krok: zadrzBitku, pocitadlo: novy });
         }
       }
     }
     // Len nové udalosti — view.kolo je to isté prekreslenie.
   }, [udalosti?.id]);
+  // Odložená bitka sa spustí, keď výučba prejde na ďalší krok — ešte pred vykreslením, aby text
+  // nového kroku nebolo vidno skôr než animáciu.
+  const [odlozeneBitky, setOdlozeneBitky] = useState<{ readonly krok: string; readonly pocitadlo: NonNullable<typeof pocitadlo> } | null>(null);
+  useLayoutEffect(() => {
+    if (odlozeneBitky === null || odlozeneBitky.krok === zadrzBitku) return;
+    setPocitadlo(odlozeneBitky.pocitadlo);
+    setOdlozeneBitky(null);
+  }, [odlozeneBitky, zadrzBitku]);
   const [ucetBitky, setUcetBitky] = useState<UcetBitky | null>(null);
   const [ucetBitkyZavrety, setUcetBitkyZavrety] = useState(false);
   const predoslyView = useRef<ClientState | null>(null);

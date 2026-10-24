@@ -368,6 +368,10 @@ export function Hra() {
     );
   }
 
+  const krokVyucby = hra.vyucba?.krok ?? null;
+  const zadrzBitku =
+    krokVyucby !== null && (krokVyucby.kto === "bot" || krokVyucby.kto === "auto") && krokVyucby.melichar.trim() !== "" ? krokVyucby.id : null;
+
   return (
     <>
     <HudbaPartie />
@@ -385,6 +389,8 @@ export function Hra() {
       udalosti={hra.udalosti}
       bezOknaKonca={hra.vyucba !== null}
       vyucba={hra.vyucba !== null}
+      // Ťah bota či hry s textom Melichara čaká na „ďalej“ — bitka, ktorú spustil, sa prehrá až po ňom (U3).
+      zadrzBitku={zadrzBitku}
       // Pri rozhodnutí (volba) je správnych viac kandidátov — potvrdiť sa nezamyká.
       vyucbaOcakava={hra.vyucba?.krok?.kto === "hrac" && hra.vyucba.krok.volba === null ? hra.vyucba.krok.ocakava : null}
       // Vo výučbe chybu ukazuje bublina Melichara.
@@ -424,6 +430,9 @@ export function Hra() {
         odpovedz={hra.vyucbaOdpoved}
         rada={hra.radaVyucby}
         pocitadloBezi={pocitadloBezi}
+        view={hra.view}
+        udalosti={hra.udalosti}
+        hraci={hra.hraci}
       />
     )}
     </>
