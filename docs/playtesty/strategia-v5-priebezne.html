@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stratég v5: priebežný rozbor variantov (NA EX!)</title>
+<style>
+  :root { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#dccdb3; --text:#2a2016; --tlmeny:#6b5b45;
+    --akcent:#9a5f0c; --cervena:#a83c28; --zelena:#3a7533; --modra:#276f7a; color-scheme: light; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--pozadie); color:var(--text); font:16px/1.55 system-ui,"Segoe UI",Roboto,sans-serif; }
+  main { max-width:980px; margin:0 auto; padding:24px 14px 80px; }
+  h1,h2 { font-family:Georgia,serif; line-height:1.2; }
+  h1 { font-size:clamp(1.5rem,5vw,2.1rem); margin:0 0 6px; }
+  h2 { font-size:1.25rem; margin:34px 0 10px; }
+  .pod { color:var(--tlmeny); margin:0 0 16px; }
+  .verdikt { border:1px solid var(--akcent); background:var(--plocha); border-radius:12px; padding:12px 16px; }
+  .verdikt li { margin-bottom:6px; }
+  .tab { overflow-x:auto; background:var(--plocha); border:1px solid var(--okraj); border-radius:12px; margin:8px 0; }
+  table { border-collapse:collapse; width:100%; font-size:.85rem; min-width:640px; }
+  th,td { padding:6px 8px; border-bottom:1px solid var(--okraj); text-align:right; white-space:nowrap; }
+  th:first-child,td:first-child { text-align:left; white-space:normal; }
+  th { color:var(--tlmeny); font-size:.74rem; text-transform:uppercase; letter-spacing:.03em; }
+  tr.v4 td { background:color-mix(in srgb,var(--modra) 10%,transparent); }
+  .zle { color:var(--cervena); font-weight:600; } .dobre { color:var(--zelena); font-weight:600; }
+  .blok { background:var(--plocha); border:1px solid var(--okraj); border-radius:12px; padding:12px 16px; margin:10px 0; }
+  code, pre { font-family:ui-monospace,Consolas,monospace; font-size:.82rem; background:var(--plocha-2); border-radius:6px; }
+  pre { padding:10px; overflow-x:auto; white-space:pre-wrap; word-break:break-all; }
+  code { padding:1px 4px; }
+  footer { margin-top:40px; color:var(--tlmeny); font-size:.85rem; border-top:1px solid var(--okraj); padding-top:10px; }
+</style>
+</head>
+<body>
+<main>
+<h1>Pravidlá v5: priebežný rozbor variantov</h1>
+<p class="pod">Stratég, 24. 10. 2026 (večer, prerušené). Bot proti botovi (Štamgast), rovnaké semienka ako v4, stredná hra (5 lokalít), 40 partií na štatistiky skóre, 32 partií zrkadla a 16 rozdaní × 2 miesta na rebrík. Šum pri 40 partiách je okolo ± 8 p. b., pri rebríku ± 9 p. b. Bot je ladený na v4; nové bodovanie hodnotí cez to isté <code>elderScore</code>, stávku bitky som mu vo variante prepočítal podľa skutočných bodov. Čísla variantov sú náznak smeru, nie dôkaz.</p>
+
+<section class="verdikt" aria-labelledby="v">
+<h2 id="v" style="margin-top:0">Hlavné zistenia</h2>
+<ul>
+<li><b>Bodovanie v5 (V5 = väčšiny, 1 + zóny, rovnosť podmienky nikomu, scorecardy v5, Bitkár +1/+2/+3, bez prehry balíčkom)</b> zmenší čísla z 50 : 28 na <b>9 : 4</b>. Tesných partií (porazený má aspoň 75 % bodov víťaza) je <b>25 %</b> oproti 20 % vo v4, cieľ 40 % nedosiahol žiadny variant (najviac 33 %).</li>
+<li><span class="zle">Scorecardy v5 robia bota pasívnym:</span> podmienka Cigarety (9 pozícií) spolu s „pas za cigarety“ sa oplatí viac ako bitka. Bot hneď pasuje, <b>45 % bitiek skončí remízou</b> (v4 12 %), NA EX klesne zo 7,3 na 1,5 za partiu, ťahov zo 126 na 86, v ruke pred bitkou 10 kariet. Bez podmienky Cigarety sa hra vráti (remízy 13 %, NA EX 4,3, 118 ťahov). <b>Toto treba vyriešiť pred v5.</b></li>
+<li><b>Zručnosť klesá:</b> rebrík pri ε = 0,1 63 % → 44 % (V5), pri ε = 0,25 94 % → 81 %. Otočky 37 % → 24 %. Predurčenosť rozdania 0,47 → 0,35 (lepšie).</li>
+<li><b>Variant (a) útecha</b> (kto väčšinu prehrá, ale vyhrá aspoň jednu podmienku, dostane 1 b): tesné 25 % → 30 %, porazený 4 → 5 b. Malý posun, nič nerozbíja.</li>
+<li><b>NA EX naraz + Výtržník (B):</b> zrážka je u bota vzácna (0 – 0,13 za partiu, 2 % NA EX). Útočník vyhrá bitku 56 % → 52 %, obranca 33 % → 39 %: útočník stráca výhodu posledného slova. Rebrík ε = 0,1 63 → 75 %, ε = 0,25 94 → 78 % (v šume). Výtržník dá priemerne 4 tuhé (2 až 6 podľa karty).</li>
+<li><b>Pohoršenie oboma smermi:</b> bot ho volí k sebe v 22 – 35 % Pohoršení. Tesnosť 25 % → 15 % (bez útechy) a 25 % s útechou: k sebe pomáha skôr vedúcemu. Rebrík nezmeraný.</li>
+<li><b>Fajčenie len v Pitke (C):</b> bot v Zhromaždení nefajčí nikdy, takže preň je C bez zmeny. AI playtesteri však fajčili v Zhromaždení v 42 z 94 prípadov (128 denníkov 21. – 24. 10.), u ľudí C zasiahne takmer polovicu fajčenia.</li>
+</ul>
+</section>
+
+<h2>Stredná hra: v4 proti variantom</h2>
+<div class="tab"><table>
+<thead><tr><th>Variant</th><th>Skóre (medián)</th><th>Tesné ≥75 %</th><th>Rozdiel ≤ 2</th><th>Remízy bitiek</th><th>NA EX / partia</th><th>Ťahov</th><th>Ruka pred bitkou</th><th>Útočník vyhrá bitku</th><th>Rebrík ε 0,1</th><th>Rebrík ε 0,25</th><th>Otočky</th><th>Predurčenosť</th></tr></thead>
+<tbody>
+<tr class="v4"><td>v4 (dnes)</td><td>50,5 : 28</td><td>20 %</td><td>5 %</td><td>12 %</td><td>7,3</td><td>126</td><td>4,6</td><td>56 %</td><td>63 %</td><td>94 %</td><td>37 %</td><td>0,47</td></tr>
+<tr><td>A: bodovanie Michala, rozloženie v4</td><td>8,5 : 3</td><td class="zle">10 %</td><td>18 %</td><td>19 %</td><td>5,7</td><td>120</td><td>7,8</td><td>55 %</td><td>53 %</td><td>81 %</td><td>36 %</td><td>0,59</td></tr>
+<tr><td>V5: A + scorecardy v5 + Bitkár slabší</td><td>9 : 4</td><td>25 %</td><td>33 %</td><td class="zle">45 %</td><td class="zle">1,5</td><td>86</td><td>10,4</td><td>39 %</td><td class="zle">44 %</td><td>81 %</td><td>24 %</td><td>0,35</td></tr>
+<tr><td>V5 + útecha (a)</td><td>8,5 : 5</td><td class="dobre">30 %</td><td>38 %</td><td>43 %</td><td>1,9</td><td>90</td><td>10,2</td><td>39 %</td><td>–</td><td>–</td><td>–</td><td>–</td></tr>
+<tr><td>V5 + Pohoršenie oboma smermi</td><td>9 : 3</td><td>15 %</td><td>25 %</td><td>49 %</td><td>1,2</td><td>85</td><td>10,5</td><td>35 %</td><td>–</td><td>–</td><td>–</td><td>–</td></tr>
+<tr><td>V5 + útecha + Pohoršenie</td><td>9 : 4</td><td>25 %</td><td>30 %</td><td>47 %</td><td>1,8</td><td>88</td><td>10,3</td><td>37 %</td><td>–</td><td>–</td><td>–</td><td>–</td></tr>
+<tr><td>Celá dávka: V5 + útecha + Pohoršenie + B + C</td><td>9 : 4</td><td>28 %</td><td>33 %</td><td>43 %</td><td>1,9</td><td>88</td><td>10,3</td><td>39 %</td><td>–</td><td>–</td><td>–</td><td>–</td></tr>
+<tr><td>V5 + útecha + Pohoršenie, <b>bez podmienky Cigarety</b></td><td>9 : 4</td><td>20 %</td><td>25 %</td><td class="dobre">13 %</td><td class="dobre">4,3</td><td>118</td><td>4,7</td><td>–</td><td>–</td><td>–</td><td>–</td><td>–</td></tr>
+<tr><td>B: NA EX naraz + Výtržník (bodovanie v4)</td><td>55 : 22,5</td><td>25 %</td><td>10 %</td><td>9 %</td><td>7,5</td><td>130</td><td>4,5</td><td>52 %</td><td>75 %</td><td>78 %</td><td>37 %</td><td>0,30</td></tr>
+<tr><td>C: fajčenie len v Pitke (bodovanie v4)</td><td colspan="12">pre bota totožné s v4 (bot v Zhromaždení nefajčí)</td></tr>
+<tr><td>A + B + C (rozloženie v4)</td><td>9 : 2</td><td>5 %</td><td>15 %</td><td>23 %</td><td>6,0</td><td>118</td><td>7,7</td><td>48 %</td><td>69 %</td><td>78 %</td><td>41 %</td><td>0,36</td></tr>
+</tbody></table></div>
+<p class="pod">Dlhá hra (7 lokalít, 40 partií): v4 84 : 37, tesné 26 %; V5 8,5 : 3, tesné 13 %, remízy bitiek 36 %; V5 + útecha + Pohoršenie 9 : 4, tesné 18 %. Krátka hra nezmeraná.</p>
+
+<h2>Prečo skóre ostáva 9 : 4 a nie 15 : 13</h2>
+<div class="blok">
+<p>Pri V5 vyhrá víťaz partie sám väčšinu u 4,2 z 8 starších, porazený u 0,9, obaja (rovnosť) u 2,9. Zóny strachu pridajú víťazovi 2,1 b, porazenému 0,05 b. Podmienky, ktoré vyhrá víťaz partie: Lokality 79 %, Znepokojenie 75 %, Strach 51 %. Porazenému nepomáha takmer žiadna: Dlh 98 % rovnosť, Vydesenie 97 %, Cirhóza 76 %, Rezerva 75 %, Starší 73 %, Absťák 53 % (porazený 29 %, víťaz 19 %). Kto vyhrá viac bitiek, vyhrá partiu v 86 – 89 %.</p>
+<p>Vzorec bodov to mení len málo (rozloženie v4): útecha 10 → 17 % tesných, rovnosť pri staršom 1 b 15 %, oboje 20 %, bez zón 15 %, bod za každú podmienku 15 %. Najviac pomohla zamietnutá priazeň dediny v plnej sile (s útechou a rovnosťou 1 b: tesné 33 %, rozdiel ≤ 2 b v 45 % partií, kto vyhrá viac bitiek, vyhrá len 60 %). Tesnosť teda musí prísť z bitky (dobiehanie), nie zo vzorca.</p>
+</div>
+
+<h2>Priazne v5 (40 partií, V5 + útecha + Pohoršenie)</h2>
+<div class="blok">
+<p>Bitky s priazňou / otočené kontrafaktom (bez nej) / účinok za 40 partií. <b>S podmienkou Cigarety</b> (pasívna hra): Bitkár 25 / 11 (44 % bitiek, kde ju niekto mal), Veriaci 23 / 3, Fajčiar 23 cigariet, Alkoholik Na zdravie 3 NA EX bez pečene, Úžerník 1 Dlh, Neprajník Výpalné 0, Lakomec a Exekútor 0. <b>Bez podmienky Cigarety</b> (aktívna hra): Bitkár 32 / 8, Veriaci 18 / 4, Fajčiar 39 cigariet, Úžerník 8 Dlhov, Výpalné 8 cigariet, Na zdravie 4, Lakomec a Exekútor 0. Mŕtve sú teda Lakomec a Exekútor (ešte bez návrhu), takmer mŕtve Na zdravie a Výpalné. Bitkár aj slabší je najsilnejší.</p>
+</div>
+
+<h2>Čo chýba a ako to dopočítať</h2>
+<div class="blok">
+<ul>
+<li>Rebrík a otočky pre V5 + útecha + Pohoršenie, celú dávku a V5 bez Cigariet (stredná); rebrík dlhej hry; krátka hra celá.</li>
+<li>Väčší rebrík (≥ 40 rozdaní) pre v4 a víťazný variant, lebo pri 16 rozdaniach je šum ± 9 p. b.</li>
+<li>Náhrada podmienky Cigarety (návrh: „minuté cigarety za hru“, odmení aktivitu namiesto pasu) — nezmerané.</li>
+</ul>
+<p>Worktree s celým variantom: <code>F:/Projects/naex-features/playtest/varianty/v5d</code> (diff aj v <code>playtest/strategia/v5/v5-vsetko.diff</code>). Prepínače <code>--v5</code>: A bodovanie, SC5 scorecardy v5, BK Bitkár slabší, UT útecha, POH Pohoršenie oboma smermi, B NA EX naraz, C fajčenie v Pitke, PR5 priazne v5, NOCIG bez podmienky Cigarety, PD priazeň dediny. Najviac 4 procesy naraz:</p>
+<pre>cd F:/Projects/naex-features/playtest/varianty/v5d
+O=../../strategia/v5; S="node --experimental-strip-types --no-warnings"
+$S tools/bot/v5run.ts --v5 A,SC5,BK,UT,POH --dlzka stredna --json $O/sk-A_SC5_BK_UT_POH-stredna.json &gt; $O/sk-A_SC5_BK_UT_POH-stredna.txt &amp;
+$S tools/bot/v5run.ts --v5 A,SC5,BK,UT,POH,B,C --dlzka stredna --json $O/sk-A_SC5_BK_UT_POH_B_C-stredna.json &gt; $O/sk-A_SC5_BK_UT_POH_B_C-stredna.txt &amp;
+$S tools/bot/v5run.ts --v5 A,SC5,BK,UT,POH,NOCIG --dlzka stredna --json $O/sk-A_SC5_BK_UT_POH_NOCIG-stredna.json &gt; $O/sk-A_SC5_BK_UT_POH_NOCIG-stredna.txt &amp;
+$S tools/bot/v5run.ts --v5 X --dlzka dlha --len rebrik,miesto --json $O/sk-X-dlha.json &gt; $O/sk-X-dlha.txt &amp;
+wait
+$S tools/bot/v5run.ts --v5 A,SC5,BK,UT,POH,B,C --dlzka dlha --len rebrik,miesto --json $O/sk-A_SC5_BK_UT_POH_B_C-dlha.json &gt; $O/sk-A_SC5_BK_UT_POH_B_C-dlha.txt &amp;
+for v in X A,SC5,BK A,SC5,BK,UT,POH A,SC5,BK,UT,POH,B,C; do f=$(echo $v | tr , _); $S tools/bot/v5stat.ts --partii 40 --dlzka kratka --v5 $v --json $O/d-$f-kratka.json &gt; /dev/null; done
+$S tools/bot/v5stat.ts --partii 40 --dlzka dlha --v5 A,SC5,BK,UT,POH,B,C --json $O/d-A_SC5_BK_UT_POH_B_C-dlha.json &gt; /dev/null
+wait</pre>
+</div>
+
+<h2>Otázky pre Michala</h2>
+<ol>
+<li>Podmienka Cigarety na 9 pozíciách s pasom za cigarety robí z hry pasovanie. Nahradiť ju (napr. minuté cigarety za hru), ubrať jej pozície, alebo zmeniť pas?</li>
+<li>Cieľ 40 % tesných partií vzorec bodov nedosiahne. Ste ochotní pridať dobiehanie do bitky (priazeň dediny v nejakej podobe), alebo stačí 25 – 30 %?</li>
+<li>NA EX naraz berie útočníkovi výhodu posledného slova (útočník vyhrá bitku 56 → 52 %). Chcete mu ju vrátiť inak (napr. odpovedá posledný)?</li>
+<li>Pohoršenie k sebe využíva skôr vedúci (tesnosť bez útechy klesla). Obmedziť ho len na hráča, ktorý bitku prehráva?</li>
+</ol>
+<footer>Merania: <code>playtest/strategia/v5/</code> (mimo gitu), nástroje <code>nastroje/v5stat.ts</code> a <code>v5run.ts</code>. Hlavná vetva sa nemenila. Bot sa variantom neprispôsobuje (okrem stávky bitky, skrytého NA EX a odpovede po odhalení). Úplný rozbor <code>strategia-v5-&lt;id&gt;.html</code> vznikne po dopočítaní.</footer>
+</main>
+</body>
+</html>
