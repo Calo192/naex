@@ -29,6 +29,13 @@ z výučby nováčik naučí hrať a kde ju treba opraviť**, nie priebeh.
    zle / nevie**. Odpovede over proti `docs/PRAVIDLA.md` a pri každom
    „zle“ citáciou napíš, čo je správne a ktorý krok to mal naučiť. Na konci:
    čo výučba naučila spoľahlivo a čo nenaučila nikoho.
+   **Meradlo krátkej výučby** (od 2026-10-24: jedno kolo, zvyšok učia nápovedy
+   v prvej partii): „správne“ znamená, že odpoveď pokrýva, čo **výučba naozaj
+   učí**: cieľ (body od starších, vydesenie ako okamžitá výhra), poradie kola,
+   Zhromaždenie a limit, Pitka a NA EX, bitka a tuhé, poldeci a cigarety.
+   Pojmy, ktoré učia až nápovedy (počet Pitiek do hĺbky, Dlh a zadĺženie,
+   Absťák, patronát, Pohoršenie, prevaha, Dedičstvo, Záverečná, Exekútor), sa do
+   „správne“ nevyžadujú. Ich chýbanie nie je chyba výučby.
 5. **Mapa krokov**: riadok = krok scenára (index, id, prvých ~60 znakov
    Melichara), stĺpce = nováčikovia; bunka = jasnosť z denníka (1–5)
    a farba podľa `suhrn.json` (zelená: bez chyby, žltá: chyba alebo viac
