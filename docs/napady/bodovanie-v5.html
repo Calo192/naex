@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NA EX! — prestavba bodovania pre pravidlá v5 (smery)</title>
+<style>
+:root {
+  --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --okraj: #3d3229;
+  --text: #f1e8d8; --tlmeny: #b6a790;
+  --akcent: #e9ad45; --cervena: #d0563f; --zelena: #7cbf74; --modra: #8fb4e0;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #dccdb3;
+    --text: #2a2016; --tlmeny: #5e4f3b;
+    --akcent: #9a5d06; --cervena: #a83a26; --zelena: #356e2f; --modra: #2d5a8f;
+    color-scheme: light;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 system-ui, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 980px; margin: 0 auto; padding: 28px 16px 56px; }
+h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; line-height: 1.2; }
+h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); margin: 0 0 10px; }
+h2 { font-size: 1.4rem; margin: 38px 0 14px; padding-bottom: 6px; border-bottom: 1px solid var(--okraj); }
+h3 { font-size: 1.12rem; margin: 0 0 8px; }
+p { margin: 0 0 10px; }
+a { color: var(--akcent); }
+:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+.uvod { color: var(--tlmeny); }
+.odporucane { background: var(--plocha); border: 1px solid var(--akcent); border-radius: 12px; padding: 14px 16px; margin: 18px 0; }
+.odporucane ol { margin: 6px 0 0; padding-left: 20px; }
+.odporucane li { margin-bottom: 6px; }
+.tab-obal { overflow-x: auto; }
+table.prehlad { width: 100%; border-collapse: collapse; font-size: .92rem; }
+table.prehlad th, table.prehlad td { padding: 7px 6px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--okraj); }
+table.prehlad thead th { border-bottom: 2px solid var(--okraj); }
+td.c, th.c { text-align: right; white-space: nowrap; }
+tr.dnes td { color: var(--cervena); }
+.znacka { display: inline-block; font-size: .78rem; border-radius: 999px; padding: 1px 9px; border: 1px solid currentColor; white-space: nowrap; margin: 0 4px 2px 0; }
+.z-pravidla { color: var(--cervena); }
+.z-karty { color: var(--zelena); }
+.z-kod { color: var(--modra); }
+.z-odp { color: var(--akcent); font-weight: 600; }
+ol.smery { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+ol.smery > li { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 14px 16px; }
+ol.smery > li.odp { border-left: 4px solid var(--akcent); }
+.cislo { color: var(--akcent); font-family: Georgia, serif; margin-right: 6px; }
+.znacky { margin: 0 0 10px; }
+dl.polozka { margin: 0; display: grid; grid-template-columns: 9.5em 1fr; gap: 6px 12px; }
+dl.polozka dt { color: var(--tlmeny); font-size: .88rem; padding-top: 2px; }
+dl.polozka dd { margin: 0; }
+dl.polozka ul { margin: 0; padding-left: 18px; }
+dl.polozka li { margin-bottom: 3px; }
+.skore { font-family: Georgia, serif; font-size: 1.15rem; color: var(--akcent); white-space: nowrap; }
+.priklad { background: var(--plocha-2); border-radius: 8px; padding: 8px 12px; }
+.blok { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 16px; margin-bottom: 12px; }
+.blok ul, .blok ol { margin: 4px 0 0; padding-left: 18px; }
+.blok li { margin-bottom: 5px; }
+.hlavna { border-left: 4px solid var(--cervena); }
+details.viac { margin-top: 10px; }
+details.viac summary { cursor: pointer; color: var(--tlmeny); font-size: .9rem; }
+details.viac[open] summary { color: var(--text); }
+code { font-family: ui-monospace, Consolas, monospace; font-size: .86em; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+footer { margin-top: 40px; padding-top: 12px; border-top: 1px solid var(--okraj); color: var(--tlmeny); font-size: .9rem; }
+@media (max-width: 600px) {
+  dl.polozka { grid-template-columns: 1fr; }
+  dl.polozka dt { padding-top: 6px; }
+  table.prehlad { font-size: .82rem; }
+}
+</style>
+</head>
+<body>
+<main>
+
+<h1>Prestavba bodovania pre pravidlá v5: smery na rozmýšľanie</h1>
+<p class="uvod">Navrhár, 24. 10. 2026. Michal: <i>„Hráč má jedno kolo 80 bodov, druhé −11. Body sa musia získavať
+pomalšie a pomalšie strácať. Chcem, aby nadobudnutý bod mal váhu a aby hra nekončila 88 : 10, ale napríklad 15 : 13.“</i>
+Toto nie je hotové pravidlo. Je to diagnóza, šesť smerov a návrh, čo zmerať najprv. Podklady: §14 pravidiel,
+<code>scorecards.json</code>, reporty playtestov a dve vlastné merania (2000 rozdaní scorecardov, 150 partií bot proti
+botovi). Pravidlá v4 ani kód som nemenil.</p>
+
+<section class="odporucane" aria-labelledby="h-odp">
+  <h2 id="h-odp" style="margin-top:0;border:0;padding:0">V skratke</h2>
+  <ol>
+    <li><b>Prečo 80 a potom −11:</b> každý kus sa počíta toľkokrát, na koľkých scorecardoch je jeho podmienka aktívna
+      (lokalita v priemere 6×). Skóre je navyše len snímka stavu, nič sa neodkladá na istotu. Kliatby v balíčku,
+      markery a patronát sa dajú vrátiť.</li>
+    <li><b>Zmenšiť čísla je ľahké.</b> Každý smer dá 8 až 15 bodov na víťaza. <b>Priblížiť výsledok (15 : 13) je
+      ťažšie.</b> Keď sa len zruší násobok, pomer ostane 2 : 1 (10 : 5), lebo lokalita, prebytok aj strach idú
+      víťazovi bitky.</li>
+    <li><b>Najprv zmerať:</b> smer 4 (klesajúci výnos) spolu so smerom 6 (kliatba najviac −1). Potom smer 2 (čiarky
+      na účte, body sa nedajú stratiť).</li>
+  </ol>
+</section>
+
+<h2 id="diagnoza">1. Diagnóza: odkiaľ prichádzajú skoky</h2>
+
+<div class="blok hlavna">
+  <h3>Príčina A: násobok rozdania</h3>
+  <p>Bodujú len aktívne podmienky scorecardov a <b>každá aktívna podmienka boduje obom hráčom zvlášť</b>
+  (<code>docs/PRAVIDLA.md:954</code>, <code>:968</code>). V kóde sa body rátajú ako <code>kusy × bodyPodmienok</code>
+  pre každú podmienku každého staršieho (<code>packages/core/src/elders.ts:285</code>) a sčítajú sa cez všetkých
+  8 starších (<code>engine.ts:3772</code>). Z 64 podmienok je v priemere 32 aktívnych. Vytlačené „lokalita 2“ teda
+  v partii stojí 2 × počet aktívnych podmienok „lokality“:</p>
+  <div class="tab-obal"><table class="prehlad">
+    <thead><tr><th>Kus</th><th class="c">aktívnych podmienok<br>(priemer, 10.–90. percentil)</th><th class="c">hodnota v partii</th><th class="c">rozpätie</th></tr></thead>
+    <tbody>
+      <tr><td>ovládnutá lokalita (2)</td><td class="c">6,2 (4–8)</td><td class="c"><b>12,4 b</b></td><td class="c">2 až 22 b</td></tr>
+      <tr><td>starší z patronátu (2)</td><td class="c">3,4 (2–5)</td><td class="c">6,7 b</td><td class="c">0 až 14 b</td></tr>
+      <tr><td>3 cigarety (1)</td><td class="c">2,9 (1–5)</td><td class="c">2,9 b</td><td class="c">0 až 6 b</td></tr>
+      <tr><td>nepriznaná Cirhóza (−2)</td><td class="c">2,4 (1–4)</td><td class="c">−4,7 b</td><td class="c">0 až −10 b</td></tr>
+      <tr><td>Dlh, aj priznaný (−1)</td><td class="c">4,0 (2–6)</td><td class="c">−4,0 b</td><td class="c">−1 až −7 b</td></tr>
+      <tr><td>starší sa ťa bojí na úrovni 1 / 2 / 3</td><td class="c">4,7 / 5,0 / 3,5</td><td class="c">≈ 5 / 9 / 13 b</td><td class="c">podľa rozdania</td></tr>
+    </tbody>
+  </table></div>
+  <p style="margin-top:8px"><small>Meranie: 2000 rozdaní (<code>setupGame</code>, semienka 1–2000), sada v10. Sedí
+  s cenníkom z reportov: lokalita 12–18 b, Dlh −4 až −7, Cirhóza ≈ −6, strach 4–5 / 9 / 13 b
+  (<code>docs/playtesty/20261024-075830.html</code>, <code>20261022-065959.html</code>). V partii 20261016-155120
+  bolo aktívnych 10 podmienok „lokality“, jedna lokalita tam stála 20 b.</small></p>
+</div>
+
+<div class="blok hlavna">
+  <h3>Príčina B: skóre je snímka stavu, nič sa neodkladá</h3>
+  <p>„Body teraz“ sa vždy prepočítajú z aktuálneho stavu. Nič, čo hráč získal, nemá istotu:</p>
+  <ul>
+    <li><b>Kliatby v balíčku a v ruke</b> sa rátajú plnou cenou, kým ich hráč neprizná alebo nespáli. Jeden NA EX
+      na kartu s neaktívnym Dlhom či pečeňou ich zdvojí v každej Pitke (kliatbová bomba). Náhľad tak ukázal
+      −30 b v K2 (PT 20261024-075830).</li>
+    <li><b>Markery sa vracajú.</b> Súper prebytkom alebo Pohoršením vráti staršieho o zónu, čo je −4 až −13 b.
+      Eva tak v K3 dvoma bodmi prebytku zrušila Šimonove tri Pohoršenia.</li>
+    <li><b>Patronát a sekera</b> presúvajú celé balíky bodov naraz: väzeň za 12 b, dve lokality zo sekery za 24–32 b.</li>
+  </ul>
+</div>
+
+<div class="blok hlavna">
+  <h3>Príčina C: všetko ide víťazovi bitky (snowball)</h3>
+  <p>Víťaz bitky dostane lokalitu (12 b) aj prebytok. Prebytok posúva markery, a teda strach, ďalších 5 až 13 b
+  za každého staršieho. Prebytok 6 posunul troch starších a Šimonove body vyskočili z 10 na 45
+  (PT 20261024-075830, K4). Podľa merania stratéga má u bota víťaz 57 b z lokalít a 23 b zo strachu, porazený 30 b
+  a 2,5 b (<code>strategia-20261021-143600.html</code>). Lokality aj strach teda ťahajú tým istým smerom, a preto
+  pomer víťaz : porazený nezmení ani menší násobok.</p>
+</div>
+
+<h3>Ako to vyzerá v partiách</h3>
+<p>Ľudia a AI playtesteri: 111 : 104, 101 : 44, 84 : 54, 114 : 35 (vedúci 82 : 21 pred K7, alebo 13 : 89 po K4).
+Moje meranie, bot proti botovi (všetky tri povahy, 90 partií v strednej hre s 5 lokalitami a 60 v dlhej so 7):</p>
+<div class="tab-obal"><table class="prehlad">
+  <thead><tr><th>Ukazovateľ (dnešné bodovanie)</th><th class="c">stredná</th><th class="c">dlhá</th></tr></thead>
+  <tbody>
+    <tr><td>medián výsledku víťaz : porazený</td><td class="c">59 : 24</td><td class="c">75 : 39</td></tr>
+    <tr><td>skok rozdielu skóre za jedno kolo: medián / 90. percentil / najviac</td><td class="c">19 / 44 / 113</td><td class="c">21 / 48 / 105</td></tr>
+    <tr><td>zmena bodov jedného hráča za kolo (najhoršie / najlepšie)</td><td class="c">−62 / +105</td><td class="c">−89 / +92</td></tr>
+    <tr><td>kolá, v ktorých hráč body stratil</td><td class="c">28 %</td><td class="c">29 %</td></tr>
+    <tr><td>partie, v ktorých mal niekto počas hry záporné skóre</td><td class="c">50 %</td><td class="c">47 %</td></tr>
+    <tr><td>tesné partie (porazený má aspoň 75 % bodov víťaza)</td><td class="c">26 %</td><td class="c">18 %</td></tr>
+  </tbody>
+</table></div>
+<p><small>Michalovo „80, potom −11“ je teda bežné, nie výnimka. Pri hrách, kde sa body zbierajú (Carcassonne,
+Osadníci, Ticket to Ride), hráč body počas partie prakticky nestráca a skok za kolo je zlomok konečného rozdielu.</small></p>
+
+<h2 id="smery">2. Šesť smerov</h2>
+
+<p>Pri každom smere je odhad skóre typickej partie. Čísla „boti“ som prepočítal na koncových stavoch tých istých
+150 partií. <b>Boti však hrali na dnešné body</b>, takže je to len smer, nie výsledok. Pri vlastnom bodovaní by hrali
+inak (najmä pri smere 5). Súhrnná tabuľka je na konci tejto časti.</p>
+
+<ol class="smery">
+
+<li id="s1">
+  <h3><span class="cislo">1</span>Čo je napísané, to platí (cenník bez násobkov)</h3>
+  <p class="znacky"><span class="znacka z-pravidla">pravidlá</span><span class="znacka z-kod">kód S</span><span class="znacka z-karty">scorecardy: význam</span></p>
+  <dl class="polozka">
+    <dt>Princíp</dt><dd>Každý druh kusu sa ráta <b>raz</b>, za vytlačenú cenu: lokalita 2, väzeň 2, strach 1 / 2 / 3
+      za staršieho, 3 cigarety 1, Cirhóza −2, Dlh −1. Scorecardy rozhodnú len o tom, <b>čo sa v tejto partii
+      počíta</b> (druh boduje, ak je aktívny aspoň na jednom scorecarde). Mierka: „dve aktívne = dvojnásobok,
+      viac nie“.</dd>
+    <dt>Skóre</dt><dd><span class="skore">10 : 5</span> (stredná), <span class="skore">14 : 7</span> (dlhá). Najväčší
+      skok za kolo 19 namiesto 113.</dd>
+    <dt>Strategickosť</dt><dd>Menej náhody, lebo lokalita už nestojí raz 2 a raz 22 b podľa rozdania. Hráč si cenník
+      zapamätá, náhľady netreba ručne prepočítavať. Ubudne však plánovanie cez voľbu karty na scorecard, ktorú Eva
+      nazvala „najkrajší plánovací prvok“.</dd>
+    <dt>Tematika</dt><dd>Neutrálna. Sedí s tým, čo hráči čítali v pravidlách („lokalita 2“) a čo ich mýlilo
+      (PT 20261022-065959).</dd>
+    <dt>Riziká</dt><dd><ul>
+      <li>Pomer ostáva 2 : 1. Tesných partií je stále 27 %, teda samo to Michalov cieľ nesplní.</li>
+      <li>Cirhóza −2 sa rovná celej lokalite, takže kliatby ešte viac rozhodujú (zvyšok skoku 19 sú hlavne ony). Preto smer 6.</li>
+      <li>Remíz pribudne: pri bodoch 10 : 5 je to 12 % partií. Treba rozhodcu remízy.</li>
+    </ul></dd>
+    <dt>Dopad</dt><dd><code>elderScore</code> a <code>pocetKusov</code> (<code>elders.ts:266</code>), rozpis bodov v UI
+      (<code>RozpisBodov.tsx</code>, <code>KrcmovyUcet.tsx</code>, <code>bodyPodmienok.tsx</code>), §14, ťahák,
+      výučba, testy. Bot počíta body tou istou funkciou (<code>bot.ts:334</code>), prispôsobí sa sám.
+      Fyzické scorecardy ostanú, zmení sa len to, ako sa čítajú. Asi 1–2 dni.</dd>
+    <dt>Zmerať</dt><dd>Rebrík zručnosti (<code>strategickost.ts</code>), podiel remíz, vplyv rozdania na víťaza.</dd>
+  </dl>
+</li>
+
+<li id="s2" class="odp">
+  <h3><span class="cislo">2</span>Čiarky na účte (body sa pripíšu a nedajú sa stratiť)</h3>
+  <p class="znacky"><span class="znacka z-odp">odporúčané druhé</span><span class="znacka z-pravidla">pravidlá</span><span class="znacka z-kod">kód M–L</span><span class="znacka z-karty">scorecardy: nová úloha</span></p>
+  <dl class="polozka">
+    <dt>Princíp</dt><dd>Krčmár robí čiarky na účte, ako na pivnom tácku. Body sa <b>pripíšu pri udalosti</b> a potom
+      sa už nezmažú: vyhraná bitka +2, vyhraný patronát +1, starší sa ťa prvý raz bojí v oranžovej +1 a v červenej
+      ďalší +1. Keď ho súper vráti, čiarka ostane, súper si ju musí zarobiť inde. Kliatby čiarky nemažú, ich trest je
+      v hre (Exekútor, tuhé poškodenie, mŕtva karta v ruke). Scorecard môže pridávať čiarky za svoju tému, napríklad
+      Bitkár „+1 za bitku vyhranú o 3 a viac“.</dd>
+    <dt>Skóre</dt><dd><span class="skore">9 : 5</span> (stredná), <span class="skore">13 : 7</span> (dlhá). Najväčší
+      skok 9 a skóre nikdy neklesne. U ľudí, ktorí tlačia starších viac ako boti, odhadujem 14 : 10.</dd>
+    <dt>Strategickosť</dt><dd>Každý bod sa ráta hneď a natrvalo, „bod má váhu“ doslova. Vracanie markera už súperovi
+      neuberie, len zatvorí cestu k ďalšej čiarke. Prebytok je teda viac stavba než deštrukcia. Riziko je, že náskok
+      sa dá ubrániť, preto treba dobiehanie (napríklad porazený bitky dostane čiarku „na žiaľ“, ak prehral o 1).</dd>
+    <dt>Tematika</dt><dd>Najsilnejšia zo všetkých smerov. Krčmový účet už v hre je (<code>KrcmovyUcet.tsx</code>),
+      čiarky na tácku pozná každý, kto bol v dedinskej krčme.</dd>
+    <dt>Riziká</dt><dd><ul>
+      <li>Posledná bitka má menej váhy (+2 z 13), čo je dobré, ale aj menej drámy.</li>
+      <li>Tesných partií bolo pri prepočte len 23 % v strednej hre (v dlhej 32 %). Bez dobiehania sa náskok drží.</li>
+      <li>Scorecardy strácajú dnešných 8 podmienok, čo znamená novú tlač a tvorcu.</li>
+    </ul></dd>
+    <dt>Dopad</dt><dd>Nové pole v stave (<code>ciarky: [n, n]</code>), pripísanie v engine pri bitke (6d), patronáte
+      a posune markera, udalosti do kroniky a momentov, <code>viewFor</code>, stôl a účet. Bot potrebuje
+      novú hodnotiacu funkciu (dnes hodnotí stav cez <code>elderScore</code>). Asi 3–5 dní plus bot.</dd>
+    <dt>Zmerať</dt><dd>Otočky od polovice partie, sila dobiehania, rebrík, či boti nezačnú len brániť náskok.</dd>
+  </dl>
+</li>
+
+<li id="s3">
+  <h3><span class="cislo">3</span>Starší drží s tým, kto vedie (majority na konci)</h3>
+  <p class="znacky"><span class="znacka z-pravidla">pravidlá</span><span class="znacka z-kod">kód M</span><span class="znacka z-karty">scorecardy ostanú</span></p>
+  <dl class="polozka">
+    <dt>Princíp</dt><dd>Ako v El Grande alebo pri najdlhšej ceste v Osadníkoch. Každý starší na konci hry porovná
+      oboch hráčov v svojich aktívnych podmienkach (kto má viac lokalít, väzňov, cigariet a strachu, kto má menej
+      Dlhov a Cirhóz). Kto vyhrá viac jeho podmienok, dostane od neho 3 b, druhý 1 b.</dd>
+    <dt>Skóre</dt><dd>So stupňovaním 3 / 1 odhadujem <span class="skore">16 : 10</span>. Verzia „1 b za každú
+      vyhranú podmienku, víťaz berie všetko“ vyšla 17 : 5.</dd>
+    <dt>Strategickosť</dt><dd>Vysoká. Každý starší je iný súboj („u Farára mi stačí mať menej Dlhov“), a to rieši
+      výčitku, že politika je „účtovníctvo“ a tlačí sa vždy najbližší starší (PT 20261022-065959). Hráč sa
+      rozhoduje, o ktoré majority bojovať a ktoré pustiť.</dd>
+    <dt>Tematika</dt><dd>Dobrá: dedinskí starší sa na konci pridajú k silnejšiemu, sú to klebety a politika.</dd>
+    <dt>Riziká</dt><dd><ul>
+      <li>Bez bodov pre druhého je snowball horší ako dnes, tesných bolo len 11 %. Druhé miesto preto musí bodovať.</li>
+      <li>Ťažšie počítanie na papieri: pri ôsmich starších treba zistiť osem víťazov. Náhľad „kto vedie u koho“ je nutný.</li>
+      <li>Remízy v jednotlivých podmienkach sú časté.</li>
+    </ul></dd>
+    <dt>Dopad</dt><dd>Prepis <code>elderScore</code> na porovnanie oboch hráčov, nový náhľad pri každom staršom,
+      rozpis bodov, bot. Asi 2–3 dni.</dd>
+    <dt>Zmerať</dt><dd>Tesnosť pri 3 / 1 a 2 / 1, počet remíz v podmienkach, či sa bot naučí pustiť stratenú majoritu.</dd>
+  </dl>
+</li>
+
+<li id="s4" class="odp">
+  <h3><span class="cislo">4</span>Klesajúci výnos (prvá lokalita viac než piata)</h3>
+  <p class="znacky"><span class="znacka z-odp">odporúčané prvé</span><span class="znacka z-pravidla">pravidlá</span><span class="znacka z-kod">kód S–M</span><span class="znacka z-karty">scorecardy: význam</span></p>
+  <dl class="polozka">
+    <dt>Princíp</dt><dd>Každý ďalší kus toho istého druhu má menšiu cenu. Lokality 3, 2, 2, potom po 1 (súčet
+      3 / 5 / 7 / 8 / 9…). Strach je 1 za každého staršieho, ktorý sa ťa bojí, a +1 za vydeseného. Väzni a cigarety
+      dávajú najviac 2 (1 b za 4 cigarety). Kliatba je −1 za druh (smer 6). Patrí sem aj Michalov „logaritmus“
+      a strop: výnos rastie čoraz pomalšie.</dd>
+    <dt>Skóre</dt><dd><span class="skore">9 : 5</span> (stredná), <span class="skore">11 : 7</span> (dlhá). Tesných
+      partií je 33 % a 37 % (dnes 26 % a 18 %). Je to jediný smer, ktorý pri prepočte výrazne zblížil výsledok
+      v dlhej hre. U ľudí odhadujem 13 : 10.</dd>
+    <dt>Strategickosť</dt><dd>Oplatí sa rozkladať, nie ťahať jedno. Porazenému druhá lokalita pridá viac, než víťazovi
+      piata, takže dobiehanie je zabudované priamo v bodovaní. Pri každom cieli a patronáte vzniká otázka „čo mi
+      pridá viac: ďalšia lokalita, alebo prvý vydesený starší?“.</dd>
+    <dt>Tematika</dt><dd>Prvé pivo chutí najviac. Na ďalšie veci pôsobí neutrálne.</dd>
+    <dt>Riziká</dt><dd><ul>
+      <li>Tabuľku výnosov si treba pamätať. Pomôže, keď bude vytlačená na scorecarde a ukázaná v náhľade.</li>
+      <li>Vedúci s 5 lokalitami môže prestať o lokality bojovať a ísť len po starších. Treba zmerať, či to nie je dominantný ťah.</li>
+      <li>Rozdanie scorecardov by stratilo vplyv. Ak má ostať, nech určuje, ktoré druhy majú výnos 3–2–2 a ktoré 2–1–1.</li>
+    </ul></dd>
+    <dt>Dopad</dt><dd>Bodovacia funkcia a tabuľka výnosov v <code>KONSTANTY</code>, UI rozpisu, §14, ťahák, výučba.
+      Bot sa prispôsobí sám (<code>bot.ts:334</code>). Variant sa dá zapnúť prepínačom len pre turnaj, takže je
+      to najlacnejšie meranie. Asi 1–2 dni.</dd>
+    <dt>Zmerať</dt><dd>Tesnosť, otočky, rebrík zručnosti, podiel partií, v ktorých vedúci prestane bojovať o lokality.</dd>
+  </dl>
+</li>
+
+<li id="s5">
+  <h3><span class="cislo">5</span>Bodujú len starší (strach ako jediný zdroj bodov)</h3>
+  <p class="znacky"><span class="znacka z-pravidla">pravidlá</span><span class="znacka z-kod">kód M</span><span class="znacka z-karty">scorecardy aj lokality: veľká zmena</span></p>
+  <dl class="polozka">
+    <dt>Princíp</dt><dd>Body na konci sú súčet úrovní strachu: starší sa ťa bojí na úrovni 1 / 2 / 3, za to máš
+      1 / 2 / 3 b. Spolu je to najviac 24 a každý starší boduje len jednému hráčovi. Lokalita bodov nedáva, dáva
+      prebytok, akcie hrany a napríklad jeden posun markera navyše. Kliatby uberajú len cez hru.</dd>
+    <dt>Skóre</dt><dd>Odhadujem <span class="skore">12 : 9</span>. Súčet oboch je najviac 24, takže 88 : 10 nemôže
+      nastať. Prepočet na botoch dal 3 : 0, ale tie dnes strach skoro netlačia, preto to číslo nič nehovorí.</dd>
+    <dt>Strategickosť</dt><dd>Celá hra sa zbieha na politiku: Pohoršenie, prebytok, patronát, zamknutá pozícia.
+      Playtesteri to označili za najhlbšiu časť hry. Bitka je potom prostriedok, nie cieľ.</dd>
+    <dt>Tematika</dt><dd>Najčistejšia: hra je o desení starších, aj predčasná výhra je za vydesenie polovice starších.
+      Body a cieľ hry by konečne hovorili to isté.</dd>
+    <dt>Riziká</dt><dd><ul>
+      <li>Markery sa vracajú, takže strácanie bodov ostáva (±1 za posun). Pomohla by čiarka za dosiahnutú úroveň (smer 2).</li>
+      <li>Lokality a 15 efektov lokalít stratia priamu odmenu a hra sa zmení najviac zo všetkých smerov.</li>
+      <li>Bot sa musí naučiť novú hru (prebytok a Pohoršenie budú mať inú cenu).</li>
+    </ul></dd>
+    <dt>Dopad</dt><dd>Samotné bodovanie je jednoduché. Väčšia práca je s významom scorecardov (len priazeň), textami
+      pravidiel, výučbou a botom. Fyzické scorecardy by stratili podmienky. Asi 3–5 dní.</dd>
+    <dt>Zmerať</dt><dd>Až s botom, ktorý hrá na strach: rozptyl, predčasné vydesenia, rebrík.</dd>
+  </dl>
+</li>
+
+<li id="s6" class="odp">
+  <h3><span class="cislo">6</span>Kliatba trestá v hre, nie v skóre (doplnok k smerom 1–5)</h3>
+  <p class="znacky"><span class="znacka z-odp">súčasť prvého merania</span><span class="znacka z-pravidla">pravidlá</span><span class="znacka z-kod">kód S</span><span class="znacka z-karty">text Cirhózy a Dlhu</span></p>
+  <dl class="polozka">
+    <dt>Princíp</dt><dd>Dlh a Cirhóza na konci uberú najviac <b>−1 za druh</b> (alebo vôbec nič). Ich skutočná cena je
+      v hre: Dlh vedie k exekúcii, priznaná Cirhóza dáva súperovi tuhé, nepriznaná zasekne ruku. Na tom je postavená
+      „pomalšie strácať“.</dd>
+    <dt>Skóre</dt><dd>So smerom 1: <span class="skore">8 : 4</span> namiesto 10 : 5, najväčší skok za kolo 8 namiesto 19.
+      Kliatby tvoria väčšinu toho, čo zo skokov ostane po zrušení násobku.</dd>
+    <dt>Strategickosť</dt><dd>Kliatbová bomba ostane silným ťahom v bitke, ale prestane mazať celú partiu (dnes −30 b
+      v náhľade). Odpadne aj trik „držať Cirhózy do K7 a všetky priznať v poslednej bitke“ (PT 20261024-075830),
+      lebo ich cena na konci je malá. Cena v bitke treba overiť, aby kliatby úplne nestratili zuby.</dd>
+    <dt>Tematika</dt><dd>Dlh ťa vytrestá exekútor, nie účtovník na konci. Lepšie to sedí.</dd>
+    <dt>Riziká</dt><dd>Úžerník, Exekútor a Dlh musia ostať hrozbou. Treba zmerať počet exekúcií a priznaní.</dd>
+    <dt>Dopad</dt><dd><code>pocetKusov</code> (<code>elders.ts:212</code>), text karty „Nepriznaná uberá body na konci
+      hry“ (Cirhóza v <code>cards.json</code> a v tvorcovi), §8, §14, ťahák. Asi pol dňa.</dd>
+    <dt>Zmerať</dt><dd>Exekúcie a priznania za partiu, ako často sa dáva NA EX na kartu s kliatbou.</dd>
+  </dl>
+</li>
+
+</ol>
+
+<h3 style="margin-top:22px">Súhrn prepočtu (tie isté koncové stavy, boti hrali na dnešné body)</h3>
+<div class="tab-obal"><table class="prehlad">
+  <thead><tr><th>Bodovanie</th><th class="c">stredná<br>medián</th><th class="c">tesné</th><th class="c">najväčší skok<br>za kolo</th><th class="c">dlhá<br>medián</th><th class="c">tesné</th><th class="c">remízy<br>(stredná)</th></tr></thead>
+  <tbody>
+    <tr class="dnes"><td>dnes</td><td class="c">59 : 24</td><td class="c">26 %</td><td class="c">113</td><td class="c">75 : 39</td><td class="c">18 %</td><td class="c">2 %</td></tr>
+    <tr><td>1 cenník bez násobkov</td><td class="c">10 : 5</td><td class="c">27 %</td><td class="c">19</td><td class="c">14 : 7</td><td class="c">20 %</td><td class="c">12 %</td></tr>
+    <tr><td>1 + 6 (malé body, kliatba −1 za druh)</td><td class="c">8 : 4</td><td class="c">32 %</td><td class="c">8</td><td class="c">11 : 7</td><td class="c">30 %</td><td class="c">6 %</td></tr>
+    <tr><td>2 čiarky na účte</td><td class="c">9 : 5</td><td class="c">23 %</td><td class="c">9</td><td class="c">13 : 7</td><td class="c">32 %</td><td class="c">8 %</td></tr>
+    <tr><td>3 majority, víťaz berie všetko</td><td class="c">17 : 5</td><td class="c">11 %</td><td class="c">35</td><td class="c">17 : 5</td><td class="c">12 %</td><td class="c">2 %</td></tr>
+    <tr><td>4 + 6 klesajúci výnos</td><td class="c">9 : 5</td><td class="c">33 %</td><td class="c">10</td><td class="c">11 : 7</td><td class="c">37 %</td><td class="c">8 %</td></tr>
+    <tr><td>5 len strach</td><td colspan="6">nedá sa prepočítať, boti dnes strach netlačia (3 : 0, remíza v 16 %)</td></tr>
+  </tbody>
+</table></div>
+<p><small>Tesné = porazený má aspoň 75 % bodov víťaza (15 : 13 je 87 %). Ak by sa za skok rátal pomer ku konečnému
+rozdielu, dnešných 113 pri mediáne rozdielu 28 sú 4 partie rozdielu v jednom kole, pri smere 4 + 6 sú to 2,5.</small></p>
+
+<details class="viac">
+  <summary>Zvažované a odložené</summary>
+  <ul>
+    <li><b>Relatívne skóre (rozdiel v kole, nie súčty):</b> rieši len zobrazenie. Skóre 4 : 3 v „setoch“ je tesné na
+      pohľad, ale náskok sa skryje. Bližšie k Michalovmu zámeru je smer 2.</li>
+    <li><b>Strop na kolo (najviac ±N bodov za kolo):</b> lieči príznak a hráč by musel rátať, čo prepadlo. Smery 1 + 6
+      už znížia najväčší skok zo 113 na 8 bez stropu.</li>
+    <li><b>Delenie dnešných bodov (napríklad /6):</b> je to smer 1 so zaokrúhľovaním, pomer sa nezmení.</li>
+  </ul>
+</details>
+
+<h2 id="odporucanie">3. Odporúčanie a otázky</h2>
+
+<div class="blok" style="border-color:var(--akcent)">
+  <h3>Prvé meranie stratégom</h3>
+  <ol>
+    <li><b>Smer 4 + 6</b> (klesajúci výnos, kliatba −1 za druh). Je najlacnejší, lebo mení len bodovaciu funkciu,
+      bot ju použije sám a variant sa zapne prepínačom pre turnaj. V prepočte najviac zblížil výsledok.
+      Merať proti dnešku a proti smeru 1 + 6 ako kontrole („stačí zrušiť násobok?“).</li>
+    <li><b>Smer 2</b> (čiarky na účte) ako druhé meranie. Najpriamejšie zodpovedá „nadobudnutý bod má váhu“ a má
+      najlepšiu tému. Potrebuje však nové pole v stave a hodnotenie bota, preto až po prvom meraní.</li>
+  </ol>
+  <p style="margin-top:8px"><b>Čo merať pri každom variante</b> (rovnaké semienka, všetky tri povahy, stredná aj dlhá
+  hra): medián skóre, podiel tesných partií (cieľ aspoň 50 %), najväčší skok za kolo, podiel kôl so stratou bodov,
+  otočky od polovice partie, víťaz poslednej bitky vyhrá partiu (dnes 84–86 % v krátkej), remízy a rebrík zručnosti
+  (<code>strategickost.ts</code>, aby menšie čísla neznamenali viac náhody).</p>
+</div>
+
+<div class="blok">
+  <h3>Otázky pre Michala</h3>
+  <ol>
+    <li>Čo je dôležitejšie: malé čísla, alebo tesný výsledok? Samotné zmenšenie dá 10 : 5, nie 15 : 13.</li>
+    <li>Smú body počas hry vôbec klesnúť? (Pri smere 2 nie, pri smere 6 len o −1 za druh kliatby.)</li>
+    <li>Smie sa v5 zmeniť úloha scorecardov (podmienky na vytlačenej karte), alebo majú ostať a mení sa len, ako sa
+      čítajú? Smery 1, 3, 4 a 6 ich nechajú, smery 2 a 5 nie.</li>
+    <li>Má porazený bitky dostať niečo do skóre (dobiehanie), alebo má tesnosť prísť len z klesajúceho výnosu?</li>
+    <li>Pri malých číslach bude viac remíz (6–12 % partií). Kto ich má vyhrať: víťaz poslednej bitky, ten s viac
+      lokalitami, alebo ten s menej kliatbami?</li>
+  </ol>
+</div>
+
+<details class="viac">
+  <summary>Ako som meral</summary>
+  <ul>
+    <li><b>Násobky:</b> 2000 rozdaní cez <code>setupGame</code> a <code>podmienkyStarsieho</code>, počet aktívnych
+      podmienok každého druhu.</li>
+    <li><b>Partie:</b> <code>tahBota</code> proti <code>tahBota</code>, povahy Štamgast, Rapavý Fero a Teta Gizka
+      v striedaní, 90 partií strednej hry (5 lokalít, semienka 5000–5089) a 60 dlhej (7 lokalít). Skóre som
+      zapisoval na konci každého kola. Alternatívne bodovania sú vypočítané na tých istých stavoch, čiarky
+      (smer 2) postupne po kolách.</li>
+    <li>Skript je jednorazový a v repozitári nie je. Pre stratéga je dôležité, že boti v ňom hrali na dnešné body.
+      Skutočné meranie potrebuje variant bodovania, ktorý bude bot hodnotiť počas hry.</li>
+    <li>Dnešné hodnoty majú v <code>scorecards.json:17</code> poznámku „finálne (Michal 2026-10-22)“. Toto zadanie
+      ich otvára pre v5.</li>
+  </ul>
+</details>
+
+<footer>Navrhár NA EX!, vetva <code>navrhar/bodovanie-v5</code>. Pravidlá ani kód sa nemenili. O smeroch rozhoduje
+  Michal cez Leadera, meranie robí stratég (skill naex-strategia).</footer>
+</main>
+</body>
+</html>
