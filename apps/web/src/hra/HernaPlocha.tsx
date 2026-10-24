@@ -55,8 +55,11 @@ import {
   battleOutcome,
   cenaPrebytku,
   prebytokNaRozdelenie,
+  dopadyNahladu,
   kliatbyNahladu,
   nahladPitky,
+  pocet,
+  stavPoPatronate,
   svokraZaNaex,
   tvar,
   vyhladDlhov,
@@ -106,7 +109,7 @@ import {
   stranyLokality,
   vydesil,
 } from "@naex/core";
-import type { ActionSums, GameState, KliatbyNahladu, MarkerPos, NahladVylozenia, PolozkaVykladania, Podmienka, Rod, Slot, StranaLinie } from "@naex/core";
+import type { ActionSums, DopadyNahladu, GameState, KliatbyNahladu, MarkerPos, NahladVylozenia, PolozkaVykladania, Podmienka, Rod, Slot, StranaLinie } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
 import { LiniaStarsich, LupaStarsieho, type StarsiVLinii } from "./LiniaStarsich.tsx";
@@ -1020,6 +1023,30 @@ export function HernaPlocha({
     if (k.dalejCirhozy !== 0 || k.dalejDlhy !== 0) casti.push("vrátane ďalších Pitiek kola");
     return `${casti.length === 0 ? "nič" : casti.join(", ")}${k.body !== 0 ? ` · ${k.body > 0 ? "+" : "−"}${Math.abs(k.body)} b` : ""}`;
   };
+  /**
+   * Zvyšok ceny ťahu (návrh #1, playtest 20261024-075830): cigarety z Pitiek
+   * kola, Pohoršenia v bitke s ≈ bodmi (rozdiel hráča voči súperovi) a mäkké.
+   * Len to, čo sa mení; null, keď sa nemení nič.
+   */
+  const textDopadov = (d: readonly [DopadyNahladu, DopadyNahladu]): string | null => {
+    const znak = (n: number): string => `${n > 0 ? "+" : "−"}${Math.abs(n)}`;
+    const kto = (p: PlayerId): string => (p === ja ? "ty" : menoHraca(super_));
+    const hraci = [ja, super_] as const;
+    const casti: string[] = [];
+    const cig = hraci.filter((p) => d[p].cigarety !== 0).map((p) => `${kto(p)} ${znak(d[p].cigarety)}`);
+    if (cig.length > 0) casti.push(`cigarety: ${cig.join(", ")}`);
+    const poh = hraci
+      .filter((p) => d[p].pohorsenia !== 0)
+      .map((p) => {
+        const n = d[p].pohorsenia;
+        const spolu = d[p].pohorseniaSpolu !== n ? `spolu ${d[p].pohorseniaSpolu}, ` : "";
+        return `${kto(p)} ${n > 0 ? "+" : "−"}${pocet(Math.abs(n), "posun", "posuny", "posunov")} (${spolu}≈ ${d[p].pohorseniaBody === 0 ? "0" : znak(d[p].pohorseniaBody)} b)`;
+      });
+    if (poh.length > 0) casti.push(`Pohoršenia: ${poh.join(", ")}`);
+    const makke = hraci.filter((p) => d[p].makke !== 0).map((p) => `${kto(p)} ${znak(d[p].makke)}`);
+    if (makke.length > 0) casti.push(`mäkké: ${makke.join(", ")}`);
+    return casti.length === 0 ? null : casti.join(" · ");
+  };
   // Možnosť NA EX pod myšou či fokusom — tá istá karta svieti na stole.
   const [zvyraznenaNaex, setZvyraznenaNaex] = useState<number | null>(null);
   // Karta z riadku hrozby (prejdenie myšou) — v línii sa zvýrazní.
@@ -1037,6 +1064,8 @@ export function HernaPlocha({
         readonly zmeny: readonly [string[], string[]];
         readonly vzorec: readonly string[];
         readonly kliatby: readonly [KliatbyNahladu, KliatbyNahladu];
+        /** Cigarety, Pohoršenia a mäkké po NA EX (dopadyNahladu). */
+        readonly dopady: readonly [DopadyNahladu, DopadyNahladu];
         /** Koľko cigariet mi za toto NA EX ukradnú súperove Svokry. */
         readonly svokra: number;
         readonly majitel: PlayerId;
@@ -1084,8 +1113,9 @@ export function HernaPlocha({
       const hraci: ClientState["hraci"] = ja === 0 ? [{ ...h[0], pecen: h[0].pecen + 1 }, h[1]] : [h[0], { ...h[1], pecen: h[1].pecen + 1 }];
       const pred = { ciel: stol.ciel, ovladnute: view.ovladnute, strany: view.strany, starsi: view.starsi, hraci: view.hraci, lokalitaOtocena: view.lokalitaOtocena, vizia: view.vizia };
       const kliatby = kliatbyNahladu(data, pred, { ...pred, strany, hraci }, dalsiePitky, cenyKliatob);
+      const dopady = dopadyNahladu(data, view, { ...view, strany, hraci }, dalsiePitky);
       const svokra = svokraZaNaex(data, view, ja, view.hraci[ja].cigarety);
-      out.set(uid, { tuhe: d.tuhe, zmeny, vzorec, kliatby, svokra, majitel: placed.playedBy, strana, pozicia: index + 1 });
+      out.set(uid, { tuhe: d.tuhe, zmeny, vzorec, kliatby, dopady, svokra, majitel: placed.playedBy, strana, pozicia: index + 1 });
     }
     return out;
   }, [mode.typ, naexCiele, data, view, stol, lineEval, odhad, ja, sada, nahladyPitky, cenyKliatob, dalsiePitky]);
@@ -1097,7 +1127,11 @@ export function HernaPlocha({
     const mojeAbstaky = view.ruka.filter((k) => k.defId === "abstak").length;
     const bezOdpovede = poskodenieBitky(data, view, evaluateLine(data, lineState(view)).sums, ja === 0 ? [mojeAbstaky, 0] : [0, mojeAbstaky]);
     const pred = { ciel: stol.ciel, ovladnute: view.ovladnute, strany: view.strany, starsi: view.starsi, hraci: view.hraci, lokalitaOtocena: view.lokalitaOtocena, vizia: view.vizia };
-    return { pred: bezOdpovede.tuhe, kliatby: kliatbyNahladu(data, pred, { ...pred, strany: stol.strany }, dalsiePitky, cenyKliatob) };
+    return {
+      pred: bezOdpovede.tuhe,
+      kliatby: kliatbyNahladu(data, pred, { ...pred, strany: stol.strany }, dalsiePitky, cenyKliatob),
+      dopady: dopadyNahladu(data, view, { ...view, strany: stol.strany }, dalsiePitky),
+    };
   }, [reagujem, odhad, stol, vylozenia, view, data, ja, dalsiePitky, cenyKliatob]);
 
   // Náhľad vyloženia na koniec strany (playtest 20261017-164450: ktorá hrana
@@ -2488,8 +2522,10 @@ export function HernaPlocha({
           const b2 = (v: readonly [number, number]): string => `${v[ja]}:${v[super_]}`;
           const vybrany = mode.typ === "patronat" ? view.starsi.find((e) => e.elderId === mode.elderId) : undefined;
           if (mode.typ === "patronat" && vybrany !== undefined) {
-            const cena = cenaPatronatu(vybrany);
             const vybrata = kandidatiPatronatu.find((k) => k.uid === mode.uid);
+            // Celá cena (návrh #1, playtest 20261024-075830): cigarety a súperove Pohoršenia s ≈ bodmi.
+            const cenaTahu = textDopadov(dopadyNahladu(data, view, stavPoPatronate(view, vybrany.elderId), 0));
+            const cena = cenaPatronatu(vybrany);
             return {
               nadpis: `Patronát — ${menoKarty(vybrany.karta.defId)}`,
               text: (
@@ -2497,8 +2533,8 @@ export function HernaPlocha({
                   <span>
                     Ktorý Občan či Zviera pôjde lícom dole na scorecard? Pri výhre ostane na ukazovateli a jeho akcie zapnú podmienky —
                     pod kartou body ty:súper pri výhre (teraz <b>{b2(nahladPatronatu(data, view, vybrany.elderId, null).teraz)}</b>, pri
-                    prehre <b>{b2(nahladPatronatu(data, view, vybrany.elderId, null).prehra)}</b>; súper si ich {cena.pohorsenia} Pohoršeniami
-                    môže čiastočne vrátiť).
+                    prehre <b>{b2(nahladPatronatu(data, view, vybrany.elderId, null).prehra)}</b>, bez súperových Pohoršení).
+                    {cenaTahu !== null && <> Cena: {cenaTahu}.</>}
                   </span>
                   <span className="zberatel-ponuka">
                     {kandidatiPatronatu.map((k) => (
@@ -2783,6 +2819,7 @@ export function HernaPlocha({
                       <span className="tlmene">
                         {" "}· bitka {nahladOdpovede.pred[ja]}:{nahladOdpovede.pred[super_]} → <b>{odhad.tuhe[ja]}:{odhad.tuhe[super_]}</b> · kliatby — ty:{" "}
                         {textKliatob(nahladOdpovede.kliatby[ja])} · {menoHraca(super_)}: {textKliatob(nahladOdpovede.kliatby[super_])}
+                        {textDopadov(nahladOdpovede.dopady) !== null && <> · {textDopadov(nahladOdpovede.dopady)}</>}
                       </span>
                     )}
                     {textVolbyMiesta !== null && <> · {textVolbyMiesta}</>}
@@ -3033,7 +3070,8 @@ export function HernaPlocha({
               {vybrana.zmeny[super_].length > 0 ? vybrana.zmeny[super_].join(", ") : "bez zmeny"}
               <span className="tlmene">
                 {" "}
-                · kliatby — ty: {textKliatob(vybrana.kliatby[ja])} · {menoHraca(super_)}: {textKliatob(vybrana.kliatby[super_])} · pečeň +1
+                · kliatby — ty: {textKliatob(vybrana.kliatby[ja])} · {menoHraca(super_)}: {textKliatob(vybrana.kliatby[super_])}
+                {textDopadov(vybrana.dopady) !== null && <> · {textDopadov(vybrana.dopady)}</>} · pečeň +1
                 {vybrana.svokra > 0 && <> · Svokra ti ukradne {vybrana.svokra} cig.</>} · v ďalšom kole limit{" "}
                 {limitPo === limitBez ? `ostane ${limitBez}` : `${limitPo} namiesto ${limitBez}`} · platí, ak {menoHraca(super_)} neodpovie (v ruke má{" "}
                 {view.hraci[super_].rukaPocet} {view.hraci[super_].rukaPocet === 1 ? "kartu" : view.hraci[super_].rukaPocet >= 2 && view.hraci[super_].rukaPocet <= 4 ? "karty" : "kariet"})

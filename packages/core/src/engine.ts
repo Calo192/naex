@@ -2542,18 +2542,9 @@ function vyhodnotPitku(s: MutState, data: GameData, events: Event[]): void {
   // 4.–6. Obmedzenie, Cigarety, ťahanie (Michal 2026-10-16): aktívne akcie
   //    Cigareta dávajú cigarety, súperove Obmedzenia ich uberú.
   //    Karty si hráč doberá fajčením (cmdSmoke) — kedy chce.
+  const cigaretyPitky = cigaretyZPitky(data, s as GameState, sums, s.pitkaCislo);
   for (const p of [0, 1] as const) {
-    let cigarety = sums[p].Cigareta ?? 0;
-    // Priazeň Fajčiara: cigarety navyše v prvej Pitke kola o lokalitu — +sila,
-    // bez dvojnásobku (Michal 2026-10-19: cigarety platia šenok aj Dedičstvo).
-    if (s.pitkaCislo === 1 && s.ciel?.typ === "lokalita") {
-      cigarety += priazen(data, s as GameState, "FAJCIAR", p) / KONSTANTY.NASOBOK_PRIAZNE;
-    }
-    const opp = opponentOf(p);
-    const obmedzenia = sums[opp].Obmedzenie ?? 0;
-    // cigorky (Dedičstvo): v každej Pitke cigareta navyše — Obmedzenie ju neuberie.
-    const cigorky = vDedicstve(s as GameState, p, "cigorky") ? KONSTANTY.EFEKT.CIGORKY_CIGARETY : 0;
-    const ziska = Math.max(0, cigarety - obmedzenia) + cigorky;
+    const ziska = cigaretyPitky[p];
     ucet.cigarety[p] = ziska;
     if (ziska > 0) {
       hrac(s, p).cigarety += ziska;
@@ -2580,6 +2571,32 @@ function vyhodnotPitku(s: MutState, data: GameData, events: Event[]): void {
     if (pripravVizia(s)) return;
   }
   dokonciPitku(s, data, events);
+}
+
+/**
+ * Cigarety, ktoré hráči dostanú vo vyhodnotení Pitky číslo `pitkaCislo`
+ * (PRAVIDLA §7 krok 5) — jeden výpočet pre motor aj náhľad NA EX, aby cena
+ * ťahu v cigaretách sedela so zúčtovaním (návrh #1, playtest 20261024-075830).
+ */
+export function cigaretyZPitky(
+  data: GameData,
+  s: VerejnyStav,
+  sums: readonly [ActionSums, ActionSums],
+  pitkaCislo: number,
+): readonly [number, number] {
+  const pre = (p: PlayerId): number => {
+    let cigarety = sums[p].Cigareta ?? 0;
+    // Priazeň Fajčiara: cigarety navyše v prvej Pitke kola o lokalitu — +sila,
+    // bez dvojnásobku (Michal 2026-10-19: cigarety platia šenok aj Dedičstvo).
+    if (pitkaCislo === 1 && s.ciel?.typ === "lokalita") {
+      cigarety += priazen(data, s, "FAJCIAR", p) / KONSTANTY.NASOBOK_PRIAZNE;
+    }
+    const obmedzenia = sums[opponentOf(p)].Obmedzenie ?? 0;
+    // cigorky (Dedičstvo): v každej Pitke cigareta navyše — Obmedzenie ju neuberie.
+    const cigorky = vDedicstve(s, p, "cigorky") ? KONSTANTY.EFEKT.CIGORKY_CIGARETY : 0;
+    return Math.max(0, cigarety - obmedzenia) + cigorky;
+  };
+  return [pre(0), pre(1)];
 }
 
 /** Na koho sa vo Vízii čaká — obranca pred útočníkom. */
@@ -2801,27 +2818,51 @@ function nastavSumy(s: MutState, data: GameData, events: Event[]): void {
   if (b === null) return;
   const sums = evaluateLine(data, lineState(s as GameState)).sums;
   b.sums = sums as DeepMutable<BitkaStav["sums"]>;
-  // Patronát: súper patróna dostane Pohoršenia navyše (o koľko marker išiel do
-  // stredu) — strach, ktorý spôsobil, mu tak neprepadne (Michal 2026-10-20).
-  const zPatronatu = (p: PlayerId): number => s.patronat[opponentOf(p)]?.pohorsenia ?? 0;
   const pohorsenie = (p: PlayerId): number => {
-    const zLinie = sums[p].Pohoršenie ?? 0;
-    const spolu = zLinie + zPatronatu(p);
+    const r = rozpisPohorseni(data, s as GameState, sums, p);
     const proti = opponentOf(p);
-    if (spolu === 0) return 0;
-    // policajtka: súperove Pohoršenia proti tebe neplatia — aj tie z patronátu.
+    if (r.spolu === 0) return 0;
     // Hlásiť, inak hráči tiché zrušenie považovali za chybu (playtest 20261021-143600).
-    if (pohorseniaNeplatia(data, s as GameState, proti)) {
-      const pat = zLinie === spolu ? "" : ` (${spolu - zLinie} z patronátu)`;
-      events.push({ type: "log", text: `Policajtka: ${spolu} Pohoršení hráča ${p + 1}${pat} proti hráčovi ${proti + 1} neplatí.` });
+    if (r.neplatia) {
+      const pat = r.zPatronatu === 0 ? "" : ` (${r.zPatronatu} z patronátu)`;
+      events.push({ type: "log", text: `Policajtka: ${r.spolu} Pohoršení hráča ${p + 1}${pat} proti hráčovi ${proti + 1} neplatí.` });
       return 0;
     }
     if (efektHraca(s as GameState, proti, "policajtka")) {
       events.push({ type: "log", text: `Praudovravec umlčal Policajtku hráča ${proti + 1} — Pohoršenia hráča ${p + 1} platia.` });
     }
-    return spolu;
+    return r.spolu;
   };
   b.pohorsenieZostava = [pohorsenie(0), pohorsenie(1)];
+}
+
+/** Stav pre Pohoršenia bitky — línia a verejný patronát (GameState aj ClientState). */
+export type StavPohorseni = VerejnyStav & { readonly patronat: readonly ({ readonly pohorsenia: number } | null)[] };
+
+function rozpisPohorseni(
+  data: GameData,
+  s: StavPohorseni,
+  sums: readonly [ActionSums, ActionSums],
+  p: PlayerId,
+): { readonly spolu: number; readonly zPatronatu: number; readonly neplatia: boolean } {
+  // Patronát: súper patróna dostane Pohoršenia navyše (o koľko marker išiel do
+  // stredu) — strach, ktorý spôsobil, mu tak neprepadne (Michal 2026-10-20).
+  const zPatronatu = s.patronat[opponentOf(p)]?.pohorsenia ?? 0;
+  // policajtka: súperove Pohoršenia proti tebe neplatia — aj tie z patronátu.
+  return { spolu: (sums[p].Pohoršenie ?? 0) + zPatronatu, zPatronatu, neplatia: pohorseniaNeplatia(data, s, opponentOf(p)) };
+}
+
+/**
+ * Pohoršenia, ktoré hráči dostanú v bitke (PRAVIDLA §9.2) zo súčtov línie
+ * a patronátu — ten istý výpočet ako nastavSumy, pre náhľad ceny NA EX
+ * a patronátu (návrh #1, playtest 20261024-075830).
+ */
+export function pohorseniaVBitke(data: GameData, s: StavPohorseni, sums: readonly [ActionSums, ActionSums]): readonly [number, number] {
+  const pre = (p: PlayerId): number => {
+    const r = rozpisPohorseni(data, s, sums, p);
+    return r.neplatia ? 0 : r.spolu;
+  };
+  return [pre(0), pre(1)];
 }
 
 /** Ženie bitku dopredu, kým nenarazí na rozhodnutie hráča alebo koniec. */
