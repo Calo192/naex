@@ -16,7 +16,8 @@ viac kôl dizajnu). Vtedy pre ňu platí časť „Ďalšia session“ nižšie.
 |---|---|---|
 | `naex-programator` | Opus | funkcie, opravy, UI v klientovi, nástroje — vetva v pracovisku, commit, bez push |
 | `naex-napady` | Opus | dávky nápadov, scenár výučby, osnovy a audity pravidiel |
-| `naex-admin` | Opus | karty v tvorcovi, ilustrácie (Leonardo), rebalans, Novinky |
+| `naex-admin` | Opus | karty v tvorcovi, priradenie ilustrácií, rebalans, Novinky |
+| `naex-ilustrator` | Opus | všetky obrázky (Leonardo) vo všetkých aktívnych štýloch, koláž na výber, katalóg štýlov `tools/admin/styly.json` |
 | `naex-ui`, `naex-ux` | Opus | návrhy dizajnu s ukážkami (skill `naex-dizajn`) |
 | `naex-ui-inspektor` | Sonnet | meranie UI chýb na lokálnom serveri (1 kolo + kontrola opráv) |
 | `naex-oko` | Sonnet | snímky: čo je kde, orezané, prekryté, konzola — vráti text |
@@ -70,7 +71,7 @@ a povie to.
    opakovať v cykle zlepšovania, ktorý Michal schválil.
 5. **Ťažké výpočty** (turnaje botov, `strategickost.ts`, viac partií naraz)
    bežia najviac po jednom.
-6. **Leonardo.Ai** používa `naex-admin`. Na ľubovoľný obrázok smie bez
+6. **Leonardo.Ai** používa `naex-ilustrator` (do 1 USD na zadanie, Michal 2026-10-24). Na ľubovoľný obrázok smie bez
    pýtania. Dym na obrázku len z cigarety, popolníka alebo úst, žiadne zložité
    polohy rúk.
 7. **Dočasné súbory a Chrome** patria na `F:\Projects\naex-tmp` (Michal

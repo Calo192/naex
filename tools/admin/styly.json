@@ -1,0 +1,22 @@
+{
+  "_popis": "Katalóg výtvarných štýlov ilustrácií NA EX! (Michal 2026-10-24). Spravuje ho agent naex-ilustrator. Stav: aktivny = generuje sa v ňom každý nový obrázok; skusobny = len na ukážku, kým ho Michal neschváli; vyradeny = nepoužíva sa. Vzory sú cesty k ilustráciám, ktoré slúžia ako referencie v Leonardo (najviac 6 na generovanie).",
+  "styly": [
+    {
+      "id": "hra",
+      "nazov": "Štýl hry",
+      "stav": "aktivny",
+      "popis": "tools/admin/styl.md (prompt STYL v tools/admin/styl.ts)",
+      "vzory": [
+        "packages/server/seed/karty/kocovnik.jpg",
+        "packages/server/seed/karty/niekoho_stryna.jpg",
+        "packages/server/seed/karty/podvodnik.jpg",
+        "packages/server/seed/karty/zamocnik.jpg",
+        "packages/server/seed/karty/krcmarka.jpg",
+        "packages/server/seed/karty/postarka.jpg",
+        "packages/server/seed/karty/veterinar.jpg",
+        "packages/server/seed/karty/farar.jpg"
+      ],
+      "poznamka": "Vzory = Michalove najobľúbenejšie karty (2026-10-24). Švagriná v sade nie je."
+    }
+  ]
+}
