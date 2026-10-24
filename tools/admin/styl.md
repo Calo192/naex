@@ -40,6 +40,12 @@ vyčnievala.
   smoking, no smoke anywhere“.
 - **Ruky** v jednoduchých prirodzených polohách, päť prstov. Žiadne pretláčanie,
   prepletené ruky ani zložité úchopy — model ich kreslí zle.
+- **Predmety fyzikálne správne — pevné pravidlo** (Michal 2026-10-24, platí
+  pre každý obrázok): krígeľ má **jedno** ucho, pohár a poldecák **žiadne**,
+  fľaša **jedno** hrdlo, ruka **päť** prstov, stolička stojí nohami na zemi.
+  Model rád kreslí krígle s dvoma uchami, keď ich postava drží oboma rukami —
+  radšej nech poháre stoja na pulte či stole pred postavou, nikto ich nedrží.
+  Krígeľ s dvoma uchami, fľaša s dvoma hrdlami či šesť prstov = zlý obrázok.
 
 ## Šablóna promptu
 
@@ -108,7 +114,10 @@ Pred použitím si každý návrh pozri (Read na súbor) a over:
    pozri pri plnej veľkosti (pri pochybnosti zväčšený výrez).
 4. **Dym**: každý obláčik musí viesť k cigarete, popolníku alebo k ústam.
    Dym z chrbta, hlavy či zo vzduchu = zlý obrázok, generuj znova.
-5. Postava zodpovedá názvu a téme karty (Kliatba pôsobí ako trest, Starešina
+5. **Predmety**: spočítaj uchá kríglov (jedno), pohárov (žiadne), hrdlá fliaš
+   (jedno) a prsty (päť) — aj na poličkách v pozadí. Pri pochybnosti zväčšený
+   výrez.
+6. Postava zodpovedá názvu a téme karty (Kliatba pôsobí ako trest, Starešina
    ako autorita, Zviera ako dedinské zviera).
 
 Ak žiadny z návrhov nesedí, uprav námet (konkrétnejšie prostredie, výraz,
