@@ -17,7 +17,10 @@ export const STYL =
   // Pevné pravidlo Michala 2026-10-24 pre každý obrázok (styl.md): ľuďom sa dymilo z chrbta a z uší.
   "Smoke may come ONLY from a lit cigarette, from a cigarette resting in an ashtray, or from the mouth of a person exhaling it — " +
   "never from ears, backs, hair, clothes or out of thin air. " +
-  "Hands in simple natural poses, anatomically correct with five fingers; no tangled or interlocked hands.";
+  "Hands in simple natural poses, anatomically correct with five fingers; no tangled or interlocked hands. " +
+  // Pevné pravidlo Michala 2026-10-24 (styl.md): krígeľ s dvoma uchami v páse kapitoly Zhromaždenie.
+  "Every object must be physically correct: a beer mug has exactly one handle, a drinking glass or shot glass has no handle, " +
+  "a bottle has exactly one neck, a hand has exactly five fingers, a chair has its legs on the floor.";
 
 /** Pás nad kapitolou pravidiel (Michal 2026-10-24): ten istý štýl, široká scéna; orezá sa na 2,5 : 1. */
 export const STYL_PASU = STYL.replace(
