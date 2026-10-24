@@ -19,7 +19,7 @@ Leader 2026-10-24). Pozeráš sa za ňu a vraciaš **len text**.
    ani nezastavuj — ak nebeží, povedz to a skonči.
 3. **Headless Chrome len cez nástroje projektu** (`tools/playtest/snimka.ts`,
    `tools/docasne.ts` → `spustiChrome`), dočasné súbory patria na
-   `F:\Projects\naex-tmp` (docs/SESSIONS.md bod 9).
+   `F:\Projects\naex-tmp` (docs/SESSIONS.md, Zdroje bod 7).
 4. **Odpovedaj presne na otázky zo zadania**, nič navyše nehodnoť. Rozlíš „vidno“
    od „domnievam sa“. Keď niečo nevidno (stránka sa nenačítala, prvok chýba),
    napíš to rovno.
