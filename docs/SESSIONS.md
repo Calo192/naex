@@ -123,3 +123,14 @@ Po `/clear` platí meno okna. Odovzdanie vedie v
 Sessions z režimu viacerých sessions (UX/UI, New features, Bugfixing, Admin,
 Playtest, UI Inspector, Navrhár) dokončia rozrobené úlohy a potom sa
 nepoužívajú. Ich worktree ostávajú ako pracoviská agentov.
+
+## Ťažké výpočty: limit procesov (Leader 2026-10-24)
+
+Dvaja agenti naraz pustili spolu vyše 50 node procesov (xargs -P 14) a počítač
+mal CPU 100 % a voľnú RAM 0,3 GB z 32. Preto platí:
+- **Naraz beží najviac jeden agent s ťažkými výpočtami** (turnaje, strategickost.ts,
+  merania botov). Leader to v zadaní uvedie.
+- **Agent spustí najviac 4 súbežné procesy** (xargs -P 4, nie viac). Ak
+  vedľa beží iný agent s výpočtami, najviac 2.
+- **Pred hromadným spustením** skontroluje voľnú RAM (aspoň 8 GB) a počas behu
+  sleduje, či počítač nedochádza.
