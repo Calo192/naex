@@ -327,7 +327,7 @@ export class Obsah {
    * cards.json); preskočí sa, ak má tvorca nezverejnenú prácu (návrh upravený
    * po poslednom zverejnení) — tú by prepísal.
    */
-  dorovnajSoSeedom(teraz: number, znacka = "migracia-sada-v12-20261024"):"hotovo" | "bez-zmeny" | "preskocene" | "uz-bezalo" {
+  dorovnajSoSeedom(teraz: number, znacka = "migracia-sada-v13-20261024"):"hotovo" | "bez-zmeny" | "preskocene" | "uz-bezalo" {
     if (this.nastaveniaT.jeden(znacka) !== null) return "uz-bezalo";
     const posledna = this.db.prepare("SELECT cas FROM sady ORDER BY verzia DESC LIMIT 1").get() as { cas: number } | undefined;
     const navrhy = this.karty.vsetky();
