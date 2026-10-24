@@ -340,7 +340,11 @@ function rozdielBodov(data: GameData, s: GameState, ja: PlayerId, starsi: readon
 /** Bitky o lokalitu, ktoré ešte prídu po tejto. */
 function buducnostHry(s: GameState): number {
   const zostava = s.lokalityVHre.length;
-  return Math.max(0.15, Math.min(1, zostava / 3));
+  // Zdroje sa míňajú naplno, kým ostáva aspoň polovica partie (krátka hra:
+  // 1 bitka po tejto, stredná 2, dlhá 3); pevné „3“ ich v krátkej hre
+  // podceňovalo už od 1. kola (turnaj proti starému botovi 2026-10-24).
+  const polovica = Math.max(1, (Math.max(s.lokalitCelkom, zostava + 1) - 1) / 2);
+  return Math.max(0.15, Math.min(1, zostava / polovica));
 }
 
 /** Čo získa víťaz prebiehajúcej bitky oproti porazenému (v bodoch). */
@@ -452,10 +456,20 @@ function hodnotaPriazni(k: Kontext, s: GameState, p: PlayerId): number {
 function hodnotaVydesenia(s: GameState, p: PlayerId): number {
   const prah = prahVydesenia(s);
   const vydeseni = s.starsi.filter((e) => vydesil(e, p)).length;
+  const ohlasene = s.ohlaseneVydesenie[p];
+  // Ohlásené vydesenie vyhrá až na konci nasledujúceho kola. V poslednom kole
+  // (v krátkej hre už v 3.) nové vydesenie nezaberie — rátajú sa len body.
+  if (ohlasene !== null && ohlasene < s.kolo && vydeseni >= prah) return 2.5 * vydeseni + 40;
+  if (kolPoTomto(s) === 0) return 0;
   let v = 2.5 * vydeseni + 0.5 * s.starsi.filter((e) => strachZ(e, p) === 2).length;
-  if (vydeseni >= prah) v += s.ohlaseneVydesenie[p] !== null ? 40 : 25;
+  if (vydeseni >= prah) v += ohlasene !== null ? 40 : 25;
   else if (vydeseni === prah - 1) v += 4;
   return v;
+}
+
+/** Koľko kôl (bitiek o lokalitu) príde po tomto. */
+function kolPoTomto(s: GameState): number {
+  return s.ciel === null ? Math.max(0, s.lokalityVHre.length - 1) : s.lokalityVHre.length;
 }
 
 /** Celková hodnota stavu z pohľadu bota (k.ja). */
@@ -805,12 +819,14 @@ function zhromazdenie(v: Volba): Command | null {
   if (z === null) return null;
 
   // Priznanie neodovzdá ťah. Dlh sa prizná sám pri dobratí; Cirhóza priznaná
-  // dá súperovi +1 tuhé v každej bitke (Michal 2026-10-20), nepriznaná −2 body
-  // na konci — prizná ju, až keď ostávajú najviac dve bitky.
+  // dá súperovi +1 tuhé v každej zvyšnej bitke (Michal 2026-10-20), nepriznaná
+  // −2 za každú aktívnu podmienku pečeň na konci. Cena priznania teda rastie
+  // s počtom zvyšných bitiek, nie s dĺžkou hry — v krátkej hre (3 lokality)
+  // by pevné „najviac dve zvyšné“ priznávalo už v 1. kole.
   for (const cmd of v.legal) {
     if (cmd.type !== "place" || cmd.target !== "priznanie") continue;
     const karta = h.ruka.find((x) => x.uid === cmd.uid);
-    if (karta?.defId === "cirhoza" && state.lokalityVHre.length <= 2) return cmd;
+    if (karta?.defId === "cirhoza" && ziskPriznaniaCirhozy(v, karta) > 0) return cmd;
     if (karta?.defId === "dlh") return cmd;
   }
 
@@ -857,6 +873,23 @@ function zhromazdenie(v: Volba): Command | null {
   const sZaverecnou = (po: GameState): number =>
     po.strany.some((strana) => strana.some((pl) => pl.zaverecna === true && pl.playedBy === ja)) ? BONUS_ZAVERECNEJ * k.buducnost : 0;
   return najlepsi(v, moznosti, (po) => hodnotaStavu(k, dohrajZhromazdenie(k, po), 0.9) + sZaverecnou(po));
+}
+
+/** Hodnota jedného tuhého navyše pre súpera v jednej bitke (v bodoch) — hrubý odhad. */
+const CENA_TUHEHO_ZA_BITKU = 0.9;
+
+/**
+ * Body, ktoré priznanie Cirhózy ušetrí na konci, mínus súperovo +1 tuhé
+ * v tejto a každej ďalšej bitke.
+ */
+function ziskPriznaniaCirhozy(v: Volba, karta: CardInstance): number {
+  const { data, state, ja, k } = v;
+  const h = state.hraci[ja];
+  const hrac = { ...h, ruka: h.ruka.filter((x) => x.uid !== karta.uid), priznane: [...h.priznane, karta] };
+  const po: GameState = { ...state, hraci: ja === 0 ? [hrac, state.hraci[1]] : [state.hraci[0], hrac] };
+  const usetri = rozdielBodov(data, po, ja) - rozdielBodov(data, state, ja);
+  const bitiek = state.lokalityVHre.length + (state.ciel === null ? 0 : 1);
+  return k.povaha.body * usetri - k.povaha.bitka * CENA_TUHEHO_ZA_BITKU * bitiek;
 }
 
 /** Cena utajenia Záverečnej (súper nevie, čo odpovedať) — hrubý odhad. */
