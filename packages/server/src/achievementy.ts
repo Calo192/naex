@@ -54,6 +54,8 @@ export interface AchievementPreKlienta {
   readonly tajny: boolean;
   /** Počet rankov (dĺžka prahov) — ★ z koľkých. */
   readonly rankov: number;
+  /** Vzácnosť každého ranku (bezne, nezvycajne, vzacne, legendarne) — farba podtácku. */
+  readonly zriedkavost: readonly string[];
 }
 
 /** Oznam v partii: hráč práve získal rank. */
@@ -84,6 +86,7 @@ const preKlienta = (a: Achievement, rank: number): AchievementPreKlienta => ({
   piktogram: a.piktogram,
   tajny: a.tajny,
   rankov: a.prahy.length,
+  zriedkavost: a.zriedkavost,
 });
 
 interface Kariera {
@@ -311,6 +314,16 @@ export class Achievementy {
    */
   vitrina(pouzivatel: number): VitrinaAchievementov {
     const zisky = this.zisky(pouzivatel);
+    const kariera = this.kariera(pouzivatel);
+    const rozne = this.rozne(pouzivatel);
+    // Postup kariéry (Michal 2026-10-24: Kamaráti z krčmy, séria výhier…) — súčet partií od spustenia.
+    const postup = (a: Achievement): PostupKariery | null => {
+      if (a.rozsah !== "kariera") return null;
+      const k = klucVedra(a.proti, a);
+      if (a.agregacia === "rozne") return { hodnota: rozne.get(k)?.size ?? 0, aktualna: null };
+      const v = kariera.get(k) ?? { hodnota: 0, aktualna: 0 };
+      return { hodnota: v.hodnota, aktualna: a.agregacia === "seria" ? v.aktualna : null };
+    };
     const polozky = this.katalog.achievementy.map((a): PolozkaVitriny => {
       const moje = zisky.filter((z) => z.achievement === a.id);
       const rank = moje.reduce((m, z) => Math.max(m, z.rank), 0);
@@ -324,7 +337,9 @@ export class Achievementy {
         tajny: a.tajny,
         rankov: a.prahy.length,
         rank,
+        zriedkavost: skryty ? [] : a.zriedkavost,
         prahy: skryty ? [] : a.prahy,
+        postup: skryty ? null : postup(a),
         ziskane: moje.map((z) => ({ rank: z.rank, ziskane: z.ziskane, partia: z.partia })),
       };
     });
@@ -332,10 +347,18 @@ export class Achievementy {
   }
 }
 
+/** Postup kariérneho achievementu: hodnota cez partie (súčet, rekord alebo počet rôznych); pri sérii aj aktuálna séria. */
+export interface PostupKariery {
+  readonly hodnota: number;
+  readonly aktualna: number | null;
+}
+
 export interface PolozkaVitriny extends AchievementPreKlienta {
   readonly rank: number;
   /** Prahy rankov (pri skrytom tajnom prázdne). */
   readonly prahy: readonly number[];
+  /** Len rozsah kariera (a nie skrytý tajný): kde hráč je, napr. 7 z 10 rôznych ľudí; inak null. */
+  readonly postup: PostupKariery | null;
   readonly ziskane: readonly { readonly rank: number; readonly ziskane: number; readonly partia: number | null }[];
 }
 

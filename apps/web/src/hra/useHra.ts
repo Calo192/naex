@@ -124,6 +124,8 @@ export interface AchievementPreKlienta {
   readonly piktogram: string | null;
   readonly tajny: boolean;
   readonly rankov: number;
+  /** Vzácnosť každého ranku: bezne | nezvycajne | vzacne | legendarne (podľa Navrhára). */
+  readonly zriedkavost: readonly string[];
 }
 
 /** Získaný rank — oznam v partii. vzacny = 3★ alebo tajný (Melichar sa ozve). */
