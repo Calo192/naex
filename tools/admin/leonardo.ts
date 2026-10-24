@@ -141,6 +141,9 @@ export async function generuj(moznosti: {
   readonly sila: Sila;
   readonly navyse: boolean;
   readonly seed?: number;
+  /** Rozmer z pomerov, ktoré Nano Banana pozná (napr. 21:9 = 1536×672); inak štvorec. */
+  readonly sirka?: number;
+  readonly vyska?: number;
 }): Promise<Kolo> {
   const { id, adr, pracovny, pocet, sila, navyse } = moznosti;
   if (!Number.isInteger(pocet) || pocet < 1 || pocet > MAX_OBRAZKOV_V_KOLE) {
@@ -164,8 +167,8 @@ export async function generuj(moznosti: {
   const odp = await leonardo<{ generate?: { generationId?: string } }>("POST", "/v2/generations", {
     model: MODEL_API,
     parameters: {
-      width: 1024,
-      height: 1024,
+      width: moznosti.sirka ?? 1024,
+      height: moznosti.vyska ?? 1024,
       prompt: zadanie.prompt,
       quantity: pocet,
       ...(moznosti.seed === undefined ? {} : { seed: moznosti.seed }),
