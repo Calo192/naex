@@ -1437,7 +1437,7 @@ export function PriebehKola({ view, onBitka }: { readonly view: ClientState; rea
     );
   }
   return (
-    <ol className="priebeh-kola" aria-label={`Kolo ${view.kolo}`}>
+    <ol className="priebeh-kola" aria-label={`Kolo ${view.kolo}`} data-vyucba="os-kola">
       <li
         className="priebeh-kolo"
         title={`Hrá sa o ${view.lokalitCelkom} lokalít; zostáva ${view.lokalityVHre.length} nevybraných${view.naSekeru.length > 0 ? `, na sekere ${view.naSekeru.length}` : ""}.`}

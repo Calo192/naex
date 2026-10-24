@@ -306,7 +306,7 @@ function Stupnica({
   readonly hranice: boolean;
 }) {
   return (
-    <span className="ls-stupnica" aria-hidden="true">
+    <span className="ls-stupnica" aria-hidden="true" data-vyucba="starsi-stupnica">
       {FARBY_STUPNICE.map((f, k) => (
         <i key={k} style={{ background: f, "--z": STUPNICA_ZONY[k] } as CSSProperties} />
       ))}

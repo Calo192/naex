@@ -112,21 +112,55 @@
   }
 }
 
+/* Krok na staršom: zlatý okraj „klikni“ má len ten, koho krok čaká — Farár medzi siedmimi
+   rovnako orámovanými nevynikol (playtest U3). Kliknúť sa dá aj na ostatných, server povie prečo nie. */
+body.vyucba-bezi .ls-sc.klik:not([data-vyucba-zvyraznene]) {
+  border: 2px solid var(--okraj);
+  box-shadow: none;
+}
+
+body.vyucba-bezi .ls-sc.klik[data-vyucba-zvyraznene] {
+  border-color: var(--akcent-svetly);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--akcent) 55%, transparent);
+}
+
+/* Pečať NA EX! po výbere karty pulzuje — nováčik nevedel, že je to tlačidlo (playtest U6). */
+body.vyucba-bezi .pecat-naex {
+  animation: vyucba-vyzva 1.2s ease-in-out infinite;
+}
+
+@keyframes vyucba-vyzva {
+  50% {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--akcent) 45%, transparent);
+    scale: 1.06;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .vyucba-obrys {
+  .vyucba-obrys,
+  body.vyucba-bezi .pecat-naex {
     animation: none;
   }
 }
 
-/* ---- bublina Melichara ---- */
+/* ---- pevný stĺpec Melichara (Leader 2026-10-24) ----
+   Vľavo pod osou kola až po spodok okna; bary, stôl, ruka aj vrstvy (šenok, Karty, Log)
+   sa o neho zúžia, takže nič nezakrýva. Text sa posúva vnútri, päta s „ďalej“ stojí dole. */
+body.vyucba-bezi {
+  --vyucba-panel: clamp(240px, 18vw, 360px);
+  --vyucba-odsadenie: calc(var(--vyucba-panel) + 12px);
+}
+
 .vyucba-bublina {
   position: fixed;
   z-index: 70;
+  left: 16px;
+  top: var(--vyucba-hore, 110px);
+  bottom: 8px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  width: min(380px, calc(100vw - 32px));
-  max-height: calc(100dvh - 160px);
+  gap: 10px;
+  width: var(--vyucba-panel);
   padding: 12px 14px;
   border-radius: 16px;
   border: 2px solid var(--akcent);
@@ -136,7 +170,98 @@
   isolation: isolate;
   color: var(--text);
   box-shadow: 0 10px 30px color-mix(in srgb, #000 55%, transparent);
-  transition: left 0.25s ease, top 0.25s ease;
+}
+
+.vyucba-bublina > .vyucba-text {
+  flex: 0 1 auto;
+  min-height: 0;
+}
+
+/* Zväčšená karta, o ktorej krok hovorí (playtest U4: text kariet na stole mal 6–7 px a súperove
+   karty sú hore nohami). Kópia z DOM stola, rovno, zmenšená tak, aby sa zmestila pod text. */
+.vyucba-nahlad {
+  position: relative;
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.vyucba-nahlad-obal {
+  position: relative;
+  flex: none;
+}
+
+.vyucba-nahlad-obal > .kl {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 0;
+  transform-origin: 0 0;
+  box-shadow: 0 6px 18px color-mix(in srgb, #000 50%, transparent);
+}
+
+.vyucba-bublina > .vyucba-pata {
+  margin-top: auto;
+}
+
+@media (min-width: 761px) {
+  body.vyucba-bezi .hra > .plocha,
+  body.vyucba-bezi .hra > .ruka {
+    margin-left: var(--vyucba-odsadenie);
+  }
+
+  body.vyucba-bezi .vrstva {
+    left: calc(16px + var(--vyucba-odsadenie));
+  }
+}
+
+/* Stĺpec zúžil bary: identita hráča užšia a bez Frajeriny (vo výučbe nehrá), aby sa
+   popisy dlaždíc nezrezali; „prerušiť“ bez „výučbu“, nech je s „ďalej“ v jednom riadku. */
+@media (max-width: 1500px) {
+  body.vyucba-bezi .doska {
+    --ident: minmax(120px, 160px);
+  }
+
+  body.vyucba-bezi .doska .zdroj {
+    padding-inline: 5px;
+  }
+
+  body.vyucba-bezi .doska :is(.zdroj-pod, .neresti-pocet, .obchod-text, .abstak-vyhlad) {
+    font-size: 0.66rem;
+  }
+
+  body.vyucba-bezi .doska-frajerina,
+  .vyucba-dlhy-popis {
+    display: none;
+  }
+}
+
+/* Veľký monitor: stĺpec je široký — väčšie písmo, nech sa číta z diaľky (playtest U4). */
+@media (min-width: 1700px) and (min-height: 920px) {
+  .vyucba-text {
+    font-size: 1.06rem;
+    line-height: 1.5;
+  }
+
+  .vyucba-hlava .vyucba-avatar {
+    width: 56px;
+    height: 56px;
+  }
+}
+
+/* Mobil: stĺpec by vzal pol stola — Melichar je pás nad rukou. */
+@media (max-width: 760px) {
+  .vyucba-bublina {
+    top: auto;
+    left: 8px;
+    right: 8px;
+    bottom: calc(var(--ruka-h, 120px) + 8px);
+    width: auto;
+    max-height: 40dvh;
+  }
 }
 
 .vyucba-hlava {
@@ -180,21 +305,6 @@
   background: var(--akcent);
 }
 
-.vyucba-presun {
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  min-height: 32px;
-  padding: 0 8px;
-  border-radius: 8px;
-  font-size: 0.95rem;
-}
-
-.vyucba-presun span {
-  font-size: 0.72rem;
-}
-
 /* Prvá veta: čo kliknúť (z príkazu, ktorý krok čaká). */
 .vyucba-text .vyucba-pokyn {
   padding: 6px 10px;
@@ -212,24 +322,46 @@ body.vyucba-bezi .ruka-rad > .tahatelna:not(:hover) > .kl[data-vyucba-zvyraznene
 }
 
 /* U4: odhad, stávku a vydesenie výučba ukáže, až keď o nich Melichar hovorí (playtest: pri prvých
-   krokoch ich nikto nechápal). Pokyn na stole ostáva v jednom riadku — celý by prekryl nadpisy
-   krajov; čo urobiť, hovorí bublina a celé znenie sa rozbalí pod myšou. */
+   krokoch ich nikto nechápal). Z pásu kola zmiznú celé — skryté zaberali miesto a pás orezal
+   „Zhromaždenie 1 z 2“ (1920 × 1080). */
 body.vyucba-bezi:not(.vyucba-odhad) .pas-kola .suhrn-bitky,
 body.vyucba-bezi:not(.vyucba-odhad) .pas-kola .stavka-bitky,
 body.vyucba-bezi:not(.vyucba-vydesenie) .starsi-info-samostatne,
 body.vyucba-bezi:not(.vyucba-vydesenie) .pas-kola .pas-starsi {
+  display: none;
+}
+
+body.vyucba-bezi:not(.vyucba-body) .zdroj-body .zdroj-pod {
   visibility: hidden;
+}
+
+/* Pokyn na stole celý (playtest U4: trojbodka orezala „Alebo celý prebytok naraz…“) — vo výučbe
+   leží v toku nad plsťou a zalomí sa, nič neprekryje. Na nízkom okne (1366 × 650) by druhý riadok
+   zmenšil karty línie pod 75 px — tam ostáva v riadku, celé znenie pod myšou. */
+@media (min-width: 761px) and (min-height: 720px) {
+  body.vyucba-bezi .linia-obal:not(:has(.zberatel-ponuka, .vizia-karta)) {
+    padding-top: 0;
+  }
+
+  body.vyucba-bezi .linia-stav:not(:has(.zberatel-ponuka, .vizia-karta)) {
+    position: relative;
+    top: auto;
+    left: auto;
+    translate: none;
+    width: auto;
+    max-width: 100%;
+    align-self: center;
+    margin: 0 0 4px;
+  }
+
+  body.vyucba-bezi .linia-stav:not(:has(.zberatel-ponuka, .vizia-karta)) > .pilulka-text {
+    white-space: normal;
+  }
 }
 
 /* U5: lupa staršieho sa v úzkom stĺpci nerozpadne. */
 .lupa-starsieho {
   min-width: 260px;
-}
-
-/* Pečiatky na hrane stola (fajčiť, záverečná, pasovať, končím…) sú tlačidlá ťahu — nad bublinou,
-   aby ich nikdy nezakryla (Leader 2026-10-24). Bublina si pritom stále hľadá miesto mimo nich. */
-body.vyucba-bezi .stol-hrana {
-  z-index: 75;
 }
 
 /* Počas výučby komentuje Melichar — pruhy udalostí a priazne na stole by ležali cez karty. */
@@ -252,12 +384,6 @@ body.vyucba-bezi .oznamy-priazne {
   margin-bottom: 0;
 }
 
-/* Komentáre k ťahom Štamgasta pred aktuálnym krokom — menšie a tlmené. */
-.vyucba-text .vyucba-predtym {
-  font-size: 0.85rem;
-  color: var(--tlmeny);
-}
-
 .vyucba-chyba {
   padding: 6px 10px;
   border-radius: 8px;
@@ -269,7 +395,7 @@ body.vyucba-bezi .oznamy-priazne {
 
 .vyucba-pata {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px 12px;
 }
@@ -298,41 +424,16 @@ body.vyucba-bezi .oznamy-priazne {
   white-space: nowrap;
 }
 
-/* „presunúť“ a „prerušiť“ vpravo v jednom riadku so stavom — päta sa nezalomí. */
-.vyucba-pata > .vyucba-presun {
+/* „prerušiť“ vpravo v riadku so stavom či „ďalej“. */
+.vyucba-pata > .vyucba-prerusit {
   margin-left: auto;
 }
 
-/* Nízky notebook: menšia bublina, nech nezakryje pol stola. */
-@media (max-height: 919px) {
-  .vyucba-bublina {
-    width: min(340px, calc(100vw - 32px));
-    gap: 6px;
-    padding: 10px 12px;
-  }
-
-  .vyucba-text {
-    font-size: 0.88rem;
-    line-height: 1.4;
-  }
-}
-
-/* 1366 × 650: bublina širšia a nižšia — na nízkom stole sa zmestí vedľa kariet a nad
-   pečiatky na hrane (pri 300 px bola vysoká a vždy niečo prekryla). */
+/* Nízky notebook: stĺpec je nízky — menšie písmo a avatar, nech sa text zmestí bez posúvania. */
 @media (max-height: 719px) {
   .vyucba-bublina {
-    width: min(330px, calc(100vw - 32px));
-    gap: 4px;
-    padding: 6px 10px;
-  }
-
-  .vyucba-pata {
-    gap: 4px 8px;
-  }
-
-  /* Päta sa zmestí do jedného riadku aj s „ďalej“ a „presunúť“. */
-  .vyucba-dlhy-popis {
-    display: none;
+    gap: 6px;
+    padding: 8px 10px;
   }
 
   .vyucba-hlava .vyucba-avatar {
@@ -341,8 +442,8 @@ body.vyucba-bezi .oznamy-priazne {
   }
 
   .vyucba-text {
-    font-size: 0.82rem;
-    line-height: 1.35;
+    font-size: 0.86rem;
+    line-height: 1.38;
   }
 }
 
