@@ -111,7 +111,7 @@ Pomocné súbory (návrhy JSON, texty komentárov, skripty) dávaj do
 v `admin-agent/`, ktorý importuje `@naex/tvorba` a `@naex/core`
 (`evaluateLine`, `prispevkyKariet`…).
 
-## Ako funguje karta (prečítaj aj PRAVIDLA §2–§4)
+## Ako funguje karta (prečítaj aj PRAVIDLA §2 a §6)
 
 Návrh v tvorcovi (`KartaNavrh`, `packages/tvorba/src/typy.ts`):
 
@@ -138,12 +138,12 @@ Návrh v tvorcovi (`KartaNavrh`, `packages/tvorba/src/typy.ts`):
   sa v tlači objaví `kopie`-krát. **Frekvencia v balíčku = permutácie × kópie**
   — viac akcií na menej voľných pozíciách = menej permutácií = karta je
   v balíčku zriedkavejšia. Pozri `A prehlad`.
-- **Aktivácia (jadro hry, §4)**: karty ležia v línii vedľa seba a vedľa lokality.
+- **Aktivácia (jadro hry, §6)**: karty ležia v línii vedľa seba a vedľa lokality.
   Akcia sa aktivuje, keď sa **pravá strana jednej karty a ľavá strana susednej
   stretnú na rovnakej pozícii** s akciou na oboch (spoj). Podstrčená karta na
-  súperovej strane sa číta podľa §4 — pred návrhom si spoje prepočítaj (`evaluateLine`). Nespárované akcie sú neaktívne; NA EX ich zdvojí a aktívne
+  súperovej strane sa číta podľa §6 — pred návrhom si spoje prepočítaj (`evaluateLine`). Nespárované akcie sú neaktívne; NA EX ich zdvojí a aktívne
   zruší.
-- **Akcie** (`A vzhlad`, PRAVIDLA §3): útok Rana 1 / Pecka 2 / Petelica 3 tuhého,
+- **Akcie** (`A vzhlad`, PRAVIDLA §2): útok Rana 1 / Pecka 2 / Petelica 3 tuhého,
   Povera (mäkké), Viera (obrana), Posilnenie, Odpor, Pohoršenie (markery
   starších), Robota, Vízia, Cigaretka, Obmedzenie, a „zlé“ akcie Dlh (Hazard),
   PoškodeniePečene (Pečeň), Poldeci (Poldecko). **Vlastnú akciu** (kľúč
@@ -166,7 +166,7 @@ Návrh v tvorcovi (`KartaNavrh`, `packages/tvorba/src/typy.ts`):
   upraviť tiež (zadanie pre vývoj). `A texty` to stráži.
 - **Starší** ležia na ukazovateľoch; priazeň a body nedáva starší, ale
   **bodovacia karta**, ktorú pri príprave dostane náhodne (`A starsi`,
-  PRAVIDLÁ §9–§10).
+  PRAVIDLÁ §10 a §14).
 - **Zverejnenie**: z návrhov vznikne `cards.json` sady (`zverejnenie.ts`);
   zastaví ho chyba návrhu, neznáma akcia alebo chyba v jadre. Zverejnená sada
   sa už nemení; ďalšie zmeny idú do novej verzie. Návrat = staršia sada sa
@@ -320,7 +320,7 @@ bez textu a skriptov), pozri ho (Read) a nahraj `A ikona <kluc> <subor.svg>`.
 
 Keď karta potrebuje kód (nový efekt, zmena implementovaného efektu, nová
 akcia), napíš do `admin-agent/zadania/<id>.md`: karta a jej id, presný text
-efektu, kedy sa spúšťa (spúšťač, fáza z PRAVIDIEL §7–§8), čo presne mení
+efektu, kedy sa spúšťa (spúšťač, fáza z PRAVIDIEL §4–§9), čo presne mení
 v stave hry, hraničné prípady (NA EX, podstrčená karta, prázdny balíček),
 podobný implementovaný efekt ako vzor, a čo má overiť test. Vo výstupe to
 zhrň a daj cestu.

@@ -10,10 +10,10 @@ Spustíš agenta `naex-rozhodca` (`.claude/agents/naex-rozhodca.md`) a odovzdá�
 výsledok. Sám testy nepíšeš.
 
 1. **Rozsah** z `$ARGUMENTS`: `celé`, `zmenené` alebo zoznam paragrafov
-   (`§7`, `§8 Pohoršenie`). Bez argumentu: ak
+   (`§7`, `§10 Pohoršenie`). Bez argumentu: ak
    `tools/rozhodca/mapa.json` má `pravidlaCommit: null`, je to prvý prechod —
-   povedz používateľovi, že celé pravidlá (~1100 riadkov, §1–§14) sú veľká
-   práca na desiatky minút, a navrhni začať §4–§8 (jadro: aktivácia, poldeci,
+   povedz používateľovi, že celé pravidlá (~1100 riadkov, §1–§17) sú veľká
+   práca na desiatky minút, a navrhni začať §6–§9 (jadro: zhromaždenie, Pitka, pečeň,
    kolo, bitka); inak zmenené paragrafy
    (`node --experimental-strip-types --no-warnings tools/rozhodca/mapa.ts zmenene`).
    Ak sa nič nezmenilo, povedz to a skonči.

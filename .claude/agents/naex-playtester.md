@@ -47,7 +47,7 @@ ktorý hra už rieši.
 Pred prvým ťahom (súper sa pripravuje tiež, na teba počká):
 
 1. Prečítaj **celé** `docs/PRAVIDLA.md` od prvého po posledný riadok
-   (§1–§14 vrátane priazní v §9 a výkladu efektov v §14). Úvodný blok
+   (§1–§17 vrátane priazní v §10 a výkladu kariet v §16). Úvodný blok
    „Interview 2026-10-19“ má prednosť pred staršími odsekmi. Potom ťahák
    `tools/playtest/tahak.md` a `tools/playtest/kriteria.md` (časti A a C).
 2. Spusti `karty` a prejdi **každú** kartu sady: akcie po stranách, tagy,
@@ -59,8 +59,8 @@ Pred prvým ťahom (súper sa pripravuje tiež, na teba počká):
    poškodenie, výsledok, prebytok, Veštica, Liečba/Pohreb,
    Cintorín) vypíš **všetky ťahy**, ktoré tam existujú, čo stoja, čo prinášajú
    a na čo si dať pozor. Ďalej: ako sa ráta poškodenie a výsledok bitky
-   (§8), ako sa boduje (§10, scorecardy), všetky podmienky konca (§1),
-   priazne a ich účinok (§9), kliatby (§12), zdroje (poldeci, cigarety,
+   (§9), ako sa boduje (§14, scorecardy), všetky podmienky konca (§1),
+   priazne a ich účinok (§10), kliatby (§11), zdroje (poldeci, cigarety,
    pečeň, zadĺženie, absťák) a čím sa menia. Na konci 5–10 strategických
    princípov, ktoré z pravidiel vyplývajú (čo je cenné, čo je pasca).
 4. Ak ťahák (`tools/playtest/tahak.md`) alebo výpis klienta **odporuje** `docs/PRAVIDLA.md`,
@@ -123,8 +123,8 @@ a po ťahu ho porovnaj s výpisom. Rovnako si všímaj:
 - ťah, ktorý pravidlá povoľujú, ale chýba v MOŽNÝCH ŤAHOCH alebo ho server
   odmietol,
 - ťah, ktorý klient ponúka, hoci ho pravidlá zakazujú,
-- efekt karty, ktorý sa nevyhodnotil, vyhodnotil inak než v §14 či na
-  karte, alebo v nesprávnom kroku (§8),
+- efekt karty, ktorý sa nevyhodnotil, vyhodnotil inak než v §16 či na
+  karte, alebo v nesprávnom kroku (§9),
 - nápovedu alebo náhľad klienta, ktorý nesedí s tým, čo sa potom stalo,
 - rozpor medzi dvoma miestami pravidiel navzájom, alebo s ťahákom (`tools/playtest/tahak.md`).
 

@@ -15,8 +15,8 @@ anglicky, doménové pojmy neprekladáš (`poldeci`, `zhromazdenie`, `naex`,
 
 Zadanie ti povie **rozsah**: „celé pravidlá“ (prvý prechod), „zmenené
 paragrafy“ (predvolené, keď mapa už má prechod) alebo konkrétne paragrafy
-(„§7 Patronát“, „§8“). Prvý prechod celých pravidiel je veľký — rob ho po
-kapitolách (§1–§14) a mapu ukladaj priebežne, aby sa práca nestratila.
+(„§10 Patronát“, „§9“). Prvý prechod celých pravidiel je veľký — rob ho po
+kapitolách (§1–§17) a mapu ukladaj priebežne, aby sa práca nestratila.
 
 ## Nemenné pravidlá
 
@@ -72,7 +72,7 @@ kapitolách (§1–§14) a mapu ukladaj priebežne, aby sa práca nestratila.
 6. **Overenie a commit** (len testy a mapa, prechádzajúce):
    `npm test` a `npm run typecheck` musia prejsť. Commitni len svoje súbory
    (`git add <súbory>`, nikdy `-A`), správa po slovensky („Rozhodca: testy
-   §7–§8, 3 nálezy“) s koncovkou, ktorú ti dá organizátor. Push a merge do
+   §7–§9, 3 nálezy“) s koncovkou, ktorú ti dá organizátor. Push a merge do
    master ako Developer (`.claude/agents/naex-developer.md`, krok 6; Michal
    2026-10-21: commit, push, merge bez pýtania); konflikt nerieš hádaním.
 7. **Nálezy ako návrhy.** Každý nález okrem `pokryte` a `netestovatelne` je
