@@ -4450,8 +4450,9 @@ button.auto-hotovo-odkaz {
 /* ---- stôl so scrollom (Michal 2026-10-24) ----
  * Keď by karty v línii klesli pod čitateľnú veľkosť (HernaPlocha SIRKA_CITATELNA:
  * malé okno, zoom 150 %), partia nie je na výšku okna: stôl má výšku podľa kariet
- * a stránka sa scrolluje. Ruka ostáva prilepená dole, aby sa z nej dalo ťahať
- * na stôl aj pri posunutej stránke. Zhustenie barov a pásu ostáva. */
+ * a stránka sa scrolluje. Ruka a hrana stola ležia v toku stránky — prilepené by
+ * zakryli tvoj bar (UI inšpekcia); ťahá sa po scrolle nadol, kde je stôl aj ruka.
+ * Vrstva voľby cieľa a draftu má výšku podľa obsahu. Zhustenie barov a pásu ostáva. */
 @media (min-width: 761px) {
   /* Do strán sa orezáva ako na výšku okna (bar pri úzkom okne presahuje), nadol nie. */
   .obsah:has(> .hra.stol-scroll) {
@@ -4473,9 +4474,23 @@ button.auto-hotovo-odkaz {
     height: auto;
   }
 
-  .hra.stol-scroll .ruka {
-    position: sticky;
-    bottom: 0;
+  .hra.stol-scroll .stol-hrana {
+    position: relative;
+    bottom: auto;
+  }
+
+  .hra.stol-scroll .stol-plst.linia-skryta > .linia {
+    display: none;
+  }
+
+  .hra.stol-scroll .vrstva-fazy {
+    position: static;
+    margin: 22px 10px 10px;
+    overflow: visible;
+  }
+
+  .hra.stol-scroll .linia-obal.s-hranou .vrstva-fazy {
+    margin-bottom: 48px;
   }
 }
 
