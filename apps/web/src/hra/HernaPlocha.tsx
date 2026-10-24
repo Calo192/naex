@@ -114,7 +114,7 @@ import { PocitadloBitky } from "./PocitadloBitky.tsx";
 import { mediaUrl } from "../lib/api.ts";
 import { useStrazOdchodu } from "../lib/odchod.ts";
 import { skupinyBalicka } from "./doberaciBalicek.ts";
-import { SkratkyNapoveda, useSkratky } from "./skratky.tsx";
+import { SkratkyNapoveda, escVratiNavrh, tlacidloNavratu, useSkratky, type VrstvyPreEsc } from "./skratky.tsx";
 import type { Sada } from "@naex/tvorba";
 import { HernaKarta, vzhladKarty, type HernaKartaProps } from "./HernaKarta.tsx";
 import { useZarovnanieLinie } from "./zarovnanieLinie.ts";
@@ -2225,7 +2225,7 @@ export function HernaPlocha({
   const stolTlacidla = ((): ReactNode => {
     if (!somNaTahu || view.koniec !== null) return null;
     const navrat = (text: string, fn: () => void): ReactNode => (
-      <button onClick={fn} title="To isté urobí pravý klik na kartu.">
+      <button data-skratka="esc" onClick={fn} title="To isté urobí pravý klik na kartu alebo Esc.">
         {text}
       </button>
     );
@@ -3962,6 +3962,31 @@ export function HernaPlocha({
     window.addEventListener("keydown", klaves);
     return () => window.removeEventListener("keydown", klaves);
   }, [vybranaDoOblasti]);
+  // Esc vráti návrh ťahu do ruky až ako posledná vrstva (Leader 2026-10-24). Obsluhy
+  // ostatných vrstiev bežia na ten istý kláves; stav z tohto kreslenia ešte ukazuje,
+  // čo bolo otvorené pred stlačením, a DOM sa do konca udalosti nezmení.
+  useEffect(() => {
+    if (navrh === null) return;
+    const klaves = (e: KeyboardEvent): void => {
+      if (e.key !== "Escape" || e.defaultPrevented) return;
+      const otvorene = (sel: string): boolean => [...document.querySelectorAll(sel)].some((el) => el.getClientRects().length > 0);
+      const vrstvy: VrstvyPreEsc = {
+        lupa: lupa !== null || otvorene(".lupa:not(.doznieva)"),
+        dialog: vrstva !== null || skratky.napoveda || otvorene('[role="dialog"]'),
+        starsi: starsiViditelni || nahliadnutie,
+        vyber: miestoVolby !== null || mode.typ === "naexCiel" || vybranaDoOblasti !== null,
+        potvrdenie: potvrdenie !== null,
+        odhad: odhadOtvoreny,
+        pult: otvorene('.sb-spust[aria-expanded="true"]'),
+      };
+      const navrat = tlacidloNavratu();
+      if (!escVratiNavrh(vrstvy, navrat !== null)) return;
+      e.preventDefault();
+      navrat?.click();
+    };
+    window.addEventListener("keydown", klaves);
+    return () => window.removeEventListener("keydown", klaves);
+  });
   /** Klik na kartu v ruke: karta → cieľ na dlaždici. */
   const vyberDoOblasti = (k: CardInstance): void => {
     setMiestoVolby(null);
