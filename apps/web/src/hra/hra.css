@@ -1295,6 +1295,13 @@ body.tahanie-aktivne * {
   user-select: none;
 }
 
+/* Lupa ani bublina Melichara nesmú zachytiť pustenú kartu — cieľ pod nimi by
+   mlčky nezabral (playtest výučby 2026-10-23). */
+body.tahanie-aktivne .lupa,
+body.tahanie-aktivne [data-vyucba-bublina] {
+  pointer-events: none;
+}
+
 .tahatelna.tahana {
   opacity: 0.3;
 }

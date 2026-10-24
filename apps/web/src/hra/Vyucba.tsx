@@ -408,7 +408,9 @@ export function VyucbaStol({
   const [zvolene, setZvolene] = useState(0);
   useLayoutEffect(() => {
     const el = bublinaRef.current;
-    if (el === null) return;
+    // Počas ťahania karty sa úzke „+“ mení na plné miesto, ktoré skóre nepozná —
+    // bublina by naň skočila a karta by dopadla na ňu (playtest výučby 2026-10-23).
+    if (el === null || document.body.classList.contains("tahanie-aktivne")) return;
     const miesta = miestaBubliny(el.offsetWidth, el.offsetHeight);
     let i = rucne ?? 0;
     if (rucne === null) {
