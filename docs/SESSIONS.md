@@ -1,119 +1,123 @@
-# Súbežné sessions — pravidlá spolupráce
+# Jedna session a agenti — pravidlá práce
 
-Michal komunikuje len s **Leaderom**. Leader rozdeľuje prácu, ostatné sessions
-hlásia jemu a medzi sebou si píšu cez `SendMessage` (adresát = meno z `ListAgents`).
+Od 2026-10-24 (Michal) beží NA EX! v **jednej session — Leader**. Michal hovorí
+len s ním. Prácu robia **agenti**, ktorých Leader spúšťa nástrojom Agent na
+jednu úlohu: začnú s malým kontextom, prácu urobia a vrátia krátku správu.
+Predtým bežalo naraz 7–8 sessions s pevnými rolami. Meranie z 2026-10-24
+ukázalo, že 97 % tokenov išlo na opakované čítanie ich rastúceho kontextu,
+nie na prácu.
 
-| Session       | Rola                                              | Worktree / vetva              | Dev porty (PORT / NAEX_WEB_PORT) |
-|---------------|---------------------------------------------------|-------------------------------|----------------------------------|
-| Leader        | koordinácia, merge do master, nasadenie           | `F:\Projects\naex` (hlavný)   | 8787 / 5173                      |
-| Bugfixing     | opravy chýb                                       | `F:\Projects\naex-bugfix`     | 8788 / 5174                      |
-| New features  | nové funkcie, roadmapa                            | `F:\Projects\naex-features`   | 8789 / 5175                      |
-| UX/UI         | dizajn a jeho implementácia v klientovi           | `F:\Projects\naex-ui`         | 8790 / 5176                      |
-| Admin         | karty v tvorcovi, ilustrácie (Leonardo), rebalans | `F:\Projects\naex-admin`      | 8791 / 5177                      |
-| Playtesting   | playtesty, návrhy, rozhodca, stratég              | `F:\Projects\naex-playtest`   | 8792 / 5178 (servery playtestu: od 8800 vyššie) |
-| UI Inspector  | UI inšpekcia (`/naex-ui-inspektor`), len hľadá chyby | `F:\Projects\naex-inspektor` (detached origin/master) | 8793 / 5179                      |
-| Navrhár       | nové nápady do hry (karty, skórovanie, pravidlá, čo odstrániť), kód nemení | `F:\Projects\naex-navrhar`  | 8794 / 5180                      |
+Druhú session Michal otvorí len na dlhú prácu, ktorú chce viesť sám (napr.
+viac kôl dizajnu). Vtedy pre ňu platí časť „Ďalšia session“ nižšie.
 
-Reštart Claude Code sessions premenuje (`naex-xx`) a po `/clear` štartujú
-v hlavnom strome. Rolu neurčuje meno ani priečinok: session, ktorá ju nepozná,
-sa opýta Leadera, nič nemení a potom prejde do worktree svojej roly.
+## Agenti
 
-Porty 8780–8799 a 5170–5199 patria dev serverom sessions, 8800+ dočasným
-serverom playtestov (`tools/playtest/turnus.ts`).
+| Agent | Model | Na čo |
+|---|---|---|
+| `naex-programator` | Opus | funkcie, opravy, UI v klientovi, nástroje — vetva v pracovisku, commit, bez push |
+| `naex-napady` | Opus | dávky nápadov, scenár výučby, osnovy a audity pravidiel |
+| `naex-admin` | Opus | karty v tvorcovi, ilustrácie (Leonardo), rebalans, Novinky |
+| `naex-ui`, `naex-ux` | Opus | návrhy dizajnu s ukážkami (skill `naex-dizajn`) |
+| `naex-ui-inspektor` | Sonnet | meranie UI chýb na lokálnom serveri (1 kolo + kontrola opráv) |
+| `naex-oko` | Sonnet | snímky: čo je kde, orezané, prekryté, konzola — vráti text |
+| `naex-citac` | Sonnet | dlhé dokumenty, reporty, logy — odpovede s `cesta:riadok` |
+| `naex-overovac` | Haiku | rebase, test, typecheck, build — verdikt a padnuté testy |
+| `Explore` (vstavaný) | — | kde je čo v kóde |
+| playtest, stratég, rozhodca, bot-tréner, developer | podľa definície | cez svoje skilly (`/naex-playtest`, `/naex-strategia`, …) |
+
+Model sa vyberá podľa úlohy: Opus na kód a návrhy, Sonnet na pozeranie
+a čítanie, Haiku na mechanické overenie. **Nový druh agenta** Leader nezakladá
+sám (Michal 2026-10-24). Keď by sa na úlohu hodil, upozorní Michala a navrhne
+mu rolu a model. Agenta vytvorí až po jeho súhlase. Bežiaceho agenta Leader oslovuje znova
+(SendMessage na jeho meno), ak úloha pokračuje (napr. oprava nálezov
+z inšpekcie). Nového agenta zakladá len na novú úlohu.
+
+## Pracoviská (worktree a porty)
+
+Agent, ktorý mení súbory, dostane od Leadera **pracovisko**, teda worktree
+s vlastnými portami. Dva súbežné agenti nikdy nedostanú to isté pracovisko.
+
+| Pracovisko | Dev porty (PORT / NAEX_WEB_PORT) |
+|---|---|
+| `F:\Projects\naex-features` | 8789 / 5175 |
+| `F:\Projects\naex-bugfix` | 8788 / 5174 |
+| `F:\Projects\naex-ui` | 8790 / 5176 |
+| `F:\Projects\naex-admin` | 8791 / 5177 |
+| `F:\Projects\naex-navrhar` | 8794 / 5180 |
+| `F:\Projects\naex-inspektor` (detached, len meranie) | 8793 / 5179 |
+| `F:\Projects\naex-playtest` (playtesty) | 8792 / 5178, servery playtestu od 8800 |
+
+Do hlavného stromu `F:\Projects\naex` (master, 8787 / 5173) píše len Leader.
+Agent začína na čistom worktree príkazom
+`git checkout -B <vetva> origin/master`. Ak worktree nie je čistý, nič nemaže
+a povie to.
 
 ## Zdroje, o ktoré sa nebiť
 
-1. **Pracovný strom.** Do `F:\Projects\naex` píše len Leader. Každá iná session
-   pracuje vo vlastnom worktree:
-   `git worktree add ../naex-<meno> -b <meno>/<téma> origin/master`,
-   potom `npm install` a skopíruj `.env` (je mimo gitu). `data/` je v každom
-   worktree vlastná (vlastná SQLite) — pri prvom štarte sa naseeduje.
-2. **Porty.** Dev server púšťaj s vlastnými portami z tabuľky:
-   `PORT=8788 NAEX_WEB_PORT=5174 npm run dev` (PowerShell: `$env:PORT=8788; $env:NAEX_WEB_PORT=5174; npm run dev`).
-3. **master a push.** Do `master` merguje **len Leader** (Michal 2026-10-23,
-   po tom, čo auto režim sessions push blokuje). Session vetvu len commitne
-   (repozitár je spoločný, Leader ju vidí aj nepushnutú): rebase na
-   `origin/master`, `npm test`, `npm run typecheck`, `npm run build`, potom
-   **jedna veta** Leaderovi: meno vetvy a čo mení. Push sa neskúša.
-4. **Živý web.** Nasadzuje len Leader (`/naex-nasad`). Kto chce niečo na živý
-   web, povie Leaderovi.
-5. **Zdieľané súbory s vysokým rizikom konfliktu** — kto ich ide meniť, najprv
-   to ohlási Leaderovi (a Leader dá vedieť ostatným):
-   `packages/core/data/cards.json`, značka v `dorovnajSoSeedom`,
-   `docs/PRAVIDLA.md`, `packages/core/src/bot.ts`, `tools/playtest/tahak.md`,
-   `apps/web/src/schemy.css`, `package.json` / `package-lock.json`.
-6. **Sada kariet na živom webe** mení len Admin a zverejňuje len so súhlasom
-   Michala (cez Leadera). Počas bežiaceho playtestu na živom webe Admin
-   nezverejňuje — Playtesting ohlási začiatok a koniec.
-7. **Ťažké výpočty** (turnaje botov, `strategickost.ts` ≈ 8 min, 3 playtesty
-   naraz) ohlás Leaderovi pred spustením; naraz beží najviac jeden.
-8. **Leonardo.Ai kredit** používa Admin (a UX/UI po dohode s Leaderom).
-9. **Disk C a %TEMP%** (Leader 2026-10-23 — disk sa dvakrát zaplnil na 0 GB
-   profilmi headless Chromu). Headless Chrome aj vo vlastných skriptoch
-   v scratchpade spúšťaj cez `spustiChrome` z `tools/docasne.ts` (profil
-   a Chromove `scoped_dir*` v jednom priečinku, zmaže sa vo `finally`, pri páde
-   aj Ctrl+C) a `zastav()` volaj vo `finally`. Iné dočasné priečinky nástrojov
-   s predponou `naex-` cez `docasnyPriecinok`. Zvyšky staršie ako 2 h upratuje
-   každý nástroj a `npm test` pri štarte; ručne
+1. **master, push, nasadenie** robí len Leader. Agent commitne na vetvu a vráti
+   jej meno. Leader zmerguje vetvu do master, ak prejdú testy, typecheck
+   a build (výpis do súboru, push len pri zelenom výsledku), a nasadzuje
+   skillom `/naex-nasad`.
+2. **Rizikové zdieľané súbory**: `packages/core/data/cards.json`, značka
+   v `dorovnajSoSeedom`, `docs/PRAVIDLA.md`, `packages/core/src/bot.ts`,
+   `tools/playtest/tahak.md`, `apps/web/src/schemy.css`, `package.json`
+   a `package-lock.json`. Naraz ich mení najviac jeden agent a Leader to
+   uvedie v zadaní.
+3. **Sada kariet na živom webe**: mení ju agent `naex-admin`. Zverejňuje sa len
+   so súhlasom Michala, ktorý prechádza cez Leadera. Počas playtestu na živom
+   webe sa nezverejňuje.
+4. **Playtest partie** spúšťa Leader len so súhlasom Michala. Výučbu smie
+   opakovať v cykle zlepšovania, ktorý Michal schválil.
+5. **Ťažké výpočty** (turnaje botov, `strategickost.ts`, viac partií naraz)
+   bežia najviac po jednom.
+6. **Leonardo.Ai** používa `naex-admin`. Na ľubovoľný obrázok smie bez
+   pýtania. Dym na obrázku len z cigarety, popolníka alebo úst, žiadne zložité
+   polohy rúk.
+7. **Dočasné súbory a Chrome** patria na `F:\Projects\naex-tmp` (Michal
+   2026-10-23, disk C sa dvakrát zaplnil). Headless Chrome spúšťaj len cez
+   `spustiChrome` z `tools/docasne.ts` a `zastav()` volaj vo `finally`. Iné
+   dočasné priečinky vytváraj cez `docasnyPriecinok`. Zvyšky staršie ako 2 h
+   upratuje každý nástroj aj `npm test`. Ručne:
    `node --experimental-strip-types --no-warnings tools/docasne.ts`.
-   Všetko dočasné patrí na disk projektu, nie na C (Michal 2026-10-23):
-   `F:\Projects\naex-tmp` (`NAEX_TMP`, inak `<koreň repa>/../naex-tmp`).
-   `.claude/settings.json` nastaví TEMP/TMP/NAEX_TMP sessions po reštarte;
-   kód sa naň nespolieha — `tools/docasne.ts` berie základ zo `zakladDocasnych()`,
-   `nastavDocasneEnv()` presmeruje TEMP/TMP procesu a jeho detí (vitest.config,
-   zaloz.ts, vyucba.ts) a `deploy/nahraj.sh` robí mktemp do NAEX_TMP. Vo vlastnom
-   skripte bez týchto funkcií nastav deťom `TEMP`/`TMP` na NAEX_TMP sám.
+   `.claude/settings.json` nastavuje TEMP/TMP/NAEX_TMP.
+8. **Živý web** je len na čítanie (`--zivy` nástroje), okrem krokov, ktoré
+   povolil Michal: nasadenie, zverejnenie a playtest.
 
-## Komunikácia
+## Ako Leader zadáva a preberá
 
-- Začiatok úlohy, koniec úlohy, blokér → krátka správa Leaderovi.
-- Otázka na inú session (napr. UX/UI → Bugfixing „meníš aj HraStol.tsx?“) →
-  priamo jej; ak z toho vyjde rozhodnutie, jedna veta Leaderovi.
-- Rozhodnutia, ktoré patria Michalovi, idú cez Leadera — sessions sa Michala
-  nepýtajú priamo.
-- Prvý riadok správy = samostatná veta, o čo ide.
-- **Správy Leaderovi najviac 3–5 riadkov** (Michal 2026-10-23 — šetrí tokeny).
-  Podrobnosti patria do commitu, reportu alebo súboru, v správe len cesta.
+- **Zadanie** je samostatné, lebo agent nemá kontext. Obsahuje úlohu,
+  kritérium hotového, pracovisko, porty, vetvu, súbory, na ktoré nesiahať,
+  a rozhodnutia Michala doslova.
+- **UI práca:** programátor → `naex-ui-inspektor` na jeho dev serveri (jedno
+  kolo) → ak sú vysoké alebo stredné nálezy, Leader ich pošle tomu istému
+  programátorovi → jedna kontrola opráv → merge. Snímky pre Michala (je často
+  na telefóne) posiela Leader cez SendUserFile a sám ich nečíta, ak netreba.
+- **Správa agenta** má najviac 5 riadkov. Podrobnosti patria do commitu,
+  reportu alebo súboru.
+- **Rozhodnutia** patria Michalovi. Leader sa ho pýta (AskUserQuestion)
+  a odporúčanú voľbu dá na prvé miesto.
 
-## UI dizajn a UI inšpekcia (Michal 2026-10-23)
+## Šetrenie tokenov
 
-UX/UI pred hlásením „hotové“ požiada UI Inspector o kontrolu svojej vetvy. Na
-svojich portoch pustí dev server, pošle Inspectorovi url, cesty a stavy stola
-a Inspector zmeria vetvu nástrojom `inspekcia.ts --url …` (len lokálny server).
-Nálezy Inspector posiela **priamo UX/UI**, nie Leaderovi. UX/UI opraví vysoké
-a stredné nálezy, a ak treba, kontrolu zopakuje. Leaderovi potom napíše vetvu
-a výsledok inšpekcie jednou vetou (napr. „inšpekcia: 0 vysokých, 0 stredných“).
-Rovnako postupuje Bugfixing pri UI opravách.
-
-## Šetrenie tokenov (Michal 2026-10-23)
-
-- **Odovzdanie.** Každá session vedie `F:\Projects\handoff\<rola>.md` (mimo
-  gitu, najviac ~30 riadkov): rola, worktree a vetva, čo je hotové, čo
-  rozrobené, ďalší krok, otvorené otázky. Aktualizuj ho pri každom dokončení
-  úlohy. Po `/clear` alebo reštarte ho session prečíta ako prvé (spolu s týmto
-  súborom) a pokračuje.
-- **`/clear` a `/compact`** píše Michal do okna session (príkazy sa nedajú
-  poslať správou). Leader mu povie, ktorá session je v pokoji a dá sa vyčistiť
-  (`/clear`), a ktorá potrebuje kontext, ale je dlhá (`/compact`). Pred
-  `/clear` musí byť odovzdanie aktuálne.
-- **Playtest** predvolene 1 partia s reportom; `max` len pred veľkým
-  rozhodnutím (napr. pred zmrazením pravidiel).
-- **Modely agentov:** UI inšpektor, spisovateľ reportov a AI playtesteri bežia
-  na Sonnete; dizajnéri, stratég, navrhár, rozhodca a Developer na Opuse.
-  Sessions UI Inspector, Admin a Navrhár stačí na Sonnete (`/model sonnet`,
-  Michal 2026-10-24).
-- **Kontext je najdrahší** (meranie Leadera 2026-10-24: 97 % spotreby je
-  opakované čítanie kontextu, nie výstup). Snímky obrazovky, dlhé výpisy
-  a dlhé dokumenty nečítaj v hlavnej session — ostanú v kontexte a čítajú sa
-  pri každom ďalšom kroku. Pošli ich **pomocnému agentovi** (nástroj Agent,
-  `subagent_type`) a od neho si vezmi len text:
-  - `naex-oko` (Sonnet) — snímky webu a stola, čo je kde, orezané, prekryté,
-    konzola; vráti text a cesty k snímkam pre Michala,
-  - `naex-overovac` (Haiku) — rebase, test, typecheck, build; vráti verdikt
-    a len padnuté testy,
-  - `naex-citac` (Sonnet) — reporty playtestov, denníky, logy, PRAVIDLA.md;
-    vráti odpovede s dokladom `cesta:riadok`,
-  - vstavaný `Explore` — kde je čo v kóde.
-  Pomocného agenta, ktorý už beží, oslov znova (SendMessage), nezakladaj nový.
-- **Inšpekcia:** jedno kolo a jedna kontrola opráv. Ďalšie kolo len pri novom
+- Snímky, dlhé výpisy a dlhé dokumenty Leader nečíta sám. Pošle ich agentovi
+  (`naex-oko`, `naex-overovac`, `naex-citac`) a vezme si len text.
+- Inšpekcia má jedno kolo a jednu kontrolu opráv. Ďalšie kolo len pri novom
   vysokom náleze.
+- Playtest predvolene 1 partia s reportom, `max` len pred veľkým rozhodnutím.
+- Leader vedie `F:\Projects\handoff\leader.md` (stav, čo beží, čo čaká na
+  Michala). Po `/clear` alebo reštarte ho prečíta spolu s týmto súborom
+  a pokračuje. Pri nedostatku tokenov ho prebúdza strážna slučka (`/loop`
+  každú hodinu).
+
+## Ďalšia session (len keď ju Michal otvorí)
+
+Pracuje vo vlastnom pracovisku z tabuľky, ktoré jej pridelí Leader. Do master
+nemerguje. Leaderovi pošle meno vetvy a jednu vetu. Rolu jej dá Leader.
+Po `/clear` platí meno okna. Odovzdanie vedie v
+`F:\Projects\handoff\<rola>.md`.
+
+## Prechod (2026-10-24)
+
+Sessions z režimu viacerých sessions (UX/UI, New features, Bugfixing, Admin,
+Playtest, UI Inspector, Navrhár) dokončia rozrobené úlohy a potom sa
+nepoužívajú. Ich worktree ostávajú ako pracoviská agentov.

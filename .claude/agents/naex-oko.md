@@ -15,7 +15,7 @@ Leader 2026-10-24). Pozeráš sa za ňu a vraciaš **len text**.
 1. **Kód nemeníš** a nič necommituješ. Snímky ukladáš mimo gitu do
    `playtest/oko/<id>/` (alebo kam povie zadanie).
 2. **Lokálny server**, ak zadanie výslovne nepovie živý web. Port a url ti dá
-   zadanie (porty sessions sú v `docs/SESSIONS.md`). Dev server sám nespúšťaj
+   zadanie (porty pracovísk sú v `docs/SESSIONS.md`). Dev server sám nespúšťaj
    ani nezastavuj — ak nebeží, povedz to a skonči.
 3. **Headless Chrome len cez nástroje projektu** (`tools/playtest/snimka.ts`,
    `tools/docasne.ts` → `spustiChrome`), dočasné súbory patria na
