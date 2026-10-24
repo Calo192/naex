@@ -95,12 +95,15 @@
     {
       "id": "i-kolo",
       "kto": "info",
-      "melichar": "Kolo je bitka o jednu lokalitu. Obranca vyberie cieľ, obaja si kúpite karty zo šenku, potom vykladáte karty (Zhromaždenie) a pijete (Pitka), raz až štyrikrát podľa lokality. Nakoniec bitka: kto má viac tuhého, berie lokalitu."
+      "melichar": "Hore je lišta kola: voľba cieľa, draft, Zhromaždenie, Pitka a bitka. Vždy ti ukáže, kde práve sme.",
+      "zvyraznit": [
+        "os-kola"
+      ]
     },
     {
       "id": "i-bar",
       "kto": "info",
-      "melichar": "Dole je tvoj bar. Poldeci je pohárik: koľko máš plných, toľko kariet vyložíš, a ešte jednu. Cigarety sú peniaze na šenok a na fajčenie. Absťák, Dlh a pečeň zatiaľ nevšímaj, prídu neskôr.",
+      "melichar": "Dole je tvoj bar. Limit kariet v Zhromaždení je plné poldeci + 1, máš dva, teda tri. Cigarety platia šenok a fajčenie. Absťák je kliatba: keď v kole menej piješ a fajčíš ako minule, uberie ti 1 tuhé.",
       "zvyraznit": [
         "bar:poldeci",
         "bar:cigarety"
@@ -114,7 +117,7 @@
         "uid": "lokality:jednota",
         "otocena": false
       },
-      "melichar": "Vyber Jednotu a potvrď ju, ako leží. Si obranca a ten cieľ vyberá, útočník zato kupuje a vykladá prvý. Tvoja je ľavá hrana lokality, tá s Cigaretou.",
+      "melichar": "Klikni na Jednotu a potvrď, neotáčaj ju. Si obranca a ten cieľ vyberá, útočník zato kupuje a vykladá prvý. Tvoja je ľavá hrana lokality, tá s Cigaretou.",
       "zvyraznit": [
         "lokality:jednota"
       ]
@@ -137,7 +140,7 @@
           "stavba:zahradkar"
         ]
       },
-      "melichar": "Zvýraznené štyri karty daj na Smetisko a potvrď: Puška, Policajtka, Podvodník, Záhradkár. Šenok je spoločná ponuka kariet za cigarety, Smetisko súper neuvidí. Zvyšné štyri idú do šenku, je medzi nimi Hasič.",
+      "melichar": "Zvýraznené štyri karty daj na Smetisko a potvrď: Puška, Policajtka, Podvodník, Záhradkár. Na Smetisko dáš karty, ktoré nechceš dať Štamgastovi, neuvidí ich. Zvyšné štyri idú do šenku, je medzi nimi Hasič.",
       "zvyraznit": [
         "stavba"
       ]
@@ -174,6 +177,14 @@
       "melichar": "Útočník kupuje prvý. Karta stojí cigaretu. Štamgast si kúpil Dvojčatá."
     },
     {
+      "id": "i-hrany",
+      "kto": "info",
+      "melichar": "Pozri na Hasiča v šenku. Na hranách kariet sú ikony akcií: vpravo Rana (1 tuhé) a Petelica (3 tuhé), vľavo Posilnenie, ktoré zdvojí spojenú akciu. Akcia platí, len keď sa na spoji stretne s ikonou v tej istej výške.",
+      "zvyraznit": [
+        "senok:hasic"
+      ]
+    },
+    {
       "id": "k4",
       "kto": "hrac",
       "prikaz": {
@@ -182,7 +193,7 @@
           "senok:hasic"
         ]
       },
-      "melichar": "Kúp Hasiča. Tuhé je sila v bitke: Rana dáva 1, Pecka 2 a Hasičova Petelica 3.",
+      "melichar": "Kúp Hasiča za cigaretu. Pecka by dala 2 tuhé, jeho Petelica dá 3.",
       "zvyraznit": [
         "senok:hasic"
       ]
@@ -290,7 +301,7 @@
           }
         ]
       },
-      "melichar": "Štamgast pridal Dievčinu na vydaj. Má Pohoršenie: po bitke posunie jedného staršieho k tebe."
+      "melichar": "Štamgast pridal Dievčinu na vydaj. Má Pohoršenie, to hýbe staršími. Ukážem ti ich pri bitke."
     },
     {
       "id": "k11",
@@ -328,7 +339,7 @@
       "prikaz": {
         "type": "pass"
       },
-      "melichar": "Klikni pasovať (P) a nechaj odpočet Vrátiť vyprchať. Za každú kartu, ktorú si ešte smel vyložiť, dostaneš cigaretu: limit sú tri, na stole máš dve, takže jedna.",
+      "melichar": "Klikni pasovať (P). Za každú kartu, ktorú si ešte smel vyložiť, dostaneš cigaretu: limit sú tri, na stole máš dve, takže jedna.",
       "zvyraznit": [
         "tlacidlo:pas"
       ]
@@ -359,7 +370,8 @@
       "melichar": "Vyber Hasiča a daj NA EX (N). Jeho Petelica nemá partnera, takže zatiaľ nerobí nič. Po NA EX udrie dvakrát: 7 : 0.",
       "zvyraznit": [
         "linia:hasic",
-        "tlacidlo:naex"
+        "tlacidlo:naex",
+        "os-kola"
       ]
     },
     {
@@ -390,7 +402,7 @@
       "prikaz": {
         "type": "skipNaex"
       },
-      "melichar": "Klikni končím (K) a potvrď Skončiť Pitku. Ďalší poldeci si nechaj. Pitku začína obranca a útočník má posledné slovo.",
+      "melichar": "Klikni končím (K). Ďalší poldeci si nechaj. Pitku začína obranca a útočník má posledné slovo.",
       "zvyraznit": [
         "tlacidlo:hotovo"
       ]
@@ -439,7 +451,7 @@
       "prikaz": {
         "type": "pass"
       },
-      "melichar": "Pitky sú dnes dve, takže ešte jedno Zhromaždenie. Štamgast pasuje."
+      "melichar": "Pitky sú dnes dve, koľko ich bude, určuje lokalita. Ešte jedno Zhromaždenie: Štamgast pasuje."
     },
     {
       "id": "k21",
@@ -496,7 +508,7 @@
       "prikaz": {
         "type": "pass"
       },
-      "melichar": "Klikni pasovať (P) a nechaj odpočet vyprchať. Za nevyloženú kartu dostaneš cigaretu.",
+      "melichar": "Klikni pasovať (P). Za nevyloženú kartu dostaneš cigaretu.",
       "zvyraznit": [
         "tlacidlo:pas"
       ]
@@ -507,7 +519,7 @@
       "prikaz": {
         "type": "skipNaex"
       },
-      "melichar": "Klikni končím (K) a potvrď Skončiť Pitku. Ďalšie NA EX netreba, toto je posledná Pitka a bitku máš vyhratú.",
+      "melichar": "Klikni končím (K). Ďalšie NA EX netreba, toto je posledná Pitka a bitku pravdepodobne vyhráš.",
       "zvyraznit": [
         "tlacidlo:hotovo"
       ]
@@ -521,13 +533,22 @@
       "melichar": "Pitka sa vyhodnotí, Štamgast dostal druhý Dlh."
     },
     {
+      "id": "i-ukazem",
+      "kto": "info",
+      "melichar": "Bitka! Teraz ti ukážem starších: osem dedinských autorít hore. Bitka nimi hýbe a dávajú väčšinu bodov.",
+      "zvyraznit": [
+        "linia-starsich",
+        "os-kola"
+      ]
+    },
+    {
       "id": "k25",
       "kto": "bot",
       "prikaz": {
         "type": "pohorsenie",
         "elderId": "starosta"
       },
-      "melichar": "Bitka! Dievčina na vydaj odišla z hry a spálila oba Štamgastove Dlhy, ako píše jej karta. Jej Pohoršenie posúva Starostu o krok k tebe."
+      "melichar": "Dievčina na vydaj odišla z hry a spálila oba Štamgastove Dlhy, ako píše jej karta. Jej Pohoršenie posunie jedného staršieho o krok, tu Starostu k tebe."
     },
     {
       "id": "k26",
@@ -544,7 +565,7 @@
     {
       "id": "i-bitka",
       "kto": "info",
-      "melichar": "Bitka 9 : 3 pre teba, najviac ti dal Hasič s NA EX, 6 tuhých. Viac tuhého berie Jednotu, pri rovnosti by išla na sekeru.",
+      "melichar": "Bitka 9 : 3 pre teba, najviac ti dal Hasič s NA EX, 6 tuhých. Viac tuhého berie Jednotu. Pri rovnosti by išla na sekeru: dostal by ju víťaz najbližšej bitky.",
       "zvyraznit": [
         "bitka-ucet"
       ]
@@ -552,7 +573,7 @@
     {
       "id": "q-bitka",
       "kto": "otazka",
-      "melichar": "Ty máš spojenú Ranu a Pecku, Štamgast Petelicu. Ako dopadne bitka?",
+      "melichar": "Rana dáva 1 tuhé, Pecka 2, Petelica 3. Ty máš spojenú Ranu a Pecku, Štamgast Petelicu. Ako dopadne bitka?",
       "moznosti": [
         {
           "text": "Vyhrám, mám dve karty.",
@@ -576,13 +597,13 @@
       "kto": "info",
       "melichar": "Starších je osem. Každý má marker na stupnici: v strede sivá, potom žltá, oranžová a červená. Čím ďalej od stredu, tým väčší strach.",
       "zvyraznit": [
-        "bar:body"
+        "starsi-stupnica"
       ]
     },
     {
       "id": "i-starsi2",
       "kto": "info",
-      "melichar": "Marker posúvaš k súperovi. Súper od staršieho dostane priazeň, malý bonus. Starší sa zato bojí teba a za jeho strach dostaneš na konci body.",
+      "melichar": "Staršieho tlačíš preč od seba, k súperovi. Napríklad Farára tlačíš k Štamgastovi: Štamgast dostane jeho priazeň, malý bonus, ale Farár sa bojí teba. Za strach staršieho máš na konci body.",
       "zvyraznit": [
         "linia-starsich"
       ]
@@ -618,7 +639,7 @@
         "type": "prebytok",
         "elderId": "farar"
       },
-      "melichar": "A do tretice. Farár je v oranžovom a bojí sa ťa viac. Jednota je tvoja.",
+      "melichar": "A do tretice. Farár je v oranžovom a bojí sa ťa viac.",
       "zvyraznit": [
         "starsi:farar"
       ]
@@ -670,7 +691,7 @@
     {
       "id": "i-kolo2",
       "kto": "info",
-      "melichar": "Prvé kolo je tvoje. Platia len spojené akcie. V bitke vyhrá viac tuhého. NA EX zdvojí akcie bez partnera, ale stojí poldeci a pečeň. Prebytok tlačí starších k súperovi a boja sa teba.",
+      "melichar": "Prvé kolo aj Jednota sú tvoje. Platia len spojené akcie. V bitke vyhrá viac tuhého. NA EX zdvojí akcie bez partnera, ale stojí poldeci a pečeň. Prebytok tlačí starších k súperovi a boja sa teba.",
       "zvyraznit": [
         "hlavicka:log"
       ]
@@ -678,17 +699,22 @@
     {
       "id": "i-kolo2b",
       "kto": "info",
-      "melichar": "Druhé kolo. Každý si dobral dve karty a jeden poldeci sa dolial. Bežné ťahy teraz spraví hra za teba, ty urobíš tie dôležité."
+      "melichar": "Druhé kolo. Každý si dobral dve karty a jeden poldeci sa dolial."
+    },
+    {
+      "id": "i-auto",
+      "kto": "info",
+      "melichar": "Pozeraj: hra za teba postaví šenok a patronát nechá tak, lebo to už poznáš. Lokalitu si vyberieš a Hasiča kúpiš sám."
     },
     {
       "id": "k30",
-      "kto": "auto",
+      "kto": "hrac",
       "prikaz": {
         "type": "chooseLocation",
         "uid": "lokality:krcma",
         "otocena": false
       },
-      "melichar": "",
+      "melichar": "Vyber Krčmu a potvrď, ostala posledná. Má zákon: kto má plný poldeci, musí v Pitke dať NA EX.",
       "zvyraznit": [
         "lokality:krcma"
       ]
@@ -749,14 +775,14 @@
     },
     {
       "id": "k34",
-      "kto": "auto",
+      "kto": "hrac",
       "prikaz": {
         "type": "draftBer",
         "uids": [
           "senok:hasic"
         ]
       },
-      "melichar": "",
+      "melichar": "Kúp Hasiča. Jeho Petelica sa s povinným NA EX na Krčme zíde.",
       "zvyraznit": [
         "senok:hasic"
       ]
@@ -797,14 +823,6 @@
       "melichar": ""
     },
     {
-      "id": "i-auto",
-      "kto": "info",
-      "melichar": "Hra za teba: vybrala Krčmu, lebo ostala posledná, postavila šenok a kúpila Hasiča. Krčma má zákon: kto má plný poldeci, musí v Pitke dať NA EX. Štamgast medzitým priložil Psa.",
-      "zvyraznit": [
-        "lokality:krcma"
-      ]
-    },
-    {
       "id": "k39",
       "kto": "bot",
       "prikaz": {
@@ -817,7 +835,7 @@
           }
         ]
       },
-      "melichar": ""
+      "melichar": "Štamgast priložil Psa ku Krčme."
     },
     {
       "id": "k40",
@@ -932,32 +950,10 @@
         "uid": "ruka:pijan",
         "target": "vlastna"
       },
-      "melichar": "Štamgast dal NA EX na vlastného Pijana. Smieš odpovedať jednou kartou. Oplatí sa? Vyber kartu a miesto, alebo bez odpovede.",
+      "melichar": "Odpovedz: polož Pijana k Miňištrantovi na svoju stranu a potvrď. Pozri na pás hore: 12 : 5 → 13 : 4. Odpoveď sa oplatí, keď spojí akciu, ktorá bola bez páru.",
       "zvyraznit": [
         "ruka:pijan"
-      ],
-      "volba": {
-        "kandidati": [
-          "ruka:pijan",
-          "tlacidlo:bez-odpovede"
-        ],
-        "zle": [
-          {
-            "prikaz": {
-              "type": "bezReakcie"
-            },
-            "text": "Tu sa odpoveď oplatí: tvoj Pijan k Miňištrantovi spojí Ranu aj Vieru, 13 : 4 namiesto 12 : 5. Skús to."
-          },
-          {
-            "prikaz": {
-              "type": "place",
-              "target": "superova"
-            },
-            "text": "Za Hasičom by si spároval jeho Petelicu a tvoje NA EX by ju zrušilo, klesol by si na 6 : 5."
-          }
-        ],
-        "inak": "Hľadaj kartu, ktorá sa na tvojej strane s niečím spojí."
-      }
+      ]
     },
     {
       "id": "k50",
@@ -1014,8 +1010,7 @@
       ],
       "volba": {
         "kandidati": [
-          "linia:ministrant",
-          "linia:pijan",
+          "linia:ministrant#2",
           "tlacidlo:naex"
         ],
         "zle": [
@@ -1117,7 +1112,7 @@
         "type": "prebytok",
         "elderId": "farar"
       },
-      "melichar": "Klikni na Farára. Stál na predposlednom mieste od začiatku kola, takže ho vytlačíš na kraj do červenej. Je vydesený, to je najväčší strach.",
+      "melichar": "Klikni na Farára. Stál na predposlednom mieste od začiatku kola, takže ho vytlačíš na kraj do červenej: je vydesený. Keď vydesíš štyroch starších a udržíš ich kolo, vyhráš hneď.",
       "zvyraznit": [
         "starsi:farar"
       ]
@@ -1157,7 +1152,7 @@
     {
       "id": "i-koniec",
       "kto": "info",
-      "melichar": "Koniec a víťazstvo 45 : 11! Body ti dali lokality 20, strach starších 21 a zvyšné cigarety 12, Cirhóza ti zobrala 8. Štamgastovi dali body len cigarety a trochu strachu, Dlhy mu zobrali 8.",
+      "melichar": "Koniec a víťazstvo 45 : 11! Body ti dali lokality 20, strach starších 21 a zvyšné cigarety 12, Cirhóza ti zobrala 8. Štamgastovi dali body len zvyšné cigarety a trochu strachu, Dlhy mu zobrali 8.",
       "zvyraznit": [
         "bar:body"
       ]
@@ -1165,12 +1160,56 @@
     {
       "id": "i-zhrnutie",
       "kto": "info",
-      "melichar": "Zhrnutie. Body sú za lokality a strach starších. Kolo: cieľ, šenok, Zhromaždenie a Pitka, bitka. Karty kladieš tak, aby sa akcie spojili. NA EX zdvojí akcie bez partnera. Bitku vyhrá viac tuhého. Poldeci sú limit kariet, cigarety platia šenok."
+      "melichar": "Zhrnutie. Body sú za lokality a strach starších. Kolo: cieľ, šenok, Zhromaždenie a Pitka, bitka. Karty kladieš tak, aby sa akcie spojili. Plné poldeci + 1 je limit kariet. Bitku vyhrá viac tuhého."
+    },
+    {
+      "id": "q-plan-naex",
+      "kto": "otazka",
+      "melichar": "Máš plný poldeci a kartu s Petelicou bez páru. Čo urobíš?",
+      "moznosti": [
+        {
+          "text": "Dám na ňu NA EX, Petelica udrie dvakrát.",
+          "spravna": true,
+          "vysvetlenie": "Áno. Len sleduj pečeň, NA EX ju plní."
+        },
+        {
+          "text": "Najprv jej vyložím partnera, nech Petelica platí.",
+          "spravna": false,
+          "vysvetlenie": "Aj to ide, ale spojená Petelica dá len 3. Bez partnera ju NA EX zdvojí na 6."
+        },
+        {
+          "text": "Nič, poldeci si nechám.",
+          "spravna": false,
+          "vysvetlenie": "Petelica bez páru je zbytočná, NA EX z nej spraví najsilnejší úder."
+        }
+      ]
+    },
+    {
+      "id": "q-plan-starsi",
+      "kto": "otazka",
+      "melichar": "Prebytkom môžeš posunúť jedného staršieho. Ktorého?",
+      "moznosti": [
+        {
+          "text": "Toho, ktorý je od teba už najďalej.",
+          "spravna": true,
+          "vysvetlenie": "Áno. Dotlačíš ho do červenej, vydesený dá najviac a štyria vydesení sú výhra."
+        },
+        {
+          "text": "Toho v strede, nech sa začne báť.",
+          "spravna": false,
+          "vysvetlenie": "Zo sivej do žltej je málo. Viac dá ten, čo je už ďaleko."
+        },
+        {
+          "text": "Toho, ktorý mi prejavuje priazeň.",
+          "spravna": false,
+          "vysvetlenie": "Ten je na tvojej strane. Posunul by si ho k sebe späť a priazeň by si stratil."
+        }
+      ]
     },
     {
       "id": "i-zhrnutie2",
       "kto": "info",
-      "melichar": "Tvoj plán do prvej partie: bitky vyhrávaj spojmi, NA EX dávaj na kartu so silnou akciou bez páru a pečeň drž pod prahom. Jedného staršieho dotlač prebytkom až do červenej. Dedičstvo, Záverečnú a patronát nájdeš v Pravidlách."
+      "melichar": "To je tvoj plán do prvej partie: NA EX na Petelicu bez páru a pečeň drž pod tromi. Prebytkom tlač jedného staršieho až do červenej. A bitky vyhrávaj spojmi, nie počtom kariet."
     },
     {
       "id": "i-dovidenia",
