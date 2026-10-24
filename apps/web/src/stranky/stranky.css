@@ -340,14 +340,38 @@ button.cip.aktivny {
   border-radius: 3px;
 }
 
-/* Obsah: časti A/B/C, aktívna kapitola s podkapitolami. */
+/* Obsah: časti A/B/C, aktívna kapitola s podkapitolami. Na desktope je rozbalená
+   len aktívna časť, ostatné sú jeden riadok — bok sa zmestí aj do 1366×650. */
+.obsah-cast-skok {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.obsah-cast-skok:hover {
+  color: var(--akcent-svetly);
+}
+
+.obsah-cast-skok span {
+  color: var(--slaby-text);
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 500;
+}
+
 .pravidla-obsah {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.obsah-cast h3 {
+.obsah-cast h3,
+.obsah-cast-skok {
   margin: 0 0 4px;
   font: 700 0.76rem/1.2 var(--pismo);
   letter-spacing: 0.1em;
@@ -1097,7 +1121,8 @@ button.cip.aktivny {
   border-radius: 50%;
   padding: 0;
   font-weight: 800;
-  color: rgba(0, 0, 0, 0.6);
+  /* Plná čierna: na pevných farbách zón (nemenia sa so schémou) drží kontrast ≥ 4,5 (UI inšpekcia). */
+  color: #000;
   border: 3px solid transparent;
 }
 

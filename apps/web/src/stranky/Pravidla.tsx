@@ -193,13 +193,18 @@ function Obsah({
   podkapitoly,
   ukazky,
   poVybere,
+  kompaktny = false,
 }: {
   readonly poloha: Poloha;
   readonly podkapitoly: ReadonlyMap<string, readonly Podkapitola[]>;
   readonly ukazky: ReadonlySet<string>;
   readonly poVybere?: () => void;
+  /** Desktop: rozbalená len časť s aktívnou kapitolou (bok sa zmestí do nízkeho okna). */
+  readonly kompaktny?: boolean;
 }) {
   const aktivna = KAPITOLY[poloha.kapitola];
+  // Kým je čitateľ v slovníku, rozbalená ostáva posledná časť.
+  const aktivnaCast = (aktivna ?? KAPITOLY[KAPITOLY.length - 1])?.cast;
   const klik = (id: string) => (e: React.MouseEvent) => {
     e.preventDefault();
     poVybere?.();
@@ -207,7 +212,19 @@ function Obsah({
   };
   return (
     <nav className="pravidla-obsah" aria-label="Obsah pravidiel">
-      {CASTI.map((c) => (
+      {CASTI.map((c) => {
+        const kapitolyCasti = KAPITOLY.filter((k) => k.cast === c.id);
+        if (kompaktny && c.id !== aktivnaCast) {
+          const prva = kapitolyCasti[0];
+          return (
+            <div key={c.id} className="obsah-cast">
+              <button type="button" className="obsah-cast-skok" onClick={() => prva !== undefined && skocNa(prva.id)}>
+                {c.id} · {c.nazov} <span>{kapitolyCasti.length} kap.</span>
+              </button>
+            </div>
+          );
+        }
+        return (
         <div key={c.id} className="obsah-cast">
           <h3>
             {c.id} · {c.nazov}
@@ -240,7 +257,8 @@ function Obsah({
               })}
           </ol>
         </div>
-      ))}
+        );
+      })}
       <a
         href="#slovnik"
         className={`obsah-slovnik ${poloha.kapitola === KAPITOLY.length ? "aktivna" : ""}`}
@@ -331,6 +349,22 @@ export function Pravidla() {
   const { sada } = useSada();
   const poloha = usePoloha();
   const [mobilObsah, setMobilObsah] = useState(false);
+  // Obsah zdola je dialóg: fokus do hľadania, Esc zavrie a fokus sa vráti na lištu (UI inšpekcia).
+  const listaRef = useRef<HTMLButtonElement>(null);
+  const sheetRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!mobilObsah) return;
+    sheetRef.current?.querySelector<HTMLInputElement>("input")?.focus();
+    const esc = (e: KeyboardEvent): void => {
+      if (e.key === "Escape") setMobilObsah(false);
+    };
+    window.addEventListener("keydown", esc);
+    const lista = listaRef.current;
+    return () => {
+      window.removeEventListener("keydown", esc);
+      lista?.focus();
+    };
+  }, [mobilObsah]);
 
   // Podkapitoly, ukážky a čas čítania sa zistia z vykresleného textu — jediný zdroj je obsah kapitoly.
   const knihaRef = useRef<HTMLDivElement>(null);
@@ -399,12 +433,12 @@ export function Pravidla() {
             <i style={{ width: `${percent}%` }} />
           </div>
           <Hladanie />
-          <Obsah poloha={poloha} podkapitoly={podkapitoly} ukazky={ukazky} />
+          <Obsah poloha={poloha} podkapitoly={podkapitoly} ukazky={ukazky} kompaktny />
         </aside>
 
         {/* Mobil: lišta „kde som“ pod hlavičkou otvorí obsah zdola. */}
         <div className="pravidla-lista">
-          <button type="button" onClick={() => setMobilObsah(true)} aria-expanded={mobilObsah}>
+          <button type="button" ref={listaRef} onClick={() => setMobilObsah(true)} aria-expanded={mobilObsah}>
             <span className="pravidla-lista-cislo">
               {poloha.kapitola < KAPITOLY.length ? `${poloha.kapitola + 1} / ${KAPITOLY.length}` : "A–Z"}
             </span>
@@ -415,7 +449,7 @@ export function Pravidla() {
         </div>
         {mobilObsah && (
           <div className="pravidla-sheet-zaclona" onClick={() => setMobilObsah(false)}>
-            <div className="pravidla-sheet" role="dialog" aria-label="Obsah pravidiel" onClick={(e) => e.stopPropagation()}>
+            <div className="pravidla-sheet" ref={sheetRef} role="dialog" aria-modal="true" aria-label="Obsah pravidiel" onClick={(e) => e.stopPropagation()}>
               <button type="button" className="pravidla-sheet-zavriet" aria-label="Zavrieť obsah" onClick={() => setMobilObsah(false)}>
                 ✕
               </button>
