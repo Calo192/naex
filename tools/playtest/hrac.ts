@@ -14,7 +14,7 @@
 import { appendFileSync, mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import WebSocket from "ws";
-import type { ActionSums, CardInstance, CenyKliatob, ClientState, Command, ElderState, Event, GameData, GameState, PlayerId, Pohlavie, Rod, Slot, VerejnyStav } from "@naex/core";
+import type { ActionSums, CardInstance, CenyKliatob, ClientState, DopadyNahladu, Command, ElderState, Event, GameData, GameState, PlayerId, Pohlavie, Rod, Slot, VerejnyStav } from "@naex/core";
 import {
   jeKartaPatronatu,
   stavZavislosti,
@@ -33,6 +33,8 @@ import {
   cenaKliatby,
   rozlozRod,
   kliatbyNahladu,
+  dopadyNahladu,
+  stavPoPatronate,
   svokraZaNaex,
   cenaPrebytku,
   nahladPitky,
@@ -261,6 +263,31 @@ function vyhladPitkyText(v: ClientState, p: PlayerId): string | null {
   return `pečeň ${n.pecen} ▸ ${n.pecen + n.pecenZoStola}/${n.prahPecene}, zadĺženie ${n.zadlzenie} ▸ ${n.zadlzenie + n.zadlzenieZoStola}/${n.prahDlhu} → ${kedy}: ${kliatby.length > 0 ? kliatby.join(", ") : "žiadna kliatba"} (karty na stole pripíšu pečeň ${n.pecenZoStola}, zadĺženie ${n.zadlzenieZoStola}; za každý celý prah jedna kliatba)`;
 }
 
+/**
+ * Zvyšok ceny ťahu ako na webe (návrh #1, playtest 20261024-075830): cigarety
+ * z Pitiek kola, Pohoršenia v najbližšej bitke s ≈ bodmi a mäkké. Prázdny
+ * reťazec, keď sa nič z toho nemení.
+ */
+function dopadyText(d: readonly [DopadyNahladu, DopadyNahladu], ja: PlayerId): string {
+  const su: PlayerId = ja === 0 ? 1 : 0;
+  const znak = (n: number): string => `${n > 0 ? "+" : "−"}${Math.abs(n)}`;
+  const kto = (p: PlayerId): string => (p === ja ? "ty" : "súper");
+  const casti: string[] = [];
+  const cig = [ja, su].filter((p) => d[p].cigarety !== 0).map((p) => `${kto(p)} ${znak(d[p].cigarety)}`);
+  if (cig.length > 0) casti.push(`cigarety: ${cig.join(", ")}`);
+  const poh = [ja, su]
+    .filter((p) => d[p].pohorsenia !== 0)
+    .map((p) => {
+      const n = d[p].pohorsenia;
+      const spolu = d[p].pohorseniaSpolu !== n ? `spolu ${d[p].pohorseniaSpolu}; ` : "";
+      return `${kto(p)} ${znak(n)} ${Math.abs(n) === 1 ? "posun" : Math.abs(n) <= 4 ? "posuny" : "posunov"} markera (${spolu}≈ ${znak(d[p].pohorseniaBody)} b ${p === ja ? "pre teba voči súperovi" : "pre súpera voči tebe"}, ak ich dá najvýhodnejšie)`;
+    });
+  if (poh.length > 0) casti.push(`Pohoršenia v bitke: ${poh.join(", ")}`);
+  const makke = [ja, su].filter((p) => d[p].makke !== 0).map((p) => `${kto(p)} ${znak(d[p].makke)}`);
+  if (makke.length > 0) casti.push(`mäkké poškodenie v bitke: ${makke.join(", ")}`);
+  return casti.length === 0 ? "" : `; ${casti.join("; ")}`;
+}
+
 /** Cena NA EX na kartu uid v kliatbách a bodoch pre oboch (tá istá logika ako náhľad na webe). */
 function cenaNaexText(v: ClientState, uid: number): string {
   const ja = v.ja;
@@ -283,12 +310,13 @@ function cenaNaexText(v: ClientState, uid: number): string {
     const poBitke = d !== k.dlhyPoBitke ? ` → po bitke ${k.dlhyPoBitke} (Robota či Dievčina na vydaj spáli)` : "";
     return `${c !== 0 ? `Cirhóza ${c > 0 ? "+" : "−"}${Math.abs(c)} (priznaná body neuberie, súper za ňu +1 tuhé v každej bitke) ` : ""}${d !== 0 ? `Dlh ${d > 0 ? "+" : "−"}${Math.abs(d)}${poBitke} ` : ""}(${k.body < 0 ? "−" : "+"}${Math.abs(k.body)} b)`;
   };
+  const dopady = dopadyText(dopadyNahladu(DATA, v, { ...v, strany, hraci }, dalsie), ja);
   const svokra = svokraZaNaex(DATA, v, ja, v.hraci[ja].cigarety);
   const abstaky = v.ruka.filter((k) => k.defId === "abstak").length;
   const stol: VerejnyStav = { ciel: v.ciel, ovladnute: v.ovladnute, strany, starsi: v.starsi, hraci: v.hraci };
   const d0 = poskodenieBitky(DATA, v, evaluateLine(DATA, lineState(v)).sums, ja === 0 ? [abstaky, 0] : [0, abstaky]);
   const d1 = poskodenieBitky(DATA, stol, evaluateLine(DATA, { ...lineState(v), strany }).sums, ja === 0 ? [abstaky, 0] : [0, abstaky]);
-  return `; bitka (tuhé) ${d0.tuhe[ja]}:${d0.tuhe[su]} → ${d1.tuhe[ja]}:${d1.tuhe[su]}; kliatby z tejto a ďalších Pitiek kola (NA EX leží do bitky): ty ${pre(ja)}, súper ${pre(su)}${svokra > 0 ? `; Svokra ti ukradne ${svokra} cig.` : ""}; súper má v ruke ${kariet(v.hraci[su].rukaPocet)} a smie odpovedať jednou`;
+  return `; bitka (tuhé) ${d0.tuhe[ja]}:${d0.tuhe[su]} → ${d1.tuhe[ja]}:${d1.tuhe[su]}; kliatby z tejto a ďalších Pitiek kola (NA EX leží do bitky): ty ${pre(ja)}, súper ${pre(su)}${dopady}${svokra > 0 ? `; Svokra ti ukradne ${svokra} cig.` : ""}; súper má v ruke ${kariet(v.hraci[su].rukaPocet)} a smie odpovedať jednou`;
 }
 
 function vykresli(v: ClientState, mena: readonly string[]): string {
@@ -593,11 +621,12 @@ function moznosti(v: ClientState): string[] {
         for (const e of v.starsi) {
           const cena = cenaPatronatu(e);
           if (!patronatMozny(e, ja) || h.cigarety < cena.cigarety) continue;
+          const dopady = dopadyText(dopadyNahladu(DATA, v, stavPoPatronate(v, e.elderId), 0), ja);
           for (const k of kandidati) {
             const n = nahladPatronatu(DATA, v, e.elderId, k);
             c(
               { type: "patronat", elderId: e.elderId, uid: k.uid },
-              `PATRONÁT: vezmi do ruky staršieho ${meno(e.karta.defId)} (v tomto kole ho smieš vyložiť), na jeho scorecard lícom dole ${meno(k.defId)}, marker do stredu; zaplatíš ${cena.cigarety} cig., súper dostane v bitke ${cena.pohorsenia} Pohoršení navyše (môže nimi vrátiť marker späť). Vyhráš bitku = starší je tvoj, prehráš = odhodíš poldeci natrvalo. Body ty:súper teraz ${b(n.teraz)}, pri výhre ${b(n.vyhra)}, pri prehre ${b(n.prehra)} (bez Pohoršení súpera)`,
+              `PATRONÁT: vezmi do ruky staršieho ${meno(e.karta.defId)} (v tomto kole ho smieš vyložiť), na jeho scorecard lícom dole ${meno(k.defId)}, marker do stredu; zaplatíš ${cena.cigarety} cig., súper dostane v bitke ${cena.pohorsenia} Pohoršení navyše (môže nimi vrátiť marker späť). Vyhráš bitku = starší je tvoj, prehráš = odhodíš poldeci natrvalo. Body ty:súper teraz ${b(n.teraz)}, pri výhre ${b(n.vyhra)}, pri prehre ${b(n.prehra)} (bez Pohoršení súpera)${dopady}`,
             );
           }
         }

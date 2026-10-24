@@ -331,7 +331,7 @@ export function doliatieZakazane(state: GameState, p: PlayerId): boolean {
 
 
 /** policajtka (Furt): súperove Pohoršenia proti jej majiteľovi neplatia. */
-export function pohorseniaNeplatia(data: GameData, state: GameState, proti: PlayerId): boolean {
+export function pohorseniaNeplatia(data: GameData, state: VerejnyStav, proti: PlayerId): boolean {
   return efektHraca(state, proti, "policajtka") && !efektPotlaceny(data, state, proti, "policajtka");
 }
 

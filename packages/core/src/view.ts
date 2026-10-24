@@ -25,12 +25,12 @@ import type {
   VyberStavby,
   ZhromazdenieStav,
 } from "./engine.ts";
-import { cenaDedicstva, mozeHrat, najdiNastroje, naTahu, uidZaverecnej } from "./engine.ts";
+import { cenaDedicstva, mozeHrat, najdiNastroje, naTahu, pohorsenieMozne, uidZaverecnej } from "./engine.ts";
 import { KONSTANTY } from "./constants.ts";
-import { MARKER_STRED, posunMarker, priazenHraca, priazenSila } from "./elders.ts";
+import { MARKER_STRED, posunMarker, prekraciaHranicu, priazenHraca, priazenSila } from "./elders.ts";
 import type { MarkerPos } from "./elders.ts";
 import type { DamageResult } from "./battle.ts";
-import { partiaHraca } from "./effects.ts";
+import { partiaHraca, pohorsenieNaKraj } from "./effects.ts";
 
 export interface HracVerejne {
   readonly rukaPocet: number;
@@ -561,6 +561,38 @@ export function hltavyPrebytok(
     kroky.push(najlepsi.elderId);
   }
   return { kroky, view: v };
+}
+
+/**
+ * Hltavé Pohoršenia: hráč `p` posunie `pocet` markerov k súperovi, každý tam,
+ * kde rozdielu bodov (p − súper, bodyTeraz) najviac pridá, a len kam smie
+ * (pohorsenieMozne — hranice zón, krajná pozícia). Vráti, o koľko sa rozdiel
+ * pohne. Pre „≈ b“ v náhľade NA EX a patronátu (návrh #1, playtest
+ * 20261024-075830); súperove Pohoršenia v tej istej bitke nerieši, preto „≈“.
+ */
+export function hodnotaPohorseni(data: GameData, view: ClientState, p: PlayerId, pocet: number): number {
+  const super_: PlayerId = p === 0 ? 1 : 0;
+  const rozdiel = (v: ClientState): number => {
+    const b = bodyTeraz(data, v).spolu;
+    return b[p] - b[super_];
+  };
+  const hranice: Record<string, number> = { ...(view.bitkaStav?.pohorsenieHranice ?? {}) };
+  let v = view;
+  for (let zostava = pocet; zostava > 0; zostava--) {
+    let najlepsi: { readonly v: ClientState; readonly hodnota: number; readonly elderId: string; readonly hranica: boolean } | null = null;
+    for (const e of v.starsi) {
+      if (!pohorsenieMozne({ ...v, bitkaStav: { pohorsenieHranice: hranice } }, p, e)) continue;
+      const marker = posunMarker(e, super_, true, pohorsenieNaKraj(v, p));
+      if (marker === null) continue;
+      const po: ClientState = { ...v, starsi: v.starsi.map((x) => (x.elderId === e.elderId ? { ...x, marker } : x)) };
+      const hodnota = rozdiel(po);
+      if (najlepsi === null || hodnota > najlepsi.hodnota) najlepsi = { v: po, hodnota, elderId: e.elderId, hranica: prekraciaHranicu(e.marker, marker) };
+    }
+    if (najlepsi === null) break;
+    if (najlepsi.hranica) hranice[`${p}:${najlepsi.elderId}`] = (hranice[`${p}:${najlepsi.elderId}`] ?? 0) + 1;
+    v = najlepsi.v;
+  }
+  return rozdiel(v) - rozdiel(view);
 }
 
 /**
