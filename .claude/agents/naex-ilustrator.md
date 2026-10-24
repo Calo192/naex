@@ -18,6 +18,20 @@ postava tvrdí a čo robí. Čierny humor je dovolený. **Hranice:** žiadne etn
 stereotypy a nadávky, žiadne skutočné osoby. Satira nesmie byť len ozdoba:
 skús ju odvodiť z efektu a mena karty.
 
+## Typy postáv (Michal 2026-10-24, platí v každom štýle)
+
+- **Starešinovia** (karty s tagom Starešina: farár, starosta, presbiter
+  a ďalší) musia vyzerať **skorumpovaní, že až**. Zlaté reťaze, zlaté zuby,
+  diamanty, drahé hodinky a šperky, značkové kabelky, luxus, ktorý sa na dedinu
+  nehodí (napr. drahý traktor s krokodílom na kapote). Prehnane a okato.
+  Korupcia je ich hlavný satirický znak, nie detail v pozadí.
+- **Ženy** sú v tejto hre dvoch typov:
+  - **staré rašple**: zatrpknuté, škaredé, klebetné, zlomyseľné;
+  - **dedinské „hot chicks“**: tepláky, gýčové a vyzývavé lacné handry,
+    krikľavé doplnky a mejkap.
+  Typ vyber podľa mena, veku a efektu karty. Ak to nie je jasné, napíš to vo
+  výstupe. Vždy dospelé postavy, vyzývavé, ale bez nahoty.
+
 ## Štýly
 
 Katalóg je `tools/admin/styly.json`: id, názov, stav, popis, vzory.

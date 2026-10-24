@@ -119,6 +119,12 @@ Pred použitím si každý návrh pozri (Read na súbor) a over:
    výrez.
 6. Postava zodpovedá názvu a téme karty (Kliatba pôsobí ako trest, Starešina
    ako autorita, Zviera ako dedinské zviera).
+7. **Starešina vyzerá skorumpovaný, že až** (Michal 2026-10-24): zlaté reťaze,
+   zlaté zuby, diamanty, drahé hodinky a šperky, značkové kabelky, luxus, ktorý
+   sa na dedinu nehodí (drahý traktor s krokodílom na kapote). Prehnane a okato.
+8. **Ženy sú dvoch typov** (Michal 2026-10-24): staré rašple (zatrpknuté,
+   škaredé, klebetné) alebo dedinské „hot chicks“ (tepláky, gýčové vyzývavé
+   lacné handry, krikľavé doplnky). Vždy dospelé, bez nahoty.
 
 Ak žiadny z návrhov nesedí, uprav námet (konkrétnejšie prostredie, výraz,
 svetlo) a generuj znova — nie viac ako 3 kolá na kartu bez konzultácie
