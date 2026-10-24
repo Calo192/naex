@@ -226,6 +226,12 @@ body.vyucba-bezi:not(.vyucba-vydesenie) .pas-kola .pas-starsi {
   min-width: 260px;
 }
 
+/* Pečiatky na hrane stola (fajčiť, záverečná, pasovať, končím…) sú tlačidlá ťahu — nad bublinou,
+   aby ich nikdy nezakryla (Leader 2026-10-24). Bublina si pritom stále hľadá miesto mimo nich. */
+body.vyucba-bezi .stol-hrana {
+  z-index: 75;
+}
+
 /* Počas výučby komentuje Melichar — pruhy udalostí a priazne na stole by ležali cez karty. */
 body.vyucba-bezi .pokyn-udalosti:not(.pokyn-tahania),
 body.vyucba-bezi .oznamy-priazne {
