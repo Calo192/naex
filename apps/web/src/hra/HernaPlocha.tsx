@@ -631,13 +631,16 @@ export function HernaPlocha({
       ? SIRKA_V_LINII
       : Math.floor((vyskaPlste - (vyskaOkna < NIZKE_OKNO ? PRIDAVOK_NIZKE : vyskaOkna < NOTEBOOK ? PRIDAVOK_NOTEBOOK : PRIDAVOK_LINIE)) / (POMER_KARTY * (1 + rezervaPosunu)));
   useEffect(() => {
-    if (mobil || stolScroll || vyskaPlste === 0 || sirkaPodlaVysky >= SIRKA_CITATELNA) return;
+    // Výučba stôl na scroll neprepína: návrh ťahu so spojom (vysunuté karty, pokyn v dvoch riadkoch
+    // úzkeho stola) ho prepol natrvalo a pás hráča s rukou ostali pod okrajom okna (UI inšpekcia
+    // 20261024-napovedy, N4). Karty ostávajú aj tak na SIRKA_CITATELNA a do plste sa vojdú.
+    if (mobil || vyucba === true || stolScroll || vyskaPlste === 0 || sirkaPodlaVysky >= SIRKA_CITATELNA) return;
     // Skrytá línia (starší, voľba cieľa, draft): plsť zmenší pokyn s kartami (patronát),
     // nie karty línie — scroll by plsť zrazil na pár px (UI inšpekcia 20261024-nahlad, N1).
     if (plstRef.current?.classList.contains("linia-skryta") === true) return;
     const t = setTimeout(() => setStolScroll(true), ONESKORENIE_SCROLLU_MS);
     return () => clearTimeout(t);
-  }, [mobil, stolScroll, vyskaPlste, sirkaPodlaVysky]);
+  }, [mobil, vyucba, stolScroll, vyskaPlste, sirkaPodlaVysky]);
   const sirkaVLinii =
     sirkaLinie === 0
       ? Math.min(SIRKA_V_LINII, sirkaPodlaVysky)
