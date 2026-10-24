@@ -2563,20 +2563,25 @@ export function HernaPlocha({
             // Celá cena (návrh #1, playtest 20261024-075830): cigarety a súperove Pohoršenia s ≈ bodmi.
             const cenaTahu = textDopadov(dopadyNahladu(data, view, stavPoPatronate(view, vybrany.elderId), 0));
             const cena = cenaPatronatu(vybrany);
+            // Nízke okno (1366 × 650): pokyn v toku uberá plsti so staršími — vysvetlenie ide
+            // do titulku a karty kandidátov sú menšie (UI inšpekcia 20261024-nahlad, patronát).
+            const nizke = vyskaOkna < NIZKE_OKNO;
+            const vysvetlenie = "Pri výhre ostane na ukazovateli a jeho akcie zapnú podmienky.";
             return {
               nadpis: `Patronát — ${menoKarty(vybrany.karta.defId)}`,
               text: (
                 <span className="zberatel-text">
-                  <span>
-                    Ktorý Občan či Zviera pôjde lícom dole na scorecard? Pri výhre ostane na ukazovateli a jeho akcie zapnú podmienky —
-                    pod kartou body ty:súper pri výhre (teraz <b>{b2(nahladPatronatu(data, view, vybrany.elderId, null).teraz)}</b>, pri
-                    prehre <b>{b2(nahladPatronatu(data, view, vybrany.elderId, null).prehra)}</b>, bez súperových Pohoršení).
+                  <span title={nizke ? vysvetlenie : undefined}>
+                    Ktorý Občan či Zviera pôjde lícom dole na scorecard?{" "}
+                    {nizke ? "Pod kartou" : <>{vysvetlenie.slice(0, -1)} — pod kartou</>} body ty:súper pri výhre (teraz{" "}
+                    <b>{b2(nahladPatronatu(data, view, vybrany.elderId, null).teraz)}</b>, pri prehre{" "}
+                    <b>{b2(nahladPatronatu(data, view, vybrany.elderId, null).prehra)}</b>, bez súperových Pohoršení).
                     {cenaTahu !== null && <> Cena: {cenaTahu}.</>}
                   </span>
                   <span className="zberatel-ponuka">
                     {kandidatiPatronatu.map((k) => (
                       <span key={k.uid} className="nahrada-kandidat">
-                        {karta({ karta: k, sirka: vyskaOkna < NIZKE_OKNO ? 56 : 72, vybrana: mode.uid === k.uid, onClick: () => setMode({ typ: "patronat", elderId: vybrany.elderId, uid: k.uid }) })}
+                        {karta({ karta: k, sirka: nizke ? 48 : 72, vybrana: mode.uid === k.uid, onClick: () => setMode({ typ: "patronat", elderId: vybrany.elderId, uid: k.uid }) })}
                         <small>výhra {b2(nahladPatronatu(data, view, vybrany.elderId, k).vyhra)}</small>
                       </span>
                     ))}
