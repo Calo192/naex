@@ -271,8 +271,11 @@ function miestaBubliny(w: number, h: number): Obdlznik[] {
   return [hornyStol, nadHranou, stred, dole, hore].flatMap((y, i) => xs.map((x, j) => ({ kluc: `${i}${j}`, x, y, w, h })));
 }
 
-/** Panely, ktoré sa objavia aj počas ťahu bota či hry: stavba, šenok, starší, hláška ťahania. */
-const PANELY = ".pokyn-tahania, .vrstva-fazy .stavba-zona, .vrstva-fazy .stavba-balicek, .vrstva-fazy .draft-karty, .vrstva-starsich:not([hidden]) .linia-starsich";
+/**
+ * Panely, ktoré sa objavia aj počas ťahu bota či hry: stavba, šenok, starší. Hláška ťahania nie —
+ * počas ťahu bota sa neťahá a ostávajúca hláška by bublinu posúvala pri každom ťahu (UI inšpekcia).
+ */
+const PANELY = ".vrstva-fazy .stavba-zona, .vrstva-fazy .stavba-balicek, .vrstva-fazy .draft-karty, .vrstva-starsich:not([hidden]) .linia-starsich";
 
 function skorePanelov(o: Obdlznik): number {
   return rectyPrvkov(PANELY).reduce((s, b) => s + prekrytie(o, b), 0);
@@ -282,12 +285,12 @@ function skorePanelov(o: Obdlznik): number {
 function skoreChranene(o: Obdlznik, zvyraznene: readonly Obdlznik[]): number {
   const sucet = (r: readonly Obdlznik[], vaha: number): number => r.reduce((s, b) => s + prekrytie(o, b) * vaha, 0);
   return (
-    sucet(zvyraznene, 50) +
+    sucet(zvyraznene, 100) +
     // Hláška, prečo sa karta nepoložila, musí byť celá vidno.
-    sucet(rectyPrvkov(".pokyn-tahania"), 50) +
-    sucet(rectyPrvkov(".vrstva-fazy .stavba-zona, .vrstva-fazy .stavba-balicek, .vrstva-fazy .draft-karty, .vrstva-starsich:not([hidden]) .linia-starsich"), 30) +
+    sucet(rectyPrvkov(".pokyn-tahania"), 100) +
+    sucet(rectyPrvkov(PANELY), 100) +
     // Miesto na konci strany je cieľ ťahu — rovnako dôležité ako zvýraznené prvky.
-    sucet(rectyPrvkov(".miesto-volby"), 50)
+    sucet(rectyPrvkov(".miesto-volby"), 100)
   );
 }
 
@@ -297,9 +300,9 @@ function skoreMiesta(o: Obdlznik, zvyraznene: readonly Obdlznik[]): number {
     skoreChranene(o, zvyraznene) +
     sucet(rectyPrvkov(".linia .partia-rad .kl"), 4) +
     sucet(rectyPrvkov(".stol-hrana .pecat, .stol-hrana button"), 20) +
-    sucet(rectyPrvkov(".linia-stav"), 4) +
-    sucet(rectyPrvkov(".pas-kola-obal"), 4) +
-    sucet(rectyPrvkov(".doska.moja"), 7) +
+    sucet(rectyPrvkov(".linia-stav"), 6) +
+    sucet(rectyPrvkov(".pas-kola-obal"), 6) +
+    sucet(rectyPrvkov(".doska.moja"), 5) +
     sucet(rectyPrvkov(".doska.superova"), 2) +
     sucet(rectyPrvkov(".ruka-rad .kl"), 1)
   );
@@ -434,16 +437,22 @@ export function VyucbaStol({
   const [rucne, setRucne] = useState<number | null>(null);
   const [poloha, setPoloha] = useState<Obdlznik | null>(null);
   const [zvolene, setZvolene] = useState(0);
+  // Pre ktorý krok bola poloha vyrátaná — v rámci kroku bublina neskáče za každou zmenou stola.
+  const pocitane = useRef<string | null>(null);
   useLayoutEffect(() => {
     const el = bublinaRef.current;
     // Počas ťahania karty sa úzke „+“ mení na plné miesto, ktoré skóre nepozná —
     // bublina by naň skočila a karta by dopadla na ňu (playtest výučby 2026-10-23).
     if (el === null || document.body.classList.contains("tahanie-aktivne")) return;
+    // Bublina je lepkavá (UI inšpekcia): poloha sa vyráta na začiatku kroku hráča či info kroku
+    // a potom sa zmení, len keď by zakryla niečo chránené. Pri ťahoch bota a hry ju presunie len
+    // panel (stavba, šenok, starší) — inak by skákala s každou kartou na stole.
     const sama = krok?.kto === "auto" || krok?.kto === "bot";
-    if (rucne === null && sama && poloha !== null) {
+    const idKroku = krok?.id ?? "hotovo";
+    if (rucne === null && poloha !== null && (sama || pocitane.current === idKroku)) {
       const h = el.offsetHeight;
       const tu = { ...poloha, w: el.offsetWidth, h };
-      if (skorePanelov(tu) === 0) {
+      if ((sama ? skorePanelov(tu) : skoreChranene(tu, zvyraznene)) === 0) {
         // Ostáva na mieste; len sa nesmie dostať pod spodok okna.
         const y = Math.min(poloha.y, window.innerHeight - h - 12);
         if (Math.abs(y - poloha.y) > 1) setPoloha({ ...poloha, y });
@@ -465,6 +474,7 @@ export function VyucbaStol({
     }
     const p = miesta[i % miesta.length];
     if (p === undefined) return;
+    pocitane.current = idKroku;
     if (i !== zvolene) setZvolene(i);
     if (poloha === null || Math.abs(poloha.x - p.x) > 1 || Math.abs(poloha.y - p.y) > 1) setPoloha(p);
   });
