@@ -22,7 +22,7 @@
       "id": "noir",
       "nazov": "Film noir",
       "stav": "skusobny",
-      "popis": "Čiernobiela tuš, silné tiene a kontrast svetla a tmy (film noir 40. rokov), bez farby, zrnitosť. Generovať len z textového opisu postavy — referencia karty v štýle hry ťahá model späť do farebného komiksu (Admin 2026-10-24).",
+      "popis": "Čiernobiela tuš, silné tiene a kontrast svetla a tmy (film noir 40. rokov), bez farby, zrnitosť. Generovať len z textového opisu postavy — referencia karty v štýle hry ťahá model späť do farebného komiksu (Admin 2026-10-24). Výnimka (Michal 2026-10-24): pri Starešinoch smú znaky korupcie (zlato, šperky, hodinky, diamanty) mierne vybočiť z čiernobielej — teplé žlté zlato ako jediný farebný akcent. Ostatné postavy a predmety prísne čiernobiele.",
       "vzory": [
         "tools/admin/styly/noir-podvodnik.jpg"
       ],
