@@ -455,6 +455,9 @@
         ]
       },
       "melichar": "Polož svietiaceho Miňištranta tak, aby jeho Viera znížila Štamgastovi tuhé, a potvrď. Viera platí, len keď sa na spoji stretne s akciou v tej istej výške, napríklad s Dlhom na konci Štamgastovej strany. Kam ho dáš?",
+      "zvyraznit": [
+        "akcia:Viera"
+      ],
       "volba": {
         "kandidati": [
           "ruka:ministrant#2"
