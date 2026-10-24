@@ -3056,6 +3056,18 @@ button.dlzka-volba.aktivna {
   flex-wrap: wrap;
 }
 
+/* Text vedľa kariet, nie nad nimi — pokyn patronátu v toku inak zjedol plsť so staršími
+   (UI inšpekcia 20261024-nahlad, N1). */
+.zberatel-text > span:first-child {
+  flex: 1 1 280px;
+}
+
+/* Patronát: nadpis v riadku s textom — o riadok nižší pokyn, viac plste pre starších. */
+.linia-stav:has(.nahrada-kandidat) {
+  flex-wrap: nowrap;
+  text-align: left;
+}
+
 .zberatel-ponuka > span {
   cursor: pointer;
 }
@@ -3254,9 +3266,12 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna.nemoze:hover > .kl {
   bottom: auto;
 }
 
+/* Nákupy vľavo sa nezalomia: stĺpec je aspoň taký široký ako ich rad — keď sa nezmestia
+   do polovice, pečiatka NA EX! sa posunie doprava, namiesto druhého riadku tlačidiel, ktorý
+   zmenšil karty a pustil stôl na scroll (UI inšpekcia 20261024-nahlad, N2). */
 .hrana-rad {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-columns: minmax(max-content, 1fr) auto minmax(0, 1fr);
   align-items: center;
   gap: 12px;
   padding: 0 16px;
@@ -4486,6 +4501,12 @@ button.auto-hotovo-odkaz {
     padding-block: 0;
     overflow: hidden;
     visibility: hidden;
+  }
+
+  /* Starší ležia vo vrstve cez plsť (absolute) — bez línie by plsť v scrolle mala pár px
+     (stôl ostal v scrolle z Pitky, UI inšpekcia 20261024-nahlad, N1). */
+  .hra.stol-scroll .stol-plst.linia-skryta.krok-starsich {
+    min-height: 320px;
   }
 
   .hra.stol-scroll .vrstva-fazy {
@@ -6008,6 +6029,13 @@ button.auto-hotovo-odkaz {
 
   .linia-stav:not(:has(.zberatel-ponuka, .vizia-karta)):is(:hover, :focus-within, :focus) > .pilulka-text {
     white-space: normal;
+  }
+
+  /* Rozbalený pokyn rastie nahor (cez pás kola), spodok ostane v riadku pokynu — nadol
+     prekrýval karty línie so štítkami NA EX a „vybraná“ (UI inšpekcia 20261024-nahlad, N3).
+     1lh + 10 px = výška pokynu v jednom riadku (padding 3 px a okraj 2 px hore aj dole). */
+  .linia-stav:not(:has(.zberatel-ponuka, .vizia-karta)):is(:hover, :focus-within, :focus) {
+    translate: -50% calc(-100% + 1lh + 10px);
   }
 
   /* Hrane stola stačí spodný okraj plste — 40 px línie navyše bola tá istá rezerva dvakrát
