@@ -272,6 +272,21 @@ function miestaBubliny(w: number, h: number): Obdlznik[] {
 }
 
 /**
+ * Pečiatky a počítadlo na hrane stola sú nad bublinou — keby siahala pätou (presunúť,
+ * prerušiť) na ne, posunie sa nahor tak, aby päta skončila nad nimi (UI inšpekcia).
+ */
+function nadHranouStola(o: Obdlznik): Obdlznik {
+  const hore = (document.querySelector(".hra-hlava")?.getBoundingClientRect().bottom ?? 110) + 8;
+  let y = o.y;
+  for (const el of document.querySelectorAll<HTMLElement>(".stol-hrana .pecat, .stol-hrana button, .stol-hrana .hrana-zasoba")) {
+    const r = el.getBoundingClientRect();
+    if (r.width === 0 || r.right <= o.x || r.left >= o.x + o.w) continue;
+    if (r.top < y + o.h && r.bottom > y) y = Math.max(hore, r.top - o.h - 6);
+  }
+  return y === o.y ? o : { ...o, y };
+}
+
+/**
  * Panely, ktoré sa objavia aj počas ťahu bota či hry: stavba, šenok, starší. Hláška ťahania nie —
  * počas ťahu bota sa neťahá a ostávajúca hláška by bublinu posúvala pri každom ťahu (UI inšpekcia).
  */
@@ -467,7 +482,7 @@ export function VyucbaStol({
       const tu = { ...poloha, w: el.offsetWidth, h };
       if ((sama ? skorePanelov(tu, krok) : skoreChranene(tu, zvyraznene)) === 0) {
         // Ostáva na mieste; len sa nesmie dostať pod spodok okna.
-        const y = Math.min(poloha.y, window.innerHeight - h - 12);
+        const y = nadHranouStola({ ...tu, y: Math.min(poloha.y, window.innerHeight - h - 12) }).y;
         if (Math.abs(y - poloha.y) > 1) setPoloha({ ...poloha, y });
         return;
       }
@@ -485,8 +500,9 @@ export function VyucbaStol({
         }
       });
     }
-    const p = miesta[i % miesta.length];
-    if (p === undefined) return;
+    const m = miesta[i % miesta.length];
+    if (m === undefined) return;
+    const p = nadHranouStola(m);
     pocitane.current = idKroku;
     if (i !== zvolene) setZvolene(i);
     if (poloha === null || Math.abs(poloha.x - p.x) > 1 || Math.abs(poloha.y - p.y) > 1) setPoloha(p);
