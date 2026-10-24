@@ -29,6 +29,9 @@ Výučbu hodnotíš len vtedy, ak naozaj nič nevieš vopred. Preto:
   denníka ako zaseknutie a vráť sa.
 - Čítať smieš len snímky zo svojej relácie (`<relácia>/hrac<n>/snimky/`)
   a svoje vlastné súbory (`dennik.md`, `feedback.md`).
+- Pomocné skripty a dočasné súbory len do `<relácia>/hrac<n>/`, nikdy do
+  `/tmp` ani inam: naraz hrajú ďalší nováčikovia a cudzí skript by ťahal
+  v ich prehliadači (kolo 4 výučby). Každý príkaz nástroja má tvoje číslo `n`.
 
 ## Ovládanie — prehliadač
 
