@@ -2516,6 +2516,13 @@ button.dlzka-volba.aktivna {
   color: var(--akcent);
 }
 
+/* Rámik má farbu akcentu ako fokus — fokus z klávesnice sa musí od neho líšiť (UI inšpekcia N5). */
+.tlacidlo-cigarety:focus-visible {
+  outline: 3px solid var(--akcent);
+  outline-offset: 3px;
+  box-shadow: 0 0 12px color-mix(in srgb, var(--akcent) 50%, transparent);
+}
+
 .tlacidlo-cigarety .cena {
   margin-left: 4px;
 }
@@ -6076,6 +6083,70 @@ button.auto-hotovo-odkaz {
   .pas-kola > .pas-limit,
   .pas-kola > .pas-starsi {
     flex-shrink: 0;
+  }
+
+  /* Keď sa pás nevojde (UI inšpekcia 20261024-napovedy, N3): stred bez orezania zľava
+     (safe), počet Zhromaždení a Pitiek sa nestratí — skráti sa verdikt odhadu trojbodkou
+     (celý je po kliku na odhad) a poznámka pri počte Pitiek. */
+  .pas-kola {
+    justify-content: safe center;
+  }
+
+  .pas-kola > .pas-pitky {
+    flex-shrink: 0;
+  }
+
+  .pas-kola .pas-pitky > .pas-pozn {
+    max-width: 26ch;
+    min-width: 0;
+  }
+
+  /* Najprv sa skráti poradie v Pitke a „tuhé · prebytok“, verdikt odhadu až nakoniec; nadpis
+     a šípka odhadu ostanú. */
+  .pas-kola > .pas-poradie {
+    flex-shrink: 20;
+  }
+
+  .pas-kola > .suhrn-bitky {
+    flex-shrink: 1;
+    min-width: 14em;
+    justify-content: flex-start;
+  }
+
+  .pas-kola > .suhrn-bitky > :is(b, .suhrn-bitky-tuhe) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .pas-kola > .suhrn-bitky > b {
+    flex: 0 1 auto;
+    min-width: 5em;
+  }
+
+  .pas-kola > .suhrn-bitky > .suhrn-bitky-tuhe {
+    flex: 0 20 auto;
+    min-width: 0;
+  }
+
+  .pas-kola > .suhrn-bitky > :not(b, .suhrn-bitky-tuhe) {
+    flex-shrink: 0;
+  }
+}
+
+/* Vysoké okno: pás má výšku dvoch riadkov aj tak (.pas-kola-obal) — čo sa nevojde, zalomí sa
+   namiesto trojbodky (na 1920 × 1080 sa skracoval verdikt odhadu, UI inšpekcia N3). */
+@media (min-width: 761px) and (min-height: 920px) {
+  .pas-kola {
+    flex-wrap: wrap;
+    row-gap: 2px;
+  }
+}
+
+/* Užšie okno: „vyloží ešte 3 karty“ povedia aj sloty — miesto dostane verdikt odhadu.
+   „pasoval“ ostane — to zo slotov nevidno. */
+@media (min-width: 761px) and (max-width: 1599px) {
+  .pas-limit .pas-hrac:not(.pasoval) .pas-text {
+    display: none;
   }
 }
 

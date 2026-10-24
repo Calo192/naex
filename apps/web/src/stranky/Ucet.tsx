@@ -519,7 +519,7 @@ export function Profil() {
             Melichar to krátko vysvetlí. Každú povie len raz.
           </span>
         </label>
-        <div className="riadok-tlacidiel">
+        <div className="riadok-tlacidiel napovedy-znova">
           <button type="button" className="tlacidlo-male" onClick={ukazNapovedyZnova} disabled={napovedyZnova}>
             {napovedyZnova ? "Nápovedy sa ukážu znova" : "Ukázať nápovedy znova"}
           </button>
