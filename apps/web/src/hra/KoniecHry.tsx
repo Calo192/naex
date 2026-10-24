@@ -4,7 +4,7 @@
 
 import { useEffect, useRef } from "react";
 import type { ClientState, GameData, PlayerId, Rod } from "@naex/core";
-import { bodyTeraz, tvar } from "@naex/core";
+import { VERZIA_PRAVIDIEL, bodyTeraz, tvar } from "@naex/core";
 import { Odkaz } from "../lib/router.tsx";
 import { RozpisBodov } from "./RozpisBodov.tsx";
 import { SuhrnPoPartii } from "../achievementy/VPartii.tsx";
@@ -87,6 +87,8 @@ export function KoniecHry({ view, data, mena, menoKarty, frajerina, achievementy
         )}
         {achievementy !== null && <SuhrnPoPartii suhrn={achievementy} />}
         <div className="koniec-tlacidla">
+          {/* Na akých pravidlách sa hralo — v riadku tlačidiel, aby okno na notebooku nenarástlo. */}
+          <span className="koniec-verzia">pravidlá {VERZIA_PRAVIDIEL}</span>
           <button onClick={onZavri}>pozrieť stôl</button>
           {/* Hodnotenie hry tými istými kritériami ako AI playtesteri (Michal 2026-10-21). */}
           <Odkaz href="/spatna-vazba#hodnotenie" className="tlacidlo">

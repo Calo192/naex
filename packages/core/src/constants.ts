@@ -153,12 +153,15 @@ export const KONSTANTY = {
 export const DLZKY_HRY = { kratka: 3, stredna: 5, dlha: 7 } as const;
 
 /**
- * Značka verzie pravidiel, ktorú nesie každá archivovaná partia (Michal
- * 2026-10-22) — profily podľa nej oddelia partie hrané na iných pravidlách.
- * Zmeň (dátum zmeny) vždy, keď sa mení správanie pravidiel v jadre; druhá
- * zmena v ten istý deň dostane príponu „.2“ atď.
+ * Verzia pravidiel, ktorú nesie každá archivovaná partia (Michal 2026-10-22) —
+ * podľa nej sa dajú oddeliť partie hrané na iných pravidlách. Do zmrazenia v4
+ * bola značkou dátum zmeny („2026-10-24.2“); od v4 (Michal 2026-10-24) sa
+ * pravidlá menia len v dávkach raz za 2 týždne a celá dávka dostane ďalšie
+ * číslo („v5“) spolu s novým dátumom platnosti.
  */
-export const VERZIA_PRAVIDIEL = "2026-10-24.2";
+export const VERZIA_PRAVIDIEL = "v4";
+/** Odkedy platí VERZIA_PRAVIDIEL — hráč ho vidí na stránke Pravidlá. */
+export const PRAVIDLA_PLATNE_OD = "2026-10-24";
 export type DlzkaHry = keyof typeof DLZKY_HRY;
 export const ALL_DLZKY: readonly DlzkaHry[] = ["kratka", "stredna", "dlha"];
 export const PREDVOLENA_DLZKA: DlzkaHry = "stredna";

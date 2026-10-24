@@ -2303,6 +2303,19 @@ button.dlzka-volba.aktivna {
   margin-top: 18px;
 }
 
+.koniec-verzia {
+  margin-right: auto;
+  align-self: center;
+  font-size: 0.75rem;
+  color: var(--tlmeny);
+}
+
+@media (max-width: 520px) {
+  .koniec-verzia {
+    display: none;
+  }
+}
+
 /* ---- draft na stole: stavba šenku a branie (Michal 2026-10-16) ----
  * Panel je nad stolom celý čas, kým hráč draftuje — žiadna vrstva, ktorá
  * by sa počas ťahania skryla. Zelený okraj = hráš ty, sivý = čakáš. */

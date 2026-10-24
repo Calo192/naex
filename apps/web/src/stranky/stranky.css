@@ -261,6 +261,15 @@ button.cip.aktivny {
   font-variant-numeric: tabular-nums;
 }
 
+.pravidla-verzia {
+  margin: -4px 0 0;
+  font-size: 0.78rem;
+}
+
+.pravidla-verzia-mobil {
+  display: none;
+}
+
 .pravidla-pokrok {
   height: 4px;
   border-radius: 2px;
@@ -788,6 +797,11 @@ button.cip.aktivny {
 
   .pravidla-bok {
     display: none;
+  }
+
+  .pravidla-verzia-mobil {
+    display: block;
+    margin: 0 0 12px;
   }
 
   .pravidla-lista {

@@ -5,6 +5,7 @@
 // pod myšou a slovník je na konci.
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { PRAVIDLA_PLATNE_OD, VERZIA_PRAVIDIEL } from "@naex/core";
 import type { Sada } from "@naex/tvorba";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { useSada } from "../lib/sada.tsx";
@@ -19,6 +20,10 @@ const OBRAZKY = import.meta.glob("./pravidla-obrazky/*.{jpg,jpeg,webp,png}", { e
 >;
 const obrazokKapitoly = (meno: string): string | null =>
   Object.entries(OBRAZKY).find(([cesta]) => cesta.replace(/^.*\//, "").replace(/\.[a-z]+$/, "") === meno)?.[1] ?? null;
+
+/** „2026-10-24“ → „24. 10. 2026“ — tak, ako dátum píšu hráči. */
+const [rokPlatnosti, mesiacPlatnosti, denPlatnosti] = PRAVIDLA_PLATNE_OD.split("-").map(Number);
+const VERZIA = `Pravidlá ${VERZIA_PRAVIDIEL}, platné od ${denPlatnosti}. ${mesiacPlatnosti}. ${rokPlatnosti}`;
 
 /** Kam dopadne skok na kotvu: pod lepkavú hlavičku webu, na mobile aj pod lištu „N / 15“. */
 function odsadenie(): number {
@@ -460,6 +465,7 @@ export function Pravidla() {
               {kdeSom}
             </span>
           </div>
+          <p className="pravidla-verzia tlmene">{VERZIA}</p>
           <div className="pravidla-pokrok" aria-hidden="true">
             <i style={{ width: `${percent}%` }} />
           </div>
@@ -491,6 +497,8 @@ export function Pravidla() {
         )}
 
         <div className="pravidla-kniha" ref={knihaRef}>
+          {/* Na mobile bok s nadpisom chýba — verzia ide nad prvú kapitolu. */}
+          <p className="pravidla-verzia pravidla-verzia-mobil tlmene">{VERZIA}</p>
           {sada === null ? (
             <div className="kostra-textu" aria-label="Načítava sa">
               {[92, 100, 84, 96, 70, 0, 88, 100, 60].map((w, i) => (
