@@ -20,6 +20,7 @@ import {
   DLZKY_HRY,
   IllegalCommandError,
   ktoVykona,
+  cakaNaDalej,
   pauzaKrokuVyucby,
   prelozKluceZvyraznenia,
   radaKVolbe,
@@ -170,7 +171,8 @@ interface Room {
    * príkaz, ktorý krok dovoľuje; ťahy bota hrá podľa skriptu. Nič z nej
    * nejde do archívu, štatistík ani Frajeriny.
    */
-  vyucba: { krok: number } | null;
+  /** vykonany = ťah bota či auto krok s textom je vykonaný a čaká na „ďalej“ (U5). */
+  vyucba: { krok: number; vykonany: boolean } | null;
   /** Strop pečiatok momentov (Michal 2026-10-23): 1 za úsek kola, zlato 2 za partiu. */
   momenty: StavMomentov;
   /** Achievementy partie (Michal 2026-10-23); null = nič sa nezískava (výučba, ešte nezačala). */
@@ -186,6 +188,8 @@ export interface KrokVyucbyKlient {
   readonly spolu: number;
   readonly id: string;
   readonly kto: "hrac" | "bot" | "info" | "auto" | "otazka";
+  /** Ťah bota či auto krok je vykonaný a čaká na „ďalej“ (U5); inak false. */
+  readonly vykonany: boolean;
   readonly melichar: string;
   readonly zvyraznit: readonly string[];
   readonly ocakava: Command | null;
@@ -705,7 +709,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           return;
         }
         const kto = scenarVyucby.kroky[room.vyucba.krok]?.kto;
-        if (kto !== "info" && kto !== "otazka") {
+        if (kto !== "info" && kto !== "otazka" && !room.vyucba.vykonany) {
           sendError(ws, "Teraz nie je čo potvrdiť — urob ťah, ktorý ukazuje majster Melichar.");
           return;
         }
@@ -872,7 +876,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       historia: [[], []],
       melicharVolnyOd: [0, 0],
       momenty: NOVE_MOMENTY,
-      vyucba: { krok },
+      vyucba: { krok, vykonany: false },
       achievementy: null,
     };
     rooms.set(room.code, room);
@@ -899,6 +903,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       spolu: scenarVyucby.kroky.length,
       id: k.id,
       kto: k.kto,
+      vykonany: room.vyucba.vykonany,
       melichar: k.melichar,
       zvyraznit: prelozKluceZvyraznenia(room.state, k.zvyraznit ?? []),
       ocakava,
@@ -917,6 +922,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   const posunVyucbu = (room: Room): void => {
     if (room.vyucba === null) return;
     room.vyucba.krok++;
+    room.vyucba.vykonany = false;
     const id = room.hraci[VYUCBA_HRAC]?.id;
     const hotovo = room.vyucba.krok >= scenarVyucby.kroky.length;
     if (id !== undefined) {
@@ -939,7 +945,11 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     if (k.kto !== "hrac") {
       sendError(
         ws,
-        k.kto === "info" ? "Najprv si prečítaj, čo hovorí majster Melichar, a klikni „ďalej“." : k.kto === "auto" ? "Tento ťah spraví hra za teba — chvíľu počkaj." : "Teraz ťahá Štamgast.",
+        k.kto === "info" || room.vyucba.vykonany
+          ? "Najprv si prečítaj, čo hovorí majster Melichar, a klikni „ďalej“."
+          : k.kto === "auto"
+            ? "Tento ťah spraví hra za teba — chvíľu počkaj."
+            : "Teraz ťahá Štamgast.",
       );
       return;
     }
@@ -978,7 +988,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   const naplanujVyucbu = (room: Room): void => {
     if (room.vyucba === null || room.botTimer !== null || room.state === null) return;
     const najblizsi = scenarVyucby.kroky[room.vyucba.krok];
-    if (najblizsi === undefined || (najblizsi.kto !== "bot" && najblizsi.kto !== "auto")) return;
+    if (najblizsi === undefined || (najblizsi.kto !== "bot" && najblizsi.kto !== "auto") || room.vyucba.vykonany) return;
     room.botTimer = setTimeout(() => {
       room.botTimer = null;
       const state = room.state;
@@ -990,6 +1000,12 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         vykonaj(room, prikazZoScenara(state, hrac, krok.prikaz), hrac);
       } catch (err) {
         console.error(`Scenár výučby: ${krok.kto === "auto" ? "automatický ťah hráča" : "ťah bota"} neprešiel`, krok.id, err);
+        return;
+      }
+      // S textom: ťah je na stole a krok čaká na „ďalej“ — hráč vidí text aj výsledok (U5).
+      if (cakaNaDalej(krok)) {
+        room.vyucba.vykonany = true;
+        posliVyucbu(room);
         return;
       }
       posunVyucbu(room);

@@ -15,10 +15,9 @@ import {
   naTahu,
   ocakavanyPrikaz,
   overScenar,
-  PAUZA_NA_SLOVO_MS,
-  PAUZA_NAJVIAC_MS,
+  PAUZA_PRED_TAHOM_MS,
   PAUZA_TICHA_MS,
-  PAUZA_ZAKLAD_MS,
+  cakaNaDalej,
   pauzaKrokuVyucby,
   porovnajSKrokom,
   prelozKluceZvyraznenia,
@@ -250,11 +249,13 @@ describe("výučba — kontrolné otázky a rozhodnutia (UX N2)", () => {
 describe("výučba — pauza pred krokom, ktorý hra spraví sama (UI inšpekcia)", () => {
   const krok = (kto: "bot" | "auto", melichar: string) => ({ id: "x", kto, melichar, prikaz: { type: "pass" as const } });
 
-  it("bot bez textu 700 ms; s textom a auto 1800 ms + 60 ms na slovo, najviac 4 s", () => {
+  it("s textom 700 ms a potom čaká na ďalej; bez textu 1500 ms a ide sám (U5)", () => {
     expect(pauzaKrokuVyucby(krok("bot", ""))).toBe(PAUZA_TICHA_MS);
-    expect(pauzaKrokuVyucby(krok("auto", ""))).toBe(PAUZA_ZAKLAD_MS);
-    expect(pauzaKrokuVyucby(krok("bot", "Štamgast ide do krčmy  a pije."))).toBe(PAUZA_ZAKLAD_MS + 6 * PAUZA_NA_SLOVO_MS);
-    expect(pauzaKrokuVyucby(krok("auto", Array.from({ length: 200 }, () => "slovo").join(" ")))).toBe(PAUZA_NAJVIAC_MS);
+    expect(pauzaKrokuVyucby(krok("auto", "  "))).toBe(PAUZA_TICHA_MS);
+    expect(pauzaKrokuVyucby(krok("bot", "Štamgast ide do krčmy a pije."))).toBe(PAUZA_PRED_TAHOM_MS);
+    expect(cakaNaDalej(krok("auto", "Hra kúpila Hasiča."))).toBe(true);
+    expect(cakaNaDalej(krok("bot", ""))).toBe(false);
+    expect(PAUZA_TICHA_MS).toBeGreaterThanOrEqual(1500);
   });
 });
 
@@ -271,5 +272,17 @@ describe("výučba — kľúče zvýraznenia „zóna:defId#n“ idú klientovi 
       "ruka:neexistuje#2",
     ]);
     if (ruka.filter((k) => k.defId === defId).length >= 2) expect(prelozKluceZvyraznenia(state, [`ruka:${defId}#2`])).toEqual([`uid:${druha?.uid}`]);
+  });
+});
+
+describe("výučba — zlý ťah pri staršom pomenuje staršieho (U3)", () => {
+  it("prebytok, Pohoršenie a patronát na zlého staršieho: text povie meno správneho", () => {
+    const state = setupGame(data, 7);
+    const [a, b] = state.starsi;
+    if (a === undefined || b === undefined) throw new Error("starší");
+    const meno = defOf(data, a.karta).name;
+    const p = porovnajSKrokom(data, state, { type: "prebytok", elderId: b.elderId }, { type: "prebytok", elderId: a.elderId });
+    expect(p.chybajuce.map((x) => x.popis)).toEqual([`posuň prebytkom staršieho „${meno}“`]);
+    expect(textChybyKroku(p)).toContain(meno);
   });
 });
