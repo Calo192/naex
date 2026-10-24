@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Priazne: prečo nekompenzujú (rozbor 2026-10-24, NA EX!)</title>
+<style>
+  :root {
+    --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #dccdb3;
+    --text: #2a2016; --tlmeny: #6b5b45; --slaby: #7d6d55;
+    --akcent: #9a5f0c; --cervena: #a83c28; --zelena: #3a7533; --modra: #276f7a;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 system-ui, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 1040px; margin: 0 auto; padding: 28px 14px 90px; }
+  h1, h2, h3 { font-family: Georgia, serif; line-height: 1.2; }
+  h1 { font-size: clamp(1.6rem, 4.5vw, 2.3rem); margin: 0 0 8px; }
+  h2 { font-size: 1.3rem; margin: 40px 0 12px; }
+  h3 { font-size: 1.05rem; margin: 0 0 6px; }
+  .podnadpis { color: var(--tlmeny); margin: 0 0 18px; max-width: 78ch; }
+  code { font-size: 0.86em; background: var(--plocha-2); padding: 1px 5px; border-radius: 5px; overflow-wrap: anywhere; }
+  .verdikt { border: 1px solid var(--akcent); background: var(--plocha); border-left: 6px solid var(--akcent);
+    border-radius: 14px; padding: 12px 16px; margin: 16px 0; }
+  .verdikt p { margin: 6px 0; }
+  .stitok { display: inline-block; font: 700 0.76rem/1 system-ui, sans-serif; letter-spacing: 0.06em; text-transform: uppercase;
+    color: #fff; background: var(--akcent); border-radius: 999px; padding: 5px 12px; margin-bottom: 6px; }
+  .cisla { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin: 14px 0; }
+  .cislo { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 11px 13px; }
+  .cislo b { display: block; font: 700 1.4rem/1.1 Georgia, serif; color: var(--akcent); }
+  .cislo span { color: var(--tlmeny); font-size: 0.87rem; display: block; margin-top: 4px; }
+  .tab { overflow-x: auto; background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; margin: 10px 0; -webkit-overflow-scrolling: touch; }
+  .tab table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 720px; }
+  .tab th, .tab td { padding: 7px 9px; border-bottom: 1px solid var(--okraj); text-align: left; vertical-align: top; }
+  .tab tr:last-child td { border-bottom: 0; }
+  .tab th { color: var(--slaby); font-weight: 600; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .tab td.n { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .zav { display: inline-block; border-radius: 999px; padding: 1px 9px; font-size: 0.76rem; font-weight: 700; white-space: nowrap; }
+  .zav.silna { background: #dfe9dc; color: var(--zelena); }
+  .zav.stredna { background: #f1e2c8; color: var(--akcent); }
+  .zav.slaba { background: #f3dcd5; color: var(--cervena); }
+  .zav.mrtva { background: var(--cervena); color: #fff; }
+  .graf { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 12px 14px; margin: 10px 0; }
+  .riadok { display: grid; grid-template-columns: 110px 1fr; gap: 8px; align-items: center; margin: 6px 0; font-size: 0.86rem; }
+  .riadok .meno { color: var(--tlmeny); }
+  .pruh { position: relative; height: 18px; background: var(--plocha-2); border-radius: 4px; }
+  .pruh i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; background: var(--akcent); }
+  .pruh.modry i { background: var(--modra); }
+  .pruh em { position: absolute; left: 6px; top: 0; font-style: normal; font-size: 0.76rem; line-height: 18px; color: var(--text); }
+  .pruh .ciara { position: absolute; top: -3px; bottom: -3px; border-left: 2px dashed var(--cervena); }
+  .poznamka { color: var(--tlmeny); font-size: 0.88rem; margin: 8px 2px 0; }
+  .filtre { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 14px; }
+  .filtre button { font: inherit; font-size: 0.88rem; border-radius: 999px; padding: 6px 14px; border: 1px solid var(--okraj);
+    background: var(--plocha-2); color: var(--text); cursor: pointer; min-height: 36px; }
+  .filtre button[aria-pressed="true"] { background: var(--akcent); color: #fff; border-color: var(--akcent); font-weight: 700; }
+  .filtre button:focus-visible, summary:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+  .navrh { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 13px 15px; margin-bottom: 12px; }
+  .navrh.odp-zaviest { border-left: 5px solid var(--zelena); }
+  .navrh.odp-vyskusat { border-left: 5px solid var(--akcent); }
+  .navrh.odp-zamietnut { border-left: 5px solid var(--cervena); }
+  .navrh dl { display: grid; grid-template-columns: minmax(96px, 150px) 1fr; gap: 4px 12px; margin: 8px 0 0; font-size: 0.92rem; }
+  .navrh dt { color: var(--slaby); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; padding-top: 3px; }
+  .navrh dd { margin: 0; }
+  .odp { display: inline-block; font-size: 0.74rem; font-weight: 700; border-radius: 999px; padding: 2px 10px; margin-left: 6px; vertical-align: middle; color: #fff; }
+  .odp.zaviest { background: var(--zelena); }
+  .odp.vyskusat { background: var(--akcent); }
+  .odp.zamietnut { background: var(--cervena); }
+  blockquote { margin: 6px 0; padding: 4px 12px; border-left: 3px solid var(--okraj); color: var(--tlmeny); font-style: italic; font-size: 0.9rem; }
+  ol li, ul li { margin-bottom: 7px; }
+  .chyba { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 10px 14px; margin: 8px 0; }
+  .chyba h3 { font-size: 1rem; }
+  details { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 8px 14px; margin: 10px 0; }
+  summary { cursor: pointer; font-weight: 600; }
+  footer { color: var(--tlmeny); font-size: 0.86rem; margin-top: 44px; border-top: 1px solid var(--okraj); padding-top: 14px; }
+  @media (max-width: 560px) {
+    .navrh dl { grid-template-columns: 1fr; }
+    .navrh dt { padding-top: 6px; }
+    .riadok { grid-template-columns: 86px 1fr; }
+  }
+</style>
+</head>
+<body>
+<main>
+<span class="stitok">Rozbor stratéga</span>
+<h1>Priazne: prečo nekompenzujú</h1>
+<p class="podnadpis">Michalova otázka z 24. 10. 2026: kto vystraší staršieho, dáva súperovi jeho priazeň. Prečo to zaostávajúcemu
+nepomáha dobiehať? Overil som tri podozrenia: zlú implementáciu, nevyrovnanú silu a zlé využívanie. Pravidlá v4 (master <code>edfaffe</code>).</p>
+
+<section class="verdikt" aria-labelledby="verdikt">
+  <h2 id="verdikt" style="margin-top:4px">Verdikt</h2>
+  <p><strong>Implementácia sedí:</strong> všetkých 8 priazní robí to, čo hovorí §10, a dostane ich správny hráč. Našiel som len tri drobnosti
+  (Fajčiarovi berie cigarety Obmedzenie, Pohoršenie mení priazeň už v tej istej bitke, Exekútor sa nikdy neprejaví).</p>
+  <p><strong>Priazeň nekompenzuje, lebo je malá a darca si ju vyberá.</strong> V 435 bitkách botov otočili priazne výsledok len v <strong>3 %</strong> bitiek.
+  Štyri z ôsmich priazní nerobia skoro nič. Body za strach sú pri každom staršom rovnaké, takže vedúci dá súperovi vždy neškodnú
+  priazeň a nič ho to nestojí. AI playtesteri to robili v 6 zo 7 partií. Bot to zatiaľ nerobí, preto merania s botmi priazeň skôr nadhodnocujú.</p>
+  <p><strong>Odporúčam ako prvé</strong> vziať darcovi voľbu: <em>priazeň dediny</em>, teda tuhé navyše podľa súčtu sily všetkých priazní nad súperove.
+  Vo variante s +1 tuhým za každý bod sily vyhrával zaostávajúci s priazňou bitku v 82 % (dnes 67 %). Je to však priveľa, preto ju navrhujem v polovičnej sile a pred zavedením zmerať rebrík.</p>
+</section>
+
+<h2 id="cisla">Čísla</h2>
+<div class="cisla">
+  <div class="cislo"><b>3 %</b><span>bitiek otočila bitková priazeň (Bitkár, Veriaci, Neprajník). Z bitiek, kde ju niekto mal, 12 %.</span></div>
+  <div class="cislo"><b>1,48 : 0,30</b><span>priemerná sila priazní zaostávajúceho a vedúceho pri bitke. Priazeň teda ide správnemu hráčovi.</span></div>
+  <div class="cislo"><b>61 % → 65 %</b><span>zaostávajúci vyhrá bitku bez bitkovej priazne, resp. s ňou (n = 287 / 94). Rozdiel je v šume.</span></div>
+  <div class="cislo"><b>0 ×</b><span>sa prejavil Exekútor: najviac priznaných Dlhov bolo 7, prah je 10.</span></div>
+  <div class="cislo"><b>6 zo 7</b><span>partií AI playtesterov s denníkom, v ktorých vedúci výslovne dával súperovi „neškodnú“ priazeň.</span></div>
+  <div class="cislo"><b>1,5 / partiu</b><span>patronátov. 79 % z nich urobil zaostávajúci, a tým priazeň minul (marker ide do stredu).</span></div>
+  <div class="cislo"><b>80 %</b><span>vedúci po 4. kole (z 5) vyhrá partiu. Otočky 33 %, náskok sa medzi bitkami v priemere zmenší o 8,5 b.</span></div>
+  <div class="cislo"><b>0</b><span>ostrých partií ľudí v archíve živého webu (<code>karty-v-partiach --zivy --ludia</code>), takže o ľuďoch nič.</span></div>
+</div>
+<p class="poznamka">100 partií bot proti botovi (striedajú sa povahy Štamgast, Rapavý Fero, Teta Gizka), stredná hra (5 lokalít), 435 bitiek.
+Kontrafakt: to isté poškodenie som prepočítal bez danej priazne.</p>
+
+<h2 id="tabulka">Tabuľka priazní</h2>
+<p class="poznamka">„Držaná“ znamená podiel hráč-bitiek (870), v ktorých hráč priazeň mal pri výpočte poškodenia. „Prínos“ som zmeral v partiách botov.
+Sila 3 sa pri bitke takmer nevyskytuje: Bitkár 0×, Veriaci 3×, lebo krajnú pozíciu stráži zamknutie a patronát marker vracia do stredu.</p>
+<div class="tab" role="region" aria-label="Tabuľka priazní" tabindex="0">
+<table>
+  <thead><tr><th scope="col">Priazeň</th><th scope="col">Účinok (sila 1 / 2 / 3)</th><th scope="col">Kód = §10?</th><th scope="col">Držaná, ⌀ sila</th><th scope="col">Nameraný prínos</th><th scope="col">Ako s ňou zaobchádzajú</th><th scope="col">Sila</th></tr></thead>
+  <tbody>
+    <tr><th scope="row">Bitkár</th><td>+2 / +4 / +6 tuhé</td><td>áno, <code>engine.ts:803</code>, <code>battle.ts:72</code></td><td class="n">5,4 %, 1,53</td><td>otočila <strong>19 %</strong> bitiek, kde ju niekto mal (9 / 47), vždy v prospech držiteľa</td><td>AI sa jej vyhýbajú („Bitkár dáva Eve +4 tuhé, NIE“), bot nie</td><td><span class="zav silna">silná, vzácna</span></td></tr>
+    <tr><th scope="row">Veriaci</th><td>+1 / +2 / +3 Viera</td><td>áno, <code>engine.ts:793</code></td><td class="n">5,6 %, 1,69</td><td>otočila <strong>12 %</strong> (6 / 49), najprv ruší súperove Povery, až potom uberá tuhé</td><td>AI sa jej vyhýbajú</td><td><span class="zav stredna">stredná</span></td></tr>
+    <tr><th scope="row">Neprajník</th><td>strop mäkkého +2 / +4 / +6</td><td>áno, <code>engine.ts:800</code>, <code>battle.ts:77–82</code></td><td class="n">5,7 %, 1,68</td><td><strong>0 %</strong> výsledkov, lebo víťaza určuje tuhé. Prebytok menila v 24 %.</td><td>AI: „mäkké poškodenie, ktoré nič neurobí“</td><td><span class="zav slaba">slabá</span></td></tr>
+    <tr><th scope="row">Fajčiar</th><td>+1 / +2 / +3 cigarety v 1. Pitke</td><td>skoro, Obmedzenie ju uberá (<code>engine.ts:2591–2597</code>)</td><td class="n">6,9 %, 1,62</td><td>+1,0 cigarety na hráč-bitku</td><td>časť AI sa jej vyhýba</td><td><span class="zav slaba">slabá</span></td></tr>
+    <tr><th scope="row">Alkoholik</th><td>prah Cirhózy 5 / 7 / 9</td><td>áno, <code>engine.ts:633</code></td><td class="n">9,4 %, 1,57</td><td>0,33 Cirhózy menej na hráč-bitku (27 v 100 partiách), čo je ≈ 0,7 – 2,6 b</td><td>AI nejednotne: raz „neškodná“, inokedy „nedávať“</td><td><span class="zav stredna">stredná</span></td></tr>
+    <tr><th scope="row">Úžerník</th><td>prah Dlhu 3 / 4 / 5</td><td>áno, <code>engine.ts:647</code>, <code>player.ts:76</code></td><td class="n">6,0 %, 1,50</td><td>0,15 Dlhu menej na hráč-bitku, čo je ≈ 0,6 – 1 b</td><td>AI: neškodná</td><td><span class="zav slaba">slabá</span></td></tr>
+    <tr><th scope="row">Lakomec</th><td>barter za 4 / 3 / 2 cigarety</td><td>áno, <code>engine.ts:2449</code>, <code>player.ts:93</code></td><td class="n">6,7 %, 1,67</td><td>0,14 cigarety na hráč-bitku. Barter bol v 100 partiách len 26×, s priazňou 5×.</td><td>AI: neškodná</td><td><span class="zav mrtva">takmer mŕtva</span></td></tr>
+    <tr><th scope="row">Exekútor</th><td>prah Exekútora 14 / 18 / 22</td><td>áno, <code>player.ts:80</code> (10 + 2 × priazeň)</td><td class="n">7,6 %, 1,59</td><td><strong>0</strong>: ani základný prah 10 nikto nedosiahol (najviac 7 Dlhov)</td><td>AI: najčastejší „bezpečný“ cieľ prebytku</td><td><span class="zav mrtva">mŕtva</span></td></tr>
+  </tbody>
+</table>
+</div>
+<p class="poznamka">Michal tipoval, že silné sú poškodenie a Viera navyše. Je to tak: Bitkár a Veriaci sú jediné priazne, ktoré merateľne menia bitku. Bitku však rozhodujú zriedka, lebo 29 % bitiek
+sa skončí rozdielom tuhého 6 a viac a sila 3 sa pri bitke nevyskytuje.</p>
+
+<div class="graf" role="img" aria-label="Podiel bitiek, ktoré priazeň otočila, a podiel posunov markerov podľa priazne">
+  <h3>Otočené bitky a kam posúvajú markery</h3>
+  <p class="poznamka" style="margin-top:0">Hnedý pruh: koľko bitiek priazeň otočila, keď ju niekto mal. Modrý pruh: podiel posunov k súperovi, ktoré mu pridali priazeň daného typu
+  (1916 posunov botov). Čiarkovaná čiara 12,5 % znamená rovnomerný výber.</p>
+  <div class="riadok"><span class="meno">Bitkár</span><div><div class="pruh"><i style="width:19%"></i><em>19 % otočených</em></div><div class="pruh modry" style="margin-top:3px"><i style="width:11%"></i><span class="ciara" style="left:12.5%"></span><em>11 % posunov</em></div></div></div>
+  <div class="riadok"><span class="meno">Veriaci</span><div><div class="pruh"><i style="width:12%"></i><em>12 %</em></div><div class="pruh modry" style="margin-top:3px"><i style="width:12%"></i><span class="ciara" style="left:12.5%"></span><em>12 %</em></div></div></div>
+  <div class="riadok"><span class="meno">Neprajník</span><div><div class="pruh"><i style="width:0%"></i><em>0 %</em></div><div class="pruh modry" style="margin-top:3px"><i style="width:12%"></i><span class="ciara" style="left:12.5%"></span><em>12 %</em></div></div></div>
+  <div class="riadok"><span class="meno">Fajčiar</span><div><div class="pruh modry"><i style="width:11%"></i><span class="ciara" style="left:12.5%"></span><em>11 %</em></div></div></div>
+  <div class="riadok"><span class="meno">Alkoholik</span><div><div class="pruh modry"><i style="width:17%"></i><span class="ciara" style="left:12.5%"></span><em>17 %</em></div></div></div>
+  <div class="riadok"><span class="meno">Úžerník</span><div><div class="pruh modry"><i style="width:10%"></i><span class="ciara" style="left:12.5%"></span><em>10 %</em></div></div></div>
+  <div class="riadok"><span class="meno">Lakomec</span><div><div class="pruh modry"><i style="width:13%"></i><span class="ciara" style="left:12.5%"></span><em>13 %</em></div></div></div>
+  <div class="riadok"><span class="meno">Exekútor</span><div><div class="pruh modry"><i style="width:15%"></i><span class="ciara" style="left:12.5%"></span><em>15 %</em></div></div></div>
+  <p class="poznamka">Bot dáva priazne skoro rovnomerne, takže sa nebezpečným nevyhýba. AI playtesteri sa im vyhýbajú zámerne (citáty nižšie).</p>
+</div>
+
+<h2 id="preco">Prečo priazeň nekompenzuje: päť príčin</h2>
+<ol>
+  <li><strong>Darca si vyberá, ktorú priazeň dá, a uhnúť ho nič nestojí.</strong> Zónové podmienky (Znepokojenie, Strach, Vydesenie) rátajú strach
+  zo všetkých 8 starších rovnako (§14). Je teda jedno, ktorého staršieho vedúci postraší. Z ôsmich priazní menia bitku len dve, takže vždy má
+  aspoň päť neškodných cieľov.
+  <blockquote>„Volím Veterinára (priazeň Exekútor: súperovi najmenej užitočná).“ (20261021-143600-1)</blockquote>
+  <blockquote>„Priazeň v partii fungovala len ako pasca na vyhnutie sa … priazeň je zakázaná zóna pri 2 z 8 starších; zvyšok je rovnako dobrý.“ (20261021-143600-3, feedback)</blockquote>
+  <blockquote>„Dobiehanie nepomohlo: priazeň (Exekútor 22, Lakomec) je nanič.“ (20261021-143600-3, feedback druhého hráča)</blockquote></li>
+  <li><strong>Aj silná priazeň je malá.</strong> Bitkár so silou 1 až 2 pridá 2 až 4 tuhé, no 29 % bitiek sa končí rozdielom 6 a viac. Bitkové priazne spolu
+  otočili 3 % bitiek. Zisk z ekonomických priazní je do 1 – 3 b na bitku. Jedna vyhratá bitka pritom prinesie lokalitu (10 – 18 b) a posuny strachu.</li>
+  <li><strong>Priazeň je dočasná, strach trvalý.</strong> Vedúci si posun hneď pripíše ako body za strach. Súper z priazne niečo má, len kým marker stojí
+  na jeho polovici, a sila 3 sa k bitke prakticky nedostane (zamknutie, patronát).</li>
+  <li><strong>Hlavné využitie priazne je ju minúť.</strong> Patronát (1,5 na partiu, 79 % zaostávajúci) vráti marker do stredu. Zaostávajúci teda priazeň
+  predá za šancu na staršieho a bitku stratí. Patrón vyhral bitku v 54 %, zaostávajúci celkovo v 61 %.</li>
+  <li><strong>Štyri priazne nemajú účinok.</strong> Exekútor sa nikdy neprejaví, Lakomcov barter sa skoro nepoužíva a Neprajník nevie zmeniť víťaza bitky.
+  Úžerník zabráni Dlhu raz za 7 bitiek.</li>
+</ol>
+<details>
+  <summary>Snehová guľa: čo ukazujú bitky botov</summary>
+  <p>V partiách botov dobiehanie v bitkách funguje. Vedúci (podľa bodov pred bitkou) vyhrá bitku len v 38 %, víťaz minulej bitky vyhrá aj ďalšiu v 42 %
+  a náskok sa medzi bitkami zmenší v 63 % prípadov (v priemere o 8,5 b). Pri náskoku 50 b a viac však zaostávajúci vyhrá len 31 % bitiek (n = 13).
+  Snehová guľa z posudku nápadníka („víťaz partie má viac“) meria, čo má víťaz na konci. Neukazuje, či náskok rastie. Priazeň tam nie je príčina,
+  len nepomáha: odmena za strach príde hneď a natrvalo, kým kompenzácia je malá a dá sa jej uhnúť.</p>
+</details>
+
+<h2 id="chyby">Chyby a nejasnosti v implementácii</h2>
+<p>Overené ako správne: sila 1 / 2 / 3 podľa zóny (<code>elders.ts:18</code>, <code>elders.ts:55–64</code>), priazeň patrí hráčovi na polovici markera
+(indexy 0–2 hráč 0, 6–8 hráč 1), účinok 2 × sila (<code>engine.ts:449–460</code>, <code>NASOBOK_PRIAZNE</code>), vzorec každej z ôsmich priazní (tabuľka vyššie),
+patronát vracia marker do stredu, pri prebudení priazeň ostáva súperovi. Texty v rozhraní (<code>apps/web/src/hra/Scorecard.tsx:25–53</code>) sedia s kódom.</p>
+<div class="chyba"><h3>1. Fajčiar: súperovo Obmedzenie uberá aj cigarety z priazne</h3>
+<p><code>packages/core/src/engine.ts:2591–2597</code>: cigarety z priazne sa pripočítajú pred odpočtom Obmedzenia, kým Cigorky sú výslovne chránené.
+§10 (<code>docs/PRAVIDLA.md:681</code>) hovorí „cigarety navyše rovné sile“ bez výnimky. Treba rozhodnúť a dopísať jedno alebo druhé. Dopad je malý.</p></div>
+<div class="chyba"><h3>2. Pohoršenie mení priazeň už v tej istej bitke</h3>
+<p><code>engine.ts:2943–2956</code>: Pohoršenie (krok 2) sa vyhodnotí pred poškodením (krok 3). Pohoršenie, ktoré posunie Bitkára k súperovi, mu dá tuhé hneď v tejto bitke.
+Poradie §9 to pripúšťa, ale nikde to nie je povedané a <code>PRAVIDLA.md:581</code> hovorí o priazni „v ďalších kolách“. Odhad bitky v Zhromaždení s tým neráta.
+Dnes to zmenilo víťaza v 6 zo 435 bitiek. Pri silnejšej priazni (variant nižšie) v 8 % bitiek.</p></div>
+<div class="chyba"><h3>3. Exekútor je nedosiahnuteľný</h3>
+<p><code>packages/core/src/player.ts:80–82</code>: vzorec 10 + 2 × priazeň (14 / 18 / 22) sedí s tabuľkou §10, takže nejde o chybu kódu. Už základný prah 10 však
+v 435 bitkách nikto nedosiahol (najviac 7 priznaných Dlhov, raz ≥ 6). Priazeň preto nemá účinok.</p></div>
+<div class="chyba"><h3>4. Dve rovnaké priazne by sa nesčítali (len pri starých sadách)</h3>
+<p><code>engine.ts:456–459</code> vráti prvého staršieho s danou priazňou. Ak by sada mala Zberateľa aj Očumovateľa (oba sa načítajú ako Úžerník, <code>types.ts:193</code>),
+druhý by sa ignoroval. Súčasná sada má 8 rôznych priazní, takže to nemá dopad.</p></div>
+
+<h2 id="vyuzivanie">Ako priazne využívajú</h2>
+<ul>
+  <li><strong>Bot</strong> priazne pozná. Bitkové počíta priamo v odhade bitky (<code>poskodenieBitky</code>), všetky váži v hodnote stavu
+  (<code>bot.ts:198–207</code>: za bod priazne Bitkár 0,5, Fajčiar 0,25, Veriaci 0,2 … Exekútor a Úžerník 0,05, násobené zvyškom hry).
+  Prebytok a Pohoršenie volí najlepšou hodnotou stavu (<code>bot.ts:1019–1021</code>). Body za strach v nej prevážia, preto posúva skoro rovnomerne
+  (Bitkár 11 %, Veriaci 12 %, Exekútor 15 %, Alkoholik 17 %). <strong>Bot je naivný darca</strong>, takže merania s botmi silu kompenzácie nadhodnocujú.
+  Patronát robí často (1,5 na partiu), čím priazeň mení na šancu na staršieho.</li>
+  <li><strong>AI playtesteri</strong> pri prebytku a Pohoršení vyberajú neškodnú priazeň zámerne a vedia to pomenovať (6 zo 7 partií s denníkom:
+  20261021-041728, -143600-1, -143600-3, 20261022-065959-1, -065959-2, 20261024-075830-2). Ako zaostávajúci priazeň skoro vždy minú patronátom.
+  V jednej partii sa Bitkár ako priazeň neuplatnil ani raz (feedback 20261021-143600-2: „Priazeň Bitkár +2/+4/+6 tuhé sa nehrala ani raz“).</li>
+  <li><strong>Ľudia:</strong> v archíve živého webu nie je žiadna partia ľudí, preto sa to zmerať nedá.</li>
+</ul>
+
+<h2 id="navrhy">Návrhy</h2>
+<div class="filtre" role="group" aria-label="Filter návrhov podľa odporúčania">
+  <button type="button" data-f="vsetky" aria-pressed="true">Všetky</button>
+  <button type="button" data-f="zaviest" aria-pressed="false">Zaviesť</button>
+  <button type="button" data-f="vyskusat" aria-pressed="false">Vyskúšať</button>
+  <button type="button" data-f="zamietnut" aria-pressed="false">Zamietnuť</button>
+</div>
+<div id="zoznam-navrhov">
+<article class="navrh odp-vyskusat" data-odp="vyskusat">
+  <h3>1. Priazeň dediny: tuhé podľa súčtu priazní<span class="odp vyskusat">vyskúšať v playteste</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Vedúci si vyberá, ktorú priazeň dá, a uhýbať ho nič nestojí (príčina 1). Bitkové priazne otočili len 3 % bitiek.</dd>
+    <dt>Zmena</dt><dd>V bitke dostane hráč navyše tuhé za to, o koľko je súčet sily všetkých priazní na jeho polovici vyšší než súperov. Osem priazní ostáva ako dnes.
+    Dve hodnoty: <strong>(a) +1 tuhé za každý bod rozdielu</strong> (zmerané), <strong>(b) +1 tuhé za každé 2 body</strong> (nezmerané, odhadom polovičný účinok).
+    Priazeň sa ráta podľa stavu <strong>na začiatku bitky</strong>, takže Pohoršenie ju v tej istej bitke nezmení.</dd>
+    <dt>Prečo zručnosť</dt><dd>Každý posun k súperovi má cenu, ktorej sa nedá uhnúť. Vedúci sa tak musí rozhodnúť, koľko strachu si kúpi za silnejšieho súpera v ďalšej bitke.
+    Kto dokáže dobre načasovať desenie (napr. tesne pred poslednou bitkou), získa.</dd>
+    <dt>Čísla variantu (a)</dt><dd>60 partií, rovnaké semienka (pred → po): zaostávajúci s priazňou vyhrá bitku <strong>67 % → 82 %</strong>, bez priazne 57 % → 52 %;
+    náskok vedúceho sa medzi bitkami zmenší o 7,2 → 12,5 b; vedúci po 4. kole vyhrá <strong>78 % → 64 %</strong>; otočky 37 % → 41 %;
+    víťaz bitky vyhrá aj ďalšiu 43 % → <strong>28 %</strong>; Pohoršenie mení víťaza v tej istej bitke 0,4 % → 8 %.</dd>
+    <dt>Cena a riziko</dt><dd>Variant (a) je priveľa: bitky sa striedajú ako pingpong (28 %) a otočky sú na hornej hranici pásma 20 – 40 %. Hrozí, že lepší hráč bude vyhrávať menej.
+    Rebrík som pre limit CPU nemeral, to je ďalší krok. Pribudne jedno číslo pri hráčovi („priazeň dediny +X“). Bot ju vidí cez odhad bitky, ale pri rozdelení prebytku s ňou neráta.</dd>
+    <dt>Náročnosť</dt><dd>malá (jedna funkcia v <code>stranyBitky</code>, rozpis bitky, text §10)</dd>
+  </dl>
+</article>
+<article class="navrh odp-zaviest" data-odp="zaviest">
+  <h3>2. Naučiť bota dávať neškodnú priazeň<span class="odp zaviest">zaviesť (len bot)</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Bot posúva markery skoro rovnomerne, kým AI playtesteri nebezpečným priazniam uhýbajú. Merania s botmi (aj posudok nápadníka a rozbory v5) tak kompenzáciu nadhodnocujú.</dd>
+    <dt>Zmena</dt><dd>V <code>bot.ts</code> pri prebytku a Pohoršení pri rovnakých bodoch uprednostniť staršieho s najslabšou priazňou pre súpera
+    (napr. VAHA_PRIAZNE Bitkár 0,5 → 1,5, Veriaci 0,2 → 0,8; zvyšok bez zmeny). Poriadne to spraví <code>naex-bot-trener</code>.</dd>
+    <dt>Prečo zručnosť</dt><dd>Bot bude hrať ako skúsený človek, takže merania budú poctivejšie a bot silnejší súper.</dd>
+    <dt>Čísla</dt><dd>nemerané; podľa kontrafaktu zmizne väčšina z 3 % bitiek, ktoré dnes otočí priazeň</dd>
+    <dt>Cena a riziko</dt><dd>žiadna pre pravidlá. Dnešné čísla dobiehania sa trochu zhoršia, ale budú pravdivejšie.</dd>
+    <dt>Náročnosť</dt><dd>malá</dd>
+  </dl>
+</article>
+<article class="navrh odp-zaviest" data-odp="zaviest">
+  <h3>3. Dopísať do pravidiel dve nejasnosti<span class="odp zaviest">zaviesť (text)</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Chyby 1 a 2 vyššie: Fajčiar verzus Obmedzenie, Pohoršenie a priazeň v tej istej bitke.</dd>
+    <dt>Zmena</dt><dd>Michal rozhodne a do §9.2 a §10 sa dopíše: (a) „Obmedzenie uberá aj cigarety z priazne Fajčiara“, alebo nie (ako pri Cigorkách);
+    (b) „Pohoršenie mení priazeň už pre túto bitku“, alebo „priazeň v bitke platí podľa stavu na začiatku bitky“. Druhá možnosť je jednoduchšia na čítanie a nutná pri návrhu 1.</dd>
+    <dt>Prečo zručnosť</dt><dd>Odhad bitky v Zhromaždení bude pravdivý, lebo hráč nebude prekvapený zmenou priazne uprostred bitky.</dd>
+    <dt>Cena a riziko</dt><dd>malá, (b) mení kód v jednom mieste</dd>
+    <dt>Náročnosť</dt><dd>malá</dd>
+  </dl>
+</article>
+<article class="navrh odp-vyskusat" data-odp="vyskusat">
+  <h3>4. Oživiť mŕtve priazne<span class="odp vyskusat">vyskúšať (alternatíva k 1)</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Exekútor (0 účinkov), Lakomec (0,14 cigarety na bitku), Neprajník (nikdy nezmení víťaza) a Úžerník (0,15 Dlhu) dávajú vedúcemu bezpečné miesto, kam odložiť strach.</dd>
+    <dt>Zmena</dt><dd>Ak Michal chce zachovať osem rôznych priazní namiesto návrhu 1: každá priazeň dostane aj účinok v bitke alebo v šenku. Príklady na rozhodnutie:
+    Exekútor: prah Exekútora −sila <em>súperovi</em> (2 alebo 3 ×), alebo nahradiť inou priazňou;
+    Lakomec: šenok o silu lacnejší (najmenej 0) namiesto barteru;
+    Neprajník: Povery nad Dlhy dávajú aj tuhé (1 za každé 2), alebo Neprajník = +sila Povier.</dd>
+    <dt>Prečo zručnosť</dt><dd>Neostane neškodný cieľ, takže výber staršieho pri prebytku bude skutočné rozhodnutie.</dd>
+    <dt>Cena a riziko</dt><dd>väčší zásah do textov a kariet. Riziko je, že niektorá priazeň bude zase prisilná. Nemerané.</dd>
+    <dt>Náročnosť</dt><dd>stredná</dd>
+  </dl>
+</article>
+<article class="navrh odp-vyskusat" data-odp="vyskusat">
+  <h3>5. Body za strach podľa staršieho (súvis s bodovaním v5)<span class="odp vyskusat">vyskúšať spolu s v5</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Strach z hocktorého staršieho má dnes rovnakú cenu, preto uhýbanie nič nestojí.</dd>
+    <dt>Zmena</dt><dd>Bodovanie v5 (Michalov návrh, <code>docs/pravidla-v5/davka.md</code>) počíta body za každého staršieho zvlášť. Tým dostane každý starší inú cenu,
+    a ak má cenný starší nebezpečnú priazeň, vedúci musí vážiť. Pri meraní v5 treba sledovať aj to, komu víťaz posúva markery (skript <code>meranie.ts</code> to vie).</dd>
+    <dt>Prečo zručnosť</dt><dd>Voľba staršieho bude výmena „body teraz za silnejšieho súpera“, a to je skutočné rozhodnutie.</dd>
+    <dt>Cena a riziko</dt><dd>Žiadna navyše, je to súčasť v5. Riziko je, že vedúci si aj tak nájde lacného staršieho s neškodnou priazňou.</dd>
+    <dt>Náročnosť</dt><dd>malá (len meranie)</dd>
+  </dl>
+</article>
+<article class="navrh odp-vyskusat" data-odp="vyskusat">
+  <h3>6. Porazený volí staršieho pre prvý bod prebytku<span class="odp vyskusat">vyskúšať</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>O priazni rozhoduje len vedúci.</dd>
+    <dt>Zmena</dt><dd>Prvý bod prebytku pridelí hráč, proti ktorému sa prebytok delí (smer ostáva k nemu). Ostatné body delí držiteľ ako dnes.</dd>
+    <dt>Prečo zručnosť</dt><dd>Dobiehanie bude odmeňovať rozhodnutie porazeného (napr. Bitkára pred ťažkou bitkou), nie automatický bonus.</dd>
+    <dt>Cena a riziko</dt><dd>Pribudne jeden krok v bitke. Účinok je obmedzený, lebo stále ide len o 1 posun a o dnešné, slabé priazne. Nemerané.</dd>
+    <dt>Náročnosť</dt><dd>malá až stredná</dd>
+  </dl>
+</article>
+<article class="navrh odp-zamietnut" data-odp="zamietnut">
+  <h3>7. Zvýšiť násobok priazne (2 × sila → 3 × sila)<span class="odp zamietnut">zamietnuť</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Priazeň je malá.</dd>
+    <dt>Zmena</dt><dd><code>NASOBOK_PRIAZNE</code> 2 → 3.</dd>
+    <dt>Prečo nie</dt><dd>Posilní len priazne, ktoré už teraz menia bitku (Bitkár, Alkoholik), a tým sa vedúci už teraz vyhýbajú. Mŕtve priazne ostanú mŕtve
+    a neškodný cieľ prebytku ostane. Silnejší Bitkár navyše zvyšuje náhodu rozdania (na koho scorecard padne).</dd>
+    <dt>Náročnosť</dt><dd>malá, no bez účinku na príčinu</dd>
+  </dl>
+</article>
+</div>
+
+<h2 id="sledovat">Čo sledovať v ďalšom playteste</h2>
+<ol>
+  <li>Pri každom rozdelení prebytku a Pohoršení: zvažoval si, akú priazeň dávaš súperovi? Vybral si zámerne neškodnú, a stálo ťa to niečo?</li>
+  <li>Keď si prehrával a mal priazeň: zmenila tvoj plán na ďalšiu bitku, alebo si ju hneď minul patronátom? Prečo?</li>
+  <li>Ktorú priazeň považuješ za bezcennú a ktorú za nebezpečnú? (Porovnám s tabuľkou vyššie.)</li>
+  <li>Prekvapilo ťa niekedy, že Pohoršenie zmenilo priazeň (a tým poškodenie) ešte v tej istej bitke?</li>
+</ol>
+
+<h2 id="rozhodnutia">Čo potrebujem od Michala</h2>
+<ul>
+  <li>Smer: má byť priazeň <strong>istá</strong> (priazeň dediny, návrh 1) alebo <strong>pestrá</strong> (osem rôznych, ale všetky citeľné, návrh 4)?</li>
+  <li>Má Obmedzenie uberať cigarety z priazne Fajčiara?</li>
+  <li>Má Pohoršenie meniť priazeň už v tej istej bitke, alebo platí stav na začiatku bitky?</li>
+</ul>
+
+<footer>
+  <p><strong>Ako sa meralo.</strong> Vlastný skript nad jadrom (<code>playtest/strategia/priazne-20261024/meranie.ts</code>, rozbor <code>rozbor.mjs</code>, <code>rozbor2.mjs</code>):
+  100 partií bot proti botovi so striedaním troch povah, stredná hra (5 lokalít), semienka 7000 + n. V každej bitke som zapísal priazne pred Pohoršením a pri výpočte poškodenia,
+  výsledok, body pred bitkou a kontrafakt (to isté poškodenie bez danej priazne). Ďalej posuny markerov (prebytok, Pohoršenie), patronáty
+  a ekonomické priazne: cigarety Fajčiara, ušetrený barter, Cirhózy a Dlhy, ktorým vyšší prah zabránil (z logu pečene a zadĺženia za Pitku), a priznané Dlhy pre Exekútora.
+  Variant <em>priazeň dediny</em> (+1 tuhé za bod rozdielu sily) bežal vo worktree na 60 partiách s rovnakými semienkami (diff <code>priazen-dediny.diff</code>), testy bitky, starších
+  a dobiehania prešli (65 / 65). Spolu ≈ 5 min CPU. Rebrík zručnosti som pre limit CPU nemeral.</p>
+  <p>Bot je ladený na súčasné pravidlá a variantu sa neprispôsobuje: rozdelenie prebytku s priazňou dediny nepočíta, vidí ju len v odhade bitky. Čísla variantu sú náznak smeru, nie dôkaz.
+  Pri 60 partiách je šum okolo ± 10 p. b. Citáty sú z denníkov a feedbacku AI playtesterov (relácie 20261021 až 20261024). Stratég, 24. 10. 2026.</p>
+</footer>
+</main>
+<script>
+(function () {
+  var tlacidla = document.querySelectorAll(".filtre button");
+  var navrhy = document.querySelectorAll("#zoznam-navrhov .navrh");
+  tlacidla.forEach(function (b) {
+    b.addEventListener("click", function () {
+      var f = b.getAttribute("data-f");
+      tlacidla.forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      navrhy.forEach(function (n) { n.hidden = !(f === "vsetky" || n.getAttribute("data-odp") === f); });
+    });
+  });
+})();
+</script>
+</body>
+</html>
