@@ -37,7 +37,7 @@ robí agent `naex-admin`, nie ty).
    nevymýšľaj ju potichu: daj ju do `data/` s `TODO` (CLAUDE.md), zvoľ
    najkonzervatívnejšiu hodnotu z návrhu a uveď to vo výsledku.
 3. **Zmena pravidla** = jadro (`packages/core`) + testy + `docs/PRAVIDLA.md`
-   (paragraf aj úvodný blok zmien) + nový dátum v `VERZIA_PRAVIDIEL`
+   (paragraf; históriu do docs/pravidla-historia.md) + ďalšia verzia `vN` v `VERZIA_PRAVIDIEL` len pri dávke zmien (od v4 raz za 2 týždne, Michal 2026-10-24)
    (`packages/core/src/constants.ts` — archív partií podľa neho oddeľuje
    štatistiky pred a po zmene) + položka v
    `docs/playtesty/zmeny-pravidiel.html` (prečo, čo sa zmenilo, čo sledovať —
