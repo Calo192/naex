@@ -1375,6 +1375,45 @@ body.tahanie-aktivne [data-vyucba-bublina] {
   filter: drop-shadow(0 18px 26px rgba(0, 0, 0, 0.55));
 }
 
+/* Hláška „karta sa nepoložila“ pri bode, kde hráč kartu pustil (HernaPlocha). */
+.chyba-tahania {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 950;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* Šírka podľa obsahu, nie podľa miesta k okraju okna — pri pravom kraji sa zúžila
+     na 7 riadkov (UI inšpekcia). Polohu dopočíta polohaChybyTahania v HernaPlocha. */
+  box-sizing: border-box;
+  width: max-content;
+  max-width: min(260px, calc(100vw - 32px));
+  padding: 6px 10px 6px 12px;
+  border-radius: 12px;
+  background: var(--plocha);
+  border: 1px solid var(--cervena-text);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  color: var(--cervena-text);
+  font-size: 0.85rem;
+  font-weight: 700;
+  line-height: 1.35;
+  /* Len priehľadnosť — transform nesie polohu nad bodom. */
+  animation: chyba-tahania-in 0.16s ease-out;
+}
+
+@keyframes chyba-tahania-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chyba-tahania {
+    animation: none;
+  }
+}
+
 .tahanie-duch > .kl {
   transform: rotate(-3deg) scale(1.04);
   /* Pod duchom musí byť vidno zvýraznené miesto a štítok „nahradiť". */
