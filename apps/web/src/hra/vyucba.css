@@ -95,12 +95,6 @@
   pointer-events: auto;
 }
 
-/* Krok bez ťahu: klik mimo zvýraznenia nič neurobí (priehľadná plocha s dierami). */
-.vyucba-blok {
-  fill: transparent;
-  pointer-events: fill;
-}
-
 .vyucba-tien {
   fill: color-mix(in srgb, #000 55%, transparent);
 }

@@ -215,24 +215,12 @@ function useZvyraznenie(kluce: readonly string[]): readonly Obdlznik[] {
   return obdlzniky;
 }
 
-/**
- * Stmavenie stola okrem zvýraznených prvkov. Kliky prechádzajú, len v kroku bez ťahu
- * (blokovat) chytí stmavená plocha klik mimo zvýraznených dier (playtest: klik na okraj
- * otvoril Karty). Diery sú v ceste s evenodd, takže zvýraznený prvok sa dá kliknúť.
- */
-function Stmavenie({ obdlzniky, blokovat }: { readonly obdlzniky: readonly Obdlznik[]; readonly blokovat: boolean }) {
-  if (obdlzniky.length === 0 && !blokovat) return null;
+/** Stmavenie stola okrem zvýraznených prvkov — kliky aj myš prechádzajú (pointer-events: none). */
+function Stmavenie({ obdlzniky }: { readonly obdlzniky: readonly Obdlznik[] }) {
+  if (obdlzniky.length === 0) return null;
   const okraj = 6;
-  const W = window.innerWidth;
-  const H = window.innerHeight;
-  const diery = obdlzniky.map((o) => {
-    const x = o.x - okraj;
-    const y = o.y - okraj;
-    return `M${x},${y}h${o.w + 2 * okraj}v${o.h + 2 * okraj}h${-(o.w + 2 * okraj)}Z`;
-  });
   return (
     <svg className="vyucba-stmavenie" aria-hidden="true" width="100%" height="100%">
-      {blokovat && <path className="vyucba-blok" d={`M0,0H${W}V${H}H0Z${diery.join("")}`} fillRule="evenodd" />}
       <defs>
         <mask id="vyucba-maska">
           <rect width="100%" height="100%" fill="white" />
@@ -283,6 +271,13 @@ function miestaBubliny(w: number, h: number): Obdlznik[] {
   return [hornyStol, nadHranou, stred, dole, hore].flatMap((y, i) => xs.map((x, j) => ({ kluc: `${i}${j}`, x, y, w, h })));
 }
 
+/** Panely, ktoré sa objavia aj počas ťahu bota či hry: stavba, šenok, starší, hláška ťahania. */
+const PANELY = ".pokyn-tahania, .vrstva-fazy .stavba-zona, .vrstva-fazy .stavba-balicek, .vrstva-fazy .draft-karty, .vrstva-starsich:not([hidden]) .linia-starsich";
+
+function skorePanelov(o: Obdlznik): number {
+  return rectyPrvkov(PANELY).reduce((s, b) => s + prekrytie(o, b), 0);
+}
+
 /** Prekrytie s tým, čo bublina nesmie zakryť nikdy (zvýraznené, hláška, stavba, šenok, starší, miesta „+“). */
 function skoreChranene(o: Obdlznik, zvyraznene: readonly Obdlznik[]): number {
   const sucet = (r: readonly Obdlznik[], vaha: number): number => r.reduce((s, b) => s + prekrytie(o, b) * vaha, 0);
@@ -290,7 +285,7 @@ function skoreChranene(o: Obdlznik, zvyraznene: readonly Obdlznik[]): number {
     sucet(zvyraznene, 50) +
     // Hláška, prečo sa karta nepoložila, musí byť celá vidno.
     sucet(rectyPrvkov(".pokyn-tahania"), 50) +
-    sucet(rectyPrvkov(".vrstva-fazy .stavba-zona, .vrstva-fazy .stavba-balicek, .vrstva-fazy .draft-karty, .vrstva-starsich:not([hidden]) .ls-sc, .vrstva-starsich:not([hidden]) .ls-hlava"), 30) +
+    sucet(rectyPrvkov(".vrstva-fazy .stavba-zona, .vrstva-fazy .stavba-balicek, .vrstva-fazy .draft-karty, .vrstva-starsich:not([hidden]) .linia-starsich"), 30) +
     // Miesto na konci strany je cieľ ťahu — rovnako dôležité ako zvýraznené prvky.
     sucet(rectyPrvkov(".miesto-volby"), 50)
   );
@@ -304,7 +299,7 @@ function skoreMiesta(o: Obdlznik, zvyraznene: readonly Obdlznik[]): number {
     sucet(rectyPrvkov(".stol-hrana .pecat, .stol-hrana button"), 20) +
     sucet(rectyPrvkov(".linia-stav"), 4) +
     sucet(rectyPrvkov(".pas-kola-obal"), 4) +
-    sucet(rectyPrvkov(".doska.moja"), 4) +
+    sucet(rectyPrvkov(".doska.moja"), 7) +
     sucet(rectyPrvkov(".doska.superova"), 2) +
     sucet(rectyPrvkov(".ruka-rad .kl"), 1)
   );
@@ -448,7 +443,7 @@ export function VyucbaStol({
     if (rucne === null && sama && poloha !== null) {
       const h = el.offsetHeight;
       const tu = { ...poloha, w: el.offsetWidth, h };
-      if (skoreChranene(tu, zvyraznene) === 0) {
+      if (skorePanelov(tu) === 0) {
         // Ostáva na mieste; len sa nesmie dostať pod spodok okna.
         const y = Math.min(poloha.y, window.innerHeight - h - 12);
         if (Math.abs(y - poloha.y) > 1) setPoloha({ ...poloha, y });
@@ -478,6 +473,24 @@ export function VyucbaStol({
     window.addEventListener("resize", zmena);
     return () => window.removeEventListener("resize", zmena);
   }, []);
+
+  // Krok bez ťahu: klik mimo zvýraznenia a bubliny nič neurobí (playtest: klik na okraj otvoril Karty).
+  // Prechod myšou ostáva — lupa karty či staršieho sa otvorí aj v info kroku.
+  const blokuj = krok?.kto === "info" || krok?.kto === "otazka";
+  useEffect(() => {
+    if (!blokuj) return;
+    const povolene = (t: EventTarget | null): boolean =>
+      t instanceof Element && t.closest("[data-vyucba-bublina], [data-vyucba-zvyraznene], .lupa, .vrstva-zavriet, .hlavicka") !== null;
+    const zastav = (e: Event): void => {
+      if (povolene(e.target)) return;
+      e.preventDefault();
+      e.stopPropagation();
+    };
+    for (const typ of ["pointerdown", "mousedown", "click", "contextmenu"]) window.addEventListener(typ, zastav, true);
+    return () => {
+      for (const typ of ["pointerdown", "mousedown", "click", "contextmenu"]) window.removeEventListener(typ, zastav, true);
+    };
+  }, [blokuj]);
 
   // Chyba zmizne pri ďalšom kliku na stole — hráč výber opravuje.
   useEffect(() => {
@@ -541,7 +554,7 @@ export function VyucbaStol({
 
   return (
     <>
-      <Stmavenie obdlzniky={zvyraznene} blokovat={krok?.kto === "info" || krok?.kto === "otazka"} />
+      <Stmavenie obdlzniky={zvyraznene} />
       <aside
         ref={bublinaRef}
         className={`vyucba-bublina ${krok?.kto ?? "hotovo"}`}
