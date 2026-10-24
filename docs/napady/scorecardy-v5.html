@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NA EX! — scorecardy starších pre pravidlá v5</title>
+<style>
+:root {
+  --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --okraj: #3d3229;
+  --text: #f1e8d8; --tlmeny: #b6a790;
+  --akcent: #e9ad45; --cervena: #d0563f; --zelena: #7cbf74; --modra: #8fb4e0;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #dccdb3;
+    --text: #2a2016; --tlmeny: #5e4f3b;
+    --akcent: #9a5d06; --cervena: #a83a26; --zelena: #356e2f; --modra: #2d5a8f;
+    color-scheme: light;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 system-ui, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 1240px; margin: 0 auto; padding: 24px 14px 56px; }
+h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; line-height: 1.2; }
+h1 { font-size: clamp(1.5rem, 4vw, 2.1rem); margin: 0 0 8px; }
+h2 { font-size: 1.35rem; margin: 36px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--okraj); }
+h3 { font-size: 1.1rem; margin: 18px 0 8px; }
+p { margin: 0 0 10px; }
+.uvod { color: var(--tlmeny); }
+.blok { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 16px; margin-bottom: 12px; }
+.blok ul, .blok ol { margin: 4px 0 0; padding-left: 20px; }
+.blok li { margin-bottom: 6px; }
+.hlavny { border: 1px solid var(--akcent); }
+code { font-family: ui-monospace, Consolas, monospace; font-size: .86em; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+.tl { color: var(--tlmeny); }
+
+.legenda { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .9rem; margin: 6px 0 14px; color: var(--tlmeny); }
+.legenda span { display: inline-flex; align-items: center; gap: 6px; }
+.bod { width: 12px; height: 12px; border-radius: 3px; display: inline-block; flex: none; }
+.bod.vod { background: var(--akcent); } .bod.dob { background: var(--zelena); } .bod.zona { background: var(--cervena); }
+
+.karty { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
+.sc { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 12px; display: flex; flex-direction: column; }
+.sc header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; margin-bottom: 8px; }
+.sc h3 { margin: 0; font-size: 1.2rem; }
+.typ { color: var(--tlmeny); font-size: .85rem; }
+.znacka { font-size: .74rem; border-radius: 999px; padding: 0 8px; border: 1px solid currentColor; white-space: nowrap; }
+.d-dob { color: var(--zelena); } .d-vod { color: var(--cervena); } .d-vyv { color: var(--modra); }
+.plocha { display: grid; grid-template-columns: minmax(0, 1fr) 20px minmax(0, 1fr); gap: 6px; align-items: stretch; }
+.strana { list-style: none; margin: 0; padding: 0; display: grid; grid-template-rows: repeat(4, 1fr); gap: 4px; }
+.strana li { display: flex; align-items: center; gap: 5px; background: var(--plocha-2); border-radius: 8px; padding: 4px 6px; border-left: 4px solid var(--okraj); min-height: 40px; min-width: 0; font-size: .86rem; line-height: 1.15; }
+.strana li.vod { border-left-color: var(--akcent); } .strana li.dob { border-left-color: var(--zelena); } .strana li.zona { border-left-color: var(--cervena); }
+.strana li.vod .ik { color: var(--akcent); } .strana li.dob .ik { color: var(--zelena); } .strana li.zona .ik { color: var(--cervena); }
+.ik { width: 22px; height: 22px; flex: none; }
+.sl { font-size: .68rem; color: var(--tlmeny); width: 2.1em; flex: none; }
+.nz { min-width: 0; overflow-wrap: anywhere; hyphens: auto; }
+.nz small { display: block; font-size: .7rem; color: var(--tlmeny); }
+.ram { border: 1px dashed var(--okraj); border-radius: 6px; writing-mode: vertical-rl; font-size: .68rem; color: var(--tlmeny); display: flex; align-items: center; justify-content: center; }
+.ch { margin: 10px 0 8px; font-size: .95rem; }
+.san { font-size: .86rem; margin: auto 0 0; }
+
+.tab-obal { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+th, td { padding: 6px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--okraj); }
+thead th { border-bottom: 2px solid var(--okraj); }
+td.c, th.c { text-align: right; white-space: nowrap; }
+.ok { color: var(--zelena); font-weight: 600; }
+details { margin-top: 14px; }
+details summary { cursor: pointer; color: var(--tlmeny); }
+details[open] summary { color: var(--text); margin-bottom: 8px; }
+footer { margin-top: 40px; padding-top: 12px; border-top: 1px solid var(--okraj); color: var(--tlmeny); font-size: .88rem; }
+@media (max-width: 380px) {
+  main { padding: 18px 8px 40px; }
+  .karty { grid-template-columns: 1fr; }
+  .strana li { font-size: .8rem; padding: 3px 4px; gap: 3px; }
+  .ik { width: 18px; height: 18px; }
+  table { font-size: .8rem; }
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <defs>
+  <symbol id="i-znepokojenie" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></symbol>
+  <symbol id="i-strach" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12l6-6 6 6M6 18l6-6 6 6"/></symbol>
+  <symbol id="i-vydesenie" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6-5 6 5M6 15l6-5 6 5M6 21l6-5 6 5"/></symbol>
+  <symbol id="i-lokality" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M11 3v18M8 21h6"/><path d="M5 5h11l3 2.5-3 2.5H5z"/><path d="M17 12H7l-3 2.5L7 17h10z"/></symbol>
+  <symbol id="i-starsi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="3.2"/><path d="M5.5 20.5c.5-4 3.2-6 6.5-6s6 2 6.5 6"/><path d="M4 3v18M20 3v18M3 3h18"/></symbol>
+  <symbol id="i-cigarety" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M2.5 14h16v4h-16z"/><path d="M13 14v4"/><path d="M21 18v-4M18.5 11c0-2 2.5-2 2.5-4s-2-2.5-2-4"/></symbol>
+  <symbol id="i-rezerva" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M6 7h12M10.5 4.5h3" fill="none"/><path d="M7 9.5h10l-1.6 11H8.6z" fill="none"/><path d="M7.7 13.5h8.6l-1.1 7H8.8z" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-abstak" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M9 11h6l1.6 10H7.4z"/><path d="M5 4.5l1.8 2.5M12 3v3.2M19 4.5L17.2 7"/></symbol>
+  <symbol id="i-dlh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 5h16v10"/><path d="M2.5 8h16v11h-16z"/><circle cx="10.5" cy="13.5" r="2.4"/></symbol>
+  <symbol id="i-cirhoza" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M2.8 10.5C2.8 6.8 7 5 12.5 5S21.5 6 21.5 9c0 3.6-4.5 8.3-9.5 9.5-3 .7-4-1.8-6-3.2S2.8 13 2.8 10.5z"/><path d="M12 7.5v6" stroke-linecap="round"/></symbol>
+ </defs>
+</svg>
+<main>
+<h1>Scorecardy starších pre pravidlá v5</h1>
+<p class="uvod">Navrhár, 24. 10. 2026. Úloha od Michala: nové rozloženie 8 scorecardov s podmienkami Absťák a Rezerva, každý starší s iným charakterom.
+Dáta sú v <code>packages/core/data/scorecards-v5.json</code>. Dnešný <code>scorecards.json</code> (v4) ani kód hry som nemenil.</p>
+
+<div class="blok hlavny">
+ <ul>
+  <li><b>8 scorecardov, každý so 4 + 4 podmienkami a iným mixom.</b> Dve rovnaké podmienky na scorecarde (napríklad Úžerník 2× Dlh)
+   ležia v slotoch, ktoré naraz zapne len 1 z 8 kariet starších. Charakter sa tak prejaví pri 6 až 7 z 8 starších, ale váhu nezdvojí.</li>
+  <li><b>Absťák je 8×, Rezerva 7×.</b> Lokality klesnú z 12 na 8 pozícií a zónové podmienky (strach) z 26 na 10.
+   Strach už odmeňuje vzorec bodov (1 + zóny), preto ho súboje nemajú rátať znova.</li>
+  <li><b>Zaostávajúci má šancu u každého staršieho.</b> V 200 partiách botov vyhrá staršieho (remíza sa ráta ako polovica) priemerne v 28–41 % prípadov
+   podľa scorecardu. Pri dnešnom rozložení je to 16–34 %. Pri každej karte staršieho je aktívna aspoň jedna podmienka, ktorú vie vyhrať aj zaostávajúci.</li>
+  <li><b>Tesnosť:</b> priemerný rozdiel skóre klesne zo 7,2 na 5,9 bodu, typický výsledok však ostáva okolo 8 : 2.
+   Výsledok okolo 15 : 13 rozloženie scorecardov neprinesie, musí ho priniesť vzorec bodov. Ten práve meria stratég.</li>
+ </ul>
+</div>
+
+<h2>1. Osem scorecardov</h2>
+<p>Každý riadok je jedna podmienka vo výške slotu karty. Zlomok vľavo hovorí, koľko z 8 kariet starších má v tom slote akciu, teda ako často je podmienka aktívna.
+Pri podmienke s označením „menej“ vyhrá súboj hráč, ktorý má menej. Pri ostatných vyhrá ten, kto má viac. Šanca zaostávajúceho je uvedená ako priemer / najhorší starší.</p>
+<div class="legenda">
+ <span><i class="bod vod"></i>nahráva vedúcemu (Lokality, Starší, Rezerva)</span>
+ <span><i class="bod zona"></i>zóna strachu, ráta len ostatných starších</span>
+ <span><i class="bod dob"></i>vie vyhrať aj zaostávajúci (Cigarety, Dlh, Cirhóza, Absťák)</span>
+</div>
+<div class="karty">
+<article class="sc">
+ <header><h3>Úžerník</h3><span class="znacka d-dob">dobiehací</span><span class="typ">peniaze</span></header>
+ <div class="plocha">
+  <ol class="strana"><li class="zona"><span class="sl">3/8</span><svg class="ik" aria-hidden="true"><use href="#i-strach"/></svg><span class="nz">Strach</span></li><li class="dob"><span class="sl">5/8</span><svg class="ik" aria-hidden="true"><use href="#i-abstak"/></svg><span class="nz">Absťák<small> menej</small></span></li><li class="dob"><span class="sl">4/8</span><svg class="ik" aria-hidden="true"><use href="#i-dlh"/></svg><span class="nz">Dlh<small> menej</small></span></li><li class="vod"><span class="sl">4/8</span><svg class="ik" aria-hidden="true"><use href="#i-starsi"/></svg><span class="nz">Starší</span></li></ol>
+  <div class="ram" aria-hidden="true">karta staršieho</div>
+  <ol class="strana"><li class="dob"><span class="sl">4/8</span><svg class="ik" aria-hidden="true"><use href="#i-dlh"/></svg><span class="nz">Dlh<small> menej</small></span></li><li class="vod"><span class="sl">4/8</span><svg class="ik" aria-hidden="true"><use href="#i-lokality"/></svg><span class="nz">Lokality</span></li><li class="dob"><span class="sl">5/8</span><svg class="ik" aria-hidden="true"><use href="#i-cigarety"/></svg><span class="nz">Cigarety</span></li><li class="vod"><span class="sl">3/8</span><svg class="ik" aria-hidden="true"><use href="#i-rezerva"/></svg><span class="nz">Rezerva</span></li></ol>
+ </div>
+ <p class="ch">Úžerník nehľadá dobrého človeka, ale bonitného klienta: Dlh ráta dvakrát, k tomu hotovosť (Cigarety) a zábezpeku (Rezerva, Lokality). Komu sa trasú ruky, ten nesplatí.</p>
+ <p class="san">Šanca zaostávajúceho: <b>36 / 20 %</b> <span class="tl">(dnešné rozloženie 19 / 14 %)</span></p>
+</article>
+<article class="sc">
+ <header><h3>Veriaci</h3><span class="znacka d-vyv">vyvážený</span><span class="typ">striedmosť</span></header>
+ <div class="plocha">
+  <ol class="strana"><li class="dob"><span class="sl">3/8</span><svg class="ik" aria-hidden="true"><use href="#i-cirhoza"/></svg><span class="nz">Cirhóza<small> menej</small></span></li><li class="vod"><span class="sl">5/8</span><svg class="ik" aria-hidden="true"><use href="#i-starsi"/></svg><span class="nz">Starší</span></li><li class="dob"><span class="sl">4/8</span><svg class="ik" aria-hidden="true"><use href="#i-cirhoza"/></svg><span class="nz">Cirhóza<small> menej</small></span></li><li class="vod"><span class="sl">4/8</span><svg class="ik" aria-hidden="true"><use href="#i-lokality"/></svg><span class="nz">Lokality</span></li></ol>
+  <div class="ram" aria-hidden="true">karta staršieho</div>
+  <ol class="strana"><li class="dob"><span class="sl">4/8</span><svg class="ik" aria-hidden="true"><use href="#i-abstak"/></svg><span class="nz">Absťák<small> menej</small></span></li><li class="zona"><span class="sl">4/8</span><svg class="ik" aria-hidden="true"><use href="#i-znepokojenie"/></svg><span class="nz">Znepokojenie</span></li><li class="dob"><span class="sl">5/8</span><svg class="ik" aria-hidden="true"><use href="#i-dlh"/></svg><span class="nz">Dlh<small> menej</small></span></li><li class="dob"><span class="sl">3/8</span><svg class="ik" aria-hidden="true"><use href="#i-abstak"/></svg><span class="nz">Absťák<small> menej</small></span></li></ol>
+ </div>
+ <p class="ch">Telo je chrám: Veriaci ráta dvakrát Cirhózu a dvakrát Absťák, k tomu poctivosť (Dlh) a bázeň (Znepokojenie). Zo všetkých starších má najmenej podmienok, ktoré nahrávajú vedúcemu (3 z 8).</p>
+ <p class="san">Šanca zaostávajúceho: <b>31 / 19 %</b> <span class="tl">(dnešné rozloženie 18 / 13 %)</span></p>
+</article>
+<article class="sc">
+ <header><h3>Alkoholik</h3><span class="znacka d-dob">dobiehací</span><span class="typ">neresti</span></header>
+ <div class="plocha">
+  <ol class="strana"><li class="zona"><span class="sl">3/8</span><svg class="ik" aria-hidden="true"><use href="#i-strach"/></svg><span class="nz">Strach</span></li><li class="dob"><span class="sl">5/8</span><svg class="ik" aria-hidden="true"><use href="#i-cigarety"/></svg><span class="nz">Cigarety</span></li><li class="vod"><span class="sl">4/8</span><svg class="ik" aria-hidden="true"><use href="#i-starsi"/></svg><span class="nz">Starší</span></li><li class="dob"><span class="sl">4/8</span><svg class="ik" aria-hidden="true"><use href="#i-abstak"/></svg><span class="nz">Absťák<small> menej</small></span></li></ol>
+  <div class="ram" aria-hidden="true">karta staršieho</div>
+  <ol class="strana"><li class="vod"><span class="sl">4/8</span><svg class="ik" aria-hidden="true"><use href="#i-lokality"/></svg><span class="nz">Lokality</span></li><li class="dob"><span class="sl">4/8</span><svg class="ik" aria-hidden="true"><use href="#i-abstak"/></svg><span class="nz">Absťák<small> menej</small></span></li><li class="dob"><span class="sl">5/8</span><svg class="ik" aria-hidden="true"><use href="#i-cirhoza"/></svg><span class="nz">Cirhóza<small> menej</small></span></li><li class="vod"><span class="sl">3/8</span><svg class="ik" aria-hidden="true"><use href="#i-rezerva"/></svg><span class="nz">Rezerva</span></li></ol>
+ </div>
+ <p class="ch">Alkoholik a Veriaci sa zhodnú len v jednom: kto sa trasie, prehral. Absťák ráta dvakrát, k tomu kamarátov (Starší), krčmy (Lokality) a to, čo ešte ostalo vo fľaši (Rezerva).</p>
+ <p class="san">Šanca zaostávajúceho: <b>36 / 20 %</b> <span class="tl">(dnešné rozloženie 18 / 11 %)</span></p>
+</article>
+<article class="sc">
+ <header><h3>Bitkár</h3><span class="znacka d-vod">vodcovský</span><span class="typ">sila</span></header>
+ <div class="plocha">
+  <ol class="strana"><li class="zona"><span class="sl">3/8</span><svg class="ik" aria-hidden="true"><use href="#i-strach"/></svg><span class="nz">Strach</span></li><li class="vod"><span class="sl">5/8</span><svg class="ik" aria-hidden="true"><use href="#i-lokality"/></svg><span class="nz">Lokality</span></li><li class="zona"><span class="sl">4/8</span><svg class="ik" aria-hidden="true"><use href="#i-vydesenie"/></svg><span class="nz">Vydesenie</span></li><li class="vod"><span class="sl">4/8</span><svg class="ik" aria-hidden="true"><use href="#i-starsi"/></svg><span class="nz">Starší</span></li></ol>
+  <div class="ram" aria-hidden="true">karta staršieho</div>
+  <ol class="strana"><li class="dob"><span class="sl">4/8</span><svg class="ik" aria-hidden="true"><use href="#i-cigarety"/></svg><span class="nz">Cigarety</span></li><li class="dob"><span class="sl">4/8</span><svg class="ik" aria-hidden="true"><use href="#i-dlh"/></svg><span class="nz">Dlh<small> menej</small></span></li><li class="dob"><span class="sl">5/8</span><svg class="ik" aria-hidden="true"><use href="#i-abstak"/></svg><span class="nz">Absťák<small> menej</small></span></li><li class="vod"><span class="sl">3/8</span><svg class="ik" aria-hidden="true"><use href="#i-lokality"/></svg><span class="nz">Lokality</span></li></ol>
+ </div>
+ <p class="ch">Bitkár rešpektuje silu. Ako jediný ráta Lokality dvakrát a pýta sa na Strach aj Vydesenie. Zaostávajúcemu nechá len Cigarety, Dlh a Absťák, preto je zámerne najťažší.</p>
+ <p class="san">Šanca zaostávajúceho: <b>28 / 15 %</b> <span class="tl">(dnešné rozloženie 16 / 14 %)</span></p>
+</article>
+<article class="sc">
+ <header><h3>Fajčiar</h3><span class="znacka d-vyv">vyvážený</span><span class="typ">hotovosť a nerest</span></header>
+ <div class="plocha">
+  <ol class="strana"><li class="zona"><span class="sl">3/8</span><svg class="ik" aria-hidden="true"><use href="#i-znepokojenie"/></svg><span class="nz">Znepokojenie</span></li><li class="dob"><span class="sl">5/8</span><svg class="ik" aria-hidden="true"><use href="#i-abstak"/></svg><span class="nz">Absťák<small> menej</small></span></li><li class="vod"><span class="sl">4/8</span><svg class="ik" aria-hidden="true"><use href="#i-lokality"/></svg><span class="nz">Lokality</span></li><li class="dob"><span class="sl">4/8</span><svg class="ik" aria-hidden="true"><use href="#i-cigarety"/></svg><span class="nz">Cigarety</span></li></ol>
+  <div class="ram" aria-hidden="true">karta staršieho</div>
+  <ol class="strana"><li class="dob"><span class="sl">4/8</span><svg class="ik" aria-hidden="true"><use href="#i-dlh"/></svg><span class="nz">Dlh<small> menej</small></span></li><li class="dob"><span class="sl">4/8</span><svg class="ik" aria-hidden="true"><use href="#i-cigarety"/></svg><span class="nz">Cigarety</span></li><li class="zona"><span class="sl">5/8</span><svg class="ik" aria-hidden="true"><use href="#i-strach"/></svg><span class="nz">Strach</span></li><li class="vod"><span class="sl">3/8</span><svg class="ik" aria-hidden="true"><use href="#i-rezerva"/></svg><span class="nz">Rezerva</span></li></ol>
+ </div>
+ <p class="ch">Kto nemá čo zapáliť, nemá slovo: Cigarety dvakrát a Absťák. Pri cigarete sa najlepšie ohovára, preto Fajčiar sleduje aj Znepokojenie a Strach.</p>
+ <p class="san">Šanca zaostávajúceho: <b>32 / 21 %</b> <span class="tl">(dnešné rozloženie 31 / 17 %)</span></p>
+</article>
+<article class="sc">
+ <header><h3>Lakomec</h3><span class="znacka d-dob">dobiehací</span><span class="typ">šetrnosť</span></header>
+ <div class="plocha">
+  <ol class="strana"><li class="dob"><span class="sl">3/8</span><svg class="ik" aria-hidden="true"><use href="#i-cigarety"/></svg><span class="nz">Cigarety</span></li><li class="dob"><span class="sl">5/8</span><svg class="ik" aria-hidden="true"><use href="#i-cirhoza"/></svg><span class="nz">Cirhóza<small> menej</small></span></li><li class="vod"><span class="sl">4/8</span><svg class="ik" aria-hidden="true"><use href="#i-rezerva"/></svg><span class="nz">Rezerva</span></li><li class="vod"><span class="sl">4/8</span><svg class="ik" aria-hidden="true"><use href="#i-starsi"/></svg><span class="nz">Starší</span></li></ol>
+  <div class="ram" aria-hidden="true">karta staršieho</div>
+  <ol class="strana"><li class="vod"><span class="sl">4/8</span><svg class="ik" aria-hidden="true"><use href="#i-rezerva"/></svg><span class="nz">Rezerva</span></li><li class="dob"><span class="sl">4/8</span><svg class="ik" aria-hidden="true"><use href="#i-dlh"/></svg><span class="nz">Dlh<small> menej</small></span></li><li class="dob"><span class="sl">5/8</span><svg class="ik" aria-hidden="true"><use href="#i-cigarety"/></svg><span class="nz">Cigarety</span></li><li class="vod"><span class="sl">3/8</span><svg class="ik" aria-hidden="true"><use href="#i-lokality"/></svg><span class="nz">Lokality</span></li></ol>
+ </div>
+ <p class="ch">Lakomec nič neminie a to isté čaká od teba: Cigarety aj Rezervu ráta dvakrát a Dlh nestrpí. Koho sa kto bojí, ho nezaujíma. Ako jediný nemá zónovú podmienku.</p>
+ <p class="san">Šanca zaostávajúceho: <b>41 / 28 %</b> <span class="tl">(dnešné rozloženie 25 / 14 %)</span></p>
+</article>
+<article class="sc">
+ <header><h3>Neprajník</h3><span class="znacka d-vyv">vyvážený</span><span class="typ">škodoradosť</span></header>
+ <div class="plocha">
+  <ol class="strana"><li class="dob"><span class="sl">3/8</span><svg class="ik" aria-hidden="true"><use href="#i-cirhoza"/></svg><span class="nz">Cirhóza<small> menej</small></span></li><li class="zona"><span class="sl">5/8</span><svg class="ik" aria-hidden="true"><use href="#i-strach"/></svg><span class="nz">Strach</span></li><li class="dob"><span class="sl">4/8</span><svg class="ik" aria-hidden="true"><use href="#i-dlh"/></svg><span class="nz">Dlh<small> menej</small></span></li><li class="vod"><span class="sl">4/8</span><svg class="ik" aria-hidden="true"><use href="#i-starsi"/></svg><span class="nz">Starší</span></li></ol>
+  <div class="ram" aria-hidden="true">karta staršieho</div>
+  <ol class="strana"><li class="dob"><span class="sl">4/8</span><svg class="ik" aria-hidden="true"><use href="#i-abstak"/></svg><span class="nz">Absťák<small> menej</small></span></li><li class="vod"><span class="sl">4/8</span><svg class="ik" aria-hidden="true"><use href="#i-rezerva"/></svg><span class="nz">Rezerva</span></li><li class="dob"><span class="sl">5/8</span><svg class="ik" aria-hidden="true"><use href="#i-cigarety"/></svg><span class="nz">Cigarety</span></li><li class="zona"><span class="sl">3/8</span><svg class="ik" aria-hidden="true"><use href="#i-znepokojenie"/></svg><span class="nz">Znepokojenie</span></li></ol>
+ </div>
+ <p class="ch">Neprajník ti Lokality neprizná, ako jediný ich na scorecarde nemá. Zato si spočíta tvoje Cirhózy, Dlhy a Absťáky a sleduje, koho sa boja ostatní starší.</p>
+ <p class="san">Šanca zaostávajúceho: <b>32 / 24 %</b> <span class="tl">(dnešné rozloženie 26 / 20 %)</span></p>
+</article>
+<article class="sc">
+ <header><h3>Exekútor</h3><span class="znacka d-vyv">vyvážený</span><span class="typ">majetok</span></header>
+ <div class="plocha">
+  <ol class="strana"><li class="dob"><span class="sl">3/8</span><svg class="ik" aria-hidden="true"><use href="#i-dlh"/></svg><span class="nz">Dlh<small> menej</small></span></li><li class="vod"><span class="sl">5/8</span><svg class="ik" aria-hidden="true"><use href="#i-rezerva"/></svg><span class="nz">Rezerva</span></li><li class="dob"><span class="sl">4/8</span><svg class="ik" aria-hidden="true"><use href="#i-cigarety"/></svg><span class="nz">Cigarety</span></li><li class="vod"><span class="sl">4/8</span><svg class="ik" aria-hidden="true"><use href="#i-starsi"/></svg><span class="nz">Starší</span></li></ol>
+  <div class="ram" aria-hidden="true">karta staršieho</div>
+  <ol class="strana"><li class="dob"><span class="sl">4/8</span><svg class="ik" aria-hidden="true"><use href="#i-cirhoza"/></svg><span class="nz">Cirhóza<small> menej</small></span></li><li class="vod"><span class="sl">4/8</span><svg class="ik" aria-hidden="true"><use href="#i-starsi"/></svg><span class="nz">Starší</span></li><li class="vod"><span class="sl">5/8</span><svg class="ik" aria-hidden="true"><use href="#i-lokality"/></svg><span class="nz">Lokality</span></li><li class="zona"><span class="sl">3/8</span><svg class="ik" aria-hidden="true"><use href="#i-vydesenie"/></svg><span class="nz">Vydesenie</span></li></ol>
+ </div>
+ <p class="ch">Exekútor ráta, čo sa dá zabaviť: získaných starších dvakrát, Lokality, plné poldeci aj Cigarety. Dlžník s Cirhózou je preňho zlá investícia a Vydesenie je jeho pracovný nástroj.</p>
+ <p class="san">Šanca zaostávajúceho: <b>31 / 18 %</b> <span class="tl">(dnešné rozloženie 34 / 15 %)</span></p>
+</article>
+</div>
+
+<h2>2. Pravidlá rozmanitosti a ich overenie</h2>
+<p>Pravidlá som overil skriptom nad <code>scorecards-v5.json</code> a kartami starších z <code>cards.json</code>. Všetkých 5 pravidiel je splnených.
+Ten istý skript na dnešnom <code>scorecards.json</code> našiel 47 porušení.</p>
+<div class="tab-obal"><table>
+ <thead><tr><th>Pravidlo</th><th>v5</th><th>dnes (v4)</th></tr></thead>
+ <tbody>
+  <tr><td><b>1. Primeraná početnosť:</b> každý typ 2× až 10×. Najmenej majú typy, ktoré v súboji často končia remízou (Vydesenie v 89 %).</td><td class="ok">2–9×</td><td>Lokality 12×, Absťák a Rezerva 0×</td></tr>
+  <tr><td><b>2. Rôzne mixy:</b> žiadne dva scorecardy nemajú spoločných viac ako 6 z 8 podmienok.</td><td class="ok">najviac 6</td><td>Úžerník a Veriaci 7</td></tr>
+  <tr><td><b>3. Vyváženosť:</b> pri každej z 8 kariet staršieho je aktívna aspoň 1 podmienka, ktorú vie vyhrať aj zaostávajúci, a aspoň 1, ktorá nahráva vedúcemu.</td><td class="ok">64 z 64</td><td>22 kombinácií bez dobiehacej podmienky</td></tr>
+  <tr><td><b>4. Aktivácia:</b> dvojicu rovnakých podmienok zapne naraz najviac 1 karta staršieho. Charakter je tak aktívny pri 6 až 7 z 8 starších.</td><td class="ok">1 z 8</td><td>Úžerník: 2× Znepokojenie naraz pri 5 starších</td></tr>
+  <tr><td><b>5. Strach sa nerozmnoží:</b> najviac 2 zónové podmienky na scorecarde a obe aktívne naraz najviac pri 1 karte staršieho.</td><td class="ok">10 pozícií, 0–2 na scorecard</td><td>26 pozícií, Neprajník 5</td></tr>
+ </tbody>
+</table></div>
+
+<h3>Ako často je ktorá podmienka aktívna</h3>
+<p>Karty starších zapínajú sloty takto: ľavý 0 má akciu na 3 z 8 kariet, ľavý 1 na 5, ľavý 2 a 3 na 4, pravý 0 a 1 na 4, pravý 2 na 5 a pravý 3 na 3. Každá karta zapne presne 4 sloty.
+Pri náhodnom rozdaní scorecardov z toho vychádza tento očakávaný počet aktívnych podmienok v jednej partii (u všetkých 8 starších spolu):</p>
+<div class="tab-obal"><table>
+ <thead><tr><th>Podmienka</th><th class="c">Pozícií</th><th class="c">Aktívnych v partii</th><th class="c">Dnes</th><th class="c">Rovnosť</th><th class="c">Vedúci vyhrá</th></tr></thead>
+ <tbody>
+  <tr><td>Cigarety</td><td class="c">9</td><td class="c">4,9</td><td class="c">3,0</td><td class="c">10 %</td><td class="c">40 %</td></tr>
+  <tr><td>Absťák (menej)</td><td class="c">8</td><td class="c">4,3</td><td class="c">—</td><td class="c">32 %</td><td class="c">52 %</td></tr>
+  <tr><td>Starší (patronát)</td><td class="c">8</td><td class="c">4,1</td><td class="c">3,4</td><td class="c">47 %</td><td class="c">62 %</td></tr>
+  <tr><td>Lokality</td><td class="c">8</td><td class="c">4,0</td><td class="c">6,3</td><td class="c">4 %</td><td class="c">85 %</td></tr>
+  <tr><td>Dlh (menej)</td><td class="c">8</td><td class="c">4,0</td><td class="c">4,0</td><td class="c">46 %</td><td class="c">55 %</td></tr>
+  <tr><td>Rezerva</td><td class="c">7</td><td class="c">3,3</td><td class="c">—</td><td class="c">29 %</td><td class="c">71 %</td></tr>
+  <tr><td>Cirhóza (menej, nepriznaná)</td><td class="c">6</td><td class="c">3,0</td><td class="c">2,4</td><td class="c">74 %</td><td class="c">51 %</td></tr>
+  <tr><td>Strach</td><td class="c">5</td><td class="c">2,4</td><td class="c">4,9</td><td class="c">38 %</td><td class="c">90 %</td></tr>
+  <tr><td>Znepokojenie</td><td class="c">3</td><td class="c">1,3</td><td class="c">4,6</td><td class="c">19 %</td><td class="c">85 %</td></tr>
+  <tr><td>Vydesenie</td><td class="c">2</td><td class="c">0,9</td><td class="c">3,5</td><td class="c">89 %</td><td class="c">96 %</td></tr>
+ </tbody>
+</table></div>
+<p class="tl">Stĺpce Rovnosť a Vedúci vyhrá sú zo súbojov v 200 stredných partiách. Vedúci je víťaz partie podľa v4 a percento sa ráta len zo súbojov, ktoré neskončili rovnosťou.
+Zónové podmienky rátajú len ostatných starších. Jasne pomáhajú dobiehať iba Cigarety. Dlh, Cirhóza a Absťák sú okolo 50 %, môže ich teda vyhrať ktokoľvek.</p>
+
+<details>
+ <summary>Ktoré podmienky zapne ktorá karta staršieho (64 kombinácií)</summary>
+ <div class="tab-obal"><table>
+  <thead><tr><th>Scorecard</th><th>Farár</th><th>Krčmárka</th><th>Starosta</th><th>Poštárka</th><th>Hrobár</th><th>Autobusár</th><th>Veterinár</th><th>Vychovávateľka</th></tr></thead>
+  <tbody>
+<tr><th>Úžerník</th><td>Absťák, Starší, Dlh, Cigarety</td><td>Dlh, Starší, Dlh, Lokality</td><td>Strach, Dlh, Lokality, Rezerva</td><td>Absťák, Dlh, Lokality, Cigarety</td><td>Strach, Absťák, Cigarety, Rezerva</td><td>Absťák, Dlh, Starší, Cigarety</td><td>Absťák, Dlh, Lokality, Cigarety</td><td>Strach, Starší, Dlh, Rezerva</td></tr>
+<tr><th>Veriaci</th><td>Starší, Lokality, Absťák, Dlh</td><td>Cirhóza, Lokality, Absťák, Znepokojenie</td><td>Cirhóza, Cirhóza, Znepokojenie, Absťák</td><td>Starší, Absťák, Znepokojenie, Dlh</td><td>Cirhóza, Starší, Dlh, Absťák</td><td>Starší, Cirhóza, Lokality, Dlh</td><td>Starší, Cirhóza, Znepokojenie, Dlh</td><td>Cirhóza, Lokality, Absťák, Absťák</td></tr>
+<tr><th>Alkoholik</th><td>Cigarety, Absťák, Lokality, Cirhóza</td><td>Starší, Absťák, Lokality, Absťák</td><td>Strach, Starší, Absťák, Rezerva</td><td>Cigarety, Lokality, Absťák, Cirhóza</td><td>Strach, Cigarety, Cirhóza, Rezerva</td><td>Cigarety, Starší, Absťák, Cirhóza</td><td>Cigarety, Starší, Absťák, Cirhóza</td><td>Strach, Absťák, Lokality, Rezerva</td></tr>
+<tr><th>Bitkár</th><td>Lokality, Starší, Cigarety, Absťák</td><td>Vydesenie, Starší, Cigarety, Dlh</td><td>Strach, Vydesenie, Dlh, Lokality</td><td>Lokality, Cigarety, Dlh, Absťák</td><td>Strach, Lokality, Absťák, Lokality</td><td>Lokality, Vydesenie, Starší, Absťák</td><td>Lokality, Vydesenie, Dlh, Absťák</td><td>Strach, Starší, Cigarety, Lokality</td></tr>
+<tr><th>Fajčiar</th><td>Absťák, Cigarety, Dlh, Strach</td><td>Lokality, Cigarety, Dlh, Cigarety</td><td>Znepokojenie, Lokality, Cigarety, Rezerva</td><td>Absťák, Dlh, Cigarety, Strach</td><td>Znepokojenie, Absťák, Strach, Rezerva</td><td>Absťák, Lokality, Cigarety, Strach</td><td>Absťák, Lokality, Cigarety, Strach</td><td>Znepokojenie, Cigarety, Dlh, Rezerva</td></tr>
+<tr><th>Lakomec</th><td>Cirhóza, Starší, Rezerva, Cigarety</td><td>Rezerva, Starší, Rezerva, Dlh</td><td>Cigarety, Rezerva, Dlh, Lokality</td><td>Cirhóza, Rezerva, Dlh, Cigarety</td><td>Cigarety, Cirhóza, Cigarety, Lokality</td><td>Cirhóza, Rezerva, Starší, Cigarety</td><td>Cirhóza, Rezerva, Dlh, Cigarety</td><td>Cigarety, Starší, Rezerva, Lokality</td></tr>
+<tr><th>Neprajník</th><td>Strach, Starší, Absťák, Cigarety</td><td>Dlh, Starší, Absťák, Rezerva</td><td>Cirhóza, Dlh, Rezerva, Znepokojenie</td><td>Strach, Absťák, Rezerva, Cigarety</td><td>Cirhóza, Strach, Cigarety, Znepokojenie</td><td>Strach, Dlh, Starší, Cigarety</td><td>Strach, Dlh, Rezerva, Cigarety</td><td>Cirhóza, Starší, Absťák, Znepokojenie</td></tr>
+<tr><th>Exekútor</th><td>Rezerva, Starší, Cirhóza, Lokality</td><td>Cigarety, Starší, Cirhóza, Starší</td><td>Dlh, Cigarety, Starší, Vydesenie</td><td>Rezerva, Cirhóza, Starší, Lokality</td><td>Dlh, Rezerva, Lokality, Vydesenie</td><td>Rezerva, Cigarety, Starší, Lokality</td><td>Rezerva, Cigarety, Starší, Lokality</td><td>Dlh, Starší, Cirhóza, Vydesenie</td></tr>
+  </tbody>
+ </table></div>
+ <p class="tl">Po náhrade staršieho (patronát) leží na ukazovateli iná karta a tá zapína iné sloty. Meranie v časti 3 s tým počíta.</p>
+</details>
+
+<h2>3. Meranie: 200 stredných a 60 dlhých partií</h2>
+<p>Boti (Štamgast, Rapavý Fero a Teta Gizka v 9 dvojiciach, jadro z <code>origin/master</code>) dohrali partie podľa v4. Na koncovom stave som spočítal bodovanie v5:
+súboj podmienka po podmienke, za staršieho 1 b + zóny strachu, pri rovnosti body obom, zónové podmienky len cez ostatných starších.
+Každú partiu som vyhodnotil pri 8 rôznych rozdaniach scorecardov.
+<b>Šanca zaostávajúceho</b> znamená, ako často staršieho vyhrá hráč, ktorý partiu podľa v4 prehral. Remíza pri staršom sa ráta ako polovica.</p>
+<div class="tab-obal"><table>
+ <thead><tr><th>Stredná hra</th><th class="c">Dnešné rozloženie</th><th class="c">v5</th></tr></thead>
+ <tbody>
+  <tr><td>Priemerný rozdiel skóre</td><td class="c">7,2</td><td class="c">5,9</td></tr>
+  <tr><td>Medián výsledku</td><td class="c">9 : 2</td><td class="c">8 : 2</td></tr>
+  <tr><td>Víťaz v5 je ten istý ako víťaz v4</td><td class="c">88 %</td><td class="c">78 %</td></tr>
+  <tr><td>Remíza pri staršom (body dostanú obaja)</td><td class="c">15 %</td><td class="c">20 %</td></tr>
+  <tr><td>Aktívnych zónových podmienok na staršieho</td><td class="c">1,64</td><td class="c">0,57</td></tr>
+  <tr><td>Šanca zaostávajúceho podľa scorecardu</td><td class="c">16–34 %</td><td class="c">28–41 %</td></tr>
+ </tbody>
+</table></div>
+<p>V dlhej hre klesne rozdiel zo 7,7 na 6,1 bodu, medián sa zmení z 12 : 4 na 12 : 6 a šanca zaostávajúceho je 24–35 %.</p>
+<p class="tl">Obmedzenie: boti hrajú podľa v4 a o Absťák, Rezervu ani o súboje nebojujú. Čísla ukazujú, ako sa nové rozloženie správa na skutočných koncových stavoch.
+Ako sa bude hrať, keď o podmienky začnú bojovať ľudia, zmeria stratég. Z rozložení, ktoré spĺňajú pravidlá 1–5, som vyberal tie s vyššou šancou zaostávajúceho
+a s remízou pri staršom najviac 21 %. Lokality som na každom scorecarde dal do iného slotu, aby nezávisel od jednej karty staršieho.</p>
+
+<h2>4. Čo treba od programátora</h2>
+<div class="blok">
+ <ol>
+  <li><b>Nové typy podmienok</b> <code>abstak</code> a <code>rezerva</code> v type <code>Podmienka</code> a v <code>ALL_PODMIENKY</code> (<code>packages/core/src/types.ts:213</code>).
+   Bez nich <code>parseScorecards</code> súbor v5 odmietne (<code>packages/core/src/data.ts:167</code>).</li>
+  <li><b>Počty pre súboj:</b> Absťák = všetky Absťáky hráča (ruka, balíčky, priznané aj v línii, vzor <code>verejneAbstaky</code> v <code>engine.ts:743</code>).
+   Rezerva = <code>poldeciPlne</code>. Obe patria do <code>pocetKusov</code> (<code>packages/core/src/elders.ts:212</code>).</li>
+  <li><b>Bodovanie v5</b> (dávka, bod 3) namiesto <code>elderScore</code>: súboj na aktívnych podmienkach so smerom podľa znamienka v <code>body</code>
+   (−1 znamená, že vyhrá menej). Zónové podmienky rátajú ostatných starších a dve rovnaké aktívne podmienky sú dva súboje.</li>
+  <li><b>Výber sady podľa verzie pravidiel:</b> v4 ďalej načíta <code>scorecards.json</code>, v5 <code>scorecards-v5.json</code>.
+   Tvorca kariet (Bodovacie karty v SQLite) potrebuje nové rozloženie a novú seed značku, inak živý web ostane na starom rozložení.</li>
+  <li><b>Ikony Absťák a Rezerva</b> medzi ikony bodovania v tvorcovi. Absťák: prázdny prevrátený poldecák a nad ním čiarky chvenia. Rezerva: plný poldecák s pokrievkou.
+   Obe sú načrtnuté v tomto náhľade. Názvy a popisy patria do <code>apps/web/src/karta/podmienky.ts</code>.</li>
+  <li><b>Bot</b> musí poznať nové podmienky a súboje, inak ich pri hodnotení pozície prehliada. <b>Test dát:</b> 4 + 4 podmienky na scorecarde a pravidlá 1–5 z časti 2.</li>
+ </ol>
+</div>
+
+<h2>5. Otázky pre Michala</h2>
+<div class="blok">
+ <ol>
+  <li>Zónových podmienok je 10 namiesto 26, lebo strach už odmeňuje vzorec bodov (1 + zóny). Súhlasíš, alebo chceš viac Znepokojenia (teraz je 3×)?</li>
+  <li>Vydesenie je len 2× (Bitkár, Exekútor), lebo súboj o neho končí remízou v 89 % partií. Nechať ho takto, alebo ho zo scorecardov úplne vyradiť?</li>
+  <li>Bitkár je zámerne najťažší pre zaostávajúceho (šanca 28 %, 2× Lokality). Chceš ho takého, alebo ho mám vyrovnať?</li>
+  <li>Rezerva: ráta sa Vínko ako plný poldeci?</li>
+  <li>Keď sú dve rovnaké podmienky aktívne naraz (pri 1 karte z 8), sú to dva súboje. Platí to, alebo sa majú rátať ako jeden?</li>
+ </ol>
+</div>
+
+<footer>Navrhár, 24. 10. 2026. Podklady: <code>docs/pravidla-v5/davka.md</code>, <code>docs/napady/podmienky-starsich-v5.html</code>, <code>docs/PRAVIDLA.md</code> §14,
+<code>packages/core/data/scorecards.json</code>, <code>cards.json</code> (karty starších), <code>elders.ts</code>. Meranie: 200 stredných a 60 dlhých partií bot proti botovi (skripty v scratchpade).</footer>
+</main>
+</body>
+</html>
