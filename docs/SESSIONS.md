@@ -25,6 +25,7 @@ viac kôl dizajnu). Vtedy pre ňu platí časť „Ďalšia session“ nižšie.
 | `naex-overovac` | Haiku | rebase, test, typecheck, build — verdikt a padnuté testy |
 | `Explore` (vstavaný) | — | kde je čo v kóde |
 | playtest, stratég, rozhodca, bot-tréner, developer | podľa definície | cez svoje skilly (`/naex-playtest`, `/naex-strategia`, …) |
+| kontrola štýlu ilustrácií | — | skill `/naex-kontrola-stylu` (agent `naex-ilustrator` v režime kontroly) |
 
 Model sa vyberá podľa úlohy: Opus na kód a návrhy, Sonnet na pozeranie
 a čítanie, Haiku na mechanické overenie. **Nový druh agenta** Leader nezakladá
