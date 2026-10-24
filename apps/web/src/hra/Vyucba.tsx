@@ -129,6 +129,7 @@ function prvkyKluca(kluc: string): HTMLElement[] {
   // Pri stavbe šenku len karty, ktoré ešte ležia v balíčku — na Smetisku už sú, kde majú byť.
   if (kluc.startsWith("smetisko:")) return [...document.querySelectorAll<HTMLElement>(`.stavba-balicek [data-vyucba-uid="${Number(kluc.slice(9))}"]`)];
   const css = (x: string): string => x.replace(/["\\]/g, "");
+  if (kluc.startsWith("akcia:")) return [...document.querySelectorAll<HTMLElement>(`:is(.ruka-rad, .linia) .kl-slot[data-akcia="${css(kluc.slice(6))}"]`)];
   const priame = [...document.querySelectorAll<HTMLElement>(`[data-vyucba="${css(kluc)}"]`)];
   if (priame.length > 0 || !kluc.includes(":")) return priame;
   const [zona, id] = [kluc.slice(0, kluc.indexOf(":")), kluc.slice(kluc.indexOf(":") + 1)];
@@ -162,8 +163,8 @@ function viditelny(el: HTMLElement): boolean {
   // Prvok pod vrstvou (šenok, Karty, Log) nesvieti cez ňu; bublina a lupa sa nerátajú.
   const x = Math.min(Math.max(r.left + r.width / 2, 0), window.innerWidth - 1);
   const y = Math.min(Math.max(r.top + Math.min(r.height / 2, 40), 0), window.innerHeight - 1);
-  const navrchu = document.elementFromPoint(x, y);
-  return navrchu === null || el.contains(navrchu) || navrchu.contains(el) || navrchu.closest("[data-vyucba-bublina], .lupa") !== null;
+  const navrchu = document.elementsFromPoint(x, y).find((e) => e.closest(".vyucba-stmavenie, [data-vyucba-bublina], .lupa") === null) ?? null;
+  return navrchu === null || el.contains(navrchu) || navrchu.contains(el);
 }
 
 /** Zvýraznené prvky kroku: označí ich data-vyucba-zvyraznene a vráti ich obdĺžniky. */
@@ -189,7 +190,7 @@ function useZvyraznenie(kluce: readonly string[]): readonly Obdlznik[] {
         if (!najdene.has(el)) el.removeAttribute("data-vyucba-zvyraznene");
       }
       // Zóna, ktorá obsahuje presnejšie zvýraznené prvky (panel stavby a jeho karty), ostane v tieni.
-      for (const el of [...najdene.keys()]) if ([...najdene.keys()].some((x) => x !== el && el.contains(x))) najdene.delete(el);
+      for (const el of [...najdene.keys()]) if (el.hasAttribute("data-vyucba") && [...najdene.keys()].some((x) => x !== el && el.contains(x))) najdene.delete(el);
       const out: Obdlznik[] = [];
       for (const [el, k] of najdene) {
         if (el.getAttribute("data-vyucba-zvyraznene") !== k) el.setAttribute("data-vyucba-zvyraznene", k);
@@ -285,6 +286,7 @@ function skoreMiesta(o: Obdlznik, zvyraznene: readonly Obdlznik[]): number {
   const sucet = (r: readonly Obdlznik[], vaha: number): number => r.reduce((s, b) => s + prekrytie(o, b) * vaha, 0);
   return (
     sucet(zvyraznene, 50) +
+    sucet(rectyPrvkov(".vrstva-fazy .stavba-zona, .vrstva-fazy .stavba-balicek, .vrstva-fazy .draft-karty, .vrstva-starsich:not([hidden]) .ls-sc"), 30) +
     sucet(rectyPrvkov(".linia .partia-rad .kl"), 4) +
     sucet(rectyPrvkov(".stol-hrana .pecat, .stol-hrana button"), 20) +
     sucet(rectyPrvkov(".linia-stav"), 4) +
@@ -356,6 +358,13 @@ export function VyucbaStol({
     return () => clearTimeout(t);
   }, [krok?.id]);
 
+  // U5: pri zmene kroku zavrie visiacu lupu karty či staršieho (Lupa sa zatvára Escapom) —
+  // len keď je otvorená, inak by Escape zrušil rozpracovaný výber.
+  useEffect(() => {
+    if (krok === null || document.querySelector(".lupa:not(.doznieva)") === null) return;
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+  }, [krok?.id]);
+
   // Hrozba na stole je v odhade bitky — keď ju krok ukazuje a odhad je zbalený, rozbalí sa raz.
   useEffect(() => {
     if (krok === null || !krok.zvyraznit.includes("hrozba")) return;
@@ -369,8 +378,14 @@ export function VyucbaStol({
   // Pruhy udalostí a priazne na stole počas výučby nie — komentuje Melichar (playtest: ležali cez karty).
   useEffect(() => {
     document.body.classList.add("vyucba-bezi");
-    return () => document.body.classList.remove("vyucba-bezi");
+    return () => document.body.classList.remove("vyucba-bezi", "vyucba-odhad");
   }, []);
+  // Odhad bitky, stávka a vydesení sa ukážu od kroku, ktorý o nich hovorí (alebo o bitke), a potom ostanú.
+  useEffect(() => {
+    if (krok === null) return;
+    const text = krok.melichar.toLowerCase();
+    if (krok.zvyraznit.some((k) => k === "hrozba" || k === "bitka-ucet") || /odhad|vydes|hrozb|bitk/.test(text)) document.body.classList.add("vyucba-odhad");
+  }, [krok?.id]);
 
   // Vetu „Takto nie — ešte chýba: …“ skladá server; po odmietnutí svietia len karty,
   // ktoré chýbajú alebo sú navyše (a potvrdenie), inak všetko, čo krok čaká.
@@ -393,7 +408,10 @@ export function VyucbaStol({
   useEffect(() => {
     const m = predtymAuto.current;
     predtymAuto.current = krok?.kto === "auto" ? krok.zvyraznit : null;
-    if (m === null || m.length === 0) return;
+    if (m === null || m.length === 0) {
+      setDosvit([]);
+      return;
+    }
     setDosvit(m);
     const t = setTimeout(() => setDosvit([]), 1500);
     return () => clearTimeout(t);
@@ -412,8 +430,9 @@ export function VyucbaStol({
     // bublina by naň skočila a karta by dopadla na ňu (playtest výučby 2026-10-23).
     if (el === null || document.body.classList.contains("tahanie-aktivne")) return;
     const miesta = miestaBubliny(el.offsetWidth, el.offsetHeight);
-    let i = rucne ?? 0;
-    if (rucne === null) {
+    let i = rucne ?? zvolene;
+    const sama = krok?.kto === "auto" || krok?.kto === "bot";
+    if (rucne === null && !(sama && poloha !== null)) {
       let naj = Number.POSITIVE_INFINITY;
       miesta.forEach((o, j) => {
         // Pri rovnakom skóre ostáva bublina, kde je (neskáče sem a tam).
@@ -518,9 +537,6 @@ export function VyucbaStol({
               {percento} %
             </span>
           </div>
-          <button type="button" className="vyucba-presun" onClick={presun} title="Presunúť bublinu inam (ostane tam)">
-            ⇆ <span>presunúť</span>
-          </button>
         </header>
         <div className="vyucba-text" role="status" aria-live="polite" hidden={krok !== null && krok.melichar.trim() === "" && predtym === null && chyba === null && rada === null}>
           {chyba !== null && krok !== null && <p className="vyucba-chyba">{chyba}</p>}
@@ -576,8 +592,11 @@ export function VyucbaStol({
               {krok.kto === "hrac" && <span className="vyucba-stav">Tvoj ťah</span>}
               {krok.kto === "bot" && <span className="vyucba-stav vyucba-caka">{menoBota} ťahá…</span>}
               {krok.kto === "auto" && <span className="vyucba-stav vyucba-caka">Hra ťahá za teba…</span>}
-              <button type="button" className="tlacidlo-jemne vyucba-prerusit" onClick={prerusit} title="Postup sa uloží — pokračuješ na stránke Hrať.">
-                prerušiť výučbu
+              <button type="button" className="vyucba-presun" onClick={presun} title="Bublina zakrýva, čo potrebuješ? Presuň ju inam — ostane tam.">
+                ⇆ <span>presunúť</span>
+              </button>
+              <button type="button" className="tlacidlo-jemne vyucba-prerusit" onClick={prerusit} title="Prerušiť výučbu — postup sa uloží, pokračuješ na stránke Hrať.">
+                prerušiť<span className="vyucba-dlhy-popis"> výučbu</span>
               </button>
             </>
           )}

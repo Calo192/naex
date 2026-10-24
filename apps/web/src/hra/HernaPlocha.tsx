@@ -324,6 +324,8 @@ export interface HernaPlochaProps {
   readonly onPocitadlo?: (bezi: boolean) => void;
   /** Výučba „Prvá hra“: okno konca partie neukazovať — záver povie Melichar v bubline. */
   readonly bezOknaKonca?: boolean;
+  /** Výučba „Prvá hra“ beží — pas bez odpočtu na vrátenie, „končím“ bez druhého potvrdenia. */
+  readonly vyucba?: boolean;
   /** Výučba: ťah, ktorý krok čaká — „potvrdiť“ sa odomkne, až keď na stole leží všetko z neho. */
   readonly vyucbaOcakava?: Command | null;
 }
@@ -380,6 +382,7 @@ export function HernaPlocha({
   onPocitadlo,
   bezOknaKonca,
   vyucbaOcakava,
+  vyucba,
 }: HernaPlochaProps) {
   DATA = data;
   const ja = view.ja;
@@ -2550,7 +2553,7 @@ export function HernaPlocha({
                 data-skratka="p"
                 data-vyucba="tlacidlo:pas"
                 title="Do Pitky už nevykladáš, súper vykladá sám. Za každú kartu, ktorú si ešte smel vyložiť, dostaneš cigaretu."
-                onClick={() => (mozemVylozit ? odlozenyPas.spusti({ type: "pass" }) : posli({ type: "pass" }))}
+                onClick={() => (mozemVylozit && vyucba !== true ? odlozenyPas.spusti({ type: "pass" }) : posli({ type: "pass" }))}
               >
                 pasovať <CenaCigariet n={zaPas} znamienko="+" />
               </button>
@@ -2875,7 +2878,7 @@ export function HernaPlocha({
             }
             onClick={() => {
               if (krcma) return;
-              if (hotovoVzdavaNaex) setPotvrdenie("hotovo");
+              if (hotovoVzdavaNaex && vyucba !== true) setPotvrdenie("hotovo");
               else posli({ type: "skipNaex" });
             }}
           >

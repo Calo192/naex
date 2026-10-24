@@ -217,6 +217,20 @@ body.vyucba-bezi .ruka-rad > .tahatelna:not(:hover) > .kl[data-vyucba-zvyraznene
   transition: transform 0.2s ease;
 }
 
+/* U4: odhad, stávku a vydesenie výučba ukáže, až keď o nich Melichar hovorí (playtest: pri prvých
+   krokoch ich nikto nechápal). Pokyn na stole ostáva v jednom riadku — celý by prekryl nadpisy
+   krajov; čo urobiť, hovorí bublina a celé znenie sa rozbalí pod myšou. */
+body.vyucba-bezi:not(.vyucba-odhad) .pas-kola .suhrn-bitky,
+body.vyucba-bezi:not(.vyucba-odhad) .pas-kola .stavka-bitky,
+body.vyucba-bezi:not(.vyucba-odhad) .vydeseni-pocet {
+  visibility: hidden;
+}
+
+/* U5: lupa staršieho sa v úzkom stĺpci nerozpadne. */
+.lupa-starsieho {
+  min-width: 260px;
+}
+
 /* Počas výučby komentuje Melichar — pruhy udalostí a priazne na stole by ležali cez karty. */
 body.vyucba-bezi .pokyn-udalosti:not(.pokyn-tahania),
 body.vyucba-bezi .oznamy-priazne {
@@ -254,7 +268,7 @@ body.vyucba-bezi .oznamy-priazne {
 
 .vyucba-pata {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   gap: 8px 12px;
 }
@@ -278,8 +292,14 @@ body.vyucba-bezi .oznamy-priazne {
 }
 
 .vyucba-prerusit {
-  margin-left: auto;
+  flex: none;
   font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+/* „presunúť“ a „prerušiť“ vpravo v jednom riadku so stavom — päta sa nezalomí. */
+.vyucba-pata > .vyucba-presun {
+  margin-left: auto;
 }
 
 /* Nízky notebook: menšia bublina, nech nezakryje pol stola. */
@@ -306,7 +326,12 @@ body.vyucba-bezi .oznamy-priazne {
   }
 
   .vyucba-pata {
-    gap: 4px 10px;
+    gap: 4px 8px;
+  }
+
+  /* Päta sa zmestí do jedného riadku aj s „ďalej“ a „presunúť“. */
+  .vyucba-dlhy-popis {
+    display: none;
   }
 
   .vyucba-hlava .vyucba-avatar {

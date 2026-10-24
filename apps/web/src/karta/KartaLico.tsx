@@ -94,6 +94,7 @@ export function KartaLico(props: KartaLicoProps) {
       <span
         key={`${strana}${i}`}
         className={`kl-slot${st === null ? "" : ` kl-${st.stav}`}${props.spoj?.[strana].includes(i) === true ? " kl-spoj" : ""}`}
+        data-akcia={kluc}
         style={{ "--x": r.x, "--y": r.y, "--s": r.w, "--r": g.polomerSlotu } as CSSProperties}
         tabIndex={bezPopisov ? undefined : props.slotyBezFokusu === true ? -1 : 0}
         aria-label={`${nazov}: ${akcia?.popis ?? ""}`}
