@@ -103,8 +103,17 @@ Rovnako postupuje Bugfixing pri UI opravách.
   Sessions UI Inspector, Admin a Navrhár stačí na Sonnete (`/model sonnet`,
   Michal 2026-10-24).
 - **Kontext je najdrahší** (meranie Leadera 2026-10-24: 97 % spotreby je
-  opakované čítanie kontextu, nie výstup). Snímky obrazovky nečítaj v hlavnej
-  session — ostanú v kontexte a čítajú sa pri každom ďalšom kroku. Pošli ich
-  pomocnému agentovi (Sonnet) a od neho si vezmi len text nálezov.
+  opakované čítanie kontextu, nie výstup). Snímky obrazovky, dlhé výpisy
+  a dlhé dokumenty nečítaj v hlavnej session — ostanú v kontexte a čítajú sa
+  pri každom ďalšom kroku. Pošli ich **pomocnému agentovi** (nástroj Agent,
+  `subagent_type`) a od neho si vezmi len text:
+  - `naex-oko` (Sonnet) — snímky webu a stola, čo je kde, orezané, prekryté,
+    konzola; vráti text a cesty k snímkam pre Michala,
+  - `naex-overovac` (Haiku) — rebase, test, typecheck, build; vráti verdikt
+    a len padnuté testy,
+  - `naex-citac` (Sonnet) — reporty playtestov, denníky, logy, PRAVIDLA.md;
+    vráti odpovede s dokladom `cesta:riadok`,
+  - vstavaný `Explore` — kde je čo v kóde.
+  Pomocného agenta, ktorý už beží, oslov znova (SendMessage), nezakladaj nový.
 - **Inšpekcia:** jedno kolo a jedna kontrola opráv. Ďalšie kolo len pri novom
   vysokom náleze.
