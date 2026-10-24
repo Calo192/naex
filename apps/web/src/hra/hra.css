@@ -4447,6 +4447,58 @@ button.auto-hotovo-odkaz {
   overflow: hidden;
 }
 
+/* ---- stôl so scrollom (Michal 2026-10-24) ----
+ * Keď by karty v línii klesli pod čitateľnú veľkosť (HernaPlocha SIRKA_CITATELNA:
+ * malé okno, zoom 150 %), partia nie je na výšku okna: stôl má výšku podľa kariet
+ * a stránka sa scrolluje. Ruka a hrana stola ležia v toku stránky — prilepené by
+ * zakryli tvoj bar (UI inšpekcia); ťahá sa po scrolle nadol, kde je stôl aj ruka.
+ * Vrstva voľby cieľa a draftu má výšku podľa obsahu. Zhustenie barov a pásu ostáva. */
+@media (min-width: 761px) {
+  /* Do strán sa orezáva ako na výšku okna (bar pri úzkom okne presahuje), nadol nie. */
+  .obsah:has(> .hra.stol-scroll) {
+    height: auto;
+    min-height: calc(100dvh - 65px);
+    overflow-x: clip;
+    overflow-y: visible;
+  }
+
+  .hra.stol-scroll {
+    height: auto;
+  }
+
+  .hra.stol-scroll :is(.plocha, .stred, .linia-obal, .linia-obal > .stol-plst) {
+    flex: none;
+  }
+
+  .hra.stol-scroll .stol-plst > .linia {
+    height: auto;
+  }
+
+  .hra.stol-scroll .stol-hrana {
+    position: relative;
+    bottom: auto;
+  }
+
+  /* Nulová výška, nie display: none — šírka línie určuje veľkosť kariet draftu (12 miest stavby). */
+  .hra.stol-scroll .stol-plst.linia-skryta > .linia {
+    height: 0;
+    min-height: 0;
+    padding-block: 0;
+    overflow: hidden;
+    visibility: hidden;
+  }
+
+  .hra.stol-scroll .vrstva-fazy {
+    position: static;
+    margin: 22px 10px 10px;
+    overflow: visible;
+  }
+
+  .hra.stol-scroll .linia-obal.s-hranou .vrstva-fazy {
+    margin-bottom: 48px;
+  }
+}
+
 /* ---- stôl bez scrollovania (Michal 2026-10-23, #67) ----
  * Na počítači zaberá partia presne okno pod hlavičkou webu: súperov bar, stôl,
  * tvoj bar a ruka pod sebou; stôl dostane zvyšok výšky a karty v línii sa
