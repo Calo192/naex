@@ -147,10 +147,10 @@ export const KONSTANTY = {
 
 /**
  * Dĺžka hry = počet lokalít, o ktoré sa hráči bijú (rozhodnutie Michala
- * 2026-10-11). Dlhá hra potrebuje v sade aspoň 11 lokalít — kým ich admin
- * v tvorcovi nepridá, nedá sa zvoliť.
+ * 2026-10-11; 3 / 5 / 7 od 2026-10-24, predtým 5 / 7 / 11). Dĺžku, na ktorú
+ * sada nemá dosť lokalít, ponuka vynechá.
  */
-export const DLZKY_HRY = { kratka: 5, stredna: 7, dlha: 11 } as const;
+export const DLZKY_HRY = { kratka: 3, stredna: 5, dlha: 7 } as const;
 
 /**
  * Značka verzie pravidiel, ktorú nesie každá archivovaná partia (Michal

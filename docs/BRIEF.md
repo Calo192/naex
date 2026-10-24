@@ -322,6 +322,7 @@ uzavrel Michal 2026-10-22 (roadmapa #11); odpovede sú v PRAVIDLA.md.
    manželka, 2 Dievčina na vydaj; tieto druhy nie sú v spoločnom balíčku ani v šenku.
 8. ~~**Lokality** — v `cards.json` je len **7**.~~ Vyriešené (Michal 2026-10-20):
    sada má 14 lokalít; krátka 5, stredná 7, dlhá 11 bitiek, dlhá hra sa dá zvoliť.
+   Od 2026-10-24 (Michal): krátka 3, stredná 5, dlhá 7.
 10. ~~**Kočovník** (pravidlá v3) — pôvodný efekt stratil zmysel.~~ Vyriešené
    (Michal 2026-10-19): Kočovník míňa limit ako každá karta. Efekt od 2026-10-24:
    „Furt: Jeho akcie sa počítajú hráčovi, ktorý má v jeho kraji prevahu.“ Do

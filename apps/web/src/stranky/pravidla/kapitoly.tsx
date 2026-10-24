@@ -83,7 +83,7 @@ export const KAPITOLY: readonly Kapitola[] = [
       <>
         <div className="karticky">
           <div className="karticka">
-            <strong>Body na konci.</strong> Hra končí po poslednej bitke o lokalitu (5, 7 alebo 11 podľa{" "}
+            <strong>Body na konci.</strong> Hra končí po poslednej bitke o lokalitu (3, 5 alebo 7 podľa{" "}
             <P k="dlzka-hry">dĺžky hry</P>). Bodujú sa ovládnuté lokality, získaní starší, strach starších a zvyšné cigarety —
             mínus Dlhy a Cirhózy.
           </div>
@@ -194,7 +194,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         </ol>
         <H3 id="kolo-priprava">Príprava</H3>
         <p>
-          Zvoľte <P k="dlzka-hry">dĺžku hry</P> — 5, 7 alebo 11 lokalít. Každý hráč zamieša svojich 7 štartovacích kariet
+          Zvoľte <P k="dlzka-hry">dĺžku hry</P> — 3, 5 alebo 7 lokalít. Každý hráč zamieša svojich 7 štartovacích kariet
           (3 Pijani, 2 Miňištranti, Milujúca manželka, Dievčina na vydaj), dobere si <strong>5 do ruky</strong> a dostane{" "}
           <strong>2 plné poldeci a 3 cigarety</strong>. Hra rozdá 8 starších s náhodnými scorecardmi; markery ležia v strede.
         </p>

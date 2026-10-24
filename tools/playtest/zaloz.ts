@@ -4,7 +4,7 @@
 // Použitie (z koreňa repozitára):
 //   node --experimental-strip-types --no-warnings tools/playtest/zaloz.ts ["Meno hráča 1"] ["Meno hráča 2"] [kratka|stredna|dlha]
 //
-// Dĺžka hry = počet lokalít (5 / 7 / 11); predvolená je stredná.
+// Dĺžka hry = počet lokalít (3 / 5 / 7); predvolená je stredná.
 //
 // S prepínačom --bot hrá hráč 1 proti offline protihráčovi Štamgastovi
 // (NPC na serveri); meno hráča 2 sa vtedy ignoruje a účet hráča 2 nevzniká.

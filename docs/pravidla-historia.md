@@ -573,3 +573,14 @@ neukradne — rozhoduje prevaha v kraji.“
 
 **O4 (len znenie, §11):** držať nepriznanú Cirhózu do posledného kola je
 zámer; §11 to teraz hovorí výslovne aj s cenou.
+
+## 2026-10-24.2 — dĺžky hry 3 / 5 / 7 lokalít (§1, §3, Michal 2026-10-24)
+
+Krátka hra má 3 lokality, stredná (predvolená) 5, dlhá 7. Tá istá značka
+`VERZIA_PRAVIDIEL` ako zmena NA EX × Posilnenie vyššie.
+
+Staré znenie §3:
+
+> - **Dĺžka hry** sa volí pred začiatkom počtom lokalít: krátka **5**, stredná
+>   **7** (predvolená), dlhá **11**. Dlhú hru možno zvoliť, len keď má zverejnená
+>   sada aspoň 11 lokalít — `cards.json` ich má 15.

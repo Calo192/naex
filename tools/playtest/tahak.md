@@ -6,7 +6,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 `nezrovnalosti.md`. Po zmene pravidla ho aktualizuje Developer — jediné miesto;
 čísla stráži test `packages/core/test/tahak.test.ts`.
 
-- **Dĺžka hry** = počet lokalít (krátka 5, stredná 7, dlhá 11). Výpis klienta
+- **Dĺžka hry** = počet lokalít (krátka 3, stredná 5, dlhá 7; od 2026-10-24). Výpis klienta
   ukazuje, o koľko lokalít sa hrá a koľko je ovládnutých.
 - **Štart:** 7 štartoviek (3 Pijan, 2 Miňištrant, 1 Milujúca manželka, 1 Dievčina na vydaj;
   Michal 2026-10-22); 5 kariet v ruke, 2 plné poldeci, 3 cigarety.

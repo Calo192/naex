@@ -33,7 +33,7 @@ hra má toľko kôl, koľko určí dĺžka hry (§3). Na konci vyhrá, kto má v
 | Hráč vydesí aspoň polovicu starších (aj nahradených) a **udrží ich do konca nasledujúceho kola** — ohlásené vydesenie; súper má kolo na odpoveď, napr. patronát nad vydeseným starším vráti marker do stredu (§10) | **vyhráva** |
 | Hráč nedokáže čeliť exekúcii (§11) | okamžite **prehráva** |
 | Veľkosť balíčka hráča je pod 5 po drafte alebo na konci kola (karty z línie sa už vrátili) | **prehráva** |
-| Odohrá sa posledná bitka o lokalitu (5 / 7 / 11 podľa dĺžky hry) | spočítajú sa body (§14) |
+| Odohrá sa posledná bitka o lokalitu (3 / 5 / 7 podľa dĺžky hry) | spočítajú sa body (§14) |
 
 Veľkosť balíčka = doberací + odhadzovací + ruka. **Priznané karty ani
 Dedičstvo sa nerátajú.** Na konci kola sa najprv vyhodnotí vydesenie, potom
@@ -102,9 +102,9 @@ nepoužíva — cigareta je cigareta.
 
 ## 3. Príprava hry
 
-- **Dĺžka hry** sa volí pred začiatkom počtom lokalít: krátka **5**, stredná
-  **7** (predvolená), dlhá **11**. Dlhú hru možno zvoliť, len keď má zverejnená
-  sada aspoň 11 lokalít — `cards.json` ich má 15.
+- **Dĺžka hry** sa volí pred začiatkom počtom lokalít: krátka **3**, stredná
+  **5** (predvolená), dlhá **7**. Dĺžku možno zvoliť, len keď má zverejnená
+  sada aspoň toľko lokalít — `cards.json` ich má 15.
 - **8 starších**, každý na **scorecarde** rozdanom náhodne (scorecard určuje
   priazeň staršieho, §10, a jeho bodovacie podmienky, §14). Marker každého
   staršieho začína **v strede stupnice** (index 4).

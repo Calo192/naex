@@ -36,23 +36,23 @@ async function zalozAPripoj(dlzka?: string): Promise<{ view: { lokalitCelkom: nu
 }
 
 describe("dĺžka hry", () => {
-  it("predvolená je stredná — 7 lokalít", async () => {
+  it("predvolená je stredná — 5 lokalít", async () => {
     const r = await zalozAPripoj();
-    expect("view" in r && r.view.lokalitCelkom).toBe(7);
-    expect("view" in r && r.view.lokalityVHre.length).toBe(7);
+    expect("view" in r && r.view.lokalitCelkom).toBe(5);
+    expect("view" in r && r.view.lokalityVHre.length).toBe(5);
   });
 
-  it("krátka hra má 5 lokalít a lobby ju ponúka", async () => {
+  it("krátka hra má 3 lokality a lobby ju ponúka", async () => {
     const r = await zalozAPripoj("kratka");
-    expect("view" in r && r.view.lokalitCelkom).toBe(5);
+    expect("view" in r && r.view.lokalitCelkom).toBe(3);
     const { cookie } = await registruj(server.port);
     const res = await fetch(`http://127.0.0.1:${server.port}/api/hry/otvorene`, { headers: { cookie } });
-    // Sada v8 má 14 lokalít — dlhá hra (11) je možná.
+    // Sada má 15 lokalít — dlhá hra (7) je možná.
     expect(((await res.json()) as { dlzky: string[] }).dlzky).toEqual(["kratka", "stredna", "dlha"]);
   });
 
-  it("dlhá hra má 11 lokalít", async () => {
+  it("dlhá hra má 7 lokalít", async () => {
     const r = await zalozAPripoj("dlha");
-    expect("view" in r && r.view.lokalitCelkom).toBe(11);
+    expect("view" in r && r.view.lokalitCelkom).toBe(7);
   });
 });

@@ -18,7 +18,7 @@ export const SLOVNIK: readonly PojemSlovnika[] = [
   { id: "cirhoza", pojem: "Cirhóza", popis: "Kliatba z pečene; ide navrch tvojho balíčka, priznaná dá súperovi v bitke +1 tuhé, nepriznaná na konci uberá body." },
   { id: "dedicstvo", pojem: "Dedičstvo", popis: "Nástroj vyložený mimo línie; platí jeho efekt a cena rastie pre oboch: 1., 2., 3. Nástroj stojí 1, 2, 3 cigarety." },
   { id: "dlh", pojem: "Dlh", popis: "Kliatba zo zadĺženia; prizná sa sama, ráta sa k prahu Exekútora a na konci uberá body aj priznaný." },
-  { id: "dlzka-hry", pojem: "Dĺžka hry", popis: "Počet lokalít, o ktoré sa hrá: krátka 5, stredná 7, dlhá 11." },
+  { id: "dlzka-hry", pojem: "Dĺžka hry", popis: "Počet lokalít, o ktoré sa hrá: krátka 3, stredná 5, dlhá 7." },
   { id: "doliatie", pojem: "Doliatie", popis: "Počas Pitky za 2 cigarety otočíš vypitý poldeci späť na plný." },
   { id: "efekt", pojem: "Efekt", popis: "Text karty: čo karta robí a kedy; kedy hovorí tučné slovo na jeho začiatku." },
   { id: "exekutor", pojem: "Exekútor", popis: "Keď priznané Dlhy dosiahnu prah (základ 10), odovzdáš Nástroj, inak hneď prehrávaš." },

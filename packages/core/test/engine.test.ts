@@ -9,6 +9,7 @@ import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { Command, GameState, PlayerId } from "../src/index.ts";
 import {
+  DLZKY_HRY,
   KONSTANTY,
   apply,
   eventsFor,
@@ -92,8 +93,8 @@ describe("M6 — setup", () => {
     }
     expect(state.senok.length).toBe(0);
     expect(state.starsi.length).toBe(8);
-    expect(state.lokalityVHre.length).toBe(7);
-    expect(state.lokalitCelkom).toBe(7);
+    expect(state.lokalityVHre.length).toBe(DLZKY_HRY.stredna);
+    expect(state.lokalitCelkom).toBe(DLZKY_HRY.stredna);
     expect(state.hraci[0].poldeciPlne).toBe(2);
     expect(state.hraci[0].cigarety).toBe(3);
     expect(state.faza).toBe("volbaCiela");

@@ -54,7 +54,7 @@
     {
       "id": "1.koniec.posledna-bitka",
       "paragraf": "1. Cieľ a koniec hry › Podmienky konca",
-      "pravidlo": "Po poslednej bitke o lokalitu (5 / 7 / 11) sa spočítajú body.",
+      "pravidlo": "Po poslednej bitke o lokalitu (3 / 5 / 7) sa spočítajú body.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/engine.test.ts › celá hra náhodnými legálnymi ťahmi dobehne",
@@ -1430,10 +1430,10 @@
     {
       "id": "3.lokality",
       "paragraf": "3. Príprava hry",
-      "pravidlo": "Dĺžka hry 5 / 7 / 11 lokalít; dlhá len so sadou, ktorá má aspoň 11 lokalít (sada má 15).",
+      "pravidlo": "Dĺžka hry 3 / 5 / 7 lokalít (od 2026-10-24); dĺžka len so sadou, ktorá má aspoň toľko lokalít (sada má 15).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-kolo.test.ts › §3: dĺžka hry 5 / 7 / 11 lokalít; dlhá len so sadou, ktorá má aspoň 11 lokalít",
+        "packages/core/test/pravidla-kolo.test.ts › §3: dĺžka hry 3 / 5 / 7 lokalít; dĺžka len so sadou, ktorá má aspoň toľko lokalít",
         "packages/core/test/variants.test.ts › načíta 63 kariet, 8 starších, 15 lokalít, 8 nástrojov (sada v11 živého webu, 2026-10-23)"
       ]
     },

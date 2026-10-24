@@ -474,20 +474,20 @@ describe("§3 Príprava hry", () => {
     expect(s.kolo).toBe(1);
   });
 
-  it("§3: dĺžka hry 5 / 7 / 11 lokalít; dlhá len so sadou, ktorá má aspoň 11 lokalít", () => {
-    expect(DLZKY_HRY).toEqual({ kratka: 5, stredna: 7, dlha: 11 });
-    for (const n of [5, 7, 11]) {
+  it("§3: dĺžka hry 3 / 5 / 7 lokalít; dĺžka len so sadou, ktorá má aspoň toľko lokalít", () => {
+    expect(DLZKY_HRY).toEqual({ kratka: 3, stredna: 5, dlha: 7 });
+    for (const n of [3, 5, 7]) {
       const s = setupGame(data, 22, { lokalit: n });
       expect(s.lokalitCelkom).toBe(n);
       expect(s.lokalityVHre).toHaveLength(n);
     }
     expect(dostupneDlzky(data)).toContain("dlha");
-    // Sada s 10 lokalitami dlhú hru neponúkne a nespustí.
-    const nechaj = new Set(data.lokality.slice(0, 10).map((d) => d.id));
+    // Sada so 6 lokalitami dlhú hru neponúkne a nespustí.
+    const nechaj = new Set(data.lokality.slice(0, 6).map((d) => d.id));
     const cards = new Map([...data.cards].filter(([, d]) => !d.tags.includes("Lokalita") || nechaj.has(d.id)));
     const mala = buildGameData(cards, data.elders, parseScorecards(scorecardsJson));
     expect(dostupneDlzky(mala)).toEqual(["kratka", "stredna"]);
-    expect(() => setupGame(mala, 22, { lokalit: 11 })).toThrow();
+    expect(() => setupGame(mala, 22, { lokalit: 7 })).toThrow();
   });
 });
 

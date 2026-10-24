@@ -15,6 +15,7 @@ import { Momenty } from "./Momenty.tsx";
 import { Soundboard } from "./Soundboard.tsx";
 import { useHra } from "./useHra.ts";
 import { OznamZiskov } from "../achievementy/VPartii.tsx";
+import { tvar } from "../stranky/Statistiky.tsx";
 import { PonukaVyucby, useVyucbaUctu, VyucbaStol, VyucbaVLobby, type VyucbaUctu } from "./Vyucba.tsx";
 import { useNepodporovaneZariadenie } from "./zariadenie.ts";
 import "./hra.css";
@@ -26,9 +27,12 @@ interface OtvorenaHra {
   readonly vytvorena: number;
 }
 
-/** Popis dĺžky hry: „Stredná · 7 lokalít“. */
+/** „3 lokality“, „5 lokalít“ — krátka hra má od 2026-10-24 len 3. */
+const lokalit = (n: number): string => `${n} ${tvar(n, "lokalita", "lokality", "lokalít")}`;
+
+/** Popis dĺžky hry: „Stredná · 5 lokalít“. */
 export function popisDlzky(d: DlzkaHry): string {
-  return `${NAZOV_DLZKY[d]} · ${DLZKY_HRY[d]} lokalít`;
+  return `${NAZOV_DLZKY[d]} · ${lokalit(DLZKY_HRY[d])}`;
 }
 
 function Lobby({
@@ -111,10 +115,10 @@ function Lobby({
                   className={`dlzka-volba ${dlzka === d ? "aktivna" : ""}`}
                   disabled={!ide}
                   onClick={() => setDlzka(d)}
-                  title={ide ? undefined : `Sada zatiaľ nemá ${DLZKY_HRY[d]} lokalít — pribudnú v tvorbe kariet.`}
+                  title={ide ? undefined : `Sada zatiaľ nemá ${lokalit(DLZKY_HRY[d])} — pribudnú v tvorbe kariet.`}
                 >
                   <strong>{NAZOV_DLZKY[d]}</strong>
-                  <span>{DLZKY_HRY[d]} lokalít</span>
+                  <span>{lokalit(DLZKY_HRY[d])}</span>
                 </button>
               );
             })}
