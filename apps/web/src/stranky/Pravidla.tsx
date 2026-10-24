@@ -20,8 +20,15 @@ const OBRAZKY = import.meta.glob("./pravidla-obrazky/*.{jpg,jpeg,webp,png}", { e
 const obrazokKapitoly = (meno: string): string | null =>
   Object.entries(OBRAZKY).find(([cesta]) => cesta.replace(/^.*\//, "").replace(/\.[a-z]+$/, "") === meno)?.[1] ?? null;
 
-/** Odsadenie pod lepkavou hlavičkou webu — kam dopadne skok na kotvu. */
-const POD_HLAVICKOU = 84;
+/** Kam dopadne skok na kotvu: pod lepkavú hlavičku webu, na mobile aj pod lištu „N / 15“. */
+function odsadenie(): number {
+  const lista = document.querySelector<HTMLElement>(".pravidla-lista");
+  const spodok =
+    lista !== null && lista.offsetParent !== null
+      ? lista.getBoundingClientRect().bottom
+      : (document.querySelector(".hlavicka")?.getBoundingClientRect().bottom ?? 65);
+  return Math.max(0, spodok) + 16;
+}
 
 const bezDiakritiky = (s: string): string =>
   s
@@ -36,11 +43,19 @@ function cielKotvy(hash: string): HTMLElement | null {
   return document.getElementById(STARE_KOTVY[id] ?? id);
 }
 
+/**
+ * Okamžitý posun na prvok pod hlavičku. Plynulé posúvanie cieľ minulo: kým stránka
+ * „letela“, menila sa výška obsahu nad cieľom (na 1920 o ~400 px, UI 2026-10-24).
+ */
+function posunNa(el: HTMLElement): void {
+  window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - odsadenie(), behavior: "instant" });
+}
+
 function skocNa(id: string): void {
   const el = document.getElementById(id);
   if (el === null) return;
   history.pushState(null, "", `#${id}`);
-  window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - POD_HLAVICKOU + 4 });
+  posunNa(el);
 }
 
 interface Podkapitola {
@@ -157,7 +172,7 @@ function usePoloha(): Poloha {
     let raf = 0;
     const zmeraj = (): void => {
       raf = 0;
-      const hranica = POD_HLAVICKOU + 40;
+      const hranica = odsadenie() + 40;
       const sekcie = [...document.querySelectorAll<HTMLElement>("section.kapitola, section#slovnik")];
       let kapitola = 0;
       sekcie.forEach((s, i) => {
@@ -391,11 +406,27 @@ export function Pravidla() {
     if (sada === null) return;
     const skoc = (): void => {
       const el = cielKotvy(location.hash);
-      if (el !== null) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - POD_HLAVICKOU + 4 });
+      if (el !== null) posunNa(el);
     };
     skoc();
+    // Písmo a ukážky ešte môžu zmeniť výšku textu nad cieľom — skok sa raz zopakuje,
+    // ak medzitým čitateľ sám neposunul stránku.
+    let sam = false;
+    const posunulSam = (): void => {
+      sam = true;
+    };
+    const opakuj = (): void => {
+      if (!sam) skoc();
+    };
+    const t = setTimeout(opakuj, 600);
+    void document.fonts?.ready.then(opakuj);
+    for (const u of ["wheel", "touchmove", "keydown"] as const) window.addEventListener(u, posunulSam, { passive: true, once: true });
     window.addEventListener("hashchange", skoc);
-    return () => window.removeEventListener("hashchange", skoc);
+    return () => {
+      clearTimeout(t);
+      for (const u of ["wheel", "touchmove", "keydown"] as const) window.removeEventListener(u, posunulSam);
+      window.removeEventListener("hashchange", skoc);
+    };
   }, [sada]);
 
   // „/“ skočí do hľadania (ako na iných weboch s dokumentáciou).
