@@ -107,7 +107,7 @@ export function cenaPatronatu(elder: ElderState): { readonly cigarety: number; r
 /** Zóna so stranou (−3 … 3, sivá 0) — hranicu zón prekročí posun, ktorý ju zmení. */
 const ZONA_SO_STRANOU = [-3, -2, -1, 0, 0, 0, 1, 2, 3] as const;
 
-/** Prekročí posun z `z` na `na` hranicu zón? (Pohoršenie smie najviac dve — §8.2.) */
+/** Prekročí posun z `z` na `na` hranicu zón? (Pohoršenie smie najviac dve — §9.2.) */
 export function prekraciaHranicu(z: MarkerPos, na: MarkerPos): boolean {
   return ZONA_SO_STRANOU[z] !== ZONA_SO_STRANOU[na];
 }

@@ -564,7 +564,7 @@ async function main(): Promise<void> {
         }
       }
       if (n > 8) console.log(`… a ďalších ${n - 8} variantov.`);
-      console.log("\nV línii: karta podstrčená na súperovu stranu sa číta podľa PRAVIDIEL §4 — over, ktorá hrana sa dotkne lokality.");
+      console.log("\nV línii: karta podstrčená na súperovu stranu sa číta podľa PRAVIDIEL §6 — over, ktorá hrana sa dotkne lokality.");
       break;
     }
 
@@ -670,7 +670,7 @@ async function main(): Promise<void> {
       console.log("\nBODOVACIE KARTY (názov = priazeň; podmienky vľavo | vpravo):");
       for (const b of o.bodovacie) console.log(`  ${b.nazov}: ${b.lava.map(ikona).join(" ")} | ${b.prava.map(ikona).join(" ")}`);
       console.log(`\nBODY ZA PODMIENKY (jadro, scorecards.json): ${Object.entries(body).map(([k, v]) => `${k} ${v}`).join(", ")}`);
-      console.log("Hodnoty priazní (sila 1/2/3 × 2) a pravidlá strachu: PRAVIDLÁ §9; body: §10.");
+      console.log("Hodnoty priazní (sila 1/2/3 × 2) a pravidlá strachu: PRAVIDLÁ §10; body: §14.");
       break;
     }
 

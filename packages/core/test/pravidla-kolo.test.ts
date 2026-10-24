@@ -1,5 +1,5 @@
 // Rozhodca pravidiel (prvý prechod 2026-10-22): priebeh kola podľa PRAVIDLA.md
-// §1, §4–§7 a §11 — voľba cieľa, poradie v Pitke, odpoveď na NA EX, Vypiť,
+// §2–§7, §10–§13 a §15 — voľba cieľa, poradie v Pitke, odpoveď na NA EX, Vypiť,
 // Dedičstvo, Pitka (Dlh, Fajčiar, Cigorky, Vízia), patronát, príprava hry.
 // Očakávané hodnoty sú z textu pravidiel, nie z toho, čo kód vráti.
 
@@ -87,10 +87,10 @@ function vysledokPitky(events: readonly Event[]): Extract<Event, { type: "pitkaV
   return e;
 }
 
-// --- §7 Voľba cieľa a útočník -------------------------------------------------
+// --- §4 a §5 Voľba cieľa a útočník -------------------------------------------------
 
-describe("§7 Priebeh kola — kto volí cieľ a kto útočí", () => {
-  it("§7: cieľ kola vyberá a natáča obranca, útočník nie", () => {
+describe("§4 Priebeh kola — kto volí cieľ a kto útočí", () => {
+  it("§5: cieľ kola vyberá a natáča obranca, útočník nie", () => {
     for (const seed of [1, 2, 3, 4]) {
       const s = setupGame(data, seed);
       const o = opponentOf(s.utocnik);
@@ -104,17 +104,17 @@ describe("§7 Priebeh kola — kto volí cieľ a kto útočí", () => {
     }
   });
 
-  it("§7: útočník prvého kola je náhodný — zo semienka raz jeden, raz druhý hráč", () => {
+  it("§4: útočník prvého kola je náhodný — zo semienka raz jeden, raz druhý hráč", () => {
     const utocnici = new Set<PlayerId>();
     for (let seed = 1; seed <= 30; seed++) utocnici.add(setupGame(data, seed).utocnik);
     expect([...utocnici].sort()).toEqual([0, 1]);
   });
 });
 
-// --- §7 Pitka nahlas a §5 odpoveď na NA EX ------------------------------------
+// --- §7 Pitka nahlas a odpoveď na NA EX ------------------------------------
 
 describe("§7 Pitka — obranca začína, útočník má posledné slovo (Michal 2026-10-21)", () => {
-  it("§7/§5: obranca začína; po jeho NA EX odpovedá útočník; „hotovo“ je nevratné; na NA EX útočníka obranca už len odpovie", () => {
+  it("§7: obranca začína; po jeho NA EX odpovedá útočník; „hotovo“ je nevratné; na NA EX útočníka obranca už len odpovie", () => {
     const s0 = setupGame(data, 5);
     const pijan0 = inst("pijan");
     const pijan1 = inst("pijan");
@@ -156,7 +156,7 @@ describe("§7 Pitka — obranca začína, útočník má posledné slovo (Michal
     expect(events.some((e) => e.type === "pitkaVysledok")).toBe(true);
   });
 
-  it("§14 Most: aj odpoveď na NA EX smie len na vlastnú stranu", () => {
+  it("§15 Most: aj odpoveď na NA EX smie len na vlastnú stranu", () => {
     const pijan0 = inst("pijan");
     const s = vPitke(data, 6, [[lezi(pijan0, 0)], [lezi(inst("pijan"), 1)]], {
       ciel: { typ: "lokalita", lokalita: inst("most") },
@@ -171,9 +171,9 @@ describe("§7 Pitka — obranca začína, útočník má posledné slovo (Michal
   });
 });
 
-// --- §5 Vypiť a §6 Dedičstvo ----------------------------------------------------
+// --- §13 Vypiť, §11 priznanie a §12 Dedičstvo ----------------------------------------------------
 
-describe("§5 Vypiť a §6 Priznanie a Dedičstvo v ťahu", () => {
+describe("§13 Vypiť, §11 priznanie a §12 Dedičstvo v ťahu", () => {
   function vZhromazdeni(ruka: CardInstance[], h: Partial<PlayerState> = {}): GameState {
     const s0 = setupGame(data, 8);
     return sHracom(
@@ -190,7 +190,7 @@ describe("§5 Vypiť a §6 Priznanie a Dedičstvo v ťahu", () => {
     );
   }
 
-  it("§5: Vypiť ide pred kartu — „karta, Vypiť, karta“ ťah neprejde, „Vypiť, karta, karta“ áno", () => {
+  it("§13: Vypiť ide pred kartu — „karta, Vypiť, karta“ ťah neprejde, „Vypiť, karta, karta“ áno", () => {
     const a = inst("pijan");
     const b = inst("pijan");
     const s = vZhromazdeni([a, b], { poldeciPlne: 2 });
@@ -202,7 +202,7 @@ describe("§5 Vypiť a §6 Priznanie a Dedičstvo v ťahu", () => {
     expect(po.hraci[0].poldeciPlne).toBe(1);
   });
 
-  it("§6: priznanie neodovzdá ťah, vyloženie Nástroja do Dedičstva áno — a limit vykladania nemíňa", () => {
+  it("§6/§11: priznanie neodovzdá ťah, vyloženie Nástroja do Dedičstva áno — a limit vykladania nemíňa", () => {
     const cirhoza = inst("cirhoza");
     const noviny = inst("noviny");
     let s = vZhromazdeni([cirhoza, noviny], { cigarety: 3 });
@@ -218,10 +218,10 @@ describe("§5 Vypiť a §6 Priznanie a Dedičstvo v ťahu", () => {
   });
 });
 
-// --- §5 NA EX pri lokalite a §14 NA EX na Veterána ----------------------------------
+// --- §7 NA EX pri lokalite a §16 NA EX na Veterána ----------------------------------
 
-describe("§5 NA EX na kartu pri lokalite a §14 NA EX na Veterána", () => {
-  it("§5: NA EX na kartu pri lokalite ruší a zdvojuje len jej akcie — hrana lokality ostáva, ako bola", () => {
+describe("§7 NA EX na kartu pri lokalite a §16 NA EX na Veterána", () => {
+  it("§7: NA EX na kartu pri lokalite ruší a zdvojuje len jej akcie — hrana lokality ostáva, ako bola", () => {
     const lok = makeDef("r_lok", ["Rana", null, null, null], EMPTY, { tags: ["Lokalita"] });
     const pri: Layout4 = ["Pecka", "Rana", null, null];
     const karta = makeDef("r_pri", EMPTY, pri);
@@ -239,7 +239,7 @@ describe("§5 NA EX na kartu pri lokalite a §14 NA EX na Veterána", () => {
     expect(sNaex.sums[0].Rana).toBe(1 + 2);
   });
 
-  it("§5: na kartu, na ktorej už poldeci leží, ďalšie NA EX dať nedá — ani súper", () => {
+  it("§7: na kartu, na ktorej už poldeci leží, ďalšie NA EX dať nedá — ani súper", () => {
     const pijan = inst("pijan");
     // Karty vo dvojiciach — NA EX len na kartu s aktívnou aj neaktívnou akciou (2026-10-23).
     const linia = { lokalita: null, lokalitaOtocena: false, strany: [[lezi(pijan, 0, 0), lezi(inst("pijan"), 0)], [lezi(inst("pijan"), 1), lezi(inst("pijan"), 1)]] as GameState["strany"] };
@@ -261,7 +261,7 @@ describe("§5 NA EX na kartu pri lokalite a §14 NA EX na Veterána", () => {
     expect(ev.aktivneStredu).toEqual([1, 0]);
   });
 
-  it("§14 Veterán: NA EX naňho zdvojí jeho aktívne akcie a nezruší ich; neaktívne ostanú neaktívne (v4)", () => {
+  it("§16 Veterán: NA EX naňho zdvojí jeho aktívne akcie a nezruší ich; neaktívne ostanú neaktívne (v4)", () => {
     const R4: Layout4 = ["Rana", "Rana", "Rana", "Rana"];
     const R2: Layout4 = ["Rana", "Rana", null, null];
     const veteran = makeDef("veteran", R4, R4, { tags: ["Občan", "Chlap"] });
@@ -286,7 +286,7 @@ describe("§5 NA EX na kartu pri lokalite a §14 NA EX na Veterána", () => {
 // --- §7 Pitka — vyhodnotenie --------------------------------------------------------
 
 describe("§7 Pitka — poradie vyhodnotenia", () => {
-  it("§7 krok 2: za každý celý prah zadĺženia jeden Dlh — 5 pri prahu 2 = 2 Dlhy, zvyšok sa po Pitke vynuluje", () => {
+  it("§8: za každý celý prah zadĺženia jeden Dlh — 5 pri prahu 2 = 2 Dlhy, zvyšok sa po Pitke vynuluje", () => {
     const vonk: Layout4 = ["Dlh", "Dlh", "Dlh", null];
     const vnut: Layout4 = ["Dlh", "Dlh", "Rana", null];
     const o = makeDef("r_dlh_o", EMPTY, vonk);
@@ -301,7 +301,7 @@ describe("§7 Pitka — poradie vyhodnotenia", () => {
     expect(state.hraci[0].zadlzenie).toBe(0);
   });
 
-  it("§9 Fajčiar: +sila cigariet (bez ×2) len v 1. Pitke bitky o lokalitu", () => {
+  it("§10 Fajčiar: +sila cigariet (bez ×2) len v 1. Pitke kola", () => {
     const s0 = setupGame(data, 11);
     const idx = s0.starsi.findIndex((e) => favourStarsieho(data, e) === "FAJCIAR");
     expect(idx).toBeGreaterThanOrEqual(0);
@@ -314,7 +314,7 @@ describe("§7 Pitka — poradie vyhodnotenia", () => {
     expect(druha.cigarety).toEqual([0, 0]);
   });
 
-  it("§7 krok 5 / §6 Cigorky: cigareta navyše v každej Pitke — súperove Obmedzenia ju neuberú", () => {
+  it("§7 krok 5 / §12 Cigorky: cigareta navyše v každej Pitke — súperove Obmedzenia ju neuberú", () => {
     const O4: Layout4 = ["Obmedzenie", "Obmedzenie", "Obmedzenie", "Obmedzenie"];
     const obm = makeDef("r_obm", O4, O4);
     const sada = sadaS(obm);
@@ -343,9 +343,9 @@ describe("§7 Pitka — poradie vyhodnotenia", () => {
   });
 });
 
-// --- §7 Patronát --------------------------------------------------------------------
+// --- §10 Patronát --------------------------------------------------------------------
 
-describe("§7 Patronát — obmedzenia", () => {
+describe("§10 Patronát — obmedzenia", () => {
   function vPatronate(): { s: GameState; u: PlayerId; obcan: CardInstance } {
     const s0 = setupGame(data, 31);
     const u = s0.utocnik;
@@ -367,21 +367,21 @@ describe("§7 Patronát — obmedzenia", () => {
     return { s, u, obcan };
   }
 
-  it("§7: po patronáte marker ide do stredu a ráta sa ako začiatok kola — na krajnú sa v tomto kole nedostane", () => {
+  it("§10: po patronáte marker ide do stredu a ráta sa ako začiatok kola — na krajnú sa v tomto kole nedostane", () => {
     const { s, u, obcan } = vPatronate();
     const po = apply(data, s, { type: "patronat", elderId: s.starsi[0]!.elderId, uid: obcan.uid }, u).state;
     expect(po.starsi[0]!.marker).toBe(4);
     expect(po.starsi[0]!.markerZaciatokKola).toBe(4);
   });
 
-  it("§7: každý smie vziať najviac jedného staršieho za kolo", () => {
+  it("§10: každý smie vziať najviac jedného staršieho za kolo", () => {
     const { s, u, obcan } = vPatronate();
     expect(moznyPatronat(data, s, u).length).toBeGreaterThan(0);
     const uzMa: GameState = { ...s, patronat: (u === 0 ? [{ elderId: "x", nahrada: obcan, pohorsenia: 2 }, null] : [null, { elderId: "x", nahrada: obcan, pohorsenia: 2 }]) as GameState["patronat"] };
     expect(moznyPatronat(data, uzMa, u)).toEqual([]);
   });
 
-  it("§7: kartu staršieho z patronátu smie hráč vyložiť ako Starešinu — ráta sa do prevahy a smie naň dať NA EX", () => {
+  it("§10: kartu staršieho z patronátu smie hráč vyložiť ako Starešinu — ráta sa do prevahy a smie naň dať NA EX", () => {
     const { s, u, obcan } = vPatronate();
     const po = apply(data, s, { type: "patronat", elderId: s.starsi[0]!.elderId, uid: obcan.uid }, u).state;
     const starsi = po.starsi[0]!.karta;
@@ -393,7 +393,7 @@ describe("§7 Patronát — obmedzenia", () => {
     expect(naexCieleVLinii(data, linia, opponentOf(u))).toContain(starsi.uid);
   });
 
-  it("§8.4: pri remíze sa patronát vyrieši ako prehra — starší späť na scorecard, náhrada do ruky, bolestné poldeci", () => {
+  it("§9.4: pri remíze sa patronát vyrieši ako prehra — starší späť na scorecard, náhrada do ruky, bolestné poldeci", () => {
     const { s, u, obcan } = vPatronate();
     const po = apply(data, s, { type: "patronat", elderId: s.starsi[0]!.elderId, uid: obcan.uid }, u).state;
     const starsiUid = po.starsi[0]!.karta.uid;
@@ -435,7 +435,7 @@ describe("§7 Patronát — obmedzenia", () => {
     expect(konec.hraci[u].poldeciPlne + konec.hraci[u].poldeciVypite).toBe(1);
   });
 
-  it("§7: kartu staršieho z patronátu nemožno vymeniť Starostom", () => {
+  it("§10: kartu staršieho z patronátu nemožno vymeniť Starostom", () => {
     const { s, u, obcan } = vPatronate();
     const po = apply(data, s, { type: "patronat", elderId: s.starsi[0]!.elderId, uid: obcan.uid }, u).state;
     const starsiUid = po.starsi[0]!.karta.uid;
@@ -463,10 +463,10 @@ describe("§7 Patronát — obmedzenia", () => {
   });
 });
 
-// --- §11 Príprava hry -----------------------------------------------------------------
+// --- §3 Príprava hry -----------------------------------------------------------------
 
-describe("§11 Príprava hry", () => {
-  it("§11: 8 starších s markerom v strede, nikto nič neohlásil", () => {
+describe("§3 Príprava hry", () => {
+  it("§3: 8 starších s markerom v strede, nikto nič neohlásil", () => {
     const s = setupGame(data, 21);
     expect(s.starsi).toHaveLength(8);
     expect(s.starsi.every((e) => e.marker === 4 && e.markerZaciatokKola === 4 && !e.nahradeny)).toBe(true);
@@ -474,7 +474,7 @@ describe("§11 Príprava hry", () => {
     expect(s.kolo).toBe(1);
   });
 
-  it("§11: dĺžka hry 5 / 7 / 11 lokalít; dlhá len so sadou, ktorá má aspoň 11 lokalít", () => {
+  it("§3: dĺžka hry 5 / 7 / 11 lokalít; dlhá len so sadou, ktorá má aspoň 11 lokalít", () => {
     expect(DLZKY_HRY).toEqual({ kratka: 5, stredna: 7, dlha: 11 });
     for (const n of [5, 7, 11]) {
       const s = setupGame(data, 22, { lokalit: n });
@@ -491,10 +491,10 @@ describe("§11 Príprava hry", () => {
   });
 });
 
-// --- §3, §5, §7 doplnky ---------------------------------------------------------------
+// --- §2, §6, §7 doplnky ---------------------------------------------------------------
 
-describe("§3, §5 a §7 — doplnky prvého prechodu", () => {
-  it("§3: starý kľúč akcie Cigaretka sa pri načítaní sady preloží na Cigareta", () => {
+describe("§2, §6 a §7 — doplnky prvého prechodu", () => {
+  it("§2: starý kľúč akcie Cigaretka sa pri načítaní sady preloží na Cigareta", () => {
     const karta = {
       id: "r_stara",
       index: 900,
@@ -510,7 +510,7 @@ describe("§3, §5 a §7 — doplnky prvého prechodu", () => {
     expect(sada.get("r_stara")?.left.actions).toEqual({ Cigareta: 1 });
   });
 
-  it("§5: NA EX v základe najviac raz za Pitku", () => {
+  it("§7: NA EX v základe najviac raz za Pitku", () => {
     const a = inst("pijan");
     const b = inst("pijan");
     const s = vPitke(data, 15, [[lezi(a, 1), lezi(b, 1)], []]);
@@ -521,7 +521,7 @@ describe("§3, §5 a §7 — doplnky prvého prechodu", () => {
     expect(() => apply(data, dalej, { type: "naex", uid: b.uid }, 1)).toThrow(IllegalCommandError);
   });
 
-  it("§5: pečeň z NA EX sa pripíše hneď tomu, kto NA EX dal — aj keď karta je súperova", () => {
+  it("§7: pečeň z NA EX sa pripíše hneď tomu, kto NA EX dal — aj keď karta je súperova", () => {
     const pijan0 = inst("pijan");
     const s = vPitke(data, 16, [[lezi(pijan0, 0), lezi(inst("pijan"), 0)], []]);
     const po = apply(data, s, { type: "naex", uid: pijan0.uid }, 1).state;
@@ -532,7 +532,7 @@ describe("§3, §5 a §7 — doplnky prvého prechodu", () => {
     expect(po.strany[0][0]?.naexBy).toBe(1);
   });
 
-  it("§5: limit vykladania sa počíta nanovo na začiatku každého Zhromaždenia (aj medzi Pitkami)", () => {
+  it("§6: limit vykladania sa počíta nanovo na začiatku každého Zhromaždenia (aj medzi Pitkami)", () => {
     const R: Layout4 = ["Rana", null, null, null];
     const R3: Layout4 = [null, null, null, "Rana"];
     const lok = makeDef("r_lok_2p", R, R, { tags: ["Lokalita"] });
@@ -555,7 +555,7 @@ describe("§3, §5 a §7 — doplnky prvého prechodu", () => {
     expect(s.zhromazdenieStav?.naTahu).toBe(0);
   });
 
-  it("§5/§14 Zastávka: Vypiť znižuje spoločný limit obom", () => {
+  it("§13/§15 Zastávka: Vypiť znižuje spoločný limit obom", () => {
     const s0 = setupGame(data, 18);
     const s = sHracom(
       {

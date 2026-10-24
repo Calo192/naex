@@ -155,7 +155,7 @@ export interface ZhromazdenieStav {
   readonly vlastny?: readonly [number, number];
 }
 
-/** Za koľko kariet dostane hráč cigarety, keď teraz pasuje (§7; Zastávka §14). */
+/** Za koľko kariet dostane hráč cigarety, keď teraz pasuje (§6; Zastávka §15). */
 export function kartyZaPas(z: Pick<ZhromazdenieStav, "zostavaLimit" | "vlastny">, p: PlayerId): number {
   return Math.min(z.zostavaLimit[p], z.vlastny?.[p] ?? z.zostavaLimit[p]);
 }
@@ -591,7 +591,7 @@ function doRuky(s: MutState, p: PlayerId, karta: DeepMutable<CardInstance>, even
 }
 
 /**
- * Nová kliatba (PRAVIDLA §12, „verejný dlh“ Michal 2026-10-21): Dlh sa hneď
+ * Nová kliatba (PRAVIDLA §11, „verejný dlh“ Michal 2026-10-21): Dlh sa hneď
  * prizná — ide medzi priznané karty, kartu zaň hráč nedobere a na konci
  * hry uberá body aj priznaný. Cirhóza ide NAVRCH doberacieho balíčka, aby
  * prišla do ruky pri najbližšom ťahaní a hráč o nej rozhodol. Cena kliatby
@@ -611,7 +611,7 @@ function pridajKliatbu(s: MutState, data: GameData, p: PlayerId, defId: string, 
   events.push({ type: "log", text });
 }
 
-/** Poškodenie pečene + okamžitá Cirhóza pri prahu (PRAVIDLA §7 krok 3). */
+/** Poškodenie pečene + okamžitá Cirhóza pri prahu (PRAVIDLA §8). */
 function pridajPecen(
   s: MutState,
   data: GameData,
@@ -653,7 +653,7 @@ function pridajZadlzenie(s: MutState, data: GameData, p: PlayerId, mnozstvo: num
 }
 
 /**
- * Čo pripíšu karty na stole pri vyhodnotení Pitky (PRAVIDLA §7 kroky 2–3):
+ * Čo pripíšu karty na stole pri vyhodnotení Pitky (PRAVIDLA §7 kroky 2–3, §8):
  * zadĺženie z aktívnych akcií Dlh (Finančná poradkyňa ich posiela súperovi)
  * a pečeň z akcií Poškodenie pečene a Poldeci. Jeden výpočet pre
  * vyhodnotenie aj náhľad, aby sa nemohli rozísť.
@@ -764,7 +764,7 @@ function cirhozyPriznane(s: VerejnyStav, p: PlayerId): number {
 }
 
 /**
- * Poškodenie bitky zo súčtov aktívnych akcií (PRAVIDLA §8.3). Server ho
+ * Poškodenie bitky zo súčtov aktívnych akcií (PRAVIDLA §9.3). Server ho
  * volá pri vyhodnotení, klient pre živý odhad nad aktuálnou líniou.
  * Absťáky v ruke sú tajné — klient pozná len svoje, súperove dá 0.
  */
@@ -962,7 +962,7 @@ export function setupGame(data: GameData, seed: number, opts?: SetupOptions): Ga
     zaverecnaOdklad: [null, null],
   };
 
-  // Náhodný útočník prvého kola (PRAVIDLA §7).
+  // Náhodný útočník prvého kola (PRAVIDLA §3, §4).
   const [prvy, rng0] = rngInt(s.rng, 2);
   s.rng = rng0;
   s.utocnik = prvy as PlayerId;
@@ -1684,7 +1684,7 @@ function vyriesPatronat(s: MutState, data: GameData, vitaz: PlayerId | null, eve
 function zacniZhromazdenie(s: MutState, data: GameData, events: Event[], zacina: PlayerId = s.utocnik): void {
   s.faza = "zhromazdenie";
   events.push({ type: "faza", faza: "zhromazdenie" });
-  // Limit sa počíta nanovo na začiatku každého Zhromaždenia (PRAVIDLA §5).
+  // Limit sa počíta nanovo na začiatku každého Zhromaždenia (PRAVIDLA §6).
   // zastavka ho prepíše na 2; vinko pridáva poldeci navyše.
   s.zhromazdenieStav = {
     naTahu: zacina,
@@ -1764,7 +1764,7 @@ function cmdPlace(
     });
     manualEfekty(s, data, "Dedičstvo", events);
   } else {
-    // Nástroj sa do limitu vykladania nezapočítava (PRAVIDLA §5+§6); ostatné
+    // Nástroj sa do limitu vykladania nezapočítava (PRAVIDLA §6, §12); ostatné
     // karty limit míňajú (Kočovník od 2026-10-19 tiež).
     // Družstvo: Pracujúci limit nemíňajú.
     if (!jeNastroj && !bezLimituPracujuci(cielLokalita(s as GameState)?.defId ?? null, def.tags)) {
@@ -1897,7 +1897,7 @@ function vylozDoLinie(
   need(!(def.tags.includes("Kliatba") && !def.tags.includes("Občan")), "Kliatbu možno len priznať — do línie nepatrí.");
   // Karta smie na ktorúkoľvek stranu; patrí tomu, kto ju zahral (pravidlá v3).
   const cielPartia: PlayerId = target === "vlastna" ? p : opponentOf(p);
-  // Nástroj nesmie susediť s Nástrojom (PRAVIDLA §6).
+  // Nástroj nesmie susediť s Nástrojom (PRAVIDLA §12).
   const partia = s.strany[cielPartia];
   const sused = partia.length > 0 ? partia[partia.length - 1] : null;
   need(sused?.zaverecna !== true, "Za Záverečnú sa nedá priložiť, kým sa na konci Pitky neotočí.");
@@ -2203,7 +2203,7 @@ function cmdNaex(
   // Skryté Záverečné si NA EX zapamätajú pre Svokru a Vychovávateľku pri otočení.
   zapisOdklad(s, opponentOf(p), "naexSupera", 1);
   zapisOdklad(s, p, "naexVlastne", 1);
-  // Pečeň z NA EX sa počíta hneď — poldeci pije ten, kto NA EX dal (PRAVIDLA §5).
+  // Pečeň z NA EX sa počíta hneď — poldeci pije ten, kto NA EX dal (PRAVIDLA §7).
   pridajPecen(s, data, p, 1, events);
   // Vínna pivnica dovolí dve NA EX za Pitku, inde jedno.
   const pocet = (pitka.naexPocet?.[p] ?? 0) + 1;
@@ -3337,7 +3337,7 @@ export function prebytokNaRozdelenie(s: VerejnyStav, outcome: BattleOutcome): nu
   return Math.max(0, outcome.prebytok - prebytokProtiZlava(s, opponentOf(outcome.prebytokDrzi)));
 }
 
-/** Poškodenie + výsledok (PRAVIDLA §8.3–8.4) — čisto automatické. */
+/** Poškodenie + výsledok (PRAVIDLA §9.3–9.4) — čisto automatické. */
 function vyhodnotPoskodenie(s: MutState, data: GameData, events: Event[]): void {
   const b = s.bitkaStav;
   if (b === null) return;
@@ -3530,7 +3530,7 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
   }
   s.strany = [[], []];
 
-  // Lokalitu si berie víťaz (Benzínka ju od 2026-10-20 neprepadá, §8.4).
+  // Lokalitu si berie víťaz (Benzínka ju od 2026-10-20 neprepadá, §9.4).
   // Remíza (Michal 2026-10-21): lokalita ide na sekeru, víťaz najbližšej
   // bitky si vezme aj ju; v poslednej bitke už niet komu, tak prepadne.
   const lokalita = cielLokalita(s as GameState);
@@ -3627,7 +3627,7 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
   doberPoBitke(s, events);
 }
 
-/** Začiatok kola: vypité poldeci sa čiastočne otočia na plné (PRAVIDLA §5). */
+/** Začiatok kola: vypité poldeci sa čiastočne otočia na plné (PRAVIDLA §6). */
 function dolejNaZaciatkuKola(s: MutState, events: Event[]): void {
   for (const p of [0, 1] as const) {
     const pocet = Math.min(KONSTANTY.POLDECI_NA_ZACIATKU_KOLA, s.hraci[p].poldeciVypite);

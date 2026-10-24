@@ -15,7 +15,7 @@ type Stav = (typeof STAVY)[number];
 
 interface Pravidlo {
   readonly id: string;
-  /** Nadpis paragrafu z PRAVIDLA.md, napr. „§7 Patronát“. */
+  /** Nadpis paragrafu z PRAVIDLA.md, napr. „10. Starší › Patronát“. */
   readonly paragraf: string;
   readonly pravidlo: string;
   readonly stav: Stav;

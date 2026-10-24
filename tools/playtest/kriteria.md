@@ -79,7 +79,7 @@ alebo výpis klienta), a tým, ako sa hra naozaj zachovala. Formát jednej
 položky:
 
 - **Kde:** kolo, fáza, ťah (JSON), karty.
-- **Pravidlo:** paragraf `docs/PRAVIDLA.md` (napr. „§8 krok 3“) alebo text
+- **Pravidlo:** paragraf `docs/PRAVIDLA.md` (napr. „§9.3“) alebo text
   karty, krátky citát.
 - **Čakal som:** čo malo podľa pravidla nastať (s výpočtom, ak ide o čísla).
 - **Stalo sa:** čo ukázal výpis (presné čísla).

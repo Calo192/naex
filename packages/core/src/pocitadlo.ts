@@ -14,7 +14,7 @@ import type { StolBitky } from "./hrozba.ts";
 import type { LineEval } from "./partia.ts";
 import type { PlayerId } from "./types.ts";
 
-/** Tuhé poškodenie za jednu aktívnu akciu (PRAVIDLA §8.3). */
+/** Tuhé poškodenie za jednu aktívnu akciu (PRAVIDLA §9.3). */
 const SILA: Readonly<Partial<Record<Action, number>>> = { Rana: 1, Pecka: 2, Petelica: 3 };
 
 export interface KrokPocitadla {

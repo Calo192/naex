@@ -466,7 +466,7 @@ export function nahladPosunuMarkera(
 /**
  * Náhľad jedného posunu prebytkom k porazenému: to isté ako nahladPosunuMarkera
  * a navyše cigareta, ktorú porazený dostane za prvý posun každého staršieho
- * (§8.4) — cigarety bodujú na scorecardoch. Spoločné pre web aj konzolový
+ * (§9.4) — cigarety bodujú na scorecardoch. Spoločné pre web aj konzolový
  * klient agentov (predtým ju neukazoval ani jeden).
  */
 export function nahladPosunuPrebytkom(data: GameData, view: ClientState, elderId: string): NahladPosunu | null {
@@ -505,7 +505,7 @@ const STAVKA_PREBYTOK_NAJVIAC = 5;
  * Ako sa pohne rozdiel bodov (vitaz − porazený), keď `vitaz` vyhrá bitku
  * s prebytkom `prebytok`. Víťaz rozdeľuje prebytok hltavo — každý posun tam,
  * kde mu najviac pridá (to isté bodyTeraz ako náhľad posunu markera);
- * porazený dostane cigaretu za každého posunutého staršieho (§8.4).
+ * porazený dostane cigaretu za každého posunutého staršieho (§9.4).
  * Pohoršenia ani patronát nerieši — platia bez ohľadu na výsledok, resp.
  * súperova karta pri patronáte je skrytá. Preto „≈“.
  */
@@ -518,7 +518,7 @@ function zmenaPoVyhre(data: GameData, view: ClientState, vitaz: PlayerId, prebyt
   const lokalita = view.ciel?.typ === "lokalita" ? view.ciel.lokalita : null;
   const ziskane = [...(lokalita === null ? [] : [lokalita]), ...view.naSekeru.filter((k) => k.uid !== lokalita?.uid)];
   const poLokalite: ClientState = { ...view, ovladnute: [...view.ovladnute, ...ziskane.map((karta) => ({ karta, hrac: vitaz }))] };
-  // Miňištrant vo víťazovej partii zdraží každý posun (§8.4).
+  // Miňištrant vo víťazovej partii zdraží každý posun (§9.4).
   const cena = 1 + partiaHraca(view, vitaz).filter((pl) => pl.card.defId === "ministrant").length;
   const { kroky, view: v } = hltavyPrebytok(data, poLokalite, vitaz, prebytok, cena);
   const hraci: [HracVerejne, HracVerejne] = [v.hraci[0], v.hraci[1]];
