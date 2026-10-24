@@ -1,4 +1,4 @@
-// Vyhodnotenie bitky — presné poradie z PRAVIDLA.md §8 (M4).
+// Vyhodnotenie bitky — presné poradie z PRAVIDLA.md §9 (M4).
 //
 // Tu sú len ČISTÉ funkcie (Exekútor / poškodenie / výsledok). Kroky, ktoré
 // vyžadujú rozhodnutie hráča (Pohoršenie, rozdelenie prebytku,
@@ -20,7 +20,7 @@ export interface BattleSide {
   readonly cirhozaBonus: number;
   /** Dodatočné tuhé poškodenie z efektov kariet (recidivista, pes, …). */
   readonly tuheBonus: number;
-  /** Počet mojich Absťákov — znižujú MOJE tuhé poškodenie (PRAVIDLA §12). */
+  /** Počet mojich Absťákov — znižujú MOJE tuhé poškodenie (PRAVIDLA §8). */
   readonly abstaky: number;
   /** Tuhé menej z efektov súpera (Pasca: −1 za každé moje Zviera v línii). Chýba = 0. */
   readonly tuheZlava?: number;
@@ -111,7 +111,7 @@ export function battleOutcome(damage: DamageResult): BattleOutcome {
   return { vitaz, prebytokDrzi, prebytok: Math.abs(damage.celkove[0] - damage.celkove[1]) };
 }
 
-/** Krok Exekútora pre jedného hráča (PRAVIDLA §8.1). */
+/** Krok Exekútora pre jedného hráča (PRAVIDLA §11). */
 export type ExekutorVysledok = "mimoOhrozenia" | "musiOdovzdatNastroj";
 
 export function exekutorCheck(priznaneDlhy: number, priazenExekutora: number): ExekutorVysledok {

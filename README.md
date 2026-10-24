@@ -106,7 +106,7 @@ Nová karta z tvorcu (neznáme id) beží automaticky v režime MANUAL.
 - **Natívne v motore:** `dlh`, `cirhoza`, `kocovnik`, `abstak`.
 - **Implementované:** všetky ostatné. Od 2026-10-12 (playtest
   20261012-055944) aj bývalé MANUAL efekty — výklad ich textov je
-  v `docs/PRAVIDLA.md` §14. Efekty závislé od polohy v línii (Liberál,
+  v `docs/PRAVIDLA.md` §16. Efekty závislé od polohy v línii (Liberál,
   Silná nezávislá žena, Veterán, Zámočník, Šarlatán, Pijan) sú v
   `partia.ts` (`kartoveEfekty`), voľby hráča (Policajtka, Veštica,
   Benzínka, Poštárka, Starosta) sú príkazy motora.

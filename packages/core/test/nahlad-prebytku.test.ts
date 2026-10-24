@@ -1,7 +1,7 @@
 // Náhľad posunu prebytkom (UX/UI 2026-10-22): web a konzolový klient agentov
 // ukazovali rôzne čísla — konzola zmenu aj súčet („0 (→ −2)“), web len zmenu —
 // a ani jeden neratal cigaretu, ktorú porazený dostane za prvý posun staršieho
-// (§8.4), hoci cigarety bodujú. Obaja teraz volajú nahladPosunuPrebytkom.
+// (§9.4), hoci cigarety bodujú. Obaja teraz volajú nahladPosunuPrebytkom.
 
 import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";

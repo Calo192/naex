@@ -169,7 +169,7 @@ Balíčky, poldeci, cigarety, pečeň, závislosť, odvodené hodnoty
 
 ### M4 — Vyhodnotenie bitky
 
-Presné poradie z `PRAVIDLA.md §8`. Čisté funkcie
+Presné poradie z `PRAVIDLA.md §9`. Čisté funkcie
 (Exekútor / poškodenie / výsledok) oddelené od krokov, ktoré vyžadujú
 rozhodnutie hráča (Pohoršenie, Pohreb) — tie motor len **pripraví**.
 
@@ -302,20 +302,20 @@ Pravidlá v11 tieto veci nehovoria jednoznačne. Ak sa rozhodneš sám, **napí�
 do commitu a do README**, nech sa to dá ľahko prepnúť. Všetky doterajšie otázky
 uzavrel Michal 2026-10-22 (roadmapa #11); odpovede sú v PRAVIDLA.md.
 
-1. ~~**Posilnenie proti Posilneniu** na spoji — nič, alebo niečo?~~ Nič sa nedeje (§4).
+1. ~~**Posilnenie proti Posilneniu** na spoji — nič, alebo niečo?~~ Nič sa nedeje (§6).
 2. ~~**NA EX** — je „ruší aktívne a zdvojnásobuje neaktívne" naozaj **tá istá**
    operácia na vlastnej aj súperovej karte?~~ Vyriešené (Michal 2026-10-18):
    áno, NA EX smie na vlastného aj súperovho Občana či Starešinu a operácia
-   je tá istá (PRAVIDLA §5).
+   je tá istá (PRAVIDLA §7).
 3. ~~**Podpora** — počíta sa lokalita ako karta v okolí?~~ Áno. Pojem vypadol v pravidlách v4.
 4. ~~**Vzbura na lokalite** — aktivuje obe strany lokality, alebo len tú, ktorá
-   patrí do danej partie?~~ Len hranu lokality pri tom kraji (§4).
+   patrí do danej partie?~~ Len hranu lokality pri tom kraji (§6).
 5. ~~**Cirhóza v partii** — „Obdržíš od súpera dodatočnú ranu" znamená +1 tuhé
    pre súpera za každú Cirhózu v mojej línii?~~ Vyriešené (Michal 2026-10-20):
    kliatba do línie nepatrí; každá **priznaná** Cirhóza dá súperovi v každej
-   bitke +1 tuhé (PRAVIDLA §8).
+   bitke +1 tuhé (PRAVIDLA §9.3).
 6. ~~**Absťák** — čo presne sa počíta ako „nerest"?~~ Pitie aj fajčenie, platby
-   za šenok, Dedičstvo a Starostu nie (§12).
+   za šenok, Dedičstvo a Starostu nie (§8).
 7. ~~**Štartovacia ruka** — ako sa 10 kariet delí medzi 4 typy štartoviek?~~
    Vyriešené (Michal 2026-10-22, roadmapa #8): 7 kariet — 3 Pijan, 2 Miňištrant,
    1 Milujúca manželka, 1 Dievčina na vydaj. Predtým (2026-10-18): 4 Pijan, 2 Miňištrant, 2 Milujúca
@@ -333,14 +333,14 @@ uzavrel Michal 2026-10-22 (roadmapa #11); odpovede sú v PRAVIDLA.md.
    ukradni mu 1 cigaretu.“ — od 2026-10-19 **2 cigarety**, dve Svokry 4.
    Implementované a zverejnené (sada v6).
 9. ~~**Šenok** — čo sa stane, keď sa minie spoločný doberací balíček?~~ Šenok sa
-   zmenšuje až na nulu, hra beží ďalej bez trestu (§7).
+   zmenšuje až na nulu, hra beží ďalej bez trestu (§5).
 
 **Otázky k pravidlám v4** (na rozhodnutie pri prepise PRAVIDLA.md, roadmapa #12):
 
 12. **NA EX na kartu, ktorej akciu zrušil Odpor suseda** — zdvojí NA EX aj
    akciu zrušenú Odporom (neaktívna → ×2), alebo ostáva zrušená? Hra ju
    nechá zrušenú (`partia.ts`: NA EX mení len akcie cieľovej karty, zrušenie
-   Odporom ostáva); PRAVIDLA §4 a §5 to nehovoria. Rozhodca 2026-10-22, dopad malý.
+   Odporom ostáva); PRAVIDLA §6 a §7 to nehovoria. Rozhodca 2026-10-22, dopad malý.
 
 ---
 
@@ -352,7 +352,7 @@ Všetky uzavrel Michal 2026-10-22 (roadmapa #11). Nové neznáme hodnoty daj ako
 - ~~`data/elders.json` — ktorý starší dáva ktorú **priazeň** a **bočné
   bodovacie pozície**.~~ Vyriešené: priazeň aj bodovacie podmienky nesie
   **scorecard**, ktorý starší dostane pri príprave hry náhodne
-  (`data/scorecards.json`, prepísané z KartyAI 2026-07-13; §9, §10).
+  (`data/scorecards.json`, prepísané z KartyAI 2026-07-13; §10, §14).
 - ~~Body za **ovládnutú lokalitu**, za **získaného staršieho**, za **cigaretu**,
   pokuta za **nepriznanú cirhózu**.~~ Finálne: lokalita 2, starší 2, cigarety
   1 za trojicu, Cirhóza −2, Dlh −1 (`data/scorecards.json`).

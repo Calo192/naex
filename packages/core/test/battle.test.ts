@@ -1,4 +1,4 @@
-// M4 — vyhodnotenie bitky podľa PRAVIDLA §8.
+// M4 — vyhodnotenie bitky podľa PRAVIDLA §9.
 
 import { describe, expect, it } from "vitest";
 import type { BattleSide } from "../src/index.ts";

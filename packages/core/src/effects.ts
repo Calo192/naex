@@ -290,7 +290,7 @@ interface PoldeciHraca {
 }
 
 /**
- * Limit vykladania na začiatku Zhromaždenia tohto kola (PRAVIDLA §5) — pre
+ * Limit vykladania na začiatku Zhromaždenia tohto kola (PRAVIDLA §6) — pre
  * náhľad „limit po tomto ťahu“. `zmenaPoldeci` mení plné poldeci (−1 za
  * kartu zo šenku).
  */

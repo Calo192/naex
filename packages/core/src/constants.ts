@@ -3,7 +3,7 @@
 
 export const KONSTANTY = {
   /**
-   * Štartovacie vybavenie hráča (PRAVIDLA §11). Michal 2026-10-20 znížil
+   * Štartovacie vybavenie hráča (PRAVIDLA §3). Michal 2026-10-20 znížil
    * poldeci z 3 na 2 (cigarety ostávajú 3) — pas teraz platí cigaretami.
    */
   START_POLDECI: 2,
@@ -41,7 +41,7 @@ export const KONSTANTY = {
    */
   KOPIE_V_SPOLOCNOM_BALICKU: 2,
 
-  /** Základy odvodených hodnôt (PRAVIDLA §9 a §13). */
+  /** Základy odvodených hodnôt (PRAVIDLA §8 a §10). */
   /**
    * Prah Cirhózy (+ priazeň Alkoholika). Michal 2026-10-12 zvýšil z 2 na 3:
    * v playteste 20261011-183315 hráči priznávali kliatby po jednej a kolá sa
@@ -125,9 +125,9 @@ export const KONSTANTY = {
     AUTOMAT_PREHRA_DLHY: 1,
   },
 
-  /** Stokársky barter: cigarety → nový plný poldeci (PRAVIDLA §5); Lakomec zlacní. */
+  /** Stokársky barter: cigarety → nový plný poldeci (PRAVIDLA §7); Lakomec zlacní. */
   BARTER_CENA: 5,
-  /** Cigarety → otočenie vypitého poldeci (PRAVIDLA §5). */
+  /** Cigarety → otočenie vypitého poldeci (PRAVIDLA §7). */
   REFILL_CENA: 2,
   /**
    * Nové kolo, nový poldeci (Michal 2026-10-16, playtest 20261016-155120):
