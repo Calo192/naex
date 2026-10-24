@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NA EX! — nové podmienky na scorecardoch starších (pravidlá v5)</title>
+<style>
+:root {
+  --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --okraj: #3d3229;
+  --text: #f1e8d8; --tlmeny: #b6a790;
+  --akcent: #e9ad45; --cervena: #d0563f; --zelena: #7cbf74; --modra: #8fb4e0;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #dccdb3;
+    --text: #2a2016; --tlmeny: #5e4f3b;
+    --akcent: #9a5d06; --cervena: #a83a26; --zelena: #356e2f; --modra: #2d5a8f;
+    color-scheme: light;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 system-ui, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 980px; margin: 0 auto; padding: 28px 16px 56px; }
+h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; line-height: 1.2; }
+h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); margin: 0 0 10px; }
+h2 { font-size: 1.4rem; margin: 38px 0 14px; padding-bottom: 6px; border-bottom: 1px solid var(--okraj); }
+h3 { font-size: 1.12rem; margin: 0 0 8px; }
+p { margin: 0 0 10px; }
+a { color: var(--akcent); }
+:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+.uvod { color: var(--tlmeny); }
+.odporucane { background: var(--plocha); border: 1px solid var(--akcent); border-radius: 12px; padding: 14px 16px; margin: 18px 0; }
+.odporucane ol { margin: 6px 0 0; padding-left: 20px; }
+.odporucane li { margin-bottom: 6px; }
+.tab-obal { overflow-x: auto; }
+table.prehlad { width: 100%; border-collapse: collapse; font-size: .92rem; }
+table.prehlad th, table.prehlad td { padding: 7px 6px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--okraj); }
+table.prehlad thead th { border-bottom: 2px solid var(--okraj); }
+td.c, th.c { text-align: right; white-space: nowrap; }
+tr.dnes td { color: var(--cervena); }
+.znacka { display: inline-block; font-size: .78rem; border-radius: 999px; padding: 1px 9px; border: 1px solid currentColor; white-space: nowrap; margin: 0 4px 2px 0; }
+.z-pravidla { color: var(--cervena); }
+.z-karty { color: var(--zelena); }
+.z-kod { color: var(--modra); }
+.z-odp { color: var(--akcent); font-weight: 600; }
+ol.smery { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+ol.smery > li { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 14px 16px; }
+ol.smery > li.odp { border-left: 4px solid var(--akcent); }
+.cislo { color: var(--akcent); font-family: Georgia, serif; margin-right: 6px; }
+.znacky { margin: 0 0 10px; }
+dl.polozka { margin: 0; display: grid; grid-template-columns: 9.5em 1fr; gap: 6px 12px; }
+dl.polozka dt { color: var(--tlmeny); font-size: .88rem; padding-top: 2px; }
+dl.polozka dd { margin: 0; }
+dl.polozka ul { margin: 0; padding-left: 18px; }
+dl.polozka li { margin-bottom: 3px; }
+.skore { font-family: Georgia, serif; font-size: 1.15rem; color: var(--akcent); white-space: nowrap; }
+.priklad { background: var(--plocha-2); border-radius: 8px; padding: 8px 12px; }
+.blok { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 16px; margin-bottom: 12px; }
+.blok ul, .blok ol { margin: 4px 0 0; padding-left: 18px; }
+.blok li { margin-bottom: 5px; }
+.hlavna { border-left: 4px solid var(--cervena); }
+details.viac { margin-top: 10px; }
+details.viac summary { cursor: pointer; color: var(--tlmeny); font-size: .9rem; }
+details.viac[open] summary { color: var(--text); }
+code { font-family: ui-monospace, Consolas, monospace; font-size: .86em; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+footer { margin-top: 40px; padding-top: 12px; border-top: 1px solid var(--okraj); color: var(--tlmeny); font-size: .9rem; }
+@media (max-width: 600px) {
+  dl.polozka { grid-template-columns: 1fr; }
+  dl.polozka dt { padding-top: 6px; }
+  table.prehlad { font-size: .82rem; }
+}
+</style>
+</head>
+<body>
+<main>
+
+<h1>Nové podmienky na scorecardoch starších (pravidlá v5)</h1>
+<p class="uvod">Navrhár, 24. 10. 2026. Úloha od Michala: povinne podmienka s Absťákom, ďalšie návrhy podmienok,
+rozloženie na scorecardoch a TOP 4 na prvé meranie. Vychádzam z návrhu bodovania v5 v <code>docs/pravidla-v5/davka.md</code>
+(súboj podmienka po podmienke, body = 1 + zóny strachu, strach ráta len ostatných starších). Pravidlá v4 ani kód hry som nemenil.</p>
+
+<section class="odporucane" aria-labelledby="h-skratka">
+  <h2 id="h-skratka" style="margin-top:0;border:0;padding:0">V skratke</h2>
+  <ol>
+    <li><b>Absťák:</b> vyhrá hráč, ktorý má na konci menej Absťákov. Rátajú sa všetky jeho Absťáky. V praxi sú všetky priznané a ležia na stole,
+      takže ich vidno. Ikona: trasúca sa ruka nad prázdnym poldecákom.</li>
+    <li><b>Dve dnešné podmienky sú v súboji takmer stále nerozhodné.</b> Pri Nepriznanej Cirhóze majú obaja v 68 % partií nulu. Pri Vydesení
+      (ráta len ostatných starších) je remíza v 83 %. Navrhujem ich nahradiť ako prvé.</li>
+    <li><b>Na stranu sa piata podmienka nezmestí.</b> Podmienku zapína akcia karty na rovnakom indexe a karta má 4 sloty. Každý z 8 starších zapne
+      presne 4 podmienky. Nahrádzam teda duplicity a nerozhodné podmienky. Ako možnosť navyše dávam <b>znak</b>, 9. podmienku, ktorá
+      platí vždy a nesie charakter staršieho.</li>
+    <li><b>TOP 4 na prvé meranie</b> (k povinnému Absťáku): <b>Pečeň</b>, <b>Obľúbenec</b>, <b>Voliči</b>, <b>Zbožnosť</b>. Ich rozloženie je M1 v časti 4.</li>
+    <li><b>Upozornenie k tesnosti:</b> v hrubom odhade (časť 4) zmena podmienok skráti rozdiel len zo 7 na 6 bodov a typický výsledok je okolo
+      9 : 3. Výsledok okolo 15 : 13 pravdepodobne neprinesú podmienky, ale vzorec bodov (otázka 1).</li>
+  </ol>
+</section>
+
+<h2 id="meranie">1. Ako som to meral</h2>
+<div class="blok">
+  <p>Odohral som 150 strednej a 60 dlhej partie bot proti botovi (povahy Štamgast, Rapavý Fero, Teta Gizka, jadro z <code>origin/master</code>).
+  Na konci každej som pre oboch hráčov zrátal hodnotu každého kandidáta. Pri hodnotách z celej partie (NA EX, Pohoršenia, Viera, pečeň)
+  som ich počas partie sčítaval z príkazov a udalostí. Ide o skript v scratchpade, nie o nástroj v repozitári.</p>
+  <ul>
+    <li><b>Rovnosť</b>: ako často majú obaja rovnako. Taká podmienka v súboji nikomu nepomôže a pri staršom pribudnú remízy (body dostanú obaja).</li>
+    <li><b>0 : 0</b>: obaja nemajú nič, podmienka je „mŕtva“.</li>
+    <li><b>Víťaz má viac</b>: v koľkých percentách partií s nerovnosťou mal viac víťaz partie podľa v4. Okolo 50 % znamená, že podmienka
+      je nezávislá. Vysoké číslo znamená, že ju berie vedúci hráč (snehová guľa). Nízke číslo znamená, že pomáha dobiehať.</li>
+  </ul>
+  <p><b>Obmedzenie:</b> boti hrajú podľa v4 a o nové podmienky nebojujú. Čísla ukazujú, ako sú hodnoty v partii prirodzene rozložené.
+  Nehovoria, ako sa podmienka bude hrať, keď o ňu hráči začnú bojovať. To zmeria až stratég.</p>
+</div>
+
+<h2 id="abstak">2. Povinná podmienka: Absťák</h2>
+<ol class="smery">
+<li class="odp">
+  <h3><span class="cislo">A</span>Absťák (záporná)</h3>
+  <div class="znacky"><span class="znacka z-odp">povinná</span><span class="znacka z-kod">bez nového sledovania</span></div>
+  <dl class="polozka">
+    <dt>Ikona</dt><dd>Trasúca sa ruka (tri čiarky chvenia) nad prázdnym, prevráteným poldecákom. Je čitateľná aj v malom a nedá sa
+      pomýliť s pečeňou ani s bankovkami.</dd>
+    <dt>Pravidlo</dt><dd>Vyhrá hráč, ktorý má na konci hry <b>menej Absťákov</b>. Rátajú sa <b>všetky</b> jeho Absťáky, priznané aj
+      nepriznané.</dd>
+    <dt>Prečo „všetky“</dt><dd>Nový Absťák dnes prichádza rovno priznaný (<code>packages/core/src/engine.ts:3626</code>) a odchádza do zásoby
+      (<code>engine.ts:3634</code>). Nepriznaný Absťák v hre teda nevzniká a „všetky“ sa rovná „priznané“. Znenie „všetky“ je však odolné:
+      keby budúca karta poslala Absťák do balíčka, nevznikne diera ako pri dnešnej Cirhóze. Pre hráča: „každý Absťák, ktorý máš“.</dd>
+    <dt>Rovnosť</dt><dd>Rovnaký počet (aj 0 : 0) znamená, že podmienku nevyhrá nikto.</dd>
+    <dt>Ako ju ovplyvniť</dt><dd>Neubrať na nerestiach z kola na kolo. Keď už Absťák máš, v ďalšom kole <b>viac nerestí</b> jeden vráti do zásoby.
+      Pozor na Milujúcu manželku (Absťák aj pri rovnakom počte). Posledné kolo sa ráta: Absťáky sa rozdajú
+      (<code>engine.ts:3609–3641</code>) ešte pred záverečným bodovaním (<code>engine.ts:3656</code>). Vzniká tak „fajront“: v poslednom
+      kole sa oplatí piť a fajčiť viac než v predposlednom.</dd>
+    <dt>Téma a satira</dt><dd>Starší si všíma, komu sa trasú ruky. Na dedine nie je hanba piť, hanba je prestať.</dd>
+    <dt>Dáta</dt><dd>Stredná: rovnosť 41 %, z toho 0 : 0 23 %, priemer 0,74 na hráča, najviac 3. Dlhá: rovnosť 47 %, 0 : 0 18 %.
+      Víťaz partie má viac Absťákov v 48 % (stredná) a 31 % (dlhá), takže v dlhej hre mierne nahráva vedúcemu.</dd>
+    <dt>Riziko</dt><dd>Podmienka je často nerozhodná (41–47 %). Ak to stratégovi prekáža, je tu varianta <b>„Absťáky získané za hru“</b>:
+      rovnosť 39 %, ale 0 : 0 len 2 %. Potrebuje nové počítadlo a stratí sa ňou možnosť „zbaviť sa ho v poslednom kole“.
+      Snehová guľa je slabá, náhoda nízka, čitateľnosť dobrá (karty ležia na stole).</dd>
+    <dt>Implementácia</dt><dd>Nízka: nový kľúč <code>abstak</code> v type <code>Podmienka</code> (<code>packages/core/src/types.ts:213</code>),
+      počet v <code>pocetKusov</code> (<code>packages/core/src/elders.ts:212</code>, vzor <code>verejneAbstaky</code>, <code>engine.ts:743</code>),
+      názov a popis v <code>apps/web/src/karta/podmienky.ts</code> a ikona SVG v tvorcovi (Bodovacie karty, ikony bodovania).</dd>
+  </dl>
+</li>
+</ol>
+
+<h2 id="nove">3. Ďalšie návrhy (10)</h2>
+<p>Pri každej podmienke vyhrá v súboji ten, kto ju spĺňa lepšie. Pri rovnosti ju nevyhrá nikto (tak som počítal aj v odhade, otázka 3).
+„Ostatní starší“ znamená všetkých okrem toho, na ktorého scorecarde podmienka leží, rovnako ako pri strachu v bode 4 návrhu v5.</p>
+
+<div class="tab-obal">
+<table class="prehlad">
+  <thead><tr><th>Podmienka</th><th>Smer</th><th class="c">Rovnosť</th><th class="c">0 : 0</th><th class="c">Víťaz má viac</th><th>Kód</th></tr></thead>
+  <tbody>
+    <tr><td><b>Pečeň</b></td><td>menej</td><td class="c">5 %</td><td class="c">0 %</td><td class="c">41 %</td><td>počítadlo</td></tr>
+    <tr><td><b>Obľúbenec</b></td><td>viac</td><td class="c">17 %</td><td class="c">11 %</td><td class="c">24 %</td><td>hneď</td></tr>
+    <tr><td><b>Voliči</b></td><td>viac</td><td class="c">13 %</td><td class="c">0 %</td><td class="c">37 %</td><td>hneď + view</td></tr>
+    <tr><td><b>Zbožnosť</b></td><td>viac</td><td class="c">7 %</td><td class="c">0 %</td><td class="c">54 %</td><td>počítadlo</td></tr>
+    <tr><td>Eso v rukáve</td><td>viac</td><td class="c">11 %</td><td class="c">0 %</td><td class="c">46 %</td><td>hneď</td></tr>
+    <tr><td>Klebety</td><td>viac</td><td class="c">9 %</td><td class="c">3 %</td><td class="c">52 %</td><td>počítadlo</td></tr>
+    <tr><td>Prípitky</td><td>viac</td><td class="c">24 %</td><td class="c">0 %</td><td class="c">49 %</td><td>počítadlo</td></tr>
+    <tr><td>Fajront</td><td>viac</td><td class="c">32 %</td><td class="c">12 %</td><td class="c">48 %</td><td>hneď</td></tr>
+    <tr><td>Rezerva</td><td>viac</td><td class="c">31 %</td><td class="c">3 %</td><td class="c">74 %</td><td>hneď</td></tr>
+    <tr><td>Dedičstvo</td><td>viac</td><td class="c">51 %</td><td class="c">43 %</td><td class="c">45 %</td><td>hneď</td></tr>
+    <tr class="dnes"><td colspan="6">Pre porovnanie, dnešné podmienky v tom istom meraní:</td></tr>
+    <tr class="dnes"><td>Lokality</td><td>viac</td><td class="c">4 %</td><td class="c">0 %</td><td class="c">85 %</td><td>—</td></tr>
+    <tr class="dnes"><td>Cigarety</td><td>viac</td><td class="c">10 %</td><td class="c">1 %</td><td class="c">44 %</td><td>—</td></tr>
+    <tr class="dnes"><td>Dlh</td><td>menej</td><td class="c">45 %</td><td class="c">43 %</td><td class="c">—</td><td>—</td></tr>
+    <tr class="dnes"><td>Nepriznaná Cirhóza</td><td>menej</td><td class="c">71 %</td><td class="c">68 %</td><td class="c">—</td><td>—</td></tr>
+    <tr class="dnes"><td>Starší (patronát)</td><td>viac</td><td class="c">45 %</td><td class="c">35 %</td><td class="c">74 %</td><td>—</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="uvod">Stredná hra, 150 partií. Pri záporných podmienkach je stĺpec „víťaz má viac“ pre porovnanie bez významu.
+„Počítadlo“ znamená, že GameState musí začať sledovať novú hodnotu. „View“ znamená, že treba zverejniť počet súperovi.</p>
+
+<ol class="smery">
+
+<li class="odp">
+  <h3><span class="cislo">1</span>Pečeň (záporná), náhrada za Nepriznanú Cirhózu</h3>
+  <div class="znacky"><span class="znacka z-odp">TOP 4</span><span class="znacka z-kod">nové počítadlo</span></div>
+  <dl class="polozka">
+    <dt>Ikona</dt><dd>Pečeň ako dnes, ale s rysou ako na teplomere (stupnica), aby sa nepomýlila s Cirhózou.</dd>
+    <dt>Pravidlo</dt><dd>Vyhrá hráč, ktorý si za celú hru <b>menej poškodil pečeň</b>. Ráta sa každé poškodenie pečene, ktoré sa
+      započítalo k prahu Cirhózy (akcie, NA EX, vypité poldeci).</dd>
+    <dt>Rovnosť</dt><dd>Rovnaký súčet znamená, že ju nevyhrá nikto (stáva sa v 5 %).</dd>
+    <dt>Ako ju ovplyvniť</dt><dd>Menej NA EX a menej pitia v Zhromaždení, nevykladať vlastné Poldeci a Poškodenie pečene. Súperovi
+      pečeň „naliať“ cez NA EX a podstrčenie.</dd>
+    <dt>Téma a satira</dt><dd>Celá dedina pije, ale za rozumného sa považuje ten, kto ešte stojí na nohách.</dd>
+    <dt>Prečo</dt><dd>Nepriznaná Cirhóza je v súboji mŕtva: v 68 % partií majú obaja nulu, v dlhej hre v 73 %. Pečeň má tú istú tému
+      a rozhodne takmer vždy. Rozhodnutie „držať Cirhózu do konca“ tým zo scorecardu zmizne (otázka 4).</dd>
+    <dt>Riziko</dt><dd>Snehová guľa nie (víťaz má viac v 41 %). Náhoda nízka. Čitateľnosť strednú pomôže číslo pečene pri hráčovi
+      počas celej hry (dnes sa po Pitke nuluje).</dd>
+    <dt>Implementácia</dt><dd>Stredná: nové pole <code>pecenZaHru</code> v <code>PlayerState</code> (<code>packages/core/src/player.ts:7</code>).
+      Pripočítať sa musí tam, kde vzniká udalosť <code>pecen</code> (<code>engine.ts:624</code>, <code>engine.ts:2129</code>), a pole treba
+      zobraziť v klientovi.</dd>
+  </dl>
+</li>
+
+<li class="odp">
+  <h3><span class="cislo">2</span>Obľúbenec</h3>
+  <div class="znacky"><span class="znacka z-odp">TOP 4</span><span class="znacka z-kod">bez nového sledovania</span><span class="znacka z-pravidla">dobiehanie</span></div>
+  <dl class="polozka">
+    <dt>Ikona</dt><dd>Srdce na stupnici (marker na tvojej polovici), rovnaký znak ako ♥ priazne na stole.</dd>
+    <dt>Pravidlo</dt><dd>Vyhrá hráč, ktorému prejavuje priazeň <b>viac ostatných starších</b> (marker na jeho polovici, hocijaká zóna).</dd>
+    <dt>Rovnosť</dt><dd>Rovnaký počet znamená, že ju nevyhrá nikto.</dd>
+    <dt>Ako ju ovplyvniť</dt><dd>Nechať súpera posúvať markery k tebe, patronát (marker ide do stredu, priazeň tým stratíš), rozdeľovanie prebytku.
+      Je to opak strachu: kto desí, ten priazeň rozdáva súperovi.</dd>
+    <dt>Téma a satira</dt><dd>Niektorí starší sa neboja, len si vyberajú, komu podržať pivo. V politike vyhráva aj ten, koho majú radi, nielen koho sa boja.</dd>
+    <dt>Dáta</dt><dd>Víťaz partie má viac priazní len v 24 % (dlhá 16 %). Je to <b>jediný kandidát, ktorý jasne pomáha dobiehať</b>.</dd>
+    <dt>Riziko</dt><dd>Je to presné zrkadlo Znepokojenia: priazeň pre teba znamená strach zo súpera. <b>Nesmie byť na jednom scorecarde
+      so Znepokojením</b>, inak sa podmienky navzájom zrušia. So Strachom sa len čiastočne prekrýva. Čitateľnosť je dobrá (♥ na stole).</dd>
+    <dt>Implementácia</dt><dd>Nízka: <code>priazenHraca</code> (<code>packages/core/src/elders.ts:55</code>) cez ostatných starších.</dd>
+  </dl>
+</li>
+
+<li class="odp">
+  <h3><span class="cislo">3</span>Voliči</h3>
+  <div class="znacky"><span class="znacka z-odp">TOP 4</span><span class="znacka z-kod">hneď + verejný počet</span></div>
+  <dl class="polozka">
+    <dt>Ikona</dt><dd>Volebná urna s lístkom.</dd>
+    <dt>Pravidlo</dt><dd>Vyhrá hráč, ktorý má v balíčku (ruka, doberací a odhadzovací) <b>viac kariet s tagom Občan</b>.</dd>
+    <dt>Rovnosť</dt><dd>Rovnaký počet znamená, že ju nevyhrá nikto (13 %, nikdy 0 : 0, lebo štartovacích 7 kariet sú samí Občania).</dd>
+    <dt>Ako ju ovplyvniť</dt><dd>Brať Občanov zo šenku. Občana stojí Pohreb (spáli kartu z línie), Benzínka (zahodí Občanov), Dievčina na vydaj
+      (spáli sa) aj náhrada pri patronáte (Občan ostane na scorecarde). Veštica karty vymení.</dd>
+    <dt>Téma a satira</dt><dd>Starší sa nepýta, čo si urobil, ale koľko ľudí za tebou stojí. Bratranci sú v dedine volebný program.</dd>
+    <dt>Prečo</dt><dd>Šenok a balíček dnes nemá na body žiadny vplyv a v v5 sa ruší aj prehra balíčkom pod 5. Voliči dávajú draftu
+      nový zmysel a súperia s cigaretami (šenok ich stojí).</dd>
+    <dt>Riziko</dt><dd>Mierne nahráva dobiehajúcemu (víťaz má viac v 37 %). Čitateľnosť: počet súperových Občanov musí byť verejný.
+      Zloženie balíčka je takmer celé známe (štart a branie zo šenku sú verejné), ale treba to výslovne zverejniť.</dd>
+    <dt>Implementácia</dt><dd>Nízka v jadre (tagy z <code>cards.json</code>, ako <code>velkostBalicka</code> v <code>player.ts</code>). Stredná vo view:
+      nový verejný počet ako pri kliatbách (<code>packages/core/src/view.ts:171</code>) a test vo <code>view-*.test.ts</code>.</dd>
+  </dl>
+</li>
+
+<li class="odp">
+  <h3><span class="cislo">4</span>Zbožnosť</h3>
+  <div class="znacky"><span class="znacka z-odp">TOP 4</span><span class="znacka z-kod">nové počítadlo</span></div>
+  <dl class="polozka">
+    <dt>Ikona</dt><dd>Zopnuté ruky alebo krížik nad lavicou.</dd>
+    <dt>Pravidlo</dt><dd>Vyhrá hráč, ktorý mal za celú hru vo svojej partii v bitkách <b>viac aktívnych Vier</b> (súčet za všetky bitky,
+      pred rušením s Poverou).</dd>
+    <dt>Rovnosť</dt><dd>Rovnaký súčet znamená, že ju nevyhrá nikto (7 %).</dd>
+    <dt>Ako ju ovplyvniť</dt><dd>Vykladať karty s Vierou (17 druhov kariet vrátane Farára a lokalít Kostol, Cintorín, Kar), Posilnenie,
+      NA EX na Vieru, priazeň Veriaceho.</dd>
+    <dt>Téma a satira</dt><dd>V nedeľu v prvej lavici, v pondelok v krčme. Starší ráta, koľkokrát ťa videl v kostole, nie čo si tam robil.</dd>
+    <dt>Riziko</dt><dd>Snehová guľa slabá (54 %, dlhá 64 %). Viera dnes slúži hlavne proti tuhému, takže podmienka by ju zhodnotila
+      aj v prehratej bitke. Čitateľnosť strednú pomôže počítadlo pri hráčovi.</dd>
+    <dt>Lacnejšia varianta</dt><dd>„Viac kariet s akciou Viera v balíčku“ funguje bez počítadla. Má rovnosť 21 % a rozhoduje skôr draft než hra.</dd>
+    <dt>Implementácia</dt><dd>Stredná: pole <code>vieraZaHru</code>, pripočítavať zo súčtov pri <code>bitkaVysledok</code> (<code>engine.ts:3394</code>).</dd>
+  </dl>
+</li>
+
+<li>
+  <h3><span class="cislo">5</span>Eso v rukáve</h3>
+  <div class="znacky"><span class="znacka z-kod">bez nového sledovania</span></div>
+  <dl class="polozka">
+    <dt>Ikona</dt><dd>Karta trčiaca z rukáva.</dd>
+    <dt>Pravidlo</dt><dd>Vyhrá hráč, ktorý má na konci hry <b>viac kariet v ruke</b>. Kliatby sa nerátajú.</dd>
+    <dt>Rovnosť</dt><dd>Rovnaký počet znamená, že ju nevyhrá nikto (11 %).</dd>
+    <dt>Ako ju ovplyvniť</dt><dd>V poslednom Zhromaždení nevyložiť všetko, Vízia, Poštárka, fajčenie v Pitke, šenok.</dd>
+    <dt>Téma a satira</dt><dd>Dedinský politik nikdy neukáže všetky karty, posledné drží na voľby.</dd>
+    <dt>Riziko</dt><dd>Odmeňuje šetrenie v poslednom kole na úkor bitky. To je dobré napätie, ale bot aj hráč môžu „nehrať“.
+      Počet kariet v ruke je verejný (<code>rukaPocet</code>, <code>view.ts:217</code>).</dd>
+    <dt>Implementácia</dt><dd>Nízka: <code>ruka.length</code> bez kliatob.</dd>
+  </dl>
+</li>
+
+<li>
+  <h3><span class="cislo">6</span>Klebety</h3>
+  <div class="znacky"><span class="znacka z-kod">nové počítadlo</span></div>
+  <dl class="polozka">
+    <dt>Ikona</dt><dd>Dve hlavy pri sebe a jazyk (alebo ruka pri ústach).</dd>
+    <dt>Pravidlo</dt><dd>Vyhrá hráč, ktorý za hru <b>posunul viac markerov Pohoršením</b> (každý posun o pozíciu, aj Pohoršenia z patronátu).</dd>
+    <dt>Rovnosť</dt><dd>Rovnaký počet znamená, že ju nevyhrá nikto (9 %).</dd>
+    <dt>Ako ju ovplyvniť</dt><dd>Akcie Pohoršenia, patronát súpera (dá ti Pohoršenia navyše), Kultúrny dom (bez limitu hraníc).
+      Brzdí to súperova Policajtka.</dd>
+    <dt>Téma a satira</dt><dd>Na dedine nevyhráva, kto má pravdu, ale kto ju prvý roznesie.</dd>
+    <dt>Riziko</dt><dd>Odmeňuje činnosť, nie výsledok. Posun k súperovi mu dáva priazeň, takže podmienka nie je kópiou strachu.
+      Snehová guľa slabá (52 %).</dd>
+    <dt>Implementácia</dt><dd>Stredná: pole <code>klebetyZaHru</code>, pripočítavať v príkaze <code>pohorsenie</code> (<code>engine.ts:1239</code>).</dd>
+  </dl>
+</li>
+
+<li>
+  <h3><span class="cislo">7</span>Prípitky</h3>
+  <div class="znacky"><span class="znacka z-kod">nové počítadlo</span></div>
+  <dl class="polozka">
+    <dt>Ikona</dt><dd>Dva štrngajúce poldecáky.</dd>
+    <dt>Pravidlo</dt><dd>Vyhrá hráč, ktorý za hru <b>dal viac NA EX</b> (aj povinné na Krčme).</dd>
+    <dt>Rovnosť</dt><dd>Rovnaký počet znamená, že ju nevyhrá nikto (24 %).</dd>
+    <dt>Ako ju ovplyvniť</dt><dd>Dávať NA EX, Vínna pivnica (dve za Pitku). Stojí to pečeň, takže s Pečeňou vzniká priame napätie.</dd>
+    <dt>Téma a satira</dt><dd>Kto nepripíja, ten niečo skrýva.</dd>
+    <dt>Riziko</dt><dd>Pri v5 #2 (NA EX naraz) sa súčet NA EX zmení. Merať ju treba až s touto zmenou. Kostol a Anonymný alkoholik ju brzdia.</dd>
+    <dt>Implementácia</dt><dd>Nízka až stredná: pole <code>naexZaHru</code> (dnes je len <code>naexVKole</code>, <code>engine.ts:2195</code>).</dd>
+  </dl>
+</li>
+
+<li>
+  <h3><span class="cislo">8</span>Fajront</h3>
+  <div class="znacky"><span class="znacka z-kod">bez nového sledovania</span></div>
+  <dl class="polozka">
+    <dt>Ikona</dt><dd>Hodiny ukazujúce polnoc nad pohárom.</dd>
+    <dt>Pravidlo</dt><dd>Vyhrá hráč, ktorý mal v <b>poslednom kole viac nerestí</b>.</dd>
+    <dt>Rovnosť</dt><dd>Rovnaký počet znamená, že ju nevyhrá nikto (32 %, z toho 0 : 0 12 %).</dd>
+    <dt>Ako ju ovplyvniť</dt><dd>Piť a fajčiť v poslednom kole, doliatie, barter.</dd>
+    <dt>Téma a satira</dt><dd>Na fajront sa pije najviac, lebo zajtra je pondelok.</dd>
+    <dt>Riziko</dt><dd>Ťahá rovnakým smerom ako Absťák (oboje odmeňuje neresti v poslednom kole). <b>Nedávať ich na jeden scorecard.</b>
+      Počas hry je čitateľná (<code>stavZavislosti</code> ukazuje neresti).</dd>
+    <dt>Implementácia</dt><dd>Nízka: <code>nerestiMinuleKolo</code> po poslednom kole (<code>engine.ts:3640</code>, nastaví sa pred bodovaním).</dd>
+  </dl>
+</li>
+
+<li>
+  <h3><span class="cislo">9</span>Rezerva</h3>
+  <div class="znacky"><span class="znacka z-kod">bez nového sledovania</span><span class="znacka z-pravidla">snehová guľa</span></div>
+  <dl class="polozka">
+    <dt>Ikona</dt><dd>Plný poldecák s pokrievkou (odložený na horšie časy).</dd>
+    <dt>Pravidlo</dt><dd>Vyhrá hráč, ktorý má na konci <b>viac plných poldeci</b>.</dd>
+    <dt>Rovnosť</dt><dd>Rovnaký počet znamená, že ju nevyhrá nikto (31 %).</dd>
+    <dt>Ako ju ovplyvniť</dt><dd>Nepiť (Vypiť, NA EX), doliatie za 2 cigarety, barter. Prehratý patronát stojí poldeci.</dd>
+    <dt>Téma a satira</dt><dd>Lakomec si fľašu schová pod pult a na pohrebe sa tvári triezvo.</dd>
+    <dt>Riziko</dt><dd><b>Silná snehová guľa:</b> víťaz partie má viac plných poldeci v 74 % (dlhá 85 %). Do TOP ju nedávam.</dd>
+    <dt>Implementácia</dt><dd>Nízka: <code>poldeciPlne</code> (<code>player.ts:15</code>). Otvorené je, či sa ráta Vínko.</dd>
+  </dl>
+</li>
+
+<li>
+  <h3><span class="cislo">10</span>Dedičstvo</h3>
+  <div class="znacky"><span class="znacka z-kod">bez nového sledovania</span></div>
+  <dl class="polozka">
+    <dt>Ikona</dt><dd>Truhlica s kladivom.</dd>
+    <dt>Pravidlo</dt><dd>Vyhrá hráč, ktorý má <b>viac Nástrojov v Dedičstve</b>.</dd>
+    <dt>Rovnosť</dt><dd>Rovnaký počet znamená, že ju nevyhrá nikto (51 %, z toho 0 : 0 43 %. V dlhej hre 32 % a 13 %).</dd>
+    <dt>Ako ju ovplyvniť</dt><dd>Kupovať Dedičstvo (cena rastie), Cintorín (zadarmo). Exekúcia ho berie.</dd>
+    <dt>Téma a satira</dt><dd>Exekútor si všíma, čo sa dá zabaviť, a dedina, čo zostane deťom.</dd>
+    <dt>Riziko</dt><dd>V strednej hre často mŕtva. Hodí sa ako znak Exekútora, nie ako bežná podmienka.</dd>
+    <dt>Implementácia</dt><dd>Nízka: <code>dedicstvo.length</code> (<code>player.ts:14</code>).</dd>
+  </dl>
+</li>
+</ol>
+
+<details class="viac">
+  <summary>Čo som zmeral a zahodil</summary>
+  <ul>
+    <li><b>Kriminál v balíčku</b> (menej vyhráva): rovnosť 45 %, sú len 3 druhy kariet. <b>Autority</b>, <b>Pracujúci</b>, <b>Ženy</b>:
+      malé počty a len draft. Ženy by navyše mohli pôsobiť ako bodovanie podľa pohlavia.</li>
+    <li><b>Pohreby za hru</b>: rovnosť 45 %, z toho 0 : 0 24 %, a odmeňuje priznanú Cirhózu.</li>
+    <li><b>Veľkosť balíčka</b>: je to slabšia kópia Voličov (rovnosť 18 %).</li>
+    <li><b>Cirhózy všetky na konci</b> (rovnosť 22 %) a <b>Cirhózy získané za hru</b> (18 %): obe sú použiteľné, ak Michal chce slovo Cirhóza
+      na scorecarde zachovať (otázka 4).</li>
+  </ul>
+</details>
+
+<h2 id="rozlozenie">4. Rozloženie na scorecardoch</h2>
+<div class="blok hlavna">
+  <h3>Prečo nie 5 na stranu</h3>
+  <p>Podmienku zapína neprázdna akcia karty na ukazovateli na rovnakej strane a indexe (<code>elders.ts</code>, <code>podmienkyStarsieho</code>).
+  Karta má 4 sloty na stranu a všetkých 8 starších zapína <b>presne 4 podmienky</b> (napríklad Farár ľavé 1 a 3, pravé 0 a 2, Poštárka
+  ľavé 1 a pravé 0–2). Piata pozícia by nemala čo zapnúť. Preto navrhujem dve cesty, ktoré sa dajú spojiť.</p>
+</div>
+
+<ol class="smery">
+<li class="odp">
+  <h3><span class="cislo">A</span>Nahradiť nerozhodné a duplicitné podmienky (odporúčam)</h3>
+  <ul>
+    <li><b>Nepriznaná Cirhóza</b> (5 pozícií) sa nahradí <b>Pečeňou</b>. Podmienka je mŕtva (68 % 0 : 0).</li>
+    <li><b>Vydesenie</b> (7 pozícií) v súboji takmer nerozhoduje, remíza je v 83 %. Vydesenie aj tak odmení vzorec 1 + zóny strachu
+      a okamžitá výhra. V M1 ho ešte nechávam, v M2 ho nahrádzam charakterovými podmienkami.</li>
+    <li><b>Duplicity</b> (Bitkár má 4× Lokality, Lakomec 3× Dlh, Alkoholik 2× Starší a 2× Lokality) uvoľnia miesto pre charakter.</li>
+    <li><b>Zakázané dvojice na jednom scorecarde:</b> Obľúbenec so Znepokojením (zrkadlo), Absťák s Fajrontom (rovnaký smer).</li>
+  </ul>
+</li>
+<li>
+  <h3><span class="cislo">B</span>Znak staršieho: 9. podmienka, ktorá platí vždy (na meranie)</h3>
+  <p>V hlavičke scorecardu, mimo strán, je jedna podmienka podľa priazne: Úžerník Dlh, Veriaci Zbožnosť, Alkoholik Absťák, Bitkár Lokality,
+  Fajčiar Cigarety, Lakomec Eso v rukáve, Neprajník Klebety, Exekútor Dedičstvo. Každý starší má potom 5 podmienok. Nepárny počet
+  znižuje remízy (pri M2 z 23 na 15 % starších) a charakter je čitateľný na prvý pohľad.
+  <b>Cena:</b> nové miesto v grafike scorecardu (geometria v <code>packages/tvorba</code>) a pole <code>znak</code> v
+  <code>ScorecardDef</code> (<code>types.ts:240</code>) aj v <code>scorecards.json</code>.</p>
+</li>
+</ol>
+
+<h3 style="margin-top:22px">Charakter starších (M2, plný návrh)</h3>
+<p>Charakter nesie <b>scorecard, teda priazeň</b>, nie karta staršieho. Scorecardy sa rozdávajú náhodne a <code>elders.json</code> zámerne
+nemá vlastnosti. Michalov príklad „Farár boduje Vieru“ by teda platil, len keď Farár dostane scorecard Veriaceho (otázka 5).
+Tučne sú zmeny oproti dnešku.</p>
+<div class="tab-obal">
+<table class="prehlad">
+  <thead><tr><th>Scorecard</th><th>Charakter</th><th>Ľavá 0–3</th><th>Pravá 0–3</th></tr></thead>
+  <tbody>
+    <tr><td>Úžerník</td><td>dlhy, hotovosť, klientela</td><td>Dlh, Znep., <b>Cigarety</b>, Starší</td><td>Strach, Lokality, <b>Voliči</b>, <b>Pečeň</b></td></tr>
+    <tr><td>Veriaci</td><td>zbožnosť, striedmosť</td><td><b>Pečeň</b>, Lokality, Strach, Znep.</td><td><b>Klebety</b>, Starší, <b>Zbožnosť</b>, Dlh</td></tr>
+    <tr><td>Alkoholik</td><td>neresti, kamaráti</td><td>Starší, Strach, <b>Absťák</b>, Cigarety</td><td>Strach, Lokality, <b>Prípitky</b>, <b>Obľúbenec</b></td></tr>
+    <tr><td>Bitkár</td><td>lokality, partia chlapov</td><td><b>Prípitky</b>, Lokality, Strach, <b>Voliči</b></td><td>Strach, Lokality, <b>Obľúbenec</b>, Cigarety</td></tr>
+    <tr><td>Fajčiar</td><td>cigarety, fajront</td><td>Strach, Cigarety, Lokality, Dlh</td><td>Cigarety, <b>Fajront</b>, Starší, Znep.</td></tr>
+    <tr><td>Lakomec</td><td>šetrí na všetkom</td><td>Dlh, Znep., Strach, <b>Pečeň</b></td><td>Dlh, Lokality, <b>Absťák</b>, <b>Eso v rukáve</b></td></tr>
+    <tr><td>Neprajník</td><td>strach, klebety</td><td>Znep., <b>Klebety</b>, <b>Zbožnosť</b>, Strach</td><td>Starší, Cigarety, <b>Pečeň</b>, Strach</td></tr>
+    <tr><td>Exekútor</td><td>dlhy, majetok</td><td>Lokality, Dlh, Cigarety, <b>Dedičstvo</b></td><td>Znep., <b>Pečeň</b>, Dlh, Starší</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="uvod">V M2 je Absťák u Alkoholika a Lakomca, nie u Fajčiara, lebo ten má Fajront. Obľúbenec je len tam, kde nie je Znepokojenie.
+<b>M1</b> (TOP 4) je dnešné rozloženie, v ktorom sa menia len tieto pozície: Cirhóza → Pečeň (všade), Úžerník P2 Voliči, Veriaci P2 Zbožnosť,
+Alkoholik Ľ2 Absťák a P3 Obľúbenec, Bitkár Ľ3 Voliči a P2 Obľúbenec, Fajčiar P3 Absťák, Lakomec P2 Absťák, Neprajník Ľ2 Zbožnosť.</p>
+
+<h3 style="margin-top:22px">Hrubý odhad bodovania v5 (150 stredných partií, boti hrajú podľa v4)</h3>
+<div class="tab-obal">
+<table class="prehlad">
+  <thead><tr><th>Rozloženie</th><th class="c">Remíza pri staršom</th><th class="c">Body na hráča</th><th class="c">Rozdiel (priemer)</th><th class="c">Remízy partie</th></tr></thead>
+  <tbody>
+    <tr class="dnes"><td>dnešné podmienky (4)</td><td class="c">15 %</td><td class="c">6,0</td><td class="c">7,2</td><td class="c">5 %</td></tr>
+    <tr><td>dnešné + znak (5)</td><td class="c">13 %</td><td class="c">5,9</td><td class="c">6,8</td><td class="c">5 %</td></tr>
+    <tr><td>M1, TOP 4 (4)</td><td class="c">21 %</td><td class="c">6,2</td><td class="c">6,6</td><td class="c">5 %</td></tr>
+    <tr><td>M1 + znak (5)</td><td class="c">15 %</td><td class="c">5,9</td><td class="c">6,3</td><td class="c">6 %</td></tr>
+    <tr><td>M2, plný návrh (4)</td><td class="c">23 %</td><td class="c">6,3</td><td class="c">6,2</td><td class="c">7 %</td></tr>
+    <tr><td>M2 + znak (5)</td><td class="c">15 %</td><td class="c">5,9</td><td class="c">6,0</td><td class="c">5 %</td></tr>
+  </tbody>
+</table>
+</div>
+<p>Počítané podľa návrhu Michala: súboj na aktívnych podmienkach, pri rovnosti podmienky ju nevyhrá nikto, pri remíze pri staršom dostanú
+body obaja a body sú 1 + zóny strachu. Nové podmienky rozdiel mierne zmenšia (zo 7,2 na 6,0–6,2). Typický výsledok však ostáva okolo 9 : 3.
+Najväčšiu váhu majú Lokality (rozhodnú v 96 % a víťaz ich má viac v 85 %). Ďalšie zmenšenie rozdielu musí prísť zo vzorca bodov
+alebo z ubratia Lokalít, nie z nových podmienok.</p>
+
+<h2 id="odporucanie">5. Odporúčanie a otázky</h2>
+<section class="odporucane" aria-labelledby="h-top">
+  <h2 id="h-top" style="margin-top:0;border:0;padding:0">TOP 4 na prvé meranie (k povinnému Absťáku)</h2>
+  <ol>
+    <li><b>Pečeň</b>: nahrádza mŕtvu Nepriznanú Cirhózu a rozhodne takmer vždy (rovnosť 5 %).</li>
+    <li><b>Obľúbenec</b>: jediný jasný dobiehací kandidát (víťaz má viac len v 24 %), bez nového sledovania.</li>
+    <li><b>Voliči</b>: dáva bodový zmysel draftu a balíčku, keď v5 ruší prehru balíčkom pod 5.</li>
+    <li><b>Zbožnosť</b>: charakter Veriaceho, Michalov príklad s Vierou, rovnosť 7 %.</li>
+  </ol>
+  <p>Stratégovi navrhujem merať v tomto poradí: M1 proti dnešným podmienkam, potom M1 + znak. M2 až keď M1 obstojí.</p>
+</section>
+
+<div class="blok">
+  <h3>Otázky pre Michala</h3>
+  <ol>
+    <li>Odhad vychádza okolo 9 : 3, nie 15 : 13. Má stratég popri podmienkach skúšať aj zmenu vzorca bodov (napríklad 1 bod aj
+      porazenému pri staršom, alebo menšiu váhu Lokalít)?</li>
+    <li>Absťák: súhlasíš so znením „všetky Absťáky na konci“ (dá sa ho zbaviť v poslednom kole), alebo chceš „Absťáky získané za hru“
+      (nedá sa ho zbaviť, menej remíz)?</li>
+    <li>Pri rovnosti jednej podmienky ju nevyhrá nikto, tak som počítal. Platí to, alebo má pri rovnosti bod dostať každý?</li>
+    <li>Môže Nepriznaná Cirhóza zo scorecardov zmiznúť (nahradí ju Pečeň)? Ak chceš slovo Cirhóza zachovať, náhradou môže byť
+      „Cirhózy všetky na konci“.</li>
+    <li>Má charakter niesť scorecard (priazeň, ako navrhujem), alebo karta staršieho (Farár vždy Vieru)? Druhé by znamenalo vlastnosti
+      v <code>elders.json</code> a pevnú väzbu starší–podmienka.</li>
+    <li>Chceš znak (9. podmienku vždy aktívnu v hlavičke scorecardu)? Treba naň miesto v grafike scorecardov.</li>
+  </ol>
+</div>
+
+<footer>Navrhár, 24. 10. 2026. Podklady: <code>docs/pravidla-v5/davka.md</code>, <code>docs/PRAVIDLA.md</code> §8, §10, §11, §14,
+<code>packages/core/data/scorecards.json</code>, <code>packages/core/src/elders.ts</code>, <code>engine.ts</code>, <code>player.ts</code>.
+Meranie: 150 stredných a 60 dlhých partií bot proti botovi, jadro z <code>origin/master</code> 218dca8.</footer>
+</main>
+</body>
+</html>
