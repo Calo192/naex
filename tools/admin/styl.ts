@@ -20,7 +20,14 @@ export const STYL =
   "Hands in simple natural poses, anatomically correct with five fingers; no tangled or interlocked hands. " +
   // Pevné pravidlo Michala 2026-10-24 (styl.md): krígeľ s dvoma uchami v páse kapitoly Zhromaždenie.
   "Every object must be physically correct: a beer mug has exactly one handle, a drinking glass or shot glass has no handle, " +
-  "a bottle has exactly one neck, a hand has exactly five fingers, a chair has its legs on the floor.";
+  "a bottle has exactly one neck, a hand has exactly five fingers, a chair has its legs on the floor. " +
+  // Typy postáv Michala 2026-10-24 (styl.md body 7–8). Podmienečne, lebo chvost dostávajú aj lokality
+  // a predmety — bez „if“ by model ťahal starostov a ženy aj do obrázka pušky.
+  "If a village elder or official appears (priest, mayor, postmistress, publican and the like), make him or her outrageously, " +
+  "blatantly corrupt: chunky gold chains, gold teeth, diamond rings, an expensive wristwatch, flashy jewellery, a designer handbag, " +
+  "luxury that is absurdly out of place in a poor village. " +
+  "If women appear, each is one of two village types: a bitter, ugly, gossiping old hag, or an adult tacky village 'hot chick' " +
+  "in a tracksuit or cheap flashy provocative clothes with loud accessories and heavy make-up — always adults, fully clothed, no nudity.";
 
 /** Pás nad kapitolou pravidiel (Michal 2026-10-24): ten istý štýl, široká scéna; orezá sa na 2,5 : 1. */
 export const STYL_PASU = STYL.replace(
