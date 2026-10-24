@@ -4197,7 +4197,14 @@ export function HernaPlocha({
       // V drafte sa hrana neprilepí nad ruku: stôl leží pod draftom a pri posúvaní
       // by zakrývala karty draftu a pokyn; potvrdenie je aj tak v draft paneli.
       // Ani keď z línie nad rukou nie je nič vidno (liniaVidno).
-      <div className={view.faza === "draft" || !liniaVidno ? "stol-hrana neprilepena" : "stol-hrana"}>
+      <div
+        className={[
+          view.faza === "draft" || !liniaVidno ? "stol-hrana neprilepena" : "stol-hrana",
+          !maHranaTlacidla && pokynUdalosti === null ? "len-pokyn" : "",
+        ]
+          .filter((x) => x !== "")
+          .join(" ")}
+      >
         {pokynTahania}
         {pokynUdalosti}
         {maHranaTlacidla && (

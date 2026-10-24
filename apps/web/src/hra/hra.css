@@ -3272,6 +3272,26 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna.nemoze:hover > .kl {
   pointer-events: auto;
 }
 
+/* Hláška po nepoložení karty sa vznáša nad hranou — v toku by na chvíľu zmenšila
+   plsť aj karty v línii (UX/UI 2026-10-24, 1366×650). */
+.stol-hrana .pokyn-tahania {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  margin: 0 0 6px;
+}
+
+/* Úzka, nech v strede stola nevojde pod bublinu Melichara pri kraji (1366×650). */
+.stol-hrana .pokyn-tahania > .pokyn-chyba {
+  max-width: min(560px, calc(100% - 32px));
+}
+
+/* Hrana len pre hlášku: bez výšky a bez záporného okraja, rozloženie sa nepohne. */
+.stol-hrana.len-pokyn {
+  margin-top: 0;
+}
+
 /* Počet cigariet pred nákupmi. */
 .hrana-zasoba {
   display: inline-flex;
