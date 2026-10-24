@@ -78,7 +78,8 @@ export const PREDVOLENE_KLUCOVE_SLOVA: readonly KlucoveSlovo[] = [
   S("Nástup", "Vyhodnotí sa pri zahraní karty."),
   S("Furt", "Platí, kým je karta odhalená kdekoľvek v hracom priestore."),
   S("Bitka", "Uplatní sa pri vyhodnotení bitky."),
-  S("Pitka", "Uplatní sa počas Pitky — keď si hráči doberajú karty a vyhodnocujú efekty."),
+  // Michal 2026-10-24: Pitka sama karty nedáva (PRAVIDLA §7, krok 6).
+  S("Pitka", "Uplatní sa počas Pitky — keď hráči dávajú NA EX, fajčia a vyhodnocujú karty na stole. Pitka sama karty nedáva."),
   S("Zhromaždenie", "Uplatní sa počas Zhromaždenia — keď hráči vykladajú karty."),
   S(
     "Dedičstvo",
