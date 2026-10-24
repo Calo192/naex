@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="sk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Krátka výučba a nápovedy v prvej partii — NA EX!</title>
+<style>
+:root{--pozadie:#14110e;--plocha:#1e1914;--okraj:#3d3229;--text:#f1e8d8;--tlmeny:#b6a790;--akcent:#e9ad45;--modra:#8fb4e0;--cerv:#e5735c;--zel:#7cbf74;color-scheme:dark}
+@media (prefers-color-scheme: light){:root{--pozadie:#f6f1e7;--plocha:#fffaf1;--okraj:#dccdb3;--text:#2a2016;--tlmeny:#5e4f3b;--akcent:#9a5d06;--modra:#2d5a8f;--cerv:#a8321e;--zel:#2f6f2a;color-scheme:light}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--pozadie);color:var(--text);font:16px/1.55 system-ui,"Segoe UI",sans-serif}
+main{max-width:860px;margin:0 auto;padding:20px 14px 56px}
+h1,h2,h3{font-family:Georgia,serif;margin:0 0 8px}h1{font-size:1.6rem}h2{font-size:1.25rem;margin-top:34px;border-bottom:1px solid var(--okraj);padding-bottom:4px}
+.uvod,small{color:var(--tlmeny)}
+code{font-family:ui-monospace,Consolas,monospace;font-size:.85em;background:var(--plocha);padding:0 4px;border-radius:4px;word-break:break-word}
+.karta{background:var(--plocha);border:1px solid var(--okraj);border-left:5px solid var(--akcent);border-radius:10px;padding:10px 14px;margin:12px 0}
+.karta.b{border-left-color:var(--modra)}
+.karta h3{font-size:1.05rem;font-family:system-ui,sans-serif}
+.karta h3 span{color:var(--tlmeny);font-weight:400;font-size:.85rem}
+.mel{font-style:italic;border-left:3px solid var(--okraj);padding-left:10px;margin:6px 0}
+dl{display:grid;grid-template-columns:96px 1fr;gap:2px 10px;margin:6px 0 0;font-size:.9rem}dt{color:var(--tlmeny)}dd{margin:0}
+@media (max-width:520px){dl{grid-template-columns:1fr}dt{margin-top:4px}}
+ol li,ul li{margin:4px 0}
+.zhrnutie{background:var(--plocha);border:1px solid var(--okraj);border-radius:10px;padding:10px 14px}
+details summary{cursor:pointer;color:var(--akcent)}
+</style></head><body><main>
+
+<h1>Krátka výučba a nápovedy v prvej partii</h1>
+<p class="uvod">Navrhár, 24. 10. 2026. Rozhodnutie Michala z 24. 10.: výučba má jedno kolo a 8 až 10 minút. Pojmy, ktoré z nej vypadli,
+vysvetlí Melichar v prvej partii proti botovi krátkou nápovedou, keď sa daná vec objaví prvýkrát.
+Dáta sú v <code>packages/core/data/vyucba/napovedy.json</code>, scenár v <code>packages/core/data/vyucba/prva-hra.json</code>
+a prehľad krokov v <a href="vyucba-scenar.html">vyucba-scenar.html</a>.</p>
+
+<div class="zhrnutie">
+<b>V skratke</b>
+<ul>
+<li>Výučba: 47 krokov namiesto 88, jedno kolo, jedna lokalita (Jednota), jedna Pitka. Odhad 7 až 9 minút (88 krokov trvalo 10,8 až 12,8 min).</li>
+<li>Nápovedy: 19, zoradené podľa dôležitosti. Prvých 12 (úroveň A) sa v prvej partii objaví takmer vždy, 7 (úroveň B) podľa priebehu.</li>
+<li>Od programátora: detektor nápoved v jadre, bublina v klientovi, pamäť „videné“ a vypínač pri účte, oprava 2 testov a 2 textov klienta.</li>
+</ul>
+</div>
+
+<h2>1. Nová výučba (prva-hra.json)</h2>
+<p>Každý krok zavedie najviac jeden nový pojem a pojem sa vysvetlí skôr, než ho Melichar použije. Poradie pojmov:</p>
+<ol>
+<li>body (cieľ hry) <code>i-vitaj</code></li>
+<li>lokalita a bitka o ňu <code>i-lokalita</code></li>
+<li>cigarety <code>i-cigarety</code></li>
+<li>šenok (postaví ho hra, Smetisko až v nápovede) <code>i-senok</code></li>
+<li>akcia <code>i-akcie</code></li>
+<li>tuhé (Rana 1, Petelica 3) <code>i-tuhe</code></li>
+<li>poldeci a limit kariet <code>i-poldeci</code></li>
+<li>Zhromaždenie <code>k-zh-bot1</code></li>
+<li>spoj <code>i-spoj</code></li>
+<li>odhad bitky <code>k-zh-bot2</code></li>
+<li>Viera <code>i-viera</code></li>
+<li>súperova strana <code>i-superova</code></li>
+<li>fajčenie <code>k-fajcit</code></li>
+<li>Pitka <code>i-pitka</code>, NA EX <code>i-naex</code>, pečeň <code>i-cena</code></li>
+<li>starší <code>i-starsi</code>, strach <code>i-strach</code>, prebytok <code>k-prebytok1</code>, zdraženie Miňištrantom <code>k-prebytok2</code></li>
+</ol>
+<p><b>Ostalo z kôl 1–5:</b> rozhodnutie s Miňištrantom na súperovej strane s radou pri zlom ťahu (pred ním nová veta, že kartu smieš dať aj súperovi, podľa návrhu S2),
+ťahanie na „+“ v prvom kladení, odhad bitky po každom ťahu (1 : 3, 2 : 3, 2 : 2, 7 : 2), NA EX na Hasičovu Petelicu bez partnera,
+otázky <code>q-spoj</code>, <code>q-naex</code>, <code>q-bitka</code>, <code>q-starsi</code>, <code>q-plan-naex</code>.</p>
+<p><b>Vypadlo:</b> druhé kolo, Krčma, druhá Pitka a vzorec počtu Pitiek, Dlh a zadĺženie, Cirhóza, Pohoršenie, Dievčina na vydaj, Absťák, okamžitá výhra
+vydesením, priazeň, otázka <code>q-pitky</code> a <code>q-plan-starsi</code>. Štamgast nemá Dlh ani Pohoršenie: jeho prvá karta (Zámočník) sa s Jednotou nespojí,
+preto je Pitka jedna.</p>
+<p><b>Priebeh:</b> Štamgast kúpi Zámočníka a Recidivistu, hráč Hasiča. Zhromaždenie: Zámočník, Pijan (Rana s Cigaretou Jednoty), Recidivista (Petelica, 1 : 3),
+Hasič (2 : 3), Štamgastov Miňištrant, fajčenie, hráčov Miňištrant na súperovej strane (Viera, 2 : 2). Pitka: NA EX na Hasiča (7 : 2).
+Bitka 7 : 2, prebytok 5, Farár dvakrát do žltej, zvyšný bod prepadne. Koniec 13 : 4 (Jednota 10, Farárov strach 3; Štamgast 4 za cigarety).</p>
+
+<h2>2. Ako sa nápovedy ukazujú</h2>
+<ol>
+<li><b>Kde:</b> v partii proti botovi, nie vo výučbe. Či aj v partii dvoch ľudí, rozhodne Michal (otázka 1).</li>
+<li><b>Raz za účet:</b> nápoveda sa ukáže, keď nastane jej spúšťač, a potom už nikdy. Platí aj pre návštevníka.</li>
+<li><b>Najviac jedna naraz:</b> keď sa spustí viac, ukáže sa tá s najnižším poradím; ostatné ostanú neukázané a spustia sa pri ďalšom výskyte.</li>
+<li><b>Čaká:</b> počas Počítadla bitky, ťahu súpera a hlášky Melichara pri pečiatke momentu sa bublina neotvorí, počká.</li>
+<li><b>Hra nečaká:</b> bublina nie je modálna, stôl nestmavne. „Rozumiem“ ju zavrie, „vypnúť nápovedy“ vypne všetky (aj prepínač v profile).</li>
+<li><b>Zvýraznenie:</b> kľúče z výučby (<code>bar:dlhy</code>, <code>tlacidlo:pas</code>, <code>starsi:farar</code> …), len jemný rámik bez stmavenia.</li>
+<li><b>Text:</b> 1–2 vety, tykanie, Melicharov tón, jeden nový pojem. Zástupné slová <code>{lokalita}</code>, <code>{efekt}</code>, <code>{starsi}</code>, <code>{karta}</code>, <code>{elderId}</code>, <code>{defId}</code> doplní detektor.</li>
+<li><b>Bez úniku:</b> spúšťač sa počíta len z pohľadu hráča (<code>viewFor</code>), nie zo súperovej ruky (pravidlo 2 v CLAUDE.md).</li>
+</ol>
+
+<h2>3. Nápovedy</h2>
+
+<div class="karta"><h3>1. stavba-senku <span>· A</span></h3>
+<p class="mel">„Šenok staviate ty a súper naraz: štyri karty daj do šenku, štyri na Smetisko. Na Smetisko patria tie, ktoré nechceš dať súperovi, neuvidí ich.“</p>
+<dl><dt>Spúšťač</dt><dd>prvá stavba šenku: <code>faza === "draft"</code>, <code>draftStav.krok === "stavba"</code>, môj balíček stavby nie je prázdny</dd>
+<dt>Jadro</dt><dd><code>packages/core/src/engine.ts:129</code> DraftStav, PRAVIDLA §5</dd><dt>Zvýrazniť</dt><dd><code>stavba</code></dd>
+<dt>Prečo</dt><dd>Výučba šenok stavia za hráča; Smetisko bolo nejasné (Marta, kolo 5).</dd></dl></div>
+
+<div class="karta"><h3>2. rola <span>· A</span></h3>
+<p class="mel">Útočník: „Si útočník: kupuješ a kladieš prvý. Dnes rozhodol žreb, odteraz je útočníkom ten, kto prehrá bitku.“<br>
+Obranca: „Si obranca: vyberáš lokalitu a Pitku začínaš ty. Dnes rozhodol žreb, odteraz je obrancom ten, kto vyhrá bitku.“</p>
+<dl><dt>Spúšťač</dt><dd>začiatok 1. kola (<code>faza === "volbaCiela"</code>, <code>kolo === 1</code>); variant podľa <code>utocnik === ja</code></dd>
+<dt>Jadro</dt><dd><code>engine.ts:240</code> GameState.utocnik, PRAVIDLA §4</dd><dt>Zvýrazniť</dt><dd><code>os-kola</code></dd></dl></div>
+
+<div class="karta"><h3>3. odpoved-naex <span>· A</span></h3>
+<p class="mel">„Súper dal NA EX a ty smieš hneď položiť jednu kartu. Keď ňou spojíš akciu bez partnera na karte s NA EX, NA EX ju zruší namiesto zdvojenia.“</p>
+<dl><dt>Spúšťač</dt><dd><code>pitkaStav.reakcia === ja</code> prvýkrát</dd><dt>Jadro</dt><dd><code>engine.ts:174</code> PitkaStav.reakcia, PRAVIDLA §7</dd>
+<dt>Zvýrazniť</dt><dd><code>tlacidlo:bez-odpovede</code></dd></dl></div>
+
+<div class="karta"><h3>4. pocet-pitiek <span>· A</span></h3>
+<p class="mel">„Pitka sa dnes zopakuje: obaja máte pri lokalite spojenú jej akciu. Pred každou ďalšou Pitkou je nové Zhromaždenie.“</p>
+<dl><dt>Spúšťač</dt><dd><code>pitkyCelkom</code> prvýkrát stúpne na 2 a viac (pred &lt; 2, po ≥ 2)</dd>
+<dt>Jadro</dt><dd><code>engine.ts:1282</code> pocetPitiek, <code>engine.ts:266</code>, PRAVIDLA §7 Počet Pitiek</dd><dt>Zvýrazniť</dt><dd><code>os-kola</code></dd>
+<dt>Prečo</dt><dd>Otázka 2 testu bola 0/3 dve kolá po sebe; bez vzorca, v situácii (návrh S1).</dd></dl></div>
+
+<div class="karta"><h3>5. zadlzenie <span>· A</span></h3>
+<p class="mel">„Akcia Dlh ti plní zadĺženie v bare. Keď dosiahne číslo za lomkou, dostaneš kartu Dlh.“</p>
+<dl><dt>Spúšťač</dt><dd><code>nahladPitky(view)[ja].zadlzenie &gt; 0</code> prvýkrát</dd><dt>Jadro</dt><dd><code>engine.ts:700</code> nahladPitky, <code>engine.ts:873</code> prahyHraca, PRAVIDLA §8</dd>
+<dt>Zvýrazniť</dt><dd><code>bar:zadlzenie</code></dd><dt>Prečo</dt><dd>Zadĺženie a Dlh oddelene (návrh S3, krok 27 mal jasnosť 2/1/2).</dd></dl></div>
+
+<div class="karta"><h3>6. dlh <span>· A</span></h3>
+<p class="mel">„Prvý Dlh! Leží medzi priznanými kartami a na konci hry ti zoberie body.“</p>
+<dl><dt>Spúšťač</dt><dd>udalosť <code>pitkaVysledok</code> s <code>dlhy[ja] &gt; 0</code>, alebo pribudol Dlh medzi mojimi priznanými</dd>
+<dt>Jadro</dt><dd><code>engine.ts:412</code> Event pitkaVysledok, PRAVIDLA §11</dd><dt>Zvýrazniť</dt><dd><code>bar:dlhy</code></dd></dl></div>
+
+<div class="karta"><h3>7. pas-cigarety <span>· A</span></h3>
+<p class="mel">„Pasovať sa oplatí aj skôr: za každú kartu, ktorú si ešte smel vyložiť, dostaneš cigaretu.“</p>
+<dl><dt>Spúšťač</dt><dd>Zhromaždenie, som na ťahu, v tomto Zhromaždení som už vyložil kartu a <code>kartyZaPas(zhromazdenie, ja) ≥ 1</code></dd>
+<dt>Jadro</dt><dd><code>engine.ts:158</code> kartyZaPas, PRAVIDLA §6</dd><dt>Zvýrazniť</dt><dd><code>tlacidlo:pas</code></dd></dl></div>
+
+<div class="karta"><h3>8. lokalita-pravidlo <span>· A</span></h3>
+<p class="mel">„{lokalita} má vlastné pravidlo a platí celé kolo: {efekt}“ (efekt = text karty z <code>cards.json</code>)</p>
+<dl><dt>Spúšťač</dt><dd>prvé kolo o Krčmu, Kostol, Benzínku, Zastávku, Most, Vínnu pivnicu alebo Družstvo (menia základný ťah)</dd>
+<dt>Jadro</dt><dd><code>engine.ts:258</code> GameState.ciel, PRAVIDLA §15</dd><dt>Zvýrazniť</dt><dd><code>linia:{lokalita}</code> (overiť, že kľúč nájde lokalitu v línii)</dd>
+<dt>Prečo</dt><dd>Katka (kolo 5): „KONČÍM zhasnuté bez dôvodu“ v Krčme.</dd></dl></div>
+
+<div class="karta"><h3>9. body <span>· A</span></h3>
+<p class="mel">„Body v bare ukazujú, koľko by si mal, keby hra skončila teraz. Klikni na ne a uvidíš, čo ti dáva ktorý starší.“</p>
+<dl><dt>Spúšťač</dt><dd>koniec prvej bitky partie (prechod z 1. do 2. kola)</dd><dt>Jadro</dt><dd><code>view.ts:359</code> bodyTeraz, PRAVIDLA §14</dd>
+<dt>Zvýrazniť</dt><dd><code>bar:body</code></dd><dt>Prečo</dt><dd>Katka: priebežné body „nikde nevysvetlené“ (návrh S7).</dd></dl></div>
+
+<div class="karta"><h3>10. pohorsenie <span>· A</span></h3>
+<p class="mel">Moje: „Tvoje Pohoršenie posunie jedného staršieho o krok k súperovi, aj keď bitku prehráš. Vyber ktorého.“<br>
+Súperovo: „Súperovo Pohoršenie posúva staršieho k tebe, aj keď bitku prehrá. Ten starší sa potom bojí jeho.“</p>
+<dl><dt>Spúšťač</dt><dd>prvý <code>bitkaStav.krok === "pohorsenie"</code>; variant podľa <code>bitkaStav.caka === ja</code></dd>
+<dt>Jadro</dt><dd><code>engine.ts:188</code>, <code>engine.ts:2860</code> pohorseniaVBitke, PRAVIDLA §9.2</dd><dt>Zvýrazniť</dt><dd><code>linia-starsich</code></dd></dl></div>
+
+<div class="karta"><h3>11. abstak <span>· A</span></h3>
+<p class="mel">„Pozor na Absťák: kto v kole pije a fajčí menej ako v predošlom, dostane ho. Každý Absťák ti v bitke uberie 1 tuhé.“</p>
+<dl><dt>Spúšťač</dt><dd>od 2. kola prvé <code>stavZavislosti(view, ja).vyhlad === "ziska"</code> na mojom ťahu; ak nestihne, pri prvom Absťáku</dd>
+<dt>Jadro</dt><dd><code>packages/core/src/zavislost.ts:52</code>, PRAVIDLA §8</dd><dt>Zvýrazniť</dt><dd><code>bar:abstak</code></dd></dl></div>
+
+<div class="karta"><h3>12. cirhoza <span>· A</span></h3>
+<p class="mel">„V ruke máš Cirhózu z pretečenej pečene. Nepriznaná ti na konci berie body, priznaná nie, no súper za ňu dostane v každej bitke 1 tuhé.“</p>
+<dl><dt>Spúšťač</dt><dd>prvá Cirhóza v mojej ruke</dd><dt>Jadro</dt><dd><code>engine.ts:412</code> (cirhozy), PRAVIDLA §11 Priznanie</dd>
+<dt>Zvýrazniť</dt><dd><code>ruka:cirhoza</code></dd><dt>Prečo</dt><dd>Výučba v <code>i-cena</code> sľubuje: „zlú kartu ti ukážem, keď príde“.</dd></dl></div>
+
+<div class="karta b"><h3>13. priazen <span>· B</span></h3>
+<p class="mel">„{starsi} je na tvojej polovici a prejavuje ti priazeň: malý bonus podľa jeho podložky. Bojí sa zato súpera.“</p>
+<dl><dt>Spúšťač</dt><dd>marker staršieho prvýkrát na mojej polovici v žltej alebo ďalej</dd><dt>Jadro</dt><dd><code>engine.ts:449</code> priazen, PRAVIDLA §10</dd>
+<dt>Zvýrazniť</dt><dd><code>starsi:{elderId}</code></dd></dl></div>
+
+<div class="karta b"><h3>14. prevaha <span>· B</span></h3>
+<p class="mel">„Akcie lokality v kraji dostane, kto tam má viac svojich Občanov, Zvierat a Starešinov. Pri rovnosti ten, koho karta leží pri lokalite.“</p>
+<dl><dt>Spúšťač</dt><dd>v jednom kraji prvýkrát ležia karty oboch hráčov a kraj tvorí spoj s lokalitou</dd><dt>Jadro</dt><dd><code>packages/core/src/partia.ts:249</code> prevahaStran, PRAVIDLA §6</dd>
+<dt>Zvýrazniť</dt><dd><code>prevaha</code></dd></dl></div>
+
+<div class="karta b"><h3>15. patronat <span>· B</span></h3>
+<p class="mel">„Starší, ktorý ti prejavuje priazeň, smie ísť s tebou do bitky: za cigarety si ho vezmeš do ruky. Keď bitku prehráš, vráti sa a stratíš poldeci.“</p>
+<dl><dt>Spúšťač</dt><dd><code>draftStav.krok === "patronat"</code> a smiem vziať aspoň jedného staršieho</dd>
+<dt>Jadro</dt><dd><code>engine.ts:1555</code> moznyPatronat, <code>view.ts:409</code> nahladPatronatu, PRAVIDLA §10 Patronát</dd><dt>Zvýrazniť</dt><dd><code>linia-starsich</code></dd>
+<dt>Poznámka</dt><dd>Pohoršenia navyše pre súpera ukáže náhľad patronátu, v texte nie sú.</dd></dl></div>
+
+<div class="karta b"><h3>16. vydesenie <span>· B</span></h3>
+<p class="mel">Moje: „Vydesený starší! Kto vydesí štyroch a udrží ich do konca ďalšieho kola, vyhrá hneď.“<br>
+Súperovo: „Súper ti vydesil staršieho. Keď ich vydesí štyroch a udrží ich do konca ďalšieho kola, vyhrá hneď.“</p>
+<dl><dt>Spúšťač</dt><dd>marker staršieho prvýkrát na indexe 0 alebo 8; variant podľa toho, koho sa bojí</dd>
+<dt>Jadro</dt><dd><code>engine.ts:3711</code> prahVydesenia, <code>engine.ts:286</code> ohlaseneVydesenie, PRAVIDLA §1</dd><dt>Zvýrazniť</dt><dd><code>linia-starsich</code></dd></dl></div>
+
+<div class="karta b"><h3>17. dedicstvo <span>· B</span></h3>
+<p class="mel">„{karta} je Nástroj. Môžeš ho dať do Dedičstva za cigarety a jeho efekt potom platí do konca hry.“</p>
+<dl><dt>Spúšťač</dt><dd>Zhromaždenie, som na ťahu, v ruke prvýkrát karta s tagom Nástroj</dd><dt>Jadro</dt><dd><code>engine.ts:1874</code> cenaDedicstva, PRAVIDLA §12</dd>
+<dt>Zvýrazniť</dt><dd><code>ruka:{defId}</code></dd></dl></div>
+
+<div class="karta b"><h3>18. exekutor <span>· B</span></h3>
+<p class="mel">„Priznaných Dlhov je veľa. Keď dosiahnu číslo za lomkou, v bitke príde Exekútor: odovzdáš mu Nástroj, alebo prehráš.“</p>
+<dl><dt>Spúšťač</dt><dd><code>priznaneDlhy ≥ exekutor − 2</code> z <code>prahyHraca</code>, rovnako ako varovanie v bare</dd>
+<dt>Jadro</dt><dd><code>engine.ts:873</code> prahyHraca, <code>apps/web/src/hra/Panely.tsx:769</code>, PRAVIDLA §11 Exekútor</dd><dt>Zvýrazniť</dt><dd><code>bar:dlhy</code></dd></dl></div>
+
+<div class="karta b"><h3>19. zaverecna <span>· B</span></h3>
+<p class="mel">„Za cigaretu smieš zahrať kartu lícom dole ako Záverečnú, súper nevie, čo to je. Po nej už v tomto Zhromaždení nič nevyložíš.“</p>
+<dl><dt>Spúšťač</dt><dd>od 2. kola môj ťah v Zhromaždení, keď je príkaz <code>zaverecna</code> legálny</dd><dt>Jadro</dt><dd><code>engine.ts:1185</code>, PRAVIDLA §13</dd>
+<dt>Zvýrazniť</dt><dd><code>zaverecna</code></dd></dl></div>
+
+<details><summary>Čo nápovedu nedostalo a prečo</summary>
+<p>Sekera (remíza je zriedkavá, Výsledok bitky ju pomenuje), Vypiť (viac kariet v ťahu), doliatie a barter, Pohreb, Kar, Vízia, Krčmárka a efekty kariet
+(text na karte, lupa). Dajú sa doplniť ďalším záznamom v <code>napovedy.json</code> bez zmeny kódu, ak detektor dostane nový spúšťač.</p>
+</details>
+
+<h2>4. Čo treba od programátora</h2>
+<ol>
+<li><b>Detektor v jadre:</b> čistá funkcia napr. <code>napovedy(data, pred: ClientState, po: ClientState, udalosti, videne): {id, variant, doplnky}[]</code>
+v <code>packages/core/src</code>, podobne ako <code>momenty()</code> (<code>packages/core/src/momenty.ts:141</code>), ale z pohľadu jedného hráča.
+Test pre každý spúšťač a test, že nepoužije nič mimo <code>viewFor</code>.</li>
+<li><b>Server:</b> pri účte zoznam videných nápoved a vypínač (stĺpce v <code>pouzivatelia</code> ako <code>vyucba_krok</code>, <code>packages/server/src/db.ts:358</code>), API na označenie a vypnutie.</li>
+<li><b>Klient:</b> bublina Melichara (štýl ako <code>apps/web/src/hra/Vyucba.tsx</code>, bez stmavenia), fronta podľa poradia, čakanie na Počítadlo bitky a hlášky
+(<code>apps/web/src/hra/Melichar.tsx:76</code> useMelichar), zvýraznenie tými istými kľúčmi ako výučba, prepínač v profile.</li>
+<li><b>Testy, ktoré predpokladajú dve kolá alebo staré id krokov</b> (nový scenár ich nesplní, kód som nemenil):
+<ul>
+<li><code>packages/core/test/vyucba.test.ts:102–118</code> „hra s dvoma lokalitami sa po druhej bitke skončí“: <code>expect(s.kolo).toBe(2)</code>, scenár má jednu lokalitu. Návrh: čakať <code>r.lokality.length</code>.</li>
+<li><code>apps/web/test/zmenyVyucby.test.ts:38–78</code>: hľadá ťahy <code>k39</code> (Štamgast kladie Psa), <code>k43</code>/<code>k44</code> (pas Štamgasta a hry za hráča s cigaretami),
+<code>k33</code> (kúpa), <code>k25</code> (Pohoršenie na Starostu), <code>k48</code> (NA EX Štamgasta na Pijana). V novom scenári: kúpa = <code>k-kupa-bot</code>, kladenie = <code>k-zh-bot1</code> (Zámočník);
+pas s cigaretami, Pohoršenie ani NA EX Štamgasta v ňom nie sú, tieto testy potrebujú vlastný malý scenár.</li>
+</ul></li>
+<li><b>Texty klienta:</b> <code>apps/web/src/hra/Vyucba.tsx:58</code> sľubuje „postaviť šenok“ (teraz ho stavia hra) a <code>Vyucba.tsx:626</code> po výučbe hovorí
+„Teraz vieš všetko, čo treba“. Návrh: „Základ máš. Zvyšok ti Melichar povie v prvej partii, keď to príde.“</li>
+<li><b>Test pochopenia nováčikov</b> (<code>.claude/agents/naex-novacik.md</code>, meradlo reportu) ráta počet Pitiek, okamžitú výhru a mínus za Dlh. Výučba ich už neučí,
+meradlo treba zúžiť, inak otázky 1 a 2 klesnú.</li>
+</ol>
+
+<h2>5. Otázky pre Michala</h2>
+<ol>
+<li>Nápovedy aj v prvej partii dvoch ľudí, alebo len proti botovi?</li>
+<li>Kým nevyčerpá všetky (aj v druhej, tretej partii), alebo len prvá partia?</li>
+<li>Hráč, ktorý prešiel starú dvojkolovú výučbu: ukázať mu nápovedy celé, alebo len tie, ktoré výučba nikdy nemala (Smetisko, rola, prevaha, patronát, Dedičstvo, Záverečná, Exekútor)?</li>
+</ol>
+
+</main></body></html>

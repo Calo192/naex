@@ -55,7 +55,7 @@ export function VyucbaVLobby({ vyucba, zacni }: { readonly vyucba: VyucbaUctu; r
             ? `Majster Melichar ťa čaká pri stole — si v kroku ${vyucba.krok + 1} z ${vyucba.spolu}.`
             : vyucba.stav === "hotova"
               ? "Výučbu máš za sebou. Ak si chceš pravidlá zopakovať, zahraj si ju znova."
-              : "Majster Melichar ťa krok za krokom prevedie partiou proti Štamgastovi: vybrať cieľ, postaviť šenok, vykladať, NA EX! a bitka. Do štatistík sa neráta."}
+              : "Majster Melichar ťa za pár minút prevedie jedným kolom proti Štamgastovi: vybrať cieľ, kúpiť zo šenku, vykladať, NA EX! a bitka. Šenok postaví hra za teba. Do štatistík sa neráta."}
         </p>
       </div>
       <div className="riadok-tlacidiel">
@@ -123,7 +123,7 @@ const ZMENA_MS = 2_500;
 const POTVRDIT = "potvrdit";
 
 /** Prvky stola ku kľúču zo scenára — priamo, alebo cez zónu (ruka, linia, bar…). */
-function prvkyKluca(kluc: string): HTMLElement[] {
+export function prvkyKluca(kluc: string): HTMLElement[] {
   // Potvrdenie ťahu: tlačidlá so skratkou K (potvrdiť, hotovo) a tie, ktoré si to označia (vziať do ruky).
   if (kluc === POTVRDIT) {
     return [...document.querySelectorAll<HTMLElement>('.hra button.tlacidlo-hlavne:is([data-skratka="k"], [data-vyucba="potvrdit"]):not(:disabled)')];
@@ -623,7 +623,10 @@ export function VyucbaStol({
           {krok !== null ? (
             krok.melichar.trim() !== "" && <p>{krok.melichar}</p>
           ) : (
-            <p>Výučbu máš za sebou! Teraz vieš všetko, čo treba. Zahraj si naostro — Štamgast a jeho kumpáni ťa čakajú.</p>
+            <p>
+              Výučbu máš za sebou! Základ vieš, zvyšok ti poviem v prvej partii: keď sa objaví niečo nové — Dlh, Absťák, Pohoršenie —
+              ozvem sa krátkou nápovedou. Zahraj si naostro, Štamgast a jeho kumpáni ťa čakajú.
+            </p>
           )}
           {moznosti.length > 0 && (
             <div className="vyucba-moznosti" role="group" aria-label="Možnosti odpovede">
@@ -657,7 +660,7 @@ export function VyucbaStol({
           {krok === null ? (
             <>
               <button className="tlacidlo-hlavne" onClick={hratProtiPocitacu}>
-                Hrať proti počítaču
+                Hrať prvú partiu proti počítaču
               </button>
               <button onClick={prerusit}>Do lobby</button>
             </>

@@ -587,3 +587,88 @@ body.vyucba-bezi .stol-hrana:not(:has(> :not(.pokyn-udalosti:not(.pokyn-tahania)
 .vyucba-ponuka-pozn {
   font-size: 0.82rem;
 }
+
+/* ---- nápovedy Melichara v partii (Michal 2026-10-24) ----
+ * Bublina ako vo výučbe, ale bez stmavenia: leží v rohu stola, kde prekryje najmenej
+ * (Napovedy.tsx miestoBubliny), hru neblokuje a zavrie ju klik alebo Esc. */
+.napoveda-bublina {
+  position: fixed;
+  z-index: 65;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: clamp(260px, 24vw, 380px);
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 2px solid var(--akcent);
+  background: var(--plocha);
+  color: var(--text);
+  box-shadow: 0 8px 24px color-mix(in srgb, #000 50%, transparent);
+  cursor: pointer;
+  animation: napoveda-prichod 0.25s ease-out;
+}
+
+.napoveda-telo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.napoveda-text {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.42;
+}
+
+.napoveda-pata {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+}
+
+.napoveda-vypnut {
+  margin-left: auto;
+  font-size: 0.78rem;
+}
+
+/* Prvok, o ktorom nápoveda hovorí: len jemný rámik, stôl ostáva svetlý. */
+/* body: prednosť pred „outline: none“ dlaždíc a tlačidiel v hra.css. */
+body [data-napoveda-zvyraznene] {
+  outline: 2px dashed var(--akcent);
+  /* Dovnútra — dlaždice barov a karty majú rodiča s overflow: hidden, vonkajší rámik by orezal. */
+  outline-offset: -3px;
+}
+
+@keyframes napoveda-prichod {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .napoveda-bublina {
+    animation: none;
+  }
+}
+
+/* Nízky notebook: menšie písmo, nech bublina nezaberie pol stola. */
+@media (max-height: 719px) {
+  .napoveda-bublina {
+    width: clamp(250px, 26vw, 340px);
+    padding: 8px 10px;
+  }
+
+  .napoveda-bublina .vyucba-avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  .napoveda-text {
+    font-size: 0.84rem;
+    line-height: 1.36;
+  }
+}

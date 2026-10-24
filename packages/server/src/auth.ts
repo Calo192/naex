@@ -48,6 +48,8 @@ export interface Pouzivatel {
   readonly skratky: boolean;
   /** Pohlavie pre tvary hlášok („Eva skončila“); null = neuvádza, hlášky sú neutrálne. */
   readonly pohlavie: Pohlavie | null;
+  /** Nápovedy majstra Melichara v partii (Michal 2026-10-24) — predvolene zapnuté. */
+  readonly napovedy: boolean;
   /** Súhrn štatistík skrytý pred ostatnými (Michal 2026-10-22). */
   readonly skrytySuhrn: boolean;
 }
@@ -61,6 +63,15 @@ export function overLupu(v: unknown): number {
   const n = Number(v);
   if (!Number.isFinite(n) || n < LUPA_OD || n > LUPA_DO) throw new ChybaVstupu(`Zväčšenie musí byť ${LUPA_OD} až ${LUPA_DO} %.`);
   return Math.round(n);
+}
+
+/** Najviac toľko videných nápoved pri účte — katalóg ich má 19, strop len chráni databázu. */
+export const MAX_VIDENYCH_NAPOVED = 100;
+
+/** Id nápovede z requestu — tvar ako v napovedy.json („pas-cigarety“). */
+export function overIdNapovedy(v: unknown): string {
+  if (typeof v !== "string" || !/^[a-z0-9-]{1,40}$/.test(v)) throw new ChybaVstupu("Neznáma nápoveda.");
+  return v;
 }
 
 export function overPrepinac(v: unknown, co: string): boolean {
@@ -209,6 +220,31 @@ export class Ucty {
     ).map((r) => ({ krok: r.krok, odpovedi: Number(r.odpovedi), spravne: Number(r.spravne) }));
   }
 
+  /** Nápovedy Melichara, ktoré hráč už videl (id z napovedy.json). */
+  videneNapovedy(id: number): string[] {
+    const r = this.db.prepare("SELECT napovedy_videne FROM pouzivatelia WHERE id = ?").get(id) as { napovedy_videne: string | null } | undefined;
+    try {
+      const v: unknown = JSON.parse(r?.napovedy_videne ?? "[]");
+      return Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : [];
+    } catch {
+      return [];
+    }
+  }
+
+  /** Zapíše videnú nápovedu; zoznam má strop, aby ho klient nenafúkol. */
+  pridajVidenuNapovedu(id: number, napoveda: string): string[] {
+    const videne = this.videneNapovedy(id);
+    if (videne.includes(napoveda) || videne.length >= MAX_VIDENYCH_NAPOVED) return videne;
+    const nove = [...videne, napoveda];
+    this.db.prepare("UPDATE pouzivatelia SET napovedy_videne = ? WHERE id = ?").run(JSON.stringify(nove), id);
+    return nove;
+  }
+
+  /** „Ukázať nápovedy znova“ v profile. */
+  resetujNapovedy(id: number): void {
+    this.db.prepare("UPDATE pouzivatelia SET napovedy_videne = NULL WHERE id = ?").run(id);
+  }
+
   ulozVyucbu(id: number, krok: number, stav?: "hotova" | "preskocena" | null): void {
     if (stav === undefined) this.db.prepare("UPDATE pouzivatelia SET vyucba_krok = ? WHERE id = ?").run(krok, id);
     else this.db.prepare("UPDATE pouzivatelia SET vyucba_krok = ?, vyucba_stav = ? WHERE id = ?").run(krok, stav, id);
@@ -271,6 +307,7 @@ export class Ucty {
       ai: Number(r.ai) === 1,
       schema: typeof r.schema === "string" ? r.schema : null,
       skratky: r.skratky === null || r.skratky === undefined ? true : Number(r.skratky) === 1,
+      napovedy: r.napovedy === null || r.napovedy === undefined ? true : Number(r.napovedy) === 1,
       pohlavie: POHLAVIA.includes(r.pohlavie as Pohlavie) ? (r.pohlavie as Pohlavie) : null,
       skrytySuhrn: Number(r.skryty_suhrn) === 1,
     };
@@ -278,7 +315,7 @@ export class Ucty {
 
   podlaId(id: number): Pouzivatel | null {
     return this.riadok(
-      this.db.prepare("SELECT id, login, meno, avatar, rola, lupa, hudba, melichar, ai, schema, skratky, pohlavie, skryty_suhrn FROM pouzivatelia WHERE id = ?").get(id) as
+      this.db.prepare("SELECT id, login, meno, avatar, rola, lupa, hudba, melichar, ai, schema, skratky, napovedy, pohlavie, skryty_suhrn FROM pouzivatelia WHERE id = ?").get(id) as
         | Record<string, unknown>
         | undefined,
     );
@@ -359,6 +396,7 @@ export class Ucty {
       melichar?: number;
       schema?: string;
       skratky?: boolean;
+      napovedy?: boolean;
       pohlavie?: Pohlavie | null;
       skrytySuhrn?: boolean;
     },
@@ -369,6 +407,7 @@ export class Ucty {
     if (zmeny.melichar !== undefined) this.db.prepare("UPDATE pouzivatelia SET melichar = ? WHERE id = ?").run(zmeny.melichar, id);
     if (zmeny.schema !== undefined) this.db.prepare("UPDATE pouzivatelia SET schema = ? WHERE id = ?").run(zmeny.schema, id);
     if (zmeny.skratky !== undefined) this.db.prepare("UPDATE pouzivatelia SET skratky = ? WHERE id = ?").run(zmeny.skratky ? 1 : 0, id);
+    if (zmeny.napovedy !== undefined) this.db.prepare("UPDATE pouzivatelia SET napovedy = ? WHERE id = ?").run(zmeny.napovedy ? 1 : 0, id);
     if (zmeny.pohlavie !== undefined) this.db.prepare("UPDATE pouzivatelia SET pohlavie = ? WHERE id = ?").run(zmeny.pohlavie, id);
     if (zmeny.skrytySuhrn !== undefined) this.db.prepare("UPDATE pouzivatelia SET skryty_suhrn = ? WHERE id = ?").run(zmeny.skrytySuhrn ? 1 : 0, id);
     if (zmeny.avatar !== undefined) this.db.prepare("UPDATE pouzivatelia SET avatar = ? WHERE id = ?").run(zmeny.avatar, id);

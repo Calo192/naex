@@ -13,7 +13,7 @@ import type { KartaNavrh, Pozicia, StranaNavrhu, AkciaDef, KlucoveSlovo, Kategor
 import { exportTxt, importTxt, slug, PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
 import type { Pouzivatel, Rola, Ucty } from "./auth.ts";
 import type { Achievementy } from "./achievementy.ts";
-import { ChybaVstupu, cookieOdhlasenia, cookieRelacie, overHesloVstup, overLogin, overHlasitost, overLupu, overMeno, overSchemu, overPrepinac, overPohlavie, citajCookie, jeSpravca } from "./auth.ts";
+import { ChybaVstupu, cookieOdhlasenia, cookieRelacie, overHesloVstup, overLogin, overHlasitost, overLupu, overMeno, overSchemu, overPrepinac, overPohlavie, overIdNapovedy, citajCookie, jeSpravca } from "./auth.ts";
 import type { DruhMedia, Media } from "./media.ts";
 import type { Hudba } from "./hudba.ts";
 import type { Obsah } from "./obsah.ts";
@@ -376,10 +376,31 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
           ...(b.melichar !== undefined ? { melichar: overHlasitost(b.melichar, "hlášok") } : {}),
           ...(b.schema !== undefined ? { schema: overSchemu(b.schema) } : {}),
           ...(b.skratky !== undefined ? { skratky: overPrepinac(b.skratky, "Klávesové skratky") } : {}),
+          ...(b.napovedy !== undefined ? { napovedy: overPrepinac(b.napovedy, "Nápovedy Melichara") } : {}),
           ...(b.pohlavie !== undefined ? { pohlavie: overPohlavie(b.pohlavie) } : {}),
           ...(b.skrytySuhrn !== undefined ? { skrytySuhrn: overPrepinac(b.skrytySuhrn, "Skryť môj súhrn") } : {}),
         }),
       });
+    }
+
+    // ----- nápovedy Melichara v partii (Michal 2026-10-24) -----------------
+    // Ktorú nápovedu ukázať, rozpozná klient z vlastného pohľadu (napovedy.ts v jadre);
+    // server si pamätá len videné id a vypínač (PATCH /profil napovedy).
+    if (r === "GET /napovedy") {
+      const p = prihlaseny();
+      return ok({ zapnute: p.napovedy, videne: ctx.ucty.videneNapovedy(p.id) });
+    }
+
+    if (r === "POST /napovedy/videna") {
+      const p = prihlaseny();
+      const b = await citajJson(req);
+      return ok({ videne: ctx.ucty.pridajVidenuNapovedu(p.id, overIdNapovedy(b.id)) });
+    }
+
+    if (r === "POST /napovedy/reset") {
+      const p = prihlaseny();
+      ctx.ucty.resetujNapovedy(p.id);
+      return ok({ videne: [] });
     }
 
     // ----- výučba „Prvá hra“ (Michal 2026-10-23) ----------------------------

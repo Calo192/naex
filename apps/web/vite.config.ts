@@ -17,7 +17,8 @@ export default defineConfig({
       "/api": { target: `http://${server}` },
       "/media": { target: `http://${server}` },
       "/hudba": { target: `http://${server}` },
-      "/melichar": { target: `http://${server}` },
+      // Len hlášky (/melichar/…) — avatar /melichar.jpg je v public/ klienta.
+      "^/melichar/": { target: `http://${server}` },
       "/playtesty": { target: `http://${server}` },
     },
   },

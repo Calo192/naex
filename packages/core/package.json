@@ -9,7 +9,8 @@
     ".": "./src/index.ts",
     "./data/cards.json": "./data/cards.json",
     "./data/elders.json": "./data/elders.json",
-    "./data/scorecards.json": "./data/scorecards.json"
+    "./data/scorecards.json": "./data/scorecards.json",
+    "./data/vyucba/napovedy.json": "./data/vyucba/napovedy.json"
   },
   "scripts": { "build": "tsc --build" }
 }

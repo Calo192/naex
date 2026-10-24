@@ -285,6 +285,23 @@ export function Profil() {
       .catch(chyba);
   };
 
+  // Nápovedy majstra Melichara v partii (Michal 2026-10-24): vypnúť a ukázať znova.
+  const [napovedy, setNapovedy] = useState(ja?.napovedy !== false);
+  const [napovedyZnova, setNapovedyZnova] = useState(false);
+  const prepniNapovedy = (zapnute: boolean): void => {
+    setNapovedy(zapnute);
+    api
+      .patch<{ pouzivatel: Pouzivatel }>("/profil", { napovedy: zapnute })
+      .then((r) => nastav(r.pouzivatel))
+      .catch(chyba);
+  };
+  const ukazNapovedyZnova = (): void => {
+    api
+      .post("/napovedy/reset")
+      .then(() => setNapovedyZnova(true))
+      .catch(chyba);
+  };
+
   // Pohlavie pre tvary hlášok v partii (Michal 2026-10-22) — voliteľné, inak neutrálne hlášky.
   const [pohlavie, setPohlavie] = useState<Pohlavie | null>(ja?.pohlavie ?? null);
   const vyberPohlavie = (p: Pohlavie | null): void => {
@@ -495,6 +512,18 @@ export function Profil() {
             nefungujú; M otvorí pult Melichara a číslice na ňom buchnú pečiatkou.
           </span>
         </label>
+        <label className="skratky-volba">
+          <input type="checkbox" checked={napovedy} onChange={(e) => prepniNapovedy(e.target.checked)} />
+          <span>
+            <b>Nápovedy majstra Melichara v partii</b> — keď sa v partii prvýkrát stretneš s niečím novým (Dlh, Absťák, Pohoršenie…),
+            Melichar to krátko vysvetlí. Každú povie len raz.
+          </span>
+        </label>
+        <div className="riadok-tlacidiel">
+          <button type="button" className="tlacidlo-male" onClick={ukazNapovedyZnova} disabled={napovedyZnova}>
+            {napovedyZnova ? "Nápovedy sa ukážu znova" : "Ukázať nápovedy znova"}
+          </button>
+        </div>
         <fieldset className="skore-volby">
           <legend>Ako o tebe písať v hláškach partie</legend>
           {VOLBY_POHLAVIA.map((v) => (
