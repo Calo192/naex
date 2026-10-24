@@ -95,7 +95,7 @@
     {
       "id": "i-kolo",
       "kto": "info",
-      "melichar": "Hore je lišta kola: voľba cieľa, draft, Zhromaždenie, Pitka a bitka. Vždy ti ukáže, kde práve sme.",
+      "melichar": "Lišta kola ukazuje fázy: voľba cieľa, draft, Zhromaždenie, Pitka a bitka. Vždy na nej vidíš, kde práve sme.",
       "zvyraznit": [
         "os-kola"
       ]
@@ -103,7 +103,7 @@
     {
       "id": "i-bar",
       "kto": "info",
-      "melichar": "Dole je tvoj bar. Limit kariet v Zhromaždení je plné poldeci + 1, máš dva, teda tri. Cigarety platia šenok a fajčenie. Absťák je kliatba: keď v kole menej piješ a fajčíš ako minule, uberie ti 1 tuhé.",
+      "melichar": "Toto je tvoj bar. Limit kariet v Zhromaždení je plné poldeci + 1, máš dva, teda tri. Cigarety platia šenok a fajčenie. Absťák je kliatba: keď v kole menej piješ a fajčíš ako minule, uberie ti 1 tuhé.",
       "zvyraznit": [
         "bar:poldeci",
         "bar:cigarety"
@@ -350,7 +350,7 @@
       "prikaz": {
         "type": "pass"
       },
-      "melichar": "Štamgast pasuje tiež."
+      "melichar": "Štamgast pasoval tiež."
     },
     {
       "id": "i-pitka",
@@ -413,7 +413,7 @@
       "prikaz": {
         "type": "skipNaex"
       },
-      "melichar": "Pitka sa vyhodnotí. Štamgastovi sa naplnilo zadĺženie, tak dostal Dlh, a Dlh na konci berie body. Ty máš cigaretu za Cigaretu Jednoty, on za Cigaretu na Dvojčatách."
+      "melichar": "Pitka sa vyhodnotila. Štamgastovi sa naplnilo zadĺženie, tak dostal Dlh, a Dlh na konci berie body. Ty máš cigaretu za Cigaretu Jednoty, on za Cigaretu na Dvojčatách."
     },
     {
       "id": "i-cena",
@@ -451,7 +451,7 @@
       "prikaz": {
         "type": "pass"
       },
-      "melichar": "Pitky sú dnes dve, koľko ich bude, určuje lokalita. Ešte jedno Zhromaždenie: Štamgast pasuje."
+      "melichar": "Pitky sú dnes dve, koľko ich bude, určuje lokalita. Prišlo ďalšie Zhromaždenie a Štamgast pasoval."
     },
     {
       "id": "k21",
@@ -530,12 +530,12 @@
       "prikaz": {
         "type": "skipNaex"
       },
-      "melichar": "Pitka sa vyhodnotí, Štamgast dostal druhý Dlh."
+      "melichar": "Pitka sa vyhodnotila, Štamgast dostal druhý Dlh."
     },
     {
       "id": "i-ukazem",
       "kto": "info",
-      "melichar": "Bitka! Teraz ti ukážem starších: osem dedinských autorít hore. Bitka nimi hýbe a dávajú väčšinu bodov.",
+      "melichar": "Bitka! Teraz ti ukážem starších: osem dedinských autorít. Bitka nimi hýbe a dávajú väčšinu bodov.",
       "zvyraznit": [
         "linia-starsich",
         "os-kola"
@@ -548,7 +548,7 @@
         "type": "pohorsenie",
         "elderId": "starosta"
       },
-      "melichar": "Dievčina na vydaj odišla z hry a spálila oba Štamgastove Dlhy, ako píše jej karta. Jej Pohoršenie posunie jedného staršieho o krok, tu Starostu k tebe."
+      "melichar": "Dievčina na vydaj odišla z hry a spálila oba Štamgastove Dlhy, ako píše jej karta. Jej Pohoršenie posunulo Starostu o krok k tebe."
     },
     {
       "id": "k26",
@@ -940,7 +940,7 @@
         "type": "naex",
         "uid": "linia:pijan"
       },
-      "melichar": "Krčma núti aj Štamgasta: NA EX na vlastného Pijana. Pridá mu rany, 12 : 5, ale zdvojí mu aj Dlh a pečeň."
+      "melichar": "Krčma prinútila aj Štamgasta: dal NA EX na vlastného Pijana. Pridalo mu rany, 12 : 5, ale zdvojilo mu aj Dlh a pečeň."
     },
     {
       "id": "k49",
@@ -950,7 +950,7 @@
         "uid": "ruka:pijan",
         "target": "vlastna"
       },
-      "melichar": "Odpovedz: polož Pijana k Miňištrantovi na svoju stranu a potvrď. Pozri na pás hore: 12 : 5 → 13 : 4. Odpoveď sa oplatí, keď spojí akciu, ktorá bola bez páru.",
+      "melichar": "Odpovedz: polož Pijana k Miňištrantovi na svoju stranu a potvrď. Pozri na odhad bitky: 12 : 5 → 13 : 4. Odpoveď sa oplatí, keď spojí akciu, ktorá bola bez páru.",
       "zvyraznit": [
         "ruka:pijan"
       ]
@@ -961,7 +961,7 @@
       "prikaz": {
         "type": "skipNaex"
       },
-      "melichar": "Pitka sa vyhodnotí. Štamgast má ďalší Dlh."
+      "melichar": "Pitka sa vyhodnotila. Štamgast má ďalší Dlh."
     },
     {
       "id": "k51",
@@ -1058,7 +1058,7 @@
         "type": "naex",
         "uid": "liniaSupera:ministrant"
       },
-      "melichar": "Krčma núti aj Štamgasta. Dal NA EX na tvojho prvého Miňištranta: jeho spojenú Vieru zruší, 13 : 3."
+      "melichar": "Krčma prinútila aj Štamgasta. Dal NA EX na tvojho prvého Miňištranta a zrušil mu spojenú Vieru: 13 : 3."
     },
     {
       "id": "k58",
@@ -1100,7 +1100,7 @@
       "prikaz": {
         "type": "skipNaex"
       },
-      "melichar": "Pitka sa vyhodnotí: tebe pretiekla pečeň a prišla Cirhóza, to je cena dvoch NA EX. Bitka 13 : 3 pre teba, hlavne vďaka Hasičovi s NA EX.",
+      "melichar": "Pitka sa vyhodnotila: tebe pretiekla pečeň a prišla Cirhóza, to je cena dvoch NA EX. Bitka 13 : 3 pre teba, hlavne vďaka Hasičovi s NA EX.",
       "zvyraznit": [
         "bitka-ucet"
       ]
