@@ -13,7 +13,11 @@ export const STYL =
   "cross-hatching and grainy texture in the shadows, muted dirty palette of browns, olive, slate blue and grey with one warm " +
   "accent light, slightly grotesque caricatured expressive faces with realistic proportions, run-down post-socialist " +
   "Slovak village atmosphere with cluttered worn details. Square composition, main subject centered. " +
-  "No text, no letters, no logos, no watermark, no frame, no border.";
+  "No text, no letters, no logos, no watermark, no frame, no border. " +
+  // Pevné pravidlo Michala 2026-10-24 pre každý obrázok (styl.md): ľuďom sa dymilo z chrbta a z uší.
+  "Smoke may come ONLY from a lit cigarette, from a cigarette resting in an ashtray, or from the mouth of a person exhaling it — " +
+  "never from ears, backs, hair, clothes or out of thin air. " +
+  "Hands in simple natural poses, anatomically correct with five fingers; no tangled or interlocked hands.";
 
 /** Pás nad kapitolou pravidiel (Michal 2026-10-24): ten istý štýl, široká scéna; orezá sa na 2,5 : 1. */
 export const STYL_PASU = STYL.replace(
@@ -21,7 +25,8 @@ export const STYL_PASU = STYL.replace(
   "Wide panoramic banner composition, the scene spread across the whole width, nothing important near the top and bottom edges. Full bleed: the artwork fills the entire canvas to every edge — " +
     "no letterbox bars, no white margin, no panel border, no signature. No signs or labels with writing anywhere.",
 );
-export const REFERENCIE_PASU = ["krcma", "pijan", "svokra"];
+/** Predloha štýlu pásov: karty, ktoré Michal považuje za najvydarenejšie (2026-10-24). */
+export const REFERENCIE_PASU = ["kocovnik", "niekoho_stryna", "podvodnik", "zamocnik", "krcmarka", "postarka", "veterinar", "farar"];
 
 export const REFERENCIE: Readonly<Record<string, readonly string[]>> = {
   obcan: ["svokra", "pijan", "hasic"],
