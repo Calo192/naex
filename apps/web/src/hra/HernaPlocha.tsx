@@ -254,8 +254,47 @@ function pravyKlik(fn: (() => void) | undefined): ((e: React.MouseEvent) => void
 const DOZNIEVANIE_LUPY_MS = 160;
 /** Ako dlho ostane hláška „karta sa nepoložila“ — stačí na prečítanie, potom nezavadzia. */
 const ZOBRAZENIE_CHYBY_TAHANIA_MS = 6000;
-/** Najväčšia šírka tej hlášky — rovnaká ako max-width .chyba-tahania v hra.css. */
-const SIRKA_CHYBY_TAHANIA = 340;
+/**
+ * Kam s hláškou „karta sa nepoložila“ (w × h): k bodu pustenia — nad, pod, vedľa,
+ * alebo do rohu plste —, kde najmenej zakryje ciele ťahu, lokalitu, pečiatky
+ * a bary (UI inšpekcia 2026-10-24: nad bodom pod líniou zakryla líniu aj „+“).
+ * Pri rovnakom skóre bližšie k bodu. Nad plsť nie — tam je pokyn a pás kola.
+ */
+function polohaChybyTahania(bod: { readonly x: number; readonly y: number }, w: number, h: number): { readonly x: number; readonly y: number } {
+  const plst = document.querySelector(".stol-plst")?.getBoundingClientRect();
+  // Pilulka pokynu presahuje na hornú hranu plste.
+  const hore = Math.max(8, (plst?.top ?? 0) + 8);
+  const dole = Math.max(hore, window.innerHeight - 8 - h);
+  const vpravo = Math.max(16, window.innerWidth - 16 - w);
+  const medzera = 14;
+  const kandidati = [
+    [bod.x - w / 2, bod.y - h - medzera],
+    [bod.x - w / 2, bod.y + medzera],
+    [bod.x - w - medzera, bod.y - h / 2],
+    [bod.x + medzera, bod.y - h / 2],
+    ...(plst === undefined
+      ? []
+      : [
+          [plst.left + 8, plst.top + 8],
+          [plst.right - 8 - w, plst.top + 8],
+          [plst.left + 8, plst.bottom - 8 - h],
+          [plst.right - 8 - w, plst.bottom - 8 - h],
+        ]),
+  ].map(([x = 0, y = 0]) => ({ x: Math.min(Math.max(x, 16), vpravo), y: Math.min(Math.max(y, hore), dole) }));
+  const vahy: readonly (readonly [string, number])[] = [
+    [".linia .kl, .miesto-volby, .linia-skupina.lokalita, .stol-hrana .pecat, .stol-hrana button, [data-vyucba-bublina]", 10],
+    [".doska, .linia-stav, .pas-kola-obal", 3],
+    [".ruka .kl", 1],
+  ];
+  const prekazky = vahy.map(([sel, vaha]) => ({ vaha, r: [...document.querySelectorAll(sel)].map((e) => e.getBoundingClientRect()) }));
+  const skore = (p: { readonly x: number; readonly y: number }): number =>
+    prekazky.reduce(
+      (s, { vaha, r }) =>
+        s + vaha * r.reduce((t, b) => t + Math.max(0, Math.min(p.x + w, b.right) - Math.max(p.x, b.left)) * Math.max(0, Math.min(p.y + h, b.bottom) - Math.max(p.y, b.top)), 0),
+      0,
+    ) + Math.hypot(p.x + w / 2 - bod.x, p.y + h / 2 - bod.y);
+  return kandidati.reduce((naj, p) => (skore(p) < skore(naj) ? p : naj));
+}
 /** Šírka lupy staršieho z bodového baru — vojde sa aj na notebook 1366 × 650 a neprekryje celý stôl. */
 const SIRKA_LUPY_STARSIEHO = 400;
 
@@ -1412,7 +1451,7 @@ export function HernaPlocha({
     if (ciel === null || !cieleZdroja(z).has(ciel)) {
       const vykladal = z.odkial === "ruka" && !z.navrh && [...cieleZdroja(z)].some((c) => jeCielVykladania(c) || c.startsWith(NAHRADIT));
       if (vykladal && document.elementFromPoint(bod.x, bod.y)?.closest(".ruka") == null) {
-        setChybaTahania({ text: "Karta sa nepoložila — pusti ju na zvýraznené miesto, alebo klikni na „+“ na konci strany a potom na kartu.", ...bod });
+        setChybaTahania({ text: "Karta sa nepoložila. Pusti ju na zvýraznené miesto alebo klikni na „+“ a potom na kartu.", ...bod });
       }
       return;
     }
@@ -1463,6 +1502,14 @@ export function HernaPlocha({
     if (chybaTahania === null) return;
     const t = setTimeout(() => setChybaTahania(null), ZOBRAZENIE_CHYBY_TAHANIA_MS);
     return () => clearTimeout(t);
+  }, [chybaTahania]);
+  const chybaTahaniaRef = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const el = chybaTahaniaRef.current;
+    if (el === null || chybaTahania === null) return;
+    const p = polohaChybyTahania(chybaTahania, el.offsetWidth, el.offsetHeight);
+    el.style.left = `${p.x}px`;
+    el.style.top = `${p.y}px`;
   }, [chybaTahania]);
   const { tahanie, zacni, duchRef } = useTahanie(pusti);
 
@@ -4900,16 +4947,8 @@ export function HernaPlocha({
       )}
 
       {chybaTahania !== null && (
-        <div
-          className="chyba-tahania"
-          role="alert"
-          style={{
-            left: Math.min(Math.max(chybaTahania.x, 16 + SIRKA_CHYBY_TAHANIA / 2), window.innerWidth - 16 - SIRKA_CHYBY_TAHANIA / 2),
-            top: chybaTahania.y,
-            // Nad bodom; pri hornom okraji okna pod ním.
-            transform: chybaTahania.y > 180 ? "translate(-50%, calc(-100% - 14px))" : "translate(-50%, 14px)",
-          }}
-        >
+        // Poloha sa dopočíta pred vykreslením (useLayoutEffect) podľa rozmeru hlášky.
+        <div className="chyba-tahania" role="alert" ref={chybaTahaniaRef}>
           <span>⚠ {chybaTahania.text}</span>
           <button type="button" className="tlacidlo-male" onClick={() => setChybaTahania(null)}>
             OK
