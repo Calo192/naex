@@ -584,3 +584,17 @@ Staré znenie §3:
 > - **Dĺžka hry** sa volí pred začiatkom počtom lokalít: krátka **5**, stredná
 >   **7** (predvolená), dlhá **11**. Dlhú hru možno zvoliť, len keď má zverejnená
 >   sada aspoň 11 lokalít — `cards.json` ich má 15.
+
+## v4 — zmrazenie pravidiel (Michal 2026-10-24, roadmapa #12)
+
+Michal schválil zmrazenie po nasadení 64c140e. Pravidlá sa nemenili — platí
+znenie a správanie jadra so značkou 2026-10-24.2 (zápisy vyššie). Mení sa len
+označenie: `VERZIA_PRAVIDIEL` je odteraz **„v4“** (predtým dátum zmeny) a partie
+v archíve s ňou sa dajú oddeliť od starších s dátumovými značkami „2026-10-…“.
+Hráč verziu vidí na stránke Pravidlá („Pravidlá v4, platné od 24. 10. 2026“)
+a v okne konca partie.
+
+Odteraz sa pravidlá menia len v dávkach raz za 2 týždne; celá dávka dostane
+ďalšiu verziu (**„v5“**) a hráči sa o nej dozvedia v Novinkách. Sada kariet sa
+ladí ďalej mimo dávok. Do v5 čaká napríklad „NA EX naraz + Výtržník pri
+zrážke“, ak ho stratég odporučí.

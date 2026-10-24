@@ -1,5 +1,8 @@
 # NA EX! — pravidlá (špecifikácia)
 
+**Pravidlá v4 (zmrazené 2026-10-24).** Odteraz sa menia len v dávkach raz
+za 2 týždne; celá dávka dostane ďalšiu verziu (v5).
+
 Špecifikácia pravidiel kartovej hry NA EX! (Michal Calík) pre implementáciu
 a testy. Text pre hráčov je na stránke Pravidlá; toto je presné znenie, podľa
 ktorého sa hra programuje a overuje.
@@ -15,7 +18,7 @@ za krokom** (§5–§10), **Podrobnosti** (§11–§16) a slovník (§17).
   oprava.
 - Čo pravidlá nehovoria, nedopĺňaj potichu — spýtaj sa a zapíš to sem.
 - Ako sa pravidlá menili a čo platilo predtým: `docs/pravidla-historia.md`.
-  Partie v archíve nesú `VERZIA_PRAVIDIEL`.
+  Partie v archíve nesú `VERZIA_PRAVIDIEL` (od zmrazenia „v4“).
 
 ---
 
