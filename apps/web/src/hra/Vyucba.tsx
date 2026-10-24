@@ -277,8 +277,23 @@ function miestaBubliny(w: number, h: number): Obdlznik[] {
  */
 const PANELY = ".vrstva-fazy .stavba-zona, .vrstva-fazy .stavba-balicek, .vrstva-fazy .draft-karty, .vrstva-starsich:not([hidden]) .linia-starsich";
 
-function skorePanelov(o: Obdlznik): number {
-  return rectyPrvkov(PANELY).reduce((s, b) => s + prekrytie(o, b), 0);
+/** Krok potrebuje líniu starších — inak ju otvorenú cez Body pri novom kroku zavrieme. */
+export function krokSoStarsimi(krok: KrokVyucby | null): boolean {
+  if (krok === null) return false;
+  return (
+    krok.zvyraznit.some((k) => k === "bar:body" || k === "linia-starsich" || k.startsWith("starsi:")) ||
+    ["prebytok", "pohorsenie", "patronat", "bezPatronatu"].includes(krok.ocakava?.type ?? "")
+  );
+}
+
+/**
+ * Prekrytie s panelmi počas ťahu bota či hry. Línia starších otvorená cez Body, ktorú krok
+ * nepotrebuje, sa o chvíľu zavrie — bublinu neposunie (UI inšpekcia: skok po info kroku).
+ */
+function skorePanelov(o: Obdlznik, krok: KrokVyucby | null): number {
+  const zatvori = !krokSoStarsimi(krok) && document.querySelector('[data-vyucba-prvok="body"][aria-pressed="true"]') !== null;
+  const sel = zatvori ? PANELY.replace(", .vrstva-starsich:not([hidden]) .linia-starsich", "") : PANELY;
+  return rectyPrvkov(sel).reduce((s, b) => s + prekrytie(o, b), 0);
 }
 
 /** Prekrytie s tým, čo bublina nesmie zakryť nikdy (zvýraznené, hláška, stavba, šenok, starší, miesta „+“). */
@@ -299,7 +314,7 @@ function skoreMiesta(o: Obdlznik, zvyraznene: readonly Obdlznik[]): number {
   return (
     skoreChranene(o, zvyraznene) +
     sucet(rectyPrvkov(".linia .partia-rad .kl"), 4) +
-    sucet(rectyPrvkov(".stol-hrana .pecat, .stol-hrana button"), 20) +
+    sucet(rectyPrvkov(".stol-hrana .pecat, .stol-hrana button"), 40) +
     sucet(rectyPrvkov(".linia-stav"), 6) +
     sucet(rectyPrvkov(".pas-kola-obal"), 6) +
     sucet(rectyPrvkov(".doska.moja"), 5) +
@@ -359,9 +374,7 @@ export function VyucbaStol({
     const kluceKroku = krok.zvyraznit;
     const typ = krok.ocakava?.type ?? "";
     const t = setTimeout(() => {
-      const starsich =
-        kluceKroku.some((k) => k === "bar:body" || k === "linia-starsich" || k.startsWith("starsi:")) || ["prebytok", "pohorsenie", "patronat", "bezPatronatu"].includes(typ);
-      if (!starsich) document.querySelector<HTMLElement>('[data-vyucba-prvok="body"][aria-pressed="true"]')?.click();
+      if (!krokSoStarsimi(krok)) document.querySelector<HTMLElement>('[data-vyucba-prvok="body"][aria-pressed="true"]')?.click();
       const vrstvu = kluceKroku.some((k) => k.startsWith("hlavicka:")) || typ === "pohreb" || typ === "patronat";
       if (!vrstvu) document.querySelector<HTMLElement>(".vrstva:not(.skryta) .vrstva-zavriet")?.click();
     }, 350);
@@ -452,7 +465,7 @@ export function VyucbaStol({
     if (rucne === null && poloha !== null && (sama || pocitane.current === idKroku)) {
       const h = el.offsetHeight;
       const tu = { ...poloha, w: el.offsetWidth, h };
-      if ((sama ? skorePanelov(tu) : skoreChranene(tu, zvyraznene)) === 0) {
+      if ((sama ? skorePanelov(tu, krok) : skoreChranene(tu, zvyraznene)) === 0) {
         // Ostáva na mieste; len sa nesmie dostať pod spodok okna.
         const y = Math.min(poloha.y, window.innerHeight - h - 12);
         if (Math.abs(y - poloha.y) > 1) setPoloha({ ...poloha, y });
