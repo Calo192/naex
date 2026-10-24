@@ -28,7 +28,17 @@ async function cakaj(podmienka: () => boolean, popis: string): Promise<void> {
 }
 
 type Zisk = { id: string; rank: number; vzacny: boolean; nazov: string };
-type Polozka = { id: string; nazov: string; popis: string; rank: number; tajny: boolean; prahy: number[]; ziskane: { rank: number; partia: number | null }[] };
+type Polozka = {
+  id: string;
+  nazov: string;
+  popis: string;
+  rank: number;
+  tajny: boolean;
+  prahy: number[];
+  zriedkavost: string[];
+  postup: { hodnota: number; aktualna: number | null } | null;
+  ziskane: { rank: number; partia: number | null }[];
+};
 type Vitrina = { achievementy: Polozka[] } | null;
 
 const api = async <T>(cookie: string, cesta: string, metoda = "GET", telo?: unknown): Promise<T> =>
@@ -97,6 +107,27 @@ describe("achievementy na serveri", () => {
         const v = (await api<{ achievementy: Vitrina }>(cookie, "/achievementy")).achievementy;
         expect(v?.achievementy.find((x) => x.id === dohrate.id)?.rank).toBeGreaterThanOrEqual(1);
       }
+    }
+
+    // Postup kariéry vo vitríne: Kamaráti z krčmy (rôzni súperi) a séria výhier — údaje servera.
+    const vitrinaHraca = async (cookie: string): Promise<Polozka[]> => (await api<{ achievementy: Vitrina }>(cookie, "/achievementy")).achievementy?.achievementy ?? [];
+    const kamarati = katalog.achievementy.find((x) => x.metrika === "rozniSuperi");
+    const seria = katalog.achievementy.find((x) => x.metrika === "seriaVyhier");
+    const vitaz = ra.view?.koniec?.vitaz ?? null;
+    for (const [cookie, miesto] of [
+      [a, 0],
+      [b, 1],
+    ] as const) {
+      const v = await vitrinaHraca(cookie);
+      if (kamarati !== undefined) expect(v.find((x) => x.id === kamarati.id)?.postup).toEqual({ hodnota: 1, aktualna: null });
+      if (seria !== undefined) {
+        const vyhral = vitaz === miesto ? 1 : 0;
+        expect(v.find((x) => x.id === seria.id)?.postup).toEqual({ hodnota: vyhral, aktualna: vitaz === null ? 0 : vyhral });
+      }
+      // Partiový achievement postup nemá; zriedkavosť ide pre podtácky.
+      const partiovy = v.find((x) => katalog.achievementy.find((k) => k.id === x.id)?.rozsah === "partia" && !x.tajny);
+      expect(partiovy?.postup).toBeNull();
+      expect(partiovy?.zriedkavost.length).toBeGreaterThan(0);
     }
 
     // Opätovné pripojenie po konci: súhrn príde znova.
