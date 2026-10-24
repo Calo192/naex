@@ -29,7 +29,7 @@ a do partií nezasahuješ.
     `naex-implementacia`. Cieľ je čo najlepší výsledok, aj keď to trvá dlhšie
     a stojí viac — preto `max` len pred veľkým rozhodnutím (napr. pred
     zmrazením pravidiel), inak predvolený report (Michal 2026-10-23, tokeny).
-- **dĺžka hry** `kratka` (5 lokalít) | `stredna` (7, predvolená) | `dlha` (11).
+- **dĺžka hry** `kratka` (3 lokality) | `stredna` (5, predvolená) | `dlha` (7).
 - **`vyucba [1–3]`**: namiesto partie playtest výučby „Prvá hra“ s nováčikmi
   v prehliadači (predvolene 3). Postup je v časti **Režim vyucba** nižšie,
   kroky 1–10 vtedy neplatia.

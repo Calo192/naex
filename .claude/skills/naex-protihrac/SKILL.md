@@ -12,7 +12,7 @@ spustíš agenta `naex-protihrac` a po partii odovzdáš výsledok. Sám nehrá�
 ## Argumenty
 
 `$ARGUMENTS` — voliteľne štýl agenta a dĺžka hry (`kratka`, `stredna`, `dlha`).
-Predvolené: dĺžka **stredna** (7 lokalít) a štýl:
+Predvolené: dĺžka **stredna** (5 lokalít) a štýl:
 
 - **„Krčmár Jožo"**: vyvážený a prefíkaný. Hrá na body aj na bitky podľa
   situácie, rád podstrčí súperovi do partie sabotéra s Odporom, šetrí poldeci
