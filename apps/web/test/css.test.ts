@@ -77,7 +77,8 @@ describe("CSS webu", () => {
     const css = readFileSync(cesta, "utf8");
     expect(chybyZatvoriek(css)).toEqual([]);
     expect(await varovaniaEsbuild(css, cesta)).toEqual([]);
-  });
+    // Prvé volanie štartuje službu esbuild — pod záťažou celej sady trvá aj nad 5 s.
+  }, 30_000);
 
   it("stráž by chybu zo zlúčenia naozaj chytila", async () => {
     // Presne to, čo sa stalo: @keyframes bez konca a za ním @media bez začiatku.
