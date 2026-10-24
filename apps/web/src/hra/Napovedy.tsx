@@ -111,15 +111,32 @@ const prienik = (a: DOMRect, l: number, t: number, w: number, h: number): number
 
 /** Užšia bublina by mala viac riadkov ako slov v riadku. */
 const NAJUZSIA = 220;
-/** Prekryté tlačidlo či ruka váži toľkokrát viac ako prekrytá karta na stole. */
+/** Prekryté tlačidlo, nadpis či miesto na kartu váži toľkokrát viac ako prekrytá karta na stole. */
 const VAHA_TLACIDLA = 20;
+/** Čo bublina nesmie zakryť (váha VAHA_TLACIDLA) a čo smie, len keď inde miesto nie je (karty — aj klikateľné, role=button). */
+const TAZKE = "button, input, [role='button']:not(.kl), .ruka, .linia-stav, .stavba-zona-miesto, .stavba-zona-nazov, .draft-hlava > *";
+const PREKAZKY = `.hra :is(${TAZKE}, .kl)`;
+
+interface Prekazka {
+  readonly r: DOMRect;
+  readonly vaha: number;
+}
+
+function prekazky(bublina: HTMLElement): Prekazka[] {
+  return [...document.querySelectorAll<HTMLElement>(PREKAZKY)]
+    .filter((el) => !bublina.contains(el) && el.getClientRects().length > 0)
+    .map((el) => ({ r: el.getBoundingClientRect(), vaha: el.matches(TAZKE) ? VAHA_TLACIDLA : 1 }));
+}
+
+const prekrytie = (p: readonly Prekazka[], left: number, top: number, w: number, h: number): number =>
+  p.reduce((a, x) => a + x.vaha * prienik(x.r, left, top, w, h), 0);
 
 /**
- * Kam bublinu položiť: do rohu stola, kde neprekryje tlačidlá ani karty (ruka je pod
- * stolom, tú nezakryje nikdy). Bublina sa smie zúžiť, aby sa vošla vedľa kariet;
- * keď nevojde nikde, vyberie roh s najmenším prekrytím. Pri rovnosti vyhrá skorší roh.
+ * Kam bublinu položiť: do rohu stola, kde neprekryje tlačidlá, nadpisy ani karty (ruka je
+ * pod stolom, tú nezakryje nikdy). Bublina sa smie zúžiť, aby sa vošla vedľa kariet; keď
+ * nevojde nikde, vyberie roh s najmenším váženým prekrytím. Pri rovnosti vyhrá skorší roh.
  */
-function miestoBubliny(bublina: HTMLElement): Miesto {
+function miestoBubliny(bublina: HTMLElement): { readonly miesto: Miesto; readonly skore: number } {
   // Inline šírku nastavuje React (style) — po meraní sa vráti, inak by ju pri rovnakej hodnote nezapísal znova.
   const predtym = bublina.style.width;
   bublina.style.width = "";
@@ -128,13 +145,10 @@ function miestoBubliny(bublina: HTMLElement): Miesto {
   if (stol === undefined) {
     const top = Math.max(8, window.innerHeight - bublina.offsetHeight - 160);
     bublina.style.width = predtym;
-    return { left: 16, top, width: plna };
+    return { miesto: { left: 16, top, width: plna }, skore: 0 };
   }
   const okraj = 12;
-  // Tlačidlá a ruka nezakryť nikdy (váha), karty na stole len keď inde miesto nie je.
-  const prekazky = [...document.querySelectorAll<HTMLElement>(".hra :is(button, input, [role='button'], .kl, .linia-stav, .ruka, .stavba-zona-miesto, .stavba-zona-nazov)")]
-    .filter((el) => !bublina.contains(el) && el.getClientRects().length > 0)
-    .map((el) => ({ r: el.getBoundingClientRect(), vaha: el.matches("button, input, [role='button'], .ruka") ? VAHA_TLACIDLA : 1 }));
+  const p = prekazky(bublina);
   let najlepsie: Miesto | null = null;
   let najmenej = Number.POSITIVE_INFINITY;
   for (const roh of ["vlavo-hore", "vpravo-hore", "vlavo-dole", "vpravo-dole"] as const) {
@@ -144,7 +158,7 @@ function miestoBubliny(bublina: HTMLElement): Miesto {
       // Hore je pilulka s pokynom (na hrane stola) — bublina začne pod ňou.
       const top = Math.round(Math.max(8, roh.endsWith("hore") ? stol.top + 34 : Math.min(stol.bottom, window.innerHeight) - h - okraj));
       const left = Math.round(Math.max(8, roh.startsWith("vlavo") ? stol.left + okraj : stol.right - w - okraj));
-      const plocha = prekazky.reduce((a, p) => a + p.vaha * prienik(p.r, left, top, w, h), 0);
+      const plocha = prekrytie(p, left, top, w, h);
       if (plocha < najmenej) {
         najmenej = plocha;
         najlepsie = { left, top, width: w };
@@ -154,7 +168,13 @@ function miestoBubliny(bublina: HTMLElement): Miesto {
     if (najmenej === 0) break;
   }
   bublina.style.width = predtym;
-  return najlepsie ?? { left: 16, top: 120, width: plna };
+  return { miesto: najlepsie ?? { left: 16, top: 120, width: plna }, skore: najmenej };
+}
+
+/** Vážené prekrytie bubliny na mieste, kde práve je. */
+function skoreTeraz(bublina: HTMLElement): number {
+  const r = bublina.getBoundingClientRect();
+  return prekrytie(prekazky(bublina), r.left, r.top, r.width, r.height);
 }
 
 /** Jemný rámik na prvkoch, o ktorých nápoveda hovorí — bez stmavenia stola. */
@@ -260,16 +280,25 @@ export function NapovedaMelichara({
       return;
     }
     const el = bublina.current;
-    const zmeraj = (): void => setMiesto(miestoBubliny(el));
+    const zmeraj = (): void => setMiesto(miestoBubliny(el).miesto);
     zmeraj();
     // Karty stola sa po prekreslení ešte dorovnajú (zarovnanie línie) — druhé meranie o chvíľu.
     const t = setTimeout(zmeraj, 300);
+    // Stôl sa mení aj bez novej fázy (karty šenku dobehnú, objaví sa tlačidlo): keď bublina
+    // niečo zakrýva a inde by zakryla citeľne menej, presunie sa — inak stojí.
+    const kontrola = setInterval(() => {
+      const teraz = skoreTeraz(el);
+      if (teraz === 0) return;
+      const nove = miestoBubliny(el);
+      if (nove.skore < teraz / 2) setMiesto(nove.miesto);
+    }, 1000);
     window.addEventListener("resize", zmeraj);
     return () => {
       clearTimeout(t);
+      clearInterval(kontrola);
       window.removeEventListener("resize", zmeraj);
     };
-    // Miesto sa vyberie pri otvorení, v novej fáze a pri zmene okna — inak bublina neskáče.
+    // Miesto sa vyberie pri otvorení, v novej fáze, pri zmene okna a keď niečo zakrýva.
   }, [ukazana, usek]);
 
   if (ukazana === null) return null;

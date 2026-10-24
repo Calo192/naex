@@ -4227,7 +4227,7 @@ export function HernaPlocha({
       const spolu = Math.max(start[p], zs.zostavaLimit[p]);
       const zostava = zs.zostavaLimit[p];
       return (
-        <span className={`pas-hrac ${p === ja ? "moje" : "superove"}`}>
+        <span className={`pas-hrac ${p === ja ? "moje" : "superove"}${zs.pasoval[p] ? " pasoval" : ""}`}>
           <span className="pas-meno">{p === ja ? "ty" : menoHraca(p)}</span>
           <span className="pas-sloty" aria-label={`vyloží ešte ${zostava} z ${spolu}`}>
             {Array.from({ length: spolu }, (_, i) => (

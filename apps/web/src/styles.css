@@ -1209,6 +1209,15 @@ textarea {
   cursor: pointer;
 }
 
+/* „Ukázať nápovedy znova“ pod textom prepínača nápoved, voľby pohlavia s odstupom (UI inšpekcia N6). */
+.preferencie .napovedy-znova {
+  margin: 8px 0 0 30px;
+}
+
+.preferencie .skore-volby {
+  margin-top: 18px;
+}
+
 .skratky-volba input {
   margin-top: 3px;
   accent-color: var(--akcent);

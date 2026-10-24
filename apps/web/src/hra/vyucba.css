@@ -390,6 +390,20 @@ body.vyucba-bezi .ucet-bitky {
   body.vyucba-bezi .pas-kola .pas-starsi {
     display: none;
   }
+
+  /* Ani dva riadky pásu sa sem nevojdú — stránka sa posúvala o 47–194 px a bar hráča s rukou
+     ostali pod okrajom (UI inšpekcia 20261024-napovedy, N4). Pás ostane v jednom riadku:
+     počet Zhromaždení a odhad celé (hra.css), skráti sa len poradie v Pitke. */
+  body.vyucba-bezi .pas-kola {
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  body.vyucba-bezi .pas-kola > .pas-poradie {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 /* Najdrobnejšie popisy v paneli starších (poradie, odznak +1) aspoň 11 px. */
@@ -640,6 +654,12 @@ body [data-napoveda-zvyraznene] {
   outline: 2px dashed var(--akcent);
   /* Dovnútra — dlaždice barov a karty majú rodiča s overflow: hidden, vonkajší rámik by orezal. */
   outline-offset: -3px;
+}
+
+/* Čiarkovaný rámik nesmie prebiť fokus z klávesnice („už neťahám“ — UI inšpekcia 20261024-napovedy, N5). */
+body [data-napoveda-zvyraznene]:focus-visible {
+  outline-style: solid;
+  outline-width: 3px;
 }
 
 @keyframes napoveda-prichod {
