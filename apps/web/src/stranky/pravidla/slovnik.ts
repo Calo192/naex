@@ -41,7 +41,7 @@ export const SLOVNIK: readonly PojemSlovnika[] = [
   { id: "pecen", pojem: "Pečeň", popis: "Počítadlo v Pitke z akcií Poškodenie pečene, Poldeci a z NA EX; za každý celý prah Cirhóza." },
   { id: "pitka", pojem: "Pitka", popis: "Vyhodnotenie po Zhromaždení: NA EX, Dlhy, pečeň, cigarety; v jednej bitke je 1 až 4 Pitiek." },
   { id: "podmienka", pojem: "Podmienka", popis: "Políčko na scorecarde staršieho; aktívna podmienka na konci boduje obom hráčom." },
-  { id: "podstrcenie", pojem: "Podstrčenie", popis: "Karta vyložená na súperovu stranu; ostáva tvoja a jej akcie sa rátajú tebe." },
+  { id: "podstrcenie", pojem: "Podstrčenie", popis: "Karta vyložená na súperovu stranu; ostáva tvoja a jej akcie sa rátajú tebe (okrem Kočovníka)." },
   { id: "pohorsenie", pojem: "Pohoršenie", popis: "Akcia, ktorá v bitke posunie marker staršieho o 1 k súperovi." },
   { id: "pohreb", pojem: "Pohreb", popis: "Po bitke spáliš priznanú Cirhózu a jednu svoju kartu z línie." },
   { id: "poldeci", pojem: "Poldeci", popis: "Pohárik pálenky; plný zvyšuje limit o 1 a platí ním NA EX aj ďalšiu kartu v ťahu." },

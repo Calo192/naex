@@ -203,13 +203,14 @@
     {
       "id": "6.prevaha",
       "paragraf": "6. Zhromaždenie › Prevaha a akcie lokality",
-      "pravidlo": "Akcie hrany lokality dostane hráč s prevahou v kraji (viac svojich Občanov, Zvierat a Starešinov), pri rovnosti ten, koho karta leží hneď pri lokalite.",
+      "pravidlo": "Akcie hrany lokality dostane hráč s prevahou v kraji (viac svojich Občanov, Zvierat a Starešinov), pri rovnosti ten, koho karta leží hneď pri lokalite; podstrčená karta pri lokalite akcie hrany neukradne, ale určuje, ktoré sa spoja.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/lokality-20261020.test.ts › podstrčená karta pri lokalite hranu nevezme, keď má domáci na strane viac kariet",
         "packages/core/test/lokality-20261020.test.ts › pri rovnosti rozhodne karta pri lokalite; Nástroje sa nerátajú",
         "packages/core/test/lokality-20261020.test.ts › Cirhóza ani Nástroj do prevahy nerátajú",
-        "packages/core/test/stav-kraja.test.ts › rovnosť 1 : 1 — hranu má karta pri lokalite, druhému stačí 1 karta"
+        "packages/core/test/stav-kraja.test.ts › rovnosť 1 : 1 — hranu má karta pri lokalite, druhému stačí 1 karta",
+        "packages/core/test/lokality-20261020.test.ts › podstrčená karta pri lokalite akcie hrany neukradne, ale určuje, ktoré sa spoja (O2, zámer Michala 2026-10-24)"
       ]
     },
     {
@@ -431,6 +432,19 @@
       "stav": "pokryte",
       "testy": [
         "packages/core/test/pravidla-kolo.test.ts › §7: NA EX na kartu pri lokalite ruší a zdvojuje len jej akcie — hrana lokality ostáva, ako bola"
+      ]
+    },
+    {
+      "id": "7.naex.posilnenie",
+      "paragraf": "7. Pitka › NA EX",
+      "pravidlo": "NA EX na kartu s Posilnením zruší Posilnenie aj ×2 partnera na spoji; partnerova akcia (aj hrana lokality) ostáva aktívna ×1; Veteránovi sa Posilnenie nezruší (Michal 2026-10-24).",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/naex-posilnenie.test.ts › zruší aj ×2 partnera na spoji — jeho akcia ostáva aktívna ×1",
+        "packages/core/test/naex-posilnenie.test.ts › platí aj na súperovej karte: majiteľ partnera stratí ×2",
+        "packages/core/test/naex-posilnenie.test.ts › partner s vlastným NA EX: jeho akcia na spoji je zrušená, zrušenie Posilnenia ju neoživí",
+        "packages/core/test/naex-posilnenie.test.ts › hrana lokality ostáva aktívna, ale bez ×2 od zrušeného Posilnenia",
+        "packages/core/test/naex-posilnenie.test.ts › Veterán s Posilnením: NA EX ho nezruší, partner má ×2 ďalej"
       ]
     },
     {
@@ -906,11 +920,12 @@
     {
       "id": "13.podstrcenie",
       "paragraf": "13. Pokročilé ťahy › Podstrčenie (sabotér)",
-      "pravidlo": "Kartu možno podstrčiť na súperovu stranu: jej Odpor mu zruší akciu na spoji, jej akcie bodujú pre toho, kto ju zahral; hranu lokality jedna podstrčená karta neukradne.",
+      "pravidlo": "Kartu možno podstrčiť na súperovu stranu: jej Odpor mu zruší akciu na spoji, jej akcie bodujú pre toho, kto ju zahral (okrem Kočovníka); akcie hrany lokality jedna podstrčená karta neukradne, ale tvorí s nimi spoj.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/partia.test.ts › Odpor podstrčenej karty ruší súperovu akciu a vlastné akcie boduje majiteľovi",
-        "packages/core/test/lokality-20261020.test.ts › podstrčená karta pri lokalite hranu nevezme, keď má domáci na strane viac kariet"
+        "packages/core/test/lokality-20261020.test.ts › podstrčená karta pri lokalite hranu nevezme, keď má domáci na strane viac kariet",
+        "packages/core/test/lokality-20261020.test.ts › podstrčená karta pri lokalite akcie hrany neukradne, ale určuje, ktoré sa spoja (O2, zámer Michala 2026-10-24)"
       ]
     },
     {
@@ -1447,6 +1462,17 @@
       "stav": "pokryte",
       "testy": [
         "packages/core/test/pravidla-20261021.test.ts › každá zmena počtu súperových kliatob má v jeho logu zmienku o kliatbe"
+      ]
+    },
+    {
+      "id": "11.kliatby.cirhoza-drzanie",
+      "paragraf": "11. Kliatby, priznanie, Exekútor, Pohreb › Kliatby",
+      "pravidlo": "Nepriznanú Cirhózu smie hráč držať v ruke aj do posledného kola (zámer, Michal 2026-10-24): súper za ňu tuhé nedostáva, na Pohreb nie je, na konci hry uberá body.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/kar.test.ts › Cirhózu si hráč smie nechať; bez Cirhózy v ruke sa krok preskočí",
+        "packages/core/test/pravidla-bitka.test.ts › §14/§11: Dlh uberá aj priznaný, Cirhóza len nepriznaná (ruka aj oba balíčky), cigarety po trojiciach",
+        "packages/core/test/pravidla-20261019.test.ts › za každú priznanú Cirhózu dá súper +1 tuhé"
       ]
     },
     {

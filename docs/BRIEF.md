@@ -323,8 +323,11 @@ uzavrel Michal 2026-10-22 (roadmapa #11); odpovede sú v PRAVIDLA.md.
 8. ~~**Lokality** — v `cards.json` je len **7**.~~ Vyriešené (Michal 2026-10-20):
    sada má 14 lokalít; krátka 5, stredná 7, dlhá 11 bitiek, dlhá hra sa dá zvoliť.
 10. ~~**Kočovník** (pravidlá v3) — pôvodný efekt stratil zmysel.~~ Vyriešené
-   (Michal 2026-10-19): Kočovník míňa limit ako každá karta; efekt „Furt: Dlh
-   a Poškodenie pečene z jeho akcií dostáva hráč, na ktorého strane leží.“
+   (Michal 2026-10-19): Kočovník míňa limit ako každá karta. Efekt od 2026-10-24:
+   „Furt: Jeho akcie sa počítajú hráčovi, ktorý má v jeho kraji prevahu.“ Do
+   prevahy sa ráta majiteľovi, pri rovnosti rozhoduje karta pri lokalite (§16).
+   Predtým: „Furt: Dlh a Poškodenie pečene z jeho akcií dostáva hráč, na
+   ktorého strane leží.“
 11. **Svokra** (pravidlá v3) — NA EX smie len na vlastné karty, pôvodný efekt
    („vráť súperovi jedno NA EX z tvojej karty“) stratil zmysel. **Nový efekt
    (rozhodnutie Michala 2026-10-11):** „Nástup: Súper v najbližšej Pitke nesmie

@@ -21,8 +21,9 @@
 //  - Posilnenie + Posilnenie: nič sa nedeje (niet čo zdvojnásobiť).
 //  - Vzbura na lokalite aktivuje len stranu patriacu danej partii.
 //  - Vzbura ani NA EX neoživujú akcie zrušené Odporom.
-//  - NA EX mení len akcie cieľovej karty; už vypočítané dôsledky jej akcií
-//    na susedoch (Posilnenie ×2, Odpor zrušenie) ostávajú.
+//  - NA EX mení len akcie cieľovej karty; zrušenie Odporom na susedovi
+//    ostáva. Výnimka: zrušené Posilnenie prestane zdvojovať partnera na spoji
+//    (Michal 2026-10-24, O1 z playtestu 20261024-075830).
 //
 // Efekty kariet, ktoré závisia od polohy v línii (Liberál, Silná nezávislá
 // žena, Zámočník, Šarlatán, Pijan), sa vyhodnocujú tu, po spojoch
@@ -138,6 +139,8 @@ interface Elem {
   vieraAkoVizia: boolean;
   /** dovody[side][k]: čo akciu aktivovalo či zdvojilo (ZdrojAkcie.dovody). */
   readonly dovody: string[][][];
+  /** Akcie susedov, ktoré Posilnenie tejto karty zdvojilo — NA EX ich zdvojenie zruší. */
+  readonly posilnene: { readonly elem: Elem; readonly side: 0 | 1; readonly k: number }[];
 }
 
 /**
@@ -286,6 +289,7 @@ function makeElem(
     naexBy,
     vieraAkoVizia: false,
     dovody: [0, 1].map(() => [[], [], [], []]),
+    posilnene: [],
   };
 }
 
@@ -391,6 +395,7 @@ function resolveJunction(a: Elem, b: Elem): void {
       otherElem.stav[otherSide]![k] = "aktivna";
       otherElem.nasobok[otherSide]![k] = 2;
       otherElem.dovody[otherSide]![k]!.push("Posilnenie");
+      posilElem.posilnene.push({ elem: otherElem, side: otherSide, k });
     } else {
       a.stav[1]![k] = "aktivna";
       a.nasobok[1]![k] = 1;
@@ -420,6 +425,22 @@ function applyVzbura(elem: Elem): void {
  * Veterán (Furt, pravidlá v4, Michal 2026-10-23): naopak — jeho aktívne
  * akcie NA EX zdvojí a nezruší, neaktívne ostanú neaktívne.
  */
+/**
+ * NA EX zruší Posilnenie karty — a s ním aj ×2, ktoré dalo partnerovi na spoji
+ * (Michal 2026-10-24); partnerova akcia ostáva aktívna ×1. Beží pred applyNaex
+ * všetkých kariet, aby NA EX na partnerovi (zrušenie, Veterán ×2) vychádzalo
+ * už z ×1. Veteránovi NA EX Posilnenie nezruší, takže zdvojenie ostáva.
+ */
+function zrusPosilnenie(elem: Elem): void {
+  if (elem.naexBy === undefined || elem.defId === "veteran") return;
+  for (const { elem: partner, side, k } of elem.posilnene) {
+    if (partner.stav[side]![k] !== "aktivna" || partner.nasobok[side]![k] !== 2) continue;
+    partner.nasobok[side]![k] = 1;
+    const dovody = partner.dovody[side]![k]!;
+    dovody.splice(dovody.indexOf("Posilnenie"), 1);
+  }
+}
+
 function applyNaex(elem: Elem, bezZdvojenia: boolean): void {
   if (elem.naexBy === undefined) return;
   if (elem.defId === "veteran") {
@@ -571,6 +592,7 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
       for (const sused of [seg[i - 1], seg[i + 1]]) if (sused !== undefined && !sused.isLokalita) vedlaSofera.add(sused);
     });
   }
+  for (const elem of elems) zrusPosilnenie(elem);
   for (const elem of elems) applyNaex(elem, vedlaSofera.has(elem));
   const ranyPijana = kartoveEfekty(segments);
 
