@@ -40,3 +40,23 @@ Na zmeranie (stratég, varianta a turnaj botov):
 - či sa výsledok dá čítať počas partie (návrh: pri každom staršom ukazovať,
   kto by ho teraz bodoval),
 - podiel zručnosti voči náhode oproti v4.
+
+## Priazne v5: interview s Michalom (2026-10-24)
+
+Podklady: docs/napady/priazne-v5.html a docs/playtesty/priazne-rozbor-20261024.html.
+
+| Priazeň | Rozhodnutie |
+|---|---|
+| Úžerník | **Premenovať.** Efekt: po bitke sa ti zníži priznaný Dlh o 1/2/3. |
+| Lakomec | **Premenovať, nová priazeň** (návrh treba). Zľavu v šenku a doterajší barter nechce. |
+| Neprajník | **Výpalné**: súperovo NA EX na tvoju kartu ho stojí 1/2/3 cigarety, dostaneš ich ty. |
+| Bitkár | Ostáva, slabší: +1/+2/+3 tuhého. |
+| Veriaci | Zatiaľ bez zmeny (Viera navyše +1/+2/+3). |
+| Fajčiar | Ostáva +1/+2/+3 cigarety, ale **po výbere zo šenku** (nie v 1. Pitke). Súperovo **Obmedzenie ich neuberá** (priazeň je chránená). |
+| Alkoholik | **Na zdravie**: tvoje NA EX ti nepoškodí pečeň (sila 1 prvé v kole, 2 dve, 3 všetky). |
+| Exekútor | **Nová priazeň** (návrh treba). Dnešný prah Exekúcie sa neprejavil nikdy. |
+
+Ďalšie rozhodnutia:
+- **Priazeň dediny** (tuhé za rozdiel súčtu priazní) **nie**.
+- **Pohoršenie mení priazeň hneď**, už v tej istej bitke, ako dnes kód. Treba to dopísať do pravidiel (dnes PRAVIDLA hovoria o ďalších kolách).
+- **Bot**: naučiť ho dávať súperovi najslabšiu priazeň. Zároveň zmerať, ktoré priazne sú najslabšie, a vyrovnať ich tak, aby žiadna nebola mŕtva. **Cieľ Michala: pridelenie priazne staršiemu (komu dám prebytok) musí byť ťažké rozhodnutie**, nie vopred známe „tieto priazne nič nerobia“.
