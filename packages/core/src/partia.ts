@@ -605,14 +605,11 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
         if (nasobok === 0) continue;
         // Akcia lokality patrí majiteľovi karty, s ktorou tvorí spoj (bez suseda
         // nie je aktívna); akcia karty jej majiteľovi, nech leží kdekoľvek.
-        // Kočovník (Michal 2026-10-18): jeho Dlh a Poškodenie pečene dostáva hráč, na ktorého strane leží.
-        const kocovnik = elem.defId === "kocovnik" && elem.strana !== null && (action === "Dlh" || action === "PoškodeniePečene");
+        // Kočovník (Furt, Michal 2026-10-24): všetky jeho akcie dostane hráč
+        // s prevahou v jeho kraji — súper, ktorý tam prevládne, berie aj škodlivé.
+        const kocovnik = elem.defId === "kocovnik" && elem.strana !== null ? (susedLokality[elem.strana] ?? elem.owner) : null;
         const nastroj = susedNastroja.get(elem)?.[side] ?? null;
-        const target: PlayerId = elem.isLokalita
-          ? (susedLokality[side] ?? side)
-          : kocovnik
-            ? (elem.strana as PlayerId)
-            : (nastroj ?? elem.owner);
+        const target: PlayerId = elem.isLokalita ? (susedLokality[side] ?? side) : (kocovnik ?? nastroj ?? elem.owner);
         const ako: Action = elem.vieraAkoVizia && action === "Viera" ? "Vízia" : action;
         sums[target][ako] = (sums[target][ako] ?? 0) + nasobok;
         const dovody = [...(elem.dovody[side]![k] ?? [])];

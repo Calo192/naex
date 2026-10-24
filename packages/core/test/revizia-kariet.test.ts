@@ -65,15 +65,47 @@ describe("Pasca a Kočovník vo vyhodnotení línie", () => {
   const k = (id: string, l: readonly (string | null)[], r: readonly (string | null)[]) =>
     instanceFor(sd, id, l as never, r as never);
 
-  it("Kočovník: jeho Hazard dostáva hráč, na ktorého strane leží", () => {
-    const lokD = makeDef("lokD", D, D, { tags: ["Lokalita"] });
-    const sd2 = syntheticData([lokD, makeDef("kocovnik", D, D, { tags: ["Občan", "Zahraničný"] })]);
-    const kocovnik: PlacedCard = { card: instanceFor(sd2, "kocovnik", D, D), playedBy: 0 };
-    // Podstrčený na stranu hráča 1: jeho aktívny Dlh ide hráčovi 1.
-    const ev = evaluateLine(sd2, { lokalita: instanceFor(sd2, "lokD", D, D), lokalitaOtocena: false, strany: [[], [kocovnik]] });
-    expect(ev.sums[1].Dlh).toBe(1);
-    // Dlh lokality dostane majiteľ susednej karty (hráč 0) — to je bežné pravidlo.
-    expect(ev.sums[0].Dlh).toBe(1);
+});
+
+// Kočovník (Furt, Michal 2026-10-24): jeho akcie dostane hráč s prevahou v jeho
+// kraji; do prevahy sa ráta majiteľovi; pri rovnosti karta hneď pri lokalite.
+describe("Kočovník — akcie hráčovi s prevahou v kraji", () => {
+  // Akcie na indexoch 0 a 3 — otočená karta (hráč 1) ich má na tých istých miestach.
+  const R = ["Rana", null, null, "Rana"] as const;
+  const D = ["Dlh", null, null, "Dlh"] as const;
+  const lok = makeDef("lok", R, R, { tags: ["Lokalita"] });
+  const obcan = makeDef("obcan", R, R);
+  const sdDlh = syntheticData([lok, obcan, makeDef("kocovnik", D, D, { tags: ["Občan", "Zahraničný"] })]);
+  const sdRana = syntheticData([lok, obcan, makeDef("kocovnik", R, R, { tags: ["Občan", "Zahraničný"] })]);
+  const leziV = (sd: typeof sdDlh, id: string, a: readonly (string | null)[], hrac: PlayerId): PlacedCard => ({
+    card: instanceFor(sd, id, a as never, a as never),
+    playedBy: hrac,
+  });
+  const ev = (sd: typeof sdDlh, strana1: PlacedCard[]) =>
+    evaluateLine(sd, { lokalita: instanceFor(sd, "lok", R as never, R as never), lokalitaOtocena: false, strany: [[], strana1] });
+
+  it("prevahu má majiteľ (Kočovník sám v kraji) → Dlh dostane majiteľ, hoci leží na súperovej strane", () => {
+    const e = ev(sdDlh, [leziV(sdDlh, "kocovnik", D, 0)]);
+    expect(e.sums[0].Dlh).toBeGreaterThan(0);
+    expect(e.sums[1].Dlh ?? 0).toBe(0);
+  });
+
+  it("súper v kraji prevládne (rovnosť, jeho karta pri lokalite) → Kočovníkov Dlh dostane súper", () => {
+    const e = ev(sdDlh, [leziV(sdDlh, "obcan", R, 1), leziV(sdDlh, "kocovnik", D, 0)]);
+    expect(e.sums[1].Dlh).toBeGreaterThan(0);
+    expect(e.sums[0].Dlh ?? 0).toBe(0);
+  });
+
+  it("platí pre všetky jeho akcie — aj Ranu dostane hráč s prevahou", () => {
+    const e = ev(sdRana, [leziV(sdRana, "obcan", R, 1), leziV(sdRana, "kocovnik", R, 0)]);
+    expect(e.sums[0].Rana ?? 0).toBe(0);
+    expect(e.sums[1].Rana).toBeGreaterThan(0);
+  });
+
+  it("do prevahy sa Kočovník ráta majiteľovi — s ďalšou svojou kartou majiteľ v kraji prevládne a akcie má on", () => {
+    const e = ev(sdDlh, [leziV(sdDlh, "obcan", R, 1), leziV(sdDlh, "kocovnik", D, 0), leziV(sdDlh, "obcan", R, 0)]);
+    expect(e.sums[0].Dlh).toBeGreaterThan(0);
+    expect(e.sums[1].Dlh ?? 0).toBe(0);
   });
 });
 

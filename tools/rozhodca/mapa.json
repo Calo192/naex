@@ -1682,10 +1682,13 @@
     {
       "id": "16.karta.kocovnik",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Kočovník: Dlh a Poškodenie pečene z jeho akcií dostáva hráč, na ktorého strane leží; limit míňa.",
+      "pravidlo": "Kočovník: všetky jeho akcie dostane hráč s prevahou v jeho kraji; do prevahy sa ráta majiteľovi, pri rovnosti karta pri lokalite; limit míňa.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/revizia-kariet.test.ts › Kočovník: jeho Hazard dostáva hráč, na ktorého strane leží",
+        "packages/core/test/revizia-kariet.test.ts › prevahu má majiteľ (Kočovník sám v kraji) → Dlh dostane majiteľ, hoci leží na súperovej strane",
+        "packages/core/test/revizia-kariet.test.ts › súper v kraji prevládne (rovnosť, jeho karta pri lokalite) → Kočovníkov Dlh dostane súper",
+        "packages/core/test/revizia-kariet.test.ts › platí pre všetky jeho akcie — aj Ranu dostane hráč s prevahou",
+        "packages/core/test/revizia-kariet.test.ts › do prevahy sa Kočovník ráta majiteľovi — s ďalšou svojou kartou majiteľ v kraji prevládne a akcie má on",
         "packages/core/test/vykladanie.test.ts › Kočovník míňa limit ako každá karta (Michal 2026-10-19)"
       ]
     },

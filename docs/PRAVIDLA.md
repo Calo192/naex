@@ -212,9 +212,9 @@ Nástroja sa v striedaní počíta ako ťah, priznanie nie.
   teda ide „nohami hore“). Ten je jej **majiteľ** a karta je v **jeho partii**:
   **partia hráča = všetky karty natočené k nemu**, nech ležia na ktorejkoľvek
   strane. Text karty „v tvojej partii“ = medzi tvojimi kartami.
-- **Akcie** karty sa rátajú jej majiteľovi. Na spoji sa karta páruje so
-  susedmi bežne: susedova akcia sa aktivuje a pripíše sa majiteľovi susednej
-  karty. **Efekty** karty (Nástup, Furt, Bitka, Výhra…) patria majiteľovi.
+- **Akcie** karty sa rátajú jej majiteľovi (výnimky: akcie Nástroja, §12,
+  a Kočovníka, §16). Na spoji sa karta páruje so susedmi bežne: susedova akcia
+  sa aktivuje a pripíše sa majiteľovi susednej karty. **Efekty** karty (Nástup, Furt, Bitka, Výhra…) patria majiteľovi.
 - **Kraje:** polovice línie sa volajú podľa hrán lokality — každá lokalita má
   vlastné (Krčma: *pri výčape* / *pri dverách*; zoznam v §15). „Tvoja/súperova
   strana“ ostáva len ako pomenovanie, ku komu kraj prilieha.
@@ -1016,7 +1016,7 @@ v strede).
 | Krčmárka | Pri bitke: ak hráč nemá Absťák a v tomto kole nedal NA EX, vypitý poldeci sa mu otočí na plný (automaticky). |
 | Liberál | Ak je v partii majiteľa rovnako žien a chlapov (Liberál sa neráta), jeho aktívne akcie sa rátajú dvakrát. NA EX naň dať nemožno. |
 | Milujúca manželka | Furt (kým je odhalená — v línii aj priznaná): majiteľ dostane Absťák aj pri **rovnakom** počte nerestí ako v predošlom kole; Manželky sa sčítavajú (dve = aj pri o 1 viac nerestiach). Zbavenie Absťáku sa nemení. |
-| Kočovník | Dlh a Poškodenie pečene z jeho akcií dostáva hráč, na ktorého strane leží (Pecku a Poldeci jeho majiteľ). Limit vykladania míňa ako každá karta. |
+| Kočovník | Furt: **všetky** jeho akcie (Rana, Dlh, Poškodenie pečene, Cigareta…) sa počítajú hráčovi, ktorý má v jeho kraji prevahu (§6). Do prevahy sa Kočovník ráta normálne svojmu majiteľovi; pri rovnosti rozhoduje bežné pravidlo (karta hneď pri lokalite). Súper, ktorý v kraji prevládne, dostane aj jeho škodlivé akcie — podhodiť sa mu dajú, ale súper to vie ovplyvniť. Limit vykladania míňa ako každá karta. |
 | Pasca | Dedičstvo: každé súperovo Zviera v línii (kdekoľvek, jeho karta) mu uberie 1 tuhé poškodenie. |
 | Pes | Furt: za každý pár akcií na spoji Psa so súperovou kartou — z ktorejkoľvek strany Psa, rátajú sa aj páry zrušené Odporom či NA EX (karty sú spojené) — dá majiteľ Psa v bitke +1 tuhé poškodenie, ale len keď Pes leží na strane svojho majiteľa; podstrčený na súperovu stranu nedá nič. Na Psa sa smie podstrčiť. Nesmie byť v partii s iným zvieraťom. Akcie: vľavo 1 Rana, vpravo 2 Rany. |
 | Pijan | Bitka: ak má Žena v jeho okolí aktívnu akciu Poldeci, súper ti udelí 1 Ranu — majiteľ Pijana dostane od súpera +1 Ranu za každého takého Pijana. |

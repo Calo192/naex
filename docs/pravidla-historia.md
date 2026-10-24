@@ -543,3 +543,13 @@ Podľa nového §; dátum je dátum rozhodnutia Michala, ak nie je uvedené inak
 > Úžerník nahradil Zberateľa (Michal 2026-10-20) a ten Očumovateľa (2026-10-12):
 > Preskúmanie používali len Policajtka a Veštica. Preskúmanie je pevne 5. Staré sady
 > so Zberateľom či Očumovateľom sa načítajú ako Úžerník (§8.6b).
+
+## 2026-10-24 — Kočovník: akcie hráčovi s prevahou v kraji (§16)
+
+Michal 2026-10-24: nový efekt „Furt: Jeho akcie sa počítajú hráčovi, ktorý má
+v jeho kraji prevahu.“ Platí pre všetky jeho akcie; do prevahy sa ráta svojmu
+majiteľovi, pri rovnosti rozhoduje karta pri lokalite.
+
+Staré znenie §16 (od 2026-10-18, limit od 2026-10-19):
+
+> | Kočovník | Dlh a Poškodenie pečene z jeho akcií dostáva hráč, na ktorého strane leží (Pecku a Poldeci jeho majiteľ). Limit vykladania míňa ako každá karta. |
