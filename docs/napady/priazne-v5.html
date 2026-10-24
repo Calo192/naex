@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NA EX! — alternatívne priazne starších (pravidlá v5)</title>
+<style>
+:root {
+  --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --okraj: #3d3229;
+  --text: #f1e8d8; --tlmeny: #b6a790;
+  --akcent: #e9ad45; --cervena: #d0563f; --zelena: #7cbf74; --modra: #8fb4e0;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #dccdb3;
+    --text: #2a2016; --tlmeny: #5e4f3b;
+    --akcent: #9a5d06; --cervena: #a83a26; --zelena: #356e2f; --modra: #2d5a8f;
+    color-scheme: light;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 system-ui, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 980px; margin: 0 auto; padding: 28px 16px 56px; }
+h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; line-height: 1.2; }
+h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); margin: 0 0 10px; }
+h2 { font-size: 1.4rem; margin: 38px 0 14px; padding-bottom: 6px; border-bottom: 1px solid var(--okraj); }
+h3 { font-size: 1.12rem; margin: 0 0 8px; }
+p { margin: 0 0 10px; }
+a { color: var(--akcent); }
+:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+.uvod { color: var(--tlmeny); }
+.odporucane { background: var(--plocha); border: 1px solid var(--akcent); border-radius: 12px; padding: 14px 16px; margin: 18px 0; }
+.odporucane ol { margin: 6px 0 0; padding-left: 20px; }
+.odporucane li { margin-bottom: 6px; }
+.tab-obal { overflow-x: auto; }
+table.prehlad { width: 100%; border-collapse: collapse; font-size: .92rem; }
+table.prehlad th, table.prehlad td { padding: 7px 6px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--okraj); }
+table.prehlad thead th { border-bottom: 2px solid var(--okraj); }
+td.c, th.c { text-align: right; white-space: nowrap; }
+tr.dnes td { color: var(--cervena); }
+.znacka { display: inline-block; font-size: .78rem; border-radius: 999px; padding: 1px 9px; border: 1px solid currentColor; white-space: nowrap; margin: 0 4px 2px 0; }
+.z-pravidla { color: var(--cervena); }
+.z-karty { color: var(--zelena); }
+.z-kod { color: var(--modra); }
+.z-odp { color: var(--akcent); font-weight: 600; }
+ol.smery { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+ol.smery > li { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 14px 16px; }
+ol.smery > li.odp { border-left: 4px solid var(--akcent); }
+.cislo { color: var(--akcent); font-family: Georgia, serif; margin-right: 6px; }
+.znacky { margin: 0 0 10px; }
+dl.polozka { margin: 0; display: grid; grid-template-columns: 9.5em 1fr; gap: 6px 12px; }
+dl.polozka dt { color: var(--tlmeny); font-size: .88rem; padding-top: 2px; }
+dl.polozka dd { margin: 0; }
+dl.polozka ul { margin: 0; padding-left: 18px; }
+dl.polozka li { margin-bottom: 3px; }
+.skore { font-family: Georgia, serif; font-size: 1.15rem; color: var(--akcent); white-space: nowrap; }
+.priklad { background: var(--plocha-2); border-radius: 8px; padding: 8px 12px; }
+.blok { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 16px; margin-bottom: 12px; }
+.blok ul, .blok ol { margin: 4px 0 0; padding-left: 18px; }
+.blok li { margin-bottom: 5px; }
+.hlavna { border-left: 4px solid var(--cervena); }
+details.viac { margin-top: 10px; }
+details.viac summary { cursor: pointer; color: var(--tlmeny); font-size: .9rem; }
+details.viac[open] summary { color: var(--text); }
+code { font-family: ui-monospace, Consolas, monospace; font-size: .86em; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+footer { margin-top: 40px; padding-top: 12px; border-top: 1px solid var(--okraj); color: var(--tlmeny); font-size: .9rem; }
+@media (max-width: 600px) {
+  dl.polozka { grid-template-columns: 1fr; }
+  dl.polozka dt { padding-top: 6px; }
+  table.prehlad { font-size: .82rem; }
+}
+</style>
+</head>
+
+<body>
+<main>
+
+<h1>Alternatívne priazne starších (pravidlá v5)</h1>
+<p class="uvod">Navrhár, 24. 10. 2026. Úloha od Michala cez Leadera: ku každej z 8 priazní alternatívy, nové priazne na dobiehanie,
+zladenie s bodovaním v5 a odporúčaný set. Pravidlá v4 ani kód hry som nemenil. Rozbor stratéga, či sú priazne zle implementované
+alebo zle využívané (<code>docs/playtesty/priazne-rozbor-*.html</code>), v čase písania ešte nebol.</p>
+
+<section class="odporucane" aria-labelledby="h-skratka">
+  <h2 id="h-skratka" style="margin-top:0;border:0;padding:0">V skratke</h2>
+  <ol>
+    <li><b>Michal má pravdu, ale problém je väčší.</b> Priazne sú rozdelené na dve silné (Bitkár, Veriaci) a šesť takmer
+      prázdnych. Kto rozdeľuje prebytok, vyberá staršieho, a teda aj priazeň. Súperovi preto pošle tú neškodnú.
+      Kompenzácia tak nepríde vôbec, lebo silné priazne víťaz neposúva a slabé nepomôžu.</li>
+    <li><b>Doklad:</b> Bitkár pridá +2 / +4 / +6 tuhého, pritom priemerné tuhé v bitke je 4,2 a v 61 % bitiek je rozdiel najviac 4. Držiteľ Bitkára vyhral 74 % bitiek, držitelia Úžerníka, Lakomca, Fajčiara a Exekútora 46–50 %, teda toľko ako bez priazne. Priazne sa k zaostávajúcemu dostanú (558 : 107 priazní pri bitkách), ale pri súčte síl 6 a viac vyhrá len 39 % bitiek.</li>
+    <li><b>Smer:</b> 8 priazní <b>rovnakej váhy</b>, žiadna nie je „+N do bitky“. Každá pomáha zaostávajúcemu v inom
+      zdroji (šenok, poldeci, karty, kliatby, informácia, prebytok) a zároveň mu pomáha vyhrať jednu podmienku v5.</li>
+    <li><b>Odporúčaný set</b> (časť 5): Záložňa, Zľava v šenku, Výpalné, Zastane sa, Spoveď, Fajčiar bez zmeny,
+      Naleje, Súpis majetku. K tomu pravidlo v5 <b>„rovnosť podmienky vyhráva ten, komu starší prejavuje priazeň“</b>.</li>
+    <li><b>Najprv zmerať</b> (stratég): set proti dnešným priazniam a tri varianty násobku bodov v5 (časť 4).</li>
+  </ol>
+</section>
+
+<h2 id="h-diag">1. Čo dnes priazne robia a prečo nedobiehajú</h2>
+
+<div class="blok hlavna">
+  <h3>Víťaz si vyberá, akú priazeň súperovi dá</h3>
+  <p>Prebytok rozdeľuje ten, kto ho drží, a sám volí staršieho (<code>docs/PRAVIDLA.md:567</code>). Pohoršenie tiež
+  (<code>PRAVIDLA.md:513</code>). Každý posun k súperovi mu dá priazeň <b>toho</b> scorecardu. Keď sú priazne nerovnaké,
+  stačí posúvať starších so slabou priazňou.</p>
+  <ul>
+    <li>PT 20261016-155120: „Eva dala Janovi zámerne neškodné Neprajníka a Exekútora, Jano sa vyhýbal Bitkárovi
+      a Veriacemu.“</li>
+    <li>PT 20261024-075830: „je vidieť, ktorého staršieho možno súperovi dať bez rizika (Starosta, Poštárka, Autobusár)
+      a ktorého nie (Bitkár, Veriaci).“</li>
+    <li>Návrh dobiehania (PT 20261016-134912): Eva mala priazeň 6 z 8 starších, väčšinou na maxime, a vyhrala 0 z 5 bitiek.
+      „Eva mala 6 priazní a ani jednu, ktorou by vyhrala ďalšiu bitku.“</li>
+    <li>Bot to robí tiež: váhy priazní v <code>packages/core/src/bot.ts:198</code> sú Bitkár 0,5, Fajčiar 0,25,
+      Veriaci 0,2, Neprajník 0,15, Lakomec a Alkoholik 0,1, Úžerník a Exekútor 0,05.
+      Medzi Bitkárom a Exekútorom je desaťnásobok.</li>
+  </ul>
+</div>
+
+<div class="blok">
+  <h3>Moje meranie: 664 bitiek bot proti botovi</h3>
+  <p>150 stredných partií, povahy Štamgast, Rapavý Fero a Teta Gizka na striedačku, jadro <code>origin/master</code> edfaffe.
+  Pri každej bitke som zapísal tuhé poškodenie, priazne oboch hráčov a body v4 pred bitkou. Skript je v scratchpade,
+  nie v repozitári.</p>
+  <div class="tab-obal"><table class="prehlad">
+<thead><tr><th>Priazeň</th><th class="c">držaná v bitkách</th><th class="c">⌀ sila</th><th class="c">držiteľ vyhral</th><th class="c">posuny prebytkom</th></tr></thead>
+<tbody>
+<tr class="dnes"><td>Bitkár</td><td class="c">13 %</td><td class="c">1,58</td><td class="c">74 %</td><td class="c">250</td></tr>
+<tr><td>Alkoholik</td><td class="c">10 %</td><td class="c">1,58</td><td class="c">62 %</td><td class="c">204</td></tr>
+<tr><td>Neprajník</td><td class="c">10 %</td><td class="c">1,67</td><td class="c">61 %</td><td class="c">212</td></tr>
+<tr class="dnes"><td>Veriaci</td><td class="c">11 %</td><td class="c">1,69</td><td class="c">58 %</td><td class="c">237</td></tr>
+<tr><td>Lakomec</td><td class="c">16 %</td><td class="c">1,63</td><td class="c">50 %</td><td class="c">268</td></tr>
+<tr><td>Exekútor</td><td class="c">13 %</td><td class="c">1,61</td><td class="c">48 %</td><td class="c">217</td></tr>
+<tr><td>Úžerník</td><td class="c">15 %</td><td class="c">1,67</td><td class="c">47 %</td><td class="c">231</td></tr>
+<tr><td>Fajčiar</td><td class="c">13 %</td><td class="c">1,73</td><td class="c">46 %</td><td class="c">203</td></tr>
+</tbody></table></div>
+<div class="tab-obal" style="margin-top:10px"><table class="prehlad">
+<thead><tr><th>Hráč, ktorý v bodoch v4 zaostáva</th><th class="c">bitiek</th><th class="c">vyhral bitku</th></tr></thead>
+<tbody>
+<tr><td>bez priazne</td><td class="c">258</td><td class="c">60 %</td></tr>
+<tr><td>súčet síl priazní 1–2</td><td class="c">193</td><td class="c">59 %</td></tr>
+<tr><td>súčet síl 3–5</td><td class="c">118</td><td class="c">62 %</td></tr>
+<tr><td>súčet síl 6 a viac</td><td class="c">33</td><td class="c">39 %</td></tr>
+<tr><td>s Bitkárom alebo Veriacim</td><td class="c">126</td><td class="c">65 %</td></tr>
+<tr><td>bez nich</td><td class="c">476</td><td class="c">57 %</td></tr>
+</tbody></table></div>
+  <p>Smer funguje: priazne má z 84 % zaostávajúci hráč (558 : 107). Bitku však zaostávajúci vyhrá v 57–62 % bez ohľadu na to, či má priazne. Pri súčte síl 6 a viac je to len 39 %, takže hlboký prepad priazne nezachránia. O bitke rozhoduje len Bitkár (74 %) a slabšie Veriaci (58 %). Bitkár sám rozhodol 16 z 84 bitiek (19 %): bez neho by ich držiteľ nevyhral. Alkoholik a Neprajník (61–62 %) bitku priamo neovplyvňujú, pri 67–69 bitkách to pripisujem náhode. Bot posúva prebytkom Bitkára (250) skoro rovnako ako ostatných (203–268), ľudia a AI playtesteri sa mu vyhýbajú (citácie vyššie). Obmedzenie: držiteľ priazne je zvyčajne útočník a zaostáva, takže čísla nie sú čistý účinok priazne.</p>
+</div>
+
+<h2 id="h-dnes">2. Dnešných 8 priazní a alternatívy</h2>
+<p>Sila je 1 / 2 / 3 podľa zóny (žltá, oranžová, červená na polovici držiteľa), účinok sa v kóde ráta ako 2 × sila
+(<code>packages/core/src/engine.ts:449</code>, <code>KONSTANTY.NASOBOK_PRIAZNE</code>). Tabuľka je v
+<code>docs/PRAVIDLA.md:675–684</code>.</p>
+
+<ol class="smery">
+<li>
+  <h3><span class="cislo">B</span>Bitkár: tuhé poškodenie +2 / +4 / +6</h3>
+  <p class="znacky"><span class="znacka z-pravidla">priveľmi silná</span></p>
+  <dl class="polozka">
+    <dt>Prečo</dt><dd>Tuhé rozhoduje o víťazovi bitky (<code>PRAVIDLA.md:552</code>). Priemerné tuhé v bitke je 4,2 a v 61 % bitiek je rozdiel najviac 4, takže sila 2 obvykle stačí na výhru. V meraní vyhral držiteľ Bitkára 74 % bitiek a 16 z 84 (19 %) by bez neho nevyhral. Je to jediná priazeň,
+      ktorá sama vyhrá bitku, preto ju víťaz súperovi nikdy nedá. Kompenzácia sa tak nekoná ani pri nej.</dd>
+    <dt>Alternatíva A</dt><dd><b>Zastane sa ťa:</b> súperov prebytok proti tebe je menší o 2 / 4 / 6 (ako Puška
+      v Dedičstve, <code>PRAVIDLA.md:572</code>). Bitkár ťa podrží, keď ťa bijú. Bitku nevyhrá, ale zastaví snehovú guľu
+      tam, kde vzniká: prebytok posúva markery a tým strach a body (<code>docs/napady/bodovanie-v5.html</code>, príčina C).</dd>
+    <dt>Alternatíva B</dt><dd><b>Bitkár ½:</b> tuhé +1 / +2 / +3 (bez ×2). Najmenšia zmena, ale ostáva „+N do bitky“.</dd>
+  </dl>
+</li>
+<li>
+  <h3><span class="cislo">V</span>Veriaci: Viera navyše +1 / +2 / +3</h3>
+  <p class="znacky"><span class="znacka z-pravidla">silná</span></p>
+  <dl class="polozka">
+    <dt>Prečo</dt><dd>Každá zvyšná Viera uberá súperovi 1 tuhé (<code>PRAVIDLA.md:533–535</code>), takže priazeň je v praxi
+      „súper −1 / −2 / −3 tuhého“, polovica Bitkára. Navyše ruší súperove Povery, a tým aj jeho mäkké poškodenie a prebytok.
+      V meraní vyhral držiteľ 58 % bitiek a v 8 zo 72 vyhral o menej, než bola Viera navyše.</dd>
+    <dt>Alternatíva A</dt><dd><b>Spoveď:</b> na konci kola spáľ jednu svoju kliatbu. Sila 1: Absťák. Sila 2: Absťák alebo
+      priznaný Dlh. Sila 3: aj Cirhózu (priznanú, alebo nepriznanú z ruky). Rozpis je v časti 3, nová priazeň N7.</dd>
+    <dt>Alternatíva B</dt><dd><b>Anjel strážny:</b> súperovo NA EX na tvoju kartu nezdvojí jej neaktívne akcie
+      (ako Šofér). Nová priazeň N3.</dd>
+  </dl>
+</li>
+<li>
+  <h3><span class="cislo">F</span>Fajčiar: +1 / +2 / +3 cigarety v prvej Pitke kola</h3>
+  <p class="znacky"><span class="znacka z-odp">nechať</span></p>
+  <dl class="polozka">
+    <dt>Prečo</dt><dd>Stredná a dobre cielená. Cigarety platia šenok, doliatie, barter aj Dedičstvo, teda presne to, čo
+      zaostávajúci potrebuje na prestavbu balíčka. Vo v5 sa fajčí len v Pitke (<code>docs/pravidla-v5/davka.md</code>, č. 1),
+      cigareta z prvej Pitky sa tak dá hneď vyfajčiť na kartu. Držiteľ vyhral 46 % bitiek, cigarety sa prejavia až v ďalšom kole.</dd>
+    <dt>Alternatíva A</dt><dd>Ponechať. Je to vzor, akú váhu majú mať ostatné priazne.</dd>
+    <dt>Alternatíva B</dt><dd><b>Pripáľ si:</b> v každej Pitke smieš 1 / 1 / 2-krát vyfajčiť bez cigarety (dobrať kartu).
+      Silnejšie a priamo dá karty, ale je to nerest, takže pomôže aj proti Absťáku.</dd>
+  </dl>
+</li>
+<li>
+  <h3><span class="cislo">L</span>Lakomec: stokársky barter za 4 / 3 / 2 cigarety</h3>
+  <p class="znacky"><span class="znacka z-karty">situačná</span></p>
+  <dl class="polozka">
+    <dt>Prečo</dt><dd>Barter dá trvalý poldeci navyše, teda limit vykladania +1 na celú hru (<code>PRAVIDLA.md:279</code>).
+      Pri sile 3 je to silné, pri sile 1 (4 cigarety) skoro nikdy. Pomôže len tomu, kto má cigarety, a tie má skôr vedúci.</dd>
+    <dt>Alternatíva A</dt><dd><b>Zľava v šenku:</b> prvý ťah v braní zo šenku je lacnejší o silu (nová priazeň N1).
+      Lakomec vie, kde dávajú zadarmo.</dd>
+    <dt>Alternatíva B</dt><dd>Ponechať barter, ale sila 1 = 3 cigarety, sila 2 = 2, sila 3 = 2 a doliatie za 1.</dd>
+  </dl>
+</li>
+<li>
+  <h3><span class="cislo">A</span>Alkoholik: prah Cirhózy 5 / 7 / 9</h3>
+  <p class="znacky"><span class="znacka z-pravidla">slabá</span></p>
+  <dl class="polozka">
+    <dt>Prečo</dt><dd>Pomôže, len keď v jednej Pitke padne aspoň 3 pečene. Cirhóz býva 1–2 na hráča za partiu
+      (PT 20261012-173832, 20261017-164450), vo výnimočnej partii viac (20261018-185541). Keď pomôže, ušetrí kliatbu,
+      ale bitku ani prestavbu balíčka nezmení.</dd>
+    <dt>Alternatíva A</dt><dd><b>Naleje:</b> na začiatku kola sa ti otočí o 1 / 2 / 3 vypité poldeci viac
+      (nová priazeň N4). Viac plných poldeci je väčší limit vykladania. Prehrávajúca Eva mala limit 1 proti Janovým 3–4
+      kartám (PT 20261016-134912).</dd>
+    <dt>Alternatíva B</dt><dd><b>Na zdravie:</b> tvoje NA EX ti nepoškodí pečeň (sila 1 prvé v kole, sila 2 dve, sila 3 všetky).
+      Lacnejšie NA EX pre toho, kto dobieha.</dd>
+  </dl>
+</li>
+<li>
+  <h3><span class="cislo">Ú</span>Úžerník: prah Dlhu 3 / 4 / 5</h3>
+  <p class="znacky"><span class="znacka z-pravidla">slabá</span></p>
+  <dl class="polozka">
+    <dt>Prečo</dt><dd>Zadĺženie sa po Pitke nuluje (<code>PRAVIDLA.md:438</code>) a v bežnej Pitke vystúpi na 1
+      (PT 20261016-134912: „štyrikrát na 1 a vynulovalo sa“). Prah 2 prekročí len kliatbová bomba cez NA EX a tú vyšší prah
+      len zmierni. Bot jej dáva váhu 0,05.</dd>
+    <dt>Alternatíva A</dt><dd><b>Záložňa:</b> po bitke si smieš 1 / 2 / 3 svoje karty z línie vziať rovno do ruky
+      (nová priazeň N5). Úžerník ti vráti, čo si mu dal do zálohy.</dd>
+    <dt>Alternatíva B</dt><dd><b>Pôžička:</b> v braní zo šenku si smieš vziať 1 / 2 / 3 karty bez cigarety, za každú
+      dostaneš 1 Dlh (nová priazeň N9).</dd>
+  </dl>
+</li>
+<li>
+  <h3><span class="cislo">N</span>Neprajník: mäkké poškodenie smie prekročiť súperove Dlhy o 2 / 4 / 6</h3>
+  <p class="znacky"><span class="znacka z-pravidla">slabá</span></p>
+  <dl class="polozka">
+    <dt>Prečo</dt><dd>Mäkké neurčí víťaza bitky, len prebytok (<code>PRAVIDLA.md:552–555</code>). Zaostávajúci prebytok
+      zvyčajne nedrží. Navyše treba Povery, ktoré prežijú súperovu Vieru. Bot 0,15.</dd>
+    <dt>Alternatíva A</dt><dd><b>Výpalné:</b> každé súperovo NA EX na tvoju kartu ho stojí 1 / 2 / 3 cigarety,
+      ktoré dostaneš ty (nová priazeň N2). Neprajník všetko rozkecá, súper radšej zaplatí.</dd>
+    <dt>Alternatíva B</dt><dd><b>Zlé oko:</b> súperove Pohoršenia proti tebe: prvých 1 / 2 / 3 v bitke neplatí
+      (čiastočná Policajtka). Zastaví druhú cestu snehovej gule.</dd>
+  </dl>
+</li>
+<li>
+  <h3><span class="cislo">E</span>Exekútor: prah Exekútora 14 / 18 / 22</h3>
+  <p class="znacky"><span class="znacka z-pravidla">prázdna</span></p>
+  <dl class="polozka">
+    <dt>Prečo</dt><dd>Exekútor v žiadnom reporte nehrozil, ani pri prahu 10: „0/10 u oboch“ (PT 20261012-055944,
+      20261012-101447, 20261017-164450), aj pri 21 Dlhoch v partii „0/10 a 0/22“ (20261018-185541). Priznané Dlhy pália
+      Robota, Dievčina na vydaj a Vdova skôr, ako dôjdu k prahu.</dd>
+    <dt>Alternatíva A</dt><dd><b>Súpis majetku:</b> na začiatku kola uvidíš 1 / 2 karty zo súperovej ruky, pri sile 3 celú ruku
+      (nová priazeň N6).</dd>
+    <dt>Alternatíva B</dt><dd><b>Protekcia na úrade:</b> pri rovnosti v podmienkach na konci hry vyhráš 1 / 2 / 3 z nich
+      (nová priazeň N8, vo v5).</dd>
+  </dl>
+</li>
+</ol>
+
+<h2 id="h-nove">3. Nové priazne na dobiehanie (10)</h2>
+<p>Ani jedna nepridáva tuhé ani Vieru. Každá pomáha v inom zdroji. Stĺpec „v5“ ukazuje, ktorú podmienku z návrhu
+<code>docs/napady/podmienky-starsich-v5.html</code> pomáha vyhrať. Tak sa priazeň spája s bodovaním: kto má priazeň,
+ľahšie vyhrá súboj u niektorého staršieho.</p>
+
+<div class="tab-obal">
+<table class="prehlad">
+<thead><tr><th>#</th><th>Priazeň</th><th>Scorecard</th><th>Zdroj</th><th>Pomôže vo v5</th><th>Kód</th></tr></thead>
+<tbody>
+<tr><td>N1</td><td>Zľava v šenku</td><td>Lakomec</td><td>šenok</td><td>Voliči, Cigarety</td><td>nízky</td></tr>
+<tr><td>N2</td><td>Výpalné</td><td>Neprajník</td><td>ochrana pred NA EX</td><td>Cigarety</td><td>nízky (ako Svokra)</td></tr>
+<tr><td>N3</td><td>Anjel strážny</td><td>Veriaci</td><td>ochrana pred NA EX</td><td>Pečeň, Dlh</td><td>nízky (ako Šofér)</td></tr>
+<tr><td>N4</td><td>Naleje</td><td>Alkoholik</td><td>poldeci</td><td>Rezerva</td><td>nízky</td></tr>
+<tr><td>N5</td><td>Záložňa</td><td>Úžerník</td><td>vrátenie karty</td><td>Eso v rukáve</td><td>stredný</td></tr>
+<tr><td>N6</td><td>Súpis majetku</td><td>Exekútor</td><td>nahliadnutie</td><td>—</td><td>stredný + <code>viewFor</code></td></tr>
+<tr><td>N7</td><td>Spoveď</td><td>Veriaci</td><td>kliatby</td><td>Absťák, Dlh, Pečeň</td><td>nízky</td></tr>
+<tr><td>N8</td><td>Protekcia</td><td>Exekútor</td><td>rovnosť v bodovaní</td><td>všetky</td><td>len s v5</td></tr>
+<tr><td>N9</td><td>Pôžička</td><td>Úžerník</td><td>šenok na dlh</td><td>Voliči (proti Dlhu)</td><td>nízky</td></tr>
+<tr><td>N10</td><td>Volí bojisko</td><td>Bitkár</td><td>cieľ kola</td><td>Lokality</td><td>stredný</td></tr>
+</tbody>
+</table>
+</div>
+
+<ol class="smery" style="margin-top:14px">
+<li class="odp">
+  <h3><span class="cislo">N1</span>Zľava v šenku (Lakomec)</h3>
+  <p class="znacky"><span class="znacka z-odp">do setu</span><span class="znacka z-pravidla">výnimka z §5</span></p>
+  <dl class="polozka">
+    <dt>Znenie</dt><dd>Tvoj prvý ťah v braní zo šenku v kole je lacnejší o silu priazne (najmenej 0).</dd>
+    <dt>Sila 1 / 2 / 3</dt><dd>1 karta zadarmo alebo 2 karty za 2 / 2 karty za 1 / 2 karty zadarmo.</dd>
+    <dt>Satira</dt><dd>Lakomec vie, kde dávajú zadarmo. Povie to len tebe, lebo súpera nemá rád ešte viac než teba.</dd>
+    <dt>Dobiehanie</dt><dd>Šenok je jediná cesta k lepšiemu balíčku a silné karty sú len zo šenku (PT 20261018-185541,
+      20261019-055945). Zaostávajúci je útočník a berie prvý (<code>PRAVIDLA.md:133</code>), zľava sa mu teda takmer vždy uplatní.</dd>
+    <dt>Kolízia</dt><dd>„Nič nie je zadarmo“ (<code>PRAVIDLA.md:180</code>) dostane výnimku. S Jednotou a Starostom sa nebije.</dd>
+    <dt>Riziko</dt><dd>Pri sile 3 dve karty zadarmo každé kolo. Ak to bude priveľa, sila 3 = 2 karty za 1.</dd>
+  </dl>
+</li>
+<li class="odp">
+  <h3><span class="cislo">N2</span>Výpalné (Neprajník)</h3>
+  <p class="znacky"><span class="znacka z-odp">do setu</span></p>
+  <dl class="polozka">
+    <dt>Znenie</dt><dd>Každé súperovo NA EX na tvoju kartu (aj povinné na Krčme) mu zoberie cigarety a dá ich tebe.
+      Bez cigarety nič.</dd>
+    <dt>Sila 1 / 2 / 3</dt><dd>1 / 2 / 3 cigarety za každé NA EX.</dd>
+    <dt>Satira</dt><dd>Neprajník si všíma každý pohárik, ktorý súper naleje, a hneď to rozkecá po dedine.
+      Súper radšej zaplatí, aby mlčal.</dd>
+    <dt>Dobiehanie</dt><dd>Mäkká ochrana pred NA EX: neruší ho, len ho zdraží. Súperovo NA EX na tvoju kartu ti ruší
+      aktívne akcie (<code>PRAVIDLA.md:333</code>), teda ti berie bitku. Teraz za to zaplatí.</dd>
+    <dt>Kolízia</dt><dd>Svokra robí to isté za NA EX na hocijakú kartu (<code>PRAVIDLA.md:1052</code>, kód
+      <code>svokraZaNaex</code>, <code>engine.ts:2720</code>). Sčítajú sa. Na vlastnú kartu NA EX nestojí nič.</dd>
+    <dt>Riziko</dt><dd>Súper NA EX dá na vlastnú kartu. Tým sa ale aj tak vzdá sabotáže, čo je cieľ.</dd>
+  </dl>
+</li>
+<li>
+  <h3><span class="cislo">N3</span>Anjel strážny (Veriaci)</h3>
+  <p class="znacky"><span class="znacka z-karty">alternatíva</span></p>
+  <dl class="polozka">
+    <dt>Znenie</dt><dd>Súperovo NA EX na tvoju kartu nezdvojí jej neaktívne akcie. Aktívne zruší ako vždy.</dd>
+    <dt>Sila 1 / 2 / 3</dt><dd>Prvé NA EX súpera v kole / prvé dve / všetky.</dd>
+    <dt>Satira</dt><dd>Kto sa modlí, tomu sa aj fľaša prevráti len do polovice.</dd>
+    <dt>Dobiehanie</dt><dd>Chráni pred kliatbovou bombou: NA EX na kartu s neaktívnym Dlhom či pečeňou ich zdvojí v každej Pitke.
+      Náhľad tak ukázal −30 b v K2 (PT 20261024-075830).</dd>
+    <dt>Kolízia</dt><dd>Je to účinok Šoféra (<code>PRAVIDLA.md:1032</code>, <code>packages/core/src/partia.ts:591</code>),
+      ale bez susedstva. Šofér stratí jedinečnosť, kým priazeň trvá.</dd>
+    <dt>Riziko</dt><dd>Tvrdšia verzia (NA EX na tvoju kartu nedá vôbec) by bola priveľa: NA EX je hlavná zbraň hry.</dd>
+  </dl>
+</li>
+<li class="odp">
+  <h3><span class="cislo">N4</span>Naleje (Alkoholik)</h3>
+  <p class="znacky"><span class="znacka z-odp">do setu</span></p>
+  <dl class="polozka">
+    <dt>Znenie</dt><dd>Na začiatku kola sa ti otočí na plné o toľko vypitých poldeci viac, koľko je sila.</dd>
+    <dt>Sila 1 / 2 / 3</dt><dd>Spolu 2 / 3 / 4 otočené poldeci (dnes 1, <code>PRAVIDLA.md:293</code>), najviac všetky vypité.</dd>
+    <dt>Satira</dt><dd>Alkoholik ti rád naleje. Vie, aké je to piť sám.</dd>
+    <dt>Dobiehanie</dt><dd>Limit vykladania = plné poldeci + 1. Porazený je po NA EX na suchu a vyloží menej
+      (PT 20261016-134912, „snehová guľa cez cenu NA EX“). Viac kariet v línii pomôže v bitke bez „+N“.</dd>
+    <dt>Kolízia</dt><dd>Krčmárka a doliatie ostávajú. Vínko tiež (ráta sa ako plný poldeci).</dd>
+    <dt>Riziko</dt><dd>Hráč s 2 poldeci má najviac 2 vypité, takže sila 2 a 3 sa líšia len po barteri. Ak treba, sila 3 =
+      otočí všetky a doliatie za 1 cigaretu.</dd>
+  </dl>
+</li>
+<li class="odp">
+  <h3><span class="cislo">N5</span>Záložňa (Úžerník)</h3>
+  <p class="znacky"><span class="znacka z-odp">do setu</span></p>
+  <dl class="polozka">
+    <dt>Znenie</dt><dd>Pri návrate kariet po bitke (<code>PRAVIDLA.md:595</code>) smieš svoje karty z línie vziať rovno
+      do ruky namiesto do odhadzovacieho balíčka.</dd>
+    <dt>Sila 1 / 2 / 3</dt><dd>1 / 2 / 3 karty.</dd>
+    <dt>Satira</dt><dd>Úžerník ti vráti, čo si mu dal do zálohy. Úrok si zapíše do zošita, ten je verejný.</dd>
+    <dt>Dobiehanie</dt><dd>Zaostávajúci si nechá najlepšie karty na ďalšie kolo, nemusí ich dobrať znova. Ruka bez limitu
+      (<code>PRAVIDLA.md:142</code>) to unesie. Pomôže aj podmienke Eso v rukáve.</dd>
+    <dt>Kolízia</dt><dd>Nie karta staršieho z patronátu (má vlastné pravidlo). Karty spálené v bitke (Pohreb, Dievčina) sa
+      nevracajú vôbec.</dd>
+    <dt>Riziko</dt><dd>Na výber kariet treba nové rozhodnutie hráča v kroku 7 bitky (UI aj bot).</dd>
+  </dl>
+</li>
+<li class="odp">
+  <h3><span class="cislo">N6</span>Súpis majetku (Exekútor)</h3>
+  <p class="znacky"><span class="znacka z-odp">do setu</span><span class="znacka z-kod">viewFor</span></p>
+  <dl class="polozka">
+    <dt>Znenie</dt><dd>Po dobratí na začiatku kola uvidíš náhodné karty zo súperovej ruky. Súper vie, ktoré si videl.</dd>
+    <dt>Sila 1 / 2 / 3</dt><dd>1 karta / 2 karty / celá ruka.</dd>
+    <dt>Satira</dt><dd>Exekútor robí súpis majetku. Neberie nič, len si zapíše, čo má sused pod stolom.</dd>
+    <dt>Dobiehanie</dt><dd>Informácia pre toho, kto prehráva: vie, či má zmysel súperovi kradnúť hranu lokality, kam dať
+      NA EX a kedy pasovať. Čítanie súpera playtesteri chvália (PT 20261024-075830).</dd>
+    <dt>Kolízia</dt><dd>Preskúmanie (Policajtka, Veštica) je pevne 5 kariet balíčka, nie ruky. Výber kariet musí byť zo
+      semienka (<code>GameState.rng</code>) a <code>viewFor()</code> ich pošle len držiteľovi priazne. Treba to otestovať
+      (CLAUDE.md, pravidlo 2).</dd>
+    <dt>Riziko</dt><dd>Bot skryté informácie zamieša (<code>bot.ts</code>), takže ju bez úpravy nevyužije. Stratég ju
+      botmi nezmeria, treba AI playtest.</dd>
+  </dl>
+</li>
+<li class="odp">
+  <h3><span class="cislo">N7</span>Spoveď (Veriaci)</h3>
+  <p class="znacky"><span class="znacka z-odp">do setu</span></p>
+  <dl class="polozka">
+    <dt>Znenie</dt><dd>Na konci kola, po porovnaní nerestí, smieš spáliť jednu svoju kliatbu.</dd>
+    <dt>Sila 1 / 2 / 3</dt><dd>Absťák / Absťák alebo priznaný Dlh / Absťák, Dlh alebo Cirhózu (priznanú, alebo nepriznanú z ruky).</dd>
+    <dt>Satira</dt><dd>Pán farár odpustí všetko. Pečeň menej.</dd>
+    <dt>Dobiehanie</dt><dd>Kliatby sa hromadia porazenému: Jano 15 kliatob v prehratej partii (PT 20261012-101447), Eva
+      „jedna zlá Pitka a ruka je mŕtva na 2–3 kolá“ (20261018-185541). Absťák uberá tuhé (<code>PRAVIDLA.md:479</code>),
+      takže Spoveď pomôže v bitke nepriamo.</dd>
+    <dt>Kolízia</dt><dd>Spálenie Dlhu je ako Robota (<code>PRAVIDLA.md:805</code>), Hrobár sa nespúšťa. Spálená Cirhóza
+      nedá Pohreb.</dd>
+    <dt>Riziko</dt><dd>Vo v5 sú Absťák, Dlh a Pečeň podmienky, takže Spoveď mení aj body. To je zámer, treba zmerať.</dd>
+  </dl>
+</li>
+<li>
+  <h3><span class="cislo">N8</span>Protekcia (Exekútor, len vo v5)</h3>
+  <p class="znacky"><span class="znacka z-karty">alternatíva</span><span class="znacka z-pravidla">bodovanie v5</span></p>
+  <dl class="polozka">
+    <dt>Znenie</dt><dd>Na konci hry: keď je v podmienke ktoréhokoľvek staršieho rovnosť, smieš ju vyhrať ty.</dd>
+    <dt>Sila 1 / 2 / 3</dt><dd>1 / 2 / 3 takéto podmienky.</dd>
+    <dt>Satira</dt><dd>Na úrade má známeho. Keď je to nerozhodne, papiere sa vždy nájdu u teba.</dd>
+    <dt>Dobiehanie</dt><dd>Rovnosti sú časté: Absťák 41 %, Rezerva 31 %, Dlh 45 % partií
+      (<code>docs/napady/podmienky-starsich-v5.html</code>). Rozhodne aj o tom, kto dostane body za staršieho.</dd>
+    <dt>Riziko</dt><dd>Pôsobí až na konci a meria sa ťažko. Lepšie ako všeobecné pravidlo pre všetky priazne (časť 4,
+      variant P), nie ako jedna priazeň.</dd>
+  </dl>
+</li>
+<li>
+  <h3><span class="cislo">N9</span>Pôžička (Úžerník)</h3>
+  <p class="znacky"><span class="znacka z-karty">alternatíva</span></p>
+  <dl class="polozka">
+    <dt>Znenie</dt><dd>V braní zo šenku smieš vziať kartu bez cigarety. Za každú takú kartu dostaneš 1 Dlh (hneď priznaný).</dd>
+    <dt>Sila 1 / 2 / 3</dt><dd>Najviac 1 / 2 / 3 karty za kolo.</dd>
+    <dt>Satira</dt><dd>Úžerník ti požičia vždy, keď to najviac potrebuješ. Preto je úžerník.</dd>
+    <dt>Dobiehanie</dt><dd>Kto nemá cigaretu, dnes brať nemôže (<code>PRAVIDLA.md:181</code>). Pôžička mu otvorí šenok
+      za cenu, ktorú cíti: Dlh je mäkké poškodenie pre súpera a vo v5 podmienka.</dd>
+    <dt>Riziko</dt><dd>Úplne sa prekrýva so Zľavou (N1). Do setu len jednu z nich.</dd>
+  </dl>
+</li>
+<li>
+  <h3><span class="cislo">N10</span>Volí bojisko (Bitkár)</h3>
+  <p class="znacky"><span class="znacka z-karty">alternatíva</span></p>
+  <dl class="polozka">
+    <dt>Znenie</dt><dd>Keď si útočník: sila 1 = natočíš cieľ ty, sila 2 = raz za kolo odmietneš cieľ a obranca vyberie iný,
+      sila 3 = cieľ vyberieš a natočíš ty.</dd>
+    <dt>Satira</dt><dd>Bitkár vie, v ktorej krčme sa biť. V tej, kde ťa poznajú.</dd>
+    <dt>Dobiehanie</dt><dd>Voľba cieľa je výsada víťaza (<code>PRAVIDLA.md:135</code>) a cieľ určuje počet Pitiek
+      a akcie hrán. Porazený si vyberie bojisko, kde má šancu.</dd>
+    <dt>Riziko</dt><dd>Obrancovi nedáva nič, teda pôsobí len pri prehre. Sila 3 berie víťazovi hlavnú výsadu.</dd>
+  </dl>
+</li>
+</ol>
+
+<h2 id="h-v5">4. Ako priazne zladiť s bodovaním v5</h2>
+<p>Vo v5 (<code>docs/pravidla-v5/davka.md</code>) dostane za staršieho body ten, kto vyhrá viac jeho podmienok:
+1 bod + 1 za každú zónu, v ktorej sa ho starší bojí. Hráč, ktorému starší prejavuje priazeň, dostane len 1 bod.
+Posunúť marker k súperovi teda dá súperovi priazeň v hre a tebe väčší násobok na konci. Tu sú štyri spôsoby,
+ako priazeň zapojiť do bodov.</p>
+
+<ol class="smery">
+<li class="odp">
+  <h3><span class="cislo">P</span>Prednosť pri rovnosti (všeobecné pravidlo)</h3>
+  <p>Keď je pri podmienke staršieho rovnosť, vyhrá ju hráč, ktorému tento starší prejavuje priazeň. V strede ju nevyhrá nikto,
+  ako dnes. <b>Odporúčam ako základ</b>, platí vedľa každého setu priazní.</p>
+  <ul>
+    <li>Kto staršieho desí, má väčší násobok. Kto má jeho priazeň, vyhráva jeho rovnosti. Obaja majú o čo bojovať.</li>
+    <li>Je to jednoduché, čitateľné na stole (♥ pri staršom) a tematické: starší drží s tým, koho má rád.</li>
+    <li>Ubudne remíz pri staršom (dnes 15–23 % podľa rozloženia).</li>
+  </ul>
+</li>
+<li>
+  <h3><span class="cislo">V1</span>Násobok pre toho, koho sa starší bojí (návrh Michala)</h3>
+  <p>Dnešný návrh v5. Silne odmeňuje víťaza bitky, lebo prebytok posúva markery od neho. Hrubý odhad je
+  9 : 3 (<code>docs/napady/podmienky-starsich-v5.html</code>, časť 4). Snehová guľa ostáva.</p>
+</li>
+<li>
+  <h3><span class="cislo">V2</span>Násobok pre hráča s priazňou (návrh Leadera)</h3>
+  <p>1 bod + 1 za každú zónu priazne. Starší, ktorého si odtlačil k súperovi, je cennejší <b>pre súpera</b>, ak súper vyhrá
+  jeho podmienky. Najsilnejšie dobiehanie.</p>
+  <ul>
+    <li>Riziko: desiť sa prestane oplácať. Ostane len okamžitá výhra vydesením a podmienka Strach u ostatných starších.
+      Prebytok sa začne „rozdávať“ do stredu alebo vôbec. Môže vzniknúť hra, v ktorej sa oplatí prehrávať.</li>
+    <li>Treba zmerať, či boti nezačnú prebytok zahadzovať a či sa ešte hrá na vydesenie.</li>
+  </ul>
+</li>
+<li>
+  <h3><span class="cislo">V3</span>Násobok podľa zóny pre toho, kto vyhrá (symetrický)</h3>
+  <p>Vychýlený starší je cennejší pre oboch: 1 + zóny markera, nech je na ktorejkoľvek strane. Body dostane ten, kto vyhrá viac
+  jeho podmienok. Kto desí, zdvihne cenu staršieho, ale musí si ho aj vybojovať. Súper s priazňou (a prednosťou pri rovnosti)
+  má reálnu šancu ho vziať.</p>
+  <ul>
+    <li>Kompromis medzi V1 a V2. Desiť sa oplatí len tam, kde vyhrávaš podmienky.</li>
+    <li>Riziko: menej jasný príbeh („bojí sa ťa, ale body má súper“). Čitateľnosť pomôže náhľad „kto by ho teraz bodoval“.</li>
+  </ul>
+</li>
+</ol>
+<p>Odporúčané poradie merania: <b>V1 + P</b> proti <b>V3 + P</b>, potom <b>V2 + P</b>. Pri každom nový set priazní
+proti dnešnému.</p>
+
+<h2 id="h-set">5. Odporúčaný set, meranie a otázky</h2>
+
+<div class="tab-obal">
+<table class="prehlad">
+<thead><tr><th>Scorecard</th><th>Dnes</th><th>Navrhujem</th><th>Sila 1 / 2 / 3</th><th>Zdroj</th></tr></thead>
+<tbody>
+<tr><td>Úžerník</td><td>prah Dlhu</td><td><b>Záložňa</b> (N5)</td><td>1 / 2 / 3 karty z línie do ruky</td><td>karty</td></tr>
+<tr><td>Lakomec</td><td>barter</td><td><b>Zľava v šenku</b> (N1)</td><td>prvý ťah šenku −1 / −2 / −3 cigarety</td><td>šenok</td></tr>
+<tr><td>Neprajník</td><td>mäkké nad Dlhy</td><td><b>Výpalné</b> (N2)</td><td>1 / 2 / 3 cigarety za súperovo NA EX na tvoju kartu</td><td>ochrana</td></tr>
+<tr><td>Bitkár</td><td>tuhé +2 / +4 / +6</td><td><b>Zastane sa</b></td><td>súperov prebytok −2 / −4 / −6</td><td>proti snehovej guli</td></tr>
+<tr><td>Veriaci</td><td>Viera +1 / +2 / +3</td><td><b>Spoveď</b> (N7)</td><td>spáľ Absťák / aj Dlh / aj Cirhózu</td><td>kliatby</td></tr>
+<tr><td>Fajčiar</td><td>cigarety v 1. Pitke</td><td><b>bez zmeny</b></td><td>+1 / +2 / +3 cigarety</td><td>cigarety</td></tr>
+<tr><td>Alkoholik</td><td>prah Cirhózy</td><td><b>Naleje</b> (N4)</td><td>+1 / +2 / +3 otočené poldeci</td><td>poldeci</td></tr>
+<tr><td>Exekútor</td><td>prah Exekútora</td><td><b>Súpis majetku</b> (N6)</td><td>1 / 2 karty / celá ruka súpera</td><td>informácia</td></tr>
+</tbody>
+</table>
+</div>
+<p>Plus pravidlo <b>P</b> (prednosť pri rovnosti). Pri tomto sete už nie je „bezpečný“ starší, ktorého by víťaz súperovi
+posunul bez straty. Každá priazeň pomôže inak a žiadna sama nevyhrá bitku. Násobok 2 × sila v kóde
+(<code>NASOBOK_PRIAZNE</code>) by sa zrušil, priazne by sa písali priamo v sile 1 / 2 / 3.</p>
+
+<div class="blok">
+  <h3>Čo zmerať (stratég)</h3>
+  <ol>
+    <li><b>Rovnováha priazní:</b> pri každej priazni výhra bitky držiteľa, keď zaostáva, a zmena rozdielu bodov za 2 kolá
+      po jej získaní. Cieľ: žiadna priazeň nevyčnieva o viac ako o tretinu.</li>
+    <li><b>Výber pri prebytku:</b> ako často víťaz posúva ktorý scorecard. Pri dobrej rovnováhe je to blízko rovnomerného.
+      Dnes v mojom meraní posunul bot prebytkom Lakomca 268-krát, Bitkára 250, Veriaceho 237, Úžerníka 231, Exekútora 217, Neprajníka 212, Alkoholika 204 a Fajčiara 203-krát.</li>
+    <li><b>Otočky:</b> podiel partií, ktoré vyhral hráč zaostávajúci po polovici partie (dnešné priazne proti setu).</li>
+    <li><b>V1 / V2 / V3 s pravidlom P:</b> tesnosť (cieľ okolo 15 : 13), podiel remíz pri staršom, či sa ešte posúvajú
+      markery a či sa neoplatí prehrávať (V2).</li>
+    <li><b>Rebrík zručnosti</b> (<code>tools/bot/strategickost.ts</code>) pre víťazný variant.</li>
+  </ol>
+  <p>Bot potrebuje nové váhy priazní (<code>bot.ts:198</code>) a rozhodnutia pre Záložňu a Spoveď. Súpis majetku boti
+  nezmerajú (zamiešajú skryté informácie), ten len AI playtest.</p>
+</div>
+
+<div class="blok">
+  <h3>Otázky pre Michala</h3>
+  <ol>
+    <li>Súhlasíš so smerom „8 priazní rovnakej váhy, žiadna +N do bitky“? Alebo má Bitkár ostať bojový, len slabší
+      (+1 / +2 / +3)?</li>
+    <li>Zľava v šenku pri sile 3 = dve karty zadarmo. Smie byť šenok zadarmo (dnes „nič nie je zadarmo“)?</li>
+    <li>Súpis majetku: je pre teba v poriadku priazeň, ktorú boti nevedia využiť a stratég ju nezmeria?</li>
+    <li>Pravidlo P (rovnosť podmienky vyhrá hráč s priazňou toho staršieho): zaradiť do v5 hneď, alebo až po meraní?</li>
+    <li>Ktoré varianty násobku má stratég merať: V1, V2, V3, alebo všetky tri?</li>
+    <li>Názvy scorecardov ostávajú (Úžerník, Lakomec…)? Pri Záložni a Súpise majetku sa charakter mierne posúva.</li>
+  </ol>
+</div>
+
+<footer>Navrhár, 24. 10. 2026. Podklady: <code>docs/PRAVIDLA.md</code> §4–§11, §14; <code>docs/pravidla-v5/davka.md</code>;
+<code>docs/napady/bodovanie-v5.html</code>; <code>docs/napady/podmienky-starsich-v5.html</code>;
+<code>docs/playtesty/navrh-dobiehanie.html</code>; reporty PT 20261012-055944 až 20261024-075830;
+<code>packages/core/src/engine.ts</code>, <code>battle.ts</code>, <code>player.ts</code>, <code>bot.ts</code>.
+Meranie: 664 bitiek zo 150 stredných partií bot proti botovi, jadro <code>origin/master</code> edfaffe.</footer>
+</main>
+</body>
+</html>
