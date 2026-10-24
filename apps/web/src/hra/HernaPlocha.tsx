@@ -118,6 +118,7 @@ import { mediaUrl } from "../lib/api.ts";
 import { useStrazOdchodu } from "../lib/odchod.ts";
 import { skupinyBalicka } from "./doberaciBalicek.ts";
 import { SkratkyNapoveda, escVratiNavrh, tlacidloNavratu, useSkratky, type VrstvyPreEsc } from "./skratky.tsx";
+import { polozkySoZaverecnou, tahSoZaverecnou } from "./zaverecnaTahu.ts";
 import type { Sada } from "@naex/tvorba";
 import { HernaKarta, vzhladKarty, type HernaKartaProps } from "./HernaKarta.tsx";
 import { useZarovnanieLinie } from "./zarovnanieLinie.ts";
@@ -782,20 +783,16 @@ export function HernaPlocha({
   // tam, odkiaľ prišla, z návrhu potichu vypadne.
   // Reakcia na súperovo NA EX: jedna karta z ruky do línie mimo limitu.
   const reagujem = somNaTahu && view.faza === "pitka" && view.pitkaStav?.reakcia === ja;
-  // Záverečná (roadmapa #83): prepínač na hrane stola — posledná karta ťahu do línie pôjde
-  // lícom dole za cigaretu a potom už v tomto Zhromaždení nevykladám.
-  const [zaverecnaZapnuta, setZaverecnaZapnuta] = useState(false);
-  useEffect(() => setZaverecnaZapnuta(false), [klucTahu]);
   const vylozenia: readonly PolozkaVykladania[] = (() => {
     if (navrh?.typ !== "vylozenia" || !somNaTahu || !(view.faza === "zhromazdenie" || reagujem)) return [];
-    const polozky = navrh.polozky.flatMap((x) => {
+    return navrh.polozky.flatMap((x) => {
       const k = view.ruka.find((r) => r.uid === x.uid);
       return k === undefined ? [] : [{ karta: k, ciel: x.ciel }];
     });
-    if (!zaverecnaZapnuta || reagujem) return polozky;
-    const posledna = polozky.map((x) => x.ciel === "vlastna" || x.ciel === "superova").lastIndexOf(true);
-    return polozky.map((x, i) => (i === posledna ? { ...x, zaverecna: true as const } : x));
   })();
+  // Pri myši na Záverečnej návrh ukáže, ktorá karta pôjde lícom dole.
+  const [nahladZaverecnej, setNahladZaverecnej] = useState(false);
+  useEffect(() => setNahladZaverecnej(false), [klucTahu]);
   /** Posledná navrhnutá karta (v odpovedi na NA EX jediná). */
   const vylozene: PolozkaVykladania | null = vylozenia[vylozenia.length - 1] ?? null;
   // Celý ťah v Zhromaždení naraz: koľko poldeci stojí a či ho pravidlá pustia —
@@ -805,7 +802,7 @@ export function HernaPlocha({
   const plan = view.faza === "zhromazdenie" ? planTahu(vylozenia) : null;
   // Výučba (playtest 20261023-161148, návrh 1): ťah, ktorému ešte niečo chýba, sa nedá potvrdiť —
   // inak ho server odmietol a hráč nevedel prečo. Rovnaká karta (defId) platí za tú zo scenára.
-  const chybaVoVyucbe = ((): string | null => {
+  const chybaVyucby = (polozky: readonly PolozkaVykladania[]): string | null => {
     if (vyucbaOcakava === undefined || vyucbaOcakava === null) return null;
     const kroky = (vyucbaOcakava.type === "tah" ? vyucbaOcakava.kroky : [vyucbaOcakava]) as readonly Command[];
     const ocakavane = kroky.flatMap((k) => {
@@ -815,15 +812,24 @@ export function HernaPlocha({
     });
     const sedi = (o: (typeof ocakavane)[number], v: PolozkaVykladania): boolean =>
       v.karta.defId === o.defId && v.ciel === o.ciel && o.zaverecna === (v.zaverecna === true);
-    const chyba = ocakavane.filter((o) => !vylozenia.some((v) => sedi(o, v)));
+    const chyba = ocakavane.filter((o) => !polozky.some((v) => sedi(o, v)));
     if (chyba.length === 0) return null;
-    const navyse = vylozenia.filter((v) => !ocakavane.some((o) => sedi(o, v)));
+    const navyse = polozky.filter((v) => !ocakavane.some((o) => sedi(o, v)));
     return [
       `Ešte chýba: ${chyba.map((o) => menoKarty(o.defId)).join(", ")}.`,
       navyse.length > 0 ? `${navyse.map((v) => menoKarty(v.karta.defId)).join(", ")} sem teraz nepatrí — vráť do ruky (pravý klik).` : "",
     ]
       .filter((x) => x !== "")
       .join(" ");
+  };
+  const chybaVoVyucbe = chybaVyucby(vylozenia);
+  // Záverečná (roadmapa #83, Michal 2026-10-24) je forma konca ťahu: tlačidlo vedľa potvrdenia
+  // odošle návrh a jeho posledná karta pôjde lícom dole; potom už v tomto Zhromaždení nevykladám.
+  const zaverecna = ((): { readonly kroky: readonly Command[] | null; readonly dovod: string | null } | null => {
+    if (view.faza !== "zhromazdenie" || !somNaTahu) return null;
+    const t = tahSoZaverecnou(data, view, ja, vylozenia);
+    const vyucba = t.kroky === null ? null : chybaVyucby(polozkySoZaverecnou(vylozenia));
+    return vyucba === null ? t : { kroky: null, dovod: vyucba };
   })();
   /** Koľkatá karta do línie či do Dedičstva v ťahu (od 0) — od druhej stojí plný poldeci. */
   const poradieVTahu = (uid: number): number => vylozenia.filter((x) => x.ciel !== "priznanie").findIndex((x) => x.karta.uid === uid);
@@ -2072,7 +2078,8 @@ export function HernaPlocha({
   /** Vonkajší koniec strany: navrhnuté karty, a počas ťahania voľné miesto. */
   const koniecStrany = (p: PlayerId): ReactNode => {
     const ciel: CielVykladania = p === ja ? "vlastna" : "superova";
-    const navrhnute = vylozenia.filter((x) => x.ciel === ciel).map((x) => {
+    const naStole = nahladZaverecnej && zaverecna?.kroky != null ? polozkySoZaverecnou(vylozenia) : vylozenia;
+    const navrhnute = naStole.filter((x) => x.ciel === ciel).map((x) => {
       const z: Zdroj = { karta: x.karta, odkial: "ruka", navrh: true };
       const props = {
         karta: x.karta,
@@ -2356,6 +2363,32 @@ export function HernaPlocha({
       </span>
     );
 
+  // Záverečná vpravo pri konci ťahu (Michal 2026-10-24), nie medzi nákupmi: je to druhý spôsob,
+  // ako ťah odoslať. Neaktívna ostáva viditeľná a pri myši povie prečo, ako pečiatky nákupov.
+  const tlacidloZaverecnej: ReactNode =
+    zaverecna === null ? null : (
+      <button
+        type="button"
+        className="tlacidlo-zaverecna"
+        data-vyucba="zaverecna"
+        aria-disabled={zaverecna.kroky === null}
+        title={
+          zaverecna.dovod ??
+          `Záverečná: posledná karta návrhu pôjde lícom dole za ${cigariet(KONSTANTY.CENA_ZAVERECNEJ)}. Súper ju nevidí do konca Pitky a za ňu nepriloží; ty už v tomto Zhromaždení nevykladáš (bez cigariet za pas).`
+        }
+        onMouseEnter={() => setNahladZaverecnej(true)}
+        onMouseLeave={() => setNahladZaverecnej(false)}
+        onFocus={() => setNahladZaverecnej(true)}
+        onBlur={() => setNahladZaverecnej(false)}
+        onClick={() => {
+          if (zaverecna.kroky !== null) posli({ type: "tah", kroky: zaverecna.kroky });
+        }}
+      >
+        <span className="ikona-rub" aria-hidden="true" />
+        záverečná · <CenaCigariet n={KONSTANTY.CENA_ZAVERECNEJ} />
+      </button>
+    );
+
   // ---- tlačidlá návrhu na stole (Michal 2026-10-20) ------------------------
   // Potvrdenie patrí k tomu, čo leží na stole — hráč nemusí pozerať dole na pás.
   const stolTlacidla = ((): ReactNode => {
@@ -2389,6 +2422,7 @@ export function HernaPlocha({
           >
             potvrdiť{plan.poldeci > 0 && <span className="cena">−{plan.poldeci} poldeci</span>}
           </button>
+          {tlacidloZaverecnej}
           {/* Výučba: prečo sa nedá potvrdiť, priamo pri tlačidle (nápoveda na dotyku nie je). */}
           {chybaVoVyucbe !== null && plan.chyba === null && <span className="vyucba-zamok">{chybaVoVyucbe}</span>}
         </>
@@ -2434,16 +2468,13 @@ export function HernaPlocha({
     readonly dovod: string | null;
     readonly tip: string;
     readonly akcia: () => void;
-    /** Prepínač (Záverečná) — stlačený stav. */
-    readonly stlacena?: boolean;
   }): ReactNode => (
     <button
       key={p.kluc}
       type="button"
-      className={`pecat pecat-nakup${p.dovod !== null ? " ne" : ""}${p.stlacena === true ? " stlacena" : ""}`}
-      data-vyucba={p.kluc === "zaverecna" ? "zaverecna" : `tlacidlo:${p.kluc}`}
+      className={`pecat pecat-nakup${p.dovod !== null ? " ne" : ""}`}
+      data-vyucba={`tlacidlo:${p.kluc}`}
       aria-disabled={p.dovod !== null}
-      aria-pressed={p.stlacena}
       title={p.dovod ?? p.tip}
       onClick={() => {
         if (p.dovod === null) p.akcia();
@@ -2689,17 +2720,6 @@ export function HernaPlocha({
               tip: "Fajčiť: za cigaretu si hneď doberieš kartu. Ťah ti neskončí, ráta sa ako nerest.",
               akcia: () => cmd({ type: "smoke", pocet: 1 }),
             })}
-            {(view.zaverecnaMozna || zaverecnaZapnuta) &&
-              pecatNakupu({
-                kluc: "zaverecna",
-                ikona: <span className="ikona-rub" aria-hidden="true" />,
-                nazov: zaverecnaZapnuta ? "záverečná ✓" : "záverečná",
-                cena: KONSTANTY.CENA_ZAVERECNEJ,
-                dovod: null,
-                stlacena: zaverecnaZapnuta,
-                tip: `Záverečná: posledná karta ťahu do línie pôjde lícom dole za ${cigariet(KONSTANTY.CENA_ZAVERECNEJ)}. Súper ju nevidí do konca Pitky a za ňu nepriloží; ty už v tomto Zhromaždení nevykladáš (bez cigariet za pas).`,
-                akcia: () => setZaverecnaZapnuta(!zaverecnaZapnuta),
-              })}
           </>
         );
         // Celý ťah naraz (Michal 2026-10-19): karty sa ťahajú na stôl ako návrh,
@@ -2737,9 +2757,6 @@ export function HernaPlocha({
             nadpis,
             text: textNahladuTahania ?? textVolbyMiesta ?? (
               <>
-                {zaverecnaZapnuta && (
-                  <strong>Záverečná: polož kartu do línie — pôjde lícom dole a potom už nevykladáš. </strong>
-                )}
                 Potiahni kartu z ruky na stôl, alebo klikni na <strong>+</strong> na konci strany — vysunú sa karty, ktoré sa tam spoja. Alebo
                 pasuj do Pitky (cigareta za každú nevyloženú kartu).{" "}
                 <span className="tlmene">
@@ -2749,15 +2766,18 @@ export function HernaPlocha({
             ),
             vlavo: fajcit,
             vpravo: (
-              <button
-                className="pecat pecat-koncim"
-                data-skratka="p"
-                data-vyucba="tlacidlo:pas"
-                title="Do Pitky už nevykladáš, súper vykladá sám. Za každú kartu, ktorú si ešte smel vyložiť, dostaneš cigaretu."
-                onClick={() => (mozemVylozit && vyucba !== true ? odlozenyPas.spusti({ type: "pass" }) : posli({ type: "pass" }))}
-              >
-                pasovať <CenaCigariet n={zaPas} znamienko="+" />
-              </button>
+              <>
+                {tlacidloZaverecnej}
+                <button
+                  className="pecat pecat-koncim"
+                  data-skratka="p"
+                  data-vyucba="tlacidlo:pas"
+                  title="Do Pitky už nevykladáš, súper vykladá sám. Za každú kartu, ktorú si ešte smel vyložiť, dostaneš cigaretu."
+                  onClick={() => (mozemVylozit && vyucba !== true ? odlozenyPas.spusti({ type: "pass" }) : posli({ type: "pass" }))}
+                >
+                  pasovať <CenaCigariet n={zaPas} znamienko="+" />
+                </button>
+              </>
             ),
           };
         }
@@ -2770,7 +2790,6 @@ export function HernaPlocha({
                 <span key={x.karta.uid} className="tah-polozka">
                   {i > 0 && " · "}
                   <strong>{menoKarty(x.karta.defId)}</strong> → {POPIS_CIELA[x.ciel]}
-                  {x.zaverecna === true && <b className="zaverecna-text"> · Záverečná lícom dole (−{cigariet(KONSTANTY.CENA_ZAVERECNEJ)})</b>}
                   {poradieVTahu(x.karta.uid) >= 1 && <b className="poldeci-text"> (−1 poldeci)</b>}
                 </span>
               ))}

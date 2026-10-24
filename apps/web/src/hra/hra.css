@@ -5017,14 +5017,29 @@ button.auto-hotovo-odkaz {
   background: repeating-linear-gradient(45deg, currentColor 0 2px, transparent 2px 5px);
 }
 
-.pecat-nakup.stlacena {
+/* Záverečná vedľa potvrdenia či pasu: druhý spôsob konca ťahu — obrys v akcente, aby nesplynula
+   s potvrdením, a nezalomí sa (1366 px). */
+.hrana-rad button.tlacidlo-zaverecna {
+  white-space: nowrap;
   border-color: var(--akcent);
-  background: color-mix(in srgb, var(--akcent) 24%, var(--plocha-2));
   color: var(--akcent-svetly);
+  background: var(--plocha-2);
 }
 
-.zaverecna-text {
-  color: var(--akcent-svetly);
+.hrana-rad button.tlacidlo-zaverecna:hover:not([aria-disabled="true"]) {
+  background: color-mix(in srgb, var(--akcent) 22%, var(--plocha-2));
+}
+
+.hrana-rad button.tlacidlo-zaverecna[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-style: dashed;
+  border-color: var(--okraj-svetly);
+  color: var(--tlmeny);
+}
+
+.hrana-rad button.tlacidlo-zaverecna[aria-disabled="true"]:active {
+  transform: none;
 }
 
 .bitka-skryta {
