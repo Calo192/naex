@@ -279,23 +279,33 @@ function miestaBubliny(w: number, h: number): Obdlznik[] {
   // Nie nad hornú hranu stola — tam je pás kola a pokyn (UI inšpekcia).
   const nadHranou = hrana.length === 0 ? hornyStol : Math.max(hornyStol, Math.min(...hrana) - h - 8);
   // Miesto hneď pod osou kola nie — zakrylo bar súpera, pás kola aj pokyn (UI inšpekcia).
-  return [hornyStol, nadHranou, stred, dole].flatMap((y, i) => xs.map((x, j) => ({ kluc: `${i}${j}`, x, y, w, h })));
+  // Pod osou kola zakryje súperov bar — lepšie než vlastný, o ktorom výučba hovorí (UI inšpekcia).
+  return [hornyStol, nadHranou, stred, dole, hore].flatMap((y, i) => xs.map((x, j) => ({ kluc: `${i}${j}`, x, y, w, h })));
 }
 
-function skoreMiesta(o: Obdlznik, zvyraznene: readonly Obdlznik[]): number {
+/** Prekrytie s tým, čo bublina nesmie zakryť nikdy (zvýraznené, hláška, stavba, šenok, starší, miesta „+“). */
+function skoreChranene(o: Obdlznik, zvyraznene: readonly Obdlznik[]): number {
   const sucet = (r: readonly Obdlznik[], vaha: number): number => r.reduce((s, b) => s + prekrytie(o, b) * vaha, 0);
   return (
     sucet(zvyraznene, 50) +
     // Hláška, prečo sa karta nepoložila, musí byť celá vidno.
     sucet(rectyPrvkov(".pokyn-tahania"), 50) +
-    sucet(rectyPrvkov(".vrstva-fazy .stavba-zona, .vrstva-fazy .stavba-balicek, .vrstva-fazy .draft-karty, .vrstva-starsich:not([hidden]) .ls-sc"), 30) +
+    sucet(rectyPrvkov(".vrstva-fazy .stavba-zona, .vrstva-fazy .stavba-balicek, .vrstva-fazy .draft-karty, .vrstva-starsich:not([hidden]) .ls-sc, .vrstva-starsich:not([hidden]) .ls-hlava"), 30) +
+    // Miesto na konci strany je cieľ ťahu — rovnako dôležité ako zvýraznené prvky.
+    sucet(rectyPrvkov(".miesto-volby"), 50)
+  );
+}
+
+function skoreMiesta(o: Obdlznik, zvyraznene: readonly Obdlznik[]): number {
+  const sucet = (r: readonly Obdlznik[], vaha: number): number => r.reduce((s, b) => s + prekrytie(o, b) * vaha, 0);
+  return (
+    skoreChranene(o, zvyraznene) +
     sucet(rectyPrvkov(".linia .partia-rad .kl"), 4) +
     sucet(rectyPrvkov(".stol-hrana .pecat, .stol-hrana button"), 20) +
     sucet(rectyPrvkov(".linia-stav"), 4) +
     sucet(rectyPrvkov(".pas-kola-obal"), 4) +
-    // Miesto na konci strany je cieľ ťahu — rovnako dôležité ako zvýraznené prvky.
-    sucet(rectyPrvkov(".miesto-volby"), 50) +
-    sucet(rectyPrvkov(".doska"), 4) +
+    sucet(rectyPrvkov(".doska.moja"), 4) +
+    sucet(rectyPrvkov(".doska.superova"), 2) +
     sucet(rectyPrvkov(".ruka-rad .kl"), 1)
   );
 }
@@ -380,13 +390,16 @@ export function VyucbaStol({
   // Pruhy udalostí a priazne na stole počas výučby nie — komentuje Melichar (playtest: ležali cez karty).
   useEffect(() => {
     document.body.classList.add("vyucba-bezi");
-    return () => document.body.classList.remove("vyucba-bezi", "vyucba-odhad");
+    return () => document.body.classList.remove("vyucba-bezi", "vyucba-odhad", "vyucba-vydesenie");
   }, []);
   // Odhad bitky, stávka a vydesení sa ukážu od kroku, ktorý o nich hovorí (alebo o bitke), a potom ostanú.
   useEffect(() => {
     if (krok === null) return;
     const text = krok.melichar.toLowerCase();
-    if (krok.zvyraznit.some((k) => k === "hrozba" || k === "bitka-ucet") || /odhad|vydes|hrozb|bitk/.test(text)) document.body.classList.add("vyucba-odhad");
+    if (krok.zvyraznit.some((k) => k === "hrozba" || k === "bitka-ucet") || /bitka/.test(krok.id) || /odhad|hrozb/.test(text)) {
+      document.body.classList.add("vyucba-odhad");
+    }
+    if (/vydes/.test(text)) document.body.classList.add("vyucba-vydesenie");
   }, [krok?.id]);
 
   // Vetu „Takto nie — ešte chýba: …“ skladá server; po odmietnutí svietia len karty,
@@ -431,10 +444,20 @@ export function VyucbaStol({
     // Počas ťahania karty sa úzke „+“ mení na plné miesto, ktoré skóre nepozná —
     // bublina by naň skočila a karta by dopadla na ňu (playtest výučby 2026-10-23).
     if (el === null || document.body.classList.contains("tahanie-aktivne")) return;
+    const sama = krok?.kto === "auto" || krok?.kto === "bot";
+    if (rucne === null && sama && poloha !== null) {
+      const h = el.offsetHeight;
+      const tu = { ...poloha, w: el.offsetWidth, h };
+      if (skoreChranene(tu, zvyraznene) === 0) {
+        // Ostáva na mieste; len sa nesmie dostať pod spodok okna.
+        const y = Math.min(poloha.y, window.innerHeight - h - 12);
+        if (Math.abs(y - poloha.y) > 1) setPoloha({ ...poloha, y });
+        return;
+      }
+    }
     const miesta = miestaBubliny(el.offsetWidth, el.offsetHeight);
     let i = rucne ?? zvolene;
-    const sama = krok?.kto === "auto" || krok?.kto === "bot";
-    if (rucne === null && !(sama && poloha !== null)) {
+    if (rucne === null) {
       let naj = Number.POSITIVE_INFINITY;
       miesta.forEach((o, j) => {
         // Pri rovnakom skóre ostáva bublina, kde je (neskáče sem a tam).
@@ -513,7 +536,7 @@ export function VyucbaStol({
     if (jeInfo && poloha !== null) dalejRef.current?.focus({ preventScroll: true });
   }, [krok?.id, jeInfo, poloha === null]);
 
-  const presun = (): void => setRucne((zvolene + 1) % 8);
+  const presun = (): void => setRucne((zvolene + 1) % 10);
   const percento = krok === null ? 100 : Math.round(((krok.index + 1) / krok.spolu) * 100);
 
   return (

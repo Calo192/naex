@@ -222,7 +222,8 @@ body.vyucba-bezi .ruka-rad > .tahatelna:not(:hover) > .kl[data-vyucba-zvyraznene
    krajov; čo urobiť, hovorí bublina a celé znenie sa rozbalí pod myšou. */
 body.vyucba-bezi:not(.vyucba-odhad) .pas-kola .suhrn-bitky,
 body.vyucba-bezi:not(.vyucba-odhad) .pas-kola .stavka-bitky,
-body.vyucba-bezi:not(.vyucba-odhad) .vydeseni-pocet {
+body.vyucba-bezi:not(.vyucba-vydesenie) .starsi-info-samostatne,
+body.vyucba-bezi:not(.vyucba-vydesenie) .pas-kola .pas-starsi {
   visibility: hidden;
 }
 
