@@ -12,6 +12,7 @@ import { HernaPlocha } from "./HernaPlocha.tsx";
 import { HudbaPartie } from "./Hudba.tsx";
 import { useMelichar } from "./Melichar.tsx";
 import { Momenty } from "./Momenty.tsx";
+import { NapovedaMelichara } from "./Napovedy.tsx";
 import { Soundboard } from "./Soundboard.tsx";
 import { useHra } from "./useHra.ts";
 import { OznamZiskov } from "../achievementy/VPartii.tsx";
@@ -144,7 +145,7 @@ function Lobby({
             hneď a do Frajeriny sa neráta.
           </p>
           <div className="riadok-tlacidiel">
-            <button onClick={() => zaloz(false, dlzka, true)} disabled={!maPravo(ja, "hrat_bot") || zavrete} title={preco}>
+            <button onClick={() => zaloz(false, dlzka, true)} disabled={!maPravo(ja, "hrat_bot") || zavrete} title={preco} data-hrat-bot="">
               Hrať proti počítaču
             </button>
           </div>
@@ -379,6 +380,8 @@ export function Hra() {
     {hra.vyucba === null && (
       <Momenty udalosti={hra.udalosti} ja={hra.view.ja} mena={hra.hraci.map((h, i) => h?.meno ?? `Hráč ${i + 1}`)} hovor={hovorPriMomente} pocitadloBezi={pocitadloBezi} />
     )}
+    {/* Nápovedy Melichara (Michal 2026-10-24): v každej partii, nie vo výučbe — tam hovorí scenár. */}
+    {hra.vyucba === null && <NapovedaMelichara data={hra.data} view={hra.view} udalosti={hra.udalosti} pocitadloBezi={pocitadloBezi} />}
     <HernaPlocha
       onPocitadlo={setPocitadloBezi}
       view={hra.view}

@@ -93,4 +93,25 @@ describe("nastavenia profilu", () => {
     expect((await volaj("PUT", "/profil/avatar-predvoleny", cookie, { avatar: "cudzie-medium" })).status).toBe(400);
     expect((await volaj("PUT", "/profil/avatar-predvoleny", "", { avatar: zvoleny })).status).toBe(401);
   });
+
+  it("nápovedy Melichara (Michal 2026-10-24): predvolene zapnuté, videné sa pamätajú pri účte, vypínač a reset", async () => {
+    const { cookie } = await registruj(server.port);
+    expect((await volaj("GET", "/napovedy", cookie)).data).toEqual({ zapnute: true, videne: [] });
+
+    expect((await volaj("POST", "/napovedy/videna", cookie, { id: "rola" })).data.videne).toEqual(["rola"]);
+    // Druhýkrát sa nezapíše — každá nápoveda raz.
+    await volaj("POST", "/napovedy/videna", cookie, { id: "rola" });
+    await volaj("POST", "/napovedy/videna", cookie, { id: "pas-cigarety" });
+    expect((await volaj("GET", "/napovedy", cookie)).data.videne).toEqual(["rola", "pas-cigarety"]);
+    for (const zle of ["Rola!", "", 5, "x".repeat(41)]) expect((await volaj("POST", "/napovedy/videna", cookie, { id: zle })).status).toBe(400);
+
+    const vyp = await volaj("PATCH", "/profil", cookie, { napovedy: false });
+    expect((vyp.data.pouzivatel as { napovedy: boolean }).napovedy).toBe(false);
+    expect((await volaj("GET", "/napovedy", cookie)).data.zapnute).toBe(false);
+    expect((await volaj("PATCH", "/profil", cookie, { napovedy: "nie" })).status).toBe(400);
+
+    await volaj("POST", "/napovedy/reset", cookie);
+    expect((await volaj("GET", "/napovedy", cookie)).data.videne).toEqual([]);
+    expect((await volaj("GET", "/napovedy", "")).status).toBe(401);
+  });
 });

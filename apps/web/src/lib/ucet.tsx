@@ -64,6 +64,8 @@ export interface Pouzivatel {
   readonly ai?: boolean;
   /** Farebná schéma webu (lib/schemy.ts); null = predvolená. */
   readonly schema?: string | null;
+  /** Nápovedy majstra Melichara v partii (Michal 2026-10-24); chýba = zapnuté. */
+  readonly napovedy?: boolean;
   /** Klávesové skratky v partii (K, P, N, Esc, ?); chýba = zapnuté. */
   readonly skratky?: boolean;
   /** Pohlavie pre tvary hlášok v partii; null/chýba = neuvádza (neutrálne hlášky). */

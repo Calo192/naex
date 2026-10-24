@@ -23,6 +23,7 @@ export * from "./prehravac.ts";
 export * from "./view.ts";
 export * from "./vyucba.ts";
 export * from "./momenty.ts";
+export * from "./napovedy.ts";
 export * from "./achievementy.ts";
 export * from "./nahlady.ts";
 export * from "./hrozba.ts";

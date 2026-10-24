@@ -5,9 +5,10 @@
   "zverejnena": false,
   "popis": "Krátka výučba (prva-hra.json, 1 kolo) učí len Zhromaždenie a spoje, Pitku s NA EX, bitku a starších. Zvyšok povie Melichar v partii proti botovi, keď sa vec objaví prvýkrát. Každá nápoveda raz za účet, dá sa vypnúť. Špecifikácia: docs/napady/napovedy-prva-partia.html. Spúšťač sa počíta z pohľadu hráča (viewFor), nikdy zo skrytých vecí súpera.",
   "nastavenia": {
-    "kde": "partia proti botovi; nie vo výučbe (TODO Michal: aj prvá partia dvoch ľudí?)",
-    "dokedy": "kým nie je každá nápoveda ukázaná alebo kým ich hráč nevypne (TODO Michal: alebo len prvá partia)",
+    "kde": "každá partia, proti botovi aj proti ľuďom, každému hráčovi (aj kto výučbu neprešiel); nie vo výučbe (Michal 2026-10-24)",
+    "dokedy": "kým nie je každá nápoveda ukázaná alebo kým ich hráč nevypne; v profile sa dajú vypnúť aj ukázať znova (Michal 2026-10-24)",
     "razZaUcet": true,
+    "pamat": "videné nápovedy pri účte (SQLite, stĺpec napovedy_videne), bez účtu v prehliadači",
     "najviacNaraz": 1,
     "kolizia": "pri viacerých naraz sa ukáže tá s najnižším poradím; ostatné ostanú neukázané a spustia sa pri ďalšom výskyte",
     "caka": "počas Počítadla bitky, ťahu súpera a hlášky Melichara (momenty) bublina čaká",
@@ -108,7 +109,8 @@
       "uroven": "A",
       "spustac": {
         "kedy": "prvé kolo o lokalitu, ktorej pravidlo mení základný ťah",
-        "podmienka": "view.ciel.lokalita.defId v [krcma, kostol, benzinka, zastavka, most, vinna_pivnica, druzstvo], prvé také kolo",
+        "podmienka": "view.ciel.lokalita.defId v zozname lokality, prvé také kolo",
+        "lokality": ["krcma", "kostol", "benzinka", "zastavka", "most", "vinna_pivnica", "druzstvo"],
         "doplnit": "{lokalita} = názov karty, {efekt} = effect_text z cards.json",
         "jadro": ["packages/core/src/engine.ts:258 GameState.ciel", "docs/PRAVIDLA.md §15 Lokality"]
       },

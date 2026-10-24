@@ -99,7 +99,7 @@ describe("výučba — pevné rozdanie", () => {
     expect(() => setupZRozdania(data, { ...r, scorecardy: { farar: "neexistuje" } })).toThrow(/scorecard/);
   });
 
-  it("hra s dvoma lokalitami sa po druhej bitke skončí s bodovaním", () => {
+  it("hra s jednou lokalitou sa po prvej bitke skončí s bodovaním", () => {
     // Väčšie balíčky, nech hra neskončí prehrou na balíček skôr než bitkami.
     const balicek = ["pijan", "pijan", "ministrant", "ministrant", "hasic", "svokra", "pijan", "ministrant", "hasic", "svokra"];
     let s: GameState = setupZRozdania(data, { ...r, hraci: [{ ...r.hraci[0], doberaci: balicek }, { ...r.hraci[1], doberaci: balicek }] });
@@ -114,7 +114,7 @@ describe("výučba — pevné rozdanie", () => {
     }
     expect(s.koniec?.dovod).toMatch(/posledná bitka/);
     expect(s.koniec?.body).not.toBeNull();
-    expect(s.kolo).toBe(2);
+    expect(s.kolo).toBe(1);
   });
 });
 

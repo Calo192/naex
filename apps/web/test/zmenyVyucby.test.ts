@@ -14,7 +14,7 @@ import { stitokTahu, zmenyStola } from "../src/hra/zmenyVyucby.ts";
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const scenar = scenarJson as unknown as ScenarVyucby;
 
-/** Pohľad hráča pred a po každom ťahu bota a hry za hráča zo scenára. */
+/** Pohľad hráča pred a po každom ťahu scenára — bot, hra za hráča aj hráč (zmenyStola ich nerozlišuje). */
 function tahySoZmenami(): { readonly krok: KrokScenara; readonly pred: ClientState; readonly po: ClientState }[] {
   let state = zacniVyucbu(data, scenar);
   const out: { krok: KrokScenara; pred: ClientState; po: ClientState }[] = [];
@@ -23,7 +23,7 @@ function tahySoZmenami(): { readonly krok: KrokScenara; readonly pred: ClientSta
     const kto = ktoVykona(krok);
     const pred = viewFor(data, state, VYUCBA_HRAC);
     state = apply(data, state, prikazZoScenara(state, kto, krok.prikaz), kto).state;
-    if (krok.kto !== "hrac") out.push({ krok, pred, po: viewFor(data, state, VYUCBA_HRAC) });
+    out.push({ krok, pred, po: viewFor(data, state, VYUCBA_HRAC) });
   }
   return out;
 }
@@ -36,30 +36,33 @@ const tah = (id: string) => {
 
 describe("zmeny na stole po ťahu bota či hry vo výučbe", () => {
   it("karta, ktorú Štamgast priložil, svieti na stole", () => {
-    const { po, kluce } = tah("k39");
-    const pes = po.strany[1].find((pl) => pl.card.defId === "pes");
-    expect(pes).toBeDefined();
-    expect(kluce).toContain(`uid:${pes?.card.uid}`);
+    const { po, kluce } = tah("k-zh-bot1");
+    const zamocnik = po.strany[1].find((pl) => pl.card.defId === "zamocnik");
+    expect(zamocnik).toBeDefined();
+    expect(kluce).toContain(`uid:${zamocnik?.card.uid}`);
   });
 
-  it("pas Štamgasta rozsvieti jeho cigarety, pas hry za hráča tvoje", () => {
-    expect(tah("k43").kluce).toContain("bar-supera:cigarety");
-    expect(tah("k44").kluce).toContain("bar:cigarety");
+  it("cigarety za kúpu Štamgasta svietia na jeho bare, za tvoju na tvojom", () => {
+    expect(tah("k-kupa-bot").kluce).toContain("bar-supera:cigarety");
+    expect(tah("k-kup-hasic").kluce).toContain("bar:cigarety");
+    // Pas s plným limitom nedal cigaretu — nič sa nerozsvieti.
+    expect(tah("k-pas-bot").kluce).toEqual([]);
   });
 
   it("kúpu Štamgasta zo šenku ukáže jeho dlaždica Karty — karta v jeho ruke je skrytá", () => {
-    const { kluce } = tah("k33");
+    const { kluce } = tah("k-kupa-bot");
     expect(kluce).toContain("bar-supera:karty");
   });
 
-  it("Pohoršenie rozsvieti staršieho, ktorého posunulo", () => {
-    expect(tah("k25").kluce).toContain("starsi:starosta");
+  it("posun markera za prebytok rozsvieti staršieho", () => {
+    expect(tah("k-prebytok1").kluce).toContain("starsi:farar");
   });
 
   it("NA EX na kartu v línii ju rozsvieti", () => {
-    const { po, kluce } = tah("k48");
-    const pijan = po.strany[1].find((pl) => pl.card.defId === "pijan");
-    expect(kluce).toContain(`uid:${pijan?.card.uid}`);
+    const { po, kluce } = tah("k-naex");
+    const hasic = po.strany[0].find((pl) => pl.card.defId === "hasic");
+    expect(hasic).toBeDefined();
+    expect(kluce).toContain(`uid:${hasic?.card.uid}`);
   });
 
   it("každá karta v kľúčoch je v pohľade hráča — zvýraznenie neprezradí skrytú kartu", () => {
@@ -73,7 +76,7 @@ describe("zmeny na stole po ťahu bota či hry vo výučbe", () => {
   });
 
   it("ťah, ktorý nič nezmenil, nič nerozsvieti", () => {
-    const { pred } = tah("k39");
+    const { pred } = tah("k-zh-bot1");
     expect(zmenyStola(pred, pred)).toEqual([]);
   });
 });

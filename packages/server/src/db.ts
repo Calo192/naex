@@ -357,6 +357,10 @@ function migruj(db: Db): void {
   // a či ju dokončil alebo preskočil (NULL = ešte nie).
   if (!ucty.some((c) => c.name === "vyucba_krok")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN vyucba_krok INTEGER NOT NULL DEFAULT 0");
   if (!ucty.some((c) => c.name === "vyucba_stav")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN vyucba_stav TEXT");
+  // Nápovedy Melichara v partii (Michal 2026-10-24): 0 = vypnuté, NULL = zapnuté;
+  // videné = JSON pole id z napovedy.json (každá sa ukáže len raz, reset v profile).
+  if (!ucty.some((c) => c.name === "napovedy")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN napovedy INTEGER");
+  if (!ucty.some((c) => c.name === "napovedy_videne")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN napovedy_videne TEXT");
   // Kedy hráč naposledy otvoril Novinky — značka v navigácii (Michal 2026-10-22); NULL = od registrácie.
   if (!ucty.some((c) => c.name === "novinky_videne")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN novinky_videne INTEGER");
   // Pohlavie pre tvary hlášok v partii (Michal 2026-10-22): muz / zena; NULL = neuvádza (neutrálne hlášky).
