@@ -104,23 +104,24 @@ export interface ScenarVyucby {
 export const VYUCBA_HRAC: PlayerId = 0;
 export const VYUCBA_BOT: PlayerId = 1;
 
-/** Pauza pred ťahom bota bez komentára (ms). */
-export const PAUZA_TICHA_MS = 700;
-/** Pauza pred auto krokom a ťahom bota s komentárom: základ + čas na čítanie, najviac strop (UI inšpekcia). */
-export const PAUZA_ZAKLAD_MS = 1_800;
-export const PAUZA_NA_SLOVO_MS = 60;
-export const PAUZA_NAJVIAC_MS = 4_000;
+/** Pauza pred ťahom bez komentára — UI stihne dosvietiť, čo sa stalo (ms). */
+export const PAUZA_TICHA_MS = 1_500;
+/**
+ * Pauza pred ťahom s komentárom Melichara (UX/UI 2026-10-24, playtest výučby U5):
+ * ťah sa vykoná a krok čaká na „ďalej“ — hráč číta text aj výsledok naraz.
+ */
+export const PAUZA_PRED_TAHOM_MS = 700;
+
+/** Ako dlho počkať pred krokom, ktorý hra spraví sama (bot, auto). */
+export function pauzaKrokuVyucby(krok: KrokVyucby): number {
+  return cakaNaDalej(krok) ? PAUZA_PRED_TAHOM_MS : PAUZA_TICHA_MS;
+}
 
 /**
- * Ako dlho počkať pred krokom, ktorý hra spraví sama (bot, auto) — aby hráč
- * stihol prečítať komentár a UI zvýrazniť, čo sa stane. Auto krok čaká vždy
- * aspoň základ, aj bez textu.
+ * Ťah bota či auto krok s textom Melichara sa po vykonaní neposunie sám, čaká na
+ * „ďalej“ (playtest výučby U5: hra preskočila 3–5 krokov naraz). Bez textu ide sám.
  */
-export function pauzaKrokuVyucby(krok: KrokVyucby): number {
-  const slov = krok.melichar.trim() === "" ? 0 : krok.melichar.trim().split(/\s+/).length;
-  if (krok.kto === "bot" && slov === 0) return PAUZA_TICHA_MS;
-  return Math.min(PAUZA_NAJVIAC_MS, PAUZA_ZAKLAD_MS + slov * PAUZA_NA_SLOVO_MS);
-}
+export const cakaNaDalej = (krok: KrokVyucby): boolean => (krok.kto === "bot" || krok.kto === "auto") && krok.melichar.trim() !== "";
 
 /** Za koho sa krok vykoná — auto je príkaz hráča, len ho zahrá hra. */
 export const ktoVykona = (krok: KrokVyucby): PlayerId => (krok.kto === "bot" ? VYUCBA_BOT : VYUCBA_HRAC);
@@ -325,6 +326,12 @@ function kartaPodlaUid(state: GameState, uid: number): CardInstance | null {
   return null;
 }
 
+/** Meno staršieho podľa karty na jeho scorecarde (U3: „Klikni na Farára“, nie „urob ťah“). */
+const menoStarsieho = (data: GameData, state: GameState, elderId: string): string => {
+  const e = state.starsi.find((x) => x.elderId === elderId);
+  return e === undefined ? elderId : defOf(data, e.karta).name;
+};
+
 const menoKarty = (data: GameData, state: GameState, uid: number): string => {
   const k = kartaPodlaUid(state, uid);
   return k === null ? "?" : defOf(data, k).name;
@@ -380,6 +387,14 @@ export function popisKroku(data: GameData, state: GameState, c: Command): PopisK
         return `vezmi zo šenku ${c.uids.map((u) => `„${menoKarty(data, state, u)}“`).join(", ")}`;
       case "chooseLocation":
         return `vyber ${nazov}`;
+      case "prebytok":
+        return `posuň prebytkom staršieho „${menoStarsieho(data, state, c.elderId)}“`;
+      case "pohorsenie":
+        return `posuň Pohoršením staršieho „${menoStarsieho(data, state, c.elderId)}“`;
+      case "patronat":
+        return `vezmi si staršieho „${menoStarsieho(data, state, c.elderId)}“ (patronát)`;
+      case "bezPatronatu":
+        return "patronát vynechaj";
       default:
         return "urob ťah, ktorý svieti";
     }

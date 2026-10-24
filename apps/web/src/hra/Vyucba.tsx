@@ -515,7 +515,8 @@ export function VyucbaStol({
 
   // Krok bez ťahu: klik mimo zvýraznenia a bubliny nič neurobí (playtest: klik na okraj otvoril Karty).
   // Prechod myšou ostáva — lupa karty či staršieho sa otvorí aj v info kroku.
-  const blokuj = krok?.kto === "info" || krok?.kto === "otazka";
+  // Vykonaný ťah bota či auto krok s textom čaká na „ďalej“ ako info (U5).
+  const blokuj = krok?.kto === "info" || krok?.kto === "otazka" || krok?.vykonany === true;
   useEffect(() => {
     if (!blokuj) return;
     const povolene = (t: EventTarget | null): boolean =>
@@ -568,7 +569,7 @@ export function VyucbaStol({
 
   // Enter = „ďalej“ v kroku bez ťahu, aj keď fokus ostal na karte či tlačidle po kliku myšou
   // (playtest: Enter po kliku nereagoval). Polia na písanie nechá tak.
-  const jeInfo = !pocitadloBezi && (krok?.kto === "info" || (krok?.kto === "otazka" && vybrana?.spravna === true));
+  const jeInfo = !pocitadloBezi && (krok?.kto === "info" || krok?.vykonany === true || (krok?.kto === "otazka" && vybrana?.spravna === true));
   useEffect(() => {
     if (!jeInfo) return;
     const klaves = (e: KeyboardEvent): void => {
@@ -667,8 +668,8 @@ export function VyucbaStol({
                 </button>
               )}
               {krok.kto === "hrac" && <span className="vyucba-stav">Tvoj ťah</span>}
-              {krok.kto === "bot" && <span className="vyucba-stav vyucba-caka">{menoBota} ťahá…</span>}
-              {krok.kto === "auto" && <span className="vyucba-stav vyucba-caka">Hra ťahá za teba…</span>}
+              {krok.kto === "bot" && !krok.vykonany && <span className="vyucba-stav vyucba-caka">{menoBota} ťahá…</span>}
+              {krok.kto === "auto" && !krok.vykonany && <span className="vyucba-stav vyucba-caka">Hra ťahá za teba…</span>}
               <button type="button" className="vyucba-presun" onClick={presun} title="Bublina zakrýva, čo potrebuješ? Presuň ju inam — ostane tam.">
                 ⇆ <span>presunúť</span>
               </button>

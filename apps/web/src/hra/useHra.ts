@@ -64,6 +64,8 @@ export interface KrokVyucby {
    * otazka = kontrolná otázka (text je melichar, možnosti v moznosti).
    */
   readonly kto: "hrac" | "bot" | "info" | "auto" | "otazka";
+  /** Ťah bota či auto krok s textom je vykonaný a čaká na „ďalej“ (vyucbaDalej) — U5. */
+  readonly vykonany: boolean;
   readonly melichar: string;
   /** Kľúče prvkov na zvýraznenie, napr. „bar:poldeci“, „ruka:hasic“ — v UI atribút data-vyucba. */
   readonly zvyraznit: readonly string[];

@@ -28,6 +28,7 @@ interface KrokMsg {
   index: number;
   spolu: number;
   kto: "hrac" | "bot" | "info" | "auto" | "otazka";
+  vykonany?: boolean;
   melichar: string;
   zvyraznit: string[];
   ocakava: Command | null;
@@ -44,10 +45,11 @@ async function zacni(cookie: string): Promise<{ k: Klient; prvy: Msg }> {
   return { k, prvy: await k.cakaj("vyucba") };
 }
 
-/** Krok bez ťahu: pri otázke správna odpoveď (zapíše sa ako prvá), potom „ďalej“ — ako pri texte. */
+/** Krok bez ťahu hráča: pri otázke správna odpoveď (zapíše sa ako prvá), potom „ďalej“ — aj po vykonanom ťahu bota s textom. */
 function potvrd(k: Klient, krok: KrokMsg): void {
   if (krok.kto === "otazka") k.posli({ type: "vyucbaOdpoved", index: (krok.moznosti ?? []).findIndex((m) => m.spravna) });
-  if (krok.kto === "info" || krok.kto === "otazka") k.posli({ type: "vyucbaDalej" });
+  // Vykonaný ťah bota či auto krok s textom čaká na „ďalej“ (U5).
+  if (krok.kto === "info" || krok.kto === "otazka" || krok.vykonany === true) k.posli({ type: "vyucbaDalej" });
 }
 
 /** Odohrá kroky výučby, kým nie je hotová alebo kým neprejde `max` krokov. */
