@@ -346,6 +346,7 @@ button.cip.aktivny {
   display: flex;
   justify-content: space-between;
   width: 100%;
+  min-height: 24px;
   padding: 4px 0;
   border: 0;
   background: none;
@@ -476,7 +477,8 @@ button.cip.aktivny {
   color: var(--text);
 }
 
-/* Kniha: kapitoly za sebou, text v stĺpci na čítanie. */
+/* Kniha: kapitoly za sebou, text v stĺpci na čítanie. Ilustrácia je pri každej šírke
+   pás nad kapitolou cez celý stĺpec (Michal 2026-10-24: na 1920 nie do pravého okraja). */
 .pravidla-kniha {
   min-width: 0;
   max-width: 760px;
@@ -621,33 +623,6 @@ button.cip.aktivny {
 
 .kapitola-dalej strong {
   color: var(--text);
-}
-
-/* Široké okno: ilustrácia do pravého okraja, text ostáva v stĺpci. */
-@media (min-width: 1500px) {
-  .pravidla-kniha {
-    max-width: 1180px;
-  }
-
-  .kapitola {
-    display: grid;
-    grid-template-columns: minmax(0, 720px) minmax(260px, 1fr);
-    column-gap: 44px;
-    align-items: start;
-  }
-
-  .kapitola > * {
-    grid-column: 1;
-  }
-
-  .kapitola > .kapitola-pas {
-    grid-column: 2;
-    grid-row: 1 / span 6;
-    position: sticky;
-    top: 90px;
-    aspect-ratio: 4 / 3;
-    max-height: none;
-  }
 }
 
 /* Pojem v texte: podčiarknutý, vysvetlenie pod myšou (Pojem.tsx). */
