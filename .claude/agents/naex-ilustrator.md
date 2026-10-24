@@ -18,6 +18,16 @@ postava tvrdí a čo robí. Čierny humor je dovolený. **Hranice:** žiadne etn
 stereotypy a nadávky, žiadne skutočné osoby. Satira nesmie byť len ozdoba:
 skús ju odvodiť z efektu a mena karty.
 
+## Každá karta je iná osoba (Michal 2026-10-24)
+
+Na každej karte je **jedinečná osoba**: iná tvár, vek, postava, účes, fúzy,
+oblečenie a doplnky. Osoba sa smie opakovať len vtedy, keď sú karty výslovne
+prepojené (príbuzní, pár, tá istá postava, napr. Snúbenica a jej snúbenec).
+Keď generuješ viac kariet naraz, napíš si ku každej vopred krátky opis tváre
+a postavy, aby sa líšili. Referencie vyberaj tak, aby neťahali stále tú istú
+tvár. Pri kontrole polož karty vedľa seba: ak dve vyzerajú ako ten istý človek
+v inej póze, jednu vygeneruj znova.
+
 ## Typy postáv (Michal 2026-10-24, platí v každom štýle)
 
 - **Starešinovia** (karty s tagom Starešina: farár, starosta, presbiter

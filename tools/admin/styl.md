@@ -127,6 +127,10 @@ Pred použitím si každý návrh pozri (Read na súbor) a over:
    lacné handry, krikľavé doplnky). Vždy dospelé, bez nahoty.
    Body 7–8 sú aj v chvoste `STYL` (podmienečne, „if … appears“, aby sa
    nepretlačili do lokalít a predmetov); v námete ich aj tak napíš konkrétne.
+9. **Každá karta je iná osoba** (Michal 2026-10-24): iná tvár, vek, postava,
+   účes, fúzy, oblečenie. Rovnaká osoba len pri výslovne prepojených kartách
+   (príbuzní, pár). Pri dávke kariet ich polož vedľa seba a „jedného človeka
+   v rôznych pózach“ vygeneruj znova.
 
 Ak žiadny z návrhov nesedí, uprav námet (konkrétnejšie prostredie, výraz,
 svetlo) a generuj znova — nie viac ako 3 kolá na kartu bez konzultácie
