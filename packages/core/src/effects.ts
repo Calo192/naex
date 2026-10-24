@@ -49,7 +49,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   autobusar: "impl", // Bitka: ignoruj 1 Absťák
   benzinka: "impl", // Zhromaždenie + Pitka: nikto nesmie fajčiť (Michal 2026-10-20)
   cigorky: "impl", // Dedičstvo: žiadny refill; v každej Pitke cigareta navyše
-  kocovnik: "native", // Furt: Dlh a Poškodenie pečene z jeho akcií dostáva hráč, na ktorého strane leží (bez limitu zrušené 2026-10-19)
+  kocovnik: "native", // Furt: jeho akcie sa počítajú hráčovi s prevahou v jeho kraji (Michal 2026-10-24; evaluateLine)
   cirhoza: "native", // Bitka: dodatočná rana od súpera (cirhozaBonus)
   dievcina_na_vydaj: "impl", // Bitka: zahodenie + dlhy podľa aktívnych akcií
   dlh: "native", // Bitka: krok Exekútora
