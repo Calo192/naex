@@ -32,6 +32,14 @@ vyčnievala.
   nečitateľný.)
 - **Bez skutočných osôb a značiek** — žiadne podobizne známych ľudí, žiadne
   skutočné logá či produkty.
+- **Dym — pevné pravidlo** (Michal 2026-10-24, platí pre každý obrázok, karty
+  aj pásy): dym smie ísť **len z horiacej cigarety, z cigarety v popolníku
+  alebo z úst postavy, ktorá ho vyfukuje**. Nikdy z ucha, chrbta, vlasov,
+  oblečenia ani len tak zo vzduchu. Model to rád porušuje — zadymená krčma mu
+  stačí ako dôvod. Ak scéna fajčenie nepotrebuje, napíš do námetu „nobody is
+  smoking, no smoke anywhere“.
+- **Ruky** v jednoduchých prirodzených polohách, päť prstov. Žiadne pretláčanie,
+  prepletené ruky ani zložité úchopy — model ich kreslí zle.
 
 ## Šablóna promptu
 
@@ -96,13 +104,26 @@ Pred použitím si každý návrh pozri (Read na súbor) a over:
 
 1. Linka, šrafovanie a paleta sedia s referenciami (polož ich vedľa seba).
 2. Motív je v strede a prežije orez do karty (54 × 80 mm, ilustrácia v hornej časti).
-3. Žiadny text, logo, rám, ani deformované ruky či tváre.
-4. Postava zodpovedá názvu a téme karty (Kliatba pôsobí ako trest, Starešina
+3. Žiadny text, logo, rám, ani deformované ruky či tváre. Ruky a prsty si
+   pozri pri plnej veľkosti (pri pochybnosti zväčšený výrez).
+4. **Dym**: každý obláčik musí viesť k cigarete, popolníku alebo k ústam.
+   Dym z chrbta, hlavy či zo vzduchu = zlý obrázok, generuj znova.
+5. Postava zodpovedá názvu a téme karty (Kliatba pôsobí ako trest, Starešina
    ako autorita, Zviera ako dedinské zviera).
 
 Ak žiadny z návrhov nesedí, uprav námet (konkrétnejšie prostredie, výraz,
 svetlo) a generuj znova — nie viac ako 3 kolá na kartu bez konzultácie
 s Michalom (generovanie stojí kredity).
+
+## Pásy kapitol pravidiel
+
+`admin.ts pas-generuj <kluc> "<námet>" [--sila MID]` — široký pás nad
+kapitolou stránky Pravidlá: 1536 × 672 (21:9, najširší pomer Nano Banana),
+potom orez na 2,5 : 1 a zmenšenie na 1600 × 640 JPEG (150–250 kB) do
+`apps/web/src/stranky/pravidla-obrazky/`. Predloha štýlu sú karty, ktoré
+Michal považuje za najvydarenejšie (`REFERENCIE_PASU` v `styl.ts`: Kočovník,
+Niekoho stryná, Podvodník, Zámočník, Krčmárka, Poštárka, Veterinár, Pán farár).
+Model občas pridá biely okraj alebo čierne pruhy — orezávaj len čistú plochu.
 
 ## Ikony akcií (SVG)
 

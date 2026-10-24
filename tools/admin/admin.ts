@@ -449,7 +449,11 @@ async function main(): Promise<void> {
     const adr = join(PRACOVNY, "pravidla", kluc);
     mkdirSync(adr, { recursive: true });
     const prompt = `${namet.trim().replace(/\.$/, "")}. ${STYL_PASU}`;
-    const referencie = REFERENCIE_PASU.map((id) => join("packages/server/seed/karty", `${id}.jpg`));
+    // Leonardo berie najviac 6 referencií — každý pás dostane inú šesticu, aby sa vystriedali všetky.
+    const posun = [...kluc].reduce((a, c) => a + c.charCodeAt(0), 0) % REFERENCIE_PASU.length;
+    const referencie = Array.from({ length: Math.min(6, REFERENCIE_PASU.length) }, (_, i) =>
+      join("packages/server/seed/karty", `${REFERENCIE_PASU[(posun + i) % REFERENCIE_PASU.length]}.jpg`),
+    );
     writeFileSync(join(adr, "zadanie.json"), `${JSON.stringify({ prompt, kategoria: "pas", referencie }, null, 2)}\n`);
     const seed = hodnota("--seed");
     // 21:9 je najširší pomer Nano Banana; pás 2,5 : 1 sa z neho vyreže.
