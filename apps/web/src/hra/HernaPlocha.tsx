@@ -252,6 +252,10 @@ function pravyKlik(fn: (() => void) | undefined): ((e: React.MouseEvent) => void
 
 /** Dĺžka doznievania lupy po odchode myši — rovnaká ako animácia .lupa.doznieva v hra.css. */
 const DOZNIEVANIE_LUPY_MS = 160;
+/** Ako dlho ostane hláška „karta sa nepoložila“ — stačí na prečítanie, potom nezavadzia. */
+const ZOBRAZENIE_CHYBY_TAHANIA_MS = 6000;
+/** Najväčšia šírka tej hlášky — rovnaká ako max-width .chyba-tahania v hra.css. */
+const SIRKA_CHYBY_TAHANIA = 340;
 /** Šírka lupy staršieho z bodového baru — vojde sa aj na notebook 1366 × 650 a neprekryje celý stôl. */
 const SIRKA_LUPY_STARSIEHO = 400;
 
@@ -1408,7 +1412,7 @@ export function HernaPlocha({
     if (ciel === null || !cieleZdroja(z).has(ciel)) {
       const vykladal = z.odkial === "ruka" && !z.navrh && [...cieleZdroja(z)].some((c) => jeCielVykladania(c) || c.startsWith(NAHRADIT));
       if (vykladal && document.elementFromPoint(bod.x, bod.y)?.closest(".ruka") == null) {
-        setChybaTahania("Karta sa nepoložila — pusti ju na zvýraznené miesto, alebo klikni na „+“ na konci strany a potom na kartu.");
+        setChybaTahania({ text: "Karta sa nepoložila — pusti ju na zvýraznené miesto, alebo klikni na „+“ na konci strany a potom na kartu.", ...bod });
       }
       return;
     }
@@ -1451,8 +1455,15 @@ export function HernaPlocha({
     }
   };
 
-  const [chybaTahania, setChybaTahania] = useState<string | null>(null);
+  // Hláška leží tam, kde hráč kartu pustil — to miesto je prázdne. Na stole by
+  // zakryla lokalitu a „+“, kam hovorí kartu pustiť (UI inšpekcia 2026-10-24).
+  const [chybaTahania, setChybaTahania] = useState<{ readonly text: string; readonly x: number; readonly y: number } | null>(null);
   useEffect(() => setChybaTahania(null), [klucTahu]);
+  useEffect(() => {
+    if (chybaTahania === null) return;
+    const t = setTimeout(() => setChybaTahania(null), ZOBRAZENIE_CHYBY_TAHANIA_MS);
+    return () => clearTimeout(t);
+  }, [chybaTahania]);
   const { tahanie, zacni, duchRef } = useTahanie(pusti);
 
   // ---- lupa nad kartami na stole a vo vrstvách ----------------------------
@@ -4142,18 +4153,6 @@ export function HernaPlocha({
     };
     return `Pitka ${ucetPitky.pitka} vyhodnotená · ty: ${za(ja)} · ${menoHraca(super_)}: ${za(super_)}`;
   })();
-  // Vlastný pás: výučba pruh udalostí schová (komentuje Melichar), túto hlášku nie.
-  const pokynTahania =
-    chybaTahania === null || chyba !== null ? null : (
-      <div className="pokyn-udalosti pokyn-tahania">
-        <span className="pokyn-chyba" role="alert">
-          ⚠ {chybaTahania}
-          <button type="button" className="tlacidlo-male" onClick={() => setChybaTahania(null)}>
-            OK
-          </button>
-        </span>
-      </div>
-    );
   const pokynUdalosti =
     chyba === null && poslednySuperov.length === 0 && textUctuPitky === null ? null : (
       <div className="pokyn-udalosti">
@@ -4193,19 +4192,11 @@ export function HernaPlocha({
     );
   const maHranaTlacidla = hranaVlavo !== null || hranaStred !== null || hranaVpravo !== null;
   const hranaStola =
-    !maHranaTlacidla && pokynUdalosti === null && pokynTahania === null ? null : (
+    !maHranaTlacidla && pokynUdalosti === null ? null : (
       // V drafte sa hrana neprilepí nad ruku: stôl leží pod draftom a pri posúvaní
       // by zakrývala karty draftu a pokyn; potvrdenie je aj tak v draft paneli.
       // Ani keď z línie nad rukou nie je nič vidno (liniaVidno).
-      <div
-        className={[
-          view.faza === "draft" || !liniaVidno ? "stol-hrana neprilepena" : "stol-hrana",
-          !maHranaTlacidla && pokynUdalosti === null ? "len-pokyn" : "",
-        ]
-          .filter((x) => x !== "")
-          .join(" ")}
-      >
-        {pokynTahania}
+      <div className={view.faza === "draft" || !liniaVidno ? "stol-hrana neprilepena" : "stol-hrana"}>
         {pokynUdalosti}
         {maHranaTlacidla && (
           <div className="hrana-rad">
@@ -4905,6 +4896,24 @@ export function HernaPlocha({
             otocena: tahanie.zdroj.odkial === "lokality" && tahanie.zdroj.navrh && lokalitaNavrhOtocena,
             bezPopisov: true,
           })}
+        </div>
+      )}
+
+      {chybaTahania !== null && (
+        <div
+          className="chyba-tahania"
+          role="alert"
+          style={{
+            left: Math.min(Math.max(chybaTahania.x, 16 + SIRKA_CHYBY_TAHANIA / 2), window.innerWidth - 16 - SIRKA_CHYBY_TAHANIA / 2),
+            top: chybaTahania.y,
+            // Nad bodom; pri hornom okraji okna pod ním.
+            transform: chybaTahania.y > 180 ? "translate(-50%, calc(-100% - 14px))" : "translate(-50%, 14px)",
+          }}
+        >
+          <span>⚠ {chybaTahania.text}</span>
+          <button type="button" className="tlacidlo-male" onClick={() => setChybaTahania(null)}>
+            OK
+          </button>
         </div>
       )}
     </div>
