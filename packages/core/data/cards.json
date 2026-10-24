@@ -1,5 +1,5 @@
 {
- "source": "tvorca kariet 2026-10-23T11:57:58.864Z",
+ "source": "tvorca kariet 2026-10-24T07:56:39.852Z",
  "actions": [
   "Cigareta",
   "Dlh",
@@ -593,7 +593,7 @@
     "Závislý",
     "Chlap"
    ],
-   "effect_text": "Bitka: Ak má žena v jeho okolí aktívnu akciu poldeci, udelí ranu do vlastnej partie.",
+   "effect_text": "Bitka: Ak má Žena v jeho okolí aktívnu akciu Poldeci, súper ti udelí 1 Ranu.",
    "triggers": [
     "Bitka"
    ],
@@ -779,9 +779,9 @@
     "Pracujúci",
     "Žena"
    ],
-   "effect_text": "Prestávka: Dlh z jej akcií dostáva súper, nie ty.",
+   "effect_text": "Pitka: Dlh z jej akcií dostáva súper, nie ty.",
    "triggers": [
-    "Prestávka"
+    "Pitka"
    ],
    "left": {
     "blocked": [],
@@ -2066,53 +2066,49 @@
     "Zahraničný",
     "Chlap"
    ],
-   "effect_text": "Furt: Dlh a Poškodenie pečene z jeho akcií dostáva hráč, na ktorého strane leží.",
+   "effect_text": "Furt: Jeho akcie sa počítajú hráčovi, ktorý má v jeho kraji prevahu.",
    "triggers": [
     "Furt"
    ],
    "left": {
-    "blocked": [],
+    "blocked": [
+     0,
+     3
+    ],
     "actions": {
-     "Dlh": 2,
-     "Poldeci": 1,
+     "Dlh": 1,
      "PoškodeniePečene": 1
     },
     "allowed": {
-     "0": [
-      "Dlh"
-     ],
      "1": [
-      "Dlh"
+      "Dlh",
+      "PoškodeniePečene"
      ],
      "2": [
-      "PoškodeniePečene",
-      "Poldeci"
-     ],
-     "3": [
-      "PoškodeniePečene",
-      "Poldeci"
+      "Dlh",
+      "PoškodeniePečene"
      ]
     }
    },
    "right": {
     "blocked": [
-     1
+     3
     ],
     "actions": {
-     "Dlh": 1,
-     "Pecka": 1,
-     "PoškodeniePečene": 1
+     "Cigareta": 1,
+     "PoškodeniePečene": 1,
+     "Rana": 1
     },
     "allowed": {
      "0": [
-      "Pecka"
+      "Cigareta"
      ],
-     "2": [
-      "Dlh",
+     "1": [
+      "Rana",
       "PoškodeniePečene"
      ],
-     "3": [
-      "Dlh",
+     "2": [
+      "Rana",
       "PoškodeniePečene"
      ]
     }
