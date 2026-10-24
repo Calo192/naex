@@ -2,6 +2,7 @@
 // zmena Frajeriny a návrat do lobby. Kým bol koniec len riadok v páse
 // pokynov, hráči ho prehliadli a nevedeli, odkiaľ body sú.
 
+import { useEffect, useRef } from "react";
 import type { ClientState, GameData, PlayerId, Rod } from "@naex/core";
 import { bodyTeraz, tvar } from "@naex/core";
 import { Odkaz } from "../lib/router.tsx";
@@ -28,6 +29,10 @@ export interface KoniecHryProps {
 
 export function KoniecHry({ view, data, mena, menoKarty, frajerina, achievementy = null, onZavri, opustit, rodJa = null, rody = [null, null] }: KoniecHryProps) {
   const koniec = view.koniec;
+  // Fokus na „späť do lobby“ bez posunu — autoFocus vyroloval vysoké okno nadol a výsledok
+  // hore hráč nevidel (UI inšpekcia 2026-10-24).
+  const lobbyRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => lobbyRef.current?.focus({ preventScroll: true }), [koniec === null]);
   if (koniec === null) return null;
   const ja = view.ja;
   const su: PlayerId = ja === 0 ? 1 : 0;
@@ -87,7 +92,7 @@ export function KoniecHry({ view, data, mena, menoKarty, frajerina, achievementy
           <Odkaz href="/spatna-vazba#hodnotenie" className="tlacidlo">
             ohodnotiť hru
           </Odkaz>
-          <button className="tlacidlo-hlavne" onClick={opustit} autoFocus>
+          <button ref={lobbyRef} className="tlacidlo-hlavne" onClick={opustit}>
             späť do lobby
           </button>
         </div>
