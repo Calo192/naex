@@ -643,6 +643,24 @@ body.vyucba-bezi .stol-hrana:not(:has(> :not(.pokyn-udalosti:not(.pokyn-tahania)
   gap: 6px 12px;
 }
 
+/* Zbalená nápoveda: plná by zakryla kartu, z ktorej hráč vyberá — len Melichar a „nápoveda“. */
+.napoveda-bublina.zbalena {
+  width: auto;
+  align-items: center;
+  padding: 6px 10px 6px 6px;
+  border-radius: 999px;
+}
+
+.napoveda-bublina.zbalena .napoveda-telo,
+.napoveda-bublina:not(.zbalena) .napoveda-rozbal {
+  display: none;
+}
+
+.napoveda-bublina.zbalena .vyucba-avatar {
+  width: 32px;
+  height: 32px;
+}
+
 .napoveda-vypnut {
   margin-left: auto;
   font-size: 0.78rem;
