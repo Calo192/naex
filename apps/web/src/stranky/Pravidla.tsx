@@ -128,7 +128,7 @@ function Hladanie({ poVybere }: { readonly poVybere?: () => void }) {
         }}
       />
       {dotaz.trim().length >= 2 && (
-        <ul className="pravidla-vysledky" role="listbox" aria-label="Výsledky hľadania">
+        <ul className="pravidla-vysledky" aria-label="Výsledky hľadania" aria-live="polite">
           {vysledky.length === 0 && <li className="tlmene">Nič sa nenašlo.</li>}
           {vysledky.map((v, i) => (
             <li key={`${v.kotva}-${i}`}>
