@@ -378,6 +378,7 @@ export function Hra() {
       log={hra.log}
       udalosti={hra.udalosti}
       bezOknaKonca={hra.vyucba !== null}
+      vyucba={hra.vyucba !== null}
       // Pri rozhodnutí (volba) je správnych viac kandidátov — potvrdiť sa nezamyká.
       vyucbaOcakava={hra.vyucba?.krok?.kto === "hrac" && hra.vyucba.krok.volba === null ? hra.vyucba.krok.ocakava : null}
       // Vo výučbe chybu ukazuje bublina Melichara.
