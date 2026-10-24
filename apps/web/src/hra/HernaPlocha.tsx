@@ -513,7 +513,12 @@ export function HernaPlocha({
   // Zväčšenie karty (lupa a ruka) podľa nastavenia v profile.
   const mierkaLupy = (useUcet().ja?.lupa ?? LUPA_PREDVOLENA) / 100;
   // Klávesové skratky v partii (Michal 2026-10-22, roadmapa #19) — vypínač v profile.
-  const skratky = useSkratky(useUcet().ja?.skratky !== false && view.koniec === null);
+  const skratky = useSkratky(useUcet().ja?.skratky !== false && view.koniec === null, (k) => {
+    // N bez vybranej karty nič nerobil — nováčik nevedel prečo (playtest výučby U6).
+    if (k !== "n" || !naexMozny || mode.typ === "naexCiel") return;
+    const r = liniaRef.current?.getBoundingClientRect();
+    setChybaTahania({ text: "Najprv vyber kartu so značkou NA EX v línii — potom NA EX! alebo N.", x: r === undefined ? window.innerWidth / 2 : r.left + r.width / 2, y: r === undefined ? window.innerHeight / 2 : r.top + r.height / 2 });
+  });
   const lokalitaRef = useRef<HTMLDivElement>(null);
   // Línia môže byť dlhá — lokalitu drž v strede pohľadu.
   const pocetVLinii = view.strany[0].length + view.strany[1].length;
@@ -1443,7 +1448,11 @@ export function HernaPlocha({
     return out;
   };
 
+  // Kde hráč pustil kartu: položená karta sa objaví pod nehybnou myšou a jej lupa zakryla
+  // tlačidlá návrhu (UI inšpekcia, výučba kolo 4) — lupa sa ukáže, až keď myš odíde z miesta.
+  const poPusteni = useRef<{ readonly x: number; readonly y: number } | null>(null);
   const pusti = (z: Zdroj, ciel: string | null, bod: { readonly x: number; readonly y: number }): void => {
+    poPusteni.current = bod;
     // Karta ťahaná zo zväčšenej kópie — lupa by po pustení visela na starom mieste.
     setLupa(null);
     setMiestoVolby(null);
@@ -1545,7 +1554,8 @@ export function HernaPlocha({
   >();
   /** Zväčší kartu pod prvkom `el` (myš, fokus, na dotyku ťuknutie). */
   const otvorLupu = (kluc: string, el: Element | null | undefined, zFokusu = false, prechod = false): void => {
-    if (tahanie === null && el != null) setLupa({ kluc, rect: bezPosunuHarmoniky(el), zFokusu, prechod });
+    // Časovač prejdenia myšou mohol dobehnúť až počas ťahania — stav `tahanie` v ňom je starý.
+    if (tahanie === null && !document.body.classList.contains("tahanie-aktivne") && el != null) setLupa({ kluc, rect: bezPosunuHarmoniky(el), zFokusu, prechod });
   };
   const casovacLupy = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const lupaZavreta = useRef<{ readonly kluc: string; readonly cas: number } | null>(null);
@@ -1610,6 +1620,22 @@ export function HernaPlocha({
     return null;
   };
   useEffect(() => () => clearTimeout(casovacLupy.current), []);
+  // Lupa po ťahaní ostala visieť nad miestami a tlačidlami (playtest výučby U2): zavrie sa
+  // pri začiatku ťahania, pri novom ťahu (karta pod ňou sa presunula) a na požiadanie
+  // výučby pri novom kroku (udalosť naex:zavri-lupu — Escape by zrušil aj výber).
+  const zavriLupuHned = useCallback((): void => {
+    clearTimeout(casovacLupy.current);
+    setLupa(null);
+    setDoznieva(null);
+  }, []);
+  useEffect(() => {
+    if (tahanie !== null) zavriLupuHned();
+  }, [tahanie !== null, zavriLupuHned]);
+  useEffect(zavriLupuHned, [klucTahu, view.strany[0].length + view.strany[1].length, zavriLupuHned]);
+  useEffect(() => {
+    window.addEventListener("naex:zavri-lupu", zavriLupuHned);
+    return () => window.removeEventListener("naex:zavri-lupu", zavriLupuHned);
+  }, [zavriLupuHned]);
   // Susedia uhnú o polovicu prírastku šírky lupy (harmonika v hra.css) — pred
   // vykreslením, aby sa susedia nepohli najprv o starý posun.
   useLayoutEffect(() => {
@@ -1646,6 +1672,8 @@ export function HernaPlocha({
    * myš práve odišla, znova neotvorí, kým myš neopustí jej miesto.
    */
   const ONESKORENIE_LUPY_MS = 150;
+  /** O koľko px sa musí myš po pustení karty pohnúť, aby sa lupa znova otvárala. */
+  const VZDIALENOST_PO_PUSTENI = 60;
   const nadLupou = (kluc: string, najdi: (el: HTMLElement) => Element | null, fokus: boolean) => {
     najdiLupu.set(kluc, najdi);
     return {
@@ -1653,6 +1681,11 @@ export function HernaPlocha({
       tabIndex: fokus ? 0 : undefined,
       onPointerEnter: (e: ReactPointerEvent<HTMLElement>): void => {
         if (e.pointerType !== "mouse" || tahanie !== null) return;
+        const p = poPusteni.current;
+        if (p !== null) {
+          if (Math.hypot(e.clientX - p.x, e.clientY - p.y) < VZDIALENOST_PO_PUSTENI) return;
+          poPusteni.current = null;
+        }
         const z = lupaZavreta.current;
         if (z?.kluc === kluc) return;
         const el = e.currentTarget;

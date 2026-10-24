@@ -4,7 +4,7 @@
 // platia tie isté podmienky ako pri kliknutí (disabled, potvrdenie, Krčma).
 // M a číslice 1–9 patria pultu Melichara (kláves pečiatky je v skupina.json). Vypínač je v profile (Preferencie).
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const SKRATKY_V_PARTII: readonly { readonly klaves: string; readonly popis: string }[] = [
   { klaves: "K", popis: "končím · hotovo · potvrdiť ťah" },
@@ -64,8 +64,14 @@ function stlacitelne(el: Element): el is HTMLElement {
 }
 
 /** Zapne skratky; vráti, či je otvorený zoznam skratiek, a jeho prepínač. */
-export function useSkratky(zapnute: boolean): { readonly napoveda: boolean; readonly prepniNapovedu: () => void; readonly zavriNapovedu: () => void } {
+export function useSkratky(
+  zapnute: boolean,
+  /** Kláves bez tlačidla na stole (N bez vybranej karty) — stôl povie prečo (playtest výučby U6). */
+  bezTlacidla?: (klaves: string) => void,
+): { readonly napoveda: boolean; readonly prepniNapovedu: () => void; readonly zavriNapovedu: () => void } {
   const [napoveda, setNapoveda] = useState(false);
+  const bezTlacidlaRef = useRef(bezTlacidla);
+  bezTlacidlaRef.current = bezTlacidla;
   useEffect(() => {
     if (!zapnute) return;
     const klaves = (e: KeyboardEvent): void => {
@@ -82,7 +88,10 @@ export function useSkratky(zapnute: boolean): { readonly napoveda: boolean; read
       const k = e.key.toLowerCase();
       if (!STLACITELNE.has(k)) return;
       const tlacidlo = [...document.querySelectorAll(`[data-skratka="${k}"]`)].find(stlacitelne);
-      if (tlacidlo === undefined) return;
+      if (tlacidlo === undefined) {
+        bezTlacidlaRef.current?.(k);
+        return;
+      }
       e.preventDefault();
       tlacidlo.click();
     };

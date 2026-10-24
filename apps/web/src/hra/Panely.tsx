@@ -606,9 +606,10 @@ export function HracDoska({
           }
           pod={
             <>
-              {/* Každý riadok vo vlastnom prvku — v úzkej dlaždici sa skráti trojbodkou, nezalomí (malý notebook). */}
+              {/* Každý riadok vo vlastnom prvku — v úzkej dlaždici sa skráti trojbodkou, nezalomí (malý notebook).
+                  „Na stole“ pred „vypité“: trojbodka zrezala práve ju (UI inšpekcia 2026-10-24). */}
               <span>
-                plné · {hrac.poldeciVypite} vypité{naexNaStole > 0 && ` · ${naexNaStole} na stole`}
+                plné{naexNaStole > 0 && ` · ${naexNaStole} na stole`} · {hrac.poldeciVypite} vypité
               </span>
               <b>limit {limit}</b>
             </>
@@ -1437,7 +1438,7 @@ export function PriebehKola({ view, onBitka }: { readonly view: ClientState; rea
     );
   }
   return (
-    <ol className="priebeh-kola" aria-label={`Kolo ${view.kolo}`}>
+    <ol className="priebeh-kola" aria-label={`Kolo ${view.kolo}`} data-vyucba="os-kola">
       <li
         className="priebeh-kolo"
         title={`Hrá sa o ${view.lokalitCelkom} lokalít; zostáva ${view.lokalityVHre.length} nevybraných${view.naSekeru.length > 0 ? `, na sekere ${view.naSekeru.length}` : ""}.`}

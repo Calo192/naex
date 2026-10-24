@@ -4419,6 +4419,16 @@ button.auto-hotovo-odkaz {
   text-overflow: ellipsis;
 }
 
+/* Jediný riadok textu pod číslom (výhľad Pitky za prúžkom) sa smie zalomiť na dva — „po Pitke:
+   Cirhóza ×1 · −8 b“ sa orezal aj pri 1920 (UI inšpekcia 2026-10-24). */
+.doska .zdroj .zdroj-pod > :only-child,
+.doska .zdroj .zdroj-pod > .pruh + .vyhlad:last-child {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  white-space: normal;
+}
+
 /* Prúžok nerestí vedľa čísla Absťáku. */
 .doska .zdroj-abstak .zdroj-hodnota .neresti-pruh {
   flex: 1;
@@ -6140,8 +6150,12 @@ button.auto-hotovo-odkaz {
     display: none;
   }
 
-  .doska .obchod-text {
-    display: block;
+  /* Bez tlačidiel obchodu je to jediný riadok — smie sa zalomiť („stačí na nový poldeci“). */
+  .doska .zdroj .zdroj-pod > .obchod-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    white-space: normal;
   }
 
   .hra,
