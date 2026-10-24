@@ -35,7 +35,8 @@ function odohraj(
   super_: "nahodny" | "bot",
   povahy: readonly [string, string] = ["stamgast", "stamgast"],
 ): { state: GameState; stavyBota: GameState[] } {
-  let s = setupGame(data, seed, { lokalit: DLZKY_HRY.kratka });
+  // 5 lokalít (do 2026-10-24 krátka hra) — krátka s 3 dá málo ťahov bota na porovnania.
+  let s = setupGame(data, seed, { lokalit: DLZKY_HRY.stredna });
   let rng = rngSeed(seed * 7 + 1);
   const stavyBota: GameState[] = [];
   for (let krok = 0; s.koniec === null && krok < 5000; krok++) {

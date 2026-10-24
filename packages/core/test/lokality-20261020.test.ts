@@ -330,6 +330,26 @@ describe("Prevaha (Michal 2026-10-20): hranu lokality dostane, kto má na strane
     expect(prevahaStran(sd, strany)).toEqual([null, 1]);
   });
 
+  it("podstrčená karta pri lokalite akcie hrany neukradne, ale určuje, ktoré sa spoja (O2, zámer Michala 2026-10-24)", () => {
+    const hrana = ["Rana", "Pecka", null, null] as const;
+    const sd2 = syntheticData([makeDef("lok2", R, hrana, { tags: ["Lokalita"] }), makeDef("obcan", R, R, { tags: ["Občan"] }), makeDef("prazdny", E, E, { tags: ["Občan"] })]);
+    const k2 = (id: string, l: readonly (string | null)[], r: readonly (string | null)[]) => instanceFor(sd2, id, l as never, r as never);
+    const strany: GameState["strany"] = [
+      [],
+      [
+        { card: k2("obcan", R, R), playedBy: 0 },
+        { card: k2("prazdny", E, E), playedBy: 1 },
+        { card: k2("prazdny", E, E), playedBy: 1 },
+      ],
+    ];
+    const ev = evaluateLine(sd2, { lokalita: k2("lok2", R, hrana), lokalitaOtocena: false, strany });
+    // Podstrčená karta spojí len Ranu hrany; Pecka hrany ostane neaktívna, hoci prevahu má hráč 1.
+    expect(ev.aktivneStredu).toEqual([0, 1]);
+    expect((ev.zdroje[1].Rana ?? []).filter((z) => z.vStrede)).toHaveLength(1);
+    expect(ev.sums[1].Pecka ?? 0).toBe(0);
+    expect(ev.sums[0].Pecka ?? 0).toBe(0);
+  });
+
   it("pri rovnosti rozhodne karta pri lokalite; Nástroje sa nerátajú", () => {
     const strany: GameState["strany"] = [
       [],

@@ -553,3 +553,34 @@ majiteľovi, pri rovnosti rozhoduje karta pri lokalite.
 Staré znenie §16 (od 2026-10-18, limit od 2026-10-19):
 
 > | Kočovník | Dlh a Poškodenie pečene z jeho akcií dostáva hráč, na ktorého strane leží (Pecku a Poldeci jeho majiteľ). Limit vykladania míňa ako každá karta. |
+
+## 2026-10-24.2 — NA EX zruší aj ×2 od Posilnenia; spresnenia pred zmrazením v4
+
+Rozhodnutia Michala 2026-10-24 k otázkam O1, O2 a O4 z reportu
+`docs/playtesty/20261024-075830.html`.
+
+**O1 (zmena hry, §6, §7):** NA EX na kartu s Posilnením zruší aj ×2, ktoré
+Posilnenie dávalo partnerovi na spoji; partnerova akcia ostáva aktívna ×1.
+Predtým NA EX menilo len akcie cieľovej karty a partner (aj hrana lokality)
+mal ×2 ďalej. Zrušenie Odporom na susedovi, hrana lokality v páre s kartou
+(ostáva aktívna) a Pes (ráta aj zrušené páry) sa nemenia.
+
+**O2 (len znenie, §6, §13):** prvá karta pri lokalite, aj podstrčená, určuje,
+ktoré akcie hrany sa spoja; akcie dostane hráč s prevahou. Je to zámer. Staré
+znenie §6: „Jedna podstrčená karta teda hranu neukradne — treba v kraji
+prevládnuť.“ Staré znenie §13: „Hrany lokality jedna podstrčená karta
+neukradne — rozhoduje prevaha v kraji.“
+
+**O4 (len znenie, §11):** držať nepriznanú Cirhózu do posledného kola je
+zámer; §11 to teraz hovorí výslovne aj s cenou.
+
+## 2026-10-24.2 — dĺžky hry 3 / 5 / 7 lokalít (§1, §3, Michal 2026-10-24)
+
+Krátka hra má 3 lokality, stredná (predvolená) 5, dlhá 7. Tá istá značka
+`VERZIA_PRAVIDIEL` ako zmena NA EX × Posilnenie vyššie.
+
+Staré znenie §3:
+
+> - **Dĺžka hry** sa volí pred začiatkom počtom lokalít: krátka **5**, stredná
+>   **7** (predvolená), dlhá **11**. Dlhú hru možno zvoliť, len keď má zverejnená
+>   sada aspoň 11 lokalít — `cards.json` ich má 15.

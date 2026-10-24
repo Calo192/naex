@@ -66,8 +66,9 @@ tools/             import z tlačového PDF, piktogramy akcií
   vidia len poslednú **zverejnenú** sadu. Rozohraná partia dohrá na sade,
   s ktorou začala. Zverejnenie overí návrhy cez `loadGameData` jadra;
   karta s vlastnou akciou bez pravidiel v jadre sa zverejniť nedá.
-- **Pravidlá v3** (2026-10-11): dĺžka hry sa volí v lobby — krátka 5, stredná 7
-  (predvolená), dlhá 11 lokalít; dlhá sa dá zvoliť, až keď má sada 11 lokalít.
+- **Pravidlá v3** (2026-10-11): dĺžka hry sa volí v lobby — krátka 3, stredná 5
+  (predvolená), dlhá 7 lokalít (od 2026-10-24, predtým 5 / 7 / 11); dĺžka sa dá
+  zvoliť, až keď má sada dosť lokalít.
   Každú kartu možno vyložiť do vlastnej aj súperovej partie a **patrí tomu,
   kto ju zahral** — akcie aj efekty sa rátajú majiteľovi (`evaluateLine`
   pripisuje súčty podľa `playedBy`, efekty cez `kartyHraca`/`maKartu`).
@@ -144,8 +145,8 @@ na jednom mieste v kóde (odkazy v zátvorkách). Michal ich všetky potvrdil
 7. **Štartovacia ruka** — 3× Pijan, 2× Miňištrant, 1× Milujúca
    manželka, 1× Dievčina na vydaj (Michal 2026-10-22, predtým 4/2/2/2;
    `KONSTANTY.START_RUKA`).
-8. **Lokality** — dĺžka hry = počet bitiek o lokalitu: krátka 5, stredná 7,
-   dlhá 11 (`DLZKY_HRY`); sada má 14 lokalít.
+8. **Lokality** — dĺžka hry = počet bitiek o lokalitu: krátka 3, stredná 5,
+   dlhá 7 (`DLZKY_HRY`, od 2026-10-24; predtým 5 / 7 / 11); sada má 15 lokalít.
 9. **Šenok** — v každom kole sa stavia z toľkých kariet, koľko je
    nenahradených starších (nadol na párne, najviac polovica spoločného
    balíčka); po braní sa doplní z balíčka na 8. Keď sa spoločný balíček

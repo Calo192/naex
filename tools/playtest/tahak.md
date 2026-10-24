@@ -6,13 +6,13 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 `nezrovnalosti.md`. Po zmene pravidla ho aktualizuje Developer — jediné miesto;
 čísla stráži test `packages/core/test/tahak.test.ts`.
 
-- **Dĺžka hry** = počet lokalít (krátka 5, stredná 7, dlhá 11). Výpis klienta
+- **Dĺžka hry** = počet lokalít (krátka 3, stredná 5, dlhá 7; od 2026-10-24). Výpis klienta
   ukazuje, o koľko lokalít sa hrá a koľko je ovládnutých.
 - **Štart:** 7 štartoviek (3 Pijan, 2 Miňištrant, 1 Milujúca manželka, 1 Dievčina na vydaj;
   Michal 2026-10-22); 5 kariet v ruke, 2 plné poldeci, 3 cigarety.
 - **Každú kartu** môžeš vyložiť na koniec **svojej aj súperovej strany**
   (`target` `vlastna` / `superova`). Karta **patrí tomu, kto ju zahral** — akcie
-  aj efekty sa rátajú majiteľovi, nech leží kdekoľvek. Podstrčený „sabotér"
+  aj efekty sa rátajú majiteľovi, nech leží kdekoľvek (výnimky: Nástroj, Kočovník — nižšie). Podstrčený „sabotér"
   s Odporom zruší súperovi akciu na spoji. Každá karta okrem Nástroja míňa limit
   vykladania (aj Kočovník). **Limit = plné poldeci + 1** — poldeci na karte cez NA EX
   sa neráta (v4), takže NA EX ti limit zníži o 1.
@@ -34,12 +34,16 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 - **Prevaha (2026-10-20):** akcie hrany lokality dostane, kto má v tej
   polovici línie (kraji) **viac svojich Občanov, Zvierat a Starešinov** (Nástroje a Cirhóza nie); pri rovnosti
   hráč, ktorého karta v tom kraji leží hneď pri lokalite (vyložená ako prvá) — nie
-  „majiteľ lokality“. Jedna podstrčená karta hranu neukradne. Kraje
+  „majiteľ lokality“. Jedna podstrčená karta neukradne akcie hrany, ale tvorí
+  s nimi spoj: ako prvá karta pri lokalite určuje, ktoré akcie hrany sa
+  aktivujú (dostane ich hráč s prevahou). Kraje
   majú mená podľa lokality (Krčma: pri výčape / pri dverách). **Pasca**
   (Dedičstvo): každé súperovo Zviera v línii mu uberie 1 tuhé.
   Nové karty (po zverejnení): **Presbiter** — sám proti súperovej prevahe
   v kraji zoberie súperovi toľko Viery, koľko má aktívnych akcií;
-  **Dvojčatá** — do prevahy sa rátajú za dvoch.
+  **Dvojčatá** — do prevahy sa rátajú za dvoch; **Kočovník** — Furt: jeho akcie
+  (aj Rana, Dlh, Poškodenie pečene) sa počítajú hráčovi, ktorý má v jeho kraji
+  prevahu; do prevahy sa ráta majiteľovi, pri rovnosti rozhoduje karta pri lokalite.
 - **Poradie (2026-10-20):** cieľ kola vyberá a natáča **obranca** (víťaz
   poslednej bitky); **útočník** (porazený) berie zo šenku prvý a **vykladá
   prvý**; v Pitke začína obranca — jeho „hotovo“ je nevratné a zapíše sa
@@ -69,7 +73,9 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   nedobereš) a na konci hry uberá body **aj priznaný**; Dlh podstrčený do balíčka
   (Vychovávateľka) sa pri dobratí prizná sám. Nová **Cirhóza ide navrch tvojho
   doberacieho balíčka**; priznáš ju, keď chceš, ale kartu za ňu **nedobereš** a súper za každú
-  priznanú dostane v bitke +1 tuhé (nepriznaná −2 za každú aktívnu podmienku pečeň na konci). Počet súperových
+  priznanú dostane v bitke +1 tuhé (nepriznaná −2 za každú aktívnu podmienku pečeň na konci).
+  Nepriznanú Cirhózu smieš držať aj do posledného kola a priznať v poslednom Zhromaždení —
+  dovtedy súper za ňu tuhé nedostáva, ale nemáš ju na Pohreb a ak hra skončí skôr, uberie body. Počet súperových
   nepriznaných kliatob je verejný (stav ho ukazuje), body súpera sú presné. Dlh sa sám nepáli (2026-10-22) — spáli ho len Robota,
   Dievčina na vydaj, Niekoho stryná a Veľmi smútiaca vdova; Milujúca manželka
   a Absťák kartu dajú. Kliatba do línie nepatrí (len Milujúca manželka). Priznanie nemíňa
@@ -99,7 +105,9 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   Pečeň +1 je tvoja. Súper smie hneď odpovedať jednou kartou mimo limitu
   (`place` / `bezReakcie`) — odpoveď smie zmeniť prevahu v kraji aj počet Pitiek. Nie na Liberála, nie na súperovho Anonymného
   alkoholika (jeho susedov nechráni), nie na kartu, na ktorej už poldeci leží. NA EX na kartu
-  pri lokalite mení len akcie karty, akcie hrany lokality ostávajú. Dievčina na vydaj
+  pri lokalite mení len akcie karty, akcie hrany lokality ostávajú aktívne. NA EX na kartu
+  s Posilnením zruší Posilnenie aj ×2 partnera na spoji (2026-10-24; partner ostáva ×1,
+  aj hrana lokality). Dievčina na vydaj
   ráta aj akcie zdvojené cez NA EX; jej akcie v bitke, v ktorej sa zahodí, ešte platia. Svokra súpera ti za NA EX zoberie 2 cigarety.
   Šofér: NA EX na kartu vedľa neho neaktívne akcie nezdvojí (aktívne zruší). Snúbenica
   vyložená vedľa karty s NA EX (aj ako odpoveď) ju vráti majiteľovi do ruky a ľahne na jej miesto. Veterán (v4): NA EX mu aktívne akcie zdvojí

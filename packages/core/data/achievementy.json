@@ -1079,7 +1079,7 @@
       "id": "maraton",
       "nazov": "Maratón",
       "kategoria": "partie",
-      "popis": "Vyhrané dlhé partie (11 lokalít): spolu {prah}.",
+      "popis": "Vyhrané dlhé partie (7 lokalít): spolu {prah}.",
       "metrika": "vyhra.dlha",
       "rozsah": "kariera",
       "prahy": [

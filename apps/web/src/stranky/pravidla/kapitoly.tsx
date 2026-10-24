@@ -83,7 +83,7 @@ export const KAPITOLY: readonly Kapitola[] = [
       <>
         <div className="karticky">
           <div className="karticka">
-            <strong>Body na konci.</strong> Hra končí po poslednej bitke o lokalitu (5, 7 alebo 11 podľa{" "}
+            <strong>Body na konci.</strong> Hra končí po poslednej bitke o lokalitu (3, 5 alebo 7 podľa{" "}
             <P k="dlzka-hry">dĺžky hry</P>). Bodujú sa ovládnuté lokality, získaní starší, strach starších a zvyšné cigarety —
             mínus Dlhy a Cirhózy.
           </div>
@@ -194,7 +194,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         </ol>
         <H3 id="kolo-priprava">Príprava</H3>
         <p>
-          Zvoľte <P k="dlzka-hry">dĺžku hry</P> — 5, 7 alebo 11 lokalít. Každý hráč zamieša svojich 7 štartovacích kariet
+          Zvoľte <P k="dlzka-hry">dĺžku hry</P> — 3, 5 alebo 7 lokalít. Každý hráč zamieša svojich 7 štartovacích kariet
           (3 Pijani, 2 Miňištranti, Milujúca manželka, Dievčina na vydaj), dobere si <strong>5 do ruky</strong> a dostane{" "}
           <strong>2 plné poldeci a 3 cigarety</strong>. Hra rozdá 8 starších s náhodnými scorecardmi; markery ležia v strede.
         </p>
@@ -307,7 +307,8 @@ export const KAPITOLY: readonly Kapitola[] = [
         <p>
           Akcie hrany lokality dostane hráč s <P k="prevaha">prevahou</P> v tom <P k="kraj">kraji</P> — kto tam má viac svojich{" "}
           <strong>Občanov, Zvierat a Starešinov</strong> (Nástroje ani Cirhóza sa nerátajú). Pri rovnosti hráč, ktorého karta
-          v kraji leží hneď pri lokalite. Jedna podstrčená karta hranu neukradne. Kraje majú mená podľa lokality, napríklad
+          v kraji leží hneď pri lokalite. Jedna podstrčená karta teda neukradne akcie hrany, ale tvorí s nimi spoj: ako prvá
+          karta pri lokalite určuje, ktoré akcie hrany sa aktivujú, a tie dostane hráč s prevahou. Kraje majú mená podľa lokality, napríklad
           v Krčme „pri výčape“ a „pri dverách“.
         </p>
       </>
@@ -368,7 +369,11 @@ export const KAPITOLY: readonly Kapitola[] = [
         </p>
         <ul>
           <li>Nedá sa dať na Liberála, na súperovho Anonymného alkoholika ani na kartu, na ktorej už poldeci leží.</li>
-          <li>NA EX na kartu pri lokalite mení len akcie karty — akcie hrany lokality ostávajú.</li>
+          <li>NA EX na kartu pri lokalite mení len akcie karty — akcie hrany lokality ostávajú aktívne.</li>
+          <li>
+            NA EX na kartu s Posilnením zruší Posilnenie aj ×2, ktoré dávalo partnerovi na spoji — partnerova akcia (aj hrana
+            lokality) ostáva aktívna, ale len ×1.
+          </li>
           <li>Veterán je výnimka: NA EX mu aktívne akcie zdvojí (nezruší) a neaktívne nechá.</li>
           <li>Súperovu Záverečnú (lícom dole) smie dostať NA EX vždy.</li>
           <li>V Krčme musí dať NA EX každý, kto má plný poldeci a kam ho dať; vo Vínnej pivnici smieš dvakrát za Pitku.</li>
@@ -639,7 +644,9 @@ export const KAPITOLY: readonly Kapitola[] = [
           </li>
           <li>
             <strong>Cirhóza</strong> — ide navrch doberacieho balíčka. Priznáš ju, keď chceš, ale kartu za ňu{" "}
-            <strong>nedobereš</strong>. Priznaná dá súperovi v bitke +1 tuhé, nepriznaná na konci uberá body.
+            <strong>nedobereš</strong>. Priznaná dá súperovi v bitke +1 tuhé, nepriznaná na konci uberá body. Smieš ju držať
+            v ruke aj do posledného kola a priznať až v poslednom Zhromaždení — dovtedy za ňu súper tuhé nedostáva, ale
+            nemáš ju na Pohreb a ak hra skončí skôr, uberie ti body.
           </li>
           <li>
             <strong>Absťák</strong> — príde rovno priznaný a za neho si dobereš kartu.
@@ -741,6 +748,16 @@ export const KAPITOLY: readonly Kapitola[] = [
           Karta vyložená na súperovu stranu je <P k="podstrcenie">podstrčená</P>: ostáva tvoja, jej akcie aj efekty sa rátajú
           tebe a so súperovými susedmi sa páruje normálne — aktivuje im akcie na spoji, ktoré dostane súper. Pošli mu sabotéra:
           tvoj Odpor mu zruší akciu, ktorú potreboval, a zaberieš mu koniec strany.
+        </p>
+        <p>
+          Akcie hrany lokality podstrčená karta neukradne, ale tvorí s nimi spoj: keď leží pri lokalite ako prvá, určuje, ktoré
+          akcie hrany sa aktivujú. Dostane ich hráč s prevahou v kraji.
+        </p>
+        <p>
+          <strong>Kočovník</strong> je výnimka: „Furt: Jeho akcie sa počítajú hráčovi, ktorý má v jeho kraji prevahu.“ Všetky
+          jeho akcie — aj Rana, Dlh či Poškodenie pečene — dostane ten, kto v kraji prevláda. Do prevahy sa Kočovník ráta
+          svojmu majiteľovi, pri rovnosti rozhoduje karta hneď pri lokalite. Škodlivé akcie sa súperovi dajú podhodiť, ale
+          súper to vie ovplyvniť kartami, ktoré do kraja vyloží.
         </p>
         <H3 id="pokrocile-modifikatory">Posilnenie, Odpor a Vzbura</H3>
         <ul>

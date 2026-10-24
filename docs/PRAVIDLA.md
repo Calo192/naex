@@ -33,7 +33,7 @@ hra má toľko kôl, koľko určí dĺžka hry (§3). Na konci vyhrá, kto má v
 | Hráč vydesí aspoň polovicu starších (aj nahradených) a **udrží ich do konca nasledujúceho kola** — ohlásené vydesenie; súper má kolo na odpoveď, napr. patronát nad vydeseným starším vráti marker do stredu (§10) | **vyhráva** |
 | Hráč nedokáže čeliť exekúcii (§11) | okamžite **prehráva** |
 | Veľkosť balíčka hráča je pod 5 po drafte alebo na konci kola (karty z línie sa už vrátili) | **prehráva** |
-| Odohrá sa posledná bitka o lokalitu (5 / 7 / 11 podľa dĺžky hry) | spočítajú sa body (§14) |
+| Odohrá sa posledná bitka o lokalitu (3 / 5 / 7 podľa dĺžky hry) | spočítajú sa body (§14) |
 
 Veľkosť balíčka = doberací + odhadzovací + ruka. **Priznané karty ani
 Dedičstvo sa nerátajú.** Na konci kola sa najprv vyhodnotí vydesenie, potom
@@ -102,9 +102,9 @@ nepoužíva — cigareta je cigareta.
 
 ## 3. Príprava hry
 
-- **Dĺžka hry** sa volí pred začiatkom počtom lokalít: krátka **5**, stredná
-  **7** (predvolená), dlhá **11**. Dlhú hru možno zvoliť, len keď má zverejnená
-  sada aspoň 11 lokalít — `cards.json` ich má 15.
+- **Dĺžka hry** sa volí pred začiatkom počtom lokalít: krátka **3**, stredná
+  **5** (predvolená), dlhá **7**. Dĺžku možno zvoliť, len keď má zverejnená
+  sada aspoň toľko lokalít — `cards.json` ich má 15.
 - **8 starších**, každý na **scorecarde** rozdanom náhodne (scorecard určuje
   priazeň staršieho, §10, a jeho bodovacie podmienky, §14). Marker každého
   staršieho začína **v strede stupnice** (index 4).
@@ -256,15 +256,19 @@ efektívna_pravá(otočená) = ľavá čítaná odzadu
 | Posilnenie + Odpor | neprepojené akcie aktivuje **iba karta s Odporom** |
 | Posilnenie + Posilnenie | nič sa nedeje — niet čo zdvojnásobiť |
 
+Keď NA EX zruší Posilnenie, zruší aj ×2, ktoré dávalo partnerovi na spoji (§7).
+
 ### Prevaha a akcie lokality
 
 Hranu lokality aktivuje karta, ktorá s ňou tvorí spoj, no jej akcie dostane
 hráč s **prevahou** v tom kraji: kto tam má **viac svojich Občanov, Zvierat
 a Starešinov** (Nástroje, Cirhóza ani iné karty sa nerátajú; Dvojčatá za
 dvoch, §16). Pri rovnosti má prevahu hráč, ktorého karta v tom kraji leží
-**hneď pri lokalite** (vyložená ako prvá). Jedna podstrčená karta teda hranu
-neukradne — treba v kraji prevládnuť. Natočenie lokality (volí obranca)
-určuje, ktorá hrana leží pri ktorom kraji.
+**hneď pri lokalite** (vyložená ako prvá). Jedna podstrčená karta teda
+**neukradne akcie hrany**, ale tvorí s nimi spoj: ako prvá karta pri lokalite
+určuje, ktoré akcie hrany sa aktivujú, a tie potom dostane hráč s prevahou —
+o akcie treba v kraji prevládnuť. Natočenie lokality (volí obranca) určuje,
+ktorá hrana leží pri ktorom kraji.
 
 ### Limit vykladania
 
@@ -340,8 +344,12 @@ strane — a položí na ňu jeden plný poldeci.
   vyprodukuje (zdvojený Dlh či pečeň), patria majiteľovi karty — NA EX zruší
   aktívne akcie (aj vlastný Dlh či pečeň) a zdvojí neaktívne.
 - **NA EX na kartu pri lokalite** ruší a zdvojuje len akcie tej karty — akcie
-  **hrany lokality** v páre s ňou ostávajú, ako boli (dostane ich hráč
-  s prevahou v kraji).
+  **hrany lokality** v páre s ňou ostávajú aktívne (dostane ich hráč
+  s prevahou v kraji); jediná zmena je ×2 od Posilnenia karty (nasledujúci bod).
+- **NA EX na kartu s Posilnením** zruší Posilnenie aj **×2, ktoré dávalo
+  partnerovi** na spoji: partnerova akcia (aj akcia hrany lokality) ostáva
+  aktívna, ale už len ×1. Akcia, ktorú karta zrušila Odporom, ostáva zrušená.
+  Veteránovi NA EX Posilnenie nezruší, takže partner má ×2 ďalej.
 - NA EX leží na karte až do bitky — jej akcie sa vyhodnotia v **každej** Pitke
   kola.
 - Poldeci **ostáva hráča, ktorý NA EX dal**: do limitu sa neráta (§6) a pri
@@ -739,6 +747,10 @@ a kartu zaň hráč nedobere. Dlh, ktorý sa do balíčka dostane inak
 (Vychovávateľka), sa pri dobratí prizná sám (nižšie). Nová **Cirhóza** ide
 **navrch doberacieho balíčka** — do ruky príde pri najbližšom ťahaní a hráč ju
 prizná, keď chce, alebo ju podrží (Vízia ju môže zahodiť, Kar tiež).
+Nepriznanú Cirhózu smieš držať v ruke aj do posledného kola a priznať ju až
+v poslednom Zhromaždení: dovtedy za ňu súper tuhé nedostáva, ale nemáš ju na
+Pohreb a ak hra skončí skôr, než ju priznáš (aj vydesením, §1), uberie ti −2 za
+každú aktívnu podmienku pečeň (§14).
 
 Na konci hry sa nepriznané Cirhózy rátajú v ruke aj v oboch balíčkoch, Dlhy
 všetky. Efekty, ktoré „zahadzujú“ Dlhy či Cirhózy (Niekoho stryná, Veľmi
@@ -912,8 +924,11 @@ voliteľné a hráč tým v tomto Zhromaždení **končí s vykladaním** (ako p
 
 Súperovi môžeš na jeho stranu podstrčiť kartu — jej Odpor mu zruší akciu na
 spoji, jej akcie bodujú pre teba a zaberie mu koniec strany. Karta ostáva
-v tvojej partii a míňa tvoj limit (§6). Hrany lokality jedna podstrčená karta
-neukradne — rozhoduje prevaha v kraji. Podstrčený Pes nedá nič (§16) a na Moste
+v tvojej partii a míňa tvoj limit (§6). Jedna podstrčená karta neukradne akcie
+hrany lokality, ale tvorí s nimi spoj: ak leží pri lokalite, určuje, ktoré
+akcie hrany sa aktivujú, a dostane ich hráč s prevahou v kraji (§6).
+Podstrčený Kočovník je výnimka z „akcie bodujú pre teba“ — jeho akcie dostane
+hráč s prevahou v jeho kraji (§16). Podstrčený Pes nedá nič (§16) a na Moste
 sa na súperovu stranu nevykladá (§15).
 
 ---
