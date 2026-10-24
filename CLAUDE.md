@@ -27,7 +27,7 @@ dvaja ľudia na dvoch zariadeniach, nie viac hráčov naraz.
 4. **Náhoda je deterministická.** Jeden seedovaný generátor v `GameState`.
 5. **Dáta, nie kód.** Karty upravuje admin v tvorcovi (SQLite); hra beží na
    zverejnenej sade. `packages/core/data/cards.json` je východisková sada
-   pre prvé spustenie a testy — kópia sady v10 živého webu (2026-10-22: texty po M23,
+   pre prvé spustenie a testy — kópia sady v15 živého webu (2026-10-24; v10 2026-10-22: texty po M23,
    Liberál, Pes, Anonymný alkoholik, Krčma s prahom +2; `cardsJson` z `/api/sada` živého
    webu — lokálne a živé číslovanie sád sa líši, platí číslo živého webu;
    produkcia ho prevezme pri štarte cez novú značku v `dorovnajSoSeedom`, zmeny vzhľadu
@@ -107,7 +107,7 @@ naex-admin (`admin.ts novinka-pridaj`) — novinka sa píše až po nasadení na
 
 ```
 packages/core/       jadro pravidiel — čistý TS, bez I/O
-  data/cards.json      60 kariet — kópia sady v10 živého webu (neupravuj ručne)
+  data/cards.json      60 kariet — kópia sady v15 živého webu (neupravuj ručne)
   data/elders.json     8 starších; priazeň a body nesie scorecard (scorecards.json)
   src/bot.ts           offline protihráč (NPC: heuristiky + výpočet dopredu, žiadne
                        LLM); tri povahy (POVAHY) — Štamgast, Rapavý Fero, Teta
