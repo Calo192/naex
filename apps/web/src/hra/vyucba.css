@@ -233,7 +233,9 @@ body.vyucba-bezi {
     font-size: 0.66rem;
   }
 
+  /* Avatar hráča tiež preč — meno a čip „nepriznané · Cirhóza ×1“ potrebujú celú šírku (UI inšpekcia). */
   body.vyucba-bezi .doska-frajerina,
+  body.vyucba-bezi .doska-hrac .karta-hraca-kotva,
   .vyucba-dlhy-popis {
     display: none;
   }

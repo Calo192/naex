@@ -1448,7 +1448,11 @@ export function HernaPlocha({
     return out;
   };
 
+  // Kde hráč pustil kartu: položená karta sa objaví pod nehybnou myšou a jej lupa zakryla
+  // tlačidlá návrhu (UI inšpekcia, výučba kolo 4) — lupa sa ukáže, až keď myš odíde z miesta.
+  const poPusteni = useRef<{ readonly x: number; readonly y: number } | null>(null);
   const pusti = (z: Zdroj, ciel: string | null, bod: { readonly x: number; readonly y: number }): void => {
+    poPusteni.current = bod;
     // Karta ťahaná zo zväčšenej kópie — lupa by po pustení visela na starom mieste.
     setLupa(null);
     setMiestoVolby(null);
@@ -1668,6 +1672,8 @@ export function HernaPlocha({
    * myš práve odišla, znova neotvorí, kým myš neopustí jej miesto.
    */
   const ONESKORENIE_LUPY_MS = 150;
+  /** O koľko px sa musí myš po pustení karty pohnúť, aby sa lupa znova otvárala. */
+  const VZDIALENOST_PO_PUSTENI = 60;
   const nadLupou = (kluc: string, najdi: (el: HTMLElement) => Element | null, fokus: boolean) => {
     najdiLupu.set(kluc, najdi);
     return {
@@ -1675,6 +1681,11 @@ export function HernaPlocha({
       tabIndex: fokus ? 0 : undefined,
       onPointerEnter: (e: ReactPointerEvent<HTMLElement>): void => {
         if (e.pointerType !== "mouse" || tahanie !== null) return;
+        const p = poPusteni.current;
+        if (p !== null) {
+          if (Math.hypot(e.clientX - p.x, e.clientY - p.y) < VZDIALENOST_PO_PUSTENI) return;
+          poPusteni.current = null;
+        }
         const z = lupaZavreta.current;
         if (z?.kluc === kluc) return;
         const el = e.currentTarget;
