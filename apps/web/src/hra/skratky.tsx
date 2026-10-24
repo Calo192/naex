@@ -11,13 +11,45 @@ export const SKRATKY_V_PARTII: readonly { readonly klaves: string; readonly popi
   { klaves: "P", popis: "pasovať (v šenku „už neťahám“)" },
   { klaves: "N", popis: "NA EX! na vybranú kartu" },
   { klaves: "O", popis: "tvoje karty: balíček, odhodené, priznané, Dedičstvo" },
-  { klaves: "Esc", popis: "zrušiť výber · zavrieť" },
+  { klaves: "Esc", popis: "zrušiť výber · zavrieť · nakoniec vrátiť návrh ťahu do ruky" },
   { klaves: "M", popis: "pult majstra Melichara" },
   { klaves: "1–9", popis: "pečiatka Melichara s tým číslom — náhodná hláška zo skupiny" },
   { klaves: "?", popis: "tento zoznam" },
 ];
 
 const STLACITELNE = new Set(["k", "p", "n", "o"]);
+
+/** Čo je nad stolom otvorené — každé z toho zavrie Esc samo (svojou obsluhou). */
+export interface VrstvyPreEsc {
+  readonly lupa: boolean;
+  /** Vrstva (Log, Šenok…), bublina karty hráča, zoznam skratiek, koniec hry. */
+  readonly dialog: boolean;
+  readonly starsi: boolean;
+  /** Vybrané „+“ na konci strany, cieľ NA EX, výber karty do oblasti. */
+  readonly vyber: boolean;
+  readonly potvrdenie: boolean;
+  readonly odhad: boolean;
+  readonly pult: boolean;
+}
+
+/**
+ * Vráti Esc návrh ťahu do ruky? Až ako posledná vrstva (Leader 2026-10-24): kým je
+ * niečo otvorené, Esc zavrie najprv to. A len cez tlačidlo návratu, ktoré by hráč
+ * mohol stlačiť (`navrat` — viditeľné, povolené, nič ho nezakrýva, ani stmavenie
+ * výučby), takže Esc nikdy nezruší viac než klik a návrh nepotvrdí ani neodošle.
+ */
+export function escVratiNavrh(vrstvy: VrstvyPreEsc, navrat: boolean): boolean {
+  return navrat && !Object.values(vrstvy).some(Boolean);
+}
+
+/** Tlačidlo návratu návrhu (data-skratka="esc"), ak by ho hráč mohol stlačiť myšou. */
+export function tlacidloNavratu(): HTMLElement | null {
+  const el = [...document.querySelectorAll('[data-skratka="esc"]')].find(stlacitelne);
+  if (el === undefined) return null;
+  const r = el.getBoundingClientRect();
+  const navrchu = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+  return navrchu !== null && el.contains(navrchu) ? el : null;
+}
 
 /** Pri písaní do poľa (chat, meno…) skratky mlčia. */
 function pise(t: EventTarget | null): boolean {
