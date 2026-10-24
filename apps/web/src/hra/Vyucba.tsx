@@ -286,6 +286,8 @@ function skoreMiesta(o: Obdlznik, zvyraznene: readonly Obdlznik[]): number {
   const sucet = (r: readonly Obdlznik[], vaha: number): number => r.reduce((s, b) => s + prekrytie(o, b) * vaha, 0);
   return (
     sucet(zvyraznene, 50) +
+    // Hláška, prečo sa karta nepoložila, musí byť celá vidno.
+    sucet(rectyPrvkov(".pokyn-tahania"), 50) +
     sucet(rectyPrvkov(".vrstva-fazy .stavba-zona, .vrstva-fazy .stavba-balicek, .vrstva-fazy .draft-karty, .vrstva-starsich:not([hidden]) .ls-sc"), 30) +
     sucet(rectyPrvkov(".linia .partia-rad .kl"), 4) +
     sucet(rectyPrvkov(".stol-hrana .pecat, .stol-hrana button"), 20) +
