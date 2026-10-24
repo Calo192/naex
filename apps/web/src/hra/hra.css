@@ -4479,8 +4479,13 @@ button.auto-hotovo-odkaz {
     bottom: auto;
   }
 
+  /* Nulová výška, nie display: none — šírka línie určuje veľkosť kariet draftu (12 miest stavby). */
   .hra.stol-scroll .stol-plst.linia-skryta > .linia {
-    display: none;
+    height: 0;
+    min-height: 0;
+    padding-block: 0;
+    overflow: hidden;
+    visibility: hidden;
   }
 
   .hra.stol-scroll .vrstva-fazy {
