@@ -377,6 +377,11 @@ body.vyucba-bezi .ucet-bitky {
   body.vyucba-bezi .pas-stolicky {
     flex-wrap: wrap;
   }
+
+  /* Obrys zvýraznenia výsledku bitky (6 px okolo) by inak ležal cez „… ďalšie Zhromaždenie“ vedľa. */
+  body.vyucba-bezi .pas-kola > .suhrn-bitky {
+    margin-inline: 8px;
+  }
 }
 
 /* Na nízkom okne (1366 × 650) by počet vydesených zalomil pás do druhého riadku a karty línie by
@@ -441,6 +446,12 @@ body.vyucba-bezi :is(.ls-poradie, .ls-odznak) {
 /* Počas výučby komentuje Melichar — pruhy udalostí a priazne na stole by ležali cez karty. */
 body.vyucba-bezi .pokyn-udalosti:not(.pokyn-tahania),
 body.vyucba-bezi .oznamy-priazne {
+  display: none;
+}
+
+/* Hrana stola, v ktorej je len ten skrytý pruh udalostí, je prázdna — jej záporný okraj by stiahol
+   plsť o 34 px pod tvoj bar a karty línie sa orezali (UI inšpekcia 1366 × 650, krok 29). */
+body.vyucba-bezi .stol-hrana:not(:has(> :not(.pokyn-udalosti:not(.pokyn-tahania)))) {
   display: none;
 }
 
