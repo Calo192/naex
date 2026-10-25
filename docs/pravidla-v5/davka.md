@@ -96,6 +96,8 @@ Podklad: docs/napady/priazne-v5-set.html.
 - **Podmienka Cigarety:** nechať, sledovať pasovanie v playteste (náhrada „minuté cigarety“ pripravená).
 - **NA EX naraz:** **útočník položí reakčnú kartu druhý** (po odkrytí NA EX odpovedá najprv obranca, útočník má posledné slovo).
 - **Pohoršenie k sebe smie každý.**
+- **Výtržník** (Michal 2026-10-25): karta sa najprv spáruje so susedmi s pôvodnými akciami, potom sa jej akcie zmenia na Rany pre majiteľa. **Po bitke výtržník vytriezvie** — akcie sú znova pôvodné; Výtržníkom je len počas jednej bitky.
+- **Pri zrážke NA EX** sa Výpalné aj Svokra platia za každé z oboch NA EX.
 
 ## Čo v5 prerobí (Michal 2026-10-25: „bude treba prerobiť takmer všetko“)
 
