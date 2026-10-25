@@ -841,3 +841,26 @@ Prehľad zmien:
 > Príklad: Farár má aktívne Znepokojenie a Strach. Starší A sa ťa bojí na úrovni
 > 1, B na 2, Farár je v neutrále → z Farára máš 1 + 2. Keď Farára vydesíš
 > (úroveň 3), ráta sa za neho Strach (Vydesenie aktívne nemá) → 1 + 2 + 2.
+
+## v5 — Cirhóza do odhadzovacieho balíčka (§4, §7, §8, §11, Michal 2026-10-25)
+
+Michal: „Cirhóza ide na odhadzovací balíček. Taktiež, keď sa doberací balíček
+minie, odhadzovací balíček sa POMIEŠA a stane sa z neho nový doberací
+balíček.“ Nová Cirhóza (za každý celý prah pečene) ide do odhadzovacieho
+balíčka, nie navrch doberacieho; do ruky príde až po zamiešaní. Zamiešanie
+hra robila pri každom ťahaní aj predtým — znenie sa len zjednotilo.
+`VERZIA_PRAVIDIEL` ostáva „v5“.
+
+Staré znenie §8 (Pečeň a Cirhóza):
+
+> Nová Cirhóza ide navrch doberacieho balíčka (§11).
+
+Staré znenie §11 (Kliatby):
+
+> Nová **Cirhóza** ide **navrch doberacieho balíčka** — do ruky príde pri
+> najbližšom ťahaní a hráč ju prizná, keď chce, alebo ju podrží (Vízia ju môže
+> zahodiť, Kar tiež).
+
+Staré znenie §4 (Začiatok kola): „Keď sa doberací balíček minie, zamieša sa
+odhadzovací.“ — §7 Vízia a §16 Veľmi smútiaca vdova: „prázdny sa doplní
+zamiešaním odhadzovacieho“.

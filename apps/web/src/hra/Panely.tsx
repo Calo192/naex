@@ -726,7 +726,7 @@ export function HracDoska({
                 <TipVyhladu x={vyhladPecene} />
                 {hrac.pecen} z {prahy.cirhoza}
                 {v !== null && v.pecenZoStola > 0 && `, karty na stole pripíšu ${v.pecenZoStola} → ${pecenPo}`}. Vyhodnocuje sa len v Pitke: za
-                každý celý prah vzniká Cirhóza (ide navrch doberacieho balíčka; priznaná dá súperovi v bitke +1 tuhé poškodenie) a{" "}
+                každý celý prah vzniká Cirhóza (ide do odhadzovacieho balíčka; priznaná dá súperovi v bitke +1 tuhé poškodenie) a{" "}
                 <b>po každej Pitke sa pečeň vynuluje</b>.
                 {vyhlad !== null && (
                   <span className="tip-stav">
@@ -1434,7 +1434,7 @@ export function PriebehKola({ view, onBitka }: { readonly view: ClientState; rea
               smie hneď odpovedať jednou kartou. Fajčiť, doliať poldeci ({KONSTANTY.REFILL_CENA} cig.), nový poldeci (barter).
               <span className="tip-riadok">
                 Potom sa pripíšu akcie: Dlh (zadĺženie — za každý celý prah Dlh, hneď priznaný), Poškodenie pečene a Poldeci (za každý celý
-                prah Cirhóza navrch balíčka), Obmedzenie, Cigarety a Vízia. Pečeň aj zadĺženie sa po Pitke vynulujú.
+                prah Cirhóza do odhadzovacieho balíčka), Obmedzenie, Cigarety a Vízia. Pečeň aj zadĺženie sa po Pitke vynulujú.
               </span>
               {viac && <span className="tip-stav">{pocetPozn}</span>}
             </>

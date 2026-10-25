@@ -1,7 +1,8 @@
 // Pravidlá 2026-10-21 (rozbory strategia-kliatby-20261021 a strategia-remiza-20261021,
 // dizajn hra-nezrovnalosti-20261021-1229): remíza „na sekeru“ len podľa tuhého,
-// verejný dlh a Cirhóza navrch balíčka, náhľad Pitky, záznam „hotovo“ a verejný
-// počet nepriznaných kliatob vo viewFor.
+// verejný dlh a Cirhóza navrch balíčka (od 2026-10-25 ide do odhadzovacieho,
+// pravidla-20261025.test.ts), náhľad Pitky, záznam „hotovo“ a verejný počet
+// nepriznaných kliatob vo viewFor.
 
 import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
@@ -97,7 +98,7 @@ describe("remíza na sekeru (Michal 2026-10-21)", () => {
   });
 });
 
-describe("verejný dlh a Cirhóza navrch balíčka (Michal 2026-10-21)", () => {
+describe("verejný dlh (Michal 2026-10-21) a nová Cirhóza do odhadzovacieho balíčka (Michal 2026-10-25)", () => {
   const P4: Layout4 = ["PoškodeniePečene", "PoškodeniePečene", "PoškodeniePečene", "PoškodeniePečene"];
   const D4: Layout4 = ["Dlh", "Dlh", "Dlh", "Dlh"];
   const piticka = makeDef("piticka", P4, P4);
@@ -126,8 +127,11 @@ describe("verejný dlh a Cirhóza navrch balíčka (Michal 2026-10-21)", () => {
     };
   }
 
-  it("nový Dlh sa hneď prizná a ráta sa na konci; nová Cirhóza ide navrch doberacieho balíčka", () => {
-    const s0 = setupGame(sada, 77);
+  it("nový Dlh sa hneď prizná a ráta sa na konci; nová Cirhóza ide do odhadzovacieho balíčka", () => {
+    const s1 = setupGame(sada, 77);
+    // Doberací balíček so 6 kartami: dobratie po bitke ho nevyčerpá, odhadzovací sa nezamieša.
+    const plny = Array.from({ length: 6 }, (_, i): CardInstance => ({ uid: 700001 + i, defId: "pijan", leftLayout: 0, rightLayout: 0 }));
+    const s0: GameState = { ...s1, hraci: [{ ...s1.hraci[0], doberaci: plny, odhadzovaci: [] }, s1.hraci[1]] };
     const lezi = (card: CardInstance, playedBy: PlayerId): PlacedCard => ({ card, playedBy });
     let s = vPitke(s0, [[lezi(instanceFor(sada, "piticka", P4, P4), 0), lezi(instanceFor(sada, "dlzna", D4, D4), 0)], []]);
     // Čo náhľad sľúbi, musí vyhodnotenie urobiť.
@@ -141,11 +145,12 @@ describe("verejný dlh a Cirhóza navrch balíčka (Michal 2026-10-21)", () => {
     expect(priznaneDlhy).toBe(nahlad[0].dlhy);
     expect(state.hraci[0].odhadzovaci.some((k) => k.defId === "dlh")).toBe(false);
     expect(nahlad[0].cirhozy).toBeGreaterThan(0);
-    // Cirhózy idú navrch balíčka — po bitke si ich hráč hneď dobere do ruky.
-    expect(events.filter((e) => e.type === "log" && e.text === "Hráč 1 získava Cirhózu — ide navrch jeho doberacieho balíčka.")).toHaveLength(nahlad[0].cirhozy);
+    // Cirhózy idú do odhadzovacieho balíčka — dobratie po bitke ich do ruky nedá.
+    expect(events.filter((e) => e.type === "log" && e.text === "Hráč 1 získava Cirhózu — ide do jeho odhadzovacieho balíčka.")).toHaveLength(nahlad[0].cirhozy);
     expect(nepriznaneKliatbyHraca(state.hraci[0]).cirhoza - nepriznaneKliatbyHraca(s0.hraci[0]).cirhoza).toBe(nahlad[0].cirhozy);
-    const doRukyPoBitke = Math.min(nahlad[0].cirhozy, 2);
-    expect(state.hraci[0].ruka.filter((k) => k.defId === "cirhoza").length).toBeGreaterThanOrEqual(doRukyPoBitke);
+    expect(state.hraci[0].odhadzovaci.filter((k) => k.defId === "cirhoza")).toHaveLength(nahlad[0].cirhozy);
+    expect(state.hraci[0].doberaci.some((k) => k.defId === "cirhoza")).toBe(false);
+    expect(state.hraci[0].ruka.some((k) => k.defId === "cirhoza")).toBe(false);
     // Priznaný Dlh uberá body na konci rovnako ako nepriznaný.
     const v = viewFor(sada, state, 1);
     const pred = bodyTeraz(sada, v).spolu[0];

@@ -139,8 +139,9 @@ poslednej bitky: **vyberá a natáča cieľ** kola a **Pitku začína**.
 
 - Každému hráčovi sa otočí **jeden vypitý poldeci na plný** (§6, limit).
 - Od druhého kola si každý hráč dobere zo svojho doberacieho balíčka
-  **2 karty** (dobratie po bitke). Keď sa doberací balíček minie, zamieša sa
-  odhadzovací. **Limit ruky nie je** — hráč smie mať kariet, koľko chce. Karty
+  **2 karty** (dobratie po bitke). **Keď sa doberací balíček minie,
+  odhadzovací sa zamieša a stane sa z neho nový doberací balíček** — pri
+  každom ťahaní, aj uprostred neho. **Limit ruky nie je** — hráč smie mať kariet, koľko chce. Karty
   navyše dáva šenok, fajčenie v Pitke (§7), priznanie kliatby (§11), Vízia
   a efekty.
 
@@ -423,7 +424,7 @@ Po „hotovo“ oboch hráčov:
 1. **NA EX** — odkrytie a odpovede (vyššie).
 2. **Dlh** — za **každý celý prah** zadĺženia hráč získa kartu Dlh (§8).
 3. **Poškodenie pečene a Cirhóza** — za **každý celý prah** pečene hráč získa
-   Cirhózu (§8).
+   Cirhózu do odhadzovacieho balíčka (§8).
 4. **Obmedzenie**
 5. **Cigarety** — hráč dostane cigarety za akcie Cigareta:
    ```
@@ -433,7 +434,8 @@ Po „hotovo“ oboch hráčov:
 6. **Ťahanie kariet** — Pitka sama karty nedáva; doberajú sa fajčením,
    priznaním kliatby, Poštárkou a Víziou.
 7. **Vízia** — za každú aktívnu Víziu sa hráč pozrie na vrchnú kartu svojho
-   doberacieho balíčka (prázdny sa doplní zamiešaním odhadzovacieho)
+   doberacieho balíčka (keď sa doberací balíček minie, odhadzovací sa
+   zamieša a stane sa z neho nový doberací balíček)
    a rozhodne: **do ruky**, alebo **zahodiť** (z hry; súperov Hrobár za to
    dostane cigaretu). Rozhoduje obranca, potom útočník; vrchnú kartu vidí len
    on.
@@ -490,7 +492,7 @@ do najbližšej Pitky). Za **každý celý prah** pečene hráč získa Cirhózu
 prah Cirhózy = 3   (+2 Nealko v Dedičstve, +2 obom v kole o Krčmu)
 ```
 
-Nová Cirhóza ide navrch doberacieho balíčka (§11).
+Nová Cirhóza ide do **odhadzovacieho balíčka** hráča (§11).
 
 ### Nerest a Absťák
 
@@ -803,14 +805,16 @@ ohlásené vydesenie (§1). Bot ho vyhodnocuje z bodov (`bot.ts`, `patronat`).
 | Karta | Vzniká | Účinok |
 |---|---|---|
 | **Dlh** | za každý celý prah zadĺženia (§8) a priamo z efektov kariet — **hneď priznaný** | bez akcií; priznaný sa ráta k prahu Exekútora a súperove Povery proti nemu udelia mäkké poškodenie; na konci hry sa **každý** Dlh, aj priznaný, ráta do podmienky Dlhy (§14) |
-| **Cirhóza** | za každý celý prah poškodenia pečene (§8) — ide **navrch doberacieho balíčka** | nepriznaná ide po bitke do tvojho odhadzovacieho balíčka; na konci hry prehráva súboje o Cirhózu (§14); priznaná dá súperovi v každej bitke +1 tuhé (§9.3) a umožní Pohreb |
+| **Cirhóza** | za každý celý prah poškodenia pečene (§8) — ide do **odhadzovacieho balíčka** | nepriznaná ide po bitke do tvojho odhadzovacieho balíčka; na konci hry prehráva súboje o Cirhózu (§14); priznaná dá súperovi v každej bitke +1 tuhé (§9.3) a umožní Pohreb |
 | **Absťák** | keď hráč v kole skonzumuje **menej nerestí** než v predošlom (§8) — **rovno priznaný** | znižuje **tvoje** tuhé poškodenie o 1 za kus; každý získaný sa ráta do podmienky Absťák (§14), aj keď sa ho neskôr zbavíš |
 
 **Verejný dlh:** nový **Dlh sa hneď prizná** — ide medzi priznané karty
 a kartu zaň hráč nedobere. Dlh, ktorý sa do balíčka dostane inak
 (Vychovávateľka), sa pri dobratí prizná sám (nižšie). Nová **Cirhóza** ide
-**navrch doberacieho balíčka** — do ruky príde pri najbližšom ťahaní a hráč ju
-prizná, keď chce, alebo ju podrží (Vízia ju môže zahodiť, Kar tiež).
+do **odhadzovacieho balíčka** — do ruky príde, až keď sa doberací balíček
+minie, odhadzovací sa zamieša a stane sa z neho nový doberací balíček. Potom
+ju hráč prizná, keď chce, alebo ju podrží (Vízia ju môže zahodiť, Kar tiež;
+kým leží v odhadzovacom balíčku, zahodí ju aj Niekoho stryná).
 
 **Nepriznaná Cirhóza po bitke do odhadzovacieho balíčka:** Cirhóza, ktorú má
 hráč po bitke v ruke a nepriznal ju, ide do jeho odhadzovacieho balíčka
@@ -1146,7 +1150,7 @@ v strede).
 | Veterán | Furt: NA EX na Veterána jeho **aktívne** akcie nezruší, ale **zdvojí** (aj Poldeci a Poškodenie pečene); neaktívne nezdvojí — ostanú neaktívne. |
 | Veštica | Pri prehre: porazený si prezrie oba doberacie balíčky, vymení jednu svoju kartu za súperovu, potom sa oba balíčky zamiešajú (§9.5b). |
 | Vychovávateľka | Keď sa odkryje NA EX majiteľa (§7), jeden jeho priznaný Dlh sa zamieša do súperovho **doberacieho balíčka** (pri dobratí sa súperovi sám prizná, §11). |
-| Veľmi smútiaca vdova | Nástup: odhalí sa vrchná karta súperovho doberacieho balíčka (prázdny sa doplní zamiešaním odhadzovacieho). Ak je to muž (tag Chlap), ide z hry a majiteľ Vdovy **zahodí** (z hry) 2 svoje Dlhy z ruky, odhadzovacieho balíčka alebo spomedzi priznaných. Log vždy oznámi odhalenú kartu. Hrobár sa za Dlhy nespúšťa. |
+| Veľmi smútiaca vdova | Nástup: odhalí sa vrchná karta súperovho doberacieho balíčka (keď je prázdny, súperov odhadzovací sa zamieša a stane sa z neho nový doberací balíček). Ak je to muž (tag Chlap), ide z hry a majiteľ Vdovy **zahodí** (z hry) 2 svoje Dlhy z ruky, odhadzovacieho balíčka alebo spomedzi priznaných. Log vždy oznámi odhalenú kartu. Hrobár sa za Dlhy nespúšťa. |
 | Niekoho stryná | Nástup: zahodí (z hry) 1 Cirhózu alebo 1 Dlh z ruky či z odhadzovacieho balíčka, Dlh aj spomedzi priznaných. Hra vyberie za hráča: najprv z ruky, potom z odhadzovacieho, nakoniec priznaný Dlh; Cirhózu pred Dlhom. |
 | Vínko | Dedičstvo: ráta sa ako plný poldeci navyše (limit +1); majiteľ nesmie dolievať poldeci za cigarety. Stokársky barter je povolený. |
 | Zámočník | Aktívne akcie Nástrojov v jeho okolí sa rátajú dvakrát. |

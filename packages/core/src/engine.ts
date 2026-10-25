@@ -614,20 +614,19 @@ function doRuky(s: MutState, p: PlayerId, karta: DeepMutable<CardInstance>, even
 /**
  * Nová kliatba (PRAVIDLA §11, „verejný dlh“ Michal 2026-10-21): Dlh sa hneď
  * prizná — ide medzi priznané karty, kartu zaň hráč nedobere a na konci
- * hry uberá body aj priznaný. Cirhóza ide NAVRCH doberacieho balíčka, aby
- * prišla do ruky pri najbližšom ťahaní a hráč o nej rozhodol. Cena kliatby
- * je tak známa hneď, nie až pri sčítaní podľa toho, či sa dobrala.
+ * hry uberá body aj priznaný. Cirhóza ide do odhadzovacieho balíčka
+ * (Michal 2026-10-25; predtým navrch doberacieho) — do ruky príde, až keď sa
+ * doberací balíček minie a odhadzovací sa zamieša (tahaj).
  */
 function pridajKliatbu(s: MutState, data: GameData, p: PlayerId, defId: string, events: Event[]): void {
   const karta = novaInstancia(s, data, defId) as DeepMutable<CardInstance>;
   if (defId === "dlh") hrac(s, p).priznane.push(karta);
-  else if (defId === "cirhoza") hrac(s, p).doberaci.unshift(karta);
   else hrac(s, p).odhadzovaci.push(karta);
   const text =
     defId === "dlh"
       ? `Hráč ${p + 1} získava Dlh — hneď sa priznáva (na konci hry uberá body aj priznaný).`
       : defId === "cirhoza"
-        ? `Hráč ${p + 1} získava Cirhózu — ide navrch jeho doberacieho balíčka.`
+        ? `Hráč ${p + 1} získava Cirhózu — ide do jeho odhadzovacieho balíčka.`
         : `Hráč ${p + 1} získava kartu Absťák.`;
   events.push({ type: "log", text });
 }

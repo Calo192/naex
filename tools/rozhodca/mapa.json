@@ -633,6 +633,22 @@
       ]
     },
     {
+      "id": "4.kolo.zamiesanie",
+      "paragraf": "4. Priebeh kola",
+      "pravidlo": "Keď sa doberací balíček minie, odhadzovací sa zamieša a stane sa z neho nový doberací balíček — pri každom ťahaní (dobratie po bitke, fajčenie, priznanie, Poštárka, Vízia, Veľmi smútiaca vdova).",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/pravidla-20261025.test.ts › fajčenie",
+        "packages/core/test/pravidla-20261025.test.ts › fajčenie uprostred: najprv zvyšok doberacieho, potom zamiešaný odhadzovací",
+        "packages/core/test/pravidla-20261025.test.ts › Poštárka",
+        "packages/core/test/pravidla-20261025.test.ts › priznanie kliatby",
+        "packages/core/test/pravidla-20261025.test.ts › dobratie po bitke (2 karty na ďalšie kolo)",
+        "packages/core/test/pravidla-20261025.test.ts › Veľmi smútiaca vdova odhalí vrchnú kartu zamiešaného odhadzovacieho balíčka súpera",
+        "packages/core/test/pravidla-20261025.test.ts › pri prázdnom doberacom sa odhadzovací zamieša a nová Cirhóza príde do ruky (Vízia: vziať)",
+        "packages/core/test/michal-20261018.test.ts › aj keď je doberací prázdny — zamieša sa odhadzovací"
+      ]
+    },
+    {
       "id": "4.kolo.zdroje-kariet",
       "paragraf": "4. Priebeh kola",
       "pravidlo": "Karty navyše dáva šenok, fajčenie (len v Pitke), priznanie kliatby, Vízia a efekty.",
@@ -1314,7 +1330,7 @@
       "pravidlo": "Súboje: viac lokalít, starších z patronátu, cigariet, plných poldeci (Rezerva, Vínko +1); menej Dlhov (aj priznaných), nepriznaných Cirhóz (ruka aj balíčky) a Absťákov získaných za hru.",
       "stav": "na-overenie",
       "testy": [],
-      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/pravidla-bitka.test.ts › §14/§11: Dlh uberá aj priznaný, Cirhóza len nepriznaná (ruka aj oba balíčky), cigarety po trojiciach; packages/core/test/pravidla-20261021.test.ts › nový Dlh sa hneď prizná a ráta sa na konci; nová Cirhóza ide navrch doberacieho balíčka."
+      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/pravidla-bitka.test.ts › §14/§11: Dlh uberá aj priznaný, Cirhóza len nepriznaná (ruka aj oba balíčky), cigarety po trojiciach; packages/core/test/pravidla-20261021.test.ts › nový Dlh sa hneď prizná a ráta sa na konci; nová Cirhóza ide do odhadzovacieho balíčka."
     },
     {
       "id": "14.kategorie",
@@ -1367,10 +1383,12 @@
     {
       "id": "11.kliatby.verejny-dlh",
       "paragraf": "11. Kliatby, priznanie, Exekútor, Pohreb › Kliatby",
-      "pravidlo": "Nový Dlh sa hneď prizná (bez karty); nová Cirhóza ide navrch doberacieho balíčka.",
+      "pravidlo": "Nový Dlh sa hneď prizná (bez karty); nová Cirhóza ide do odhadzovacieho balíčka (Michal 2026-10-25, predtým navrch doberacieho).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-20261021.test.ts › nový Dlh sa hneď prizná a ráta sa na konci; nová Cirhóza ide navrch doberacieho balíčka"
+        "packages/core/test/pravidla-20261021.test.ts › nový Dlh sa hneď prizná a ráta sa na konci; nová Cirhóza ide do odhadzovacieho balíčka",
+        "packages/core/test/pravidla-20261025.test.ts › Cirhóza nejde navrch doberacieho — Vízia vidí jeho pôvodnú vrchnú kartu",
+        "packages/core/test/pravidla-20261025.test.ts › pri prázdnom doberacom sa odhadzovací zamieša a nová Cirhóza príde do ruky (Vízia: vziať)"
       ]
     },
     {

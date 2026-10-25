@@ -16,7 +16,7 @@ export const SLOVNIK: readonly PojemSlovnika[] = [
   { id: "body-za-starsieho", pojem: "Body za staršieho", popis: "1 bod + 1 za každú zónu, v ktorej sa ťa starší bojí; získa ich, kto vyhrá viac jeho podmienok, pri rovnosti obaja." },
   { id: "bitka", pojem: "Bitka", popis: "Koniec kola: viac tuhého poškodenia berie lokalitu, prebytok posúva markery starších." },
   { id: "cigareta", pojem: "Cigareta", popis: "Mena hry: platí šenok, Dedičstvo, doliatie a barter; vyfajčená v Pitke je hneď karta navyše." },
-  { id: "cirhoza", pojem: "Cirhóza", popis: "Kliatba z pečene; ide navrch tvojho balíčka, priznaná dá súperovi v bitke +1 tuhé, nepriznaná ide po bitke do tvojho odhadzovacieho balíčka a na konci hry prehráva súboje o Cirhózu." },
+  { id: "cirhoza", pojem: "Cirhóza", popis: "Kliatba z pečene; ide do tvojho odhadzovacieho balíčka, priznaná dá súperovi v bitke +1 tuhé, nepriznaná ide po bitke do tvojho odhadzovacieho balíčka a na konci hry prehráva súboje o Cirhózu." },
   { id: "dedicstvo", pojem: "Dedičstvo", popis: "Nástroj vyložený mimo línie; platí jeho efekt a cena rastie pre oboch: 1., 2., 3. Nástroj stojí 1, 2, 3 cigarety." },
   { id: "dlh", pojem: "Dlh", popis: "Kliatba zo zadĺženia: každé 2 zadĺženia v Pitke = 1 Dlh; prizná sa sám, ráta sa k prahu Exekúcie (10) a na konci do podmienky Dlhy." },
   { id: "dlzka-hry", pojem: "Dĺžka hry", popis: "Počet lokalít, o ktoré sa hrá: krátka 3, stredná 5, dlhá 7." },

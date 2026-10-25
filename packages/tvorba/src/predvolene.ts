@@ -26,7 +26,7 @@ export const AKCIE_20261019: readonly { readonly kluc: string; readonly nazov: s
   {
     kluc: "PoškodeniePečene",
     nazov: "Poškodenie pečene",
-    popis: "Pridá 1 poškodenie pečene. V Pitke za každý celý prah získaš Cirhózu — ide navrch tvojho doberacieho balíčka.",
+    popis: "Pridá 1 poškodenie pečene. V Pitke za každý celý prah získaš Cirhózu — ide do tvojho odhadzovacieho balíčka.",
   },
   { kluc: "Poldeci", nazov: "Poldeci", popis: "Pri bitke otočí jeden tvoj vypitý poldeci späť na plný. Poškodenie pečene z neho sa počíta už v Pitke." },
   {

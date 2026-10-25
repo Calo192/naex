@@ -118,7 +118,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <H3 id="co-mas-pred-sebou-bar">Ruka, balíček a bar</H3>
         <p>
           Máš <strong>ruku</strong> (bez limitu), <strong>doberací balíček</strong> a <strong>odhadzovací balíček</strong>. Keď sa
-          doberací minie, zamieša sa odhadzovací. Na bare vidíš svoje <P k="poldeci">poldeci</P> (plné a vypité),{" "}
+          doberací balíček minie, odhadzovací sa zamieša a stane sa z neho nový doberací balíček. Na bare vidíš svoje <P k="poldeci">poldeci</P> (plné a vypité),{" "}
           <P k="cigareta">cigarety</P>, <P k="pecen">pečeň</P>, zadĺženie a <P k="nerest">neresti</P> kola.
         </p>
         <H3 id="co-mas-pred-sebou-karta">Karta</H3>
@@ -432,7 +432,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <p>
           K <P k="pecen">pečeni</P> prispieva každá akcia <strong>Poškodenie pečene</strong>, každá akcia <strong>Poldeci</strong>{" "}
           a každé NA EX. Vyhodnotí sa <strong>len v Pitke</strong>: za každý celý prah (3; Nealko v Dedičstve a Krčma ho zvyšujú) dostaneš
-          kartu <P k="cirhoza">Cirhóza</P> — ide navrch tvojho doberacieho balíčka. Po Pitke sa pečeň vynuluje, zvyšok pod prahom
+          kartu <P k="cirhoza">Cirhóza</P> — ide do tvojho odhadzovacieho balíčka. Po Pitke sa pečeň vynuluje, zvyšok pod prahom
           sa neprenáša. Poldeci vypitý v Zhromaždení (ďalšia karta v ťahu) pripíše +1 pečene do najbližšej Pitky.
         </p>
         <H3 id="cena-dlh">Zadĺženie a Dlh</H3>
@@ -671,7 +671,8 @@ export const KAPITOLY: readonly Kapitola[] = [
             priznaný, sa ráta k prahu Exekútora a na konci do podmienky Dlhy.
           </li>
           <li>
-            <strong>Cirhóza</strong> — ide navrch doberacieho balíčka. Priznáš ju, keď chceš, ale kartu za ňu{" "}
+            <strong>Cirhóza</strong> — ide do odhadzovacieho balíčka; do ruky príde, až keď sa doberací balíček minie
+            a odhadzovací sa zamieša. Priznáš ju, keď chceš, ale kartu za ňu{" "}
             <strong>nedobereš</strong>. Priznaná dá súperovi v každej bitke +1 tuhé. <strong>Nepriznaná ide po bitke do tvojho odhadzovacieho
             balíčka; na konci hry prehráva súboje o Cirhózu.</strong> Buď ju prizníš hneď, alebo riskuješ, že sa ti do konca
             hry nevráti do ruky.

@@ -71,10 +71,13 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   Karty navyše: šenok, fajčenie (`smoke`: cigareta = karta hneď, **len v Pitke**
   (v5), v Zhromaždení nie; s prázdnym doberacím aj odhadzovacím balíčkom sa fajčiť
   nedá), priznanie kliatby, Vízia, efekty. Malý balíček prehru nespôsobí (v5).
+  Keď sa doberací balíček minie, odhadzovací sa zamieša a stane sa z neho nový
+  doberací balíček (pri každom ťahaní).
 - **Kliatby (verejný dlh, 2026-10-21):** nový **Dlh sa hneď prizná** (kartu zaň
   nedobereš) a na konci hry sa ráta do podmienky Dlhy **aj priznaný**; Dlh podstrčený do balíčka
-  (Vychovávateľka) sa pri dobratí prizná sám. Nová **Cirhóza ide navrch tvojho
-  doberacieho balíčka**; priznáš ju, keď chceš, ale kartu za ňu **nedobereš** a súper za každú
+  (Vychovávateľka) sa pri dobratí prizná sám. Nová **Cirhóza ide do tvojho
+  odhadzovacieho balíčka** (2026-10-25) — do ruky príde, až keď sa doberací balíček minie a odhadzovací
+  sa zamieša; priznáš ju, keď chceš, ale kartu za ňu **nedobereš** a súper za každú
   priznanú dostane v bitke +1 tuhé (v5: nepriznaná ide po bitke do tvojho odhadzovacieho balíčka; na konci hry prehráva súboje o Cirhózu)
   — prizná ju hneď, alebo riskuješ, že sa ti do konca nevráti do ruky. Kým ju nepriznáš, súper za ňu tuhé
   nedostáva a na Pohreb ju nemáš. Počet súperových
