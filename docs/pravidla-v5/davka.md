@@ -98,6 +98,7 @@ Podklad: docs/napady/priazne-v5-set.html.
 - **Pohoršenie k sebe smie každý.**
 - **Výtržník** (Michal 2026-10-25): karta sa najprv spáruje so susedmi s pôvodnými akciami, potom sa jej akcie zmenia na Rany pre majiteľa. **Po bitke výtržník vytriezvie** — akcie sú znova pôvodné; Výtržníkom je len počas jednej bitky.
 - **Pri zrážke NA EX** sa Výpalné aj Svokra platia za každé z oboch NA EX.
+- Potvrdené podľa kódu (Michal 2026-10-25): Pohoršenie k sebe s Novinami smie až na krajnú pozíciu; Policajtka ruší súperove Pohoršenia v oboch smeroch; Výpalné zoberie len toľko cigariet, koľko súper má; pri „do dna“ sa nerest ráta ďalej. Starší bez aktívnej podmienky prakticky nenastane (každá karta staršieho má akcie); rovnosť vo všetkých podmienkach = body obom.
 - **Neprajník → Výpalník** (priazeň Výpalné). Benzínka v5: len „Pitka: Nikto nesmie fajčiť.“ Cirhóza: „Nepriznaná ide po bitke do tvojho odhadzovacieho balíčka; na konci hry prehráva súboje o Cirhózu.“ Popis akcie Dlh s konkrétnymi číslami (prah zadĺženia, prah Exekúcie). (Michal 2026-10-25)
 
 ## Čo v5 prerobí (Michal 2026-10-25: „bude treba prerobiť takmer všetko“)
