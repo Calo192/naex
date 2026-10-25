@@ -24,7 +24,7 @@
         "podmienka": "view.faza === \"draft\" && view.draftStav.krok === \"stavba\" && môj balíček stavby nie je prázdny",
         "jadro": ["packages/core/src/engine.ts:129 DraftStav.krok", "docs/PRAVIDLA.md §5 Stavba šenku"]
       },
-      "melichar": "Šenok staviate ty a súper naraz: štyri karty daj do šenku, štyri na Smetisko. Na Smetisko patria tie, ktoré nechceš dať súperovi, neuvidí ich.",
+      "melichar": "Šenok staviate ty a súper naraz: štyri karty daj do šenku, štyri na Smetisko. Na Smetisko patria tie, ktoré súperovi nedopraješ, neuvidí ich. Nedopriať niečo druhým ti ide, to viem.",
       "zvyraznit": ["stavba"]
     },
     {
@@ -38,8 +38,8 @@
         "jadro": ["packages/core/src/engine.ts:240 GameState.utocnik", "docs/PRAVIDLA.md §4 Útočník a obranca"]
       },
       "melichar": {
-        "utocnik": "Si útočník: kupuješ a kladieš prvý. Dnes rozhodol žreb, odteraz je útočníkom ten, kto prehrá bitku.",
-        "obranca": "Si obranca: vyberáš lokalitu a Pitku začínaš ty. Dnes rozhodol žreb, odteraz je obrancom ten, kto vyhrá bitku."
+        "utocnik": "Si útočník: kupuješ a kladieš prvý. Dnes rozhodol žreb, odteraz je útočníkom ten, kto prehrá bitku. Tak si na tú rolu zvykaj.",
+        "obranca": "Si obranca: vyberáš lokalitu a Pitku začínaš ty. Dnes rozhodol žreb, odteraz je obrancom ten, kto vyhrá bitku. Užívaj si to, kým to trvá."
       },
       "zvyraznit": ["os-kola"]
     },
@@ -52,7 +52,7 @@
         "podmienka": "view.pitkaStav.reakcia === ja",
         "jadro": ["packages/core/src/engine.ts:174 PitkaStav.reakcia", "docs/PRAVIDLA.md §7 Odpoveď na NA EX"]
       },
-      "melichar": "NA EX sa odkryli a ty smieš za súperovo NA EX položiť jednu kartu. Keď ňou spojíš akciu bez partnera na karte s NA EX, NA EX ju zruší namiesto zdvojenia.",
+      "melichar": "Pozorne, hovorím to len raz. NA EX sa odkryli a ty smieš za súperovo NA EX položiť jednu kartu. Keď ňou spojíš akciu bez partnera na karte s NA EX, NA EX ju zruší namiesto zdvojenia.",
       "zvyraznit": ["tlacidlo:bez-odpovede"]
     },
     {
@@ -64,7 +64,7 @@
         "podmienka": "pred.pitkyCelkom < 2 && po.pitkyCelkom >= 2",
         "jadro": ["packages/core/src/engine.ts:1282 pocetPitiek", "packages/core/src/engine.ts:266 GameState.pitkyCelkom", "docs/PRAVIDLA.md §7 Počet Pitiek"]
       },
-      "melichar": "Pitka sa dnes zopakuje: obaja máte pri lokalite spojenú jej akciu. Pred každou ďalšou Pitkou je nové Zhromaždenie.",
+      "melichar": "Pitka sa dnes zopakuje: obaja máte pri lokalite spojenú jej akciu. Pred každou ďalšou Pitkou je nové Zhromaždenie. Viac príležitostí na chyby, teší ma to za teba.",
       "zvyraznit": ["os-kola"]
     },
     {
@@ -76,7 +76,7 @@
         "podmienka": "nahladPitky(view)[ja].zadlzenie > 0",
         "jadro": ["packages/core/src/engine.ts:700 nahladPitky", "packages/core/src/engine.ts:873 prahyHraca (dlh)", "docs/PRAVIDLA.md §8 Zadĺženie a Dlh"]
       },
-      "melichar": "Akcia [Dlh] Dlh ti plní zadĺženie v bare. Keď dosiahne číslo za lomkou, dostaneš kartu Dlh.",
+      "melichar": "Akcia [Dlh] Dlh ti plní zadĺženie v bare. Keď dosiahne číslo za lomkou, dostaneš kartu Dlh. O dlžobách niečo vieš, však? Napríklad o jednej cigarete.",
       "zvyraznit": ["bar:zadlzenie"]
     },
     {
@@ -88,7 +88,7 @@
         "podmienka": "udalosť pitkaVysledok s dlhy[ja] > 0, alebo pribudol Dlh medzi mojimi priznanými",
         "jadro": ["packages/core/src/engine.ts:412 Event pitkaVysledok", "docs/PRAVIDLA.md §11 Kliatby"]
       },
-      "melichar": "Prvý Dlh! Leží medzi priznanými kartami. Na konci hry pri starších s podmienkou Dlhy vyhrá ten, kto má Dlhov menej.",
+      "melichar": "Prvý Dlh! Úprimne, nečudujem sa. Leží medzi priznanými kartami. Na konci hry pri starších s podmienkou Dlhy vyhrá ten, kto má Dlhov menej.",
       "zvyraznit": ["bar:dlhy"]
     },
     {
@@ -100,7 +100,7 @@
         "podmienka": "view.faza === \"zhromazdenie\" && naTahu === ja && v tomto Zhromaždení som vyložil kartu && kartyZaPas(view.zhromazdenie, ja) >= 1",
         "jadro": ["packages/core/src/engine.ts:158 kartyZaPas", "docs/PRAVIDLA.md §6 Pas a koniec Zhromaždenia"]
       },
-      "melichar": "Pasovať sa oplatí aj skôr: za každú kartu, ktorú si ešte smel vyložiť, dostaneš [Cigareta] cigaretu.",
+      "melichar": "Pasovať sa oplatí aj skôr: za každú kartu, ktorú si ešte smel vyložiť, dostaneš [Cigareta] cigaretu. Jednu by si potom mohol aj vrátiť, len tak spomínam.",
       "zvyraznit": ["tlacidlo:pas"]
     },
     {
@@ -126,7 +126,7 @@
         "podmienka": "pred.kolo === 1 && po.kolo === 2, alebo prvý koniec bitky",
         "jadro": ["packages/core/src/view.ts:359 bodyTeraz", "docs/PRAVIDLA.md §14 Bodovanie"]
       },
-      "melichar": "Body v bare ukazujú, koľko by si mal, keby hra skončila teraz. Klikni na ne a uvidíš, čo ti dáva ktorý starší.",
+      "melichar": "Body v bare ukazujú, koľko by si mal, keby hra skončila teraz. Klikni na ne a uvidíš, čo ti dáva ktorý starší. Keď sa ti tie čísla nebudú páčiť, mne sa nesťažuj.",
       "zvyraznit": ["bar:body"]
     },
     {
@@ -140,8 +140,8 @@
         "jadro": ["packages/core/src/engine.ts:188 BitkaKrok pohorsenie", "packages/core/src/engine.ts:2860 pohorseniaVBitke", "docs/PRAVIDLA.md §9.2 Pohoršenie"]
       },
       "melichar": {
-        "moje": "Tvoje Pohoršenie posunie jedného staršieho o krok k súperovi alebo k sebe, aj keď bitku prehráš. K sebe si vezmeš jeho priazeň hneď, platí už v tejto bitke.",
-        "superove": "Súperovo Pohoršenie posúva staršieho k tebe alebo k nemu, aj keď bitku prehrá. Priazeň sa mení hneď, ešte v tejto bitke."
+        "moje": "Tvoje Pohoršenie posunie jedného staršieho o krok k súperovi alebo k sebe, aj keď bitku prehráš. A to sa ti zíde. K sebe si vezmeš jeho priazeň hneď, platí už v tejto bitke.",
+        "superove": "Súperovo Pohoršenie posúva staršieho k tebe alebo k nemu, aj keď bitku prehrá. Priazeň sa mení hneď, ešte v tejto bitke. Nepozeraj tak na mňa, ja som ho nevyložil."
       },
       "zvyraznit": ["linia-starsich"]
     },
@@ -154,7 +154,7 @@
         "podmienka": "stavZavislosti(view, ja).vyhlad === \"ziska\" na mojom ťahu, alebo pribudol Absťák medzi mojimi priznanými",
         "jadro": ["packages/core/src/zavislost.ts:52 stavZavislosti", "docs/PRAVIDLA.md §8 Nerest a Absťák"]
       },
-      "melichar": "Pozor na Absťák: kto v kole pije [Poldeci] a fajčí [Cigareta] menej ako v predošlom, dostane ho. Každý ti v bitke uberie 1 tuhé a na konci sa rátajú všetky, čo si za hru dostal.",
+      "melichar": "Pozor na Absťák: kto v kole pije [Poldeci] a fajčí [Cigareta] menej ako v predošlom, dostane ho. Každý ti v bitke uberie 1 tuhé a na konci sa rátajú všetky, čo si za hru dostal. Ja len radím, rob si, ako chceš.",
       "zvyraznit": ["bar:abstak"]
     },
     {
@@ -166,7 +166,7 @@
         "podmienka": "view.hraci[ja].ruka obsahuje defId \"cirhoza\"",
         "jadro": ["packages/core/src/engine.ts:412 Event pitkaVysledok (cirhozy)", "docs/PRAVIDLA.md §11 Priznanie"]
       },
-      "melichar": "V ruke máš Cirhózu z pretečenej pečene. Priznaná ťa body nestojí, no súper za ňu dostane v každej bitke 1 tuhé. Nepriznaná ide po bitke do tvojho odhadzovacieho balíčka a na konci hry prehráva súboje o Cirhózu.",
+      "melichar": "V ruke máš Cirhózu z pretečenej pečene. Varoval som ťa, ale dobre. Priznaná ťa body nestojí, no súper za ňu dostane v každej bitke 1 tuhé. Nepriznaná ide po bitke do tvojho odhadzovacieho balíčka a na konci hry prehráva súboje o Cirhózu.",
       "zvyraznit": ["ruka:cirhoza"]
     },
     {
@@ -179,7 +179,7 @@
         "doplnit": "{starsi} = meno staršieho, {elderId}",
         "jadro": ["packages/core/src/engine.ts:449 priazen", "docs/PRAVIDLA.md §10 Dvojaká úloha markera"]
       },
-      "melichar": "{starsi} je na tvojej polovici a prejavuje ti priazeň: malý bonus podľa jeho podložky. Bojí sa zato súpera.",
+      "melichar": "{starsi} je na tvojej polovici a prejavuje ti priazeň: malý bonus podľa jeho podložky. Bojí sa zato súpera. Niekto ťa má rád, to by som nečakal.",
       "zvyraznit": ["starsi:{elderId}"]
     },
     {
@@ -191,7 +191,7 @@
         "podmienka": "strana línie s kartami oboch playedBy a s aktivovanou akciou hrany lokality",
         "jadro": ["packages/core/src/partia.ts:249 prevahaStran", "docs/PRAVIDLA.md §6 Prevaha a akcie lokality"]
       },
-      "melichar": "Akcie lokality v kraji dostane, kto tam má viac svojich Občanov, Zvierat a Starešinov. Pri rovnosti ten, koho karta leží pri lokalite.",
+      "melichar": "Akcie lokality v kraji dostane, kto tam má viac svojich Občanov, Zvierat a Starešinov. Pri rovnosti ten, koho karta leží pri lokalite. Rátať do troch vieš, to bude stačiť.",
       "zvyraznit": ["prevaha"]
     },
     {
@@ -203,7 +203,7 @@
         "podmienka": "view.draftStav.krok === \"patronat\" && hráč má aspoň jedného staršieho, ktorého smie vziať (moznyPatronat)",
         "jadro": ["packages/core/src/engine.ts:1555 moznyPatronat", "packages/core/src/view.ts:409 nahladPatronatu", "docs/PRAVIDLA.md §10 Patronát"]
       },
-      "melichar": "Starší, ktorý ti prejavuje priazeň, smie ísť s tebou do bitky: za [Cigareta] cigarety si ho vezmeš do ruky. Keď bitku prehráš, vráti sa a stratíš [Poldeci] poldeci.",
+      "melichar": "Starší, ktorý ti prejavuje priazeň, smie ísť s tebou do bitky: za [Cigareta] cigarety si ho vezmeš do ruky. Jemu ich dáš hneď, mne nie. Keď bitku prehráš, vráti sa a stratíš [Poldeci] poldeci.",
       "zvyraznit": ["linia-starsich"]
     },
     {
@@ -217,8 +217,8 @@
         "jadro": ["packages/core/src/engine.ts:3711 prahVydesenia", "packages/core/src/engine.ts:286 ohlaseneVydesenie", "docs/PRAVIDLA.md §1 Podmienky konca"]
       },
       "melichar": {
-        "moje": "Vydesený starší! Kto vydesí štyroch a udrží ich do konca ďalšieho kola, vyhrá hneď.",
-        "superove": "Súper ti vydesil staršieho. Keď ich vydesí štyroch a udrží ich do konca ďalšieho kola, vyhrá hneď."
+        "moje": "Vydesený starší! Kto vydesí štyroch a udrží ich do konca ďalšieho kola, vyhrá hneď. Jeden už máš, chýbajú len traja. Len.",
+        "superove": "Súper ti vydesil staršieho. Keď ich vydesí štyroch a udrží ich do konca ďalšieho kola, vyhrá hneď. Ale to sa určite nestane. Však?"
       },
       "zvyraznit": ["linia-starsich"]
     },
@@ -232,7 +232,7 @@
         "doplnit": "{karta} = názov Nástroja, {defId}",
         "jadro": ["packages/core/src/engine.ts:1874 cenaDedicstva", "docs/PRAVIDLA.md §12 Dedičstvo"]
       },
-      "melichar": "{karta} je Nástroj. Môžeš ho dať do Dedičstva za [Cigareta] cigarety a jeho efekt potom platí do konca hry.",
+      "melichar": "{karta} je Nástroj. Môžeš ho dať do Dedičstva za [Cigareta] cigarety a jeho efekt potom platí do konca hry. Aspoň niečo u teba vydrží až do konca.",
       "zvyraznit": ["ruka:{defId}"]
     },
     {
@@ -244,7 +244,7 @@
         "podmienka": "prahyHraca(view, ja).priznaneDlhy >= prahyHraca(view, ja).exekutor - 2 (rovnako ako varovanie v bare)",
         "jadro": ["packages/core/src/engine.ts:873 prahyHraca", "apps/web/src/hra/Panely.tsx:769 varovanie Dlhov", "docs/PRAVIDLA.md §11 Exekútor"]
       },
-      "melichar": "Priznaných Dlhov je veľa. Keď dosiahnu číslo za lomkou, v bitke príde Exekútor: odovzdáš mu Nástroj, alebo prehráš.",
+      "melichar": "Priznaných Dlhov máš už dosť, nechcem nič hovoriť. Keď dosiahnu číslo za lomkou, v bitke príde Exekútor: odovzdáš mu Nástroj, alebo prehráš. Poznám ho, neodporúčam.",
       "zvyraznit": ["bar:dlhy"]
     },
     {
@@ -256,7 +256,7 @@
         "podmienka": "view.kolo >= 2 && naTahu === ja && príkaz zaverecna je legálny (aspoň 1 cigareta, ešte nepasoval)",
         "jadro": ["packages/core/src/engine.ts:1185 príkaz zaverecna", "docs/PRAVIDLA.md §13 Záverečná"]
       },
-      "melichar": "Za [Cigareta] cigaretu smieš zahrať kartu lícom dole ako Záverečnú, súper nevie, čo to je. Po nej už v tomto Zhromaždení nič nevyložíš.",
+      "melichar": "Za [Cigareta] cigaretu smieš zahrať kartu lícom dole ako Záverečnú, súper nevie, čo to je. Po nej už v tomto Zhromaždení nič nevyložíš. Zase cigareta, ktorá nejde mne.",
       "zvyraznit": ["zaverecna"]
     }
   ]
