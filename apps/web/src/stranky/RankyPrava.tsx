@@ -61,7 +61,7 @@ export function RankyPrava({ poZmene }: { readonly poZmene: () => void }) {
       </summary>
       {chyba !== null && <Hlaska>{chyba}</Hlaska>}
       <p className="tlmene">
-        Návštevník → Poldeci po výučbe (achievement Prvá hra) alebo prvej dohratej partii (aj proti počítaču) → Deci → Sedmička podľa
+        Nealko → Poldeci po výučbe (achievement Prvá hra) alebo prvej dohratej partii (aj proti počítaču) → Deci → Sedmička podľa
         hviezd achievementov, v percentách všetkých hviezd (zaokrúhlené nahor). Automatika rank len zvyšuje — Deci a Sedmička získané
         ešte za partie ostávajú. Rank nastavený ručne v tabuľke nižšie automatika nemení. Admin a subadmin smú vždy všetko.
       </p>

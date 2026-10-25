@@ -17,7 +17,7 @@ export const NAZOV_UROVNE: Readonly<Record<Rola, string>> = {
   sedmicka: "Sedmička",
   deci: "Deci",
   hrac: "Poldeci",
-  navstevnik: "návštevník",
+  navstevnik: "Nealko",
 };
 
 /** Hráčske ranky od najnižšieho — tým sa prideľujú práva. */

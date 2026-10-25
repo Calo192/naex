@@ -53,7 +53,7 @@ export function Hraci() {
       <header className="hraci-hlavicka">
         <h1>Hráči</h1>
         <p className="tlmene">
-          Nový účet je návštevník; po výučbe alebo prvej dohratej partii (aj proti počítaču) je z neho Poldeci, potom Deci a Sedmička podľa hviezd
+          Nový účet je Nealko; po výučbe alebo prvej dohratej partii (aj proti počítaču) je z neho Poldeci, potom Deci a Sedmička podľa hviezd
           achievementov (percentá v Ranky a práva). Rank nastavený ručne (značka „ručne“) automatika nemení, kým ho nevrátiš na automatický. Účty AI agentov majú značku AI
           — ich spätnú väzbu web predvolene skrýva. {somAdmin ? "Rank aj značku AI meníš v tabuľke." : "Hráčske ranky meníš v tabuľke; subadminov a značku AI mení len admin."}
         </p>
