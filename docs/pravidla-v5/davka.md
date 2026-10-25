@@ -12,6 +12,7 @@ ktoré sa merajú pre ďalšiu dávku. Nič z toho ešte nie je v hre.
 | 6 | **Priazne starších:** Bitkár ostáva, ale slabší (+1/+2/+3 tuhého namiesto +2/+4/+6). Lakomec dostane novú priazeň (nie zľava v šenku). Ostatné priazne podľa docs/napady/priazne-v5.html na meranie. Násobok bodov za staršieho ostáva V1 (koho sa bojí). Rovnosť podmienky ostáva nikomu (nie hráčovi s priazňou). | schválené smerom, meria stratég | Michal 2026-10-24 |
 | 7 | **Pohoršenie oboma smermi:** hráč, ktorého Pohoršenie sa aktivovalo, posunie marker zvoleného staršieho o 1 k súperovi (ako dnes) ALEBO k sebe. K sebe znamená, že priazeň toho staršieho získa on, a keďže Pohoršenie mení priazeň hneď, platí už v tej istej bitke (môže ju rozhodnúť). Limit dvoch hraníc zón, zákaz krajnej pozície a Policajtka platia v oboch smeroch. | schválené, meria stratég | Michal 2026-10-24 |
 | 4 | **Prehra balíčkom pod 5 kariet sa ruší.** Okamžitá výhra vydesením ostáva. | schválené | Michal 2026-10-24 |
+| 8 | **Nepriznaná Cirhóza po bitke do odhadzovacieho balíčka:** Cirhóza, ktorú hráč má po bitke v ruke a nepriznal ju, ide do jeho odhadzovacieho balíčka. Hráč sa musí rozhodnúť, či ju prizná hneď (súper +1 tuhé v každej bitke), alebo riskuje, že sa mu v poslednom kole nevráti do ruky a na konci hry ho bude stáť body. Na konci hry sa ráta aj v balíčkoch ako dnes. | schválené, meria stratég | Michal 2026-10-25 |
 
 ## Bodovanie v5: návrh Michala (2026-10-24)
 
