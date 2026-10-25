@@ -123,6 +123,7 @@ import { SkratkyNapoveda, escVratiNavrh, tlacidloNavratu, useSkratky, type Vrstv
 import { klucFazy, predvolenyRezim, vyberSpravu, type RezimStran } from "./bar.ts";
 import { JednotnyBar, type StranaBaru } from "./JednotnyBar.tsx";
 import { polozkySoZaverecnou, tahSoZaverecnou } from "./zaverecnaTahu.ts";
+import { klavesPreskociPauzu, PAUZA_CIELA_MS, pauzaPoVolbeCiela, type PauzaCiela } from "./pauzaCiela.ts";
 import type { Sada } from "@naex/tvorba";
 import { HernaKarta, vzhladKarty, type HernaKartaProps } from "./HernaKarta.tsx";
 import { useZarovnanieLinie } from "./zarovnanieLinie.ts";
@@ -1802,6 +1803,56 @@ export function HernaPlocha({
     window.addEventListener("naex:zavri-lupu", zavriLupuHned);
     return () => window.removeEventListener("naex:zavri-lupu", zavriLupuHned);
   }, [zavriLupuHned]);
+
+  // Pauza po súperovej voľbe cieľa (roadmapa #102): stavbu šenku robia obaja naraz, takže
+  // hráč by súperovu voľbu prebehol — stôl ju na chvíľu ukáže a prvý klik či kláves ju len zruší.
+  // Vo výučbe lokalitu ukazuje Melichar svojím krokom, v prehrávači tempo určuje hráč.
+  const [pauzaCiela, setPauzaCiela] = useState<PauzaCiela | null>(null);
+  const predVolbouCiela = useRef<ClientState | null>(null);
+  useLayoutEffect(() => {
+    const pred = predVolbouCiela.current;
+    predVolbouCiela.current = view;
+    if (vyucba === true || prehravanie !== undefined) return;
+    const nova = pauzaPoVolbeCiela(pred, view);
+    if (nova !== null) setPauzaCiela(nova);
+    else if (pauzaCiela !== null && (view.kolo !== pauzaCiela.kolo || view.koniec !== null)) setPauzaCiela(null);
+  }, [view]);
+  // Kým beží počítadlo bitky, pauza počká — inak by jej 3 s ubehli pod ním.
+  const pauzaBezi = pauzaCiela !== null && !pocitadloBezi;
+  const zrusPauzuCiela = useCallback((): void => setPauzaCiela(null), []);
+  useEffect(() => {
+    if (!pauzaBezi) return;
+    zavriLupuHned();
+    const t = setTimeout(zrusPauzuCiela, PAUZA_CIELA_MS);
+    // Kláves pauzu zruší a ďalej nejde — skratka by inak odoslala ťah stavby.
+    const klaves = (e: KeyboardEvent): void => {
+      if (!klavesPreskociPauzu(e.key)) return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      zrusPauzuCiela();
+    };
+    window.addEventListener("keydown", klaves, true);
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener("keydown", klaves, true);
+    };
+  }, [pauzaBezi, zrusPauzuCiela, zavriLupuHned]);
+  // Okno okolo lokality v strede línie — meria sa po vykreslení, pri posune aj zmene okna.
+  const [oknoPauzy, setOknoPauzy] = useState<DOMRect | null>(null);
+  useLayoutEffect(() => {
+    if (!pauzaBezi) {
+      setOknoPauzy(null);
+      return;
+    }
+    const zmeraj = (): void => setOknoPauzy(lokalitaRef.current?.getBoundingClientRect() ?? null);
+    zmeraj();
+    window.addEventListener("scroll", zmeraj, true);
+    window.addEventListener("resize", zmeraj);
+    return () => {
+      window.removeEventListener("scroll", zmeraj, true);
+      window.removeEventListener("resize", zmeraj);
+    };
+  }, [pauzaBezi]);
   // Susedia uhnú o polovicu prírastku šírky lupy (harmonika v hra.css) — pred
   // vykreslením, aby sa susedia nepohli najprv o starý posun.
   useLayoutEffect(() => {
@@ -4424,7 +4475,8 @@ export function HernaPlocha({
           },
   });
 
-  const vrstvaFazy: ReactNode = mobil ? null : cielPanel !== null && lokalitaNavrh === null ? cielPanel : draftPanel;
+  // Počas pauzy po súperovej voľbe cieľa je vidno líniu s vybranou lokalitou, nie stavbu.
+  const vrstvaFazy: ReactNode = mobil || pauzaBezi ? null : cielPanel !== null && lokalitaNavrh === null ? cielPanel : draftPanel;
   const liniaSkryta = starsiViditelni || vrstvaFazy !== null;
 
   // ---- jednotný bar: strany, odhad a os kola (Michal 2026-10-25, mock V2) -------------
@@ -4624,10 +4676,11 @@ export function HernaPlocha({
   const maHranaTlacidla = hranaVlavo !== null || hranaStred !== null || hranaVpravo !== null;
   // Na stole (Michal 2026-10-25) je hrana jeden rad stredom na čiare okraja plste.
   const hranaStola = !maHranaTlacidla ? null : (
+    // Počas pauzy po voľbe cieľa by „potvrdiť“ stavby svietilo v okne okolo lokality; miesto drží, aby stôl neposkočil.
     // V drafte sa hrana neprilepí nad ruku: stôl leží pod draftom a pri posúvaní
     // by zakrývala karty draftu a pokyn.
     // Ani keď z línie nad rukou nie je nič vidno (liniaVidno).
-    <div className={`${view.faza === "draft" || !liniaVidno ? "stol-hrana neprilepena" : "stol-hrana"} s-tlacidlami`}>
+    <div className={`${view.faza === "draft" || !liniaVidno ? "stol-hrana neprilepena" : "stol-hrana"} s-tlacidlami${pauzaBezi ? " pocas-pauzy" : ""}`}>
       <div className="hrana-rad">
         <div className="hrana-vlavo">{hranaVlavo}</div>
         <div className="hrana-stred">{hranaStred}</div>
@@ -4636,11 +4689,59 @@ export function HernaPlocha({
     </div>
   );
 
+  // Nápis stojí nad lokalitou (pod ňou, keď nad ňou nie je miesto) — obidve hrany hovoria natočenie.
+  const pauzaCielaEl = ((): ReactNode => {
+    if (!pauzaBezi || lokalita === null) return null;
+    const kTebe = krajStrany(ja);
+    const kSuperovi = krajStrany(super_);
+    const nad = oknoPauzy !== null && oknoPauzy.top > 150;
+    const polohaNapisu: CSSProperties | undefined =
+      oknoPauzy === null
+        ? undefined
+        : {
+            left: oknoPauzy.left + oknoPauzy.width / 2,
+            top: nad ? oknoPauzy.top - 14 : oknoPauzy.bottom + 14,
+            transform: nad ? "translate(-50%, -100%)" : "translateX(-50%)",
+          };
+    return (
+      <div
+        className="pauza-ciela"
+        style={{ "--pauza-ms": `${PAUZA_CIELA_MS}ms` } as CSSProperties}
+        onClick={zrusPauzuCiela}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          zrusPauzuCiela();
+        }}
+      >
+        {oknoPauzy !== null && (
+          <div
+            className="pauza-ciela-okno"
+            style={{ left: oknoPauzy.left - 8, top: oknoPauzy.top - 8, width: oknoPauzy.width + 16, height: oknoPauzy.height + 16 }}
+            aria-hidden="true"
+          />
+        )}
+        <div className={`pauza-ciela-napis${oknoPauzy === null ? " stred" : ""}`} style={polohaNapisu} role="status" aria-live="assertive">
+          <strong>Súper vybral: {menoKarty(lokalita.defId)}</strong>
+          {kTebe !== null && kSuperovi !== null ? (
+            <span>
+              k tebe <b>{kTebe}</b> · k súperovi <b>{kSuperovi}</b>
+            </span>
+          ) : (
+            ikonyStranStredu
+          )}
+          <small>klik alebo kláves — ďalej</small>
+          <span className="pauza-ciela-cas" aria-hidden="true" />
+        </div>
+      </div>
+    );
+  })();
+
   return (
     <div
       className={stolScroll ? "hra stol-scroll" : "hra"}
       style={{ "--ruka-w": `${sirkaVRuke}px`, "--hlavicka-h": `${vyskaHlavicky}px` } as CSSProperties}
     >
+      {pauzaCielaEl}
       {/* V prehrávači výsledok ukáže detail partie — okno konca s hodnotením a lobby tam nepatrí. */}
       {view.koniec !== null && !koniecZavrety && prehravanie === undefined && bezOknaKonca !== true && (
         <KoniecHry
@@ -4802,7 +4903,7 @@ export function HernaPlocha({
           {ucetBitkyEl}
           {/* Na počítači ležia voľba cieľa a draft na stole (vrstvaFazy) — línia je vtedy prázdna. */}
           {mobil && cielPanel}
-          {mobil && draftPanel}
+          {mobil && !pauzaBezi && draftPanel}
           {bitkaPanel}
           {/* Farba stola hovorí, čí je ťah: zelená = tvoj, sivá = čakáš. */}
           <div

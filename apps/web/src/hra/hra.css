@@ -6606,3 +6606,109 @@ button.auto-hotovo-odkaz {
     padding-bottom: 10px;
   }
 }
+
+/* Pauza po súperovej voľbe cieľa (roadmapa #102): stôl stmavne okrem vybranej lokality.
+   Vrstva chytá prvý klik, aby nepadol do stavby šenku pod ňou. */
+.pauza-ciela {
+  position: fixed;
+  inset: 0;
+  z-index: 800;
+  cursor: pointer;
+}
+
+.pauza-ciela-okno {
+  position: fixed;
+  border-radius: 16px;
+  border: 3px solid var(--akcent);
+  box-shadow:
+    0 0 0 100vmax rgba(0, 0, 0, 0.55),
+    0 0 28px var(--akcent);
+  pointer-events: none;
+  animation: pauza-ciela-ziara 1s ease-in-out infinite alternate;
+}
+
+.pauza-ciela-napis {
+  position: fixed;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  max-width: min(520px, 92vw);
+  padding: 10px 18px 12px;
+  border-radius: 12px;
+  border: 2px solid var(--akcent);
+  background: var(--plocha-2);
+  color: var(--text);
+  text-align: center;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+  animation: oznam-prichod 0.22s ease;
+}
+
+.pauza-ciela-napis.stred {
+  left: 50%;
+  top: 40%;
+  transform: translate(-50%, -50%);
+}
+
+.pauza-ciela-napis strong {
+  font-size: 1.35rem;
+  color: var(--akcent);
+}
+
+.pauza-ciela-napis span {
+  font-size: 0.92rem;
+}
+
+.pauza-ciela-napis small {
+  color: var(--tlmeny);
+  font-size: 0.78rem;
+}
+
+/* Ubúdajúci pásik hovorí, koľko z 3 s ešte ostáva. */
+.pauza-ciela-cas {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 100%;
+  background: var(--akcent);
+  transform-origin: left;
+  animation: pauza-ciela-cas var(--pauza-ms, 3000ms) linear forwards;
+}
+
+@keyframes pauza-ciela-ziara {
+  from {
+    box-shadow:
+      0 0 0 100vmax rgba(0, 0, 0, 0.55),
+      0 0 10px var(--akcent);
+  }
+  to {
+    box-shadow:
+      0 0 0 100vmax rgba(0, 0, 0, 0.55),
+      0 0 34px var(--akcent);
+  }
+}
+
+@keyframes pauza-ciela-cas {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pauza-ciela-okno,
+  .pauza-ciela-napis {
+    animation: none;
+  }
+
+  .pauza-ciela-cas {
+    display: none;
+  }
+}
+
+.stol-hrana.pocas-pauzy {
+  visibility: hidden;
+}
