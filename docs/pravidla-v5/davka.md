@@ -90,6 +90,13 @@ Podklad: docs/napady/priazne-v5-set.html.
 - **Výpalné:** platí sa za **každé** súperovo NA EX (1/2/3 cigarety, dostaneš ich ty).
 - **Na zdravie → „do dna“:** poldeci z tvojho NA EX sa vráti plný (1/2/3 za kolo).
 
+## Interview 4 (Michal 2026-10-25, po finálnom rozbore docs/playtesty/strategia-v5.html)
+
+- **Variant (a): nezaviesť.** Body za staršieho len víťazovi (pri rovnosti obom).
+- **Podmienka Cigarety:** nechať, sledovať pasovanie v playteste (náhrada „minuté cigarety“ pripravená).
+- **NA EX naraz:** **útočník položí reakčnú kartu druhý** (po odkrytí NA EX odpovedá najprv obranca, útočník má posledné slovo).
+- **Pohoršenie k sebe smie každý.**
+
 ## Čo v5 prerobí (Michal 2026-10-25: „bude treba prerobiť takmer všetko“)
 
 Zmrazenie pravidiel trvá najviac týždeň; v5 má výnimku a nasadí sa na Michalov pokyn.
