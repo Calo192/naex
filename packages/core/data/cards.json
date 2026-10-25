@@ -1,5 +1,5 @@
 {
- "source": "tvorca kariet 2026-10-24T19:34:14.252Z",
+ "source": "tvorca kariet 2026-10-25T09:47:26.709Z",
  "actions": [
   "Cigareta",
   "Dlh",
@@ -453,7 +453,7 @@
    "tags": [
     "Kliatba"
    ],
-   "effect_text": "Bitka: Ak je priznaná, súper má +1 tuhé poškodenie. Nepriznaná uberá body na konci hry.",
+   "effect_text": "Bitka: Ak je priznaná, súper má +1 tuhé poškodenie. Nepriznaná ide po bitke do tvojho odhadzovacieho balíčka; na konci hry prehráva súboje o Cirhózu.",
    "triggers": [
     "Bitka"
    ],
@@ -1828,9 +1828,8 @@
    "tags": [
     "Lokalita"
    ],
-   "effect_text": "Zhromaždenie: Nikto nesmie fajčiť. Pitka: Nikto nesmie fajčiť.",
+   "effect_text": "Pitka: Nikto nesmie fajčiť.",
    "triggers": [
-    "Zhromaždenie",
     "Pitka"
    ],
    "left": {
