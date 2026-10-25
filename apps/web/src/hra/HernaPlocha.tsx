@@ -118,7 +118,8 @@ import { mediaUrl } from "../lib/api.ts";
 import { useStrazOdchodu } from "../lib/odchod.ts";
 import { skupinyBalicka } from "./doberaciBalicek.ts";
 import { SkratkyNapoveda, escVratiNavrh, tlacidloNavratu, useSkratky, type VrstvyPreEsc } from "./skratky.tsx";
-import { miestoUdalosti } from "./hrana.ts";
+import { klucFazy, predvolenyRezim, vyberSpravu, type RezimStran } from "./bar.ts";
+import { JednotnyBar, type StranaBaru } from "./JednotnyBar.tsx";
 import { polozkySoZaverecnou, tahSoZaverecnou } from "./zaverecnaTahu.ts";
 import type { Sada } from "@naex/tvorba";
 import { HernaKarta, vzhladKarty, type HernaKartaProps } from "./HernaKarta.tsx";
@@ -127,13 +128,15 @@ import { Lupa, maxMierkaLupy } from "./Lupa.tsx";
 import { LUPA_PREDVOLENA, useUcet } from "../lib/ucet.tsx";
 import { Vrstva as VrstvaPanel } from "./Vrstva.tsx";
 import {
+  AkcieStrany,
   BitkaPanel,
   CenaCigariet,
   HracDoska,
   IkonaCigareta,
   IkonaPoldeci,
+  OdhadBaru,
   PriebehKola,
-  SuhrnBitky,
+  tipOdhadu,
   type BitkaPanelProps,
   type HrozbaBitky,
   type KartyDlazdica,
@@ -146,6 +149,8 @@ import { menoVoVete, rodHraca, textHlasky } from "./useHra.ts";
 import { useBezNaexVBitke, useOdlozenyPrikaz } from "./usePohodlie.ts";
 import { useTahanie } from "./useTahanie.ts";
 import "./hra.css";
+// Až po hra.css — jednotný bar upravuje aj jej pravidlá (os kola, nástroje, rezerva stola).
+import "./jbar.css";
 
 /**
  * Čo sa ťahá. `navrh` = karta už leží na stole, ale len ako nepotvrdený návrh.
@@ -301,7 +306,7 @@ function polohaChybyTahania(bod: { readonly x: number; readonly y: number }, w: 
   ].map(([x = 0, y = 0]) => ({ x: Math.min(Math.max(x, 16), vpravo), y: Math.min(Math.max(y, hore), dole) }));
   const vahy: readonly (readonly [string, number])[] = [
     [".linia .kl, .miesto-volby, .linia-skupina.lokalita, .stol-hrana .pecat, .stol-hrana button, [data-vyucba-bublina]", 10],
-    [".doska, .linia-stav, .pas-kola-obal", 3],
+    [".doska, .linia-stav, .jbar", 3],
     [".ruka .kl", 1],
   ];
   const prekazky = vahy.map(([sel, vaha]) => ({ vaha, r: [...document.querySelectorAll(sel)].map((e) => e.getBoundingClientRect()) }));
@@ -323,15 +328,6 @@ function kariet(n: number): string {
 /** Podmet so slovesom — „zvyšné 4 karty pôjdu“, „zvyšných 5 kariet pôjde“. */
 function zvysnePojdu(n: number): string {
   return n === 1 ? "zvyšná 1 karta pôjde" : n >= 2 && n <= 4 ? `zvyšné ${n} karty pôjdu` : `zvyšných ${n} kariet pôjde`;
-}
-
-/** Nominatív — „súper: 2 plné poldeci · 3 karty v ruke“. */
-function plnePoldeci(n: number): string {
-  return n === 1 ? "1 plný poldeci" : n >= 2 && n <= 4 ? `${n} plné poldeci` : `${n} plných poldeci`;
-}
-
-function kartyNom(n: number): string {
-  return n === 1 ? "1 karta" : n >= 2 && n <= 4 ? `${n} karty` : `${n} kariet`;
 }
 
 function cigariet(n: number): string {
@@ -2803,11 +2799,8 @@ export function HernaPlocha({
       case "zhromazdenie": {
         const zostava = zostavaTeraz;
         const plne = view.hraci[ja].poldeciPlne;
-        const nadpis = (
-          <>
-            Zhromaždenie <small>limit {zostava}</small>
-          </>
-        );
+        // Fázu a limit hovorí jednotný bar (os kola, strany) — pilulka nesie len pokyn (Michal 2026-10-25).
+        const nadpis = null;
         // Fajčiť smie hráč kedykoľvek na svojom ťahu (Michal 2026-10-16) — cigareta = karta hneď.
         const fajcit = (
           <>
@@ -2952,7 +2945,7 @@ export function HernaPlocha({
         const pitkaSt = view.pitkaStav;
         const obranca: PlayerId = view.utocnik === 0 ? 1 : 0;
         const naexBol = pitkaSt?.naexPouzity[ja] === true;
-        const nadpis = `Pitka ${view.pitkaCislo}/${view.pitkyCelkom}`;
+        const nadpis = null;
         if (reagujem) {
           // Reakcia na súperovo NA EX (Michal 2026-10-12): jedna karta mimo limitu.
           return vylozene === null
@@ -3783,31 +3776,14 @@ export function HernaPlocha({
           hrozby: b?.damage != null ? [] : hrozbyBitky,
           ukazHrozbu: setUkazHrozbu,
         };
-  // Na počítači je odhad bitky v páse kola jedným riadkom; klik naň prepne ten istý pás
-  // na riadok bitky s akciami oboch strán (Michal 2026-10-23, ako bar hráča cez Body).
-  // Pás drží výšku, línia sa nepohne. Na mobile leží celý panel pod pásom ako doteraz.
-  const [odhadOtvoreny, setOdhadOtvoreny] = useState(false);
-  const pasRef = useRef<HTMLDivElement>(null);
-  const [vyskaPasu, setVyskaPasu] = useState(0);
-  useEffect(() => {
-    const el = pasRef.current;
-    if (el === null || odhadOtvoreny) return;
-    const ro = new ResizeObserver(([z]) => setVyskaPasu(Math.round(z?.borderBoxSize[0]?.blockSize ?? 0)));
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [odhadOtvoreny, bitkaProps === null]);
-  const idOdhadu = useId();
-  useEffect(() => {
-    if (!odhadOtvoreny) return;
-    const klaves = (e: KeyboardEvent): void => {
-      if (e.key === "Escape") setOdhadOtvoreny(false);
-    };
-    window.addEventListener("keydown", klaves);
-    return () => window.removeEventListener("keydown", klaves);
-  }, [odhadOtvoreny]);
+  // Strany jednotného baru (Michal 2026-10-25): aktivované akcie, alebo karty na vyloženie.
+  // Kým hráč neklikne na odhad, režim určí fáza; ručné prepnutie platí do konca fázy.
+  const klucRezimu = klucFazy(view.kolo, view.faza, view.pitkaCislo);
+  const [rezimRucne, setRezimRucne] = useState<{ readonly kluc: string; readonly rezim: RezimStran } | null>(null);
+  // Na mobile sú akcie v celom paneli bitky pod barom — strany baru nesú len karty.
+  const rezimStran: RezimStran = mobil ? "karty" : rezimRucne?.kluc === klucRezimu ? rezimRucne.rezim : predvolenyRezim(view.faza);
+  const prepniStrany = (): void => setRezimRucne({ kluc: klucRezimu, rezim: rezimStran === "akcie" ? "karty" : "akcie" });
   const bitkaPanel = bitkaProps === null || !mobil ? null : <BitkaPanel {...bitkaProps} />;
-  const suhrnBitky =
-    bitkaProps === null ? null : <SuhrnBitky {...bitkaProps} otvoreny={odhadOtvoreny} prepni={() => setOdhadOtvoreny((o) => !o)} id={idOdhadu} />;
 
   // ---- vydesenie a priazeň (Michal 2026-10-16) -----------------------------
   const prahVyd = prahVydesenia(view);
@@ -4234,7 +4210,6 @@ export function HernaPlocha({
         starsi: starsiViditelni || nahliadnutie,
         vyber: miestoVolby !== null || mode.typ === "naexCiel" || vybranaDoOblasti !== null,
         potvrdenie: potvrdenie !== null,
-        odhad: odhadOtvoreny,
         pult: otvorene('.sb-spust[aria-expanded="true"]'),
       };
       const navrat = tlacidloNavratu();
@@ -4295,131 +4270,111 @@ export function HernaPlocha({
   const vrstvaFazy: ReactNode = mobil ? null : cielPanel !== null && lokalitaNavrh === null ? cielPanel : draftPanel;
   const liniaSkryta = starsiViditelni || vrstvaFazy !== null;
 
-  // ---- pás kola: koľko Pitiek a koľko kariet kto vykladá -------------------
-  // Súhrn starších (Michal 2026-10-22, #55 kus 3): v páse kola, aby na 1366 × 768 bolo vidno viac zo stĺpcov.
-  const starsiSuhrn = (
-    <span className="pas-starsi">
-      <span
-        className={`vydeseni-pocet ${vydeseni[super_] >= prahVyd - 1 ? "hrozba" : ""}`}
-        title={`Kto vydesí ${prahVyd} starších (krajná červená pozícia) a udrží ich do konca ďalšieho kola, vyhrá.`}
-      >
-        vydesení <b className="moje">ty {vydeseni[ja]}/{prahVyd}</b> · <b className="superove">{menoHraca(super_)} {vydeseni[super_]}/{prahVyd}</b>
-      </span>
+  // ---- jednotný bar: strany, odhad a os kola (Michal 2026-10-25, mock V2) -------------
+  // Vydesení sú v osi baru jedným krátkym údajom, celé znenie je v nápovede.
+  const desi = (
+    <span
+      className={`jbar-desi vydeseni-pocet ${vydeseni[super_] >= prahVyd - 1 ? "hrozba" : ""}`}
+      title={`Vydesení starší — ty ${vydeseni[ja]}, ${menoHraca(super_)} ${vydeseni[super_]} z ${prahVyd}. Kto vydesí ${prahVyd} starších (krajná červená pozícia) a udrží ich do konca ďalšieho kola, vyhrá.`}
+    >
+      <span className="jbar-desi-nazov">vydesení </span>
+      <b className="moje">{vydeseni[ja]}</b>:<b className="superove">{vydeseni[super_]}</b>/{prahVyd}
     </span>
   );
-  const pasKola = ((): ReactNode => {
-    if (view.koniec !== null || view.ciel === null) return null;
-    if (view.faza !== "zhromazdenie" && view.faza !== "pitka" && view.faza !== "bitka") return null;
-    const n = view.pitkyCelkom;
-    const aktualna = view.faza === "zhromazdenie" ? view.pitkaCislo + 1 : view.pitkaCislo;
-    const zs = view.zhromazdenieStav;
-    const start = zs === null ? null : limitNaZaciatku?.kluc === klucZhromazdenia ? limitNaZaciatku.limit : zs.zostavaLimit;
-    const sloty = (p: PlayerId): ReactNode => {
-      if (zs === null || start === null) return null;
-      const spolu = Math.max(start[p], zs.zostavaLimit[p]);
-      const zostava = zs.zostavaLimit[p];
-      return (
-        <span className={`pas-hrac ${p === ja ? "moje" : "superove"}${zs.pasoval[p] ? " pasoval" : ""}`}>
-          <span className="pas-meno">{p === ja ? "ty" : menoHraca(p)}</span>
-          <span className="pas-sloty" aria-label={`vyloží ešte ${zostava} z ${spolu}`}>
-            {Array.from({ length: spolu }, (_, i) => (
-              <span key={i} className={i < spolu - zostava ? "slot pouzity" : "slot"} aria-hidden="true" />
-            ))}
-          </span>
-          <span className="pas-text">
-            {zs.pasoval[p]
-              ? tvar(rodHracaP(p), "pasoval", "pasovala", "pas")
-              : zostava === 0
-                ? tvar(rodHracaP(p), "vyložil všetko", "vyložila všetko", "všetko vyložené")
-                : `vyloží ešte ${kariet(zostava)}`}
-          </span>
-        </span>
+  const rukaPocet = (p: PlayerId): ReactNode => (
+    <span key="ruka" className="jbar-ruka" title={p === ja ? "Kariet v tvojej ruke" : `Kariet v ruke — ${menoHraca(p)}`}>
+      <b>{view.hraci[p].rukaPocet}</b> v ruke
+    </span>
+  );
+  // Režim „karty“ (Michal 2026-10-25): povinne počet kariet — zvyšných na vyloženie alebo
+  // v ruke podľa fázy; nič, čo už je inde na stole (cigarety, poldeci sú v bare hráča).
+  const kartyBaru = (p: PlayerId): ReactNode => {
+    const casti: ReactNode[] = [];
+    const pozn = (kluc: string, text: ReactNode, title?: string): void => {
+      casti.push(
+        <span key={kluc} className="jbar-pozn" title={title}>
+          {text}
+        </span>,
       );
     };
-    // Pitka ako dve stoličky (dizajn UI N2 + UX N1): poradie, kto je na ťahu, kto
-    // už skončil a s NA EX či bez — „hotovo“ predtým nezanechalo žiadnu stopu.
+    const zs = view.zhromazdenieStav;
     const ps = view.pitkaStav;
     const obranca: PlayerId = view.utocnik === 0 ? 1 : 0;
-    const stolicky =
-      view.faza === "pitka" && ps !== null && view.vizia === null ? (
-        <ol className="pas-stolicky" aria-label="Poradie v Pitke" aria-live="polite">
-          {([obranca, view.utocnik] as const).map((p, i) => {
-            const odpoveda = ps.reakcia === p;
-            const naTahu = ps.naTahu === p && ps.reakcia === null && !ps.hotovy[p];
-            const naex = (ps.naexPocet?.[p] ?? 0) > 0;
-            const stav = ps.hotovy[p]
-              ? `✓ ${tvar(rodHracaP(p), "skončil", "skončila", "koniec")}${naex ? " po NA EX" : " bez NA EX"}`
-              : odpoveda
-                ? "odpovedá na NA EX"
-                : naTahu
-                  ? `na ťahu${naex ? " · NA EX dal" : ""}`
-                  : `čaká${naex ? " · NA EX dal" : ""}`;
-            const posledne = naTahu && ps.hotovy[p === 0 ? 1 : 0];
-            return (
-              <li
-                key={p}
-                className={["stolicka", p === ja ? "moja" : "superova", naTahu || odpoveda ? "na-tahu" : "", ps.hotovy[p] ? "hotova" : ""].join(" ")}
-              >
-                <span className="stolicka-poradie">{i + 1}.</span>
-                <span className="stolicka-meno">
-                  {p === ja ? "ty" : menoHraca(p)} · {i === 0 ? "obranca, začína" : "útočník"}
-                </span>
-                <span className="stolicka-stav">{stav}</span>
-                {/* Verejné zdroje (návrh 5 A): kto ešte môže dať NA EX a čím odpovedať. */}
-                <span className="stolicka-zdroje">
-                  {plnePoldeci(view.hraci[p].poldeciPlne)} · {kartyNom(view.hraci[p].rukaPocet)} v ruke
-                </span>
-                {posledne && <span className="stolicka-posledne">{p === ja ? "posledné slovo máš ty" : "má posledné slovo"}</span>}
-              </li>
-            );
-          })}
-        </ol>
-      ) : null;
-    // Poradie Pitky vopred (návrh 5 A): hráči posledné slovo útočníka cítili ako „stoličku“.
-    const poradiePitky =
-      view.faza === "zhromazdenie" ? (
-        <span className="pas-poradie" title="Pitku začína obranca; keď dá „hotovo“, hrá útočník a má posledné slovo.">
-          {obranca === ja ? `v Pitke začínaš ty, posledné slovo má ${menoHraca(super_)}` : `v Pitke začne ${menoHraca(super_)}, posledné slovo máš ty`}
-        </span>
-      ) : null;
-    const limityDalej =
-      view.faza === "pitka" && aktualna < n ? (
-        <span className="pas-pozn">
-          ďalšie Zhromaždenie: ty limit {limitZhromazdenia(view, ja)} · {menoHraca(super_)} limit {limitZhromazdenia(view, super_)}
-        </span>
-      ) : null;
-    return (
-      <div className="pas-kola" key={view.kolo}>
-        <span
-          className="pas-pitky"
-          title="Pitiek je 1 + menší z počtov aktivovaných akcií lokality na jej dvoch stranách. Keď sa aktivuje ďalšia na oboch, Pitka pribudne — už začatá neubudne."
-        >
-          <span className={`pas-pitky-pocet ${n > 1 ? "viac" : ""}`}>
-            {view.faza === "bitka" ? `Bitka po ${n} ${n === 1 ? "Pitke" : "Pitkách"}` : view.faza === "pitka" ? `Pitka ${aktualna} z ${n}` : `Zhromaždenie ${aktualna} z ${n}`}
-            {view.faza === "zhromazdenie" && <small> · zatiaľ</small>}
-          </span>
-          <span className="pas-bodky" aria-hidden="true">
-            {Array.from({ length: n }, (_, i) => (
-              <span key={i} className={i + 1 < aktualna || view.faza === "bitka" ? "bodka hotova" : i + 1 === aktualna ? "bodka teraz" : "bodka"} />
-            ))}
-          </span>
-          {view.faza !== "zhromazdenie" && <span className="pas-pozn">{n === 1 ? "1 Pitka — potom bitka" : `${n} Pitky — po každej ďalšie Zhromaždenie`}</span>}
-          {limityDalej}
-        </span>
-        {stolicky}
-        {poradiePitky}
-        {stavka !== null && <StavkaBitky stavka={stavka} />}
-        {suhrnBitky}
-        {view.faza === "zhromazdenie" && (
-          <span className="pas-limit">
-            {sloty(ja)}
-            {sloty(super_)}
-          </span>
-        )}
-        {starsiSuhrn}
-      </div>
+    if (view.koniec !== null) {
+      casti.push(rukaPocet(p));
+    } else if (view.faza === "zhromazdenie" && zs !== null) {
+      const start = limitNaZaciatku?.kluc === klucZhromazdenia ? limitNaZaciatku.limit : zs.zostavaLimit;
+      const spolu = Math.max(start[p], zs.zostavaLimit[p]);
+      const zostava = zs.zostavaLimit[p];
+      casti.push(
+        <span key="sloty" className="pas-sloty" aria-hidden="true">
+          {Array.from({ length: spolu }, (_, i) => (
+            <span key={i} className={i < spolu - zostava ? "slot pouzity" : "slot"} />
+          ))}
+        </span>,
+      );
+      const poradie = obranca === p ? "v Pitke začína" : "v Pitke má posledné slovo";
+      casti.push(
+        <span key="text" className="jbar-hlavne" title={`${p === ja ? "Ty" : menoHraca(p)}: ${poradie}.`}>
+          {zs.pasoval[p]
+            ? tvar(rodHracaP(p), "pasoval", "pasovala", "pas")
+            : zostava === 0
+              ? tvar(rodHracaP(p), "vyložil všetko", "vyložila všetko", "všetko vyložené")
+              : `${p === ja ? "vyložíš" : "vyloží"} ešte ${kariet(zostava)}`}
+        </span>,
+      );
+    } else if (view.faza === "pitka" && ps !== null) {
+      const naex = (ps.naexPocet?.[p] ?? 0) > 0;
+      casti.push(
+        <span key="poradie" className="jbar-poradie" title={obranca === p ? "Pitku začína obranca." : "Útočník hrá po obrancovi a má posledné slovo."}>
+          {obranca === p ? "1." : "2."}
+        </span>,
+      );
+      casti.push(rukaPocet(p));
+      if (ps.hotovy[p]) pozn("stav", `✓ ${tvar(rodHracaP(p), "skončil", "skončila", "koniec")}${naex ? " po NA EX" : " bez NA EX"}`);
+      else if (ps.reakcia === p) pozn("stav", "odpovedá na NA EX");
+      else if (naex) pozn("stav", "NA EX dal");
+      if (view.pitkaCislo < view.pitkyCelkom) pozn("limit", `ďalšie Zhromaždenie: ${limitZhromazdenia(view, p)}`, "Limit vykladania v ďalšom Zhromaždení.");
+    } else if (view.faza === "draft" && draft !== null) {
+      casti.push(rukaPocet(p));
+      if (draft.krok === "stavba") pozn("stav", draft.vybral[p] ? `✓ ${tvar(rodHracaP(p), "vybral", "vybrala", "vybrané")}` : "stavia šenok");
+      if (draft.noveKarty[p] > 0) pozn("senok", `+${draft.noveKarty[p]} zo šenku`);
+      if (draft.krok === "beranie" && draft.hotovo[p]) pozn("stav", `✓ ${tvar(rodHracaP(p), "skončil", "skončila", "koniec")}`);
+    } else if (view.faza === "bitka") {
+      casti.push(rukaPocet(p));
+      pozn("dobere", `po bitke dobere ${KONSTANTY.KARTY_PO_BITKE}`);
+    } else {
+      casti.push(rukaPocet(p));
+    }
+    return casti;
+  };
+  const naTahuStrana = (p: PlayerId): boolean => {
+    if (view.koniec !== null) return false;
+    if (view.faza === "draft" && draft?.krok === "stavba") return !draft.vybral[p];
+    const ps = view.pitkaStav;
+    if (view.faza === "pitka" && ps !== null) return ps.reakcia === p || (ps.reakcia === null && ps.naTahu === p && !ps.hotovy[p]);
+    return view.naTahu === p;
+  };
+  const stranaBaru = (p: PlayerId): StranaBaru => ({
+    meno: p === ja ? "ty" : menoHraca(p),
+    naTahu: naTahuStrana(p),
+    akcie: <AkcieStrany sums={lineEval.sums[p]} zdroje={lineEval.zdroje[p]} rozpis={rozpis[p]} sada={sada} menoKarty={menoKarty} sNazvom />,
+    karty: kartyBaru(p),
+  });
+  const prepnutNa = rezimStran === "akcie" ? "karty na vyloženie" : "aktivované akcie";
+  const stredBaru: ReactNode =
+    bitkaProps !== null ? (
+      <OdhadBaru {...bitkaProps} />
+    ) : (
+      <>
+        <span className="jbar-nadpis">{view.koniec !== null ? "koniec" : "cieľ"}</span>
+        <b className="jbar-verdikt">
+          {view.koniec !== null ? "Koniec hry" : lokalita !== null ? menoKarty(lokalita.defId) : "vyberá sa lokalita"}
+        </b>
+        {view.koniec === null && view.naSekeru.length > 0 && <span className="jbar-tuhe">+ {view.naSekeru.length} na sekere</span>}
+      </>
     );
-  })();
+  const skratkyZapnute = useUcet().ja?.skratky !== false;
 
   // ---- účty a posledné udalosti (UX N3) ---------------------------------------
   const zn = (x: number): string => (x > 0 ? `+${x}` : x < 0 ? `−${-x}` : "±0");
@@ -4486,34 +4441,11 @@ export function HernaPlocha({
     };
     return `Pitka ${ucetPitky.pitka} vyhodnotená · ty: ${za(ja)} · ${menoHraca(super_)}: ${za(super_)}`;
   })();
-  const pokynUdalosti =
-    chyba === null && poslednySuperov.length === 0 && textUctuPitky === null ? null : (
-      <div className="pokyn-udalosti">
-        {chyba !== null && (
-          <span className="pokyn-chyba" role="alert">
-            ⚠ Ťah neprešiel: {chyba}
-            {zrusChybu !== undefined && (
-              <button type="button" className="tlacidlo-male" onClick={zrusChybu}>
-                OK
-              </button>
-            )}
-          </span>
-        )}
-        {textUctuPitky !== null && (
-          <span className="pokyn-ucet" role="status" title={textUctuPitky}>
-            {textUctuPitky}
-          </span>
-        )}
-        {poslednySuperov.length > 0 && (
-          <span className="pokyn-posledny" aria-live="polite" title={`↺ ${poslednySuperov.join(" · ")}`}>
-            ↺ {poslednySuperov.join(" · ")}
-          </span>
-        )}
-      </div>
-    );
+  // Stavová správa má od jednotného baru pevné miesto pod odhadom (Michal 2026-10-25) — z hrany stola zmizla.
+  const spravaBaru = vyberSpravu(chyba, textUctuPitky, poslednySuperov.length > 0 ? poslednySuperov.join(" · ") : null);
 
   // Spodná hrana stola (Michal 2026-10-21): vľavo nákupy za cigarety, v strede
-  // NA EX! či potvrdenie návrhu, vpravo koniec ťahu. Udalosti a chyby sú hneď nad ňou.
+  // NA EX! či potvrdenie návrhu, vpravo koniec ťahu.
   const hranaVlavo = stolTlacidla?.vlavo ?? pokyn?.vlavo ?? null;
   const hranaStred = stolTlacidla?.stred ?? pokyn?.stred ?? null;
   const vpravoTahu = stolTlacidla?.vpravo ?? null;
@@ -4526,27 +4458,19 @@ export function HernaPlocha({
       </>
     );
   const maHranaTlacidla = hranaVlavo !== null || hranaStred !== null || hranaVpravo !== null;
-  // Na stole (Michal 2026-10-25) je hrana jeden rad stredom na čiare okraja plste (miestoUdalosti).
-  const kdeUdalosti = miestoUdalosti(hranaStred !== null, mobil);
-  const hranaStola =
-    !maHranaTlacidla && pokynUdalosti === null ? null : (
-      // V drafte sa hrana neprilepí nad ruku: stôl leží pod draftom a pri posúvaní
-      // by zakrývala karty draftu a pokyn.
-      // Ani keď z línie nad rukou nie je nič vidno (liniaVidno).
-      <div className={`${view.faza === "draft" || !liniaVidno ? "stol-hrana neprilepena" : "stol-hrana"}${maHranaTlacidla ? " s-tlacidlami" : ""}`}>
-        {kdeUdalosti === "nad" && pokynUdalosti}
-        {(maHranaTlacidla || kdeUdalosti !== "nad") && (
-          <div className="hrana-rad">
-            <div className="hrana-vlavo">{hranaVlavo}</div>
-            <div className="hrana-stred">{kdeUdalosti === "stred" ? pokynUdalosti : hranaStred}</div>
-            <div className="hrana-vpravo">
-              {kdeUdalosti === "vedla" && pokynUdalosti}
-              {hranaVpravo}
-            </div>
-          </div>
-        )}
+  // Na stole (Michal 2026-10-25) je hrana jeden rad stredom na čiare okraja plste.
+  const hranaStola = !maHranaTlacidla ? null : (
+    // V drafte sa hrana neprilepí nad ruku: stôl leží pod draftom a pri posúvaní
+    // by zakrývala karty draftu a pokyn.
+    // Ani keď z línie nad rukou nie je nič vidno (liniaVidno).
+    <div className={`${view.faza === "draft" || !liniaVidno ? "stol-hrana neprilepena" : "stol-hrana"} s-tlacidlami`}>
+      <div className="hrana-rad">
+        <div className="hrana-vlavo">{hranaVlavo}</div>
+        <div className="hrana-stred">{hranaStred}</div>
+        <div className="hrana-vpravo">{hranaVpravo}</div>
       </div>
-    );
+    </div>
+  );
 
   return (
     <div
@@ -4568,55 +4492,72 @@ export function HernaPlocha({
           opustit={opustit}
         />
       )}
-      <header className="hra-hlava">
-        {/* Kód miestnosti je v hlavičke webu (blok partie, Michal 2026-10-23); v prehrávači ostáva číslo partie tu. */}
-        {prehravanie !== undefined && (
-          <span className="kod" title="číslo partie v archíve">
-            {kod}
-          </span>
-        )}
-        <PriebehKola view={view} onBitka={ucetBitky !== null && view.kolo === ucetBitky.kolo + 1 ? () => setUcetBitkyZavrety(false) : undefined} />
-        {/* Šenok, Lokality a Log sú v osi kola (Michal 2026-10-21) — ovládanie partie je v hlavičke webu. */}
-        <div className="hlava-vrstvy">
-          {(["senok", "lokality", "log"] as const).map((v) => {
-            const pocet = v === "senok" ? view.senok.length : v === "lokality" ? view.lokalityVHre.length : log.length - videnyLog;
-            // Kartu zo šenku či lokalitu vrátiš pustením na jej tlačidlo.
-            const ciel = v === "log" ? null : v;
-            return (
+      <JednotnyBar
+        os={
+          <>
+            {/* Kód miestnosti je v hlavičke webu (blok partie, Michal 2026-10-23); v prehrávači ostáva číslo partie tu. */}
+            {prehravanie !== undefined && (
+              <span className="kod" title="číslo partie v archíve">
+                {kod}
+              </span>
+            )}
+            <PriebehKola view={view} onBitka={ucetBitky !== null && view.kolo === ucetBitky.kolo + 1 ? () => setUcetBitkyZavrety(false) : undefined} />
+          </>
+        }
+        desi={desi}
+        nastroje={
+          // Šenok, Lokality a Log sú v osi kola (Michal 2026-10-21) — ovládanie partie je v hlavičke webu.
+          <div className="hlava-vrstvy">
+            {(["senok", "lokality", "log"] as const).map((v) => {
+              const pocet = v === "senok" ? view.senok.length : v === "lokality" ? view.lokalityVHre.length : log.length - videnyLog;
+              // Kartu zo šenku či lokalitu vrátiš pustením na jej tlačidlo.
+              const ciel = v === "log" ? null : v;
+              return (
+                <button
+                  key={v}
+                  className={[
+                    "hlava-vrstva",
+                    vrstva === v ? "otvorena" : "",
+                    treba === v && vrstva !== v ? "treba" : "",
+                    ciel !== null && jeCiel(ciel) ? "ciel-zona" : "",
+                    ciel !== null && nadCielom(ciel) ? "nad-cielom" : "",
+                  ].join(" ")}
+                  data-ciel={ciel !== null && jeCiel(ciel) ? ciel : undefined}
+                  data-vyucba={`hlavicka:${v}`}
+                  onClick={() => setVrstva(vrstva === v ? null : v)}
+                >
+                  {v === "senok" ? "Šenok" : v === "lokality" ? "Lokality" : "Log"}
+                  {(v !== "log" || pocet > 0) && <span className={v === "log" ? "pocet nove" : "pocet"}>{pocet}</span>}
+                </button>
+              );
+            })}
+            {skratkyZapnute && (
               <button
-                key={v}
-                className={[
-                  "hlava-vrstva",
-                  vrstva === v ? "otvorena" : "",
-                  treba === v && vrstva !== v ? "treba" : "",
-                  ciel !== null && jeCiel(ciel) ? "ciel-zona" : "",
-                  ciel !== null && nadCielom(ciel) ? "nad-cielom" : "",
-                ].join(" ")}
-                data-ciel={ciel !== null && jeCiel(ciel) ? ciel : undefined}
-                data-vyucba={`hlavicka:${v}`}
-                onClick={() => setVrstva(vrstva === v ? null : v)}
+                type="button"
+                className={`hlava-vrstva hlava-skratky ${skratky.napoveda ? "otvorena" : ""}`}
+                aria-expanded={skratky.napoveda}
+                aria-keyshortcuts="?"
+                data-vyucba="hlavicka:skratky"
+                title="Klávesové skratky (?)"
+                onClick={skratky.prepniNapovedu}
               >
-                {v === "senok" ? "Šenok" : v === "lokality" ? "Lokality" : "Log"}
-                {(v !== "log" || pocet > 0) && <span className={v === "log" ? "pocet nove" : "pocet"}>{pocet}</span>}
+                ?
               </button>
-            );
-          })}
-          {useUcet().ja?.skratky !== false && (
-            <button
-              type="button"
-              className={`hlava-vrstva hlava-skratky ${skratky.napoveda ? "otvorena" : ""}`}
-              aria-expanded={skratky.napoveda}
-              aria-keyshortcuts="?"
-              data-vyucba="hlavicka:skratky"
-              title="Klávesové skratky (?)"
-              onClick={skratky.prepniNapovedu}
-            >
-              ?
-            </button>
-          )}
-        </div>
+            )}
+          </div>
+        }
+        rezim={rezimStran}
+        prepni={prepniStrany}
+        stred={stredBaru}
+        tip={bitkaProps !== null ? tipOdhadu(bitkaProps, stavka, prepnutNa) : { nadpis: "Strany baru", text: `Klik ukáže na stranách baru ${prepnutNa}.` }}
+        ja={stranaBaru(ja)}
+        su={stranaBaru(super_)}
+        sprava={spravaBaru}
+        zrusChybu={zrusChybu}
+        bezPrepinaca={mobil}
+      >
         {skratky.napoveda && <SkratkyNapoveda onZavri={skratky.zavriNapovedu} />}
-      </header>
+      </JednotnyBar>
       {slotHlavicky !== null &&
         createPortal(
           <div className="hlavicka-partia">
@@ -4697,18 +4638,7 @@ export function HernaPlocha({
           {/* Na počítači ležia voľba cieľa a draft na stole (vrstvaFazy) — línia je vtedy prázdna. */}
           {mobil && cielPanel}
           {mobil && draftPanel}
-          <div
-            className="pas-kola-obal"
-            id={idOdhadu}
-            ref={pasRef}
-            // Pod NOTEBOOK pás nemá výšku dvoch riadkov — riadok bitky s hrozbou by sa doň nezmestil.
-            style={odhadOtvoreny && vyskaPasu > 0 && vyskaOkna >= NOTEBOOK ? { height: vyskaPasu } : undefined}
-          >
-            {odhadOtvoreny && bitkaProps !== null && !mobil ? <BitkaPanel {...bitkaProps} stred={suhrnBitky} /> : pasKola}
-          </div>
           {bitkaPanel}
-          {/* Starší sú na stole po kliku na Body (#68) — nad stolom ostáva len ich súhrn. */}
-          {pasKola === null && <div className="starsi-info-samostatne">{starsiSuhrn}</div>}
           {/* Farba stola hovorí, čí je ťah: zelená = tvoj, sivá = čakáš. */}
           <div
             ref={liniaObalRef}
@@ -4718,9 +4648,11 @@ export function HernaPlocha({
             {/* Pokyn je pilulka na hornej hrane stola (Michal 2026-10-21) — predtým pás nad rukou. */}
             {/* tabIndex: pokyn skrátený na jeden riadok sa rozbalí aj z klávesnice (fokus). */}
             <div className="linia-stav" role="status" aria-live="polite" tabIndex={0}>
-              <strong className="pilulka-nadpis">
-                {pokyn?.nadpis ?? (view.koniec !== null ? "Koniec hry" : somNaTahu ? "Tvoj ťah" : `Na ťahu je ${menoHraca(super_)}`)}
-              </strong>
+              {(pokyn === null || pokyn.nadpis !== null) && (
+                <strong className="pilulka-nadpis">
+                  {pokyn?.nadpis ?? (view.koniec !== null ? "Koniec hry" : somNaTahu ? "Tvoj ťah" : `Na ťahu je ${menoHraca(super_)}`)}
+                </strong>
+              )}
               {pokyn?.text !== undefined && <span className="pilulka-text">{pokyn.text}</span>}
             </div>
             {toastPriazneEl}

@@ -143,170 +143,6 @@ body.vyucba-bezi .pecat-naex {
   }
 }
 
-/* ---- pevný stĺpec Melichara (Leader 2026-10-24) ----
-   Vľavo pod osou kola až po spodok okna; bary, stôl, ruka aj vrstvy (šenok, Karty, Log)
-   sa o neho zúžia, takže nič nezakrýva. Text sa posúva vnútri, päta s „ďalej“ stojí dole. */
-body.vyucba-bezi {
-  --vyucba-panel: clamp(240px, 18vw, 360px);
-  --vyucba-odsadenie: calc(var(--vyucba-panel) + 12px);
-}
-
-.vyucba-bublina {
-  position: fixed;
-  z-index: 70;
-  left: 16px;
-  top: var(--vyucba-hore, 110px);
-  bottom: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: var(--vyucba-panel);
-  padding: 12px 14px;
-  border-radius: 16px;
-  border: 2px solid var(--akcent);
-  /* Nepriehľadná — stôl pod ňou nesmie presvitať (playtest výučby). */
-  background: var(--plocha);
-  background-clip: padding-box;
-  isolation: isolate;
-  color: var(--text);
-  box-shadow: 0 10px 30px color-mix(in srgb, #000 55%, transparent);
-}
-
-.vyucba-bublina > .vyucba-text {
-  flex: 0 1 auto;
-  min-height: 0;
-}
-
-/* Zväčšená karta, o ktorej krok hovorí (playtest U4: text kariet na stole mal 6–7 px a súperove
-   karty sú hore nohami). Kópia z DOM stola, rovno, zmenšená tak, aby sa zmestila pod text. */
-.vyucba-nahlad {
-  position: relative;
-  flex: 1 1 0;
-  min-height: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-
-.vyucba-nahlad-obal {
-  position: relative;
-  flex: none;
-}
-
-.vyucba-nahlad-obal > .kl {
-  position: absolute;
-  top: 0;
-  left: 0;
-  margin: 0;
-  transform-origin: 0 0;
-  box-shadow: 0 6px 18px color-mix(in srgb, #000 50%, transparent);
-}
-
-.vyucba-bublina > .vyucba-pata {
-  margin-top: auto;
-}
-
-@media (min-width: 761px) {
-  body.vyucba-bezi .hra > .plocha,
-  body.vyucba-bezi .hra > .ruka {
-    margin-left: var(--vyucba-odsadenie);
-  }
-
-  body.vyucba-bezi .vrstva {
-    left: calc(16px + var(--vyucba-odsadenie));
-  }
-}
-
-/* Stĺpec zúžil bary: identita hráča užšia a bez Frajeriny (vo výučbe nehrá), aby sa
-   popisy dlaždíc nezrezali; „prerušiť“ bez „výučbu“, nech je s „ďalej“ v jednom riadku. */
-@media (max-width: 1500px) {
-  body.vyucba-bezi .doska {
-    --ident: minmax(120px, 160px);
-  }
-
-  body.vyucba-bezi .doska .zdroj {
-    padding-inline: 5px;
-  }
-
-  body.vyucba-bezi .doska :is(.zdroj-pod, .neresti-pocet, .obchod-text, .abstak-vyhlad) {
-    font-size: 0.66rem;
-  }
-
-  /* Avatar hráča tiež preč — meno a čip „nepriznané · Cirhóza ×1“ potrebujú celú šírku (UI inšpekcia). */
-  body.vyucba-bezi .doska-frajerina,
-  body.vyucba-bezi .doska-hrac .karta-hraca-kotva,
-  .vyucba-dlhy-popis {
-    display: none;
-  }
-}
-
-/* Veľký monitor: stĺpec je široký — väčšie písmo, nech sa číta z diaľky (playtest U4). */
-@media (min-width: 1700px) and (min-height: 920px) {
-  .vyucba-text {
-    font-size: 1.06rem;
-    line-height: 1.5;
-  }
-
-  .vyucba-hlava .vyucba-avatar {
-    width: 56px;
-    height: 56px;
-  }
-}
-
-/* Mobil: stĺpec by vzal pol stola — Melichar je pás nad rukou. */
-@media (max-width: 760px) {
-  .vyucba-bublina {
-    top: auto;
-    left: 8px;
-    right: 8px;
-    bottom: calc(var(--ruka-h, 120px) + 8px);
-    width: auto;
-    max-height: 40dvh;
-  }
-}
-
-.vyucba-hlava {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.vyucba-kto {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.vyucba-kto strong {
-  font: 700 1rem/1.2 var(--nadpis);
-}
-
-.vyucba-postup {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.72rem;
-  color: var(--slaby-text);
-  font-variant-numeric: tabular-nums;
-}
-
-.vyucba-postup-pruh {
-  flex: 1;
-  height: 4px;
-  border-radius: 2px;
-  background: var(--plocha-3);
-  overflow: hidden;
-}
-
-.vyucba-postup-pruh > span {
-  display: block;
-  height: 100%;
-  background: var(--akcent);
-}
-
 /* Prvá veta: čo kliknúť (z príkazu, ktorý krok čaká). */
 .vyucba-text .vyucba-pokyn {
   padding: 6px 10px;
@@ -326,11 +162,9 @@ body.vyucba-bezi .ruka-rad > .tahatelna:not(:hover) > .kl[data-vyucba-zvyraznene
 /* U4: odhad, stávku a vydesenie výučba ukáže, až keď o nich Melichar hovorí (playtest: pri prvých
    krokoch ich nikto nechápal). Z pásu kola zmiznú celé — skryté zaberali miesto a pás orezal
    „Zhromaždenie 1 z 2“ (1920 × 1080). */
-body.vyucba-bezi:not(.vyucba-odhad) .pas-kola .suhrn-bitky,
-body.vyucba-bezi:not(.vyucba-odhad) .pas-kola .stavka-bitky,
-body.vyucba-bezi:not(.vyucba-vydesenie) .starsi-info-samostatne,
-body.vyucba-bezi:not(.vyucba-vydesenie) .pas-kola .pas-starsi {
-  display: none;
+body.vyucba-bezi:not(.vyucba-odhad) .jbar-odhad > :not(.jbar-cip),
+body.vyucba-bezi:not(.vyucba-vydesenie) .jbar-desi {
+  visibility: hidden;
 }
 
 body.vyucba-bezi:not(.vyucba-body) .zdroj-body .zdroj-pod {
@@ -346,7 +180,7 @@ body.vyucba-bezi .kl-otocena > .kl-plocha > :is(.kl-pas, .kl-efekt) {
 }
 
 /* Stávku bitky (±3: +19 / −21 b) scenár nevysvetľuje — ukáže sa, až keď o nej Melichar hovorí. */
-body.vyucba-bezi:not(.vyucba-stavka) .pas-kola .stavka-bitky {
+body.vyucba-bezi:not(.vyucba-stavka) .stavka-bitky {
   display: none;
 }
 
@@ -354,56 +188,6 @@ body.vyucba-bezi:not(.vyucba-stavka) .pas-kola .stavka-bitky {
    stôl prešiel na scroll a stránka sa odroľovala (Katka, krok 53). */
 body.vyucba-bezi .ucet-bitky {
   display: none;
-}
-
-/* Pás kola vo výučbe nekončí trojbodkou („Zhromažde…“, „prehra o …“, 3/3): zalomí sa do dvoch
-   riadkov. Na 1920 × 1080 má pás výšku dvoch riadkov aj tak; nižšie poznámky pásu skrýva hra.css. */
-@media (min-width: 761px) {
-  /* Užšie medzery: na 1440 × 800 sa Pitka s odhadom zmestí do riadku, druhý riadok berie výšku kartám. */
-  body.vyucba-bezi .pas-kola {
-    flex-wrap: wrap;
-    gap: 2px 10px;
-    white-space: normal;
-    overflow: visible;
-  }
-
-  body.vyucba-bezi .pas-kola > *,
-  body.vyucba-bezi .pas-pitky .pas-pozn {
-    overflow: visible;
-    text-overflow: clip;
-  }
-
-  body.vyucba-bezi .pas-pitky,
-  body.vyucba-bezi .pas-stolicky {
-    flex-wrap: wrap;
-  }
-
-  /* Obrys zvýraznenia výsledku bitky (6 px okolo) by inak ležal cez „… ďalšie Zhromaždenie“ vedľa. */
-  body.vyucba-bezi .pas-kola > .suhrn-bitky {
-    margin-inline: 8px;
-  }
-}
-
-/* Na nízkom okne (1366 × 650) by počet vydesených zalomil pás do druhého riadku a karty línie by
-   klesli pod čitateľnú veľkosť (stôl so scrollom). Vydesených ukazujú stupnice starších a Melichar. */
-@media (min-width: 761px) and (max-height: 719px) {
-  body.vyucba-bezi .pas-kola .pas-starsi {
-    display: none;
-  }
-
-  /* Ani dva riadky pásu sa sem nevojdú — stránka sa posúvala o 47–194 px a bar hráča s rukou
-     ostali pod okrajom (UI inšpekcia 20261024-napovedy, N4). Pás ostane v jednom riadku:
-     počet Zhromaždení a odhad celé (hra.css), skráti sa len poradie v Pitke. */
-  body.vyucba-bezi .pas-kola {
-    flex-wrap: nowrap;
-    white-space: nowrap;
-    overflow: hidden;
-  }
-
-  body.vyucba-bezi .pas-kola > .pas-poradie {
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
 }
 
 /* Najdrobnejšie popisy v paneli starších (poradie, odznak +1) aspoň 11 px. */
@@ -452,20 +236,8 @@ body.vyucba-bezi :is(.ls-poradie, .ls-odznak) {
   }
 }
 
-/* U5: lupa staršieho sa v úzkom stĺpci nerozpadne. */
-.lupa-starsieho {
-  min-width: 260px;
-}
-
-/* Počas výučby komentuje Melichar — pruhy udalostí a priazne na stole by ležali cez karty. */
-body.vyucba-bezi .pokyn-udalosti:not(.pokyn-tahania),
+/* Počas výučby komentuje Melichar — pruh priazne na stole by ležal cez karty. */
 body.vyucba-bezi .oznamy-priazne {
-  display: none;
-}
-
-/* Hrana stola, v ktorej je len ten skrytý pruh udalostí, je prázdna — jej záporný okraj by stiahol
-   plsť o 34 px pod tvoj bar a karty línie sa orezali (UI inšpekcia 1366 × 650, krok 29). */
-body.vyucba-bezi .stol-hrana:not(:has(> :not(.pokyn-udalosti:not(.pokyn-tahania)))) {
   display: none;
 }
 
@@ -492,13 +264,6 @@ body.vyucba-bezi .stol-hrana:not(:has(> :not(.pokyn-udalosti:not(.pokyn-tahania)
   font-weight: 600;
 }
 
-.vyucba-pata {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 12px;
-}
-
 .vyucba-dalej kbd {
   margin-left: 6px;
   padding: 0 5px;
@@ -521,29 +286,6 @@ body.vyucba-bezi .stol-hrana:not(:has(> :not(.pokyn-udalosti:not(.pokyn-tahania)
   flex: none;
   font-size: 0.8rem;
   white-space: nowrap;
-}
-
-/* „prerušiť“ vpravo v riadku so stavom či „ďalej“. */
-.vyucba-pata > .vyucba-prerusit {
-  margin-left: auto;
-}
-
-/* Nízky notebook: stĺpec je nízky — menšie písmo a avatar, nech sa text zmestí bez posúvania. */
-@media (max-height: 719px) {
-  .vyucba-bublina {
-    gap: 6px;
-    padding: 8px 10px;
-  }
-
-  .vyucba-hlava .vyucba-avatar {
-    width: 34px;
-    height: 34px;
-  }
-
-  .vyucba-text {
-    font-size: 0.86rem;
-    line-height: 1.38;
-  }
 }
 
 /* ---- vstup v lobby ---- */
@@ -602,70 +344,6 @@ body.vyucba-bezi .stol-hrana:not(:has(> :not(.pokyn-udalosti:not(.pokyn-tahania)
   font-size: 0.82rem;
 }
 
-/* ---- nápovedy Melichara v partii (Michal 2026-10-24) ----
- * Bublina ako vo výučbe, ale bez stmavenia: leží v rohu stola, kde prekryje najmenej
- * (Napovedy.tsx miestoBubliny), hru neblokuje a zavrie ju klik alebo Esc. */
-.napoveda-bublina {
-  position: fixed;
-  z-index: 65;
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  width: clamp(260px, 24vw, 380px);
-  padding: 10px 12px;
-  border-radius: 14px;
-  border: 2px solid var(--akcent);
-  background: var(--plocha);
-  color: var(--text);
-  box-shadow: 0 8px 24px color-mix(in srgb, #000 50%, transparent);
-  cursor: pointer;
-  animation: napoveda-prichod 0.25s ease-out;
-}
-
-.napoveda-telo {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.napoveda-text {
-  margin: 0;
-  font-size: 0.92rem;
-  line-height: 1.42;
-}
-
-.napoveda-pata {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px 12px;
-}
-
-/* Zbalená nápoveda: plná by zakryla kartu, z ktorej hráč vyberá — len Melichar a „nápoveda“. */
-.napoveda-bublina.zbalena {
-  width: auto;
-  align-items: center;
-  padding: 6px 10px 6px 6px;
-  border-radius: 999px;
-}
-
-.napoveda-bublina.zbalena .napoveda-telo,
-.napoveda-bublina:not(.zbalena) .napoveda-rozbal {
-  display: none;
-}
-
-.napoveda-bublina.zbalena .vyucba-avatar {
-  width: 32px;
-  height: 32px;
-}
-
-.napoveda-vypnut {
-  margin-left: auto;
-  font-size: 0.78rem;
-}
-
 /* Prvok, o ktorom nápoveda hovorí: len jemný rámik, stôl ostáva svetlý. */
 /* body: prednosť pred „outline: none“ dlaždíc a tlačidiel v hra.css. */
 body [data-napoveda-zvyraznene] {
@@ -680,33 +358,15 @@ body [data-napoveda-zvyraznene]:focus-visible {
   outline-width: 3px;
 }
 
-@keyframes napoveda-prichod {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .napoveda-bublina {
-    animation: none;
-  }
-}
-
-/* Nízky notebook: menšie písmo, nech bublina nezaberie pol stola. */
-@media (max-height: 719px) {
-  .napoveda-bublina {
-    width: clamp(250px, 26vw, 340px);
-    padding: 8px 10px;
-  }
-
-  .napoveda-bublina .vyucba-avatar {
-    width: 32px;
-    height: 32px;
-  }
-
-  .napoveda-text {
-    font-size: 0.84rem;
-    line-height: 1.36;
-  }
+/* Melichar dovolí len „ďalej“ (Michal 2026-10-25): stôl zošedne, farbu si nechá len to, o čom hovorí
+   (maska s dierami, Vyucba.tsx Stmavenie). Bar s Melicharom je nad tým. */
+.vyucba-sede {
+  position: fixed;
+  inset: 0;
+  z-index: 59;
+  pointer-events: none;
+  backdrop-filter: grayscale(1);
+  -webkit-backdrop-filter: grayscale(1);
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
 }

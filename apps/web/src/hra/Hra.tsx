@@ -11,6 +11,7 @@ import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { HernaPlocha } from "./HernaPlocha.tsx";
 import { HudbaPartie } from "./Hudba.tsx";
 import { useMelichar } from "./Melichar.tsx";
+import { MelicharVBare } from "./MelicharBar.tsx";
 import { Momenty } from "./Momenty.tsx";
 import { NapovedaMelichara } from "./Napovedy.tsx";
 import { Soundboard } from "./Soundboard.tsx";
@@ -237,7 +238,7 @@ export function Hra() {
   // Ozve sa pri pečiatke momentu (Momenty), nie po každom ťahu (Michal 2026-10-23), a v každej
   // partii pri vzácnom achievemente (3★ alebo tajný). Vo výučbe hovorí v bubline — mlčí.
   const sBotom = hra.hraci.some((h) => h?.bot === true);
-  const { ozviMoment } = useMelichar(hra.view !== null && hra.vyucba === null);
+  const { ozviMoment, hovori: melicharHovori, umlcBublinu } = useMelichar(hra.view !== null && hra.vyucba === null);
   const hovorPriMomente = useCallback((nalada: NaladaMomentu) => (sBotom ? ozviMoment(nalada) : undefined), [sBotom, ozviMoment]);
   const posledny = hra.achievementy.zisky.at(-1);
   useEffect(() => {
@@ -381,7 +382,28 @@ export function Hra() {
       <Momenty udalosti={hra.udalosti} ja={hra.view.ja} mena={hra.hraci.map((h, i) => h?.meno ?? `Hráč ${i + 1}`)} hovor={hovorPriMomente} pocitadloBezi={pocitadloBezi} />
     )}
     {/* Nápovedy Melichara (Michal 2026-10-24): v každej partii, nie vo výučbe — tam hovorí scenár. */}
-    {hra.vyucba === null && <NapovedaMelichara data={hra.data} view={hra.view} udalosti={hra.udalosti} pocitadloBezi={pocitadloBezi} />}
+    {hra.vyucba === null && <NapovedaMelichara data={hra.data} view={hra.view} udalosti={hra.udalosti} pocitadloBezi={pocitadloBezi} sada={m.sada} />}
+    {/* Hláška pri pečiatke momentu: kým znie, Melichar je v bare (Michal 2026-10-25). Text hlášky sa
+        neukazuje (Michal 2026-10-22), len že hovorí. */}
+    {melicharHovori && (
+      <MelicharVBare
+        rezim="cely"
+        trieda="mel-hlaska"
+        vpravo={
+          <button type="button" className="tlacidlo-jemne" onClick={umlcBublinu}>
+            zavrieť
+          </button>
+        }
+      >
+        <p className="mel-zvuk" aria-label="Majster Melichar hovorí">
+          <span />
+          <span />
+          <span />
+          <span />
+          <span />
+        </p>
+      </MelicharVBare>
+    )}
     <HernaPlocha
       onPocitadlo={setPocitadloBezi}
       view={hra.view}
@@ -436,6 +458,7 @@ export function Hra() {
         view={hra.view}
         udalosti={hra.udalosti}
         hraci={hra.hraci}
+        sada={m.sada}
       />
     )}
     </>

@@ -8,11 +8,14 @@
 // prvok s data-vyucba-prvok / data-vyucba-karta = časť za dvojbodkou.
 // Nájdený prvok dostane data-vyucba-zvyraznene="kľúč" (číta ho playtest výučby).
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { ClientState, Command, Event as UdalostHry } from "@naex/core";
 import { api } from "../lib/api.ts";
 import { menoVoVete, rodHraca, textUdalosti, type HracInfo, type KrokVyucby, type PopisKrokuVyucby, type StavVyucby } from "./useHra.ts";
 import { stitokTahu, zmenyStola } from "./zmenyVyucby.ts";
+import type { Sada } from "@naex/tvorba";
+import { rezimMelichara } from "./bar.ts";
+import { MelicharVBare, VetaMelichara } from "./MelicharBar.tsx";
 import "./vyucba.css";
 
 /** Stav výučby účtu (GET /api/vyucba). */
@@ -137,8 +140,8 @@ export function prvkyKluca(kluc: string): HTMLElement[] {
   const css = (x: string): string => x.replace(/["\\]/g, "");
   if (kluc.startsWith("akcia:")) return [...document.querySelectorAll<HTMLElement>(`:is(.ruka-rad, .linia) .kl-slot[data-akcia="${css(kluc.slice(6))}"]`)];
   const priame = [...document.querySelectorAll<HTMLElement>(`[data-vyucba="${css(kluc)}"]`)];
-  // Účet bitky je na stole až v ďalšom kole — počas bitky je jej výsledok v páse kola.
-  if (kluc === "bitka-ucet" && priame.length === 0) return [...document.querySelectorAll<HTMLElement>(".pas-kola .suhrn-bitky")];
+  // Účet bitky je na stole až v ďalšom kole — počas bitky je jej výsledok v odhade jednotného baru.
+  if (kluc === "bitka-ucet" && priame.length === 0) return [...document.querySelectorAll<HTMLElement>(".jbar-odhad")];
   if (priame.length > 0 || !kluc.includes(":")) return priame;
   const [zona, id] = [kluc.slice(0, kluc.indexOf(":")), kluc.slice(kluc.indexOf(":") + 1)];
   return [
@@ -242,81 +245,42 @@ function useZvyraznenie(kluce: readonly string[], zmeny: readonly string[]): rea
   return obdlzniky;
 }
 
-/** Najväčšie zväčšenie karty v stĺpci Melichara — viac je už len rozmazaný obrázok. */
-const NAHLAD_MAX = 2.6;
-
-/**
- * Zväčšená kópia karty, o ktorej krok hovorí, v stĺpci Melichara (playtest U4). Karta v ruke či
- * na stole je malá a súperova hore nohami; kópia je rovno, bez kľúčov výučby a lupy (playtest
- * výučby ju nesmie nájsť ako zvýraznený prvok). Hľadá sa medzi zvýraznenými, prednostne mimo ruky.
- */
-function useNahladKarty(miesto: HTMLDivElement | null, obdlzniky: readonly Obdlznik[]): void {
-  const sig = JSON.stringify(obdlzniky);
-  useEffect(() => {
-    if (miesto === null) return;
-    let zdroj: HTMLElement | null = null;
-    let posledne = "";
-    const zmeraj = (): void => {
-      const mimo = (el: HTMLElement): boolean => el.closest(".lupa, [data-vyucba-bublina]") === null;
-      const karty = [...document.querySelectorAll<HTMLElement>(".kl[data-vyucba-zvyraznene]")].filter(mimo);
-      // Bez karty kroku ukáže kartu, ktorú práve pohol Štamgast či hra za hráča.
-      const zmenene = [...document.querySelectorAll<HTMLElement>(".kl[data-vyucba-zmena]")].filter(mimo);
-      const el = karty.find((k) => k.closest(".ruka") === null) ?? karty[0] ?? zmenene.find((k) => k.closest(".ruka") === null) ?? zmenene[0] ?? null;
-      const w = el?.offsetWidth ?? 0;
-      const h = el?.offsetHeight ?? 0;
-      const k = el === null || w === 0 ? 0 : Math.min(NAHLAD_MAX, miesto.clientWidth / w, miesto.clientHeight / h);
-      // Kópia má zmysel, len keď je karta citeľne väčšia ako na stole.
-      const ukaz = el !== null && k >= 1.25 && w * k >= 120;
-      const kluc = ukaz ? `${el.getAttribute("data-vyucba-uid") ?? el.getAttribute("data-vyucba-karta")}|${w}|${h}|${k.toFixed(3)}|${el.childElementCount}` : "";
-      if (kluc === posledne && el === zdroj) return;
-      posledne = kluc;
-      zdroj = el;
-      if (!ukaz) {
-        miesto.replaceChildren();
-        return;
-      }
-      const kopia = el.cloneNode(true) as HTMLElement;
-      for (const x of [kopia, ...kopia.querySelectorAll<HTMLElement>("*")]) {
-        for (const a of [...x.attributes]) if (a.name.startsWith("data-vyucba") || a.name === "data-lupa" || a.name === "id" || a.name === "tabindex") x.removeAttribute(a.name);
-      }
-      kopia.classList.remove("kl-otocena");
-      kopia.setAttribute("aria-hidden", "true");
-      kopia.style.transform = `scale(${k})`;
-      const obal = document.createElement("div");
-      obal.className = "vyucba-nahlad-obal";
-      obal.style.width = `${Math.round(w * k)}px`;
-      obal.style.height = `${Math.round(h * k)}px`;
-      obal.append(kopia);
-      miesto.replaceChildren(obal);
-    };
-    zmeraj();
-    const t = setInterval(zmeraj, 400);
-    return () => {
-      clearInterval(t);
-      miesto.replaceChildren();
-    };
-  }, [miesto, sig]);
+/** Maska „všetko okrem zvýraznených prvkov“ pre zošednutie (CSS mask-image s dierami). */
+function maskaBezDier(obdlzniky: readonly Obdlznik[], okraj: number): string {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  const diery = obdlzniky.map((o) => `M${o.x - okraj} ${o.y - okraj}h${o.w + 2 * okraj}v${o.h + 2 * okraj}h${-(o.w + 2 * okraj)}z`).join("");
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><path fill-rule="evenodd" d="M0 0h${w}v${h}h${-w}z${diery}"/></svg>`;
+  return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
 }
 
-/** Stmavenie stola okrem zvýraznených prvkov — kliky aj myš prechádzajú (pointer-events: none). */
-function Stmavenie({ obdlzniky }: { readonly obdlzniky: readonly Obdlznik[] }) {
-  if (obdlzniky.length === 0) return null;
+/**
+ * Stmavenie stola okrem zvýraznených prvkov — kliky aj myš prechádzajú (pointer-events: none).
+ * Keď Melichar dovolí len „ďalej“ (sede), stôl navyše zošedne (Michal 2026-10-25); farbu si
+ * nechá len to, o čom hovorí.
+ */
+function Stmavenie({ obdlzniky, sede }: { readonly obdlzniky: readonly Obdlznik[]; readonly sede: boolean }) {
+  if (obdlzniky.length === 0 && !sede) return null;
   const okraj = 6;
+  const maska = sede ? maskaBezDier(obdlzniky, okraj) : null;
   return (
-    <svg className="vyucba-stmavenie" aria-hidden="true" width="100%" height="100%">
-      <defs>
-        <mask id="vyucba-maska">
-          <rect width="100%" height="100%" fill="white" />
-          {obdlzniky.map((o, i) => (
-            <rect key={i} x={o.x - okraj} y={o.y - okraj} width={o.w + 2 * okraj} height={o.h + 2 * okraj} rx={10} fill="black" />
-          ))}
-        </mask>
-      </defs>
-      {obdlzniky.length > 0 && <rect className="vyucba-tien" width="100%" height="100%" mask="url(#vyucba-maska)" />}
-      {obdlzniky.map((o, i) => (
-        <rect key={i} className={o.zmena ? "vyucba-obrys zmena" : "vyucba-obrys"} x={o.x - okraj} y={o.y - okraj} width={o.w + 2 * okraj} height={o.h + 2 * okraj} rx={10} />
-      ))}
-    </svg>
+    <>
+      {maska !== null && <div className="vyucba-sede" aria-hidden="true" style={{ maskImage: maska, WebkitMaskImage: maska }} />}
+      <svg className="vyucba-stmavenie" aria-hidden="true" width="100%" height="100%">
+        <defs>
+          <mask id="vyucba-maska">
+            <rect width="100%" height="100%" fill="white" />
+            {obdlzniky.map((o, i) => (
+              <rect key={i} x={o.x - okraj} y={o.y - okraj} width={o.w + 2 * okraj} height={o.h + 2 * okraj} rx={10} fill="black" />
+            ))}
+          </mask>
+        </defs>
+        <rect className="vyucba-tien" width="100%" height="100%" mask="url(#vyucba-maska)" />
+        {obdlzniky.map((o, i) => (
+          <rect key={i} className={o.zmena ? "vyucba-obrys zmena" : "vyucba-obrys"} x={o.x - okraj} y={o.y - okraj} width={o.w + 2 * okraj} height={o.h + 2 * okraj} rx={10} />
+        ))}
+      </svg>
+    </>
   );
 }
 
@@ -344,6 +308,7 @@ export function VyucbaStol({
   view,
   udalosti,
   hraci,
+  sada,
 }: {
   readonly stav: StavVyucby;
   readonly dalej: () => void;
@@ -365,6 +330,8 @@ export function VyucbaStol({
   readonly view: ClientState;
   readonly udalosti: { readonly id: number; readonly events: readonly UdalostHry[] };
   readonly hraci: readonly [HracInfo | null, HracInfo | null];
+  /** Sada kariet — piktogramy akcií v reči Melichara (aj vlastné ikony z tvorcu). */
+  readonly sada: Sada | null;
 }) {
   const krok = stav.krok;
   useEffect(() => {
@@ -393,16 +360,6 @@ export function VyucbaStol({
   // Pri zmene kroku zavrie visiacu lupu karty či staršieho (HernaPlocha, U2).
   useEffect(() => {
     if (krok !== null) window.dispatchEvent(new Event("naex:zavri-lupu"));
-  }, [krok?.id]);
-
-  // Hrozba na stole je v odhade bitky — keď ju krok ukazuje a odhad je zbalený, rozbalí sa raz.
-  useEffect(() => {
-    if (krok === null || !krok.zvyraznit.includes("hrozba")) return;
-    const t = setTimeout(() => {
-      if (document.querySelector('[data-vyucba="hrozba"]') === null) document.querySelector<HTMLElement>('.suhrn-bitky[aria-expanded="false"]')?.click();
-    }, 300);
-    return () => clearTimeout(t);
-    // Len pri zmene kroku — hráč ho potom smie zbaliť.
   }, [krok?.id]);
 
   // Pruhy udalostí a priazne na stole počas výučby nie — komentuje Melichar (playtest: ležali cez karty).
@@ -476,34 +433,6 @@ export function VyucbaStol({
   }, [krok?.id]);
   const stitokText = stitok !== null && stitok.ukazany === krok?.id ? stitok.text : null;
   const zvyraznene = useZvyraznenie(kluce, zmena?.kluce ?? []);
-  const [nahlad, setNahlad] = useState<HTMLDivElement | null>(null);
-  useNahladKarty(nahlad, zvyraznene);
-
-  // Pevné miesto Melichara (Leader 2026-10-24, playtest výučby kolo 3): stĺpec vľavo pod osou kola,
-  // stôl, bary aj ruka sa o neho zúžia (vyucba.css). Plávajúca bublina vždy niečo zakryla a skákala;
-  // stĺpec nemá čo zakryť a „ďalej“ je stále na tom istom mieste.
-  useLayoutEffect(() => {
-    let posledne = "";
-    const zmeraj = (): void => {
-      // Os kola po scrollnutí stola odíde hore — stĺpec ostane pod prilepenou hlavičkou webu, nie cez ňu.
-      const hore = Math.max(
-        document.querySelector(".hra-hlava")?.getBoundingClientRect().bottom ?? 0,
-        document.querySelector(".hlavicka")?.getBoundingClientRect().bottom ?? 0,
-      );
-      const v = `${Math.max(0, Math.round(hore)) + 8}px`;
-      if (v === posledne) return;
-      posledne = v;
-      document.body.style.setProperty("--vyucba-hore", v);
-    };
-    zmeraj();
-    const t = setInterval(zmeraj, 300);
-    window.addEventListener("resize", zmeraj);
-    return () => {
-      clearInterval(t);
-      window.removeEventListener("resize", zmeraj);
-      document.body.style.removeProperty("--vyucba-hore");
-    };
-  }, []);
 
   // Krok bez ťahu: klik mimo zvýraznenia a bubliny nič neurobí (playtest: klik na okraj otvoril Karty).
   // Prechod myšou ostáva — lupa karty či staršieho sa otvorí aj v info kroku.
@@ -582,106 +511,101 @@ export function VyucbaStol({
   }, [krok?.id, jeInfo]);
 
   const percento = krok === null ? 100 : Math.round(((krok.index + 1) / krok.spolu) * 100);
+  // Melichar hovorí v bare (Michal 2026-10-25), kým má čo povedať alebo čaká na „ďalej“; ťah bez
+  // textu nechá bar hráčovi. Počas Počítadla bitky text čaká (playtest výučby kolo 4, U3) — stmavený
+  // pod animáciou hovoril o výsledku skôr, než ho bolo vidno.
+  const maText =
+    krok === null || stitokText !== null || chyba !== null || rada !== null || krok.melichar.trim() !== "" || moznosti.length > 0 || jeInfo;
+  const hovori = maText && !pocitadloBezi;
 
   return (
     <>
-      <Stmavenie obdlzniky={zvyraznene} />
-      <aside
-        className={`vyucba-bublina ${krok?.kto ?? "hotovo"}`}
-        data-vyucba-bublina=""
-        data-vyucba-krok={krok?.id ?? "hotovo"}
-        aria-label="Majster Melichar"
-      >
-        <header className="vyucba-hlava">
-          <img className="vyucba-avatar" src="/melichar.jpg" alt="" width={44} height={44} />
-          <div className="vyucba-kto">
-            <strong>Majster Melichar</strong>
-            {/* Percentá, nie „krok n / 70“ — ťahy Štamgasta sa spájajú a číslo by preskakovalo (playtest). */}
-            <span className="vyucba-postup" aria-label={`Výučba: ${percento} %`}>
-              <span className="vyucba-postup-pruh">
-                <span style={{ width: `${percento}%` }} />
-              </span>
+      <Stmavenie obdlzniky={zvyraznene} sede={hovori && blokuj} />
+      {hovori && (
+        <MelicharVBare
+          rezim={rezimMelichara(kluce)}
+          trieda={`vyucba-bublina ${krok?.kto ?? "hotovo"}`}
+          atributy={{ "data-vyucba-bublina": "", "data-vyucba-krok": krok?.id ?? "hotovo" }}
+          // Percentá, nie „krok n / 70“ — ťahy Štamgasta sa spájajú a číslo by preskakovalo (playtest).
+          pocitadlo={
+            <span className="mel-pocitadlo" aria-label={`Výučba: ${percento} %`}>
               {percento} %
             </span>
-          </div>
-        </header>
-        {/* Počas Počítadla bitky text čaká (playtest výučby kolo 4, U3): stmavený pod animáciou hovoril
-            o výsledku skôr, než ho bolo vidno. Text kroku, ktorý bitku spustil, sa číta pred ňou (HernaPlocha zadrzBitku). */}
-        <div
-          className="vyucba-text"
-          role="status"
-          aria-live="polite"
-          hidden={pocitadloBezi || (krok !== null && krok.melichar.trim() === "" && stitokText === null && chyba === null && rada === null)}
-        >
-          {stitokText !== null && krok !== null && (
-            <p className="vyucba-stitok" data-vyucba-stitok="">
-              {stitokText}
-            </p>
-          )}
-          {chyba !== null && krok !== null && <p className="vyucba-chyba">{chyba}</p>}
-          {rada !== null && krok !== null && <p className="vyucba-rada">{rada}</p>}
-          {krok !== null ? (
-            krok.melichar.trim() !== "" && <p>{krok.melichar}</p>
-          ) : (
-            <p>
-              Výučbu máš za sebou! Základ vieš, zvyšok ti poviem v prvej partii: keď sa objaví niečo nové — Dlh, Absťák, Pohoršenie —
-              ozvem sa krátkou nápovedou. Zahraj si naostro, Štamgast a jeho kumpáni ťa čakajú.
-            </p>
-          )}
-          {moznosti.length > 0 && (
-            <div className="vyucba-moznosti" role="group" aria-label="Možnosti odpovede">
-              {moznosti.map((m, i) => {
-                const stav = odpoved === i ? (m.spravna ? " spravna" : " zla") : "";
-                return (
-                  <button
-                    key={i}
-                    type="button"
-                    className={`vyucba-moznost${stav}`}
-                    onClick={() => vyber(i)}
-                    disabled={vybrana?.spravna === true && odpoved !== i}
-                    aria-pressed={odpoved === i}
-                  >
-                    <kbd>{i + 1}</kbd> {m.text}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-          {vybrana !== undefined && (
-            <p className={vybrana.spravna ? "vyucba-vysvetlenie spravna" : "vyucba-vysvetlenie zla"}>
-              <strong>{vybrana.spravna ? "Správne. " : "Nie celkom. "}</strong>
-              {vybrana.vysvetlenie}
-              {!vybrana.spravna && " Skús inú možnosť."}
-            </p>
-          )}
-        </div>
-        <div className="vyucba-nahlad" ref={setNahlad} aria-hidden="true" />
-        <footer className="vyucba-pata">
-          {krok === null ? (
-            <>
-              <button className="tlacidlo-hlavne" onClick={hratProtiPocitacu}>
-                Hrať prvú partiu proti počítaču
-              </button>
-              <button onClick={prerusit}>Do lobby</button>
-            </>
-          ) : (
-            <>
-              {jeInfo && (
-                <button ref={dalejRef} className="tlacidlo-hlavne vyucba-dalej" onClick={dalej} data-vyucba-dalej="">
-                  ďalej <kbd>Enter</kbd>
+          }
+          vpravo={
+            krok === null ? (
+              <>
+                <button className="tlacidlo-hlavne" onClick={hratProtiPocitacu}>
+                  Hrať prvú partiu proti počítaču
                 </button>
-              )}
-              {pocitadloBezi && <span className="vyucba-stav vyucba-caka">Bitka sa počíta…</span>}
-              {krok.kto === "hrac" && !pocitadloBezi && <span className="vyucba-stav">Tvoj ťah</span>}
-              {krok.kto === "bot" && !krok.vykonany && <span className="vyucba-stav vyucba-caka">{menoBota} ťahá…</span>}
-              {krok.kto === "auto" && !krok.vykonany && <span className="vyucba-stav vyucba-caka">Hra ťahá za teba…</span>}
-              <button type="button" className="tlacidlo-jemne vyucba-prerusit" onClick={prerusit} title="Prerušiť výučbu — postup sa uloží, pokračuješ na stránke Hrať.">
-                prerušiť<span className="vyucba-dlhy-popis"> výučbu</span>
-              </button>
-            </>
-          )}
-        </footer>
-      </aside>
+                <button onClick={prerusit}>Do lobby</button>
+              </>
+            ) : (
+              <>
+                {krok.kto === "hrac" && <span className="vyucba-stav">Tvoj ťah</span>}
+                {krok.kto === "bot" && !krok.vykonany && <span className="vyucba-stav vyucba-caka">{menoBota} ťahá…</span>}
+                {krok.kto === "auto" && !krok.vykonany && <span className="vyucba-stav vyucba-caka">Hra ťahá za teba…</span>}
+                {jeInfo && (
+                  <button ref={dalejRef} className="tlacidlo-hlavne mel-dalej vyucba-dalej" onClick={dalej} data-vyucba-dalej="">
+                    ďalej <kbd>Enter</kbd>
+                  </button>
+                )}
+                <button type="button" className="tlacidlo-jemne vyucba-prerusit" onClick={prerusit} title="Prerušiť výučbu — postup sa uloží, pokračuješ na stránke Hrať.">
+                  prerušiť<span className="vyucba-dlhy-popis"> výučbu</span>
+                </button>
+              </>
+            )
+          }
+        >
+          <div className="vyucba-text" role="status" aria-live="polite">
+            {stitokText !== null && krok !== null && (
+              <p className="vyucba-stitok" data-vyucba-stitok="">
+                {stitokText}
+              </p>
+            )}
+            {chyba !== null && krok !== null && <p className="vyucba-chyba">{chyba}</p>}
+            {rada !== null && krok !== null && <p className="vyucba-rada">{rada}</p>}
+            {krok !== null ? (
+              krok.melichar.trim() !== "" && (
+                <p>
+                  <VetaMelichara text={krok.melichar} sada={sada} />
+                </p>
+              )
+            ) : (
+              <p>
+                Výučbu máš za sebou! Základ vieš, zvyšok ti poviem v prvej partii: keď sa objaví niečo nové — Dlh, Absťák, Pohoršenie —
+                ozvem sa krátkou nápovedou. Zahraj si naostro, Štamgast a jeho kumpáni ťa čakajú.
+              </p>
+            )}
+            {moznosti.length > 0 && (
+              <div className="vyucba-moznosti" role="group" aria-label="Možnosti odpovede">
+                {moznosti.map((m, i) => {
+                  const stav = odpoved === i ? (m.spravna ? " spravna" : " zla") : "";
+                  return (
+                    <button
+                      key={i}
+                      type="button"
+                      className={`vyucba-moznost${stav}`}
+                      onClick={() => vyber(i)}
+                      disabled={vybrana?.spravna === true && odpoved !== i}
+                      aria-pressed={odpoved === i}
+                    >
+                      <kbd>{i + 1}</kbd> {m.text}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+            {vybrana !== undefined && (
+              <p className={vybrana.spravna ? "vyucba-vysvetlenie spravna" : "vyucba-vysvetlenie zla"}>
+                <strong>{vybrana.spravna ? "Správne. " : "Nie celkom. "}</strong>
+                {vybrana.vysvetlenie}
+                {!vybrana.spravna && " Skús inú možnosť."}
+              </p>
+            )}
+          </div>
+        </MelicharVBare>
+      )}
     </>
   );
 }

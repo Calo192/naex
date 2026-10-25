@@ -4,17 +4,20 @@
 // ľudia), každá nápoveda raz za účet, v profile sa dajú vypnúť a ukázať znova.
 //
 // Situáciu rozpoznáva jadro (napovedy.ts) z pohľadu hráča — z toho istého, čo
-// klient kreslí, takže nápoveda nič neprezradí. Bublina nestmavuje stôl a hru
-// neblokuje: zavrie ju klik na ňu alebo Esc. Kým beží Počítadlo bitky, pečiatka
+// klient kreslí, takže nápoveda nič neprezradí. Melichar ju povie v bare (MelicharBar);
+// nestmavuje stôl a hru neblokuje: zavrie ju „rozumiem“ alebo Esc. Kým beží Počítadlo bitky, pečiatka
 // momentu či ťah súpera, nápoveda počká.
 // Ukážka na snímky a UI inšpekciu: /hra?ukazka-napovedy=<id> (neuloží sa ako videná).
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import katalogJson from "@naex/core/data/vyucba/napovedy.json";
 import type { ClientState, Event, GameData, KatalogNapoved, Napoveda } from "@naex/core";
 import { dalsiaNapoveda, napovedy } from "@naex/core";
 import { api } from "../lib/api.ts";
 import { useUcet, type Pouzivatel } from "../lib/ucet.tsx";
+import type { Sada } from "@naex/tvorba";
+import { rezimMelichara } from "./bar.ts";
+import { MelicharVBare, VetaMelichara } from "./MelicharBar.tsx";
 import { prvkyKluca } from "./Vyucba.tsx";
 import "./vyucba.css";
 
@@ -100,104 +103,6 @@ function ukazkaZAdresy(data: GameData, view: ClientState): Napoveda | null {
   return { id: def.id, poradie: def.poradie, text, zvyraznit: def.zvyraznit.filter((k) => !k.includes("{")) };
 }
 
-interface Miesto {
-  readonly left: number;
-  readonly top: number;
-  readonly width: number;
-}
-
-const prienik = (a: DOMRect, l: number, t: number, w: number, h: number): number =>
-  Math.max(0, Math.min(a.right, l + w) - Math.max(a.left, l)) * Math.max(0, Math.min(a.bottom, t + h) - Math.max(a.top, t));
-
-/** Užšia bublina by mala viac riadkov ako slov v riadku. */
-const NAJUZSIA = 220;
-/**
- * Čo bublina nezakryje nikdy: tlačidlá, ruku, pokyn, nadpisy panelov, miesta Smetiska a karty,
- * z ktorých hráč vyberá (šenok, stavba, voľba cieľa). Karty v línii smie zakryť, keď inde
- * miesto nie je. Klikateľná karta má role=button — ťažká je len tam, kde sa z nej vyberá.
- */
-const TAZKE =
-  "button, input, [role='button']:not(.kl), .ruka, .linia-stav, .stavba-zona-miesto, .stavba-zona-nazov, .draft-hlava > *, .draft-panel .kl, .draft-karty .kl";
-const PREKAZKY = `.hra :is(${TAZKE}, .kl)`;
-
-interface Prekazka {
-  readonly r: DOMRect;
-  readonly tazka: boolean;
-}
-
-function prekazky(bublina: HTMLElement): Prekazka[] {
-  return [...document.querySelectorAll<HTMLElement>(PREKAZKY)]
-    .filter((el) => !bublina.contains(el) && el.getClientRects().length > 0)
-    .map((el) => ({ r: el.getBoundingClientRect(), tazka: el.matches(TAZKE) }));
-}
-
-/** Prekrytie: najprv ťažké (nesmie byť), potom ľahké (čím menej, tým lepšie). */
-interface Prekrytie {
-  readonly tazke: number;
-  readonly lahke: number;
-}
-
-function prekrytie(p: readonly Prekazka[], left: number, top: number, w: number, h: number): Prekrytie {
-  let tazke = 0;
-  let lahke = 0;
-  for (const x of p) {
-    const a = prienik(x.r, left, top, w, h);
-    if (x.tazka) tazke += a;
-    else lahke += a;
-  }
-  return { tazke, lahke };
-}
-
-const lepsie = (a: Prekrytie, b: Prekrytie): boolean => a.tazke < b.tazke || (a.tazke === b.tazke && a.lahke < b.lahke);
-
-/**
- * Kam bublinu položiť: do rohu stola, kde zakryje najmenej (ťažké prekážky pred ľahkými).
- * Plná bublina sa smie zúžiť; zbalená (len Melichar a „nápoveda“) má pevnú šírku. Trieda
- * zbalenej sa na meranie prepne a hneď vráti — medzi tým sa nekreslí.
- */
-function miestoBubliny(bublina: HTMLElement, zbalena: boolean): { readonly miesto: Miesto; readonly prekrytie: Prekrytie } {
-  // Inline šírku nastavuje React (style) — po meraní sa vráti, inak by ju pri rovnakej hodnote nezapísal znova.
-  const predtym = bublina.style.width;
-  const predtymZbalena = bublina.classList.contains("zbalena");
-  bublina.classList.toggle("zbalena", zbalena);
-  bublina.style.width = "";
-  const plna = bublina.offsetWidth;
-  const vrat = (): void => {
-    bublina.style.width = predtym;
-    bublina.classList.toggle("zbalena", predtymZbalena);
-  };
-  const stol = document.querySelector(".hra .linia-obal")?.getBoundingClientRect();
-  if (stol === undefined) {
-    const top = Math.max(8, window.innerHeight - bublina.offsetHeight - 160);
-    vrat();
-    return { miesto: { left: 16, top, width: plna }, prekrytie: { tazke: 0, lahke: 0 } };
-  }
-  const okraj = 12;
-  const p = prekazky(bublina);
-  let najlepsie: { miesto: Miesto; prekrytie: Prekrytie } | null = null;
-  for (const roh of ["vlavo-hore", "vpravo-hore", "vlavo-dole", "vpravo-dole"] as const) {
-    for (let w = plna; w >= Math.min(plna, NAJUZSIA); w -= 20) {
-      bublina.style.width = `${w}px`;
-      const h = bublina.offsetHeight;
-      // Hore je pilulka s pokynom (na hrane stola) — bublina začne pod ňou.
-      const top = Math.round(Math.max(8, roh.endsWith("hore") ? stol.top + 34 : Math.min(stol.bottom, window.innerHeight) - h - okraj));
-      const left = Math.round(Math.max(8, roh.startsWith("vlavo") ? stol.left + okraj : stol.right - w - okraj));
-      const pr = prekrytie(p, left, top, w, h);
-      if (najlepsie === null || lepsie(pr, najlepsie.prekrytie)) najlepsie = { miesto: { left, top, width: w }, prekrytie: pr };
-      if (pr.tazke === 0 && pr.lahke === 0) break;
-    }
-    if (najlepsie !== null && najlepsie.prekrytie.tazke === 0 && najlepsie.prekrytie.lahke === 0) break;
-  }
-  vrat();
-  return najlepsie ?? { miesto: { left: 16, top: 120, width: plna }, prekrytie: { tazke: 0, lahke: 0 } };
-}
-
-/** Prekrytie bubliny na mieste, kde práve je. */
-function prekrytieTeraz(bublina: HTMLElement): Prekrytie {
-  const r = bublina.getBoundingClientRect();
-  return prekrytie(prekazky(bublina), r.left, r.top, r.width, r.height);
-}
-
 /** Jemný rámik na prvkoch, o ktorých nápoveda hovorí — bez stmavenia stola. */
 function useRamik(kluce: readonly string[] | null): void {
   const sig = kluce?.join("|") ?? "";
@@ -223,11 +128,13 @@ export function NapovedaMelichara({
   view,
   udalosti,
   pocitadloBezi,
+  sada,
 }: {
   readonly data: GameData;
   readonly view: ClientState;
   readonly udalosti: { readonly id: number; readonly events: readonly Event[] };
   readonly pocitadloBezi: boolean;
+  readonly sada: Sada | null;
 }) {
   const { zapnute, videne, oznac, vypni } = useNapovedyUctu();
   const [cakajuca, setCakajuca] = useState<Napoveda | null>(null);
@@ -277,23 +184,8 @@ export function NapovedaMelichara({
 
   const zavri = useCallback(() => setUkazana(null), []);
 
-  const bublina = useRef<HTMLElement>(null);
-  const [miesto, setMiesto] = useState<Miesto | null>(null);
-  // Zbalená: plná bublina by zakryla kartu, z ktorej hráč vyberá (šenok) či tlačidlo — ostane
-  // len Melichar s „nápoveda“; klik ju rozbalí. Keď sa neskôr plná vojde, rozbalí sa sama.
-  const [zbalena, setZbalena] = useState(false);
-  const rucne = useRef(false);
-  const [rozbalenie, setRozbalenie] = useState(0);
-  // Nová nápoveda začína nerozbalená klikom — reset v layout efekte nižšie, pred umiestnením.
-  const predoslaNapoveda = useRef<Napoveda | null>(null);
-  const rozbal = useCallback(() => {
-    rucne.current = true;
-    setRozbalenie((n) => n + 1);
-    setZbalena(false);
-  }, []);
-
-  // Esc zavrie najprv bublinu (capture) — návrh ťahu na stole ostane. Skrytá čakajúca nie.
-  const viditelna = ukazana !== null && miesto !== null;
+  // Esc zavrie najprv bublinu (capture) — návrh ťahu na stole ostane.
+  const viditelna = ukazana !== null;
   useEffect(() => {
     if (!viditelna) return;
     const klaves = (e: KeyboardEvent): void => {
@@ -306,81 +198,24 @@ export function NapovedaMelichara({
     return () => window.removeEventListener("keydown", klaves, true);
   }, [viditelna, zavri]);
 
-  useRamik(viditelna && !zbalena ? (ukazana?.zvyraznit ?? null) : null);
-
-  // Iná fáza = iný stôl (voľba cieľa → stavba šenku → línia): miesto sa vyberie znova.
-  const usek = `${view.faza}|${view.draftStav?.krok ?? ""}|${view.bitkaStav?.krok ?? ""}`;
-  useLayoutEffect(() => {
-    if (ukazana === null || bublina.current === null) {
-      setMiesto(null);
-      return;
-    }
-    if (predoslaNapoveda.current !== ukazana) {
-      predoslaNapoveda.current = ukazana;
-      rucne.current = false;
-    }
-    const el = bublina.current;
-    const umiestni = (): void => {
-      const plna = miestoBubliny(el, false);
-      // Rozbalená klikom ostane plná — hráč si ju vyžiadal; inak plná len bez ťažkého prekrytia.
-      if (plna.prekrytie.tazke === 0 || rucne.current) {
-        setZbalena(false);
-        setMiesto(plna.miesto);
-        return;
-      }
-      const mala = miestoBubliny(el, true);
-      setZbalena(true);
-      // Ani zbalená sa nevojde — počká (neukáže sa), kým sa stôl neuvoľní.
-      setMiesto(mala.prekrytie.tazke === 0 ? mala.miesto : null);
-    };
-    umiestni();
-    // Karty stola sa po prekreslení ešte dorovnajú (zarovnanie línie) — druhé meranie o chvíľu.
-    const t = setTimeout(umiestni, 300);
-    // Stôl sa mení aj bez novej fázy (karty šenku dobehnú, objaví sa tlačidlo): keď bublina
-    // niečo zakrýva, alebo je zbalená či skrytá a plná by sa už vošla, premiestni sa — inak stojí.
-    const kontrola = setInterval(() => {
-      if (rucne.current) return;
-      const teraz = prekrytieTeraz(el);
-      if (!el.classList.contains("zbalena") && el.style.visibility !== "hidden" && teraz.tazke === 0 && teraz.lahke === 0) return;
-      umiestni();
-    }, 1000);
-    window.addEventListener("resize", umiestni);
-    return () => {
-      clearTimeout(t);
-      clearInterval(kontrola);
-      window.removeEventListener("resize", umiestni);
-    };
-    // Miesto sa vyberie pri otvorení, v novej fáze, po rozbalení klikom, pri zmene okna a keď niečo zakrýva.
-  }, [ukazana, usek, rozbalenie]);
+  useRamik(viditelna ? (ukazana?.zvyraznit ?? null) : null);
 
   if (ukazana === null) return null;
+  // Nápoveda hovorí v bare (Michal 2026-10-25) — nič na stole nezakryje, hru neblokuje.
   return (
-    <aside
-      ref={bublina}
-      className={zbalena ? "napoveda-bublina zbalena" : "napoveda-bublina"}
-      data-napoveda={ukazana.id}
-      aria-live="polite"
-      aria-label="Nápoveda majstra Melichara"
-      style={miesto === null ? { visibility: "hidden" } : { left: miesto.left, top: miesto.top, width: miesto.width }}
-      onClick={zbalena ? rozbal : zavri}
-      title={zbalena ? "Melichar má nápovedu — klikni a ukáže sa." : "Klikni alebo stlač Esc a nápoveda zmizne."}
-    >
-      <img className="vyucba-avatar" src="/melichar.jpg" alt="" width={40} height={40} />
-      {/* Obe podoby sú v DOM vždy (CSS podľa triedy zbalena) — miestoBubliny meria plnú aj zbalenú. */}
-      <button type="button" className="tlacidlo-male napoveda-rozbal" onClick={rozbal} tabIndex={zbalena ? 0 : -1}>
-        nápoveda
-      </button>
-      <div className="napoveda-telo">
-        <p className="napoveda-text">{ukazana.text}</p>
-        <div className="napoveda-pata">
-          <button type="button" className="tlacidlo-male tlacidlo-hlavne" onClick={zavri}>
+    <MelicharVBare
+      rezim={rezimMelichara(ukazana.zvyraznit)}
+      trieda="napoveda-bublina"
+      atributy={{ "data-napoveda": ukazana.id }}
+      vpravo={
+        <>
+          <button type="button" className="tlacidlo-hlavne mel-dalej" onClick={zavri} title="Nápoveda zmizne (aj Esc).">
             rozumiem
           </button>
           <button
             type="button"
             className="tlacidlo-jemne napoveda-vypnut"
-            onClick={(e) => {
-              e.stopPropagation();
+            onClick={() => {
               vypni();
               zavri();
             }}
@@ -388,8 +223,12 @@ export function NapovedaMelichara({
           >
             vypnúť nápovedy
           </button>
-        </div>
-      </div>
-    </aside>
+        </>
+      }
+    >
+      <p className="napoveda-text" aria-live="polite">
+        <VetaMelichara text={ukazana.text} sada={sada} />
+      </p>
+    </MelicharVBare>
   );
 }
