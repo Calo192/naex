@@ -321,6 +321,11 @@ textarea {
   flex-direction: column;
 }
 
+/* Otvorené menu musí byť nad barom Melichara vo výučbe (jbar.css, z-index 75) — inak zakryje Pravidlá. */
+.hlavicka:has(.navigacia.otvorena, .ucet-menu) {
+  z-index: 80;
+}
+
 .hlavicka {
   position: sticky;
   top: 0;

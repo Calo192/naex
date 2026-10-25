@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
 import { api } from "./lib/api.ts";
 import { NOVINKY_VIDENE, citajVidene } from "./lib/novinky.ts";
-import { useStrazenaPartia } from "./lib/odchod.ts";
+import { ZAVES_ODCHODU, useStrazenaPartia, type StrazenaPartia } from "./lib/odchod.ts";
 import { Odkaz, chod, useCesta } from "./lib/router.tsx";
 import { NAZOV_UROVNE, jeSpravca, maPravo, useUcet, type Pravo } from "./lib/ucet.tsx";
 import { Avatar } from "./komponenty.tsx";
@@ -77,23 +77,34 @@ function useDielnaZnacka(cesta: string, prihlaseny: boolean): number {
  * Odísť z partie? (Michal 2026-10-23) — klik na položku menu počas partie. Partia
  * beží ďalej; predvolené (fokus, Esc, klik mimo) je zostať.
  */
-function OdchodZPartie({ kod, nazov, onZostat, onOdist }: { readonly kod: string; readonly nazov: string; readonly onZostat: () => void; readonly onOdist: () => void }) {
+function OdchodZPartie({
+  partia,
+  nazov,
+  onZostat,
+  onOdist,
+}: {
+  readonly partia: StrazenaPartia;
+  readonly nazov: string;
+  readonly onZostat: () => void;
+  readonly onOdist: () => void;
+}) {
   const zostatRef = useRef<HTMLButtonElement>(null);
   const zostat = useRef(onZostat);
   zostat.current = onZostat;
   useEffect(() => {
     zostatRef.current?.focus();
     // Zachytené skôr než Esc hernej plochy (línia starších, lupa…).
+    // Ostatné klávesy tiež nesmú k stolu: Enter na tlačidle dialógu by vo výučbe posunul
+    // krok a jeho preventDefault zrušil klik tlačidla. Predvolená akcia (Tab, Enter) ostáva.
     const klaves = (e: KeyboardEvent): void => {
-      if (e.key !== "Escape") return;
       e.stopPropagation();
-      zostat.current();
+      if (e.key === "Escape") zostat.current();
     };
     window.addEventListener("keydown", klaves, true);
     return () => window.removeEventListener("keydown", klaves, true);
   }, []);
   return (
-    <div className="odchod-zaves" onClick={onZostat}>
+    <div className={ZAVES_ODCHODU} onClick={onZostat}>
       <div
         className="odchod-dialog"
         role="alertdialog"
@@ -103,10 +114,19 @@ function OdchodZPartie({ kod, nazov, onZostat, onOdist }: { readonly kod: string
         onClick={(e) => e.stopPropagation()}
       >
         <h2 id="odchod-nadpis">Odísť z partie?</h2>
-        <p id="odchod-text">
-          Partia beží ďalej — nie je to vzdanie sa. Vrátiš sa do nej cez <b>Hrať</b> alebo kódom miestnosti <span className="odchod-kod">{kod}</span>.
-        </p>
-        <p>Súper medzitým čaká; po 3 minútach bez teba si môže vyžiadať kontumačnú výhru.</p>
+        {partia.vyucba ? (
+          <p id="odchod-text">
+            Výučba počká — vrátiš sa do nej cez <b>Hrať</b>, na tom istom mieste.
+          </p>
+        ) : (
+          <>
+            <p id="odchod-text">
+              Partia beží ďalej — nie je to vzdanie sa. Vrátiš sa do nej cez <b>Hrať</b> alebo kódom miestnosti{" "}
+              <span className="odchod-kod">{partia.kod}</span>.
+            </p>
+            <p>Súper medzitým čaká; po 3 minútach bez teba si môže vyžiadať kontumačnú výhru.</p>
+          </>
+        )}
         <div className="odchod-tlacidla">
           <button type="button" onClick={onOdist}>
             {nazov}
@@ -272,7 +292,7 @@ export function Layout({
       </header>
       {odchod !== null && strazenaPartia !== null && (
         <OdchodZPartie
-          kod={strazenaPartia}
+          partia={strazenaPartia}
           nazov={odchod.nazov}
           onZostat={() => setOdchod(null)}
           onOdist={() => {

@@ -11,12 +11,19 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ClientState, Command, Event as UdalostHry } from "@naex/core";
 import { api } from "../lib/api.ts";
+import { ZAVES_ODCHODU } from "../lib/odchod.ts";
 import { menoVoVete, rodHraca, textUdalosti, type HracInfo, type KrokVyucby, type PopisKrokuVyucby, type StavVyucby } from "./useHra.ts";
 import { stitokTahu, zmenyStola } from "./zmenyVyucby.ts";
 import type { Sada } from "@naex/tvorba";
 import { moznostiKvizu, rezimMelichara } from "./bar.ts";
 import { CisloStrany, MelicharVBare, StrankovanaVeta, VetaMelichara, kusyVety, useStrany, type KusVety } from "./MelicharBar.tsx";
 import "./vyucba.css";
+
+/**
+ * Kliky, ktoré zámok kroku bez ťahu púšťa: bublina, lupa, zatvorenie vrstiev, hlavička webu
+ * a dialóg „Odísť z partie?“ — ten leží mimo hlavičky a bez neho nešiel zavrieť ani opustiť.
+ */
+export const KLIKY_MIMO_ZAMKU = `[data-vyucba-bublina], .lupa, .vrstva-zavriet, .pecat-zrusit, .hlavicka, .${ZAVES_ODCHODU}`;
 
 /** Stav výučby účtu (GET /api/vyucba). */
 export interface VyucbaUctu {
@@ -454,7 +461,7 @@ export function VyucbaStol({
     if (!blokuj) return;
     const povolene = (t: EventTarget | null): boolean =>
       t instanceof Element &&
-      (t.closest("[data-vyucba-bublina], .lupa, .vrstva-zavriet, .pecat-zrusit, .hlavicka") !== null || (naneisto && t.closest("[data-vyucba-zvyraznene]") !== null));
+      (t.closest(KLIKY_MIMO_ZAMKU) !== null || (naneisto && t.closest("[data-vyucba-zvyraznene]") !== null));
     const zastav = (e: Event): void => {
       // Kliky z kódu (zatvorenie vrstvy, otvorenie starších pri novom kroku) prejdú.
       if (!e.isTrusted || povolene(e.target)) return;
@@ -580,7 +587,8 @@ export function VyucbaStol({
   // Po novom kroku bez ťahu či po odpovedi fokus na hlavné tlačidlo — Enter aj čítačka vedia, kde sú.
   const dalejRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
-    if (jeInfo || vOdpovedi) dalejRef.current?.focus({ preventScroll: true });
+    // Otvorený dialóg odchodu si fokus nechá — Enter patrí jeho tlačidlu.
+    if ((jeInfo || vOdpovedi) && document.querySelector(`.${ZAVES_ODCHODU}`) === null) dalejRef.current?.focus({ preventScroll: true });
   }, [krok?.id, jeInfo, vOdpovedi, strany.strana]);
 
   const percento = krok === null ? 100 : Math.round(((krok.index + 1) / krok.spolu) * 100);
