@@ -52,7 +52,7 @@
         "podmienka": "view.pitkaStav.reakcia === ja",
         "jadro": ["packages/core/src/engine.ts:174 PitkaStav.reakcia", "docs/PRAVIDLA.md §7 Odpoveď na NA EX"]
       },
-      "melichar": "Súper dal NA EX a ty smieš hneď položiť jednu kartu. Keď ňou spojíš akciu bez partnera na karte s NA EX, NA EX ju zruší namiesto zdvojenia.",
+      "melichar": "NA EX sa odkryli a ty smieš za súperovo NA EX položiť jednu kartu. Keď ňou spojíš akciu bez partnera na karte s NA EX, NA EX ju zruší namiesto zdvojenia.",
       "zvyraznit": ["tlacidlo:bez-odpovede"]
     },
     {
@@ -88,7 +88,7 @@
         "podmienka": "udalosť pitkaVysledok s dlhy[ja] > 0, alebo pribudol Dlh medzi mojimi priznanými",
         "jadro": ["packages/core/src/engine.ts:412 Event pitkaVysledok", "docs/PRAVIDLA.md §11 Kliatby"]
       },
-      "melichar": "Prvý Dlh! Leží medzi priznanými kartami a na konci hry ti zoberie body.",
+      "melichar": "Prvý Dlh! Leží medzi priznanými kartami. Na konci hry pri starších s podmienkou Dlhy vyhrá ten, kto má Dlhov menej.",
       "zvyraznit": ["bar:dlhy"]
     },
     {
@@ -140,8 +140,8 @@
         "jadro": ["packages/core/src/engine.ts:188 BitkaKrok pohorsenie", "packages/core/src/engine.ts:2860 pohorseniaVBitke", "docs/PRAVIDLA.md §9.2 Pohoršenie"]
       },
       "melichar": {
-        "moje": "Tvoje Pohoršenie posunie jedného staršieho o krok k súperovi, aj keď bitku prehráš. Vyber ktorého.",
-        "superove": "Súperovo Pohoršenie posúva staršieho k tebe, aj keď bitku prehrá. Ten starší sa potom bojí jeho."
+        "moje": "Tvoje Pohoršenie posunie jedného staršieho o krok k súperovi alebo k sebe, aj keď bitku prehráš. K sebe si vezmeš jeho priazeň hneď, platí už v tejto bitke.",
+        "superove": "Súperovo Pohoršenie posúva staršieho k tebe alebo k nemu, aj keď bitku prehrá. Priazeň sa mení hneď, ešte v tejto bitke."
       },
       "zvyraznit": ["linia-starsich"]
     },
@@ -154,7 +154,7 @@
         "podmienka": "stavZavislosti(view, ja).vyhlad === \"ziska\" na mojom ťahu, alebo pribudol Absťák medzi mojimi priznanými",
         "jadro": ["packages/core/src/zavislost.ts:52 stavZavislosti", "docs/PRAVIDLA.md §8 Nerest a Absťák"]
       },
-      "melichar": "Pozor na Absťák: kto v kole pije a fajčí menej ako v predošlom, dostane ho. Každý Absťák ti v bitke uberie 1 tuhé.",
+      "melichar": "Pozor na Absťák: kto v kole pije a fajčí menej ako v predošlom, dostane ho. Každý ti v bitke uberie 1 tuhé a na konci sa rátajú všetky, čo si za hru dostal.",
       "zvyraznit": ["bar:abstak"]
     },
     {
@@ -166,7 +166,7 @@
         "podmienka": "view.hraci[ja].ruka obsahuje defId \"cirhoza\"",
         "jadro": ["packages/core/src/engine.ts:412 Event pitkaVysledok (cirhozy)", "docs/PRAVIDLA.md §11 Priznanie"]
       },
-      "melichar": "V ruke máš Cirhózu z pretečenej pečene. Nepriznaná ti na konci berie body, priznaná nie, no súper za ňu dostane v každej bitke 1 tuhé.",
+      "melichar": "V ruke máš Cirhózu z pretečenej pečene. Priznaná ťa body nestojí, no súper za ňu dostane v každej bitke 1 tuhé. Nepriznaná ide po bitke do tvojho odhadzovacieho balíčka a na konci hry prehráva súboje o Cirhózu.",
       "zvyraznit": ["ruka:cirhoza"]
     },
     {
