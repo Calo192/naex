@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI návrh: stupnica starších · stupnica-20261025-1723</title>
+<style>
+/* ---------- rám dokumentu (svetlá téma podľa systému) ---------- */
+:root {
+  --bg: #14110e; --pl: #1e1914; --pl2: #28211a; --ok: #3d3229; --tx: #f1e8d8; --tl: #b6a790; --sl: #9d8f7b;
+  --ak: #e9ad45; --ce: #e5735c; --ze: #7cbf74;
+  --serif: "Bitter", Georgia, "Times New Roman", serif;
+  --sans: Roboto, "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root { --bg: #f5efe5; --pl: #fffaf2; --pl2: #efe5d5; --ok: #d8c9b2; --tx: #2a2017; --tl: #5e4f3d; --sl: #6d5d49; --ak: #9a6510; --ce: #a8341f; --ze: #2f7a33; color-scheme: light; }
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition-duration: 0s !important; animation: none !important; } }
+body { margin: 0; background: var(--bg); color: var(--tx); font: 16px/1.6 var(--sans); }
+main { max-width: 1180px; margin: 0 auto; padding: 24px 18px 80px; }
+h1, h2, h3, h4 { font-family: var(--serif); line-height: 1.2; }
+h1 { font-size: clamp(1.6rem, 3.6vw, 2.3rem); margin: 0 0 6px; }
+h2 { font-size: 1.5rem; margin: 48px 0 12px; padding-top: 8px; border-top: 1px solid var(--ok); }
+h3 { font-size: 1.2rem; margin: 0; }
+h4 { font-size: 1rem; margin: 18px 0 6px; }
+p { margin: 0 0 12px; max-width: 75ch; }
+ul, ol { max-width: 80ch; }
+li { margin-bottom: 4px; }
+a { color: var(--ak); text-underline-offset: 3px; }
+code { font: 0.86em/1.4 Consolas, "Cascadia Mono", monospace; background: var(--pl2); padding: 1px 5px; border-radius: 5px; overflow-wrap: anywhere; }
+pre { background: var(--pl2); border: 1px solid var(--ok); border-radius: 10px; padding: 10px 12px; overflow-x: auto; font: 0.82rem/1.5 Consolas, "Cascadia Mono", monospace; max-width: 100%; }
+:focus-visible { outline: 2px solid var(--ak); outline-offset: 2px; }
+.meta { color: var(--tl); font-size: 0.95rem; }
+.verdikt { margin: 16px 0 0; padding: 14px 18px; border-left: 4px solid var(--ak); background: var(--pl); border-radius: 0 12px 12px 0; }
+.verdikt p { max-width: none; }
+.verdikt p:last-child { margin-bottom: 0; }
+nav.obsah { display: flex; flex-wrap: wrap; gap: 6px; margin: 18px 0 0; }
+nav.obsah a { padding: 8px 12px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 999px; background: var(--pl); border: 1px solid var(--ok); text-decoration: none; color: var(--tx); font-size: 0.9rem; }
+nav.obsah a:hover { border-color: var(--ak); }
+.galeria { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 14px; }
+.galeria figure { margin: 0; background: var(--pl); border: 1px solid var(--ok); border-radius: 12px; overflow: hidden; }
+.galeria img { display: block; width: 100%; height: auto; }
+.galeria figcaption { padding: 10px 12px; font-size: 0.88rem; color: var(--tl); }
+.galeria figcaption b { color: var(--tx); }
+.tab-obal { overflow-x: auto; border: 1px solid var(--ok); border-radius: 12px; }
+table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+table.audit { min-width: 720px; }
+th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--ok); }
+thead th { background: var(--pl2); font-size: 0.78rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--tl); }
+tbody tr:last-child td { border-bottom: none; }
+td.c { font-weight: 700; white-space: nowrap; }
+.filtre { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+.filtre button, .rezimy button, .ovl button { font: 600 0.88rem/1 var(--sans); padding: 10px 14px; min-height: 44px; border-radius: 9px; border: 1px solid var(--ok); background: var(--pl); color: var(--tx); cursor: pointer; }
+.filtre button[aria-pressed="true"], .rezimy button[aria-pressed="true"], .ovl button[aria-pressed="true"] { background: var(--ak); border-color: var(--ak); color: #2b1b03; }
+.zav { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; white-space: nowrap; }
+.zav.vysoka { background: #5a1f15; color: #ffc2b4; }
+.zav.stredna { background: #4a3510; color: #ffd98f; }
+.zav.nizka { background: #22312a; color: #b5e3b0; }
+.zav.vysoka::before { content: "▲ "; }
+.zav.stredna::before { content: "■ "; }
+.zav.nizka::before { content: "▼ "; }
+.navrh { background: var(--pl); border: 1px solid var(--ok); border-radius: 16px; padding: 18px; margin: 22px 0; }
+.navrh.odvazny { border-color: var(--ak); }
+.navrh-hlava { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; margin-bottom: 8px; }
+.poradie { font: 800 1.6rem/1 var(--serif); color: var(--ak); }
+.stitky { display: flex; flex-wrap: wrap; gap: 6px; }
+.stitok { font-size: 0.78rem; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--ok); color: var(--tl); white-space: nowrap; }
+.stitok.n-mala { border-color: var(--ze); color: var(--ze); }
+.stitok.n-stredna { border-color: var(--ak); color: var(--ak); }
+.stitok.n-velka { border-color: var(--ce); color: var(--ce); }
+.rezimy { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 8px; }
+.porovnanie { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.porovnanie > .strana { min-width: 0; }
+.porovnanie[data-rezim="pred"] > .po, .porovnanie[data-rezim="po"] > .pred { display: none; }
+.porovnanie[data-rezim="pred"], .porovnanie[data-rezim="po"] { grid-template-columns: 1fr; }
+.strana-nadpis { font: 700 0.78rem/1 var(--sans); letter-spacing: 0.08em; text-transform: uppercase; color: var(--tl); margin: 0 0 8px; }
+.po .strana-nadpis { color: var(--ze); }
+.pred .strana-nadpis { color: var(--ce); }
+@media (max-width: 860px) { .porovnanie { grid-template-columns: 1fr; } }
+.ovl { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 0; }
+.ovl button { min-height: 44px; padding: 8px 12px; font-size: 0.82rem; }
+dl.detail { display: grid; grid-template-columns: 150px 1fr; gap: 6px 14px; margin: 14px 0 0; font-size: 0.93rem; }
+dl.detail dt { color: var(--tl); font-weight: 600; }
+dl.detail dd { margin: 0; }
+@media (max-width: 640px) { dl.detail { grid-template-columns: 1fr; } dl.detail dd { margin-bottom: 8px; } }
+.poradie-zoznam { counter-reset: p; list-style: none; padding: 0; }
+.poradie-zoznam li { counter-increment: p; position: relative; padding: 10px 14px 10px 54px; background: var(--pl); border: 1px solid var(--ok); border-radius: 12px; margin-bottom: 8px; max-width: none; }
+.poradie-zoznam li::before { content: counter(p); position: absolute; left: 14px; top: 8px; font: 800 1.4rem/1 var(--serif); color: var(--ak); }
+.otazky li { margin-bottom: 10px; }
+.tokeny { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 10px; margin: 12px 0; }
+.tok { display: flex; gap: 10px; align-items: center; background: var(--pl); border: 1px solid var(--ok); border-radius: 10px; padding: 8px 10px; font-size: 0.85rem; }
+.tok i { flex: none; width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--ok); }
+footer { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--ok); color: var(--tl); font-size: 0.9rem; }
+
+/* =====================================================================
+   UKÁŽKY — vždy tmavá krčma (tokeny z apps/web/src/schemy.css, :root krcma)
+   ===================================================================== */
+.m {
+  --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --plocha-3: #332a21; --okraj: #3d3229; --okraj-svetly: #57483a;
+  --text: #f1e8d8; --tlmeny: #b6a790; --slaby-text: #9d8f7b; --akcent: #e9ad45; --akcent-svetly: #ffd08a; --na-akcente: #2b1b03;
+  --cervena: #d0563f; --zelena: #7cbf74; --ja: #5cc0cf; --ja-tmava: #1d3b40; --su: #e0805f; --su-tmava: #43261d; --lesk: #ffffff;
+  /* NOVÉ tokeny (návrh, schemy.css :root) — farby zón stupnice; rovnaké vo všetkých schémach ako FARBY_STUPNICE */
+  --zona-0: #e5e7eb; --zona-1: #facc15; --zona-2: #f97316; --zona-3: #dc2626;
+  --nadpis: "Bitter", Georgia, serif; --pismo: Roboto, "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark; color: var(--text); font-family: var(--pismo);
+  background: radial-gradient(120% 90% at 50% 30%, #23301f 0%, #172015 55%, #0f140d 100%);
+  border: 1px solid var(--okraj); border-radius: 14px; padding: 14px; position: relative; overflow: hidden;
+}
+.m * { box-sizing: border-box; }
+.m [hidden] { display: none !important; }
+.rad { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-start; }
+.uzke .sc { width: 112px; }
+.uzke .lh { font-size: .62rem; }
+
+/* --- scorecard v línii (hra.css 5006–5300, zjednodušený) --- */
+.sc { width: 164px; max-width: 100%; display: flex; flex-direction: column; gap: 4px; padding: 6px 7px 7px; border-radius: 10px; background: var(--plocha); border: 1px solid var(--okraj); container-type: inline-size; transition: box-shadow .15s ease; }
+.sc-h { display: flex; align-items: baseline; gap: 4px; }
+.sc-h b { flex: 1; min-width: 0; font: 700 .95rem/1.2 var(--nadpis); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bod { flex: none; font-size: .66rem; font-weight: 700; padding: 0 6px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+.bod.su { color: var(--su); } .bod.ob { color: var(--akcent); } .bod.ja { color: var(--ja); }
+.por { flex: none; font-size: .7rem; color: var(--slaby-text); }
+.sc-t { display: grid; grid-template-columns: 20px minmax(0, 1fr) 20px; gap: 4px; height: 112px; }
+.ik-st { display: flex; flex-direction: column; justify-content: space-evenly; }
+.ik-st i { width: 20px; height: 20px; border-radius: 4px; background: var(--plocha-3); }
+.ik-st i.a { background: var(--text); }
+.portret { border-radius: 6px; display: grid; place-items: center; font: 700 2.2rem/1 var(--nadpis); color: rgb(255 255 255 / .28);
+  background: radial-gradient(60% 45% at 50% 38%, hsl(var(--h) 30% 55%) 0 40%, transparent 41%), linear-gradient(170deg, hsl(var(--h) 35% 30%), hsl(var(--h) 25% 14%)); }
+.pata { font-size: .7rem; line-height: 1.3; color: var(--slaby-text); }
+.pata .ja, .ja { color: var(--ja); } .pata .su, .su { color: var(--su); }
+.r3 { display: flex; justify-content: space-between; gap: 4px; font-variant-numeric: tabular-nums; }
+.r3 > * { opacity: .6; } .r3 > b { opacity: 1; }
+@container (width < 130px) { .dlhe { display: none; } .r3 > span:nth-child(2) { display: none; } }
+
+/* --- stupnica dnes (hra.css 5224–5275) --- */
+.st { --seg: calc(100% / 9); flex: none; position: relative; display: flex; align-items: flex-end; gap: 2px; height: 18px; }
+.st i { flex: 1; border-radius: 2px; }
+.st .z0 { height: 5px; background: var(--zona-0); }
+.st .z1 { height: 9px; background: var(--zona-1); }
+.st .z2 { height: 13px; background: var(--zona-2); }
+.st .z3 { height: 17px; background: var(--zona-3); }
+.st em { position: absolute; top: -2px; bottom: -2px; left: calc(var(--b) * var(--seg) - 1px); border-left: 2px dashed var(--akcent); }
+.mk { position: absolute; bottom: -1px; left: calc((var(--p) + .5) * var(--seg)); width: 15px; height: 15px; translate: -50% 0; border-radius: 50%; background: var(--pozadie); border: 3px solid var(--slaby-text); box-shadow: 0 0 0 1px var(--text); }
+.mk.ja { border-color: var(--ja); } .mk.su { border-color: var(--su); }
+.n1 .mk:not(.ja):not(.su) { border-color: var(--text); box-shadow: 0 0 0 1px var(--pozadie); }
+.mk.duch { background: none; border: 2px dashed var(--akcent); box-shadow: none; }
+.sc.blik { animation: blik 1.2s ease-out; }
+@keyframes blik { 0%, 40% { box-shadow: 0 0 0 4px var(--akcent); } }
+.lh { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; font-size: .78rem; color: var(--tlmeny); margin: 0 0 8px; }
+.pill { padding: 2px 12px; border: 1px solid var(--akcent); border-radius: 999px; background: var(--plocha); color: var(--text); font-size: .75rem; }
+.pill b { color: var(--akcent-svetly); }
+.btn-smer { display: flex; gap: 4px; }
+.btn-smer button { flex: 1; min-width: 0; padding: 2px 4px; min-height: 24px; border-radius: 6px; border: 1px solid; background: var(--pozadie); color: var(--text); font: 700 .7rem/1.2 var(--pismo); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.btn-smer .ja { border-color: var(--ja); } .btn-smer .su { border-color: var(--su); }
+.btn-smer .ja:is(:hover, :focus-visible, .nahl) { background: color-mix(in srgb, var(--ja) 28%, var(--pozadie)); outline: none; }
+.btn-smer .su:is(:hover, :focus-visible, .nahl) { background: color-mix(in srgb, var(--su) 28%, var(--pozadie)); outline: none; }
+
+/* --- N1: popísaná stupnica --- */
+.sc1, .sc2 { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 112px auto auto 1fr; }
+.stw { display: flex; flex-direction: column; gap: 2px; }
+.st-pod { display: flex; justify-content: space-between; font: 700 .6rem/1 var(--pismo); letter-spacing: .05em; text-transform: uppercase; }
+.stav { display: flex; flex-wrap: wrap; gap: 3px; font-size: .7rem; line-height: 1.25; }
+.cip-p, .cip-s { display: inline-flex; align-items: center; gap: 4px; min-height: 18px; padding: 1px 6px; border-radius: 999px; border: 1px solid var(--okraj-svetly); color: var(--tlmeny); white-space: nowrap; max-width: 100%; overflow: hidden; }
+.cip-p.ja { border-color: var(--ja); color: var(--ja); background: color-mix(in srgb, var(--ja) 10%, transparent); }
+.cip-p.su { border-color: var(--su); color: var(--su); background: color-mix(in srgb, var(--su) 10%, transparent); }
+.cip-s.nula { color: var(--slaby-text); }
+.cip-s b { font-weight: 700; }
+.ur { flex: none; display: inline-grid; place-items: center; width: 14px; height: 14px; border-radius: 50%; font: 800 .6rem/1 var(--pismo); font-style: normal; color: var(--pozadie); }
+.ur.u1 { background: var(--zona-1); } .ur.u2 { background: var(--zona-2); } .ur.u3 { background: var(--zona-3); color: var(--lesk); }
+.legenda { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; font-size: .74rem; color: var(--tlmeny); padding: 6px 10px; border-radius: 10px; background: color-mix(in srgb, var(--pozadie) 70%, transparent); border: 1px solid var(--okraj); margin: 0 0 10px; }
+.legenda .q { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--akcent); color: var(--akcent); font-weight: 700; }
+
+/* --- N2: kto koho tlačí --- */
+.st2 { margin-bottom: 7px; }
+.mk2 { position: absolute; bottom: -2px; left: calc((var(--p) + .5) * var(--seg)); width: 17px; height: 17px; translate: -50% 0; border-radius: 50%; display: grid; place-items: center; font-size: 10px; line-height: 1; color: var(--pozadie);
+  background: var(--pozadie); border: 2px solid var(--pozadie); box-shadow: 0 0 0 1.5px var(--text); transition: left .22s ease-out, background-color .22s; }
+.mk2.ja { background: var(--ja); } .mk2.su { background: var(--su); }
+.mk2.duch { background: color-mix(in srgb, var(--akcent) 35%, transparent); border: 2px solid var(--akcent); box-shadow: none; }
+.mk2.duch.stare { background: transparent; border: 2px dashed var(--text); opacity: .55; }
+.stopa { position: absolute; bottom: -7px; height: 3px; border-radius: 2px; left: calc(var(--od) * var(--seg)); width: calc(var(--sirka) * var(--seg)); transition: width .22s ease-out, left .22s ease-out; }
+.stopa.su { background: var(--su); } .stopa.ja { background: var(--ja); }
+.stopa::after { content: ""; position: absolute; top: -3px; border: 4.5px solid transparent; }
+.stopa.vlavo::after { left: -4px; border-right: 6px solid var(--su); border-left: 0; }
+.stopa:not(.vlavo)::after { right: -4px; border-left: 6px solid var(--ja); border-right: 0; }
+.zarez { position: absolute; top: -7px; left: calc(var(--b) * var(--seg) - 4px); width: 0; height: 0; border: 4px solid transparent; border-top: 5px solid var(--akcent); border-bottom: 0; }
+.pips { display: inline-flex; gap: 2px; vertical-align: middle; }
+.pips i { width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid var(--akcent); }
+.pips i.p { background: var(--akcent); }
+.nahlad { font-size: .7rem; line-height: 1.3; padding: 4px 6px; border-radius: 6px; border: 1px solid var(--akcent); background: color-mix(in srgb, var(--akcent) 8%, var(--plocha)); color: var(--text); }
+.nahlad b { color: var(--akcent-svetly); }
+
+/* --- N3: účtenka posunu --- */
+.uctenka { flex: 1 1 200px; max-width: 300px; border-radius: 10px; background: var(--plocha-2); border: 1px solid var(--okraj-svetly); box-shadow: 0 10px 30px rgb(0 0 0 / .45); font-size: .72rem; line-height: 1.35; overflow: hidden; transition: opacity .2s ease-out, translate .2s ease-out; }
+.uctenka.skryta { opacity: 0; translate: 0 6px; }
+.uct-h { display: flex; gap: 6px; align-items: baseline; padding: 6px 8px; background: var(--plocha-3); font-weight: 700; }
+.uct-h .typ { font: 700 .62rem/1 var(--pismo); letter-spacing: .08em; text-transform: uppercase; color: var(--akcent); }
+.uct-r { display: grid; grid-template-columns: 62px 1fr; gap: 6px; padding: 5px 8px; border-top: 1px dashed var(--okraj-svetly); }
+.uct-r > span:first-child { font: 700 .62rem/1.5 var(--pismo); letter-spacing: .05em; text-transform: uppercase; }
+.posuny { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: .74rem; color: var(--tlmeny); margin: 0 0 10px; }
+.posuny .cip { display: inline-flex; gap: 5px; align-items: center; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--okraj-svetly); background: var(--plocha); color: var(--text); }
+.posuny .cip small { color: var(--slaby-text); font-size: .68rem; }
+.doska-pruh { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; margin-top: 10px; padding: 6px 10px; border-radius: 10px; border: 1px solid var(--ja); background: color-mix(in srgb, var(--ja) 8%, var(--plocha)); font-size: .74rem; }
+.doska-pruh button { margin-left: auto; min-height: 32px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--akcent); background: var(--plocha-2); color: var(--text); font: 600 .72rem/1 var(--pismo); }
+
+/* --- N5: starší uteká --- */
+.tk { --seg: calc(100% / 9); display: grid; grid-template-columns: 18px minmax(0, 1fr) 18px; gap: 4px; align-items: end; padding-top: 10px; }
+.tk-rad { position: relative; display: flex; gap: 2px; align-items: flex-end; height: 22px; margin-bottom: 8px; --seg: calc(100% / 9); }
+.tk-rad i { flex: 1; height: 16px; border-radius: 4px; display: grid; place-items: center; box-shadow: inset 0 -2px 0 rgb(0 0 0 / .25); }
+.tk-rad .t0 { height: 10px; background: repeating-linear-gradient(90deg, #4a3a2b 0 3px, #3f3124 3px 6px); }
+.tk-rad .t1 { background: var(--zona-1); } .tk-rad .t2 { background: var(--zona-2); height: 19px; } .tk-rad .t3 { background: var(--zona-3); height: 22px; }
+.tk-rad i svg { width: 12px; height: 12px; }
+.tk-rad .t3 svg { width: 14px; height: 14px; }
+@container (width < 130px) { .tk-rad i svg { display: none; } }
+.av { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font: 700 .5rem/1 var(--pismo); color: var(--text); background: var(--plocha-3); margin-bottom: 8px; }
+.av.ja { box-shadow: 0 0 0 2px var(--ja); } .av.su { box-shadow: 0 0 0 2px var(--su); }
+.med { position: absolute; bottom: 6px; left: calc((var(--p) + .5) * var(--seg)); translate: -50% 0; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font: 700 .7rem/1 var(--nadpis); color: var(--text);
+  background: radial-gradient(60% 50% at 50% 40%, hsl(var(--h) 30% 55%) 0 40%, hsl(var(--h) 30% 22%) 41%); border: 2px solid var(--pozadie); box-shadow: 0 0 0 2px var(--text); transition: left .22s ease-out; }
+.med.ja { box-shadow: 0 0 0 2px var(--ja); } .med.su { box-shadow: 0 0 0 2px var(--su); }
+.srdce { position: absolute; right: -6px; top: -6px; width: 13px; height: 13px; border-radius: 50%; display: grid; place-items: center; font-size: 8px; background: var(--ja); color: var(--pozadie); }
+.med.su .srdce { background: var(--su); }
+.st5 { bottom: -6px !important; }
+.uteka { font: italic 600 .72rem/1.3 var(--nadpis); color: var(--tlmeny); }
+.uteka b { font-style: normal; }
+</style>
+</head>
+<body>
+<main>
+<header>
+  <p class="meta">Dizajn · UI návrh · id <code>stupnica-20261025-1723</code> · 2026-10-25 · roadmapa #95</p>
+  <h1>Stupnica starších: aby bolo vidno, kto má priazeň, koho sa starší bojí a prečo sa marker pohol</h1>
+  <p class="meta">Cieľ: herný stôl <code>/hra</code> → línia starších (<code>apps/web/src/hra/LiniaStarsich.tsx</code>, <code>Stupnica</code>; štýly <code>hra.css:4883–5460</code>).
+  Relácia <code>playtest/20261025-172338</code> (Dizajn 1 proti Dizajn 2, Pohoršenie aj prebytok odohrané).
+  Súbežný UX návrh (správanie a toky): <a href="dizajn-stupnica-20261025-1723-ux.html">dizajn-stupnica-20261025-1723-ux.html</a>.</p>
+  <div class="verdikt">
+    <p><b>Verdikt.</b> Stupnica je pekná a dobre čitateľná ako „kde je marker“. Nehovorí však, čo to znamená, pre koho, ani prečo je tam: nemá popis strán, strach sa v bežnom pohľade z karty stratí a posun nenechá stopu.
+    Najväčší rozdiel spravia tri veci: <b>popísať stupnicu</b> (strany, priazeň a strach vždy viditeľne, rýchla výhra), <b>dať markeru dve vrstvy</b> (vyplnená farba = priazeň, stopa od stredu = kto ho natlačil a koho sa bojí) a <b>účtenka pri každom posune</b> (prečo a čo z toho má ktorý hráč).</p>
+  </div>
+  <nav class="obsah" aria-label="Obsah">
+    <a href="#stav">Súčasný stav</a><a href="#audit">Audit</a><a href="#tokeny">Nové tokeny</a>
+    <a href="#n1">1 · Popísaná stupnica</a><a href="#n2">2 · Kto koho tlačí</a><a href="#n3">3 · Účtenka posunu</a><a href="#n4">4 · Náhľad na karte</a><a href="#n5">5 · Starší uteká</a>
+    <a href="#poradie">Poradie</a><a href="#otazky">Otázky</a>
+  </nav>
+</header>
+
+<section id="stav" aria-labelledby="h-stav">
+<h2 id="h-stav">Súčasný stav</h2>
+<p>Všetky snímky sú zo živej partie na vývojovom serveri (hráč 2 vidí svoju polovicu vľavo, hráč 1 tiež — stupnica je zrkadlená). Pod 900 px sa herný stôl neukáže („Tu sa NA EX! zatiaľ hrať nedá“), najužší prípad je preto 960 px.</p>
+<div class="galeria">
+<figure><a href="dizajn-stupnica-20261025-1723/ui-01-pohorsenie-detail.png"><img src="dizajn-stupnica-20261025-1723/ui-01-pohorsenie-detail.png" alt="ui-01 · Pohoršenie, Dizajn 2." loading="lazy"></a><figcaption><b>ui-01 · Pohoršenie, Dizajn 2.</b> Dve tlačidlá smeru, prerušované hranice zón, pod nimi účinok a „nikoho sa nebojí · hranice 0/2“. Stupnica samotná nemá ani slovo.</figcaption></figure>
+<figure><a href="dizajn-stupnica-20261025-1723/ui-02-nahlad-pohorsenia.png"><img src="dizajn-stupnica-20261025-1723/ui-02-nahlad-pohorsenia.png" alt="ui-02 · Náhľad pri „k súperovi ▶“." loading="lazy"></a><figcaption><b>ui-02 · Náhľad pri „k súperovi ▶“.</b> Na karte len prerušovaný krúžok o dielik vedľa, vysvetlenie je v hlavičke línie.</figcaption></figure>
+<figure><a href="dizajn-stupnica-20261025-1723/ui-03-nahlad-v-hlavicke.png"><img src="dizajn-stupnica-20261025-1723/ui-03-nahlad-v-hlavicke.png" alt="ui-03 · Pilulka v hlavičke." loading="lazy"></a><figcaption><b>ui-03 · Pilulka v hlavičke.</b> „Farár — posunúť · k Dizajn 1: neutrál → neutrál · body ty ±0, súper ±0 · do žltej ešte 1 krok · ♥ nikto“ — zóny pomenované farbami.</figcaption></figure>
+<figure><a href="dizajn-stupnica-20261025-1723/ui-04-body-strach-chyba.png"><img src="dizajn-stupnica-20261025-1723/ui-04-body-strach-chyba.png" alt="ui-04 · Po prebytku, pohľad Body (1600 × 1000)." loading="lazy"></a><figcaption><b>ui-04 · Po prebytku, pohľad Body (1600 × 1000).</b> Poštárka na mojej žltej: „♥ ty +1 · Bitkár“, „súper +2“. Riadok o strachu chýba — skryla ho container query.</figcaption></figure>
+<figure><a href="dizajn-stupnica-20261025-1723/ui-05-po-prebytku-linia-zmizla.png"><img src="dizajn-stupnica-20261025-1723/ui-05-po-prebytku-linia-zmizla.png" alt="ui-05 · Dizajn 2 hneď po prebytku súpera." loading="lazy"></a><figcaption><b>ui-05 · Dizajn 2 hneď po prebytku súpera.</b> Ďalší krok je Pohreb, stôl ukazuje líniu kariet. Že práve dostal priazeň Bitkár +1 a Poštárka sa bojí súpera, sa nedozvie.</figcaption></figure>
+<figure><a href="dizajn-stupnica-20261025-1723/ui-06-caka-na-pohorsenie.png"><img src="dizajn-stupnica-20261025-1723/ui-06-caka-na-pohorsenie.png" alt="ui-06 · Čakajúci hráč počas súperovho Pohoršenia." loading="lazy"></a><figcaption><b>ui-06 · Čakajúci hráč počas súperovho Pohoršenia.</b> „ČAKÁŠ Na ťahu je Dizajn 2.“ Stupnice Poštárky a Autobusára sú o 15 px nižšie ako susedné.</figcaption></figure>
+<figure><a href="dizajn-stupnica-20261025-1723/ui-07-postarka-po-prebytku.png"><img src="dizajn-stupnica-20261025-1723/ui-07-postarka-po-prebytku.png" alt="ui-07 · Detail (2×)." loading="lazy"></a><figcaption><b>ui-07 · Detail (2×).</b> Priazeň nesie len 3 px prstenec v <code>--ja</code> na žltom dieliku (1,39 : 1). Súperov prstenec na oranžovej by mal 1,01 : 1.</figcaption></figure>
+<figure><a href="dizajn-stupnica-20261025-1723/ui-08-sirka-960.png"><img src="dizajn-stupnica-20261025-1723/ui-08-sirka-960.png" alt="ui-08 · Najužší stôl, 960 px." loading="lazy"></a><figcaption><b>ui-08 · Najužší stôl, 960 px.</b> Scorecard ≈ 110 px, dielik ≈ 10 px, mená orezané na „F.“, „K.“. Nové texty potrebujú krátku podobu.</figcaption></figure>
+</div>
+</section>
+
+<section id="audit" aria-labelledby="h-audit">
+<h2 id="h-audit">Audit</h2>
+<p>Kontrasty sú prepočítané podľa WCAG 2.2 pre schému Krčma (<code>schemy.css</code>). Text päty (<code>--slaby-text</code> na <code>--plocha</code>) má 5,52 : 1 a je v poriadku. Problémom nie je čitateľnosť písma, ale chýbajúci význam a farba ako jediný nosič.</p>
+<div class="filtre" role="group" aria-label="Filter závažnosti">
+  <button type="button" data-f="vse" aria-pressed="true">Všetky (12)</button>
+  <button type="button" data-f="vysoka" aria-pressed="false">Vysoká (3)</button>
+  <button type="button" data-f="stredna" aria-pressed="false">Stredná (5)</button>
+  <button type="button" data-f="nizka" aria-pressed="false">Nízka (4)</button>
+</div>
+<div class="tab-obal">
+<table class="audit">
+<thead><tr><th scope="col">#</th><th scope="col">Závažnosť</th><th scope="col">Oblasť</th><th scope="col">Problém</th><th scope="col">Dôkaz</th></tr></thead>
+<tbody>
+<tr data-z="vysoka"><td class="c">A1</td><td><span class="zav vysoka">vysoká</span></td><td>Hierarchia / obsah</td><td>Stupnica je 9 farebných dielikov bez jediného slova: nikde nie je napísané, ktorá polovica je tvoja, čo znamená farba ani že marker nesie dva významy (priazeň teraz, strach na konci). Stupnica je <code>aria-hidden</code>.</td><td><code>LiniaStarsich.tsx:381–391</code>; snímka ui-01. Playtester: „Prečo je to takto otočené, neviem vysvetliť.“ (<code>vyucba-20261024-155610/hrac1/feedback.md:9</code>); sledovateľ chce „legendu pri stupnici“ (<code>20261011-125943/sledovatel/hodnotenie.md:41</code>).</td></tr>
+<tr data-z="vysoka"><td class="c">A2</td><td><span class="zav vysoka">vysoká</span></td><td>Hierarchia</td><td>Druhý význam markera — strach — v bežnom pohľade (klik na Body) z karty zmizne: riadok „bojí sa súpera · úroveň 1“ je v <code>.ls-ucinok</code>, ktorý sa pri výške línie pod 330 px skryje. Ostane „★ súper +2“ bez vysvetlenia, prečo +2.</td><td><code>hra.css:5405–5416</code>, <code>LiniaStarsich.tsx:360</code>; ui-04 (1600 × 1000, Body) vs. ui-01 (Pohoršenie, riadok tam je).</td></tr>
+<tr data-z="vysoka"><td class="c">A3</td><td><span class="zav vysoka">vysoká</span></td><td>Pohyb / stav</td><td>Posun nemá stopu ani dôvod. Marker preskočí, karta 1,2 s zabliká jantárom. Hráč, ktorému súper prebytkom posunul markery, ich často vôbec neuvidí: po poslednom posune ide hneď ďalší krok (Pohreb) a stôl ukáže líniu kariet.</td><td><code>hra.css:5039–5048</code>, <code>HernaPlocha.tsx:3769–3781</code> (1,6 s); ui-05 (Dizajn 2 dostal priazeň Bitkár +1 — na obrazovke o tom nič).</td></tr>
+<tr data-z="stredna"><td class="c">A4</td><td><span class="zav stredna">stredná</span></td><td>Obsah / typografia</td><td>Zóny sa v UI volajú farbami („neutrál → neutrál“, „žltá“), pravidlá a bodovacie podmienky ich volajú Znepokojenie, Strach, Vydesenie. Dva slovníky pre jednu vec a farba nehovorí, čo znamená.</td><td><code>LiniaStarsich.tsx:19</code> (<code>NAZOV_ZONY</code>); ui-03.</td></tr>
+<tr data-z="stredna"><td class="c">A5</td><td><span class="zav stredna">stredná</span></td><td>Farby a kontrast</td><td>Komu patrí priazeň, ukazuje len 3 px prstenec markera, takže farba je jediný nosič (WCAG 1.4.1). Súperova farba <code>--su</code> #e0805f má proti oranžovej zóne #f97316 kontrast <b>1,01 : 1</b>, <code>--ja</code> na žltej 1,39 : 1. Tlačidlo „k súperovi ▶“ vyzerá ako „oranžová“.</td><td><code>hra.css:5249–5269</code>; ui-07 (marker na žltej).</td></tr>
+<tr data-z="stredna"><td class="c">A6</td><td><span class="zav stredna">stredná</span></td><td>Hierarchia / stavy</td><td>Náhľad posunu je ďaleko od miesta akcie: text je v pilulke uprostred hlavičky, oko je pri tlačidle na karte. Duch markera je tenký prerušovaný krúžok, pri posune v sivej zóne náhľad hovorí „neutrál → neutrál“.</td><td><code>LiniaStarsich.tsx:110–126</code>, <code>hra.css:5271–5275</code>; ui-02, ui-03.</td></tr>
+<tr data-z="stredna"><td class="c">A7</td><td><span class="zav stredna">stredná</span></td><td>Farby / ikonografia</td><td>Hranice zón pri Pohoršení sú jantárové prerušované čiary cez stupnicu: na žltom dieliku majú kontrast 1,30 : 1. „hranice 0/2“ je text bez vysvetlenia.</td><td><code>hra.css:5240–5247</code>; ui-01.</td></tr>
+<tr data-z="stredna"><td class="c">A8</td><td><span class="zav stredna">stredná</span></td><td>Mriežka</td><td>Stupnice ôsmich starších nie sú v jednom rade. Päta má rôzny počet riadkov (účinok až 4 riadky), telo sa zmenší a stupnica Poštárky a Autobusára je o 15 px nižšie. Osem markerov sa tak nedá prečítať ako jeden graf.</td><td><code>hra.css:5073</code> (<code>.ls-telo</code> flex 1), <code>:5390</code> (clamp 4); ui-06.</td></tr>
+<tr data-z="nizka"><td class="c">A9</td><td><span class="zav nizka">nízka</span></td><td>Stav hry</td><td>Čakajúci hráč vidí „ČAKÁŠ Na ťahu je Dizajn 2.“, ale nie to, že súper práve posúva jeho markery (Pohoršenie, prebytok 7).</td><td>ui-06 (Pohoršenie súpera).</td></tr>
+<tr data-z="nizka"><td class="c">A10</td><td><span class="zav nizka">nízka</span></td><td>Obsah</td><td>Log: „Prebytok: marker staršieho postarka sa posúva k hráčovi 2.“ — id namiesto mena, „hráčovi 2“, bez dôsledku. Playtesteri to vytkli dvakrát.</td><td><code>engine.ts:3514</code>, <code>:3585</code>; <code>vyucba-20261024-155610/hrac1/feedback.md:44</code>, <code>hrac2/feedback.md:44</code>.</td></tr>
+<tr data-z="nizka"><td class="c">A11</td><td><span class="zav nizka">nízka</span></td><td>Pohyb / kontrast</td><td>Marker sa neposúva plynule (<code>left</code> bez prechodu) — skok nevysvetľuje smer. Prstenec neutrálneho markera (<code>--slaby-text</code>) má na sivej 2,55 : 1, pod 3 : 1 pre grafiku.</td><td><code>hra.css:5249–5260</code>; sledovateľ chce animáciu posunu markera (<code>20261011-101224/sledovatel/hodnotenie.md:46</code>).</td></tr>
+<tr data-z="nizka"><td class="c">A12</td><td><span class="zav nizka">nízka</span></td><td>Responzivita</td><td>Pri najužšom stole (960 px; pod 900 px sa hra neukáže) má scorecard ≈ 110 px, dielik ≈ 10 px a marker 15 px zakryje jeden a pol dielika. Každý nový text pri stupnici musí mať krátku podobu.</td><td>ui-08.</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section id="tokeny" aria-labelledby="h-tokeny">
+<h2 id="h-tokeny">Nové tokeny (návrh)</h2>
+<p>Farby zón dnes žijú len v <code>FARBY_STUPNICE</code> (<code>packages/tvorba/src/geometria.ts:120</code>) a do stupnice idú inline štýlom. Návrhy 1–5 ich potrebujú aj v CSS (čip úrovne strachu, zárezy, legenda). Nové farby smú prísť len cez <code>schemy.css</code>, preto navrhujem štyri tokeny v <code>:root</code>. Hodnoty sú tie isté ako na tlačenom scorecarde a schéma ich nemení (ako dnes, komentár v <code>schemy.css:3–4</code>):</p>
+<div class="tokeny">
+  <div class="tok"><i style="background:#e5e7eb"></i><span><code>--zona-0</code> #e5e7eb<br><small>Neutralita</small></span></div>
+  <div class="tok"><i style="background:#facc15"></i><span><code>--zona-1</code> #facc15<br><small>Znepokojenie · text <code>--pozadie</code> 12,3 : 1</small></span></div>
+  <div class="tok"><i style="background:#f97316"></i><span><code>--zona-2</code> #f97316<br><small>Strach · text <code>--pozadie</code> 6,7 : 1</small></span></div>
+  <div class="tok"><i style="background:#dc2626"></i><span><code>--zona-3</code> #dc2626<br><small>Vydesenie · text <code>--lesk</code> 4,8 : 1</small></span></div>
+</div>
+<p><code>Stupnica</code> potom namiesto <code>style={{ background: f }}</code> dostane triedu <code>z0…z3</code>. <code>FARBY_STUPNICE</code> ostáva pre tvorcu a tlač. Žiadne iné nové farby nenavrhujem: hráčov nesú <code>--ja</code> a <code>--su</code>, zvýraznenie <code>--akcent</code>.</p>
+</section>
+
+<section id="navrhy" aria-labelledby="h-navrhy">
+<h2 id="h-navrhy">Návrhy</h2>
+<p>Ukážky sú z pohľadu hráča Dizajn 2 (ty), súper je Dizajn 1, stav po odohranom prebytku: Poštárka je o dva kroky na tvojej polovici. Krčmárka v návrhoch 1 a 5 je ilustračná (súperova polovica, oranžová), aby bolo vidno obe strany. Tlačidlo „960 px“ zúži kartu na šírku najužšieho stola.</p>
+
+<!-- ============ N1 ============ -->
+<article class="navrh" id="n1" aria-labelledby="h-n1">
+  <div class="navrh-hlava"><span class="poradie">1</span><h3 id="h-n1">Popísaná stupnica — strany, priazeň a strach vždy na karte</h3>
+    <span class="stitky"><span class="stitok n-mala">rýchla výhra · malá (≈ 1 h)</span><span class="stitok">rieši A1, A2, A4, A8, A11</span></span></div>
+  <p>Pod stupnicu prídu dva štítky strán (◀ TY · SÚPER ▶ vo farbách hráčov) a pod ne riadok s dvoma čipmi, ktorý v línii nikdy nezmizne: <b>♥ komu priazeň + sila</b> a <b>koho sa bojí + úroveň</b> (číslo v krúžku farby zóny). Zóny sa volajú menom (Znepokojenie, Strach, Vydesenie), nie farbou. Pri nízkej línii ustúpi dlhý účinok priazne, nie strach. Karta dostane mriežku riadkov, takže osem stupníc stojí v jednom rade. V hlavičke línie je jednoriadková legenda s tlačidlom „?“, ktoré otvorí interaktívnu ukážku z Pravidiel (<code>UkazkaStupnice</code>).</p>
+  <div class="rezimy" role="group" aria-label="Zobrazenie ukážky 1"><button type="button" data-rezim="oboje" aria-pressed="true">Vedľa seba</button><button type="button" data-rezim="pred" aria-pressed="false">Pred</button><button type="button" data-rezim="po" aria-pressed="false">Po</button><button type="button" data-uzke aria-pressed="false">960 px</button></div>
+  <div class="porovnanie" data-rezim="oboje">
+    <div class="strana pred"><p class="strana-nadpis">Pred (dnes)</p>
+      <div class="m"><div class="lh"><span><b class="ja">♥ tvoje:</b> Bitkár +1</span><span>vydesení ty 0/4 · Dizajn 1 0/4</span></div>
+        <div class="rad"><div class="sc"><div class="sc-h"><b>Farár</b><span class="bod su">★ súper +1</span><span class="por">1</span></div><div class="sc-t"><span class="ik-st"><i></i><i class="a"></i><i></i><i class="a"></i></span><span class="portret" style="--h:270">F</span><span class="ik-st"><i class="a"></i><i></i><i class="a"></i><i></i></span></div><span class="st" style="--p:5"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i class="z0"></i><i class="z0"></i><i class="z0"></i><i class="z1"></i><i class="z2"></i><i class="z3"></i><b class="mk"></b></span><div class="pata">♥ nikto · Kmotor<br>pri +1: −1 Dlh po bitke<br><span class="r3"><span class="ja">ty 0</span><span>súboje 0:1</span><b class="su">súper +1</b></span></div></div><div class="sc"><div class="sc-h"><b>Poštárka</b><span class="bod su">★ súper +2</span><span class="por">4</span></div><div class="sc-t"><span class="ik-st"><i></i><i class="a"></i><i></i><i></i></span><span class="portret" style="--h:205">P</span><span class="ik-st"><i class="a"></i><i class="a"></i><i class="a"></i><i></i></span></div><span class="st" style="--p:2"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i class="z0"></i><i class="z0"></i><i class="z0"></i><i class="z1"></i><i class="z2"></i><i class="z3"></i><b class="mk ja"></b></span><div class="pata"><span class="ja">♥ ty +1 · Bitkár</span><br>+1 tuhé v bitke<br><span class="r3"><span class="ja">ty 0</span><span>súboje 0:1</span><b class="su">súper +2</b></span></div></div><div class="sc"><div class="sc-h"><b>Krčmárka</b><span class="bod ja">★ ty +3</span><span class="por">2</span></div><div class="sc-t"><span class="ik-st"><i></i><i></i><i class="a"></i><i class="a"></i></span><span class="portret" style="--h:25">K</span><span class="ik-st"><i class="a"></i><i class="a"></i><i></i><i></i></span></div><span class="st" style="--p:7"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i class="z0"></i><i class="z0"></i><i class="z0"></i><i class="z1"></i><i class="z2"></i><i class="z3"></i><b class="mk su"></b></span><div class="pata"><span class="su">♥ Dizajn 1 +2 · Fajčiar</span><br>+2 cig. po šenku<br><span class="r3"><b class="ja">ty +3</b><span>súboje 2:0</span><span class="su">súper 0</span></span></div></div></div></div></div>
+    <div class="strana po"><p class="strana-nadpis">Po</p>
+      <div class="m"><div class="legenda"><span class="q" aria-hidden="true">?</span><span><b class="ja">◀ tvoja polovica:</b> ♥ priazeň máš ty, starší sa bojí súpera</span><span><b class="su">súperova ▶:</b> priazeň má on, bojí sa teba</span><span>strach = body na konci</span></div>
+        <div class="rad"><div class="sc sc1"><div class="sc-h"><b>Farár</b><span class="bod su">★ súper +1</span><span class="por">1</span></div><div class="sc-t"><span class="ik-st"><i></i><i class="a"></i><i></i><i class="a"></i></span><span class="portret" style="--h:270">F</span><span class="ik-st"><i class="a"></i><i></i><i class="a"></i><i></i></span></div><div class="stw n1"><span class="st" style="--p:5"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i class="z0"></i><i class="z0"></i><i class="z0"></i><i class="z1"></i><i class="z2"></i><i class="z3"></i><b class="mk"></b></span><span class="st-pod" aria-hidden="true"><span class="ja">◀ ty</span><span class="su">súper ▶</span></span></div><div class="stav"><span class="cip-p">♥ nikto <span class="dlhe">· Kmotor</span></span><span class="cip-s nula">nebojí sa nikoho</span></div><div class="pata">pri +1: −1 Dlh po bitke<br><span class="r3"><span class="ja">ty 0</span><span>súboje 0:1</span><b class="su">súper +1</b></span></div></div><div class="sc sc1"><div class="sc-h"><b>Poštárka</b><span class="bod su">★ súper +2</span><span class="por">4</span></div><div class="sc-t"><span class="ik-st"><i></i><i class="a"></i><i></i><i></i></span><span class="portret" style="--h:205">P</span><span class="ik-st"><i class="a"></i><i class="a"></i><i class="a"></i><i></i></span></div><div class="stw n1"><span class="st" style="--p:2"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i class="z0"></i><i class="z0"></i><i class="z0"></i><i class="z1"></i><i class="z2"></i><i class="z3"></i><b class="mk ja"></b></span><span class="st-pod" aria-hidden="true"><span class="ja">◀ ty</span><span class="su">súper ▶</span></span></div><div class="stav"><span class="cip-p ja">♥ ty +1 <span class="dlhe">· Bitkár</span></span><span class="cip-s"><i class="ur u1" aria-hidden="true">1</i><span>bojí sa <b class="su">súpera</b><span class="dlhe"> · Znepokojenie</span></span></span></div><div class="pata">+1 tuhé v bitke<br><span class="r3"><span class="ja">ty 0</span><span>súboje 0:1</span><b class="su">súper +2</b></span></div></div><div class="sc sc1"><div class="sc-h"><b>Krčmárka</b><span class="bod ja">★ ty +3</span><span class="por">2</span></div><div class="sc-t"><span class="ik-st"><i></i><i></i><i class="a"></i><i class="a"></i></span><span class="portret" style="--h:25">K</span><span class="ik-st"><i class="a"></i><i class="a"></i><i></i><i></i></span></div><div class="stw n1"><span class="st" style="--p:7"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i class="z0"></i><i class="z0"></i><i class="z0"></i><i class="z1"></i><i class="z2"></i><i class="z3"></i><b class="mk su"></b></span><span class="st-pod" aria-hidden="true"><span class="ja">◀ ty</span><span class="su">súper ▶</span></span></div><div class="stav"><span class="cip-p su">♥ súper +2 <span class="dlhe">· Fajčiar</span></span><span class="cip-s"><i class="ur u2" aria-hidden="true">2</i><span>bojí sa <b class="ja">teba</b><span class="dlhe"> · Strach</span></span></span></div><div class="pata">+2 cig. po šenku<br><span class="r3"><b class="ja">ty +3</b><span>súboje 2:0</span><span class="su">súper 0</span></span></div></div></div></div></div>
+  </div>
+  <dl class="detail">
+    <dt>Zmena</dt><dd><code>Stupnica</code>: pod <code>.ls-stupnica</code> pribudne <code>&lt;span class="ls-strany"&gt;</code> (◀ ty / súper ▶, <code>0.6rem</code>, verzálky, <code>--ja</code>/<code>--su</code>). Namiesto riadku <code>.ls-priazen</code> príde <code>.ls-stav</code> s dvoma čipmi (<code>.cip</code> z <code>komponenty.tsx</code>, výška 18 px). Čip strachu: <code>&lt;i class="ls-uroven u1"&gt;1&lt;/i&gt;</code> + „bojí sa <b>súpera</b> · Znepokojenie“. Názvy zón: <code>NAZOV_ZONY = ["Neutralita", "Znepokojenie", "Strach", "Vydesenie"]</code>. <code>.ls-sc</code>: <code>display: grid; grid-template-rows: auto minmax(0, 1fr) auto auto auto</code> a päta má pevné 2 riadky (dlhé znenie je v titulku a v Lupe). Container query (<code>height &lt; 330px</code>) skryje <code>.ls-ucinok</code>, <code>.ls-stav</code> ostane. Stupnica dostane <code>role="img"</code> s <code>aria-label={popisMarkera}</code>. Neutrálny marker: prstenec <code>--text</code> namiesto <code>--slaby-text</code>.</dd>
+    <dt>Úzky stôl (960 px)</dt><dd>Container query na šírku karty (<code>.ls-sc { container: ls-sc / inline-size }</code>, <code>width &lt; 130px</code>): čipy sa skrátia na „♥ ty +1“ a „(1) bojí sa súpera“, stĺpec „súboje“ zmizne. Štítky strán ostanú, sú to dve slová. Vyskúšaj tlačidlom „960 px“.</dd>
+    <dt>Náročnosť</dt><dd>Malá, len CSS a JSX v jednom komponente. Riziko: výška päty pri 1280 × 800 — preto ustúpi dlhý účinok, nie strach.</dd>
+    <dt>Súbory</dt><dd><code>apps/web/src/hra/LiniaStarsich.tsx</code> (<code>Stupnica</code>, <code>ScorecardVLinii</code>, <code>NAZOV_ZONY</code>), <code>apps/web/src/hra/hra.css</code> (5006–5460), <code>apps/web/src/schemy.css</code> (tokeny zón).</dd>
+  </dl>
+</article>
+
+<!-- ============ N2 ============ -->
+<article class="navrh" id="n2" aria-labelledby="h-n2">
+  <div class="navrh-hlava"><span class="poradie">2</span><h3 id="h-n2">Kto koho tlačí — marker s dvoma vrstvami</h3>
+    <span class="stitky"><span class="stitok n-stredna">stredná</span><span class="stitok">rieši A1, A5, A11</span></span></div>
+  <p>Jadro nepochopenia je, že jeden marker nesie dve informácie pre dvoch rôznych hráčov. Dám každej vlastnú vrstvu:</p>
+  <ul>
+    <li><b>Výplň markera = priazeň.</b> Marker je vyplnený farbou hráča, ktorý má priazeň, a nesie ♥. Tmavý lem 2 px ho oddelí od zóny (15 : 1), takže súperov marker na oranžovej už nesplynie (dnes 1,01 : 1). Farba nie je jediný nosič: je tu ♥ a strana.</li>
+    <li><b>Stopa od stredu = strach.</b> Čiara pod stupnicou od stredu k markeru má farbu hráča, ktorý marker natlačil, a šípku. Je to presne hráč, ktorého sa starší bojí, a dĺžka stopy je úroveň strachu.</li>
+  </ul>
+  <p>Dve rôzne farby na jednej stupnici vizuálne povedia pravidlo „priazeň a strach nikdy nepatria tomu istému hráčovi“ (§10). Posúvaj marker tlačidlami a sleduj obe strany.</p>
+  <div class="rezimy" role="group" aria-label="Zobrazenie ukážky 2"><button type="button" data-rezim="oboje" aria-pressed="true">Vedľa seba</button><button type="button" data-rezim="pred" aria-pressed="false">Pred</button><button type="button" data-rezim="po" aria-pressed="false">Po</button><button type="button" data-uzke aria-pressed="false">960 px</button></div>
+  <div class="porovnanie" data-rezim="oboje" id="n2-por">
+    <div class="strana pred"><p class="strana-nadpis">Pred (dnes)</p>
+      <div class="m"><div class="rad"><div class="sc"><div class="sc-h"><b>Poštárka</b><span class="bod su">★ súper +2</span><span class="por">4</span></div><div class="sc-t"><span class="ik-st"><i></i><i class="a"></i><i></i><i></i></span><span class="portret" style="--h:205">P</span><span class="ik-st"><i class="a"></i><i class="a"></i><i class="a"></i><i></i></span></div><span class="st" style="--p:2" id="n2-pred-st"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i class="z0"></i><i class="z0"></i><i class="z0"></i><i class="z1"></i><i class="z2"></i><i class="z3"></i><b class="mk ja"></b></span><div class="pata" id="n2-pred-pata"></div></div></div></div></div>
+    <div class="strana po"><p class="strana-nadpis">Po</p>
+      <div class="m"><div class="rad"><div class="sc sc2"><div class="sc-h"><b>Poštárka</b><span class="bod su">★ súper +2</span><span class="por">4</span></div><div class="sc-t"><span class="ik-st"><i></i><i class="a"></i><i></i><i></i></span><span class="portret" style="--h:205">P</span><span class="ik-st"><i class="a"></i><i class="a"></i><i class="a"></i><i></i></span></div><div class="stw"><span class="st st2" style="--p:2" id="n2-po-st"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i class="z0"></i><i class="z0"></i><i class="z0"></i><i class="z1"></i><i class="z2"></i><i class="z3"></i><span class="stopa su vlavo" style="--od:2.5;--sirka:2"></span><b class="mk2 ja" aria-hidden="true">♥</b></span><span class="st-pod" aria-hidden="true"><span class="ja">◀ ty</span><span class="su">súper ▶</span></span></div><div id="n2-po-stav"></div><div class="pata" id="n2-po-pata"></div></div></div></div></div>
+  </div>
+  <div class="ovl" role="group" aria-label="Posun markera v ukážke 2">
+    <button type="button" data-n2="-1">◀ súper tlačí k tebe</button>
+    <button type="button" data-n2="1">ty tlačíš k súperovi ▶</button>
+  </div>
+  <p class="meta" id="n2-vysvetli" aria-live="polite"></p>
+  <dl class="detail">
+    <dt>Zmena</dt><dd><code>.ls-marker</code>: 17 px, <code>background: var(--ja | --su)</code>, <code>border: 2px solid var(--pozadie)</code>, <code>box-shadow: 0 0 0 1.5px var(--text)</code>, obsah „♥“ (10 px, <code>--pozadie</code>, kontrast 8,9 : 1 na <code>--ja</code> a 6,7 : 1 na <code>--su</code>). Nový prvok <code>&lt;b class="ls-stopa su|ja"&gt;</code> v <code>Stupnica</code>: <code>left</code> a <code>width</code> z <code>--p</code> (od stredu, 3 px, šípka cez <code>::after</code>). V sivej zóne sa stopa nekreslí. Pohyb: <code>transition: left .22s ease-out</code> na markeri aj stope, pod <code>prefers-reduced-motion</code> vypnutý. Pre Lupu staršieho (<code>LupaStarsieho</code>) tá istá stupnica.</dd>
+    <dt>Úzky stôl</dt><dd>Stopa a výplň nepotrebujú text. Pri 112 px je stopa 1–3 dieliky (10–30 px), čitateľná. Marker 17 px prekryje dielik, ale jeho výplň je teraz nosič informácie, nie prekážka.</dd>
+    <dt>Náročnosť</dt><dd>Stredná: CSS a jeden prvok v <code>Stupnica</code>, nový prop <code>obavany</code> („ja“/„su“/null). Treba preveriť výučbu (<code>data-vyucba="starsi-stupnica"</code>), kde Melichar o stupnici hovorí.</dd>
+    <dt>Súbory</dt><dd><code>LiniaStarsich.tsx:368–393</code>, <code>hra.css:5224–5275</code>, <code>stranky/Ukazky.tsx</code> (rovnaký vzhľad v Pravidlách, aby sa učilo na tom istom obrázku).</dd>
+  </dl>
+</article>
+
+<!-- ============ N3 ============ -->
+<article class="navrh" id="n3" aria-labelledby="h-n3">
+  <div class="navrh-hlava"><span class="poradie">3</span><h3 id="h-n3">Účtenka posunu — prečo sa marker pohol a čo z toho má ktorý hráč</h3>
+    <span class="stitky"><span class="stitok n-stredna">stredná až veľká</span><span class="stitok">rieši A3, A9, A10, A11</span></span></div>
+  <p>Toto je Michalova priama požiadavka. Každý posun dostane tri vizuálne vrstvy:</p>
+  <ol>
+    <li><b>Pohyb so stopou:</b> marker sa posunie po dielikoch (220 ms na krok), na starom mieste ostane prerušovaný „duch“ až do konca bitky.</li>
+    <li><b>Účtenka pri karte:</b> malý lístok (ako krčmový účet, <code>KrcmovyUcet.tsx</code> má podobný jazyk) s hlavičkou <i>typ · kto · o koľko a kam</i> a dvoma riadkami <i>TY</i> a <i>Dizajn 1</i> — čo z toho má každý: priazeň teraz, strach a body na konci, cigareta za posun.</li>
+    <li><b>Pás „Posuny v tejto bitke“</b> v hlavičke línie a po zatvorení línie pásik pri tvojej doske („Starší po bitke · 2 posuny · ukázať“). Tak sa to dozvie aj hráč, ktorému súper posúval markery a stôl už prešiel na ďalší krok (ui-05).</li>
+  </ol>
+  <div class="rezimy" role="group" aria-label="Zobrazenie ukážky 3"><button type="button" data-rezim="oboje" aria-pressed="true">Vedľa seba</button><button type="button" data-rezim="pred" aria-pressed="false">Pred</button><button type="button" data-rezim="po" aria-pressed="false">Po</button></div>
+  <div class="porovnanie" data-rezim="oboje">
+    <div class="strana pred"><p class="strana-nadpis">Pred (dnes)</p>
+      <div class="m"><div class="lh"><span class="pill">ČAKÁŠ · Na ťahu je <b>Dizajn 1</b>.</span></div>
+        <div class="rad"><div class="sc" id="n3-pred-sc"><div class="sc-h"><b>Poštárka</b><span class="bod ob">★ obaja</span><span class="por">4</span></div><div class="sc-t"><span class="ik-st"><i></i><i class="a"></i><i></i><i></i></span><span class="portret" style="--h:205">P</span><span class="ik-st"><i class="a"></i><i class="a"></i><i class="a"></i><i></i></span></div><span class="st" style="--p:4" id="n3-pred-st"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i class="z0"></i><i class="z0"></i><i class="z0"></i><i class="z1"></i><i class="z2"></i><i class="z3"></i><b class="mk"></b></span><div class="pata" id="n3-pred-pata">♥ nikto · Bitkár<br>pri +1: +1 tuhé v bitke<br><span class="r3"><span class="ja">ty +1</span><span>súboje 0:1</span><span class="su">súper +1</span></span></div></div></div></div></div>
+    <div class="strana po"><p class="strana-nadpis">Po</p>
+      <div class="m"><div class="posuny" id="n3-posuny"><b>Posuny v tejto bitke:</b> <span class="cip">Farár <span class="su">▸ 1</span> <small>Pohoršenie · Dizajn 2</small></span></div>
+        <div class="rad">
+          <div class="sc sc2" id="n3-po-sc"><div class="sc-h"><b>Poštárka</b><span class="bod ob">★ obaja</span><span class="por">4</span></div><div class="sc-t"><span class="ik-st"><i></i><i class="a"></i><i></i><i></i></span><span class="portret" style="--h:205">P</span><span class="ik-st"><i class="a"></i><i class="a"></i><i class="a"></i><i></i></span></div><div class="stw"><span class="st st2" style="--p:4" id="n3-po-st"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i class="z0"></i><i class="z0"></i><i class="z0"></i><i class="z1"></i><i class="z2"></i><i class="z3"></i><span class="stopa su vlavo" id="n3-stopa" style="--od:4.5;--sirka:0" hidden></span><b class="mk2 duch stare" id="n3-duch" style="--p:4" hidden></b><b class="mk2" id="n3-mk" aria-hidden="true"></b></span><span class="st-pod" aria-hidden="true"><span class="ja">◀ ty</span><span class="su">súper ▶</span></span></div><div id="n3-stav"><div class="stav"><span class="cip-p">♥ nikto <span class="dlhe">· Bitkár</span></span><span class="cip-s nula">nebojí sa nikoho</span></div></div></div>
+          <div class="uctenka skryta" id="n3-uct" role="status">
+            <div class="uct-h"><span class="typ">Prebytok</span><span>Dizajn 1 → Poštárka o 2 k tebe</span></div>
+            <div class="uct-r"><span class="ja">Ty</span><span>♥ <b>Bitkár +1</b> hneď: +1 tuhé v každej bitke · <b>+1 cigareta</b> za posun</span></div>
+            <div class="uct-r"><span class="su">Dizajn 1</span><span>Poštárka sa ho bojí: <b>Znepokojenie</b> <i class="ur u1" aria-hidden="true">1</i> — keď vyhrá viac jej podmienok, dostane za ňu <b>2 b.</b> namiesto 1</span></div>
+          </div>
+        </div>
+        <div class="doska-pruh" id="n3-pruh" hidden><b class="ja">Starší po bitke</b><span>Poštárka ◂◂ k tebe (prebytok) · Farár ▸ k Dizajn 1 (Pohoršenie)</span><button type="button" tabindex="-1">ukázať</button></div>
+      </div></div>
+  </div>
+  <div class="ovl" role="group" aria-label="Prehrať posun v ukážke 3"><button type="button" id="n3-hraj">▶ Prehraj prebytok (Poštárka o 2 k tebe)</button><button type="button" id="n3-reset">Späť na začiatok</button></div>
+  <h4>Šablóny textu účtenky (z pohľadu toho, kto ju číta)</h4>
+  <div class="tab-obal"><table>
+    <thead><tr><th scope="col">Príčina</th><th scope="col">Hlavička</th><th scope="col">Riadok „ty“ / riadok súpera</th></tr></thead>
+    <tbody>
+      <tr><td>Prebytok súpera</td><td>Prebytok · Dizajn 1 → Poštárka o 2 k tebe</td><td>Ty: ♥ Bitkár +1 hneď · +1 cigareta. Dizajn 1: bojí sa ho (Znepokojenie), za Poštárku 2 b. namiesto 1.</td></tr>
+      <tr><td>Tvoj prebytok</td><td>Prebytok · ty → Krčmárka o 1 k Dizajn 1</td><td>Ty: bojí sa ťa (Znepokojenie) — za Krčmárku 2 b. namiesto 1. Dizajn 1: ♥ Fajčiar +1 hneď · +1 cigareta.</td></tr>
+      <tr><td>Pohoršenie k sebe</td><td>Pohoršenie · ty → Poštárka o 1 k sebe</td><td>Ty: ♥ Bitkár +1 → +2, platí už v tejto bitke. Dizajn 1: strach Poštárky 1 → 2 (Strach).</td></tr>
+      <tr><td>Pohoršenie súpera na neutrál</td><td>Pohoršenie · Dizajn 1 → Farár o 1 k tebe</td><td>Zatiaľ sa nič nemení (Neutralita). Ďalší krok k tebe: ♥ Kmotor +1 pre teba, Farár sa začne báť Dizajn 1.</td></tr>
+      <tr><td>Patronát</td><td>Patronát · Dizajn 1 → Hrobár do stredu</td><td>Ty: Hrobár sa ťa už nebojí (bol Strach) · dostaneš 3 Pohoršenia navyše. Dizajn 1: ♥ Exekútor stratil, drží Hrobára v ruke.</td></tr>
+    </tbody>
+  </table></div>
+  <dl class="detail">
+    <dt>Zmena</dt><dd>V <code>HernaPlocha.tsx</code> sa <code>zmeneniStarsi</code> (3769–3781) rozšíri na zoznam <code>posunyBitky: { elderId, z, na, pricina: "pohorsenie" | "prebytok" | "patronat" | "noviny", kto }[]</code>. Príčina je z <code>krokStarsich</code> pred zmenou, zoznam sa vynuluje s novou bitkou. Nový komponent <code>UctenkaPosunu</code> (v <code>LiniaStarsich.tsx</code>) kreslí účtenku nad pätou karty: <code>--plocha-2</code>, lem <code>--okraj-svetly</code>, tieň <code>--tien</code>, nástup <code>opacity</code> a <code>translate</code> 200 ms. Riadok hráča má štítok v <code>--ja</code>/<code>--su</code> a obsah z <code>UCINOK_PRIAZNE</code> a <code>preco()</code>. Pásik pri doske je <code>.odznak</code>-tlačidlo, ktoré otvorí líniu starších (<code>prepniStarsich</code>). Log (<code>engine.ts:3514, 3585</code>) dostane meno karty a meno hráča namiesto id a čísla.</dd>
+    <dt>Kedy zmizne</dt><dd>Duch a účtenka do konca bitky, pásik pri doske do ďalšej voľby cieľa alebo zatvorenia. Či sa účtenky ukazujú po jednej, alebo spolu, je rozhodnutie toku — viď <a href="dizajn-stupnica-20261025-1723-ux.html">UX návrh</a>.</dd>
+    <dt>Úzky stôl</dt><dd>Pri karte pod 130 px sa účtenka nekreslí na karte, ale ako bublina nad ňou (šírka 240 px, ako Lupa). Na karte ostane len duch a stopa.</dd>
+    <dt>Náročnosť</dt><dd>Stredná až veľká: stav v klientovi (bez zmeny servera, zmeny markera vidí klient z <code>view.starsi</code> a príčinu z <code>bitkaStav.krok</code>), nový komponent, texty pre 4 príčiny × 2 pohľady.</dd>
+    <dt>Súbory</dt><dd><code>HernaPlocha.tsx</code> (3700–3830, doska), <code>LiniaStarsich.tsx</code>, <code>Panely.tsx</code> (pásik pri Body), <code>hra.css</code>, <code>packages/core/src/engine.ts</code> (len text logu).</dd>
+  </dl>
+</article>
+
+<!-- ============ N4 ============ -->
+<article class="navrh" id="n4" aria-labelledby="h-n4">
+  <div class="navrh-hlava"><span class="poradie">4</span><h3 id="h-n4">Náhľad priamo na karte a čitateľné hranice zón</h3>
+    <span class="stitky"><span class="stitok n-mala">malá až stredná</span><span class="stitok">rieši A6, A7, A4</span></span></div>
+  <p>Pri Pohoršení a prebytku sa náhľad presunie z hlavičky línie na kartu, kam hráč práve pozerá: duch markera je vyplnený (jantár 35 %) a päta karty sa na čas prejdenia myšou prepne na <b>„po posune“</b>. Z neho vidno aj protiintuitívnu vec: <i>k sebe</i> ti pridá priazeň, ale súperovi pridá strach. Hranice zón sú jantárové zárezy nad stupnicou (na tmavom podklade 8,7 : 1), nie čiary cez žltú (1,30 : 1). Počet prejdených hraníc ukazujú dve bodky ●○ namiesto „hranice 1/2“. Prejdi myšou alebo Tabom na tlačidlá.</p>
+  <div class="rezimy" role="group" aria-label="Zobrazenie ukážky 4"><button type="button" data-rezim="oboje" aria-pressed="true">Vedľa seba</button><button type="button" data-rezim="pred" aria-pressed="false">Pred</button><button type="button" data-rezim="po" aria-pressed="false">Po</button></div>
+  <div class="porovnanie" data-rezim="oboje">
+    <div class="strana pred"><p class="strana-nadpis">Pred (dnes)</p>
+      <div class="m"><div class="lh"><span class="pill" id="n4-pred-pill">Pri staršom vyber smer: k súperovi, alebo k sebe — priazeň sa zmení hneď a platí už v tejto bitke.</span></div>
+        <div class="rad"><div class="sc" style="border:2px solid var(--akcent)"><div class="sc-h"><b>Poštárka</b><span class="bod su">★ súper +2</span><span class="por">4</span></div><div class="sc-t"><span class="ik-st"><i></i><i class="a"></i><i></i><i></i></span><span class="portret" style="--h:205">P</span><span class="ik-st"><i class="a"></i><i class="a"></i><i class="a"></i><i></i></span></div><span class="st" style="--p:2"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i class="z0"></i><i class="z0"></i><i class="z0"></i><i class="z1"></i><i class="z2"></i><i class="z3"></i><em style="--b:1"></em><em style="--b:2"></em><em style="--b:3"></em><em style="--b:6"></em><em style="--b:7"></em><em style="--b:8"></em><b class="mk ja"></b><b class="mk duch" id="n4-pred-duch" style="--p:2" hidden></b></span><div class="pata"><span class="ja">♥ ty +1 · Bitkár</span></div>
+          <div class="btn-smer"><button type="button" class="ja" data-n4="ja">◀ k sebe</button><button type="button" class="su" data-n4="su">k súperovi ▶</button></div>
+          <div class="pata"><b>Tvoja priazeň:</b> +1 tuhého poškodenia v každej bitke.<br>bojí sa súpera · úroveň 1 · hranice 1/2</div></div></div></div></div>
+    <div class="strana po"><p class="strana-nadpis">Po</p>
+      <div class="m"><div class="lh"><span class="pill">Pohoršenie · zostáva 1 — vyber smer pri staršom</span></div>
+        <div class="rad"><div class="sc sc2" style="border:2px solid var(--akcent)"><div class="sc-h"><b>Poštárka</b><span class="bod su">★ súper +2</span><span class="por">4</span></div><div class="sc-t"><span class="ik-st"><i></i><i class="a"></i><i></i><i></i></span><span class="portret" style="--h:205">P</span><span class="ik-st"><i class="a"></i><i class="a"></i><i class="a"></i><i></i></span></div><div class="stw"><span class="st st2" style="--p:2"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i class="z0"></i><i class="z0"></i><i class="z0"></i><i class="z1"></i><i class="z2"></i><i class="z3"></i><em class="zarez" style="--b:1"></em><em class="zarez" style="--b:2"></em><em class="zarez" style="--b:3"></em><em class="zarez" style="--b:6"></em><em class="zarez" style="--b:7"></em><em class="zarez" style="--b:8"></em><span class="stopa su vlavo" style="--od:2.5;--sirka:2"></span><b class="mk2 duch" id="n4-duch" style="--p:2" hidden></b><b class="mk2 ja" aria-hidden="true">♥</b></span><span class="st-pod" aria-hidden="true"><span class="ja">◀ ty</span><span class="su">súper ▶</span></span></div>
+          <div class="btn-smer"><button type="button" class="ja" data-n4="ja">◀ k sebe</button><button type="button" class="su" data-n4="su">k súperovi ▶</button></div>
+          <div id="n4-po-pata"><div class="stav"><span class="cip-p ja">♥ ty +1 <span class="dlhe">· Bitkár</span></span><span class="cip-s"><i class="ur u1" aria-hidden="true">1</i><span>bojí sa <b class="su">súpera</b><span class="dlhe"> · Znepokojenie</span></span></span></div><div class="pata">hranice zón <span class="pips" aria-label="prejdená 1 z 2"><i class="p"></i><i></i></span></div></div></div></div></div></div>
+  </div>
+  <dl class="detail">
+    <dt>Zmena</dt><dd><code>ScorecardVLinii</code>: pri <code>nahlad !== undefined</code> sa <code>.ls-pata</code> nahradí blokom <code>.ls-nahlad-karty</code> (lem <code>--akcent</code>, pozadie <code>color-mix(--akcent 8 %, --plocha)</code>) s textom „Znepokojenie → Strach · ♥ ty +1 → +2 · bojí sa súpera 1 → 2“. Text sa zostaví z <code>ciel</code> cez <code>priazenSila</code>/<code>STUPNICA_ZONY</code>, rovnako ako dnešná pilulka. Pilulka v hlavičke ostane ako kópia pre čítačku (<code>aria-live</code>). <code>.ls-marker.duch</code>: plný jantár 35 % + lem <code>--akcent</code>. <code>.ls-stupnica em</code> → trojuholníkový zárez nad dielikom (<code>border-top: 5px solid var(--akcent)</code>), na tých istých šiestich hraniciach ako dnes (<code>prekraciaHranicu</code>). <code>hranice 1/2</code> → <code>.ls-pips</code>.</dd>
+    <dt>Úzky stôl</dt><dd>Náhľad v päte má krátku podobu „→ Strach · ♥ +2 · strach 2“. Tlačidlá smeru ostanú „◀ k sebe“ a „k súperovi ▶“, pri 112 px ako „◀“ a „▶“ s <code>aria-label</code>.</dd>
+    <dt>Náročnosť</dt><dd>Malá až stredná: logika náhľadu už existuje (<code>akciaNahladu</code>), mení sa miesto a forma.</dd>
+    <dt>Súbory</dt><dd><code>LiniaStarsich.tsx:99–126, 243–366</code>, <code>hra.css:5240–5275, 5329–5390</code>.</dd>
+  </dl>
+</article>
+
+<!-- ============ N5 ============ -->
+<article class="navrh odvazny" id="n5" aria-labelledby="h-n5">
+  <div class="navrh-hlava"><span class="poradie">5</span><h3 id="h-n5">Odvážny smer: „Starší uteká“ — marker je sám starší</h3>
+    <span class="stitky"><span class="stitok n-velka">veľká</span><span class="stitok">posilňuje identitu · rieši A1, A4, A5 inak</span></span></div>
+  <p>Namiesto abstraktného krúžku beží po stupnici <b>portrét staršieho v medailóne</b> a na koncoch sedia <b>avatary hráčov</b>. Metafora sa vysvetlí sama: <i>starší uteká pred tým, koho sa bojí, a túli sa k tomu, kto ho chráni</i>. Pri kom stojí, ten má jeho priazeň (♥ na medailóne). Od koho uteká, ten ho desí (stopa jeho farby). Zóny sú krčmové tácky so zväčšujúcimi sa karikatúrnymi tvárami strachu (znepokojený, vystrašený, vydesený). Tvár je druhý nosič popri farbe a výške, takže nerozhoduje len farba. Neutralita je drevo stola namiesto bledosivého pruhu, ktorý vyzerá ako prázdny progress bar. Pod stupnicou je jedna veta v tóne hry: <i>„Poštárka uteká pred Dizajn 1 — u teba v priazni.“</i></p>
+  <div class="rezimy" role="group" aria-label="Zobrazenie ukážky 5"><button type="button" data-rezim="oboje" aria-pressed="true">Vedľa seba</button><button type="button" data-rezim="pred" aria-pressed="false">Pred</button><button type="button" data-rezim="po" aria-pressed="false">Po</button><button type="button" data-uzke aria-pressed="false">960 px</button></div>
+  <div class="porovnanie" data-rezim="oboje">
+    <div class="strana pred"><p class="strana-nadpis">Pred (dnes)</p>
+      <div class="m"><div class="rad"><div class="sc"><div class="sc-h"><b>Poštárka</b><span class="bod su">★ súper +2</span><span class="por">4</span></div><div class="sc-t"><span class="ik-st"><i></i><i class="a"></i><i></i><i></i></span><span class="portret" style="--h:205">P</span><span class="ik-st"><i class="a"></i><i class="a"></i><i class="a"></i><i></i></span></div><span class="st" style="--p:2"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i class="z0"></i><i class="z0"></i><i class="z0"></i><i class="z1"></i><i class="z2"></i><i class="z3"></i><b class="mk ja"></b></span><div class="pata"><span class="ja">♥ ty +1 · Bitkár</span><br>+1 tuhé v bitke<br><span class="r3"><span class="ja">ty 0</span><span>súboje 0:1</span><b class="su">súper +2</b></span></div></div><div class="sc"><div class="sc-h"><b>Krčmárka</b><span class="bod ja">★ ty +3</span><span class="por">2</span></div><div class="sc-t"><span class="ik-st"><i></i><i></i><i class="a"></i><i class="a"></i></span><span class="portret" style="--h:25">K</span><span class="ik-st"><i class="a"></i><i class="a"></i><i></i><i></i></span></div><span class="st" style="--p:7"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i class="z0"></i><i class="z0"></i><i class="z0"></i><i class="z1"></i><i class="z2"></i><i class="z3"></i><b class="mk su"></b></span><div class="pata"><span class="su">♥ Dizajn 1 +2 · Fajčiar</span><br>+2 cig. po šenku<br><span class="r3"><b class="ja">ty +3</b><span>súboje 2:0</span><span class="su">súper 0</span></span></div></div></div></div></div>
+    <div class="strana po"><p class="strana-nadpis">Po</p>
+      <div class="m"><div class="rad">
+        <div class="sc sc2"><div class="sc-h"><b>Poštárka</b><span class="bod su">★ súper +2</span><span class="por">4</span></div><div class="sc-t"><span class="ik-st"><i></i><i class="a"></i><i></i><i></i></span><span class="portret" style="--h:205">P</span><span class="ik-st"><i class="a"></i><i class="a"></i><i class="a"></i><i></i></span></div><span class="tk" style="--p:2"><span class="av ja" aria-hidden="true">D2</span><span class="tk-rad"><i class="t3"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.8 4.6 L6.8 3.6 M12.2 4.6 L9.2 3.6" stroke="#14110e" stroke-width="1.1"/><circle cx="5.5" cy="6.6" r="1.5" fill="#fff"/><circle cx="10.5" cy="6.6" r="1.5" fill="#fff"/><circle cx="5.5" cy="6.6" r=".7" fill="#14110e"/><circle cx="10.5" cy="6.6" r=".7" fill="#14110e"/><ellipse cx="8" cy="11.2" rx="2.4" ry="2.2" fill="#14110e"/></svg></i><i class="t2"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.8 4.6 L6.8 3.6 M12.2 4.6 L9.2 3.6" stroke="#14110e" stroke-width="1.1"/><circle cx="5.6" cy="6.8" r="1" fill="#14110e"/><circle cx="10.4" cy="6.8" r="1" fill="#14110e"/><ellipse cx="8" cy="11" rx="1.6" ry="1.3" fill="#14110e"/></svg></i><i class="t1"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4.4 L6.8 4.9 M12 4.4 L9.2 4.9" stroke="#14110e" stroke-width="1.1"/><circle cx="5.6" cy="6.8" r="1" fill="#14110e"/><circle cx="10.4" cy="6.8" r="1" fill="#14110e"/><path d="M5.2 11.2 Q8 10 10.8 11.2" stroke="#14110e" stroke-width="1.3" fill="none"/></svg></i><i class="t0"></i><i class="t0"></i><i class="t0"></i><i class="t1"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4.4 L6.8 4.9 M12 4.4 L9.2 4.9" stroke="#14110e" stroke-width="1.1"/><circle cx="5.6" cy="6.8" r="1" fill="#14110e"/><circle cx="10.4" cy="6.8" r="1" fill="#14110e"/><path d="M5.2 11.2 Q8 10 10.8 11.2" stroke="#14110e" stroke-width="1.3" fill="none"/></svg></i><i class="t2"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.8 4.6 L6.8 3.6 M12.2 4.6 L9.2 3.6" stroke="#14110e" stroke-width="1.1"/><circle cx="5.6" cy="6.8" r="1" fill="#14110e"/><circle cx="10.4" cy="6.8" r="1" fill="#14110e"/><ellipse cx="8" cy="11" rx="1.6" ry="1.3" fill="#14110e"/></svg></i><i class="t3"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.8 4.6 L6.8 3.6 M12.2 4.6 L9.2 3.6" stroke="#14110e" stroke-width="1.1"/><circle cx="5.5" cy="6.6" r="1.5" fill="#fff"/><circle cx="10.5" cy="6.6" r="1.5" fill="#fff"/><circle cx="5.5" cy="6.6" r=".7" fill="#14110e"/><circle cx="10.5" cy="6.6" r=".7" fill="#14110e"/><ellipse cx="8" cy="11.2" rx="2.4" ry="2.2" fill="#14110e"/></svg></i><span class="stopa st5 su vlavo" style="--od:2.5;--sirka:2"></span><b class="med ja" style="--h:205">P<span class="srdce">♥</span></b></span><span class="av su" aria-hidden="true">D1</span></span><div class="uteka">uteká pred <b class="su">Dizajn 1</b><span class="dlhe"> — u teba v priazni</span></div><div class="pata"><span class="ja">♥ Bitkár +1</span> · +1 tuhé v bitke</div></div>
+        <div class="sc sc2"><div class="sc-h"><b>Krčmárka</b><span class="bod ja">★ ty +3</span><span class="por">2</span></div><div class="sc-t"><span class="ik-st"><i></i><i></i><i class="a"></i><i class="a"></i></span><span class="portret" style="--h:25">K</span><span class="ik-st"><i class="a"></i><i class="a"></i><i></i><i></i></span></div><span class="tk" style="--p:7"><span class="av ja" aria-hidden="true">D2</span><span class="tk-rad"><i class="t3"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.8 4.6 L6.8 3.6 M12.2 4.6 L9.2 3.6" stroke="#14110e" stroke-width="1.1"/><circle cx="5.5" cy="6.6" r="1.5" fill="#fff"/><circle cx="10.5" cy="6.6" r="1.5" fill="#fff"/><circle cx="5.5" cy="6.6" r=".7" fill="#14110e"/><circle cx="10.5" cy="6.6" r=".7" fill="#14110e"/><ellipse cx="8" cy="11.2" rx="2.4" ry="2.2" fill="#14110e"/></svg></i><i class="t2"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.8 4.6 L6.8 3.6 M12.2 4.6 L9.2 3.6" stroke="#14110e" stroke-width="1.1"/><circle cx="5.6" cy="6.8" r="1" fill="#14110e"/><circle cx="10.4" cy="6.8" r="1" fill="#14110e"/><ellipse cx="8" cy="11" rx="1.6" ry="1.3" fill="#14110e"/></svg></i><i class="t1"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4.4 L6.8 4.9 M12 4.4 L9.2 4.9" stroke="#14110e" stroke-width="1.1"/><circle cx="5.6" cy="6.8" r="1" fill="#14110e"/><circle cx="10.4" cy="6.8" r="1" fill="#14110e"/><path d="M5.2 11.2 Q8 10 10.8 11.2" stroke="#14110e" stroke-width="1.3" fill="none"/></svg></i><i class="t0"></i><i class="t0"></i><i class="t0"></i><i class="t1"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4.4 L6.8 4.9 M12 4.4 L9.2 4.9" stroke="#14110e" stroke-width="1.1"/><circle cx="5.6" cy="6.8" r="1" fill="#14110e"/><circle cx="10.4" cy="6.8" r="1" fill="#14110e"/><path d="M5.2 11.2 Q8 10 10.8 11.2" stroke="#14110e" stroke-width="1.3" fill="none"/></svg></i><i class="t2"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.8 4.6 L6.8 3.6 M12.2 4.6 L9.2 3.6" stroke="#14110e" stroke-width="1.1"/><circle cx="5.6" cy="6.8" r="1" fill="#14110e"/><circle cx="10.4" cy="6.8" r="1" fill="#14110e"/><ellipse cx="8" cy="11" rx="1.6" ry="1.3" fill="#14110e"/></svg></i><i class="t3"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.8 4.6 L6.8 3.6 M12.2 4.6 L9.2 3.6" stroke="#14110e" stroke-width="1.1"/><circle cx="5.5" cy="6.6" r="1.5" fill="#fff"/><circle cx="10.5" cy="6.6" r="1.5" fill="#fff"/><circle cx="5.5" cy="6.6" r=".7" fill="#14110e"/><circle cx="10.5" cy="6.6" r=".7" fill="#14110e"/><ellipse cx="8" cy="11.2" rx="2.4" ry="2.2" fill="#14110e"/></svg></i><span class="stopa st5 ja" style="--od:4.5;--sirka:3"></span><b class="med su" style="--h:25">K<span class="srdce">♥</span></b></span><span class="av su" aria-hidden="true">D1</span></span><div class="uteka">vystrašene uteká pred <b class="ja">tebou</b><span class="dlhe"> — k Dizajn 1</span></div><div class="pata"><span class="su">♥ Fajčiar +2</span> · +2 cig. po šenku</div></div>
+      </div></div></div>
+  </div>
+  <dl class="detail">
+    <dt>Zmena</dt><dd>Nový <code>Stupnica</code> s variantom <code>vzhlad="tacky"</code>: medailón 24 px s výrezom ilustrácie (<code>obrazok</code> už v <code>StarsiVLinii</code> je) a prstencom <code>--ja</code>/<code>--su</code>, avatary z <code>HracDoska</code> (18 px), tácky <code>border-radius: 4px</code> s vnútorným tieňom, neutrál ako drevo z <code>--plocha-3</code>/<code>--okraj-svetly</code>. Tváre sú tri malé SVG v štýle piktogramov (biela/čierna, rovnaká hrúbka čiary ako <code>IkonaPodmienky</code>), pod 130 px karty sa skryjú. Veta pod stupnicou: 6 šablón (neutrál, 3 úrovne × strana) v tóne Melichara.</dd>
+    <dt>Úzky stôl</dt><dd>Tváre a druhá polovica vety zmiznú, medailón a avatary ostanú (prepni „960 px“). Pri 112 px je medailón 20 px.</dd>
+    <dt>Náročnosť</dt><dd>Veľká: nové piktogramy (ideálne nakreslené k ostatným ikonám), úprava výučby a Pravidiel, aby stôl a učebnica vyzerali rovnako. Tlačený scorecard sa nemení — web sa od neho vzdiali. To je rozhodnutie pre Michala.</dd>
+    <dt>Súbory</dt><dd><code>LiniaStarsich.tsx</code>, <code>hra.css</code>, <code>stranky/Ukazky.tsx</code>, nové SVG v <code>apps/web/src/karta/</code>.</dd>
+  </dl>
+</article>
+</section>
+
+<section id="poradie" aria-labelledby="h-poradie">
+<h2 id="h-poradie">Odporúčané poradie</h2>
+<ol class="poradie-zoznam">
+  <li><b>Návrh 1 — popísaná stupnica</b> (hodina práce). Okamžite odstráni dve najväčšie chyby: stupnica bez strán a strach, ktorý z karty mizne. Je základom pre ostatné návrhy (tokeny zón, mriežka karty, názvy zón).</li>
+  <li><b>Návrh 3 — účtenka posunu.</b> Odpovedá priamo na otázku „prečo sa posunula a čo z toho mám“. Robiť spolu s UX návrhom, ktorý určí, kedy a komu sa ukáže.</li>
+  <li><b>Návrh 2 — kto koho tlačí</b>, spolu s <b>návrhom 4</b> (náhľad na karte). Oba menia tú istú <code>Stupnicu</code> a dohromady dajú jeden jazyk: výplň = priazeň, stopa = strach, duch = kam to pôjde.</li>
+  <li><b>Návrh 5</b> len ak sa Michalovi páči smer. Je to alternatíva k návrhu 2 (nie nadstavba): obe riešia „dve vrstvy“, 5 metaforou a ilustráciou, 2 farbou a čiarou.</li>
+</ol>
+</section>
+
+<section id="otazky" aria-labelledby="h-otazky">
+<h2 id="h-otazky">Otázky na Michala</h2>
+<ol class="otazky">
+  <li><b>Tokeny zón v <code>schemy.css</code></b> (<code>--zona-0…3</code>, rovnaké vo všetkých schémach) — súhlasíš? Bez nich by čip úrovne strachu a zárezy museli brať farby inline z <code>FARBY_STUPNICE</code>.</li>
+  <li><b>Pomenovanie zón v hre:</b> Znepokojenie / Strach / Vydesenie (ako podmienky a pravidlá) namiesto „žltá / oranžová / červená“ — aj v náhľade a logu?</li>
+  <li><b>Formulácia strachu na karte:</b> „bojí sa súpera“ (dnes), alebo aktívne „desí ho Dizajn 1“ / „desíš ho ty“? Aktívna forma lepšie sedí na stopu z návrhu 2, pasívna na pravidlá.</li>
+  <li><b>Návrh 5:</b> môže sa webová stupnica vzdialiť od tlačeného scorecardu (portrét ako marker, tácky, tváre), alebo má stôl vyzerať ako tlačená karta?</li>
+  <li><b>Účtenka:</b> ukázať aj posuny, ktoré nič nezmenili (sivá zóna → sivá zóna), alebo len tie, čo zmenili priazeň či strach? Ja by som ukázal všetky, ale tie bez zmeny len ako riadok v páse „Posuny v tejto bitke“.</li>
+</ol>
+</section>
+
+<footer>
+  <p>UI dizajnér (naex-dizajn) · návrh, kód webu sa nemenil · snímky v <code>docs/playtesty/dizajn-stupnica-20261025-1723/</code> (ui-01 až ui-08), pracovné poznámky v <code>playtest/dizajn/stupnica-20261025-1723/ui-poznamky.md</code> · UX návrh: <a href="dizajn-stupnica-20261025-1723-ux.html">dizajn-stupnica-20261025-1723-ux.html</a></p>
+</footer>
+</main>
+
+<script>
+(() => {
+  // Filter auditu
+  const fb = document.querySelectorAll(".filtre button");
+  fb.forEach((b) => b.addEventListener("click", () => {
+    fb.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    const f = b.dataset.f;
+    document.querySelectorAll("table.audit tbody tr").forEach((r) => { r.hidden = f !== "vse" && r.dataset.z !== f; });
+  }));
+  // Režimy pred/po a úzky stôl
+  document.querySelectorAll(".navrh").forEach((n) => {
+    const por = n.querySelector(".porovnanie");
+    n.querySelectorAll(".rezimy button[data-rezim]").forEach((b) => b.addEventListener("click", () => {
+      n.querySelectorAll(".rezimy button[data-rezim]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      por.dataset.rezim = b.dataset.rezim;
+    }));
+    const u = n.querySelector(".rezimy button[data-uzke]");
+    if (u) u.addEventListener("click", () => {
+      const on = u.getAttribute("aria-pressed") !== "true";
+      u.setAttribute("aria-pressed", String(on));
+      por.querySelectorAll(".m").forEach((m) => m.classList.toggle("uzke", on));
+    });
+  });
+
+  const Z = [3, 2, 1, 0, 0, 0, 1, 2, 3];
+  const ZONA = ["Neutralita", "Znepokojenie", "Strach", "Vydesenie"];
+  const pip = (u) => '<i class="ur u' + u + '" aria-hidden="true">' + u + "</i>";
+  const stav = (p, priazen) => {
+    if (p >= 3 && p <= 5) return '<div class="stav"><span class="cip-p">♥ nikto <span class="dlhe">· ' + priazen + '</span></span><span class="cip-s nula">nebojí sa nikoho</span></div>';
+    const ja = p < 3, u = Z[p];
+    return '<div class="stav"><span class="cip-p ' + (ja ? "ja" : "su") + '">♥ ' + (ja ? "ty" : "súper") + " +" + u + ' <span class="dlhe">· ' + priazen + '</span></span><span class="cip-s">' + pip(u) + '<span>bojí sa <b class="' + (ja ? "su" : "ja") + '">' + (ja ? "súpera" : "teba") + '</b><span class="dlhe"> · ' + ZONA[u] + "</span></span></span></div>";
+  };
+  const nastavStopu = (el, p) => {
+    if (!el) return;
+    const skry = p >= 3 && p <= 5;
+    el.style.setProperty("--od", String(Math.min(p, 4) + 0.5));
+    el.style.setProperty("--sirka", skry ? "0" : String(Math.abs(p - 4)));
+    el.className = "stopa " + (p < 4 ? "su vlavo" : "ja");
+    el.hidden = skry;
+  };
+
+  // N2: posúvanie markera
+  let p2 = 2;
+  const kreslN2 = () => {
+    const fav = p2 < 3 ? "ja" : p2 > 5 ? "su" : "";
+    const u = Z[p2];
+    const pred = document.getElementById("n2-pred-st");
+    pred.style.setProperty("--p", String(p2));
+    pred.querySelector(".mk").className = "mk" + (fav ? " " + fav : "");
+    document.getElementById("n2-pred-pata").innerHTML =
+      (fav ? '<span class="' + fav + '">♥ ' + (fav === "ja" ? "ty" : "súper") + " +" + u + " · Bitkár</span>" : "♥ nikto · Bitkár") + "<br>" + (fav ? "+" + u + " tuhé v bitke" : "pri +1: +1 tuhé v bitke");
+    const po = document.getElementById("n2-po-st");
+    po.style.setProperty("--p", String(p2));
+    const mk = po.querySelector(".mk2:not(.duch)");
+    mk.className = "mk2" + (fav ? " " + fav : "");
+    mk.textContent = fav ? "♥" : "";
+    let s = po.querySelector(".stopa");
+    if (!s) { s = document.createElement("span"); po.insertBefore(s, mk); }
+    nastavStopu(s, p2);
+    document.getElementById("n2-po-stav").innerHTML = stav(p2, "Bitkár");
+    document.getElementById("n2-po-pata").innerHTML = fav ? "+" + u + " tuhé v bitke" : "pri +1: +1 tuhé v bitke";
+    document.getElementById("n2-vysvetli").textContent = fav === ""
+      ? "Neutralita: výplň aj stopa chýbajú — nikto nemá priazeň a starší sa nebojí nikoho."
+      : fav === "ja"
+        ? "Výplň " + "je tvoja (♥ +" + u + "), stopa je súperova: natlačil ho k tebe, preto sa ho starší bojí (" + ZONA[u] + ")."
+        : "Výplň je súperova (♥ +" + u + "), stopa je tvoja: natlačil si ho k súperovi, starší sa bojí teba (" + ZONA[u] + ").";
+  };
+  document.querySelectorAll("[data-n2]").forEach((b) => b.addEventListener("click", () => {
+    p2 = Math.max(0, Math.min(8, p2 + Number(b.dataset.n2)));
+    kreslN2();
+  }));
+  kreslN2();
+
+  // N3: prehranie posunu
+  let casovace = [];
+  const zrus = () => { casovace.forEach(clearTimeout); casovace = []; };
+  const n3Reset = () => {
+    zrus();
+    const st = document.getElementById("n3-pred-st");
+    st.style.setProperty("--p", "4"); st.querySelector(".mk").className = "mk";
+    document.getElementById("n3-pred-sc").classList.remove("blik");
+    document.getElementById("n3-pred-pata").innerHTML = '♥ nikto · Bitkár<br>pri +1: +1 tuhé v bitke<br><span class="r3"><span class="ja">ty +1</span><span>súboje 0:1</span><span class="su">súper +1</span></span>';
+    const po = document.getElementById("n3-po-st");
+    po.style.setProperty("--p", "4");
+    const mk = document.getElementById("n3-mk"); mk.className = "mk2"; mk.textContent = "";
+    document.getElementById("n3-duch").hidden = true;
+    nastavStopu(document.getElementById("n3-stopa"), 4);
+    document.getElementById("n3-stav").innerHTML = stav(4, "Bitkár");
+    document.getElementById("n3-uct").classList.add("skryta");
+    document.getElementById("n3-pruh").hidden = true;
+    const ps = document.getElementById("n3-posuny");
+    ps.querySelectorAll(".cip.novy").forEach((c) => c.remove());
+  };
+  document.getElementById("n3-reset").addEventListener("click", n3Reset);
+  document.getElementById("n3-hraj").addEventListener("click", () => {
+    n3Reset();
+    // Pred: skok + 1,2 s záblesk
+    const sc = document.getElementById("n3-pred-sc");
+    void sc.offsetWidth;
+    const st = document.getElementById("n3-pred-st");
+    st.style.setProperty("--p", "2"); st.querySelector(".mk").className = "mk ja";
+    sc.classList.add("blik");
+    document.getElementById("n3-pred-pata").innerHTML = '<span class="ja">♥ ty +1 · Bitkár</span><br>+1 tuhé v bitke<br><span class="r3"><span class="ja">ty 0</span><span>súboje 0:1</span><b class="su">súper +2</b></span>';
+    // Po: duch, krok za krokom, účtenka
+    document.getElementById("n3-duch").hidden = false;
+    const po = document.getElementById("n3-po-st");
+    const mk = document.getElementById("n3-mk");
+    const krok = (p, t) => casovace.push(setTimeout(() => {
+      po.style.setProperty("--p", String(p));
+      nastavStopu(document.getElementById("n3-stopa"), p);
+      const fav = p < 3 ? "ja" : "";
+      mk.className = "mk2" + (fav ? " ja" : ""); mk.textContent = fav ? "♥" : "";
+      document.getElementById("n3-stav").innerHTML = stav(p, "Bitkár");
+    }, t));
+    krok(3, 120); krok(2, 380);
+    casovace.push(setTimeout(() => {
+      document.getElementById("n3-uct").classList.remove("skryta");
+      const c = document.createElement("span"); c.className = "cip novy";
+      c.innerHTML = 'Poštárka <span class="ja">◂ 2</span> <small>prebytok · Dizajn 1</small>';
+      document.getElementById("n3-posuny").appendChild(c);
+    }, 650));
+    casovace.push(setTimeout(() => { document.getElementById("n3-pruh").hidden = false; }, 1100));
+  });
+
+  // N4: náhľad smeru
+  const n4Text = {
+    ja: { pred: "<b>Poštárka</b> — posunúť · k sebe: žltá → oranžová · body ty ±0, súper +1 · ♥ ty +2", p: 1,
+      po: '<div class="nahlad"><b>Po posune k sebe:</b> Znepokojenie → <b>Strach</b><br>♥ ty +1 → <b>+2</b> (Bitkár, už v tejto bitke)<br>bojí sa <span class="su">súpera</span> 1 → <b>2</b> · body súper +2 → +3</div><div class="pata">hranice zón <span class="pips" aria-label="prejdené 2 z 2"><i class="p"></i><i class="p"></i></span> — ďalej k sebe už nie</div>' },
+    su: { pred: "<b>Poštárka</b> — posunúť · k Dizajn 1: žltá → neutrál · body ty ±0, súper −1 · ♥ nikto", p: 3,
+      po: '<div class="nahlad"><b>Po posune k súperovi:</b> Znepokojenie → <b>Neutralita</b><br>♥ priazeň Bitkár <b>stratíš</b> (−1 tuhé)<br>nebojí sa nikoho · body súper +2 → +1</div><div class="pata">hranice zón <span class="pips" aria-label="prejdené 2 z 2"><i class="p"></i><i class="p"></i></span></div>' },
+  };
+  const n4Zaklad = document.getElementById("n4-po-pata").innerHTML;
+  const n4Pill = document.getElementById("n4-pred-pill").innerHTML;
+  const n4 = (smer) => {
+    const dp = document.getElementById("n4-pred-duch"), d = document.getElementById("n4-duch");
+    document.querySelectorAll("[data-n4]").forEach((b) => b.classList.toggle("nahl", b.dataset.n4 === smer));
+    if (!smer) { dp.hidden = true; d.hidden = true; document.getElementById("n4-po-pata").innerHTML = n4Zaklad; document.getElementById("n4-pred-pill").innerHTML = n4Pill; return; }
+    const t = n4Text[smer];
+    dp.hidden = false; dp.style.setProperty("--p", String(t.p));
+    d.hidden = false; d.style.setProperty("--p", String(t.p));
+    document.getElementById("n4-po-pata").innerHTML = t.po;
+    document.getElementById("n4-pred-pill").innerHTML = t.pred;
+  };
+  document.querySelectorAll("[data-n4]").forEach((b) => {
+    b.addEventListener("mouseenter", () => n4(b.dataset.n4));
+    b.addEventListener("focus", () => n4(b.dataset.n4));
+    b.addEventListener("click", () => n4(b.dataset.n4));
+    b.addEventListener("mouseleave", () => n4(null));
+    b.addEventListener("blur", () => n4(null));
+  });
+})();
+</script>
+</body>
+</html>
