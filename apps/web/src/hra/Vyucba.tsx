@@ -525,6 +525,7 @@ export function VyucbaStol({
         <MelicharVBare
           rezim={rezimMelichara(kluce)}
           trieda={`vyucba-bublina ${krok?.kto ?? "hotovo"}`}
+          rozbalena={moznosti.length > 0}
           atributy={{ "data-vyucba-bublina": "", "data-vyucba-krok": krok?.id ?? "hotovo" }}
           // Percentá, nie „krok n / 70“ — ťahy Štamgasta sa spájajú a číslo by preskakovalo (playtest).
           pocitadlo={
@@ -564,7 +565,7 @@ export function VyucbaStol({
               </p>
             )}
             {chyba !== null && krok !== null && <p className="vyucba-chyba">{chyba}</p>}
-            {rada !== null && krok !== null && <p className="vyucba-rada">{rada}</p>}
+            {rada !== null && krok !== null && <p className="vyucba-rada"><VetaMelichara text={rada} sada={sada} /></p>}
             {krok !== null ? (
               krok.melichar.trim() !== "" && (
                 <p>
@@ -573,8 +574,10 @@ export function VyucbaStol({
               )
             ) : (
               <p>
-                Výučbu máš za sebou! Základ vieš, zvyšok ti poviem v prvej partii: keď sa objaví niečo nové — Dlh, Absťák, Pohoršenie —
-                ozvem sa krátkou nápovedou. Zahraj si naostro, Štamgast a jeho kumpáni ťa čakajú.
+                <VetaMelichara
+                  text="Výučbu máš za sebou! Základ vieš, zvyšok ti poviem v prvej partii: keď sa objaví niečo nové — Dlh, Absťák, Pohoršenie — ozvem sa krátkou nápovedou. Zahraj si naostro, Štamgast a jeho kumpáni ťa čakajú."
+                  sada={sada}
+                />
               </p>
             )}
             {moznosti.length > 0 && (
@@ -590,7 +593,11 @@ export function VyucbaStol({
                       disabled={vybrana?.spravna === true && odpoved !== i}
                       aria-pressed={odpoved === i}
                     >
-                      <kbd>{i + 1}</kbd> {m.text}
+                      <kbd>{i + 1}</kbd>{" "}
+                      {/* Jeden kus textu — tlačidlo je flex a medzera by vznikla aj okolo piktogramu. */}
+                      <span>
+                        <VetaMelichara text={m.text} sada={sada} />
+                      </span>
                     </button>
                   );
                 })}
@@ -599,7 +606,7 @@ export function VyucbaStol({
             {vybrana !== undefined && (
               <p className={vybrana.spravna ? "vyucba-vysvetlenie spravna" : "vyucba-vysvetlenie zla"}>
                 <strong>{vybrana.spravna ? "Správne. " : "Nie celkom. "}</strong>
-                {vybrana.vysvetlenie}
+                <VetaMelichara text={vybrana.vysvetlenie} sada={sada} />
                 {!vybrana.spravna && " Skús inú možnosť."}
               </p>
             )}

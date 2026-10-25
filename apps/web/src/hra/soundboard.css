@@ -1,6 +1,8 @@
 /* Soundboard majstra Melichara (dizajn soundboard-20261022-0934, variant B):
- * tlačidlo v hlavičke webu ako .hlava-vrstva, nemodálny panel-cenník 600 px,
- * bublina pod menom súpera. Farby len z tokenov schemy.css. */
+ * tlačidlo v hlavičke webu ako .hlava-vrstva, bublina pod menom súpera.
+ * Od 2026-10-25 (Michal) je pult v jednotnom bare nad stolom namiesto jeho obsahu
+ * (.sb-bar, v mieste Melichara — jbar.css), v pevnej výške baru: nikdy ho nezvýši.
+ * Farby len z tokenov schemy.css. */
 
 .sb {
   position: relative;
@@ -36,6 +38,16 @@
   background: var(--plocha-3);
   border-color: var(--okraj-svetly);
   color: var(--text);
+}
+
+/* Otvorený pult je v bare — tlačidlo to povie farbou Melichara. */
+.sb[data-v-bare="1"] .sb-spust {
+  border-color: var(--akcent);
+}
+
+/* Klik, kým hovorí Melichar: pult sa neotvorí, tlačidlo sa len zatrasie. */
+.sb-spust.pocka {
+  animation: sb-trasie 0.28s ease;
 }
 
 .sb[data-ja="moja"] .sb-spust {
@@ -138,7 +150,7 @@
   animation: sb-vyskoc 0.18s ease-out;
 }
 
-.sb[data-super="1"] .sb-super {
+.sb[data-super="1"][data-v-bare="0"] .sb-super {
   display: inline-flex;
 }
 
@@ -160,15 +172,22 @@
   font-weight: 700;
 }
 
+@keyframes sb-vyskoc {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
 /* Vlny (zvuk hrá) — tvar nesie význam aj bez farby. */
-.sb .vlny {
+:is(.sb, .sb-bar) .vlny {
   display: flex;
   align-items: center;
   gap: 2px;
   height: 14px;
 }
 
-.sb .vlny i {
+:is(.sb, .sb-bar) .vlny i {
   display: block;
   width: 3px;
   height: 100%;
@@ -177,19 +196,19 @@
   animation: sb-vlna 0.9s ease-in-out infinite;
 }
 
-.sb .vlny i:nth-child(1) {
+:is(.sb, .sb-bar) .vlny i:nth-child(1) {
   animation-delay: -0.2s;
 }
 
-.sb .vlny i:nth-child(2) {
+:is(.sb, .sb-bar) .vlny i:nth-child(2) {
   animation-delay: -0.5s;
 }
 
-.sb .vlny i:nth-child(3) {
+:is(.sb, .sb-bar) .vlny i:nth-child(3) {
   animation-delay: -0.1s;
 }
 
-.sb .vlny i:nth-child(4) {
+:is(.sb, .sb-bar) .vlny i:nth-child(4) {
   animation-delay: -0.7s;
 }
 
@@ -204,76 +223,48 @@
 }
 
 .sb-spust .vlny,
-.sb[data-ja="moja"] .sb-stav .vlny {
+.sb-bar[data-ja="moja"] .sb-stav .vlny {
   color: var(--ja);
 }
 
 .sb-super .vlny,
-.sb[data-ja="pripravene"] .sb-stav .vlny {
+.sb-bar[data-ja="pripravene"] .sb-stav .vlny {
   color: var(--su);
 }
 
-/* ---- panel (nemodálny, zarovnaný k pravému okraju tlačidla) ---- */
-.sb-panel {
-  position: absolute;
-  top: calc(100% + 14px);
-  right: 0;
-  z-index: 4;
-  width: 600px;
-  max-width: calc(100vw - 32px);
-  max-height: calc(100vh - 220px);
+/* ---- pult v bare: medailón · stav · pečiatky · hlasitosť · zavrieť ---- */
+.sb-bar {
+  --sb-medailon: 48px;
+  --sb-pecat-h: 62px;
   display: flex;
-  flex-direction: column;
-  white-space: normal;
-  background: var(--plocha);
-  border: 1px solid var(--okraj-svetly);
-  border-radius: 14px;
-  box-shadow:
-    0 24px 60px rgba(0, 0, 0, 0.6),
-    0 0 0 1px rgba(0, 0, 0, 0.35);
-  transform-origin: calc(100% - 50px) 0;
-  animation: sb-rozbal 0.18s ease-out;
-}
-
-.sb-panel::before {
-  content: "";
-  position: absolute;
-  top: -7px;
-  right: 46px;
-  width: 12px;
-  height: 12px;
-  rotate: 45deg;
-  background: var(--plocha);
-  border-left: 1px solid var(--okraj-svetly);
-  border-top: 1px solid var(--okraj-svetly);
-}
-
-@keyframes sb-rozbal {
-  from {
-    opacity: 0;
-    transform: translateY(-6px) scale(0.98);
-  }
-}
-
-@keyframes sb-vyskoc {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-}
-
-.sb-hlava {
-  display: flex;
+  flex: 1;
   align-items: center;
-  gap: 12px;
-  padding: 12px 10px 10px 14px;
-  border-radius: 14px 14px 0 0;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--akcent) 11%, transparent), transparent);
+  gap: 14px;
+  min-width: 0;
+  padding: 0 10px 0 14px;
+  border: 1px solid var(--akcent);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  background: var(--plocha-3);
+  color: var(--text);
+  white-space: nowrap;
+  animation: sb-prichod 0.18s ease-out;
+}
+
+@keyframes sb-prichod {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Keď Melichar hovorí, pult ustúpi (Soundboard ho do baru nedá); toto len poistí prechod. */
+.jbar-mel-miesto:has(> .mel) > .sb-bar {
+  display: none;
 }
 
 .sb-medailon {
-  width: 38px;
-  height: 38px;
+  width: var(--sb-medailon);
+  height: var(--sb-medailon);
   flex: none;
   border-radius: 50%;
   display: grid;
@@ -285,62 +276,63 @@
 }
 
 .sb-medailon svg {
-  width: 24px;
-  height: 24px;
+  width: 66%;
+  height: 66%;
 }
 
-.sb-hlava h2 {
-  margin: 0;
-  font: 800 1.12rem/1.15 var(--nadpis);
-  letter-spacing: 0.01em;
+.sb-medailon.hovori {
+  border-color: var(--akcent);
+  box-shadow:
+    inset 0 0 0 2px var(--pozadie),
+    0 0 0 3px color-mix(in srgb, var(--akcent) 25%, transparent);
 }
 
-.sb-hlava p {
-  margin: 1px 0 0;
-  font-size: 0.8rem;
-  color: var(--slaby-text);
-}
-
-.sb-zavriet {
-  margin-left: auto;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  border: 1px solid transparent;
-  background: transparent;
-  color: var(--tlmeny);
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-.sb-zavriet:hover {
-  background: var(--plocha-3);
-  color: var(--text);
-  border-color: var(--okraj);
-}
-
-/* Pás stavu: vždy rovnako vysoký, nech panel neskáče. */
-.sb-stav {
+/* Stav: vždy rovnako široký, nech pečiatky neskáču; správa smie na dva riadky. */
+.sb-info {
   position: relative;
   display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 32px;
-  flex: none;
-  padding: 0 14px;
-  font-size: 0.84rem;
-  color: var(--slaby-text);
-  border-top: 1px solid var(--okraj);
-  border-bottom: 1px solid var(--okraj);
-  background: color-mix(in srgb, var(--pozadie) 45%, transparent);
+  flex: 0 0 180px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  min-width: 0;
+  padding-bottom: 4px;
 }
 
-.sb[data-ja="moja"] .sb-stav,
-.sb[data-ja="odpocet"] .sb-stav {
+.sb-kto {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font: 700 0.7rem/1.2 var(--pismo);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--akcent);
+}
+
+.sb-stav {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  font-size: 0.82rem;
+  line-height: 1.2;
+  white-space: normal;
+  color: var(--slaby-text);
+}
+
+.sb-stav-text {
+  display: -webkit-box;
+  min-width: 0;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.sb-bar[data-ja="moja"] .sb-stav,
+.sb-bar[data-ja="odpocet"] .sb-stav {
   color: var(--ja);
 }
 
-.sb[data-ja="pripravene"][data-super="1"] .sb-stav {
+.sb-bar[data-ja="pripravene"][data-super="1"] .sb-stav {
   color: var(--su);
 }
 
@@ -353,18 +345,18 @@
 .sb-pas {
   position: absolute;
   left: 0;
-  bottom: -1px;
+  bottom: 0;
   height: 3px;
   background: var(--ja);
   border-radius: 0 3px 3px 0;
 }
 
-/* Klik počas hrania či odpočtu nič nespustí, len zatrasie pásom stavu. */
-.sb-stav.trasie {
+/* Klik počas hrania či odpočtu nič nespustí, len zatrasie stavom. */
+.sb-info.trasie {
   animation: sb-trasie 0.28s ease;
 }
 
-.sb-stav.trasie2 {
+.sb-info.trasie2 {
   animation: sb-trasie2 0.28s ease;
 }
 
@@ -392,20 +384,63 @@
   }
 }
 
-.sb-stlmene {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 14px;
-  font-size: 0.8rem;
-  color: var(--tlmeny);
-  background: color-mix(in srgb, var(--info) 8%, transparent);
-  border-bottom: 1px solid var(--okraj);
+.sb-prazdne {
+  flex: 1;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--slaby-text);
+  font-size: 0.85rem;
 }
 
-.sb-stlmene button {
-  margin-left: auto;
+.sb-bar kbd {
   flex: none;
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  font: 700 0.7rem/1 var(--pismo);
+  color: var(--tlmeny);
+  background: var(--pozadie);
+  border: 1px solid var(--okraj-svetly);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+}
+
+.sb-ovladanie {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--slaby-text);
+}
+
+.sb-ovladanie label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--tlmeny);
+}
+
+.sb-reproduktor {
+  width: 16px;
+  height: 16px;
+}
+
+.sb-ovladanie input[type="range"] {
+  width: 84px;
+  accent-color: var(--akcent);
+}
+
+.sb-ovladanie output {
+  min-width: 3.4em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+.sb-zapnut {
   height: 28px;
   padding: 0 10px;
   border-radius: 7px;
@@ -416,115 +451,36 @@
   border: 1px solid var(--okraj-svetly);
 }
 
-/* Telo: pult s pečiatkami — na 1366 × 650 bez posúvania. */
-.sb-telo {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 10px 14px 12px;
-  overflow-y: auto;
-}
-
-.sb-prazdne {
-  margin: 0;
-  color: var(--slaby-text);
-  font-size: 0.85rem;
-}
-
-.sb kbd {
-  flex: none;
-  display: inline-grid;
-  place-items: center;
-  min-width: 22px;
-  height: 22px;
-  padding: 0 5px;
-  font: 700 0.72rem/1 var(--pismo);
+.sb-zavriet {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
   color: var(--tlmeny);
-  background: var(--pozadie);
-  border: 1px solid var(--okraj-svetly);
-  border-bottom-width: 2px;
-  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
 }
 
-.sb-pata {
-  display: flex;
-  /* Posuvník, percentá a skratky sa do 600 px nezmestia — skratky prejdú pod (UI inšpekcia U12). */
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px;
-  flex: none;
-  padding: 9px 14px 11px;
-  border-top: 1px solid var(--okraj);
-  font-size: 0.8rem;
-  color: var(--slaby-text);
-}
-
-.sb-pata label {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--tlmeny);
-}
-
-.sb-pata input[type="range"] {
-  width: 120px;
-  accent-color: var(--akcent);
-}
-
-.sb-pata output {
-  min-width: 3.4em;
-  font-variant-numeric: tabular-nums;
+.sb-zavriet:hover {
+  background: var(--plocha-2);
   color: var(--text);
+  border-color: var(--okraj);
 }
 
-.sb-pata .skratky {
-  margin-left: auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.sb-pata .skratky kbd {
-  min-width: 20px;
-  height: 20px;
-  font-size: 0.68rem;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .sb .vlny i {
-    animation: none;
-  }
-  .sb-panel,
-  .sb-super,
-  .sb-stav.trasie,
-  .sb-stav.trasie2,
-  .sb-bodka {
-    animation: none;
-  }
-}
-
-/* Hra na mobile nie je podporovaná (Michal 2026-10-22) — soundboard tam netreba. */
-@media (max-width: 760px) {
-  .sb {
-    display: none;
-  }
-}
-
-.sb-pata label,
-.sb-pata .skratky {
-  white-space: nowrap;
-}
-
-/* ---- pult s pečiatkami skupín (Michal 2026-10-23) ----
+/* ---- pečiatky skupín (Michal 2026-10-23) ----
  * Každá skupina je pečiatka v jej farbe (--farba z tokenu skupiny), mierne
  * nakrivo ako na pulte; pri buchnutí odtlačok, kým hrá, vlny namiesto ikony.
  * Text na pečiatke je farba skupiny primiešaná k --text (60 %) a pozadie sa
- * v žiadnom stave nemení — tak drží 4.5:1 vo všetkých schémach (UI inšpekcia). */
+ * v žiadnom stave nemení — tak drží 4.5:1 vo všetkých schémach (UI inšpekcia).
+ * V bare sú v jednom rade a delia sa o šírku; názov sa radšej zalomí, než oreže. */
 .sb-pult {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
-  gap: 12px;
-  padding: 4px 2px 2px;
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 0 4px;
 }
 
 .sb-pecat {
@@ -532,13 +488,15 @@
   --naklon: -1deg;
   position: relative;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 3px;
-  min-height: 104px;
+  flex: 1 1 0;
+  align-items: center;
+  gap: 8px;
   min-width: 0;
-  padding: 9px 10px 8px;
+  max-width: 200px;
+  height: var(--sb-pecat-h);
+  padding: 4px 8px 4px 7px;
   text-align: left;
+  white-space: normal;
   color: var(--text);
   background: color-mix(in srgb, var(--plocha-2) 86%, var(--farba));
   border: 3px double var(--farba);
@@ -556,13 +514,13 @@
 .sb-pecat:hover:not([aria-disabled="true"]),
 .sb-pecat:focus-visible {
   rotate: 0deg;
-  translate: 0 -2px;
-  box-shadow: 0 5px 0 rgba(0, 0, 0, calc(0.35 * var(--tma)));
+  translate: 0 -1px;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, calc(0.35 * var(--tma)));
 }
 
 .sb-pecat:focus-visible {
   outline: 2px solid var(--farba);
-  outline-offset: 3px;
+  outline-offset: 2px;
 }
 
 .sb-pecat:active:not([aria-disabled="true"]) {
@@ -584,56 +542,49 @@
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--farba) 55%, transparent);
 }
 
-.sb-pecat-hore {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-}
-
 .sb-pecat-ik {
   display: grid;
+  flex: none;
   place-items: center;
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   color: var(--farba);
 }
 
 .sb-pecat-ik svg {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
 }
 
 .sb-pecat-ik .vlny {
-  height: 18px;
+  height: 16px;
 }
 
 .sb-ikona-text {
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   line-height: 1;
 }
 
+/* Kláves ako štítok v rohu pečiatky — názvu nechá celú šírku. */
 .sb-pecat kbd {
+  position: absolute;
+  top: -9px;
+  right: -7px;
+  background: var(--plocha-3);
   color: color-mix(in srgb, var(--farba) 60%, var(--text));
   border-color: color-mix(in srgb, var(--farba) 60%, var(--okraj-svetly));
 }
 
 .sb-pecat-nazov {
-  font: 800 0.98rem/1.15 var(--nadpis);
-  letter-spacing: 0.04em;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  min-width: 0;
+  font: 800 0.8rem/1.12 var(--nadpis);
+  letter-spacing: 0.03em;
   text-transform: uppercase;
   color: color-mix(in srgb, var(--farba) 60%, var(--text));
-}
-
-.sb-pecat-citat {
-  font: italic 400 0.78rem/1.25 var(--pismo);
-  color: var(--tlmeny);
-}
-
-.sb-pecat-pocet {
-  margin-top: auto;
-  font: 500 0.72rem/1.2 var(--pismo);
-  color: color-mix(in srgb, var(--tlmeny) 75%, var(--text));
 }
 
 /* Odtlačok: kruh atramentu v farbe skupiny sa rozplynie od stredu. */
@@ -694,24 +645,92 @@
   color: var(--ja);
 }
 
-.sb-medailon {
-  width: 48px;
-  height: 48px;
+/* Do 1480 px šírky (7 pečiatok): užší stav a posuvník. */
+@media (max-width: 1480px) {
+  .sb-bar {
+    gap: 10px;
+  }
+
+  .sb-info {
+    flex-basis: 150px;
+  }
+
+  .sb-pult {
+    gap: 8px;
+  }
+
+  .sb-ovladanie input[type="range"] {
+    width: 70px;
+  }
 }
 
-.sb-medailon svg {
-  width: 32px;
-  height: 32px;
+/* Nižší notebook (bar 63 px). */
+@media (min-width: 761px) and (max-height: 919px) {
+  .sb-bar {
+    --sb-medailon: 40px;
+    --sb-pecat-h: 47px;
+  }
+
+  .sb-pecat-nazov {
+    font-size: 0.74rem;
+  }
+
+  .sb-stav {
+    font-size: 0.78rem;
+  }
 }
 
-.sb-medailon.hovori {
-  border-color: var(--akcent);
-  box-shadow:
-    inset 0 0 0 2px var(--pozadie),
-    0 0 0 3px color-mix(in srgb, var(--akcent) 25%, transparent);
+/* 1366 × 650 (bar 52 px). */
+@media (min-width: 761px) and (max-height: 719px) {
+  .sb-bar {
+    --sb-medailon: 34px;
+    --sb-pecat-h: 40px;
+    padding-left: 10px;
+  }
+
+  .sb-kto {
+    font-size: 0.6rem;
+  }
+
+  .sb-stav {
+    font-size: 0.72rem;
+  }
+
+  .sb-pecat {
+    gap: 6px;
+    padding: 2px 6px;
+  }
+
+  .sb-pecat-ik,
+  .sb-pecat-ik svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .sb-pecat-nazov {
+    font-size: 0.66rem;
+  }
+
+  .sb-bar kbd {
+    min-width: 18px;
+    height: 18px;
+    font-size: 0.64rem;
+  }
+
+  .sb-zavriet {
+    width: 28px;
+    height: 28px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  :is(.sb, .sb-bar) .vlny i,
+  .sb-bar,
+  .sb-super,
+  .sb-spust.pocka,
+  .sb-info.trasie,
+  .sb-info.trasie2,
+  .sb-bodka,
   .fuz.hovori .fuz-l,
   .fuz.hovori .fuz-p,
   .sb-pecat-odtlacok {
@@ -722,22 +741,10 @@
   }
 }
 
-/* Nízky notebook (1366 × 650): pečiatky bez citátu a panel takmer na výšku okna, nech sa celý pult zmestí bez posúvania. */
-@media (max-height: 719px) {
-  .sb-panel {
-    max-height: calc(100vh - 80px);
-  }
-
-  .sb-pult {
-    gap: 10px;
-  }
-
-  .sb-pecat {
-    min-height: 0;
-    padding: 7px 9px 6px;
-  }
-
-  .sb-pecat-citat {
+/* Hra na mobile nie je podporovaná (Michal 2026-10-22) — soundboard tam netreba. */
+@media (max-width: 760px) {
+  .sb,
+  .sb-bar {
     display: none;
   }
 }

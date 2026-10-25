@@ -989,6 +989,52 @@
   }
 }
 
+/* Otázka výučby (Michal 2026-10-25: v kvíze sa nesmie scrollovať). Otázka je blokujúci krok
+   a stôl je zošednutý — bublina sa rozbalí dole cez stôl ako karta pod barom, celá bez
+   posúvania; bar ostane rovnako vysoký (bublina je mimo toku) a po „ďalej“ sa zbalí. */
+@media (min-width: 761px) {
+  .mel.rozbalena {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    min-height: 100%;
+    padding-block: 10px;
+    border-bottom-width: 2px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+  }
+
+  .mel.rozbalena .mel-telo {
+    max-height: none;
+  }
+
+  .mel.rozbalena .mel-kto {
+    display: flex;
+  }
+
+  .mel.rozbalena .mel-veta {
+    overflow: visible;
+  }
+
+  .mel.rozbalena .mel-veta .vyucba-text {
+    display: block;
+  }
+
+  .mel.rozbalena .mel-veta .vyucba-moznosti {
+    margin: 6px 0 2px;
+    gap: 6px 10px;
+  }
+
+  .mel.rozbalena .mel-veta .vyucba-moznost {
+    padding: 4px 12px;
+  }
+
+  .mel.rozbalena .mel-veta .vyucba-vysvetlenie {
+    margin-top: 6px;
+  }
+}
+
 /* Mobil: bublina v toku, výška podľa vety. */
 @media (max-width: 760px) {
   .mel {
