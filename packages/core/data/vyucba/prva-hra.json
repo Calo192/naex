@@ -254,7 +254,7 @@
     {
       "id": "i-spoj",
       "kto": "info",
-      "melichar": "Kde sa dve karty dotýkajú, je spoj. Keď sa na ňom stretnú dve akcie v rovnakej výške, obe platia. Akcia bez partnera nerobí nič. Ako niektorí. Zámočník sa s akciou Jednoty nestretol.",
+      "melichar": "Kde sa dve karty dotýkajú, je spoj. Keď sa na ňom stretnú dve akcie v rovnakej výške, obe platia. Akcia nespojená so žiadnou inou akciou nerobí nič. Ako niektorí. Zámočník sa s akciou Jednoty nestretol.",
       "zvyraznit": [
         "linia"
       ]
@@ -322,7 +322,7 @@
           }
         ]
       },
-      "melichar": "Polož Hasiča na ľavý koniec svojej strany, za Pijana, a potvrď. Pijan má [PoškodeniePečene] Poškodenie pečene na oboch hranách a Hasičova [Rana] Rana sa spojí s jedným: 2 : 3 a pečeň +1, o tej neskôr. [Petelica] Petelica ostane bez partnera a zatiaľ neplatí. Zapamätaj si to, ty debil."
+      "melichar": "Polož Hasiča na ľavý koniec svojej strany, za Pijana, a potvrď. Pijan má [PoškodeniePečene] Poškodenie pečene na oboch hranách a Hasičova [Rana] Rana sa spojí s jedným: 2 : 3 a pečeň +1, o tej neskôr. [Petelica] Petelica ostane nespojená so žiadnou akciou a zatiaľ neplatí. Zapamätaj si to, ty debil."
     },
     {
       "id": "k-zh-bot3",
@@ -458,7 +458,7 @@
         "type": "naex",
         "uid": "linia:hasic"
       },
-      "melichar": "Vyber Hasiča a daj NA EX (N). Dá sa len na kartu, ktorá má spojenú aj osamotenú akciu. Pamätáš na tú [Petelica] Petelicu bez partnera? Nie? Teraz udrie dvakrát, 6 tuhých: 7 : 2.",
+      "melichar": "Vyber Hasiča a daj NA EX (N). Dá sa len na kartu, ktorá má spojenú aj osamotenú akciu. Pamätáš na tú [Petelica] Petelicu nespojenú so žiadnou akciou? Nie? Teraz udrie dvakrát, 6 tuhých: 7 : 2.",
       "zvyraznit": [
         "linia:hasic",
         "tlacidlo:naex"
@@ -478,14 +478,14 @@
       "melichar": "Či si počúval: na akú kartu sa NA EX oplatí?",
       "moznosti": [
         {
-          "text": "Moja karta so silnou akciou bez partnera.",
+          "text": "Moja karta so silnou akciou nespojenou so žiadnou inou akciou.",
           "spravna": true,
-          "vysvetlenie": "Áno, tú zdvojí. Aj súperova so silnou spojenou akciou je dobrý terč, len jeho akcie bez partnera mu NA EX zdvojí."
+          "vysvetlenie": "Áno, tú zdvojí. Aj súperova so silnou spojenou akciou je dobrý terč, len jeho akcie nespojené so žiadnou inou akciou mu NA EX zdvojí."
         },
         {
           "text": "Súperova karta so silnou spojenou akciou.",
           "spravna": true,
-          "vysvetlenie": "Áno, tú mu zruší. Len jeho akcie bez partnera mu NA EX zdvojí, tak nech sú slabé. A svoju kartu so silnou akciou bez partnera zdvojíš tiež."
+          "vysvetlenie": "Áno, tú mu zruší. Len jeho akcie nespojené so žiadnou inou akciou mu NA EX zdvojí, tak nech sú slabé. A svoju kartu so silnou nespojenou akciou zdvojíš tiež."
         }
       ]
     },
@@ -630,12 +630,12 @@
     {
       "id": "i-zhrnutie",
       "kto": "info",
-      "melichar": "Zopakujem to, pre istotu: najprv zoberieš karty zo šenku, potom Zhromaždenie, Pitka a bitka. Platia len spojené akcie. NA EX zdvojí akcie bez partnera. Bitku vyhrá viac tuhého, prebytočné tuhé desí starších a body dávajú starší."
+      "melichar": "Zopakujem to, pre istotu: najprv zoberieš karty zo šenku, potom Zhromaždenie, Pitka a bitka. Platia len spojené akcie. NA EX zdvojí akcie nespojené so žiadnou inou akciou. Bitku vyhrá viac tuhého, prebytočné tuhé desí starších a body dávajú starší."
     },
     {
       "id": "q-plan-naex",
       "kto": "otazka",
-      "melichar": "V Pitke máš plný poldeci a Hasiča so spojenou Ranou a Petelicou bez partnera, čo s ním?",
+      "melichar": "V Pitke máš plný poldeci a Hasiča so spojenou Ranou a Petelicou nespojenou so žiadnou akciou, čo s ním?",
       "moznosti": [
         {
           "text": "Dám na Hasiča NA EX.",
@@ -645,7 +645,7 @@
         {
           "text": "Nič, Petelica aj tak platí.",
           "spravna": false,
-          "vysvetlenie": "Akcia bez partnera nerobí nič, Petelica dá 0. S NA EX by dala 6. Nevadí, na to sú výučby."
+          "vysvetlenie": "Akcia nespojená so žiadnou inou akciou nerobí nič, Petelica dá 0. S NA EX by dala 6. Nevadí, na to sú výučby."
         }
       ]
     },

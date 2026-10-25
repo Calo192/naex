@@ -52,7 +52,7 @@
         "podmienka": "view.pitkaStav.reakcia === ja",
         "jadro": ["packages/core/src/engine.ts:174 PitkaStav.reakcia", "docs/PRAVIDLA.md §7 Odpoveď na NA EX"]
       },
-      "melichar": "Pozorne, hovorím to len raz. NA EX sa odkryli a ty smieš za súperovo NA EX položiť jednu kartu. Keď ňou spojíš akciu bez partnera na karte s NA EX, NA EX ju zruší namiesto zdvojenia.",
+      "melichar": "Pozorne, hovorím to len raz. NA EX sa odkryli a ty smieš za súperovo NA EX položiť jednu kartu. Keď ňou spojíš akciu, ktorá na karte s NA EX nebola spojená so žiadnou inou akciou, NA EX ju zruší namiesto zdvojenia.",
       "zvyraznit": ["tlacidlo:bez-odpovede"]
     },
     {
