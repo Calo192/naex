@@ -43,6 +43,62 @@ describe("Melichar v bare", () => {
     expect(castiVety("[Cigareta][PoškodeniePečene]", (k) => akcie.has(k))).toEqual([{ akcia: "Cigareta" }, { akcia: "PoškodeniePečene" }]);
   });
 
+  it("slovo akcie dostane piktogram aj bez značky — v každom páde, s veľkým aj malým písmenom", () => {
+    const vsetky = (): boolean => true;
+    expect(castiVety("Viera ťa podrží.", vsetky)).toEqual([{ akcia: "Viera" }, { text: "Viera ťa podrží." }]);
+    expect(castiVety("Máš dve rany a žiadnu vieru.", vsetky)).toEqual([
+      { text: "Máš dve " },
+      { akcia: "Rana" },
+      { text: "rany a žiadnu " },
+      { akcia: "Viera" },
+      { text: "vieru." },
+    ]);
+    for (const [slovo, akcia] of [
+      ["Vierou", "Viera"],
+      ["Rán", "Rana"],
+      ["Ranami", "Rana"],
+      ["Dlhy", "Dlh"],
+      ["dlhov", "Dlh"],
+      ["Dlhu", "Dlh"],
+      ["cigariet", "Cigareta"],
+      ["Cigaretu", "Cigareta"],
+      ["poldeci", "Poldeci"],
+      ["Petelicou", "Petelica"],
+      ["Pohoršenia", "Pohoršenie"],
+      ["poškodenie pečene", "PoškodeniePečene"],
+      ["Vízie", "Vízia"],
+      ["Robotu", "Robota"],
+    ] as const) {
+      expect(castiVety(`Tu je ${slovo} a nič viac`, vsetky)).toEqual([{ text: "Tu je " }, { akcia }, { text: `${slovo} a nič viac` }]);
+    }
+  });
+
+  it("bez falošných zhôd: iné slová s rovnakým kmeňom ostanú textom", () => {
+    for (const veta of ["Ráno dlho ranil.", "Ranný vlak, dlhý stôl, robotník.", "Vierka a Ranáková", "VIERA kričí", "Cigaretka"]) {
+      expect(castiVety(veta, () => true)).toEqual([{ text: veta }]);
+    }
+  });
+
+  it("v jednej vete len pri prvom výskyte, pri značke sa nezdvojí; nová veta má vlastný", () => {
+    expect(castiVety("Rana a Rana. Rana!", () => true)).toEqual([
+      { akcia: "Rana" },
+      { text: "Rana a Rana. " },
+      { akcia: "Rana" },
+      { text: "Rana!" },
+    ]);
+    expect(castiVety("Za jednu [Cigareta] cigaretu a ďalšiu cigaretu.", () => true)).toEqual([
+      { text: "Za jednu " },
+      { akcia: "Cigareta" },
+      { text: " cigaretu a ďalšiu cigaretu." },
+    ]);
+    // Slovo pred značkou tej istej akcie tiež ikonu nedostane.
+    expect(castiVety("Viera [Viera] stačí.", () => true)).toEqual([{ text: "Viera " }, { akcia: "Viera" }, { text: " stačí." }]);
+  });
+
+  it("akcia, ktorú hra nepozná, ikonu nedostane", () => {
+    expect(castiVety("Rana a Viera.", (k) => k === "Viera")).toEqual([{ text: "Rana a " }, { akcia: "Viera" }, { text: "Viera." }]);
+  });
+
   it("neznámy kľúč aj zástupné meno jadra ostanú textom", () => {
     expect(castiVety("{lokalita} a [Nič] [Rana]", (k) => k === "Rana")).toEqual([{ text: "{lokalita} a [Nič] " }, { akcia: "Rana" }]);
     expect(castiVety("bez značiek", () => true)).toEqual([{ text: "bez značiek" }]);

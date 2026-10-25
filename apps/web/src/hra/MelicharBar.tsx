@@ -2,6 +2,7 @@
 // jeho bublina obsadí bar, ktorý ostane rovnako vysoký; po „ďalej“ či zatvorení sa bar
 // vráti. Hovorí tak výučba, nápovedy aj hláška pri pečiatke momentu. Bublina sa vkladá
 // do miesta v bare (portál) — výučba a nápovedy žijú mimo hernej plochy (Hra.tsx).
+// Na to isté miesto ide aj pult hlášok (Soundboard); keď Melichar hovorí, pult mu ustúpi.
 
 import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
@@ -15,7 +16,7 @@ import { MELICHAR_PRIBEH } from "./melicharPribeh.ts";
 export const ID_MIESTA_MELICHARA = "jbar-melichar";
 
 /** Miesto v bare — po novej partii je to iný prvok, preto sa overuje, či ešte žije. */
-function useMiestoVBare(): HTMLElement | null {
+export function useMiestoVBare(): HTMLElement | null {
   const [miesto, setMiesto] = useState<HTMLElement | null>(null);
   useEffect(() => {
     const najdi = (): void => setMiesto((m) => (m !== null && m.isConnected ? m : document.getElementById(ID_MIESTA_MELICHARA)));
@@ -24,6 +25,23 @@ function useMiestoVBare(): HTMLElement | null {
     return () => clearInterval(t);
   }, []);
   return miesto;
+}
+
+/** Hovorí Melichar v bare (výučba, nápoveda, hláška momentu)? Pult hlášok mu vtedy ustúpi (Soundboard). */
+export function useMelicharHovoriVBare(miesto: HTMLElement | null): boolean {
+  const [hovori, setHovori] = useState(false);
+  useEffect(() => {
+    if (miesto === null) {
+      setHovori(false);
+      return;
+    }
+    const zisti = (): void => setHovori([...miesto.children].some((el) => el.classList.contains("mel")));
+    zisti();
+    const mo = new MutationObserver(zisti);
+    mo.observe(miesto, { childList: true });
+    return () => mo.disconnect();
+  }, [miesto]);
+  return hovori;
 }
 
 /** Veta Melichara s piktogramami akcií namiesto značiek [Rana] (bar.ts, castiVety). */
@@ -86,15 +104,20 @@ export interface MelicharVBareProps {
   /** Vpravo: stav a tlačidlá („ďalej“, „rozumiem“…). */
   readonly vpravo: ReactNode;
   readonly trieda?: string;
+  /**
+   * Otázka výučby (Michal 2026-10-25: v kvíze sa nesmie scrollovať): bublina sa rozbalí dole
+   * cez zošednutý stôl ako karta pod barom; bar ostane rovnako vysoký.
+   */
+  readonly rozbalena?: boolean;
   /** Atribúty pre nástroje (data-vyucba-bublina, data-vyucba-krok, data-napoveda). */
   readonly atributy?: Readonly<Record<`data-${string}`, string>>;
 }
 
-export function MelicharVBare({ rezim, children, pocitadlo, vpravo, trieda, atributy }: MelicharVBareProps) {
+export function MelicharVBare({ rezim, children, pocitadlo, vpravo, trieda, rozbalena = false, atributy }: MelicharVBareProps) {
   const miesto = useMiestoVBare();
   if (miesto === null) return null;
   return createPortal(
-    <aside className={`mel${trieda === undefined ? "" : ` ${trieda}`}`} data-mel-rezim={rezim} aria-label={MELICHAR_PRIBEH.meno} {...atributy}>
+    <aside className={`mel${trieda === undefined ? "" : ` ${trieda}`}${rozbalena ? " rozbalena" : ""}`} data-mel-rezim={rezim} aria-label={MELICHAR_PRIBEH.meno} {...atributy}>
       <AvatarMelichara />
       <div className="mel-telo">
         <span className="mel-kto">

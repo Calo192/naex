@@ -55,29 +55,95 @@ export function rezimMelichara(kluce: readonly string[]): RezimMelichara {
 
 export type CastVety = { readonly text: string } | { readonly akcia: string };
 
+/** Tvary podstatného mena vo všetkých pádoch oboch čísel (zhodné tvary len raz). */
+const tvary = (...t: readonly string[]): readonly string[] => [...new Set(t)];
+const podlaZena = (k: string, gPl: string, sgG = `${k}y`, sgD = `${k}e`): readonly string[] =>
+  tvary(`${k}a`, sgG, sgD, `${k}u`, `${k}ou`, gPl, `${k}ám`, `${k}ami`, `${k}ách`);
+const podlaVysvedcenie = (k: string): readonly string[] =>
+  tvary(`${k}ie`, `${k}ia`, `${k}iu`, `${k}ím`, `${k}í`, `${k}iam`, `${k}iami`, `${k}iach`);
+
 /**
- * Značka piktogramu v reči Melichara: [Rana], [Cigareta], [PoškodeniePečene] — kľúč akcie
- * (ako v tvorcovi) sa v bubline nahradí jej piktogramom. Slovo za ním píše autor sám, lebo sa
- * skloňuje („jednu [Cigareta] cigaretu“). Hranaté zátvorky, lebo kučeravé {lokalita}, {karta}
- * sú zástupné mená, ktoré dopĺňa jadro. Neznámy kľúč ostane textom.
+ * Slová, pri ktorých Melichar ukáže piktogram akcie aj bez značky (Michal 2026-10-25: „Keď
+ * Melichar hovorí o akcii, treba ukázať piktogram“). Vymenované tvary, nie voľný kmeň — inak
+ * by ikonu dostalo aj „ráno“ či „dlho“. Začiatočné písmeno smie byť veľké aj malé.
+ */
+export const TVARY_AKCII: Readonly<Record<string, readonly string[]>> = {
+  Viera: tvary(...podlaZena("Vier", "Vier"), "Vieram", "Vierach"),
+  Rana: podlaZena("Ran", "Rán"),
+  Pecka: podlaZena("Peck", "Peciek"),
+  Petelica: tvary(...podlaZena("Petelic", "Petelíc", "Petelice", "Petelici"), "Peteliciam", "Peteliciach"),
+  Povera: podlaZena("Pover", "Pover"),
+  Cigareta: podlaZena("Cigaret", "Cigariet"),
+  Robota: podlaZena("Robot", "Robôt"),
+  Vízia: tvary("Vízia", "Vízie", "Vízii", "Víziu", "Víziou", "Vízií", "Víziám", "Víziami", "Víziách"),
+  Pohoršenie: podlaVysvedcenie("Pohoršen"),
+  Obmedzenie: podlaVysvedcenie("Obmedzen"),
+  Posilnenie: podlaVysvedcenie("Posilnen"),
+  PoškodeniePečene: podlaVysvedcenie("Poškoden").map((t) => `${t} pečene`),
+  Dlh: tvary("Dlh", "Dlhu", "Dlhom", "Dlhy", "Dlhov", "Dlhmi", "Dlhoch"),
+  Odpor: tvary("Odpor", "Odporu", "Odpore", "Odporom", "Odpory", "Odporov", "Odporoch"),
+  Poldeci: tvary("Poldeci"),
+};
+
+const KLUC_TVARU = new Map(Object.entries(TVARY_AKCII).flatMap(([kluc, t]) => t.map((x) => [x.toLowerCase(), kluc] as const)));
+const vzorTvaru = (t: string): string => {
+  const [prve = "", ...zvysok] = [...t];
+  return `[${prve.toUpperCase()}${prve.toLowerCase()}]${zvysok.join("").replace(/ /g, "\\s+")}`;
+};
+/** Dlhšie tvary skôr — „Ranami“ pred „Rana“; hranica slova aj pre diakritiku (\p{L}). */
+const SLOVO_AKCIE = new RegExp(
+  `(?<![\\p{L}\\p{N}])(?:${Object.values(TVARY_AKCII)
+    .flat()
+    .sort((x, y) => y.length - x.length)
+    .map(vzorTvaru)
+    .join("|")})(?![\\p{L}\\p{N}])`,
+  "gu",
+);
+const ZNACKA = /\[([^[\]\s]+)\]/g;
+/** Veta končí bodkou, otáznikom, výkričníkom či trojbodkou; zvyšok bez nich je posledná veta. */
+const VETA = /[^.!?…]*(?:[.!?…]+|$)/g;
+
+function pridajText(out: CastVety[], text: string): void {
+  if (text === "") return;
+  const posledna = out.at(-1);
+  if (posledna !== undefined && "text" in posledna) out[out.length - 1] = { text: posledna.text + text };
+  else out.push({ text });
+}
+
+/**
+ * Text Melichara na kúsky text / piktogram akcie. Značka [Rana], [Cigareta], [PoškodeniePečene]
+ * — kľúč akcie (ako v tvorcovi) — sa nahradí jej piktogramom; slovo za ňou píše autor sám
+ * („jednu [Cigareta] cigaretu“). Hranaté zátvorky, lebo kučeravé {lokalita}, {karta} sú zástupné
+ * mená, ktoré dopĺňa jadro. Neznámy kľúč ostane textom. Bez značky dostane piktogram pred seba
+ * slovo akcie (TVARY_AKCII), v každej vete len prvý výskyt a len keď v nej akcia značku nemá.
  */
 export function castiVety(text: string, jeAkcia: (kluc: string) => boolean): CastVety[] {
   const out: CastVety[] = [];
-  let zvysok = "";
-  let i = 0;
-  for (const m of text.matchAll(/\[([^[\]\s]+)\]/g)) {
-    const kluc = m[1] ?? "";
-    zvysok += text.slice(i, m.index);
-    i = m.index + m[0].length;
-    if (!jeAkcia(kluc)) {
-      zvysok += m[0];
-      continue;
+  for (const [veta] of text.matchAll(VETA)) {
+    if (veta === "") continue;
+    const ukazane = new Set([...veta.matchAll(ZNACKA)].map((m) => m[1] ?? "").filter(jeAkcia));
+    const slova = (kus: string): void => {
+      let i = 0;
+      for (const m of kus.matchAll(SLOVO_AKCIE)) {
+        const kluc = KLUC_TVARU.get(m[0].replace(/\s+/g, " ").toLowerCase());
+        if (kluc === undefined || ukazane.has(kluc) || !jeAkcia(kluc)) continue;
+        ukazane.add(kluc);
+        pridajText(out, kus.slice(i, m.index));
+        out.push({ akcia: kluc });
+        pridajText(out, m[0]);
+        i = m.index + m[0].length;
+      }
+      pridajText(out, kus.slice(i));
+    };
+    let i = 0;
+    for (const m of veta.matchAll(ZNACKA)) {
+      const kluc = m[1] ?? "";
+      if (!jeAkcia(kluc)) continue;
+      slova(veta.slice(i, m.index));
+      out.push({ akcia: kluc });
+      i = m.index + m[0].length;
     }
-    if (zvysok !== "") out.push({ text: zvysok });
-    zvysok = "";
-    out.push({ akcia: kluc });
+    slova(veta.slice(i));
   }
-  zvysok += text.slice(i);
-  if (zvysok !== "") out.push({ text: zvysok });
   return out;
 }

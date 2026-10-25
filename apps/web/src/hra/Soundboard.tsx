@@ -1,22 +1,26 @@
 // Soundboard majstra Melichara (Michal 2026-10-22, dizajn soundboard-20261022-0934,
 // variant B): hráč si v partii sám púšťa hlášky, počuje ich aj súper. Tlačidlo
-// je v hlavičke webu pri mene súpera, panel je nemodálny „krčmový pult“.
+// je v hlavičke webu pri mene súpera.
 // Od 2026-10-23 (Michal) je pult z pečiatok skupín: skupiny sú dáta (priečinok
 // pri importe + skupina.json: názov, ikona, farba, kláves), nová skupina sa
 // objaví sama. Kláves aj klik pustí náhodnú hlášku zo skupiny, nie poslednú.
 // Kým hrá vlastná hláška a 2 s po nej, ďalšiu nepustí (stráži to aj server);
 // súperova ho neblokuje. Názov hlášky sa pri prehrávaní neukazuje.
+// Od 2026-10-25 (Michal) nepláva pod hlavičkou: otvorený pult nahradí obsah
+// jednotného baru nad stolom (ako Body prepnú bar hráča na podmienky), v jeho výške;
+// po zatvorení sa bar vráti. Melichar vo výučbe či v nápovede má prednosť (pult.ts).
 
 import { useCallback, useEffect, useId, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent } from "react";
+import { createPortal } from "react-dom";
 import { api } from "../lib/api.ts";
 import { MELICHAR_PREDVOLENY, useUcet, type Pouzivatel } from "../lib/ucet.tsx";
 import { hlasitostZvuku } from "./Hudba.tsx";
 import { nacitajMelichara, urlHlasky, type HlaskaMelichara, type Melichar, type SkupinaMelichara } from "./Melichar.tsx";
+import { useMelicharHovoriVBare, useMiestoVBare } from "./MelicharBar.tsx";
+import { TICHO_MS, prepniPult, pultVBare, stavPauzy, zostavaPauzy } from "./pult.ts";
 import type { HlaskaVPartii } from "./useHra.ts";
 import "./soundboard.css";
 
-/** Pauza po vlastnej hláške — rovnakú stráži server (MELICHAR_PAUZA_MS). */
-const TICHO_MS = 2_000;
 /** Keď zoznam dĺžku nemá (starý server), ráta sa s touto. */
 const TRVANIE_NEZNAME_MS = 5_000;
 
@@ -47,7 +51,7 @@ function Vlny() {
   );
 }
 
-/** Fúziky majstra Melichara (medailón v hlavičke panela aj tlačidlo v hlavičke webu). */
+/** Fúziky majstra Melichara (medailón pultu aj tlačidlo v hlavičke webu). */
 const FUZ =
   "M12 11c-1.5-2.3-4.3-2.7-6-.8-.8.9-2 1-2.9.3.4 2.5 2.6 4 4.9 3.4 1.7-.4 3-1.5 4-2.9Zm0 0c1.5-2.3 4.3-2.7 6-.8.8.9 2 1 2.9.3-.4 2.5-2.6 4-4.9 3.4-1.7-.4-3-1.5-4-2.9Z";
 
@@ -90,6 +94,15 @@ function IkonaSkupiny({ ikona }: { readonly ikona: string }) {
   );
 }
 
+function IkonaReproduktor() {
+  return (
+    <svg className="sb-reproduktor" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M2 6h2.5L8 3v10L4.5 10H2Z" fill="currentColor" />
+      <path d="M10.5 5.5a3.5 3.5 0 0 1 0 5M12.5 3.5a6.3 6.3 0 0 1 0 9" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 function IkonaTicho() {
   return (
     <svg className="sb-ticho" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -107,8 +120,6 @@ export interface SoundboardProps {
   readonly udalost: HlaskaVPartii | null;
   readonly pusti: (id: string) => void;
 }
-
-type Stav = "pripravene" | "moja" | "odpocet";
 
 export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: SoundboardProps) {
   const { ja, nastav } = useUcet();
@@ -131,17 +142,22 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
   }, []);
 
   const [otvorene, setOtvorene] = useState(false);
+  const miestoVBare = useMiestoVBare();
+  const melicharHovori = useMelicharHovoriVBare(miestoVBare);
+  const vBare = pultVBare(otvorene, melicharHovori) && miestoVBare !== null;
   // Časy, nie stav — odpočet sa ráta z nich pri každom prekreslení.
   const [moja, setMoja] = useState<{ readonly id: string; readonly koniec: number } | null>(null);
   const [superDo, setSuperDo] = useState(0);
   const [teraz, setTeraz] = useState(() => Date.now());
   const [trasie, setTrasie] = useState(0);
+  /** Klik na tlačidlo, kým hovorí Melichar — tlačidlo sa zatrasie (kľúč animácie). */
+  const [pocka, setPocka] = useState(0);
   /** Pečiatka, ktorou hráč naposledy buchol (kľúč animácie odtlačku). */
   const [dopad, setDopad] = useState<{ readonly skupina: string; readonly n: number } | null>(null);
 
-  const stav: Stav = moja === null || teraz >= moja.koniec + TICHO_MS ? "pripravene" : teraz < moja.koniec ? "moja" : "odpocet";
+  const stav = stavPauzy(moja, teraz);
   const superHra = teraz < superDo;
-  const zostava = moja === null ? 0 : Math.max(0, moja.koniec + TICHO_MS - teraz);
+  const zostava = zostavaPauzy(moja, teraz);
   const hovori = stav === "moja" || superHra;
   const skupinaMojej = stav === "moja" ? pult?.find((p) => p.hlasky.some((h) => h.id === moja?.id))?.skupina.id : undefined;
 
@@ -218,62 +234,76 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
 
   const obal = useRef<HTMLSpanElement>(null);
   const spust = useRef<HTMLButtonElement>(null);
-  const panel = useRef<HTMLDivElement>(null);
+  const panel = useRef<HTMLElement>(null);
+  /** Fokus na prvú pečiatku len po otvorení hráčom — nie keď sa pult vráti po Melicharovi. */
+  const fokusPoOtvoreni = useRef(false);
   const zavri = useCallback((fokusNaTlacidlo: boolean): void => {
     setOtvorene(false);
     if (fokusNaTlacidlo) spust.current?.focus();
   }, []);
+  const prepniRef = useRef((): void => undefined);
+  prepniRef.current = (): void => {
+    const krok = prepniPult(otvorene, melicharHovori);
+    if (krok === "zavri") setOtvorene(false);
+    else if (krok === "pocka") setPocka((n) => n + 1);
+    else {
+      fokusPoOtvoreni.current = true;
+      setOtvorene(true);
+    }
+  };
 
   // M otvorí/zavrie, kláves skupiny (1–9 zo skupina.json) pustí náhodnú hlášku
-  // aj pri zavretom paneli, Esc zavrie — nikdy pri písaní do poľa; klik mimo panel ho zavrie.
+  // aj pri zavretom pulte, Esc zavrie — nikdy pri písaní do poľa; klik mimo pult ho zavrie.
   useEffect(() => {
     const klaves = (e: KeyboardEvent): void => {
       const t = e.target;
       if (t instanceof HTMLInputElement || t instanceof HTMLTextAreaElement || (t instanceof HTMLElement && t.isContentEditable)) return;
       if (e.ctrlKey || e.metaKey || e.altKey) return;
       if (e.key === "m" || e.key === "M") {
+        // Bez tlačidla na obrazovke (mobil) pult nie je.
+        if (spust.current === null || spust.current.getClientRects().length === 0) return;
         e.preventDefault();
-        setOtvorene((o) => !o);
+        prepniRef.current();
         return;
       }
       if (/^[1-9]$/.test(e.key) && pustiKlavesRef.current(e.key)) {
         e.preventDefault();
         return;
       }
-      if (e.key === "Escape" && otvorene) zavri(true);
+      // Pult schovaný za Melicharom Esc nezavrie — Esc patrí tomu, čo je vidno.
+      if (e.key === "Escape" && vBare) zavri(true);
     };
     window.addEventListener("keydown", klaves);
     return () => window.removeEventListener("keydown", klaves);
-  }, [otvorene, zavri]);
+  }, [vBare, zavri]);
   useEffect(() => {
     if (!otvorene) return;
+    // Klik do bublín Melichara („ďalej“, „rozumiem“) pult nezavrie — vráti sa po nich.
     const mimo = (e: PointerEvent): void => {
-      if (obal.current !== null && e.target instanceof Node && !obal.current.contains(e.target)) setOtvorene(false);
+      const t = e.target;
+      if (!(t instanceof Node)) return;
+      if (obal.current?.contains(t) === true || miestoVBare?.contains(t) === true) return;
+      setOtvorene(false);
     };
     document.addEventListener("pointerdown", mimo);
     return () => document.removeEventListener("pointerdown", mimo);
-  }, [otvorene]);
-  // Po otvorení fokus na prvú pečiatku, aby šli šípky hneď.
+  }, [otvorene, miestoVBare]);
   useEffect(() => {
-    if (otvorene) panel.current?.querySelector<HTMLButtonElement>(".sb-pecat")?.focus();
-  }, [otvorene]);
+    if (!vBare || !fokusPoOtvoreni.current) return;
+    fokusPoOtvoreni.current = false;
+    panel.current?.querySelector<HTMLButtonElement>(".sb-pecat")?.focus();
+  }, [vBare]);
 
-  const sipky = (e: ReactKeyboardEvent<HTMLDivElement>): void => {
+  const sipky = (e: ReactKeyboardEvent<HTMLElement>): void => {
     if (e.ctrlKey || e.metaKey || e.altKey || e.target instanceof HTMLInputElement) return;
     const tlacidla = [...(panel.current?.querySelectorAll<HTMLButtonElement>(".sb-pecat") ?? [])];
     const i = tlacidla.findIndex((b) => b === document.activeElement);
     if (i < 0) return;
-    // Stĺpcov je toľko, koľko pečiatok má prvý riadok mriežky.
-    const prvy = tlacidla[0]?.offsetTop;
-    const stlpcov = Math.max(1, tlacidla.filter((b) => b.offsetTop === prvy).length);
-    const POSUN: Readonly<Record<string, number>> = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: stlpcov, ArrowUp: -stlpcov };
+    const POSUN: Readonly<Record<string, number>> = { ArrowRight: 1, ArrowLeft: -1 };
     const posun = POSUN[e.key];
     if (posun === undefined) return;
     e.preventDefault();
-    // Hore a dole len tam, kde pod či nad pečiatkou nejaká je — inak fokus ostane.
-    const ciel = i + posun;
-    if (Math.abs(posun) > 1 && (ciel < 0 || ciel >= tlacidla.length)) return;
-    tlacidla[Math.min(tlacidla.length - 1, Math.max(0, ciel))]?.focus();
+    tlacidla[Math.min(tlacidla.length - 1, Math.max(0, i + posun))]?.focus();
   };
 
   const klavesy = (pult ?? []).flatMap((p) => (p.skupina.klaves === null ? [] : [p.skupina.klaves]));
@@ -284,22 +314,36 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
       : stav === "odpocet"
         ? "Chvíľu ticho…"
         : superHra
-          ? `${menoSupera} púšťa Melichara — môžeš odpovedať.`
-          : "Buchni pečiatkou — Melichar vyberie hlášku zo skupiny.";
-  const titulok = stav === "moja" ? "Melichar hovorí za teba" : stav === "odpocet" ? `Chvíľu ticho — o ${sek} s môžeš znova` : "Pult majstra Melichara (M)";
+          ? `${menoSupera} púšťa Melichara — môžeš odpovedať`
+          : stlmene
+            ? "U teba stlmený — súper ťa počuje"
+            : "Buchni pečiatkou — počuje ťa aj súper";
+  const titulok =
+    stav === "moja"
+      ? "Melichar hovorí za teba"
+      : stav === "odpocet"
+        ? `Chvíľu ticho — o ${sek} s môžeš znova`
+        : !otvorene && melicharHovori
+          ? "Majster Melichar práve hovorí — pult otvoríš, keď dohovorí"
+          : otvorene && melicharHovori
+            ? "Pult počká, kým Melichar dohovorí (M zavrie)"
+            : "Pult majstra Melichara (M)";
+  const skratky = `M otvorí a zavrie${klavesy.length > 0 ? ` · ${klavesy[0]}${klavesy.length > 1 ? `–${klavesy[klavesy.length - 1]}` : ""} pečiatka` : ""} · Esc zavrie`;
   const idPanela = useId();
+  const data = { "data-ja": stav, "data-super": superHra ? "1" : "0", "data-stlmene": stlmene ? "1" : "0" };
 
   return (
-    <span className="sb" ref={obal} data-ja={stav} data-super={superHra ? "1" : "0"} data-stlmene={stlmene ? "1" : "0"}>
+    <span className="sb" ref={obal} {...data} data-v-bare={vBare ? "1" : "0"}>
       <button
         type="button"
         ref={spust}
-        className="sb-spust"
+        key={`spust-${pocka}`}
+        className={`sb-spust${pocka > 0 ? " pocka" : ""}`}
         aria-expanded={otvorene}
         aria-controls={idPanela}
         aria-keyshortcuts="M"
         title={titulok}
-        onClick={() => setOtvorene((o) => !o)}
+        onClick={() => prepniRef.current()}
       >
         <span className="sb-ik" aria-hidden="true">
           {stav === "odpocet" ? <span className="prstenec" style={{ "--p": String(zostava / TICHO_MS) } as CSSProperties} /> : <Fuzy hovori={hovori} />}
@@ -309,9 +353,9 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
         {stlmene && <IkonaTicho />}
       </button>
 
-      {/* Kto hovorí, nie čo — názov hlášky sa pri prehrávaní neukazuje. */}
+      {/* Kto hovorí, nie čo — názov hlášky sa pri prehrávaní neukazuje. Pri otvorenom pulte to povie pult. */}
       <span className="sb-super" role="status">
-        {superHra && (
+        {superHra && !vBare && (
           <>
             <Vlny />
             <span>
@@ -321,40 +365,26 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
         )}
       </span>
 
-      {otvorene && (
-        <div className="sb-panel" id={idPanela} ref={panel} role="group" aria-label="Pult majstra Melichara" onKeyDown={sipky}>
-          <div className="sb-hlava">
+      {/* Bar nad stolom: data-mel-rezim="cely" mu povie, že jeho riadky má schovať (JednotnyBar). */}
+      {vBare &&
+        createPortal(
+          <section className="sb-bar" id={idPanela} ref={panel} data-mel-rezim="cely" aria-label="Pult majstra Melichara" onKeyDown={sipky} {...data}>
             <span className={`sb-medailon${hovori ? " hovori" : ""}`} aria-hidden="true">
               <Fuzy hovori={hovori} />
             </span>
-            <div>
-              <h2>Pult majstra Melichara</h2>
-              <p>buchni pečiatkou — počuje ťa aj súper</p>
+            <div className={`sb-info ${trasie % 2 === 1 ? "trasie" : trasie > 0 ? "trasie2" : ""}`}>
+              <span className="sb-kto">Pult Melichara</span>
+              <span className="sb-stav" role="status" title={textStavu}>
+                {(stav === "moja" || (stav === "pripravene" && superHra)) && <Vlny />}
+                <span className="sb-stav-text">{textStavu}</span>
+                {stav === "odpocet" && <span className="sb-cas">{sek} s</span>}
+              </span>
+              <i className="sb-pas" style={{ width: stav === "odpocet" ? `${(zostava / TICHO_MS) * 100}%` : 0 }} />
             </div>
-            <button type="button" className="sb-zavriet" aria-label="Zavrieť pult (Esc)" onClick={() => zavri(true)}>
-              ✕
-            </button>
-          </div>
-          <div className={`sb-stav ${trasie % 2 === 1 ? "trasie" : trasie > 0 ? "trasie2" : ""}`}>
-            {stav === "moja" && <Vlny />}
-            {stav === "pripravene" && superHra && <Vlny />}
-            <span>{textStavu}</span>
-            {stav === "odpocet" && <span className="sb-cas">{sek} s</span>}
-            <i className="sb-pas" style={{ width: stav === "odpocet" ? `${(zostava / TICHO_MS) * 100}%` : 0 }} />
-          </div>
-          {stlmene && (
-            <div className="sb-stlmene">
-              <span>U teba je Melichar stlmený — súper hlášky počuje, ty nie.</span>
-              <button type="button" onClick={() => setHlasitost(MELICHAR_PREDVOLENY)}>
-                Zapnúť zvuk
-              </button>
-            </div>
-          )}
-          <div className="sb-telo">
             {pult === null && <p className="sb-prazdne">Hlášky sa načítavajú…</p>}
             {pult !== null && pult.length === 0 && <p className="sb-prazdne">Majster Melichar dnes nemá čo povedať — hlášky na serveri nie sú.</p>}
             {pult !== null && pult.length > 0 && (
-              <div className="sb-pult">
+              <div className="sb-pult" role="group" aria-label="Pečiatky skupín hlášok">
                 {pult.map((p, i) => {
                   const { skupina } = p;
                   const hraje = skupinaMojej === skupina.id;
@@ -363,53 +393,43 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
                       key={skupina.id}
                       type="button"
                       className={`sb-pecat${hraje ? " hraje" : ""}`}
-                      style={{ "--farba": farbaSkupiny(skupina.farba), "--naklon": `${i % 2 === 0 ? -1.5 : 1.2}deg` } as CSSProperties}
+                      style={{ "--farba": farbaSkupiny(skupina.farba), "--naklon": `${i % 2 === 0 ? -1.2 : 1}deg` } as CSSProperties}
                       aria-disabled={stav !== "pripravene" || undefined}
                       aria-keyshortcuts={skupina.klaves ?? undefined}
                       aria-label={`${skupina.nazov}: náhodná hláška${skupina.klaves !== null ? ` (kláves ${skupina.klaves})` : ""}`}
+                      title={`${skupina.nazov}${skupina.citat !== "" ? ` — „${skupina.citat}“` : ""} · ${pocetHlasok(p.hlasky.length)}`}
                       onClick={() => pustiSkupinu(p)}
                     >
                       {/* Odtlačok pri buchnutí — nový kľúč animáciu spustí znova, tlačidlo ostane (fokus). */}
                       {skupina.id === dopad?.skupina && <span key={dopad.n} className="sb-pecat-odtlacok" aria-hidden="true" />}
-                      <span className="sb-pecat-hore">
-                        <span className="sb-pecat-ik">{hraje ? <Vlny /> : <IkonaSkupiny ikona={skupina.ikona} />}</span>
-                        {skupina.klaves !== null && <kbd>{skupina.klaves}</kbd>}
-                      </span>
+                      <span className="sb-pecat-ik">{hraje ? <Vlny /> : <IkonaSkupiny ikona={skupina.ikona} />}</span>
+                      {/* Citát a počet hlášok sú v titulku — v bare na ne nie je miesto. */}
                       <span className="sb-pecat-nazov">{skupina.nazov}</span>
-                      {skupina.citat !== "" && <span className="sb-pecat-citat">„{skupina.citat}“</span>}
-                      <span className="sb-pecat-pocet">{pocetHlasok(p.hlasky.length)}</span>
+                      {skupina.klaves !== null && <kbd>{skupina.klaves}</kbd>}
                     </button>
                   );
                 })}
               </div>
             )}
-          </div>
-          <div className="sb-pata">
-            <label>
-              Hlasitosť u teba{" "}
-              <input type="range" min="0" max="100" value={hlasitost} onChange={(e) => setHlasitost(Number(e.target.value))} />
-            </label>
-            <output>{hlasitost} %</output>
-            <span className="skratky">
-              <kbd>M</kbd> otvorí
-              {klavesy.length > 0 && (
-                <>
-                  {" · "}
-                  <kbd>{klavesy[0]}</kbd>
-                  {klavesy.length > 1 && (
-                    <>
-                      –<kbd>{klavesy[klavesy.length - 1]}</kbd>
-                    </>
-                  )}{" "}
-                  pečiatka
-                </>
+            <div className="sb-ovladanie">
+              <label title="Hlasitosť Melichara u teba — súper ho počuje podľa svojej">
+                <IkonaReproduktor />
+                <input type="range" min="0" max="100" value={hlasitost} aria-label="Hlasitosť Melichara u teba" onChange={(e) => setHlasitost(Number(e.target.value))} />
+              </label>
+              {stlmene ? (
+                <button type="button" className="sb-zapnut" onClick={() => setHlasitost(MELICHAR_PREDVOLENY)}>
+                  Zapnúť zvuk
+                </button>
+              ) : (
+                <output>{hlasitost} %</output>
               )}
-              {" · "}
-              <kbd>Esc</kbd> zavrie
-            </span>
-          </div>
-        </div>
-      )}
+              <button type="button" className="sb-zavriet" aria-label="Zavrieť pult (Esc)" title={skratky} onClick={() => zavri(true)}>
+                ✕
+              </button>
+            </div>
+          </section>,
+          miestoVBare,
+        )}
     </span>
   );
 }

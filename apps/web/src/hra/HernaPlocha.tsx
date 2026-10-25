@@ -4314,7 +4314,7 @@ export function HernaPlocha({
         starsi: starsiViditelni || nahliadnutie,
         vyber: miestoVolby !== null || mode.typ === "naexCiel" || vybranaDoOblasti !== null,
         potvrdenie: potvrdenie !== null,
-        pult: otvorene('.sb-spust[aria-expanded="true"]'),
+        pult: otvorene(".sb-bar"),
       };
       const navrat = tlacidloNavratu();
       if (!escVratiNavrh(vrstvy, navrat !== null)) return;

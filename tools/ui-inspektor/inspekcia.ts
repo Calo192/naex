@@ -171,7 +171,7 @@ const MERANIE = String.raw`(async () => {
     return false;
   };
   // Modálne vrstvy a vyskakovacie panely zakrývajú stránku pod sebou zámerne.
-  const MODALY = '[role=dialog],dialog,.vrstva,.koniec-vrstva,.sb-panel,.skratky-napoveda';
+  const MODALY = '[role=dialog],dialog,.vrstva,.koniec-vrstva,.skratky-napoveda';
   const modal = (el) => el.closest(MODALY);
   // Obdĺžnik samotného obsahu: blok býva širší než text v ňom (meno zarovnané doprava).
   const obsahRect = (el) => { const rg = document.createRange(); rg.selectNodeContents(el); return rg.getBoundingClientRect(); };
