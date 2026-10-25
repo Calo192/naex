@@ -102,7 +102,7 @@
       "stav": "pokryte",
       "testy": [
         "packages/core/test/pravidla-20261019.test.ts › dve Viery s priazňou sily 2 uberú súperovi 4 tuhé, nie 10",
-        "packages/core/test/player.test.ts › prahy rastú s priazňou, hodnota Viery je 1 (Veriaci dáva Vieru navyše)"
+        "packages/core/test/player.test.ts › v5: prahy priazeň nezdvíha, súperov Exekútor prah Exekúcie zníži; hodnota Viery je 1"
       ],
       "poznamka": "Znenie opravené podľa rozhodcu #11 (Michal 2026-10-22, implementované 2026-10-23)."
     },
