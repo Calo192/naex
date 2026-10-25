@@ -147,3 +147,52 @@ export function castiVety(text: string, jeAkcia: (kluc: string) => boolean): Cas
   }
   return out;
 }
+
+/** Text Melichara po vetách (s medzerou pred vetou) — strana v bare sa delí len medzi vetami. */
+export function vetyTextu(text: string): string[] {
+  return [...text.matchAll(VETA)].map((m) => m[0]).filter((v) => v.trim() !== "");
+}
+
+export interface StranyTextu {
+  /** Index prvého kusu každej strany (prvá strana začína nulou). */
+  readonly zaciatky: readonly number[];
+  /** Kusy, ktoré sa nezmestia ani samy — problém textu, nie rozloženia. */
+  readonly pretecie: readonly number[];
+}
+
+/**
+ * Strany textu Melichara (Michal 2026-10-25: v bare sa nescrolluje a bar sa nerozbalí cez
+ * stôl). Kusy (vety, štítok, chyba) idú za sebou, kým sa zmestia do výšky; ďalší začne novú
+ * stranu. vyska(od, po) je výška kusov [od, po) vysádzaných na jednej strane — meria ju
+ * prehliadač, lebo zalomenie riadkov závisí od šírky aj piktogramov.
+ */
+export function rozdelNaStrany(pocet: number, vyska: (od: number, po: number) => number, dostupne: number): StranyTextu {
+  const zaciatky: number[] = [];
+  const pretecie: number[] = [];
+  let od = 0;
+  while (od < pocet) {
+    zaciatky.push(od);
+    let po = od + 1;
+    if (vyska(od, po) > dostupne) pretecie.push(od);
+    else while (po < pocet && vyska(od, po + 1) <= dostupne) po++;
+    od = po;
+  }
+  return { zaciatky: zaciatky.length === 0 ? [0] : zaciatky, pretecie };
+}
+
+/**
+ * Kvíz má v bare miesto na dve možnosti pod sebou (Michal 2026-10-25: „Stačí, ak možnosti budú
+ * 2.“). Pri viacerých v dátach sa ukážu prvé dve — a keď medzi nimi nie je správna, druhú
+ * nahradí správna, inak by sa otázka nedala zodpovedať. Index ostáva z dát (server si zapíše
+ * odpoveď podľa neho).
+ */
+export function moznostiKvizu<M extends { readonly spravna?: boolean }>(
+  moznosti: readonly M[],
+): { readonly zobrazene: readonly { readonly index: number; readonly moznost: M }[]; readonly varovanie: string | null } {
+  const vsetky = moznosti.map((moznost, index) => ({ index, moznost }));
+  if (vsetky.length <= 2) return { zobrazene: vsetky, varovanie: null };
+  const prve = vsetky.slice(0, 2);
+  const spravna = vsetky.find((x) => x.moznost.spravna === true);
+  const zobrazene = spravna === undefined || prve.includes(spravna) ? prve : [prve[0]!, spravna];
+  return { zobrazene, varovanie: `Kvíz má ${vsetky.length} možnosti, v bare sa ukážu len dve (${zobrazene.map((x) => x.index + 1).join(" a ")}).` };
+}

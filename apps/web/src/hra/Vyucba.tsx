@@ -8,14 +8,14 @@
 // prvok s data-vyucba-prvok / data-vyucba-karta = časť za dvojbodkou.
 // Nájdený prvok dostane data-vyucba-zvyraznene="kľúč" (číta ho playtest výučby).
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ClientState, Command, Event as UdalostHry } from "@naex/core";
 import { api } from "../lib/api.ts";
 import { menoVoVete, rodHraca, textUdalosti, type HracInfo, type KrokVyucby, type PopisKrokuVyucby, type StavVyucby } from "./useHra.ts";
 import { stitokTahu, zmenyStola } from "./zmenyVyucby.ts";
 import type { Sada } from "@naex/tvorba";
-import { rezimMelichara } from "./bar.ts";
-import { MelicharVBare, VetaMelichara } from "./MelicharBar.tsx";
+import { moznostiKvizu, rezimMelichara } from "./bar.ts";
+import { CisloStrany, MelicharVBare, StrankovanaVeta, VetaMelichara, kusyVety, useStrany, type KusVety } from "./MelicharBar.tsx";
 import "./vyucba.css";
 
 /** Stav výučby účtu (GET /api/vyucba). */
@@ -463,52 +463,109 @@ export function VyucbaStol({
     return () => window.removeEventListener("pointerdown", zrus);
   }, [chyba, zrusChybu]);
 
-  // Kontrolná otázka: vybraná možnosť (overuje klient); po správnej sa dá ísť ďalej.
+  // Kontrolná otázka v bare (Michal 2026-10-25): otázka vľavo, dve možnosti pod sebou vpravo;
+  // po výbere odpoveď ako samostatné okno v tom istom bare — „späť na otázku“ ju vráti. Vybranú
+  // možnosť overuje klient; po zlej sa vyberá znova, po správnej sa dá ísť ďalej.
   const [odpoved, setOdpoved] = useState<number | null>(null);
-  useEffect(() => setOdpoved(null), [krok?.id]);
+  const [pohlad, setPohlad] = useState<"otazka" | "odpoved">("otazka");
+  useEffect(() => {
+    setOdpoved(null);
+    setPohlad("otazka");
+  }, [krok?.id]);
   const moznosti = krok?.kto === "otazka" ? (krok.moznosti ?? []) : [];
+  const kviz = useMemo(() => moznostiKvizu(moznosti), [moznosti]);
+  useEffect(() => {
+    if (kviz.varovanie !== null) console.warn(`Výučba, krok ${krok?.id ?? "?"}: ${kviz.varovanie}`);
+  }, [krok?.id, kviz.varovanie]);
   const vybrana = odpoved === null ? undefined : moznosti[odpoved];
+  const vOdpovedi = pohlad === "odpoved" && vybrana !== undefined;
   const vyber = useCallback(
     (i: number) => {
-      if (moznosti[i] === undefined || vybrana?.spravna === true) return;
+      if (moznosti[i] === undefined) return;
+      setPohlad("odpoved");
+      if (i === odpoved || vybrana?.spravna === true) return;
       setOdpoved(i);
       odpovedz(i);
     },
-    [moznosti, vybrana, odpovedz],
+    [moznosti, odpoved, vybrana, odpovedz],
   );
+  const spatNaOtazku = useCallback(() => setPohlad("otazka"), []);
   useEffect(() => {
-    if (moznosti.length === 0) return;
+    if (kviz.zobrazene.length === 0) return;
     const klaves = (e: KeyboardEvent): void => {
-      const i = Number(e.key) - 1;
-      if (!Number.isInteger(i) || i < 0 || i >= moznosti.length) return;
+      if (e.key === "Backspace" && pohlad === "odpoved") {
+        e.preventDefault();
+        spatNaOtazku();
+        return;
+      }
+      const m = kviz.zobrazene[Number(e.key) - 1];
+      if (m === undefined || e.repeat) return;
       e.preventDefault();
-      vyber(i);
+      vyber(m.index);
     };
     window.addEventListener("keydown", klaves);
     return () => window.removeEventListener("keydown", klaves);
-  }, [moznosti, vyber]);
+  }, [kviz.zobrazene, vyber, pohlad, spatNaOtazku]);
+
+  // Text v bare po stranách — nescrolluje sa (Michal 2026-10-25); „ďalej“ najprv listuje.
+  const kusy: KusVety[] = [];
+  if (krok === null) {
+    kusy.push(...kusyVety("hotovo", TEXT_NA_KONIEC, sada));
+  } else if (vOdpovedi) {
+    kusy.push({ kluc: "verdikt", obsah: <strong className="mel-verdikt">{vybrana.spravna === true ? "Správne. " : "Nie celkom. "}</strong> });
+    kusy.push(...kusyVety("vysvetlenie", vybrana.vysvetlenie, sada));
+    if (vybrana.spravna !== true) kusy.push({ kluc: "skus", obsah: " Skús inú možnosť." });
+  } else {
+    if (stitokText !== null) {
+      kusy.push({
+        kluc: "stitok",
+        obsah: (
+          <span className="vyucba-stitok" data-vyucba-stitok="">
+            {stitokText}
+          </span>
+        ),
+      });
+    }
+    if (chyba !== null) kusy.push({ kluc: "chyba", obsah: <span className="vyucba-chyba">{chyba}</span> });
+    if (rada !== null) {
+      kusy.push({
+        kluc: "rada",
+        obsah: (
+          <span className="vyucba-rada">
+            <VetaMelichara text={rada} sada={sada} />
+          </span>
+        ),
+      });
+    }
+    kusy.push(...kusyVety("veta", krok.melichar, sada));
+  }
+  const podpis = [krok?.id ?? "hotovo", pohlad, odpoved ?? "", stitokText ?? "", chyba ?? "", rada ?? "", vOdpovedi ? vybrana.vysvetlenie : (krok?.melichar ?? "")].join("|");
+  const strany = useStrany(podpis);
 
   // Enter = „ďalej“ v kroku bez ťahu, aj keď fokus ostal na karte či tlačidle po kliku myšou
-  // (playtest: Enter po kliku nereagoval). Polia na písanie nechá tak.
+  // (playtest: Enter po kliku nereagoval). Polia na písanie nechá tak. Dlhý text najprv listuje,
+  // zlá odpoveď kvízu vráti otázku.
   const jeInfo = !pocitadloBezi && (krok?.kto === "info" || krok?.vykonany === true || (krok?.kto === "otazka" && vybrana?.spravna === true));
+  const zlaOdpoved = vOdpovedi && vybrana.spravna !== true;
+  const enter: (() => void) | null = pocitadloBezi ? null : strany.dalsiaJe ? strany.dalsia : zlaOdpoved ? spatNaOtazku : jeInfo ? dalej : null;
   useEffect(() => {
-    if (!jeInfo) return;
+    if (enter === null) return;
     const klaves = (e: KeyboardEvent): void => {
       if (e.key !== "Enter" || e.repeat) return;
       const t = e.target as HTMLElement | null;
       if (t?.closest("input, textarea, select, [contenteditable=true]") != null) return;
       e.preventDefault();
-      dalej();
+      enter();
     };
     window.addEventListener("keydown", klaves);
     return () => window.removeEventListener("keydown", klaves);
-  }, [jeInfo, dalej]);
+  }, [enter]);
 
-  // Po novom kroku bez ťahu fokus na „ďalej“ — Enter aj čítačka vedia, kde sú.
+  // Po novom kroku bez ťahu či po odpovedi fokus na hlavné tlačidlo — Enter aj čítačka vedia, kde sú.
   const dalejRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
-    if (jeInfo) dalejRef.current?.focus({ preventScroll: true });
-  }, [krok?.id, jeInfo]);
+    if (jeInfo || vOdpovedi) dalejRef.current?.focus({ preventScroll: true });
+  }, [krok?.id, jeInfo, vOdpovedi, strany.strana]);
 
   const percento = krok === null ? 100 : Math.round(((krok.index + 1) / krok.spolu) * 100);
   // Melichar hovorí v bare (Michal 2026-10-25), kým má čo povedať alebo čaká na „ďalej“; ťah bez
@@ -517,83 +574,62 @@ export function VyucbaStol({
   const maText =
     krok === null || stitokText !== null || chyba !== null || rada !== null || krok.melichar.trim() !== "" || moznosti.length > 0 || jeInfo;
   const hovori = maText && !pocitadloBezi;
+  const spatHlavne = zlaOdpoved && !strany.dalsiaJe;
+
+  const tlacidloDalej = (
+    <button ref={spatHlavne ? undefined : dalejRef} className="tlacidlo-hlavne mel-dalej vyucba-dalej" onClick={() => enter?.()} data-vyucba-dalej="">
+      ďalej <kbd>Enter</kbd>
+    </button>
+  );
+  const predoslaStrana = strany.strana > 0 && (
+    <button type="button" className="tlacidlo-jemne mel-spat" onClick={strany.predosla} title="Predošlá strana textu" aria-label="Predošlá strana textu">
+      ‹
+    </button>
+  );
 
   return (
     <>
       <Stmavenie obdlzniky={zvyraznene} sede={hovori && blokuj} />
       {hovori && (
         <MelicharVBare
-          rezim={rezimMelichara(kluce)}
-          trieda={`vyucba-bublina ${krok?.kto ?? "hotovo"}`}
-          rozbalena={moznosti.length > 0}
-          atributy={{ "data-vyucba-bublina": "", "data-vyucba-krok": krok?.id ?? "hotovo" }}
+          // Kvíz je celý v bare a v jeho výške (Michal 2026-10-25) — os kola pod ním neostáva.
+          rezim={moznosti.length > 0 ? "cely" : rezimMelichara(kluce)}
+          trieda={`vyucba-bublina ${krok?.kto ?? "hotovo"}${moznosti.length === 0 ? "" : vOdpovedi ? ` kviz kviz-odpoved ${zlaOdpoved ? "zla" : "spravna"}` : " kviz kviz-otazka"}`}
+          atributy={{
+            "data-vyucba-bublina": "",
+            "data-vyucba-krok": krok?.id ?? "hotovo",
+            ...(moznosti.length > 0 ? { "data-vyucba-kviz": vOdpovedi ? "odpoved" : "otazka" } : {}),
+          }}
           // Percentá, nie „krok n / 70“ — ťahy Štamgasta sa spájajú a číslo by preskakovalo (playtest).
           pocitadlo={
-            <span className="mel-pocitadlo" aria-label={`Výučba: ${percento} %`}>
-              {percento} %
-            </span>
+            <>
+              <span className="mel-pocitadlo" aria-label={`Výučba: ${percento} %`}>
+                {percento} %
+              </span>
+              <CisloStrany strany={strany} />
+              {/* Okno odpovede nahradilo otázku — nech hráč vie, na čo Melichar odpovedá. */}
+              {vOdpovedi && (
+                <span className="mel-tvoja">
+                  tvoja odpoveď: <VetaMelichara text={vybrana.text} sada={sada} />
+                </span>
+              )}
+            </>
           }
-          vpravo={
-            krok === null ? (
-              <>
-                <button className="tlacidlo-hlavne" onClick={hratProtiPocitacu}>
-                  Hrať prvú partiu proti počítaču
-                </button>
-                <button onClick={prerusit}>Do lobby</button>
-              </>
-            ) : (
-              <>
-                {krok.kto === "hrac" && <span className="vyucba-stav">Tvoj ťah</span>}
-                {krok.kto === "bot" && !krok.vykonany && <span className="vyucba-stav vyucba-caka">{menoBota} ťahá…</span>}
-                {krok.kto === "auto" && !krok.vykonany && <span className="vyucba-stav vyucba-caka">Hra ťahá za teba…</span>}
-                {jeInfo && (
-                  <button ref={dalejRef} className="tlacidlo-hlavne mel-dalej vyucba-dalej" onClick={dalej} data-vyucba-dalej="">
-                    ďalej <kbd>Enter</kbd>
-                  </button>
-                )}
-                <button type="button" className="tlacidlo-jemne vyucba-prerusit" onClick={prerusit} title="Prerušiť výučbu — postup sa uloží, pokračuješ na stránke Hrať.">
-                  prerušiť<span className="vyucba-dlhy-popis"> výučbu</span>
-                </button>
-              </>
-            )
-          }
-        >
-          <div className="vyucba-text" role="status" aria-live="polite">
-            {stitokText !== null && krok !== null && (
-              <p className="vyucba-stitok" data-vyucba-stitok="">
-                {stitokText}
-              </p>
-            )}
-            {chyba !== null && krok !== null && <p className="vyucba-chyba">{chyba}</p>}
-            {rada !== null && krok !== null && <p className="vyucba-rada"><VetaMelichara text={rada} sada={sada} /></p>}
-            {krok !== null ? (
-              krok.melichar.trim() !== "" && (
-                <p>
-                  <VetaMelichara text={krok.melichar} sada={sada} />
-                </p>
-              )
-            ) : (
-              <p>
-                <VetaMelichara
-                  text="Výučbu máš za sebou! Základ vieš, zvyšok ti poviem v prvej partii: keď sa objaví niečo nové — Dlh, Absťák, Pohoršenie — ozvem sa krátkou nápovedou. Zahraj si naostro, Štamgast a jeho kumpáni ťa čakajú."
-                  sada={sada}
-                />
-              </p>
-            )}
-            {moznosti.length > 0 && (
+          moznosti={
+            moznosti.length > 0 && !vOdpovedi ? (
               <div className="vyucba-moznosti" role="group" aria-label="Možnosti odpovede">
-                {moznosti.map((m, i) => {
-                  const stav = odpoved === i ? (m.spravna ? " spravna" : " zla") : "";
+                {kviz.zobrazene.map(({ index, moznost: m }, k) => {
+                  const stav = odpoved === index ? (m.spravna === true ? " spravna" : " zla") : "";
                   return (
                     <button
-                      key={i}
+                      key={index}
                       type="button"
                       className={`vyucba-moznost${stav}`}
-                      onClick={() => vyber(i)}
-                      disabled={vybrana?.spravna === true && odpoved !== i}
-                      aria-pressed={odpoved === i}
+                      onClick={() => vyber(index)}
+                      disabled={vybrana?.spravna === true && odpoved !== index}
+                      aria-pressed={odpoved === index}
                     >
-                      <kbd>{i + 1}</kbd>{" "}
+                      <kbd>{k + 1}</kbd>
                       {/* Jeden kus textu — tlačidlo je flex a medzera by vznikla aj okolo piktogramu. */}
                       <span>
                         <VetaMelichara text={m.text} sada={sada} />
@@ -602,17 +638,57 @@ export function VyucbaStol({
                   );
                 })}
               </div>
-            )}
-            {vybrana !== undefined && (
-              <p className={vybrana.spravna ? "vyucba-vysvetlenie spravna" : "vyucba-vysvetlenie zla"}>
-                <strong>{vybrana.spravna ? "Správne. " : "Nie celkom. "}</strong>
-                <VetaMelichara text={vybrana.vysvetlenie} sada={sada} />
-                {!vybrana.spravna && " Skús inú možnosť."}
-              </p>
-            )}
+            ) : undefined
+          }
+          vpravo={
+            krok === null ? (
+              <>
+                {predoslaStrana}
+                {strany.dalsiaJe ? (
+                  tlacidloDalej
+                ) : (
+                  <>
+                    <button className="tlacidlo-hlavne" onClick={hratProtiPocitacu}>
+                      Hrať prvú partiu proti počítaču
+                    </button>
+                    <button onClick={prerusit}>Do lobby</button>
+                  </>
+                )}
+              </>
+            ) : (
+              <>
+                {predoslaStrana}
+                {!vOdpovedi && krok.kto === "hrac" && <span className="vyucba-stav">Tvoj ťah</span>}
+                {!vOdpovedi && krok.kto === "bot" && !krok.vykonany && <span className="vyucba-stav vyucba-caka">{menoBota} ťahá…</span>}
+                {!vOdpovedi && krok.kto === "auto" && !krok.vykonany && <span className="vyucba-stav vyucba-caka">Hra ťahá za teba…</span>}
+                {vOdpovedi && (
+                  <button
+                    ref={spatHlavne ? dalejRef : undefined}
+                    type="button"
+                    className={spatHlavne ? "tlacidlo-hlavne mel-dalej kviz-spat" : "mel-dalej kviz-spat"}
+                    onClick={spatNaOtazku}
+                    data-vyucba-spat=""
+                    title="Späť na otázku (aj Backspace)"
+                  >
+                    späť na otázku{spatHlavne && <kbd>Enter</kbd>}
+                  </button>
+                )}
+                {(strany.dalsiaJe || (jeInfo && !spatHlavne)) && tlacidloDalej}
+                <button type="button" className="tlacidlo-jemne vyucba-prerusit" onClick={prerusit} title="Prerušiť výučbu — postup sa uloží, pokračuješ na stránke Hrať.">
+                  prerušiť<span className="vyucba-dlhy-popis"> výučbu</span>
+                </button>
+              </>
+            )
+          }
+        >
+          <div className="vyucba-text" role="status" aria-live="polite">
+            <StrankovanaVeta kusy={kusy} podpis={podpis} strany={strany} />
           </div>
         </MelicharVBare>
       )}
     </>
   );
 }
+
+const TEXT_NA_KONIEC =
+  "Výučbu máš za sebou! Základ vieš, zvyšok ti poviem v prvej partii: keď sa objaví niečo nové — Dlh, Absťák, Pohoršenie — ozvem sa krátkou nápovedou. Zahraj si naostro, Štamgast a jeho kumpáni ťa čakajú.";
