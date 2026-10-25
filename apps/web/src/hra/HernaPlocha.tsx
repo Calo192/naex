@@ -528,7 +528,7 @@ export function HernaPlocha({
     return () => ro.disconnect();
   }, []);
   // Kým partia beží, klik na menu v hlavičke sa najprv opýta (Michal 2026-10-23); prehrávač nestráži.
-  useStrazOdchodu(view.koniec === null && prehravanie === undefined, kod);
+  useStrazOdchodu(view.koniec === null && prehravanie === undefined, kod, vyucba === true);
   // Ovládanie partie (spojenie, kontumácia, vzdať sa, odísť) je v hlavičke webu — Layout má preň miesto.
   const [slotHlavicky, setSlotHlavicky] = useState<HTMLElement | null>(null);
   useEffect(() => {
