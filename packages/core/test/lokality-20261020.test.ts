@@ -28,7 +28,7 @@ import {
   rozpisPoskodenia,
   setupGame,
 } from "../src/index.ts";
-import { instanceFor, makeDef, syntheticData } from "./helpers.ts";
+import { instanceFor, makeDef, syntheticData, naexOdkryte } from "./helpers.ts";
 
 const zaklad = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const NOVE = ["most", "cintorin", "obecny_urad", "jednota", "kulturny_dom", "vinna_pivnica", "druzstvo"];
@@ -196,7 +196,7 @@ describe("Vínna pivnica, Jednota, Obecný úrad, Kultúrny dom", () => {
     const naex = (defId: string) => {
       const pijan = inst("pijan");
       const s = vPitke(defId, { poldeciPlne: 1, pecen: 2 }, [[na(pijan, 0)], []]);
-      return apply(data, s, { type: "naex", uid: pijan.uid }, 0).events.some((e) => e.type === "log" && /prah pečene/.test(e.text));
+      return naexOdkryte(data, s, pijan.uid, 0).events.some((e) => e.type === "log" && /prah pečene/.test(e.text));
     };
     expect(naex("zberny_dvor")).toBe(true);
     expect(naex("krcma")).toBe(false);

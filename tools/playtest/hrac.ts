@@ -58,6 +58,7 @@ import {
   zakazVypit,
   nahladVylozenia,
   naexCieleVLinii,
+  naexZaPitku,
   obavanyHrac,
   posunMarker,
   priazen,
@@ -713,8 +714,12 @@ function moznosti(v: ClientState): string[] {
       }
       let naexMoznosti = 0;
       if (zakazNaex(v)) out.push("(Kostol: nikto nesmie dať NA EX)");
-      if (pk?.naexPouzity[ja] !== true && h.poldeciPlne > 0 && !zakazNaex(v)) {
-        const ciele = new Set(naexCieleVLinii(DATA, lineState(v), ja));
+      // NA EX naraz (v5): moje skryté NA EX sa rátajú do limitu Pitky aj poldeci.
+      const mojeSkryte = pk?.skryteNaex ?? [];
+      const naexEste = pk?.naexPouzity[ja] !== true && (pk?.naexPocet?.[ja] ?? 0) + mojeSkryte.length < naexZaPitku(v) && h.poldeciPlne - mojeSkryte.length > 0;
+      if (mojeSkryte.length > 0) out.push(`(Skryto si dal ${mojeSkryte.length === 1 ? "NA EX" : `${mojeSkryte.length} NA EX`} — odkryje sa, keď obaja skončíte Pitku; súper potom smie odpovedať jednou kartou za každé.)`);
+      if (naexEste && !zakazNaex(v)) {
+        const ciele = new Set(naexCieleVLinii(DATA, lineState(v), ja).filter((uid) => !mojeSkryte.some((x) => x.uid === uid)));
         for (const p of [0, 1] as const) {
           for (const pl of v.strany[p]) {
             if (!ciele.has(pl.card.uid)) continue;
@@ -722,18 +727,18 @@ function moznosti(v: ClientState): string[] {
             const moja = pl.playedBy === ja;
             c(
               { type: "naex", uid: pl.card.uid },
-              `NA EX na ${moja ? "svoju" : "SÚPEROVU"} kartu ${meno(pl.card.defId)} (na ${p === ja ? "tvojej" : "súperovej"} strane) — ${pl.card.defId === "veteran" ? "Veterán: zdvojí jeho aktívne akcie a nezruší ich, neaktívne nechá" : "zruší jej aktívne akcie, zdvojí neaktívne"} (rátajú sa ${moja ? "tebe" : "súperovi"}; násobky sa násobia, NA EX × Silná žena = ×4); pečeň +1 tebe, poldeci sa pri bitke vypije (v ďalšom kole limit ${limitBuduceKolo(v, ja, true) === limitBuduceKolo(v, ja) ? `ostane ${limitBuduceKolo(v, ja)}` : `${limitBuduceKolo(v, ja, true)} namiesto ${limitBuduceKolo(v, ja)}`}); súper smie hneď odpovedať jednou kartou${cenaNaexText(v, pl.card.uid)}`,
+              `NA EX na ${moja ? "svoju" : "SÚPEROVU"} kartu ${meno(pl.card.defId)} (na ${p === ja ? "tvojej" : "súperovej"} strane) — ${pl.card.defId === "veteran" ? "Veterán: zdvojí jeho aktívne akcie a nezruší ich, neaktívne nechá" : "zruší jej aktívne akcie, zdvojí neaktívne"} (rátajú sa ${moja ? "tebe" : "súperovi"}; násobky sa násobia, NA EX × Silná žena = ×4); pečeň +1 tebe, poldeci sa pri bitke vypije (v ďalšom kole limit ${limitBuduceKolo(v, ja, true) === limitBuduceKolo(v, ja) ? `ostane ${limitBuduceKolo(v, ja)}` : `${limitBuduceKolo(v, ja, true)} namiesto ${limitBuduceKolo(v, ja)}`}); skryto — súper ho uvidí až po tom, čo obaja skončíte Pitku (ak naň dá NA EX aj on, je z karty Výtržník: všetky akcie Rany pre majiteľa), potom smie odpovedať jednou kartou${cenaNaexText(v, pl.card.uid)}`,
             );
           }
         }
       }
-      if (pk?.naexPouzity[ja] !== true && h.poldeciPlne > 0 && !zakazNaex(v)) {
-        for (const z of v.zaverecne.filter((x) => x.majitel !== ja && x.naexBy === null)) {
+      if (naexEste && !zakazNaex(v)) {
+        for (const z of v.zaverecne.filter((x) => x.majitel !== ja && x.naexBy === null && !mojeSkryte.some((y) => y.uid === x.uid))) {
           naexMoznosti++;
           c({ type: "naex", uid: z.uid }, `NA EX na SÚPEROVU ZÁVEREČNÚ lícom dole (${z.strana === ja ? "na tvojej" : "na súperovej"} strane) — nevieš, čo to je; prejde vždy, aktívne akcie zruší a neaktívne zdvojí ako pri každej karte; pečeň +1 tebe`);
         }
       }
-      if (pk?.naexPouzity[ja] === true) out.push("(NA EX si v tejto Pitke už dal)");
+      if (pk?.naexPouzity[ja] === true || (mojeSkryte.length > 0 && !naexEste)) out.push("(NA EX si v tejto Pitke už dal)");
       else if (naexMoznosti === 0 && !zakazNaex(v)) out.push("(NA EX ide len na Občana či Starešinu v línii, ktorý má aspoň 1 aktívnu a aspoň 1 neaktívnu akciu, bez poldeci — tvojho aj súperovho, nie Nástroj, nie Liberál, nie na súperovho Anonymného alkoholika — a len s plným poldeci)");
       const mamKartu = (defId: string) => [...v.strany[0], ...v.strany[1]].some((pl) => pl.playedBy === ja && pl.card.defId === defId && pl.zaverecna !== true);
       if (mamKartu("postarka") && pk?.postarka[ja] !== true) {

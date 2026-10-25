@@ -13,6 +13,8 @@ import {
   apply,
   barterCena,
   buildGameData,
+  evaluateLine,
+  eventsFor,
   favourStarsieho,
   legalCommands,
   loadGameData,
@@ -25,6 +27,8 @@ import {
   priazenZKluca,
   rozpisPoskodenia,
   setupGame,
+  tahBota,
+  uidZaverecnej,
   viewFor,
 } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
@@ -323,5 +327,126 @@ describe("v5 bod 6: priazne v5 (sila 1 / 2 / 3)", () => {
     expect([s1.hraci[1].poldeciPlne, s1.hraci[1].poldeciVypite]).toEqual([2, 0]);
     const bez = dohraj(apply(sada, s, { type: "naex", uid: ciel }, 1).state);
     expect([bez.hraci[1].poldeciPlne, bez.hraci[1].poldeciVypite]).toEqual([1, 1]);
+  });
+});
+
+describe("v5 bod 2: NA EX naraz + Výtržník", () => {
+  const R2: Layout4 = ["Rana", "Rana", null, null];
+  const R1: Layout4 = ["Rana", null, null, null];
+  const VP: Layout4 = ["Viera", "Pohoršenie", null, null];
+  const sada = buildGameData(
+    new Map([...data.cards, ["v5n_lavy", makeDef("v5n_lavy", EMPTY, R2)], ["v5n_pol", makeDef("v5n_pol", R1, R1)], ["v5n_vp", makeDef("v5n_vp", EMPTY, VP)]]),
+    data.elders,
+    parseScorecards(scorecardsJson),
+  );
+  /** Pitka, obranca 1 na ťahu; na strane hráča 1 dve jeho karty (NA EX smie na obe), ruky prázdne. */
+  function pitka(seed: number): { s: GameState; lavy: number; pol: number } {
+    const s0 = setupGame(sada, seed);
+    const lavy = instanceFor(sada, "v5n_lavy", EMPTY, R2);
+    const pol = instanceFor(sada, "v5n_pol", R1, R1);
+    const s: GameState = {
+      ...s0,
+      faza: "pitka",
+      kolo: 2,
+      utocnik: 0,
+      pitkyCelkom: 1,
+      pitkaCislo: 1,
+      ciel: { typ: "lokalita", lokalita: null },
+      lokalityVHre: s0.lokalityVHre.slice(1),
+      strany: [[], [{ card: pol, playedBy: 1 }, { card: lavy, playedBy: 1 }]],
+      hraci: [
+        // Cigareta na fajčenie — inak by hra „hotovo“ odohrala za hráča sama.
+        { ...s0.hraci[0], ruka: [], cigarety: 1, poldeciPlne: 1, poldeciVypite: 0 },
+        { ...s0.hraci[1], ruka: [], cigarety: 1, poldeciPlne: 1, poldeciVypite: 0 },
+      ],
+      pitkaStav: { naTahu: 1, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0], vykup: [false, false] },
+    };
+    return { s, lavy: lavy.uid, pol: pol.uid };
+  }
+
+  it("skryté NA EX súper nevidí — pohľad aj udalosti sú rovnaké, ako keby NA EX nedal", () => {
+    const { s, lavy } = pitka(101);
+    const { state, events } = apply(sada, s, { type: "naex", uid: lavy }, 1);
+    expect(state.pitkaStav?.skryteNaex).toEqual([{ hrac: 1, uid: lavy }]);
+    expect(state.hraci[1].poldeciPlne).toBe(1);
+    const bez: GameState = { ...state, pitkaStav: { ...state.pitkaStav!, skryteNaex: [] } };
+    expect(viewFor(sada, state, 0)).toEqual(viewFor(sada, bez, 0));
+    expect(eventsFor(events, 0)).toEqual([]);
+    // Vlastné NA EX hráč vidí.
+    expect(viewFor(sada, state, 1).pitkaStav?.skryteNaex).toEqual([{ hrac: 1, uid: lavy }]);
+    expect(eventsFor(events, 1).length).toBeGreaterThan(0);
+    // Ani „hotovo“ neprezradí, či NA EX dal.
+    const hotovo = apply(sada, state, { type: "skipNaex" }, 1);
+    const hotovoBez = apply(sada, { ...s }, { type: "skipNaex" }, 1);
+    expect(viewFor(sada, hotovo.state, 0)).toEqual(viewFor(sada, hotovoBez.state, 0));
+    expect(eventsFor(hotovo.events, 0)).toEqual(eventsFor(hotovoBez.events, 0));
+  });
+
+  it("bot nevidí súperovo skryté NA EX — rozhodne sa rovnako", () => {
+    const { s, lavy } = pitka(102);
+    const poNaex = apply(sada, s, { type: "naex", uid: lavy }, 1).state;
+    const sHotovym = apply(sada, poNaex, { type: "skipNaex" }, 1).state;
+    const bez = apply(sada, s, { type: "skipNaex" }, 1).state;
+    expect(tahBota(sada, sHotovym, 0, 7)).toEqual(tahBota(sada, bez, 0, 7));
+  });
+
+  it("odkrytie po „hotovo“ oboch: poldeci, pečeň a záznam; dve NA EX na tú istú kartu = Výtržník", () => {
+    const { s, lavy } = pitka(103);
+    let st = apply(sada, s, { type: "naex", uid: lavy }, 1).state;
+    st = apply(sada, st, { type: "skipNaex" }, 1).state;
+    // Hráč 0 súperovo NA EX nevidí — tú istú kartu smie vybrať.
+    expect(legalCommands(sada, st, 0)).toContainEqual({ type: "naex", uid: lavy });
+    st = apply(sada, st, { type: "naex", uid: lavy }, 0).state;
+    const { state, events } = apply(sada, st, { type: "skipNaex" }, 0);
+    const texty = events.flatMap((e) => (e.type === "log" ? [e.text] : []));
+    expect(texty.some((t) => t.startsWith("Zrážka NA EX"))).toBe(true);
+    expect(events.filter((e) => e.type === "pecen").map((e) => (e.type === "pecen" ? e.hrac : -1)).sort()).toEqual([0, 1]);
+    const vysledok = events.find((e) => e.type === "bitkaVysledok");
+    // Výtržník: obe akcie karty sú aktívne Rany majiteľa (hráč 1), bez zdvojenia NA EX,
+    // a sused s ňou spáruje svoju Ranu ako predtým: 2 + 1.
+    expect(vysledok?.type === "bitkaVysledok" ? vysledok.sums[1].Rana : -1).toBe(3);
+    // Pri odkrytí obaja položili svoj plný poldeci na kartu.
+    expect([state.hraci[0].poldeciPlne, state.hraci[1].poldeciPlne]).toEqual([0, 0]);
+  });
+
+  it("Výtržník: všetky akcie karty sú aktívne Rany pre majiteľa, aj Viera a Pohoršenie", () => {
+    const vp = instanceFor(sada, "v5n_vp", EMPTY, VP);
+    const pol = instanceFor(sada, "v5n_pol", R1, R1);
+    const line = (vytrznik: boolean) => ({
+      lokalita: null,
+      lokalitaOtocena: false,
+      strany: [[], [{ card: pol, playedBy: 1 as PlayerId }, { card: vp, playedBy: 1 as PlayerId, ...(vytrznik ? { naexBy: 0 as PlayerId, naexBy2: 1 as PlayerId, vytrznik: true as const } : {}) }]] as GameState["strany"],
+    });
+    const bez = evaluateLine(sada, line(false)).sums[1];
+    const s = evaluateLine(sada, line(true)).sums[1];
+    expect(s.Viera ?? 0).toBe(0);
+    expect(s.Pohoršenie ?? 0).toBe(0);
+    // Viera a Pohoršenie Výtržníka sú dve Rany navyše.
+    expect((s.Rana ?? 0) - (bez.Rana ?? 0)).toBe(2);
+  });
+});
+
+describe("v5 bod 2: skryté NA EX na súperovu Záverečnú", () => {
+  it("vlastné skryté NA EX nesie náhradné uid Záverečnej — skutočná karta sa neprezradí", () => {
+    const s0 = setupGame(data, 111);
+    const zaverecna: CardInstance = { uid: 991111, defId: "svokra", leftLayout: 0, rightLayout: 0 };
+    const s: GameState = {
+      ...s0,
+      faza: "pitka",
+      pitkyCelkom: 1,
+      pitkaCislo: 1,
+      ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
+      lokalityVHre: s0.lokalityVHre.slice(1),
+      strany: [[], [{ card: inst("pijan"), playedBy: 1 }, { card: zaverecna, playedBy: 1, zaverecna: true }]],
+      hraci: [{ ...s0.hraci[0], poldeciPlne: 1, cigarety: 1 }, s0.hraci[1]],
+      zaverecnaOdklad: [null, { naexSupera: 0, naexVlastne: 0, zahodeniaSupera: 0 }],
+      pitkaStav: { naTahu: 0, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0], vykup: [false, false] },
+    };
+    const po = apply(data, s, { type: "naex", uid: uidZaverecnej(1) }, 0).state;
+    const pohlad = viewFor(data, po, 0);
+    expect(pohlad.pitkaStav?.skryteNaex).toEqual([{ hrac: 0, uid: uidZaverecnej(1) }]);
+    expect(JSON.stringify(pohlad)).not.toContain(`${zaverecna.uid}`);
+    // Druhé NA EX na tú istú Záverečnú už nie.
+    expect(legalCommands(data, po, 0)).not.toContainEqual({ type: "naex", uid: uidZaverecnej(1) });
   });
 });

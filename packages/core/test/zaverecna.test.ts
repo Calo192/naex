@@ -10,6 +10,7 @@ import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, GameState, PlacedCard, PlayerId } from "../src/index.ts";
 import { apply, legalCommands, loadGameData, planVykladania, setupGame, tahBota, uidZaverecnej, viewFor } from "../src/index.ts";
+import { naexOdkryte } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -145,13 +146,13 @@ describe("Záverečná — NA EX", () => {
     for (const defId of ["noviny", "liberal"]) {
       const s = vPitke([[skryta(inst(defId), 1)], []], 0);
       expect(legalCommands(data, s, 0)).toContainEqual({ type: "naex", uid: uidZaverecnej(0) });
-      const po = apply(data, s, { type: "naex", uid: uidZaverecnej(0) }, 0).state;
+      const po = naexOdkryte(data, s, uidZaverecnej(0), 0).state;
       expect(po.strany[0][0]?.naexBy).toBe(0);
       expect(viewFor(data, po, 0).zaverecne[0]?.naexBy).toBe(0);
     }
     const vlastna = vPitke([[skryta(inst("pijan"), 0)], []], 0);
     expect(legalCommands(data, vlastna, 0).some((c) => c.type === "naex")).toBe(false);
-    expect(() => apply(data, vlastna, { type: "naex", uid: vlastna.strany[0][0]!.card.uid }, 0)).toThrow(/svoju Záverečnú/);
+    expect(() => naexOdkryte(data, vlastna, vlastna.strany[0][0]!.card.uid, 0)).toThrow(/svoju Záverečnú/);
   });
 });
 
@@ -176,11 +177,12 @@ describe("Záverečná — otočenie na konci Pitky", () => {
   it("Svokra lícom dole za NA EX súpera nekradne hneď — až pri otočení", () => {
     const pijan: PlacedCard = { card: inst("pijan"), playedBy: 0 };
     const s = vPitke([[pijan], [skryta(inst("svokra"), 1)]], 0);
-    const naex = apply(data, s, { type: "naex", uid: pijan.card.uid }, 0);
+    const naex = naexOdkryte(data, s, pijan.card.uid, 0);
     expect(naex.state.hraci[0].cigarety).toBe(3);
     expect(naex.events.some((e) => e.type === "log" && e.text.startsWith("Svokra"))).toBe(false);
-    const st = naex.state.pitkaStav?.reakcia === 1 ? apply(data, naex.state, { type: "bezReakcie" }, 1).state : naex.state;
-    const { state, logy } = dohrajPitku(st);
+    const odpoved = naex.state.pitkaStav?.reakcia === 1 ? apply(data, naex.state, { type: "bezReakcie" }, 1) : null;
+    const { state, logy: zvysok } = dohrajPitku(odpoved?.state ?? naex.state);
+    const logy = [...(odpoved?.events ?? []).flatMap((e) => (e.type === "log" ? [e.text] : [])), ...zvysok];
     expect(logy.some((t) => t.startsWith("Svokra:"))).toBe(true);
     expect(state.hraci[1].cigarety - state.hraci[0].cigarety).toBeGreaterThanOrEqual(4 - 3);
   });

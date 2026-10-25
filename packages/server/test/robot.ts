@@ -142,7 +142,8 @@ export class Robot {
         const p = view.pitkaStav;
         if (p?.reakcia === ja) return { type: "bezReakcie" };
         // Krčma: s plným poldeci treba dať NA EX — na vlastného Občana, inak na hocikoho v línii.
-        if (view.ciel?.lokalita?.defId === "krcma" && p !== null && !p.naexPouzity[ja] && view.hraci[ja].poldeciPlne > 0) {
+        // NA EX naraz (v5): skryté NA EX už dané — Krčma je spokojná.
+        if (view.ciel?.lokalita?.defId === "krcma" && p !== null && !p.naexPouzity[ja] && (p.skryteNaex ?? []).length === 0 && view.hraci[ja].poldeciPlne > 0) {
           const ciele = new Set(naexCieleVLinii(DATA, lineState(view), ja));
           const linia = [...view.strany[0], ...view.strany[1]];
           const ciel = linia.find((pl) => pl.playedBy === ja && ciele.has(pl.card.uid)) ?? linia.find((pl) => ciele.has(pl.card.uid));

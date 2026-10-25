@@ -4,7 +4,8 @@
 // nesmie dostať von: obsah súperovej ruky, obsah ani poradie ŽIADNEHO
 // doberacieho balíčka (vlastného, súperovho, spoločného), súperov balíček
 // stavby šenku a jeho výber v kroku stavby, jeho
-// karta z Vízie a jeho karta lícom dole pri patronáte (náhrada staršieho).
+// karta z Vízie, jeho karta lícom dole pri patronáte (náhrada staršieho)
+// a jeho skryto vybrané NA EX (v5, NA EX naraz — do odkrytia ani ich počet).
 // Posielajú sa len počty (aj počet súperových nepriznaných kliatob — ten sa
 // dá odvodiť z verejného logu). Skryť kartu v rozhraní je bezcenné — filtruje
 // sa TU a testuje sa to. Súperova skrytá Záverečná (lícom dole) v strany
@@ -295,7 +296,20 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
             noveKarty: d.noveKarty,
           },
     zhromazdenieStav: state.zhromazdenieStav,
-    pitkaStav: state.pitkaStav,
+    // NA EX naraz (v5): súperove skryté NA EX sa neposielajú — ani že nejaké dal.
+    pitkaStav:
+      state.pitkaStav === null
+        ? null
+        : {
+            ...state.pitkaStav,
+            // Moje NA EX na súperovu skrytú Záverečnú nesie jej náhradné uid — skutočné by ju prezradilo.
+            skryteNaex: (state.pitkaStav.skryteNaex ?? [])
+              .filter((x) => x.hrac === ja)
+              .map((x) => {
+                const strana = ([0, 1] as const).find((q) => state.strany[q].some((pl) => pl.card.uid === x.uid && skryta(pl)));
+                return strana === undefined ? x : { ...x, uid: uidZaverecnej(strana) };
+              }),
+          },
     bitkaStav:
       bitka === null
         ? null

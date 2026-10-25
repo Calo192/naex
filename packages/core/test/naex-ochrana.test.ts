@@ -10,6 +10,7 @@ import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, GameState, PlacedCard, PlayerId } from "../src/index.ts";
 import { apply, krcmaVyzaduje, legalCommands, loadGameData, setupGame } from "../src/index.ts";
+import { naexOdkryte } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -80,32 +81,32 @@ describe("Svokra", () => {
   it("za NA EX súpera ukradne jej majiteľ 2 cigarety", () => {
     const pijan = lezi("pijan", 0);
     const s = vPitke([[pijan, lezi("pijan", 0)], [lezi("svokra", 1)]], 0, [3, 0]);
-    const { state, events } = apply(data, s, { type: "naex", uid: uid(pijan) }, 0);
+    const { state, events } = naexOdkryte(data, s, uid(pijan), 0);
     expect([state.hraci[0].cigarety, state.hraci[1].cigarety]).toEqual([1, 2]);
     expect(events.some((e) => e.type === "log" && e.text.startsWith("Svokra:"))).toBe(true);
   });
 
   it("súper bez cigarety nestratí nič; vlastné NA EX majiteľa nič nespustí", () => {
     const pijan = lezi("pijan", 0);
-    const bezCigariet = apply(data, vPitke([[pijan, lezi("pijan", 0)], [lezi("svokra", 1)]], 0, [0, 0]), { type: "naex", uid: uid(pijan) }, 0).state;
+    const bezCigariet = naexOdkryte(data, vPitke([[pijan, lezi("pijan", 0)], [lezi("svokra", 1)]], 0, [0, 0]), uid(pijan), 0).state;
     expect([bezCigariet.hraci[0].cigarety, bezCigariet.hraci[1].cigarety]).toEqual([0, 0]);
-    const vlastne = apply(data, vPitke([[pijan, lezi("pijan", 0)], [lezi("svokra", 0)]], 0, [2, 2]), { type: "naex", uid: uid(pijan) }, 0).state;
+    const vlastne = naexOdkryte(data, vPitke([[pijan, lezi("pijan", 0)], [lezi("svokra", 0)]], 0, [2, 2]), uid(pijan), 0).state;
     expect([vlastne.hraci[0].cigarety, vlastne.hraci[1].cigarety]).toEqual([2, 2]);
   });
 
   it("dve Svokry ukradnú 4 cigarety, viac než súper má nie", () => {
     const pijan = lezi("pijan", 0);
     const s = vPitke([[pijan, lezi("pijan", 0)], [lezi("svokra", 1), lezi("svokra", 1)]], 0, [5, 0]);
-    const po = apply(data, s, { type: "naex", uid: uid(pijan) }, 0).state;
+    const po = naexOdkryte(data, s, uid(pijan), 0).state;
     expect([po.hraci[0].cigarety, po.hraci[1].cigarety]).toEqual([1, 4]);
-    const malo = apply(data, vPitke([[pijan, lezi("pijan", 0)], [lezi("svokra", 1), lezi("svokra", 1)]], 0, [3, 0]), { type: "naex", uid: uid(pijan) }, 0).state;
+    const malo = naexOdkryte(data, vPitke([[pijan, lezi("pijan", 0)], [lezi("svokra", 1), lezi("svokra", 1)]], 0, [3, 0]), uid(pijan), 0).state;
     expect([malo.hraci[0].cigarety, malo.hraci[1].cigarety]).toEqual([0, 3]);
   });
 
   it("Praudovravec súpera ju umlčí (Autorita)", () => {
     const pijan = lezi("pijan", 0);
     const s = vPitke([[pijan, lezi("praudovravec", 0)], [lezi("svokra", 1)]], 0, [2, 0]);
-    const po = apply(data, s, { type: "naex", uid: uid(pijan) }, 0).state;
+    const po = naexOdkryte(data, s, uid(pijan), 0).state;
     expect([po.hraci[0].cigarety, po.hraci[1].cigarety]).toEqual([2, 0]);
   });
 

@@ -28,7 +28,7 @@ import {
   viewFor,
 } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
-import { instanceFor, makeDef, syntheticData } from "./helpers.ts";
+import { instanceFor, makeDef, syntheticData, naexOdkryte } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const EMPTY: Layout4 = [null, null, null, null];
@@ -426,7 +426,7 @@ describe("Vychovávateľka: Dlh ide súperovi do balíčka, nie na ruku", () => 
       { priznane: [dlh] },
     );
     const ruka1 = s.hraci[1].ruka.length;
-    s = apply(data, s, { type: "naex", uid: ciel.uid }, 0).state;
+    s = naexOdkryte(data, s, ciel.uid, 0).state;
     expect(s.hraci[0].priznane.map((k) => k.uid)).not.toContain(dlh.uid);
     expect(s.hraci[1].doberaci.map((k) => k.uid)).toContain(dlh.uid);
     expect(s.hraci[1].ruka).toHaveLength(ruka1);

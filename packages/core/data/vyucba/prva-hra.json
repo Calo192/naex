@@ -467,14 +467,6 @@
       ]
     },
     {
-      "id": "k-naex-bot",
-      "kto": "bot",
-      "prikaz": {
-        "type": "bezReakcie"
-      },
-      "melichar": ""
-    },
-    {
       "id": "i-cena",
       "kto": "info",
       "melichar": "NA EX nie je zadarmo. Poldeci sa v bitke vypije a pečeň v bare sa plní. Keď pretečie, dostaneš zlú kartu; ukážem ti ju, keď príde.",
@@ -525,6 +517,14 @@
       "zvyraznit": [
         "bar:cigarety"
       ]
+    },
+    {
+      "id": "k-naex-bot",
+      "kto": "bot",
+      "prikaz": {
+        "type": "bezReakcie"
+      },
+      "melichar": ""
     },
     {
       "id": "i-bitka",

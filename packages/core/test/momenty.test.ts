@@ -8,7 +8,7 @@ import scorecardsJson from "../data/scorecards.json";
 import type { Command, Event, GameState, Moment, PlacedCard, PlayerId, StavMomentov } from "../src/index.ts";
 import { MOMENTY, NALADY, NALADY_MOMENTOV, NOVE_MOMENTY, ZLATO_ZA_PARTIU, apply, buildGameData, legalCommands, loadGameData, momenty, naTahu, obmedzMomenty, rngInt, rngSeed, setupGame, naladaMomentu } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
-import { EMPTY, instanceFor, makeDef } from "./helpers.ts";
+import { EMPTY, instanceFor, makeDef, naexOdkryte } from "./helpers.ts";
 
 const zaklad = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const R: Layout4 = ["Rana", null, null, null];
@@ -48,7 +48,7 @@ function predZvratom(): { s: GameState; c0: PlacedCard } {
 describe("momenty — rozpoznanie", () => {
   it("Zvrat: NA EX, ktoré otočí víťaza výhľadu, je strieborná pečiatka v prospech toho, kto teraz vyhráva", () => {
     const { s, c0 } = predZvratom();
-    const { state, events } = apply(data, s, { type: "naex", uid: c0.card.uid }, 0);
+    const { state, events } = naexOdkryte(data, s, c0.card.uid, 0);
     const m = momenty(data, s, state, events);
     expect(m).toContainEqual(expect.objectContaining({ typ: "zvrat", stupen: "striebro", hrac: 0 }));
   });

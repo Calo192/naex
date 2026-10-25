@@ -178,9 +178,11 @@ describe("náhľad Pitky = vyhodnotenie (Michal 2026-10-21)", () => {
     for (const seed of SEEDY) {
       partia(seed, ({ pred, cmd, events }) => {
         const pitka = pred.pitkaStav;
-        if (cmd.type !== "skipNaex" || pitka === null) return;
-        const posledny = pitka.hotovy[0] || pitka.hotovy[1];
-        if (!posledny) return;
+        // NA EX naraz (v5): Pitka sa vyhodnotí po poslednom „hotovo“ alebo po
+        // poslednej odpovedi na odkryté NA EX. Skryté NA EX náhľad ešte nevidí
+        // (ani hráč) — také kroky sa porovnať nedajú.
+        if ((cmd.type !== "skipNaex" && cmd.type !== "bezReakcie") || pitka === null) return;
+        if ((pitka.skryteNaex ?? []).length > 0 || !events.some((e) => e.type === "pitkaVysledok")) return;
         const nahlad = nahladPitky(data, pred);
         for (const p of [0, 1] as const) {
           const cirhozy = events.filter((e) => e.type === "log" && rozlozRod(e.text, ["muz", "muz"]) === `Hráč ${p + 1} dosiahol prah pečene (${nahlad[p].prahPecene}) — Cirhóza.`).length;

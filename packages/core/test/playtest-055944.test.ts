@@ -33,7 +33,7 @@ import {
   viewFor,
 } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
-import { EMPTY, instanceFor, makeDef, syntheticData } from "./helpers.ts";
+import { EMPTY, instanceFor, makeDef, syntheticData, naexOdkryte } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -104,11 +104,13 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
 }
 
 describe("reakcia na NA EX", () => {
-  it("súper smie hneď vyložiť jednu kartu mimo limitu, potom je na ťahu znova ten, kto NA EX dal", () => {
+  it("v5: na odkryté NA EX smie súper vyložiť jednu kartu mimo limitu, potom sa Pitka vyhodnotí", () => {
     const s0 = setupGame(data, 11);
     const moja = inst("pijan");
     let s = vPitke(s0, [[lezi(moja, 0), lezi(inst("pijan"), 0)], []]);
-    s = apply(data, s, { type: "naex", uid: moja.uid }, 0).state;
+    // NA EX naraz: kým obaja neskončia Pitku, súper o ňom nevie a neodpovedá.
+    expect(apply(data, s, { type: "naex", uid: moja.uid }, 0).state.pitkaStav?.reakcia).toBeNull();
+    s = naexOdkryte(data, s, moja.uid, 0).state;
     expect(s.pitkaStav?.reakcia).toBe(1);
     expect(naTahu(s)).toBe(1);
     const moznosti = legalCommands(data, s, 1);
@@ -118,17 +120,16 @@ describe("reakcia na NA EX", () => {
     const karta = s.hraci[1].ruka[0] as CardInstance;
     s = apply(data, s, { type: "place", uid: karta.uid, target: "superova" }, 1).state;
     expect(s.strany[0].map((p) => p.card.uid)).toContain(karta.uid);
-    expect(s.pitkaStav?.reakcia).toBeNull();
-    expect(naTahu(s)).toBe(0);
+    expect(s.pitkaStav?.reakcia ?? null).toBeNull();
+    expect(s.pitkaCislo === 1 && s.faza === "pitka" && s.vizia === null).toBe(false);
   });
 
   it("bez kariet v ruke sa reakcia neponúka", () => {
     const s0 = setupGame(data, 12);
     const moja = inst("pijan");
     let s = vPitke({ ...s0, hraci: [s0.hraci[0], { ...s0.hraci[1], ruka: [] }] }, [[lezi(moja, 0), lezi(inst("pijan"), 0)], []]);
-    s = apply(data, s, { type: "naex", uid: moja.uid }, 0).state;
-    expect(s.pitkaStav?.reakcia).toBeNull();
-    expect(naTahu(s)).toBe(0);
+    s = naexOdkryte(data, s, moja.uid, 0).state;
+    expect(s.pitkaStav?.reakcia ?? null).toBeNull();
   });
 
   it("na Liberála NA EX dať nemožno", () => {
@@ -406,7 +407,7 @@ describe("Poštárka, Starosta a Vychovávateľka", () => {
     const moja = inst("pijan");
     const dlh = inst("dlh");
     let s = vPitke({ ...s0, hraci: [{ ...s0.hraci[0], priznane: [dlh] }, s0.hraci[1]] }, [[lezi(vych, 0), lezi(moja, 0)], []]);
-    s = apply(data, s, { type: "naex", uid: moja.uid }, 0).state;
+    s = naexOdkryte(data, s, moja.uid, 0).state;
     expect(s.hraci[0].priznane).toHaveLength(0);
     expect(s.hraci[1].doberaci.map((k) => k.uid)).toContain(dlh.uid);
   });

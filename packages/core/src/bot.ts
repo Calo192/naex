@@ -45,6 +45,7 @@ import {
   manzelkyHraca,
   legalCommands,
   naexCieleVLinii,
+  sNaexNaKartach,
   lineState,
   poskodenieBitky,
   prahVydesenia,
@@ -647,7 +648,10 @@ function najlepsi(volba: Volba, moznosti: readonly Command[], ohodnot: (s: GameS
  * výber kariet, ktorý apply prijme). Hráč nesmie byť bez možnosti — to
  * je chyba volajúceho.
  */
-export function tahBota(data: GameData, state: GameState, ja: PlayerId, seed: number, nastavenia: BotNastavenia = {}): Command {
+export function tahBota(data: GameData, stav: GameState, ja: PlayerId, seed: number, nastavenia: BotNastavenia = {}): Command {
+  // NA EX naraz (v5): súperove skryté NA EX bot nevidí, rovnako ako hráč.
+  const state: GameState =
+    stav.pitkaStav === null ? stav : { ...stav, pitkaStav: { ...stav.pitkaStav, skryteNaex: (stav.pitkaStav.skryteNaex ?? []).filter((x) => x.hrac === ja) } };
   const legal = legalCommands(data, state, ja);
   const prvy = legal[0];
   if (prvy === undefined) throw new Error("Bot nemá legálny ťah.");
@@ -975,8 +979,11 @@ function pitka(v: Volba): Command | null {
   // NA EX: zahrá si ho nanečisto aj so súperovou odpoveďou.
   const naex = v.legal.filter((c) => c.type === "naex");
   if (naex.length > 0) {
-    const poOdpovedi = (po: GameState): number => {
-      if (po.pitkaStav?.reakcia === su) {
+    // NA EX naraz (v5): skryté NA EX sa ráta, akoby už ležalo na karte; súper
+    // naň odpovie až po odkrytí — ak má čím.
+    const poOdpovedi = (po0: GameState): number => {
+      let po = sNaexNaKartach(po0);
+      if (po.hraci[su].ruka.length > 0) {
         const odpoved = najlepsieVylozenie(k, po, po.hraci[su].ruka, su, Number.POSITIVE_INFINITY);
         if (odpoved !== null) {
           po = {
@@ -994,7 +1001,7 @@ function pitka(v: Volba): Command | null {
     if (best !== null) {
       if (krcmaVyzaduje(data, state, ja)) return best;
       const s0 = v.vzorky[0] ?? state;
-      if (priemer(v, best, poOdpovedi) > hodnotaStavu(k, s0, 1.5) + k.povaha.prahRiziko) return best;
+      if (priemer(v, best, poOdpovedi) > hodnotaStavu(k, sNaexNaKartach(s0), 1.5) + k.povaha.prahRiziko) return best;
     }
   }
   // Koniec ťahu v Pitke: chýbajúce neresti dorovnať, inak hrozí Absťák.

@@ -28,7 +28,7 @@ import {
   setupGame,
 } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
-import { EMPTY, instanceFor, makeDef, syntheticData } from "./helpers.ts";
+import { EMPTY, instanceFor, makeDef, syntheticData, naexOdkryte } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -114,7 +114,7 @@ describe("§4 Priebeh kola — kto volí cieľ a kto útočí", () => {
 // --- §7 Pitka nahlas a odpoveď na NA EX ------------------------------------
 
 describe("§7 Pitka — obranca začína, útočník má posledné slovo (Michal 2026-10-21)", () => {
-  it("§7: obranca začína; po jeho NA EX odpovedá útočník; „hotovo“ je nevratné; na NA EX útočníka obranca už len odpovie", () => {
+  it("§7 (v5 NA EX naraz): obranca začína; NA EX oboch sa odkryjú, až keď obaja skončia; odpovedá najprv obranca, posledné slovo má útočník", () => {
     const s0 = setupGame(data, 5);
     const pijan0 = inst("pijan");
     const pijan1 = inst("pijan");
@@ -132,27 +132,27 @@ describe("§7 Pitka — obranca začína, útočník má posledné slovo (Michal
     s = apply(data, s, { type: "pass" }, 0).state;
     expect(s.faza).toBe("pitka");
     expect(naTahu(s)).toBe(1);
-    // Obranca dá NA EX → útočník smie odpovedať jednou kartou; počas odpovede sa nefajčí ani nedáva NA EX.
+    // Obranca dá NA EX skryto — útočník neodpovedá, obranca hrá ďalej.
     s = apply(data, s, { type: "naex", uid: pijan0.uid }, 1).state;
-    expect(s.pitkaStav?.reakcia).toBe(0);
-    const odpoved = legalCommands(data, s, 0);
-    expect(odpoved.some((c) => c.type === "place")).toBe(true);
-    expect(odpoved.every((c) => c.type === "place" || c.type === "bezReakcie")).toBe(true);
-    s = apply(data, s, { type: "bezReakcie" }, 0).state;
-    // Po odpovedi je znova na ťahu ten, kto NA EX dal.
+    expect(s.pitkaStav?.reakcia).toBeNull();
     expect(naTahu(s)).toBe(1);
     s = apply(data, s, { type: "skipNaex" }, 1).state;
     // „Hotovo“ je nevratné: obranca už nič nehrá, je na ťahu útočník.
     expect(naTahu(s)).toBe(0);
     expect(legalCommands(data, s, 1)).toEqual([]);
-    // Útočník dá NA EX → obranca (už hotový) smie len odpovedať jednou kartou.
+    // Útočník dá NA EX a skončí → odkrytie; odpovedá najprv obranca (na NA EX útočníka).
     s = apply(data, s, { type: "naex", uid: pijan1.uid }, 0).state;
+    s = apply(data, s, { type: "skipNaex" }, 0).state;
+    expect(s.strany[0][0]?.naexBy).toBe(1);
+    expect(s.strany[1][0]?.naexBy).toBe(0);
     expect(s.pitkaStav?.reakcia).toBe(1);
-    expect(legalCommands(data, s, 1).every((c) => c.type === "place" || c.type === "bezReakcie")).toBe(true);
+    const odpoved = legalCommands(data, s, 1);
+    expect(odpoved.some((c) => c.type === "place")).toBe(true);
+    expect(odpoved.every((c) => c.type === "place" || c.type === "bezReakcie")).toBe(true);
     s = apply(data, s, { type: "bezReakcie" }, 1).state;
-    expect(naTahu(s)).toBe(0);
-    // Po „hotovo“ oboch sa Pitka vyhodnotí — obranca sa už na ťah nedostane.
-    const { events } = apply(data, s, { type: "skipNaex" }, 0);
+    // Posledné slovo má útočník (Michal 2026-10-25, interview 4).
+    expect(s.pitkaStav?.reakcia).toBe(0);
+    const { events } = apply(data, s, { type: "bezReakcie" }, 0);
     expect(events.some((e) => e.type === "pitkaVysledok")).toBe(true);
   });
 
@@ -161,7 +161,7 @@ describe("§7 Pitka — obranca začína, útočník má posledné slovo (Michal
     const s = vPitke(data, 6, [[lezi(pijan0, 0)], [lezi(inst("pijan"), 1)]], {
       ciel: { typ: "lokalita", lokalita: inst("most") },
     });
-    const po = apply(data, s, { type: "naex", uid: pijan0.uid }, 1).state;
+    const po = naexOdkryte(data, s, pijan0.uid, 1).state;
     expect(po.pitkaStav?.reakcia).toBe(0);
     const miesta = legalCommands(data, po, 0).filter((c): c is Extract<Command, { type: "place" }> => c.type === "place");
     expect(miesta.length).toBeGreaterThan(0);
@@ -524,7 +524,7 @@ describe("§2, §6 a §7 — doplnky prvého prechodu", () => {
   it("§7: pečeň z NA EX sa pripíše hneď tomu, kto NA EX dal — aj keď karta je súperova", () => {
     const pijan0 = inst("pijan");
     const s = vPitke(data, 16, [[lezi(pijan0, 0), lezi(inst("pijan"), 0)], []]);
-    const po = apply(data, s, { type: "naex", uid: pijan0.uid }, 1).state;
+    const po = naexOdkryte(data, s, pijan0.uid, 1).state;
     expect(po.hraci[1].pecen).toBe(s.hraci[1].pecen + 1);
     expect(po.hraci[0].pecen).toBe(s.hraci[0].pecen);
     // Poldeci sa vypije až v bitke — teraz leží na karte a ráta sa dávajúcemu do limitu.
