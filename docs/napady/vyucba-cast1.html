@@ -1,0 +1,1103 @@
+<!doctype html>
+<html lang="sk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Výučba Prvá hra — 1. časť (návrh)</title>
+<style>
+:root{--pozadie:#14110e;--plocha:#1e1914;--plocha2:#272019;--okraj:#3d3229;--text:#f1e8d8;--tlmeny:#b6a790;--akcent:#e9ad45;--modra:#8fb4e0;--zelena:#7fc48a;--cervena:#e88a7a;color-scheme:dark}
+@media (prefers-color-scheme: light){:root{--pozadie:#f6f1e7;--plocha:#fffaf1;--plocha2:#f3eadb;--okraj:#dccdb3;--text:#2a2016;--tlmeny:#5e4f3b;--akcent:#9a5d06;--modra:#2d5a8f;--zelena:#2f7a3b;--cervena:#a8402c;color-scheme:light}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--pozadie);color:var(--text);font:15px/1.5 system-ui,"Segoe UI",sans-serif}
+main{max-width:860px;margin:0 auto;padding:18px 12px 60px}
+h1,h2,h3{font-family:Georgia,serif;line-height:1.2}h1{font-size:1.5rem}h2{margin-top:2rem;border-bottom:1px solid var(--okraj);padding-bottom:4px}
+h3.cast{margin:1.4rem 0 .4rem;color:var(--akcent)}
+.uvod,small{color:var(--tlmeny)}code{font-family:ui-monospace,Consolas,monospace;font-size:.82em;word-break:break-word}
+.box{background:var(--plocha);border:1px solid var(--okraj);border-radius:8px;padding:10px 12px;margin:10px 0}
+.filter{position:sticky;top:0;z-index:5;background:var(--pozadie);padding:8px 0;display:flex;flex-wrap:wrap;gap:6px;border-bottom:1px solid var(--okraj)}
+.filter button{background:var(--plocha);color:var(--text);border:1px solid var(--okraj);border-radius:14px;padding:3px 10px;font-size:.85rem;cursor:pointer}
+.filter button.zap{background:var(--akcent);color:#1b1309;border-color:var(--akcent)}
+details.krok{background:var(--plocha);border:1px solid var(--okraj);border-left:4px solid var(--okraj);border-radius:6px;margin:6px 0}
+details.krok.hrac{border-left-color:var(--akcent)}details.krok.bot,details.krok.auto{border-left-color:var(--modra)}details.krok.otazka{border-left-color:var(--zelena)}
+summary{cursor:pointer;padding:7px 9px;display:flex;flex-wrap:wrap;gap:6px;align-items:baseline;list-style:none}
+summary::-webkit-details-marker{display:none}
+.cislo{font-weight:700;min-width:1.6em}.kto{font-size:.75rem;text-transform:uppercase;color:var(--tlmeny)}
+.nahlad{flex-basis:100%;color:var(--tlmeny);font-size:.88rem}
+details[open] .nahlad{display:none}
+.tag{font-size:.72rem;background:var(--plocha2);border:1px solid var(--okraj);border-radius:10px;padding:0 6px;margin-right:3px}
+.povod{font-size:.72rem;border-radius:10px;padding:0 6px}.povod.doslova{background:#2f5d36;color:#fff}.povod.upravené{background:#7a5a12;color:#fff}.povod.nové{background:#3b4f72;color:#fff}
+.telo{padding:0 10px 10px}
+blockquote{margin:8px 0;padding:8px 10px;background:var(--plocha2);border-radius:6px;font-size:1rem}
+.tl{color:var(--akcent);font-weight:600}
+.ik{display:inline-block;min-width:1.5em;padding:0 3px;border-radius:4px;color:#fff;font-size:.72rem;font-weight:700;text-align:center;line-height:1.4em;vertical-align:1px}
+.kviz{display:flex;flex-direction:column;gap:6px;margin:6px 0}
+.moz{text-align:left;background:var(--plocha2);color:var(--text);border:1px solid var(--okraj);border-radius:6px;padding:7px 9px;font:inherit;cursor:pointer}
+.moz .vysv{display:none;margin-top:4px;font-size:.88rem}.moz.ukaz .vysv{display:block}
+.moz.ukaz.ok{border-color:var(--zelena)}.moz.ukaz.zle{border-color:var(--cervena)}
+.volba{font-size:.88rem}.volba ul{margin:4px 0;padding-left:18px}
+.svieti,.pozn,.stol{font-size:.88rem;margin:6px 0}.pozn{color:var(--tlmeny)}
+.cmd{display:block;margin-top:3px;color:var(--tlmeny)}
+table{border-collapse:collapse;width:100%;font-size:.85rem}th,td{border-bottom:1px solid var(--okraj);padding:4px 5px;text-align:left;vertical-align:top}
+table.stav{font-size:.75rem;margin-top:6px}table.stav th{color:var(--tlmeny);font-weight:400}
+.obal{overflow-x:auto}
+ol.otazky li{margin:6px 0}
+.linia{font-family:ui-monospace,Consolas,monospace;font-size:.8rem;white-space:pre;overflow-x:auto;background:var(--plocha2);padding:8px;border-radius:6px}
+</style></head><body><main>
+<h1>Výučba „Prvá hra“ — 1. časť (návrh)</h1>
+<p class="uvod">Nápadník, 25. 10. 2026, podľa interview Michala (roadmapa #105, postrehy #95–#104). Navrhujem len 1. časť: všetko po prvú bitku
+vrátane prebytku a stupnice. Partia ostane rozohraná na začiatku 2. kola. Overený scenár v jadre:
+<code>docs/napady/vyucba-cast1.json</code> (rovnaký formát ako <code>prva-hra.json</code>, <code>tools/vyucba/prehraj.ts</code>: „Scenár sedí“). Čísla v tabuľkách pri krokoch
+počíta jadro. Michal ho prejde a upraví, nič sa neprogramovalo.</p>
+
+<div class="box"><b>V skratke</b>
+<ul>
+<li><b>Tri lokality</b> (Most, Vínna pivnica, Cintorín) = tri kolá. Hráč vyberá sám a <b>natočí</b> Most Petelicou k sebe. Zlá voľba dostane radu Melichara.</li>
+<li><b>Dve Pitky</b>: obaja spoja akciu mosta, takže hráč vidí opakovanie Zhromaždenie → Pitka a pochopí, že stôl sa platí v každej Pitke (Hasič až v 2. Zhromaždení = 1 Dlh namiesto 2).</li>
+<li><b>Akcie</b>: Rana, Pecka, Petelica, Viera (Štamgastova z mosta), Dlh, Poškodenie pečene (pečeň 2/3, zadĺženie 1/2 prepadne, potom karta Dlh). <b>Bar</b> sa vysvetľuje po dlaždiciach, vždy keď sa mení, a vždy je vidno, čí je.</li>
+<li><b>NA EX v 1. časti nie</b>, len jedna veta pri tlačidle. Bitka 7 : 4 sa vyhrá aj bez neho.</li>
+<li><b>Prebytok 3</b> ide celý na Farára (sivá → žltá → oranžová). Farár má scorecard Exekútor, takže hráč na svojom bare vidí, ako mu Štamgastova priazeň znižuje prah exekútora (10 → 9 → 8). Most mu vyhrá podmienku Lokality: Farár mu dá 3 body, spolu 8 : 5.</li>
+<li>71 krokov (13 hráča, 10 Štamgasta, 1 hra za hráča, 34 info, 13 kvízov), 2314 slov. Doslova od Michala 17 hlášok, upravených 11. Odhad <b>14–16 min</b> (dnešná výučba: 47 krokov, 1 536 slov, ≈ 10 min). Návrh škrtov je dole.</li>
+</ul></div>
+
+<h2>Rozhodnutia návrhu</h2>
+<div class="box">
+<p><b>Lokality.</b> Most otočený (<code>otocena: true</code>): pri hráčovi je <span class="ik" style="background:#c0392b">Pt</span> Petelica a <span class="ik" style="background:#7d6608">D</span> Dlh, pri Štamgastovi <span class="ik" style="background:#2e86c1">V</span> Viera a Obmedzenie.
+Efekt Mostu (karty len na vlastnú stranu) 1. časť zjednodušuje, lebo hráč nemá kam podstrčiť. Vínna pivnica (najviac Pecka) a Cintorín (žiadne tuhé) sú zlé voľby s jasnou radou.
+Obe ostávajú na 2. a 3. kolo. Kostol ani Krčmu som nedal, lebo by v 2. časti bránili NA EX alebo ho vynucovali.
+<br><b>NA EX nie.</b> Prvá Pitka má aj bez neho tri veci (účet za pečeň a Dlh, cigarety za Cigaretu, fajčenie). NA EX potrebuje rozlíšenie spojená/nespojená akcia, skrytosť a odpoveď, a to je látka 2. časti. Ostáva len veta pri tlačidle (krok i-naex).
+<br><b>Dve Pitky.</b> Pitiek = 1 + menší z počtov spojených akcií mosta (§7). Hráč spojí Petelicu, Štamgast Vieru → 2. Zhromaždenie aj Pitka sa zopakujú a kvíz q-hasic overí, že hráč chápe, čo z toho vyplýva.
+<br><b>Šenok stavia Melichar</b> (Michalov text „aby si to nedojebal“), ale hneď vysvetlí prečo: Hasiča do šenku (chceme ho kúpiť), Recidivistu s Petelicou na Smetisko (Štamgast kupuje prvý).
+<br><b>Bar.</b> Každá dlaždica dostane krok vo chvíli, keď sa prvýkrát mení: Cigarety → Štamgastov bar → Karty → Poldeci → Zadĺženie → Pečeň → Dlhy → BODY → Absťák. Pri zmene svieti bar toho, komu patrí.
+<br><b>Stupnica.</b> Farár a Krčmárka si vymenia scorecardy (Farár = Exekútor, Krčmárka = Abstinent). Abstinent by Štamgastovi dal Pohoršenie v ďalších bitkách, Exekútor je pre hráča vidno priamo v bare.</p>
+</div>
+
+<h2>Kroky</h2>
+<p class="uvod">Klik na krok ho otvorí. Pri kvíze klikni na možnosť a ukáže sa vysvetlenie. Farby: <span style="color:var(--akcent)">hráč</span>, <span style="color:var(--modra)">Štamgast / hra</span>, <span style="color:var(--zelena)">kvíz</span>.
+Štítky „doslova / upravené / nové“ porovnávajú text s dnešným <code>prva-hra.json</code>. Tabuľka pod krokom ukazuje stav po kroku (z jadra): tuhé ako odhad bitky, pečeň a zadĺženie ako náhľad Pitky.</p>
+<div class="filter" id="filter">
+<button data-f="vsetko" class="zap">všetko</button>
+<button data-f="cast:A">A úvod</button><button data-f="cast:B">B šenok</button><button data-f="cast:C">C Zhrom. 1</button><button data-f="cast:D">D Pitka 1</button><button data-f="cast:E">E Zhrom. 2</button><button data-f="cast:F">F bitka</button>
+<button data-f="p:#95">#95</button><button data-f="p:#96">#96</button><button data-f="p:#97">#97</button><button data-f="p:#98">#98</button><button data-f="p:#99">#99</button><button data-f="p:#100">#100</button><button data-f="p:#101">#101</button><button data-f="p:#103">#103</button><button data-f="p:bar">bar</button>
+<button data-f="otvor">otvoriť všetky</button>
+</div>
+<div id="kroky">
+<h3 class="cast" id="cast-A">A. Úvod a výber lokality</h3>
+<details class="krok info" data-cast="A" data-postrehy="#105" open>
+<summary><span class="cislo">1</span><span class="kto">info</span><code>i-vitaj</code><span class="povod doslova">doslova</span><span class="tagy"><span class="tag">#105</span></span><span class="nahlad">ČO TAM SEDÍŠ – SEM POĎ! Ja som Meliš… EH! Majster Melichar. Daj mi cigaretu, ak chceš, aby…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Prázdny stôl, tri lokality čakajú na výber. Tlačidlá „Dať cigaretu“ a „Preskočiť výučbu“. Hráčovi ubudne 1 cigareta (5 → 4). </p>
+<blockquote>ČO TAM SEDÍŠ – SEM POĎ! Ja som Meliš… EH! Majster Melichar. Daj mi cigaretu, ak chceš, aby som ťa naučil hrať! <span class="tl">[Dať cigaretu]</span></blockquote>
+
+
+
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>—</td><td>—</td><td>4 · 3</td><td>—</td><td>—</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok info" data-cast="A" data-postrehy="#96" open>
+<summary><span class="cislo">2</span><span class="kto">info</span><code>i-lokalita</code><span class="povod doslova">doslova</span><span class="tagy"><span class="tag">#96</span></span><span class="nahlad">Hrá sa na viacero kôl – každé kolo je bitka na inom mieste. Snažíš sa dať súperovi čo najv…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Bez zmeny. </p>
+<blockquote>Hrá sa na viacero kôl – každé kolo je bitka na inom mieste. Snažíš sa dať súperovi čo najviac po papuli. Ak mu naložíš viac ako on tebe, bitku vyhráš. Slovo sa tu šíri rýchlo a o týchto bitkách sa dozvedia miestne starešiny… Ty im musíš ukázať, kto je tu pán… Ich strach ti na konci hry prinesie body, ALEBO aj nie, a čo ja viem…</blockquote>
+
+
+
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>—</td><td>—</td><td>4 · 3</td><td>—</td><td>—</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok info" data-cast="A" data-postrehy="#96 #102" open>
+<summary><span class="cislo">3</span><span class="kto">info</span><code>i-lokality</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#96</span><span class="tag">#102</span></span><span class="nahlad">Na stole sú tri lokality, dnes teda tri kolá: v každom sa bijete o jednu. Kto bitku vyhrá,…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Svietia tri lokality: Most, Vínna pivnica, Cintorín. </p>
+<blockquote>Na stole sú tri lokality, dnes teda tri kolá: v každom sa bijete o jednu. Kto bitku vyhrá, lokalitu si berie. Na konci hry ti za ňu dajú body starší, ukážem ti to po bitke. V prvom kole vyberáš ty, potom vždy ten, kto vyhral poslednú bitku.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> lokality na výber</p>
+
+<p class="pozn">Prečo je ich viac: tri lokality = tri kolá. Lokalita ako podmienka bodovania sa sľúbi tu a ukáže po bitke (i-lokality-body), keď už hráč pozná starších.</p>
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>—</td><td>—</td><td>4 · 3</td><td>—</td><td>—</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok info" data-cast="A" data-postrehy="#99 #96" >
+<summary><span class="cislo">4</span><span class="kto">info</span><code>i-hrany</code><span class="povod upravené">upravené</span><span class="tagy"><span class="tag">#99</span><span class="tag">#96</span></span><span class="nahlad">Pozri na hrany lokalít. Ikony na hranách sú akcie. Nie ozdoby, akcie. <span class="ik" style="background:#c0392b" title="Rana">R</span> Rana, <span class="ik" style="background:#c0392b" title="Pecka">Pk</span>…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Lokality svietia, hráč si prezerá hrany. </p>
+<blockquote>Pozri na hrany lokalít. Ikony na hranách sú akcie. Nie ozdoby, akcie. <span class="ik" style="background:#c0392b" title="Rana">R</span> Rana, <span class="ik" style="background:#c0392b" title="Pecka">Pk</span> Pecka a <span class="ik" style="background:#c0392b" title="Petelica">Pt</span> Petelica dávajú tuhé, silu v bitke: 1, 2 a 3. Kto má v bitke viac tuhého, vyhrá.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> lokality na výber</p>
+<p class="pozn"><b>Pôvod:</b> z i-akcie („Nie ozdoby, akcie.“) a i-tuhe („Dávajú tuhé, silu v bitke… Kto má v bitke viac tuhého, vyhrá.“)</p>
+<p class="pozn">Slová akcia a tuhé musia prísť už tu: výber cieľa je v jadre pred šenkom.</p>
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>—</td><td>—</td><td>4 · 3</td><td>—</td><td>—</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok hrac" data-cast="A" data-postrehy="#96 #102" >
+<summary><span class="cislo">5</span><span class="kto">hrac</span><code>k-ciel</code><span class="povod upravené">upravené</span><span class="tagy"><span class="tag">#96</span><span class="tag">#102</span></span><span class="nahlad">Vyber Most a natoč ho <span class="ik" style="background:#c0392b" title="Petelica">Pt</span> Petelicou k sebe: klikni naň, ďalším klikom ho otočíš, po…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Hráč vyberie Most a otočí ho, aby Petelica a Dlh mosta boli pri ňom. Pri Štamgastovi ostane Viera a Obmedzenie. <code class="cmd">{&quot;type&quot;:&quot;chooseLocation&quot;,&quot;uid&quot;:&quot;lokality:most&quot;,&quot;otocena&quot;:true}</code></p>
+<blockquote>Vyber Most a natoč ho <span class="ik" style="background:#c0392b" title="Petelica">Pt</span> Petelicou k sebe: klikni naň, ďalším klikom ho otočíš, potom potvrď. Hrana pri tebe môže byť tvoja, tú druhú dostane súper. Tvoj súper bude Štamgast, ja ti budem radiť.</blockquote>
+
+<div class="volba"><b>Rozhodnutie hráča.</b> Zlé ťahy dostanú radu:<ul><li><code>{&quot;type&quot;:&quot;chooseLocation&quot;,&quot;uid&quot;:&quot;lokality:most&quot;,&quot;otocena&quot;:false}</code> → Takto by <span class="ik" style="background:#c0392b" title="Petelica">Pt</span> Petelica hľadela na Štamgasta a pri tebe by bola <span class="ik" style="background:#2e86c1" title="Viera">V</span> Viera a žiadne tuhé. Otoč ho, klikni naň ešte raz.</li><li><code>{&quot;type&quot;:&quot;chooseLocation&quot;,&quot;uid&quot;:&quot;lokality:vinna_pivnica&quot;}</code> → Vínna pivnica má najviac <span class="ik" style="background:#c0392b" title="Pecka">Pk</span> Pecku, to sú 2. Most má Petelicu, to sú 3. Počítať vieš, nie?</li><li><code>{&quot;type&quot;:&quot;chooseLocation&quot;,&quot;uid&quot;:&quot;lokality:cintorin&quot;}</code> → Na Cintoríne nie je žiadne tuhé. Tam sa chodí plakať, nie biť.</li><li>inak → Most, Petelicou k sebe. Viac od teba nechcem.</li></ul></div>
+<p class="svieti"><b>Svieti:</b> lokality na výber · + karty a ciele očakávaného ťahu (klient sám)</p>
+<p class="pozn"><b>Pôvod:</b> z k-ciel prevzatá veta „Tvoj súper bude Štamgast, ja ti budem radiť.“</p>
+<p class="pozn">Skutočný výber: zlá lokalita alebo zlé natočenie dostane radu (volba.zle), nie chybu.</p>
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>—</td><td>—</td><td>4 · 3</td><td>—</td><td>—</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok info" data-cast="A" data-postrehy="#96" >
+<summary><span class="cislo">6</span><span class="kto">info</span><code>i-most</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#96</span></span><span class="nahlad">Most je cieľ kola. Na Moste kladieš karty len na svoju stranu, tak to tam chodí. Aspoň sa …</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Most leží v strede línie. </p>
+<blockquote>Most je cieľ kola. Na Moste kladieš karty len na svoju stranu, tak to tam chodí. Aspoň sa nepomýliš.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> línia</p>
+
+<p class="pozn">Efekt Mostu (len na vlastnú stranu) part 1 zjednodušuje: hráč nemá kam podstrčiť.</p>
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>—</td><td>—</td><td>4 · 3</td><td>—</td><td>—</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok info" data-cast="A" data-postrehy="#100" >
+<summary><span class="cislo">7</span><span class="kto">info</span><code>i-fazy</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#100</span></span><span class="nahlad">Kolo ide zľava doprava: šenok, Zhromaždenie, Pitka, bitka. V šenku kúpiš karty, v Zhromažd…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Svieti priebeh kola: šenok → Zhromaždenie → Pitka → bitka. </p>
+<blockquote>Kolo ide zľava doprava: šenok, Zhromaždenie, Pitka, bitka. V šenku kúpiš karty, v Zhromaždení ich vyložíš k Mostu, v Pitke sa platí za to, čo leží na stole, a v bitke sa ráta tuhé. Bez kariet nemáš čo vyložiť a bez stola niet čo platiť.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> priebeh kola</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>—</td><td>—</td><td>4 · 3</td><td>—</td><td>—</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<h3 class="cast" id="cast-B">B. Bar a šenok</h3>
+<details class="krok info" data-cast="B" data-postrehy="bar" >
+<summary><span class="cislo">8</span><span class="kto">info</span><code>i-cigarety</code><span class="povod doslova">doslova</span><span class="tagy"><span class="tag">bar</span></span><span class="nahlad">Toto je tvoj bar. <span class="ik" style="background:#a04000" title="Cigareta">C</span> Cigarety sú tu platidlo. Bez cigariet to ďaleko nedotiahneš.</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Svieti dlaždica Cigarety v hráčovom bare. </p>
+<blockquote>Toto je tvoj bar. <span class="ik" style="background:#a04000" title="Cigareta">C</span> Cigarety sú tu platidlo. Bez cigariet to ďaleko nedotiahneš.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> tvoje Cigarety</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>—</td><td>—</td><td>4 · 3</td><td>—</td><td>—</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok info" data-cast="B" data-postrehy="bar" >
+<summary><span class="cislo">9</span><span class="kto">info</span><code>i-bar-supera</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">bar</span></span><span class="nahlad">A toto je Štamgastov bar. Jeho cigarety, jeho starosti. Tvoje veci sú vždy v bare s tvojím…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Svieti Štamgastov bar a jeho Cigarety. </p>
+<blockquote>A toto je Štamgastov bar. Jeho cigarety, jeho starosti. Tvoje veci sú vždy v bare s tvojím menom, jeho v bare s jeho menom.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> Štamgastov bar · Štamgastove Cigarety</p>
+
+<p class="pozn">Moje vs. súperove zdroje: každá ďalšia dlaždica svieti v bare toho, komu sa práve mení.</p>
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>—</td><td>—</td><td>4 · 3</td><td>—</td><td>—</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok otazka" data-cast="B" data-postrehy="bar" >
+<summary><span class="cislo">10</span><span class="kto">otazka</span><code>q-bar</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">bar</span></span><span class="nahlad">Komu patria cigarety v bare so Štamgastovým menom?</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Kvíz. </p>
+<blockquote>Komu patria cigarety v bare so Štamgastovým menom?</blockquote>
+<div class="kviz"><button class="moz ok" type="button">Štamgastovi.<span class="vysv">✓ Áno. Tvoje sú len tie v tvojom bare. A tá, čo si dal mne, je už moja.</span></button><button class="moz zle" type="button">Mne, veď ich vidím.<span class="vysv">✗ Vidieť a mať nie je to isté. Jeho bar, jeho cigarety.</span></button></div>
+
+
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>—</td><td>—</td><td>4 · 3</td><td>—</td><td>—</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok info" data-cast="B" data-postrehy="#97" >
+<summary><span class="cislo">11</span><span class="kto">info</span><code>i-senok</code><span class="povod doslova">doslova</span><span class="tagy"><span class="tag">#97</span></span><span class="nahlad">Teraz sa stavia šenok: ponuka kariet, ktoré si môžeš kúpiť. Naostro doň vyberáš karty sám,…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Stavba šenku: hráč si smie skúsiť ťahať karty na Smetisko nanečisto. </p>
+<blockquote>Teraz sa stavia šenok: ponuka kariet, ktoré si môžeš kúpiť. Naostro doň vyberáš karty sám, dnes to za teba spravím ja, aby si to nedojebal. Môžeš si skúsiť natiahnuť karty na Smetisko – tie sa odhodia, ale tentokrát budem mať posledné slovo ja.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> stavba šenku</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>—</td><td>—</td><td>4 · 3</td><td>—</td><td>—</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok auto" data-cast="B" data-postrehy="#97" >
+<summary><span class="cislo">12</span><span class="kto">auto</span><code>k-stavba</code><span class="povod doslova">doslova</span><span class="tagy"><span class="tag">#97</span></span><span class="nahlad">Dal som za teba štyri karty do šenku a štyri na Smetisko, naspodok balíčka. Štamgast vyber…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Hra za hráča: do šenku Hasič, Veštica, Šarlatán, Snúbenica; na Smetisko Recidivista, Pes, Svokra, Policajtka. <code class="cmd">{&quot;type&quot;:&quot;stavbaSenku&quot;,&quot;doSenku&quot;:[&quot;stavba:hasic&quot;,&quot;stavba:vestica&quot;,&quot;stavba:sarlatan&quot;,&quot;stavba:snubenica&quot;],&quot;odhod&quot;:[&quot;stavba:recidivista&quot;,&quot;stavba:pes&quot;,&quot;stavba:svokra&quot;,&quot;stavba:policajtka&quot;]}</code></p>
+<blockquote>Dal som za teba štyri karty do šenku a štyri na Smetisko, naspodok balíčka. Štamgast vyberá zo svojich ôsmich naraz s tebou. Jemu to trvá, počkáme.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> stavba šenku</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>—</td><td>—</td><td>4 · 3</td><td>—</td><td>—</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok bot" data-cast="B" data-postrehy="#97" >
+<summary><span class="cislo">13</span><span class="kto">bot</span><code>k-stavba-bot</code><span class="povod doslova">doslova</span><span class="tagy"><span class="tag">#97</span></span><span class="nahlad">Štamgast: do šenku Zámočník, Presbiter, Niekoho stryná, Záhradkár (ticho, bez hlášky).</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Štamgast: do šenku Zámočník, Presbiter, Niekoho stryná, Záhradkár (ticho, bez hlášky). <code class="cmd">{&quot;type&quot;:&quot;stavbaSenku&quot;,&quot;doSenku&quot;:[&quot;stavba:zamocnik&quot;,&quot;stavba:presbiter&quot;,&quot;stavba:niekoho_stryna&quot;,&quot;stavba:zahradkar&quot;],&quot;odhod&quot;:[&quot;stavba:veteran&quot;,&quot;stavba:zivnostnik&quot;,&quot;stavba:cierna_macka&quot;,&quot;stavba:podvodnik&quot;]}</code></p>
+
+
+
+
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>—</td><td>—</td><td>4 · 3</td><td>—</td><td>—</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok info" data-cast="B" data-postrehy="#97" >
+<summary><span class="cislo">14</span><span class="kto">info</span><code>i-preco-senok</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#97</span></span><span class="nahlad">Prečo najprv stavať a potom kupovať? Do šenku dávaš, čo chceš kúpiť: ja som dal Hasiča. Na…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Šenok má 8 kariet, polovicu od každého. </p>
+<blockquote>Prečo najprv stavať a potom kupovať? Do šenku dávaš, čo chceš kúpiť: ja som dal Hasiča. Na Smetisko ide, čo nechceš nechať súperovi: Recidivista má tiež <span class="ik" style="background:#c0392b" title="Petelica">Pt</span> Petelicu a Štamgast kupuje prvý. Polovicu šenku postavil on, kupujete z neho obaja.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> šenok</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>—</td><td>—</td><td>4 · 3</td><td>—</td><td>—</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok otazka" data-cast="B" data-postrehy="#97" >
+<summary><span class="cislo">15</span><span class="kto">otazka</span><code>q-senok</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#97</span></span><span class="nahlad">Prečo išiel Recidivista na Smetisko?</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Kvíz. </p>
+<blockquote>Prečo išiel Recidivista na Smetisko?</blockquote>
+<div class="kviz"><button class="moz ok" type="button">Aby ho nekúpil Štamgast.<span class="vysv">✓ Áno. Čo nechceš nechať súperovi, zahoď. Vidíš, nie je to až také ťažké.</span></button><button class="moz zle" type="button">Lebo je to zlá karta.<span class="vysv">✗ Zlá nie je, má Petelicu. Práve preto ju Štamgastovi nedáme.</span></button></div>
+
+
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>—</td><td>—</td><td>4 · 3</td><td>—</td><td>—</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok bot" data-cast="B" data-postrehy="#97" >
+<summary><span class="cislo">16</span><span class="kto">bot</span><code>k-kupa-bot</code><span class="povod doslova">doslova</span><span class="tagy"><span class="tag">#97</span></span><span class="nahlad">Šenok je hotový. Kupuje sa striedavo a Štamgast začína: kúpil Zámočníka za jednu [Cigareta…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Štamgast kúpi Zámočníka (cigarety 3 → 2). <code class="cmd">{&quot;type&quot;:&quot;draftBer&quot;,&quot;uids&quot;:[&quot;senok:zamocnik&quot;]}</code></p>
+<blockquote>Šenok je hotový. Kupuje sa striedavo a Štamgast začína: kúpil Zámočníka za jednu <span class="ik" style="background:#a04000" title="Cigareta">C</span> cigaretu. Vidíš? Niektorí ľudia cigarety aj dávajú.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> šenok · Štamgastove Cigarety</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>—</td><td>—</td><td>4 · 2</td><td>—</td><td>—</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok info" data-cast="B" data-postrehy="#99" >
+<summary><span class="cislo">17</span><span class="kto">info</span><code>i-tuhe</code><span class="povod doslova">doslova</span><span class="tagy"><span class="tag">#99</span></span><span class="nahlad">Hasič má akcie <span class="ik" style="background:#c0392b" title="Rana">R</span> Rana a <span class="ik" style="background:#c0392b" title="Petelica">Pt</span> Petelica. Dávajú tuhé, silu v bitke: Rana 1, Petel…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Svieti Hasič v šenku. </p>
+<blockquote>Hasič má akcie <span class="ik" style="background:#c0392b" title="Rana">R</span> Rana a <span class="ik" style="background:#c0392b" title="Petelica">Pt</span> Petelica. Dávajú tuhé, silu v bitke: Rana 1, Petelica 3. Kto má v bitke viac tuhého, vyhrá. Áno, tri je viac ako jeden.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> Hasič v šenku</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>—</td><td>—</td><td>4 · 2</td><td>—</td><td>—</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok hrac" data-cast="B" data-postrehy="#97" >
+<summary><span class="cislo">18</span><span class="kto">hrac</span><code>k-kup-hasic</code><span class="povod doslova">doslova</span><span class="tagy"><span class="tag">#97</span></span><span class="nahlad">Kúp Hasiča za <span class="ik" style="background:#a04000" title="Cigareta">C</span> cigaretu, kvôli <span class="ik" style="background:#c0392b" title="Petelica">Pt</span> Petelici. Vidíš, aké ľahké je dať niek…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Hráč kúpi Hasiča (cigarety 4 → 3). <code class="cmd">{&quot;type&quot;:&quot;draftBer&quot;,&quot;uids&quot;:[&quot;senok:hasic&quot;]}</code></p>
+<blockquote>Kúp Hasiča za <span class="ik" style="background:#a04000" title="Cigareta">C</span> cigaretu, kvôli <span class="ik" style="background:#c0392b" title="Petelica">Pt</span> Petelici. Vidíš, aké ľahké je dať niekomu cigaretu?</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> Hasič v šenku · + karty a ciele očakávaného ťahu (klient sám)</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>—</td><td>—</td><td>3 · 2</td><td>—</td><td>—</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok info" data-cast="B" data-postrehy="bar" >
+<summary><span class="cislo">19</span><span class="kto">info</span><code>i-karty</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">bar</span></span><span class="nahlad">Hasič je v ruke. Koľko máš kariet v ruke a v balíčkoch, ukazuje dlaždica Karty. Keď zabudn…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Svieti dlaždica Karty. </p>
+<blockquote>Hasič je v ruke. Koľko máš kariet v ruke a v balíčkoch, ukazuje dlaždica Karty. Keď zabudneš, čo máš, klikni na ňu. Stáva sa.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> tvoje Karty</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>—</td><td>—</td><td>3 · 2</td><td>—</td><td>—</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok bot" data-cast="B" data-postrehy="#97" >
+<summary><span class="cislo">20</span><span class="kto">bot</span><code>k-stop-bot</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#97</span></span><span class="nahlad">Štamgast už neťahá. Ty máš ešte poslednú šancu, potom nákup končí. Čo v šenku ostane, počk…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Štamgast skončí s nákupom. <code class="cmd">{&quot;type&quot;:&quot;draftStop&quot;}</code></p>
+<blockquote>Štamgast už neťahá. Ty máš ešte poslednú šancu, potom nákup končí. Čo v šenku ostane, počká na ďalšie kolo.</blockquote>
+
+
+
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>—</td><td>—</td><td>3 · 2</td><td>—</td><td>—</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok hrac" data-cast="B" data-postrehy="#97" >
+<summary><span class="cislo">21</span><span class="kto">hrac</span><code>k-stop</code><span class="povod doslova">doslova</span><span class="tagy"><span class="tag">#97</span></span><span class="nahlad">Klikni už neťahám (P). Zvyšné <span class="ik" style="background:#a04000" title="Cigareta">C</span> cigarety sa ti zídu na konci. Mne by sa zišli hne…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Hráč klikne Už neťahám; šenok sa doplní na 8 (Kočovník, Liberál). Patronát hra preskočí (nikto nemá priazeň). <code class="cmd">{&quot;type&quot;:&quot;draftStop&quot;}</code></p>
+<blockquote>Klikni už neťahám (P). Zvyšné <span class="ik" style="background:#a04000" title="Cigareta">C</span> cigarety sa ti zídu na konci. Mne by sa zišli hneď, ale ja nič nehovorím.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> PAS / UŽ NEŤAHÁM · + karty a ciele očakávaného ťahu (klient sám)</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>0 : 0</td><td>1</td><td>3 · 2</td><td>0/3 · 0/3</td><td>0/2 · 0/2</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<h3 class="cast" id="cast-C">C. Prvé Zhromaždenie</h3>
+<details class="krok info" data-cast="C" data-postrehy="#98" >
+<summary><span class="cislo">22</span><span class="kto">info</span><code>i-zhromazdenie</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#98</span></span><span class="nahlad">Zhromaždenie je podstata hry. Striedavo kladiete karty k Mostu tak, aby sa vaše akcie spoj…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Začína Zhromaždenie 1. </p>
+<blockquote>Zhromaždenie je podstata hry. Striedavo kladiete karty k Mostu tak, aby sa vaše akcie spojili a dali viac tuhého ako súperove. Kto bude mať v bitke viac tuhého, berie Most. Toto si zapamätaj, zvyšok sú detaily.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> priebeh kola</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>0 : 0</td><td>1</td><td>3 · 2</td><td>0/3 · 0/3</td><td>0/2 · 0/2</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok info" data-cast="C" data-postrehy="bar" >
+<summary><span class="cislo">23</span><span class="kto">info</span><code>i-poldeci</code><span class="povod doslova">doslova</span><span class="tagy"><span class="tag">bar</span></span><span class="nahlad"><span class="ik" style="background:#117a65" title="Poldeci">Pd</span> Poldeci je pohárik pálenky. Koľko máš plných, toľko kariet teraz vyložíš, a ešte…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Svieti dlaždica Poldeci: 2 plné, limit 3. </p>
+<blockquote><span class="ik" style="background:#117a65" title="Poldeci">Pd</span> Poldeci je pohárik pálenky. Koľko máš plných, toľko kariet teraz vyložíš, a ešte jednu. Máš dva, teda tri karty. Spočítal som ti to, nech sa netrápiš.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> tvoje Poldeci</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>0 : 0</td><td>1</td><td>3 · 2</td><td>0/3 · 0/3</td><td>0/2 · 0/2</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok bot" data-cast="C" data-postrehy="#99" >
+<summary><span class="cislo">24</span><span class="kto">bot</span><code>k-zh-bot1</code><span class="povod upravené">upravené</span><span class="tagy"><span class="tag">#99</span></span><span class="nahlad">Po šenkovom drafte ide Zhromaždenie: striedavo kladiete karty k Mostu, Štamgast začína. Pr…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Štamgast položí Zámočníka k Mostu: jeho Pecka + Viera mosta. <code class="cmd">{&quot;type&quot;:&quot;tah&quot;,&quot;kroky&quot;:[{&quot;type&quot;:&quot;place&quot;,&quot;uid&quot;:&quot;ruka:zamocnik&quot;,&quot;target&quot;:&quot;vlastna&quot;}]}</code></p>
+<blockquote>Po šenkovom drafte ide Zhromaždenie: striedavo kladiete karty k Mostu, Štamgast začína. Priložil Zámočníka. Pozeraj, nech sa niečo naučíš.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> línia</p>
+<p class="pozn"><b>Pôvod:</b> Michalov text, „k Jednote“ → „k Mostu“</p>
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>0 : 2</td><td>1</td><td>3 · 2</td><td>0/3 · 0/3</td><td>0/2 · 0/2</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok info" data-cast="C" data-postrehy="#99" >
+<summary><span class="cislo">25</span><span class="kto">info</span><code>i-spoj</code><span class="povod upravené">upravené</span><span class="tagy"><span class="tag">#99</span></span><span class="nahlad">Kde sa dve karty dotýkajú, je spoj. Keď sa na ňom stretnú dve akcie v rovnakej výške, obe …</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Svieti línia. </p>
+<blockquote>Kde sa dve karty dotýkajú, je spoj. Keď sa na ňom stretnú dve akcie v rovnakej výške, obe platia. Akcia nespojená so žiadnou inou akciou nerobí nič. Ako niektorí. Zámočníkova <span class="ik" style="background:#c0392b" title="Pecka">Pk</span> Pecka sa stretla s <span class="ik" style="background:#2e86c1" title="Viera">V</span> Vierou mosta: obe platia a obe sú Štamgastove.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> línia</p>
+<p class="pozn"><b>Pôvod:</b> Michalov text, posledná veta nová (Zámočník sa teraz spojí)</p>
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>0 : 2</td><td>1</td><td>3 · 2</td><td>0/3 · 0/3</td><td>0/2 · 0/2</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok info" data-cast="C" data-postrehy="#99" >
+<summary><span class="cislo">26</span><span class="kto">info</span><code>i-pecka-viera</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#99</span></span><span class="nahlad"><span class="ik" style="background:#c0392b" title="Pecka">Pk</span> Pecka sú 2 tuhé. <span class="ik" style="background:#2e86c1" title="Viera">V</span> Viera je štít: každá spojená uberie súperovi 1 tuhé. Súpe…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Svieti odhad bitky. </p>
+<blockquote><span class="ik" style="background:#c0392b" title="Pecka">Pk</span> Pecka sú 2 tuhé. <span class="ik" style="background:#2e86c1" title="Viera">V</span> Viera je štít: každá spojená uberie súperovi 1 tuhé. Súper si ty, ak si si nevšimol. Odhad bitky: 0 : 2.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> odhad bitky</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>0 : 2</td><td>1</td><td>3 · 2</td><td>0/3 · 0/3</td><td>0/2 · 0/2</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok otazka" data-cast="C" data-postrehy="#99" >
+<summary><span class="cislo">27</span><span class="kto">otazka</span><code>q-viera</code><span class="povod upravené">upravené</span><span class="tagy"><span class="tag">#99</span></span><span class="nahlad">Štamgast má spojenú Vieru. Čo urobí v bitke?</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Kvíz. </p>
+<blockquote>Štamgast má spojenú Vieru. Čo urobí v bitke?</blockquote>
+<div class="kviz"><button class="moz ok" type="button">Uberie mi 1 tuhé.<span class="vysv">✓ Áno. Viera je štít, nie päsť.</span></button><button class="moz zle" type="button">Pridá jemu 1 tuhé.<span class="vysv">✗ Nie, Viera nebije, len tlmí. Tvoje tuhé zníži o 1. Hovoril som to pred chvíľou, ale nevadí.</span></button></div>
+
+
+<p class="pozn"><b>Pôvod:</b> druhé vysvetlenie končí Michalovou vetou „Hovoril som to pred chvíľou, ale nevadí.“</p>
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>0 : 2</td><td>1</td><td>3 · 2</td><td>0/3 · 0/3</td><td>0/2 · 0/2</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok hrac" data-cast="C" data-postrehy="#99 #98" >
+<summary><span class="cislo">28</span><span class="kto">hrac</span><code>k-pijan</code><span class="povod upravené">upravené</span><span class="tagy"><span class="tag">#99</span><span class="tag">#98</span></span><span class="nahlad">Teraz ty. Máš dvoch Pijanov. Polož toho, ktorého <span class="ik" style="background:#c0392b" title="Rana">R</span> Rana sa stretne s <span class="ik" style="background:#c0392b" title="Petelica">Pt</span> Petel…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Hráč položí Pijana (variant 0/2): Rana + Petelica mosta. Pitky 1 → 2. <code class="cmd">{&quot;type&quot;:&quot;tah&quot;,&quot;kroky&quot;:[{&quot;type&quot;:&quot;place&quot;,&quot;uid&quot;:&quot;ruka:pijan&quot;,&quot;target&quot;:&quot;vlastna&quot;}]}</code></p>
+<blockquote>Teraz ty. Máš dvoch Pijanov. Polož toho, ktorého <span class="ik" style="background:#c0392b" title="Rana">R</span> Rana sa stretne s <span class="ik" style="background:#c0392b" title="Petelica">Pt</span> Petelicou mosta: potiahni ho na svietiace „+“, alebo klikni na „+“ a potom na kartu. Potom potvrď. Pomaly, nikam sa neponáhľame.</blockquote>
+
+<div class="volba"><b>Rozhodnutie hráča.</b> Zlé ťahy dostanú radu:<ul><li><code>{&quot;type&quot;:&quot;place&quot;,&quot;uid&quot;:&quot;ruka:pijan#2&quot;}</code> → Tento má Ranu o riadok nižšie: stretla by sa s <span class="ik" style="background:#7d6608" title="Dlh">D</span> Dlhom mosta, nie s Petelicou. Zober toho druhého. Sú len dvaja, to zvládneme.</li><li>inak → Hľadaj Pijana, ktorého Rana je v rovnakej výške ako Petelica mosta. Pomaly, ja mám času dosť.</li></ul></div>
+<p class="svieti"><b>Svieti:</b> + karty a ciele očakávaného ťahu (klient sám)</p>
+<p class="pozn"><b>Pôvod:</b> Michalov návod na ťahanie a „Pomaly, nikam sa neponáhľame.“; zvyšok nový</p>
+<p class="pozn">Rozhodnutie: druhý Pijan (0/1) by spojil Ranu s Dlhom mosta — Melichar poradí.</p>
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>3 : 2</td><td>2</td><td>3 · 2</td><td>0/3 · 0/3</td><td>0/2 · 0/2</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok info" data-cast="C" data-postrehy="#99 #96" >
+<summary><span class="cislo">29</span><span class="kto">info</span><code>i-pijan-spoj</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#99</span><span class="tag">#96</span></span><span class="nahlad">Rana 1 a Petelica mosta 3: máš 4 tuhé, Štamgastova Viera ti 1 uberie, odhad 3 : 2. Hrana m…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Svieti odhad bitky a línia. </p>
+<blockquote>Rana 1 a Petelica mosta 3: máš 4 tuhé, Štamgastova Viera ti 1 uberie, odhad 3 : 2. Hrana mosta pri tebe je tvoja, lebo pri nej leží tvoja karta. Nie zlé. Na začiatočníka.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> odhad bitky · línia</p>
+
+<p class="pozn">„Hrana pri tebe je tvoja, lebo pri nej leží tvoja karta“ je zjednodušená prevaha (presne v 3. časti).</p>
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>3 : 2</td><td>2</td><td>3 · 2</td><td>0/3 · 0/3</td><td>0/2 · 0/2</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok otazka" data-cast="C" data-postrehy="#99" >
+<summary><span class="cislo">30</span><span class="kto">otazka</span><code>q-spoj</code><span class="povod doslova">doslova</span><span class="tagy"><span class="tag">#99</span></span><span class="nahlad">Tak schválne: prečo Pijanova <span class="ik" style="background:#c0392b" title="Rana">R</span> Rana platí?</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Kvíz. </p>
+<blockquote>Tak schválne: prečo Pijanova <span class="ik" style="background:#c0392b" title="Rana">R</span> Rana platí?</blockquote>
+<div class="kviz"><button class="moz ok" type="button">Na spoji stretla Petelicu mosta v rovnakej výške.<span class="vysv">✓ Áno, spojená akcia platí, osamotená nie. Vidíš, keď chceš, ide to.</span></button><button class="moz zle" type="button">Leží na mojej strane.<span class="vysv">✗ Strana nerozhoduje, rozhoduje partner na spoji. Hovoril som to pred chvíľou, ale nevadí.</span></button></div>
+
+
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>3 : 2</td><td>2</td><td>3 · 2</td><td>0/3 · 0/3</td><td>0/2 · 0/2</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok info" data-cast="C" data-postrehy="#101" >
+<summary><span class="cislo">31</span><span class="kto">info</span><code>i-pitky</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#101</span></span><span class="nahlad">Pozri na priebeh kola: pribudla druhá Pitka. Pitiek je 1 + menší z dvoch počtov: koľko akc…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Na osi kola pribudla druhá Pitka (a druhé Zhromaždenie). </p>
+<blockquote>Pozri na priebeh kola: pribudla druhá Pitka. Pitiek je 1 + menší z dvoch počtov: koľko akcií mosta si spojil ty a koľko Štamgast. Ty jednu, on jednu, teda dve. Pred každou Pitkou je Zhromaždenie, takže dnes dvakrát kladiete a dvakrát pijete.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> priebeh kola</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>3 : 2</td><td>2</td><td>3 · 2</td><td>0/3 · 0/3</td><td>0/2 · 0/2</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok otazka" data-cast="C" data-postrehy="#101" >
+<summary><span class="cislo">32</span><span class="kto">otazka</span><code>q-pitky</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#101</span></span><span class="nahlad">Koľko Pitiek by bolo, keby Štamgast s mostom nespojil nič?</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Kvíz. </p>
+<blockquote>Koľko Pitiek by bolo, keby Štamgast s mostom nespojil nič?</blockquote>
+<div class="kviz"><button class="moz ok" type="button">Jedna.<span class="vysv">✓ Áno: 1 + menší počet, a menší je 0. Počítaš lepšie, ako vyzeráš.</span></button><button class="moz zle" type="button">Dve, veď ja som spojil.<span class="vysv">✗ Rozhoduje menší z dvoch počtov. Jeho 0, teda jedna Pitka.</span></button></div>
+
+
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>3 : 2</td><td>2</td><td>3 · 2</td><td>0/3 · 0/3</td><td>0/2 · 0/2</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok bot" data-cast="C" data-postrehy="#99" >
+<summary><span class="cislo">33</span><span class="kto">bot</span><code>k-zh-bot2</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#99</span></span><span class="nahlad">Štamgast pridal Pijana k Zámočníkovi: <span class="ik" style="background:#c0392b" title="Rana">R</span> Rana a <span class="ik" style="background:#a04000" title="Cigareta">C</span> Cigareta. Rana je ďalšie tu…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Štamgast položí Pijana za Zámočníka: Rana + Cigareta Zámočníka. <code class="cmd">{&quot;type&quot;:&quot;tah&quot;,&quot;kroky&quot;:[{&quot;type&quot;:&quot;place&quot;,&quot;uid&quot;:&quot;ruka:pijan&quot;,&quot;target&quot;:&quot;vlastna&quot;}]}</code></p>
+<blockquote>Štamgast pridal Pijana k Zámočníkovi: <span class="ik" style="background:#c0392b" title="Rana">R</span> Rana a <span class="ik" style="background:#a04000" title="Cigareta">C</span> Cigareta. Rana je ďalšie tuhé, 3 : 3. Cigareta mu v každej Pitke dá cigaretu. V každej, počuješ? Zapamätaj si to.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> odhad bitky</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>3 : 3</td><td>2</td><td>3 · 2</td><td>0/3 · 0/3</td><td>0/2 · 0/2</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok hrac" data-cast="C" data-postrehy="#99" >
+<summary><span class="cislo">34</span><span class="kto">hrac</span><code>k-pijan2</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#99</span></span><span class="nahlad">Polož druhého Pijana za prvého a potvrď. Jeho <span class="ik" style="background:#c0392b" title="Rana">R</span> Rana sa spojí s <span class="ik" style="background:#7d6608" title="Dlh">D</span> Dlhom prvého Pi…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Hráč položí druhého Pijana: Rana + Dlh, pečeň 2 (obe Poškodenia pečene). <code class="cmd">{&quot;type&quot;:&quot;tah&quot;,&quot;kroky&quot;:[{&quot;type&quot;:&quot;place&quot;,&quot;uid&quot;:&quot;ruka:pijan&quot;,&quot;target&quot;:&quot;vlastna&quot;}]}</code></p>
+<blockquote>Polož druhého Pijana za prvého a potvrď. Jeho <span class="ik" style="background:#c0392b" title="Rana">R</span> Rana sa spojí s <span class="ik" style="background:#7d6608" title="Dlh">D</span> Dlhom prvého Pijana a <span class="ik" style="background:#8e44ad" title="PoškodeniePečene">PP</span> Poškodenie pečene s Poškodením pečene. Spoj zapne obe akcie, aj tie, čo škodia tebe. Tak to v živote chodí.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> + karty a ciele očakávaného ťahu (klient sám)</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>4 : 3</td><td>2</td><td>3 · 2</td><td>2/3 · 0/3</td><td>1/2 · 0/2</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok info" data-cast="C" data-postrehy="#99 bar" >
+<summary><span class="cislo">35</span><span class="kto">info</span><code>i-zadlzenie</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#99</span><span class="tag">bar</span></span><span class="nahlad"><span class="ik" style="background:#7d6608" title="Dlh">D</span> Dlh ti v Pitke pridá 1 do Zadĺženia, bar to už ukazuje šípkou. V Pitke za každé 2 za…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Svieti Zadĺženie: 0 ▸ 1 z 2. </p>
+<blockquote><span class="ik" style="background:#7d6608" title="Dlh">D</span> Dlh ti v Pitke pridá 1 do Zadĺženia, bar to už ukazuje šípkou. V Pitke za každé 2 zadĺženia dostaneš kartu Dlh a tá ťa na konci hry stojí body. Budeš mať 1, teda zatiaľ nič. Zatiaľ.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> tvoje Zadĺženie</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>4 : 3</td><td>2</td><td>3 · 2</td><td>2/3 · 0/3</td><td>1/2 · 0/2</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok info" data-cast="C" data-postrehy="#99 bar" >
+<summary><span class="cislo">36</span><span class="kto">info</span><code>i-pecen</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#99</span><span class="tag">bar</span></span><span class="nahlad"><span class="ik" style="background:#8e44ad" title="PoškodeniePečene">PP</span> Pečeň: v Pitke ti stôl napočíta 2 z 3. Keď v Pitke dosiahneš 3, dostane…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Svieti Pečeň: 0 ▸ 2 z 3. </p>
+<blockquote><span class="ik" style="background:#8e44ad" title="PoškodeniePečene">PP</span> Pečeň: v Pitke ti stôl napočíta 2 z 3. Keď v Pitke dosiahneš 3, dostaneš Cirhózu, zlú kartu do balíčka. Po každej Pitke sa pečeň aj zadĺženie vynulujú. Pečeni je to jedno, mne tiež.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> tvoja Pečeň</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>4 : 3</td><td>2</td><td>3 · 2</td><td>2/3 · 0/3</td><td>1/2 · 0/2</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok otazka" data-cast="C" data-postrehy="#99" >
+<summary><span class="cislo">37</span><span class="kto">otazka</span><code>q-dlh</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#99</span></span><span class="nahlad">Čo bude po Pitke so zadĺžením 1?</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Kvíz. </p>
+<blockquote>Čo bude po Pitke so zadĺžením 1?</blockquote>
+<div class="kviz"><button class="moz ok" type="button">Vynuluje sa, kartu Dlh nedostanem.<span class="vysv">✓ Áno, zvyšok pod 2 prepadne. Tebe sa dlhy odpúšťajú. Mne nikdy nikto.</span></button><button class="moz zle" type="button">Ostane mi a v ďalšej Pitke budem mať 2.<span class="vysv">✗ Neostane, po Pitke sa nuluje. Lenže v ďalšej Pitke ti ho stôl napočíta znova, kým tam Pijan leží.</span></button></div>
+
+
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>4 : 3</td><td>2</td><td>3 · 2</td><td>2/3 · 0/3</td><td>1/2 · 0/2</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok bot" data-cast="C" data-postrehy="#98" >
+<summary><span class="cislo">38</span><span class="kto">bot</span><code>k-pas-bot</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#98</span></span><span class="nahlad">Štamgast pasoval. Smel vyložiť ešte jednu kartu, tak dostal <span class="ik" style="background:#a04000" title="Cigareta">C</span> cigaretu. Za každú …</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Štamgast pasuje, +1 cigareta (2 → 3). <code class="cmd">{&quot;type&quot;:&quot;pass&quot;}</code></p>
+<blockquote>Štamgast pasoval. Smel vyložiť ešte jednu kartu, tak dostal <span class="ik" style="background:#a04000" title="Cigareta">C</span> cigaretu. Za každú kartu, ktorú pasom nevyložíš, je cigareta.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> Štamgastove Cigarety</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>4 : 3</td><td>2</td><td>3 · 3</td><td>2/3 · 0/3</td><td>1/2 · 0/2</td><td>0 · 0</td><td>8 : 8</td></tr></table>
+</div></details>
+<details class="krok info" data-cast="C" data-postrehy="#101" >
+<summary><span class="cislo">39</span><span class="kto">info</span><code>i-hasic-neskor</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#101</span></span><span class="nahlad">Hasiča si teraz nechaj. Jeho <span class="ik" style="background:#c0392b" title="Petelica">Pt</span> Petelica by sa spojila s <span class="ik" style="background:#7d6608" title="Dlh">D</span> Dlhom Pijana: zadĺž…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Svieti Hasič v ruke a os kola. </p>
+<blockquote>Hasiča si teraz nechaj. Jeho <span class="ik" style="background:#c0392b" title="Petelica">Pt</span> Petelica by sa spojila s <span class="ik" style="background:#7d6608" title="Dlh">D</span> Dlhom Pijana: zadĺženie 2, v Pitke karta Dlh. A Pitky sú dnes dve, platil by si ju dvakrát. Tuhé sa ráta až v bitke, Hasič ti neujde.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> Hasič v ruke · priebeh kola</p>
+
+<p class="pozn">Jadro: čo leží na stole, Pitka účtuje v každej Pitke znova (pečeň a zadĺženie sa po Pitke nulujú). Hasič v 1. Zhromaždení = 2 karty Dlh, v 2. = 1.</p>
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>4 : 3</td><td>2</td><td>3 · 3</td><td>2/3 · 0/3</td><td>1/2 · 0/2</td><td>0 · 0</td><td>8 : 8</td></tr></table>
+</div></details>
+<details class="krok hrac" data-cast="C" data-postrehy="#98" >
+<summary><span class="cislo">40</span><span class="kto">hrac</span><code>k-pas</code><span class="povod upravené">upravené</span><span class="tagy"><span class="tag">#98</span></span><span class="nahlad">Klikni pasovať (P). Za kartu, ktorú si ešte smel vyložiť, dostaneš cigaretu. Pasovať ti, m…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Hráč pasuje, +1 cigareta (3 → 4). <code class="cmd">{&quot;type&quot;:&quot;pass&quot;}</code></p>
+<blockquote>Klikni pasovať (P). Za kartu, ktorú si ešte smel vyložiť, dostaneš cigaretu. Pasovať ti, myslím, pôjde.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> PAS / UŽ NEŤAHÁM · + karty a ciele očakávaného ťahu (klient sám)</p>
+<p class="pozn"><b>Pôvod:</b> Michalova veta „Pasovať ti, myslím, pôjde.“; zvyšok nový</p>
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>4 : 3</td><td>2</td><td>4 · 3</td><td>2/3 · 0/3</td><td>1/2 · 0/2</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok otazka" data-cast="C" data-postrehy="#98" >
+<summary><span class="cislo">41</span><span class="kto">otazka</span><code>q-zhromazdenie</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#98</span></span><span class="nahlad">Tak čo sa robí v Zhromaždení?</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Kvíz. </p>
+<blockquote>Tak čo sa robí v Zhromaždení?</blockquote>
+<div class="kviz"><button class="moz ok" type="button">Kladiem karty, aby sa moje akcie spojili a dali viac tuhého.<span class="vysv">✓ Áno. Toto je celá hra, zvyšok sú výhovorky.</span></button><button class="moz zle" type="button">Pijem.<span class="vysv">✗ Pije sa v Pitke. Tá príde teraz, vydrž.</span></button></div>
+
+
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>4 : 3</td><td>2</td><td>4 · 3</td><td>2/3 · 0/3</td><td>1/2 · 0/2</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<h3 class="cast" id="cast-D">D. Prvá Pitka</h3>
+<details class="krok info" data-cast="D" data-postrehy="#100" >
+<summary><span class="cislo">42</span><span class="kto">info</span><code>i-pitka</code><span class="povod doslova">doslova</span><span class="tagy"><span class="tag">#100</span></span><span class="nahlad">Pitka! Karty sa už nekladú, teraz sa pije. Začínaš ty, Štamgast po tebe. Na toto máš talen…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Pitka 1, hráč začína. </p>
+<blockquote>Pitka! Karty sa už nekladú, teraz sa pije. Začínaš ty, Štamgast po tebe. Na toto máš talent, to ti uznám.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> priebeh kola</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>4 : 3</td><td>2</td><td>4 · 3</td><td>2/3 · 0/3</td><td>1/2 · 0/2</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok info" data-cast="D" data-postrehy="#100" >
+<summary><span class="cislo">43</span><span class="kto">info</span><code>i-ucet</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#100</span></span><span class="nahlad">V Pitke sa platí za to, čo leží na stole: pečeň a Dlh. A vyplácajú sa cigarety za [Cigaret…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Svieti Pečeň a Zadĺženie. </p>
+<blockquote>V Pitke sa platí za to, čo leží na stole: pečeň a Dlh. A vyplácajú sa cigarety za <span class="ik" style="background:#a04000" title="Cigareta">C</span> Cigaretu. Preto ide Pitka až po Zhromaždení: najprv sa naleje, potom sa platí.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> tvoja Pečeň · tvoje Zadĺženie</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>4 : 3</td><td>2</td><td>4 · 3</td><td>2/3 · 0/3</td><td>1/2 · 0/2</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok info" data-cast="D" data-postrehy="#100" >
+<summary><span class="cislo">44</span><span class="kto">info</span><code>i-fajcit</code><span class="povod doslova">doslova</span><span class="tagy"><span class="tag">#100</span></span><span class="nahlad">Fajčiť sa smie len v Pitke: za jednu <span class="ik" style="background:#a04000" title="Cigareta">C</span> cigaretu si hneď doberieš kartu. Dnes netr…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Svieti FAJČIŤ. </p>
+<blockquote>Fajčiť sa smie len v Pitke: za jednu <span class="ik" style="background:#a04000" title="Cigareta">C</span> cigaretu si hneď doberieš kartu. Dnes netreba, cigarety si nechaj. Možno budem ešte potrebovať nejakú požičať, tak aby si mal!</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> FAJČIŤ</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>4 : 3</td><td>2</td><td>4 · 3</td><td>2/3 · 0/3</td><td>1/2 · 0/2</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok info" data-cast="D" data-postrehy="#103" >
+<summary><span class="cislo">45</span><span class="kto">info</span><code>i-naex</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#103</span></span><span class="nahlad">Tamto je NA EX, podľa neho sa hra volá. Silná vec, naučím ťa ho v 2. časti. Dnes ho nechaj…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Svieti NA EX (len ukázať). </p>
+<blockquote>Tamto je NA EX, podľa neho sa hra volá. Silná vec, naučím ťa ho v 2. časti. Dnes ho nechaj tak. Ešte ti neverím.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> NA EX</p>
+
+<p class="pozn">NA EX v 1. časti nie: Pitka má aj bez neho čo učiť (účet, cigarety, fajčenie) a bitku hráč vyhrá bez neho.</p>
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>4 : 3</td><td>2</td><td>4 · 3</td><td>2/3 · 0/3</td><td>1/2 · 0/2</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok hrac" data-cast="D" data-postrehy="#100" >
+<summary><span class="cislo">46</span><span class="kto">hrac</span><code>k-hotovo</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#100</span></span><span class="nahlad">Klikni končím (K). Štamgast ide po tebe.</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Hráč klikne Končím. <code class="cmd">{&quot;type&quot;:&quot;skipNaex&quot;}</code></p>
+<blockquote>Klikni končím (K). Štamgast ide po tebe.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> KONČÍM · + karty a ciele očakávaného ťahu (klient sám)</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>4 : 3</td><td>2</td><td>4 · 3</td><td>2/3 · 0/3</td><td>1/2 · 0/2</td><td>0 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok bot" data-cast="D" data-postrehy="#100 #101" >
+<summary><span class="cislo">47</span><span class="kto">bot</span><code>k-hotovo-bot</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#100</span><span class="tag">#101</span></span><span class="nahlad">Pitka sa vyhodnotila. Tvoja pečeň 2 z 3 aj zadĺženie 1 z 2 sa vynulovali, nič zlé sa nesta…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Štamgast končí, Pitka sa vyhodnotí: hráčova pečeň 2/3 a zadĺženie 1/2 prepadnú, Štamgast +1 cigareta za Cigaretu. Hra prejde do Zhromaždenia 2. <code class="cmd">{&quot;type&quot;:&quot;skipNaex&quot;}</code></p>
+<blockquote>Pitka sa vyhodnotila. Tvoja pečeň 2 z 3 aj zadĺženie 1 z 2 sa vynulovali, nič zlé sa nestalo. Štamgast dostal cigaretu za Cigaretu. A ideme znova: druhé Zhromaždenie, Štamgast začína.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> tvoja Pečeň · tvoje Zadĺženie · Štamgastove Cigarety · priebeh kola</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>4 : 3</td><td>2</td><td>4 · 4</td><td>2/3 · 0/3</td><td>1/2 · 0/2</td><td>0 · 0</td><td>8 : 8</td></tr></table>
+</div></details>
+<details class="krok otazka" data-cast="D" data-postrehy="#100" >
+<summary><span class="cislo">48</span><span class="kto">otazka</span><code>q-fazy</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#100</span></span><span class="nahlad">Prečo ide Pitka až po Zhromaždení?</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Kvíz (obe odpovede správne). </p>
+<blockquote>Prečo ide Pitka až po Zhromaždení?</blockquote>
+<div class="kviz"><button class="moz ok" type="button">V Pitke sa platí za to, čo leží na stole.<span class="vysv">✓ Áno. Najprv sa naleje, potom sa platí. A fajčením si v Pitke doberieš karty na ďalšie Zhromaždenie.</span></button><button class="moz ok" type="button">V Pitke si fajčením doberiem karty na ďalšie Zhromaždenie.<span class="vysv">✓ Aj to. A ešte sa v nej platí za to, čo leží na stole. Dve správne odpovede, aby si sa necítil zle.</span></button></div>
+
+
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>4 : 3</td><td>2</td><td>4 · 4</td><td>2/3 · 0/3</td><td>1/2 · 0/2</td><td>0 · 0</td><td>8 : 8</td></tr></table>
+</div></details>
+<h3 class="cast" id="cast-E">E. Druhé Zhromaždenie a Pitka</h3>
+<details class="krok bot" data-cast="E" data-postrehy="#99" >
+<summary><span class="cislo">49</span><span class="kto">bot</span><code>k-zh2-bot</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#99</span></span><span class="nahlad">Štamgast pridal druhého Pijana: <span class="ik" style="background:#c0392b" title="Rana">R</span> Rana, <span class="ik" style="background:#7d6608" title="Dlh">D</span> Dlh a dvakrát <span class="ik" style="background:#8e44ad" title="PoškodeniePečene">PP</span> Poškod…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Štamgast položí druhého Pijana: Rana + Dlh + pečeň 2. <code class="cmd">{&quot;type&quot;:&quot;tah&quot;,&quot;kroky&quot;:[{&quot;type&quot;:&quot;place&quot;,&quot;uid&quot;:&quot;ruka:pijan&quot;,&quot;target&quot;:&quot;vlastna&quot;}]}</code></p>
+<blockquote>Štamgast pridal druhého Pijana: <span class="ik" style="background:#c0392b" title="Rana">R</span> Rana, <span class="ik" style="background:#7d6608" title="Dlh">D</span> Dlh a dvakrát <span class="ik" style="background:#8e44ad" title="PoškodeniePečene">PP</span> Poškodenie pečene, presne ako ty. Odhad 4 : 4. Pri remíze Most nedostane nikto. To by bola hanba.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> odhad bitky · Štamgastovo Zadĺženie · Štamgastova Pečeň</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>4 : 4</td><td>2</td><td>4 · 4</td><td>2/3 · 2/3</td><td>1/2 · 1/2</td><td>0 · 0</td><td>8 : 8</td></tr></table>
+</div></details>
+<details class="krok hrac" data-cast="E" data-postrehy="#99 #101" >
+<summary><span class="cislo">50</span><span class="kto">hrac</span><code>k-hasic</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#99</span><span class="tag">#101</span></span><span class="nahlad">Teraz Hasiča: polož ho za druhého Pijana a potvrď. <span class="ik" style="background:#c0392b" title="Petelica">Pt</span> Petelica sa spojí s <span class="ik" style="background:#7d6608" title="Dlh">D</span> Dl…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Hráč položí Hasiča: Petelica + Dlh Pijana. Odhad 7 : 4, zadĺženie ▸ 2 z 2. <code class="cmd">{&quot;type&quot;:&quot;tah&quot;,&quot;kroky&quot;:[{&quot;type&quot;:&quot;place&quot;,&quot;uid&quot;:&quot;ruka:hasic&quot;,&quot;target&quot;:&quot;vlastna&quot;}]}</code></p>
+<blockquote>Teraz Hasiča: polož ho za druhého Pijana a potvrď. <span class="ik" style="background:#c0392b" title="Petelica">Pt</span> Petelica sa spojí s <span class="ik" style="background:#7d6608" title="Dlh">D</span> Dlhom, 7 : 4. Zadĺženie bude 2 z 2, v Pitke karta Dlh. Jedna, nie dve, lebo ostáva už len jedna Pitka. Vidíš, že rozmýšľam za teba.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> + karty a ciele očakávaného ťahu (klient sám)</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>7 : 4</td><td>2</td><td>4 · 4</td><td>2/3 · 2/3</td><td>2/2 · 1/2</td><td>0 · 0</td><td>8 : 8</td></tr></table>
+</div></details>
+<details class="krok otazka" data-cast="E" data-postrehy="#101" >
+<summary><span class="cislo">51</span><span class="kto">otazka</span><code>q-hasic</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#101</span></span><span class="nahlad">Prečo Hasič až v druhom Zhromaždení?</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Kvíz. </p>
+<blockquote>Prečo Hasič až v druhom Zhromaždení?</blockquote>
+<div class="kviz"><button class="moz ok" type="button">Jeho Dlh zaplatím len v jednej Pitke.<span class="vysv">✓ Áno. Čo leží na stole, platíš v každej Pitke, ktorá ešte príde.</span></button><button class="moz zle" type="button">V prvom by jeho Petelica neplatila.<span class="vysv">✗ Platila by. Tuhé sa ráta až v bitke, je jedno, kedy ho vyložíš. Išlo o Dlh.</span></button></div>
+
+
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>7 : 4</td><td>2</td><td>4 · 4</td><td>2/3 · 2/3</td><td>2/2 · 1/2</td><td>0 · 0</td><td>8 : 8</td></tr></table>
+</div></details>
+<details class="krok bot" data-cast="E" data-postrehy="#98" >
+<summary><span class="cislo">52</span><span class="kto">bot</span><code>k-pas-bot2</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#98</span></span><span class="nahlad">Štamgast pasoval a zobral dve <span class="ik" style="background:#a04000" title="Cigareta">C</span> cigarety za dve nevyložené karty. Šetrný chlap. T…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Štamgast pasuje, +2 cigarety. <code class="cmd">{&quot;type&quot;:&quot;pass&quot;}</code></p>
+<blockquote>Štamgast pasoval a zobral dve <span class="ik" style="background:#a04000" title="Cigareta">C</span> cigarety za dve nevyložené karty. Šetrný chlap. To u nás nevidno často.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> Štamgastove Cigarety</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>7 : 4</td><td>2</td><td>4 · 6</td><td>2/3 · 2/3</td><td>2/2 · 1/2</td><td>0 · 0</td><td>5 : 8</td></tr></table>
+</div></details>
+<details class="krok hrac" data-cast="E" data-postrehy="#98" >
+<summary><span class="cislo">53</span><span class="kto">hrac</span><code>k-pas2</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#98</span></span><span class="nahlad">Aj ty pasuj (P). Dve cigarety, skoro zadarmo.</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Hráč pasuje, +2 cigarety. <code class="cmd">{&quot;type&quot;:&quot;pass&quot;}</code></p>
+<blockquote>Aj ty pasuj (P). Dve cigarety, skoro zadarmo.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> PAS / UŽ NEŤAHÁM · + karty a ciele očakávaného ťahu (klient sám)</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>7 : 4</td><td>2</td><td>6 · 6</td><td>2/3 · 2/3</td><td>2/2 · 1/2</td><td>0 · 0</td><td>8 : 8</td></tr></table>
+</div></details>
+<details class="krok hrac" data-cast="E" data-postrehy="#101" >
+<summary><span class="cislo">54</span><span class="kto">hrac</span><code>k-hotovo2</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#101</span></span><span class="nahlad">Druhá Pitka, posledná. Klikni končím (K).</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Pitka 2, hráč klikne Končím. <code class="cmd">{&quot;type&quot;:&quot;skipNaex&quot;}</code></p>
+<blockquote>Druhá Pitka, posledná. Klikni končím (K).</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> KONČÍM · + karty a ciele očakávaného ťahu (klient sám)</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>7 : 4</td><td>2</td><td>6 · 6</td><td>2/3 · 2/3</td><td>2/2 · 1/2</td><td>0 · 0</td><td>8 : 8</td></tr></table>
+</div></details>
+<details class="krok bot" data-cast="E" data-postrehy="#99 bar" >
+<summary><span class="cislo">55</span><span class="kto">bot</span><code>k-hotovo-bot2</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#99</span><span class="tag">bar</span></span><span class="nahlad">Zadĺženie 2 z 2: máš kartu Dlh. Hneď je priznaná a už sa ťa drží. Dlhy v bare ukazujú 1 z …</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Pitka 2 sa vyhodnotí: hráč dostane kartu Dlh (priznaná, Dlhy 1/10), BODY klesnú 8 → 1. Ide sa do bitky. <code class="cmd">{&quot;type&quot;:&quot;skipNaex&quot;}</code></p>
+<blockquote>Zadĺženie 2 z 2: máš kartu Dlh. Hneď je priznaná a už sa ťa drží. Dlhy v bare ukazujú 1 z 10: pri desiatich príde exekútor. Ja o tom niečo viem. A ak ti práve spadli BODY, to je tiež Dlh. Body ti vysvetlím po bitke.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> tvoje Dlhy · tvoje Zadĺženie · tvoje BODY</p>
+
+<p class="pozn">Playtest výučby 20261025-122456: „komentovať skoky bodov“ — preto posledné vety.</p>
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>7 : 4</td><td>2</td><td>6 · 7</td><td>2/3 · 2/3</td><td>2/2 · 1/2</td><td>1 · 0</td><td>1 : 8</td></tr></table>
+</div></details>
+<h3 class="cast" id="cast-F">F. Bitka, prebytok, stupnica, body</h3>
+<details class="krok info" data-cast="F" data-postrehy="#98 #96" >
+<summary><span class="cislo">56</span><span class="kto">info</span><code>i-bitka</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#98</span><span class="tag">#96</span></span><span class="nahlad">Bitka! Tvoje tuhé: Rana, Petelica mosta, Rana, Petelica Hasiča, 1 + 3 + 1 + 3 = 8, mínus Š…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Odhad bitky 7 : 4, hráč čaká na rozdelenie prebytku. </p>
+<blockquote>Bitka! Tvoje tuhé: Rana, Petelica mosta, Rana, Petelica Hasiča, 1 + 3 + 1 + 3 = 8, mínus Štamgastova Viera, 7. Štamgast: Pecka 2 a dve Rany, 4. Most je tvoj.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> odhad bitky</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>7 : 4</td><td>2</td><td>6 · 7</td><td>2/3 · 2/3</td><td>2/2 · 1/2</td><td>1 · 0</td><td>1 : 8</td></tr></table>
+</div></details>
+<details class="krok otazka" data-cast="F" data-postrehy="#99" >
+<summary><span class="cislo">57</span><span class="kto">otazka</span><code>q-bitka</code><span class="povod doslova">doslova</span><span class="tagy"><span class="tag">#99</span></span><span class="nahlad">Čo je teda silnejšie? Dve Rany alebo jedna Petelica?</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Kvíz. </p>
+<blockquote>Čo je teda silnejšie? Dve Rany alebo jedna Petelica?</blockquote>
+<div class="kviz"><button class="moz ok" type="button">Jedna Petelica, 3 : 2.<span class="vysv">✓ Áno, rozhoduje súčet tuhého: 3 proti 2. Až ma to dojalo.</span></button><button class="moz zle" type="button">Dve Rany, sú dve.<span class="vysv">✗ Ráta sa tuhé, nie počet: 2 proti 3. Ale dve Rany sú pekné, to áno.</span></button></div>
+
+
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>7 : 4</td><td>2</td><td>6 · 7</td><td>2/3 · 2/3</td><td>2/2 · 1/2</td><td>1 · 0</td><td>1 : 8</td></tr></table>
+</div></details>
+<details class="krok info" data-cast="F" data-postrehy="#95" >
+<summary><span class="cislo">58</span><span class="kto">info</span><code>i-starsi</code><span class="povod doslova">doslova</span><span class="tagy"><span class="tag">#95</span></span><span class="nahlad">Teraz starší: osem dedinských autorít. Bitky v nich vzbudzujú respekt a strach a body na k…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Svietia starší. </p>
+<blockquote>Teraz starší: osem dedinských autorít. Bitky v nich vzbudzujú respekt a strach a body na konci hry dávajú len oni. Ja sa s nimi momentálne nestretávam, ale to sem nepatrí.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> starší</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>7 : 4</td><td>2</td><td>6 · 7</td><td>2/3 · 2/3</td><td>2/2 · 1/2</td><td>1 · 0</td><td>1 : 8</td></tr></table>
+</div></details>
+<details class="krok info" data-cast="F" data-postrehy="#95" >
+<summary><span class="cislo">59</span><span class="kto">info</span><code>i-strach</code><span class="povod doslova">doslova</span><span class="tagy"><span class="tag">#95</span></span><span class="nahlad">Každý starší má stupnicu: v strede sivá, potom žltá, oranžová a červená. Staršieho tlačíš …</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Svieti stupnica. Tlačidlo „Odovzdať cigaretu“ (6 → 5). </p>
+<blockquote>Každý starší má stupnicu: v strede sivá, potom žltá, oranžová a červená. Staršieho tlačíš k Štamgastovi a čím ďalej je, tým viac sa ťa bojí. ALE POZOR! Čím viac sa ťa bojí, tým viac pomáha druhému! Inak, nemáš ešte cigaretku? <span class="tl">[Odovzdať cigaretu]</span></blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> stupnica</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>7 : 4</td><td>2</td><td>5 · 7</td><td>2/3 · 2/3</td><td>2/2 · 1/2</td><td>1 · 0</td><td>1 : 8</td></tr></table>
+</div></details>
+<details class="krok hrac" data-cast="F" data-postrehy="#95" >
+<summary><span class="cislo">60</span><span class="kto">hrac</span><code>k-prebytok1</code><span class="povod upravené">upravené</span><span class="tagy"><span class="tag">#95</span></span><span class="nahlad">Vyhral si o 3 tuhé, BOHA jeho! Prebytok tuhého znamená tvoju dominanciu v bitke a tým si b…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Hráč klikne Farára: index 4 → 5 (sivá). <code class="cmd">{&quot;type&quot;:&quot;prebytok&quot;,&quot;elderId&quot;:&quot;farar&quot;}</code></p>
+<blockquote>Vyhral si o 3 tuhé, BOHA jeho! Prebytok tuhého znamená tvoju dominanciu v bitke a tým si buduješ respekt u starších. My to tu voláme „respekt“, ale v skutočnosti je to strach. Za každý bod prebytku posunieš staršieho o políčko k Štamgastovi. Klikni na Farára. Na Farára, nie na mňa.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> Farár · + karty a ciele očakávaného ťahu (klient sám)</p>
+<p class="pozn"><b>Pôvod:</b> Michalov text, „o 5 tuhých“ → „o 3 tuhé“, bez Miňištranta (hráč ho dnes nemá v línii)</p>
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>7 : 4</td><td>2</td><td>5 · 7</td><td>2/3 · 2/3</td><td>2/2 · 1/2</td><td>1 · 0</td><td>1 : 8</td></tr></table>
+</div></details>
+<details class="krok hrac" data-cast="F" data-postrehy="#95" >
+<summary><span class="cislo">61</span><span class="kto">hrac</span><code>k-prebytok2</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#95</span></span><span class="nahlad">Farár je o políčko bližšie k Štamgastovi, ale ešte v sivej. V sivej sa nikto nikoho nebojí…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Farár 5 → 6 (žltá). Prah exekútora hráča 10 → 9. <code class="cmd">{&quot;type&quot;:&quot;prebytok&quot;,&quot;elderId&quot;:&quot;farar&quot;}</code></p>
+<blockquote>Farár je o políčko bližšie k Štamgastovi, ale ešte v sivej. V sivej sa nikto nikoho nebojí, ako na farskej oslave. Klikni naňho znova.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> Farár · + karty a ciele očakávaného ťahu (klient sám)</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>7 : 4</td><td>2</td><td>5 · 7</td><td>2/3 · 2/3</td><td>2/2 · 1/2</td><td>1 · 0</td><td>3 : 8</td></tr></table>
+</div></details>
+<details class="krok hrac" data-cast="F" data-postrehy="#95" >
+<summary><span class="cislo">62</span><span class="kto">hrac</span><code>k-prebytok3</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#95</span></span><span class="nahlad">Žltá! Farár sa ťa začína báť a Štamgastovi prejavuje priazeň. Pozri na svoje Dlhy: prah ex…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Farár 6 → 7 (oranžová), prah 8. Bitka sa dohrá: Štamgast +1 cigareta, Most ide hráčovi, karty sa vrátia, začne 2. kolo (voľba cieľa). <code class="cmd">{&quot;type&quot;:&quot;prebytok&quot;,&quot;elderId&quot;:&quot;farar&quot;}</code></p>
+<blockquote>Žltá! Farár sa ťa začína báť a Štamgastovi prejavuje priazeň. Pozri na svoje Dlhy: prah exekútora klesol z 10 na 9, lebo Farár je na scorecarde Exekútor. Posledný klik a je oranžový.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> Farár · tvoje Dlhy · + karty a ciele očakávaného ťahu (klient sám)</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>—</td><td>—</td><td>5 · 8</td><td>—</td><td>—</td><td>1 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok info" data-cast="F" data-postrehy="#95" >
+<summary><span class="cislo">63</span><span class="kto">info</span><code>i-oranzova</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#95</span></span><span class="nahlad">Oranžová. Farár sa ťa bojí na druhom stupni a Štamgast má jeho priazeň sily 2: tvoj prah e…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Svieti Farár, hráčove Dlhy (1 z 8) a Štamgastove cigarety. </p>
+<blockquote>Oranžová. Farár sa ťa bojí na druhom stupni a Štamgast má jeho priazeň sily 2: tvoj prah exekútora je 8. Stupnica sa posunula, lebo si vyhral o 3 a ten prebytok si dal Farárovi. Štamgast za posunutého staršieho dostal cigaretu. Útecha pre porazených.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> Farár · tvoje Dlhy · Štamgastove Cigarety</p>
+
+<p class="pozn">Prečo sa stupnica posunula a čo z toho má kto — priamo na hráčovom bare.</p>
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>—</td><td>—</td><td>5 · 8</td><td>—</td><td>—</td><td>1 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok otazka" data-cast="F" data-postrehy="#95" >
+<summary><span class="cislo">64</span><span class="kto">otazka</span><code>q-starsi</code><span class="povod doslova">doslova</span><span class="tagy"><span class="tag">#95</span></span><span class="nahlad">Farár je posunutý k Štamgastovi, čo z toho máš ty?</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Kvíz (Michalov). </p>
+<blockquote>Farár je posunutý k Štamgastovi, čo z toho máš ty?</blockquote>
+<div class="kviz"><button class="moz zle" type="button">Farár mi odteraz pomáha.<span class="vysv">✗ Nie, pomáha Štamgastovi a teba sa bojí. Ale pekná predstava.</span></button><button class="moz ok" type="button">Jeho strach mi dá body.<span class="vysv">✓ Áno, za jeho strach môžeš dostať viac bodov. Konečne sa ťa niekto bojí.</span></button></div>
+
+<p class="svieti"><b>Svieti:</b> Farár</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>—</td><td>—</td><td>5 · 8</td><td>—</td><td>—</td><td>1 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok otazka" data-cast="F" data-postrehy="#95" >
+<summary><span class="cislo">65</span><span class="kto">otazka</span><code>q-prebytok</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#95</span></span><span class="nahlad">Prečo si všetky tri body nedal trom rôznym starším?</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Kvíz (obe odpovede správne). </p>
+<blockquote>Prečo si všetky tri body nedal trom rôznym starším?</blockquote>
+<div class="kviz"><button class="moz ok" type="button">V sivej by sa ma nikto nebál.<span class="vysv">✓ Áno. Rozhádzaný prebytok je ako rozliata pálenka: škoda ho.</span></button><button class="moz ok" type="button">Štamgast by dostal tri cigarety namiesto jednej.<span class="vysv">✓ Aj to: cigaretu dostane za každého posunutého staršieho. Dve správne odpovede, nezvykaj si.</span></button></div>
+
+
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>—</td><td>—</td><td>5 · 8</td><td>—</td><td>—</td><td>1 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok info" data-cast="F" data-postrehy="#96" >
+<summary><span class="cislo">66</span><span class="kto">info</span><code>i-lokality-body</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#96</span></span><span class="nahlad">Most je tvoj. Pamätáš, prečo ho chceš? Traja starší majú podmienku Lokality: na konci hry …</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Svietia Farár, Starosta, Autobusár (podmienka Lokality). </p>
+<blockquote>Most je tvoj. Pamätáš, prečo ho chceš? Traja starší majú podmienku Lokality: na konci hry ju vyhrá, kto má viac lokalít. Teraz si to ty.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> Farár · Starosta · Autobusár</p>
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>—</td><td>—</td><td>5 · 8</td><td>—</td><td>—</td><td>1 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok info" data-cast="F" data-postrehy="#96 #95 bar" >
+<summary><span class="cislo">67</span><span class="kto">info</span><code>i-body</code><span class="povod upravené">upravené</span><span class="tagy"><span class="tag">#96</span><span class="tag">#95</span><span class="tag">bar</span></span><span class="nahlad">BODY v bare sú body, keby hra skončila teraz: 8 : 5. Body dáva každý starší zvlášť: kto vy…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Svieti BODY oboch hráčov a Farár. </p>
+<blockquote>BODY v bare sú body, keby hra skončila teraz: 8 : 5. Body dáva každý starší zvlášť: kto vyhrá viac jeho podmienok, dostane bod a ďalší za každú zónu, v ktorej sa ho bojí. Farár: vyhrávaš jeho Lokality a bojí sa ťa v oranžovej, to sú 3 body.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> tvoje BODY · Štamgastove BODY · Farár</p>
+<p class="pozn"><b>Pôvod:</b> prvá veta z Michalovho k-hotovo-bot („BODY v bare sú body, keby hra skončila teraz.“)</p>
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>—</td><td>—</td><td>5 · 8</td><td>—</td><td>—</td><td>1 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok otazka" data-cast="F" data-postrehy="#96" >
+<summary><span class="cislo">68</span><span class="kto">otazka</span><code>q-lokality</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">#96</span></span><span class="nahlad">Načo ti bude Most na konci hry?</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Kvíz. </p>
+<blockquote>Načo ti bude Most na konci hry?</blockquote>
+<div class="kviz"><button class="moz ok" type="button">Pomôže mi vyhrať podmienku Lokality pri starších.<span class="vysv">✓ Áno. Preto si ho vyberal a preto si sa bil.</span></button><button class="moz zle" type="button">Na nič, bitku som už vyhral.<span class="vysv">✗ Bitka bola len cesta. Lokality sú podmienka bodovania. Za to ti dal Farár 3 body, nie za pekné oči.</span></button></div>
+
+
+
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>—</td><td>—</td><td>5 · 8</td><td>—</td><td>—</td><td>1 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok info" data-cast="F" data-postrehy="bar" >
+<summary><span class="cislo">69</span><span class="kto">info</span><code>i-abstak</code><span class="povod nové">nové</span><span class="tagy"><span class="tag">bar</span></span><span class="nahlad">Posledná dlaždica, Absťák. Dostaneš ho, keď v kole spravíš menej nerestí ako v predošlom: …</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Svieti dlaždica Absťák. </p>
+<blockquote>Posledná dlaždica, Absťák. Dostaneš ho, keď v kole spravíš menej nerestí ako v predošlom: menej vyfajčíš, menej vypiješ. Prvé kolo je len základ. Takú abstinenciu ti závidím.</blockquote>
+
+
+<p class="svieti"><b>Svieti:</b> tvoj Absťák</p>
+
+<p class="pozn">Kandidát na škrt — Absťák sa v 1. časti nedeje.</p>
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>—</td><td>—</td><td>5 · 8</td><td>—</td><td>—</td><td>1 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok info" data-cast="F" data-postrehy="#100" >
+<summary><span class="cislo">70</span><span class="kto">info</span><code>i-zhrnutie</code><span class="povod upravené">upravené</span><span class="tagy"><span class="tag">#100</span></span><span class="nahlad">Zopakujem to, pre istotu: najprv zoberieš karty zo šenku, potom Zhromaždenie, Pitka a bitk…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Bez zvýraznenia. </p>
+<blockquote>Zopakujem to, pre istotu: najprv zoberieš karty zo šenku, potom Zhromaždenie, Pitka a bitka. Platia len spojené akcie. Bitku vyhrá viac tuhého, prebytočné tuhé desí starších a body dávajú starší.</blockquote>
+
+
+
+<p class="pozn"><b>Pôvod:</b> Michalov text bez vety o NA EX</p>
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>—</td><td>—</td><td>5 · 8</td><td>—</td><td>—</td><td>1 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+<details class="krok info" data-cast="F" data-postrehy="#105" >
+<summary><span class="cislo">71</span><span class="kto">info</span><code>i-dovidenia</code><span class="povod upravené">upravené</span><span class="tagy"><span class="tag">#105</span></span><span class="nahlad">To je prvá časť. Partia pokračuje: v 2. časti ťa naučím NA EX a zopár podlostí. Alebo choď…</span></summary>
+<div class="telo">
+<p class="stol"><b>Na stole:</b> Koniec 1. časti: ponuka „Pokračovať 2. časťou“ / „Hrať proti počítaču“ (nové UI). </p>
+<blockquote>To je prvá časť. Partia pokračuje: v 2. časti ťa naučím NA EX a zopár podlostí. Alebo choď hrať proti počítaču, ak si myslíš, že už všetko vieš. Za tie dve cigarety ďakujem. Tretiu mi niekedy dones, neponáhľaj sa. Na zdravie!</blockquote>
+
+
+
+<p class="pozn"><b>Pôvod:</b> posledné dve vety Michalove; ponuka 2. časti nová</p>
+
+<table class="stav"><tr><th>tuhé ty : Š</th><th>Pitky</th><th>cigarety ty · Š</th><th>pečeň ty · Š</th><th>zadĺženie ty · Š</th><th>Dlhy</th><th>BODY</th></tr>
+<tr><td>—</td><td>—</td><td>5 · 8</td><td>—</td><td>—</td><td>1 · 0</td><td>8 : 5</td></tr></table>
+</div></details>
+</div>
+
+<h2>Postrehy #95–#104 a kde ich rieši 1. časť</h2>
+<div class="obal"><table>
+<tr><th>#</th><th>postreh</th><th>kroky</th></tr>
+<tr><td>95</td><td>stupnica starších a prečo sa posúva</td><td>i-strach, k-prebytok1–3, i-oranzova, q-starsi, q-prebytok. V UI hry je to samostatný návrh (UX), nie výučba.</td></tr>
+<tr><td>96</td><td>prečo sa vyberá lokalita, prečo je ich viac</td><td>i-lokality, i-hrany, k-ciel (skutočný výber), i-lokality-body, i-body, q-lokality</td></tr>
+<tr><td>97</td><td>prečo sa šenok stavia a potom kupuje</td><td>i-senok, k-stavba, i-preco-senok, q-senok</td></tr>
+<tr><td>98</td><td>podstata hry, čo robiť v Zhromaždení</td><td>i-zhromazdenie, q-zhromazdenie, i-bitka</td></tr>
+<tr><td>99</td><td>akcie a ich spájanie</td><td>i-hrany, i-tuhe, i-spoj, i-pecka-viera, q-viera, k-pijan (rozhodnutie), q-spoj, k-pijan2, i-zadlzenie, i-pecen, q-dlh, q-bitka</td></tr>
+<tr><td>100</td><td>prečo fázy idú v tomto poradí</td><td>i-fazy, i-ucet, q-fazy, i-zhrnutie</td></tr>
+<tr><td>101</td><td>prečo viac Zhromaždení a Pitiek</td><td>i-pitky, q-pitky, i-hasic-neskor, k-hotovo-bot, k-hasic, q-hasic</td></tr>
+<tr><td>102</td><td>pauza po súperovom výbere lokality</td><td>V 1. časti vyberá hráč, preto netreba. Pauza (3 s, klik ju preskočí) je úloha UI.</td></tr>
+<tr><td>103</td><td>NA EX dôraznejšie, viac kvízov</td><td>V 1. časti len i-naex. 13 kvízov pokrýva ostatné pojmy, NA EX príde v 2. časti.</td></tr>
+<tr><td>104</td><td>nováčik siaha po pravidlách</td><td>Mimo scenára (lobby, stránka Pravidlá).</td></tr>
+</table></div>
+
+<h2>Rozdanie</h2>
+<div class="obal"><table>
+<tr><th>čo</th><th>hodnota</th></tr>
+<tr><td>lokality</td><td><code>most/0/0, vinna_pivnica/0/0, cintorin/0/0</code>: 3 kolá (krátka hra), hráč vyberie <code>most</code> s <code>otocena: true</code></td></tr>
+<tr><td>útočník</td><td>1 (Štamgast). Hráč je obranca, preto vyberá cieľ a v Pitke začína.</td></tr>
+<tr><td>hráč</td><td>ruka <code>pijan/0/2, pijan/0/1, ministrant/0/0, milujuca_manzelka/0/0, dievcina_na_vydaj/0/0</code>; doberací <code>pijan/1/0, ministrant/2/0</code>; 5 cigariet (2 dá Melicharovi). Pravidlami 5 + 2 štartovacích kariet.</td></tr>
+<tr><td>Štamgast</td><td>ruka rovnaká; doberací <code>pijan/1/1, ministrant/1/1</code>; 3 cigarety</td></tr>
+<tr><td>scorecardy</td><td>ako dnes, len <b>farar ↔ krcmarka</b>: farar EXEKUTOR, krcmarka LAKOMEC; starosta BITKAR, postarka VERIACI, hrobar ALKOHOLIK, autobusar FAJCIAR, veterinar NEPRAJNIK, vychovavatelka UZERNIK. Podmienku Lokality majú aktívnu Farár, Starosta a Autobusár.</td></tr>
+<tr><td>spoločný balíček</td><td>hráčova stavba: <code>hasic/0/1, vestica, sarlatan, snubenica | recidivista, pes, svokra, policajtka</code>;
+Štamgastova: <code>zamocnik/0/1, presbiter, niekoho_stryna, zahradkar | veteran, zivnostnik, cierna_macka, podvodnik</code>;
+doplnenie šenku <code>kocovnik, liberal</code>; zvyšok <code>dvojcata, sofer, financna_poradkyna, velmi_smutiaca_vdova, silna_nezavisla_zena, praudovravec, anonymny_alkoholik, cigorky, puska, pasca, nealko, vinko, noviny, svaty_text, vyherny_automat</code></td></tr>
+<tr><td>seed</td><td>15 (ako dnes)</td></tr>
+</table></div>
+<p>Línia pred bitkou (hráč vľavo, cez Most, Štamgast vpravo; spoje):</p>
+<div class="linia">Hasič ─Pt+D─ Pijan ─R+D, PP+PP─ Pijan ─R+Pt─ [MOST] ─V+Pk─ Zámočník ─C+R─ Pijan ─R+D, PP+PP─ Pijan
+hráč: R1 + Pt3 + R1 + Pt3 = 8, mínus Viera 1 = 7      Štamgast: Pk2 + R1 + R1 = 4      prebytok 3</div>
+
+<h3>Čo z rozdania ostáva po 1. časti</h3>
+<p>Po kroku i-dovidenia je partia v <b>2. kole pri voľbe cieľa</b>. Hráč vyhral, ostáva obrancom a vyberá z Vínnej pivnice a Cintorína.
+Most je jeho. Hráč: ruka Miňištrant, Manželka, Dievčina, Pijan, Miňištrant (dobral 2), 5 cigariet, 2 plné poldeci, 1 priznaný Dlh,
+v odhadzovacom Pijan, Pijan, Hasič. Štamgast: ruka Miňištrant, Manželka, Dievčina, Pijan, Miňištrant, 8 cigariet, 0 Dlhov.
+Šenok: Veštica, Šarlatán, Snúbenica, Presbiter, Niekoho stryná, Záhradkár, Kočovník, Liberál. Spoločný balíček: 23 kariet.
+Farár je na indexe 7 (oranžová, Štamgast má priazeň Exekútora sily 2). Neresti 0 : 0 sú základ pre Absťák.
+Partia teda môže pokračovať ďalšími kolami bez zásahu.</p>
+
+<h2>Dopad na kód (len informácia)</h2>
+<ul>
+<li>Scenár dnes končí koncom hry. 1. časť končí <b>uprostred partie</b>, takže server musí vedieť, že časť skončila, uložiť stav pre 2. časť, udeliť hviezdičku za časť (#105) a klient ponúknuť „Pokračovať 2. časťou“ / „Hrať proti počítaču“.</li>
+<li>Kroky i-oranzova až i-dovidenia bežia, keď je už 2. kolo pri voľbe cieľa. Klient nesmie hráčovi ponúknuť výber lokality a musí ukázať starších (zvýraznenie <code>starsi:*</code>) aj Most medzi ovládnutými.</li>
+<li><code>volba</code> pri <code>chooseLocation</code> (rady k zlej lokalite a natočeniu) jadro overí (<code>overScenar</code> prešiel). Treba ešte vyskúšať v klientovi: kandidáti v paneli lokalít a otáčanie klikom.</li>
+<li>Formát scenára netreba meniť. Všetky kľúče zvýraznenia klient pozná (<code>Vyucba.tsx</code>, <code>Panely.tsx</code>: bar:karty, bar:abstak, bar:dlhy, bar:zadlzenie, bar-supera:pecen…).</li>
+</ul>
+
+<h2>Odhad dĺžky</h2>
+<p>2314 slov oproti 1 536 dnes (≈ 10 min v playteste 20261025-122456, cez Enter ≈ 5 min). Úmerne to vychádza na <b>14–16 minút</b>, cez Enter ≈ 8.
+Ak treba bližšie k 10 minútam, navrhujem škrtnúť (≈ −3 min): <code>i-most</code>, <code>q-bar</code>, <code>i-karty</code>, <code>q-pitky</code>,
+<code>q-zhromazdenie</code>, <code>q-prebytok</code>, <code>i-abstak</code> a <code>i-zhrnutie</code> (zhrnutie robia kvízy). Kľúčové pojmy by si kvíz nechali.</p>
+
+<h2>Otvorené otázky pre Michala</h2>
+<ol class="otazky">
+<li><b>Natočenie:</b> má hráč Most otočiť sám (klik naň, ako navrhujem; učí to natočenie), alebo ho hra natočí a hráč len vyberie lokalitu?</li>
+<li><b>Šenok:</b> nechať Melichara stavať za hráča (tvoj text „aby si to nedojebal“) a len vysvetliť prečo, alebo nech hráč stavia sám s radami pri zlej karte (jadro to vie porovnať)?</li>
+<li><b>NA EX</b> v 1. časti len ukázať tlačidlo (i-naex) — súhlasíš?</li>
+<li><b>Bar:</b> dlaždice vysvetľujem postupne, keď sa menia (nie prehliadkou ôsmich dlaždíc hneď na začiatku). Absťák ide až na koniec a je kandidát na škrt. Je to tak dobre?</li>
+<li><b>Súper:</b> nechávam tvoje „Tvoj súper bude Štamgast, ja ti budem radiť“. Platí to, alebo hráč hrá priamo proti Melicharovi?</li>
+<li><b>Scorecardy:</b> súhlasíš s výmenou Farár ↔ Krčmárka (Farár = Exekútor), aby bolo vidno priazeň na hráčovom bare?</li>
+<li><b>Dĺžka a kvízy:</b> 71 krokov a 13 kvízov (≈ 15 min). Škrtnúť podľa zoznamu vyššie, alebo nechať?</li>
+<li><b>Prebytok:</b> všetky 3 body na Farára (Melichar vedie), alebo nechať hráča rozdeliť a q-prebytok vysvetlí, prečo nie?</li>
+<li><b>Zjednodušenia:</b> „hrana pri tebe je tvoja, lebo pri nej leží tvoja karta“ (presne je to prevaha) a vynechanie slov útočník/obranca. Presne by to prišlo v 3. časti. OK?</li>
+<li><b>Nové hlášky</b> sú pasívne agresívne, ale nevulgárne („Ešte ti neverím“, „ako na farskej oslave“, „Ja o tom niečo viem“ pri exekútorovi). Hrubšie miesta si doplň sám.</li>
+</ol>
+
+<h2>Overenie</h2>
+<ul>
+<li><code>node --experimental-strip-types --no-warnings tools/vyucba/prehraj.ts docs/napady/vyucba-cast1.json --ticho</code> → „Scenár sedí.“ Každý krok je legálny a na ťahu je ten, komu krok patrí.</li>
+<li>Čísla z jadra: Pitky 1 → 2 po prvom Pijanovi, tuhé 0:2 → 3:2 → 3:3 → 4:3 → 4:4 → 7:4, hráčova pečeň 2/3 (obe Pitky), zadĺženie 1/2 → 2/2 (karta Dlh v 2. Pitke),
+prah exekútora 10 → 9 → 8, BODY 8 : 5 na konci (8 : 8 → 1 : 8 po Dlhu, keď prvé Lokality ešte nikto nemá).</li>
+<li>Pravidlá podľa <code>docs/PRAVIDLA.md</code>: §4 (útočník/obranca), §5 (stavba a branie), §6 (spoj, limit = plné + 1, pas za cigarety), §7 (Počet Pitiek, vynulovanie pečene a zadĺženia), §8 (prahy 3 a 2), §9.3–9.4 (Viera, prebytok, cigareta za posunutého staršieho), §10 (stupnica, priazeň Exekútora), §14 (body 1 + zóny strachu).</li>
+</ul>
+</main>
+<script>
+document.querySelectorAll(".moz").forEach(b=>b.addEventListener("click",e=>{e.preventDefault();b.classList.toggle("ukaz")}));
+const tl=[...document.querySelectorAll("#filter button")];
+tl.forEach(b=>b.addEventListener("click",()=>{
+  const f=b.dataset.f;
+  if(f==="otvor"){const vsetky=[...document.querySelectorAll("details.krok")];const otvor=vsetky.some(d=>!d.open);vsetky.forEach(d=>d.open=otvor);return;}
+  tl.forEach(x=>x.classList.toggle("zap",x===b));
+  document.querySelectorAll("details.krok").forEach(d=>{
+    let ok=true;
+    if(f.startsWith("cast:"))ok=d.dataset.cast===f.slice(5);
+    if(f.startsWith("p:"))ok=d.dataset.postrehy.split(" ").includes(f.slice(2));
+    d.style.display=ok?"":"none";
+  });
+  document.querySelectorAll("h3.cast").forEach(h=>{h.style.display=(f==="vsetko"||f.startsWith("cast:")&&h.id==="cast-"+f.slice(5))?"":"none"});
+}));
+</script>
+</body></html>
