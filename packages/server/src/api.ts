@@ -23,7 +23,7 @@ import type { Prava } from "./prava.ts";
 import type { FilterPartii, Profily } from "./profily.ts";
 import { FILTRE_PARTII } from "./profily.ts";
 import type { Prehravac } from "./prehravac.ts";
-import { POPIS_PRAVA, PRAVA, RANKY_HRACOV, jeRankHraca } from "./prava.ts";
+import { POPIS_PRAVA, PRAVA, RANKY_HRACOV, dalsiRank, jeRankHraca, prahyRankov } from "./prava.ts";
 import type { KategoriaNazoru, Nazory, Triedenie } from "./nazory.ts";
 import type { Playtesty } from "./playtesty.ts";
 import type { Navrhy } from "./navrhy.ts";
@@ -641,7 +641,13 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
         // Skrytý súhrn: ani staré súčty štatistík (pole statistiky) ani vitrínu achievementov cudziemu nepošleme.
         return ok({ ...profil, statistiky: prazdneStatistiky(), casSpolu: 0, suhrnSkryty, suhrn: null, achievementy: null });
       }
-      return ok({ ...profil, suhrnSkryty, suhrn: ctx.profily.suhrn(id, f as FilterPartii, !cudzi), achievementy: ctx.achievementy?.vitrina(id) ?? null });
+      // Hviezdy a cesta k ďalšiemu ranku len vo vlastnom profile (Michal 2026-10-25).
+      const h = ctx.ucty.hviezdy(id);
+      const postupRanku =
+        pohlad === "vlastny" && h.spolu > 0
+          ? { hviezdy: h.hviezdy, spolu: h.spolu, dalsi: jeRankHraca(ciel.rola) ? dalsiRank(ctx.prava.nastavenie().postup, ciel.rola, h) : null }
+          : null;
+      return ok({ ...profil, suhrnSkryty, suhrn: ctx.profily.suhrn(id, f as FilterPartii, !cudzi), achievementy: ctx.achievementy?.vitrina(id) ?? null, postupRanku });
     }
 
     // Vlastná vitrína achievementov (Michal 2026-10-23); cudzie sú v GET /hraci/:id.
@@ -950,7 +956,12 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       return ok({ uzavierka: ctx.nastavUzavierku(b.zapnut) });
     }
     // Ranky a práva (Michal 2026-10-22): matica rank × právo a pravidlá postupu.
-    if (sub === "GET /prava") return ok({ ...ctx.prava.nastavenie(), prava: PRAVA, popis: POPIS_PRAVA, ranky: RANKY_HRACOV });
+    if (sub === "GET /prava") {
+      const n = ctx.prava.nastavenie();
+      const spolu = ctx.achievementy?.spoluHviezd() ?? 0;
+      // Prahy v hviezdach k percentám — admin vidí, čo percentá dnes znamenajú (null = achievementy vypnuté).
+      return ok({ ...n, prava: PRAVA, popis: POPIS_PRAVA, ranky: RANKY_HRACOV, hviezdySpolu: spolu, prahyHviezd: prahyRankov(n.postup, spolu) });
+    }
     if (sub === "PUT /prava") {
       const nove = ctx.prava.uloz(ja2, await citajJson(req));
       ctx.ucty.prepocitajRanky(nove.postup);

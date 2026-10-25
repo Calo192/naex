@@ -1,5 +1,7 @@
 // Ranky a práva (Michal 2026-10-22). Hráčske ranky: návštevník → Poldeci
-// (kľúč „hrac“) → Deci → Sedmička; nad nimi subadmin a admin. Admin a subadmin
+// (kľúč „hrac“) → Deci → Sedmička; nad nimi subadmin a admin. Na Deci
+// a Sedmičku sa postupuje hviezdami achievementov (Michal 2026-10-25), nie
+// partiami; automatika rank len zvyšuje, nikoho neznižuje. Admin a subadmin
 // prideľujú práva rankom v matici (Tvorba → Ranky a práva). Správcovia majú
 // vždy všetko, aby sa nikto nezamkol; správcovské funkcie (Tvorba, roadmapa,
 // návrhy) ostávajú viazané na rolu. Server každé právo overí — klient len
@@ -47,11 +49,28 @@ export type RankHraca = (typeof RANKY_HRACOV)[number];
 
 export const jeRankHraca = (r: Rola): r is RankHraca => (RANKY_HRACOV as readonly Rola[]).includes(r);
 
+/**
+ * Postup na Deci a Sedmičku v percentách všetkých hviezd (★) achievementov
+ * (Michal 2026-10-25). Prahy v hviezdach sa rátajú z aktuálneho katalógu —
+ * nový achievement ich posunie sám.
+ */
 export interface PostupRankov {
-  /** Deci po toľkých dohratých partiách s ľuďmi (bez vzdaných). */
+  /** Deci od toľkých percent všetkých hviezd. */
   readonly deci: number;
-  /** Sedmička po toľkých dohratých partiách s ľuďmi. */
+  /** Sedmička od toľkých percent všetkých hviezd. */
   readonly sedmicka: number;
+}
+
+/** Hviezdy hráča a koľko ich je v katalógu spolu (0 = achievementy vypnuté). */
+export interface HviezdyHraca {
+  readonly hviezdy: number;
+  readonly spolu: number;
+}
+
+/** Čo rozhoduje o automatickom ranku hráča. */
+export interface PodkladRanku extends HviezdyHraca {
+  /** Dokončil výučbu alebo dohral aspoň jednu partiu (aj s botom) — Poldeci. */
+  readonly poldeci: boolean;
 }
 
 export interface NastaveniePrav {
@@ -62,21 +81,41 @@ export interface NastaveniePrav {
 
 /**
  * Predvolené (Michal 2026-10-22): „Pre začiatok dovoľ všetko každému“ — práva
- * nižším rankom odoberie admin postupne (roadmapa #57). Poldeci po prvej
- * dohratej partii (aj s botom) je pevné pravidlo, Deci po 10, Sedmička po 30.
+ * nižším rankom odoberie admin postupne (roadmapa #57). Poldeci po výučbe
+ * alebo prvej dohratej partii (aj s botom) je pevné pravidlo; Deci od 35 %
+ * a Sedmička od 50 % všetkých hviezd (Michal 2026-10-25).
  */
 export const PREDVOLENE_PRAVA: NastaveniePrav = {
   matica: Object.fromEntries(PRAVA.map((p) => [p, [...RANKY_HRACOV]])) as Record<Pravo, RankHraca[]>,
-  postup: { deci: 10, sedmicka: 30 },
+  postup: { deci: 35, sedmicka: 50 },
 };
 
 const KLUC = "prava";
 
-/** Rank podľa dohratých partií s ľuďmi; Poldeci má každý, kto dohral aspoň jednu partiu (aj s botom). */
-export function rankPodlaPartii(postup: PostupRankov, sLudmi: number, dohralAspon1: boolean): RankHraca {
-  if (sLudmi >= postup.sedmicka) return "sedmicka";
-  if (sLudmi >= postup.deci) return "deci";
-  return dohralAspon1 || sLudmi >= 1 ? "hrac" : "navstevnik";
+/**
+ * Prahy v hviezdach: percento zo všetkých, zaokrúhlené nahor — „aspoň 35 %“
+ * nesmie pustiť hráča pod 35 %. Bez katalógu (spolu 0) sa na hviezdy postúpiť nedá.
+ */
+export function prahyRankov(postup: PostupRankov, spolu: number): { readonly deci: number; readonly sedmicka: number } | null {
+  if (spolu <= 0) return null;
+  // Malá rezerva proti chybe pohyblivej čiarky (35 % zo 100 nesmie dať 36).
+  const prah = (percent: number): number => Math.max(1, Math.ceil((percent * spolu) / 100 - 1e-9));
+  return { deci: prah(postup.deci), sedmicka: prah(postup.sedmicka) };
+}
+
+/** Rank podľa hviezd; Poldeci po výučbe alebo prvej dohratej partii. */
+export function rankPodlaHviezd(postup: PostupRankov, p: PodkladRanku): RankHraca {
+  const prahy = prahyRankov(postup, p.spolu);
+  if (prahy !== null && p.hviezdy >= prahy.sedmicka) return "sedmicka";
+  if (prahy !== null && p.hviezdy >= prahy.deci) return "deci";
+  return p.poldeci ? "hrac" : "navstevnik";
+}
+
+/** Ďalší rank a koľko hviezd naň treba — pre profil; null na vrchole alebo bez katalógu. */
+export function dalsiRank(postup: PostupRankov, rank: RankHraca, h: HviezdyHraca): { readonly rank: "deci" | "sedmicka"; readonly prah: number } | null {
+  const prahy = prahyRankov(postup, h.spolu);
+  if (prahy === null || rank === "sedmicka") return null;
+  return rank === "deci" ? { rank: "sedmicka", prah: prahy.sedmicka } : { rank: "deci", prah: prahy.deci };
 }
 
 export class Prava {
@@ -89,7 +128,8 @@ export class Prava {
   /** Uložené nastavenie doplnené o predvolené — nové právo tak dostane predvolenú hodnotu samo. */
   nastavenie(): NastaveniePrav {
     const r = this.db.prepare("SELECT data FROM nastavenia WHERE kluc = ?").get(KLUC) as { data: string } | undefined;
-    let ulozene: Partial<{ matica: Record<string, unknown>; postup: Record<string, unknown> }> = {};
+    // Postup v partiách (kľúč „postup“, do 2026-10-25) sa ignoruje — percentá hviezd sú v „postupHviezd“.
+    let ulozene: Partial<{ matica: Record<string, unknown>; postupHviezd: Record<string, unknown> }> = {};
     try {
       ulozene = r === undefined ? {} : (JSON.parse(r.data) as typeof ulozene);
     } catch {
@@ -100,14 +140,12 @@ export class Prava {
       const v = ulozene.matica?.[p];
       if (Array.isArray(v)) matica[p] = RANKY_HRACOV.filter((x) => v.includes(x));
     }
-    const cislo = (v: unknown, predvolene: number): number => (typeof v === "number" && Number.isInteger(v) && v >= 1 ? v : predvolene);
-    return {
-      matica,
-      postup: {
-        deci: cislo(ulozene.postup?.deci, PREDVOLENE_PRAVA.postup.deci),
-        sedmicka: cislo(ulozene.postup?.sedmicka, PREDVOLENE_PRAVA.postup.sedmicka),
-      },
-    };
+    const percento = (v: unknown): number | null => (typeof v === "number" && Number.isInteger(v) && v >= 1 && v <= 100 ? v : null);
+    const deci = percento(ulozene.postupHviezd?.deci);
+    const sedmicka = percento(ulozene.postupHviezd?.sedmicka);
+    // Pokazený záznam (Sedmička nie nad Deci) nesmie pustiť hráčov rovno na Sedmičku — radšej predvolené.
+    const postup = deci !== null && sedmicka !== null && sedmicka > deci ? { deci, sedmicka } : PREDVOLENE_PRAVA.postup;
+    return { matica, postup };
   }
 
   /** Zmena matice alebo pravidiel postupu — len správca; overí tvar. */
@@ -128,18 +166,18 @@ export class Prava {
     let postup = teraz.postup;
     if (telo.postup !== undefined) {
       const b = telo.postup as Record<string, unknown>;
-      const cislo = (v: unknown, co: string, predtym: number): number => {
+      const percento = (v: unknown, co: string, predtym: number): number => {
         if (v === undefined) return predtym;
-        if (typeof v !== "number" || !Number.isInteger(v) || v < 1 || v > 10000) throw new ChybaVstupu(`${co}: celé číslo 1 až 10000.`);
+        if (typeof v !== "number" || !Number.isInteger(v) || v < 1 || v > 100) throw new ChybaVstupu(`${co}: celé percento 1 až 100.`);
         return v;
       };
-      postup = { deci: cislo(b.deci, "Deci", postup.deci), sedmicka: cislo(b.sedmicka, "Sedmička", postup.sedmicka) };
-      if (postup.sedmicka <= postup.deci) throw new ChybaVstupu("Sedmička musí vyžadovať viac partií ako Deci.");
+      postup = { deci: percento(b.deci, "Deci", postup.deci), sedmicka: percento(b.sedmicka, "Sedmička", postup.sedmicka) };
+      if (postup.sedmicka <= postup.deci) throw new ChybaVstupu("Sedmička musí vyžadovať viac hviezd ako Deci.");
     }
     const nove: NastaveniePrav = { matica, postup };
     this.db
       .prepare("INSERT INTO nastavenia (kluc, data) VALUES (?, ?) ON CONFLICT(kluc) DO UPDATE SET data = excluded.data")
-      .run(KLUC, JSON.stringify(nove));
+      .run(KLUC, JSON.stringify({ matica, postupHviezd: postup }));
     return nove;
   }
 

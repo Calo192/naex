@@ -77,9 +77,20 @@ describe("výučba „Prvá hra“", () => {
 
     const koniec = await hraj(k, prvy);
     expect(koniec).toMatchObject({ hotovo: true, krok: null });
+    // Dokončená výučba = achievement Prvá hra (Michal 2026-10-25) — oznam príde hneď.
+    expect((await k.cakaj("achievement")).zisk).toMatchObject({ id: "prva-hra", rank: 1, rankov: 1 });
     k.zavri();
 
     expect((await api<{ pouzivatel: { rola: string } }>(cookie, "GET", "/ja")).pouzivatel.rola).toBe("hrac");
+    const vitrina = await api<{ achievementy: { achievementy: { id: string; rank: number }[] } }>(cookie, "GET", "/achievementy");
+    expect(vitrina.achievementy.achievementy.filter((x) => x.rank > 0).map((x) => x.id)).toEqual(["prva-hra"]);
+
+    // Opakovaná výučba už Prvú hru nedá druhý raz.
+    await api(cookie, "POST", "/vyucba/znova");
+    const druha = await zacni(cookie);
+    await hraj(druha.k, druha.prvy);
+    await expect(druha.k.cakaj("achievement")).rejects.toThrow(/Nedošla/);
+    druha.k.zavri();
     expect(await api(cookie, "GET", "/vyucba")).toMatchObject({ stav: "hotova", ponuknut: false });
     const partie = await api<{ pocet: number }>(cookie, "GET", `/hraci/${ja.pouzivatel.id}/partie`);
     expect(partie.pocet).toBe(0);

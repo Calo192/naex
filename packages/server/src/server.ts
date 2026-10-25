@@ -297,6 +297,12 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     sendError(ws, `Na toto tvoj rank nemá právo: ${POPIS_PRAVA[pravo]}.`);
     return true;
   };
+  // Deci a Sedmička podľa hviezd achievementov (Michal 2026-10-25); bez achievementov len Poldeci.
+  if (achievementy !== null) {
+    const a = achievementy;
+    a.dorovnajVyucbu(teraz());
+    ucty.pouziHviezdy((id) => a.hviezdy(id));
+  }
   ucty.prepocitajRanky(prava.nastavenie().postup);
   const nazory = new Nazory(db, prava);
   const playtesty = new Playtesty(opts.playtestyDir ?? fileURLToPath(new URL("../../../docs/playtesty", import.meta.url)), join(dataDir, "playtesty"));
@@ -927,8 +933,14 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     const hotovo = room.vyucba.krok >= scenarVyucby.kroky.length;
     if (id !== undefined) {
       ucty.ulozVyucbu(id, room.vyucba.krok, hotovo ? "hotova" : undefined);
-      // Dohratie výučby spraví z návštevníka hráča — bez archívu, štatistík a Frajeriny.
-      if (hotovo) ucty.povysPoPartii(id, prava.nastavenie().postup);
+      if (hotovo) {
+        // Dokončená výučba = achievement Prvá hra (Michal 2026-10-25) a z návštevníka Poldeci —
+        // bez archívu, štatistík a Frajeriny. AI playtester achievementy nezískava.
+        const ws = room.sockets[VYUCBA_HRAC];
+        const zisky = achievementy !== null && room.hraci[VYUCBA_HRAC]?.ai !== true ? achievementy.udelZaVyucbu(id, teraz()) : [];
+        if (ws !== null) for (const zisk of zisky) send(ws, { type: "achievement", zisk });
+        ucty.povysPoPartii(id, prava.nastavenie().postup);
+      }
     }
     posliVyucbu(room);
     naplanujVyucbu(room);
@@ -1069,6 +1081,11 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         for (const zisk of zisky[miesto]) send(ws, { type: "achievement", zisk });
         const suhrn = suhrny[miesto];
         if (suhrn !== null) send(ws, { type: "achievementySuhrn", suhrn });
+      }
+      // Nová hviezda môže hneď zvýšiť rank (Deci, Sedmička) — aj keď hráč práve nie je pripojený.
+      for (const miesto of [0, 1] as const) {
+        const id = room.hraci[miesto]?.id;
+        if (zisky[miesto].length > 0 && id !== undefined && id !== BOT_ID) ucty.povysPodlaHviezd(id, prava.nastavenie().postup);
       }
     } catch (err) {
       // Achievementy nesmú zastaviť partiu.

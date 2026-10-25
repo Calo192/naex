@@ -6,7 +6,7 @@ import { ALL_DLZKY, DLZKY_HRY, NAZOV_DLZKY, PREDVOLENA_DLZKA } from "@naex/core"
 import { api, mediaUrl } from "../lib/api.ts";
 import { useSada } from "../lib/sada.tsx";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
-import { maPravo, useUcet } from "../lib/ucet.tsx";
+import { maPravo, useUcet, type Pouzivatel } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { HernaPlocha } from "./HernaPlocha.tsx";
 import { HudbaPartie } from "./Hudba.tsx";
@@ -229,7 +229,7 @@ function NepodporovaneZariadenie({ dovod }: { readonly dovod: "dotyk" | "uzke" }
 
 export function Hra() {
   useTitulok("Hrať");
-  const { ja, nacitane } = useUcet();
+  const { ja, nacitane, nastav: nastavUcet } = useUcet();
   const nepodporovane = useNepodporovaneZariadenie();
   // Na nepodporovanom zariadení sa ani nepripája — po roztiahnutí okna sa pripojí a vráti do partie.
   const hra = useHra(ja !== null && nepodporovane === null);
@@ -243,6 +243,15 @@ export function Hra() {
   const posledny = hra.achievementy.zisky.at(-1);
   useEffect(() => {
     if (posledny?.vzacny === true) ozviMoment(posledny.tajny ? "udiv" : "pohoda");
+    // Nová hviezda mohla zvýšiť rank (server ho prepočíta hneď) — účet sa načíta znova.
+    // Výpadok spojenia účet neodhlási, preto nie obnov().
+    if (hra.achievementy.n > 0)
+      void api
+        .get<{ pouzivatel: Pouzivatel | null }>("/ja")
+        .then((r) => {
+          if (r.pouzivatel !== null) nastavUcet(r.pouzivatel);
+        })
+        .catch(() => undefined);
     // Len pri novom zisku (n), nie pri prekreslení.
   }, [hra.achievementy.n]);
   const cmd = hra.cmd;
@@ -377,7 +386,8 @@ export function Hra() {
   return (
     <>
     <HudbaPartie />
-    {hra.vyucba === null && <OznamZiskov zisky={hra.achievementy.zisky} />}
+    {/* Vo výučbe len na jej konci — achievement Prvá hra (Michal 2026-10-25). */}
+    {(hra.vyucba === null || hra.vyucba.hotovo) && <OznamZiskov zisky={hra.achievementy.zisky} />}
     {hra.vyucba === null && (
       <Momenty udalosti={hra.udalosti} ja={hra.view.ja} mena={hra.hraci.map((h, i) => h?.meno ?? `Hráč ${i + 1}`)} hovor={hovorPriMomente} pocitadloBezi={pocitadloBezi} />
     )}

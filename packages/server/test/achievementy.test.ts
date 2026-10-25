@@ -144,6 +144,13 @@ describe("achievementy na serveri", () => {
     if (tajny !== undefined) expect(["???", ...katalog.achievementy.flatMap((x) => (x.tajnyText === null ? [] : [x.tajnyText]))]).toContain(tajny.popis);
     expect(tajny?.nazov ?? "???").toBe("???");
     expect((await api<{ achievementy: Vitrina }>(b, `/hraci/${idA}`)).achievementy).not.toBeNull();
+    // Hviezdy a cesta k ďalšiemu ranku (Michal 2026-10-25): len vo vlastnom profile, cudziemu nič.
+    type PostupRanku = { hviezdy: number; spolu: number; dalsi: { rank: string; prah: number } | null } | null;
+    const hviezdyA = (vlastna?.achievementy ?? []).reduce((n, x) => n + x.rank, 0);
+    const spolu = katalog.achievementy.reduce((n, x) => n + x.prahy.length, 0);
+    expect(hviezdyA).toBeLessThan(Math.ceil(spolu * 0.35));
+    expect((await api<{ postupRanku: PostupRanku }>(a, `/hraci/${idA}`)).postupRanku).toEqual({ hviezdy: hviezdyA, spolu, dalsi: { rank: "deci", prah: Math.ceil(spolu * 0.35) } });
+    expect((await api<{ postupRanku: PostupRanku }>(b, `/hraci/${idA}`)).postupRanku).toBeNull();
     await api(a, "/profil", "PATCH", { skrytySuhrn: true });
     expect((await api<{ achievementy: Vitrina }>(b, `/hraci/${idA}`)).achievementy).toBeNull();
     expect((await api<{ achievementy: Vitrina }>(a, `/hraci/${idA}`)).achievementy).not.toBeNull();
@@ -177,9 +184,9 @@ describe("achievementy na serveri", () => {
 });
 
 describe("achievementy — vypínač (Michal 2026-10-23)", () => {
-  it("kým katalóg nemá zapnute: true, partia nič nepošle ani neuloží a API vráti null", async () => {
-    expect(nacitajKatalog().zapnute).toBe(false);
-    const { server: s, zmaz: zmazVyp } = await testovaciServer(TEST_ADMIN, { botPauzaMs: 0 });
+  it("vypnuté achievementy: partia nič nepošle ani neuloží a API vráti null (katalóg je od 2026-10-25 zapnutý)", async () => {
+    expect(nacitajKatalog().zapnute).toBe(true);
+    const { server: s, zmaz: zmazVyp } = await testovaciServer(TEST_ADMIN, { botPauzaMs: 0, achievementyZapnute: false });
     try {
       const a = (await registruj(s.port)).cookie;
       const r = new Robot(s.port, a);

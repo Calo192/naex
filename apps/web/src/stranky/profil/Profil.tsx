@@ -21,6 +21,7 @@ import {
   type FilterPartii,
   type Metrika,
   type PartieApi,
+  type PostupRanku,
   type ProfilApi,
   type RiadokPartie,
   type Vysledok,
@@ -214,6 +215,31 @@ function BilanciaRiadok({ b, nazov }: { readonly b: Bilancia; readonly nazov: st
   );
 }
 
+/** Hviezdy achievementov a cesta k ďalšiemu ranku (Michal 2026-10-25) — „Deci: 40 / 66 ★“. */
+function PostupRankuOdznak({ p }: { readonly p: PostupRanku }) {
+  const dalsi = p.dalsi;
+  const title =
+    dalsi === null
+      ? `Máš ${p.hviezdy} z ${p.spolu} hviezd achievementov.`
+      : `Máš ${p.hviezdy} z ${p.spolu} hviezd achievementov. ${NAZOV_UROVNE[dalsi.rank]} od ${dalsi.prah} ★ — chýba ${Math.max(0, dalsi.prah - p.hviezdy)}.`;
+  return (
+    <span className="profil-postup-ranku" title={title}>
+      {dalsi === null ? (
+        <>
+          {p.hviezdy} / {p.spolu} ★
+        </>
+      ) : (
+        <>
+          {NAZOV_UROVNE[dalsi.rank]}: {p.hviezdy} / {dalsi.prah} ★
+          <span className="profil-postup-pruh" aria-hidden="true">
+            <span style={{ width: `${Math.min(100, (100 * p.hviezdy) / dalsi.prah)}%` }} />
+          </span>
+        </>
+      )}
+    </span>
+  );
+}
+
 /** Profil hráča (/hrac/:id). */
 export function HracProfil({ id }: { readonly id: number }) {
   const { nastav } = useUcet();
@@ -266,6 +292,7 @@ export function HracProfil({ id }: { readonly id: number }) {
             {profil.hrac.rola === "admin" && <span className="odznak odznak-admin">tvorca hry</span>}
             {profil.hrac.rola === "subadmin" && <span className="odznak">subadmin</span>}
             {RANKY_HRACOV.includes(profil.hrac.rola as Rola) && <span className="odznak">{NAZOV_UROVNE[profil.hrac.rola as Rola]}</span>}
+            {profil.postupRanku != null && <PostupRankuOdznak p={profil.postupRanku} />}
             <span className="tlmene">v krčme od {datum(profil.hrac.vytvoreny)}</span>
           </div>
           {vlastny && (

@@ -2,7 +2,9 @@
 // počíta metriky partie; server rozhodne, kto čo získava, uloží zisk k účtu,
 // sčíta kariéru a pošle oznam LEN hráčovi, ktorý získal (súper ho nevidí).
 //
-// Kto získava: človek (nie bot, nie AI účet), nie vo výučbe. Achievement sa
+// Kto získava: človek (nie bot, nie AI účet), nie vo výučbe — za jej dokončenie
+// je len achievement s metrikou „vyucba“ (Prvá hra). Hviezdy (★) všetkých
+// achievementov určujú rank Deci a Sedmička (prava.ts). Achievement sa
 // ráta v partii, ktorej typ (ľudia / bot) zodpovedá jeho „proti“. Kariéra
 // sa sčíta po partii vo vedierku jej typu a vo „vsetky“; rátané od spustenia.
 
@@ -33,6 +35,7 @@ import {
 } from "@naex/core";
 import type { Db } from "./db.ts";
 import { transakcia } from "./db.ts";
+import type { HviezdyHraca } from "./prava.ts";
 
 const KATALOG = fileURLToPath(new URL("../../core/data/achievementy.json", import.meta.url));
 
@@ -301,6 +304,49 @@ export class Achievementy {
       return a === undefined ? [] : [{ ...preKlienta(a, p.rank), rank: p.rank, hodnota: p.hodnota, prah: p.prah }];
     });
     return { ziskane: [...h.ziskane], chybaloMalo: blizko };
+  }
+
+  /** Koľko hviezd (★) je v katalógu spolu — z neho sa rátajú prahy rankov Deci a Sedmička. */
+  spoluHviezd(): number {
+    return this.katalog.achievementy.reduce((n, a) => n + a.prahy.length, 0);
+  }
+
+  /**
+   * Hviezdy hráča: súčet rankov achievementov z katalógu. Všetky hviezdy platia rovnako
+   * (aj tajné a „záporné“ ako Vlastný gól); achievement vyradený z katalógu sa neráta.
+   */
+  hviezdy(pouzivatel: number): HviezdyHraca {
+    let hviezdy = 0;
+    const drzane = this.drzane(pouzivatel);
+    for (const a of this.katalog.achievementy) hviezdy += Math.min(drzane.get(a.id) ?? 0, a.prahy.length);
+    return { hviezdy, spolu: this.spoluHviezd() };
+  }
+
+  /**
+   * Koniec výučby „Prvá hra“: achievementy s metrikou „vyucba“ (Michal 2026-10-25).
+   * Udelia sa raz — opakovaná výučba už nič nedá. Vráti nové zisky pre oznam.
+   */
+  udelZaVyucbu(pouzivatel: number, cas: number): ZiskAchievementu[] {
+    const drzane = this.drzane(pouzivatel);
+    const out: ZiskAchievementu[] = [];
+    for (const a of this.katalog.achievementy) {
+      if (a.metrika !== "vyucba" || (drzane.get(a.id) ?? 0) >= a.prahy.length) continue;
+      const mal = drzane.get(a.id) ?? 0;
+      const rank = a.prahy.length;
+      transakcia(this.db, () => {
+        const vloz = this.db.prepare("INSERT OR IGNORE INTO achievementy_zisky (pouzivatel, achievement, rank, ziskane, miestnost, partia) VALUES (?, ?, ?, ?, 'vyucba', NULL)");
+        for (let r = mal + 1; r <= rank; r++) vloz.run(pouzivatel, a.id, r, cas);
+      });
+      out.push({ ...preKlienta(a, rank), rank, hodnota: 1, vzacny: rank >= 3 || a.tajny });
+    }
+    return out;
+  }
+
+  /** Pri štarte: kto výučbu dokončil skôr, než achievement existoval, dostane ho dodatočne (bez oznamu). */
+  dorovnajVyucbu(cas: number): void {
+    if (!this.katalog.achievementy.some((a) => a.metrika === "vyucba")) return;
+    const ids = this.db.prepare("SELECT id FROM pouzivatelia WHERE vyucba_stav = 'hotova' AND ai = 0").all() as { id: number }[];
+    for (const { id } of ids) this.udelZaVyucbu(Number(id), cas);
   }
 
   /** Po zápise do archívu: zisky z miestnosti dostanú id partie (odkaz na detail). */

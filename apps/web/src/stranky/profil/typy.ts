@@ -61,7 +61,16 @@ export type ProfilApi = ProfilHraca & {
   readonly suhrn: Suhrn | null;
   /** Vitrína achievementov; null, kým nie sú zapnuté alebo keď si cudzí hráč skryl súhrn. */
   readonly achievementy?: VitrinaApi | null;
+  /** Len vo vlastnom profile: hviezdy (★) achievementov a koľko treba na ďalší rank; null bez achievementov. */
+  readonly postupRanku?: PostupRanku | null;
 };
+
+export interface PostupRanku {
+  readonly hviezdy: number;
+  readonly spolu: number;
+  /** Ďalší rank a jeho prah v hviezdach; null na Sedmičke (alebo u správcu). */
+  readonly dalsi: { readonly rank: "deci" | "sedmicka"; readonly prah: number } | null;
+}
 
 export interface SuperVPartii extends HracVerejny {
   readonly bot?: string;
