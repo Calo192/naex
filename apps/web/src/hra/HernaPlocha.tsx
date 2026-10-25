@@ -2664,7 +2664,7 @@ export function HernaPlocha({
         nadpis: "Stavba šenku",
         text: (
           <span className="cakanie-text">
-            Šenok za teba stavia hra
+            Šenok za teba stavia Melichar
             <span className="bodky" aria-hidden="true" />
           </span>
         ),
@@ -4196,7 +4196,7 @@ export function HernaPlocha({
                 {somNaTahu
                   ? `Tvoj balíček: ${kariet(draft.mojBalicek.length)} — vyber ${kariet(krokSt.odhod)} na Smetisko, ${zvysnePojdu(krokSt.doSenku)} do Šenku.`
                   : zaHracaHra && draft.mojVyber === null
-                    ? "Šenok za teba stavia hra."
+                    ? "Šenok za teba stavia Melichar."
                     : `${tvar(rodHracaP(ja), "Vybral si", "Vybrala si", "Výber je hotový")} — čakáš, kým vyberie ${menoHraca(super_)}.`}
               </span>
             </header>

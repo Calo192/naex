@@ -58,7 +58,7 @@ export function VyucbaVLobby({ vyucba, zacni }: { readonly vyucba: VyucbaUctu; r
             ? `Majster Melichar ťa čaká pri stole — si v kroku ${vyucba.krok + 1} z ${vyucba.spolu}.`
             : vyucba.stav === "hotova"
               ? "Výučbu máš za sebou. Ak si chceš pravidlá zopakovať, zahraj si ju znova."
-              : "Majster Melichar ťa za pár minút prevedie jedným kolom proti Štamgastovi: vybrať cieľ, kúpiť zo šenku, vykladať, NA EX! a bitka. Šenok postaví hra za teba. Do štatistík sa neráta."}
+              : "Majster Melichar ťa za pár minút prevedie jedným kolom proti Štamgastovi: vybrať cieľ, kúpiť zo šenku, vykladať, NA EX! a bitka. Šenok za teba postaví Melichar. Do štatistík sa neráta."}
         </p>
       </div>
       <div className="riadok-tlacidiel">
