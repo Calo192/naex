@@ -15,10 +15,15 @@ import type { GameServer } from "../src/server.ts";
 import { TEST_ADMIN, prihlas, registruj, testovaciServer } from "./pomocnik.ts";
 import { Robot } from "./robot.ts";
 
+// Pevné rozdanie: partia (a s ňou kontrola viditeľnosti) je pri každom behu rovnaká.
+// Seed je vybraný tak, že karta z línie bitky sa cez odhadzovací balíček vráti
+// Eve do ruky — test tak overuje aj to, že verejne známa karta nie je únik.
+const SEED = 26;
+
 let server: GameServer;
 let zmaz: () => Promise<void>;
 beforeAll(async () => {
-  ({ server, zmaz } = await testovaciServer());
+  ({ server, zmaz } = await testovaciServer(TEST_ADMIN, { seedRozdania: SEED }));
 });
 afterAll(async () => {
   await zmaz();
@@ -27,6 +32,17 @@ afterAll(async () => {
 const volaj = async <T>(cookie: string, cesta: string): Promise<{ status: number; data: T }> => {
   const res = await fetch(`http://127.0.0.1:${server.port}/api${cesta}`, { headers: { cookie, "x-naex": "1" } });
   return { status: res.status, data: (await res.json()) as T };
+};
+/** Všetky uid kariet v odpovedi — podľa štruktúry, nie hľadaním v texte. */
+const uidy = (o: unknown, out = new Set<number>()): Set<number> => {
+  if (Array.isArray(o)) for (const x of o) uidy(x, out);
+  else if (o !== null && typeof o === "object") {
+    for (const [k, v] of Object.entries(o)) {
+      if (k === "uid" && typeof v === "number") out.add(v);
+      else uidy(v, out);
+    }
+  }
+  return out;
 };
 const cakaj = async (podmienka: () => boolean | Promise<boolean>): Promise<void> => {
   for (let i = 0; i < 400; i++) {
@@ -81,16 +97,24 @@ describe("prehrávač partie", () => {
     expect(posledny.data).toMatchObject({ koniec: true, miesto: ja });
     // Prehratý koniec = archivovaný: Eva sa vzdala, vyhral Jano.
     expect((posledny.data.view as unknown as { koniec: { vitaz: number } }).koniec.vitaz).toBe(ja);
-    // Krok po krok: v odpovedi účastníka nie je súperova ruka ani karty balíčkov, hoci miesto žiada iné.
+    // Krok po kroku: účastník dostane presne pohľad zo svojho miesta, hoci žiada iné — bez súperovej
+    // ruky a kariet balíčkov. Karta, ktorá už ležala odkrytá (napr. v línii bitky a cez odhadzovací
+    // balíček sa vrátila súperovi do ruky), je verejne známa; únik je len karta zo súperovej ruky,
+    // ktorú účastník predtým mimo nej nikdy nevidel.
     const superMiesto = ja === 0 ? 1 : 0;
-    for (const n of [0, 3, Math.floor(zoznam.data.pocet / 2), zoznam.data.pocet - 1]) {
+    const videne = new Set<number>();
+    for (let n = 0; n <= zoznam.data.pocet; n++) {
       const moj = await volaj<Krok>(jano, `/partie/${partia}/krok/${n}?miesto=${superMiesto}`);
       expect(moj.status).toBe(200);
       expect(moj.data.miesto).toBe(ja);
+      expect(moj.data).toEqual((await volaj<Krok>(admin, `/partie/${partia}/krok/${n}?miesto=${ja}`)).data);
       const jeho = await volaj<Krok>(admin, `/partie/${partia}/krok/${n}?miesto=${superMiesto}`);
       expect(jeho.data.miesto).toBe(superMiesto);
+      const jehoRuka = new Set(jeho.data.view.ruka.map((k) => k.uid));
+      const vOdpovedi = uidy(moj.data);
+      expect([...jehoRuka].filter((u) => vOdpovedi.has(u) && !videne.has(u)), `únik v kroku ${n}`).toEqual([]);
+      for (const u of uidy(moj.data.view)) if (!jehoRuka.has(u)) videne.add(u);
       const text = JSON.stringify(moj.data);
-      for (const k of jeho.data.view.ruka) expect(text).not.toContain(`"uid":${k.uid},`);
       expect(text).not.toContain("\"doberaci\":");
       expect(text).not.toContain("\"spolocnyBalicek\":");
     }

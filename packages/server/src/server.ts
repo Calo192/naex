@@ -270,6 +270,8 @@ export interface ServerOpts {
   readonly achievementyZapnute?: boolean;
   /** Iný scenár výučby (testy); predvolene data/vyucba/prva-hra.json. */
   readonly scenarVyucby?: ScenarVyucby;
+  /** Pevný seed rozdania každej novej partie (testy) — partia sa dá zopakovať. */
+  readonly seedRozdania?: number;
 }
 
 export function createGameServer(opts: ServerOpts): Promise<GameServer> {
@@ -620,7 +622,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           // Offline protihráč sedí hneď — partia začína bez čakania.
           const povaha = POVAHY.find((p) => p.id === room.botPovaha);
           room.hraci[1] = { id: BOT_ID, meno: povaha?.meno ?? "Štamgast", avatar: avatary.bota(room.botPovaha), frajerina: 0, pohlavie: null, ai: false };
-          room.seed = randomInt(2 ** 31);
+          room.seed = opts.seedRozdania ?? randomInt(2 ** 31);
           room.state = setupGame(room.data, room.seed, { lokalit: DLZKY_HRY[room.dlzka] });
           room.zaciatok = teraz();
           room.statistiky = noveStatistiky();
@@ -661,7 +663,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         // (usadit práve zmenil room.hraci — TS si pamätá starý stav)
         const [h0, h1] = room.hraci as readonly (HracVMiestnosti | null)[];
         if (h0 != null && h1 != null && room.state === null) {
-          room.seed = randomInt(2 ** 31);
+          room.seed = opts.seedRozdania ?? randomInt(2 ** 31);
           room.state = setupGame(room.data, room.seed, { lokalit: DLZKY_HRY[room.dlzka] });
           room.zaciatok = teraz();
           room.statistiky = noveStatistiky();
