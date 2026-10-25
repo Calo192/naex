@@ -103,10 +103,10 @@ describe("výučba „Prvá hra“", () => {
     expect((prvy.krok as KrokMsg).kto).toBe("info");
     k.posli({ type: "cmd", cmd: { type: "pass" } });
     expect(String((await k.cakaj("error")).text)).toMatch(/Melichar/);
-    // Texty pred prvým ťahom hráča preklikne „ďalej“.
+    // Texty pred prvým ťahom hráča preklikne „ďalej“, ťahy hry za hráča (k-ciel) tiež.
     let msg = prvy;
-    while ((msg.krok as KrokMsg).kto === "info") {
-      k.posli({ type: "vyucbaDalej" });
+    while ((msg.krok as KrokMsg).kto !== "hrac") {
+      potvrd(k, msg.krok as KrokMsg);
       msg = await k.cakaj("vyucba");
     }
     const tah = msg.krok as KrokMsg;
@@ -127,7 +127,8 @@ describe("výučba „Prvá hra“", () => {
   it("postup sa ukladá — po odchode výučba pokračuje od toho istého kroku; preskočiť a znova", async () => {
     const { cookie } = await registruj(server.port);
     const { k, prvy } = await zacni(cookie);
-    const po = await hraj(k, prvy, 3);
+    // 4 správy: i-vitaj, i-lokalita, k-ciel (hra ťahá) a k-ciel vykonaný → ďalej.
+    const po = await hraj(k, prvy, 4);
     const index = (po.krok as KrokMsg).index;
     expect(index).toBeGreaterThanOrEqual(3);
     k.zavri();
@@ -257,9 +258,9 @@ describe("výučba — kontrolné otázky a rozhodnutia (UX N2)", () => {
       const odp = (await (await fetch(`http://127.0.0.1:${s.port}/api/admin/vyucba/odpovede`, { headers: { cookie: admin } })).json()) as { odpovede: unknown[] };
       expect(odp.odpovede).toEqual([{ krok: "q-spoj", odpovedi: 1, spravne: 0 }]);
 
-      // Do rozhodnutia: info preklikať, potom zlý ťah → rada, žiadna chyba.
+      // Do rozhodnutia: info a ťahy hry za hráča preklikať, potom zlý ťah → rada, žiadna chyba.
       while ((msg.krok as KrokMsg).kto !== "hrac") {
-        if ((msg.krok as KrokMsg).kto === "info") k.posli({ type: "vyucbaDalej" });
+        potvrd(k, msg.krok as KrokMsg);
         msg = await k.cakaj("vyucba");
       }
       expect((msg.krok as { volba: unknown }).volba).toEqual({ kandidati: ["ruka:pijan"] });
@@ -271,5 +272,60 @@ describe("výučba — kontrolné otázky a rozhodnutia (UX N2)", () => {
     } finally {
       await zmazQ();
     }
+  });
+});
+
+describe("výučba — cigareta pre Melichara (Michal 2026-10-25)", () => {
+  interface StavMsg {
+    view: { hraci: { cigarety: number }[] };
+    events: { type: string; text?: string }[];
+  }
+
+  it("„Dať cigaretu“ v úvode uberie hráčovi hernú cigaretu cez server a návrat do výučby ju nevráti", async () => {
+    const { cookie } = await registruj(server.port);
+    const { k, prvy } = await zacni(cookie);
+    expect(prvy.krok).toMatchObject({ id: "i-vitaj", kto: "info", tlacidlo: "Dať cigaretu", odovzdaCigaretu: true, preskocenie: true });
+    expect(((await k.cakaj("state")) as unknown as StavMsg).view.hraci[0]?.cigarety).toBe(5);
+    k.posli({ type: "vyucbaDalej" });
+    const po = (await k.cakaj("state")) as unknown as StavMsg;
+    expect(po.view.hraci[0]?.cigarety).toBe(4);
+    expect(po.events.some((e) => e.type === "log" && /Melichar/.test(e.text ?? ""))).toBe(true);
+    expect((await k.cakaj("vyucba")).krok).toMatchObject({ id: "i-lokalita", tlacidlo: null, odovzdaCigaretu: false, preskocenie: false });
+    k.zavri();
+    await new Promise((r) => setTimeout(r, 50));
+
+    // Obnovenie stránky: výučba pokračuje od i-lokalita a cigareta ostala u Melichara.
+    const znova = await zacni(cookie);
+    expect(znova.prvy.krok).toMatchObject({ id: "i-lokalita" });
+    expect(((await znova.k.cakaj("state")) as unknown as StavMsg).view.hraci[0]?.cigarety).toBe(4);
+    znova.k.zavri();
+  });
+
+  it("i-strach má tlačidlo „Odovzdať cigaretu“ a uberie ďalšiu; i-senok je nanečisto", async () => {
+    const { cookie } = await registruj(server.port);
+    const { k, prvy } = await zacni(cookie);
+    let msg = prvy;
+    let senok: KrokMsg | null = null;
+    while ((msg.krok as KrokMsg & { id: string }).id !== "i-strach") {
+      const krok = msg.krok as KrokMsg & { id: string };
+      if (krok.id === "i-senok") senok = krok;
+      if (krok.kto === "hrac") k.posli({ type: "cmd", cmd: krok.ocakava });
+      else potvrd(k, krok);
+      msg = await k.cakaj("vyucba");
+    }
+    expect(senok).toMatchObject({ kto: "info", naneisto: true });
+    expect(msg.krok).toMatchObject({ kto: "info", tlacidlo: "Odovzdať cigaretu", odovzdaCigaretu: true });
+    // Posledný stav pred odovzdaním: z fronty po jednom, kým tam niečo je.
+    let pred: StavMsg | null = null;
+    for (;;) {
+      const st = await Promise.race([k.cakaj("state"), new Promise<null>((r) => setTimeout(() => r(null), 100))]);
+      if (st === null) break;
+      pred = st as unknown as StavMsg;
+    }
+    const mal = pred?.view.hraci[0]?.cigarety ?? -1;
+    expect(mal).toBe(4);
+    k.posli({ type: "vyucbaDalej" });
+    expect(((await k.cakaj("state")) as unknown as StavMsg).view.hraci[0]?.cigarety).toBe(3);
+    k.zavri();
   });
 });

@@ -396,6 +396,11 @@ export interface HernaPlochaProps {
   readonly vyucbaOcakava?: Command | null;
   /** Výučba: ťah hráča teraz spraví hra (krok „auto“) — stôl nevyzýva hráča a nereaguje na neho. */
   readonly zaHracaHra?: boolean;
+  /**
+   * Výučba: hráč si stavbu šenku len skúša (Michal 2026-10-25) — karty smie presúvať, no
+   * potvrdiť nie je; rozloženie spraví Melichar v ďalšom kroku.
+   */
+  readonly naneisto?: boolean;
 }
 
 /** Názvy fáz pre titulok karty prehliadača. */
@@ -454,6 +459,7 @@ export function HernaPlocha({
   vyucba,
   zadrzBitku = null,
   zaHracaHra = false,
+  naneisto = false,
 }: HernaPlochaProps) {
   DATA = data;
   const ja = view.ja;
@@ -721,7 +727,7 @@ export function HernaPlocha({
   const doSenkuStavby = (draft?.mojBalicek ?? []).filter((k) => !odhodStavby.includes(k.uid)).map((k) => k.uid);
   const stavbaHotova = odhodStavby.length === krokSt.odhod && doSenkuStavby.length === krokSt.doSenku;
   const potvrdStavbu = (): void => {
-    if (stavbaHotova) posli({ type: "stavbaSenku", doSenku: doSenkuStavby, odhod: odhodStavby });
+    if (stavbaHotova && !naneisto) posli({ type: "stavbaSenku", doSenku: doSenkuStavby, odhod: odhodStavby });
   };
 
   // Limit Zhromaždenia na jeho začiatku — pás nad stolom z neho ukazuje,
@@ -2658,7 +2664,7 @@ export function HernaPlocha({
         nadpis: "Stavba šenku",
         text: (
           <span className="cakanie-text">
-            Šenok za teba stavia hra
+            Šenok za teba stavia Melichar
             <span className="bodky" aria-hidden="true" />
           </span>
         ),
@@ -2796,6 +2802,12 @@ export function HernaPlocha({
               </>
             ),
             stred: pecatTahu({ text: "neberiem", druh: "pas", tip: "Bez patronátu — starší ostanú, kde sú.", akcia: () => posli({ type: "bezPatronatu" }) }),
+          };
+        }
+        if (draft.krok === "stavba" && naneisto) {
+          return {
+            nadpis: "Stavba šenku",
+            text: <>Skús si, ktoré karty by išli na <strong>Smetisko</strong> — klikni na kartu alebo ju potiahni. Rozloženie dnes spraví majster Melichar.</>,
           };
         }
         if (draft.krok === "stavba") {
@@ -4184,7 +4196,7 @@ export function HernaPlocha({
                 {somNaTahu
                   ? `Tvoj balíček: ${kariet(draft.mojBalicek.length)} — vyber ${kariet(krokSt.odhod)} na Smetisko, ${zvysnePojdu(krokSt.doSenku)} do Šenku.`
                   : zaHracaHra && draft.mojVyber === null
-                    ? "Šenok za teba stavia hra."
+                    ? "Šenok za teba stavia Melichar."
                     : `${tvar(rodHracaP(ja), "Vybral si", "Vybrala si", "Výber je hotový")} — čakáš, kým vyberie ${menoHraca(super_)}.`}
               </span>
             </header>
@@ -4211,7 +4223,7 @@ export function HernaPlocha({
               })}
             </div>
           </div>
-          {somNaTahu && mobil && (
+          {somNaTahu && mobil && !naneisto && (
             <footer className="draft-paticka">
               <span>{textStavby}</span>
               <button className="tlacidlo-hlavne" data-skratka="k" disabled={!stavbaHotova} onClick={potvrdStavbu}>

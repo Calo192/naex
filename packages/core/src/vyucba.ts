@@ -50,7 +50,7 @@ export interface Rozdanie {
  */
 export type PrikazScenara = Readonly<Record<string, unknown>> & { readonly type: Command["type"] };
 
-/** Možnosť kontrolnej otázky (Michal 2026-10-23, UX N2): 2–3 možnosti, práve jedna správna. */
+/** Možnosť kontrolnej otázky (Michal 2026-10-23, UX N2): 2–3 možnosti, aspoň jedna správna. */
 export interface MoznostOtazky {
   readonly text: string;
   readonly spravna: boolean;
@@ -85,6 +85,20 @@ export interface KrokVyucby {
   readonly melichar: string;
   /** Čo v UI zvýrazniť: CSS selektory alebo id prvkov (dohoda s UX/UI). */
   readonly zvyraznit?: readonly string[];
+  /** Nápis tlačidla „ďalej“ pri info kroku (napr. „Odovzdať cigaretu“). */
+  readonly tlacidlo?: string;
+  /**
+   * Info krok: „ďalej“ odovzdá Melicharovi 1 hernú cigaretu z baru hráča (Michal
+   * 2026-10-25) — mení partiu, preto ho jadro prehrá aj pri návrate do výučby.
+   */
+  readonly odovzdaCigaretu?: boolean;
+  /** Pri kroku ponúknuť aj „Preskočiť výučbu“ (Michal 2026-10-25: úvod s cigaretou). */
+  readonly preskocenie?: boolean;
+  /**
+   * Info krok: so zvýraznenými prvkami sa hráč smie hrať nanečisto (stavba šenku, Michal
+   * 2026-10-25) — serveru sa nič neposiela, platí až príkaz ďalšieho kroku.
+   */
+  readonly naneisto?: boolean;
 }
 
 export interface ScenarVyucby {
@@ -227,13 +241,27 @@ export interface StavVyucby {
 }
 
 /**
+ * Hráč dá Melicharovi 1 cigaretu zo svojho baru (za výučbu). Nie je to ťah
+ * pravidiel, preto nejde cez apply — jadro ju len uberie.
+ */
+export function odovzdajCigaretu(state: GameState): GameState {
+  const h = state.hraci[VYUCBA_HRAC];
+  if (h.cigarety < 1) throw new Error("Hráč nemá cigaretu, ktorú by odovzdal Melicharovi.");
+  const hraci: [GameState["hraci"][0], GameState["hraci"][1]] = [state.hraci[0], state.hraci[1]];
+  hraci[VYUCBA_HRAC] = { ...h, cigarety: h.cigarety - 1 };
+  return { ...state, hraci };
+}
+
+/**
  * Vykoná krok `i` scenára nad stavom: krok hráča alebo bota príkazom jadra,
- * info nič. Vyhodí chybu, keď príkaz nie je v jadre legálny (scenár nesedí).
+ * info nič (okrem odovzdania cigarety). Vyhodí chybu, keď príkaz nie je
+ * v jadre legálny (scenár nesedí).
  */
 export function vykonajKrok(data: GameData, scenar: ScenarVyucby, state: GameState, i: number): GameState {
   const krok = scenar.kroky[i];
   if (krok === undefined) throw new Error(`Scenár nemá krok ${i}.`);
-  if (krok.kto === "info" || krok.kto === "otazka") return state;
+  if (krok.kto === "info") return krok.odovzdaCigaretu === true ? odovzdajCigaretu(state) : state;
+  if (krok.kto === "otazka") return state;
   const kto = ktoVykona(krok);
   if (krok.prikaz === undefined) throw new Error(`Krok ${krok.id}: ${krok.kto} bez príkazu.`);
   const cmd = prikazZoScenara(state, kto, krok.prikaz);
@@ -271,7 +299,16 @@ export function overScenar(data: GameData, scenar: ScenarVyucby): string | null 
       if (chyba !== null) return `Krok ${i} (${krok.id}): ${chyba}`;
       continue;
     }
-    if (krok.kto === "info") continue;
+    if (krok.kto === "info") {
+      if (krok.naneisto === true && (krok.zvyraznit ?? []).length === 0) return `Krok ${i} (${krok.id}): naneisto bez zvýraznených prvkov — hráč by nemal s čím hýbať.`;
+      try {
+        state = vykonajKrok(data, scenar, state, i);
+      } catch (e) {
+        return `Krok ${i} (${krok.id}): ${(e as Error).message}`;
+      }
+      continue;
+    }
+    if (krok.odovzdaCigaretu === true || krok.naneisto === true) return `Krok ${i} (${krok.id}): odovzdaCigaretu a naneisto patria len k info kroku.`;
     const kto = ktoVykona(krok);
     if (krok.prikaz === undefined) return `Krok ${i} (${krok.id}): ${krok.kto} bez príkazu.`;
     try {
@@ -448,7 +485,8 @@ function chybaOtazky(krok: KrokVyucby): string | null {
   const m = krok.moznosti ?? [];
   if (krok.prikaz !== undefined) return "otázka nemá mať prikaz";
   if (m.length < 2 || m.length > 3) return "otázka má mať 2 – 3 možnosti";
-  if (m.filter((x) => x.spravna === true).length !== 1) return "otázka má mať práve jednu správnu možnosť";
+  // Obe možnosti smú byť správne (Michal 2026-10-25, q-naex) — hráč klikne jednu a je dobre.
+  if (!m.some((x) => x.spravna === true)) return "otázka má mať aspoň jednu správnu možnosť";
   if (m.some((x) => typeof x.text !== "string" || x.text.trim() === "" || typeof x.vysvetlenie !== "string" || x.vysvetlenie.trim() === "")) {
     return "každá možnosť potrebuje text aj vysvetlenie";
   }

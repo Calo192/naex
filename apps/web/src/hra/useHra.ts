@@ -70,10 +70,18 @@ export interface KrokVyucby {
   /** Kľúče prvkov na zvýraznenie, napr. „bar:poldeci“, „ruka:hasic“ — v UI atribút data-vyucba. */
   readonly zvyraznit: readonly string[];
   readonly ocakava: Command | null;
-  /** Kontrolná otázka: 2–3 možnosti, práve jedna správna — klient overí sám; inak null. */
+  /** Kontrolná otázka: 2–3 možnosti, aspoň jedna správna — klient overí sám; inak null. */
   readonly moznosti: readonly { readonly text: string; readonly spravna: boolean; readonly vysvetlenie: string }[] | null;
   /** Rozhodnutie: kandidáti na zvýraznenie (kľúče ako zvyraznit) namiesto očakávanej karty; inak null. */
   readonly volba: { readonly kandidati: readonly string[] } | null;
+  /** Nápis tlačidla „ďalej“ (napr. „Odovzdať cigaretu“); null = „ďalej“. */
+  readonly tlacidlo: string | null;
+  /** „Ďalej“ odovzdá Melicharovi 1 hernú cigaretu — server ju uberie (Michal 2026-10-25). */
+  readonly odovzdaCigaretu: boolean;
+  /** Ponúknuť „Preskočiť výučbu“ (úvod s cigaretou). */
+  readonly preskocenie: boolean;
+  /** So zvýraznenými prvkami sa hráč smie hrať nanečisto — nič sa neposiela (stavba šenku). */
+  readonly naneisto: boolean;
 }
 
 /** Krok ťahu slovami (jadro popisKroku); uid = karta, ktorú treba zvýrazniť. */

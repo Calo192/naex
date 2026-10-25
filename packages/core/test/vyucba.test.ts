@@ -9,6 +9,7 @@ import scenarJson from "../data/vyucba/prva-hra.json";
 import type { CardInstance, Command, GameState, ScenarVyucby, VolbaKroku } from "../src/index.ts";
 import {
   apply,
+  bodyTeraz,
   defOf,
   legalCommands,
   loadGameData,
@@ -29,6 +30,7 @@ import {
   setupZRozdania,
   textChybyKroku,
   uidZOdkazu,
+  viewFor,
   zacniVyucbu,
   zodpovedaVzoru,
   zhodnyPrikaz,
@@ -220,11 +222,13 @@ describe("výučba — kontrolné otázky a rozhodnutia (UX N2)", () => {
     { text: "Nič", spravna: false, vysvetlenie: "Nie." },
   ];
 
-  it("otázka partiu nemení a overScenar stráži 2–3 možnosti, práve jednu správnu, bez príkazu", () => {
+  it("otázka partiu nemení a overScenar stráži 2–3 možnosti, aspoň jednu správnu, bez príkazu", () => {
     expect(overScenar(data, sOtazkou(otazka(dobre)))).toBeNull();
     expect(JSON.stringify(prehrajVyucbu(data, sOtazkou(otazka(dobre)), 2))).toBe(JSON.stringify(prehrajVyucbu(data, scenar, 1)));
     expect(overScenar(data, sOtazkou(otazka([dobre[0] as (typeof dobre)[number]])))).toMatch(/2 – 3 možnosti/);
-    expect(overScenar(data, sOtazkou(otazka(dobre.map((m) => ({ ...m, spravna: true })))))).toMatch(/práve jednu správnu/);
+    // Obe správne smú byť (Michal 2026-10-25, q-naex), žiadna správna nie.
+    expect(overScenar(data, sOtazkou(otazka(dobre.map((m) => ({ ...m, spravna: true })))))).toBeNull();
+    expect(overScenar(data, sOtazkou(otazka(dobre.map((m) => ({ ...m, spravna: false })))))).toMatch(/aspoň jednu správnu/);
     expect(overScenar(data, sOtazkou(otazka(dobre, { prikaz: { type: "pass" } })))).toMatch(/nemá mať prikaz/);
     expect(overScenar(data, sOtazkou(otazka([...dobre, { text: "", spravna: false, vysvetlenie: "x" }])))).toMatch(/text aj vysvetlenie/);
   });
@@ -284,5 +288,55 @@ describe("výučba — zlý ťah pri staršom pomenuje staršieho (U3)", () => {
     const p = porovnajSKrokom(data, state, { type: "prebytok", elderId: b.elderId }, { type: "prebytok", elderId: a.elderId });
     expect(p.chybajuce.map((x) => x.popis)).toEqual([`posuň prebytkom staršieho „${meno}“`]);
     expect(textChybyKroku(p)).toContain(meno);
+  });
+});
+
+describe("výučba — cigarety pre Melichara (Michal 2026-10-25)", () => {
+  const iVitaj = scenar.kroky.findIndex((k) => k.id === "i-vitaj");
+  const iStrach = scenar.kroky.findIndex((k) => k.id === "i-strach");
+
+  it("hráč začína s 5, úvod a stupnica strachu mu uberú po cigarete, na konci má 3 a výsledok je 8 : 4", () => {
+    expect(scenar.kroky.filter((k) => k.odovzdaCigaretu === true).map((k) => k.id)).toEqual(["i-vitaj", "i-strach"]);
+    expect(zacniVyucbu(data, scenar).hraci[0].cigarety).toBe(5);
+    expect(prehrajVyucbu(data, scenar, iVitaj + 1).hraci[0].cigarety).toBe(4);
+    const predStrachom = prehrajVyucbu(data, scenar, iStrach);
+    expect(prehrajVyucbu(data, scenar, iStrach + 1).hraci[0].cigarety).toBe(predStrachom.hraci[0].cigarety - 1);
+    const koniec = prehrajVyucbu(data, scenar, scenar.kroky.length);
+    expect(koniec.hraci[0].cigarety).toBe(3);
+    expect(koniec.koniec?.body).toEqual([8, 4]);
+  });
+
+  it("čísla v hláškach sedia s jadrom: body 8 : 3 → 7 : 6 po odkrytí NA EX, bitka 7 : 2", () => {
+    const body = (n: number) => bodyTeraz(data, viewFor(data, prehrajVyucbu(data, scenar, n), 0)).spolu;
+    const iOdkrytie = scenar.kroky.findIndex((k) => k.id === "k-hotovo-bot");
+    expect(body(iOdkrytie)).toEqual([8, 3]);
+    expect(body(iOdkrytie + 1)).toEqual([7, 6]);
+    const iBitka = scenar.kroky.findIndex((k) => k.id === "i-bitka");
+    const bitka = prehrajVyucbu(data, scenar, iBitka).bitkaStav;
+    expect(bitka?.damage?.celkove).toEqual([7, 2]);
+  });
+
+  it("úvod ponúkne preskočenie a tlačidlá majú nápis zo scenára; k-ciel spraví hra a Jednota nesvieti", () => {
+    expect(scenar.kroky[iVitaj]).toMatchObject({ kto: "info", tlacidlo: "Dať cigaretu", preskocenie: true });
+    expect(scenar.kroky[iStrach]).toMatchObject({ kto: "info", tlacidlo: "Odovzdať cigaretu" });
+    const ciel = scenar.kroky.find((k) => k.id === "k-ciel");
+    expect(ciel?.kto).toBe("auto");
+    for (const id of ["i-lokalita", "k-ciel"]) expect(scenar.kroky.find((k) => k.id === id)?.zvyraznit ?? []).toEqual([]);
+  });
+
+  it("bez cigarety ju hráč odovzdať nemôže; odovzdanie a naneisto len pri info kroku", () => {
+    const chudak: ScenarVyucby = { ...scenar, rozdanie: { ...scenar.rozdanie, hraci: [{ ...scenar.rozdanie.hraci[0], cigarety: 0 }, scenar.rozdanie.hraci[1]] } };
+    expect(overScenar(data, chudak)).toMatch(/i-vitaj.*nemá cigaretu/);
+    const zlyKrok: ScenarVyucby = { ...scenar, kroky: scenar.kroky.map((k) => (k.id === "k-pijan" ? { ...k, odovzdaCigaretu: true } : k)) };
+    expect(overScenar(data, zlyKrok)).toMatch(/k-pijan.*len k info kroku/);
+    const bezZvyraznenia: ScenarVyucby = { ...scenar, kroky: scenar.kroky.map((k) => (k.id === "i-senok" ? { ...k, zvyraznit: [] } : k)) };
+    expect(overScenar(data, bezZvyraznenia)).toMatch(/i-senok.*naneisto bez zvýraznených/);
+  });
+
+  it("šenok nanečisto: i-senok partiu nemení, rozloženie určí až k-stavba zo scenára", () => {
+    const iSenok = scenar.kroky.findIndex((k) => k.id === "i-senok");
+    expect(scenar.kroky[iSenok]).toMatchObject({ kto: "info", naneisto: true });
+    expect(scenar.kroky[iSenok + 1]).toMatchObject({ id: "k-stavba", kto: "auto" });
+    expect(JSON.stringify(prehrajVyucbu(data, scenar, iSenok + 1))).toBe(JSON.stringify(prehrajVyucbu(data, scenar, iSenok)));
   });
 });
