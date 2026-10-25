@@ -22,7 +22,7 @@ describe("verzia pravidiel", () => {
 
   // TODO(v5): PRAVIDLA.md prepíše na v5 iný agent po rozhodnutiach Michala
   // (docs/pravidla-v5/davka.md) — potom skip zrušiť, hlavička musí sedieť s jadrom.
-  it.skip("hlavička PRAVIDLA.md sedí s jadrom", () => {
+  it("hlavička PRAVIDLA.md sedí s jadrom", () => {
     const hlavicka = pravidla.split(/\r?\n/).slice(0, 6).join(" ");
     expect(hlavicka).toContain(`Pravidlá ${VERZIA_PRAVIDIEL} (zmrazené ${PRAVIDLA_PLATNE_OD})`);
   });
