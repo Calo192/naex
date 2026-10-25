@@ -5,11 +5,12 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
-import type { Command, GameState, PlayerId } from "../src/index.ts";
+import type { BitkaStav, CardInstance, Command, ElderState, GameState, PlayerId } from "../src/index.ts";
 import {
   DLZKY_HRY,
   POVAHY,
   apply,
+  favourStarsieho,
   legalCommands,
   loadGameData,
   mozeHrat,
@@ -130,4 +131,91 @@ describe("offline protihráč", () => {
     }
     expect(porovnani).toBeGreaterThan(20);
   }, 60_000);
+});
+
+describe("offline protihráč — pravidlá v5", () => {
+  function bitka(b: Partial<BitkaStav>): BitkaStav {
+    return {
+      krok: null,
+      caka: null,
+      sums: [{}, {}],
+      exekutorHotovy: [true, true],
+      pohorsenieZostava: [0, 0],
+      pohorsenieHranice: {},
+      damage: null,
+      vitaz: null,
+      prebytokDrzi: null,
+      prebytokZostava: 0,
+      prebytokPosunute: [],
+      pohrebHotovy: [false, false],
+      benzinkaZostava: [0, 0],
+      karHotovy: [true, true],
+      spalit: [],
+      vesticaHotova: false,
+      ...b,
+    };
+  }
+  /** Bitka s prázdnou líniou v kroku Pohoršenia; hráč 0 (obranca) má posledné Pohoršenie. */
+  function vPohorseni(seed: number, markery: (e: ElderState) => ElderState["marker"]): GameState {
+    const s0 = setupGame(data, seed);
+    return {
+      ...s0,
+      faza: "bitka",
+      kolo: 2,
+      utocnik: 1,
+      strany: [[], []],
+      ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0] as CardInstance },
+      lokalityVHre: s0.lokalityVHre.slice(1),
+      starsi: s0.starsi.map((e) => ({ ...e, marker: markery(e), markerZaciatokKola: markery(e) })),
+      bitkaStav: bitka({ krok: "pohorsenie", caka: 0, pohorsenieZostava: [1, 0] }),
+    };
+  }
+  const priazenStarsieho = (s: GameState, elderId: string): string => favourStarsieho(data, s.starsi.find((e) => e.elderId === elderId) as ElderState);
+
+  it("posledným Pohoršením k sebe si vezme Bitkára, keď ním bitku vyhrá", () => {
+    for (const seed of [71, 72, 73]) {
+      // Bitkár v sivej zóne pri hráčovi 0, ostatní v strede: prázdna línia je 0 : 0, Bitkár sily 1 rozhodne.
+      const s = vPohorseni(seed, (e) => (data.scorecards.find((x) => x.id === e.scorecard)?.favour === "BITKAR" ? 3 : 4));
+      for (const povaha of POVAHY) {
+        const cmd = tahBota(data, s, 0, seed, { povaha: povaha.id });
+        expect(cmd.type, povaha.id).toBe("pohorsenie");
+        if (cmd.type !== "pohorsenie") continue;
+        expect([priazenStarsieho(s, cmd.elderId), cmd.kSebe], `${povaha.id} ${seed}`).toEqual(["BITKAR", true]);
+        expect(apply(data, s, cmd, 0).state.bitkaStav?.vitaz).toBe(0);
+      }
+    }
+  }, 30_000);
+
+  it("prebytkom dá súperovi priazeň, ktorá mu v tejto partii urobí najmenej", () => {
+    for (const seed of [81, 82, 83]) {
+      // Po výhre Bitkárom drží hráč 0 prebytok 1; všetci ostatní starší sú tesne pred zónou súpera.
+      const bitkar = (e: ElderState): boolean => data.scorecards.find((x) => x.id === e.scorecard)?.favour === "BITKAR";
+      const s = vPohorseni(seed, (e) => (bitkar(e) ? 3 : 5));
+      const id = s.starsi.find(bitkar)?.elderId as string;
+      const po = apply(data, s, { type: "pohorsenie", elderId: id, kSebe: true }, 0).state;
+      expect(po.bitkaStav?.krok).toBe("prebytok");
+      expect(po.bitkaStav?.prebytokDrzi).toBe(0);
+      for (const povaha of POVAHY) {
+        const cmd = tahBota(data, po, 0, seed, { povaha: povaha.id });
+        expect(cmd.type, povaha.id).toBe("prebytok");
+        if (cmd.type !== "prebytok") continue;
+        // Súper nemá priznaný Dlh (Kmotor nič nerobí) a NA EX dáva zriedka (Výpalné, „do dna“).
+        expect(["EXEKUTOR", "UZERNIK", "NEPRAJNIK", "ALKOHOLIK"], `${povaha.id} ${seed}`).toContain(priazenStarsieho(po, cmd.elderId));
+      }
+    }
+  }, 30_000);
+
+  it("na Kare zahodí nepriznanú Cirhózu aj s tenkým balíčkom (prehra balíčkom pod 5 neplatí)", () => {
+    const s0 = vPohorseni(91, () => 4);
+    let uid = 880000;
+    const k = (defId: string): CardInstance => ({ uid: ++uid, defId, leftLayout: 0, rightLayout: 0 });
+    const cirhoza = k("cirhoza");
+    const s: GameState = {
+      ...s0,
+      bitkaStav: bitka({ krok: "kar", caka: 0, karHotovy: [false, true] }),
+      hraci: [{ ...s0.hraci[0], ruka: [cirhoza, k("pijan")], doberaci: [k("pijan")], odhadzovaci: [] }, s0.hraci[1]],
+    };
+    expect(legalCommands(data, s, 0)).toContainEqual({ type: "kar", uid: cirhoza.uid });
+    expect(tahBota(data, s, 0, 1)).toEqual({ type: "kar", uid: cirhoza.uid });
+  });
 });
