@@ -36,6 +36,32 @@
   gap: 6px 10px;
 }
 
+.profil-postup-ranku {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--akcent);
+  white-space: nowrap;
+}
+
+.profil-postup-pruh {
+  display: inline-block;
+  width: 72px;
+  height: 6px;
+  border-radius: 99px;
+  background: var(--plocha-3);
+  border: 1px solid var(--okraj-svetly);
+  overflow: hidden;
+}
+
+.profil-postup-pruh > span {
+  display: block;
+  height: 100%;
+  background: var(--akcent);
+}
+
 .profil-vlastne {
   display: flex;
   flex-wrap: wrap;

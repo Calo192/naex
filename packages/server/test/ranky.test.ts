@@ -10,8 +10,11 @@ import { prazdneStatistiky } from "@naex/core";
 import { Archiv } from "../src/archiv.ts";
 import { Ucty } from "../src/auth.ts";
 import { otvorDb } from "../src/db.ts";
-import { PRAVA, PREDVOLENE_PRAVA, Prava, rankPodlaPartii } from "../src/prava.ts";
+import type { KatalogAchievementov } from "@naex/core";
+import { Achievementy, nacitajKatalog } from "../src/achievementy.ts";
+import { PRAVA, PREDVOLENE_PRAVA, Prava, dalsiRank, prahyRankov, rankPodlaHviezd } from "../src/prava.ts";
 import type { GameServer } from "../src/server.ts";
+import { createGameServer } from "../src/server.ts";
 import { Klient, TEST_ADMIN, nastavUroven, prihlas, registruj, testovaciServer } from "./pomocnik.ts";
 
 function docasnaDb(): { db: ReturnType<typeof otvorDb>; zmaz: () => void } {
@@ -31,53 +34,146 @@ function partie(archiv: Archiv, hraci: [number, number], pocet: number, dohrata 
 
 const POSTUP = PREDVOLENE_PRAVA.postup;
 
-describe("ranky — automatický postup", () => {
-  it("prahy: Poldeci po prvej partii (aj s botom), Deci po 10, Sedmička po 30 partiách s ľuďmi", () => {
-    expect(POSTUP).toEqual({ deci: 10, sedmicka: 30 });
-    expect(rankPodlaPartii(POSTUP, 0, false)).toBe("navstevnik");
-    expect(rankPodlaPartii(POSTUP, 0, true)).toBe("hrac");
-    expect(rankPodlaPartii(POSTUP, 9, true)).toBe("hrac");
-    expect(rankPodlaPartii(POSTUP, 10, false)).toBe("deci");
-    expect(rankPodlaPartii(POSTUP, 30, false)).toBe("sedmicka");
+/** Hráč má prvých n hviezd katalógu (ranky po poradí, riadky ako pri zisku v partii); ďalšie, čo už mal, sa pripočítajú. */
+function dajHviezdy(db: ReturnType<typeof otvorDb>, katalog: KatalogAchievementov, pouzivatel: number, n: number): void {
+  const vloz = db.prepare("INSERT OR IGNORE INTO achievementy_zisky (pouzivatel, achievement, rank, ziskane, miestnost, partia) VALUES (?, ?, ?, 1, 'test', NULL)");
+  let zostava = n;
+  for (const a of katalog.achievementy) {
+    for (let r = 1; r <= a.prahy.length && zostava > 0; r++, zostava--) vloz.run(pouzivatel, a.id, r);
+    if (zostava === 0) return;
+  }
+}
+
+describe("ranky — automatický postup podľa hviezd (Michal 2026-10-25)", () => {
+  it("prahy: Deci od 35 %, Sedmička od 50 % všetkých hviezd katalógu, zaokrúhlené nahor", () => {
+    expect(POSTUP).toEqual({ deci: 35, sedmicka: 50 });
+    const katalog = nacitajKatalog();
+    const spolu = katalog.achievementy.reduce((n, a) => n + a.prahy.length, 0);
+    const prahy = prahyRankov(POSTUP, spolu);
+    expect(prahy).toEqual({ deci: Math.ceil(spolu * 0.35), sedmicka: Math.ceil(spolu * 0.5) });
+    // Dnešný katalóg: 62 achievementov so 186 hviezdami + Prvá hra = 187 → Deci 66, Sedmička 94.
+    expect(spolu).toBe(187);
+    expect(prahy).toEqual({ deci: 66, sedmicka: 94 });
+    // Presné percento sa nezaokrúhli nahor o hviezdu navyše; bez katalógu sa na hviezdy nepostupuje.
+    expect(prahyRankov(POSTUP, 100)).toEqual({ deci: 35, sedmicka: 50 });
+    expect(prahyRankov(POSTUP, 0)).toBeNull();
+    const r = (hviezdy: number, poldeci: boolean) => rankPodlaHviezd(POSTUP, { hviezdy, spolu, poldeci });
+    expect(r(0, false)).toBe("navstevnik");
+    expect(r(65, false)).toBe("navstevnik");
+    expect(r(0, true)).toBe("hrac");
+    expect(r(65, true)).toBe("hrac");
+    expect(r(66, true)).toBe("deci");
+    expect(r(93, true)).toBe("deci");
+    expect(r(94, true)).toBe("sedmicka");
+    expect(r(187, true)).toBe("sedmicka");
+    expect(rankPodlaHviezd(POSTUP, { hviezdy: 0, spolu: 0, poldeci: true })).toBe("hrac");
+    expect(dalsiRank(POSTUP, "hrac", { hviezdy: 40, spolu })).toEqual({ rank: "deci", prah: 66 });
+    expect(dalsiRank(POSTUP, "deci", { hviezdy: 70, spolu })).toEqual({ rank: "sedmicka", prah: 94 });
+    expect(dalsiRank(POSTUP, "sedmicka", { hviezdy: 100, spolu })).toBeNull();
   });
 
-  it("partie povyšujú len nahor, vzdané sa nerátajú, ručný rank a správcov nemenia", () => {
+  it("Poldeci po výučbe alebo prvej partii; hviezdy povyšujú, partie už nie; nikoho neznížia", () => {
     const { db, zmaz } = docasnaDb();
     try {
       const ucty = new Ucty(db, { login: "Admin", heslo: null });
       const archiv = new Archiv(db);
+      const katalog = nacitajKatalog();
+      const achievementy = new Achievementy(db, katalog);
+      ucty.pouziHviezdy((id) => achievementy.hviezdy(id));
       const a = ucty.registruj("jano", "tajneheslo", "Jano", 1);
       const b = ucty.registruj("eva", "tajneheslo", "Eva", 1);
+      const c = ucty.registruj("fero", "tajneheslo", "Fero", 1);
+
+      // Výučba: achievement Prvá hra raz a z návštevníka Poldeci.
+      ucty.ulozVyucbu(a.id, 99, "hotova");
+      expect(achievementy.udelZaVyucbu(a.id, 5).map((z) => [z.id, z.rank])).toEqual([["prva-hra", 1]]);
+      expect(achievementy.udelZaVyucbu(a.id, 6)).toEqual([]);
+      expect(achievementy.hviezdy(a.id)).toEqual({ hviezdy: 1, spolu: 187 });
       expect(ucty.povysPoPartii(a.id, POSTUP)).toBe(true);
       expect(ucty.podlaId(a.id)?.rola).toBe("hrac");
-      partie(archiv, [a.id, b.id], 9);
-      partie(archiv, [a.id, b.id], 5, false);
-      expect(ucty.povysPoPartii(a.id, POSTUP)).toBe(false);
-      partie(archiv, [a.id, b.id], 1);
-      expect(ucty.povysPoPartii(a.id, POSTUP)).toBe(true);
-      expect(ucty.podlaId(a.id)?.rola).toBe("deci");
-      // Prísnejšie pravidlá nikoho automaticky neznížia.
-      ucty.prepocitajRanky({ deci: 50, sedmicka: 60 });
-      expect(ucty.podlaId(a.id)?.rola).toBe("deci");
-      // Ručný rank: automatika ho nemení ani nahor.
-      ucty.nastavRolu(b.id, "navstevnik");
-      expect(ucty.rolaRucne(b.id)).toBe(true);
-      expect(ucty.povysPoPartii(b.id, POSTUP)).toBe(false);
+      // Kto výučbu preskočí, je Poldeci po prvej dohratej partii (aj s botom).
+      expect(ucty.povysPodlaHviezd(b.id, POSTUP)).toBeNull();
       expect(ucty.podlaId(b.id)?.rola).toBe("navstevnik");
-      // Návrat na automatický rank prepočíta podľa pravidiel.
+      expect(ucty.povysPoPartii(b.id, POSTUP)).toBe(true);
+      expect(ucty.podlaId(b.id)?.rola).toBe("hrac");
+
+      // Partie s ľuďmi už Deci nedajú (ani 40 dohratých)…
+      partie(archiv, [a.id, b.id], 40);
+      ucty.prepocitajRanky(POSTUP);
+      expect(ucty.podlaId(a.id)?.rola).toBe("hrac");
+      // …hviezdy áno (k Prvej hre ďalšie): 65 nie, 66 Deci, 94 Sedmička — hneď po zisku.
+      dajHviezdy(db, katalog, a.id, 64);
+      expect(ucty.povysPodlaHviezd(a.id, POSTUP)).toBeNull();
+      dajHviezdy(db, katalog, a.id, 65);
+      expect(ucty.povysPodlaHviezd(a.id, POSTUP)).toBe("deci");
+      dajHviezdy(db, katalog, a.id, 93);
+      expect(ucty.povysPodlaHviezd(a.id, POSTUP)).toBe("sedmicka");
+
+      // Nikoho neznížiť: Deci za partie (zo starých pravidiel) ostáva pri prepočte aj pri návrate na automatiku.
+      db.prepare("UPDATE pouzivatelia SET rola = 'deci' WHERE id = ?").run(c.id);
+      ucty.prepocitajRanky(POSTUP);
+      expect(ucty.podlaId(c.id)?.rola).toBe("deci");
+      ucty.automatickyRank(c.id, POSTUP);
+      expect(ucty.podlaId(c.id)?.rola).toBe("deci");
+      // Prísnejšie percentá nikoho neznížia ani pri prepočte.
+      ucty.prepocitajRanky({ deci: 90, sedmicka: 99 });
+      expect(ucty.podlaId(a.id)?.rola).toBe("sedmicka");
+
+      // Ručný rank: automatika ho nemení ani nahor; návrat na automatiku ho prepočíta (aj nadol, Poldeci ostáva).
+      ucty.nastavRolu(b.id, "sedmicka");
+      dajHviezdy(db, katalog, b.id, 10);
+      expect(ucty.povysPodlaHviezd(b.id, POSTUP)).toBeNull();
       ucty.automatickyRank(b.id, POSTUP);
       expect(ucty.rolaRucne(b.id)).toBe(false);
-      expect(ucty.podlaId(b.id)?.rola).toBe("deci");
-      ucty.automatickyRank(a.id, { deci: 50, sedmicka: 60 });
-      expect(ucty.podlaId(a.id)?.rola).toBe("hrac");
+      expect(ucty.podlaId(b.id)?.rola).toBe("hrac");
       // Subadmin nie je hráčsky rank — automatika ho nemení.
       ucty.nastavRolu(a.id, "subadmin");
-      expect(ucty.rolaRucne(a.id)).toBe(false);
-      partie(archiv, [a.id, b.id], 40);
       ucty.prepocitajRanky(POSTUP);
       expect(ucty.podlaId(a.id)?.rola).toBe("subadmin");
     } finally {
       zmaz();
+    }
+  });
+
+  it("štart nad starým nastavením (postup v partiách): percentá sú predvolené, matica ostáva; výučba dodatočne dá Prvú hru", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "naex-ranky-start-"));
+    try {
+      const db = otvorDb(join(dir, "naex.sqlite"));
+      const ucty = new Ucty(db, TEST_ADMIN);
+      const zaPartie = ucty.registruj("starydeci", "tajneheslo", "Starý Deci", 1);
+      const poVyucbe = ucty.registruj("vyucba", "tajneheslo", "Po výučbe", 1);
+      db.prepare("UPDATE pouzivatelia SET rola = 'sedmicka' WHERE id = ?").run(zaPartie.id);
+      ucty.ulozVyucbu(poVyucbe.id, 99, "hotova");
+      const matica = Object.fromEntries(PRAVA.map((p) => [p, p === "hodnotit_hru" ? ["deci", "sedmicka"] : ["navstevnik", "hrac", "deci", "sedmicka"]]));
+      db.prepare("INSERT INTO nastavenia (kluc, data) VALUES ('prava', ?)").run(JSON.stringify({ matica, postup: { deci: 10, sedmicka: 30 } }));
+      db.close();
+
+      const s = await createGameServer({ port: 0, dataDir: dir, admin: TEST_ADMIN, staticDir: join(dir, "nic"), achievementyZapnute: true });
+      try {
+        const admin = await prihlas(s.port, TEST_ADMIN.login, TEST_ADMIN.heslo);
+        const prava = await fetch(`http://127.0.0.1:${s.port}/api/admin/prava`, { headers: { cookie: admin } });
+        expect(prava.status).toBe(200);
+        expect(await prava.json()).toMatchObject({
+          postup: { deci: 35, sedmicka: 50 },
+          hviezdySpolu: 187,
+          prahyHviezd: { deci: 66, sedmicka: 94 },
+          matica: { hodnotit_hru: ["deci", "sedmicka"] },
+        });
+        const zoznam = (await (await fetch(`http://127.0.0.1:${s.port}/api/admin/pouzivatelia`, { headers: { cookie: admin } })).json()) as {
+          pouzivatelia: { id: number; rola: string }[];
+        };
+        expect(zoznam.pouzivatelia.find((u) => u.id === zaPartie.id)?.rola).toBe("sedmicka");
+        expect(zoznam.pouzivatelia.find((u) => u.id === poVyucbe.id)?.rola).toBe("hrac");
+        const cookie = await prihlas(s.port, "vyucba", "tajneheslo");
+        const vitrina = (await (await fetch(`http://127.0.0.1:${s.port}/api/achievementy`, { headers: { cookie } })).json()) as {
+          achievementy: { achievementy: { id: string; rank: number }[] };
+        };
+        expect(vitrina.achievementy.achievementy.find((x) => x.id === "prva-hra")?.rank).toBe(1);
+      } finally {
+        await s.close();
+      }
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
     }
   });
 });
@@ -114,8 +210,11 @@ describe("práva — matica rank × právo", () => {
       expect(() => prava.uloz(hrac, { matica: { hrat_bot: [] } })).toThrow(/admin alebo subadmin/);
       expect(() => prava.uloz(admin, { matica: { lietat: ["hrac"] } })).toThrow(/Neznáme právo/);
       expect(() => prava.uloz(admin, { matica: { hrat_bot: ["subadmin"] } })).toThrow(/zoznam rankov/);
-      expect(() => prava.uloz(admin, { postup: { deci: 20, sedmicka: 20 } })).toThrow(/viac partií/);
-      expect(prava.uloz(admin, { postup: { deci: 5 } }).postup).toEqual({ deci: 5, sedmicka: 30 });
+      expect(() => prava.uloz(admin, { postup: { deci: 50, sedmicka: 50 } })).toThrow(/viac hviezd/);
+      expect(() => prava.uloz(admin, { postup: { deci: 101 } })).toThrow(/percento 1 až 100/);
+      expect(prava.uloz(admin, { postup: { deci: 30 } }).postup).toEqual({ deci: 30, sedmicka: 50 });
+      // Uložené percentá prežijú načítanie (kľúč postupHviezd, starý „postup“ v partiách sa ignoruje).
+      expect(new Prava(db).nastavenie().postup).toEqual({ deci: 30, sedmicka: 50 });
     } finally {
       zmaz();
     }
@@ -171,7 +270,7 @@ describe("ranky a práva — API", () => {
     expect(ulozene.status).toBe(200);
     expect(((await volaj(hrac, "GET", "/ja")).data.pouzivatel as { prava: string[] }).prava).not.toContain("hodnotit_hru");
     const nacitane = await volaj(admin, "GET", "/admin/prava");
-    expect(nacitane.data).toMatchObject({ postup: { deci: 10, sedmicka: 30 }, ranky: ["navstevnik", "hrac", "deci", "sedmicka"] });
+    expect(nacitane.data).toMatchObject({ postup: { deci: 35, sedmicka: 50 }, ranky: ["navstevnik", "hrac", "deci", "sedmicka"] });
     // Späť na predvolené, aby ostatné testy servera nič nezdedili.
     await volaj(admin, "PUT", "/admin/prava", { matica: { hodnotit_hru: ["navstevnik", "hrac", "deci", "sedmicka"] } });
   });

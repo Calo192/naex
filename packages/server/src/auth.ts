@@ -3,13 +3,14 @@
 //
 // Úroveň účtu (Michal 2026-10-12): admin (jediný, z NAEX_ADMIN_HESLO),
 // subadmin (povýši ho admin), hráč, návštevník. Nový účet je návštevník
-// a hráčom sa stane po prvej dohratej partii proti človeku aj proti botovi (Michal 2026-10-21).
+// a hráčom (Poldeci) sa stane po výučbe alebo prvej dohratej partii proti človeku aj proti botovi
+// (Michal 2026-10-21); Deci a Sedmička podľa hviezd achievementov (Michal 2026-10-25, prava.ts).
 
 import { createHash, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 import type { IncomingMessage } from "node:http";
 import type { Db } from "./db.ts";
-import type { PostupRankov } from "./prava.ts";
-import { RANKY_HRACOV, jeRankHraca, rankPodlaPartii } from "./prava.ts";
+import type { HviezdyHraca, PostupRankov } from "./prava.ts";
+import { RANKY_HRACOV, jeRankHraca, rankPodlaHviezd, type RankHraca } from "./prava.ts";
 import type { Pohlavie } from "@naex/core";
 import { POHLAVIA } from "@naex/core";
 
@@ -149,6 +150,8 @@ export class Ucty {
   private readonly adminLogin: string;
   /** Náhodný predvolený avatar pre účet bez vlastnej fotky (pozri Avatary). */
   private predvoleny: () => string | null = () => null;
+  /** Hviezdy achievementov hráča (pozri Achievementy); bez achievementov 0 z 0 — na hviezdy sa nepostupuje. */
+  private hviezdyHraca: (id: number) => HviezdyHraca = () => ({ hviezdy: 0, spolu: 0 });
 
   constructor(db: Db, admin: { readonly login: string; readonly heslo: string | null }) {
     this.db = db;
@@ -191,10 +194,6 @@ export class Ucty {
     return (this.db.prepare(`SELECT (${DOHRATE_SQL}) AS n FROM pouzivatelia WHERE id = ?`).get(id) as { n: number } | undefined)?.n ?? 0;
   }
 
-  /**
-   * Po dohratej partii (aj proti botovi): rank podľa pravidiel postupu — len
-   * povyšuje, ručne nastavený rank a správcov nemení. Vracia, či sa zmenil.
-   */
   /** Postup výučby „Prvá hra“: krok scenára a či je dokončená alebo preskočená. */
   vyucba(id: number): { krok: number; stav: "hotova" | "preskocena" | null } {
     const r = this.db.prepare("SELECT vyucba_krok, vyucba_stav FROM pouzivatelia WHERE id = ?").get(id) as
@@ -250,41 +249,70 @@ export class Ucty {
     else this.db.prepare("UPDATE pouzivatelia SET vyucba_krok = ?, vyucba_stav = ? WHERE id = ?").run(krok, stav, id);
   }
 
+  /** Zdroj hviezd achievementov — nastaví server, keď sú achievementy zapnuté. */
+  pouziHviezdy(hviezdy: (id: number) => HviezdyHraca): void {
+    this.hviezdyHraca = hviezdy;
+  }
+
+  hviezdy(id: number): HviezdyHraca {
+    return this.hviezdyHraca(id);
+  }
+
+  /**
+   * Po dohratej partii (aj proti botovi) alebo výučbe: rank podľa pravidiel
+   * postupu — len povyšuje, ručne nastavený rank a správcov nemení. Vracia, či sa zmenil.
+   */
   povysPoPartii(id: number, postup: PostupRankov): boolean {
     return this.povys(id, postup, true);
   }
 
-  /** Pri štarte a po zmene pravidiel: povýši každého, komu pravidlá dávajú vyšší rank. */
+  /** Po novej hviezde: povýši, ak na to hráč má. Vráti nový rank, alebo null, keď sa nezmenil. */
+  povysPodlaHviezd(id: number, postup: PostupRankov): Rola | null {
+    return this.povys(id, postup, false) ? (this.podlaId(id)?.rola ?? null) : null;
+  }
+
+  /**
+   * Pri štarte a po zmene pravidiel: povýši každého, komu pravidlá dávajú vyšší rank.
+   * Nikoho neznižuje — kto má Deci alebo Sedmičku ešte za partie, ponechá si ich (Michal 2026-10-25).
+   */
   prepocitajRanky(postup: PostupRankov): void {
     const ids = this.db.prepare("SELECT id FROM pouzivatelia WHERE rola_rucne = 0").all() as { id: number }[];
     for (const { id } of ids) this.povys(id, postup, false);
   }
 
-  private povys(id: number, postup: PostupRankov, poPartii: boolean): boolean {
-    const r = this.db.prepare(`SELECT rola, rola_rucne, (${DOHRATE_SQL}) AS dohrate FROM pouzivatelia WHERE id = ?`).get(id) as
-      | { rola: string; rola_rucne: number; dohrate: number }
+  /** Rank podľa pravidiel; Poldeci dáva výučba alebo dohratá partia (s botom sa nerátajú v DOHRATE_SQL, preto poPartii). */
+  private rankPodlaPravidiel(id: number, postup: PostupRankov, poPartii: boolean): RankHraca {
+    const r = this.db.prepare(`SELECT vyucba_stav, (${DOHRATE_SQL}) AS dohrate FROM pouzivatelia WHERE id = ?`).get(id) as
+      | { vyucba_stav: string | null; dohrate: number }
       | undefined;
+    const poldeci = poPartii || r?.vyucba_stav === "hotova" || Number(r?.dohrate ?? 0) >= 1;
+    return rankPodlaHviezd(postup, { ...this.hviezdyHraca(id), poldeci });
+  }
+
+  private povys(id: number, postup: PostupRankov, poPartii: boolean): boolean {
+    const r = this.db.prepare("SELECT rola, rola_rucne FROM pouzivatelia WHERE id = ?").get(id) as { rola: string; rola_rucne: number } | undefined;
     if (r === undefined || r.rola_rucne === 1) return false;
     const teraz = rolaZDb(r.rola);
     if (!jeRankHraca(teraz)) return false;
-    const cielovy = rankPodlaPartii(postup, Number(r.dohrate), poPartii);
+    const cielovy = this.rankPodlaPravidiel(id, postup, poPartii);
     if (RANKY_HRACOV.indexOf(cielovy) <= RANKY_HRACOV.indexOf(teraz)) return false;
     this.db.prepare("UPDATE pouzivatelia SET rola = ? WHERE id = ?").run(cielovy, id);
     return true;
   }
 
   /**
-   * Návrat z ručného ranku na automatický: rank sa prepočíta podľa pravidiel
-   * (aj nadol). Kto už bol aspoň Poldeci, ostáva ním — partie s botom sa neukladajú.
+   * Návrat z ručného ranku na automatický: ručný rank sa prepočíta podľa pravidiel
+   * (aj nadol), kto už bol aspoň Poldeci, ostáva ním. Automatický rank sa neznižuje —
+   * Deci a Sedmička získané ešte za partie ostávajú (Michal 2026-10-25: nikoho neznížiť).
    */
   automatickyRank(id: number, postup: PostupRankov): void {
-    const r = this.db.prepare(`SELECT rola, (${DOHRATE_SQL}) AS dohrate FROM pouzivatelia WHERE id = ?`).get(id) as
-      | { rola: string; dohrate: number }
-      | undefined;
+    const r = this.db.prepare("SELECT rola, rola_rucne FROM pouzivatelia WHERE id = ?").get(id) as { rola: string; rola_rucne: number } | undefined;
     if (r === undefined) return;
     const teraz = rolaZDb(r.rola);
     if (!jeRankHraca(teraz)) return;
-    const rank = rankPodlaPartii(postup, Number(r.dohrate), teraz !== "navstevnik");
+    const podlaPravidiel = this.rankPodlaPravidiel(id, postup, false);
+    const dolna: RankHraca = r.rola_rucne === 1 ? (teraz === "navstevnik" ? "navstevnik" : "hrac") : teraz;
+    const rank = RANKY_HRACOV[Math.max(RANKY_HRACOV.indexOf(podlaPravidiel), RANKY_HRACOV.indexOf(dolna))] ?? podlaPravidiel;
     this.db.prepare("UPDATE pouzivatelia SET rola = ?, rola_rucne = 0 WHERE id = ?").run(rank, id);
   }
 

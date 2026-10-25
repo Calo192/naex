@@ -1,6 +1,6 @@
 {
   "verzia": 1,
-  "zapnute": false,
+  "zapnute": true,
   "kategorie": [
     {
       "id": "bitka",
@@ -936,6 +936,25 @@
         "legendarne"
       ],
       "zdroj": "príkaz pass, cigarety pred a po"
+    },
+    {
+      "id": "prva-hra",
+      "nazov": "Prvá hra",
+      "kategoria": "partie",
+      "popis": "Dokonči výučbu u majstra Melichara. Odteraz už nie si návštevník, ale Poldeci.",
+      "metrika": "vyucba",
+      "rozsah": "partia",
+      "prahy": [
+        1
+      ],
+      "proti": "vsetky",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Poldeci",
+      "zriedkavost": [
+        "bezne"
+      ],
+      "zdroj": "server: koniec výučby Prvá hra (vyucba_stav = hotova)"
     },
     {
       "id": "prva-runda",

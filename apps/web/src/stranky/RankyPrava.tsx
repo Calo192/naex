@@ -9,7 +9,11 @@ import { Hlaska } from "../komponenty.tsx";
 
 interface NastaveniePrav {
   readonly matica: Readonly<Record<Pravo, readonly Rola[]>>;
+  /** Percentá všetkých hviezd achievementov (Michal 2026-10-25). */
   readonly postup: { readonly deci: number; readonly sedmicka: number };
+  readonly hviezdySpolu: number;
+  /** Prahy v hviezdach pre uložené percentá; null, keď sú achievementy vypnuté. */
+  readonly prahyHviezd: { readonly deci: number; readonly sedmicka: number } | null;
   readonly prava: readonly Pravo[];
   readonly popis: Readonly<Record<Pravo, string>>;
 }
@@ -57,8 +61,9 @@ export function RankyPrava({ poZmene }: { readonly poZmene: () => void }) {
       </summary>
       {chyba !== null && <Hlaska>{chyba}</Hlaska>}
       <p className="tlmene">
-        Návštevník → Poldeci po prvej dohratej partii (aj proti počítaču) → Deci → Sedmička po dohratých partiách s ľuďmi (vzdané sa
-        nerátajú). Rank nastavený ručne v tabuľke nižšie automatika nemení. Admin a subadmin smú vždy všetko.
+        Návštevník → Poldeci po výučbe (achievement Prvá hra) alebo prvej dohratej partii (aj proti počítaču) → Deci → Sedmička podľa
+        hviezd achievementov, v percentách všetkých hviezd (zaokrúhlené nahor). Automatika rank len zvyšuje — Deci a Sedmička získané
+        ešte za partie ostávajú. Rank nastavený ručne v tabuľke nižšie automatika nemení. Admin a subadmin smú vždy všetko.
       </p>
       <form
         className="ranky-postup"
@@ -68,13 +73,18 @@ export function RankyPrava({ poZmene }: { readonly poZmene: () => void }) {
         }}
       >
         <label>
-          Deci po <input type="number" min={1} value={postup.deci} onChange={(e) => setPostup({ ...postup, deci: e.target.value })} /> partiách
+          Deci od <input type="number" min={1} max={99} value={postup.deci} onChange={(e) => setPostup({ ...postup, deci: e.target.value })} /> % hviezd
+          {n.prahyHviezd !== null && <span className="tlmene"> = {n.prahyHviezd.deci} ★</span>}
         </label>
         <label>
-          Sedmička po <input type="number" min={2} value={postup.sedmicka} onChange={(e) => setPostup({ ...postup, sedmicka: e.target.value })} /> partiách
+          Sedmička od <input type="number" min={2} max={100} value={postup.sedmicka} onChange={(e) => setPostup({ ...postup, sedmicka: e.target.value })} /> % hviezd
+          {n.prahyHviezd !== null && <span className="tlmene"> = {n.prahyHviezd.sedmicka} ★</span>}
         </label>
         <button type="submit">uložiť postup</button>
         {ulozene && <span className="tlmene">uložené</span>}
+        <span className="tlmene">
+          {n.prahyHviezd === null ? "Achievementy sú vypnuté — na Deci a Sedmičku sa nepostupuje." : `Hviezd v achievementoch je spolu ${n.hviezdySpolu}.`}
+        </span>
       </form>
       <div className="tabulka-obal">
         <table className="tabulka ranky-matica">
