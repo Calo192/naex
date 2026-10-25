@@ -351,8 +351,10 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
 /** Body z jedného scorecardu, keby hra skončila teraz — pre oboch hráčov. */
 export interface BodyStarsieho {
   readonly elderId: string;
-  /** body[p] = body hráča p z tohto scorecardu. */
+  /** body[p] = body hráča p za tohto staršieho (v5: 1 + zóny strachu víťazovi súbojov, pri rovnosti obom). */
   readonly body: readonly [number, number];
+  /** vyhry[p] = koľko súbojov (aktívnych podmienok) hráč p pri tomto staršom vyhráva. */
+  readonly vyhry: readonly [number, number];
   /** polozky[p] = každá aktívna podmienka a koľko z nej má hráč p. */
   readonly polozky: readonly [readonly BodPodmienky[], readonly BodPodmienky[]];
 }
@@ -395,7 +397,7 @@ export function bodyTeraz(data: GameData, view: ClientState): BodyTeraz {
     const s = elderScore(data, stav, elder);
     spolu[0] += s.body[0];
     spolu[1] += s.body[1];
-    return { elderId: elder.elderId, body: s.body, polozky: s.polozky };
+    return { elderId: elder.elderId, body: s.body, vyhry: s.vyhry, polozky: s.polozky };
   });
   return { spolu, starsi };
 }

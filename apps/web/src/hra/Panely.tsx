@@ -440,6 +440,8 @@ function Rola({ utoci, tip, frajerina }: { readonly utoci: boolean; readonly tip
 
 export interface HracDoskaProps {
   readonly view: ClientState;
+  /** Dáta sady — priazne do výhľadu limitu (Na zdravie „do dna“, v5). */
+  readonly data: GameData;
   readonly p: PlayerId;
   readonly info: HracInfo | null;
   readonly prahy: { readonly cirhoza: number; readonly dlh: number; readonly exekutor: number; readonly priznaneDlhy: number };
@@ -489,6 +491,7 @@ function porovnanieBodov(moje: number, jeho: number, menoJeho: string): string {
  */
 export function HracDoska({
   view,
+  data,
   p,
   info,
   prahy,
@@ -510,10 +513,14 @@ export function HracDoska({
   // Stavbu šenku hrajú obaja naraz — „na ťahu“ je každý, kto ešte nevybral.
   const naTahu =
     view.koniec === null && (view.faza === "draft" && view.draftStav?.krok === "stavba" ? !view.draftStav.vybral[p] : view.naTahu === p);
-  const naexNaStole = view.strany[0].concat(view.strany[1]).filter((pl) => pl.naexBy === p).length;
+  // NA EX naraz (v5): skryté NA EX vidí len jeho majiteľ (viewFor) — poldeci sa odpíše až pri odkrytí,
+  // no hráč ho už dal, preto ho tu ukážeme ako ležiaci na stole. Zrážka = druhý poldeci na karte (naexBy2).
+  const skryteNaex = (view.pitkaStav?.skryteNaex ?? []).filter((x) => x.hrac === p).length;
+  const naexNaStole = view.strany[0].concat(view.strany[1]).filter((pl) => pl.naexBy === p || pl.naexBy2 === p).length + skryteNaex;
+  const plne = Math.max(0, hrac.poldeciPlne - skryteNaex);
   // Limit, s ktorým hráč vstupuje do Zhromaždenia (so Zastávkou a Vínkom; NA EX na stole sa neráta).
   const limit = limitZhromazdenia(view, p);
-  const buduci = limitBuduceKolo(view, p);
+  const buduci = limitBuduceKolo(view, p, false, data);
   const kto = ja ? "Máš" : "Má";
   const doNovehoPoldeci =
     hrac.cigarety >= KONSTANTY.BARTER_CENA ? "stačí na nový poldeci" : `${KONSTANTY.BARTER_CENA - hrac.cigarety} do nového poldeci`;
@@ -548,7 +555,7 @@ export function HracDoska({
   const priznaneDlhy = hrac.priznane.filter((k) => k.defId === "dlh").length;
 
   const poldeci: ReactNode[] = [];
-  for (let i = 0; i < hrac.poldeciPlne; i++) poldeci.push(<IkonaPoldeci key={`p${i}`} plny />);
+  for (let i = 0; i < plne; i++) poldeci.push(<IkonaPoldeci key={`p${i}`} plny />);
   for (let i = 0; i < hrac.poldeciVypite; i++) poldeci.push(<IkonaPoldeci key={`v${i}`} plny={false} />);
 
   return (
@@ -602,7 +609,7 @@ export function HracDoska({
           hodnota={
             <>
               <span className="poldeci-rad">{poldeci.length > 0 ? poldeci : "—"}</span>
-              <span className="velke-cislo">{hrac.poldeciPlne}</span>
+              <span className="velke-cislo">{plne}</span>
             </>
           }
           pod={
@@ -619,8 +626,8 @@ export function HracDoska({
             nadpis: "Poldeci",
             text: (
               <>
-                {kto} {hrac.poldeciPlne} plné a {hrac.poldeciVypite} vypité
-                {naexNaStole > 0 ? `, ${naexNaStole} leží na stole cez NA EX` : ""}.
+                {kto} {plne} plné a {hrac.poldeciVypite} vypité
+                {naexNaStole > 0 ? `, ${naexNaStole} leží na stole cez NA EX${skryteNaex > 0 ? ` (${skryteNaex} skryto — súper ho uvidí pri odkrytí)` : ""}` : ""}.
                 <span className="tip-stav">
                   {jeCielLokalita(view, "zastavka")
                     ? `Limit vykladania: Zastávka — spoločný pre oboch, ${limit} (súčet limitov oboch hráčov)`
@@ -631,10 +638,10 @@ export function HracDoska({
                   {KONSTANTY.POLDECI_NA_ZACIATKU_KOLA} vypitý doleje sám (bez akcie Poldeci a doliatia cigaretami).
                 </span>
                 <span className="tip-riadok">
-                  V Pitke položíš plný poldeci na Občana alebo Starešinu (NA EX!): zdvojnásobí neaktívne akcie
-                  karty a zruší jej aktívne; limit vykladania ti tým klesne o 1. V Zhromaždení ťa plný poldeci stojí každá ďalšia karta v tom istom ťahu.
-                  Vypitý doleješ za {KONSTANTY.REFILL_CENA} cigarety (nie s Vínkom v Dedičstve), nový získaš barterom ({KONSTANTY.BARTER_CENA}{" "}
-                  cigariet, s priazňou Lakomca menej).
+                  V Pitke položíš plný poldeci na Občana alebo Starešinu (NA EX!) — skryto, súper ho uvidí, keď obaja skončíte Pitku. Zdvojnásobí
+                  neaktívne akcie karty a zruší jej aktívne; limit vykladania ti tým klesne o 1. V Zhromaždení ťa plný poldeci stojí každá ďalšia
+                  karta v tom istom ťahu. Vypitý doleješ za {KONSTANTY.REFILL_CENA} cigarety (nie s Vínkom v Dedičstve), nový získaš barterom
+                  ({KONSTANTY.BARTER_CENA} cigariet). Na konci hry vyhráva súboj Rezerva, kto má viac plných poldeci (Vínko sa ráta ako plný).
                 </span>
               </>
             ),
@@ -687,9 +694,8 @@ export function HracDoska({
                 <span className="tip-riadok">
                   Získavaš ich z aktívnych akcií Cigareta v Pitke (mínus súperove Obmedzenia) a prenášajú sa z kola na kolo.
                   Platíš nimi šenok (1 karta = {KONSTANTY.CENA_SENKU[1]}, 2 karty = {KONSTANTY.CENA_SENKU[2]}) a Dedičstvo (cena rastie pre oboch).
-                  Fajčiť smieš na svojom ťahu v Zhromaždení aj v Pitke: cigareta = karta hneď. V Pitke {KONSTANTY.REFILL_CENA} cigarety dolejú
-                  vypitý poldeci, {KONSTANTY.BARTER_CENA} (s priazňou Lakomca menej) vymeníš za nový plný (stokársky barter). Na konci hry bod za každé{" "}
-                  {KONSTANTY.CIGARIET_NA_KUS}, ak to dovolí scorecard.
+                  Fajčiť smieš len v Pitke, na svojom ťahu: cigareta = karta hneď. V Pitke {KONSTANTY.REFILL_CENA} cigarety dolejú vypitý poldeci,{" "}
+                  {KONSTANTY.BARTER_CENA} vymeníš za nový plný (stokársky barter). Na konci hry vyhráva súboj Cigarety pri staršom, kto ich má viac.
                 </span>
               </>
             ),
@@ -723,13 +729,15 @@ export function HracDoska({
                 <b>po každej Pitke sa pečeň vynuluje</b>.
                 {vyhlad !== null && (
                   <span className="tip-stav">
-                    Nepriznaná Cirhóza ťa na konci hry stojí {bodov(vyhlad.cenaCirhozy)} (dnešné scorecardy).
+                    {vyhlad.cenaCirhozy === 0
+                      ? "Ďalšia nepriznaná Cirhóza by teraz body nezmenila"
+                      : `Ďalšia nepriznaná Cirhóza by ťa teraz stála ${bodov(vyhlad.cenaCirhozy)}`}{" "}
+                    (súboje o Cirhózu pri starších). Nepriznaná ide po bitke do odhadzovacieho balíčka.
                   </span>
                 )}
                 <span className="tip-riadok">
                   Pribúda akciami Poškodenie pečene a Poldeci a NA EX v Pitke; poldeci vypitý v Zhromaždení ju pripíše dopredu do najbližšej Pitky.
-                  NA EX leží na karte až do bitky — jej zdvojené akcie sa vyhodnotia v každej Pitke kola. Prah = {KONSTANTY.PRAH_CIRHOZY_ZAKLAD} +
-                  priazeň Alkoholika.
+                  NA EX leží na karte až do bitky — jej zdvojené akcie sa vyhodnotia v každej Pitke kola. Prah = {prahy.cirhoza}.
                 </span>
               </>
             ),
@@ -759,7 +767,9 @@ export function HracDoska({
                 {hrac.zadlzenie} z {prahy.dlh}
                 {v !== null && v.zadlzenieZoStola > 0 && `, karty na stole pripíšu ${v.zadlzenieZoStola} → ${zadlzeniePo}`}. Za každý celý prah
                 vzniká karta Dlh — <b>hneď sa prizná</b> a na konci hry uberá body aj priznaný.
-                <span className="tip-stav">Jeden Dlh ťa na konci hry stojí {bodov(cenaDlhu)} (dnešné scorecardy).</span>
+                <span className="tip-stav">
+                  {cenaDlhu === 0 ? "Ďalší Dlh by teraz body nezmenil" : `Ďalší Dlh by ťa teraz stál ${bodov(cenaDlhu)}`} (súboje o Dlhy pri starších).
+                </span>
                 <span className="tip-riadok">Pribúda akciami Dlh v Pitke a <b>po každej Pitke sa vynuluje</b>.</span>
               </>
             ),
@@ -774,7 +784,7 @@ export function HracDoska({
               <small>/{prahy.exekutor}</small>
             </span>
           }
-          pod={priznaneDlhy > 0 ? `do Exekútora · ${bodov(priznaneDlhy * cenaDlhu)} na konci` : "do Exekútora"}
+          pod="do Exekútora"
           tip={{
             nadpis: "Priznané Dlhy",
             text: (
@@ -782,9 +792,13 @@ export function HracDoska({
                 {prahy.priznaneDlhy} z {prahy.exekutor}. Keď ich má hráč v bitke aspoň {prahy.exekutor}, prichádza
                 Exekútor: musí odovzdať Nástroj (polovica dlhov potom zhorí), inak prehráva. Kto je pod prahom, spáli v každej bitke 1 priznaný Dlh.
                 <span className="tip-stav">
-                  Na konci hry uberá body aj priznaný Dlh: teraz {bodov(priznaneDlhy * cenaDlhu)} ({bodov(cenaDlhu)} za kus pri dnešných scorecardoch).
+                  Na konci hry sa ráta aj priznaný Dlh — súboj Dlhy pri staršom vyhrá, kto ich má menej
+                  {priznaneDlhy > 0 ? ` (máš ${priznaneDlhy} priznané)` : ""}.
                 </span>
-                <span className="tip-riadok">Prah = 10 + 2 × priazeň Exekútora. Robota spáli 1 priznaný Dlh, Dievčina na vydaj ich spáli viac.</span>
+                <span className="tip-riadok">
+                  Prah = {KONSTANTY.PRAH_EXEKUTORA_ZAKLAD}, súperova priazeň Exekútora ho znižuje. Priazeň Kmotra ti po bitke zníži priznané Dlhy.
+                  Robota spáli 1 priznaný Dlh, Dievčina na vydaj ich spáli viac.
+                </span>
               </>
             ),
           }}
@@ -796,7 +810,11 @@ export function HracDoska({
           aria-pressed={starsi.stlacene}
           aria-controls={starsi.id}
           data-vyucba-prvok="body"
-          title={starsi.stlacene ? "Späť na stôl (Esc)" : "Starší a body na stole — za čo koľko, keby hra skončila teraz"}
+          title={
+            starsi.stlacene
+              ? "Späť na stôl (Esc)"
+              : "Body za starších, keby hra skončila teraz — klik ukáže pri každom staršom súboje podmienok a kto by za neho teraz dostal body"
+          }
           onClick={starsi.prepni}
         >
           <span className="zdroj-nazov">Body {starsi.stlacene ? "▴" : "▾"}</span>

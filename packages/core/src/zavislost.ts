@@ -52,7 +52,8 @@ export interface StavZavislosti {
 export function stavZavislosti(data: GameData, s: StavPreZavislost, p: PlayerId): StavZavislosti {
   const hrac = s.hraci[p];
   let naexNaStole = 0;
-  for (const strana of s.strany) for (const pl of strana) if (pl.naexBy === p) naexNaStole++;
+  // Zrážka NA EX (v5, Výtržník): druhý poldeci na karte je nerest druhého hráča.
+  for (const strana of s.strany) for (const pl of strana) if (pl.naexBy === p || pl.naexBy2 === p) naexNaStole++;
   const teraz = hrac.nerestiTotoKolo + naexNaStole;
   const minule = hrac.nerestiMinuleKolo;
   const abstaky = verejneAbstaky(s, p);

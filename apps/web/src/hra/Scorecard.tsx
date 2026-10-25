@@ -1,22 +1,14 @@
-// Texty k scorecardom staršieho: znamienko bodov, výpočet podmienky a účinok priazne.
-// Scorecardy na stole kreslí LiniaStarsich.tsx (Michal 2026-10-23, #69).
+// Texty k scorecardom staršieho: znamienko bodov a účinok priazne. Súboje podmienok
+// (v5) sú v bodyPodmienok.tsx; scorecardy na stole kreslí LiniaStarsich.tsx (#69).
 
-import type { BodPodmienky, Favour } from "@naex/core";
-import { KONSTANTY, urovenPodmienky } from "@naex/core";
+import type { Favour } from "@naex/core";
+import { KONSTANTY } from "@naex/core";
 
 /** „+4“, „−2“, „0“. */
 export function znamienko(n: number): string {
   return n > 0 ? `+${n}` : n < 0 ? `−${-n}` : "0";
 }
 
-/** Výpočet jednej podmienky pre hráča: „2 starší × 2 = +4“. */
-export function vypocetPodmienky(p: BodPodmienky, bodyZaKus: number): string {
-  const kusy =
-    urovenPodmienky(p.podmienka) !== null
-      ? `${p.kusy} ${p.kusy === 1 ? "starší" : "starších"}`
-      : `${p.kusy} ks`;
-  return `${kusy} × ${bodyZaKus < 0 ? `−${-bodyZaKus}` : bodyZaKus} = ${znamienko(p.body)}`;
-}
 
 /** Čo priazeň danej sily (1 / 2 / 3) dáva — od v5 silou, bez dvojnásobku. PRAVIDLA §10. */
 export const UCINOK_PRIAZNE: Readonly<Record<Favour, (sila: number) => string>> = {

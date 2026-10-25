@@ -31,7 +31,7 @@
     "cigarety",
     "rezerva"
    ],
-   "pozadie": "ocumovatel.jpg"
+   "pozadie": "kmotor.jpg"
   },
   {
    "id": "veriaci",
@@ -131,7 +131,7 @@
     "cigarety",
     "lokality"
    ],
-   "pozadie": "lakomec.jpg"
+   "pozadie": "abstinent.jpg"
   },
   {
    "id": "neprajnik",
@@ -151,7 +151,7 @@
     "cigarety",
     "znepokojenie"
    ],
-   "pozadie": "neprajnik.jpg"
+   "pozadie": "vypalnik.jpg"
   },
   {
    "id": "exekutor",

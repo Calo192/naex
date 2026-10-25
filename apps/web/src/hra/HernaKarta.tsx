@@ -46,12 +46,18 @@ export interface HernaKartaProps {
   readonly hranaVnutorna?: "left" | "right" | undefined;
   /** Sloty vytlačených strán (indexy zhora), ktoré vytvoria spoj — výber miesta na stole. */
   readonly spoj?: { readonly left: readonly number[]; readonly right: readonly number[] } | undefined;
+  /** Zrážka NA EX (v5): karta je počas bitky Výtržník — každá jej akcia je Rana pre majiteľa. */
+  readonly vytrznik?: boolean | undefined;
 }
 
-export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev, onClick, vybrana, bezPopisov, hranaVnutorna, spoj }: HernaKartaProps) {
+export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev, onClick, vybrana, bezPopisov, hranaVnutorna, spoj, vytrznik = false }: HernaKartaProps) {
   const vytlacene = printedSides(data, karta);
   const strana = (ps: "left" | "right"): { roz: RozlozenieStrany; sloty: (SlotStav | null)[] | null } => {
-    const roz = [0, 1, 2, 3].map((k) => vytlacene[ps][k] ?? null) as unknown as RozlozenieStrany;
+    // Výtržník kreslí Rany na miestach vytlačených akcií — hráč má vidieť, čo karta naozaj robí.
+    const roz = [0, 1, 2, 3].map((k) => {
+      const a = vytlacene[ps][k] ?? null;
+      return vytrznik && a !== null ? "Rana" : a;
+    }) as unknown as RozlozenieStrany;
     const sloty =
       ev === undefined || ev === null
         ? null
@@ -64,7 +70,7 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
   const l = strana("left");
   const p = strana("right");
   // NA EX na karte ukazuje štítok nad kartou v línii (HernaPlocha), nie odznak v nej.
-  const odznaky = ev?.vzbura === true ? <span>Vzbura!</span> : undefined;
+  const odznaky = vytrznik ? <span className="odznak-vytrznik">Výtržník!</span> : ev?.vzbura === true ? <span>Vzbura!</span> : undefined;
 
   return (
     <KartaLico

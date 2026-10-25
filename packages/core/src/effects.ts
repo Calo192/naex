@@ -11,7 +11,7 @@ import type { GameData } from "./data.ts";
 import { defOf } from "./data.ts";
 import type { GameState } from "./engine.ts";
 import type { ElderState } from "./elders.ts";
-import { prebudenyPre } from "./elders.ts";
+import { favourStarsieho, prebudenyPre, priazenHraca, priazenSila } from "./elders.ts";
 import type { CardInstance } from "./types.ts";
 import type { LineEval, PlacedCard } from "./partia.ts";
 import { rataSaDoPrevahy, spojePsa } from "./partia.ts";
@@ -313,12 +313,22 @@ export function vlastnyLimitZhromazdenia(state: StavPoldeci, p: PlayerId, zmenaP
  * Nevie o akcii Poldeci, Krčmárke, doliatí cigaretami ani o budúcej Zastávke —
  * ukazuje, s čím hráč ráta, ak nič z toho nepríde. `naex` = dá teraz NA EX.
  */
-export function limitBuduceKolo(state: StavPoldeci, p: PlayerId, naex = false): number {
+export function limitBuduceKolo(state: StavPoldeci, p: PlayerId, naex = false, data?: GameData): number {
   const h = state.hraci[p];
-  const naStole = state.strany.flat().filter((pl) => pl.naexBy === p).length + (naex ? 1 : 0);
-  const plne = h.poldeciPlne - (naex ? 1 : 0);
-  const dolieva = Math.min(KONSTANTY.POLDECI_NA_ZACIATKU_KOLA, h.poldeciVypite + naStole);
+  // Zrážka NA EX (v5, Výtržník): druhý poldeci na karte je toho druhého hráča.
+  const naStole = state.strany.flat().filter((pl) => pl.naexBy === p || pl.naexBy2 === p).length + (naex ? 1 : 0);
+  // Na zdravie „do dna“ (Alkoholik v5): poldeci z toľkých NA EX, aká je sila priazne, sa po bitke
+  // vráti plný (vypiPoldeci) — bez dát sady sa priazeň nepozná, náhľad ju neráta.
+  const vratia = data === undefined ? 0 : Math.min(naStole, silaDoDna(data, state, p));
+  const plne = h.poldeciPlne - (naex ? 1 : 0) + vratia;
+  const dolieva = Math.min(KONSTANTY.POLDECI_NA_ZACIATKU_KOLA, h.poldeciVypite + naStole - vratia);
   return plne + dolieva + 1 + limitBonus(state, p);
+}
+
+/** Sila priazne Alkoholika („do dna“) hráča p — koľko poldeci z jeho NA EX sa za kolo vráti plných. */
+export function silaDoDna(data: GameData, state: Pick<VerejnyStav, "starsi">, p: PlayerId): number {
+  const e = state.starsi.find((x) => favourStarsieho(data, x) === "ALKOHOLIK" && priazenHraca(x) === p);
+  return e === undefined ? 0 : priazenSila(e);
 }
 
 /**

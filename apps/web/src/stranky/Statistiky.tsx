@@ -281,7 +281,10 @@ function AkcieVBitkach({ akcie, bitky }: { readonly akcie: StatistikyHraca["akci
   );
 }
 
-/** Body podľa podmienok scorecardov — kladné doprava, záporné (dlh, cirhóza) doľava od nuly. */
+/**
+ * Podmienky scorecardov — kladné doprava, záporné (dlh, cirhóza) doľava od nuly. Do v4 body
+ * za podmienku, od v5 vyhraté súboje (body dáva starší, nie podmienka — statistiky.ts).
+ */
 function BodyPodla({ body }: { readonly body: StatistikyHraca["bodyPodla"] }) {
   const { sada } = useSada();
   const ikony = sada?.ikonyBodovania ?? [];
@@ -447,7 +450,7 @@ export function Statistiky({ profil, vlastny }: { readonly profil: ProfilHraca; 
         <GrafFrajeriny historia={profil.historia} />
       </section>
 
-      <Sekcia siroka nazov="Bodovanie" ikona={<span className="stat-ikona-text">★</span>} popis="Body zo záverečného bodovania podľa podmienok scorecardov starších.">
+      <Sekcia siroka nazov="Bodovanie" ikona={<span className="stat-ikona-text">★</span>} popis="Body zo záverečného bodovania. Pod tým podmienky scorecardov: v partiách do v4 body za podmienku, od v5 vyhraté súboje pri starších.">
         <Udaj nazov="bodov spolu" hodnota={cislo(s.body)} vyrazny />
         <Udaj nazov="na bodovanú partiu" hodnota={priemer(s.body, s.bodovanePartie)} pomoc={`${s.bodovanePartie} ${tvar(s.bodovanePartie, "partia sa skončila", "partie sa skončili", "partií sa skončilo")} záverečným bodovaním.`} />
         <Udaj nazov="najviac v partii" hodnota={cislo(s.najviacBodov)} />

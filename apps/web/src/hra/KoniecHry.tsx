@@ -75,7 +75,7 @@ export function KoniecHry({ view, data, mena, menoKarty, frajerina, achievementy
               ja={ja}
               menoSupera={mena[su]}
               menoKarty={menoKarty}
-              nadpis="Body po starších — každá aktívna podmienka boduje obom"
+              nadpis="Vyúčtovanie po starších — kto vyhrá viac súbojov, tomu dá starší body (rovnosť = obom)"
             />
           </div>
         )}

@@ -1869,6 +1869,60 @@ button:disabled .cena {
   font-weight: 400;
 }
 
+/* v5: riadok na staršieho — súboje ako štítky (víťaz farbou), body za staršieho vpravo. */
+/* Všetko v jednom riadku — 8 starších sa zmestí aj na nízky notebook. */
+.rozpis-v5 tbody th,
+.rozpis-v5 td.cislo {
+  white-space: nowrap;
+}
+
+.rozpis-v5 tbody th small,
+.rozpis-v5 td.cislo small {
+  margin-left: 5px;
+  font-size: 0.68rem;
+}
+
+.rozpis-v5 .rozpis-suboje {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 4px;
+}
+
+.rozpis-suboj {
+  padding: 0 6px;
+  border-radius: 99px;
+  border: 1px solid var(--okraj);
+  font-size: 0.75rem;
+  line-height: 1.5;
+  white-space: nowrap;
+  color: var(--tlmeny);
+  font-variant-numeric: tabular-nums;
+}
+
+.rozpis-suboj.moje {
+  border-color: var(--ja);
+}
+
+.rozpis-suboj.superove {
+  border-color: var(--su);
+}
+
+.rozpis-suboj b {
+  font-weight: 500;
+}
+
+.rozpis-suboj b.vyhral {
+  font-weight: 800;
+}
+
+.rozpis-suboj.moje b.vyhral {
+  color: var(--ja);
+}
+
+.rozpis-suboj.superove b.vyhral {
+  color: var(--su);
+}
+
 .rozpis-bodov tfoot > tr > * {
   border-top: 2px solid var(--okraj);
   font-weight: 700;
@@ -2219,6 +2273,15 @@ button.dlzka-volba.aktivna {
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
 }
 
+/* Vyúčtovanie v5 (riadok na staršieho so súbojmi) potrebuje šírku, nie výšku. */
+.koniec-okno:has(.rozpis-v5) {
+  width: min(1040px, 100%);
+}
+
+.rozpis-bodov.rozpis-v5 {
+  max-width: none;
+}
+
 .koniec-okno.vyhra {
   border-top-color: var(--zelena);
 }
@@ -2259,7 +2322,8 @@ button.dlzka-volba.aktivna {
 }
 
 .koniec-rozpis {
-  max-height: 46vh;
+  /* Vyúčtovanie v5 má riadok na staršieho — na nízkom notebooku smie zabrať, čo okno pustí. */
+  max-height: max(46vh, calc(100vh - 310px));
   overflow-y: auto;
 }
 
@@ -3537,6 +3601,30 @@ button.pecat-potvrd:disabled::after {
   width: 15px;
   height: 15px;
   fill: #ffd08a;
+}
+
+/* NA EX naraz (v5): moje skryté NA EX — súper ho nevidí, preto prerušovaný okraj. */
+.naex-nad.naex-skryte {
+  background: var(--tma);
+  border: 1px dashed var(--cervena-svetla);
+}
+
+/* Výtržník (zrážka NA EX): na prvý pohľad iná karta — červený okraj a pečiatka. */
+.naex-nad.vytrznik-stitok {
+  background: var(--cervena);
+  border-color: var(--cervena-svetla);
+  text-transform: uppercase;
+}
+
+.s-lupou.vytrznik .kl {
+  outline: 3px solid var(--cervena);
+  outline-offset: 1px;
+}
+
+.kl-odznaky > .odznak-vytrznik {
+  background: var(--cervena);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 /* Na karte už NA EX je — štítok „NA EX“ (dá sa dať) by sa s ním prekrýval. */
@@ -5045,6 +5133,43 @@ button.auto-hotovo-odkaz {
   color: var(--cervena-text);
 }
 
+.ls-odznak.nula {
+  color: var(--slaby-text);
+}
+
+/* Kto by za staršieho teraz dostal body (v5) — pečiatka v hlavičke scorecardu. */
+.ls-boduje {
+  flex: none;
+  padding: 0 5px;
+  border-radius: 99px;
+  font: 800 0.66rem/1.35 var(--pismo);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  border: 1px solid currentColor;
+}
+
+.ls-boduje.moje {
+  color: var(--ja);
+}
+
+.ls-boduje.superove {
+  color: var(--su);
+}
+
+.ls-boduje.obaja {
+  color: var(--akcent-svetly);
+}
+
+.ls-suboje {
+  flex: none;
+  opacity: 1;
+  color: var(--slaby-text);
+}
+
+.ls-sc-hlava > .ls-boduje {
+  margin-left: auto;
+}
+
 .ls-portret {
   position: relative;
   min-height: 0;
@@ -5195,6 +5320,60 @@ button.auto-hotovo-odkaz {
 .linia-starsich.pohlad-su .ls-body .superove {
   font-weight: 800;
   opacity: 1;
+}
+
+/* Pohoršenie oboma smermi (v5): smer vyberá tlačidlo, nie klik na celý scorecard. */
+.ls-sc.klik.smery {
+  cursor: default;
+}
+
+.ls-smery {
+  display: flex;
+  gap: 4px;
+}
+
+.ls-smer {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 1px 4px;
+  border-radius: 6px;
+  border: 1px solid var(--okraj);
+  background: var(--pozadie);
+  color: var(--text);
+  font: inherit;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.ls-smer.ja {
+  border-color: var(--ja);
+}
+
+.ls-smer.su {
+  border-color: var(--su);
+}
+
+.ls-smer.ja:hover,
+.ls-smer.ja.nahl,
+.ls-smer.ja:focus-visible {
+  outline: none;
+  background: color-mix(in srgb, var(--ja) 28%, var(--pozadie));
+}
+
+.ls-smer.su:hover,
+.ls-smer.su.nahl,
+.ls-smer.su:focus-visible {
+  outline: none;
+  background: color-mix(in srgb, var(--su) 28%, var(--pozadie));
+}
+
+.ls-smer:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  background: none;
 }
 
 .ls-dovod {
@@ -5407,9 +5586,6 @@ button.auto-hotovo-odkaz {
   right: auto;
 }
 
-.balicek-prehra {
-  margin: 0;
-}
 
 .balicek-skupina h3 {
   margin: 0 0 8px;
@@ -5610,6 +5786,16 @@ button.auto-hotovo-odkaz {
 .lst-body {
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+}
+
+.lst-podmienky li.vyhravam .lst-body {
+  color: var(--ja);
+  font-weight: 700;
+}
+
+.lst-podmienky li.prehravam .lst-body {
+  color: var(--su);
+  font-weight: 700;
 }
 
 .lst-spolu {

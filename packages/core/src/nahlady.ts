@@ -6,7 +6,9 @@
 
 import type { PlayerId } from "./types.ts";
 import type { GameData } from "./data.ts";
-import { cigaretyZPitky, lineState, nahladPitky, paleneDlhyVBitke, pohorseniaVBitke, poskodenieBitky } from "./engine.ts";
+import { cigaretyZPitky, lineState, nahladPitky, paleneDlhyVBitke, pohorseniaVBitke, poskodenieBitky, silaPriazne, svokraZaNaex } from "./engine.ts";
+import { silaDoDna } from "./effects.ts";
+import { opponentOf } from "./types.ts";
 import { evaluateLine } from "./partia.ts";
 import { cenaPatronatu, MARKER_STRED } from "./elders.ts";
 import type { ClientState } from "./view.ts";
@@ -135,6 +137,59 @@ export function dopadyNahladu(data: GameData, pred: ClientState, po: ClientState
     };
   };
   return [pre(0), pre(1)];
+}
+
+/**
+ * Čo jedno ďalšie NA EX hráča p zúčtuje pri odkrytí (v5, NA EX naraz) — tým istým
+ * poradím ako odhalNaex v motore: najprv súperove Svokry, potom Výpalné zo zvyšku
+ * cigariet. `doDna`: poldeci z neho sa po bitke vráti plný (Na zdravie, Alkoholik).
+ * Súperove skryté NA EX náhľad nepozná, preto zrážku (Výtržník) nesľubuje.
+ */
+export interface OdkrytieNaex {
+  /** Cigarety, ktoré za toto NA EX ukradnú súperove Svokry. */
+  readonly svokra: number;
+  /** Cigarety, ktoré za toto NA EX zaplatíš súperovi (Výpalné), najviac koľko ti ostane. */
+  readonly vypalne: number;
+  readonly doDna: boolean;
+}
+
+export function odkrytieNaex(data: GameData, view: ClientState, p: PlayerId): OdkrytieNaex {
+  const cig = view.hraci[p].cigarety;
+  const svokra = svokraZaNaex(data, view, p, cig);
+  const vypalne = Math.min(silaPriazne(data, view, "NEPRAJNIK", opponentOf(p)), cig - svokra);
+  const linia = view.strany.flat();
+  const naStole =
+    linia.filter((pl) => pl.naexBy === p || pl.naexBy2 === p).length +
+    view.zaverecne.filter((z) => z.naexBy === p && !linia.some((pl) => pl.card.uid === z.uid)).length;
+  return { svokra, vypalne: Math.max(0, vypalne), doDna: naStole < silaDoDna(data, view, p) };
+}
+
+/**
+ * Pohľad hráča `view.ja` s jeho skrytými NA EX (v5) tak, ako ich motor zúčtuje
+ * pri odkrytí: poldeci na karte, pečeň +1, Svokra a Výpalné — základ náhľadu
+ * ďalšieho NA EX a výhľadov Pitky. Súperove skryté NA EX klient nevidí.
+ */
+export function sMojimiSkrytymiNaex(data: GameData, view: ClientState): ClientState {
+  const ja = view.ja;
+  const skryte = (view.pitkaStav?.skryteNaex ?? []).filter((x) => x.hrac === ja);
+  let v = view;
+  for (const x of skryte) {
+    const kde = v.strany.findIndex((st) => st.some((pl) => pl.card.uid === x.uid && pl.naexBy === undefined));
+    // Súperova skrytá Záverečná nie je v strany — NA EX na ňu nesie jej náhradné uid.
+    const naRub = kde === -1 && v.zaverecne.some((z) => z.uid === x.uid && z.naexBy === null);
+    if (kde === -1 && !naRub) continue;
+    const cena = odkrytieNaex(data, v, ja);
+    const strany: [ClientState["strany"][0], ClientState["strany"][1]] = [v.strany[0], v.strany[1]];
+    if (kde !== -1) strany[kde as PlayerId] = v.strany[kde as PlayerId].map((pl) => (pl.card.uid === x.uid ? { ...pl, naexBy: ja } : pl));
+    const zaverecne = naRub ? v.zaverecne.map((z) => (z.uid === x.uid ? { ...z, naexBy: ja } : z)) : v.zaverecne;
+    const hraci: [ClientState["hraci"][0], ClientState["hraci"][1]] = [v.hraci[0], v.hraci[1]];
+    const su = opponentOf(ja);
+    const h = hraci[ja];
+    hraci[ja] = { ...h, poldeciPlne: Math.max(0, h.poldeciPlne - 1), pecen: h.pecen + 1, cigarety: h.cigarety - cena.svokra - cena.vypalne };
+    hraci[su] = { ...hraci[su], cigarety: hraci[su].cigarety + cena.svokra + cena.vypalne };
+    v = { ...v, strany, hraci, zaverecne };
+  }
+  return v;
 }
 
 /**

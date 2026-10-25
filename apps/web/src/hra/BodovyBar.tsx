@@ -1,7 +1,8 @@
 // Bodový bar (Michal 2026-10-23): po kliku na Body ukáže stôl líniu starších
-// a oba bary hráčov sa prepnú zo zdrojov na body — jedna dlaždica na typ
-// podmienky so súčtom bodov zo všetkých starších. Prejdenie myšou po dlaždici
-// zvýrazní v línii starších, u ktorých tá podmienka boduje (aj podmienku samu).
+// a oba bary hráčov sa prepnú zo zdrojov na súboje — jedna dlaždica na typ
+// podmienky: koľko jej súbojov pri starších hráč vyhráva (v5 sa za podmienku
+// body nedávajú, dáva ich starší víťazovi väčšiny súbojov). Prejdenie myšou po
+// dlaždici zvýrazní v línii starších, u ktorých je podmienka aktívna.
 // Body a Karty ostávajú na svojom mieste.
 
 import type { CSSProperties } from "react";
@@ -10,7 +11,7 @@ import { ALL_PODMIENKY, podmienkyStarsieho } from "@naex/core";
 import type { IkonaBodovania } from "@naex/tvorba";
 import { IkonaPodmienky } from "../karta/IkonaPodmienky.tsx";
 import { NAZOV_PODMIENKY } from "../karta/podmienky.ts";
-import { znamienko } from "./Scorecard.tsx";
+import { jednotka, subojePoPodmienkach } from "./bodyPodmienok.tsx";
 
 /** Krátke názvy do dlaždice — dlhé (NAZOV_PODMIENKY) sú v nápovede. */
 export const KRATKO_PODMIENKA: Readonly<Record<Podmienka, string>> = {
@@ -42,44 +43,47 @@ export interface BodovyBarProps {
 
 interface Typ {
   readonly podmienka: Podmienka;
-  readonly body: number;
-  /** Starší, u ktorých podmienka boduje (aktívna), s bodmi pre tohto hráča. */
-  readonly aktivne: readonly { readonly meno: string; readonly body: number }[];
+  /** Súboje tejto podmienky: koľko vyhráva hráč, koľko súper, koľko ich je. */
+  readonly vyhry: number;
+  readonly prehry: number;
+  readonly pocet: number;
+  /** Starší, u ktorých je podmienka aktívna, a ich súboj (hodnota hráča : súpera). */
+  readonly aktivne: readonly { readonly meno: string; readonly ja: number; readonly su: number; readonly vitaz: "ja" | "su" | null }[];
   readonly neaktivne: number;
   readonly kusy: number;
 }
 
-/** Súčty podmienok cez všetkých starších pre hráča p — len typy, ktoré na scorecardoch v hre sú. */
+/** Súboje podmienok cez všetkých starších pre hráča p — len typy, ktoré na scorecardoch v hre sú. */
 export function typyPodmienok(data: GameData, starsi: readonly ElderState[], body: BodyTeraz, p: PlayerId, meno: (e: ElderState) => string): Typ[] {
+  const su: PlayerId = p === 0 ? 1 : 0;
+  const suboje = subojePoPodmienkach(body);
   return ALL_PODMIENKY.flatMap((podmienka): Typ[] => {
-    let sucet = 0;
-    let kusy = 0;
-    let neaktivne = 0;
-    let vHre = false;
-    const aktivne: { meno: string; body: number }[] = [];
-    for (const e of starsi) {
-      const tu = podmienkyStarsieho(data, e).filter((x) => x.podmienka === podmienka);
-      if (tu.length === 0) continue;
-      vHre = true;
-      const polozky = body.starsi.find((b) => b.elderId === e.elderId)?.polozky[p].filter((x) => x.podmienka === podmienka) ?? [];
-      const b = polozky.reduce((s, x) => s + x.body, 0);
-      if (tu.some((x) => x.aktivna)) aktivne.push({ meno: meno(e), body: b });
-      else neaktivne++;
-      sucet += b;
-      kusy = Math.max(kusy, ...polozky.map((x) => x.kusy));
-    }
-    return vHre ? [{ podmienka, body: sucet, aktivne, neaktivne, kusy }] : [];
+    const vHre = starsi.filter((e) => podmienkyStarsieho(data, e).some((x) => x.podmienka === podmienka));
+    if (vHre.length === 0) return [];
+    const t = suboje.get(podmienka);
+    const neaktivne = vHre.filter((e) => !podmienkyStarsieho(data, e).some((x) => x.podmienka === podmienka && x.aktivna)).length;
+    const aktivne = (t?.starsi ?? []).map(({ elderId, suboj }) => {
+      const e = starsi.find((x) => x.elderId === elderId);
+      return {
+        meno: e === undefined ? elderId : meno(e),
+        ja: suboj.hodnoty[p],
+        su: suboj.hodnoty[su],
+        vitaz: suboj.vitaz === null ? null : suboj.vitaz === p ? ("ja" as const) : ("su" as const),
+      };
+    });
+    return [{ podmienka, vyhry: t?.vyhry[p] ?? 0, prehry: t?.vyhry[su] ?? 0, pocet: t?.pocet ?? 0, aktivne, neaktivne, kusy: t?.hodnoty[p] ?? 0 }];
   });
 }
 
 export function BodovyBar({ p, data, starsi, body, ikony, mena, menoStarsieho, zvyraznena, zvyrazni }: BodovyBarProps) {
   const typy = typyPodmienok(data, starsi, body, p, menoStarsieho);
+  const su: PlayerId = p === 0 ? 1 : 0;
   return (
-    <div className="bodovy-bar" style={{ "--n": typy.length } as CSSProperties} role="list" aria-label={`Body podľa podmienok — ${mena[p]}`}>
+    <div className="bodovy-bar" style={{ "--n": typy.length } as CSSProperties} role="list" aria-label={`Súboje podľa podmienok — ${mena[p]}`}>
       {typy.map((t) => {
         const popis = [
-          `${NAZOV_PODMIENKY[t.podmienka]} — ${mena[p]} ${znamienko(t.body)} b spolu`,
-          ...t.aktivne.map((a) => `${a.meno}: ${znamienko(a.body)}`),
+          `${NAZOV_PODMIENKY[t.podmienka]} — ${mena[p]} vyhráva ${t.vyhry} z ${t.pocet} súbojov`,
+          ...t.aktivne.map((a) => `${a.meno}: ${a.ja} : ${a.su} ${a.vitaz === null ? "rovnosť" : a.vitaz === "ja" ? `vyhráva ${mena[p]}` : `vyhráva ${mena[su]}`}`),
           ...(t.neaktivne > 0 ? [`neaktívna u ${t.neaktivne} ${t.neaktivne === 1 ? "staršieho" : "starších"} (karta na ukazovateli tu nemá akciu)`] : []),
         ].join("\n");
         return (
@@ -87,7 +91,7 @@ export function BodovyBar({ p, data, starsi, body, ikony, mena, menoStarsieho, z
             key={t.podmienka}
             role="listitem"
             tabIndex={0}
-            className={`zdroj bodova-dlazdica ${t.body > 0 ? "plus" : t.body < 0 ? "minus" : ""}${zvyraznena === t.podmienka ? " zvyraznena" : ""}`}
+            className={`zdroj bodova-dlazdica ${t.vyhry > t.prehry ? "plus" : t.vyhry < t.prehry ? "minus" : ""}${zvyraznena === t.podmienka ? " zvyraznena" : ""}`}
             title={popis}
             onMouseEnter={() => zvyrazni(t.podmienka)}
             onMouseLeave={() => zvyrazni(null)}
@@ -97,10 +101,13 @@ export function BodovyBar({ p, data, starsi, body, ikony, mena, menoStarsieho, z
             <span className="zdroj-nazov">{KRATKO_PODMIENKA[t.podmienka]}</span>
             <span className="zdroj-hodnota">
               <IkonaPodmienky podmienka={t.podmienka} ikony={ikony} />
-              <span className="velke-cislo">{znamienko(t.body)}</span>
+              <span className="velke-cislo">
+                {t.vyhry}
+                <small>/{t.pocet}</small>
+              </span>
             </span>
             <span className="zdroj-pod">
-              {t.aktivne.length === 0 ? "nikde neboduje" : `boduje u ${t.aktivne.length} · ${t.kusy} ks`}
+              {t.pocet === 0 ? "nikde aktívna" : `súbojov · má ${t.kusy} ${jednotka(t.podmienka, t.kusy)}`}
             </span>
           </div>
         );

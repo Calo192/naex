@@ -1,29 +1,107 @@
-// Body po bodovacích podmienkach (lokality, starší, cigarety, zóny strachu,
-// Dlhy, Cirhóza) — z bodyTeraz, spoločné pre všetky zobrazenia skóre:
-// dlaždice v bare hráča aj krčmové účty (preferencia v profile, Michal 2026-10-22).
-// Predtým to rátal Scoreboard nad staršími (Michal 2026-10-18).
+// Body za starších (pravidlá v5, návrh Michala 2026-10-24, docs/pravidla-v5/davka.md):
+// pri každom staršom je každá aktívna podmienka súboj hráčov — kto ich vyhrá viac,
+// tomu dá starší body (1 + zóny strachu, v ktorých sa ho bojí; s priazňou či v strede 1),
+// pri rovnosti obom. Z bodyTeraz, spoločné pre línie starších, bodový bar, koniec hry
+// a krčmový účet. Do v4 sa bodovalo za kusy — staré partie číta KrcmovyUcet po starom.
 
-import type { BodPodmienky, BodyTeraz, GameData, Podmienka, PlayerId } from "@naex/core";
-import { KONSTANTY } from "@naex/core";
-import type { TipObsah } from "../karta/Tip.tsx";
-import { NAZOV_PODMIENKY } from "../karta/podmienky.ts";
-import { vypocetPodmienky, znamienko } from "./Scorecard.tsx";
+import type { BodPodmienky, BodyStarsieho, BodyTeraz, ElderState, Podmienka, PlayerId } from "@naex/core";
+import { priazenHraca, strachZ, urovenPodmienky } from "@naex/core";
 
 export const PORADIE_PODMIENOK: readonly Podmienka[] = ["lokality", "starsi", "cigarety", "rezerva", "znepokojenie", "strach", "vydesenie", "dlh", "cirhoza", "abstak"];
 
-/** Za čo podmienka dáva kusy — prvý riadok nápovedy. */
+/** Čo sa v súboji podmienky porovnáva — prvý riadok nápovedy. */
 export const ZA_CO: Readonly<Record<Podmienka, string>> = {
-  lokality: "Za každú ovládnutú lokalitu (vyhraná bitka o lokalitu).",
-  starsi: "Za každého staršieho získaného patronátom (vyhratá bitka, keď bol tvojou kartou v ruke).",
-  cigarety: `Za každé ${KONSTANTY.CIGARIET_NA_KUS} cigarety, ktoré ti ostanú na konci hry.`,
-  znepokojenie: "Za každého staršieho, ktorý sa ťa bojí aspoň na úrovni 1 (marker v žltej zóne na súperovej polovici).",
-  strach: "Za každého staršieho, ktorý sa ťa bojí aspoň na úrovni 2 (oranžová zóna).",
-  vydesenie: "Za každého vydeseného staršieho (červená krajná pozícia).",
-  dlh: "Za každý tvoj Dlh — aj priznaný. Nový Dlh sa hneď prizná; zbavíš sa ho len pálením v bitke a kartami (Dievčina, Robota, Stryná…).",
-  cirhoza: "Za každú nepriznanú Cirhózu v ruke a v balíčkoch — priznaj ju.",
-  abstak: "Absťáky, ktoré si získal za celú hru — zbavením sa Absťáku neubudnú.",
-  rezerva: "Plné poldeci na konci hry; Vínko v Dedičstve sa ráta ako plný.",
+  lokality: "Vyhrá, kto ovláda viac lokalít (vyhraté bitky o lokalitu).",
+  starsi: "Vyhrá, kto má viac starších získaných patronátom.",
+  cigarety: "Vyhrá, kto má na konci viac cigariet.",
+  znepokojenie: "Vyhrá, koho sa aspoň v žltej zóne bojí viac OSTATNÝCH starších (tento sa neráta).",
+  strach: "Vyhrá, koho sa aspoň v oranžovej zóne bojí viac OSTATNÝCH starších (tento sa neráta).",
+  vydesenie: "Vyhrá, kto vydesil viac OSTATNÝCH starších (červená krajná pozícia).",
+  dlh: "Vyhrá, kto má menej Dlhov — aj priznaných. Zbavíš sa ich pálením v bitke a kartami (Dievčina, Robota, Stryná…).",
+  cirhoza: "Vyhrá, kto má menej nepriznaných Cirhóz v ruke a v balíčkoch.",
+  abstak: "Vyhrá, kto za celú hru získal menej Absťákov — zbavením sa Absťáku neubudnú.",
+  rezerva: "Vyhrá, kto má na konci viac plných poldeci; Vínko v Dedičstve sa ráta ako plný.",
 };
+
+/** Jednotka hodnoty v súboji: zónové podmienky rátajú starších, ostatné kusy. */
+export function jednotka(podmienka: Podmienka, n: number): string {
+  if (urovenPodmienky(podmienka) !== null) return n === 1 ? "starší" : "starších";
+  return "ks";
+}
+
+/** Súboj jednej aktívnej podmienky pri staršom. */
+export interface SubojPodmienky {
+  readonly kluc: string;
+  readonly podmienka: Podmienka;
+  readonly strana: BodPodmienky["strana"];
+  readonly index: BodPodmienky["index"];
+  /** Hodnota hráča 0 a 1 (lokality, cigarety, ostatní starší, ktorí sa boja…). */
+  readonly hodnoty: readonly [number, number];
+  /** Kto súboj vyhráva; null = rovnosť, nevyhrá nikto. */
+  readonly vitaz: PlayerId | null;
+}
+
+/** Súboje staršieho v poradí scorecardu — polozky oboch hráčov idú v tom istom poradí. */
+export function subojeStarsieho(s: BodyStarsieho): SubojPodmienky[] {
+  return s.polozky[0].map((a, i) => {
+    const b = s.polozky[1][i];
+    const vitaz: PlayerId | null = a.body > 0 ? 0 : (b?.body ?? 0) > 0 ? 1 : null;
+    return { kluc: `${s.elderId}/${a.strana}/${a.index}`, podmienka: a.podmienka, strana: a.strana, index: a.index, hodnoty: [a.kusy, b?.kusy ?? 0], vitaz };
+  });
+}
+
+/** Kto body za staršieho teraz dostane: jeden hráč, „obaja“ (rovnosť súbojov), alebo nikto. */
+export function kohoBoduje(s: BodyStarsieho): PlayerId | "obaja" | null {
+  const [a, b] = s.body;
+  if (a > 0 && b > 0) return "obaja";
+  if (a > 0) return 0;
+  if (b > 0) return 1;
+  return null;
+}
+
+/** Prečo hráč p dostane za staršieho práve toľko: „1 + 2 za strach“, „1 (priazeň)“, „1 (stred)“. */
+export function preco(elder: ElderState, p: PlayerId): string {
+  const z = strachZ(elder, p);
+  if (z > 0) return `1 + ${z} za strach`;
+  return priazenHraca(elder) === p ? "1, má jeho priazeň" : "1, marker v strede";
+}
+
+/** Bodovanie v5 má pri každom staršom aj počty vyhratých súbojov — staré partie (v4) nie. */
+export function jeBodovanieV5(body: BodyTeraz): boolean {
+  return body.starsi.every((s) => (s as Partial<BodyStarsieho>).vyhry !== undefined);
+}
+
+/** Súboje jednej podmienky naprieč staršími — pre bodový bar. */
+export interface SubojeTypu {
+  readonly podmienka: Podmienka;
+  /** Koľko súbojov tejto podmienky vyhráva hráč 0 a 1 (zvyšok je rovnosť). */
+  readonly vyhry: readonly [number, number];
+  readonly pocet: number;
+  /** Hodnota hráčov — rovnaká pri každom staršom (okrem zónových, tam sa nepočíta ten starší). */
+  readonly hodnoty: readonly [number, number];
+  readonly starsi: readonly { readonly elderId: string; readonly suboj: SubojPodmienky }[];
+}
+
+/** Súboje podľa podmienky v poradí PORADIE_PODMIENOK; podmienka, ktorá nie je aktívna nikde, chýba. */
+export function subojePoPodmienkach(body: BodyTeraz): Map<Podmienka, SubojeTypu> {
+  const out = new Map<Podmienka, { podmienka: Podmienka; vyhry: [number, number]; pocet: number; hodnoty: [number, number]; starsi: { elderId: string; suboj: SubojPodmienky }[] }>();
+  for (const s of body.starsi) {
+    for (const suboj of subojeStarsieho(s)) {
+      const m = out.get(suboj.podmienka) ?? { podmienka: suboj.podmienka, vyhry: [0, 0], pocet: 0, hodnoty: [0, 0], starsi: [] };
+      m.pocet++;
+      if (suboj.vitaz !== null) m.vyhry[suboj.vitaz]++;
+      m.hodnoty = [Math.max(m.hodnoty[0], suboj.hodnoty[0]), Math.max(m.hodnoty[1], suboj.hodnoty[1])];
+      m.starsi.push({ elderId: s.elderId, suboj });
+      out.set(suboj.podmienka, m);
+    }
+  }
+  return new Map(PORADIE_PODMIENOK.flatMap((p) => {
+    const m = out.get(p);
+    return m === undefined ? [] : [[p, m] as const];
+  }));
+}
+
+// ---- do v4: body za kusy (krčmový účet starých partií) ------------------------------
 
 /** Starší a pozícia podmienky na jeho scorecarde — tá istá podmienka môže byť aktívna dvakrát. */
 export interface ZdrojPodmienky {
@@ -40,7 +118,7 @@ export interface BodyPodmienky {
   readonly zdroje: readonly ZdrojPodmienky[];
 }
 
-/** Súčty po podmienkach v poradí PORADIE_PODMIENOK; podmienka, ktorá nie je aktívna nikde, chýba. */
+/** Súčty po podmienkach (bodovanie v4) v poradí PORADIE_PODMIENOK; podmienka, ktorá nie je aktívna nikde, chýba. */
 export function bodyPoPodmienkach(body: BodyTeraz): Map<Podmienka, BodyPodmienky> {
   const out = new Map<Podmienka, { podmienka: Podmienka; body: [number, number]; kusy: [number, number]; zdroje: ZdrojPodmienky[] }>();
   for (const s of body.starsi) {
@@ -63,39 +141,4 @@ export function bodyPoPodmienkach(body: BodyTeraz): Map<Podmienka, BodyPodmienky
     const m = out.get(p);
     return m === undefined ? [] : [[p, m] as const];
   }));
-}
-
-/** Nápoveda podmienky z pohľadu hráča `ja`: za čo, za kus, a čo z ktorého staršieho má kto. */
-export function tipPodmienky(
-  m: BodyPodmienky,
-  data: GameData,
-  ja: PlayerId,
-  menoSupera: string,
-  menoStarsieho: (elderId: string) => string,
-): TipObsah {
-  const su: PlayerId = ja === 0 ? 1 : 0;
-  const zaKus = data.bodyPodmienok[m.podmienka];
-  const kliatba = m.podmienka === "dlh" || m.podmienka === "cirhoza";
-  const vypocet = (pol: BodPodmienky | null): string => (pol === null ? "0" : vypocetPodmienky(pol, zaKus));
-  return {
-    nadpis: `${NAZOV_PODMIENKY[m.podmienka]} — ty ${znamienko(m.body[ja])}, ${menoSupera} ${znamienko(m.body[su])}`,
-    text: (
-      <>
-        {ZA_CO[m.podmienka]} {zaKus > 0 ? "+" : "−"}
-        {Math.abs(zaKus)} za kus na každom scorecarde, kde je podmienka aktívna — teraz na{" "}
-        {m.zdroje.length === 1 ? "jednom" : `${m.zdroje.length}`}. Boduje obom hráčom.
-        {m.zdroje.map((z) => (
-          <span key={z.kluc} className="tip-riadok">
-            <b>{menoStarsieho(z.elderId)}:</b> ty {vypocet(z.polozky[ja])} · {menoSupera} {vypocet(z.polozky[su])}
-          </span>
-        ))}
-        {kliatba && (
-          <span className="tip-stav">
-            Súperove nepriznané kliatby sa rátajú z toho, čo sa ukázalo na stole (vznik, priznanie, zahodenie) — ktoré karty a kde ležia,
-            nevidíš, ale ich počet áno.
-          </span>
-        )}
-      </>
-    ),
-  };
 }

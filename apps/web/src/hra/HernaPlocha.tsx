@@ -60,7 +60,6 @@ import {
   nahladPitky,
   pocet,
   stavPoPatronate,
-  svokraZaNaex,
   tvar,
   vyhladDlhov,
   cieleVykladania,
@@ -85,6 +84,9 @@ import {
   vykupZoSrotu,
   zakazFajcit,
   zakazNaex,
+  naexZaPitku,
+  odkrytieNaex,
+  sMojimiSkrytymiNaex,
   nahladPosunuMarkera,
   nahladPosunuPrebytkom,
   pohorsenieNaKraj,
@@ -112,7 +114,7 @@ import {
 import type { ActionSums, DopadyNahladu, GameState, KliatbyNahladu, MarkerPos, NahladVylozenia, PolozkaVykladania, Podmienka, Rod, Slot, StranaLinie } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
-import { LiniaStarsich, LupaStarsieho, type StarsiVLinii } from "./LiniaStarsich.tsx";
+import { LiniaStarsich, LupaStarsieho, type StarsiVLinii, type VolbaPosunu } from "./LiniaStarsich.tsx";
 import { PocitadloBitky } from "./PocitadloBitky.tsx";
 import { mediaUrl } from "../lib/api.ts";
 import { useStrazOdchodu } from "../lib/odchod.ts";
@@ -897,11 +899,21 @@ export function HernaPlocha({
       ? view.senok.filter((k) => navrh.uids.includes(k.uid)).slice(0, zoSenkuLimit)
       : [];
 
+  // NA EX naraz (v5): moje skryto vybrané NA EX — server posiela len moje,
+  // na súperovu skrytú Záverečnú s jej náhradným uid. Súperove nevidím.
+  const mojeSkryteNaex = useMemo(
+    () => new Set((view.pitkaStav?.skryteNaex ?? []).filter((x) => x.hrac === ja).map((x) => x.uid)),
+    [view.pitkaStav, ja],
+  );
+  // Pre mňa sú skryté NA EX dané: náhľady a výhľady rátajú s nimi tak, ako ich motor
+  // zúčtuje pri odkrytí (poldeci, pečeň, Svokra, Výpalné — sMojimiSkrytymiNaex).
+  const zaklad = useMemo(() => sMojimiSkrytymiNaex(data, view), [data, view]);
   // Stôl tak, ako by vyzeral po potvrdení návrhu — z neho sa ráta živé
-  // zvýraznenie spojov aj odhad bitky.
+  // zvýraznenie spojov aj odhad bitky. Moje skryté NA EX v ňom ležia na kartách
+  // (pre mňa sú dané), súperove nie — tie sa ukážu až pri odkrytí.
   const { stol, lineEval, odhad, rozpis, hrozby } = useMemo(() => {
-    let strany = view.strany;
-    let hraci = view.hraci;
+    let strany: ClientState["strany"] = zaklad.strany;
+    let hraci = zaklad.hraci;
     for (const x of vylozenia) {
       if (x.ciel === "vlastna" || x.ciel === "superova") {
         const kam = x.ciel === "vlastna" ? ja : super_;
@@ -937,24 +949,33 @@ export function HernaPlocha({
         : ([hrozbaNaex(data, stolBitky, priebeh, 0, abstakyVRuke), hrozbaNaex(data, stolBitky, priebeh, 1, abstakyVRuke)] as const);
     return { stol, lineEval, odhad, rozpis, hrozby };
     // vylozene a lokalitaNavrh sú odvodené len z navrh a view.
-  }, [data, view, navrh, somNaTahu]);
+  }, [data, view, navrh, somNaTahu, zaklad]);
 
   // NA EX na Občana alebo Starešinu v línii — vlastného aj súperovho (Michal 2026-10-18).
   // Súperova Záverečná lícom dole: NA EX na ňu smie vždy (cez náhradné uid, roadmapa #83).
+  // Na kartu s mojím skrytým NA EX druhé nedám (moznostiNaex v jadre).
   const naexCiele = useMemo(
-    () => new Set([...naexCieleVLinii(data, lineState(view), ja), ...view.zaverecne.filter((z) => z.majitel !== ja && z.naexBy === null).map((z) => z.uid)]),
-    [data, view.strany, view.zaverecne, ja],
+    () =>
+      new Set(
+        [...naexCieleVLinii(data, lineState(view), ja), ...view.zaverecne.filter((z) => z.majitel !== ja && z.naexBy === null).map((z) => z.uid)].filter(
+          (uid) => !mojeSkryteNaex.has(uid),
+        ),
+      ),
+    [data, view.strany, view.zaverecne, ja, mojeSkryteNaex],
   );
 
   // Kedy NA EX dať môžem — karty, ktoré ho prijmú, nesú v línii značku.
+  // Skryté NA EX sa rátajú do limitu Pitky aj plných poldeci (poldeci sa odpíše až pri odkrytí).
   const pitka = view.pitkaStav;
+  const naexLimitMinuty = pitka !== null && (pitka.naexPouzity[ja] || (pitka.naexPocet?.[ja] ?? 0) + mojeSkryteNaex.size >= naexZaPitku(view));
   const naexMozny =
     somNaTahu &&
     view.faza === "pitka" &&
     pitka !== null &&
     pitka.reakcia === null &&
-    !pitka.naexPouzity[ja] &&
-    view.hraci[ja].poldeciPlne > 0;
+    !pitka.hotovy[ja] &&
+    !naexLimitMinuty &&
+    view.hraci[ja].poldeciPlne - mojeSkryteNaex.size > 0;
   // Kartu so značkou smieš rovno kliknúť — bez Kostola, ktorý NA EX zakazuje.
   const naexPriamo = naexMozny && !zakazNaex(view);
   // Benzínka: vlastní Občania v línii, z ktorých hráč vyberá, koho zahodí.
@@ -974,6 +995,7 @@ export function HernaPlocha({
   // istý výpočet ako vyhodnotenie (nahladPitky). V Zhromaždení ráta aj poldeci,
   // ktoré navrhnutý ťah vypije.
   const otocenaTeraz = lokalitaNavrh?.otocena ?? view.lokalitaOtocena;
+  // Pečeň zo skrytých NA EX už nesie zaklad (sMojimiSkrytymiNaex).
   const vypijemVTahu = plan?.poldeci ?? 0;
   // Stávka bitky (návrh 3 A): v pásme kola a pri potvrdení pasu.
   const stavka = useMemo(
@@ -982,11 +1004,11 @@ export function HernaPlocha({
   );
   const nahladyPitky = useMemo(() => {
     if (view.koniec !== null || (view.faza !== "zhromazdenie" && view.faza !== "pitka") || stol.ciel === null) return null;
-    const h = view.hraci;
+    const h = zaklad.hraci;
     const hraci: ClientState["hraci"] =
       ja === 0 ? [{ ...h[0], pecen: h[0].pecen + vypijemVTahu }, h[1]] : [h[0], { ...h[1], pecen: h[1].pecen + vypijemVTahu }];
     return nahladPitky(data, { ciel: stol.ciel, ovladnute: view.ovladnute, strany: stol.strany, starsi: view.starsi, hraci, lokalitaOtocena: otocenaTeraz, vizia: view.vizia });
-  }, [data, view, stol, ja, vypijemVTahu, otocenaTeraz]);
+  }, [data, view, stol, ja, vypijemVTahu, otocenaTeraz, zaklad]);
   /** Body jednej Cirhózy a jedného Dlhu na konci hry pri dnešných scorecardoch (záporné). */
   const cenyKliatob = useMemo(
     () =>
@@ -1001,7 +1023,7 @@ export function HernaPlocha({
   // Robota a Dievčina na vydaj nespália — rovnaký stôl ako výhľad Pitky.
   const dlhyBitka = useMemo(() => {
     if (nahladyPitky === null || stol.ciel === null) return null;
-    const h = view.hraci;
+    const h = zaklad.hraci;
     const hraci: ClientState["hraci"] =
       ja === 0 ? [{ ...h[0], pecen: h[0].pecen + vypijemVTahu }, h[1]] : [h[0], { ...h[1], pecen: h[1].pecen + vypijemVTahu }];
     const v = vyhladDlhov(data, { ciel: stol.ciel, ovladnute: view.ovladnute, strany: stol.strany, starsi: view.starsi, hraci, lokalitaOtocena: otocenaTeraz, vizia: view.vizia }, dalsiePitky);
@@ -1009,7 +1031,7 @@ export function HernaPlocha({
       const teraz = view.hraci[p].priznane.filter((k) => k.defId === "dlh").length;
       return { pali: v[p].kapacita, ostane: v[p].poBitke - Math.max(0, teraz - v[p].kapacita) };
     }) as [VyhladPitky["dlhyBitka"], VyhladPitky["dlhyBitka"]];
-  }, [nahladyPitky, stol, view, ja, vypijemVTahu, data, otocenaTeraz, dalsiePitky]);
+  }, [nahladyPitky, stol, view, ja, vypijemVTahu, data, otocenaTeraz, dalsiePitky, zaklad]);
   const vyhladPitky = (p: PlayerId): VyhladPitky | null =>
     nahladyPitky === null || dlhyBitka === null
       ? null
@@ -1108,6 +1130,10 @@ export function HernaPlocha({
         readonly dopady: readonly [DopadyNahladu, DopadyNahladu];
         /** Koľko cigariet mi za toto NA EX ukradnú súperove Svokry. */
         readonly svokra: number;
+        /** Výpalné (v5): koľko cigariet za toto NA EX zaplatím súperovi. */
+        readonly vypalne: number;
+        /** Na zdravie (v5): poldeci z tohto NA EX sa mi po bitke vráti plný. */
+        readonly doDna: boolean;
         readonly majitel: PlayerId;
         readonly strana: PlayerId;
         readonly pozicia: number;
@@ -1124,8 +1150,8 @@ export function HernaPlocha({
       const placed = view.strany[strana][index];
       if (placed === undefined) continue;
       const strany: ClientState["strany"] = [
-        view.strany[0].map((pl) => (pl.card.uid === uid ? { ...pl, naexBy: ja } : pl)),
-        view.strany[1].map((pl) => (pl.card.uid === uid ? { ...pl, naexBy: ja } : pl)),
+        stol.strany[0].map((pl) => (pl.card.uid === uid ? { ...pl, naexBy: ja } : pl)),
+        stol.strany[1].map((pl) => (pl.card.uid === uid ? { ...pl, naexBy: ja } : pl)),
       ];
       const ev = evaluateLine(data, { ...lineState(view), strany });
       const d = poskodenieBitky(data, { ...stol, strany }, ev.sums, ja === 0 ? [mojeAbstaky, 0] : [0, mojeAbstaky]);
@@ -1149,16 +1175,21 @@ export function HernaPlocha({
         }
       }
       // Kliatby: NA EX pripíše pečeň +1 tomu, kto ho dal, a zmení línie — porovnaj stôl pred a po.
-      const h = view.hraci;
-      const hraci: ClientState["hraci"] = ja === 0 ? [{ ...h[0], pecen: h[0].pecen + 1 }, h[1]] : [h[0], { ...h[1], pecen: h[1].pecen + 1 }];
-      const pred = { ciel: stol.ciel, ovladnute: view.ovladnute, strany: view.strany, starsi: view.starsi, hraci: view.hraci, lokalitaOtocena: view.lokalitaOtocena, vizia: view.vizia };
+      // Cigarety pri odkrytí (v5): súperove Svokry a Výpalné — tým istým poradím ako motor (odkrytieNaex).
+      const odkrytie = odkrytieNaex(data, zaklad, ja);
+      const platim = odkrytie.svokra + odkrytie.vypalne;
+      const h = zaklad.hraci;
+      const hraci: ClientState["hraci"] =
+        ja === 0
+          ? [{ ...h[0], pecen: h[0].pecen + 1, poldeciPlne: h[0].poldeciPlne - 1, cigarety: h[0].cigarety - platim }, { ...h[1], cigarety: h[1].cigarety + platim }]
+          : [{ ...h[0], cigarety: h[0].cigarety + platim }, { ...h[1], pecen: h[1].pecen + 1, poldeciPlne: h[1].poldeciPlne - 1, cigarety: h[1].cigarety - platim }];
+      const pred = { ciel: stol.ciel, ovladnute: view.ovladnute, strany: zaklad.strany, starsi: view.starsi, hraci: zaklad.hraci, lokalitaOtocena: view.lokalitaOtocena, vizia: view.vizia };
       const kliatby = kliatbyNahladu(data, pred, { ...pred, strany, hraci }, dalsiePitky, cenyKliatob);
-      const dopady = dopadyNahladu(data, view, { ...view, strany, hraci }, dalsiePitky);
-      const svokra = svokraZaNaex(data, view, ja, view.hraci[ja].cigarety);
-      out.set(uid, { tuhe: d.tuhe, zmeny, vzorec, kliatby, dopady, svokra, majitel: placed.playedBy, strana, pozicia: index + 1 });
+      const dopady = dopadyNahladu(data, zaklad, { ...zaklad, strany, hraci }, dalsiePitky);
+      out.set(uid, { tuhe: d.tuhe, zmeny, vzorec, kliatby, dopady, svokra: odkrytie.svokra, vypalne: odkrytie.vypalne, doDna: odkrytie.doDna, majitel: placed.playedBy, strana, pozicia: index + 1 });
     }
     return out;
-  }, [mode.typ, naexCiele, data, view, stol, lineEval, odhad, ja, sada, nahladyPitky, cenyKliatob, dalsiePitky]);
+  }, [mode.typ, naexCiele, data, view, stol, lineEval, odhad, ja, sada, nahladyPitky, cenyKliatob, dalsiePitky, zaklad]);
 
   // Náhľad odpovede na NA EX (návrh #1 B): ten istý ako pri NA EX — bitka pred
   // a po navrhnutej karte a kliatby oboch hráčov po Pitke.
@@ -1879,7 +1910,7 @@ export function HernaPlocha({
     return (
       <span
         className="hodnota-lokality"
-        title={`Ovládnutie${sSekerou ? " (aj so sekerou)" : ""} by ti dnes pridalo ${h[ja]} b, ${menoHraca(super_)} ${h[super_]} b — podľa rozdania scorecardov, každá aktívna podmienka „lokality“ zvlášť.`}
+        title={`Ovládnutie${sSekerou ? " (aj so sekerou)" : ""} by ti dnes pridalo ${h[ja]} b, ${menoHraca(super_)} ${h[super_]} b — podľa súbojov o lokality pri starších (body za staršieho získa, kto vyhrá viac jeho súbojov).`}
       >
         +{h[ja]} b · súper +{h[super_]}
       </span>
@@ -2013,19 +2044,35 @@ export function HernaPlocha({
       const nova = noveSuperove.includes(uid);
       // NA EX na karte je štítok nad kartou, výber pre NA EX nápis pod ňou (Michal 2026-10-21).
       const naexBy = placed.naexBy;
+      // NA EX naraz (v5): moje skryté NA EX vidím len ja; zrážka oboch = Výtržník.
+      const skryteMoje = mojeSkryteNaex.has(uid);
+      const vytrznik = placed.vytrznik === true;
       const vybranaNaex = mode.typ === "naexCiel" && mode.uid === uid;
       const stitky =
-        nova || naexBy !== undefined || vybranaNaex || placed.zaverecna === true ? (
+        nova || naexBy !== undefined || skryteMoje || vybranaNaex || placed.zaverecna === true ? (
           <>
             {nova && (
               <span className="nova-stitok" title={`Vyložil ${menoHraca(super_)} v poslednom ťahu`}>
                 nová
               </span>
             )}
-            {naexBy !== undefined && (
+            {vytrznik ? (
+              <span
+                className="naex-nad vytrznik-stitok"
+                title={`Zrážka NA EX: obaja ste dali poldeci na túto kartu. Do konca bitky je z nej Výtržník — každá jej akcia je Rana pre ${placed.playedBy === ja ? "teba" : menoHraca(placed.playedBy)}. Po bitke vytriezvie.`}
+              >
+                <IkonaPoldeci /> Výtržník · Rany pre {placed.playedBy === ja ? "teba" : menoHraca(placed.playedBy)}
+              </span>
+            ) : naexBy !== undefined ? (
               <span className="naex-nad" title={`NA EX — poldeci hráča ${menoHraca(naexBy)}`}>
                 <IkonaPoldeci /> NA EX · {naexBy === ja ? "tvoj" : menoHraca(naexBy)}
               </span>
+            ) : (
+              skryteMoje && (
+                <span className="naex-nad naex-skryte" title={`Tvoje NA EX leží skryto — ${menoHraca(super_)} ho nevidí. Odkryje sa, keď obaja skončíte Pitku.`}>
+                  <IkonaPoldeci /> NA EX · tvoj · skryto
+                </span>
+              )
             )}
             {/* Nad kartou ako NA EX — pod ňou zakrýval text efektu (UI inšpekcia); za štítkom NA EX sa posunie vyššie. */}
             {placed.zaverecna === true && (
@@ -2045,12 +2092,14 @@ export function HernaPlocha({
           onClick: klikLinia(placed.playedBy, uid),
           vybrana: (mode.typ === "naexCiel" && (mode.uid === uid || zvyraznenaNaex === uid)) || vybranaBenzinka,
           spoj: spojPre(uid),
+          vytrznik,
         },
         {
           trieda: [
             naexMozny && naexCiele.has(uid) ? "naex-mozny" : "",
             mode.typ === "naexCiel" && !naexCiele.has(uid) ? "naex-nie" : "",
-            naexBy !== undefined ? "naex-dany" : "",
+            naexBy !== undefined || skryteMoje ? "naex-dany" : "",
+            vytrznik ? "vytrznik" : "",
             nova ? "nova-superova" : "",
             ukazHrozbu === uid ? "hrozba-ciel" : "",
             placed.zaverecna === true ? "zaverecna-moja" : "",
@@ -2212,10 +2261,16 @@ export function HernaPlocha({
           Záverečná
           <small>lícom dole · otočí sa na konci Pitky</small>
         </span>
-        {z.naexBy !== null && (
+        {z.naexBy !== null ? (
           <span className="naex-nad">
             <IkonaPoldeci /> NA EX · {z.naexBy === ja ? "tvoj" : menoHraca(z.naexBy)}
           </span>
+        ) : (
+          mojeSkryteNaex.has(z.uid) && (
+            <span className="naex-nad naex-skryte" title={`Tvoje NA EX leží skryto — ${menoHraca(super_)} ho nevidí. Odkryje sa, keď obaja skončíte Pitku.`}>
+              <IkonaPoldeci /> NA EX · tvoj · skryto
+            </span>
+          )
         )}
         {vybrana && <span className="vybrana-pod">vybraná</span>}
       </button>,
@@ -2801,29 +2856,7 @@ export function HernaPlocha({
         const plne = view.hraci[ja].poldeciPlne;
         // Fázu a limit hovorí jednotný bar (os kola, strany) — pilulka nesie len pokyn (Michal 2026-10-25).
         const nadpis = null;
-        // Fajčiť smie hráč kedykoľvek na svojom ťahu (Michal 2026-10-16) — cigareta = karta hneď.
-        const fajcit = (
-          <>
-            <span className="hrana-zasoba" title={`Máš ${cigariet(view.hraci[ja].cigarety)}.`}>
-              <b>{view.hraci[ja].cigarety}</b>cigarety
-            </span>
-            {pecatNakupu({
-              kluc: "fajcit",
-              ikona: <IkonaCigareta zakaz={zakazFajcit(view)} />,
-              nazov: "fajčiť",
-              cena: 1,
-              dovod: zakazFajcit(view)
-                ? "Benzínka: nikto nesmie fajčiť."
-                : view.hraci[ja].cigarety === 0
-                  ? "Nemáš cigaretu."
-                  : !jeCoTahat(view.hraci[ja].doberaciPocet, view.hraci[ja].odhadzovaci.length)
-                    ? "Nemáš z čoho ťahať — doberací aj odhadzovací balíček sú prázdne."
-                    : null,
-              tip: "Fajčiť: za cigaretu si hneď doberieš kartu. Ťah ti neskončí, ráta sa ako nerest.",
-              akcia: () => cmd({ type: "smoke", pocet: 1 }),
-            })}
-          </>
-        );
+        // Fajčiť sa vo v5 dá len v Pitke (bod 1, Michal 2026-10-24) — v Zhromaždení tlačidlo nie je.
         // Celý ťah naraz (Michal 2026-10-19): karty sa ťahajú na stôl ako návrh,
         // každá ďalšia stojí plný poldeci, server dostane ťah až po „potvrdiť“ na stole.
         if (vylozenia.length === 0 || plan === null) {
@@ -2866,7 +2899,6 @@ export function HernaPlocha({
                 </span>
               </>
             ),
-            vlavo: fajcit,
             vpravo: (
               <>
                 {tlacidloZaverecnej}
@@ -2915,7 +2947,6 @@ export function HernaPlocha({
               {textVolbyMiesta !== null && <> · {textVolbyMiesta}</>}
             </>
           ),
-          vlavo: fajcit,
         };
       }
 
@@ -2931,8 +2962,7 @@ export function HernaPlocha({
                 {k !== null && <span className="vizia-karta">{sLupou({ karta: k, sirka: 72 })}</span>}
                 <span>
                   Vrchná karta tvojho balíčka: <strong>{k === null ? "?" : menoKarty(k.defId)}</strong>. Vezmi si ju do ruky, alebo ju zahoď
-                  — navždy z hry (kliatba, slabá karta).{zostava > 1 ? ` Ešte ${zostava - 1}× Vízia.` : ""}{" "}
-                  <span className="tlmene">Balíček pod {KONSTANTY.MIN_VELKOST_BALICKA} kariet = prehra.</span>
+                  — navždy z hry (kliatba, slabá karta).{zostava > 1 ? ` Ešte ${zostava - 1}× Vízia.` : ""}
                 </span>
               </span>
             ),
@@ -2944,17 +2974,30 @@ export function HernaPlocha({
         const hracJa = view.hraci[ja];
         const pitkaSt = view.pitkaStav;
         const obranca: PlayerId = view.utocnik === 0 ? 1 : 0;
-        const naexBol = pitkaSt?.naexPouzity[ja] === true;
+        const naexBol = naexLimitMinuty;
         const nadpis = null;
         if (reagujem) {
-          // Reakcia na súperovo NA EX (Michal 2026-10-12): jedna karta mimo limitu.
+          // Reakcia na súperovo NA EX (Michal 2026-10-12): jedna karta mimo limitu. Vo v5 až po
+          // odkrytí NA EX oboch — najprv obranca, posledné slovo má útočník (interview 4).
+          const poMneSuper = (pitkaSt?.frontaReakcii ?? []).includes(super_);
+          const superoveNaex = view.strany
+            .flat()
+            .filter((pl) => pl.naexBy === super_ || pl.naexBy2 === super_)
+            .map((pl) => (pl.vytrznik === true ? `${menoKarty(pl.card.defId)} (Výtržník)` : menoKarty(pl.card.defId)));
           return vylozene === null
             ? {
                 nadpis: "Odpoveď na NA EX",
                 text: textNahladuTahania ?? textVolbyMiesta ?? (
                   <>
-                    {menoHraca(super_)} {tvar(rodHracaP(super_), "dal", "dala", "dáva")} NA EX — môžeš hneď vyložiť <strong>jednu kartu</strong> z ruky (limit nemíňa), napr. aby si
-                    jeho neaktívne akcie spároval a NA EX ich zrušil. Potiahni ju na stôl, alebo klikni na <strong>+</strong> na konci strany.
+                    NA EX sú odkryté — {menoHraca(super_)} {tvar(rodHracaP(super_), "dal", "dala", "dáva")} NA EX
+                    {superoveNaex.length > 0 ? ` na ${superoveNaex.join(" a ")}` : ""}. Môžeš vyložiť <strong>jednu kartu</strong> z ruky (limit
+                    nemíňa), napr. aby si jeho neaktívne akcie spároval a NA EX ich zrušil.{" "}
+                    {poMneSuper ? (
+                      <strong>Odpovedáš prvý — {menoHraca(super_)} potom odpovie na tvoje NA EX.</strong>
+                    ) : obranca !== ja ? (
+                      <strong>Máš posledné slovo.</strong>
+                    ) : null}{" "}
+                    Potiahni ju na stôl, alebo klikni na <strong>+</strong> na konci strany.
                   </>
                 ),
                 stred: pecatTahu({
@@ -3042,8 +3085,10 @@ export function HernaPlocha({
         const dovodBezNaex = zakazNaex(view)
           ? "Kostol: nikto nesmie dať NA EX."
           : naexBol
-          ? "NA EX si v tejto Pitke už dal."
-          : hracJa.poldeciPlne === 0
+          ? mojeSkryteNaex.size > 0
+            ? "Tvoje NA EX v tejto Pitke už leží (skryto)."
+            : "NA EX si v tejto Pitke už dal."
+          : hracJa.poldeciPlne - mojeSkryteNaex.size <= 0
             ? "Nemáš plný poldeci (doliať: 2 cigarety)."
             : naexCiele.size === 0
               ? "NA EX ide len na Občana či Starešinu v línii (nie Nástroj, nie Liberál, nie na súperovho Anonymného alkoholika)."
@@ -3062,20 +3107,22 @@ export function HernaPlocha({
         // Poradie v Pitke (dizajn UX N1 „Pitka nahlas“): obranca začína, útočník má posledné slovo.
         const superSkoncil = pitkaSt?.hotovy[super_] === true;
         const zacinam = obranca === ja && !superSkoncil;
-        const superNaex = (pitkaSt?.naexPocet?.[super_] ?? 0) > 0;
+        // NA EX naraz (v5): či súper NA EX dal, sa ukáže až pri odkrytí — tu len že už vybral.
         const kontext = superSkoncil ? (
           <>
-            {menoHraca(super_)} {tvar(rodHracaP(super_), "skončil", "skončila", "končí")}{superNaex ? "" : " bez NA EX"}.{" "}
-            <strong>{tvar(rodHracaP(ja), "Si posledný", "Si posledná", "Máš posledné slovo")}</strong> — na tvoje NA EX už odpovie len jednou
-            kartou. Po tvojom „končím“ sa Pitka vyhodnotí.{" "}
+            <strong>
+              {menoHraca(super_)} {tvar(rodHracaP(super_), "už vybral", "už vybrala", "už skončil výber")}
+            </strong>{" "}
+            — či a kam dal NA EX, uvidíš pri odkrytí po tvojom „končím“.{" "}
+            {obranca === ja ? "Na jeho NA EX odpovieš prvý, on má posledné slovo." : "Na tvoje NA EX odpovie prvý, posledné slovo máš ty."}{" "}
           </>
         ) : zacinam ? (
           <>
-            <strong>Začínaš Pitku.</strong> {menoHraca(super_)} uvidí tvoje NA EX a smie naň odpovedať.{" "}
+            <strong>Začínaš Pitku.</strong> NA EX vyberáte obaja skryto — odkryjú sa, keď skončíte. Na tú istú kartu oboch = Výtržník.{" "}
           </>
         ) : null;
-        const limitPo = limitBuduceKolo(view, ja, true);
-        const limitBez = limitBuduceKolo(view, ja);
+        const limitPo = limitBuduceKolo(zaklad, ja, true, data);
+        const limitBez = limitBuduceKolo(zaklad, ja, false, data);
         // „končím“ chce druhý klik len vtedy, keď ním hráč vzdáva možné NA EX a súper ešte neskončil.
         const hotovoVzdavaNaex = dovodBezNaex === null && !superSkoncil && !krcma;
         if (potvrdenie === "hotovo") {
@@ -3083,7 +3130,8 @@ export function HernaPlocha({
             nadpis,
             text: (
               <strong>
-                Skončiť bez NA EX? V tejto Pitke ho už nedáš a {menoHraca(super_)} bude hrať s vedomím, že {tvar(rodHracaP(ja), "si skončil", "si skončila", "končíš")} — bude mať posledné slovo.
+                Skončiť bez NA EX? V tejto Pitke ho už nedáš. {menoHraca(super_)} uvidí, že {tvar(rodHracaP(ja), "si skončil", "si skončila", "končíš")}, ale nie či
+                máš NA EX — to sa ukáže pri odkrytí.
               </strong>
             ),
             vpravo: (
@@ -3193,8 +3241,8 @@ export function HernaPlocha({
               krcma
                 ? "Krčma: kým máš plný poldeci, najprv daj NA EX."
                 : superSkoncil
-                  ? "Pitka sa vyhodnotí — nedá sa vrátiť."
-                  : `Končíš svoju časť Pitky — nedá sa vrátiť. ${menoHraca(super_)} potom hrá a má posledné slovo.`
+                  ? "NA EX oboch sa odkryjú, po odpovediach sa Pitka vyhodnotí — nedá sa vrátiť."
+                  : `Končíš svoju časť Pitky — nedá sa vrátiť. ${menoHraca(super_)} potom vyberá; tvoje NA EX neuvidí, kým neskončí aj on.`
             }
             onClick={() => {
               if (krcma) return;
@@ -3202,7 +3250,7 @@ export function HernaPlocha({
               else posli({ type: "skipNaex" });
             }}
           >
-            {superSkoncil ? "končím · vyhodnotiť" : "končím"}
+            {superSkoncil ? "končím · odkryť" : "končím"}
           </button>
         );
         // Vybraná karta (klik na kartu so značkou): pod kartou „vybraná“, v pilulke náhľad, na hrane pečiatka NA EX!.
@@ -3233,8 +3281,16 @@ export function HernaPlocha({
                 {" "}
                 · kliatby — ty: {textKliatob(vybrana.kliatby[ja])} · {menoHraca(super_)}: {textKliatob(vybrana.kliatby[super_])}
                 {textDopadov(vybrana.dopady) !== null && <> · {textDopadov(vybrana.dopady)}</>} · pečeň +1
-                {vybrana.svokra > 0 && <> · Svokra ti ukradne {vybrana.svokra} cig.</>} · v ďalšom kole limit{" "}
-                {limitPo === limitBez ? `ostane ${limitBez}` : `${limitPo} namiesto ${limitBez}`} · platí, ak {menoHraca(super_)} neodpovie (v ruke má{" "}
+                {vybrana.svokra > 0 && <> · Svokra ti ukradne {vybrana.svokra} cig.</>}
+                {vybrana.vypalne > 0 && (
+                  <>
+                    {" "}
+                    · Výpalné: zaplatíš {menoHraca(super_)} {vybrana.vypalne} cig.
+                  </>
+                )}
+                {vybrana.doDna && <> · Na zdravie: poldeci sa ti po bitke vráti plný</>} · v ďalšom kole limit{" "}
+                {limitPo === limitBez ? `ostane ${limitBez}` : `${limitPo} namiesto ${limitBez}`} · skryto do konca Pitky; ak {menoHraca(super_)} dá NA EX
+                na tú istú kartu, je z nej Výtržník (všetky akcie Rany pre majiteľa) · platí, ak {menoHraca(super_)} neodpovie (v ruke má{" "}
                 {view.hraci[super_].rukaPocet} {view.hraci[super_].rukaPocet === 1 ? "kartu" : view.hraci[super_].rukaPocet >= 2 && view.hraci[super_].rukaPocet <= 4 ? "karty" : "kariet"})
               </span>
             </span>
@@ -3242,7 +3298,13 @@ export function HernaPlocha({
         const naexStred =
           vybranaUid === null || dovodBezNaex !== null ? undefined : (
             <span className="pecat-naex-obal">
-              <button className="tlacidlo-naex pecat-naex" data-skratka="n" data-vyucba="tlacidlo:naex" title={`NA EX na ${menoVybranej} — súper smie hneď odpovedať jednou kartou.`} onClick={() => posli({ type: "naex", uid: vybranaUid })}>
+              <button
+                className="tlacidlo-naex pecat-naex"
+                data-skratka="n"
+                data-vyucba="tlacidlo:naex"
+                title={`NA EX na ${menoVybranej} — skryto: ${menoHraca(super_)} ho uvidí, až keď obaja skončíte Pitku. Potom smie odpovedať jednou kartou.`}
+                onClick={() => posli({ type: "naex", uid: vybranaUid })}
+              >
                 NA EX!
               </button>
               <button className="pecat-zrusit" aria-label="Zrušiť výber" title="Zrušiť výber (aj pravý klik na stôl)" onClick={() => setMode({ typ: "ziadny" })}>
@@ -3277,6 +3339,19 @@ export function HernaPlocha({
                   </>
                 )}
                 {kontext}
+                {mojeSkryteNaex.size > 0 && (
+                  <>
+                    <strong>
+                      Tvoje NA EX leží skryto na{" "}
+                      {[...mojeSkryteNaex]
+                        .map((uid) =>
+                          view.zaverecne.some((z) => z.uid === uid) ? "súperovej Záverečnej" : menoKarty(view.strany.flat().find((pl) => pl.card.uid === uid)?.card.defId ?? ""),
+                        )
+                        .join(" a ")}
+                    </strong>{" "}
+                    — {menoHraca(super_)} ho nevidí, kým obaja neskončíte.{" "}
+                  </>
+                )}
                 {dovodBezNaex !== null ? (
                   <>
                     Fajči, doliať či kúp poldeci — potom končím. <span className="tlmene">{dovodBezNaex}</span>
@@ -3381,7 +3456,12 @@ export function HernaPlocha({
                 Pohoršenie <small>zostáva {b.pohorsenieZostava[ja]}</small>
               </>
             ),
-            text: "Klikni na staršieho — marker sa posunie k súperovi: on dostane priazeň, starší sa začne báť teba (zónové body, cesta k vydeseniu). Pri zamknutom je dôvod.",
+            text: (
+              <>
+                Pri staršom vyber smer. <strong>K súperovi</strong>: on dostane priazeň, starší sa začne báť teba (body za staršieho, cesta
+                k vydeseniu). <strong>K sebe</strong>: priazeň sa ti zmení hneď a platí už v tejto bitke. Pri zamknutom je dôvod.
+              </>
+            ),
           };
         }
         if (b.krok === "prebytok") {
@@ -3495,10 +3575,10 @@ export function HernaPlocha({
   // Náhľad posunu (Michal 2026-10-19): komu posun pomôže — body spolu a priazeň.
   const ZONA = ["neutrál", "žltá", "oranžová", "červená"] as const;
   const DO_ZONY = ["neutrálu", "žltej", "oranžovej", "červenej"] as const;
-  const popisPosunu = (elder: ElderState, cezPohorsenie: boolean, naKraj = false): string => {
+  const popisPosunu = (elder: ElderState, cezPohorsenie: boolean, naKraj = false, k: PlayerId = super_): string => {
     // Prebytok: aj cigareta porazenému za prvý posun staršieho (§9.4) — nahladPosunuPrebytkom.
-    const n = cezPohorsenie ? nahladPosunuMarkera(data, view, elder.elderId, super_, true, naKraj) : nahladPosunuPrebytkom(data, view, elder.elderId);
-    const novy = posunMarker(elder, super_, cezPohorsenie, naKraj);
+    const n = cezPohorsenie ? nahladPosunuMarkera(data, view, elder.elderId, k, true, naKraj) : nahladPosunuPrebytkom(data, view, elder.elderId);
+    const novy = posunMarker(elder, k, cezPohorsenie, naKraj);
     if (n === null || novy === null) return "";
     const zn = (x: number): string => (x > 0 ? `+${x}` : x < 0 ? `−${-x}` : "±0");
     const priazen = n.priazen === null ? "♥ nikto" : `♥ ${n.priazen === ja ? "tebe" : "súperovi"} +${n.sila}`;
@@ -3509,7 +3589,7 @@ export function HernaPlocha({
     if (n.zmena[ja] === 0 && n.zmena[super_] === 0) {
       let m = novy;
       for (let krok = 1; krok <= 4; krok++) {
-        const dalsi = posunMarker({ ...elder, marker: m }, super_, false);
+        const dalsi = posunMarker({ ...elder, marker: m }, k, false);
         if (dalsi === null) break;
         m = dalsi;
         if (STUPNICA_ZONY[m] !== STUPNICA_ZONY[novy]) {
@@ -3519,7 +3599,32 @@ export function HernaPlocha({
       }
     }
     // Bez čísel pozícií (Michal 2026-10-22): hráč 2 vidí stupnicu zrkadlovo, „4 → 5“ by mu klamalo.
-    return ` · k ${menoHraca(super_)}: ${zonaPred} → ${zonaPo} · body ty ${zn(n.zmena[ja])}, súper ${zn(n.zmena[super_])}${doZony} · ${priazen}`;
+    // Pohoršenie k sebe (v5): priazeň sa mení hneď, rozhoduje už túto bitku.
+    const hned = k === ja && cezPohorsenie && n.priazen !== priazenHraca(elder) ? " — hneď, platí už v tejto bitke" : "";
+    return ` · ${k === ja ? "k sebe" : `k ${menoHraca(super_)}`}: ${zonaPred} → ${zonaPo} · body ty ${zn(n.zmena[ja])}, súper ${zn(n.zmena[super_])}${doZony} · ${priazen}${hned}`;
+  };
+  /**
+   * Pohoršenie oboma smermi (v5 bod 7): pri každom staršom voľba k súperovi alebo
+   * k sebe — len smery, ktoré jadro dovolí (hranice zón, kraj, Noviny).
+   */
+  const volbyPohorsenia = (elder: ElderState): readonly VolbaPosunu[] | undefined => {
+    const b = view.bitkaStav;
+    if (!somNaTahu || view.faza !== "bitka" || b?.caka !== ja || b.krok !== "pohorsenie") return undefined;
+    const naKraj = pohorsenieNaKraj(view, ja);
+    const volby: VolbaPosunu[] = [];
+    for (const kSebe of [false, true]) {
+      if (!pohorsenieMozne(view, ja, elder, kSebe)) continue;
+      const ciel = posunMarker(elder, kSebe ? ja : super_, true, naKraj);
+      if (ciel === null) continue;
+      volby.push({
+        smer: kSebe ? "ja" : "su",
+        nazov: kSebe ? "k sebe" : "k súperovi",
+        akcia: `posunúť${popisPosunu(elder, true, naKraj, kSebe ? ja : super_)}`,
+        ciel,
+        klik: () => cmd(kSebe ? { type: "pohorsenie", elderId: elder.elderId, kSebe: true } : { type: "pohorsenie", elderId: elder.elderId }),
+      });
+    }
+    return volby.length === 0 ? undefined : volby;
   };
   const klikStarsi = (elder: ElderState): { readonly akcia: string; readonly klik: () => void } | undefined => {
     if (!somNaTahu) return undefined;
@@ -3535,10 +3640,6 @@ export function HernaPlocha({
     const smerKSuperovi = super_;
     if (view.faza === "bitka" && b?.caka === ja) {
       // Zamknuté markery (krajná pozícia, Pohoršenie na krajnú, limit dvoch hraníc zón) sa neponúkajú.
-      const naKraj = pohorsenieNaKraj(view, ja);
-      if (b.krok === "pohorsenie" && pohorsenieMozne(view, ja, elder)) {
-        return { akcia: `posunúť k súperovi${popisPosunu(elder, true, naKraj)}`, klik: () => cmd({ type: "pohorsenie", elderId: elder.elderId }) };
-      }
       if (b.krok === "prebytok" && posunMarker(elder, smerKSuperovi, false) !== null) {
         return { akcia: `posunúť marker${popisPosunu(elder, false)}`, klik: () => cmd({ type: "prebytok", elderId: elder.elderId }) };
       }
@@ -3640,12 +3741,14 @@ export function HernaPlocha({
       return kandidatiPatronatu.length === 0 ? "nemáš v ruke Občana ani Zviera" : "nedá sa vziať";
     }
     const pohorsenie = krokStarsich.typ === "pohorsenie";
-    if (posunMarker(e, super_, pohorsenie, pohorsenie && naKrajPohorsenia) !== null) return pohorsenie ? "už 2 hranice zón" : undefined;
+    if (pohorsenie && (posunMarker(e, super_, true, naKrajPohorsenia) !== null || posunMarker(e, ja, true, naKrajPohorsenia) !== null)) return "už 2 hranice zón";
+    if (!pohorsenie && posunMarker(e, super_, false) !== null) return undefined;
     if (e.marker === 0 || e.marker === 8) return "už na krajnej pozícii";
     return pohorsenie ? "krajnú pozíciu Pohoršenie nedosiahne" : "na krajnú len z predposlednej od začiatku kola";
   };
   const starsiVLinii: StarsiVLinii[] = view.starsi.map((e) => {
     const klik = klikStarsi(e);
+    const volby = volbyPohorsenia(e);
     const obrazok = vzhladKarty(sada, data, e.karta.defId).obrazok;
     const iPatron = view.patronat.findIndex((x) => x?.elderId === e.elderId);
     const pohorsenie = krokStarsich?.typ === "pohorsenie";
@@ -3661,8 +3764,9 @@ export function HernaPlocha({
       obrazok: obrazok === null ? null : mediaUrl(obrazok.nahlad),
       body: body.starsi.find((x) => x.elderId === e.elderId),
       klik,
+      volby,
       ciel,
-      dovod: klik === undefined ? zamokStarsieho(e) : undefined,
+      dovod: klik === undefined && volby === undefined ? zamokStarsieho(e) : undefined,
       hranice: pohorsenie && krokStarsich !== null ? (bs?.pohorsenieHranice[`${krokStarsich.kto}:${e.elderId}`] ?? 0) : undefined,
       patron: iPatron === -1 ? null : { kto: iPatron as PlayerId, pohorsenia: view.patronat[iPatron]?.pohorsenia ?? 0 },
       vybrany: mode.typ === "patronat" && mode.elderId === e.elderId,
@@ -4324,15 +4428,21 @@ export function HernaPlocha({
         </span>,
       );
     } else if (view.faza === "pitka" && ps !== null) {
+      // NA EX naraz (v5): súperove NA EX je známe až po odkrytí (obaja skončili), moje skryté vidím.
       const naex = (ps.naexPocet?.[p] ?? 0) > 0;
+      const skryte = p === ja && mojeSkryteNaex.size > 0;
+      const odkryte = ps.hotovy[0] && ps.hotovy[1];
       casti.push(
         <span key="poradie" className="jbar-poradie" title={obranca === p ? "Pitku začína obranca." : "Útočník hrá po obrancovi a má posledné slovo."}>
           {obranca === p ? "1." : "2."}
         </span>,
       );
       casti.push(rukaPocet(p));
-      if (ps.hotovy[p]) pozn("stav", `✓ ${tvar(rodHracaP(p), "skončil", "skončila", "koniec")}${naex ? " po NA EX" : " bez NA EX"}`);
-      else if (ps.reakcia === p) pozn("stav", "odpovedá na NA EX");
+      if (ps.reakcia === p) pozn("stav", p === ja ? "odpovedáš na NA EX" : "odpovedá na NA EX");
+      else if (ps.hotovy[p] && !odkryte && p !== ja)
+        pozn("stav", `✓ ${tvar(rodHracaP(p), "vybral", "vybrala", "vybrané")} · NA EX?`, "Či a kam dal NA EX, uvidíš pri odkrytí — keď skončíš aj ty.");
+      else if (ps.hotovy[p]) pozn("stav", `✓ ${tvar(rodHracaP(p), "skončil", "skončila", "koniec")}${naex || skryte ? " po NA EX" : odkryte ? " bez NA EX" : ""}`);
+      else if (skryte) pozn("stav", "NA EX skryto", "Súper tvoje NA EX nevidí — odkryje sa, keď obaja skončíte Pitku.");
       else if (naex) pozn("stav", "NA EX dal");
       if (view.pitkaCislo < view.pitkyCelkom) pozn("limit", `ďalšie Zhromaždenie: ${limitZhromazdenia(view, p)}`, "Limit vykladania v ďalšom Zhromaždení.");
     } else if (view.faza === "draft" && draft !== null) {
@@ -4442,7 +4552,8 @@ export function HernaPlocha({
     return `Pitka ${ucetPitky.pitka} vyhodnotená · ty: ${za(ja)} · ${menoHraca(super_)}: ${za(super_)}`;
   })();
   // Stavová správa má od jednotného baru pevné miesto pod odhadom (Michal 2026-10-25) — z hrany stola zmizla.
-  const spravaBaru = vyberSpravu(chyba, textUctuPitky, poslednySuperov.length > 0 ? poslednySuperov.join(" · ") : null);
+  // Vo výučbe hovorí len Melichar — správa o súperovom ťahu sa v bare neukáže (Michal 2026-10-25).
+  const spravaBaru = vyberSpravu(chyba, textUctuPitky, poslednySuperov.length > 0 && vyucba !== true ? poslednySuperov.join(" · ") : null);
 
   // Spodná hrana stola (Michal 2026-10-21): vľavo nákupy za cigarety, v strede
   // NA EX! či potvrdenie návrhu, vpravo koniec ťahu.
@@ -4614,6 +4725,7 @@ export function HernaPlocha({
         {/* Súperi sedia oproti sebe (Michal 2026-10-22): súperov bar hore, tvoj pod stolom;
             scoreboard nad staršími zanikol — body sú v bare hráča. */}
         <HracDoska
+          data={data}
           view={view}
           p={super_}
           info={hraci[super_]}
@@ -4723,6 +4835,7 @@ export function HernaPlocha({
           </div>
 
           <HracDoska
+            data={data}
             view={view}
             p={ja}
             info={hraci[ja]}
@@ -4957,10 +5070,6 @@ export function HernaPlocha({
               </div>
               {zal === "balicek" && (
                 <>
-                  <p className="popis balicek-prehra">
-                    Prehrávaš, keď ti v balíčku, odhodených a v ruke spolu ostane menej ako {KONSTANTY.MIN_VELKOST_BALICKA} kariet —
-                    teraz ich máš {hJa.doberaciPocet + hJa.odhadzovaci.length + view.ruka.length}.
-                  </p>
                   {hJa.doberaciPocet === 0 && <span className="popis">Balíček je prázdny — pri ďalšom ťahaní sa doň zamiešajú odhodené karty.</span>}
                   {skupinyBalicka(data, view.mojBalicekZlozenie).map((s) => (
                     <section key={s.nazov} className="balicek-skupina">
