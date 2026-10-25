@@ -72,3 +72,36 @@ Podklad: docs/napady/priazne-v5-set.html.
 - **Exekútor:** súperov prah Exekúcie je nižší o 1/2/3.
 - **Úžerník → Kmotor:** po bitke zníži priznaný Dlh o 1/2/3. Bez Dlhu nerobí nič (nechať tak, bez náhrady).
 - Návrhy nápadníka Výpalné za každé súperovo NA EX a Na zdravie „do dna“ (poldeci z tvojho NA EX sa vráti plný) zatiaľ nerozhodnuté — čakajú na meranie.
+
+## Interview 3 (Michal 2026-10-25): otvorené otázky
+
+- **NA EX naraz + Výtržník: áno, do v5** (napriek tomu, že zrážka je zriedkavá).
+- **Variant (a)** „1 b aj za aspoň jednu vyhratú podmienku“: rozhodne po finálnom meraní stratéga.
+- **Podmienka Cigarety:** zatiaľ nechať (bez náhrady).
+- **Absťák v scorecardoch:** Absťáky **získané za hru** (nedá sa ho zbaviť).
+- **Zónové podmienky:** 10, Znepokojenie 3× — áno.
+- **Vydesenie v scorecardoch:** nechať 2× (Bitkár, Exekútor).
+- **Bitkárov scorecard:** zámerne najťažší — áno.
+- **Rezerva:** Vínko sa ráta ako plný poldeci.
+- **Dve rovnaké aktívne podmienky:** dva súboje.
+- **Nepriznaná Cirhóza** na scorecardoch ostáva (nenahrádza ju Pečeň).
+- **Charakter staršieho** nesie scorecard (podľa priazne), nie karta staršieho.
+- **Znak** (9. vždy aktívna podmienka): nie.
+- **Výpalné:** platí sa za **každé** súperovo NA EX (1/2/3 cigarety, dostaneš ich ty).
+- **Na zdravie → „do dna“:** poldeci z tvojho NA EX sa vráti plný (1/2/3 za kolo).
+
+## Čo v5 prerobí (Michal 2026-10-25: „bude treba prerobiť takmer všetko“)
+
+Zmrazenie pravidiel trvá najviac týždeň; v5 má výnimku a nasadí sa na Michalov pokyn.
+
+| Oblasť | Čo | Kto | Stav |
+|---|---|---|---|
+| Jadro | etapy 1–9 z tabuľky vyššie, VERZIA_PRAVIDIEL v5 | programátor (v5/pravidla) | beží |
+| Bot | hrať v5: Pohoršenie k sebe, fajčiť v Pitke, Cirhóza priznať/riskovať, súperovi najslabšia priazeň | bot-tréner (max 2 procesy) | po jadre |
+| Stôl (UI) | bodovanie po starších (kto by ho teraz bodoval), Pohoršenie oboma smermi, nové priazne, NA EX naraz (ak áno), scorecardy Absťák/Rezerva, jednotný bar (mocky ui/jednotny-bar) | programátor UI | po jadre a výbere baru |
+| Pravidlá | docs/PRAVIDLA.md, stránka /pravidla (poradie hry), tlač, ťahák AI hráčov tools/playtest/tahak.md, mapa rozhodcu | nápadník + rozhodca | po rozhodnutiach |
+| Výučba | nová výuková hra proti Majstrovi Melicharovi (Ladislav Melisko, ktorý narobil v dedine dlhy, preto vystupuje pod tajným menom); začne tým, že si od hráča požičia cigaretu a za to ho naučí hrať; bublina nie na celej ľavej strane (súperove zdroje alebo jednotný bar). Dnešná výučba sa Michalovi nepáčila. | Michal premýšľa → nápadník scenár | čaká na Michala |
+| Nápovedy | packages/core/src/napovedy.ts — texty a spúšťače podľa v5 | programátor | po pravidlách |
+| Scorecardy, priazne | dáta, texty na kartách starších, ilustrácie nových mien (Abstinent, Kmotor…) | admin, ilustrátor | po rozhodnutiach |
+| Štatistiky, achievementy, Vývoj | partie v5 oddelene od v4, známky | programátor | pred nasadením |
+| Hráči | Novinka „Pravidlá v5“, oznam v lobby | admin | po nasadení |
