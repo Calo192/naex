@@ -189,11 +189,11 @@ export const ALL_FAVOURS: readonly Favour[] = [
  * Zrušené priazne a ich náhrady — staré zverejnené sady a databázy ich ešte
  * nesú. Očumovateľ (Preskúmanie) v hre nič nerobil; nahradil ho Zberateľ
  * (Michal 2026-10-12) a Zberateľa Úžerník s prahom Dlhu (Michal 2026-10-20).
- * Pravidlá v5 (Michal 2026-10-24/25) premenovali Úžerníka na Kmotra a Lakomca
- * na Abstinenta — kľúč priazne v hre ostáva, bodovacia karta v tvorcovi smie
- * niesť nové meno.
+ * Pravidlá v5 (Michal 2026-10-24/25) premenovali Úžerníka na Kmotra, Lakomca
+ * na Abstinenta a Neprajníka na Výpalníka (priazeň Výpalné) — kľúč priazne
+ * v hre ostáva, bodovacia karta v tvorcovi smie niesť nové meno.
  */
-const PRIAZNE_ALIAS: Readonly<Record<string, Favour>> = { OCUMOVATEL: "UZERNIK", ZBERATEL: "UZERNIK", KMOTOR: "UZERNIK", ABSTINENT: "LAKOMEC" };
+const PRIAZNE_ALIAS: Readonly<Record<string, Favour>> = { OCUMOVATEL: "UZERNIK", ZBERATEL: "UZERNIK", KMOTOR: "UZERNIK", ABSTINENT: "LAKOMEC", VYPALNIK: "NEPRAJNIK" };
 
 /** Priazeň z kľúča (aj zrušeného), alebo null, ak taká nie je. */
 export function priazenZKluca(kluc: string): Favour | null {

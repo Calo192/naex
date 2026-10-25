@@ -205,15 +205,18 @@ export class Obsah {
   }
 
   /**
-   * Očumovateľa nahradil Zberateľ (Michal 2026-10-12) a Zberateľa Úžerník
-   * s prahom Dlhu (Michal 2026-10-20): bodovacia karta sa v databáze premenuje
-   * a scorecardy sa zverejnia nanovo s rovnakými kartami.
+   * Očumovateľa nahradil Zberateľ (Michal 2026-10-12), Zberateľa Úžerník
+   * (2026-10-20) a Úžerníka v pravidlách v5 Kmotor: bodovacia karta so ZRUŠENÝM
+   * menom sa v databáze premenuje a scorecardy sa zverejnia nanovo s rovnakými
+   * kartami. Úžerník, Lakomec a Neprajník sa tu zámerne nepremenúvajú — mená hra
+   * ďalej pozná (aliasy priazní), a prezverejnenie by hráčom bez súhlasu Michala
+   * vydalo nové scorecardy; v5 do tvorcu zapíše Admin a zverejní so súhlasom.
    */
   premenujZrusenePriazne(teraz: number): void {
     const stare = this.bodovacie.vsetky().filter((b) => b.nazov === "Očumovateľ" || b.nazov === "Zberateľ");
     if (stare.length === 0) return;
     transakcia(this.db, () => {
-      for (const b of stare) this.bodovacie.uloz(b.id, { ...b, nazov: "Úžerník", upravene: teraz });
+      for (const b of stare) this.bodovacie.uloz(b.id, { ...b, nazov: "Kmotor", upravene: teraz });
     });
     this.prezverejniBodovanie(teraz);
   }

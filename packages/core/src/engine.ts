@@ -817,7 +817,7 @@ function stranyBitky(
       cirhozaBonus: Math.max(0, cirhozyPriznane(s, opp) - mody[p]!.cirhozaZlava),
       tuheBonus: mody[p]!.tuheBonus,
       tuheZlava: mody[p]!.tuheZlava,
-      // Čierna mačka: Povery bez stropu (Neprajník vo v5 strop nezdvíha — má Výpalné).
+      // Čierna mačka: Povery bez stropu (Výpalník, predtým Neprajník, vo v5 strop nezdvíha — má Výpalné).
       makkeNadDlhy: vPartii(s, p, "cierna_macka") ? Number.POSITIVE_INFINITY : 0,
       abstaky: abstakyVBitke(data, s, p, abstakyVRuke[p]),
       priznaneDlhy: pocetKariet(s.hraci[p], "dlh", "priznane"),
@@ -2347,8 +2347,8 @@ function dalsiaReakcia(s: MutState, data: GameData, events: Event[]): boolean {
 }
 
 /**
- * Výpalné (Neprajník v5, Michal 2026-10-25): za KAŽDÉ NA EX hráča `dal` mu
- * súper s priazňou Neprajníka vezme 1 / 2 / 3 cigarety (koľko má).
+ * Výpalné (priazeň Výpalníka, predtým Neprajník — v5, Michal 2026-10-25): za
+ * KAŽDÉ NA EX hráča `dal` mu súper s touto priazňou vezme 1 / 2 / 3 cigarety (koľko má).
  */
 function vypalne(s: MutState, data: GameData, dal: PlayerId, events: Event[]): void {
   const komu = opponentOf(dal);
@@ -2356,7 +2356,7 @@ function vypalne(s: MutState, data: GameData, dal: PlayerId, events: Event[]): v
   if (n <= 0) return;
   hrac(s, dal).cigarety -= n;
   hrac(s, komu).cigarety += n;
-  events.push({ type: "log", text: `Výpalné (priazeň Neprajníka): hráč ${dal + 1} platí za NA EX hráčovi ${komu + 1} ${cigariet(n)}.` });
+  events.push({ type: "log", text: `Výpalné (priazeň Výpalníka): hráč ${dal + 1} platí za NA EX hráčovi ${komu + 1} ${cigariet(n)}.` });
 }
 
 /** Vychovávateľka hráča p: súper dostane jeho priznaný Dlh do doberacieho balíčka. */

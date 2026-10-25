@@ -182,16 +182,18 @@ describe("v5 bod 7: Pohoršenie oboma smermi", () => {
 });
 
 describe("v5 bod 5: scorecardy v5 s podmienkami Absťák a Rezerva", () => {
-  it("východisková sada má 8 scorecardov, Absťák aj Rezervu a nové mená Kmotor a Abstinent", () => {
+  it("východisková sada má 8 scorecardov, Absťák aj Rezervu a nové mená Kmotor, Abstinent a Výpalník", () => {
     expect(data.scorecards).toHaveLength(8);
     const vsetky = data.scorecards.flatMap((sc) => [...sc.lava, ...sc.prava]);
     expect(vsetky).toContain("abstak");
     expect(vsetky).toContain("rezerva");
     expect(data.scorecards.find((sc) => sc.favour === "UZERNIK")?.nazov).toBe("Kmotor");
     expect(data.scorecards.find((sc) => sc.favour === "LAKOMEC")?.nazov).toBe("Abstinent");
+    expect(data.scorecards.find((sc) => sc.favour === "NEPRAJNIK")?.nazov).toBe("Výpalník");
     // Bodovacia karta v tvorcovi smie niesť nové meno.
     expect(priazenZKluca("KMOTOR")).toBe("UZERNIK");
     expect(priazenZKluca("ABSTINENT")).toBe("LAKOMEC");
+    expect(priazenZKluca("VYPALNIK")).toBe("NEPRAJNIK");
   });
 
   it("Absťák = Absťáky získané za hru: zbavením sa Absťáku počítadlo neklesne", () => {
@@ -278,7 +280,7 @@ describe("v5 bod 6: priazne v5 (sila 1 / 2 / 3)", () => {
     expect(prahyHraca(data, s, 1).exekutor).toBe(KONSTANTY.PRAH_EXEKUTORA_ZAKLAD);
   });
 
-  it("Alkoholik a Kmotor prahy Cirhózy a Dlhu nemenia, Neprajník strop mäkkého nezdvíha", () => {
+  it("Alkoholik a Kmotor prahy Cirhózy a Dlhu nemenia, Výpalník (Neprajník) strop mäkkého nezdvíha", () => {
     let s = setupGame(data, 94);
     s = sPriaznou(sPriaznou(sPriaznou(s, "ALKOHOLIK", 0, 3), "UZERNIK", 0, 3), "NEPRAJNIK", 0, 3);
     expect(prahyHraca(data, s, 0).cirhoza).toBe(KONSTANTY.PRAH_CIRHOZY_ZAKLAD);
@@ -309,7 +311,7 @@ describe("v5 bod 6: priazne v5 (sila 1 / 2 / 3)", () => {
     expect(po.hraci[1].cigarety).toBe(s.hraci[1].cigarety);
   });
 
-  it("Výpalné (Neprajník): za každé súperovo NA EX mu prejde 1 / 2 / 3 cigariet", () => {
+  it("Výpalné (Výpalník, predtým Neprajník): za každé súperovo NA EX mu prejde 1 / 2 / 3 cigariet", () => {
     const { s, ciel } = pitkaSNaex(97);
     const sNeprajnikom = sPriaznou(s, "NEPRAJNIK", 0, 2);
     const po = dohraj(apply(sada, sNeprajnikom, { type: "naex", uid: ciel }, 1).state);
