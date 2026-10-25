@@ -474,7 +474,16 @@ describe("kliatba do línie nepatrí (Michal 2026-10-20)", () => {
 describe("Dlhy sa priznávajú samy, Cirhóza bez dobratia (Michal 2026-10-20)", () => {
   it("dobratý Dlh sa hneď prizná a hráč ťahá ďalšiu kartu, aj v reťazi", () => {
     const [d1, d2, p1] = [inst("dlh"), inst("dlh"), inst("pijan")];
-    let s = vZhromazdeniHrac0(47, { ruka: [], doberaci: [d1, d2, p1], odhadzovaci: [], cigarety: 1, priznane: [] });
+    const z = vZhromazdeniHrac0(47, { ruka: [], doberaci: [d1, d2, p1], odhadzovaci: [], cigarety: 1, priznane: [] });
+    // Fajčí sa len v Pitke (v5).
+    let s: GameState = {
+      ...z,
+      faza: "pitka",
+      zhromazdenieStav: null,
+      pitkyCelkom: 1,
+      pitkaCislo: 1,
+      pitkaStav: { naTahu: 0, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false] },
+    };
     s = apply(data, s, { type: "smoke", pocet: 1 }, 0).state;
     expect(s.hraci[0].ruka.map((k) => k.uid)).toEqual([p1.uid]);
     expect(s.hraci[0].priznane.map((k) => k.uid)).toEqual([d1.uid, d2.uid]);

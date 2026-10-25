@@ -25,10 +25,10 @@
           "pijan/1/0",
           "ministrant/0/0",
           "milujuca_manzelka/0/0",
-          "dievcina_na_vydaj/0/0"
+          "dievcina_na_vydaj/0/0",
+          "ministrant/2/0"
         ],
         "doberaci": [
-          "ministrant/2/0",
           "pijan/1/0"
         ]
       },
@@ -363,18 +363,6 @@
       "melichar": "Kartu smieš položiť aj na koniec Štamgastovej strany. Ostane tvoja a spojí sa s jeho kartou.",
       "zvyraznit": [
         "linia"
-      ]
-    },
-    {
-      "id": "k-fajcit",
-      "kto": "hrac",
-      "prikaz": {
-        "type": "smoke",
-        "pocet": 1
-      },
-      "melichar": "Vyfajči cigaretu: hneď si dobereš kartu z balíčka. Fajčí sa, keď ti chýba dobrá karta.",
-      "zvyraznit": [
-        "tlacidlo:fajcit"
       ]
     },
     {

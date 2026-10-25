@@ -842,15 +842,7 @@ function zhromazdenie(v: Volba): Command | null {
     }
   }
 
-  // Fajčenie (karta hneď, ťah nekončí): proti Absťáku, alebo keď niet čo vyložiť.
-  const smoke = v.legal.find((c) => c.type === "smoke");
-  const doLinie = v.legal.filter((c) => c.type === "place" && (c.target === "vlastna" || c.target === "superova"));
-  const maCoTahat = h.doberaci.length + h.odhadzovaci.length > 0;
-  // Deficit nerestí sa dorovná až na konci Pitky — dovtedy ho môže pokryť NA EX či runda.
-  if (smoke !== undefined && maCoTahat && !z.pasoval[ja]) {
-    const prazdno = doLinie.length === 0 && z.zostavaLimit[ja] > 0 && h.cigarety >= 2;
-    if (prazdno && h.nerestiTotoKolo + 1 <= stropNeresti(state, ja)) return smoke;
-  }
+  // Fajčiť sa od v5 dá len v Pitke (tam rieši fajčenie pitka()).
 
   // Vykladanie: každú možnosť dohrá nanečisto (obaja chamtivo) a ohodnotí.
   const videne = new Set<string>();

@@ -1301,9 +1301,7 @@ function dohrajNevyhnutne(data: GameData, s: MutState, events: Event[]): void {
   for (;;) {
     const p = naTahu(s as GameState);
     if (p === null) return;
-    // Fajčiť smie hráč v Zhromaždení kedykoľvek, ale kvôli tomu sa za neho
-    // nečaká — kto nemá čo vyložiť, pasuje (cigarety mu ostanú na Pitku).
-    const moznosti = legalCommands(data, s as GameState, p).filter((c) => !(s.faza === "zhromazdenie" && c.type === "smoke"));
+    const moznosti = legalCommands(data, s as GameState, p);
     const jedina = moznosti.length === 1 ? moznosti[0] : undefined;
     if (jedina?.type === "pass") {
       events.push({ type: "log", text: `Hráč ${p + 1} už nemá čo vyložiť.` });
@@ -2413,9 +2411,9 @@ function cmdStarosta(
 }
 
 /**
- * Fajčenie (Michal 2026-10-16): cigareta = jedna karta hneď. Smie sa
- * v Zhromaždení aj v Pitke, keď je hráč na ťahu, a ťah to neukončí.
- * Cigarety sa prenášajú z kola na kolo.
+ * Fajčenie (Michal 2026-10-16): cigareta = jedna karta hneď, ťah to neukončí.
+ * Od v5 (Michal 2026-10-24) len v Pitke — v Zhromaždení si hráč kartu
+ * fajčením nedoberie. Cigarety sa prenášajú z kola na kolo.
  */
 /**
  * Fajčenie dáva kartu z doberacieho balíčka (s premiešaním odhadzovacieho).
@@ -2428,7 +2426,7 @@ export function jeCoTahat(doberaci: number, odhadzovaci: number): boolean {
 function cmdSmoke(s: MutState, cmd: { pocet: number }, p: PlayerId, events: Event[]): void {
   const pitka = s.pitkaStav;
   const vPitke = s.faza === "pitka" && pitka !== null && pitka.reakcia === null;
-  need(vPitke || (s.faza === "zhromazdenie" && s.zhromazdenieStav !== null), "Fajčiť sa dá v Zhromaždení a v Pitke.");
+  need(vPitke, "Fajčiť sa dá len v Pitke.");
   need(!zakazFajcit(s as GameState), "Benzínka: nikto nesmie fajčiť.");
   need(cmd.pocet > 0 && Number.isInteger(cmd.pocet), "Počet cigariet musí byť kladný.");
   need(s.hraci[p].cigarety >= cmd.pocet, "Toľko cigariet nemáš.");
@@ -3825,9 +3823,7 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
       // ťah neodovzdáva, tomu vypitie tiež nepridá).
       const doLinie = vylozenia.some((c) => c.type === "place" && c.target !== "priznanie");
       if (doLinie && state.hraci[p].poldeciPlne > 0 && !z.pasoval[p] && !zakazVypit(state)) out.push({ type: "vypit" });
-      // Fajčiť (karta za cigaretu) smie hráč kedykoľvek na svojom ťahu — okrem Benzínky
-      // a keď nemá z čoho ťahať.
-      if (mozeFajcit(state, p)) out.push({ type: "smoke", pocet: 1 });
+      // Fajčiť sa v Zhromaždení nesmie (v5, Michal 2026-10-24) — len v Pitke.
       out.push(...vylozenia);
       break;
     }
