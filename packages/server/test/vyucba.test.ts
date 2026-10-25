@@ -136,9 +136,21 @@ describe("výučba „Prvá hra“", () => {
   });
 });
 
-describe("výučba — vypínač (scenár nezverejnený)", () => {
-  it("kým nie je zverejnená, hráč ju nedostane ponúknutú ani nespustí; správca áno", async () => {
+describe("výučba — vypínač", () => {
+  it("zverejnený scenár prva-hra.json dostane každý nový hráč ponúknutý (Michal 2026-10-25)", async () => {
+    expect(nacitajVyucbu().zverejnena).toBe(true);
     const { server: s, zmaz: z } = await testovaciServer(TEST_ADMIN, { botPauzaMs: 0 });
+    try {
+      const { cookie } = await registruj(s.port);
+      const r = await fetch(`http://127.0.0.1:${s.port}/api/vyucba`, { headers: { cookie } });
+      expect(await r.json()).toMatchObject({ dostupna: true, ponuknut: true });
+    } finally {
+      await z();
+    }
+  });
+
+  it("kým nie je zverejnená, hráč ju nedostane ponúknutú ani nespustí; správca áno", async () => {
+    const { server: s, zmaz: z } = await testovaciServer(TEST_ADMIN, { botPauzaMs: 0, scenarVyucby: { ...nacitajVyucbu(), zverejnena: false } });
     try {
       const { cookie } = await registruj(s.port);
       const ziadaj = async (c: string) => (await (await fetch(`http://127.0.0.1:${s.port}/api/vyucba`, { headers: { cookie: c } })).json()) as { dostupna: boolean; ponuknut: boolean };
