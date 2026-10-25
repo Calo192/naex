@@ -524,14 +524,15 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
 // Bonus priazne = NASOBOK_PRIAZNE × sila (Michal 2026-10-16: sila 1 / 2 / 3, účinok dvojnásobný).
 const bonus = (s: number): number => KONSTANTY.NASOBOK_PRIAZNE * s;
 const UCINOK: Record<string, (s: number) => string> = {
-  UZERNIK: (s) => `prah Dlhu ${KONSTANTY.PRAH_DLHU_ZAKLAD + s} namiesto ${KONSTANTY.PRAH_DLHU_ZAKLAD}`,
-  LAKOMEC: (s) => `stokársky barter za ${KONSTANTY.BARTER_CENA - s} cigariet`,
-  NEPRAJNIK: (s) => `tvoje Povery smú dať o ${bonus(s)} mäkkého viac, než má súper priznaných Dlhov`,
-  BITKAR: (s) => `+${bonus(s)} tuhého poškodenia v bitke`,
+  // Priazne v5 (Michal 2026-10-24/25): sila 1 / 2 / 3 bez dvojnásobku.
+  UZERNIK: (s) => `Kmotor: po bitke ti zmizne ${s} priznaných Dlhov`,
+  LAKOMEC: (s) => `Abstinent: v bitke +${s} Pohoršenia`,
+  NEPRAJNIK: (s) => `Výpalné: za každé súperovo NA EX ti zaplatí ${s} cigariet`,
+  BITKAR: (s) => `+${s} tuhého poškodenia v bitke`,
   VERIACI: (s) => `+${s} Viery v každej bitke`,
-  FAJCIAR: (s) => `+${s} ${s === 1 ? "cigareta" : "cigarety"} v 1. Pitke bitky o lokalitu`,
-  ALKOHOLIK: (s) => `prah Cirhózy ${KONSTANTY.PRAH_CIRHOZY_ZAKLAD + bonus(s)}`,
-  EXEKUTOR: (s) => `prah Exekútora ${KONSTANTY.PRAH_EXEKUTORA_ZAKLAD + 2 * bonus(s)}`,
+  FAJCIAR: (s) => `+${s} ${s === 1 ? "cigareta" : "cigarety"} po výbere zo šenku`,
+  ALKOHOLIK: (s) => `Na zdravie: poldeci z ${s} tvojich NA EX za kolo sa po bitke vráti plný`,
+  EXEKUTOR: (s) => `súperov prah Exekúcie ${KONSTANTY.PRAH_EXEKUTORA_ZAKLAD - s} namiesto ${KONSTANTY.PRAH_EXEKUTORA_ZAKLAD}`,
 };
 
 function popisStarsieho(e: ElderState, kto: (p: PlayerId | null) => string, mojeBody: number, jehoBody: number): string {

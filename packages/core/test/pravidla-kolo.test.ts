@@ -301,7 +301,7 @@ describe("§7 Pitka — poradie vyhodnotenia", () => {
     expect(state.hraci[0].zadlzenie).toBe(0);
   });
 
-  it("§10 Fajčiar: +sila cigariet (bez ×2) len v 1. Pitke kola", () => {
+  it("§10 Fajčiar (v5): v Pitke cigarety navyše nedáva — dáva ich po šenku", () => {
     const s0 = setupGame(data, 11);
     const idx = s0.starsi.findIndex((e) => favourStarsieho(data, e) === "FAJCIAR");
     expect(idx).toBeGreaterThanOrEqual(0);
@@ -309,7 +309,7 @@ describe("§7 Pitka — poradie vyhodnotenia", () => {
     const starsi = s0.starsi.map((e, i) => (i === idx ? { ...e, marker: 1 as const, markerZaciatokKola: 1 as const } : e));
     const zaklad: Partial<GameState> = { starsi, ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! }, lokalityVHre: s0.lokalityVHre.slice(1) };
     const prva = vysledokPitky(dopiPitku(data, vPitke(data, 11, [[], []], zaklad)).events);
-    expect(prva.cigarety).toEqual([2, 0]);
+    expect(prva.cigarety).toEqual([0, 0]);
     const druha = vysledokPitky(dopiPitku(data, vPitke(data, 11, [[], []], { ...zaklad, pitkyCelkom: 2, pitkaCislo: 2 })).events);
     expect(druha.cigarety).toEqual([0, 0]);
   });

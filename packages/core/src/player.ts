@@ -74,17 +74,23 @@ export function limitVykladania(player: Pick<PlayerState, "poldeciPlne">): numbe
   return player.poldeciPlne + 1;
 }
 
-export function prahCirhozy(priazenAlkoholika: number): number {
-  return KONSTANTY.PRAH_CIRHOZY_ZAKLAD + priazenAlkoholika;
+// Priazne v5 (Michal 2026-10-24/25): Alkoholik, Kmotor (Úžerník), Abstinent
+// (Lakomec) a Neprajník už prahy, barter ani mäkké poškodenie nemenia.
+
+export function prahCirhozy(): number {
+  return KONSTANTY.PRAH_CIRHOZY_ZAKLAD;
 }
 
-/** Prah Dlhu = 2 + sila Úžerníka (priazeň je 2 × sila, Úžerník pridáva len silu). */
-export function prahDlhu(priazenUzernika: number): number {
-  return KONSTANTY.PRAH_DLHU_ZAKLAD + priazenUzernika / KONSTANTY.NASOBOK_PRIAZNE;
+export function prahDlhu(): number {
+  return KONSTANTY.PRAH_DLHU_ZAKLAD;
 }
 
-export function prahExekutora(priazenExekutora: number): number {
-  return KONSTANTY.PRAH_EXEKUTORA_ZAKLAD + 2 * priazenExekutora;
+/**
+ * Prah Exekúcie hráča (§11). Priazeň Exekútora v5 (Michal 2026-10-25): SÚPEROV
+ * prah je nižší o silu priazne (1 / 2 / 3) — `zlava` = sila súperovho Exekútora.
+ */
+export function prahExekutora(zlava = 0): number {
+  return KONSTANTY.PRAH_EXEKUTORA_ZAKLAD - zlava;
 }
 
 /** Hodnota jednej Viery; Veriaci od 2026-10-20 dáva Vieru navyše, nie vyššiu hodnotu. */
@@ -92,18 +98,7 @@ export function hodnotaViery(): number {
   return KONSTANTY.HODNOTA_VIERY_ZAKLAD;
 }
 
-/**
- * Stokársky barter (Michal 2026-10-18, priazeň Lakomca): stojí o silu priazne
- * menej — 5 / 4 / 3 / 2 cigarety. Priazeň je 2 × sila, preto polovica.
- */
-export function cenaBarteru(priazenLakomca: number): number {
-  return Math.max(1, KONSTANTY.BARTER_CENA - priazenLakomca / KONSTANTY.NASOBOK_PRIAZNE);
-}
-
-/**
- * Mäkké poškodenie Povier smie prekročiť súperove priznané Dlhy o priazeň
- * Neprajníka (2 / 4 / 6) — Michal 2026-10-18 namiesto kľúčového slova Zopár.
- */
-export function makkeNadDlhy(priazenNeprajnika: number): number {
-  return priazenNeprajnika;
+/** Stokársky barter (§7): pevná cena, Lakomec ju vo v5 už nezlacňuje. */
+export function cenaBarteru(): number {
+  return KONSTANTY.BARTER_CENA;
 }

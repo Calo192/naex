@@ -194,16 +194,20 @@ const DEDICSTVO: Readonly<Record<string, number>> = {
   vinko: 0.8,
 };
 
-/** Ako veľmi hráčovi pomáha jeden bod priazne daného typu. */
+/**
+ * Ako veľmi hráčovi pomáha jeden bod priazne (priazen = 2 × sila) daného typu.
+ * Priazne v5 sú vyrovnané na ≈ 1 cigaretu za kolo na bod sily (Michal
+ * 2026-10-25), preto zatiaľ rovnaká váha — doladí bot-tréner.
+ */
 const VAHA_PRIAZNE: Readonly<Record<Favour, number>> = {
-  BITKAR: 0.5,
+  BITKAR: 0.25,
   VERIACI: 0.2,
-  FAJCIAR: 0.25,
+  FAJCIAR: 0.2,
   NEPRAJNIK: 0.15,
-  ALKOHOLIK: 0.1,
-  EXEKUTOR: 0.05,
-  UZERNIK: 0.05,
-  LAKOMEC: 0.1,
+  ALKOHOLIK: 0.15,
+  EXEKUTOR: 0.1,
+  UZERNIK: 0.15,
+  LAKOMEC: 0.2,
 };
 
 /** Hodnota karty v balíčku — čím vyššia, tým radšej ju bot má. */

@@ -12,7 +12,6 @@
 import type { CardInstance, Favour, PlayerId, Podmienka, ScorecardDef, SlotIndex } from "./types.ts";
 import type { GameData } from "./data.ts";
 import { printedSides } from "./data.ts";
-import { BODOVANIE_V5 } from "./constants.ts";
 
 /** Sila priazne podľa pozície markera (Michal 2026-10-16: 1 / 2 / 3, predtým 1 / 2 / 2). */
 export const STUPNICA_HODNOTY = [3, 2, 1, 0, 0, 0, 1, 2, 3] as const;
@@ -303,8 +302,9 @@ export function elderScore(data: GameData, stav: StavBodovania, elder: ElderStat
   }
   const pre = (p: PlayerId): number => {
     const su: PlayerId = p === 0 ? 1 : 0;
-    if (vyhry[p] >= vyhry[su]) return bodyZaStarsieho(elder, p);
-    return BODOVANIE_V5.UTECHA && vyhry[p] > 0 ? 1 : 0;
+    // Kto väčšinu súbojov prehrá, nedostane nič — ani za vyhratú podmienku
+    // (variant „útecha“ Michal zamietol, interview 4).
+    return vyhry[p] >= vyhry[su] ? bodyZaStarsieho(elder, p) : 0;
   };
   return { body: [pre(0), pre(1)], vyhry, polozky };
 }

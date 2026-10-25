@@ -6,7 +6,6 @@ import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, ElderState, MarkerPos, ScorecardDef, StavBodovania } from "../src/index.ts";
 import {
-  BODOVANIE_V5,
   buildGameData,
   cenaPatronatu,
   elderScore,
@@ -171,13 +170,12 @@ describe("M5 — patronát a bodovanie", () => {
     expect(elderScore(d, stav([farar, b, c]), farar).body).toEqual([1, 1]);
   });
 
-  it("v5: dve rovnaké aktívne podmienky sú dva súboje; kto väčšinu prehrá, nedostane nič (útecha vypnutá)", () => {
+  it("v5: dve rovnaké aktívne podmienky sú dva súboje; kto väčšinu prehrá, nedostane nič (útecha nie — interview 4)", () => {
     const sc: ScorecardDef = { id: "sc", nazov: "Test", favour: "LAKOMEC", lava: ["cigarety", null, "cigarety", null], prava: [null, "strach", null, null] };
     const d = buildGameData(data.cards, new Map(), { scorecards: [sc], body: BODY });
     const e = elderAt(7); // bojí sa hráča 0 na úrovni 2, ostatní starší nie sú
     const stav = { ...stavBodovania({ cigarety: [3, 6], dlhy: [0, 0] }), starsi: [e] };
     const v = elderScore(d, stav, e);
-    expect(BODOVANIE_V5.UTECHA).toBe(false);
     expect(v.vyhry).toEqual([0, 2]);
     // Hráč 1 vyhral oba súboje o cigarety; starší sa ho nebojí (strach má z hráča 0) → 1 b.
     expect(v.body).toEqual([0, 1]);

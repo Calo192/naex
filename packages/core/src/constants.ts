@@ -168,19 +168,6 @@ export const DLZKY_HRY = { kratka: 3, stredna: 5, dlha: 7 } as const;
 export const VERZIA_PRAVIDIEL = "v5";
 /** Odkedy platí VERZIA_PRAVIDIEL — hráč ho vidí na stránke Pravidlá. */
 export const PRAVIDLA_PLATNE_OD = "2026-10-25";
-/**
- * Bodovanie v5 (návrh Michala 2026-10-24, docs/pravidla-v5/davka.md) — čo ešte
- * nie je rozhodnuté, je tu pomenované a vypnuté.
- */
-export const BODOVANIE_V5 = {
-  /**
-   * TODO(Michal): variant (a) „útecha“ — kto väčšinu súbojov pri staršom
-   * prehrá, ale vyhrá aspoň jednu podmienku, dostane 1 b. Rozhodne Michal po
-   * finálnom meraní stratéga (interview 3, 2026-10-25); dovtedy vypnuté.
-   */
-  UTECHA: false as boolean,
-} as const;
-
 export type DlzkaHry = keyof typeof DLZKY_HRY;
 export const ALL_DLZKY: readonly DlzkaHry[] = ["kratka", "stredna", "dlha"];
 export const PREDVOLENA_DLZKA: DlzkaHry = "stredna";

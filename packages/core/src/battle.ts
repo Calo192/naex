@@ -114,8 +114,9 @@ export function battleOutcome(damage: DamageResult): BattleOutcome {
 /** Krok Exekútora pre jedného hráča (PRAVIDLA §11). */
 export type ExekutorVysledok = "mimoOhrozenia" | "musiOdovzdatNastroj";
 
-export function exekutorCheck(priznaneDlhy: number, priazenExekutora: number): ExekutorVysledok {
-  return priznaneDlhy >= prahExekutora(priazenExekutora)
+/** zlavaPrahu = sila súperovej priazne Exekútora (v5). */
+export function exekutorCheck(priznaneDlhy: number, zlavaPrahu = 0): ExekutorVysledok {
+  return priznaneDlhy >= prahExekutora(zlavaPrahu)
     ? "musiOdovzdatNastroj"
     : "mimoOhrozenia";
 }

@@ -118,11 +118,11 @@ describe("M4 — výsledok", () => {
 });
 
 describe("M4 — Exekútor", () => {
-  it("prah je 10 + 2×priazeň", () => {
+  it("prah je 10, súperov Exekútor (v5) ho zníži o svoju silu", () => {
     expect(exekutorCheck(9, 0)).toBe("mimoOhrozenia");
     expect(exekutorCheck(10, 0)).toBe("musiOdovzdatNastroj");
-    expect(exekutorCheck(13, 2)).toBe("mimoOhrozenia");
-    expect(exekutorCheck(14, 2)).toBe("musiOdovzdatNastroj");
+    expect(exekutorCheck(7, 2)).toBe("mimoOhrozenia");
+    expect(exekutorCheck(8, 2)).toBe("musiOdovzdatNastroj");
   });
 
   it("po odovzdaní Nástroja zhorí polovica dlhov nadol", () => {
