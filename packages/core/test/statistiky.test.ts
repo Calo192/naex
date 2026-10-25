@@ -8,6 +8,7 @@ import type { Command, DvojicaStatistik, Event, GameState } from "../src/index.t
 import {
   apply,
   bodyTeraz,
+  elderScore,
   legalCommands,
   loadGameData,
   naTahu,
@@ -65,8 +66,10 @@ describe("štatistiky partie", () => {
         expect(s.poskodeniePecene).toBeGreaterThanOrEqual(s.cirhozyZiskane * 2);
         if (state.koniec?.body != null) {
           expect(s.body).toBe(state.koniec.body[p]);
+          // v5: bodyPodla = vyhraté súboje podmienok, body sú za starších.
           const podla = Object.values(s.bodyPodla).reduce((a, x) => a + x, 0);
-          expect(podla).toBe(s.body);
+          expect(podla).toBe(state.starsi.reduce((a, e) => a + elderScore(data, state, e).vyhry[p], 0));
+          expect(s.body).toBe(state.starsi.reduce((a, e) => a + elderScore(data, state, e).body[p], 0));
         }
       }
       // Remíza o staršieho nemá víťaza.

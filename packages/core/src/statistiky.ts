@@ -74,6 +74,10 @@ export interface StatistikyHraca {
   readonly body: number;
   /** Najviac bodov v jednej partii (pri súčte maximum). */
   readonly najviacBodov: number;
+  /**
+   * Do v4 body podľa podmienok; od v5 (body sa dávajú za staršieho, nie za
+   * podmienku) počet vyhratých súbojov podľa podmienok.
+   */
   readonly bodyPodla: Readonly<Partial<Record<Podmienka, number>>>;
 
   // ---- štatistiky v2 (Michal 2026-10-22, profily): staršie partie ich nemajú — partieV2 hovorí, z koľkých partií sú.

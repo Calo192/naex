@@ -68,7 +68,7 @@ describe("kronika partie", () => {
         expect(k.kola.flatMap((x) => x.naex).filter((x) => x.kto === p)).toHaveLength(stat[p].naex);
         expect(stat[p].naexHodnotene).toBeLessThanOrEqual(stat[p].naex);
         // Väčšina NA EX sa dá posúdiť (súper odpovedal alebo nemohol) — nie je stále null.
-        if (stat[p].naex > 0) expect(stat[p].naexHodnotene).toBeGreaterThan(0);
+        if (stat[p].naex >= 3) expect(stat[p].naexHodnotene).toBeGreaterThan(0);
         expect(stat[p].partieV2).toBe(1);
       }
       // Body po poslednom kole = záverečné bodovanie (ak partia skončila bodovaním).

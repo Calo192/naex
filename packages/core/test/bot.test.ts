@@ -112,7 +112,8 @@ describe("offline protihráč", () => {
     let porovnani = 0;
     let rng = rngSeed(5);
     for (const [i, s] of stavyBota.entries()) {
-      if (i % 3 !== 0 || s.bitkaStav?.krok === "vestica") continue; // Veštica smie vidieť oba balíčky
+      // Veštica smie vidieť oba balíčky, Vízia vrchnú kartu vlastného.
+      if (i % 3 !== 0 || s.bitkaStav?.krok === "vestica" || s.vizia !== null) continue;
       const su = s.hraci[0];
       const [skryte, r1] = rngShuffle(rng, [...su.ruka, ...su.doberaci]);
       const [moj, r2] = rngShuffle(r1, s.hraci[1].doberaci);

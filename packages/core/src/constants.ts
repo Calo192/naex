@@ -140,7 +140,10 @@ export const KONSTANTY = {
   POLDECI_NA_ZACIATKU_KOLA: 1,
 
   /**
-   * Podmienka „zvyšné cigarety“ ráta kusy po trojiciach (Michal 2026-10-16):
+   * Do v4: podmienka „zvyšné cigarety“ rátala kusy po trojiciach. Vo v5 sa
+   * o cigarety bojuje kus po kuse (súboj podmienok), konštantu číta už len UI.
+   *
+   * Pôvodne: podmienka „zvyšné cigarety“ ráta kusy po trojiciach (Michal 2026-10-16):
    * cigarety sa hromadia z akcií Cigareta a sú hlavne mena, nie zdroj bodov.
    */
   CIGARIET_NA_KUS: 3,
@@ -165,6 +168,19 @@ export const DLZKY_HRY = { kratka: 3, stredna: 5, dlha: 7 } as const;
 export const VERZIA_PRAVIDIEL = "v5";
 /** Odkedy platí VERZIA_PRAVIDIEL — hráč ho vidí na stránke Pravidlá. */
 export const PRAVIDLA_PLATNE_OD = "2026-10-25";
+/**
+ * Bodovanie v5 (návrh Michala 2026-10-24, docs/pravidla-v5/davka.md) — čo ešte
+ * nie je rozhodnuté, je tu pomenované a vypnuté.
+ */
+export const BODOVANIE_V5 = {
+  /**
+   * TODO(Michal): variant (a) „útecha“ — kto väčšinu súbojov pri staršom
+   * prehrá, ale vyhrá aspoň jednu podmienku, dostane 1 b. Rozhodne Michal po
+   * finálnom meraní stratéga (interview 3, 2026-10-25); dovtedy vypnuté.
+   */
+  UTECHA: false as boolean,
+} as const;
+
 export type DlzkaHry = keyof typeof DLZKY_HRY;
 export const ALL_DLZKY: readonly DlzkaHry[] = ["kratka", "stredna", "dlha"];
 export const PREDVOLENA_DLZKA: DlzkaHry = "stredna";

@@ -273,7 +273,7 @@ describe("§14 Bodovanie na konci hry", () => {
     expect(data.bodyPodmienok).toEqual({ znepokojenie: 1, strach: 1, vydesenie: 1, lokality: 1, starsi: 1, cigarety: 1, rezerva: 1, cirhoza: -1, dlh: -1, abstak: -1 });
   });
 
-  it("§14/§11: Dlh uberá aj priznaný, Cirhóza len nepriznaná (ruka aj oba balíčky), cigarety po trojiciach", () => {
+  it("§14/§11 (v5): v súboji Dlh ráta aj priznaný, Cirhóza len nepriznanú (ruka aj oba balíčky), cigarety kus po kuse", () => {
     const R3: Layout4 = ["Rana", "Rana", "Rana", null];
     const def = makeDef("r_starsi", R3, EMPTY, { tags: ["Starešina"] });
     const sada = buildGameData(new Map([[def.id, def]]), new Map(), {
@@ -298,8 +298,12 @@ describe("§14 Bodovanie na konci hry", () => {
         nic,
       ],
     };
-    // Hráč 0: Dlh 2 × −1, Cirhóza 2 × −2 (priznaná sa neráta), cigarety ⌊8/3⌋ = 2 × 1 → −4. Hráč 1: 2 cigarety = 0 kusov.
-    expect(elderScore(sada, stav, elder).body).toEqual([-2, 0]);
+    // Hráč 0: Dlhy 2, Cirhózy 2 (priznaná sa neráta), cigarety 8; hráč 1: 0, 0, 2.
+    // Súboje: Dlh a Cirhóza hráč 1 (menej), cigarety hráč 0 → 1 : 2, body len hráč 1 (stred = 1).
+    const v = elderScore(sada, stav, elder);
+    expect(v.polozky[0].map((x) => [x.podmienka, x.kusy])).toEqual([["dlh", 2], ["cirhoza", 2], ["cigarety", 8]]);
+    expect(v.vyhry).toEqual([1, 2]);
+    expect(v.body).toEqual([0, 1]);
   });
 });
 

@@ -1,20 +1,24 @@
 // Hodnota lokality (Michal 2026-10-22): pri výbere cieľa a vo vrstve Lokality
 // ukazuje, o koľko bodov si každý polepší ovládnutím lokality podľa dnešného
-// rozdania scorecardov — každá aktívna podmienka „lokality“ zvlášť.
+// rozdania scorecardov. Vo v5 je podmienka Lokality súboj (body za staršieho).
 
 import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { ClientState, Command, GameState } from "../src/index.ts";
-import { apply, hodnotaLokality, legalCommands, loadGameData, naTahu, podmienkyStarsieho, rngInt, rngSeed, setupGame, viewFor } from "../src/index.ts";
+import { apply, bodyZaStarsieho, hodnotaLokality, legalCommands, loadGameData, naTahu, podmienkyStarsieho, rngInt, rngSeed, setupGame, viewFor } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
-/** Nezávisle od bodyTeraz: počet aktívnych podmienok „lokality“ × body za kus. */
-const ocakavana = (v: ClientState): number =>
-  v.starsi.reduce((a, e) => a + podmienkyStarsieho(data, e).filter((x) => x.aktivna && x.podmienka === "lokality").length, 0) *
-  data.bodyPodmienok.lokality;
+/**
+ * Horná hranica (v5): lokalita pomôže len pri starších s aktívnou podmienkou
+ * Lokality — najviac o celé body za takého staršieho (1 + zóny strachu).
+ */
+const najviac = (v: ClientState, p: 0 | 1): number =>
+  v.starsi
+    .filter((e) => podmienkyStarsieho(data, e).some((x) => x.aktivna && x.podmienka === "lokality"))
+    .reduce((a, e) => a + bodyZaStarsieho(e, p), 0);
 
 /** Stavy pri voľbe cieľa v náhodných partiách (od 2. kola, keď už niečo leží na ukazovateľoch). */
 function volbyCiela(seed: number): GameState[] {
@@ -34,17 +38,21 @@ function volbyCiela(seed: number): GameState[] {
 }
 
 describe("hodnota lokality", () => {
-  it("každá lokalita má pre oboch hodnotu = aktívne podmienky „lokality“ × body za kus", () => {
+  it("v5: lokalita nikomu neuberie, pomôže najviac o body starších s podmienkou Lokality, a pre všetky lokality rovnako", () => {
     let nenulovych = 0;
     for (const seed of [3, 7, 12]) {
       for (const s of volbyCiela(seed)) {
         for (const p of [0, 1] as const) {
           const v = viewFor(data, s, p);
-          const ocakavane = ocakavana(v);
-          for (const k of v.lokalityVHre) {
-            expect(hodnotaLokality(data, v, k)).toEqual([ocakavane, ocakavane]);
-            if (ocakavane > 0) nenulovych++;
+          const prva = v.lokalityVHre[0];
+          if (prva === undefined) continue;
+          const h = hodnotaLokality(data, v, prva);
+          for (const q of [0, 1] as const) {
+            expect(h[q]).toBeGreaterThanOrEqual(0);
+            expect(h[q]).toBeLessThanOrEqual(najviac(v, q));
           }
+          for (const k of v.lokalityVHre) expect(hodnotaLokality(data, v, k)).toEqual(h);
+          if (h[0] + h[1] > 0) nenulovych++;
         }
       }
     }
@@ -57,7 +65,10 @@ describe("hodnota lokality", () => {
     const [ciel, ...ine] = v0.lokalityVHre;
     const v: ClientState = { ...v0, naSekeru: ine.slice(0, 2) };
     const jedna = hodnotaLokality(data, v, ciel!);
-    expect(hodnotaLokality(data, v, ciel!, true)).toEqual([jedna[0] * 3, jedna[1] * 3]);
+    // v5: súboj o lokality — tri lokality pomôžu aspoň toľko ako jedna (nie trojnásobok).
+    const tri = hodnotaLokality(data, v, ciel!, true);
+    expect(tri[0]).toBeGreaterThanOrEqual(jedna[0]);
+    expect(tri[1]).toBeGreaterThanOrEqual(jedna[1]);
     // Bez sekery na stole sa nič nepridá.
     expect(hodnotaLokality(data, v0, ciel!, true)).toEqual(hodnotaLokality(data, v0, ciel!));
   });

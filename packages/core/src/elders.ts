@@ -12,7 +12,7 @@
 import type { CardInstance, Favour, PlayerId, Podmienka, ScorecardDef, SlotIndex } from "./types.ts";
 import type { GameData } from "./data.ts";
 import { printedSides } from "./data.ts";
-import { KONSTANTY } from "./constants.ts";
+import { BODOVANIE_V5 } from "./constants.ts";
 
 /** Sila priazne podľa pozície markera (Michal 2026-10-16: 1 / 2 / 3, predtým 1 / 2 / 2). */
 export const STUPNICA_HODNOTY = [3, 2, 1, 0, 0, 0, 1, 2, 3] as const;
@@ -227,7 +227,8 @@ function pocetKusov(podmienka: Podmienka, stav: StavBodovania, p: PlayerId): num
     case "starsi":
       return stav.starsi.filter((e) => e.ziskal === p).length;
     case "cigarety":
-      return Math.floor(hrac.cigarety / KONSTANTY.CIGARIET_NA_KUS);
+      // v5: súboj o zvyšné cigarety kus po kuse (trojice platili pri bodoch za kus vo v4).
+      return hrac.cigarety;
     case "cirhoza":
       return nepriznane("cirhoza");
     case "dlh":
@@ -243,60 +244,67 @@ function pocetKusov(podmienka: Podmienka, stav: StavBodovania, p: PlayerId): num
   }
 }
 
-/** Aktívna podmienka scorecardu a čo z nej hráč má. */
+/** Aktívna podmienka scorecardu — súboj hráčov (v5) a čo z nej hráč má. */
 export interface BodPodmienky extends StavPodmienky {
+  /** 1 = hráč tento súboj vyhral, 0 = prehral alebo rovnosť (body za staršieho sú v BodyScorecardu). */
   readonly body: number;
   /**
-   * Za koľko kusov: pri zónovej podmienke počet starších, ktorí sa hráča boja
-   * práve na jej úroveň; inak ovládnuté lokality, získaní starší, cigarety,
-   * Dlhy (aj priznané) či nepriznané Cirhózy hráča.
+   * Hodnota hráča v súboji: pri zónovej podmienke počet OSTATNÝCH starších,
+   * ktorí sa ho boja aspoň na jej úroveň; inak ovládnuté lokality, získaní
+   * starší, cigarety, plné poldeci, Absťáky za hru, Dlhy (aj priznané) či
+   * nepriznané Cirhózy hráča.
    */
   readonly kusy: number;
 }
 
 export interface BodyScorecardu {
-  /** Body hráča 0 a hráča 1 z tohto scorecardu. */
+  /** Body hráča 0 a hráča 1 za tohto staršieho. */
   readonly body: readonly [number, number];
-  /** Každá aktívna podmienka zvlášť, pre každého hráča (aj s nulou). */
+  /** Koľko súbojov (aktívnych podmienok) vyhral hráč 0 a hráč 1. */
+  readonly vyhry: readonly [number, number];
+  /** Každá aktívna podmienka zvlášť, pre každého hráča. */
   readonly polozky: readonly [readonly BodPodmienky[], readonly BodPodmienky[]];
 }
 
+/** Body, ktoré hráč za staršieho dostane: 1 + zóny strachu, v ktorých sa ho bojí (priazeň či stred = 1). */
+export function bodyZaStarsieho(elder: ElderState, p: PlayerId): number {
+  return 1 + strachZ(elder, p);
+}
+
 /**
- * Bodovanie jedného scorecardu na konci hry (Michal 2026-10-16). Starší nemá
- * pri bodovaní strany: každá AKTÍVNA podmienka (karta na ukazovateli má pri
- * nej akciu, na ktorejkoľvek strane) boduje OBOM hráčom, každá zvlášť.
- * Marker tohto staršieho o bodoch nerozhoduje — určuje len priazeň.
+ * Bodovanie v5 (návrh Michala 2026-10-24, davka.md): body sa rátajú za každého
+ * staršieho zvlášť. Každá AKTÍVNA podmienka jeho scorecardu je súboj hráčov —
+ * dve rovnaké podmienky sú dva súboje (Michal 2026-10-25); rovnosť v súboji
+ * nevyhrá nikto. Smer súboja dávajú dáta (bodyPodmienok: kladné = vyhrá viac,
+ * záporné = vyhrá menej — Dlh, Cirhóza, Absťák).
  *
- *  - Za kus (lokality, starší, cigarety, Dlh, Cirhóza): kusy hráča × body.
- *  - Zónové (Znepokojenie 1, Strach 2, Vydesenie 3) sa pozerajú na strach
- *    VŠETKÝCH starších v hre, aj tohto: za každého staršieho, ktorý sa hráča
- *    bojí na úrovni L, dá scorecard hodnotu svojej najvyššej aktívnej zónovej
- *    podmienky s úrovňou ≤ L. Príklad: Farár má aktívne Znepokojenie a Strach,
- *    starší A sa ťa bojí na úrovni 1, B na 2, C na 3 → 1 + 2 + 2.
+ *  - Zónové podmienky (Znepokojenie 1, Strach 2, Vydesenie 3) rátajú len
+ *    OSTATNÝCH starších, ktorí sa hráča boja aspoň na tú úroveň.
+ *  - Body za staršieho dostane, kto vyhrá viac súbojov; pri rovnosti obaja.
+ *    Body = 1 + zóny strachu, v ktorých sa starší hráča bojí (bodyZaStarsieho).
+ *  - Plošné body za kusy a násobenie počtom podmienok sa vo v5 rušia.
  */
 export function elderScore(data: GameData, stav: StavBodovania, elder: ElderState): BodyScorecardu {
   const aktivne = podmienkyStarsieho(data, elder).filter((p) => p.aktivna);
-  const preHraca = (p: PlayerId): BodPodmienky[] => {
-    // Úroveň strachu → koľko starších sa hráča bojí práve na ňu.
-    const naUrovni: [number, number, number, number] = [0, 0, 0, 0];
-    for (const e of stav.starsi) naUrovni[strachZ(e, p)]++;
-    // Ktorá zónová podmienka berie starších na úrovni L: najvyššia aktívna s úrovňou ≤ L.
-    const urovne = new Set(aktivne.map((x) => urovenPodmienky(x.podmienka)).filter((u) => u !== null));
-    const beriePre = (u: 1 | 2 | 3): number => {
-      let kusy = 0;
-      for (let l = u; l <= 3; l++) {
-        const najvyssia = [3, 2, 1].find((x) => x <= l && urovne.has(x as 1 | 2 | 3));
-        if (najvyssia === u) kusy += naUrovni[l] ?? 0;
-      }
-      return kusy;
-    };
-    return aktivne.map((pod) => {
-      const u = urovenPodmienky(pod.podmienka);
-      const kusy = u !== null ? beriePre(u) : pocetKusov(pod.podmienka, stav, p);
-      return { ...pod, kusy, body: kusy * data.bodyPodmienok[pod.podmienka] };
-    });
+  const ostatni = stav.starsi.filter((e) => e.elderId !== elder.elderId);
+  const hodnota = (podmienka: Podmienka, p: PlayerId): number => {
+    const u = urovenPodmienky(podmienka);
+    return u !== null ? ostatni.filter((e) => strachZ(e, p) >= u).length : pocetKusov(podmienka, stav, p);
   };
-  const polozky = [preHraca(0), preHraca(1)] as const;
-  const sucet = (x: readonly BodPodmienky[]): number => x.reduce((a, y) => a + y.body, 0);
-  return { body: [sucet(polozky[0]), sucet(polozky[1])], polozky };
+  const vyhry: [number, number] = [0, 0];
+  const polozky: [BodPodmienky[], BodPodmienky[]] = [[], []];
+  for (const pod of aktivne) {
+    const h: [number, number] = [hodnota(pod.podmienka, 0), hodnota(pod.podmienka, 1)];
+    const smer = Math.sign(data.bodyPodmienok[pod.podmienka]);
+    const rozdiel = smer * (h[0] - h[1]);
+    const vitaz: PlayerId | null = rozdiel > 0 ? 0 : rozdiel < 0 ? 1 : null;
+    if (vitaz !== null) vyhry[vitaz]++;
+    for (const p of [0, 1] as const) polozky[p].push({ ...pod, kusy: h[p], body: vitaz === p ? 1 : 0 });
+  }
+  const pre = (p: PlayerId): number => {
+    const su: PlayerId = p === 0 ? 1 : 0;
+    if (vyhry[p] >= vyhry[su]) return bodyZaStarsieho(elder, p);
+    return BODOVANIE_V5.UTECHA && vyhry[p] > 0 ? 1 : 0;
+  };
+  return { body: [pre(0), pre(1)], vyhry, polozky };
 }

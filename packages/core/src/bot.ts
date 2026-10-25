@@ -297,13 +297,13 @@ interface Kontext {
   readonly povaha: Povaha;
 }
 
-/** Koľko bodov na konci hry dá jedna cigareta navyše (podmienky „zvyšné cigarety“, kus = 3). */
-function bodyZaCigaretu(data: GameData, s: GameState): number {
-  let n = 0;
-  for (const elder of s.starsi) {
-    for (const p of podmienkyStarsieho(data, elder)) if (p.aktivna && p.podmienka === "cigarety") n++;
-  }
-  return (n * data.bodyPodmienok.cigarety) / KONSTANTY.CIGARIET_NA_KUS;
+/**
+ * Koľko bodov na konci hry dá jedna cigareta navyše. Vo v5 je podmienka
+ * Cigarety súboj — cena jednej cigarety nie je lineárna a rozdiel bodov ju už
+ * zachytí (rozdielBodov), preto tu nič navyše (stratég: inak bot len pasuje).
+ */
+function bodyZaCigaretu(_data: GameData, _s: GameState): number {
+  return 0;
 }
 
 /**
@@ -353,15 +353,16 @@ function buducnostHry(s: GameState): number {
 /** Čo získa víťaz prebiehajúcej bitky oproti porazenému (v bodoch). */
 function stavkaBitky(data: GameData, s: GameState, ja: PlayerId): number {
   if (s.ciel === null) return 0;
-  let lokality = 0;
-  for (const elder of s.starsi) {
-    for (const p of podmienkyStarsieho(data, elder)) if (p.aktivna && p.podmienka === "lokality") lokality++;
-  }
+  // v5: lokalita (aj zo sekery) pomôže v súbojoch o lokality — rozdiel bodov,
+  // keď ju vezmem ja, oproti tomu, keď ju vezme súper.
+  const karty = [...(s.ciel.lokalita === null ? [] : [s.ciel.lokalita]), ...s.naSekeru.filter((k) => k.uid !== s.ciel?.lokalita?.uid)];
+  const sLokalitou = (q: PlayerId): GameState => ({ ...s, ovladnute: [...s.ovladnute, ...karty.map((karta) => ({ karta, hrac: q }))] });
+  const lokality = Math.abs(rozdielBodov(data, sLokalitou(ja), ja) - rozdielBodov(data, sLokalitou(opponentOf(ja)), ja)) / 2;
   // Patronát: víťaz-patrón si staršieho nechá, porazený platí poldeci.
   let patronat = 0;
   for (const q of [0, 1] as const) if (s.patronat[q] !== null) patronat += hodnotaZiskania(data, s, ja, q) + 2;
   // Na sekeru (Michal 2026-10-21): víťaz berie aj lokality z predošlých remíz.
-  return lokality * data.bodyPodmienok.lokality * (1 + s.naSekeru.length) + 1.5 + patronat;
+  return lokality + 1.5 + patronat;
 }
 
 /**
