@@ -864,3 +864,16 @@ Staré znenie §11 (Kliatby):
 Staré znenie §4 (Začiatok kola): „Keď sa doberací balíček minie, zamieša sa
 odhadzovací.“ — §7 Vízia a §16 Veľmi smútiaca vdova: „prázdny sa doplní
 zamiešaním odhadzovacieho“.
+
+## v5 — Veštica zamieša prázdny doberací balíček (§9.5b, Michal 2026-10-25)
+
+Michal: Veštica sa má pri prázdnom doberacom balíčku jedného z hráčov spustiť —
+prázdny doberací sa doplní zamiešaním svojho odhadzovacieho, rovnako ako pri
+ťahaní. Predtým sa Veštica pri prázdnom doberacom balíčku ktoréhokoľvek
+hráča nespustila. Nespustí sa už len vtedy, keď niektorý hráč nemá ani
+odhadzovací balíček. `VERZIA_PRAVIDIEL` ostáva „v5“.
+
+Staré znenie §9.5b:
+
+> Porazený s Vešticou vo svojej partii si prezrie oba doberacie balíčky,
+> vymení jednu svoju kartu za súperovu a oba balíčky sa zamiešajú (§16).

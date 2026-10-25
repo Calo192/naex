@@ -1131,10 +1131,14 @@
     {
       "id": "9.vestica",
       "paragraf": "9. Bitka › 9.5b Veštica",
-      "pravidlo": "Porazený s Vešticou si prezrie oba doberacie balíčky, vymení jednu kartu a balíčky sa zamiešajú.",
+      "pravidlo": "Porazený s Vešticou si prezrie oba doberacie balíčky, vymení jednu kartu a balíčky sa zamiešajú. Prázdny doberací sa najprv doplní zamiešaním odhadzovacieho; bez doberacieho aj odhadzovacieho sa Veštica nespustí.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/playtest-055944.test.ts › Veštica: oba balíčky vidí len porazený počas výberu"
+        "packages/core/test/playtest-055944.test.ts › Veštica: oba balíčky vidí len porazený počas výberu",
+        "packages/core/test/pravidla-20261025.test.ts › prázdny doberací porazeného: odhadzovací sa zamieša, Veštica čaká na výber a vymení kartu",
+        "packages/core/test/pravidla-20261025.test.ts › prázdne doberacie oboch: zamiešajú sa oba odhadzovacie",
+        "packages/core/test/pravidla-20261025.test.ts › súper nemá ani doberací, ani odhadzovací: Veštica sa nespustí a nič sa nemieša",
+        "packages/core/test/pravidla-20261025.test.ts › porazený nemá ani doberací, ani odhadzovací: Veštica sa nespustí"
       ]
     },
     {

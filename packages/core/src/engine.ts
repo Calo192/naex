@@ -557,6 +557,20 @@ function novaInstancia(s: MutState, data: GameData, defId: string): CardInstance
 }
 
 /**
+ * Keď sa doberací balíček minie, odhadzovací sa zamieša a stane sa z neho nový
+ * doberací balíček (PRAVIDLA §4) — pri ťahaní aj pri Veštici. Vracia, či sa miešalo.
+ */
+function doplnDoberaci(s: MutState, p: PlayerId): boolean {
+  const player = hrac(s, p);
+  if (player.doberaci.length > 0 || player.odhadzovaci.length === 0) return false;
+  const [premiesane, rng] = rngShuffle(s.rng, player.odhadzovaci);
+  s.rng = rng;
+  player.doberaci = premiesane as DeepMutable<CardInstance>[];
+  player.odhadzovaci = [];
+  return true;
+}
+
+/**
  * Ťahanie z vlastného doberacieho balíčka, s premiešaním odhadzovacieho.
  * Dobratý Dlh sa hneď sám prizná a hráč za neho ťahá ďalšiu kartu — aj tá
  * môže byť Dlh (Michal 2026-10-20, zrýchlenie hry). Vracia karty v ruke.
@@ -566,12 +580,7 @@ function tahaj(s: MutState, p: PlayerId, pocet: number, events: Event[]): CardIn
   const tahane: CardInstance[] = [];
   let priznane = 0;
   for (let i = 0; i < pocet; i++) {
-    if (player.doberaci.length === 0 && player.odhadzovaci.length > 0) {
-      const [premiesane, rng] = rngShuffle(s.rng, player.odhadzovaci);
-      s.rng = rng;
-      player.doberaci = premiesane as DeepMutable<CardInstance>[];
-      player.odhadzovaci = [];
-    }
+    doplnDoberaci(s, p);
     const karta = player.doberaci.shift();
     if (karta === undefined) break;
     if (karta.defId === "dlh") {
@@ -3110,13 +3119,18 @@ function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
   // 5. Veštica (Prehra): porazený vymení kartu medzi doberacími balíčkami.
   if (b.krok === "vestica") {
     const porazeny = b.vitaz === null ? null : opponentOf(b.vitaz);
-    if (
-      porazeny !== null &&
-      !b.vesticaHotova &&
-      maEfekt(s, data, porazeny, "vestica") &&
-      s.hraci[porazeny].doberaci.length > 0 &&
-      s.hraci[opponentOf(porazeny)].doberaci.length > 0
-    ) {
+    const maKarty = (q: PlayerId): boolean => s.hraci[q].doberaci.length + s.hraci[q].odhadzovaci.length > 0;
+    if (porazeny !== null && !b.vesticaHotova && maEfekt(s, data, porazeny, "vestica") && maKarty(porazeny) && maKarty(opponentOf(porazeny))) {
+      // Prázdny doberací balíček sa doplní ako pri ťahaní (Michal 2026-10-25) — inak by Veštica prepadla.
+      // Keď niekto nemá ani odhadzovací, Veštica sa nespustí a nič sa nemieša.
+      for (const q of [porazeny, opponentOf(porazeny)]) {
+        if (doplnDoberaci(s, q)) {
+          events.push({
+            type: "log",
+            text: `Veštica: doberací balíček hráča ${q + 1} sa minul — odhadzovací sa zamiešal a je z neho nový doberací.`,
+          });
+        }
+      }
       b.caka = porazeny;
       return;
     }

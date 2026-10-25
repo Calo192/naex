@@ -7,7 +7,7 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardDef, CardInstance, GameData, GameState, PlayerId, PlayerState } from "../src/index.ts";
-import { apply, buildGameData, loadGameData, nahladPitky, naTahu, parseScorecards, setupGame } from "../src/index.ts";
+import { apply, buildGameData, legalCommands, loadGameData, nahladPitky, naTahu, parseScorecards, setupGame, viewFor } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
 import { instanceFor, makeDef } from "./helpers.ts";
 
@@ -221,5 +221,110 @@ describe("keď sa doberací balíček minie, odhadzovací sa zamieša a stane sa
     const po = apply(data, s, { type: "place", uid: vdova.uid, target: "vlastna" }, 0).state;
     const h1 = po.hraci[1];
     expect(uids([...h1.ruka, ...h1.doberaci, ...h1.odhadzovaci])).not.toContain(muz.uid);
+  });
+});
+
+describe("Veštica pri prázdnom doberacom balíčku zamieša odhadzovací (Michal 2026-10-25)", () => {
+  /**
+   * Hráč 0 vyhral, drží prebytok 1; porazený hráč 1 má v línii Vešticu.
+   * Rozdelením prebytku bitka dôjde ku kroku Veštice.
+   */
+  function poPrebytku(seed: number, h0: Partial<PlayerState>, h1: Partial<PlayerState>): { pred: GameState; po: GameState; log: string[] } {
+    const s0 = setupGame(data, seed);
+    const pred = sHracom(
+      sHracom(
+        {
+          ...s0,
+          faza: "bitka",
+          kolo: 2,
+          utocnik: 1,
+          strany: [[], [{ card: inst("vestica"), playedBy: 1 }]],
+          ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
+          lokalityVHre: s0.lokalityVHre.slice(1),
+          bitkaStav: {
+            krok: "prebytok",
+            caka: 0,
+            sums: [{}, {}],
+            exekutorHotovy: [true, true],
+            pohorsenieZostava: [0, 0],
+            pohorsenieHranice: {},
+            damage: null,
+            vitaz: 0,
+            prebytokDrzi: 0,
+            prebytokZostava: 1,
+            prebytokPosunute: [],
+            pohrebHotovy: [false, false],
+            karHotovy: [true, true],
+            vesticaHotova: false,
+            benzinkaZostava: [0, 0],
+            spalit: [],
+          },
+        },
+        0,
+        h0,
+      ),
+      1,
+      h1,
+    );
+    const cmd = legalCommands(data, pred, 0).find((c) => c.type === "prebytok");
+    expect(cmd).toBeDefined();
+    const r = apply(data, pred, cmd!, 0);
+    return { pred, po: r.state, log: r.events.flatMap((e) => (e.type === "log" ? [e.text] : [])) };
+  }
+
+  it("prázdny doberací porazeného: odhadzovací sa zamieša, Veštica čaká na výber a vymení kartu", () => {
+    const odhodene = [inst("ministrant"), inst("cirhoza"), inst("pijan")];
+    const supera = kusy(2, "kocovnik");
+    const { pred, po } = poPrebytku(81, { doberaci: supera, odhadzovaci: [] }, { doberaci: [], odhadzovaci: odhodene });
+    expect(po.bitkaStav?.krok).toBe("vestica");
+    expect(naTahu(po)).toBe(1);
+    expect(uids(po.hraci[1].doberaci).sort()).toEqual(uids(odhodene).sort());
+    expect(po.hraci[1].odhadzovaci).toEqual([]);
+    expect(uids(po.hraci[0].doberaci)).toEqual(uids(supera));
+    // Rovnaký stav, rovnaké zamiešanie — zo seedovaného generátora v stave.
+    expect(apply(data, pred, legalCommands(data, pred, 0).find((c) => c.type === "prebytok")!, 0).state).toEqual(po);
+    expect(po.rng).not.toEqual(pred.rng);
+
+    // Oba balíčky vidí len porazený; víťaz vidí len počet a prázdny odhadzovací.
+    expect(viewFor(data, po, 1).volbaVestica).toEqual({ moj: po.hraci[1].doberaci, jeho: po.hraci[0].doberaci });
+    const vitaz = viewFor(data, po, 0);
+    expect(vitaz.volbaVestica).toBeNull();
+    expect(vitaz.hraci[1].doberaciPocet).toBe(3);
+    expect(vitaz.hraci[1].odhadzovaci).toEqual([]);
+    expect(JSON.stringify(vitaz)).not.toContain(`"uid":${po.hraci[1].doberaci[0]!.uid},`);
+
+    const moja = po.hraci[1].doberaci[0]!;
+    const jeho = po.hraci[0].doberaci[0]!;
+    const koniec = apply(data, po, { type: "vestica", moja: 0, jeho: 0 }, 1).state;
+    expect(koniec.bitkaStav === null || koniec.bitkaStav.vesticaHotova).toBe(true);
+    const vsetky = (s: GameState, p: PlayerId): number[] => uids([...s.hraci[p].ruka, ...s.hraci[p].doberaci, ...s.hraci[p].odhadzovaci]);
+    expect(vsetky(koniec, 1)).toContain(jeho.uid);
+    expect(vsetky(koniec, 0)).toContain(moja.uid);
+  });
+
+  it("prázdne doberacie oboch: zamiešajú sa oba odhadzovacie", () => {
+    const odhodene0 = kusy(2, "kocovnik");
+    const odhodene1 = kusy(2, "ministrant");
+    const { po, log } = poPrebytku(82, { doberaci: [], odhadzovaci: odhodene0 }, { doberaci: [], odhadzovaci: odhodene1 });
+    expect(po.bitkaStav?.krok).toBe("vestica");
+    expect(naTahu(po)).toBe(1);
+    expect(uids(po.hraci[0].doberaci).sort()).toEqual(uids(odhodene0).sort());
+    expect(uids(po.hraci[1].doberaci).sort()).toEqual(uids(odhodene1).sort());
+    expect(po.hraci[0].odhadzovaci).toEqual([]);
+    expect(po.hraci[1].odhadzovaci).toEqual([]);
+    expect(log.filter((t) => t.startsWith("Veštica: doberací balíček"))).toHaveLength(2);
+  });
+
+  it("súper nemá ani doberací, ani odhadzovací: Veštica sa nespustí a nič sa nemieša", () => {
+    const odhodene = kusy(2, "ministrant");
+    const { po, log } = poPrebytku(83, { doberaci: [], odhadzovaci: [] }, { doberaci: [], odhadzovaci: odhodene });
+    expect(po.bitkaStav?.krok).not.toBe("vestica");
+    expect(log.filter((t) => t.startsWith("Veštica"))).toEqual([]);
+  });
+
+  it("porazený nemá ani doberací, ani odhadzovací: Veštica sa nespustí", () => {
+    const { po, log } = poPrebytku(84, { doberaci: [], odhadzovaci: kusy(2, "kocovnik") }, { doberaci: [], odhadzovaci: [] });
+    expect(po.bitkaStav?.krok).not.toBe("vestica");
+    expect(log.filter((t) => t.startsWith("Veštica"))).toEqual([]);
   });
 });
