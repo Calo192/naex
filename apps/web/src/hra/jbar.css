@@ -664,6 +664,11 @@
   border-radius: 0;
 }
 
+/* V hornom riadku (34 – 52 px) sú dva riadky vety len bez okraja. */
+.jbar.mel-hore .mel-telo {
+  padding-block: 0;
+}
+
 /* Nad osou je Melichar len v hornom riadku — menovka by vzala riadok vete (kto hovorí, povie fotka). */
 .jbar.mel-hore .mel-kto {
   display: none;
@@ -754,19 +759,23 @@
   }
 }
 
+/* Telo má celú výšku baru a text je v ňom vycentrovaný — StrankovanaVeta z neho ráta voľnú výšku. */
 .mel-telo {
   display: flex;
   flex: 1;
   flex-direction: column;
   justify-content: center;
+  align-self: stretch;
   gap: 1px;
   min-width: 0;
-  max-height: 100%;
+  min-height: 0;
   padding-block: 4px;
+  overflow: hidden;
 }
 
 .mel-kto {
   display: flex;
+  flex: none;
   align-items: baseline;
   gap: 10px;
   font: 700 0.7rem/1.2 var(--pismo);
@@ -775,30 +784,43 @@
   color: var(--akcent);
 }
 
-.mel-pocitadlo {
+.mel-pocitadlo,
+.mel-cislo-strany {
   font-weight: 600;
   letter-spacing: 0;
   color: var(--tlmeny);
   font-variant-numeric: tabular-nums;
 }
 
-/* Veta: dlhšia (otázka s možnosťami) sa posúva vnútri — bar nikdy nezvýši. */
+/* Veta sa nikdy neposúva (Michal 2026-10-25) — čo sa nezmestí, ide na ďalšiu stranu (StrankovanaVeta). */
 .mel-veta {
+  flex: 0 1 auto;
   min-height: 0;
-  overflow-y: auto;
+  overflow: hidden;
   font-size: 1rem;
   line-height: 1.32;
-  scrollbar-width: thin;
 }
 
 .mel-veta p {
   margin: 0;
 }
 
-.mel-veta .vyucba-text {
+.mel-veta :is(.vyucba-text, .napoveda-text) {
+  position: relative;
   overflow: visible;
   font-size: inherit;
   line-height: inherit;
+}
+
+/* Merač strán: celý text v šírke vety, zobrazí sa len na chvíľu merania (pred vykreslením). */
+.mel-merac {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: none;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .mel-veta :is(.vyucba-stitok, .vyucba-chyba, .vyucba-rada) {
@@ -808,33 +830,89 @@
   font-size: 0.86em;
 }
 
-.mel-veta .vyucba-moznosti {
+/* Kvíz v bare (Michal 2026-10-25): možnosti pod sebou napravo od otázky, dve nízke tlačidlá
+   v jeho výške. Text možnosti sa nezalamuje — bar má na dva riadky miesto len raz. */
+.mel-moznosti {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 4px 8px;
-  margin-top: 3px;
+  flex: 0 1 auto;
+  align-self: stretch;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  max-width: 48%;
+  padding-block: 5px;
 }
 
-.mel-veta .vyucba-moznost {
+.mel-moznosti .vyucba-moznosti {
+  height: 100%;
+  max-height: 76px;
+  margin: 0;
+  gap: 5px;
+}
+
+.mel-moznosti .vyucba-moznost {
+  flex: 1 1 0;
+  align-items: center;
   min-height: 0;
-  padding: 1px 10px;
-  font-size: 0.86em;
-  line-height: 1.3;
+  padding: 0 12px 0 8px;
+  font-size: 0.92rem;
+  line-height: 1.15;
+  white-space: nowrap;
 }
 
-.mel-veta .vyucba-vysvetlenie {
-  margin-top: 3px;
-  padding: 1px 8px;
+.mel-moznosti .vyucba-moznost kbd {
+  line-height: 1.35;
 }
 
-/* Piktogram akcie priamo v texte (značka [Rana]) — ten istý ako na kartách. */
+/* Odpoveď kvízu: samostatné okno v tom istom bare — farba povie verdikt. */
+.mel.kviz-odpoved.spravna {
+  border-color: var(--zelena);
+  background: color-mix(in srgb, var(--zelena) 14%, var(--plocha-3));
+}
+
+.mel.kviz-odpoved.zla {
+  border-color: var(--cervena);
+  background: color-mix(in srgb, var(--cervena) 12%, var(--plocha-3));
+}
+
+.mel.kviz-odpoved .mel-avatar {
+  border-color: currentColor;
+}
+
+.mel.kviz-odpoved.spravna .mel-verdikt {
+  color: var(--zelena-svetla);
+}
+
+.mel.kviz-odpoved.zla .mel-verdikt {
+  color: var(--cervena-text);
+}
+
+.mel-spat {
+  min-width: 0;
+  padding-inline: 10px;
+  font-weight: 700;
+}
+
+.kviz-spat {
+  white-space: nowrap;
+}
+
+.kviz-spat kbd {
+  margin-left: 6px;
+  padding: 0 5px;
+  border-radius: 4px;
+  font: 600 0.7rem/1.5 var(--pismo);
+  background: color-mix(in srgb, var(--na-akcente) 15%, transparent);
+}
+
+/* Piktogram akcie priamo v texte (značka [Rana]) — ten istý ako na kartách. Nesmie zvýšiť riadok:
+   bar má na vetu pevnú výšku a riadok s ikonou navyše by poslal vetu na ďalšiu stranu (1440 × 800). */
 .mel-ikona {
   display: inline-block;
-  width: 1.45em;
-  height: 1.45em;
+  width: 1.25em;
+  height: 1.25em;
   margin: 0 2px;
-  vertical-align: -0.38em;
+  vertical-align: -0.27em;
 }
 
 .mel-ikona .ikona-akcie {
@@ -952,20 +1030,27 @@
     font-size: 0.6rem;
   }
 
-  /* Otázka s možnosťami: riadok menovky dostane veta — kto hovorí, povie fotka. */
-  .mel:has(.vyucba-moznosti) .mel-kto {
-    display: none;
+  /* Dva riadky vety aj s menovkou sa do 51 px zmestia len s tenším okrajom. */
+  .mel-telo {
+    padding-block: 2px;
   }
 
-  .mel-veta .vyucba-text:has(.vyucba-moznosti) {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 2px 10px;
+  .mel-moznosti {
+    padding-block: 3px;
   }
 
-  .mel-veta .vyucba-moznosti {
-    margin: 0;
+  .mel-moznosti .vyucba-moznosti {
+    gap: 3px;
+  }
+
+  .mel-moznosti .vyucba-moznost {
+    padding: 0 10px 0 6px;
+    font-size: 0.8rem;
+  }
+
+  .mel-moznosti .vyucba-moznost kbd {
+    font-size: 0.66rem;
+    line-height: 1.2;
   }
 
   .mel-veta {
@@ -986,52 +1071,6 @@
   .mel-pribeh img {
     width: 120px;
     height: 120px;
-  }
-}
-
-/* Otázka výučby (Michal 2026-10-25: v kvíze sa nesmie scrollovať). Otázka je blokujúci krok
-   a stôl je zošednutý — bublina sa rozbalí dole cez stôl ako karta pod barom, celá bez
-   posúvania; bar ostane rovnako vysoký (bublina je mimo toku) a po „ďalej“ sa zbalí. */
-@media (min-width: 761px) {
-  .mel.rozbalena {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1;
-    min-height: 100%;
-    padding-block: 10px;
-    border-bottom-width: 2px;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
-  }
-
-  .mel.rozbalena .mel-telo {
-    max-height: none;
-  }
-
-  .mel.rozbalena .mel-kto {
-    display: flex;
-  }
-
-  .mel.rozbalena .mel-veta {
-    overflow: visible;
-  }
-
-  .mel.rozbalena .mel-veta .vyucba-text {
-    display: block;
-  }
-
-  .mel.rozbalena .mel-veta .vyucba-moznosti {
-    margin: 6px 0 2px;
-    gap: 6px 10px;
-  }
-
-  .mel.rozbalena .mel-veta .vyucba-moznost {
-    padding: 4px 12px;
-  }
-
-  .mel.rozbalena .mel-veta .vyucba-vysvetlenie {
-    margin-top: 6px;
   }
 }
 
@@ -1056,7 +1095,42 @@
   }
 
   .mel-veta {
-    max-height: 40dvh;
     font-size: 0.92rem;
+  }
+
+  .mel-moznosti {
+    flex: 1 1 100%;
+    max-width: none;
+  }
+
+  .mel-moznosti .vyucba-moznost {
+    white-space: normal;
+  }
+}
+
+/* Okno odpovede kvízu: na čo Melichar odpovedá (vybraná možnosť) — v riadku menovky. */
+.mel-tvoja {
+  min-width: 0;
+  font-size: max(11px, 1em);
+  overflow: hidden;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--tlmeny);
+}
+
+.mel-tvoja .mel-ikona {
+  width: 1.2em;
+  height: 1.2em;
+  vertical-align: -0.3em;
+}
+
+/* Odhad v bubline Melichara na užšom okne bez riadku „ešte môže“ — inak by Melicharovi ostal
+   úzky stĺpec a krátka veta by išla na tri strany (1366 × 650). Celý odhad je v nápovede kópie. */
+@media (min-width: 761px) and (max-width: 1599px) {
+  .jbar-odhad-kopia .hrozba-bitky-riadok {
+    display: none;
   }
 }

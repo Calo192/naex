@@ -2,7 +2,7 @@
 // ručné prepnutie do konca fázy a jediná stavová správa s prednosťou chyby.
 
 import { describe, expect, it } from "vitest";
-import { castiVety, klucFazy, predvolenyRezim, rezimMelichara, vyberSpravu } from "../src/hra/bar.ts";
+import { castiVety, klucFazy, moznostiKvizu, predvolenyRezim, rezimMelichara, rozdelNaStrany, vetyTextu, vyberSpravu } from "../src/hra/bar.ts";
 
 describe("režim strán baru", () => {
   it("v Zhromaždení ukazuje karty na vyloženie, v Pitke a bitke akcie", () => {
@@ -111,5 +111,56 @@ describe("Melichar v bare", () => {
     expect(rezimMelichara(["hrozba", "os-kola"])).toBe("odhad");
     expect(rezimMelichara(["ruka:pijan", "potvrdit"])).toBe("cely");
     expect(rezimMelichara([])).toBe("cely");
+  });
+});
+
+describe("text Melichara po stranách (v bare sa nescrolluje)", () => {
+  // Kus = 1 riadok po 16 px; výška kusov [od, po) = počet riadkov.
+  const riadky = (r: readonly number[]) => (od: number, po: number): number => r.slice(od, po).reduce((a, b) => a + b, 0) * 16;
+
+  it("text, ktorý sa zmestí, je jedna strana", () => {
+    expect(rozdelNaStrany(3, riadky([1, 0.5, 0.5]), 32)).toEqual({ zaciatky: [0], pretecie: [] });
+  });
+
+  it("dlhší text sa delí medzi kusmi na strany, ktoré sa zmestia", () => {
+    expect(rozdelNaStrany(5, riadky([1, 1, 1, 1, 1]), 32)).toEqual({ zaciatky: [0, 2, 4], pretecie: [] });
+  });
+
+  it("kus, ktorý sa nezmestí ani sám, je strana sám a hlási sa ako problém textu", () => {
+    expect(rozdelNaStrany(3, riadky([1, 3, 1]), 32)).toEqual({ zaciatky: [0, 1, 2], pretecie: [1] });
+  });
+
+  it("prázdny text má jednu (prázdnu) stranu", () => {
+    expect(rozdelNaStrany(0, riadky([]), 32)).toEqual({ zaciatky: [0], pretecie: [] });
+  });
+
+  it("vety ostanú celé aj s medzerou pred sebou — spojené dajú pôvodný text", () => {
+    const text = "Petelica udrie dvakrát. Len sleduj pečeň! Kto vyhrá? 3 : 2";
+    expect(vetyTextu(text)).toEqual(["Petelica udrie dvakrát.", " Len sleduj pečeň!", " Kto vyhrá?", " 3 : 2"]);
+    expect(vetyTextu(text).join("")).toBe(text);
+    expect(vetyTextu("")).toEqual([]);
+  });
+});
+
+describe("kvíz v bare: dve možnosti", () => {
+  const m = (spravna: boolean, text: string) => ({ spravna, text });
+
+  it("dve možnosti ukáže obe, bez varovania", () => {
+    const r = moznostiKvizu([m(false, "a"), m(true, "b")]);
+    expect(r.zobrazene.map((x) => x.index)).toEqual([0, 1]);
+    expect(r.varovanie).toBeNull();
+  });
+
+  it("pri troch ukáže prvé dve a varuje", () => {
+    const r = moznostiKvizu([m(true, "a"), m(false, "b"), m(false, "c")]);
+    expect(r.zobrazene.map((x) => x.index)).toEqual([0, 1]);
+    expect(r.varovanie).toMatch(/3 možnosti/);
+  });
+
+  it("keď správna nie je medzi prvými dvoma, druhú nahradí — index ostáva z dát", () => {
+    const r = moznostiKvizu([m(false, "a"), m(false, "b"), m(true, "c")]);
+    expect(r.zobrazene.map((x) => x.index)).toEqual([0, 2]);
+    expect(r.zobrazene[1]?.moznost.text).toBe("c");
+    expect(r.varovanie).not.toBeNull();
   });
 });

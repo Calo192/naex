@@ -17,7 +17,7 @@ import { api } from "../lib/api.ts";
 import { useUcet, type Pouzivatel } from "../lib/ucet.tsx";
 import type { Sada } from "@naex/tvorba";
 import { rezimMelichara } from "./bar.ts";
-import { MelicharVBare, VetaMelichara } from "./MelicharBar.tsx";
+import { CisloStrany, MelicharVBare, StrankovanaVeta, kusyVety, useStrany } from "./MelicharBar.tsx";
 import { prvkyKluca } from "./Vyucba.tsx";
 import "./vyucba.css";
 
@@ -199,6 +199,8 @@ export function NapovedaMelichara({
   }, [viditelna, zavri]);
 
   useRamik(viditelna ? (ukazana?.zvyraznit ?? null) : null);
+  // Dlhšia nápoveda ide na strany s „ďalej“ — bar sa nerozbalí ani nescrolluje (Michal 2026-10-25).
+  const strany = useStrany(ukazana === null ? "" : `${ukazana.id}|${ukazana.text}`);
 
   if (ukazana === null) return null;
   // Nápoveda hovorí v bare (Michal 2026-10-25) — nič na stole nezakryje, hru neblokuje.
@@ -207,11 +209,23 @@ export function NapovedaMelichara({
       rezim={rezimMelichara(ukazana.zvyraznit)}
       trieda="napoveda-bublina"
       atributy={{ "data-napoveda": ukazana.id }}
+      pocitadlo={<CisloStrany strany={strany} />}
       vpravo={
         <>
-          <button type="button" className="tlacidlo-hlavne mel-dalej" onClick={zavri} title="Nápoveda zmizne (aj Esc).">
-            rozumiem
-          </button>
+          {strany.strana > 0 && (
+            <button type="button" className="tlacidlo-jemne mel-spat" onClick={strany.predosla} title="Predošlá strana textu" aria-label="Predošlá strana textu">
+              ‹
+            </button>
+          )}
+          {strany.dalsiaJe ? (
+            <button type="button" className="tlacidlo-hlavne mel-dalej" onClick={strany.dalsia} title="Ďalšia strana nápovedy">
+              ďalej
+            </button>
+          ) : (
+            <button type="button" className="tlacidlo-hlavne mel-dalej" onClick={zavri} title="Nápoveda zmizne (aj Esc).">
+              rozumiem
+            </button>
+          )}
           <button
             type="button"
             className="tlacidlo-jemne napoveda-vypnut"
@@ -226,9 +240,9 @@ export function NapovedaMelichara({
         </>
       }
     >
-      <p className="napoveda-text" aria-live="polite">
-        <VetaMelichara text={ukazana.text} sada={sada} />
-      </p>
+      <div className="napoveda-text" aria-live="polite">
+        <StrankovanaVeta kusy={kusyVety(ukazana.id, ukazana.text, sada)} podpis={`${ukazana.id}|${ukazana.text}`} strany={strany} />
+      </div>
     </MelicharVBare>
   );
 }
