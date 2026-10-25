@@ -27,9 +27,14 @@ export interface PocitadloBitkyProps {
   /** Línia v okamihu bitky zľava doprava (tvoja strana · lokalita · súperova), už nakreslené karty. */
   readonly rad: readonly { readonly uid: number; readonly karta: ReactNode }[];
   readonly onKoniec: () => void;
+  /**
+   * Výučba: konečný výsledok je na paneli od začiatku a karty len ukazujú, odkiaľ je. Rastúce
+   * číslo „1 : 0“ sa bilo s Melicharom, ktorý hovorí o 7 : 2 (playtest výučby 20261025, K6).
+   */
+  readonly vysledokHned?: boolean;
 }
 
-export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec }: PocitadloBitkyProps) {
+export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledokHned = false }: PocitadloBitkyProps) {
   const su: PlayerId = ja === 0 ? 1 : 0;
   const posledna = p.vln - 1;
   const [vlna, setVlna] = useState(-1);
@@ -57,7 +62,7 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec }: Pocita
     return () => window.removeEventListener("keydown", klaves, true);
   });
 
-  const cislo = hotovo ? p.tuhe : vlna < 0 ? ([0, 0] as const) : stavPocitadla(p, vlna);
+  const cislo = hotovo || vysledokHned ? p.tuhe : vlna < 0 ? ([0, 0] as const) : stavPocitadla(p, vlna);
   const vitaz = p.tuhe[ja] === p.tuhe[su] ? null : p.tuhe[ja] > p.tuhe[su] ? ja : su;
   const popis = (k: KrokPocitadla): string => {
     const z = k.zmena > 0 ? `+${k.zmena}` : `−${-k.zmena}`;
@@ -87,12 +92,12 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec }: Pocita
       }}
     >
       <div className="pocitadlo-scena">
-        <div className={`pocitadlo-panel${hotovo ? " hotovo" : ""}`}>
+        <div className={`pocitadlo-panel${hotovo || vysledokHned ? " hotovo" : ""}`}>
           <span className="pocitadlo-nadpis">Bitka · tuhé</span>
           <span className="pocitadlo-cisla">
-            <b className={`ja${hotovo && vitaz === ja ? " vyhra" : ""}`}>{cislo[ja]}</b>
+            <b className={`ja${(hotovo || vysledokHned) && vitaz === ja ? " vyhra" : ""}`}>{cislo[ja]}</b>
             <span className="pocitadlo-dvojbodka">:</span>
-            <b className={`su${hotovo && vitaz === su ? " vyhra" : ""}`}>{cislo[su]}</b>
+            <b className={`su${(hotovo || vysledokHned) && vitaz === su ? " vyhra" : ""}`}>{cislo[su]}</b>
           </span>
           <span className="pocitadlo-mena">ty · {mena[su]}</span>
         </div>
@@ -123,7 +128,7 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec }: Pocita
               ))}
             </span>
           )}
-          {hotovo && (
+          {(hotovo || vysledokHned) && (
             <span className="pocitadlo-verdikt">
               {vitaz === null ? "Remíza v tuhom" : vitaz === ja ? `Vyhrávaš o ${p.tuhe[ja] - p.tuhe[su]}` : `Prehrávaš o ${p.tuhe[su] - p.tuhe[ja]}`}
             </span>

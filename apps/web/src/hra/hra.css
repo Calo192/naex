@@ -3283,9 +3283,12 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna.nemoze:hover > .kl {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  padding: 0 4px;
-  font: 700 0.62rem/1.2 var(--pismo);
-  letter-spacing: 0.12em;
+  /* Podklad ako pečiatky vedľa — bez neho počet ležal na čiare okraja stola (playtest výučby 20261025). */
+  padding: 2px 8px 3px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--pozadie) 85%, transparent);
+  font: 700 0.68rem/1.2 var(--pismo);
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--slaby);
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
@@ -5937,8 +5940,10 @@ button.auto-hotovo-odkaz {
     padding: 2px 8px;
   }
 
+  /* Väčšie písmo s užšími medzerami — rovnaká šírka, ale nie 10 px (playtest výučby 20261025). */
   .doska .zdroj-nazov {
-    font-size: 0.64rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
     line-height: 1.1;
   }
 
@@ -6134,7 +6139,8 @@ button.auto-hotovo-odkaz {
   }
 
   .doska .zdroj-nazov {
-    font-size: 0.62rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.03em;
   }
 
   .doska .velke-cislo {

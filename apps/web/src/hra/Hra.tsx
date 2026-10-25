@@ -428,6 +428,7 @@ export function Hra() {
       zadrzBitku={zadrzBitku}
       // Pri rozhodnutí (volba) je správnych viac kandidátov — potvrdiť sa nezamyká.
       vyucbaOcakava={hra.vyucba?.krok?.kto === "hrac" && hra.vyucba.krok.volba === null ? hra.vyucba.krok.ocakava : null}
+      zaHracaHra={krokVyucby?.kto === "auto" && !krokVyucby.vykonany}
       // Vo výučbe chybu ukazuje bublina Melichara.
       chyba={hra.vyucba !== null ? null : hra.chyba}
       zrusChybu={hra.zrusChybu}

@@ -407,13 +407,13 @@ export function VyucbaStol({
   // ZMENA_MS po ňom; krok bez textu nechá v ďalšom kroku štítok z logu („Bot Štamgast pasuje…“).
   // Správa so stavom príde pred ďalším krokom, takže krok je v tej chvíli ešte ten, čo ťahal.
   const predView = useRef(view);
-  const [zmena, setZmena] = useState<{ readonly krokId: string; readonly kluce: readonly string[] } | null>(null);
+  const [zmena, setZmena] = useState<{ readonly krokId: string; readonly kluce: readonly string[]; readonly sTextom: boolean } | null>(null);
   const [stitok, setStitok] = useState<{ readonly krokId: string; readonly text: string; readonly ukazany: string | null } | null>(null);
   useEffect(() => {
     const pred = predView.current;
     predView.current = view;
     if (pred === view || krok === null || (krok.kto !== "bot" && krok.kto !== "auto")) return;
-    setZmena({ krokId: krok.id, kluce: [...new Set([...(krok.kto === "auto" ? krok.zvyraznit : []), ...zmenyStola(pred, view)])] });
+    setZmena({ krokId: krok.id, kluce: [...new Set([...(krok.kto === "auto" ? krok.zvyraznit : []), ...zmenyStola(pred, view)])], sTextom: krok.melichar.trim() !== "" });
     const mena = hraci.map((h, i) => menoVoVete(h, i));
     const rody = [rodHraca(hraci[0]), rodHraca(hraci[1])] as const;
     const riadky = udalosti.events.map((e) => textUdalosti(e, mena, rody)).filter((t): t is string => t !== null);
@@ -424,7 +424,10 @@ export function VyucbaStol({
   }, [view]);
   useEffect(() => {
     if (zmena === null || krok?.id === zmena.krokId) return;
-    const t = setTimeout(() => setZmena(null), ZMENA_MS);
+    // Zmenu po ťahu s textom hráč videl, kým čítal; ďalší krok s vlastným zvýraznením ju tiež
+    // nepotrebuje — panely Štamgasta svietili v krokoch, ktoré o nich nehovoria (playtest výučby 20261025).
+    const hned = zmena.sTextom || (krok?.zvyraznit.length ?? 0) > 0;
+    const t = setTimeout(() => setZmena(null), hned ? 0 : ZMENA_MS);
     return () => clearTimeout(t);
   }, [zmena, krok?.id]);
   // Štítok patrí jednému kroku za ťahom — ďalší krok ho zahodí.
@@ -434,16 +437,21 @@ export function VyucbaStol({
   const stitokText = stitok !== null && stitok.ukazany === krok?.id ? stitok.text : null;
   const zvyraznene = useZvyraznenie(kluce, zmena?.kluce ?? []);
 
-  // Krok bez ťahu: klik mimo zvýraznenia a bubliny nič neurobí (playtest: klik na okraj otvoril Karty).
+  // Krok bez ťahu: klik mimo bubliny nič neurobí (playtest: klik na okraj otvoril Karty).
   // Prechod myšou ostáva — lupa karty či staršieho sa otvorí aj v info kroku.
   // Vykonaný ťah bota či auto krok s textom čaká na „ďalej“ ako info (U5).
-  const blokuj = krok?.kto === "info" || krok?.kto === "otazka" || krok?.vykonany === true;
+  // Zvýraznený prvok v kroku bez ťahu tiež nie: klik na svietiacu Jednotu otvoril výber cieľa
+  // s POTVRDIŤ a jeho X sa nedalo zavrieť (playtest výučby 20261025, krok 2). Kým ťahá Štamgast
+  // či hra za hráča, nemá hráč na stole čo robiť tiež.
+  const tahaIny = (krok?.kto === "bot" || krok?.kto === "auto") && krok.vykonany !== true;
+  const blokuj = krok?.kto === "info" || krok?.kto === "otazka" || krok?.vykonany === true || tahaIny;
   useEffect(() => {
     if (!blokuj) return;
     const povolene = (t: EventTarget | null): boolean =>
-      t instanceof Element && t.closest("[data-vyucba-bublina], [data-vyucba-zvyraznene], .lupa, .vrstva-zavriet, .hlavicka") !== null;
+      t instanceof Element && t.closest("[data-vyucba-bublina], .lupa, .vrstva-zavriet, .pecat-zrusit, .hlavicka") !== null;
     const zastav = (e: Event): void => {
-      if (povolene(e.target)) return;
+      // Kliky z kódu (zatvorenie vrstvy, otvorenie starších pri novom kroku) prejdú.
+      if (!e.isTrusted || povolene(e.target)) return;
       e.preventDefault();
       e.stopPropagation();
     };
@@ -538,6 +546,8 @@ export function VyucbaStol({
       });
     }
     kusy.push(...kusyVety("veta", krok.melichar, sada));
+    // Ťah hry za hráča bez textu: bar nesmie zmiznúť — stôl by ostal bez slova (playtest výučby 20261025, krok 6).
+    if (krok.melichar.trim() === "" && stitokText === null && krok.kto === "auto" && tahaIny) kusy.push({ kluc: "auto", obsah: "Tento ťah spraví hra za teba — chvíľu počkaj." });
   }
   const podpis = [krok?.id ?? "hotovo", pohlad, odpoved ?? "", stitokText ?? "", chyba ?? "", rada ?? "", vOdpovedi ? vybrana.vysvetlenie : (krok?.melichar ?? "")].join("|");
   const strany = useStrany(podpis);
@@ -572,7 +582,7 @@ export function VyucbaStol({
   // textu nechá bar hráčovi. Počas Počítadla bitky text čaká (playtest výučby kolo 4, U3) — stmavený
   // pod animáciou hovoril o výsledku skôr, než ho bolo vidno.
   const maText =
-    krok === null || stitokText !== null || chyba !== null || rada !== null || krok.melichar.trim() !== "" || moznosti.length > 0 || jeInfo;
+    krok === null || stitokText !== null || chyba !== null || rada !== null || krok.melichar.trim() !== "" || moznosti.length > 0 || jeInfo || (krok.kto === "auto" && tahaIny);
   const hovori = maText && !pocitadloBezi;
   const spatHlavne = zlaOdpoved && !strany.dalsiaJe;
 
@@ -589,7 +599,8 @@ export function VyucbaStol({
 
   return (
     <>
-      <Stmavenie obdlzniky={zvyraznene} sede={hovori && blokuj} />
+      {/* Ťah Štamgasta stôl nezošedí — hráč sleduje, čo sa na ňom zmení. */}
+      <Stmavenie obdlzniky={zvyraznene} sede={hovori && blokuj && !(krok?.kto === "bot" && tahaIny)} />
       {hovori && (
         <MelicharVBare
           // Kvíz je celý v bare a v jeho výške (Michal 2026-10-25) — os kola pod ním neostáva.

@@ -478,7 +478,8 @@ export interface HracDoskaProps {
 /** „o 12 pred Tetou“ / „o 3 za Tetou“ / „rovnako“ — dlaždica Body. */
 function porovnanieBodov(moje: number, jeho: number, menoJeho: string): string {
   if (moje === jeho) return `rovnako ako ${menoJeho}`;
-  return `o ${Math.abs(moje - jeho)} ${moje > jeho ? "pred" : "za"} · ${menoJeho} ${znamienkoBodov(jeho)}`;
+  // Meno s bodmi sa nezalamuje — na notebooku ostávalo „+6“ samo na ďalšom riadku (výučba 20261025).
+  return `o ${Math.abs(moje - jeho)} ${moje > jeho ? "pred" : "za"} · ${`${menoJeho} ${znamienkoBodov(jeho)}`.replace(/ /g, "\u00a0")}`;
 }
 
 /**

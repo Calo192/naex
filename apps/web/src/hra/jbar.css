@@ -1027,7 +1027,8 @@
   }
 
   .mel-kto {
-    font-size: 0.6rem;
+    font-size: 0.66rem;
+    letter-spacing: 0.06em;
   }
 
   /* Dva riadky vety aj s menovkou sa do 51 px zmestia len s tenším okrajom. */

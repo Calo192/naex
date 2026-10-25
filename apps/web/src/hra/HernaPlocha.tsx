@@ -148,6 +148,7 @@ import { StavkaBitky } from "./StavkaBitky.tsx";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
 import type { HracInfo, SuhrnAchievementov, ZmenyFrajeriny } from "./useHra.ts";
 import { menoVoVete, rodHraca, textHlasky } from "./useHra.ts";
+import { NAHRADIT, textNepolozenejKarty } from "./nepolozenaKarta.ts";
 import { useBezNaexVBitke, useOdlozenyPrikaz } from "./usePohodlie.ts";
 import { useTahanie } from "./useTahanie.ts";
 import "./hra.css";
@@ -184,7 +185,6 @@ const POPIS_CIELA: Record<CielVykladania, string> = {
   dedicstvo: "do Dedičstva (za cigarety)",
 };
 
-const NAHRADIT = "nahradit:";
 /** Cieľ pri preusporiadaní ruky: karta, pred/za ktorú ťahaná karta pôjde. */
 const PORADIE = "poradie:";
 /** Zóny stavby šenku (Michal 2026-10-16): vľavo Smetisko, vpravo Šenok. */
@@ -394,6 +394,8 @@ export interface HernaPlochaProps {
   readonly zadrzBitku?: string | null;
   /** Výučba: ťah, ktorý krok čaká — „potvrdiť“ sa odomkne, až keď na stole leží všetko z neho. */
   readonly vyucbaOcakava?: Command | null;
+  /** Výučba: ťah hráča teraz spraví hra (krok „auto“) — stôl nevyzýva hráča a nereaguje na neho. */
+  readonly zaHracaHra?: boolean;
 }
 
 /** Názvy fáz pre titulok karty prehliadača. */
@@ -451,6 +453,7 @@ export function HernaPlocha({
   vyucbaOcakava,
   vyucba,
   zadrzBitku = null,
+  zaHracaHra = false,
 }: HernaPlochaProps) {
   DATA = data;
   const ja = view.ja;
@@ -483,7 +486,9 @@ export function HernaPlocha({
     if (vrstva === "log") setVidenyLog(log.length);
   }, [vrstva, log.length]);
   // Stavbu šenku hrajú obaja naraz — „môžem hrať“ nie je vždy „som na ťahu“.
-  const somNaTahu = view.mozemHrat;
+  // Ťah, ktorý vo výučbe spraví hra za hráča, nie je hráčov — inak stavba šenku vyzývala
+  // „Vyber 4 karty na Smetisko“ s POTVRDIŤ, kým hra stavala (playtest výučby 20261025, krok 6).
+  const somNaTahu = view.mozemHrat && !zaHracaHra;
   const draft = view.draftStav;
   const stavim = view.faza === "draft" && draft?.krok === "stavba";
   // Živý odhad záverečného bodovania — hráč musí stále vidieť, za čo dostane body.
@@ -1608,9 +1613,17 @@ export function HernaPlocha({
     // povie to hláška — ticho bolo horšie než samo zlyhanie (playtest výučby 2026-10-23).
     // Pustenie späť nad ruku je zrušenie, to hlášku nepotrebuje.
     if (ciel === null || !cieleZdroja(z).has(ciel)) {
-      const vykladal = z.odkial === "ruka" && !z.navrh && [...cieleZdroja(z)].some((c) => jeCielVykladania(c) || c.startsWith(NAHRADIT));
+      // Aj pri vyčerpanom limite (žiadny cieľ) — vtedy hláška povie prečo a čo ďalej.
+      const vykladal = z.odkial === "ruka" && !z.navrh && vykladam;
       if (vykladal && document.elementFromPoint(bod.x, bod.y)?.closest(".ruka") == null) {
-        setChybaTahania({ text: "Karta sa nepoložila. Pusti ju na zvýraznené miesto alebo klikni na „+“ a potom na kartu.", ...bod });
+        const miesta = [...moznostiMiesta.values()];
+        const text = textNepolozenejKarty({
+          ciele: cieleZdroja(z),
+          plus: miesta.some((m) => m.dovod === null),
+          dovodStola: miesta.find((m) => m.dovod !== null)?.dovod ?? null,
+          pas: view.faza === "zhromazdenie",
+        });
+        setChybaTahania({ text, ...bod });
       }
       return;
     }
@@ -2590,8 +2603,10 @@ export function HernaPlocha({
       data-vyucba={`tlacidlo:${p.kluc}`}
       aria-disabled={p.dovod !== null}
       title={p.dovod ?? p.tip}
-      onClick={() => {
+      onClick={(e) => {
         if (p.dovod === null) p.akcia();
+        // Nedostupný nákup povie prečo — tichý klik na DOLIAŤ mýlil (playtest výučby 20261025).
+        else setChybaTahania({ text: p.dovod, x: e.clientX, y: e.clientY });
       }}
     >
       {(p.ikona !== null || p.cena > 0) && (
@@ -2617,11 +2632,13 @@ export function HernaPlocha({
             {frajerina !== null && <ZmenaFrajeriny pred={frajerina[ja].pred} po={frajerina[ja].po} />}
           </>
         ),
-        tlacidla: (
-          <button className="tlacidlo-hlavne" onClick={opustit}>
-            {prehravanie === undefined ? "späť do lobby" : "späť na detail partie"}
-          </button>
-        ),
+        // Výučba končí v bare Melichara (tam je aj „Do lobby“) — tu by tlačidlo predbehlo jej záver.
+        tlacidla:
+          vyucba === true ? undefined : (
+            <button className="tlacidlo-hlavne" onClick={opustit}>
+              {prehravanie === undefined ? "späť do lobby" : "späť na detail partie"}
+            </button>
+          ),
       };
     }
     if (!somNaTahu && beriem) {
@@ -2634,6 +2651,17 @@ export function HernaPlocha({
           </span>
         ),
         ...(mobil ? {} : { vpravo: skoreBrania }),
+      };
+    }
+    if (zaHracaHra && stavim && draft?.mojVyber === null) {
+      return {
+        nadpis: "Stavba šenku",
+        text: (
+          <span className="cakanie-text">
+            Šenok za teba stavia hra
+            <span className="bodky" aria-hidden="true" />
+          </span>
+        ),
       };
     }
     if (!somNaTahu && stavim) {
@@ -2890,7 +2918,13 @@ export function HernaPlocha({
           }
           return {
             nadpis,
-            text: textNahladuTahania ?? textVolbyMiesta ?? (
+            text: textNahladuTahania ?? textVolbyMiesta ?? (![...moznostiMiesta.values()].some((m) => m.karty.size > 0) ? (
+              // Pri vyčerpanom limite pokyn „potiahni kartu“ zavádzal (playtest výučby 20261025, K11).
+              <>
+                <strong>Na stôl už nič nevyložíš.</strong> Pasuj do Pitky{zaPas > 0 ? ` — dostaneš ${cigariet(zaPas)}` : ""}.{" "}
+                <span className="tlmene">{[...moznostiMiesta.values()].find((m) => m.dovod !== null)?.dovod ?? ""}</span>
+              </>
+            ) : (
               <>
                 Potiahni kartu z ruky na stôl, alebo klikni na <strong>+</strong> na konci strany — vysunú sa karty, ktoré sa tam spoja. Alebo
                 pasuj do Pitky (cigareta za každú nevyloženú kartu).{" "}
@@ -2898,7 +2932,7 @@ export function HernaPlocha({
                   Ďalšie karty v tom istom ťahu smieš pridať, každá ťa stojí plný poldeci (limit −1, pečeň +1){plne === 0 ? " — teraz žiadny nemáš" : ""}.
                 </span>
               </>
-            ),
+            )),
             vpravo: (
               <>
                 {tlacidloZaverecnej}
@@ -3320,21 +3354,11 @@ export function HernaPlocha({
             textVyberu ?? (
               <>
                 {/* Prepínač je odkaz v texte, nie pečiatka — na hrane by prekryl popis kraja (UX/UI, 1600×1000). */}
-                {bezNaex.zapnute ? (
+                {bezNaex.zapnute && (
                   <>
                     <strong>Do konca bitky končíš Pitky sám, bez NA EX.</strong>{" "}
                     <button className="auto-hotovo-odkaz" onClick={bezNaex.vypni}>
                       zrušiť
-                    </button>{" "}
-                  </>
-                ) : (
-                  <>
-                    <button
-                      className="auto-hotovo-odkaz"
-                      title="Hra za teba v každej ďalšej Pitke tejto bitky ťukne „končím“ — bez NA EX, bez fajčenia. Na súperovo NA EX odpovedáš sám."
-                      onClick={bezNaex.zapni}
-                    >
-                      do konca bitky bez NA EX
                     </button>{" "}
                   </>
                 )}
@@ -3362,6 +3386,20 @@ export function HernaPlocha({
                     <span className="tlmene">
                       NA EX sa pri bitke vypije → v ďalšom kole limit {limitPo === limitBez ? `ostane ${limitBez}` : `${limitPo} namiesto ${limitBez}`}.
                     </span>
+                  </>
+                )}
+                {/* Voľba až na konci ako celá veta — na začiatku sa čítala ako odtrhnutý kus vety pred
+                    „Začínaš Pitku“ (playtest výučby 20261025). Výučba ju nevysvetľuje, tam nie je. */}
+                {!bezNaex.zapnute && vyucba !== true && (
+                  <>
+                    {" "}
+                    <button
+                      className="auto-hotovo-odkaz"
+                      title="Hra za teba v každej ďalšej Pitke tejto bitky ťukne „končím“ — bez NA EX, bez fajčenia. Na súperovo NA EX odpovedáš sám."
+                      onClick={bezNaex.zapni}
+                    >
+                      Ďalšie Pitky tejto bitky bez NA EX
+                    </button>
                   </>
                 )}
               </>
@@ -3817,7 +3855,8 @@ export function HernaPlocha({
           pozrieť stôl
         </button>
       )
-    ) : (
+    ) : vyucba === true ? null : (
+      // Vo výučbe prepína stôl a starších Melichar podľa kroku.
       <button type="button" className="ls-tlacidlo" onClick={zavriStarsich}>
         ← {vysledokKroku && pohladStarsich === null ? "ďalej na stôl" : "Späť na stôl"} <kbd>Esc</kbd>
       </button>
@@ -4058,7 +4097,7 @@ export function HernaPlocha({
           })}
           {Array.from({ length: Math.max(0, kapacita - karty.length) }, (_, i) => (
             <div key={`m${i}`} className="stavba-zona-miesto" style={{ width: sirkaDraftu, height: Math.round(sirkaDraftu * POMER_KARTY) }}>
-              potiahni sem kartu
+              {somNaTahu ? "potiahni sem kartu" : null}
             </div>
           ))}
         </span>
@@ -4144,7 +4183,9 @@ export function HernaPlocha({
               <span>
                 {somNaTahu
                   ? `Tvoj balíček: ${kariet(draft.mojBalicek.length)} — vyber ${kariet(krokSt.odhod)} na Smetisko, ${zvysnePojdu(krokSt.doSenku)} do Šenku.`
-                  : `${tvar(rodHracaP(ja), "Vybral si", "Vybrala si", "Výber je hotový")} — čakáš, kým vyberie ${menoHraca(super_)}.`}
+                  : zaHracaHra && draft.mojVyber === null
+                    ? "Šenok za teba stavia hra."
+                    : `${tvar(rodHracaP(ja), "Vybral si", "Vybrala si", "Výber je hotový")} — čakáš, kým vyberie ${menoHraca(super_)}.`}
               </span>
             </header>
           )}
@@ -5230,7 +5271,7 @@ export function HernaPlocha({
               bezPopisov: true,
             }),
           }));
-          return <PocitadloBitky p={pocitadlo.p} ja={ja} mena={[menoHraca(0), menoHraca(1)]} menoKarty={menoKarty} rad={rad} onKoniec={koniecPocitadla} />;
+          return <PocitadloBitky p={pocitadlo.p} ja={ja} mena={[menoHraca(0), menoHraca(1)]} menoKarty={menoKarty} rad={rad} onKoniec={koniecPocitadla} vysledokHned={vyucba === true} />;
         })()}
 
       {/* Až tu — lupaKarty sa naplnia pri kreslení stola a vrstiev vyššie. */}
