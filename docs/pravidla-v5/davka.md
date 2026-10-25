@@ -73,6 +73,23 @@ Podklad: docs/napady/priazne-v5-set.html.
 - **Úžerník → Kmotor:** po bitke zníži priznaný Dlh o 1/2/3. Bez Dlhu nerobí nič (nechať tak, bez náhrady).
 - Návrhy nápadníka Výpalné za každé súperovo NA EX a Na zdravie „do dna“ (poldeci z tvojho NA EX sa vráti plný) zatiaľ nerozhodnuté — čakajú na meranie.
 
+## Interview 3 (Michal 2026-10-25): otvorené otázky
+
+- **NA EX naraz + Výtržník: áno, do v5** (napriek tomu, že zrážka je zriedkavá).
+- **Variant (a)** „1 b aj za aspoň jednu vyhratú podmienku“: rozhodne po finálnom meraní stratéga.
+- **Podmienka Cigarety:** zatiaľ nechať (bez náhrady).
+- **Absťák v scorecardoch:** Absťáky **získané za hru** (nedá sa ho zbaviť).
+- **Zónové podmienky:** 10, Znepokojenie 3× — áno.
+- **Vydesenie v scorecardoch:** nechať 2× (Bitkár, Exekútor).
+- **Bitkárov scorecard:** zámerne najťažší — áno.
+- **Rezerva:** Vínko sa ráta ako plný poldeci.
+- **Dve rovnaké aktívne podmienky:** dva súboje.
+- **Nepriznaná Cirhóza** na scorecardoch ostáva (nenahrádza ju Pečeň).
+- **Charakter staršieho** nesie scorecard (podľa priazne), nie karta staršieho.
+- **Znak** (9. vždy aktívna podmienka): nie.
+- **Výpalné:** platí sa za **každé** súperovo NA EX (1/2/3 cigarety, dostaneš ich ty).
+- **Na zdravie → „do dna“:** poldeci z tvojho NA EX sa vráti plný (1/2/3 za kolo).
+
 ## Čo v5 prerobí (Michal 2026-10-25: „bude treba prerobiť takmer všetko“)
 
 Zmrazenie pravidiel trvá najviac týždeň; v5 má výnimku a nasadí sa na Michalov pokyn.
