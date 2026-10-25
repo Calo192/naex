@@ -47,6 +47,7 @@ import {
   porovnajSKrokom,
   prehrajVyucbu,
   prikazZoScenara,
+  vykonajKrok,
   setupGame,
   textChybyKroku,
   VYUCBA_BOT,
@@ -197,6 +198,14 @@ export interface KrokVyucbyKlient {
   readonly moznosti: readonly MoznostOtazky[] | null;
   /** Rozhodnutie hráča: kandidáti na zvýraznenie namiesto očakávanej karty; inak null. */
   readonly volba: { readonly kandidati: readonly string[] } | null;
+  /** Nápis tlačidla „ďalej“ (napr. „Odovzdať cigaretu“); null = „ďalej“. */
+  readonly tlacidlo: string | null;
+  /** „Ďalej“ odovzdá Melicharovi 1 hernú cigaretu (Michal 2026-10-25). */
+  readonly odovzdaCigaretu: boolean;
+  /** Ponúknuť „Preskočiť výučbu“ (úvod). */
+  readonly preskocenie: boolean;
+  /** So zvýraznenými prvkami sa smie hrať nanečisto — nič sa neposiela (stavba šenku). */
+  readonly naneisto: boolean;
 }
 
 /** Po dohraní vlastnej hlášky musí hráč ešte chvíľu počkať (Michal 2026-10-22). */
@@ -714,10 +723,23 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           sendError(ws, "Nie si vo výučbe.");
           return;
         }
-        const kto = scenarVyucby.kroky[room.vyucba.krok]?.kto;
+        const krok = scenarVyucby.kroky[room.vyucba.krok];
+        const kto = krok?.kto;
         if (kto !== "info" && kto !== "otazka" && !room.vyucba.vykonany) {
           sendError(ws, "Teraz nie je čo potvrdiť — urob ťah, ktorý ukazuje majster Melichar.");
           return;
+        }
+        // Cigareta pre Melichara (Michal 2026-10-25): ten istý krok jadra, aký prehrá návrat do výučby.
+        if (krok?.odovzdaCigaretu === true && room.state !== null) {
+          try {
+            room.state = vykonajKrok(room.data, scenarVyucby, room.state, room.vyucba.krok);
+          } catch (err) {
+            console.error("Scenár výučby: odovzdanie cigarety neprešlo", krok.id, err);
+            sendError(ws, "Cigaretu teraz odovzdať nemôžeš.");
+            return;
+          }
+          room.lastActivity = teraz();
+          broadcast(room, [{ type: "log", text: "Hráč 1 dal majstrovi Melicharovi cigaretu." }]);
         }
         posunVyucbu(room);
         break;
@@ -915,6 +937,10 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       ocakava,
       moznosti: k.kto === "otazka" ? (k.moznosti ?? []) : null,
       volba: k.volba === undefined ? null : { kandidati: prelozKluceZvyraznenia(room.state, k.volba.kandidati) },
+      tlacidlo: k.tlacidlo ?? null,
+      odovzdaCigaretu: k.odovzdaCigaretu === true,
+      preskocenie: k.preskocenie === true,
+      naneisto: k.naneisto === true,
     };
   };
 

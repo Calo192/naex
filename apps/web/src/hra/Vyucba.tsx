@@ -299,6 +299,7 @@ export function VyucbaStol({
   chyba,
   zrusChybu,
   prerusit,
+  preskocit,
   hratProtiPocitacu,
   menoBota,
   chybaVyucby,
@@ -316,6 +317,8 @@ export function VyucbaStol({
   readonly zrusChybu: () => void;
   /** Odíde od stola; postup ostáva uložený. */
   readonly prerusit: () => void;
+  /** Preskočí výučbu (ako „Preskočiť“ v ponuke) a odíde od stola — úvod s cigaretou. */
+  readonly preskocit: () => void;
   readonly hratProtiPocitacu: () => void;
   readonly menoBota: string;
   /** Čo zlému ťahu chýbalo a čo bolo navyše (server, vyucbaChyba) — karty sa zvýraznia. */
@@ -445,10 +448,13 @@ export function VyucbaStol({
   // či hra za hráča, nemá hráč na stole čo robiť tiež.
   const tahaIny = (krok?.kto === "bot" || krok?.kto === "auto") && krok.vykonany !== true;
   const blokuj = krok?.kto === "info" || krok?.kto === "otazka" || krok?.vykonany === true || tahaIny;
+  // Nanečisto (stavba šenku, Michal 2026-10-25): so zvýrazneným sa hráč smie hrať, ťah aj tak spraví Melichar.
+  const naneisto = krok?.kto === "info" && krok.naneisto;
   useEffect(() => {
     if (!blokuj) return;
     const povolene = (t: EventTarget | null): boolean =>
-      t instanceof Element && t.closest("[data-vyucba-bublina], .lupa, .vrstva-zavriet, .pecat-zrusit, .hlavicka") !== null;
+      t instanceof Element &&
+      (t.closest("[data-vyucba-bublina], .lupa, .vrstva-zavriet, .pecat-zrusit, .hlavicka") !== null || (naneisto && t.closest("[data-vyucba-zvyraznene]") !== null));
     const zastav = (e: Event): void => {
       // Kliky z kódu (zatvorenie vrstvy, otvorenie starších pri novom kroku) prejdú.
       if (!e.isTrusted || povolene(e.target)) return;
@@ -459,7 +465,7 @@ export function VyucbaStol({
     return () => {
       for (const typ of ["pointerdown", "mousedown", "click", "contextmenu"]) window.removeEventListener(typ, zastav, true);
     };
-  }, [blokuj]);
+  }, [blokuj, naneisto]);
 
   // Chyba zmizne pri ďalšom kliku na stole — hráč výber opravuje.
   useEffect(() => {
@@ -586,11 +592,21 @@ export function VyucbaStol({
   const hovori = maText && !pocitadloBezi;
   const spatHlavne = zlaOdpoved && !strany.dalsiaJe;
 
+  // Vlastný nápis (Dať cigaretu, Odovzdať cigaretu) až na poslednej strane textu — dovtedy tlačidlo listuje.
+  const napisDalej = krok !== null && krok.tlacidlo !== null && jeInfo && !strany.dalsiaJe ? krok.tlacidlo : "ďalej";
   const tlacidloDalej = (
-    <button ref={spatHlavne ? undefined : dalejRef} className="tlacidlo-hlavne mel-dalej vyucba-dalej" onClick={() => enter?.()} data-vyucba-dalej="">
-      ďalej <kbd>Enter</kbd>
+    <button
+      ref={spatHlavne ? undefined : dalejRef}
+      className="tlacidlo-hlavne mel-dalej vyucba-dalej"
+      onClick={() => enter?.()}
+      data-vyucba-dalej=""
+      {...(krok?.odovzdaCigaretu === true && napisDalej !== "ďalej" ? { "data-vyucba-cigareta": "" } : {})}
+    >
+      {napisDalej} <kbd>Enter</kbd>
     </button>
   );
+  // Úvod: „Dať cigaretu“ alebo „Preskočiť výučbu“ — dve tlačidlá, prerušenie by bolo tretie (Michal 2026-10-25).
+  const preskocenie = krok !== null && krok.preskocenie && !vOdpovedi;
   const predoslaStrana = strany.strana > 0 && (
     <button type="button" className="tlacidlo-jemne mel-spat" onClick={strany.predosla} title="Predošlá strana textu" aria-label="Predošlá strana textu">
       ‹
@@ -685,9 +701,15 @@ export function VyucbaStol({
                   </button>
                 )}
                 {(strany.dalsiaJe || (jeInfo && !spatHlavne)) && tlacidloDalej}
-                <button type="button" className="tlacidlo-jemne vyucba-prerusit" onClick={prerusit} title="Prerušiť výučbu — postup sa uloží, pokračuješ na stránke Hrať.">
-                  prerušiť<span className="vyucba-dlhy-popis"> výučbu</span>
-                </button>
+                {preskocenie ? (
+                  <button type="button" className="mel-dalej vyucba-preskocit" onClick={preskocit} data-vyucba-preskocit="" title="Výučbu preskočíš — nájdeš ju kedykoľvek na stránke Hrať.">
+                    Preskočiť výučbu
+                  </button>
+                ) : (
+                  <button type="button" className="tlacidlo-jemne vyucba-prerusit" onClick={prerusit} title="Prerušiť výučbu — postup sa uloží, pokračuješ na stránke Hrať.">
+                    prerušiť<span className="vyucba-dlhy-popis"> výučbu</span>
+                  </button>
+                )}
               </>
             )
           }

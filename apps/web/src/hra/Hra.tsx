@@ -284,6 +284,11 @@ export function Hra() {
     odid();
     obnovVyucbu();
   }, [odid, obnovVyucbu]);
+  // „Preskočiť výučbu“ pri stole (úvod s cigaretou) = to isté ako v ponuke, a odchod od stola.
+  const preskocVyucbuPriStole = useCallback(() => {
+    odid();
+    preskocVyucbu();
+  }, [odid, preskocVyucbu]);
 
   // Odkaz /hra?kod=ABCD rovno pripojí do miestnosti.
   const { pripojene, miestnost, pripoj } = hra;
@@ -429,6 +434,7 @@ export function Hra() {
       // Pri rozhodnutí (volba) je správnych viac kandidátov — potvrdiť sa nezamyká.
       vyucbaOcakava={hra.vyucba?.krok?.kto === "hrac" && hra.vyucba.krok.volba === null ? hra.vyucba.krok.ocakava : null}
       zaHracaHra={krokVyucby?.kto === "auto" && !krokVyucby.vykonany}
+      naneisto={krokVyucby?.kto === "info" && krokVyucby.naneisto}
       // Vo výučbe chybu ukazuje bublina Melichara.
       chyba={hra.vyucba !== null ? null : hra.chyba}
       zrusChybu={hra.zrusChybu}
@@ -457,6 +463,7 @@ export function Hra() {
         chyba={hra.chyba}
         zrusChybu={hra.zrusChybu}
         prerusit={prerusVyucbu}
+        preskocit={preskocVyucbuPriStole}
         hratProtiPocitacu={() => {
           prerusVyucbu();
           hra.zaloz(false, PREDVOLENA_DLZKA, true);
