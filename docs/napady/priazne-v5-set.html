@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NA EX! — priazne v5: celý set ôsmich</title>
+<style>
+:root {
+  --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --okraj: #3d3229;
+  --text: #f1e8d8; --tlmeny: #b6a790;
+  --akcent: #e9ad45; --cervena: #d0563f; --zelena: #7cbf74; --modra: #8fb4e0;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #dccdb3;
+    --text: #2a2016; --tlmeny: #5e4f3b;
+    --akcent: #9a5d06; --cervena: #a83a26; --zelena: #356e2f; --modra: #2d5a8f;
+    color-scheme: light;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 system-ui, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 980px; margin: 0 auto; padding: 28px 16px 56px; }
+h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; line-height: 1.2; }
+h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); margin: 0 0 10px; }
+h2 { font-size: 1.4rem; margin: 38px 0 14px; padding-bottom: 6px; border-bottom: 1px solid var(--okraj); }
+h3 { font-size: 1.12rem; margin: 0 0 8px; }
+p { margin: 0 0 10px; }
+a { color: var(--akcent); }
+:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+.uvod { color: var(--tlmeny); }
+.odporucane { background: var(--plocha); border: 1px solid var(--akcent); border-radius: 12px; padding: 14px 16px; margin: 18px 0; }
+.odporucane ol { margin: 6px 0 0; padding-left: 20px; }
+.odporucane li { margin-bottom: 6px; }
+.tab-obal { overflow-x: auto; }
+table.prehlad { width: 100%; border-collapse: collapse; font-size: .92rem; }
+table.prehlad th, table.prehlad td { padding: 7px 6px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--okraj); }
+table.prehlad thead th { border-bottom: 2px solid var(--okraj); }
+td.c, th.c { text-align: right; white-space: nowrap; }
+tr.dnes td { color: var(--cervena); }
+.znacka { display: inline-block; font-size: .78rem; border-radius: 999px; padding: 1px 9px; border: 1px solid currentColor; white-space: nowrap; margin: 0 4px 2px 0; }
+.z-pravidla { color: var(--cervena); }
+.z-karty { color: var(--zelena); }
+.z-kod { color: var(--modra); }
+.z-odp { color: var(--akcent); font-weight: 600; }
+ol.smery { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+ol.smery > li { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 14px 16px; }
+ol.smery > li.odp { border-left: 4px solid var(--akcent); }
+.cislo { color: var(--akcent); font-family: Georgia, serif; margin-right: 6px; }
+.znacky { margin: 0 0 10px; }
+dl.polozka { margin: 0; display: grid; grid-template-columns: 9.5em 1fr; gap: 6px 12px; }
+dl.polozka dt { color: var(--tlmeny); font-size: .88rem; padding-top: 2px; }
+dl.polozka dd { margin: 0; }
+dl.polozka ul { margin: 0; padding-left: 18px; }
+dl.polozka li { margin-bottom: 3px; }
+.skore { font-family: Georgia, serif; font-size: 1.15rem; color: var(--akcent); white-space: nowrap; }
+.priklad { background: var(--plocha-2); border-radius: 8px; padding: 8px 12px; }
+.blok { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 16px; margin-bottom: 12px; }
+.blok ul, .blok ol { margin: 4px 0 0; padding-left: 18px; }
+.blok li { margin-bottom: 5px; }
+.hlavna { border-left: 4px solid var(--cervena); }
+details.viac { margin-top: 10px; }
+details.viac summary { cursor: pointer; color: var(--tlmeny); font-size: .9rem; }
+details.viac[open] summary { color: var(--text); }
+code { font-family: ui-monospace, Consolas, monospace; font-size: .86em; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+footer { margin-top: 40px; padding-top: 12px; border-top: 1px solid var(--okraj); color: var(--tlmeny); font-size: .9rem; }
+@media (max-width: 600px) {
+  dl.polozka { grid-template-columns: 1fr; }
+  dl.polozka dt { padding-top: 6px; }
+  table.prehlad { font-size: .82rem; }
+}
+</style>
+</head>
+<body>
+<main>
+
+<h1>Priazne v5: celý set ôsmich</h1>
+<p class="uvod">Navrhár, 25. 10. 2026. Úloha od Michala cez Leadera: nová priazeň Lakomca s menom, nová priazeň Exekútora,
+meno pre Úžerníka, úpravy Výpalného, Na zdravie a Bitkára a vyrovnanie celej osmičky. Kód hry ani pravidlá som nemenil.
+Podklady: <code>docs/pravidla-v5/davka.md</code> (Priazne v5), <code>docs/napady/priazne-v5.html</code>,
+<code>docs/playtesty/priazne-rozbor-20261024.html</code> a priebežné čísla stratéga.</p>
+
+<section class="odporucane" aria-labelledby="h-skratka">
+  <h2 id="h-skratka" style="margin-top:0;border:0;padding:0">V skratke</h2>
+  <ol>
+    <li><b>Cieľ vyrovnania: jeden bod sily ≈ 1 cigareta za kolo.</b> Bitkár +1 / +2 / +3 tomu zodpovedá presne
+      (zmerané: 1,1 / 2,1 / 3,1). Ostatné priazne treba zdvihnúť na túto úroveň, Bitkára netreba ďalej oslabovať.</li>
+    <li><b>Lakomec → Škrečok</b>: po bitke si 1 / 2 / 3 svoje karty z línie vezmeš rovno do ruky.</li>
+    <li><b>Exekútor → Zabavenie</b>: na začiatku kola súper otočí 1 / 2 / 3 plné poldeci na vypité.</li>
+    <li><b>Úžerník → Kmotor</b>. Keď nemáš Dlh, efekt je mŕtvy, preto navrhujem doplnok: za každý Dlh, ktorý nebolo čo spáliť, dostaneš cigaretu.</li>
+    <li><b>Výpalné</b> za <i>každé</i> súperovo NA EX (ako Svokra). <b>Na zdravie</b> „do dna“: poldeci z NA EX sa ti po bitke vráti plný.</li>
+    <li>V tomto sete má každá priazeň zhruba rovnakú silu, ale každá škodí darcovi v inej situácii. Kto rozdeľuje prebytok, musí prečítať stôl. Bezpečný starší neostane.</li>
+  </ol>
+</section>
+
+<h2 id="mena">1. Spoločná mena: cigareta za kolo</h2>
+<p>Silu každej priazne vyjadrujem jedným číslom: <b>koľko cigariet za kolo by mala hodnotu, akú má táto priazeň</b> (ďalej <b>c/kolo</b>).
+Meral som partie botov, v ktorých jeden hráč drží priazeň s pevnou silou celú partiu a priazne v4 sú vypnuté. Výsledok som porovnal
+s partiami bez priazní na rovnakých semienkach. Ako výhru partie rátam bodovanie v5 (súboje podmienok, 1 b + zóny strachu).</p>
+<div class="blok">
+  <ul>
+    <li>Fajčiar po šenku dá presne <i>s</i> cigariet za kolo, je to teda <b>meradlo</b>. Pri sile 1 / 2 / 3 zdvihol výhru partie
+      o 6 / 22 / 32 p. b. Vychádza to zhruba <b>10,5 p. b. výhry partie za 1 c/kolo</b>.</li>
+    <li>Bitkár +1 tuhé zdvihol výhru bitky o 6,5 p. b. a výhru partie o 11 p. b. To je <b>1,1 c/kolo</b>.
+      Jedno tuhé v každej bitke má teda cenu zhruba jednej cigarety za kolo.</li>
+    <li>Priazne bez merania som odhadol z počtov v partiách botov (napr. koľko NA EX súper dá za partiu) a z cien v pravidlách:
+      karta ≈ 1 cigareta (fajčenie, Zberný dvor <code>PRAVIDLA.md:999</code>), plný poldeci ≈ 2 cigarety (doliatie <code>PRAVIDLA.md:383</code>).</li>
+  </ul>
+  <p class="priklad">Pozor na dve rôzne čísla. Stratég uvádza, že Bitkár otočí 25–44 % bitiek, <i>v ktorých ho niekto má</i>
+  (ide o tesné bitky a kontrafakt). Ja uvádzam čistý prírastok pri trvalom držaní. Obe čísla platia.
+  Moje porovnáva priazne medzi sebou, stratégovo ukazuje, aké sú bitky tesné.</p>
+</div>
+
+<h2 id="lakomec">2. Lakomec: nová priazeň a nové meno</h2>
+<p>Lakomec na scorecarde v5 ráta dvakrát Cigarety a Rezervu (<code>scorecards-v5.json</code>). Má „nič neminie“. Zľavu v šenku ani barter Michal nechce.</p>
+<ol class="smery">
+<li class="odp">
+  <h3><span class="cislo">L1</span>Škrečok: nič nevyhodí</h3>
+  <p class="znacky"><span class="znacka z-odp">odporúčam</span><span class="znacka z-kod">kód stredný</span></p>
+  <dl class="polozka">
+    <dt>Znenie</dt><dd>Pri návrate kariet po bitke (§9.7, <code>PRAVIDLA.md:595</code>) si smieš svoje karty z línie vziať rovno do ruky
+      namiesto do odhadzovacieho balíčka. Neplatí to pre kartu staršieho z patronátu ani pre karty spálené v bitke (Pohreb, Dievčina na vydaj).</dd>
+    <dt>Sila 1 / 2 / 3</dt><dd>1 / 2 / 3 karty.</dd>
+    <dt>Satira</dt><dd>Škrečok nič nevyhodí. Čo raz vyložil na stôl, odnesie domov v lícach, aj s obrúskom.</dd>
+    <dt>Odhad sily</dt><dd><span class="skore">≈ 1,1 / 2,0 / 2,5 c/kolo</span>. V skúšobnom behu vrátil pri sile 2
+      5 až 9 kariet za partiu. Karta stojí 1 cigaretu, vybraná o niečo viac. Pri sile 3 už často nie je čo vrátiť.</dd>
+    <dt>Ťažké rozhodnutie</dt><dd>Darcu to bolí, keď má súper v línii silné karty zo šenku. Tie si tak udrží do ďalšej bitky.</dd>
+    <dt>Riziko</dt><dd>Treba nové rozhodnutie v kroku 7 bitky (UI aj bot). Ruka bez limitu to unesie (<code>PRAVIDLA.md:142</code>).</dd>
+  </dl>
+</li>
+<li>
+  <h3><span class="cislo">L2</span>Držgroš: kto nič nevyloží, nič nestratí</h3>
+  <p class="znacky"><span class="znacka z-karty">alternatíva</span><span class="znacka z-kod">kód nízky</span></p>
+  <dl class="polozka">
+    <dt>Znenie</dt><dd>Keď v kole prvýkrát pasuješ v Zhromaždení, dostaneš navyše cigarety (k cigaretám za nevyužitý limit, <code>PRAVIDLA.md:304</code>).
+      Záverečná sa nepočíta.</dd>
+    <dt>Sila 1 / 2 / 3</dt><dd>+1 / +2 / +3 cigarety.</dd>
+    <dt>Satira</dt><dd>Držgroš na rundu nikdy neprispeje. Keď príde čašník, práve si zaväzuje šnúrky.</dd>
+    <dt>Odhad sily</dt><dd><span class="skore">≈ 0,7 / 1,4 / 2,1 c/kolo</span>. Boti pasovali asi 0,7-krát za kolo.
+      Ak to bude málo, platí za každý pas (nie len prvý).</dd>
+    <dt>Riziko</dt><dd>Odmeňuje pasivitu. To však môže byť aj zaujímavé rozhodnutie: pasovať skoro a zbierať, alebo sa biť.</dd>
+  </dl>
+</li>
+<li>
+  <h3><span class="cislo">L3</span>Skrblík: nedopije (Naleje)</h3>
+  <p class="znacky"><span class="znacka z-pravidla">neodporúčam: mŕtva</span></p>
+  <dl class="polozka">
+    <dt>Znenie</dt><dd>Na začiatku kola sa ti otočí o 1 / 2 / 3 vypité poldeci viac.</dd>
+    <dt>Odhad sily</dt><dd><span class="skore">≈ 0,1 c/kolo</span>. V skúšobnom behu otočila pri sile 1 len 0 až 2 poldeci za partiu.
+      Hráč má 2 poldeci a jeden sa otočí sám, takže skoro nikdy nie je čo otočiť. Uvádzam ju len preto, aby sa k nej už nikto nevracal.</dd>
+  </dl>
+</li>
+</ol>
+
+<h2 id="exekutor">3. Exekútor: nová priazeň</h2>
+<p>Exekútor na scorecarde v5 ráta, čo sa dá zabaviť: Starších, Lokality, Rezervu a Cigarety. Prah Exekúcie (§11, <code>PRAVIDLA.md:810</code>)
+ostane pevný 10 (Obecný úrad −4), bez priazne.</p>
+<ol class="smery">
+<li class="odp">
+  <h3><span class="cislo">E1</span>Zabavenie</h3>
+  <p class="znacky"><span class="znacka z-odp">odporúčam</span><span class="znacka z-kod">kód nízky</span></p>
+  <dl class="polozka">
+    <dt>Znenie</dt><dd>Na začiatku kola, keď sa každému otočí jeden poldeci (<code>PRAVIDLA.md:293</code>), súper otočí plné poldeci na vypité.
+      Nie je to nerest a pečeň mu to nepoškodí. Doliať si ich smie ako vždy.</dd>
+    <dt>Sila 1 / 2 / 3</dt><dd>1 / 2 / 3 poldeci (najviac toľko, koľko má plných).</dd>
+    <dt>Satira</dt><dd>Exekútor nalepí súperovi na fľašu žltú nálepku „Zaistené“. Fľaša ostane na stole, len sa z nej nesmie piť.</dd>
+    <dt>Odhad sily</dt><dd><span class="skore">≈ 1,6 / 2,5 / 2,8 c/kolo</span>. V skúšobnom behu zabavila pri sile 1 3 až 4 poldeci za partiu.
+      Súper teda o limit vykladania menej, alebo za doliatie zaplatí 2 cigarety.</dd>
+    <dt>Ťažké rozhodnutie</dt><dd>Škodí priamo darcovi. Kto rozdáva prebytok, je spravidla vedúci a potrebuje plné poldeci na vykladanie.</dd>
+    <dt>Riziko</dt><dd>Sila 1 vychádza o pol cigarety nad cieľom. Pri sile 2 má súper s 2 poldeci limit 1. Ak to meranie potvrdí, stupnica bude 1 / 1 / 2.</dd>
+  </dl>
+</li>
+<li>
+  <h3><span class="cislo">E2</span>Dražba</h3>
+  <p class="znacky"><span class="znacka z-karty">alternatíva</span><span class="znacka z-kod">kód stredný</span></p>
+  <dl class="polozka">
+    <dt>Znenie</dt><dd>Po bitke si vezmi jednu súperovu kartu z jeho línie do svojho odhadzovacieho balíčka (nie staršieho, nie kliatbu).</dd>
+    <dt>Sila 1 / 2 / 3</dt><dd>Kartu vyberie súper / náhodná / vyberieš ty.</dd>
+    <dt>Satira</dt><dd>Exekútor súperovi zabaví televízor a v dražbe ti ho predá za korunu. Kúpna zmluva je na servítke.</dd>
+    <dt>Odhad sily</dt><dd><span class="skore">≈ 0,6 / 1,7 / 2,3 c/kolo</span>. V skúšobnom behu presunula pri sile 2 3 až 5 kariet za partiu.
+      Účinok je trvalý a dvojitý: ty kartu máš, súper ju stratil.</dd>
+    <dt>Riziko</dt><dd>Mení balíčky natrvalo a narastá s dĺžkou hry. Pri sile 1 súper dá najhoršiu kartu, takže sa nemusí oplatiť ju brať (smieš odmietnuť).</dd>
+  </dl>
+</li>
+<li>
+  <h3><span class="cislo">E3</span>Vymáhanie</h3>
+  <p class="znacky"><span class="znacka z-pravidla">neodporúčam: mŕtva</span></p>
+  <dl class="polozka">
+    <dt>Znenie</dt><dd>Po bitke ti súper zaplatí 1 cigaretu za každý svoj priznaný Dlh, najviac 1 / 2 / 3.</dd>
+    <dt>Odhad sily</dt><dd><span class="skore">≈ 0,1 c/kolo</span>. Dlhov je málo (na konci 0,6 na hráča), v skúšobnom behu 0 až 2 cigarety za partiu.
+      Narazí na to isté ako dnešný prah Exekúcie.</dd>
+  </dl>
+</li>
+</ol>
+
+<h2 id="uzernik">4. Úžerník: nové meno</h2>
+<p>Efekt je daný: po bitke sa ti spáli 1 / 2 / 3 priznané Dlhy. Interný kľúč <code>UZERNIK</code> ostáva, mení sa len názov scorecardu a texty.</p>
+<ol class="smery">
+<li class="odp">
+  <h3><span class="cislo">Ú1</span>Kmotor</h3>
+  <p class="znacky"><span class="znacka z-odp">odporúčam</span></p>
+  <p>„Kmotor ti dlh vybaví. Nepýtaj sa ako. V nedeľu budeš vedieť, koho krúžkovať.“ Jedno slovo, každý ho pozná a sedí k peniazom na scorecarde (Dlh 2×).</p>
+</li>
+<li>
+  <h3><span class="cislo">Ú2</span>Konsolidátor</h3>
+  <p>„Všetky tvoje dlhy zlúči do jedného, menšieho. Úrok ti vysvetlí v ďalšom kole.“ Satira na reklamy na pôžičky. Dlhšie slovo, na scorecarde sa zmestí horšie.</p>
+</li>
+<li>
+  <h3><span class="cislo">Ú3</span>Dobrodinec</h3>
+  <p>„Dobrodinec dlh zaplatí za teba. Zmluvu si prečítaš, keď vytriezvieš.“ Irónia je jemnejšia, charakter je menej jasný.</p>
+</li>
+</ol>
+<div class="blok hlavna">
+  <p><b>Riziko: Kmotor bude mŕtvy.</b> Dlhov je v partii málo. Na konci má hráč priemerne 0,6 Dlhu, v skúšobnom behu Kmotor pri sile 2 spálil 0 až 4 Dlhy za partiu.
+  Odhad: <span class="skore">≈ 0,3 / 0,5 / 0,6 c/kolo</span>.</p>
+  <p><b>Doplnok na rozhodnutie:</b> za každý Dlh, ktorý nebolo čo spáliť, dostaneš 1 cigaretu („keď nemáš dlh, dá ti na pivo“).
+  Potom je Kmotor vždy <span class="skore">≈ 1 / 2 / 3 c/kolo</span> (v skúšobnom behu pri sile 2 bez Dlhov 10 cigariet za partiu).
+  Ak nechceš druhú cigaretovú priazeň vedľa Fajčiara, doplnkom môže byť karta namiesto cigarety.</p>
+</div>
+
+<h2 id="upravy">5. Úpravy Výpalného, Na zdravie a Bitkára</h2>
+<ol class="smery">
+<li class="odp">
+  <h3><span class="cislo">N</span>Výpalné (Neprajník)</h3>
+  <dl class="polozka">
+    <dt>Dnes v5</dt><dd>Súperovo NA EX na <i>tvoju</i> kartu ho stojí 1 / 2 / 3 cigarety. Súper dá na tvoje karty asi 2 NA EX za partiu a často nemá cigarety:
+      <span class="skore">≈ 0,3 / 0,6 / 0,9 c/kolo</span>. Stratég: takmer nič.</dd>
+    <dt>N1 (odporúčam)</dt><dd><b>Za každé súperovo NA EX</b>, na hocijakú kartu (aj povinné na Krčme), 1 / 2 / 3 cigarety. Súper dá asi 3,8 NA EX za partiu:
+      <span class="skore">≈ 0,6 / 1,3 / 1,9 c/kolo</span>, k tomu odstrašenie. Je to Svokra bez karty (<code>PRAVIDLA.md:1052</code>), sčítajú sa.</dd>
+    <dt>N2</dt><dd>Len na tvoju kartu, ale dvojnásobne: 2 / 4 / 6 cigariet. Sila je podobná N1, odstrašenie cielenejšie, ale častejšie narazí na prázdne vrecko.</dd>
+    <dt>Satira</dt><dd>Neprajník si všíma každý pohárik, ktorý súper naleje, a hneď to rozkecá po dedine. Súper radšej zaplatí, aby mlčal.</dd>
+  </dl>
+</li>
+<li class="odp">
+  <h3><span class="cislo">A</span>Na zdravie (Alkoholik)</h3>
+  <dl class="polozka">
+    <dt>Dnes v5</dt><dd>Tvoje NA EX ti nepoškodí pečeň. Ušetrí asi 0,6 pečene za kolo, pri prahu 3 je to málo Cirhóz:
+      <span class="skore">≈ 0,2 / 0,3 / 0,3 c/kolo</span>. Stratég: takmer nič.</dd>
+    <dt>A1 (odporúčam): do dna</dt><dd>Poldeci z tvojho NA EX sa ti po bitke vráti plný (nevypije sa). Sila 1: prvé NA EX v kole. Sila 2: prvé NA EX
+      a k tomu ti nepoškodí pečeň. Sila 3: všetky tvoje NA EX, poldeci aj pečeň.
+      <span class="skore">≈ 1,2 / 1,5 / 2,0 c/kolo</span>: 0,6 NA EX za kolo × 2 cigarety za poldeci, k tomu pečeň.</dd>
+    <dt>A2: Kuráž</dt><dd>+1 tuhé za každé tvoje NA EX v kole, najviac sila. <span class="skore">≈ 0,6 / 0,8 / 0,9 c/kolo</span>.
+      Krivka je plochá, lebo dve NA EX v kole sú zriedkavé. Tretia priazeň „+N do bitky“.</dd>
+    <dt>Satira A1</dt><dd>Alkoholik ti pripije a pohárik ti potom potichu doleje. Vie, aké je to piť sám.</dd>
+    <dt>Ťažké rozhodnutie</dt><dd>Lacné NA EX pre súpera, ktorý je po prehre na suchu. Snehová guľa cez cenu NA EX (PT 20261016-134912) tak slabne.</dd>
+  </dl>
+</li>
+<li>
+  <h3><span class="cislo">B</span>Bitkár</h3>
+  <dl class="polozka">
+    <dt>B1 (odporúčam)</dt><dd><b>Ponechať +1 / +2 / +3 tuhé.</b> Zmerané (400 / 400 / 300 partií): výhra bitky +6,5 / +15 / +25 p. b.,
+      výhra partie +11 / +22 / +33 p. b., teda <span class="skore">1,1 / 2,1 / 3,1 c/kolo</span>. Je presne na cieli a Fajčiar pri sile 2 je rovnako silný (2,1).
+      Problém nie je v sile Bitkára, ale v tom, že ostatné priazne sú slabé. Keď ich zdvihneme, Bitkár prestane byť jediná priazeň, ktorej sa treba báť.</dd>
+    <dt>B2</dt><dd>+1 / +1 / +2, ak meranie celého setu ukáže, že darcovia sa Bitkárovi stále vyhýbajú. Sila 3 je pri bitke aj tak skoro nikdy (stratég: 0 × v 435 bitkách).</dd>
+    <dt>B3</dt><dd>Zastane sa: súperov prebytok proti tebe je o 1 / 2 / 3 menší. Bitku nevyhrá, len brzdí posuny markerov. Rozhodnutie o tom, či má byť nejaká priazeň „+N do bitky“.</dd>
+  </dl>
+</li>
+</ol>
+
+<h2 id="set">6. Vyrovnanosť celej osmičky</h2>
+<p>M = zmerané (partie botov, priazeň držaná celú partiu), O = odhad z počtov v partiách. Cieľ je 1 / 2 / 3 c/kolo, v pásme ±0,5.</p>
+<div class="tab-obal">
+<table class="prehlad">
+<thead><tr><th>Scorecard</th><th>Priazeň v sete</th><th class="c">c/kolo pri sile 1 / 2 / 3</th><th>Zdroj</th><th>Kedy ju darca najviac oľutuje</th></tr></thead>
+<tbody>
+<tr><td>Úžerník → Kmotor</td><td>spáli 1 / 2 / 3 Dlhy, zvyšok cigarety</td><td class="c">1 / 2 / 3</td><td>O</td><td>súper má Dlhy (aj podmienka Dlh v5)</td></tr>
+<tr><td>Lakomec → Škrečok</td><td>1 / 2 / 3 karty z línie do ruky</td><td class="c">1,1 / 2,0 / 2,5</td><td>O</td><td>súper má v línii silné karty</td></tr>
+<tr><td>Neprajník</td><td>Výpalné za každé NA EX</td><td class="c">0,6 / 1,3 / 1,9</td><td>O</td><td>chceš dávať NA EX, najmä na Krčme</td></tr>
+<tr><td>Bitkár</td><td>+1 / +2 / +3 tuhé</td><td class="c">1,1 / 2,1 / 3,1</td><td>M</td><td>ďalšia bitka bude tesná</td></tr>
+<tr><td>Veriaci</td><td>Viera +1 / +2 / +3 (bez zmeny)</td><td class="c">0,4 / 1,6 / 2,9</td><td>M</td><td>máš Povery a stavíš na tuhé</td></tr>
+<tr><td>Fajčiar</td><td>+1 / +2 / +3 cigarety po šenku, chránené</td><td class="c">0,5 / 2,1 / 3,0</td><td>M (meradlo)</td><td>v šenku ostali silné karty</td></tr>
+<tr><td>Alkoholik</td><td>Na zdravie, do dna</td><td class="c">1,2 / 1,5 / 2,0</td><td>O</td><td>súper je na suchu a má ciele na NA EX</td></tr>
+<tr><td>Exekútor</td><td>Zabavenie 1 / 2 / 3 poldeci</td><td class="c">1,6 / 2,5 / 2,8</td><td>O</td><td>potrebuješ plné poldeci na vykladanie</td></tr>
+<tr class="dnes"><td colspan="5">Na porovnanie dnešné v5 (bez úprav): Výpalné na tvoju kartu 0,3 / 0,6 / 0,9, Na zdravie 0,2 / 0,3 / 0,3, Kmotor bez doplnku 0,3 / 0,5 / 0,6.
+Lakomec a Exekútor podľa stratéga 0.</td></tr>
+</tbody>
+</table>
+</div>
+<p>Fajčiar pri sile 1 vyšiel 0,5 ± 0,6, teda v šume. Podľa definície má 1.</p>
+
+<div class="blok">
+  <h3>Bitkár a Veriaci</h3>
+  <ul>
+    <li><b>Bitkár +1 / +2 / +3 je v rovnováhe</b> a je to najlepšie zmerané meradlo setu. Ďalšie oslabenie netreba, kým sa nezmeria celý set.</li>
+    <li><b>Veriaci je v rovnováhe pri sile 2 a 3, pri sile 1 je slabý (0,4).</b> Jedna Viera navyše najprv zruší súperovu Poveru
+      (<code>PRAVIDLA.md:533</code>) a až potom uberie tuhé, takže sa často minie na mäkké poškodenie, ktoré víťaza neurčí.
+      Ak to bude prekážať, stačí sila 1 = +1 Viera a +1 tuhé, alebo Viera +2 / +3 / +4.</li>
+    <li>Bitkár a Veriaci sú si podobné, obe pôsobia na tuhé. V sete sú to jediné dve bitkové priazne. Ostatných šesť pôsobí na iné zdroje (cigarety, karty, poldeci, Dlh, NA EX).</li>
+  </ul>
+</div>
+
+<div class="blok hlavna">
+  <h3>Prečo bude pridelenie prebytku ťažké rozhodnutie</h3>
+  <ul>
+    <li>Všetkých osem priazní má podobnú priemernú silu, takže žiadny starší nie je zadarmo. Dnes sú štyri bezpečné (Lakomec, Exekútor, Úžerník, Neprajník).</li>
+    <li>Každá škodí darcovi v inej situácii (posledný stĺpec tabuľky). Darca preto pri každom rozdelení číta stôl:
+      chystá NA EX, potrebuje plné poldeci, je ďalšia bitka tesná, sú v šenku silné karty?</li>
+    <li>K tomu bodovanie v5: starší má pre darcu cenu podľa zóny strachu a podmienok, ktoré vyhráva. Darca teda váži body teraz proti silnejšiemu súperovi.</li>
+    <li>Riziká: Exekútor pri sile 1 je mierne nad cieľom, Veriaci pri sile 1 a Neprajník sú mierne pod ním. Škrečok a Zabavenie sú odhady, nie merania.</li>
+  </ul>
+</div>
+
+<h2 id="meranie">7. Meranie pre stratéga</h2>
+<p>Skript a výsledky sú v <code>F:/Projects/naex-tmp/priazne-meranie</code>: <code>meraj.ts</code> (bot proti botovi, priazeň s pevnou silou celú partiu,
+bodovanie v4 aj v5, pokračuje po partiách), <code>patch.mjs</code> (háčiky do <b>kópie</b> jadra, nie do repa), <code>rozbor.mjs</code> (tabuľka).
+Hotové: baseline 400 partií, Bitkár 1–3, Veriaci 1–3, Fajčiar 1–3. Jedna partia trvá pri 4 procesoch asi 3 s, preto najviac 4 procesy naraz.</p>
+<pre class="priklad" style="white-space:pre-wrap;overflow-x:auto"><code>cd F:/Projects/naex-tmp/priazne-meranie
+mkdir -p core && cp -r ../../naex-ui/packages/core/src ../../naex-ui/packages/core/data core/   # jadro z origin/master
+node patch.mjs core/src/engine.ts
+# kolo 1 (4 procesy, každý ≈ 10 min): Škrečok, Zabavenie
+for e in "ZALOZNA 1" "ZALOZNA 2" "ZABAVENIE 1" "ZABAVENIE 2"; do
+  node --experimental-strip-types --no-warnings meraj.ts $e 200 0 &
+done; wait
+# kolo 2: Výpalné za každé NA EX, Na zdravie do dna
+for e in "VYPALNE_V 1" "VYPALNE_V 2" "NAZDRAVIE2 1" "NAZDRAVIE2 2"; do
+  node --experimental-strip-types --no-warnings meraj.ts $e 200 0 &
+done; wait
+# kolo 3: Kmotor s doplnkom a bez neho, dnešné Výpalné a Na zdravie na kontrolu
+for e in "KMOTOR 1" "KMOTOR 2" "UZERNIK 2" "NEPRAJNIK 2"; do
+  node --experimental-strip-types --no-warnings meraj.ts $e 200 0 &
+done; wait
+# voliteľne: "ALKOHOLIK 2" "PAS 1" "PAS 2" "ZHABANIE 2"
+node rozbor.mjs</code></pre>
+<p>Kódy efektov: ZALOZNA = Škrečok, ZABAVENIE = Zabavenie, VYPALNE_V = Výpalné za každé NA EX, NEPRAJNIK = dnešné Výpalné, NAZDRAVIE2 = Na zdravie do dna,
+ALKOHOLIK = dnešné Na zdravie, KMOTOR = Kmotor s doplnkom, UZERNIK = bez doplnku, PAS = Držgroš, ZHABANIE = Dražba.
+Prepočet: Δ výhry partie v5 (stĺpec „partia v5“ mínus 50) / 10,5 = c/kolo. Pri 200 partiách je šum ± 7 p. b. (± 0,7 c/kolo).
+Cieľ: každá priazeň pri sile 1 a 2 v pásme 1 ± 0,5 a 2 ± 0,5 c/kolo.</p>
+<details class="viac"><summary>Obmedzenia merania</summary>
+  <ul>
+    <li>Priazeň drží jeden hráč celú partiu. V hre ju má zaostávajúci len niekoľko kôl a priemerne so silou 1,5–1,7. Čísla teda porovnávajú priazne medzi sebou, nie ich skutočný podiel na výhrach.</li>
+    <li>Boti hrajú podľa v4. Háčiky Bitkára, Veriaceho, Výpalného a Na zdravie vidí aj výpočet bota. Ostatné priazne sa vkladajú medzi ťahy, takže ich bot nepredvída a čísla sú skôr dolná hranica.</li>
+    <li>Škrečok a Dražba vyberajú kartu jednoduchou heuristikou (súčet akcií). Odhady „O“ sú z 3-partiových skúšobných behov a z cien v pravidlách, preto sú hrubé.</li>
+  </ul>
+</details>
+
+<h2 id="dopad">8. Dopad na pravidlá a kód (po schválení)</h2>
+<ul>
+  <li><code>docs/PRAVIDLA.md:672–684</code> (§10 tabuľka priazní, zrušiť „2 × sila“), <code>:810</code> (prah Exekúcie bez priazne), <code>:459</code> a <code>:447</code> (prahy Cirhózy a Dlhu bez priazne), <code>:385</code> (barter bez Lakomca).</li>
+  <li><code>packages/core/src/engine.ts:449</code> (<code>priazen</code>, <code>NASOBOK_PRIAZNE</code>), <code>:2207</code> (NA EX: Výpalné, Na zdravie), <code>:2592</code> (Fajčiar po šenku, chránený pred Obmedzením), návrat kariet <code>:3564</code> (Škrečok), začiatok kola (Zabavenie), krok bitky po návrate kariet (Kmotor).</li>
+  <li><code>packages/core/src/player.ts:71–105</code> (prahy a barter bez priazní), <code>bot.ts:198–207</code> (váhy priazní: pri vyrovnanom sete skoro rovnaké), <code>apps/web/src/hra/Scorecard.tsx:25–53</code> (texty), názvy scorecardov v <code>scorecards-v5.json</code> a v tvorcovi (Bodovacie karty, SQLite).</li>
+</ul>
+
+<h2 id="otazky">9. Otázky pre Michala</h2>
+<ol>
+  <li>Prijímaš cieľ „jeden bod sily ≈ 1 cigareta za kolo“ ako mieru vyrovnania?</li>
+  <li>Kmotor: smie dať cigaretu (alebo kartu) za Dlh, ktorý nebolo čo spáliť? Bez toho bude takmer mŕtvy.</li>
+  <li>Lakomec: Škrečok (karty z línie do ruky), alebo jednoduchší Držgroš (cigarety za pas)?</li>
+  <li>Exekútor: Zabavenie so stupnicou 1 / 2 / 3, alebo opatrnejšie 1 / 1 / 2?</li>
+</ol>
+
+<footer>Navrhár, 25. 10. 2026. Podklady: <code>docs/pravidla-v5/davka.md</code>, <code>docs/napady/priazne-v5.html</code>, <code>docs/napady/scorecardy-v5.html</code>,
+<code>docs/playtesty/priazne-rozbor-20261024.html</code>, <code>docs/PRAVIDLA.md</code> §6–§11, <code>packages/core/data/scorecards-v5.json</code>.
+Meranie: 2 600 partií bot proti botovi (baseline, Bitkár, Veriaci, Fajčiar), skúšobné behy po 3 partiách pre ostatné priazne, skripty v <code>F:/Projects/naex-tmp/priazne-meranie</code>.</footer>
+</main>
+</body>
+</html>
