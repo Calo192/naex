@@ -45,8 +45,8 @@ describe("zmeny na stole po ťahu bota či hry vo výučbe", () => {
   it("cigarety za kúpu Štamgasta svietia na jeho bare, za tvoju na tvojom", () => {
     expect(tah("k-kupa-bot").kluce).toContain("bar-supera:cigarety");
     expect(tah("k-kup-hasic").kluce).toContain("bar:cigarety");
-    // Pas s plným limitom nedal cigaretu — nič sa nerozsvieti.
-    expect(tah("k-pas-bot").kluce).toEqual([]);
+    // Pas s nevyloženou kartou dal Štamgastovi cigaretu (1. časť, Michal 2026-10-25).
+    expect(tah("k-pas-bot").kluce).toContain("bar-supera:cigarety");
   });
 
   it("kúpu Štamgasta zo šenku ukáže jeho dlaždica Karty — karta v jeho ruke je skrytá", () => {
@@ -58,8 +58,8 @@ describe("zmeny na stole po ťahu bota či hry vo výučbe", () => {
     expect(tah("k-prebytok1").kluce).toContain("starsi:farar");
   });
 
-  it("NA EX na kartu v línii ju rozsvieti", () => {
-    const { po, kluce } = tah("k-naex");
+  it("karta, ktorú hráč priložil, svieti na stole", () => {
+    const { po, kluce } = tah("k-hasic");
     const hasic = po.strany[0].find((pl) => pl.card.defId === "hasic");
     expect(hasic).toBeDefined();
     expect(kluce).toContain(`uid:${hasic?.card.uid}`);

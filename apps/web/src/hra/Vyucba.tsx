@@ -65,7 +65,7 @@ export function VyucbaVLobby({ vyucba, zacni }: { readonly vyucba: VyucbaUctu; r
             ? `Majster Melichar ťa čaká pri stole — si v kroku ${vyucba.krok + 1} z ${vyucba.spolu}.`
             : vyucba.stav === "hotova"
               ? "Výučbu máš za sebou. Ak si chceš pravidlá zopakovať, zahraj si ju znova."
-              : "Majster Melichar ťa za pár minút prevedie jedným kolom proti Štamgastovi: vybrať cieľ, kúpiť zo šenku, vykladať, NA EX! a bitka. Šenok za teba postaví Melichar. Do štatistík sa neráta."}
+              : "1. časť: majster Melichar ťa prevedie prvým kolom proti Štamgastovi — lokalita, šenok, Zhromaždenie, Pitka, bitka a starší. NA EX! príde v 2. časti. Do štatistík sa neráta."}
         </p>
       </div>
       <div className="riadok-tlacidiel">
@@ -351,21 +351,23 @@ export function VyucbaStol({
 
   // Pri novom kroku sa stôl vráti z pohľadu starších a zavrú sa vrstvy, ktoré krok
   // nepotrebuje (playtest: po kroku Body ostali starší otvorení, Lokality zakryli bar).
+  // Po prvej bitke drží starších na stole HernaPlocha (ukazStarsich) — klik na Body by ich zavrel.
+  const poBitke = view.kolo > 1;
   useEffect(() => {
     if (krok === null) return;
     const kluceKroku = krok.zvyraznit;
     const typ = krok.ocakava?.type ?? "";
     const t = setTimeout(() => {
-      if (!krokSoStarsimi(krok)) document.querySelector<HTMLElement>('[data-vyucba-prvok="body"][aria-pressed="true"]')?.click();
+      if (!krokSoStarsimi(krok) && !poBitke) document.querySelector<HTMLElement>('[data-vyucba-prvok="body"][aria-pressed="true"]')?.click();
       // Stupnice strachu sú na kartách starších — línia starších sa otvorí sama (playtest: krok 38 svietil Body).
-      else if (kluceKroku.some((k) => k === "starsi-stupnica" || k === "linia-starsich")) {
+      else if (!poBitke && kluceKroku.some((k) => k === "starsi-stupnica" || k === "linia-starsich")) {
         document.querySelector<HTMLElement>('.doska.moja [data-vyucba-prvok="body"][aria-pressed="false"]')?.click();
       }
       const vrstvu = kluceKroku.some((k) => k.startsWith("hlavicka:")) || typ === "pohreb" || typ === "patronat";
       if (!vrstvu) document.querySelector<HTMLElement>(".vrstva:not(.skryta) .vrstva-zavriet")?.click();
     }, 350);
     return () => clearTimeout(t);
-  }, [krok?.id]);
+  }, [krok?.id, poBitke]);
 
   // Pri zmene kroku zavrie visiacu lupu karty či staršieho (HernaPlocha, U2).
   useEffect(() => {
@@ -454,7 +456,8 @@ export function VyucbaStol({
   // s POTVRDIŤ a jeho X sa nedalo zavrieť (playtest výučby 20261025, krok 2). Kým ťahá Štamgast
   // či hra za hráča, nemá hráč na stole čo robiť tiež.
   const tahaIny = (krok?.kto === "bot" || krok?.kto === "auto") && krok.vykonany !== true;
-  const blokuj = krok?.kto === "info" || krok?.kto === "otazka" || krok?.vykonany === true || tahaIny;
+  // Po poslednom kroku partia stojí (1. časť končí uprostred) — stôl už na ťah nevyzýva.
+  const blokuj = krok === null || krok.kto === "info" || krok.kto === "otazka" || krok.vykonany === true || tahaIny;
   // Nanečisto (stavba šenku, Michal 2026-10-25): so zvýrazneným sa hráč smie hrať, ťah aj tak spraví Melichar.
   const naneisto = krok?.kto === "info" && krok.naneisto;
   useEffect(() => {
@@ -683,8 +686,12 @@ export function VyucbaStol({
                   tlacidloDalej
                 ) : (
                   <>
-                    <button className="tlacidlo-hlavne" onClick={hratProtiPocitacu}>
-                      Hrať prvú partiu proti počítaču
+                    {/* 2. časť ešte nie je (Michal 2026-10-25) — ponuka ostáva viditeľná, nech hráč vie, že príde. */}
+                    <button type="button" disabled data-vyucba-dalsia-cast="" title="2. časť výučby (NA EX a zopár podlostí) pripravujeme.">
+                      2. časť pripravujeme
+                    </button>
+                    <button className="tlacidlo-hlavne" onClick={hratProtiPocitacu} data-vyucba-koniec="">
+                      Hrať proti počítaču
                     </button>
                     <button onClick={prerusit}>Do lobby</button>
                   </>
@@ -731,5 +738,6 @@ export function VyucbaStol({
   );
 }
 
+// Na konci časti sa už rozlúčil posledný krok scenára — tu len kam ďalej.
 const TEXT_NA_KONIEC =
-  "Výučbu máš za sebou! Základ vieš, zvyšok ti poviem v prvej partii: keď sa objaví niečo nové — Dlh, Absťák, Pohoršenie — ozvem sa krátkou nápovedou. Zahraj si naostro, Štamgast a jeho kumpáni ťa čakajú.";
+  "1. časť máš za sebou, hviezdička za ňu je tvoja. V partii proti počítaču sa ozvem krátkou nápovedou, keď sa objaví niečo nové.";

@@ -105,6 +105,16 @@ export interface ScenarVyucby {
   readonly id: string;
   readonly nazov: string;
   /**
+   * Časť výučby (Michal 2026-10-25: výučba po častiach, hviezdička za každú) —
+   * dokončenie scenára dá achievement Prvá hra s týmto rankom. Bez nej 1.
+   */
+  readonly cast?: number;
+  /**
+   * Verzia krokov: uložený postup inej verzie nesedí na kroky (iné poradie aj
+   * počet), preto rozohraná výučba so starou verziou začne odznova.
+   */
+  readonly verzia?: string;
+  /**
    * Vypínač (Michal 2026-10-23): kým nie je true, výučbu hráčom server
    * neponúkne ani nespustí — len správcom na skúšanie. Zapne sa až s hotovým
    * scenárom a UI.

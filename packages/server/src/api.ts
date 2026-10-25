@@ -113,6 +113,8 @@ export interface ApiKontext {
   readonly stavServera: () => StavServera;
   /** Počet krokov scenára výučby „Prvá hra“ (Michal 2026-10-23). */
   readonly vyucbaKrokov: number;
+  /** Verzia scenára výučby — uložený postup inej verzie začne odznova (ScenarVyucby.verzia). */
+  readonly vyucbaVerzia: string | null;
   /** Vypínač výučby: false = hráčom sa nezobrazí (ponuka ani tlačidlo), správcom áno. */
   readonly vyucbaPreHracov: boolean;
   /** Zapne alebo vypne uzávierku; vráti nový stav. */
@@ -408,7 +410,7 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     // nezačal, nedokončil ani nepreskočil. Partia samotná ide cez WebSocket.
     if (r === "GET /vyucba") {
       const p = prihlaseny();
-      const v = ctx.ucty.vyucba(p.id);
+      const v = ctx.ucty.vyucba(p.id, ctx.vyucbaVerzia);
       // dostupna: či ukázať tlačidlo „Prvá hra“; kým je vypínač vypnutý, len správcom (skúšanie).
       const dostupna = ctx.vyucbaPreHracov || jeSpravca(p.rola);
       return ok({ krok: v.krok, spolu: ctx.vyucbaKrokov, stav: v.stav, dostupna, ponuknut: ctx.vyucbaPreHracov && v.stav === null && v.krok === 0 && p.rola === "navstevnik" });
@@ -422,7 +424,7 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
 
     if (r === "POST /vyucba/preskocit") {
       const p = prihlaseny();
-      ctx.ucty.ulozVyucbu(p.id, ctx.ucty.vyucba(p.id).krok, "preskocena");
+      ctx.ucty.ulozVyucbu(p.id, ctx.ucty.vyucba(p.id, ctx.vyucbaVerzia).krok, "preskocena", ctx.vyucbaVerzia);
       return ok({ ok: true });
     }
 

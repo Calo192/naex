@@ -289,6 +289,8 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   const scenarVyucby = opts.scenarVyucby ?? nacitajVyucbu();
   /** Výučba je pre hráčov, až keď je scenár zverejnený; dovtedy ju spustí len správca. */
   const vyucbaPreHracov = opts.vyucbaZapnuta ?? scenarVyucby.zverejnena === true;
+  /** Výučba prešla posledným krokom — časť môže skončiť uprostred partie (1. časť po prvej bitke). */
+  const vyucbaSkoncila = (room: Room): boolean => room.vyucba !== null && room.vyucba.krok >= scenarVyucby.kroky.length;
   const archiv = new Archiv(db);
   // Katalóg achievementov (Navrhár, data/achievementy.json): chyba v ňom vypne achievementy, nie server.
   // Kým katalóg nemá „zapnute“: true, achievementy sa nepočítajú, neukladajú ani neposielajú (Michal 2026-10-23).
@@ -357,7 +359,8 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   // Uzávierka pred nasadením (Michal 2026-10-23) — len v pamäti, reštart ju zruší.
   let uzavierka: Uzavierka | null = null;
   const stavServera = (): StavServera => {
-    const bezi = [...rooms.values()].filter((r) => r.state !== null && r.state.koniec === null);
+    // Dokončená výučba stojí uprostred partie, no nikto ju nedohrá — nasadenie na ňu nečaká.
+    const bezi = [...rooms.values()].filter((r) => r.state !== null && r.state.koniec === null && !vyucbaSkoncila(r));
     const cakajuce = [...rooms.values()].filter((r) => r.state === null).length;
     // Partia bez ťahu 30 min je opustená — nasadenie na ňu nečaká (skill naex-nasad).
     const aktivne = bezi.filter((r) => teraz() - r.lastActivity < OPUSTENA_PO_MS).length;
@@ -422,6 +425,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           stavServera,
           nastavUzavierku,
           vyucbaKrokov: scenarVyucby.kroky.length,
+          vyucbaVerzia: scenarVyucby.verzia ?? null,
           vyucbaPreHracov,
         },
         req,
@@ -864,7 +868,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       return;
     }
     const { sada, data } = obsah.aktualnaSada();
-    const ulozene = ucty.vyucba(ja.id);
+    const ulozene = ucty.vyucba(ja.id, scenarVyucby.verzia ?? null);
     let krok = ulozene.stav === "hotova" || ulozene.krok >= scenarVyucby.kroky.length ? 0 : ulozene.krok;
     let state: GameState;
     try {
@@ -960,12 +964,14 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     const id = room.hraci[VYUCBA_HRAC]?.id;
     const hotovo = room.vyucba.krok >= scenarVyucby.kroky.length;
     if (id !== undefined) {
-      ucty.ulozVyucbu(id, room.vyucba.krok, hotovo ? "hotova" : undefined);
+      ucty.ulozVyucbu(id, room.vyucba.krok, hotovo ? "hotova" : undefined, scenarVyucby.verzia ?? null);
       if (hotovo) {
-        // Dokončená výučba = achievement Prvá hra (Michal 2026-10-25) a z návštevníka Poldeci —
-        // bez archívu, štatistík a Frajeriny. AI playtester achievementy nezískava.
+        // Dokončená časť výučby = hviezdička achievementu Prvá hra za časť (Michal 2026-10-25)
+        // a z návštevníka Poldeci — bez archívu, štatistík a Frajeriny. AI playtester achievementy
+        // nezískava. Partia ostane stáť uprostred (ďalší ťah vykonajVyucbu nepustí) a zanikne odchodom.
         const ws = room.sockets[VYUCBA_HRAC];
-        const zisky = achievementy !== null && room.hraci[VYUCBA_HRAC]?.ai !== true ? achievementy.udelZaVyucbu(id, teraz()) : [];
+        const zisky =
+          achievementy !== null && room.hraci[VYUCBA_HRAC]?.ai !== true ? achievementy.udelZaVyucbu(id, teraz(), scenarVyucby.cast ?? 1) : [];
         if (ws !== null) for (const zisk of zisky) send(ws, { type: "achievement", zisk });
         ucty.povysPoPartii(id, prava.nastavenie().postup);
       }
@@ -1206,6 +1212,8 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         room.sockets[seat] = null;
         room.odpojenyOd[seat] = teraz();
         oznamPripojenie(room, seat, false);
+        // Dokončenú výučbu už niet čo obnoviť — postup je uložený, miestnosť by len visela.
+        if (vyucbaSkoncila(room)) zrusMiestnost(room);
       }
       infos.delete(ws);
     });

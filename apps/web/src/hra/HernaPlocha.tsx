@@ -402,6 +402,11 @@ export interface HernaPlochaProps {
    * potvrdiť nie je; rozloženie spraví Melichar v ďalšom kroku.
    */
   readonly naneisto?: boolean;
+  /**
+   * Výučba: kroky po bitke hovoria o starších a stupnici, hoci partia je už pri voľbe cieľa
+   * 2. kola — línia starších ostane na stole (bar bežný, nie bodový) namiesto výberu lokality.
+   */
+  readonly ukazStarsich?: boolean;
 }
 
 /** Názvy fáz pre titulok karty prehliadača. */
@@ -461,6 +466,7 @@ export function HernaPlocha({
   zadrzBitku = null,
   zaHracaHra = false,
   naneisto = false,
+  ukazStarsich = false,
 }: HernaPlochaProps) {
   DATA = data;
   const ja = view.ja;
@@ -1363,7 +1369,9 @@ export function HernaPlocha({
   const posli = (c: Command): void => {
     cmd(c);
     setMode({ typ: "ziadny" });
-    setNavrh(null);
+    // Vo výučbe môže server ťah odmietnuť radou Melichara („Otoč ho, klikni naň ešte raz“) — návrh
+    // ostane na stole, nech ho hráč opraví; prijatý ťah zmení klucTahu a návrh zmizne aj tak.
+    if (vyucba !== true) setNavrh(null);
     setVyberLokality(null);
   };
   // Menej klikov (roadmapa #9 B): logika je v usePohodlie a v jadre (pohodlie.ts).
@@ -3779,7 +3787,7 @@ export function HernaPlocha({
   }, [potrebujemLiniu]);
   // Kým beží počítadlo bitky, stôl ukazuje líniu kariet (rozsvecujú sa), nie starších.
   const starsiViditelni =
-    tahanie === null && pocitadlo === null && (krokStarsich !== null ? !nahliadnutie : vysledokKroku || pohladStarsich !== null);
+    tahanie === null && pocitadlo === null && (krokStarsich !== null ? !nahliadnutie : vysledokKroku || pohladStarsich !== null || ukazStarsich);
   const pohladLinie = pohladStarsich ?? ja;
   // Bodový bar (Michal 2026-10-23): po kliku na Body ukážu oba bary body podľa podmienok;
   // späť sa prepnú spolu so stolom. Podmienka pod myšou zvýrazní starších v línii.

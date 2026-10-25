@@ -194,13 +194,18 @@ export class Ucty {
     return (this.db.prepare(`SELECT (${DOHRATE_SQL}) AS n FROM pouzivatelia WHERE id = ?`).get(id) as { n: number } | undefined)?.n ?? 0;
   }
 
-  /** Postup výučby „Prvá hra“: krok scenára a či je dokončená alebo preskočená. */
-  vyucba(id: number): { krok: number; stav: "hotova" | "preskocena" | null } {
-    const r = this.db.prepare("SELECT vyucba_krok, vyucba_stav FROM pouzivatelia WHERE id = ?").get(id) as
-      | { vyucba_krok: number; vyucba_stav: string | null }
+  /**
+   * Postup výučby „Prvá hra“: krok scenára a či je dokončená alebo preskočená.
+   * Krok uložený pri inej verzii scenára (`verzia` = ScenarVyucby.verzia) nesedí na
+   * dnešné kroky — rozohraná výučba vtedy začne od prvého kroku; stav ostáva.
+   */
+  vyucba(id: number, verzia: string | null): { krok: number; stav: "hotova" | "preskocena" | null } {
+    const r = this.db.prepare("SELECT vyucba_krok, vyucba_stav, vyucba_verzia FROM pouzivatelia WHERE id = ?").get(id) as
+      | { vyucba_krok: number; vyucba_stav: string | null; vyucba_verzia: string | null }
       | undefined;
     const stav = r?.vyucba_stav === "hotova" || r?.vyucba_stav === "preskocena" ? r.vyucba_stav : null;
-    return { krok: Number(r?.vyucba_krok ?? 0), stav };
+    const krok = Number(r?.vyucba_krok ?? 0);
+    return { krok: (r?.vyucba_verzia ?? null) === verzia ? krok : 0, stav };
   }
 
   /** Prvá odpoveď hráča na kontrolnú otázku výučby — ďalšie pokusy sa nezapisujú. */
@@ -244,9 +249,10 @@ export class Ucty {
     this.db.prepare("UPDATE pouzivatelia SET napovedy_videne = NULL WHERE id = ?").run(id);
   }
 
-  ulozVyucbu(id: number, krok: number, stav?: "hotova" | "preskocena" | null): void {
-    if (stav === undefined) this.db.prepare("UPDATE pouzivatelia SET vyucba_krok = ? WHERE id = ?").run(krok, id);
-    else this.db.prepare("UPDATE pouzivatelia SET vyucba_krok = ?, vyucba_stav = ? WHERE id = ?").run(krok, stav, id);
+  /** Uloží postup výučby; stav undefined = nemení sa, verzia = scenár, na ktorého kroky krok sedí. */
+  ulozVyucbu(id: number, krok: number, stav?: "hotova" | "preskocena" | null, verzia: string | null = null): void {
+    if (stav === undefined) this.db.prepare("UPDATE pouzivatelia SET vyucba_krok = ?, vyucba_verzia = ? WHERE id = ?").run(krok, verzia, id);
+    else this.db.prepare("UPDATE pouzivatelia SET vyucba_krok = ?, vyucba_stav = ?, vyucba_verzia = ? WHERE id = ?").run(krok, stav, verzia, id);
   }
 
   /** Zdroj hviezd achievementov — nastaví server, keď sú achievementy zapnuté. */

@@ -435,6 +435,8 @@ export function Hra() {
       vyucbaOcakava={hra.vyucba?.krok?.kto === "hrac" && hra.vyucba.krok.volba === null ? hra.vyucba.krok.ocakava : null}
       zaHracaHra={krokVyucby?.kto === "auto" && !krokVyucby.vykonany}
       naneisto={krokVyucby?.kto === "info" && krokVyucby.naneisto}
+      // 1. časť výučby končí po prvej bitke: o starších hovorí, keď je partia už v 2. kole.
+      ukazStarsich={hra.vyucba !== null && hra.view.kolo > 1 && krokVyucby?.kto !== "hrac"}
       // Vo výučbe chybu ukazuje bublina Melichara.
       chyba={hra.vyucba !== null ? null : hra.chyba}
       zrusChybu={hra.zrusChybu}

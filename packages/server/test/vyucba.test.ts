@@ -77,8 +77,8 @@ describe("výučba „Prvá hra“", () => {
 
     const koniec = await hraj(k, prvy);
     expect(koniec).toMatchObject({ hotovo: true, krok: null });
-    // Dokončená výučba = achievement Prvá hra (Michal 2026-10-25) — oznam príde hneď.
-    expect((await k.cakaj("achievement")).zisk).toMatchObject({ id: "prva-hra", rank: 1, rankov: 1 });
+    // Dokončená 1. časť = 1. hviezdička achievementu Prvá hra (Michal 2026-10-25) — oznam príde hneď.
+    expect((await k.cakaj("achievement")).zisk).toMatchObject({ id: "prva-hra", rank: 1, rankov: 3 });
     k.zavri();
 
     expect((await api<{ pouzivatel: { rola: string } }>(cookie, "GET", "/ja")).pouzivatel.rola).toBe("hrac");
@@ -103,10 +103,12 @@ describe("výučba „Prvá hra“", () => {
     expect((prvy.krok as KrokMsg).kto).toBe("info");
     k.posli({ type: "cmd", cmd: { type: "pass" } });
     expect(String((await k.cakaj("error")).text)).toMatch(/Melichar/);
-    // Texty pred prvým ťahom hráča preklikne „ďalej“, ťahy hry za hráča (k-ciel) tiež.
+    // Texty a rozhodnutia (výber Mosta) pred prvým ťahom hráča bez rozhodnutia preklikne.
     let msg = prvy;
-    while ((msg.krok as KrokMsg).kto !== "hrac") {
-      potvrd(k, msg.krok as KrokMsg);
+    while ((msg.krok as KrokMsg).kto !== "hrac" || (msg.krok as KrokMsg & { volba: unknown }).volba !== null) {
+      const krok = msg.krok as KrokMsg;
+      if (krok.kto === "hrac") k.posli({ type: "cmd", cmd: krok.ocakava });
+      else potvrd(k, krok);
       msg = await k.cakaj("vyucba");
     }
     const tah = msg.krok as KrokMsg;
@@ -127,7 +129,7 @@ describe("výučba „Prvá hra“", () => {
   it("postup sa ukladá — po odchode výučba pokračuje od toho istého kroku; preskočiť a znova", async () => {
     const { cookie } = await registruj(server.port);
     const { k, prvy } = await zacni(cookie);
-    // 4 správy: i-vitaj, i-lokalita, k-ciel (hra ťahá) a k-ciel vykonaný → ďalej.
+    // 4 správy: i-vitaj, i-lokalita, i-lokality, i-hrany — ďalej čaká výber Mosta.
     const po = await hraj(k, prvy, 4);
     const index = (po.krok as KrokMsg).index;
     expect(index).toBeGreaterThanOrEqual(3);
@@ -145,6 +147,37 @@ describe("výučba „Prvá hra“", () => {
     expect(await api(cookie, "GET", "/vyucba")).toMatchObject({ stav: "preskocena", ponuknut: false });
     await api(cookie, "POST", "/vyucba/znova");
     expect(await api(cookie, "GET", "/vyucba")).toMatchObject({ krok: 0, stav: null });
+  });
+});
+
+describe("výučba po častiach — 1. časť končí uprostred partie (Michal 2026-10-25)", () => {
+  const stavServera = async (): Promise<{ partie: { sBotom: number } }> => {
+    const admin = await prihlas(server.port, TEST_ADMIN.login, TEST_ADMIN.heslo);
+    return (await (await fetch(`http://127.0.0.1:${server.port}/api/admin/stav-servera`, { headers: { cookie: admin } })).json()) as { partie: { sBotom: number } };
+  };
+
+  it("po poslednom kroku partia stojí: ťah server nepustí, nasadenie na ňu nečaká a odchodom zanikne", async () => {
+    const pred = (await stavServera()).partie.sBotom;
+    const { cookie } = await registruj(server.port);
+    const { k, prvy } = await zacni(cookie);
+    const { code } = await k.cakaj("privitanie");
+    expect((await stavServera()).partie.sBotom).toBe(pred + 1);
+    const koniec = await hraj(k, prvy);
+    expect(koniec).toMatchObject({ hotovo: true, krok: null });
+    // Hráč by bol na ťahu (voľba cieľa 2. kola) — vo výučbe už nie.
+    k.posli({ type: "cmd", cmd: { type: "chooseLocation", uid: 1, otocena: false } });
+    expect(String((await k.cakaj("error")).text)).toMatch(/Výučba sa skončila/);
+    expect((await stavServera()).partie.sBotom).toBe(pred);
+    k.zavri();
+    await new Promise((r) => setTimeout(r, 50));
+    const znova = new Klient(server.port, cookie);
+    await znova.otvorene();
+    znova.posli({ type: "rejoin", code });
+    expect(String((await znova.cakaj("error")).text)).toMatch(/neexistuje/);
+    znova.zavri();
+    // Do štatistík a archívu sa nič nezapísalo.
+    const ja = await api<{ pouzivatel: { id: number } }>(cookie, "GET", "/ja");
+    expect((await api<{ pocet: number }>(cookie, "GET", `/hraci/${ja.pouzivatel.id}/partie`)).pocet).toBe(0);
   });
 });
 
@@ -323,9 +356,9 @@ describe("výučba — cigareta pre Melichara (Michal 2026-10-25)", () => {
       pred = st as unknown as StavMsg;
     }
     const mal = pred?.view.hraci[0]?.cigarety ?? -1;
-    expect(mal).toBe(4);
+    expect(mal).toBe(6);
     k.posli({ type: "vyucbaDalej" });
-    expect(((await k.cakaj("state")) as unknown as StavMsg).view.hraci[0]?.cigarety).toBe(3);
+    expect(((await k.cakaj("state")) as unknown as StavMsg).view.hraci[0]?.cigarety).toBe(5);
     k.zavri();
   });
 });

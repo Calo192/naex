@@ -139,7 +139,7 @@ const VLASTNE: Readonly<Record<string, Metrika>> = {
   remiza: { druh: "sucet", popis: "1 za remízu", zmer: (k) => pre(() => ak(dohrata(k) && k.po.koniec?.vitaz === null)) },
   dohrataPartia: { druh: "sucet", popis: "1 za dohratú partiu (bez vzdania)", zmer: (k) => pre(() => ak(dohrata(k))) },
   // Výučba „Prvá hra“ nie je partia s achievementmi — achievement s touto metrikou udelí server na jej konci.
-  vyucba: { druh: "sucet", popis: "dokončená výučba Prvá hra (udeľuje server, v partii nič)", zmer: () => [null, null] },
+  vyucba: { druh: "sucet", popis: "dokončené časti výučby Prvá hra (udeľuje server, v partii nič)", zmer: () => [null, null] },
   rozdielBodov: {
     druh: "max",
     popis: "o koľko bodov hráč vyhral záverečné bodovanie",

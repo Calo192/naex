@@ -941,20 +941,24 @@
       "id": "prva-hra",
       "nazov": "Prvá hra",
       "kategoria": "partie",
-      "popis": "Dokonči výučbu u majstra Melichara. Odteraz už nie si Nealko, ale Poldeci.",
+      "popis": "Dokonči {prah}. časť výučby u majstra Melichara. Po prvej už nie si Nealko, ale Poldeci.",
       "metrika": "vyucba",
       "rozsah": "partia",
       "prahy": [
-        1
+        1,
+        2,
+        3
       ],
       "proti": "vsetky",
       "tajny": false,
       "tajnyText": null,
       "piktogram": "akcia:Poldeci",
       "zriedkavost": [
+        "bezne",
+        "bezne",
         "bezne"
       ],
-      "zdroj": "server: koniec výučby Prvá hra (vyucba_stav = hotova)"
+      "zdroj": "server: koniec časti výučby Prvá hra (rank = číslo časti; 1. časť = vyucba_stav hotova)"
     },
     {
       "id": "prva-runda",

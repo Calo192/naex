@@ -323,30 +323,34 @@ export class Achievementy {
   }
 
   /**
-   * Koniec výučby „Prvá hra“: achievementy s metrikou „vyucba“ (Michal 2026-10-25).
-   * Udelia sa raz — opakovaná výučba už nič nedá. Vráti nové zisky pre oznam.
+   * Koniec časti výučby „Prvá hra“: achievementy s metrikou „vyucba“ — hviezdička za
+   * každú časť (Michal 2026-10-25), rank = číslo dokončenej časti. Udelia sa raz —
+   * opakovaná časť už nič nedá a nikomu sa nič neuberie. Vráti nové zisky pre oznam.
    */
-  udelZaVyucbu(pouzivatel: number, cas: number): ZiskAchievementu[] {
+  udelZaVyucbu(pouzivatel: number, cas: number, cast: number): ZiskAchievementu[] {
     const drzane = this.drzane(pouzivatel);
     const out: ZiskAchievementu[] = [];
     for (const a of this.katalog.achievementy) {
-      if (a.metrika !== "vyucba" || (drzane.get(a.id) ?? 0) >= a.prahy.length) continue;
       const mal = drzane.get(a.id) ?? 0;
-      const rank = a.prahy.length;
+      const rank = Math.min(cast, a.prahy.length);
+      if (a.metrika !== "vyucba" || mal >= rank) continue;
       transakcia(this.db, () => {
         const vloz = this.db.prepare("INSERT OR IGNORE INTO achievementy_zisky (pouzivatel, achievement, rank, ziskane, miestnost, partia) VALUES (?, ?, ?, ?, 'vyucba', NULL)");
         for (let r = mal + 1; r <= rank; r++) vloz.run(pouzivatel, a.id, r, cas);
       });
-      out.push({ ...preKlienta(a, rank), rank, hodnota: 1, vzacny: rank >= 3 || a.tajny });
+      out.push({ ...preKlienta(a, rank), rank, hodnota: cast, vzacny: rank >= 3 || a.tajny });
     }
     return out;
   }
 
-  /** Pri štarte: kto výučbu dokončil skôr, než achievement existoval, dostane ho dodatočne (bez oznamu). */
+  /**
+   * Pri štarte: kto výučbu dokončil skôr, než achievement existoval, dostane ho dodatočne (bez oznamu).
+   * Dokončená výučba spred delenia na časti obsahovala 1. časť — hviezdička za ňu.
+   */
   dorovnajVyucbu(cas: number): void {
     if (!this.katalog.achievementy.some((a) => a.metrika === "vyucba")) return;
     const ids = this.db.prepare("SELECT id FROM pouzivatelia WHERE vyucba_stav = 'hotova' AND ai = 0").all() as { id: number }[];
-    for (const { id } of ids) this.udelZaVyucbu(Number(id), cas);
+    for (const { id } of ids) this.udelZaVyucbu(Number(id), cas, 1);
   }
 
   /** Po zápise do archívu: zisky z miestnosti dostanú id partie (odkaz na detail). */
