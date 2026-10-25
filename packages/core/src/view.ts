@@ -564,7 +564,7 @@ export function hltavyPrebytok(
 }
 
 /**
- * Hltavé Pohoršenia: hráč `p` posunie `pocet` markerov k súperovi, každý tam,
+ * Hltavé Pohoršenia: hráč `p` posunie `pocet` markerov k súperovi alebo k sebe (v5), každý tam,
  * kde rozdielu bodov (p − súper, bodyTeraz) najviac pridá, a len kam smie
  * (pohorsenieMozne — hranice zón, krajná pozícia). Vráti, o koľko sa rozdiel
  * pohne. Pre „≈ b“ v náhľade NA EX a patronátu (návrh #1, playtest
@@ -580,13 +580,16 @@ export function hodnotaPohorseni(data: GameData, view: ClientState, p: PlayerId,
   let v = view;
   for (let zostava = pocet; zostava > 0; zostava--) {
     let najlepsi: { readonly v: ClientState; readonly hodnota: number; readonly elderId: string; readonly hranica: boolean } | null = null;
+    // v5: Pohoršenie smie aj k sebe — hltavo sa vyberá lepší z oboch smerov.
     for (const e of v.starsi) {
-      if (!pohorsenieMozne({ ...v, bitkaStav: { pohorsenieHranice: hranice } }, p, e)) continue;
-      const marker = posunMarker(e, super_, true, pohorsenieNaKraj(v, p));
-      if (marker === null) continue;
-      const po: ClientState = { ...v, starsi: v.starsi.map((x) => (x.elderId === e.elderId ? { ...x, marker } : x)) };
-      const hodnota = rozdiel(po);
-      if (najlepsi === null || hodnota > najlepsi.hodnota) najlepsi = { v: po, hodnota, elderId: e.elderId, hranica: prekraciaHranicu(e.marker, marker) };
+      for (const kSebe of [false, true]) {
+        if (!pohorsenieMozne({ ...v, bitkaStav: { pohorsenieHranice: hranice } }, p, e, kSebe)) continue;
+        const marker = posunMarker(e, kSebe ? p : super_, true, pohorsenieNaKraj(v, p));
+        if (marker === null) continue;
+        const po: ClientState = { ...v, starsi: v.starsi.map((x) => (x.elderId === e.elderId ? { ...x, marker } : x)) };
+        const hodnota = rozdiel(po);
+        if (najlepsi === null || hodnota > najlepsi.hodnota) najlepsi = { v: po, hodnota, elderId: e.elderId, hranica: prekraciaHranicu(e.marker, marker) };
+      }
     }
     if (najlepsi === null) break;
     if (najlepsi.hranica) hranice[`${p}:${najlepsi.elderId}`] = (hranice[`${p}:${najlepsi.elderId}`] ?? 0) + 1;

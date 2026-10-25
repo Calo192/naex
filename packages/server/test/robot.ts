@@ -170,6 +170,9 @@ export class Robot {
           const elder = view.starsi.find((e) =>
             b.krok === "pohorsenie" ? pohorsenieMozne(view, ja, e) : posunMarker(e, smerK, false) !== null,
           );
+          // v5: Pohoršenie smie aj k sebe — keď k súperovi nejde nič.
+          const kSebe = b.krok === "pohorsenie" && elder === undefined ? view.starsi.find((e) => pohorsenieMozne(view, ja, e, true)) : undefined;
+          if (kSebe !== undefined) return { type: "pohorsenie", elderId: kSebe.elderId, kSebe: true };
           if (elder === undefined) throw new Error(`${b.krok}: žiadny posúvateľný marker`);
           return b.krok === "pohorsenie"
             ? { type: "pohorsenie", elderId: elder.elderId }

@@ -349,7 +349,8 @@ export type Command =
   // Rozhodnutia siahajúce do vlastného balíčka sa zadávajú cez defId + kde,
   // nie cez uid: klient uid kariet v doberacom balíčku nikdy nevidí.
   | { readonly type: "exekutorTool"; readonly defId: string; readonly kde: KartaZdroj }
-  | { readonly type: "pohorsenie"; readonly elderId: string }
+  // Pohoršenie (v5 bod 7): marker o 1 k súperovi (bez kSebe), alebo k sebe (kSebe: true).
+  | { readonly type: "pohorsenie"; readonly elderId: string; readonly kSebe?: boolean }
   | { readonly type: "prebytok"; readonly elderId: string }
   // Pohreb (pravidlá v4 — zlúčil v sebe Liečbu): spáli priznanú Cirhózu a svoju
   // kartu z línie; za Závislého smie hráč vziať kartu zo šenku (senokUid).
@@ -2936,7 +2937,7 @@ function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
   if (b.krok === "pohorsenie") {
     for (const p of [obranca(s), s.utocnik]) {
       while (b.pohorsenieZostava[p] > 0) {
-        if (!s.starsi.some((e) => pohorsenieMozne(s as GameState, p, e as ElderState))) {
+        if (!s.starsi.some((e) => pohorsenieMozne(s as GameState, p, e as ElderState) || pohorsenieMozne(s as GameState, p, e as ElderState, true))) {
           b.pohorsenieZostava[p] = 0;
           break;
         }
@@ -3274,13 +3275,17 @@ export function najdiNastroje(s: GameState, data: GameData, p: PlayerId): KartaV
  * viackrát, no Pohoršenia jedného hráča ho posunú najviac cez dve hranice zón
  * (Michal 2026-10-20: pravá sivá → ľavá oranžová áno); Kultúrny dom limit ruší.
  * Na krajnú pozíciu Pohoršenie nesmie (okrem Novín).
+ *
+ * Od v5 (Michal 2026-10-24, bod 7) aj k sebe (`kSebe`) — limit hraníc (spoločný
+ * pre oba smery), zákaz krajnej pozície aj Policajtka platia rovnako.
  */
 export function pohorsenieMozne(
   state: VerejnyStav & { readonly bitkaStav: { readonly pohorsenieHranice: Readonly<Record<string, number>> } | null },
   p: PlayerId,
   elder: ElderState,
+  kSebe = false,
 ): boolean {
-  const nova = posunMarker(elder, opponentOf(p), true, pohorsenieNaKraj(state, p));
+  const nova = posunMarker(elder, kSebe ? p : opponentOf(p), true, pohorsenieNaKraj(state, p));
   if (nova === null) return false;
   if (pohorsenieBezLimitu(state) || !prekraciaHranicu(elder.marker, nova)) return true;
   const uz = state.bitkaStav?.pohorsenieHranice[`${p}:${elder.elderId}`] ?? 0;
@@ -3337,7 +3342,7 @@ function cmdExekutorTool(
 function cmdPohorsenie(
   s: MutState,
   data: GameData,
-  cmd: { elderId: string },
+  cmd: { elderId: string; kSebe?: boolean },
   p: PlayerId,
   events: Event[],
 ): void {
@@ -3346,16 +3351,19 @@ function cmdPohorsenie(
   need(b.pohorsenieZostava[p] > 0, "Nemáš aktívne Pohoršenie.");
   const elder = s.starsi.find((e) => e.elderId === cmd.elderId);
   need(elder !== undefined, "Taký starší nie je.");
-  const nova = posunMarker(elder as ElderState, opponentOf(p), true, pohorsenieNaKraj(s as GameState, p));
+  const kSebe = cmd.kSebe === true;
+  const smer = kSebe ? p : opponentOf(p);
+  const nova = posunMarker(elder as ElderState, smer, true, pohorsenieNaKraj(s as GameState, p));
   need(nova !== null, "Marker sa nedá posunúť.");
-  need(pohorsenieMozne(s as GameState, p, elder as ElderState), "Pohoršenie posunie jeden marker najviac cez dve hranice zón.");
+  need(pohorsenieMozne(s as GameState, p, elder as ElderState, kSebe), "Pohoršenie posunie jeden marker najviac cez dve hranice zón.");
   const kluc = `${p}:${cmd.elderId}`;
   if (prekraciaHranicu(elder.marker, nova)) b.pohorsenieHranice[kluc] = (b.pohorsenieHranice[kluc] ?? 0) + 1;
+  // Priazeň sa mení hneď — platí už v poškodení tejto bitky (Michal 2026-10-24).
   elder.marker = nova;
   b.pohorsenieZostava[p] -= 1;
   events.push({
     type: "log",
-    text: `Pohoršenie: marker staršieho ${cmd.elderId} sa posúva k hráčovi ${opponentOf(p) + 1}.`,
+    text: `Pohoršenie: marker staršieho ${cmd.elderId} sa posúva k hráčovi ${smer + 1}${kSebe ? " (k sebe)" : ""}.`,
   });
   skontrolujVydesenie(s, data, events);
   pokracujBitku(s, data, events);
@@ -3929,6 +3937,7 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
       } else if (b.krok === "pohorsenie") {
         for (const elder of state.starsi) {
           if (pohorsenieMozne(state, p, elder)) out.push({ type: "pohorsenie", elderId: elder.elderId });
+          if (pohorsenieMozne(state, p, elder, true)) out.push({ type: "pohorsenie", elderId: elder.elderId, kSebe: true });
         }
       } else if (b.krok === "prebytok") {
         if (b.prebytokZostava < cenaPosunuPrebytkom(state, p)) break;

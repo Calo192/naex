@@ -789,9 +789,9 @@ function moznosti(v: ClientState): string[] {
       }
       if (b?.krok === "exekutor") for (const o of v.volbyExekutor ?? []) c({ type: "exekutorTool", defId: o.defId, kde: o.kde }, `odovzdaj Exekútorovi ${meno(o.defId)} (${o.kde})`);
       // Len markery, ktoré sa naozaj dajú posunúť (krajná pozícia je zamknutá).
-      const nahlad = (e: ElderState, cezPohorsenie: boolean, naKraj = false): string => {
+      const nahlad = (e: ElderState, cezPohorsenie: boolean, naKraj = false, k: PlayerId = su): string => {
         // Ten istý výpočet ako web: prebytok ráta aj cigaretu porazenému (nahladPosunuPrebytkom).
-        const n = cezPohorsenie ? nahladPosunuMarkera(DATA, v, e.elderId, su, true, naKraj) : nahladPosunuPrebytkom(DATA, v, e.elderId);
+        const n = cezPohorsenie ? nahladPosunuMarkera(DATA, v, e.elderId, k, true, naKraj) : nahladPosunuPrebytkom(DATA, v, e.elderId);
         if (n === null) return "";
         const zn = (x: number): string => (x > 0 ? `+${x}` : x < 0 ? `${x}` : "±0");
         // Zmena ako na webe; spolu po posune zvlášť — „0 (→ −2)“ sa čítalo ako zmena o −2.
@@ -803,6 +803,11 @@ function moznosti(v: ClientState): string[] {
           // Ten istý marker aj viackrát, najviac cez dve hranice zón (Kultúrny dom bez limitu).
           if (!pohorsenieMozne(v, ja, e)) continue;
           c({ type: "pohorsenie", elderId: e.elderId }, `posuň marker ${meno(e.karta.defId)} k súperovi (on dostane priazeň, starší sa začne báť teba)${nahlad(e, true, naKraj)}`);
+        }
+        // Pravidlá v5: Pohoršenie aj k sebe — priazeň hneď, platí už v poškodení tejto bitky.
+        for (const e of v.starsi) {
+          if (!pohorsenieMozne(v, ja, e, true)) continue;
+          c({ type: "pohorsenie", elderId: e.elderId, kSebe: true }, `posuň marker ${meno(e.karta.defId)} k sebe (ty dostaneš priazeň hneď, platí už v tejto bitke; starší sa začne báť súpera)${nahlad(e, true, naKraj, ja)}`);
         }
       }
       if (b?.krok === "prebytok") {
