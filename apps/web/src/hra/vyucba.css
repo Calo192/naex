@@ -370,3 +370,10 @@ body [data-napoveda-zvyraznene]:focus-visible {
   mask-size: 100% 100%;
   mask-repeat: no-repeat;
 }
+
+/* Oznam achievementu (hviezdička za časť) by v pravom hornom rohu zakryl tlačidlá konca časti
+   v bare Melichara („Do lobby“) — vo výučbe ide do pravého dolného rohu. */
+body.vyucba-bezi .oznam-achievementu {
+  top: auto;
+  bottom: 16px;
+}

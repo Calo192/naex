@@ -3,7 +3,7 @@
   "nazov": "Nápovedy Melichara v prvej partii",
   "verzia": 1,
   "zverejnena": false,
-  "popis": "Krátka výučba (prva-hra.json, 1 kolo) učí len Zhromaždenie a spoje, Pitku s NA EX, bitku a starších. Zvyšok povie Melichar v partii proti botovi, keď sa vec objaví prvýkrát. Každá nápoveda raz za účet, dá sa vypnúť. Špecifikácia: docs/napady/napovedy-prva-partia.html. Spúšťač sa počíta z pohľadu hráča (viewFor), nikdy zo skrytých vecí súpera.",
+  "popis": "Výučba po častiach (prva-hra.json, 1. časť: lokalita, šenok, Zhromaždenie, Pitka, bitka a starší; NA EX príde v 2. časti, dovtedy ho predstaví nápoveda prve-naex). Zvyšok povie Melichar v partii proti botovi, keď sa vec objaví prvýkrát. Každá nápoveda raz za účet, dá sa vypnúť. Špecifikácia: docs/napady/napovedy-prva-partia.html. Spúšťač sa počíta z pohľadu hráča (viewFor), nikdy zo skrytých vecí súpera.",
   "nastavenia": {
     "kde": "každá partia, proti botovi aj proti ľuďom, každému hráčovi (aj kto výučbu neprešiel); nie vo výučbe (Michal 2026-10-24)",
     "dokedy": "kým nie je každá nápoveda ukázaná alebo kým ich hráč nevypne; v profile sa dajú vypnúť aj ukázať znova (Michal 2026-10-24)",
@@ -56,8 +56,20 @@
       "zvyraznit": ["tlacidlo:bez-odpovede"]
     },
     {
-      "id": "pocet-pitiek",
+      "id": "prve-naex",
       "poradie": 4,
+      "uroven": "A",
+      "spustac": {
+        "kedy": "prvá Pitka, v ktorej hráč smie dať NA EX (jeho ťah, plný poldeci, Občan či Starešina v línii); kým výučba nemá 2. časť o NA EX (2026-10-25)",
+        "podmienka": "view.faza === \"pitka\" && view.naTahu === ja && !pitkaStav.hotovy[ja] && !pitkaStav.naexPouzity[ja] && plné poldeci > 0 && naexCieleVLinii(...).length > 0 && !zakazNaex(view)",
+        "jadro": ["packages/core/src/engine.ts naexCieleVLinii", "packages/core/src/hrozba.ts mozeEsteNaex", "docs/PRAVIDLA.md §7 NA EX"]
+      },
+      "melichar": "NA EX! Plný [Poldeci] poldeci dáš na Občana alebo Starešinu v línii. Akcie na tej karte, ktoré nie sú spojené so žiadnou inou akciou, zdvojí, spojené zruší. Pečeň ti pribudne o 1. V 2. časti výučby ti to ukážem poriadne, dovtedy skúšaj na vlastnú päsť.",
+      "zvyraznit": ["bar:poldeci"]
+    },
+    {
+      "id": "pocet-pitiek",
+      "poradie": 5,
       "uroven": "A",
       "spustac": {
         "kedy": "počet Pitiek v kole prvýkrát stúpol na 2 a viac (po vyložení karty)",
@@ -69,7 +81,7 @@
     },
     {
       "id": "zadlzenie",
-      "poradie": 5,
+      "poradie": 6,
       "uroven": "A",
       "spustac": {
         "kedy": "výhľad Pitky prvýkrát ukáže hráčovi zadĺženie",
@@ -81,7 +93,7 @@
     },
     {
       "id": "dlh",
-      "poradie": 6,
+      "poradie": 7,
       "uroven": "A",
       "spustac": {
         "kedy": "hráč dostal prvú kartu Dlh",
@@ -93,7 +105,7 @@
     },
     {
       "id": "pas-cigarety",
-      "poradie": 7,
+      "poradie": 8,
       "uroven": "A",
       "spustac": {
         "kedy": "hráč je v Zhromaždení na ťahu, už vyložil kartu a ešte mu ostal limit",
@@ -105,7 +117,7 @@
     },
     {
       "id": "lokalita-pravidlo",
-      "poradie": 8,
+      "poradie": 9,
       "uroven": "A",
       "spustac": {
         "kedy": "prvé kolo o lokalitu, ktorej pravidlo mení základný ťah",
@@ -119,7 +131,7 @@
     },
     {
       "id": "body",
-      "poradie": 9,
+      "poradie": 10,
       "uroven": "A",
       "spustac": {
         "kedy": "po prvej bitke partie, keď sa skončí rozdeľovanie prebytku",
@@ -131,7 +143,7 @@
     },
     {
       "id": "pohorsenie",
-      "poradie": 10,
+      "poradie": 11,
       "uroven": "A",
       "spustac": {
         "kedy": "prvý krok Pohoršenia v bitke",
@@ -147,7 +159,7 @@
     },
     {
       "id": "abstak",
-      "poradie": 11,
+      "poradie": 12,
       "uroven": "A",
       "spustac": {
         "kedy": "od druhého kola prvýkrát hrozí Absťák; ak výhľad nestihne, pri prvom Absťáku",
@@ -159,7 +171,7 @@
     },
     {
       "id": "cirhoza",
-      "poradie": 12,
+      "poradie": 13,
       "uroven": "A",
       "spustac": {
         "kedy": "hráč má prvýkrát v ruke Cirhózu",
@@ -171,7 +183,7 @@
     },
     {
       "id": "priazen",
-      "poradie": 13,
+      "poradie": 14,
       "uroven": "B",
       "spustac": {
         "kedy": "starší sa prvýkrát dostal na hráčovu polovicu do žltej alebo ďalej",
@@ -184,7 +196,7 @@
     },
     {
       "id": "prevaha",
-      "poradie": 14,
+      "poradie": 15,
       "uroven": "B",
       "spustac": {
         "kedy": "v jednom kraji prvýkrát ležia karty oboch hráčov a kraj tvorí spoj s lokalitou",
@@ -196,7 +208,7 @@
     },
     {
       "id": "patronat",
-      "poradie": 15,
+      "poradie": 16,
       "uroven": "B",
       "spustac": {
         "kedy": "hráč smie prvýkrát vziať staršieho do patronátu",
@@ -208,7 +220,7 @@
     },
     {
       "id": "vydesenie",
-      "poradie": 16,
+      "poradie": 17,
       "uroven": "B",
       "spustac": {
         "kedy": "prvý vydesený starší v partii (marker na krajnej červenej)",
@@ -224,7 +236,7 @@
     },
     {
       "id": "dedicstvo",
-      "poradie": 17,
+      "poradie": 18,
       "uroven": "B",
       "spustac": {
         "kedy": "hráč má prvýkrát Nástroj v ruke a je na ťahu v Zhromaždení",
@@ -237,7 +249,7 @@
     },
     {
       "id": "exekutor",
-      "poradie": 18,
+      "poradie": 19,
       "uroven": "B",
       "spustac": {
         "kedy": "priznané Dlhy hráča sa prvýkrát priblížia k prahu Exekútora",
@@ -249,7 +261,7 @@
     },
     {
       "id": "zaverecna",
-      "poradie": 19,
+      "poradie": 20,
       "uroven": "B",
       "spustac": {
         "kedy": "od druhého kola, prvý ťah hráča v Zhromaždení, keď smie zahrať Záverečnú",

@@ -14,7 +14,8 @@ import type { GameData } from "./data.ts";
 import { defOf } from "./data.ts";
 import type { ClientState } from "./view.ts";
 import { cenaPatronatu, patronatMozny, priazenHraca, priazenSila, prebudenyPre, vydesil } from "./elders.ts";
-import { kandidatiNaNahradu, kartyZaPas, lineState, nahladPitky, prahyHraca, verejneAbstaky } from "./engine.ts";
+import { zakazNaex } from "./effects.ts";
+import { kandidatiNaNahradu, kartyZaPas, lineState, nahladPitky, naexCieleVLinii, prahyHraca, verejneAbstaky } from "./engine.ts";
 import { evaluateLine } from "./partia.ts";
 import { stavZavislosti } from "./zavislost.ts";
 
@@ -65,6 +66,14 @@ const SPUSTACE: Readonly<Record<string, Spustac>> = {
   rola: (_d, v, ja) => (v.faza === "volbaCiela" && v.kolo === 1 ? { variant: v.utocnik === ja ? "utocnik" : "obranca" } : null),
 
   "odpoved-naex": (_d, v, ja) => (v.faza === "pitka" && v.pitkaStav?.reakcia === ja ? ANO : null),
+
+  // Kým výučba nemá 2. časť o NA EX, predstaví ho nápoveda — v prvej Pitke, kde ho hráč naozaj smie dať.
+  "prve-naex": (d, v, ja) => {
+    const p = v.pitkaStav;
+    if (v.faza !== "pitka" || v.naTahu !== ja || p === null || p.reakcia != null || p.hotovy[ja] || p.naexPouzity[ja]) return null;
+    if (zakazNaex(v) || v.hraci[ja].poldeciPlne <= 0) return null;
+    return naexCieleVLinii(d, lineState(v), ja).length > 0 ? ANO : null;
+  },
 
   "pocet-pitiek": (_d, v) => ((v.faza === "zhromazdenie" || v.faza === "pitka") && v.pitkyCelkom >= 2 ? ANO : null),
 

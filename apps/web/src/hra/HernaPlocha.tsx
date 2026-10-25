@@ -4921,14 +4921,18 @@ export function HernaPlocha({
           >
             {/* Pokyn je pilulka na hornej hrane stola (Michal 2026-10-21) — predtým pás nad rukou. */}
             {/* tabIndex: pokyn skrátený na jeden riadok sa rozbalí aj z klávesnice (fokus). */}
-            <div className="linia-stav" role="status" aria-live="polite" tabIndex={0}>
-              {(pokyn === null || pokyn.nadpis !== null) && (
-                <strong className="pilulka-nadpis">
-                  {pokyn?.nadpis ?? (view.koniec !== null ? "Koniec hry" : somNaTahu ? "Tvoj ťah" : `Na ťahu je ${menoHraca(super_)}`)}
-                </strong>
-              )}
-              {pokyn?.text !== undefined && <span className="pilulka-text">{pokyn.text}</span>}
-            </div>
+            {/* Výučba po bitke hovorí o starších, hoci partia stojí pri voľbe cieľa 2. kola — „klikni na
+                lokalitu“ by hráča posielal na ťah, ktorý výučba nepustí. */}
+            {!ukazStarsich && (
+              <div className="linia-stav" role="status" aria-live="polite" tabIndex={0}>
+                {(pokyn === null || pokyn.nadpis !== null) && (
+                  <strong className="pilulka-nadpis">
+                    {pokyn?.nadpis ?? (view.koniec !== null ? "Koniec hry" : somNaTahu ? "Tvoj ťah" : `Na ťahu je ${menoHraca(super_)}`)}
+                  </strong>
+                )}
+                {pokyn?.text !== undefined && <span className="pilulka-text">{pokyn.text}</span>}
+              </div>
+            )}
             {toastPriazneEl}
             <div className={`stol-plst${liniaSkryta ? " linia-skryta" : ""}${starsiViditelni && krokStarsich !== null ? " krok-starsich" : ""}`} ref={plstRef}>
             {/* Línia kariet ostáva v DOM a drží výšku stola — línia starších leží nad ňou (#68). */}

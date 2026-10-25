@@ -6,7 +6,8 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import katalogJson from "../data/vyucba/napovedy.json";
-import type { CardInstance, Command, GameState, KatalogNapoved, MarkerPos } from "../src/index.ts";
+import scenarJson from "../data/vyucba/prva-hra.json";
+import type { CardInstance, Command, GameState, KatalogNapoved, MarkerPos, ScenarVyucby } from "../src/index.ts";
 import {
   apply,
   dalsiaNapoveda,
@@ -14,6 +15,7 @@ import {
   loadGameData,
   naTahu,
   napovedy,
+  prehrajVyucbu,
   rngInt,
   rngSeed,
   setupGame,
@@ -120,6 +122,25 @@ describe("nápovedy — rozpoznanie z pohľadu hráča", () => {
     expect(dalsiaNapoveda(data, katalog, v, new Set())?.id).toBe("rola");
     expect(dalsiaNapoveda(data, katalog, v, new Set(["rola"]))?.id).toBe("cirhoza");
     expect(dalsiaNapoveda(data, katalog, v, new Set(["rola", "cirhoza"]))).toBeNull();
+  });
+});
+
+describe("nápovedy — prvé NA EX (kým výučba nemá 2. časť, 2026-10-25)", () => {
+  // Pitka z 1. časti výučby: hráč začína, má 2 plné poldeci a Pijana (Občan) v línii.
+  const scenar = scenarJson as unknown as ScenarVyucby;
+  const pri = (id: string): GameState => prehrajVyucbu(data, scenar, scenar.kroky.findIndex((k) => k.id === id));
+
+  it("v Pitke na svojom ťahu s plným poldecim a Občanom v línii áno; súper na ťahu ani po „končím“ nie", () => {
+    expect(ids(pri("i-pitka"), 0)).toContain("prve-naex");
+    expect(ids(pri("i-pitka"), 1)).not.toContain("prve-naex");
+    expect(ids(pri("k-hotovo-bot"), 0)).not.toContain("prve-naex");
+  });
+
+  it("bez plného poldeci a mimo Pitky nie", () => {
+    const s = pri("i-pitka");
+    const bez: GameState = { ...s, hraci: [{ ...s.hraci[0], poldeciPlne: 0 }, s.hraci[1]] };
+    expect(ids(bez, 0)).not.toContain("prve-naex");
+    expect(ids(pri("k-pas"), 0)).not.toContain("prve-naex");
   });
 });
 
