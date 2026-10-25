@@ -152,13 +152,13 @@ describe("§1 Podmienky konca", () => {
     expect(st.hraci[0].priznane.filter((k) => k.defId === "dlh")).toHaveLength(9);
   });
 
-  it("§1: balíček (doberací + odhadzovací + ruka) pod 5 kariet na konci kola znamená prehru; presne 5 nie", () => {
+  it("§1 (v5 bod 4): balíček pod 5 kariet na konci kola už neprehráva — ani 1 karta", () => {
     const styri = predKoncomBitky(44, (s) => sHracom(s, 1, { ruka: kusy(4, "pijan"), doberaci: [], odhadzovaci: [] }));
     const po4 = apply(data, styri, { type: "skipPohreb" }, 0).state;
-    expect(po4.koniec?.vitaz).toBe(0);
-    const pat = predKoncomBitky(44, (s) => sHracom(s, 1, { ruka: kusy(3, "pijan"), doberaci: kusy(1, "pijan"), odhadzovaci: kusy(1, "pijan"), priznane: kusy(3, "dlh") }));
-    const po5 = apply(data, pat, { type: "skipPohreb" }, 0).state;
-    expect(po5.koniec).toBeNull();
+    expect(po4.koniec).toBeNull();
+    expect(po4.faza).toBe("volbaCiela");
+    const jedna = predKoncomBitky(44, (s) => sHracom(s, 1, { ruka: kusy(1, "pijan"), doberaci: [], odhadzovaci: [] }));
+    expect(apply(data, jedna, { type: "skipPohreb" }, 0).state.koniec).toBeNull();
   });
 
   it("§1: ohlásené vydesenie — kto do konca nasledujúceho kola udrží polovicu (4 z 8) vydesených, vyhrá; kto ich stratí, nevyhrá", () => {

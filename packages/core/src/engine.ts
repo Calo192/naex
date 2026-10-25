@@ -28,7 +28,6 @@ import {
   prahDlhu,
   prahExekutora,
   textNeresti,
-  velkostBalicka,
 } from "./player.ts";
 import type { BattleOutcome, BattleSide, DamageResult } from "./battle.ts";
 import { battleOutcome, computeDamage, dlhyPoExekucii, exekutorCheck } from "./battle.ts";
@@ -1528,8 +1527,6 @@ function dalsiVBerani(s: MutState, data: GameData, p: PlayerId, events: Event[])
     s.senok.push(...s.spolocnyBalicek.splice(0, doplnit));
     events.push({ type: "log", text: `Šenok sa dopĺňa z vrchu spoločného balíčka na ${s.senok.length} kariet (+${doplnit}).` });
   }
-  skontrolujBalicky(s, data, events);
-  if (s.koniec !== null) return;
   // Patronát: rozhoduje útočník, potom obranca — druhý už vidí voľbu prvého.
   d.krok = "patronat";
   d.naTahu = s.utocnik;
@@ -2665,9 +2662,6 @@ function dokonciPitku(s: MutState, data: GameData, events: Event[]): void {
 
   s.vizia = null;
   s.pitkaStav = null;
-  // Pokles balíčka pod 5 sa kontroluje až v stabilných bodoch (po drafte
-  // a na konci kola) — uprostred kola ležia karty v partiách a do veľkosti
-  // balíčka sa nepočítajú, takže by kontrola falošne trestala vykladanie.
 
   // Ďalšia Pitka (Michal 2026-10-19): toľko, koľko dovolia aktivované akcie
   // karty v strede — línia sa medzitým mohla zmeniť.
@@ -3646,9 +3640,8 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
   s.cirhozyVKole = [0, 0];
   s.naexVKole = [false, false];
 
+  // Prehra balíčkom pod 5 kariet sa vo v5 ruší (Michal 2026-10-24), vydesenie ostáva.
   skontrolujVydesenie(s, data, events, true);
-  if (s.koniec !== null) return;
-  skontrolujBalicky(s, data, events);
   if (s.koniec !== null) return;
 
   // Posledná bitka o lokalitu → záverečné bodovanie.
@@ -3741,23 +3734,6 @@ function skontrolujVydesenie(s: MutState, data: GameData, events: Event[], konie
       });
     } else if (koniecKola && s.kolo > ohlasene) {
       ukonciHru(s, data, p, `Hráč ${p + 1} ${rodovo(p, "udržal", "udržala", "udržiava")} vydesených ${vydeseni} z ${vHre.length} starších.`, events);
-      return;
-    }
-  }
-}
-
-/** Pokles balíčka pod 5 → okamžitá prehra (PRAVIDLA §1). */
-function skontrolujBalicky(s: MutState, data: GameData, events: Event[]): void {
-  if (s.koniec !== null) return;
-  for (const p of [0, 1] as const) {
-    if (velkostBalicka(s.hraci[p] as PlayerState) < KONSTANTY.MIN_VELKOST_BALICKA) {
-      ukonciHru(
-        s,
-        data,
-        opponentOf(p),
-        `Balíček hráča ${p + 1} klesol pod ${KONSTANTY.MIN_VELKOST_BALICKA} kariet.`,
-        events,
-      );
       return;
     }
   }

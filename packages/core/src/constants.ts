@@ -93,7 +93,10 @@ export const KONSTANTY = {
    */
   POHORSENIE_MAX_HRANIC: 2,
 
-  /** Prehra pri poklese balíčka pod túto hodnotu (PRAVIDLA §1). */
+  /**
+   * Prehra pri poklese balíčka pod túto hodnotu platila do v4; vo v5 sa ruší
+   * (Michal 2026-10-24). Ostáva ako opatrnosť bota pri zahadzovaní kariet.
+   */
   MIN_VELKOST_BALICKA: 5,
 
   /**
