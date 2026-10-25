@@ -51,7 +51,10 @@ export interface PlacedCard {
    * leží — obaja skryto vybrali tú istú kartu (zrážka). Pije ho pri bitke tiež.
    */
   readonly naexBy2?: PlayerId;
-  /** Zrážka NA EX: z karty je Výtržník — všetky jej akcie sú aktívne Rany pre majiteľa. */
+  /**
+   * Zrážka NA EX: z karty je Výtržník — všetky jej akcie sú aktívne Rany pre
+   * majiteľa (až po spárovaní). Len do konca bitky, potom vytriezvie (Michal 2026-10-25).
+   */
   readonly vytrznik?: true;
 }
 

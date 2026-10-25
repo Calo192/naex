@@ -409,6 +409,34 @@ describe("v5 bod 2: NA EX naraz + Výtržník", () => {
     expect([state.hraci[0].poldeciPlne, state.hraci[1].poldeciPlne]).toEqual([0, 0]);
   });
 
+  it("Výtržník je výtržníkom len počas jednej bitky — po bitke vytriezvie (pôvodné akcie, bez príznaku, aj v pohľade a logu)", () => {
+    const { s: s0, lavy } = pitka(104);
+    let st = apply(sada, s0, { type: "naex", uid: lavy }, 1).state;
+    st = apply(sada, st, { type: "skipNaex" }, 1).state;
+    st = apply(sada, st, { type: "naex", uid: lavy }, 0).state;
+    const logy: string[] = [];
+    let r = apply(sada, st, { type: "skipNaex" }, 0);
+    for (let i = 0; ; i++) {
+      for (const e of r.events) if (e.type === "log") logy.push(e.text);
+      st = r.state;
+      const p = naTahu(st);
+      if (st.faza !== "pitka" && st.faza !== "bitka") break;
+      if (p === null || i > 30) throw new Error("bitka sa nedohrala");
+      r = apply(sada, st, legalCommands(sada, st, p)[0]!, p);
+    }
+    expect(logy.some((t) => t.startsWith("Zrážka NA EX"))).toBe(true);
+    expect(logy.some((t) => t.includes("vytriezvel"))).toBe(true);
+    // Karta je späť v balíčku majiteľa ako obyčajná karta — rovnaký variant, žiadny príznak.
+    expect(st.strany).toEqual([[], []]);
+    const karta = [...st.hraci[1].odhadzovaci, ...st.hraci[1].ruka, ...st.hraci[1].doberaci].find((k) => k.uid === lavy);
+    expect(karta).toEqual(s0.strany[1].find((pl) => pl.card.uid === lavy)?.card);
+    for (const q of [0, 1] as const) expect(JSON.stringify(viewFor(sada, st, q))).not.toMatch(/vytrznik|naexBy2/);
+    // Vyložená znova má pôvodné akcie: spárovaná Rana z každej karty = 2 (ako Výtržník dala 3).
+    const pol = instanceFor(sada, "v5n_pol", R1, R1);
+    const znova = evaluateLine(sada, { lokalita: null, lokalitaOtocena: false, strany: [[], [{ card: pol, playedBy: 1 }, { card: karta!, playedBy: 1 }]] });
+    expect(znova.sums[1].Rana).toBe(2);
+  });
+
   it("Výtržník: všetky akcie karty sú aktívne Rany pre majiteľa, aj Viera a Pohoršenie", () => {
     const vp = instanceFor(sada, "v5n_vp", EMPTY, VP);
     const pol = instanceFor(sada, "v5n_pol", R1, R1);

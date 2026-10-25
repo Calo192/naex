@@ -3733,9 +3733,15 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
   vyriesPatronat(s, data, vitaz, events);
 
   // 7. Návrat kariet — do odhadzovacieho balíčka hráča, ktorý ich zahral.
-  //    Zahodené (Dievčina na vydaj) sa spália.
+  //    Zahodené (Dievčina na vydaj) sa spália. Výtržník je výtržníkom len počas
+  //    jednej bitky (Michal 2026-10-25): vytriezvie — do balíčka ide karta
+  //    s pôvodnými akciami, príznak ostáva len na PlacedCard, ktorá zaniká.
   for (const partia of s.strany) {
     for (const placed of partia) {
+      if (placed.vytrznik === true) {
+        events.push({ type: "log", text: `Výtržník ${defOf(data, placed.card as CardInstance).name} vytriezvel — karta má znova svoje akcie.` });
+        delete (placed as { vytrznik?: true }).vytrznik;
+      }
       if (b.spalit.includes(placed.card.uid)) continue;
       hrac(s, placed.playedBy as PlayerId).odhadzovaci.push(placed.card as DeepMutable<CardInstance>);
     }
