@@ -61,3 +61,13 @@ Podklady: docs/napady/priazne-v5.html a docs/playtesty/priazne-rozbor-20261024.h
 - **Priazeň dediny** (tuhé za rozdiel súčtu priazní) **nie**.
 - **Pohoršenie mení priazeň hneď**, už v tej istej bitke, ako dnes kód. Treba to dopísať do pravidiel (dnes PRAVIDLA hovoria o ďalších kolách).
 - **Bot**: naučiť ho dávať súperovi najslabšiu priazeň. Zároveň zmerať, ktoré priazne sú najslabšie, a vyrovnať ich tak, aby žiadna nebola mŕtva. **Cieľ Michala: pridelenie priazne staršiemu (komu dám prebytok) musí byť ťažké rozhodnutie**, nie vopred známe „tieto priazne nič nerobia“.
+
+## Priazne v5: interview 2 (Michal 2026-10-25)
+
+Podklad: docs/napady/priazne-v5-set.html.
+
+- **Miera sily:** 1 bod sily priazne ≈ 1 cigareta za kolo. Bitkár +1/+2/+3 jej zodpovedá (zmerané), ďalej sa neoslabuje; ostatné priazne sa zdvihnú na túto úroveň.
+- **Lakomec → Abstinent:** v bitke +1/+2/+3 Pohoršenie („uvidíme, čo to spraví“ — meria stratég).
+- **Exekútor:** súperov prah Exekúcie je nižší o 1/2/3.
+- **Úžerník → Kmotor:** po bitke zníži priznaný Dlh o 1/2/3. Bez Dlhu nerobí nič (nechať tak, bez náhrady).
+- Návrhy nápadníka Výpalné za každé súperovo NA EX a Na zdravie „do dna“ (poldeci z tvojho NA EX sa vráti plný) zatiaľ nerozhodnuté — čakajú na meranie.
