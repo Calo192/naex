@@ -50,6 +50,8 @@ export interface HracVerejne {
    */
   readonly nerestiTotoKolo: number;
   readonly nerestiMinuleKolo: number;
+  /** Absťáky získané za hru (v5, podmienka Absťák) — verejné, Absťák sa priznáva hneď. */
+  readonly abstakyZiskane: number;
 }
 
 export interface BitkaVerejne {
@@ -226,6 +228,7 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
       zadlzenie: hrac.zadlzenie,
       nerestiTotoKolo: hrac.nerestiTotoKolo,
       nerestiMinuleKolo: hrac.nerestiMinuleKolo,
+      abstakyZiskane: hrac.abstakyZiskane ?? 0,
     };
   };
 
@@ -367,6 +370,9 @@ export function bodyTeraz(data: GameData, view: ClientState): BodyTeraz {
       doberaci: [...nahradne("dlh", kliatby.dlh - vOdhadzovacom("dlh")), ...nahradne("cirhoza", kliatby.cirhoza - vOdhadzovacom("cirhoza"))],
       odhadzovaci: h.odhadzovaci,
       priznane: h.priznane,
+      poldeciPlne: h.poldeciPlne,
+      dedicstvo: h.dedicstvo,
+      abstakyZiskane: h.abstakyZiskane,
     };
   };
   const stav = { ovladnute: view.ovladnute, starsi: view.starsi, hraci: [hrac(0), hrac(1)] };

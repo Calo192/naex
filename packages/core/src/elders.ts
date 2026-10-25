@@ -206,6 +206,11 @@ export interface StavBodovania {
     readonly odhadzovaci: readonly CardInstance[];
     /** Priznané karty — z nich sa na konci ráta Dlh (verejný dlh). */
     readonly priznane: readonly CardInstance[];
+    /** Plné poldeci a Dedičstvo (Vínko = plný poldeci navyše) — podmienka Rezerva. */
+    readonly poldeciPlne: number;
+    readonly dedicstvo: readonly CardInstance[];
+    /** Absťáky získané za hru — podmienka Absťák (chýba = 0). */
+    readonly abstakyZiskane?: number;
   }[];
 }
 
@@ -227,6 +232,12 @@ function pocetKusov(podmienka: Podmienka, stav: StavBodovania, p: PlayerId): num
       return nepriznane("cirhoza");
     case "dlh":
       return nepriznane("dlh") + hrac.priznane.filter((k) => k.defId === "dlh").length;
+    // v5 (Michal 2026-10-25): Absťáky získané za hru, nie tie, čo hráč práve má.
+    case "abstak":
+      return hrac.abstakyZiskane ?? 0;
+    // v5 (Michal 2026-10-25): Vínko v Dedičstve sa ráta ako plný poldeci.
+    case "rezerva":
+      return hrac.poldeciPlne + (hrac.dedicstvo.some((k) => k.defId === "vinko") ? 1 : 0);
     default:
       return 0;
   }

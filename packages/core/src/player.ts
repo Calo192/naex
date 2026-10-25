@@ -27,6 +27,11 @@ export interface PlayerState {
   /** Spotrebované neresti v predošlom kole — porovnanie dáva Absťák. */
   readonly nerestiMinuleKolo: number;
   readonly nerestiTotoKolo: number;
+  /**
+   * Absťáky získané za celú hru (v5, podmienka Absťák — Michal 2026-10-25):
+   * zbavením sa Absťáku neklesne. Chýba v stavoch spred v5 (= 0).
+   */
+  readonly abstakyZiskane?: number;
 }
 
 /** „1 nerest“, „3 neresti“, „5 nerestí“ — pre log a rozhranie. */
@@ -48,6 +53,7 @@ export function freshPlayer(): PlayerState {
     zadlzenie: 0,
     nerestiMinuleKolo: 0,
     nerestiTotoKolo: 0,
+    abstakyZiskane: 0,
   };
 }
 

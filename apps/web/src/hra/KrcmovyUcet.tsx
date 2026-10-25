@@ -16,6 +16,8 @@ const JEDNOTKA: Readonly<Record<Podmienka, string>> = {
   vydesenie: "starších",
   dlh: "ks",
   cirhoza: "ks",
+  abstak: "ks",
+  rezerva: "ks",
 };
 
 export interface KrcmovyUcetProps {

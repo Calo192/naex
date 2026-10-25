@@ -7,7 +7,7 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { BitkaStav, CardInstance, ElderState, GameState, PlayerId, PlayerState } from "../src/index.ts";
-import { IllegalCommandError, apply, legalCommands, loadGameData, pohorsenieMozne, setupGame, viewFor } from "../src/index.ts";
+import { IllegalCommandError, apply, legalCommands, loadGameData, pohorsenieMozne, priazenZKluca, setupGame, viewFor } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -153,5 +153,33 @@ describe("v5 bod 7: Pohoršenie oboma smermi", () => {
     // 5 → 6 by bola tretia hranica.
     expect(pohorsenieMozne(st, 0, e)).toBe(false);
     expect(pohorsenieMozne(st, 0, e, true)).toBe(true);
+  });
+});
+
+describe("v5 bod 5: scorecardy v5 s podmienkami Absťák a Rezerva", () => {
+  it("východisková sada má 8 scorecardov, Absťák aj Rezervu a nové mená Kmotor a Abstinent", () => {
+    expect(data.scorecards).toHaveLength(8);
+    const vsetky = data.scorecards.flatMap((sc) => [...sc.lava, ...sc.prava]);
+    expect(vsetky).toContain("abstak");
+    expect(vsetky).toContain("rezerva");
+    expect(data.scorecards.find((sc) => sc.favour === "UZERNIK")?.nazov).toBe("Kmotor");
+    expect(data.scorecards.find((sc) => sc.favour === "LAKOMEC")?.nazov).toBe("Abstinent");
+    // Bodovacia karta v tvorcovi smie niesť nové meno.
+    expect(priazenZKluca("KMOTOR")).toBe("UZERNIK");
+    expect(priazenZKluca("ABSTINENT")).toBe("LAKOMEC");
+  });
+
+  it("Absťák = Absťáky získané za hru: zbavením sa Absťáku počítadlo neklesne", () => {
+    // Menej nerestí než minulé kolo → Absťák a počítadlo +1.
+    const s = predKoncomBitky(81, (x) => sHracom(x, 0, { nerestiMinuleKolo: 2, nerestiTotoKolo: 1, abstakyZiskane: 1, doberaci: kusy(4, "pijan") }));
+    const po = apply(data, s, { type: "skipPohreb" }, 0).state;
+    expect(po.hraci[0].abstakyZiskane).toBe(2);
+    // Viac nerestí → Absťák späť do zásoby, získané ostávajú.
+    const s2 = predKoncomBitky(82, (x) => sHracom(x, 0, { nerestiMinuleKolo: 1, nerestiTotoKolo: 3, abstakyZiskane: 2, priznane: [inst("abstak")], doberaci: kusy(4, "pijan") }));
+    const po2 = apply(data, s2, { type: "skipPohreb" }, 0).state;
+    expect(po2.hraci[0].priznane.some((k) => k.defId === "abstak")).toBe(false);
+    expect(po2.hraci[0].abstakyZiskane).toBe(2);
+    // Klient vidí počítadlo oboch (Absťák sa priznáva verejne).
+    expect(viewFor(data, po2, 1).hraci[0].abstakyZiskane).toBe(2);
   });
 });

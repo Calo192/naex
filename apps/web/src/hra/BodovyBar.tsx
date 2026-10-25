@@ -22,6 +22,8 @@ export const KRATKO_PODMIENKA: Readonly<Record<Podmienka, string>> = {
   cigarety: "Cigarety",
   cirhoza: "Cirhóza",
   dlh: "Dlhy",
+  abstak: "Absťáky",
+  rezerva: "Rezerva",
 };
 
 export interface BodovyBarProps {

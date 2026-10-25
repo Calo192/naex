@@ -203,7 +203,7 @@ describe("scorecardy pri príprave hry", () => {
   });
 });
 
-const BODY = { znepokojenie: 1, strach: 2, vydesenie: 3, lokality: 3, starsi: 3, cigarety: 1, cirhoza: -2, dlh: -1 };
+const BODY = { znepokojenie: 1, strach: 2, vydesenie: 3, lokality: 3, starsi: 3, cigarety: 1, cirhoza: -2, dlh: -1, abstak: -1, rezerva: 1 };
 
 function stavBodovania(o: { cigarety: [number, number]; dlhy: [number, number] }): StavBodovania {
   const hrac = (p: 0 | 1) => ({
@@ -212,6 +212,8 @@ function stavBodovania(o: { cigarety: [number, number]; dlhy: [number, number] }
     doberaci: [],
     odhadzovaci: [],
     priznane: [],
+    poldeciPlne: 0,
+    dedicstvo: [],
   });
   return { ovladnute: [], starsi: [], hraci: [hrac(0), hrac(1)] };
 }

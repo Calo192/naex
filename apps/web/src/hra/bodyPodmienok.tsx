@@ -9,7 +9,7 @@ import type { TipObsah } from "../karta/Tip.tsx";
 import { NAZOV_PODMIENKY } from "../karta/podmienky.ts";
 import { vypocetPodmienky, znamienko } from "./Scorecard.tsx";
 
-export const PORADIE_PODMIENOK: readonly Podmienka[] = ["lokality", "starsi", "cigarety", "znepokojenie", "strach", "vydesenie", "dlh", "cirhoza"];
+export const PORADIE_PODMIENOK: readonly Podmienka[] = ["lokality", "starsi", "cigarety", "rezerva", "znepokojenie", "strach", "vydesenie", "dlh", "cirhoza", "abstak"];
 
 /** Za čo podmienka dáva kusy — prvý riadok nápovedy. */
 export const ZA_CO: Readonly<Record<Podmienka, string>> = {
@@ -21,6 +21,8 @@ export const ZA_CO: Readonly<Record<Podmienka, string>> = {
   vydesenie: "Za každého vydeseného staršieho (červená krajná pozícia).",
   dlh: "Za každý tvoj Dlh — aj priznaný. Nový Dlh sa hneď prizná; zbavíš sa ho len pálením v bitke a kartami (Dievčina, Robota, Stryná…).",
   cirhoza: "Za každú nepriznanú Cirhózu v ruke a v balíčkoch — priznaj ju.",
+  abstak: "Absťáky, ktoré si získal za celú hru — zbavením sa Absťáku neubudnú.",
+  rezerva: "Plné poldeci na konci hry; Vínko v Dedičstve sa ráta ako plný.",
 };
 
 /** Starší a pozícia podmienky na jeho scorecarde — tá istá podmienka môže byť aktívna dvakrát. */

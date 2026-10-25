@@ -269,8 +269,8 @@ describe("§11 Pohreb a §9.7 Návrat kariet", () => {
 // --- §14 Bodovanie ------------------------------------------------------------------------------
 
 describe("§14 Bodovanie na konci hry", () => {
-  it("§14: body za podmienky — znepokojenie 1, strach 2, vydesenie 3, lokalita 2, starší 2, cigarety 1, Cirhóza −2, Dlh −1", () => {
-    expect(data.bodyPodmienok).toEqual({ znepokojenie: 1, strach: 2, vydesenie: 3, lokality: 2, starsi: 2, cigarety: 1, cirhoza: -2, dlh: -1 });
+  it("§14 (v5): podmienky sú súboje — viac vyhráva pri všetkých okrem Cirhózy, Dlhu a Absťáku", () => {
+    expect(data.bodyPodmienok).toEqual({ znepokojenie: 1, strach: 1, vydesenie: 1, lokality: 1, starsi: 1, cigarety: 1, rezerva: 1, cirhoza: -1, dlh: -1, abstak: -1 });
   });
 
   it("§14/§11: Dlh uberá aj priznaný, Cirhóza len nepriznaná (ruka aj oba balíčky), cigarety po trojiciach", () => {
@@ -281,7 +281,7 @@ describe("§14 Bodovanie na konci hry", () => {
       body: data.bodyPodmienok,
     });
     const elder = freshElder("r_starsi", instanceFor(sada, "r_starsi", R3, EMPTY), "r_sc");
-    const nic = { cigarety: 2, ruka: [], doberaci: [], odhadzovaci: [], priznane: [] };
+    const nic = { cigarety: 2, ruka: [], doberaci: [], odhadzovaci: [], priznane: [], poldeciPlne: 0, dedicstvo: [] };
     const stav: StavBodovania = {
       ovladnute: [],
       starsi: [elder],
@@ -292,12 +292,14 @@ describe("§14 Bodovanie na konci hry", () => {
           doberaci: [inst("cirhoza")],
           odhadzovaci: [inst("dlh")],
           priznane: [inst("dlh"), inst("cirhoza")],
+          poldeciPlne: 0,
+          dedicstvo: [],
         },
         nic,
       ],
     };
     // Hráč 0: Dlh 2 × −1, Cirhóza 2 × −2 (priznaná sa neráta), cigarety ⌊8/3⌋ = 2 × 1 → −4. Hráč 1: 2 cigarety = 0 kusov.
-    expect(elderScore(sada, stav, elder).body).toEqual([-4, 0]);
+    expect(elderScore(sada, stav, elder).body).toEqual([-2, 0]);
   });
 });
 

@@ -327,6 +327,9 @@ function rozdielBodov(data: GameData, s: GameState, ja: PlayerId, starsi: readon
           doberaci: [...skryte(p, "dlh"), ...skryte(p, "cirhoza")],
           odhadzovaci: s.hraci[p].odhadzovaci,
           priznane: s.hraci[p].priznane,
+          poldeciPlne: s.hraci[p].poldeciPlne,
+          dedicstvo: s.hraci[p].dedicstvo,
+          abstakyZiskane: s.hraci[p].abstakyZiskane ?? 0,
         };
   const stav = { ovladnute: s.ovladnute, starsi, hraci: [hrac(0), hrac(1)] };
   let v = 0;

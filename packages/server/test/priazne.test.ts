@@ -29,9 +29,9 @@ describe("zrušené priazne Očumovateľ a Zberateľ", () => {
       expect(obsah.bodovacie.vsetky().some((b) => b.nazov === stare)).toBe(false);
       const { data } = obsah.aktualnaSada();
       expect(data.scorecards.some((sc) => sc.favour === "UZERNIK" && sc.nazov === "Úžerník")).toBe(true);
-      // Body za kus berie hra z jadra, nie zo zverejnenej sady.
-      expect(data.bodyPodmienok.lokality).toBe(2);
-      expect(data.bodyPodmienok.starsi).toBe(2);
+      // Body (vo v5 smer súboja) berie hra z jadra, nie zo zverejnenej sady.
+      expect(data.bodyPodmienok.lokality).toBe(1);
+      expect(data.bodyPodmienok.dlh).toBe(-1);
       db.close();
     });
   }

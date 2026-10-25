@@ -3638,6 +3638,7 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
     const manzelka = manzelky[p] ?? 0;
     if (s.kolo > 1 && teraz < minule + manzelka) {
       hrac(s, p).priznane.push(novaInstancia(s, data, "abstak") as DeepMutable<CardInstance>);
+      hrac(s, p).abstakyZiskane = (s.hraci[p].abstakyZiskane ?? 0) + 1;
       // Absťák sa rovno priznáva — a priznanie kliatby dáva kartu (Michal 2026-10-19).
       const dobral = tahaj(s, p, 1, events).length;
       events.push({

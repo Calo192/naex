@@ -1,87 +1,170 @@
 {
  "_comment": [
-  "Scorecardy (bodovacie karty starších) — východisková sada pre prvé spustenie",
-  "a testy. V hre platí sada zverejnená v tvorcovi (Tvorba → Bodovacie karty).",
-  "Rozloženie podmienok je prepísané z KartyAI (scorecardDrafts, 2026-07-13).",
+  "Scorecardy (bodovacie karty starších) pravidiel v5 — východisková sada pre prvé spustenie",
+  "a testy (Navrhár 2026-10-24, docs/napady/scorecardy-v5.html). V hre platí sada zverejnená",
+  "v tvorcovi (Tvorba → Bodovacie karty); rozloženie v4 je v histórii gitu.",
   "",
-  "lava/prava: 4 pozície zhora nadol; ľavá strana patrí hráčovi 0, pravá hráčovi 1.",
-  "Podmienku aktivuje NEPRÁZDNA akcia karty na ukazovateli na tej istej strane a indexe.",
-  "Na konci hry boduje len obávaný hráč a len aktivované podmienky na svojej strane.",
+  "lava/prava: 4 pozície zhora nadol. Podmienku aktivuje NEPRÁZDNA akcia karty na",
+  "ukazovateli na tej istej strane a indexe.",
   "",
-  "body: znepokojenie/strach/vydesenie = body, ak je marker aspoň v tej zóne;",
-  "      ostatné = body za každý kus obávaného hráča (ovládnutá lokalita, starší",
-  "      získaný náhradou, zvyšná cigareta, nepriznaná cirhóza, každý dlh — aj priznaný).",
-  "      Lokality, starší a cigarety bodujú len od oranžovej zóny (prahPodmienky",
-  "      v elders.ts, rozhodnutie Michala 2026-10-12). Lokality a starší dávajú",
-  "      2 za kus (predtým 3) — Michal 2026-10-12 po playteste 20261012-055944.",
-  "      Hodnoty sú finálne (Michal 2026-10-22, roadmapa #11)."
+  "Bodovanie v5 (docs/pravidla-v5/davka.md): každá aktívna podmienka staršieho je súboj",
+  "hráčov (dve rovnaké = dva súboje). Kto vyhrá viac súbojov, dostane za staršieho 1 b + 1",
+  "za každú zónu strachu, v ktorej sa ho starší bojí (priazeň či stred = 1 b). Pri rovnosti",
+  "dostanú body obaja. Zónové podmienky rátajú len OSTATNÝCH starších.",
+  "",
+  "body: v5 sa za kusy neboduje. Číslo udáva len smer súboja:",
+  "      +1 = vyhrá, kto má viac; -1 = vyhrá, kto má menej.",
+  "      abstak = Absťáky získané za hru (Michal 2026-10-25); rezerva = plné poldeci",
+  "      na konci, Vínko v Dedičstve sa ráta ako plný poldeci (Michal 2026-10-25)."
  ],
  "body": {
   "znepokojenie": 1,
-  "strach": 2,
-  "vydesenie": 3,
-  "lokality": 2,
-  "starsi": 2,
+  "strach": 1,
+  "vydesenie": 1,
+  "lokality": 1,
+  "starsi": 1,
   "cigarety": 1,
-  "cirhoza": -2,
-  "dlh": -1
+  "rezerva": 1,
+  "cirhoza": -1,
+  "dlh": -1,
+  "abstak": -1
  },
  "scorecards": [
   {
    "id": "zberatel",
-   "nazov": "Úžerník",
+   "nazov": "Kmotor",
    "favour": "UZERNIK",
-   "lava": ["dlh", "znepokojenie", "vydesenie", "starsi"],
-   "prava": ["strach", "lokality", "znepokojenie", "cirhoza"]
+   "lava": [
+    "strach",
+    "abstak",
+    "dlh",
+    "starsi"
+   ],
+   "prava": [
+    "dlh",
+    "lokality",
+    "cigarety",
+    "rezerva"
+   ]
   },
   {
    "id": "veriaci",
    "nazov": "Veriaci",
    "favour": "VERIACI",
-   "lava": ["cirhoza", "lokality", "strach", "znepokojenie"],
-   "prava": ["vydesenie", "starsi", "lokality", "dlh"]
+   "lava": [
+    "cirhoza",
+    "starsi",
+    "cirhoza",
+    "lokality"
+   ],
+   "prava": [
+    "abstak",
+    "znepokojenie",
+    "dlh",
+    "abstak"
+   ]
   },
   {
    "id": "alkoholik",
    "nazov": "Alkoholik",
    "favour": "ALKOHOLIK",
-   "lava": ["starsi", "strach", "starsi", "cigarety"],
-   "prava": ["strach", "lokality", "vydesenie", "lokality"]
+   "lava": [
+    "strach",
+    "cigarety",
+    "starsi",
+    "abstak"
+   ],
+   "prava": [
+    "lokality",
+    "abstak",
+    "cirhoza",
+    "rezerva"
+   ]
   },
   {
    "id": "bitkar",
    "nazov": "Bitkár",
    "favour": "BITKAR",
-   "lava": ["vydesenie", "lokality", "strach", "lokality"],
-   "prava": ["strach", "lokality", "lokality", "cigarety"]
+   "lava": [
+    "strach",
+    "lokality",
+    "vydesenie",
+    "starsi"
+   ],
+   "prava": [
+    "cigarety",
+    "dlh",
+    "abstak",
+    "lokality"
+   ]
   },
   {
    "id": "fajciar",
    "nazov": "Fajčiar",
    "favour": "FAJCIAR",
-   "lava": ["strach", "cigarety", "lokality", "dlh"],
-   "prava": ["cigarety", "znepokojenie", "starsi", "znepokojenie"]
+   "lava": [
+    "znepokojenie",
+    "abstak",
+    "lokality",
+    "cigarety"
+   ],
+   "prava": [
+    "dlh",
+    "cigarety",
+    "strach",
+    "rezerva"
+   ]
   },
   {
    "id": "lakomec",
-   "nazov": "Lakomec",
+   "nazov": "Abstinent",
    "favour": "LAKOMEC",
-   "lava": ["dlh", "znepokojenie", "strach", "cirhoza"],
-   "prava": ["dlh", "lokality", "dlh", "vydesenie"]
+   "lava": [
+    "cigarety",
+    "cirhoza",
+    "rezerva",
+    "starsi"
+   ],
+   "prava": [
+    "rezerva",
+    "dlh",
+    "cigarety",
+    "lokality"
+   ]
   },
   {
    "id": "neprajnik",
    "nazov": "Neprajník",
    "favour": "NEPRAJNIK",
-   "lava": ["znepokojenie", "vydesenie", "znepokojenie", "strach"],
-   "prava": ["starsi", "cigarety", "cirhoza", "strach"]
+   "lava": [
+    "cirhoza",
+    "strach",
+    "dlh",
+    "starsi"
+   ],
+   "prava": [
+    "abstak",
+    "rezerva",
+    "cigarety",
+    "znepokojenie"
+   ]
   },
   {
    "id": "exekutor",
    "nazov": "Exekútor",
    "favour": "EXEKUTOR",
-   "lava": ["lokality", "dlh", "cigarety", "vydesenie"],
-   "prava": ["znepokojenie", "cirhoza", "dlh", "starsi"]
+   "lava": [
+    "dlh",
+    "rezerva",
+    "cigarety",
+    "starsi"
+   ],
+   "prava": [
+    "cirhoza",
+    "starsi",
+    "lokality",
+    "vydesenie"
+   ]
   }
  ]
 }

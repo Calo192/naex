@@ -189,8 +189,11 @@ export const ALL_FAVOURS: readonly Favour[] = [
  * Zrušené priazne a ich náhrady — staré zverejnené sady a databázy ich ešte
  * nesú. Očumovateľ (Preskúmanie) v hre nič nerobil; nahradil ho Zberateľ
  * (Michal 2026-10-12) a Zberateľa Úžerník s prahom Dlhu (Michal 2026-10-20).
+ * Pravidlá v5 (Michal 2026-10-24/25) premenovali Úžerníka na Kmotra a Lakomca
+ * na Abstinenta — kľúč priazne v hre ostáva, bodovacia karta v tvorcovi smie
+ * niesť nové meno.
  */
-const PRIAZNE_ALIAS: Readonly<Record<string, Favour>> = { OCUMOVATEL: "UZERNIK", ZBERATEL: "UZERNIK" };
+const PRIAZNE_ALIAS: Readonly<Record<string, Favour>> = { OCUMOVATEL: "UZERNIK", ZBERATEL: "UZERNIK", KMOTOR: "UZERNIK", ABSTINENT: "LAKOMEC" };
 
 /** Priazeň z kľúča (aj zrušeného), alebo null, ak taká nie je. */
 export function priazenZKluca(kluc: string): Favour | null {
@@ -206,9 +209,10 @@ export interface ElderDef {
 }
 
 /**
- * Podmienka na scorecarde (bodovacej karte staršieho). Aktívna podmienka
- * boduje obom hráčom: zónové za starších, ktorí sa hráča boja, ostatné za
- * každý kus hráča (`elderScore`).
+ * Podmienka na scorecarde (bodovacej karte staršieho). Od v5 je každá aktívna
+ * podmienka súboj hráčov (`elderScore`): zónové o strach ostatných starších,
+ * ostatné o kusy — Absťák (získané za hru) a Rezerva (plné poldeci) pribudli
+ * vo v5 (Michal 2026-10-24).
  */
 export type Podmienka =
   | "znepokojenie"
@@ -218,7 +222,9 @@ export type Podmienka =
   | "starsi"
   | "cigarety"
   | "cirhoza"
-  | "dlh";
+  | "dlh"
+  | "abstak"
+  | "rezerva";
 
 export const ALL_PODMIENKY: readonly Podmienka[] = [
   "znepokojenie",
@@ -229,6 +235,8 @@ export const ALL_PODMIENKY: readonly Podmienka[] = [
   "cigarety",
   "cirhoza",
   "dlh",
+  "abstak",
+  "rezerva",
 ];
 
 /**
