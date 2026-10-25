@@ -49,9 +49,65 @@ Spoločné:
 - `docs/playtesty/zmeny-pravidiel.html` — skúšobné zmeny z predošlých
   playtestov, pri každej „Čo sledovať“.
 
+- `tools/playtest/skusenosti/` — zošity skúseností AI hráčov (formát
+  v `README.md`); zapisuješ do nich ty (časť „Skúsenosti — zápis do zošitov“).
+
 `hra.json`, `server-data/` ani `snimky/` nečítaj. Rozhranie (web, vzhľad,
 výpis klienta agentov) do reportu nepatrí — agenti hrajú cez textového
 klienta, ich poznámky k nemu vynechaj.
+
+## Skúsenosti — zápis do zošitov (Michal 2026-10-25)
+
+AI playtesteri si vedú zošity skúseností, aby v ďalších partiách hrali
+lepšie: `tools/playtest/skusenosti/<kluc>.md` za každú postavu
+a `spolocne.md` pre poznatky o pravidlách a hre. Playtester skúsenosť len
+navrhne vo `feedback.md` (časť „Návrhy skúseností“). **Kontrola je na
+tebe:** do zošita ide len to, čo overíš. Formát položky a pravidlá sú
+v `tools/playtest/skusenosti/README.md`. Prečítaj si ho pred zápisom.
+
+`S` = `node --experimental-strip-types --no-warnings tools/playtest/skusenosti.ts`.
+
+1. `$S over-verziu`: overené skúsenosti z inej verzie pravidiel, než má
+   jadro, sa označia ako `neoverená`.
+2. `$S cakajuce` vypíše feedbacky v `playtest/`, ktorých návrhy ešte nik
+   nezapísal. Okrem tvojho turnusu to môžu byť aj staršie turnusy
+   s followupom `min`, ktoré nemali spisovateľa. Spracuj ich spolu
+   s turnusom.
+3. **Použité skúsenosti** (každý hráč, časť „Použité skúsenosti“). Tvrdenie
+   hráča over v denníku a `priebeh.log`:
+   - **potvrdená**: `potvrdenia` + 1, id partie na koniec `partie`, nový
+     `dátum`. Neoverená, ktorá sa potvrdila na aktuálnych pravidlách
+     a pravidlám neodporuje, dostane `stav: overená` a `pravidlá` = aktuálna
+     `VERZIA_PRAVIDIEL`.
+   - **vyvrátená**: `vyvrátenia` + 1. Ak má viac vyvrátení ako potvrdení,
+     vyraď ju.
+   - **zlá** (odporuje `docs/PRAVIDLA.md` alebo vznikla zo zle pochopeného
+     pravidla): prepíš pravidlo správania na správne a pridaj riadok
+     `- oprava: <dátum> <partia>: čo bolo zle, paragraf`. Daj jej
+     `stav: neoverená`. Ak správna verzia nedáva zmysel, skúsenosť vyraď.
+   - **nedotkla sa**: nič nemeň.
+4. **Nové návrhy.** Každý over:
+   - **proti pravidlám**: paragraf `docs/PRAVIDLA.md`, pri pochybnosti kód
+     jadra,
+   - **proti priebehu**: stalo sa to v partii tak, ako hráč píše?
+   Potom:
+   - **Prejde**: zapíš ho do zošita postavy (vlastná) alebo do `spolocne.md`
+     (spoločná) so `stav: overená`, aktuálnou verziou, `potvrdenia: 1` a
+     dôkazom v `prečo`. Ak už v zošite je podobná skúsenosť, je to jej
+     potvrdenie, nie nová položka.
+   - **Neprejde** (omyl v pravidlách, partia to neukázala, náhoda vydávaná
+     za poučenie, nejde o správanie): nezapíš ho a v reporte napíš prečo.
+   - Vlastnú skúsenosť, ktorá platí pre každého, daj do `spolocne.md`.
+     Spoločnú, ktorá sedí len jednému štýlu, daj do zošita postavy.
+5. **Preplnenie:** zošit má najviac 15 položiek. Pri ďalšej vypadne
+   najslabšia, ktorú vypíše `$S kontrola`.
+6. Za nadpis `## Návrhy skúseností` v každom spracovanom feedbacku doplň
+   ` (zapísané RRRR-MM-DD)`, aby ich `cakajuce` nevrátil znova.
+7. `$S kontrola` musí skončiť „Zošity sedia“. Zošity sú v gite. Ich zmeny
+   commitne organizátor spolu s reportom.
+
+Pri playteste výučby (`naex-novacik`) skúsenosti nerieš, nováčikovia sa
+neučia.
 
 ## Report — interaktívne HTML
 
@@ -150,6 +206,11 @@ Obsah (v tomto poradí):
    verdikte 1–2 vety dôvodu s číslom alebo citátom. Verdikty ukáž hore v tejto
    sekcii ako tabuľku (návrh, verdikt farebne, dôvod) — nie v `<details>`.
 
+7b. **Skúsenosti** — krátka sekcia: čo pribudlo do zošitov (id, zošit,
+   pravidlo správania), čo sa potvrdilo alebo vyvrátilo, čo si opravil a čo
+   vypadlo (preplnenie, viac vyvrátení). Pri zamietnutých návrhoch jedna veta,
+   prečo neprešli. Použi zoznam alebo tabuľku, bez `<details>`.
+
 8. **Pätička** — jedna veta: AI postavy hrali vo dvojiciach proti sebe cez
    skutočný server bez znalosti súperovej ruky; počet partií turnusu a že
    každá partia je jeden údaj.
@@ -165,6 +226,8 @@ a zhrnutie do 15 riadkov: priemerné známky (každý hráč a celkovo), odhad
 zručnosť : náhoda každého hráča, potvrdené chyby v hre (nezrovnalosti zaradené ako „chyba v hre“)
 a otázky na autora, 3–5 najsilnejších návrhov na strategickosť, čo bolo
 dobré, ďalšie veci na zlepšenie a k zmenám zo `zmeny-pravidiel.html` po
-jednej vete (organizátor ich zapíše ako „Výsledok playtestu“). Ak si dostal
+jednej vete (organizátor ich zapíše ako „Výsledok playtestu“). Pridaj riadok
+o skúsenostiach: koľko pribudlo, koľko sa potvrdilo, vyvrátilo, opravilo
+a vypadlo, a zmenené zošity (organizátor ich commitne). Ak si dostal
 návrhy na overenie, pridaj riadok pre každý: `#<id> zabralo|nezabralo|málo dát —
 <1–2 vety dôvodu>` (organizátor ich zapíše k návrhom na webe).

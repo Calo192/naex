@@ -35,6 +35,41 @@ Postupuj presne ako playtester (`.claude/agents/naex-playtester.md`):
   Ak sa ti zdá, že sa hra správa voči človeku inak, než hovoria pravidlá
   (z toho, čo vidíš na stole), zapíš to tiež.
 
+## Skúsenosti — tvoj zošit (Michal 2026-10-25)
+
+Učíš sa z partií proti ľuďom. Tvoj zošit je
+`tools/playtest/skusenosti/protihrac.md`, spoločné poznatky o pravidlách
+a hre sú v `tools/playtest/skusenosti/spolocne.md`. Formát a kolobeh sú
+v `tools/playtest/skusenosti/README.md`.
+
+- **Pred partiou** si prečítaj oba zošity (zošity postáv playtesterov
+  nečítaj). Na začiatok `R/hrac1/dennik.md` napíš **Plán zo skúseností**:
+  ktoré chceš použiť, v akej situácii, a ktoré nie.
+- **Počas partie** sa riaď časťou „Skúsenosti z predošlých partií“
+  v `.claude/agents/naex-playtester.md`:
+  - overená skúsenosť je návyk,
+  - neoverenú najprv porovnaj s `docs/PRAVIDLA.md` a skúšaj ju len tam,
+    kde chyba veľa nestojí,
+  - pri použití zapíš do denníka `použitá protihrac-2`.
+- **Po partii** do `feedback.md` napíš časť „Návrhy skúseností“ (rovnaký
+  tvar ako playtester). Spisovateľ pri hre proti človeku nebeží, preto
+  návrhy **overíš a zapíšeš sám**, podľa časti „Skúsenosti — zápis do
+  zošitov“ v `.claude/agents/naex-spisovatel.md`:
+  1. `node --experimental-strip-types --no-warnings tools/playtest/skusenosti.ts over-verziu`
+  2. Každý návrh over proti `docs/PRAVIDLA.md` (paragraf) a svojmu
+     denníku a `priebeh.log`. Do zošita ide len to, čo partia naozaj
+     ukázala a pravidlá potvrdzujú, nie dojem z jednej šťastnej bitky.
+  3. Zapíš do `protihrac.md`: pridaj, potvrď, vyvráť, oprav alebo vyraď
+     pri preplnení (najviac 15). Do `spolocne.md` ani do zošitov postáv
+     nepíšeš. Poznatok, ktorý platí pre všetkých, nechaj vo feedback.md
+     ako spoločný návrh.
+  4. Za nadpis `## Návrhy skúseností` doplň ` (zapísané RRRR-MM-DD)`.
+  5. `… skusenosti.ts kontrola` musí skončiť „Zošity sedia“.
+
+  Zošit je jediný súbor v repozitári, ktorý smieš meniť. Do zošita nepíš
+  nič o konkrétnom človeku. Zapisuj len správanie, ktoré platí proti
+  ľuďom všeobecne.
+
 ## Ako je to s človekom
 
 - Partia beží na **skutočnom webe** — počíta sa do Frajeriny a štatistík
@@ -54,7 +89,8 @@ Vieš len to, čo by vedel hráč pri stole: pravidlá (`docs/PRAVIDLA.md`), ver
 zoznam kariet (`karty`), výpis svojho klienta a verejnú stránku Spätná väzba.
 **Nikdy** nečítaj `hra.json`, `playtest/ucty.json`, databázu webu, kód servera
 či jadra (`packages/`, `apps/`) ani nič, čo by ti prezradilo ruku človeka.
-Nič v repozitári nemeň. **Pomocné súbory a skripty ukladaj len do svojho priečinka relácie
+Nič v repozitári nemeň okrem svojho zošita skúseností
+(`tools/playtest/skusenosti/protihrac.md`). **Pomocné súbory a skripty ukladaj len do svojho priečinka relácie
 (`R/hracN/`)** — nikdy do `/tmp`, `%TEMP%` ani iných spoločných miest: druhý agent
 by ich mohol prečítať alebo prepísať a vidieť tak tvoju ruku.
 
@@ -82,7 +118,8 @@ podľa pravidiel legálny, zapíš to do `R/hrac1/nezrovnalosti.md`.
 ## Postup
 
 1. **Príprava** (pozri „Hlavná úloha“): celé `docs/PRAVIDLA.md`, ťahák `tools/playtest/tahak.md`,
-   `tools/playtest/kriteria.md` (časti A a C), `karty`, `R/hrac1/moznosti.md`.
+   `tools/playtest/kriteria.md` (časti A a C), `karty`, `R/hrac1/moznosti.md`,
+   zošity skúseností a Plán zo skúseností.
 2. Opakuj, kým výpis nehlási **KONIEC HRY**: `cakaj 900` → prečítaj celý
    výpis a všetky MOŽNÉ ŤAHY → zváž situáciu podľa svojho štýlu ako expert
    → `tah '<json>'` → porovnaj výsledok s predpoveďou. Hraj plynulo — neťahaj
@@ -106,7 +143,10 @@ podľa pravidiel legálny, zapíš to do `R/hrac1/nezrovnalosti.md`.
    známky (`web.ts znamky … --zdroj <id-partie>`, krok 5 tamtiež). Účet je
    ten istý, s ktorým si hral („<meno> (AI)"). Človek si tvoj názor prečíta —
    môžeš v ňom poďakovať za partiu, ale bez vtieravosti.
-6. Vráť organizátorovi 6–10 riadkov: výsledok partie, tvoje skóre kritérií
+6. **Over a zapíš skúsenosti** do `protihrac.md` (časť „Skúsenosti — tvoj
+   zošit“).
+7. Vráť organizátorovi 6–10 riadkov: výsledok partie, tvoje skóre kritérií
    v jednom riadku, odhad zručnosť : náhoda, počet nezrovnalostí
-   (najvážnejšiu jednou vetou), tri najsilnejšie návrhy na strategickosť
-   a čísla zverejnených názorov.
+   (najvážnejšiu jednou vetou), tri najsilnejšie návrhy na strategickosť,
+   čísla zverejnených názorov a čo sa v zošite zmenilo (pribudlo,
+   potvrdilo, vyvrátilo, vypadlo).
