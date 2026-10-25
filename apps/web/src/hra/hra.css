@@ -2491,6 +2491,27 @@ button.dlzka-volba.aktivna {
   color: var(--su);
 }
 
+/* Skóre šenku na hrane stola (Michal 2026-10-25): pilulka na čiare ako udalosti. */
+.hrana-skore {
+  display: inline-flex;
+  gap: 12px;
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  background: var(--plocha);
+  border: 1px solid var(--okraj);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+.hrana-skore .moje {
+  color: var(--ja);
+}
+
+.hrana-skore .superove {
+  color: var(--su);
+}
+
 .bodka {
   display: inline-block;
   width: 0.7em;
@@ -3552,6 +3573,71 @@ button.pecat-zrusit {
   border: 1px solid var(--okraj-svetly);
 }
 
+/* Potvrdenie ťahu v strede hrany (Michal 2026-10-25) — pečiatka ako NA EX!, ale v jantári
+   hlavného tlačidla, nie v tehle NA EX!. Ťah bez návrhu (už neťahám) je jantárový obrys ako
+   „končím“; čo sa ešte nedá, je nevypálená pečiatka ako nákup. ✕ v rohu = pecat-zrusit. */
+.pecat-tahu-obal {
+  position: relative;
+  display: inline-flex;
+  animation: pecat-dopad 0.22s ease-out;
+}
+
+button.pecat-potvrd {
+  flex-direction: row;
+  gap: 8px;
+  min-height: 52px;
+  padding: 0 26px;
+  font-size: 1.15rem;
+  letter-spacing: 0.06em;
+  color: var(--na-akcente);
+  background: var(--akcent);
+  border: 2px solid var(--akcent-tmavy);
+  box-shadow:
+    0 3px 0 color-mix(in oklab, var(--akcent-tmavy) 55%, #000),
+    0 0 0 4px color-mix(in srgb, var(--akcent) 20%, transparent),
+    0 10px 24px rgba(0, 0, 0, 0.5);
+  rotate: -3deg;
+}
+
+button.pecat-potvrd:hover:not(:disabled) {
+  rotate: 0deg;
+  background: var(--akcent-svetly);
+}
+
+button.pecat-potvrd:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 color-mix(in oklab, var(--akcent-tmavy) 55%, #000);
+}
+
+button.pecat-potvrd .cena,
+button.pecat-potvrd .cena-cig {
+  font-size: 0.85rem;
+  color: inherit;
+}
+
+button.pecat-potvrd .ikona-cigareta {
+  fill: currentColor;
+}
+
+button.pecat-potvrd:disabled {
+  cursor: not-allowed;
+  opacity: 1;
+  color: var(--slaby);
+  /* Plný podklad — čiara okraja stola cez nevypálenú pečiatku neprechádza. */
+  background: var(--pozadie);
+  border: 2px dashed var(--okraj-svetly);
+  box-shadow: none;
+  rotate: 0deg;
+}
+
+button.pecat-potvrd:disabled::after {
+  display: none;
+}
+
+.pecat-tahu-obal > button.pecat-koncim {
+  rotate: -2deg;
+}
+
 @keyframes pecat-dopad {
   from {
     transform: scale(1.35);
@@ -3560,12 +3646,14 @@ button.pecat-zrusit {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pecat-naex-obal {
+  .pecat-naex-obal,
+  .pecat-tahu-obal {
     animation: none;
   }
 
   button.pecat,
-  button.tlacidlo-naex.pecat-naex {
+  button.tlacidlo-naex.pecat-naex,
+  .pecat-tahu-obal > button.pecat {
     rotate: 0deg;
     transition: none;
   }
@@ -6150,7 +6238,6 @@ button.auto-hotovo-odkaz {
   }
 }
 
-/* Stavba na stole: „potvrdiť“ v pravom rohu panelu, v riadku s názvami Smetiska a Šenku. */
 .obchod-text {
   display: none;
 }
@@ -6171,37 +6258,13 @@ button.auto-hotovo-odkaz {
   align-content: center;
 }
 
-.stavba-potvrd {
-  position: absolute;
-  top: 8px;
-  right: 12px;
-  z-index: 2;
-  padding: 6px 20px;
-}
-
 .vrstva-fazy .stavba-zona {
   padding: 6px 8px;
 }
 
-/* Branie na stole: tlačidlá v riadku hlavičky, karty pod nimi. */
+/* Branie na stole: len karty šenku — pokyn, skóre aj potvrdenie sú na hranách stola (Michal 2026-10-25). */
 .vrstva-fazy > .draft-panel.branie {
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 8px 16px;
   align-content: center;
-}
-
-.vrstva-fazy > .draft-panel.branie > .draft-hlava {
-  grid-row: 1;
-}
-
-.vrstva-fazy > .draft-panel.branie > .draft-paticka {
-  grid-row: 1;
-  grid-column: 2;
-  flex-wrap: nowrap;
-}
-
-.vrstva-fazy > .draft-panel.branie > .draft-paticka > .tlmene {
-  display: none;
 }
 
 .vrstva-fazy > .draft-panel.branie > .draft-karty {
@@ -6809,5 +6872,136 @@ button.auto-hotovo-odkaz {
   .pocitadlo-bitky,
   .pocitadlo-bitky * {
     animation: none !important;
+  }
+}
+
+/* ---- Hrany stola stredom na čiare (Michal 2026-10-25) ----
+ * Pilulka pokynu hore aj rad hrany dole (pečiatky ťahu, nákupy, udalosti) majú zvislý stred
+ * presne na čiare okraja plste — pri akejkoľvek výške, preto translate −50 % od čiary, nie
+ * pevný presah. Rad hrany neberie miesto v toku: do plste siaha polovicou (rezerva v plsti)
+ * a pod ňu druhou polovicou (okraj pod stolom mínus medzera k baru hráča). Výšku pečiatok
+ * určuje --pecat-h, aby rezerva sedela aj na malom notebooku. Stôl so scrollom má hranu v toku. */
+@media (min-width: 761px) {
+  .hra {
+    --pecat-h: 56px;
+    --stred-medzera: 8px;
+  }
+
+  /* border-box: výška pečiatky = --pecat-h aj s okrajom — z nej sa ráta rezerva hrany. */
+  button.pecat,
+  button.pecat-koncim,
+  button.pecat-potvrd,
+  button.tlacidlo-naex.pecat-naex,
+  button.pecat-tichy {
+    box-sizing: border-box;
+    min-height: var(--pecat-h);
+  }
+
+  button.tlacidlo-naex.pecat-naex {
+    min-height: calc(var(--pecat-h) + 8px);
+  }
+
+  button.pecat-tichy {
+    min-height: calc(var(--pecat-h) - 8px);
+  }
+
+  .linia-obal.s-hranou {
+    --hrana-h: 28px;
+  }
+
+  .linia-obal.s-tlacidlami {
+    --hrana-h: var(--pecat-h);
+  }
+
+  .linia-obal.s-tlacidlami:has(.pecat-naex) {
+    --hrana-h: calc(var(--pecat-h) + 8px);
+  }
+
+  .hra:not(.stol-scroll) .linia-obal.s-hranou {
+    /* +3 px: naklonená pečiatka siaha rohom o kúsok nižšie než jej rámik. */
+    margin-bottom: max(0px, calc(var(--hrana-h) / 2 + 3px - var(--stred-medzera)));
+  }
+
+  /* top: 100 % = spodok plste; −1 px = stred jej 2 px okraja. */
+  .hra:not(.stol-scroll) .linia-obal > .stol-hrana {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    bottom: auto;
+    left: 0;
+    margin: 0;
+    translate: 0 calc(-50% - 1px);
+  }
+
+  .hra:not(.stol-scroll) .linia-obal.s-hranou .stol-plst {
+    padding-bottom: calc(var(--hrana-h) / 2 + 4px);
+  }
+
+  .hra:not(.stol-scroll) .linia-obal.s-hranou :is(.vrstva-fazy, .vrstva-starsich) {
+    bottom: calc(var(--hrana-h) / 2 + 4px);
+  }
+
+  /* Udalosti v rade hrany: jeden riadok s trojbodkou (celé znenie pri myši), rad nezalomia.
+     Vedľa pečiatky ležia hneď za ňou, tlačidlá vpravo ostanú pri pravom okraji. */
+  .stol-hrana .hrana-rad .pokyn-udalosti {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+  .hrana-stred > .pokyn-udalosti {
+    justify-content: center;
+    max-width: min(60vw, 900px);
+  }
+
+  .hrana-vpravo > .pokyn-udalosti {
+    flex: 1 1 0;
+  }
+
+  .stol-hrana .hrana-rad .pokyn-udalosti > :not(.pokyn-chyba) {
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* Pilulka pokynu: linia-obal má hore 22 px, plsť 2 px okraj — čiara je 23 px od vrchu. */
+  .linia-stav:not(:has(.zberatel-ponuka, .vizia-karta)) {
+    top: 23px;
+    translate: -50% -50%;
+  }
+
+  /* Rozbalená rastie nahor od spodku zbalenej (polovica riadku a jej okraje pod čiarou). */
+  .linia-stav:not(:has(.zberatel-ponuka, .vizia-karta)):is(:hover, :focus-within, :focus) {
+    translate: -50% calc(-100% + 0.5lh + 5px);
+  }
+}
+
+@media (min-width: 761px) and (max-height: 919px) {
+  .hra {
+    --pecat-h: 52px;
+  }
+
+  button.pecat {
+    padding-block: 4px;
+  }
+}
+
+@media (min-width: 761px) and (max-height: 719px) {
+  .hra {
+    --pecat-h: 48px;
+    --stred-medzera: 4px;
+  }
+
+  button.pecat {
+    padding-block: 2px;
+  }
+
+  /* Línia je tu krátka a karty malé — hrana smie ležať cez jej spodný okraj ako doteraz;
+     vrstvy draftu a starších (veľké karty) rezervu majú. */
+  .hra:not(.stol-scroll) .linia-obal.s-hranou .stol-plst {
+    padding-bottom: 10px;
   }
 }

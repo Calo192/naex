@@ -126,7 +126,7 @@ const POTVRDIT = "potvrdit";
 export function prvkyKluca(kluc: string): HTMLElement[] {
   // Potvrdenie ťahu: tlačidlá so skratkou K (potvrdiť, hotovo) a tie, ktoré si to označia (vziať do ruky).
   if (kluc === POTVRDIT) {
-    return [...document.querySelectorAll<HTMLElement>('.hra button.tlacidlo-hlavne:is([data-skratka="k"], [data-vyucba="potvrdit"]):not(:disabled)')];
+    return [...document.querySelectorAll<HTMLElement>('.hra button:is(.tlacidlo-hlavne, .pecat-potvrd):is([data-skratka="k"], [data-vyucba="potvrdit"]):not(:disabled)')];
   }
   // Karta z očakávaného ťahu (uid:N) — mimo zväčšenej kópie v lupe.
   if (kluc.startsWith("uid:")) {
