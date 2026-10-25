@@ -94,7 +94,11 @@ nezrovnalosti pravidiel a hry a navrhnú zmeny (`tools/playtest/kriteria.md`,
    (celé pravidlá, karty, moznosti.md), potom odohraj celú partiu ako expert.
    Hlavne potrebujem rozbor náhoda vs. zručnosť, nezrovnalosti medzi
    pravidlami a hrou, návrhy, ako hru spraviť strategickejšou, a tvoje
-   zameranie. Napíš spätnú väzbu a zverejni ju na webe.“
+   zameranie. Zošit skúseností: tools/playtest/skusenosti/<kluc>.md
+   a spolocne.md — prečítaj ich pred partiou, v pláne napíš, ktoré
+   použiješ, a vo feedback.md navrhni nové (časť Návrhy skúseností). Napíš
+   spätnú väzbu a zverejni ju na webe.“ Kľúč postavy je v `turnus.json`
+   (výpis turnusu ho ukáže ako riadok „Zošit:“).
 
    Ak existuje predošlý rozbor `docs/playtesty/strategia-*.html`, pridaj do
    zadania jeho otázky z časti „Čo sledovať v ďalšom playteste“. Ak sú návrhy
@@ -120,10 +124,14 @@ nezrovnalosti pravidiel a hry a navrhnú zmeny (`tools/playtest/kriteria.md`,
 5. **Followup `min`** — koniec. Odovzdaj: výsledok každej partie (jedna veta),
    známky hráčov v jednom riadku (z `R/hrac*/feedback.md`), odkaz na Spätnú
    väzbu (`<živý web>/spatna-vazba`) a kde sú súbory (`playtest/<id>-<n>/`).
+   Skúsenosti ostanú len ako návrhy vo `feedback.md` (bez spisovateľa ich
+   nik neoverí). Zapíšu sa pri najbližšom reporte, keď ich spisovateľ nájde
+   cez `skusenosti.ts cakajuce`. Relácie preto nemaž.
 
 6. **Followup predvolený a `max` — report.** Spusti `naex-spisovatel` na
    pozadí: „Turnus: playtest/turnus-<id>/turnus.json. Napíš report zo všetkých
-   partií.“ (spomeň `organizator.md`, ak vznikol; ak sú návrhy na overenie,
+   partií. Over a zapíš navrhnuté skúsenosti do zošitov
+   (tools/playtest/skusenosti/, aj čakajúce z turnusov min).“ (spomeň `organizator.md`, ak vznikol; ak sú návrhy na overenie,
    pridaj „Návrhy na overenie: #<id> <názov> — <otázky>; … Daj každému verdikt.“). Pri `max` v **tej istej
    správe** spusti aj `naex-strateg`: „Turnus: … . Zmeraj náhodu a zručnosť,
    vyhodnoť návrhy playtesterov, najsľubnejšie vyskúšaj ako varianty a napíš
@@ -168,7 +176,10 @@ nezrovnalosti pravidiel a hry a navrhnú zmeny (`tools/playtest/kriteria.md`,
      partiu turnusu (známky oboch hráčov z `R/hrac*/feedback.md`, výsledok,
      dĺžka, odkaz na report; `zmenyPred` = doterajšie `CAKAJUCE`) a do
      `CAKAJUCE` zmeny pravidiel, ktoré vznikli po tomto playteste,
-   - oba súbory potom nahraj na živý web (`$A report-nahraj … --zivy`).
+   - oba súbory potom nahraj na živý web (`$A report-nahraj … --zivy`),
+   - zošity skúseností: `$P/skusenosti.ts kontrola` musí skončiť
+     „Zošity sedia“ a zmeny v `tools/playtest/skusenosti/` sa commitnú
+     spolu s reportom (master a push len Leader, `docs/SESSIONS.md`).
 
 10. **Odovzdaj výsledok používateľovi** (texty z playtestu pre ľudí píš ako
     interaktívne HTML, nie Markdown):
@@ -243,3 +254,10 @@ Krok výučby a hlášky servera berie zo záznamu WebSocketu (strážca v
   servera (`viewFor`), súperovu ruku ani balíčky nepozná.
 - Partia je jeden údaj; viac partií v turnuse s rôznymi štýlmi je silnejší
   podklad — pripomeň to pri porovnávaní reportov.
+- **Skúsenosti** (Michal 2026-10-25): playtesteri si vedú zošity
+  v `tools/playtest/skusenosti/` (formát a kolobeh v `README.md`). Každá
+  postava má vlastný zošit a všetci zdieľajú `spolocne.md`. Playtester
+  skúsenosti len navrhuje, overuje a zapisuje ich spisovateľ. Pri novej
+  `VERZIA_PRAVIDIEL` ich `skusenosti.ts over-verziu` označí ako neoverené
+  (test to stráži). Nováčikovia výučby zošity nečítajú, majú byť vždy
+  čerství.

@@ -71,6 +71,6 @@ console.log(`Turnus ${id}: ${pocet} ${pocet === 1 ? "partia" : "partie"}, dĺžk
 for (const [i, p] of partie.entries()) {
   console.log(`\nPartia ${i + 1}: ${p.relacia} (http://localhost:${p.port})`);
   for (const [cislo, h] of [[1, p.hrac1], [2, p.hrac2]] as const) {
-    console.log(`  Hráč ${cislo}: ${h.meno} — ${h.styl}\n           Zameranie: ${h.zameranie}`);
+    console.log(`  Hráč ${cislo}: ${h.meno} — ${h.styl}\n           Zameranie: ${h.zameranie}\n           Zošit: tools/playtest/skusenosti/${h.kluc}.md`);
   }
 }

@@ -45,8 +45,10 @@ Meno do 19 znakov (web doň pridá „ (AI)"), štýl jednou-dvoma vetami.
    na jeho ťahy trpezlivo čaká.
 
 4. **Spusti agenta** `naex-protihrac` na pozadí (`run_in_background: true`):
-   „Relácia: R. Meno: …, štýl: …. Web: <url>. Odohraj partiu proti človeku,
-   napíš spätnú väzbu a zverejni ju na webe."
+   „Relácia: R. Meno: …, štýl: …. Web: <url>. Pred partiou si prečítaj
+   zošity skúseností (tools/playtest/skusenosti/protihrac.md a spolocne.md).
+   Odohraj partiu proti človeku, napíš spätnú väzbu, zverejni ju na webe
+   a nakoniec over a zapíš skúsenosti do protihrac.md."
    Kým hrá, nepolluj. Ak sa používateľ medzitým ozve, odpovedz mu — agent
    beží ďalej.
 
@@ -63,13 +65,19 @@ Meno do 19 znakov (web doň pridá „ (AI)"), štýl jednou-dvoma vetami.
    a hrou (`R/hrac1/nezrovnalosti.md`), najsilnejšie návrhy na strategickosť
    a odkaz na stránku Spätná väzba (`http://localhost:8787/spatna-vazba`
    alebo `npm start`, server partie je už zastavený), kde sú
-   jeho názory. Ak chce prehľadný report, napíš ho ako interaktívne HTML
+   jeho názory, a čo sa agent naučil (zmeny v
+   `tools/playtest/skusenosti/protihrac.md`). Zošit je v gite. Zmenu over
+   (`node --experimental-strip-types --no-warnings tools/playtest/skusenosti.ts kontrola`)
+   a commitni ju (master a push len Leader, `docs/SESSIONS.md`). Ak chce prehľadný report, napíš ho ako interaktívne HTML
    (pravidlo pre dokumenty pre ľudí) z `R/hrac1/feedback.md` a `dennik.md`.
 
 ## Poznámky
 
 - Relácie sú v `playtest/` (mimo gitu), heslá AI účtov v `playtest/ucty.json`.
 - Agent vidí len to, čo hráč — ruku človeka nepozná.
+- Protihráč sa učí (Michal 2026-10-25): jeden zošit `protihrac.md` pre všetky
+  štýly. Overenie skúseností robí sám na konci partie, lebo spisovateľ tu
+  nebeží. Formát je v `tools/playtest/skusenosti/README.md`.
 - Prihlásenie z `localhost:8787` platí aj na serveri partie (relácie sú
   v databáze, cookie nerozlišuje porty). Log servera je v `R/server.log`.
 - Ak miestnosť zmizne („Miestnosť s týmto kódom neexistuje"), pozri

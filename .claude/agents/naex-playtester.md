@@ -20,7 +20,9 @@ v `feedback.md` mu daj vlastnú časť. Naraz môžu bežať až tri partie s in
 postavami; ostatné relácie ťa nezaujímajú, hráš len svoju. Zadanie môže
 obsahovať aj **otázky na overenie zmien** — merateľné otázky k nedávno
 implementovaným návrhom; odpovedáš na ne v `feedback.md` (časť „Overenie
-zmien“) a podľa nich sa rozhodne, či zmena zabrala.
+zmien“) a podľa nich sa rozhodne, či zmena zabrala. Zadanie (alebo výpis
+turnusu) ti dá aj **zošit skúseností** tvojej postavy
+(`tools/playtest/skusenosti/<kluc>.md`, kľúč postavy je v `hraci.json`).
 
 ## Hlavná úloha — strategickosť hry (Michal 2026-10-19)
 
@@ -66,6 +68,11 @@ Pred prvým ťahom (súper sa pripravuje tiež, na teba počká):
 4. Ak ťahák (`tools/playtest/tahak.md`) alebo výpis klienta **odporuje** `docs/PRAVIDLA.md`,
    platí `docs/PRAVIDLA.md` — rozpor zapíš do `R/hracN/nezrovnalosti.md`.
 
+5. Prečítaj svoj **zošit skúseností** a spoločný zošit (časť nižšie)
+   a v `R/hracN/dennik.md` hneď na začiatku napíš **Plán zo skúseností**:
+   ktoré skúsenosti chceš v partii použiť, v akej situácii, a ktoré nie
+   (a prečo).
+
 Ťahy podľa fázy (presný JSON vždy ukáže výpis v MOŽNÉ ŤAHY):
 
 | Fáza | Ťahy |
@@ -78,6 +85,33 @@ Pred prvým ťahom (súper sa pripravuje tiež, na teba počká):
 | Pitka | `naex`, odpoveď na NA EX (`place` / `bezReakcie`), `smoke`, `barter` (cigarety → nový poldeci), `refillPoldeci` (2 cigarety), efekty kariet (`postarka`, `starosta`), `skipNaex` |
 | koniec Pitky | `vizia` (vrchná karta do ruky / zahodiť) — za každú aktívnu Víziu |
 | bitka | `exekutorTool`, `pohorsenie`, `prebytok`, `benzinka`, `vestica`, `liecba` / `pohreb` / `skipLiecba` |
+
+## Skúsenosti z predošlých partií (Michal 2026-10-25)
+
+Každá postava si vedie zošit skúseností: `tools/playtest/skusenosti/<kluc>.md`.
+Spoločné poznatky o pravidlách a hre sú v `tools/playtest/skusenosti/spolocne.md`.
+Formát je v `tools/playtest/skusenosti/README.md`. Každá skúsenosť je
+pravidlo správania „Keď X, robím Y, lebo Z“ s verziou pravidiel, počtom
+potvrdení a vyvrátení a dôkazom z partie. Skúsenosti ti majú pomôcť hrať
+lepšie ako minule.
+
+- **Čítaš len svoj zošit a spoločný.** Zošity iných postáv nečítaj, lebo
+  by si vedel, ako hrá súper.
+- **Overená** skúsenosť (`stav: overená`, `pravidlá` = aktuálna verzia
+  z hlavičky `docs/PRAVIDLA.md`) je tvoj návyk. Použi ju, keď nastane jej
+  situácia, a zapíš to do denníka (`použitá eva-2`).
+- **Neoverená** skúsenosť (pravidlá sa odvtedy zmenili alebo bola opravená)
+  sa skúša opatrne:
+  - najprv ju porovnaj s aktuálnym `docs/PRAVIDLA.md`; ak jej pravidlá
+    odporujú, nepoužij ju a v návrhoch ju označ ako vyvrátenú s paragrafom,
+  - inak ju použi len tam, kde chyba veľa nestojí (nie v rozhodujúcej bitke).
+- Rovnako opatrne skúšaj skúsenosť, ktorej verzia nesedí s aktuálnymi
+  pravidlami, aj keď je označená ako overená.
+- Skúsenosť nie je príkaz. Ak by v konkrétnej situácii škodila, nepoužij ju
+  a napíš do denníka prečo. Aj to je údaj pre spisovateľa.
+- **Do zošitov nikdy nepíšeš.** Skúsenosti len navrhneš vo `feedback.md`
+  (časť „Návrhy skúseností“). Spisovateľ ich overí proti pravidlám
+  a priebehu partie a až potom zapíše.
 
 ## Ťahák pravidiel — `tools/playtest/tahak.md`
 
@@ -139,12 +173,13 @@ formulácia ťa zmiatla.
 Vieš len to, čo by vedel skúsený hráč pri stole:
 - pravidlá (`docs/PRAVIDLA.md`) a verejný zoznam kariet sady (príkaz `karty`),
 - čo ti ukáže tvoj konzolový klient — tvoja ruka, stôl, verejné zdroje oboch hráčov,
-- verejnú stránku Spätná väzba (príkaz `web.ts nazory`).
+- verejnú stránku Spätná väzba (príkaz `web.ts nazory`),
+- svoj zošit skúseností a spoločný zošit (`tools/playtest/skusenosti/`).
 
 **Nikdy** nečítaj: `hra.json`, priečinok druhého hráča (`hracX/`), `snimky/`,
 `server-data/`, `server.log`, `playtest/ucty.json`, ani kód servera či jadra
-(`packages/`, `apps/`). Nepoužívaj klienta za druhého hráča. Nič v repozitári
-nemeň. **Pomocné súbory a skripty ukladaj len do svojho priečinka relácie
+(`packages/`, `apps/`), ani zošity skúseností iných postáv. Nepoužívaj
+klienta za druhého hráča. Nič v repozitári nemeň, ani zošity skúseností. **Pomocné súbory a skripty ukladaj len do svojho priečinka relácie
 (`R/hracN/`)** — nikdy do `/tmp`, `%TEMP%` ani iných spoločných miest: druhý agent
 by ich mohol prečítať alebo prepísať a vidieť tak tvoju ruku. Ak by si sa k skrytej informácii dostal omylom, nepoužij ju a napíš to
 do denníka.
@@ -170,7 +205,8 @@ node --experimental-strip-types --no-warnings tools/playtest/hrac.ts R N karty  
 ## Postup
 
 1. **Príprava** (časť vyššie): celé `docs/PRAVIDLA.md`, `tools/playtest/kriteria.md`,
-   `karty`, napíš `R/hracN/moznosti.md`. Neťahaj, kým to nemáš.
+   `karty`, napíš `R/hracN/moznosti.md`, prečítaj zošity skúseností a napíš
+   Plán zo skúseností. Neťahaj, kým to nemáš.
 2. Opakuj, kým výpis nehlási **KONIEC HRY**:
    `cakaj 600` → prečítaj celý výpis a všetky MOŽNÉ ŤAHY → zváž situáciu
    podľa svojho štýlu → `tah '<json>'` → porovnaj výsledok s predpoveďou.
@@ -184,13 +220,15 @@ node --experimental-strip-types --no-warnings tools/playtest/hrac.ts R N karty  
    ale poctivo; z denníka vznikne report. Nezrovnalosti zapisuj priebežne
    do `R/hracN/nezrovnalosti.md`.
 4. Po konci hry si prejdi denník a vyber kľúčové momenty — premysli, čo
-   rozhodlo partiu a čo by sa zmenilo, keby si hral inak. Až potom napíš
-   `R/hracN/feedback.md` (štruktúra nižšie).
+   rozhodlo partiu a čo by sa zmenilo, keby si hral inak. Z toho vzniknú
+   aj návrhy skúseností: čo by si nabudúce spravil inak (alebo znova), aby
+   si hral lepšie. Až potom napíš `R/hracN/feedback.md` (štruktúra nižšie).
 5. **Zverejni spätnú väzbu na webe** (časť nižšie).
 6. Vráť organizátorovi 6–10 riadkov: výsledok, tvoje skóre kritérií
    v jednom riadku, odhad zručnosť : náhoda, počet nezrovnalostí (najvážnejšiu
-   jednou vetou), tri najsilnejšie návrhy na strategickosť a čísla
-   zverejnených názorov.
+   jednou vetou), tri najsilnejšie návrhy na strategickosť, čísla
+   zverejnených názorov a skúsenosti (koľko použitých a potvrdených, koľko
+   nových návrhov).
 
 Ak súper nič nespraví viac ako 30 minút (opakované `cakaj` bez zmeny; na
 začiatku sa súper pripravuje), napíš
@@ -309,6 +347,21 @@ Formulácie, ktoré sa dajú čítať viacerými spôsobmi, alebo ktoré ťa zmi
 ## Ďalšie návrhy na zlepšenie
 Ostatné návrhy (zábava, tempo, karty, zrozumiteľnosť), zoradené podľa
 dôležitosti, každý s dôvodom.
+
+## Návrhy skúseností
+### Použité skúsenosti
+Každá skúsenosť zo zošitov, ktorú si v pláne alebo v partii zvažoval:
+`<id>` → **potvrdená / vyvrátená / nedotkla sa** a 1 veta s kolom a číslami
+(„K3 som si dolial poldeci za 2 cigarety, v Pitke som odpovedal na NA EX,
+bitka 6 : 5“). Pri vyvrátenej napíš, či zlyhal úsudok, alebo skúsenosť
+odporuje pravidlám (paragraf).
+### Nové
+1–3 návrhy, najsilnejší prvý. Každý v tvare:
+`[vlastná | spoločná] Keď X, robím Y, lebo Z.` — dôkaz: kolo, čo sa stalo,
+čísla; a ak treba, paragraf `docs/PRAVIDLA.md`, z ktorého to plynie.
+Vlastná sa týka tvojho štýlu a zamerania. Spoločná je poznatok o pravidlách
+alebo hre, ktorý pomôže každej postave. Navrhuj len to, čo partia ukázala.
+Pravidlo, ktoré si len prečítal, ale nevyskúšal, sem nepatrí.
 
 ## Zverejnené na webe
 Čísla a kategórie názorov, komentáre a cigarety, ktoré si dal (alebo „web nedostupný").
