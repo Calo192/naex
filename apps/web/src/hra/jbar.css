@@ -1,0 +1,1016 @@
+/* Jednotný bar nad stolom (Michal 2026-10-25, mock V2 „Os dole, správa pod verdiktom“).
+ * Nahradil os kola, pás fázy aj riadok bitky (bez modro-červeného gradientu). Výška je
+ * vo všetkých fázach a oboch režimoch strán rovnaká — riadky majú pevnú výšku, obsah sa
+ * skracuje trojbodkou, nikdy nezalomí. Farby len z tokenov schémy. */
+
+.jbar {
+  --jbar-h1: 52px;
+  --jbar-h2: 30px;
+  --jbar-ikona: 28px;
+  /* V toku nad súperovým barom (stôl je na výšku okna) — pod ním pláva zoznam skratiek. */
+  position: relative;
+  z-index: 45;
+  container: jbar / inline-size;
+  display: grid;
+  grid-template-rows: var(--jbar-h1) var(--jbar-h2);
+  min-width: 0;
+  border: 1px solid var(--okraj);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  background: var(--plocha-2);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+/* ---- horný riadok: strana | odhad + správa | strana ---- */
+.jbar-st {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(420px, auto) minmax(0, 1fr);
+  min-width: 0;
+}
+
+.jbar-strana {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 0 12px;
+  overflow: hidden;
+  /* Čo sa nevojde, mizne k stredu baru — vidno, že pokračuje (celé je na stole). */
+  mask-image: linear-gradient(90deg, #000 calc(100% - 14px), transparent);
+}
+
+.jbar-strana.ja {
+  --efekt-farba: var(--ja);
+  box-shadow: inset 4px 0 var(--ja);
+}
+
+.jbar-strana.su {
+  --efekt-farba: var(--su);
+  flex-direction: row-reverse;
+  box-shadow: inset -4px 0 var(--su);
+  mask-image: linear-gradient(270deg, #000 calc(100% - 14px), transparent);
+}
+
+.jbar-kto {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  max-width: 14ch;
+  font: 700 0.86rem/1.15 var(--nadpis);
+  white-space: nowrap;
+}
+
+.jbar-strana.ja .jbar-kto {
+  color: var(--ja);
+}
+
+.jbar-strana.su .jbar-kto {
+  align-items: flex-end;
+  color: var(--su);
+}
+
+.jbar-kto,
+.jbar-kto > small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Kto je na rade — nenápadne (Michal 2026-10-25), stôl to hovorí farbou. */
+.jbar-na-tahu {
+  font: 600 0.6rem/1.2 var(--pismo);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tlmeny);
+}
+
+.jbar-obsah {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.jbar-strana.su .jbar-obsah {
+  flex-direction: row-reverse;
+}
+
+/* Akcie: skutočné piktogramy akcií ako na kartách (Panely.tsx, AkcieStrany), ikona a číslo vedľa seba. */
+.jbar .jbar-akcie {
+  flex-wrap: nowrap;
+  gap: 5px;
+}
+
+.jbar .efekt {
+  flex: none;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  padding: 2px 8px 2px 3px;
+  border-radius: 8px;
+}
+
+.jbar .efekt-ikona {
+  width: var(--jbar-ikona);
+  height: var(--jbar-ikona);
+}
+
+.jbar .efekt-ikona .ikona-akcie {
+  border-radius: 6px;
+}
+
+.jbar .efekt-hodnota {
+  font-size: 1.05rem;
+}
+
+.jbar .efekt-nazov {
+  font-size: 0.8rem;
+  color: var(--tlmeny);
+}
+
+.jbar .efekty-ziadne {
+  font-size: 0.82rem;
+}
+
+/* Názov akcie len pri širokom bare (mock V2: 1920 px s názvom, 1366 px bez). */
+@container jbar (max-width: 1700px) {
+  .jbar .efekt-nazov {
+    display: none;
+  }
+}
+
+/* Karty na vyloženie: sloty, počet v ruke, poradie v Pitke. */
+.jbar-karty {
+  gap: 10px;
+  font-size: 0.86rem;
+  color: var(--tlmeny);
+}
+
+.jbar-strana.ja .jbar-karty {
+  --slot: var(--ja);
+}
+
+.jbar-strana.su .jbar-karty {
+  --slot: var(--su);
+}
+
+.jbar-karty .pas-sloty {
+  flex: none;
+  color: var(--slot);
+}
+
+.jbar-karty .pas-sloty .slot {
+  width: 12px;
+  height: 18px;
+}
+
+.jbar-hlavne,
+.jbar-ruka b {
+  font-weight: 800;
+  color: var(--text);
+}
+
+.jbar-poradie {
+  font: 800 1rem/1 var(--nadpis);
+  color: var(--tlmeny);
+}
+
+.jbar-strana.na-tahu .jbar-poradie {
+  color: var(--akcent);
+}
+
+.jbar-pozn {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- stred: odhad bitky (prepínač strán) a stavová správa pod ním ---- */
+.jbar-stred {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  min-width: 0;
+  max-width: 640px;
+  padding: 0 16px;
+  background: var(--plocha-3);
+}
+
+.jbar-odhad {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.jbar-odhad:disabled {
+  cursor: default;
+}
+
+.jbar-odhad:focus-visible {
+  outline: 2px solid var(--akcent-svetly);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.jbar-nadpis {
+  flex: none;
+  font: 700 0.64rem/1 var(--pismo);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tlmeny);
+}
+
+/* Verdikt sa neskracuje — skráti sa hrozba za ním (celá je v nápovede). */
+.jbar-verdikt {
+  flex: none;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font: 800 1.02rem/1.2 var(--pismo);
+}
+
+.jbar-verdikt.vyhravam {
+  color: var(--zelena);
+}
+
+.jbar-verdikt.prehravam {
+  color: var(--cervena-text);
+}
+
+.jbar-verdikt.remiza {
+  color: var(--akcent);
+}
+
+.jbar-tuhe {
+  flex: none;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.jbar-odhad .hrozba-bitky-riadok {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.78rem;
+  color: var(--tlmeny);
+}
+
+/* Segmentový čip „akcie | karty“ — aby bolo vidno, že klik prepína strany. */
+.jbar-cip {
+  display: inline-flex;
+  flex: none;
+  align-self: center;
+  overflow: hidden;
+  border: 1px solid var(--okraj-svetly);
+  border-radius: 999px;
+  font-size: 0.7rem;
+  line-height: 1.35;
+}
+
+.jbar-cip > span {
+  padding: 0 8px;
+  color: var(--tlmeny);
+}
+
+.jbar-cip > span.zap {
+  background: var(--akcent);
+  color: var(--na-akcente);
+  font-weight: 800;
+}
+
+.jbar-odhad:hover .jbar-cip {
+  border-color: var(--akcent);
+}
+
+/* Stavová správa: pevné miesto pod odhadom, jeden riadok, celé znenie pri myši. */
+.jbar-sprava-miesto {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+  height: 1.4em;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.jbar-sprava {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  max-width: 100%;
+  color: var(--info);
+}
+
+.jbar-sprava-text {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.jbar-sprava.ucet {
+  color: var(--text);
+}
+
+.jbar-sprava.chyba {
+  color: var(--cervena-text);
+  font-weight: 700;
+}
+
+.jbar-sprava.stara {
+  opacity: 0.55;
+}
+
+.jbar-sprava.nova {
+  animation: jbar-sprava 0.22s ease-out;
+}
+
+@keyframes jbar-sprava {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jbar-sprava.nova {
+    animation: none;
+  }
+}
+
+.jbar-sprava .tlacidlo-male {
+  flex: none;
+  min-height: 0;
+  padding: 0 8px;
+  line-height: 1.3;
+}
+
+/* ---- dolný riadok: os kola ako pravítko nad stolom ---- */
+.jbar-os {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding-right: 4px;
+  border-top: 1px solid var(--okraj);
+  border-radius: 0 0 11px 11px;
+  background: var(--pozadie);
+}
+
+.jbar-os .priebeh-kola {
+  align-self: stretch;
+}
+
+.jbar-os .priebeh-kola li {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-block: 0;
+}
+
+.jbar-os .kod {
+  flex: none;
+  padding: 2px 8px;
+  font-size: 0.9rem;
+}
+
+.jbar-desi {
+  display: inline-block;
+  flex: none;
+  white-space: nowrap;
+}
+
+.jbar .hlava-vrstvy {
+  gap: 4px;
+}
+
+.jbar button.hlava-vrstva {
+  height: calc(var(--jbar-h2) - 4px);
+  padding-block: 0;
+}
+
+/* Užší bar (1366–1500 px): menší stred, strany dostanú miesto. */
+@container jbar (max-width: 1500px) {
+  .jbar-st {
+    grid-template-columns: minmax(0, 1fr) minmax(380px, auto) minmax(0, 1fr);
+  }
+
+  .jbar-stred {
+    max-width: 500px;
+    padding: 0 12px;
+  }
+
+  .jbar-desi-nazov {
+    display: none;
+  }
+}
+
+/* Úzke okno (900–1100 px, tablet na šírku): stred ustúpi stranám, „na ťahu“ povie stôl. */
+@container jbar (max-width: 1100px) {
+  .jbar-st {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, auto) minmax(0, 1fr);
+  }
+
+  .jbar-stred {
+    max-width: 400px;
+    padding: 0 10px;
+  }
+
+  .jbar-na-tahu {
+    display: none;
+  }
+}
+
+/* Nižšie okno (notebook, 1440 × 800): nižšie riadky, rovnaké usporiadanie. Bar je o 27 px vyšší než
+   os kola; vo voľbe cieľa a drafte (bez pásu fázy) ich vracia stôl — rezerva nad plsťou len na
+   polovicu pilulky pokynu, vrstva draftu hneď pod ňou a bary hráčov o 4 px nižšie (karty šenku ostanú 170 px). */
+@media (min-width: 761px) and (max-height: 919px) {
+  .jbar {
+    --jbar-h1: 40px;
+    --jbar-h2: 23px;
+    --jbar-ikona: 23px;
+  }
+
+  .doska,
+  .plocha > section.doska {
+    --bar-h: 76px;
+  }
+
+  .linia-obal:not(:has(.zberatel-ponuka, .vizia-karta)) {
+    padding-top: 15px;
+  }
+
+  .linia-stav:not(:has(.zberatel-ponuka, .vizia-karta)) {
+    top: 16px;
+  }
+
+  /* Vrstva siaha pod pilulku — tá leží nad ňou a karty začínajú až pod okrajom panela. */
+  .vrstva-fazy {
+    inset: 10px 10px 10px;
+  }
+
+  .jbar .efekt-hodnota {
+    font-size: 0.98rem;
+  }
+}
+
+/* 1366 × 650: bar čo najnižší — karty šenku na stole sa nesmú zmenšiť (Leader 2026-10-25). Bar je
+   o 16 px vyšší než os kola, ktorú nahradil; vo voľbe cieľa a drafte (bez pásu fázy) ich vracia stôl:
+   rezerva nad plsťou len na polovicu pilulky pokynu, vrstva draftu hneď pod ňou a bary hráčov o 2 px nižšie. */
+@media (min-width: 761px) and (max-height: 719px) {
+  .jbar {
+    --jbar-h1: 34px;
+    --jbar-h2: 18px;
+    --jbar-ikona: 20px;
+  }
+
+  .linia-obal:not(:has(.zberatel-ponuka, .vizia-karta)) {
+    padding-top: 14px;
+  }
+
+  /* Pilulka pokynu: stred na čiare plste (14 px rezerva + 1 px okraja). */
+  .linia-stav:not(:has(.zberatel-ponuka, .vizia-karta)) {
+    top: 15px;
+  }
+
+  .vrstva-fazy {
+    inset: 14px 6px 6px;
+  }
+
+  .doska,
+  .plocha > section.doska {
+    --bar-h: 74px;
+  }
+
+  .jbar-kto {
+    font-size: 0.78rem;
+    line-height: 1.05;
+  }
+
+  .jbar-na-tahu {
+    font-size: 0.55rem;
+  }
+
+  .jbar .efekt {
+    padding-block: 1px;
+  }
+
+  .jbar .efekt-hodnota {
+    font-size: 0.9rem;
+  }
+
+  .jbar-karty {
+    font-size: 0.8rem;
+  }
+
+  .jbar-karty .pas-sloty .slot {
+    width: 10px;
+    height: 15px;
+  }
+
+  .jbar-odhad {
+    line-height: 1.1;
+  }
+
+  .jbar-verdikt {
+    font-size: 0.92rem;
+    line-height: 1.1;
+  }
+
+  .jbar-sprava-miesto {
+    height: 1.3em;
+    font-size: 0.74rem;
+    line-height: 1.3;
+  }
+
+  .jbar-os .priebeh-kola li {
+    font-size: 0.72rem;
+  }
+
+  .jbar button.hlava-vrstva {
+    font-size: 0.76rem;
+  }
+
+  .jbar-desi {
+    font-size: 0.72rem;
+  }
+}
+
+/* Mobil: bar v toku stránky, výška podľa obsahu — stred hore, strany pod ním, os s nástrojmi dole. */
+@media (max-width: 760px) {
+  .jbar {
+    position: static;
+    grid-template-rows: auto auto;
+    border-top: 1px solid var(--okraj);
+    border-radius: 12px;
+  }
+
+  .jbar-st {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .jbar-stred {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    max-width: none;
+    padding: 4px 8px;
+    border-radius: 0;
+  }
+
+  .jbar-strana {
+    min-height: 34px;
+    padding: 4px 8px;
+  }
+
+  .jbar-os {
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 4px;
+  }
+
+  .jbar-os .priebeh-kola {
+    flex: 1 1 100%;
+    min-height: 26px;
+  }
+
+  .jbar .hlava-vrstvy {
+    width: 100%;
+    justify-content: center;
+    margin-left: 0;
+  }
+
+  .jbar button.hlava-vrstva {
+    height: 28px;
+  }
+}
+
+/* ---- riadky baru a miesto Melichara ---- */
+.jbar > .jbar-st {
+  grid-row: 1;
+  grid-column: 1;
+}
+
+.jbar > .jbar-os {
+  grid-row: 2;
+  grid-column: 1;
+}
+
+.jbar > [hidden] {
+  display: none;
+}
+
+.jbar > .jbar-mel-miesto {
+  display: flex;
+  grid-row: 1 / -1;
+  grid-column: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+.jbar > .jbar-mel-miesto:empty {
+  display: none;
+}
+
+/* Os kola ostane pod Melicharom, keď o nej hovorí. */
+.jbar.mel-hore > .jbar-mel-miesto {
+  grid-row: 1;
+}
+
+/* Keď Melichar hovorí, bar je nad stmavením výučby (vyucba.css, z-index 60) — inak by stmavol aj jeho. */
+.jbar.mel-hovori {
+  z-index: 75;
+}
+
+/* ---- Majster Melichar v bare (Michal 2026-10-25, mock „Melichar v bare“) ---- */
+.mel {
+  --mel-avatar: 62px;
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  padding: 0 14px;
+  border: 1px solid var(--akcent);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  background: var(--plocha-3);
+  color: var(--text);
+  animation: mel-prichod 0.22s ease-out;
+}
+
+/* Viac bublín naraz (nápoveda a hláška) — hovorí posledná. */
+.jbar-mel-miesto > .mel:not(:last-child) {
+  display: none;
+}
+
+.jbar.mel-hore .mel {
+  --mel-avatar: 44px;
+  border-radius: 0;
+}
+
+/* Nad osou je Melichar len v hornom riadku — menovka by vzala riadok vete (kto hovorí, povie fotka). */
+.jbar.mel-hore .mel-kto {
+  display: none;
+}
+
+@keyframes mel-prichod {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mel {
+    animation: none;
+  }
+}
+
+.mel-avatar-obal {
+  position: relative;
+  flex: none;
+}
+
+.mel-avatar {
+  display: block;
+  width: var(--mel-avatar);
+  height: var(--mel-avatar);
+  padding: 0;
+  border: 2px solid var(--akcent);
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--plocha);
+  cursor: help;
+}
+
+.mel-avatar img,
+.mel-pribeh img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Kto je Melichar: zväčšená fotka a pár viet pod barom pri myši (na dotyku po ťuknutí). */
+.mel-pribeh {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: -6px;
+  z-index: 90;
+  display: none;
+  gap: 14px;
+  width: min(460px, 80vw);
+  padding: 12px 14px;
+  border: 1px solid var(--akcent);
+  border-radius: 14px;
+  background: var(--plocha);
+  box-shadow: 0 14px 36px color-mix(in srgb, #000 55%, transparent);
+  font-size: 0.9rem;
+  line-height: 1.45;
+  text-align: left;
+}
+
+.mel-pribeh img {
+  flex: none;
+  width: 150px;
+  height: 150px;
+  border: 2px solid var(--akcent);
+  border-radius: 12px;
+}
+
+.mel-pribeh b {
+  font-family: var(--nadpis);
+  color: var(--akcent-svetly);
+}
+
+.mel-avatar-obal:hover .mel-pribeh,
+.mel-avatar-obal:focus-within .mel-pribeh,
+.mel-avatar-obal.otvoreny .mel-pribeh {
+  display: flex;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .mel-avatar img {
+    transition: transform 0.2s ease;
+  }
+
+  .mel-avatar:hover img {
+    transform: scale(1.12);
+  }
+}
+
+.mel-telo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1px;
+  min-width: 0;
+  max-height: 100%;
+  padding-block: 4px;
+}
+
+.mel-kto {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font: 700 0.7rem/1.2 var(--pismo);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--akcent);
+}
+
+.mel-pocitadlo {
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--tlmeny);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Veta: dlhšia (otázka s možnosťami) sa posúva vnútri — bar nikdy nezvýši. */
+.mel-veta {
+  min-height: 0;
+  overflow-y: auto;
+  font-size: 1rem;
+  line-height: 1.32;
+  scrollbar-width: thin;
+}
+
+.mel-veta p {
+  margin: 0;
+}
+
+.mel-veta .vyucba-text {
+  overflow: visible;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.mel-veta :is(.vyucba-stitok, .vyucba-chyba, .vyucba-rada) {
+  display: inline-block;
+  margin: 0 8px 2px 0;
+  padding: 0 8px;
+  font-size: 0.86em;
+}
+
+.mel-veta .vyucba-moznosti {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  margin-top: 3px;
+}
+
+.mel-veta .vyucba-moznost {
+  min-height: 0;
+  padding: 1px 10px;
+  font-size: 0.86em;
+  line-height: 1.3;
+}
+
+.mel-veta .vyucba-vysvetlenie {
+  margin-top: 3px;
+  padding: 1px 8px;
+}
+
+/* Piktogram akcie priamo v texte (značka [Rana]) — ten istý ako na kartách. */
+.mel-ikona {
+  display: inline-block;
+  width: 1.45em;
+  height: 1.45em;
+  margin: 0 2px;
+  vertical-align: -0.38em;
+}
+
+.mel-ikona .ikona-akcie {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+}
+
+.mel-ukazka {
+  display: flex;
+  flex: none;
+  align-self: stretch;
+  align-items: center;
+}
+
+.jbar-odhad-kopia {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: calc(100% - 12px);
+  align-self: center;
+  padding: 0 14px;
+  border-radius: 10px;
+  background: var(--plocha-2);
+  white-space: nowrap;
+  cursor: help;
+}
+
+.mel-vpravo {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 10px;
+}
+
+.mel-dalej {
+  white-space: nowrap;
+}
+
+/* Hláška pri pečiatke momentu: len že Melichar hovorí — text hlášky sa neukazuje (Michal 2026-10-22). */
+.mel-zvuk {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 22px;
+  margin: 0;
+}
+
+.mel-zvuk > span {
+  width: 4px;
+  height: 40%;
+  border-radius: 2px;
+  background: var(--akcent);
+  animation: mel-zvuk 0.9s ease-in-out infinite;
+}
+
+.mel-zvuk > span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.mel-zvuk > span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.mel-zvuk > span:nth-child(4) {
+  animation-delay: 0.45s;
+}
+
+.mel-zvuk > span:nth-child(5) {
+  animation-delay: 0.6s;
+}
+
+@keyframes mel-zvuk {
+  50% {
+    height: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mel-zvuk > span {
+    animation: none;
+    height: 70%;
+  }
+}
+
+@media (min-width: 761px) and (max-height: 919px) {
+  .mel {
+    --mel-avatar: 54px;
+  }
+
+  .jbar.mel-hore .mel {
+    --mel-avatar: 38px;
+  }
+
+  .mel-veta {
+    font-size: 0.94rem;
+    line-height: 1.28;
+  }
+}
+
+/* 1366 × 650: bar má 58 px — veta menším písmom, aby sa zmestili dva riadky. */
+@media (min-width: 761px) and (max-height: 719px) {
+  .mel {
+    --mel-avatar: 44px;
+    gap: 10px;
+    padding: 0 10px;
+  }
+
+  .jbar.mel-hore .mel {
+    --mel-avatar: 30px;
+  }
+
+  .mel-kto {
+    font-size: 0.6rem;
+  }
+
+  /* Otázka s možnosťami: riadok menovky dostane veta — kto hovorí, povie fotka. */
+  .mel:has(.vyucba-moznosti) .mel-kto {
+    display: none;
+  }
+
+  .mel-veta .vyucba-text:has(.vyucba-moznosti) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px 10px;
+  }
+
+  .mel-veta .vyucba-moznosti {
+    margin: 0;
+  }
+
+  .mel-veta {
+    font-size: 0.82rem;
+    line-height: 1.22;
+  }
+
+  .mel-vpravo {
+    gap: 6px;
+  }
+
+  .mel-vpravo button {
+    min-height: 0;
+    padding: 3px 10px;
+    font-size: 0.8rem;
+  }
+
+  .mel-pribeh img {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+/* Mobil: bublina v toku, výška podľa vety. */
+@media (max-width: 760px) {
+  .mel {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px;
+    border-top: 1px solid var(--akcent);
+    border-radius: 12px;
+  }
+
+  .mel {
+    --mel-avatar: 40px;
+  }
+
+  .mel-vpravo {
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .mel-veta {
+    max-height: 40dvh;
+    font-size: 0.92rem;
+  }
+}

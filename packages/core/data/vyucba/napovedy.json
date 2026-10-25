@@ -76,7 +76,7 @@
         "podmienka": "nahladPitky(view)[ja].zadlzenie > 0",
         "jadro": ["packages/core/src/engine.ts:700 nahladPitky", "packages/core/src/engine.ts:873 prahyHraca (dlh)", "docs/PRAVIDLA.md §8 Zadĺženie a Dlh"]
       },
-      "melichar": "Akcia Dlh ti plní zadĺženie v bare. Keď dosiahne číslo za lomkou, dostaneš kartu Dlh.",
+      "melichar": "Akcia [Dlh] Dlh ti plní zadĺženie v bare. Keď dosiahne číslo za lomkou, dostaneš kartu Dlh.",
       "zvyraznit": ["bar:zadlzenie"]
     },
     {
@@ -100,7 +100,7 @@
         "podmienka": "view.faza === \"zhromazdenie\" && naTahu === ja && v tomto Zhromaždení som vyložil kartu && kartyZaPas(view.zhromazdenie, ja) >= 1",
         "jadro": ["packages/core/src/engine.ts:158 kartyZaPas", "docs/PRAVIDLA.md §6 Pas a koniec Zhromaždenia"]
       },
-      "melichar": "Pasovať sa oplatí aj skôr: za každú kartu, ktorú si ešte smel vyložiť, dostaneš cigaretu.",
+      "melichar": "Pasovať sa oplatí aj skôr: za každú kartu, ktorú si ešte smel vyložiť, dostaneš [Cigareta] cigaretu.",
       "zvyraznit": ["tlacidlo:pas"]
     },
     {
@@ -154,7 +154,7 @@
         "podmienka": "stavZavislosti(view, ja).vyhlad === \"ziska\" na mojom ťahu, alebo pribudol Absťák medzi mojimi priznanými",
         "jadro": ["packages/core/src/zavislost.ts:52 stavZavislosti", "docs/PRAVIDLA.md §8 Nerest a Absťák"]
       },
-      "melichar": "Pozor na Absťák: kto v kole pije a fajčí menej ako v predošlom, dostane ho. Každý ti v bitke uberie 1 tuhé a na konci sa rátajú všetky, čo si za hru dostal.",
+      "melichar": "Pozor na Absťák: kto v kole pije [Poldeci] a fajčí [Cigareta] menej ako v predošlom, dostane ho. Každý ti v bitke uberie 1 tuhé a na konci sa rátajú všetky, čo si za hru dostal.",
       "zvyraznit": ["bar:abstak"]
     },
     {
@@ -203,7 +203,7 @@
         "podmienka": "view.draftStav.krok === \"patronat\" && hráč má aspoň jedného staršieho, ktorého smie vziať (moznyPatronat)",
         "jadro": ["packages/core/src/engine.ts:1555 moznyPatronat", "packages/core/src/view.ts:409 nahladPatronatu", "docs/PRAVIDLA.md §10 Patronát"]
       },
-      "melichar": "Starší, ktorý ti prejavuje priazeň, smie ísť s tebou do bitky: za cigarety si ho vezmeš do ruky. Keď bitku prehráš, vráti sa a stratíš poldeci.",
+      "melichar": "Starší, ktorý ti prejavuje priazeň, smie ísť s tebou do bitky: za [Cigareta] cigarety si ho vezmeš do ruky. Keď bitku prehráš, vráti sa a stratíš [Poldeci] poldeci.",
       "zvyraznit": ["linia-starsich"]
     },
     {
@@ -232,7 +232,7 @@
         "doplnit": "{karta} = názov Nástroja, {defId}",
         "jadro": ["packages/core/src/engine.ts:1874 cenaDedicstva", "docs/PRAVIDLA.md §12 Dedičstvo"]
       },
-      "melichar": "{karta} je Nástroj. Môžeš ho dať do Dedičstva za cigarety a jeho efekt potom platí do konca hry.",
+      "melichar": "{karta} je Nástroj. Môžeš ho dať do Dedičstva za [Cigareta] cigarety a jeho efekt potom platí do konca hry.",
       "zvyraznit": ["ruka:{defId}"]
     },
     {
@@ -256,7 +256,7 @@
         "podmienka": "view.kolo >= 2 && naTahu === ja && príkaz zaverecna je legálny (aspoň 1 cigareta, ešte nepasoval)",
         "jadro": ["packages/core/src/engine.ts:1185 príkaz zaverecna", "docs/PRAVIDLA.md §13 Záverečná"]
       },
-      "melichar": "Za cigaretu smieš zahrať kartu lícom dole ako Záverečnú, súper nevie, čo to je. Po nej už v tomto Zhromaždení nič nevyložíš.",
+      "melichar": "Za [Cigareta] cigaretu smieš zahrať kartu lícom dole ako Záverečnú, súper nevie, čo to je. Po nej už v tomto Zhromaždení nič nevyložíš.",
       "zvyraznit": ["zaverecna"]
     }
   ]

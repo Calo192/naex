@@ -5,7 +5,7 @@
 import { describe, expect, it } from "vitest";
 import { escVratiNavrh, type VrstvyPreEsc } from "../src/hra/skratky.tsx";
 
-const NIC: VrstvyPreEsc = { lupa: false, dialog: false, starsi: false, vyber: false, potvrdenie: false, odhad: false, pult: false };
+const NIC: VrstvyPreEsc = { lupa: false, dialog: false, starsi: false, vyber: false, potvrdenie: false, pult: false };
 
 describe("Esc a návrh ťahu", () => {
   it("bez otvorenej vrstvy vráti návrh cez tlačidlo návratu", () => {

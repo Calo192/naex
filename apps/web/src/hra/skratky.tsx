@@ -28,7 +28,6 @@ export interface VrstvyPreEsc {
   /** Vybrané „+“ na konci strany, cieľ NA EX, výber karty do oblasti. */
   readonly vyber: boolean;
   readonly potvrdenie: boolean;
-  readonly odhad: boolean;
   readonly pult: boolean;
 }
 
