@@ -3563,6 +3563,20 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
   }
   s.strany = [[], []];
 
+  // Nepriznaná Cirhóza v ruke ide po bitke do odhadzovacieho balíčka (v5 bod 8,
+  // Michal 2026-10-25): kto ju neprizná hneď, riskuje, že sa mu do konca hry
+  // nevráti do ruky a na konci ho bude stáť body (ráta sa aj v balíčkoch).
+  for (const p of [0, 1] as const) {
+    const cirhozy = s.hraci[p].ruka.filter((k) => k.defId === "cirhoza");
+    if (cirhozy.length === 0) continue;
+    hrac(s, p).ruka = s.hraci[p].ruka.filter((k) => k.defId !== "cirhoza");
+    hrac(s, p).odhadzovaci.push(...cirhozy);
+    events.push({
+      type: "log",
+      text: `Hráč ${p + 1}: ${cirhozy.length === 1 ? "nepriznaná Cirhóza z ruky ide" : `${cirhozy.length} nepriznané Cirhózy z ruky idú`} do odhadzovacieho balíčka.`,
+    });
+  }
+
   // Lokalitu si berie víťaz (Benzínka ju od 2026-10-20 neprepadá, §9.4).
   // Remíza (Michal 2026-10-21): lokalita ide na sekeru, víťaz najbližšej
   // bitky si vezme aj ju; v poslednej bitke už niet komu, tak prepadne.

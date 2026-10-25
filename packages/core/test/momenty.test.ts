@@ -102,7 +102,6 @@ describe("momenty — strop", () => {
 
 describe("momenty — nič neprezradia", () => {
   it("v celej partii je moment rovnaký, nech má ktorýkoľvek hráč v ruke a balíčku čokoľvek", () => {
-    let s = setupGame(zaklad, 47);
     let rng = rngSeed(5);
     let porovnanych = 0;
     const inaRuka = (x: GameState): GameState => ({
@@ -111,19 +110,23 @@ describe("momenty — nič neprezradia", () => {
       // Skrytá Záverečná: iná karta lícom dole.
       strany: x.strany.map((strana) => strana.map((pl) => (pl.zaverecna === true ? { ...pl, card: { ...pl.card, defId: "svokra" } } : pl))) as unknown as GameState["strany"],
     });
-    for (let i = 0; i < 4000 && s.koniec === null; i++) {
-      const p = naTahu(s);
-      if (p === null) break;
-      const cmds = legalCommands(zaklad, s, p);
-      const [j, r] = rngInt(rng, cmds.length);
-      rng = r;
-      const { state: po, events } = apply(zaklad, s, cmds[j] as Command, p);
-      const m = momenty(zaklad, s, po, events);
-      expect(JSON.stringify(momenty(zaklad, inaRuka(s), inaRuka(po), events))).toBe(JSON.stringify(m));
-      porovnanych++;
-      s = po;
+    // Náhodná partia môže skončiť skoro (exekúcia) — preto viac partií.
+    for (const seed of [47, 48, 49]) {
+      let s = setupGame(zaklad, seed);
+      for (let i = 0; i < 4000 && s.koniec === null; i++) {
+        const p = naTahu(s);
+        if (p === null) break;
+        const cmds = legalCommands(zaklad, s, p);
+        const [j, r] = rngInt(rng, cmds.length);
+        rng = r;
+        const { state: po, events } = apply(zaklad, s, cmds[j] as Command, p);
+        const m = momenty(zaklad, s, po, events);
+        expect(JSON.stringify(momenty(zaklad, inaRuka(s), inaRuka(po), events))).toBe(JSON.stringify(m));
+        porovnanych++;
+        s = po;
+      }
     }
-    expect(porovnanych).toBeGreaterThan(100);
+    expect(porovnanych).toBeGreaterThan(200);
   });
 });
 

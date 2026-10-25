@@ -68,8 +68,9 @@ describe("Kar", () => {
     const s = doKaru(predBitkou("kar", [[cirhoza], [inst("pijan")]]));
     expect(s.bitkaStav?.caka).toBe(0);
     const po = apply(data, s, { type: "kar", uid: null }, 0).state;
-    expect(po.hraci[0].ruka.map((k) => k.uid)).toContain(cirhoza.uid);
     expect(po.bitkaStav?.krok).not.toBe("kar");
+    // Nechaná Cirhóza ide po bitke do odhadzovacieho balíčka (v5 bod 8), nie preč z hry.
+    expect([...po.hraci[0].ruka, ...po.hraci[0].odhadzovaci, ...po.hraci[0].doberaci].map((k) => k.uid)).toContain(cirhoza.uid);
   });
 
   it("inde ako na Kare sa krok nekoná", () => {
