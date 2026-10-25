@@ -159,9 +159,9 @@ export const DLZKY_HRY = { kratka: 3, stredna: 5, dlha: 7 } as const;
  * pravidlá menia len v dávkach raz za 2 týždne a celá dávka dostane ďalšie
  * číslo („v5“) spolu s novým dátumom platnosti.
  */
-export const VERZIA_PRAVIDIEL = "v4";
+export const VERZIA_PRAVIDIEL = "v5";
 /** Odkedy platí VERZIA_PRAVIDIEL — hráč ho vidí na stránke Pravidlá. */
-export const PRAVIDLA_PLATNE_OD = "2026-10-24";
+export const PRAVIDLA_PLATNE_OD = "2026-10-25";
 export type DlzkaHry = keyof typeof DLZKY_HRY;
 export const ALL_DLZKY: readonly DlzkaHry[] = ["kratka", "stredna", "dlha"];
 export const PREDVOLENA_DLZKA: DlzkaHry = "stredna";
