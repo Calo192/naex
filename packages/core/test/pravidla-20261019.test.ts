@@ -28,7 +28,7 @@ import {
   viewFor,
 } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
-import { instanceFor, makeDef, syntheticData } from "./helpers.ts";
+import { instanceFor, makeDef, syntheticData, naexOdkryte } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const EMPTY: Layout4 = [null, null, null, null];
@@ -171,12 +171,12 @@ describe("ruka: +2 karty po bitke, žiadny limit ruky (Michal 2026-10-19)", () =
 });
 
 describe("Úžerník (Michal 2026-10-20): prah Dlhu 2 + sila, Zberateľ zanikol", () => {
-  it("priazeň Úžerníka zvýši prah Dlhu o silu; súper má prah 2", () => {
+  it("v5: priazeň Úžerníka (Kmotra) prah Dlhu nemení — obaja majú prah 2", () => {
     const s0 = setupGame(data, 42);
     const uzernik = s0.starsi.find((e) => favourStarsieho(data, e) === "UZERNIK")!;
     // Marker na 1 = priazeň hráča 0, sila 2.
     const s: GameState = { ...s0, starsi: s0.starsi.map((e) => (e === uzernik ? { ...e, marker: 1, markerZaciatokKola: 1 } : e)) };
-    expect(prahyHraca(data, s, 0).dlh).toBe(4);
+    expect(prahyHraca(data, s, 0).dlh).toBe(2);
     expect(prahyHraca(data, s, 1).dlh).toBe(2);
   });
 
@@ -426,7 +426,7 @@ describe("Vychovávateľka: Dlh ide súperovi do balíčka, nie na ruku", () => 
       { priznane: [dlh] },
     );
     const ruka1 = s.hraci[1].ruka.length;
-    s = apply(data, s, { type: "naex", uid: ciel.uid }, 0).state;
+    s = naexOdkryte(data, s, ciel.uid, 0).state;
     expect(s.hraci[0].priznane.map((k) => k.uid)).not.toContain(dlh.uid);
     expect(s.hraci[1].doberaci.map((k) => k.uid)).toContain(dlh.uid);
     expect(s.hraci[1].ruka).toHaveLength(ruka1);
@@ -474,7 +474,16 @@ describe("kliatba do línie nepatrí (Michal 2026-10-20)", () => {
 describe("Dlhy sa priznávajú samy, Cirhóza bez dobratia (Michal 2026-10-20)", () => {
   it("dobratý Dlh sa hneď prizná a hráč ťahá ďalšiu kartu, aj v reťazi", () => {
     const [d1, d2, p1] = [inst("dlh"), inst("dlh"), inst("pijan")];
-    let s = vZhromazdeniHrac0(47, { ruka: [], doberaci: [d1, d2, p1], odhadzovaci: [], cigarety: 1, priznane: [] });
+    const z = vZhromazdeniHrac0(47, { ruka: [], doberaci: [d1, d2, p1], odhadzovaci: [], cigarety: 1, priznane: [] });
+    // Fajčí sa len v Pitke (v5).
+    let s: GameState = {
+      ...z,
+      faza: "pitka",
+      zhromazdenieStav: null,
+      pitkyCelkom: 1,
+      pitkaCislo: 1,
+      pitkaStav: { naTahu: 0, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false] },
+    };
     s = apply(data, s, { type: "smoke", pocet: 1 }, 0).state;
     expect(s.hraci[0].ruka.map((k) => k.uid)).toEqual([p1.uid]);
     expect(s.hraci[0].priznane.map((k) => k.uid)).toEqual([d1.uid, d2.uid]);

@@ -250,7 +250,7 @@ describe("Pohoršenie: viac posunov, najviac dve hranice zón (Michal 2026-10-20
     let st = s;
     const id = s.starsi[0]!.elderId;
     for (let i = 0; i < 6; i++) {
-      if (!legalCommands(data, st, 1).some((c) => c.type === "pohorsenie" && c.elderId === id)) break;
+      if (!legalCommands(data, st, 1).some((c) => c.type === "pohorsenie" && c.elderId === id && c.kSebe !== true)) break;
       st = apply(data, st, { type: "pohorsenie", elderId: id }, 1).state;
     }
     return st;

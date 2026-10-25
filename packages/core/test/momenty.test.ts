@@ -8,7 +8,7 @@ import scorecardsJson from "../data/scorecards.json";
 import type { Command, Event, GameState, Moment, PlacedCard, PlayerId, StavMomentov } from "../src/index.ts";
 import { MOMENTY, NALADY, NALADY_MOMENTOV, NOVE_MOMENTY, ZLATO_ZA_PARTIU, apply, buildGameData, legalCommands, loadGameData, momenty, naTahu, obmedzMomenty, rngInt, rngSeed, setupGame, naladaMomentu } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
-import { EMPTY, instanceFor, makeDef } from "./helpers.ts";
+import { EMPTY, instanceFor, makeDef, naexOdkryte } from "./helpers.ts";
 
 const zaklad = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const R: Layout4 = ["Rana", null, null, null];
@@ -48,7 +48,7 @@ function predZvratom(): { s: GameState; c0: PlacedCard } {
 describe("momenty — rozpoznanie", () => {
   it("Zvrat: NA EX, ktoré otočí víťaza výhľadu, je strieborná pečiatka v prospech toho, kto teraz vyhráva", () => {
     const { s, c0 } = predZvratom();
-    const { state, events } = apply(data, s, { type: "naex", uid: c0.card.uid }, 0);
+    const { state, events } = naexOdkryte(data, s, c0.card.uid, 0);
     const m = momenty(data, s, state, events);
     expect(m).toContainEqual(expect.objectContaining({ typ: "zvrat", stupen: "striebro", hrac: 0 }));
   });
@@ -102,7 +102,6 @@ describe("momenty — strop", () => {
 
 describe("momenty — nič neprezradia", () => {
   it("v celej partii je moment rovnaký, nech má ktorýkoľvek hráč v ruke a balíčku čokoľvek", () => {
-    let s = setupGame(zaklad, 47);
     let rng = rngSeed(5);
     let porovnanych = 0;
     const inaRuka = (x: GameState): GameState => ({
@@ -111,19 +110,23 @@ describe("momenty — nič neprezradia", () => {
       // Skrytá Záverečná: iná karta lícom dole.
       strany: x.strany.map((strana) => strana.map((pl) => (pl.zaverecna === true ? { ...pl, card: { ...pl.card, defId: "svokra" } } : pl))) as unknown as GameState["strany"],
     });
-    for (let i = 0; i < 4000 && s.koniec === null; i++) {
-      const p = naTahu(s);
-      if (p === null) break;
-      const cmds = legalCommands(zaklad, s, p);
-      const [j, r] = rngInt(rng, cmds.length);
-      rng = r;
-      const { state: po, events } = apply(zaklad, s, cmds[j] as Command, p);
-      const m = momenty(zaklad, s, po, events);
-      expect(JSON.stringify(momenty(zaklad, inaRuka(s), inaRuka(po), events))).toBe(JSON.stringify(m));
-      porovnanych++;
-      s = po;
+    // Náhodná partia môže skončiť skoro (exekúcia) — preto viac partií.
+    for (const seed of [47, 48, 49]) {
+      let s = setupGame(zaklad, seed);
+      for (let i = 0; i < 4000 && s.koniec === null; i++) {
+        const p = naTahu(s);
+        if (p === null) break;
+        const cmds = legalCommands(zaklad, s, p);
+        const [j, r] = rngInt(rng, cmds.length);
+        rng = r;
+        const { state: po, events } = apply(zaklad, s, cmds[j] as Command, p);
+        const m = momenty(zaklad, s, po, events);
+        expect(JSON.stringify(momenty(zaklad, inaRuka(s), inaRuka(po), events))).toBe(JSON.stringify(m));
+        porovnanych++;
+        s = po;
+      }
     }
-    expect(porovnanych).toBeGreaterThan(100);
+    expect(porovnanych).toBeGreaterThan(200);
   });
 });
 

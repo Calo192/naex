@@ -142,7 +142,8 @@ export class Robot {
         const p = view.pitkaStav;
         if (p?.reakcia === ja) return { type: "bezReakcie" };
         // Krčma: s plným poldeci treba dať NA EX — na vlastného Občana, inak na hocikoho v línii.
-        if (view.ciel?.lokalita?.defId === "krcma" && p !== null && !p.naexPouzity[ja] && view.hraci[ja].poldeciPlne > 0) {
+        // NA EX naraz (v5): skryté NA EX už dané — Krčma je spokojná.
+        if (view.ciel?.lokalita?.defId === "krcma" && p !== null && !p.naexPouzity[ja] && (p.skryteNaex ?? []).length === 0 && view.hraci[ja].poldeciPlne > 0) {
           const ciele = new Set(naexCieleVLinii(DATA, lineState(view), ja));
           const linia = [...view.strany[0], ...view.strany[1]];
           const ciel = linia.find((pl) => pl.playedBy === ja && ciele.has(pl.card.uid)) ?? linia.find((pl) => ciele.has(pl.card.uid));
@@ -170,6 +171,9 @@ export class Robot {
           const elder = view.starsi.find((e) =>
             b.krok === "pohorsenie" ? pohorsenieMozne(view, ja, e) : posunMarker(e, smerK, false) !== null,
           );
+          // v5: Pohoršenie smie aj k sebe — keď k súperovi nejde nič.
+          const kSebe = b.krok === "pohorsenie" && elder === undefined ? view.starsi.find((e) => pohorsenieMozne(view, ja, e, true)) : undefined;
+          if (kSebe !== undefined) return { type: "pohorsenie", elderId: kSebe.elderId, kSebe: true };
           if (elder === undefined) throw new Error(`${b.krok}: žiadny posúvateľný marker`);
           return b.krok === "pohorsenie"
             ? { type: "pohorsenie", elderId: elder.elderId }

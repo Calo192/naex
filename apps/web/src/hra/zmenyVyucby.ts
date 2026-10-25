@@ -11,8 +11,10 @@ function miestaKariet(v: ClientState): Map<number, string> {
   const daj = (karty: readonly CardInstance[], zona: string): void => {
     for (const k of karty) m.set(k.uid, zona);
   };
+  // NA EX naraz (v5): moje skryté NA EX ešte neleží na karte, ale hráč ho vidí.
+  const skryte = new Set((v.pitkaStav?.skryteNaex ?? []).map((x) => x.uid));
   for (const p of [0, 1] as const) {
-    for (const pl of v.strany[p]) m.set(pl.card.uid, `strana${p}|${pl.naexBy ?? ""}`);
+    for (const pl of v.strany[p]) m.set(pl.card.uid, `strana${p}|${pl.naexBy ?? ""}${skryte.has(pl.card.uid) ? "|skryte" : ""}`);
     daj(v.hraci[p].priznane, `priznane${p}`);
     daj(v.hraci[p].dedicstvo, `dedicstvo${p}`);
     daj(v.hraci[p].odhadzovaci, `odhadzovaci${p}`);

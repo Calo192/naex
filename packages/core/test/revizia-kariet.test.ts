@@ -152,8 +152,8 @@ describe("Policajtka, Praudovravec, Puška, Noviny, Lakomec", () => {
     expect(posunMarker(len, 0, true, true)).toBeNull();
   });
 
-  it("Lakomec: barter za 5 / 4 / 3 / 2 cigarety podľa sily priazne", () => {
-    expect([0, 2, 4, 6].map(cenaBarteru)).toEqual([5, 4, 3, 2]);
+  it("v5: barter stojí vždy 5 cigariet (Lakomec je Abstinent, barter nezlacňuje)", () => {
+    expect(cenaBarteru()).toBe(5);
   });
 });
 

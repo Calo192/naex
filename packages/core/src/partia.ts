@@ -46,6 +46,16 @@ export interface PlacedCard {
    * priložiť; efekty mimo línie a Nástup sa odložia na otočenie.
    */
   readonly zaverecna?: true;
+  /**
+   * NA EX naraz (v5, Michal 2026-10-24/25): druhý hráč, ktorého poldeci na karte
+   * leží — obaja skryto vybrali tú istú kartu (zrážka). Pije ho pri bitke tiež.
+   */
+  readonly naexBy2?: PlayerId;
+  /**
+   * Zrážka NA EX: z karty je Výtržník — všetky jej akcie sú aktívne Rany pre
+   * majiteľa (až po spárovaní). Len do konca bitky, potom vytriezvie (Michal 2026-10-25).
+   */
+  readonly vytrznik?: true;
 }
 
 export interface LineState {
@@ -554,11 +564,14 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
   const elems: Elem[] = [];
   const segments: Elem[][] = [];
 
+  // Výtržník NA EX nezdvojuje — jeho akcie sa prepíšu na Rany nižšie.
+  const vytrznici = new Set<number>();
+  for (const strana of line.strany) for (const p of strana) if (p.vytrznik === true) vytrznici.add(p.card.uid);
   const partia0 = line.strany[0].map((p) =>
-    makeElem(data, p.card, p.playedBy, p.playedBy === 1, false, p.naexBy, 0),
+    makeElem(data, p.card, p.playedBy, p.playedBy === 1, false, p.vytrznik === true ? undefined : p.naexBy, 0),
   );
   const partia1 = line.strany[1].map((p) =>
-    makeElem(data, p.card, p.playedBy, p.playedBy === 1, false, p.naexBy, 1),
+    makeElem(data, p.card, p.playedBy, p.playedBy === 1, false, p.vytrznik === true ? undefined : p.naexBy, 1),
   );
 
   // Prevaha (Michal 2026-10-20, rozbor strategia-strany-20261020): akcie hrany
@@ -595,6 +608,23 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
   for (const elem of elems) zrusPosilnenie(elem);
   for (const elem of elems) applyNaex(elem, vedlaSofera.has(elem));
   const ranyPijana = kartoveEfekty(segments);
+  // Výtržník (zrážka NA EX naraz, v5): každá akcia karty je aktívna Rana pre
+  // majiteľa. Spoje susedov sa rátajú s vytlačenými akciami — Výtržník ich nemení.
+  for (const elem of elems) {
+    if (!vytrznici.has(elem.uid)) continue;
+    const rana = (x: Slot): Slot => (x === null ? null : "Rana");
+    const m = elem as { effLeft: readonly Slot[]; effRight: readonly Slot[] };
+    m.effLeft = elem.effLeft.map(rana);
+    m.effRight = elem.effRight.map(rana);
+    for (const side of [0, 1] as const) {
+      const akcie = side === 0 ? elem.effLeft : elem.effRight;
+      for (let k = 0; k < akcie.length; k++) {
+        if (akcie[k] === null) continue;
+        elem.stav[side]![k] = "aktivna";
+        elem.nasobok[side]![k] = 1;
+      }
+    }
+  }
 
   // Nástroj v línii (Michal 2026-10-19): akcie na spoji dostane majiteľ karty,
   // s ktorou Nástroj spoj vytvoril — nie majiteľ Nástroja. Efekt Nástroja platí

@@ -11,6 +11,8 @@ export const NAZOV_PODMIENKY: Record<Podmienka, string> = {
   cigarety: "Zvyšné cigarety",
   cirhoza: "Nepriznaná cirhóza",
   dlh: "Dlhy",
+  abstak: "Absťáky za hru",
+  rezerva: "Rezerva (plné poldeci)",
 };
 
 function b(n: number): string {
@@ -41,6 +43,11 @@ export function popisPodmienky(p: Podmienka, body: number): string {
       return `${b(body)} za každú nepriznanú cirhózu.`;
     case "dlh":
       return `${b(body)} za každý Dlh (aj priznaný).`;
+    // Pravidlá v5: súboj podmienok — vyhrá, kto má menej Absťákov za hru / viac plných poldeci.
+    case "abstak":
+      return "Vyhrá, kto za hru získal menej Absťákov.";
+    case "rezerva":
+      return "Vyhrá, kto má na konci viac plných poldeci (Vínko sa ráta ako plný).";
   }
 }
 

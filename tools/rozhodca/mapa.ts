@@ -10,7 +10,9 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 
-export const STAVY = ["pokryte", "chyba-v-hre", "chyba-v-pravidlach", "nejasne", "netestovatelne"] as const;
+// „na-overenie“: znenie sa zmenilo (napr. nová verzia pravidiel) a rozhodca ho ešte neprešiel —
+// testy starej verzie sú odpojené, nové priradí pri ďalšom prechode.
+export const STAVY = ["pokryte", "chyba-v-hre", "chyba-v-pravidlach", "nejasne", "netestovatelne", "na-overenie"] as const;
 type Stav = (typeof STAVY)[number];
 
 interface Pravidlo {

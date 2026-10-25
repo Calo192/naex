@@ -120,7 +120,7 @@ describe("M5 — patronát a bodovanie", () => {
     expect(prekraciaHranicu(6, 5)).toBe(true);
   });
 
-  it("podmienky za kus bodujú obom hráčom bez ohľadu na marker a stranu (Michal 2026-10-16)", () => {
+  it("v5: súboje podmienok — kto vyhrá viac, dostane 1 + zóny strachu, v ktorých sa ho starší bojí", () => {
     // Karta: vľavo Viera (0) a Povera (2), vpravo Pecka (1).
     const sc: ScorecardDef = {
       id: "sc",
@@ -131,46 +131,73 @@ describe("M5 — patronát a bodovanie", () => {
     };
     const d = buildGameData(data.cards, new Map(), { scorecards: [sc], body: BODY });
     const stav = { ...stavBodovania({ cigarety: [9, 4], dlhy: [0, 2] }), ovladnute: [{ hrac: 1 as const }] };
-    // Cigarety sa rátajú po trojiciach. Hráč 0: 9 → 3 kusy. Hráč 1: 4 → 1 kus + 1 lokalita × 3 − 2 dlhy.
-    for (const marker of [0, 2, 4, 6, 8] as const) {
-      expect(elderScore(d, stav, elderAt(marker)).body).toEqual([3, 1 + 3 - 2]);
-    }
-    const p1 = elderScore(d, stav, elderAt(4)).polozky[1];
-    expect(p1.map((x) => [x.podmienka, x.kusy, x.body])).toEqual([
-      ["cigarety", 1, 1], // 4 cigarety = 1 kus (po trojiciach)
-      ["lokality", 1, 3],
-      ["dlh", 2, -2],
+    // Cigarety 9 : 4 → hráč 0, lokality 0 : 1 → hráč 1, Dlhy 0 : 2 → hráč 0 (menej). Súboje 2 : 1.
+    const body = (marker: MarkerPos): readonly [number, number] => elderScore(d, stav, elderAt(marker)).body;
+    expect(body(4)).toEqual([1, 0]); // stred = 1 b
+    expect(body(2)).toEqual([1, 0]); // priazeň hráča 0 = 1 b
+    expect(body(6)).toEqual([2, 0]); // bojí sa hráča 0 v žltej
+    expect(body(8)).toEqual([4, 0]); // vydesený hráčom 0
+    const e = elderScore(d, stav, elderAt(4));
+    expect(e.vyhry).toEqual([2, 1]);
+    expect(e.polozky[1].map((x) => [x.podmienka, x.kusy, x.body])).toEqual([
+      ["cigarety", 4, 0], // kus po kuse, nie po trojiciach
+      ["lokality", 1, 1],
+      ["dlh", 2, 0],
     ]);
   });
 
-  it("zónové podmienky bodujú za strach všetkých starších, vrátane tohto — príklad s Farárom", () => {
+  it("v5: zónové podmienky rátajú len strach OSTATNÝCH starších; rovnosť súbojov = body obom", () => {
     // Aktívne: Znepokojenie (lava 0) a Strach (lava 2); Vydesenie vpravo neaktívne.
     const sc: ScorecardDef = { id: "sc", nazov: "Test", favour: "VERIACI", lava: ["znepokojenie", null, "strach", null], prava: [null, null, "vydesenie", null] };
     const d = buildGameData(data.cards, new Map(), { scorecards: [sc], body: BODY });
-    const farar = elderAt(4);
     const a = { ...elderAt(6), elderId: "a" }; // bojí sa hráča 0 na úrovni 1
     const b = { ...elderAt(7), elderId: "b" }; // bojí sa hráča 0 na úrovni 2
     const c = { ...elderAt(1), elderId: "c" }; // bojí sa hráča 1 na úrovni 2
-    const stav = (f: ElderState): StavBodovania => ({ ...stavBodovania({ cigarety: [0, 0], dlhy: [0, 0] }), starsi: [f, a, b, c] });
+    const stav = (starsi: ElderState[]): StavBodovania => ({ ...stavBodovania({ cigarety: [0, 0], dlhy: [0, 0] }), starsi });
 
-    // Farár sám v neutrále: hráč 0 má 1 (a) + 2 (b), hráč 1 má 2 (c).
-    expect(elderScore(d, stav(farar), farar).body).toEqual([3, 2]);
-    // Farára hráč 0 vydesí (úroveň 3) — Vydesenie Farár nemá aktívne, ráta sa Strach: 1 + 2 + 2.
+    // Znepokojenie 2 (a, b) : 1 (c) → hráč 0; Strach 1 (b) : 1 (c) → nikto. Súboje 1 : 0.
+    const farar = elderAt(4);
+    expect(elderScore(d, stav([farar, a, b, c]), farar).body).toEqual([1, 0]);
+    // Farára hráč 0 vydesí — jeho vlastný strach sa do súboja neráta, body áno: 1 + 3.
     const vydeseny = elderAt(8);
-    const s = elderScore(d, stav(vydeseny), vydeseny);
-    expect(s.body).toEqual([5, 2]);
+    const s = elderScore(d, stav([vydeseny, a, b, c]), vydeseny);
+    expect(s.body).toEqual([4, 0]);
     expect(s.polozky[0].map((x) => [x.podmienka, x.kusy, x.body])).toEqual([
-      ["znepokojenie", 1, 1],
-      ["strach", 2, 4],
+      ["znepokojenie", 2, 1],
+      ["strach", 1, 0],
     ]);
+    // Bez a: Znepokojenie 1 : 1, Strach 1 : 1 → rovnosť, body obom podľa vzťahu (stred = 1).
+    expect(elderScore(d, stav([farar, b, c]), farar).body).toEqual([1, 1]);
   });
 
-  it("každá aktívna podmienka sa ráta zvlášť, aj keď je rovnaká", () => {
+  it("v5: dve rovnaké aktívne podmienky sú dva súboje; kto väčšinu prehrá, nedostane nič (útecha nie — interview 4)", () => {
     const sc: ScorecardDef = { id: "sc", nazov: "Test", favour: "LAKOMEC", lava: ["cigarety", null, "cigarety", null], prava: [null, "strach", null, null] };
     const d = buildGameData(data.cards, new Map(), { scorecards: [sc], body: BODY });
-    const e = elderAt(7); // bojí sa hráča 0 na úrovni 2
+    const e = elderAt(7); // bojí sa hráča 0 na úrovni 2, ostatní starší nie sú
     const stav = { ...stavBodovania({ cigarety: [3, 6], dlhy: [0, 0] }), starsi: [e] };
-    expect(elderScore(d, stav, e).body).toEqual([1 + 1 + 2, 2 + 2]);
+    const v = elderScore(d, stav, e);
+    expect(v.vyhry).toEqual([0, 2]);
+    // Hráč 1 vyhral oba súboje o cigarety; starší sa ho nebojí (strach má z hráča 0) → 1 b.
+    expect(v.body).toEqual([0, 1]);
+  });
+
+  it("v5: Absťák (menej získaných za hru vyhrá) a Rezerva (plné poldeci, Vínko = plný)", () => {
+    const sc: ScorecardDef = { id: "sc", nazov: "Test", favour: "FAJCIAR", lava: ["abstak", null, "rezerva", null], prava: [null, null, null, null] };
+    const d = buildGameData(data.cards, new Map(), { scorecards: [sc], body: BODY });
+    const zaklad = stavBodovania({ cigarety: [0, 0], dlhy: [0, 0] });
+    const vinko: CardInstance = { uid: 977, defId: "vinko", leftLayout: 0, rightLayout: 0 };
+    const stav = (sVinkom: boolean): StavBodovania => ({
+      ...zaklad,
+      hraci: [
+        { ...zaklad.hraci[0]!, abstakyZiskane: 1, poldeciPlne: 0, dedicstvo: sVinkom ? [vinko] : [] },
+        { ...zaklad.hraci[1]!, abstakyZiskane: 3, poldeciPlne: 1 },
+      ],
+    });
+    // Absťák 1 : 3 → hráč 0; Rezerva 1 (Vínko) : 1 → nikto.
+    expect(elderScore(d, stav(true), elderAt(4)).vyhry).toEqual([1, 0]);
+    expect(elderScore(d, stav(true), elderAt(4)).body).toEqual([1, 0]);
+    // Bez Vínka Rezervu vyhrá hráč 1 → 1 : 1, body obom.
+    expect(elderScore(d, stav(false), elderAt(4)).body).toEqual([1, 1]);
   });
 
   it("podmienky staršieho: aktívna je tá, pri ktorej má karta akciu", () => {
@@ -203,7 +230,7 @@ describe("scorecardy pri príprave hry", () => {
   });
 });
 
-const BODY = { znepokojenie: 1, strach: 2, vydesenie: 3, lokality: 3, starsi: 3, cigarety: 1, cirhoza: -2, dlh: -1 };
+const BODY = { znepokojenie: 1, strach: 2, vydesenie: 3, lokality: 3, starsi: 3, cigarety: 1, cirhoza: -2, dlh: -1, abstak: -1, rezerva: 1 };
 
 function stavBodovania(o: { cigarety: [number, number]; dlhy: [number, number] }): StavBodovania {
   const hrac = (p: 0 | 1) => ({
@@ -212,6 +239,8 @@ function stavBodovania(o: { cigarety: [number, number]; dlhy: [number, number] }
     doberaci: [],
     odhadzovaci: [],
     priznane: [],
+    poldeciPlne: 0,
+    dedicstvo: [],
   });
   return { ovladnute: [], starsi: [], hraci: [hrac(0), hrac(1)] };
 }

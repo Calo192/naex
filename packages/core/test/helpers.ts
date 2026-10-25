@@ -4,13 +4,16 @@ import type {
   Action,
   CardDef,
   CardInstance,
+  Event,
   GameData,
+  GameState,
+  PlayerId,
   SideDef,
   Slot,
   Tag,
   Trigger,
 } from "../src/index.ts";
-import { buildGameData, sideLayouts } from "../src/index.ts";
+import { apply, buildGameData, sideLayouts } from "../src/index.ts";
 
 export type Layout4 = readonly [Slot, Slot, Slot, Slot];
 
@@ -86,3 +89,27 @@ export function makeCard(
 }
 
 export const EMPTY: Layout4 = [null, null, null, null];
+
+/**
+ * NA EX naraz (v5, Michal 2026-10-24/25): NA EX sa vyberá skryto a odkryje
+ * sa, až keď obaja skončia svoju časť Pitky. Test súpera vopred „skončí“
+ * a hráč hneď po NA EX skončí tiež — vráti stav po odkrytí (ak súper smie
+ * odpovedať, Pitka sa ešte nevyhodnotila).
+ */
+export function naexOdkryte(
+  data: GameData,
+  s: GameState,
+  uid: number,
+  p: PlayerId,
+): { state: GameState; events: Event[] } {
+  const pitka = s.pitkaStav;
+  if (pitka === null) throw new Error("naexOdkryte: nie je Pitka");
+  const hotovy: [boolean, boolean] = p === 0 ? [false, true] : [true, false];
+  const pred: GameState = { ...s, pitkaStav: { ...pitka, hotovy, naTahu: p } };
+  const a = apply(data, pred, { type: "naex", uid }, p);
+  // Keď hráč nemá v Pitke nič iné, skončí ju za neho hra sama (dohrajNevyhnutne).
+  const caka = a.state.faza === "pitka" && a.state.pitkaStav?.hotovy[p] === false && a.state.pitkaStav.naTahu === p;
+  if (!caka) return a;
+  const b = apply(data, a.state, { type: "skipNaex" }, p);
+  return { state: b.state, events: [...a.events, ...b.events] };
+}

@@ -53,20 +53,21 @@ describe("priazeň: sila 1 / 2 / 3 a dvojnásobný účinok", () => {
 });
 
 describe("cigarety: Cigareta ich dáva, fajčenie dáva karty", () => {
-  it("v Zhromaždení smie hráč fajčiť: karta hneď, cigareta preč, ťah mu neskončí", () => {
+  it("v Pitke smie hráč fajčiť: karta hneď, cigareta preč, ťah mu neskončí (v5: v Zhromaždení nie)", () => {
     const s0 = setupGame(data, 4);
     const s: GameState = {
       ...s0,
-      faza: "zhromazdenie",
+      faza: "pitka",
+      pitkyCelkom: 1,
+      pitkaCislo: 1,
       hraci: [{ ...s0.hraci[0], cigarety: 2 }, s0.hraci[1]],
-      zhromazdenieStav: { naTahu: 0, zostavaLimit: [3, 3], pasoval: [false, false], navyse: [0, 0] },
+      pitkaStav: { naTahu: 0, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false] },
     } as GameState;
     expect(legalCommands(data, s, 0)).toContainEqual({ type: "smoke", pocet: 1 });
     const po = apply(data, s, { type: "smoke", pocet: 1 }, 0).state;
     expect(po.hraci[0].cigarety).toBe(1);
     expect(po.hraci[0].ruka).toHaveLength(s.hraci[0].ruka.length + 1);
     expect(naTahu(po)).toBe(0);
-    expect(po.zhromazdenieStav?.zostavaLimit[0]).toBe(3);
   });
 
   it("karty dobraté fajčením v Pitke sú súčasť ruky — viewFor ich súperovi nepošle", () => {

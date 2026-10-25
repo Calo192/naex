@@ -12,6 +12,7 @@ import {
   limitZhromazdenia,
   loadGameData,
   prahCirhozy,
+  prahDlhu,
   setupGame,
   prahExekutora,
   velkostBalicka,
@@ -71,11 +72,11 @@ describe("M3 — odvodené hodnoty", () => {
     expect(velkostBalicka(player)).toBe(4);
   });
 
-  it("prahy rastú s priazňou, hodnota Viery je 1 (Veriaci dáva Vieru navyše)", () => {
-    expect(prahCirhozy(0)).toBe(3);
-    expect(prahCirhozy(2)).toBe(5);
-    expect(prahExekutora(0)).toBe(10);
-    expect(prahExekutora(2)).toBe(14);
+  it("v5: prahy priazeň nezdvíha, súperov Exekútor prah Exekúcie zníži; hodnota Viery je 1", () => {
+    expect(prahCirhozy()).toBe(3);
+    expect(prahDlhu()).toBe(2);
+    expect(prahExekutora()).toBe(10);
+    expect(prahExekutora(2)).toBe(8);
     expect(hodnotaViery()).toBe(1);
   });
 });

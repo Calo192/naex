@@ -18,8 +18,7 @@ import {
   mozeEsteNaex,
   poskodenieBitky,
   setupGame,
-  viewFor,
-} from "../src/index.ts";
+  viewFor, sNaexNaKartach } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const obcania = [...data.cards.values()].filter((d) => d.tags.includes("Občan") && d.id !== "liberal").map((d) => d.id);
@@ -73,13 +72,13 @@ describe("hrozba na stole", () => {
         // Motor: každé povolené NA EX naozaj zahrané.
         const najlepsie = legalCommands(data, na, p)
           .flatMap((c) => (c.type === "naex" ? [c.uid] : []))
-          .map((uid) => hodnota(vysledok(apply(data, na, { type: "naex", uid }, p).state), p));
+          .map((uid) => hodnota(vysledok(sNaexNaKartach(apply(data, na, { type: "naex", uid }, p).state)), p));
         const best = Math.max(teraz, ...najlepsie);
         const h = hrozbaNaex(data, na, priebeh(na), p, [0, 0]);
         if (best > teraz) {
           expect(h).not.toBeNull();
           expect(hodnota(h!.vysledok, p)).toBe(best);
-          expect(hodnota(vysledok(apply(data, na, { type: "naex", uid: h!.uid }, p).state), p)).toBe(best);
+          expect(hodnota(vysledok(sNaexNaKartach(apply(data, na, { type: "naex", uid: h!.uid }, p).state)), p)).toBe(best);
           nasla++;
         } else {
           expect(h).toBeNull();

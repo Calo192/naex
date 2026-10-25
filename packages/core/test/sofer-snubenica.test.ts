@@ -54,7 +54,7 @@ describe("Šofér", () => {
   });
 });
 
-/** Pitka po NA EX hráča 0 — hráč 1 smie odpovedať jednou kartou z ruky. */
+/** Pitka po odkrytom NA EX hráča 0 — hráč 1 smie odpovedať jednou kartou z ruky. */
 function poNaex(strany: GameState["strany"], rukaReagujuceho: CardInstance[]): GameState {
   const s = setupGame(data, 5);
   return {
@@ -67,7 +67,8 @@ function poNaex(strany: GameState["strany"], rukaReagujuceho: CardInstance[]): G
       { ...s.hraci[0], poldeciPlne: 1, poldeciVypite: 0, nerestiTotoKolo: 0 },
       { ...s.hraci[1], ruka: rukaReagujuceho },
     ],
-    pitkaStav: { naTahu: 1, hotovy: [false, false], naexPouzity: [true, false], fajcenie: [0, 0], reakcia: 1, postarka: [false, false], starosta: [false, false] },
+    // NA EX naraz (v5): odpovedá sa po odkrytí, keď obaja skončili; po hráčovi 1 ešte odpovedá hráč 0.
+    pitkaStav: { naTahu: 1, hotovy: [true, true], naexPouzity: [true, false], fajcenie: [0, 0], reakcia: 1, postarka: [false, false], starosta: [false, false], frontaReakcii: [0] },
   } as GameState;
 }
 

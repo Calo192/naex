@@ -13,9 +13,21 @@ import { FARBY_STUPNICE } from "@naex/tvorba";
 import { IkonaPodmienky } from "../karta/IkonaPodmienky.tsx";
 import { NAZOV_PODMIENKY } from "../karta/podmienky.ts";
 import { KRATKO_PODMIENKA } from "./BodovyBar.tsx";
+import { ZA_CO, kohoBoduje, preco, subojeStarsieho } from "./bodyPodmienok.tsx";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE, znamienko } from "./Scorecard.tsx";
 
 const NAZOV_ZONY = ["neutrál", "žltá", "oranžová", "červená"] as const;
+
+/** Jeden smer posunu markera v kroku (Pohoršenie v5: k súperovi alebo k sebe). */
+export interface VolbaPosunu {
+  /** Ku komu marker pôjde: „ja“ = k sebe, „su“ = k súperovi. */
+  readonly smer: "ja" | "su";
+  readonly nazov: string;
+  /** Celý náhľad posunu do hlavičky línie. */
+  readonly akcia: string;
+  readonly ciel: MarkerPos;
+  readonly klik: () => void;
+}
 
 /** Jeden starší v línii — dáta pripraví HernaPlocha. */
 export interface StarsiVLinii {
@@ -26,6 +38,8 @@ export interface StarsiVLinii {
   readonly body: BodyStarsieho | undefined;
   /** Klik v kroku (Pohoršenie, prebytok, patronát) a čo urobí. */
   readonly klik?: { readonly akcia: string; readonly klik: () => void } | undefined;
+  /** Pohoršenie (v5): povolené smery posunu — namiesto kliku na celý scorecard. */
+  readonly volby?: readonly VolbaPosunu[] | undefined;
   /** Kam by sa marker posunul (duch markera pri prejdení myšou). */
   readonly ciel?: MarkerPos | null | undefined;
   /** Prečo sa v kroku nedá kliknúť (zamknutý starší). */
@@ -83,8 +97,9 @@ export function LiniaStarsich({
 }: LiniaStarsichProps) {
   const su: PlayerId = ja === 0 ? 1 : 0;
   // Náhľad posunu v hlavičke — celý text, dlaždica sa neoreže (UI U3).
-  const [nahlad, setNahlad] = useState<string | null>(null);
-  const nahladovany = starsi.find((s) => s.elder.elderId === nahlad);
+  const [nahlad, setNahlad] = useState<{ readonly elderId: string; readonly smer: "ja" | "su" | null } | null>(null);
+  const nahladovany = starsi.find((s) => s.elder.elderId === nahlad?.elderId);
+  const akciaNahladu = nahladovany?.volby?.find((v) => v.smer === nahlad?.smer)?.akcia ?? nahladovany?.klik?.akcia;
   const priazne = (p: PlayerId): string =>
     starsi
       .filter((s) => priazenHraca(s.elder) === p)
@@ -95,14 +110,18 @@ export function LiniaStarsich({
   const stred =
     krok !== null ? (
       <span className="ls-nahlad" aria-live="polite">
-        {nahladovany?.klik !== undefined ? (
+        {nahladovany !== undefined && akciaNahladu !== undefined ? (
           <>
             <b>{nahladovany.meno}</b>
             {" — "}
-            {nahladovany.klik.akcia}
+            {akciaNahladu}
           </>
         ) : (
-          <span className="ls-tlmene">Prejdi myšou alebo Tabom na staršieho — tu uvidíš, čo posun urobí.</span>
+          <span className="ls-tlmene">
+            {starsi.some((s) => s.volby !== undefined)
+              ? "Pri staršom vyber smer: k súperovi, alebo k sebe — priazeň sa zmení hneď a platí už v tejto bitke."
+              : "Prejdi myšou alebo Tabom na staršieho — tu uvidíš, čo posun urobí."}
+          </span>
         )}
       </span>
     ) : (
@@ -138,8 +157,8 @@ export function LiniaStarsich({
             krok={krok}
             hraniceZon={hraniceZon}
             zmeneny={zmenene.has(s.elder.elderId)}
-            nahlad={nahlad === s.elder.elderId}
-            onNahlad={(n) => setNahlad(n ? s.elder.elderId : (x) => (x === s.elder.elderId ? null : x))}
+            nahlad={nahlad?.elderId === s.elder.elderId ? nahlad.smer : undefined}
+            onNahlad={(n, smer = null) => setNahlad(n ? { elderId: s.elder.elderId, smer } : (x) => (x?.elderId === s.elder.elderId ? null : x))}
             kto={kto}
             zvyraznena={zvyraznena}
             lupa={krok === null ? lupa?.(s) : undefined}
@@ -175,13 +194,14 @@ function ScorecardVLinii({
   readonly krok: string | null;
   readonly hraniceZon: boolean;
   readonly zmeneny: boolean;
-  readonly nahlad: boolean;
-  readonly onNahlad: (n: boolean) => void;
+  /** Náhľad na tomto staršom: null = celý scorecard, smer = tlačidlo smeru, undefined = žiadny. */
+  readonly nahlad: "ja" | "su" | null | undefined;
+  readonly onNahlad: (n: boolean, smer?: "ja" | "su" | null) => void;
   readonly kto: (p: PlayerId) => string;
   readonly zvyraznena: Podmienka | null;
   readonly lupa: HTMLAttributes<HTMLElement> | undefined;
 }) {
-  const { elder, body, klik } = s;
+  const { elder, body, klik, volby } = s;
   const su: PlayerId = ja === 0 ? 1 : 0;
   const sc = scorecardStarsieho(data, elder);
   const priazen = priazenHraca(elder);
@@ -191,28 +211,39 @@ function ScorecardVLinii({
   const podmienky = podmienkyStarsieho(data, elder);
   // Zrkadlenie (Michal 2026-10-22, #55): každý vidí svoju polovicu stupnice vľavo.
   const poloha = (m: number): number => (ja === 0 ? m : 8 - m);
-  const bodyPodmienky = (strana: "lava" | "prava", index: number) =>
-    body?.polozky[pohlad].find((x) => x.strana === strana && x.index === index);
+  // Súboj podmienky (v5): kto ju pri tomto staršom vyhráva — odznak z pohľadu zvýrazneného hráča.
+  const suboje = body === undefined ? [] : subojeStarsieho(body);
+  const subojNa = (strana: "lava" | "prava", index: number) => suboje.find((x) => x.strana === strana && x.index === index);
+  const ina: PlayerId = pohlad === 0 ? 1 : 0;
 
   const strana = (str: "lava" | "prava"): ReactNode =>
     podmienky
       .filter((p) => p.strana === str)
       .map((p) => {
-        const b = bodyPodmienky(str, p.index);
+        const x = subojNa(str, p.index);
+        const vysledok = x === undefined ? "" : x.vitaz === null ? "rovnosť, nevyhrá nikto" : `vyhráva ${kto(x.vitaz)}`;
         return (
           <span
             key={p.index}
             className={`ls-podmienka${p.aktivna ? " aktivna" : ""}${p.aktivna && p.podmienka === zvyraznena ? " zvyraznena" : ""}`}
-            title={`${NAZOV_PODMIENKY[p.podmienka]} — ${p.aktivna ? `aktívna, boduje obom${b !== undefined ? ` (${kto(pohlad)} ${znamienko(b.body)})` : ""}` : "neaktívna, karta staršieho tu nemá akciu"}`}
+            title={`${NAZOV_PODMIENKY[p.podmienka]} — ${p.aktivna ? `súboj${x !== undefined ? `: ${kto(ja)} ${x.hodnoty[ja]} · ${kto(su)} ${x.hodnoty[su]} → ${vysledok}` : ""}. ${ZA_CO[p.podmienka]}` : "neaktívna, karta staršieho tu nemá akciu"}`}
           >
             <IkonaPodmienky podmienka={p.podmienka} ikony={ikony} />
-            {p.aktivna && b !== undefined && b.body !== 0 && <span className={`ls-odznak ${triedaBodov(b.body)}`}>{znamienko(b.body)}</span>}
+            {p.aktivna && x !== undefined && (
+              <span className={`ls-odznak ${x.vitaz === pohlad ? "plus" : x.vitaz === ina ? "minus" : "nula"}`}>
+                {x.vitaz === pohlad ? "✓" : x.vitaz === ina ? "✗" : "="}
+              </span>
+            )}
           </span>
         );
       });
+  // Kto by za tohto staršieho teraz dostal body (v5 davka.md: ukazovať pri každom staršom).
+  const boduje = body === undefined ? null : kohoBoduje(body);
 
-  const krokTrieda = krok === null ? "" : s.vybrany === true ? " vybrany" : klik !== undefined ? ` klik${nahlad ? " nahl" : ""}` : " nedost";
-  const ciel = nahlad || s.vybrany === true ? s.ciel : null;
+  const krokTrieda =
+    krok === null ? "" : s.vybrany === true ? " vybrany" : klik !== undefined || volby !== undefined ? ` klik${nahlad !== undefined ? " nahl" : ""}${volby !== undefined ? " smery" : ""}` : " nedost";
+  const ciel =
+    volby !== undefined ? (volby.find((v) => v.smer === nahlad)?.ciel ?? null) : nahlad !== undefined || s.vybrany === true ? s.ciel : null;
   const vydeseny = uroven === 3;
   const zvyrazneny = zvyraznena !== null && podmienky.some((p) => p.aktivna && p.podmienka === zvyraznena);
   const ucinok = ucinokPriazne(data, elder);
@@ -243,6 +274,18 @@ function ScorecardVLinii({
     >
       <div className="ls-sc-hlava">
         <b className="ls-meno">{s.meno}</b>
+        {body !== undefined && boduje !== null && (
+          <span
+            className={`ls-boduje ${boduje === "obaja" ? "obaja" : boduje === ja ? "moje" : "superove"}`}
+            title={
+              boduje === "obaja"
+                ? `Súboje ${body.vyhry[ja]} : ${body.vyhry[su]} — rovnosť, body teraz dostanú obaja: ty ${znamienko(body.body[ja])} (${preco(elder, ja)}), súper ${znamienko(body.body[su])} (${preco(elder, su)}).`
+                : `Súboje ${body.vyhry[ja]} : ${body.vyhry[su]} — body za staršieho by teraz získal ${boduje === ja ? "ty" : "súper"}: ${znamienko(body.body[boduje])} (${preco(elder, boduje)}).`
+            }
+          >
+            ★ {boduje === "obaja" ? "obaja" : `${boduje === ja ? "ty" : "súper"} ${znamienko(body.body[boduje])}`}
+          </span>
+        )}
         <span className="ls-poradie">{poradie}</span>
       </div>
       <div className="ls-telo">
@@ -266,11 +309,40 @@ function ScorecardVLinii({
         <span className="ls-ucinok-kratko" title={ucinok.cely}>
           {ucinok.kratko}
         </span>
-        {s.dovod !== undefined ? (
+        {volby !== undefined ? (
+          <span className="ls-smery">
+            {(["ja", "su"] as const).map((smer) => {
+              const v = volby.find((x) => x.smer === smer);
+              const nazov = smer === "ja" ? "◀ k sebe" : "k súperovi ▶";
+              return v === undefined ? (
+                <button key={smer} type="button" className={`ls-smer ${smer}`} disabled title={smer === "ja" ? "K sebe sa tento marker posunúť nedá." : "K súperovi sa tento marker posunúť nedá."}>
+                  {nazov}
+                </button>
+              ) : (
+                <button
+                  key={smer}
+                  type="button"
+                  className={`ls-smer ${smer}${nahlad === smer ? " nahl" : ""}`}
+                  aria-label={`${s.meno}: ${v.akcia}`}
+                  onClick={v.klik}
+                  onMouseEnter={() => onNahlad(true, smer)}
+                  onMouseLeave={() => onNahlad(false)}
+                  onFocus={() => onNahlad(true, smer)}
+                  onBlur={() => onNahlad(false)}
+                >
+                  {nazov}
+                </button>
+              );
+            })}
+          </span>
+        ) : s.dovod !== undefined ? (
           <span className="ls-dovod">{s.dovod}</span>
         ) : (
-          <span className="ls-body">
-            <span className={`moje ${triedaBodov(body?.body[ja] ?? 0)}`}>★ ty {znamienko(body?.body[ja] ?? 0)}</span>
+          <span className="ls-body" title="Súboje = vyhraté aktívne podmienky; body za staršieho získa, kto ich vyhrá viac (rovnosť = obaja).">
+            <span className={`moje ${triedaBodov(body?.body[ja] ?? 0)}`}>ty {znamienko(body?.body[ja] ?? 0)}</span>
+            <span className="ls-suboje">
+              súboje {body?.vyhry[ja] ?? 0}:{body?.vyhry[su] ?? 0}
+            </span>
             <span className={`superove ${triedaBodov(body?.body[su] ?? 0)}`}>súper {znamienko(body?.body[su] ?? 0)}</span>
           </span>
         )}
@@ -368,23 +440,27 @@ export function LupaStarsieho({
   const uroven = STUPNICA_ZONY[elder.marker];
   const poloha = (m: number): number => (ja === 0 ? m : 8 - m);
   const podmienky = podmienkyStarsieho(data, elder);
-  const bodyPodmienky = (p: (typeof podmienky)[number], h: PlayerId): number =>
-    body?.polozky[h].find((x) => x.strana === p.strana && x.index === p.index)?.body ?? 0;
+  const suboje = body === undefined ? [] : subojeStarsieho(body);
   const strana = (str: "lava" | "prava"): ReactNode =>
     podmienky
       .filter((p) => p.strana === str)
       .sort((a, b) => a.index - b.index)
-      .map((p) => (
-        <li
-          key={`${p.strana}${p.index}`}
-          className={p.aktivna ? "aktivna" : ""}
-          title={`${NAZOV_PODMIENKY[p.podmienka]} — ${p.aktivna ? `ty ${znamienko(bodyPodmienky(p, ja))} · ${mena[su]} ${znamienko(bodyPodmienky(p, su))}` : "neaktívna, karta na ukazovateli tu nemá akciu"}`}
-        >
-          <IkonaPodmienky podmienka={p.podmienka} ikony={ikony} />
-          <span className="lst-nazov">{KRATKO_PODMIENKA[p.podmienka]}</span>
-          <span className="lst-body">{p.aktivna ? `${znamienko(bodyPodmienky(p, ja))} / ${znamienko(bodyPodmienky(p, su))}` : "—"}</span>
-        </li>
-      ));
+      .map((p) => {
+        const x = suboje.find((y) => y.strana === p.strana && y.index === p.index);
+        const hodnota = (h: PlayerId): string => (x === undefined ? "0" : `${x.vitaz === h ? "✓" : ""}${x.hodnoty[h]}`);
+        return (
+          <li
+            key={`${p.strana}${p.index}`}
+            className={`${p.aktivna ? "aktivna" : ""}${x?.vitaz === ja ? " vyhravam" : x?.vitaz === su ? " prehravam" : ""}`}
+            title={`${NAZOV_PODMIENKY[p.podmienka]} — ${p.aktivna ? `súboj ty ${x?.hodnoty[ja] ?? 0} · ${mena[su]} ${x?.hodnoty[su] ?? 0}. ${ZA_CO[p.podmienka]}` : "neaktívna, karta na ukazovateli tu nemá akciu"}`}
+          >
+            <IkonaPodmienky podmienka={p.podmienka} ikony={ikony} />
+            <span className="lst-nazov">{KRATKO_PODMIENKA[p.podmienka]}</span>
+            <span className="lst-body">{p.aktivna ? `${hodnota(ja)} : ${hodnota(su)}` : "—"}</span>
+          </li>
+        );
+      });
+  const boduje = body === undefined ? null : kohoBoduje(body);
   return (
     <div className="lupa-starsieho" style={{ width: sirka }}>
       <div className="lst-vrch">
@@ -404,13 +480,18 @@ export function LupaStarsieho({
           </p>
         </div>
       </div>
-      <div className="lst-podmienky" aria-label={`Podmienky scorecardu — body ty / ${mena[su]}`}>
+      <div className="lst-podmienky" aria-label={`Súboje podmienok — ty : ${mena[su]}`}>
         <ul>{strana("lava")}</ul>
         <ul>{strana("prava")}</ul>
       </div>
       <p className="lst-spolu">
-        ★ tento starší: ty {znamienko(body?.body[ja] ?? 0)} · súper {znamienko(body?.body[su] ?? 0)}
-        <span className="lst-tlmene"> · podmienky ty / súper</span>
+        ★ súboje ty {body?.vyhry[ja] ?? 0} : {body?.vyhry[su] ?? 0} {mena[su]} → body{" "}
+        {boduje === null
+          ? "nikto"
+          : boduje === "obaja"
+            ? `obaja: ty ${znamienko(body?.body[ja] ?? 0)}, ${mena[su]} ${znamienko(body?.body[su] ?? 0)}`
+            : `${boduje === ja ? "ty" : mena[su]} ${znamienko(body?.body[boduje] ?? 0)} (${preco(elder, boduje)})`}
+        <span className="lst-tlmene"> · kto vyhrá viac súbojov, dostane 1 + zóny strachu (s priazňou 1)</span>
       </p>
     </div>
   );

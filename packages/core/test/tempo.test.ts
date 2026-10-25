@@ -7,7 +7,7 @@ import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, GameState, PlacedCard, PlayerId } from "../src/index.ts";
 import { KONSTANTY, apply, buildGameData, legalCommands, loadGameData, rozlozRod, setupGame } from "../src/index.ts";
-import { EMPTY, instanceFor, makeDef } from "./helpers.ts";
+import { EMPTY, instanceFor, makeDef, naexOdkryte } from "./helpers.ts";
 
 const zaklad = loadGameData(cardsJson, eldersJson, scorecardsJson);
 // Dva Dlhy: jeden spáruje sused (aktívny), druhý ostane voľný — NA EX smie od
@@ -96,11 +96,10 @@ describe("prah Dlhu a Cirhózy", () => {
     const pri: PlacedCard = { card: instanceFor(data, "sused", EMPTY, [null, "Viera", null, null]), playedBy: 0 as PlayerId };
     const s = vPitke([[], [pri, lezi]]);
     // NA EX zruší spárovaný Dlh a zdvojí voľný → 2 akcie Dlh.
-    const naex = apply(data, s, { type: "naex", uid: karta.uid }, 0).state;
-    // Súper smie na NA EX odpovedať kartou — tu nechce.
-    const bezReakcie = apply(data, naex, { type: "bezReakcie" }, 1).state;
-    const po = apply(data, bezReakcie, { type: "skipNaex" }, 0).state;
-    const { state, events } = apply(data, po, { type: "skipNaex" }, 1);
+    // NA EX naraz (v5): obaja skončia Pitku, NA EX sa odkryje; súper smie
+    // odpovedať kartou — tu nechce, a Pitka sa vyhodnotí.
+    const naex = naexOdkryte(data, s, karta.uid, 0).state;
+    const { state, events } = apply(data, naex, { type: "bezReakcie" }, 1);
     // Verejný dlh (2026-10-21): nový Dlh ide rovno medzi priznané (bitka po Pitke
     // hneď jeden priznaný spáli, preto z logu).
     const dlhy = events.filter((e) => e.type === "log" && e.text.startsWith("Hráč 1 získava Dlh — hneď sa priznáva")).length;

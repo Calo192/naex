@@ -152,13 +152,13 @@ describe("§1 Podmienky konca", () => {
     expect(st.hraci[0].priznane.filter((k) => k.defId === "dlh")).toHaveLength(9);
   });
 
-  it("§1: balíček (doberací + odhadzovací + ruka) pod 5 kariet na konci kola znamená prehru; presne 5 nie", () => {
+  it("§1 (v5 bod 4): balíček pod 5 kariet na konci kola už neprehráva — ani 1 karta", () => {
     const styri = predKoncomBitky(44, (s) => sHracom(s, 1, { ruka: kusy(4, "pijan"), doberaci: [], odhadzovaci: [] }));
     const po4 = apply(data, styri, { type: "skipPohreb" }, 0).state;
-    expect(po4.koniec?.vitaz).toBe(0);
-    const pat = predKoncomBitky(44, (s) => sHracom(s, 1, { ruka: kusy(3, "pijan"), doberaci: kusy(1, "pijan"), odhadzovaci: kusy(1, "pijan"), priznane: kusy(3, "dlh") }));
-    const po5 = apply(data, pat, { type: "skipPohreb" }, 0).state;
-    expect(po5.koniec).toBeNull();
+    expect(po4.koniec).toBeNull();
+    expect(po4.faza).toBe("volbaCiela");
+    const jedna = predKoncomBitky(44, (s) => sHracom(s, 1, { ruka: kusy(1, "pijan"), doberaci: [], odhadzovaci: [] }));
+    expect(apply(data, jedna, { type: "skipPohreb" }, 0).state.koniec).toBeNull();
   });
 
   it("§1: ohlásené vydesenie — kto do konca nasledujúceho kola udrží polovicu (4 z 8) vydesených, vyhrá; kto ich stratí, nevyhrá", () => {
@@ -269,11 +269,11 @@ describe("§11 Pohreb a §9.7 Návrat kariet", () => {
 // --- §14 Bodovanie ------------------------------------------------------------------------------
 
 describe("§14 Bodovanie na konci hry", () => {
-  it("§14: body za podmienky — znepokojenie 1, strach 2, vydesenie 3, lokalita 2, starší 2, cigarety 1, Cirhóza −2, Dlh −1", () => {
-    expect(data.bodyPodmienok).toEqual({ znepokojenie: 1, strach: 2, vydesenie: 3, lokality: 2, starsi: 2, cigarety: 1, cirhoza: -2, dlh: -1 });
+  it("§14 (v5): podmienky sú súboje — viac vyhráva pri všetkých okrem Cirhózy, Dlhu a Absťáku", () => {
+    expect(data.bodyPodmienok).toEqual({ znepokojenie: 1, strach: 1, vydesenie: 1, lokality: 1, starsi: 1, cigarety: 1, rezerva: 1, cirhoza: -1, dlh: -1, abstak: -1 });
   });
 
-  it("§14/§11: Dlh uberá aj priznaný, Cirhóza len nepriznaná (ruka aj oba balíčky), cigarety po trojiciach", () => {
+  it("§14/§11 (v5): v súboji Dlh ráta aj priznaný, Cirhóza len nepriznanú (ruka aj oba balíčky), cigarety kus po kuse", () => {
     const R3: Layout4 = ["Rana", "Rana", "Rana", null];
     const def = makeDef("r_starsi", R3, EMPTY, { tags: ["Starešina"] });
     const sada = buildGameData(new Map([[def.id, def]]), new Map(), {
@@ -281,7 +281,7 @@ describe("§14 Bodovanie na konci hry", () => {
       body: data.bodyPodmienok,
     });
     const elder = freshElder("r_starsi", instanceFor(sada, "r_starsi", R3, EMPTY), "r_sc");
-    const nic = { cigarety: 2, ruka: [], doberaci: [], odhadzovaci: [], priznane: [] };
+    const nic = { cigarety: 2, ruka: [], doberaci: [], odhadzovaci: [], priznane: [], poldeciPlne: 0, dedicstvo: [] };
     const stav: StavBodovania = {
       ovladnute: [],
       starsi: [elder],
@@ -292,12 +292,18 @@ describe("§14 Bodovanie na konci hry", () => {
           doberaci: [inst("cirhoza")],
           odhadzovaci: [inst("dlh")],
           priznane: [inst("dlh"), inst("cirhoza")],
+          poldeciPlne: 0,
+          dedicstvo: [],
         },
         nic,
       ],
     };
-    // Hráč 0: Dlh 2 × −1, Cirhóza 2 × −2 (priznaná sa neráta), cigarety ⌊8/3⌋ = 2 × 1 → −4. Hráč 1: 2 cigarety = 0 kusov.
-    expect(elderScore(sada, stav, elder).body).toEqual([-4, 0]);
+    // Hráč 0: Dlhy 2, Cirhózy 2 (priznaná sa neráta), cigarety 8; hráč 1: 0, 0, 2.
+    // Súboje: Dlh a Cirhóza hráč 1 (menej), cigarety hráč 0 → 1 : 2, body len hráč 1 (stred = 1).
+    const v = elderScore(sada, stav, elder);
+    expect(v.polozky[0].map((x) => [x.podmienka, x.kusy])).toEqual([["dlh", 2], ["cirhoza", 2], ["cigarety", 8]]);
+    expect(v.vyhry).toEqual([1, 2]);
+    expect(v.body).toEqual([0, 1]);
   });
 });
 

@@ -23,6 +23,7 @@ import {
   poskodenieBitky,
   setupGame,
   stavPoPatronate,
+  sNaexNaKartach,
   viewFor,
 } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
@@ -180,7 +181,8 @@ describe("náhľad NA EX: cigarety, Pohoršenia a mäkké sedia so zúčtovaním
     for (const uid of ciele(s)) {
       const pred = viewFor(data, s, p);
       const [d0] = dopadyNahladu(data, pred, poNaex(pred, p, uid), 0);
-      const t = naex(s, p, uid);
+      // NA EX naraz (v5): skryté NA EX sa do línie dostane až pri odkrytí.
+      const t = sNaexNaKartach(naex(s, p, uid));
       // Bitka ráta poškodenie poskodenieBitky (vyhodnotPoskodenie).
       const makke = (x: GameState): number => poskodenieBitky(data, x, evaluateLine(data, lineState(x)).sums, [0, 0]).makke[0];
       expect(d0.makke).toBe(makke(t) - makke(s));

@@ -16,6 +16,7 @@ import type {
   PlayerId,
   RozpisPoskodenia,
   StavZavislosti,
+  StavkaBitky as StavkaBitkyCisla,
   ZdrojeAkcii,
 } from "@naex/core";
 import { KONSTANTY, battleOutcome, textNeresti as neresti, jeCielLokalita, limitBuduceKolo, limitZhromazdenia, pocet, tvar } from "@naex/core";
@@ -439,6 +440,8 @@ function Rola({ utoci, tip, frajerina }: { readonly utoci: boolean; readonly tip
 
 export interface HracDoskaProps {
   readonly view: ClientState;
+  /** Dáta sady — priazne do výhľadu limitu (Na zdravie „do dna“, v5). */
+  readonly data: GameData;
   readonly p: PlayerId;
   readonly info: HracInfo | null;
   readonly prahy: { readonly cirhoza: number; readonly dlh: number; readonly exekutor: number; readonly priznaneDlhy: number };
@@ -488,6 +491,7 @@ function porovnanieBodov(moje: number, jeho: number, menoJeho: string): string {
  */
 export function HracDoska({
   view,
+  data,
   p,
   info,
   prahy,
@@ -509,10 +513,14 @@ export function HracDoska({
   // Stavbu šenku hrajú obaja naraz — „na ťahu“ je každý, kto ešte nevybral.
   const naTahu =
     view.koniec === null && (view.faza === "draft" && view.draftStav?.krok === "stavba" ? !view.draftStav.vybral[p] : view.naTahu === p);
-  const naexNaStole = view.strany[0].concat(view.strany[1]).filter((pl) => pl.naexBy === p).length;
+  // NA EX naraz (v5): skryté NA EX vidí len jeho majiteľ (viewFor) — poldeci sa odpíše až pri odkrytí,
+  // no hráč ho už dal, preto ho tu ukážeme ako ležiaci na stole. Zrážka = druhý poldeci na karte (naexBy2).
+  const skryteNaex = (view.pitkaStav?.skryteNaex ?? []).filter((x) => x.hrac === p).length;
+  const naexNaStole = view.strany[0].concat(view.strany[1]).filter((pl) => pl.naexBy === p || pl.naexBy2 === p).length + skryteNaex;
+  const plne = Math.max(0, hrac.poldeciPlne - skryteNaex);
   // Limit, s ktorým hráč vstupuje do Zhromaždenia (so Zastávkou a Vínkom; NA EX na stole sa neráta).
   const limit = limitZhromazdenia(view, p);
-  const buduci = limitBuduceKolo(view, p);
+  const buduci = limitBuduceKolo(view, p, false, data);
   const kto = ja ? "Máš" : "Má";
   const doNovehoPoldeci =
     hrac.cigarety >= KONSTANTY.BARTER_CENA ? "stačí na nový poldeci" : `${KONSTANTY.BARTER_CENA - hrac.cigarety} do nového poldeci`;
@@ -547,7 +555,7 @@ export function HracDoska({
   const priznaneDlhy = hrac.priznane.filter((k) => k.defId === "dlh").length;
 
   const poldeci: ReactNode[] = [];
-  for (let i = 0; i < hrac.poldeciPlne; i++) poldeci.push(<IkonaPoldeci key={`p${i}`} plny />);
+  for (let i = 0; i < plne; i++) poldeci.push(<IkonaPoldeci key={`p${i}`} plny />);
   for (let i = 0; i < hrac.poldeciVypite; i++) poldeci.push(<IkonaPoldeci key={`v${i}`} plny={false} />);
 
   return (
@@ -601,7 +609,7 @@ export function HracDoska({
           hodnota={
             <>
               <span className="poldeci-rad">{poldeci.length > 0 ? poldeci : "—"}</span>
-              <span className="velke-cislo">{hrac.poldeciPlne}</span>
+              <span className="velke-cislo">{plne}</span>
             </>
           }
           pod={
@@ -618,8 +626,8 @@ export function HracDoska({
             nadpis: "Poldeci",
             text: (
               <>
-                {kto} {hrac.poldeciPlne} plné a {hrac.poldeciVypite} vypité
-                {naexNaStole > 0 ? `, ${naexNaStole} leží na stole cez NA EX` : ""}.
+                {kto} {plne} plné a {hrac.poldeciVypite} vypité
+                {naexNaStole > 0 ? `, ${naexNaStole} leží na stole cez NA EX${skryteNaex > 0 ? ` (${skryteNaex} skryto — súper ho uvidí pri odkrytí)` : ""}` : ""}.
                 <span className="tip-stav">
                   {jeCielLokalita(view, "zastavka")
                     ? `Limit vykladania: Zastávka — spoločný pre oboch, ${limit} (súčet limitov oboch hráčov)`
@@ -630,10 +638,10 @@ export function HracDoska({
                   {KONSTANTY.POLDECI_NA_ZACIATKU_KOLA} vypitý doleje sám (bez akcie Poldeci a doliatia cigaretami).
                 </span>
                 <span className="tip-riadok">
-                  V Pitke položíš plný poldeci na Občana alebo Starešinu (NA EX!): zdvojnásobí neaktívne akcie
-                  karty a zruší jej aktívne; limit vykladania ti tým klesne o 1. V Zhromaždení ťa plný poldeci stojí každá ďalšia karta v tom istom ťahu.
-                  Vypitý doleješ za {KONSTANTY.REFILL_CENA} cigarety (nie s Vínkom v Dedičstve), nový získaš barterom ({KONSTANTY.BARTER_CENA}{" "}
-                  cigariet, s priazňou Lakomca menej).
+                  V Pitke položíš plný poldeci na Občana alebo Starešinu (NA EX!) — skryto, súper ho uvidí, keď obaja skončíte Pitku. Zdvojnásobí
+                  neaktívne akcie karty a zruší jej aktívne; limit vykladania ti tým klesne o 1. V Zhromaždení ťa plný poldeci stojí každá ďalšia
+                  karta v tom istom ťahu. Vypitý doleješ za {KONSTANTY.REFILL_CENA} cigarety (nie s Vínkom v Dedičstve), nový získaš barterom
+                  ({KONSTANTY.BARTER_CENA} cigariet). Na konci hry vyhráva súboj Rezerva, kto má viac plných poldeci (Vínko sa ráta ako plný).
                 </span>
               </>
             ),
@@ -686,9 +694,8 @@ export function HracDoska({
                 <span className="tip-riadok">
                   Získavaš ich z aktívnych akcií Cigareta v Pitke (mínus súperove Obmedzenia) a prenášajú sa z kola na kolo.
                   Platíš nimi šenok (1 karta = {KONSTANTY.CENA_SENKU[1]}, 2 karty = {KONSTANTY.CENA_SENKU[2]}) a Dedičstvo (cena rastie pre oboch).
-                  Fajčiť smieš na svojom ťahu v Zhromaždení aj v Pitke: cigareta = karta hneď. V Pitke {KONSTANTY.REFILL_CENA} cigarety dolejú
-                  vypitý poldeci, {KONSTANTY.BARTER_CENA} (s priazňou Lakomca menej) vymeníš za nový plný (stokársky barter). Na konci hry bod za každé{" "}
-                  {KONSTANTY.CIGARIET_NA_KUS}, ak to dovolí scorecard.
+                  Fajčiť smieš len v Pitke, na svojom ťahu: cigareta = karta hneď. V Pitke {KONSTANTY.REFILL_CENA} cigarety dolejú vypitý poldeci,{" "}
+                  {KONSTANTY.BARTER_CENA} vymeníš za nový plný (stokársky barter). Na konci hry vyhráva súboj Cigarety pri staršom, kto ich má viac.
                 </span>
               </>
             ),
@@ -722,13 +729,15 @@ export function HracDoska({
                 <b>po každej Pitke sa pečeň vynuluje</b>.
                 {vyhlad !== null && (
                   <span className="tip-stav">
-                    Nepriznaná Cirhóza ťa na konci hry stojí {bodov(vyhlad.cenaCirhozy)} (dnešné scorecardy).
+                    {vyhlad.cenaCirhozy === 0
+                      ? "Ďalšia nepriznaná Cirhóza by teraz body nezmenila"
+                      : `Ďalšia nepriznaná Cirhóza by ťa teraz stála ${bodov(vyhlad.cenaCirhozy)}`}{" "}
+                    (súboje o Cirhózu pri starších). Nepriznaná ide po bitke do odhadzovacieho balíčka.
                   </span>
                 )}
                 <span className="tip-riadok">
                   Pribúda akciami Poškodenie pečene a Poldeci a NA EX v Pitke; poldeci vypitý v Zhromaždení ju pripíše dopredu do najbližšej Pitky.
-                  NA EX leží na karte až do bitky — jej zdvojené akcie sa vyhodnotia v každej Pitke kola. Prah = {KONSTANTY.PRAH_CIRHOZY_ZAKLAD} +
-                  priazeň Alkoholika.
+                  NA EX leží na karte až do bitky — jej zdvojené akcie sa vyhodnotia v každej Pitke kola. Prah = {prahy.cirhoza}.
                 </span>
               </>
             ),
@@ -758,7 +767,9 @@ export function HracDoska({
                 {hrac.zadlzenie} z {prahy.dlh}
                 {v !== null && v.zadlzenieZoStola > 0 && `, karty na stole pripíšu ${v.zadlzenieZoStola} → ${zadlzeniePo}`}. Za každý celý prah
                 vzniká karta Dlh — <b>hneď sa prizná</b> a na konci hry uberá body aj priznaný.
-                <span className="tip-stav">Jeden Dlh ťa na konci hry stojí {bodov(cenaDlhu)} (dnešné scorecardy).</span>
+                <span className="tip-stav">
+                  {cenaDlhu === 0 ? "Ďalší Dlh by teraz body nezmenil" : `Ďalší Dlh by ťa teraz stál ${bodov(cenaDlhu)}`} (súboje o Dlhy pri starších).
+                </span>
                 <span className="tip-riadok">Pribúda akciami Dlh v Pitke a <b>po každej Pitke sa vynuluje</b>.</span>
               </>
             ),
@@ -773,7 +784,7 @@ export function HracDoska({
               <small>/{prahy.exekutor}</small>
             </span>
           }
-          pod={priznaneDlhy > 0 ? `do Exekútora · ${bodov(priznaneDlhy * cenaDlhu)} na konci` : "do Exekútora"}
+          pod="do Exekútora"
           tip={{
             nadpis: "Priznané Dlhy",
             text: (
@@ -781,9 +792,13 @@ export function HracDoska({
                 {prahy.priznaneDlhy} z {prahy.exekutor}. Keď ich má hráč v bitke aspoň {prahy.exekutor}, prichádza
                 Exekútor: musí odovzdať Nástroj (polovica dlhov potom zhorí), inak prehráva. Kto je pod prahom, spáli v každej bitke 1 priznaný Dlh.
                 <span className="tip-stav">
-                  Na konci hry uberá body aj priznaný Dlh: teraz {bodov(priznaneDlhy * cenaDlhu)} ({bodov(cenaDlhu)} za kus pri dnešných scorecardoch).
+                  Na konci hry sa ráta aj priznaný Dlh — súboj Dlhy pri staršom vyhrá, kto ich má menej
+                  {priznaneDlhy > 0 ? ` (máš ${priznaneDlhy} priznané)` : ""}.
                 </span>
-                <span className="tip-riadok">Prah = 10 + 2 × priazeň Exekútora. Robota spáli 1 priznaný Dlh, Dievčina na vydaj ich spáli viac.</span>
+                <span className="tip-riadok">
+                  Prah = {KONSTANTY.PRAH_EXEKUTORA_ZAKLAD}, súperova priazeň Exekútora ho znižuje. Priazeň Kmotra ti po bitke zníži priznané Dlhy.
+                  Robota spáli 1 priznaný Dlh, Dievčina na vydaj ich spáli viac.
+                </span>
               </>
             ),
           }}
@@ -795,7 +810,11 @@ export function HracDoska({
           aria-pressed={starsi.stlacene}
           aria-controls={starsi.id}
           data-vyucba-prvok="body"
-          title={starsi.stlacene ? "Späť na stôl (Esc)" : "Starší a body na stole — za čo koľko, keby hra skončila teraz"}
+          title={
+            starsi.stlacene
+              ? "Späť na stôl (Esc)"
+              : "Body za starších, keby hra skončila teraz — klik ukáže pri každom staršom súboje podmienok a kto by za neho teraz dostal body"
+          }
           onClick={starsi.prepni}
         >
           <span className="zdroj-nazov">Body {starsi.stlacene ? "▴" : "▾"}</span>
@@ -859,6 +878,7 @@ function Dlazdica({
   tip,
   trieda,
   nasobok = 1,
+  nazov,
 }: {
   readonly ikona: ReactNode;
   readonly hodnota: ReactNode;
@@ -867,6 +887,8 @@ function Dlazdica({
   readonly trieda?: string;
   /** Najväčší násobok karty (×2 NA EX, ×4 NA EX so Silnou ženou) — čip namiesto „(+3)“. */
   readonly nasobok?: number;
+  /** Názov akcie vedľa ikony — jednotný bar ho ukáže len pri širokom okne. */
+  readonly nazov?: string;
 }) {
   const { tip: okno, ukaz, skry } = useTip();
   const viditelne = zmeny.filter((z) => z !== 0);
@@ -880,6 +902,7 @@ function Dlazdica({
       onBlur={skry}
     >
       <span className="efekt-ikona">{ikona}</span>
+      {nazov !== undefined && <span className="efekt-nazov">{nazov}</span>}
       <span className="efekt-hodnota">
         {hodnota}
         {nasobok > 1 && <small className="efekt-nasobok">×{nasobok}</small>}
@@ -890,37 +913,23 @@ function Dlazdica({
   );
 }
 
-function StranaBitky({
-  meno,
-  tuhe,
-  makke,
-  celkove,
-  sums,
-  zdroje,
-  rozpis,
-  sada,
-  vitaz,
-  zarovnanie,
-  menoKarty,
-  skryta,
-}: {
-  readonly meno: string;
-  readonly tuhe: number;
-  readonly makke: number;
-  readonly celkove: number;
+interface AkcieStranyProps {
   readonly sums: ActionSums;
   readonly zdroje: ZdrojeAkcii;
   readonly rozpis: RozpisPoskodenia;
   readonly sada: Sada;
-  readonly vitaz: boolean;
-  readonly zarovnanie: "vlavo" | "vpravo";
   readonly menoKarty: (defId: string) => string;
-  /** Súperova Záverečná lícom dole — tuhé môže byť viac. */
-  readonly skryta?: boolean;
-}) {
+  /** Názov akcie vedľa ikony (jednotný bar ho ukáže len pri širokom okne). */
+  readonly sNazvom?: boolean;
+}
+
+/**
+ * Aktivované akcie jednej strany ako dlaždice so skutočnými piktogramami akcií (aj
+ * vlastnými ikonami z tvorcu) — v paneli bitky aj v jednotnom bare (Michal 2026-10-25).
+ */
+export function AkcieStrany({ sums, zdroje, rozpis, sada, menoKarty, sNazvom = false }: AkcieStranyProps) {
   const akcia = (kluc: string) => sada.akcie.find((a) => a.kluc === kluc);
   const nazov = (kluc: string): string => akcia(kluc)?.nazov ?? kluc;
-  const zdroj = (z: string): string => ZDROJ_ROZPISU[z] ?? menoKarty(z);
   const dovod = (d: string): string =>
     d === "Posilnenie"
       ? "zdvojená Posilnením"
@@ -932,12 +941,14 @@ function StranaBitky({
             ? `efekt karty ${menoKarty(d.slice(6))}`
             : d;
 
+  const aktivne = PORADIE_AKCII.filter((a) => (sums[a] ?? 0) !== 0 || (a === "Povera" && rozpis.poveraIgnorovana > 0) || (zdroje[a] ?? []).length > 0);
+  // Názvy sa zmestia len k pár akciám — pri viacerých by sa ikony na strane baru nezmestili.
+  const sNazvami = sNazvom && aktivne.length <= 4;
   const dlazdice: ReactNode[] = [];
-  for (const a of PORADIE_AKCII) {
+  for (const a of aktivne) {
     const hodnota = sums[a] ?? 0;
     const ignorovana = a === "Povera" ? rozpis.poveraIgnorovana : 0;
     const zoznam = zdroje[a] ?? [];
-    if (hodnota === 0 && ignorovana === 0 && zoznam.length === 0) continue;
     // Zdvojenia (Posilnenie, NA EX, efekty kariet) — o koľko je súčet vyšší než počet aktívnych slotov;
     // záporné položky sú zrážky súperových efektov (Presbiter).
     const kladne = zoznam.filter((z) => z.hodnota > 0);
@@ -970,6 +981,7 @@ function StranaBitky({
         key={a}
         trieda={sila !== undefined ? "tuha" : ""}
         ikona={<IkonaAkcie kluc={a} akcia={akcia(a)} />}
+        {...(sNazvami ? { nazov: nazov(a) } : {})}
         hodnota={hodnota}
         nasobok={nasobok}
         zmeny={[nasobok > 1 ? 0 : navyse, zrazkaEfektom, -zrusene, -ignorovana]}
@@ -986,7 +998,38 @@ function StranaBitky({
       />,
     );
   }
+  return dlazdice.length > 0 ? <>{dlazdice}</> : <span className="efekty-ziadne">žiadne aktívne akcie</span>;
+}
 
+function StranaBitky({
+  meno,
+  tuhe,
+  makke,
+  celkove,
+  sums,
+  zdroje,
+  rozpis,
+  sada,
+  vitaz,
+  zarovnanie,
+  menoKarty,
+  skryta,
+}: {
+  readonly meno: string;
+  readonly tuhe: number;
+  readonly makke: number;
+  readonly celkove: number;
+  readonly sums: ActionSums;
+  readonly zdroje: ZdrojeAkcii;
+  readonly rozpis: RozpisPoskodenia;
+  readonly sada: Sada;
+  readonly vitaz: boolean;
+  readonly zarovnanie: "vlavo" | "vpravo";
+  readonly menoKarty: (defId: string) => string;
+  /** Súperova Záverečná lícom dole — tuhé môže byť viac. */
+  readonly skryta?: boolean;
+}) {
+  const zdroj = (z: string): string => ZDROJ_ROZPISU[z] ?? menoKarty(z);
   const bonus = rozpis.bonusy.reduce((s, z) => s + z.hodnota, 0);
   const zrazka = rozpis.zrazky.reduce((s, z) => s + z.hodnota, 0);
   const tipTuhe: TipObsah = {
@@ -1037,7 +1080,9 @@ function StranaBitky({
         />
         <span className="bitka-doplnok">{makke > 0 ? `+${makke} mäkké · ` : ""}celkom {celkove}</span>
       </div>
-      <div className="efekty">{dlazdice.length > 0 ? dlazdice : <span className="efekty-ziadne">žiadne aktívne akcie</span>}</div>
+      <div className="efekty">
+        <AkcieStrany sums={sums} zdroje={zdroje} rozpis={rozpis} sada={sada} menoKarty={menoKarty} />
+      </div>
     </div>
   );
 }
@@ -1065,11 +1110,6 @@ export interface BitkaPanelProps {
   readonly utocnik?: string;
   /** Rod hráča pre „Vyhral(a) si bitku“ (Michal 2026-10-22); chýba = neutrálne. */
   readonly rodJa?: Rod;
-  /**
-   * Riadok bitky nad stolom (Michal 2026-10-23): strany s akciami ostávajú, stred
-   * nahradí jednoriadkový súhrn — celý panel je po kliku na súhrn.
-   */
-  readonly stred?: ReactNode;
   /**
    * Hrozba na stole (Michal 2026-10-23): o koľko ešte súper (a ty) môže otočiť bitku
    * jedným NA EX z toho, čo leží na stole — ruka sa nepočíta. Len keď mení výsledok.
@@ -1118,10 +1158,10 @@ function RiadkyHrozby({
       {text}
     </span>
   );
-  if (!jedenRiadok || hrozby.length === 1) return <>{hrozby.map((h) => cast(h, h.kratko))}</>;
+  if (!jedenRiadok) return <>{hrozby.map((h) => cast(h, h.kratko))}</>;
   return (
     <span className="hrozba-bitky-riadok" data-vyucba="hrozba" title={hrozby.map((h) => h.cele).join("\n")}>
-      Ešte môže: {hrozby.map((h, i) => (
+      ešte môže: {hrozby.map((h, i) => (
         <span key={h.kto}>
           {i > 0 && " · "}
           {cast(h, h.mini)}
@@ -1155,42 +1195,79 @@ function verdiktBitky({ damage, ja, vysledok, naSekeru, poslednaBitka, cenaPosun
   // Prebytok: posun stojí 1, víťaza s Miňištrantom viac — koľko posunov z neho reálne bude.
   const cenaPosunu = prebytokDrzi === null ? 1 : prebytokDrzi === vitaz ? cenaPosunuVitaza[prebytokDrzi] : 1;
   const posunov = Math.floor(prebytokNaRozdelenie / Math.max(1, cenaPosunu));
-  return { su, vitaz, prebytok, prebytokDrzi, rozdiel, vyhravam, vStavke, coPriRemize, verdikt, cenaPosunu, posunov };
+  // V bare je na verdikt jeden krátky riadok — čo prinesie remíza, povie nápoveda.
+  const kratko = rozdiel === 0 ? "Remíza" : verdikt;
+  return { su, vitaz, prebytok, prebytokDrzi, rozdiel, vyhravam, vStavke, coPriRemize, verdikt, kratko, cenaPosunu, posunov };
 }
 
 /**
- * Súhrn odhadu bitky v páse kola (Stôl bez scrollovania, #67): verdikt a tuhé
- * v jednom riadku, celý panel s ikonami akcií ukáže klik.
+ * Odhad bitky v strede jednotného baru (Michal 2026-10-25, mock V2): verdikt, tuhé a hrozba
+ * v jednom riadku — jediné miesto odhadu. Prebytok, remíza, cieľ aj stávka sú v nápovede
+ * (tipOdhadu); natrvalo by brali miesto stavovej správe pod nimi.
  */
-export function SuhrnBitky(props: BitkaPanelProps & { readonly otvoreny: boolean; readonly prepni: () => void; readonly id: string }) {
-  const { damage, ja, vysledok, otvoreny, prepni, id, skrytaSupera } = props;
-  const { su, vitaz, vyhravam, verdikt, prebytok, prebytokDrzi } = verdiktBitky(props);
+export function OdhadBaru(props: BitkaPanelProps) {
+  const { damage, ja, vysledok, skrytaSupera } = props;
+  const { su, vitaz, vyhravam, kratko } = verdiktBitky(props);
   return (
-    <button
-      type="button"
-      className={`suhrn-bitky ${vitaz === null ? "" : vyhravam ? "vyhravam" : "prehravam"}`}
-      aria-expanded={otvoreny}
-      aria-controls={id}
-      onClick={prepni}
-      title={[otvoreny ? "Späť na pás kola (Esc)" : "Riadok bitky — tuhé a akcie oboch strán", ...(props.hrozby ?? []).map((h) => h.cele)].join("\n")}
-    >
-      <span className="suhrn-bitky-nadpis">{vysledok ? "Výsledok" : "Odhad"}</span>
-      <b>
-        {verdikt}
+    <>
+      <span className="jbar-nadpis">{vysledok ? "výsledok" : "odhad"}</span>
+      <b className={`jbar-verdikt ${vitaz === null ? "remiza" : vyhravam ? "vyhravam" : "prehravam"}`}>
+        {kratko}
         {skrytaSupera === true && !vysledok && " ?"}
       </b>
-      <span className="suhrn-bitky-tuhe">
-        tuhé {damage.tuhe[ja]} : {damage.tuhe[su]}
-        {skrytaSupera === true && "?"}
-        {prebytokDrzi !== null && ` · prebytok ${prebytok} → ${prebytokDrzi === ja ? "tebe" : props.mena[su]}`}
+      <span className="jbar-tuhe" title="tuhé poškodenie ty : súper">
+        {damage.tuhe[ja]} : {damage.tuhe[su]}
+        {skrytaSupera === true && !vysledok && "?"}
       </span>
-      <span aria-hidden="true">{otvoreny ? "▴" : "▾"}</span>
-    </button>
+      <RiadkyHrozby hrozby={props.hrozby} ukazHrozbu={props.ukazHrozbu} jedenRiadok />
+    </>
   );
 }
 
+/** Nápoveda odhadu v bare: čo býval celý panel bitky, a stávka (Michal 2026-10-25: len v nápovede). */
+export function tipOdhadu(props: BitkaPanelProps, stavka: StavkaBitkyCisla | null, prepnutNa: string): TipObsah {
+  const { damage, ja, vysledok, mena, ciel, naSekeru, prebytokNaRozdelenie, utocnik } = props;
+  const { su, prebytok, prebytokDrzi, rozdiel, vStavke, coPriRemize, verdikt, cenaPosunu, posunov } = verdiktBitky(props);
+  const posunyText = posunov === 1 ? "posun" : posunov >= 2 && posunov <= 4 ? "posuny" : "posunov";
+  return {
+    nadpis: `${vysledok ? "Výsledok bitky" : "Odhad bitky"}${ciel === "" ? "" : ` · ${ciel}`}`,
+    text: (
+      <>
+        <b>{verdikt}</b> · tuhé {damage.tuhe[ja]} : {damage.tuhe[su]}
+        <span className="tip-riadok">
+          {prebytokDrzi === null
+            ? "prebytok: nikto"
+            : `prebytok ${prebytok}${prebytokNaRozdelenie < prebytok ? ` − Puška = ${prebytokNaRozdelenie}` : ""} → ${prebytokDrzi === ja ? "tebe" : mena[su]} · ${posunov} ${posunyText} (posun stojí ${cenaPosunu}${cenaPosunu > 1 ? ", Miňištrant" : ""})`}
+        </span>
+        {(props.hrozby ?? []).map((h) => (
+          <span key={h.kto} className="tip-riadok">
+            {h.cele}
+          </span>
+        ))}
+        {naSekeru.length > 0 && (
+          <span className="tip-riadok">
+            ide o {vStavke + (vStavke === 1 ? " lokalitu" : vStavke <= 4 ? " lokality" : " lokalít")} · na sekere {naSekeru.join(", ")}
+          </span>
+        )}
+        {!vysledok && rozdiel !== 0 && <span className="tip-riadok">pri remíze: {coPriRemize}</span>}
+        {!vysledok && stavka !== null && (
+          <span className="tip-riadok">
+            táto bitka: výhra o {stavka.prebytok} ≈ <b>{znamienkoBodov(stavka.vyhra)} b</b>, prehra o {stavka.prebytok} ≈{" "}
+            <b>{znamienkoBodov(stavka.prehra)} b</b>
+            {stavka.superNajviac !== null && <> · posledná bitka — súper najviac ≈ {znamienkoBodov(stavka.superNajviac)} b</>}
+          </span>
+        )}
+        {utocnik !== undefined && <span className="tip-riadok">{utocnik}</span>}
+        <span className="tip-stav">
+          {vysledok ? "" : "Podľa aktuálnej línie; súperove Absťáky v ruke nevidno. "}Klik ukáže na stranách baru {prepnutNa}.
+        </span>
+      </>
+    ),
+  };
+}
+
 export function BitkaPanel(props: BitkaPanelProps) {
-  const { damage, sums, zdroje, rozpis, ja, vysledok, mena, sada, ciel, menoKarty, naSekeru, prebytokNaRozdelenie, utocnik, stred } = props;
+  const { damage, sums, zdroje, rozpis, ja, vysledok, mena, sada, ciel, menoKarty, naSekeru, prebytokNaRozdelenie, utocnik } = props;
   const { su, vitaz, prebytok, prebytokDrzi, rozdiel, vyhravam, vStavke, coPriRemize, verdikt, cenaPosunu, posunov } = verdiktBitky(props);
 
   const strana = (p: PlayerId, zarovnanie: "vlavo" | "vpravo") => (
@@ -1211,35 +1288,28 @@ export function BitkaPanel(props: BitkaPanelProps) {
   );
 
   return (
-    <section className={`bitka-panel ${vitaz === null ? "" : vyhravam ? "vyhravam" : "prehravam"}${stred !== undefined ? " riadok" : ""}`} aria-label="Bitka">
+    <section className={`bitka-panel ${vitaz === null ? "" : vyhravam ? "vyhravam" : "prehravam"}`} aria-label="Bitka">
       {strana(ja, "vlavo")}
-      {stred !== undefined ? (
-        <div className="bitka-stred">
-          {stred}
-          <RiadkyHrozby hrozby={props.hrozby} ukazHrozbu={props.ukazHrozbu} jedenRiadok />
-        </div>
-      ) : (
-        <div className="bitka-stred">
-          <span className="bitka-nadpis">
-            {vysledok ? "Výsledok bitky" : "Odhad bitky"} · {ciel}
+      <div className="bitka-stred">
+        <span className="bitka-nadpis">
+          {vysledok ? "Výsledok bitky" : "Odhad bitky"} · {ciel}
+        </span>
+        {utocnik !== undefined && <span className="bitka-pozn">{utocnik}</span>}
+        {naSekeru.length > 0 && (
+          <span className="bitka-sekera" title="Lokality z predošlých remíz — víťaz tejto bitky ich berie spolu s jej lokalitou.">
+            ide o {vStavke + (vStavke === 1 ? " lokalitu" : vStavke <= 4 ? " lokality" : " lokalít")} · na sekere {naSekeru.join(", ")}
           </span>
-          {utocnik !== undefined && <span className="bitka-pozn">{utocnik}</span>}
-          {naSekeru.length > 0 && (
-            <span className="bitka-sekera" title="Lokality z predošlých remíz — víťaz tejto bitky ich berie spolu s jej lokalitou.">
-              ide o {vStavke + (vStavke === 1 ? " lokalitu" : vStavke <= 4 ? " lokality" : " lokalít")} · na sekere {naSekeru.join(", ")}
-            </span>
-          )}
-          <span className="bitka-verdikt">{verdikt}</span>
-          <RiadkyHrozby hrozby={props.hrozby} ukazHrozbu={props.ukazHrozbu} />
-          <span className="bitka-pozn">
-            {prebytokDrzi === null
-              ? "prebytok: nikto"
-              : `prebytok ${prebytok}${prebytokNaRozdelenie < prebytok ? ` − Puška = ${prebytokNaRozdelenie}` : ""} → ${prebytokDrzi === ja ? "tebe" : mena[su]} · ${posunov} ${posunov === 1 ? "posun" : posunov >= 2 && posunov <= 4 ? "posuny" : "posunov"} (posun stojí ${cenaPosunu}${cenaPosunu > 1 ? ", Miňištrant" : ""})`}
-          </span>
-          {!vysledok && rozdiel !== 0 && <span className="bitka-pozn tlmene">pri remíze: {coPriRemize}</span>}
-          {!vysledok && <span className="bitka-pozn tlmene">podľa aktuálnej línie; súperove Absťáky v ruke nevidno</span>}
-        </div>
-      )}
+        )}
+        <span className="bitka-verdikt">{verdikt}</span>
+        <RiadkyHrozby hrozby={props.hrozby} ukazHrozbu={props.ukazHrozbu} />
+        <span className="bitka-pozn">
+          {prebytokDrzi === null
+            ? "prebytok: nikto"
+            : `prebytok ${prebytok}${prebytokNaRozdelenie < prebytok ? ` − Puška = ${prebytokNaRozdelenie}` : ""} → ${prebytokDrzi === ja ? "tebe" : mena[su]} · ${posunov} ${posunov === 1 ? "posun" : posunov >= 2 && posunov <= 4 ? "posuny" : "posunov"} (posun stojí ${cenaPosunu}${cenaPosunu > 1 ? ", Miňištrant" : ""})`}
+        </span>
+        {!vysledok && rozdiel !== 0 && <span className="bitka-pozn tlmene">pri remíze: {coPriRemize}</span>}
+        {!vysledok && <span className="bitka-pozn tlmene">podľa aktuálnej línie; súperove Absťáky v ruke nevidno</span>}
+      </div>
       {strana(su, "vpravo")}
     </section>
   );
@@ -1427,10 +1497,17 @@ export function PriebehKola({ view, onBitka }: { readonly view: ClientState; rea
       i++;
       continue;
     }
+    // „Pitka 1 z 2“ je od jednotného baru len tu (Michal 2026-10-25) — aj pri Zhromaždení.
     polozky.push(
       <KrokOsi
         key={k.id}
-        krok={i === aktualny && viac && k.id.startsWith("pitka-") ? { ...k, nazov: `Pitka ${k.id.slice(6)} z ${pitiek}` } : k}
+        krok={
+          i === aktualny && viac && k.id.startsWith("pitka-")
+            ? { ...k, nazov: `Pitka ${k.id.slice(6)} z ${pitiek}` }
+            : i === aktualny && viac && k.id.startsWith("zhromazdenie-")
+              ? { ...k, nazov: `Zhromaždenie ${k.id.slice(13)} z ${pitiek}` }
+              : k
+        }
         trieda={i === aktualny ? "aktualny" : i < aktualny ? "hotovy" : ""}
         {...(i === aktualny ? { refEl: aktualnyRef } : {})}
         onKlik={k.id === "bitka" ? onBitka : undefined}

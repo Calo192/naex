@@ -25,10 +25,10 @@
           "pijan/1/0",
           "ministrant/0/0",
           "milujuca_manzelka/0/0",
-          "dievcina_na_vydaj/0/0"
+          "dievcina_na_vydaj/0/0",
+          "ministrant/2/0"
         ],
         "doberaci": [
-          "ministrant/2/0",
           "pijan/1/0"
         ]
       },
@@ -366,18 +366,6 @@
       ]
     },
     {
-      "id": "k-fajcit",
-      "kto": "hrac",
-      "prikaz": {
-        "type": "smoke",
-        "pocet": 1
-      },
-      "melichar": "Vyfajči cigaretu: hneď si dobereš kartu z balíčka. Fajčí sa, keď ti chýba dobrá karta.",
-      "zvyraznit": [
-        "tlacidlo:fajcit"
-      ]
-    },
-    {
       "id": "k-ministrant",
       "kto": "hrac",
       "prikaz": {
@@ -479,14 +467,6 @@
       ]
     },
     {
-      "id": "k-naex-bot",
-      "kto": "bot",
-      "prikaz": {
-        "type": "bezReakcie"
-      },
-      "melichar": ""
-    },
-    {
       "id": "i-cena",
       "kto": "info",
       "melichar": "NA EX nie je zadarmo. Poldeci sa v bitke vypije a pečeň v bare sa plní. Keď pretečie, dostaneš zlú kartu; ukážem ti ju, keď príde.",
@@ -537,6 +517,14 @@
       "zvyraznit": [
         "bar:cigarety"
       ]
+    },
+    {
+      "id": "k-naex-bot",
+      "kto": "bot",
+      "prikaz": {
+        "type": "bezReakcie"
+      },
+      "melichar": ""
     },
     {
       "id": "i-bitka",

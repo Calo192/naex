@@ -4,7 +4,8 @@
 // nesmie dostať von: obsah súperovej ruky, obsah ani poradie ŽIADNEHO
 // doberacieho balíčka (vlastného, súperovho, spoločného), súperov balíček
 // stavby šenku a jeho výber v kroku stavby, jeho
-// karta z Vízie a jeho karta lícom dole pri patronáte (náhrada staršieho).
+// karta z Vízie, jeho karta lícom dole pri patronáte (náhrada staršieho)
+// a jeho skryto vybrané NA EX (v5, NA EX naraz — do odkrytia ani ich počet).
 // Posielajú sa len počty (aj počet súperových nepriznaných kliatob — ten sa
 // dá odvodiť z verejného logu). Skryť kartu v rozhraní je bezcenné — filtruje
 // sa TU a testuje sa to. Súperova skrytá Záverečná (lícom dole) v strany
@@ -50,6 +51,8 @@ export interface HracVerejne {
    */
   readonly nerestiTotoKolo: number;
   readonly nerestiMinuleKolo: number;
+  /** Absťáky získané za hru (v5, podmienka Absťák) — verejné, Absťák sa priznáva hneď. */
+  readonly abstakyZiskane: number;
 }
 
 export interface BitkaVerejne {
@@ -226,6 +229,7 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
       zadlzenie: hrac.zadlzenie,
       nerestiTotoKolo: hrac.nerestiTotoKolo,
       nerestiMinuleKolo: hrac.nerestiMinuleKolo,
+      abstakyZiskane: hrac.abstakyZiskane ?? 0,
     };
   };
 
@@ -292,7 +296,20 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
             noveKarty: d.noveKarty,
           },
     zhromazdenieStav: state.zhromazdenieStav,
-    pitkaStav: state.pitkaStav,
+    // NA EX naraz (v5): súperove skryté NA EX sa neposielajú — ani že nejaké dal.
+    pitkaStav:
+      state.pitkaStav === null
+        ? null
+        : {
+            ...state.pitkaStav,
+            // Moje NA EX na súperovu skrytú Záverečnú nesie jej náhradné uid — skutočné by ju prezradilo.
+            skryteNaex: (state.pitkaStav.skryteNaex ?? [])
+              .filter((x) => x.hrac === ja)
+              .map((x) => {
+                const strana = ([0, 1] as const).find((q) => state.strany[q].some((pl) => pl.card.uid === x.uid && skryta(pl)));
+                return strana === undefined ? x : { ...x, uid: uidZaverecnej(strana) };
+              }),
+          },
     bitkaStav:
       bitka === null
         ? null
@@ -334,8 +351,10 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
 /** Body z jedného scorecardu, keby hra skončila teraz — pre oboch hráčov. */
 export interface BodyStarsieho {
   readonly elderId: string;
-  /** body[p] = body hráča p z tohto scorecardu. */
+  /** body[p] = body hráča p za tohto staršieho (v5: 1 + zóny strachu víťazovi súbojov, pri rovnosti obom). */
   readonly body: readonly [number, number];
+  /** vyhry[p] = koľko súbojov (aktívnych podmienok) hráč p pri tomto staršom vyhráva. */
+  readonly vyhry: readonly [number, number];
   /** polozky[p] = každá aktívna podmienka a koľko z nej má hráč p. */
   readonly polozky: readonly [readonly BodPodmienky[], readonly BodPodmienky[]];
 }
@@ -367,6 +386,9 @@ export function bodyTeraz(data: GameData, view: ClientState): BodyTeraz {
       doberaci: [...nahradne("dlh", kliatby.dlh - vOdhadzovacom("dlh")), ...nahradne("cirhoza", kliatby.cirhoza - vOdhadzovacom("cirhoza"))],
       odhadzovaci: h.odhadzovaci,
       priznane: h.priznane,
+      poldeciPlne: h.poldeciPlne,
+      dedicstvo: h.dedicstvo,
+      abstakyZiskane: h.abstakyZiskane,
     };
   };
   const stav = { ovladnute: view.ovladnute, starsi: view.starsi, hraci: [hrac(0), hrac(1)] };
@@ -375,7 +397,7 @@ export function bodyTeraz(data: GameData, view: ClientState): BodyTeraz {
     const s = elderScore(data, stav, elder);
     spolu[0] += s.body[0];
     spolu[1] += s.body[1];
-    return { elderId: elder.elderId, body: s.body, polozky: s.polozky };
+    return { elderId: elder.elderId, body: s.body, vyhry: s.vyhry, polozky: s.polozky };
   });
   return { spolu, starsi };
 }
@@ -564,7 +586,7 @@ export function hltavyPrebytok(
 }
 
 /**
- * Hltavé Pohoršenia: hráč `p` posunie `pocet` markerov k súperovi, každý tam,
+ * Hltavé Pohoršenia: hráč `p` posunie `pocet` markerov k súperovi alebo k sebe (v5), každý tam,
  * kde rozdielu bodov (p − súper, bodyTeraz) najviac pridá, a len kam smie
  * (pohorsenieMozne — hranice zón, krajná pozícia). Vráti, o koľko sa rozdiel
  * pohne. Pre „≈ b“ v náhľade NA EX a patronátu (návrh #1, playtest
@@ -580,13 +602,16 @@ export function hodnotaPohorseni(data: GameData, view: ClientState, p: PlayerId,
   let v = view;
   for (let zostava = pocet; zostava > 0; zostava--) {
     let najlepsi: { readonly v: ClientState; readonly hodnota: number; readonly elderId: string; readonly hranica: boolean } | null = null;
+    // v5: Pohoršenie smie aj k sebe — hltavo sa vyberá lepší z oboch smerov.
     for (const e of v.starsi) {
-      if (!pohorsenieMozne({ ...v, bitkaStav: { pohorsenieHranice: hranice } }, p, e)) continue;
-      const marker = posunMarker(e, super_, true, pohorsenieNaKraj(v, p));
-      if (marker === null) continue;
-      const po: ClientState = { ...v, starsi: v.starsi.map((x) => (x.elderId === e.elderId ? { ...x, marker } : x)) };
-      const hodnota = rozdiel(po);
-      if (najlepsi === null || hodnota > najlepsi.hodnota) najlepsi = { v: po, hodnota, elderId: e.elderId, hranica: prekraciaHranicu(e.marker, marker) };
+      for (const kSebe of [false, true]) {
+        if (!pohorsenieMozne({ ...v, bitkaStav: { pohorsenieHranice: hranice } }, p, e, kSebe)) continue;
+        const marker = posunMarker(e, kSebe ? p : super_, true, pohorsenieNaKraj(v, p));
+        if (marker === null) continue;
+        const po: ClientState = { ...v, starsi: v.starsi.map((x) => (x.elderId === e.elderId ? { ...x, marker } : x)) };
+        const hodnota = rozdiel(po);
+        if (najlepsi === null || hodnota > najlepsi.hodnota) najlepsi = { v: po, hodnota, elderId: e.elderId, hranica: prekraciaHranicu(e.marker, marker) };
+      }
     }
     if (najlepsi === null) break;
     if (najlepsi.hranica) hranice[`${p}:${najlepsi.elderId}`] = (hranice[`${p}:${najlepsi.elderId}`] ?? 0) + 1;

@@ -598,3 +598,246 @@ Odteraz sa pravidlá menia len v dávkach raz za 2 týždne; celá dávka dostan
 ďalšiu verziu (**„v5“**) a hráči sa o nej dozvedia v Novinkách. Sada kariet sa
 ladí ďalej mimo dávok. Do v5 čaká napríklad „NA EX naraz + Výtržník pri
 zrážke“, ak ho stratég odporučí.
+
+## v5 — Pravidlá v5 (Michal 2026-10-24 a 2026-10-25, platné od 2026-10-25)
+
+Dávka zmien a rozhodnutia Michala: `docs/pravidla-v5/davka.md` (tabuľka bodov
+1–8, Bodovanie v5, Priazne v5 interview 1 a 2, Interview 3 a 4, doplnok
+o Výtržníkovi). Rozbor stratéga: `docs/playtesty/strategia-v5.html`.
+`VERZIA_PRAVIDIEL` je „v5“, `PRAVIDLA_PLATNE_OD` 2026-10-25. Text
+`docs/PRAVIDLA.md` sa prepísal ako jeden súvislý text v poradí hry, bez
+zmenových blokov; tu sú zmeny a staré znenia.
+
+Prehľad zmien:
+
+1. **Fajčenie len v Pitke** (§2, §4, §6, §7, §15 Benzínka). Draft zo šenku
+   bez zmeny.
+2. **NA EX naraz a Výtržník** (§7, §9.5, §16 Svokra, Vychovávateľka): NA EX sa
+   v Pitke vyberá skryto, odkryje sa, keď sú hotoví obaja (najprv obrancovo).
+   Odpovede po odkrytí: najprv obranca, útočník druhý. Zrážka na tej istej
+   karte = Výtržník (všetky akcie sú Rany pre majiteľa, len počas jednej
+   bitky); pečeň, Svokru aj Výpalné platí každý za svoje NA EX.
+3. **Bodovanie po starších** (§14, §10, §11): súboje podmienok, body za
+   staršieho = 1 + zóny strachu víťazovi (pri rovnosti obom), zónové podmienky
+   len za ostatných starších, dve rovnaké podmienky = dva súboje. Plošné body
+   za kusy a násobenie počtom podmienok skončili. Variant (a) „1 b aj za
+   aspoň jednu vyhratú podmienku“ sa nezaviedol (interview 4).
+4. **Prehra balíčkom pod 5 kariet sa ruší** (§1, §4). Vydesenie ostáva.
+5. **Scorecardy v5** s podmienkami **Absťák** (získané za hru) a **Rezerva**
+   (plné poldeci, Vínko sa ráta); Cigarety a Nepriznaná Cirhóza ostávajú,
+   „znak“ nie (§8, §14). Úžerník je Kmotor, Lakomec Abstinent, Neprajník
+   Výpalník.
+6. **Priazne v5** (§10 a miesta, kde pôsobia): sila 1 / 2 / 3 bez
+   dvojnásobku. Bitkár +1 / +2 / +3 tuhého, Kmotor (Úžerník) −1 / 2 / 3
+   priznaného Dlhu po bitke, Abstinent (Lakomec) +1 / +2 / +3 Pohoršenia,
+   Exekútor znižuje súperov prah Exekúcie o 1 / 2 / 3, Výpalné (Výpalník,
+   predtým Neprajník)
+   1 / 2 / 3 cigarety za každé súperovo NA EX, Fajčiar +1 / +2 / +3 cigarety
+   po šenku (Obmedzenie ich neuberá), Na zdravie „do dna“ (Alkoholik)
+   1 / 2 / 3 poldeci z NA EX za kolo sa vráti plných, Veriaci bez zmeny.
+   Prah Dlhu je 2, prah Cirhózy 3, barter 5 cigariet, strop mäkkého
+   poškodenia zdvíha už len Čierna mačka.
+7. **Pohoršenie oboma smermi** (§9.2, §15 Kultúrny dom, §16 Policajtka,
+   Noviny): k súperovi alebo k sebe, smie každý; priazeň sa mení hneď a platí
+   už v tej istej bitke. Limit dvoch hraníc (spoločný pre oba smery), zákaz
+   krajnej pozície a Policajtka platia v oboch smeroch.
+8. **Nepriznaná Cirhóza po bitke do odhadzovacieho balíčka** (§9.7, §11):
+   „Nepriznaná ide po bitke do tvojho odhadzovacieho balíčka; na konci hry
+   prehráva súboje o Cirhózu.“
+9. **Benzínka** má len „Pitka: Nikto nesmie fajčiť.“ Akcia Dlh a Exekútor sa
+   v texte uvádzajú konkrétnymi číslami (prah zadĺženia 2 na 1 Dlh, prah
+   Exekúcie 10, so súperovým Exekútorom 9 / 8 / 7).
+
+### Staré znenie §1 (podmienky konca)
+
+> ### Podmienky konca
+>
+> | Udalosť | Výsledok |
+> |---|---|
+> | Hráč vydesí aspoň polovicu starších (aj nahradených) a **udrží ich do konca nasledujúceho kola** — ohlásené vydesenie; súper má kolo na odpoveď, napr. patronát nad vydeseným starším vráti marker do stredu (§10) | **vyhráva** |
+> | Hráč nedokáže čeliť exekúcii (§11) | okamžite **prehráva** |
+> | Veľkosť balíčka hráča je pod 5 po drafte alebo na konci kola (karty z línie sa už vrátili) | **prehráva** |
+> | Odohrá sa posledná bitka o lokalitu (3 / 5 / 7 podľa dĺžky hry) | spočítajú sa body (§14) |
+>
+> Veľkosť balíčka = doberací + odhadzovací + ruka. **Priznané karty ani
+> Dedičstvo sa nerátajú.** Na konci kola sa najprv vyhodnotí vydesenie, potom
+> veľkosť balíčka.
+
+### Staré znenie §7 (poradie Pitky, odpoveď, fajčenie, cigarety)
+
+> ### Poradie: obranca začína, útočník má posledné slovo
+>
+> Pitku **začína obranca**. Dáva NA EX, fajčí, dolieva — a skončí „hotovo“.
+> „Hotovo“ je **nevratné** a zapíše sa do logu („Hráč X končí svoju časť Pitky
+> bez NA EX“). Potom hrá útočník a má **posledné slovo**: na jeho NA EX už
+> obranca odpovie len jednou kartou. Po „hotovo“ oboch sa Pitka vyhodnotí.
+> Poštárka a Starosta sa používajú tiež v tejto časti Pitky.
+
+> - Na **Krčme** hráč s plným poldeci (a kartou, kam ho dať) musí NA EX dať,
+>   inak Pitku neskončí; prah Cirhózy je tam zato obom o 2 vyšší (§15).
+> - Efekty okolo NA EX: Svokra (súper za každé NA EX stratí 2 cigarety),
+>   Šofér, Snúbenica, Veterán, Vychovávateľka (§16).
+>
+> ### Odpoveď na NA EX
+>
+> Hneď po súperovom NA EX smie druhý hráč vyložiť **jednu kartu z ruky** na
+> koniec svojej alebo súperovej strany. Limit vykladania nemíňa; kto nemá kartu,
+> ktorú smie vyložiť, neodpovedá. Potom je na ťahu znova ten, kto NA EX dal.
+> Striedavo: keď neskôr NA EX dá aj druhý hráč, prvý má tiež jednu odpoveď.
+> Cieľ: spárovať neaktívne akcie karty s NA EX — tie sa tým stanú aktívnymi
+> a NA EX ich zruší. Počas odpovede sa nefajčí ani nedáva NA EX. Odpoveď je bežné
+> vyloženie: smie zmeniť **prevahu v kraji** aj **počet Pitiek**.
+
+> - **Fajčenie:** na svojom ťahu v Zhromaždení aj v Pitke smie hráč vyfajčiť
+>   cigaretu — hneď si dobere kartu, ťah mu neskončí, ráta sa to ako nerest.
+>   Keď sú doberací aj odhadzovací balíček prázdne, **fajčiť sa nedá** —
+>   cigareta by nedala kartu. Na Benzínke sa nefajčí (§15).
+> - **Doliatie, 2 cigarety** (počas Pitky) → otoč jeden vypitý poldeci späť na
+>   plný. S Vínkom v Dedičstve nie (§16).
+> - **Stokársky barter, 5 cigariet** (s priazňou Lakomca menej, na Jednote
+>   o 1 menej) → nový plný poldeci navyše.
+
+> 5. **Cigarety** — hráč dostane cigarety za akcie Cigareta:
+>    ```
+>    nové cigarety = Cigarety (+ sila Fajčiara v 1. Pitke kola) − súperove Obmedzenia (najmenej 0) + Cigorky v Dedičstve
+>    ```
+
+### Staré znenie §8 (prahy)
+
+> ```
+> prah Dlhu = 2 + sila Úžerníka        (zadĺženie 8 pri prahu 2 = 4 Dlhy)
+> ```
+
+> ```
+> prah Cirhózy = 3 + priazeň Alkoholika   (+2 Nealko v Dedičstve, +2 obom v kole o Krčmu)
+> ```
+
+### Staré znenie §9.2 a §9.3 (Pohoršenie, Neprajník)
+
+> ### 9.2 Pohoršenie
+>
+> Každé aktivované Pohoršenie posunie marker jedného staršieho o 1 smerom
+> k súperovi, **bez ohľadu na výsledok bitky**. Staršieho vyberá hráč, ktorého
+> akcia sa aktivovala.
+>
+> - Ten istý marker smie ísť **aj viackrát**, Pohoršenia jedného hráča ho však
+>   prenesú najviac cez **dve hranice zón** — z pravej sivej do ľavej oranžovej
+>   áno (4 posuny), z pravej oranžovej len po ľavú sivú. **Kultúrny dom** limit
+>   ruší.
+> - Pohoršením sa **nedá dostať na krajnú pozíciu** (okrem Novín, §16).
+> - K aktívnym Pohoršeniam pribudnú **Pohoršenia z patronátu** súpera (§10).
+> - Súperova Policajtka Pohoršenia proti svojmu majiteľovi ruší (§16).
+
+> **Priznaná Cirhóza škodí tomu, kto ju priznal:** za každú priznanú Cirhózu
+> hráča dostane súper v každej bitke +1 tuhé (Veterinár to znižuje). Ráta sa ako
+> tuhé, takže ju zvyšná Viera tiež znižuje. Strop mäkkého poškodenia posúva
+> priazeň Neprajníka, Čierna mačka ho ruší (§10, §16). Tuhé ďalej menia efekty
+> kariet a lokalít (Pes, Pijan, Pasca, Lesná cesta, Ihrisko…, §15, §16).
+
+> > Napätie hry: desiť staršieho sa oplatí bodovo, ale zároveň tým prihrávaš
+> > súperovi jeho priazeň v ďalších kolách.
+
+### Staré znenie §10 (dvojaká úloha markera, priazne)
+
+> **Strach o bodoch tohto staršieho nerozhoduje** — jeho scorecard boduje obom
+> hráčom (§14). Strach sa ráta do zónových podmienok (Znepokojenie, Strach,
+> Vydesenie) **na všetkých scorecardoch** a do vydesenia (§1).
+>
+> Príklad: marker Farára na indexe 7 (polovica hráča 1, oranžová zóna) —
+> priazeň +2 má hráč 1; Farár sa bojí hráča 0 na úrovni 2. Každý scorecard
+> s aktívnym Strachom (alebo Znepokojením) tak hráčovi 0 pridá body za Farára.
+>
+> Web to počas hry ukazuje pri každom staršom: **♥** priazeň (komu a s akým
+> účinkom), **★** body tohto scorecardu pre teba aj súpera, keby hra skončila
+> teraz, a koho sa starší bojí; pri každej aktívnej podmienke je číslo s tvojimi
+> bodmi a tlačidlo „rozpis bodov“ ukáže tabuľku všetkých podmienok.
+
+> **Priazeň** (bonus) = **2 × sila**, sila 1 / 2 / 3 podľa zóny. Priazeň
+> staršieho určuje scorecard, na ktorom leží (rozdáva sa náhodne, §3).
+>
+> | Priazeň | Uplatňuje sa pri | Vplyv | sila 1 / 2 / 3 |
+> |---|---|---|---|
+> | Úžerník | Prah Dlhu (§8) | 2 + sila (bez ×2 — zadĺženie sa po Pitke nuluje) | 3 / 4 / 5 |
+> | Lakomec | Stokársky barter (§7) | 5 − sila cigariet | 4 / 3 / 2 |
+> | Neprajník | Mäkké poškodenie Povier (§9.3) | smie prekročiť súperove priznané Dlhy o priazeň | +2 / +4 / +6 |
+> | Bitkár | Vyhodnotenie bitky (§9.3) | tuhé poškodenie navyše rovné priazni | +2 / +4 / +6 |
+> | Veriaci | Viera v bitke (§9.3) | Viera navyše rovná sile; hodnota Viery ostáva 1 | +1 / +2 / +3 |
+> | Fajčiar | Prvá Pitka kola (§7) | cigarety navyše rovné sile (bez ×2 — cigarety platia šenok aj Dedičstvo) | +1 / +2 / +3 |
+> | Alkoholik | Prah Cirhózy (§8) | 3 + priazeň | 5 / 7 / 9 |
+> | Exekútor | Prah Exekútora (§11) | 10 + 2 × priazeň | 14 / 18 / 22 |
+>
+> Staré sady so Zberateľom či Očumovateľom sa načítajú ako Úžerník. Preskúmanie
+> (Policajtka, Veštica) je pevne 5 kariet.
+>
+> Efekty kariet uvádzajú pevné čísla (Farár „ignoruj 2 súperove Povery“,
+> Autobusár „ignoruj 1 Absťák“, Poštárka „až 2 karty a s nimi 1 Dlh“…) — číslo
+> nezávisí od iného staršieho. Lakomec zlacňuje barter (nepoužíva 2 × silu,
+> lebo barter za 1 cigaretu by bol poldeci zadarmo), Neprajník púšťa Povery nad
+> súperove priznané Dlhy. Čísla sú v kóde v `KONSTANTY.EFEKT`.
+
+### Staré znenie §11 (Cirhóza v ruke, cena kliatob, prah Exekútora)
+
+> Nepriznanú Cirhózu smieš držať v ruke aj do posledného kola a priznať ju až
+> v poslednom Zhromaždení: dovtedy za ňu súper tuhé nedostáva, ale nemáš ju na
+> Pohreb a ak hra skončí skôr, než ju priznáš (aj vydesením, §1), uberie ti −2 za
+> každú aktívnu podmienku pečeň (§14).
+
+> | | Nepriznaná | Priznaná |
+> |---|---|---|
+> | Dlh | — (nový Dlh sa hneď prizná) | **−1 za každú aktívnu podmienku bankovky** na konci hry; **ráta sa k prahu Exekútora**; Povery proti nemu udelia mäkké poškodenie |
+> | Cirhóza | **−2 za každú aktívnu podmienku pečeň** na konci hry | body neuberá; **súper za ňu v bitke +1 tuhé**; umožní Pohreb; kartu za priznanie **nedostaneš** |
+> | Milujúca manželka | — | naďalej posúva latku Absťáku (§16) |
+>
+> Skutočnú cenu kliatby určuje **rozdanie scorecardov**: každá aktívna podmienka
+> boduje zvlášť, takže Dlh môže stáť −4 až −7 a Cirhóza −2 až −8 bodov (§14).
+
+> ```
+> prah = 10 + 2 × priazeň Exekútora          (Obecný úrad −4)
+> ```
+
+### Staré znenie §14 (bodovanie v4)
+
+> ## 14. Bodovanie
+>
+> Na konci hry (po poslednej bitke, §1) sa bodujú **len aktivované podmienky
+> scorecardov** — plošné body za lokality, cigarety, dlhy či Cirhózy nie sú.
+>
+> ### Scorecardy
+>
+> Každý starší leží na **scorecarde** — podložke s rámčekom pre kartu, stupnicou
+> strachu a **8 bodovacími podmienkami** (4 na stranu, vo výške slotov karty).
+> Scorecardy sa starším **rozdajú náhodne** pri príprave hry a scorecard určuje
+> **priazeň** staršieho (názov scorecardu = priazeň). Rozloženie podmienok je
+> v `data/scorecards.json`.
+>
+> - Podmienku **aktivuje neprázdna akcia** karty na ukazovateli na tej istej
+>   strane a indexe. Náhrada staršieho tak zmení aktivované podmienky.
+> - **Starší nemá pri bodovaní strany:** každá aktívna podmienka — ľavá aj
+>   pravá — boduje **obom hráčom**, každá zvlášť (dve aktívne Lokality =
+>   dvakrát), bez ohľadu na to, koho sa starší bojí. Strana len určuje, ktorá
+>   akcia karty podmienku aktivuje.
+>
+> | Ikona | Podmienka | Body pre každého hráča |
+> |---|---|---|
+> | 1 / 2 / 3 šípky | Znepokojenie / Strach / Vydesenie | **1 / 2 / 3** za každého staršieho v hre, ktorý sa hráča bojí aspoň na úrovni 1 / 2 / 3 |
+> | smerovník | ovládnuté lokality | **+2** za kus |
+> | väzeň | starší získaní patronátom | **+2** za kus |
+> | cigareta | zvyšné cigarety | **+1** za kus — **kus = 3 cigarety** |
+> | pečeň | nepriznaná Cirhóza | **−2** za kus |
+> | bankovky | každý Dlh — aj priznaný | **−1** za kus |
+>
+> Body sa počítajú za kus a **za každú aktívnu podmienku** daného typu, takže
+> **skutočnú hodnotu určuje rozdanie scorecardov** — pri šiestich aktívnych
+> podmienkach smerovník stojí každá ovládnutá lokalita 6 × 2 = 12 b (v playteste
+> 12 až 18 b), Dlh −4 až −7. Hodnoty sú v `data/scorecards.json`.
+>
+> ### Zónové podmienky
+>
+> Zónové podmienky (Znepokojenie, Strach, Vydesenie) sa pozerajú na **všetkých
+> 8 starších** vrátane toho, na ktorého scorecarde ležia. Za každého staršieho,
+> ktorý sa hráča bojí na úrovni L, dá scorecard hodnotu svojej **najvyššej**
+> aktívnej zónovej podmienky s úrovňou ≤ L (nesčítajú sa).
+>
+> Príklad: Farár má aktívne Znepokojenie a Strach. Starší A sa ťa bojí na úrovni
+> 1, B na 2, Farár je v neutrále → z Farára máš 1 + 2. Keď Farára vydesíš
+> (úroveň 3), ráta sa za neho Strach (Vydesenie aktívne nemá) → 1 + 2 + 2.

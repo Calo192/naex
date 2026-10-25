@@ -20,7 +20,7 @@ import {
   vyhladDlhov,
 } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
-import { instanceFor, makeDef } from "./helpers.ts";
+import { instanceFor, makeDef, naexOdkryte } from "./helpers.ts";
 
 const zaklad = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const D4: Layout4 = ["Dlh", "Dlh", "Dlh", "Dlh"];
@@ -95,7 +95,7 @@ describe("Dlh po bitke v náhľade sedí s hrou", () => {
     // Hráč 1 dá NA EX, ak je na ťahu; inak najprv hráč 0 skončí.
     let t = s;
     if (naTahu(t) !== p) t = apply(data, t, { type: "skipNaex" }, naTahu(t)!).state;
-    t = apply(data, t, { type: "naex", uid: ciel }, p).state;
+    t = naexOdkryte(data, t, ciel, p).state;
     const sNaex = doBitky(t);
     const bezNaex = doBitky(s);
     expect(k0.dlhy).toBeGreaterThan(0);
@@ -110,7 +110,7 @@ describe("Dlh po bitke v náhľade sedí s hrou", () => {
     const ukradne = svokraZaNaex(data, viewFor(data, s, 0), 0, pred);
     let t = s;
     if (naTahu(t) !== 0) t = apply(data, t, { type: "skipNaex" }, naTahu(t)!).state;
-    t = apply(data, t, { type: "naex", uid: s.strany[0][0]!.card.uid }, 0).state;
+    t = naexOdkryte(data, t, s.strany[0][0]!.card.uid, 0).state;
     expect(pred - t.hraci[0].cigarety).toBe(ukradne);
   });
 });

@@ -8,7 +8,7 @@ import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, GameState, LineState, PlacedCard, PlayerId } from "../src/index.ts";
 import { apply, evaluateLine, legalCommands, loadGameData, setupGame } from "../src/index.ts";
-import { instanceFor, makeDef, syntheticData } from "./helpers.ts";
+import { instanceFor, makeDef, syntheticData, naexOdkryte } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -57,7 +57,7 @@ describe("NA EX na vlastné aj súperove karty", () => {
     expect(naex).not.toContain(puska.card.uid);
     expect(() => apply(data, s, { type: "naex", uid: puska.card.uid }, 0)).toThrow(/Občana alebo Starešinu/);
     // Pečeň z NA EX ide hráčovi, ktorý ho dal — aj keď karta patrí súperovi.
-    const { state, events } = apply(data, s, { type: "naex", uid: superova.card.uid }, 0);
+    const { state, events } = naexOdkryte(data, s, superova.card.uid, 0);
     expect(events).toContainEqual({ type: "pecen", hrac: 0, mnozstvo: 1 });
     expect(state.strany[1][1]?.naexBy).toBe(0);
   });

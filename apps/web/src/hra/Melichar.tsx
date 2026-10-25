@@ -5,7 +5,7 @@
 // v profile (0 = Melichar mlčí). Hudba hrá ďalej rovnako nahlas a názov
 // hlášky sa neukazuje (Michal 2026-10-22).
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { NaladaMomentu } from "@naex/core";
 import { api } from "../lib/api.ts";
 import { MELICHAR_PREDVOLENY, useUcet } from "../lib/ucet.tsx";
@@ -72,9 +72,14 @@ interface Hlas {
   skoncil(): void;
 }
 
-/** aktivny = rozohraná partia proti počítaču. ozviMoment(nalada) volaj pri pečiatke momentu. */
-export function useMelichar(aktivny: boolean): { readonly ozviMoment: (nalada: NaladaMomentu) => void } {
+/**
+ * aktivny = rozohraná partia proti počítaču. ozviMoment(nalada) volaj pri pečiatke momentu.
+ * hovori = práve znie hláška — Melichar je vtedy v bare (Michal 2026-10-25); umlcBublinu ho
+ * odtiaľ pošle preč, hláška dohrá.
+ */
+export function useMelichar(aktivny: boolean): { readonly ozviMoment: (nalada: NaladaMomentu) => void; readonly hovori: boolean; readonly umlcBublinu: () => void } {
   const ja = useUcet().ja;
+  const [hovori, setHovori] = useState(false);
   const hlasitost = ja?.melichar ?? MELICHAR_PREDVOLENY;
   const zapnuty = aktivny && hlasitost > 0;
   const hlas = useRef<Hlas | null>(null);
@@ -95,6 +100,7 @@ export function useMelichar(aktivny: boolean): { readonly ozviMoment: (nalada: N
       tichoDo: 0,
       caka: undefined,
       skoncil: () => {
+        setHovori(false);
         if (!h.hovori) return;
         h.hovori = false;
         h.tichoDo = Date.now() + TICHO_MS;
@@ -112,6 +118,7 @@ export function useMelichar(aktivny: boolean): { readonly ozviMoment: (nalada: N
       h.audio.removeAttribute("src");
       h.audio.load();
       hlas.current = null;
+      setHovori(false);
     };
   }, [zapnuty]);
 
@@ -131,10 +138,11 @@ export function useMelichar(aktivny: boolean): { readonly ozviMoment: (nalada: N
         h.posledna = hlaska.id;
         h.audio.src = urlHlasky(hlaska);
         h.audio.volume = hlasitostZvuku(nastavenie.current.hlasitost);
-        h.audio.play().catch(h.skoncil);
+        h.audio.play().then(() => setHovori(true), h.skoncil);
       });
     }, ONESKORENIE_MS);
   }, []);
 
-  return { ozviMoment };
+  const umlcBublinu = useCallback(() => setHovori(false), []);
+  return { ozviMoment, hovori, umlcBublinu };
 }

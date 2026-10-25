@@ -45,6 +45,7 @@ import {
   manzelkyHraca,
   legalCommands,
   naexCieleVLinii,
+  sNaexNaKartach,
   lineState,
   poskodenieBitky,
   prahVydesenia,
@@ -194,16 +195,20 @@ const DEDICSTVO: Readonly<Record<string, number>> = {
   vinko: 0.8,
 };
 
-/** Ako veľmi hráčovi pomáha jeden bod priazne daného typu. */
+/**
+ * Ako veľmi hráčovi pomáha jeden bod priazne (priazen = 2 × sila) daného typu.
+ * Priazne v5 sú vyrovnané na ≈ 1 cigaretu za kolo na bod sily (Michal
+ * 2026-10-25), preto zatiaľ rovnaká váha — doladí bot-tréner.
+ */
 const VAHA_PRIAZNE: Readonly<Record<Favour, number>> = {
-  BITKAR: 0.5,
+  BITKAR: 0.25,
   VERIACI: 0.2,
-  FAJCIAR: 0.25,
+  FAJCIAR: 0.2,
   NEPRAJNIK: 0.15,
-  ALKOHOLIK: 0.1,
-  EXEKUTOR: 0.05,
-  UZERNIK: 0.05,
-  LAKOMEC: 0.1,
+  ALKOHOLIK: 0.15,
+  EXEKUTOR: 0.1,
+  UZERNIK: 0.15,
+  LAKOMEC: 0.2,
 };
 
 /** Hodnota karty v balíčku — čím vyššia, tým radšej ju bot má. */
@@ -297,13 +302,13 @@ interface Kontext {
   readonly povaha: Povaha;
 }
 
-/** Koľko bodov na konci hry dá jedna cigareta navyše (podmienky „zvyšné cigarety“, kus = 3). */
-function bodyZaCigaretu(data: GameData, s: GameState): number {
-  let n = 0;
-  for (const elder of s.starsi) {
-    for (const p of podmienkyStarsieho(data, elder)) if (p.aktivna && p.podmienka === "cigarety") n++;
-  }
-  return (n * data.bodyPodmienok.cigarety) / KONSTANTY.CIGARIET_NA_KUS;
+/**
+ * Koľko bodov na konci hry dá jedna cigareta navyše. Vo v5 je podmienka
+ * Cigarety súboj — cena jednej cigarety nie je lineárna a rozdiel bodov ju už
+ * zachytí (rozdielBodov), preto tu nič navyše (stratég: inak bot len pasuje).
+ */
+function bodyZaCigaretu(_data: GameData, _s: GameState): number {
+  return 0;
 }
 
 /**
@@ -327,6 +332,9 @@ function rozdielBodov(data: GameData, s: GameState, ja: PlayerId, starsi: readon
           doberaci: [...skryte(p, "dlh"), ...skryte(p, "cirhoza")],
           odhadzovaci: s.hraci[p].odhadzovaci,
           priznane: s.hraci[p].priznane,
+          poldeciPlne: s.hraci[p].poldeciPlne,
+          dedicstvo: s.hraci[p].dedicstvo,
+          abstakyZiskane: s.hraci[p].abstakyZiskane ?? 0,
         };
   const stav = { ovladnute: s.ovladnute, starsi, hraci: [hrac(0), hrac(1)] };
   let v = 0;
@@ -350,15 +358,16 @@ function buducnostHry(s: GameState): number {
 /** Čo získa víťaz prebiehajúcej bitky oproti porazenému (v bodoch). */
 function stavkaBitky(data: GameData, s: GameState, ja: PlayerId): number {
   if (s.ciel === null) return 0;
-  let lokality = 0;
-  for (const elder of s.starsi) {
-    for (const p of podmienkyStarsieho(data, elder)) if (p.aktivna && p.podmienka === "lokality") lokality++;
-  }
+  // v5: lokalita (aj zo sekery) pomôže v súbojoch o lokality — rozdiel bodov,
+  // keď ju vezmem ja, oproti tomu, keď ju vezme súper.
+  const karty = [...(s.ciel.lokalita === null ? [] : [s.ciel.lokalita]), ...s.naSekeru.filter((k) => k.uid !== s.ciel?.lokalita?.uid)];
+  const sLokalitou = (q: PlayerId): GameState => ({ ...s, ovladnute: [...s.ovladnute, ...karty.map((karta) => ({ karta, hrac: q }))] });
+  const lokality = Math.abs(rozdielBodov(data, sLokalitou(ja), ja) - rozdielBodov(data, sLokalitou(opponentOf(ja)), ja)) / 2;
   // Patronát: víťaz-patrón si staršieho nechá, porazený platí poldeci.
   let patronat = 0;
   for (const q of [0, 1] as const) if (s.patronat[q] !== null) patronat += hodnotaZiskania(data, s, ja, q) + 2;
   // Na sekeru (Michal 2026-10-21): víťaz berie aj lokality z predošlých remíz.
-  return lokality * data.bodyPodmienok.lokality * (1 + s.naSekeru.length) + 1.5 + patronat;
+  return lokality + 1.5 + patronat;
 }
 
 /**
@@ -639,7 +648,10 @@ function najlepsi(volba: Volba, moznosti: readonly Command[], ohodnot: (s: GameS
  * výber kariet, ktorý apply prijme). Hráč nesmie byť bez možnosti — to
  * je chyba volajúceho.
  */
-export function tahBota(data: GameData, state: GameState, ja: PlayerId, seed: number, nastavenia: BotNastavenia = {}): Command {
+export function tahBota(data: GameData, stav: GameState, ja: PlayerId, seed: number, nastavenia: BotNastavenia = {}): Command {
+  // NA EX naraz (v5): súperove skryté NA EX bot nevidí, rovnako ako hráč.
+  const state: GameState =
+    stav.pitkaStav === null ? stav : { ...stav, pitkaStav: { ...stav.pitkaStav, skryteNaex: (stav.pitkaStav.skryteNaex ?? []).filter((x) => x.hrac === ja) } };
   const legal = legalCommands(data, state, ja);
   const prvy = legal[0];
   if (prvy === undefined) throw new Error("Bot nemá legálny ťah.");
@@ -842,15 +854,7 @@ function zhromazdenie(v: Volba): Command | null {
     }
   }
 
-  // Fajčenie (karta hneď, ťah nekončí): proti Absťáku, alebo keď niet čo vyložiť.
-  const smoke = v.legal.find((c) => c.type === "smoke");
-  const doLinie = v.legal.filter((c) => c.type === "place" && (c.target === "vlastna" || c.target === "superova"));
-  const maCoTahat = h.doberaci.length + h.odhadzovaci.length > 0;
-  // Deficit nerestí sa dorovná až na konci Pitky — dovtedy ho môže pokryť NA EX či runda.
-  if (smoke !== undefined && maCoTahat && !z.pasoval[ja]) {
-    const prazdno = doLinie.length === 0 && z.zostavaLimit[ja] > 0 && h.cigarety >= 2;
-    if (prazdno && h.nerestiTotoKolo + 1 <= stropNeresti(state, ja)) return smoke;
-  }
+  // Fajčiť sa od v5 dá len v Pitke (tam rieši fajčenie pitka()).
 
   // Vykladanie: každú možnosť dohrá nanečisto (obaja chamtivo) a ohodnotí.
   const videne = new Set<string>();
@@ -950,6 +954,8 @@ function pitka(v: Volba): Command | null {
   }
   if (refill !== undefined && neresti + KONSTANTY.REFILL_CENA <= strop && k.buducnost > 0.3) return refill;
   if (smoke !== undefined && maCoTahat && h.ruka.length < 4 && h.cigarety >= 3 && neresti + 1 <= strop) return smoke;
+  // v5: fajčí sa len v Pitke — s prázdnou rukou si kartu na ďalšie kolo dober aj za poslednú cigaretu navyše.
+  if (smoke !== undefined && maCoTahat && h.ruka.length <= 2 && h.cigarety >= 2 && neresti + 1 <= strop) return smoke;
 
   // Poštárka: dve karty za Dlh, kým je Exekútor ďaleko.
   const postarka = v.legal.find((c) => c.type === "postarka" && c.pocet === KONSTANTY.EFEKT.POSTARKA_KARTY);
@@ -975,8 +981,11 @@ function pitka(v: Volba): Command | null {
   // NA EX: zahrá si ho nanečisto aj so súperovou odpoveďou.
   const naex = v.legal.filter((c) => c.type === "naex");
   if (naex.length > 0) {
-    const poOdpovedi = (po: GameState): number => {
-      if (po.pitkaStav?.reakcia === su) {
+    // NA EX naraz (v5): skryté NA EX sa ráta, akoby už ležalo na karte; súper
+    // naň odpovie až po odkrytí — ak má čím.
+    const poOdpovedi = (po0: GameState): number => {
+      let po = sNaexNaKartach(po0);
+      if (po.hraci[su].ruka.length > 0) {
         const odpoved = najlepsieVylozenie(k, po, po.hraci[su].ruka, su, Number.POSITIVE_INFINITY);
         if (odpoved !== null) {
           po = {
@@ -994,7 +1003,7 @@ function pitka(v: Volba): Command | null {
     if (best !== null) {
       if (krcmaVyzaduje(data, state, ja)) return best;
       const s0 = v.vzorky[0] ?? state;
-      if (priemer(v, best, poOdpovedi) > hodnotaStavu(k, s0, 1.5) + k.povaha.prahRiziko) return best;
+      if (priemer(v, best, poOdpovedi) > hodnotaStavu(k, sNaexNaKartach(s0), 1.5) + k.povaha.prahRiziko) return best;
     }
   }
   // Koniec ťahu v Pitke: chýbajúce neresti dorovnať, inak hrozí Absťák.
