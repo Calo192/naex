@@ -954,6 +954,8 @@ function pitka(v: Volba): Command | null {
   }
   if (refill !== undefined && neresti + KONSTANTY.REFILL_CENA <= strop && k.buducnost > 0.3) return refill;
   if (smoke !== undefined && maCoTahat && h.ruka.length < 4 && h.cigarety >= 3 && neresti + 1 <= strop) return smoke;
+  // v5: fajčí sa len v Pitke — s prázdnou rukou si kartu na ďalšie kolo dober aj za poslednú cigaretu navyše.
+  if (smoke !== undefined && maCoTahat && h.ruka.length <= 2 && h.cigarety >= 2 && neresti + 1 <= strop) return smoke;
 
   // Poštárka: dve karty za Dlh, kým je Exekútor ďaleko.
   const postarka = v.legal.find((c) => c.type === "postarka" && c.pocet === KONSTANTY.EFEKT.POSTARKA_KARTY);
