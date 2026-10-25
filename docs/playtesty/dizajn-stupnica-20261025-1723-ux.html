@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UX návrh: stupnica starších na hernom stole (stupnica-20261025-1723)</title>
+<style>
+:root{--bg:#14110e;--pl:#1e1914;--pl2:#2a231c;--tx:#f1e8d8;--sl:#b9ab95;--ja:#e9ad45;--te:#e0644c;--ze:#7cbf74;--mo:#6fb3d2;--ok:#3a3128;--wf:#3b342c;--wf2:#4a4239;--wf3:#5a5146;--wft:#e2d8c6}
+@media (prefers-color-scheme: light){:root{--bg:#f7f2ea;--pl:#fffaf2;--pl2:#efe6d8;--tx:#221a12;--sl:#5d5245;--ja:#8a5a00;--te:#a8331f;--ze:#2f7a28;--mo:#1d6b8f;--ok:#d9cdb9;--wf:#e6dfd3;--wf2:#d0c6b6;--wf3:#bfb3a1;--wft:#2d251c}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:1180px;margin:0 auto;padding:24px 16px 64px}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;line-height:1.25}
+h1{font-size:1.9rem;margin:.2em 0 .3em}
+h2{font-size:1.45rem;margin:2.2em 0 .6em;border-bottom:1px solid var(--ok);padding-bottom:.25em}
+h3{font-size:1.15rem;margin:1.4em 0 .4em}
+h4{font-size:1rem;margin:1em 0 .3em}
+a{color:var(--ja)}
+a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--ja);outline-offset:2px}
+code{font-size:.88em;overflow-wrap:anywhere}
+.meta{color:var(--sl);font-size:.93rem}
+.verdikt{background:var(--pl);border-left:4px solid var(--ja);padding:12px 16px;border-radius:6px}
+.mriezka{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.dlazdica{background:var(--pl);border:1px solid var(--ok);border-radius:8px;padding:12px 14px}
+.dlazdica b{color:var(--ja)}
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+th,td{text-align:left;vertical-align:top;padding:8px;border-bottom:1px solid var(--ok)}
+th{color:var(--sl);font-weight:600}
+.tab-obal{overflow-x:auto}
+.zav{display:inline-block;min-width:1.7em;text-align:center;border-radius:4px;padding:0 .3em;font-weight:700;color:#14110e}
+.zav4{background:#e0644c}.zav3{background:#e9ad45}.zav2{background:#c8b98f}.zav1{background:#8f8574}
+.stitok{display:inline-block;font-size:.78rem;border:1px solid var(--ok);border-radius:999px;padding:0 .55em;margin:0 .2em .2em 0;color:var(--sl)}
+.stitok.mala{border-color:var(--ze);color:var(--ze)}
+.stitok.stredna{border-color:var(--ja);color:var(--ja)}
+.stitok.velka{border-color:var(--te);color:var(--te)}
+.stitok.odpor{background:var(--ja);color:#14110e;border-color:var(--ja);font-weight:700}
+.filtre{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 12px}
+.filtre button{min-height:44px;padding:0 14px;border-radius:6px;border:1px solid var(--ok);background:var(--pl);color:var(--tx);font:inherit;cursor:pointer}
+.filtre button[aria-pressed="true"]{background:var(--ja);color:#14110e;border-color:var(--ja)}
+figure{margin:12px 0 18px;background:var(--pl);border:1px solid var(--ok);border-radius:8px;padding:8px}
+figure img{max-width:100%;height:auto;display:block;border-radius:4px}
+figcaption{font-size:.88rem;color:var(--sl);padding:6px 4px 0}
+.dve{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+@media (max-width:860px){.dve{grid-template-columns:1fr}}
+.tok{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+@media (max-width:700px){.tok{grid-template-columns:1fr}}
+.tok>div{background:var(--pl2);border:1px solid var(--ok);border-radius:8px;padding:10px 14px}
+.tok ol{margin:0;padding-left:1.3em}
+.pred h4{color:var(--te)}.po h4{color:var(--ze)}
+.navrh{background:var(--pl);border:1px solid var(--ok);border-radius:10px;padding:4px 18px 16px;margin:18px 0}
+.navrh.odporucany{border:2px solid var(--ja)}
+.navrh>h3{margin-top:.9em}
+.navrh dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:8px 0}
+.navrh dt{color:var(--sl);font-weight:600}
+.navrh dd{margin:0}
+@media (max-width:600px){.navrh dl{grid-template-columns:1fr}.navrh dt{margin-top:6px}}
+details{margin:8px 0}
+summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:600}
+.citat{border-left:3px solid var(--mo);padding:4px 12px;margin:8px 0;color:var(--sl);font-style:italic}
+.citat cite{display:block;font-style:normal;font-size:.85rem;margin-top:2px}
+.pozn{font-size:.88rem;color:var(--sl)}
+.skok{position:absolute;left:-999px}.skok:focus{left:16px;top:8px;background:var(--ja);color:#14110e;padding:6px 10px;z-index:9}
+nav.obsah ol{columns:2;column-gap:28px;padding-left:1.2em}
+@media (max-width:600px){nav.obsah ol{columns:1}}
+.svg-obal{background:var(--pl);border:1px solid var(--ok);border-radius:8px;padding:8px;overflow-x:auto}
+.svg-obal svg{display:block;min-width:720px;width:100%;height:auto}
+.mc{background:var(--pl2);border:1px dashed var(--sl);border-radius:6px;padding:8px 12px;margin:6px 0;font-size:.95rem}
+.mc b.k{color:var(--ja)}
+
+/* ---------- drôtené modely (low-fi: sivé bloky, reálny text) ---------- */
+.wf{background:var(--wf);border:2px solid var(--wf2);border-radius:10px;padding:12px;margin:8px 0;color:var(--wft);font:13px/1.35 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:auto}
+.wf-pop{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;opacity:.75;margin:0 0 6px}
+.wf-rad{display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap}
+.wf-hlava{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;background:var(--wf2);border-radius:8px;padding:6px 10px;margin-bottom:10px}
+.wf-hlava .leg{display:flex;align-items:center;gap:6px}
+.wf-btn{display:inline-flex;align-items:center;justify-content:center;min-height:30px;min-width:30px;padding:0 10px;border:1.5px solid var(--wft);border-radius:6px;font-weight:700}
+.wf-sc{width:230px;flex:none;background:var(--wf2);border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:5px}
+.wf-sc.siroky{width:300px}
+.wf-sc .h{display:flex;justify-content:space-between;align-items:center;font-weight:700}
+.wf-odz{border:1.5px solid var(--wft);border-radius:999px;padding:0 6px;font-size:11px;font-weight:700}
+.wf-portret{height:74px;background:var(--wf3);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;opacity:.8}
+.stup{position:relative;display:flex;align-items:flex-end;gap:2px;height:30px;padding-top:12px}
+.stup i{flex:1;border-radius:2px;background:var(--wf3);display:block}
+.stup i.z0{height:5px;opacity:.55}.stup i.z1{height:9px}.stup i.z2{height:13px}.stup i.z3{height:17px}
+.stup i.akt{outline:2px solid var(--wft);outline-offset:1px}
+.stup .pin{position:absolute;top:0;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:9px solid var(--wft);translate:-50% 0}
+.stup .duch{position:absolute;top:0;width:12px;height:9px;border:1.5px dashed var(--wft);border-radius:2px;translate:-50% 0;opacity:.8}
+.stup .sip{position:absolute;top:3px;height:0;border-top:2px solid var(--wft)}
+.stup .sip::after{content:"";position:absolute;right:-2px;top:-5px;border-left:7px solid var(--wft);border-top:4px solid transparent;border-bottom:4px solid transparent}
+.strany{display:flex;justify-content:space-between;font-size:11px;font-weight:700;opacity:.9}
+.cisla{display:flex;gap:2px;font-size:10px;opacity:.75}.cisla span{flex:1;text-align:center}
+.veta{background:var(--wf);border-radius:5px;padding:3px 6px;font-size:12px}
+.veta b{font-weight:700}
+.veta.tl{opacity:.75}
+.zdroj{display:inline-block;border:1.5px dashed var(--wft);border-radius:4px;padding:0 5px;font-size:11px;font-weight:700}
+.wf-panel{background:var(--wf2);border:1.5px solid var(--wft);border-radius:8px;padding:8px 10px}
+.wf-panel table{font-size:12px}
+.wf-panel th,.wf-panel td{border-bottom:1px solid var(--wf3);padding:4px 6px;color:var(--wft)}
+.wf-pil{display:inline-block;background:var(--wf);border:2px solid var(--wft);border-radius:12px;padding:4px 14px;font-size:13px;max-width:100%}
+.wf-pil strong{letter-spacing:.06em;text-transform:uppercase;font-size:11px;margin-right:6px}
+.wf-mel{display:flex;gap:10px;align-items:flex-start;background:var(--wf2);border-radius:8px;padding:8px 10px}
+.wf-mel .av{width:40px;height:40px;border-radius:50%;background:var(--wf3);flex:none}
+.wf-stlpce{display:grid;grid-template-columns:repeat(3,minmax(200px,1fr));gap:10px}
+.wf-stlpec{background:var(--wf2);border-radius:8px;padding:8px}
+.wf-stlpec h5{margin:0 0 6px;font-size:12px}
+.chip{display:flex;justify-content:space-between;gap:6px;background:var(--wf);border-radius:5px;padding:4px 6px;margin-bottom:5px;font-size:12px}
+.chip b{font-weight:700}
+.wf-pod{position:relative;background:var(--wf2);border:1.5px solid var(--wft);border-radius:8px;padding:10px 12px;max-width:520px}
+.wf-pod ol{margin:4px 0;padding-left:1.2em}
+@media (prefers-reduced-motion: no-preference){.blik{animation:bl 2.4s ease-in-out infinite}@keyframes bl{50%{opacity:.45}}}
+</style>
+</head>
+<body>
+<a class="skok" href="#obsah">Preskočiť na obsah</a>
+<main id="obsah">
+<p class="meta">UX návrh · id <code>stupnica-20261025-1723</code> · 25. 10. 2026 · roadmapa #95 „Vysvetliť stupnicu starších (výučba aj UI)“ · herný stôl <code>/hra</code>, línia starších<br>
+Súbežný návrh vzhľadu: <a href="dizajn-stupnica-20261025-1723-ui.html">dizajn-stupnica-20261025-1723-ui.html</a> (UI dizajnér). Nadväzuje na <a href="dizajn-linia-starsich-20261023-0805-ux.html">UX návrh línie starších z 23. 10.</a></p>
+<h1>Stupnica starších: čo znamená a prečo sa pohla</h1>
+
+<p class="verdikt"><b>Verdikt.</b> Všetko, čo hráč potrebuje vedieť, hra už pozná a väčšinu aj niekde ukazuje. Chýba však vysvetlenie priamo pri stupnici. Nikde nie je napísané, ktorá polovica je moja, a priazeň, strach a body ležia na štyroch rôznych miestach. Na menšom stole riadok so strachom celkom zmizne. Posun stupnice dnes len 1,6 sekundy blikne a log napíše „marker staršieho postarka sa posúva k hráčovi 2“. Prečo sa pohla a čo z toho má ktorý hráč, sa hráč nedozvie. Navrhujem začať rýchlou výhrou <b>N1</b> (legenda a popis strán). Hneď po nej odporúčam <b>N3</b>, stopu posunu so zdrojom a dôsledkom pre oboch hráčov. Práve to Michal v #95 žiada.</p>
+
+<nav class="obsah" aria-label="Obsah">
+<ol>
+<li><a href="#pouzivatelia">Používatelia a ich úlohy</a></li>
+<li><a href="#model">Čo má hráč pochopiť (pravidlo §10)</a></li>
+<li><a href="#toky">Toky dnes</a></li>
+<li><a href="#signaly">Signály z playtestov</a></li>
+<li><a href="#audit">Audit použiteľnosti</a></li>
+<li><a href="#navrhy">Návrhy N1–N5</a></li>
+<li><a href="#poradie">Odporúčané poradie</a></li>
+<li><a href="#otazky">Otázky do playtestu a na Michala</a></li>
+</ol>
+</nav>
+
+<h2 id="pouzivatelia">Používatelia a ich úlohy</h2>
+<div class="mriezka">
+<div class="dlazdica"><b>Nováčik po výučbe</b><br>„Čo mi tento starší dáva a čo mi berie?“ Pozná farby, no nevie, ktorá strana je jeho a prečo sa ho boja, keď priazeň má súper.</div>
+<div class="dlazdica"><b>Hráč v kroku bitky</b> (Pohoršenie, prebytok)<br>„Kam posunúť marker, aby som z toho niečo mal?“ Rozhoduje pod časovým tlakom a za pár sekúnd.</div>
+<div class="dlazdica"><b>Hráč, ktorý čaká</b><br>„Čo mi súper práve robí so staršími a čo z toho budem mať?“ Dnes vidí iba „ČAKÁŠ“.</div>
+<div class="dlazdica"><b>Skúsený hráč</b><br>„Kto sa koho bojí a koľko je to bodov?“ Chce prehľad všetkých ôsmich naraz, bez otvárania lupy.</div>
+</div>
+
+<h2 id="model">Čo má hráč pochopiť (pravidlo §10, bez zmeny)</h2>
+<p>Marker má dvojakú úlohu. Na čej polovici leží, ten hráč má <b>priazeň</b>, teda bonus počas hry so silou 1/2/3 podľa farby. Starší sa pritom <b>bojí toho druhého</b> a strach sa na konci hry vypláca bodmi: kto vyhrá viac podmienok staršieho, dostane 1 bod a k tomu 1 za každú zónu strachu. Prebytok po bitke posúva markery od držiteľa prebytku k jeho súperovi, Pohoršenie o krok k súperovi alebo k sebe (§9.2, §9.4). Pravidlo je zámerne „otočené“, ako hovorí §9.4: <i>„vystrašený starší ti na konci pridá body […], ale súperovi medzitým dáva svoju priazeň.“</i> Celé UX stojí na tom, aby hráč videl obe polovice tejto vety naraz.</p>
+<div class="svg-obal">
+<svg viewBox="0 0 900 230" role="img" aria-labelledby="m-t m-d">
+<title id="m-t">Dvojaká úloha markera</title>
+<desc id="m-d">Stupnica s deviatimi pozíciami. Marker stojí v žltej zóne na polovici súpera. Šípka vedie od markera k súperovi s textom priazeň plus 1 počas hry. Druhá šípka vedie k tebe s textom bojí sa ťa, Znepokojenie, na konci až 2 body.</desc>
+<style>.s{fill:#8f8574}.t{fill:currentColor;font:14px system-ui,sans-serif}.tb{font-weight:700}.l{stroke:currentColor;stroke-width:2;fill:none}</style>
+<g style="color:var(--tx)">
+<text class="t tb" x="40" y="28">ty (vždy vľavo)</text>
+<text class="t tb" x="700" y="28">súper (vpravo)</text>
+<g transform="translate(200,60)">
+<rect class="s" x="0" y="34" width="50" height="22" rx="3"/><rect class="s" x="56" y="40" width="50" height="16" rx="3"/><rect class="s" x="112" y="46" width="50" height="10" rx="3"/>
+<rect class="s" x="168" y="51" width="50" height="5" rx="2" opacity=".5"/><rect class="s" x="224" y="51" width="50" height="5" rx="2" opacity=".5"/><rect class="s" x="280" y="51" width="50" height="5" rx="2" opacity=".5"/>
+<rect class="s" x="336" y="46" width="50" height="10" rx="3" stroke="currentColor" stroke-width="2"/><rect class="s" x="392" y="40" width="50" height="16" rx="3"/><rect class="s" x="448" y="34" width="50" height="22" rx="3"/>
+<path d="M353 18 l8 12 l8 -12 z" fill="currentColor"/>
+<text class="t" x="0" y="78">červená 3</text><text class="t" x="112" y="78">žltá 1</text><text class="t" x="200" y="78">sivý stred</text><text class="t" x="336" y="78">žltá 1</text><text class="t" x="430" y="78">červená 3</text>
+</g>
+<path class="l" d="M570 92 C640 92 700 60 720 45"/><path d="M716 40 l10 2 l-6 8 z" fill="currentColor"/>
+<text class="t" x="610" y="178">♥ súper má priazeň +1 (bonus hneď)</text>
+<path class="l" d="M540 150 C420 200 200 200 90 45"/><path d="M84 52 l4 -10 l6 9 z" fill="currentColor"/>
+<text class="t" x="230" y="222">starší sa bojí teba (Znepokojenie): na konci za neho až 1 + 1 = 2 b</text>
+</g>
+</svg>
+</div>
+<p class="pozn">Toto SVG je zároveň náčrt toho, čo má povedať popover „Ako čítať stupnicu“ v N1.</p>
+
+<h2 id="toky">Toky dnes</h2>
+<p class="pozn">Partia <code>playtest/20261025-172338</code> (Dizajn 1 proti Dizajn 2, krátka hra), kolo 1, bitka o Ihrisko 9 : 2. Dizajn 2 dal Pohoršenie na Farára, Dizajn 1 rozdelil prebytok 7. Miňištrant zdražil posun na 3, takže Poštárka išla 2 kroky do žltej k Dizajn 2 a 1 prebytok prepadol. Okno 1600 × 1000, ak nie je uvedené inak.</p>
+
+<h3>T1 — Pohoršenie: „kam posunúť a čo z toho mám“</h3>
+<div class="dve">
+<figure><img src="dizajn-stupnica-20261025-1723/ux-1-pohorsenie-krok.png" alt="Krok Pohoršenie u Dizajn 2: osem scorecardov, pri každom tlačidlá k sebe a k súperovi, pokyn hore orezaný tromi bodkami." loading="lazy"><figcaption>Pohoršenie: vysvetlenie v pokyne je orezané uprostred vety („priazeň sa ti zmení …“). Hlavička línie hovorí len „vyber smer“.</figcaption></figure>
+<figure><img src="dizajn-stupnica-20261025-1723/ux-2-pohorsenie-nahlad-sive.png" alt="Prejdenie myšou na k súperovi pri Farárovi: hlavička ukazuje neutrál → neutrál, body ty ±0, súper ±0, do žltej ešte 1 krok." loading="lazy"><figcaption>Náhľad je dobrý („neutrál → neutrál · do žltej ešte 1 krok“), lenže je iba v hlavičke a iba pri prejdení myšou alebo pri fokuse. Na samotnej stupnici sa ukáže len prerušovaný duch.</figcaption></figure>
+</div>
+<ol>
+<li>Hráč prečíta pokyn. Veta s „prečo“ je orezaná (U9).</li>
+<li>Prejde myšou na tlačidlo a v hlavičke si prečíta náhľad. Pri ôsmich staršoch a dvoch smeroch je to až 16 prejdení.</li>
+<li>Klikne. Marker blikne a nič viac. Pri posune v sivej sa nezmení nič viditeľné (U8).</li>
+</ol>
+
+<h3>T2 — Čakajúci hráč: „čo mi súper robí“</h3>
+<figure><img src="dizajn-stupnica-20261025-1723/ux-3-caka-na-supera.png" alt="Pohľad Dizajn 1, kým Dizajn 2 robí Pohoršenie: pilulka ČAKÁŠ Na ťahu je Dizajn 2, línia starších s bežným súhrnom." loading="lazy"><figcaption>Dizajn 1 vidí „ČAKÁŠ · Na ťahu je Dizajn 2“. Nevie, že ide o Pohoršenie, koľko ich ostáva ani čo hrozí (U7). Línia sa mu ukázala, ale hlavička ostala v bežnom súhrne (<code>HernaPlocha.tsx:4872</code>, krok sa posiela len hráčovi na ťahu).</figcaption></figure>
+
+<h3>T3 — Prebytok: „prečo idú k súperovi, keď som vyhral“</h3>
+<figure><img src="dizajn-stupnica-20261025-1723/ux-4-prebytok-krok.png" alt="Krok Prebytok u Dizajn 1: pokyn Klikni na staršieho — marker ide k súperovi, posun ťa stojí 3 (Miňištrant), orezaný. Hlavička ukazuje náhľad Farára neutrál → neutrál, do žltej ešte 2 kroky. Nad stolom bublina Melichara o Cirhóze." loading="lazy"><figcaption>Pokyn hovorí, <i>čo</i> sa stane („on priazeň, teba sa starší začne báť“), ale nehovorí <i>prečo je to dobré</i>, teda body na konci hry. Aj tu je pokyn orezaný. Náhľad „do žltej ešte 2 kroky“ nepočíta s tým, že pri cene 3 zostáva prebytok len na 2 posuny.</figcaption></figure>
+
+<h3>T4 — Po bitke: „čo sa stalo a čo z toho mám“</h3>
+<div class="dve">
+<figure><img src="dizajn-stupnica-20261025-1723/ux-5-po-bitke-ty.png" alt="Línia starších u Dizajn 1 po prebytku: Poštárka má marker vpravo v žltej s červeným prstencom, v hlavičke ★ ty +2, v päte ♥ Dizajn 2 +1 Bitkár a bojí sa teba úroveň 1." loading="lazy"><figcaption>Dizajn 1 po prebytku. O Poštárke sa dozvie z troch miest: ★ ty +2 v hlavičke, ♥ Dizajn 2 +1 v päte a „bojí sa teba · úroveň 1“ v poslednom riadku. Marker zakrýva farbu zóny, na ktorej stojí (U2). Nikde nie je napísané, ktorá polovica je jeho, ani čo sa zmenilo a prečo.</figcaption></figure>
+<figure><img src="dizajn-stupnica-20261025-1723/ux-7-notebook-1280.png" alt="Ten istý pohľad pri 1280 × 720: pod stupnicou je len ♥ Dizajn 2 +1 Bitkár, +1 tuhé v bitke a riadok s bodmi; riadok bojí sa chýba." loading="lazy"><figcaption>Pri 1280 × 720 (nízky stôl) riadok „bojí sa…“ <b>zmizne</b>. Je totiž v <code>.ls-ucinok</code> a ten skryje <code>@container linia-starsich (height &lt; 330px)</code> (<code>hra.css:5406</code>, <code>LiniaStarsich.tsx:360</code>). Ostane len priazeň, takže polovica vzťahu chýba.</figcaption></figure>
+</div>
+<figure><img src="dizajn-stupnica-20261025-1723/ux-6-lupa-super.png" alt="Lupa Poštárky u Dizajn 2: ♥ ty +1 +1 tuhé v bitke, Bojí sa súpera · žltá, Vydesíš → súper +3, vydesí súper → ty +3, súboje ty 0 : 1 Dizajn 1, body Dizajn 1 +2 (1 + 1 za strach)." loading="lazy"><figcaption>Najlepšie vysvetlenie v hre je lupa staršieho, kde sú priazeň, strach aj body v jednom bloku. V kroku Pohoršenia a prebytku, keď ju hráč potrebuje najviac, je však vypnutá (<code>LiniaStarsich.tsx:164</code>, <code>lupa={krok === null ? … : undefined}</code>). Riadok „Vydesíš → súper +3“ je presný, no bez kontextu mätie, lebo „vydesíš“ tu znamená „dáš súperovi priazeň“ (U10).</figcaption></figure>
+<p>Kroky dnes: posun (blik 1,6 s, <code>HernaPlocha.tsx:3778</code>), potom toast, ale <b>len</b> keď niekto získa alebo posilní priazeň (<code>HernaPlocha.tsx:4002</code>). Strach, stratu priazne ani posun v sivej toast neoznámi. Hráč, ktorý chce vedieť „prečo“, otvorí Log a nájde <code>Prebytok: marker staršieho postarka sa posúva k Dizajn 2.</code> (id namiesto mena, bez dôsledku, <code>engine.ts:3585</code>, <code>engine.ts:3514</code>).</p>
+
+<h2 id="signaly">Signály z playtestov a spätnej väzby</h2>
+<blockquote class="citat">„Prebytkom ich posúvam k súperovi. Starší sa potom bojí mňa a za strach dostávam body […] Súper dostane jeho ‚priazeň‘, malý bonus. Prečo je to takto otočené, neviem vysvetliť.“ — „Pitky, priazeň verzus strach a Pohoršenie som nechytila. Viac zmien na stole ako vysvetlení.“<cite>Marta Prvýkrát (nováčik), playtest výučby 20261024-155610, hrac1/feedback.md</cite></blockquote>
+<blockquote class="citat">„Priazeň a strach si trochu pletiem.“ — „Snímka 124: log ‚marker staršieho autobusar sa posúva k hráčovi 2‘ je technický, malé písmeno, ‚hráčovi 2‘.“<cite>nováčik 2, 20261024-155610, hrac2/feedback.md</cite></blockquote>
+<blockquote class="citat">„Prečo prebytok víťaza posúva markery k porazenému a to dáva víťazovi strach/body?“ — „Pre porazeného nejasné a bez šance reagovať.“<cite>20261016-134912, hrac2/feedback.md</cite></blockquote>
+<blockquote class="citat">„Starší: […] stupnica má farby, čím ďalej, tým viac sa ťa boja. Každý starší dá body za svoje podmienky. Podrobnosti neviem.“<cite>playtest výučby 20261025-122456, hrac1/feedback.md</cite></blockquote>
+<blockquote class="citat">„Nejasné: […] kam smeruje priazeň pri prebytku.“ · „chýba vysvetlenie ukazovateľa priazne“<cite>20261011-101224 hrac1 · 20261011-125943 sledovateľ (V6 Nápovedy)</cite></blockquote>
+<p>Michal, roadmapa #95 (25. 10.): hráč nechápe, čo znamenajú sivá, žltá, oranžová a červená ani prečo sa stupnica posúva. Chce popis pri stupnici a pri každom posune, prečo sa pohla a čo z toho má ktorý hráč. Ľudská spätná väzba na webe sa stupnice zatiaľ netýka. Názory AI hráčov (#17, #33) riešia silu prebytku, nie jeho zrozumiteľnosť.</p>
+
+<h2 id="audit">Audit použiteľnosti</h2>
+<p class="pozn">Závažnosť podľa Nielsena: 4 = katastrofa použiteľnosti, 3 = veľký problém, 2 = menší, 1 = kozmetický.</p>
+<div class="filtre" role="group" aria-label="Filter podľa závažnosti">
+<button type="button" data-f="vsetky" aria-pressed="true">Všetky (13)</button>
+<button type="button" data-f="4" aria-pressed="false">Závažnosť 4</button>
+<button type="button" data-f="3" aria-pressed="false">Závažnosť 3</button>
+<button type="button" data-f="2" aria-pressed="false">Závažnosť 2</button>
+</div>
+<p id="audit-pocet" class="pozn" aria-live="polite">Zobrazených 13 z 13.</p>
+<div class="tab-obal">
+<table id="audit-tab">
+<thead><tr><th scope="col">#</th><th scope="col">Problém</th><th scope="col">Heuristika</th><th scope="col">Záv.</th><th scope="col">Dôkaz</th><th scope="col">Koho, ako často</th><th scope="col">Rieši</th></tr></thead>
+<tbody>
+<tr data-z="4"><td>U1</td><td>Stupnica nemá legendu ani popis strán. Nikde nie je povedané, že „tvoja polovica je vždy vľavo“ (zrkadlenie #55), ani čo znamená farba a výška.</td><td>Rozpoznanie namiesto pamätania; zhoda so svetom</td><td><span class="zav zav4">4</span></td><td><code>LiniaStarsich.tsx:369–391</code> (stupnica bez textu, <code>aria-hidden</code>); ux-5; citát Marta</td><td>každý nováčik, každý pohľad na línii</td><td>N1, N5</td></tr>
+<tr data-z="4"><td>U2</td><td>Posun nevysvetľuje príčinu ani dôsledok: 1,6 s blik, toast len pri získaní priazne, nie pri strachu, strate priazne ani posune v sivej.</td><td>Viditeľnosť stavu systému</td><td><span class="zav zav4">4</span></td><td><code>HernaPlocha.tsx:3768–3780</code>, <code>:4002</code>; #95</td><td>obaja hráči, každá bitka (1–4 posuny)</td><td>N3</td></tr>
+<tr data-z="3"><td>U3</td><td>Priazeň, strach a body sú na 4 miestach (prstenec markera, ♥ v päte, „bojí sa…“ v poslednom riadku, ★ v hlavičke). Žiadna veta ich nespája.</td><td>Rozpoznanie; minimalizmus</td><td><span class="zav zav3">3</span></td><td><code>LiniaStarsich.tsx:279, 306, 349–361</code>; ux-5</td><td>všetci, pri každom čítaní staršieho</td><td>N2, N5</td></tr>
+<tr data-z="3"><td>U4</td><td>Na nízkom stole (notebook 1280 × 720) zmizne riadok strachu, ostane len priazeň.</td><td>Viditeľnosť stavu</td><td><span class="zav zav3">3</span></td><td><code>hra.css:5406–5414</code>; ux-7</td><td>hráči na notebookoch, stále</td><td>N2</td></tr>
+<tr data-z="3"><td>U5</td><td>Marker (15 px disk) zakrýva farbu zóny, na ktorej stojí. Zónu treba odhadnúť zo susedov.</td><td>Viditeľnosť stavu</td><td><span class="zav zav3">3</span></td><td><code>hra.css:5249–5260</code>; ux-5; snímka 04 v UI návrhu</td><td>všetci</td><td>N1 (forma: UI)</td></tr>
+<tr data-z="3"><td>U6</td><td>Čakajúci hráč nevidí názov kroku, zostávajúci prebytok ani to, čo z posunov dostane.</td><td>Viditeľnosť stavu</td><td><span class="zav zav3">3</span></td><td><code>HernaPlocha.tsx:4872</code>; ux-3</td><td>vždy jeden z dvoch hráčov, každá bitka</td><td>N4, N3</td></tr>
+<tr data-z="3"><td>U7</td><td>Pokyn kroku hovorí, čo sa stane, ale nie prečo je to dobré (body). Smer „víťaz posúva k porazenému“ je proti intuícii.</td><td>Zhoda so svetom; nápoveda</td><td><span class="zav zav3">3</span></td><td><code>HernaPlocha.tsx:3511, 3528</code>; citáty 20261016, Marta</td><td>nováčikovia, prvé 2–3 bitky</td><td>N4, N1</td></tr>
+<tr data-z="3"><td>U8</td><td>Lupa staršieho (priazeň, strach a body v jednom bloku) je v kroku Pohoršenia a prebytku vypnutá.</td><td>Nápoveda a dokumentácia; flexibilita</td><td><span class="zav zav3">3</span></td><td><code>LiniaStarsich.tsx:164</code>; ux-6</td><td>hráč v kroku, každá bitka</td><td>N3, N2</td></tr>
+<tr data-z="2"><td>U9</td><td>Pokyn kroku je pri 1600 px orezaný práve na vete s „prečo“.</td><td>Viditeľnosť; minimalizmus</td><td><span class="zav zav2">2</span></td><td>ux-1, ux-4</td><td>hráč v kroku</td><td>N4</td></tr>
+<tr data-z="2"><td>U10</td><td>Posun v sivom strede vyzerá ako „nič“. Že sa marker priblížil k farbe, ukáže len náhľad v hlavičke pri prejdení myšou.</td><td>Viditeľnosť stavu</td><td><span class="zav zav2">2</span></td><td>ux-2; <code>HernaPlocha.tsx:3636–3648</code></td><td>najmä 1. kolo (všetci v strede)</td><td>N3</td></tr>
+<tr data-z="2"><td>U11</td><td>Log píše id staršieho a „hráčovi 1“, bez dôsledku.</td><td>Zhoda so svetom</td><td><span class="zav zav2">2</span></td><td><code>engine.ts:3514, 3585</code>; citát hrac2</td><td>kto hľadá „prečo“ (Log)</td><td>N3</td></tr>
+<tr data-z="2"><td>U12</td><td>Línia hovorí „žltá, úroveň 1“, bar a pravidlá „Znepokojenie / Strach / Vydesenie“. Väzbu na podmienky v bare hráč nevidí.</td><td>Konzistencia</td><td><span class="zav zav2">2</span></td><td><code>LiniaStarsich.tsx:19, 360</code>; PRAVIDLA §10 tabuľka; bar ZNEPOKOJENIE 2/2 (ux-5)</td><td>všetci, pri bodovaní</td><td>N2</td></tr>
+<tr data-z="2"><td>U13</td><td>Melichar má nápovedu pre priazeň a Pohoršenie, ale nie pre prvý prebytok ani prvý strach. Zmena markera nie je oznámená čítačke (WCAG 4.1.3).</td><td>Nápoveda; prístupnosť</td><td><span class="zav zav2">2</span></td><td><code>packages/core/data/vyucba/napovedy.json</code> (id: priazen, pohorsenie); stupnica <code>aria-hidden</code></td><td>nováčikovia (raz za účet); používatelia čítačky</td><td>N4, N3</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="navrhy">Návrhy</h2>
+<p>Od najmenšieho po najodvážnejší. N1 až N4 sa navzájom dopĺňajú, N5 je alternatívny pohľad. Ako návrhy <b>vyzerajú</b>, rieši UI dizajnér. Tu sú obsah, toky a správanie.</p>
+
+<!-- N1 -->
+<section class="navrh" aria-labelledby="n1">
+<h3 id="n1">N1 · Legenda a strany stupnice <span class="stitok odpor">rýchla výhra</span> <span class="stitok mala">malá</span></h3>
+<dl>
+<dt>Rieši</dt><dd>U1, U5 (požiadavka, forma u UI), čiastočne U7</dd>
+<dt>Čo</dt><dd>
+<ol>
+<li><b>Popis strán pri každej stupnici:</b> pod ňou „◀ ty“ vľavo a krstné meno súpera vpravo, napríklad „Dizajn 2 ▶“. Je to krátke a zrkadlenie sa tým vysvetlí samo.</li>
+<li><b>Legenda v hlavičke línie</b> (vždy, aj v kroku), jeden riadok: <i>„♥ priazeň má ten, na koho polovici je marker · bojí sa toho druhého · žltá / oranžová / červená = 1 / 2 / 3“</i>.</li>
+<li><b>Tlačidlo „?“ Ako čítať stupnicu</b> v hlavičke otvorí popover s troma vetami a <b>živým príkladom z tejto partie</b> (prvý starší mimo stredu, inak všeobecný príklad).</li>
+<li><b>Požiadavka na vzhľad:</b> farba zóny, na ktorej marker stojí, musí ostať viditeľná. Marker môže byť nad segmentom ako špendlík, segment pod ním sa zvýrazní. Formu volí UI.</li>
+</ol></dd>
+</dl>
+<div class="tok">
+<div class="pred"><h4>Pred</h4><ol><li>Hráč vidí farebný pás a krúžok.</li><li>Musí si pamätať z výučby, ktorá strana je jeho a čo znamená farba.</li><li>Kto nevie, hľadá v Pravidlách (iná stránka, partia beží).</li></ol></div>
+<div class="po"><h4>Po</h4><ol><li>Pod pásom čítam „◀ ty · Dizajn 2 ▶“ a legendu v hlavičke.</li><li>Ak neviem, kliknem na „?“, kde sú tri vety a príklad Poštárky.</li><li>Esc ma vráti na stôl, partia sa nepreruší.</li></ol></div>
+</div>
+<p class="wf-pop">Drôtený model — hlavička línie a jeden scorecard (pohľad Dizajn 1)</p>
+<div class="wf" aria-label="Drôtený model N1">
+<div class="wf-hlava">
+<span class="wf-btn">← Späť na stôl</span>
+<span class="leg"><b>♥ priazeň</b> má ten, na koho polovici je marker · <b>bojí sa</b> toho druhého · žltá / oranžová / červená = 1 / 2 / 3</span>
+<span class="wf-btn" aria-hidden="true">? Ako čítať stupnicu</span>
+</div>
+<div class="wf-rad">
+<div class="wf-sc">
+<div class="h"><span>Poštárka</span><span class="wf-odz">★ ty +2</span></div>
+<div class="wf-portret">portrét + 4 + 4 podmienky</div>
+<div class="stup"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i class="z0"></i><i class="z0"></i><i class="z0"></i><i class="z1 akt"></i><i class="z2"></i><i class="z3"></i><span class="pin" style="left:72.2%"></span></div>
+<div class="strany"><span>◀ ty</span><span>Dizajn 2 ▶</span></div>
+<div class="veta tl">(päta podľa N2)</div>
+</div>
+<div class="wf-pod">
+<b>Ako čítať stupnicu</b>
+<ol>
+<li>Marker ukazuje, na čej polovici starší je. <b>Tvoja polovica je vždy vľavo.</b></li>
+<li>Kto ho má na svojej polovici, má jeho <b>♥ priazeň</b>, teda bonus počas hry. Žltá +1, oranžová +2, červená +3.</li>
+<li><b>Bojí sa toho druhého.</b> Strach sa platí na konci: kto vyhrá viac jeho podmienok, dostane 1 b a k tomu 1 za každú farbu strachu.</li>
+</ol>
+<p style="margin:6px 0"><b>Teraz:</b> Poštárka je v žltej na strane Dizajn 2. Dizajn 2 má +1 tuhé v bitke. Poštárka sa bojí teba, ak vyhráš viac jej podmienok, dostaneš za ňu 2 b.</p>
+<p style="margin:6px 0"><b>Kto ho posúva:</b> prebytok po bitke (kto ho drží, tlačí starších k súperovi) a Pohoršenie (o krok k súperovi alebo k sebe).</p>
+<span class="wf-btn">Rozumiem</span> <span class="pozn">Esc zavrie</span>
+</div>
+</div>
+</div>
+<dl>
+<dt>Mikrocopy</dt><dd>Legenda a popover ako v modeli. „Rozumiem“, nie „OK“. Text popoveru je zároveň kandidát na krok výučby (#95, 1. časť), aby sa hráč s rovnakými vetami stretol dvakrát.</dd>
+<dt>Prístupnosť</dt><dd>„?“ je <code>&lt;button aria-expanded aria-controls&gt;</code>, fokus ide do popoveru a Esc ho zavrie a vráti fokus na „?“. Stupnica ostáva <code>aria-hidden</code>, lebo scorecard už má <code>aria-label</code> „Poštárka: žltá, bojí sa teba, priazeň súperova +1“ (<code>LiniaStarsich.tsx:250</code>). Pribudnú doň body. Popisy strán aspoň 11 px, kontrast 4,5 : 1.</dd>
+<dt>Náročnosť</dt><dd><span class="stitok mala">malá</span> 2–4 h. Dotknuté súbory: <code>apps/web/src/hra/LiniaStarsich.tsx</code> (hlavička <code>ls-hlava</code>, <code>Stupnica</code>), <code>apps/web/src/hra/hra.css</code>; príklad z partie používa <code>priazenHraca</code>, <code>obavanyHrac</code>, <code>priazenSila</code> z <code>@naex/core</code>.</dd>
+<dt>Ako overiť</dt><dd>Otázka do playtestu po 1. bitke: <i>„Ukáž staršieho, ktorý sa bojí teba. Kto má jeho priazeň? Koľko bodov by si za neho mohol dostať?“</i> Sledovať, či nováčik odpovie správne do 10 s bez otvorenia Pravidiel. Dnes podľa výučby 20261024 nevie odpovedať ani jeden z troch.</dd>
+</dl>
+</section>
+
+<!-- N2 -->
+<section class="navrh" aria-labelledby="n2">
+<h3 id="n2">N2 · Veta vzťahu pri každom staršom <span class="stitok mala">malá – stredná</span></h3>
+<dl>
+<dt>Rieši</dt><dd>U3, U4, U12, čiastočne U8</dd>
+<dt>Čo</dt><dd>Päta scorecardu dnes mieša účinok priazne, strach a súboje a na nízkom stole sa oreže. Nahradiť ju <b>dvoma pevnými riadkami, ktoré nikdy nezmiznú</b>, a jedným bodovým:
+<ol>
+<li><b>♥ riadok:</b> „♥ <b>Dizajn 2 +1</b> · +1 tuhé v bitke“, prípadne „♥ nikto · pri +1: +1 tuhé v bitke“.</li>
+<li><b>Strach:</b> „bojí sa <b>teba</b> · Znepokojenie“, prípadne „nikoho sa nebojí“. Názov zóny je slovo z pravidiel a z baru (Znepokojenie / Strach / Vydesenie), pri ňom farebný štítok zóny. Nahradí to „úroveň 1“.</li>
+<li><b>Body:</b> „súboje 1 : 0 → ty +2 (1 + 1 za strach)“. Rovnaký tvar ako v lupe (<code>LiniaStarsich.tsx:487–495</code>).</li>
+</ol>
+Na nízkom stole ustúpi <b>účinok</b> (je v titulku a v lupe), riadky so vzťahom ostanú. Prejdenie myšou na podmienku ZNEPOKOJENIE v bare už dnes zvýrazní starších (<code>zvyraznena</code>). Pribudne aj opačný smer: prejdenie na štítok „Znepokojenie“ v päte zvýrazní podmienku v bare.</dd>
+</dl>
+<div class="tok">
+<div class="pred"><h4>Pred</h4><ol><li>★ ty +2 v hlavičke: prečo práve 2?</li><li>♥ Dizajn 2 +1 · Bitkár v päte.</li><li>„bojí sa teba · úroveň 1“ v poslednom riadku. Pri 1280 × 720 chýba.</li><li>Spojiť si to musí hráč sám.</li></ol></div>
+<div class="po"><h4>Po</h4><ol><li>Riadok ♥: čo má súper.</li><li>Riadok strachu: čo mám ja, rovnakým slovom ako v bare.</li><li>Riadok bodov: koľko a prečo (1 + 1 za strach).</li></ol></div>
+</div>
+<p class="wf-pop">Drôtený model — ten istý starší z oboch strán stola</p>
+<div class="wf wf-rad" aria-label="Drôtený model N2">
+<div class="wf-sc">
+<div class="wf-pop">pohľad Dizajn 1</div>
+<div class="h"><span>Poštárka</span><span class="wf-odz">★ ty +2</span></div>
+<div class="stup"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i class="z0"></i><i class="z0"></i><i class="z0"></i><i class="z1 akt"></i><i class="z2"></i><i class="z3"></i><span class="pin" style="left:72.2%"></span></div>
+<div class="strany"><span>◀ ty</span><span>Dizajn 2 ▶</span></div>
+<div class="veta">♥ <b>Dizajn 2 +1</b> · +1 tuhé v bitke</div>
+<div class="veta">bojí sa <b>teba</b> · [žltá] Znepokojenie</div>
+<div class="veta tl">súboje 1 : 0 → <b>ty +2</b> (1 + 1 za strach)</div>
+</div>
+<div class="wf-sc">
+<div class="wf-pop">pohľad Dizajn 2 (zrkadlovo)</div>
+<div class="h"><span>Poštárka</span><span class="wf-odz">★ súper +2</span></div>
+<div class="stup"><i class="z3"></i><i class="z2"></i><i class="z1 akt"></i><i class="z0"></i><i class="z0"></i><i class="z0"></i><i class="z1"></i><i class="z2"></i><i class="z3"></i><span class="pin" style="left:27.8%"></span></div>
+<div class="strany"><span>◀ ty</span><span>Dizajn 1 ▶</span></div>
+<div class="veta">♥ <b>ty +1</b> · +1 tuhé v bitke</div>
+<div class="veta">bojí sa <b>Dizajn 1</b> · [žltá] Znepokojenie</div>
+<div class="veta tl">súboje 0 : 1 → <b>Dizajn 1 +2</b> (1 + 1 za strach)</div>
+</div>
+<div class="wf-sc">
+<div class="wf-pop">sivý stred</div>
+<div class="h"><span>Hrobár</span><span class="wf-odz">★ obaja</span></div>
+<div class="stup"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i class="z0"></i><i class="z0 akt"></i><i class="z0"></i><i class="z1"></i><i class="z2"></i><i class="z3"></i><span class="pin" style="left:50%"></span></div>
+<div class="strany"><span>◀ ty</span><span>Dizajn 2 ▶</span></div>
+<div class="veta">♥ nikto · pri +1: súperov prah Exekúcie −1</div>
+<div class="veta">nikoho sa nebojí</div>
+<div class="veta tl">súboje 0 : 0 → obaja +1</div>
+</div>
+</div>
+<dl>
+<dt>Mikrocopy</dt><dd>„bojí sa teba“ a „bojí sa Dizajn 2“ namiesto „bojí sa súpera“ (meno je jasnejšie). Zóny nazývať slovami z pravidiel: <b>Znepokojenie, Strach, Vydesenie</b>. Farba je doplnok, nie jediný nositeľ informácie (WCAG 1.4.1).</dd>
+<dt>Prístupnosť</dt><dd><code>aria-label</code> scorecardu dostane aj tretiu časť: „…, body teraz ty +2“. Riadky sú obyčajný text, čítačka ich prečíta v poradí.</dd>
+<dt>Náročnosť</dt><dd><span class="stitok mala">malá – stredná</span> pol dňa, hlavne preto, že treba overiť výšku pri 1280, 1440 a 1600 (UI). Súbory: <code>LiniaStarsich.tsx</code> (<code>ls-pata</code>), <code>hra.css</code> (container query na <code>.ls-ucinok</code>), <code>BodovyBar.tsx</code> (opačné zvýraznenie).</dd>
+<dt>Ako overiť</dt><dd>Pri 1280 × 720 položiť otázku: <i>„Za ktorého staršieho by si teraz dostal najviac bodov a prečo?“</i> Sledovať, či hráč odpovie z línie a nemusí otvárať lupu.</dd>
+</dl>
+</section>
+
+<!-- N3 -->
+<section class="navrh odporucany" aria-labelledby="n3">
+<h3 id="n3">N3 · Stopa posunu: prečo sa pohla a čo z toho má ktorý hráč <span class="stitok stredna">stredná</span> <span class="stitok odpor">jadro #95</span></h3>
+<dl>
+<dt>Rieši</dt><dd>U2, U10, U11, čiastočne U6, U8 a U13</dd>
+<dt>Čo</dt><dd>
+<ol>
+<li><b>Stopa na stupnici:</b> každý posun nechá na scorecarde stopu, ktorá vydrží <b>do konca nasledujúceho Zhromaždenia</b>: duch pôvodnej pozície, šípka a <b>štítok zdroja</b> („Prebytok · Dizajn 1 ×2“, „Pohoršenie · Dizajn 2 · k sebe“, „Patronát · do stredu“, „Noviny“). Východisko je <code>markerZaciatokKola</code>, ktoré klient už má (<code>elders.ts:32</code>), takže stopa prežije aj obnovenie stránky.</li>
+<li><b>Riadok „čo z toho“</b> pod stupnicou, kým stopa trvá. Je v ňom dôsledok pre <b>oboch</b> a zmena bodov: „Dizajn 2: ♥ +1 tuhé v bitke · ty: bojí sa ťa (Znepokojenie), body ty +1“. Posun v sivej: <i>„zatiaľ bez účinku · do žltej u Dizajn 2 ešte 1 krok“</i>, aby nevyzeral ako chyba.</li>
+<li><b>Súhrn „Starší po bitke“:</b> keď sa skončí krok prebytku, línia už dnes ostane na stole (<code>vysledokKroku</code>, <code>HernaPlocha.tsx:3716</code>). Do jej hlavičky pribudne rozbaľovací súhrn, kde každý posunutý starší má jeden riadok so zdrojom, pozíciou pred a po a dôsledkom pre oboch. Pod tým sú cigarety za prebytok.</li>
+<li><b>Toast sa rozšíri</b> z „dostávaš priazeň“ (<code>HernaPlocha.tsx:3986–4020</code>) na súhrn bitky: <i>„Bitka posunula 2 starších · Poštárka sa ťa bojí (Znepokojenie) · Dizajn 2 má +1 tuhé“</i>. Klik otvorí súhrn.</li>
+<li><b>Log ľudskou rečou</b> s menom a dôsledkom: <i>„Prebytok (Dizajn 1): Poštárka sivá → žltá u Dizajn 2. Dizajn 2 má jej priazeň +1 (Bitkár), Poštárka sa bojí Dizajn 1 (Znepokojenie).“</i></li>
+</ol></dd>
+<dt>Údaje</dt><dd>Pozícia pred a po: <code>markerZaciatokKola</code> a <code>marker</code> (verejné). Zdroj a hráča dnes nesie len text logu (<code>engine.ts:3514, 3585</code>). Navrhujem štruktúrovanú udalosť <code>{ type: "posunMarkera", elderId, z, na, zdroj: "prebytok" | "pohorsenie" | "patronat" | "noviny", kto }</code>. Pravidlá sa tým nemenia, poloha markera je verejná informácia pre oboch (bez rizika pre <code>viewFor</code>). Klient z nej poskladá stopu, súhrn, toast aj log.</dd>
+</dl>
+<div class="svg-obal">
+<svg viewBox="0 0 900 250" role="img" aria-labelledby="n3-t n3-d">
+<title id="n3-t">Tok po posune markera: dnes a po N3</title>
+<desc id="n3-d">Dnes: posun, blik 1,6 sekundy, toast len pri priazni, hráč hľadá v logu text s id a nevie. Po N3: posun, stopa so štítkom zdroja, riadok čo z toho pre oboch, súhrn Starší po bitke, log s menom a dôsledkom.</desc>
+<style>.b{fill:none;stroke:currentColor;stroke-width:1.5}.bx{fill:none;stroke:currentColor;stroke-width:2.5}.tx{fill:currentColor;font:13px system-ui,sans-serif}.h{font-weight:700;font-size:14px}.ar{stroke:currentColor;stroke-width:1.5;marker-end:url(#a3)}</style>
+<defs><marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+<g style="color:var(--tx)">
+<text class="tx h" x="10" y="22">Dnes</text>
+<rect class="b" x="10" y="34" width="150" height="54" rx="8"/><text class="tx" x="22" y="58">posun markera</text><text class="tx" x="22" y="76">(prebytok, Pohoršenie)</text>
+<line class="ar" x1="160" y1="61" x2="190" y2="61"/>
+<rect class="b" x="190" y="34" width="150" height="54" rx="8"/><text class="tx" x="202" y="58">blik 1,6 s</text><text class="tx" x="202" y="76">toast len pri priazni</text>
+<line class="ar" x1="340" y1="61" x2="370" y2="61"/>
+<rect class="b" x="370" y="34" width="230" height="54" rx="8"/><text class="tx" x="382" y="58">Log: „marker staršieho postarka</text><text class="tx" x="382" y="76">sa posúva k Dizajn 2.“</text>
+<line class="ar" x1="600" y1="61" x2="630" y2="61"/>
+<rect class="b" x="630" y="34" width="250" height="54" rx="8" stroke-dasharray="5 4"/><text class="tx" x="642" y="58">„Prečo? Čo z toho mám?“</text><text class="tx" x="642" y="76">Pravidlá alebo hádanie</text>
+<text class="tx h" x="10" y="132">Po N3</text>
+<rect class="bx" x="10" y="144" width="150" height="70" rx="8"/><text class="tx" x="22" y="168">posun markera</text><text class="tx" x="22" y="186">+ udalosť</text><text class="tx" x="22" y="204">posunMarkera</text>
+<line class="ar" x1="160" y1="179" x2="190" y2="179"/>
+<rect class="bx" x="190" y="144" width="170" height="70" rx="8"/><text class="tx" x="202" y="168">stopa na stupnici</text><text class="tx" x="202" y="186">duch → šípka</text><text class="tx" x="202" y="204">„Prebytok · Dizajn 1 ×2“</text>
+<line class="ar" x1="360" y1="179" x2="390" y2="179"/>
+<rect class="bx" x="390" y="144" width="200" height="70" rx="8"/><text class="tx" x="402" y="168">„čo z toho“ pre oboch</text><text class="tx" x="402" y="186">♥ Dizajn 2 +1 tuhé</text><text class="tx" x="402" y="204">ty: bojí sa ťa · body +1</text>
+<line class="ar" x1="590" y1="179" x2="620" y2="179"/>
+<rect class="bx" x="620" y="144" width="260" height="70" rx="8"/><text class="tx" x="632" y="168">súhrn „Starší po bitke“</text><text class="tx" x="632" y="186">+ toast + log s menom</text><text class="tx" x="632" y="204">stopa do konca Zhromaždenia</text>
+</g>
+</svg>
+</div>
+<p class="wf-pop">Drôtený model — Poštárka po prebytku a súhrn bitky (pohľad Dizajn 1)</p>
+<div class="wf" aria-label="Drôtený model N3">
+<div class="wf-rad">
+<div class="wf-sc">
+<div class="h"><span>Poštárka</span><span class="wf-odz">★ ty +2</span></div>
+<div class="wf-portret">portrét + podmienky</div>
+<div class="stup"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i class="z0"></i><i class="z0"></i><i class="z0"></i><i class="z1 akt"></i><i class="z2"></i><i class="z3"></i><span class="duch" style="left:50%"></span><span class="sip" style="left:52%;width:17%"></span><span class="pin" style="left:72.2%"></span></div>
+<div class="strany"><span>◀ ty</span><span>Dizajn 2 ▶</span></div>
+<div><span class="zdroj">Prebytok · Dizajn 1 ×2</span></div>
+<div class="veta"><b>Teraz:</b> Dizajn 2 má ♥ +1 tuhé v bitke · Poštárka sa bojí <b>teba</b> (Znepokojenie) · body <b>ty +1</b></div>
+</div>
+<div class="wf-sc">
+<div class="h"><span>Farár</span><span class="wf-odz">★ ty +1</span></div>
+<div class="wf-portret">portrét + podmienky</div>
+<div class="stup"><i class="z3"></i><i class="z2"></i><i class="z1"></i><i class="z0 akt"></i><i class="z0"></i><i class="z0"></i><i class="z1"></i><i class="z2"></i><i class="z3"></i><span class="duch" style="left:50%"></span><span class="pin" style="left:38.9%"></span></div>
+<div class="strany"><span>◀ ty</span><span>Dizajn 2 ▶</span></div>
+<div><span class="zdroj">Pohoršenie · Dizajn 2</span></div>
+<div class="veta">zatiaľ bez účinku · do žltej <b>u teba</b> ešte 1 krok</div>
+</div>
+<div class="wf-panel" style="flex:1;min-width:380px">
+<b>Starší po bitke o Ihrisko</b> <span class="pozn">(rozbalené v hlavičke línie, zavrie Esc alebo „Späť na stôl“)</span>
+<table>
+<thead><tr><th>starší</th><th>posun</th><th>prečo</th><th>čo z toho</th></tr></thead>
+<tbody>
+<tr><td>Poštárka</td><td>sivá → žltá u Dizajn 2</td><td>Prebytok (Dizajn 1) ×2</td><td>Dizajn 2: ♥ +1 tuhé v bitke · ty: bojí sa ťa, body +1</td></tr>
+<tr><td>Farár</td><td>stred → sivá u teba</td><td>Pohoršenie (Dizajn 2)</td><td>zatiaľ nič · do žltej u teba 1 krok</td></tr>
+</tbody>
+</table>
+<p style="margin:6px 0 0">Prebytok 7, posun stál 3 (Miňištrant) → 1 prepadol · Dizajn 2 dostal 1 cigaretu za posunutého staršieho.</p>
+</div>
+</div>
+</div>
+<dl>
+<dt>Mikrocopy</dt><dd>Štítok zdroja: <b>„Prebytok · meno ×n“</b>, <b>„Pohoršenie · meno“</b> (+ „· k sebe“), <b>„Patronát · do stredu“</b>. Dôsledok vždy v tvare „kto: čo“, nikdy „hráč 1“. Pre posun v sivej: „zatiaľ bez účinku · do žltej u {meno} ešte {n} {krok|kroky}“. Pozície bez čísel (zrkadlenie, rozhodnutie Michala 22. 10.).</dd>
+<dt>Prístupnosť</dt><dd>Súhrn sa oznámi raz na konci kroku cez existujúci <code>role="status"</code> (jedna veta, polite), nie pri každom bliknutí. Stopa nesmie byť len animácia: duch a šípka sú statické a pri <code>prefers-reduced-motion</code> bez pohybu. Rozbaľovací súhrn je <code>&lt;details&gt;</code> alebo tlačidlo s <code>aria-expanded</code>. Cieľ aspoň 24 × 24 px (WCAG 2.5.8).</dd>
+<dt>Náročnosť</dt><dd><span class="stitok stredna">stredná</span> 1–2 dni. Súbory: <code>packages/core/src/engine.ts</code> (udalosť <code>posunMarkera</code> pri Pohoršení, prebytku, patronáte a Novinách + test), <code>apps/web/src/hra/useHra.ts</code> (<code>textUdalosti</code>), <code>HernaPlocha.tsx</code> (toast, <code>zmeneniStarsi</code> → stopa), <code>LiniaStarsich.tsx</code> (stopa, riadok, súhrn), <code>hra.css</code>. Bot ani pravidlá sa nemenia.</dd>
+<dt>Ako overiť</dt><dd>Hneď po 1. a 2. bitke položiť otázku: <i>„Čo sa v tejto bitke stalo so staršími a čo z toho máš ty a čo súper?“</i> Úspech znamená, že hráč odpovie bez otvorenia Logu a správne pomenuje zdroj (prebytok či Pohoršenie). AI playtesterom pridať do <code>nezrovnalosti.md</code> kontrolu, či súhrn sedí s posunmi.</dd>
+</dl>
+</section>
+
+<!-- N4 -->
+<section class="navrh" aria-labelledby="n4">
+<h3 id="n4">N4 · Krok vidí aj čakajúci a Melichar povie „prečo“ <span class="stitok stredna">stredná</span></h3>
+<dl>
+<dt>Rieši</dt><dd>U6, U7, U9, U13</dd>
+<dt>Čo</dt><dd>
+<ol>
+<li><b>Pilulka čakajúceho</b> pomenuje krok a dôsledok pre neho: <i>„PREBYTOK · Dizajn 1 rozdeľuje 7 (zostáva 1) — posúva starších k tebe: dostaneš ich priazeň, jeho sa začnú báť.“</i> Línia mu ukazuje stopy z N3 živo, posun po posune.</li>
+<li><b>Pilulka hráča v kroku je kratšia</b>, aby sa pri 1600 px neorezala, a obsahuje „prečo“:<br>
+Prebytok: <i>„Posuň starších k súperovi. On dostane priazeň, teba sa začnú báť a za strach máš na konci body. Posun stojí 1.“</i><br>
+Pohoršenie: <i>„K súperovi: bojí sa teba (body). K sebe: priazeň máš hneď, už v tejto bitke.“</i></li>
+<li><b>Dve nové nápovedy Melichara</b> v <code>napovedy.json</code> (raz za účet, dajú sa vypnúť). Texty sú návrh a tón schvaľuje Michal:
+<div class="mc"><b class="k">prebytok · moje</b> (prvý krok prebytku, ktorý rozdeľuje hráč): „Vyhral si o viac, než bolo treba. Ten prebytok tlač starších k súperovi. On od nich dostane priazeň, malý bonus hneď. Teba sa zato začnú báť a strach sa na konci platí bodmi. V tejto dedine je strach viac ako láska.“</div>
+<div class="mc"><b class="k">prebytok · súperove</b>: „Súper ťa prebil a tlačí starších k tebe. Dostaneš ich priazeň, to ti pomôže hneď. Jeho sa ale začnú báť a za to dostane na konci body. Netešil by som sa priveľmi.“</div>
+<div class="mc"><b class="k">strach</b> (prvý starší sa začal báť hráča, zvýrazní <code>starsi:{elderId}</code>): „{starsi} sa ťa bojí. Keď na konci vyhráš viac jeho podmienok, dostaneš za neho bod a ešte jeden za každú farbu strachu. Priazeň má zatiaľ súper, nech sa poteší.“</div>
+</li>
+</ol></dd>
+</dl>
+<div class="tok">
+<div class="pred"><h4>Pred (čakajúci)</h4><ol><li>„ČAKÁŠ · Na ťahu je Dizajn 1.“</li><li>Markery bliknú, ak je línia otvorená.</li><li>Po kroku sa nič nevysvetlí. Toast príde len pri priazni.</li></ol></div>
+<div class="po"><h4>Po (čakajúci)</h4><ol><li>„PREBYTOK · Dizajn 1 rozdeľuje 7 — posúva starších k tebe…“</li><li>Stopy pribúdajú živo a pri každej je dôsledok pre mňa.</li><li>Na konci kroku sa zobrazí súhrn (N3). Pri prvom prebytku pridá vetu aj Melichar.</li></ol></div>
+</div>
+<p class="wf-pop">Drôtený model — pohľad čakajúceho (Dizajn 2) počas prebytku</p>
+<div class="wf" aria-label="Drôtený model N4">
+<p style="text-align:center;margin:0 0 10px"><span class="wf-pil"><strong>Prebytok · Dizajn 1</strong> zostáva 1 — posúva starších <b>k tebe</b>: dostaneš ich priazeň, jeho sa začnú báť.</span></p>
+<div class="wf-hlava"><span class="wf-btn">pozrieť stôl</span><span class="leg blik">Dizajn 1 práve: <b>Poštárka</b> sivá → žltá u teba · ♥ ty +1 tuhé v bitke · bojí sa Dizajn 1</span></div>
+<div class="wf-mel"><span class="av" aria-hidden="true"></span><div><b>Majster Melichar</b><br>„Súper ťa prebil a tlačí starších k tebe. Dostaneš ich priazeň, to ti pomôže hneď. Jeho sa ale začnú báť a za to dostane na konci body. Netešil by som sa priveľmi.“ <span class="wf-btn">rozumiem</span></div></div>
+</div>
+<dl>
+<dt>Prístupnosť</dt><dd>Pilulka už má <code>role="status" aria-live="polite"</code> (<code>HernaPlocha.tsx:4815</code>). Pri zmene kroku sa nová veta prečíta. Text „Dizajn 1 práve: …“ sa obnovuje najviac raz za posun. Melichar nečaká na klik a neblokuje stôl (ako dnes).</dd>
+<dt>Náročnosť</dt><dd><span class="stitok stredna">stredná</span> 1 deň. Súbory: <code>HernaPlocha.tsx</code> (pokyn pri <code>krokStarsich</code> pre <code>!krokMoj</code>, <code>krok</code> pre <code>LiniaStarsich</code> aj čakajúcemu v režime „len čítanie“), <code>packages/core/data/vyucba/napovedy.json</code> a rozpoznanie situácie v jadre (<code>napovedy.ts</code>), <code>Napovedy.tsx</code> netreba meniť.</dd>
+<dt>Ako overiť</dt><dd>V playteste dvoch ľudí sa po bitke opýtať <b>porazeného</b>: <i>„Prečo sa ti starší posunuli k tebe a je to pre teba dobré alebo zlé?“</i> Dnes je to otázka z 20261016 („pre porazeného nejasné“). Pri AI playtesteroch sledovať, či nezrovnalosti „smer prebytku“ zmiznú.</dd>
+</dl>
+</section>
+
+<!-- N5 -->
+<section class="navrh" aria-labelledby="n5">
+<h3 id="n5">N5 · Pohľad „Kto sa koho bojí“ <span class="stitok velka">odvážnejší</span> <span class="stitok stredna">stredná – veľká</span></h3>
+<dl>
+<dt>Rieši</dt><dd>U1, U3 a mentálny model „otočenej“ priazne; prehľad pre skúseného hráča</dd>
+<dt>Čo</dt><dd>Druhý pohľad na tých istých starších, prepínač v hlavičke línie „<b>Stupnice | Kto sa koho bojí</b>“. Hráč si ho pamätá v rámci partie. Starší sú v <b>troch stĺpcoch podľa vzťahu, nie podľa poradia</b>:
+„<b>Boja sa teba</b> · body pre teba · priazeň má Dizajn 2“ | „<b>Nikoho sa neboja</b>“ | „<b>Boja sa Dizajn 2</b> · body pre neho · priazeň máš ty“.
+Každý starší je riadok so zónou (Znepokojenie / Strach / Vydesenie), bodmi teraz a účinkom priazne. Posun presunie riadok medzi stĺpcami. Pri <code>prefers-reduced-motion</code> sa riadok presunie bez animácie a so stopou z N3. Navrch ľavého stĺpca patrí „vydesení 0/4“. Otázku „čo z toho mám“ tento pohľad zodpovie usporiadaním, bez čítania pásu.</dd>
+<dt>Riziko</dt><dd>Dva pohľady sú viac učenia. Mení sa poradie starších, takže hráč stráca väzbu „starší č. 4 = Poštárka“. Prekrýva sa s variantom C (tabuľa stupníc) z <a href="dizajn-linia-starsich-20261023-0805-ux.html">návrhu z 23. 10.</a>. Menšia verzia: tento pohľad použiť len ako obsah súhrnu „Starší po bitke“ z N3.</dd>
+</dl>
+<p class="wf-pop">Drôtený model — pohľad Dizajn 1 po bitke</p>
+<div class="wf" aria-label="Drôtený model N5">
+<div class="wf-hlava"><span class="wf-btn">← Späť na stôl</span><span class="leg">pohľad: <b>[Stupnice]</b> <b style="text-decoration:underline">[Kto sa koho bojí]</b></span><span class="leg">vydesení ty 0/4 · Dizajn 2 0/4 · body ty +5 · Dizajn 2 +5</span></div>
+<div class="wf-stlpce">
+<div class="wf-stlpec"><h5>Boja sa teba → body pre teba · ♥ má Dizajn 2</h5>
+<div class="chip"><span><b>Poštárka</b> · Znepokojenie</span><span>ty +2 · D2 ♥ +1 tuhé</span></div>
+<p class="pozn" style="margin:4px 0 0">Ďalej tlačiť k Dizajn 2 = viac bodov pre teba, väčší bonus pre neho.</p></div>
+<div class="wf-stlpec"><h5>Nikoho sa neboja</h5>
+<div class="chip"><span><b>Farár</b> · u teba, 1 krok do žltej</span><span>ty +1</span></div>
+<div class="chip"><span><b>Krčmárka</b></span><span>ty +1</span></div>
+<div class="chip"><span><b>Starosta</b></span><span>D2 +1</span></div>
+<div class="chip"><span><b>Hrobár</b> · <b>Autobusár</b> · …</span><span>…</span></div></div>
+<div class="wf-stlpec"><h5>Boja sa Dizajn 2 → body pre neho · ♥ máš ty</h5>
+<p class="pozn" style="margin:0">Zatiaľ nikto. Keď ťa súper prebije, starší prídu sem: dostaneš ich priazeň, jeho sa budú báť.</p></div>
+</div>
+</div>
+<dl>
+<dt>Prístupnosť</dt><dd>Stĺpce ako tri <code>&lt;section&gt;</code> s nadpismi a riadky ako zoznam. Pre čítačku je to prirodzenejšie než deväť segmentov pásu. Prepínač je dvojica tlačidiel s <code>aria-pressed</code>.</dd>
+<dt>Náročnosť</dt><dd><span class="stitok stredna">stredná – veľká</span> 2–3 dni vrátane výšky stola a lupy. Súbory: nový komponent v <code>apps/web/src/hra/</code> (napr. <code>VztahyStarsich.tsx</code>), <code>HernaPlocha.tsx</code> (prepínač), <code>hra.css</code>.</dd>
+<dt>Ako overiť</dt><dd>A/B v dvoch playtestoch s ľuďmi: polovica hrá so Stupnicami, polovica s pohľadom „Kto sa koho bojí“. Rovnaká otázka ako pri N1 a pri tom meraný čas. Ďalej sledovať, koľkokrát hráči prepnú (ak sa nevracajú ku Stupniciam, pohľad je lepší predvolený).</dd>
+</dl>
+</section>
+
+<h2 id="poradie">Odporúčané poradie</h2>
+<ol>
+<li><b>N1</b> hneď (rýchla výhra, pár hodín). Odpovie na „čo znamená“. Text popoveru prevezme aj výučba (#95, 1. časť).</li>
+<li><b>N3</b> ako ďalší krok, je to jadro žiadosti „prečo sa posunula a čo z toho má ktorý hráč“. Udalosť <code>posunMarkera</code> v jadre je predpokladom pre N4 aj N5.</li>
+<li><b>N2</b> spolu s N3 alebo hneď po nej. Ide o rovnakú pätu scorecardu a rovnaký výškový rozpočet, s UI dizajnérom je to jedna úloha.</li>
+<li><b>N4</b> po N3, lebo čakajúci potrebuje stopy, aby mal na čo pozerať. Melicharove nápovedy sa dajú pridať aj samostatne, hneď.</li>
+<li><b>N5</b> len ako experiment, ak playtest po N1 až N4 ukáže, že nováčik si priazeň a strach stále pletie. Najprv v malej verzii (obsah súhrnu „Starší po bitke“).</li>
+</ol>
+<p class="pozn">Všetko spolu stačí overiť jedným playtestom s ľuďmi (nováčik a skúsený) a jedným turnusom AI (nezrovnalosti v súhrne). AI hráči hrajú cez konzolu, takže vzhľad a čitateľnosť neoveria.</p>
+
+<h2 id="otazky">Otázky</h2>
+<h3>Do playtestu (s ľuďmi)</h3>
+<ol>
+<li>Po 1. bitke: „Ukáž staršieho, ktorý sa bojí teba. Kto má jeho priazeň? Koľko bodov za neho môžeš dostať?“ (N1, N2)</li>
+<li>Po každej bitke: „Čo sa so staršími stalo, prečo a čo z toho máš ty a čo súper?“ Odpovedať bez Logu. (N3)</li>
+<li>Porazenému: „Prečo idú starší k tebe? Je to pre teba dobré, alebo zlé?“ (N4)</li>
+<li>Pri 1280 × 720: „Za ktorého staršieho by si teraz dostal najviac bodov?“ (N2)</li>
+<li>Sledovať: koľkokrát hráč otvorí Log alebo Pravidlá počas bitky (cieľ: menej), či kliká na „?“ a či ho po 2. kole ešte potrebuje.</li>
+</ol>
+<h3>Na Michala</h3>
+<ol>
+<li><b>Slová zón:</b> smie línia používať názvy z pravidiel (Znepokojenie, Strach, Vydesenie) namiesto „žltá, úroveň 1“? Bar ich už používa. (N2)</li>
+<li><b>Ako dlho drží stopa posunu:</b> do konca nasledujúceho Zhromaždenia (návrh), do konca kola, alebo do ďalšej bitky? (N3)</li>
+<li><b>Udalosť <code>posunMarkera</code> v jadre:</b> súhlas s malou zmenou v <code>packages/core</code> (bez zmeny pravidiel, poloha markera je verejná)? Bez nej by klient musel čítať text logu. (N3)</li>
+<li><b>Melichar:</b> schváliť tón troch nových nápovied (prebytok moje a súperove, strach), prípadne ich prevziať aj do výučby. (N4)</li>
+<li><b>Pomenovanie polovíc:</b> „◀ ty · Dizajn 2 ▶“ (návrh), alebo „tvoja strana“ a „strana súpera“? Meno je jasnejšie, no pri dlhých menách sa bude skracovať. (N1)</li>
+<li><b>Pravidlo, nie UX:</b> náhľad „do žltej ešte 2 kroky“ pri prebytku nepočíta s Miňištrantom (posun za 3 a prebytok 7 vystačí na 2 kroky). Ukázať radšej „na koľko posunov prebytok stačí“? Je to oprava náhľadu, nie pravidla, len potvrdenie zámeru.</li>
+</ol>
+
+<p class="pozn" style="margin-top:3em">Zdroje: <code>apps/web/src/hra/LiniaStarsich.tsx</code>, <code>HernaPlocha.tsx</code>, <code>hra.css</code>, <code>useHra.ts</code>; <code>packages/core/src/engine.ts</code>, <code>elders.ts</code>, <code>view.ts</code>; <code>packages/core/data/vyucba/napovedy.json</code>; <code>docs/PRAVIDLA.md</code> §9.2, §9.4, §10, §14; playtesty 20261011-101224, 20261011-125943, 20261016-134912, 20261019-055945, vyucba-20261024-155610, vyucba-20261025-122456; snímky z relácie <code>playtest/20261025-172338</code> (pracovné v <code>playtest/dizajn/stupnica-20261025-1723/</code>).</p>
+</main>
+<script>
+(function(){
+  var tlacidla=document.querySelectorAll('.filtre button');
+  var riadky=document.querySelectorAll('#audit-tab tbody tr');
+  var pocet=document.getElementById('audit-pocet');
+  tlacidla.forEach(function(b){
+    b.addEventListener('click',function(){
+      var f=b.getAttribute('data-f'), n=0;
+      tlacidla.forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false');});
+      riadky.forEach(function(r){var ok=f==='vsetky'||r.getAttribute('data-z')===f;r.hidden=!ok;if(ok)n++;});
+      pocet.textContent='Zobrazených '+n+' z '+riadky.length+'.';
+    });
+  });
+})();
+</script>
+</body>
+</html>

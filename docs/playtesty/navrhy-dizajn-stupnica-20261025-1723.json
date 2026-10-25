@@ -1,0 +1,71 @@
+{
+  "davka": "20261025-172300",
+  "zdroj": "dizajn",
+  "podklady": ["dizajn-stupnica-20261025-1723-ui.html", "dizajn-stupnica-20261025-1723-ux.html"],
+  "navrhy": [
+    {
+      "kluc": "stupnica-popis",
+      "nazov": "Stupnica starších nemá popis — hráč nevie, čo znamená",
+      "kritickost": "vysoka",
+      "oblast": "rozhranie",
+      "zdroj": "dizajn",
+      "problem": "Na stupnici staršieho nie je napísané, ktorá polovica je hráčova, čo znamená farba zóny ani že marker znamená zároveň priazeň (komu) aj strach (koho). Na menšom stole riadok so strachom celkom zmizne a ostane len „★ súper +2“. Michal (roadmapa #95): hráč stupnicu nechápe.",
+      "pricina": "Rozhranie: LiniaStarsich.tsx (~r. 360–391) kreslí stupnicu bez štítkov a legendy; hra.css ~r. 5405–5416 container query skryje riadok strachu pri nízkej línii; súperova farba --su má proti oranžovej zóne kontrast 1,01 : 1.",
+      "prejav": "UI aj UX dizajnér to videli v partii (relácia 20261025-172338); playtester: „Prečo je to takto otočené, neviem vysvetliť.“",
+      "dokazy": ["ukážka UI, návrh 1 (snímky ui-01 až ui-04)", "ukážka UX, N1 a N2 (snímky ux-*)", "kontrast --su proti oranžovej zóne 1,01 : 1"],
+      "moznosti": [
+        { "kluc": "A", "nazov": "Popísaná stupnica", "popis": "LiniaStarsich.tsx + hra.css: pod každou stupnicou štítky strán „◀ ty · <meno súpera> ▶“; dva čipy, ktoré nikdy nezmiznú (♥ komu priazeň +sila; „bojí sa <koho> · Znepokojenie/Strach/Vydesenie“); zóny pomenované podľa pravidiel namiesto farieb; legenda v hlavičke línie a tlačidlo „?“ s príkladom z partie; riadok „súboje → body (1 + 1 za strach)“; nové tokeny --zona-0 až --zona-3 v schemy.css (rovnaké vo všetkých schémach), aby zóna nesplývala s farbou súpera. Ukážka UI návrh 1, UX N1+N2.", "dopad": "Rieši hlavné nepochopenie bez zmeny jadra; asi hodina až pol dňa práce.", "narocnost": "malá", "odporucana": true },
+        { "kluc": "B", "nazov": "A + kto koho tlačí", "popis": "Ako A, navyše výplň markera ukazuje, kto má priazeň, a čiara od stredu vo farbe hráča, ktorý marker natlačil, ukazuje strach. Ukážka UI návrh 2.", "dopad": "Vzťah je viditeľný aj bez čítania; viac vizuálnej záťaže na malom stole.", "narocnost": "stredná", "odporucana": false },
+        { "kluc": "C", "nazov": "Odvážny smer „Starší uteká“", "popis": "Marker je portrét staršieho, na koncoch stupnice avatary hráčov, zóny ako tácky s karikatúrnymi tvárami strachu; web sa vzdiali od tlačeného scorecardu. Ukážka UI návrh 5; alternatívne UX N5 „Kto sa koho bojí“ (starší v troch stĺpcoch).", "dopad": "Najzrozumiteľnejšie a najzábavnejšie, ale veľká zmena a odklon od tlačenej hry.", "narocnost": "veľká", "odporucana": false }
+      ],
+      "odporucanie": "A hneď (rýchla výhra, UI aj UX sa zhodli ako na prvom kroku); B alebo C až podľa playtestu.",
+      "otazky": [
+        "Smú sa zóny v hre volať Znepokojenie / Strach / Vydesenie (aj v náhľade a v logu) namiesto „žltá, úroveň 1“?",
+        "Strany pomenovať menom súpera, alebo „súper“? Na karte písať „bojí sa súpera“, alebo aktívne „desí ho <meno>“?",
+        "Môžu do schemy.css pribudnúť tokeny --zona-0 až --zona-3, rovnaké vo všetkých schémach?"
+      ],
+      "overenie": ["Nováčik po prvej bitke vie povedať, komu starší prejavuje priazeň a koho sa bojí, bez otvárania pravidiel.", "Pri 1366×650 aj 1280×720 je pri každom staršom viditeľná priazeň aj strach."]
+    },
+    {
+      "kluc": "stupnica-posun",
+      "nazov": "Posun stupnice nevysvetľuje príčinu ani dôsledok",
+      "kritickost": "vysoka",
+      "oblast": "rozhranie",
+      "zdroj": "dizajn",
+      "problem": "Keď sa marker staršieho posunie (prebytok po bitke, Pohoršenie), karta len na 1,2–1,6 s zabliká. Hráč, ktorému súper rozdelil prebytok, to často vôbec nevidí, lebo hneď príde Pohreb a stôl ukáže líniu kariet. Nevie, prečo sa stupnica posunula a čo z toho má. Michal (roadmapa #95): hráč nechápe, prečo sa stupnica posúva.",
+      "pricina": "HernaPlocha.tsx ~r. 3778 (krátke bliknutie), toast len pri získaní priazne, nie pri strachu; log z engine.ts ~r. 3514 a 3585 píše „marker staršieho postarka sa posúva k hráčovi 2“ bez mien a dôvodu.",
+      "prejav": "V partii dizajnérov sa po prebytku a Pohoršení posun stratil pod Pohrebom (snímka ui-05).",
+      "dokazy": ["ukážka UI, návrh 3 a 4", "ukážka UX, N3 (snímky ux-*)"],
+      "moznosti": [
+        { "kluc": "A", "nazov": "Lepší log a toast", "popis": "Bez zmeny jadra: log s menami a dôvodom („Prebytok: Dizajn 1 posunul Poštárku k Dizajn 2 → žltá, Poštárka sa bojí Dizajn 1“); toast aj pri vzniku či zmene strachu.", "dopad": "Malý zásah, ale posun ostane vizuálne prchavý.", "narocnost": "malá", "odporucana": false },
+        { "kluc": "B", "nazov": "Účtenka posunu", "popis": "Nová udalosť posunMarkera v packages/core (pravidlá sa nemenia; viewFor ju posiela obom, je verejná). Klient: marker sa posunie plynulo, na starom mieste ostane „duch“ do konca nasledujúceho Zhromaždenia; pri karte lístok so zdrojom („Prebytok · Dizajn 1 ×2“, „Pohoršenie“) a dvoma riadkami „čo z toho máš ty“ / „čo z toho má súper“; súhrn „Starší po bitke“ v hlavičke aj po zatvorení línie; log s menami. Ukážka UI návrh 3 + UX N3.", "dopad": "Priamo rieši „prečo sa posunula“; UI aj UX ju odporúčajú ako jadro #95.", "narocnost": "stredná", "odporucana": true },
+        { "kluc": "C", "nazov": "B + náhľad pred posunom", "popis": "Ako B, navyše pri Pohoršení a prebytku päta karty ukáže stav po posune a hranice zón sú zárezy nad stupnicou; náhľad počíta s Miňištrantom (ukáže, na koľko posunov prebytok vystačí). Ukážka UI návrh 4.", "dopad": "Hráč vidí dôsledok ešte pred rozhodnutím; viac práce.", "narocnost": "veľká", "odporucana": false }
+      ],
+      "odporucanie": "B — UI aj UX sa zhodli, že bez stopy posunu hráč príčinu nepochopí; C ako ďalší krok, ak playtest ukáže, že sa hráči pri prebytku rozhodujú naslepo.",
+      "otazky": [
+        "Súhlasíš s novou udalosťou posunMarkera v jadre (pravidlá sa nemenia)?",
+        "Ako dlho má držať stopa posunu? Návrh: do konca nasledujúceho Zhromaždenia.",
+        "Ukazovať v účtenke aj posuny, ktoré nič nezmenili (zo sivej do sivej)?"
+      ],
+      "overenie": ["Hráč, ktorému súper rozdelil prebytok, po bitke vie povedať, ktorý starší sa posunul, prečo a čo z toho má.", "Posun je viditeľný aj po Pohrebe a po zatvorení línie starších."]
+    },
+    {
+      "kluc": "stupnica-cakajuci",
+      "nazov": "Čakajúci hráč nevie, čo súper so staršími robí",
+      "kritickost": "stredna",
+      "oblast": "rozhranie",
+      "zdroj": "dizajn",
+      "problem": "Kým súper robí Pohoršenie alebo rozdeľuje prebytok, druhý hráč vidí len „ČAKÁŠ“. Nevie, čo sa deje ani čo z toho bude mať. Lupa staršieho, ktorá vysvetľuje najlepšie, je v tomto kroku vypnutá.",
+      "pricina": "Rozhranie: stav čakania bez názvu kroku; LiniaStarsich.tsx ~r. 164 vypína lupu počas kroku.",
+      "prejav": "UX dizajnér v partii za čakajúceho hráča (snímky ux-*).",
+      "dokazy": ["ukážka UX, N4"],
+      "moznosti": [
+        { "kluc": "A", "nazov": "Pilulka kroku pre čakajúceho", "popis": "Namiesto „ČAKÁŠ“ pilulka s názvom kroku a dôsledkom („Súper rozdeľuje prebytok 5 — posúva starších k tebe“); kratšie pokyny s „prečo“; lupa staršieho povolená aj počas kroku. Ukážka UX N4.", "dopad": "Čakanie dáva zmysel, hráč sa učí aj zo súperovho ťahu.", "narocnost": "stredná", "odporucana": true },
+        { "kluc": "B", "nazov": "A + nápovedy Melichara", "popis": "Ako A, navyše dve nové nápovedy Melichara (prvý prebytok, prvý strach) v napovedy.json — tón schváli Michal.", "dopad": "Vysvetlí pojem v okamihu, keď nastane; súvisí s výučbou.", "narocnost": "stredná", "odporucana": false }
+      ],
+      "odporucanie": "A po návrhoch stupnica-popis a stupnica-posun; nápovedy (B) zladiť s 1. časťou výučby, ktorá stupnicu vysvetlí.",
+      "otazky": ["Schváliš tón nových textov Melichara (ak B)?"],
+      "overenie": ["Čakajúci hráč počas súperovho prebytku vie povedať, čo súper robí a čo z toho bude mať."]
+    }
+  ]
+}
