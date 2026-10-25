@@ -112,7 +112,7 @@
     {
       "id": "i-senok",
       "kto": "info",
-      "melichar": "Teraz sa stavia šenok: ponuka kariet, ktoré si môžeš kúpiť. Dnes ho za teba postaví hra, nech sa hneď nepreťažíš.",
+      "melichar": "Teraz sa stavia šenok: ponuka kariet, ktoré si môžeš kúpiť. Naostro doň vyberáš karty sám, dnes to za teba spraví hra. Nič neklikaj, nech sa hneď nepreťažíš.",
       "zvyraznit": [
         "stavba"
       ]
@@ -135,7 +135,10 @@
           "stavba:zahradkar"
         ]
       },
-      "melichar": ""
+      "melichar": "Hra dala za teba štyri karty do šenku a štyri na Smetisko, naspodok balíčka. Štamgast vyberá zo svojich ôsmich naraz s tebou. Jemu to trvá, počkáme.",
+      "zvyraznit": [
+        "stavba"
+      ]
     },
     {
       "id": "k-stavba-bot",
@@ -320,7 +323,7 @@
           }
         ]
       },
-      "melichar": "Polož Hasiča na ľavý koniec svojej strany, za Pijana, a potvrď. Spojí sa jeho [Rana] Rana: 2 : 3. [Petelica] Petelica ostane bez partnera a zatiaľ neplatí. Zapamätaj si to, prosím. Aspoň toto."
+      "melichar": "Polož Hasiča na ľavý koniec svojej strany, za Pijana, a potvrď. Pijan má [PoškodeniePečene] Poškodenie pečene na oboch hranách a Hasičova [Rana] Rana sa spojí s jedným: 2 : 3 a pečeň +1, o tej neskôr. [Petelica] Petelica ostane bez partnera a zatiaľ neplatí. Zapamätaj si to, prosím."
     },
     {
       "id": "k-zh-bot3",
@@ -409,7 +412,7 @@
       "prikaz": {
         "type": "pass"
       },
-      "melichar": "No vidíš! Tvoja [Viera] Viera sa spojila a uberá Štamgastovi 1 tuhé: 2 : 2. Štamgast pasoval. Aj on je prekvapený.",
+      "melichar": "No vidíš! Tvoja [Viera] Viera sa spojila s jeho [PoškodeniePečene] Poškodením pečene: uberá mu 1 tuhé, 2 : 2, a pečeň +1 má aj on. Štamgast pasoval. Aj on je prekvapený.",
       "zvyraznit": [
         "bitka-ucet"
       ]
@@ -465,7 +468,7 @@
     {
       "id": "i-cena",
       "kto": "info",
-      "melichar": "NA EX nie je zadarmo, na rozdiel od istej výučby. [Poldeci] Poldeci sa v bitke vypije a [PoškodeniePečene] pečeň v bare sa naplní. Keď pretečie, dostaneš zlú kartu; v partii ti ju ukážem.",
+      "melichar": "NA EX nie je zadarmo, na rozdiel od istej výučby. [Poldeci] Poldeci sa v bitke vypije a [PoškodeniePečene] pečeň dostane +1, s tou od Pijana máš 2 z 3. Keď pretečie, dostaneš zlú kartu; v partii ti ju ukážem.",
       "zvyraznit": [
         "bar:pecen"
       ]
@@ -504,9 +507,11 @@
       "prikaz": {
         "type": "skipNaex"
       },
-      "melichar": "Štamgast skončil tiež a NA EX sa odkryli. On žiadne nedal, ty si dal na Hasiča. Lebo som ti to povedal, ale aj tak pekne.",
+      "melichar": "Štamgast skončil tiež a NA EX sa odkryli: on žiadne, ty na Hasiča. BODY v bare sú body, keby hra skončila teraz. Štamgast má teraz viac plných [Poldeci] poldeci a to cenia štyria starší: jemu body stúpli z 3 na 6, tebe klesli z 8 na 7.",
       "zvyraznit": [
-        "linia:hasic"
+        "linia:hasic",
+        "bar:body",
+        "bar-supera:body"
       ]
     },
     {
@@ -515,7 +520,7 @@
       "prikaz": {
         "type": "bezReakcie"
       },
-      "melichar": "Na tvoje NA EX smel Štamgast odpovedať jednou kartou z ruky. Neodpovedal, tak sa Pitka vyhodnotila: za [Cigareta] Cigaretu Jednoty máš cigaretu. Ďalšiu. Keby si náhodou nevedel, komu ju dať.",
+      "melichar": "Na tvoje NA EX smel Štamgast odpovedať kartou z ruky. Neodpovedal, tak sa Pitka vyhodnotila: za [Cigareta] Cigaretu Jednoty máš ďalšiu cigaretu. [PoškodeniePečene] Pečeň s 2 z 3 nepretiekla a po Pitke sa vynuluje. Na stole sa už ukázali starší, k nim sa dostanem po bitke.",
       "zvyraznit": [
         "bar:cigarety"
       ]
@@ -568,7 +573,7 @@
         "type": "prebytok",
         "elderId": "farar"
       },
-      "melichar": "Vyhral si o 5 tuhých, to je prebytok. Za prebytok posúvaš starších k Štamgastovi. Klikni na Farára. Na Farára, nie na mňa.",
+      "melichar": "Vyhral si o 5 tuhých, to je prebytok: zaň posúvaš starších k Štamgastovi. Tvoj Miňištrant ti každý posun zdraží na 2. Vlastný Miňištrant, predstav si. Klikni na Farára. Na Farára, nie na mňa.",
       "zvyraznit": [
         "starsi:farar"
       ]
@@ -580,7 +585,7 @@
         "type": "prebytok",
         "elderId": "farar"
       },
-      "melichar": "Farár je ešte v sivej. Klikni naňho znova: v žltej sa ťa začne báť. Ďalej to nepôjde, tvoj Miňištrant zdražuje každý posun na 2 body prebytku. Vlastný Miňištrant, predstav si.",
+      "melichar": "Posun stál 2, ostali 3 a Farár je ešte v sivej. Klikni naňho znova: v žltej sa ťa začne báť. Zvyšný 1 na ďalší posun nestačí a prepadne, a keďže je dnes jediná bitka, hra skončí.",
       "zvyraznit": [
         "starsi:farar"
       ]
@@ -616,9 +621,9 @@
     {
       "id": "i-body",
       "kto": "info",
-      "melichar": "Teba podržala Jednota a ušetrené [Cigareta] cigarety, Štamgasta plné [Poldeci] poldeci. Farár sa ťa bojí v žltej, preto ti dal 2 body, Štamgastovi len 1. Ušetrené cigarety, hm. Zapamätám si.",
+      "melichar": "Tvojich 8: Farár 2, lebo sa ťa bojí v žltej, a po 1 Krčmárka, Starosta, Poštárka, Hrobár, Autobusár a Veterinár. Podržala ťa Jednota, ušetrené [Cigareta] cigarety a Farárov strach. Štamgastovi dali po bode Farár, Hrobár, Veterinár a Vychovávateľka, za plné [Poldeci] poldeci. Ušetrené cigarety, hm. Zapamätám si.",
       "zvyraznit": [
-        "starsi:farar"
+        "linia-starsich"
       ]
     },
     {
@@ -629,17 +634,17 @@
     {
       "id": "q-plan-naex",
       "kto": "otazka",
-      "melichar": "Máš plné poldeci a Petelicu bez partnera, čo urobíš?",
+      "melichar": "V Pitke máš plný poldeci a Hasiča so spojenou Ranou a Petelicou bez partnera, čo s ním?",
       "moznosti": [
         {
-          "text": "Dám na ňu NA EX.",
+          "text": "Dám na Hasiča NA EX.",
           "spravna": true,
-          "vysvetlenie": "Áno, Petelica udrie dvakrát, len sleduj pečeň. Nakoniec si predsa niečo pochytil."
+          "vysvetlenie": "Áno, Petelica udrie dvakrát, 6 tuhých, len sleduj pečeň. Nakoniec si predsa niečo pochytil."
         },
         {
-          "text": "Najprv jej vyložím partnera.",
+          "text": "Nič, Petelica aj tak platí.",
           "spravna": false,
-          "vysvetlenie": "Spojená Petelica dá len 3, NA EX bez partnera dá 6. Nevadí, na to sú výučby."
+          "vysvetlenie": "Akcia bez partnera nerobí nič, Petelica dá 0. S NA EX by dala 6. Nevadí, na to sú výučby."
         }
       ]
     },
