@@ -273,8 +273,9 @@ export function UkazkaStupnice() {
           <>
             Marker leží na {strana} polovici v zóne <strong>{ZONY[m]}</strong>: priazeň s hodnotou <strong>{hodnota}</strong>{" "}
             má {strana === "tvojej" ? "ty" : "súper"}. Starší sa bojí {strana === "tvojej" ? "súpera" : "teba"} na úrovni{" "}
-            <strong>{uroven}</strong> — na konci hry to {strana === "tvojej" ? "súperovi" : "tebe"} pridá body na každom
-            scorecarde s aktívnym Znepokojením, Strachom či Vydesením.
+            <strong>{uroven}</strong> — ak {strana === "tvojej" ? "súper" : "ty"} vyhrá viac podmienok tohto staršieho, dostane
+            za neho {1 + uroven} body namiesto 1. Na scorecardoch ostatných starších sa ráta do Znepokojenia, Strachu či
+            Vydesenia.
             {(m === 0 || m === 8) && " Krajná pozícia je zamknutá a starší sa prebudí pre vydesujúceho hráča."}
           </>
         )}
