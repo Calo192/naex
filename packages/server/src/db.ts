@@ -307,17 +307,16 @@ export function otvorDb(cesta: string): Db {
 
 /** Úpravy databáz vytvorených staršou schémou. */
 function migruj(db: Db): void {
-  const stlpce = db.prepare("PRAGMA table_info(partie)").all() as { name: string }[];
-  if (!stlpce.some((c) => c.name === "dohrata")) {
+  if (!stlpceTabulky(db, "partie").has("dohrata")) {
     db.exec("ALTER TABLE partie ADD COLUMN dohrata INTEGER NOT NULL DEFAULT 1");
     // Staré partie: vzdanie a kontumáciu prezradí len text dôvodu.
     db.exec("UPDATE partie SET dohrata = 0 WHERE dovod LIKE 'Partiu vzdáva%' OR dovod LIKE 'Kontumácia%'");
   }
-  // Štatistiky kariet partie (JSON z @naex/core) — staršie partie ich nemajú.
-  if (!stlpce.some((c) => c.name === "karty")) db.exec("ALTER TABLE partie ADD COLUMN karty TEXT");
-  // Zber dát pre profily (Michal 2026-10-22): partie s botom (hráč bota má pouzivatel NULL),
-  // dĺžka, verzia jadra (commit) a pravidiel, seed + príkazy na budúci prehrávač, kronika po kolách.
-  const novePartie: readonly [string, string][] = [
+  doplnStlpce(db, "partie", [
+    // Štatistiky kariet partie (JSON z @naex/core) — staršie partie ich nemajú.
+    ["karty", "TEXT"],
+    // Zber dát pre profily (Michal 2026-10-22): partie s botom (hráč bota má pouzivatel NULL),
+    // dĺžka, verzia jadra (commit) a pravidiel, seed + príkazy na budúci prehrávač, kronika po kolách.
     ["s_botom", "INTEGER NOT NULL DEFAULT 0"],
     ["bot_povaha", "TEXT"],
     ["dlzka", "TEXT"],
@@ -326,52 +325,62 @@ function migruj(db: Db): void {
     ["seed", "INTEGER"],
     ["prikazy", "TEXT"],
     ["kronika", "TEXT"],
-  ];
-  for (const [meno, typ] of novePartie) if (!stlpce.some((c) => c.name === meno)) db.exec(`ALTER TABLE partie ADD COLUMN ${meno} ${typ}`);
-  // Zväčšenie karty pri prejdení myšou v percentách (Michal 2026-10-19); NULL = predvolené.
-  // Náhľad média (Michal 2026-10-22, rýchlosť živého webu): menšia kópia, ktorú
-  // vyrobí prehliadač admina — /media/<id>?n ju pošle namiesto originálu.
-  const mediaStlpce = db.prepare("PRAGMA table_info(media)").all() as { name: string }[];
-  if (!mediaStlpce.some((c) => c.name === "nahlad")) db.exec("ALTER TABLE media ADD COLUMN nahlad TEXT");
-  const ucty = db.prepare("PRAGMA table_info(pouzivatelia)").all() as { name: string }[];
-  if (!ucty.some((c) => c.name === "lupa")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN lupa INTEGER");
-  // Hlasitosť hudby počas partie v percentách (Michal 2026-10-20); NULL = predvolená.
-  if (!ucty.some((c) => c.name === "hudba")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN hudba INTEGER");
-  // Účet AI agenta (playtester, protihráč, admin) — jeho spätná väzba je
-  // predvolene skrytá (Michal 2026-10-21). Nastavuje len admin.
-  if (!ucty.some((c) => c.name === "ai")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN ai INTEGER NOT NULL DEFAULT 0");
-  // Farebná schéma webu (Michal 2026-10-21); NULL = predvolená Krčma.
-  if (!ucty.some((c) => c.name === "schema")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN schema TEXT");
-  // Zobrazenie skóre v partii (Michal 2026-10-22) — od roadmapy #70 sú body len dlaždice
-  // a stĺpec sa nečíta; ostáva, aby staré databázy nemuseli meniť tabuľku.
-  if (!ucty.some((c) => c.name === "skore")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN skore TEXT");
-  // Klávesové skratky v partii (Michal 2026-10-22, roadmapa #19): 0 = vypnuté, NULL = zapnuté.
-  if (!ucty.some((c) => c.name === "skratky")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN skratky INTEGER");
-  // Ranky (Michal 2026-10-22): 1 = rank nastavil správca ručne, automatický postup ho nemení.
-  if (!ucty.some((c) => c.name === "rola_rucne")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN rola_rucne INTEGER NOT NULL DEFAULT 0");
-  // Hlášky majstra Melichara v partii proti počítaču (Michal 2026-10-21): hlasitosť
-  // v percentách; NULL = predvolené. Stĺpec melichar_frekvencia v starších
-  // databázach sa od 2026-10-23 nečíta — Melichar sa ozve len pri momente.
-  if (!ucty.some((c) => c.name === "melichar")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN melichar INTEGER");
-  // Výučba „Prvá hra“ (Michal 2026-10-23): koľko krokov scenára hráč prešiel
-  // a či ju dokončil alebo preskočil (NULL = ešte nie).
-  if (!ucty.some((c) => c.name === "vyucba_krok")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN vyucba_krok INTEGER NOT NULL DEFAULT 0");
-  if (!ucty.some((c) => c.name === "vyucba_stav")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN vyucba_stav TEXT");
-  // Verzia scenára, na ktorého kroky sedí vyucba_krok (výučba po častiach, 2026-10-25); NULL = starší scenár.
-  if (!ucty.some((c) => c.name === "vyucba_verzia")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN vyucba_verzia TEXT");
-  // Nápovedy Melichara v partii (Michal 2026-10-24): 0 = vypnuté, NULL = zapnuté;
-  // videné = JSON pole id z napovedy.json (každá sa ukáže len raz, reset v profile).
-  if (!ucty.some((c) => c.name === "napovedy")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN napovedy INTEGER");
-  if (!ucty.some((c) => c.name === "napovedy_videne")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN napovedy_videne TEXT");
-  // Kedy hráč naposledy otvoril Novinky — značka v navigácii (Michal 2026-10-22); NULL = od registrácie.
-  if (!ucty.some((c) => c.name === "novinky_videne")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN novinky_videne INTEGER");
-  // Pohlavie pre tvary hlášok v partii (Michal 2026-10-22): muz / zena; NULL = neuvádza (neutrálne hlášky).
-  if (!ucty.some((c) => c.name === "pohlavie")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN pohlavie TEXT");
-  // Profil (Michal 2026-10-22): „skryť môj súhrn“ pred ostatnými; hodnotenie (Frajerina) ostáva viditeľné.
-  if (!ucty.some((c) => c.name === "skryty_suhrn")) db.exec("ALTER TABLE pouzivatelia ADD COLUMN skryty_suhrn INTEGER NOT NULL DEFAULT 0");
+  ]);
+  doplnStlpce(db, "media", [
+    // Náhľad média (Michal 2026-10-22, rýchlosť živého webu): menšia kópia, ktorú
+    // vyrobí prehliadač admina — /media/<id>?n ju pošle namiesto originálu.
+    ["nahlad", "TEXT"],
+  ]);
+  doplnStlpce(db, "pouzivatelia", [
+    // Zväčšenie karty pri prejdení myšou v percentách (Michal 2026-10-19); NULL = predvolené.
+    ["lupa", "INTEGER"],
+    // Hlasitosť hudby počas partie v percentách (Michal 2026-10-20); NULL = predvolená.
+    ["hudba", "INTEGER"],
+    // Účet AI agenta (playtester, protihráč, admin) — jeho spätná väzba je
+    // predvolene skrytá (Michal 2026-10-21). Nastavuje len admin.
+    ["ai", "INTEGER NOT NULL DEFAULT 0"],
+    // Farebná schéma webu (Michal 2026-10-21); NULL = predvolená Krčma.
+    ["schema", "TEXT"],
+    // Zobrazenie skóre v partii (Michal 2026-10-22) — od roadmapy #70 sú body len dlaždice
+    // a stĺpec sa nečíta; ostáva, aby staré databázy nemuseli meniť tabuľku.
+    ["skore", "TEXT"],
+    // Klávesové skratky v partii (Michal 2026-10-22, roadmapa #19): 0 = vypnuté, NULL = zapnuté.
+    ["skratky", "INTEGER"],
+    // Ranky (Michal 2026-10-22): 1 = rank nastavil správca ručne, automatický postup ho nemení.
+    ["rola_rucne", "INTEGER NOT NULL DEFAULT 0"],
+    // Hlášky majstra Melichara v partii proti počítaču (Michal 2026-10-21): hlasitosť
+    // v percentách; NULL = predvolené. Stĺpec melichar_frekvencia v starších
+    // databázach sa od 2026-10-23 nečíta — Melichar sa ozve len pri momente.
+    ["melichar", "INTEGER"],
+    // Výučba „Prvá hra“ (Michal 2026-10-23): koľko krokov scenára hráč prešiel
+    // a či ju dokončil alebo preskočil (NULL = ešte nie).
+    ["vyucba_krok", "INTEGER NOT NULL DEFAULT 0"],
+    ["vyucba_stav", "TEXT"],
+    // Verzia scenára, na ktorého kroky sedí vyucba_krok (výučba po častiach, 2026-10-25); NULL = starší scenár.
+    ["vyucba_verzia", "TEXT"],
+    // Nápovedy Melichara v partii (Michal 2026-10-24): 0 = vypnuté, NULL = zapnuté;
+    // videné = JSON pole id z napovedy.json (každá sa ukáže len raz, reset v profile).
+    ["napovedy", "INTEGER"],
+    ["napovedy_videne", "TEXT"],
+    // Kedy hráč naposledy otvoril Novinky — značka v navigácii (Michal 2026-10-22); NULL = od registrácie.
+    ["novinky_videne", "INTEGER"],
+    // Pohlavie pre tvary hlášok v partii (Michal 2026-10-22): muz / zena; NULL = neuvádza (neutrálne hlášky).
+    ["pohlavie", "TEXT"],
+    // Profil (Michal 2026-10-22): „skryť môj súhrn“ pred ostatnými; hodnotenie (Frajerina) ostáva viditeľné.
+    ["skryty_suhrn", "INTEGER NOT NULL DEFAULT 0"],
+  ]);
   // Verdikt overenia návrhu ďalším playtestom (Michal 2026-10-21).
-  const navrhy = db.prepare("PRAGMA table_info(navrhy)").all() as { name: string }[];
-  if (!navrhy.some((c) => c.name === "verdikt")) db.exec("ALTER TABLE navrhy ADD COLUMN verdikt TEXT NOT NULL DEFAULT ''");
+  doplnStlpce(db, "navrhy", [["verdikt", "TEXT NOT NULL DEFAULT ''"]]);
+}
+
+function stlpceTabulky(db: Db, tabulka: string): Set<string> {
+  return new Set((db.prepare(`PRAGMA table_info(${tabulka})`).all() as { name: string }[]).map((c) => c.name));
+}
+
+/** Pridá stĺpce, ktoré tabuľka zo staršej schémy ešte nemá — v poradí zoznamu. */
+function doplnStlpce(db: Db, tabulka: string, stlpce: readonly (readonly [meno: string, typ: string])[]): void {
+  const ma = stlpceTabulky(db, tabulka);
+  for (const [meno, typ] of stlpce) if (!ma.has(meno)) db.exec(`ALTER TABLE ${tabulka} ADD COLUMN ${meno} ${typ}`);
 }
 
 /** Transakcia — pri výnimke sa všetko vráti. */
