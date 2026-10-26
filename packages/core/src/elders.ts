@@ -22,6 +22,22 @@ export const STUPNICA_ZONY = [3, 2, 1, 0, 0, 0, 1, 2, 3] as const;
 export type MarkerPos = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 export const MARKER_STRED: MarkerPos = 4;
 
+/** Názvy zón podľa pravidiel (§10) — rovnaké slová ako zónové podmienky scorecardu. */
+export const NAZVY_ZON = ["Neutralita", "Znepokojenie", "Strach", "Vydesenie"] as const;
+
+/**
+ * Posun markera (roadmapa #95, Michal 2026-10-26): odkiaľ kam, prečo a kto ho
+ * urobil. Pozícia markera je verejná, preto aj posun — posiela sa obom.
+ */
+export interface PosunMarkera {
+  readonly elderId: string;
+  readonly z: MarkerPos;
+  readonly na: MarkerPos;
+  readonly zdroj: "pohorsenie" | "prebytok" | "patronat";
+  /** Hráč, ktorého akcia marker posunula (pri prebytku držiteľ prebytku). */
+  readonly kto: PlayerId;
+}
+
 export interface ElderState {
   /** Pôvodný starší (kľúč do elders.json — ukazovateľ ostáva aj po náhrade). */
   readonly elderId: string;
@@ -261,6 +277,11 @@ export interface BodyScorecardu {
   readonly body: readonly [number, number];
   /** Koľko súbojov (aktívnych podmienok) vyhral hráč 0 a hráč 1. */
   readonly vyhry: readonly [number, number];
+  /**
+   * Zóna strachu staršieho z hráča 0 a z hráča 1 — body víťaza súbojov sú
+   * 1 + strach. Rozpis bodov v rozhraní ide odtiaľto, nie z vlastného výpočtu (#109).
+   */
+  readonly strach: readonly [0 | 1 | 2 | 3, 0 | 1 | 2 | 3];
   /** Každá aktívna podmienka zvlášť, pre každého hráča. */
   readonly polozky: readonly [readonly BodPodmienky[], readonly BodPodmienky[]];
 }
@@ -306,5 +327,5 @@ export function elderScore(data: GameData, stav: StavBodovania, elder: ElderStat
     // (variant „útecha“ Michal zamietol, interview 4).
     return vyhry[p] >= vyhry[su] ? bodyZaStarsieho(elder, p) : 0;
   };
-  return { body: [pre(0), pre(1)], vyhry, polozky };
+  return { body: [pre(0), pre(1)], vyhry, strach: [strachZ(elder, 0), strachZ(elder, 1)], polozky };
 }

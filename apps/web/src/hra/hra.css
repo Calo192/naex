@@ -451,6 +451,16 @@ button.zdroj-body[aria-pressed="true"] .velke-cislo {
   color: var(--tlmeny);
 }
 
+/* Starší sa od bitky pohli (#95) — odkaz na stopu v línii starších. */
+.zdroj-posuny {
+  margin-left: 6px;
+  padding: 0 5px;
+  border-radius: 99px;
+  border: 1px solid var(--akcent);
+  color: var(--akcent-svetly);
+  letter-spacing: 0;
+}
+
 .zdroj-hodnota {
   display: flex;
   align-items: center;
@@ -4908,6 +4918,7 @@ button.auto-hotovo-odkaz {
 }
 
 .linia-starsich {
+  position: relative;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -5032,6 +5043,7 @@ button.auto-hotovo-odkaz {
 /* Scorecard v línii: obrátené tokeny ako papier by svietili — ostáva plocha dlaždice. */
 .ls-sc {
   --ikona: clamp(18px, 2.05cqw, 34px);
+  container: ls-sc / inline-size;
   min-width: 0;
   min-height: 0;
   display: flex;
@@ -5198,6 +5210,24 @@ button.auto-hotovo-odkaz {
 
 .ls-sc-hlava > .ls-boduje {
   margin-left: auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Úzky scorecard: „teraz:“ ustúpi hviezdičke, meno staršieho sa zmestí. */
+.ls-hviezda {
+  display: none;
+}
+
+@container ls-sc (width < 175px) {
+  .ls-teraz {
+    display: none;
+  }
+
+  .ls-hviezda {
+    display: inline;
+  }
 }
 
 .ls-portret {
@@ -5264,12 +5294,15 @@ button.auto-hotovo-odkaz {
   border-radius: 2px;
 }
 
+/* Hranice zón pri Pohoršení: zárezy nad stupnicou (UI A7 — čiara cez žltú mala 1,3 : 1). */
 .ls-stupnica em {
   position: absolute;
-  top: -2px;
-  bottom: -2px;
+  top: -3px;
   left: calc(var(--b) * var(--seg) - 1px);
-  border-left: 2px dashed var(--akcent);
+  translate: -50% 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 6px solid var(--akcent);
 }
 
 /* Marker: tmavý disk s prstencom farby toho, kto má priazeň (UI U4 — 15 : 1). */
@@ -5284,6 +5317,8 @@ button.auto-hotovo-odkaz {
   background: var(--pozadie);
   border: 3px solid var(--slaby-text);
   box-shadow: 0 0 0 1px var(--text);
+  /* Posun je plynulý — skok nevysvetľoval smer (UI A11). */
+  transition: left 0.45s ease-out;
 }
 
 .ls-marker.ja {
@@ -5296,9 +5331,204 @@ button.auto-hotovo-odkaz {
 
 /* Duch: kam marker posun dostane. */
 .ls-marker.duch {
-  background: none;
-  border: 2px dashed var(--akcent);
+  background: color-mix(in srgb, var(--akcent) 35%, transparent);
+  border: 2px solid var(--akcent);
   box-shadow: none;
+}
+
+/* Stopa posunu od bitky (#95): prerušovaný duch na starom mieste a čiara k markeru. */
+.ls-marker.stopa {
+  background: none;
+  border: 2px dashed var(--akcent-svetly);
+  box-shadow: none;
+  opacity: 0.85;
+  transition: none;
+}
+
+.ls-stopa {
+  position: absolute;
+  bottom: 5px;
+  left: calc((var(--od) + 0.5) * var(--seg));
+  width: calc((var(--do) - var(--od)) * var(--seg));
+  height: 3px;
+  border-radius: 2px;
+  background: var(--akcent-svetly);
+  opacity: 0.8;
+}
+
+/* Strany pod stupnicou (návrh stupnica-popis A): tvoja polovica je vždy vľavo. */
+.ls-strany {
+  flex: none;
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: -2px;
+  font: 700 0.6rem/1.15 var(--pismo);
+  letter-spacing: 0.03em;
+}
+
+.ls-strany > span {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ls-strany .moje {
+  color: var(--ja);
+}
+
+.ls-strany .ls-hranice {
+  color: var(--akcent-svetly);
+  font-weight: 600;
+}
+
+.ls-strany .superove {
+  color: var(--su);
+}
+
+/* Dva čipy, ktoré nikdy nezmiznú: komu priazeň a koho sa bojí. */
+.ls-stav {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  font-size: 0.68rem;
+  line-height: 1.3;
+}
+
+.ls-cip {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--tlmeny);
+}
+
+/* Farba = hráč, o ktorom čip hovorí (♥ komu, bojí sa koho) — vždy dvaja rôzni. */
+.ls-cip.priazen.moja,
+.ls-cip.strach.moj {
+  color: var(--ja);
+}
+
+.ls-cip.priazen.superova,
+.ls-cip.strach.superov {
+  color: var(--su);
+}
+
+.ls-cip.strach.nikoho {
+  color: var(--slaby-text);
+}
+
+.ls-cip s {
+  opacity: 0.6;
+}
+
+.ls-znacka {
+  display: inline-block;
+  width: 0.62rem;
+  height: 0.62rem;
+  margin-right: 4px;
+  vertical-align: -1px;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px var(--okraj-svetly);
+}
+
+/* Náhľad pred posunom: čipy ukazujú stav po posune. */
+.ls-stav.po-posune .ls-cip {
+  padding: 0 3px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--akcent) 14%, transparent);
+  box-shadow: inset 0 0 0 1px var(--akcent);
+}
+
+/* Lístok posunu na portréte: zdroj a čo z toho má ktorý hráč. */
+.ls-listok {
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  bottom: 3px;
+  display: flex;
+  flex-direction: column;
+  padding: 2px 5px;
+  border-radius: 5px;
+  border: 1px solid var(--akcent);
+  background: color-mix(in srgb, var(--plocha-2) 92%, transparent);
+  font: 0.6rem/1.3 var(--pismo);
+  color: var(--text);
+}
+
+.ls-listok > b {
+  color: var(--akcent-svetly);
+}
+
+.ls-listok > b,
+.ls-listok-riadok {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ls-listok-riadok.moje > b {
+  color: var(--ja);
+}
+
+.ls-listok-riadok.superove > b {
+  color: var(--su);
+}
+
+.ls-po-posune {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--akcent-svetly);
+}
+
+/* „? stupnica“ a legenda s príkladom z partie (UX N1). */
+.ls-otaznik {
+  flex: none;
+  min-height: 24px;
+  padding: 1px 10px;
+  border: 1px solid var(--okraj-svetly);
+  border-radius: 999px;
+  background: var(--plocha);
+  color: var(--text);
+  font: 700 0.74rem/1.2 var(--pismo);
+  cursor: pointer;
+}
+
+.ls-otaznik:hover,
+.ls-otaznik:focus-visible,
+.ls-otaznik.otvorena {
+  border-color: var(--akcent);
+  color: var(--akcent-svetly);
+}
+
+.ls-legenda {
+  position: absolute;
+  top: 32px;
+  left: 0;
+  z-index: 6;
+  width: min(560px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 16px;
+  border: 1px solid var(--akcent);
+  border-radius: 10px;
+  background: var(--plocha-2);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--text);
+}
+
+.ls-legenda p {
+  margin: 0;
+}
+
+.ls-legenda .ls-tlacidlo {
+  align-self: flex-end;
 }
 
 .ls-pata {
@@ -5311,19 +5541,10 @@ button.auto-hotovo-odkaz {
   color: var(--tlmeny);
 }
 
-.ls-priazen,
 .ls-body {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-}
-
-.ls-priazen.moja {
-  color: var(--ja);
-}
-
-.ls-priazen.superova {
-  color: var(--su);
 }
 
 .ls-body {
@@ -5414,9 +5635,11 @@ button.auto-hotovo-odkaz {
   text-overflow: ellipsis;
 }
 
+/* Pevná výška (3 riadky): osem stupníc stojí v jednom rade aj pri rôzne dlhom účinku (UI A8). */
 .ls-ucinok {
+  height: 3.9em;
   display: -webkit-box;
-  -webkit-line-clamp: 4;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   color: var(--slaby-text);
@@ -5435,8 +5658,31 @@ button.auto-hotovo-odkaz {
     display: none;
   }
 
-  .ls-pata > .ls-ucinok-kratko {
-    display: block;
+  /* Ikony podmienok potrebujú výšku tela (pri 1366 × 650 sa prekrývali): riadky pod
+     stupnicou sú hustejšie a body „ty / súper“ nesie čip „teraz“ v hlavičke. */
+  .ls-sc {
+    gap: 2px;
+  }
+
+  .ls-stav {
+    font-size: 0.62rem;
+    line-height: 1.22;
+  }
+
+  .ls-strany {
+    font-size: 0.56rem;
+    margin-top: 0;
+  }
+
+  /* Počet zvyšných posunov je aj v hlavičke línie — riadok navyše by pri prejdení myšou posunul stupnicu. */
+  .ls-pata > .ls-body,
+  .ls-pata > .ls-po-posune {
+    display: none;
+  }
+
+  /* Lístok posunu zakryje portrét len pri prejdení myšou — inak len zdroj. */
+  .ls-sc:not(:hover, :focus-within) .ls-listok-riadok {
+    display: none;
   }
 }
 
@@ -5471,7 +5717,8 @@ button.auto-hotovo-odkaz {
 @media (prefers-reduced-motion: reduce) {
   .stol-plst > .linia,
   .linia-starsich,
-  .ls-sc {
+  .ls-sc,
+  .ls-marker {
     transition: none;
     animation: none;
   }
@@ -5708,15 +5955,6 @@ button.auto-hotovo-odkaz {
   outline-offset: 1px;
 }
 
-/* Účinok priazne vždy (Michal 2026-10-23) — jeden riadok, celé znenie v titulku. */
-.ls-ucinok-kratko {
-  display: none;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  color: var(--slaby-text);
-}
-
 /* Lupa staršieho (Michal 2026-10-23): výška podľa obsahu, karta hore vedľa textu,
    podmienky 4 + 4 ako na scorecarde. Písmo pevné — lupa má pevnú šírku. */
 .lupa-starsieho {
@@ -5829,8 +6067,17 @@ button.auto-hotovo-odkaz {
 }
 
 .lst-spolu {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lst-spolu p {
   margin: 0;
-  font-weight: 700;
+}
+
+.lst-stopa b {
+  color: var(--akcent-svetly);
 }
 
 /* ---- Malý notebook (Michal 2026-10-23) ----

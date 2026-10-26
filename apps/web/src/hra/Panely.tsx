@@ -465,7 +465,8 @@ export interface HracDoskaProps {
    * Klik na Body prepne stôl na líniu starších (Michal 2026-10-23, #68) — bar sa
    * neprepína. `stlacene`: línia práve ukazuje čísla tohto hráča.
    */
-  readonly starsi: { readonly stlacene: boolean; readonly prepni: () => void; readonly id: string };
+  /** posuny = koľko starších sa pohlo od poslednej bitky (stopa na stupnici, #95). */
+  readonly starsi: { readonly stlacene: boolean; readonly prepni: () => void; readonly id: string; readonly posuny?: number };
   /** Dlaždica KARTY: klik otvorí vrstvu Karty, pri ťahaní kliatby či Nástroja je cieľom (#76). */
   readonly karty: KartyDlazdica;
   /**
@@ -814,11 +815,14 @@ export function HracDoska({
           title={
             starsi.stlacene
               ? "Späť na stôl (Esc)"
-              : "Body za starších, keby hra skončila teraz — klik ukáže pri každom staršom súboje podmienok a kto by za neho teraz dostal body"
+              : `Body za starších, keby hra skončila teraz — klik ukáže pri každom staršom súboje podmienok a kto by za neho teraz dostal body${(starsi.posuny ?? 0) > 0 ? `. Od bitky sa pohlo starších: ${starsi.posuny} — pri nich je stopa a lístok, prečo.` : ""}`
           }
           onClick={starsi.prepni}
         >
-          <span className="zdroj-nazov">Body {starsi.stlacene ? "▴" : "▾"}</span>
+          <span className="zdroj-nazov">
+            Body {starsi.stlacene ? "▴" : "▾"}
+            {!starsi.stlacene && (starsi.posuny ?? 0) > 0 && <span className="zdroj-posuny">⇄ {starsi.posuny}</span>}
+          </span>
           <span className="zdroj-hodnota">
             <span className="velke-cislo">{znamienkoBodov(body.spolu[p])}</span>
           </span>

@@ -30,9 +30,11 @@ import {
 } from "./player.ts";
 import type { BattleOutcome, BattleSide, DamageResult } from "./battle.ts";
 import { battleOutcome, computeDamage, dlhyPoExekucii, exekutorCheck } from "./battle.ts";
-import type { ElderState, MarkerPos } from "./elders.ts";
+import type { ElderState, MarkerPos, PosunMarkera } from "./elders.ts";
 import {
   MARKER_STRED,
+  NAZVY_ZON,
+  STUPNICA_ZONY,
   cenaPatronatu,
   freshElder,
   patronatMozny,
@@ -323,6 +325,12 @@ export interface GameState {
    * naraz — otočí sa na konci Pitky). Vyhodnotia sa pri otočení (Michal 2026-10-23).
    */
   readonly zaverecnaOdklad: readonly [OdkladZaverecnej | null, OdkladZaverecnej | null];
+  /**
+   * Posuny markerov (Pohoršenie, prebytok, patronát) od poslednej bitky do
+   * konca nasledujúceho Zhromaždenia — stopa na stupnici a účtenka (#95).
+   * Verejné; pravidlá z nich nič nerátajú.
+   */
+  readonly posunyMarkerov: readonly PosunMarkera[];
 }
 
 /** Čo by skrytá Záverečná spustila, keby bola odkrytá (Svokra, Vychovávateľka, Hrobár). */
@@ -450,6 +458,8 @@ export type Event =
       readonly dlhy: readonly [number, number];
       readonly cigarety: readonly [number, number];
     }
+  /** Posun markera staršieho — verejný ako marker sám; klient z neho kreslí stopu a účtenku. */
+  | ({ readonly type: "posunMarkera" } & PosunMarkera)
   /** Pečiatka momentu (momenty.ts) — verejná, rovnaká pre oboch; server ju pridá po príkaze. */
   | { readonly type: "moment"; readonly moment: Moment }
   | {
@@ -1013,6 +1023,7 @@ export function setupGame(data: GameData, seed: number, opts?: SetupOptions): Ga
     ohlaseneVydesenie: [null, null],
     patronat: [null, null],
     zaverecnaOdklad: [null, null],
+    posunyMarkerov: [],
   };
 
   // Náhodný útočník prvého kola (PRAVIDLA §3, §4).
@@ -1677,6 +1688,7 @@ function cmdPatronat(
   hrac(s, p).cigarety -= cena.cigarety;
   hrac(s, p).ruka.push(elder.karta);
   s.patronat[p] = { elderId: elder.elderId, nahrada: karta, pohorsenia: cena.pohorsenia };
+  if (elder.marker !== MARKER_STRED) zapisPosun(s, events, { elderId: elder.elderId, z: elder.marker, na: MARKER_STRED, zdroj: "patronat", kto: p });
   elder.marker = MARKER_STRED;
   // Na krajnú pozíciu sa v tomto kole znova dostať nedá (začiatok kola = stred).
   elder.markerZaciatokKola = MARKER_STRED;
@@ -2198,6 +2210,8 @@ function cmdVypit(s: MutState, data: GameData, p: PlayerId, events: Event[]): vo
 // Pitka
 
 function zacniPitku(s: MutState, data: GameData, events: Event[]): void {
+  // Stopa posunov drží do konca Zhromaždenia po bitke (Michal 2026-10-26).
+  s.posunyMarkerov = [];
   s.faza = "pitka";
   s.pitkaCislo += 1;
   events.push({ type: "faza", faza: "pitka" });
@@ -3563,6 +3577,19 @@ function cmdExekutorTool(
   pokracujBitku(s, data, events);
 }
 
+/** Zapíše posun markera do stopy (posunyMarkerov) a pošle ho obom ako udalosť. */
+function zapisPosun(s: MutState, events: Event[], posun: PosunMarkera): void {
+  s.posunyMarkerov.push(posun);
+  events.push({ type: "posunMarkera", ...posun });
+}
+
+/** Log posunu s menom staršieho a dôsledkom — „hráč N“ klient nahradí menom (UX U11). */
+function textPosunu(data: GameData, elder: ElderState, smer: "k sebe" | "k súperovi"): string {
+  const komu = priazenHraca(elder);
+  const priazen = komu === null ? "" : `, priazeň +${priazenSila(elder)} má hráč ${komu + 1}`;
+  return `${defOf(data, elder.karta).name} o krok ${smer} → ${NAZVY_ZON[STUPNICA_ZONY[elder.marker]]}${priazen}.`;
+}
+
 function cmdPohorsenie(
   s: MutState,
   data: GameData,
@@ -3583,12 +3610,10 @@ function cmdPohorsenie(
   const kluc = `${p}:${cmd.elderId}`;
   if (prekraciaHranicu(elder.marker, nova)) b.pohorsenieHranice[kluc] = (b.pohorsenieHranice[kluc] ?? 0) + 1;
   // Priazeň sa mení hneď — platí už v poškodení tejto bitky (Michal 2026-10-24).
+  zapisPosun(s, events, { elderId: cmd.elderId, z: elder.marker, na: nova, zdroj: "pohorsenie", kto: p });
   elder.marker = nova;
   b.pohorsenieZostava[p] -= 1;
-  events.push({
-    type: "log",
-    text: `Pohoršenie: marker staršieho ${cmd.elderId} sa posúva k hráčovi ${smer + 1}${kSebe ? " (k sebe)" : ""}.`,
-  });
+  events.push({ type: "log", text: `Pohoršenie (hráč ${p + 1}): ${textPosunu(data, elder as ElderState, kSebe ? "k sebe" : "k súperovi")}` });
   skontrolujVydesenie(s, data, events);
   pokracujBitku(s, data, events);
 }
@@ -3653,13 +3678,11 @@ function cmdPrebytok(
   // je to porazený, ako hovorí pravidlo.
   const nova = posunMarker(elder as ElderState, opponentOf(p), false);
   need(nova !== null, "Marker sa nedá posunúť.");
+  zapisPosun(s, events, { elderId: cmd.elderId, z: elder.marker, na: nova, zdroj: "prebytok", kto: p });
   elder.marker = nova;
   if (!b.prebytokPosunute.includes(cmd.elderId)) b.prebytokPosunute.push(cmd.elderId);
   b.prebytokZostava = Math.max(0, b.prebytokZostava - cena);
-  events.push({
-    type: "log",
-    text: `Prebytok: marker staršieho ${cmd.elderId} sa posúva k hráčovi ${opponentOf(p) + 1}.`,
-  });
+  events.push({ type: "log", text: `Prebytok (hráč ${p + 1}): ${textPosunu(data, elder as ElderState, "k súperovi")}` });
   skontrolujVydesenie(s, data, events);
   pokracujBitku(s, data, events);
 }
