@@ -27,15 +27,15 @@ export interface MediaZaznam {
  * scorecardov mali 350 – 600 kB a na stole sa kreslia 240 px široké.
  * Menšie súbory (avatary) ostávajú, ako sú.
  */
-export const PRAH_NAHLADU = 150 * 1024;
+const PRAH_NAHLADU = 150 * 1024;
 /** Ilustrácie kariet: náhľad 512 px (≈ 70 kB) sa na stole kreslí ≈ 117 px — aj ten dostane menší. */
-export const PRAH_NAHLADU_KARTY = 30 * 1024;
+const PRAH_NAHLADU_KARTY = 30 * 1024;
 
 /** Ilustrácie kariet a knižnica (mriežky od 84 px, náhľad karty v Dielni) — malý náhľad. */
 const MALY_NAHLAD: readonly DruhMedia[] = ["karta", "kniznica"];
 
 /** Akú dlhú stranu má mať náhľad: karta a knižnica 320 px, ostatné (scorecard 240 px) 512 px. */
-export function stranaNahladu(z: Pick<MediaZaznam, "druh">): number {
+function stranaNahladu(z: Pick<MediaZaznam, "druh">): number {
   return MALY_NAHLAD.includes(z.druh) ? 320 : 512;
 }
 
@@ -53,7 +53,7 @@ const PRIPONA: Record<string, string> = {
 };
 
 /** Skutočný typ podľa prvých bajtov; SVG len ako text s koreňom <svg>. */
-export function typObsahu(buf: Buffer): string | null {
+function typObsahu(buf: Buffer): string | null {
   if (buf.length > 3 && buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff) return "image/jpeg";
   if (buf.length > 8 && buf.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))) return "image/png";
   if (buf.length > 12 && buf.toString("ascii", 0, 4) === "RIFF" && buf.toString("ascii", 8, 12) === "WEBP") return "image/webp";

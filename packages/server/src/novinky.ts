@@ -5,7 +5,7 @@
 import type { Db } from "./db.ts";
 import { ChybaVstupu } from "./auth.ts";
 
-export const KATEGORIE_NOVINIEK = ["pravidla", "karty", "dizajn", "web", "opravy"] as const;
+const KATEGORIE_NOVINIEK = ["pravidla", "karty", "dizajn", "web", "opravy"] as const;
 export type KategoriaNovinky = (typeof KATEGORIE_NOVINIEK)[number];
 
 export interface Novinka {

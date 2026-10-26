@@ -76,6 +76,17 @@ interface SeedNavrh {
 type RawSide = { blocked: Pozicia[]; actions: Record<string, number>; allowed?: Record<string, string[]>; name?: string };
 type RawCard = { id: string; name: string; tags: string[]; effect_text: string; left: RawSide; right: RawSide };
 
+/** Karty východiskovej sady z repozitára (packages/core/data/cards.json). */
+function nacitajCards(): RawCard[] {
+  return (JSON.parse(readFileSync(join(CORE_DATA, "cards.json"), "utf8")) as { cards: RawCard[] }).cards;
+}
+
+/** Vzhľad a ilustrácie kariet zo seed/navrhy.json; bez súboru prázdny zoznam. */
+function nacitajSeedNavrhy(): SeedNavrh[] {
+  const cesta = join(SEED, "navrhy.json");
+  return existsSync(cesta) ? (JSON.parse(readFileSync(cesta, "utf8")) as SeedNavrh[]) : [];
+}
+
 /** Strana návrhu v porovnateľnom tvare (poradie kľúčov akcií a pozícií). */
 function rovnaStrana(s: StranaNavrhu): unknown {
   const zoradene = <T>(o: Readonly<Record<string, T>>) => Object.entries(o).sort(([a], [b]) => a.localeCompare(b));
@@ -127,9 +138,8 @@ export class Obsah {
 
   naplnAkTreba(teraz: number): void {
     if (this.karty.pocet() > 0) return;
-    const cards = (JSON.parse(readFileSync(join(CORE_DATA, "cards.json"), "utf8")) as { cards: RawCard[] }).cards;
-    const seedPath = join(SEED, "navrhy.json");
-    const navrhy = existsSync(seedPath) ? (JSON.parse(readFileSync(seedPath, "utf8")) as SeedNavrh[]) : [];
+    const cards = nacitajCards();
+    const navrhy = nacitajSeedNavrhy();
     transakcia(this.db, () => {
       cards.forEach((c, i) => {
         const s = navrhy.find((n) => n.id === c.id);
@@ -176,6 +186,7 @@ export class Obsah {
     const seedPath = join(dir, "bodovacie.json");
     if (!existsSync(seedPath)) return;
     const seed = JSON.parse(readFileSync(seedPath, "utf8")) as SeedBodovanie;
+    const ikona = (p: Podmienka | null): string | null => (p === null ? null : `ikona_${p}`);
     transakcia(this.db, () => {
       for (const [podmienka, nazov] of Object.entries(seed.nazvyIkon) as [Podmienka, string][]) {
         const subor = join(dir, "ikony", `${podmienka}.svg`);
@@ -186,7 +197,6 @@ export class Obsah {
       for (const b of seed.bodovacie) {
         const subor = join(dir, "pozadia", b.pozadie);
         const pozadie = existsSync(subor) ? this.media.uloz(readFileSync(subor), "pozadie", b.pozadie, teraz, ["image/jpeg"]).id : null;
-        const ikona = (p: Podmienka | null): string | null => (p === null ? null : `ikona_${p}`);
         this.bodovacie.uloz(b.id, {
           id: b.id,
           nazov: b.nazov,
@@ -229,9 +239,8 @@ export class Obsah {
    * seed/, a server založený z čistej databázy ho mal bez obrázka.
    */
   doplnChybajuceIlustracie(teraz: number): void {
-    const seedPath = join(SEED, "navrhy.json");
-    if (!existsSync(seedPath)) return;
-    const navrhy = JSON.parse(readFileSync(seedPath, "utf8")) as SeedNavrh[];
+    const navrhy = nacitajSeedNavrhy();
+    if (navrhy.length === 0) return;
     const zoSeedu = (id: string): KartaNavrh["obrazok"] => {
       const s = navrhy.find((n) => n.id === id);
       return s === undefined ? null : this.seedObrazok(s.obrazok, teraz);
@@ -246,9 +255,8 @@ export class Obsah {
         this.ulozKartu({ ...k, obrazok });
       }
     });
-    const posledna = this.db.prepare("SELECT data FROM sady ORDER BY verzia DESC LIMIT 1").get() as { data: string } | undefined;
-    if (posledna === undefined) return;
-    const stara = JSON.parse(posledna.data) as Omit<Sada, "verzia">;
+    const stara = this.poslednaSada();
+    if (stara === null) return;
     let zmena = false;
     const karty = stara.karty.map((k) => {
       if (k.obrazok !== null) return k;
@@ -258,8 +266,7 @@ export class Obsah {
       return { ...k, obrazok };
     });
     if (!zmena) return;
-    this.db.prepare("INSERT INTO sady (cas, autor, data) VALUES (?, ?, ?)").run(teraz, null, JSON.stringify({ ...stara, cas: teraz, karty }));
-    this.cache = null;
+    this.ulozSadu({ ...stara, cas: teraz, karty }, null, teraz);
   }
 
   /**
@@ -273,13 +280,11 @@ export class Obsah {
     transakcia(this.db, () => {
       for (const k of this.klucoveSlova.vsetky()) if (zrusene.has(k.slovo.toLowerCase())) this.klucoveSlova.zmaz(k.slovo);
     });
-    const posledna = this.db.prepare("SELECT data FROM sady ORDER BY verzia DESC LIMIT 1").get() as { data: string } | undefined;
-    if (posledna === undefined) return;
-    const stara = JSON.parse(posledna.data) as Omit<Sada, "verzia">;
+    const stara = this.poslednaSada();
+    if (stara === null) return;
     const klucoveSlova = stara.klucoveSlova.filter((k) => !zrusene.has(k.slovo.toLowerCase()));
     if (klucoveSlova.length === stara.klucoveSlova.length) return;
-    this.db.prepare("INSERT INTO sady (cas, autor, data) VALUES (?, ?, ?)").run(teraz, null, JSON.stringify({ ...stara, cas: teraz, klucoveSlova }));
-    this.cache = null;
+    this.ulozSadu({ ...stara, cas: teraz, klucoveSlova }, null, teraz);
   }
 
   /**
@@ -310,14 +315,12 @@ export class Obsah {
       }
       this.nastaveniaT.uloz(ZNACKA, { cas: teraz });
     });
-    const posledna = this.db.prepare("SELECT data FROM sady ORDER BY verzia DESC LIMIT 1").get() as { data: string } | undefined;
-    if (posledna === undefined) return;
-    const stara = JSON.parse(posledna.data) as Omit<Sada, "verzia">;
+    const stara = this.poslednaSada();
+    if (stara === null) return;
     const nova = { ...premenuj(stara), akcie: stara.akcie.map(upravAkciu) };
     // Čistá databáza má už nové názvy — bez zmeny netreba novú verziu.
     if (JSON.stringify(nova) === JSON.stringify(stara)) return;
-    this.db.prepare("INSERT INTO sady (cas, autor, data) VALUES (?, ?, ?)").run(teraz, null, JSON.stringify({ ...nova, cas: teraz }));
-    this.cache = null;
+    this.ulozSadu({ ...nova, cas: teraz }, null, teraz);
   }
 
   /**
@@ -338,9 +341,8 @@ export class Obsah {
       console.warn(`Tvorca má nezverejnené návrhy — ${znacka} sa preskakuje (dorovnaj ručne).`);
       return "preskocene";
     }
-    const cards = (JSON.parse(readFileSync(join(CORE_DATA, "cards.json"), "utf8")) as { cards: RawCard[] }).cards;
-    const seedPath = join(SEED, "navrhy.json");
-    const seed = existsSync(seedPath) ? (JSON.parse(readFileSync(seedPath, "utf8")) as SeedNavrh[]) : [];
+    const cards = nacitajCards();
+    const seed = nacitajSeedNavrhy();
     const kluc = (k: KartaNavrh): string =>
       JSON.stringify([k.nazov, k.tagy, k.efekt, k.obrazok, k.farba, k.mierkaTextu, k.mierkaIkon, k.sirkaMm, k.vyskaMm, k.kopie, rovnaStrana(k.lava), rovnaStrana(k.prava)]);
     let zmena = false;
@@ -392,13 +394,33 @@ export class Obsah {
 
   /** Nová verzia sady s rovnakými kartami a aktuálnymi scorecardmi z tvorcu. */
   private prezverejniBodovanie(teraz: number): void {
-    const posledna = this.db.prepare("SELECT data FROM sady ORDER BY verzia DESC LIMIT 1").get() as { data: string } | undefined;
-    if (posledna === undefined) return;
-    const stara = JSON.parse(posledna.data) as Omit<Sada, "verzia">;
+    const stara = this.poslednaSada();
+    if (stara === null) return;
     const obsah = { ...stara, cas: teraz, ...this.bodovanieSady() };
     loadGameData(obsah.cardsJson, this.elders, obsah.scorecardsJson);
-    this.db.prepare("INSERT INTO sady (cas, autor, data) VALUES (?, ?, ?)").run(teraz, null, JSON.stringify(obsah));
+    this.ulozSadu(obsah, null, teraz);
+  }
+
+  /** Posledná zverejnená sada bez čísla verzie; null pred prvým zverejnením. */
+  private poslednaSada(): Omit<Sada, "verzia"> | null {
+    const r = this.db.prepare("SELECT data FROM sady ORDER BY verzia DESC LIMIT 1").get() as { data: string } | undefined;
+    return r === undefined ? null : (JSON.parse(r.data) as Omit<Sada, "verzia">);
+  }
+
+  /** Zapíše novú verziu sady a vráti jej číslo; aktuálna sada sa načíta nanovo. */
+  private ulozSadu(obsah: Omit<Sada, "verzia">, autor: number | null, teraz: number): number {
+    const r = this.db.prepare("INSERT INTO sady (cas, autor, data) VALUES (?, ?, ?)").run(teraz, autor, JSON.stringify(obsah));
     this.cache = null;
+    return Number(r.lastInsertRowid);
+  }
+
+  /**
+   * Scorecardy uloženej sady pre jadro. Sady spred scorecardov hrajú s východiskovými
+   * z repozitára; body za podmienky sú herné hodnoty jadra — platia aj pre staršie sady.
+   */
+  private scorecardsSady(s: Pick<Sada, "scorecardsJson">): Record<string, unknown> {
+    const body = (this.scorecardsPredvolene as { body: unknown }).body;
+    return { ...((s.scorecardsJson ?? this.scorecardsPredvolene) as Record<string, unknown>), body };
   }
 
   /** Scorecardy pre sadu z bodovacích kariet tvorcu (prázdny tvorca → východiskové z repozitára). */
@@ -477,9 +499,7 @@ export class Obsah {
     if (problemy.length > 0) throw new ChybaVstupu(`Sadu nemožno zverejniť:\n${problemy.join("\n")}`, 422);
 
     const obsah = { cas: teraz, karty, cardsJson, ...bodovanie, ...this.vzhlad() };
-    const r = this.db.prepare("INSERT INTO sady (cas, autor, data) VALUES (?, ?, ?)").run(teraz, autor, JSON.stringify(obsah));
-    this.cache = null;
-    return { verzia: Number(r.lastInsertRowid), ...obsah };
+    return { verzia: this.ulozSadu(obsah, autor, teraz), ...obsah };
   }
 
   aktualnaSada(): { sada: Sada; data: GameData } {
@@ -489,11 +509,7 @@ export class Obsah {
       | undefined;
     if (r === undefined) throw new Error("Žiadna zverejnená sada — server sa nenaplnil.");
     const ulozena = { verzia: r.verzia, ...(JSON.parse(r.data) as Omit<Sada, "verzia">) };
-    // Sady spred scorecardov hrajú s východiskovými z repozitára. Body za
-    // podmienky sú herné hodnoty jadra — platia aj pre staršie sady.
-    const scorecards = (ulozena.scorecardsJson ?? this.scorecardsPredvolene) as Record<string, unknown>;
-    const body = (this.scorecardsPredvolene as { body: unknown }).body;
-    const sada: Sada = { ...ulozena, scorecardsJson: { ...scorecards, body } };
+    const sada: Sada = { ...ulozena, scorecardsJson: this.scorecardsSady(ulozena) };
     this.cache = { sada, data: loadGameData(sada.cardsJson, this.elders, sada.scorecardsJson) };
     return this.cache;
   }
@@ -508,8 +524,7 @@ export class Obsah {
     const r = this.db.prepare("SELECT data FROM sady WHERE verzia = ?").get(verzia) as { data: string } | undefined;
     if (r === undefined) return null;
     const ulozena = JSON.parse(r.data) as Omit<Sada, "verzia">;
-    const body = (this.scorecardsPredvolene as { body: unknown }).body;
-    const scorecards = { ...((ulozena.scorecardsJson ?? this.scorecardsPredvolene) as Record<string, unknown>), body };
+    const scorecards = this.scorecardsSady(ulozena);
     try {
       const data = loadGameData(ulozena.cardsJson, this.elders, scorecards);
       this.dataSad.set(verzia, data);
@@ -528,22 +543,20 @@ export class Obsah {
     const r = this.db.prepare("SELECT data FROM sady WHERE verzia = ?").get(verzia) as { data: string } | undefined;
     if (r === undefined) throw new ChybaVstupu(`Sada v${verzia} neexistuje.`, 404);
     const stara = JSON.parse(r.data) as Omit<Sada, "verzia">;
-    const body = (this.scorecardsPredvolene as { body: unknown }).body;
-    const scorecards = { ...((stara.scorecardsJson ?? this.scorecardsPredvolene) as Record<string, unknown>), body };
+    const scorecards = this.scorecardsSady(stara);
     try {
       loadGameData(stara.cardsJson, this.elders, scorecards);
     } catch (err) {
       throw new ChybaVstupu(`Sadu v${verzia} súčasná hra nevie načítať: ${err instanceof Error ? err.message : String(err)}`, 422);
     }
-    const nova = this.db.prepare("INSERT INTO sady (cas, autor, data) VALUES (?, ?, ?)").run(teraz, autor, JSON.stringify({ ...stara, cas: teraz }));
-    this.cache = null;
+    const novaVerzia = this.ulozSadu({ ...stara, cas: teraz }, autor, teraz);
     const ids = new Set(stara.karty.map((k) => k.id));
     if (navrhy) {
       transakcia(this.db, () => {
         stara.karty.forEach((k, i) => this.ulozKartu({ ...k, upravene: teraz }, i));
       });
     }
-    return { verzia: Number(nova.lastInsertRowid), kariet: stara.karty.length, mimoSady: this.karty.vsetky().filter((k) => !ids.has(k.id)).map((k) => k.id) };
+    return { verzia: novaVerzia, kariet: stara.karty.length, mimoSady: this.karty.vsetky().filter((k) => !ids.has(k.id)).map((k) => k.id) };
   }
 
   historiaSad(): { verzia: number; cas: number; autor: number | null; kariet: number }[] {
@@ -559,9 +572,5 @@ export class Obsah {
       autor: r.autor,
       kariet: (JSON.parse(r.data) as { karty: unknown[] }).karty.length,
     }));
-  }
-
-  get eldersJson(): unknown {
-    return this.elders;
   }
 }

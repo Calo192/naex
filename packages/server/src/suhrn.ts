@@ -48,8 +48,8 @@ export const METRIKY: readonly DefMetriky[] = [
 
 /** Rozdiel, ktorý je už prakticky veľký (UX návrh: body 2, percentá 10 p. b.). */
 const PRAH: Readonly<Record<Jednotka, number>> = { b: 2, "%": 10, x: 0.5 };
-export const OD_STRANOK = 5;
-export const OD_TRENDU = 10;
+const OD_STRANOK = 5;
+const OD_TRENDU = 10;
 export const HRACOV_NA_PRIEMER = 10;
 export const PARTII_NA_PRIEMER = 5;
 

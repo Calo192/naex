@@ -68,7 +68,7 @@ export function overKategoriu(v: unknown): KategoriaNazoru {
   throw new ChybaVstupu("Neznáma kategória.");
 }
 
-export function overStav(v: unknown): StavNazoru {
+function overStav(v: unknown): StavNazoru {
   if (typeof v === "string" && (STAVY as readonly string[]).includes(v)) return v as StavNazoru;
   throw new ChybaVstupu("Neznámy stav.");
 }

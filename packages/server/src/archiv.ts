@@ -163,11 +163,11 @@ export class Archiv {
             "INSERT INTO partie_hraci (partia, miesto, pouzivatel, vysledok, body, frajerina_pred, frajerina_po, statistiky) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
           )
           .run(id, miesto, z.hraci[miesto], vysledok, z.body?.[miesto] ?? null, pred[miesto].hodnota, po[miesto], JSON.stringify(z.statistiky[miesto]));
-        const f = pred[miesto];
         // Nehodnotená partia ostane v archíve a štatistikách, Frajerinu nemení.
         if (!hodnotena) continue;
         const kto = z.hraci[miesto];
         if (kto === null) continue;
+        const f = pred[miesto];
         this.db
           .prepare(
             `INSERT INTO frajerina (pouzivatel, hodnota, najvyssia, partie, vyhry, prehry, remizy) VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -194,7 +194,6 @@ export class Archiv {
     });
   }
 
-  /** Poradie v rebríčku (1 = najlepší); hráč bez partie poradie nemá. */
   /** Poradie v rebríčku (1 = najlepší); hráč bez partie poradie nemá. AI účty sa rátajú len pre správcu. */
   private poradie(f: StavFrajeriny, sAi: boolean): number | null {
     if (f.partie === 0) return null;

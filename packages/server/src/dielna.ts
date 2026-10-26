@@ -12,7 +12,7 @@ import type { Pouzivatel } from "./auth.ts";
 import { ChybaVstupu, jeSpravca } from "./auth.ts";
 import type { Prava } from "./prava.ts";
 
-export const STAVY_DIELNE = ["koncept", "hlasovanie", "vratene", "zamietnute", "v_tvorcovi"] as const;
+const STAVY_DIELNE = ["koncept", "hlasovanie", "vratene", "zamietnute", "v_tvorcovi"] as const;
 export type StavDielne = (typeof STAVY_DIELNE)[number];
 /** Stav, ako ho vidí hráč: „v hre“ a „archív“ sa odvodzujú pri čítaní. */
 export type StavZobrazeny = StavDielne | "v_hre" | "archiv";
@@ -22,7 +22,7 @@ export type Rozhodnutie = "schvalit" | "vratit" | "zamietnut";
 /** Otvorené návrhy (koncept, hlasovanie, vrátené) — najviac 3 na hráča. */
 export const MAX_OTVORENYCH = 3;
 /** Návrh bez jedinej ľudskej cigarety ide po 60 dňoch do archívu. */
-export const ARCHIV_PO_MS = 60 * 24 * 60 * 60 * 1000;
+const ARCHIV_PO_MS = 60 * 24 * 60 * 60 * 1000;
 /** Značka „krabička“ — len vizuálny prah, nie podmienka posudku. */
 export const KRABICKA = 20;
 const POZICIE = [0, 1, 2, 3] as const;
@@ -166,7 +166,7 @@ const prazdnyObsah = (): ObsahNavrhu => ({
 });
 
 /** Id karty v tvorcovi z názvu: malé písmená bez diakritiky, podčiarkovníky. */
-export function idZNazvu(nazov: string, obsadene: (id: string) => boolean): string {
+function idZNazvu(nazov: string, obsadene: (id: string) => boolean): string {
   const zaklad =
     nazov
       .normalize("NFD")
@@ -181,6 +181,13 @@ export function idZNazvu(nazov: string, obsadene: (id: string) => boolean): stri
 
 const rovnakeStrany = (a: StranaNavrhu, b: StranaNavrhu): boolean =>
   JSON.stringify(poziciZoStrany(a)) === JSON.stringify(poziciZoStrany(b)) && JSON.stringify(a.akcie) === JSON.stringify(b.akcie);
+
+/** Obsah návrhu z riadku dielna_navrhy. */
+const obsahRiadku = (r: Record<string, unknown>): ObsahNavrhu => JSON.parse(String(r.data)) as ObsahNavrhu;
+
+/** Podoba upravovanej karty v čase návrhu; null pri novej karte. */
+const zakladRiadku = (r: Record<string, unknown>): KartaNavrh | null =>
+  r.zaklad_karta === null ? null : (JSON.parse(String(r.zaklad_karta)) as KartaNavrh);
 
 export class Dielna {
   private readonly db: Db;
@@ -310,9 +317,9 @@ export class Dielna {
       id: Number(r.id),
       typ: r.typ as TypNavrhu,
       zaklad: r.zaklad === null ? null : String(r.zaklad),
-      zakladKarta: r.zaklad_karta === null ? null : (JSON.parse(String(r.zaklad_karta)) as KartaNavrh),
+      zakladKarta: zakladRiadku(r),
       autor: this.autor(r, "a_"),
-      obsah: JSON.parse(String(r.data)) as ObsahNavrhu,
+      obsah: obsahRiadku(r),
       stav: zobrazeny,
       dovod: String(r.dovod),
       cigarety,
@@ -459,7 +466,7 @@ export class Dielna {
     this.prava.vyzaduj(ja, "navrhovat_karty");
     const r = this.mojRiadok(ja, id);
     if (r.stav === "v_tvorcovi") throw new ChybaVstupu("Návrh je už v tvorcovi kariet — ďalšie zmeny navrhni ako úpravu karty.");
-    const obsah = this.overObsah(telo, JSON.parse(String(r.data)) as ObsahNavrhu);
+    const obsah = this.overObsah(telo, obsahRiadku(r));
     this.db.prepare("UPDATE dielna_navrhy SET data = ?, upraveny = ? WHERE id = ?").run(JSON.stringify(obsah), teraz, id);
   }
 
@@ -471,8 +478,7 @@ export class Dielna {
     if (r.stav === "zamietnute" && this.otvorene(ja.id, id) >= MAX_OTVORENYCH) {
       throw new ChybaVstupu(`Naraz smieš mať najviac ${MAX_OTVORENYCH} otvorené návrhy.`);
     }
-    const zaklad = r.zaklad_karta === null ? null : (JSON.parse(String(r.zaklad_karta)) as KartaNavrh);
-    const chyby = this.chybyNaOdoslanie(JSON.parse(String(r.data)) as ObsahNavrhu, r.typ as TypNavrhu, zaklad);
+    const chyby = this.chybyNaOdoslanie(obsahRiadku(r), r.typ as TypNavrhu, zakladRiadku(r));
     if (chyby.length > 0) throw new ChybaVstupu(chyby.join(" "));
     this.db.prepare("UPDATE dielna_navrhy SET stav = 'hlasovanie', odoslany = ?, upraveny = ? WHERE id = ?").run(teraz, teraz, id);
   }
@@ -566,9 +572,9 @@ export class Dielna {
       return { kartaId: null, roadmapa: null };
     }
 
-    const obsah = JSON.parse(String(r.data)) as ObsahNavrhu;
+    const obsah = obsahRiadku(r);
     const typ = r.typ as TypNavrhu;
-    const zakladKarta = r.zaklad_karta === null ? null : (JSON.parse(String(r.zaklad_karta)) as KartaNavrh);
+    const zakladKarta = zakladRiadku(r);
     const chyby = this.chybyNaOdoslanie(obsah, typ, zakladKarta);
     if (chyby.length > 0) throw new ChybaVstupu(`Návrh sa nedá prevziať: ${chyby.join(" ")}`);
 

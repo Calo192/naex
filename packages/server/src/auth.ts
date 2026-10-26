@@ -20,7 +20,7 @@ import { POHLAVIA } from "@naex/core";
  */
 export type Rola = "admin" | "subadmin" | "sedmicka" | "deci" | "hrac" | "navstevnik";
 
-export const UROVNE: readonly Rola[] = ["admin", "subadmin", "sedmicka", "deci", "hrac", "navstevnik"];
+const UROVNE: readonly Rola[] = ["admin", "subadmin", "sedmicka", "deci", "hrac", "navstevnik"];
 
 /** Admin a subadmin: správa hráčov, tvorba kariet, mazanie cudzích príspevkov. */
 export function jeSpravca(rola: Rola): boolean {
@@ -28,6 +28,10 @@ export function jeSpravca(rola: Rola): boolean {
 }
 
 const rolaZDb = (v: unknown): Rola => (UROVNE.includes(v as Rola) ? (v as Rola) : "navstevnik");
+/** Číselné nastavenie účtu; NULL (alebo stĺpec mimo dotazu) = predvolené. */
+const nastavenie = (v: unknown, predvolene: number): number => (v === null || v === undefined ? predvolene : Number(v));
+/** Vypínač účtu; NULL (alebo stĺpec mimo dotazu) = zapnutý, 0 = vypnutý. */
+const vypinac = (v: unknown): boolean => v === null || v === undefined || Number(v) === 1;
 
 export interface Pouzivatel {
   readonly id: number;
@@ -67,7 +71,7 @@ export function overLupu(v: unknown): number {
 }
 
 /** Najviac toľko videných nápoved pri účte — katalóg ich má 19, strop len chráni databázu. */
-export const MAX_VIDENYCH_NAPOVED = 100;
+const MAX_VIDENYCH_NAPOVED = 100;
 
 /** Id nápovede z requestu — tvar ako v napovedy.json („pas-cigarety“). */
 export function overIdNapovedy(v: unknown): string {
@@ -112,18 +116,20 @@ const DOHRATE_SQL = `SELECT COUNT(*) FROM partie_hraci ph JOIN partie pa ON pa.i
 
 const COOKIE = "naex_sid";
 const PLATNOST_MS = 30 * 24 * 60 * 60 * 1000;
+/** Parametre scrypt — uložený hash ich nenesie, preto ich hashovanie aj overenie berie odtiaľto. */
+const SCRYPT = { N: 16384, r: 8, p: 1 } as const;
 
 export function hashHesla(heslo: string): string {
   const sol = randomBytes(16);
-  const hash = scryptSync(heslo, sol, 64, { N: 16384, r: 8, p: 1 });
+  const hash = scryptSync(heslo, sol, 64, SCRYPT);
   return `scrypt$${sol.toString("base64")}$${hash.toString("base64")}`;
 }
 
-export function overHeslo(heslo: string, ulozene: string): boolean {
+function overHeslo(heslo: string, ulozene: string): boolean {
   const [druh, sol, hash] = ulozene.split("$");
   if (druh !== "scrypt" || sol === undefined || hash === undefined) return false;
   const ocakavany = Buffer.from(hash, "base64");
-  const skutocny = scryptSync(heslo, Buffer.from(sol, "base64"), ocakavany.length, { N: 16384, r: 8, p: 1 });
+  const skutocny = scryptSync(heslo, Buffer.from(sol, "base64"), ocakavany.length, SCRYPT);
   return timingSafeEqual(ocakavany, skutocny);
 }
 
@@ -168,9 +174,9 @@ export class Ucty {
     this.db
       .prepare(
         `UPDATE pouzivatelia SET rola = CASE WHEN (${DOHRATE_SQL}) >= 1 THEN 'hrac' ELSE 'navstevnik' END
-         WHERE rola NOT IN ('admin', 'subadmin', 'sedmicka', 'deci', 'hrac', 'navstevnik')`,
+         WHERE rola NOT IN (${UROVNE.map(() => "?").join(", ")})`,
       )
-      .run();
+      .run(...UROVNE);
     // Od 2026-10-21 stačí na úroveň hráč jedna dohratá partia.
     this.db.prepare(`UPDATE pouzivatelia SET rola = 'hrac' WHERE rola = 'navstevnik' AND (${DOHRATE_SQL}) >= 1`).run();
     this.db.prepare("UPDATE pouzivatelia SET rola = 'hrac' WHERE rola = 'admin' AND login <> ?").run(admin.login);
@@ -295,10 +301,16 @@ export class Ucty {
     return rankPodlaHviezd(postup, { ...this.hviezdyHraca(id), poldeci });
   }
 
-  private povys(id: number, postup: PostupRankov, poPartii: boolean): boolean {
+  /** Rank účtu a či ho nastavil správca ručne; undefined = účet neexistuje. */
+  private rankUctu(id: number): { readonly rola: Rola; readonly rucne: boolean } | undefined {
     const r = this.db.prepare("SELECT rola, rola_rucne FROM pouzivatelia WHERE id = ?").get(id) as { rola: string; rola_rucne: number } | undefined;
-    if (r === undefined || r.rola_rucne === 1) return false;
-    const teraz = rolaZDb(r.rola);
+    return r === undefined ? undefined : { rola: rolaZDb(r.rola), rucne: r.rola_rucne === 1 };
+  }
+
+  private povys(id: number, postup: PostupRankov, poPartii: boolean): boolean {
+    const ucet = this.rankUctu(id);
+    if (ucet === undefined || ucet.rucne) return false;
+    const teraz = ucet.rola;
     if (!jeRankHraca(teraz)) return false;
     const cielovy = this.rankPodlaPravidiel(id, postup, poPartii);
     if (RANKY_HRACOV.indexOf(cielovy) <= RANKY_HRACOV.indexOf(teraz)) return false;
@@ -312,19 +324,19 @@ export class Ucty {
    * Deci a Sedmička získané ešte za partie ostávajú (Michal 2026-10-25: nikoho neznížiť).
    */
   automatickyRank(id: number, postup: PostupRankov): void {
-    const r = this.db.prepare("SELECT rola, rola_rucne FROM pouzivatelia WHERE id = ?").get(id) as { rola: string; rola_rucne: number } | undefined;
-    if (r === undefined) return;
-    const teraz = rolaZDb(r.rola);
+    const ucet = this.rankUctu(id);
+    if (ucet === undefined) return;
+    const teraz = ucet.rola;
     if (!jeRankHraca(teraz)) return;
     const podlaPravidiel = this.rankPodlaPravidiel(id, postup, false);
-    const dolna: RankHraca = r.rola_rucne === 1 ? (teraz === "navstevnik" ? "navstevnik" : "hrac") : teraz;
+    const dolna: RankHraca = ucet.rucne ? (teraz === "navstevnik" ? "navstevnik" : "hrac") : teraz;
     const rank = RANKY_HRACOV[Math.max(RANKY_HRACOV.indexOf(podlaPravidiel), RANKY_HRACOV.indexOf(dolna))] ?? podlaPravidiel;
     this.db.prepare("UPDATE pouzivatelia SET rola = ?, rola_rucne = 0 WHERE id = ?").run(rank, id);
   }
 
   /** Či rank nastavil správca ručne (automatika ho nemení). */
   rolaRucne(id: number): boolean {
-    return (this.db.prepare("SELECT rola_rucne FROM pouzivatelia WHERE id = ?").get(id) as { rola_rucne: number } | undefined)?.rola_rucne === 1;
+    return this.rankUctu(id)?.rucne === true;
   }
 
   private riadok(r: Record<string, unknown> | undefined): Pouzivatel | null {
@@ -335,13 +347,13 @@ export class Ucty {
       meno: String(r.meno),
       avatar: r.avatar === null ? null : String(r.avatar),
       rola: rolaZDb(r.rola),
-      lupa: r.lupa === null || r.lupa === undefined ? LUPA_PREDVOLENA : Number(r.lupa),
-      hudba: r.hudba === null || r.hudba === undefined ? HUDBA_PREDVOLENA : Number(r.hudba),
-      melichar: r.melichar === null || r.melichar === undefined ? MELICHAR_PREDVOLENY : Number(r.melichar),
+      lupa: nastavenie(r.lupa, LUPA_PREDVOLENA),
+      hudba: nastavenie(r.hudba, HUDBA_PREDVOLENA),
+      melichar: nastavenie(r.melichar, MELICHAR_PREDVOLENY),
       ai: Number(r.ai) === 1,
       schema: typeof r.schema === "string" ? r.schema : null,
-      skratky: r.skratky === null || r.skratky === undefined ? true : Number(r.skratky) === 1,
-      napovedy: r.napovedy === null || r.napovedy === undefined ? true : Number(r.napovedy) === 1,
+      skratky: vypinac(r.skratky),
+      napovedy: vypinac(r.napovedy),
       pohlavie: POHLAVIA.includes(r.pohlavie as Pohlavie) ? (r.pohlavie as Pohlavie) : null,
       skrytySuhrn: Number(r.skryty_suhrn) === 1,
     };

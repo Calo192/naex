@@ -12,11 +12,11 @@ import type { Db } from "./db.ts";
 import type { Pouzivatel } from "./auth.ts";
 import { ChybaVstupu, jeSpravca } from "./auth.ts";
 
-export const STAVY_NAVRHU = ["nove", "implementovat", "odlozene", "zamietnute", "rozpracovane", "implementovane", "overene", "nezabralo"] as const;
+const STAVY_NAVRHU = ["nove", "implementovat", "odlozene", "zamietnute", "rozpracovane", "implementovane", "overene", "nezabralo"] as const;
 export type StavNavrhu = (typeof STAVY_NAVRHU)[number];
 
 /** Odkiaľ návrh je — z playtestu, od dizajnérov webu (skill naex-dizajn), alebo rozpor pravidiel a kódu (agent naex-rozhodca). */
-export const ZDROJE_NAVRHU = ["playtest", "dizajn", "rozhodca"] as const;
+const ZDROJE_NAVRHU = ["playtest", "dizajn", "rozhodca"] as const;
 export type ZdrojNavrhu = (typeof ZDROJE_NAVRHU)[number];
 
 /** Rozhodnutia človeka; zvyšné stavy nastavuje Developer počas práce a organizátor playtestu po overení. */
