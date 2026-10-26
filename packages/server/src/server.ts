@@ -26,7 +26,7 @@ import {
   radaKVolbe,
   type MoznostOtazky,
   VERZIA_PRAVIDIEL,
-  bodyTeraz,
+  ucetSpakov,
   defOf,
   doplnNaexZKroniky,
   novaKronika,
@@ -1150,10 +1150,10 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         verziaPravidiel: VERZIA_PRAVIDIEL,
         seed: room.seed,
         prikazy: room.prikazy,
-        // Kronika: kolá a záverečné bodovanie (BodyTeraz z jadra, ten istý účet ako na stole) s menami starších.
+        // Kronika: kolá a záverečný účet špakov (v6, ten istý rozpis ako na stole) s menami starších.
         kronika: {
           kola: room.kronika?.kola ?? [],
-          zaverecne: bodyTeraz(room.data, viewFor(room.data, koniec, 0)),
+          zaverecne: ucetSpakov(viewFor(room.data, koniec, 0)),
           menaStarsich: Object.fromEntries(koniec.starsi.map((e) => [e.elderId, defOf(room.data, e.karta).name])),
         },
         // Hodnotená (Frajerina) len keď na to majú právo obaja a nehrá človek proti AI

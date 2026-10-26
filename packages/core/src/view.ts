@@ -64,6 +64,8 @@ export interface BitkaVerejne {
   /** Starší, ktorých prebytok už posunul — za každého porazený raz dostane cigaretu (verejné). */
   readonly prebytokPosunute: readonly string[];
   readonly pohorsenieZostava: readonly [number, number];
+  /** Z toho Pohoršenia zo súperovho patronátu — nesmú na jeho patróna (pohorsenieMozne, v6). */
+  readonly pohorseniaPatronatu: readonly [number, number];
   /** Špaky, ktoré hráčom v tejto bitke zhoreli pri exekúcii (v6). */
   readonly exekutor: readonly [number, number];
   readonly benzinkaZostava: readonly [number, number];
@@ -346,6 +348,7 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
             prebytokZostava: bitka.prebytokZostava,
             prebytokPosunute: bitka.prebytokPosunute,
             pohorsenieZostava: bitka.pohorsenieZostava,
+            pohorseniaPatronatu: bitka.pohorseniaPatronatu ?? [0, 0],
             exekutor: bitka.exekutor,
             benzinkaZostava: bitka.benzinkaZostava,
             spalit: bitka.spalit,
@@ -595,6 +598,8 @@ export function hodnotaPohorseni(_data: GameData, view: ClientState, p: PlayerId
   for (let zostava = pocet; zostava > 0; zostava--) {
     let najlepsi: { readonly v: ClientState; readonly hodnota: number } | null = null;
     for (const e of v.starsi) {
+      // Súperov patrón: Pohoršenia z patronátu naňho nesmú (v6) — odhad ho vynechá celý.
+      if (e.elderId === v.patronat[super_]?.elderId) continue;
       for (const smer of [super_, p] as const) {
         const marker = posunMarker(e, smer);
         if (marker === null) continue;
@@ -639,4 +644,20 @@ export function stavkaBitky(_data: GameData, view: ClientState): StavkaBitky | n
     prehra: -(spakyZaBitku(pitky, abstaky[su], abstaky[ja]) + view.spakyNaSekere),
     naSekere: view.spakyNaSekere,
   };
+}
+
+/**
+ * Záverečný účet partie v6 do archívu (kronika): popolníky oboch hráčov
+ * a nástenka bitiek. Partie do v5 majú v archíve záverečné bodovanie po
+ * starších (bez poľa `verzia`) — číta ho klient po starom.
+ */
+export interface UcetSpakov {
+  readonly verzia: "v6";
+  readonly spolu: readonly [number, number];
+  readonly rozpis: readonly [RozpisSpakov, RozpisSpakov];
+  readonly nastenka: readonly BitkaNaNastenke[];
+}
+
+export function ucetSpakov(view: Pick<ClientState, "nastenka" | "koniec" | "spaky">): UcetSpakov {
+  return { verzia: "v6", spolu: [view.spaky[0], view.spaky[1]], rozpis: rozpisSpakov(view), nastenka: view.nastenka };
 }

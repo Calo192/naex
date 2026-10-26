@@ -22,10 +22,10 @@ function miestaKariet(v: ClientState): Map<number, string> {
   daj(v.ruka, "ruka");
   daj(v.senok, "senok");
   daj(v.lokalityVHre, "lokality");
-  daj(v.prepadnute, "prepadnute");
+  // v6: odohrané lokality ležia na nástenke.
   daj(
-    v.ovladnute.map((o) => o.karta),
-    "ovladnute",
+    v.nastenka.flatMap((b) => (b.lokalita === null ? [] : [b.lokalita])),
+    "nastenka",
   );
   if (v.ciel?.lokalita != null) m.set(v.ciel.lokalita.uid, "ciel");
   return m;

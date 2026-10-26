@@ -8,13 +8,13 @@ import { useEffect, useRef, useState, type ReactNode, type RefObject } from "rea
 import type {
   Action,
   ActionSums,
-  BodyTeraz,
   ClientState,
   DamageResult,
   GameData,
   NahladPitkyHraca,
   PlayerId,
   RozpisPoskodenia,
+  SpakyTeraz,
   StavZavislosti,
   StavkaBitky as StavkaBitkyCisla,
   ZdrojeAkcii,
@@ -457,8 +457,8 @@ export interface HracDoskaProps {
   readonly obchodCigariet?:
     | { readonly mozno: boolean; readonly doliat: () => void; readonly novy: () => void; readonly cenaBarteru: number }
     | undefined;
-  /** Body „keby hra skončila teraz“ — dlaždica Body (Michal 2026-10-22, scoreboard zanikol). */
-  readonly body: BodyTeraz;
+  /** Špaky „keby hra skončila teraz“ — dlaždica Body (v6: špaky mínus nepriznaná Cirhóza). */
+  readonly body: SpakyTeraz;
   /** Mená oboch hráčov podľa miesta. */
   readonly mena: readonly [string, string];
   /**
@@ -1179,14 +1179,14 @@ function RiadkyHrozby({
 /** Verdikt a prebytok bitky — spoločné pre panel aj jeho jednoriadkový súhrn. */
 function verdiktBitky({ damage, ja, vysledok, naSekeru, poslednaBitka, cenaPosunuVitaza, prebytokNaRozdelenie, rodJa = null }: BitkaPanelProps) {
   const su = (ja === 0 ? 1 : 0) as PlayerId;
-  // Remíza (Michal 2026-10-21): pri rovnakom tuhom nevyhrá nikto — lokalita ide na sekeru (PRAVIDLA §9.4).
+  // Remíza v6 (Michal 2026-10-26): rozhodnú Absťáky, potom Dlhy, inak sekera — tu len odhad z tuhého (PRAVIDLA §9.4).
   const { vitaz, prebytok, prebytokDrzi } = battleOutcome(damage);
   const rozdiel = Math.abs(damage.tuhe[ja] - damage.tuhe[su]);
   const vyhravam = vitaz === ja;
   const vStavke = 1 + naSekeru.length;
   const coPriRemize = poslednaBitka
-    ? `lokalita${naSekeru.length > 0 ? " aj sekera" : ""} prepadne (posledná bitka)`
-    : `lokalita na sekeru → ďalšia bitka o ${vStavke + 1} lokality`;
+    ? "menej Absťákov, potom menej Dlhov; inak špaky prepadnú (finále)"
+    : "menej Absťákov, potom menej Dlhov; inak špaky na sekeru";
   const verdikt =
     rozdiel === 0
       ? `Remíza — ${coPriRemize}`
@@ -1251,15 +1251,14 @@ export function tipOdhadu(props: BitkaPanelProps, stavka: StavkaBitkyCisla | nul
         ))}
         {naSekeru.length > 0 && (
           <span className="tip-riadok">
-            ide o {vStavke + (vStavke === 1 ? " lokalitu" : vStavke <= 4 ? " lokality" : " lokalít")} · na sekere {naSekeru.join(", ")}
+            na sekere {naSekeru.join(", ")} — vezme ich víťaz
           </span>
         )}
         {!vysledok && rozdiel !== 0 && <span className="tip-riadok">pri remíze: {coPriRemize}</span>}
         {!vysledok && stavka !== null && (
           <span className="tip-riadok">
-            táto bitka: výhra o {stavka.prebytok} ≈ <b>{znamienkoBodov(stavka.vyhra)} b</b>, prehra o {stavka.prebytok} ≈{" "}
-            <b>{znamienkoBodov(stavka.prehra)} b</b>
-            {stavka.superNajviac !== null && <> · posledná bitka — súper najviac ≈ {znamienkoBodov(stavka.superNajviac)} b</>}
+            táto bitka ({stavka.pitky} Pitky): tvoja výhra <b>+{stavka.vyhra} špakov</b>, súperova <b>+{-stavka.prehra}</b>
+            {stavka.naSekere > 0 && <> · na sekere {stavka.naSekere}</>}
           </span>
         )}
         {utocnik !== undefined && <span className="tip-riadok">{utocnik}</span>}
@@ -1483,7 +1482,8 @@ export function PriebehKola({ view, onBitka }: { readonly view: ClientState; rea
     const rychlo = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
     el.scrollIntoView({ inline: "center", block: "nearest", behavior: rychlo ? "auto" : "smooth" });
   }, [aktualneId, view.kolo]);
-  const odohrane = view.ovladnute.length + view.prepadnute.length + view.naSekeru.length;
+  const odohrane = view.nastenka.filter((b) => b.lokalita !== null).length;
+  const finale = view.ciel?.typ === "finale";
   const polozky: ReactNode[] = [];
   for (let i = 0; i < kroky.length; i++) {
     const k = kroky[i];
@@ -1523,10 +1523,10 @@ export function PriebehKola({ view, onBitka }: { readonly view: ClientState; rea
     <ol className="priebeh-kola" aria-label={`Kolo ${view.kolo}`} data-vyucba="os-kola">
       <li
         className="priebeh-kolo"
-        title={`Hrá sa o ${pocet(view.lokalitCelkom, "lokalitu", "lokality", "lokalít")}; ${view.lokalityVHre.length >= 2 && view.lokalityVHre.length <= 4 ? "zostávajú" : "zostáva"} ${pocet(view.lokalityVHre.length, "nevybraná", "nevybrané", "nevybraných")}${view.naSekeru.length > 0 ? `, na sekere ${view.naSekeru.length}` : ""}.`}
+        title={`Hrá sa o ${pocet(view.lokalitCelkom, "lokalitu", "lokality", "lokalít")} a finále; ${view.lokalityVHre.length >= 2 && view.lokalityVHre.length <= 4 ? "zostávajú" : "zostáva"} ${pocet(view.lokalityVHre.length, "nevybraná", "nevybrané", "nevybraných")}${view.spakyNaSekere > 0 ? `, na sekere ${view.spakyNaSekere} špakov` : ""}.`}
       >
-        Kolo {view.kolo} · lokalita {Math.min(view.lokalitCelkom, odohrane + 1)}/{view.lokalitCelkom}
-        {view.naSekeru.length > 0 && <span className="priebeh-sekera"> · na sekere {view.naSekeru.length}</span>}
+        Kolo {view.kolo} · {finale ? "finále" : `lokalita ${Math.min(view.lokalitCelkom, odohrane + 1)}/${view.lokalitCelkom}`}
+        {view.spakyNaSekere > 0 && <span className="priebeh-sekera"> · na sekere {view.spakyNaSekere} š.</span>}
       </li>
       {polozky}
     </ol>

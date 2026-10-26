@@ -11,7 +11,7 @@ import type { AkciaDef, Kategoria, KlucoveSlovo } from "./typy.ts";
  * Poškodenie pečene, Poldeci, Cigareta; nikde „fyzická cigareta“) a nová
  * Vízia. Server nimi pri štarte prepíše staré databázy (zjednotNazvyAkcii).
  * Popisy Dlhu a Poškodenia pečene sú už podľa M23 (verejný dlh, 2026-10-21),
- * Dlh podľa pravidiel v5 s číslami z jadra (Michal 2026-10-25) — staré
+ * Dlh podľa pravidiel v6 s číslami z jadra (Michal 2026-10-26) — staré
  * databázy ich dostanú z dorovnajSoSeedom (len s novou značkou).
  */
 export const AKCIE_20261019: readonly { readonly kluc: string; readonly nazov: string; readonly popis: string }[] = [
@@ -21,7 +21,7 @@ export const AKCIE_20261019: readonly { readonly kluc: string; readonly nazov: s
     popis:
       `Zvýši zadĺženie o 1. V Pitke za každé ${KONSTANTY.PRAH_DLHU_ZAKLAD} zadĺženia získaš Dlh — hneď sa prizná. ` +
       `Pri ${KONSTANTY.PRAH_EXEKUTORA_ZAKLAD} priznaných Dlhoch ťa v bitke čaká Exekúcia (súperov Exekútor ten prah zníži o 1 / 2 / 3). ` +
-      "Na konci hry vyhrá súboj o podmienku Dlh, kto má Dlhov menej — rátajú sa aj priznané.",
+      "Exekúcia ti spáli polovicu priznaných Dlhov a rovnako veľa špakov; pri remíze v bitke prehráva, kto má viac priznaných Dlhov (v6).",
   },
   {
     kluc: "PoškodeniePečene",

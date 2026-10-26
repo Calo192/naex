@@ -233,6 +233,12 @@ export interface BitkaStav {
   readonly pohorsenieZostava: readonly [number, number];
   /** Pohoršenia, ktoré hráči v bitke dostali (pred použitím) — rekapitulácia bitky. */
   readonly pohorseniaSpolu?: readonly [number, number];
+  /**
+   * Koľko z pohorsenieZostava sú ešte Pohoršenia zo súperovho patronátu (v6,
+   * Michal 2026-10-26) — tie nesmú na staršieho, ktorého si súper vzal za patróna.
+   * Chýba = 0.
+   */
+  readonly pohorseniaPatronatu?: readonly [number, number];
   readonly damage: DamageResult | null;
   readonly vitaz: PlayerId | null;
   readonly prebytokDrzi: PlayerId | null;
@@ -3129,8 +3135,10 @@ function nastavSumy(s: MutState, data: GameData, events: Event[]): void {
   if (b === null) return;
   const sums = evaluateLine(data, lineState(s as GameState)).sums;
   b.sums = sums as DeepMutable<BitkaStav["sums"]>;
+  const zPatronatu: [number, number] = [0, 0];
   const pohorsenie = (p: PlayerId): number => {
     const r = rozpisPohorseni(data, s as GameState, sums, p);
+    zPatronatu[p] = r.neplatia ? 0 : r.zPatronatu;
     const proti = opponentOf(p);
     if (r.spolu === 0) return 0;
     // Hlásiť, inak hráči tiché zrušenie považovali za chybu (playtest 20261021-143600).
@@ -3146,6 +3154,31 @@ function nastavSumy(s: MutState, data: GameData, events: Event[]): void {
   };
   b.pohorsenieZostava = [pohorsenie(0), pohorsenie(1)];
   b.pohorseniaSpolu = [b.pohorsenieZostava[0], b.pohorsenieZostava[1]];
+  b.pohorseniaPatronatu = zPatronatu;
+}
+
+/**
+ * Smie hráč p teraz dať Pohoršenie na staršieho (k súperovi, alebo kSebe k sebe)?
+ * V6 posúva o pole bez limitu, aj na kraj. Pohoršenia zo súperovho patronátu
+ * (Michal 2026-10-26) nesmú na staršieho, ktorého si súper vzal za patróna —
+ * inak by mu marker hneď vrátili a patronát by nezastavil vydesenie. Ostatné
+ * Pohoršenia naňho smú; hra minie najprv tie z patronátu.
+ */
+export function pohorsenieMozne(
+  state: {
+    readonly patronat: readonly ({ readonly elderId: string } | null)[];
+    readonly bitkaStav: { readonly pohorsenieZostava: readonly [number, number]; readonly pohorseniaPatronatu?: readonly [number, number] } | null;
+  },
+  p: PlayerId,
+  elder: Pick<ElderState, "elderId" | "marker">,
+  kSebe = false,
+): boolean {
+  const b = state.bitkaStav;
+  if (b === null || b.pohorsenieZostava[p] <= 0) return false;
+  if (posunMarker(elder, kSebe ? p : opponentOf(p)) === null) return false;
+  const patronSupera = state.patronat[opponentOf(p)]?.elderId;
+  if (elder.elderId !== patronSupera) return true;
+  return b.pohorsenieZostava[p] > (b.pohorseniaPatronatu?.[p] ?? 0);
 }
 
 /** Stav pre Pohoršenia bitky — línia a verejný patronát (GameState aj ClientState). */
@@ -3266,7 +3299,7 @@ function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
     for (const p of [obranca(s), s.utocnik]) {
       while (b.pohorsenieZostava[p] > 0) {
         // v6: Pohoršenie posúva ako prebytok — o pole, bez limitu, aj na kraj; k sebe aj k súperovi.
-        if (!s.starsi.some((e) => posunMarker(e, p) !== null || posunMarker(e, opponentOf(p)) !== null)) {
+        if (!s.starsi.some((e) => pohorsenieMozne(s as GameState, p, e) || pohorsenieMozne(s as GameState, p, e, true))) {
           b.pohorsenieZostava[p] = 0;
           break;
         }
@@ -3734,9 +3767,17 @@ function cmdPohorsenie(
   const smer = kSebe ? p : opponentOf(p);
   const nova = posunMarker(elder, smer);
   need(nova !== null, "Marker je na kraji stupnice.");
+  need(pohorsenieMozne(s as GameState, p, elder, kSebe), "Pohoršenia z patronátu nesmú na staršieho, ktorého si súper vzal za patróna.");
   // Priazeň aj strach sa menia hneď — platia už v poškodení a v špakoch tejto bitky.
   zapisPosun(s, events, { elderId: cmd.elderId, z: elder.marker, na: nova, zdroj: "pohorsenie", kto: p });
   elder.marker = nova;
+  // Najprv sa míňajú Pohoršenia z patronátu — na patróna smú len ostatné.
+  const zPatronatu = b.pohorseniaPatronatu?.[p] ?? 0;
+  if (zPatronatu > 0 && cmd.elderId !== s.patronat[opponentOf(p)]?.elderId) {
+    const nove: [number, number] = [b.pohorseniaPatronatu?.[0] ?? 0, b.pohorseniaPatronatu?.[1] ?? 0];
+    nove[p] = zPatronatu - 1;
+    b.pohorseniaPatronatu = nove;
+  }
   b.pohorsenieZostava[p] -= 1;
   events.push({ type: "log", text: `Pohoršenie (hráč ${p + 1}): ${textPosunu(data, elder as ElderState, kSebe ? "k sebe" : "k súperovi")}` });
   skontrolujVydesenie(s, data, events);
@@ -4457,8 +4498,8 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
         out.push({ type: "zahradkar", zahodit: true }, { type: "zahradkar", zahodit: false });
       } else if (b.krok === "pohorsenie") {
         for (const elder of state.starsi) {
-          if (posunMarker(elder, opponentOf(p)) !== null) out.push({ type: "pohorsenie", elderId: elder.elderId });
-          if (posunMarker(elder, p) !== null) out.push({ type: "pohorsenie", elderId: elder.elderId, kSebe: true });
+          if (pohorsenieMozne(state, p, elder)) out.push({ type: "pohorsenie", elderId: elder.elderId });
+          if (pohorsenieMozne(state, p, elder, true)) out.push({ type: "pohorsenie", elderId: elder.elderId, kSebe: true });
         }
       } else if (b.krok === "prebytok") {
         if (b.prebytokZostava < cenaPosunuPrebytkom(state, p)) break;

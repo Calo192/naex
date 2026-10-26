@@ -4,7 +4,13 @@
 // verejné (CLAUDE.md, pravidlo 2). AI playtester je hráčom skrytý — v cudzích
 // partiách sa ukáže bez odkazu (id null).
 
-import type { BodyTeraz, KoloKroniky, StatistikyHraca } from "@naex/core";
+import type { KoloKroniky, StatistikyHraca, UcetSpakov } from "@naex/core";
+
+/** Záverečné bodovanie partie do v5 (po starších) — server ho len prenáša z archívu. */
+export interface ZaverecneV5 {
+  readonly spolu: readonly [number, number];
+  readonly starsi: readonly unknown[];
+}
 import { POVAHY, normalizujStatistiky } from "@naex/core";
 import type { Db } from "./db.ts";
 import type { Vysledok } from "./frajerina.ts";
@@ -72,8 +78,8 @@ export interface DetailPartie {
   readonly kola: readonly KoloKroniky[];
   /** Svoja strana plná, súperova len verejné polia; správca obe plné. */
   readonly strany: readonly [Partial<StatistikyHraca>, Partial<StatistikyHraca>];
-  /** Záverečné bodovanie (BodyTeraz z jadra) — staršie partie ho nemajú. */
-  readonly zaverecne: BodyTeraz | null;
+  /** Záverečný účet: v6 špaky (UcetSpakov), do v5 bodovanie po starších; najstaršie partie ho nemajú. */
+  readonly zaverecne: UcetSpakov | ZaverecneV5 | null;
   readonly menaStarsich: Readonly<Record<string, string>>;
 }
 
@@ -199,7 +205,7 @@ export class Profily {
     const miesto = ja === 0 || ja === 1 ? ja : null;
     if (miesto === null && !spravca) return null;
 
-    let kronika: { kola?: KoloKroniky[]; zaverecne?: BodyTeraz; menaStarsich?: Record<string, string> } = {};
+    let kronika: { kola?: KoloKroniky[]; zaverecne?: UcetSpakov | ZaverecneV5; menaStarsich?: Record<string, string> } = {};
     try {
       const k = p.kronika === null ? null : (JSON.parse(p.kronika) as unknown);
       // Staršia podoba (len pole kôl) aj nová ({ kola, zaverecne, menaStarsich }).

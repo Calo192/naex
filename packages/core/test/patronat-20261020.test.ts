@@ -145,16 +145,40 @@ describe("patronát — vzatie staršieho do ruky", () => {
     expect(po.patronat[u]?.pohorsenia).toBe(3);
   });
 
-  it("súper dostane Pohoršenia v bitke a vráti nimi marker toho istého staršieho až do oranžovej", () => {
-    const { s, u, obcan } = vPatronate(2);
+  it("v6: súperove Pohoršenia z patronátu nesmú na patróna — patrón z červenej zastaví vydesenie (Michal 2026-10-26)", () => {
+    const { s, u, obcan } = vPatronate(3);
     const elderId = s.starsi[0]!.elderId;
     let st = apply(data, s, { type: "patronat", elderId, uid: obcan.uid }, u).state;
     st = doBitky(st);
     const o = opponentOf(u);
     expect(st.bitkaStav?.krok).toBe("pohorsenie");
-    expect(st.bitkaStav?.pohorsenieZostava[o]).toBe(2);
-    for (let i = 0; i < 2; i++) st = apply(data, st, { type: "pohorsenie", elderId }, o).state;
-    expect(st.starsi[0]!.marker).toBe(naPolovici(u, 2));
+    expect(st.bitkaStav?.pohorsenieZostava[o]).toBe(3);
+    expect(st.bitkaStav?.pohorseniaPatronatu?.[o]).toBe(3);
+    // Na patróna nie (ani k sebe, ani k súperovi), na ostatných starších áno.
+    const legal = legalCommands(data, st, o);
+    expect(legal.some((c) => c.type === "pohorsenie" && c.elderId === elderId)).toBe(false);
+    expect(() => apply(data, st, { type: "pohorsenie", elderId }, o)).toThrow(/patróna/);
+    const iny = st.starsi[1]!.elderId;
+    for (let i = 0; i < 3 && st.bitkaStav?.krok === "pohorsenie"; i++) st = apply(data, st, { type: "pohorsenie", elderId: iny }, o).state;
+    expect(st.starsi[0]!.marker).toBe(3);
+  });
+
+  it("v6: na patróna smú súperove ostatné Pohoršenia (zo stola) — z patronátu sa minú najprv", () => {
+    const { s, u, obcan } = vPatronate(1);
+    const elderId = s.starsi[0]!.elderId;
+    let st = apply(data, s, { type: "patronat", elderId, uid: obcan.uid }, u).state;
+    st = doBitky(st);
+    const o = opponentOf(u);
+    // Súper má 1 Pohoršenie z patronátu a k tomu 1 zo stola.
+    const b = st.bitkaStav!;
+    const zostava: [number, number] = [b.pohorsenieZostava[0], b.pohorsenieZostava[1]];
+    zostava[o] += 1;
+    st = { ...st, bitkaStav: { ...b, caka: o, pohorsenieZostava: zostava } };
+    expect(legalCommands(data, st, o)).toContainEqual({ type: "pohorsenie", elderId });
+    const po = apply(data, st, { type: "pohorsenie", elderId }, o).state;
+    expect(po.starsi[0]!.marker).toBe(naPolovici(u, 1));
+    // Zostalo len Pohoršenie z patronátu — na patróna už nie.
+    if (po.bitkaStav?.krok === "pohorsenie") expect(legalCommands(data, po, o).some((c) => c.type === "pohorsenie" && c.elderId === elderId)).toBe(false);
   });
 
   it("Policajtka patróna zruší aj Pohoršenia z patronátu", () => {

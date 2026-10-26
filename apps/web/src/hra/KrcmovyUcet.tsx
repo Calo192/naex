@@ -2,9 +2,9 @@
 // dizajn stol-oproti-c2-20261022-1030): ty vľavo, súper vpravo, v strede starší
 // (v5) či podmienka (partie do v4, body za kusy). Papier sú obrátené tokeny.
 
-import type { BodyTeraz, GameData, PlayerId, Podmienka } from "@naex/core";
+import type { GameData, PlayerId, Podmienka } from "@naex/core";
 import { NAZOV_PODMIENKY } from "../karta/podmienky.ts";
-import { PORADIE_PODMIENOK, ZA_CO, bodyPoPodmienkach, jeBodovanieV5, kohoBoduje, subojeStarsieho, type BodyPodmienky } from "./bodyPodmienok.tsx";
+import { PORADIE_PODMIENOK, SMER_V5, ZA_CO, bodyPoPodmienkach, jeBodovanieV5, kohoBoduje, subojeStarsieho, type BodyPodmienky, type BodyTeraz } from "./bodyPodmienok.tsx";
 import { znamienko } from "./Scorecard.tsx";
 
 const JEDNOTKA: Readonly<Record<Podmienka, string>> = {
@@ -122,7 +122,7 @@ function UcetV4({ body, data, ja, mena, menoStarsieho, kolo }: KrcmovyUcetProps)
   const podmienky = bodyPoPodmienkach(body);
   const riadky: Riadok[] = PORADIE_PODMIENOK.map((podmienka) => {
     const m = podmienky.get(podmienka);
-    return { podmienka, m, zaKus: data.bodyPodmienok[podmienka] * (m?.zdroje.length ?? 0) };
+    return { podmienka, m, zaKus: SMER_V5[podmienka] * (m?.zdroje.length ?? 0) };
   });
 
   const kusy = (r: Riadok, p: PlayerId): string => `${r.m?.kusy[p] ?? 0} ${JEDNOTKA[r.podmienka]}`;

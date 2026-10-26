@@ -576,7 +576,7 @@ hráč, ktorého akcia sa aktivovala; oba smery smie každý hráč.
   (zo stredu na červenú tri Pohoršenia). Ďalej von ako na kraj sa nedá.
 - Pohoršenie mení aj **strach hneď** — ráta sa už do špakov za starších tejto
   bitky (krok 4b).
-- K aktívnym Pohoršeniam pribudnú **Pohoršenia z patronátu** súpera (§10)
+- K aktívnym Pohoršeniam pribudnú **Pohoršenia z patronátu** súpera (§10; nie na patróna)
   a Pohoršenia z priazne **Abstinenta** (§10).
 - Súperova Policajtka ruší Pohoršenia proti svojmu majiteľovi — všetky, v oboch
   smeroch (§16).
@@ -803,8 +803,10 @@ Cena:
   červená **0**,
 - súper dostane v tejto bitke toľko **Pohoršení navyše**, o koľko polí sa
   marker vrátil do stredu: **1 / 2 / 3** (spolu s cigaretami vždy 3). Hrá ich
-  ako svoje (§9.2) — aj na toho istého staršieho; strach, ktorý spôsobil, mu
-  tak neprepadne. Patrónova Policajtka ich zruší,
+  ako svoje (§9.2), ale **nie na staršieho, ktorého si patrón vzal** (v6,
+  Michal 2026-10-26) — inak by mu marker hneď vrátil a patronát by nezastavil
+  vydesenie. Ostatné súperove Pohoršenia (zo stola, z priazne) na patróna smú;
+  hra minie najprv tie z patronátu. Patrónova Policajtka ich zruší,
 - hráč musí mať aspoň **jeden poldeci** (plný či vypitý) — na bolestné.
 
 Po bitke (krok 6d, pred návratom kariet):

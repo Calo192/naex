@@ -1,12 +1,12 @@
-// Obrazovka konca hry (playtest 20261012-055944): víťaz, body po starších,
+// Obrazovka konca hry (playtest 20261012-055944): víťaz, účet špakov (v6),
 // zmena Frajeriny a návrat do lobby. Kým bol koniec len riadok v páse
 // pokynov, hráči ho prehliadli a nevedeli, odkiaľ body sú.
 
 import { useEffect, useRef } from "react";
 import type { ClientState, GameData, PlayerId, Rod } from "@naex/core";
-import { VERZIA_PRAVIDIEL, bodyTeraz, tvar } from "@naex/core";
+import { VERZIA_PRAVIDIEL, rozpisSpakov, tvar } from "@naex/core";
 import { Odkaz } from "../lib/router.tsx";
-import { RozpisBodov } from "./RozpisBodov.tsx";
+import { UcetSpakov } from "./UcetSpakov.tsx";
 import { SuhrnPoPartii } from "../achievementy/VPartii.tsx";
 import type { SuhrnAchievementov, ZmenyFrajeriny } from "./useHra.ts";
 import { textHlasky } from "./useHra.ts";
@@ -27,7 +27,7 @@ export interface KoniecHryProps {
   readonly rody?: readonly [Rod, Rod];
 }
 
-export function KoniecHry({ view, data, mena, menoKarty, frajerina, achievementy = null, onZavri, opustit, rodJa = null, rody = [null, null] }: KoniecHryProps) {
+export function KoniecHry({ view, mena, frajerina, achievementy = null, onZavri, opustit, rodJa = null, rody = [null, null] }: KoniecHryProps) {
   const koniec = view.koniec;
   // Fokus na „späť do lobby“ bez posunu — autoFocus vyroloval vysoké okno nadol a výsledok
   // hore hráč nevidel (UI inšpekcia 2026-10-24).
@@ -43,11 +43,9 @@ export function KoniecHry({ view, data, mena, menoKarty, frajerina, achievementy
         ? tvar(rodJa, "Vyhral si!", "Vyhrala si!", "Výhra!")
         : tvar(rodJa, "Prehral si", "Prehrala si", "Prehra");
   const dovod = textHlasky(koniec.dovod, mena, rody);
-  // Rozpis po starších tým istým bodovaním ako na konci hry — súperove
-  // nepriznané kliatby pozná view z verejného počtu, takže sa sčíta na
-  // koniec.body (playtest 20261021-041728: predtým dva rôzne súčty v jednom okne).
-  // Pri vzdaní, exekúcii či vydesení sa nebodovalo — rozpis by mýlil.
-  const rozpis = koniec.body === null ? null : bodyTeraz(data, view);
+  // Účet špakov z nástenky a konca hry (v6) — sčíta sa na koniec.body.
+  // Pri vzdaní či vydesení sa nebodovalo — rozpis by mýlil.
+  const rozpis = koniec.body === null ? null : rozpisSpakov(view);
   const zmena = frajerina?.[ja];
 
   return (
@@ -68,15 +66,7 @@ export function KoniecHry({ view, data, mena, menoKarty, frajerina, achievementy
         )}
         {rozpis !== null && (
           <div className="koniec-rozpis">
-            <RozpisBodov
-              body={rozpis}
-              starsi={view.starsi}
-              data={data}
-              ja={ja}
-              menoSupera={mena[su]}
-              menoKarty={menoKarty}
-              nadpis="Vyúčtovanie po starších — kto vyhrá viac súbojov, tomu dá starší body (rovnosť = obom)"
-            />
+            <UcetSpakov rozpis={rozpis} ja={ja} mena={mena} />
           </div>
         )}
         {zmena !== undefined && (

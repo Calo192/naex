@@ -822,9 +822,9 @@ function draft(v: Volba): Command | null {
 }
 
 /**
- * Patronát (Michal 2026-10-20) — odhad z bodov. Súper si Pohoršeniami vráti
- * strach (z červenej najviac do oranžovej), takže zisk je hlavne väzeň, karta
- * staršieho v ruke a pri červenej zrušené vydesenie. Prehra stojí poldeci.
+ * Patronát (Michal 2026-10-20) — odhad zo špakov. V6 (Michal 2026-10-26) súper
+ * Pohoršeniami z patronátu patróna nevráti, marker ostane v strede: súper prestane
+ * dostávať špaky za jeho strach a vydesenie padne. Prehra stojí poldeci.
  */
 function patronat(v: Volba): Command | null {
   const { data, state, ja, k } = v;
@@ -851,8 +851,7 @@ function patronat(v: Volba): Command | null {
     const karta = state.hraci[ja].ruka.find((x) => x.uid === cmd.uid);
     if (elder === undefined || karta === undefined) continue;
     const cena = cenaPatronatu(elder);
-    const vzdialenost = Math.min(Math.abs(elder.marker - MARKER_STRED), 3);
-    const marker = (elder.marker < MARKER_STRED ? MARKER_STRED - vzdialenost : MARKER_STRED + vzdialenost) as MarkerPos;
+    const marker: MarkerPos = MARKER_STRED;
     const poVyhre = hodnotaStarsich(
       state.starsi.map((e) => (e.elderId === elder.elderId ? { ...e, marker, karta, nahradeny: true, ziskal: ja } : e)),
     );

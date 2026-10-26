@@ -171,7 +171,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   polovici, pôvodný starší). Na jeho scorecard dáš lícom dole Občana/Zviera
   z ruky, marker ide do stredu. Platíš cigarety do červenej (žltá 2, oranžová 1,
   červená 0), súper dostane v bitke Pohoršenia navyše (o koľko polí marker išiel do
-  stredu: 1 / 2 / 3). Treba mať aspoň 1 poldeci. Kartu staršieho smieš v kole
+  stredu: 1 / 2 / 3) — tie však **nesmú na tohto staršieho** (v6; ostatné jeho Pohoršenia
+  naňho smú, hra minie najprv tie z patronátu). Treba mať aspoň 1 poldeci. Kartu staršieho smieš v kole
   vyložiť. **Výhra** = starší ostáva tebe (náhrada sa otočí); **prehra** aj sekera = starší
   sa vráti, náhrada do ruky a **odhodíš poldeci** natrvalo. Patronát platí aj vo finále
   a vráti marker z červenej naraz do stredu.
