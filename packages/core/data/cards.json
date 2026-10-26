@@ -1,5 +1,5 @@
 {
- "source": "tvorca kariet 2026-10-26T11:27:53.132Z",
+ "source": "tvorca kariet — koncept v6 nad sadou v20 2026-10-26T15:40:28.042Z",
  "actions": [
   "Cigareta",
   "Dlh",
@@ -136,7 +136,7 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Tvoje Pohoršenie smie posunúť marker aj na krajnú pozíciu, ak bol na predposlednej už na začiatku kola.",
+   "effect_text": "Dedičstvo: Po bitke dostaneš 1 špak navyše, ak sa ťa bojí viac starších ako súpera.",
    "triggers": [
     "Dedičstvo"
    ],
@@ -406,7 +406,7 @@
    "tags": [
     "Kliatba"
    ],
-   "effect_text": "Bitka: Skontroluj či pred dverami nestojí exekútor.",
+   "effect_text": "Bitka: Skontroluj, či pred dverami nestojí Exekútor. Pri remíze v tuhom aj v Absťákoch prehrá, kto má viac priznaných Dlhov.",
    "triggers": [
     "Bitka"
    ],
@@ -441,7 +441,7 @@
    "tags": [
     "Kliatba"
    ],
-   "effect_text": "Bitka: Ak je priznaná, súper má +1 tuhé poškodenie. Nepriznaná ide po bitke do tvojho odhadzovacieho balíčka; na konci hry prehráva súboje o Cirhózu.",
+   "effect_text": "Bitka: Ak je priznaná, súper má +1 tuhé poškodenie. Nepriznaná ide po bitke do tvojho odhadzovacieho balíčka; na konci hry ti zoberie 5 špakov.",
    "triggers": [
     "Bitka"
    ],
@@ -706,7 +706,7 @@
     "Závislý",
     "Chlap"
    ],
-   "effect_text": "Výhra: Posunutie ukazovateľa priazne staršieho ťa stojí o 1 prebytočné poškodenie viac.",
+   "effect_text": "Výhra: Každý posun markera staršieho prebytkom ťa stojí o 1 prebytok viac.",
    "triggers": [
     "Výhra"
    ],
@@ -1639,30 +1639,27 @@
     "Pracujúci",
     "Chlap"
    ],
-   "effect_text": "Nástup: Zahoď jedno súperovo dedičstvo.",
+   "effect_text": "Výhra: Zahoď jedno súperovo dedičstvo.",
    "triggers": [
-    "Nástup"
+    "Výhra"
    ],
    "left": {
     "blocked": [],
     "actions": {
      "Dlh": 1,
-     "Rana": 1,
-     "Robota": 1
+     "Odpor": 1
     },
     "allowed": {
      "0": [
-      "Rana"
+      "Odpor"
      ],
      "1": [
-      "Rana"
+      "Odpor"
      ],
      "2": [
-      "Robota",
       "Dlh"
      ],
      "3": [
-      "Robota",
       "Dlh"
      ]
     }
@@ -1671,7 +1668,7 @@
     "blocked": [],
     "actions": {
      "Cigareta": 2,
-     "Rana": 1
+     "PoškodeniePečene": 1
     },
     "allowed": {
      "0": [
@@ -1681,10 +1678,10 @@
       "Cigareta"
      ],
      "2": [
-      "Rana"
+      "PoškodeniePečene"
      ],
      "3": [
-      "Rana"
+      "PoškodeniePečene"
      ]
     }
    },
@@ -1980,7 +1977,7 @@
    "tags": [
     "Kliatba"
    ],
-   "effect_text": "Bitka: Udeluješ súperovi o ranu menej.",
+   "effect_text": "Bitka: Udeluješ súperovi o ranu menej. Ak máš viac Absťákov než súper, pri remíze v tuhom prehráš, a keď vyhráš, dostaneš o rozdiel menej špakov (aspoň 1).",
    "triggers": [
     "Bitka"
    ],
@@ -2053,7 +2050,7 @@
     "Zahraničný",
     "Chlap"
    ],
-   "effect_text": "Furt: Jeho akcie sa počítajú hráčovi, ktorý má v jeho kraji prevahu.",
+   "effect_text": "Furt: Jeho akcie sa počítajú hráčovi, ktorý má v jeho kraji prevahu. Vo finále majiteľovi.",
    "triggers": [
     "Furt"
    ],
@@ -2356,7 +2353,7 @@
     "Pracujúci",
     "Chlap"
    ],
-   "effect_text": "Exekúcia: Môžeš ho zahodiť namiesto náradia.",
+   "effect_text": "Exekúcia: Môžeš zahodiť Záhradkára namiesto špakov.",
    "triggers": [
     "Exekúcia"
    ],
@@ -2626,7 +2623,7 @@
    "tags": [
     "Lokalita"
    ],
-   "effect_text": "Bitka: Pohoršenie nemá limit dvoch hraníc zón (na krajnú pozíciu stále nie).",
+   "effect_text": "Bitka: Prebytok sa nerozdeľuje medzi starších. Kto ho drží, dostane toľko špakov, aký je prebytok.",
    "triggers": [
     "Bitka"
    ],
@@ -2847,7 +2844,7 @@
     "Autorita",
     "Chlap"
    ],
-   "effect_text": "Bitka: Ak v jeho kraji nemáš iného Občana, Zviera ani Starešinu a súper tam má prevahu, súper má o toľko Viery menej, koľko má Presbiter aktívnych akcií.",
+   "effect_text": "Bitka: Ak v jeho kraji nemáš iného Občana, Zviera ani Starešinu a súper tam má prevahu, súper má o toľko Viery menej, koľko má Presbiter aktívnych akcií. Vo finále nepôsobí.",
    "triggers": [
     "Bitka"
    ],
@@ -2960,7 +2957,7 @@
    "tags": [
     "Lokalita"
    ],
-   "effect_text": "Bitka: Každý hráč smie zahodiť jednu nepriznanú Cirhózu z ruky. Súperov Hrobár za to dostane cigaretu.",
+   "effect_text": "Bitka: Každý hráč smie zahodiť jednu nepriznanú Cirhózu z ruky.",
    "triggers": [
     "Bitka"
    ],
