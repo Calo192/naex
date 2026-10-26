@@ -314,13 +314,21 @@ textarea {
 }
 
 /* ---- kostra ----------------------------------------------------------- */
-/* Jedna mriežka (Michal 2026-10-26, #21 B): hlavička vždy na celú šírku, jeden ľavý
-   okraj a tri šírky obsahu. Široké stránky (Vývoj, Tvorba, Playtest) idú na celé okno,
-   ich ľavá hrana sedí s logom; užšie stránky sú na strede. */
+/* Kostra na stred (Michal 2026-10-26: „Ľavý okraj každej stránky skáče“): hlavička,
+   obsah aj pätička v jednom kontajneri .kostra (Layout), takže logo a začiatok obsahu
+   majú na každej stránke mimo hry tú istú ľavú hranu — pri 1920 px 240 px, pri 1440 px
+   36 px. Úzke stránky (stĺpec na čítanie) sú užšie len sprava. Herný stôl kostru nemá. */
 :root {
   --okraj-stranky: clamp(16px, 2.5vw, 40px);
+  --kostra-max: 1440px;
   --sirka-citanie: 760px;
-  --sirka-stranky: 1280px;
+}
+
+.kostra {
+  width: 100%;
+  max-width: calc(var(--kostra-max) + 2 * var(--okraj-stranky));
+  margin-inline: auto;
+  padding-inline: var(--okraj-stranky);
 }
 
 .aplikacia {
@@ -374,7 +382,9 @@ textarea {
   clip-path: polygon(-10% 0, 110% 0, 92% 100%, 8% 100%);
 }
 
-/* Menu sa nikdy nezalomí — čo sa nezmestí, ide do „Viac ▾“ (Layout, useViac). */
+/* Menu sa nikdy nezalomí — čo sa nezmestí, ide do „Viac ▾“ (Layout, useViac). Výplň
+   do strán so záporným okrajom: overflow by inak orezal prstenec aktívneho Hrať
+   a obrys fokusu (4 px mimo tlačidla), položky ostanú na mieste. */
 .navigacia {
   display: flex;
   align-items: center;
@@ -382,7 +392,8 @@ textarea {
   flex: 0 1 auto;
   min-width: 0;
   overflow: hidden;
-  padding-block: 6px;
+  padding: 6px;
+  margin-inline: -6px;
 }
 
 .navigacia a,
@@ -761,22 +772,11 @@ button.sprava-tlacidlo {
   display: none;
 }
 
-/* Obsah: jeden okraj a tri šírky (Layout sirka). Úzke stránky majú stĺpec na čítanie
-   zľava v šírke stránky — nadpis a nástroje ostanú na tej istej hrane. */
+/* Obsah: šírku a ľavú hranu dáva .kostra; bez nej (herný stôl) ide na celé okno. */
 .obsah {
   flex: 1;
   width: 100%;
-  margin: 0 auto;
   padding: 32px var(--okraj-stranky) 64px;
-}
-
-.obsah-stranka,
-.obsah-citanie {
-  max-width: calc(var(--sirka-stranky) + 2 * var(--okraj-stranky));
-}
-
-.obsah-siroka {
-  max-width: none;
 }
 
 /* Celé okno pod hlavičkou; posúvajú sa len časti vnútri. */
@@ -807,7 +807,11 @@ button.sprava-tlacidlo {
 
 .paticka {
   border-top: 1px solid var(--okraj);
-  padding: 22px var(--okraj-stranky);
+  padding-block: 22px;
+}
+
+.paticka-vnutro {
+  padding-inline: var(--okraj-stranky);
   display: flex;
   flex-wrap: wrap;
   gap: 8px 24px;
@@ -886,7 +890,7 @@ button.sprava-tlacidlo {
   }
 
   .obsah {
-    padding: 24px 16px 48px;
+    padding: 24px var(--okraj-stranky) 48px;
   }
 }
 

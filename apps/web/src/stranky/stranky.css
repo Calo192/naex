@@ -57,10 +57,11 @@ button.cip.aktivny {
   width: 120px;
 }
 
+/* Mriežka začína na hrane kostry — pri zmene veľkosti kariet sa ľavá hrana nepohne. */
 .mriezka-kariet {
   display: grid;
   gap: 34px 26px;
-  justify-content: center;
+  justify-content: start;
 }
 
 .mriezka-polozka {

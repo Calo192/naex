@@ -1,6 +1,8 @@
 // Kostra stránky: hlavička s navigáciou (podľa roly) a obsah.
-// Jedna kostra v hre aj mimo nej (Michal 2026-10-26, #21 B a #22 A): hlavička na celú
-// šírku s okrajom --okraj-stranky, logo · menu · pravá zóna · účet. Pri stole menu
+// Kostra na stred (Michal 2026-10-26: „Ľavý okraj každej stránky skáče“): hlavička, obsah
+// aj pätička v jednom kontajneri .kostra, takže logo a začiatok obsahu majú na každej
+// stránke tú istú ľavú hranu. Herný stôl ide na celú šírku, aj s hlavičkou.
+// Hlavička: logo · menu · pravá zóna · účet. Pri stole menu
 // webu nie je (#23) — v pravej zóne je štítok partie a menu Partia (portál z hernej
 // plochy). Mimo stola s rozohranou partiou je tam pilulka „Späť ku stolu“.
 
@@ -12,9 +14,6 @@ import { KLUC_MIESTNOSTI, ZAVES_ODCHODU, useJeStolVHlavicke, useStrazenaPartia, 
 import { Odkaz, chod, useCesta } from "./lib/router.tsx";
 import { NAZOV_UROVNE, jeSpravca, useUcet } from "./lib/ucet.tsx";
 import { Avatar } from "./komponenty.tsx";
-
-/** Šírka obsahu (tokeny v styles.css): čítanie 760 px, stránka 1280 px, široká = celé okno. */
-export type SirkaStranky = "citanie" | "stranka" | "siroka";
 
 /**
  * Koľko noviniek pribudlo od poslednej návštevy stránky Novinky (roadmapa #20) —
@@ -245,11 +244,12 @@ function PilulkaPartie({ partia }: { readonly partia: { readonly kod: string; re
 
 export function Layout({
   children,
-  sirka = "stranka",
+  stol = false,
   plna = false,
 }: {
   readonly children: ReactNode;
-  readonly sirka?: SirkaStranky;
+  /** Herný stôl mimo živej partie (prehrávač, ukážky) — celá šírka okna ako pri stole. */
+  readonly stol?: boolean;
   /** Celé okno pod hlavičkou bez posúvania stránky a bez pätičky. */
   readonly plna?: boolean;
 }) {
@@ -274,6 +274,8 @@ export function Layout({
   const polozky = nacitane ? hlavneMenu(ja, pravaNavstevnika) : [];
   const sprava = spravaWebu(ja);
   const skryte = useViac(navRef, viacTlacidlo, pravaRef, `${priStole}|${polozky.map((p) => p.href).join()}|${noveNovinky}|${dielna}|${navrhy}|${rozohrana?.kod ?? ""}|${ja?.meno ?? ""}`);
+  const celaSirka = stol || priStole || plna;
+  const kostra = celaSirka ? "" : " kostra";
   const [odchod, setOdchod] = useState<{ readonly href: string | null; readonly nazov: string } | null>(null);
   // Klik na odkaz v hlavičke (logo, účet) počas partie zachytí dialóg — ovládanie
   // partie (#hlavicka-hra) nie. Ctrl/stredné tlačidlo otvárajú novú kartu ďalej.
@@ -355,7 +357,7 @@ export function Layout({
   return (
     <div className="aplikacia">
       <header className="hlavicka" onClickCapture={strazOdchodu}>
-        <div className={priStole ? "hlavicka-vnutro pri-stole" : "hlavicka-vnutro"}>
+        <div className={`hlavicka-vnutro${priStole ? " pri-stole" : ""}${kostra}`}>
           <Odkaz href="/" className="logo" aria-label="NA EX! — domov" data-nazov="úvodnú stránku">
             <span className="logo-pohar" aria-hidden="true" />
             <span className="logo-text">NA EX!</span>
@@ -513,10 +515,12 @@ export function Layout({
           }}
         />
       )}
-      <main className={plna ? "obsah obsah-plna" : `obsah obsah-${sirka}`}>{children}</main>
+      <main className={plna ? "obsah obsah-plna" : `obsah${kostra}`}>{children}</main>
       <footer className={plna ? "paticka paticka-skryta" : "paticka"}>
-        <span>NA EX! — kartová hra pre dvoch · © Michal Calík</span>
-        <span>Hra je fikcia a karikatúra. Alkohol, fajčenie a hazard škodia zdraviu.</span>
+        <div className={`paticka-vnutro${kostra}`}>
+          <span>NA EX! — kartová hra pre dvoch · © Michal Calík</span>
+          <span>Hra je fikcia a karikatúra. Alkohol, fajčenie a hazard škodia zdraviu.</span>
+        </div>
       </footer>
     </div>
   );
