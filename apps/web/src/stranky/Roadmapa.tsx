@@ -1,9 +1,11 @@
 // Roadmapa hry (Michal 2026-10-21): stĺpce sú abstraktné horizonty, poradie
-// v stĺpci je priorita. Vidí ju každý; admin a subadmin ju upravujú —
+// v stĺpci je priorita. Horizonty si delia celú šírku okna, Hotové sú pás
+// posledných pod tabuľou a panel so všetkými (dizajn #20 B, Michal 2026-10-26).
+// Vidí ju rank s právom vidiet_vyvoj; admin a subadmin ju upravujú —
 // ťahaním myšou, klávesmi Alt+šípky alebo v detaile položky. Schválené
 // návrhy z playtestov sa do Prijímača dostanú samy (server, roadmapa.ts).
 
-import { useCallback, useEffect, useRef, useState, type DragEvent, type FormEvent, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type DragEvent, type FormEvent, type KeyboardEvent } from "react";
 import { api } from "../lib/api.ts";
 import { Odkaz } from "../lib/router.tsx";
 import { Hlaska, Nacitavanie } from "../komponenty.tsx";
@@ -432,11 +434,69 @@ function ZmazTlacidlo({ zmaz }: { readonly zmaz: () => void }) {
   );
 }
 
-export function Roadmapa() {
+/** Počty pre pás stránky Vývoj: položky v horizontoch (bez Prijímača) a hotové. */
+export interface PoctyRoadmapy {
+  readonly aktivne: number;
+  readonly hotove: number;
+}
+
+/** Koľko hotových ukáže pás pod tabuľou; zvyšok je v paneli (Michal 2026-10-26). */
+const POSLEDNYCH_HOTOVYCH = 6;
+
+/** Najnovšie hotové navrchu; bez dátumu (staré záznamy) na koniec v poradí stĺpca. */
+const podlaDokoncenia = (a: Polozka, b: Polozka): number => (b.dokoncena ?? -Infinity) - (a.dokoncena ?? -Infinity) || a.poradie - b.poradie;
+
+function VsetkyHotove({
+  polozky,
+  otvor,
+  zavri,
+}: {
+  readonly polozky: readonly Polozka[];
+  readonly otvor: (id: number) => void;
+  readonly zavri: () => void;
+}) {
+  const zavriet = useRef<HTMLButtonElement>(null);
+  useEffect(() => zavriet.current?.focus(), []);
+  useEffect(() => {
+    const esc = (e: globalThis.KeyboardEvent) => e.key === "Escape" && zavri();
+    document.addEventListener("keydown", esc);
+    return () => document.removeEventListener("keydown", esc);
+  }, [zavri]);
+  return (
+    <>
+      <div className="rm-detail-pozadie" onClick={zavri} />
+      <aside className="rm-detail rm-hotove-panel" role="dialog" aria-modal="true" aria-labelledby="rm-hotove-nadpis">
+        <button ref={zavriet} type="button" className="rm-zavriet tlacidlo-jemne" onClick={zavri} aria-label="Zavrieť">
+          ×
+        </button>
+        <h3 id="rm-hotove-nadpis">
+          Hotové <span className="rm-pocet">{polozky.length}</span>
+        </h3>
+        <p className="tlmene">Implementované a nasadené, najnovšie navrchu.</p>
+        <ol className="rm-hotove-zoznam">
+          {polozky.map((p) => (
+            <li key={p.id} className={`obl-${p.oblast}`}>
+              <button type="button" onClick={() => otvor(p.id)}>
+                <span className="rm-hotove-datum">{p.dokoncena === null ? "—" : datum(p.dokoncena)}</span>
+                <i aria-hidden="true" />
+                <span>{p.nazov}</span>
+              </button>
+            </li>
+          ))}
+        </ol>
+      </aside>
+    </>
+  );
+}
+
+export function Roadmapa({ onPocty }: { readonly onPocty?: (p: PoctyRoadmapy) => void }) {
   const [data, setData] = useState<{ stlpce: Stlpec[]; polozky: Polozka[]; upravuje: boolean } | null>(null);
   const [chyba, setChyba] = useState<string | null>(null);
   const [filter, setFilter] = useState<Oblast | null>(null);
-  const [hotoveOtvorene, setHotoveOtvorene] = useState(false);
+  const [lenNaRozhodnutie, setLenNaRozhodnutie] = useState(false);
+  // Mobil: naraz jeden horizont (prepínač nad tabuľou), nie 45 kariet pod sebou.
+  const [horizont, setHorizont] = useState("teraz");
+  const [hotovePanel, setHotovePanel] = useState(false);
   const [detail, setDetail] = useState<number | "nova" | null>(null);
   const [tahana, setTahana] = useState<number | null>(null);
   const [miesto, setMiesto] = useState<{ stlpec: string; pred: number | null } | null>(null);
@@ -452,6 +512,15 @@ export function Roadmapa() {
       .catch((e: unknown) => setChyba(e instanceof Error ? e.message : String(e)));
   }, []);
   useEffect(nacitaj, [nacitaj]);
+
+  useEffect(() => {
+    if (data === null) return;
+    const horizonty = new Set(data.stlpce.filter((s) => s.verejny && s.kluc !== "hotove").map((s) => s.kluc));
+    onPocty?.({
+      aktivne: data.polozky.filter((p) => horizonty.has(p.stlpec)).length,
+      hotove: data.polozky.filter((p) => p.stlpec === "hotove").length,
+    });
+  }, [data, onPocty]);
 
   const presun = useCallback(
     (id: number, stlpec: string, pred: number | null) => {
@@ -479,12 +548,29 @@ export function Roadmapa() {
     setDetail(null);
     poslednyFokus.current?.focus();
   }, []);
+  const zavriHotove = useCallback(() => setHotovePanel(false), []);
 
-  if (data === null) return chyba !== null ? <Hlaska>{chyba}</Hlaska> : <Nacitavanie />;
+  if (data === null) {
+    return (
+      <section id="roadmapa" className="vyvoj-sekcia" aria-labelledby="roadmapa-nadpis">
+        <div className="vyvoj-sekcia-hlava">
+          <h2 id="roadmapa-nadpis">Roadmapa</h2>
+        </div>
+        {chyba !== null ? <Hlaska>{chyba}</Hlaska> : <Nacitavanie />}
+      </section>
+    );
+  }
 
   const stlpce = data.stlpce.filter((s) => s.verejny || data.upravuje);
+  const horizonty = stlpce.filter((s) => s.verejny && s.kluc !== "hotove");
+  const prijimac = data.upravuje ? stlpce.find((s) => s.kluc === "prijimac") : undefined;
   const vStlpci = (k: string) => data.polozky.filter((p) => p.stlpec === k);
-  const viditelna = (p: Polozka) => filter === null || p.oblast === filter;
+  const vOblasti = (p: Polozka) => filter === null || p.oblast === filter;
+  const viditelna = (p: Polozka) => vOblasti(p) && (!lenNaRozhodnutie || p.stav === "nove");
+  const naRozhodnutie = data.polozky.filter((p) => p.stav === "nove" && p.stlpec !== "hotove").length;
+  const hotove = vStlpci("hotove").sort(podlaDokoncenia);
+  const hotoveVOblasti = hotove.filter(vOblasti);
+  const cielTahu = data.upravuje && tahana !== null;
 
   const presunKlavesom = (p: Polozka, smer: "hore" | "dole" | "vlavo" | "vpravo") => {
     const v = vStlpci(p.stlpec);
@@ -499,13 +585,14 @@ export function Roadmapa() {
     }
   };
 
-  const nadStlpcom = (e: DragEvent<HTMLDivElement>, stlpec: string) => {
+  // Stĺpec ide zhora nadol; Prijímač je vodorovný pás, preto miesto určí aj poloha vľavo/vpravo.
+  const nadStlpcom = (e: DragEvent<HTMLDivElement>, stlpec: string, vodorovne: boolean) => {
     if (tahana === null) return;
     e.preventDefault();
     const karty = [...e.currentTarget.querySelectorAll<HTMLElement>(".rm-polozka")].filter((k) => k.dataset.id !== String(tahana));
     const pred = karty.find((k) => {
       const r = k.getBoundingClientRect();
-      return e.clientY < r.top + r.height / 2;
+      return vodorovne ? e.clientY < r.top || (e.clientY < r.bottom && e.clientX < r.left + r.width / 2) : e.clientY < r.top + r.height / 2;
     });
     const predId = pred === undefined ? null : Number(pred.dataset.id);
     if (miesto?.stlpec !== stlpec || miesto.pred !== predId) setMiesto({ stlpec, pred: predId });
@@ -517,94 +604,187 @@ export function Roadmapa() {
   };
   const otvorena = detail === null ? null : detail === "nova" ? "nova" : (data.polozky.find((p) => p.id === detail) ?? null);
 
+  const karta = (p: Polozka, poradie: number) => (
+    <Karta
+      p={p}
+      poradie={poradie}
+      upravuje={data.upravuje}
+      otvor={() => otvor(p.id)}
+      presunKlavesom={(smer) => presunKlavesom(p, smer)}
+      tahaj={(id) => {
+        setTahana(id);
+        if (id === null) setMiesto(null);
+      }}
+    />
+  );
+
+  /** Telo stĺpca, ktoré prijme ťahanú kartu (správca). */
+  const telo = (kluc: string, polozky: readonly Polozka[], vsetky: readonly Polozka[], vodorovne: boolean, prazdny: string) => (
+    <div
+      className={`rm-stlpec-telo ${cielTahu && miesto?.stlpec === kluc ? "nad" : ""}`}
+      onDragOver={cielTahu ? (e) => nadStlpcom(e, kluc, vodorovne) : undefined}
+      onDragLeave={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setMiesto(null);
+      }}
+      onDrop={(e) => {
+        e.preventDefault();
+        if (tahana !== null && miesto !== null) presun(tahana, miesto.stlpec, miesto.pred);
+        setTahana(null);
+        setMiesto(null);
+      }}
+    >
+      {polozky.length === 0 && <p className="rm-prazdny">{vsetky.length > 0 ? "Nič nevyhovuje filtru." : prazdny}</p>}
+      {polozky.map((p) => (
+        <div key={p.id} className="rm-obal">
+          {cielTahu && miesto?.stlpec === kluc && miesto.pred === p.id && <div className="rm-miesto" />}
+          {karta(p, vsetky.indexOf(p) + 1)}
+        </div>
+      ))}
+      {cielTahu && miesto?.stlpec === kluc && miesto.pred === null && <div className="rm-miesto" />}
+    </div>
+  );
+
+  const prijate = prijimac === undefined ? [] : vStlpci(prijimac.kluc);
+
   return (
-    <div className="roadmapa">
-      {chyba !== null && <Hlaska>{chyba}</Hlaska>}
-      <div className="rm-nastroje">
-        <div className="cipy" role="group" aria-label="Filtrovať podľa oblasti">
-          <button type="button" className={`cip ${filter === null ? "aktivny" : ""}`} aria-pressed={filter === null} onClick={() => setFilter(null)}>
-            Všetko
-          </button>
-          {(Object.keys(OBLASTI) as Oblast[]).map((o) => (
-            <button key={o} type="button" className={`cip rm-cip obl-${o} ${filter === o ? "aktivny" : ""}`} aria-pressed={filter === o} onClick={() => setFilter(filter === o ? null : o)}>
-              <i aria-hidden="true" />
-              {OBLASTI[o]}
+    <>
+      <section id="roadmapa" className="vyvoj-sekcia roadmapa" aria-labelledby="roadmapa-nadpis">
+        <div className="vyvoj-sekcia-hlava">
+          <h2 id="roadmapa-nadpis">Roadmapa</h2>
+          <span className="tlmene">stĺpce sú horizonty, nie dátumy — čo je v stĺpci vyššie, príde na rad skôr</span>
+        </div>
+        {chyba !== null && <Hlaska>{chyba}</Hlaska>}
+        <div className="rm-nastroje">
+          <div className="cipy rm-oblasti" role="group" aria-label="Filtrovať podľa oblasti">
+            <button type="button" className={`cip ${filter === null ? "aktivny" : ""}`} aria-pressed={filter === null} onClick={() => setFilter(null)}>
+              Všetko
+            </button>
+            {(Object.keys(OBLASTI) as Oblast[]).map((o) => (
+              <button key={o} type="button" className={`cip rm-cip obl-${o} ${filter === o ? "aktivny" : ""}`} aria-pressed={filter === o} onClick={() => setFilter(filter === o ? null : o)}>
+                <i aria-hidden="true" />
+                {OBLASTI[o]}
+              </button>
+            ))}
+          </div>
+          {/* Mobil: filtre oblastí v jednom výbere namiesto riadku čipov. */}
+          <label className="rm-oblast-vyber">
+            <span>Oblasť</span>
+            <select value={filter ?? ""} onChange={(e) => setFilter(e.target.value === "" ? null : (e.target.value as Oblast))}>
+              <option value="">všetky</option>
+              {(Object.keys(OBLASTI) as Oblast[]).map((o) => (
+                <option key={o} value={o}>
+                  {OBLASTI[o]}
+                </option>
+              ))}
+            </select>
+          </label>
+          {data.upravuje && (
+            <div className="rm-spravca-nastroje">
+              <button type="button" className={`cip ${lenNaRozhodnutie ? "aktivny" : ""}`} aria-pressed={lenNaRozhodnutie} onClick={() => setLenNaRozhodnutie(!lenNaRozhodnutie)}>
+                Len na rozhodnutie ({naRozhodnutie})
+              </button>
+              <button type="button" className="tlacidlo-hlavne" onClick={() => otvor("nova")}>
+                + Položka
+              </button>
+            </div>
+          )}
+        </div>
+
+        {prijimac !== undefined && (prijate.length > 0 || cielTahu) && (
+          <section className="rm-stlpec rm-prijimac" aria-labelledby="rm-stlpec-prijimac">
+            <header className="rm-stlpec-hlava">
+              <h3 id="rm-stlpec-prijimac">
+                {prijimac.nazov} <span className="rm-pocet">{prijate.length}</span>
+                <span className="rm-horizont">vidí len správca</span>
+              </h3>
+              <p>{prijimac.zamer}</p>
+            </header>
+            {telo(prijimac.kluc, prijate.filter(viditelna), prijate, true, "Sem potiahni položku.")}
+          </section>
+        )}
+
+        <div className="rm-horizonty" role="group" aria-label="Horizont">
+          {horizonty.map((s) => (
+            <button key={s.kluc} type="button" className={`cip ${horizont === s.kluc ? "aktivny" : ""}`} aria-pressed={horizont === s.kluc} onClick={() => setHorizont(s.kluc)}>
+              {s.nazov} <span className="rm-pocet">{vStlpci(s.kluc).length}</span>
             </button>
           ))}
         </div>
-        {data.upravuje && (
-          <button type="button" className="tlacidlo-hlavne" onClick={() => otvor("nova")}>
-            + Položka
+
+        <div className="rm-tabula" style={{ "--rm-stlpce": horizonty.length } as CSSProperties}>
+          {horizonty.map((s) => {
+            const vsetky = vStlpci(s.kluc);
+            return (
+              <section key={s.kluc} className={`rm-stlpec rm-${s.kluc} ${horizont === s.kluc ? "vybrany" : ""}`} aria-labelledby={`rm-stlpec-${s.kluc}`}>
+                <header className="rm-stlpec-hlava">
+                  <h3 id={`rm-stlpec-${s.kluc}`}>
+                    {s.nazov} <span className="rm-pocet">{vsetky.length}</span>
+                    {s.horizont !== "" && <span className="rm-horizont">{s.horizont}</span>}
+                  </h3>
+                  <p>{s.zamer}</p>
+                </header>
+                {telo(s.kluc, vsetky.filter(viditelna), vsetky, false, data.upravuje ? "Sem potiahni položku." : "Zatiaľ prázdne.")}
+              </section>
+            );
+          })}
+        </div>
+        <p className="tlmene rm-napoveda">
+          {data.upravuje
+            ? "Kartu presunieš ťahaním, v detaile, alebo klávesmi Alt + šípky (hore a dole v stĺpci, vľavo a vpravo medzi stĺpcami). Prijímač a skryté položky hráči nevidia."
+            : "Klikni na kartu a uvidíš, prečo sa robí a kedy bude hotová."}
+        </p>
+      </section>
+
+      <section id="hotove" className="vyvoj-sekcia" aria-labelledby="hotove-nadpis">
+        <div className="vyvoj-sekcia-hlava">
+          <h2 id="hotove-nadpis">
+            Hotové <span className="rm-pocet">{hotove.length}</span>
+          </h2>
+          <span className="tlmene">naposledy implementované a nasadené</span>
+        </div>
+        <div
+          className={`rm-hotove-pas ${cielTahu && miesto?.stlpec === "hotove" ? "nad" : ""}`}
+          onDragOver={
+            cielTahu
+              ? (e) => {
+                  e.preventDefault();
+                  if (miesto?.stlpec !== "hotove") setMiesto({ stlpec: "hotove", pred: null });
+                }
+              : undefined
+          }
+          onDragLeave={(e) => {
+            if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setMiesto(null);
+          }}
+          onDrop={(e) => {
+            e.preventDefault();
+            if (tahana !== null) presun(tahana, "hotove", null);
+            setTahana(null);
+            setMiesto(null);
+          }}
+        >
+          {hotoveVOblasti.length === 0 && <p className="rm-prazdny">{hotove.length > 0 ? "Nič nevyhovuje filtru." : "Zatiaľ nič."}</p>}
+          {hotoveVOblasti.slice(0, POSLEDNYCH_HOTOVYCH).map((p) => (
+            <div key={p.id} className="rm-obal">
+              {karta(p, hotove.indexOf(p) + 1)}
+            </div>
+          ))}
+        </div>
+        {hotoveVOblasti.length > POSLEDNYCH_HOTOVYCH && (
+          <button
+            type="button"
+            className="tlacidlo rm-hotove-vsetky"
+            onClick={(e) => {
+              poslednyFokus.current = e.currentTarget;
+              setHotovePanel(true);
+            }}
+          >
+            Ukázať všetkých {hotoveVOblasti.length}
+            {filter !== null && ` (${OBLASTI[filter]})`}
           </button>
         )}
-      </div>
+      </section>
 
-      <div className="rm-tabula">
-        {stlpce.map((s) => {
-          const vsetky = vStlpci(s.kluc);
-          const viditelne = vsetky.filter(viditelna);
-          const zbaleny = s.kluc === "hotove" && !hotoveOtvorene;
-          const cielTahu = data.upravuje && tahana !== null;
-          return (
-            <section key={s.kluc} className={`rm-stlpec rm-${s.kluc}`} aria-labelledby={`rm-stlpec-${s.kluc}`}>
-              <header className="rm-stlpec-hlava">
-                <h3 id={`rm-stlpec-${s.kluc}`}>
-                  {s.nazov} <span className="rm-pocet">{vsetky.length}</span>
-                  {s.horizont !== "" && <span className="rm-horizont">{s.horizont}</span>}
-                </h3>
-                <p>{s.zamer}</p>
-                {s.kluc === "hotove" && (
-                  <button type="button" className="rm-zbal" onClick={() => setHotoveOtvorene(!hotoveOtvorene)} aria-expanded={hotoveOtvorene}>
-                    {zbaleny ? `Ukázať ${vsetky.length} hotových` : "Zbaliť"}
-                  </button>
-                )}
-              </header>
-              <div
-                className={`rm-stlpec-telo ${cielTahu && miesto?.stlpec === s.kluc ? "nad" : ""}`}
-                onDragOver={cielTahu ? (e) => nadStlpcom(e, s.kluc) : undefined}
-                onDragLeave={(e) => {
-                  if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setMiesto(null);
-                }}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  if (tahana !== null && miesto !== null) presun(tahana, miesto.stlpec, miesto.pred);
-                  setTahana(null);
-                  setMiesto(null);
-                }}
-              >
-                {!zbaleny && viditelne.length === 0 && (
-                  <p className="rm-prazdny">{vsetky.length > 0 ? "Nič nevyhovuje filtru." : data.upravuje ? "Sem potiahni položku." : "Zatiaľ prázdne."}</p>
-                )}
-                {!zbaleny &&
-                  viditelne.map((p) => (
-                    <div key={p.id} className="rm-obal">
-                      {cielTahu && miesto?.stlpec === s.kluc && miesto.pred === p.id && <div className="rm-miesto" />}
-                      <Karta
-                        p={p}
-                        poradie={vsetky.indexOf(p) + 1}
-                        upravuje={data.upravuje}
-                        otvor={() => otvor(p.id)}
-                        presunKlavesom={(smer) => presunKlavesom(p, smer)}
-                        tahaj={(id) => {
-                          setTahana(id);
-                          if (id === null) setMiesto(null);
-                        }}
-                      />
-                    </div>
-                  ))}
-                {cielTahu && miesto?.stlpec === s.kluc && miesto.pred === null && <div className="rm-miesto" />}
-              </div>
-            </section>
-          );
-        })}
-      </div>
-      <p className="tlmene rm-napoveda">
-        {data.upravuje
-          ? "Kartu presunieš ťahaním, v detaile, alebo klávesmi Alt + šípky (hore a dole v stĺpci, vľavo a vpravo medzi stĺpcami). Prijímač a skryté položky hráči nevidia."
-          : "Stĺpce sú horizonty, nie dátumy: čo je v stĺpci vyššie, príde na rad skôr."}
-      </p>
-
-      {otvorena !== null && (
+      {otvorena !== null ? (
         <Detail
           p={otvorena}
           vsetky={data.polozky}
@@ -615,7 +795,9 @@ export function Roadmapa() {
           ulozene={nacitaj}
           presun={presun}
         />
+      ) : (
+        hotovePanel && <VsetkyHotove polozky={hotoveVOblasti} otvor={(id) => setDetail(id)} zavri={zavriHotove} />
       )}
-    </div>
+    </>
   );
 }

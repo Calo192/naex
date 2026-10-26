@@ -24,6 +24,7 @@ export const PRAVA = [
   "vlastna_fotka",
   "reporty_playtestov",
   "navrhovat_karty",
+  "vidiet_vyvoj",
 ] as const;
 export type Pravo = (typeof PRAVA)[number];
 
@@ -41,6 +42,7 @@ export const POPIS_PRAVA: Readonly<Record<Pravo, string>> = {
   vlastna_fotka: "nahrať vlastnú fotku avatara",
   reporty_playtestov: "vidieť reporty playtestov",
   navrhovat_karty: "navrhovať karty (Dielňa)",
+  vidiet_vyvoj: "vidieť stránku Vývoj (známky hry a roadmapu)",
 };
 
 /** Ranky, ktorým sa práva prideľujú, od najnižšieho. */
@@ -181,15 +183,22 @@ export class Prava {
     return nove;
   }
 
-  /** Má používateľ právo? Správca vždy; AI agent hodnotiť smie vždy (playtesty). */
-  smie(ja: Pick<Pouzivatel, "rola" | "ai">, pravo: Pravo): boolean {
+  /**
+   * Má používateľ právo? Správca vždy; AI agent hodnotiť smie vždy (playtesty).
+   * Neprihlásený (null) má práva Nealka — verejnú stránku (Vývoj) tak admin
+   * zatvorí aj návštevníkom bez účtu, keď ju Nealkovi odoberie.
+   */
+  smie(ja: Pick<Pouzivatel, "rola" | "ai"> | null, pravo: Pravo): boolean {
+    if (ja === null) return this.nastavenie().matica[pravo].includes("navstevnik");
     if (jeSpravca(ja.rola)) return true;
     if (pravo === "hodnotit_hru" && ja.ai) return true;
     return jeRankHraca(ja.rola) && this.nastavenie().matica[pravo].includes(ja.rola);
   }
 
-  vyzaduj(ja: Pick<Pouzivatel, "rola" | "ai">, pravo: Pravo): void {
-    if (!this.smie(ja, pravo)) throw new ChybaVstupu(`Na toto tvoj rank nemá právo: ${POPIS_PRAVA[pravo]}.`, 403);
+  vyzaduj(ja: Pick<Pouzivatel, "rola" | "ai"> | null, pravo: Pravo): void {
+    if (this.smie(ja, pravo)) return;
+    if (ja === null) throw new ChybaVstupu(`Prihlás sa — bez účtu sa nedá ${POPIS_PRAVA[pravo]}.`, 401);
+    throw new ChybaVstupu(`Na toto tvoj rank nemá právo: ${POPIS_PRAVA[pravo]}.`, 403);
   }
 
   /** Zoznam práv používateľa — pre /api/ja (klient podľa neho skrýva tlačidlá). */

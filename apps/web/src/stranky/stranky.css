@@ -424,8 +424,22 @@ button.cip.aktivny {
   flex: 1;
 }
 
-.precitana .obsah-cislo {
+.precitana .obsah-cislo,
+.obsah-precitana {
   color: var(--zelena);
+}
+
+.obsah-precitana {
+  font-size: 0.8rem;
+}
+
+.obsah-skryte {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .pravidla-obsah li.aktivna > a {
@@ -615,23 +629,22 @@ button.cip.aktivny {
   margin-bottom: 0.35em;
 }
 
-.kapitola-dalej {
-  display: inline-block;
-  margin-top: 18px;
-  padding: 10px 14px;
-  border: 1px solid var(--okraj);
-  border-radius: 10px;
-  color: var(--tlmeny);
-  text-decoration: none;
+/* Koniec kapitoly: čiara s malým textom, nie tlačidlo (dizajn #24 A). */
+.kapitola-koniec {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 26px;
+  color: var(--slaby-text);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
 }
 
-.kapitola-dalej:hover {
-  color: var(--text);
-  border-color: var(--akcent);
-}
-
-.kapitola-dalej strong {
-  color: var(--text);
+.kapitola-koniec::before,
+.kapitola-koniec::after {
+  content: "";
+  flex: 1;
+  border-top: 1px solid var(--okraj);
 }
 
 /* Pojem v texte: podčiarknutý, vysvetlenie pod myšou (Pojem.tsx). */

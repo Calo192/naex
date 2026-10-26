@@ -140,12 +140,12 @@ export class Hodnotenia {
     return this.prava.smie(ja, "hodnotit_hru");
   }
 
-  /** Posledné známky hráča (bez importovaných z playtestov). */
-  moje(ja: Pouzivatel): { znamky: Znamky | null; cas: number | null; smie: boolean } {
+  /** Posledné známky hráča (bez importovaných z playtestov) a kritériá formulára — hodnotiť smie aj ten, kto Vývoj nevidí. */
+  moje(ja: Pouzivatel): { znamky: Znamky | null; cas: number | null; smie: boolean; kriteria: readonly Kriterium[] } {
     const r = this.db.prepare("SELECT data, cas FROM znamky WHERE pouzivatel = ? ORDER BY cas DESC, id DESC LIMIT 1").get(ja.id) as
       | { data: string; cas: number }
       | undefined;
-    return { znamky: r === undefined ? null : (JSON.parse(r.data) as Znamky), cas: r?.cas ?? null, smie: this.smie(ja) };
+    return { znamky: r === undefined ? null : (JSON.parse(r.data) as Znamky), cas: r?.cas ?? null, smie: this.smie(ja), kriteria: KRITERIA };
   }
 
   /**

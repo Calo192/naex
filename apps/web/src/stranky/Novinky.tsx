@@ -80,7 +80,7 @@ export function Novinky() {
         <h1>Novinky</h1>
         <p className="tlmene">
           Čo sa v hre a na webe zmenilo: pravidlá, karty, vzhľad, nové funkcie aj opravené chyby. Najnovšie sú hore. Kam hra smeruje ďalej,
-          ukazuje <Odkaz href="/vyvoj/roadmapa">roadmapa</Odkaz>.
+          ukazuje <Odkaz href="/vyvoj#roadmapa">roadmapa</Odkaz>.
         </p>
       </header>
 
