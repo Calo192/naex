@@ -41,7 +41,7 @@ export const KONSTANTY = {
    */
   KOPIE_V_SPOLOCNOM_BALICKU: 2,
 
-  /** Základy odvodených hodnôt (PRAVIDLA §8 a §10). */
+  // Základy odvodených hodnôt (PRAVIDLA §8 a §10).
   /**
    * Prah Cirhózy (+ priazeň Alkoholika). Michal 2026-10-12 zvýšil z 2 na 3:
    * v playteste 20261011-183315 hráči priznávali kliatby po jednej a kolá sa
@@ -85,19 +85,12 @@ export const KONSTANTY = {
   NASOBOK_PRIAZNE: 2,
   PRAH_EXEKUTORA_ZAKLAD: 10, // + 2 × priazeň Exekútora
   HODNOTA_VIERY_ZAKLAD: 1, // Veriaci (2026-10-20) dáva Vieru navyše rovnú sile, hodnotu nemení
-  PRESKUMANIE: 5,
   /**
    * Pohoršenie (Michal 2026-10-20): ten istý marker smie ísť v bitke aj
    * viackrát, Pohoršenia jedného hráča ho však posunú najviac cez toľkoto
    * hraníc zón (pravá sivá → ľavá oranžová áno). Kultúrny dom limit ruší.
    */
   POHORSENIE_MAX_HRANIC: 2,
-
-  /**
-   * Prehra pri poklese balíčka pod túto hodnotu platila do v4; vo v5 sa ruší
-   * (Michal 2026-10-24). Ostáva ako opatrnosť bota pri zahadzovaní kariet.
-   */
-  MIN_VELKOST_BALICKA: 5,
 
   /**
    * Pevné čísla z efektov kariet (Michal 2026-10-18, revízia kariet, variant A):
@@ -138,15 +131,6 @@ export const KONSTANTY = {
    * po drafte a NA EX ostal s limitom 1 až do konca partie (Eva 4 zo 7 kôl).
    */
   POLDECI_NA_ZACIATKU_KOLA: 1,
-
-  /**
-   * Do v4: podmienka „zvyšné cigarety“ rátala kusy po trojiciach. Vo v5 sa
-   * o cigarety bojuje kus po kuse (súboj podmienok), konštantu číta už len UI.
-   *
-   * Pôvodne: podmienka „zvyšné cigarety“ ráta kusy po trojiciach (Michal 2026-10-16):
-   * cigarety sa hromadia z akcií Cigareta a sú hlavne mena, nie zdroj bodov.
-   */
-  CIGARIET_NA_KUS: 3,
 
   // Body na konci hry sú v data/scorecards.json (podmienky scorecardov).
 } as const;
