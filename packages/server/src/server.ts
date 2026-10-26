@@ -65,7 +65,7 @@ import { Media } from "./media.ts";
 import { Avatary } from "./avatary.ts";
 import { Hudba } from "./hudba.ts";
 import { Obsah, nacitajElders, nacitajScorecards } from "./obsah.ts";
-import type { OtvorenaHra, StavServera, Uzavierka } from "./api.ts";
+import type { OtvorenaHra, RozohranaPartia, StavServera, Uzavierka } from "./api.ts";
 import { OZNAM_UZAVIERKY, spracujApi } from "./api.ts";
 import type { ZmenaFrajeriny } from "./archiv.ts";
 import { Archiv } from "./archiv.ts";
@@ -396,6 +396,14 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       }))
       .sort((a, b) => b.vytvorena - a.vytvorena);
 
+  // Hotová výučba stojí uprostred partie, no nikto ju nedohrá — „Späť ku stolu“ by viedlo do prázdna.
+  const rozohranaPartia = (kod: string, hracId: number): RozohranaPartia | null => {
+    const room = rooms.get(kod);
+    if (room === undefined || room.state === null || room.state.koniec !== null || vyucbaSkoncila(room)) return null;
+    if (!room.hraci.some((h, i) => h !== null && i !== room.bot && h.id === hracId)) return null;
+    return { kod: room.code, vyucba: room.vyucba !== null };
+  };
+
   const http = createServer((req, res) => {
     const url = new URL(req.url ?? "/", "http://localhost");
     if (url.pathname.startsWith("/api/")) {
@@ -423,6 +431,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           teraz,
           bezpecneCookie: opts.bezpecneCookie ?? false,
           otvoreneHry,
+          rozohranaPartia,
           poZverejneni: () => undefined,
           stavServera,
           nastavUzavierku,
@@ -536,7 +545,10 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       send(ws, { type: "historia", events: room.historia[seat] });
       send(ws, { type: "state", view: viewFor(room.data, room.state, seat), events: [] });
       const druhe: PlayerId = seat === 0 ? 1 : 0;
-      send(ws, { type: "superPripojeny", connected: room.sockets[druhe] !== null || room.bot === druhe });
+      const connected = room.sockets[druhe] !== null || room.bot === druhe;
+      // Po návrate (obnovenie stránky) klient nevie, odkedy súper chýba — odpočet kontumácie by začal odznova.
+      const od = room.odpojenyOd[druhe];
+      send(ws, { type: "superPripojeny", connected, ...(connected || od === null ? {} : { odpojenyMs: Math.max(0, teraz() - od) }) });
     }
     if (room.vysledok !== null) send(ws, { type: "frajerina", zmeny: room.vysledok });
     const suhrn = room.achievementy?.hraci[seat]?.suhrn ?? null;

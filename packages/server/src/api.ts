@@ -34,6 +34,12 @@ import { KRABICKA, MAX_OTVORENYCH } from "./dielna.ts";
 import type { Hodnotenia } from "./znamky.ts";
 import { overKategoriu as overKategoriuNazoru } from "./nazory.ts";
 
+/** Rozohraná partia hráča — pilulka „Partia beží · Späť ku stolu“ v hlavičke mimo stola. */
+export interface RozohranaPartia {
+  readonly kod: string;
+  readonly vyucba: boolean;
+}
+
 export interface OtvorenaHra {
   readonly kod: string;
   readonly hostitel: { readonly meno: string; readonly avatar: string | null; readonly frajerina: number | null };
@@ -108,6 +114,8 @@ export interface ApiKontext {
   readonly bezpecneCookie: boolean;
   /** Verejné hry čakajúce na súpera (z herného servera). */
   readonly otvoreneHry: () => readonly OtvorenaHra[];
+  /** Partia v miestnosti s kódom, v ktorej hráč sedí a ktorá ešte beží; inak null. */
+  readonly rozohranaPartia: (kod: string, hracId: number) => RozohranaPartia | null;
   /** Po zverejnení novej sady — nové hry pobežia na nej. */
   readonly poZverejneni: () => void;
   readonly stavServera: () => StavServera;
@@ -338,7 +346,9 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     // ----- účet ----------------------------------------------------------
     // Počet dohratých partií — návštevník vidí, koľko mu chýba do úrovne hráč.
     if (r === "GET /ja") {
-      return ok({ pouzivatel: ja === null ? null : { ...ja, dohrate: ctx.ucty.dohrate(ja.id), prava: ctx.prava.zoznam(ja) } });
+      // Neprihlásený má práva Nealka — klient podľa nich skryje odkazy (Vývoj), ktoré by server odmietol.
+      if (ja === null) return ok({ pouzivatel: null, prava: ctx.prava.zoznam(null) });
+      return ok({ pouzivatel: { ...ja, dohrate: ctx.ucty.dohrate(ja.id), prava: ctx.prava.zoznam(ja) } });
     }
 
     if (r === "POST /registracia") {
@@ -479,6 +489,11 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     // ----- verejné -------------------------------------------------------
     if (r === "GET /sada") return ok(ctx.obsah.aktualnaSada().sada);
 
+    // Kód je z prehliadača hráča; cudziu ani skončenú partiu server neprezradí.
+    if (r === "GET /hry/moja") {
+      const kod = (query.get("kod") ?? "").trim().toUpperCase();
+      return ok({ partia: ja === null || !/^[A-Z0-9]{1,8}$/.test(kod) ? null : ctx.rozohranaPartia(kod, ja.id) });
+    }
     if (r === "GET /hry/otvorene") {
       prihlaseny();
       return ok({
@@ -948,6 +963,7 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     }
     // Návrhy zlepšení z playtestov — sekcia Playtest.
     if (sub === "GET /navrhy") return ok({ navrhy: ctx.navrhy.zoznam() });
+    if (sub === "GET /navrhy/pocet") return ok({ naRozhodnutie: ctx.navrhy.naRozhodnutie() });
     if (sub === "POST /navrhy") return ok({ ids: ctx.navrhy.nahraj(ja2, await citajJson(req), teraz) }, 201);
     if (casti[2] === "navrhy" && casti.length === 4 && /^\d+$/.test(id)) {
       if (metoda === "PATCH") {

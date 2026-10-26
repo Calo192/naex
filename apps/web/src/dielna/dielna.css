@@ -26,9 +26,9 @@
   border-bottom-color: var(--akcent);
 }
 
+/* Šírku dáva stránka (Layout, #21 B) — Dielňa je záložka Kariet a sedí na ich hrane. */
 .dielna {
-  max-width: 1100px;
-  margin: 0 auto;
+  max-width: none;
 }
 
 .dielna-ovladanie,

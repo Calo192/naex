@@ -3749,8 +3749,8 @@ button.pecat-potvrd:disabled::after {
   background: color-mix(in srgb, var(--zelena) 25%, transparent);
 }
 
-/* ---- hlavička webu počas partie: spojenie, kontumácia, vzdať sa, odísť ---- */
-/* Blok partie v hlavičke (Michal 2026-10-23, hlavička B): oddelený od menu rámikom. */
+/* ---- hlavička webu pri prehrávaní dohratej partie: kroky prehrávača ---- */
+/* Partia sama má v hlavičke štítok a menu Partia (hlavicka.css). */
 .hlavicka-partia {
   display: flex;
   align-items: center;
@@ -3760,58 +3760,6 @@ button.pecat-potvrd:disabled::after {
   border: 1px solid var(--okraj);
   background: var(--plocha);
   white-space: nowrap;
-}
-
-.partia-kod {
-  font: 700 0.8rem/1 var(--nadpis);
-  letter-spacing: 0.12em;
-  color: var(--akcent);
-  cursor: help;
-}
-
-/* Stav súpera a kontumácia v jednej pilulke — kontumácia patrí k „odpojený“. */
-.partia-super {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 30px;
-  padding: 2px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--okraj);
-}
-
-.partia-super.offline {
-  padding-right: 3px;
-  border-color: color-mix(in srgb, var(--cervena) 55%, transparent);
-}
-
-/* Dlhé meno súpera sa skráti — blok partie nesmie vytlačiť menu (celé meno je v nápovede). */
-.partia-super .spojenie {
-  max-width: 13em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.partia-super.online .spojenie {
-  color: var(--zelena);
-}
-
-.partia-super.offline .spojenie {
-  color: var(--cervena-text);
-}
-
-.partia-super .opustit {
-  border-radius: 999px;
-}
-
-.hlavicka-partia .spojenie {
-  font-size: 0.85rem;
-}
-
-.hlavicka-partia .opustit.potvrdit {
-  background: var(--cervena);
-  border-color: var(--cervena-text);
-  color: #fff;
 }
 
 @media (max-width: 760px) {
@@ -3833,10 +3781,6 @@ button.pecat-potvrd:disabled::after {
   button.pecat-nakup {
     min-width: 0;
     padding: 5px 10px;
-  }
-
-  .hlavicka-partia .spojenie {
-    display: none;
   }
 
   .hlava-vrstvy {

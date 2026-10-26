@@ -66,29 +66,30 @@ export function App() {
 
   // Reporty playtestov vidí aj rank s právom (Michal 2026-10-22); návrhy len správca (Playtest to rozlíši).
   if (cesta === "/playtest" || cesta.startsWith("/playtest/")) {
-    return <Layout siroky>{chranene(<Playtest cesta={cesta} />, !maPravo(ja, "reporty_playtestov"))}</Layout>;
+    return <Layout sirka="siroka">{chranene(<Playtest cesta={cesta} />, !maPravo(ja, "reporty_playtestov"))}</Layout>;
   }
-  if (cesta.startsWith("/admin")) return <Layout siroky>{chranene(<Admin cesta={cesta} />, true)}</Layout>;
-  if (cesta === "/hraci") return <Layout siroky>{chranene(<Hraci />, true)}</Layout>;
-  if (cesta === "/hra") return <Layout siroky><Hra /></Layout>;
-  if (cesta === "/pravidla") return <Layout siroky><Pravidla /></Layout>;
+  // Šírka obsahu (Michal 2026-10-26, #21 B): Vývoj, Tvorba, Playtest a Hráči na celé okno.
+  if (cesta.startsWith("/admin")) return <Layout sirka="siroka">{chranene(<Admin cesta={cesta} />, true)}</Layout>;
+  if (cesta === "/hraci") return <Layout sirka="siroka">{chranene(<Hraci />, true)}</Layout>;
+  if (cesta === "/hra") return <Layout><Hra /></Layout>;
+  if (cesta === "/pravidla") return <Layout><Pravidla /></Layout>;
   // Vývoj hry a roadmapa sú verejné (Michal 2026-10-21); upravuje ich správca.
-  if (cesta === "/vyvoj" || cesta.startsWith("/vyvoj/")) return <Layout siroky><Vyvoj cesta={cesta} /></Layout>;
+  if (cesta === "/vyvoj" || cesta.startsWith("/vyvoj/")) return <Layout sirka="siroka"><Vyvoj cesta={cesta} /></Layout>;
   const hrac = /^\/hrac\/(\d+)$/.exec(cesta);
-  if (hrac !== null) return <Layout siroky>{chranene(<HracProfil id={Number(hrac[1])} />)}</Layout>;
+  if (hrac !== null) return <Layout>{chranene(<HracProfil id={Number(hrac[1])} />)}</Layout>;
   const partia = /^\/partia\/(\d+)$/.exec(cesta);
-  if (partia !== null) return <Layout siroky>{chranene(<DetailPartie id={Number(partia[1])} />)}</Layout>;
+  if (partia !== null) return <Layout>{chranene(<DetailPartie id={Number(partia[1])} />)}</Layout>;
   const prehravac = /^\/partia\/(\d+)\/prehravac$/.exec(cesta);
-  if (prehravac !== null) return <Layout siroky>{chranene(<Prehravac id={Number(prehravac[1])} />)}</Layout>;
-  if (cesta === "/profil") return <Layout siroky>{chranene(<Profil />)}</Layout>;
+  if (prehravac !== null) return <Layout sirka="siroka">{chranene(<Prehravac id={Number(prehravac[1])} />)}</Layout>;
+  if (cesta === "/profil") return <Layout>{chranene(<Profil />)}</Layout>;
   // Ukážka UI achievementov na snímky a inšpekciu, kým nie je napojené API (len správca).
-  if (cesta === "/achievementy/ukazka") return <Layout siroky>{chranene(<UkazkaAchievementov />, true)}</Layout>;
+  if (cesta === "/achievementy/ukazka") return <Layout sirka="siroka">{chranene(<UkazkaAchievementov />, true)}</Layout>;
   // Rekapitulácia bitky a Pitky na skutočnej partii botov — snímky a inšpekcia bez živej partie.
-  if (cesta === "/hra/ukazka-rekapitulacie") return <Layout siroky>{chranene(<Suspense fallback={<Nacitavanie />}><UkazkaRekapitulacie /></Suspense>, true)}</Layout>;
+  if (cesta === "/hra/ukazka-rekapitulacie") return <Layout sirka="siroka">{chranene(<Suspense fallback={<Nacitavanie />}><UkazkaRekapitulacie /></Suspense>, true)}</Layout>;
   // Herný stôl v zvolenom okamihu partie botov (finále, bitka, koniec) — snímky bez živej partie.
-  if (cesta === "/hra/ukazka-stola") return <Layout siroky>{chranene(<Suspense fallback={<Nacitavanie />}><UkazkaStola /></Suspense>, true)}</Layout>;
+  if (cesta === "/hra/ukazka-stola") return <Layout sirka="siroka">{chranene(<Suspense fallback={<Nacitavanie />}><UkazkaStola /></Suspense>, true)}</Layout>;
   // Dielňa je záložka stránky Karty (Michal 2026-10-22); čítať smie každý.
-  if (cesta === "/karty/dielna" || cesta.startsWith("/karty/dielna/")) return <Layout siroky><Dielna cesta={cesta} /></Layout>;
+  if (cesta === "/karty/dielna" || cesta.startsWith("/karty/dielna/")) return <Layout><Dielna cesta={cesta} /></Layout>;
 
   const stranka: ReactNode =
     cesta === "/" ? <Domov />
@@ -99,5 +100,5 @@ export function App() {
     : cesta === "/rebricek" ? chranene(<Rebricek />)
     : cesta === "/spatna-vazba" ? chranene(<SpatnaVazba />)
     : <Nenajdene />;
-  return <Layout>{stranka}</Layout>;
+  return <Layout sirka={cesta === "/novinky" || cesta === "/spatna-vazba" ? "citanie" : "stranka"}>{stranka}</Layout>;
 }

@@ -82,6 +82,8 @@ export const MELICHAR_PREDVOLENY = 70;
 interface UcetKontext {
   readonly ja: Pouzivatel | null;
   readonly nacitane: boolean;
+  /** Práva neprihláseného (Nealko) — podľa nich hlavička skrýva odkazy; null = server ich neposlal. */
+  readonly pravaNavstevnika: readonly Pravo[] | null;
   nastav(p: Pouzivatel | null): void;
   /** Znova načíta účet zo servera — úroveň sa mení aj počas partie (hráčom po prvej dohratej partii). */
   obnov(): void;
@@ -93,6 +95,7 @@ const Kontext = createContext<UcetKontext | null>(null);
 export function UcetProvider({ children }: { children: ReactNode }) {
   const [ja, setJaStav] = useState<Pouzivatel | null>(null);
   const [nacitane, setNacitane] = useState(false);
+  const [pravaNavstevnika, setPravaNavstevnika] = useState<readonly Pravo[] | null>(null);
 
   // Schéma uložená v účte má prednosť pred tou v prehliadači — platí na každom zariadení.
   const setJa = useCallback((p: Pouzivatel | null): void => {
@@ -102,8 +105,11 @@ export function UcetProvider({ children }: { children: ReactNode }) {
 
   const obnov = useCallback((): void => {
     api
-      .get<{ pouzivatel: Pouzivatel | null }>("/ja")
-      .then((r) => setJa(r.pouzivatel))
+      .get<{ pouzivatel: Pouzivatel | null; prava?: readonly Pravo[] }>("/ja")
+      .then((r) => {
+        setPravaNavstevnika(r.pouzivatel === null ? (r.prava ?? null) : null);
+        setJa(r.pouzivatel);
+      })
       .catch(() => setJa(null))
       .finally(() => setNacitane(true));
   }, [setJa]);
@@ -113,9 +119,11 @@ export function UcetProvider({ children }: { children: ReactNode }) {
   const odhlas = useCallback(async () => {
     await api.post("/odhlasenie");
     setJa(null);
-  }, []);
+    // Práva návštevníka (čo hlavička ukáže bez účtu).
+    obnov();
+  }, [obnov]);
 
-  return <Kontext.Provider value={{ ja, nacitane, nastav: setJa, obnov, odhlas }}>{children}</Kontext.Provider>;
+  return <Kontext.Provider value={{ ja, nacitane, pravaNavstevnika, nastav: setJa, obnov, odhlas }}>{children}</Kontext.Provider>;
 }
 
 export function useUcet(): UcetKontext {

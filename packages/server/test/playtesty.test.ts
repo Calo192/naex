@@ -122,12 +122,19 @@ describe("návrhy z playtestov", () => {
     expect(r.status).toBe(201);
     const { ids } = (await r.json()) as { ids: number[] };
     const [prvy = 0, druhy = 0] = ids;
+    const pocet = async (cookie: string): Promise<[number, unknown]> => {
+      const res = await fetch(url("/api/admin/navrhy/pocet"), { headers: { cookie } });
+      return [res.status, ((await res.json()) as { naRozhodnutie?: number }).naRozhodnutie];
+    };
+    expect(await pocet(sub)).toEqual([200, 2]);
+    expect((await pocet(hrac))[0]).toBe(403);
 
     // Neexistujúca možnosť a vlastné riešenie bez popisu neprejdú.
     expect((await fetch(url(`/api/admin/navrhy/${prvy}`), json(admin, "PATCH", { stav: "implementovat", volba: "Z" }))).status).toBe(400);
     expect((await fetch(url(`/api/admin/navrhy/${prvy}`), json(admin, "PATCH", { stav: "implementovat", volba: "vlastne", poznamka: "" }))).status).toBe(400);
     expect((await fetch(url(`/api/admin/navrhy/${prvy}`), json(admin, "PATCH", { stav: "implementovat", volba: "A", poznamka: "Draft len v bitke." }))).status).toBe(200);
     expect((await fetch(url(`/api/admin/navrhy/${druhy}`), json(admin, "PATCH", { stav: "zamietnute" }))).status).toBe(200);
+    expect(await pocet(admin)).toEqual([200, 0]);
     // Developer hlási výsledok — rozhodnutie a kto ho urobil ostanú.
     expect((await fetch(url(`/api/admin/navrhy/${prvy}`), json(sub, "PATCH", { stav: "implementovane", vysledok: "commit abc123" }))).status).toBe(200);
 
