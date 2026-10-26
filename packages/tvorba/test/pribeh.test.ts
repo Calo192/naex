@@ -1,4 +1,4 @@
-// Príbeh a účel karty (Michal 2026-10-26): nepovinné texty pre stránku Pravidlá › Karty.
+// Príbeh a účel karty (Michal 2026-10-26): nepovinné texty pre detail karty v glosári Karty.
 // Karta bez nich musí ostať v sade aj v exporte presne taká ako predtým a jadro ich nečíta.
 
 import { describe, expect, it } from "vitest";

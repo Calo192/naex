@@ -1,5 +1,5 @@
 // Príbeh a účel karty (Michal 2026-10-26): texty pre hráča, ktoré ukazuje len
-// stránka Pravidlá › Karty — nie hra ani výučba. Jadro ich nečíta. Prázdny text
+// detail karty v glosári Karty (/karty) — nie hra ani výučba. Jadro ich nečíta. Prázdny text
 // sa neukladá, takže karta bez textov má v JSON rovnaký tvar ako pred ich zavedením.
 
 import type { KartaNavrh } from "./typy.ts";

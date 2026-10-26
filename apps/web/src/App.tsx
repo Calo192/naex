@@ -11,7 +11,6 @@ import { jeSpravca, maPravo, useUcet } from "./lib/ucet.tsx";
 import { Domov } from "./stranky/Domov.tsx";
 import { Glosar } from "./stranky/Glosar.tsx";
 import { Pravidla } from "./stranky/Pravidla.tsx";
-import { KartyPravidiel } from "./stranky/pravidla/Karty.tsx";
 import { Prihlasenie, Profil, Registracia } from "./stranky/Ucet.tsx";
 import { Hra } from "./hra/Hra.tsx";
 import { HracProfil } from "./stranky/profil/Profil.tsx";
@@ -72,8 +71,6 @@ export function App() {
   if (cesta === "/hraci") return <Layout siroky>{chranene(<Hraci />, true)}</Layout>;
   if (cesta === "/hra") return <Layout siroky><Hra /></Layout>;
   if (cesta === "/pravidla") return <Layout siroky><Pravidla /></Layout>;
-  // Príbeh a účel kariet ukazuje len táto stránka pravidiel (Michal 2026-10-26).
-  if (cesta === "/pravidla/karty") return <Layout siroky><KartyPravidiel /></Layout>;
   // Vývoj hry a roadmapa sú verejné (Michal 2026-10-21); upravuje ich správca.
   if (cesta === "/vyvoj" || cesta.startsWith("/vyvoj/")) return <Layout siroky><Vyvoj cesta={cesta} /></Layout>;
   const hrac = /^\/hrac\/(\d+)$/.exec(cesta);

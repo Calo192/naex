@@ -384,7 +384,7 @@ export function Tvorca({ id }: { readonly id: string }) {
           <section className="panel">
             <h3>Pre hráča</h3>
             <p className="tlmene tvorca-poznamka">
-              Nepovinné. Hráči ich uvidia len na stránke <Odkaz href="/pravidla/karty">Pravidlá › Karty</Odkaz> po zverejnení sady — hra ani výučba ich
+              Nepovinné. Hráči ich uvidia len v detaile karty v glosári <Odkaz href="/karty">Karty</Odkaz> po zverejnení sady — hra ani výučba ich
               neukazujú.
             </p>
             <Pole label="Príbeh" pomoc="Kto alebo čo to v dedine je a odkiaľ sa vzal. Prázdny riadok začne nový odsek.">

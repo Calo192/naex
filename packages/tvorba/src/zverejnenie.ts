@@ -54,7 +54,7 @@ export function doCardsJson(karty: readonly KartaNavrh[], zdroj: string): unknow
       left: stranaJson(k.lava),
       right: stranaJson(k.prava),
       permutations: { total: l * r, left: l, right: r },
-      // Texty pre hráča (stránka Pravidlá › Karty) — jadro ich nečíta.
+      // Texty pre hráča (detail karty v glosári) — jadro ich nečíta.
       ...textyKarty(k.pribeh, k.ucel),
     };
   });
