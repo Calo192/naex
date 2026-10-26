@@ -41,6 +41,17 @@ export interface PocitadloBitky {
   readonly vln: number;
   /** Výsledok, na ktorom počítadlo skončí — tuhé z vyhodnotenia. */
   readonly tuhe: readonly [number, number];
+  /** Vlna bonusov a vlna zrážok (Viera súpera) — rekapitulácia pod počítadlom podľa nich ruší Vieru s Poverou. */
+  readonly vlnaBonusov: number;
+  readonly vlnaZrazok: number;
+}
+
+/** Vlna karty v línii: 0 = lokalita (stred), n = n-tá karta od lokality na oboch stranách. */
+export function vlnyKariet(stol: StolBitky): ReadonlyMap<number, number> {
+  const vlnaKarty = new Map<number, number>();
+  if (stol.ciel?.lokalita != null) vlnaKarty.set(stol.ciel.lokalita.uid, 0);
+  for (const strana of stol.strany) strana.forEach((pl, i) => vlnaKarty.set(pl.card.uid, i + 1));
+  return vlnaKarty;
 }
 
 /**
@@ -49,10 +60,7 @@ export interface PocitadloBitky {
  * krok „spolu“.
  */
 export function pocitadloBitky(data: GameData, stol: StolBitky, linia: LineEval, tuhe: readonly [number, number]): PocitadloBitky {
-  // Vzdialenosť od lokality: index na strane (0 = pri lokalite) + 1; stred 0.
-  const vlnaKarty = new Map<number, number>();
-  if (stol.ciel?.lokalita != null) vlnaKarty.set(stol.ciel.lokalita.uid, 0);
-  for (const strana of stol.strany) strana.forEach((pl, i) => vlnaKarty.set(pl.card.uid, i + 1));
+  const vlnaKarty = vlnyKariet(stol);
   const kartyVln = Math.max(0, ...vlnaKarty.values());
 
   const kroky: KrokPocitadla[] = [];
@@ -91,7 +99,7 @@ export function pocitadloBitky(data: GameData, stol: StolBitky, linia: LineEval,
     }
   }
   kroky.sort((a, b) => a.vlna - b.vlna || a.kto - b.kto);
-  return { kroky, vln, tuhe };
+  return { kroky, vln, tuhe, vlnaBonusov: kartyVln + 1, vlnaZrazok: kartyVln + 2 };
 }
 
 /** Stav počítadla po vlne `vlna` (vrátane): tuhé oboch, nikdy pod 0 (ako vo vyhodnotení). */
