@@ -23,6 +23,7 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ["doplnenie šenku", `doplní na ${KONSTANTY.SENOK_PO_BRANI}`],
     ["doliatie", `${KONSTANTY.REFILL_CENA} cigarety → vypitý poldeci`],
     ["barter", `${KONSTANTY.BARTER_CENA} cigariet → nový plný poldeci`],
+    ["Autobusár", `Autobusár ignoruje ${KONSTANTY.EFEKT.AUTOBUSAR_ABSTAKY} Absťák svojho majiteľa všade`],
   ])("%s", (_, ocakavane) => {
     expect(tahak).toContain(ocakavane);
   });

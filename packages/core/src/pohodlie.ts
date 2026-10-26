@@ -31,7 +31,7 @@ export function navrhPrebytku(data: GameData, view: ClientState): { readonly kro
  * ostáva na hráčovi a Krčma, ktorá NA EX vynúti, prepínač vypne.
  */
 export function autoKoniecPitky(view: ClientState, kolo: number | null): Command | null {
-  if (kolo === null || kolo !== view.kolo || view.koniec !== null || !view.mozemHrat) return null;
+  if (kolo === null || kolo !== view.kolo || view.koniec !== null || !view.mozemHrat || view.hasicVolba !== null) return null;
   const ps = view.pitkaStav;
   const ja: PlayerId = view.ja;
   if (view.faza !== "pitka" || ps === null || ps.reakcia !== null || ps.naTahu !== ja || ps.hotovy[ja]) return null;

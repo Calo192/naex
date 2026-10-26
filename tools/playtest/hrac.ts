@@ -323,7 +323,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
   const out: string[] = [];
   const kto = (p: PlayerId | null) => (p === null ? "nikto" : p === ja ? "TY" : mena[p] ?? `Hráč ${p + 1}`);
   out.push(
-    `=== Kolo ${v.kolo}, fáza ${v.faza}${v.faza === "pitka" ? ` ${v.pitkaCislo}/${v.pitkyCelkom}` : ""}${v.faza === "zhromazdenie" ? ` (pred Pitkou ${v.pitkaCislo + 1}/${v.pitkyCelkom})` : ""}${v.vizia !== null ? " (VÍZIA)" : ""}${v.bitkaStav?.krok ? ` (krok ${v.bitkaStav.krok})` : ""} — na ťahu: ${v.draftStav?.krok === "stavba" ? "obaja naraz (stavba šenku)" : kto(v.naTahu)} ===`,
+    `=== Kolo ${v.kolo}, fáza ${v.faza}${v.faza === "pitka" ? ` ${v.pitkaCislo}/${v.pitkyCelkom}` : ""}${v.faza === "zhromazdenie" ? ` (pred Pitkou ${v.pitkaCislo + 1}/${v.pitkyCelkom})` : ""}${v.vizia !== null ? " (VÍZIA)" : ""}${v.hasicVolba !== null ? " (HASIČ)" : ""}${v.bitkaStav?.krok ? ` (krok ${v.bitkaStav.krok})` : ""} — na ťahu: ${v.draftStav?.krok === "stavba" ? "obaja naraz (stavba šenku)" : kto(v.naTahu)} ===`,
   );
   if (v.koniec !== null) {
     out.push(`KONIEC HRY: vyhral ${kto(v.koniec.vitaz)}. ${rozlozRod(v.koniec.dovod, rodyHracov)}${v.koniec.body ? ` Špaky: ty ${v.koniec.body[ja]}, súper ${v.koniec.body[su]}.` : ""}`);
@@ -589,6 +589,17 @@ function moznosti(v: ClientState): string[] {
   const out: string[] = [];
   const c = (cmd: Command, popis: string) => out.push(`${JSON.stringify(cmd)}   — ${popis}`);
   const su = (ja === 0 ? 1 : 0) as PlayerId;
+  if (v.hasicVolba !== null) {
+    // Hasič (Michal 2026-10-26): náhodná karta z odhadzovacieho balíčka — nechať, alebo vrátiť.
+    const k = v.hasicVolba.karta;
+    if (k === null) {
+      c({ type: "hasic", nechat: false }, "HASIČ: vytiahnutá karta už v odhadzovacom balíčku nie je — pokračuj");
+      return out;
+    }
+    c({ type: "hasic", nechat: true }, `HASIČ: kartu ${popisKarty(k)} z tvojho odhadzovacieho balíčka si nechaj v ruke (Dlh sa sám prizná a ťaháš kartu)`);
+    c({ type: "hasic", nechat: false }, `HASIČ: kartu ${meno(k.defId)} vráť do odhadzovacieho balíčka (kliatba, slabá karta)`);
+    return out;
+  }
   switch (v.faza) {
     case "volbaCiela": {
       for (const k of v.lokalityVHre) {

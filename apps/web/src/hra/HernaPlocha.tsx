@@ -2828,6 +2828,19 @@ export function HernaPlocha({
         ),
       };
     }
+    if (!somNaTahu && view.hasicVolba !== null && view.hasicVolba.hrac === super_) {
+      const k = view.hasicVolba.karta;
+      return {
+        nadpis: "Hasič",
+        text: (
+          <span className="cakanie-text">
+            <strong>{menoHraca(super_)}</strong> {tvar(rodHracaP(super_), "vytiahol", "vytiahla", "ťahá")} Hasičom z odhadzovacieho balíčka kartu
+            {k === null ? "" : <> <strong>{menoKarty(k.defId)}</strong></>} — nechá si ju v ruke, alebo ju vráti
+            <span className="bodky" aria-hidden="true" />
+          </span>
+        ),
+      };
+    }
     if (!somNaTahu && view.vizia !== null) {
       return {
         nadpis: "Vízia",
@@ -2888,6 +2901,35 @@ export function HernaPlocha({
             <span className="bodky" aria-hidden="true" />
           </span>
         ),
+      };
+    }
+    if (view.hasicVolba !== null) {
+      // Hasič (Michal 2026-10-26): náhodná karta z odhadzovacieho balíčka — do ruky, alebo späť.
+      const k = view.hasicVolba.karta;
+      return {
+        nadpis: "Hasič",
+        text: (
+          <span className="vizia-text">
+            {k !== null && <span className="vizia-karta">{sLupou({ karta: k, sirka: 72 })}</span>}
+            <span>
+              {k === null ? (
+                "Karta, ktorú Hasič vytiahol, už v odhadzovacom balíčku nie je."
+              ) : (
+                <>
+                  Hasič ti z odhadzovacieho balíčka vytiahol kartu <strong>{menoKarty(k.defId)}</strong>. Necháš si ju v ruke, alebo ju vrátiš
+                  do odhadzovacieho balíčka?
+                </>
+              )}
+            </span>
+          </span>
+        ),
+        // „vrátiť“ je druhá voľba, nie zrušenie — preto nie je ✕ na pečiatke.
+        stred: pecatTahu({
+          text: k === null ? "pokračovať" : "do ruky",
+          tip: k === null ? "Hra pokračuje." : "Kartu si necháš v ruke.",
+          akcia: () => posli({ type: "hasic", nechat: k !== null }),
+        }),
+        ...(k === null ? {} : { vpravo: <button onClick={() => posli({ type: "hasic", nechat: false })}>vrátiť</button> }),
       };
     }
 

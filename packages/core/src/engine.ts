@@ -381,6 +381,24 @@ export interface GameState {
   readonly pitkyKola?: readonly RekapitulaciaPitky[];
   /** Pečeň a Cirhózy kola na začiatku Pitky — rekapitulácia Pitky z nich ráta pitie a NA EX. */
   readonly zaciatokPitky?: { readonly pecen: readonly [number, number]; readonly cirhozy: readonly [number, number] } | null;
+  /**
+   * Hasič (Michal 2026-10-26): karty náhodne vytiahnuté z vlastného
+   * odhadzovacieho balíčka, o ktorých hráč ešte nerozhodol (nechať v ruke,
+   * alebo vrátiť). Kým nerozhodne, nikto iný nehrá; karta leží ďalej
+   * v odhadzovacom balíčku. Chýba v uloženiach spred zmeny.
+   */
+  readonly hasicVolby?: readonly HasicVolba[];
+}
+
+/** Čakajúca voľba Hasiča. */
+export interface HasicVolba {
+  readonly hrac: PlayerId;
+  readonly uid: number;
+  /**
+   * Čo hra odložila do rozhodnutia: odpoveď na NA EX by hneď vyhodnotila
+   * Pitku a otočená Záverečná by ju ukončila — s kartou ešte nerozhodnutou.
+   */
+  readonly potom: "reakcia" | "koniecPitky" | null;
 }
 
 /** Čo by skrytá Záverečná spustila, keby bola odkrytá (Svokra, Vychovávateľka, Hrobár). */
@@ -438,6 +456,8 @@ export type Command =
   | { readonly type: "zivnostnik"; readonly uid: number }
   // Záhradkár pri exekúcii (v6, Michal 2026-10-26): zahodiť ho namiesto špakov, alebo nie.
   | { readonly type: "zahradkar"; readonly zahodit: boolean }
+  // Hasič (Nástup, Michal 2026-10-26): kartu z odhadzovacieho balíčka si nechať v ruke (true), alebo ju vrátiť (false).
+  | { readonly type: "hasic"; readonly nechat: boolean }
   | { readonly type: "smoke"; readonly pocet: number }
   | { readonly type: "barter" }
   | { readonly type: "refillPoldeci" }
@@ -903,7 +923,11 @@ export function verejneAbstaky(s: VerejnyStav, p: PlayerId): number {
   return n;
 }
 
-/** O koľko Absťáky znížia hráčovi tuhé poškodenie v bitke (Autobusár jeden ignoruje). */
+/**
+ * Absťáky, ktoré sa hráčovi v bitke rátajú: o toľko mu znížia tuhé poškodenie
+ * a rozhodujú remízu aj špaky víťaza. Autobusár jeden ignoruje všade
+ * (Michal 2026-10-26, variant A).
+ */
 export function abstakyVBitke(data: GameData, s: VerejnyStav, p: PlayerId, vRuke: number): number {
   return Math.max(0, verejneAbstaky(s, p) + vRuke - bitkaMody(data, s, p).abstakyZlava);
 }
@@ -1232,6 +1256,13 @@ export function setupZRozdania(data: GameData, r: Rozdanie): GameState {
 
 export function naTahu(state: GameState): PlayerId | null {
   if (state.koniec !== null) return null;
+  const hasic = state.hasicVolby?.[0];
+  if (hasic !== undefined) return hasic.hrac;
+  return naTahuVoFaze(state);
+}
+
+/** Kto je na ťahu podľa fázy — bez čakania na voľbu Hasiča. */
+function naTahuVoFaze(state: GameState): PlayerId | null {
   switch (state.faza) {
     case "volbaCiela":
       // Cieľ kola vyberá a natáča obranca, vykladať začína útočník (Michal 2026-10-20).
@@ -1262,6 +1293,7 @@ export function naTahu(state: GameState): PlayerId | null {
  */
 export function mozeHrat(state: GameState, p: PlayerId): boolean {
   if (state.koniec !== null) return false;
+  if (cakaHasic(state)) return naTahu(state) === p;
   if (state.faza === "draft" && state.draftStav?.krok === "stavba") {
     return state.draftStav.vyber[p] === null;
   }
@@ -1277,6 +1309,17 @@ export function apply(
   cmd: Command,
   hracId: PlayerId,
 ): { state: GameState; events: Event[] } {
+  return applyPrikaz(data, state, cmd, hracId, false);
+}
+
+/** `vTahu`: krok ťahu poslaného naraz — Hasič vyložený skôr v tom istom ťahu ho nezastaví. */
+function applyPrikaz(
+  data: GameData,
+  state: GameState,
+  cmd: Command,
+  hracId: PlayerId,
+  vTahu: boolean,
+): { state: GameState; events: Event[] } {
   need(state.koniec === null, "Hra sa skončila.");
   const s = structuredClone(state) as MutState;
   const events: Event[] = [];
@@ -1286,6 +1329,7 @@ export function apply(
     // aj celý prebytok jedným klikom (roadmapa #9 B, Michal 2026-10-22).
     const prebytok = state.faza === "bitka" && state.bitkaStav?.krok === "prebytok";
     need(state.faza === "zhromazdenie" || prebytok, "Celý ťah naraz sa hrá len v Zhromaždení alebo pri prebytku.");
+    need(!cakaHasic(state), HASIC_NAJPRV);
     need(cmd.kroky.length > 0, "Ťah je prázdny.");
     let st = state;
     const vsetky: Event[] = [];
@@ -1295,9 +1339,11 @@ export function apply(
         need(st.faza === "bitka" && st.bitkaStav?.krok === "prebytok" && st.bitkaStav.caka === hracId, "Prebytok sa minul skôr, než si posunul všetky markery.");
       } else {
         need(k.type === "place" || k.type === "vypit" || k.type === "zaverecna", "V ťahu smú byť len vyloženia, Vypiť a Záverečná.");
-        need(st.faza === "zhromazdenie" && naTahu(st) === hracId, "Ťah sa skončil skôr, než si vyložil všetky karty.");
+        // O vytiahnutej karte Hasiča hráč rozhodne po zvyšku ťahu (ten poslal skôr, než ju videl);
+        // ťah sa preto posudzuje bez čakania na Hasiča.
+        need(st.faza === "zhromazdenie" && naTahuVoFaze(st) === hracId, "Ťah sa skončil skôr, než si vyložil všetky karty.");
       }
-      const r = apply(data, st, k, hracId);
+      const r = applyPrikaz(data, st, k, hracId, true);
       st = r.state;
       vsetky.push(...r.events);
     }
@@ -1312,6 +1358,7 @@ export function apply(
 
   need(mozeHrat(state, hracId), "Nie si na ťahu.");
   need(state.vizia === null || cmd.type === "vizia", "Najprv rozhodni o karte z Vízie.");
+  need(!cakaHasic(state) || cmd.type === "hasic" || vTahu, HASIC_NAJPRV);
 
   switch (cmd.type) {
     case "chooseLocation":
@@ -1392,6 +1439,9 @@ export function apply(
       break;
     case "zahradkar":
       cmdZahradkar(s, data, cmd, hracId, events);
+      break;
+    case "hasic":
+      cmdHasic(s, data, cmd, hracId, events);
       break;
     case "pohorsenie":
       cmdPohorsenie(s, data, cmd, hracId, events);
@@ -2010,9 +2060,10 @@ export function zablokovaneStrany(view: { readonly zaverecne: readonly { readonl
 
 /**
  * Otočenie Záverečných na konci Pitky: odložené spúšťače (Svokra,
- * Vychovávateľka, Hrobár) sa vyhodnotia teraz, potom Nástup.
+ * Vychovávateľka, Hrobár) sa vyhodnotia teraz, potom Nástup. Vráti true,
+ * keď otočený Hasič čaká na voľbu — koniec Pitky dobehne až po nej.
  */
-function otocZaverecne(s: MutState, data: GameData, events: Event[]): void {
+function otocZaverecne(s: MutState, data: GameData, events: Event[]): boolean {
   for (const { strana, placed } of skryteZaverecne(s as GameState)) {
     const p = placed.playedBy;
     const opp = opponentOf(p);
@@ -2037,7 +2088,9 @@ function otocZaverecne(s: MutState, data: GameData, events: Event[]): void {
       }
     }
     if (def.triggers.includes("Nástup")) nastupEfekt(s, data, def.id, p, strana, events);
+    if (odlozPoHasicovi(s, "koniecPitky")) return true;
   }
+  return false;
 }
 
 /**
@@ -2183,18 +2236,23 @@ function nastupEfekt(
       break;
     }
     case "hasic": {
-      // Zober si pracujúceho občana do ruky z odhadzovacieho balíčka.
-      const idx = s.hraci[p].odhadzovaci.findIndex((k) =>
-        defOf(data, k as CardInstance).tags.includes("Pracujúci"),
-      );
-      if (idx !== -1) {
-        const karta = hrac(s, p).odhadzovaci.splice(idx, 1)[0] as DeepMutable<CardInstance>;
-        hrac(s, p).ruka.push(karta);
-        events.push({
-          type: "log",
-          text: `Hasič: hráč ${p + 1} si berie ${defOf(data, karta).name} z odhadzovacieho.`,
-        });
+      // Michal 2026-10-26: náhodná karta z vlastného odhadzovacieho balíčka, aj
+      // kliatba — hráč sa rozhodne, či si ju nechá (príkaz hasic). Karta, o ktorej
+      // ešte rozhoduje iný Hasič z toho istého ťahu, sa znova nevytiahne.
+      const caka = new Set((s.hasicVolby ?? []).map((v) => v.uid));
+      const moznosti = s.hraci[p].odhadzovaci.filter((k) => !caka.has(k.uid));
+      if (moznosti.length === 0) {
+        events.push({ type: "log", text: `Hasič: hráč ${p + 1} má prázdny odhadzovací balíček — nič sa nestane.` });
+        break;
       }
+      const [i, rng] = rngInt(s.rng, moznosti.length);
+      s.rng = rng;
+      const karta = moznosti[i] as CardInstance;
+      s.hasicVolby = [...(s.hasicVolby ?? []), { hrac: p, uid: karta.uid, potom: null }];
+      events.push({
+        type: "log",
+        text: `Hasič: hráč ${p + 1} ${rodovo(p, "vytiahol", "vytiahla", "ťahá")} z odhadzovacieho balíčka kartu ${defOf(data, karta).name} — nechá si ju, alebo ju vráti.`,
+      });
       break;
     }
     case "niekoho_stryna": {
@@ -2674,6 +2732,7 @@ function cmdReakcia(
   if (s.pitkyCelkom !== pitkyPred) {
     events.push({ type: "log", text: `Odpoveď na NA EX: Pitiek v kole je ${s.pitkyCelkom} namiesto ${pitkyPred}.` });
   }
+  if (odlozPoHasicovi(s, "reakcia")) return;
   ukonciReakciu(s, data, events);
 }
 
@@ -2988,11 +3047,55 @@ function cmdVizia(s: MutState, data: GameData, cmd: { vziat: boolean }, p: Playe
   dokonciPitku(s, data, events);
 }
 
+const HASIC_NAJPRV = "Najprv rozhodni o karte, ktorú vytiahol Hasič.";
+
+/** Čaká sa, kým hráč rozhodne o karte z Hasiča? */
+export function cakaHasic(state: Pick<GameState, "hasicVolby">): boolean {
+  return (state.hasicVolby?.length ?? 0) > 0;
+}
+
+/**
+ * Keď práve vyložený Hasič čaká na voľbu, zapamätá, čo má hra urobiť po nej,
+ * a vráti true — volajúci tok hry zastaví.
+ */
+function odlozPoHasicovi(s: MutState, potom: NonNullable<HasicVolba["potom"]>): boolean {
+  const volby = s.hasicVolby ?? [];
+  const posledna = volby[volby.length - 1];
+  if (posledna === undefined) return false;
+  posledna.potom = potom;
+  return true;
+}
+
+/**
+ * Hasič: vytiahnutú kartu si hráč nechá v ruke (Dlh sa ako vždy sám prizná
+ * a hráč ťahá ďalšiu kartu), alebo ju vráti do odhadzovacieho balíčka.
+ * Potom dobehne, čo hra kvôli voľbe odložila.
+ */
+function cmdHasic(s: MutState, data: GameData, cmd: { nechat: boolean }, p: PlayerId, events: Event[]): void {
+  const [volba, ...dalsie] = s.hasicVolby ?? [];
+  need(volba !== undefined && volba.hrac === p, "Teraz nerozhoduješ o karte od Hasiča.");
+  s.hasicVolby = dalsie;
+  const idx = s.hraci[p].odhadzovaci.findIndex((k) => k.uid === volba.uid);
+  if (idx === -1) {
+    // Zvyšok toho istého ťahu (napr. Niekoho stryná) ju medzitým odniesol.
+    events.push({ type: "log", text: `Hasič: karta hráča ${p + 1} už v odhadzovacom balíčku nie je.` });
+  } else if (cmd.nechat) {
+    const karta = hrac(s, p).odhadzovaci.splice(idx, 1)[0] as DeepMutable<CardInstance>;
+    events.push({ type: "log", text: `Hasič: hráč ${p + 1} si kartu ${defOf(data, karta as CardInstance).name} necháva v ruke.` });
+    doRuky(s, p, karta, events);
+  } else {
+    const meno = defOf(data, s.hraci[p].odhadzovaci[idx] as CardInstance).name;
+    events.push({ type: "log", text: `Hasič: hráč ${p + 1} vracia kartu ${meno} do odhadzovacieho balíčka.` });
+  }
+  if (volba.potom === "reakcia") ukonciReakciu(s, data, events);
+  else if (volba.potom === "koniecPitky") dokonciPitku(s, data, events);
+}
+
 /** Koniec Pitky: pečeň a zadĺženie sa vynulujú, ide ďalšia Pitka alebo bitka. */
 function dokonciPitku(s: MutState, data: GameData, events: Event[]): void {
   // Záverečné sa otočia ešte pred vynulovaním pečene — Nástup (napr. Niekoho
   // stryná) patrí ešte do tejto Pitky.
-  otocZaverecne(s, data, events);
+  if (otocZaverecne(s, data, events)) return;
   // Rekapitulácia až teraz: počas Vízie ešte mohla ležať súperova karta lícom dole.
   const rekap = s.pitkyKola?.at(-1);
   if (rekap !== undefined && rekap.pitka === s.pitkaCislo) events.push({ type: "pitkaRekap", rekap: rekap as RekapitulaciaPitky });
@@ -3825,7 +3928,7 @@ function vyhodnotPoskodenie(s: MutState, data: GameData, events: Event[]): void 
   const vRuke = (p: PlayerId): number => s.hraci[p].ruka.filter((k) => k.defId === "abstak").length;
   const damage = poskodenieBitky(data, s as GameState, b.sums as readonly [ActionSums, ActionSums], [vRuke(0), vRuke(1)]);
   // Remízu v tuhom rozhodnú Absťáky, ktoré hráči práve majú, potom priznané Dlhy (v6).
-  const abstaky: [number, number] = [aktualneAbstaky(s as GameState, 0), aktualneAbstaky(s as GameState, 1)];
+  const abstaky: [number, number] = [aktualneAbstaky(data, s as GameState, 0), aktualneAbstaky(data, s as GameState, 1)];
   const dlhy: [number, number] = [pocetKariet(s.hraci[0] as PlayerState, "dlh", "priznane"), pocetKariet(s.hraci[1] as PlayerState, "dlh", "priznane")];
   const outcome = battleOutcome(damage, { abstaky, dlhy });
   b.damage = damage as DeepMutable<DamageResult>;
@@ -3876,9 +3979,16 @@ function vyhodnotPoskodenie(s: MutState, data: GameData, events: Event[]): void 
   manualEfekty(s, data, "Prehra", events);
 }
 
-/** Absťáky, ktoré hráč práve má — priznané, vo svojich kartách v línii aj v ruke (v6: remíza a špaky za bitku). */
-export function aktualneAbstaky(s: VerejnyStav & { readonly hraci: readonly [{ readonly ruka: readonly CardInstance[] }, { readonly ruka: readonly CardInstance[] }] }, p: PlayerId): number {
-  return verejneAbstaky(s, p) + s.hraci[p].ruka.filter((k) => k.defId === "abstak").length;
+/**
+ * Absťáky, ktoré hráč práve má — priznané, vo svojich kartách v línii aj v ruke —
+ * po Autobusárovi (v6: remíza a špaky za bitku).
+ */
+export function aktualneAbstaky(
+  data: GameData,
+  s: VerejnyStav & { readonly hraci: readonly [{ readonly ruka: readonly CardInstance[] }, { readonly ruka: readonly CardInstance[] }] },
+  p: PlayerId,
+): number {
+  return abstakyVBitke(data, s, p, s.hraci[p].ruka.filter((k) => k.defId === "abstak").length);
 }
 
 /** Koľko starších sa hráča p bojí (marker na súperovej polovici) — Noviny (v6). */
@@ -4371,6 +4481,7 @@ function mozeFajcit(state: GameState, p: PlayerId): boolean {
 
 export function legalCommands(data: GameData, state: GameState, p: PlayerId): Command[] {
   if (!mozeHrat(state, p)) return [];
+  if (cakaHasic(state)) return [{ type: "hasic", nechat: true }, { type: "hasic", nechat: false }];
   const out: Command[] = [];
 
   switch (state.faza) {

@@ -109,6 +109,13 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 - **Vízia:** na konci Pitky za každú aktívnu Víziu uvidíš vrchnú kartu svojho
   balíčka — `{"type":"vizia","vziat":true}` do ruky, alebo `false` = zahodiť
   (navždy z hry).
+- **Hasič (Nástup, 2026-10-26):** vytiahne náhodnú kartu z tvojho odhadzovacieho
+  balíčka (aj kliatbu; súper ju vidí, odhadzovací je verejný) —
+  `{"type":"hasic","nechat":true}` do ruky (Dlh sa sám prizná a ťaháš kartu),
+  alebo `false` = vráti sa do odhadzovacieho. Kým nerozhodneš, hra čaká; v ťahu
+  naraz rozhoduješ po zvyšku ťahu. Prázdny odhadzovací = nič.
+- **Autobusár (2026-10-26):** Autobusár ignoruje 1 Absťák svojho majiteľa všade
+  v bitke — v tuhom poškodení, pri remíze v tuhom aj v špakoch víťaza.
 - **Hrobár a Poštárka (2026-10-22):** keď zahodíš kartu — efektom, Víziou, aj
   Pohrebom po bitke —, súperov Hrobár dostane cigaretu za každú.
   Poštárka dá Dlh len za naozaj dobratú kartu; s prázdnym doberacím aj

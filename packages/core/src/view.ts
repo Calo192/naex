@@ -26,7 +26,7 @@ import type {
   VyberStavby,
   ZhromazdenieStav,
 } from "./engine.ts";
-import { cenaDedicstva, verejneAbstaky, mozeHrat, naTahu, stranaStreduFinale, uidZaverecnej, vyplatZaStarsich } from "./engine.ts";
+import { abstakyVBitke, cenaDedicstva, mozeHrat, naTahu, stranaStreduFinale, uidZaverecnej, vyplatZaStarsich } from "./engine.ts";
 import { KONSTANTY } from "./constants.ts";
 import { MARKER_STRED, favourStarsieho, posunMarker, priazenHraca, priazenSila, spakyZaStarsich, strachZ, vydesil } from "./elders.ts";
 import type { DamageResult } from "./battle.ts";
@@ -182,6 +182,12 @@ export interface ClientState {
   /** Vízia: vrchná karta MÔJHO balíčka, o ktorej práve rozhodujem — len mne. */
   readonly volbaVizia: CardInstance | null;
   /**
+   * Hasič: kto rozhoduje o vytiahnutej karte a ktorá to je. Verejné obom —
+   * karta leží v jeho odhadzovacom balíčku, ten je verejný. null = nikto
+   * nerozhoduje; karta null = medzitým z odhadzovacieho zmizla.
+   */
+  readonly hasicVolba: { readonly hrac: PlayerId; readonly karta: CardInstance | null } | null;
+  /**
    * Nepriznané kliatby v MOJOM doberacom balíčku (len počty, poradie nie).
    * Vlastné karty hráč pozná, len nevie, v akom poradí ich dobere.
    */
@@ -273,6 +279,7 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
   const d = state.draftStav;
   const bitka = state.bitkaStav;
   const mojaBitkovaVolba = bitka !== null && bitka.caka === ja;
+  const hasic = state.hasicVolby?.[0];
   return {
     ja,
     faza: state.faza,
@@ -365,6 +372,8 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
         : null,
     vizia: state.vizia,
     volbaVizia: state.vizia !== null && naTahu(state) === ja ? (state.hraci[ja].doberaci[0] ?? null) : null,
+    hasicVolba:
+      hasic === undefined ? null : { hrac: hasic.hrac, karta: state.hraci[hasic.hrac].odhadzovaci.find((k) => k.uid === hasic.uid) ?? null },
     mojeKliatbyVBalicku: {
       dlh: state.hraci[ja].doberaci.filter((k) => k.defId === "dlh").length,
       cirhoza: state.hraci[ja].doberaci.filter((k) => k.defId === "cirhoza").length,
@@ -632,15 +641,16 @@ export interface StavkaBitky {
 /**
  * Stávka bitky (Michal 2026-10-22, návrh 3 A; v6 v špakoch): čo hráč získa
  * výhrou a čo získa súper, keď vyhrá on. Súperove Absťáky v ruke nevidno —
- * rátajú sa len verejné.
+ * rátajú sa len verejné; Autobusár jeden ignoruje.
  */
-export function stavkaBitky(_data: GameData, view: ClientState): StavkaBitky | null {
+export function stavkaBitky(data: GameData, view: ClientState): StavkaBitky | null {
   if (view.ciel === null || view.koniec !== null) return null;
   const ja = view.ja;
   const su: PlayerId = ja === 0 ? 1 : 0;
   const pitky = Math.max(view.pitkyCelkom, view.pitkaCislo, 1);
-  const abstaky: [number, number] = [verejneAbstaky(view, 0), verejneAbstaky(view, 1)];
-  abstaky[ja] += view.ruka.filter((k) => k.defId === "abstak").length;
+  const abstaky: [number, number] = [0, 0];
+  abstaky[ja] = abstakyVBitke(data, view, ja, view.ruka.filter((k) => k.defId === "abstak").length);
+  abstaky[su] = abstakyVBitke(data, view, su, 0);
   return {
     pitky,
     vyhra: spakyZaBitku(pitky, abstaky[ja], abstaky[su]) + view.spakyNaSekere,
