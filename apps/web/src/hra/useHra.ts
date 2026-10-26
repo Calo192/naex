@@ -9,6 +9,7 @@ import { kariet, loadGameData, rozlozRod } from "@naex/core";
 import eldersJson from "@naex/core/data/elders.json";
 import scorecardsJson from "@naex/core/data/scorecards.json";
 import type { Sada } from "@naex/tvorba";
+import { KLUC_MIESTNOSTI } from "../lib/odchod.ts";
 
 export interface HracInfo {
   readonly id?: number;
@@ -103,7 +104,8 @@ type ServerMsg =
   | { type: "state"; view: ClientState; events: Event[] }
   /** Doterajší log partie pri návrate (obnovenie stránky, výpadok) — nahrádza miestny. */
   | { type: "historia"; events: Event[] }
-  | { type: "superPripojeny"; connected: boolean }
+  /** odpojenyMs: ako dlho súper chýba — len pri návrate k stolu, inak práve odišiel. */
+  | { type: "superPripojeny"; connected: boolean; odpojenyMs?: number }
   | { type: "frajerina"; zmeny: ZmenyFrajeriny }
   /** Hláška majstra Melichara zo soundboardu — server ju posiela obom hráčom. */
   | { type: "melichar"; id: string; seat: 0 | 1; trvanieMs: number }
@@ -174,6 +176,8 @@ export interface HraHook {
   readonly udalosti: { readonly id: number; readonly events: readonly Event[] };
   readonly chyba: string | null;
   readonly superPripojeny: boolean;
+  /** Odkedy je súper odpojený (čas prehliadača) — odpočet kontumácie; null = pripojený. */
+  readonly superOdpojenyOd: number | null;
   readonly frajerina: ZmenyFrajeriny | null;
   /** Posledná hláška Melichara pustená v partii (ktorýmkoľvek hráčom). */
   readonly melichar: HlaskaVPartii | null;
@@ -205,7 +209,7 @@ export interface HraHook {
   zrusChybu(): void;
 }
 
-const KLUC = "naex.miestnost";
+const KLUC = KLUC_MIESTNOSTI;
 
 export function textUdalosti(e: Event, mena: readonly string[], rody: readonly [Rod, Rod]): string | null {
   const meno = (p: number) => mena[p] ?? `Hráč ${p + 1}`;
@@ -242,6 +246,7 @@ export function useHra(aktivne: boolean): HraHook {
   const [udalosti, setUdalosti] = useState<{ readonly id: number; readonly events: readonly Event[] }>({ id: 0, events: [] });
   const [chyba, setChyba] = useState<string | null>(null);
   const [superPripojeny, setSuperPripojeny] = useState(true);
+  const [superOdpojenyOd, setSuperOdpojenyOd] = useState<number | null>(null);
   const [frajerina, setFrajerina] = useState<ZmenyFrajeriny | null>(null);
   const [melichar, setMelichar] = useState<HlaskaVPartii | null>(null);
   const [vyucba, setVyucba] = useState<StavVyucby | null>(null);
@@ -302,6 +307,7 @@ export function useHra(aktivne: boolean): HraHook {
           break;
         case "superPripojeny":
           setSuperPripojeny(msg.connected);
+          setSuperOdpojenyOd(msg.connected ? null : Date.now() - (msg.odpojenyMs ?? 0));
           break;
         case "frajerina":
           setFrajerina(msg.zmeny);
@@ -386,6 +392,7 @@ export function useHra(aktivne: boolean): HraHook {
     udalosti,
     chyba,
     superPripojeny,
+    superOdpojenyOd,
     frajerina,
     melichar,
     achievementy,

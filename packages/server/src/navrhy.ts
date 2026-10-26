@@ -147,6 +147,12 @@ export class Navrhy {
     this.db = db;
   }
 
+  /** Koľko návrhov čaká na rozhodnutie človeka (nové a nezabraté) — počet pri Playteste v menu Správa. */
+  naRozhodnutie(): number {
+    const r = this.db.prepare("SELECT COUNT(*) AS n FROM navrhy WHERE stav IN ('nove', 'nezabralo')").get() as { n: number };
+    return Number(r.n);
+  }
+
   zoznam(): Navrh[] {
     const riadky = this.db
       .prepare(

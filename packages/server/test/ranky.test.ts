@@ -413,6 +413,7 @@ describe("ranky a práva — API", () => {
 
     // Predvolene ako doteraz: vidí každý, aj bez prihlásenia.
     expect(await vyvoj("")).toEqual([200, 200]);
+    expect((await volaj("", "GET", "/ja")).data).toMatchObject({ pouzivatel: null, prava: expect.arrayContaining(["vidiet_vyvoj"]) as unknown });
     expect(await vyvoj(nealko)).toEqual([200, 200]);
 
     await bezPrava(admin, "vidiet_vyvoj", async () => {
@@ -420,6 +421,8 @@ describe("ranky a práva — API", () => {
       expect(await vyvoj(nealko)).toEqual([403, 403]);
       expect(await vyvoj(poldeci)).toEqual([200, 200]);
       expect((await volaj(nealko, "GET", "/ja")).data.pouzivatel).toMatchObject({ prava: expect.not.arrayContaining(["vidiet_vyvoj"]) as unknown });
+      // Neprihlásený dostane práva Nealka — hlavička mu odkaz na Vývoj neukáže.
+      expect((await volaj("", "GET", "/ja")).data).toMatchObject({ pouzivatel: null, prava: expect.not.arrayContaining(["vidiet_vyvoj"]) as unknown });
       // Formulár hodnotenia berie kritériá z /znamky/moje — Nealko hodnotí ďalej.
       const moje = await volaj(nealko, "GET", "/znamky/moje");
       expect(moje.status).toBe(200);

@@ -1,0 +1,403 @@
+/* Partia v hlavičke webu (Michal 2026-10-26, #22 A): štítok partie a menu „Partia ▾“.
+   Farby len cez tokeny zo schemy.css. */
+
+.partia-hlavicka {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.partia-stitok {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 40px;
+  min-width: 0;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--okraj-svetly);
+  background: linear-gradient(180deg, var(--plocha-2), var(--plocha));
+  color: var(--tlmeny);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.stitok-kod {
+  font: 700 0.8rem/1 var(--nadpis);
+  letter-spacing: 0.12em;
+  color: var(--akcent);
+  cursor: help;
+}
+
+.stitok-delic {
+  flex: none;
+  width: 1px;
+  height: 18px;
+  background: var(--okraj-svetly);
+}
+
+.stitok-krok {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.stitok-krok.finale {
+  color: var(--akcent);
+  font: 700 0.95rem var(--nadpis);
+}
+
+.stitok-kratke {
+  display: none;
+}
+
+.stitok-skore {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.stitok-pop {
+  display: block;
+  flex: none;
+}
+
+.stitok-pop.ja {
+  color: var(--ja);
+}
+
+.stitok-pop.su {
+  color: var(--su);
+}
+
+.stitok-pop-cig {
+  fill: var(--text);
+  opacity: 0.85;
+}
+
+.stitok-pop-zar {
+  fill: var(--akcent);
+}
+
+.stitok-n {
+  min-width: 0.7em;
+  padding: 1px 2px;
+  border-radius: 5px;
+  font: 800 1.15rem/1 var(--nadpis);
+  color: var(--text);
+  text-align: center;
+}
+
+.stitok-n.blik {
+  animation: stitok-blik 2.5s ease-out;
+}
+
+.stitok-n.blik.minus {
+  animation-name: stitok-blik-minus;
+}
+
+.stitok-dvojbodka {
+  color: var(--slaby-text);
+  font-weight: 700;
+}
+
+/* Posledná zmena špakov po bitke — „+2“ svieti 2,5 s (číslo nesie význam, nie farba). */
+.stitok-zmena {
+  padding: 3px 5px;
+  border-radius: 999px;
+  border: 1px solid var(--zelena);
+  background: color-mix(in oklab, var(--zelena) 22%, var(--plocha));
+  color: var(--zelena);
+  font: 700 0.72rem/1 var(--pismo);
+  animation:
+    stitok-zmena-in 0.2s ease-out,
+    stitok-zmena-out 0.4s ease-in 2.1s forwards;
+}
+
+.stitok-zmena.minus {
+  border-color: var(--cervena);
+  background: color-mix(in oklab, var(--cervena) 22%, var(--plocha));
+  color: var(--cervena-text);
+}
+
+@keyframes stitok-zmena-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes stitok-zmena-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes stitok-blik {
+  0%,
+  30% {
+    background: color-mix(in oklab, var(--zelena) 35%, transparent);
+  }
+  100% {
+    background: transparent;
+  }
+}
+
+@keyframes stitok-blik-minus {
+  0%,
+  30% {
+    background: color-mix(in oklab, var(--cervena) 35%, transparent);
+  }
+  100% {
+    background: transparent;
+  }
+}
+
+.stitok-super {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  max-width: 14em;
+}
+
+.stitok-super-meno {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stitok-super.online > :first-child {
+  color: var(--zelena);
+}
+
+.stitok-super.offline > :first-child,
+.stitok-super-stav {
+  color: var(--cervena-text);
+}
+
+.hp-citacka {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---- menu Partia ▾ ---- */
+.partia-menu-obal {
+  position: relative;
+  flex: none;
+}
+
+button.partia-menu-tlacidlo {
+  position: relative;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid var(--okraj);
+  background: transparent;
+  color: var(--tlmeny);
+  font-size: 1rem;
+}
+
+button.partia-menu-tlacidlo:hover:not(:disabled),
+button.partia-menu-tlacidlo[aria-expanded="true"] {
+  background: var(--plocha-3);
+  color: var(--text);
+}
+
+.partia-menu-tlacidlo .sipka {
+  font-size: 0.75em;
+  opacity: 0.8;
+}
+
+/* Kontumácia je k dispozícii — hráč ju nezmešká, ani keď je menu zavreté. */
+.bodka-pozor {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--akcent);
+  box-shadow: 0 0 0 2px var(--pozadie);
+}
+
+.partia-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  width: 320px;
+  padding: 6px;
+  border: 1px solid var(--okraj-svetly);
+  border-radius: 12px;
+  background: var(--plocha-2);
+  box-shadow: var(--tien);
+  white-space: normal;
+}
+
+.partia-menu-hlava {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 6px;
+  padding: 8px 10px 10px;
+  border-bottom: 1px solid var(--okraj);
+}
+
+.partia-menu-hlava span {
+  color: var(--slaby-text);
+  font-size: 0.82rem;
+}
+
+.partia-menu hr {
+  margin: 6px 2px;
+  border: 0;
+  border-top: 1px solid var(--okraj);
+}
+
+.partia-menu > button {
+  justify-content: flex-start;
+  width: 100%;
+  min-height: 40px;
+  padding: 9px 10px;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: var(--text);
+  font-size: 0.95rem;
+  text-align: left;
+}
+
+.partia-menu > button:hover:not(:disabled) {
+  background: var(--plocha-3);
+}
+
+.partia-menu kbd {
+  margin-left: auto;
+  padding: 4px 7px;
+  border: 1px solid var(--okraj-svetly);
+  border-radius: 6px;
+  color: var(--akcent);
+  font: 700 0.8rem/1 var(--nadpis);
+  letter-spacing: 0.12em;
+}
+
+.partia-menu > button.dvoj {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.partia-menu .dvoj small {
+  color: var(--slaby-text);
+  font-size: 0.8rem;
+  line-height: 1.35;
+}
+
+/* Kým súper nechýba 3 minúty, kontumácia je sivá s vysvetlením (a odpočtom). */
+.partia-menu > button.kontum:disabled {
+  opacity: 1;
+  color: var(--slaby-text);
+}
+
+.partia-menu > button.kontum:disabled b {
+  font-weight: 500;
+}
+
+.partia-menu > button.kontum.zvyraznena {
+  background: var(--akcent-podklad);
+  box-shadow: inset 3px 0 0 var(--akcent);
+}
+
+.partia-menu > button.kontum.zvyraznena b {
+  color: var(--akcent);
+}
+
+.partia-menu > button.nebezpecne {
+  color: color-mix(in oklab, var(--cervena-svetla) 88%, var(--slaby));
+}
+
+.partia-menu > button.nebezpecne:hover:not(:disabled) {
+  background: color-mix(in oklab, var(--tehla-tmava) 27%, var(--pozadie));
+}
+
+.partia-potvrd {
+  padding: 10px;
+  border: 1px solid var(--cervena);
+  border-radius: 9px;
+  background: color-mix(in oklab, var(--tehla-tmava) 18%, var(--plocha-2));
+}
+
+.partia-potvrd p {
+  margin: 0 0 10px;
+  color: var(--text);
+  font-size: 0.88rem;
+}
+
+.partia-potvrd div {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* Kód miestnosti v štítku až od 1500 px — užšie je v menu Partia. */
+@media (max-width: 1499px) {
+  .stitok-kod,
+  .stitok-kod-delic {
+    display: none;
+  }
+}
+
+/* Notebook: krok skrátene, meno súpera kratšie. */
+@media (max-width: 1399px) {
+  .stitok-dlhe {
+    display: none;
+  }
+
+  .stitok-kratke {
+    display: inline;
+  }
+
+  .stitok-super {
+    max-width: 9em;
+  }
+}
+
+/* Mobil (hra je tam blokovaná): štítok len so skóre a stavom súpera. */
+@media (max-width: 760px) {
+  .partia-stitok {
+    gap: 6px;
+    padding: 0 10px;
+  }
+
+  .stitok-krok,
+  .stitok-krok + .stitok-delic,
+  .stitok-super-meno,
+  .stitok-super-stav {
+    display: none;
+  }
+
+  .partia-menu {
+    position: fixed;
+    top: 64px;
+    right: 8px;
+    left: 8px;
+    width: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stitok-zmena,
+  .stitok-n.blik {
+    animation: none;
+  }
+}

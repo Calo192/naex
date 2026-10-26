@@ -202,7 +202,7 @@ export class Prava {
   }
 
   /** Zoznam práv používateľa — pre /api/ja (klient podľa neho skrýva tlačidlá). */
-  zoznam(ja: Pick<Pouzivatel, "rola" | "ai">): Pravo[] {
+  zoznam(ja: Pick<Pouzivatel, "rola" | "ai"> | null): Pravo[] {
     return PRAVA.filter((p) => this.smie(ja, p));
   }
 }

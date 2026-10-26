@@ -1,12 +1,6 @@
 /* Vývoj hry (/vyvoj): známky v čase, zásady, ciele, roadmapa; hodnotenie v Spätnej väzbe.
    Farby len cez tokeny zo schemy.css (--graf-ludia a --graf-ai sú série grafu). */
 
-/* Široká stránka na celé okno (Michal 2026-10-26: nie strop 1600 px) — roadmapa
-   tak ukáže všetky horizonty bez posúvania do strany. */
-.obsah-siroky:has(> .vyvoj-stranka) {
-  max-width: none;
-}
-
 .vyvoj-stranka {
   --vyvoj-pas: 56px;
 }

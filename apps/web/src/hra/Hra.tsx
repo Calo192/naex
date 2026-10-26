@@ -461,6 +461,7 @@ export function Hra() {
       chyba={hra.vyucba !== null ? null : hra.chyba}
       zrusChybu={hra.zrusChybu}
       superPripojeny={hra.superPripojeny}
+      superOdpojenyOd={hra.superOdpojenyOd}
       kod={m.code}
       cmd={cmd}
       opustit={hra.odid}

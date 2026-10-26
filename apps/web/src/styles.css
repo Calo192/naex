@@ -314,6 +314,14 @@ textarea {
 }
 
 /* ---- kostra ----------------------------------------------------------- */
+/* Jedna mriežka (Michal 2026-10-26, #21 B): hlavička vždy na celú šírku, jeden ľavý
+   okraj a tri šírky obsahu. Široké stránky (Vývoj, Tvorba, Playtest) idú na celé okno,
+   ich ľavá hrana sedí s logom; užšie stránky sú na strede. */
+:root {
+  --okraj-stranky: clamp(16px, 2.5vw, 40px);
+  --sirka-citanie: 760px;
+  --sirka-stranky: 1280px;
+}
 
 .aplikacia {
   min-height: 100vh;
@@ -322,7 +330,7 @@ textarea {
 }
 
 /* Otvorené menu musí byť nad barom Melichara vo výučbe (jbar.css, z-index 75) — inak zakryje Pravidlá. */
-.hlavicka:has(.navigacia.otvorena, .ucet-menu) {
+.hlavicka:has(.navigacia-mobil, .ucet-menu, .partia-menu) {
   z-index: 80;
 }
 
@@ -335,14 +343,13 @@ textarea {
   border-bottom: 1px solid var(--okraj);
 }
 
+/* Tri zóny: logo · menu · pravá zóna (partia, Správa) a účet — v hre aj mimo nej. */
 .hlavicka-vnutro {
-  max-width: 1360px;
-  margin: 0 auto;
   height: 64px;
-  padding: 0 20px;
+  padding: 0 var(--okraj-stranky);
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 24px;
 }
 
 .logo {
@@ -367,15 +374,22 @@ textarea {
   clip-path: polygon(-10% 0, 110% 0, 92% 100%, 8% 100%);
 }
 
+/* Menu sa nikdy nezalomí — čo sa nezmestí, ide do „Viac ▾“ (Layout, useViac). */
 .navigacia {
   display: flex;
+  align-items: center;
   gap: 4px;
-  flex: 1;
+  flex: 0 1 auto;
   min-width: 0;
+  overflow: hidden;
+  padding-block: 6px;
 }
 
-.navigacia a {
-  padding: 8px 14px;
+.navigacia a,
+button.nav-viac,
+button.sprava-tlacidlo {
+  flex: none;
+  padding: 8px 12px;
   white-space: nowrap;
   border-radius: 8px;
   color: var(--tlmeny);
@@ -383,14 +397,82 @@ textarea {
   font-weight: 500;
 }
 
-.navigacia a:hover {
+.navigacia a:hover,
+button.nav-viac:hover:not(:disabled) {
   color: var(--text);
   background: var(--plocha-2);
 }
 
-.navigacia a.aktivna {
+.navigacia a.aktivna,
+button.nav-viac.aktivna {
   color: var(--text);
   background: var(--plocha-3);
+}
+
+/* Hrať je prvé a ako tlačidlo (#23 A). */
+.navigacia a.nav-hlavna,
+.navigacia-mobil a.nav-hlavna {
+  margin-right: 8px;
+  padding: 8px 18px;
+  border: 1px solid color-mix(in oklab, var(--akcent) 36%, var(--akcent-svetly));
+  background: linear-gradient(180deg, color-mix(in oklab, var(--akcent) 67%, var(--akcent-svetly)), color-mix(in oklab, var(--akcent) 55%, var(--akcent-tmavy)));
+  color: var(--na-akcente);
+  font-weight: 700;
+}
+
+.navigacia a.nav-hlavna:hover {
+  background: linear-gradient(180deg, color-mix(in oklab, var(--akcent) 31%, var(--akcent-svetly)), color-mix(in oklab, var(--akcent) 74%, var(--akcent-tmavy)));
+  color: var(--na-akcente);
+}
+
+.navigacia a.nav-hlavna.aktivna {
+  box-shadow:
+    0 0 0 2px var(--pozadie),
+    0 0 0 4px var(--akcent);
+}
+
+/* Skryté položky (Viac ▾) — tlačidlá majú inak display z tlačidla a hidden by nezabral. */
+.navigacia [hidden],
+.nav-viac[hidden] {
+  display: none !important;
+}
+
+.nav-oddelovac {
+  flex: none;
+  width: 1px;
+  height: 22px;
+  margin: 0 10px;
+  background: var(--okraj-svetly);
+}
+
+.nav-viac-obal {
+  position: relative;
+  flex: none;
+  margin-right: auto;
+}
+
+button.nav-viac,
+button.sprava-tlacidlo {
+  border: 1px solid transparent;
+  background: transparent;
+  font-size: 1rem;
+}
+
+button.nav-viac[aria-expanded="true"],
+button.sprava-tlacidlo[aria-expanded="true"],
+button.sprava-tlacidlo.aktivna,
+button.sprava-tlacidlo:hover:not(:disabled) {
+  background: var(--plocha-3);
+  color: var(--text);
+}
+
+button.sprava-tlacidlo {
+  border-color: var(--okraj);
+}
+
+.sipka {
+  font-size: 0.75em;
+  opacity: 0.8;
 }
 
 /* Počet noviniek od poslednej návštevy Noviniek (2026-10-22). */
@@ -407,6 +489,106 @@ textarea {
   line-height: 1.35em;
   text-align: center;
   vertical-align: 0.1em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Novinky či Dielňa schované vo Viac ▾ — bodka, aby značka nezmizla. */
+.nav-bodka {
+  width: 8px;
+  height: 8px;
+  margin-left: 6px;
+  border-radius: 50%;
+  background: var(--akcent);
+}
+
+/* „3 na rozhodnutie“ pri Playteste v menu Správa. */
+.nav-pocet {
+  margin-left: auto;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--akcent);
+  color: var(--na-akcente);
+  font: 700 0.75rem/1 var(--pismo);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Pravá zóna: pri stole štítok partie a menu Partia, inak pilulka a Správa. */
+.hlavicka-prava {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  min-width: 0;
+}
+
+.hlavicka-vnutro.pri-stole .hlavicka-prava {
+  flex: 0 1 auto;
+  margin-left: auto;
+}
+
+/* Miesto pre ovládanie partie (portál z hernej plochy) — mimo partie prázdne. */
+.hlavicka-hra {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.hlavicka-hra:empty {
+  display: none;
+}
+
+.sprava-obal {
+  position: relative;
+}
+
+/* „● Partia HZ3T beží · Späť ku stolu“ (#22 A) — mimo stola, kým partia beží. */
+.partia-pilulka {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  height: 40px;
+  padding: 0 6px 0 14px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--akcent) 60%, var(--okraj));
+  background: var(--akcent-podklad);
+  color: var(--text);
+  font-size: 0.9rem;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.partia-pilulka:hover {
+  border-color: var(--akcent);
+}
+
+.pilulka-bodka {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--zelena);
+  animation: pilulka-pulz 2s infinite;
+}
+
+@keyframes pilulka-pulz {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--zelena) 60%, transparent);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 7px transparent;
+  }
+}
+
+.pilulka-text b {
+  letter-spacing: 0.08em;
+}
+
+.pilulka-spat {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--akcent) 67%, var(--akcent-svetly)), color-mix(in oklab, var(--akcent) 55%, var(--akcent-tmavy)));
+  color: var(--na-akcente);
+  font-weight: 700;
 }
 
 .ucet {
@@ -414,16 +596,7 @@ textarea {
   display: flex;
   gap: 8px;
   align-items: center;
-}
-
-/* Miesto pre ovládanie partie (portál z hernej plochy) — mimo partie prázdne. */
-.hlavicka-hra {
-  display: flex;
-  align-items: center;
-}
-
-.hlavicka-hra:empty {
-  display: none;
+  flex: none;
 }
 
 .ucet-tlacidlo {
@@ -458,6 +631,11 @@ textarea {
   flex-direction: column;
 }
 
+.ucet-menu.menu-vlavo {
+  right: auto;
+  left: 0;
+}
+
 .ucet-menu-hlava {
   display: flex;
   flex-direction: column;
@@ -468,12 +646,15 @@ textarea {
 
 .ucet-menu-hlava span {
   font-size: 0.82rem;
-  color: var(--slaby);
+  color: var(--slaby-text);
 }
 
 .ucet-menu a,
 .ucet-menu button {
+  display: flex;
+  align-items: center;
   justify-content: flex-start;
+  gap: 8px;
   padding: 9px 10px;
   border-radius: 8px;
   background: none;
@@ -481,10 +662,12 @@ textarea {
   color: var(--text);
   text-decoration: none;
   font-size: 0.95rem;
+  white-space: nowrap;
 }
 
 .ucet-menu a:hover,
-.ucet-menu button:hover:not(:disabled) {
+.ucet-menu button:hover:not(:disabled),
+.ucet-menu a.aktivna {
   background: var(--plocha-3);
 }
 
@@ -499,7 +682,7 @@ textarea {
   padding: 10px;
   background: none;
   border: none;
-  order: 3;
+  flex: none;
 }
 
 .hamburger span {
@@ -525,19 +708,78 @@ textarea {
   background: var(--akcent);
 }
 
+.navigacia-mobil {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: calc(100dvh - 64px);
+  overflow-y: auto;
+  padding: 10px 16px 16px;
+  background: var(--plocha);
+  border-bottom: 1px solid var(--okraj);
+  box-shadow: var(--tien);
+}
+
+.navigacia-mobil a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  color: var(--tlmeny);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.navigacia-mobil a.aktivna {
+  color: var(--text);
+  background: var(--plocha-3);
+}
+
+.navigacia-mobil a.nav-hlavna {
+  justify-content: center;
+  margin: 4px 0 6px;
+}
+
+.nav-skupina {
+  padding: 14px 14px 6px;
+  color: var(--slaby-text);
+  font: 600 0.72rem/1 var(--pismo);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.nav-skupina:first-child {
+  padding-top: 6px;
+}
+
+.len-mobil {
+  display: none;
+}
+
+/* Obsah: jeden okraj a tri šírky (Layout sirka). Úzke stránky majú stĺpec na čítanie
+   zľava v šírke stránky — nadpis a nástroje ostanú na tej istej hrane. */
 .obsah {
   flex: 1;
   width: 100%;
-  max-width: 1200px;
   margin: 0 auto;
-  padding: 32px 20px 64px;
+  padding: 32px var(--okraj-stranky) 64px;
 }
 
-.obsah-siroky {
-  max-width: 1600px;
+.obsah-stranka,
+.obsah-citanie {
+  max-width: calc(var(--sirka-stranky) + 2 * var(--okraj-stranky));
 }
 
-/* Celé okno pod hlavičkou; posúvajú sa len časti vnútri (pravidlá: text vpravo). */
+.obsah-siroka {
+  max-width: none;
+}
+
+/* Celé okno pod hlavičkou; posúvajú sa len časti vnútri. */
 .obsah-plna {
   flex: none;
   max-width: none;
@@ -565,7 +807,7 @@ textarea {
 
 .paticka {
   border-top: 1px solid var(--okraj);
-  padding: 22px 20px;
+  padding: 22px var(--okraj-stranky);
   display: flex;
   flex-wrap: wrap;
   gap: 8px 24px;
@@ -574,153 +816,69 @@ textarea {
   font-size: 0.82rem;
 }
 
-/* Riadok odkazov sa zmestí až nad 1100 px; pod tým (mobil, tablet, malý
-   notebook) je navigácia v menu — predtým až pod 760 px a 761–1100 px sa
-   odkazy zalamovali a hlavička pretekala (tlačidlo účtu mimo obrazovky). */
-@media (max-width: 1100px) {
+/* Meno pri avatare až od 1500 px — v hre aj mimo nej, aby účet stál na tom istom mieste. */
+@media (max-width: 1499px) {
   .hlavicka-vnutro {
-    gap: 12px;
+    gap: 16px;
+  }
+
+  .hlavicka .ucet-meno {
+    display: none;
+  }
+
+  .ucet-tlacidlo {
+    padding: 4px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .navigacia a,
+  button.nav-viac,
+  button.sprava-tlacidlo {
+    padding: 8px 10px;
+  }
+
+  .nav-oddelovac {
+    margin: 0 4px;
+  }
+}
+
+/* Mobil: menu v ☰ so skupinami, v hlavičke Hrať alebo „Späť ku stolu“. */
+@media (max-width: 760px) {
+  .hlavicka-vnutro {
+    gap: 8px;
+  }
+
+  .navigacia,
+  .nav-viac-obal {
+    display: none;
   }
 
   .hamburger {
     display: flex;
   }
 
-  .navigacia {
-    display: none;
-    position: absolute;
-    top: 64px;
-    left: 0;
-    right: 0;
-    flex-direction: column;
-    gap: 2px;
-    padding: 10px 16px 16px;
-    background: var(--plocha);
-    border-bottom: 1px solid var(--okraj);
+  .len-mobil {
+    display: inline-flex;
   }
 
-  .navigacia a {
-    padding: 12px 14px;
+  .hrat-mobil {
+    min-height: 44px;
+    padding: 0 16px;
   }
 
-  .navigacia.otvorena {
-    display: flex;
+  .partia-pilulka {
+    height: 44px;
+    padding: 0 4px 0 12px;
   }
 
-  .ucet {
+  .hlavicka-prava {
     margin-left: auto;
   }
-}
 
-/* Počas partie (Michal 2026-10-23, hlavička B): hlavička na celú šírku okna, všetky
-   položky menu vedľa seba a za nimi blok partie (portál do #hlavicka-hra). Klik na menu
-   sa najprv opýta, či hráč partiu opúšťa (Layout, OdchodZPartie). */
-.hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) {
-  max-width: none;
-  gap: 16px;
-}
-
-.hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .navigacia {
-  gap: 2px;
-}
-
-.hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .navigacia a {
-  padding: 8px 12px;
-}
-
-/* 1500–1699 px: menu tesnejšie a účet len avatarom — inak blok partie prekryje „Tvorbu“ (UI inšpekcia). */
-@media (min-width: 1500px) and (max-width: 1699px) {
-  .hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .navigacia a {
-    padding: 8px 8px;
-  }
-
-  .hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .ucet-meno {
+  /* Pri stole je logo len pohár — štítok, menu Partia a účet sa zmestia do riadku. */
+  .hlavicka-vnutro.pri-stole .logo-text {
     display: none;
-  }
-}
-
-/* Malý notebook (MacBook 13" s oknom ≈ 1440): 9 položiek menu aj blok partie sa zmestia
-   s tesnejšími medzerami — hamburger až pod 1400 px (Michal 2026-10-23). */
-@media (min-width: 1400px) and (max-width: 1499px) {
-  .hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) {
-    gap: 10px;
-    padding: 0 12px;
-  }
-
-  .hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .navigacia {
-    gap: 0;
-  }
-
-  .hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .navigacia a {
-    padding: 8px 6px;
-  }
-
-  .hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .ucet-meno {
-    display: none;
-  }
-}
-
-/* Užšie okno sa s blokom partie nezmestí — menu ide za hamburger (návrh C, 2026-10-22). */
-@media (max-width: 1399px) {
-  .hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .hamburger {
-    display: flex;
-  }
-
-  .hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .navigacia {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    flex: none;
-    flex-direction: column;
-    gap: 2px;
-    padding: 10px 16px 16px;
-    background: var(--plocha);
-    border-bottom: 1px solid var(--okraj);
-  }
-
-  .hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .navigacia a {
-    padding: 12px 14px;
-  }
-
-  .hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .navigacia.otvorena {
-    display: flex;
-  }
-
-  .hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .hlavicka-hra {
-    margin-left: auto;
-  }
-}
-
-@media (min-width: 1101px) and (max-width: 1400px) {
-  .hlavicka-vnutro {
-    gap: 16px;
-  }
-
-  .navigacia a {
-    padding: 8px 10px;
-  }
-}
-
-@media (max-width: 760px) {
-  /* Ovládanie partie sa na úzkej hlavičke nezmestí vedľa loga — ide do vlastného riadku. */
-  .hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) {
-    flex-wrap: wrap;
-    height: auto;
-    min-height: 64px;
-    row-gap: 0;
-  }
-
-  .hlavicka-hra:not(:empty) {
-    order: 5;
-    width: 100%;
-    justify-content: flex-end;
-    padding-bottom: 8px;
-  }
-
-  .hlavicka-vnutro:has(.hlavicka-hra:not(:empty)) .navigacia {
-    top: 100%;
   }
 
   .skryt-mobil {
@@ -729,6 +887,12 @@ textarea {
 
   .obsah {
     padding: 24px 16px 48px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pilulka-bodka {
+    animation: none;
   }
 }
 
@@ -813,7 +977,6 @@ textarea {
 
 .profil {
   max-width: 760px;
-  margin: 0 auto;
   display: grid;
   gap: 24px;
 }

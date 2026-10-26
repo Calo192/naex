@@ -625,9 +625,9 @@ td.cislo {
 
 /* ---- spätná väzba ------------------------------------------------------------- */
 
+/* Stĺpec na čítanie zľava v šírke stránky (#21 B). */
 .spatna-vazba {
-  max-width: 860px;
-  margin: 0 auto;
+  max-width: var(--sirka-citanie);
   display: grid;
   gap: 22px;
 }

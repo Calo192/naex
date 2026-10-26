@@ -123,7 +123,8 @@ import { radSenku } from "./tieneSenku.ts";
 import { PocitadloSLiniou } from "./PocitadloBitky.tsx";
 import { RekapitulaciaPitkyVrstva, type PiktogramyRekapitulacie } from "./Rekapitulacia.tsx";
 import { mediaUrl } from "../lib/api.ts";
-import { useStrazOdchodu } from "../lib/odchod.ts";
+import { useStolVHlavicke, useStrazOdchodu } from "../lib/odchod.ts";
+import { HlavickaPartie } from "./HlavickaPartie.tsx";
 import { skupinyBalicka } from "./doberaciBalicek.ts";
 import { SkratkyNapoveda, escVratiNavrh, tlacidloNavratu, useSkratky, type VrstvyPreEsc } from "./skratky.tsx";
 import { klucFazy, predvolenyRezim, vyberSpravu, type RezimStran } from "./bar.ts";
@@ -379,6 +380,8 @@ export interface HernaPlochaProps {
   readonly chyba: string | null;
   readonly zrusChybu?: () => void;
   readonly superPripojeny: boolean;
+  /** Odkedy je súper odpojený (useHra) — odpočet kontumácie v menu Partia. */
+  readonly superOdpojenyOd?: number | null;
   readonly kod: string;
   readonly cmd: (c: Command) => void;
   readonly opustit: () => void;
@@ -467,6 +470,7 @@ export function HernaPlocha({
   chyba,
   zrusChybu,
   superPripojeny,
+  superOdpojenyOd = null,
   kod,
   cmd,
   opustit,
@@ -502,13 +506,6 @@ export function HernaPlocha({
   const autoVrstva = useRef("");
   // Obrazovka konca hry sa dá zavrieť a pozrieť si stôl.
   const [koniecZavrety, setKoniecZavrety] = useState(false);
-  // Vzdanie sa je nevratné — prvé kliknutie len pýta potvrdenie.
-  const [potvrdVzdanie, setPotvrdVzdanie] = useState(false);
-  useEffect(() => {
-    if (!potvrdVzdanie) return;
-    const t = setTimeout(() => setPotvrdVzdanie(false), 4000);
-    return () => clearTimeout(t);
-  }, [potvrdVzdanie]);
   // Koľko riadkov logu hráč už videl — zvyšok svieti ako nové na tlačidle.
   const [videnyLog, setVidenyLog] = useState(() => log.length);
   useEffect(() => {
@@ -552,6 +549,8 @@ export function HernaPlocha({
   }, []);
   // Kým partia beží, klik na menu v hlavičke sa najprv opýta (Michal 2026-10-23); prehrávač nestráži.
   useStrazOdchodu(view.koniec === null && prehravanie === undefined, kod, vyucba === true);
+  // Pri stole hlavička nemá menu webu (Michal 2026-10-26, #23); prehrávač ho nechá.
+  useStolVHlavicke(prehravanie === undefined);
   // Ovládanie partie (spojenie, kontumácia, vzdať sa, odísť) je v hlavičke webu — Layout má preň miesto.
   const [slotHlavicky, setSlotHlavicky] = useState<HTMLElement | null>(null);
   useEffect(() => {
@@ -5063,53 +5062,25 @@ export function HernaPlocha({
       </JednotnyBar>
       {slotHlavicky !== null &&
         createPortal(
-          <div className="hlavicka-partia">
-            {prehravanie ?? (
-              <>
-            {/* Blok partie (Michal 2026-10-23, hlavička B): kód miestnosti, súper, Melichar, vzdať sa, odísť. */}
-            <span className="partia-kod" title="Kód miestnosti — vrátiš sa ním do partie alebo ho pošli súperovi">
-              {kod}
-            </span>
-            <span className={`partia-super ${superPripojeny ? "online" : "offline"}`}>
-              <span className="spojenie" title={menoHraca(super_)}>{superPripojeny ? `● ${menoHraca(super_)}` : `○ ${menoHraca(super_)} odpojený`}</span>
-              {/* Kontumácia patrí k stavu „odpojený“, ktorý ju umožňuje (dizajn UI N1). */}
-              {view.koniec === null && !superPripojeny && kontumacia !== undefined && (
-                <button
-                  className="opustit tlacidlo-male"
-                  onClick={kontumacia}
-                  title="Súper je odpojený. Po 3 minútach si môžeš vyžiadať kontumačnú výhru."
-                >
-                  kontumačná výhra
-                </button>
-              )}
-            </span>
-            {vHlavicke}
-            {view.koniec === null && (
-              <button
-                className={`opustit tlacidlo-male tlacidlo-nebezpecne ${potvrdVzdanie ? "potvrdit" : ""}`}
-                onClick={() => {
-                  if (!potvrdVzdanie) {
-                    setPotvrdVzdanie(true);
-                    return;
-                  }
-                  setPotvrdVzdanie(false);
-                  cmd({ type: "vzdat" });
-                }}
-                title="Partia sa skončí tvojou prehrou a započíta sa do Frajeriny."
-              >
-                {potvrdVzdanie ? "naozaj sa vzdať?" : "vzdať sa"}
-              </button>
-            )}
-            <button
-              className="opustit tlacidlo-male tlacidlo-jemne"
-              onClick={opustit}
-              title={view.koniec === null ? "Partia beží ďalej — vrátiš sa do nej kódom miestnosti." : undefined}
-            >
-              {view.koniec === null ? "odísť" : "opustiť hru"}
-            </button>
-              </>
-            )}
-          </div>,
+          prehravanie !== undefined ? (
+            <div className="hlavicka-partia">{prehravanie}</div>
+          ) : (
+            // Štítok partie a menu Partia ▾ (Michal 2026-10-26, #22 A) — menu webu je počas partie preč (#23).
+            <HlavickaPartie
+              kod={kod}
+              view={view}
+              menoSupera={menoHraca(super_)}
+              superBot={hraci[super_]?.bot === true}
+              superPripojeny={superPripojeny}
+              superOdpojenyOd={superOdpojenyOd}
+              vyucba={vyucba === true}
+              pocitadloBezi={pocitadloBezi}
+              melichar={vHlavicke}
+              vzdat={() => cmd({ type: "vzdat" })}
+              kontumacia={kontumacia}
+              opustit={opustit}
+            />
+          ),
           slotHlavicky,
         )}
 

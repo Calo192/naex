@@ -9,6 +9,9 @@
 // Od 2026-10-25 (Michal) nepláva pod hlavičkou: otvorený pult nahradí obsah
 // jednotného baru nad stolom (ako Body prepnú bar hráča na podmienky), v jeho výške;
 // po zatvorení sa bar vráti. Melichar vo výučbe či v nápovede má prednosť (pult.ts).
+// Od 2026-10-26 (Michal, #23) v hlavičke počas partie nie je tlačidlo: pult otvorí
+// položka „Hlášky Melichara“ v menu Partia alebo kláves M. V hlavičke ostane len
+// krátky stav, kým hláška hrá alebo beží pauza.
 
 import { useCallback, useEffect, useId, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { createPortal } from "react-dom";
@@ -18,8 +21,23 @@ import { hlasitostZvuku } from "./Hudba.tsx";
 import { nacitajMelichara, urlHlasky, type HlaskaMelichara, type Melichar, type SkupinaMelichara } from "./Melichar.tsx";
 import { useMelicharHovoriVBare, useMiestoVBare } from "./MelicharBar.tsx";
 import { TICHO_MS, prepniPult, pultVBare, stavPauzy, zostavaPauzy } from "./pult.ts";
+import { ID_TLACIDLA_PARTIE } from "./stitokPartie.ts";
 import type { HlaskaVPartii } from "./useHra.ts";
 import "./soundboard.css";
+
+/** Udalosť, ktorou menu Partia otvorí a zavrie pult (Soundboard žije v hlavičke celú partiu). */
+const PREPNI_PULT = "naex:pult-melichara";
+
+/** Položka menu Partia: otvorí alebo zavrie pult Melichara. */
+export function prepniPultMelichara(): void {
+  window.dispatchEvent(new Event(PREPNI_PULT));
+}
+
+/** Kliky do menu Partia pult nezatvoria — položka ho prepína sama. */
+export const MIMO_PULTU = "data-pult-melichara";
+
+/** Ako dlho ostane v hlavičke „Melichar práve hovorí“ po pokuse otvoriť pult. */
+const POCKA_MS = 2_000;
 
 /** Keď zoznam dĺžku nemá (starý server), ráta sa s touto. */
 const TRVANIE_NEZNAME_MS = 5_000;
@@ -150,8 +168,8 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
   const [superDo, setSuperDo] = useState(0);
   const [teraz, setTeraz] = useState(() => Date.now());
   const [trasie, setTrasie] = useState(0);
-  /** Klik na tlačidlo, kým hovorí Melichar — tlačidlo sa zatrasie (kľúč animácie). */
-  const [pocka, setPocka] = useState(0);
+  /** Pokus otvoriť pult, kým hovorí Melichar — hlavička to chvíľu povie (kľúč animácie a koniec). */
+  const [pocka, setPocka] = useState<{ readonly n: number; readonly do: number }>({ n: 0, do: 0 });
   /** Pečiatka, ktorou hráč naposledy buchol (kľúč animácie odtlačku). */
   const [dopad, setDopad] = useState<{ readonly skupina: string; readonly n: number } | null>(null);
 
@@ -161,8 +179,9 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
   const hovori = stav === "moja" || superHra;
   const skupinaMojej = stav === "moja" ? pult?.find((p) => p.hlasky.some((h) => h.id === moja?.id))?.skupina.id : undefined;
 
+  const pockaVidno = teraz < pocka.do;
   // Hodiny bežia, len kým niečo hrá alebo sa odpočítava.
-  const aktivne = stav !== "pripravene" || superHra;
+  const aktivne = stav !== "pripravene" || superHra || pockaVidno;
   useEffect(() => {
     if (!aktivne) return;
     let raf = 0;
@@ -233,19 +252,22 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
   }, [hlasitost, ulozena, nastav]);
 
   const obal = useRef<HTMLSpanElement>(null);
-  const spust = useRef<HTMLButtonElement>(null);
   const panel = useRef<HTMLElement>(null);
   /** Fokus na prvú pečiatku len po otvorení hráčom — nie keď sa pult vráti po Melicharovi. */
   const fokusPoOtvoreni = useRef(false);
   const zavri = useCallback((fokusNaTlacidlo: boolean): void => {
     setOtvorene(false);
-    if (fokusNaTlacidlo) spust.current?.focus();
+    if (fokusNaTlacidlo) document.getElementById(ID_TLACIDLA_PARTIE)?.focus();
   }, []);
   const prepniRef = useRef((): void => undefined);
   prepniRef.current = (): void => {
     const krok = prepniPult(otvorene, melicharHovori);
     if (krok === "zavri") setOtvorene(false);
-    else if (krok === "pocka") setPocka((n) => n + 1);
+    else if (krok === "pocka") {
+      const t = Date.now();
+      setPocka((p) => ({ n: p.n + 1, do: t + POCKA_MS }));
+      setTeraz(t);
+    }
     else {
       fokusPoOtvoreni.current = true;
       setOtvorene(true);
@@ -260,8 +282,8 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
       if (t instanceof HTMLInputElement || t instanceof HTMLTextAreaElement || (t instanceof HTMLElement && t.isContentEditable)) return;
       if (e.ctrlKey || e.metaKey || e.altKey) return;
       if (e.key === "m" || e.key === "M") {
-        // Bez tlačidla na obrazovke (mobil) pult nie je.
-        if (spust.current === null || spust.current.getClientRects().length === 0) return;
+        // Na mobile pult nie je (partia je tam blokovaná, menu Partia ho neponúka).
+        if (window.matchMedia("(max-width: 760px)").matches) return;
         e.preventDefault();
         prepniRef.current();
         return;
@@ -277,12 +299,18 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
     return () => window.removeEventListener("keydown", klaves);
   }, [vBare, zavri]);
   useEffect(() => {
+    const prepni = (): void => prepniRef.current();
+    window.addEventListener(PREPNI_PULT, prepni);
+    return () => window.removeEventListener(PREPNI_PULT, prepni);
+  }, []);
+  useEffect(() => {
     if (!otvorene) return;
     // Klik do bublín Melichara („ďalej“, „rozumiem“) pult nezavrie — vráti sa po nich.
     const mimo = (e: PointerEvent): void => {
       const t = e.target;
       if (!(t instanceof Node)) return;
       if (obal.current?.contains(t) === true || miestoVBare?.contains(t) === true) return;
+      if (t instanceof Element && t.closest(`[${MIMO_PULTU}]`) !== null) return;
       setOtvorene(false);
     };
     document.addEventListener("pointerdown", mimo);
@@ -318,40 +346,32 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
           : stlmene
             ? "U teba stlmený — súper ťa počuje"
             : "Buchni pečiatkou — počuje ťa aj súper";
-  const titulok =
-    stav === "moja"
-      ? "Melichar hovorí za teba"
-      : stav === "odpocet"
-        ? `Chvíľu ticho — o ${sek} s môžeš znova`
-        : !otvorene && melicharHovori
-          ? "Majster Melichar práve hovorí — pult otvoríš, keď dohovorí"
-          : otvorene && melicharHovori
-            ? "Pult počká, kým Melichar dohovorí (M zavrie)"
-            : "Pult majstra Melichara (M)";
+  // Stav v hlavičke len kým sa niečo deje — tlačidlo pultu je v menu Partia.
+  const stavVHlavicke =
+    vBare
+      ? null
+      : stav === "moja"
+        ? "Melichar hovorí za teba"
+        : stav === "odpocet"
+          ? `Chvíľu ticho — ${sek} s`
+          : pockaVidno
+            ? "Majster Melichar práve hovorí — pult otvoríš, keď dohovorí"
+            : null;
   const skratky = `M otvorí a zavrie${klavesy.length > 0 ? ` · ${klavesy[0]}${klavesy.length > 1 ? `–${klavesy[klavesy.length - 1]}` : ""} pečiatka` : ""} · Esc zavrie`;
   const idPanela = useId();
   const data = { "data-ja": stav, "data-super": superHra ? "1" : "0", "data-stlmene": stlmene ? "1" : "0" };
 
   return (
     <span className="sb" ref={obal} {...data} data-v-bare={vBare ? "1" : "0"}>
-      <button
-        type="button"
-        ref={spust}
-        key={`spust-${pocka}`}
-        className={`sb-spust${pocka > 0 ? " pocka" : ""}`}
-        aria-expanded={otvorene}
-        aria-controls={idPanela}
-        aria-keyshortcuts="M"
-        title={titulok}
-        onClick={() => prepniRef.current()}
-      >
-        <span className="sb-ik" aria-hidden="true">
-          {stav === "odpocet" ? <span className="prstenec" style={{ "--p": String(zostava / TICHO_MS) } as CSSProperties} /> : <Fuzy hovori={hovori} />}
-          {superHra && <span className="sb-bodka" />}
+      {stavVHlavicke !== null && (
+        <span key={`spust-${pocka.n}`} className={`sb-spust sb-indikator${pockaVidno && stav === "pripravene" ? " pocka" : ""}`} title={stavVHlavicke}>
+          <span className="sb-ik" aria-hidden="true">
+            {stav === "odpocet" ? <span className="prstenec" style={{ "--p": String(zostava / TICHO_MS) } as CSSProperties} /> : <Fuzy hovori={hovori} />}
+          </span>
+          <span className="sb-nazov">{stav === "odpocet" ? `${sek} s` : "Melichar"}</span>
+          {stlmene && <IkonaTicho />}
         </span>
-        <span className="sb-nazov">Melichar</span>
-        {stlmene && <IkonaTicho />}
-      </button>
+      )}
 
       {/* Kto hovorí, nie čo — názov hlášky sa pri prehrávaní neukazuje. Pri otvorenom pulte to povie pult. */}
       <span className="sb-super" role="status">
