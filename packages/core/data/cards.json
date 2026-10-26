@@ -1,5 +1,5 @@
 {
- "source": "tvorca kariet 2026-10-26T11:26:00.788Z",
+ "source": "tvorca kariet 2026-10-26T11:27:53.132Z",
  "actions": [
   "Cigareta",
   "Dlh",
@@ -211,27 +211,21 @@
     "Dedičstvo"
    ],
    "left": {
-    "blocked": [
-     0,
-     1
-    ],
+    "blocked": [],
     "actions": {
-     "Poldeci": 1
+     "Poldeci": 2
     }
    },
    "right": {
-    "blocked": [
-     0,
-     1
-    ],
+    "blocked": [],
     "actions": {
-     "PoškodeniePečene": 1
+     "PoškodeniePečene": 4
     }
    },
    "permutations": {
-    "total": 4,
-    "left": 2,
-    "right": 2
+    "total": 6,
+    "left": 6,
+    "right": 1
    }
   },
   {
