@@ -15,7 +15,6 @@ import {
   efektPotlaceny,
   evaluateLine,
   loadGameData,
-  pohorseniaNeplatia,
   posunMarker,
   prebytokProtiZlava,
   printedSides,
@@ -122,17 +121,10 @@ describe("Policajtka, Praudovravec, Puška, Noviny, Lakomec", () => {
     } as GameState;
   };
 
-  it("Policajtka: súperove Pohoršenia proti jej majiteľovi neplatia", () => {
-    const s = stav([[], [lezi("policajtka", 1)]]);
-    expect(pohorseniaNeplatia(data, s, 1)).toBe(true);
-    expect(pohorseniaNeplatia(data, s, 0)).toBe(false);
-  });
-
   it("Praudovravec: Autority v SÚPEROVEJ partii neuplatňujú efekt", () => {
     // Policajtka (Autorita) hráča 1, Praudovravec hráča 0 → umlčaná.
     const s = stav([[lezi("praudovravec", 0)], [lezi("policajtka", 1)]]);
     expect(efektPotlaceny(data, s, 1, "policajtka")).toBe(true);
-    expect(pohorseniaNeplatia(data, s, 1)).toBe(false);
     // Vlastný Praudovravec tvoju Autoritu neumlčí.
     const vlastny = stav([[], [lezi("praudovravec", 1), lezi("policajtka", 1)]]);
     expect(efektPotlaceny(data, vlastny, 1, "policajtka")).toBe(false);

@@ -60,7 +60,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   krcma: "impl", // Pitka: s plným poldeci povinný NA EX (bez NA EX sa Pitka neskončí); prah Cirhózy +2
   krcmarka: "impl", // Bitka: otočenie vypitého poldeci
   lesna_cesta: "impl", // Bitka: +1 tuhé za každého svojho Občana, Zviera či Starešinu v súperovom kraji, najviac 2 (Michal 2026-10-20)
-  liberal: "impl", // Furt: 2× akcie pri rovnosti pohlaví; Furt: nevie NA EX
+  liberal: "impl", // Furt: 2× akcie pri rovnosti pohlaví (NA EX naň smie od 2026-10-26)
   milujuca_manzelka: "impl", // Furt: Absťák aj pri rovnakom počte nerestí (Michal 2026-10-19)
   ministrant: "impl", // Výhra: posun markera stojí +1 prebytku
   nealko: "impl", // Dedičstvo: Poldeci/NA EX bez pečene; Poldeci nedopĺňa
@@ -68,7 +68,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   noviny: "impl", // Dedičstvo (v6): po bitke +1 špak, keď sa ťa bojí viac starších ako súpera (engine.ts)
   pasca: "impl", // Dedičstvo: každé súperovo Zviera v línii mu uberie 1 tuhé (Michal 2026-10-20)
   pijan: "impl", // Bitka: rana do vlastnej partie pri žene s aktívnym poldeci
-  policajtka: "impl", // Nástup: preskúmaj a rozdeľ doberací balíček (voľba hráča)
+  policajtka: "impl", // Pitka: súper, ktorý v nej dal viac NA EX ako ty, dostane Dlh (Michal 2026-10-26)
   postarka: "impl", // Pitka: voliteľné doberanie s dlhmi
   praudovravec: "impl", // Furt: Autority v tvojej partii neuplatňujú efekt
   presbiter: "impl", // Bitka: sám proti prevahe — súper má o toľko Viery menej, koľko má Presbiter aktívnych akcií (partia.ts, Michal 2026-10-20)
@@ -93,11 +93,11 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   pes: "impl", // Furt: +1 tuhé za pár akcií na spoji so súperovou kartou; nikdy v partii s iným zvieraťom
   kostol: "impl", // Zhromaždenie: nikto nesmie vypiť; Pitka: nikto nesmie dať NA EX (Michal 2026-10-20)
   zahradkar: "impl", // Exekúcia (v6): smieš ho zahodiť namiesto špakov, Dlhy zhoria aj tak (príkaz zahradkar)
-  svokra: "impl", // Furt: za každé NA EX súpera mu ukradni 2 cigarety (Michal 2026-10-19)
+  svokra: "impl", // Bitka: za každú tvoju kartu so súperovým NA EX súperovi Rana (Michal 2026-10-26)
   sarlatan: "impl", // Furt: Viera v okolí platí ako Vízia
   podvodnik: "impl", // Prehra: ukradni 2 cigarety
   cierna_macka: "impl", // Furt: tvoje Povery dávajú mäkké poškodenie aj bez súperových priznaných Dlhov
-  anonymny_alkoholik: "impl", // Furt: súper naňho nedá NA EX
+  anonymny_alkoholik: "impl", // Furt: tvoje NA EX naňho sa nepočíta do limitu za Pitku (placatka, Michal 2026-10-26)
   // Roadmapa #71 (2026-10-23).
   sofer: "impl", // Furt: NA EX na susednú kartu nezdvojí jej neaktívne akcie (partia.ts)
   snubenica: "impl", // Nástup (do 2026-10-23 Ujo s fúrikom): vedľa karty s NA EX ju vráti majiteľovi do ruky a zaujme jej miesto
@@ -325,11 +325,6 @@ export function doliatieZakazane(state: GameState, p: PlayerId): boolean {
 }
 
 
-/** policajtka (Furt): súperove Pohoršenia proti jej majiteľovi neplatia. */
-export function pohorseniaNeplatia(data: GameData, state: VerejnyStav, proti: PlayerId): boolean {
-  return efektHraca(state, proti, "policajtka") && !efektPotlaceny(data, state, proti, "policajtka");
-}
-
 /** puska (Dedičstvo): prebytočné poškodenie, ktoré súper rozdeľuje proti jej majiteľovi, je menšie. */
 export function prebytokProtiZlava(state: VerejnyStav, proti: PlayerId): number {
   return vDedicstve(state, proti, "puska") ? KONSTANTY.EFEKT.PUSKA_PREBYTOK : 0;
@@ -342,7 +337,7 @@ export function cenaPrebytku(state: GameState, p: PlayerId): number {
 
 /** Bitkové modifikátory závislé od kariet v hre. */
 export interface BitkaMody {
-  /** Dodatočné tuhé poškodenie hráča (recidivista, Lesná cesta, Ihrisko). */
+  /** Dodatočné tuhé poškodenie hráča (recidivista, Svokra, Lesná cesta, Ihrisko). */
   readonly tuheBonus: number;
   /** Tuhé menej: súperova Pasca v Dedičstve, −1 za každé moje Zviera v línii (Michal 2026-10-20). */
   readonly tuheZlava: number;
@@ -354,6 +349,22 @@ export interface BitkaMody {
   readonly superovePoveryZlava: number;
   /** veterinar: Cirhóza pridáva o 2 poškodenia menej. */
   readonly cirhozaZlava: number;
+}
+
+/**
+ * svokra (Bitka, Michal 2026-10-26 — predtým kradla cigarety za NA EX): za
+ * každú kartu hráča p so súperovým NA EX — na ktorejkoľvek strane, aj pri
+ * zrážke (Výtržník) — dostane súper Ranu (+1 tuhé pre p). Poldeci z NA EX
+ * ležia na kartách do kroku 5 bitky, takže sa rátajú rovno zo stola; každá
+ * Svokra zvlášť. Autorita — súperov Praudovravec ju umlčí.
+ */
+export function svokraRany(data: GameData, state: VerejnyStav, p: PlayerId): number {
+  if (!efektHraca(state, p, "svokra") || efektPotlaceny(data, state, p, "svokra")) return 0;
+  const opp = opponentOf(p);
+  const moje = partiaHraca(state, p);
+  const svokry = Math.max(1, moje.filter((pl) => pl.card.defId === "svokra" && pl.zaverecna !== true).length);
+  const sNaexSupera = moje.filter((pl) => pl.naexBy === opp || pl.naexBy2 === opp).length;
+  return svokry * sNaexSupera * KONSTANTY.EFEKT.SVOKRA_RANY;
 }
 
 export function bitkaMody(data: GameData, state: VerejnyStav, p: PlayerId): BitkaMody {
@@ -369,6 +380,7 @@ export function bitkaMody(data: GameData, state: VerejnyStav, p: PlayerId): Bitk
   }
   // pes (Michal 2026-10-20): +1 tuhé za každý pár akcií na spoji Psa so súperovou kartou.
   pridaj("pes", spojePsa(data, state.strany, state.ciel?.typ === "finale")[p]);
+  pridaj("svokra", svokraRany(data, state, p));
   // Rátajú sa tie isté karty ako do prevahy: Občania, Zvieratá, Starešinovia.
   const doPrevahy = (pl: PlacedCard): boolean => rataSaDoPrevahy(defOf(data, pl.card).tags);
   // lesna_cesta (Michal 2026-10-20): +1 tuhé za každú svoju kartu na súperovej strane, najviac 2.

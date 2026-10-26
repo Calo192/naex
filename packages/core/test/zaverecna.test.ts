@@ -174,17 +174,19 @@ describe("Záverečná — otočenie na konci Pitky", () => {
     expect(viewFor(data, state, 1).zaverecne).toEqual([]);
   });
 
-  it("Svokra lícom dole za NA EX súpera nekradne hneď — až pri otočení", () => {
+  it("Policajtka lícom dole za NA EX súpera nedá Dlh pri odkrytí — až pri otočení", () => {
     const pijan: PlacedCard = { card: inst("pijan"), playedBy: 0 };
-    const s = vPitke([[pijan], [skryta(inst("svokra"), 1)]], 0);
+    const s = vPitke([[pijan], [skryta(inst("policajtka"), 1)]], 0);
+    const dlhy = (t: GameState): number => t.hraci[0].priznane.filter((k) => k.defId === "dlh").length;
     const naex = naexOdkryte(data, s, pijan.card.uid, 0);
-    expect(naex.state.hraci[0].cigarety).toBe(3);
-    expect(naex.events.some((e) => e.type === "log" && e.text.startsWith("Svokra"))).toBe(false);
+    expect(naex.events.some((e) => e.type === "log" && e.text.startsWith("Policajtka"))).toBe(false);
+    if (naex.state.pitkaStav?.reakcia === 1) expect(dlhy(naex.state)).toBe(dlhy(s));
     const odpoved = naex.state.pitkaStav?.reakcia === 1 ? apply(data, naex.state, { type: "bezReakcie" }, 1) : null;
-    const { state, logy: zvysok } = dohrajPitku(odpoved?.state ?? naex.state);
-    const logy = [...(odpoved?.events ?? []).flatMap((e) => (e.type === "log" ? [e.text] : [])), ...zvysok];
-    expect(logy.some((t) => t.startsWith("Svokra:"))).toBe(true);
-    expect(state.hraci[1].cigarety - state.hraci[0].cigarety).toBeGreaterThanOrEqual(4 - 3);
+    const { logy: zvysok } = dohrajPitku(odpoved?.state ?? naex.state);
+    const logy = [...naex.events, ...(odpoved?.events ?? [])].flatMap((e) => (e.type === "log" ? [e.text] : [])).concat(zvysok);
+    const otocenie = logy.indexOf("Záverečná hráča 2 sa otáča: Policajtka.");
+    expect(otocenie).toBeGreaterThan(-1);
+    expect(logy.findIndex((t) => t === "Policajtka: hráč 1 dal v tejto Pitke viac NA EX (1 : 0) — dostáva Dlh.")).toBeGreaterThan(otocenie);
   });
 });
 

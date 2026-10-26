@@ -14,8 +14,8 @@ import {
   loadGameData,
   naTahu,
   parseScorecards,
+  poOdkrytiNaex,
   setupGame,
-  svokraZaNaex,
   viewFor,
   vyhladDlhov,
 } from "../src/index.ts";
@@ -103,14 +103,21 @@ describe("Dlh po bitke v náhľade sedí s hrou", () => {
     expect(k0.body).toBe(k0.cirhozy * -2 + k0.dlhyPoBitke * -6);
   });
 
-  it("Svokra: náhľad ukradne toľko cigariet ako hra", () => {
+  it("Svokra (Michal 2026-10-26): náhľad NA EX na jej majiteľovu kartu ukáže Ranu, cigarety nekradne", () => {
     const s0 = vPitke();
     const s: GameState = { ...s0, strany: [s0.strany[0], [lezi({ uid: 910100, defId: "svokra", leftLayout: 0, rightLayout: 0 }, 1)]] };
-    const pred = s.hraci[0].cigarety;
-    const ukradne = svokraZaNaex(data, viewFor(data, s, 0), 0, pred);
-    let t = s;
-    if (naTahu(t) !== 0) t = apply(data, t, { type: "skipNaex" }, naTahu(t)!).state;
-    t = naexOdkryte(data, t, s.strany[0][0]!.card.uid, 0).state;
-    expect(pred - t.hraci[0].cigarety).toBe(ukradne);
+    // Hráč 1 má Svokru: NA EX hráča 0 na hráčovu 0 kartu jej majiteľovi nič nedá.
+    const naSvoju = poOdkrytiNaex(data, viewFor(data, s, 0), s.strany[0][0]!.card.uid)!;
+    expect(naSvoju.svokra).toBe(0);
+    expect(naSvoju.view.hraci[0].cigarety).toBe(s.hraci[0].cigarety);
+    // Svokru má hráč 0: NA EX hráča 1 na jeho kartu = Rana pre hráča 1.
+    const s2: GameState = { ...s0, strany: [[...s0.strany[0], lezi({ uid: 910101, defId: "svokra", leftLayout: 0, rightLayout: 0 }, 0)], []] };
+    const naJeho = poOdkrytiNaex(data, viewFor(data, s2, 1), s2.strany[0][0]!.card.uid)!;
+    expect(naJeho.svokra).toBe(1);
+    expect(naJeho.view.hraci[1].cigarety).toBe(s2.hraci[1].cigarety);
+    let t = s2;
+    if (naTahu(t) !== 1) t = apply(data, t, { type: "skipNaex" }, naTahu(t)!).state;
+    t = naexOdkryte(data, t, s2.strany[0][0]!.card.uid, 1).state;
+    expect(t.hraci[1].cigarety).toBe(s2.hraci[1].cigarety);
   });
 });

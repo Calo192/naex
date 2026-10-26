@@ -89,24 +89,15 @@ describe("bitka hlási, čo zmenší či zruší prebytok a Pohoršenia", () => 
     expect(logy(events)).toContain("Prebytok 2 prepadol — posun markera stojí hráča 1 3 (Miňištrant).");
   });
 
-  it("Policajtka: zrušené Pohoršenia aj z patronátu ohlási; umlčanú Praudovravcom tiež", () => {
+  it("Policajtka (Michal 2026-10-26) Pohoršenia neruší — bitka o nej mlčí a Pohoršenia z patronátu platia", () => {
     // Benzínka: hráč 0 spáli jedného z dvoch Občanov, potom sa prepočítajú Pohoršenia.
-    const s = (strany: GameState["strany"]): GameState =>
-      vBitke(strany, { krok: "benzinka", caka: 0, benzinkaZostava: [1, 0], exekutorHotovy: [false, false] }, (t) => ({
-        ...t,
-        patronat: [null, { elderId: t.starsi[0]!.elderId, nahrada: inst("pijan"), pohorsenia: 2 }],
-      }));
-    const pijan = lezi("pijan", 0);
-    const zrusene = apply(data, s([[pijan, lezi("pijan", 0)], [lezi("policajtka", 1)]]), { type: "benzinka", uids: [pijan.card.uid] }, 0);
-    expect(logy(zrusene.events)).toContain("Policajtka: 2 Pohoršení hráča 1 (2 z patronátu) proti hráčovi 2 neplatí.");
-
-    const pijan2 = lezi("pijan", 0);
-    const umlcana = apply(
-      data,
-      s([[pijan2, lezi("pijan", 0), lezi("praudovravec", 0)], [lezi("policajtka", 1)]]),
-      { type: "benzinka", uids: [pijan2.card.uid] },
-      0,
-    );
-    expect(logy(umlcana.events)).toContain("Praudovravec umlčal Policajtku hráča 2 — Pohoršenia hráča 1 platia.");
+    const s = vBitke([[lezi("pijan", 0), lezi("pijan", 0)], [lezi("policajtka", 1)]], { krok: "benzinka", caka: 0, benzinkaZostava: [1, 0], exekutorHotovy: [false, false] }, (t) => ({
+      ...t,
+      patronat: [null, { elderId: t.starsi[0]!.elderId, nahrada: inst("pijan"), pohorsenia: 2 }],
+    }));
+    const { state, events } = apply(data, s, { type: "benzinka", uids: [s.strany[0][0]!.card.uid] }, 0);
+    expect(logy(events).some((t) => t.startsWith("Policajtka") || t.startsWith("Praudovravec umlčal"))).toBe(false);
+    expect(state.bitkaStav?.pohorseniaPatronatu?.[0]).toBe(2);
+    expect(state.bitkaStav?.pohorseniaSpolu?.[0] ?? 0).toBeGreaterThanOrEqual(2);
   });
 });

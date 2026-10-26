@@ -95,8 +95,8 @@ describe("náhľad NA EX v5 = zúčtovanie motora", () => {
       if (st.pitkaStav?.hotovy[1] !== true) st = apply(sada, st, { type: "skipNaex" }, 1).state;
       st = apply(sada, st, { type: "skipNaex" }, 0).state;
       expect(st.pitkaStav?.reakcia).toBe(0);
-      expect(sV.hraci[1].cigarety - st.hraci[1].cigarety).toBe(nahlad.vypalne + nahlad.svokra);
-      expect(st.hraci[0].cigarety - sV.hraci[0].cigarety).toBe(nahlad.vypalne + nahlad.svokra);
+      expect(sV.hraci[1].cigarety - st.hraci[1].cigarety).toBe(nahlad.vypalne);
+      expect(st.hraci[0].cigarety - sV.hraci[0].cigarety).toBe(nahlad.vypalne);
     }
   });
 

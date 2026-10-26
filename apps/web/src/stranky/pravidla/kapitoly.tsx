@@ -383,7 +383,11 @@ export const KAPITOLY: readonly Kapitola[] = [
           Pred potvrdením ti hra ukáže bitku pred a po aj kliatby, ktoré z toho budú.
         </p>
         <ul>
-          <li>Nedá sa dať na Liberála, na súperovho Anonymného alkoholika ani na kartu, na ktorej už poldeci leží.</li>
+          <li>Nedá sa dať na kartu, na ktorej už poldeci leží.</li>
+          <li>
+            <strong>Placatka:</strong> NA EX na tvojho vlastného Anonymného alkoholika sa nepočíta do limitu za Pitku — smieš
+            ho dať navyše k bežnému. Na Kostole nie a na Anonymného alkoholika s poldeci ďalšie nejde.
+          </li>
           <li>NA EX na kartu pri lokalite mení len akcie karty — akcie hrany lokality ostávajú aktívne.</li>
           <li>
             NA EX na kartu s Posilnením zruší Posilnenie aj ×2, ktoré dávalo partnerovi na spoji — partnerova akcia (aj hrana
@@ -391,17 +395,20 @@ export const KAPITOLY: readonly Kapitola[] = [
           </li>
           <li>Veterán je výnimka: NA EX mu aktívne akcie zdvojí (nezruší) a neaktívne nechá.</li>
           <li>Súperovu Záverečnú (lícom dole) smie dostať NA EX vždy.</li>
-          <li>V Krčme musí dať NA EX každý, kto má plný poldeci a kam ho dať; vo Vínnej pivnici smieš dvakrát za Pitku.</li>
+          <li>
+            V Krčme musí dať NA EX každý, kto má plný poldeci a kam ho dať (stačí aj placatka); vo Vínnej pivnici smieš
+            dvakrát za Pitku.
+          </li>
         </ul>
         <H3 id="naex-odkrytie">Odkrytie a Výtržník</H3>
         <p>
           Keď ste hotoví obaja, NA EX sa odkryjú — najprv obrancovo, potom útočníkovo. Až vtedy poldeci ľahne na kartu,
-          pripíše sa pečeň a platia efekty ako Svokra či Výpalné.
+          pripíše sa pečeň a platia efekty ako Výpalné. Súperova Policajtka ti dá Dlh, ak si v Pitke dal viac NA EX ako on.
         </p>
         <p className="zvyraznene">
           <strong>Zrážka:</strong> ak ste obaja vybrali tú istú kartu, je z nej <P k="vytrznik">Výtržník</P>. So susedmi sa
           najprv spáruje ako obvykle, potom sa <strong>všetky jej akcie zmenia na Rany</strong> pre jej majiteľa — aj tie bez
-          partnera. Každý platí za svoje NA EX (pečeň, poldeci, Svokra, Výpalné). Po bitke Výtržník vytriezvie a karta má
+          partnera. Každý platí za svoje NA EX (pečeň, poldeci, Výpalné). Po bitke Výtržník vytriezvie a karta má
           znova pôvodné akcie.
         </p>
         <H3 id="naex-odpoved">Odpoveď na NA EX</H3>
@@ -622,7 +629,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           K sebe si priazeň toho staršieho vezmeš (alebo ju súperovi uberieš). Priazeň sa mení <strong>hneď</strong> — platí už
           v poškodení tej istej bitky, takže ju môže rozhodnúť. Ten istý marker smieš posunúť aj viackrát,{" "}
           <strong>bez limitu</strong> a aj na krajnú pozíciu (zo stredu na červenú tri Pohoršenia). Pohoršenie mení aj strach
-          hneď — ráta sa už do špakov za starších tej istej bitky. Súperova Policajtka ruší tvoje Pohoršenia v oboch smeroch.
+          hneď — ráta sa už do špakov za starších tej istej bitky.
         </p>
         <H3 id="starsi-priazne">Priazne</H3>
         <p>

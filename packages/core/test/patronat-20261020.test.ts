@@ -181,13 +181,13 @@ describe("patronát — vzatie staršieho do ruky", () => {
     if (po.bitkaStav?.krok === "pohorsenie") expect(legalCommands(data, po, o).some((c) => c.type === "pohorsenie" && c.elderId === elderId)).toBe(false);
   });
 
-  it("Policajtka patróna zruší aj Pohoršenia z patronátu", () => {
+  it("Policajtka patróna Pohoršenia z patronátu neruší (Michal 2026-10-26)", () => {
     const { s, u, obcan } = vPatronate(2);
     const elderId = s.starsi[0]!.elderId;
     let st = apply(data, s, { type: "patronat", elderId, uid: obcan.uid }, u).state;
     st = { ...st, strany: (u === 0 ? [[lezi(inst("policajtka"), 0)], []] : [[], [lezi(inst("policajtka"), 1)]]) as GameState["strany"] };
     st = doBitky(st);
-    expect(st.bitkaStav?.pohorsenieZostava[opponentOf(u)] ?? 0).toBe(0);
+    expect(st.bitkaStav?.pohorseniaPatronatu?.[opponentOf(u)] ?? 0).toBeGreaterThan(0);
   });
 });
 

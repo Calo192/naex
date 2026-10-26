@@ -71,7 +71,6 @@ import {
   limitZhromazdenia,
   vlastnyLimitZhromazdenia,
   naexZaPitku,
-  pohorseniaNeplatia,
   prebytokProtiZlava,
   prahCirhozyBonus,
   spolocnyLimit,
@@ -180,6 +179,7 @@ export function kartyZaPas(z: Pick<ZhromazdenieStav, "zostavaLimit" | "vlastny">
 export interface PitkaStav {
   readonly naTahu: PlayerId;
   readonly hotovy: readonly [boolean, boolean];
+  /** Limit NA EX za Pitku je po odkrytí minutý (placatka sa doň neráta). */
   readonly naexPouzity: readonly [boolean, boolean];
   /** Cigarety vyfajčené v tejto pitke (každá už dala kartu). */
   readonly fajcenie: readonly [number, number];
@@ -192,7 +192,7 @@ export interface PitkaStav {
   /** Poštárka a Starosta sa smú použiť raz za Pitku. */
   readonly postarka: readonly [boolean, boolean];
   readonly starosta: readonly [boolean, boolean];
-  /** Koľko NA EX hráč v tejto Pitke dal (Vínna pivnica dovolí dve). */
+  /** Koľko NA EX hráč v tejto Pitke dal, aj placatku (Policajtka ich porovná). */
   readonly naexPocet?: readonly [number, number];
   /** Zberný dvor: výkup karty z odhadzovacieho balíčka už v tejto Pitke použitý. */
   readonly vykup?: readonly [boolean, boolean];
@@ -401,11 +401,11 @@ export interface HasicVolba {
   readonly potom: "reakcia" | "koniecPitky" | null;
 }
 
-/** Čo by skrytá Záverečná spustila, keby bola odkrytá (Svokra, Vychovávateľka, Hrobár). */
+/** Čo by skrytá Záverečná spustila, keby bola odkrytá (Policajtka, Vychovávateľka, Hrobár). */
 export interface OdkladZaverecnej {
-  /** NA EX súpera majiteľa (Svokra). */
+  /** NA EX súpera majiteľa (Policajtka). */
   readonly naexSupera: number;
-  /** NA EX majiteľa (Vychovávateľka). */
+  /** NA EX majiteľa (Vychovávateľka, Policajtka). */
   readonly naexVlastne: number;
   /** Karty, ktoré súper zahodil (Hrobár). */
   readonly zahodeniaSupera: number;
@@ -2059,7 +2059,7 @@ export function zablokovaneStrany(view: { readonly zaverecne: readonly { readonl
 }
 
 /**
- * Otočenie Záverečných na konci Pitky: odložené spúšťače (Svokra,
+ * Otočenie Záverečných na konci Pitky: odložené spúšťače (Policajtka,
  * Vychovávateľka, Hrobár) sa vyhodnotia teraz, potom Nástup. Vráti true,
  * keď otočený Hasič čaká na voľbu — koniec Pitky dobehne až po nej.
  */
@@ -2073,13 +2073,9 @@ function otocZaverecne(s: MutState, data: GameData, events: Event[]): boolean {
     const odklad = s.zaverecnaOdklad[p];
     s.zaverecnaOdklad[p] = null;
     if (odklad !== null && maEfekt(s, data, p, def.id)) {
-      if (def.id === "svokra" && odklad.naexSupera > 0) {
-        const ukradne = Math.min(s.hraci[opp].cigarety, odklad.naexSupera * KONSTANTY.EFEKT.SVOKRA_CIGARETY);
-        if (ukradne > 0) {
-          hrac(s, opp).cigarety -= ukradne;
-          hrac(s, p).cigarety += ukradne;
-          events.push({ type: "log", text: `Svokra: hráč ${p + 1} ${rodovo(p, "ukradol", "ukradla", "kradne")} hráčovi ${opp + 1} ${cigariet(ukradne)} za NA EX.` });
-        }
+      if (def.id === "policajtka") {
+        // Záverečná sa otočí na konci Pitky po svojom Zhromaždení — odklad drží NA EX práve tejto Pitky.
+        if (odklad.naexSupera > odklad.naexVlastne) dlhOdPolicajtky(s, data, opp, odklad.naexSupera, odklad.naexVlastne, events);
       } else if (def.id === "hrobar" && odklad.zahodeniaSupera > 0) {
         hrac(s, p).cigarety += odklad.zahodeniaSupera;
         events.push({ type: "log", text: `Hrobár: hráč ${p + 1} si berie ${cigariet(odklad.zahodeniaSupera)} za zahodené karty.` });
@@ -2441,14 +2437,15 @@ function cmdNaex(
   need(!pitka.hotovy[p], "Svoju časť Pitky si už skončil.");
   need(!zakazNaex(s as GameState), "Kostol: nikto nesmie dať NA EX.");
   const moje = skryteHraca(pitka, p);
+  // Skrytú Záverečnú súper cieli náhradným uid (uidZaverecnej) — skutočné nepozná.
+  const skryta = skryteZaverecne(s as GameState).find((x) => uidZaverecnej(x.strana) === cmd.uid);
+  const uidCiela = skryta === undefined ? cmd.uid : skryta.placed.card.uid;
   need(
-    !pitka.naexPouzity[p] && (pitka.naexPocet?.[p] ?? 0) + moje.length < naexZaPitku(s as GameState),
+    !naexLimitMinuty(data, s as GameState, p) || jePlacatka(data, s as GameState, p, uidCiela),
     naexZaPitku(s as GameState) > 1 ? "NA EX smieš dať najviac dvakrát za Pitku." : "NA EX smieš dať najviac raz za Pitku.",
   );
   need(s.hraci[p].poldeciPlne - moje.length > 0, "Nemáš plný poldeci.");
-  // Skrytú Záverečnú súper cieli náhradným uid (uidZaverecnej) — skutočné nepozná.
-  const skryta = skryteZaverecne(s as GameState).find((x) => uidZaverecnej(x.strana) === cmd.uid);
-  const kde = najdiVLinii(s, skryta === undefined ? cmd.uid : skryta.placed.card.uid);
+  const kde = najdiVLinii(s, uidCiela);
   need(kde !== null, "Karta neleží v žiadnej partii.");
   const placed = s.strany[kde.strana][kde.index] as DeepMutable<PlacedCard>;
   need(placed.naexBy === undefined && !moje.some((x) => x.uid === placed.card.uid), "Na karte už poldeci leží.");
@@ -2457,15 +2454,13 @@ function cmdNaex(
   const def = defOf(data, placed.card as CardInstance);
   if (placed.zaverecna === true) {
     // Skrytá Záverečná (Michal 2026-10-23): majiteľ nie, súperovi NA EX prejde
-    // vždy — kontrola tagu či Liberála by kartu prezradila.
+    // vždy — kontrola tagu či zmyslu NA EX by kartu prezradila.
     need(placed.playedBy !== p, "Na svoju Záverečnú NA EX dať nemôžeš, kým sa neotočí.");
   } else {
     need(
       def.tags.includes("Občan") || def.tags.includes("Starešina"),
       "NA EX smie len na Občana alebo Starešinu.",
     );
-    need(def.id !== "liberal", "Liberál: na neho NA EX dať nemožno.");
-    need(!chraneneAlkoholikom(s.strany[kde.strana], kde.index, p), "Anonymný alkoholik: na neho NA EX dať nemôžeš.");
     need(
       naexMaZmysel(data, lineState(s as GameState)).has(placed.card.uid),
       "NA EX smie len na kartu, ktorá má aspoň jednu aktívnu a aspoň jednu neaktívnu akciu.",
@@ -2482,7 +2477,7 @@ function cmdNaex(
 
 /**
  * Odkrytie NA EX naraz (v5): keď obaja skončia svoju časť Pitky. Najprv NA EX
- * obrancu, potom útočníka — poldeci, pečeň (pije ten, kto NA EX dal), Svokra,
+ * obrancu, potom útočníka — poldeci, pečeň (pije ten, kto NA EX dal),
  * Výpalné, Vychovávateľka. Tú istú kartu oboch = zrážka, z karty je Výtržník.
  * Odpovede (jedna karta za každé súperovo NA EX): najprv obranca, útočník má
  * posledné slovo (Michal 2026-10-25, interview 4). Vracia true, keď sa čaká
@@ -2496,10 +2491,12 @@ function odhalNaex(s: MutState, data: GameData, events: Event[]): boolean {
   if (skryte.length === 0) return false;
   const obr = obranca(s);
   const pocty: [number, number] = [0, 0];
+  const vLimite: [number, number] = [0, 0];
   for (const p of [obr, s.utocnik] as const) {
     for (const x of skryte.filter((y) => y.hrac === p)) {
       const kde = najdiVLinii(s, x.uid);
       if (kde === null) continue;
+      if (!jePlacatka(data, s as GameState, p, x.uid)) vLimite[p] += 1;
       const placed = s.strany[kde.strana][kde.index] as DeepMutable<PlacedCard>;
       const opp = opponentOf(p);
       const zrazka = placed.naexBy === opp;
@@ -2521,7 +2518,7 @@ function odhalNaex(s: MutState, data: GameData, events: Event[]): boolean {
           text: `Zrážka NA EX: obaja dali poldeci na tú istú kartu — je z nej Výtržník, všetky jej akcie sú Rany pre hráča ${placed.playedBy + 1}.`,
         });
       }
-      // Skryté Záverečné si NA EX zapamätajú pre Svokru a Vychovávateľku pri otočení.
+      // Skryté Záverečné si NA EX zapamätajú pre Policajtku a Vychovávateľku pri otočení.
       zapisOdklad(s, opp, "naexSupera", 1);
       zapisOdklad(s, p, "naexVlastne", 1);
       // Pečeň z NA EX — poldeci pije ten, kto NA EX dal (PRAVIDLA §7).
@@ -2529,19 +2526,14 @@ function odhalNaex(s: MutState, data: GameData, events: Event[]): boolean {
       // vychovavatelka: súper si musí vziať jeden tvoj priznaný Dlh — do
       // doberacieho balíčka, nie na ruku (Michal 2026-10-19).
       if (maEfekt(s, data, p, "vychovavatelka")) presunDlhVychovavatelky(s, p, events);
-      // svokra: každá Svokra súpera mu za toto NA EX ukradne cigarety.
-      const ukradne = svokraZaNaex(data, s, p, s.hraci[p].cigarety);
-      if (ukradne > 0) {
-        hrac(s, p).cigarety -= ukradne;
-        hrac(s, opp).cigarety += ukradne;
-        events.push({ type: "log", text: `Svokra: hráč ${opp + 1} ${rodovo(opp, "ukradol", "ukradla", "kradne")} hráčovi ${p + 1} ${cigariet(ukradne)} za NA EX.` });
-      }
       vypalne(s, data, p, events);
     }
   }
-  // Vínna pivnica dovolí dve NA EX za Pitku, inde jedno.
+  // Policajtka porovná všetky NA EX Pitky (aj placatku); limit (Vínna pivnica dve, inde jedno) placatku neráta.
   pitka.naexPocet = [(pitka.naexPocet?.[0] ?? 0) + pocty[0], (pitka.naexPocet?.[1] ?? 0) + pocty[1]];
-  for (const p of [0, 1] as const) pitka.naexPouzity[p] = (pitka.naexPocet[p] ?? 0) >= naexZaPitku(s as GameState);
+  for (const p of [0, 1] as const) pitka.naexPouzity[p] = pitka.naexPouzity[p] || vLimite[p] >= naexZaPitku(s as GameState);
+  // Policajtka porovná NA EX hneď pri odkrytí — odpoveď na NA EX už počet nezmení.
+  for (const p of [obr, s.utocnik] as const) policajtka(s, data, p, events);
   // Odpovede: obranca na NA EX útočníka, potom útočník na NA EX obrancu.
   pitka.frontaReakcii = [...Array<PlayerId>(pocty[s.utocnik]).fill(obr), ...Array<PlayerId>(pocty[obr]).fill(s.utocnik)];
   return dalsiaReakcia(s, data, events);
@@ -2599,18 +2591,52 @@ function zapisOdklad(s: MutState, majitel: PlayerId, co: keyof OdkladZaverecnej,
 
 /**
  * NA EX hráča p — Občania a Starešinovia v línii (vlastní aj súperovi) bez
- * poldeci, nie Liberál ani súperov Anonymný alkoholik.
+ * poldeci. Po minutom limite už len placatka (vlastný Anonymný alkoholik).
  */
 export function moznostiNaex(data: GameData, state: GameState, p: PlayerId): number[] {
   const pitka = state.pitkaStav;
   if (pitka === null || pitka.reakcia !== null || pitka.hotovy[p] || zakazNaex(state)) return [];
   // NA EX naraz (v5): vlastné skryté NA EX sa rátajú do limitu, poldeci aj cieľov.
   const moje = skryteHraca(pitka, p);
-  if (pitka.naexPouzity[p] || (pitka.naexPocet?.[p] ?? 0) + moje.length >= naexZaPitku(state)) return [];
   if (state.hraci[p].poldeciPlne - moje.length <= 0) return [];
+  const minuty = naexLimitMinuty(data, state, p);
   // Súperova skrytá Záverečná má náhradné uid — porovnáva sa skutočná karta.
   const skutocne = (uid: number): number => skryteZaverecne(state).find((x) => uidZaverecnej(x.strana) === uid)?.placed.card.uid ?? uid;
-  return naexCieleVLinii(data, lineState(state), p).filter((uid) => !moje.some((x) => x.uid === skutocne(uid)));
+  return naexCieleVLinii(data, lineState(state), p).filter(
+    (uid) => !moje.some((x) => x.uid === skutocne(uid)) && (!minuty || jePlacatka(data, state, p, skutocne(uid))),
+  );
+}
+
+/** Čo treba na posúdenie limitu NA EX za Pitku — GameState aj pohľad klienta. */
+type StavLimituNaex = VerejnyStav & { readonly pitkaStav: Pick<PitkaStav, "naexPouzity" | "skryteNaex"> | null };
+
+/**
+ * anonymny_alkoholik (Furt, Michal 2026-10-26 — „placatka“): NA EX hráča p na
+ * vlastného Anonymného alkoholika sa do limitu NA EX za Pitku neráta. Súper
+ * naňho NA EX dať smie, ale jemu sa do limitu ráta. Zákaz na Kostole a pravidlo
+ * „na kartu s poldeci ďalšie NA EX nie“ platia aj tu, takže placatka je
+ * najviac jedna na Anonymného alkoholika za kolo.
+ */
+export function jePlacatka(data: GameData, state: Pick<VerejnyStav, "strany">, p: PlayerId, uid: number): boolean {
+  const ciel = [...state.strany[0], ...state.strany[1]].find((pl) => pl.card.uid === uid);
+  return (
+    ciel !== undefined &&
+    ciel.card.defId === "anonymny_alkoholik" &&
+    ciel.playedBy === p &&
+    ciel.zaverecna !== true &&
+    !efektPotlaceny(data, state, p, "anonymny_alkoholik")
+  );
+}
+
+/**
+ * Minul hráč p v tejto Pitke limit NA EX (Vínna pivnica dve, inde jedno)? Po
+ * odkrytí to drží naexPouzity, pred ním sa rátajú jeho skryté NA EX — placatka nie.
+ */
+export function naexLimitMinuty(data: GameData, state: StavLimituNaex, p: PlayerId): boolean {
+  const pitka = state.pitkaStav;
+  if (pitka === null || pitka.naexPouzity[p]) return true;
+  const vLimite = skryteHraca(pitka, p).filter((x) => !jePlacatka(data, state, p, x.uid)).length;
+  return vLimite >= naexZaPitku(state);
 }
 
 /** Čo z pohľadu klienta treba na posúdenie NA EX (ClientState to spĺňa). */
@@ -2637,11 +2663,13 @@ export function moznostiNaexVPohlade(data: GameData, view: PohladNaNaex): number
   if (!view.mozemHrat || view.faza !== "pitka" || view.vizia !== null || pitka === null) return [];
   if (pitka.reakcia !== null || pitka.hotovy[ja] || zakazNaex(view)) return [];
   const moje = skryteHraca(pitka, ja);
-  if (pitka.naexPouzity[ja] || (pitka.naexPocet?.[ja] ?? 0) + moje.length >= naexZaPitku(view)) return [];
   if (view.hraci[ja].poldeciPlne - moje.length <= 0) return [];
+  const minuty = naexLimitMinuty(data, view, ja);
   // Súperovu skrytú Záverečnú klient v línii nemá — doplní ju zo zaverecne (náhradné uid).
   const naRub = view.zaverecne.filter((z) => z.majitel !== ja && z.naexBy === null && !view.strany.some((st) => st.some((pl) => pl.card.uid === z.uid))).map((z) => z.uid);
-  return [...naexCieleVLinii(data, lineState(view), ja), ...naRub].filter((uid) => !moje.some((x) => x.uid === uid));
+  return [...naexCieleVLinii(data, lineState(view), ja), ...naRub].filter(
+    (uid) => !moje.some((x) => x.uid === uid) && (!minuty || jePlacatka(data, view, ja, uid)),
+  );
 }
 
 /**
@@ -2654,12 +2682,12 @@ export function naexCieleVLinii(data: GameData, line: LineState, p: PlayerId): n
   const out: number[] = [];
   const zmysel = naexMaZmysel(data, line);
   for (const [si, strana] of line.strany.entries()) {
-    for (const [i, placed] of strana.entries()) {
+    for (const placed of strana) {
       if (placed.zaverecna === true) {
         if (placed.naexBy === undefined && placed.playedBy !== p) out.push(uidZaverecnej(si as PlayerId));
         continue;
       }
-      if (placed.naexBy !== undefined || placed.card.defId === "liberal" || chraneneAlkoholikom(strana, i, p)) continue;
+      if (placed.naexBy !== undefined) continue;
       const tags = defOf(data, placed.card).tags;
       if ((tags.includes("Občan") || tags.includes("Starešina")) && zmysel.has(placed.card.uid)) out.push(placed.card.uid);
     }
@@ -2685,18 +2713,14 @@ export function naexMaZmysel(data: GameData, line: LineState): ReadonlySet<numbe
 }
 
 /**
- * anonymny_alkoholik: súper jeho majiteľa naňho nedá NA EX; majiteľ smie.
- * Susedov nechráni (Michal 2026-10-22; od 2026-10-19 chránil aj majiteľove
- * karty vedľa seba).
+ * krcma: kto má plný poldeci (a kam ho dať), musí dať NA EX — jedno. Splní ho
+ * aj placatka na vlastného Anonymného alkoholika (Michal 2026-10-26), preto
+ * po prvom NA EX v Pitke povinnosť končí, aj keď placatka či druhé NA EX ešte ide.
  */
-function chraneneAlkoholikom(strana: readonly PlacedCard[], i: number, p: PlayerId): boolean {
-  const ciel = strana[i];
-  return ciel?.card.defId === "anonymny_alkoholik" && ciel.playedBy !== p;
-}
-
-/** krcma: kto má plný poldeci (a kam ho dať), musí dať NA EX. */
 export function krcmaVyzaduje(data: GameData, state: GameState, p: PlayerId): boolean {
-  return jeCielLokalita(state, "krcma") && moznostiNaex(data, state, p).length > 0;
+  const pitka = state.pitkaStav;
+  const dal = skryteHraca(pitka, p).length + (pitka?.naexPocet?.[p] ?? 0) > 0;
+  return jeCielLokalita(state, "krcma") && !dal && moznostiNaex(data, state, p).length > 0;
 }
 
 /** Hráč q má v ruke kartu, ktorú môže vyložiť do línie (reakcia je mimo limitu). */
@@ -2978,6 +3002,37 @@ function vyhodnotPitku(s: MutState, data: GameData, events: Event[]): void {
 }
 
 /**
+ * policajtka (Pitka, Michal 2026-10-26 — nahradila „súperove Pohoršenia
+ * neplatia“): ak súper majiteľa p dal v tejto Pitke viac NA EX ako p (placatka
+ * sa ráta), dostane pri odkrytí NA EX Dlh — jeden, nie za každé NA EX navyše.
+ * Pri rovnosti a na Kostole (0 : 0) nič. Platí odkrytá Policajtka v línii
+ * v okamihu odkrytia (nie vyložená až ako odpoveď); skrytú Záverečnú vyhodnotí
+ * otocZaverecne.
+ */
+function policajtka(s: MutState, data: GameData, p: PlayerId, events: Event[]): void {
+  const opp = opponentOf(p);
+  const pocet = s.pitkaStav?.naexPocet ?? [0, 0];
+  const dlhy = dlhyPolicajtky(data, s as GameState, p, pocet[opp], pocet[p]);
+  for (let i = 0; i < dlhy; i++) dlhOdPolicajtky(s, data, opp, pocet[opp], pocet[p], events);
+}
+
+/**
+ * Koľko Dlhov dá Policajtka hráča p súperovi, ktorý dal v Pitke `naexSupera`
+ * NA EX proti `naexMajitela` — každá odkrytá Policajtka jeden; 0, keď súper
+ * nedal viac alebo Policajtku umlčal Praudovravec. Pre motor aj náhľad NA EX.
+ */
+export function dlhyPolicajtky(data: GameData, s: VerejnyStav, p: PlayerId, naexSupera: number, naexMajitela: number): number {
+  if (naexSupera <= naexMajitela || !efektHraca(s, p, "policajtka") || efektPotlaceny(data, s, p, "policajtka")) return 0;
+  return Math.max(1, partiaHraca(s, p).filter((pl) => pl.card.defId === "policajtka" && pl.zaverecna !== true).length);
+}
+
+/** Policajtka dá hráčovi `komu` Dlh (hneď priznaný) za NA EX `jeho` : `majitela`. */
+function dlhOdPolicajtky(s: MutState, data: GameData, komu: PlayerId, jeho: number, majitela: number, events: Event[]): void {
+  events.push({ type: "log", text: `Policajtka: hráč ${komu + 1} dal v tejto Pitke viac NA EX (${jeho} : ${majitela}) — dostáva Dlh.` });
+  pridajKliatbu(s, data, komu, "dlh", events);
+}
+
+/**
  * Cigarety, ktoré hráči dostanú vo vyhodnotení Pitky číslo `pitkaCislo`
  * (PRAVIDLA §7 krok 5) — jeden výpočet pre motor aj náhľad NA EX, aby cena
  * ťahu v cigaretách sedela so zúčtovaním (návrh #1, playtest 20261024-075830).
@@ -3161,14 +3216,6 @@ export function paleneDlhyVBitke(
   return [pre(0), pre(1)];
 }
 
-/** svokra: koľko cigariet súperove Svokry ukradnú hráčovi p za jeho NA EX — pre motor aj náhľad. */
-export function svokraZaNaex(data: GameData, s: VerejnyStav, p: PlayerId, cigarety: number): number {
-  const opp = opponentOf(p);
-  if (!efektHraca(s, opp, "svokra") || efektPotlaceny(data, s, opp, "svokra")) return 0;
-  const svokry = Math.max(1, partiaHraca(s, opp).filter((pl) => pl.card.defId === "svokra" && pl.zaverecna !== true).length);
-  return Math.min(cigarety, svokry * KONSTANTY.EFEKT.SVOKRA_CIGARETY);
-}
-
 function zacniBitku(s: MutState, data: GameData, events: Event[]): void {
   s.faza = "bitka";
   events.push({ type: "faza", faza: "bitka" });
@@ -3258,7 +3305,7 @@ function spalZLinie(
 }
 
 /** Súčty akcií a Pohoršenia z aktuálnej línie (Benzínka ju môže zmeniť). */
-function nastavSumy(s: MutState, data: GameData, events: Event[]): void {
+function nastavSumy(s: MutState, data: GameData): void {
   const b = s.bitkaStav;
   if (b === null) return;
   const sums = evaluateLine(data, lineState(s as GameState)).sums;
@@ -3266,18 +3313,7 @@ function nastavSumy(s: MutState, data: GameData, events: Event[]): void {
   const zPatronatu: [number, number] = [0, 0];
   const pohorsenie = (p: PlayerId): number => {
     const r = rozpisPohorseni(data, s as GameState, sums, p);
-    zPatronatu[p] = r.neplatia ? 0 : r.zPatronatu;
-    const proti = opponentOf(p);
-    if (r.spolu === 0) return 0;
-    // Hlásiť, inak hráči tiché zrušenie považovali za chybu (playtest 20261021-143600).
-    if (r.neplatia) {
-      const pat = r.zPatronatu === 0 ? "" : ` (${r.zPatronatu} z patronátu)`;
-      events.push({ type: "log", text: `Policajtka: ${r.spolu} Pohoršení hráča ${p + 1}${pat} proti hráčovi ${proti + 1} neplatí.` });
-      return 0;
-    }
-    if (efektHraca(s as GameState, proti, "policajtka")) {
-      events.push({ type: "log", text: `Praudovravec umlčal Policajtku hráča ${proti + 1} — Pohoršenia hráča ${p + 1} platia.` });
-    }
+    zPatronatu[p] = r.zPatronatu;
     return r.spolu;
   };
   b.pohorsenieZostava = [pohorsenie(0), pohorsenie(1)];
@@ -3317,14 +3353,14 @@ function rozpisPohorseni(
   s: StavPohorseni,
   sums: readonly [ActionSums, ActionSums],
   p: PlayerId,
-): { readonly spolu: number; readonly zPatronatu: number; readonly neplatia: boolean } {
+): { readonly spolu: number; readonly zPatronatu: number } {
   // Patronát: súper patróna dostane Pohoršenia navyše (o koľko marker išiel do
   // stredu) — strach, ktorý spôsobil, mu tak neprepadne (Michal 2026-10-20).
   const zPatronatu = s.patronat[opponentOf(p)]?.pohorsenia ?? 0;
   // Abstinent v5 (Michal 2026-10-25): v bitke +1 / +2 / +3 Pohoršenia.
   const abstinent = silaPriazne(data, s, "LAKOMEC", p);
-  // policajtka: súperove Pohoršenia proti tebe neplatia — aj tie z patronátu a Abstinenta.
-  return { spolu: (sums[p].Pohoršenie ?? 0) + zPatronatu + abstinent, zPatronatu, neplatia: pohorseniaNeplatia(data, s, opponentOf(p)) };
+  // Policajtka ich od 2026-10-26 neruší — jej efekt je Dlh za NA EX v Pitke.
+  return { spolu: (sums[p].Pohoršenie ?? 0) + zPatronatu + abstinent, zPatronatu };
 }
 
 /**
@@ -3333,20 +3369,7 @@ function rozpisPohorseni(
  * a patronátu (návrh #1, playtest 20261024-075830).
  */
 export function pohorseniaVBitke(data: GameData, s: StavPohorseni, sums: readonly [ActionSums, ActionSums]): readonly [number, number] {
-  const pre = (p: PlayerId): number => {
-    const r = rozpisPohorseni(data, s, sums, p);
-    return r.neplatia ? 0 : r.spolu;
-  };
-  return [pre(0), pre(1)];
-}
-
-/** Pohoršenia hráčov, ktoré súperova Policajtka v bitke zruší — nastavSumy ich hlási v logu, náhľad tiež. */
-export function pohorseniaZruseneVBitke(data: GameData, s: StavPohorseni, sums: readonly [ActionSums, ActionSums]): readonly [number, number] {
-  const pre = (p: PlayerId): number => {
-    const r = rozpisPohorseni(data, s, sums, p);
-    return r.neplatia ? r.spolu : 0;
-  };
-  return [pre(0), pre(1)];
+  return [rozpisPohorseni(data, s, sums, 0).spolu, rozpisPohorseni(data, s, sums, 1).spolu];
 }
 
 /** Ženie bitku dopredu, kým nenarazí na rozhodnutie hráča alebo koniec. */
@@ -3367,7 +3390,7 @@ function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
       spalZLinie(s, data, p, obcania.map((o) => o.card.uid), "Benzínka", events);
       b.benzinkaZostava[p] = 0;
     }
-    nastavSumy(s, data, events);
+    nastavSumy(s, data);
     b.krok = "kar";
   }
 

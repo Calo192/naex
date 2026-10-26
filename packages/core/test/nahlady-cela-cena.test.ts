@@ -265,26 +265,24 @@ describe("náhľad NA EX nemlčí o tom, čo hra zúčtuje navyše (návrh #49)"
     return { t, log };
   }
 
-  it("Policajtka: zrušené Pohoršenia náhľad hlási, bitka ich nepridelí", () => {
+  it("Policajtka (Michal 2026-10-26) súperove Pohoršenia neruší — bitka ich pridelí, ako sľúbil náhľad", () => {
     const s0 = vPitke([
       lezi(instanceFor(data, "pohorsujuci_test", P4, P4), 0),
       lezi(instanceFor(data, "pohorsujuci_test", P4, P4), 0),
       lezi(instanceFor(data, "pohorsujuci_test", P4, P4), 0),
     ]);
     const s: GameState = { ...s0, strany: [s0.strany[0], [lezi(karta(940001, "policajtka"), 1)]] };
-    let zrusene = 0;
+    const bez = sLogom(s);
+    const spolu = (t: GameState): number => t.bitkaStav?.pohorseniaSpolu?.[0] ?? 0;
+    expect(spolu(bez.t)).toBeGreaterThan(0);
+    // 0 : 0 NA EX — Policajtka mlčí.
+    expect(bez.log.some((x) => x.startsWith("Policajtka:"))).toBe(false);
     for (const uid of ciele(s).filter((u) => u !== 940001)) {
       const n = nahladNaexNaKartu(data, viewFor(data, s, 1), uid, ceny)!;
-      const { t, log } = sLogom(naex(s, 1, uid));
-      expect(n.dopady[0].pohorsenia).toBe(0);
-      expect(t.bitkaStav?.pohorsenieZostava[0] ?? 0).toBe(0);
-      const bez = sLogom(s).log.find((x) => x.startsWith("Policajtka:"));
-      const s_ = log.find((x) => x.startsWith("Policajtka:"));
-      const pocetZLogu = (x: string | undefined): number => Number(/Policajtka: (\d+)/.exec(x ?? "")?.[1] ?? 0);
-      expect(n.dopady[0].pohorseniaZrusene).toBe(pocetZLogu(s_) - pocetZLogu(bez));
-      if (n.dopady[0].pohorseniaZrusene !== 0) zrusene++;
+      const { t } = sLogom(naex(s, 1, uid));
+      expect(n.dopady[0].pohorsenia).toBe(spolu(t) - spolu(bez.t));
+      expect(n.dopady[0].pohorseniaSpolu).toBe(spolu(t));
     }
-    expect(zrusene).toBeGreaterThan(0);
   });
 
   it("Vychovávateľka: priznaný Dlh odíde súperovi — náhľad aj Dlhy po bitke s tým rátajú", () => {
