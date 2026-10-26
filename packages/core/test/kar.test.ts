@@ -1,5 +1,5 @@
 // Lokalita Kar (roadmapa #80, 2026-10-23): „Bitka: Každý hráč smie zahodiť jednu
-// nepriznanú Cirhózu z ruky. Súperov Hrobár za to dostane cigaretu.“ Kraje
+// nepriznanú Cirhózu z ruky.“ Zahodenie spúšťa Hrobára ako každé iné (jeho efekt). Kraje
 // „pri vdove“ a „pri koláčoch“. Lokalita je vo zverejnenej sade v11 (cards.json).
 
 import { describe, expect, it } from "vitest";

@@ -2446,6 +2446,37 @@ export function moznostiNaex(data: GameData, state: GameState, p: PlayerId): num
   return naexCieleVLinii(data, lineState(state), p).filter((uid) => !moje.some((x) => x.uid === skutocne(uid)));
 }
 
+/** Čo z pohľadu klienta treba na posúdenie NA EX (ClientState to spĺňa). */
+export type PohladNaNaex = VerejnyStav & {
+  readonly lokalitaOtocena: boolean;
+  readonly faza: Phase;
+  readonly ja: PlayerId;
+  readonly mozemHrat: boolean;
+  readonly vizia: GameState["vizia"];
+  readonly pitkaStav: PitkaStav | null;
+  readonly hraci: readonly [VerejnyHrac & { readonly poldeciPlne: number }, VerejnyHrac & { readonly poldeciPlne: number }];
+  readonly zaverecne: readonly { readonly majitel: PlayerId; readonly uid: number; readonly naexBy: PlayerId | null }[];
+};
+
+/**
+ * moznostiNaex z pohľadu hráča `view.ja` — tie isté podmienky ako cmdNaex, len
+ * z toho, čo klient vidí (vlastné skryté NA EX áno, súperove nie). Klient podľa
+ * toho kreslí značku NA EX na kartách: pri Kostole ju kreslil, hoci motor NA EX
+ * nepustí (roadmapa #112).
+ */
+export function moznostiNaexVPohlade(data: GameData, view: PohladNaNaex): number[] {
+  const pitka = view.pitkaStav;
+  const ja = view.ja;
+  if (!view.mozemHrat || view.faza !== "pitka" || view.vizia !== null || pitka === null) return [];
+  if (pitka.reakcia !== null || pitka.hotovy[ja] || zakazNaex(view)) return [];
+  const moje = skryteHraca(pitka, ja);
+  if (pitka.naexPouzity[ja] || (pitka.naexPocet?.[ja] ?? 0) + moje.length >= naexZaPitku(view)) return [];
+  if (view.hraci[ja].poldeciPlne - moje.length <= 0) return [];
+  // Súperovu skrytú Záverečnú klient v línii nemá — doplní ju zo zaverecne (náhradné uid).
+  const naRub = view.zaverecne.filter((z) => z.majitel !== ja && z.naexBy === null && !view.strany.some((st) => st.some((pl) => pl.card.uid === z.uid))).map((z) => z.uid);
+  return [...naexCieleVLinii(data, lineState(view), ja), ...naRub].filter((uid) => !moje.some((x) => x.uid === uid));
+}
+
 /**
  * Karty v línii, na ktoré smie hráč p dať NA EX — spoločné pre server aj klienta.
  * Súperova skrytá Záverečná ide vždy, a to náhradným uid (uidZaverecnej); klient
@@ -3045,6 +3076,15 @@ export function pohorseniaVBitke(data: GameData, s: StavPohorseni, sums: readonl
   return [pre(0), pre(1)];
 }
 
+/** Pohoršenia hráčov, ktoré súperova Policajtka v bitke zruší — nastavSumy ich hlási v logu, náhľad tiež. */
+export function pohorseniaZruseneVBitke(data: GameData, s: StavPohorseni, sums: readonly [ActionSums, ActionSums]): readonly [number, number] {
+  const pre = (p: PlayerId): number => {
+    const r = rozpisPohorseni(data, s, sums, p);
+    return r.neplatia ? r.spolu : 0;
+  };
+  return [pre(0), pre(1)];
+}
+
 /** Ženie bitku dopredu, kým nenarazí na rozhodnutie hráča alebo koniec. */
 function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
   const b = s.bitkaStav;
@@ -3068,7 +3108,7 @@ function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
   }
 
   // 0b. Kar (roadmapa #80): kto má v ruke nepriznanú Cirhózu, smie jednu zahodiť
-  // (obranca, potom útočník). Súperov Hrobár za to dostane cigaretu.
+  // (obranca, potom útočník).
   if (b.krok === "kar") {
     if (jeCielLokalita(s as GameState, "kar")) {
       for (const p of [obranca(s), s.utocnik]) {

@@ -14,8 +14,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   (`target` `vlastna` / `superova`). Karta **patrí tomu, kto ju zahral** — akcie
   aj efekty sa rátajú majiteľovi, nech leží kdekoľvek (výnimky: Nástroj, Kočovník — nižšie). Podstrčený „sabotér"
   s Odporom zruší súperovi akciu na spoji. Každá karta okrem Nástroja míňa limit
-  vykladania (aj Kočovník). **Limit = plné poldeci + 1** — poldeci na karte cez NA EX
-  sa neráta (v4), takže NA EX ti limit zníži o 1.
+  vykladania (aj Kočovník). **Limit = plné poldeci + 1** — NA EX limit nemíňa, ale
+  jeho poldeci na karte sa neráta (v4), takže v ďalšom Zhromaždení kola máš limit o 1 nižší.
 - **Názvoslovie:** línia = celý rad; lokalita ju delí na dve **strany** (tvoja,
   súperova). **Tvoja partia** = všetky tvoje karty, na ktorejkoľvek strane.
   Akcie: Dlh, Poškodenie pečene, Poldeci, Cigareta (nie Hazard, Pečeň,
@@ -57,7 +57,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   Ihrisko (+2 tuhé za každý kraj, kde máš viac svojich Občanov, Zvierat a Starešinov), Zberný
   dvor (raz za Pitku `vykup`: cigareta → karta z odhadzovacieho do ruky),
   Most (len na vlastnú stranu), Kar (na začiatku bitky `{"type":"kar","uid":…|null}`: zahoď
-  jednu nepriznanú Cirhózu z ruky, súperov Hrobár dostane cigaretu), Cintorín (porazený `cintorin`: Nástroj
+  jednu nepriznanú Cirhózu z ruky), Cintorín (porazený `cintorin`: Nástroj
   z ruky do Dedičstva zadarmo), Obecný úrad (prah Exekútora −4, Robota
   spáli 2 Dlhy), Jednota (barter −1), Kultúrny dom (Pohoršenie bez limitu
   dvoch hraníc zón), Vínna pivnica (NA EX 2× za Pitku), Družstvo (Pracujúci
