@@ -6712,3 +6712,162 @@ button.auto-hotovo-odkaz {
 .stol-hrana.pocas-pauzy {
   visibility: hidden;
 }
+
+/* Ponuka patronátu (#110): na mieste línie starších len tí, ktorých si smieš vziať —
+   karta s akciami v čitateľnej veľkosti, vedľa priazeň a cena. */
+.ponuka-patronatu {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  animation: ls-prichod 0.22s ease-out 0.06s backwards;
+}
+
+.pp-hlava {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 26px;
+  font-size: 0.8rem;
+  color: var(--tlmeny);
+}
+
+.pp-hlava > b {
+  color: var(--akcent);
+  letter-spacing: 0.02em;
+}
+
+.pp-hlava .ls-tlacidlo {
+  margin-left: auto;
+}
+
+.pp-tlmene {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pp-moznosti {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding-top: 4px;
+}
+
+.pp-moznost {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.text-pod > .pp-moznost {
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pp-karta {
+  flex: none;
+  border-radius: 8px;
+  box-shadow: 0 0 0 2px var(--akcent), 0 6px 18px rgba(0, 0, 0, 0.45);
+}
+
+.pp-text {
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  font-size: 0.82rem;
+  line-height: 1.3;
+  color: var(--text);
+}
+
+.text-pod .pp-text {
+  gap: 2px;
+  font-size: 0.74rem;
+}
+
+.pp-meno {
+  font-size: 1.05rem;
+}
+
+.pp-priazen {
+  color: var(--ja);
+}
+
+.pp-cena {
+  color: var(--tlmeny);
+}
+
+.pp-vziat {
+  margin-top: 4px;
+}
+
+.text-pod .pp-vziat {
+  margin-top: 2px;
+  padding: 2px 10px;
+  font-size: 0.74rem;
+}
+
+/* Tieň karty, ktorú vzal súper zo šenku (#111): na mieste karty ostane stlmená
+   karta so súperovým menom, do konca draftu. */
+.senok-tien > .kl {
+  opacity: 0.4;
+  filter: grayscale(0.75);
+  outline: 2px dashed var(--su);
+  outline-offset: -2px;
+  border-radius: 6px;
+  animation: senok-tien-prichod 0.5s ease-out;
+}
+
+.senok-tien:hover > .kl,
+.senok-tien:focus-visible > .kl {
+  opacity: 0.75;
+}
+
+.senok-tien-stitok {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  transform: translate(-50%, -50%) rotate(-8deg);
+  max-width: 96%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--su);
+  color: var(--pozadie);
+  font-size: 0.72rem;
+  font-weight: 800;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes senok-tien-prichod {
+  from {
+    opacity: 1;
+    filter: none;
+  }
+}
+
+/* Prelet vzatej karty k súperovej doske (LetiacaKarta.tsx). */
+.letiaca-karta {
+  position: fixed;
+  z-index: 880;
+  pointer-events: none;
+  transform-origin: center;
+  will-change: transform, opacity;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.55));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .senok-tien > .kl {
+    animation: none;
+  }
+}

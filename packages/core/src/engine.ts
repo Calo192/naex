@@ -136,6 +136,20 @@ export interface DraftStav {
   /** Hráč už nič neberie (prestal, alebo šenok je prázdny). */
   readonly hotovo: readonly [boolean, boolean];
   readonly noveKarty: readonly [number, number];
+  /**
+   * Karty vzaté zo šenku v tomto drafte (#111, Michal 2026-10-26) — branie je
+   * verejné, hráč má vidieť, čo mu súper zobral; na mieste karty ostane jej tieň.
+   * Chýba v stavoch spred tejto zmeny (scenár výučby, staré testy) — číta sa cez `?? []`.
+   */
+  readonly zobrate?: readonly ZobrataZoSenku[];
+}
+
+/** Karta vzatá zo šenku: kto ju vzal a na ktorom mieste šenku ležala. */
+export interface ZobrataZoSenku {
+  readonly karta: CardInstance;
+  readonly hrac: PlayerId;
+  /** Miesto v rade šenku, rátané aj s tieňmi skôr vzatých kariet — tieň ostane tam, kde karta ležala. */
+  readonly miesto: number;
 }
 
 export interface ZhromazdenieStav {
@@ -1525,11 +1539,16 @@ function cmdDraftBer(
   need(s.hraci[p].cigarety >= cena, `Na ${pocet === 1 ? "kartu" : kariet(pocet)} treba ${cigariet(cena)}.`);
   hrac(s, p).cigarety -= cena;
   const mena: string[] = [];
-  for (const uid of cmd.uids) {
+  // Miesta tieňov sa určia pred vybratím, aby dve karty jedného ťahu nepohli jedna druhou.
+  const zobrate = [...(d.zobrate ?? [])];
+  const miesta = cmd.uids.map((uid) => miestoVSenku(s.senok.findIndex((k) => k.uid === uid), zobrate));
+  cmd.uids.forEach((uid, i) => {
     const karta = s.senok.splice(s.senok.findIndex((k) => k.uid === uid), 1)[0] as DeepMutable<CardInstance>;
     hrac(s, p).ruka.push(karta);
     mena.push(defOf(data, karta as CardInstance).name);
-  }
+    zobrate.push({ karta: { ...karta }, hrac: p, miesto: miesta[i] ?? 0 });
+  });
+  d.zobrate = zobrate;
   d.noveKarty[p] += pocet;
   events.push({ type: "log", text: `Hráč ${p + 1} berie zo šenku ${mena.join(" a ")} za ${cena} ${cena === 1 ? "cigaretu" : "cigarety"}.` });
   // Prázdny šenok končí branie obom.
@@ -1538,6 +1557,17 @@ function cmdDraftBer(
   // branie končí (Michal 2026-10-20; predtým bral druhý sám, koľko chcel).
   if (d.hotovo[opponentOf(p)]) d.hotovo[p] = true;
   dalsiVBerani(s, data, p, events);
+}
+
+/** Miesto karty šenku (index v `senok`) v rade s tieňmi: index-té miesto, ktoré nezaberá tieň. */
+export function miestoVSenku(index: number, zobrate: readonly Pick<ZobrataZoSenku, "miesto">[]): number {
+  const tiene = new Set(zobrate.map((z) => z.miesto));
+  let miesto = 0;
+  for (let volnych = 0; ; miesto++) {
+    if (tiene.has(miesto)) continue;
+    if (volnych === index) return miesto;
+    volnych++;
+  }
 }
 
 function cmdDraftStop(s: MutState, data: GameData, p: PlayerId, events: Event[]): void {
