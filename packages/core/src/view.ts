@@ -30,6 +30,7 @@ import type {
 import { cenaDedicstva, mozeHrat, najdiNastroje, naTahu, pohorsenieMozne, uidZaverecnej } from "./engine.ts";
 import { KONSTANTY } from "./constants.ts";
 import { MARKER_STRED, posunMarker, prekraciaHranicu, priazenHraca, priazenSila } from "./elders.ts";
+import type { MarkerPos } from "./elders.ts";
 import type { DamageResult } from "./battle.ts";
 import { partiaHraca, pohorsenieNaKraj } from "./effects.ts";
 
@@ -438,6 +439,24 @@ export function cenaKliatby(data: GameData, view: ClientState, p: PlayerId, defI
   return bodyTeraz(data, { ...view, nepriznaneKliatby: kliatby }).spolu[p] - pred;
 }
 
+/** Rozdiel bodov p − súper podľa bodyTeraz — mierka hltavých náhľadov. */
+function rozdielBodov(data: GameData, view: ClientState, p: PlayerId): number {
+  const b = bodyTeraz(data, view).spolu;
+  return b[p] - b[opponentOf(p)];
+}
+
+/** Pohľad, v ktorom marker staršieho `elderId` stojí na `marker`. */
+function sMarkerom(view: ClientState, elderId: string, marker: MarkerPos): ClientState {
+  return { ...view, starsi: view.starsi.map((e) => (e.elderId === elderId ? { ...e, marker } : e)) };
+}
+
+/** Pohľad, v ktorom má hráč p o `pocet` cigariet viac. */
+function sCigaretami(view: ClientState, p: PlayerId, pocet: number): ClientState {
+  const hraci: [HracVerejne, HracVerejne] = [view.hraci[0], view.hraci[1]];
+  hraci[p] = { ...hraci[p], cigarety: hraci[p].cigarety + pocet };
+  return { ...view, hraci };
+}
+
 /** Body oboch hráčov pri patronáte: teraz, po vzatí (aj pri prehre) a pri výhre patróna. */
 export interface NahladPatronatu {
   readonly teraz: readonly [number, number];
@@ -501,7 +520,7 @@ export function nahladPosunuMarkera(
   if (marker === null) return null;
   const posunuty = { ...elder, marker };
   const pred = bodyTeraz(data, view).spolu;
-  const po = bodyTeraz(data, { ...view, starsi: view.starsi.map((e) => (e.elderId === elderId ? posunuty : e)) }).spolu;
+  const po = bodyTeraz(data, sMarkerom(view, elderId, marker)).spolu;
   return {
     body: [po[0], po[1]],
     zmena: [po[0] - pred[0], po[1] - pred[1]],
@@ -525,10 +544,8 @@ export function nahladPosunuPrebytkom(data: GameData, view: ClientState, elderId
   const elder = view.starsi.find((e) => e.elderId === elderId);
   const marker = elder === undefined ? null : posunMarker(elder, porazeny, false);
   if (marker === null) return n;
-  const hraci: [HracVerejne, HracVerejne] = [view.hraci[0], view.hraci[1]];
-  hraci[porazeny] = { ...hraci[porazeny], cigarety: hraci[porazeny].cigarety + 1 };
   const pred = bodyTeraz(data, view).spolu;
-  const po = bodyTeraz(data, { ...view, hraci, starsi: view.starsi.map((e) => (e.elderId === elderId ? { ...e, marker } : e)) }).spolu;
+  const po = bodyTeraz(data, sCigaretami(sMarkerom(view, elderId, marker), porazeny, 1)).spolu;
   return { ...n, body: [po[0], po[1]], zmena: [po[0] - pred[0], po[1] - pred[1]] };
 }
 
@@ -558,19 +575,13 @@ const STAVKA_PREBYTOK_NAJVIAC = 5;
  */
 function zmenaPoVyhre(data: GameData, view: ClientState, vitaz: PlayerId, prebytok: number): number {
   const porazeny = opponentOf(vitaz);
-  const rozdiel = (v: ClientState): number => {
-    const b = bodyTeraz(data, v).spolu;
-    return b[vitaz] - b[porazeny];
-  };
   const lokalita = view.ciel?.typ === "lokalita" ? view.ciel.lokalita : null;
   const ziskane = [...(lokalita === null ? [] : [lokalita]), ...view.naSekeru.filter((k) => k.uid !== lokalita?.uid)];
   const poLokalite: ClientState = { ...view, ovladnute: [...view.ovladnute, ...ziskane.map((karta) => ({ karta, hrac: vitaz }))] };
   // Miňištrant vo víťazovej partii zdraží každý posun (§9.4).
   const cena = 1 + partiaHraca(view, vitaz).filter((pl) => pl.card.defId === "ministrant").length;
   const { kroky, view: v } = hltavyPrebytok(data, poLokalite, vitaz, prebytok, cena);
-  const hraci: [HracVerejne, HracVerejne] = [v.hraci[0], v.hraci[1]];
-  hraci[porazeny] = { ...hraci[porazeny], cigarety: hraci[porazeny].cigarety + new Set(kroky).size };
-  return rozdiel({ ...v, hraci }) - rozdiel(view);
+  return rozdielBodov(data, sCigaretami(v, porazeny, new Set(kroky).size), vitaz) - rozdielBodov(data, view, vitaz);
 }
 
 /**
@@ -588,10 +599,6 @@ export function hltavyPrebytok(
   cena: number,
 ): { readonly kroky: readonly string[]; readonly view: ClientState } {
   const super_ = opponentOf(drzi);
-  const rozdiel = (v: ClientState): number => {
-    const b = bodyTeraz(data, v).spolu;
-    return b[drzi] - b[super_];
-  };
   let v = view;
   const kroky: string[] = [];
   for (let zostava = prebytok; zostava >= cena; zostava -= cena) {
@@ -599,8 +606,8 @@ export function hltavyPrebytok(
     for (const e of v.starsi) {
       const marker = posunMarker(e, super_, false);
       if (marker === null) continue;
-      const po: ClientState = { ...v, starsi: v.starsi.map((x) => (x.elderId === e.elderId ? { ...x, marker } : x)) };
-      const hodnota = rozdiel(po);
+      const po = sMarkerom(v, e.elderId, marker);
+      const hodnota = rozdielBodov(data, po, drzi);
       if (najlepsi === null || hodnota > najlepsi.hodnota) najlepsi = { v: po, hodnota, elderId: e.elderId };
     }
     if (najlepsi === null) break;
@@ -619,10 +626,6 @@ export function hltavyPrebytok(
  */
 export function hodnotaPohorseni(data: GameData, view: ClientState, p: PlayerId, pocet: number): number {
   const super_ = opponentOf(p);
-  const rozdiel = (v: ClientState): number => {
-    const b = bodyTeraz(data, v).spolu;
-    return b[p] - b[super_];
-  };
   const hranice: Record<string, number> = { ...(view.bitkaStav?.pohorsenieHranice ?? {}) };
   let v = view;
   for (let zostava = pocet; zostava > 0; zostava--) {
@@ -633,8 +636,8 @@ export function hodnotaPohorseni(data: GameData, view: ClientState, p: PlayerId,
         if (!pohorsenieMozne({ ...v, bitkaStav: { pohorsenieHranice: hranice } }, p, e, kSebe)) continue;
         const marker = posunMarker(e, kSebe ? p : super_, true, pohorsenieNaKraj(v, p));
         if (marker === null) continue;
-        const po: ClientState = { ...v, starsi: v.starsi.map((x) => (x.elderId === e.elderId ? { ...x, marker } : x)) };
-        const hodnota = rozdiel(po);
+        const po = sMarkerom(v, e.elderId, marker);
+        const hodnota = rozdielBodov(data, po, p);
         if (najlepsi === null || hodnota > najlepsi.hodnota) najlepsi = { v: po, hodnota, elderId: e.elderId, hranica: prekraciaHranicu(e.marker, marker) };
       }
     }
@@ -642,7 +645,7 @@ export function hodnotaPohorseni(data: GameData, view: ClientState, p: PlayerId,
     if (najlepsi.hranica) hranice[`${p}:${najlepsi.elderId}`] = (hranice[`${p}:${najlepsi.elderId}`] ?? 0) + 1;
     v = najlepsi.v;
   }
-  return rozdiel(v) - rozdiel(view);
+  return rozdielBodov(data, v, p) - rozdielBodov(data, view, p);
 }
 
 /**
