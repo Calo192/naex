@@ -120,12 +120,6 @@ export function jeEfektManual(defId: string): boolean {
 // ---------------------------------------------------------------------------
 // Kde sa efekt nachádza a komu patrí
 
-/** Furt na lokalite platí, kým je odhalená: cieľ kola alebo už ovládnutá. */
-export function lokalitaVHre(state: VerejnyStav, defId: string): boolean {
-  if (state.ciel?.typ === "lokalita" && state.ciel.lokalita?.defId === defId) return true;
-  return state.ovladnute.some((o) => o.karta.defId === defId);
-}
-
 /** Lokalita aktuálneho kola. */
 export function jeCielLokalita(state: Pick<VerejnyStav, "ciel">, defId: string): boolean {
   return state.ciel?.typ === "lokalita" && state.ciel.lokalita?.defId === defId;

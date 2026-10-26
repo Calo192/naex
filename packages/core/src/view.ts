@@ -29,7 +29,6 @@ import type {
 import { cenaDedicstva, mozeHrat, najdiNastroje, naTahu, pohorsenieMozne, uidZaverecnej } from "./engine.ts";
 import { KONSTANTY } from "./constants.ts";
 import { MARKER_STRED, posunMarker, prekraciaHranicu, priazenHraca, priazenSila } from "./elders.ts";
-import type { MarkerPos } from "./elders.ts";
 import type { DamageResult } from "./battle.ts";
 import { partiaHraca, pohorsenieNaKraj } from "./effects.ts";
 

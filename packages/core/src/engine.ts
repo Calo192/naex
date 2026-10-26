@@ -9,7 +9,7 @@
 // Rozhodnutia pri nejasných pravidlách sú vypísané v README (sekcia
 // „Rozhodnuté nejasnosti“) a označené v komentároch ako [R#].
 
-import type { CardDef, CardInstance, Phase, PlayerId, Tag } from "./types.ts";
+import type { CardDef, CardInstance, Phase, PlayerId } from "./types.ts";
 import { opponentOf, priazenZKluca } from "./types.ts";
 import type { GameData } from "./data.ts";
 import { defOf } from "./data.ts";
@@ -30,7 +30,7 @@ import {
 } from "./player.ts";
 import type { BattleOutcome, BattleSide, DamageResult } from "./battle.ts";
 import { battleOutcome, computeDamage, dlhyPoExekucii, exekutorCheck } from "./battle.ts";
-import type { ElderState, MarkerPos, PosunMarkera } from "./elders.ts";
+import type { ElderState, PosunMarkera } from "./elders.ts";
 import {
   MARKER_STRED,
   NAZVY_ZON,
@@ -557,10 +557,6 @@ function poZahodeni(s: MutState, data: GameData, p: PlayerId, pocet: number, eve
   if (!maEfekt(s, data, opp, "hrobar")) return;
   hrac(s, opp).cigarety += pocet;
   events.push({ type: "log", text: `Hrobár: hráč ${opp + 1} si berie ${cigariet(pocet)} za zahodené karty.` });
-}
-
-function tagOf(data: GameData, card: CardInstance): readonly Tag[] {
-  return defOf(data, card).tags;
 }
 
 function najdiVLinii(s: MutState, uid: number): { strana: PlayerId; index: number } | null {
@@ -1283,7 +1279,7 @@ export function apply(
       cmdPass(s, data, hracId, events);
       break;
     case "vypit":
-      cmdVypit(s, data, hracId, events);
+      cmdVypit(s, hracId, events);
       break;
     case "naex":
       cmdNaex(s, data, cmd, hracId, events);
@@ -2187,7 +2183,7 @@ function cmdPass(s: MutState, data: GameData, p: PlayerId, events: Event[]): voi
  * hneď klesne o 1 (poldeci už nie je plný), pečeň +1 a ráta sa ako nerest —
  * zato hráč ďalšou kartou neodovzdá ťah. Smie piť opakovane.
  */
-function cmdVypit(s: MutState, data: GameData, p: PlayerId, events: Event[]): void {
+function cmdVypit(s: MutState, p: PlayerId, events: Event[]): void {
   const z = s.zhromazdenieStav;
   need(s.faza === "zhromazdenie" && z !== null, "Vypiť sa dá len v Zhromaždení.");
   need(!z.pasoval[p], "Už si pasoval.");
