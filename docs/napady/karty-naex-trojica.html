@@ -65,6 +65,12 @@ td.ver { white-space: nowrap; font-weight: 600; }
 .s-sk { color: var(--tlmeny); } .s-naex { color: var(--naex); }
 .navrh { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 16px 18px; margin: 22px 0; }
 .navrh.odp { border-color: var(--akcent); box-shadow: inset 4px 0 0 var(--akcent); }
+.navrh.rozh { border-color: var(--ok); box-shadow: inset 4px 0 0 var(--ok); }
+.rozhodnute { margin: 12px 0 4px; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--ok); background: var(--plocha-2); }
+.rozhodnute b:first-child { color: var(--ok); }
+details.zalohy { border: 1px dashed var(--okraj); border-radius: 12px; padding: 8px 12px; margin: 16px 0; }
+details.zalohy > summary { font-size: .95rem; }
+.zodp { font-size: .9rem; color: var(--ok); margin-top: 4px; }
 .navrh > header { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
 .navrh > header h3 { margin: 0; font-size: 1.3rem; flex: 1 1 220px; }
 .cislo { font-family: var(--serif); font-size: 1.6rem; color: var(--akcent); line-height: 1; }
@@ -132,19 +138,33 @@ footer ul { padding-left: 18px; }
   Chcem, aby to tým pádom mali niečo spoločné s NA EX — ak sa súper viac NA EX ako ja, dostane Dlh.“</div>
 <p class="uvod">Vychádzam z pravidiel v6 (<code>docs/PRAVIDLA.md</code>), sady v21 (<code>packages/core/data/cards.json</code>), jadra na
 <code>1cfb1f2</code> a z dávok <code>analyza-sady.html</code> a <code>karty-kolo2.html</code>. Nič som nesimuloval (na webe beží ULTRA playtest).
-Sila je úvaha z pravidiel a z čísel analýzy sady (90 partií botov). Akcie a tagy všetkých troch kariet ostávajú. Do tvorcu nič nejde.</p>
+Sila je úvaha z pravidiel a z čísel analýzy sady (90 partií botov). Akcie a tagy všetkých kariet ostávajú. Do tvorcu nič nejde.</p>
+
+<section class="rozhodnute" aria-labelledby="h-rozh">
+  <h2 id="h-rozh" style="margin:0 0 6px;border:0;padding:0;font-size:1.15rem">Rozhodnuté Michalom 26. 10.: trojica schválená, programuje sa</h2>
+  <ul style="margin:0;padding-left:20px">
+    <li><b>Policajtka:</b> P1, 1 Dlh za Pitku. Dychovú skúšku nahrádza.</li>
+    <li><b>Svokra:</b> S1 Varecha, 1 Rana za kartu.</li>
+    <li><b>Anonymný alkoholik:</b> A1 Placatka.</li>
+    <li><b>Liberál stráca vetu „Nedá sa naň dať NA EX“.</b> Nový efekt navrhujem v <a href="#liberal">časti 5</a>.</li>
+  </ul>
+  <p class="pozn" style="margin:6px 0 0">Otvorené ostávajú len Liberál (L0–L3) a otázky 3 a 4. Pri otázkach 3 a 4 je uvedený predvolený výklad, ktorý sa programuje. Michal ho potvrdí alebo zmení.</p>
+</section>
 
 <section class="skratka" aria-labelledby="h-skratka">
   <h2 id="h-skratka">V skratke</h2>
   <ul>
-    <li><b>Odporúčaná trojica:</b> Policajtka <b>P1</b> „Pitka: kto dal viac NA EX, dostane Dlh“ · Svokra <b>S1 Varecha</b> „Ranu za každú tvoju kartu so súperovým NA EX“ ·
+    <li><b>Schválená trojica (programuje sa):</b> Policajtka <b>P1</b> „Pitka: kto dal viac NA EX, dostane Dlh“ · Svokra <b>S1 Varecha</b> „Ranu za každú tvoju kartu so súperovým NA EX“ ·
       Anonymný alkoholik <b>A1 Placatka</b> „tvoje NA EX naňho sa nepočíta do limitu; súper naňho NA EX dať smie“.</li>
     <li><b>Spoločná téma, tri otázky o NA EX:</b> <i>koľko</i> (Policajtka), <i>na koho</i> (Svokra), <i>mimo počtu</i> (Anonymný alkoholik).
       Tri rôzne meny: Dlh, Rana, NA EX navyše. Žiadna z kariet nekradne cigarety a žiadna nezakazuje NA EX.</li>
-    <li><b>Duplicity zmiznú:</b> Svokra už nie je priazeň Výpalníka (D2), Anonymný alkoholik už nie je Liberál (D1). Telá, na ktoré NA EX nejde: 23 % → 20 %.</li>
-    <li><b>Policajtka nahrádza Dychovú skúšku.</b> NA EX je v hre 9,5× za partiu, Vypiť 0,7×. Dychovej skúške hrozilo, že bude mŕtva.</li>
-    <li><b>Kód:</b> P1 a S1 nepotrebujú nový stav, A1 mení tri kontroly limitu. Všetky tri majú spúšťač, ktorý už existuje, takže netreba čakať na v7.</li>
-    <li>Na konci je 5 otázok.</li>
+    <li><b>Duplicity zmiznú:</b> Svokra už nie je priazeň Výpalníka (D2). Liberál stráca vetu o NA EX (D1), takže Anonymný alkoholik už nie je jeho kópia.
+      Telá, na ktoré NA EX nejde: 23 % → 20 % (Liberál), s A1 navyše 17 %.</li>
+    <li><b>Liberál (nové, časť 5):</b> odporúčam <b>L1 Kázeň o tolerancii</b> „Bitka: Ak súper nemá v partii rovnako žien a chlapov, jedno jeho Pohoršenie neplatí.“
+      Nahradí aj dnešnú vetu o ×2, takže z hry zmizne jeden zo štyroch efektov ×2.</li>
+    <li><b>Policajtka P1 nahrádza Dychovú skúšku</b> (rozhodnuté). NA EX je v hre 9,5× za partiu, Vypiť 0,7×. Dychovej skúške hrozilo, že bude mŕtva.</li>
+    <li><b>Kód:</b> P1, S1 a L1 nepotrebujú nový stav, A1 mení tri kontroly limitu. Všetky majú spúšťač, ktorý už existuje, takže netreba čakať na v7.</li>
+    <li>Otvorené otázky: 3 a 4, každá s predvoleným výkladom, ktorý sa programuje. Otázky 1, 2 a 5 sú zodpovedané.</li>
   </ul>
 </section>
 
@@ -155,7 +175,8 @@ Sila je úvaha z pravidiel a z čísel analýzy sady (90 partií botov). Akcie a
     <li><a href="#policajtka">Policajtka: 3 okamihy vyhodnotenia a vzťah k Dychovej skúške</a></li>
     <li><a href="#svokra">Svokra: 3 varianty</a></li>
     <li><a href="#aa">Anonymný alkoholik: 3 varianty</a></li>
-    <li><a href="#trojica">Odporúčaná trojkombinácia</a></li>
+    <li><a href="#trojica">Trojkombinácia (schválená)</a></li>
+    <li><a href="#liberal">Liberál bez NA EX: 3 varianty nového efektu</a></li>
     <li><a href="#dopad">Dopad na texty, kód a testy</a></li>
     <li><a href="#zamietnute">Zvážené a zamietnuté</a></li>
     <li><a href="#otazky">Otázky pre Michala</a></li>
@@ -195,8 +216,8 @@ Sila je úvaha z pravidiel a z čísel analýzy sady (90 partií botov). Akcie a
 <p class="pozn">Občan · Autorita · Žena. Akcie bez zmeny: vľavo Obmedzenie a Rana (sloty 2–3 blokované), vpravo Robota (sloty 0 a 3 blokované).
 Všetky tri varianty majú rovnakú podmienku. Líšia sa v tom, kedy sa vyhodnotí a čo sa ráta.</p>
 
-<article class="navrh odp" id="p1" data-kluc="p1" data-odp="ano" data-nazov="Policajtka · P1 Pitka (každá Pitka zvlášť)">
-  <header><span class="cislo">P1</span><h3>Fúkajte: každá Pitka</h3><span class="stitok s-ano">odporúčam áno</span></header>
+<article class="navrh rozh" id="p1">
+  <header><span class="cislo">P1</span><h3>Fúkajte: každá Pitka</h3><span class="stitok s-ano">rozhodnuté Michalom 26. 10.</span></header>
   <div class="kt">
     <div class="kt-hlava"><b>Policajtka</b><span class="kt-tagy">Občan · Autorita · Žena</span></div>
     <div class="kt-efekt"><span class="sp">Pitka:</span> Ak súper v tejto Pitke dal viac NA EX ako ty, dostane Dlh.</div>
@@ -208,7 +229,7 @@ Všetky tri varianty majú rovnakú podmienku. Líšia sa v tom, kedy sa vyhodno
       <li>0:0 aj 1:1: nič. Pri zrážke (Výtržník) má každý jedno NA EX, teda 1:1.</li>
       <li>Kostol (0 NA EX): nikdy.</li>
       <li>Krčma: obaja musia NA EX dať, takže zvyčajne 1:1. Dlh padne len vtedy, keď majiteľ dať nemohol (nemal plný poldeci alebo cieľ).</li>
-      <li>Vínna pivnica: pri 2:1 aj 2:0 súper dostane jeden Dlh (otázka 1).</li></ul></dd>
+      <li>Vínna pivnica: pri 2:1 aj 2:0 súper dostane jeden Dlh (1 Dlh za Pitku, rozhodnuté).</li></ul></dd>
     <dt>Jadro</dt><dd>Počet za Pitku už existuje: <code>pitka.naexPocet</code> (<code>engine.ts:2485</code>). Efekt patrí do <code>vyhodnotPitku</code>
       pred <code>pridajZadlzenie</code> (<code>:2856–2858</code>) a Dlh pridá <code>pridajKliatbu(…, "dlh")</code> (<code>:756–767</code>). Dlh sa hneď prizná a ukáže
       v rekapitulácii Pitky (<code>:2884–2887</code>). Skrytú Záverečnú už pokrýva odklad <code>naexSupera</code> a <code>naexVlastne</code> (<code>:386–394</code>, <code>:2466–2468</code>),
@@ -230,16 +251,12 @@ Všetky tri varianty majú rovnakú podmienku. Líšia sa v tom, kedy sa vyhodno
  "effect_text":"Pitka: Ak súper v tejto Pitke dal viac NA EX ako ty, dostane Dlh.","triggers":["Pitka"],
  "left":{"blocked":[2,3],"actions":{"Obmedzenie":1,"Rana":1}},
  "right":{"blocked":[0,3],"actions":{"Robota":1}}}</pre></details>
-  <div class="volba">
-    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
-    <p class="volba-vyznam">Áno daj len jednému variantu Policajtky. Variant = Dlh za každé NA EX navyše (na Vínnej pivnici až 2).</p>
-    <label class="skryte" for="pozn-p1">Poznámka k P1</label>
-    <textarea id="pozn-p1" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
-  </div>
+  <div class="rozhodnute"><b>Rozhodnuté Michalom 26. 10.:</b> P1, 1 Dlh za Pitku. Nahrádza Dychovú skúšku. Trojica je schválená a programuje sa.</div>
 </article>
 
-<article class="navrh" id="p2" data-kluc="p2" data-odp="nie" data-nazov="Policajtka · P2 Bitka (súčet za kolo)">
-  <header><span class="cislo">P2</span><h3>Fúka sa za celý večer: bitka</h3><span class="stitok s-nie">záloha</span></header>
+<details class="zalohy"><summary>Zálohy P2 a P3 (odpadli rozhodnutím „1 Dlh za Pitku“)</summary>
+<article class="navrh" id="p2">
+  <header><span class="cislo">P2</span><h3>Fúka sa za celý večer: bitka</h3><span class="stitok s-nie">odpadá</span></header>
   <div class="kt">
     <div class="kt-hlava"><b>Policajtka</b><span class="kt-tagy">Občan · Autorita · Žena</span></div>
     <div class="kt-efekt"><span class="sp">Bitka:</span> Ak súper dal v tomto kole viac NA EX ako ty, dostane Dlh za každé NA EX navyše.</div>
@@ -255,17 +272,11 @@ Všetky tri varianty majú rovnakú podmienku. Líšia sa v tom, kedy sa vyhodno
       Dlh príde pred krokom Exekútora, takže ho súperova aktívna Robota hneď spáli (<code>engine.ts:3297–3302</code>). To isté platí pri P1.</dd>
     <dt>Riziko</dt><dd>Nový stav a zmena Krčmárky. Náhľad počas Pitky musí ukazovať priebežný stav celého kola.</dd>
   </dl>
-  <div class="odporucanie"><b>Odporúčanie: nie, nechať ako zálohu.</b> Hodí sa, ak má ostať pocit Dychovej skúšky, že „sa fúka za celý večer“.</div>
-  <div class="volba">
-    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
-    <p class="volba-vyznam">Áno = P2 namiesto P1. Variant = 2 Dlhy naraz (ako Dychová skúška) namiesto Dlhu za každé NA EX navyše.</p>
-    <label class="skryte" for="pozn-p2">Poznámka k P2</label>
-    <textarea id="pozn-p2" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
-  </div>
+  <div class="odporucanie"><b>Odpadá.</b> Bola to záloha pre pocit Dychovej skúšky, že „sa fúka za celý večer“.</div>
 </article>
 
-<article class="navrh" id="p3" data-kluc="p3" data-odp="nie" data-nazov="Policajtka · P3 Po bitke (koniec kola)">
-  <header><span class="cislo">P3</span><h3>Účet ráno: po bitke</h3><span class="stitok s-nie">neodporúčam</span></header>
+<article class="navrh" id="p3">
+  <header><span class="cislo">P3</span><h3>Účet ráno: po bitke</h3><span class="stitok s-nie">odpadá</span></header>
   <div class="kt">
     <div class="kt-hlava"><b>Policajtka</b><span class="kt-tagy">Občan · Autorita · Žena</span></div>
     <div class="kt-efekt"><span class="sp">Po bitke:</span> Ak súper dal v tomto kole viac NA EX ako ty, dostane Dlh za každé NA EX navyše.</div>
@@ -278,17 +289,12 @@ Všetky tri varianty majú rovnakú podmienku. Líšia sa v tom, kedy sa vyhodno
     <dt>Sila</dt><dd>Najslabšia z troch. V tejto bitke Dlh už nič nespraví (Povera, remíza aj Exekútor sú za nami) a do ďalšej ho súper stihne spáliť Robotou alebo Dievčinou na vydaj.</dd>
     <dt>Riziko</dt><dd>Nový spúšťač kvôli jedinej karte a hráč následok hneď nevidí.</dd>
   </dl>
-  <div class="odporucanie"><b>Odporúčanie: nie.</b></div>
-  <div class="volba">
-    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
-    <p class="volba-vyznam">Áno = P3 namiesto P1 (počká na v7).</p>
-    <label class="skryte" for="pozn-p3">Poznámka k P3</label>
-    <textarea id="pozn-p3" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
-  </div>
+  <div class="odporucanie"><b>Odpadá.</b></div>
 </article>
+</details>
 
-<article class="navrh odp" id="vztah" data-kluc="vztah" data-odp="ano" data-nazov="Policajtka · vzťah k Dychovej skúške">
-  <header><span class="cislo">P</span><h3>Vzťah k Dychovej skúške</h3><span class="stitok s-ano">odporúčam: nahrádza</span></header>
+<article class="navrh rozh" id="vztah">
+  <header><span class="cislo">P</span><h3>Vzťah k Dychovej skúške</h3><span class="stitok s-ano">vyriešené: nahradená</span></header>
   <div class="tab-obal"><table>
     <thead><tr><th>Vzťah</th><th>Text karty</th><th>Za</th><th>Proti</th></tr></thead>
     <tbody>
@@ -297,13 +303,8 @@ Všetky tri varianty majú rovnakú podmienku. Líšia sa v tom, kedy sa vyhodno
       <tr><td class="ver">Dopĺňa</td><td>Dve vety: Dychová skúška (2 Dlhy) aj P1</td><td>Zachová schválenú Dychovú skúšku.</td><td>Dva zdroje Dlhu na jednej karte, najdlhší text. Neodporúčam.</td></tr>
     </tbody>
   </table></div>
-  <div class="odporucanie"><b>Odporúčanie: nahrádza.</b> Kombinácia je dobrá záloha, ak chceš trestať aj Vypiť.</div>
-  <div class="volba">
-    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
-    <p class="volba-vyznam">Áno = nahrádza. Variant = kombinácia (alebo dopĺňa, napíš). Nie = Policajtka ostane s Dychovou skúškou bez NA EX. Neskôr = po ULTRA playteste.</p>
-    <label class="skryte" for="pozn-vztah">Poznámka k vzťahu</label>
-    <textarea id="pozn-vztah" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
-  </div>
+  <div class="rozhodnute"><b>Rozhodnuté Michalom 26. 10.:</b> nahrádza. Policajtka má len vetu P1 a Dychová skúška z kola 2 do sady nejde.
+    Vypiť teraz netrestá žiadna karta. Kombinácia ostáva zapísaná ako nápad na neskôr.</div>
 </article>
 
 <!-- ======================= 2 SVOKRA ======================= -->
@@ -315,8 +316,8 @@ Všetky tri varianty majú rovnakú podmienku. Líšia sa v tom, kedy sa vyhodno
 Dnes je to presne priazeň Výpalníka (D2: „za každé súperovo NA EX ti súper dá 1/2/3 cigarety“) a kradla 77× za 90 partií.
 Jej cigarety navyše kŕmia Kapybaru (H1, H4 v analýze).</p>
 
-<article class="navrh odp" id="s1" data-kluc="s1" data-odp="ano" data-nazov="Svokra · S1 Varecha">
-  <header><span class="cislo">S1</span><h3>Varecha</h3><span class="stitok s-ano">odporúčam áno</span></header>
+<article class="navrh rozh" id="s1">
+  <header><span class="cislo">S1</span><h3>Varecha</h3><span class="stitok s-ano">rozhodnuté Michalom 26. 10.</span></header>
   <div class="kt">
     <div class="kt-hlava"><b>Svokra</b><span class="kt-tagy">Občan · Autorita · Žena</span></div>
     <div class="kt-efekt"><span class="sp">Bitka:</span> Za každú tvoju kartu so súperovým NA EX udelíš súperovi Ranu.</div>
@@ -334,7 +335,7 @@ Jej cigarety navyše kŕmia Kapybaru (H1, H4 v analýze).</p>
     <dt>Sila</dt><dd>Slabšia než dnes. Dnes berie 2 cigarety za každé súperovo NA EX kamkoľvek. Po zmene dá 1 tuhé za NA EX na tvoje karty
       a súper sa jej vyhne, keď NA EX dá na svoju kartu. Tuhé však rozhoduje bitku a Svokra prestane kŕmiť Kapybaru cigaretami.</dd>
     <dt>Riziko</dt><dd><ul>
-      <li>Ak bude slabá, stačí zvýšiť číslo (1 Rana) v <code>KONSTANTY.EFEKT</code> (otázka 5). Súperova Viera Ranu zníži.</li>
+      <li>Michal rozhodol 1 Ranu za kartu. Číslo bude v <code>KONSTANTY.EFEKT</code>, takže sa po playteste dá ľahko zmeniť. Súperova Viera Ranu zníži.</li>
       <li>Je Autorita, takže dnes ju súperov Praudovravec umlčí (<code>effects.ts:163–167</code>). Po D1 už nie.</li>
     </ul></dd>
   </dl>
@@ -344,16 +345,12 @@ Jej cigarety navyše kŕmia Kapybaru (H1, H4 v analýze).</p>
  "effect_text":"Bitka: Za každú tvoju kartu so súperovým NA EX udelíš súperovi Ranu.","triggers":["Bitka"],
  "left":{"blocked":[2,3],"actions":{"Poldeci":1}},
  "right":{"blocked":[],"actions":{"Obmedzenie":1,"Pecka":1,"Viera":1},"allowed":{"0":["Viera"],"1":["Viera"],"2":["Obmedzenie","Pecka"],"3":["Obmedzenie","Pecka"]}}}</pre></details>
-  <div class="volba">
-    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
-    <p class="volba-vyznam">Áno daj len jednému variantu Svokry. Variant = 2 Rany za kartu.</p>
-    <label class="skryte" for="pozn-s1">Poznámka k S1</label>
-    <textarea id="pozn-s1" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
-  </div>
+  <div class="rozhodnute"><b>Rozhodnuté Michalom 26. 10.:</b> S1 Varecha, 1 Rana za kartu. Trojica je schválená a programuje sa.</div>
 </article>
 
-<article class="navrh" id="s2" data-kluc="s2" data-odp="nie" data-nazov="Svokra · S2 Posledné slovo">
-  <header><span class="cislo">S2</span><h3>Posledné slovo</h3><span class="stitok s-nie">záloha, silnejšia</span></header>
+<details class="zalohy"><summary>Zálohy S2 a S3 (odpadli rozhodnutím „1 Rana za kartu“)</summary>
+<article class="navrh" id="s2">
+  <header><span class="cislo">S2</span><h3>Posledné slovo</h3><span class="stitok s-nie">odpadá</span></header>
   <div class="kt">
     <div class="kt-hlava"><b>Svokra</b><span class="kt-tagy">Občan · Autorita · Žena</span></div>
     <div class="kt-efekt"><span class="sp">Furt:</span> Na každé súperovo NA EX odpovedáš dvoma kartami.</div>
@@ -367,17 +364,11 @@ Jej cigarety navyše kŕmia Kapybaru (H1, H4 v analýze).</p>
       môžu pridať Pitku a zmeniť prevahu v kraji.</dd>
     <dt>Riziko</dt><dd>Veľký výkyv v tempe a dlhšie čakanie v Pitke. Súper prestane NA EX dávať úplne, rovnako ako dnes. S prázdnou rukou nerobí nič.</dd>
   </dl>
-  <div class="odporucanie"><b>Odporúčanie: nie, nechať ako zálohu.</b> Hodí sa, ak má Svokra ostať taká silná ako dnes. Pointa „svokra má vždy posledné slovo“ je výborná.</div>
-  <div class="volba">
-    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
-    <p class="volba-vyznam">Áno = S2 namiesto S1.</p>
-    <label class="skryte" for="pozn-s2">Poznámka k S2</label>
-    <textarea id="pozn-s2" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
-  </div>
+  <div class="odporucanie"><b>Odpadá.</b> Bola to záloha pre prípad, že má Svokra ostať taká silná ako dnes („svokra má vždy posledné slovo“).</div>
 </article>
 
-<article class="navrh" id="s3" data-kluc="s3" data-odp="nie" data-nazov="Svokra · S3 Výplata (s krádežou)">
-  <header><span class="cislo">S3</span><h3>Výplata</h3><span class="stitok s-nie">neodporúčam</span></header>
+<article class="navrh" id="s3">
+  <header><span class="cislo">S3</span><h3>Výplata</h3><span class="stitok s-nie">odpadá</span></header>
   <div class="kt">
     <div class="kt-hlava"><b>Svokra</b><span class="kt-tagy">Občan · Autorita · Žena</span></div>
     <div class="kt-efekt"><span class="sp">Pitka:</span> Ak súper v tejto Pitke dal NA EX, cigarety, ktoré by v nej dostal, dostaneš ty.</div>
@@ -389,14 +380,9 @@ Jej cigarety navyše kŕmia Kapybaru (H1, H4 v analýze).</p>
     <dt>Sila</dt><dd>Proti súperovi s akciami Cigareta podobná ako dnes, proti súperovi bez nich nulová. Za jednu Pitku vezme výplatu raz, bez ohľadu na počet NA EX.</dd>
     <dt>Riziko</dt><dd>Stále sú to cigarety za súperovo NA EX. Prekryv s Výpalníkom (D2) sa len zmenší, nezmizne, a Kapybara dostáva palivo ďalej.</dd>
   </dl>
-  <div class="odporucanie"><b>Odporúčanie: nie.</b> Má zmysel, len ak chceš krádež zachovať.</div>
-  <div class="volba">
-    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
-    <p class="volba-vyznam">Áno = S3 namiesto S1.</p>
-    <label class="skryte" for="pozn-s3">Poznámka k S3</label>
-    <textarea id="pozn-s3" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
-  </div>
+  <div class="odporucanie"><b>Odpadá.</b></div>
 </article>
+</details>
 
 <!-- ======================= 3 ANONYMNÝ ALKOHOLIK ======================= -->
 <h2 id="aa">3. Anonymný alkoholik</h2>
@@ -404,10 +390,11 @@ Jej cigarety navyše kŕmia Kapybaru (H1, H4 v analýze).</p>
   <div class="kt-hlava"><b>Dnes (v21)</b><span class="kt-tagy">Furt: Na neho nesmie súper dať NA EX.</span></div>
 </div>
 <p class="pozn">Občan · Závislý · Chlap. Akcie bez zmeny: vľavo Odpor a Robota (sloty 0 a 3 blokované), vpravo Viera (slot 1 alebo 2) a Dlh (slot 3).
-Liberál má druhú vetu „Nedá sa naň dať NA EX“, takže obaja robia to isté (D1). Všetky tri varianty zákaz rušia: súper naňho NA EX dať smie.</p>
+Liberál vetu „Nedá sa naň dať NA EX“ stráca (Michal 26. 10.), takže duplicita D1 zmizne aj bez zmeny Anonymného alkoholika.
+Nový efekt je tu kvôli Michalovmu zadaniu a kvôli tomu, aby NA EX dostalo späť cieľ. Všetky tri varianty zákaz rušia: súper naňho NA EX dať smie.</p>
 
-<article class="navrh odp" id="a1" data-kluc="a1" data-odp="ano" data-nazov="Anonymný alkoholik · A1 Placatka">
-  <header><span class="cislo">A1</span><h3>Placatka</h3><span class="stitok s-ano">odporúčam áno</span></header>
+<article class="navrh rozh" id="a1">
+  <header><span class="cislo">A1</span><h3>Placatka</h3><span class="stitok s-ano">rozhodnuté Michalom 26. 10.</span></header>
   <div class="kt">
     <div class="kt-hlava"><b>Anonymný alkoholik</b><span class="kt-tagy">Občan · Závislý · Chlap</span></div>
     <div class="kt-efekt"><span class="sp">Furt:</span> Tvoje NA EX naňho sa nepočíta do limitu NA EX za Pitku.</div>
@@ -421,8 +408,9 @@ Liberál má druhú vetu „Nedá sa naň dať NA EX“, takže obaja robia to i
       <li>Do ostatných počtov sa ráta normálne: Policajtka, Svokra, Krčmárka, Výpalné.</li>
       <li>Súper naňho NA EX dať smie, napríklad mu zruší Robotu či Vieru, a tým mu placatku na kolo zoberie.
         Keď ho v tej istej Pitke vyberú obaja, je z neho Výtržník.</li>
-      <li>Kostol: zákaz platí (otázka 3). Krčma: povinnosť má splniť aj placatka (otázka 4).
-        Inak by ho <code>krcmaVyzaduje</code> (<code>engine.ts:2640–2642</code>, <code>:2820</code>) nútilo dať ešte jedno NA EX.</li>
+      <li><b>Kostol (predvolený výklad, otázka 3):</b> zákaz NA EX platí aj pre placatku. Výnimka je z limitu, nie zo zákazu (<code>zakazNaex</code>, <code>effects.ts:224–226</code>, sa nemení).</li>
+      <li><b>Krčma (predvolený výklad, otázka 4):</b> povinné NA EX splní aj NA EX na Anonymného alkoholika.
+        Inak by <code>krcmaVyzaduje</code> (<code>engine.ts:2640–2642</code>, <code>:2820</code>) hráča nútilo dať ešte jedno NA EX. Kontrola Krčmy sa teda pýta, či hráč v Pitke dal aspoň jedno NA EX.</li>
     </ul></dd>
     <dt>Jadro</dt><dd>Limit kontrolujú <code>cmdNaex</code> (<code>engine.ts:2386–2389</code>), <code>moznostiNaex</code> (<code>:2551</code>) a <code>moznostiNaexVPohlade</code> (<code>:2582</code>).
       NA EX na vlastného Anonymného alkoholika sa nebude rátať do <code>naexPocet</code> a <code>naexPouzity</code> (<code>:2485–2486</code>) ani do skrytých NA EX v limite.
@@ -437,22 +425,19 @@ Liberál má druhú vetu „Nedá sa naň dať NA EX“, takže obaja robia to i
       <li>Pravidlo „najviac raz za Pitku“ dostane výnimku na karte, podobne ako ju má Vínna pivnica na lokalite.</li>
     </ul></dd>
   </dl>
-  <div class="odporucanie"><b>Odporúčanie: áno.</b> Z karty, ktorá NA EX zakazuje, sa stane jediná karta, ktorá NA EX pridáva. S Liberálom už nemá nič spoločné a NA EX dostane späť cieľ.
+  <div class="odporucanie"><b>Odporúčanie: áno.</b> Z karty, ktorá NA EX zakazuje, sa stane jediná karta, ktorá NA EX pridáva. Spolu s Liberálom bez vety o NA EX budú telá bez NA EX na 17 %.
     Príbeh to už hovorí: „Placatku vo vnútornom vrecku nepočíta.“</div>
   <details><summary>JSON (na neskôr)</summary><pre>{"id":"anonymny_alkoholik","name":"Anonymný alkoholik","tags":["Občan","Závislý","Chlap"],
  "effect_text":"Furt: Tvoje NA EX naňho sa nepočíta do limitu NA EX za Pitku.","triggers":["Furt"],
  "left":{"blocked":[0,3],"actions":{"Odpor":1,"Robota":1}},
  "right":{"blocked":[0],"actions":{"Dlh":1,"Viera":1},"allowed":{"1":["Viera"],"2":["Viera"],"3":["Dlh"]}}}</pre></details>
-  <div class="volba">
-    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
-    <p class="volba-vyznam">Áno daj len jednému variantu Anonymného alkoholika. Variant = placatka sa nepočíta nikde (ani Policajtke, Svokre či Výpalnému).</p>
-    <label class="skryte" for="pozn-a1">Poznámka k A1</label>
-    <textarea id="pozn-a1" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
-  </div>
+  <div class="rozhodnute"><b>Rozhodnuté Michalom 26. 10.:</b> A1 Placatka. Trojica je schválená a programuje sa. Placatka sa nepočíta len do limitu, do ostatných počtov sa ráta.
+    Výklad pre Kostol a Krčmu je predvolený (otázky 3 a 4).</div>
 </article>
 
-<article class="navrh" id="a2" data-kluc="a2" data-odp="nie" data-nazov="Anonymný alkoholik · A2 Triezvy deň">
-  <header><span class="cislo">A2</span><h3>Triezvy deň</h3><span class="stitok s-nie">záloha</span></header>
+<details class="zalohy"><summary>Zálohy A2 a A3 (odpadli rozhodnutím „A1 Placatka“)</summary>
+<article class="navrh" id="a2">
+  <header><span class="cislo">A2</span><h3>Triezvy deň</h3><span class="stitok s-nie">odpadá</span></header>
   <div class="kt">
     <div class="kt-hlava"><b>Anonymný alkoholik</b><span class="kt-tagy">Občan · Závislý · Chlap</span></div>
     <div class="kt-efekt"><span class="sp">Pitka:</span> Ak si v tejto Pitke nedal NA EX, dostaneš cigaretu.</div>
@@ -465,17 +450,11 @@ Liberál má druhú vetu „Nedá sa naň dať NA EX“, takže obaja robia to i
     <dt>Riziko</dt><dd>Podmienku „nedal si NA EX“ už má Krčmárka (<code>PRAVIDLA.md:1135</code>), teda podmienka sa prekrýva, odmena je iná.
       S Policajtkou ťahá rovnakým smerom (majiteľ nepije), čo je dvojitý tlak k Absťáku. Abstinent vymení poldeci za cigarety, satira sedí.</dd>
   </dl>
-  <div class="odporucanie"><b>Odporúčanie: nie, nechať ako zálohu.</b> Je jednoduchá, ale od majiteľa chce to isté ako Policajtka.</div>
-  <div class="volba">
-    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
-    <p class="volba-vyznam">Áno = A2 namiesto A1. Variant = karta namiesto cigarety.</p>
-    <label class="skryte" for="pozn-a2">Poznámka k A2</label>
-    <textarea id="pozn-a2" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
-  </div>
+  <div class="odporucanie"><b>Odpadá.</b> Je jednoduchá, ale od majiteľa chce to isté ako Policajtka.</div>
 </article>
 
-<article class="navrh" id="a3" data-kluc="a3" data-odp="nie" data-nazov="Anonymný alkoholik · A3 Pod stolom">
-  <header><span class="cislo">A3</span><h3>Pod stolom</h3><span class="stitok s-nie">neodporúčam</span></header>
+<article class="navrh" id="a3">
+  <header><span class="cislo">A3</span><h3>Pod stolom</h3><span class="stitok s-nie">odpadá</span></header>
   <div class="kt">
     <div class="kt-hlava"><b>Anonymný alkoholik</b><span class="kt-tagy">Občan · Závislý · Chlap</span></div>
     <div class="kt-efekt"><span class="sp">Furt:</span> Keď naňho súper dá NA EX, vypije k tomu ešte jeden plný poldeci.</div>
@@ -485,21 +464,16 @@ Liberál má druhú vetu „Nedá sa naň dať NA EX“, takže obaja robia to i
     <dt>Jadro</dt><dd><code>cmdNaex</code> <code>:2390</code> (2 plné poldeci, keď cieľom je súperov Anonymný alkoholik), <code>odhalNaex</code> <code>:2452</code> a <code>:2470</code>
       (poldeci a pečeň navyše, nerest), <code>moznostiNaex</code> <code>:2552</code> a <code>:2604</code>. Zo zákazu v <code>:2629–2637</code> sa stane cena.</dd>
     <dt>Sila</dt><dd>Blízko dnešku, mäkký zákaz. Súper naňho NA EX dá, len keď sa mu oplatí zaplatiť 2 poldeci.</dd>
-    <dt>Riziko</dt><dd>V praxi skoro to isté ako zákaz, teda ako Liberál, takže duplicita sa zmenší len málo. Do kontroly NA EX pribudne ďalšia výnimka.</dd>
+    <dt>Riziko</dt><dd>V praxi skoro to isté ako dnešný zákaz, takže NA EX cieľ takmer nedostane späť. Do kontroly NA EX pribudne ďalšia výnimka.</dd>
   </dl>
-  <div class="odporucanie"><b>Odporúčanie: nie.</b> Je to najmenšia zmena, ak má Anonymný alkoholik ostať ochranca.</div>
-  <div class="volba">
-    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
-    <p class="volba-vyznam">Áno = A3 namiesto A1.</p>
-    <label class="skryte" for="pozn-a3">Poznámka k A3</label>
-    <textarea id="pozn-a3" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
-  </div>
+  <div class="odporucanie"><b>Odpadá.</b> Bola to najmenšia zmena pre prípad, že má Anonymný alkoholik ostať ochranca.</div>
 </article>
+</details>
 
 <!-- ======================= 4 TROJICA ======================= -->
-<h2 id="trojica">4. Odporúčaná trojkombinácia</h2>
-<article class="navrh odp" id="t" data-kluc="trojica" data-odp="ano" data-nazov="Trojkombinácia P1 + S1 Varecha + A1 Placatka">
-  <header><span class="cislo">★</span><h3>Koľko · Na koho · Mimo počtu</h3><span class="stitok s-ano">odporúčam áno</span></header>
+<h2 id="trojica">4. Trojkombinácia</h2>
+<article class="navrh rozh" id="t">
+  <header><span class="cislo">★</span><h3>Koľko · Na koho · Mimo počtu</h3><span class="stitok s-ano">schválená, programuje sa</span></header>
   <div class="tab-obal"><table>
     <thead><tr><th>Karta</th><th>Otázka</th><th>Spúšťač</th><th>Mena</th><th>Majiteľ chce</th><th>Súper odpovie</th></tr></thead>
     <tbody>
@@ -514,7 +488,8 @@ Liberál má druhú vetu „Nedá sa naň dať NA EX“, takže obaja robia to i
       Lacnú cestu má: NA EX na svoju kartu (Svokra mlčí) a len vtedy, keď piješ aj ty (Policajtka mlčí).</li>
     <li><b>Placatka proti súperovej Policajtke:</b> NA EX navyše ťa dostane nad súpera a dostaneš Dlh. Proti vlastnej Policajtke sa bije tiež. Majiteľ volí.</li>
     <li><b>Placatka a vlastná Svokra:</b> súper, ktorý ti Anonymného alkoholika obsadí NA EXom, dostane Ranu.</li>
-    <li><b>Kostol:</b> všetky tri mlčia. <b>Krčma:</b> Policajtka takmer mlčí, Svokra určuje, kam súper musí NA EX dať, a placatka splní povinnosť (otázka 4).
+    <li><b>Kostol:</b> všetky tri mlčia, aj placatka (predvolený výklad, otázka 3). <b>Krčma:</b> Policajtka takmer mlčí, Svokra určuje, kam súper musí NA EX dať,
+      a povinnosť splní aj placatka (predvolený výklad, otázka 4).
       <b>Vínna pivnica:</b> Policajtka porovná aj 2:1 a s placatkou môžu byť až 3 NA EX v Pitke.</li>
     <li><b>Záverečná:</b> Policajtku pokryje odklad pri otočení, Svokra sa ráta až v bitke, keď je otočená.
       Na Anonymného alkoholika lícom dole dá NA EX len súper (<code>PRAVIDLA.md:1017–1018</code>), takže placatka ide až po otočení.</li>
@@ -522,20 +497,144 @@ Liberál má druhú vetu „Nedá sa naň dať NA EX“, takže obaja robia to i
     <li><b>Snúbenica:</b> Policajtke počet nezmení. Kartu, ktorú Snúbenica vrátila, Svokra nepočíta.</li>
     <li><b>Praudovravec:</b> Policajtka aj Svokra sú Autority, dnes ich umlčí (<code>effects.ts:163–167</code>), po D1 nie. Anonymný alkoholik Autorita nie je.</li>
   </ul>
-  <div class="odporucanie"><b>Odporúčanie: áno.</b> Každá karta sa pýta na NA EX inak a platí inou menou, takže sa dopĺňajú a nekopírujú.
-    Svokra a Anonymný alkoholik prídu o svoje duplicity. NA EX dostane späť jeden cieľ a cigarety prestanú tiecť zo Svokry do Kapybary.</div>
+  <div class="odporucanie"><b>Prečo to funguje:</b> každá karta sa pýta na NA EX inak a platí inou menou, takže sa dopĺňajú a nekopírujú.
+    Svokra príde o duplicitu s Výpalníkom. NA EX dostane späť dva ciele (Anonymný alkoholik a Liberál) a cigarety prestanú tiecť zo Svokry do Kapybary.</div>
+  <div class="rozhodnute"><b>Schválené Michalom 26. 10.:</b> P1 + S1 Varecha + A1 Placatka, Dychová skúška nahradená. Trojica sa programuje.</div>
+</article>
+
+<!-- ======================= 5 LIBERÁL ======================= -->
+<h2 id="liberal">5. Liberál bez NA EX</h2>
+<div class="kt stare">
+  <div class="kt-hlava"><b>Dnes (v21)</b><span class="kt-tagy">Občan · Zahraničný · Žena · Chlap</span></div>
+  <div class="kt-efekt"><span class="sp">Furt:</span> Ak je v tvojej partii rovnako žien a chlapov, jeho akcie sa rátajú dvakrát. <span class="sp">Furt:</span> <s>Nedá sa naň dať NA EX.</s></div>
+  <div class="kt-akcie"><div><small>vľavo</small> Pohoršenie <small>(slot 0 alebo 1, sloty 2–3 blokované)</small></div>
+    <div><small>vpravo</small> Cigareta <small>(slot 2 alebo 3, sloty 0–1 blokované)</small></div></div>
+</div>
+<dl class="riadky">
+  <dt>Čo robí dnes</dt><dd>Dve vety. <b>Prvá (×2):</b> keď je vo vlastnej partii (bez neho) rovnako žien a chlapov, aktívne akcie sa mu rátajú dvakrát. Platí to aj pri 0 : 0
+    (<code>PRAVIDLA.md:1136</code>, jadro <code>partia.ts:521–526</code>). <b>Druhá (NA EX):</b> NA EX naňho nejde, ani od majiteľa
+    (<code>PRAVIDLA.md:366</code>, <code>:1017–1018</code>; <code>engine.ts:2409</code>, <code>:2604</code>; klient <code>HernaPlocha.tsx:1082</code>, <code>:3317</code>).
+    Bot ho váži 0,5 (<code>bot.ts:167</code>). Testy: <code>playtest-055944.test.ts:137–140</code> (NA EX), <code>:275–322</code> (×2), <code>zaverecna.test.ts:146</code>.</dd>
+  <dt>Rozhodnuté</dt><dd>Druhá veta padá (Michal 26. 10.).</dd>
+  <dt>Čo s prvou vetou</dt><dd>Prvá veta je jeden zo štyroch efektov ×2 (Silná žena, Zámočník, Liberál, Veterán; D3 v analýze, „ďalší ×2 nepridávať“).
+    Odporúčam nahradiť celý efekt jednou novou vetou. Karta tak ostane jednovetá, D3 bude mať o jeden ×2 menej a vtip s počítaním žien a chlapov
+    sa presunie z jeho vlastnej partie na súperovu, kde naozaj káže. Voľba je nižšie, v bloku L0.</dd>
+  <dt>Satira</dt><dd>Kázanie a pokrytectvo: káže rovnosť a toleranciu ostatným, sám sa pohoršuje nad všetkým (vľavo má Pohoršenie) a prosecco mu platia iní.
+    Bez etnických narážok, Zahraničný nemá národnosť.</dd>
+</dl>
+
+<article class="navrh odp" id="l0" data-kluc="l0" data-odp="ano" data-nazov="Liberál · L0 čo s vetou ×2">
+  <header><span class="cislo">L0</span><h3>Veta ×2: nahradiť, alebo nechať?</h3><span class="stitok s-ano">odporúčam nahradiť</span></header>
+  <div class="tab-obal"><table>
+    <thead><tr><th>Možnosť</th><th>Text</th><th>Za</th><th>Proti</th></tr></thead>
+    <tbody>
+      <tr><td class="ver">Nahradiť</td><td>len nová veta (L1, L2 alebo L3)</td><td>Jedna veta, D3 má o jeden ×2 menej.</td><td>Pohoršenie a Cigareta sú ×1, takže silu dá len nová veta.</td></tr>
+      <tr><td class="ver">Dve vety</td><td>×2 a nová veta</td><td>Liberál ostane silný ako dnes.</td><td>Dlhý text. Pri L1 a L3 by sa pohlavia počítali dvakrát (raz u teba, raz u súpera).</td></tr>
+      <tr><td class="ver">Len zmazať</td><td>len ×2 (D1 z analýzy)</td><td>Najmenšia zmena, kód len zmaže zákaz NA EX.</td><td>Žiadna satira na kázanie, Liberál ostane kartou ×2.</td></tr>
+    </tbody>
+  </table></div>
   <div class="volba">
     <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
-    <p class="volba-vyznam">Áno = celá trojica, ako je. Variant = iná kombinácia (napíš, napr. P1 + S2 + A1). Neskôr = až po ULTRA playteste v6.</p>
-    <label class="skryte" for="pozn-trojica">Poznámka k trojici</label>
-    <textarea id="pozn-trojica" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
+    <p class="volba-vyznam">Áno = nahradiť celý efekt novou vetou. Variant = dve vety (×2 + nová). Nie = len zmazať vetu o NA EX, ×2 ostane.</p>
+    <label class="skryte" for="pozn-l0">Poznámka k L0</label>
+    <textarea id="pozn-l0" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
   </div>
 </article>
 
-<!-- ======================= 5 DOPAD ======================= -->
+<article class="navrh odp" id="l1" data-kluc="l1" data-odp="ano" data-nazov="Liberál · L1 Kázeň o tolerancii">
+  <header><span class="cislo">L1</span><h3>Kázeň o tolerancii</h3><span class="stitok s-ano">odporúčam áno</span></header>
+  <div class="kt">
+    <div class="kt-hlava"><b>Liberál</b><span class="kt-tagy">Občan · Zahraničný · Žena · Chlap</span></div>
+    <div class="kt-efekt"><span class="sp">Bitka:</span> Ak súper nemá v partii rovnako žien a chlapov, jedno jeho Pohoršenie neplatí.</div>
+  </div>
+  <dl class="riadky">
+    <dt>Vtip</dt><dd>Celý večer vysvetľuje, že pohoršovať sa je netolerantné, a pohoršuje sa pritom nad každým, kto nemá vyvážený stôl. Vlastné Pohoršenie mu, samozrejme, platí.</dd>
+    <dt>Spúšťač</dt><dd>Bitka, krok 2 Pohoršenie (<code>PRAVIDLA.md:566–586</code>). Zníži sa súčet, keď sa Pohoršenia spočítajú po Benzínke.</dd>
+    <dt>Čo sa ráta</dt><dd>Súperove karty v línii (jeho partia, na ktorejkoľvek strane) s tagom Žena a Chlap, rovnako ako dnes Liberál ráta svoju partiu.
+      Karta s oboma tagmi ide do oboch, 0 : 0 je rovnosť. Každý Liberál zruší jedno. Návrh výkladu: zruší sa najprv Pohoršenie zo stola, potom z priazne Abstinenta, nakoniec z patronátu.</dd>
+    <dt>Jadro</dt><dd>Nový stav netreba. <code>rozpisPohorseni</code> (<code>engine.ts:3212–3225</code>) odpočíta od <code>spolu</code> počet súperových Liberálov, keď hráč nemá rovnosť.
+      Log patrí do <code>nastavSumy</code> (<code>:3158–3183</code>), ako dnes pri Policajtke (<code>:3170–3173</code>). Náhľad <code>pohorseniaVBitke</code> (<code>:3232</code>) ide tým istým výpočtom.
+      Počítanie pohlaví sa vytiahne z <code>partia.ts:523–526</code> do pomocnej funkcie. Zmaže sa ×2 (<code>partia.ts:521–526</code>), zákaz NA EX (<code>engine.ts:2409</code>, <code>:2604</code>)
+      a hlášky v klientovi (<code>HernaPlocha.tsx:1082</code>, <code>:3317</code>).</dd>
+    <dt>Sila</dt><dd>Podobná ako dnes, len opačným smerom. Dnes si pri rovnosti vo vlastnej partii zdvojí Pohoršenie a Cigaretu, teda +1 Pohoršenie pre seba.
+      Po zmene súperovi zoberie jedno Pohoršenie vždy, keď súper rovnosť nemá, a to je väčšina bitiek. Pohoršení je tak v hre spolu menej.</dd>
+    <dt>Riziko</dt><dd><ul>
+      <li>Je to malá brzda Pohoršenia. Brzdy Pokuta a Hliadka Michal pri Policajtke odmietol, táto je však len o 1 a súper ju vypne tým, že vyrovná pohlavia.</li>
+      <li>Ak ULTRA playtest ukáže, že Pohoršenie brzdu netreba (H3), bude to obyčajná karta.</li>
+      <li>Súper musí sledovať pohlavia v partii, čo je ďalšia vec na počítanie. Náhľad bitky ju ukáže.</li>
+      <li>Nekryje sa so Zverákom (najviac 1 pole na staršieho) ani s novou Policajtkou (tá sa Pohoršenia netýka).</li>
+    </ul></dd>
+  </dl>
+  <div class="odporucanie"><b>Odporúčanie: áno.</b> Zostane vtip s počítaním žien a chlapov, ktorý je dnes na karte aj v príbehu. Liberál ním však káže súperovi a popri Zveráku
+    je jedinou brzdou Pohoršenia, ktorá v hre ostane. S Placatkou, Varechou ani Policajtkou nemá nič spoločné.</div>
+  <details><summary>JSON (na neskôr)</summary><pre>{"id":"liberal","name":"Liberál","tags":["Občan","Zahraničný","Žena","Chlap"],
+ "effect_text":"Bitka: Ak súper nemá v partii rovnako žien a chlapov, jedno jeho Pohoršenie neplatí.","triggers":["Bitka"],
+ "left":{"blocked":[2,3],"actions":{"Pohoršenie":1}},
+ "right":{"blocked":[0,1],"actions":{"Cigareta":1}}}</pre></details>
+  <div class="volba">
+    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
+    <p class="volba-vyznam">Áno daj len jednému variantu Liberála. Variant = podmienka „viac chlapov ako žien“ namiesto nerovnosti (užšie, ostrejšie).</p>
+    <label class="skryte" for="pozn-l1">Poznámka k L1</label>
+    <textarea id="pozn-l1" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
+  </div>
+</article>
+
+<article class="navrh" id="l2" data-kluc="l2" data-odp="neskor" data-nazov="Liberál · L2 Zrušený">
+  <header><span class="cislo">L2</span><h3>Zrušený</h3><span class="stitok s-neskor">silný, neskôr</span></header>
+  <div class="kt">
+    <div class="kt-hlava"><b>Liberál</b><span class="kt-tagy">Občan · Zahraničný · Žena · Chlap</span></div>
+    <div class="kt-efekt"><span class="sp">Nástup:</span> Vyber súperovu kartu v línii. Do konca kola jej efekt neplatí.</div>
+  </div>
+  <dl class="riadky">
+    <dt>Vtip</dt><dd>Cancel kultúra: verejne zruší suseda za starý status a do konca večera s ním nikto nehovorí. Akcie karty platia ďalej, umlčí sa len efekt.</dd>
+    <dt>Spúšťač</dt><dd>Nástup, aj ako odpoveď na NA EX. Ako Záverečná sa vyhodnotí až pri otočení. Súperovu skrytú Záverečnú vybrať nemožno, prebudeného staršieho tiež nie (nie je v línii).</dd>
+    <dt>Jadro</dt><dd>Najväčší kód z troch variantov. Treba nový stav (zoznam zrušených kariet), ktorý sa vynuluje na konci kola (<code>engine.ts:4215–4220</code>),
+      a voľbu cieľa v Nástupe (<code>:2161</code>, s čakaním ako pri Benzínke). Filter pribudne do <code>vPartii</code> a <code>efektHraca</code> (<code>effects.ts:141–156</code>)
+      a príznak do efektov v línii: <code>partia.ts:513–535</code>, Veterán <code>:465–486</code>, Šofér <code>:620</code>, Pes <code>effects.ts:371</code>.
+      K tomu priame kontroly v jadre, napr. Dievčina <code>engine.ts:3105–3106</code> a počet Svokier <code>:3065</code>. Bot potrebuje voľbu cieľa.</dd>
+    <dt>Sila</dt><dd>Situačne veľmi vysoká: vypne Kapybaru, Svokru, Policajtku, Psa či Kohúta. Po D1 Praudovravca je to jediná protihra proti efektom kariet (H4 v analýze).</dd>
+    <dt>Riziko</dt><dd>Veľký kód a veľa výnimiek a hráčom treba vysvetliť rozdiel medzi efektom a akciami. Kým Praudovravec nedostane D1, kryje sa s ním (<code>effects.ts:163–167</code>).
+      Zrušiť súperovi kľúčovú kartu na celé kolo môže byť frustrujúce.</dd>
+  </dl>
+  <div class="odporucanie"><b>Odporúčanie: neskôr.</b> Je to najostrejšia satira, ale aj najdrahšia. Vrátiť sa k nej, ak playtest ukáže, že efektom kariet chýba protihra (H4).</div>
+  <div class="volba">
+    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
+    <p class="volba-vyznam">Áno = L2 namiesto L1. Neskôr = po playteste, ak bude chýbať protihra proti efektom.</p>
+    <label class="skryte" for="pozn-l2">Poznámka k L2</label>
+    <textarea id="pozn-l2" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
+  </div>
+</article>
+
+<article class="navrh" id="l3" data-kluc="l3" data-odp="nie" data-nazov="Liberál · L3 Dotácie">
+  <header><span class="cislo">L3</span><h3>Dotácie</h3><span class="stitok s-nie">neodporúčam</span></header>
+  <div class="kt">
+    <div class="kt-hlava"><b>Liberál</b><span class="kt-tagy">Občan · Zahraničný · Žena · Chlap</span></div>
+    <div class="kt-efekt"><span class="sp">Zhromaždenie:</span> Kým súper nemá v partii rovnako žien a chlapov, za pas nedostane cigarety.</div>
+  </div>
+  <dl class="riadky">
+    <dt>Vtip</dt><dd>Dotácie len pre vyvážené kolektívy. Prosecco mu medzitým platia tí, ktorí kvótu nesplnili.</dd>
+    <dt>Spúšťač</dt><dd>Zhromaždenie, pri pase (<code>PRAVIDLA.md:320–331</code>).</dd>
+    <dt>Jadro</dt><dd><code>cmdPass</code> (<code>engine.ts:2272–2291</code>; <code>kartyZaPas</code>, <code>CIGARETY_ZA_PAS_NA_KARTU</code>) a počítanie pohlaví ako v L1. Treba aj náhľad pasu v klientovi. Malé.</dd>
+    <dt>Sila</dt><dd>Slabá až stredná. Súper príde o 0–2 cigarety za Zhromaždenie a pri prázdnej partii (0 : 0) karta nepôsobí.</dd>
+    <dt>Riziko</dt><dd>Svojou triedou sa kryje s Obmedzením (súper má menej cigariet). Pas je hlavný prítok cigariet a Kšeft na ne stavia.
+      Ak hráč pasuje skôr, než niečo vyloží, rovnosť 0 : 0 ho chráni, takže L3 trestá skôr toho, kto vykladá.</dd>
+  </dl>
+  <div class="odporucanie"><b>Odporúčanie: nie.</b> Vtip sedí, hra z neho má málo.</div>
+  <div class="volba">
+    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
+    <p class="volba-vyznam">Áno = L3 namiesto L1. Variant = cigarety za pas dostaneš ty (krádež, silnejšie).</p>
+    <label class="skryte" for="pozn-l3">Poznámka k L3</label>
+    <textarea id="pozn-l3" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
+  </div>
+</article>
+
+<!-- ======================= 6 DOPAD ======================= -->
 <section class="ramik" id="dopad" aria-labelledby="h-dopad">
-  <h2 id="h-dopad">Dopad na texty, kód a testy (trojica P1 + S1 + A1)</h2>
+  <h2 id="h-dopad">Dopad na texty, kód a testy (P1 + S1 + A1 + Liberál L1)</h2>
   <ul>
+    <li><b>Liberál (L1, nahradiť celý efekt):</b> <code>PRAVIDLA.md:366</code>, <code>:1017–1018</code>, <code>:1136</code>; jadro <code>partia.ts:521–526</code>, <code>engine.ts:2409</code>, <code>:2604</code>, <code>:3158–3183</code>, <code>:3212–3225</code>;
+      komentár <code>effects.ts:63</code>; klient <code>HernaPlocha.tsx:1082</code>, <code>:3317</code>, <code>kapitoly.tsx:386</code>; ťahák <code>tahak.md:126</code>; rozhodca <code>mapa.json:394–397</code>, <code>:1604–1608</code>;
+      testy <code>playtest-055944.test.ts:137–140</code>, <code>:275–322</code>, <code>zaverecna.test.ts:146</code>; váha bota <code>bot.ts:167</code>. Výučba Liberála nečíta, je len v spoločnom balíčku (<code>prva-hra.json</code>).</li>
     <li><b>PRAVIDLA.md:</b> §7 <code>:366–367</code> (zákaz pre Anonymného alkoholika), <code>:389–391</code> a <code>:404–405</code> (Svokra pri odkrytí a zrážke),
       §9.2 <code>:585–586</code> a §10 <code>:812–813</code> (Policajtka ruší Pohoršenia), §13 <code>:1017–1018</code> a <code>:1022–1023</code> (Záverečná),
       §16 <code>:1132</code>, <code>:1142</code>, <code>:1154</code>. Nový výklad: placatka (limit, Krčma, Kostol) a Varecha (čo sa ráta).</li>
@@ -562,6 +661,10 @@ Liberál má druhú vetu „Nedá sa naň dať NA EX“, takže obaja robia to i
     <li><b>Anonymný alkoholik ako pasca</b> (NA EX naňho nič nespraví a súper dostane Ranu). V praxi naňho NA EX nikto nedá, takže je to znova zákaz.</li>
     <li><b>Anonymný alkoholik berie súperov poldeci</b> (poldeci z NA EX pripadne majiteľovi). Trvalý poldeci navyše je priveľa, barter stojí 5 cigariet.</li>
     <li><b>Policajtka „Dlh za každé súperovo NA EX“ bez porovnania.</b> Je to Výpalník v Dlhoch a majiteľ by o ničom nerozhodoval.</li>
+    <li><b>Liberál „Káže vodu, pije víno“</b> (súper nesmie Vypiť, ty áno). Vypiť je zriedkavé (0,7 za partiu) a Kostol zákaz pitia už má, pre oboch.</li>
+    <li><b>Liberál „Prerozdelenie“</b> (keď má súper v ruke viac kariet, vezmi mu náhodnú). Kryje sa s Klebetnicou, ktorá tiež berie z ruky.</li>
+    <li><b>Liberál „Kvóta“</b> (súper bez rovnosti má limit vykladania o 1 nižší). Priveľa, limit býva 2.</li>
+    <li><b>Liberál „Pohoršenie navyše“</b>, keď súper nemá rovnosť. Je to tematicky čisté, ale pridáva Pohoršenie, ktoré už teraz nemá brzdu (H3).</li>
   </ul>
 </section>
 
@@ -570,16 +673,18 @@ Liberál má druhú vetu „Nedá sa naň dať NA EX“, takže obaja robia to i
   <h2 id="h-otazky">Otázky pre Michala</h2>
   <p class="pozn">Stačí krátka odpoveď, skopíruje sa spolu s voľbami.</p>
   <ol class="otazky">
-    <li data-otazka="q1">Policajtka: jeden Dlh za Pitku (odporúčam), alebo Dlh za každé NA EX navyše (na Vínnej pivnici až 2)?
-      <label class="skryte" for="odp-q1">Odpoveď na otázku 1</label><textarea id="odp-q1" placeholder="Odpoveď (nepovinné)"></textarea></li>
-    <li data-otazka="q2">Liberál: duplicita s Anonymným alkoholikom zmizne aj bez D1. Má Liberál vetu „Nedá sa naň dať NA EX“ aj tak stratiť? S ňou je 20 % tiel bez NA EX, bez nej 17 %.
-      <label class="skryte" for="odp-q2">Odpoveď na otázku 2</label><textarea id="odp-q2" placeholder="Odpoveď (nepovinné)"></textarea></li>
-    <li data-otazka="q3">Placatka na Kostole: platí zákaz NA EX aj pre ňu (odporúčam), alebo je to jediné NA EX, ktoré sa smie dať v kostole?
-      <label class="skryte" for="odp-q3">Odpoveď na otázku 3</label><textarea id="odp-q3" placeholder="Odpoveď (nepovinné)"></textarea></li>
-    <li data-otazka="q4">Placatka na Krčme: splní povinné NA EX aj NA EX na Anonymného alkoholika (odporúčam), alebo musí hráč dať aj bežné?
-      <label class="skryte" for="odp-q4">Odpoveď na otázku 4</label><textarea id="odp-q4" placeholder="Odpoveď (nepovinné)"></textarea></li>
-    <li data-otazka="q5">Svokra Varecha: 1 Rana za kartu (odporúčam), alebo 2?
-      <label class="skryte" for="odp-q5">Odpoveď na otázku 5</label><textarea id="odp-q5" placeholder="Odpoveď (nepovinné)"></textarea></li>
+    <li>Policajtka: jeden Dlh za Pitku (odporúčam), alebo Dlh za každé NA EX navyše (na Vínnej pivnici až 2)?
+      <p class="zodp">Zodpovedané Michalom 26. 10.: jeden Dlh za Pitku.</p></li>
+    <li>Liberál: duplicita s Anonymným alkoholikom zmizne aj bez D1. Má Liberál vetu „Nedá sa naň dať NA EX“ aj tak stratiť?
+      <p class="zodp">Zodpovedané Michalom 26. 10.: áno, stráca ju. Nový efekt navrhujem v <a href="#liberal">časti 5</a>.</p></li>
+    <li data-otazka="q3" data-cislo="3">Placatka na Kostole: platí zákaz NA EX aj pre ňu, alebo je to jediné NA EX, ktoré sa smie dať v kostole?
+      <p class="pozn"><b>Predvolený výklad, programuje sa:</b> Kostol zakazuje NA EX aj na Anonymného alkoholika. Placatka je výnimka z limitu, nie zo zákazu. Potvrď ho, alebo ho zmeň.</p>
+      <label class="skryte" for="odp-q3">Odpoveď na otázku 3</label><textarea id="odp-q3" placeholder="Potvrdzujem / mením na … (nepovinné)"></textarea></li>
+    <li data-otazka="q4" data-cislo="4">Placatka na Krčme: splní povinné NA EX aj NA EX na Anonymného alkoholika, alebo musí hráč dať aj bežné?
+      <p class="pozn"><b>Predvolený výklad, programuje sa:</b> na Krčme povinné NA EX splní aj NA EX na Anonymného alkoholika. Potvrď ho, alebo ho zmeň.</p>
+      <label class="skryte" for="odp-q4">Odpoveď na otázku 4</label><textarea id="odp-q4" placeholder="Potvrdzujem / mením na … (nepovinné)"></textarea></li>
+    <li>Svokra Varecha: 1 Rana za kartu (odporúčam), alebo 2?
+      <p class="zodp">Zodpovedané Michalom 26. 10.: 1 Rana za kartu.</p></li>
   </ol>
 </section>
 
@@ -678,16 +783,18 @@ Liberál má druhú vetu „Nedá sa naň dať NA EX“, takže obaja robia to i
   });
 
   function suhrn() {
-    var r = ["Michal — voľby, NA EX trojica: Policajtka, Svokra, Anonymný alkoholik (naex-tmp/brainstorming-karty/karty-naex-trojica.html):", ""];
+    var r = ["Michal — voľby, NA EX trojica a Liberál (naex-tmp/brainstorming-karty/karty-naex-trojica.html):",
+      "Už rozhodnuté 26. 10.: trojica schválená, programuje sa: Policajtka P1 (1 Dlh za Pitku, nahrádza Dychovú skúšku), Svokra S1 Varecha (1 Rana za kartu), Anonymný alkoholik A1 Placatka. Liberál stráca vetu o NA EX.",
+      "Predvolené výklady (programujú sa): Kostol zakazuje NA EX aj na Anonymného alkoholika; na Krčme povinné NA EX splní aj placatka.", ""];
     bloky.forEach(function (b) {
       var k = b.getAttribute("data-kluc");
       var v = stav.volby[k] ? NAZVY_VOLIEB[stav.volby[k]] : "bez voľby";
       var p = (stav.poznamky[k] || "").trim();
       r.push(b.getAttribute("data-nazov") + ": " + v + (p ? " — " + p : ""));
     });
-    var odp = otazky.map(function (li, i) {
+    var odp = otazky.map(function (li) {
       var a = (stav.odpovede[li.getAttribute("data-otazka")] || "").trim();
-      return a ? "Otázka " + (i + 1) + ": " + a : null;
+      return a ? "Otázka " + li.getAttribute("data-cislo") + ": " + a : null;
     }).filter(Boolean);
     if (odp.length) { r.push(""); r.push("Odpovede na otázky:"); r = r.concat(odp); }
     return r.join("\n");
