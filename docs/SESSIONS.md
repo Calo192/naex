@@ -23,6 +23,7 @@ viac kôl dizajnu). Vtedy pre ňu platí časť „Ďalšia session“ nižšie.
 | `naex-oko` | Sonnet | snímky: čo je kde, orezané, prekryté, konzola — vráti text |
 | `naex-citac` | Sonnet | dlhé dokumenty, reporty, logy — odpovede s `cesta:riadok` |
 | `naex-overovac` | Haiku | rebase, test, typecheck, build — verdikt a padnuté testy |
+| `naex-upratovac` | Opus, xhigh | týždenné čistenie kódu bez zmeny správania (cloud, piatok 04:00 SEČ) — PR `upratovanie/<dátum>`, zmerguje Leader po `naex-overovac` |
 | `Explore` (vstavaný) | — | kde je čo v kóde |
 | playtest, stratég, rozhodca, bot-tréner, developer | podľa definície | cez svoje skilly (`/naex-playtest`, `/naex-strategia`, …) |
 | kontrola štýlu ilustrácií | — | skill `/naex-kontrola-stylu` (agent `naex-ilustrator` v režime kontroly) |

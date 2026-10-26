@@ -55,6 +55,8 @@ node --experimental-strip-types --no-warnings tools/admin/admin.ts <príkaz>   #
 node --experimental-strip-types --no-warnings tools/playtest/turnus.ts 2 stredna   # 2 partie AI playtesterov naraz (skill naex-playtest)
 node --experimental-strip-types --no-warnings tools/bot/turnaj.ts 20 chamtivy stredna stamgast   # sila povahy bota
 node --experimental-strip-types --no-warnings tools/bot/strategickost.ts   # náhoda vs. zručnosť (rebrík, duplikát), ≈ 8 min
+node --experimental-strip-types --no-warnings tools/upratovanie/odtlacok.ts   # odtlačok hry: partie botov s pevnými semienkami;
+                     # refaktor (agent naex-upratovac, piatok 04:00 SEČ, PR do master) ho nesmie zmeniť
 npm test             # vitest
 npm run typecheck    # tsc --build
 npm run build

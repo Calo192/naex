@@ -1,0 +1,14 @@
+{
+  "poznamka": "Stav agenta naex-upratovac: poradie častí kódu, ktorú vezme budúci beh, a história behov. Agent ho na konci behu aktualizuje.",
+  "poradie": [
+    "packages/core/src",
+    "packages/server/src",
+    "apps/web/src/hra",
+    "apps/web/src/stranky",
+    "packages/tvorba/src a apps/web/src/admin",
+    "apps/web/src (ostatné: lib, karta, dielna, playtest, achievementy, App, Layout)",
+    "tools"
+  ],
+  "dalsia": 0,
+  "behy": []
+}
