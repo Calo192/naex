@@ -1,5 +1,5 @@
 {
- "source": "tvorca kariet — koncept v6 nad sadou v20 2026-10-26T15:40:28.042Z",
+ "source": "tvorca kariet 2026-10-26T17:32:37.823Z",
  "actions": [
   "Cigareta",
   "Dlh",
@@ -2255,7 +2255,7 @@
     "Influencer",
     "Chlap"
    ],
-   "effect_text": "Furt: Viera v jeho okolí platia ako vízia.",
+   "effect_text": "Furt: Viera v jeho okolí platí ako Vízia.",
    "triggers": [
     "Furt"
    ],
