@@ -14,6 +14,7 @@ import {
   evaluateLine,
   loadGameData,
   naTahu,
+  pitkaPredBitkou,
   pecenPitky,
   rngInt,
   rngSeed,
@@ -100,6 +101,49 @@ describe("rekapitulácia Pitky", () => {
     }
     expect(pitiek).toBeGreaterThan(8);
     expect(sCirhozou).toBeGreaterThan(0);
+  });
+
+  it("posledná Pitka kola je „pred bitkou“ — jej vrstvu nahradí rekapitulácia bitky (Michal 2026-10-26)", () => {
+    let predBitkou = 0;
+    let dalej = 0;
+    for (const zaznamy of PARTIE) {
+      // Pitka pred bitkou čaká na bitku kola; tá ju musí mať v bloku „z Pitiek kola“.
+      let caka: RekapitulaciaPitky | null = null;
+      for (const z of zaznamy) {
+        for (const [i, e] of z.events.entries()) {
+          if (e.type === "pitkaRekap") {
+            expect(caka).toBeNull();
+            if (pitkaPredBitkou(z.events, i)) {
+              predBitkou++;
+              caka = e.rekap;
+              expect(z.po.faza === "bitka" || z.po.kolo > z.pred.kolo || z.po.koniec !== null).toBe(true);
+            } else {
+              dalej++;
+              expect(z.po.faza === "zhromazdenie" || z.po.faza === "pitka").toBe(true);
+              expect(z.po.kolo).toBe(z.pred.kolo);
+            }
+          }
+          if (e.type === "bitkaVysledok") {
+            expect(caka).not.toBeNull();
+            expect(e.rekap?.pitkyKola?.pocet).toBe(caka?.pitka);
+            caka = null;
+          }
+        }
+      }
+    }
+    expect(predBitkou).toBeGreaterThan(5);
+    expect(dalej).toBeGreaterThan(0);
+  });
+
+  it("pitkaPredBitkou rozhoduje prvá zmena fázy za rekapituláciou, nie neskoršia bitka", () => {
+    const rekap = PARTIE[0]!.flatMap((z) => z.events).find((e) => e.type === "pitkaRekap");
+    expect(rekap).toBeDefined();
+    const log: Event = { type: "log", text: "…" };
+    expect(pitkaPredBitkou([rekap!, log, { type: "faza", faza: "bitka" }], 0)).toBe(true);
+    expect(pitkaPredBitkou([rekap!, { type: "faza", faza: "zhromazdenie" }, rekap!, { type: "faza", faza: "bitka" }], 0)).toBe(false);
+    expect(pitkaPredBitkou([rekap!, { type: "faza", faza: "zhromazdenie" }, rekap!, { type: "faza", faza: "bitka" }], 2)).toBe(true);
+    expect(pitkaPredBitkou([rekap!, log], 0)).toBe(false);
+    expect(pitkaPredBitkou([log, { type: "faza", faza: "bitka" }], 0)).toBe(false);
   });
 
   it("pohľad hráča nenesie rekapitulácie Pitiek kola", () => {

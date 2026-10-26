@@ -8,7 +8,7 @@
 
 import type { DamageResult } from "./battle.ts";
 import type { GameData } from "./data.ts";
-import type { BitkaNaNastenke, RozpisPoskodenia } from "./engine.ts";
+import type { BitkaNaNastenke, Event, RozpisPoskodenia } from "./engine.ts";
 import type { ActionSums, LineEval, LineState, ZdrojAkcie } from "./partia.ts";
 import { evaluateLine } from "./partia.ts";
 import type { PlayerId } from "./types.ts";
@@ -299,4 +299,19 @@ export function rekapitulaciaPitky(data: GameData, v: VstupRekapitulaciePitky): 
     cigarety: { akcie, obmedzenie, cigorky: dvojica((p) => v.cigarety[p] - (akcie[p] - obmedzenie[p])), zisk: v.cigarety },
     vizia: dvojica((p) => nula(sums[p].Vízia)),
   };
+}
+
+/**
+ * Pitka, po ktorej v tom istom ťahu začala bitka (posledná Pitka kola). Klient jej rekapituláciu
+ * neukazuje (Michal 2026-10-26): rekapitulácia bitky ju má v bloku „z Pitiek kola“ a dve vrstvy
+ * za sebou by hovorili to isté. Rozhoduje prvá zmena fázy po udalosti `pitkaRekap` — ďalšie
+ * Zhromaždenie, alebo bitka.
+ */
+export function pitkaPredBitkou(events: readonly Event[], index: number): boolean {
+  if (events[index]?.type !== "pitkaRekap") return false;
+  for (let i = index + 1; i < events.length; i++) {
+    const e = events[i];
+    if (e?.type === "faza") return e.faza === "bitka";
+  }
+  return false;
 }

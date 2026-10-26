@@ -220,6 +220,20 @@
   cursor: default;
 }
 
+/* Riadok odhadu má 18–20 px, klikacia plocha prepínača však aspoň 24 px (WCAG 2.5.8, ako pilulky
+   Šenok / Nástenka / Log). Riadok sa nezväčší — plochu nesie priehľadný pseudoprvok presahujúci
+   hore a dole; z-index ho dá nad správu pod odhadom, inak by presah dolu klik nedostal. */
+button.jbar-odhad {
+  position: relative;
+  z-index: 1;
+}
+
+button.jbar-odhad::before {
+  content: "";
+  position: absolute;
+  inset: calc(50% - 12px) 0;
+}
+
 .jbar-odhad:focus-visible {
   outline: 2px solid var(--akcent-svetly);
   outline-offset: 3px;

@@ -1497,7 +1497,18 @@ export function PriebehKola({ view, onBitka }: { readonly view: ClientState; rea
   const odohrane = view.nastenka.filter((b) => b.lokalita !== null).length;
   const finale = view.ciel?.typ === "finale";
   const polozky: ReactNode[] = [];
-  for (let i = 0; i < kroky.length; i++) {
+  // Po konci hry os nestojí na „Voľbe cieľa“ ďalšieho kola, ktoré už nebude — ukáže koniec.
+  if (view.koniec !== null) {
+    polozky.push(
+      <KrokOsi
+        key="koniec"
+        krok={{ id: "koniec", nazov: "Koniec hry", tip: { nadpis: "Koniec hry", text: view.koniec.dovod } }}
+        trieda="aktualny"
+        refEl={aktualnyRef}
+      />,
+    );
+  }
+  for (let i = 0; i < kroky.length && view.koniec === null; i++) {
     const k = kroky[i];
     const dalsi = kroky[i + 1];
     if (k === undefined) continue;
@@ -1537,7 +1548,8 @@ export function PriebehKola({ view, onBitka }: { readonly view: ClientState; rea
         className="priebeh-kolo"
         title={`Hrá sa o ${pocet(view.lokalitCelkom, "lokalitu", "lokality", "lokalít")} a finále; ${view.lokalityVHre.length >= 2 && view.lokalityVHre.length <= 4 ? "zostávajú" : "zostáva"} ${pocet(view.lokalityVHre.length, "nevybraná", "nevybrané", "nevybraných")}${view.spakyNaSekere > 0 ? `, na sekere ${view.spakyNaSekere} špakov` : ""}.`}
       >
-        Kolo {view.kolo} · {finale ? "finále" : `lokalita ${Math.min(view.lokalitCelkom, odohrane + 1)}/${view.lokalitCelkom}`}
+        Kolo {view.kolo}
+        {view.koniec === null && <> · {finale ? "finále" : `lokalita ${Math.min(view.lokalitCelkom, odohrane + 1)}/${view.lokalitCelkom}`}</>}
         {view.spakyNaSekere > 0 && <span className="priebeh-sekera"> · na sekere {view.spakyNaSekere} š.</span>}
       </li>
       {polozky}

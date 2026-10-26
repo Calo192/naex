@@ -71,6 +71,7 @@ import {
   cielLokalitaId,
   evaluateLine,
   pocitadloBitky,
+  pitkaPredBitkou,
   hrozbaNaex,
   krokStavby,
   planVykladania,
@@ -1417,8 +1418,8 @@ export function HernaPlocha({
   const [ucetPitky, setUcetPitky] = useState<UcetPitky | null>(null);
   const vysledokBitky = useRef<Extract<Event, { type: "bitkaVysledok" }> | null>(null);
   // Počítadlo bitky (Michal 2026-10-23) a pod ním rekapitulácia; po Pitke jej rekapitulácia
-  // (roadmapa #106). Vrstvy idú po rade — Pitka pred bitkou, ktorú vyhodnotil ten istý ťah —
-  // a každú zavrie až hráč (Ďalej). Stôl bitky je ten s líniou — keď bitka hneď skončila
+  // (roadmapa #106). Vrstvy idú po rade, na stole je vždy len prvá z fronty, a každú zavrie až
+  // hráč (Ďalej). Stôl bitky je ten s líniou — keď bitka hneď skončila
   // a línia už zmizla, predošlý pohľad.
   const [frontaVrstiev, setFrontaVrstiev] = useState<readonly VrstvaVyhodnotenia[]>([]);
   const vrstvaVyhodnotenia = frontaVrstiev[0] ?? null;
@@ -1434,9 +1435,11 @@ export function HernaPlocha({
   useEffect(() => onPocitadlo?.(pocitadloBezi), [pocitadloBezi, onPocitadlo]);
   useEffect(() => {
     const nove: VrstvaVyhodnotenia[] = [];
-    for (const e of udalosti?.events ?? []) {
+    const events = udalosti?.events ?? [];
+    for (const [i, e] of events.entries()) {
       if (e.type === "pitkaVysledok") setUcetPitky({ kolo: view.kolo, pitka: e.pitka, cirhozy: e.cirhozy, dlhy: e.dlhy, cigarety: e.cigarety });
-      if (e.type === "pitkaRekap") {
+      // Poslednú Pitku kola ukáže rekapitulácia bitky („z Pitiek kola“), nie vlastná vrstva (Michal 2026-10-26).
+      if (e.type === "pitkaRekap" && !pitkaPredBitkou(events, i)) {
         const ciel = view.ciel ?? predoslyView.current?.ciel ?? null;
         const lok = ciel?.lokalita ?? null;
         nove.push({ druh: "pitka", r: e.rekap, nadpis: `Pitka ${e.rekap.pitka} / ${e.rekap.pitkyCelkom}${lok === null ? "" : ` · ${menoKarty(lok.defId)}`}` });
