@@ -92,6 +92,19 @@ interface RiadokHraca {
 
 const menoBota = (povaha: string | null): string => POVAHY.find((p) => p.id === povaha)?.meno ?? "Štamgast";
 
+/** Štatistiky hráča z archívu; poškodený záznam = prázdne štatistiky. */
+function citajStatistiky(json: string): StatistikyHraca {
+  try {
+    return normalizujStatistiky(JSON.parse(json));
+  } catch {
+    return normalizujStatistiky(null);
+  }
+}
+
+/** Zmena Frajeriny v partii; null, keď sa partia nehodnotila (bot, AI, bez práva). */
+const zmenaFrajeriny = (sBotom: boolean, pred: number, po: number): { readonly pred: number; readonly po: number } | null =>
+  sBotom || pred === po ? null : { pred, po };
+
 export class Profily {
   private readonly db: Db;
 
@@ -161,7 +174,7 @@ export class Profily {
         verziaPravidiel: r.verzia_pravidiel,
         vysledok: r.vysledok,
         body: r.body === null || r.super_body === null ? null : [r.body, r.super_body],
-        frajerina: r.s_botom === 1 || r.frajerina_pred === r.frajerina_po ? null : { pred: r.frajerina_pred, po: r.frajerina_po },
+        frajerina: zmenaFrajeriny(r.s_botom === 1, r.frajerina_pred, r.frajerina_po),
         super: this.superVPartii(r, r.bot_povaha, r.s_botom === 1, spravca),
       })),
     };
@@ -198,21 +211,14 @@ export class Profily {
     const kola = (kronika.kola ?? []).map((kolo) =>
       miesto === null ? kolo : { ...kolo, naex: kolo.naex.map((n) => (n.kto === miesto ? n : { ...n, uspech: null })) },
     );
-    const statistiky = (h: RiadokHraca): StatistikyHraca => {
-      try {
-        return normalizujStatistiky(JSON.parse(h.statistiky));
-      } catch {
-        return normalizujStatistiky(null);
-      }
-    };
     const hrac = (h: RiadokHraca): HracVPartii => ({
       ...this.superVPartii(h, p.bot_povaha, p.s_botom === 1, spravca),
       vysledok: h.vysledok,
       body: h.body,
-      frajerina: p.s_botom === 1 || h.frajerina_pred === h.frajerina_po ? null : { pred: h.frajerina_pred, po: h.frajerina_po },
+      frajerina: zmenaFrajeriny(p.s_botom === 1, h.frajerina_pred, h.frajerina_po),
     });
     const [h0, h1] = hraci as [RiadokHraca, RiadokHraca];
-    const strana = (h: RiadokHraca): Partial<StatistikyHraca> => (miesto === null || h.miesto === miesto ? statistiky(h) : verejneStatistiky(statistiky(h)));
+    const strana = (h: RiadokHraca): Partial<StatistikyHraca> => (miesto === null || h.miesto === miesto ? citajStatistiky(h.statistiky) : verejneStatistiky(citajStatistiky(h.statistiky)));
     return {
       id: p.id,
       koniec: p.koniec,
@@ -243,14 +249,13 @@ export class Profily {
          LIMIT ?`,
       )
       .all(id, pocet) as { vysledok: Vysledok; body: number | null; statistiky: string; super_body: number | null; super_statistiky: string }[];
-    const st = (json: string): StatistikyHraca => {
-      try {
-        return normalizujStatistiky(JSON.parse(json));
-      } catch {
-        return normalizujStatistiky(null);
-      }
-    };
-    return riadky.map((r) => ({ vysledok: r.vysledok, body: r.body, superBody: r.super_body, ja: st(r.statistiky), super: st(r.super_statistiky) }));
+    return riadky.map((r) => ({
+      vysledok: r.vysledok,
+      body: r.body,
+      superBody: r.super_body,
+      ja: citajStatistiky(r.statistiky),
+      super: citajStatistiky(r.super_statistiky),
+    }));
   }
 
   /**

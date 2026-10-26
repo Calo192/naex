@@ -196,8 +196,7 @@ export class Hodnotenia {
       .all() as { pouzivatel: number; cas: number; data: string; ai: number }[];
     const aktualne = new Map<number, Hodnotitel>();
     const body: BodVyvoja[] = [];
-    for (let i = 0; i < riadky.length; i++) {
-      const r = riadky[i]!;
+    for (const [i, r] of riadky.entries()) {
       aktualne.set(r.pouzivatel, { ai: Number(r.ai) === 1, znamky: JSON.parse(r.data) as Znamky });
       const den = denZ(r.cas);
       const dalsi = riadky[i + 1];
