@@ -694,7 +694,7 @@ function moznosti(v: ClientState): string[] {
         const k = v.volbaVizia;
         const zostava = v.vizia.zostava[ja];
         c({ type: "vizia", vziat: true }, `VÍZIA: vrchnú kartu balíčka ${k === null ? "" : popisKarty(k)} si vezmi do ruky${zostava > 1 ? ` (ešte ${zostava - 1} Vízie)` : ""}`);
-        c({ type: "vizia", vziat: false }, "VÍZIA: vrchnú kartu ZAHOĎ — je navždy preč z hry (kliatba, slabá karta); pozor, balíček pod 5 kariet = prehra");
+        c({ type: "vizia", vziat: false }, "VÍZIA: vrchnú kartu ZAHOĎ — je navždy preč z hry (kliatba, slabá karta)");
         break;
       }
       const h = v.hraci[ja];
@@ -782,7 +782,7 @@ function moznosti(v: ClientState): string[] {
       if (b?.krok === "kar") {
         // Kar (roadmapa #80): nepriznaná Cirhóza z ruky preč — na konci by uberala body.
         const cirhoza = v.ruka.find((k) => k.defId === "cirhoza");
-        if (cirhoza !== undefined) c({ type: "kar", uid: cirhoza.uid }, "Kar: zahoď jednu nepriznanú Cirhózu z ruky (navždy z hry; balíček sa zmenší — pod 5 kariet prehra)");
+        if (cirhoza !== undefined) c({ type: "kar", uid: cirhoza.uid }, "Kar: zahoď jednu nepriznanú Cirhózu z ruky (navždy z hry)");
         c({ type: "kar", uid: null }, "Kar: Cirhózu si nechať");
       }
       if (b?.krok === "cintorin") {
