@@ -1,1 +1,186 @@
-[]
+[
+  {
+    "id": "korist-za-hranicu",
+    "nazov": "Korisť za prvý vstup do zóny (namiesto renty za každé kolo)",
+    "problem": "Vplyv, ktorý sa vypláca po každej bitke, je úrok: kto vydesí staršieho skoro, inkasuje ho pri každej ďalšej bitke a mierka „starší vs. bitky“ sa rozíde (v6 príklad: strach 19 špakov, bitky 4).",
+    "ako": "1. Na stupnici ťahanej oboma hráčmi (tug-of-war) ležia pri zónach jednorazové žetóny koristi. 2. Keď marker prvýkrát vstúpi do zóny so žetónom, aktívny hráč žetón vyhodnotí (súper stratí mince / ty dostaneš body) a žetón ide z hry. 3. Návrat markera a opätovný vstup už nič nedáva. 4. Na konci hry sa raz zaráta pozícia markera (0 / 2 / 5 / 10 VP). 5. Marker v hlavnom meste súpera = okamžitá výhra.",
+    "hry": [
+      {
+        "nazov": "7 Wonders Duel (Bauza, Cathala, 2015, 2 hráči)",
+        "preco": "Vojenská stopa je jediná spoločná stupnica. Žetóny Looting (súper stratí 2 alebo 5 mincí) sa vyhodnotia len pri prvom vstupe do zóny a idú do škatule; body za pozíciu (0/2/5/10) sa rátajú len raz na konci. Hráč rozhoduje, kedy tlačiť: tlak je udalosť s okamžitým účinkom, nie investícia, ktorá úročí. Slabší vo vojsku navyše volí, kto začne ďalší vek.",
+        "zdroj": "https://rulespal.com/7-wonders-duel/rulebook"
+      },
+      {
+        "nazov": "7 Wonders Duel — prečo stopa ťahá oboch",
+        "preco": "Recenzia: stopa dáva obom stály dôvod reagovať; tlačiť znamená brať súperovi mince a body, súper môže tlačiť späť, investícia do vojska chýba inde.",
+        "zdroj": "https://bargames101.com/7-wonders-duel/"
+      }
+    ],
+    "kritika": "V 7WD je vojenská výhra častá pri nepozornom súperovi a hráči ju vnímajú ako „náhlu smrť“ (z vlastných vedomostí, neoverené). Jednorazová korisť sama nebrzdí cestu na kraj stupnice — to robí až dĺžka stupnice a protitlak.",
+    "prevod": "Pri stupnici 7 polí (v6) leží pri každej zóne strachu na každej polovici žetón Špak: prvý vstup markera do žltej dá vydesujúcemu 1 špak, do oranžovej 1, do červenej 2 (čísla na zmeranie), žetón ide preč. Po bitke sa už nevypláca „každý starší, ktorý sa ťa bojí“; strach sa zaráta raz po finále podľa polohy (1/2/3). Popolník dostane ohorky pri udalosti, nie každé kolo. Scorecard: na stupnici natlačené tri žetóny na stranu. Výučba: „Kto prvý vystraší, berie špak. Kto ho udrží do konca, berie znova.“",
+    "rizika": "Zabudnuté žetóny = viac evidencie (web to rieši sám). Ak je korisť príliš malá, strach prestane byť os a hra sa zúži na bitky. Pohoršenie bez limitu (v6) môže v jednej bitke pobrať tri žetóny naraz — treba strop alebo zachovať limit hraníc zón.",
+    "merat": "Podiel špakov zo starších vs. z bitiek pri dnešnej v6 a pri koristi; korelácia vedenia po 2. bitke s výhrou partie (snowball); počet žetónov koristi za partiu; frekvencia vydesenia a kolo, v ktorom príde.",
+    "temy": ["posledna-bitka-a-vplyv"],
+    "pridane": "2026-10-26"
+  },
+  {
+    "id": "trvale-a-docasne-body",
+    "nazov": "Trvalé body za čin, dočasné body za držbu",
+    "problem": "Keď sa každý bod hneď stane trvalým, vedenie z prvej polovice sa nedá dobehnúť; keď je všetko dočasné, rozhodne len posledný stav (posledná bitka).",
+    "ako": "1. Body sú dvoch druhov. 2. Trvalé dáva čin (vyhratý útok, obeta) a už sa nestratia. 3. Dočasné dáva držba (chrám, pyramída, priazeň) a platia, len kým držíš; súper ti ich vezme. 4. Víťazný prah (8 / 10) sa ráta zo súčtu oboch. 5. Malý most: držba dvoch chrámov na konci kola sa premení na 1 trvalý bod.",
+    "hry": [
+      {
+        "nazov": "Kemet (Bariot, Montiel, 2012)",
+        "preco": "Trvalé body len za vyhratý útok, za obranu nič; chrámy a pyramídy úrovne 4 dávajú dočasné body, ktoré sa dajú stratiť. Armády sa preto tlačia v „preťahovaní, kde nikto nie je v bezpečí“. Hráč rozhoduje: útočiť pre istotu, alebo držať pre stav.",
+        "zdroj": "https://islaythedragon.com/featured/i-like-king-tut-and-i-cannot-lie-a-review-of-kemet/"
+      },
+      {
+        "nazov": "Kemet — zdroje bodov",
+        "preco": "Zoznam trvalých (útoky, dva chrámy, Svätyňa, dlaždice) a dočasných (chrám, pyramída 4) bodov.",
+        "zdroj": "https://goonhammer.com/boardhammer-kemet-ta-seti-expansion"
+      },
+      {
+        "nazov": "Ra (Knizia, 1999)",
+        "preco": "Dlaždice civilizácie a bohov sa na konci epochy zahodia (dočasné), monumenty sa bodujú až na konci hry (trvalé). Hráč váži: istý bod teraz, alebo budovať na koniec. Že sa faraóni držia a bodujú každú epochu, je z vlastných vedomostí, neoverené.",
+        "zdroj": "https://en.wikipedia.org/wiki/Ra_(board_game)"
+      },
+      {
+        "nazov": "Hanamikoji (Nakayama, 2013, 2 hráči)",
+        "preco": "Priazeň gejše (marker) ostáva medzi kolami u toho, kto ju získal; pri remíze sa nepohne a body z nej platia, len kým ju súper nevyhrá späť. Držiteľovi stačí remíza, vyzývateľ musí vyhrať.",
+        "zdroj": "https://en.boardgamearena.com/gamepanel?game=hanamikoji"
+      }
+    ],
+    "kritika": "Kemet sa pre 2 hráčov hrá horšie ako pre 3–5 (z vlastných vedomostí, neoverené); okamžitý koniec pri prahu môže dať výhru tomu, kto len dočasne dosiahol číslo (Kemet to rieši tým, že sa kontroluje na konci dňa — podľa vydania, viď pravidlá v3.4). Dva druhy bodov sú pojem navyše pre nováčika.",
+    "prevod": "Popolník (trvalé) a stôl starších (dočasné). Trvalé špaky: vyhratá bitka (odohrané Pitky). Kemet navyše odmeňuje len útok: v NA EX je útočník hráč, ktorý prehral minulú bitku, takže „+1 trvalý špak za bitku vyhratú ako útočník“ je zabudovaný návrat do hry bez darčeka. Dočasné: strach starších sa nepripisuje po každej bitke, ukazuje sa ako živý stav a do popolníka padne raz, po finále. Most ako pri dvoch chrámoch: kto má na konci kola aspoň 3 starších v strachu, dostane 1 trvalý špak. Hanamikoji poučenie: pri remíze v posune marker ostáva, nikto ho nevynuluje.",
+    "rizika": "Ak sa strach ráta len na konci, posledná bitka (prebytok) zase rozhoduje veľa — preto len spolu s koristou za hranicu alebo s medzibodovaním. Dva druhy špakov treba vo výučbe ukázať farbou (ohorok vs. horiaca cigareta). Bonus útočníka môže motivovať úmyselnú prehru (overiť).",
+    "merat": "Podiel výhier, keď vedúci po 3. bitke vyhrá partiu (dnes / variant); priemerný rozdiel skóre pred finále; či hráči úmyselne prehrávajú kvôli útočníkovi (bitky prehraté s veľkou rezervou kariet).",
+    "temy": ["posledna-bitka-a-vplyv"],
+    "pridane": "2026-10-26"
+  },
+  {
+    "id": "medzibodovanie",
+    "nazov": "Zúčtovanie vplyvu v ohlásených chvíľach (a kto ich spúšťa)",
+    "problem": "Keď sa vplyv boduje stále, je to pozadie; keď len na konci, je to lotéria posledného kola. Ohlásené zúčtovanie robí z vplyvu plán: viem, kedy a čo sa ráta.",
+    "ako": "1. Vplyv (majorita, priazeň) sa nezapisuje priebežne. 2. Zúčtuje sa v pevných chvíľach (po 3., 6., 9. kole) alebo keď niekto zahrá kartu zúčtovania pre konkrétny región. 3. Karta zúčtovania sa nesmie držať — musí sa zahrať v tomto kole, majiteľ volí len chvíľu. 4. Na konci sa každý región zúčtuje ešte raz, rovnakou váhou ako počas hry.",
+    "hry": [
+      {
+        "nazov": "El Grande (Kramer, Ulrich, 1995)",
+        "preco": "Zúčtovanie po 3., 6. a 9. kole, body za 1., 2. a 3. miesto v regióne. Hráč vie, kedy príde zúčtovanie, a stavia majority k nemu; aj druhé miesto niečo dá.",
+        "zdroj": "https://ultraboardgames.com/el-grande/game-rules.php"
+      },
+      {
+        "nazov": "Twilight Struggle (Gupta, Matthews, 2005, 2 hráči)",
+        "preco": "Karty zúčtovania regiónov sú v balíčku, kto ju má, volí chvíľu, ale držať ju nesmie. Body (prítomnosť / dominancia / kontrola) dostanú obaja. Na konci 10. kola sa každý región zúčtuje raz. Vplyv je preto plán na niekoľko ťahov dopredu, nie stav na konci.",
+        "zdroj": "https://en.wikipedia.org/wiki/Twilight_Struggle"
+      },
+      {
+        "nazov": "Ra (Knizia, 1999)",
+        "preco": "Body sa rátajú po každej z troch epoch a na konci; časť zdrojov po epoche zmizne, takže každá epocha je malá hra so záverom.",
+        "zdroj": "https://boardgame.de/reviews/ra.htm"
+      }
+    ],
+    "kritika": "V Twilight Struggle hráči kritizujú „ruku plnú zúčtovaní“ a náhodu, kedy karta príde (z vlastných vedomostí, neoverené). V El Grande je posledné zúčtovanie najväčšie (body sa opakujú, nerastú), takže aj tu má záver váhu — len nie celú.",
+    "prevod": "Strach starších sa v6 nevyplatí po každej bitke, ale len pri zúčtovaní. Dve podoby: (a) pevne — po 2. bitke, po 4. bitke a po finále (stredná hra), rovnakou váhou; (b) cez lokality — každá lokalita má na karte 1–2 starších, ktorých sa v kole o ňu zúčtuje (Kostol → Farár, Krčma → Krčmárka, Obecný úrad → Starosta…). Obranca, ktorý volí cieľ (§5), tak volí aj to, čí strach sa dnes ráta; útočník vie dopredu, kam tlačiť Pohoršenie. Finále zúčtuje všetkých raz. Na kartách lokalít pribudne ikona staršieho; vo výučbe „Na Kare sa ukáže, kto sa koho bojí.“",
+    "rizika": "Väzba lokalita → starší je nová dátová vrstva (scorecardy sa rozdávajú náhodne, starší sú pevní, takže väzba ide na kartu staršieho, nie na scorecard). Pri krátkej hre (3 lokality) niektorí starší nemusia prísť na rad — treba finále, ktoré zúčtuje všetkých. Obranca dostane ďalšiu výhodu (už volí cieľ).",
+    "merat": "Koľko špakov za strach dá jedno zúčtovanie vs. jedna bitka; či obranca volí cieľ podľa starších (bot aj ľudia); podiel výhier obrancu po zmene; rozptyl výsledku poslednej bitky.",
+    "temy": ["posledna-bitka-a-vplyv"],
+    "pridane": "2026-10-26"
+  },
+  {
+    "id": "slabsia-os",
+    "nazov": "Skóre podľa slabšej osi (rátaj menší popolník)",
+    "problem": "Keď sa sčítajú dve osi s rôznou mierkou (strach a bitky), vyhrá ten, kto sa zahryzne do silnejšej, a dizajnér musí mierku donekonečna ladiť.",
+    "ako": "1. Hráč zbiera body v niekoľkých farbách (osiach). 2. Na konci sa mu započíta len najslabšia farba. 3. Pri rovnosti rozhoduje druhá najslabšia atď. 4. Sila v jednej osi nepomôže, kým nedorovnáš ostatné.",
+    "hry": [
+      {
+        "nazov": "Tigris & Euphrates (Knizia, 1997)",
+        "preco": "Body v štyroch farbách (poľnohospodárstvo, obchod, náboženstvo, vláda); ráta sa najslabšia. Recenzenti: tlačí proti špecializácii a odmeňuje vyváženú hru. Hráč stále rozhoduje, ktorá noha je najkratšia a kde ju predĺžiť lacno.",
+        "zdroj": "https://www.avclub.com/tigris-and-euphrates-boardgame-review"
+      },
+      {
+        "nazov": "Tigris & Euphrates — pôvod mechaniky",
+        "preco": "Esej: „Highest-Lowest scoring“ je dnes uznávaná mechanika a Tigris ju urobil prvý; väčšina hier s ňou je od Knizia.",
+        "zdroj": "https://20thcenturygames.substack.com/p/tigris-and-euphrates"
+      }
+    ],
+    "kritika": "Skóre je ťažšie čitateľné — vedúci nie je ten s najviac bodmi. AV Club: pri dvoch hráčoch sa dajú postaviť nedobytné pozície. Bez dôvodu „prečo práve minimum“ v téme pôsobí ako matematická poučka.",
+    "prevod": "Dva popolníky pri mene hráča: Krčma (špaky za bitky) a Dedina (špaky za starších). Vyhrá, kto má väčší menší popolník; pri rovnosti rozhodne väčší. Mierku „19 vs. 4“ netreba ladiť, lebo sa nesčítajú — kto má 19 v Dedine a 4 v Krčme, má 4. Mäkká verzia na meranie: skóre = 2 × menší + väčší. Téma: „V dedine ťa rešpektujú, len keď si chlap v krčme aj pán u fary.“ Výučba: Melichar ukazuje kratší popolník.",
+    "rizika": "Nováčik nepochopí, prečo nevedie, hoci má viac špakov — web musí ukazovať „platí menší“. Hráč so zlou rukou na bitky stratí nádej skôr (minimum trestá jednu slabinu tvrdo). Ak jedna os dáva vždy oveľa viac, hrá sa len o druhú — rozhodnutia sa zúžia.",
+    "merat": "Rozdelenie (Krčma, Dedina) u víťaza a porazeného; ako často rozhodne menší popolník iné víťazstvo než súčet; počet partií, kde porazený mal vyšší súčet; dĺžka rozhodovania bota.",
+    "temy": ["posledna-bitka-a-vplyv"],
+    "pridane": "2026-10-26"
+  },
+  {
+    "id": "ustup-a-odskodne",
+    "nazov": "Porazený určuje cenu prehry (ústup, odškodné, víťaz platí)",
+    "problem": "Bitka „všetko alebo nič“ s veľkou výhrou robí z poslednej bitky lotériu; keď porazený môže prehru zlacniť (a víťaz za výhru platí), výkyv sa zmenší a pribudne rozhodnutie.",
+    "ako": "1. Bitka má plnú hodnotu (napr. 6 VP). 2. Ktorýkoľvek hráč smie na svojom ťahu ustúpiť — súper bitku vyhrá, ale dostane menej, čím skôr sa ustúpilo (podľa počtu kariet v ruke ustupujúceho). 3. Alternatívne: porazený dostane odškodné od víťaza (karty z jeho ruky podľa strát), alebo víťaz svoje zahrané karty stratí a porazený si ich vezme späť.",
+    "hry": [
+      {
+        "nazov": "Air, Land & Sea (Perry, 2019, 2 hráči)",
+        "preco": "Bitka bez ústupu dá víťazovi 6 VP, hra ide do 12. Ústup: súper dostane body podľa karty Supreme Commander ustupujúceho — „čím dlhšie čakáš, tým viac bodov dostane súper“. Hráč rozhoduje, kedy sa bitka už neoplatí. Presná tabuľka (2/3/4/6 podľa kariet v ruke) je z vlastných vedomostí, neoverené.",
+        "zdroj": "https://rulespal.com/air-land-and-sea/rulebook"
+      },
+      {
+        "nazov": "Air, Land & Sea — strategický ústup",
+        "preco": "Recenzia SU&SD: niekedy je najlepšie ustúpiť, aby si súperovi upieral úplné víťazstvo; strategický ústup prehrá bitku, ale vyhrá vojnu.",
+        "zdroj": "https://www.shutupandsitdown.com/?p=41256"
+      },
+      {
+        "nazov": "Blood Rage (Lang, 2015)",
+        "preco": "Víťaz bitky musí odhodiť zahrané bojové karty, porazení si ich vezmú späť do ruky; Loki odmeňuje prehru. Vydavateľ: vyhrávať bitky nie je vždy najlepšie, správna karta dá viac za to, že ťa rozdrvia.",
+        "zdroj": "https://rules.dized.com/game/8mhSnWp6QFijr_ZCDSjP_w/SarC8sklQG6DseH3hMivtw/resolution"
+      },
+      {
+        "nazov": "Blood Rage — prečo prehra nie je koniec",
+        "preco": "Recenzia: Loki odmeňuje prehrávanie alebo trestá víťaza; víťazstvo v bitke nie je vždy najlepší ťah.",
+        "zdroj": "https://www.meeplemountain.com/boardgame/blood-rage/"
+      },
+      {
+        "nazov": "Cosmic Encounter (Eberle, Kittredge, Olotka, 1977)",
+        "preco": "Kto zahrá Vyjednávanie proti Útoku, prehrá, ale ako odškodné si berie z ruky víťaza toľko kariet, koľko stratil lodí. Prehra je obchod, nie len strata.",
+        "zdroj": "https://en.wikipedia.org/wiki/Cosmic_Encounter"
+      }
+    ],
+    "kritika": "Ústup môže zabíjať drámu („nikto nedohrá bitku do konca“). Odškodné, ktoré je príliš veľké, kazí motiváciu vyhrať — článok o Colony varuje, že prehnané dobiehanie robí z hry hod mincou v poslednom ťahu (https://brandonthegamedev.com/colony-letting-leaders-lead/).",
+    "prevod": "NA EX! to čiastočne už má: v6 dáva víťazovi toľko špakov, koľko Pitiek sa odohralo, a počet Pitiek drží menšia strana (§7 Počet Pitiek) — kto vidí prehru, neaktivuje lokalitu a bitku zlacní. Cigarety za prebytok (§9.4) sú odškodné ako v Cosmic. Chýba výslovný ústup: „Platím a idem“ — pred ďalšou Pitkou smie hráč zaplatiť rundu (napr. 1 cigareta) a odísť; súper vyhrá bitku s doteraz odohranými Pitkami (nie s plánovanými), prebytok sa nerozdeľuje, odchádzajúci si vezme svoje karty z línie späť do ruky (Blood Rage). Vo finále (3 Pitky) by ústup po 1. Pitke dal súperovi 1 špak namiesto 3. Výučba: Melichar „Kto platí, ten ide.“",
+    "rizika": "Viac krokov v Pitke (tempo, roadmapa #9). Ak je ústup lacný, bitky sa prestanú dohrávať a NA EX stratí javisko. Karty späť do ruky môžu zrýchliť ďalšie kolo porazeného (preveriť snowball naopak). Tón: odchod z krčmy je satiricky silný, ale nesmie vyzerať ako zbabelosť bez ceny.",
+    "merat": "Ako často bot ustúpi a v ktorej Pitke; rozdiel špakov z poslednej bitky (dnes vs. s ústupom); podiel partií, kde finále otočí poradie; dĺžka partie.",
+    "temy": ["posledna-bitka-a-vplyv"],
+    "pridane": "2026-10-26"
+  },
+  {
+    "id": "ohlasena-vyhra-s-odpovedou",
+    "nazov": "Náhla výhra: ohlásiť, zaplatiť, nechať súpera odpovedať",
+    "problem": "Druhá cesta k výhre (vydesenie) dáva vplyvu váhu, ale keď je rýchla a lacná, hra skončí skôr, než sa súper zorientuje; keď je nedosiahnuteľná, nikto ju nehrá.",
+    "ako": "1. Okrem bodov existuje okamžitá výhra (podmienka na stole alebo prah na jednej stupnici). 2. Splnenie nestačí: hráč si ju nárokuje akciou alebo musí stav udržať do ďalšieho kola. 3. Nárok je verejný, súper dostane ťah na odpoveď. 4. Niekde nárok stojí: kto ide na náhlu výhru, vzdá sa bodov (Root).",
+    "hry": [
+      {
+        "nazov": "Inis (Bisson, 2016)",
+        "preco": "Tri podmienky výhry; kto splní aspoň jednu, smie si ťahom vziať žetón Pretender a vyhrá na začiatku ďalšieho kola, ak ho iný hráč nedorovná v počte splnených podmienok. Rozhodnutie: kedy sa odhaliť.",
+        "zdroj": "https://www.meeplemountain.com/reviews/inis-review-lets-make-a-king/"
+      },
+      {
+        "nazov": "Root (Wehrle, 2018)",
+        "preco": "Od 10 VP smie hráč aktivovať kartu Dominancie: zíde zo stopy bodov a vyhrá, ak na začiatku svojho ďalšieho ťahu ovláda dané čistinky. Karta je verejná, ostatní ju môžu blokovať. Jeden zdroj uvádza, že Dominancia platí až od 3 hráčov — pri dvoch by teda nebola.",
+        "zdroj": "https://www.avclub.com/the-brutally-cute-game-of-root"
+      },
+      {
+        "nazov": "Twilight Struggle (2 hráči)",
+        "preco": "Jedna spoločná stopa od −20 do +20: kto dosiahne 20, vyhrá hneď; inak sa po 10. kole zúčtuje. Celé skóre je jedno číslo — vždy vidno, kto vedie a o koľko.",
+        "zdroj": "https://en.wikipedia.org/wiki/Twilight_Struggle"
+      },
+      {
+        "nazov": "7 Wonders Duel / Hanamikoji (2 hráči)",
+        "preco": "7WD: konflikt v hlavnom meste súpera = okamžitá výhra. Hanamikoji: 4 gejše alebo 11 bodov šarmu končí hru hneď. Obe držia hrozbu viditeľnú celú hru.",
+        "zdroj": "https://en.boardgamearena.com/gamepanel?game=hanamikoji"
+      }
+    ],
+    "kritika": "Okamžité výhry vedú k „zabudol som sa brániť“ prehrám a hráči ich niekedy vnímajú ako antiklimax (z vlastných vedomostí, neoverené). Dominancia v Roote je pri dvoch hráčoch podľa jedného zdroja vypnutá — mechanika je stavaná na koalície viacerých.",
+    "prevod": "NA EX! má ohlásené vydesenie (§1: polovica starších, udržať do konca ďalšieho kola, odpoveď patronátom). V6 ruší zamknutie a limit Pohoršenia, takže vydesenie zrýchli (spaky.html, časť 4). Poučky: (a) Inis — vydesenie si treba nárokovať ťahom (napr. namiesto patronátu, verejne) a súper ho zablokuje, ak má rovnako vydesených starších; (b) Root — kto ohlási vydesenie, prestane zbierať špaky za bitky (stavia všetko na jednu kartu); (c) Twilight Struggle — ukazovať skóre ako jedno číslo rozdielu (popolník vs. popolník) s ryskou náhlej výhry. Scorecard sa nemení; na stole pribudne žetón Ohlásenie.",
+    "rizika": "Ďalší pojem a krok; ak je nárok drahý, vydesenie zmizne z hry (dnes je aj tak zriedkavé). Blokovanie rovnosťou môže viesť k pretláčaniu markerov tam a späť (dĺžka).",
+    "merat": "Frekvencia ohláseného vydesenia v v6 (bez zamknutia) a kolo, v ktorom príde; podiel ohlásení, ktoré súper odvráti; či hráči vydesenie hrajú zámerne alebo vznikne náhodou.",
+    "temy": ["posledna-bitka-a-vplyv"],
+    "pridane": "2026-10-26"
+  }
+]
