@@ -853,9 +853,10 @@ button.zdroj-body[aria-pressed="true"] .velke-cislo {
   flex-direction: row-reverse;
 }
 
+/* --slaby mal na pláte kontrast 3,96 : 1 (UI inšpekcia 20261026-1200, U10). */
 .efekty-ziadne {
   font-size: 0.85rem;
-  color: var(--slaby);
+  color: var(--tlmeny);
 }
 
 .efekt {
@@ -1405,11 +1406,13 @@ body.tahanie-aktivne [data-vyucba-bublina] {
   position: relative;
 }
 
+/* Jeden riadok vystredený na kartu — pri úzkej karte sa zalomil na dva a prekryl jej spodok. */
 .otocit-tip {
   position: absolute;
-  left: 0;
-  right: 0;
+  left: 50%;
+  translate: -50% 0;
   bottom: -14px;
+  white-space: nowrap;
   text-align: center;
   font-size: 0.74rem;
   color: var(--akcent);
@@ -6200,6 +6203,13 @@ button.auto-hotovo-odkaz {
   text-align: center;
 }
 
+/* Na širokom okne sa pokyn skracoval trojbodkou aj pri voľnom mieste (UI inšpekcia 20261026-1200, U11). */
+@media (min-width: 1600px) {
+  .linia-stav:not(:has(.zberatel-ponuka, .vizia-karta)) {
+    max-width: min(1600px, calc(100% - 160px));
+  }
+}
+
 @media (min-width: 761px) and (max-height: 919px) {
   /* Bar hráča nižší: nadpis, číslo a dva riadky textu pod sebou ako na veľkom okne, len s
      tesnejším riadkovaním (vedľa čísla mal text len ≈ 40 px a skracoval sa — UI inšpekcia). */
@@ -6221,15 +6231,29 @@ button.auto-hotovo-odkaz {
     line-height: 1.1;
   }
 
+  /* Bar má v tomto pásme 76 px (jbar.css) — nadpis, číslo a dva riadky textu sa doň zmestia len
+     s nižším riadkom čísla a tesnejším riadkovaním; inak sa druhý riadok („limit 3“, „1. kolo =
+     základ“, porovnanie bodov) orezal v polovici (UI inšpekcia 20261026-1200, U01). */
   .doska .zdroj-hodnota {
     min-height: 0;
-    height: 24px;
+    height: 22px;
   }
 
   .doska .zdroj-pod {
+    gap: 0;
     font-size: 0.7rem;
-    line-height: 1.2;
-    max-height: 2.4em;
+    line-height: 1.12;
+    max-height: 2.24em;
+  }
+
+  /* Body majú navyše 3 px jantárového okraja hore; čip posunov v nadpise preto nižší, inak
+     siaha na okraj. */
+  .doska button.zdroj-body {
+    padding-top: 0;
+  }
+
+  .doska .zdroj-posuny {
+    line-height: 1;
   }
 
   /* Prúžok k prahu opakuje číslo „0 ▸ 2/2“ — v nízkom bare by zobral riadok textu. */
@@ -6410,6 +6434,19 @@ button.auto-hotovo-odkaz {
   /* Zaokrúhlenie výšky kariet by ukázalo zvislý posuvník línie. */
   .stol-plst > .linia {
     overflow-y: hidden;
+  }
+
+  /* Pod kartou lokality nie je miesto — leží tam pečiatka POTVRDIŤ na hrane stola a nápoveda
+     sa s ňou prekrývala (UI inšpekcia 20261026-1200, U04). Nápoveda zaberie riadok nadpisu
+     „lokalita“; čo je na stole, hovorí pilulka pokynu. */
+  .linia-skupina.lokalita.navrh > .partia-popis {
+    visibility: hidden;
+  }
+
+  .linia-skupina.lokalita.navrh .otocit-tip {
+    top: 0;
+    bottom: auto;
+    font-size: 0.74rem;
   }
 
   .doska .zdroj-nazov {
