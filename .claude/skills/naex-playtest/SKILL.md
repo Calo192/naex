@@ -36,7 +36,10 @@ a do partií nezasahuješ.
     zriedka: **len na výslovný pokyn Michala** (nikdy z routine ani z vlastnej
     iniciatívy) a pred založením turnusu sa ešte raz spýtaj — ukáž počet
     agentov (2 × počet + spisovateľ, stratég, navrhár) a odhad trvania.
-    Inak postup ako pri `max` (kroky 6–7).
+    Inak postup ako pri `max` (kroky 6–7). Michal 2026-10-26 schválil:
+    ULTRA pred veľkými rozhodnutiami (zmrazenie pravidiel, ladenie mierky),
+    ako porovnanie s bežným playtestom na tej istej verzii (spisovateľ
+    porovná, čo silnejší hráči našli navyše), predvolene dĺžka `dlha`.
 - **dĺžka hry** `kratka` (3 lokality) | `stredna` (5, predvolená) | `dlha` (7).
 - **`vyucba [1–3]`**: namiesto partie playtest výučby „Prvá hra“ s nováčikmi
   v prehliadači (predvolene 3). Postup je v časti **Režim vyucba** nižšie,
