@@ -65,10 +65,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   ministrant: "impl", // Výhra: posun markera stojí +1 prebytku
   nealko: "impl", // Dedičstvo: Poldeci/NA EX bez pečene; Poldeci nedopĺňa
   niekoho_stryna: "impl", // Nástup: zahoď 1 Cirhózu alebo 1 Dlh z ruky
-  // TODO(v6): Noviny aj Kultúrny dom rušili limit a zákaz krajnej pozície Pohoršenia,
-  // ktoré v6 (Michal 2026-10-26) neplatia — efekt je bez účinku. Nový navrhne Admin,
-  // vyberie Michal. Otázka: aký efekt majú Noviny a Kultúrny dom dostať?
-  noviny: "native", // Dedičstvo: v6 bez účinku (Pohoršenie smie na kraj vždy) — TODO nový efekt
+  noviny: "impl", // Dedičstvo (v6): po bitke +1 špak, keď sa ťa bojí viac starších ako súpera (engine.ts)
   pasca: "impl", // Dedičstvo: každé súperovo Zviera v línii mu uberie 1 tuhé (Michal 2026-10-20)
   pijan: "impl", // Bitka: rana do vlastnej partie pri žene s aktívnym poldeci
   policajtka: "impl", // Nástup: preskúmaj a rozdeľ doberací balíček (voľba hráča)
@@ -95,9 +92,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   abstak: "native", // Bitka: o ranu menej (−1 tuhé za kus)
   pes: "impl", // Furt: +1 tuhé za pár akcií na spoji so súperovou kartou; nikdy v partii s iným zvieraťom
   kostol: "impl", // Zhromaždenie: nikto nesmie vypiť; Pitka: nikto nesmie dať NA EX (Michal 2026-10-20)
-  // TODO(v6): Exekútor Nástroj neberie (Michal 2026-10-26) — Záhradkár nemá čo nahradiť.
-  // Otázka pre Admina a Michala: aký efekt má Záhradkár dostať?
-  zahradkar: "native", // Exekúcia: v6 bez účinku — TODO nový efekt
+  zahradkar: "impl", // Exekúcia (v6): smieš ho zahodiť namiesto špakov, Dlhy zhoria aj tak (príkaz zahradkar)
   svokra: "impl", // Furt: za každé NA EX súpera mu ukradni 2 cigarety (Michal 2026-10-19)
   sarlatan: "impl", // Furt: Viera v okolí platí ako Vízia
   podvodnik: "impl", // Prehra: ukradni 2 cigarety
@@ -111,7 +106,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   cintorin: "impl", // Prehra: Nástroj z ruky do Dedičstva bez platenia
   obecny_urad: "impl", // Bitka: prah Exekútora −4, Robota spáli 2 priznané Dlhy
   jednota: "impl", // Pitka: stokársky barter o 1 cigaretu lacnejší
-  kulturny_dom: "native", // Bitka: v6 bez účinku (Pohoršenie nemá limit) — TODO nový efekt, viď noviny
+  kulturny_dom: "impl", // Bitka (v6): prebytok sa nerozdeľuje — držiteľ dostane toľko špakov
   vinna_pivnica: "impl", // Pitka: NA EX až dvakrát
   druzstvo: "impl", // Zhromaždenie: Pracujúci nemíňajú limit vykladania
   kar: "impl", // Bitka: každý smie zahodiť jednu nepriznanú Cirhózu z ruky (roadmapa #80)

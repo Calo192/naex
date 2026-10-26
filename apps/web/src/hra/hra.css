@@ -238,7 +238,7 @@
   --ident: minmax(170px, 230px);
   position: relative;
   display: grid;
-  grid-template-columns: var(--ident) repeat(6, minmax(0, 1fr)) minmax(0, 1.08fr) minmax(0, 0.9fr);
+  grid-template-columns: var(--ident) minmax(0, 1.08fr) repeat(6, minmax(0, 1fr)) minmax(0, 0.9fr);
   grid-template-rows: minmax(0, 1fr);
   align-items: stretch;
   height: var(--bar-h);
@@ -259,7 +259,7 @@
 .doska.superova {
   --farba: var(--su);
   --farba-tmava: var(--su-tmava);
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.08fr) repeat(6, minmax(0, 1fr)) var(--ident);
+  grid-template-columns: minmax(0, 0.9fr) repeat(6, minmax(0, 1fr)) minmax(0, 1.08fr) var(--ident);
   background: linear-gradient(270deg, var(--farba-tmava), var(--plocha) 45%);
   border-left-width: 1px;
   border-right: 5px solid var(--farba);
@@ -291,24 +291,25 @@
   overflow: hidden;
 }
 
+/* Špaky (popolník, v6) ležia hneď pri mene hráča — Michal 2026-10-26, spaky.html bod 12. */
 .doska.moja .doska-hrac { grid-column: 1; }
-.doska.moja .zdroj-dlhy { grid-column: 2; }
-.doska.moja .zdroj-zadlzenie { grid-column: 3; }
-.doska.moja .zdroj-pecen { grid-column: 4; }
-.doska.moja .zdroj-abstak { grid-column: 5; }
-.doska.moja .zdroj-cigarety { grid-column: 6; }
-.doska.moja .zdroj-poldeci { grid-column: 7; }
-.doska.moja .zdroj-body { grid-column: 8; }
+.doska.moja .zdroj-body { grid-column: 2; }
+.doska.moja .zdroj-dlhy { grid-column: 3; }
+.doska.moja .zdroj-zadlzenie { grid-column: 4; }
+.doska.moja .zdroj-pecen { grid-column: 5; }
+.doska.moja .zdroj-abstak { grid-column: 6; }
+.doska.moja .zdroj-cigarety { grid-column: 7; }
+.doska.moja .zdroj-poldeci { grid-column: 8; }
 .doska.moja .zdroj-karty { grid-column: 9; }
 
 .doska.superova .zdroj-karty { grid-column: 1; }
-.doska.superova .zdroj-body { grid-column: 2; }
-.doska.superova .zdroj-poldeci { grid-column: 3; }
-.doska.superova .zdroj-cigarety { grid-column: 4; }
-.doska.superova .zdroj-abstak { grid-column: 5; }
-.doska.superova .zdroj-pecen { grid-column: 6; }
-.doska.superova .zdroj-zadlzenie { grid-column: 7; }
-.doska.superova .zdroj-dlhy { grid-column: 8; }
+.doska.superova .zdroj-poldeci { grid-column: 2; }
+.doska.superova .zdroj-cigarety { grid-column: 3; }
+.doska.superova .zdroj-abstak { grid-column: 4; }
+.doska.superova .zdroj-pecen { grid-column: 5; }
+.doska.superova .zdroj-zadlzenie { grid-column: 6; }
+.doska.superova .zdroj-dlhy { grid-column: 7; }
+.doska.superova .zdroj-body { grid-column: 8; }
 .doska.superova .doska-hrac { grid-column: 9; }
 
 /* Body: tlačidlo, ktoré prepína stôl na líniu starších (#68). */
@@ -5098,6 +5099,7 @@ button.auto-hotovo-odkaz {
 }
 
 .ls-meno {
+  flex: 1 1 auto;
   min-width: 0;
   overflow: hidden;
   white-space: nowrap;
@@ -5116,7 +5118,8 @@ button.auto-hotovo-odkaz {
   flex: 1 1 0;
   min-height: 0;
   display: grid;
-  grid-template-columns: var(--ikona) minmax(0, 1fr) var(--ikona);
+  /* v6: bez podmienok po bokoch — portrét na celú šírku. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 4px;
 }
 
@@ -5211,26 +5214,10 @@ button.auto-hotovo-odkaz {
   color: var(--slaby-text);
 }
 
+/* Špaky za strach v hlavičke (v6): len „+2“ s ohorkom — meno staršieho má prednosť (UI U02). */
 .ls-sc-hlava > .ls-boduje {
+  flex: none;
   margin-left: auto;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Úzky scorecard: „teraz:“ ustúpi hviezdičke, meno staršieho sa zmestí. */
-.ls-hviezda {
-  display: none;
-}
-
-@container ls-sc (width < 175px) {
-  .ls-teraz {
-    display: none;
-  }
-
-  .ls-hviezda {
-    display: inline;
-  }
 }
 
 .ls-portret {
@@ -5281,20 +5268,33 @@ button.auto-hotovo-odkaz {
 }
 
 /* Schodová stupnica: výška segmentu = úroveň zóny (UI U5 — zóny nielen odtieňom). */
+/* 7 polí (v6): 3-2-1-0-1-2-3; čísla pod poľami = sila priazne aj špaky za strach. */
 .ls-stupnica {
-  --seg: calc(100% / 9);
+  --seg: calc(100% / 7);
   flex: none;
   position: relative;
   display: flex;
   align-items: flex-end;
   gap: 2px;
   height: 18px;
+  margin-bottom: 10px;
 }
 
 .ls-stupnica i {
+  position: relative;
   flex: 1;
   height: calc(5px + var(--z) * 4px);
   border-radius: 2px;
+}
+
+.ls-stupnica i small {
+  position: absolute;
+  top: calc(100% + 1px);
+  left: 0;
+  right: 0;
+  text-align: center;
+  font: 700 9px/1 var(--pismo);
+  color: var(--slaby-text);
 }
 
 /* Hranice zón pri Pohoršení: zárezy nad stupnicou (UI A7 — čiara cez žltú mala 1,3 : 1). */
@@ -5904,7 +5904,7 @@ button.auto-hotovo-odkaz {
 
 .bodovy-bar {
   grid-row: 1;
-  grid-column: 2 / span 6;
+  grid-column: 3 / span 6;
   min-width: 0;
   min-height: 0;
   display: grid;
@@ -5913,7 +5913,7 @@ button.auto-hotovo-odkaz {
 }
 
 .doska.superova .bodovy-bar {
-  grid-column: 3 / span 6;
+  grid-column: 2 / span 6;
 }
 
 .bodova-dlazdica {

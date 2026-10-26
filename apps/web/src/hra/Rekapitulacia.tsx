@@ -8,6 +8,7 @@
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import type { Action, AkciaTuha, PlayerId, PolozkaRekapitulacie, RekapitulaciaBitky, RekapitulaciaPitky } from "@naex/core";
 import { AKCIE_TUHE, pecenPitky, zadlzeniePitky } from "@naex/core";
+import { SpakyBitky } from "./Spaky.tsx";
 
 /** Piktogram akcie a jej názov zo sady (HernaPlocha). */
 export interface PiktogramyRekapitulacie {
@@ -98,6 +99,7 @@ export function riadkovRekapitulacieBitky(r: RekapitulaciaBitky): number {
   if (r.pohorsenie.polozky.length > 0) n++;
   if (r.naex.karty.length > 0) n += 2;
   if (r.pitkyKola !== null) n += 2.5;
+  if (r.spaky !== undefined) n += 3;
   return n;
 }
 
@@ -182,6 +184,12 @@ export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hot
         </>
       )}
       {hotovo && <SucetBitky r={r} ja={ja} menoSupera={menoSupera} ikonaPovery={ikona("Povera")} />}
+      {/* Špaky bitky (v6): za bitku, za starších, Exekútor; prebytok vo finále dopíše až nástenka. */}
+      {hotovo && r.spaky !== undefined && (
+        <div className="rk-spaky" role="row">
+          <SpakyBitky b={r.spaky} ja={ja} mena={ja === 0 ? ["ty", menoSupera] : [menoSupera, "ty"]} />
+        </div>
+      )}
     </div>
   );
 }

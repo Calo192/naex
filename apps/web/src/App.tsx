@@ -39,6 +39,7 @@ function Neprihlaseny() {
 
 // Ukážka rekapitulácie hrá partiu botov v prehliadači — bot nepatrí do hlavného balíka.
 const UkazkaRekapitulacie = lazy(() => import("./hra/UkazkaRekapitulacie.tsx").then((m) => ({ default: m.UkazkaRekapitulacie })));
+const UkazkaStola = lazy(() => import("./hra/UkazkaStola.tsx").then((m) => ({ default: m.UkazkaStola })));
 
 function Nenajdene() {
   return (
@@ -84,6 +85,8 @@ export function App() {
   if (cesta === "/achievementy/ukazka") return <Layout siroky>{chranene(<UkazkaAchievementov />, true)}</Layout>;
   // Rekapitulácia bitky a Pitky na skutočnej partii botov — snímky a inšpekcia bez živej partie.
   if (cesta === "/hra/ukazka-rekapitulacie") return <Layout siroky>{chranene(<Suspense fallback={<Nacitavanie />}><UkazkaRekapitulacie /></Suspense>, true)}</Layout>;
+  // Herný stôl v zvolenom okamihu partie botov (finále, bitka, koniec) — snímky bez živej partie.
+  if (cesta === "/hra/ukazka-stola") return <Layout siroky>{chranene(<Suspense fallback={<Nacitavanie />}><UkazkaStola /></Suspense>, true)}</Layout>;
   // Dielňa je záložka stránky Karty (Michal 2026-10-22); čítať smie každý.
   if (cesta === "/karty/dielna" || cesta.startsWith("/karty/dielna/")) return <Layout siroky><Dielna cesta={cesta} /></Layout>;
 

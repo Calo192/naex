@@ -1,12 +1,13 @@
-// Obrazovka konca hry (playtest 20261012-055944): víťaz, účet špakov (v6),
-// zmena Frajeriny a návrat do lobby. Kým bol koniec len riadok v páse
-// pokynov, hráči ho prehliadli a nevedeli, odkiaľ body sú.
+// Obrazovka konca hry (playtest 20261012-055944): víťaz, popolníky, krčmová
+// nástenka a účet špakov (v6), zmena Frajeriny a návrat do lobby. Kým bol koniec
+// len riadok v páse pokynov, hráči ho prehliadli a nevedeli, odkiaľ body sú.
 
 import { useEffect, useRef } from "react";
 import type { ClientState, GameData, PlayerId, Rod } from "@naex/core";
-import { VERZIA_PRAVIDIEL, rozpisSpakov, tvar } from "@naex/core";
+import { KONSTANTY, VERZIA_PRAVIDIEL, rozpisSpakov, tvar } from "@naex/core";
 import { Odkaz } from "../lib/router.tsx";
 import { UcetSpakov } from "./UcetSpakov.tsx";
+import { Nastenka, Popolnik } from "./Spaky.tsx";
 import { SuhrnPoPartii } from "../achievementy/VPartii.tsx";
 import type { SuhrnAchievementov, ZmenyFrajeriny } from "./useHra.ts";
 import { textHlasky } from "./useHra.ts";
@@ -25,9 +26,11 @@ export interface KoniecHryProps {
   readonly rodJa?: Rod;
   /** Rody oboch hráčov pre dôvod konca („Eva udržala…“); chýba = neutrálne. */
   readonly rody?: readonly [Rod, Rod];
+  /** Fotky hráčov na krčmovú nástenku (víťaz bitky). */
+  readonly avatary?: readonly [string | null, string | null];
 }
 
-export function KoniecHry({ view, mena, frajerina, achievementy = null, onZavri, opustit, rodJa = null, rody = [null, null] }: KoniecHryProps) {
+export function KoniecHry({ view, mena, menoKarty, frajerina, achievementy = null, onZavri, opustit, rodJa = null, rody = [null, null], avatary = [null, null] }: KoniecHryProps) {
   const koniec = view.koniec;
   // Fokus na „späť do lobby“ bez posunu — autoFocus vyroloval vysoké okno nadol a výsledok
   // hore hráč nevidel (UI inšpekcia 2026-10-24).
@@ -53,20 +56,40 @@ export function KoniecHry({ view, mena, frajerina, achievementy = null, onZavri,
       <div className={`koniec-okno ${koniec.vitaz === null ? "" : koniec.vitaz === ja ? "vyhra" : "prehra"}`}>
         <h2 id="koniec-nadpis">{nadpis}</h2>
         <p className="koniec-dovod">{dovod}</p>
-        {koniec.body !== null && (
-          <p className="koniec-skore">
-            <span className="moje">
-              ty <b>{koniec.body[ja]}</b>
-            </span>
-            <span className="dvojbodka">:</span>
-            <span className="superove">
-              <b>{koniec.body[su]}</b> {mena[su]}
-            </span>
-          </p>
+        {/* Popolníky (v6): konečné špaky po finále, inak to, čo hráči nazbierali do konca. */}
+        <p className="koniec-skore koniec-popolniky">
+          <span className="moje">
+            ty
+            <Popolnik n={koniec.body?.[ja] ?? view.spaky[ja]} kto="moj" velky />
+          </span>
+          <span className="dvojbodka">:</span>
+          <span className="superove">
+            <Popolnik n={koniec.body?.[su] ?? view.spaky[su]} kto="superov" velky />
+            {mena[su]}
+          </span>
+        </p>
+        {view.nastenka.length > 0 && (
+          <Nastenka
+            nastenka={view.nastenka}
+            zostava={[]}
+            ciel={null}
+            ja={ja}
+            mena={mena}
+            avatary={avatary}
+            menoKarty={menoKarty}
+            kompaktna
+            koniec
+          />
         )}
         {rozpis !== null && (
           <div className="koniec-rozpis">
             <UcetSpakov rozpis={rozpis} ja={ja} mena={mena} />
+            {(koniec.cirhozy?.[0] ?? 0) + (koniec.cirhozy?.[1] ?? 0) > 0 && (
+              <p className="koniec-cirhozy">
+                Nepriznaná Cirhóza na konci: {KONSTANTY.SPAKY_ZA_CIRHOZU} špakov za kus (ruka aj oba balíčky) — ty ×{koniec.cirhozy?.[ja] ?? 0},{" "}
+                {mena[su]} ×{koniec.cirhozy?.[su] ?? 0}.
+              </p>
+            )}
           </div>
         )}
         {zmena !== undefined && (

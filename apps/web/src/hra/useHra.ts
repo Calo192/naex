@@ -219,11 +219,15 @@ export function textUdalosti(e: Event, mena: readonly string[], rody: readonly [
     case "moment":
       return `★ ${textHlasky(e.moment.popis, mena, rody)}`;
     case "bitkaVysledok":
-      return `Bitka: tuhé ${e.damage.tuhe[0]}:${e.damage.tuhe[1]}, celkové ${e.damage.celkove[0]}:${e.damage.celkove[1]} — ${e.vitaz === null ? "remíza, lokalita ide na sekeru" : `vyhráva ${meno(e.vitaz)}`}${e.prebytok > 0 ? `, prebytok ${e.prebytok}` : ""}.`;
+      return `Bitka: tuhé ${e.damage.tuhe[0]}:${e.damage.tuhe[1]}, celkové ${e.damage.celkove[0]}:${e.damage.celkove[1]} — ${
+        e.vitaz === null
+          ? "sekera, špaky za bitku čakajú na víťaza ďalšej bitky"
+          : `vyhráva ${meno(e.vitaz)}${e.rozhodlo === "abstak" ? " (remíza, menej Absťákov)" : e.rozhodlo === "dlhy" ? " (remíza, menej priznaných Dlhov)" : ""}`
+      }${e.prebytok > 0 ? `, prebytok ${e.prebytok}` : ""}.`;
     case "koniec":
       return e.body === null
         ? `KONIEC: ${textHlasky(e.dovod, mena, rody)}`
-        : `KONIEC: ${textHlasky(e.dovod, mena, rody)} Body ${e.body[0]}:${e.body[1]}.`;
+        : `KONIEC: ${textHlasky(e.dovod, mena, rody)} Špaky ${e.body[0]}:${e.body[1]}.`;
     default:
       return null;
   }

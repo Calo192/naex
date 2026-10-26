@@ -19,17 +19,17 @@ import type {
   StavkaBitky as StavkaBitkyCisla,
   ZdrojeAkcii,
 } from "@naex/core";
-import { KONSTANTY, battleOutcome, textNeresti as neresti, jeCielLokalita, limitBuduceKolo, limitZhromazdenia, pocet, tvar } from "@naex/core";
+import { KONSTANTY, battleOutcome, textNeresti as neresti, jeCielLokalita, limitBuduceKolo, limitZhromazdenia, pocet, rozpisSpakov, tvar } from "@naex/core";
 import type { Rod } from "@naex/core";
 import type { Sada } from "@naex/tvorba";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { IKONY } from "../karta/ikony.ts";
 import { useTip, type TipObsah } from "../karta/Tip.tsx";
 import { Avatar } from "../komponenty.tsx";
-import { BodovyBar, type BodovyBarProps } from "./BodovyBar.tsx";
+import { BodovyBar } from "./BodovyBar.tsx";
 import { KartaHraca } from "./KartaHraca.tsx";
 import type { HracInfo } from "./useHra.ts";
-import { znamienko as znamienkoBodov } from "./Scorecard.tsx";
+import { Popolnik } from "./Spaky.tsx";
 
 // ---- ikony zdrojov -----------------------------------------------------------
 
@@ -223,7 +223,7 @@ export interface VyhladPitky {
   readonly vPitke: boolean;
   /** Pitky kola po tejto — NA EX a karty na stole sa v nich vyhodnotia znova. */
   readonly dalsiePitky: number;
-  /** Body jednej kliatby navyše pri dnešných scorecardoch (záporné). */
+  /** Špaky jednej kliatby navyše na konci hry (záporné; v6 Cirhóza −5, Dlh 0). */
   readonly cenaCirhozy: number;
   readonly cenaDlhu: number;
   /**
@@ -233,8 +233,9 @@ export interface VyhladPitky {
   readonly dlhyBitka: { readonly pali: number; readonly ostane: number };
 }
 
+/** „ · −5 š“ — cena kliatby v špakoch na konci hry; Dlh špaky neberie (v6), vtedy nič. */
 function bodov(n: number): string {
-  return n === 0 ? "0 b" : `${n > 0 ? "+" : "−"}${Math.abs(n)} b`;
+  return n === 0 ? "" : ` · ${n > 0 ? "+" : "−"}${Math.abs(n)} š`;
 }
 
 /** Čo vstupuje do výhľadu Pitky pod Pečeňou či Zadĺžením. */
@@ -260,15 +261,15 @@ function pitkyKratko(n: number): string {
  */
 function vyhladPitky(x: VstupVyhladu): { readonly kratke: readonly { readonly text: string; readonly zly: boolean }[]; readonly cele: readonly string[] } {
   const vsetky = x.kliatby + x.opakovane * x.dalsiePitky;
-  const pitka = `${x.vPitke ? "po Pitke" : "v Pitke"}: ${x.kliatby > 0 ? `${x.meno} ×${x.kliatby}${x.bitka === undefined ? ` · ${bodov(x.kliatby * x.cena)}` : ""}` : "nič"}`;
+  const pitka = `${x.vPitke ? "po Pitke" : "v Pitke"}: ${x.kliatby > 0 ? `${x.meno} ×${x.kliatby}${x.bitka === undefined ? bodov(x.kliatby * x.cena) : ""}` : "nič"}`;
   const dalsie = x.dalsiePitky > 0 && x.opakovane > 0 ? `a v ${x.dalsiePitky === 1 ? "ďalšej Pitke" : `ďalších ${x.dalsiePitky} Pitkách`} znova ×${x.opakovane}` : null;
   const poBitke =
     x.bitka === undefined || vsetky === 0
       ? null
-      : `${x.bitka.pali > 0 ? `bitka spáli až ${x.bitka.pali} → ostane ×${x.bitka.ostane}` : `po bitke ostanú ×${x.bitka.ostane}`} · ${bodov(x.bitka.ostane * x.cena)}`;
+      : `${x.bitka.pali > 0 ? `bitka spáli až ${x.bitka.pali} → ostane ×${x.bitka.ostane}` : `po bitke ostanú ×${x.bitka.ostane}`}${bodov(x.bitka.ostane * x.cena)}`;
   const kratke = [{ text: pitka, zly: x.kliatby > 0 }];
   // Druhý riadok: Dlh — čo ostane po bitke (zahŕňa aj ďalšie Pitky); Cirhóza — ďalšie Pitky.
-  if (x.bitka !== undefined && poBitke !== null) kratke.push({ text: `po bitke ×${x.bitka.ostane} · ${bodov(x.bitka.ostane * x.cena)}`, zly: x.bitka.ostane > 0 });
+  if (x.bitka !== undefined && poBitke !== null) kratke.push({ text: `po bitke ×${x.bitka.ostane}${bodov(x.bitka.ostane * x.cena)}`, zly: x.bitka.ostane > 0 });
   else if (dalsie !== null) kratke.push({ text: `${pitkyKratko(x.dalsiePitky)}: ×${x.opakovane}`, zly: true });
   return { kratke, cele: [pitka, dalsie, poBitke].filter((t): t is string => t !== null) };
 }
@@ -451,7 +452,7 @@ export interface HracDoskaProps {
   readonly popisKarty: (defId: string) => string;
   /** Výhľad Pitky (Zhromaždenie a Pitka) — inak null. */
   readonly vyhlad: VyhladPitky | null;
-  /** Body jedného Dlhu na konci hry pri dnešných scorecardoch (záporné) — pri priznaných Dlhoch. */
+  /** Špaky jedného Dlhu na konci hry (v6: 0 — Dlh trestá Exekútor a remíza). */
   readonly cenaDlhu: number;
   /** Doliatie a nový poldeci za cigarety — len na tvojej doske (Michal 2026-10-18: nedali sa nájsť). */
   readonly obchodCigariet?:
@@ -473,15 +474,9 @@ export interface HracDoskaProps {
    * Bodový bar (Michal 2026-10-23): kým stôl ukazuje líniu starších po kliku na Body,
    * šesť zdrojov nahradia dlaždice podmienok (zdroje skryje hra.css .doska.bodovy).
    */
-  readonly bodovy?: Omit<BodovyBarProps, "p" | "body" | "mena"> | undefined;
+  readonly bodovy?: boolean | undefined;
 }
 
-/** „o 12 pred Tetou“ / „o 3 za Tetou“ / „rovnako“ — dlaždica Body. */
-function porovnanieBodov(moje: number, jeho: number, menoJeho: string): string {
-  if (moje === jeho) return `rovnako ako ${menoJeho}`;
-  // Meno s bodmi sa nezalamuje — na notebooku ostávalo „+6“ samo na ďalšom riadku (výučba 20261025).
-  return `o ${Math.abs(moje - jeho)} ${moje > jeho ? "pred" : "za"} · ${`${menoJeho} ${znamienkoBodov(jeho)}`.replace(/ /g, "\u00a0")}`;
-}
 
 /**
  * Bar hráča (Michal 2026-10-22, dizajn stol-oproti-b2-20261022-1030): súperi
@@ -562,7 +557,7 @@ export function HracDoska({
 
   return (
     <section
-      className={`doska ${ja ? "moja" : "superova"} ${naTahu ? "na-tahu" : ""}${bodovy !== undefined ? " bodovy" : ""}`}
+      className={`doska ${ja ? "moja" : "superova"} ${naTahu ? "na-tahu" : ""}${bodovy === true ? " bodovy" : ""}`}
       aria-label={`Hráč ${meno}`}
       data-vyucba={ja ? "bar" : "bar-supera"}
     >
@@ -577,9 +572,13 @@ export function HracDoska({
           <Rola
             utoci={utoci}
             tip={
-              utoci
+              view.ciel?.typ === "finale"
+                ? utoci
+                  ? { nadpis: "Útočník finále", text: "Má viac špakov (pri rovnosti prehral poslednú bitku): vyloží prvú kartu do stredu línie — súper vidí, čo vyložil. V Pitke má posledné slovo." }
+                  : { nadpis: "Obranca finále", text: "Má menej špakov: vidí prvú kartu útočníka a kladie k nej. V Pitke začína." }
+                : utoci
                 ? { nadpis: "Útočník", text: "Prehral poslednú bitku: zo šenku berie prvý a vykladá prvý. V Pitke hrá druhý — má posledné slovo." }
-                : { nadpis: "Obranca", text: "Vyhral poslednú bitku: vyberá a natáča cieľ kola, v Pitke začína. Pri remíze nevyhrá nikto — lokalita ide na sekeru." }
+                : { nadpis: "Obranca", text: "Vyhral poslednú bitku: vyberá a natáča cieľ kola, v Pitke začína. Pri remíze v tuhom vyhrá, kto má menej Absťákov, potom menej priznaných Dlhov; inak idú špaky na sekeru." }
             }
             frajerina={info?.frajerina}
           />
@@ -590,8 +589,8 @@ export function HracDoska({
                 className="cip kliatba"
                 title={
                   ja
-                    ? "Tvoje nepriznané kliatby v ruke a v balíčkoch — na konci hry uberajú body."
-                    : "Súperove nepriznané kliatby — počet sa ráta z toho, čo sa ukázalo na stole (vznik, priznanie, zahodenie). Ktoré karty a kde ležia, nevidíš. Už sú odpočítané v jeho bodoch."
+                    ? `Tvoje nepriznané kliatby v ruke a v balíčkoch — každá Cirhóza ti na konci hry zoberie ${KONSTANTY.SPAKY_ZA_CIRHOZU} špakov.`
+                    : `Súperove nepriznané kliatby — počet sa ráta z toho, čo sa ukázalo na stole (vznik, priznanie, zahodenie). Ktoré karty a kde ležia, nevidíš. Každá Cirhóza mu na konci hry zoberie ${KONSTANTY.SPAKY_ZA_CIRHOZU} špakov.`
                 }
               >
                 nepriznané{kliatby.cirhoza > 0 && ` · Cirhóza ×${kliatby.cirhoza}`}
@@ -604,7 +603,7 @@ export function HracDoska({
 
       {/* display: contents — dlaždice sú priamo v mriežke baru (poradie v hra.css). */}
       <div className="doska-zdroje">
-        {bodovy !== undefined && <BodovyBar p={p} body={body} mena={mena} {...bodovy} />}
+        {bodovy && <BodovyBar p={p} body={body} rozpis={rozpisSpakov(view)[p]} mena={mena} />}
         <Zdroj
           nazov="Poldeci"
           trieda="zdroj-poldeci"
@@ -643,7 +642,7 @@ export function HracDoska({
                   V Pitke položíš plný poldeci na Občana alebo Starešinu (NA EX!) — skryto, súper ho uvidí, keď obaja skončíte Pitku. Zdvojnásobí
                   neaktívne akcie karty a zruší jej aktívne; limit vykladania ti tým klesne o 1. V Zhromaždení ťa plný poldeci stojí každá ďalšia
                   karta v tom istom ťahu. Vypitý doleješ za {KONSTANTY.REFILL_CENA} cigarety (nie s Vínkom v Dedičstve), nový získaš barterom
-                  ({KONSTANTY.BARTER_CENA} cigariet). Na konci hry vyhráva súboj Rezerva, kto má viac plných poldeci (Vínko sa ráta ako plný).
+                  ({KONSTANTY.BARTER_CENA} cigariet).
                 </span>
               </>
             ),
@@ -697,7 +696,7 @@ export function HracDoska({
                   Získavaš ich z aktívnych akcií Cigareta v Pitke (mínus súperove Obmedzenia) a prenášajú sa z kola na kolo.
                   Platíš nimi šenok (1 karta = {KONSTANTY.CENA_SENKU[1]}, 2 karty = {KONSTANTY.CENA_SENKU[2]}) a Dedičstvo (cena rastie pre oboch).
                   Fajčiť smieš len v Pitke, na svojom ťahu: cigareta = karta hneď. V Pitke {KONSTANTY.REFILL_CENA} cigarety dolejú vypitý poldeci,{" "}
-                  {KONSTANTY.BARTER_CENA} vymeníš za nový plný (stokársky barter). Na konci hry vyhráva súboj Cigarety pri staršom, kto ich má viac.
+                  {KONSTANTY.BARTER_CENA} vymeníš za nový plný (stokársky barter).
                 </span>
               </>
             ),
@@ -729,14 +728,10 @@ export function HracDoska({
                 {v !== null && v.pecenZoStola > 0 && `, karty na stole pripíšu ${v.pecenZoStola} → ${pecenPo}`}. Vyhodnocuje sa len v Pitke: za
                 každý celý prah vzniká Cirhóza (ide do odhadzovacieho balíčka; priznaná dá súperovi v bitke +1 tuhé poškodenie) a{" "}
                 <b>po každej Pitke sa pečeň vynuluje</b>.
-                {vyhlad !== null && (
-                  <span className="tip-stav">
-                    {vyhlad.cenaCirhozy === 0
-                      ? "Ďalšia nepriznaná Cirhóza by teraz body nezmenila"
-                      : `Ďalšia nepriznaná Cirhóza by ťa teraz stála ${bodov(vyhlad.cenaCirhozy)}`}{" "}
-                    (súboje o Cirhózu pri starších). Nepriznaná ide po bitke do odhadzovacieho balíčka.
-                  </span>
-                )}
+                <span className="tip-stav">
+                  Nepriznaná Cirhóza ide po bitke do odhadzovacieho balíčka a na konci hry ti zoberie {KONSTANTY.SPAKY_ZA_CIRHOZU} špakov (ráta sa ruka
+                  aj oba balíčky). Priznaná dá súperovi v každej bitke +1 tuhé poškodenie.
+                </span>
                 <span className="tip-riadok">
                   Pribúda akciami Poškodenie pečene a Poldeci a NA EX v Pitke; poldeci vypitý v Zhromaždení ju pripíše dopredu do najbližšej Pitky.
                   NA EX leží na karte až do bitky — jej zdvojené akcie sa vyhodnotia v každej Pitke kola. Prah = {prahy.cirhoza}.
@@ -768,10 +763,8 @@ export function HracDoska({
                 <TipVyhladu x={vyhladZadlzenia} />
                 {hrac.zadlzenie} z {prahy.dlh}
                 {v !== null && v.zadlzenieZoStola > 0 && `, karty na stole pripíšu ${v.zadlzenieZoStola} → ${zadlzeniePo}`}. Za každý celý prah
-                vzniká karta Dlh — <b>hneď sa prizná</b> a na konci hry uberá body aj priznaný.
-                <span className="tip-stav">
-                  {cenaDlhu === 0 ? "Ďalší Dlh by teraz body nezmenil" : `Ďalší Dlh by ťa teraz stál ${bodov(cenaDlhu)}`} (súboje o Dlhy pri starších).
-                </span>
+                vzniká karta Dlh — <b>hneď sa prizná</b>. Špaky Dlh sám neberie: priznané Dlhy privolajú Exekútora a pri remíze v tuhom aj
+                v Absťákoch prehrá bitku, kto ich má viac.
                 <span className="tip-riadok">Pribúda akciami Dlh v Pitke a <b>po každej Pitke sa vynuluje</b>.</span>
               </>
             ),
@@ -792,10 +785,11 @@ export function HracDoska({
             text: (
               <>
                 {prahy.priznaneDlhy} z {prahy.exekutor}. Keď ich má hráč v bitke aspoň {prahy.exekutor}, prichádza
-                Exekútor: musí odovzdať Nástroj (polovica dlhov potom zhorí), inak prehráva. Kto je pod prahom, spáli v každej bitke 1 priznaný Dlh.
+                Exekútor: zhorí polovica priznaných Dlhov (nadol) a rovnako veľa špakov — aj do mínusu, súper ich nedostane. Kto má
+                Záhradkára, smie ho zahodiť namiesto špakov.
                 <span className="tip-stav">
-                  Na konci hry sa ráta aj priznaný Dlh — súboj Dlhy pri staršom vyhrá, kto ich má menej
-                  {priznaneDlhy > 0 ? ` (máš ${priznaneDlhy} priznané)` : ""}.
+                  Pri remíze v tuhom aj v Absťákoch vyhrá bitku, kto má menej priznaných Dlhov
+                  {priznaneDlhy > 0 ? ` (${ja ? "máš" : "má"} ${priznaneDlhy})` : ""}.
                 </span>
                 <span className="tip-riadok">
                   Prah = {KONSTANTY.PRAH_EXEKUTORA_ZAKLAD}, súperova priazeň Exekútora ho znižuje. Priazeň Kmotra ti po bitke zníži priznané Dlhy.
@@ -808,25 +802,30 @@ export function HracDoska({
         <DlazdicaKariet hrac={hrac} ja={ja} karty={karty} />
         <button
           type="button"
-          className={`zdroj zdroj-body ${body.spolu[p] > 0 ? "plus" : body.spolu[p] < 0 ? "minus" : ""}${starsi.stlacene ? " stlacene" : ""}`}
+          className={`zdroj zdroj-body${starsi.stlacene ? " stlacene" : ""}`}
           aria-pressed={starsi.stlacene}
           aria-controls={starsi.id}
           data-vyucba-prvok="body"
           title={
             starsi.stlacene
               ? "Späť na stôl (Esc)"
-              : `Body za starších, keby hra skončila teraz — klik ukáže pri každom staršom súboje podmienok a kto by za neho teraz dostal body${(starsi.posuny ?? 0) > 0 ? `. Od bitky sa pohlo starších: ${starsi.posuny} — pri nich je stopa a lístok, prečo.` : ""}`
+              : `${ja ? "Tvoje špaky" : `Špaky ${meno}`} v popolníku: ${body.spaky[p]}. Po každej bitke ${ja ? "ti" : "mu"} starší, ktorí sa ${ja ? "ťa" : "ho"} boja, dajú ${body.zaStarsich[p]} (žltá 1, oranžová 2, červená 3).` +
+                (body.cirhozy[p] > 0 ? ` Nepriznaná Cirhóza ×${body.cirhozy[p]} na konci hry −${body.cirhozy[p] * KONSTANTY.SPAKY_ZA_CIRHOZU}.` : "") +
+                ` Klik ukáže starších a koho sa boja.${(starsi.posuny ?? 0) > 0 ? ` Od bitky sa pohlo starších: ${starsi.posuny} — pri nich je stopa a lístok, prečo.` : ""}`
           }
           onClick={starsi.prepni}
         >
           <span className="zdroj-nazov">
-            Body {starsi.stlacene ? "▴" : "▾"}
+            Špaky {starsi.stlacene ? "▴" : "▾"}
             {!starsi.stlacene && (starsi.posuny ?? 0) > 0 && <span className="zdroj-posuny">⇄ {starsi.posuny}</span>}
           </span>
           <span className="zdroj-hodnota">
-            <span className="velke-cislo">{znamienkoBodov(body.spolu[p])}</span>
+            <Popolnik n={body.spaky[p]} kto={ja ? "moj" : "superov"} titul="" />
           </span>
-          <span className="zdroj-pod">{porovnanieBodov(body.spolu[p], body.spolu[p === 0 ? 1 : 0], mena[p === 0 ? 1 : 0])}</span>
+          <span className="zdroj-pod">
+            {/* Nepriznaná Cirhóza je v čipe pod menom a v nápovede — dlaždica má na pod jeden riadok. */}
+            <span className={body.zaStarsich[p] > 0 ? "spaky-plus" : undefined}>+{body.zaStarsich[p]} od starších</span>
+          </span>
         </button>
       </div>
 
@@ -1057,7 +1056,7 @@ function StranaBitky({
         ))}
         <span className="tip-stav">
           {makke > 0 ? `+ ${makke} mäkké (Povera) = celkom ${celkove}` : `celkom ${celkove}`} — celkové určí, kto rozdelí prebytok. Pri
-          rovnakom tuhom nevyhrá nikto: lokalita ide na sekeru.
+          rovnakom tuhom vyhrá, kto má menej Absťákov, potom menej priznaných Dlhov; inak idú špaky na sekeru.
         </span>
       </>
     ),
@@ -1103,9 +1102,9 @@ export interface BitkaPanelProps {
   readonly sada: Sada;
   readonly ciel: string;
   readonly menoKarty: (defId: string) => string;
-  /** Lokality na sekere z predošlých remíz — víťaz tejto bitky ich berie tiež. */
+  /** Špaky na sekere z predošlých remíz („4 špaky“) — víťaz tejto bitky ich berie tiež. */
   readonly naSekeru: readonly string[];
-  /** Posledná bitka hry — pri remíze lokality prepadnú. */
+  /** Finále — pri sekere špaky prepadnú. */
   readonly poslednaBitka: boolean;
   /** Koľko stojí posun markera prebytkom, keby hráč bitku vyhral (Miňištrant); porazený platí 1. */
   readonly cenaPosunuVitaza: readonly [number, number];
@@ -1183,7 +1182,6 @@ function verdiktBitky({ damage, ja, vysledok, naSekeru, poslednaBitka, cenaPosun
   const { vitaz, prebytok, prebytokDrzi } = battleOutcome(damage);
   const rozdiel = Math.abs(damage.tuhe[ja] - damage.tuhe[su]);
   const vyhravam = vitaz === ja;
-  const vStavke = 1 + naSekeru.length;
   const coPriRemize = poslednaBitka
     ? "menej Absťákov, potom menej Dlhov; inak špaky prepadnú (finále)"
     : "menej Absťákov, potom menej Dlhov; inak špaky na sekeru";
@@ -1202,7 +1200,7 @@ function verdiktBitky({ damage, ja, vysledok, naSekeru, poslednaBitka, cenaPosun
   const posunov = Math.floor(prebytokNaRozdelenie / Math.max(1, cenaPosunu));
   // V bare je na verdikt jeden krátky riadok — čo prinesie remíza, povie nápoveda.
   const kratko = rozdiel === 0 ? "Remíza" : verdikt;
-  return { su, vitaz, prebytok, prebytokDrzi, rozdiel, vyhravam, vStavke, coPriRemize, verdikt, kratko, cenaPosunu, posunov };
+  return { su, vitaz, prebytok, prebytokDrzi, rozdiel, vyhravam, coPriRemize, verdikt, kratko, cenaPosunu, posunov };
 }
 
 /**
@@ -1232,7 +1230,7 @@ export function OdhadBaru(props: BitkaPanelProps) {
 /** Nápoveda odhadu v bare: čo býval celý panel bitky, a stávka (Michal 2026-10-25: len v nápovede). */
 export function tipOdhadu(props: BitkaPanelProps, stavka: StavkaBitkyCisla | null, prepnutNa: string): TipObsah {
   const { damage, ja, vysledok, mena, ciel, naSekeru, prebytokNaRozdelenie, utocnik } = props;
-  const { su, prebytok, prebytokDrzi, rozdiel, vStavke, coPriRemize, verdikt, cenaPosunu, posunov } = verdiktBitky(props);
+  const { su, prebytok, prebytokDrzi, rozdiel, coPriRemize, verdikt, cenaPosunu, posunov } = verdiktBitky(props);
   const posunyText = posunov === 1 ? "posun" : posunov >= 2 && posunov <= 4 ? "posuny" : "posunov";
   return {
     nadpis: `${vysledok ? "Výsledok bitky" : "Odhad bitky"}${ciel === "" ? "" : ` · ${ciel}`}`,
@@ -1272,7 +1270,7 @@ export function tipOdhadu(props: BitkaPanelProps, stavka: StavkaBitkyCisla | nul
 
 export function BitkaPanel(props: BitkaPanelProps) {
   const { damage, sums, zdroje, rozpis, ja, vysledok, mena, sada, ciel, menoKarty, naSekeru, prebytokNaRozdelenie, utocnik } = props;
-  const { su, vitaz, prebytok, prebytokDrzi, rozdiel, vyhravam, vStavke, coPriRemize, verdikt, cenaPosunu, posunov } = verdiktBitky(props);
+  const { su, vitaz, prebytok, prebytokDrzi, rozdiel, vyhravam, coPriRemize, verdikt, cenaPosunu, posunov } = verdiktBitky(props);
 
   const strana = (p: PlayerId, zarovnanie: "vlavo" | "vpravo") => (
     <StranaBitky
@@ -1300,8 +1298,8 @@ export function BitkaPanel(props: BitkaPanelProps) {
         </span>
         {utocnik !== undefined && <span className="bitka-pozn">{utocnik}</span>}
         {naSekeru.length > 0 && (
-          <span className="bitka-sekera" title="Lokality z predošlých remíz — víťaz tejto bitky ich berie spolu s jej lokalitou.">
-            ide o {vStavke + (vStavke === 1 ? " lokalitu" : vStavke <= 4 ? " lokality" : " lokalít")} · na sekere {naSekeru.join(", ")}
+          <span className="bitka-sekera" title="Špaky z predošlých remíz — víťaz tejto bitky ich dostane navyše.">
+            na sekere {naSekeru.join(", ")} — vezme ich víťaz
           </span>
         )}
         <span className="bitka-verdikt">{verdikt}</span>
@@ -1367,19 +1365,34 @@ export function PriebehKola({ view, onBitka }: { readonly view: ClientState; rea
   const pocetPozn =
     "Pitiek je 1 + menší z počtov aktivovaných akcií karty v strede na jej dvoch stranách — počet sa mení, keď hráči vykladajú karty k lokalite.";
   const kroky: KrokKola[] = [
-    {
-      id: "volbaCiela",
-      nazov: "Voľba cieľa",
-      tip: {
-        nadpis: "Voľba cieľa",
-        text: (
-          <>
-            Obranca (víťaz poslednej bitky) vyberie lokalitu a natočí ju.
-            <span className="tip-riadok">Natočenie určuje, ktoré akcie lokality sú obrátené ku ktorej strane.</span>
-          </>
-        ),
-      },
-    },
+    view.ciel?.typ === "finale"
+      ? {
+          id: "volbaCiela",
+          nazov: "Finále",
+          tip: {
+            nadpis: "Finále",
+            text: (
+              <>
+                Posledná bitka bez lokality, vždy {KONSTANTY.FINALE_PITKY} Pitky. Útočí, kto má viac špakov (pri rovnosti porazený poslednej
+                bitky); jeho prvá karta leží v strede línie a ďalšie sa kladú na jej dve strany. Kraje ani prevaha vo finále nie sú.
+                <span className="tip-riadok">Po finále dajú starší ešte raz špaky, prebytok sa zmení na špaky a odpočíta sa nepriznaná Cirhóza.</span>
+              </>
+            ),
+          },
+        }
+      : {
+          id: "volbaCiela",
+          nazov: "Voľba cieľa",
+          tip: {
+            nadpis: "Voľba cieľa",
+            text: (
+              <>
+                Obranca (víťaz poslednej bitky) vyberie lokalitu a natočí ju.
+                <span className="tip-riadok">Natočenie určuje, ktoré akcie lokality sú obrátené ku ktorej strane.</span>
+              </>
+            ),
+          },
+        },
     {
       id: "draft",
       nazov: "Draft",
@@ -1395,7 +1408,7 @@ export function PriebehKola({ view, onBitka }: { readonly view: ClientState; rea
             </span>
             <span className="tip-riadok">
               <b>Patronát:</b> komu starší prejavuje priazeň (aspoň žltá), smie si ho vziať do ruky — najprv útočník, potom obranca.
-              Na scorecard dá lícom dole Občana či Zviera z ruky, marker ide do stredu. Platí cigarety do červenej, súper dostane
+              Na jeho miesto dá lícom dole Občana či Zviera z ruky, marker ide do stredu. Platí cigarety do červenej, súper dostane
               v bitke Pohoršenia (o koľko marker išiel do stredu). Výhra = starší je jeho; prehra = odhodí poldeci.
             </span>
           </>
@@ -1450,12 +1463,14 @@ export function PriebehKola({ view, onBitka }: { readonly view: ClientState; rea
     id: "bitka",
     nazov: "Bitka",
     tip: {
-      nadpis: "Bitka o lokalitu",
+      nadpis: view.ciel?.typ === "finale" ? "Finále" : "Bitka o lokalitu",
       text: (
         <>
-          Rozhoduje tuhé poškodenie (Rana 1, Pecka 2, Petelica 3; mínus súperova Viera a vlastné Absťáky). Pri rovnakom tuhom nevyhrá
-          nikto: lokalita ide na sekeru a vezme si ju víťaz najbližšej bitky (prepadne len pri remíze v poslednej bitke). Víťaz ovládne lokalitu (aj
-          tie zo sekery a staršieho, ak ho má v patronáte); kto má vyššie celkové, rozdelí prebytok — posúva markery starších.
+          Rozhoduje tuhé poškodenie (Rana 1, Pecka 2, Petelica 3; mínus súperova Viera a vlastné Absťáky). Pri rovnakom tuhom vyhrá, kto
+          má menej Absťákov, potom menej priznaných Dlhov; inak sekera — špaky kola čakajú na víťaza ďalšej bitky (vo finále prepadnú).
+          Víťaz dostane toľko špakov, koľko Pitiek sa odohralo (mínus rozdiel Absťákov, aspoň 1) a lokalita ide na krčmovú nástenku.
+          Potom každému dajú špaky starší, ktorí sa ho boja (žltá 1, oranžová 2, červená 3). Kto má vyššie celkové, rozdelí prebytok —
+          posúva markery starších; po finále ho dostane ako špaky.
           <span className="tip-riadok">
             Potom Exekútor, Pohoršenie, Pohreb… a každý si dobere {KONSTANTY.KARTY_PO_BITKE} karty. Porazený je v ďalšom kole
             útočník.

@@ -323,6 +323,12 @@ export interface GameState {
   readonly spakyNaSekere: number;
   /** Odohrané bitky v poradí — krčmová nástenka. */
   readonly nastenka: readonly BitkaNaNastenke[];
+  /**
+   * Finále: strana, na ktorú padla prvá karta — tá leží v strede línie
+   * (strany[stredFinale][0]). Keď sú obe strany neprázdne, zo strán sa to
+   * vyčítať nedá. Chýba v uloženiach spred v6 UI.
+   */
+  readonly stredFinale?: PlayerId | null;
   /** Hráč dal v tomto kole NA EX (Krčmárka). */
   readonly naexVKole: readonly [boolean, boolean];
   readonly starsi: readonly ElderState[];
@@ -599,6 +605,21 @@ export function bitkyNaSekere(nastenka: readonly Pick<BitkaNaNastenke, "vitaz">[
 /** Hrá sa finále — posledná bitka bez lokality (v6). */
 export function jeFinale(s: Pick<VerejnyStav, "ciel">): boolean {
   return s.ciel?.typ === "finale";
+}
+
+/**
+ * Finále: strana, ktorej prvá karta (strany[p][0]) leží v strede línie; null
+ * mimo finále a kým nikto nič nevyložil. Pri jednej neprázdnej strane je to
+ * ona, pri dvoch rozhodne stredFinale (prvá vyložená karta).
+ */
+export function stranaStreduFinale(
+  s: Pick<VerejnyStav, "ciel" | "strany"> & { readonly stredFinale?: PlayerId | null },
+): PlayerId | null {
+  if (!jeFinale(s)) return null;
+  const plna = [s.strany[0].length > 0, s.strany[1].length > 0] as const;
+  if (!plna[0] && !plna[1]) return null;
+  if (plna[0] !== plna[1]) return plna[0] ? 0 : 1;
+  return s.stredFinale ?? 0;
 }
 
 /**
@@ -2067,6 +2088,7 @@ function vylozDoLinie(
   // pes: nikdy nesmie byť v partii s iným zvieraťom — medzi kartami toho istého majiteľa.
   need(!zvieraKonflikt(data, partiaHraca(s as GameState, p), def), "Pes nesmie byť medzi tvojimi kartami s iným zvieraťom.");
   const karta = vezmiZRuky(s, p, uid);
+  if (jeFinale(s) && s.strany[0].length === 0 && s.strany[1].length === 0) s.stredFinale = cielPartia;
   if (zaverecna) {
     partia.push({ card: karta, playedBy: p, zaverecna: true } as DeepMutable<PlacedCard>);
     // Meno karty sa v logu objaví až pri otočení.
@@ -4212,6 +4234,7 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
     // porazený poslednej bitky, po sekere ostáva útočník (Leader 2026-10-26).
     s.utocnik = s.spaky[0] !== s.spaky[1] ? (s.spaky[0] > s.spaky[1] ? 0 : 1) : vitaz !== null ? opponentOf(vitaz) : s.utocnik;
     s.ciel = { typ: "finale", lokalita: null };
+    s.stredFinale = null;
     s.lokalitaOtocena = false;
     events.push({
       type: "log",

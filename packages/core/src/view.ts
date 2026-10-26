@@ -26,7 +26,7 @@ import type {
   VyberStavby,
   ZhromazdenieStav,
 } from "./engine.ts";
-import { cenaDedicstva, verejneAbstaky, mozeHrat, naTahu, uidZaverecnej, vyplatZaStarsich } from "./engine.ts";
+import { cenaDedicstva, verejneAbstaky, mozeHrat, naTahu, stranaStreduFinale, uidZaverecnej, vyplatZaStarsich } from "./engine.ts";
 import { KONSTANTY } from "./constants.ts";
 import { MARKER_STRED, favourStarsieho, posunMarker, priazenHraca, priazenSila, spakyZaStarsich, strachZ, vydesil } from "./elders.ts";
 import type { DamageResult } from "./battle.ts";
@@ -156,6 +156,8 @@ export interface ClientState {
   readonly spakyNaSekere: number;
   /** Odohrané bitky v poradí: lokalita, víťaz a špaky — krčmová nástenka. */
   readonly nastenka: readonly BitkaNaNastenke[];
+  /** Finále: strana, ktorej prvá karta leží v strede línie (stranaStreduFinale); inak null. */
+  readonly stredFinale: PlayerId | null;
   readonly naexVKole: readonly [boolean, boolean];
   readonly starsi: readonly StarsiVerejne[];
   readonly ciel: CielKola | null;
@@ -291,6 +293,7 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
     spaky: state.spaky,
     spakyNaSekere: state.spakyNaSekere,
     nastenka: state.nastenka,
+    stredFinale: stranaStreduFinale(state),
     naexVKole: state.naexVKole,
     starsi: state.starsi.map((e) => ({ ...e, priazen: favourStarsieho(data, e) })),
     ciel: state.ciel,
