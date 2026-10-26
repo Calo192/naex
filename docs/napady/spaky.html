@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Špaky</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Rozvrhnutie: pravidlo ako text v jednom stĺpci, potom krokovaný príklad: stupnice, nástenka, popolníky. */
+:root {
+  --pozadie: #15120f; --plocha: #1f1a15; --plocha-2: #2a231c; --okraj: #43372c;
+  --text: #f1e8d8; --tlmeny: #b8a993;
+  --akcent: #e9ad45; --jano: #8fb4e0; --zuza: #e08f9c;
+  --z-cervena: #c9483a; --z-oranzova: #e08a3a; --z-zlta: #d9c04a; --z-siva: #6b6157;
+  --ohorok: #e9dcc4; --filter: #d08a3c; --popol: #3a332c;
+  --serif: Georgia, "Times New Roman", serif;
+  --sans: system-ui, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #d8c8ad;
+    --text: #2a2016; --tlmeny: #5e4f3b;
+    --akcent: #95590a; --jano: #2d5a8f; --zuza: #a33a52;
+    --z-cervena: #b23a2c; --z-oranzova: #c7701f; --z-zlta: #b89a17; --z-siva: #b9ad9c;
+    --ohorok: #fffdf8; --filter: #c27424; --popol: #cfc4b2;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #d8c8ad;
+  --text: #2a2016; --tlmeny: #5e4f3b;
+  --akcent: #95590a; --jano: #2d5a8f; --zuza: #a33a52;
+  --z-cervena: #b23a2c; --z-oranzova: #c7701f; --z-zlta: #b89a17; --z-siva: #b9ad9c;
+  --ohorok: #fffdf8; --filter: #c27424; --popol: #cfc4b2;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 var(--sans); }
+main { max-width: 960px; margin: 0 auto; padding-block: 28px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--serif); line-height: 1.2; text-wrap: balance; }
+h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); margin: 0 0 8px; }
+h2 { font-size: 1.4rem; margin: 40px 0 14px; padding-bottom: 6px; border-bottom: 1px solid var(--okraj); }
+h3 { font-size: 1.1rem; margin: 22px 0 8px; }
+p { margin: 0 0 10px; max-width: 72ch; }
+ul, ol { max-width: 72ch; }
+li { margin-bottom: 5px; }
+a { color: var(--akcent); }
+:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+.uvod { color: var(--tlmeny); }
+.skratka { background: var(--plocha); border: 1px solid var(--akcent); border-radius: 12px; padding: 14px 16px; margin: 18px 0; }
+.skratka h2 { margin-top: 0; border: 0; padding: 0; font-size: 1.2rem; }
+.skratka ul { margin: 6px 0 0; padding-left: 20px; }
+.vyklad { display: inline-block; font-size: .74rem; border-radius: 999px; padding: 0 8px; border: 1px solid var(--akcent); color: var(--akcent); white-space: nowrap; vertical-align: 1px; }
+.pozn { font-size: .9rem; color: var(--tlmeny); }
+.tab-obal { overflow-x: auto; }
+table.prehlad { width: 100%; border-collapse: collapse; font-size: .92rem; font-variant-numeric: tabular-nums; }
+table.prehlad th, table.prehlad td { padding: 7px 6px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--okraj); }
+table.prehlad thead th { border-bottom: 2px solid var(--okraj); font-size: .85rem; color: var(--tlmeny); font-weight: 600; }
+tr.nove td { background: var(--plocha); }
+tr.nove td:first-child { box-shadow: inset 3px 0 0 var(--akcent); }
+code { font-family: var(--mono); font-size: .86em; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+
+/* stupnica 7 polí */
+.st7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; max-width: 420px; margin: 8px 0 4px; }
+.st7 span { display: grid; place-items: center; height: 34px; border-radius: 4px; font-size: .8rem; font-weight: 600; color: #1b1612; }
+.zc { background: var(--z-cervena); } .zo { background: var(--z-oranzova); } .zz { background: var(--z-zlta); } .zs { background: var(--z-siva); }
+.st7-pop { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; max-width: 420px; font-size: .72rem; color: var(--tlmeny); text-align: center; }
+
+/* príklad */
+.priklad { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 14px; }
+.kroky { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.kroky button { appearance: none; font: inherit; font-size: .86rem; padding: 6px 11px; border-radius: 8px; border: 1px solid var(--okraj); background: var(--plocha-2); color: var(--text); cursor: pointer; }
+.kroky button[aria-pressed="true"] { border-color: var(--akcent); color: var(--akcent); font-weight: 600; }
+.priklad-mriezka { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 16px; }
+.pribeh { min-width: 0; }
+.pribeh h3 { margin-top: 0; }
+.pribeh ol { padding-left: 20px; margin: 0; }
+.pribeh li { font-size: .93rem; }
+.j { color: var(--jano); font-weight: 600; } .z { color: var(--zuza); font-weight: 600; }
+.starsi { min-width: 0; display: grid; gap: 5px; align-content: start; }
+.st-riadok { display: grid; grid-template-columns: 7.5em minmax(0, 1fr) 2.2em; gap: 8px; align-items: center; font-size: .84rem; }
+.st-riadok .mini { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.st-riadok .mini i { height: 16px; border-radius: 3px; opacity: .35; }
+.st-riadok .mini i.tu { opacity: 1; box-shadow: inset 0 0 0 2px var(--text); }
+.st-riadok b { text-align: right; font-variant-numeric: tabular-nums; }
+.starsi-hlava { display: flex; justify-content: space-between; font-size: .76rem; color: var(--tlmeny); padding-left: 8.1em; padding-right: 2.7em; }
+
+.nastenka { margin-top: 18px; background: var(--plocha-2); border-radius: 12px; padding: 12px; }
+.nastenka h3 { margin: 0 0 10px; font-size: 1rem; }
+.lokality { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+.lok { border: 1px dashed var(--okraj); border-radius: 8px; padding: 8px 6px; text-align: center; min-height: 128px; display: grid; align-content: start; justify-items: center; gap: 4px; }
+.lok.hotova { border-style: solid; background: var(--plocha); }
+.lok.final { border-color: var(--akcent); }
+.foto { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; font-family: var(--serif); font-size: 1.3rem; color: #1b1612; }
+.foto.J { background: var(--jano); } .foto.Z { background: var(--zuza); } .foto.nikto { background: var(--okraj); color: var(--tlmeny); }
+.lok .meno-lok { font-size: .78rem; color: var(--tlmeny); line-height: 1.2; }
+.lok .pocet { font-family: var(--serif); font-size: 1.2rem; }
+.lok .pozn-lok { font-size: .7rem; color: var(--tlmeny); line-height: 1.25; }
+
+.popolniky { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+.popolnik { background: var(--plocha-2); border-radius: 12px; padding: 10px 12px; min-width: 0; }
+.popolnik .hlava { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.popolnik .spolu { font-family: var(--serif); font-size: 1.7rem; font-variant-numeric: tabular-nums; }
+.misa { margin-top: 6px; border-radius: 999px; background: var(--popol); padding: 10px 14px; display: flex; flex-wrap: wrap; gap: 4px; min-height: 40px; align-items: center; }
+.ohorok { width: 16px; height: 6px; border-radius: 2px; background: linear-gradient(90deg, var(--filter) 0 45%, var(--ohorok) 45%); }
+.ohorok.minus { background: var(--z-cervena); opacity: .7; }
+.popolnik .rozpis { font-size: .8rem; color: var(--tlmeny); margin-top: 6px; }
+
+.otazky li { margin-bottom: 8px; }
+footer { margin-top: 40px; padding-top: 12px; border-top: 1px solid var(--okraj); color: var(--tlmeny); font-size: .88rem; }
+@media (max-width: 760px) {
+  .priklad-mriezka { grid-template-columns: 1fr; }
+  .lokality { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 420px) {
+  .popolniky { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<main>
+
+<h1>Špaky</h1>
+<p class="uvod">Nové bodovanie NA EX! podľa návrhu Michala (26. 10. 2026), spísal Navrhár. Návrh pravidla pre dávku v6.
+Pravidlá ani kód zatiaľ nemením. Všetky body sú potvrdené v interview s Michalom 26. 10. Čo ešte ostáva
+otvorené, je v časti 4.</p>
+
+<section class="skratka" aria-labelledby="h-skratka">
+  <h2 id="h-skratka">V skratke</h2>
+  <ul>
+    <li>Víťazné body sú <b>špaky</b>. Kto má na konci viac špakov, vyhrá. Rovnosť je remíza.</li>
+    <li>Hrá sa o X lokalít a potom <b>finále</b>, poslednú bitku bez lokality.</li>
+    <li>Víťaz bitky si lokalitu <b>neberie</b>. Dostane toľko špakov, koľko Pitiek sa v kole naozaj odohralo.</li>
+    <li>Po <b>každej</b> bitke ti každý starší, ktorý sa ťa bojí, dá 1, 2 alebo 3 špaky podľa zóny.</li>
+    <li>Stupnica strachu má <b>7 polí</b> s jedným sivým. Scorecardy nesú už len priazeň, podmienky miznú.</li>
+    <li>Kliatby: Exekútor berie Dlhy aj špaky, nepriznaná Cirhóza stojí na konci 5 špakov a Absťák uberá
+      víťazovi špaky a rozhoduje remízy.</li>
+    <li>Na webe pribudne <b>krčmová nástenka</b>: nad každou lokalitou fotka víťaza a koľko špakov za ňu získal.
+      Špaky sa zbierajú ako ohorky v popolníku pri mene hráča.</li>
+  </ul>
+</section>
+
+<h2 id="pravidlo">1. Pravidlo</h2>
+
+<h3>1.1 Priebeh hry</h3>
+<p>Hra má X bitiek o lokality a jedno finále. Dĺžka hry určuje X: krátka
+3, stredná 5, dlhá 7 lokalít, k tomu finále, teda 4, 6 alebo 8 bitiek. Kolo o lokalitu prebieha ako dnes (cieľ volí obranca,
+šenok, patronát, Zhromaždenie, Pitky, bitka).</p>
+<p>Hra sa skončí po finále, alebo skôr, keď niekto vydesí polovicu starších a udrží ich do konca
+nasledujúceho kola (ako dnes). Exekúcia už prehru nespôsobí.</p>
+
+<h3>1.2 Špaky za bitku</h3>
+<ul>
+  <li>Víťaz bitky dostane <b>toľko špakov, koľko Pitiek sa v kole odohralo</b>. Odohraná je aj Pitka, ktorá sa
+    začala a dopila, hoci počet Pitiek medzitým klesol. Lokality majú 1 až 4 Pitky. Finále má vždy 3.</li>
+  <li>Lokalitu si víťaz neberie. Karta lokality ide na krčmovú nástenku s jeho fotkou a počtom špakov.</li>
+  <li><b>Absťák:</b> ak má víťaz viac Absťákov ako porazený, dostane o rozdiel menej špakov. Príklad: 3 Pitky,
+    víťaz má 2 Absťáky a porazený 0, víťaz dostane 1 špak. Víťaz dostane vždy <b>aspoň 1 špak</b>.
+    Rátajú sa Absťáky, ktoré hráč práve má.</li>
+</ul>
+
+<h3>1.3 Remíza v bitke</h3>
+<p>Pri rovnakom tuhom poškodení vyhrá bitku:</p>
+<ol>
+  <li>kto má <b>menej Absťákov</b> (práve teraz),</li>
+  <li>pri rovnosti kto má <b>menej priznaných Dlhov</b> (Dlh sa prizná sám, keď ho hráč dobere),</li>
+  <li>pri rovnosti aj tu ostáva <b>sekera</b>. Špaky z tohto kola (odohrané Pitky) čakajú na víťaza ďalšej
+    bitky. Vo finále prepadnú. Michal chce najprv vidieť, ako často to nastane.</li>
+</ol>
+
+<h3>1.4 Špaky za starších</h3>
+<p>Po každej bitke, aj po finále, dostane každý hráč špaky za starších, ktorí sa ho boja, teda za tých,
+ktorí prejavujú priazeň súperovi. Žltá zóna 1, oranžová 2, červená 3. Starší v sivom strede nedá špaky nikomu.
+Nahradený starší sa ráta tiež.</p>
+<div class="st7" aria-hidden="true"><span class="zc">3</span><span class="zo">2</span><span class="zz">1</span><span class="zs">0</span><span class="zz">1</span><span class="zo">2</span><span class="zc">3</span></div>
+<div class="st7-pop" aria-hidden="true"><span>bojí sa Zuzy</span><span></span><span></span><span>sivá</span><span></span><span></span><span>bojí sa Jana</span></div>
+<p class="pozn">Stupnica 7 polí: červená, oranžová, žltá, sivá, žltá, oranžová, červená. Číslo je sila priazne
+pre hráča na tej polovici aj počet špakov pre hráča, ktorého sa starší bojí.</p>
+
+<h3>1.5 Poradie bitky</h3>
+<div class="tab-obal">
+<table class="prehlad">
+  <thead><tr><th>Krok</th><th>Čo sa deje</th></tr></thead>
+  <tbody>
+    <tr><td>0</td><td>Efekty na začiatku bitky (Krčmárka, Dievčina na vydaj, Kar)</td></tr>
+    <tr class="nove"><td>1</td><td>Exekútor: kto čelí exekúcii, stratí polovicu priznaných Dlhov a rovnako veľa špakov (1.7)</td></tr>
+    <tr><td>2</td><td>Pohoršenie (marker sa hýbe hneď a ráta sa už v kroku 4b)</td></tr>
+    <tr><td>3</td><td>Poškodenie</td></tr>
+    <tr class="nove"><td>4</td><td>Výsledok: víťaz podľa tuhého, pri remíze Absťák, potom Dlhy (1.3)</td></tr>
+    <tr class="nove"><td>4a</td><td>Špaky za bitku víťazovi (odohrané Pitky mínus rozdiel Absťákov, aspoň 1), karta na nástenku</td></tr>
+    <tr class="nove"><td>4b</td><td>Špaky za starších obom hráčom podľa polohy markerov</td></tr>
+    <tr class="nove"><td>4c</td><td>Prebytok: posunie markery a prejaví sa až v ďalšej bitke. Po finále sa nerozdeľuje, ale jeho držiteľ dostane toľko špakov, aký je prebytok.</td></tr>
+    <tr><td>5 – 7</td><td>Poldeci, Veštica, Pohreb, Výhra a Prehra, patronát, návrat kariet (ako dnes)</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="pozn">Prebytok rozdeľuje ako dnes hráč s vyšším celkovým poškodením. Kto má veľké mäkké poškodenie, môže
+aj po prehre posunúť markery a v ďalšom kole bodovať viac. Súper tým ale dostane silnejšie priazne.</p>
+
+<h3>1.6 Stupnica a prebytok</h3>
+<ul>
+  <li>Každý bod prebytku posunie marker o jedno pole, teda o jednu zónu. Zo stredu do žltej treba 1 bod,
+    do oranžovej 2, do červenej 3. Rovnako späť: dostať staršieho z červenej do stredu stojí 3 body.</li>
+  <li><b>Zamknutá pozícia sa ruší.</b> Prebytok smie marker dostať na červenú aj v jednom kole a z červenej
+    ho smie súper odtlačiť. Dnes červená pozícia drží, kým ju neuvoľní patronát.</li>
+  <li><b>Pohoršenie funguje rovnako ako prebytok:</b> každé posunie marker o jedno pole, bez limitu.
+    Zo stredu na červenú treba 3 Pohoršenia. Dnešný limit dvoch hraníc zón aj zákaz krajnej pozície sa rušia.</li>
+  <li><b>Kultúrny dom a Noviny</b> tým strácajú účinok (rušili práve tieto obmedzenia). Nové efekty navrhne
+    Admin, vyberá Michal.</li>
+  <li><b>Patronát:</b> cena v cigaretách ostáva (žltá 2, oranžová 1, červená 0). Súperove Pohoršenia navyše
+    sú 1, 2 alebo 3 namiesto 2, 3 alebo 4, teda o koľko polí sa marker vráti do stredu. Spolu s cigaretami
+    vždy 3.</li>
+</ul>
+
+<h3>1.7 Kliatby</h3>
+<ul>
+  <li><b>Exekútor:</b> prah ostáva (10 mínus sila súperovej priazne Exekútora, Obecný úrad o 4 menej). Kto má
+    aspoň toľko priznaných Dlhov, tomu zhorí polovica z nich (nadol) a <b>rovnaký počet špakov</b>. Špaky
+    zhoria, súper ich nedostane. Hráč smie ísť do mínusu. Odovzdanie Nástroja a okamžitá prehra sa rušia.</li>
+  <li><b>Nepriznaná Cirhóza:</b> na konci hry stojí každá <b>5 špakov</b>. Ráta sa ruka aj oba balíčky,
+    ako dnes pri podmienke Cirhóza. Priznaná Cirhóza ďalej dáva súperovi
+    +1 tuhé v každej bitke.</li>
+  <li><b>Absťák:</b> −1 tuhé ako dnes, víťaz s viac Absťákmi dostane menej špakov (1.2) a rozhoduje
+    remízy (1.3).</li>
+  <li><b>Dlh:</b> trestá ho Exekútor a druhé kolo remízy.</li>
+</ul>
+
+<h3>1.8 Scorecardy</h3>
+<p>Scorecard nesie už len priazeň staršieho. Bodovacie podmienky (Lokality, Starší, Cigarety, Rezerva, Cirhóza,
+Dlhy, Absťák, zóny strachu) sa rušia. Ovládnuté lokality už nie sú, preto padá aj všetko, čo sa na ne
+odvoláva.</p>
+
+<h3>1.9 Finále</h3>
+<ul>
+  <li>Posledná bitka. V strede nie je lokalita, línia má len hráčske karty.</li>
+  <li>Hráč, ktorý má pred finále <b>viac špakov</b>, je <b>útočník</b> a vyloží prvú kartu. Ísť prvý je tu
+    nevýhoda, súper vidí, čo vyložil. V Pitke má ako útočník posledné slovo.</li>
+  <li>Pri rovnosti špakov je útočníkom ten, kto prehral poslednú bitku.</li>
+  <li>Prvá karta leží v strede ako lokalita. Ďalšie karty sa kladú na jej dve strany a párujú sa s ňou bežne.
+    Kraje a prevaha v kraji vo finále nie sú.</li>
+  <li>Patronát vo finále platí ako v každom kole.</li>
+  <li>Finále má vždy 3 Pitky, víťaz dostane 3 špaky (mínus rozdiel Absťákov, aspoň 1).</li>
+  <li>Po finále sa ešte rozdajú špaky za starších. Prebytok sa nerozdeľuje, jeho držiteľ dostane špaky.</li>
+  <li>Potom sa odpočíta nepriznaná Cirhóza a vyhrá hráč s viac špakmi.</li>
+</ul>
+
+<h2 id="priklad">2. Príklad partie</h2>
+<p>Stredná hra: päť lokalít a finále. Jano a Zuza, osem starších. Všetky čísla počíta stránka podľa pravidla
+vyššie. Mierku Michal rieši neskôr, takže príklad ukazuje len, ako sa to počíta.</p>
+
+<div class="priklad">
+  <div class="kroky" id="kroky" role="group" aria-label="Kolo príkladu"></div>
+  <div class="priklad-mriezka">
+    <div class="pribeh" id="pribeh" aria-live="polite"></div>
+    <div>
+      <div class="starsi-hlava" aria-hidden="true"><span>bojí sa Zuzy</span><span>bojí sa Jana</span></div>
+      <div class="starsi" id="starsi"></div>
+    </div>
+  </div>
+  <div class="nastenka">
+    <h3>Krčmová nástenka</h3>
+    <div class="lokality" id="nastenka"></div>
+  </div>
+  <div class="popolniky" id="popolniky"></div>
+</div>
+
+<h2 id="dopad">3. Čo sa zmení v hre</h2>
+<div class="tab-obal">
+<table class="prehlad">
+  <thead><tr><th>Časť</th><th>Zmena</th></tr></thead>
+  <tbody>
+    <tr><td>Pravidlá</td><td>§1 koniec hry (exekúcia bez prehry), §3 dĺžka, §9 poradie bitky, remíza a Pohoršenie bez limitu,
+      §10 stupnica 7 polí, zamknutie, patronát, §11 Exekútor a Cirhóza, §14 nanovo (špaky), nová kapitola Finále. Celé ako dávka v6.</td></tr>
+    <tr><td>Jadro</td><td>Špaky v stave hráča, kolo bez lokality (finále), stupnica 7 polí (<code>STUPNICA_ZONY</code>,
+      <code>MARKER_STRED</code>), Exekútor, remíza, bodovanie. Funkcie scorecardových podmienok odpadnú.</td></tr>
+    <tr><td>Karty a lokality</td><td>Texty, ktoré hovoria o ovládnutých lokalitách, sekere, zamknutí či krajnej pozícii
+      (Miňištrant, Puška, Benzínka „lokalitu získa víťaz“). Kultúrny dom a Noviny dostanú nové efekty. Prejde ich Admin.</td></tr>
+    <tr><td>Bot</td><td>Hodnota stavu podľa špakov. Finále a stávka v počte Pitiek sú nové rozhodnutia.</td></tr>
+    <tr><td>Web</td><td>Nástenka, popolníky, stupnica 7 polí, scorecard bez podmienok, náhľad „špaky po tejto bitke“.</td></tr>
+    <tr><td>Ostatné</td><td>Výučba Prvá hra, ťahák AI hráčov, pravidlá na webe, testy a mapa rozhodcu.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2 id="otazky">4. Čo ešte ostáva otvorené</h2>
+<ol class="otazky">
+  <li><b>Finále po sekere:</b> ak majú pred finále rovnako špakov a posledná bitka skončila sekerou, nikto ju
+    neprehral. Kto je potom útočník?</li>
+  <li><b>Kultúrny dom a Noviny:</b> nové efekty navrhne Admin.</li>
+  <li><b>Mierka:</b> koľko váži bitka a koľko starší. V príklade dal Janovi strach 19 špakov a lokality 4.
+    Zmerať sa to dá turnajom botov, až keď na to dáš pokyn.</li>
+  <li><b>Riziko vydesenia:</b> Pohoršenie bez limitu a zrušené zamknutie zrýchlia cestu na červenú.
+    Abstinent (+3 Pohoršenia) a Pohoršenia z patronátu tak môžu poslať staršieho zo stredu na červenú v jednej
+    bitke. Okamžitá výhra vydesením môže prísť oveľa skôr. Treba ju sledovať v playteste.</li>
+</ol>
+
+<footer>NA EX! · Navrhár · vetva <code>navrhar/bodovanie</code> · súbor <code>docs/napady/spaky.html</code></footer>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  var MENA = ["Farár", "Krčmárka", "Starosta", "Poštárka", "Hrobár", "Autobusár", "Veterinár", "Vychovávateľka"];
+  var POLE = ["zc", "zo", "zz", "zs", "zz", "zo", "zc"];
+  var MENO = { J: "Jano", Z: "Zuza" };
+  // Marker −3 … 3: kladný = na Zuzinej polovici, starší sa bojí Jana; záporný = bojí sa Zuzy.
+  // poh: Pohoršenia [hráč, starší, smer]; preb: komu prebytok, koľko a ktorých starších posúva.
+  var KOLA = [
+    { lok: "Krčma", pitky: 2, tuhe: [5, 3], abs: [0, 0], dlhy: [1, 0], poh: [], preb: { h: "J", body: [0, 4, 2] } },
+    { lok: "Kostol", pitky: 1, tuhe: [2, 4], abs: [0, 0], dlhy: [2, 0], poh: [["Z", 1, -1]], preb: { h: "Z", body: [3, 5] } },
+    { lok: "Ihrisko", pitky: 3, tuhe: [7, 4], abs: [1, 0], dlhy: [4, 1], poh: [["J", 4, 1]], preb: { h: "J", body: [0, 4, 6, 7] } },
+    { lok: "Obecný úrad", pitky: 2, tuhe: [4, 4], abs: [1, 1], dlhy: [6, 1], exe: { h: "J", prah: 6 }, poh: [["Z", 4, -1]], preb: { h: "Z", body: [4, 2, 0] } },
+    { lok: "Jednota", pitky: 3, tuhe: [3, 6], abs: [1, 0], dlhy: [3, 1], poh: [["J", 1, 1]], preb: { h: "Z", body: [6, 7, 5, 3] } },
+    { lok: "Finále", final: true, pitky: 3, tuhe: [4, 7], abs: [2, 0], dlhy: [3, 1], poh: [["Z", 0, -1], ["J", 5, 1]], preb: { h: "Z", body: [null, null] } }
+  ];
+  var CIRHOZA = { J: 0, Z: 1 };
+
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+
+  // Prehrá celú partiu a uloží stav po každom kole.
+  function simuluj() {
+    var m = [0, 0, 0, 0, 0, 0, 0, 0];
+    var sp = { J: 0, Z: 0 };
+    var zdroj = { J: { lok: 0, st: 0, exe: 0, preb: 0, cir: 0 }, Z: { lok: 0, st: 0, exe: 0, preb: 0, cir: 0 } };
+    var nastenka = [];
+    var snimky = [{ m: m.slice(), sp: { J: 0, Z: 0 }, zdroj: JSON.parse(JSON.stringify(zdroj)), nastenka: [], text: null }];
+    KOLA.forEach(function (k) {
+      var t = [];
+      if (k.final) {
+        var ut = sp.J > sp.Z ? "J" : "Z";
+        t.push('Pred finále ' + sp.J + " : " + sp.Z + '. <span class="' + ut.toLowerCase() + '">' + MENO[ut] +
+          "</span> má viac špakov, je útočník a vyloží prvú kartu do stredu línie.");
+      }
+      if (k.exe) {
+        var h = k.exe.h, dlhy = k.dlhy[h === "J" ? 0 : 1], zhori = Math.floor(dlhy / 2);
+        sp[h] -= zhori; zdroj[h].exe -= zhori;
+        k.dlhy[h === "J" ? 0 : 1] = dlhy - zhori;
+        t.push('Exekútor: <span class="' + h.toLowerCase() + '">' + MENO[h] + "</span> má " + dlhy + " priznaných Dlhov, prah " + k.exe.prah +
+          ". Zhorí " + zhori + " Dlhy a " + zhori + " špaky.");
+      }
+      k.poh.forEach(function (p) {
+        m[p[1]] = clamp(m[p[1]] + p[2], -3, 3);
+        t.push('Pohoršenie: <span class="' + p[0].toLowerCase() + '">' + MENO[p[0]] + "</span> posunie marker (" + MENA[p[1]] + ")" +
+          (p[2] > 0 ? " k Zuze" : " k Janovi") + ".");
+      });
+      var w, dovod = "";
+      if (k.tuhe[0] !== k.tuhe[1]) w = k.tuhe[0] > k.tuhe[1] ? "J" : "Z";
+      else if (k.abs[0] !== k.abs[1]) { w = k.abs[0] < k.abs[1] ? "J" : "Z"; dovod = "remíza v tuhom, rozhodol Absťák"; }
+      else if (k.dlhy[0] !== k.dlhy[1]) { w = k.dlhy[0] < k.dlhy[1] ? "J" : "Z"; dovod = "remíza v tuhom aj v Absťákoch, rozhodli Dlhy"; }
+      else w = null;
+      var iw = w === "J" ? 0 : 1, il = 1 - iw;
+      var rozdiel = w ? Math.max(0, k.abs[iw] - k.abs[il]) : 0;
+      var zisk = w ? Math.max(1, k.pitky - rozdiel) : 0;
+      t.push("Tuhé " + k.tuhe[0] + " : " + k.tuhe[1] + (dovod ? " (" + dovod + ")" : "") + ". Bitku vyhrá " +
+        (w ? '<span class="' + w.toLowerCase() + '">' + MENO[w] + "</span>" : "nikto") + ".");
+      if (w) {
+        sp[w] += zisk; zdroj[w].lok += zisk;
+        t.push("Špaky za bitku: " + k.pitky + (k.final ? " Pitky finále" : " odohrané Pitky") +
+          (rozdiel ? " mínus " + rozdiel + " za Absťák (" + k.abs[iw] + " : " + k.abs[il] + ")" : "") + " = <b>" + zisk + "</b>.");
+      }
+      nastenka.push({ lok: k.lok, w: w, zisk: zisk, final: !!k.final, pozn: dovod ? "remíza → " + (dovod.indexOf("Dlhy") >= 0 ? "Dlhy" : "Absťák") : (rozdiel ? "−" + rozdiel + " Absťák" : "") });
+      var sj = 0, sz = 0;
+      m.forEach(function (v) { if (v > 0) sj += v; else if (v < 0) sz += -v; });
+      sp.J += sj; sp.Z += sz; zdroj.J.st += sj; zdroj.Z.st += sz;
+      t.push('Špaky za starších: <span class="j">Jano ' + sj + '</span>, <span class="z">Zuza ' + sz + "</span>.");
+      var ph = k.preb.h, n = k.preb.body.length;
+      if (k.final) {
+        sp[ph] += n; zdroj[ph].preb += n;
+        t.push('Prebytok ' + n + ' má <span class="' + ph.toLowerCase() + '">' + MENO[ph] + "</span>. Po finále sa nerozdeľuje, dostane " + n + " špaky.");
+        sp.J -= CIRHOZA.J * 5; sp.Z -= CIRHOZA.Z * 5; zdroj.J.cir -= CIRHOZA.J * 5; zdroj.Z.cir -= CIRHOZA.Z * 5;
+        t.push("Koniec hry: nepriznaná Cirhóza, Jano " + CIRHOZA.J + ", Zuza " + CIRHOZA.Z + " (−5 za kus).");
+      } else {
+        var smer = ph === "J" ? 1 : -1;
+        k.preb.body.forEach(function (e) { m[e] = clamp(m[e] + smer, -3, 3); });
+        t.push('Prebytok ' + n + ' rozdelí <span class="' + ph.toLowerCase() + '">' + MENO[ph] + "</span>: " +
+          k.preb.body.map(function (e) { return MENA[e]; }).join(", ") + (ph === "J" ? " o pole k Zuze." : " o pole k Janovi.") +
+          " Prejaví sa až v ďalšej bitke.");
+      }
+      snimky.push({ m: m.slice(), sp: { J: sp.J, Z: sp.Z }, zdroj: JSON.parse(JSON.stringify(zdroj)), nastenka: nastenka.slice(), text: t, k: k });
+    });
+    return snimky;
+  }
+
+  var SNIMKY = simuluj();
+  var aktivny = SNIMKY.length - 1;
+
+  function vykresliKroky() {
+    var obal = document.getElementById("kroky");
+    obal.innerHTML = "";
+    SNIMKY.forEach(function (s, i) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = i === 0 ? "Začiatok" : (s.k.final ? "Finále a koniec" : i + ". " + s.k.lok);
+      b.setAttribute("aria-pressed", i === aktivny ? "true" : "false");
+      b.addEventListener("click", function () { aktivny = i; vykresli(); b.focus(); });
+      obal.appendChild(b);
+    });
+  }
+
+  function ohorky(n) {
+    var h = "";
+    for (var i = 0; i < Math.abs(n); i++) h += '<span class="ohorok' + (n < 0 ? " minus" : "") + '"></span>';
+    return h;
+  }
+
+  function vykresli() {
+    vykresliKroky();
+    var s = SNIMKY[aktivny];
+    var pr = document.getElementById("pribeh");
+    if (!s.text) {
+      pr.innerHTML = "<h3>Začiatok</h3><p>Všetky markery sú v sivom strede. Nikto nemá špaky ani priazeň.</p>";
+    } else {
+      pr.innerHTML = "<h3>" + (s.k.final ? "Finále (bez lokality)" : "Kolo " + aktivny + ": " + s.k.lok) + "</h3><ol>" +
+        s.text.map(function (x) { return "<li>" + x + "</li>"; }).join("") + "</ol>" +
+        '<p class="pozn">Markery vpravo ukazujú stav po celom kole, teda už s prebytkom pre ďalšiu bitku.</p>';
+    }
+    var st = document.getElementById("starsi");
+    st.innerHTML = "";
+    s.m.forEach(function (v, e) {
+      var r = document.createElement("div");
+      r.className = "st-riadok";
+      var mini = "";
+      for (var i = -3; i <= 3; i++) mini += '<i class="' + POLE[i + 3] + (i === v ? " tu" : "") + '"></i>';
+      var kto = v > 0 ? '<b class="j">' + v + "</b>" : v < 0 ? '<b class="z">' + (-v) + "</b>" : "<b>·</b>";
+      r.innerHTML = "<span>" + MENA[e] + '</span><span class="mini" role="img" aria-label="' + MENA[e] + ": " +
+        (v > 0 ? "bojí sa Jana, " + v : v < 0 ? "bojí sa Zuzy, " + (-v) : "sivá") + '">' + mini + "</span>" + kto;
+      st.appendChild(r);
+    });
+    var na = document.getElementById("nastenka");
+    na.innerHTML = "";
+    KOLA.forEach(function (k, i) {
+      var z = s.nastenka[i];
+      var d = document.createElement("div");
+      d.className = "lok" + (z ? " hotova" : "") + (k.final ? " final" : "");
+      if (z) {
+        d.innerHTML = '<div class="foto ' + (z.w || "nikto") + '">' + (z.w ? MENO[z.w][0] : "–") + "</div>" +
+          '<div class="pocet">' + z.zisk + " " + (z.zisk === 1 ? "špak" : z.zisk >= 2 && z.zisk <= 4 ? "špaky" : "špakov") + "</div>" +
+          '<div class="meno-lok">' + k.lok + "</div>" + (z.pozn ? '<div class="pozn-lok">' + z.pozn + "</div>" : "");
+      } else {
+        d.innerHTML = '<div class="foto nikto">?</div><div class="meno-lok">' + k.lok + "</div>";
+      }
+      na.appendChild(d);
+    });
+    var po = document.getElementById("popolniky");
+    po.innerHTML = "";
+    ["J", "Z"].forEach(function (h) {
+      var z = s.zdroj[h];
+      var d = document.createElement("div");
+      d.className = "popolnik";
+      var casti = ["lokality " + z.lok, "starší " + z.st];
+      if (z.preb) casti.push("prebytok vo finále " + z.preb);
+      if (z.exe) casti.push("Exekútor −" + (-z.exe));
+      if (z.cir) casti.push("Cirhóza −" + (-z.cir));
+      d.innerHTML = '<div class="hlava"><span class="' + h.toLowerCase() + '">' + MENO[h] + '</span><span class="spolu">' + s.sp[h] + "</span></div>" +
+        '<div class="misa" role="img" aria-label="' + s.sp[h] + ' špakov">' + ohorky(s.sp[h]) + "</div>" +
+        '<div class="rozpis">' + casti.join(" · ") + "</div>";
+      po.appendChild(d);
+    });
+    if (aktivny === SNIMKY.length - 1) {
+      var vit = s.sp.J > s.sp.Z ? "Vyhráva Jano" : s.sp.Z > s.sp.J ? "Vyhráva Zuza" : "Remíza";
+      pr.insertAdjacentHTML("beforeend", "<p><b>" + vit + " " + s.sp.J + " : " + s.sp.Z + ".</b></p>");
+    }
+  }
+  vykresli();
+})();
+</script>
+</body>
+</html>
