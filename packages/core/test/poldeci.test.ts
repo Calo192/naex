@@ -23,7 +23,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     sums: [{}, {}],
     exekutorHotovy: [true, true],
     pohorsenieZostava: [0, 0],
-    pohorsenieHranice: {},
+    exekutor: [0, 0],
     damage: null,
     vitaz: 0,
     prebytokDrzi: null,

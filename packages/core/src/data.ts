@@ -25,8 +25,6 @@ export interface GameData {
   readonly elders: ReadonlyMap<string, ElderDef>;
   /** Scorecardy, ktoré sa rozdávajú starším pri príprave (aspoň toľko ako starších). */
   readonly scorecards: readonly ScorecardDef[];
-  /** Body za splnenú podmienku (zóna) alebo za kus (ostatné). */
-  readonly bodyPodmienok: Readonly<Record<Podmienka, number>>;
   /** Predpočítané rozloženia strán — počítať ich pri každom vyhodnotení je zbytočné. */
   readonly variants: ReadonlyMap<string, CardVariants>;
   /** Pomocné zoznamy — poradie podľa `index` v cards.json (stabilné). */
@@ -153,6 +151,7 @@ export function parseElders(json: unknown, cards: ReadonlyMap<string, CardDef>):
 
 export interface ScorecardsData {
   readonly scorecards: readonly ScorecardDef[];
+  /** Body za podmienky z formátu tvorcu — od v6 hra nečíta (len prenos do bodovacích kariet). */
   readonly body: Readonly<Record<Podmienka, number>>;
 }
 
@@ -238,7 +237,6 @@ export function buildGameData(
     cards,
     elders,
     scorecards: bodovanie.scorecards,
-    bodyPodmienok: bodovanie.body,
     variants,
     lokality: byIndex.filter((c) => c.tags.includes("Lokalita")),
     nastroje: byIndex.filter((c) => c.tags.includes("Nástroj")),

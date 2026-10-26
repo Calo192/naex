@@ -14,7 +14,7 @@ import {
   computeDamage,
   jeEfektManual,
   legalCommands,
-  najdiNastroje,
+  zahradkarHraca,
   limitBonus,
   spolocnyLimit,
   loadGameData,
@@ -149,11 +149,12 @@ describe("pravidlá v2 a nová tlačová sada", () => {
     expect(data.cards.get("zahradkar")?.triggers).toContain("Exekúcia");
   });
 
-  it("záhradkár sa ráta ako náhrada náradia pri exekúcii", () => {
+  it("v6: Záhradkára smie hráč pri exekúcii zahodiť namiesto špakov — hľadá sa v ruke aj v balíčkoch", () => {
     const s = fakeState({});
     const ja = s.hraci[0];
     const so = { ...s, hraci: [{ ...ja, ruka: [inst("zahradkar")] }, s.hraci[1]] as unknown as GameState["hraci"] };
-    expect(najdiNastroje(so, data, 0).some((n) => n.defId === "zahradkar")).toBe(true);
+    expect(zahradkarHraca(so, 0)).toBe("ruka");
+    expect(zahradkarHraca(so, 1)).toBeNull();
   });
 
   it("pes sa nesmie vyložiť do partie s iným zvieraťom (a naopak)", () => {

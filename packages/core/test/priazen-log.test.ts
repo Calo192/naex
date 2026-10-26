@@ -17,7 +17,7 @@ const sMarkerom = (s: GameState, i: number, marker: number): GameState => ({
 });
 
 describe("záznam priazne v logu", () => {
-  const s = sMarkerom(setupGame(data, 3), 0, 4);
+  const s = sMarkerom(setupGame(data, 3), 0, 3);
 
   it("nová priazeň a silnejšia priazeň sa zapíšu, slabšia ani zotrvanie nie", () => {
     const k0 = sMarkerom(s, 0, 2);
@@ -32,7 +32,7 @@ describe("záznam priazne v logu", () => {
   });
 
   it("preklopenie k súperovi je nová priazeň druhého hráča", () => {
-    const zaznam = zaznamyPriazne(data, sMarkerom(s, 0, 2), sMarkerom(s, 0, 6));
+    const zaznam = zaznamyPriazne(data, sMarkerom(s, 0, 2), sMarkerom(s, 0, 4));
     expect(zaznam).toHaveLength(1);
     expect(zaznam[0]!.type === "log" && zaznam[0]!.text).toMatch(/^♥ Hráč 2 /);
   });

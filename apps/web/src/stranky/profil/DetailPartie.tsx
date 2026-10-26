@@ -11,6 +11,7 @@ import { Odkaz, useTitulok } from "../../lib/router.tsx";
 import { useSada } from "../../lib/sada.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../../komponenty.tsx";
 import { KrcmovyUcet } from "../../hra/KrcmovyUcet.tsx";
+import { UcetSpakov } from "../../hra/UcetSpakov.tsx";
 import { tvar } from "../Statistiky.tsx";
 import { TEXT_VYSLEDKU, datum, trvanie, type DetailPartieApi } from "./typy.ts";
 import "./profil.css";
@@ -210,7 +211,14 @@ export function DetailPartie({ id }: { readonly id: number }) {
         </section>
       )}
 
-      {d.zaverecne !== null ? (
+      {d.zaverecne !== null && "verzia" in d.zaverecne ? (
+        <section className="profil-karta detail-ucet">
+          <h2>Záverečný účet špakov</h2>
+          <div className="detail-ucet-obal">
+            <UcetSpakov rozpis={d.zaverecne.rozpis} ja={ja} mena={mena} />
+          </div>
+        </section>
+      ) : d.zaverecne !== null ? (
         <section className="profil-karta detail-ucet">
           <h2>Záverečné bodovanie</h2>
           <div className="detail-ucet-obal">

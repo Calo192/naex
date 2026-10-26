@@ -68,6 +68,13 @@ export interface LineState {
   readonly lokalitaOtocena: boolean;
   /** partie[p][0] je karta najbližšie k lokalite. */
   readonly strany: readonly [readonly PlacedCard[], readonly PlacedCard[]];
+  /**
+   * Finále (v6, Michal 2026-10-26): v strede nie je lokalita — prvá vyložená
+   * karta leží v strede a ďalšie sa kladú na jej dve strany. Línia je jeden
+   * súvislý úsek (strana hráča 0 obrátene, potom strana hráča 1), kraje
+   * a prevaha v kraji nie sú.
+   */
+  readonly finale?: boolean;
 }
 
 export type SlotStav = "neaktivna" | "aktivna" | "zrusena";
@@ -332,12 +339,16 @@ export function spojVznikne(a: { readonly tags: readonly Tag[]; readonly stred: 
  * súperovi nedá nič.
  * Výsledok [hráč 0, hráč 1] = dodatočné tuhé majiteľa Psov.
  */
-export function spojePsa(data: GameData, strany: readonly [readonly PlacedCard[], readonly PlacedCard[]]): [number, number] {
+export function spojePsa(data: GameData, strany: readonly [readonly PlacedCard[], readonly PlacedCard[]], finale = false): [number, number] {
   const out: [number, number] = [0, 0];
-  for (const strana of [0, 1] as const) {
+  const prvky = (strana: PlayerId): Elem[] => {
     // V úseku línie leží strana hráča 0 obrátene (index 0 je pri lokalite).
     const rad = strana === 0 ? [...strany[0]].reverse() : strany[1];
-    const elems = rad.map((pl) => makeElem(data, pl.card, pl.playedBy, pl.playedBy === 1, false, pl.naexBy, strana));
+    return rad.map((pl) => makeElem(data, pl.card, pl.playedBy, pl.playedBy === 1, false, pl.naexBy, strana));
+  };
+  // Vo finále je línia jeden úsek — prvé karty oboch strán spolu susedia.
+  const useky = finale ? [[...prvky(0), ...prvky(1)]] : [prvky(0), prvky(1)];
+  for (const elems of useky) {
     for (let i = 0; i + 1 < elems.length; i++) {
       const a = elems[i] as Elem;
       const b = elems[i + 1] as Elem;
@@ -347,8 +358,8 @@ export function spojePsa(data: GameData, strany: readonly [readonly PlacedCard[]
       let pary = 0;
       for (let k = 0; k < 4; k++) if (a.effRight[k] != null && b.effLeft[k] != null) pary++;
       // Pes vedľa súperovho Psa: každý dá svojmu majiteľovi.
-      if (a.defId === "pes" && a.owner === strana) out[a.owner] += pary;
-      if (b.defId === "pes" && b.owner === strana) out[b.owner] += pary;
+      if (a.defId === "pes" && a.owner === a.strana) out[a.owner] += pary;
+      if (b.defId === "pes" && b.owner === b.strana) out[b.owner] += pary;
     }
   }
   return out;
@@ -577,7 +588,9 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
   // Prevaha (Michal 2026-10-20, rozbor strategia-strany-20261020): akcie hrany
   // lokality dostane, kto má na tej strane viac svojich kariet (Nástroje sa
   // nerátajú); pri rovnosti majiteľ karty pri lokalite (pravidlá v3).
-  const susedLokality: [PlayerId | null, PlayerId | null] = [prevaha(partia0), prevaha(partia1)];
+  // Vo finále kraje nie sú — Kočovník ostáva majiteľovi, Presbiter nepôsobí.
+  const finale = line.finale === true && line.lokalita === null;
+  const susedLokality: [PlayerId | null, PlayerId | null] = finale ? [null, null] : [prevaha(partia0), prevaha(partia1)];
   let stred: Elem | null = null;
   if (line.lokalita !== null) {
     // owner lokality je len formálny — súčty jej strán idú majiteľovi suseda.
@@ -585,9 +598,12 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
     stred = lok;
     segments.push([...[...partia0].reverse(), lok, ...partia1]);
     elems.push(...partia0, lok, ...partia1);
+  } else if (finale) {
+    // Prvá karta finále leží na začiatku jednej zo strán a susedí s oboma.
+    segments.push([...[...partia0].reverse(), ...partia1]);
+    elems.push(...partia0, ...partia1);
   } else {
-    // Bez karty v strede (len testy a ukážky — v bitke o staršieho leží
-    // v strede karta staršieho): strany sú dva samostatné úseky.
+    // Bez karty v strede (len testy a ukážky): strany sú dva samostatné úseky.
     segments.push([...partia0].reverse(), [...partia1]);
     elems.push(...partia0, ...partia1);
   }

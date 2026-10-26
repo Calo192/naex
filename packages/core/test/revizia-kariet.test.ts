@@ -144,12 +144,10 @@ describe("Policajtka, Praudovravec, Puška, Noviny, Lakomec", () => {
     expect(prebytokProtiZlava(s, 1)).toBe(0);
   });
 
-  it("Noviny: Pohoršenie smie na krajnú pozíciu, ak bol marker na predposlednej od začiatku kola", () => {
-    const e = { ...setupGame(data, 9).starsi[0]!, marker: 1, markerZaciatokKola: 1 } as ElderState;
-    expect(posunMarker(e, 0, true)).toBeNull();
-    expect(posunMarker(e, 0, true, true)).toBe(0);
-    const len = { ...e, markerZaciatokKola: 2 } as ElderState;
-    expect(posunMarker(len, 0, true, true)).toBeNull();
+  it("v6: Pohoršenie smie na krajnú pozíciu vždy (Noviny majú nový efekt — špak za väčšinu strachu)", () => {
+    const e = { ...setupGame(data, 9).starsi[0]!, marker: 1 } as ElderState;
+    expect(posunMarker(e, 0)).toBe(0);
+    expect(posunMarker({ ...e, marker: 0 }, 0)).toBeNull();
   });
 
   it("v5: barter stojí vždy 5 cigariet (Lakomec je Abstinent, barter nezlacňuje)", () => {
@@ -162,11 +160,11 @@ describe("cigarety porazenému za prebytok", () => {
   it("1 cigareta za každého posunutého staršieho, viac posunov toho istého = 1", () => {
     const s0 = setupGame(data, 12);
     const [e1, e2] = s0.starsi;
-    const stred = (e: ElderState) => ({ ...e, marker: 4, markerZaciatokKola: 4 }) as ElderState;
+    const stred = (e: ElderState) => ({ ...e, marker: 3 }) as ElderState;
     const s: GameState = {
       ...s0,
       faza: "bitka",
-      ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
+      ciel: { typ: "lokalita", lokalita: s0.lokalityVHre.find((k) => k.defId !== "kulturny_dom")! },
       starsi: [stred(e1!), stred(e2!), ...s0.starsi.slice(2)],
       bitkaStav: {
         krok: "prebytok",
@@ -174,7 +172,7 @@ describe("cigarety porazenému za prebytok", () => {
         sums: [{}, {}],
         exekutorHotovy: [true, true],
         pohorsenieZostava: [0, 0],
-        pohorsenieHranice: {},
+        exekutor: [0, 0],
         damage: { tuhe: [5, 0], makke: [0, 0], celkove: [5, 0], zvysnaViera: [0, 0], zvysnaPovera: [0, 0] },
         vitaz: 0,
         prebytokDrzi: 0,

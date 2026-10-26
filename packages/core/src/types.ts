@@ -209,10 +209,9 @@ export interface ElderDef {
 }
 
 /**
- * Podmienka na scorecarde (bodovacej karte staršieho). Od v5 je každá aktívna
- * podmienka súboj hráčov (`elderScore`): zónové o strach ostatných starších,
- * ostatné o kusy — Absťák (získané za hru) a Rezerva (plné poldeci) pribudli
- * vo v5 (Michal 2026-10-24).
+ * Podmienka (ikona) na bodovacej karte staršieho z tvorcu. Bodovala do v5;
+ * od v6 (Michal 2026-10-26) scorecard nesie len priazeň a hra podmienky
+ * nečíta. Typ ostáva, lebo ikony bodovacích kariet v tvorcovi ho ešte nesú.
  */
 export type Podmienka =
   | "znepokojenie"
@@ -241,9 +240,8 @@ export const ALL_PODMIENKY: readonly Podmienka[] = [
 
 /**
  * Scorecard — podložka, na ktorej leží karta staršieho. Rozdáva sa starším
- * náhodne pri príprave a určuje priazeň staršieho. Podmienka na indexe i
- * sa aktivuje, keď má karta na ukazovateli na tej istej strane a indexe
- * neprázdnu akciu. Ľavá strana patrí hráčovi 0, pravá hráčovi 1.
+ * náhodne pri príprave a určuje priazeň staršieho (v6 nič iné). `lava`
+ * a `prava` sú ikony z tvorcu — od v6 nebodujú.
  */
 export interface ScorecardDef {
   readonly id: string;

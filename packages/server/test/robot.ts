@@ -161,15 +161,12 @@ export class Robot {
           return { type: "benzinka", uids: obcania.slice(0, b.benzinkaZostava[ja]).map((pl) => pl.card.uid) };
         }
         if (b.krok === "vestica") return { type: "vestica", moja: 0, jeho: 0 };
-        if (b.krok === "exekutor") {
-          const volba = view.volbyExekutor?.[0];
-          if (volba === undefined) throw new Error("exekútor bez volieb");
-          return { type: "exekutorTool", defId: volba.defId, kde: volba.kde };
-        }
+        // v6: Exekútor sa pýta len na Záhradkára — robot ho zahodí.
+        if (b.krok === "exekutor") return { type: "zahradkar", zahodit: true };
         if (b.krok === "pohorsenie" || b.krok === "prebytok") {
           const smerK = ja === 0 ? 1 : 0;
           const elder = view.starsi.find((e) =>
-            b.krok === "pohorsenie" ? pohorsenieMozne(view, ja, e) : posunMarker(e, smerK, false) !== null,
+            b.krok === "pohorsenie" ? pohorsenieMozne(view, ja, e) : posunMarker(e, smerK) !== null,
           );
           // v5: Pohoršenie smie aj k sebe — keď k súperovi nejde nič.
           const kSebe = b.krok === "pohorsenie" && elder === undefined ? view.starsi.find((e) => pohorsenieMozne(view, ja, e, true)) : undefined;

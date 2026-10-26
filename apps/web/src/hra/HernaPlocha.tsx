@@ -37,7 +37,6 @@ import type {
   ElderState,
   Event,
   GameData,
-  KartaZdroj,
   LineEval,
   PlacedCard,
   PlayerId,
@@ -54,7 +53,8 @@ import {
   NAZVY_ZON,
   jeCoTahat,
   kartyZaPas,
-  bodyTeraz,
+  spakyTeraz,
+  pohorsenieMozne,
   cenaKliatby,
   battleOutcome,
   cenaPrebytku,
@@ -80,8 +80,6 @@ import {
   kandidatiNaNahradu,
   nahladPatronatu,
   patronatMozny,
-  pohorsenieBezLimitu,
-  pohorsenieMozne,
   prevahaStran,
   krajeStran,
   vykupZoSrotu,
@@ -93,7 +91,6 @@ import {
   cenaTahu,
   nahladPosunuMarkera,
   nahladPosunuPrebytkom,
-  pohorsenieNaKraj,
   nahladVylozenia,
   moznostiNaexVPohlade,
   zablokovaneStrany,
@@ -110,7 +107,6 @@ import {
   scorecardStarsieho,
   stavKraja,
   stavkaBitky,
-  hodnotaLokality,
   stavZavislosti,
   stranyLokality,
   vydesil,
@@ -451,7 +447,7 @@ interface UcetBitky {
   readonly prebytok: number;
   readonly prebytokNaRozdelenie: number;
   readonly prebytokDrzi: PlayerId | null;
-  readonly lokality: readonly { readonly meno: string; readonly komu: PlayerId | null; readonly ako: "ovladol" | "sekera" | "prepadla" }[];
+  readonly lokality: readonly { readonly meno: string; readonly komu: PlayerId | null; readonly ako: "ovladol" | "sekera" | "prepadla"; readonly spaky: number }[];
   readonly posuny: readonly { readonly meno: string; readonly pred: number; readonly po: number }[];
   readonly body: { readonly pred: readonly [number, number]; readonly po: readonly [number, number] };
 }
@@ -520,7 +516,8 @@ export function HernaPlocha({
   const draft = view.draftStav;
   const stavim = view.faza === "draft" && draft?.krok === "stavba";
   // Živý odhad záverečného bodovania — hráč musí stále vidieť, za čo dostane body.
-  const body = useMemo(() => bodyTeraz(data, view), [data, view]);
+  // v6: špaky (spolu = keby hra skončila teraz), za starších a odhad.
+  const body = useMemo(() => spakyTeraz(view), [view]);
   // Šírka okna — na mobile menšia ruka a predvolene zbalení starší.
   const [sirkaOkna, setSirkaOkna] = useState(() => (typeof window === "undefined" ? 1600 : window.innerWidth));
   const [vyskaOkna, setVyskaOkna] = useState(() => (typeof window === "undefined" ? 1000 : window.innerHeight));
@@ -959,7 +956,7 @@ export function HernaPlocha({
       }
     }
     const ciel = lokalitaNavrh !== null ? { typ: "lokalita" as const, lokalita: lokalitaNavrh.karta } : view.ciel;
-    const stol: VerejnyStav = { ciel, ovladnute: view.ovladnute, strany, starsi: view.starsi, hraci };
+    const stol: VerejnyStav = { ciel, strany, starsi: view.starsi, hraci };
     // lineState: rovnaká línia ako na serveri.
     const lineEval = evaluateLine(data, lineState({ ...stol, lokalitaOtocena: lokalitaNavrh?.otocena ?? view.lokalitaOtocena }));
     // Absťáky v ruke: svoje poznáš (bez karty, ktorá už leží na stole), súperove nie.
@@ -1022,7 +1019,7 @@ export function HernaPlocha({
     const h = zaklad.hraci;
     const hraci: ClientState["hraci"] =
       ja === 0 ? [{ ...h[0], pecen: h[0].pecen + vypijemVTahu }, h[1]] : [h[0], { ...h[1], pecen: h[1].pecen + vypijemVTahu }];
-    return nahladPitky(data, { ciel: stol.ciel, ovladnute: view.ovladnute, strany: stol.strany, starsi: view.starsi, hraci, lokalitaOtocena: otocenaTeraz, vizia: view.vizia });
+    return nahladPitky(data, { ciel: stol.ciel, strany: stol.strany, starsi: view.starsi, hraci, lokalitaOtocena: otocenaTeraz, vizia: view.vizia });
   }, [data, view, stol, ja, vypijemVTahu, otocenaTeraz, zaklad]);
   /** Body jednej Cirhózy a jedného Dlhu na konci hry pri dnešných scorecardoch (záporné). */
   const cenyKliatob = useMemo(
@@ -1041,7 +1038,7 @@ export function HernaPlocha({
     const h = zaklad.hraci;
     const hraci: ClientState["hraci"] =
       ja === 0 ? [{ ...h[0], pecen: h[0].pecen + vypijemVTahu }, h[1]] : [h[0], { ...h[1], pecen: h[1].pecen + vypijemVTahu }];
-    const v = vyhladDlhov(data, { ciel: stol.ciel, ovladnute: view.ovladnute, strany: stol.strany, starsi: view.starsi, hraci, lokalitaOtocena: otocenaTeraz, vizia: view.vizia }, dalsiePitky);
+    const v = vyhladDlhov(data, { ciel: stol.ciel, strany: stol.strany, starsi: view.starsi, hraci, lokalitaOtocena: otocenaTeraz, vizia: view.vizia }, dalsiePitky);
     return ([0, 1] as const).map((p) => {
       const teraz = view.hraci[p].priznane.filter((k) => k.defId === "dlh").length;
       return { pali: v[p].kapacita, ostane: v[p].poBitke - Math.max(0, teraz - v[p].kapacita) };
@@ -1466,17 +1463,20 @@ export function HernaPlocha({
     const v = vysledokBitky.current;
     vysledokBitky.current = null;
     const nove = <T,>(a: readonly T[], b: readonly T[], uid: (x: T) => number): T[] => b.filter((x) => !a.some((y) => uid(y) === uid(x)));
-    const lokality = [
-      ...nove(zaklad.ovladnute, view.ovladnute, (o) => o.karta.uid).map((o) => ({ meno: menoKarty(o.karta.defId), komu: o.hrac, ako: "ovladol" as const })),
-      ...nove(zaklad.naSekeru, view.naSekeru, (k) => k.uid).map((k) => ({ meno: menoKarty(k.defId), komu: null, ako: "sekera" as const })),
-      ...nove(zaklad.prepadnute, view.prepadnute, (k) => k.uid).map((k) => ({ meno: menoKarty(k.defId), komu: null, ako: "prepadla" as const })),
-    ];
+    // v6: lokalita ide na nástenku; víťaz dostane špaky, pri sekere čakajú (vo finále prepadnú).
+    const lokality = view.nastenka.slice(zaklad.nastenka.length).map((b) => ({
+      meno: b.lokalita === null ? "finále" : menoKarty(b.lokalita.defId),
+      komu: b.vitaz,
+      ako: b.vitaz !== null ? ("ovladol" as const) : b.prepadlo > 0 ? ("prepadla" as const) : ("sekera" as const),
+      spaky: b.vitaz === null ? b.prepadlo + b.pitky : b.zaBitku[b.vitaz],
+    }));
+    void nove;
     const posuny = view.starsi.flatMap((e) => {
       const a = zaklad.starsi.find((x) => x.elderId === e.elderId);
       return a === undefined || a.marker === e.marker ? [] : [{ meno: menoKarty(e.karta.defId), pred: a.marker, po: e.marker }];
     });
-    const bodyPred = bodyTeraz(data, zaklad).spolu;
-    const bodyPo = bodyTeraz(data, view).spolu;
+    const bodyPred = zaklad.spaky;
+    const bodyPo = view.spaky;
     setUcetBitky({
       kolo: pred.kolo,
       lokalita: zaklad.ciel?.lokalita === null || zaklad.ciel === null ? "" : menoKarty(zaklad.ciel.lokalita.defId),
@@ -1988,20 +1988,8 @@ export function HernaPlocha({
       </div>
     );
   };
-  // Hodnota lokality (Michal 2026-10-22): štítok cez kartu pri výbere cieľa a vo vrstve Lokality.
-  // Pri voľbe cieľa aj so sekerou — víťaz bitky ju berie spolu s cieľom.
-  const stitokHodnoty = (k: CardInstance): ReactNode => {
-    const sSekerou = view.faza === "volbaCiela" && view.naSekeru.length > 0;
-    const h = hodnotaLokality(data, view, k, sSekerou);
-    return (
-      <span
-        className="hodnota-lokality"
-        title={`Ovládnutie${sSekerou ? " (aj so sekerou)" : ""} by ti dnes pridalo ${h[ja]} b, ${menoHraca(super_)} ${h[super_]} b — podľa súbojov o lokality pri starších (body za staršieho získa, kto vyhrá viac jeho súbojov).`}
-      >
-        +{h[ja]} b · súper +{h[super_]}
-      </span>
-    );
-  };
+  // v6 (Michal 2026-10-26): lokalitu si víťaz neberie, štítok hodnoty lokality zanikol.
+  const stitokHodnoty = (_k: CardInstance): ReactNode => null;
   const aktivneCiele: ReadonlySet<string> = tahanie === null ? new Set() : cieleZdroja(tahanie.zdroj);
   const jeCiel = (c: string): boolean => aktivneCiele.has(c);
   const nadCielom = (c: string): boolean => tahanie?.ciel === c && jeCiel(c);
@@ -3630,14 +3618,17 @@ export function HernaPlocha({
           };
         }
         if (b.krok === "exekutor") {
+          // v6: zhorí polovica priznaných Dlhov a rovnako špakov — Záhradkár smie ísť namiesto špakov.
+          const dlhy = hJa.priznane.filter((k) => k.defId === "dlh").length;
           return {
             nadpis: "Exekútor!",
-            text: "Odovzdaj jeden Nástroj.",
-            tlacidla: (view.volbyExekutor ?? []).map((v, i) => (
-              <button key={i} onClick={() => posli({ type: "exekutorTool", defId: v.defId, kde: v.kde })}>
-                {menoKarty(v.defId)} <span className="cena">{v.kde}</span>
-              </button>
-            )),
+            text: `Zhorí ti ${Math.floor(dlhy / 2)} priznaných Dlhov a toľko špakov. Záhradkára smieš zahodiť namiesto špakov (Dlhy zhoria aj tak).`,
+            tlacidla: (
+              <>
+                <button onClick={() => posli({ type: "zahradkar", zahodit: true })}>zahodiť Záhradkára</button>
+                <button onClick={() => posli({ type: "zahradkar", zahodit: false })}>nechať, nech zhoria špaky</button>
+              </>
+            ),
           };
         }
         if (b.krok === "pohorsenie") {
@@ -3769,8 +3760,9 @@ export function HernaPlocha({
   const DO_ZONY = ["Neutrality", "Znepokojenia", "Strachu", "Vydesenia"] as const;
   const popisPosunu = (elder: ElderState, cezPohorsenie: boolean, naKraj = false, k: PlayerId = super_): string => {
     // Prebytok: aj cigareta porazenému za prvý posun staršieho (§9.4) — nahladPosunuPrebytkom.
-    const n = cezPohorsenie ? nahladPosunuMarkera(data, view, elder.elderId, k, true, naKraj) : nahladPosunuPrebytkom(data, view, elder.elderId);
-    const novy = posunMarker(elder, k, cezPohorsenie, naKraj);
+    void naKraj;
+    const n = cezPohorsenie ? nahladPosunuMarkera(data, view, elder.elderId, k) : nahladPosunuPrebytkom(data, view, elder.elderId);
+    const novy = posunMarker(elder, k);
     if (n === null || novy === null) return "";
     const zn = (x: number): string => (x > 0 ? `+${x}` : x < 0 ? `−${-x}` : "±0");
     const priazen = n.priazen === null ? "♥ nikto" : `♥ ${n.priazen === ja ? "tebe" : "súperovi"} +${n.sila}`;
@@ -3781,7 +3773,7 @@ export function HernaPlocha({
     if (n.zmena[ja] === 0 && n.zmena[super_] === 0) {
       let m = novy;
       for (let krok = 1; krok <= 4; krok++) {
-        const dalsi = posunMarker({ ...elder, marker: m }, k, false);
+        const dalsi = posunMarker({ ...elder, marker: m }, k);
         if (dalsi === null) break;
         m = dalsi;
         if (STUPNICA_ZONY[m] !== STUPNICA_ZONY[novy]) {
@@ -3793,7 +3785,7 @@ export function HernaPlocha({
     // Bez čísel pozícií (Michal 2026-10-22): hráč 2 vidí stupnicu zrkadlovo, „4 → 5“ by mu klamalo.
     // Pohoršenie k sebe (v5): priazeň sa mení hneď, rozhoduje už túto bitku.
     const hned = k === ja && cezPohorsenie && n.priazen !== priazenHraca(elder) ? " — hneď, platí už v tejto bitke" : "";
-    return ` · ${k === ja ? "k sebe" : `k ${menoHraca(super_)}`}: ${zonaPred} → ${zonaPo} · body ty ${zn(n.zmena[ja])}, súper ${zn(n.zmena[super_])}${doZony} · ${priazen}${hned}`;
+    return ` · ${k === ja ? "k sebe" : `k ${menoHraca(super_)}`}: ${zonaPred} → ${zonaPo} · ≈ špaky do konca ty ${zn(n.zmena[ja])}, súper ${zn(n.zmena[super_])}${doZony} · ${priazen}${hned}`;
   };
   /**
    * Pohoršenie oboma smermi (v5 bod 7): pri každom staršom voľba k súperovi alebo
@@ -3802,11 +3794,12 @@ export function HernaPlocha({
   const volbyPohorsenia = (elder: ElderState): readonly VolbaPosunu[] | undefined => {
     const b = view.bitkaStav;
     if (!somNaTahu || view.faza !== "bitka" || b?.caka !== ja || b.krok !== "pohorsenie") return undefined;
-    const naKraj = pohorsenieNaKraj(view, ja);
+    const naKraj = false;
     const volby: VolbaPosunu[] = [];
     for (const kSebe of [false, true]) {
+      // v6: Pohoršenie o pole bez limitu, aj na kraj; z patronátu nie na súperovho patróna.
       if (!pohorsenieMozne(view, ja, elder, kSebe)) continue;
-      const ciel = posunMarker(elder, kSebe ? ja : super_, true, naKraj);
+      const ciel = posunMarker(elder, kSebe ? ja : super_);
       if (ciel === null) continue;
       volby.push({
         smer: kSebe ? "ja" : "su",
@@ -3832,7 +3825,7 @@ export function HernaPlocha({
     const smerKSuperovi = super_;
     if (view.faza === "bitka" && b?.caka === ja) {
       // Zamknuté markery (krajná pozícia, Pohoršenie na krajnú, limit dvoch hraníc zón) sa neponúkajú.
-      if (b.krok === "prebytok" && posunMarker(elder, smerKSuperovi, false) !== null) {
+      if (b.krok === "prebytok" && posunMarker(elder, smerKSuperovi) !== null) {
         return { akcia: `posunúť marker${popisPosunu(elder, false)}`, klik: () => cmd({ type: "prebytok", elderId: elder.elderId }) };
       }
     }
@@ -3921,7 +3914,7 @@ export function HernaPlocha({
     return () => clearTimeout(t);
   }, [view.starsi]);
   const krokMoj = krokStarsich !== null && krokStarsich.kto === ja && somNaTahu;
-  const naKrajPohorsenia = pohorsenieNaKraj(view, ja);
+
   /** Prečo sa na staršieho v mojom kroku nedá kliknúť — textom namiesto len vyblednutia (UI U12). */
   const zamokStarsieho = (e: ElderState): string | undefined => {
     if (!krokMoj || krokStarsich === null) return undefined;
@@ -3933,10 +3926,8 @@ export function HernaPlocha({
       return kandidatiPatronatu.length === 0 ? "nemáš v ruke Občana ani Zviera" : "nedá sa vziať";
     }
     const pohorsenie = krokStarsich.typ === "pohorsenie";
-    if (pohorsenie && (posunMarker(e, super_, true, naKrajPohorsenia) !== null || posunMarker(e, ja, true, naKrajPohorsenia) !== null)) return "už 2 hranice zón";
-    if (!pohorsenie && posunMarker(e, super_, false) !== null) return undefined;
-    if (e.marker === 0 || e.marker === 8) return "už na krajnej pozícii";
-    return pohorsenie ? "krajnú pozíciu Pohoršenie nedosiahne" : "na krajnú len z predposlednej od začiatku kola";
+    if (!pohorsenie && posunMarker(e, super_) !== null) return undefined;
+    return "už na krajnej pozícii";
   };
   const starsiVLinii: StarsiVLinii[] = view.starsi.map((e) => {
     const klik = klikStarsi(e);
@@ -3949,7 +3940,7 @@ export function HernaPlocha({
         ? null
         : krokStarsich.typ === "patronat"
           ? MARKER_STRED
-          : posunMarker(e, super_, pohorsenie, pohorsenie && naKrajPohorsenia);
+          : posunMarker(e, super_);
     return {
       elder: e,
       meno: menoKarty(e.karta.defId),
@@ -3959,7 +3950,6 @@ export function HernaPlocha({
       volby,
       ciel,
       dovod: klik === undefined && volby === undefined ? zamokStarsieho(e) : undefined,
-      hranice: pohorsenie && krokStarsich !== null ? (bs?.pohorsenieHranice[`${krokStarsich.kto}:${e.elderId}`] ?? 0) : undefined,
       patron: iPatron === -1 ? null : { kto: iPatron as PlayerId, pohorsenia: view.patronat[iPatron]?.pohorsenia ?? 0 },
       vybrany: mode.typ === "patronat" && mode.elderId === e.elderId,
       stopa: stopaStarsieho(view.posunyMarkerov ?? [], e.elderId),
@@ -4096,8 +4086,8 @@ export function HernaPlocha({
           mena: [menoHraca(0), menoHraca(1)],
           sada,
           ciel: lokalita !== null ? `o ${menoKarty(lokalita.defId)}` : "",
-          naSekeru: view.naSekeru.map((k) => menoKarty(k.defId)),
-          poslednaBitka: view.lokalityVHre.length === 0,
+          naSekeru: view.spakyNaSekere > 0 ? [`${view.spakyNaSekere} špakov`] : [],
+          poslednaBitka: view.ciel?.typ === "finale",
           cenaPosunuVitaza: [
             cenaPrebytku({ strany: view.strany } as unknown as GameState, 0),
             cenaPrebytku({ strany: view.strany } as unknown as GameState, 1),
@@ -4377,24 +4367,17 @@ export function HernaPlocha({
                 : sLupou(props, { stitok: stitokHodnoty(k) });
             })}
         </div>
-        {view.naSekeru.length > 0 && (
+        {view.spakyNaSekere > 0 && (
           <p className="sekera-pozn">
-            <strong>Na sekere:</strong> {view.naSekeru.map((k) => menoKarty(k.defId)).join(", ")} — víťaz tejto bitky si ich vezme spolu s
-            lokalitou, o ktorú sa bude biť (ide o {view.naSekeru.length + 1} lokality). Pri remíze v poslednej bitke prepadnú.
+            <strong>Na sekere:</strong> {view.spakyNaSekere} špakov — vezme ich víťaz tejto bitky. Vo finále pri sekere prepadnú.
           </p>
         )}
-        {(view.ovladnute.length > 0 || view.prepadnute.length > 0) && (
+        {view.nastenka.length > 0 && (
           <div className="ovladnute">
-            {view.ovladnute.length > 0 && <span className="oblast-nazov">ovládnuté</span>}
-            {view.ovladnute.map((o) => (
-              <span key={o.karta.uid} className={`cip ${o.hrac === ja ? "moja" : "superova"}`}>
-                {menoKarty(o.karta.defId)} · {o.hrac === ja ? "ty" : menoHraca(o.hrac)}
-              </span>
-            ))}
-            {view.prepadnute.length > 0 && <span className="oblast-nazov">prepadli</span>}
-            {view.prepadnute.map((k) => (
-              <span key={k.uid} className="cip">
-                {menoKarty(k.defId)}
+            <span className="oblast-nazov">nástenka</span>
+            {view.nastenka.map((b, i) => (
+              <span key={i} className={`cip ${b.vitaz === null ? "" : b.vitaz === ja ? "moja" : "superova"}`}>
+                {b.lokalita === null ? "finále" : menoKarty(b.lokalita.defId)} · {b.vitaz === null ? "sekera" : `${b.vitaz === ja ? "ty" : menoHraca(b.vitaz)} +${b.zaBitku[b.vitaz]}`}
               </span>
             ))}
           </div>
@@ -4762,7 +4745,7 @@ export function HernaPlocha({
         <b className="jbar-verdikt">
           {view.koniec !== null ? "Koniec hry" : lokalita !== null ? menoKarty(lokalita.defId) : "vyberá sa lokalita"}
         </b>
-        {view.koniec === null && view.naSekeru.length > 0 && <span className="jbar-tuhe">+ {view.naSekeru.length} na sekere</span>}
+        {view.koniec === null && view.spakyNaSekere > 0 && <span className="jbar-tuhe">+ {view.spakyNaSekere} š. na sekere</span>}
       </>
     );
   const skratkyZapnute = useUcet().ja?.skratky !== false;
@@ -4793,7 +4776,13 @@ export function HernaPlocha({
           {ucetBitky.lokality.length > 0 && (
             <li>
               {ucetBitky.lokality
-                .map((l) => (l.ako === "ovladol" ? `${l.meno} → ${l.komu === ja ? "ty" : menoHraca(l.komu ?? super_)}` : l.ako === "sekera" ? `${l.meno} ide na sekeru` : `${l.meno} prepadla`))
+                .map((l) =>
+                  l.ako === "ovladol"
+                    ? `${l.meno}: ${l.komu === ja ? "ty" : menoHraca(l.komu ?? super_)} +${l.spaky} špakov`
+                    : l.ako === "sekera"
+                      ? `${l.meno}: sekera, ${l.spaky} špakov čaká na víťaza ďalšej bitky`
+                      : `${l.meno}: sekera, ${l.spaky} špakov prepadlo`,
+                )
                 .join(" · ")}
             </li>
           )}
@@ -4813,7 +4802,7 @@ export function HernaPlocha({
             </li>
           )}
           <li>
-            Body: ty {ucetBitky.body.pred[ja]} → <b>{ucetBitky.body.po[ja]}</b> · {menoHraca(super_)} {ucetBitky.body.pred[super_]} →{" "}
+            Špaky: ty {ucetBitky.body.pred[ja]} → <b>{ucetBitky.body.po[ja]}</b> · {menoHraca(super_)} {ucetBitky.body.pred[super_]} →{" "}
             <b>{ucetBitky.body.po[super_]}</b>
           </li>
         </ul>
@@ -5166,7 +5155,7 @@ export function HernaPlocha({
                   prahVydesenia={prahVyd}
                   spolu={body.spolu}
                   krok={krokMoj && krokStarsich !== null ? krokStarsich.nazov : null}
-                  hraniceZon={krokMoj && krokStarsich?.typ === "pohorsenie" && !pohorsenieBezLimitu(view)}
+                  hraniceZon={false}
                   zmenene={zmeneniStarsi}
                   tlacidlo={tlacidloLinieStarsich}
                   zvyraznena={zvyraznenaPodmienka}
@@ -5322,32 +5311,12 @@ export function HernaPlocha({
                 });
               })}
           </div>
-          {view.naSekeru.length > 0 && (
+          {view.nastenka.length > 0 && (
             <div className="ovladnute">
-              <span className="oblast-nazov">na sekere (berie ich víťaz najbližšej bitky)</span>
-              {view.naSekeru.map((k) => (
-                <span key={k.uid} className="cip sekera">
-                  {menoKarty(k.defId)}
-                </span>
-              ))}
-            </div>
-          )}
-          {view.prepadnute.length > 0 && (
-            <div className="ovladnute">
-              <span className="oblast-nazov">prepadli (nikto ich nevyhral)</span>
-              {view.prepadnute.map((k) => (
-                <span key={k.uid} className="cip">
-                  {menoKarty(k.defId)}
-                </span>
-              ))}
-            </div>
-          )}
-          {view.ovladnute.length > 0 && (
-            <div className="ovladnute">
-              <span className="oblast-nazov">ovládnuté</span>
-              {view.ovladnute.map((o) => (
-                <span key={o.karta.uid} className={`cip ${o.hrac === ja ? "moja" : "superova"}`}>
-                  {menoKarty(o.karta.defId)} · {o.hrac === ja ? "ty" : menoHraca(o.hrac)}
+              <span className="oblast-nazov">nástenka (v6: lokalitu si nikto neberie)</span>
+              {view.nastenka.map((b, i) => (
+                <span key={i} className={`cip ${b.vitaz === null ? "sekera" : b.vitaz === ja ? "moja" : "superova"}`}>
+                  {b.lokalita === null ? "finále" : menoKarty(b.lokalita.defId)} · {b.vitaz === null ? "sekera" : `${b.vitaz === ja ? "ty" : menoHraca(b.vitaz)} +${b.zaBitku[b.vitaz]}`}
                 </span>
               ))}
             </div>

@@ -1,14 +1,13 @@
 // Popis stupnice a stopa posunu (roadmapa #95) a rozpis bodov pri staršom (#109):
-// lístok posunu zráta zdroje a povie, čo z posunu má ktorý hráč; rozpis bodov ide
-// z čísel bodyTeraz (elderScore), nie z vlastného výpočtu.
+// lístok posunu zráta zdroje a povie, čo z posunu má ktorý hráč; v6 špaky pri staršom.
 
 import { describe, expect, it } from "vitest";
 import cardsJson from "../../../packages/core/data/cards.json";
 import eldersJson from "../../../packages/core/data/elders.json";
 import scorecardsJson from "../../../packages/core/data/scorecards.json";
-import type { BodyStarsieho, ElderState, MarkerPos, PosunMarkera } from "@naex/core";
-import { bodyTeraz, loadGameData, setupGame, viewFor } from "@naex/core";
-import { dosledokPosunu, stopaStarsieho, vysvetlenieBodov } from "../src/hra/LiniaStarsich.tsx";
+import type { ElderState, MarkerPos, PosunMarkera } from "@naex/core";
+import { loadGameData, setupGame } from "@naex/core";
+import { dosledokPosunu, stopaStarsieho, vysvetlenieSpakov } from "../src/hra/LiniaStarsich.tsx";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const s0 = setupGame(data, 5);
@@ -34,39 +33,23 @@ describe("stopa posunu", () => {
     expect(stopaStarsieho(posuny, "nikto")).toBeUndefined();
   });
 
-  it("dôsledok: priazeň hneď tomu, ku komu marker prišiel, strach (body) druhému", () => {
-    // Zo stredu do súperovej oranžovej (index 7): súper ♥ +2, hráč 0 budí Strach.
-    expect(dosledokPosunu(elder(7), 4, 1)).toBe("♥ +2 hneď");
-    expect(dosledokPosunu(elder(7), 4, 0, true)).toBe("budíš strach: Strach → až 3 b");
+  it("dôsledok (v6, 7 polí): priazeň hneď tomu, ku komu marker prišiel, strach (špaky po bitke) druhému", () => {
+    // Zo stredu do súperovej oranžovej (index 5): súper ♥ +2, hráč 0 budí Strach.
+    expect(dosledokPosunu(elder(5), 3, 1)).toBe("♥ +2 hneď");
+    expect(dosledokPosunu(elder(5), 3, 0, true)).toBe("budíš strach: Strach → +2 po bitke");
     // Späť do stredu: priazeň aj strach zmiznú.
-    expect(dosledokPosunu(elder(4), 6, 1)).toBe("♥ preč (bolo +1)");
-    expect(dosledokPosunu(elder(4), 6, 0)).toBe("už nebudí strach (bolo Znepokojenie)");
-    // Posun v sivej zóne nemení nič.
-    expect(dosledokPosunu(elder(5), 4, 0)).toBeNull();
-    expect(dosledokPosunu(elder(5), 4, 1)).toBeNull();
+    expect(dosledokPosunu(elder(3), 4, 1)).toBe("♥ preč (bolo +1)");
+    expect(dosledokPosunu(elder(3), 4, 0)).toBe("už nebudí strach (bolo Znepokojenie)");
+    // Bez posunu nič.
+    expect(dosledokPosunu(elder(3), 3, 0)).toBeNull();
   });
 });
 
-describe("rozpis bodov pri staršom (#109)", () => {
-  const body = (b: Partial<BodyStarsieho>): BodyStarsieho => ({ elderId: "x", body: [0, 0], vyhry: [0, 0], strach: [0, 0], polozky: [[], []], ...b });
-
-  it("víťaz súbojov: 1 + zóny strachu, porazený nič", () => {
-    const vety = vysvetlenieBodov(body({ body: [3, 0], vyhry: [2, 1], strach: [2, 0] }), elder(7), 0, ["Ty", "Fero"]);
-    expect(vety.join(" ")).toBe("Súboje 2 : 1 (ty : Fero). Viac súbojov vyhrávaš ty → 1 + 2 za strach (Strach) = 3 b. Fero nedostane nič.");
-  });
-
-  it("rovnosť: body obom, každému podľa vzťahu so starším", () => {
-    const vety = vysvetlenieBodov(body({ body: [1, 2], vyhry: [1, 1], strach: [0, 1] }), elder(2), 0, ["Ty", "Fero"]);
-    expect(vety[1]).toBe("Rovnosť — body dostanú obaja: ty 1 b (priazeň, nie strach), Fero 1 + 1 za strach (Znepokojenie) = 2 b.");
-  });
-
-  it("strach v rozpise je ten istý ako v bodoch jadra", () => {
-    const s = { ...s0, starsi: s0.starsi.map((e, i) => ({ ...e, marker: ([1, 7, 4, 6, 2, 0, 8, 3] as const)[i] as MarkerPos })) };
-    for (const b of bodyTeraz(data, viewFor(data, s, 0)).starsi) {
-      for (const p of [0, 1] as const) {
-        const su = p === 0 ? 1 : 0;
-        expect(b.body[p]).toBe(b.vyhry[p] >= b.vyhry[su] ? 1 + b.strach[p] : 0);
-      }
-    }
+describe("špaky pri staršom (v6)", () => {
+  it("komu starší dá po bitke špaky", () => {
+    expect(vysvetlenieSpakov({ elderId: "x", spaky: [2, 0] }, 0, ["Ty", "Fero"])).toMatch(/Bojí sa teba/);
+    expect(vysvetlenieSpakov({ elderId: "x", spaky: [0, 3] }, 0, ["Ty", "Fero"])).toMatch(/Bojí sa Fero/);
+    expect(vysvetlenieSpakov({ elderId: "x", spaky: [0, 0] }, 0, ["Ty", "Fero"])).toMatch(/Nikoho/);
   });
 });
+

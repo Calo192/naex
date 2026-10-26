@@ -34,6 +34,7 @@ import {
 } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
 import { EMPTY, instanceFor, makeDef, syntheticData, naexOdkryte } from "./helpers.ts";
+import { setupSBalickom } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -87,7 +88,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     sums: [{}, {}],
     exekutorHotovy: [true, true],
     pohorsenieZostava: [0, 0],
-    pohorsenieHranice: {},
+    exekutor: [0, 0],
     damage: null,
     vitaz: 0,
     prebytokDrzi: null,
@@ -105,7 +106,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
 
 describe("reakcia na NA EX", () => {
   it("v5: na odkryté NA EX smie súper vyložiť jednu kartu mimo limitu, potom sa Pitka vyhodnotí", () => {
-    const s0 = setupGame(data, 11);
+    const s0 = setupSBalickom(data, 11);
     const moja = inst("pijan");
     let s = vPitke(s0, [[lezi(moja, 0), lezi(inst("pijan"), 0)], []]);
     // NA EX naraz: kým obaja neskončia Pitku, súper o ňom nevie a neodpovedá.
@@ -125,7 +126,7 @@ describe("reakcia na NA EX", () => {
   });
 
   it("bez kariet v ruke sa reakcia neponúka", () => {
-    const s0 = setupGame(data, 12);
+    const s0 = setupSBalickom(data, 12);
     const moja = inst("pijan");
     let s = vPitke({ ...s0, hraci: [s0.hraci[0], { ...s0.hraci[1], ruka: [] }] }, [[lezi(moja, 0), lezi(inst("pijan"), 0)], []]);
     s = naexOdkryte(data, s, moja.uid, 0).state;
@@ -134,7 +135,7 @@ describe("reakcia na NA EX", () => {
 
   it("na Liberála NA EX dať nemožno", () => {
     const liberal = inst("liberal");
-    const s = vPitke(setupGame(data, 13), [[lezi(liberal, 0)], []]);
+    const s = vPitke(setupSBalickom(data, 13), [[lezi(liberal, 0)], []]);
     expect(moznostiNaex(data, s, 0)).not.toContain(liberal.uid);
     expect(() => apply(data, s, { type: "naex", uid: liberal.uid }, 0)).toThrow(/Liberál/);
   });
@@ -142,7 +143,7 @@ describe("reakcia na NA EX", () => {
 
 describe("Krčma vynúti NA EX", () => {
   it("s plným poldeci a vlastným Občanom v línii sa Pitka bez NA EX neskončí", () => {
-    const s0 = setupGame(data, 14);
+    const s0 = setupSBalickom(data, 14);
     const krcma = inst("krcma");
     const moja = inst("pijan");
     const s = { ...vPitke(s0, [[lezi(moja, 0), lezi(inst("pijan"), 0)], []]), ciel: { typ: "lokalita" as const, lokalita: krcma } };
@@ -156,9 +157,9 @@ describe("Krčma vynúti NA EX", () => {
 
 describe("nahradený starší ostáva v hre", () => {
   it("dáva priazeň a jeho marker sa dá posunúť Pohoršením; do ruky ho vziať nemožno", () => {
-    const s0 = setupGame(data, 15);
+    const s0 = setupSBalickom(data, 15);
     const e0 = s0.starsi[0]!;
-    const nahradeny = { ...e0, nahradeny: true, ziskal: 0 as PlayerId, marker: 7 as const, markerZaciatokKola: 7 as const };
+    const nahradeny = { ...e0, nahradeny: true, ziskal: 0 as PlayerId, marker: 5 as const };
     const starsi = [nahradeny, ...s0.starsi.slice(1)];
     const s: GameState = {
       ...s0,
@@ -167,11 +168,11 @@ describe("nahradený starší ostáva v hre", () => {
       bitkaStav: bitka({ krok: "pohorsenie", caka: 1, pohorsenieZostava: [0, 1], vitaz: null }),
     };
     const favour = data.scorecards.find((sc) => sc.id === e0.scorecard)!.favour;
-    // Marker na 7 = sila 2, účinok dvojnásobný (Michal 2026-10-16) → bonus 4.
+    // Marker na 5 = sila 2, účinok dvojnásobný (Michal 2026-10-16) → bonus 4.
     expect(priazen(data, s, favour, 1)).toBe(4);
     expect(legalCommands(data, s, 1)).toContainEqual({ type: "pohorsenie", elderId: e0.elderId });
     const po = apply(data, s, { type: "pohorsenie", elderId: e0.elderId }, 1).state;
-    expect(po.starsi[0]!.marker).toBe(6);
+    expect(po.starsi[0]!.marker).toBe(4);
     // Patronát nad náhradou nie je v ponuke.
     expect(patronatMozny(nahradeny, 1)).toBe(false);
   });
@@ -179,7 +180,7 @@ describe("nahradený starší ostáva v hre", () => {
 
 describe("limit ruky zrušený (Michal 2026-10-19)", () => {
   it("veľká ruka sa po bitke neodhadzuje a súperov Hrobár za nič nedostane", () => {
-    const s0 = setupGame(data, 20);
+    const s0 = setupSBalickom(data, 20);
     const ruka = Array.from({ length: 8 }, () => inst("pijan"));
     const hrobar = inst("hrobar");
     const s: GameState = {
@@ -205,7 +206,7 @@ describe("Benzínka, Dievčina na vydaj a Krčmárka pri bitke", () => {
   const sada = sadaS(kuric);
 
   it("Benzínka: nikto nesmie fajčiť; Krčmárka po bitke otočí vypitý poldeci (Michal 2026-10-20)", () => {
-    const s0 = setupGame(sada, 21);
+    const s0 = setupSBalickom(sada, 21);
     const benzinka = s0.lokalityVHre.find((k) => k.defId === "benzinka") ?? inst("benzinka");
     const k = (): CardInstance => instanceFor(sada, "kuric", C4, C4);
     const [a, b, c, d] = [k(), k(), k(), k()];
@@ -229,8 +230,8 @@ describe("Benzínka, Dievčina na vydaj a Krčmárka pri bitke", () => {
       s = apply(sada, s, { type: s.faza === "zhromazdenie" ? "pass" : "skipNaex" }, naTahu(s)!).state;
     }
     s = dohrajBitku(sada, s);
-    // Stará Benzínka (zahodenie Občanov, prepadnutie) už neplatí.
-    expect(s.prepadnute).toHaveLength(0);
+    // Stará Benzínka (zahodenie Občanov, prepadnutie) už neplatí — bitka je na nástenke.
+    expect(s.nastenka.at(-1)?.lokalita?.uid).toBe(benzinka.uid);
     const vsetky = (q: PlayerId) => [...s.hraci[q].odhadzovaci, ...s.hraci[q].doberaci, ...s.hraci[q].ruka].map((x) => x.uid);
     for (const x of [a, b]) expect(vsetky(0)).toContain(x.uid);
     for (const x of [c, d]) expect(vsetky(1)).toContain(x.uid);
@@ -242,7 +243,7 @@ describe("Benzínka, Dievčina na vydaj a Krčmárka pri bitke", () => {
     const dievcina = makeDef("dievcina_na_vydaj", EMPTY, ["Rana", null, null, null], { tags: ["Občan", "Závislý", "Žena"] });
     const sused = makeDef("sused", ["Rana", null, null, null], EMPTY, { tags: ["Občan"] });
     const sada2 = sadaS(dievcina, sused);
-    const s0 = setupGame(sada2, 22);
+    const s0 = setupSBalickom(sada2, 22);
     const d = instanceFor(sada2, "dievcina_na_vydaj", EMPTY, ["Rana", null, null, null]);
     const n = instanceFor(sada2, "sused", ["Rana", null, null, null], EMPTY);
     const dlhy = [inst("dlh"), inst("dlh"), inst("dlh")];
@@ -354,7 +355,7 @@ describe("efekty v línii", () => {
 
 describe("Svätý text a Puška (Nástroje 2026-10-18)", () => {
   it("Svätý text: hodnota tvojej Viery je o 1 vyššia", () => {
-    const s = setupGame(data, 23);
+    const s = setupSBalickom(data, 23);
     const stav = { ...s, hraci: [s.hraci[0], { ...s.hraci[1], dedicstvo: [inst("svaty_text")] }] as GameState["hraci"] };
     // 3 Rany proti 1 Viere: bez Svätého textu 3 − 1 = 2, so Svätým textom 3 − 2 = 1.
     expect(poskodenieBitky(data, s, [{ Rana: 3 }, { Viera: 1 }], [0, 0]).tuhe[0]).toBe(2);
@@ -366,7 +367,7 @@ describe("Svätý text a Puška (Nástroje 2026-10-18)", () => {
 // neplatia) — test nového efektu je v michal-20261018.test.ts.
 describe("Veštica — odhalené balíčky len tomu, kto vyberá", () => {
   it("Veštica: oba balíčky vidí len porazený počas výberu", () => {
-    const s0 = setupGame(data, 25);
+    const s0 = setupSBalickom(data, 25);
     const s: GameState = { ...s0, faza: "bitka", bitkaStav: bitka({ krok: "vestica", caka: 1, vitaz: 0, vesticaHotova: false }) };
     const v1 = viewFor(data, s, 1).volbaVestica;
     expect(v1?.moj).toEqual(s.hraci[1].doberaci);
@@ -378,7 +379,7 @@ describe("Veštica — odhalené balíčky len tomu, kto vyberá", () => {
 
 describe("Poštárka, Starosta a Vychovávateľka", () => {
   it("Poštárka dober navyše s Dlhom; Starosta vymení kartu za cigaretu", () => {
-    const s0 = setupGame(data, 26);
+    const s0 = setupSBalickom(data, 26);
     const postarka = inst("postarka");
     const starosta = inst("starosta");
     // Šenok pri rozdaní nie je — stavia sa v drafte.
@@ -402,7 +403,7 @@ describe("Poštárka, Starosta a Vychovávateľka", () => {
   });
 
   it("Vychovávateľka: po NA EX dostane súper tvoj priznaný Dlh do balíčka (Michal 2026-10-19)", () => {
-    const s0 = setupGame(data, 27);
+    const s0 = setupSBalickom(data, 27);
     const vych = inst("vychovavatelka");
     const moja = inst("pijan");
     const dlh = inst("dlh");

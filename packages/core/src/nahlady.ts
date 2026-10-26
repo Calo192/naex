@@ -25,7 +25,7 @@ import { opponentOf } from "./types.ts";
 import type { LineEval } from "./partia.ts";
 import { evaluateLine } from "./partia.ts";
 import type { DamageResult } from "./battle.ts";
-import { battleOutcome, dlhyPoExekucii, exekutorCheck } from "./battle.ts";
+import { battleOutcome, exekutorCheck, zhoriPriExekucii } from "./battle.ts";
 import { cenaPatronatu, MARKER_STRED } from "./elders.ts";
 import type { ClientState } from "./view.ts";
 import { hodnotaPohorseni } from "./view.ts";
@@ -39,19 +39,28 @@ export interface DlhyDoBitky {
   readonly nove: number;
   /** Koľko priznaných Dlhov bitka najviac spáli (Robota, Dievčina na vydaj). */
   readonly kapacita: number;
+  /** Koľko Dlhov (a toľko špakov) zhorí pri exekúcii (v6). */
+  readonly exekucia: number;
   /** Priznané Dlhy po bitke. */
   readonly poBitke: number;
 }
 
-/** Výhľad Dlhov do bitky oboch hráčov — doska hráča v Zhromaždení a Pitke. */
+/**
+ * Výhľad Dlhov do bitky oboch hráčov — doska hráča v Zhromaždení a Pitke.
+ * Po páleni (Dievčina na vydaj, Robota) príde Exekútor: v6 je exekúcia
+ * automatická, zhorí polovica (Záhradkár zachráni len špaky, nie Dlhy).
+ */
 export function vyhladDlhov(data: GameData, stol: StolNahladu, dalsiePitky: number): readonly [DlhyDoBitky, DlhyDoBitky] {
   const nahlad = nahladPitky(data, stol);
   const kapacita = paleneDlhyVBitke(data, stol);
+  const urad = exekutorLokality(stol);
   const pre = (p: PlayerId): DlhyDoBitky => {
     const n = nahlad[p];
     const nove = n.dlhy + Math.floor(n.zadlzenieZoStola / n.prahDlhu) * dalsiePitky;
     const teraz = stol.hraci[p].priznane.filter((k) => k.defId === "dlh").length;
-    return { nove, kapacita: kapacita[p], poBitke: Math.max(0, teraz + nove - kapacita[p]) };
+    const poPaleni = Math.max(0, teraz + nove - kapacita[p]);
+    const exekucia = exekutorCheck(poPaleni + urad.zlava, silaPriazne(data, stol, "EXEKUTOR", opponentOf(p))) ? zhoriPriExekucii(poPaleni) : 0;
+    return { nove, kapacita: kapacita[p], exekucia, poBitke: poPaleni - exekucia };
   };
   return [pre(0), pre(1)];
 }
@@ -66,7 +75,7 @@ export interface KliatbyNahladu {
   readonly dalejDlhy: number;
   /** O koľko viac priznaných Dlhov ostane po najbližšej bitke — toľko Dlhov naozaj stojí body. */
   readonly dlhyPoBitke: number;
-  /** Body na konci hry pri dnešných scorecardoch: Cirhózy ako nepriznané, Dlhy po bitke. */
+  /** Špaky na konci hry (v6): Cirhózy ako nepriznané (cenaKliatby), Dlhy po bitke. */
   readonly body: number;
 }
 
@@ -178,19 +187,17 @@ export function dopadyNahladu(
 /**
  * Stôl tak, ako ho bitka uvidí pri poškodení: priznané Dlhy po Pitkách kola
  * (Dlh sa hneď prizná), po pálení (Dievčina na vydaj na začiatku bitky,
- * Robota v kroku Exekútora) a po Exekútorovi (odovzdaný Nástroj spáli polovicu).
+ * Robota v kroku Exekútora) a po Exekútorovi (zhorí polovica, v6).
  * Priznané Dlhy súpera sú strop mäkkého — náhľad ich predtým bral spred Pitky.
- * Exekútora bez Nástroja (prehra) ani Benzínku nepredvída.
+ * Benzínku nepredvída.
  */
 export function stolPriPoskodeni(data: GameData, s: ClientState, dalsiePitky: number): ClientState {
   if (s.faza !== "pitka" && s.faza !== "zhromazdenie") return s;
   if (s.ciel === null) return s;
   const vyhlad = vyhladDlhov(data, s, dalsiePitky);
-  const urad = exekutorLokality(s);
   const hraci: [ClientState["hraci"][0], ClientState["hraci"][1]] = [s.hraci[0], s.hraci[1]];
   for (const p of [0, 1] as const) {
-    let d = vyhlad[p].poBitke;
-    if (exekutorCheck(d + urad.zlava, silaPriazne(data, s, "EXEKUTOR", opponentOf(p))) === "musiOdovzdatNastroj") d = dlhyPoExekucii(d);
+    const d = vyhlad[p].poBitke;
     const h = s.hraci[p];
     const stare = h.priznane.filter((k) => k.defId === "dlh");
     if (stare.length === d) continue;
@@ -405,6 +412,6 @@ export function stavPoPatronate(view: ClientState, elderId: string): ClientState
     ...view,
     hraci,
     patronat,
-    starsi: view.starsi.map((e) => (e.elderId === elderId ? { ...e, marker: MARKER_STRED, markerZaciatokKola: MARKER_STRED } : e)),
+    starsi: view.starsi.map((e) => (e.elderId === elderId ? { ...e, marker: MARKER_STRED } : e)),
   };
 }

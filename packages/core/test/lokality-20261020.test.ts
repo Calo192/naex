@@ -19,7 +19,7 @@ import {
   loadGameData,
   moznostiNaex,
   naexZaPitku,
-  pohorsenieBezLimitu,
+  prebytokDoSpakov,
   parseScorecards,
   planVykladania,
   evaluateLine,
@@ -202,9 +202,9 @@ describe("Vínna pivnica, Jednota, Obecný úrad, Kultúrny dom", () => {
     expect(naex("krcma")).toBe(false);
   });
 
-  it("Kultúrny dom: Pohoršenie bez limitu hraníc zón (Michal 2026-10-20)", () => {
-    expect(pohorsenieBezLimitu(vKole("kulturny_dom"))).toBe(true);
-    expect(pohorsenieBezLimitu(vKole("krcma"))).toBe(false);
+  it("Kultúrny dom (v6, K1): prebytok sa nerozdeľuje, držiteľ dostane špaky", () => {
+    expect(prebytokDoSpakov(vKole("kulturny_dom"))).toBe(true);
+    expect(prebytokDoSpakov(vKole("krcma"))).toBe(false);
   });
 });
 
@@ -250,7 +250,7 @@ describe("Cintorín: porazený dá Nástroj z ruky do Dedičstva zadarmo", () =>
       sums: [{}, {}],
       exekutorHotovy: [true, true],
       pohorsenieZostava: [0, 0],
-      pohorsenieHranice: {},
+      exekutor: [0, 0],
       damage: null,
       vitaz: 1,
       prebytokDrzi: null,

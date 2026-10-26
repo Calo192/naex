@@ -1,6 +1,7 @@
 // Zmeny Michala 2026-10-18 po partii proti AI: štartovky len v štartovacích
 // balíčkoch, Nástroj len s podporou Občana/Starešinu a automatický pas.
 
+import { jeCoTahat } from "../src/index.ts";
 import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
@@ -16,18 +17,18 @@ const inst = (defId: string): CardInstance => ({ uid: ++uidSeq, defId, leftLayou
 describe("štartovacie karty", () => {
   const STARTOVKY = ["pijan", "ministrant", "milujuca_manzelka", "dievcina_na_vydaj"];
 
-  it("obaja začínajú so 7 štartovkami: 3 Pijani, 2 Miňištranti, Manželka a Dievčina (Michal 2026-10-22)", () => {
+  it("v6: obaja začínajú so 4 kartami v ruke — Miňištrant, Milujúca manželka, Pijan a Dievčina na vydaj (Michal 2026-10-26)", () => {
     const s = setupGame(data, 7);
     for (const p of [0, 1] as const) {
-      const vsetky = [...s.hraci[p].ruka, ...s.hraci[p].doberaci];
-      const pocet = (id: string) => vsetky.filter((k) => k.defId === id).length;
-      expect(vsetky).toHaveLength(7);
-      expect(pocet("pijan")).toBe(3);
-      expect(pocet("ministrant")).toBe(2);
-      expect(pocet("milujuca_manzelka")).toBe(1);
-      expect(pocet("dievcina_na_vydaj")).toBe(1);
+      expect(s.hraci[p].ruka.map((k) => k.defId).sort()).toEqual([...STARTOVKY].sort());
+      expect(s.hraci[p].doberaci).toEqual([]);
     }
-    expect(KONSTANTY.START_RUKA).toEqual({ pijan: 3, ministrant: 2, milujuca_manzelka: 1, dievcina_na_vydaj: 1 });
+    expect(KONSTANTY.START_RUKA).toEqual({ ministrant: 1, milujuca_manzelka: 1, pijan: 1, dievcina_na_vydaj: 1 });
+  });
+
+  it("v6: prázdny doberací balíček — prvé ťahanie zamieša odhadzovací, bez kariet sa neťahá nič", () => {
+    const s0 = setupGame(data, 7);
+    expect(jeCoTahat(s0.hraci[0].doberaci.length, s0.hraci[0].odhadzovaci.length)).toBe(false);
   });
 
   it("v spoločnom balíčku (a teda v šenku) štartovky nie sú", () => {

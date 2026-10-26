@@ -8,7 +8,7 @@
 
 import type { DamageResult } from "./battle.ts";
 import type { GameData } from "./data.ts";
-import type { RozpisPoskodenia } from "./engine.ts";
+import type { BitkaNaNastenke, RozpisPoskodenia } from "./engine.ts";
 import type { ActionSums, LineEval, LineState, ZdrojAkcie } from "./partia.ts";
 import { evaluateLine } from "./partia.ts";
 import type { PlayerId } from "./types.ts";
@@ -83,6 +83,11 @@ export interface RekapitulaciaBitky {
   readonly vitaz: PlayerId | null;
   readonly prebytok: number;
   readonly prebytokDrzi: PlayerId | null;
+  /**
+   * Špaky bitky (v6): za bitku, za starších, exekúcia — záznam nástenky v čase
+   * výsledku (prebytok vo finále a na Kultúrnom dome sa dopíše až na nástenke).
+   */
+  readonly spaky?: BitkaNaNastenke;
 }
 
 export interface RekapitulaciaPitky {

@@ -133,7 +133,7 @@ describe("offline protihráč", () => {
   }, 60_000);
 });
 
-describe("offline protihráč — pravidlá v5", () => {
+describe("offline protihráč — pravidlá v5 a v6", () => {
   function bitka(b: Partial<BitkaStav>): BitkaStav {
     return {
       krok: null,
@@ -141,7 +141,7 @@ describe("offline protihráč — pravidlá v5", () => {
       sums: [{}, {}],
       exekutorHotovy: [true, true],
       pohorsenieZostava: [0, 0],
-      pohorsenieHranice: {},
+      exekutor: [0, 0],
       damage: null,
       vitaz: null,
       prebytokDrzi: null,
@@ -166,22 +166,23 @@ describe("offline protihráč — pravidlá v5", () => {
       strany: [[], []],
       ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0] as CardInstance },
       lokalityVHre: s0.lokalityVHre.slice(1),
-      starsi: s0.starsi.map((e) => ({ ...e, marker: markery(e), markerZaciatokKola: markery(e) })),
+      starsi: s0.starsi.map((e) => ({ ...e, marker: markery(e) })),
       bitkaStav: bitka({ krok: "pohorsenie", caka: 0, pohorsenieZostava: [1, 0] }),
     };
   }
   const priazenStarsieho = (s: GameState, elderId: string): string => favourStarsieho(data, s.starsi.find((e) => e.elderId === elderId) as ElderState);
 
-  it("posledným Pohoršením k sebe si vezme Bitkára, keď ním bitku vyhrá", () => {
+  it("v6: posledné Pohoršenie dá radšej na strach (špaky po každej bitke) než na výhru Bitkárom", () => {
     for (const seed of [71, 72, 73]) {
-      // Bitkár v sivej zóne pri hráčovi 0, ostatní v strede: prázdna línia je 0 : 0, Bitkár sily 1 rozhodne.
-      const s = vPohorseni(seed, (e) => (data.scorecards.find((x) => x.id === e.scorecard)?.favour === "BITKAR" ? 3 : 4));
+      // Všetci v strede, prázdna línia 0 : 0. Bitkár k sebe by vyhral bitku o 1 Pitku (1 špak),
+      // strach súpera dá špak po tejto aj po každej ďalšej bitke.
+      const s = vPohorseni(seed, () => 3);
       for (const povaha of POVAHY) {
         const cmd = tahBota(data, s, 0, seed, { povaha: povaha.id });
         expect(cmd.type, povaha.id).toBe("pohorsenie");
         if (cmd.type !== "pohorsenie") continue;
-        expect([priazenStarsieho(s, cmd.elderId), cmd.kSebe], `${povaha.id} ${seed}`).toEqual(["BITKAR", true]);
-        expect(apply(data, s, cmd, 0).state.bitkaStav?.vitaz).toBe(0);
+        expect(cmd.kSebe === true, `${povaha.id} ${seed}`).toBe(false);
+        expect(apply(data, s, cmd, 0).state.spaky[0]).toBe(1);
       }
     }
   }, 30_000);
@@ -190,7 +191,7 @@ describe("offline protihráč — pravidlá v5", () => {
     for (const seed of [81, 82, 83]) {
       // Po výhre Bitkárom drží hráč 0 prebytok 1; všetci ostatní starší sú tesne pred zónou súpera.
       const bitkar = (e: ElderState): boolean => data.scorecards.find((x) => x.id === e.scorecard)?.favour === "BITKAR";
-      const s = vPohorseni(seed, (e) => (bitkar(e) ? 3 : 5));
+      const s = vPohorseni(seed, () => 3);
       const id = s.starsi.find(bitkar)?.elderId as string;
       const po = apply(data, s, { type: "pohorsenie", elderId: id, kSebe: true }, 0).state;
       expect(po.bitkaStav?.krok).toBe("prebytok");
@@ -206,7 +207,7 @@ describe("offline protihráč — pravidlá v5", () => {
   }, 30_000);
 
   it("na Kare zahodí nepriznanú Cirhózu aj s tenkým balíčkom (prehra balíčkom pod 5 neplatí)", () => {
-    const s0 = vPohorseni(91, () => 4);
+    const s0 = vPohorseni(91, () => 3);
     let uid = 880000;
     const k = (defId: string): CardInstance => ({ uid: ++uid, defId, leftLayout: 0, rightLayout: 0 });
     const cirhoza = k("cirhoza");

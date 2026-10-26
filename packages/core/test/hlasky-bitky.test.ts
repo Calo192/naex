@@ -22,7 +22,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     sums: [{}, {}],
     exekutorHotovy: [true, true],
     pohorsenieZostava: [0, 0],
-    pohorsenieHranice: {},
+    exekutor: [0, 0],
     damage: null,
     vitaz: null,
     prebytokDrzi: null,
@@ -40,7 +40,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
 
 function vBitke(strany: GameState["strany"], b: Partial<BitkaStav>, uprav: (s: GameState) => GameState = (s) => s): GameState {
   const s0 = setupGame(data, 17);
-  const stred = (e: ElderState): ElderState => ({ ...e, marker: 4, markerZaciatokKola: 4 });
+  const stred = (e: ElderState): ElderState => ({ ...e, marker: 3 });
   return uprav({
     ...s0,
     faza: "bitka",

@@ -8,12 +8,6 @@ export const KONSTANTY = {
    */
   START_POLDECI: 2,
   /**
-   * Štartovacia ruka (rozhodnutie Michala 2026-10-11): štartovacie karty sa
-   * zamiešajú do doberacieho balíčka a hráč si dobere toľkoto. Kliatby idú
-   * do odhadzovacieho balíčka, nie do ruky.
-   */
-  VELKOST_RUKY: 5,
-  /**
    * Po každej bitke si hráč dobere toľkoto kariet (Michal 2026-10-19) —
    * namiesto doplnenia ruky na 5. Limit ruky nie je.
    */
@@ -21,16 +15,15 @@ export const KONSTANTY = {
   START_CIGARETY: 3,
 
   /**
-   * Štartovací balíček každého hráča: 7 kariet (Michal 2026-10-22, roadmapa #8;
-   * predtým 10 = 4/2/2/2). Slabé štartovky majú hráča hnať do šenku a skôr
-   * ustúpiť silnejším kartám; 5 by hráča nechalo hneď na hranici prehry
-   * (balíček pod 5) a s jedným Miňištrantom bez cigariet na šenok. Tieto štyri
-   * druhy sú výhradne štartovacie — v spoločnom balíčku ani v šenku nie sú.
+   * Počiatočná ruka každého hráča (v6, Michal 2026-10-26): len tieto štyri
+   * karty, doberací balíček je na začiatku prázdny (predtým 7 štartoviek
+   * 3/2/1/1 v balíčku a 5 v ruke). Tieto štyri druhy sú výhradne štartovacie —
+   * v spoločnom balíčku ani v šenku nie sú.
    */
   START_RUKA: {
-    pijan: 3,
-    ministrant: 2,
+    ministrant: 1,
     milujuca_manzelka: 1,
+    pijan: 1,
     dievcina_na_vydaj: 1,
   } as Readonly<Record<string, number>>,
 
@@ -87,11 +80,13 @@ export const KONSTANTY = {
   HODNOTA_VIERY_ZAKLAD: 1, // Veriaci (2026-10-20) dáva Vieru navyše rovnú sile, hodnotu nemení
   PRESKUMANIE: 5,
   /**
-   * Pohoršenie (Michal 2026-10-20): ten istý marker smie ísť v bitke aj
-   * viackrát, Pohoršenia jedného hráča ho však posunú najviac cez toľkoto
-   * hraníc zón (pravá sivá → ľavá oranžová áno). Kultúrny dom limit ruší.
+   * Špaky (pravidlá v6, Michal 2026-10-26): finále má vždy toľkoto Pitiek,
+   * víťaz bitky dostane vždy aspoň SPAKY_ZA_BITKU_MIN a nepriznaná Cirhóza
+   * na konci hry stojí toľkoto špakov za kus (ruka aj oba balíčky).
    */
-  POHORSENIE_MAX_HRANIC: 2,
+  FINALE_PITKY: 3,
+  SPAKY_ZA_BITKU_MIN: 1,
+  SPAKY_ZA_CIRHOZU: 5,
 
   /**
    * Prehra pri poklese balíčka pod túto hodnotu platila do v4; vo v5 sa ruší
@@ -138,23 +133,13 @@ export const KONSTANTY = {
    * po drafte a NA EX ostal s limitom 1 až do konca partie (Eva 4 zo 7 kôl).
    */
   POLDECI_NA_ZACIATKU_KOLA: 1,
-
-  /**
-   * Do v4: podmienka „zvyšné cigarety“ rátala kusy po trojiciach. Vo v5 sa
-   * o cigarety bojuje kus po kuse (súboj podmienok), konštantu číta už len UI.
-   *
-   * Pôvodne: podmienka „zvyšné cigarety“ ráta kusy po trojiciach (Michal 2026-10-16):
-   * cigarety sa hromadia z akcií Cigareta a sú hlavne mena, nie zdroj bodov.
-   */
-  CIGARIET_NA_KUS: 3,
-
-  // Body na konci hry sú v data/scorecards.json (podmienky scorecardov).
 } as const;
 
 /**
  * Dĺžka hry = počet lokalít, o ktoré sa hráči bijú (rozhodnutie Michala
- * 2026-10-11; 3 / 5 / 7 od 2026-10-24, predtým 5 / 7 / 11). Dĺžku, na ktorú
- * sada nemá dosť lokalít, ponuka vynechá.
+ * 2026-10-11; 3 / 5 / 7 od 2026-10-24, predtým 5 / 7 / 11). Od v6 sa po nich
+ * hrá ešte finále bez lokality. Dĺžku, na ktorú sada nemá dosť lokalít,
+ * ponuka vynechá.
  */
 export const DLZKY_HRY = { kratka: 3, stredna: 5, dlha: 7 } as const;
 
@@ -165,9 +150,9 @@ export const DLZKY_HRY = { kratka: 3, stredna: 5, dlha: 7 } as const;
  * pravidlá menia len v dávkach raz za 2 týždne a celá dávka dostane ďalšie
  * číslo („v5“) spolu s novým dátumom platnosti.
  */
-export const VERZIA_PRAVIDIEL = "v5";
+export const VERZIA_PRAVIDIEL = "v6";
 /** Odkedy platí VERZIA_PRAVIDIEL — hráč ho vidí na stránke Pravidlá. */
-export const PRAVIDLA_PLATNE_OD = "2026-10-25";
+export const PRAVIDLA_PLATNE_OD = "2026-10-26";
 export type DlzkaHry = keyof typeof DLZKY_HRY;
 export const ALL_DLZKY: readonly DlzkaHry[] = ["kratka", "stredna", "dlha"];
 export const PREDVOLENA_DLZKA: DlzkaHry = "stredna";

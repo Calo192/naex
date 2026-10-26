@@ -9,11 +9,12 @@ import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { GameState, PlayerId } from "../src/index.ts";
 import { IllegalCommandError, apply, legalCommands, loadGameData, setupGame } from "../src/index.ts";
+import { setupSBalickom } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
 function vStave(faza: "zhromazdenie" | "pitka", doberaci: boolean): GameState {
-  const s0 = setupGame(data, 41);
+  const s0 = setupSBalickom(data, 41);
   const p: PlayerId = 0;
   const h = s0.hraci[p];
   // Celý balíček v ruke — doberací aj odhadzovací prázdne (5 štartoviek, 1. kolo).

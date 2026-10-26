@@ -42,7 +42,7 @@ function predPohrebom(vitaz: PlayerId | null, strany: GameState["strany"], dedic
     sums: [{}, {}],
     exekutorHotovy: [true, true],
     pohorsenieZostava: [0, 0],
-    pohorsenieHranice: {},
+    exekutor: [0, 0],
     damage: null,
     vitaz,
     prebytokDrzi: null,

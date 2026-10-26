@@ -29,6 +29,7 @@ import {
 } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
 import { instanceFor, makeDef, syntheticData, naexOdkryte } from "./helpers.ts";
+import { setupSBalickom } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const EMPTY: Layout4 = [null, null, null, null];
@@ -49,7 +50,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     sums: [{}, {}],
     exekutorHotovy: [true, true],
     pohorsenieZostava: [0, 0],
-    pohorsenieHranice: {},
+    exekutor: [0, 0],
     damage: null,
     vitaz: 0,
     prebytokDrzi: null,
@@ -73,7 +74,7 @@ function sHracom(s: GameState, p: PlayerId, h: Partial<GameState["hraci"][0]>): 
 
 /** Stav pred Pohrebom (hráč 0 ju preskočí) — bitka potom dobehne do ďalšieho kola. */
 function predKoncomBitky(seed: number, uprav: (s: GameState) => GameState = (s) => s): GameState {
-  const s0 = setupGame(data, seed);
+  const s0 = setupSBalickom(data, seed);
   return uprav({
     ...s0,
     faza: "bitka",
@@ -95,7 +96,7 @@ const jeden = makeDef("jeden_spoj", EMPTY, [null, null, "Rana", null]);
 const sadaP = sadaS(lokP, tri, jeden);
 
 function vZhromazdeni(strany: GameState["strany"]): GameState {
-  const s0 = setupGame(sadaP, 31);
+  const s0 = setupSBalickom(sadaP, 31);
   return {
     ...s0,
     faza: "zhromazdenie",
@@ -162,20 +163,20 @@ describe("ruka: +2 karty po bitke, žiadny limit ruky (Michal 2026-10-19)", () =
     expect(po.hraci[1].ruka).toHaveLength(KONSTANTY.KARTY_PO_BITKE);
   });
 
-  it("štart: 2 poldeci (Michal 2026-10-20), 3 cigarety, 5 kariet v ruke", () => {
-    const s = setupGame(data, 41);
+  it("štart: 2 poldeci (Michal 2026-10-20), 3 cigarety, 4 karty v ruke (v6)", () => {
+    const s = setupSBalickom(data, 41);
     for (const p of [0, 1] as const) {
-      expect([s.hraci[p].poldeciPlne, s.hraci[p].cigarety, s.hraci[p].ruka.length]).toEqual([2, 3, 5]);
+      expect([s.hraci[p].poldeciPlne, s.hraci[p].cigarety, s.hraci[p].ruka.length]).toEqual([2, 3, 4]);
     }
   });
 });
 
 describe("Úžerník (Michal 2026-10-20): prah Dlhu 2 + sila, Zberateľ zanikol", () => {
   it("v5: priazeň Úžerníka (Kmotra) prah Dlhu nemení — obaja majú prah 2", () => {
-    const s0 = setupGame(data, 42);
+    const s0 = setupSBalickom(data, 42);
     const uzernik = s0.starsi.find((e) => favourStarsieho(data, e) === "UZERNIK")!;
     // Marker na 1 = priazeň hráča 0, sila 2.
-    const s: GameState = { ...s0, starsi: s0.starsi.map((e) => (e === uzernik ? { ...e, marker: 1, markerZaciatokKola: 1 } : e)) };
+    const s: GameState = { ...s0, starsi: s0.starsi.map((e) => (e === uzernik ? { ...e, marker: 1} : e)) };
     expect(prahyHraca(data, s, 0).dlh).toBe(2);
     expect(prahyHraca(data, s, 1).dlh).toBe(2);
   });
@@ -200,7 +201,7 @@ describe("Úžerník (Michal 2026-10-20): prah Dlhu 2 + sila, Zberateľ zanikol"
 const OBYCAJNA = ["krcma", "ihrisko", "lesna_cesta", "zberny_dvor"];
 
 function vZhromazdeniHrac0(seed: number, h: Partial<GameState["hraci"][0]>): GameState {
-  const s0 = setupGame(data, seed);
+  const s0 = setupSBalickom(data, seed);
   const lokalita = s0.lokalityVHre.find((k) => OBYCAJNA.includes(k.defId)) ?? inst("krcma");
   return sHracom(
     {
@@ -337,7 +338,7 @@ describe("Vízia: vrchnú kartu balíčka do ruky, alebo zahodiť (Michal 2026-1
   const sadaV = sadaS(lokV, vestec);
 
   function poPitke(): GameState {
-    const s0 = setupGame(sadaV, 50);
+    const s0 = setupSBalickom(sadaV, 50);
     let s: GameState = {
       ...s0,
       faza: "pitka",
@@ -407,7 +408,7 @@ describe("Veľmi smútiaca vdova (oprava 2026-10-19)", () => {
 
 describe("Vychovávateľka: Dlh ide súperovi do balíčka, nie na ruku", () => {
   it("pri NA EX majiteľa Vychovávateľky", () => {
-    const s0 = setupGame(data, 49);
+    const s0 = setupSBalickom(data, 49);
     const vych = inst("vychovavatelka");
     const ciel = inst("pijan");
     const dlh = inst("dlh");
@@ -504,10 +505,10 @@ describe("Dlhy sa priznávajú samy, Cirhóza bez dobratia (Michal 2026-10-20)",
 
 describe("Veriaci (Michal 2026-10-20): Viera navyše rovná sile", () => {
   it("dve Viery s priazňou sily 2 uberú súperovi 4 tuhé, nie 10", () => {
-    const s0 = setupGame(data, 49);
+    const s0 = setupSBalickom(data, 49);
     const veriaci = s0.starsi.find((e) => favourStarsieho(data, e) === "VERIACI")!;
     // Marker na 1 = priazeň hráča 0, sila 2.
-    const s: GameState = { ...s0, strany: [[], []], starsi: s0.starsi.map((e) => (e === veriaci ? { ...e, marker: 1, markerZaciatokKola: 1 } : e)) };
+    const s: GameState = { ...s0, strany: [[], []], starsi: s0.starsi.map((e) => (e === veriaci ? { ...e, marker: 1} : e)) };
     const dmg = poskodenieBitky(data, s, [{ Viera: 2 }, { Petelica: 4 }], [0, 0]);
     expect(dmg.zvysnaViera[0]).toBe(4);
     expect(dmg.tuhe[1]).toBe(12 - 4);
@@ -516,7 +517,7 @@ describe("Veriaci (Michal 2026-10-20): Viera navyše rovná sile", () => {
 
 describe("Cirhóza v bitke (Michal 2026-10-20): škodí tomu, kto ju priznal", () => {
   it("za každú priznanú Cirhózu dá súper +1 tuhé", () => {
-    const s0 = setupGame(data, 50);
+    const s0 = setupSBalickom(data, 50);
     const s = sHracom({ ...s0, strany: [[], []] }, 0, { priznane: [inst("cirhoza"), inst("cirhoza")] });
     const dmg = poskodenieBitky(data, s, [{}, {}], [0, 0]);
     expect(dmg.tuhe[1]).toBe(2);

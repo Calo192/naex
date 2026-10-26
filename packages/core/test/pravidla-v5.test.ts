@@ -20,7 +20,6 @@ import {
   loadGameData,
   naTahu,
   parseScorecards,
-  pohorsenieMozne,
   pohorseniaVBitke,
   poskodenieBitky,
   prahyHraca,
@@ -33,6 +32,7 @@ import {
 } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
 import { EMPTY, instanceFor, makeDef } from "./helpers.ts";
+import { setupSBalickom } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -53,7 +53,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     sums: [{}, {}],
     exekutorHotovy: [true, true],
     pohorsenieZostava: [0, 0],
-    pohorsenieHranice: {},
+    exekutor: [0, 0],
     damage: null,
     vitaz: 0,
     prebytokDrzi: null,
@@ -70,7 +70,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
 
 /** Bitka v kroku Pohrebu, čaká sa na hráča 0 — skipPohreb ju dokončí a začne ďalšie kolo. */
 function predKoncomBitky(seed: number, uprav: (s: GameState) => GameState = (s) => s): GameState {
-  const s0 = setupGame(data, seed);
+  const s0 = setupSBalickom(data, seed);
   return uprav({
     ...s0,
     faza: "bitka",
@@ -117,7 +117,7 @@ describe("v5 bod 8: nepriznaná Cirhóza po bitke do odhadzovacieho balíčka", 
 describe("v5 bod 7: Pohoršenie oboma smermi", () => {
   /** Bitka v kroku Pohoršenia, hráč 0 má `n` Pohoršení, línia prázdna. */
   function vPohorseni(seed: number, uprav: (s: GameState) => GameState = (s) => s, n = 1): GameState {
-    const s0 = setupGame(data, seed);
+    const s0 = setupSBalickom(data, seed);
     return uprav({
       ...s0,
       faza: "bitka",
@@ -131,7 +131,7 @@ describe("v5 bod 7: Pohoršenie oboma smermi", () => {
   }
   const sMarkerom = (s: GameState, elderId: string, marker: ElderState["marker"]): GameState => ({
     ...s,
-    starsi: s.starsi.map((e) => (e.elderId === elderId ? { ...e, marker, markerZaciatokKola: marker } : e)),
+    starsi: s.starsi.map((e) => (e.elderId === elderId ? { ...e, marker} : e)),
   });
   const bitkarId = (s: GameState): string => s.starsi.find((e) => data.scorecards.find((x) => x.id === e.scorecard)?.favour === "BITKAR")!.elderId;
 
@@ -153,40 +153,34 @@ describe("v5 bod 7: Pohoršenie oboma smermi", () => {
     expect(vysledok?.type === "bitkaVysledok" ? vysledok.damage.tuhe[0] : -1).toBe(0);
   });
 
-  it("na krajnú pozíciu nesmie ani k sebe", () => {
+  it("v6: aj k sebe smie na krajnú pozíciu, ďalej von nie", () => {
     const s = vPohorseni(72);
     const id = s.starsi[0]!.elderId;
     const st = sMarkerom(s, id, 1);
-    expect(pohorsenieMozne(st, 0, st.starsi[0]!, true)).toBe(false);
-    expect(() => apply(data, st, { type: "pohorsenie", elderId: id, kSebe: true }, 0)).toThrow(IllegalCommandError);
-    // Hráč 1 k sebe z pozície 7 tiež nie (8 je krajná).
-    expect(pohorsenieMozne(sMarkerom(s, id, 7), 1, { ...st.starsi[0]!, marker: 7, markerZaciatokKola: 7 }, true)).toBe(false);
+    expect(legalCommands(data, st, 0)).toContainEqual({ type: "pohorsenie", elderId: id, kSebe: true });
+    const po = apply(data, st, { type: "pohorsenie", elderId: id, kSebe: true }, 0).state;
+    expect(po.starsi.find((e) => e.elderId === id)?.marker).toBe(0);
+    const naKraji = sMarkerom(s, id, 0);
+    expect(legalCommands(data, naKraji, 0)).not.toContainEqual({ type: "pohorsenie", elderId: id, kSebe: true });
+    expect(() => apply(data, naKraji, { type: "pohorsenie", elderId: id, kSebe: true }, 0)).toThrow(IllegalCommandError);
   });
 
-  it("limit dvoch hraníc zón je spoločný pre oba smery", () => {
+  it("v6: limit hraníc zón sa ruší — 6 Pohoršení prejde celú stupnicu oboma smermi", () => {
     const s = vPohorseni(73, (x) => x, 6);
     const id = s.starsi[0]!.elderId;
-    let st = sMarkerom(s, id, 4);
-    st = apply(data, st, { type: "pohorsenie", elderId: id, kSebe: true }, 0).state; // 4 → 3, bez hranice
-    st = apply(data, st, { type: "pohorsenie", elderId: id, kSebe: true }, 0).state; // 3 → 2, hranica 1
-    st = apply(data, st, { type: "pohorsenie", elderId: id }, 0).state; // 2 → 3, hranica 2
-    st = apply(data, st, { type: "pohorsenie", elderId: id }, 0).state; // 3 → 4
-    st = apply(data, st, { type: "pohorsenie", elderId: id }, 0).state; // 4 → 5
-    const e = st.starsi.find((x) => x.elderId === id)!;
-    expect(e.marker).toBe(5);
-    expect(st.bitkaStav?.pohorsenieHranice[`0:${id}`]).toBe(2);
-    // 5 → 6 by bola tretia hranica.
-    expect(pohorsenieMozne(st, 0, e)).toBe(false);
-    expect(pohorsenieMozne(st, 0, e, true)).toBe(true);
+    let st = sMarkerom(s, id, 3);
+    for (let i = 0; i < 3; i++) st = apply(data, st, { type: "pohorsenie", elderId: id, kSebe: true }, 0).state; // 3 → 0
+    expect(st.starsi.find((x) => x.elderId === id)?.marker).toBe(0);
+    for (let i = 0; i < 3; i++) st = apply(data, st, { type: "pohorsenie", elderId: id }, 0).state; // 0 → 3
+    expect(st.starsi.find((x) => x.elderId === id)?.marker).toBe(3);
   });
 });
 
-describe("v5 bod 5: scorecardy v5 s podmienkami Absťák a Rezerva", () => {
-  it("východisková sada má 8 scorecardov, Absťák aj Rezervu a nové mená Kmotor, Abstinent a Výpalník", () => {
+describe("v5 bod 5 a v6: scorecardy nesú len priazeň", () => {
+  it("východisková sada má 8 scorecardov bez podmienok (v6) a mená Kmotor, Abstinent a Výpalník", () => {
     expect(data.scorecards).toHaveLength(8);
     const vsetky = data.scorecards.flatMap((sc) => [...sc.lava, ...sc.prava]);
-    expect(vsetky).toContain("abstak");
-    expect(vsetky).toContain("rezerva");
+    expect(vsetky.every((x) => x === null)).toBe(true);
     expect(data.scorecards.find((sc) => sc.favour === "UZERNIK")?.nazov).toBe("Kmotor");
     expect(data.scorecards.find((sc) => sc.favour === "LAKOMEC")?.nazov).toBe("Abstinent");
     expect(data.scorecards.find((sc) => sc.favour === "NEPRAJNIK")?.nazov).toBe("Výpalník");
@@ -221,12 +215,12 @@ describe("v5 bod 6: priazne v5 (sila 1 / 2 / 3)", () => {
   );
   /** Priazeň `favour` hráčovi p so silou sila (marker na jeho polovici). */
   const sPriaznou = (s: GameState, favour: Favour, p: PlayerId, sila: 1 | 2 | 3): GameState => {
-    const marker = (p === 0 ? 3 - sila : 5 + sila) as ElderState["marker"];
-    return { ...s, starsi: s.starsi.map((e) => (favourStarsieho(sada, e) === favour ? { ...e, marker, markerZaciatokKola: marker } : e)) };
+    const marker = (p === 0 ? 3 - sila : 3 + sila) as ElderState["marker"];
+    return { ...s, starsi: s.starsi.map((e) => (favourStarsieho(sada, e) === favour ? { ...e, marker} : e)) };
   };
   /** Pitka: hráč 1 na ťahu, na jeho strane dve karty, na ktoré smie dať NA EX. Ruky prázdne (bez odpovedí). */
   function pitkaSNaex(seed: number): { s: GameState; ciel: number } {
-    const s0 = setupGame(sada, seed);
+    const s0 = setupSBalickom(sada, seed);
     const lavy = instanceFor(sada, "v5_lavy", EMPTY, R2);
     const pol = instanceFor(sada, "v5_pol", R1, R1);
     const s: GameState = {
@@ -262,26 +256,26 @@ describe("v5 bod 6: priazne v5 (sila 1 / 2 / 3)", () => {
   }
 
   it("Bitkár: +1 / +2 / +3 tuhého (nie dvojnásobok)", () => {
-    const s0 = setupGame(data, 91);
+    const s0 = setupSBalickom(data, 91);
     for (const sila of [1, 2, 3] as const) {
       expect(poskodenieBitky(data, sPriaznou(s0, "BITKAR", 0, sila), [{}, {}], [0, 0]).tuhe).toEqual([sila, 0]);
     }
   });
 
   it("Abstinent (Lakomec): v bitke +1 / +2 / +3 Pohoršenia; barter nezlacňuje", () => {
-    const s0 = setupGame(data, 92);
+    const s0 = setupSBalickom(data, 92);
     expect(pohorseniaVBitke(data, sPriaznou(s0, "LAKOMEC", 1, 2), [{}, {}])).toEqual([0, 2]);
     expect(barterCena(data, sPriaznou(s0, "LAKOMEC", 1, 3), 1)).toBe(KONSTANTY.BARTER_CENA);
   });
 
   it("Exekútor: súperov prah Exekúcie je nižší o silu, vlastný ostáva 10", () => {
-    const s = sPriaznou(setupGame(data, 93), "EXEKUTOR", 1, 2);
+    const s = sPriaznou(setupSBalickom(data, 93), "EXEKUTOR", 1, 2);
     expect(prahyHraca(data, s, 0).exekutor).toBe(KONSTANTY.PRAH_EXEKUTORA_ZAKLAD - 2);
     expect(prahyHraca(data, s, 1).exekutor).toBe(KONSTANTY.PRAH_EXEKUTORA_ZAKLAD);
   });
 
   it("Alkoholik a Kmotor prahy Cirhózy a Dlhu nemenia, Výpalník (Neprajník) strop mäkkého nezdvíha", () => {
-    let s = setupGame(data, 94);
+    let s = setupSBalickom(data, 94);
     s = sPriaznou(sPriaznou(sPriaznou(s, "ALKOHOLIK", 0, 3), "UZERNIK", 0, 3), "NEPRAJNIK", 0, 3);
     expect(prahyHraca(data, s, 0).cirhoza).toBe(KONSTANTY.PRAH_CIRHOZY_ZAKLAD);
     expect(prahyHraca(data, s, 0).dlh).toBe(KONSTANTY.PRAH_DLHU_ZAKLAD);
@@ -297,7 +291,7 @@ describe("v5 bod 6: priazne v5 (sila 1 / 2 / 3)", () => {
   });
 
   it("Fajčiar: +1 / +2 / +3 cigarety po výbere zo šenku", () => {
-    const s0 = setupGame(data, 96);
+    const s0 = setupSBalickom(data, 96);
     const s: GameState = {
       ...sPriaznou(s0, "FAJCIAR", 0, 2),
       faza: "draft",
@@ -343,7 +337,7 @@ describe("v5 bod 2: NA EX naraz + Výtržník", () => {
   );
   /** Pitka, obranca 1 na ťahu; na strane hráča 1 dve jeho karty (NA EX smie na obe), ruky prázdne. */
   function pitka(seed: number): { s: GameState; lavy: number; pol: number } {
-    const s0 = setupGame(sada, seed);
+    const s0 = setupSBalickom(sada, seed);
     const lavy = instanceFor(sada, "v5n_lavy", EMPTY, R2);
     const pol = instanceFor(sada, "v5n_pol", R1, R1);
     const s: GameState = {
@@ -458,7 +452,7 @@ describe("v5 bod 2: NA EX naraz + Výtržník", () => {
 
 describe("v5 bod 2: skryté NA EX na súperovu Záverečnú", () => {
   it("vlastné skryté NA EX nesie náhradné uid Záverečnej — skutočná karta sa neprezradí", () => {
-    const s0 = setupGame(data, 111);
+    const s0 = setupSBalickom(data, 111);
     const zaverecna: CardInstance = { uid: 991111, defId: "svokra", leftLayout: 0, rightLayout: 0 };
     const s: GameState = {
       ...s0,

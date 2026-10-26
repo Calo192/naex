@@ -38,7 +38,7 @@ const sada = buildGameData(
 /** Priazeň `favour` hráčovi p so silou sila (marker na jeho polovici). */
 function sPriaznou(s: GameState, favour: Favour, p: PlayerId, sila: 1 | 2 | 3): GameState {
   const marker = (p === 0 ? 3 - sila : 5 + sila) as ElderState["marker"];
-  return { ...s, starsi: s.starsi.map((e) => (favourStarsieho(sada, e) === favour ? { ...e, marker, markerZaciatokKola: marker } : e)) };
+  return { ...s, starsi: s.starsi.map((e) => (favourStarsieho(sada, e) === favour ? { ...e, marker} : e)) };
 }
 
 /**
