@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prestavba Absťáku</title>
+<style>
+/* Rozvrhnutie: problém, štyri smery ako karty, porovnanie, simulátor kôl, odporúčanie a meranie. */
+:root {
+  --pozadie: #15120f; --plocha: #1f1a15; --plocha-2: #2a231c; --okraj: #43372c;
+  --text: #f1e8d8; --tlmeny: #b8a993;
+  --akcent: #e9ad45; --dobre: #7fbf7a; --zle: #d8705f; --neutral: #9a8f80;
+  --serif: Georgia, "Times New Roman", serif;
+  --sans: system-ui, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #d8c8ad;
+    --text: #2a2016; --tlmeny: #5e4f3b;
+    --akcent: #95590a; --dobre: #2f7a2b; --zle: #a8402f; --neutral: #6e6355;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #d8c8ad;
+  --text: #2a2016; --tlmeny: #5e4f3b;
+  --akcent: #95590a; --dobre: #2f7a2b; --zle: #a8402f; --neutral: #6e6355;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --pozadie: #15120f; --plocha: #1f1a15; --plocha-2: #2a231c; --okraj: #43372c;
+  --text: #f1e8d8; --tlmeny: #b8a993;
+  --akcent: #e9ad45; --dobre: #7fbf7a; --zle: #d8705f; --neutral: #9a8f80;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 var(--sans); }
+main { max-width: 960px; margin: 0 auto; padding-block: 28px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--serif); line-height: 1.2; text-wrap: balance; }
+h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); margin: 0 0 8px; }
+h2 { font-size: 1.4rem; margin: 40px 0 14px; padding-bottom: 6px; border-bottom: 1px solid var(--okraj); }
+h3 { font-size: 1.1rem; margin: 0 0 6px; }
+p { margin: 0 0 10px; max-width: 72ch; }
+ul, ol { max-width: 72ch; padding-left: 20px; }
+li { margin-bottom: 5px; }
+a { color: var(--akcent); }
+:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+code { font-family: var(--mono); font-size: .86em; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+.uvod { color: var(--tlmeny); }
+.pozn { font-size: .9rem; color: var(--tlmeny); }
+.skratka { background: var(--plocha); border: 1px solid var(--akcent); border-radius: 12px; padding: 14px 16px; margin: 18px 0; }
+.skratka h2 { margin: 0 0 6px; border: 0; padding: 0; font-size: 1.2rem; }
+
+/* smery */
+.prepinac { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 14px; }
+.prepinac button { appearance: none; font: inherit; font-size: .9rem; padding: 7px 12px; border-radius: 8px;
+  border: 1px solid var(--okraj); background: var(--plocha-2); color: var(--text); cursor: pointer; }
+.prepinac button[aria-pressed="true"] { border-color: var(--akcent); color: var(--akcent); font-weight: 600; }
+.smer { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 16px; }
+.smer[hidden] { display: none; }
+.pravidlo { font-family: var(--serif); font-size: 1.15rem; border-left: 3px solid var(--akcent); padding: 4px 0 4px 12px; margin: 8px 0 14px; max-width: 72ch; }
+.stitky { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+.stitok { font-size: .78rem; border-radius: 999px; padding: 1px 9px; border: 1px solid var(--okraj); color: var(--tlmeny); }
+.stitok.odpor { border-color: var(--akcent); color: var(--akcent); font-weight: 600; }
+.mriezka { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px 20px; }
+.mriezka h4 { margin: 8px 0 4px; font-size: .9rem; color: var(--tlmeny); text-transform: uppercase; letter-spacing: .04em; }
+.mriezka ul { margin: 0; }
+
+/* tabuľky */
+.tab-obal { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+th, td { padding: 7px 6px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--okraj); }
+thead th { border-bottom: 2px solid var(--okraj); font-size: .85rem; color: var(--tlmeny); font-weight: 600; }
+.plus { color: var(--dobre); font-weight: 600; } .minus { color: var(--zle); font-weight: 600; } .nula { color: var(--neutral); }
+
+/* simulátor */
+.sim { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 14px; }
+.sim table { font-variant-numeric: tabular-nums; }
+.sim td, .sim th { text-align: center; }
+.sim td:first-child, .sim th:first-child { text-align: left; }
+.krok { display: inline-flex; align-items: center; gap: 4px; }
+.krok button { appearance: none; width: 30px; height: 30px; border-radius: 6px; border: 1px solid var(--okraj);
+  background: var(--plocha-2); color: var(--text); font: inherit; cursor: pointer; }
+.krok output { min-width: 1.4em; display: inline-block; font-weight: 600; }
+.sim input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--akcent); }
+.abs { display: inline-block; min-width: 1.6em; padding: 1px 6px; border-radius: 6px; background: var(--plocha-2); font-weight: 600; }
+.abs.hore { color: var(--zle); } .abs.dole { color: var(--dobre); }
+.preset { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+.preset button { appearance: none; font: inherit; font-size: .84rem; padding: 5px 10px; border-radius: 8px; border: 1px solid var(--okraj); background: var(--plocha-2); color: var(--text); cursor: pointer; }
+</style>
+</head>
+<body>
+<main>
+<h1>Prestavba Absťáku</h1>
+<p class="uvod">Návrh smerov na rozhodnutie · roadmapa #113 · 2026-10-26 · Michal: „Absťák je potrebné prerobiť; ešte neviem ako, ale som si istý, že ho treba prerobiť.“</p>
+
+<div class="skratka">
+  <h2>Skratka</h2>
+  <p>Dnes je Absťák trest za rytmus: dostaneš ho, keď v kole skonzumuješ menej nerestí ako v predošlom. Hráč pri ňom nič nerozhoduje, len si stráži počty. Kto zvolní, je potrestaný, a kto sa trestu vyhýba, musí piť stále viac. Ďalej sú štyri smery. Každý dáva hráčovi skutočné rozhodnutie alebo pravidlo aspoň zjednoduší. <strong>Odporúčam B: Predsavzatie.</strong> Absťák v ňom vzniká tam, kde naozaj vzniká, totiž keď niekto abstinuje, a hráč si to zvolí vopred. Stratég nech zmeria B a A, smer D slúži ako kontrolná vzorka.</p>
+</div>
+
+<h2>V čom je problém</h2>
+<p>Pravidlo je v <code>PRAVIDLA.md §8 Nerest a Absťák</code>: na konci kola sa porovnajú neresti s predošlým kolom. Pri menšom počte hráč dostane Absťák rovno priznaný, pri väčšom sa jedného zbaví. Prvé kolo len nastaví základ. Absťák uberá 1 tuhé za kus (§9.3). V bodovaní v6 (Špaky, <code>docs/napady/spaky.html</code>) navyše ráta víťazovi menej špakov a rozhoduje remízy. Podmienka Absťák na scorecardoch tým v6 padá.</p>
+<ul>
+  <li><strong>Tematicky naopak:</strong> „menej pitia = trest je tematicky nelogické“. Janovi pokles z 2 nerestí na 0 dal Absťák (<code>docs/playtesty/20261021-143600.html</code>).</li>
+  <li><strong>Špirála:</strong> „aby sa hráč vyhol Absťáku, musí každé kolo piť viac a latka stále rastie“ (stratég, <code>docs/playtesty/strategia-20261019-2030.html</code>).</li>
+  <li><strong>Hráč nevie prečo:</strong> „Jano dostal 5 Absťákov a nikdy poriadne nevedel prečo“ (<code>docs/playtesty/20261012-101447.html</code>). Vo výučbe ostal Absťák nepochopený (Dodo, Katka; <code>docs/playtesty/vyucba-20261024-122133.html</code>).</li>
+  <li><strong>Rozhoduje, ale náhodne:</strong> „Absťák mi v 2 bitkách vzal víťazstvo“ (<code>docs/playtesty/20261018-185541.html</code>). V6 jeho váhu ešte zvýši (špaky aj remízy).</li>
+  <li><strong>Jediné rozhodnutie, ktoré dnes existuje,</strong> je obchádzka: Eva Absťák prijala zámerne, aby si znížila základ nerestí (<code>docs/playtesty/20261021-041728.html</code>). Hráči sa ním hrajú proti pravidlu, nie cez neho.</li>
+</ul>
+<p>Na Absťáku dnes visí: Milujúca manželka (latka aj pri rovnakom počte), Krčmárka („ak nemáš Absťák…“), Autobusár („ignoruj 1 Absťák“), počítanie nerestí v Pitke (fajčenie, doliatie, barter, Zberný dvor, Snúbenica), Vypiť (§13), výhľad v klientovi (<code>packages/core/src/zavislost.ts</code>), nápoveda Melichara (<code>packages/core/data/vyucba/napovedy.json</code>), achievement za Absťáky (<code>achievementy.json</code>) a bot (<code>bot.ts</code>: hodnota karty Absťák, fajčenie kvôli Absťáku).</p>
+
+<h2>Štyri smery</h2>
+<div class="prepinac" role="group" aria-label="Smer">
+  <button type="button" data-smer="A" aria-pressed="false">A · Suché kolo</button>
+  <button type="button" data-smer="B" aria-pressed="true">B · Predsavzatie</button>
+  <button type="button" data-smer="C" aria-pressed="false">C · Ponuka pohárika</button>
+  <button type="button" data-smer="D" aria-pressed="false">D · Bez Absťáku</button>
+</div>
+
+<section class="smer" id="smer-A" hidden>
+  <div class="stitky"><span class="stitok">najmenší zásah</span><span class="stitok">zmerať (2.)</span></div>
+  <h3>A · Suché kolo</h3>
+  <p class="pravidlo">Absťák dostaneš za kolo bez jedinej neresti (od 2. kola). Kolo s aspoň 2 nerestami ťa jedného Absťáku zbaví.</p>
+  <div class="mriezka">
+    <div>
+      <h4>Rozhodnutie hráča</h4>
+      <ul>
+        <li>Každé kolo: zaplatiť aspoň jednu nerest (pečeň, cigareta, limit), alebo prijať −1 tuhé?</li>
+        <li>Zbaviť sa Absťáku stojí 2 neresti. Hráč vie vopred, koľko to stojí, a porovnáva to s jedným tuhým.</li>
+        <li>Žiadne porovnávanie s minulým kolom, žiadna latka, ktorá rastie.</li>
+      </ul>
+      <h4>Riziko</h4>
+      <ul>
+        <li>Rozhodnutie je malé: skúsený hráč takmer vždy jednu nerest urobí, takže Absťák bude zriedkavý a hlavne nováčikovský.</li>
+        <li>Téma „nepiješ = trest“ ostáva, len presnejšia (abstinenčný syndróm prichádza naozaj až pri úplnom suchu).</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Karty, scorecardy, výučba</h4>
+      <ul>
+        <li><strong>Milujúca manželka:</strong> „Furt: Absťák dostaneš aj za kolo s 1 nerestou.“ Dve Manželky: aj s 2.</li>
+        <li><strong>Krčmárka, Autobusár:</strong> bez zmeny.</li>
+        <li><strong>Scorecardy:</strong> bez zmeny (v6 podmienku Absťák ruší).</li>
+        <li><strong>Výučba:</strong> jedna veta Melichara namiesto rytmu („Celé kolo nasucho? Chytí ťa Absťák.“), výhľad v bare je jednoduchší.</li>
+      </ul>
+      <h4>Jadro, klient, bot</h4>
+      <ul>
+        <li>Koniec kola: iné porovnanie, pole <code>nerestiMinuleKolo</code> zanikne.</li>
+        <li><code>stavZavislosti</code>: len „teraz 0 → hrozí / 2+ → zbavíš sa“.</li>
+        <li>Bot: jednoduchá heuristika.</li>
+      </ul>
+      <h4>Strategickosť (odhad)</h4>
+      <p><span class="plus">mierne ↑</span>: menej šumu a žiadna špirála, ale len jedna nová páka.</p>
+    </div>
+  </div>
+</section>
+
+<section class="smer" id="smer-B">
+  <div class="stitky"><span class="stitok odpor">odporúčam</span><span class="stitok">zmerať (1.)</span></div>
+  <h3>B · Predsavzatie</h3>
+  <p class="pravidlo">Na začiatku kola môžeš sľúbiť „dnes nepijem“. Keď to dodržíš, zbavíš sa Absťáku a dostaneš odmenu. Keď sľub porušíš, dostaneš Absťák. Bez sľubu sa nič neráta.</p>
+  <div class="mriezka">
+    <div>
+      <h4>Presne</h4>
+      <ul>
+        <li>Sľub dáva hráč pri voľbe cieľa (§5), verejne. Na stole leží žetón Predsavzatie.</li>
+        <li>Dodržaný sľub (0 nerestí do konca kola): −1 Absťák a odmena. Návrh odmeny: <strong>+1 špak</strong> (v6). Alternatívne posun priazne staršieho, ktorý abstinenciu oceňuje (Farár, Starosta).</li>
+        <li>Porušený sľub (prvá nerest): Absťák hneď, rovno priznaný. Sľub tým padá a hráč smie v kole piť ďalej.</li>
+      </ul>
+      <h4>Rozhodnutie hráča</h4>
+      <ul>
+        <li>Sľub ťa obmedzí: v kole bez Vypiť, bez NA EX, bez fajčenia a barteru. Tempo a výbušnosť proti istej odmene.</li>
+        <li>Súper to vie a môže na to hrať: nečaká od teba NA EX, smie riskovať. Je to informácia, s ktorou sa hrá.</li>
+        <li>Porušiť sľub v správnej chvíli (posledná Pitka, rozhodujúce NA EX) je vedomá cena, nie nehoda.</li>
+      </ul>
+      <h4>Riziko</h4>
+      <ul>
+        <li>Nový krok na začiatku kola (o jedno kliknutie dlhšie).</li>
+        <li>Veľkosť odmeny rozhodne, či sa sľub hrá. Pri +1 špaku treba zmerať, či nie je povinný.</li>
+        <li>Absťák bude zriedkavejší. Jeho úlohy v6 (remízy, menej špakov) ostávajú, ale budú rozhodovať menej často.</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Karty, scorecardy, výučba</h4>
+      <ul>
+        <li><strong>Milujúca manželka:</strong> „Furt: každé kolo musíš sľúbiť ‚dnes nepijem‘.“ Podstrčená Manželka zviaže súperovi ruky. Je to silná kliatba s jasným dôvodom, žiadny šum.</li>
+        <li><strong>Krčmárka:</strong> „ak si dnes nepil…“ (prirodzene sa viaže na sľub). <strong>Autobusár:</strong> bez zmeny.</li>
+        <li><strong>Priazeň Abstinent</strong> (dnes Pohoršenia navyše, §10) sa priam núka viazať na sľub, napríklad „+1 Pohoršenie za kolo, v ktorom si sľub dodržal“. Ďalšie karty o pití prejde Admin.</li>
+        <li><strong>Scorecardy:</strong> bez zmeny (v6).</li>
+        <li><strong>Výučba:</strong> nový krok „Predsavzatie“. Melichar môže sľub zosmiešniť, je to dobrá satira („Od pondelka nepijem. Ako každý pondelok.“).</li>
+      </ul>
+      <h4>Jadro, klient, bot</h4>
+      <ul>
+        <li>Nový príkaz <code>predsavzatie</code> vo voľbe cieľa, stav sľubu v hráčovi (verejný), kontrola pri každej neresti.</li>
+        <li>Klient: prepínač pri voľbe cieľa, žetón pri hráčovi, varovanie pred ťahom, ktorý sľub poruší.</li>
+        <li>Bot: nové rozhodnutie (sľúbiť, keď ruka nemá NA EX a odmena prevýši stratu tempa).</li>
+      </ul>
+      <h4>Strategickosť (odhad)</h4>
+      <p><span class="plus">↑↑</span>: rozhodnutie vopred s cenou aj odmenou, verejná informácia pre súpera a vedomé porušenie ako ťah.</p>
+    </div>
+  </div>
+</section>
+
+<section class="smer" id="smer-C" hidden>
+  <div class="stitky"><span class="stitok">najviac interakcie</span></div>
+  <h3>C · Ponuka pohárika</h3>
+  <p class="pravidlo">Raz za Pitku môžeš súperovi naliať zo svojho plného poldeci. Súper buď vypije (nerest, +1 pečeň), alebo odmietne a dostane Absťák.</p>
+  <div class="mriezka">
+    <div>
+      <h4>Rozhodnutie hráča</h4>
+      <ul>
+        <li><strong>Ten, kto nalieva:</strong> obetuje plný poldeci, teda vlastný limit a rezervu, aby súpera vytlačil k Cirhóze alebo k −1 tuhému.</li>
+        <li><strong>Ten, komu nalievajú:</strong> pečeň (blízko prahu Cirhózy?) proti −1 tuhému v tejto bitke a horším špakom.</li>
+        <li>Počítanie nerestí s minulým kolom úplne zmizne. Absťák vzniká len odmietnutím.</li>
+      </ul>
+      <h4>Riziko</h4>
+      <ul>
+        <li>Pitka sa predĺži o krok a reakciu. To ide proti meraniu tempa (roadmapa #9).</li>
+        <li>Silný hráč s rezervou poldeci môže súpera „zaliať“, preto treba strop (raz za Pitku, len z plného).</li>
+        <li>Najväčší zásah do bota aj klienta (nová reakcia ako pri NA EX).</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Karty, scorecardy, výučba</h4>
+      <ul>
+        <li><strong>Milujúca manželka:</strong> „Furt: ponuku musíš odmietnuť.“ (Manželka stráži.)</li>
+        <li><strong>Krčmárka:</strong> „ak si dnes neodmietol…“. <strong>Autobusár:</strong> bez zmeny.</li>
+        <li><strong>Scorecardy:</strong> bez zmeny (v6).</li>
+        <li><strong>Výučba:</strong> nový krok v Pitke. Téma je silná, „Neodmietaj, urazíš!“ sedí na krčmu.</li>
+      </ul>
+      <h4>Jadro, klient, bot</h4>
+      <ul>
+        <li>Nový príkaz v Pitke s reakciou súpera, view aj bot ako pri NA EX.</li>
+        <li><code>nerestiTotoKolo</code> a <code>nerestiMinuleKolo</code> zaniknú (zjednodušenie).</li>
+      </ul>
+      <h4>Strategickosť (odhad)</h4>
+      <p><span class="plus">↑↑</span> v interakcii, ale <span class="minus">dlhšia Pitka</span>. Dopad na tempo treba zmerať spolu so strategickosťou.</p>
+    </div>
+  </div>
+</section>
+
+<section class="smer" id="smer-D" hidden>
+  <div class="stitky"><span class="stitok">kontrolná vzorka</span><span class="stitok">najjednoduchšie pre nováčika</span></div>
+  <h3>D · Bez Absťáku</h3>
+  <p class="pravidlo">Absťák a počítanie nerestí sa zrušia. Remízu v6 rozhodujú Dlhy, potom sekera.</p>
+  <div class="mriezka">
+    <div>
+      <h4>Rozhodnutie hráča</h4>
+      <ul>
+        <li>Žiadne nové. Pitie brzdí len pečeň (Cirhóza) a cena cigariet.</li>
+        <li>Odbudne jeden pás v bare a jeden pojem vo výučbe (playtesty: „veľa čísel a pásov naraz“).</li>
+      </ul>
+      <h4>Riziko</h4>
+      <ul>
+        <li>Michal chce Absťák prerobiť, nie zrušiť. D je tu hlavne ako meradlo: koľko strategickosti Absťák dnes vôbec pridáva.</li>
+        <li>Pitie bez druhej brzdy môže zosilnieť (NA EX, Vypiť).</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Karty, scorecardy, výučba</h4>
+      <ul>
+        <li><strong>Milujúca manželka, Autobusár</strong> potrebujú nový efekt (navrhne Admin), <strong>Krčmárka</strong> stratí podmienku Absťáku.</li>
+        <li>Achievement za Absťáky padá.</li>
+        <li><strong>Výučba:</strong> nápoveda Absťák zmizne.</li>
+      </ul>
+      <h4>Jadro, klient, bot</h4>
+      <ul>
+        <li>Odstránenie naprieč jadrom, klientom, botom a testami (stredná práca, ale len mazanie).</li>
+      </ul>
+      <h4>Strategickosť (odhad)</h4>
+      <p><span class="nula">→ alebo mierne ↓</span>: menej šumu, ale aj o páku menej.</p>
+    </div>
+  </div>
+</section>
+
+<h2>Porovnanie</h2>
+<div class="tab-obal">
+<table>
+  <thead><tr><th>Smer</th><th>Rozhodnutie hráča</th><th>Téma</th><th>Nováčik</th><th>Zásah (jadro, klient, bot)</th><th>Strategickosť</th></tr></thead>
+  <tbody>
+    <tr><td>Dnes</td><td class="minus">žiadne, len stráženie počtov</td><td class="minus">menej pitia = trest</td><td class="minus">nechápe prečo</td><td>—</td><td>—</td></tr>
+    <tr><td>A · Suché kolo</td><td>malé: 1 nerest alebo −1 tuhé</td><td class="nula">presnejšia, stále trest</td><td class="plus">jedna veta</td><td class="plus">malý</td><td class="plus">mierne ↑</td></tr>
+    <tr><td><strong>B · Predsavzatie</strong></td><td class="plus">vopred: tempo proti odmene, vedomé porušenie</td><td class="plus">abstinencia ako voľba, satira sľubu</td><td>nový krok, ale jasný</td><td>stredný</td><td class="plus">↑↑</td></tr>
+    <tr><td>C · Ponuka pohárika</td><td class="plus">obaja: naliať / vypiť / odmietnuť</td><td class="plus">„Neodmietaj, urazíš!“</td><td>nový krok v Pitke</td><td class="minus">veľký, dlhšia Pitka</td><td class="plus">↑↑ (tempo ↓)</td></tr>
+    <tr><td>D · Bez Absťáku</td><td class="nula">žiadne</td><td class="nula">—</td><td class="plus">o pojem menej</td><td>stredný (mazanie)</td><td class="nula">→ / mierne ↓</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Simulátor: tie isté kolá, rôzne pravidlá</h2>
+<p class="pozn">Nastav neresti v piatich kolách a pri B aj sľub. Tabuľka ukáže, koľko Absťákov má hráč po každom kole. Pri C sa ráta s tým, že v kolách s 0 nerestami hráč odmietol jednu ponuku (pri C rozhoduje súper, takže je to len ilustrácia).</p>
+<div class="sim">
+  <div class="preset" role="group" aria-label="Príklady">
+    <button type="button" data-preset="spirala">Špirála (1, 2, 3, 2, 1)</button>
+    <button type="button" data-preset="jano">Jano zvoľnil (2, 0, 1, 1, 0)</button>
+    <button type="button" data-preset="rovno">Rovnomerne (1, 1, 1, 1, 1)</button>
+    <button type="button" data-preset="sluby">Dva sľuby (2, 0, 0, 3, 1)</button>
+  </div>
+  <div class="tab-obal">
+  <table>
+    <thead><tr><th>Kolo</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+    <tbody>
+      <tr><td>Neresti v kole</td><td id="n0"></td><td id="n1"></td><td id="n2"></td><td id="n3"></td><td id="n4"></td></tr>
+      <tr><td>Sľub (len B)</td><td id="s0"></td><td id="s1"></td><td id="s2"></td><td id="s3"></td><td id="s4"></td></tr>
+      <tr><td>Dnes</td><td id="r-dnes-0"></td><td id="r-dnes-1"></td><td id="r-dnes-2"></td><td id="r-dnes-3"></td><td id="r-dnes-4"></td></tr>
+      <tr><td>A · Suché kolo</td><td id="r-A-0"></td><td id="r-A-1"></td><td id="r-A-2"></td><td id="r-A-3"></td><td id="r-A-4"></td></tr>
+      <tr><td>B · Predsavzatie</td><td id="r-B-0"></td><td id="r-B-1"></td><td id="r-B-2"></td><td id="r-B-3"></td><td id="r-B-4"></td></tr>
+      <tr><td>C · Ponuka</td><td id="r-C-0"></td><td id="r-C-1"></td><td id="r-C-2"></td><td id="r-C-3"></td><td id="r-C-4"></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="pozn" id="sim-komentar" aria-live="polite"></p>
+</div>
+
+<h2>Odporúčanie</h2>
+<ol>
+  <li><strong>B · Predsavzatie</strong> ako hlavný smer. Absťák vtedy vzniká z abstinencie, presne ako v živote, ale len vtedy, keď si ju hráč sám zvolil a nedodržal. Vzniká rozhodnutie vopred s cenou (tempo, NA EX) aj odmenou a súper z neho číta informáciu. Milujúca manželka dostane jasnú a silnú úlohu namiesto šumu.</li>
+  <li><strong>A · Suché kolo</strong> ako lacná záloha, ak by B v meraní vyšlo ako povinný ťah alebo ako zbytočné zdržanie. Okamžite odstraňuje špirálu a nepochopenie.</li>
+  <li><strong>C</strong> je najzábavnejší krčmovo, ale ide proti tempu. Odložila by som ho na neskôr ako kartu alebo efekt lokality („Na zdravie!“), nie ako základné pravidlo.</li>
+  <li><strong>D</strong> nenavrhujem na zavedenie, len ako kontrolu v meraní.</li>
+</ol>
+
+<h2>Čo má zmerať stratég</h2>
+<p>Až po v6 (Špaky), lebo Absťák sa tam viaže na špaky a remízy. Varianty vo worktree, bot sa ich naučí cez <code>naex-bot-trener</code>:</p>
+<div class="tab-obal">
+<table>
+  <thead><tr><th>Variant</th><th>Merať</th><th>Kedy je to úspech</th></tr></thead>
+  <tbody>
+    <tr><td>B s odmenou +1 špak (a pre porovnanie +0, len zbavenie)</td><td>podiel zručnosti (<code>strategickost.ts</code>), ako často bot sľúbi a dodrží, ako často sľub poruší vedome, Absťáky na partiu, dĺžka partie</td><td>zručnosť ↑ oproti dnešku, sľub v 20–60 % kôl (nie povinný ani mŕtvy), partia nie dlhšia o viac ako 5 %</td></tr>
+    <tr><td>A</td><td>podiel zručnosti, Absťáky na partiu, ako často Absťák rozhodne bitku</td><td>zručnosť aspoň ako dnes a Absťák rozhoduje menej náhodne</td></tr>
+    <tr><td>D (kontrola)</td><td>podiel zručnosti bez Absťáku</td><td>meradlo: rozdiel dnes − D ukáže, koľko Absťák dnes pridáva alebo uberá</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Na rozhodnutie Michalovi</h2>
+<ol>
+  <li>Ktorý smer (alebo dva) má stratég zmerať? Odporúčam B a A, D ako kontrolu.</li>
+  <li>Pri B: odmena za dodržaný sľub +1 špak, alebo posun priazne staršieho, ktorý abstinenciu oceňuje?</li>
+  <li>Pri B: má byť sľub verejný (odporúčam, informácia pre súpera), alebo tajný (blafovanie, ale ťažšie pre klienta aj nováčika)?</li>
+</ol>
+
+<p class="pozn">NA EX! · Nápadník (session pre Leadera) · vetva napady/abstak · súbor docs/napady/abstak.html · zdroje: docs/PRAVIDLA.md §8, §9.3, §14, §16; docs/napady/spaky.html; reporty playtestov uvedené vyššie. Ťažké výpočty sa nespúšťali.</p>
+</main>
+<script>
+(function () {
+  // Prepínač smerov.
+  var tlacidla = document.querySelectorAll(".prepinac button");
+  tlacidla.forEach(function (b) {
+    b.addEventListener("click", function () {
+      tlacidla.forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      ["A", "B", "C", "D"].forEach(function (s) { document.getElementById("smer-" + s).hidden = s !== b.dataset.smer; });
+    });
+  });
+
+  // Simulátor: n = neresti v kole, sl = sľub pri B.
+  var n = [1, 2, 3, 2, 1], sl = [false, false, false, false, false];
+  var PRESETY = {
+    spirala: { n: [1, 2, 3, 2, 1], sl: [false, false, false, false, false] },
+    jano: { n: [2, 0, 1, 1, 0], sl: [false, false, false, false, false] },
+    rovno: { n: [1, 1, 1, 1, 1], sl: [false, false, false, false, false] },
+    sluby: { n: [2, 0, 0, 3, 1], sl: [false, true, true, false, false] }
+  };
+
+  function dnes() {
+    var a = 0, out = [];
+    for (var i = 0; i < 5; i++) {
+      if (i > 0) {
+        if (n[i] < n[i - 1]) a++;
+        else if (n[i] > n[i - 1] && a > 0) a--;
+      }
+      out.push(a);
+    }
+    return out;
+  }
+  function suche() {
+    var a = 0, out = [];
+    for (var i = 0; i < 5; i++) {
+      if (i > 0 && n[i] === 0) a++;
+      else if (n[i] >= 2 && a > 0) a--;
+      out.push(a);
+    }
+    return out;
+  }
+  function predsavzatie() {
+    var a = 0, odmena = 0, out = [];
+    for (var i = 0; i < 5; i++) {
+      if (sl[i]) {
+        if (n[i] === 0) { if (a > 0) a--; odmena++; }
+        else a++;
+      }
+      out.push(a);
+    }
+    return { abs: out, odmena: odmena };
+  }
+  function ponuka() {
+    var a = 0, out = [];
+    for (var i = 0; i < 5; i++) { if (n[i] === 0) a++; out.push(a); }
+    return out;
+  }
+
+  function bunka(id, hodnota, predtym) {
+    var el = document.getElementById(id);
+    var trieda = hodnota > predtym ? "abs hore" : hodnota < predtym ? "abs dole" : "abs";
+    el.innerHTML = '<span class="' + trieda + '">' + hodnota + "</span>";
+  }
+
+  function vykresli() {
+    for (var i = 0; i < 5; i++) {
+      (function (i) {
+        var td = document.getElementById("n" + i);
+        td.innerHTML = "";
+        var obal = document.createElement("span"); obal.className = "krok";
+        var minus = document.createElement("button"); minus.type = "button"; minus.textContent = "−";
+        minus.setAttribute("aria-label", "Menej nerestí v kole " + (i + 1));
+        var out = document.createElement("output"); out.textContent = n[i];
+        var plus = document.createElement("button"); plus.type = "button"; plus.textContent = "+";
+        plus.setAttribute("aria-label", "Viac nerestí v kole " + (i + 1));
+        minus.onclick = function () { if (n[i] > 0) { n[i]--; prepocitaj(); vykresli(); } };
+        plus.onclick = function () { if (n[i] < 5) { n[i]++; prepocitaj(); vykresli(); } };
+        obal.append(minus, out, plus); td.append(obal);
+        var sd = document.getElementById("s" + i);
+        sd.innerHTML = "";
+        var ch = document.createElement("input"); ch.type = "checkbox"; ch.checked = sl[i];
+        ch.setAttribute("aria-label", "Sľub v kole " + (i + 1));
+        ch.onchange = function () { sl[i] = ch.checked; prepocitaj(); };
+        sd.append(ch);
+      })(i);
+    }
+    prepocitaj();
+  }
+
+  function prepocitaj() {
+    var d = dnes(), a = suche(), b = predsavzatie(), c = ponuka();
+    for (var i = 0; i < 5; i++) {
+      bunka("r-dnes-" + i, d[i], i ? d[i - 1] : 0);
+      bunka("r-A-" + i, a[i], i ? a[i - 1] : 0);
+      bunka("r-B-" + i, b.abs[i], i ? b.abs[i - 1] : 0);
+      bunka("r-C-" + i, c[i], i ? c[i - 1] : 0);
+    }
+    var spolu = n.reduce(function (s, x) { return s + x; }, 0);
+    var k = "Spolu " + spolu + " nerestí. Na konci: dnes " + d[4] + ", A " + a[4] + ", B " + b.abs[4] +
+      (b.odmena ? " (+" + b.odmena + " odmena za dodržaný sľub)" : "") + ", C " + c[4] + " Absťákov.";
+    if (d[4] > a[4] && n.some(function (x, i) { return i > 0 && x > 0 && x < n[i - 1]; }))
+      k += " Dnes trestá aj zvoľnenie, ktoré nebolo suché. A ho netrestá.";
+    document.getElementById("sim-komentar").textContent = k;
+  }
+
+  document.querySelectorAll(".preset button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var p = PRESETY[b.dataset.preset];
+      n = p.n.slice(); sl = p.sl.slice(); vykresli();
+    });
+  });
+
+  vykresli();
+})();
+</script>
+</body>
+</html>
