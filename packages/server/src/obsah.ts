@@ -29,6 +29,7 @@ import {
   doCardsJson,
   doScorecardsJson,
   neznameAkcie,
+  textyKarty,
 } from "@naex/tvorba";
 import type { Db } from "./db.ts";
 import { JsonTabulka, transakcia } from "./db.ts";
@@ -74,7 +75,8 @@ interface SeedNavrh {
 }
 
 type RawSide = { blocked: Pozicia[]; actions: Record<string, number>; allowed?: Record<string, string[]>; name?: string };
-type RawCard = { id: string; name: string; tags: string[]; effect_text: string; left: RawSide; right: RawSide };
+/** pribeh a ucel nesie len sada zverejnená po ich zavedení (2026-10-26) — staršia ich nemá. */
+type RawCard = { id: string; name: string; tags: string[]; effect_text: string; left: RawSide; right: RawSide; pribeh?: string; ucel?: string };
 
 /** Karty východiskovej sady z repozitára (packages/core/data/cards.json). */
 function nacitajCards(): RawCard[] {
@@ -161,6 +163,7 @@ export class Obsah {
             lava: stranaZJson(c.left),
             prava: stranaZJson(c.right),
             upravene: teraz,
+            ...textyKarty(c.pribeh, c.ucel),
           },
           i,
         );
@@ -344,7 +347,7 @@ export class Obsah {
     const cards = nacitajCards();
     const seed = nacitajSeedNavrhy();
     const kluc = (k: KartaNavrh): string =>
-      JSON.stringify([k.nazov, k.tagy, k.efekt, k.obrazok, k.farba, k.mierkaTextu, k.mierkaIkon, k.sirkaMm, k.vyskaMm, k.kopie, rovnaStrana(k.lava), rovnaStrana(k.prava)]);
+      JSON.stringify([k.nazov, k.tagy, k.efekt, k.obrazok, k.farba, k.mierkaTextu, k.mierkaIkon, k.sirkaMm, k.vyskaMm, k.kopie, rovnaStrana(k.lava), rovnaStrana(k.prava), k.pribeh ?? null, k.ucel ?? null]);
     let zmena = false;
     transakcia(this.db, () => {
       cards.forEach((c, i) => {
@@ -366,6 +369,8 @@ export class Obsah {
           lava: stranaZJson(c.left),
           prava: stranaZJson(c.right),
           upravene: teraz,
+          // Príbeh a účel píše admin v tvorcovi; cards.json bez nich ich nezmaže.
+          ...textyKarty(c.pribeh ?? stary?.pribeh, c.ucel ?? stary?.ucel),
         };
         if (stary !== null && kluc(stary) === kluc(novy)) return;
         zmena = true;

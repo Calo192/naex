@@ -1,9 +1,10 @@
 // Glosár kariet (/karty) — zverejnená sada v tlačovom vzhľade, s variantmi,
-// detailom karty a legendou akcií. Prístupný aj bez prihlásenia.
+// detailom karty a legendou akcií. Prístupný aj bez prihlásenia. Príbeh a účel
+// karty v hre ukazuje len detail karty tu (Michal 2026-10-26) — hra ani výučba nie.
 
 import { useEffect, useMemo, useState } from "react";
 import type { KartaNavrh, Vzhlad } from "@naex/tvorba";
-import { farbaKarty, variant, variantyKarty } from "@naex/tvorba";
+import { blokyTextu, farbaKarty, variant, variantyKarty } from "@naex/tvorba";
 import { KartaLico } from "../karta/KartaLico.tsx";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
@@ -24,6 +25,27 @@ const TYPY: readonly { readonly nazov: string; readonly tag: string | null }[] =
   { nazov: "Nástroje", tag: "Nástroj" },
   { nazov: "Kliatby", tag: "Kliatba" },
 ];
+
+/** Príbeh alebo účel karty z tvorcu: odseky a odrážky (zahrania). */
+function TextKarty({ nadpis, text, trieda }: { readonly nadpis: string; readonly text: string; readonly trieda: string }) {
+  const bloky = useMemo(() => blokyTextu(text), [text]);
+  return (
+    <section className={`glosar-text ${trieda}`}>
+      <h3>{nadpis}</h3>
+      {bloky.map((b, i) =>
+        b.typ === "odrazky" ? (
+          <ul key={i}>
+            {b.polozky.map((p, j) => (
+              <li key={j}>{p}</li>
+            ))}
+          </ul>
+        ) : (
+          <p key={i}>{b.riadky.join("\n")}</p>
+        ),
+      )}
+    </section>
+  );
+}
 
 function SipkyVariantov({ v, pocet, nastav }: { readonly v: number; readonly pocet: number; readonly nastav: (n: number) => void }) {
   if (pocet <= 1) return <span className="glosar-jediny">jediný variant</span>;
@@ -97,6 +119,9 @@ function Detail({
             </p>
           )}
           {karta.efekt !== "" && <p className="glosar-efekt">{karta.efekt}</p>}
+          {karta.pribeh !== undefined && <TextKarty nadpis="Príbeh" text={karta.pribeh} trieda="glosar-pribeh" />}
+          {karta.ucel !== undefined && <TextKarty nadpis="Účel v hre" text={karta.ucel} trieda="glosar-ucel" />}
+          {karta.pribeh === undefined && karta.ucel === undefined && <p className="tlmene glosar-bez-textov">Príbeh a účel v hre tejto karty pripravujeme.</p>}
           <h3>Akcie na karte</h3>
           {akcie.length === 0 ? (
             <p className="tlmene">Karta nemá žiadne akcie.</p>
@@ -167,7 +192,7 @@ export function Glosar() {
   const viditelne = sada.karty.filter(
     (k) =>
       (typ === null || k.tagy.includes(typ)) &&
-      (filtr === "" || k.nazov.toLocaleLowerCase("sk").includes(filtr) || k.efekt.toLocaleLowerCase("sk").includes(filtr) || k.tagy.some((t) => t.toLocaleLowerCase("sk").includes(filtr))),
+      (filtr === "" || [k.nazov, k.efekt, ...k.tagy, k.pribeh ?? "", k.ucel ?? ""].some((t) => t.toLocaleLowerCase("sk").includes(filtr))),
   );
 
   return (
@@ -177,7 +202,7 @@ export function Glosar() {
         <KartyZalozky aktivna="karty" />
         <p className="tlmene">
           {sada.karty.length} kariet hry. Prejdi myšou ponad <strong>ikonu akcie</strong>, tučný spúšťač alebo pojem v
-          kurzíve — zobrazí sa, čo robí. Klikni na kartu pre detail.
+          kurzíve — zobrazí sa, čo robí. Klikni na kartu pre detail — aj s jej príbehom a účelom v hre.
         </p>
         <div className="glosar-ovladanie">
           <div className="cipy" role="group" aria-label="Typ karty">
@@ -187,7 +212,7 @@ export function Glosar() {
               </button>
             ))}
           </div>
-          <input type="search" placeholder="Hľadať názov, tag alebo efekt…" value={hladat} onChange={(e) => setHladat(e.target.value)} />
+          <input type="search" placeholder="Hľadať názov, tag, efekt alebo príbeh…" value={hladat} onChange={(e) => setHladat(e.target.value)} />
           <label className="glosar-velkost">
             <span className="tlmene">Veľkosť</span>
             <input type="range" min={150} max={420} step={10} value={sirka} onChange={(e) => setSirka(Number(e.target.value))} />

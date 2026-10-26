@@ -8,7 +8,7 @@ Web má tri časti a prihlásenie:
 | Časť | Kto | Čo |
 |---|---|---|
 | **Pravidlá** (`/pravidla`) | ktokoľvek | pravidlá v2 po kapitolách s ilustráciami a interaktívnymi ukážkami |
-| **Karty** (`/karty`) | ktokoľvek | glosár kariet v tlačovom vzhľade, tooltipy akcií a pojmov, varianty |
+| **Karty** (`/karty`) | ktokoľvek | glosár kariet v tlačovom vzhľade, tooltipy akcií a pojmov, varianty; v detaile karty príbeh a účel v hre (texty z tvorcu, hra ani výučba ich neukazujú) |
 | **Hrať** (`/hra`) | prihlásený hráč | súkromná hra s kódom alebo verejná hra zo zoznamu, mená a avatary |
 | **Tvorba** (`/admin`) | admin, subadmin | webová verzia MAUI aplikácie KartyAI — návrhy kariet, tvorca, akcie, kľúčové slová, farby, bodovacie karty, tlač, import/export, zverejnenie sady |
 | **Hráči** (`/hraci`) | admin, subadmin | účty a úrovne (admin / subadmin / hráč / návštevník), značka AI; úrovne mení len admin |
