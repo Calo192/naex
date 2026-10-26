@@ -27,8 +27,8 @@
   align-items: center;
   justify-content: space-between;
   min-height: var(--vyvoj-pas);
-  margin: 0 -20px;
-  padding: 6px 20px;
+  /* V kostre bez presahu do strán — pás začína na hrane loga ako obsah. */
+  padding: 6px 0;
   background: color-mix(in srgb, var(--pozadie) 92%, transparent);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--okraj);

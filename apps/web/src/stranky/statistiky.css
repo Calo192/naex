@@ -546,11 +546,11 @@ td.cislo {
 
 /* ---- rebríček ------------------------------------------------------------------ */
 
+/* Zľava na hrane kostry, užší len sprava (Michal 2026-10-26). */
 .rebricek {
   display: grid;
   gap: 24px;
   max-width: 980px;
-  margin: 0 auto;
 }
 
 .rebricek .stranka-hlava {

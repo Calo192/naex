@@ -2291,12 +2291,13 @@ button.dlzka-volba.aktivna {
   pointer-events: none;
 }
 
-/* Policajtka: poradie kariet, ktoré idú navrch. */
+/* Policajtka: poradie kariet, ktoré idú navrch. Len v obale — holé .poradie vytrhlo
+   z tabuľky Rebríčka čísla poradia do rohu okna. */
 .poradie-obal {
   position: relative;
 }
 
-.poradie {
+.poradie-obal > .poradie {
   position: absolute;
   top: 6px;
   left: 6px;
