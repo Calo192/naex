@@ -46,7 +46,7 @@ export interface RiadokPartie {
 /** Štatistiky súpera, ktoré na stole verejné neboli (úspech NA EX stojí na jeho skrytej ruke). */
 const NEVEREJNE: readonly (keyof StatistikyHraca)[] = ["naexUspesne", "naexHodnotene"];
 
-export function verejneStatistiky(s: StatistikyHraca): Partial<StatistikyHraca> {
+function verejneStatistiky(s: StatistikyHraca): Partial<StatistikyHraca> {
   const out: Record<string, unknown> = { ...s };
   for (const k of NEVEREJNE) delete out[k];
   return out as Partial<StatistikyHraca>;

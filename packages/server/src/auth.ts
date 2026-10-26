@@ -20,7 +20,7 @@ import { POHLAVIA } from "@naex/core";
  */
 export type Rola = "admin" | "subadmin" | "sedmicka" | "deci" | "hrac" | "navstevnik";
 
-export const UROVNE: readonly Rola[] = ["admin", "subadmin", "sedmicka", "deci", "hrac", "navstevnik"];
+const UROVNE: readonly Rola[] = ["admin", "subadmin", "sedmicka", "deci", "hrac", "navstevnik"];
 
 /** Admin a subadmin: správa hráčov, tvorba kariet, mazanie cudzích príspevkov. */
 export function jeSpravca(rola: Rola): boolean {
@@ -67,7 +67,7 @@ export function overLupu(v: unknown): number {
 }
 
 /** Najviac toľko videných nápoved pri účte — katalóg ich má 19, strop len chráni databázu. */
-export const MAX_VIDENYCH_NAPOVED = 100;
+const MAX_VIDENYCH_NAPOVED = 100;
 
 /** Id nápovede z requestu — tvar ako v napovedy.json („pas-cigarety“). */
 export function overIdNapovedy(v: unknown): string {
@@ -119,7 +119,7 @@ export function hashHesla(heslo: string): string {
   return `scrypt$${sol.toString("base64")}$${hash.toString("base64")}`;
 }
 
-export function overHeslo(heslo: string, ulozene: string): boolean {
+function overHeslo(heslo: string, ulozene: string): boolean {
   const [druh, sol, hash] = ulozene.split("$");
   if (druh !== "scrypt" || sol === undefined || hash === undefined) return false;
   const ocakavany = Buffer.from(hash, "base64");

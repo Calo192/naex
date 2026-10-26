@@ -28,7 +28,7 @@ export function novaFrajerina(f: readonly [number, number], vitaz: 0 | 1 | null)
 }
 
 /** Hodnosti podľa Frajeriny — obdoba šachových titulov. */
-export const TITULY: readonly { readonly od: number; readonly nazov: string }[] = [
+const TITULY: readonly { readonly od: number; readonly nazov: string }[] = [
   { od: 0, nazov: "Abstinent" },
   { od: 950, nazov: "Zelenáč" },
   { od: 1100, nazov: "Návštevník" },

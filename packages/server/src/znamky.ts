@@ -20,7 +20,7 @@ export interface Kriterium {
   readonly otazka: string;
 }
 
-export const KRITERIA: readonly Kriterium[] = [
+const KRITERIA: readonly Kriterium[] = [
   { kluc: "zabava", nazov: "Zábava", otazka: "Bavil som sa? Chcel by som hrať znova hneď teraz?" },
   { kluc: "rozhodnutia", nazov: "Zmysluplné rozhodnutia", otazka: "Mali moje voľby skutočné dôsledky? Bolo viac rozumných možností, alebo len jedna zjavná?" },
   { kluc: "rovnovaha", nazov: "Rovnováha a férovosť", otazka: "Mali obaja hráči rovnakú šancu? Nie je niektorá stratégia, karta alebo pozícia zjavne silnejšia?" },
@@ -79,7 +79,7 @@ export interface Vyvoj {
 const denFormat = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Bratislava" });
 export const denZ = (cas: number): string => denFormat.format(cas);
 
-export function overZnamky(v: unknown): Znamky {
+function overZnamky(v: unknown): Znamky {
   if (typeof v !== "object" || v === null || Array.isArray(v)) throw new ChybaVstupu("Známky: očakávam objekt {kritérium: 1–10}.");
   const out: Record<string, number> = {};
   for (const [k, z] of Object.entries(v)) {

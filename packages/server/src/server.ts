@@ -121,7 +121,7 @@ const BOT_ID = 0;
 const OPUSTENA_PO_MS = 30 * 60_000;
 
 /** Ako dlho musí byť súper odpojený, kým si hráč môže vyžiadať kontumačnú výhru. */
-export const KONTUMACIA_PO_MS = 3 * 60 * 1000;
+const KONTUMACIA_PO_MS = 3 * 60 * 1000;
 
 interface Room {
   readonly code: string;

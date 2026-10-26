@@ -28,7 +28,7 @@ export interface Hlaska extends Skladba {
 
 export const SKUPINY = "skupiny.json";
 /** Súbor so stránkou skupiny v jej priečinku pri importe. */
-export const SKUPINA = "skupina.json";
+const SKUPINA = "skupina.json";
 
 /**
  * Skupina hlášok (Michal 2026-10-23): priečinok pri importe, jeho skupina.json
@@ -50,10 +50,10 @@ export interface SkupinaHlasok {
 }
 
 /** Id skupiny = názov priečinka: malé písmená bez diakritiky, číslice a pomlčka. */
-export const SKUPINA_RE = /^[a-z0-9][a-z0-9-]{0,31}$/;
+const SKUPINA_RE = /^[a-z0-9][a-z0-9-]{0,31}$/;
 const KLAVES_RE = /^[1-9]$/;
 
-export function idSkupiny(priecinok: string): string {
+function idSkupiny(priecinok: string): string {
   return priecinok
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")
@@ -209,7 +209,7 @@ export function trvanieMp3(subor: Buffer): number | null {
   return ramcov === 0 ? null : Math.round(ms);
 }
 
-export const TYP_ZVUKU: Readonly<Record<string, string>> = {
+const TYP_ZVUKU: Readonly<Record<string, string>> = {
   mp3: "audio/mpeg",
   m4a: "audio/mp4",
   ogg: "audio/ogg",

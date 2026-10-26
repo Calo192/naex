@@ -12,7 +12,7 @@ import type { Pouzivatel } from "./auth.ts";
 import { ChybaVstupu, jeSpravca } from "./auth.ts";
 import type { Prava } from "./prava.ts";
 
-export const STAVY_DIELNE = ["koncept", "hlasovanie", "vratene", "zamietnute", "v_tvorcovi"] as const;
+const STAVY_DIELNE = ["koncept", "hlasovanie", "vratene", "zamietnute", "v_tvorcovi"] as const;
 export type StavDielne = (typeof STAVY_DIELNE)[number];
 /** Stav, ako ho vidí hráč: „v hre“ a „archív“ sa odvodzujú pri čítaní. */
 export type StavZobrazeny = StavDielne | "v_hre" | "archiv";
@@ -22,7 +22,7 @@ export type Rozhodnutie = "schvalit" | "vratit" | "zamietnut";
 /** Otvorené návrhy (koncept, hlasovanie, vrátené) — najviac 3 na hráča. */
 export const MAX_OTVORENYCH = 3;
 /** Návrh bez jedinej ľudskej cigarety ide po 60 dňoch do archívu. */
-export const ARCHIV_PO_MS = 60 * 24 * 60 * 60 * 1000;
+const ARCHIV_PO_MS = 60 * 24 * 60 * 60 * 1000;
 /** Značka „krabička“ — len vizuálny prah, nie podmienka posudku. */
 export const KRABICKA = 20;
 const POZICIE = [0, 1, 2, 3] as const;
@@ -166,7 +166,7 @@ const prazdnyObsah = (): ObsahNavrhu => ({
 });
 
 /** Id karty v tvorcovi z názvu: malé písmená bez diakritiky, podčiarkovníky. */
-export function idZNazvu(nazov: string, obsadene: (id: string) => boolean): string {
+function idZNazvu(nazov: string, obsadene: (id: string) => boolean): string {
   const zaklad =
     nazov
       .normalize("NFD")
