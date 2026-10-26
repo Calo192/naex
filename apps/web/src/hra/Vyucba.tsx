@@ -115,7 +115,8 @@ export function prvkyKluca(kluc: string): HTMLElement[] {
     ...document.querySelectorAll<HTMLElement>(
       `[data-vyucba="${css(zona)}"] [data-vyucba-karta="${css(id)}"], [data-vyucba="${css(zona)}"] [data-vyucba-prvok="${css(id)}"]`,
     ),
-  ];
+    // Tieň karty, ktorú vzal Melichar, v šenku už nie je — „senok:hasic“ ho nesmie rozsvietiť.
+  ].filter((el) => el.closest(".senok-tien") === null);
 }
 
 /**

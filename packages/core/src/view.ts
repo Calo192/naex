@@ -87,6 +87,18 @@ export interface DraftVerejne {
   readonly naTahu: PlayerId;
   readonly hotovo: readonly [boolean, boolean];
   readonly noveKarty: readonly [number, number];
+  /**
+   * Karty vzaté zo šenku v tomto drafte (#111) — branie je verejné, karta ležala
+   * lícom hore. Bez uid: karta je už v ruke, stačí, čo na nej bolo vidieť.
+   */
+  readonly zobrate: readonly ZobrataVerejne[];
+}
+
+/** Karta vzatá zo šenku — kto ju vzal a na ktorom mieste šenku ležala (ZobrataZoSenku v engine.ts). */
+export interface ZobrataVerejne {
+  readonly karta: Pick<CardInstance, "defId" | "leftLayout" | "rightLayout">;
+  readonly hrac: PlayerId;
+  readonly miesto: number;
 }
 
 /** Patronát hráča v kole — verejné je, koho si vzal a koľko Pohoršení dostane súper. */
@@ -296,6 +308,11 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
             naTahu: d.naTahu,
             hotovo: d.hotovo,
             noveKarty: d.noveKarty,
+            zobrate: (d.zobrate ?? []).map((z) => ({
+              karta: { defId: z.karta.defId, leftLayout: z.karta.leftLayout, rightLayout: z.karta.rightLayout },
+              hrac: z.hrac,
+              miesto: z.miesto,
+            })),
           },
     zhromazdenieStav: state.zhromazdenieStav,
     // NA EX naraz (v5): súperove skryté NA EX sa neposielajú — ani že nejaké dal.

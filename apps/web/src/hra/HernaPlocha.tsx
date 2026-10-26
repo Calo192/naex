@@ -43,6 +43,7 @@ import type {
   PlayerId,
   PocitadloBitky as Pocitadlo,
   VerejnyStav,
+  ZobrataVerejne,
 } from "@naex/core";
 import {
   KONSTANTY,
@@ -114,7 +115,10 @@ import {
 import type { ActionSums, DopadyNahladu, GameState, KliatbyNahladu, MarkerPos, NahladVylozenia, PolozkaVykladania, Podmienka, Rod, Slot, StranaLinie } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
-import { LiniaStarsich, LupaStarsieho, type StarsiVLinii, type VolbaPosunu } from "./LiniaStarsich.tsx";
+import { LiniaStarsich, LupaStarsieho, ucinokPriazne, type StarsiVLinii, type VolbaPosunu } from "./LiniaStarsich.tsx";
+import { PonukaPatronatu, type MoznostPatronatu } from "./PonukaPatronatu.tsx";
+import { LetiacaKarta, type Obdlznik, type Prelet } from "./LetiacaKarta.tsx";
+import { radSenku } from "./tieneSenku.ts";
 import { PocitadloBitky } from "./PocitadloBitky.tsx";
 import { mediaUrl } from "../lib/api.ts";
 import { useStrazOdchodu } from "../lib/odchod.ts";
@@ -256,6 +260,8 @@ const MIESTO_VOLBY = 0.42;
 const SIRKA_VO_VRSTVE = 150;
 /** Výška / šírka karty (54 × 80 mm) — výška línie určuje veľkosť kariet (Stôl bez scrollovania, #67). */
 const POMER_KARTY = 80 / 54;
+/** Náhradné uid tieňov vzatých kariet šenku (UID_TIENA − miesto) — mimo uid kariet aj Záverečnej. */
+const UID_TIENA = -800000;
 /** Čo línia zaberá okrem kariet: okraj, popisy strán, rezerva posuvníka. */
 const PRIDAVOK_LINIE = 74;
 /** To isté na nízkom okne (NOTEBOOK): jeden tenký riadok nadpisov, menšie okraje (hra.css). */
@@ -1957,6 +1963,8 @@ export function HernaPlocha({
       readonly stitok?: ReactNode;
       /** Bez lupy — na karte ležia tlačidlá (voľba zóny v šenku), lupa by ich zakryla. */
       readonly bezLupy?: boolean;
+      /** Tieň karty, ktorú vzal súper zo šenku — miesto v rade (odtiaľ odletí animácia). */
+      readonly tien?: number;
     } = {},
   ): ReactNode => {
     const uid = props.karta.uid;
@@ -1971,6 +1979,7 @@ export function HernaPlocha({
         key={moznosti.kluc ?? uid}
         className={triedy.filter((x) => x !== "").join(" ")}
         title={moznosti.titul}
+        data-tien={moznosti.tien}
         // Karta s akciou je fokusovateľná sama; ostatné dostanú tabIndex kvôli klávesnici.
         {...nadLupou(kluc, (el) => el.querySelector(".kl"), !maAkciu)}
         onContextMenu={pravyKlik(moznosti.odstran)}
@@ -3948,9 +3957,43 @@ export function HernaPlocha({
       }
     : undefined;
   const idLinieStarsich = useId();
+  // Ponuka patronátu (#110): kým si hráč staršieho nevybral, stôl ukáže namiesto línie
+  // starších len tých, ktorých si smie vziať — kartu s akciami, priazeň a cenu.
+  const vyberPatronatu = krokMoj && krokStarsich?.typ === "patronat" && mode.typ !== "patronat" && mozniPatronati.length > 0;
+  // „všetci starší“ prepne na líniu (markery, súboje) bez bodového režimu barov; nový krok začne ponukou.
+  const [liniaPriPatronate, setLiniaPriPatronate] = useState(false);
+  useEffect(() => setLiniaPriPatronate(false), [klucKroku]);
+  const ponukaPatronatu: MoznostPatronatu[] | null =
+    vyberPatronatu && pohladStarsich === null && !liniaPriPatronate
+      ? mozniPatronati.map((e) => {
+          const vyber = (): void => setMode({ typ: "patronat", elderId: e.elderId, uid: null });
+          const cena = cenaPatronatu(e);
+          const ucinok = ucinokPriazne(data, e);
+          return {
+            elderId: e.elderId,
+            meno: menoKarty(e.karta.defId),
+            karta: (sirka: number) => sLupou({ karta: e.karta, sirka, onClick: vyber }),
+            priazen: { sila: priazenSila(e), nazov: scorecardStarsieho(data, e).nazov, kratko: ucinok.kratko, cely: ucinok.cely },
+            cigarety: cena.cigarety,
+            pohorsenia: cena.pohorsenia,
+            vyber,
+          };
+        })
+      : null;
   const tlacidloLinieStarsich: ReactNode =
     krokStarsich !== null ? (
-      krokMoj ? null : (
+      vyberPatronatu ? (
+        <button
+          type="button"
+          className="ls-tlacidlo"
+          onClick={() => {
+            setLiniaPriPatronate(false);
+            setPohladStarsich(null);
+          }}
+        >
+          ← ponuka patronátu
+        </button>
+      ) : krokMoj ? null : (
         <button type="button" className="ls-tlacidlo" onClick={() => setNahliadnutie(true)} title="Krok nezruší — vráti sa klikom alebo Esc">
           pozrieť stôl
         </button>
@@ -4158,11 +4201,59 @@ export function HernaPlocha({
       </button>
     );
 
+  // ---- tieň karty, ktorú vzal súper zo šenku (#111, Michal 2026-10-26) -----
+  // Na mieste karty ostane do konca draftu stlmená karta so súperovým menom — hráč vidí,
+  // čo mu súper zobral. Vlastné vzaté karty tieň nenechajú, tie má hráč v ruke.
+  const zobrateZoSenku = view.faza === "draft" ? (draft?.zobrate ?? []) : [];
+  const tieneSenku = zobrateZoSenku.filter((z) => z.hrac === super_);
+  const tienSenku = (z: ZobrataVerejne, sirka: number): ReactNode => {
+    const uid = UID_TIENA - z.miesto;
+    const kto = `${tvar(rodHracaP(super_), "vzal", "vzala", "má")} ${menoHraca(super_)}`;
+    return sLupou(
+      { karta: { uid, ...z.karta }, sirka },
+      {
+        kluc: uid,
+        trieda: "senok-tien",
+        titul: `${menoKarty(z.karta.defId)} — zo šenku si ju ${tvar(rodHracaP(super_), "vzal", "vzala", "vzal(a)")} ${menoHraca(super_)}`,
+        stitok: <span className="senok-tien-stitok">{kto}</span>,
+        tien: z.miesto,
+      },
+    );
+  };
+  /** Karty šenku v rade aj s tieňmi — každá na mieste, kde ležala pred braním. */
+  const radSenkuSTienmi = (karty: readonly CardInstance[], kresli: (k: CardInstance) => ReactNode, sirka: number): ReactNode[] =>
+    radSenku(view.senok, karty, zobrateZoSenku, super_).map((x) => (x.typ === "karta" ? kresli(x.karta) : tienSenku(x.zobrata, sirka)));
+  // Prelet karty, ktorú súper práve vzal: z miesta jej tieňa k jeho doske (aj bot, aj Melichar vo výučbe).
+  const [prelety, setPrelety] = useState<readonly (Prelet & { readonly karta: ZobrataVerejne["karta"] })[]>([]);
+  const zobratePred = useRef<{ readonly kolo: number; readonly pocet: number } | null>(null);
+  useLayoutEffect(() => {
+    const pred = zobratePred.current;
+    zobratePred.current = { kolo: view.kolo, pocet: zobrateZoSenku.length };
+    // Po načítaní partie (aj po odpojení) sa nič neprehráva — len branie, ktoré hráč práve videl.
+    if (pred === null || pred.kolo !== view.kolo || zobrateZoSenku.length <= pred.pocet) return;
+    const nove = zobrateZoSenku.slice(pred.pocet).filter((z) => z.hrac === super_);
+    if (nove.length === 0 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const obdlznik = (el: Element | null): Obdlznik | null => {
+      const r = el?.getBoundingClientRect();
+      return r === undefined || r.width === 0 ? null : { left: r.left, top: r.top, width: r.width, height: r.height };
+    };
+    const na = obdlznik(document.querySelector(".doska.superova .zdroj-karty")) ?? obdlznik(document.querySelector(".doska.superova"));
+    // Keď súperovo branie draft ukončilo, šenok na stole už nie je — karta vyletí spod tlačidla Šenok.
+    const tlacidlo = obdlznik(document.querySelector('[data-vyucba="hlavicka:senok"]'));
+    const nahradny = tlacidlo === null ? null : { left: tlacidlo.left, top: tlacidlo.top + tlacidlo.height, width: 96, height: Math.round(96 * POMER_KARTY) };
+    if (na === null) return;
+    const pridaj = nove.flatMap((z) => {
+      const odkial = obdlznik(document.querySelector(`.senok-tien[data-tien="${z.miesto}"] .kl`)) ?? nahradny;
+      return odkial === null ? [] : [{ kluc: `${view.kolo}-${z.miesto}`, z: odkial, na, karta: z.karta }];
+    });
+    if (pridaj.length > 0) setPrelety((x) => [...x, ...pridaj]);
+  });
+
   // ---- draft na stole (Michal 2026-10-16) ----------------------------------
   // Na stole (#67) sa Smetisko a balíček zmestia do jedného radu: 12 miest na šírku;
   // na výšku karty vyplnia vrstvu stola bez réžie panelu (malý notebook, Michal 2026-10-23).
   const radZatial = stavim && view.senok.length > 0 ? 0.7 : 0;
-  const miestDraftu = stavim ? 12 : Math.max(6, view.faza === "draft" ? view.senok.length : view.lokalityVHre.length);
+  const miestDraftu = stavim ? 12 : Math.max(6, view.faza === "draft" ? view.senok.length + tieneSenku.length : view.lokalityVHre.length);
   const sirkaDraftu = mobil
     ? 84
     : Math.max(
@@ -4358,15 +4449,17 @@ export function HernaPlocha({
           </header>
         )}
         <div className="harmonika draft-karty branie-karty" data-vyucba="senok">
-          {view.senok.length === 0 && <span className="popis">Šenok je prázdny.</span>}
-          {view.senok
-            .filter((k) => !zoSenku.some((x) => x.uid === k.uid))
-            .map((k) => {
+          {view.senok.length === 0 && tieneSenku.length === 0 && <span className="popis">Šenok je prázdny.</span>}
+          {radSenkuSTienmi(
+            view.senok.filter((k) => !zoSenku.some((x) => x.uid === k.uid)),
+            (k) => {
               const z: Zdroj = { karta: k, odkial: "senok", navrh: false };
               // Klik vezme kartu do ruky ako návrh (bez ťahania, UX N4) — „hotovo“ ju potvrdí.
               const props = { karta: k, sirka: sirkaDraftu, ...(mozemBrat ? { onClick: () => prepniZoSenku(k.uid) } : {}) };
               return mozemBrat ? sLupou(props, { obsah: tahatelna(z, karta(props)), zdroj: z }) : sLupou(props);
-            })}
+            },
+            sirkaDraftu,
+          )}
         </div>
         {/* Na mobile pätička pod kartami; na stole je potvrdenie pečiatkou na hrane (pokyn.stred). */}
         {mobil && (
@@ -4702,11 +4795,14 @@ export function HernaPlocha({
   const hranaVlavo = stolTlacidla?.vlavo ?? pokyn?.vlavo ?? null;
   const hranaStred = stolTlacidla?.stred ?? pokyn?.stred ?? null;
   const vpravoTahu = stolTlacidla?.vpravo ?? null;
+  // Pri výbere patróna ležia starší na stole s kartou (ponuka) alebo v línii na klik — tlačidlá
+  // s menami by ich len opakovali a pri štyroch by pretiekli cez dosku hráča.
+  const tlacidlaPokynu = vyberPatronatu ? undefined : pokyn?.tlacidla;
   const hranaVpravo =
-    vpravoTahu === null && pokyn?.tlacidla === undefined && pokyn?.vpravo === undefined ? null : (
+    vpravoTahu === null && tlacidlaPokynu === undefined && pokyn?.vpravo === undefined ? null : (
       <>
         {vpravoTahu}
-        {pokyn?.tlacidla}
+        {tlacidlaPokynu}
         {pokyn?.vpravo}
       </>
     );
@@ -4963,6 +5059,11 @@ export function HernaPlocha({
               </div>
             )}
             {toastPriazneEl}
+            {prelety.map((x) => (
+              <LetiacaKarta key={x.kluc} prelet={x} koniec={() => setPrelety((p) => p.filter((y) => y.kluc !== x.kluc))}>
+                {karta({ karta: { uid: UID_TIENA - 500, ...x.karta }, sirka: Math.round(x.z.width) })}
+              </LetiacaKarta>
+            ))}
             <div className={`stol-plst${liniaSkryta ? " linia-skryta" : ""}${starsiViditelni && krokStarsich !== null ? " krok-starsich" : ""}`} ref={plstRef}>
             {/* Línia kariet ostáva v DOM a drží výšku stola — línia starších leží nad ňou (#68). */}
             <div className="linia harmonika-skupiny" ref={liniaRef} inert={liniaSkryta} aria-hidden={liniaSkryta || undefined} data-vyucba="linia">
@@ -5004,7 +5105,10 @@ export function HernaPlocha({
               </div>
             )}
             <div className="vrstva-starsich" id={idLinieStarsich} hidden={!starsiViditelni} data-vyucba="linia-starsich">
-              {starsiViditelni && (
+              {starsiViditelni && ponukaPatronatu !== null && (
+                <PonukaPatronatu moznosti={ponukaPatronatu} menoSupera={menoHraca(super_)} vsetci={() => setLiniaPriPatronate(true)} />
+              )}
+              {starsiViditelni && ponukaPatronatu === null && (
                 <LiniaStarsich
                   starsi={starsiVLinii}
                   data={data}
@@ -5092,8 +5196,8 @@ export function HernaPlocha({
           }
         >
           <div className="vrstva-karty harmonika">
-            {view.senok.length === 0 && <span className="popis">Šenok je prázdny.</span>}
-            {view.senok.map((k) => {
+            {view.senok.length === 0 && tieneSenku.length === 0 && <span className="popis">Šenok je prázdny.</span>}
+            {radSenkuSTienmi(view.senok, (k) => {
               const z: Zdroj = { karta: k, odkial: "senok", navrh: false };
               const vybrana = zoSenku.some((x) => x.uid === k.uid);
               const props = {
@@ -5112,7 +5216,7 @@ export function HernaPlocha({
                 zdroj: z,
                 odstran: vybrana ? () => prepniZoSenku(k.uid) : undefined,
               });
-            })}
+            }, SIRKA_VO_VRSTVE)}
           </div>
         </VrstvaPanel>
       )}
