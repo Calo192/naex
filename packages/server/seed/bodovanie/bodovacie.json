@@ -1,5 +1,5 @@
 {
- "_comment": "Scorecardy pre prvé spustenie — rozloženie pravidiel v5 (= packages/core/data/scorecards.json, Admin 2026-10-25). Ikony sú pomenované podľa podmienky.",
+ "_comment": "Scorecardy pre prvé spustenie — pravidlá v6 (= packages/core/data/scorecards.json, Michal 2026-10-26): bodovacia karta nesie len priazeň, podmienky sa rušia. Ikony ostávajú v tvorcovi, pomenované podľa podmienky.",
  "nazvyIkon": {
   "znepokojenie": "Znepokojenie",
   "strach": "Strach",
@@ -20,16 +20,16 @@
    "vyskaMm": 80,
    "mierkaIkon": 1.249,
    "lava": [
-    "strach",
-    "abstak",
-    "dlh",
-    "starsi"
+    null,
+    null,
+    null,
+    null
    ],
    "prava": [
-    "dlh",
-    "lokality",
-    "cigarety",
-    "rezerva"
+    null,
+    null,
+    null,
+    null
    ],
    "pozadie": "kmotor.jpg"
   },
@@ -40,16 +40,16 @@
    "vyskaMm": 80,
    "mierkaIkon": 1.249,
    "lava": [
-    "cirhoza",
-    "starsi",
-    "cirhoza",
-    "lokality"
+    null,
+    null,
+    null,
+    null
    ],
    "prava": [
-    "abstak",
-    "znepokojenie",
-    "dlh",
-    "abstak"
+    null,
+    null,
+    null,
+    null
    ],
    "pozadie": "veriaci.jpg"
   },
@@ -60,16 +60,16 @@
    "vyskaMm": 80,
    "mierkaIkon": 1.249,
    "lava": [
-    "strach",
-    "cigarety",
-    "starsi",
-    "abstak"
+    null,
+    null,
+    null,
+    null
    ],
    "prava": [
-    "lokality",
-    "abstak",
-    "cirhoza",
-    "rezerva"
+    null,
+    null,
+    null,
+    null
    ],
    "pozadie": "alkoholik.jpg"
   },
@@ -80,16 +80,16 @@
    "vyskaMm": 80,
    "mierkaIkon": 1.249,
    "lava": [
-    "strach",
-    "lokality",
-    "vydesenie",
-    "starsi"
+    null,
+    null,
+    null,
+    null
    ],
    "prava": [
-    "cigarety",
-    "dlh",
-    "abstak",
-    "lokality"
+    null,
+    null,
+    null,
+    null
    ],
    "pozadie": "bitkar.jpg"
   },
@@ -100,16 +100,16 @@
    "vyskaMm": 80,
    "mierkaIkon": 1.249,
    "lava": [
-    "znepokojenie",
-    "abstak",
-    "lokality",
-    "cigarety"
+    null,
+    null,
+    null,
+    null
    ],
    "prava": [
-    "dlh",
-    "cigarety",
-    "strach",
-    "rezerva"
+    null,
+    null,
+    null,
+    null
    ],
    "pozadie": "fajciar.jpg"
   },
@@ -120,16 +120,16 @@
    "vyskaMm": 80,
    "mierkaIkon": 1.249,
    "lava": [
-    "cigarety",
-    "cirhoza",
-    "rezerva",
-    "starsi"
+    null,
+    null,
+    null,
+    null
    ],
    "prava": [
-    "rezerva",
-    "dlh",
-    "cigarety",
-    "lokality"
+    null,
+    null,
+    null,
+    null
    ],
    "pozadie": "abstinent.jpg"
   },
@@ -140,16 +140,16 @@
    "vyskaMm": 80,
    "mierkaIkon": 1.249,
    "lava": [
-    "cirhoza",
-    "strach",
-    "dlh",
-    "starsi"
+    null,
+    null,
+    null,
+    null
    ],
    "prava": [
-    "abstak",
-    "rezerva",
-    "cigarety",
-    "znepokojenie"
+    null,
+    null,
+    null,
+    null
    ],
    "pozadie": "vypalnik.jpg"
   },
@@ -160,16 +160,16 @@
    "vyskaMm": 80,
    "mierkaIkon": 1.249,
    "lava": [
-    "dlh",
-    "rezerva",
-    "cigarety",
-    "starsi"
+    null,
+    null,
+    null,
+    null
    ],
    "prava": [
-    "cirhoza",
-    "starsi",
-    "lokality",
-    "vydesenie"
+    null,
+    null,
+    null,
+    null
    ],
    "pozadie": "exekutor.jpg"
   }

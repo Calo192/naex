@@ -19,7 +19,7 @@ import type { PlayerId } from "./types.ts";
 import { ALL_ACTIONS, ALL_PODMIENKY, opponentOf } from "./types.ts";
 import type { GameData } from "./data.ts";
 import type { Command, Event, GameState } from "./engine.ts";
-import { prahVydesenia } from "./engine.ts";
+import { bitkyNaSekere, prahVydesenia } from "./engine.ts";
 import type { DvojicaStatistik, StatistikyHraca } from "./statistiky.ts";
 import { noveStatistiky, prazdneStatistiky, uzavriStatistiky, zapisTah } from "./statistiky.ts";
 import type { StavKroniky } from "./kronika.ts";
@@ -209,8 +209,8 @@ const VLASTNE: Readonly<Record<string, Metrika>> = {
   },
   sekeraZobrata: {
     druh: "max",
-    popis: "koľko lokalít zo sekery hráč vzal jednou vyhratou bitkou",
-    zmer: (k) => pre((p) => ak(bitky(k).some((e) => e.vitaz === p) && k.pred.naSekeru.length > 0, k.pred.naSekeru.length)),
+    popis: "z koľkých bitiek na sekere hráč vzal špaky jednou vyhratou bitkou",
+    zmer: (k) => pre((p) => ak(bitky(k).some((e) => e.vitaz === p) && bitkyNaSekere(k.pred.nastenka) > 0, bitkyNaSekere(k.pred.nastenka))),
   },
   obeHranyLokality: {
     druh: "sucet",
@@ -221,7 +221,7 @@ const VLASTNE: Readonly<Record<string, Metrika>> = {
       return pre((p) => ak(prevaha[0] === p && prevaha[1] === p));
     },
   },
-  remizaBitky: { druh: "sucet", popis: "bitka skončená remízou (lokalita na sekeru), obom", zmer: (k) => pre(() => ak(bitky(k).some((e) => e.vitaz === null))) },
+  remizaBitky: { druh: "sucet", popis: "bitka skončená sekerou (špaky kola čakajú na víťaza ďalšej), obom", zmer: (k) => pre(() => ak(bitky(k).some((e) => e.vitaz === null))) },
   vyhraNasucho: {
     druh: "sucet",
     popis: "vyhratá bitka, keď hráč pri vyhodnotení nemal plný poldeci",

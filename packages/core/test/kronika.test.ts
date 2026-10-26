@@ -75,8 +75,9 @@ describe("kronika partie", () => {
       const posledne = k.kola.at(-1);
       expect(posledne?.bodyPo).not.toBeNull();
       if (s.koniec?.body != null) expect(posledne?.bodyPo).toEqual([s.koniec.body[0], s.koniec.body[1]]);
-      // Lokalita a útočník sú zapísané pri každom kole s bitkou.
-      for (const x of sBitkou) expect(x.lokalita).not.toBeNull();
+      // Lokalita a útočník sú zapísané pri každom kole s bitkou — finále (v6) lokalitu nemá.
+      for (const x of sBitkou) if (x !== k.kola.at(-1) || s.koniec?.body == null) expect(x.lokalita).not.toBeNull();
+      if (s.koniec?.body != null) expect(k.kola.at(-1)?.lokalita).toBeNull();
     }, 30_000);
   }
 });

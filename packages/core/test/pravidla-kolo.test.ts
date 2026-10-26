@@ -29,6 +29,7 @@ import {
 } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
 import { EMPTY, instanceFor, makeDef, syntheticData, naexOdkryte } from "./helpers.ts";
+import { setupSBalickom } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -65,7 +66,7 @@ function pitkaStav(naTahuHrac: PlayerId): PitkaStav {
 
 /** Stav v Pitke (útočník 0, obranca 1 je na ťahu). */
 function vPitke(sada: GameData, seed: number, strany: GameState["strany"], uprav: Partial<GameState> = {}): GameState {
-  const s0 = setupGame(sada, seed);
+  const s0 = setupSBalickom(sada, seed);
   return { ...s0, faza: "pitka", utocnik: 0, strany, pitkyCelkom: 1, pitkaCislo: 1, pitkaStav: pitkaStav(1), ...uprav };
 }
 
@@ -92,7 +93,7 @@ function vysledokPitky(events: readonly Event[]): Extract<Event, { type: "pitkaV
 describe("§4 Priebeh kola — kto volí cieľ a kto útočí", () => {
   it("§5: cieľ kola vyberá a natáča obranca, útočník nie", () => {
     for (const seed of [1, 2, 3, 4]) {
-      const s = setupGame(data, seed);
+      const s = setupSBalickom(data, seed);
       const o = opponentOf(s.utocnik);
       expect(naTahu(s)).toBe(o);
       expect(legalCommands(data, s, s.utocnik)).toEqual([]);
@@ -106,7 +107,7 @@ describe("§4 Priebeh kola — kto volí cieľ a kto útočí", () => {
 
   it("§4: útočník prvého kola je náhodný — zo semienka raz jeden, raz druhý hráč", () => {
     const utocnici = new Set<PlayerId>();
-    for (let seed = 1; seed <= 30; seed++) utocnici.add(setupGame(data, seed).utocnik);
+    for (let seed = 1; seed <= 30; seed++) utocnici.add(setupSBalickom(data, seed).utocnik);
     expect([...utocnici].sort()).toEqual([0, 1]);
   });
 });
@@ -115,7 +116,7 @@ describe("§4 Priebeh kola — kto volí cieľ a kto útočí", () => {
 
 describe("§7 Pitka — obranca začína, útočník má posledné slovo (Michal 2026-10-21)", () => {
   it("§7 (v5 NA EX naraz): obranca začína; NA EX oboch sa odkryjú, až keď obaja skončia; odpovedá najprv obranca, posledné slovo má útočník", () => {
-    const s0 = setupGame(data, 5);
+    const s0 = setupSBalickom(data, 5);
     const pijan0 = inst("pijan");
     const pijan1 = inst("pijan");
     let s: GameState = {
@@ -175,7 +176,7 @@ describe("§7 Pitka — obranca začína, útočník má posledné slovo (Michal
 
 describe("§13 Vypiť, §11 priznanie a §12 Dedičstvo v ťahu", () => {
   function vZhromazdeni(ruka: CardInstance[], h: Partial<PlayerState> = {}): GameState {
-    const s0 = setupGame(data, 8);
+    const s0 = setupSBalickom(data, 8);
     return sHracom(
       {
         ...s0,
@@ -302,11 +303,11 @@ describe("§7 Pitka — poradie vyhodnotenia", () => {
   });
 
   it("§10 Fajčiar (v5): v Pitke cigarety navyše nedáva — dáva ich po šenku", () => {
-    const s0 = setupGame(data, 11);
+    const s0 = setupSBalickom(data, 11);
     const idx = s0.starsi.findIndex((e) => favourStarsieho(data, e) === "FAJCIAR");
     expect(idx).toBeGreaterThanOrEqual(0);
     // Marker na indexe 1 = oranžová zóna na polovici hráča 0 → sila 2.
-    const starsi = s0.starsi.map((e, i) => (i === idx ? { ...e, marker: 1 as const, markerZaciatokKola: 1 as const } : e));
+    const starsi = s0.starsi.map((e, i) => (i === idx ? { ...e, marker: 1 as const} : e));
     const zaklad: Partial<GameState> = { starsi, ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! }, lokalityVHre: s0.lokalityVHre.slice(1) };
     const prva = vysledokPitky(dopiPitku(data, vPitke(data, 11, [[], []], zaklad)).events);
     expect(prva.cigarety).toEqual([0, 0]);
@@ -347,10 +348,10 @@ describe("§7 Pitka — poradie vyhodnotenia", () => {
 
 describe("§10 Patronát — obmedzenia", () => {
   function vPatronate(): { s: GameState; u: PlayerId; obcan: CardInstance } {
-    const s0 = setupGame(data, 31);
+    const s0 = setupSBalickom(data, 31);
     const u = s0.utocnik;
     const obcan = inst("pijan");
-    const marker = (u === 0 ? 1 : 7) as 1 | 7;
+    const marker = (u === 0 ? 1 : 5) as 1 | 5;
     const doplnok = [inst("pijan"), inst("pijan"), inst("pijan")];
     const s = sHracom(
       {
@@ -358,7 +359,7 @@ describe("§10 Patronát — obmedzenia", () => {
         faza: "draft",
         ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
         lokalityVHre: s0.lokalityVHre.slice(1),
-        starsi: s0.starsi.map((e, i) => (i === 0 ? { ...e, marker, markerZaciatokKola: marker } : e)),
+        starsi: s0.starsi.map((e, i) => (i === 0 ? { ...e, marker} : e)),
         draftStav: { krok: "patronat", balicky: [[], []], vyber: [null, null], naTahu: u, hotovo: [false, false], noveKarty: [0, 0] },
       },
       u,
@@ -367,11 +368,10 @@ describe("§10 Patronát — obmedzenia", () => {
     return { s, u, obcan };
   }
 
-  it("§10: po patronáte marker ide do stredu a ráta sa ako začiatok kola — na krajnú sa v tomto kole nedostane", () => {
+  it("§10: po patronáte marker ide do stredu (v6: zamknutie krajnej pozície sa ruší)", () => {
     const { s, u, obcan } = vPatronate();
     const po = apply(data, s, { type: "patronat", elderId: s.starsi[0]!.elderId, uid: obcan.uid }, u).state;
-    expect(po.starsi[0]!.marker).toBe(4);
-    expect(po.starsi[0]!.markerZaciatokKola).toBe(4);
+    expect(po.starsi[0]!.marker).toBe(3);
   });
 
   it("§10: každý smie vziať najviac jedného staršieho za kolo", () => {
@@ -410,7 +410,7 @@ describe("§10 Patronát — obmedzenia", () => {
           sums: [{}, {}],
           exekutorHotovy: [true, true],
           pohorsenieZostava: [0, 0],
-          pohorsenieHranice: {},
+          exekutor: [0, 0],
           damage: null,
           vitaz: null,
           prebytokDrzi: null,
@@ -467,9 +467,11 @@ describe("§10 Patronát — obmedzenia", () => {
 
 describe("§3 Príprava hry", () => {
   it("§3: 8 starších s markerom v strede, nikto nič neohlásil", () => {
-    const s = setupGame(data, 21);
+    const s = setupSBalickom(data, 21);
     expect(s.starsi).toHaveLength(8);
-    expect(s.starsi.every((e) => e.marker === 4 && e.markerZaciatokKola === 4 && !e.nahradeny)).toBe(true);
+    expect(s.starsi.every((e) => e.marker === 3 && !e.nahradeny)).toBe(true);
+    expect(s.spaky).toEqual([0, 0]);
+    expect(s.nastenka).toEqual([]);
     expect(s.ohlaseneVydesenie).toEqual([null, null]);
     expect(s.kolo).toBe(1);
   });
@@ -477,7 +479,7 @@ describe("§3 Príprava hry", () => {
   it("§3: dĺžka hry 3 / 5 / 7 lokalít; dĺžka len so sadou, ktorá má aspoň toľko lokalít", () => {
     expect(DLZKY_HRY).toEqual({ kratka: 3, stredna: 5, dlha: 7 });
     for (const n of [3, 5, 7]) {
-      const s = setupGame(data, 22, { lokalit: n });
+      const s = setupSBalickom(data, 22, { lokalit: n });
       expect(s.lokalitCelkom).toBe(n);
       expect(s.lokalityVHre).toHaveLength(n);
     }
@@ -487,7 +489,7 @@ describe("§3 Príprava hry", () => {
     const cards = new Map([...data.cards].filter(([, d]) => !d.tags.includes("Lokalita") || nechaj.has(d.id)));
     const mala = buildGameData(cards, data.elders, parseScorecards(scorecardsJson));
     expect(dostupneDlzky(mala)).toEqual(["kratka", "stredna"]);
-    expect(() => setupGame(mala, 22, { lokalit: 7 })).toThrow();
+    expect(() => setupSBalickom(mala, 22, { lokalit: 7 })).toThrow();
   });
 });
 
@@ -556,7 +558,7 @@ describe("§2, §6 a §7 — doplnky prvého prechodu", () => {
   });
 
   it("§13/§15 Zastávka: Vypiť znižuje spoločný limit obom", () => {
-    const s0 = setupGame(data, 18);
+    const s0 = setupSBalickom(data, 18);
     const s = sHracom(
       {
         ...s0,

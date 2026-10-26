@@ -6,8 +6,9 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, GameState, PlacedCard, PlayerId } from "../src/index.ts";
-import { KONSTANTY, apply, buildGameData, legalCommands, loadGameData, rozlozRod, setupGame } from "../src/index.ts";
+import { KONSTANTY, apply, buildGameData, legalCommands, loadGameData, parseScorecards, rozlozRod, setupGame } from "../src/index.ts";
 import { EMPTY, instanceFor, makeDef, naexOdkryte } from "./helpers.ts";
+import { setupSBalickom } from "./helpers.ts";
 
 const zaklad = loadGameData(cardsJson, eldersJson, scorecardsJson);
 // Dva Dlhy: jeden spáruje sused (aktívny), druhý ostane voľný — NA EX smie od
@@ -16,14 +17,14 @@ const dlznik = makeDef("dlznik", [null, "Dlh", "Dlh", null], EMPTY);
 const sused = makeDef("sused", EMPTY, [null, "Viera", null, null]);
 const data = buildGameData(new Map([...zaklad.cards, [dlznik.id, dlznik], [sused.id, sused]]), zaklad.elders, {
   scorecards: zaklad.scorecards,
-  body: zaklad.bodyPodmienok,
+  body: parseScorecards(scorecardsJson).body,
 });
 
 let uidSeq = 80000;
 const inst = (defId: string): CardInstance => ({ uid: ++uidSeq, defId, leftLayout: 0, rightLayout: 0 });
 
 function vZhromazdeni(ruka: CardInstance[], limit: [number, number], pasoval: [boolean, boolean]): GameState {
-  const s = setupGame(data, 4);
+  const s = setupSBalickom(data, 4);
   return {
     ...s,
     faza: "zhromazdenie",
@@ -33,7 +34,7 @@ function vZhromazdeni(ruka: CardInstance[], limit: [number, number], pasoval: [b
 }
 
 function vPitke(strany: GameState["strany"], hraci?: GameState["hraci"]): GameState {
-  const s = setupGame(data, 3);
+  const s = setupSBalickom(data, 3);
   return {
     ...s,
     faza: "pitka",
@@ -74,7 +75,7 @@ describe("nevyhnutné ťahy", () => {
   });
 
   it("hráč bez poldeci a cigariet v Pitke nič nepotvrdzuje", () => {
-    const s0 = setupGame(data, 3);
+    const s0 = setupSBalickom(data, 3);
     const bezNicoho = { ...s0.hraci[1], poldeciPlne: 0, cigarety: 0 };
     const s = vPitke([[], []], [s0.hraci[0], bezNicoho]);
     expect(legalCommands(data, { ...s, pitkaStav: { ...s.pitkaStav!, naTahu: 1 } } as GameState, 1)).toEqual([{ type: "skipNaex" }]);

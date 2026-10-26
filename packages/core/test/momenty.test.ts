@@ -6,7 +6,7 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { Command, Event, GameState, Moment, PlacedCard, PlayerId, StavMomentov } from "../src/index.ts";
-import { MOMENTY, NALADY, NALADY_MOMENTOV, NOVE_MOMENTY, ZLATO_ZA_PARTIU, apply, buildGameData, legalCommands, loadGameData, momenty, naTahu, obmedzMomenty, rngInt, rngSeed, setupGame, naladaMomentu } from "../src/index.ts";
+import { parseScorecards, MOMENTY, NALADY, NALADY_MOMENTOV, NOVE_MOMENTY, ZLATO_ZA_PARTIU, apply, buildGameData, legalCommands, loadGameData, momenty, naTahu, obmedzMomenty, rngInt, rngSeed, setupGame, naladaMomentu } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
 import { EMPTY, instanceFor, makeDef, naexOdkryte } from "./helpers.ts";
 
@@ -23,7 +23,7 @@ const defs = [
 ];
 const data = buildGameData(new Map([...zaklad.cards, ...defs.map((d) => [d.id, d] as const)]), zaklad.elders, {
   scorecards: zaklad.scorecards,
-  body: zaklad.bodyPodmienok,
+  body: parseScorecards(scorecardsJson).body,
 });
 const lezi = (id: string, l: Layout4, r: Layout4, p: PlayerId): PlacedCard => ({ card: instanceFor(data, id, l, r), playedBy: p });
 
@@ -55,7 +55,7 @@ describe("momenty — rozpoznanie", () => {
 
   it("Výprask: prebytok aspoň 8 je bronzová pečiatka držiteľa; 7 ešte nie", () => {
     const s = setupGame(zaklad, 42);
-    const bitka = (prebytok: number): Event => ({ type: "bitkaVysledok", damage: { tuhe: [9, 1], makke: [0, 0], celkove: [9, 1], zvysnaViera: [0, 0], zvysnaPovera: [0, 0] }, sums: [{}, {}], vitaz: 0, prebytok, prebytokNaRozdelenie: prebytok, prebytokDrzi: 0, karty: [] });
+    const bitka = (prebytok: number): Event => ({ type: "bitkaVysledok", damage: { tuhe: [9, 1], makke: [0, 0], celkove: [9, 1], zvysnaViera: [0, 0], zvysnaPovera: [0, 0] }, sums: [{}, {}], vitaz: 0, rozhodlo: "tuhe", prebytok, prebytokNaRozdelenie: prebytok, prebytokDrzi: 0, karty: [] });
     expect(momenty(zaklad, s, s, [bitka(8)])).toEqual([expect.objectContaining({ typ: "vyprask", stupen: "bronz", hrac: 0 })]);
     expect(momenty(zaklad, s, s, [bitka(7)])).toEqual([]);
   });
@@ -68,16 +68,20 @@ describe("momenty — rozpoznanie", () => {
 
   it("Prebudenie: marker na krajnej pozícii — pečiatka pre toho, komu starší slúži", () => {
     const s = setupGame(zaklad, 44);
-    const po: GameState = { ...s, starsi: s.starsi.map((e, i) => (i === 0 ? { ...e, marker: 8 } : e)) };
-    const pred: GameState = { ...s, starsi: s.starsi.map((e, i) => (i === 0 ? { ...e, marker: 7 } : e)) };
+    const po: GameState = { ...s, starsi: s.starsi.map((e, i) => (i === 0 ? { ...e, marker: 6 as const } : e)) };
+    const pred: GameState = { ...s, starsi: s.starsi.map((e, i) => (i === 0 ? { ...e, marker: 5 as const } : e)) };
     expect(momenty(zaklad, pred, po, [])).toEqual([expect.objectContaining({ typ: "prebudenie", hrac: 0 })]);
   });
 
-  it("Bitka o všetko: bitka sa začína a na sekere ležia aspoň dve lokality", () => {
+  it("Bitka o všetko (v6): bitka sa začína a na sekere sú špaky aspoň z dvoch bitiek", () => {
     const s = setupGame(zaklad, 45);
-    const po: GameState = { ...s, faza: "bitka", naSekeru: s.lokalityVHre.slice(0, 2) };
+    const sekera = (kolo: number): GameState["nastenka"][number] => ({
+      kolo, lokalita: null, vitaz: null, rozhodlo: "sekera", pitky: 2, zaBitku: [0, 0], zoSekery: 0, abstakZrazka: 0, prepadlo: 0,
+      zaStarsich: [0, 0], exekutor: [0, 0], prebytok: [0, 0], spakyPo: [0, 0],
+    });
+    const po: GameState = { ...s, faza: "bitka", nastenka: [sekera(1), sekera(2)], spakyNaSekere: 4 };
     expect(momenty(zaklad, { ...s, faza: "pitka" }, po, [])).toEqual([expect.objectContaining({ typ: "bitkaOVsetko" })]);
-    expect(momenty(zaklad, { ...s, faza: "pitka" }, { ...po, naSekeru: s.lokalityVHre.slice(0, 1) }, [])).toEqual([]);
+    expect(momenty(zaklad, { ...s, faza: "pitka" }, { ...po, nastenka: [sekera(2)] }, [])).toEqual([]);
   });
 });
 

@@ -13,7 +13,7 @@ import type { PlayerId } from "./types.ts";
 import { opponentOf } from "./types.ts";
 import type { GameData } from "./data.ts";
 import type { Event, GameState } from "./engine.ts";
-import { lineState, poskodenieBitky } from "./engine.ts";
+import { bitkyNaSekere, lineState, poskodenieBitky } from "./engine.ts";
 import type { LineEval, LineState } from "./partia.ts";
 import { evaluateLine } from "./partia.ts";
 import { prebudenyPre } from "./elders.ts";
@@ -195,9 +195,9 @@ export function momenty(data: GameData, pred: GameState, po: GameState, udalosti
     }
   }
 
-  // Bitka o všetko: na sekere ležia aspoň dve lokality, keď sa začína bitka.
-  if (pred.faza !== "bitka" && po.faza === "bitka" && po.naSekeru.length >= 2) {
-    out.push({ typ: "bitkaOVsetko", ...MOMENTY.bitkaOVsetko, hrac: null, popis: `Bitka o všetko — víťaz berie lokalitu aj ${po.naSekeru.length} zo sekery.` });
+  // Bitka o všetko: na sekere sú špaky aspoň z dvoch bitiek, keď sa začína bitka.
+  if (pred.faza !== "bitka" && po.faza === "bitka" && bitkyNaSekere(po.nastenka) >= 2) {
+    out.push({ typ: "bitkaOVsetko", ...MOMENTY.bitkaOVsetko, hrac: null, popis: `Bitka o všetko — víťaz berie aj ${po.spakyNaSekere} špakov zo sekery.` });
   }
 
   // Výprask: prebytok aspoň 8.

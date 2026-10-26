@@ -33,6 +33,7 @@ import {
 } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
 import { instanceFor, makeDef } from "./helpers.ts";
+import { setupSBalickom } from "./helpers.ts";
 
 const zaklad = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const C4: Layout4 = ["Cigareta", "Cigareta", "Cigareta", "Cigareta"];
@@ -50,7 +51,7 @@ const dlh = (uid: number): CardInstance => ({ uid, defId: "dlh", leftLayout: 0, 
 
 /** Posledná Pitka kola, obaja s plným poldeci a bez kariet v ruke (na NA EX sa neodpovedá). */
 function vPitke(strana0: readonly PlacedCard[]): GameState {
-  const s0 = setupGame(data, 41);
+  const s0 = setupSBalickom(data, 41);
   return {
     ...s0,
     faza: "pitka",
@@ -200,10 +201,10 @@ describe("náhľad NA EX: cigarety, Pohoršenia a mäkké sedia so zúčtovaním
 describe("náhľad patronátu: cigarety a Pohoršenia súpera", () => {
   /** Krok patronátu: útočník u, starší[0] mu prejavuje priazeň v oranžovej zóne. */
   function vPatronate(): { s: GameState; u: PlayerId; obcan: CardInstance } {
-    const s0 = setupGame(data, 31);
+    const s0 = setupSBalickom(data, 31);
     const u = s0.utocnik;
     const obcan: CardInstance = { uid: 930001, defId: "pijan", leftLayout: 0, rightLayout: 0 };
-    const marker = (u === 0 ? 1 : 7) as MarkerPos;
+    const marker = (u === 0 ? 1 : 5) as MarkerPos;
     const pijan = (uid: number): CardInstance => ({ uid, defId: "pijan", leftLayout: 0, rightLayout: 0 });
     const hraci = s0.hraci.map((h, i) =>
       i === u
@@ -215,7 +216,7 @@ describe("náhľad patronátu: cigarety a Pohoršenia súpera", () => {
       faza: "draft",
       ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
       lokalityVHre: s0.lokalityVHre.slice(1),
-      starsi: s0.starsi.map((e, i) => (i === 0 ? { ...e, marker, markerZaciatokKola: marker } : e)),
+      starsi: s0.starsi.map((e, i) => (i === 0 ? { ...e, marker} : e)),
       hraci,
       draftStav: { krok: "patronat", balicky: [[], []], vyber: [null, null], naTahu: u, hotovo: [false, false], noveKarty: [0, 0] },
     };

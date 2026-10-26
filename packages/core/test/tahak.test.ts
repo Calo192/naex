@@ -13,9 +13,11 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ["dĺžky hry", `krátka ${DLZKY_HRY.kratka}, stredná ${DLZKY_HRY.stredna}, dlhá ${DLZKY_HRY.dlha}`],
     [
       "štartovky",
-      `${Object.values(KONSTANTY.START_RUKA).reduce((a, b) => a + b, 0)} štartoviek (${KONSTANTY.START_RUKA["pijan"]} Pijan, ${KONSTANTY.START_RUKA["ministrant"]} Miňištrant, ${KONSTANTY.START_RUKA["milujuca_manzelka"]} Milujúca manželka, ${KONSTANTY.START_RUKA["dievcina_na_vydaj"]} Dievčina na vydaj`,
+      `${Object.values(KONSTANTY.START_RUKA).reduce((a, b) => a + b, 0)} karty v ruke (${KONSTANTY.START_RUKA["ministrant"]} Miňištrant, ${KONSTANTY.START_RUKA["milujuca_manzelka"]} Milujúca manželka, ${KONSTANTY.START_RUKA["pijan"]} Pijan, ${KONSTANTY.START_RUKA["dievcina_na_vydaj"]} Dievčina na vydaj), doberací balíček prázdny`,
     ],
-    ["štart", `${KONSTANTY.VELKOST_RUKY} kariet v ruke, ${KONSTANTY.START_POLDECI} plné poldeci, ${KONSTANTY.START_CIGARETY} cigarety`],
+    ["štart", `${KONSTANTY.START_POLDECI} plné poldeci, ${KONSTANTY.START_CIGARETY} cigarety`],
+    ["finále", `Finále má vždy ${KONSTANTY.FINALE_PITKY} Pitky`],
+    ["Cirhóza na konci", `−${KONSTANTY.SPAKY_ZA_CIRHOZU} špakov za kus`],
     ["karty po bitke", `dobereš **${KONSTANTY.KARTY_PO_BITKE} karty**`],
     ["cena šenku", `1 karta za ${KONSTANTY.CENA_SENKU[1]} cigaretu, 2 karty za ${KONSTANTY.CENA_SENKU[2]} cigarety`],
     ["doplnenie šenku", `doplní na ${KONSTANTY.SENOK_PO_BRANI}`],

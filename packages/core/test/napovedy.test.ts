@@ -100,12 +100,12 @@ describe("nápovedy — rozpoznanie z pohľadu hráča", () => {
   });
 
   it("priazeň a vydesenie: meno staršieho z karty a variant podľa toho, koho sa bojí", () => {
-    const s = { ...s0, starsi: s0.starsi.map((e, i) => (i === 0 ? { ...e, marker: 8 as MarkerPos } : e)) } as GameState;
+    const s = { ...s0, starsi: s0.starsi.map((e, i) => (i === 0 ? { ...e, marker: 6 as MarkerPos } : e)) } as GameState;
     const e = s.starsi[0]!;
     const priazen = napovedy(data, katalog, viewFor(data, s, 1)).find((n) => n.id === "priazen");
     expect(priazen?.text).toMatch(new RegExp(`^${data.cards.get(e.karta.defId)?.name} je na tvojej polovici`));
     expect(priazen?.zvyraznit).toEqual([`starsi:${e.elderId}`]);
-    // Marker na 8 = vydesil ho hráč 0.
+    // Marker na 6 = vydesil ho hráč 0.
     const vyd = (p: 0 | 1) => napovedy(data, katalog, viewFor(data, s, p)).find((n) => n.id === "vydesenie")?.text ?? "";
     expect(vyd(0)).toMatch(/^Vydesený starší/);
     expect(vyd(1)).toMatch(/^Súper ti vydesil/);

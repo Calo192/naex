@@ -25,7 +25,6 @@ import { KONSTANTY } from "./constants.ts";
  */
 export interface VerejnyStav {
   readonly ciel: GameState["ciel"];
-  readonly ovladnute: GameState["ovladnute"];
   readonly strany: GameState["strany"];
   readonly starsi: readonly ElderState[];
   readonly hraci: readonly [VerejnyHrac, VerejnyHrac];
@@ -66,7 +65,10 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   ministrant: "impl", // Výhra: posun markera stojí +1 prebytku
   nealko: "impl", // Dedičstvo: Poldeci/NA EX bez pečene; Poldeci nedopĺňa
   niekoho_stryna: "impl", // Nástup: zahoď 1 Cirhózu alebo 1 Dlh z ruky
-  noviny: "impl", // Dedičstvo: tvoje povery a súperova viera sa nerušia
+  // TODO(v6): Noviny aj Kultúrny dom rušili limit a zákaz krajnej pozície Pohoršenia,
+  // ktoré v6 (Michal 2026-10-26) neplatia — efekt je bez účinku. Nový navrhne Admin,
+  // vyberie Michal. Otázka: aký efekt majú Noviny a Kultúrny dom dostať?
+  noviny: "native", // Dedičstvo: v6 bez účinku (Pohoršenie smie na kraj vždy) — TODO nový efekt
   pasca: "impl", // Dedičstvo: každé súperovo Zviera v línii mu uberie 1 tuhé (Michal 2026-10-20)
   pijan: "impl", // Bitka: rana do vlastnej partie pri žene s aktívnym poldeci
   policajtka: "impl", // Nástup: preskúmaj a rozdeľ doberací balíček (voľba hráča)
@@ -93,7 +95,9 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   abstak: "native", // Bitka: o ranu menej (−1 tuhé za kus)
   pes: "impl", // Furt: +1 tuhé za pár akcií na spoji so súperovou kartou; nikdy v partii s iným zvieraťom
   kostol: "impl", // Zhromaždenie: nikto nesmie vypiť; Pitka: nikto nesmie dať NA EX (Michal 2026-10-20)
-  zahradkar: "impl", // Exekúcia: smie ísť namiesto náradia
+  // TODO(v6): Exekútor Nástroj neberie (Michal 2026-10-26) — Záhradkár nemá čo nahradiť.
+  // Otázka pre Admina a Michala: aký efekt má Záhradkár dostať?
+  zahradkar: "native", // Exekúcia: v6 bez účinku — TODO nový efekt
   svokra: "impl", // Furt: za každé NA EX súpera mu ukradni 2 cigarety (Michal 2026-10-19)
   sarlatan: "impl", // Furt: Viera v okolí platí ako Vízia
   podvodnik: "impl", // Prehra: ukradni 2 cigarety
@@ -107,7 +111,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   cintorin: "impl", // Prehra: Nástroj z ruky do Dedičstva bez platenia
   obecny_urad: "impl", // Bitka: prah Exekútora −4, Robota spáli 2 priznané Dlhy
   jednota: "impl", // Pitka: stokársky barter o 1 cigaretu lacnejší
-  kulturny_dom: "impl", // Bitka: Pohoršenie bez limitu hraníc zón (na krajnú stále nie)
+  kulturny_dom: "native", // Bitka: v6 bez účinku (Pohoršenie nemá limit) — TODO nový efekt, viď noviny
   vinna_pivnica: "impl", // Pitka: NA EX až dvakrát
   druzstvo: "impl", // Zhromaždenie: Pracujúci nemíňajú limit vykladania
   kar: "impl", // Bitka: každý smie zahodiť jednu nepriznanú Cirhózu z ruky (roadmapa #80)
@@ -119,12 +123,6 @@ export function jeEfektManual(defId: string): boolean {
 
 // ---------------------------------------------------------------------------
 // Kde sa efekt nachádza a komu patrí
-
-/** Furt na lokalite platí, kým je odhalená: cieľ kola alebo už ovládnutá. */
-export function lokalitaVHre(state: VerejnyStav, defId: string): boolean {
-  if (state.ciel?.typ === "lokalita" && state.ciel.lokalita?.defId === defId) return true;
-  return state.ovladnute.some((o) => o.karta.defId === defId);
-}
 
 /** Lokalita aktuálneho kola. */
 export function jeCielLokalita(state: Pick<VerejnyStav, "ciel">, defId: string): boolean {
@@ -252,14 +250,6 @@ export function naexZaPitku(state: VerejnyStav): number {
   return jeCielLokalita(state, "vinna_pivnica") ? 2 : 1;
 }
 
-/**
- * kulturny_dom: Pohoršenie nemá limit hraníc zón (Michal 2026-10-20 — viac
- * posunov toho istého markera je už bežné pravidlo; predtým to bol efekt).
- */
-export function pohorsenieBezLimitu(state: VerejnyStav): boolean {
-  return jeCielLokalita(state, "kulturny_dom");
-}
-
 /** obecny_urad: o koľko je prah Exekútora nižší a koľko Dlhov odhodí jedna Robota. */
 export function exekutorLokality(state: VerejnyStav): { readonly zlava: number; readonly robota: number } {
   return jeCielLokalita(state, "obecny_urad") ? { zlava: KONSTANTY.EFEKT.URAD_PRAH_EXEKUTORA, robota: KONSTANTY.EFEKT.URAD_ROBOTA } : { zlava: 0, robota: 1 };
@@ -345,11 +335,6 @@ export function pohorseniaNeplatia(data: GameData, state: VerejnyStav, proti: Pl
   return efektHraca(state, proti, "policajtka") && !efektPotlaceny(data, state, proti, "policajtka");
 }
 
-/** noviny (Dedičstvo): Pohoršenie smie na krajnú pozíciu, ak bol marker na predposlednej od začiatku kola. */
-export function pohorsenieNaKraj(state: VerejnyStav, p: PlayerId): boolean {
-  return vDedicstve(state, p, "noviny");
-}
-
 /** puska (Dedičstvo): prebytočné poškodenie, ktoré súper rozdeľuje proti jej majiteľovi, je menšie. */
 export function prebytokProtiZlava(state: VerejnyStav, proti: PlayerId): number {
   return vDedicstve(state, proti, "puska") ? KONSTANTY.EFEKT.PUSKA_PREBYTOK : 0;
@@ -388,7 +373,7 @@ export function bitkaMody(data: GameData, state: VerejnyStav, p: PlayerId): Bitk
     pridaj("recidivista", partiaHraca(state, opp).filter((pl) => defOf(data, pl.card).tags.includes("Zahraničný")).length);
   }
   // pes (Michal 2026-10-20): +1 tuhé za každý pár akcií na spoji Psa so súperovou kartou.
-  pridaj("pes", spojePsa(data, state.strany)[p]);
+  pridaj("pes", spojePsa(data, state.strany, state.ciel?.typ === "finale")[p]);
   // Rátajú sa tie isté karty ako do prevahy: Občania, Zvieratá, Starešinovia.
   const doPrevahy = (pl: PlacedCard): boolean => rataSaDoPrevahy(defOf(data, pl.card).tags);
   // lesna_cesta (Michal 2026-10-20): +1 tuhé za každú svoju kartu na súperovej strane, najviac 2.

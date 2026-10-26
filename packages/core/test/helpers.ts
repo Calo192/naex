@@ -8,12 +8,13 @@ import type {
   GameData,
   GameState,
   PlayerId,
+  SetupOptions,
   SideDef,
   Slot,
   Tag,
   Trigger,
 } from "../src/index.ts";
-import { apply, buildGameData, sideLayouts } from "../src/index.ts";
+import { apply, buildGameData, setupGame, sideLayouts } from "../src/index.ts";
 
 export type Layout4 = readonly [Slot, Slot, Slot, Slot];
 
@@ -112,4 +113,18 @@ export function naexOdkryte(
   if (!caka) return a;
   const b = apply(data, a.state, { type: "skipNaex" }, p);
   return { state: b.state, events: [...a.events, ...b.events] };
+}
+
+/**
+ * Rozdanie s doplneným doberacím balíčkom. Od v6 (Michal 2026-10-26) je na
+ * začiatku doberací balíček prázdny a v ruke 4 štartovky; testy, ktoré
+ * potrebujú z balíčka ťahať (fajčenie, Vízia, Poštárka, +2 po bitke), dostanú
+ * obaja hráči do balíčka toľkoto Pijanov ako pred v6 (2 karty pod rukou).
+ */
+export function setupSBalickom(data: GameData, seed: number, opts?: SetupOptions, pocet = 3): GameState {
+  const s = setupGame(data, seed, opts);
+  let uid = s.nextUid;
+  const doplnok = (): CardInstance[] => Array.from({ length: pocet }, () => ({ uid: uid++, defId: "pijan", leftLayout: 0, rightLayout: 0 }));
+  const hraci = s.hraci.map((h) => ({ ...h, doberaci: [...h.doberaci, ...doplnok()] })) as unknown as GameState["hraci"];
+  return { ...s, hraci, nextUid: uid };
 }

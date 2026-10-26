@@ -9,7 +9,7 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { Command, Event, GameState, PlayerId, PosunMarkera } from "../src/index.ts";
-import { apply, bodyTeraz, eventsFor, legalCommands, loadGameData, naTahu, rngInt, rngSeed, setupGame, viewFor } from "../src/index.ts";
+import { apply, rozpisSpakov, spakyTeraz, eventsFor, legalCommands, loadGameData, naTahu, rngInt, rngSeed, setupGame, viewFor } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -99,22 +99,23 @@ describe("posun markera", () => {
   });
 });
 
-describe("body teraz pri staršom (#109)", () => {
-  it("na konci hry sa body z pohľadu oboch hráčov zhodujú so záverečným bodovaním", () => {
+describe("špaky teraz pri staršom (v6)", () => {
+  it("na konci hry sedia špaky z pohľadu oboch hráčov a popolník s koncom hry", () => {
     let koncov = 0;
     for (const k of partie(SEEDY)) {
       const koniec = k.po.koniec;
       if (koniec === null || koniec.body === null) continue;
       for (const p of [0, 1] as const) {
-        const teraz = bodyTeraz(data, viewFor(data, k.po, p));
+        const v = viewFor(data, k.po, p);
+        const teraz = spakyTeraz(v);
         expect(teraz.spolu).toEqual(koniec.body);
-        // Rozpis: víťaz súbojov (aj pri rovnosti) dostane 1 + strach, porazený nič.
-        for (const s of teraz.starsi) {
-          for (const h of [0, 1] as const) {
-            const su = h === 0 ? 1 : 0;
-            expect(s.body[h]).toBe(s.vyhry[h] >= s.vyhry[su] ? 1 + s.strach[h] : 0);
-          }
-          expect(s.strach[0] === 0 || s.strach[1] === 0).toBe(true);
+        expect(teraz.vyplat).toBe(0);
+        // Starší dáva špaky len tomu, koho sa bojí.
+        for (const s of teraz.starsi) expect(s.spaky[0] === 0 || s.spaky[1] === 0).toBe(true);
+        const r = rozpisSpakov(v);
+        for (const h of [0, 1] as const) {
+          expect(r[h].spolu).toBe(koniec.body[h]);
+          expect(r[h].zaBitky + r[h].zaStarsich + r[h].prebytok + r[h].exekutor + r[h].cirhoza).toBe(koniec.body[h]);
         }
       }
       koncov++;

@@ -8,6 +8,7 @@ import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { BitkaStav, CardInstance, ElderState, Event, GameState, MarkerPos, PlayerId } from "../src/index.ts";
 import { apply, evaluateLine, legalCommands, loadGameData, naTahu, priazen, setupGame, viewFor } from "../src/index.ts";
+import { setupSBalickom } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -21,7 +22,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     sums: [{}, {}],
     exekutorHotovy: [true, true],
     pohorsenieZostava: [0, 0],
-    pohorsenieHranice: {},
+    exekutor: [0, 0],
     damage: null,
     vitaz: 0,
     prebytokDrzi: null,
@@ -37,24 +38,24 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
   };
 }
 
-const sMarkerom = (e: ElderState, marker: MarkerPos): ElderState => ({ ...e, marker, markerZaciatokKola: marker });
+const sMarkerom = (e: ElderState, marker: MarkerPos): ElderState => ({ ...e, marker});
 
 describe("priazeň: sila 1 / 2 / 3 a dvojnásobný účinok", () => {
   it("bonus = 2 × sila podľa zóny na polovici hráča", () => {
-    const s0 = setupGame(data, 3);
+    const s0 = setupSBalickom(data, 3);
     const e0 = s0.starsi[0]!;
     const favour = data.scorecards.find((sc) => sc.id === e0.scorecard)!.favour;
     const s = (m: MarkerPos): GameState => ({ ...s0, starsi: [sMarkerom(e0, m), ...s0.starsi.slice(1)] });
-    expect([6, 7, 8].map((m) => priazen(data, s(m as MarkerPos), favour, 1))).toEqual([2, 4, 6]);
+    expect([4, 5, 6].map((m) => priazen(data, s(m as MarkerPos), favour, 1))).toEqual([2, 4, 6]);
     expect([2, 1, 0].map((m) => priazen(data, s(m as MarkerPos), favour, 0))).toEqual([2, 4, 6]);
-    expect(priazen(data, s(4), favour, 0)).toBe(0);
-    expect(priazen(data, s(8), favour, 0)).toBe(0);
+    expect(priazen(data, s(3), favour, 0)).toBe(0);
+    expect(priazen(data, s(6), favour, 0)).toBe(0);
   });
 });
 
 describe("cigarety: Cigareta ich dáva, fajčenie dáva karty", () => {
   it("v Pitke smie hráč fajčiť: karta hneď, cigareta preč, ťah mu neskončí (v5: v Zhromaždení nie)", () => {
-    const s0 = setupGame(data, 4);
+    const s0 = setupSBalickom(data, 4);
     const s: GameState = {
       ...s0,
       faza: "pitka",
@@ -71,7 +72,7 @@ describe("cigarety: Cigareta ich dáva, fajčenie dáva karty", () => {
   });
 
   it("karty dobraté fajčením v Pitke sú súčasť ruky — viewFor ich súperovi nepošle", () => {
-    const s0 = setupGame(data, 6);
+    const s0 = setupSBalickom(data, 6);
     const s: GameState = {
       ...s0,
       faza: "pitka",
@@ -89,7 +90,7 @@ describe("cigarety: Cigareta ich dáva, fajčenie dáva karty", () => {
 
   it("aktívne Cigaretky v Pitke pridajú cigarety (mínus súperove Obmedzenia), karty nie", () => {
     // Nájdi v tlačovej sade lokalitu a kartu, ktorej spoj s lokalitou dá hráčovi 0 Cigaretku.
-    const s0 = setupGame(data, 5);
+    const s0 = setupSBalickom(data, 5);
     let najdene: { lok: CardInstance; karta: CardInstance; cig: number; obm: number } | null = null;
     for (const lok of s0.lokalityVHre) {
       if (lok.defId === "kostol" || lok.defId === "benzinka") continue;
@@ -143,8 +144,8 @@ describe("cigarety: Cigareta ich dáva, fajčenie dáva karty", () => {
 describe("ohlásené vydesenie", () => {
   /** Hráč 0 má 3 vydesených starších a štvrtého na hrane; prebytok 1. */
   function predVydesenim(seed: number): GameState {
-    const s0 = setupGame(data, seed);
-    const starsi = s0.starsi.map((e, i) => (i < 3 ? sMarkerom(e, 8) : i === 3 ? sMarkerom(e, 7) : e));
+    const s0 = setupSBalickom(data, seed);
+    const starsi = s0.starsi.map((e, i) => (i < 3 ? sMarkerom(e, 6) : i === 3 ? sMarkerom(e, 5) : e));
     return {
       ...s0,
       faza: "bitka",
@@ -181,7 +182,7 @@ describe("ohlásené vydesenie", () => {
 
 describe("prebytok a Miňištrant", () => {
   it("posun, ktorý stojí viac než zvyšný prebytok, sa nedá urobiť", () => {
-    const s0 = setupGame(data, 9);
+    const s0 = setupSBalickom(data, 9);
     const s: GameState = {
       ...s0,
       faza: "bitka",

@@ -182,7 +182,7 @@ describe("náhľad NA EX == zúčtovanie motora (seedy)", () => {
           // Priznané Dlhy pri poškodení — strop súperovho mäkkého.
           expect(dlhy(stolPriPoskodeni(data, n.odkrytie.view, 0), q), `${kde}: Dlhy pri poškodení, hráč ${q}`).toBe(dlhy(sNaex.s, q));
           expect(dlhy(stolPriPoskodeni(data, zaklad, 0), q), `${kde}: Dlhy bez NA EX, hráč ${q}`).toBe(dlhy(bezBitka.s, q));
-          if (!sNaex.rozhodnutia.has("exekutorTool") && !bezBitka.rozhodnutia.has("exekutorTool")) {
+          if (!sNaex.rozhodnutia.has("zahradkar") && !bezBitka.rozhodnutia.has("zahradkar")) {
             expect(n.kliatby[q].dlhyPoBitke, `${kde}: Dlhy po bitke, hráč ${q}`).toBe(dlhy(sNaex.s, q) - dlhy(bezBitka.s, q));
           }
         }
