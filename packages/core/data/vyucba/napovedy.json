@@ -100,7 +100,7 @@
         "podmienka": "udalosť pitkaVysledok s dlhy[ja] > 0, alebo pribudol Dlh medzi mojimi priznanými",
         "jadro": ["packages/core/src/engine.ts:412 Event pitkaVysledok", "docs/PRAVIDLA.md §11 Kliatby"]
       },
-      "melichar": "Prvý Dlh! Úprimne, nečudujem sa. Leží medzi priznanými kartami. Na konci hry pri starších s podmienkou Dlhy vyhrá ten, kto má Dlhov menej.",
+      "melichar": "Prvý Dlh! Úprimne, nečudujem sa. Leží medzi priznanými kartami. Keď ich bude veľa, príde Exekútor aj po tvoje špaky, a pri remíze v bitke rozhodujú aj Dlhy: kto ich má viac, prehrá.",
       "zvyraznit": ["bar:dlhy"]
     },
     {
@@ -136,9 +136,9 @@
       "spustac": {
         "kedy": "po prvej bitke partie, keď sa skončí rozdeľovanie prebytku",
         "podmienka": "pred.kolo === 1 && po.kolo === 2, alebo prvý koniec bitky",
-        "jadro": ["packages/core/src/view.ts:359 bodyTeraz", "docs/PRAVIDLA.md §14 Bodovanie"]
+        "jadro": ["packages/core/src/view.ts:413 spakyTeraz", "docs/PRAVIDLA.md §14 Špaky"]
       },
-      "melichar": "Body v bare ukazujú, koľko by si mal, keby hra skončila teraz. Klikni na ne a uvidíš, čo ti dáva ktorý starší. Keď sa ti tie čísla nebudú páčiť, mne sa nesťažuj.",
+      "melichar": "Body v bare sú tvoje špaky, keby hra skončila teraz. Klikni na ne a uvidíš, koľko ti ktorý starší dá po bitke. Keď sa ti tie čísla nebudú páčiť, mne sa nesťažuj.",
       "zvyraznit": ["bar:body"]
     },
     {
@@ -166,7 +166,7 @@
         "podmienka": "stavZavislosti(view, ja).vyhlad === \"ziska\" na mojom ťahu, alebo pribudol Absťák medzi mojimi priznanými",
         "jadro": ["packages/core/src/zavislost.ts:52 stavZavislosti", "docs/PRAVIDLA.md §8 Nerest a Absťák"]
       },
-      "melichar": "Pozor na Absťák: kto v kole pije [Poldeci] a fajčí [Cigareta] menej ako v predošlom, dostane ho. Každý ti v bitke uberie 1 tuhé a na konci sa rátajú všetky, čo si za hru dostal. Ja len radím, rob si, ako chceš.",
+      "melichar": "Pozor na Absťák: kto v kole pije [Poldeci] a fajčí [Cigareta] menej ako v predošlom, dostane ho. Každý ti v bitke uberie 1 tuhé, a keď vyhráš s viac Absťákmi ako súper, aj špaky za bitku. Ja len radím, rob si, ako chceš.",
       "zvyraznit": ["bar:abstak"]
     },
     {
@@ -178,7 +178,7 @@
         "podmienka": "view.hraci[ja].ruka obsahuje defId \"cirhoza\"",
         "jadro": ["packages/core/src/engine.ts:412 Event pitkaVysledok (cirhozy)", "docs/PRAVIDLA.md §11 Priznanie"]
       },
-      "melichar": "V ruke máš Cirhózu z pretečenej pečene. Varoval som ťa, ale dobre. Priznaná ťa body nestojí, no súper za ňu dostane v každej bitke 1 tuhé. Nepriznaná ide po bitke do tvojho odhadzovacieho balíčka a na konci hry prehráva súboje o Cirhózu.",
+      "melichar": "V ruke máš Cirhózu z pretečenej pečene. Varoval som ťa, ale dobre. Priznaná ťa špaky nestojí, no súper za ňu dostane v každej bitke 1 tuhé. Nepriznaná ide po bitke do tvojho odhadzovacieho balíčka a na konci hry ťa stojí 5 špakov.",
       "zvyraznit": ["ruka:cirhoza"]
     },
     {
@@ -191,7 +191,7 @@
         "doplnit": "{starsi} = meno staršieho, {elderId}",
         "jadro": ["packages/core/src/engine.ts:449 priazen", "docs/PRAVIDLA.md §10 Dvojaká úloha markera"]
       },
-      "melichar": "{starsi} je na tvojej polovici a prejavuje ti priazeň: malý bonus podľa jeho podložky. Bojí sa zato súpera. Niekto ťa má rád, to by som nečakal.",
+      "melichar": "{starsi} je na tvojej polovici a prejavuje ti priazeň: malý bonus, ten vidíš pri ňom. Bojí sa zato súpera a po bitke mu dá špaky. Niekto ťa má rád, to by som nečakal.",
       "zvyraznit": ["starsi:{elderId}"]
     },
     {
@@ -224,7 +224,7 @@
       "uroven": "B",
       "spustac": {
         "kedy": "prvý vydesený starší v partii (marker na krajnej červenej)",
-        "podmienka": "marker staršieho prvýkrát na indexe 0 alebo 8",
+        "podmienka": "marker staršieho prvýkrát na indexe 0 alebo 6 (v6: stupnica 7 polí)",
         "variant": "moje, keď sa starší bojí mňa, inak superove",
         "jadro": ["packages/core/src/engine.ts:3711 prahVydesenia", "packages/core/src/engine.ts:286 ohlaseneVydesenie", "docs/PRAVIDLA.md §1 Podmienky konca"]
       },
@@ -256,7 +256,7 @@
         "podmienka": "prahyHraca(view, ja).priznaneDlhy >= prahyHraca(view, ja).exekutor - 2 (rovnako ako varovanie v bare)",
         "jadro": ["packages/core/src/engine.ts:873 prahyHraca", "apps/web/src/hra/Panely.tsx:769 varovanie Dlhov", "docs/PRAVIDLA.md §11 Exekútor"]
       },
-      "melichar": "Priznaných Dlhov máš už dosť, nechcem nič hovoriť. Keď dosiahnu číslo za lomkou, v bitke príde Exekútor: odovzdáš mu Nástroj, alebo prehráš. Poznám ho, neodporúčam.",
+      "melichar": "Priznaných Dlhov máš už dosť, nechcem nič hovoriť. Keď dosiahnu číslo za lomkou, v bitke príde Exekútor: zhorí ti polovica Dlhov a rovnako veľa špakov. Poznám ho, neodporúčam.",
       "zvyraznit": ["bar:dlhy"]
     },
     {

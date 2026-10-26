@@ -56,7 +56,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <p>
           <strong>NA EX!</strong> je kartová hra pre dvoch hráčov zasadená do drsnej dediny. Každé kolo sa bijete o jednu{" "}
           <P k="lokalita">lokalitu</P> — krčmu, kostol, benzínku — a cestou desíte <P k="starsi">starších</P>, vážené osoby
-          dediny. Kto ovládne viac lokalít a koho sa starší boja, ten na konci zbiera body.
+          dediny. Kto vyhráva bitky a koho sa starší boja, ten zbiera <P k="spak">špaky</P> — víťazné body.
         </p>
         <p>
           Karty kladiete do spoločnej <P k="linia">línie</P>, pijete <P k="poldeci">poldeci</P>, fajčíte{" "}
@@ -75,30 +75,32 @@ export const KAPITOLY: readonly Kapitola[] = [
     nazov: "Ako sa vyhráva",
     obrazok: "02-ako-sa-vyhrava",
     vSkratke: [
-      "Na konci sa body počítajú za každého staršieho zvlášť.",
+      "Víťazné body sú špaky: za vyhratú bitku a po každej bitke za starších, ktorí sa ťa boja.",
+      "Po finále vyhrá, kto má viac špakov; rovnosť je remíza.",
       "Okamžitá výhra: vydesíš polovicu starších a udržíš ich do konca ďalšieho kola.",
-      "Okamžitá prehra: nečelíš exekúcii.",
     ],
     obsah: () => (
       <>
         <div className="karticky">
           <div className="karticka">
-            <strong>Body na konci.</strong> Hra končí po poslednej bitke o lokalitu (3, 5 alebo 7 podľa{" "}
-            <P k="dlzka-hry">dĺžky hry</P>). Pri každom staršom sa porovnáte v podmienkach jeho scorecardu — lokality, strach
-            ostatných starších, cigarety, Dlhy, Cirhózy… Body za staršieho získa, kto vyhrá viac jeho podmienok.
+            <strong>Špaky.</strong> Hrá sa 3, 5 alebo 7 bitiek o lokality podľa <P k="dlzka-hry">dĺžky hry</P> a potom{" "}
+            <P k="finale">finále</P> — posledná bitka bez lokality. Víťaz bitky dostane toľko <P k="spak">špakov</P>, koľko
+            Pitiek sa v kole odohralo, a po každej bitke ti každý starší, ktorý sa ťa bojí, dá 1, 2 alebo 3 špaky podľa zóny.
+            Po finále vyhrá, kto má viac špakov.
           </div>
           <div className="karticka karticka-ok">
             <strong>Vyhráš hneď</strong>, ak <P k="vydesenie">vydesíš</P> aspoň polovicu starších v hre a udržíš ich do konca
             nasledujúceho kola. Hra ohlásenie ukáže obom — súper má jedno kolo na odpoveď.
           </div>
           <div className="karticka karticka-zle">
-            <strong>Prehráš hneď</strong>, ak nedokážeš čeliť <P k="exekutor">exekúcii</P>. Malý balíček ťa o hru nepripraví.
+            <strong>O špaky prídeš</strong> pri <P k="exekutor">exekúcii</P> (zhorí polovica tvojich Dlhov a rovnako veľa
+            špakov) a za každú nepriznanú Cirhózu na konci hry (5 špakov). Okamžitá prehra nie je — ani exekúcia, ani malý
+            balíček ťa o hru nepripravia.
           </div>
         </div>
         <p>
-          Ako presne sa body počítajú, je v kapitole <a href="#bodovanie">Bodovanie na konci</a>. Na začiatok stačí vedieť:
-          za staršieho dostaneš 1 bod a za každú zónu, v ktorej sa ťa bojí, bod navyše — vystrašený starší je cenný, ak
-          vyhráš jeho podmienky.
+          Všetky zdroje špakov sú v kapitole <a href="#bodovanie">Špaky a finále</a>. Na začiatok stačí vedieť: vyhratá bitka
+          dáva špaky za Pitky, vystrašený starší ti po každej bitke dá ďalšie — a súperovi medzitým prejavuje priazeň.
         </p>
       </>
     ),
@@ -110,7 +112,7 @@ export const KAPITOLY: readonly Kapitola[] = [
     obrazok: "03-co-mas-pred-sebou",
     vSkratke: [
       "Ruka, doberací a odhadzovací balíček.",
-      "Bar: poldeci, cigarety, pečeň, zadĺženie a neresti kola.",
+      "Bar: poldeci, cigarety, pečeň, zadĺženie, neresti kola a špaky.",
       "Karta má akcie po hranách, tagy a efekt.",
     ],
     obsah: (s) => (
@@ -119,7 +121,8 @@ export const KAPITOLY: readonly Kapitola[] = [
         <p>
           Máš <strong>ruku</strong> (bez limitu), <strong>doberací balíček</strong> a <strong>odhadzovací balíček</strong>. Keď sa
           doberací balíček minie, odhadzovací sa zamieša a stane sa z neho nový doberací balíček. Na bare vidíš svoje <P k="poldeci">poldeci</P> (plné a vypité),{" "}
-          <P k="cigareta">cigarety</P>, <P k="pecen">pečeň</P>, zadĺženie a <P k="nerest">neresti</P> kola.
+          <P k="cigareta">cigarety</P>, <P k="pecen">pečeň</P>, zadĺženie, <P k="nerest">neresti</P> kola a svoje{" "}
+          <P k="spak">špaky</P>.
         </p>
         <H3 id="co-mas-pred-sebou-karta">Karta</H3>
         <ul>
@@ -165,8 +168,9 @@ export const KAPITOLY: readonly Kapitola[] = [
     obrazok: "04-kolo",
     vSkratke: [
       "Cieľ → šenok → Zhromaždenie a Pitka (1–4×) → bitka → po bitke.",
-      "Štart: 7 kariet v balíčku, 5 v ruke, 2 plné poldeci, 3 cigarety.",
+      "Štart: 4 karty v ruke, prázdny balíček, 2 plné poldeci, 3 cigarety.",
       "Útočník prehral poslednú bitku, obranca ju vyhral.",
+      "Po poslednej lokalite finále: bitka bez lokality, vždy 3 Pitky.",
     ],
     obsah: () => (
       <>
@@ -185,7 +189,8 @@ export const KAPITOLY: readonly Kapitola[] = [
             1- až 4-krát podľa línie.
           </li>
           <li>
-            <strong>Bitka.</strong> Viac tuhého poškodenia berie lokalitu, prebytok posúva starších.
+            <strong>Bitka.</strong> Viac tuhého poškodenia vyhráva a dostane špaky za odohrané Pitky. Starší, ktorí sa vás
+            boja, dajú špaky obom. Prebytok posúva starších.
           </li>
           <li>
             <strong>Po bitke.</strong> Karty z línie idú do odhadzovacích balíčkov, každý si dobere 2 karty a doleje sa mu jeden
@@ -194,14 +199,17 @@ export const KAPITOLY: readonly Kapitola[] = [
         </ol>
         <H3 id="kolo-priprava">Príprava</H3>
         <p>
-          Zvoľte <P k="dlzka-hry">dĺžku hry</P> — 3, 5 alebo 7 lokalít. Každý hráč zamieša svojich 7 štartovacích kariet
-          (3 Pijani, 2 Miňištranti, Milujúca manželka, Dievčina na vydaj), dobere si <strong>5 do ruky</strong> a dostane{" "}
-          <strong>2 plné poldeci a 3 cigarety</strong>. Hra rozdá 8 starších s náhodnými scorecardmi; markery ležia v strede.
+          Zvoľte <P k="dlzka-hry">dĺžku hry</P> — 3, 5 alebo 7 lokalít; po nich príde <P k="finale">finále</P>. Každý hráč má
+          na začiatku v ruke <strong>4 štartovacie karty</strong> — Miňištranta, Milujúcu manželku, Pijana a Dievčinu na vydaj.
+          Doberací balíček je prázdny, naplní ho až odhadzovací; dovtedy sa nedá ťahať ani fajčiť. K tomu{" "}
+          <strong>2 plné poldeci, 3 cigarety a 0 špakov</strong>. Hra rozdá 8 starších, každému náhodne jeho priazeň; markery
+          ležia v strede.
         </p>
         <H3 id="kolo-utocnik">Útočník a obranca</H3>
         <p>
           <strong>Útočník</strong> je ten, kto prehral poslednú bitku: berie zo šenku prvý a v Zhromaždení vykladá prvý.{" "}
-          <strong>Obranca</strong> vyberá a natáča cieľ kola a v Pitke začína — útočník má v Pitke posledné slovo.
+          <strong>Obranca</strong> vyberá a natáča cieľ kola a v Pitke začína — útočník má v Pitke posledné slovo. Vo finále
+          útočí, kto má viac špakov.
         </p>
       </>
     ),
@@ -226,7 +234,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           Obranca vyberie lokalitu, o ktorú sa bude biť, a <P k="natocenie">natočí</P> ju. Lokalita leží v strede línie a delí ju
           na dve <P k="strana">strany</P>. Natočenie určuje, ktorá hrana lokality patrí ktorému <P k="kraj">kraju</P> — akcie
           hrany dostane, kto v tom kraji má <a href="#zhromazdenie-prevaha">prevahu</a>. Efekt lokality platí len v kole, keď sa
-          o ňu bije (<a href="#lokality">tabuľka lokalít</a>).
+          o ňu bije (<a href="#lokality">tabuľka lokalít</a>). Vo finále sa cieľ nevyberá — kolo začína rovno šenkom.
         </p>
         <H3 id="senok-stavba">Stavba šenku</H3>
         <p>
@@ -248,18 +256,19 @@ export const KAPITOLY: readonly Kapitola[] = [
         </p>
         <ul>
           <li>Kartu staršieho si vezmeš do ruky a v tomto kole ju smieš vyložiť ako každú inú kartu.</li>
-          <li>Na jeho scorecard dáš lícom dole Občana alebo Zviera z ruky — súper nevie, ktorého. Marker ide do stredu.</li>
+          <li>Na jeho miesto dáš lícom dole Občana alebo Zviera z ruky — súper nevie, ktorého. Marker ide do stredu.</li>
           <li>
             Zaplatíš toľko cigariet, koľko markeru chýbalo do červenej (žltá 2, oranžová 1, červená 0). Súper dostane v tejto
-            bitke toľko Pohoršení navyše, o koľko marker išiel do stredu (2 / 3 / 4).
+            bitke toľko Pohoršení navyše, o koľko polí marker išiel do stredu (1 / 2 / 3) — tie však nesmú na staršieho,
+            ktorého si si vzal.
           </li>
-          <li>Treba mať aspoň jeden poldeci.</li>
+          <li>Treba mať aspoň jeden poldeci. Patronát platí aj vo finále.</li>
         </ul>
         <p className="zvyraznene">
-          <strong>Vyhráš bitku</strong> — lokalitu aj staršieho: náhrada sa otočí a hrá ďalej ako starší.{" "}
-          <em>Áno, aj koza smie zasadnúť do rady starších.</em> <strong>Prehráš</strong> — starší sa vráti na scorecard, náhradu
-          si vezmeš späť a <strong>odhodíš jeden poldeci</strong> natrvalo. Patronát je jediná obrana proti vydeseniu: marker
-          z krajnej pozície uvoľní len on.
+          <strong>Vyhráš bitku</strong> — staršieho si necháš: náhrada sa otočí a hrá ďalej ako starší.{" "}
+          <em>Áno, aj koza smie zasadnúť do rady starších.</em> <strong>Prehráš</strong> — starší sa vráti na svoje miesto,
+          náhradu si vezmeš späť a <strong>odhodíš jeden poldeci</strong> natrvalo. Patronát vráti marker aj z krajnej pozície
+          naraz do stredu — preto je najrýchlejšou odpoveďou na ohlásené vydesenie.
         </p>
       </>
     ),
@@ -283,7 +292,8 @@ export const KAPITOLY: readonly Kapitola[] = [
           Karty tvoria <strong>jednu súvislú <P k="linia">líniu</P></strong> bez vetvenia. Lokalita v strede ju delí na tvoju
           a súperovu <P k="strana">stranu</P>. Na ťahu položíš kartu na <strong>koniec svojej alebo súperovej strany</strong>.
           Karta je vždy natočená k tebe a ostáva tvoja — je v tvojej <P k="partia">partii</P> a jej akcie aj efekty sa rátajú
-          tebe, nech leží kdekoľvek.
+          tebe, nech leží kdekoľvek. Vo finále lokalita nie je: v strede leží prvá vyložená karta a ďalšie sa kladú na jej dve
+          strany; kraje ani prevaha tam nie sú.
         </p>
         <H3 id="zhromazdenie-spoj">Spoj akcií</H3>
         <p>
@@ -337,7 +347,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           na jej dvoch stranách (1 až 4). Akciu lokality aktivuje karta, ktorá s ňou tvorí spoj; Odpor na hrane lokality sa ráta,
           akcia hrany zrušená Odporom karty nie. Ak tvoja karta aktivuje 3 akcie lokality a súperova 1, pijú sa{" "}
           <strong>2 Pitky</strong>. Pred každou Pitkou je Zhromaždenie. Počet sa počas kola mení s líniou — začatá Pitka sa vždy
-          dopije.
+          dopije. Finále má vždy 3 Pitky. Koľko Pitiek sa odohrá, toľko špakov dostane víťaz bitky.
         </p>
         <H3 id="pitka-poradie">Poradie Pitky</H3>
         <p>
@@ -463,8 +473,8 @@ export const KAPITOLY: readonly Kapitola[] = [
         </ul>
         <p>
           Každý Absťák ti v bitke zníži tuhé poškodenie o 1 — trasú sa ti ruky. Autobusár jeden ignoruje. Hra si pamätá, koľko
-          Absťákov si <strong>získal za hru</strong>; keď sa Absťáku zbavíš, to číslo neklesne (podmienka Absťák na
-          scorecardoch).
+          Absťákov si <strong>získal za hru</strong> (štatistika). Absťáky, ktoré práve máš, navyše rozhodujú remízu v bitke
+          a víťazovi s viac Absťákmi uberajú špaky za bitku.
         </p>
       </>
     ),
@@ -477,7 +487,8 @@ export const KAPITOLY: readonly Kapitola[] = [
     vSkratke: [
       "Tuhé: Rana 1, Pecka 2, Petelica 3. Viera ho znižuje.",
       "Mäkké z Povier najviac do výšky súperových priznaných Dlhov.",
-      "Viac tuhého berie lokalitu; pri remíze ide lokalita na sekeru.",
+      "Viac tuhého vyhráva: víťaz dostane špaky za odohrané Pitky, lokalita ide na nástenku.",
+      "Remízu rozhodne menej Absťákov, potom menej Dlhov, inak sekera.",
       "Prebytok rozdeľuje hráč s vyšším celkovým poškodením.",
     ],
     obsah: () => (
@@ -501,22 +512,26 @@ export const KAPITOLY: readonly Kapitola[] = [
         <UkazkaBitky />
         <H3 id="bitka-vysledok">Výsledok a sekera</H3>
         <p>
-          Vyhráva vyššie <strong>tuhé</strong>. Pri <strong>rovnakom tuhom nevyhrá nikto</strong>: lokalita ide{" "}
-          <P k="sekera">na sekeru</P> a vezme si ju víťaz najbližšej bitky spolu s tou, o ktorú sa bije. Víťaz poslednej bitky
-          berie celú sekeru; len pri remíze v poslednej bitke lokality prepadnú. Útočník pri remíze ostáva útočníkom. Prebytok
-          rozdeľuje hráč s vyšším <strong>celkovým</strong> poškodením — aj pri remíze v tuhom.
+          Vyhráva vyššie <strong>tuhé</strong>. Pri rovnakom tuhom vyhrá, kto má <strong>menej Absťákov</strong>, a keď aj tých
+          máte rovnako, kto má <strong>menej priznaných Dlhov</strong>. Ak nerozhodnú ani Dlhy, bitku nevyhrá nikto: špaky kola
+          čakajú <P k="sekera">na sekere</P> a vezme si ich navyše víťaz najbližšej bitky; vo finále prepadnú. Útočník pri
+          sekere ostáva útočníkom.
+        </p>
+        <p className="zvyraznene">
+          Víťaz dostane toľko <P k="spak">špakov</P>, koľko Pitiek sa v kole naozaj odohralo (finále 3). Ak má viac Absťákov
+          ako porazený, dostane o rozdiel menej, ale vždy aspoň 1 špak. Lokalitu si neberie — ide na krčmovú{" "}
+          <P k="nastenka">nástenku</P> s jeho menom a špakmi. Prebytok rozdeľuje hráč s vyšším <strong>celkovým</strong>{" "}
+          poškodením — aj pri remíze v tuhom.
         </p>
         <H3 id="bitka-kroky">Kroky bitky v poradí</H3>
         <ol className="kroky">
           <li>
-            <strong>Kar</strong> — len pri bitke o Kar: každý smie zahodiť jednu nepriznanú Cirhózu z ruky.
+            <strong>Efekty na začiatku bitky</strong> — Krčmárka, Dievčina na vydaj; pri bitke o Kar potom každý smie zahodiť
+            jednu nepriznanú Cirhózu z ruky.
           </li>
           <li>
-            <strong>Efekty bitky</strong> — napríklad Krčmárka, Dievčina na vydaj.
-          </li>
-          <li>
-            <strong>Exekútor</strong> — najprv Robota, potom kontrola prahu priznaných Dlhov (kapitola{" "}
-            <a href="#kliatby">Kliatby a priznanie</a>).
+            <strong>Exekútor</strong> — najprv Robota, potom kontrola prahu priznaných Dlhov; pri exekúcii zhorí polovica Dlhov
+            a rovnako veľa špakov (kapitola <a href="#kliatby">Kliatby a priznanie</a>).
           </li>
           <li>
             <strong>Pohoršenie</strong> — posúva markery starších k súperovi alebo k sebe (kapitola{" "}
@@ -526,11 +541,17 @@ export const KAPITOLY: readonly Kapitola[] = [
             <strong>Poškodenie</strong> — Viera a Povera sa vyrušia, tuhé znižuje Viera a Absťáky, mäkké po strop Dlhov.
           </li>
           <li>
-            <strong>Výsledok</strong> — víťaz, sekera a prebytok.
+            <strong>Výsledok</strong> — víťaz (pri remíze rozhodnú Absťáky, potom Dlhy), inak sekera.
           </li>
           <li>
-            <strong>Cigarety za prebytok</strong> — hráč, proti ktorému sa prebytok rozdeľoval, dostane 1 cigaretu za každého
-            staršieho, ktorého marker sa posunul.
+            <strong>Špaky za bitku</strong> — víťaz dostane špaky za odohrané Pitky; lokalita ide na nástenku.
+          </li>
+          <li>
+            <strong>Špaky za starších</strong> — obaja dostanú špaky za starších, ktorí sa ich boja (aj Noviny v Dedičstve).
+          </li>
+          <li>
+            <strong>Prebytok</strong> — hráč s vyšším celkovým poškodením posunie markery starších; prejaví sa až v ďalšej
+            bitke. Po finále a v bitke o Kultúrny dom sa nerozdeľuje — jeho držiteľ dostane toľko špakov, aký je prebytok.
           </li>
           <li>
             <strong>Poldeci</strong> — poldeci z NA EX sa vypijú (s priazňou Alkoholika sa niektoré vrátia plné); aktívna akcia
@@ -543,7 +564,9 @@ export const KAPITOLY: readonly Kapitola[] = [
             <strong>Pohreb</strong> — s priznanou Cirhózou; na Cintoríne potom porazený smie dať Nástroj do Dedičstva zadarmo.
           </li>
           <li>
-            <strong>Kmotor</strong> — kto má jeho priazeň, tomu zmiznú priznané Dlhy podľa sily.
+            <strong>Výhra a Prehra</strong> — Živnostník, cigarety za prebytok (súper dostane 1 cigaretu za každého staršieho,
+            ktorého marker sa prebytkom posunul), Kmotor (kto má jeho priazeň, tomu zmiznú priznané Dlhy podľa sily) a ostatné
+            efekty Výhra a Prehra.
           </li>
           <li>
             <strong>Patronát</strong> — víťaz si staršieho nechá, porazený ho vráti a odhodí poldeci.
@@ -553,7 +576,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             do odhadzovacieho balíčka.
           </li>
           <li>
-            <strong>Absťák</strong> — porovnanie nerestí kola s minulým.
+            <strong>Absťák</strong> — porovnanie nerestí kola s minulým; potom sa skontroluje vydesenie.
           </li>
           <li>
             <strong>Nové kolo</strong> — každému sa doleje jeden vypitý poldeci a každý si dobere 2 karty.
@@ -568,40 +591,43 @@ export const KAPITOLY: readonly Kapitola[] = [
     nazov: "Starší a prebytok",
     obrazok: "10-starsi-a-prebytok",
     vSkratke: [
-      "Marker staršieho posunutý k súperovi = súper má priazeň, starší sa bojí teba (body).",
-      "Prebytok posúva markery k súperovi.",
-      "Pohoršenie posunie marker k súperovi alebo k sebe, najviac cez dve hranice zón, nie na krajnú pozíciu.",
-      "Krajná červená: starší sa prebudí pre teba; uvoľní ho len patronát.",
+      "Marker staršieho posunutý k súperovi = súper má priazeň, starší sa bojí teba (špaky po každej bitke).",
+      "Stupnica má 7 polí: červená, oranžová, žltá, sivý stred, žltá, oranžová, červená.",
+      "Prebytok aj Pohoršenie posúvajú marker o pole, bez limitu a aj na krajnú pozíciu.",
+      "Krajná červená: starší sa prebudí pre teba; súper ho smie odtlačiť späť.",
     ],
     obsah: () => (
       <>
         <H3 id="starsi-stupnica">Stupnica strachu</H3>
         <p>
-          Každý <P k="starsi">starší</P> leží na <P k="scorecard">scorecarde</P>, ktorý dostane na začiatku hry náhodne. Scorecard
-          určuje jeho priazeň, nesie stupnicu strachu s markerom a 8 bodovacích <P k="podmienka">podmienok</P>.
+          Každý <P k="starsi">starší</P> dostane na začiatku hry náhodne svoju priazeň a vidíš ju pri ňom. Pod ním je stupnica
+          strachu so <strong>7 poľami</strong> — červená, oranžová, žltá, sivý stred, žltá, oranžová, červená — a marker
+          začína v sivom strede.
         </p>
         <p className="zvyraznene">
           <P k="priazen">Priazeň</P> má ten, ku komu je marker posunutý — to je výhoda počas hry. Starší sa vtedy bojí toho druhého.
-          Keď posunieš marker k súperovi, dávaš mu priazeň teraz, ale tebe pribudne vystrašený starší — a{" "}
-          <P k="strach">strach</P> ti na konci zvýši body za tohto staršieho, ak vyhráš jeho podmienky.
+          Keď posunieš marker k súperovi, dávaš mu priazeň teraz, ale tebe pribudne vystrašený starší — a za jeho{" "}
+          <P k="strach">strach</P> ti po každej bitke dá <P k="spak">špaky</P>: žltá 1, oranžová 2, červená 3.
         </p>
         <UkazkaStupnice />
         <H3 id="starsi-prebytok">Prebytok a Pohoršenie</H3>
         <p>
-          <P k="prebytok">Prebytok</P> je rozdiel v celkovom poškodení. Hráč, ktorý ho rozdeľuje, ním posúva markery starších na
-          súperovu polovicu. Súper za každého staršieho, ktorého marker sa posunul, dostane 1 cigaretu.
+          <P k="prebytok">Prebytok</P> je rozdiel v celkovom poškodení. Hráč, ktorý ho rozdeľuje, ním posúva markery starších
+          k súperovi — každý bod o jedno pole (zo stredu do žltej 1, na červenú 3), aj na krajnú pozíciu a z nej von. Špaky
+          za starších sa rozdávajú ešte pred prebytkom, takže sa prejaví až v ďalšej bitke. Súper za každého staršieho, ktorého
+          marker sa posunul, dostane 1 cigaretu.
         </p>
         <p>
           Každé <P k="pohorsenie">Pohoršenie</P> posunie marker o 1 — <strong>k súperovi, alebo k sebe</strong>; vyberáš ty.
           K sebe si priazeň toho staršieho vezmeš (alebo ju súperovi uberieš). Priazeň sa mení <strong>hneď</strong> — platí už
-          v poškodení tej istej bitky, takže ju môže rozhodnúť. Ten istý marker smieš posunúť aj viackrát, tvoje Pohoršenia ho
-          však prenesú najviac cez <strong>dve hranice zón</strong> (oba smery spolu) a nikdy nie na krajnú pozíciu (v Kultúrnom
-          dome bez limitu hraníc). Súperova Policajtka ruší tvoje Pohoršenia v oboch smeroch.
+          v poškodení tej istej bitky, takže ju môže rozhodnúť. Ten istý marker smieš posunúť aj viackrát,{" "}
+          <strong>bez limitu</strong> a aj na krajnú pozíciu (zo stredu na červenú tri Pohoršenia). Pohoršenie mení aj strach
+          hneď — ráta sa už do špakov za starších tej istej bitky. Súperova Policajtka ruší tvoje Pohoršenia v oboch smeroch.
         </p>
         <H3 id="starsi-priazne">Priazne</H3>
         <p>
-          Sila priazne je <strong>1 / 2 / 3</strong> podľa zóny (žltá, oranžová, červená). Akú priazeň starší dáva, určuje jeho
-          scorecard.
+          Sila priazne je <strong>1 / 2 / 3</strong> podľa zóny (žltá, oranžová, červená). Akú priazeň starší dáva, sa mu rozdá
+          náhodne na začiatku hry.
         </p>
         <table className="tabulka">
           <thead>
@@ -622,11 +648,11 @@ export const KAPITOLY: readonly Kapitola[] = [
             <tr><td>Veriaci</td><td>Viera navyše v bitke</td><td>+1 / +2 / +3</td></tr>
           </tbody>
         </table>
-        <H3 id="starsi-vydesenie">Vydesenie, zamknutie a prebudenie</H3>
+        <H3 id="starsi-vydesenie">Vydesenie, krajná pozícia a prebudenie</H3>
         <ul>
           <li>
-            <strong>Zamknutá pozícia:</strong> na krajnú pozíciu sa dostaneš len z predposlednej, kde marker bol už na začiatku
-            kola — nie viacerými posunmi naraz ani Pohoršením. Z krajnej ho uvoľní len <a href="#patronat">patronát</a>.
+            <strong>Krajná pozícia:</strong> na červenú sa marker smie dostať aj viacerými posunmi v jednom kole, prebytkom aj
+            Pohoršením. Súper ho z nej smie odtlačiť späť alebo ho <a href="#patronat">patronátom</a> vrátiť naraz do stredu.
           </li>
           <li>
             <P k="prebudenie">Prebudenie:</P> keď vytlačíš marker na krajnú červenú, efekt staršieho začne pôsobiť pre teba (okrem
@@ -638,8 +664,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           </li>
         </ul>
         <p className="tlmene">
-          V hre to vidíš pri každom staršom: komu patrí priazeň a čo dáva, koho sa starší bojí a koľko bodov by za neho dostal
-          ty a súper, keby hra skončila teraz.
+          V hre to vidíš pri každom staršom: komu patrí priazeň a čo dáva, koho sa starší bojí a koľko špakov mu po bitke dá.
         </p>
       </>
     ),
@@ -655,7 +680,8 @@ export const KAPITOLY: readonly Kapitola[] = [
       "Kliatby: Dlh, Cirhóza, Absťák, Milujúca manželka.",
       "Priznanie vyloží kliatbu natrvalo mimo línie; limit nemíňa.",
       "Za priznanie dobereš kartu — nie za Cirhózu a nie za nový Dlh z prahu.",
-      "Priznané Dlhy na prahu Exekútora = odovzdáš Nástroj alebo prehráš.",
+      "Priznané Dlhy na prahu Exekútora = zhorí polovica Dlhov a rovnako veľa špakov.",
+      "Nepriznaná Cirhóza ťa na konci hry stojí 5 špakov.",
     ],
     obsah: () => (
       <>
@@ -668,19 +694,19 @@ export const KAPITOLY: readonly Kapitola[] = [
         <ul>
           <li>
             <strong>Dlh</strong> — nový Dlh z prahu zadĺženia sa prizná sám a kartu zaň <strong>nedobereš</strong>. Dlh, ktorý
-            ti súper podstrčí do balíčka (Vychovávateľka), sa pri dobratí prizná sám a ťaháš ďalšiu kartu. Každý Dlh, aj
-            priznaný, sa ráta k prahu Exekútora a na konci do podmienky Dlhy.
+            ti súper podstrčí do balíčka (Vychovávateľka), sa pri dobratí prizná sám a ťaháš ďalšiu kartu. Priznané Dlhy sa
+            rátajú k prahu Exekútora a pri remíze v bitke prehrá, kto ich má viac.
           </li>
           <li>
             <strong>Cirhóza</strong> — ide do odhadzovacieho balíčka; do ruky príde, až keď sa doberací balíček minie
             a odhadzovací sa zamieša. Priznáš ju, keď chceš, ale kartu za ňu{" "}
             <strong>nedobereš</strong>. Priznaná dá súperovi v každej bitke +1 tuhé. <strong>Nepriznaná ide po bitke do tvojho odhadzovacieho
-            balíčka; na konci hry prehráva súboje o Cirhózu.</strong> Buď ju prizníš hneď, alebo riskuješ, že sa ti do konca
-            hry nevráti do ruky.
+            balíčka; na konci hry ti zoberie 5 špakov</strong> (ráta sa ruka aj oba balíčky). Buď ju prizníš hneď, alebo
+            riskuješ, že sa ti do konca hry nevráti do ruky.
           </li>
           <li>
-            <strong>Absťák</strong> — príde rovno priznaný a za neho si dobereš kartu. Na konci sa rátajú Absťáky získané za
-            hru.
+            <strong>Absťák</strong> — príde rovno priznaný a za neho si dobereš kartu. Víťazovi s viac Absťákmi uberie špaky za
+            bitku a remízu v bitke prehrá, kto ich má viac.
           </li>
           <li>
             <strong>Milujúca manželka</strong> — za priznanie si dobereš kartu; odhalená (v línii či priznaná) ti sťažuje
@@ -694,11 +720,13 @@ export const KAPITOLY: readonly Kapitola[] = [
           </li>
           <li>
             Ak priznané Dlhy dosiahnu prah <P k="exekutor">Exekútora</P> (10; so súperovou priazňou Exekútora 9 / 8 / 7,
-            na Obecnom úrade o 4 menej), musíš odovzdať Nástroj — inak okamžite prehrávaš.
+            na Obecnom úrade o 4 menej), čelíš exekúcii: zhorí ti <strong>polovica priznaných Dlhov</strong> (zaokrúhlené
+            nadol) a <strong>rovnako veľa špakov</strong>. Súper ich nedostane a smieš ísť do mínusu. Kto má Záhradkára (v ruke
+            či v balíčkoch), smie ho zahodiť namiesto špakov — Dlhy zhoria aj tak.
           </li>
           <li>
-            Ak Nástroj odovzdáš, polovica Dlhov zhorí (zaokrúhlené nadol). Inak sa Dlh sám nepáli — pália ho len Robota, Dievčina
-            na vydaj, Niekoho stryná a Veľmi smútiaca vdova.
+            Kto exekúcii nečelí, tomu sa Dlh sám nepáli — pália ho len Robota, Dievčina na vydaj, Niekoho stryná a Veľmi
+            smútiaca vdova.
           </li>
         </ol>
         <H3 id="kliatby-pohreb">Pohreb</H3>
@@ -812,7 +840,11 @@ export const KAPITOLY: readonly Kapitola[] = [
     cast: "C",
     nazov: "Lokality",
     obrazok: "14-lokality",
-    vSkratke: ["Efekt lokality platí len v kole, keď sa o ňu bije.", "V sade je 15 lokalít."],
+    vSkratke: [
+      "Efekt lokality platí len v kole, keď sa o ňu bije.",
+      "Po bitke ide lokalita na krčmovú nástenku — nikto ju neovláda.",
+      "V sade je 15 lokalít.",
+    ],
     obsah: () => (
       <table className="tabulka">
         <thead>
@@ -835,7 +867,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           <tr><td>Cintorín</td><td>Prehra</td><td>Porazený smie dať Nástroj z ruky do Dedičstva zadarmo (cena Dedičstva aj tak stúpne).</td></tr>
           <tr><td>Obecný úrad</td><td>Bitka</td><td>Prah Exekútora −4; Robota spáli 2 priznané Dlhy.</td></tr>
           <tr><td>Jednota</td><td>Pitka</td><td>Nový poldeci (barter) o 1 cigaretu lacnejší.</td></tr>
-          <tr><td>Kultúrny dom</td><td>Bitka</td><td>Pohoršenie nemá limit dvoch hraníc zón v žiadnom smere (na krajnú pozíciu stále nie).</td></tr>
+          <tr><td>Kultúrny dom</td><td>Bitka</td><td>Prebytok sa nerozdeľuje medzi starších. Kto ho drží, dostane toľko špakov, aký je prebytok.</td></tr>
           <tr><td>Vínna pivnica</td><td>Pitka</td><td>NA EX až dvakrát za Pitku.</td></tr>
           <tr><td>Družstvo</td><td>Zhromaždenie</td><td>Pracujúci nemíňajú limit vykladania.</td></tr>
         </tbody>
@@ -845,56 +877,61 @@ export const KAPITOLY: readonly Kapitola[] = [
   {
     id: "bodovanie",
     cast: "C",
-    nazov: "Bodovanie na konci",
+    nazov: "Špaky a finále",
     obrazok: "15-bodovanie",
     vSkratke: [
-      "Body sa počítajú za každého staršieho zvlášť.",
-      "Každá aktívna podmienka jeho scorecardu je súboj; rovnosť nevyhrá nikto.",
-      "Body za staršieho získa, kto vyhrá viac jeho podmienok; pri rovnosti obaja.",
-      "Koľko: 1 bod + 1 za každú zónu, v ktorej sa ťa starší bojí.",
+      "Špaky sú víťazné body; po finále vyhrá, kto ich má viac, rovnosť je remíza.",
+      "Vyhratá bitka: toľko špakov, koľko sa odohralo Pitiek (aspoň 1).",
+      "Po každej bitke: každý starší, ktorý sa ťa bojí, dá 1 / 2 / 3 podľa zóny.",
+      "Finále: posledná bitka bez lokality, vždy 3 Pitky, prebytok dá špaky.",
     ],
     obsah: () => (
       <>
         <p>
-          Po poslednej bitke o lokalitu sa body počítajú <strong>za každého staršieho zvlášť</strong>. Aktívne{" "}
-          <P k="podmienka">podmienky</P> na jeho <P k="scorecard">scorecarde</P> sú <P k="suboj">súboje</P> — pri každej vyhrá
-          ten z vás, kto ju spĺňa lepšie. Iné body nie sú: lokality, cigarety ani Dlhy sa nebodujú za kusy.
+          <P k="spak">Špaky</P> zbieraš počas celej hry a sú verejné. Smú klesnúť aj do mínusu. Vyhrá, kto ich má po{" "}
+          <P k="finale">finále</P> viac; pri rovnosti je remíza. Lokality sa neovládajú — odohrané bitky
+          visia na krčmovej <P k="nastenka">nástenke</P> s menom víťaza a jeho špakmi.
         </p>
-        <H3 id="bodovanie-suboje">Súboje podmienok</H3>
+        <H3 id="spaky-zdroje">Odkiaľ sú špaky</H3>
         <table className="tabulka">
           <thead>
             <tr>
-              <th>Podmienka</th>
-              <th>Súboj vyhrá, kto má</th>
+              <th>Odkiaľ</th>
+              <th>Koľko</th>
             </tr>
           </thead>
           <tbody>
-            <tr><td>Znepokojenie / Strach / Vydesenie</td><td>viac ostatných starších, ktorí sa ho boja aspoň na úrovni 1 / 2 / 3</td></tr>
-            <tr><td>Lokality</td><td>viac ovládnutých lokalít</td></tr>
-            <tr><td>Starší</td><td>viac starších získaných patronátom</td></tr>
-            <tr><td>Cigarety</td><td>viac zvyšných cigariet</td></tr>
-            <tr><td>Rezerva</td><td>viac plných poldeci (Vínko v Dedičstve sa ráta ako plný)</td></tr>
-            <tr><td>Nepriznaná Cirhóza</td><td>menej nepriznaných Cirhóz (v ruke aj v balíčkoch)</td></tr>
-            <tr><td>Dlhy</td><td>menej Dlhov, aj priznaných</td></tr>
-            <tr><td>Absťák</td><td>menej Absťákov získaných za hru</td></tr>
+            <tr><td>Vyhratá bitka</td><td>toľko, koľko Pitiek sa v kole odohralo (finále 3); ak má víťaz viac Absťákov ako porazený, o rozdiel menej, ale aspoň 1; k tomu špaky zo sekery</td></tr>
+            <tr><td>Starší, ktorí sa ťa boja</td><td>po každej bitke za každého: žltá 1, oranžová 2, červená 3; sivý nikomu</td></tr>
+            <tr><td>Noviny v Dedičstve</td><td>po bitke +1, keď sa ťa bojí viac starších ako súpera</td></tr>
+            <tr><td>Prebytok po finále a v bitke o Kultúrny dom</td><td>toľko, aký je prebytok</td></tr>
+            <tr><td>Exekútor</td><td>mínus polovica priznaných Dlhov (Záhradkár ich zachráni)</td></tr>
+            <tr><td>Nepriznaná Cirhóza</td><td>mínus 5 za kus na konci hry (ruka aj oba balíčky)</td></tr>
           </tbody>
         </table>
-        <p>
-          Pri rovnosti (aj 0 : 0) podmienku nevyhrá nikto. Dve rovnaké aktívne podmienky sú dva súboje. Zónové podmienky rátajú
-          len <strong>ostatných</strong> starších — strach tohto staršieho sa pre jeho vlastný scorecard nepočíta.
-        </p>
-        <H3 id="bodovanie-starsi">Body za staršieho</H3>
-        <p>
-          <strong>Body za staršieho získa ten, kto vyhrá viac jeho podmienok.</strong> Pri rovnosti ich získate obaja. Kto vyhrá
-          menej, za tohto staršieho nedostane nič. Koľko bodov: <strong>1 bod + 1 za každú zónu</strong>, v ktorej sa ťa starší
-          bojí — žltá 2, oranžová 3, červená 4. Ak ti starší prejavuje priazeň alebo je marker v sivom strede, dostaneš 1 bod.
-        </p>
         <p className="zvyraznene">
-          Príklad: Farár sa ťa bojí v oranžovej zóne. Aktívne má Lokality, Dlhy, Dlhy a Strach. Ty máš 3 lokality a 1 Dlh,
-          súper 2 lokality a 1 Dlh; z ostatných starších sa aspoň v oranžovej boja dvaja teba a dvaja súpera. Lokality vyhráš ty, Dlhy aj Strach sú
-          rovnosť — vyhral si 1 : 0 a body za Farára získaš ty: 1 + 2 = 3 body. Keby si mal o Dlh viac, oba súboje o Dlhy
-          vyhrá súper, vyhrá 2 : 1 a za Farára dostane on 1 bod.
+          Príklad: v bitke o Krčmu sa odohrali 2 Pitky a vyhral si — máš 2 špaky. Farár sa ťa bojí v oranžovej a Starosta
+          v žltej, takže po bitke dostaneš ďalšie 2 + 1 = 3. Súpera sa bojí Hrobár v žltej: súper dostane 1. Po bitke je to
+          5 : 1.
         </p>
+        <H3 id="finale">Finále</H3>
+        <ul>
+          <li>Po poslednej bitke o lokalitu (3 / 5 / 7) sa hrá finále — posledná bitka bez lokality.</li>
+          <li>Cieľ sa nevyberá; šenok, branie aj patronát platia ako v každom kole.</li>
+          <li>
+            <strong>Útočí, kto má viac špakov</strong> (pri rovnosti ten, kto prehral poslednú bitku). Vykladá prvý, takže súper
+            vidí, čo vyložil; v Pitke má posledné slovo.
+          </li>
+          <li>
+            Prvá vyložená karta leží v strede ako lokalita, ďalšie sa kladú na jej dve strany a párujú sa s ňou bežne. Kraje ani
+            prevaha vo finále nie sú.
+          </li>
+          <li>Finále má vždy 3 Pitky. Pri sekere vo finále špaky kola aj zo sekery prepadnú.</li>
+          <li>
+            Po finále sa ešte rozdajú špaky za starších. Prebytok sa nerozdeľuje — jeho držiteľ dostane toľko špakov, aký je
+            prebytok. Potom sa odpočíta nepriznaná Cirhóza a vyhrá hráč s viac špakmi.
+          </li>
+        </ul>
         <div className="riadok-tlacidiel">
           <Odkaz href="/hra" className="tlacidlo tlacidlo-hlavne">
             Si pripravený? Hraj!
