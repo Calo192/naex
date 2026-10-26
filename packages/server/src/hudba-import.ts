@@ -17,7 +17,7 @@
 // Na produkcii viď docs/NASADENIE.md.
 
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { basename, extname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -29,6 +29,7 @@ import {
   nacitajPriecinokHlasok,
   nazovHlasky,
   priponaZvuku,
+  suboryVPriecinku,
   trvanieMp3,
   type Hlaska,
   type Skladba,
@@ -61,17 +62,9 @@ if (argument === undefined) {
 const priecinok = resolve(process.env.INIT_CWD ?? process.cwd(), argument);
 mkdirSync(hudba.adresar, { recursive: true });
 
-function* subory(dir: string): Generator<string> {
-  for (const meno of readdirSync(dir).sort((a, b) => a.localeCompare(b, "sk"))) {
-    const cesta = join(dir, meno);
-    if (statSync(cesta).isDirectory()) yield* subory(cesta);
-    else yield cesta;
-  }
-}
-
 const hlaskovy = hlasky ? nacitajPriecinokHlasok(priecinok) : null;
 for (const v of hlaskovy?.varovania ?? []) console.warn(v);
-const vstup = hlaskovy?.subory ?? [...subory(priecinok)].map((cesta) => ({ cesta, skupina: null }));
+const vstup = hlaskovy?.subory ?? [...suboryVPriecinku(priecinok)].map((cesta) => ({ cesta, skupina: null }));
 
 const skladby: (Skladba | Hlaska)[] = [];
 for (const { cesta, skupina } of vstup) {

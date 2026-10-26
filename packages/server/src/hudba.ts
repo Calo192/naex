@@ -5,7 +5,7 @@
 // Melichara (Michal 2026-10-21), len z adresára <data>/melichar/.
 
 import { createReadStream, existsSync, readdirSync, readFileSync, statSync } from "node:fs";
-import { join } from "node:path";
+import { basename, join } from "node:path";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { NALADY, type NaladaMomentu } from "@naex/core";
 
@@ -93,13 +93,17 @@ export interface PriecinokHlasok {
   readonly varovania: string[];
 }
 
-function* suboryVPriecinku(dir: string): Generator<string> {
+/** Všetky súbory v priečinku aj v podpriečinkoch, abecedne — import hudby aj hlášok. */
+export function* suboryVPriecinku(dir: string): Generator<string> {
   for (const meno of readdirSync(dir).sort((a, b) => a.localeCompare(b, "sk"))) {
     const cesta = join(dir, meno);
     if (statSync(cesta).isDirectory()) yield* suboryVPriecinku(cesta);
-    else if (meno !== SKUPINA) yield cesta;
+    else yield cesta;
   }
 }
+
+/** Súbory hlášok v priečinku skupiny — bez popisu skupiny (skupina.json). */
+const suboryHlasok = (dir: string): string[] => [...suboryVPriecinku(dir)].filter((cesta) => basename(cesta) !== SKUPINA);
 
 /**
  * Priečinok s hláškami: každý podpriečinok je skupina (jeho skupina.json ju
@@ -119,7 +123,7 @@ export function nacitajPriecinokHlasok(priecinok: string): PriecinokHlasok {
       continue;
     }
     if (meno.startsWith("_") || meno.startsWith(".")) {
-      const n = [...suboryVPriecinku(cesta)].length;
+      const n = suboryHlasok(cesta).length;
       varovania.push(`${meno}/ — priečinok s „_“ sa nenahráva (${n} ${n === 1 ? "súbor" : n >= 2 && n <= 4 ? "súbory" : "súborov"}).`);
       continue;
     }
@@ -143,7 +147,7 @@ export function nacitajPriecinokHlasok(priecinok: string): PriecinokHlasok {
       skupina = { ...skupina, klaves: null };
     }
     skupiny.push(skupina);
-    for (const s of suboryVPriecinku(cesta)) subory.push({ cesta: s, skupina: id });
+    for (const s of suboryHlasok(cesta)) subory.push({ cesta: s, skupina: id });
   }
   const poradie = (k: string | null): number => (k === null ? 10 : Number(k));
   skupiny.sort((a, b) => poradie(a.klaves) - poradie(b.klaves) || a.nazov.localeCompare(b.nazov, "sk"));
