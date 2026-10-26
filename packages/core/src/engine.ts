@@ -1786,6 +1786,9 @@ function cmdPatronat(
     type: "log",
     text: `Patronát: hráč ${p + 1} si berie do ruky staršieho ${defOf(data, elder.karta as CardInstance).name}, na scorecard kladie kartu lícom dole a marker dáva do stredu${cena.cigarety > 0 ? ` (platí ${cena.cigarety} ${cena.cigarety === 1 ? "cigaretu" : "cigarety"})` : ""}. Súper dostane v bitke ${cena.pohorsenia} Pohoršenia.`,
   });
+  // Patronát z červenej môže súperovi zobrať polovicu vydesených — ohlásenie
+  // padá hneď, nie až na konci kola (Michal 2026-10-26).
+  skontrolujVydesenie(s, data, events);
   dalsiVPatronate(s, data, p, events);
 }
 
@@ -4303,7 +4306,9 @@ export function prahVydesenia(state: { readonly starsi: readonly ElderState[] })
  * Vydesenie aspoň polovice starších → výhra (PRAVIDLA §1). Rátajú sa aj
  * nahradení — ostávajú v hre (Michal 2026-10-12). Ohlásené vydesenie
  * (Michal 2026-10-16): kto dosiahne prah, vyhrá, až keď ho udrží do konca
- * NASLEDUJÚCEHO kola — súper má kolo na odpoveď (bitka o staršieho).
+ * NASLEDUJÚCEHO kola — súper má kolo na odpoveď (patronát, Pohoršenie, prebytok).
+ * Volá sa po KAŽDOM posune markera (Michal 2026-10-26): pokles pod prah zruší
+ * ohlásenie hneď a opätovné doplnenie v tom istom kole ohlási vydesenie odznova.
  */
 function skontrolujVydesenie(s: MutState, data: GameData, events: Event[], koniecKola = false): void {
   if (s.koniec !== null) return;

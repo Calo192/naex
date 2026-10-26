@@ -13,12 +13,15 @@
     {
       "id": "1.koniec.vydesenie-ohlasene",
       "paragraf": "1. Cieľ a koniec hry › Podmienky konca",
-      "pravidlo": "Kto vydesí aspoň polovicu starších (aj nahradených), vyhrá, až keď ich udrží do konca nasledujúceho kola; keď ich stratí, hrozba padá.",
+      "pravidlo": "Kto vydesí aspoň polovicu starších (aj nahradených), vyhrá, až keď ich udrží do konca nasledujúceho kola; keď klesne pod polovicu (patronát, Pohoršenie, prebytok), hrozba padá hneď a opätovné doplnenie v tom istom kole ohlasuje odznova.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/dobiehanie.test.ts › polovica vydesených starších hru neukončí hneď — vydesenie sa ohlási",
         "packages/core/test/dobiehanie.test.ts › kto vydesenie udrží do konca nasledujúceho kola, vyhrá",
-        "packages/core/test/pravidla-bitka.test.ts › §1: ohlásené vydesenie — kto do konca nasledujúceho kola udrží polovicu (4 z 8) vydesených, vyhrá; kto ich stratí, nevyhrá"
+        "packages/core/test/pravidla-bitka.test.ts › §1: ohlásené vydesenie — kto do konca nasledujúceho kola udrží polovicu (4 z 8) vydesených, vyhrá; kto ich stratí, nevyhrá",
+        "packages/core/test/vydesenie-zrusenie.test.ts › §1/§10: patronát nad vydeseným starším zruší ohlásenie v tej chvíli — aj v pohľade oboch hráčov",
+        "packages/core/test/vydesenie-zrusenie.test.ts › §1: kto po zrušení v tom istom kole znova doplní polovicu, ohlasuje odznova — na konci kola nevyhrá",
+        "packages/core/test/vydesenie-zrusenie.test.ts › §1: po žiadnom ťahu nevisí ohlásenie hráča, ktorý nemá vydesenú polovicu starších (náhodné partie)"
       ]
     },
     {

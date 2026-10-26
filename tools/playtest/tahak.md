@@ -188,5 +188,6 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 - **Remíza (v6):** pri rovnakom tuhom vyhrá, kto má **menej Absťákov**, potom **menej
   priznaných Dlhov**; inak **sekera** — špaky kola (Pitky) vezme víťaz najbližšej bitky,
   vo finále prepadnú; útočník ostáva, patronát = prehra. Celkové určuje len prebytok.
-  **Ohlásené vydesenie:** polovicu starších treba udržať do konca ďalšieho kola.
+  **Ohlásené vydesenie:** polovicu starších treba udržať do konca ďalšieho kola; keď
+  klesne pod polovicu (aj patronátom), padá hneď a nové doplnenie ohlasuje odznova.
   **Cigarety za prebytok** dostane ten, proti komu sa prebytok delil.

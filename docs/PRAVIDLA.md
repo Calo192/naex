@@ -41,7 +41,11 @@ a po každej bitke za starších, ktorí sa hráča boja. Na konci vyhrá, kto m
 
 Exekúcia prehru nespôsobí — stojí Dlhy a špaky (§11).
 
-Vydesenie sa kontroluje na konci kola (§4). Malý balíček prehru nespôsobí:
+Vydesenie sa kontroluje na konci kola (§4) a po každom posune markera:
+keď hráčovi klesne počet vydesených starších pod polovicu (patronát, Pohoršenie,
+prebytok), ohlásenie **padá hneď** — ak ich v tom istom kole znova doplní,
+ohlasuje odznova a musí ich udržať do konca nasledujúceho kola (Michal 2026-10-26).
+Malý balíček prehru nespôsobí:
 keď sa doberací aj odhadzovací balíček minú, hráč len nemá čo ťahať (a fajčiť
 sa vtedy nedá, §7).
 

@@ -660,7 +660,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           </li>
           <li>
             <P k="vydesenie">Vydesenie:</P> kto má na krajnej zóne polovicu starších v hre a udrží ich do konca nasledujúceho kola,
-            vyhrá.
+            vyhrá. Keď ich čo i len na chvíľu klesne pod polovicu (napr. patronátom), hrozba padá a ráta sa odznova.
           </li>
         </ul>
         <p className="tlmene">
