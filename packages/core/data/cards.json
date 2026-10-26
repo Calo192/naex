@@ -1,5 +1,5 @@
 {
- "source": "tvorca kariet 2026-10-25T09:47:26.709Z",
+ "source": "tvorca kariet 2026-10-26T11:26:00.788Z",
  "actions": [
   "Cigareta",
   "Dlh",
@@ -388,27 +388,21 @@
     "Prehra"
    ],
    "left": {
-    "blocked": [
-     0,
-     3
-    ],
+    "blocked": [],
     "actions": {
-     "Cigareta": 1
+     "Robota": 1
     }
    },
    "right": {
-    "blocked": [
-     0,
-     3
-    ],
+    "blocked": [],
     "actions": {
-     "Dlh": 1
+     "Dlh": 4
     }
    },
    "permutations": {
     "total": 4,
-    "left": 2,
-    "right": 2
+    "left": 4,
+    "right": 1
    }
   },
   {
