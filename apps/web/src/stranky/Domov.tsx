@@ -7,7 +7,7 @@ import { IkonaPoldeci } from "../hra/Panely.tsx";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { useSada, vzhladSady } from "../lib/sada.tsx";
 import { useUcet } from "../lib/ucet.tsx";
-import { rozpracovana, useVyucbaUctu } from "../hra/Vyucba.tsx";
+import { adresaVyucby, bezPrvejCasti, napisVyucby, rozpracovana, useVyucbaUctu } from "../hra/Vyucba.tsx";
 
 const VEJAR = ["pijan", "farar", "krcma"];
 
@@ -16,6 +16,9 @@ export function Domov() {
   const { sada } = useSada();
   const { ja } = useUcet();
   const { vyucba } = useVyucbaUctu(ja !== null);
+  // Nováčikovi bez 1. časti výučby je výučba hlavná výzva a Pravidlá druhoradé (#104, Michal 2026-10-26).
+  // Prihlásený, kým sa stav výučby nenačíta, vidí bežnú titulku — nech tlačidlá neskáču.
+  const novacik = bezPrvejCasti(ja !== null, vyucba);
   const karty = sada === null ? [] : VEJAR.map((id) => sada.karty.find((k) => k.id === id)).filter((k) => k !== undefined);
 
   return (
@@ -31,20 +34,38 @@ export function Domov() {
             Kompetitívna kartová hra pre dvoch v drsnom dedinskom prostredí. Stav partiu z kariet, ktoré sa
             dotýkajú stranami, bi sa o lokality, des starších — a nezabudni na vlastné dlhy.
           </p>
-          <div className="riadok-tlacidiel">
-            <Odkaz href="/hra" className="tlacidlo tlacidlo-hlavne">
-              {ja === null ? "Prihlás sa a hraj" : "Hrať teraz"}
-            </Odkaz>
-            {/* Výučba pri stole (Michal 2026-10-23) — /hra?vyucba=1 ju rovno spustí. */}
-            {vyucba !== null && vyucba.dostupna && (
-              <Odkaz href="/hra?vyucba=1" className="tlacidlo" data-vyucba-vstup="titulka">
-                {rozpracovana(vyucba) ? "Pokračovať vo výučbe" : "Prvá hra — nauč sa hrať"}
+          {novacik ? (
+            <div className="riadok-tlacidiel hero-novacik">
+              <Odkaz href={adresaVyucby(ja !== null)} className="tlacidlo tlacidlo-hlavne tlacidlo-velke" data-vyucba-vstup="titulka">
+                <img src="/melichar.jpg" alt="" width={40} height={40} />
+                <span>
+                  {napisVyucby(vyucba)}
+                  <small>~15 minút pri stole proti Štamgastovi</small>
+                </span>
               </Odkaz>
-            )}
-            <Odkaz href="/pravidla" className="tlacidlo">
-              Naučiť sa pravidlá
-            </Odkaz>
-          </div>
+              <Odkaz href="/hra" className="tlacidlo">
+                {ja === null ? "Prihlás sa a hraj" : "Hrať teraz"}
+              </Odkaz>
+              <Odkaz href="/pravidla" className="hero-pravidla">
+                Pravidlá na čítanie
+              </Odkaz>
+            </div>
+          ) : (
+            <div className="riadok-tlacidiel">
+              <Odkaz href="/hra" className="tlacidlo tlacidlo-hlavne">
+                {ja === null ? "Prihlás sa a hraj" : "Hrať teraz"}
+              </Odkaz>
+              {/* Výučba pri stole (Michal 2026-10-23) — /hra?vyucba=1 ju rovno spustí. */}
+              {vyucba !== null && vyucba.dostupna && (
+                <Odkaz href="/hra?vyucba=1" className="tlacidlo" data-vyucba-vstup="titulka">
+                  {rozpracovana(vyucba) ? "Pokračovať vo výučbe" : "Prvá hra — nauč sa hrať"}
+                </Odkaz>
+              )}
+              <Odkaz href="/pravidla" className="tlacidlo">
+                Naučiť sa pravidlá
+              </Odkaz>
+            </div>
+          )}
         </div>
         <div className="hero-vejar" aria-hidden="true">
           {sada !== null &&

@@ -310,6 +310,53 @@ body.vyucba-bezi .oznamy-priazne {
   margin: 0;
 }
 
+/* Nováčik bez 1. časti (#104): výučba je najväčšia výzva lobby. */
+.vyucba-vstup.vyzva {
+  padding: 1.6rem 1.8rem;
+  border-width: 2px;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--akcent) 14%, var(--plocha-2)), var(--plocha));
+}
+
+.vyucba-vstup.vyzva h2 {
+  font-size: 1.5rem;
+}
+
+.vyucba-vstup.vyzva .tlacidlo-hlavne {
+  padding: 0.8rem 1.5rem;
+  font-size: 1.05rem;
+}
+
+.vyucba-vstup p.vyucba-vstup-pravidla {
+  margin-top: 6px;
+  font-size: 0.85rem;
+}
+
+/* ---- banner na Pravidlách pre toho, kto ešte nemá 1. časť (#104) ---- */
+.vyucba-vyzva {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  margin-bottom: 22px;
+  padding: 1rem 1.2rem;
+  border-color: var(--akcent);
+}
+
+.vyucba-vyzva > div {
+  flex: 1 1 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.vyucba-vyzva strong {
+  font-size: 1.08rem;
+}
+
+.vyucba-vyzva .tlmene {
+  font-size: 0.88rem;
+}
+
 /* ---- ponuka pri prvom kliku na Hrať ---- */
 .vyucba-ponuka-zaves {
   position: fixed;

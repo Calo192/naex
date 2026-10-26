@@ -32,8 +32,10 @@ export interface VyucbaUctu {
   readonly stav: "hotova" | "preskocena" | null;
   /** Či ukázať vstup do výučby (kým nie je zverejnená, len správcom). */
   readonly dostupna: boolean;
-  /** Ponúknuť ju pri prvom kliku na Hrať (návštevník, ktorý ju ešte nezačal). */
+  /** Ponúknuť ju pri zakladaní prvej partie (návštevník bez 1. časti, ktorý ju nepreskočil). */
   readonly ponuknut: boolean;
+  /** Dokončené časti — hviezdičky achievementu Prvá hra; „Začať odznova“ ich neuberie. */
+  readonly castiHotove: number;
 }
 
 export function useVyucbaUctu(prihlaseny: boolean): { readonly vyucba: VyucbaUctu | null; readonly obnov: () => void } {
@@ -52,64 +54,21 @@ export function useVyucbaUctu(prihlaseny: boolean): { readonly vyucba: VyucbaUct
 /** Rozpracovaná výučba: niečo už prešiel, ale ešte nie je hotová. */
 export const rozpracovana = (v: VyucbaUctu): boolean => v.stav !== "hotova" && v.krok > 0 && v.krok < v.spolu;
 
-/** Vstup do výučby v lobby (/hra): „Prvá hra — nauč sa hrať“ alebo „Pokračovať vo výučbe“. */
-export function VyucbaVLobby({ vyucba, zacni }: { readonly vyucba: VyucbaUctu; readonly zacni: (odznova: boolean) => void }) {
-  const pokracuj = rozpracovana(vyucba);
-  return (
-    <section className="panel vyucba-vstup">
-      <img className="vyucba-avatar" src="/melichar.jpg" alt="" width={64} height={64} />
-      <div>
-        <h2>Prvá hra — nauč sa hrať</h2>
-        <p className="tlmene">
-          {pokracuj
-            ? `Majster Melichar ťa čaká pri stole — si v kroku ${vyucba.krok + 1} z ${vyucba.spolu}.`
-            : vyucba.stav === "hotova"
-              ? "Výučbu máš za sebou. Ak si chceš pravidlá zopakovať, zahraj si ju znova."
-              : "1. časť: majster Melichar ťa prevedie prvým kolom proti Štamgastovi — lokalita, šenok, Zhromaždenie, Pitka, bitka a starší. NA EX! príde v 2. časti. Do štatistík sa neráta."}
-        </p>
-      </div>
-      <div className="riadok-tlacidiel">
-        {pokracuj ? (
-          <>
-            <button className="tlacidlo-hlavne" onClick={() => zacni(false)} data-vyucba-vstup="pokracovat">
-              Pokračovať vo výučbe
-            </button>
-            <button onClick={() => zacni(true)}>Začať odznova</button>
-          </>
-        ) : (
-          <button className="tlacidlo-hlavne" onClick={() => zacni(vyucba.stav !== null)} data-vyucba-vstup="zacat">
-            {vyucba.stav === "hotova" ? "Zahrať výučbu znova" : "Prvá hra — nauč sa hrať"}
-          </button>
-        )}
-      </div>
-    </section>
-  );
+/**
+ * Nováčik bez 1. časti výučby (#104, Michal 2026-10-26): výučba je preňho hlavná výzva, Pravidlá
+ * druhoradé. Odhlásený je nováčik vždy; prihlásený, kým nemá hviezdičku 1. časti (zo servera).
+ */
+export function bezPrvejCasti(prihlaseny: boolean, v: VyucbaUctu | null): boolean {
+  if (!prihlaseny) return true;
+  return v !== null && v.dostupna && v.castiHotove === 0;
 }
 
-/** Ponuka pri prvom kliku na Hrať: novému hráčovi výučbu, dá sa preskočiť. */
-export function PonukaVyucby({ zacni, preskoc }: { readonly zacni: () => void; readonly preskoc: () => void }) {
-  const hlavne = useRef<HTMLButtonElement>(null);
-  useEffect(() => hlavne.current?.focus(), []);
-  return (
-    <div className="vyucba-ponuka-zaves" role="dialog" aria-modal="true" aria-labelledby="vyucba-ponuka-nadpis">
-      <div className="vyucba-ponuka panel">
-        <img className="vyucba-avatar" src="/melichar.jpg" alt="" width={96} height={96} />
-        <h2 id="vyucba-ponuka-nadpis">Prvýkrát pri stole?</h2>
-        <p>
-          Som majster Melichar. Za pár minút ťa naučím hrať NA EX! — zahráš si so Štamgastom a ja ti poviem, čo a prečo. Kedykoľvek
-          môžeš prestať a pokračovať neskôr.
-        </p>
-        <div className="riadok-tlacidiel">
-          <button ref={hlavne} className="tlacidlo-hlavne" onClick={zacni} data-vyucba-vstup="ponuka">
-            Nauč ma hrať
-          </button>
-          <button onClick={preskoc}>Preskočiť, poznám pravidlá</button>
-        </div>
-        <p className="tlmene vyucba-ponuka-pozn">Výučbu nájdeš kedykoľvek hore na tejto stránke.</p>
-      </div>
-    </div>
-  );
-}
+const ADRESA_VYUCBY = "/hra?vyucba=1";
+/** Odkaz, ktorý výučbu rovno spustí — odhláseného najprv prihlási a vráti k nej. */
+export const adresaVyucby = (prihlaseny: boolean): string => (prihlaseny ? ADRESA_VYUCBY : `/prihlasenie?spat=${encodeURIComponent(ADRESA_VYUCBY)}`);
+
+/** Nápis hlavného tlačidla výučby pre nováčika. */
+export const napisVyucby = (v: VyucbaUctu | null): string => (v !== null && rozpracovana(v) ? "Pokračovať vo výučbe" : "Nauč sa hrať s Majstrom Melicharom");
 
 // ---- výučba pri stole ----------------------------------------------------------
 
@@ -145,6 +104,7 @@ export function prvkyKluca(kluc: string): HTMLElement[] {
   // Pri stavbe šenku len karty, ktoré ešte ležia v balíčku — na Smetisku už sú, kde majú byť.
   if (kluc.startsWith("smetisko:")) return [...document.querySelectorAll<HTMLElement>(`.stavba-balicek [data-vyucba-uid="${Number(kluc.slice(9))}"]`)];
   const css = (x: string): string => x.replace(/["\\]/g, "");
+  if (kluc === "spoje-lokality") return spojeLokality();
   if (kluc.startsWith("akcia:")) return [...document.querySelectorAll<HTMLElement>(`:is(.ruka-rad, .linia) .kl-slot[data-akcia="${css(kluc.slice(6))}"]`)];
   const priame = [...document.querySelectorAll<HTMLElement>(`[data-vyucba="${css(kluc)}"]`)];
   // Účet bitky je na stole až v ďalšom kole — počas bitky je jej výsledok v odhade jednotného baru.
@@ -156,6 +116,30 @@ export function prvkyKluca(kluc: string): HTMLElement[] {
       `[data-vyucba="${css(zona)}"] [data-vyucba-karta="${css(id)}"], [data-vyucba="${css(zona)}"] [data-vyucba-prvok="${css(id)}"]`,
     ),
   ];
+}
+
+/**
+ * Spojené akcie lokality na oboch stranách a ich partneri na susedných kartách. Z textu
+ * „Pitiek je 1 + menší z dvoch počtov…“ nebolo jasné, ktoré akcie Mosta sa rátajú (Michal 2026-10-25).
+ * Aktívna akcia lokality je vždy spojená; partner leží na susednej karte v rovnakej výške.
+ */
+function spojeLokality(): HTMLElement[] {
+  const stred = document.querySelector<HTMLElement>(".linia .linia-skupina.lokalita .kl");
+  if (stred === null) return [];
+  const vlastne = [...stred.querySelectorAll<HTMLElement>(".kl-slot.kl-aktivna")];
+  const s = stred.getBoundingClientRect();
+  const stredY = (el: HTMLElement): number => {
+    const r = el.getBoundingClientRect();
+    return r.top + r.height / 2;
+  };
+  const partneri = [...document.querySelectorAll<HTMLElement>(".linia :is(.linia-skupina.moja, .linia-skupina.superova) .kl-slot.kl-aktivna")].filter((el) => {
+    const r = el.getBoundingClientRect();
+    const x = r.left + r.width / 2;
+    // Len polovica susednej karty bližšia k lokalite — akcie na vzdialenejšej hrane sú spoje iných kariet.
+    const blizko = (x < s.left && s.left - x < s.width / 2) || (x > s.right && x - s.right < s.width / 2);
+    return blizko && vlastne.some((v) => Math.abs(stredY(v) - (r.top + r.height / 2)) < r.height / 2);
+  });
+  return [...vlastne, ...partneri];
 }
 
 /**

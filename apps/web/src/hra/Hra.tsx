@@ -18,7 +18,8 @@ import { Soundboard } from "./Soundboard.tsx";
 import { useHra } from "./useHra.ts";
 import { OznamZiskov } from "../achievementy/VPartii.tsx";
 import { tvar } from "../stranky/Statistiky.tsx";
-import { PonukaVyucby, useVyucbaUctu, VyucbaStol, VyucbaVLobby, type VyucbaUctu } from "./Vyucba.tsx";
+import { bezPrvejCasti, useVyucbaUctu, VyucbaStol, type VyucbaUctu } from "./Vyucba.tsx";
+import { PonukaVyucby, VyucbaVLobby } from "./VstupyVyucby.tsx";
 import { useNepodporovaneZariadenie } from "./zariadenie.ts";
 import "./hra.css";
 
@@ -71,6 +72,8 @@ function Lobby({
   const zavrete = uzavierka !== null;
   // Vypnuté tlačidlo pri uzávierke povie prečo; hlavné nesmie ostať zlaté, akoby išlo (UI inšpekcia).
   const preco = zavrete ? uzavierka : undefined;
+  // Nováčikovi bez 1. časti je hlavnou výzvou výučba (#104) — založenie hry je druhoradé.
+  const hlavneZalozenie = !zavrete && !(vyucba !== null && bezPrvejCasti(true, vyucba));
 
   useEffect(() => {
     let zive = true;
@@ -128,7 +131,7 @@ function Lobby({
           {maPravo(ja, "hrat_ludia") ? (
             <div className="riadok-tlacidiel">
               {maPravo(ja, "sukromne_miestnosti") && (
-                <button className={zavrete ? undefined : "tlacidlo-hlavne"} onClick={() => zaloz(false, dlzka)} disabled={zavrete} title={preco}>
+                <button className={hlavneZalozenie ? "tlacidlo-hlavne" : undefined} onClick={() => zaloz(false, dlzka)} disabled={zavrete} title={preco}>
                   Súkromná hra s kódom
                 </button>
               )}
@@ -261,6 +264,8 @@ export function Hra() {
   // Výučba „Prvá hra“: vstup v lobby, ponuka novému hráčovi a odkaz /hra?vyucba=1 z titulky.
   const { vyucba: vyucbaUctu, obnov: obnovVyucbu } = useVyucbaUctu(ja !== null);
   const [ponukaZavreta, setPonukaZavreta] = useState(false);
+  // Hra, ktorú nováčik zakladal, kým sa ho ponuka „Najprv výučba?“ pýta (#104); preskočenie ju založí.
+  const [zalozPoPonuke, setZalozPoPonuke] = useState<{ readonly verejna: boolean; readonly dlzka: DlzkaHry; readonly bot: boolean } | null>(null);
   const { zalozVyucbu, odid } = hra;
   const zacniVyucbu = useCallback(
     (odznova: boolean) => {
@@ -280,6 +285,19 @@ export function Hra() {
     setPonukaZavreta(true);
     void api.post("/vyucba/preskocit").finally(obnovVyucbu);
   }, [obnovVyucbu]);
+  const { zaloz } = hra;
+  const zalozSPonukou = useCallback(
+    (verejna: boolean, dlzka: DlzkaHry, bot = false) => {
+      if (vyucbaUctu?.ponuknut === true && !ponukaZavreta) setZalozPoPonuke({ verejna, dlzka, bot });
+      else zaloz(verejna, dlzka, bot);
+    },
+    [vyucbaUctu, ponukaZavreta, zaloz],
+  );
+  const preskocPonuku = useCallback(() => {
+    preskocVyucbu();
+    if (zalozPoPonuke !== null) zaloz(zalozPoPonuke.verejna, zalozPoPonuke.dlzka, zalozPoPonuke.bot);
+    setZalozPoPonuke(null);
+  }, [preskocVyucbu, zalozPoPonuke, zaloz]);
   const prerusVyucbu = useCallback(() => {
     odid();
     obnovVyucbu();
@@ -332,8 +350,10 @@ export function Hra() {
   if (m === null) {
     return (
       <>
-        <Lobby zaloz={hra.zaloz} pripoj={hra.pripoj} chyba={hra.chyba} vyucba={vyucbaUctu} zacniVyucbu={zacniVyucbu} />
-        {vyucbaUctu?.ponuknut === true && !ponukaZavreta && <PonukaVyucby zacni={() => zacniVyucbu(false)} preskoc={preskocVyucbu} />}
+        <Lobby zaloz={zalozSPonukou} pripoj={hra.pripoj} chyba={hra.chyba} vyucba={vyucbaUctu} zacniVyucbu={zacniVyucbu} />
+        {zalozPoPonuke !== null && vyucbaUctu !== null && !ponukaZavreta && (
+          <PonukaVyucby vyucba={vyucbaUctu} zacni={() => zacniVyucbu(false)} preskoc={preskocPonuku} />
+        )}
       </>
     );
   }

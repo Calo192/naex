@@ -344,6 +344,18 @@ export class Achievementy {
   }
 
   /**
+   * Koľko častí výučby „Prvá hra“ hráč dokončil — podľa hviezdičky achievementu (rank = časť).
+   * Stav výučby v účte to nepovie: „Začať odznova“ ho vynuluje, hviezdička ostáva.
+   * Null, keď katalóg achievement s metrikou „vyucba“ nemá.
+   */
+  castiVyucby(pouzivatel: number): number | null {
+    const vyucba = this.katalog.achievementy.filter((a) => a.metrika === "vyucba");
+    if (vyucba.length === 0) return null;
+    const drzane = this.drzane(pouzivatel);
+    return Math.max(...vyucba.map((a) => drzane.get(a.id) ?? 0));
+  }
+
+  /**
    * Pri štarte: kto výučbu dokončil skôr, než achievement existoval, dostane ho dodatočne (bez oznamu).
    * Dokončená výučba spred delenia na časti obsahovala 1. časť — hviezdička za ňu.
    */

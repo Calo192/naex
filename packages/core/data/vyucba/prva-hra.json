@@ -128,7 +128,9 @@
       },
       "melichar": "Vyber Most a natoč ho [Petelica] Petelicou k sebe: klikni naň, ďalším klikom ho otočíš, potom potvrď. Hrana pri tebe môže byť tvoja, tú druhú dostane súper. Tvoj súper bude Štamgast, ja ti budem radiť.",
       "zvyraznit": [
-        "lokality"
+        "lokality",
+        "lokalita-navrh",
+        "tlacidlo:otocit"
       ],
       "volba": {
         "kandidati": [
@@ -166,7 +168,7 @@
     {
       "id": "i-fazy",
       "kto": "info",
-      "melichar": "Kolo ide zľava doprava: šenok, Zhromaždenie, Pitka, bitka. V šenku kúpiš karty, v Zhromaždení ich vyložíš k Mostu, v Pitke sa platí za to, čo leží na stole, a v bitke sa ráta tuhé. Bez kariet nemáš čo vyložiť a bez stola niet čo platiť.",
+      "melichar": "Kolo ide zľava doprava: Voľba cieľa, Draft, Zhromaždenie, Pitka, Bitka. Voľbu cieľa máš za sebou, gratulujem. V Drafte si zo šenku kúpiš karty, v Zhromaždení ich hráš k Mostu, v Pitke sa pije a fajčí a v Bitke sa ráta Poškodenie ([Pohoršenie] [Rana] [Pecka] [Petelica] [Povera]).",
       "zvyraznit": [
         "os-kola"
       ]
@@ -191,7 +193,7 @@
     {
       "id": "i-senok",
       "kto": "info",
-      "melichar": "Teraz sa stavia šenok: ponuka kariet, ktoré si môžeš kúpiť. Naostro doň vyberáš karty sám, dnes to za teba spravím ja, aby si to nedojebal. Môžeš si skúsiť natiahnuť karty na Smetisko – tie sa odhodia, ale tentokrát budem mať posledné slovo ja.",
+      "melichar": "Teraz je Draft. Najprv sa stavia šenok: ponuka kariet, ktoré si potom môžeš kúpiť. Naostro doň vyberáš karty sám, dnes to za teba spravím ja, aby si to nedojebal. Môžeš si skúsiť natiahnuť karty na Smetisko – tie sa odhodia, ale tentokrát budem mať posledné slovo ja.",
       "zvyraznit": [
         "stavba"
       ],
@@ -274,7 +276,7 @@
           "senok:zamocnik"
         ]
       },
-      "melichar": "Šenok je hotový. Kupuje sa striedavo a Štamgast začína: kúpil Zámočníka za jednu [Cigareta] cigaretu. Vidíš? Niektorí ľudia cigarety aj dávajú.",
+      "melichar": "Šenok je postavený, v Drafte sa teraz kupuje. Kupuje sa striedavo a Štamgast začína: kúpil Zámočníka za jednu [Cigareta] cigaretu. Vidíš? Niektorí ľudia cigarety aj dávajú.",
       "zvyraznit": [
         "senok",
         "bar-supera:cigarety"
@@ -308,7 +310,7 @@
       "prikaz": {
         "type": "draftStop"
       },
-      "melichar": "Štamgast už neťahá. Ty máš ešte poslednú šancu, potom nákup končí. Čo v šenku ostane, počká na ďalšie kolo."
+      "melichar": "Štamgast už neťahá. Ty máš ešte poslednú šancu, potom Draft končí. Čo v šenku ostane, počká na ďalšie kolo."
     },
     {
       "id": "k-stop",
@@ -324,7 +326,7 @@
     {
       "id": "i-zhromazdenie",
       "kto": "info",
-      "melichar": "Zhromaždenie je podstata hry. Striedavo kladiete karty k Mostu tak, aby sa vaše akcie spojili a dali viac tuhého ako súperove. Kto bude mať v bitke viac tuhého, berie Most. Toto si zapamätaj, zvyšok sú detaily.",
+      "melichar": "Zhromaždenie je podstata hry. Striedavo zhromažďujete karty k Mostu: hráš karty, aby sa tvoje akcie spojili, ideálne v tvoj prospech. Kto bude mať v bitke viac tuhého, berie Most. Toto si zapamätaj, zvyšok sú detaily.",
       "zvyraznit": [
         "os-kola"
       ]
@@ -350,7 +352,7 @@
           }
         ]
       },
-      "melichar": "Po šenkovom drafte ide Zhromaždenie: striedavo kladiete karty k Mostu, Štamgast začína. Priložil Zámočníka. Pozeraj, nech sa niečo naučíš.",
+      "melichar": "Po Drafte ide Zhromaždenie: striedavo zhromažďujete karty k Mostu, Štamgast začína. Priložil Zámočníka. Pozeraj, nech sa niečo naučíš.",
       "zvyraznit": [
         "linia"
       ]
@@ -448,9 +450,10 @@
     {
       "id": "i-pitky",
       "kto": "info",
-      "melichar": "Pozri na priebeh kola: pribudla druhá Pitka. Pitiek je 1 + menší z dvoch počtov: koľko akcií mosta si spojil ty a koľko Štamgast. Ty jednu, on jednu, teda dve. Pred každou Pitkou je Zhromaždenie, takže dnes dvakrát kladiete a dvakrát pijete.",
+      "melichar": "Pozri na priebeh kola: pribudla druhá Pitka. Pitiek je 1 + menší z dvoch počtov: koľko akcií Mosta si spojil ty a koľko Štamgast. Na Moste svietia: tvoja [Petelica] Petelica s Pijanom a jeho [Viera] Viera so Zámočníkom. Ty jednu, on jednu, teda dve. Pred každou Pitkou je Zhromaždenie, takže dnes dvakrát zhromažďujete a dvakrát pijete.",
       "zvyraznit": [
-        "os-kola"
+        "os-kola",
+        "spoje-lokality"
       ]
     },
     {
@@ -514,7 +517,7 @@
     {
       "id": "i-pecen",
       "kto": "info",
-      "melichar": "[PoškodeniePečene] Pečeň: v Pitke ti stôl napočíta 2 z 3. Keď v Pitke dosiahneš 3, dostaneš Cirhózu, zlú kartu do balíčka. Po každej Pitke sa pečeň aj zadĺženie vynulujú. Pečeni je to jedno, mne tiež.",
+      "melichar": "[PoškodeniePečene] Poškodenie pečene: v Pitke budeš mať 2 z 3. Keď v Pitke dosiahneš 3, dostaneš Cirhózu — dedinskú kliatbu! Po každej Pitke sa Poškodenie pečene aj zadĺženie vynulujú. Pečeni je to jedno, mne tiež.",
       "zvyraznit": [
         "bar:pecen"
       ]
@@ -532,7 +535,7 @@
         {
           "text": "Ostane mi a v ďalšej Pitke budem mať 2.",
           "spravna": false,
-          "vysvetlenie": "Neostane, po Pitke sa nuluje. Lenže v ďalšej Pitke ti ho stôl napočíta znova, kým tam Pijan leží."
+          "vysvetlenie": "Neostane, po Pitke sa nuluje. Lenže v ďalšej Pitke ti pribudne znova, kým tam Pijan leží."
         }
       ]
     },
@@ -573,7 +576,7 @@
       "melichar": "Tak čo sa robí v Zhromaždení?",
       "moznosti": [
         {
-          "text": "Kladiem karty, aby sa moje akcie spojili a dali viac tuhého.",
+          "text": "Hrám karty, aby sa moje akcie spojili, ideálne v môj prospech.",
           "spravna": true,
           "vysvetlenie": "Áno. Toto je celá hra, zvyšok sú výhovorky."
         },
@@ -587,7 +590,7 @@
     {
       "id": "i-pitka",
       "kto": "info",
-      "melichar": "Pitka! Karty sa už nekladú, teraz sa pije. Začínaš ty, Štamgast po tebe. Na toto máš talent, to ti uznám.",
+      "melichar": "Pitka! Karty sa už nehrajú, teraz sa pije. Začínaš ty, Štamgast po tebe. Na toto máš talent, to ti uznám.",
       "zvyraznit": [
         "os-kola"
       ]
@@ -595,10 +598,11 @@
     {
       "id": "i-ucet",
       "kto": "info",
-      "melichar": "V Pitke sa platí za to, čo leží na stole: pečeň a Dlh. A vyplácajú sa cigarety za [Cigareta] Cigaretu. Preto ide Pitka až po Zhromaždení: najprv sa naleje, potom sa platí.",
+      "melichar": "V Pitke pribúdajú Dlhy a poškodzuje sa pečeň: o koľko, to určia spojené [Dlh] Dlhy a [PoškodeniePečene] Poškodenia pečene na stole. V Pitke tiež získavaš cigarety, za každú spojenú [Cigareta] Cigaretu jednu. Preto ide Pitka až po Zhromaždení.",
       "zvyraznit": [
         "bar:pecen",
-        "bar:zadlzenie"
+        "bar:zadlzenie",
+        "bar:cigarety"
       ]
     },
     {
@@ -634,7 +638,7 @@
       "prikaz": {
         "type": "skipNaex"
       },
-      "melichar": "Pitka sa vyhodnotila. Tvoja pečeň 2 z 3 aj zadĺženie 1 z 2 sa vynulovali, nič zlé sa nestalo. Štamgast dostal cigaretu za Cigaretu. A ideme znova: druhé Zhromaždenie, Štamgast začína.",
+      "melichar": "Pitka sa vyhodnotila. Tvoje Poškodenie pečene 2 z 3 aj zadĺženie 1 z 2 sa vynulovali, nič zlé sa nestalo. Štamgast dostal cigaretu za Cigaretu. A ideme znova: druhé Zhromaždenie, Štamgast začína.",
       "zvyraznit": [
         "bar:pecen",
         "bar:zadlzenie",
@@ -648,14 +652,14 @@
       "melichar": "Prečo ide Pitka až po Zhromaždení?",
       "moznosti": [
         {
-          "text": "V Pitke sa platí za to, čo leží na stole.",
+          "text": "V Pitke pribúdajú Dlhy a poškodzuje sa pečeň podľa toho, čo leží na stole.",
           "spravna": true,
-          "vysvetlenie": "Áno. Najprv sa naleje, potom sa platí. A fajčením si v Pitke doberieš karty na ďalšie Zhromaždenie."
+          "vysvetlenie": "Áno. A v Pitke tiež získavaš cigarety a fajčením si doberieš karty na ďalšie Zhromaždenie."
         },
         {
           "text": "V Pitke si fajčením doberiem karty na ďalšie Zhromaždenie.",
           "spravna": true,
-          "vysvetlenie": "Aj to. A ešte sa v nej platí za to, čo leží na stole. Dve správne odpovede, aby si sa necítil zle."
+          "vysvetlenie": "Aj to. A ešte v nej pribúdajú Dlhy a poškodzuje sa pečeň. Dve správne odpovede, aby si sa necítil zle."
         }
       ]
     },
@@ -702,7 +706,7 @@
         {
           "text": "Jeho Dlh zaplatím len v jednej Pitke.",
           "spravna": true,
-          "vysvetlenie": "Áno. Čo leží na stole, platíš v každej Pitke, ktorá ešte príde."
+          "vysvetlenie": "Áno. Čo leží na stole, ťa dobehne v každej Pitke, ktorá ešte príde."
         },
         {
           "text": "V prvom by jeho Petelica neplatila.",

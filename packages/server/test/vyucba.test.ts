@@ -68,7 +68,7 @@ describe("výučba „Prvá hra“", () => {
     const { cookie } = await registruj(server.port);
     const ja = await api<{ pouzivatel: { id: number; rola: string } }>(cookie, "GET", "/ja");
     expect(ja.pouzivatel.rola).toBe("navstevnik");
-    expect(await api(cookie, "GET", "/vyucba")).toMatchObject({ krok: 0, stav: null, ponuknut: true });
+    expect(await api(cookie, "GET", "/vyucba")).toMatchObject({ krok: 0, stav: null, ponuknut: true, castiHotove: 0 });
 
     const { k, prvy } = await zacni(cookie);
     const krok = prvy.krok as KrokMsg;
@@ -87,6 +87,8 @@ describe("výučba „Prvá hra“", () => {
 
     // Opakovaná výučba už Prvú hru nedá druhý raz.
     await api(cookie, "POST", "/vyucba/znova");
+    // „Začať odznova“ vynuluje stav, hviezdička 1. časti ostáva — vstupy nováčika (#104) sa už neukážu.
+    expect(await api(cookie, "GET", "/vyucba")).toMatchObject({ stav: null, castiHotove: 1, ponuknut: false });
     const druha = await zacni(cookie);
     await hraj(druha.k, druha.prvy);
     await expect(druha.k.cakaj("achievement")).rejects.toThrow(/Nedošla/);
@@ -136,8 +138,10 @@ describe("výučba „Prvá hra“", () => {
     k.zavri();
     await new Promise((r) => setTimeout(r, 50));
     // Bot mohol medzitým dohrať svoje kroky — uložené je aspoň to, čo hráč prešiel.
-    const ulozene = await api<{ krok: number }>(cookie, "GET", "/vyucba");
+    const ulozene = await api<{ krok: number; ponuknut: boolean }>(cookie, "GET", "/vyucba");
     expect(ulozene.krok).toBeGreaterThanOrEqual(index);
+    // Rozpracovaná, nedokončená výučba: pri zakladaní prvej partie sa ponúkne znova (#104).
+    expect(ulozene.ponuknut).toBe(true);
 
     const znova = await zacni(cookie);
     expect((znova.prvy.krok as KrokMsg).index).toBe(ulozene.krok);

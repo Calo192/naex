@@ -413,7 +413,11 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       const v = ctx.ucty.vyucba(p.id, ctx.vyucbaVerzia);
       // dostupna: či ukázať tlačidlo „Prvá hra“; kým je vypínač vypnutý, len správcom (skúšanie).
       const dostupna = ctx.vyucbaPreHracov || jeSpravca(p.rola);
-      return ok({ krok: v.krok, spolu: ctx.vyucbaKrokov, stav: v.stav, dostupna, ponuknut: ctx.vyucbaPreHracov && v.stav === null && v.krok === 0 && p.rola === "navstevnik" });
+      // Dokončené časti podľa hviezdičky achievementu Prvá hra (#104); bez achievementov podľa stavu účtu.
+      const castiHotove = ctx.achievementy?.castiVyucby(p.id) ?? (v.stav === "hotova" ? 1 : 0);
+      // Ponuka „Najprv výučba?“ pri zakladaní prvej partie: návštevník bez 1. časti, ktorý ju nepreskočil.
+      const ponuknut = ctx.vyucbaPreHracov && castiHotove === 0 && v.stav === null && p.rola === "navstevnik";
+      return ok({ krok: v.krok, spolu: ctx.vyucbaKrokov, stav: v.stav, dostupna, ponuknut, castiHotove });
     }
 
     // Prvé odpovede na kontrolné otázky výučby (metrika pre Navrhára, Michal 2026-10-23).

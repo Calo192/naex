@@ -1405,6 +1405,33 @@ body.tahanie-aktivne [data-vyucba-bublina] {
   color: var(--akcent);
 }
 
+/* Lokalita na stole pred potvrdením svieti — klik na ňu ju otočí, a to nebolo jasné
+   (Michal 2026-10-25, výučba aj voľba cieľa v hre). */
+.linia-skupina.lokalita.navrh .partia-rad > .v-linii {
+  border-radius: 10px;
+  box-shadow: 0 0 0 3px var(--akcent);
+  animation: navrh-lokality 1.6s ease-in-out infinite;
+}
+
+.linia-skupina.lokalita.navrh .otocit-tip {
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+@keyframes navrh-lokality {
+  50% {
+    box-shadow:
+      0 0 0 3px var(--akcent),
+      0 0 24px color-mix(in srgb, var(--akcent) 65%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .linia-skupina.lokalita.navrh .partia-rad > .v-linii {
+    animation: none;
+  }
+}
+
 .partia-popis {
   display: block;
   font-size: 0.8rem;

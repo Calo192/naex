@@ -432,3 +432,50 @@ describe("výučba Prvá hra — 1. časť (návrh vyucba-cast1, Michal 2026-10-
     expect(scenar.kroky.some((k) => k.prikaz?.type === "naex")).toBe(false);
   });
 });
+
+describe("výučba Prvá hra — pripomienky Michala k 1. časti (#107, 2026-10-25)", () => {
+  const krok = (id: string): ScenarVyucby["kroky"][number] => {
+    const k = scenar.kroky.find((x) => x.id === id);
+    if (k === undefined) throw new Error(`Scenár nemá krok ${id}`);
+    return k;
+  };
+  /** Všetko, čo Melichar v scenári povie — hlášky, možnosti kvízov aj vysvetlenia. */
+  const reci = scenar.kroky.flatMap((k) => [k.melichar, ...(k.moznosti ?? []).flatMap((m) => [m.text, m.vysvetlenie]), ...(k.volba?.zle ?? []).map((z) => z.text)]);
+
+  it("fázy kola menuje ako os kola: Voľba cieľa → Draft → Zhromaždenie → Pitka → Bitka; šenok patrí do Draftu", () => {
+    expect(krok("i-fazy").melichar).toContain("Voľba cieľa, Draft, Zhromaždenie, Pitka, Bitka");
+    expect(krok("i-senok").melichar).toMatch(/^Teraz je Draft\./);
+    expect(reci.some((t) => /šenok, Zhromaždenie|šenkovom drafte/.test(t))).toBe(false);
+  });
+
+  it("v Bitke sa ráta Poškodenie s piktogramami, v Pitke sa pije a fajčí; nezrozumiteľná veta je preč", () => {
+    const fazy = krok("i-fazy").melichar;
+    expect(fazy).toContain("v Pitke sa pije a fajčí");
+    expect(fazy).toContain("v Bitke sa ráta Poškodenie ([Pohoršenie] [Rana] [Pecka] [Petelica] [Povera])");
+    expect(reci.some((t) => /bez stola niet čo platiť/.test(t))).toBe(false);
+  });
+
+  it("karty sa zhromažďujú a hrajú, nie kladú; pečeň bez „stôl napočíta“ a Cirhóza je dedinská kliatba", () => {
+    expect(reci.filter((t) => /klad/i.test(t))).toEqual([]);
+    expect(reci.filter((t) => /stôl napočíta|zlú kartu/.test(t))).toEqual([]);
+    expect(krok("i-pitky").melichar).toContain("dvakrát zhromažďujete a dvakrát pijete");
+    expect(krok("i-pecen").melichar).toMatch(/^\[PoškodeniePečene\] Poškodenie pečene:/);
+    expect(krok("i-pecen").melichar).toContain("dostaneš Cirhózu — dedinskú kliatbu!");
+  });
+
+  it("zmysel Zhromaždenia a prečo Pitka po ňom — Michalove vety", () => {
+    expect(krok("q-zhromazdenie").moznosti?.find((m) => m.spravna)?.text).toBe("Hrám karty, aby sa moje akcie spojili, ideálne v môj prospech.");
+    const ucet = krok("i-ucet").melichar;
+    expect(ucet).toMatch(/^V Pitke pribúdajú Dlhy a poškodzuje sa pečeň/);
+    expect(ucet).toContain("V Pitke tiež získavaš cigarety");
+    expect(reci.some((t) => /najprv sa naleje/i.test(t))).toBe(false);
+  });
+
+  it("natáčanie Mosta svieti lokalitu na stole a tlačidlo otočiť; druhá Pitka svieti spoje Mosta na oboch stranách", () => {
+    expect(krok("k-ciel").zvyraznit).toEqual(expect.arrayContaining(["lokalita-navrh", "tlacidlo:otocit"]));
+    expect(krok("i-pitky").zvyraznit).toEqual(["os-kola", "spoje-lokality"]);
+    // Na oboch stranách Mosta je pri hláške spojená akcia — inak by „spoje-lokality“ ukázali len jednu stranu.
+    const s = prehrajVyucbu(data, scenar, scenar.kroky.findIndex((k) => k.id === "i-pitky"));
+    expect(evaluateLine(data, lineState(s)).aktivneStredu).toEqual([1, 1]);
+  });
+});

@@ -12,6 +12,7 @@ import { useSada } from "../lib/sada.tsx";
 import { CASTI, KAPITOLY, STARE_KOTVY, type Kapitola } from "./pravidla/kapitoly.tsx";
 import { PojmyPravidiel, chodNaPojem } from "./pravidla/Pojem.tsx";
 import { SLOVNIK } from "./pravidla/slovnik.ts";
+import { VyzvaVyucby } from "../hra/VstupyVyucby.tsx";
 
 /** Ilustrácie kapitol (generuje Admin, bez nápisu) — chýbajúca = zástupný pás, žiadne 404. */
 const OBRAZKY = import.meta.glob("./pravidla-obrazky/*.{jpg,jpeg,webp,png}", { eager: true, query: "?url", import: "default" }) as Record<
@@ -497,6 +498,8 @@ export function Pravidla() {
         )}
 
         <div className="pravidla-kniha" ref={knihaRef}>
+          {/* Kto ešte nemá 1. časť výučby, toho pošleme najprv k Melicharovi; Pravidlá ostanú príručkou (#104). */}
+          <VyzvaVyucby />
           {/* Na mobile bok s nadpisom chýba — verzia ide nad prvú kapitolu. */}
           <p className="pravidla-verzia pravidla-verzia-mobil tlmene">{VERZIA}</p>
           {sada === null ? (

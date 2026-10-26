@@ -2589,7 +2589,11 @@ export function HernaPlocha({
     if (!somNaTahu || view.koniec !== null) return null;
     if (view.faza === "volbaCiela" && lokalitaNavrh !== null) {
       return {
-        vlavo: <button onClick={() => setNavrh({ typ: "lokalita", uid: lokalitaNavrh.karta.uid, otocena: !lokalitaNavrh.otocena })}>otočiť ↻</button>,
+        vlavo: (
+          <button onClick={() => setNavrh({ typ: "lokalita", uid: lokalitaNavrh.karta.uid, otocena: !lokalitaNavrh.otocena })} data-vyucba="tlacidlo:otocit">
+            otočiť ↻
+          </button>
+        ),
         stred: pecatTahu({
           text: "potvrdiť",
           skratka: "k",
@@ -4966,7 +4970,11 @@ export function HernaPlocha({
                 {popisKraja(ja, "vlavo")}
                 <div className="partia-rad harmonika">{radStrany(ja)}</div>
               </div>
-              <div className="linia-skupina lokalita" ref={lokalitaRef}>
+              <div
+                className={`linia-skupina lokalita${lokalitaNavrh !== null ? " navrh" : ""}`}
+                ref={lokalitaRef}
+                data-vyucba={lokalitaNavrh !== null ? "lokalita-navrh" : undefined}
+              >
                 <span
                   className="partia-popis"
                   title={
@@ -4981,7 +4989,7 @@ export function HernaPlocha({
                 {popisStranStredu}
                 {lokalitaNavrh !== null && tahanie === null && (
                   <span className="otocit-tip" data-vyucba="otocenie">
-                    klik = otočiť
+                    klik na kartu = otočiť ↻
                   </span>
                 )}
               </div>
