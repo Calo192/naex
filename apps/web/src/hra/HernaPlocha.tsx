@@ -48,6 +48,7 @@ import {
   KONSTANTY,
   MARKER_STRED,
   STUPNICA_ZONY,
+  NAZVY_ZON,
   jeCoTahat,
   kartyZaPas,
   bodyTeraz,
@@ -114,7 +115,7 @@ import {
 import type { ActionSums, DopadyNahladu, GameState, KliatbyNahladu, MarkerPos, NahladVylozenia, PolozkaVykladania, Podmienka, Rod, Slot, StranaLinie } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
-import { LiniaStarsich, LupaStarsieho, type StarsiVLinii, type VolbaPosunu } from "./LiniaStarsich.tsx";
+import { LiniaStarsich, LupaStarsieho, stopaStarsieho, type StarsiVLinii, type VolbaPosunu } from "./LiniaStarsich.tsx";
 import { PocitadloBitky } from "./PocitadloBitky.tsx";
 import { mediaUrl } from "../lib/api.ts";
 import { useStrazOdchodu } from "../lib/odchod.ts";
@@ -2762,6 +2763,46 @@ export function HernaPlocha({
         ),
       };
     }
+    // Súperov krok na staršom (UX N4): názov kroku a čo z neho bude mať čakajúci, nie len „Čakáš“.
+    const bsCak = view.bitkaStav;
+    if (!somNaTahu && view.faza === "bitka" && bsCak !== null && bsCak.caka === super_ && (bsCak.krok === "prebytok" || bsCak.krok === "pohorsenie")) {
+      const prebytok = bsCak.krok === "prebytok";
+      return {
+        nadpis: (
+          <>
+            {prebytok ? "Prebytok súpera" : "Pohoršenie súpera"} <small>zostáva {prebytok ? bsCak.prebytokZostava : bsCak.pohorsenieZostava[super_]}</small>
+          </>
+        ),
+        text: (
+          <span className="cakanie-text">
+            {prebytok ? (
+              <>
+                <strong>{menoHraca(super_)}</strong> posúva starších k tebe: ty máš hneď ich priazeň, starší sa začnú báť súpera (body na konci).
+                Za každého staršieho cigareta.
+              </>
+            ) : (
+              <>
+                <strong>{menoHraca(super_)}</strong> posúva starších o krok: k tebe (ty priazeň, súpera sa začnú báť), alebo k sebe (priazeň si berie,
+                platí už v tejto bitke).
+              </>
+            )}
+            <span className="bodky" aria-hidden="true" />
+          </span>
+        ),
+      };
+    }
+    if (!somNaTahu && view.faza === "draft" && draft?.krok === "patronat" && draft.naTahu === super_) {
+      return {
+        nadpis: "Patronát súpera",
+        text: (
+          <span className="cakanie-text">
+            <strong>{menoHraca(super_)}</strong> sa rozhoduje, či si vezme do ruky staršieho, ktorý mu prejavuje priazeň (marker pôjde do stredu, ty
+            dostaneš Pohoršenia navyše)
+            <span className="bodky" aria-hidden="true" />
+          </span>
+        ),
+      };
+    }
     if (!somNaTahu) {
       return {
         nadpis: "Čakáš",
@@ -2840,7 +2881,7 @@ export function HernaPlocha({
             nadpis: "Patronát",
             text: (
               <>
-                Starší, ktorý ti prejavuje priazeň (aspoň žltá zóna), ti môže prísť na pomoc: vezmeš si ho do ruky, na jeho scorecard dáš
+                Starší, ktorý ti prejavuje priazeň (aspoň Znepokojenie), ti môže prísť na pomoc: vezmeš si ho do ruky, na jeho scorecard dáš
                 lícom dole Občana či Zviera z ruky a marker pôjde do stredu. Platíš cigarety do červenej, súper dostane v bitke toľko
                 Pohoršení, o koľko marker išiel do stredu. <strong>Vyhráš bitku — starší je tvoj; prehráš — odhodíš poldeci.</strong>
               </>
@@ -3707,8 +3748,9 @@ export function HernaPlocha({
 
   // ---- starší -------------------------------------------------------------
   // Náhľad posunu (Michal 2026-10-19): komu posun pomôže — body spolu a priazeň.
-  const ZONA = ["neutrál", "žltá", "oranžová", "červená"] as const;
-  const DO_ZONY = ["neutrálu", "žltej", "oranžovej", "červenej"] as const;
+  // Zóny menom z pravidiel, nie farbou (UI A4) — tie isté slová ako zónové podmienky.
+  const ZONA = NAZVY_ZON;
+  const DO_ZONY = ["Neutrality", "Znepokojenia", "Strachu", "Vydesenia"] as const;
   const popisPosunu = (elder: ElderState, cezPohorsenie: boolean, naKraj = false, k: PlayerId = super_): string => {
     // Prebytok: aj cigareta porazenému za prvý posun staršieho (§9.4) — nahladPosunuPrebytkom.
     const n = cezPohorsenie ? nahladPosunuMarkera(data, view, elder.elderId, k, true, naKraj) : nahladPosunuPrebytkom(data, view, elder.elderId);
@@ -3904,6 +3946,7 @@ export function HernaPlocha({
       hranice: pohorsenie && krokStarsich !== null ? (bs?.pohorsenieHranice[`${krokStarsich.kto}:${e.elderId}`] ?? 0) : undefined,
       patron: iPatron === -1 ? null : { kto: iPatron as PlayerId, pohorsenia: view.patronat[iPatron]?.pohorsenia ?? 0 },
       vybrany: mode.typ === "patronat" && mode.elderId === e.elderId,
+      stopa: stopaStarsieho(view.posunyMarkerov ?? [], e.elderId),
     };
   });
   // Lupa staršieho mimo krokov (Michal 2026-10-23): plynulá ako pri kartách — tie isté
@@ -5013,6 +5056,11 @@ export function HernaPlocha({
                   tlacidlo={tlacidloLinieStarsich}
                   zvyraznena={zvyraznenaPodmienka}
                   lupa={(s) => lupyStarsich.get(s.elder.elderId) ?? {}}
+                  prebytok={
+                    krokMoj && bs !== null && bs.krok === "prebytok"
+                      ? { zostava: bs.prebytokZostava, cena: bs.vitaz === ja ? cenaPrebytku({ strany: view.strany } as unknown as GameState, ja) : 1 }
+                      : undefined
+                  }
                 />
               )}
             </div>
@@ -5044,7 +5092,12 @@ export function HernaPlocha({
             }}
             body={body}
             mena={[menoHraca(0), menoHraca(1)]}
-            starsi={{ stlacene: starsiViditelni && krokStarsich === null && pohladLinie === ja, prepni: () => prepniStarsich(ja), id: idLinieStarsich }}
+            starsi={{
+              stlacene: starsiViditelni && krokStarsich === null && pohladLinie === ja,
+              prepni: () => prepniStarsich(ja),
+              id: idLinieStarsich,
+              posuny: new Set((view.posunyMarkerov ?? []).map((x) => x.elderId)).size,
+            }}
             karty={kartyDlazdica(ja)}
             bodovy={bodovyBar}
           />

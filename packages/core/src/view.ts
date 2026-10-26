@@ -14,7 +14,7 @@
 import type { CardInstance, Phase, PlayerId } from "./types.ts";
 import type { GameData } from "./data.ts";
 import type { PlacedCard } from "./partia.ts";
-import type { BodPodmienky, ElderState } from "./elders.ts";
+import type { BodPodmienky, ElderState, PosunMarkera } from "./elders.ts";
 import { elderScore } from "./elders.ts";
 import type {
   BitkaKrok,
@@ -185,6 +185,8 @@ export interface ClientState {
   readonly koniec: KoniecHry | null;
   /** Ohlásené vydesenie: kolo, v ktorom hráč vydesil polovicu starších (verejné). */
   readonly ohlaseneVydesenie: readonly [number | null, number | null];
+  /** Posuny markerov od poslednej bitky do konca Zhromaždenia (verejné, stopa na stupnici). */
+  readonly posunyMarkerov: readonly PosunMarkera[];
 }
 
 export interface KliatbyHraca {
@@ -348,6 +350,7 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
     naSekeru: state.naSekeru,
     koniec: state.koniec,
     ohlaseneVydesenie: state.ohlaseneVydesenie,
+    posunyMarkerov: state.posunyMarkerov,
   };
 }
 
@@ -358,6 +361,8 @@ export interface BodyStarsieho {
   readonly body: readonly [number, number];
   /** vyhry[p] = koľko súbojov (aktívnych podmienok) hráč p pri tomto staršom vyhráva. */
   readonly vyhry: readonly [number, number];
+  /** strach[p] = zóna strachu staršieho z hráča p — body víťaza súbojov sú 1 + strach (elderScore). */
+  readonly strach: readonly [0 | 1 | 2 | 3, 0 | 1 | 2 | 3];
   /** polozky[p] = každá aktívna podmienka a koľko z nej má hráč p. */
   readonly polozky: readonly [readonly BodPodmienky[], readonly BodPodmienky[]];
 }
@@ -400,7 +405,7 @@ export function bodyTeraz(data: GameData, view: ClientState): BodyTeraz {
     const s = elderScore(data, stav, elder);
     spolu[0] += s.body[0];
     spolu[1] += s.body[1];
-    return { elderId: elder.elderId, body: s.body, vyhry: s.vyhry, polozky: s.polozky };
+    return { elderId: elder.elderId, body: s.body, vyhry: s.vyhry, strach: s.strach, polozky: s.polozky };
   });
   return { spolu, starsi };
 }

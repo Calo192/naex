@@ -58,7 +58,7 @@ describe("súboje pri starších (v5) zo skutočného bodovania", () => {
 });
 
 describe("kohoBoduje a preco", () => {
-  const s = (body: readonly [number, number]): BodyStarsieho => ({ elderId: "x", body, vyhry: [0, 0], polozky: [[], []] });
+  const s = (body: readonly [number, number]): BodyStarsieho => ({ elderId: "x", body, vyhry: [0, 0], strach: [0, 0], polozky: [[], []] });
   it("jeden, obaja, nikto", () => {
     expect(kohoBoduje(s([3, 0]))).toBe(0);
     expect(kohoBoduje(s([0, 1]))).toBe(1);
