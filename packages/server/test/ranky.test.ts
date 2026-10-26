@@ -401,6 +401,42 @@ describe("ranky a práva — API", () => {
       expect((await volaj(n, "PUT", "/znamky", { znamky: { zabava: 5 } })).status).toBe(403);
     });
    }, 30_000);
+
+  it("Vývoj (známky a roadmapa) vidia len ranky s právom; bez účtu ako Nealko; hodnotiť sa dá aj bez Vývoja (Michal 2026-10-26)", async () => {
+    const admin = await prihlas(server.port, TEST_ADMIN.login, TEST_ADMIN.heslo);
+    const nealko = (await registruj(server.port)).cookie;
+    const poldeci = (await registruj(server.port)).cookie;
+    const sub = (await registruj(server.port)).cookie;
+    await nastavUroven(server.port, admin, poldeci, "hrac");
+    await nastavUroven(server.port, admin, sub, "subadmin");
+    const vyvoj = async (cookie: string): Promise<number[]> => [(await volaj(cookie, "GET", "/znamky")).status, (await volaj(cookie, "GET", "/roadmapa")).status];
+
+    // Predvolene ako doteraz: vidí každý, aj bez prihlásenia.
+    expect(await vyvoj("")).toEqual([200, 200]);
+    expect(await vyvoj(nealko)).toEqual([200, 200]);
+
+    await bezPrava(admin, "vidiet_vyvoj", async () => {
+      expect(await vyvoj("")).toEqual([401, 401]);
+      expect(await vyvoj(nealko)).toEqual([403, 403]);
+      expect(await vyvoj(poldeci)).toEqual([200, 200]);
+      expect((await volaj(nealko, "GET", "/ja")).data.pouzivatel).toMatchObject({ prava: expect.not.arrayContaining(["vidiet_vyvoj"]) as unknown });
+      // Formulár hodnotenia berie kritériá z /znamky/moje — Nealko hodnotí ďalej.
+      const moje = await volaj(nealko, "GET", "/znamky/moje");
+      expect(moje.status).toBe(200);
+      expect((moje.data.kriteria as unknown[]).length).toBe(12);
+      expect((await volaj(nealko, "PUT", "/znamky", { znamky: { zabava: 6 } })).status).toBe(200);
+    });
+
+    // Len Sedmička: správcovia vidia vždy, aj keď im matica nič nedáva.
+    expect((await volaj(admin, "PUT", "/admin/prava", { matica: { vidiet_vyvoj: ["sedmicka"] } })).status).toBe(200);
+    try {
+      expect(await vyvoj(poldeci)).toEqual([403, 403]);
+      expect(await vyvoj(sub)).toEqual([200, 200]);
+      expect(await vyvoj(admin)).toEqual([200, 200]);
+    } finally {
+      await volaj(admin, "PUT", "/admin/prava", { matica: { vidiet_vyvoj: ["navstevnik", "hrac", "deci", "sedmicka"] } });
+    }
+  }, 30_000);
 });
 
 describe("hodnotené partie", () => {

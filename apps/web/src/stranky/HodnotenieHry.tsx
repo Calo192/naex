@@ -41,9 +41,11 @@ export function HodnotenieHry({ smiePisat }: { readonly smiePisat: boolean }) {
   const [hotovo, setHotovo] = useState(false);
 
   useEffect(() => {
-    Promise.all([api.get<{ kriteria: Kriterium[] }>("/znamky"), api.get<{ znamky: Znamky | null; cas: number | null }>("/znamky/moje")])
-      .then(([v, m]) => {
-        setKriteria(v.kriteria);
+    // Kritériá z /znamky/moje — /znamky (Vývoj) rank hráča vidieť nemusí.
+    api
+      .get<{ znamky: Znamky | null; cas: number | null; kriteria: Kriterium[] }>("/znamky/moje")
+      .then((m) => {
+        setKriteria(m.kriteria);
         setUlozene({ znamky: m.znamky ?? {}, cas: m.cas });
         setZnamky(m.znamky ?? {});
       })

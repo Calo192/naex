@@ -488,14 +488,22 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       });
     }
 
-    // ----- známky hry a roadmapa (verejné čítanie) -----------------------
+    // ----- známky hry a roadmapa (stránka Vývoj) --------------------------
     // Von idú len priemery; ľudia až od MIN_LUDI hodnotiteľov (znamky.ts).
-    if (r === "GET /znamky") return ok({ ...ctx.hodnotenia.vyvoj(), udalosti: ctx.roadmapa.udalosti() });
+    // Kto Vývoj vidí, určuje admin rankom (právo vidiet_vyvoj, Michal 2026-10-26);
+    // kritériá na hodnotenie dáva aj /znamky/moje, aby hodnotiť šlo aj bez Vývoja.
+    if (r === "GET /znamky") {
+      ctx.prava.vyzaduj(ja, "vidiet_vyvoj");
+      return ok({ ...ctx.hodnotenia.vyvoj(), udalosti: ctx.roadmapa.udalosti() });
+    }
     if (r === "GET /znamky/moje") return ok(ctx.hodnotenia.moje(prihlaseny()));
     if (r === "PUT /znamky") return ok(ctx.hodnotenia.uloz(prihlaseny(), await citajJson(req), teraz));
 
     if (casti[1] === "roadmapa") {
-      if (r === "GET /roadmapa") return ok(ctx.roadmapa.zoznam(ja));
+      if (r === "GET /roadmapa") {
+        ctx.prava.vyzaduj(ja, "vidiet_vyvoj");
+        return ok(ctx.roadmapa.zoznam(ja));
+      }
       const p = prihlaseny();
       if (r === "POST /roadmapa") return ok({ id: ctx.roadmapa.pridaj(p, await citajJson(req), teraz) }, 201);
       const id = Number(casti[2]);

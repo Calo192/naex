@@ -171,6 +171,23 @@ interface Poloha {
   readonly podkapitola: string | null;
 }
 
+/**
+ * Vysoké okno: obsah po boku ukáže všetky časti a kapitoly naraz (dizajn #24 A,
+ * Michal 2026-10-26); v nízkom okne (notebook) zbalí časti, v ktorých čitateľ nie je.
+ */
+const VYSOKE_OKNO = "(min-height: 820px)";
+
+function useVysokeOkno(): boolean {
+  const [vysoke, setVysoke] = useState(() => window.matchMedia(VYSOKE_OKNO).matches);
+  useEffect(() => {
+    const mq = window.matchMedia(VYSOKE_OKNO);
+    const zmena = (): void => setVysoke(mq.matches);
+    mq.addEventListener("change", zmena);
+    return () => mq.removeEventListener("change", zmena);
+  }, []);
+  return vysoke;
+}
+
 /** Kde čitateľ je — posledná kapitola a podkapitola, ktorej začiatok prešiel pod hlavičku. */
 function usePoloha(): Poloha {
   const [poloha, setPoloha] = useState<Poloha>({ kapitola: 0, podkapitola: null });
@@ -251,11 +268,20 @@ function Obsah({
               .filter(({ k }) => k.cast === c.id)
               .map(({ k, i }) => {
                 const je = i === poloha.kapitola;
+                const precitana = i < poloha.kapitola;
                 return (
-                  <li key={k.id} className={je ? "aktivna" : i < poloha.kapitola ? "precitana" : undefined}>
+                  <li key={k.id} className={je ? "aktivna" : precitana ? "precitana" : undefined}>
                     <a href={`#${k.id}`} aria-current={je ? "location" : undefined} onClick={klik(k.id)}>
                       <span className="obsah-cislo">{i + 1}</span>
-                      <span className="obsah-nazov">{k.kratky ?? k.nazov}</span>
+                      <span className="obsah-nazov">
+                        {k.kratky ?? k.nazov}
+                        {precitana && <span className="obsah-skryte">, prečítané</span>}
+                      </span>
+                      {precitana && (
+                        <span className="obsah-precitana" aria-hidden="true">
+                          ✓
+                        </span>
+                      )}
                       {ukazky.has(k.id) && <span className="obsah-ukazka">ukážka</span>}
                     </a>
                     {je && aktivna !== undefined && (podkapitoly.get(k.id)?.length ?? 0) > 0 && (
@@ -365,6 +391,7 @@ export function Pravidla() {
   useTitulok("Pravidlá");
   const { sada } = useSada();
   const poloha = usePoloha();
+  const vysokeOkno = useVysokeOkno();
   const [mobilObsah, setMobilObsah] = useState(false);
   // Obsah zdola je dialóg: fokus do hľadania, Esc zavrie a fokus sa vráti na lištu (UI inšpekcia).
   const listaRef = useRef<HTMLButtonElement>(null);
@@ -471,7 +498,7 @@ export function Pravidla() {
             <i style={{ width: `${percent}%` }} />
           </div>
           <Hladanie />
-          <Obsah poloha={poloha} podkapitoly={podkapitoly} ukazky={ukazky} kompaktny />
+          <Obsah poloha={poloha} podkapitoly={podkapitoly} ukazky={ukazky} kompaktny={!vysokeOkno} />
         </aside>
 
         {/* Mobil: lišta „kde som“ pod hlavičkou otvorí obsah zdola. */}
@@ -511,7 +538,6 @@ export function Pravidla() {
           ) : (
             <>
               {KAPITOLY.map((k, i) => {
-                const dalsia = KAPITOLY[i + 1];
                 const prvaVCasti = KAPITOLY[i - 1]?.cast !== k.cast;
                 const cast = CASTI.find((c) => c.id === k.cast);
                 return (
@@ -536,16 +562,10 @@ export function Pravidla() {
                       </ul>
                     </div>
                     <div className="kapitola-telo">{k.obsah(sada)}</div>
-                    <a
-                      className="kapitola-dalej"
-                      href={`#${dalsia?.id ?? "slovnik"}`}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        skocNa(dalsia?.id ?? "slovnik");
-                      }}
-                    >
-                      Ďalej: <strong>{dalsia?.nazov ?? "Slovník"}</strong> →
-                    </a>
+                    {/* Tichý predeľ namiesto „Ďalej: …“ — ďalšia kapitola je hneď pod ním a skáče sa z obsahu po boku (dizajn #24 A). */}
+                    <div className="kapitola-koniec" aria-hidden="true">
+                      <span>koniec kapitoly {i + 1}</span>
+                    </div>
                   </section>
                 );
               })}

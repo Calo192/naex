@@ -36,7 +36,8 @@ export type Pravo =
   | "profily_inych"
   | "vlastna_fotka"
   | "reporty_playtestov"
-  | "navrhovat_karty";
+  | "navrhovat_karty"
+  | "vidiet_vyvoj";
 
 /** Má prihlásený používateľ právo? Bez zoznamu (starý server) áno — server aj tak overí. */
 export const maPravo = (ja: Pick<Pouzivatel, "prava"> | null, pravo: Pravo): boolean => ja !== null && (ja.prava === undefined || ja.prava.includes(pravo));
