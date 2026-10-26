@@ -117,7 +117,12 @@ function Karta({
         </span>
       </div>
       <h4>{p.nazov}</h4>
-      {p.kratko !== "" && <p className="rm-kratko">{p.kratko}</p>}
+      {/* Text je skrátený na dva riadky — celý ukáže nápoveda (UI inšpekcia 20261026-1800, UI-5). */}
+      {p.kratko !== "" && (
+        <p className="rm-kratko" title={p.kratko}>
+          {p.kratko}
+        </p>
+      )}
       <div className="rm-stitky">
         {p.zdroj !== null && <span className={`rm-stitok zdroj-${p.zdroj.typ}`}>{p.zdroj.text}</span>}
         {!hotova && <span className={`rm-stitok stav-${p.stav}`}>{STAVY[p.stav]}</span>}

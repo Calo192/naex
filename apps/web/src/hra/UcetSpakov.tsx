@@ -4,7 +4,7 @@
 // Čísla ráta jadro (rozpisSpakov), klient ich len píše.
 
 import type { PlayerId, RozpisSpakov } from "@naex/core";
-import { IkonaSpaku } from "./Spaky.tsx";
+import { IkonaSpaku, sMinusom } from "./Spaky.tsx";
 
 const RIADKY: readonly { readonly kluc: keyof RozpisSpakov; readonly nazov: string }[] = [
   { kluc: "zaBitky", nazov: "vyhraté bitky" },
@@ -43,7 +43,7 @@ export function UcetSpakov({ rozpis, ja, mena }: { readonly rozpis: readonly [Ro
         <span role="rowheader">spolu</span>
         {([ja, su] as const).map((p) => (
           <span key={p} role="cell">
-            <b>{rozpis[p].spolu}</b>
+            <b>{sMinusom(rozpis[p].spolu)}</b>
             <IkonaSpaku />
           </span>
         ))}

@@ -1570,6 +1570,31 @@ body.tahanie-aktivne [data-vyucba-bublina] {
   transform-origin: 50% 100%;
 }
 
+/* Meno karty nad pásom s názvom — len na nízkom okne (max. 719 px), kde je pás pod okrajom. */
+.ruka-meno {
+  display: none;
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  z-index: 1;
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--pozadie) 82%, transparent);
+  color: var(--text);
+  font: 700 0.62rem/1.3 var(--pismo);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:is(:hover, :focus-visible) > .ruka-meno,
+.ruka-rad > .tahatelna.vysunuta > .ruka-meno {
+  opacity: 0;
+}
+
 /* Mostík pod vysunutou kartou — myš pri spodnom okraji okna ju nestratí. */
 .ruka-rad .kl::after {
   content: "";
@@ -3725,6 +3750,7 @@ button.pecat-potvrd:disabled::after {
 }
 
 .jbar button.hlava-vrstva.otvorena {
+  --vrstva-okraj: var(--okraj-svetly);
   background: var(--plocha-3);
   border-color: var(--okraj-svetly);
   color: var(--text);
@@ -3732,6 +3758,7 @@ button.pecat-potvrd:disabled::after {
 
 /* Tu treba siahnuť (Draft, Liečba, výber lokality). */
 .jbar button.hlava-vrstva.treba {
+  --vrstva-okraj: var(--akcent-tmavy);
   color: var(--akcent);
   border-color: var(--akcent-tmavy);
   animation: treba 1.6s ease-in-out infinite;
@@ -4373,14 +4400,6 @@ button.auto-hotovo-odkaz {
   min-width: 0;
   margin: 0;
   align-self: center;
-}
-
-/* Body: porovnanie najviac na dva riadky. */
-.doska .zdroj-body .zdroj-pod {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 
 /* ---- stôl so scrollom (Michal 2026-10-24) ----
@@ -6364,6 +6383,13 @@ button.auto-hotovo-odkaz {
     --ruka-skryte: calc(var(--ruka-kh) * 0.5);
   }
 
+  /* Pás s názvom je tak pod okrajom okna — meno karty nesie štítok na spodku viditeľnej časti
+     (UI inšpekcia 20261026-1800, UI-4). Pri vysunutej karte zmizne, názov je na nej. */
+  .ruka-rad .ruka-meno {
+    display: block;
+    top: calc(var(--ruka-kh) - var(--ruka-skryte) - 11px);
+  }
+
   /* Hrana stola leží cez spodok plste: karty v línii sú tu malé a línia krátka,
      tlačidlá v rohoch ju neprekryjú. */
   .linia-obal.s-hranou .stol-plst {
@@ -7740,6 +7766,12 @@ button.auto-hotovo-odkaz {
      vrstvy draftu a starších (veľké karty) rezervu majú. */
   .hra:not(.stol-scroll) .linia-obal.s-hranou .stol-plst {
     padding-bottom: 10px;
+  }
+
+  /* Pečiatka ťahu v strede („bez odpovede“, „koniec ťahu“) však leží pod lokalitou a zakryla jej
+     text (UI inšpekcia 20261026-1800, UI-3) — vtedy línia ustúpi o polovicu pečiatky. */
+  .hra:not(.stol-scroll) .linia-obal.s-hranou:has(.hrana-stred > *) .stol-plst {
+    padding-bottom: calc(var(--hrana-h) / 2 + 2px);
   }
 }
 

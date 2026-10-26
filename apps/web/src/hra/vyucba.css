@@ -167,10 +167,6 @@ body.vyucba-bezi:not(.vyucba-vydesenie) .jbar-desi {
   visibility: hidden;
 }
 
-body.vyucba-bezi:not(.vyucba-body) .zdroj-body .zdroj-pod {
-  visibility: hidden;
-}
-
 /* ---- čitateľnosť stola vo výučbe (playtest výučby kolo 4, U1; V9 4,3) ---- */
 
 /* Súperove karty ležia hore nohami (3/3 nováčikov): otočená ostáva plocha s obrázkom a akciami

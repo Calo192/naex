@@ -29,7 +29,7 @@ import { Avatar } from "../komponenty.tsx";
 import { BodovyBar } from "./BodovyBar.tsx";
 import { KartaHraca } from "./KartaHraca.tsx";
 import type { HracInfo } from "./useHra.ts";
-import { Popolnik } from "./Spaky.tsx";
+import { PocetSpakov } from "./Spaky.tsx";
 
 // ---- ikony zdrojov -----------------------------------------------------------
 
@@ -809,7 +809,7 @@ export function HracDoska({
           title={
             starsi.stlacene
               ? "Späť na stôl (Esc)"
-              : `${ja ? "Tvoje špaky" : `Špaky ${meno}`} v popolníku: ${body.spaky[p]}. Po každej bitke ${ja ? "ti" : "mu"} starší, ktorí sa ${ja ? "ťa" : "ho"} boja, dajú ${body.zaStarsich[p]} (žltá 1, oranžová 2, červená 3).` +
+              : `${ja ? "Tvoje špaky" : `Špaky ${meno}`}: ${body.spaky[p]}. Po každej bitke ${ja ? "ti" : "mu"} starší, ktorí sa ${ja ? "ťa" : "ho"} boja, dajú ${body.zaStarsich[p]} (žltá 1, oranžová 2, červená 3).` +
                 (body.cirhozy[p] > 0 ? ` Nepriznaná Cirhóza ×${body.cirhozy[p]} na konci hry −${body.cirhozy[p] * KONSTANTY.SPAKY_ZA_CIRHOZU}.` : "") +
                 ` Klik ukáže starších a koho sa boja.${(starsi.posuny ?? 0) > 0 ? ` Od bitky sa pohlo starších: ${starsi.posuny} — pri nich je stopa a lístok, prečo.` : ""}`
           }
@@ -820,11 +820,8 @@ export function HracDoska({
             {!starsi.stlacene && (starsi.posuny ?? 0) > 0 && <span className="zdroj-posuny">⇄ {starsi.posuny}</span>}
           </span>
           <span className="zdroj-hodnota">
-            <Popolnik n={body.spaky[p]} kto={ja ? "moj" : "superov"} titul="" />
-          </span>
-          <span className="zdroj-pod">
-            {/* Nepriznaná Cirhóza je v čipe pod menom a v nápovede — dlaždica má na pod jeden riadok. */}
-            <span className={body.zaStarsich[p] > 0 ? "spaky-plus" : undefined}>+{body.zaStarsich[p]} od starších</span>
+            {/* Michal 2026-10-26: len piktogram, nadpis a číslo — prírastok od starších a Cirhóza sú v nápovede a za ▾. */}
+            <PocetSpakov n={body.spaky[p]} kto={ja ? "moj" : "superov"} titul="" />
           </span>
         </button>
       </div>

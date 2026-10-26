@@ -6,6 +6,7 @@
 import { useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
 import type { ClientState, PlayerId } from "@naex/core";
 import { chod } from "../lib/router.tsx";
+import { IkonaSpaku } from "./IkonaSpaku.tsx";
 import { MIMO_PULTU, prepniPultMelichara } from "./Soundboard.tsx";
 import {
   ID_TLACIDLA_PARTIE,
@@ -18,18 +19,6 @@ import {
   type ZmenaSpakov,
 } from "./stitokPartie.ts";
 import "./hlavicka.css";
-
-/** Popolník v štítku — malá ikona, farba hráča cez currentColor. */
-function MalyPopolnik({ kto }: { readonly kto: "ja" | "su" }) {
-  return (
-    <svg className={`stitok-pop ${kto}`} width="20" height="14" viewBox="0 0 20 14" aria-hidden="true">
-      <rect className="stitok-pop-cig" x="7.5" y="1.6" width="10" height="2.8" rx="1.2" transform="rotate(-16 7.5 3)" />
-      <rect className="stitok-pop-zar" x="15.2" y="0" width="3" height="2.8" rx="1" transform="rotate(-16 7.5 3)" />
-      <path d="M1 6.5h18l-2.4 6a1.4 1.4 0 0 1-1.3.9H4.7a1.4 1.4 0 0 1-1.3-.9z" fill="currentColor" />
-      <rect x="1" y="5.4" width="18" height="2" rx="1" fill="currentColor" opacity=".7" />
-    </svg>
-  );
-}
 
 /**
  * Špaky v štítku: kým beží počítadlo bitky, ostanú staré (nech hlavička neprezradí
@@ -176,7 +165,7 @@ export function HlavickaPartie({
     const z = zmenaPre(kto);
     const n = zobrazene[kto];
     return (
-      <b key={z === undefined ? "n" : `z${zmena?.id}`} className={`stitok-n${z === undefined ? "" : z.n > 0 ? " blik" : " blik minus"}`}>
+      <b key={z === undefined ? `n${kto}` : `z${kto}-${zmena?.id}`} className={`stitok-n${z === undefined ? "" : z.n > 0 ? " blik" : " blik minus"}`}>
         {n < 0 ? `−${-n}` : n}
       </b>
     );
@@ -184,7 +173,7 @@ export function HlavickaPartie({
   const znacka = (kto: 0 | 1) => {
     const z = zmenaPre(kto);
     return z === undefined ? null : (
-      <span key={`zm${zmena?.id}`} className={`stitok-zmena${z.n < 0 ? " minus" : ""}`} aria-hidden="true">
+      <span key={`zm${kto}-${zmena?.id}`} className={`stitok-zmena${z.n < 0 ? " minus" : ""}`} aria-hidden="true">
         {textZmeny(z.n)}
       </span>
     );
@@ -206,8 +195,8 @@ export function HlavickaPartie({
           <span className="stitok-kratke">{krok.kratko}</span>
         </span>
         <span className="stitok-delic" aria-hidden="true" />
-        <span className="stitok-skore" role="img" aria-label={`Špaky: ty ${zobrazene[0]}, ${menoSupera} ${zobrazene[1]}`} title={`Špaky v popolníkoch — ty ${zobrazene[0]} : ${zobrazene[1]} ${menoSupera}`}>
-          <MalyPopolnik kto="ja" />
+        <span className="stitok-skore" role="img" aria-label={`Špaky: ty ${zobrazene[0]}, ${menoSupera} ${zobrazene[1]}`} title={`Špaky — ty ${zobrazene[0]} : ${zobrazene[1]} ${menoSupera}`}>
+          <IkonaSpaku trieda="stitok-pop ja" />
           {cislo(0)}
           {znacka(0)}
           <span className="stitok-dvojbodka" aria-hidden="true">
@@ -215,7 +204,7 @@ export function HlavickaPartie({
           </span>
           {znacka(1)}
           {cislo(1)}
-          <MalyPopolnik kto="su" />
+          <IkonaSpaku trieda="stitok-pop su" />
         </span>
         <span className="stitok-delic" aria-hidden="true" />
         <span className={`stitok-super ${pripojeny ? "online" : "offline"}`} title={`${menoSupera} ${pripojeny ? "je pri stole" : "je odpojený"}`}>
