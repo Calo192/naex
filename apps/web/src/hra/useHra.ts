@@ -10,6 +10,7 @@ import eldersJson from "@naex/core/data/elders.json";
 import scorecardsJson from "@naex/core/data/scorecards.json";
 import type { Sada } from "@naex/tvorba";
 import { KLUC_MIESTNOSTI } from "../lib/odchod.ts";
+import { reakciaNaChybu, TEXT_ZANIKLEJ_PARTIE } from "./chybaMiestnosti.ts";
 
 export interface HracInfo {
   readonly id?: number;
@@ -268,6 +269,7 @@ export function useHra(aktivne: boolean): HraHook {
     ws.onopen = () => {
       setPripojene(true);
       const kod = localStorage.getItem(KLUC);
+      navratRef.current = kod !== null;
       if (kod !== null) ws.send(JSON.stringify({ type: "rejoin", code: kod }));
     };
 
@@ -282,6 +284,7 @@ export function useHra(aktivne: boolean): HraHook {
           // Krok výučby príde hneď po privítaní — iná miestnosť výučbu nemá.
           setVyucba(null);
           localStorage.setItem(KLUC, msg.code);
+          navratRef.current = false;
           setChyba(null);
           break;
         case "hraci":
@@ -330,26 +333,28 @@ export function useHra(aktivne: boolean): HraHook {
         case "vyucbaChyba":
           setChybaVyucby({ chybajuce: msg.chybajuce, navyse: msg.navyse });
           break;
-        case "error":
-          // Rozohraná partia zanikla (napr. reštart servera — miestnosti žijú
-          // v pamäti). Inak by plocha ukazovala starý stav a každý ťah by
-          // padal do prázdna; radšej späť do lobby s vysvetlením.
-          if (miestnostRef.current !== null && /neexistuje|Nie si v miestnosti/.test(msg.text)) {
+        case "error": {
+          // Server odpovedá v poradí správ — prvá chyba po rejoin patrí rejoinu.
+          const reakcia = reakciaNaChybu(msg.text, { priStole: miestnostRef.current !== null, automatickyNavrat: navratRef.current });
+          navratRef.current = false;
+          if (reakcia.druh === "zanikla") {
+            // Rozohraná partia zanikla (napr. reštart servera — miestnosti žijú
+            // v pamäti). Inak by plocha ukazovala starý stav a každý ťah by
+            // padal do prázdna; radšej späť do lobby s vysvetlením.
             localStorage.removeItem(KLUC);
             setMiestnost(null);
             setView(null);
             setLog([]);
             setHraci([null, null]);
             setVyucba(null);
-            setChyba("Partia sa stratila — server sa medzitým reštartoval. Založ novú hru.");
+            setChyba(TEXT_ZANIKLEJ_PARTIE);
             break;
           }
           // Zaniknutá alebo cudzia miestnosť pred vstupom → zabudni ju.
-          if (/neexistuje|nehráš|plná/.test(msg.text) && localStorage.getItem(KLUC) !== null && miestnostRef.current === null) {
-            localStorage.removeItem(KLUC);
-          }
-          setChyba(msg.text);
+          if (reakcia.druh === "zabudni") localStorage.removeItem(KLUC);
+          if (reakcia.druh === "ukaz" || reakcia.ukaz) setChyba(msg.text);
           break;
+        }
       }
     };
 
@@ -364,6 +369,8 @@ export function useHra(aktivne: boolean): HraHook {
 
   const miestnostRef = useRef<Miestnost | null>(null);
   miestnostRef.current = miestnost;
+  /** Čaká sa na odpoveď na automatický rejoin z localStorage — nie na kód zadaný hráčom. */
+  const navratRef = useRef(false);
 
   useEffect(() => {
     if (!aktivne) return;

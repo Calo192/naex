@@ -12,6 +12,7 @@
 // --klik klikne na prvok (CSS selektor, napr. ".tlacidlo-naex") a odfotí výsledok;
 // --klik sa dá zopakovať — kliky idú postupne, po každom snímka.
 // --schema noc odfotí web vo farebnej schéme (id z apps/web/src/lib/schemy.ts).
+// --miestnost KÓD uloží v režime „web“ kód miestnosti do prehliadača (návrat do partie po načítaní).
 //
 // Režim „web“ nepotrebuje partiu: prihlási sa na web (predvolene vývojový server
 // :8787, inak --url / NAEX_WEB_URL) AI účtom „<--ako> (AI)“ — hráč, s --tvorba
@@ -79,7 +80,7 @@ async function prihlasenie(): Promise<Prihlasenie> {
   if (web) {
     const url = webUrl(args);
     const ucet = await prihlasAgenta(url, volba("--ako") ?? "Dizajnér", ma("--tvorba") ? "subadmin" : "hrac");
-    return { zaklad: url, login: ucet.login, heslo: ucet.heslo, miestnost: null, vystup: volba("--vystup") ?? join("playtest", "dizajn", "snimky"), predpona: "" };
+    return { zaklad: url, login: ucet.login, heslo: ucet.heslo, miestnost: volba("--miestnost") ?? null, vystup: volba("--vystup") ?? join("playtest", "dizajn", "snimky"), predpona: "" };
   }
   const hra = JSON.parse(readFileSync(join(relacia ?? "", "hra.json"), "utf8")) as {
     port: number;
