@@ -12,6 +12,7 @@
 // o 180° pre hráča 1 zachová páry).
 
 import type { CardInstance, PlayerId, Slot } from "./types.ts";
+import { opponentOf } from "./types.ts";
 import type { GameData } from "./data.ts";
 import { defOf, printedSides } from "./data.ts";
 import type { ActionSums, LineEval, LineState, PlacedCard } from "./partia.ts";
@@ -88,7 +89,7 @@ export function nahladVylozenia(
   karta: CardInstance,
   kam: StranaLinie,
 ): NahladVylozenia {
-  const p: PlayerId = kam === "vlastna" ? ja : ja === 0 ? 1 : 0;
+  const p = kam === "vlastna" ? ja : opponentOf(ja);
   const naMojej = kam === "vlastna";
   // Hráčova karta je k nemu natočená; jeho strana je vľavo od lokality,
   // takže k stredu sa na nej obracia pravá hrana, na súperovej ľavá.

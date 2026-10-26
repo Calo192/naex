@@ -31,6 +31,7 @@
 // v strede). Výklad textov schválil Michal 2026-10-12.
 
 import type { Action, CardInstance, PlayerId, SideLayout, Slot, Tag } from "./types.ts";
+import { opponentOf } from "./types.ts";
 import type { GameData } from "./data.ts";
 import { defOf, printedSides } from "./data.ts";
 
@@ -186,7 +187,7 @@ function presbiter(
   for (const k of [0, 1] as const) {
     for (const e of kraje[k]) {
       if (e.defId !== "presbiter") continue;
-      const su: PlayerId = e.owner === 0 ? 1 : 0;
+      const su = opponentOf(e.owner);
       if (prevahaKrajov[k] !== su) continue;
       if (kraje[k].some((x) => x !== e && x.owner === e.owner && rataSaDoPrevahy(x.tags))) continue;
       if (elems.some((x) => x.defId === "praudovravec" && x.owner === su)) continue;
@@ -249,7 +250,7 @@ export function stavKraja(data: GameData, strana: readonly PlacedCard[]): StavKr
   const prevaha = kto(pocet, priLokalite);
   const rovnost = priLokalite !== null && pocet[0] === pocet[1];
   if (prevaha === null) return { pocet, priLokalite, prevaha, rovnost, naPrebitie: null };
-  const druhy: PlayerId = prevaha === 0 ? 1 : 0;
+  const druhy = opponentOf(prevaha);
   // Pri rovnosti berie hranu karta pri lokalite — kto ju nemá, potrebuje o 1 viac.
   const naPrebitie = pocet[prevaha] - pocet[druhy] + (priLokalite === druhy ? 0 : 1);
   return { pocet, priLokalite, prevaha, rovnost, naPrebitie };
@@ -529,7 +530,7 @@ function kartoveEfekty(segments: readonly (readonly Elem[])[]): [number, number]
     if (e.defId !== "pijan") continue;
     // Žena v okolí s aktívnou akciou Poldeci → rana do partie majiteľa Pijana.
     if (okolie(e).some((s) => s.tags.includes("Žena") && maAktivnu(s, "Poldeci"))) {
-      rany[e.owner === 0 ? 1 : 0] += 1;
+      rany[opponentOf(e.owner)] += 1;
     }
   }
   return rany;

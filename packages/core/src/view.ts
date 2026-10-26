@@ -12,6 +12,7 @@
 // vôbec nie je — súper dostane len jej stranu a náhradné uid (zaverecne).
 
 import type { CardInstance, Phase, PlayerId } from "./types.ts";
+import { opponentOf } from "./types.ts";
 import type { GameData } from "./data.ts";
 import type { PlacedCard } from "./partia.ts";
 import type { BodPodmienky, ElderState, PosunMarkera } from "./elders.ts";
@@ -353,7 +354,7 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
     mojaNahrada: state.patronat[ja]?.nahrada ?? null,
     volbaVestica:
       mojaBitkovaVolba && bitka.krok === "vestica"
-        ? { moj: state.hraci[ja].doberaci, jeho: state.hraci[ja === 0 ? 1 : 0].doberaci }
+        ? { moj: state.hraci[ja].doberaci, jeho: state.hraci[opponentOf(ja)].doberaci }
         : null,
     vizia: state.vizia,
     volbaVizia: state.vizia !== null && naTahu(state) === ja ? (state.hraci[ja].doberaci[0] ?? null) : null,
@@ -518,7 +519,7 @@ export function nahladPosunuMarkera(
 export function nahladPosunuPrebytkom(data: GameData, view: ClientState, elderId: string): NahladPosunu | null {
   const drzi = view.bitkaStav?.prebytokDrzi ?? null;
   if (drzi === null) return null;
-  const porazeny: PlayerId = drzi === 0 ? 1 : 0;
+  const porazeny = opponentOf(drzi);
   const n = nahladPosunuMarkera(data, view, elderId, porazeny, false);
   if (n === null || (view.bitkaStav?.prebytokPosunute ?? []).includes(elderId)) return n;
   const elder = view.starsi.find((e) => e.elderId === elderId);
@@ -556,7 +557,7 @@ const STAVKA_PREBYTOK_NAJVIAC = 5;
  * súperova karta pri patronáte je skrytá. Preto „≈“.
  */
 function zmenaPoVyhre(data: GameData, view: ClientState, vitaz: PlayerId, prebytok: number): number {
-  const porazeny: PlayerId = vitaz === 0 ? 1 : 0;
+  const porazeny = opponentOf(vitaz);
   const rozdiel = (v: ClientState): number => {
     const b = bodyTeraz(data, v).spolu;
     return b[vitaz] - b[porazeny];
@@ -586,7 +587,7 @@ export function hltavyPrebytok(
   prebytok: number,
   cena: number,
 ): { readonly kroky: readonly string[]; readonly view: ClientState } {
-  const super_: PlayerId = drzi === 0 ? 1 : 0;
+  const super_ = opponentOf(drzi);
   const rozdiel = (v: ClientState): number => {
     const b = bodyTeraz(data, v).spolu;
     return b[drzi] - b[super_];
@@ -617,7 +618,7 @@ export function hltavyPrebytok(
  * 20261024-075830); súperove Pohoršenia v tej istej bitke nerieši, preto „≈“.
  */
 export function hodnotaPohorseni(data: GameData, view: ClientState, p: PlayerId, pocet: number): number {
-  const super_: PlayerId = p === 0 ? 1 : 0;
+  const super_ = opponentOf(p);
   const rozdiel = (v: ClientState): number => {
     const b = bodyTeraz(data, v).spolu;
     return b[p] - b[super_];
@@ -666,7 +667,7 @@ export function hodnotaLokality(data: GameData, view: ClientState, karta: CardIn
 export function stavkaBitky(data: GameData, view: ClientState, prebytok = STAVKA_PREBYTOK): StavkaBitky | null {
   if (view.ciel?.typ !== "lokalita" || view.koniec !== null) return null;
   const ja = view.ja;
-  const super_: PlayerId = ja === 0 ? 1 : 0;
+  const super_ = opponentOf(ja);
   const posledna = view.lokalityVHre.length === 0;
   let superNajviac: number | null = null;
   if (posledna) {

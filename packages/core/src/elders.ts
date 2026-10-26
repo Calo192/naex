@@ -10,6 +10,7 @@
 //    prebudenie aj body — podmienky aktivuje karta náhrady (Michal 2026-10-12).
 
 import type { CardInstance, Favour, PlayerId, Podmienka, ScorecardDef, SlotIndex } from "./types.ts";
+import { opponentOf } from "./types.ts";
 import type { GameData } from "./data.ts";
 import { printedSides } from "./data.ts";
 
@@ -322,7 +323,7 @@ export function elderScore(data: GameData, stav: StavBodovania, elder: ElderStat
     for (const p of [0, 1] as const) polozky[p].push({ ...pod, kusy: h[p], body: vitaz === p ? 1 : 0 });
   }
   const pre = (p: PlayerId): number => {
-    const su: PlayerId = p === 0 ? 1 : 0;
+    const su = opponentOf(p);
     // Kto väčšinu súbojov prehrá, nedostane nič — ani za vyhratú podmienku
     // (variant „útecha“ Michal zamietol, interview 4).
     return vyhry[p] >= vyhry[su] ? bodyZaStarsieho(elder, p) : 0;
