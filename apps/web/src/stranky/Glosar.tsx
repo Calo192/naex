@@ -15,7 +15,8 @@ type AutoriKariet = Readonly<Record<string, { readonly meno: string; readonly pr
 import { useSada, vzhladSady } from "../lib/sada.tsx";
 import { Hlaska, Nacitavanie } from "../komponenty.tsx";
 
-const TYPY: readonly { readonly nazov: string; readonly tag: string | null }[] = [
+/** Filtre typu karty (glosár, Pravidlá › Karty). */
+export const TYPY_KARIET: readonly { readonly nazov: string; readonly tag: string | null }[] = [
   { nazov: "Všetky", tag: null },
   { nazov: "Starší", tag: "Starešina" },
   { nazov: "Občania", tag: "Občan" },
@@ -181,7 +182,7 @@ export function Glosar() {
         </p>
         <div className="glosar-ovladanie">
           <div className="cipy" role="group" aria-label="Typ karty">
-            {TYPY.map((t) => (
+            {TYPY_KARIET.map((t) => (
               <button key={t.nazov} className={typ === t.tag ? "cip aktivny" : "cip"} onClick={() => setTyp(t.tag)}>
                 {t.nazov}
               </button>

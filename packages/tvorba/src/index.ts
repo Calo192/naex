@@ -10,3 +10,4 @@ export * from "./export.ts";
 export * from "./zverejnenie.ts";
 export * from "./predvolene.ts";
 export * from "./texty.ts";
+export * from "./pribeh.ts";

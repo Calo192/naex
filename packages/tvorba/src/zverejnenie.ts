@@ -8,6 +8,7 @@ import type { BodovaciaKarta, IkonaBodovania, KartaNavrh, StranaNavrhu } from ".
 import { POZICIE } from "./typy.ts";
 import { rozlozeniaStrany } from "./varianty.ts";
 import { spustaceVTexte } from "./text.ts";
+import { textyKarty } from "./pribeh.ts";
 
 /** Prevod názvu na id karty (rovnaký ako tools/parse_cards.py). */
 export function slug(s: string): string {
@@ -53,6 +54,8 @@ export function doCardsJson(karty: readonly KartaNavrh[], zdroj: string): unknow
       left: stranaJson(k.lava),
       right: stranaJson(k.prava),
       permutations: { total: l * r, left: l, right: r },
+      // Texty pre hráča (stránka Pravidlá › Karty) — jadro ich nečíta.
+      ...textyKarty(k.pribeh, k.ucel),
     };
   });
   return {

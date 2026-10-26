@@ -10,7 +10,7 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import type { DlzkaHry, Podmienka } from "@naex/core";
 import { ALL_PODMIENKY, dostupneDlzky, prazdneStatistiky } from "@naex/core";
 import type { KartaNavrh, Pozicia, StranaNavrhu, AkciaDef, KlucoveSlovo, Kategoria, BodovaciaKarta, IkonaBodovania, Nastavenia } from "@naex/tvorba";
-import { exportTxt, importTxt, slug, PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
+import { MAX_TEXTU_KARTY, exportTxt, importTxt, sTextamiZImportu, slug, textyKarty, PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
 import type { Pouzivatel, Rola, Ucty } from "./auth.ts";
 import type { Achievementy } from "./achievementy.ts";
 import { ChybaVstupu, cookieOdhlasenia, cookieRelacie, overHesloVstup, overLogin, overHlasitost, overLupu, overMeno, overSchemu, overPrepinac, overPohlavie, overIdNapovedy, citajCookie, jeSpravca } from "./auth.ts";
@@ -253,7 +253,14 @@ export function overNavrh(v: Record<string, unknown>, id: string, teraz: number)
     lava: overStranu(v.lava, "Ľavá strana"),
     prava: overStranu(v.prava, "Pravá strana"),
     upravene: teraz,
+    ...textyKarty(textKarty(v.pribeh, "Príbeh"), textKarty(v.ucel, "Účel v hre")),
   };
+}
+
+/** Príbeh či účel karty: nepovinný text, konce riadkov ako v prehliadači. */
+function textKarty(v: unknown, pole: string): string | undefined {
+  if (v === undefined || v === null) return undefined;
+  return str(v, MAX_TEXTU_KARTY, pole).replace(/\r\n?/g, "\n");
 }
 
 function overAkciu(v: Record<string, unknown>, kluc: string, existujuca: AkciaDef | null): AkciaDef {
@@ -899,24 +906,29 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       for (const ik of karty) {
         const k = existujuce.find((e) => e.nazov.toLocaleLowerCase("sk") === ik.nazov.toLocaleLowerCase("sk"));
         if (k !== undefined) {
-          ctx.obsah.ulozKartu({ ...k, tagy: ik.tagy, efekt: ik.efekt, lava: ik.lava, prava: ik.prava, upravene: teraz });
+          ctx.obsah.ulozKartu(sTextamiZImportu({ ...k, tagy: ik.tagy, efekt: ik.efekt, lava: ik.lava, prava: ik.prava, upravene: teraz }, ik));
           upravene++;
         } else {
           let nove = slug(ik.nazov) || "karta";
           while (ctx.obsah.karty.jeden(nove) !== null) nove += "_2";
-          ctx.obsah.ulozKartu({
-            id: nove,
-            nazov: ik.nazov,
-            tagy: ik.tagy,
-            efekt: ik.efekt,
-            obrazok: null,
-            farba: null,
-            ...n,
-            kopie: 1,
-            lava: ik.lava,
-            prava: ik.prava,
-            upravene: teraz,
-          });
+          ctx.obsah.ulozKartu(
+            sTextamiZImportu(
+              {
+                id: nove,
+                nazov: ik.nazov,
+                tagy: ik.tagy,
+                efekt: ik.efekt,
+                obrazok: null,
+                farba: null,
+                ...n,
+                kopie: 1,
+                lava: ik.lava,
+                prava: ik.prava,
+                upravene: teraz,
+              },
+              ik,
+            ),
+          );
           pridane++;
         }
       }

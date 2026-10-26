@@ -1,0 +1,159 @@
+/* Pravidlá › Karty (Michal 2026-10-26): galéria kariet s príbehom a účelom v hre.
+   Farba karty (--farba-karty) je farba z tvorcu, nie farba webu — len lem ilustrácie. */
+
+.kp-spat {
+  display: inline-block;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+  color: var(--tlmeny);
+  text-decoration: none;
+}
+
+.kp-spat:hover {
+  color: var(--text);
+}
+
+.kp .stranka-hlava h1 {
+  margin: 4px 0 10px;
+}
+
+.kp-zoznam {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 540px), 1fr));
+  gap: 20px;
+  align-items: start;
+}
+
+.kp-karta {
+  display: grid;
+  grid-template-columns: 148px minmax(0, 1fr);
+  grid-template-areas:
+    "obraz hlava"
+    "obraz telo";
+  grid-template-rows: auto 1fr;
+  gap: 4px 20px;
+  padding: 18px;
+  border: 1px solid var(--okraj);
+  border-radius: 14px;
+  background: var(--plocha);
+  scroll-margin-top: 84px;
+}
+
+.kp-obraz {
+  grid-area: obraz;
+  align-self: start;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 10px;
+  border-top: 5px solid var(--farba-karty, var(--okraj-svetly));
+  background: var(--plocha-3);
+}
+
+.kp-obraz img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.kp-obraz span {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  font: 800 3rem/1 var(--nadpis);
+  color: var(--slaby-text);
+}
+
+.kp-hlava {
+  grid-area: hlava;
+  min-width: 0;
+}
+
+.kp-hlava h2 {
+  margin: 0;
+  font-size: 1.35rem;
+  line-height: 1.2;
+}
+
+.kp-tagy {
+  margin: 2px 0 0;
+  font-size: 0.85rem;
+  color: var(--tlmeny);
+}
+
+.kp-telo {
+  grid-area: telo;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.kp-efekt {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border-left: 3px solid var(--akcent);
+  background: var(--plocha-3);
+}
+
+.kp-efekt p {
+  margin: 0;
+}
+
+.kp-efekt p + p {
+  margin-top: 4px;
+}
+
+.kp-efekt [title] {
+  cursor: help;
+}
+
+.kp-text h3 {
+  margin: 0 0 4px;
+  font: 700 0.75rem/1.3 var(--pismo);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--akcent);
+}
+
+.kp-text p {
+  margin: 0 0 6px;
+  max-width: 68ch;
+  /* Zalomenia riadkov z tvorcu ostávajú, ako ich autor napísal. */
+  white-space: pre-line;
+}
+
+.kp-text ul {
+  margin: 0 0 6px;
+  padding-left: 1.2em;
+}
+
+.kp-text li {
+  margin: 3px 0;
+}
+
+/* Príbeh ako text pre atmosféru na karte — kurzívou (Bitter je načítaný len tučný). */
+.kp-pribeh p {
+  font-style: italic;
+}
+
+@media (max-width: 600px) {
+  .kp-karta {
+    grid-template-columns: 84px minmax(0, 1fr);
+    grid-template-areas:
+      "obraz hlava"
+      "telo telo";
+    grid-template-rows: auto;
+    gap: 4px 14px;
+    padding: 14px;
+  }
+
+  .kp-hlava {
+    align-self: center;
+  }
+
+  .kp-obraz span {
+    font-size: 2rem;
+  }
+}

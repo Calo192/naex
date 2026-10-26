@@ -284,6 +284,9 @@ function Obsah({
       >
         <span>A–Z</span> Slovník
       </a>
+      <Odkaz href="/pravidla/karty" className="obsah-slovnik">
+        <span aria-hidden="true">→</span> Karty: príbeh a účel v hre
+      </Odkaz>
     </nav>
   );
 }
@@ -355,7 +358,8 @@ function Slovnik({ sada }: { readonly sada: Sada }) {
         </>
       )}
       <p>
-        Všetky karty s efektmi a variantmi nájdeš v <Odkaz href="/karty">glosári kariet</Odkaz>.
+        Všetky karty s efektmi a variantmi nájdeš v <Odkaz href="/karty">glosári kariet</Odkaz>, ich príbeh a účel v hre na stránke{" "}
+        <Odkaz href="/pravidla/karty">Karty</Odkaz>.
       </p>
     </section>
   );

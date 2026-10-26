@@ -52,6 +52,10 @@ export interface KartaNavrh {
   readonly lava: StranaNavrhu;
   readonly prava: StranaNavrhu;
   readonly upravene: number;
+  /** Príbeh karty (backstory) pre stránku Pravidlá › Karty; hra ho nečíta. Chýba = karta ho ešte nemá. */
+  readonly pribeh?: string;
+  /** Účel v hre: čo s kartou hráč dosiahne a aké zahrania ponúka (odrážky „- “); hra ho nečíta. */
+  readonly ucel?: string;
 }
 
 export type IkonaAkcie =
