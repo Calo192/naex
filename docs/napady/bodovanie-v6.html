@@ -1,0 +1,611 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bodovanie v6</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Rozvrhnutie: jeden stĺpec na čítanie, karty alternatív pod sebou, kalkulačka so stupnicami strachu. */
+:root {
+  --pozadie: #15120f; --plocha: #1f1a15; --plocha-2: #2a231c; --okraj: #43372c;
+  --text: #f1e8d8; --tlmeny: #b8a993;
+  --akcent: #e9ad45; --jano: #8fb4e0; --zuza: #e08f9c;
+  --z-cervena: #c9483a; --z-oranzova: #e08a3a; --z-zlta: #d9c04a; --z-siva: #5b5249;
+  --dobre: #7cbf74; --zle: #d0563f; --stred: #c9a74a;
+  --serif: Georgia, "Times New Roman", serif;
+  --sans: system-ui, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #d8c8ad;
+    --text: #2a2016; --tlmeny: #5e4f3b;
+    --akcent: #95590a; --jano: #2d5a8f; --zuza: #a33a52;
+    --z-cervena: #b23a2c; --z-oranzova: #c7701f; --z-zlta: #b89a17; --z-siva: #b9ad9c;
+    --dobre: #356e2f; --zle: #a83a26; --stred: #8a6d12;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #d8c8ad;
+  --text: #2a2016; --tlmeny: #5e4f3b;
+  --akcent: #95590a; --jano: #2d5a8f; --zuza: #a33a52;
+  --z-cervena: #b23a2c; --z-oranzova: #c7701f; --z-zlta: #b89a17; --z-siva: #b9ad9c;
+  --dobre: #356e2f; --zle: #a83a26; --stred: #8a6d12;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 var(--sans); }
+main { max-width: 960px; margin: 0 auto; padding-block: 28px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--serif); line-height: 1.2; text-wrap: balance; }
+h1 { font-size: clamp(1.7rem, 4.5vw, 2.4rem); margin: 0 0 10px; }
+h2 { font-size: 1.4rem; margin: 40px 0 14px; padding-bottom: 6px; border-bottom: 1px solid var(--okraj); }
+h3 { font-size: 1.15rem; margin: 0; }
+p { margin: 0 0 10px; }
+a { color: var(--akcent); }
+:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+.uvod { color: var(--tlmeny); max-width: 68ch; }
+blockquote { margin: 12px 0; padding: 8px 14px; border-left: 3px solid var(--akcent); background: var(--plocha); font-family: var(--serif); font-style: italic; }
+.odporucane { background: var(--plocha); border: 1px solid var(--akcent); border-radius: 12px; padding: 14px 16px; margin: 18px 0; }
+.odporucane h2 { margin-top: 0; border: 0; padding: 0; font-size: 1.2rem; }
+.odporucane ol, .odporucane ul { margin: 6px 0 0; padding-left: 20px; }
+.odporucane li { margin-bottom: 6px; }
+.tab-obal { overflow-x: auto; }
+table.prehlad { width: 100%; border-collapse: collapse; font-size: .92rem; font-variant-numeric: tabular-nums; }
+table.prehlad th, table.prehlad td { padding: 7px 6px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--okraj); }
+table.prehlad thead th { border-bottom: 2px solid var(--okraj); font-size: .85rem; color: var(--tlmeny); font-weight: 600; }
+td.c, th.c { text-align: center; white-space: nowrap; }
+.ano { color: var(--dobre); font-weight: 700; }
+.trocha { color: var(--stred); font-weight: 700; }
+.nie { color: var(--zle); font-weight: 700; }
+.diag { display: grid; gap: 12px; }
+.diag > div { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 10px; padding: 12px 16px; min-width: 0; }
+.diag h3 { margin-bottom: 6px; }
+.diag ul { margin: 4px 0 0; padding-left: 18px; }
+.diag li { margin-bottom: 5px; }
+.alt { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+.alt.odp { border-color: var(--akcent); border-width: 2px; }
+.alt-hlava { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: baseline; margin-bottom: 10px; }
+.pismeno { font-family: var(--serif); font-size: 1.6rem; color: var(--akcent); line-height: 1; }
+.znacka { display: inline-block; font-size: .76rem; border-radius: 999px; padding: 1px 9px; border: 1px solid currentColor; white-space: nowrap; color: var(--tlmeny); }
+.znacka.odp { color: var(--akcent); font-weight: 600; }
+.heslo { font-family: var(--serif); font-style: italic; color: var(--tlmeny); margin-bottom: 10px; }
+dl.polozka { margin: 0; display: grid; grid-template-columns: 8.5em 1fr; gap: 8px 14px; }
+dl.polozka dt { color: var(--tlmeny); font-size: .86rem; padding-top: 2px; }
+dl.polozka dd { margin: 0; min-width: 0; }
+dl.polozka ul, dl.polozka ol { margin: 0; padding-left: 18px; }
+dl.polozka li { margin-bottom: 3px; }
+.moduly { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.modul { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 10px; padding: 12px 14px; min-width: 0; }
+.modul h3 { font-size: 1rem; margin-bottom: 6px; }
+.modul .kod { font-family: var(--mono); color: var(--akcent); font-size: .85rem; margin-right: 6px; }
+.modul p { font-size: .93rem; }
+.modul .kde { font-size: .82rem; color: var(--tlmeny); margin: 0; }
+code { font-family: var(--mono); font-size: .86em; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+
+/* kalkulačka */
+.kalk { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 14px; }
+.legenda { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .85rem; color: var(--tlmeny); margin-bottom: 12px; }
+.legenda b.j { color: var(--jano); } .legenda b.z { color: var(--zuza); }
+.riadky { display: grid; gap: 8px; }
+.riadok { display: grid; grid-template-columns: 9.5em minmax(0, 1fr) auto; gap: 6px 12px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--okraj); }
+.meno { font-family: var(--serif); }
+.meno small { display: block; font-family: var(--sans); font-size: .76rem; color: var(--tlmeny); }
+.stupnica { display: grid; grid-template-columns: repeat(9, minmax(22px, 1fr)); gap: 3px; max-width: 360px; }
+.stupnica button { appearance: none; border: 0; height: 30px; border-radius: 4px; cursor: pointer; position: relative; padding: 0; opacity: .55; }
+.stupnica button[aria-pressed="true"] { opacity: 1; box-shadow: inset 0 0 0 3px var(--text); }
+.stupnica button.duch { opacity: 1; box-shadow: inset 0 0 0 2px var(--text); background-image: repeating-linear-gradient(45deg, transparent 0 4px, rgba(0,0,0,.25) 4px 6px); }
+.zc { background: var(--z-cervena); } .zo { background: var(--z-oranzova); } .zz { background: var(--z-zlta); } .zs { background: var(--z-siva); }
+.stav { grid-column: 2 / 3; font-size: .8rem; color: var(--tlmeny); }
+.vacsina { display: inline-flex; border: 1px solid var(--okraj); border-radius: 8px; overflow: hidden; }
+.vacsina button { appearance: none; border: 0; background: transparent; color: var(--tlmeny); padding: 6px 9px; font: inherit; font-size: .82rem; cursor: pointer; }
+.vacsina button[aria-pressed="true"] { background: var(--plocha-2); color: var(--text); font-weight: 600; }
+.vacsina button[data-m="J"][aria-pressed="true"] { color: var(--jano); }
+.vacsina button[data-m="Z"][aria-pressed="true"] { color: var(--zuza); }
+.vstupy { display: flex; flex-wrap: wrap; gap: 10px 22px; margin: 14px 0 6px; font-size: .9rem; }
+.vstupy label { display: inline-flex; gap: 8px; align-items: center; }
+.vstupy input { width: 4em; font: inherit; padding: 3px 6px; background: var(--plocha-2); color: var(--text); border: 1px solid var(--okraj); border-radius: 6px; }
+.vysledky { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin-top: 14px; }
+.vysledok { background: var(--plocha-2); border-radius: 10px; padding: 10px 12px; min-width: 0; }
+.vysledok .nazov { font-size: .82rem; color: var(--tlmeny); }
+.vysledok .skore { font-family: var(--serif); font-size: 1.6rem; font-variant-numeric: tabular-nums; }
+.skore .j { color: var(--jano); } .skore .z { color: var(--zuza); }
+.vysledok details { font-size: .8rem; color: var(--tlmeny); margin-top: 4px; }
+.vysledok details summary { cursor: pointer; }
+.vysledok details ul { margin: 4px 0 0; padding-left: 16px; }
+.tlacidla { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.tlacidla button { appearance: none; font: inherit; font-size: .85rem; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--okraj); background: var(--plocha-2); color: var(--text); cursor: pointer; }
+footer { margin-top: 40px; padding-top: 12px; border-top: 1px solid var(--okraj); color: var(--tlmeny); font-size: .88rem; }
+@media (max-width: 640px) {
+  dl.polozka { grid-template-columns: 1fr; gap: 2px 0; }
+  dl.polozka dt { padding-top: 8px; }
+  .riadok { grid-template-columns: 1fr; }
+  .stav { grid-column: auto; }
+  table.prehlad { font-size: .82rem; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .stupnica button { transition: opacity .12s; }
+}
+</style>
+</head>
+<body>
+<main>
+
+<h1>Bodovanie v6: alternatívy</h1>
+<p class="uvod">Navrhár, 26. 10. 2026. Návrh na rozhodnutie pre Michala. Pravidlá ani kód som nemenil.
+Podklady: <code>docs/PRAVIDLA.md</code> §9.4, §10 a §14, scorecardy v5, rozbor stratéga
+<code>docs/playtesty/strategia-v5.html</code> a rozhodnutia z <code>docs/pravidla-v5/davka.md</code>.</p>
+
+<blockquote>Bodovanie starších je chaotické a problémové. Strach nefunguje úplne tak, ako by som chcel,
+a mám pocit, že víťazstvo v bitke sa nedostatočne odmeňuje. Starší, strach a priazeň majú ostať v hre.</blockquote>
+
+<section class="odporucane" aria-labelledby="h-skratka">
+  <h2 id="h-skratka">V skratke</h2>
+  <ul>
+    <li>Navrhujem <b>štyri alternatívy</b>, od malej opravy v5 (A) po úplne iné bodovanie (D), a päť
+      <b>modulov</b>, ktoré sa dajú pridať ku každej.</li>
+    <li><b>Odporúčam B, Súd starších</b> s modulmi M1 (prebytok len víťazovi) a M3 (Minuté cigarety).
+      Pravidlo znie: <i>priazeň je sila počas hry, strach sú body na konci</i>. Body za staršieho určuje
+      len jeho marker. Podmienky scorecardu ho na konci posunú najviac o jedno pole. Bitka sa do bodov
+      dostane priamo, lebo lokalita je bod a prebytok je strach.</li>
+    <li>Pred rozhodnutím by mal B, A a C porovnať stratég turnajmi botov. Čísla v tomto dokumente sú len
+      príklady, nie merania.</li>
+    <li>Dole je <a href="#kalkulacka">kalkulačka</a>. Nastavíš v nej koncový stav partie a uvidíš skóre
+      v5 aj všetkých alternatív.</li>
+  </ul>
+</section>
+
+<h2 id="diagnoza">1. Čo dnes nefunguje</h2>
+<div class="diag">
+  <div>
+    <h3>Chaos: väčšiny pri staršom</h3>
+    <ul>
+      <li>Každý starší má 4 aktívne podmienky (karty starších majú po 4 akcie), spolu 32 súbojov. Výsledok pri staršom
+        sa prevráti jedinou podmienkou, napríklad 1 Dlhom. V príklade v §14 rozhodne o 3 bodoch.</li>
+      <li>Väčšina súbojov končí rovnosťou. Dlh a Vydesenie sú skoro vždy nerozhodné a Cirhóza, Rezerva
+        a Starší v troch štvrtinách partií tiež (stratég, v5). O staršom tak rozhoduje jedna-dve
+        podmienky, ktoré hráč počas hry ťažko sleduje.</li>
+      <li>Pri rovnosti dostanú body obaja, každý inak (1 alebo 1 + zóny). Na stole to nie je vidno.
+        Náhľad bodov sa musí počítať.</li>
+      <li>Ktoré podmienky platia, určujú zablokované akcie karty staršieho a náhodne rozdané scorecardy.
+        Hráč si to musí naštudovať pri každom staršom znova.</li>
+    </ul>
+  </div>
+  <div>
+    <h3>Strach: zapína sa len pri väčšine</h3>
+    <ul>
+      <li>Strach je dnes len <b>násobok</b>. Ak pri staršom nevyhráš väčšinu podmienok, jeho strach ti
+        nedá nič. Vydesený starší (3 zóny) ti dá 0 bodov, keď pri ňom prehráš väčšinu podmienok, hoci aj 1 : 2.</li>
+      <li>Ten istý marker sa ráta na troch miestach: ako násobok pri tomto staršom, v zónových podmienkach
+        <b>ostatných</b> starších a pri okamžitej výhre vydesením. Je ťažké predvídať, čo posun urobí.</li>
+      <li>Kto drží priazeň, dostane pri väčšine 1 bod, rovnako ako hráč pri sivom markeri. Priazeň a stred
+        sa v bodoch nelíšia.</li>
+      <li>Možno ti prekáža niečo iné, napríklad že desiť znamená dať súperovi priazeň. To je zámerné
+        napätie z §9.4. Všetky alternatívy ho nechávajú. Ak ho chceš zmeniť, povedz (otázka 2 na konci).</li>
+    </ul>
+  </div>
+  <div>
+    <h3>Bitka: odmena je nepriama a nevidno ju</h3>
+    <ul>
+      <li>Lokalita je dnes len kus v súboji Lokality, a to len pri starších, kde je táto podmienka aktívna.
+        Stratég jej nameral hodnotu 1,5 až 2 body. Vo v4 to bolo 12 až 24 bodov.</li>
+      <li>Prebytok rozdeľuje hráč s vyšším <b>celkovým</b> poškodením (§9.4). Môže to byť aj porazený.
+        Prebytok navyše dáva súperovi priazeň a porazený za neho dostane cigarety.</li>
+      <li>Pri remíze ide lokalita na sekeru. Pri pasovaní za cigarety skončilo remízou až 41 % bitiek
+        (stratég, podmienka Cigarety).</li>
+      <li>Pozor: kto vyhrá viac bitiek, vyhrá partiu v 76 až 89 % (stratég). Odmena teda <b>existuje</b>.
+        Hráč ju však nevidí, lebo bitka sa do skóre dostane až na konci cez súboje pri starších. Treba ju
+        skôr zviditeľniť a spraviť priamou, nie nutne zväčšiť. Inak hrozí snowball.</li>
+    </ul>
+  </div>
+</div>
+
+<h2 id="alternativy">2. Štyri alternatívy</h2>
+<p>Každá alternatíva nechá starších, strach aj priazeň. Priebeh kola, prebytok, Pohoršenie, patronát
+a okamžitá výhra vydesením ostávajú, ak alternatíva nehovorí inak.</p>
+
+<article class="alt" id="alt-a">
+  <div class="alt-hlava"><span class="pismeno">A</span><h3>Oprava v5</h3>
+    <span class="znacka">malá zmena</span><span class="znacka">pravidlá + scorecardy</span></div>
+  <p class="heslo">V5 ostane, odstránia sa z nej tri najhoršie miesta.</p>
+  <dl class="polozka">
+    <dt>Ako sa boduje</dt>
+    <dd><ol>
+      <li><b>Lokalita = 2 body</b> priamo, mimo starších. Lokality zo sekery tiež. Podmienka Lokality
+        zo scorecardov vypadne (inak by sa lokalita rátala dvakrát). Jej miesta dostane iná podmienka.</li>
+      <li>Pri každom staršom ostáva väčšina podmienok a body 1 + zóny strachu.</li>
+      <li><b>Rovnosť väčšiny</b>: body dostane len hráč, ktorého sa starší bojí (1 + zóny). Ak je marker
+        v sivej, nedostane nikto. Dnes dostanú body obaja.</li>
+      <li>Moduly M1 (prebytok len víťazovi) a M3 (Minuté cigarety) sú súčasťou A.</li>
+    </ol></dd>
+    <dt>Čo rieši</dt>
+    <dd>Bitka má hneď viditeľnú cenu: lokalita sú 2 body na účte. Strach rozhoduje pri rovnosti. Ubudne
+      najmätúcejšie pravidlo „body obom, každému inak“.</dd>
+    <dt>Čo nerieši</dt>
+    <dd>32 súbojov ostáva a výsledok pri staršom sa stále prevráti jednou podmienkou. Strach je stále
+      len násobok. Chaos sa zmenší len trochu.</dd>
+    <dt>Dopad</dt>
+    <dd>§9.4 a §14, iné rozloženie podmienok v <code>scorecards.json</code> (bez Lokalít), náhľad bodov,
+      ťahák, výučba (texty o bodoch). Bot používa tú istú funkciu bodov, prispôsobí sa sám.</dd>
+  </dl>
+</article>
+
+<article class="alt odp" id="alt-b">
+  <div class="alt-hlava"><span class="pismeno">B</span><h3>Súd starších</h3>
+    <span class="znacka odp">odporúčam</span><span class="znacka">stredná zmena</span><span class="znacka">pravidlá + význam scorecardu + UI</span></div>
+  <p class="heslo">Priazeň je sila počas hry, strach sú body na konci.</p>
+  <dl class="polozka">
+    <dt>Počas hry</dt>
+    <dd>Bez zmeny: prebytok, Pohoršenie oboma smermi, patronát, priazne a vydesenie.</dd>
+    <dt>Na konci hry</dt>
+    <dd><ol>
+      <li><b>Súd.</b> Pri každom staršom sa porovnajú jeho aktívne podmienky ako dnes. Kto vyhrá viac
+        podmienok, posunie jeho marker <b>o 1 k súperovi</b>, teda strach z neho stúpne. Pri rovnosti marker
+        stojí. Zamknutie tu neplatí a marker smie aj na krajnú pozíciu.</li>
+      <li><b>Body.</b> Každý starší dá body hráčovi, ktorého sa bojí: žltá 1, oranžová 2, červená 3.
+        Pri markeri v sivej nedá body nikomu. Priazeň body nedáva.</li>
+      <li><b>Lokalita = 1 bod</b> navyše, priamo.</li>
+    </ol></dd>
+    <dt>Čo rieši</dt>
+    <dd><ul>
+      <li><b>Chaos:</b> skóre je to, čo leží na stole. Každý marker na súperovej polovici je tvoj bod.
+        Podmienky už nie sú brána k bodom, len posledný posun o jedno pole. Celý súd je najviac 8 posunov,
+        ktoré web ukáže vopred ako „ducha“ markera.</li>
+      <li><b>Strach:</b> každý krok strachu sa počíta vždy, nielen pri väčšine. Vydesený starší je vždy
+        3 body.</li>
+      <li><b>Bitka:</b> lokalita je bod a prebytok priamo posúva markery, teda body. S modulom M1 ho
+        rozdeľuje len víťaz.</li>
+    </ul></dd>
+    <dt>Napätie</dt>
+    <dd>Kto desí viac, dáva súperovi silnejšie priazne. Hra si tak sama pomáha prehrávajúcemu, čo je proti
+      snowballu. Obrana je Pohoršenie k sebe a patronát (marker do stredu). Rozhodnutie „komu dám prebytok“
+      je ťažšie, lebo každý posun je zároveň bod pre mňa a sila pre súpera. To bol Michalov cieľ pri
+      priazniach v5.</dd>
+    <dt>Riziká</dt>
+    <dd><ul>
+      <li>Sivý stred má 3 polia. Posun zo stredu (index 4) do sivej (3 alebo 5) bod nedá. Zvážiť, či súd
+        pri sivom markeri neposunie rovno do žltej.</li>
+      <li>Hráči budú desiť agresívnejšie, takže okamžitá výhra vydesením môže byť častejšia. Treba ju
+        zmerať a prípadne zvýšiť prah.</li>
+      <li>Rozsah skóre 0 až 24 + lokality. Typická partia odhadom 8 až 14 bodov na hráča (nezmerané).</li>
+    </ul></dd>
+    <dt>Dopad</dt>
+    <dd>§14 prepísať (kratší ako dnes), §10 „strach určuje body“, náhľad bodov a „duch“ markera v UI,
+      ťahák, výučba. Fyzické scorecardy ostanú, zmení sa len to, čo podmienky robia. Zónové podmienky
+      (Znepokojenie, Strach, Vydesenie) ostávajú súbojmi.</dd>
+  </dl>
+</article>
+
+<article class="alt" id="alt-c">
+  <div class="alt-hlava"><span class="pismeno">C</span><h3>Čiarky na účte</h3>
+    <span class="znacka">veľká zmena</span><span class="znacka">pravidlá + UI + kronika</span></div>
+  <p class="heslo">Krčmár robí čiarky na tácku. Čo je napísané, to sa nezmaže.</p>
+  <dl class="polozka">
+    <dt>Ako sa boduje</dt>
+    <dd><ul>
+      <li><b>Vyhraná bitka +2</b>, každá lokalita zo sekery +1 navyše.</li>
+      <li><b>Strach:</b> keď sa ťa starší prvý raz bojí v oranžovej, +1. Keď prvý raz v červenej, ďalší +1.
+        Čiarka ostane, aj keď marker neskôr odíde.</li>
+      <li><b>Úspešný patronát +1</b> (patrón vyhral bitku).</li>
+      <li><b>Na konci:</b> pri každom staršom +1 za väčšinu jeho podmienok, bez násobku. Rovnosť nikomu.</li>
+      <li>Priazeň body nedáva, je to len sila.</li>
+    </ul></dd>
+    <dt>Čo rieši</dt>
+    <dd>Bitka sa odmeňuje najsilnejšie a hneď. Body počas partie len pribúdajú, takže sa výsledok ľahko
+      číta a skóre neskáče dolu. Strach sa odmeňuje za dosiahnutie.</dd>
+    <dt>Riziká</dt>
+    <dd><ul>
+      <li><b>Snowball:</b> kto vyhráva bitky, ten aj beží. Stratég ukázal, že tesnosť príde zo striedania
+        bitiek, nie zo vzorca. Tu ju nič nepodporuje.</li>
+      <li>Súperova odveta stratí cenu. Vrátiť marker už body nevezme, takže Pohoršenie k sebe a patronát
+        oslabnú.</li>
+      <li>Hra si musí pamätať čiarky (kronika ich má). Za stolom treba počítadlo.</li>
+    </ul></dd>
+    <dt>Dopad</dt>
+    <dd>Nové pravidlo bodov počas hry (§9, §10, §14), účet v UI, ťahák, výučba, bot (body z udalostí).</dd>
+  </dl>
+</article>
+
+<article class="alt" id="alt-d">
+  <div class="alt-hlava"><span class="pismeno">D</span><h3>Dedina a starší</h3>
+    <span class="znacka">veľká zmena</span><span class="znacka">odvážne</span><span class="znacka">pravidlá + UI</span></div>
+  <p class="heslo">Ráta sa tvoja slabšia stránka. Kto len bije alebo len desí, prehrá.</p>
+  <dl class="polozka">
+    <dt>Ako sa boduje</dt>
+    <dd><ul>
+      <li><b>Stĺpec Dedina:</b> 2 body za každú lokalitu.</li>
+      <li><b>Stĺpec Starší:</b> súčet úrovní strachu (žltá 1, oranžová 2, červená 3) a +1 za každého
+        staršieho, pri ktorom vyhráš väčšinu podmienok.</li>
+      <li><b>Skóre = slabší z dvoch stĺpcov</b> (ako v Ingenious). Pri rovnosti rozhodne silnejší stĺpec.</li>
+    </ul></dd>
+    <dt>Čo rieši</dt>
+    <dd>Bitka je polovica hry a nedá sa obísť. Strach je druhá polovica. Každé rozhodnutie má dva
+      smery: ísť po lokalite, alebo po staršom. Prehrávajúci vie presne, čo mu chýba.</dd>
+    <dt>Riziká</dt>
+    <dd><ul>
+      <li>Nováčik nechápe, prečo mu silný stĺpec nepomôže. Výučba to musí vysvetliť hneď.</li>
+      <li>Mierka oboch stĺpcov sa musí vyvážiť meraním, inak jeden stĺpec rozhoduje vždy.</li>
+      <li>Krátka hra (3 lokality) má stĺpec Dedina veľmi hrubý: 0, 2, 4 alebo 6.</li>
+    </ul></dd>
+    <dt>Dopad</dt>
+    <dd>§14 nanovo, dva počítadlá v UI, ťahák, výučba, bot (cieľ = slabší stĺpec).</dd>
+  </dl>
+</article>
+
+<h2 id="moduly">3. Moduly na pridanie</h2>
+<p>Malé zmeny, ktoré sa dajú pripojiť ku ktorejkoľvek alternatíve (aj k dnešnej v5).</p>
+<div class="moduly">
+  <div class="modul"><h3><span class="kod">M1</span>Prebytok len víťazovi</h3>
+    <p>Prebytok rozdeľuje víťaz bitky, pri remíze nikto. Dnes ho môže rozdeľovať aj porazený s vyšším
+      celkovým poškodením.</p>
+    <p class="kde">Rieši bitku. Riziko: mäkké poškodenie (Povera proti Dlhom) stratí úlohu útechy.
+      Cigarety za prebytok porazenému ostávajú. §9.4.</p></div>
+  <div class="modul"><h3><span class="kod">M2</span>Jedno prianie staršieho</h3>
+    <p>Scorecard má namiesto 8 podmienok jedno veľké prianie podľa charakteru, napríklad Kmotor: menej
+      Dlhov, Bitkár: viac lokalít. Spolu 8 súbojov namiesto 32.</p>
+    <p class="kde">Rieši chaos najviac zo všetkého. Riziko: zmizne plánovanie cez náhradu staršieho, ktoré
+      playtesterka Eva nazvala najkrajším plánovacím prvkom. Nové scorecardy.</p></div>
+  <div class="modul"><h3><span class="kod">M3</span>Minuté cigarety</h3>
+    <p>Podmienka Cigarety vyhodnocuje minuté cigarety namiesto zvyšných. Odmeňuje aktivitu, nie pasovanie.</p>
+    <p class="kde">Stratég: remízy bitiek 41 % → 14 %, NA EX 1,8 → 5,9 za partiu, tesné partie 38 %.
+      Počítadlo už je v štatistikách (<code>cigaretyMinute</code>).</p></div>
+  <div class="modul"><h3><span class="kod">M4</span>Víťazný posun</h3>
+    <p>Víťaz bitky posunie navyše jeden marker o 1 k súperovi, aj keď prebytok je 0.</p>
+    <p class="kde">Každá vyhraná bitka je aspoň krok strachu. S B to je takmer istý bod. Riziko:
+      ďalší posun = ďalšia priazeň porazenému, čo je skôr dobre.</p></div>
+  <div class="modul"><h3><span class="kod">M5</span>Rovnosť pri staršom nikomu</h3>
+    <p>Pri rovnosti väčšiny za staršieho nedostane body nikto. V A je jemnejšia verzia (rozhodne strach).</p>
+    <p class="kde">Jednoduchšie čítanie. Stratég: rovnosť pri staršom zmenila víťaza len v 0 až 10 % partií.</p></div>
+</div>
+
+<h2 id="porovnanie">4. Porovnanie</h2>
+<div class="tab-obal">
+<table class="prehlad">
+  <thead><tr><th>Alternatíva</th><th class="c">Chaos</th><th class="c">Strach</th><th class="c">Bitka</th><th class="c">Tesné partie</th><th class="c">Zmena</th><th>Najväčšie riziko</th></tr></thead>
+  <tbody>
+    <tr><td>v5 (dnes)</td><td class="c nie">✗</td><td class="c trocha">~</td><td class="c nie">✗</td><td class="c">28 % (stratég)</td><td class="c">–</td><td>pasovanie za cigarety, nečitateľné body</td></tr>
+    <tr><td>A Oprava v5</td><td class="c trocha">~</td><td class="c trocha">~</td><td class="c ano">✓</td><td class="c">odhad ako v5 + M3</td><td class="c">malá</td><td>chaos ostáva</td></tr>
+    <tr><td><b>B Súd starších</b></td><td class="c ano">✓</td><td class="c ano">✓</td><td class="c ano">✓</td><td class="c">priazeň pomáha zaostávajúcemu</td><td class="c">stredná</td><td>častejšia výhra vydesením</td></tr>
+    <tr><td>C Čiarky na účte</td><td class="c ano">✓</td><td class="c trocha">~</td><td class="c ano">✓✓</td><td class="c">hrozí snowball</td><td class="c">veľká</td><td>kto vedie, uteká</td></tr>
+    <tr><td>D Dedina a starší</td><td class="c trocha">~</td><td class="c ano">✓</td><td class="c ano">✓</td><td class="c">neznáme</td><td class="c">veľká</td><td>neintuitívne, vyváženie</td></tr>
+  </tbody>
+</table>
+</div>
+<p style="font-size:.88rem;color:var(--tlmeny);margin-top:8px">✓ rieši, ~ čiastočne, ✗ nerieši. Tesnosť
+okrem v5 nie je zmeraná. Stratég ju zmeria, ak vyberieš kandidátov.</p>
+
+<h2 id="kalkulacka">5. Kalkulačka: ten istý koniec partie, päť bodovaní</h2>
+<div class="kalk">
+  <div class="legenda">
+    <span>Hrajú <b class="j">Jano</b> (ľavá polovica) a <b class="z">Zuza</b> (pravá polovica).</span>
+    <span>Marker na Zuzinej polovici = starší sa bojí Jana a Zuza má priazeň.</span>
+    <span>Výsledok súbojov pri staršom (kto vyhral viac podmienok) zadávaš ručne.</span>
+    <span>Šrafované pole = kam marker posunie súd v B.</span>
+  </div>
+  <div class="riadky" id="riadky"></div>
+  <div class="vstupy">
+    <label for="lokJ">Lokality Jano <input id="lokJ" type="number" min="0" max="7" value="3"></label>
+    <label for="lokZ">Lokality Zuza <input id="lokZ" type="number" min="0" max="7" value="2"></label>
+    <label for="patJ">Úspešné patronáty Jano <input id="patJ" type="number" min="0" max="7" value="0"></label>
+    <label for="patZ">Úspešné patronáty Zuza <input id="patZ" type="number" min="0" max="7" value="1"></label>
+  </div>
+  <div class="vysledky" id="vysledky" aria-live="polite"></div>
+  <div class="tlacidla"><button type="button" id="vzor">Vrátiť príklad</button>
+    <button type="button" id="stred">Všetky markery do stredu</button></div>
+  <p style="font-size:.82rem;color:var(--tlmeny);margin:10px 0 0">Zjednodušenia: v C sa čiarky strachu
+  odhadujú z koncového stavu (ako keby starší dosiahol svoju zónu raz) a bitky = lokality. V A sa ignoruje,
+  že podmienka Lokality vypadne zo scorecardov. Moduly M1, M3 a M4 menia priebeh hry, nie koncový stav,
+  preto ich kalkulačka neukazuje.</p>
+</div>
+
+<h2 id="zmerat">6. Čo zmerať pred rozhodnutím</h2>
+<p>Navrhujem dať stratégovi B, A a C (D len ak ťa zaujme). Každú s M1 a M3, B aj s M4. Na rovnakých
+rozdaniach ako v5:</p>
+<ul>
+  <li>tesné partie a rozdiel do 2 bodov (cieľ okolo 15 : 13),</li>
+  <li>ako často vyhrá partiu ten, kto vyhral viac bitiek (dnes 76 až 89 %, nechceme 100 %),</li>
+  <li>remízy bitiek a NA EX za partiu (či sa neoplatí pasovať),</li>
+  <li>rebrík zručnosti a predurčenosť rozdaním oproti v5,</li>
+  <li>pri B: ako často padne okamžitá výhra vydesením a koľko bodov ide z lokalít a koľko zo strachu.</li>
+</ul>
+<p>Bot počíta body jednou funkciou (<code>bot.ts</code>, hodnota stavu), takže varianty bodovania sa dajú
+skúsiť vo worktree bez učenia bota. Pri C treba boty naučiť udalostné body. Pravidlá v5 sú zmrazené, preto
+by vybraná alternatíva išla do dávky v6. Výučba „Prvá hra“ má texty o bodoch a treba ju upraviť.</p>
+
+<h2 id="otazky">7. Otázky pre teba</h2>
+<ol>
+  <li>Ktoré alternatívy dať zmerať? Odporúčam B, A a C.</li>
+  <li>Čo presne ti na strachu prekáža? Napríklad: (a) strach bez väčšiny nedáva nič, (b) desiť znamená
+    dať súperovi priazeň, (c) marker sa ráta na troch miestach, (d) niečo iné. Pri (b) by som pripravil
+    ešte alternatívu, kde priazeň a strach nie sú jeden marker.</li>
+  <li>Má prebytok rozdeľovať len víťaz bitky (M1)?</li>
+  <li>Pri B: má súd posúvať marker zo sivého stredu rovno do žltej, aby každý vyhraný súd bol bod?</li>
+</ol>
+
+<footer>NA EX! · Navrhár · vetva <code>navrhar/bodovanie</code> · súbor <code>docs/napady/bodovanie-v6.html</code></footer>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  // Index 0–2 = Janova polovica (bojí sa Zuzy), 3–5 sivá, 6–8 Zuzina polovica (bojí sa Jana).
+  var VZOR = [
+    { n: "Farár", s: "Veriaci", i: 7, m: "Z" },
+    { n: "Krčmárka", s: "Fajčiar", i: 6, m: "J" },
+    { n: "Starosta", s: "Kmotor", i: 4, m: "J" },
+    { n: "Poštárka", s: "Výpalník", i: 2, m: "=" },
+    { n: "Hrobár", s: "Bitkár", i: 8, m: "J" },
+    { n: "Autobusár", s: "Alkoholik", i: 1, m: "Z" },
+    { n: "Veterinár", s: "Abstinent", i: 4, m: "Z" },
+    { n: "Vychovávateľka", s: "Exekútor", i: 2, m: "J" }
+  ];
+  var ZONY = ["zc", "zo", "zz", "zs", "zs", "zs", "zz", "zo", "zc"];
+  var NAZOV_ZONY = ["červená", "oranžová", "žltá", "sivá", "sivá", "sivá", "žltá", "oranžová", "červená"];
+  var stav = VZOR.map(function (e) { return { n: e.n, s: e.s, i: e.i, m: e.m }; });
+
+  function strachJ(i) { return i >= 6 ? i - 5 : 0; }
+  function strachZ(i) { return i <= 2 ? 3 - i : 0; }
+  function posunSudu(e) {
+    if (e.m === "J") return Math.min(8, e.i + 1);
+    if (e.m === "Z") return Math.max(0, e.i - 1);
+    return e.i;
+  }
+  function num(id) { var v = parseInt(document.getElementById(id).value, 10); return isNaN(v) || v < 0 ? 0 : v; }
+
+  function popisStrachu(i) {
+    if (strachJ(i)) return "bojí sa Jana (" + NAZOV_ZONY[i] + ", " + strachJ(i) + "), priazeň Zuza";
+    if (strachZ(i)) return "bojí sa Zuzy (" + NAZOV_ZONY[i] + ", " + strachZ(i) + "), priazeň Jano";
+    return "sivá, nikto";
+  }
+
+  function spocitaj() {
+    var lokJ = num("lokJ"), lokZ = num("lokZ"), patJ = num("patJ"), patZ = num("patZ");
+    var vys = [];
+
+    // v5: väčšina pri staršom; 1 + zóny strachu; rovnosť obom.
+    var a = { J: 0, Z: 0, r: [] };
+    stav.forEach(function (e) {
+      var bj = 0, bz = 0;
+      if (e.m !== "Z") bj = 1 + strachJ(e.i);
+      if (e.m !== "J") bz = 1 + strachZ(e.i);
+      a.J += bj; a.Z += bz;
+      a.r.push(e.n + ": " + bj + " : " + bz);
+    });
+    vys.push({ k: "v5 (dnes)", J: a.J, Z: a.Z, r: a.r });
+
+    // A: lokalita 2 b; rovnosť väčšiny dostane len obávaný hráč.
+    var b = { J: lokJ * 2, Z: lokZ * 2, r: ["lokality: " + lokJ * 2 + " : " + lokZ * 2] };
+    stav.forEach(function (e) {
+      var bj = 0, bz = 0;
+      if (e.m === "J") bj = 1 + strachJ(e.i);
+      else if (e.m === "Z") bz = 1 + strachZ(e.i);
+      else if (strachJ(e.i)) bj = 1 + strachJ(e.i);
+      else if (strachZ(e.i)) bz = 1 + strachZ(e.i);
+      b.J += bj; b.Z += bz;
+      b.r.push(e.n + ": " + bj + " : " + bz);
+    });
+    vys.push({ k: "A Oprava v5", J: b.J, Z: b.Z, r: b.r });
+
+    // B: súd posunie marker o 1, body = úroveň strachu, lokalita 1 b.
+    var c = { J: lokJ, Z: lokZ, r: ["lokality: " + lokJ + " : " + lokZ] };
+    stav.forEach(function (e) {
+      var i2 = posunSudu(e);
+      var bj = strachJ(i2), bz = strachZ(i2);
+      c.J += bj; c.Z += bz;
+      c.r.push(e.n + (i2 !== e.i ? " (súd posunul)" : "") + ": " + bj + " : " + bz);
+    });
+    vys.push({ k: "B Súd starších", J: c.J, Z: c.Z, r: c.r, odp: true });
+
+    // C: bitka 2, čiarky strachu (oranžová +1, červená +1), patronát +1, väčšina +1.
+    var d = { J: lokJ * 2 + patJ, Z: lokZ * 2 + patZ, r: ["bitky: " + lokJ * 2 + " : " + lokZ * 2, "patronáty: " + patJ + " : " + patZ] };
+    var cj = 0, cz = 0, vj = 0, vz = 0;
+    stav.forEach(function (e) {
+      var sj = strachJ(e.i), sz = strachZ(e.i);
+      cj += (sj >= 2 ? 1 : 0) + (sj === 3 ? 1 : 0);
+      cz += (sz >= 2 ? 1 : 0) + (sz === 3 ? 1 : 0);
+      if (e.m === "J") vj++; else if (e.m === "Z") vz++;
+    });
+    d.J += cj + vj; d.Z += cz + vz;
+    d.r.push("čiarky strachu: " + cj + " : " + cz, "väčšiny pri starších: " + vj + " : " + vz);
+    vys.push({ k: "C Čiarky na účte", J: d.J, Z: d.Z, r: d.r });
+
+    // D: slabší z dvoch stĺpcov.
+    var sJ = 0, sZ = 0;
+    stav.forEach(function (e) {
+      sJ += strachJ(e.i) + (e.m === "J" ? 1 : 0);
+      sZ += strachZ(e.i) + (e.m === "Z" ? 1 : 0);
+    });
+    var dJ = lokJ * 2, dZ = lokZ * 2;
+    vys.push({ k: "D Dedina a starší", J: Math.min(dJ, sJ), Z: Math.min(dZ, sZ),
+      r: ["Dedina: " + dJ + " : " + dZ, "Starší: " + sJ + " : " + sZ, "rovnosť rozhodne silnejší stĺpec: " + Math.max(dJ, sJ) + " : " + Math.max(dZ, sZ)] });
+
+    var obal = document.getElementById("vysledky");
+    obal.innerHTML = "";
+    vys.forEach(function (v) {
+      var el = document.createElement("div");
+      el.className = "vysledok";
+      var vitaz = v.J > v.Z ? "vyhrá Jano" : v.Z > v.J ? "vyhrá Zuza" : "remíza";
+      el.innerHTML = '<div class="nazov">' + v.k + (v.odp ? " · odporúčam" : "") + '</div>' +
+        '<div class="skore"><span class="j">' + v.J + '</span> : <span class="z">' + v.Z + '</span></div>' +
+        '<div class="nazov">' + vitaz + '</div>' +
+        '<details><summary>rozpis (Jano : Zuza)</summary><ul>' +
+        v.r.map(function (x) { return "<li>" + x + "</li>"; }).join("") + '</ul></details>';
+      obal.appendChild(el);
+    });
+  }
+
+  function vykresli() {
+    var obal = document.getElementById("riadky");
+    obal.innerHTML = "";
+    stav.forEach(function (e, k) {
+      var r = document.createElement("div");
+      r.className = "riadok";
+      var meno = document.createElement("div");
+      meno.className = "meno";
+      meno.innerHTML = e.n + "<small>scorecard " + e.s + "</small>";
+      var st = document.createElement("div");
+      st.className = "stupnica";
+      st.setAttribute("role", "group");
+      st.setAttribute("aria-label", "Marker: " + e.n);
+      var duch = posunSudu(e);
+      for (var i = 0; i < 9; i++) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = ZONY[i] + (i === duch && duch !== e.i ? " duch" : "");
+        b.setAttribute("aria-pressed", i === e.i ? "true" : "false");
+        b.setAttribute("aria-label", e.n + ", pole " + (i + 1) + ": " + popisStrachu(i));
+        b.title = popisStrachu(i);
+        b.dataset.k = String(k); b.dataset.i = String(i);
+        st.appendChild(b);
+      }
+      var v = document.createElement("div");
+      v.className = "vacsina";
+      v.setAttribute("role", "group");
+      v.setAttribute("aria-label", "Väčšinu podmienok pri staršom " + e.n + " vyhral");
+      [["J", "Jano"], ["=", "rovnosť"], ["Z", "Zuza"]].forEach(function (p) {
+        var b = document.createElement("button");
+        b.type = "button"; b.textContent = p[1];
+        b.dataset.m = p[0]; b.dataset.k = String(k);
+        b.setAttribute("aria-pressed", e.m === p[0] ? "true" : "false");
+        v.appendChild(b);
+      });
+      var popis = document.createElement("div");
+      popis.className = "stav";
+      popis.textContent = popisStrachu(e.i);
+      r.appendChild(meno); r.appendChild(st); r.appendChild(v); r.appendChild(popis);
+      obal.appendChild(r);
+    });
+    spocitaj();
+  }
+
+  document.getElementById("riadky").addEventListener("click", function (ev) {
+    var b = ev.target.closest("button");
+    if (!b) return;
+    var k = parseInt(b.dataset.k, 10);
+    if (b.dataset.i !== undefined) stav[k].i = parseInt(b.dataset.i, 10);
+    else if (b.dataset.m) stav[k].m = b.dataset.m;
+    vykresli();
+    var spat = document.querySelector('#riadky button[data-k="' + k + '"]' + (b.dataset.i !== undefined ? '[data-i="' + b.dataset.i + '"]' : '[data-m="' + b.dataset.m + '"]'));
+    if (spat) spat.focus();
+  });
+  ["lokJ", "lokZ", "patJ", "patZ"].forEach(function (id) {
+    document.getElementById(id).addEventListener("input", spocitaj);
+  });
+  document.getElementById("vzor").addEventListener("click", function () {
+    stav = VZOR.map(function (e) { return { n: e.n, s: e.s, i: e.i, m: e.m }; });
+    document.getElementById("lokJ").value = 3; document.getElementById("lokZ").value = 2;
+    document.getElementById("patJ").value = 0; document.getElementById("patZ").value = 1;
+    vykresli();
+  });
+  document.getElementById("stred").addEventListener("click", function () {
+    stav.forEach(function (e) { e.i = 4; });
+    vykresli();
+  });
+  vykresli();
+})();
+</script>
+</body>
+</html>
