@@ -53,6 +53,8 @@ import {
   svokraZaNaex,
   lineState,
   poskodenieBitky,
+  pohorseniaVBitke,
+  prebytokDoSpakov,
   prahVydesenia,
   prahyHraca,
   priazen,
@@ -197,7 +199,8 @@ const DEDICSTVO: Readonly<Record<string, number>> = {
   svaty_text: 0.8,
   cigorky: 0.8,
   puska: 0.6,
-  noviny: 0.4,
+  // v6: +1 špak po každej bitke, keď sa ma bojí viac starších.
+  noviny: 0.8,
   pasca: 0.5,
   vyherny_automat: 0.4,
   vinko: 0.8,
@@ -368,21 +371,29 @@ function hodnotaBitky(k: Kontext, s: GameState, q: PlayerId, ostrost: number): n
   const abstaky: [number, number] = [0, 0];
   abstaky[k.ja] = s.hraci[k.ja].ruka.filter((x) => x.defId === "abstak").length;
   const dmg = poskodenieBitky(data, s, sums, abstaky);
-  // Remíza v tuhom (m = 0) nevyhrá nikto — lokalita ide na sekeru (šanca ½).
-  const m = dmg.tuhe[q] - dmg.tuhe[o];
+  // Remíza v tuhom (v6): vyhrá menej Absťákov, potom menej priznaných Dlhov, inak sekera (šanca ½).
+  const remiza = (p: PlayerId): [number, number] => [verejneAbstaky(s, p) + abstaky[p], prahyHraca(data, s, p).priznaneDlhy];
+  const [aq, dq] = remiza(q);
+  const [ao, dO] = remiza(o);
+  const tuhe = dmg.tuhe[q] - dmg.tuhe[o];
+  const m = tuhe !== 0 ? tuhe : aq !== ao ? 0.5 * Math.sign(ao - aq) : 0.5 * Math.sign(dO - dq);
   const celk = dmg.celkove[q] - dmg.celkove[o];
   const sanca = 1 / (1 + Math.exp(-ostrost * m));
-  let v = k.povaha.bitka * (k.stavka * (sanca - 0.5) + 0.35 * Math.max(-6, Math.min(6, celk)));
+  let v = k.povaha.bitka * (k.stavka * (sanca - 0.5) + cenaBoduPrebytku(s) * Math.max(-PREBYTOK_STROP, Math.min(PREBYTOK_STROP, celk)));
 
   // Akcie, ktoré sa vyhodnotia až v Pitke — po nej už sú v stave.
   if (s.faza === "zhromazdenie" || s.faza === "pitka") {
+    const pohorsenia = pohorseniaVBitke(data, s, sums);
+    const zaPohorsenie = vyplatZaStarsich(s) * VYDRZ_POSUNU;
     for (const p of [q, o] as const) {
       const sp = sums[p];
       const so = sums[opponentOf(p)];
       const h = s.hraci[p];
       let w = 0;
       w += 0.3 * Math.max(0, (sp.Cigareta ?? 0) - (so.Obmedzenie ?? 0)) * k.buducnost;
-      w += 0.5 * Math.min(3, sp.Pohoršenie ?? 0);
+      // v6: Pohoršenie posunie marker o pole bez limitu — strach platí špaky po každej
+      // zvyšnej bitke (aj tejto); pevných 0,5 za kus podceňovalo karty s Pohoršením.
+      w += zaPohorsenie * Math.min(POHORSENIE_STROP, pohorsenia[p]);
       const naex = s.strany.flat().filter((pl) => pl.naexBy === p).length;
       w += 0.4 * Math.min(sp.Poldeci ?? 0, h.poldeciVypite + naex) * k.buducnost;
       // Akcia Dlh zadlžuje (karta Dlh za každý celý prah). Pečeň pod prahom sa po Pitke
@@ -390,7 +401,8 @@ function hodnotaBitky(k: Kontext, s: GameState, q: PlayerId, ostrost: number): n
       const prah = prahyHraca(data, s, p).cirhoza;
       const pecen = h.pecen + (sp.PoškodeniePečene ?? 0) + (sp.Poldeci ?? 0);
       const blizko = pecen % prah === prah - 1 ? 0.4 : 0;
-      w -= k.povaha.kliatby * (1.5 * (sp.Dlh ?? 0) + 2.2 * Math.floor(pecen / prah) + 0.15 * pecen + blizko);
+      w -= k.povaha.kliatby * (1.5 * (sp.Dlh ?? 0) + 0.15 * pecen + blizko);
+      w -= cenaNovejCirhozy(k, s) * Math.floor(pecen / prah);
       v += p === q ? w : -w;
     }
   }
@@ -488,13 +500,19 @@ function hodnotaVydesenia(s: GameState, p: PlayerId): number {
   const ohlasene = s.ohlaseneVydesenie[p];
   // Ohlásené vydesenie vyhrá až na konci nasledujúceho kola. V poslednom kole
   // (v krátkej hre už v 3.) nové vydesenie nezaberie — rátajú sa len body.
-  if (ohlasene !== null && ohlasene < s.kolo && vydeseni >= prah) return 2.5 * vydeseni + 40;
+  // v6: posun markera má cenu zvyšných výplat strachu (aj 5–6 špakov) — výhra
+  // vydesením musí vážiť viac než pár posunov, inak ju bot nebráni ani nedotiahne.
+  if (ohlasene !== null && ohlasene < s.kolo && vydeseni >= prah) return 2.5 * vydeseni + VYDESENIE_DRZI;
   if (kolPoTomto(s) === 0) return 0;
   let v = 2.5 * vydeseni + 0.5 * s.starsi.filter((e) => strachZ(e, p) === 2).length;
-  if (vydeseni >= prah) v += ohlasene !== null ? 40 : 25;
-  else if (vydeseni === prah - 1) v += 4;
+  if (vydeseni >= prah) v += VYDESENIE_OHLASENE;
+  else if (vydeseni === prah - 1) v += 8;
   return v;
 }
+
+/** Vydesenie, ktoré vyhrá na konci tohto kola / ohlásené, na ktoré má súper ešte kolo. */
+const VYDESENIE_DRZI = 100;
+const VYDESENIE_OHLASENE = 60;
 
 /** Koľko bitiek príde po tejto (v6 aj finále). */
 function kolPoTomto(s: GameState): number {
@@ -533,8 +551,36 @@ function hodnotaVysledku(k: Kontext, s: GameState, b: NonNullable<GameState["bit
   const drzi = b.prebytokDrzi;
   const prebytok = drzi === null ? 0 : (drzi === ja ? 1 : -1) * Math.min(6, b.prebytokZostava);
   const cigarety = drzi === null ? 0 : (drzi === ja ? -1 : 1) * 0.3 * k.buducnost * k.povaha.zdroje * b.prebytokPosunute.length;
-  return k.povaha.bitka * 0.35 * prebytok + cigarety;
+  return k.povaha.bitka * cenaBoduPrebytku(s) * prebytok + cigarety;
 }
+
+/**
+ * Čo jeden bod prebytku (posun markera o pole po špakoch tejto bitky) prinesie
+ * v špakoch: zvyšné výplaty strachu, s rezervou na to, že súper marker odtlačí.
+ * Po finále a na Kultúrnom dome je prebytok rovno špakmi.
+ */
+function cenaBoduPrebytku(s: GameState): number {
+  if (prebytokDoSpakov(s)) return 1;
+  const poBitke = s.bitkaStav !== null && s.bitkaStav.damage !== null;
+  return Math.max(0.35, (vyplatZaStarsich(s) - (poBitke ? 0 : 1)) * VYDRZ_POSUNU);
+}
+
+/**
+ * Cirhóza, ktorá z Pitky ešte len príde (v špakoch). Nepriznaná stojí na konci
+ * 5 špakov (rozdielBodov ju tak ráta hneď, ako je v balíčku); skoro v hre ju
+ * hráč ešte prizná a pochová, pred finále sotva, vo finále už nie
+ * (Fero vo finále dával NA EX za −20 špakov, turnaj v6).
+ */
+function cenaNovejCirhozy(k: Kontext, s: GameState): number {
+  const zostava = kolPoTomto(s);
+  return k.povaha.body * KONSTANTY.SPAKY_ZA_CIRHOZU * (zostava === 0 ? 1 : zostava === 1 ? 0.8 : 0.6);
+}
+
+/** Koľko z hodnoty posunu markera ostane, keď ho súper môže odtlačiť späť (turnaj v6). */
+const VYDRZ_POSUNU = 0.6;
+/** Strop prebytku a Pohoršení v odhade bitky — markerov a polí je konečne veľa. */
+const PREBYTOK_STROP = 8;
+const POHORSENIE_STROP = 6;
 
 // ---------------------------------------------------------------------------
 // Zhromaždenie nanečisto — obaja vykladajú chamtivo
@@ -856,9 +902,13 @@ function patronat(v: Volba): Command | null {
       state.starsi.map((e) => (e.elderId === elder.elderId ? { ...e, marker, karta, nahradeny: true, ziskal: ja } : e)),
     );
     const poPrehre = hodnotaStarsich(state.starsi.map((e) => (e.elderId === elder.elderId ? { ...e, marker } : e)));
+    // v6: súper dostane cena.pohorsenia Pohoršení — každé posunie iný marker o pole
+    // ku mne, takže špaky za strach, ktoré návrat do stredu vzal, si väčšinou vráti.
+    const pohorseniaSupera = k.povaha.body * cena.pohorsenia * vyplatZaStarsich(state);
     const hodnota =
       sanca * (poVyhre - teraz + 0.6 * hodnotaKarty(data, elder.karta) * k.buducnost) +
       (1 - sanca) * (poPrehre - teraz - bolestne) -
+      pohorseniaSupera -
       cena.cigarety * cenaCigarety -
       0.3 * hodnotaKarty(data, karta) +
       0.4 * k.povaha.bitka;
@@ -1177,6 +1227,9 @@ function bitka(v: Volba): Command | null {
       // Cirhóza neškodí.
       const priemer = priemernaKarta(data, state, ja);
       const balicek = h.ruka.length + h.doberaci.length + h.odhadzovaci.length + partiaHraca(state, ja).length;
+      // Pohreb spáli aj priznanú Cirhózu — súper za ňu prestane dostávať +1 tuhé
+      // v každej ďalšej bitke (v6 to je aj +1 prebytku, teda posun markera).
+      const zaCirhozu = kolPoTomto(state) * (CENA_TUHEHO_ZA_BITKU + 0.5 * cenaBoduPrebytku(state));
       let best: Command | null = null;
       let bestV = 0.5;
       for (const cmd of v.legal) {
@@ -1184,8 +1237,9 @@ function bitka(v: Volba): Command | null {
         const karta = partiaHraca(state, ja).find((pl) => pl.card.uid === cmd.kartaUid)?.card;
         if (karta === undefined) continue;
         const zoSenku = cmd.senokUid === undefined ? undefined : state.senok.find((x) => x.uid === cmd.senokUid);
-        if (zoSenku === undefined && balicek < 11) continue;
-        const zisk = (zoSenku === undefined ? priemer : hodnotaKarty(data, zoSenku)) - hodnotaKarty(data, karta) - 0.3;
+        // Tenký balíček kartu len stratí, hrubý sa preriedi (zvyšné karty sú v priemere lepšie).
+        const nahrada = zoSenku !== undefined ? hodnotaKarty(data, zoSenku) : balicek >= 11 ? priemer : priemer - 1;
+        const zisk = zaCirhozu + nahrada - hodnotaKarty(data, karta) - 0.3;
         if (zisk > bestV) {
           bestV = zisk;
           best = cmd;
