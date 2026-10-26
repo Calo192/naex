@@ -32,10 +32,9 @@ import {
   bodyTeraz,
   cenaKliatby,
   rozlozRod,
-  kliatbyNahladu,
+  nahladNaexNaKartu,
   dopadyNahladu,
   stavPoPatronate,
-  svokraZaNaex,
   cenaPrebytku,
   nahladPitky,
   favourStarsieho,
@@ -289,35 +288,35 @@ function dopadyText(d: readonly [DopadyNahladu, DopadyNahladu], ja: PlayerId): s
   return casti.length === 0 ? "" : `; ${casti.join("; ")}`;
 }
 
-/** Cena NA EX na kartu uid v kliatbách a bodoch pre oboch (tá istá logika ako náhľad na webe). */
+/** Cena NA EX na kartu uid pre oboch — ten istý náhľad ako na webe (nahladNaexNaKartu, návrh #49). */
 function cenaNaexText(v: ClientState, uid: number): string {
   const ja = v.ja;
   const su: PlayerId = ja === 0 ? 1 : 0;
-  const strany: ClientState["strany"] = [
-    v.strany[0].map((pl) => (pl.card.uid === uid ? { ...pl, naexBy: ja } : pl)),
-    v.strany[1].map((pl) => (pl.card.uid === uid ? { ...pl, naexBy: ja } : pl)),
-  ];
-  const h = v.hraci;
-  const hraci: ClientState["hraci"] = ja === 0 ? [{ ...h[0], pecen: h[0].pecen + 1 }, h[1]] : [h[0], { ...h[1], pecen: h[1].pecen + 1 }];
-  const dalsie = Math.max(0, v.pitkyCelkom - v.pitkaCislo);
   const ceny = ([0, 1] as const).map((p) => ({ cirhoza: cenaKliatby(DATA, v, p, "cirhoza"), dlh: cenaKliatby(DATA, v, p, "dlh") })) as [CenyKliatob, CenyKliatob];
-  // Ten istý výpočet ako náhľad na webe: Dlh po najbližšej bitke (Robota, Dievčina na vydaj).
-  const kliatby = kliatbyNahladu(DATA, v, { ...v, strany, hraci }, dalsie, ceny);
+  const n = nahladNaexNaKartu(DATA, v, uid, ceny);
+  if (n === null) return "";
   const pre = (p: PlayerId): string => {
-    const k = kliatby[p];
+    const k = n.kliatby[p];
     const c = k.cirhozy + k.dalejCirhozy;
     const d = k.dlhy + k.dalejDlhy;
     if (c === 0 && d === 0) return "nič";
     const poBitke = d !== k.dlhyPoBitke ? ` → po bitke ${k.dlhyPoBitke} (Robota či Dievčina na vydaj spáli)` : "";
     return `${c !== 0 ? `Cirhóza ${c > 0 ? "+" : "−"}${Math.abs(c)} (priznaná body neuberie, súper za ňu +1 tuhé v každej bitke) ` : ""}${d !== 0 ? `Dlh ${d > 0 ? "+" : "−"}${Math.abs(d)}${poBitke} ` : ""}(${k.body < 0 ? "−" : "+"}${Math.abs(k.body)} b)`;
   };
-  const dopady = dopadyText(dopadyNahladu(DATA, v, { ...v, strany, hraci }, dalsie), ja);
-  const svokra = svokraZaNaex(DATA, v, ja, v.hraci[ja].cigarety);
-  const abstaky = v.ruka.filter((k) => k.defId === "abstak").length;
-  const stol: VerejnyStav = { ciel: v.ciel, ovladnute: v.ovladnute, strany, starsi: v.starsi, hraci: v.hraci };
-  const d0 = poskodenieBitky(DATA, v, evaluateLine(DATA, lineState(v)).sums, ja === 0 ? [abstaky, 0] : [0, abstaky]);
-  const d1 = poskodenieBitky(DATA, stol, evaluateLine(DATA, { ...lineState(v), strany }).sums, ja === 0 ? [abstaky, 0] : [0, abstaky]);
-  return `; bitka (tuhé) ${d0.tuhe[ja]}:${d0.tuhe[su]} → ${d1.tuhe[ja]}:${d1.tuhe[su]}; kliatby z tejto a ďalších Pitiek kola (NA EX leží do bitky): ty ${pre(ja)}, súper ${pre(su)}${dopady}${svokra > 0 ? `; Svokra ti ukradne ${svokra} cig.` : ""}; súper má v ruke ${kariet(v.hraci[su].rukaPocet)} a smie odpovedať jednou`;
+  const dopady = dopadyText(n.dopady, ja);
+  const o = n.odkrytie;
+  const prebytok = (x: typeof n.prebytokPo): string =>
+    x.drzi === null || x.prebytok === 0
+      ? "žiadny"
+      : `${x.drzi === ja ? "tvoj" : "súperov"} ${x.prebytok}${x.naRozdelenie !== x.prebytok ? ` (Puška −${x.prebytok - x.naRozdelenie})` : ""}${x.cenaPosunu > 1 ? ` (posun za ${x.cenaPosunu}, Miňištrant)` : ""}`;
+  const navyse = [
+    o.svokra > 0 ? `Svokra ti ukradne ${o.svokra} cig.` : "",
+    o.vypalne > 0 ? `Výpalné: zaplatíš súperovi ${o.vypalne} cig.` : "",
+    o.vychovavatelka ? "Vychovávateľka: tvoj priznaný Dlh ide súperovi do balíčka" : "",
+    o.krcmarka ? "Krčmárka ti v bitke neotočí vypitý poldeci" : "",
+    o.doDna ? "Na zdravie: poldeci sa ti po bitke vráti plný" : "",
+  ].filter((x) => x !== "");
+  return `; bitka (tuhé) ${n.pred.tuhe[ja]}:${n.pred.tuhe[su]} → ${n.po.tuhe[ja]}:${n.po.tuhe[su]}, prebytok ${prebytok(n.prebytokPred)} → ${prebytok(n.prebytokPo)}; kliatby z tejto a ďalších Pitiek kola (NA EX leží do bitky): ty ${pre(ja)}, súper ${pre(su)}${dopady}${navyse.length > 0 ? `; ${navyse.join("; ")}` : ""}; súper má v ruke ${kariet(v.hraci[su].rukaPocet)} a smie odpovedať jednou`;
 }
 
 function vykresli(v: ClientState, mena: readonly string[]): string {
@@ -783,7 +782,7 @@ function moznosti(v: ClientState): string[] {
       if (b?.krok === "kar") {
         // Kar (roadmapa #80): nepriznaná Cirhóza z ruky preč — na konci by uberala body.
         const cirhoza = v.ruka.find((k) => k.defId === "cirhoza");
-        if (cirhoza !== undefined) c({ type: "kar", uid: cirhoza.uid }, "Kar: zahoď jednu nepriznanú Cirhózu z ruky (navždy z hry; balíček sa zmenší — pod 5 kariet prehra; súperov Hrobár dostane cigaretu)");
+        if (cirhoza !== undefined) c({ type: "kar", uid: cirhoza.uid }, "Kar: zahoď jednu nepriznanú Cirhózu z ruky (navždy z hry; balíček sa zmenší — pod 5 kariet prehra)");
         c({ type: "kar", uid: null }, "Kar: Cirhózu si nechať");
       }
       if (b?.krok === "cintorin") {

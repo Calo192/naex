@@ -286,8 +286,11 @@ limit vykladania = plné poldeci + 1
 ```
 
 - Vypité (otočené nadol) poldeci sa **nerátajú**.
-- Poldeci položený cez NA EX sa do limitu **neráta** — odišiel zo zásoby na
-  kartu a pri bitke sa vypije (§7).
+- **NA EX je mimo limitu vykladania**: dáva sa v Pitke, nie v Zhromaždení, a limit
+  nemíňa (ani odpoveď naň, §7). Plný poldeci však z NA EX odíde zo zásoby na
+  kartu a do limitu sa už **neráta** — ďalšie Zhromaždenie toho istého kola má
+  limit o 1 nižší (súperov sa nemení). Pri bitke sa poldeci vypije (§9.5) a ďalej
+  je vypitý, kým sa neotočí na plný (začiatok kola, doliatie, Na zdravie).
 - Samotná akcia Poldeci sa do limitu nezapočítava — otáča poldeci až pri
   bitke, takže sa prejaví o kolo neskôr.
 - Priznanie (§11) ani Nástroj (do línie aj do Dedičstva, §12) limit nemíňajú.
@@ -542,8 +545,7 @@ Krčmárka (otočí vypitý poldeci) a Dievčina na vydaj (spáli priznané Dlhy
 a seba) (§16).
 
 **Kar:** po Krčmárke a Dievčine na vydaj sa každý hráč s nepriznanou Cirhózou
-v ruke rozhodne (obranca, potom útočník), či jednu zahodí — navždy z hry;
-súperov Hrobár za ňu dostane cigaretu.
+v ruke rozhodne (obranca, potom útočník), či jednu zahodí — navždy z hry.
 
 ### 9.2 Pohoršenie
 
@@ -1098,7 +1100,7 @@ keď je lokalita cieľom.
 | Zberný dvor | Pitka | Raz za Pitku: za 1 cigaretu karta z vlastného odhadzovacieho balíčka do ruky (cigareta je nerest ako pri barteri). |
 | Most | Zhromaždenie, Pitka | Karty sa smú vykladať len na vlastnú stranu — aj odpoveď na NA EX. |
 | Cintorín | Prehra | Porazený smie po Pohrebe dať jeden Nástroj z ruky do Dedičstva bez platenia; spoločná cena Dedičstva sa zvýši ako vždy (§11). |
-| Kar | Bitka | Na začiatku bitky smie každý hráč (obranca, potom útočník) zahodiť jednu **nepriznanú** Cirhózu z ruky — navždy z hry; súperov Hrobár za ňu dostane cigaretu (§9.0). |
+| Kar | Bitka | Na začiatku bitky smie každý hráč (obranca, potom útočník) zahodiť jednu **nepriznanú** Cirhózu z ruky — navždy z hry (§9.0). |
 | Obecný úrad | Bitka | Prah Exekútora je o 4 nižší; každá Robota spáli 2 priznané Dlhy namiesto 1. |
 | Jednota | Pitka | Stokársky barter (nový poldeci) je o 1 cigaretu lacnejší. |
 | Kultúrny dom | Bitka | Pohoršenie nemá limit dvoch hraníc zón v žiadnom smere (na krajnú pozíciu stále nie). |
@@ -1157,7 +1159,7 @@ v strede).
 | Niekoho stryná | Nástup: zahodí (z hry) 1 Cirhózu alebo 1 Dlh z ruky či z odhadzovacieho balíčka, Dlh aj spomedzi priznaných. Hra vyberie za hráča: najprv z ruky, potom z odhadzovacieho, nakoniec priznaný Dlh; Cirhózu pred Dlhom. |
 | Vínko | Dedičstvo: ráta sa ako plný poldeci navyše (limit +1); majiteľ nesmie dolievať poldeci za cigarety. Stokársky barter je povolený. |
 | Zámočník | Aktívne akcie Nástrojov v jeho okolí sa rátajú dvakrát. |
-| Živnostník | Výhra: keď jeho majiteľ vyhrá bitku a Živnostník leží v jeho partii v línii, majiteľ **vyberie** jedno súperovo Dedičstvo a to sa zahodí (z hry). Každý Živnostník jedno. Vyhodnotí sa na začiatku kroku 6c (§9), pred ostatnými efektmi Výhra a Prehra — zahodené Dedičstvo v tejto bitke už nič nedá. Bez súperovho Dedičstva, pri prehre či remíze nič; pri Nástupe nerobí nič. Hrobár sa nespúšťa. |
+| Živnostník | Výhra: keď jeho majiteľ vyhrá bitku a Živnostník leží v jeho partii v línii, majiteľ **vyberie** jedno súperovo Dedičstvo a to sa zahodí (z hry). Každý Živnostník jedno. Vyhodnotí sa na začiatku kroku 6c (§9), pred ostatnými efektmi Výhra a Prehra — zahodené Dedičstvo v tejto bitke už nič nedá. Bez súperovho Dedičstva, pri prehre či remíze nič; pri Nástupe nerobí nič. |
 
 ---
 

@@ -299,6 +299,15 @@
       ]
     },
     {
+      "id": "6.limit.naex",
+      "paragraf": "6. Zhromaždenie › Limit vykladania",
+      "pravidlo": "NA EX je mimo limitu vykladania (dáva sa v Pitke, limit nemíňa), ale jeho plný poldeci odíde na kartu — ďalšie Zhromaždenie toho istého kola má limit o 1 nižší, súperov sa nemení.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/naex-limit.test.ts › ďalšie Zhromaždenie kola má limit o 1 nižší tomu, kto NA EX dal"
+      ]
+    },
+    {
       "id": "6.limit.nastroj",
       "paragraf": "6. Zhromaždenie › Limit vykladania",
       "pravidlo": "Nástroj sa do limitu vykladania nezapočítava.",
@@ -1173,7 +1182,7 @@
     {
       "id": "15.lokalita.kar",
       "paragraf": "15. Lokality",
-      "pravidlo": "Kar: na začiatku bitky smie každý (obranca, potom útočník) zahodiť jednu nepriznanú Cirhózu z ruky; súperov Hrobár dostane cigaretu.",
+      "pravidlo": "Kar: na začiatku bitky smie každý (obranca, potom útočník) zahodiť jednu nepriznanú Cirhózu z ruky — navždy z hry.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/kar.test.ts › bitka počká na obrancu, ktorý má v ruke Cirhózu; zahodená Cirhóza zmizne z hry a súperov Hrobár dostane cigaretu",
@@ -1791,6 +1800,19 @@
         "packages/core/test/pravidla-20261019.test.ts › muž navrchu ide z hry a Dlhy sa naozaj zahodia — aj z odhadzovacieho",
         "packages/core/test/pravidla-20261019.test.ts › keď navrchu nie je muž, log to povie",
         "packages/core/test/pravidla-bitka.test.ts › §16 Veľmi smútiaca vdova: muž navrchu súperovho balíčka ide z hry a majiteľ zahodí 2 Dlhy aj spomedzi priznaných"
+      ]
+    },
+    {
+      "id": "16.karta.zivnostnik",
+      "paragraf": "16. Výklad kariet",
+      "pravidlo": "Živnostník (Výhra): keď jeho majiteľ vyhrá bitku a Živnostník leží v jeho partii, majiteľ vyberie jedno súperovo Dedičstvo, ktoré sa zahodí; každý Živnostník jedno; na začiatku kroku 6c; bez Dedičstva, pri prehre či remíze nič; Nástup nerobí nič.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/zivnostnik-vyhra.test.ts › Nástup už nič nezahodí",
+        "packages/core/test/zivnostnik-vyhra.test.ts › po vyhratej bitke čaká na víťaza; zahodí sa ním vybrané Dedičstvo, ostatné ostanú",
+        "packages/core/test/zivnostnik-vyhra.test.ts › dvaja Živnostníci = dve zahodenia, každé podľa výberu",
+        "packages/core/test/zivnostnik-vyhra.test.ts › bez súperovho Dedičstva, pri prehre či remíze nič",
+        "packages/core/test/zivnostnik-vyhra.test.ts › Živnostník podstrčený súperom patrí súperovi — víťazovi nič nedá"
       ]
     },
     {

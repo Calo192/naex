@@ -297,7 +297,8 @@ export const KAPITOLY: readonly Kapitola[] = [
         <p>
           V Zhromaždení vykladáte striedavo, začína útočník. Za jedno Zhromaždenie vyložíš najviac{" "}
           <P k="limit">plné poldeci + 1</P> kariet — aj bez plných poldeci aspoň jednu. Limit sa ráta nanovo na začiatku každého
-          Zhromaždenia; poldeci položené cez NA EX sa nerátajú. Nástroje limit nemíňajú.
+          Zhromaždenia. NA EX limit nemíňa (dáva sa v Pitke), ale jeho poldeci odíde zo zásoby na kartu — v ďalšom
+          Zhromaždení kola máš limit o 1 nižší a pri bitke sa vypije. Nástroje limit nemíňajú.
         </p>
         <UkazkaLimitu />
         <p>
@@ -830,7 +831,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           <tr><td>Ihrisko</td><td>Bitka</td><td>V každom kraji +2 tuhé tomu, kto tam má viac svojich Občanov, Zvierat a Starešinov — spolu až +4.</td></tr>
           <tr><td>Zberný dvor</td><td>Pitka</td><td>Raz za Pitku za cigaretu karta z tvojho odhadzovacieho balíčka do ruky.</td></tr>
           <tr><td>Most</td><td>Zhromaždenie, Pitka</td><td>Karty len na vlastnú stranu, aj odpoveď na NA EX.</td></tr>
-          <tr><td>Kar</td><td>Bitka</td><td>Každý smie na začiatku bitky zahodiť jednu nepriznanú Cirhózu z ruky; súperov Hrobár za to dostane cigaretu.</td></tr>
+          <tr><td>Kar</td><td>Bitka</td><td>Každý smie na začiatku bitky zahodiť jednu nepriznanú Cirhózu z ruky.</td></tr>
           <tr><td>Cintorín</td><td>Prehra</td><td>Porazený smie dať Nástroj z ruky do Dedičstva zadarmo (cena Dedičstva aj tak stúpne).</td></tr>
           <tr><td>Obecný úrad</td><td>Bitka</td><td>Prah Exekútora −4; Robota spáli 2 priznané Dlhy.</td></tr>
           <tr><td>Jednota</td><td>Pitka</td><td>Nový poldeci (barter) o 1 cigaretu lacnejší.</td></tr>
