@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Karty v6 — Špaky</title>
+<style>
+:root {
+  --pozadie: #15120f; --plocha: #1f1a15; --plocha-2: #2a231c; --okraj: #43372c;
+  --text: #f1e8d8; --tlmeny: #b8a993; --akcent: #e9ad45; --ok: #7fb069; --pozor: #e08a3a; --zle: #d0604f;
+  --serif: Georgia, "Times New Roman", serif; --sans: system-ui, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #d8c8ad;
+    --text: #2a2016; --tlmeny: #5e4f3b; --akcent: #95590a; --ok: #3f7a2a; --pozor: #b5641a; --zle: #a3392b;
+    color-scheme: light;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 var(--sans); }
+main { max-width: 980px; margin: 0 auto; padding: 28px 16px 120px; }
+h1, h2, h3 { font-family: var(--serif); line-height: 1.2; text-wrap: balance; }
+h1 { font-size: clamp(1.8rem, 5vw, 2.5rem); margin: 0 0 8px; }
+h2 { font-size: 1.4rem; margin: 40px 0 14px; padding-bottom: 6px; border-bottom: 1px solid var(--okraj); }
+h3 { font-size: 1.08rem; margin: 0 0 6px; }
+p, li { max-width: 76ch; }
+p { margin: 0 0 10px; }
+a { color: var(--akcent); }
+code { font-family: var(--mono); font-size: .86em; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+.uvod { color: var(--tlmeny); }
+.pozn { font-size: .9rem; color: var(--tlmeny); }
+.skratka { background: var(--plocha); border: 1px solid var(--akcent); border-radius: 12px; padding: 14px 18px; margin: 18px 0; }
+.skratka h2 { margin: 0 0 6px; border: 0; padding: 0; font-size: 1.2rem; }
+.skratka ul { margin: 0; padding-left: 20px; }
+.karta-info { display: grid; grid-template-columns: max-content 1fr; gap: 2px 12px; background: var(--plocha-2); border-radius: 10px; padding: 10px 14px; margin: 8px 0 14px; font-size: .92rem; }
+.karta-info dt { color: var(--tlmeny); }
+.karta-info dd { margin: 0; }
+.mrtvy { text-decoration: line-through; text-decoration-color: var(--zle); }
+.moznost { position: relative; background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px 12px 46px; margin: 10px 0; }
+.moznost.vybrana { border-color: var(--akcent); box-shadow: inset 3px 0 0 var(--akcent); }
+.moznost > input { position: absolute; left: 16px; top: 16px; width: 18px; height: 18px; accent-color: var(--akcent); }
+.moznost label { cursor: pointer; }
+.id { font-family: var(--mono); font-size: .8rem; color: var(--akcent); margin-right: 8px; }
+.efekt { font-family: var(--serif); font-size: 1.05rem; background: var(--plocha-2); border-radius: 8px; padding: 6px 10px; margin: 6px 0 8px; }
+.efekt b { color: var(--akcent); }
+dl.riadky { display: grid; grid-template-columns: 8.5em 1fr; gap: 4px 10px; margin: 0; font-size: .92rem; }
+dl.riadky dt { color: var(--tlmeny); }
+dl.riadky dd { margin: 0; }
+.stitok { display: inline-block; font-size: .74rem; border-radius: 999px; padding: 0 8px; border: 1px solid currentColor; margin-left: 6px; vertical-align: 2px; white-space: nowrap; }
+.st-odp { color: var(--akcent); }
+.st-text { color: var(--ok); }
+.st-mech { color: var(--zle); }
+.st-otazka { color: var(--pozor); }
+.tab-obal { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+th, td { padding: 8px 6px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--okraj); }
+thead th { font-size: .82rem; color: var(--tlmeny); border-bottom: 2px solid var(--okraj); }
+td.volba { width: 2.2em; }
+td.volba input { width: 18px; height: 18px; accent-color: var(--akcent); }
+tr.vybrany td { background: var(--plocha); }
+.nove { color: var(--text); }
+.stare { color: var(--tlmeny); }
+.otazka { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; margin: 10px 0; }
+.otazka fieldset { border: 0; padding: 0; margin: 8px 0 0; display: grid; gap: 4px; }
+.otazka label { cursor: pointer; }
+.otazka input { accent-color: var(--akcent); margin-right: 6px; }
+ol.kroky li { margin-bottom: 6px; }
+.volba-lista { position: fixed; left: 0; right: 0; bottom: 0; background: var(--plocha-2); border-top: 1px solid var(--akcent); }
+.volba-in { max-width: 980px; margin: 0 auto; padding: 10px 16px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.volba-text { flex: 1 1 300px; font-size: .9rem; }
+button { font: inherit; font-size: .9rem; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--akcent); background: var(--plocha); color: var(--akcent); cursor: pointer; }
+.skryte { position: absolute; left: -9999px; }
+footer { margin-top: 40px; padding-top: 12px; border-top: 1px solid var(--okraj); color: var(--tlmeny); font-size: .88rem; }
+@media (max-width: 640px) { dl.riadky { grid-template-columns: 1fr; } dl.riadky dt { margin-top: 4px; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Karty v6 — Špaky</h1>
+  <p class="uvod">Príprava kariet na pravidlá v6 podľa <a href="spaky.html">Špakov</a> (Michal 26. 10. 2026). Spísal Admin (AI)
+    zo sady v19 (<code>packages/core/data/cards.json</code>) a jadra (<code>effects.ts</code>). V tvorcovi som nič nezmenil
+    a nič nezverejnil — vyber a skopíruj voľbu dole.</p>
+
+  <div class="skratka">
+    <h2>V skratke</h2>
+    <ul>
+      <li><b>Kultúrny dom</b> a <b>Noviny</b> v v6 nerobia nič. Navrhujem po tri efekty. Odporúčam
+        Kultúrny dom „prebytok rovno na špaky“ (K1) a Noviny „prebytok o 1 väčší“ (N1). Oba sa robia malým háčikom
+        v jadre a K1 navyše brzdí rýchle vydesenie.</li>
+      <li>Zo 63 kariet <b>v v6 stratí zmysel len Záhradkár</b> (Exekútor už nechce Nástroj). Text treba prepísať
+        pri <b>Cirhóze</b> (súboje o Cirhózu už nie sú). Pri Absťáku, Dlhu a Miňištrantovi ide o spresnenie alebo preklep.
+        Pri piatich kartách treba rozhodnúť, ako fungujú vo finále, ktoré nemá lokalitu ani kraje.</li>
+      <li><b>Scorecardy:</b> v tvorcovi vyprázdniť 8 × 8 ikon podmienok. Názov aj pozadie ostávajú.
+        <b>Vyprázdniť ich treba až spolu s nasadením jadra v6</b>, inak by hra podľa v5 bodovala každého staršieho
+        ako remízu. Stupnicu so 7 krúžkami musí urobiť vývoj.</li>
+      <li>Benzínka a Puška majú text v poriadku. Rozpor s v6 je len vo vete PRAVIDIEL §9.4 („Lokalitu získa víťaz,
+        aj Benzínku“, „Krajnú pozíciu stráži zamknutie“) a tú prepíše dávka v6.</li>
+    </ul>
+  </div>
+
+  <!-- ===================================================================== -->
+  <h2>1. Kultúrny dom a Noviny — nové efekty</h2>
+
+  <h3>Kultúrny dom (lokalita)</h3>
+  <dl class="karta-info">
+    <dt>Dnes</dt><dd class="mrtvy">Bitka: Pohoršenie nemá limit dvoch hraníc zón (na krajnú pozíciu stále nie).</dd>
+    <dt>Prečo je mŕtvy</dt><dd>V v6 limit hraníc ani zákaz krajnej pozície nie sú (Špaky §1.6).</dd>
+    <dt>Hrany</dt><dd>na parkete: 2 × Pohoršenie, Poškodenie pečene (pozícia 1 blokovaná) · pred vchodom: Cigareta, Rana, Viera (3 blokovaná)</dd>
+    <dt>Pitky</dt><dd>až 4 (1 + menší z počtov aktivovaných akcií hrán), takže víťaz dostane 1 až 4 špaky. Patrí k najcennejším
+      lokalitám spolu s Krčmou, Zberným dvorom a Družstvom.</dd>
+    <dt>Stav v jadre</dt><dd><code>impl</code>, háčik <code>pohorsenieBezLimitu</code>. Nový efekt treba naprogramovať, karta ostane do nasadenia
+      v6 v tvorcovi so starým textom.</dd>
+  </dl>
+  <div id="kd"></div>
+
+  <h3>Noviny (Nástroj)</h3>
+  <dl class="karta-info">
+    <dt>Dnes</dt><dd class="mrtvy">Dedičstvo: Tvoje Pohoršenie smie posunúť marker aj na krajnú pozíciu, ak bol na predposlednej už na začiatku kola.</dd>
+    <dt>Prečo je mŕtvy</dt><dd>V v6 smie každé Pohoršenie na krajnú (červenú) pozíciu kedykoľvek.</dd>
+    <dt>Akcie</dt><dd>vľavo Pohoršenie, vpravo Povera (pozície 0 a 3 blokované na oboch stranách), 4 permutácie. Efekt platí len v Dedičstve,
+      ktoré stojí 1, 2, 3… cigariet (spoločná cena).</dd>
+    <dt>Porovnanie</dt><dd>Iné Dedičstvá: Puška (prebytok proti tebe −2), Svätý text (Viera +1), Cigorky (+1 cigareta v každej Pitke),
+      Nealko (prah Cirhózy +2). Nové Noviny majú byť medzi nimi.</dd>
+    <dt>Stav v jadre</dt><dd><code>impl</code>, háčik <code>pohorsenieNaKraj</code> (v v6 odpadne).</dd>
+  </dl>
+  <div id="nv"></div>
+
+  <!-- ===================================================================== -->
+  <h2>2. Karty a lokality, ktorých text odporuje v6</h2>
+  <p>Prešiel som texty všetkých 63 kariet sady v19 a k tomu popisy akcií a kľúčových slov. Pojmy, ktoré v6 ruší:
+    ovládnuté lokality, sekera ako jediný výsledok remízy, zamknutie, krajná pozícia, limit Pohoršenia, odovzdanie Nástroja
+    Exekútorovi, podmienky scorecardov (Lokality, Starší, Cigarety, Rezerva, Cirhóza, Dlhy, Absťák, zóny).
+    <b>Zaškrtni riadky, ktorých nový text chceš.</b> Pri efektoch <code>impl</code> a <code>native</code> sa text mení
+    až spolu s kódom dávky v6.</p>
+  <p class="pozn">Štítky: <span class="stitok st-text">len text</span> mechanika ostáva ·
+    <span class="stitok st-mech">mechanika</span> v v6 nedáva zmysel, treba nový efekt a kód ·
+    <span class="stitok st-otazka">otázka</span> text ostáva, treba rozhodnúť výklad.</p>
+  <div class="tab-obal"><table>
+    <thead><tr><th></th><th>Karta</th><th>Dnes → návrh</th><th>Prečo</th></tr></thead>
+    <tbody id="texty"></tbody>
+  </table></div>
+
+  <h3 style="margin-top:26px">Finále bez lokality a krajov</h3>
+  <p>Vo finále „kraje a prevaha v kraji nie sú“ (Špaky §1.9) a prebytok sa mení na špaky. Týchto kariet sa to týka. Text nechávam,
+    rozhodnutie pôjde do výkladu (§16) a do kódu.</p>
+  <div id="otazky"></div>
+
+  <h3 style="margin-top:26px">Sila v v6 — text sedí, ale hodnota sa zmení</h3>
+  <p>Nič z toho nenavrhujem meniť pred playtestom v6. Sú to karty, na ktoré sa treba pozrieť v prvých partiách
+    (<code>karty-v-partiach --od &lt;sada v6&gt;</code>).</p>
+  <div class="tab-obal"><table>
+    <thead><tr><th>Smer</th><th>Karty</th><th>Prečo</th></tr></thead>
+    <tbody>
+      <tr><td>silnejšie</td><td>Policajtka</td><td>Pohoršenie bez limitu posúva viac a ona ruší všetky súperove Pohoršenia, aj z patronátu a od Abstinenta.</td></tr>
+      <tr><td>silnejšie</td><td>Puška, Miňištrant (ako záťaž)</td><td>Každé pole stupnice dáva špak v každej ďalšej bitke a zamknutie nebrzdí. Prebytok je preto cennejší, a s ním aj −2 Pušky a +1 cena Miňištranta.</td></tr>
+      <tr><td>silnejšie</td><td>Niekoho stryná, Kar, Vízia</td><td>Nepriznaná Cirhóza stojí na konci 5 špakov (dnes je to jeden z mnohých súbojov).</td></tr>
+      <tr><td>silnejšie</td><td>priazeň Abstinent</td><td>+1 / +2 / +3 Pohoršenia bez limitu hraníc. Červená zo stredu je za 3. Navrhár to uvádza ako riziko vydesenia (Špaky §4).</td></tr>
+      <tr><td>slabšie</td><td>Cigorky, Podvodník, Svokra, Hrobár, priazne Fajčiar a Výpalník</td><td>Cigarety už nebodujú (podmienka Cigarety padá). Ostáva im hodnota na šenok, Dedičstvo, patronát a doliatie.</td></tr>
+      <tr><td>slabšie</td><td>Vínko</td><td>Podmienka Rezerva padá, Vínko ostane len limit +1.</td></tr>
+      <tr><td>iné</td><td>lokality s najviac 2 Pitkami: Lesná cesta, Zastávka, Jednota, Vínna pivnica, Cintorín</td><td>Víťaz za ne dostane 1–2 špaky, za Krčmu, Zberný dvor, Kultúrny dom či Družstvo až 4. Obranca bude cieľ voliť aj podľa toho, a to je zámer v6. Treba len sledovať, či sa „lacné“ lokality nehrajú len ako výplň.</td></tr>
+    </tbody>
+  </table></div>
+
+  <!-- ===================================================================== -->
+  <h2>3. Scorecardy — len priazeň</h2>
+  <p>Scorecard (v tvorcovi „Bodovacia karta“) má názov, ktorý určuje priazeň, pozadie a 4 + 4 sloty s ikonami podmienok. V v6 ostáva len priazeň.</p>
+  <div class="tab-obal"><table>
+    <thead><tr><th>Scorecard (priazeň)</th><th>dnes vľavo</th><th>dnes vpravo</th><th>v6</th></tr></thead>
+    <tbody id="sc"></tbody>
+  </table></div>
+
+  <h3 style="margin-top:22px">V tvorcovi (Tvorba → Bodovacie karty)</h3>
+  <ol class="kroky">
+    <li>Pri každom z 8 scorecardov klikni na každý z 8 slotov a vyber <b>prázdne</b>. Ostanú
+      <code>lava: [null, null, null, null]</code> a <code>prava: [null, null, null, null]</code>. Zverejnenie prázdny slot nekontroluje, takže
+      sada prejde.</li>
+    <li><b>Názov nemeň</b>, je to kľúč priazne (Kmotor = <code>UZERNIK</code>, Abstinent = <code>LAKOMEC</code>, Výpalník = <code>NEPRAJNIK</code>).
+      Farbu a mierku ikon nechaj.</li>
+    <li><b>Pozadie nechaj.</b> Ilustrácie stupnicu ani ikony nekreslia (pozrel som <code>kmotor.jpg</code>), stupnicu aj sloty kreslí kód.</li>
+    <li><b>Ikony bodovania nemaž.</b> Nepoužité ničomu nevadia, ostanú v histórii sád a návrat na sadu v5 (<code>vrat</code>) by bez nich nefungoval.</li>
+    <li><b>Kedy:</b> v tom istom zverejnení, ktoré pôjde s nasadením jadra v6. Keby sa scorecardy vyprázdnili skôr, hra v5 by nemala žiadnu aktívnu
+      podmienku. Každý starší by bol remíza 0 : 0, body by dostali obaja a rozhodoval by len strach. Spraví to Admin
+      (zverejnenie sady s v6 je podľa výnimky pre implementáciu dovolené), postačí pokyn.</li>
+  </ol>
+
+  <h3>Čo musí urobiť vývoj (dávka v6, nie tvorca)</h3>
+  <ul>
+    <li><b>Stupnica 7 polí na scorecarde:</b> <code>geometriaBodovacej</code> kreslí 9 krúžkov a <code>FARBY_STUPNICE</code> má 9 farieb
+      (<code>packages/tvorba/src/geometria.ts</code>). Hra ich používa aj v <code>LiniaStarsich</code> a <code>BodovaciaSvg</code>, preto musia byť
+      <code>červená, oranžová, žltá, sivá, žltá, oranžová, červená</code>.</li>
+    <li><b>Sloty podmienok:</b> pri prázdnych slotoch hra nekreslí nič, tvorca kreslí „+“. <span class="stitok st-otazka">otázka</span>
+      Majú sloty v v6 z geometrie zmiznúť (scorecard bude užší, tlač aj stôl), alebo ostanú prázdne pre prípadné budúce podmienky?</li>
+    <li><b>Zverejnenie:</b> <code>doScorecardsJson</code> posiela <code>body</code> podmienok z jadra. Keď jadro zruší typ <code>Podmienka</code>,
+      treba upraviť zverejnenie aj výber významu ikony v tvorcovi.</li>
+    <li><b>Východisková sada:</b> <code>packages/core/data/scorecards.json</code> a <code>packages/server/seed/bodovanie/bodovacie.json</code>
+      s prázdnymi podmienkami a novou značkou migrácie (to robí Developer, Admin <code>packages/</code> neupravuje).</li>
+  </ul>
+
+  <h3>Popisy v tvorcovi (Akcie a ikony, Kľúčové slová)</h3>
+  <p>Menia vzhľad všetkých kariet, preto sú v tabuľke v časti 2 ako samostatné riadky (Výhra, Prehra, akcia Dlh, akcia Poškodenie pečene).
+    Popisy na živom webe sa môžu líšiť od východiskových v kóde. Pred zmenou ich Admin overí príkazom <code>admin.ts vzhlad</code>.</p>
+
+  <footer>NA EX! · Admin (AI) · vetva <code>admin/karty-v6</code> · <code>docs/napady/karty-v6.html</code> · zdroj: sada v19,
+    <code>docs/napady/spaky.html</code> (cdfaf0e). Mimo v6: <code>cards.json</code> v19 má pri Živnostníkovi ešte „Nástup: Zahoď jedno súperovo dedičstvo“,
+    jadro už od 31c8340 robí „Výhra“, takže tvorca potrebuje nový text (samostatná úloha).</footer>
+</main>
+
+<div class="volba-lista" role="region" aria-label="Tvoja voľba">
+  <div class="volba-in">
+    <span class="volba-text" id="volbaText">Zatiaľ nič nie je vybrané.</span>
+    <button type="button" id="odporucane">vybrať odporúčané</button>
+    <button type="button" id="kopiruj">skopírovať voľbu</button>
+  </div>
+</div>
+<textarea class="skryte" id="schranka" aria-hidden="true" tabindex="-1"></textarea>
+
+<script>
+"use strict";
+const KD = [
+  { id: "K1", odp: true, nazov: "Zábava sa prepije hneď",
+    text: "<b>Bitka:</b> Prebytok sa nerozdeľuje medzi starších. Kto ho drží, dostane toľko špakov, aký je prebytok.",
+    jadro: "Tá istá vetva ako krok 4c vo finále (prebytok → špaky), len podmienená cieľom kola. Háčik v štýle dnešného <code>pohorsenieBezLimitu</code> → <code>prebytokNaSpaky(state)</code>. Puška ho zmenší ako vždy, Miňištrant tu nemá čo zdražiť.",
+    mrtvy: "Nie je mŕtvy, prebytok vzniká takmer v každej bitke. Cieľ volí obranca, takže je to páka: vezme špaky hneď namiesto markerov, ktoré platia až v ďalších bitkách. Využije to neskoro v hre alebo vtedy, keď súper tlačí markery k vydeseniu.",
+    sila: "Hodnota = prebytok, teda rovnaké číslo ako polia na stupnici. Posun markera však dáva špaky v každej ďalšej bitke, preto je K1 skoro v hre slabší a neskoro rovnocenný. Pohoršenia z hrany (2×) markery hýbu ďalej.",
+    riziko: "Prebytok môže držať aj porazený, ktorý tak dostane špaky hneď. To je v v6 v poriadku, aj dnes prebytok rozdeľuje. Bonus: brzdí rýchle vydesenie (Špaky §4).",
+    zlozitost: "malá" },
+  { id: "K2", nazov: "Zábava pre celú dedinu",
+    text: "<b>Bitka:</b> Špaky za starších sa po tejto bitke rátajú dvakrát.",
+    jadro: "Krok 4b × 2, keď je cieľom kola Kultúrny dom. Jedna konštanta v <code>KONSTANTY.EFEKT</code>.",
+    mrtvy: "Nie je mŕtvy, platí vždy, keď sa niekto niekoho bojí. S hranou 2 × Pohoršenie sa celé kolo točí okolo stupnice.",
+    sila: "Jednorazovo zdvojí bežne 2–6 špakov (v príklade Špakov dostal Jano za starších 1–6 za bitku), čo je viac než bitka (1–4). Najsilnejšia z troch možností.",
+    riziko: "Snowball: viac dostane ten, koho sa už viac boja, a obranca (víťaz minulej bitky) si Kultúrny dom zvolí, keď vedie. Treba ho sledovať pri vyrovnanosti partií.",
+    zlozitost: "malá" },
+  { id: "K3", nazov: "Slušná zábava",
+    text: "<b>Bitka:</b> Pohoršenie posunie marker každého staršieho najviac o 1 pole.",
+    jadro: "Obmedzenie posunov Pohoršením na marker za bitku. Počítadlo <code>pohorsenieHranice</code> v <code>bitkaStav</code> už existuje, v v6 by inak odpadlo. Platí pre Pohoršenia z akcií, patronátu aj od Abstinenta.",
+    mrtvy: "Zaberie len vtedy, keď niekto chce tlačiť ten istý marker viackrát (Abstinent, patronát, dve Pohoršenia na jedného). V mnohých kolách bez účinku, je bližšie k mŕtvemu.",
+    sila: "Slabá, čistá brzda proti vydeseniu. Opak toho, čo Kultúrny dom robil v v5.",
+    riziko: "Hráč nevie, prečo sa marker nepohol. Vyžaduje jasný náhľad na stole.",
+    zlozitost: "malá" },
+];
+const NV = [
+  { id: "N1", odp: true, nazov: "Noviny to roznesú",
+    text: "<b>Dedičstvo:</b> Keď rozdeľuješ prebytok, je o 1 väčší.",
+    jadro: "Zrkadlo Pušky. Pri <code>prebytokProtiZlava</code> pribudne <code>prebytokBonus</code> pre držiteľa, len pri prebytku aspoň 1 (z nuly nevznikne). Vo finále +1 špak (prebytok sa mení na špaky), na Kultúrnom dome s K1 tiež.",
+    mrtvy: "Nie je mŕtvy, prebytok drží niekto takmer v každej bitke. Majiteľovi Novín pomôže zhruba v polovici až dvoch tretinách bitiek.",
+    sila: "+1 pole za bitku znamená približne +1 špak v každej ďalšej bitke, kým marker niekto nevráti. Za Dedičstvo, ktoré stojí 1–4 cigarety. Puška u súpera ho prebije (−2), čo je dobrý pár.",
+    riziko: "Mierne zrýchli cestu na červenú (1 pole za bitku, menej ako Abstinent 1–3).",
+    zlozitost: "malá" },
+  { id: "N2", nazov: "Titulka",
+    text: "<b>Dedičstvo:</b> Po každej bitke dostaneš 1 špak, ak sa ťa bojí viac starších než súpera.",
+    jadro: "Krok 4b: porovnať počet starších, ktorí sa boja jedného a druhého hráča (aspoň žltá). Nový malý háčik.",
+    mrtvy: "Pri vyrovnanej stupnici nedá nič. Keď vedieš v strachu, dá 1 za bitku.",
+    sila: "Najviac toľko špakov, koľko bitiek ostáva (3–8), v praxi menej. Slabšie než N1, ale čitateľné.",
+    riziko: "Odmeňuje toho, kto už vedie (snowball), hoci malým číslom.",
+    zlozitost: "malá" },
+  { id: "N3", nazov: "Čo je v novinách, to platí",
+    text: "<b>Dedičstvo:</b> Staršieho, ktorý sa ťa bojí na červenej, posunie súper Pohoršením najviac o 1 pole za bitku.",
+    jadro: "Obmedzenie súperových Pohoršení na markery na červenej proti majiteľovi. Prebytok a patronát nie.",
+    mrtvy: "Zaberie len vtedy, keď máš starších na červenej, teda v strednej a neskorej hre.",
+    sila: "Chráni vydesených, čím je to čiastočné osobné zamknutie z v5.",
+    riziko: "Zrýchli okamžitú výhru vydesením, a to je presne riziko, ktoré Navrhár hlási (Špaky §4). Neodporúčam bez playtestu.",
+    zlozitost: "malá" },
+];
+const TEXTY = [
+  { id: "T1", karta: "Záhradkár", druh: "mech", stav: "impl",
+    dnes: "Exekúcia: Môžeš ho zahodiť namiesto náradia.",
+    nove: "<b>Exekúcia:</b> Môžeš ho zahodiť. Dlhy ti zhoria, špaky nie.",
+    alt: "alternatíva: <b>Exekúcia:</b> Za každú jeho aktívnu Robotu ti zhorí o 1 špak menej.",
+    preco: "V v6 Exekútor nežiada Nástroj (odovzdanie aj prehra sa rušia), takže Záhradkár nemá čo nahradiť. Návrh zachová „obetuj kartu a zachráň sa“: zahodí sa z ruky alebo balíčka ako dnes (<code>najdiNastroje</code>), len namiesto Nástroja ochráni špaky. Treba kód." },
+  { id: "T2", karta: "Cirhóza (kliatba)", druh: "text", stav: "native",
+    dnes: "Bitka: Ak je priznaná, súper má +1 tuhé poškodenie. Nepriznaná ide po bitke do tvojho odhadzovacieho balíčka; na konci hry prehráva súboje o Cirhózu.",
+    nove: "<b>Bitka:</b> Ak je priznaná, súper má +1 tuhé poškodenie. Nepriznaná ide po bitke do tvojho odhadzovacieho balíčka; na konci hry ti zoberie 5 špakov.",
+    preco: "Súboje o Cirhózu (podmienka scorecardu) v v6 nie sú. Nepriznaná stojí 5 špakov (Špaky §1.7). Správanie mení jadro v6." },
+  { id: "T3", karta: "Absťák (kliatba)", druh: "text", stav: "native",
+    dnes: "Bitka: Udeluješ súperovi o ranu menej.",
+    nove: "<b>Bitka:</b> Udeluješ súperovi o ranu menej. Ak máš viac Absťákov než súper, pri remíze v tuhom prehráš a keď vyhráš, dostaneš o rozdiel menej špakov (aspoň 1).",
+    preco: "Text neodporuje, ale v v6 robí Absťák tri veci a hráč na karte vidí len jednu. Karta nemá akcie, miesta je dosť." },
+  { id: "T4", karta: "Dlh (kliatba)", druh: "text", stav: "native",
+    dnes: "Bitka: Skontroluj či pred dverami nestojí exekútor.",
+    nove: "<b>Bitka:</b> Skontroluj, či pred dverami nestojí Exekútor. Pri remíze v tuhom aj v Absťákoch prehrá, kto má viac priznaných Dlhov.",
+    preco: "Chýba čiarka pred „či“ (preklep). V v6 Dlh rozhoduje druhý stupeň remízy (Špaky §1.3)." },
+  { id: "T5", karta: "Miňištrant", druh: "text", stav: "impl",
+    dnes: "Výhra: Posunutie ukazovateľa priazne staršieho ťa stojí o 1 prebytočné poškodenie viac.",
+    nove: "<b>Výhra:</b> Každý posun markera staršieho prebytkom ťa stojí o 1 prebytok viac.",
+    preco: "Mechanika v v6 sedí (zdražuje víťazov posun, <code>cenaPrebytku</code>), len pojmy: „ukazovateľ priazne“ je dnes marker na stupnici strachu. Kód netreba. Vo finále (prebytok → špaky) a na Kultúrnom dome s K1 nemá čo zdražiť." },
+  { id: "T6", karta: "Puška", druh: "otazka", stav: "impl",
+    dnes: "Dedičstvo: Prebytočné poškodenie, ktoré proti tebe rozdeľuje súper, je o 2 menšie.",
+    nove: "<b>Dedičstvo:</b> Prebytok, ktorý drží súper, je o 2 menší.",
+    preco: "V bežnom kole v6 text sedí. Vo finále sa však prebytok nerozdeľuje, ale mení sa na špaky, a dnešný text by tam neplatil. Nový text platí aj vo finále (−2 špaky súperovi) aj na Kultúrnom dome s K1. Zmenu treba aj v kóde, ak ju chceš." },
+  { id: "T7", karta: "kľúčové slovo Výhra", druh: "text", stav: "vzhľad",
+    dnes: "Uplatní sa, keď vyhráš bitku o lokalitu (máš vyššie tuhé poškodenie). Pri rovnakom tuhom nevyhrá nikto — lokalita ide na sekeru.",
+    nove: "Uplatní sa, keď vyhráš bitku, aj finále. Vyhrá vyššie tuhé poškodenie; pri rovnosti menej Absťákov, potom menej priznaných Dlhov. Ak je rovnosť aj tam, nevyhrá nikto (sekera).",
+    preco: "Finále nie je bitka o lokalitu a remízu v v6 rozhodujú Absťák a Dlhy. Mení vzhľad všetkých kariet so spúšťačom Výhra (Miňištrant, Živnostník, Výherný automat)." },
+  { id: "T8", karta: "kľúčové slovo Prehra", druh: "text", stav: "vzhľad",
+    dnes: "Uplatní sa, keď prehráš bitku o lokalitu (máš nižšie tuhé poškodenie). Pri rovnakom tuhom neprehrá nikto — lokalita ide na sekeru.",
+    nove: "Uplatní sa, keď prehráš bitku, aj finále. Prehrá nižšie tuhé poškodenie; pri rovnosti viac Absťákov, potom viac priznaných Dlhov. Ak je rovnosť aj tam, neprehrá nikto (sekera).",
+    preco: "Ako pri Výhre (Veštica, Podvodník, Cintorín, Výherný automat)." },
+  { id: "T9", karta: "akcia Dlh (popis)", druh: "text", stav: "vzhľad",
+    dnes: "… Na konci hry vyhrá súboj o podmienku Dlh, kto má Dlhov menej — rátajú sa aj priznané.",
+    nove: "… Exekútor ti spáli polovicu priznaných Dlhov a rovnako veľa špakov. Pri remíze v bitke prehrá, kto má viac priznaných Dlhov.",
+    preco: "Podmienka Dlh padá. Začiatok popisu (prah zadĺženia, prah Exekútora 10, súperov Exekútor −1 / −2 / −3) ostáva." },
+  { id: "T10", karta: "akcia Poškodenie pečene (popis)", druh: "text", stav: "vzhľad",
+    dnes: "Pridá 1 poškodenie pečene. V Pitke za každý celý prah získaš Cirhózu — ide do tvojho odhadzovacieho balíčka.",
+    nove: "Pridá 1 poškodenie pečene. V Pitke za každý celý prah získaš Cirhózu — ide do tvojho odhadzovacieho balíčka. Nepriznaná ťa na konci hry stojí 5 špakov.",
+    preco: "Neodporuje, len doplní, prečo na Cirhóze záleží (v v5 to niesol scorecard)." },
+];
+const OTAZKY = [
+  { id: "Q1", karta: "Kočovník", text: "Furt: Jeho akcie sa počítajú hráčovi, ktorý má v jeho kraji prevahu. Vo finále kraje nie sú.",
+    moznosti: [["a", "vo finále sa jeho akcie počítajú majiteľovi (odporúčam, najjednoduchšie)", true], ["b", "vo finále hráčovi, ktorý má v celej línii viac Občanov, Zvierat a Starešinov"]] },
+  { id: "Q2", karta: "Presbiter", text: "Bitka: Ak v jeho kraji nemáš iného Občana… a súper tam má prevahu…",
+    moznosti: [["a", "vo finále bez účinku (odporúčam)", true], ["b", "vo finále sa ráta celá línia ako jeden kraj"]] },
+  { id: "Q3", karta: "Dvojčatá", text: "Furt: Do prevahy sa rátajú za dvoch.",
+    moznosti: [["a", "vo finále bez účinku, prevaha nie je (odporúčam)", true]] },
+  { id: "Q4", karta: "Autobusár (starší)", text: "Bitka: Ignoruj 1 Absťák. V v6 Absťák uberá aj špaky víťazovi a rozhoduje remízu.",
+    moznosti: [["a", "ignoruje ho všade v bitke: tuhé, špaky aj remíza (odporúčam, tak sa text číta)", true], ["b", "len pri tuhom ako dnes"]] },
+  { id: "Q5", karta: "Prvá karta finále v strede", text: "Vo finále leží v strede hráčova karta „ako lokalita“. Šofér („lokality v strede sa to netýka“), Silná nezávislá žena a Nástroj (spoj len s Občanom či Starešinom) sa odvolávajú na lokalitu v strede.",
+    moznosti: [["a", "karta v strede je bežná karta svojho majiteľa: zdvojí ju Silná žena, Šofér na ňu platí, Nástroj s ňou spoj vytvorí, ak je Občan či Starešina (odporúčam)", true], ["b", "karta v strede sa správa ako lokalita (žiadne efekty susedov)"]] },
+];
+const SC = [
+  ["Kmotor", "Strach, Absťák, Dlhy, Starší", "Dlhy, Lokality, Cigarety, Rezerva"],
+  ["Veriaci", "Cirhóza, Starší, Cirhóza, Lokality", "Absťák, Znepokojenie, Dlhy, Absťák"],
+  ["Alkoholik", "Strach, Cigarety, Starší, Absťák", "Lokality, Absťák, Cirhóza, Rezerva"],
+  ["Bitkár", "Strach, Lokality, Vydesenie, Starší", "Cigarety, Dlhy, Absťák, Lokality"],
+  ["Fajčiar", "Znepokojenie, Absťák, Lokality, Cigarety", "Dlhy, Cigarety, Strach, Rezerva"],
+  ["Abstinent", "Cigarety, Cirhóza, Rezerva, Starší", "Rezerva, Dlhy, Cigarety, Lokality"],
+  ["Výpalník", "Cirhóza, Strach, Dlhy, Starší", "Absťák, Rezerva, Cigarety, Znepokojenie"],
+  ["Exekútor", "Dlhy, Rezerva, Cigarety, Starší", "Cirhóza, Starší, Lokality, Vydesenie"],
+];
+
+const KLUC = "naex.karty-v6";
+let stav = { kd: null, nv: null, texty: [], otazky: {} };
+try { stav = Object.assign(stav, JSON.parse(localStorage.getItem(KLUC) || "{}")); } catch (e) { /* bez úložiska */ }
+const uloz = () => { try { localStorage.setItem(KLUC, JSON.stringify(stav)); } catch (e) { /* bez úložiska */ } };
+const el = (tag, attrs, html) => { const n = document.createElement(tag); for (const [k, v] of Object.entries(attrs || {})) n.setAttribute(k, v); if (html !== undefined) n.innerHTML = html; return n; };
+
+function moznosti(korenId, zoznam, kluc) {
+  const koren = document.getElementById(korenId);
+  for (const m of zoznam) {
+    const box = el("div", { class: "moznost" + (stav[kluc] === m.id ? " vybrana" : ""), "data-id": m.id });
+    const r = el("input", { type: "radio", name: kluc, id: kluc + m.id });
+    r.checked = stav[kluc] === m.id;
+    r.addEventListener("change", () => { stav[kluc] = m.id; uloz(); obnov(); });
+    box.append(r);
+    box.append(el("h3", {}, '<label for="' + kluc + m.id + '"><span class="id">' + m.id + "</span>" + m.nazov + (m.odp ? '<span class="stitok st-odp">odporúčané</span>' : "") + "</label>"));
+    box.append(el("div", { class: "efekt" }, m.text));
+    box.append(el("dl", { class: "riadky" },
+      "<dt>Jadro</dt><dd>" + m.jadro + "</dd><dt>Nie je mŕtvy</dt><dd>" + m.mrtvy + "</dd><dt>Sila</dt><dd>" + m.sila +
+      "</dd><dt>Riziko</dt><dd>" + m.riziko + "</dd><dt>Zložitosť</dt><dd>" + m.zlozitost + " (zadanie pre vývoj, efekt bude do nasadenia <code>manual</code>)</dd>"));
+    koren.append(box);
+  }
+}
+moznosti("kd", KD, "kd");
+moznosti("nv", NV, "nv");
+
+const STITKY = { text: '<span class="stitok st-text">len text</span>', mech: '<span class="stitok st-mech">mechanika</span>', otazka: '<span class="stitok st-otazka">otázka</span>' };
+const tb = document.getElementById("texty");
+for (const t of TEXTY) {
+  const tr = el("tr", { "data-id": t.id });
+  const td = el("td", { class: "volba" });
+  const c = el("input", { type: "checkbox", id: "t" + t.id, "aria-label": "Prijať nový text: " + t.karta });
+  c.checked = stav.texty.includes(t.id);
+  c.addEventListener("change", () => {
+    stav.texty = stav.texty.filter((x) => x !== t.id);
+    if (c.checked) stav.texty.push(t.id);
+    uloz(); obnov();
+  });
+  td.append(c); tr.append(td);
+  tr.append(el("td", {}, '<label for="t' + t.id + '"><b>' + t.karta + "</b></label><br>" + STITKY[t.druh] + '<br><span class="pozn">' + t.stav + "</span>"));
+  tr.append(el("td", {}, '<div class="stare">' + t.dnes + '</div><div class="nove">→ ' + t.nove + "</div>" + (t.alt ? '<div class="pozn">' + t.alt + "</div>" : "")));
+  tr.append(el("td", {}, t.preco));
+  tb.append(tr);
+}
+
+const oq = document.getElementById("otazky");
+for (const q of OTAZKY) {
+  const box = el("div", { class: "otazka" }, "<h3>" + q.id + " · " + q.karta + '</h3><p class="pozn">' + q.text + "</p>");
+  const fs = el("fieldset", {});
+  for (const [k, popis] of q.moznosti) {
+    const lab = el("label", {});
+    const r = el("input", { type: "radio", name: q.id, value: k });
+    r.checked = stav.otazky[q.id] === k;
+    r.addEventListener("change", () => { stav.otazky[q.id] = k; uloz(); obnov(); });
+    lab.append(r, document.createTextNode(k + ") " + popis));
+    fs.append(lab);
+  }
+  box.append(fs);
+  oq.append(box);
+}
+
+const sc = document.getElementById("sc");
+for (const [n, l, p] of SC) sc.append(el("tr", {}, "<td><b>" + n + "</b></td><td>" + l + "</td><td>" + p + "</td><td>priazeň " + n + ", 8 prázdnych slotov</td>"));
+
+function obnov() {
+  for (const k of ["kd", "nv"]) for (const b of document.querySelectorAll("#" + k + " .moznost")) {
+    b.classList.toggle("vybrana", b.dataset.id === stav[k]);
+    b.querySelector("input").checked = b.dataset.id === stav[k];
+  }
+  for (const tr of document.querySelectorAll("#texty tr")) {
+    const on = stav.texty.includes(tr.dataset.id);
+    tr.classList.toggle("vybrany", on);
+    tr.querySelector("input").checked = on;
+  }
+  for (const q of OTAZKY) for (const r of document.querySelectorAll('input[name="' + q.id + '"]')) r.checked = stav.otazky[q.id] === r.value;
+  const t = document.getElementById("volbaText");
+  const v = textVolby();
+  t.innerHTML = v === "" ? "Zatiaľ nič nie je vybrané." : "<b>Tvoja voľba:</b> " + v;
+}
+function textVolby() {
+  const casti = [];
+  if (stav.kd) casti.push("Kultúrny dom " + stav.kd);
+  if (stav.nv) casti.push("Noviny " + stav.nv);
+  if (stav.texty.length) casti.push("nové texty " + TEXTY.filter((t) => stav.texty.includes(t.id)).map((t) => t.id + " " + t.karta).join(", "));
+  const q = OTAZKY.filter((x) => stav.otazky[x.id]).map((x) => x.id + stav.otazky[x.id]);
+  if (q.length) casti.push("finále " + q.join(", "));
+  return casti.join("; ");
+}
+document.getElementById("odporucane").addEventListener("click", () => {
+  stav.kd = KD.find((m) => m.odp).id;
+  stav.nv = NV.find((m) => m.odp).id;
+  stav.texty = ["T1", "T2", "T3", "T4", "T5", "T7", "T8", "T9", "T10"];
+  for (const q of OTAZKY) stav.otazky[q.id] = q.moznosti.find((m) => m[2])[0];
+  uloz(); obnov();
+});
+document.getElementById("kopiruj").addEventListener("click", async (e) => {
+  const t = "Karty v6: " + (textVolby() || "nič.");
+  try { await navigator.clipboard.writeText(t); }
+  catch (err) { const s = document.getElementById("schranka"); s.value = t; s.select(); document.execCommand("copy"); }
+  e.target.textContent = "skopírované";
+  setTimeout(() => { e.target.textContent = "skopírovať voľbu"; }, 1500);
+});
+obnov();
+</script>
+</body>
+</html>
