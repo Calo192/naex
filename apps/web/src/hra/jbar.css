@@ -1063,8 +1063,9 @@
     gap: 6px;
   }
 
+  /* 24 px = najmenší klikací cieľ („Preskočiť výučbu“ mal 23 px, UI inšpekcia 20261026-1200, U08). */
   .mel-vpravo button {
-    min-height: 0;
+    min-height: 24px;
     padding: 3px 10px;
     font-size: 0.8rem;
   }

@@ -284,6 +284,12 @@
   transform: translateY(-3px);
 }
 
+/* Klávesnicou nebolo vidno, na ktorej karte stojíš (UI inšpekcia 20261026-1200, U09). */
+.kl-klik:focus-visible {
+  outline: 3px solid var(--akcent, #f2b84b);
+  outline-offset: 2px;
+}
+
 .kl-vybrana {
   transform: translateY(-6px);
   box-shadow:

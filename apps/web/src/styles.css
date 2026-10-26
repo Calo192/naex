@@ -926,7 +926,10 @@ textarea {
   opacity: 0.85;
 }
 
+/* Blok s 2 px navyše — cieľ mal 23 px, pod hranicou 24 px (UI inšpekcia 20261026-1200, U07). */
 .hero-pravidla {
+  display: inline-block;
+  padding-block: 2px;
   color: var(--tlmeny);
   font-size: 0.92rem;
 }
