@@ -24,6 +24,11 @@ viac kôl dizajnu). Vtedy pre ňu platí časť „Ďalšia session“ nižšie.
 | `naex-citac` | Sonnet | dlhé dokumenty, reporty, logy — odpovede s `cesta:riadok` |
 | `naex-overovac` | Haiku | rebase, test, typecheck, build — verdikt a padnuté testy |
 | `naex-upratovac` | Opus, xhigh | týždenné čistenie kódu bez zmeny správania (cloud, piatok 04:00 SEČ) — PR `upratovanie/<dátum>`, zmerguje Leader po `naex-overovac` |
+| `naex-student` | Opus | štúdium iných hier: knižnica mechaník `docs/kniznica/` pre Nápadníka a Navrhára (cloud, utorok 04:00 SEČ) |
+| `naex-strazca` | Opus, xhigh | bezpečnosť: únik skrytých informácií, podvádzanie, práva, vstupy — len lokálny server, report súkromne, nie do gitu (cloud, streda 04:00 SEČ) |
+| `naex-prevadzkar` | Sonnet | živý server: dostupnosť, logy, disk, zálohy, certifikát — len číta, lokálne (SSH), denne |
+| `naex-analytik` | Sonnet | správanie ľudí: lievik výučby, partie, retencia, známky — len číta, lokálne (heslo admina), týždenne |
+| `naex-korektor` | Sonnet | jazyk a pojmy vo všetkých textoch — zoznam opráv podľa príjemcu, nič nemení |
 | `Explore` (vstavaný) | — | kde je čo v kóde |
 | playtest, stratég, rozhodca, bot-tréner, developer | podľa definície | cez svoje skilly (`/naex-playtest`, `/naex-strategia`, …) |
 | kontrola štýlu ilustrácií | — | skill `/naex-kontrola-stylu` (agent `naex-ilustrator` v režime kontroly) |
@@ -46,6 +51,7 @@ s vlastnými portami. Dva súbežné agenti nikdy nedostanú to isté pracovisko
 | `F:\Projects\naex-bugfix` | 8788 / 5174 |
 | `F:\Projects\naex-ui` | 8790 / 5176 |
 | `F:\Projects\naex-admin` | 8791 / 5177 |
+| `F:\Projects\naex-strazca` (bezpečnosť, len lokálny server) | 8795 / 5181 |
 | `F:\Projects\naex-navrhar` | 8794 / 5180 |
 | `F:\Projects\naex-inspektor` (detached, len meranie) | 8793 / 5179 |
 | `F:\Projects\naex-playtest` (playtesty) | 8792 / 5178, servery playtestu od 8800 |
