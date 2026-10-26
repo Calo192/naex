@@ -59,26 +59,22 @@
   font-variant-numeric: tabular-nums;
 }
 
-.stitok-pop {
+/* Piktogram špaku v štítku, farba hráča (selektor silnejší ako .ikona-spaku zo spaky.css). */
+.stitok-skore .stitok-pop {
+  margin: 0;
   display: block;
   flex: none;
+  width: 28px;
+  height: 14px;
+  fill: currentColor;
 }
 
-.stitok-pop.ja {
+.stitok-skore .stitok-pop.ja {
   color: var(--ja);
 }
 
-.stitok-pop.su {
+.stitok-skore .stitok-pop.su {
   color: var(--su);
-}
-
-.stitok-pop-cig {
-  fill: var(--text);
-  opacity: 0.85;
-}
-
-.stitok-pop-zar {
-  fill: var(--akcent);
 }
 
 .stitok-n {

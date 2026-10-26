@@ -162,7 +162,7 @@ import { useTahanie } from "./useTahanie.ts";
 import "./hra.css";
 // Až po hra.css — jednotný bar upravuje aj jej pravidlá (os kola, nástroje, rezerva stola).
 import "./jbar.css";
-import { IkonaSpaku, MiniNastenka, Nastenka, Popolnik, spakyPredBitkou, textSpakovBitky } from "./Spaky.tsx";
+import { IkonaSpaku, MiniNastenka, Nastenka, PocetSpakov, sMinusom, spakyPredBitkou, textSpakovBitky } from "./Spaky.tsx";
 
 /**
  * Čo sa ťahá. `navrh` = karta už leží na stole, ale len ako nepotvrdený návrh.
@@ -2005,9 +2005,9 @@ export function HernaPlocha({
         <h3 id="oznam-finale-nadpis">Finále</h3>
         <p>Posledná bitka bez lokality, vždy {KONSTANTY.FINALE_PITKY} Pitky.</p>
         <div className="oznam-skore">
-          <Popolnik n={view.spaky[ja]} kto="moj" velky titul={`Tvoje špaky: ${view.spaky[ja]}`} />
+          <PocetSpakov n={view.spaky[ja]} kto="moj" velky titul={`Tvoje špaky: ${view.spaky[ja]}`} />
           <b>:</b>
-          <Popolnik n={view.spaky[super_]} kto="superov" velky titul={`Špaky ${menoHraca(super_)}: ${view.spaky[super_]}`} />
+          <PocetSpakov n={view.spaky[super_]} kto="superov" velky titul={`Špaky ${menoHraca(super_)}: ${view.spaky[super_]}`} />
         </div>
         <p>
           {view.spaky[0] === view.spaky[1]
@@ -2770,7 +2770,7 @@ export function HernaPlocha({
         text: (
           <>
             {textHlasky(view.koniec.dovod, [menoHraca(0), menoHraca(1)], [rodHracaP(0), rodHracaP(1)])}
-            {view.koniec.body !== null && ` Špaky ${view.koniec.body[ja]} : ${view.koniec.body[super_]} (ty : ${menoHraca(super_)}).`}
+            {view.koniec.body !== null && ` Špaky ${sMinusom(view.koniec.body[ja])} : ${sMinusom(view.koniec.body[super_])} (ty : ${menoHraca(super_)}).`}
             {frajerina !== null && <ZmenaFrajeriny pred={frajerina[ja].pred} po={frajerina[ja].po} />}
           </>
         ),
@@ -3954,8 +3954,14 @@ export function HernaPlocha({
     setPohladStarsich(null);
   }, [potrebujemLiniu]);
   // Kým beží počítadlo bitky, stôl ukazuje líniu kariet (rozsvecujú sa), nie starších.
+  // Pauza po súperovej voľbe cieľa líniu starších na chvíľu skryje — rámik pauzy by inak svietil
+  // na medzeru medzi staršími a vybranú lokalitu by nebolo vidno (Michal 2026-10-26). Po pauze
+  // sa línia vráti sama: stav, ktorý ju otvoril (výsledok kroku, patronát, Body), sa nemení.
   const starsiViditelni =
-    tahanie === null && pocitadlo === null && (krokStarsich !== null ? !nahliadnutie : vysledokKroku || pohladStarsich !== null || ukazStarsich);
+    !pauzaBezi &&
+    tahanie === null &&
+    pocitadlo === null &&
+    (krokStarsich !== null ? !nahliadnutie : vysledokKroku || pohladStarsich !== null || ukazStarsich);
   const pohladLinie = pohladStarsich ?? ja;
   // Bodový bar (Michal 2026-10-23): po kliku na Body ukážu oba bary body podľa podmienok;
   // späť sa prepnú spolu so stolom.
@@ -5523,7 +5529,11 @@ export function HernaPlocha({
               const obsah = (
                 <>
                   {karta({ karta: k, sirka: sirkaVRuke, vybrana: vybrana || vybranaDoOblasti === k.uid, onClick, hranaVnutorna: strana, spoj })}
-                  {nova && <span className="nova-stitok">zo šenku</span>}
+                  {/* Nízke okno: pás s názvom je pod okrajom okna — meno ukáže štítok nad ním (hra.css). */}
+                  <span className="ruka-meno" aria-hidden="true">
+                    {menoKarty(k.defId)}
+                  </span>
+                  {nova &&<span className="nova-stitok">zo šenku</span>}
                   {dobrata && <span className="nova-stitok">dobraná</span>}
                   {jeKartaPatronatu(k.uid) && <span className="nova-stitok">starší · patronát</span>}
                   {pary.length > 0 && <span className="spoj-stitok">{pary.length === 1 ? "1 spoj" : `${pary.length} spoje`}</span>}

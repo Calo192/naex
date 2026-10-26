@@ -1,4 +1,4 @@
-// Obrazovka konca hry (playtest 20261012-055944): víťaz, popolníky, krčmová
+// Obrazovka konca hry (playtest 20261012-055944): víťaz, špaky, krčmová
 // nástenka a účet špakov (v6), zmena Frajeriny a návrat do lobby. Kým bol koniec
 // len riadok v páse pokynov, hráči ho prehliadli a nevedeli, odkiaľ body sú.
 
@@ -7,7 +7,7 @@ import type { ClientState, GameData, PlayerId, Rod } from "@naex/core";
 import { KONSTANTY, VERZIA_PRAVIDIEL, rozpisSpakov, tvar } from "@naex/core";
 import { Odkaz } from "../lib/router.tsx";
 import { UcetSpakov } from "./UcetSpakov.tsx";
-import { Nastenka, Popolnik } from "./Spaky.tsx";
+import { Nastenka, PocetSpakov } from "./Spaky.tsx";
 import { SuhrnPoPartii } from "../achievementy/VPartii.tsx";
 import type { SuhrnAchievementov, ZmenyFrajeriny } from "./useHra.ts";
 import { textHlasky } from "./useHra.ts";
@@ -56,15 +56,15 @@ export function KoniecHry({ view, mena, menoKarty, frajerina, achievementy = nul
       <div className={`koniec-okno ${koniec.vitaz === null ? "" : koniec.vitaz === ja ? "vyhra" : "prehra"}`}>
         <h2 id="koniec-nadpis">{nadpis}</h2>
         <p className="koniec-dovod">{dovod}</p>
-        {/* Popolníky (v6): konečné špaky po finále, inak to, čo hráči nazbierali do konca. */}
-        <p className="koniec-skore koniec-popolniky">
+        {/* Špaky (v6): konečné špaky po finále, inak to, čo hráči nazbierali do konca. */}
+        <p className="koniec-skore koniec-spaky">
           <span className="moje">
             ty
-            <Popolnik n={koniec.body?.[ja] ?? view.spaky[ja]} kto="moj" velky />
+            <PocetSpakov n={koniec.body?.[ja] ?? view.spaky[ja]} kto="moj" velky />
           </span>
           <span className="dvojbodka">:</span>
           <span className="superove">
-            <Popolnik n={koniec.body?.[su] ?? view.spaky[su]} kto="superov" velky />
+            <PocetSpakov n={koniec.body?.[su] ?? view.spaky[su]} kto="superov" velky />
             {mena[su]}
           </span>
         </p>

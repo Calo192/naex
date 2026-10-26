@@ -4356,7 +4356,9 @@ function zaverecneBodovanie(s: MutState, _data: GameData, events: Event[]): void
   }
   const body: [number, number] = [s.spaky[0], s.spaky[1]];
   const vitaz: PlayerId | null = body[0] === body[1] ? null : body[0] > body[1] ? 0 : 1;
-  s.koniec = { vitaz, dovod: `Odohralo sa finále — ${body[0]} : ${body[1]} špakov.`, body, cirhozy };
+  // Záporné špaky (Exekútor, Cirhóza) so znamienkom mínus, nie spojovníkom — vedľa pomlčky pôsobil ako preklep (UI-7).
+  const sk = (n: number): string => (n < 0 ? `−${-n}` : String(n));
+  s.koniec = { vitaz, dovod: `Odohralo sa finále, špaky ${sk(body[0])} : ${sk(body[1])}.`, body, cirhozy };
   s.faza = "koniec";
   events.push({ type: "koniec", vitaz, dovod: s.koniec.dovod, body });
 }

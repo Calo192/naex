@@ -1,5 +1,5 @@
 // Špaky na stole (pravidlá v6, Michal 2026-10-26, docs/napady/spaky.html bod 12):
-// víťazné body sa zbierajú ako ohorky v popolníku pri mene hráča a krčmová
+// víťazné body sa zbierajú ako špaky (dlaždica pri mene hráča) a krčmová
 // nástenka ukazuje nad každou lokalitou fotku víťaza a koľko špakov za ňu získal
 // (aj finále). Čísla ráta jadro (nástenka, rozpisSpakov), tu sa len kreslia.
 
@@ -7,52 +7,18 @@ import type { CSSProperties, ReactNode } from "react";
 import type { BitkaNaNastenke, CardInstance, CielKola, PlayerId } from "@naex/core";
 import { KONSTANTY, spakov } from "@naex/core";
 import { Avatar } from "../komponenty.tsx";
+import { IkonaSpaku } from "./IkonaSpaku.tsx";
 import "./spaky.css";
 
-/** Najviac ohorkov v popolníku — viac sa nezmestí, číslo vedľa povie presne. */
-const MIESTA_OHORKOV: readonly (readonly [number, number, number])[] = [
-  // x, y, uhol — od stredu von, aby prvé ohorky ležali na dne misky.
-  [26, 21, -18],
-  [38, 22, 24],
-  [20, 26, 12],
-  [44, 27, -30],
-  [31, 27, 70],
-  [14, 21, -40],
-  [50, 21, 38],
-  [25, 17, 52],
-  [39, 17, -58],
-  [32, 21, -4],
-  [18, 30, -10],
-  [46, 31, 14],
-];
+export { IkonaSpaku };
 
-/** Jeden ohorok: filter, papier a popol na konci (x, y = stred, uhol v stupňoch). */
-function Ohorok({ x, y, uhol }: { readonly x: number; readonly y: number; readonly uhol: number }) {
-  return (
-    <g transform={`translate(${x} ${y}) rotate(${uhol}) scale(1.35)`}>
-      <rect className="oh-filter" x={-7} y={-1.6} width={5} height={3.2} rx={0.8} />
-      <rect className="oh-papier" x={-2.2} y={-1.6} width={6.2} height={3.2} rx={0.4} />
-      <rect className="oh-popol" x={3.6} y={-1.6} width={2.2} height={3.2} rx={1.2} />
-    </g>
-  );
+/** Počet špakov so znamienkom mínus (−3), nie spojovníkom. */
+export function sMinusom(n: number): string {
+  return n < 0 ? `−${-n}` : String(n);
 }
 
-/** Malá ikona špaku do textu („+3 ◦“). */
-export function IkonaSpaku() {
-  return (
-    <svg className="ikona-spaku" viewBox="-8 -3 16 6" aria-hidden="true">
-      <g transform="scale(0.74)">
-        <Ohorok x={0} y={0} uhol={-20} />
-      </g>
-    </svg>
-  );
-}
-
-/**
- * Popolník: ohorky podľa počtu špakov (najviac 12 nakreslených) a číslo. Záporné
- * špaky (Exekútor) nechajú popolník prázdny a číslo červené.
- */
-export function Popolnik({
+/** Špaky hráča: piktogram a číslo. Záporné špaky (Exekútor) majú číslo červené. */
+export function PocetSpakov({
   n,
   kto,
   titul,
@@ -63,21 +29,10 @@ export function Popolnik({
   readonly titul?: string;
   readonly velky?: boolean;
 }) {
-  const kresli = Math.max(0, Math.min(MIESTA_OHORKOV.length, n));
   return (
-    <span className={`popolnik ${kto}${velky ? " velky" : ""}${n < 0 ? " minus" : ""}`} title={titul ?? `${spakov(n)} v popolníku`}>
-      <svg viewBox="0 0 64 40" aria-hidden="true">
-        <ellipse className="pop-tien" cx={32} cy={30} rx={30} ry={9} />
-        <ellipse className="pop-okraj" cx={32} cy={23} rx={30} ry={14} />
-        <ellipse className="pop-dno" cx={32} cy={24} rx={23} ry={9.5} />
-        {/* Žliabky na odloženie cigarety. */}
-        <rect className="pop-zliabok" x={2} y={20} width={5} height={3} rx={1.2} />
-        <rect className="pop-zliabok" x={57} y={20} width={5} height={3} rx={1.2} />
-        {MIESTA_OHORKOV.slice(0, kresli).map(([x, y, u], i) => (
-          <Ohorok key={i} x={x} y={y} uhol={u} />
-        ))}
-      </svg>
-      <b className="popolnik-cislo">{n < 0 ? `−${-n}` : n}</b>
+    <span className={`pocet-spakov ${kto}${velky ? " velky" : ""}${n < 0 ? " minus" : ""}`} title={titul ?? spakov(n)}>
+      <IkonaSpaku />
+      <b className="velke-cislo">{sMinusom(n)}</b>
     </span>
   );
 }
@@ -271,8 +226,8 @@ export function SpakyBitky({
         <span role="rowheader">v popolníku</span>
         {([ja, su] as const).map((p) => (
           <span key={p} role="cell">
-            {pred !== undefined && pred[p] !== b.spakyPo[p] && <>{pred[p]} → </>}
-            <b>{b.spakyPo[p]}</b>
+            {pred !== undefined && pred[p] !== b.spakyPo[p] && <>{sMinusom(pred[p])} → </>}
+            <b>{sMinusom(b.spakyPo[p])}</b>
             <IkonaSpaku />
           </span>
         ))}
@@ -299,7 +254,7 @@ export function textSpakovBitky(b: BitkaNaNastenke, pred: readonly [number, numb
     return casti.length === 0 ? "" : ` (${casti.join(", ")})`;
   };
   const sekera = b.vitaz !== null ? "" : b.prepadlo > 0 ? ` · sekera: ${spakov(b.prepadlo)} prepadlo` : ` · sekera: ${spakov(b.pitky)} čaká`;
-  return poradie.map((p) => `${kto(p)} ${pred[p]} → ${b.spakyPo[p]}${za(p)}`).join(" · ") + sekera;
+  return poradie.map((p) => `${kto(p)} ${sMinusom(pred[p])} → ${sMinusom(b.spakyPo[p])}${za(p)}`).join(" · ") + sekera;
 }
 
 /** Špaky v popolníkoch pred bitkou — zo záznamu nástenky (po bitke mínus to, čo bitka dala a vzala). */
