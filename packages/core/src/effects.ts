@@ -89,7 +89,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   zastavka: "impl", // Zhromaždenie: spoločný limit vykladania — súčet limitov oboch (Michal 2026-10-20)
   zberny_dvor: "impl", // Pitka: raz za Pitku za cigaretu karta z vlastného odhadzovacieho balíčka (Michal 2026-10-20)
   zamocnik: "impl", // Furt: akcie nástrojov v okolí posilnené
-  zivnostnik: "impl", // Nástup: zahoď súperovo dedičstvo
+  zivnostnik: "impl", // Výhra: víťaz zahodí jedno súperovo Dedičstvo podľa výberu (Michal 2026-10-26; predtým Nástup)
   abstak: "native", // Bitka: o ranu menej (−1 tuhé za kus)
   pes: "impl", // Furt: +1 tuhé za pár akcií na spoji so súperovou kartou; nikdy v partii s iným zvieraťom
   kostol: "impl", // Zhromaždenie: nikto nesmie vypiť; Pitka: nikto nesmie dať NA EX (Michal 2026-10-20)

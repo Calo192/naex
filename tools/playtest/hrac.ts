@@ -793,6 +793,15 @@ function moznosti(v: ClientState): string[] {
         }
         c({ type: "cintorin", uid: null }, "Cintorín: nič nedávať do Dedičstva");
       }
+      if (b?.krok === "zivnostnik") {
+        // Živnostník (Výhra, Michal 2026-10-26): víťaz vyberá, ktoré súperovo Dedičstvo zahodí.
+        const videne = new Set<string>();
+        for (const k of v.hraci[su].dedicstvo) {
+          if (videne.has(k.defId)) continue;
+          videne.add(k.defId);
+          c({ type: "zivnostnik", uid: k.uid }, `Živnostník: súperovi zahoď z Dedičstva ${meno(k.defId)} (navždy z hry)`);
+        }
+      }
       if (b?.krok === "exekutor") for (const o of v.volbyExekutor ?? []) c({ type: "exekutorTool", defId: o.defId, kde: o.kde }, `odovzdaj Exekútorovi ${meno(o.defId)} (${o.kde})`);
       // Len markery, ktoré sa naozaj dajú posunúť (krajná pozícia je zamknutá).
       const nahlad = (e: ElderState, cezPohorsenie: boolean, naKraj = false, k: PlayerId = su): string => {

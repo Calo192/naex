@@ -91,6 +91,9 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   sa na konci Pitky — až vtedy Nástup a efekty ako Svokra.
 - **Pohreb (po bitke, s priznanou Cirhózou):** `pohreb` spáli Cirhózu a tvoju kartu
   z línie; za Závislého smieš pridať `senokUid` = karta zo šenku do ruky. Liečba už nie je (v4).
+- **Živnostník (Výhra, 2026-10-26):** keď vyhráš bitku so Živnostníkom vo svojej partii, vyberieš
+  jedno súperovo Dedičstvo, ktoré sa zahodí — `{"type":"zivnostnik","uid":…}`; každý Živnostník jedno.
+  Pri Nástupe nerobí nič.
 - **Vízia:** na konci Pitky za každú aktívnu Víziu uvidíš vrchnú kartu svojho
   balíčka — `{"type":"vizia","vziat":true}` do ruky, alebo `false` = zahodiť
   (navždy z hry).

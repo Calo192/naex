@@ -70,6 +70,8 @@ export interface BitkaVerejne {
   readonly benzinkaZostava: readonly [number, number];
   /** Karty v línii, ktoré sa po bitke spália (Dievčina na vydaj). */
   readonly spalit: readonly number[];
+  /** Živnostník (Výhra): koľko súperových Dedičstiev víťaz ešte zahodí (0 mimo kroku). */
+  readonly zivnostnikZostava: number;
 }
 
 /**
@@ -325,6 +327,7 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
             pohorsenieHranice: bitka.pohorsenieHranice,
             benzinkaZostava: bitka.benzinkaZostava,
             spalit: bitka.spalit,
+            zivnostnikZostava: bitka.zivnostnikZostava ?? 0,
           },
     volbyExekutor:
       mojaBitkovaVolba && bitka.krok === "exekutor" ? najdiNastroje(state, data, ja) : null,

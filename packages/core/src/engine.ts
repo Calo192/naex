@@ -200,7 +200,8 @@ export type BitkaKrok =
   | "prebytok"
   | "vestica"
   | "pohreb"
-  | "cintorin";
+  | "cintorin"
+  | "zivnostnik";
 
 export interface BitkaStav {
   readonly krok: BitkaKrok | null;
@@ -230,6 +231,12 @@ export interface BitkaStav {
   readonly vesticaHotova: boolean;
   /** Cintorín: porazený už rozhodol o Nástroji do Dedičstva. */
   readonly cintorinHotovy?: boolean;
+  /**
+   * Živnostník (Výhra): koľko súperových Dedičstiev víťaz ešte zahodí. Nastaví
+   * sa až pri vstupe do kroku (undefined = ešte nie) — Pohreb pred ním smie
+   * Živnostníka z línie spáliť.
+   */
+  readonly zivnostnikZostava?: number;
 }
 
 export interface OvladnutaLokalita {
@@ -355,6 +362,8 @@ export type Command =
   | { readonly type: "vykup"; readonly uid: number }
   // Cintorín (Prehra): Nástroj z ruky do Dedičstva zadarmo, alebo nič (uid null).
   | { readonly type: "cintorin"; readonly uid: number | null }
+  // Živnostník (Výhra): uid súperovho Dedičstva, ktoré víťaz zahodí.
+  | { readonly type: "zivnostnik"; readonly uid: number }
   | { readonly type: "smoke"; readonly pocet: number }
   | { readonly type: "barter" }
   | { readonly type: "refillPoldeci" }
@@ -1242,6 +1251,9 @@ export function apply(
     case "cintorin":
       cmdCintorin(s, data, cmd, hracId, events);
       break;
+    case "zivnostnik":
+      cmdZivnostnik(s, data, cmd, hracId, events);
+      break;
     case "pass":
       cmdPass(s, data, hracId, events);
       break;
@@ -2054,17 +2066,6 @@ function nastupEfekt(
         }
       }
       poZahodeni(s, data, p, zRuky, events);
-      break;
-    }
-    case "zivnostnik": {
-      // Zahoď jedno súperovo dedičstvo.
-      const prve = hrac(s, opp).dedicstvo.shift();
-      if (prve !== undefined) {
-        events.push({
-          type: "log",
-          text: `Živnostník: dedičstvo ${defOf(data, prve as CardInstance).name} hráča ${opp + 1} zahodené.`,
-        });
-      }
       break;
     }
     case "velmi_smutiaca_vdova": {
@@ -3167,8 +3168,53 @@ function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
     }
     // Krok Zberateľa zanikol (Michal 2026-10-20 — jeho ukazovateľ je Úžerník s prahom Dlhu).
     b.cintorinHotovy = true;
+    b.krok = "zivnostnik";
+  }
+
+  // 6c. Živnostník (Výhra, Michal 2026-10-26; predtým Nástup a hra zahodila
+  // najstaršie Dedičstvo): víťaz za každého svojho Živnostníka v línii zahodí
+  // jedno súperovo Dedičstvo podľa vlastného výberu. Ide pred ostatnými
+  // efektmi Výhra a Prehra — zahodené Dedičstvo v tejto bitke už nič nedá.
+  if (b.krok === "zivnostnik") {
+    const vitaz = b.vitaz as PlayerId | null;
+    if (b.zivnostnikZostava === undefined) b.zivnostnikZostava = vitaz === null ? 0 : pocetZivnostnikov(s, vitaz);
+    while (vitaz !== null && b.zivnostnikZostava > 0) {
+      const dedicstvo = s.hraci[opponentOf(vitaz)].dedicstvo;
+      if (dedicstvo.length === 0) break;
+      // Keď sú všetky súperove Dedičstvá rovnaké, niet čo voliť — hra zahodí sama.
+      if (new Set(dedicstvo.map((k) => k.defId)).size > 1) {
+        b.caka = vitaz;
+        return;
+      }
+      zahodDedicstvoZivnostnikom(s, data, vitaz, (dedicstvo[0] as CardInstance).uid, events);
+    }
+    b.zivnostnikZostava = 0;
     koniecBitky(s, data, events);
   }
+}
+
+function pocetZivnostnikov(s: MutState, p: PlayerId): number {
+  return partiaHraca(s, p).filter((pl) => pl.card.defId === "zivnostnik" && pl.zaverecna !== true).length;
+}
+
+function zahodDedicstvoZivnostnikom(s: MutState, data: GameData, p: PlayerId, uid: number, events: Event[]): void {
+  const opp = opponentOf(p);
+  const b = s.bitkaStav;
+  const idx = s.hraci[opp].dedicstvo.findIndex((k) => k.uid === uid);
+  need(b !== null && idx !== -1, "Také Dedičstvo súper nemá.");
+  const karta = hrac(s, opp).dedicstvo.splice(idx, 1)[0] as CardInstance;
+  b.zivnostnikZostava = Math.max(0, (b.zivnostnikZostava ?? 0) - 1);
+  events.push({
+    type: "log",
+    text: `Živnostník: hráč ${p + 1} ${rodovo(p, "zahodil", "zahodila", "zahadzuje")} Dedičstvo ${defOf(data, karta).name} hráča ${opp + 1}.`,
+  });
+}
+
+function cmdZivnostnik(s: MutState, data: GameData, cmd: { uid: number }, p: PlayerId, events: Event[]): void {
+  const b = s.bitkaStav;
+  need(s.faza === "bitka" && b !== null && b.krok === "zivnostnik" && b.caka === p, "Nečaká sa na Živnostníka.");
+  zahodDedicstvoZivnostnikom(s, data, p, cmd.uid, events);
+  pokracujBitku(s, data, events);
 }
 
 function cmdKar(s: MutState, data: GameData, cmd: { uid: number | null }, p: PlayerId, events: Event[]): void {
@@ -4112,6 +4158,13 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
       } else if (b.krok === "cintorin") {
         out.push({ type: "cintorin", uid: null });
         for (const k of state.hraci[p].ruka) if (defOf(data, k).tags.includes("Nástroj")) out.push({ type: "cintorin", uid: k.uid });
+      } else if (b.krok === "zivnostnik") {
+        const videne = new Set<string>();
+        for (const k of state.hraci[opponentOf(p)].dedicstvo) {
+          if (videne.has(k.defId)) continue;
+          videne.add(k.defId);
+          out.push({ type: "zivnostnik", uid: k.uid });
+        }
       } else if (b.krok === "vestica") {
         const opp = opponentOf(p);
         const prve = (karty: readonly CardInstance[]): number[] => {

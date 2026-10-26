@@ -185,6 +185,7 @@ const BONUS_EFEKTU: Readonly<Record<string, number>> = {
   pes: 0.3,
   sofer: 0.3,
   snubenica: 0.4,
+  zivnostnik: 0.3,
 };
 
 /** Hodnota Nástroja v Dedičstve (malá priazeň natrvalo). */
@@ -1250,6 +1251,22 @@ function bitka(v: Volba): Command | null {
         }
       }
       return best ?? { type: "cintorin", uid: null };
+    }
+    case "zivnostnik": {
+      // Živnostník: zahodí súperovi najcennejšie Dedičstvo.
+      const su = opponentOf(ja);
+      let best: Command | null = null;
+      let bestV = Number.NEGATIVE_INFINITY;
+      for (const cmd of v.legal) {
+        if (cmd.type !== "zivnostnik") continue;
+        const karta = state.hraci[su].dedicstvo.find((x) => x.uid === cmd.uid);
+        const hodnota = karta === undefined ? 0 : (DEDICSTVO[karta.defId] ?? 0);
+        if (hodnota > bestV) {
+          bestV = hodnota;
+          best = cmd;
+        }
+      }
+      return best;
     }
     case "vestica": {
       const su = opponentOf(ja);

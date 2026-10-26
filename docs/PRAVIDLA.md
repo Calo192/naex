@@ -532,7 +532,7 @@ Bitka sa vyhodnotí po poslednej Pitke kola, v tomto poradí:
 | 5 | Poldeci (aj Na zdravie „do dna“) | §9.5 |
 | 5b | Veštica | §9.5b |
 | 6 | Pohreb, potom Cintorín | §11 |
-| 6c | Cigarety za prebytok, priazeň Kmotra, efekty Výhra a Prehra | §9.4, §10 |
+| 6c | Živnostník (víťaz vyberá), cigarety za prebytok, priazeň Kmotra, ostatné efekty Výhra a Prehra | §9.4, §10, §16 |
 | 6d | Patronát | §10 |
 | 7 | Návrat kariet; nepriznaná Cirhóza z ruky do odhadzovacieho balíčka | §9.7 |
 
@@ -1157,6 +1157,7 @@ v strede).
 | Niekoho stryná | Nástup: zahodí (z hry) 1 Cirhózu alebo 1 Dlh z ruky či z odhadzovacieho balíčka, Dlh aj spomedzi priznaných. Hra vyberie za hráča: najprv z ruky, potom z odhadzovacieho, nakoniec priznaný Dlh; Cirhózu pred Dlhom. |
 | Vínko | Dedičstvo: ráta sa ako plný poldeci navyše (limit +1); majiteľ nesmie dolievať poldeci za cigarety. Stokársky barter je povolený. |
 | Zámočník | Aktívne akcie Nástrojov v jeho okolí sa rátajú dvakrát. |
+| Živnostník | Výhra: keď jeho majiteľ vyhrá bitku a Živnostník leží v jeho partii v línii, majiteľ **vyberie** jedno súperovo Dedičstvo a to sa zahodí (z hry). Každý Živnostník jedno. Vyhodnotí sa na začiatku kroku 6c (§9), pred ostatnými efektmi Výhra a Prehra — zahodené Dedičstvo v tejto bitke už nič nedá. Bez súperovho Dedičstva, pri prehre či remíze nič; pri Nástupe nerobí nič. Hrobár sa nespúšťa. |
 
 ---
 

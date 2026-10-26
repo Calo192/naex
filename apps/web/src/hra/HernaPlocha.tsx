@@ -3547,6 +3547,31 @@ export function HernaPlocha({
             tlacidla: <button onClick={() => posli({ type: "cintorin", uid: null })}>nič</button>,
           };
         }
+        if (b.krok === "zivnostnik") {
+          // Živnostník (Výhra, Michal 2026-10-26): víťaz vyberie, ktoré súperovo Dedičstvo zahodí.
+          // Rovnaké Dedičstvá sa ponúknu raz — je jedno, ktorý kus zmizne.
+          const ponuka = view.hraci[super_].dedicstvo.filter((k, i, vsetky) => vsetky.findIndex((x) => x.defId === k.defId) === i);
+          return {
+            nadpis: (
+              <>
+                Živnostník{b.zivnostnikZostava > 1 && <small> zostáva {b.zivnostnikZostava}</small>}
+              </>
+            ),
+            text: (
+              <span className="zberatel-text">
+                <span>
+                  {tvar(rodHracaP(ja), "Vyhral si", "Vyhrala si", "Bitka je vyhratá")} so Živnostníkom v línii — klikni na Dedičstvo, ktoré {menoHraca(super_)}{" "}
+                  <strong>zahodí</strong> (navždy z hry).
+                </span>
+                <span className="zberatel-ponuka">
+                  {ponuka.map((k) => (
+                    <span key={k.uid}>{karta({ karta: k, sirka: 84, onClick: () => posli({ type: "zivnostnik", uid: k.uid }) })}</span>
+                  ))}
+                </span>
+              </span>
+            ),
+          };
+        }
         if (b.krok === "exekutor") {
           return {
             nadpis: "Exekútor!",
