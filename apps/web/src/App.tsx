@@ -3,7 +3,7 @@
 // (overuje aj server).
 // Vývoj hry (známky v čase a roadmapa) a Novinky sú verejné.
 
-import type { ReactNode } from "react";
+import { lazy, Suspense, type ReactNode } from "react";
 import { Layout } from "./Layout.tsx";
 import { Nacitavanie } from "./komponenty.tsx";
 import { Odkaz, useCesta } from "./lib/router.tsx";
@@ -36,6 +36,9 @@ function Neprihlaseny() {
     </div>
   );
 }
+
+// Ukážka rekapitulácie hrá partiu botov v prehliadači — bot nepatrí do hlavného balíka.
+const UkazkaRekapitulacie = lazy(() => import("./hra/UkazkaRekapitulacie.tsx").then((m) => ({ default: m.UkazkaRekapitulacie })));
 
 function Nenajdene() {
   return (
@@ -79,6 +82,8 @@ export function App() {
   if (cesta === "/profil") return <Layout siroky>{chranene(<Profil />)}</Layout>;
   // Ukážka UI achievementov na snímky a inšpekciu, kým nie je napojené API (len správca).
   if (cesta === "/achievementy/ukazka") return <Layout siroky>{chranene(<UkazkaAchievementov />, true)}</Layout>;
+  // Rekapitulácia bitky a Pitky na skutočnej partii botov — snímky a inšpekcia bez živej partie.
+  if (cesta === "/hra/ukazka-rekapitulacie") return <Layout siroky>{chranene(<Suspense fallback={<Nacitavanie />}><UkazkaRekapitulacie /></Suspense>, true)}</Layout>;
   // Dielňa je záložka stránky Karty (Michal 2026-10-22); čítať smie každý.
   if (cesta === "/karty/dielna" || cesta.startsWith("/karty/dielna/")) return <Layout siroky><Dielna cesta={cesta} /></Layout>;
 

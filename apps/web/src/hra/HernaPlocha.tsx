@@ -42,6 +42,8 @@ import type {
   PlacedCard,
   PlayerId,
   PocitadloBitky as Pocitadlo,
+  RekapitulaciaBitky,
+  RekapitulaciaPitky,
   VerejnyStav,
   ZobrataVerejne,
 } from "@naex/core";
@@ -120,7 +122,8 @@ import { LiniaStarsich, LupaStarsieho, stopaStarsieho, ucinokPriazne, type Stars
 import { PonukaPatronatu, type MoznostPatronatu } from "./PonukaPatronatu.tsx";
 import { LetiacaKarta, type Obdlznik, type Prelet } from "./LetiacaKarta.tsx";
 import { radSenku } from "./tieneSenku.ts";
-import { PocitadloBitky } from "./PocitadloBitky.tsx";
+import { PocitadloSLiniou } from "./PocitadloBitky.tsx";
+import { RekapitulaciaPitkyVrstva, type PiktogramyRekapitulacie } from "./Rekapitulacia.tsx";
 import { mediaUrl } from "../lib/api.ts";
 import { useStrazOdchodu } from "../lib/odchod.ts";
 import { skupinyBalicka } from "./doberaciBalicek.ts";
@@ -433,6 +436,11 @@ interface UcetPitky {
   readonly dlhy: readonly [number, number];
   readonly cigarety: readonly [number, number];
 }
+
+/** Vrstva po vyhodnotení: rekapitulácia Pitky, alebo Počítadlo bitky s rekapituláciou. */
+type VrstvaVyhodnotenia =
+  | { readonly druh: "pitka"; readonly r: RekapitulaciaPitky; readonly nadpis: string }
+  | { readonly druh: "bitka"; readonly p: Pocitadlo; readonly stol: ClientState; readonly linia: LineEval; readonly rekap: RekapitulaciaBitky | null };
 
 /** Účet bitky — výsledok, lokality, posuny markerov a body pred a po. */
 interface UcetBitky {
@@ -1235,6 +1243,10 @@ export function HernaPlocha({
   const nahladVylozeniaNa = (k: CardInstance, kam: "vlastna" | "superova"): NahladVylozenia =>
     nahladVylozenia(data, { ...lineState(view), strany: stol.strany }, ja, k, kam);
   const nazovAkcie = (k: string): string => sada.akcie.find((a) => a.kluc === k)?.nazov ?? k;
+  const piktogramyRekapitulacie: PiktogramyRekapitulacie = {
+    ikona: (k) => <IkonaAkcie kluc={k} akcia={sada.akcie.find((a) => a.kluc === k)} />,
+    nazov: nazovAkcie,
+  };
   const textZmien = (z: ActionSums): string =>
     (Object.entries(z) as [string, number][]).map(([k, d]) => `${nazovAkcie(k)} ${d > 0 ? "+" : "−"}${Math.abs(d)}`).join(", ") || "bez zmeny";
   const textSpoja = (n: NahladVylozenia): string =>
@@ -1416,40 +1428,54 @@ export function HernaPlocha({
   // vyhodnotenie komu pripísalo — inak to bolo len v logu a skóre skočilo bez súhrnu.
   const [ucetPitky, setUcetPitky] = useState<UcetPitky | null>(null);
   const vysledokBitky = useRef<Extract<Event, { type: "bitkaVysledok" }> | null>(null);
-  // Počítadlo bitky (Michal 2026-10-23): výsledok rastie po vlnách, kým ho hráč nepreskočí.
-  // Stôl je ten s líniou — keď bitka hneď skončila a línia už zmizla, predošlý pohľad.
-  const [pocitadlo, setPocitadlo] = useState<{ readonly p: Pocitadlo; readonly stol: ClientState; readonly linia: LineEval } | null>(null);
+  // Počítadlo bitky (Michal 2026-10-23) a pod ním rekapitulácia; po Pitke jej rekapitulácia
+  // (roadmapa #106). Vrstvy idú po rade — Pitka pred bitkou, ktorú vyhodnotil ten istý ťah —
+  // a každú zavrie až hráč (Ďalej). Stôl bitky je ten s líniou — keď bitka hneď skončila
+  // a línia už zmizla, predošlý pohľad.
+  const [frontaVrstiev, setFrontaVrstiev] = useState<readonly VrstvaVyhodnotenia[]>([]);
+  const vrstvaVyhodnotenia = frontaVrstiev[0] ?? null;
+  const pocitadlo = vrstvaVyhodnotenia?.druh === "bitka" ? vrstvaVyhodnotenia : null;
   const pocitadloAktivne = useRef(false);
   const koniecPocitadla = useCallback(() => {
-    pocitadloAktivne.current = false;
-    setPocitadlo(null);
+    setFrontaVrstiev((f) => {
+      pocitadloAktivne.current = f.length > 1;
+      return f.slice(1);
+    });
   }, []);
-  const pocitadloBezi = pocitadlo !== null;
+  const pocitadloBezi = vrstvaVyhodnotenia !== null;
   useEffect(() => onPocitadlo?.(pocitadloBezi), [pocitadloBezi, onPocitadlo]);
   useEffect(() => {
+    const nove: VrstvaVyhodnotenia[] = [];
     for (const e of udalosti?.events ?? []) {
       if (e.type === "pitkaVysledok") setUcetPitky({ kolo: view.kolo, pitka: e.pitka, cirhozy: e.cirhozy, dlhy: e.dlhy, cigarety: e.cigarety });
+      if (e.type === "pitkaRekap") {
+        const ciel = view.ciel ?? predoslyView.current?.ciel ?? null;
+        const lok = ciel?.lokalita ?? null;
+        nove.push({ druh: "pitka", r: e.rekap, nadpis: `Pitka ${e.rekap.pitka} / ${e.rekap.pitkyCelkom}${lok === null ? "" : ` · ${menoKarty(lok.defId)}`}` });
+      }
       if (e.type === "bitkaVysledok") {
         vysledokBitky.current = e;
         const stol = view.ciel !== null && view.strany.some((s) => s.length > 0) ? view : (predoslyView.current ?? view);
-        const tlmene = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
-        if (!tlmene && stol.ciel !== null) {
+        if (stol.ciel !== null) {
           const linia = evaluateLine(data, lineState(stol));
-          pocitadloAktivne.current = true;
-          const novy = { p: pocitadloBitky(data, stol, linia, e.damage.tuhe), stol, linia };
-          if (zadrzBitku === null) setPocitadlo(novy);
-          else setOdlozeneBitky({ krok: zadrzBitku, pocitadlo: novy });
+          nove.push({ druh: "bitka", p: pocitadloBitky(data, stol, linia, e.damage.tuhe), stol, linia, rekap: e.rekap ?? null });
         }
       }
     }
+    if (nove.length === 0) return;
+    pocitadloAktivne.current = true;
+    // Prehrávač pri posúvaní nehromadí vrstvy — ukáže len tú z práve zobrazeného kroku.
+    if (prehravanie !== undefined) setFrontaVrstiev(nove);
+    else if (zadrzBitku === null) setFrontaVrstiev((f) => [...f, ...nove]);
+    else setOdlozeneBitky((o) => ({ krok: zadrzBitku, vrstvy: [...(o?.vrstvy ?? []), ...nove] }));
     // Len nové udalosti — view.kolo je to isté prekreslenie.
   }, [udalosti?.id]);
-  // Odložená bitka sa spustí, keď výučba prejde na ďalší krok — ešte pred vykreslením, aby text
+  // Odložené vrstvy sa spustia, keď výučba prejde na ďalší krok — ešte pred vykreslením, aby text
   // nového kroku nebolo vidno skôr než animáciu.
-  const [odlozeneBitky, setOdlozeneBitky] = useState<{ readonly krok: string; readonly pocitadlo: NonNullable<typeof pocitadlo> } | null>(null);
+  const [odlozeneBitky, setOdlozeneBitky] = useState<{ readonly krok: string; readonly vrstvy: readonly VrstvaVyhodnotenia[] } | null>(null);
   useLayoutEffect(() => {
     if (odlozeneBitky === null || odlozeneBitky.krok === zadrzBitku) return;
-    setPocitadlo(odlozeneBitky.pocitadlo);
+    setFrontaVrstiev((f) => [...f, ...odlozeneBitky.vrstvy]);
     setOdlozeneBitky(null);
   }, [odlozeneBitky, zadrzBitku]);
   const [ucetBitky, setUcetBitky] = useState<UcetBitky | null>(null);
@@ -5565,29 +5591,31 @@ export function HernaPlocha({
         </div>
       </div>
 
-      {pocitadlo !== null &&
-        (() => {
-          // Línia z okamihu bitky, ako na stole: tvoja strana od lokality doľava, súperova doprava.
-          const { stol, linia } = pocitadlo;
-          const lok = stol.ciel?.lokalita ?? null;
-          const poradie = [
-            ...[...stol.strany[ja]].reverse(),
-            ...(lok === null ? [] : [{ card: lok, playedBy: null }]),
-            ...stol.strany[super_],
-          ];
-          const sirka = Math.max(56, Math.min(110, Math.floor((window.innerWidth - 120) / Math.max(1, poradie.length))));
-          const rad = poradie.map((pl) => ({
-            uid: pl.card.uid,
-            karta: karta({
-              karta: pl.card,
-              sirka,
-              otocena: pl.playedBy === null ? stol.lokalitaOtocena !== (ja === 1) : pl.playedBy !== ja,
-              eval: linia.cards.get(pl.card.uid) ?? null,
-              bezPopisov: true,
-            }),
-          }));
-          return <PocitadloBitky p={pocitadlo.p} ja={ja} mena={[menoHraca(0), menoHraca(1)]} menoKarty={menoKarty} rad={rad} onKoniec={koniecPocitadla} vysledokHned={vyucba === true} />;
-        })()}
+      {vrstvaVyhodnotenia?.druh === "pitka" && (
+        <RekapitulaciaPitkyVrstva
+          key={`pitka-${view.kolo}-${vrstvaVyhodnotenia.r.pitka}`}
+          r={vrstvaVyhodnotenia.r}
+          ja={ja}
+          mena={[menoHraca(0), menoHraca(1)]}
+          nadpis={vrstvaVyhodnotenia.nadpis}
+          menoKarty={menoKarty}
+          piktogramy={piktogramyRekapitulacie}
+          onKoniec={koniecPocitadla}
+        />
+      )}
+      {pocitadlo !== null && (
+        <PocitadloSLiniou
+          key={`bitka-${pocitadlo.stol.kolo}`}
+          vrstva={pocitadlo}
+          ja={ja}
+          mena={[menoHraca(0), menoHraca(1)]}
+          karta={karta}
+          menoKarty={menoKarty}
+          piktogramy={piktogramyRekapitulacie}
+          onKoniec={koniecPocitadla}
+          vysledokHned={vyucba === true}
+        />
+      )}
 
       {/* Až tu — lupaKarty sa naplnia pri kreslení stola a vrstiev vyššie. */}
       {(() => {

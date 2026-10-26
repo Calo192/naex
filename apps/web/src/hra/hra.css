@@ -6776,6 +6776,887 @@ button.auto-hotovo-odkaz {
   }
 }
 
+/* ---- Rekapitulácia bitky a Pitky (roadmapa #106, Michal 2026-10-26, mock 2) ----
+ * Pod Počítadlom bitky a po Pitke: ty vľavo, piktogram v strede, súper vpravo; pruhy od stredu.
+ * Vrstva sama nezmizne — Ďalej. Vyššia než okno sa posúva (mobil), stred cez margin: auto,
+ * aby sa vrch nikdy neodrezal. */
+.pocitadlo-bitky {
+  display: flex;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.pocitadlo-bitky > .pocitadlo-scena {
+  margin: auto;
+}
+
+.pocitadlo-bitky.hotova {
+  cursor: default;
+}
+
+.pocitadlo-vyhodnotena {
+  font: 800 1.6rem/1.1 var(--nadpis);
+  color: var(--text);
+}
+
+.pocitadlo-koniec {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 16px;
+  min-height: 1.2em;
+}
+
+.rk-dalej {
+  min-height: 44px;
+  min-width: 140px;
+  padding: 0 22px;
+  border-radius: 10px;
+  font: 800 1.05rem var(--nadpis);
+  cursor: pointer;
+  background: var(--akcent);
+  color: var(--na-akcente);
+  border: 2px solid var(--akcent-tmavy);
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--akcent-tmavy) 55%, #000);
+  animation: pocitadlo-vylet 0.35s ease-out both;
+}
+
+.rk-dalej:hover {
+  filter: brightness(1.1);
+}
+
+.rk-dalej:focus-visible {
+  outline: 2px solid var(--akcent-svetly);
+  outline-offset: 2px;
+}
+
+/* NA EX nad kartou v línii počítadla — kratší štítok, karty sú malé. */
+.pocitadlo-karta .pocitadlo-naex {
+  top: -11px;
+  padding: 1px 6px 1px 3px;
+  font-size: 0.58rem;
+}
+
+.pocitadlo-karta .pocitadlo-naex .ikona-poldeci {
+  width: 12px;
+  height: 12px;
+}
+
+.pocitadlo-karta.svieti .pocitadlo-naex {
+  display: none;
+}
+
+.rekap {
+  position: relative;
+  width: min(100%, 600px);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  column-gap: 10px;
+  padding: 8px 14px 10px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--plocha) 90%, transparent);
+  border: 1px solid var(--okraj);
+  cursor: auto;
+  align-content: start;
+  /* Bitka: výška všetkých riadkov vopred (--rk-riadkov z RekapBitky), nech nič neposkakuje. */
+  min-height: calc(var(--rk-riadkov, 0) * var(--rk-riadok, 2.1rem));
+}
+
+.rk-hlava {
+  display: contents;
+}
+
+.rk-hlava > span {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--okraj);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rk-hlava .l {
+  text-align: right;
+  color: var(--ja);
+}
+
+.rk-hlava .r {
+  text-align: left;
+  color: var(--su);
+}
+
+.rk-hlava .s {
+  text-align: center;
+  color: var(--slaby-text);
+}
+
+.rk-riadok,
+.vp-riadok {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+  align-items: center;
+  border-radius: 8px;
+  animation: rk-nabeh 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+
+.rk-riadok.nova-skupina {
+  border-top: 1px dashed var(--okraj);
+  margin-top: 3px;
+  padding-top: 3px;
+}
+
+.rk-sekcia {
+  grid-column: 1 / -1;
+  margin-top: 6px;
+  padding-top: 4px;
+  border-top: 1px dashed var(--okraj-svetly);
+  text-align: center;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--slaby-text);
+  animation: rk-nabeh 0.35s ease-out both;
+}
+
+.rk-stred,
+.vp-stred {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2px 0;
+  min-width: 74px;
+}
+
+.rk-stred > .ikona-akcie,
+.rk-stred > .ikona-svg {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  box-shadow: 0 0 0 1px var(--okraj-svetly);
+}
+
+.rk-naex {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 26px;
+  padding: 0 8px 0 6px;
+  border-radius: 8px;
+  background: var(--tehla-tmava);
+  border: 1px solid var(--cervena);
+  color: var(--text);
+  font: 800 0.8rem/1 var(--nadpis);
+}
+
+.rk-naex .ikona-akcie {
+  width: 20px;
+  height: 20px;
+  fill: var(--akcent-svetly);
+  background: none;
+}
+
+.rk-nazov {
+  font-size: 0.6rem;
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tlmeny);
+  white-space: nowrap;
+}
+
+.rk-nazov small {
+  font-weight: 600;
+  color: var(--slaby-text);
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+.rk-hod {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  min-width: 0;
+}
+
+.rk-hod.l {
+  flex-direction: row-reverse;
+}
+
+.rk-hod > b {
+  font: 800 1.25rem/1 var(--nadpis);
+  font-variant-numeric: tabular-nums;
+  min-width: 1.2ch;
+  text-align: center;
+}
+
+.rk-hod.l > b {
+  color: var(--ja);
+}
+
+.rk-hod.r > b {
+  color: var(--su);
+}
+
+.rk-hod > b.nula {
+  color: var(--slaby);
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.rk-hod > b.buch {
+  animation: pocitadlo-buch 0.45s ease-out;
+}
+
+.rk-pruh {
+  display: block;
+  flex: none;
+  max-width: 24vw;
+  height: 14px;
+  border-radius: 4px;
+  transition: width 0.45s ease;
+}
+
+.rk-hod.l .rk-pruh {
+  background: linear-gradient(270deg, color-mix(in srgb, var(--ja) 75%, transparent), color-mix(in srgb, var(--ja) 30%, transparent));
+}
+
+.rk-hod.r .rk-pruh {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--su) 75%, transparent), color-mix(in srgb, var(--su) 30%, transparent));
+}
+
+.rk-plus {
+  position: absolute;
+  top: -4px;
+  font: 800 0.8rem/1 var(--nadpis);
+  pointer-events: none;
+  animation: rk-plus 0.9s ease-out both;
+}
+
+.rk-hod.l .rk-plus {
+  right: -2px;
+  color: var(--ja);
+}
+
+.rk-hod.r .rk-plus {
+  left: -2px;
+  color: var(--su);
+}
+
+.rk-sucet {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 4px 6px;
+  font-size: 0.85rem;
+  color: var(--tlmeny);
+  padding-top: 6px;
+  border-top: 1px solid var(--okraj);
+  margin-top: 6px;
+  animation: rk-nabeh 0.35s ease-out both;
+}
+
+.rk-sucet b {
+  font-variant-numeric: tabular-nums;
+  font-family: var(--nadpis);
+}
+
+.rk-sucet .ja {
+  color: var(--ja);
+}
+
+.rk-sucet .su {
+  color: var(--su);
+}
+
+.rk-sucet .ikona-akcie {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  vertical-align: -4px;
+  margin-right: 2px;
+}
+
+.rk-cip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 8px 1px 6px;
+  border-radius: 99px;
+  white-space: nowrap;
+  font: 800 0.85rem/1.5 var(--nadpis);
+  background: var(--plocha-2);
+  border: 1px solid currentColor;
+  animation: pocitadlo-vylet 0.4s ease-out both;
+}
+
+.rk-cip.ja {
+  color: var(--ja);
+}
+
+.rk-cip.su {
+  color: var(--su);
+}
+
+.rk-cip.zisk {
+  color: var(--akcent-svetly);
+  border-color: var(--akcent);
+  background: color-mix(in srgb, var(--akcent) 14%, var(--plocha-2));
+}
+
+.rk-cip.nic {
+  color: var(--slaby-text);
+  border-style: dashed;
+}
+
+.rk-cip > .ikona-akcie,
+.rk-cip > .ikona-svg {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+}
+
+/* Karta kliatby (priznaný Dlh, nová Cirhóza): na výšku, ako malá karta, nie ako akcia. */
+.rk-kk {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 15px;
+  height: 21px;
+  border-radius: 3px;
+  background: #000;
+  border: 1.5px solid var(--okraj-svetly);
+}
+
+.rk-kk .ikona-akcie,
+.rk-kk .ikona-svg {
+  width: 12px;
+  height: 12px;
+  background: none;
+}
+
+.rk-kk.ja {
+  border-color: var(--ja);
+}
+
+.rk-kk.su {
+  border-color: var(--su);
+}
+
+.rk-kk.prazdna {
+  background: transparent;
+  border-style: dashed;
+  border-color: var(--slaby);
+}
+
+.rk-kk.svieti {
+  box-shadow: 0 0 0 2px var(--plocha), 0 0 0 3px var(--akcent), 0 0 10px var(--akcent);
+}
+
+/* Viera × Povera, súboj v riadku (V2): žetóny od stredu, zrušené zhasnú. */
+.vp {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  row-gap: 2px;
+  padding: 3px 0;
+  margin-top: 3px;
+  border-top: 1px dashed var(--okraj);
+}
+
+.vp:empty {
+  display: none;
+}
+
+.vp-riadok {
+  min-height: 38px;
+}
+
+.vp-strana {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.vp-strana.l,
+.vp-strana.l .vp-zetony,
+.vp-strana.l .vp-ucinok {
+  flex-direction: row-reverse;
+}
+
+.vp-zetony,
+.vp-karty,
+.vp-ucinok {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 3px;
+}
+
+.vp-zeton {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: #000;
+  border: 2px solid;
+  transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease;
+  animation: rk-nabeh 0.35s ease-out both;
+}
+
+.vp-zeton .ikona-akcie,
+.vp-zeton .ikona-svg {
+  width: 18px;
+  height: 18px;
+  background: none;
+}
+
+.vp-zeton.ja {
+  border-color: var(--ja);
+  color: var(--ja);
+}
+
+.vp-zeton.su {
+  border-color: var(--su);
+  color: var(--su);
+}
+
+.vp-zeton.zrusena {
+  opacity: 0.38;
+  filter: grayscale(1);
+  transform: scale(0.88);
+}
+
+.vp-zeton.zrusena::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  background: linear-gradient(135deg, transparent 44%, var(--cervena-svetla) 45% 55%, transparent 56%);
+}
+
+.vp-zeton.zostala {
+  box-shadow: 0 0 0 2px var(--plocha), 0 0 10px 1px currentColor;
+}
+
+.vp-zeton.zabrala {
+  box-shadow: 0 0 0 2px var(--plocha), 0 0 0 3px var(--akcent), 0 0 10px var(--akcent);
+}
+
+.vp-zeton.naprazdno {
+  opacity: 0.5;
+  border-style: dashed;
+}
+
+.vp-dvojica {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.vp-dvojica .ikona-akcie,
+.vp-dvojica .ikona-svg {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  box-shadow: 0 0 0 1px var(--okraj-svetly);
+}
+
+.vp-dvojica .vs {
+  font: 800 0.7rem var(--nadpis);
+  color: var(--slaby-text);
+}
+
+.vp-ruseni {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 18px;
+  margin-top: 2px;
+  padding: 0 5px;
+  border-radius: 99px;
+  font: 800 0.72rem/1 var(--nadpis);
+  color: var(--text);
+  background: var(--tehla-tmava);
+  border: 1px solid var(--cervena);
+  animation: pocitadlo-vylet 0.4s ease-out both;
+}
+
+/* Pitka: dieliky po prahu — plný prah = karta, neúplný prepadne. */
+.rk-mer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+}
+
+.rk-hod.l .rk-mer,
+.rk-hod.l .rk-prah {
+  flex-direction: row-reverse;
+}
+
+.rk-prah {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  vertical-align: middle;
+}
+
+.rk-prah.plny {
+  border-color: var(--akcent);
+  background: color-mix(in srgb, var(--akcent) 10%, transparent);
+}
+
+.rk-prah.prepadne {
+  border: 1px dashed var(--slaby);
+}
+
+.rk-prah.prepadne .rk-bk {
+  opacity: 0.55;
+}
+
+.rk-bk {
+  display: inline-block;
+  width: 11px;
+  height: 14px;
+  border-radius: 2px;
+  background: var(--slaby);
+  animation: rk-nabeh 0.3s ease-out both;
+}
+
+.rk-hod.l .rk-bk {
+  background: color-mix(in srgb, var(--ja) 70%, #000);
+}
+
+.rk-hod.r .rk-bk {
+  background: color-mix(in srgb, var(--su) 70%, #000);
+}
+
+.rk-bk.z-pitia {
+  background: repeating-linear-gradient(135deg, var(--akcent-tmavy) 0 3px, transparent 3px 5px) !important;
+}
+
+.rk-bk.z-poldeci {
+  box-shadow: inset 0 -4px 0 color-mix(in srgb, var(--akcent-svetly) 55%, transparent);
+}
+
+.rk-bk.obm {
+  background: repeating-linear-gradient(135deg, var(--plocha-3) 0 3px, transparent 3px 5px) !important;
+  outline: 1px solid var(--okraj-svetly);
+}
+
+.rk-bk.z-cigorky {
+  box-shadow: inset 0 0 0 2px var(--akcent);
+}
+
+.rk-obm .ikona-akcie,
+.rk-obm .ikona-svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+}
+
+.rk-legenda {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 12px;
+  max-width: 600px;
+  font-size: 0.72rem;
+  color: var(--slaby-text);
+}
+
+.rk-legenda .rk-bk {
+  vertical-align: -2px;
+  animation: none;
+}
+
+.rk-citacka {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@keyframes rk-nabeh {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes rk-plus {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  30% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-14px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pocitadlo-bitky *,
+  .pocitadlo-bitky *::before,
+  .pocitadlo-bitky *::after {
+    transition: none !important;
+  }
+
+  .rk-plus {
+    display: none;
+  }
+}
+
+/* Nízke okno (notebook 1366×650 až 1440×800): všetko hustejšie, názvy akcií len v tooltipe,
+   nech línia, tabuľka aj Ďalej vojdú bez posúvania (PocitadloSLiniou zmenší karty podľa
+   počtu riadkov). */
+@media (max-height: 859px) {
+  /* Bitka má riadkov veľa — názvy akcií len v tooltipe; Pitka ich má málo, tie ostanú. */
+  .s-rekapom .rk-stred > .rk-nazov {
+    display: none;
+  }
+
+  .rk-stred,
+  .vp-stred {
+    min-width: 58px;
+  }
+
+  .pocitadlo-bitky {
+    padding: 10px 16px;
+  }
+
+  .pocitadlo-scena {
+    gap: 7px;
+  }
+
+  .pocitadlo-panel {
+    padding: 4px 20px;
+  }
+
+  .pocitadlo-cisla {
+    font-size: 2rem;
+  }
+
+  .pocitadlo-vyhodnotena {
+    font-size: 1.25rem;
+  }
+
+  .pocitadlo-rad {
+    padding-top: 20px;
+  }
+
+  .pocitadlo-pata {
+    gap: 4px;
+    padding-top: 0;
+  }
+
+  .rekap {
+    padding: 4px 12px 6px;
+    --rk-riadok: 1.72rem;
+  }
+
+  .rk-hod {
+    min-height: 26px;
+  }
+
+  .vp-riadok {
+    min-height: 30px;
+  }
+
+  .rk-hod > b {
+    font-size: 1.1rem;
+  }
+
+  .rk-stred > .ikona-akcie,
+  .rk-stred > .ikona-svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .rk-naex {
+    height: 20px;
+  }
+
+  .rk-nazov {
+    font-size: 0.56rem;
+    line-height: 1.15;
+  }
+
+  .vp-zeton {
+    width: 20px;
+    height: 20px;
+  }
+
+  .vp-zeton .ikona-akcie {
+    width: 15px;
+    height: 15px;
+  }
+
+  .rk-dalej {
+    min-height: 38px;
+  }
+}
+
+/* Nízke a široké okno: skóre, bonusy, verdikt a Ďalej idú vedľa tabuľky — na výšku ostane
+   len línia a tabuľka. */
+@media (max-height: 859px) and (min-width: 1000px) {
+  .pocitadlo-scena.s-rekapom {
+    display: grid;
+    /* Krajné stĺpce vyrovnajú dvojicu tabuľka + skóre na stred, nech línia určuje len šírku. */
+    grid-template-columns: 1fr auto minmax(220px, 320px) 1fr;
+    grid-template-areas:
+      "rad rad rad rad"
+      ". rekap panel ."
+      ". rekap pata .";
+    grid-template-rows: auto 1fr 1fr;
+    column-gap: 18px;
+    row-gap: 8px;
+    justify-content: center;
+    justify-items: center;
+  }
+
+  .s-rekapom > .pocitadlo-panel {
+    grid-area: panel;
+    align-self: end;
+  }
+
+  .s-rekapom > .pocitadlo-rad {
+    grid-area: rad;
+  }
+
+  .s-rekapom > .rekap {
+    grid-area: rekap;
+    width: 600px;
+    max-width: calc(100vw - 420px);
+  }
+
+  .s-rekapom > .pocitadlo-pata {
+    grid-area: pata;
+    align-self: start;
+  }
+
+  .s-rekapom .pocitadlo-zoznam {
+    max-width: 340px;
+  }
+}
+
+/* Mobil: úzke stĺpce, menšie dieliky a žetóny; dlhé riadky sa zalomia. */
+@media (max-width: 640px) {
+  .pocitadlo-bitky {
+    padding: 12px 6px;
+  }
+
+  .rekap {
+    padding: 6px 6px 8px;
+    column-gap: 4px;
+  }
+
+  .rk-stred,
+  .vp-stred {
+    min-width: 56px;
+  }
+
+  .rk-nazov small {
+    display: none;
+  }
+
+  .rk-pruh {
+    max-width: 11vw;
+  }
+
+  .rk-hod {
+    gap: 3px;
+    flex-wrap: wrap;
+    row-gap: 2px;
+  }
+
+  .rk-hod > b {
+    font-size: 1.05rem;
+  }
+
+  .rk-bk {
+    width: 7px;
+  }
+
+  .rk-prah {
+    padding: 1px;
+    gap: 1px;
+  }
+
+  .rk-kk {
+    width: 12px;
+    height: 17px;
+  }
+
+  .rk-kk .ikona-akcie {
+    width: 10px;
+    height: 10px;
+  }
+
+  .vp-zeton {
+    width: 20px;
+    height: 20px;
+  }
+
+  .vp-zeton .ikona-akcie {
+    width: 15px;
+    height: 15px;
+  }
+
+  .vp-strana,
+  .vp-zetony {
+    gap: 2px;
+  }
+
+  .rk-cip {
+    font-size: 0.75rem;
+    padding: 0 5px;
+  }
+
+  .rk-legenda {
+    font-size: 0.66rem;
+  }
+
+  /* Na malej karte len poldeci, nápis by zakryl susedov. */
+  .pocitadlo-karta .pocitadlo-naex {
+    font-size: 0;
+    gap: 0;
+    padding: 1px 3px;
+  }
+
+  /* Dlhá línia sa na telefóne zalomí, karty sú aj tak malé. */
+  .pocitadlo-rad {
+    flex-wrap: wrap;
+    row-gap: 22px;
+  }
+}
+
 /* ---- Hrany stola stredom na čiare (Michal 2026-10-25) ----
  * Pilulka pokynu hore aj rad hrany dole (pečiatky ťahu, nákupy, udalosti) majú zvislý stred
  * presne na čiare okraja plste — pri akejkoľvek výške, preto translate −50 % od čiary, nie

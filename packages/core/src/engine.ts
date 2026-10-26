@@ -53,6 +53,8 @@ import { ALL_DLZKY, DLZKY_HRY, KONSTANTY, PREDVOLENA_DLZKA } from "./constants.t
 import { cigariet, kariet, pocet, rodovo } from "./jazyk.ts";
 import type { Rozdanie } from "./vyucba.ts";
 import type { Moment } from "./momenty.ts";
+import type { RekapitulaciaBitky, RekapitulaciaPitky } from "./rekapitulacia.ts";
+import { rekapitulaciaBitky, rekapitulaciaPitky } from "./rekapitulacia.ts";
 import {
   doliatieZakazane,
   bitkaMody,
@@ -226,6 +228,8 @@ export interface BitkaStav {
   readonly sums: readonly [ActionSums, ActionSums];
   readonly exekutorHotovy: readonly [boolean, boolean];
   readonly pohorsenieZostava: readonly [number, number];
+  /** Pohoršenia, ktoré hráči v bitke dostali (pred použitím) — rekapitulácia bitky. */
+  readonly pohorseniaSpolu?: readonly [number, number];
   /**
    * Koľko hraníc zón už Pohoršenia hráča prekročili s markerom staršieho
    * (kľúč `hráč:elderId`) — najviac POHORSENIE_MAX_HRANIC (Michal 2026-10-20).
@@ -331,6 +335,13 @@ export interface GameState {
    * Verejné; pravidlá z nich nič nerátajú.
    */
   readonly posunyMarkerov: readonly PosunMarkera[];
+  /**
+   * Rekapitulácie Pitiek tohto kola (roadmapa #106) — blok „z Pitiek kola“
+   * v rekapitulácii bitky. Klient ich dostane v udalostiach, nie v pohľade.
+   */
+  readonly pitkyKola?: readonly RekapitulaciaPitky[];
+  /** Pečeň a Cirhózy kola na začiatku Pitky — rekapitulácia Pitky z nich ráta pitie a NA EX. */
+  readonly zaciatokPitky?: { readonly pecen: readonly [number, number]; readonly cirhozy: readonly [number, number] } | null;
 }
 
 /** Čo by skrytá Záverečná spustila, keby bola odkrytá (Svokra, Vychovávateľka, Hrobár). */
@@ -444,6 +455,8 @@ export type Event =
       readonly prebytokDrzi: PlayerId | null;
       /** Karty v línii pri vyhodnotení (verejné) — štatistiky kariet pre tvorcu. */
       readonly karty: readonly KartaVBitke[];
+      /** Rekapitulácia pod Počítadlom bitky (roadmapa #106); chýba v starších záznamoch. */
+      readonly rekap?: RekapitulaciaBitky;
     }
   /** Poškodenie pečene započítané k prahu Cirhózy — štatistiky. */
   | { readonly type: "pecen"; readonly hrac: PlayerId; readonly mnozstvo: number }
@@ -458,6 +471,11 @@ export type Event =
       readonly dlhy: readonly [number, number];
       readonly cigarety: readonly [number, number];
     }
+  /**
+   * Rekapitulácia Pitky (roadmapa #106) — až po otočení Záverečných, aby počas
+   * Vízie neprezradila, čo dáva súperova karta lícom dole.
+   */
+  | { readonly type: "pitkaRekap"; readonly rekap: RekapitulaciaPitky }
   /** Posun markera staršieho — verejný ako marker sám; klient z neho kreslí stopu a účtenku. */
   | ({ readonly type: "posunMarkera" } & PosunMarkera)
   /** Pečiatka momentu (momenty.ts) — verejná, rovnaká pre oboch; server ju pridá po príkaze. */
@@ -1024,6 +1042,8 @@ export function setupGame(data: GameData, seed: number, opts?: SetupOptions): Ga
     patronat: [null, null],
     zaverecnaOdklad: [null, null],
     posunyMarkerov: [],
+    pitkyKola: [],
+    zaciatokPitky: null,
   };
 
   // Náhodný útočník prvého kola (PRAVIDLA §3, §4).
@@ -2214,6 +2234,7 @@ function zacniPitku(s: MutState, data: GameData, events: Event[]): void {
   s.posunyMarkerov = [];
   s.faza = "pitka";
   s.pitkaCislo += 1;
+  s.zaciatokPitky = { pecen: [s.hraci[0].pecen, s.hraci[1].pecen], cirhozy: [s.cirhozyVKole[0], s.cirhozyVKole[1]] };
   events.push({ type: "faza", faza: "pitka" });
   events.push({ type: "log", text: `Pitka ${s.pitkaCislo}/${s.pitkyCelkom}.` });
   s.pitkaStav = {
@@ -2711,6 +2732,7 @@ function vyhodnotPitku(s: MutState, data: GameData, events: Event[]): void {
     cirhozy: s.cirhozyVKole[p],
     dlhy: s.hraci[p].priznane.filter((k) => k.defId === "dlh").length,
   }));
+  const zadlzeniePred: [number, number] = [s.hraci[0].zadlzenie, s.hraci[1].zadlzenie];
 
   // 2. Dlh — aktívne akcie Dlh postihujú majiteľa karty, Dlhy Finančnej
   //    poradkyne súpera.
@@ -2745,6 +2767,25 @@ function vyhodnotPitku(s: MutState, data: GameData, events: Event[]): void {
     ucet.dlhy[p] = s.hraci[p].priznane.filter((k) => k.defId === "dlh").length - (kliatbyPred[p]?.dlhy ?? 0);
   }
   events.push({ type: "pitkaVysledok", pitka: s.pitkaCislo, ...ucet });
+  const zaciatok = s.zaciatokPitky ?? { pecen: [0, 0], cirhozy: [kliatbyPred[0]?.cirhozy ?? 0, kliatbyPred[1]?.cirhozy ?? 0] };
+  const rekap = rekapitulaciaPitky(data, {
+    pitka: s.pitkaCislo,
+    pitkyCelkom: Math.max(s.pitkaCislo, s.pitkyCelkom),
+    line: lineState(s as GameState),
+    linia: vyhodnotenie,
+    zadlzenieZoStola: prirastky.zadlzenie,
+    poskodeniePecene: prirastky.poskodeniePecene,
+    poldeci: prirastky.poldeci,
+    zadlzeniePred,
+    prahDlhu: prahDlhu(),
+    dlhy: ucet.dlhy,
+    pecenNaZaciatku: [zaciatok.pecen[0], zaciatok.pecen[1]],
+    naexDal: [pitka.naexPocet?.[0] ?? 0, pitka.naexPocet?.[1] ?? 0],
+    prahPecene: [prahCirhozy() + prahCirhozyBonus(s as GameState, 0), prahCirhozy() + prahCirhozyBonus(s as GameState, 1)],
+    cirhozy: [s.cirhozyVKole[0] - zaciatok.cirhozy[0], s.cirhozyVKole[1] - zaciatok.cirhozy[1]],
+    cigarety: ucet.cigarety,
+  });
+  s.pitkyKola = [...(s.pitkyKola ?? []), rekap as DeepMutable<RekapitulaciaPitky>];
 
   // 7. Vízia (Michal 2026-10-19): za každú aktívnu Víziu sa hráč pozrie na
   //    vrchnú kartu svojho doberacieho balíčka a rozhodne — do ruky, alebo
@@ -2833,6 +2874,10 @@ function dokonciPitku(s: MutState, data: GameData, events: Event[]): void {
   // Záverečné sa otočia ešte pred vynulovaním pečene — Nástup (napr. Niekoho
   // stryná) patrí ešte do tejto Pitky.
   otocZaverecne(s, data, events);
+  // Rekapitulácia až teraz: počas Vízie ešte mohla ležať súperova karta lícom dole.
+  const rekap = s.pitkyKola?.at(-1);
+  if (rekap !== undefined && rekap.pitka === s.pitkaCislo) events.push({ type: "pitkaRekap", rekap: rekap as RekapitulaciaPitky });
+  s.zaciatokPitky = null;
   // Pečeň a zadĺženie žijú len počas Pitky (Michal 2026-10-16) — zvyšok pod
   // prahom sa do ďalšej Pitky neprenáša.
   for (const p of [0, 1] as const) {
@@ -3012,6 +3057,7 @@ function nastavSumy(s: MutState, data: GameData, events: Event[]): void {
     return r.spolu;
   };
   b.pohorsenieZostava = [pohorsenie(0), pohorsenie(1)];
+  b.pohorseniaSpolu = [b.pohorsenieZostava[0], b.pohorsenieZostava[1]];
 }
 
 /** Stav pre Pohoršenia bitky — línia a verejný patronát (GameState aj ClientState). */
@@ -3639,15 +3685,32 @@ function vyhodnotPoskodenie(s: MutState, data: GameData, events: Event[]): void 
   b.prebytokDrzi = outcome.prebytokDrzi;
   b.prebytokZostava = prebytokNaRozdelenie(s, outcome);
   b.krok = "prebytok";
+  const sums = b.sums as readonly [ActionSums, ActionSums];
+  const line = lineState(s as GameState);
+  const linia = evaluateLine(data, line);
+  const rekap = rekapitulaciaBitky(data, {
+    linia,
+    line,
+    sums,
+    rozpis: rozpisPoskodenia(data, s as GameState, sums, [vRuke(0), vRuke(1)]),
+    damage,
+    priznaneDlhy: [pocetKariet(s.hraci[0], "dlh", "priznane"), pocetKariet(s.hraci[1], "dlh", "priznane")],
+    pohorsenia: [b.pohorseniaSpolu?.[0] ?? 0, b.pohorseniaSpolu?.[1] ?? 0],
+    pitkyKola: (s.pitkyKola ?? []) as readonly RekapitulaciaPitky[],
+    vitaz: outcome.vitaz,
+    prebytok: outcome.prebytok,
+    prebytokDrzi: outcome.prebytokDrzi,
+  });
   events.push({
     type: "bitkaVysledok",
     damage,
-    sums: b.sums as readonly [ActionSums, ActionSums],
+    sums,
     vitaz: outcome.vitaz,
     prebytok: outcome.prebytok,
     prebytokNaRozdelenie: b.prebytokZostava,
     prebytokDrzi: outcome.prebytokDrzi,
-    karty: prispevkyKariet(lineState(s as GameState), evaluateLine(data, lineState(s as GameState))),
+    karty: prispevkyKariet(line, linia),
+    rekap,
   });
   if (outcome.prebytokDrzi !== null && b.prebytokZostava < outcome.prebytok) {
     events.push({
@@ -3949,6 +4012,7 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
   s.ciel = null;
   s.cirhozyVKole = [0, 0];
   s.naexVKole = [false, false];
+  s.pitkyKola = [];
 
   // Prehra balíčkom pod 5 kariet sa vo v5 ruší (Michal 2026-10-24), vydesenie ostáva.
   skontrolujVydesenie(s, data, events, true);
