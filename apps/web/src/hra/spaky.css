@@ -307,6 +307,20 @@
   color: var(--zelena);
 }
 
+/* Rozpis za starších: čí je, ukáže farba hráča — na mená nie je na lístku miesto. */
+.nastenka-uctenka .nastenka-rozpis {
+  font-size: 0.65rem;
+  overflow-wrap: anywhere;
+}
+
+.nastenka-rozpis.moje {
+  color: color-mix(in srgb, var(--ja) 70%, var(--text));
+}
+
+.nastenka-rozpis.superove {
+  color: color-mix(in srgb, var(--su) 70%, var(--text));
+}
+
 .nastenka-listok.koniec {
   border-top: 3px dashed var(--okraj-svetly);
   opacity: 0.85;
@@ -497,6 +511,14 @@
 .sb-riadok small {
   font-weight: 400;
   color: var(--tlmeny);
+}
+
+/* Rozpis za starších pod číslom: zalomí sa v bunke, nerozťahuje mriežku. */
+.sb-riadok small.sb-pod {
+  display: block;
+  font-size: 0.75rem;
+  line-height: 1.25;
+  white-space: normal;
 }
 
 .sb-spolu > span {

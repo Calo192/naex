@@ -12,6 +12,7 @@ import {
   KONSTANTY,
   apply,
   evaluateLine,
+  eventsFor,
   legalCommands,
   loadGameData,
   naTahu,
@@ -172,6 +173,8 @@ describe("v6 karty: Kultúrny dom, Noviny", () => {
     expect(pohorsenie(sNovinami([3, 4, 0], [{}, { Rana: 5 }])).state.nastenka.at(-1)?.zaStarsich).toEqual([0, 3]);
     // Sekera: obaja za starších, Noviny tiež.
     expect(pohorsenie(sNovinami([3, 4, 0], [{}, {}])).state.nastenka.at(-1)?.zaStarsich).toEqual([1 + 1 + 1, 3]);
+    // Noviny majú v rozpise vlastnú položku na konci.
+    expect(pohorsenie(sNovinami([3, 4, 0])).state.nastenka.at(-1)?.zaStarsichRozpis?.[0].at(-1)).toEqual({ elderId: null, defId: "noviny", spaky: 1 });
   });
 });
 
@@ -276,6 +279,38 @@ describe("v6.1 (Michal 2026-10-27): strach platí len víťazovi bitky", () => {
     const st = po(lokalita(s0, "krcma"), [{}, {}]);
     expect(st.nastenka.at(-1)).toMatchObject({ vitaz: null, rozhodlo: "sekera", zaStarsich: [3, 2] });
     expect(st.spaky).toEqual([3, 2]);
+  });
+
+  it("rozpis za starších (Michal 2026-10-27): koľko dal ktorý starší, súčet = zaStarsich; pri sekere obom", () => {
+    const s = setupGame(data, 5);
+    const id = (i: number) => s.starsi[i]!.elderId;
+    const def = (i: number) => s.starsi[i]!.karta.defId;
+    const vyhra = po(lokalita(s0, "krcma"), [{ Rana: 5 }, {}]).nastenka.at(-1)!;
+    expect(vyhra.zaStarsichRozpis).toEqual([
+      [
+        { elderId: id(0), defId: def(0), spaky: 1 },
+        { elderId: id(1), defId: def(1), spaky: 2 },
+      ],
+      [],
+    ]);
+    const sekera = po(lokalita(s0, "krcma"), [{}, {}]).nastenka.at(-1)!;
+    expect(sekera.zaStarsichRozpis?.[1]).toEqual([{ elderId: id(2), defId: def(2), spaky: 2 }]);
+    for (const p of [0, 1] as const) expect(sekera.zaStarsichRozpis?.[p].reduce((a, x) => a + x.spaky, 0)).toBe(sekera.zaStarsich[p]);
+  });
+
+  it("rozpis za starších je v udalosti bitky aj na nástenke a obaja hráči ho vidia rovnako", () => {
+    const { state, events } = pohorsenie(predPoskodenim({ ciel: lokalita(s0, "krcma"), sums: [{}, {}], uprav: markery }));
+    const zaznam = state.nastenka.at(-1)!;
+    for (const p of [0, 1] as const) {
+      const bitka = eventsFor(events, p).find((e) => e.type === "bitkaVysledok");
+      expect(bitka?.type === "bitkaVysledok" ? bitka.rekap?.spaky?.zaStarsichRozpis : undefined).toEqual(zaznam.zaStarsichRozpis);
+      expect(viewFor(data, state, p).nastenka.at(-1)?.zaStarsichRozpis).toEqual(zaznam.zaStarsichRozpis);
+    }
+    // Rozpis nesie len id staršieho, kartu na ukazovateli (verejná) a číslo — nič zo skrytých zón.
+    const kluce = new Set(zaznam.zaStarsichRozpis!.flat().flatMap((x) => Object.keys(x)));
+    expect([...kluce].sort()).toEqual(["defId", "elderId", "spaky"]);
+    const verejneKarty = new Set(state.starsi.map((e) => e.karta.defId));
+    for (const x of zaznam.zaStarsichRozpis!.flat()) expect(verejneKarty.has(x.defId)).toBe(true);
   });
 
   it("finále: strach len víťazovi, pri sekere obom", () => {
