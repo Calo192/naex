@@ -19,7 +19,7 @@ import type {
   StavkaBitky as StavkaBitkyCisla,
   ZdrojeAkcii,
 } from "@naex/core";
-import { KONSTANTY, battleOutcome, cenaFajceniaHraca, jeCielLokalita, limitBuduceKolo, limitZhromazdenia, lokalitNevybranych, pocet, tvar } from "@naex/core";
+import { KONSTANTY, battleOutcome, cenaFajceniaHraca, jeCielLokalita, limitBuduceKolo, limitZhromazdenia, lokalitNevybranych, pocet, tvar, vidiVolbuSupera } from "@naex/core";
 import { ZMENA_SVIETI_MS, klikKrokuOsi, krokPartie, minSek, textZmeny } from "./stitokPartie.ts";
 import type { Rod } from "@naex/core";
 import type { Sada } from "@naex/tvorba";
@@ -524,7 +524,13 @@ export function HracDoska({
     view.koniec === null && (view.faza === "draft" && view.draftStav?.krok === "stavba" ? !view.draftStav.vybral[p] : view.naTahu === p);
   // NA EX naraz (v5): skryté NA EX vidí len jeho majiteľ (viewFor) — poldeci sa odpíše až pri odkrytí,
   // no hráč ho už dal, preto ho tu ukážeme ako ležiaci na stole. Zrážka = druhý poldeci na karte (naexBy2).
+  // Súperove skryté NA EX prídu len s Bzdochou (vyberám po ňom) — a moje vidí súper, keď ju má on.
   const skryteNaex = (view.pitkaStav?.skryteNaex ?? []).filter((x) => x.hrac === p).length;
+  const kSkrytemu = ja
+    ? vidiVolbuSupera(data, view, p === 0 ? 1 : 0)
+      ? ", súper ho vidí cez Bzdochu"
+      : ", súper ho ešte nevidí"
+    : ", skryté — vidíš ho cez Bzdochu";
   const naexNaStole = view.strany[0].concat(view.strany[1]).filter((pl) => pl.naexBy === p || pl.naexBy2 === p).length + skryteNaex;
   const plne = Math.max(0, hrac.poldeciPlne - skryteNaex);
   // Limit, s ktorým hráč vstupuje do Zhromaždenia (so Zastávkou a Vínkom; NA EX na stole sa neráta).
@@ -649,7 +655,7 @@ export function HracDoska({
             text: (
               <>
                 <span className="tip-stav">
-                  {kto} {plne} plné, {hrac.poldeciVypite} vypité{naexNaStole > 0 && `, ${naexNaStole} na stole (NA EX${skryteNaex > 0 ? ", súper ho ešte nevidí" : ""})`} · limit{" "}
+                  {kto} {plne} plné, {hrac.poldeciVypite} vypité{naexNaStole > 0 && `, ${naexNaStole} na stole (NA EX${skryteNaex > 0 ? kSkrytemu : ""})`} · limit{" "}
                   {limit}
                   {jeCielLokalita(view, "zastavka") && " (Zastávka: spoločný pre oboch)"} · ďalšie kolo {buduci}
                 </span>

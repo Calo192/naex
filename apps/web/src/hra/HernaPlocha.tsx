@@ -971,6 +971,19 @@ export function HernaPlocha({
     () => new Set((view.pitkaStav?.skryteNaex ?? []).filter((x) => x.hrac === ja).map((x) => x.uid)),
     [view.pitkaStav, ja],
   );
+  // Bzdocha (v7): kto vyberá NA EX po súperovi, dostane aj jeho skryté NA EX — stôl ich vyznačí.
+  const superoveSkryteNaex = useMemo(
+    () => new Set((view.pitkaStav?.skryteNaex ?? []).filter((x) => x.hrac !== ja).map((x) => x.uid)),
+    [view.pitkaStav, ja],
+  );
+  const stitokSuperovhoNaex = (
+    <span
+      className="naex-nad naex-skryte"
+      title={`${menoHraca(super_)} dal NA EX skryto — vidíš ho vďaka Bzdoche, lebo vyberáš po ňom. Odkryje sa, keď skončíš Pitku.`}
+    >
+      <IkonaPoldeci /> NA EX · {menoHraca(super_)} · skryto
+    </span>
+  );
   // Pre mňa sú skryté NA EX dané: náhľady a výhľady rátajú s nimi tak, ako ich motor
   // zúčtuje pri odkrytí (poldeci, pečeň, Svokra, Výpalné — sMojimiSkrytymiNaex).
   const zaklad = useMemo(() => sMojimiSkrytymiNaex(data, view), [data, view]);
@@ -2297,10 +2310,11 @@ export function HernaPlocha({
       const naexBy = placed.naexBy;
       // NA EX naraz (v5): moje skryté NA EX vidím len ja; zrážka oboch = Výtržník.
       const skryteMoje = mojeSkryteNaex.has(uid);
+      const skryteSupera = superoveSkryteNaex.has(uid);
       const vytrznik = placed.vytrznik === true;
       const vybranaNaex = mode.typ === "naexCiel" && mode.uid === uid;
       const stitky =
-        nova || otocena || naexBy !== undefined || skryteMoje || vybranaNaex || placed.zaverecna === true ? (
+        nova || otocena || naexBy !== undefined || skryteMoje || skryteSupera || vybranaNaex || placed.zaverecna === true ? (
           <>
             {nova && (
               <span className="nova-stitok" title={`Vyložil ${menoHraca(super_)} v poslednom ťahu`}>
@@ -2319,11 +2333,14 @@ export function HernaPlocha({
                 <IkonaPoldeci /> NA EX · {naexBy === ja ? "tvoj" : menoHraca(naexBy)}
               </span>
             ) : (
-              skryteMoje && (
-                <span className="naex-nad naex-skryte" title={`Tvoje NA EX leží skryto — ${menoHraca(super_)} ho nevidí. Odkryje sa, keď obaja skončíte Pitku.`}>
-                  <IkonaPoldeci /> NA EX · tvoj · skryto
-                </span>
-              )
+              <>
+                {skryteMoje && (
+                  <span className="naex-nad naex-skryte" title={`Tvoje NA EX leží skryto — ${menoHraca(super_)} ho nevidí. Odkryje sa, keď obaja skončíte Pitku.`}>
+                    <IkonaPoldeci /> NA EX · tvoj · skryto
+                  </span>
+                )}
+                {skryteSupera && stitokSuperovhoNaex}
+              </>
             )}
             {/* Nad kartou ako NA EX — pod ňou zakrýval text efektu (UI inšpekcia); za štítkom NA EX sa posunie vyššie. */}
             {placed.zaverecna === true && (
@@ -2531,12 +2548,12 @@ export function HernaPlocha({
           <span className="naex-nad">
             <IkonaPoldeci /> NA EX · {z.naexBy === ja ? "tvoj" : menoHraca(z.naexBy)}
           </span>
+        ) : mojeSkryteNaex.has(z.uid) ? (
+          <span className="naex-nad naex-skryte" title={`Tvoje NA EX leží skryto — ${menoHraca(super_)} ho nevidí. Odkryje sa, keď obaja skončíte Pitku.`}>
+            <IkonaPoldeci /> NA EX · tvoj · skryto
+          </span>
         ) : (
-          mojeSkryteNaex.has(z.uid) && (
-            <span className="naex-nad naex-skryte" title={`Tvoje NA EX leží skryto — ${menoHraca(super_)} ho nevidí. Odkryje sa, keď obaja skončíte Pitku.`}>
-              <IkonaPoldeci /> NA EX · tvoj · skryto
-            </span>
-          )
+          superoveSkryteNaex.has(z.uid) && stitokSuperovhoNaex
         )}
         {vybrana && <span className="vybrana-pod">vybraná</span>}
       </button>,

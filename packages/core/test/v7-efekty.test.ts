@@ -20,6 +20,7 @@ import {
   prirastkyPitky,
   setupGame,
   utocnikFinale,
+  vidiVolbuSupera,
   viewFor,
   zmiesaneSpoje,
 } from "../src/index.ts";
@@ -335,6 +336,10 @@ describe("Pitka (v7)", () => {
     expect(viewFor(data, t, 1).pitkaStav?.skryteNaex).toEqual([]);
     t = apply(data, t, { type: "skipNaex" }, 0).state;
     expect(viewFor(data, t, 1).pitkaStav?.skryteNaex).toHaveLength(1);
+    // Klient to vie aj z pohľadov (štítok na stole, text pri poldeci): hráč 1 vidí, hráč 0 nie.
+    expect(vidiVolbuSupera(data, viewFor(data, t, 1), 1)).toBe(true);
+    expect(vidiVolbuSupera(data, viewFor(data, t, 0), 1)).toBe(true);
+    expect(vidiVolbuSupera(data, viewFor(data, t, 0), 0)).toBe(false);
     // Bez Bzdochy nič.
     const bez = { ...t, strany: [strany[0], [strany[1][0]!]] } as GameState;
     expect(viewFor(data, bez, 1).pitkaStav?.skryteNaex).toEqual([]);

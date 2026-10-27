@@ -31,6 +31,7 @@ import type {
 import { abstakyVBitke, cenaDedicstva, lokalityNaVyber, vykupneHraca, mozeHrat, naTahu, stranaStreduFinale, uidZaverecnej, vyplatZaStarsich } from "./engine.ts";
 import { KONSTANTY } from "./constants.ts";
 import { efektHraca, efektPotlaceny } from "./effects.ts";
+import type { VerejnyStav } from "./effects.ts";
 import { MARKER_STRED, favourStarsieho, posunMarker, priazenHraca, priazenSila, spakyZaStarsich, strachZ, vydesil } from "./elders.ts";
 import type { DamageResult } from "./battle.ts";
 import { spakyZaBitku } from "./battle.ts";
@@ -265,8 +266,9 @@ export function nepriznaneKliatbyHraca(hrac: GameState["hraci"][number]): Kliatb
 /**
  * Bzdocha (Pitka, v7): hráč ja vidí súperove skryté NA EX, keď súper už svoju
  * časť Pitky skončil a ja ešte vyberám — „vyberáš NA EX po súperovi“.
+ * Všetko z verejného stavu, takže to klient vie aj z pohľadu (štítky na stole).
  */
-export function vidiVolbuSupera(data: GameData, state: GameState, ja: PlayerId): boolean {
+export function vidiVolbuSupera(data: GameData, state: VerejnyStav & { readonly pitkaStav: Pick<PitkaStav, "hotovy"> | null }, ja: PlayerId): boolean {
   const pitka = state.pitkaStav;
   if (pitka === null || pitka.hotovy[ja] || !pitka.hotovy[ja === 0 ? 1 : 0]) return false;
   return efektHraca(state, ja, "klebetnica") && !efektPotlaceny(data, state, ja, "klebetnica");
