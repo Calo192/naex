@@ -509,10 +509,6 @@ export type Command =
   | { readonly type: "skipNaex" }
   // Reakcia na súperovo NA EX: „place“ (jedna karta do línie) alebo nič.
   | { readonly type: "bezReakcie" }
-  // Poštárka (do v7 Pitka; od v7 Kšeft): dober 1 až 2 karty navyše a s nimi 1 Dlh.
-  | { readonly type: "postarka"; readonly pocet: number }
-  // Starosta (do v7 Pitka; od v7 Nástup): za cigaretu vymeň kartu z ruky za kartu zo šenku.
-  | { readonly type: "starosta"; readonly rukaUid: number; readonly senokUid: number }
   // Benzínka: vlastní Občania z línie, ktorí sa zahodia.
   | { readonly type: "benzinka"; readonly uids: readonly number[] }
   // Kar (Bitka, roadmapa #80): zahoď jednu nepriznanú Cirhózu z ruky, alebo nič (uid null).
@@ -3281,7 +3277,8 @@ function vyhodnotPitku(s: MutState, data: GameData, events: Event[]): void {
     prahDlhu: prahDlhu(),
     dlhy: ucet.dlhy,
     pecenNaZaciatku: [zaciatok.pecen[0], zaciatok.pecen[1]],
-    naexDal: [pitka.naexPocet?.[0] ?? 0, pitka.naexPocet?.[1] ?? 0],
+    // Pečeň z NA EX — na Kare (v7) ju nesie súper toho, kto NA EX dal.
+    naexDal: naexPecenSuperovi(s as GameState) ? [pitka.naexPocet?.[1] ?? 0, pitka.naexPocet?.[0] ?? 0] : [pitka.naexPocet?.[0] ?? 0, pitka.naexPocet?.[1] ?? 0],
     prahPecene: [prahCirhozy() + prahCirhozyBonus(s as GameState, 0), prahCirhozy() + prahCirhozyBonus(s as GameState, 1)],
     cirhozy: [s.cirhozyVKole[0] - zaciatok.cirhozy[0], s.cirhozyVKole[1] - zaciatok.cirhozy[1]],
     cigarety: ucet.cigarety,
@@ -4167,7 +4164,7 @@ function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
   // efektmi Výhra a Prehra — zahodené Dedičstvo v tejto bitke už nič nedá.
   if (b.krok === "zivnostnik") {
     const vitaz = b.vitaz as PlayerId | null;
-    if (b.zivnostnikZostava === undefined) b.zivnostnikZostava = vitaz === null ? 0 : pocetZivnostnikov(s, vitaz);
+    if (b.zivnostnikZostava === undefined) b.zivnostnikZostava = vitaz === null ? 0 : pocetZivnostnikov(s, data, vitaz);
     while (vitaz !== null && b.zivnostnikZostava > 0) {
       const dedicstvo = s.hraci[opponentOf(vitaz)].dedicstvo;
       if (dedicstvo.length === 0) break;
@@ -4183,7 +4180,9 @@ function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
   }
 }
 
-function pocetZivnostnikov(s: MutState, p: PlayerId): number {
+function pocetZivnostnikov(s: MutState, data: GameData, p: PlayerId): number {
+  // Do v7 Výhra; od v7 má Živnostník Nástup (Nástroj za neho).
+  if (data.cards.get("zivnostnik")?.triggers.includes("Výhra") !== true) return 0;
   return partiaHraca(s, p).filter((pl) => pl.card.defId === "zivnostnik" && pl.zaverecna !== true).length;
 }
 

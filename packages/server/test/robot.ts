@@ -101,6 +101,12 @@ export class Robot {
       if (nv.typ === "klebetnica" && k !== undefined) return { type: "klebetnica", uid: k.uid };
       const [x, y] = view.starsi;
       if (nv.typ === "dohadzovacka" && x !== undefined && y !== undefined) return { type: "dohadzovacka", elderA: x.elderId, elderB: y.elderId };
+      // v7: karta zo šenku, Nástroj za Živnostníka (robot nič), Kapybara (prvý marker mimo stredu).
+      const zoSenku = view.senok[0];
+      if (nv.typ === "senok" && zoSenku !== undefined) return { type: "senok", uid: zoSenku.uid };
+      if (nv.typ === "nastroj") return { type: "nastroj", uid: null };
+      const kapybara = view.starsi.find((e) => e.marker !== 3);
+      if (nv.typ === "kapybara" && kapybara !== undefined) return { type: "kapybara", elderId: kapybara.elderId };
     }
 
     switch (view.faza) {

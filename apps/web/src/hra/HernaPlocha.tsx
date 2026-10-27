@@ -88,13 +88,15 @@ import {
   patronatMozny,
   prevahaStran,
   krajeStran,
-  vykupZoSrotu,
-  zakazFajcit,
+  dovodZakazuFajcit,
+  defOf,
+  efektHraca,
+  efektPotlaceny,
+  jednotaZakazuje,
   cenaFajceniaHraca,
-  zakazNaex,
-  jePlacatka,
   naexLimitMinuty as naexLimitMinutyHraca,
   sMojimiSkrytymiNaex,
+  sPrilozenou,
   nahladNaexNaKartu,
   najhorsiaOdpovedNaNaex,
   cenaTahu,
@@ -378,7 +380,6 @@ type Mode =
   // Výbery viacerých kariet: Benzínka (Občania v línii), Veštica.
   | { typ: "vyber"; uids: readonly number[] }
   | { typ: "vestica"; moja: number | null; jeho: number | null }
-  | { typ: "starosta"; rukaUid: number | null }
   | { typ: "vykup" };
 
 // Hra beží na sade svojej miestnosti; pomocné funkcie nižšie ju čítajú odtiaľto.
@@ -946,8 +947,8 @@ export function HernaPlocha({
         ? "vestica"
     : mode.typ === "pohrebSenok"
         ? "senok"
-        : // Starosta: po výbere karty z ruky sa šenok otvorí sám — tlačidlo Šenok v osi zaniklo (Michal 2026-10-27).
-          mode.typ === "starosta" && mode.rukaUid !== null
+        : // Karta zo šenku (Starosta, Dohadzovačka v7): šenok sa otvorí sám.
+          view.volbaNastupu?.typ === "senok" && view.volbaNastupu.hrac === ja
           ? "senok"
           : null;
   // Výber lokality skončil (aj keď ho urobil súper) — vrstva by zakryla draft na stole.
@@ -995,11 +996,15 @@ export function HernaPlocha({
   const { stol, lineEval, odhad, rozpis, hrozby, rozsahy } = useMemo(() => {
     let strany: ClientState["strany"] = zaklad.strany;
     let hraci = zaklad.hraci;
+    let prilozeniaKu = zaklad.prilozeniaKu;
     for (const x of vylozenia) {
       if (x.ciel === "vlastna" || x.ciel === "superova") {
         const kam = x.ciel === "vlastna" ? ja : super_;
-        const nova: readonly PlacedCard[] = [...strany[kam], { card: x.karta, playedBy: ja }];
-        strany = kam === 0 ? [nova, strany[1]] : [strany[0], nova];
+        // Konflikt a Miňištrant (v7) menia stôl už pri priložení — ako motor.
+        const po = sPrilozenou(data, { ...zaklad, strany, hraci, ...(prilozeniaKu === undefined ? {} : { prilozeniaKu }) }, kam, x.karta, ja);
+        strany = po.strany;
+        hraci = po.hraci;
+        prilozeniaKu = po.prilozeniaKu;
       } else {
         const h = hraci[ja];
         const novy = x.ciel === "priznanie" ? { ...h, priznane: [...h.priznane, x.karta] } : { ...h, dedicstvo: [...h.dedicstvo, x.karta] };
@@ -1007,7 +1012,18 @@ export function HernaPlocha({
       }
     }
     const ciel = lokalitaNavrh !== null ? { typ: "lokalita" as const, lokalita: lokalitaNavrh.karta } : view.ciel;
-    const stol: VerejnyStav = { ciel, strany, starsi: view.starsi, hraci };
+    // Šofér, Strýko, Vychovávateľka, Pasca a Vidly čítajú aj NA EX v kole, Kšefty a špaky (playtest v7 131033).
+    const stol: VerejnyStav = {
+      ciel,
+      strany,
+      starsi: view.starsi,
+      hraci,
+      spaky: view.spaky,
+      naexVKole: zaklad.naexVKole,
+      ...(view.kseftRany === undefined ? {} : { kseftRany: view.kseftRany }),
+      ...(view.kseftPovery === undefined ? {} : { kseftPovery: view.kseftPovery }),
+      ...(prilozeniaKu === undefined ? {} : { prilozeniaKu }),
+    };
     // lineState: rovnaká línia ako na serveri.
     const lineEval = evaluateLine(data, lineState({ ...stol, lokalitaOtocena: lokalitaNavrh?.otocena ?? view.lokalitaOtocena }));
     // Absťáky v ruke: svoje poznáš (bez karty, ktorá už leží na stole), súperove nie.
@@ -2088,7 +2104,11 @@ export function HernaPlocha({
     oznamFinale !== "ukazany" || !jeFinaleStola || view.koniec !== null ? null : (
       <div className="oznam-finale" role="dialog" aria-labelledby="oznam-finale-nadpis">
         <h3 id="oznam-finale-nadpis">Finále</h3>
-        <p>Posledná bitka bez lokality, vždy {KONSTANTY.FINALE_PITKY} Pitky.</p>
+        <p>
+          {view.ciel?.lokalita != null
+            ? `Posledná bitka na vrcholovej lokalite ${menoKarty(view.ciel.lokalita.defId)} — kraje, prevaha aj počet Pitiek ako na každej lokalite.`
+            : `Posledná bitka bez lokality, vždy ${KONSTANTY.FINALE_PITKY} Pitky.`}
+        </p>
         <div className="oznam-skore">
           <PocetSpakov n={view.spaky[ja]} kto="moj" velky titul={`Tvoje špaky: ${view.spaky[ja]}`} />
           <b>:</b>
@@ -2098,11 +2118,15 @@ export function HernaPlocha({
           {view.spaky[0] === view.spaky[1]
             ? `Rovnako špakov — útočí ${view.utocnik === ja ? "ty" : menoHraca(view.utocnik)} (porazený poslednej bitky).`
             : view.utocnik === ja
-              ? "Máš viac špakov, preto útočíš ty."
-              : `${menoHraca(super_)} má viac špakov, preto útočí.`}{" "}
-          {view.utocnik === ja
-            ? "Tvoja prvá karta pôjde do stredu línie a súper uvidí, čo si vyložil — v Pitke máš posledné slovo."
-            : "Jeho prvá karta pôjde do stredu línie; ty kladieš k nej a v Pitke začínaš."}
+              ? "Máš menej špakov, preto útočíš ty — dobiehaš."
+              : `${menoHraca(super_)} má menej špakov, preto útočí — dobieha.`}{" "}
+          {view.ciel?.lokalita != null
+            ? view.utocnik === ja
+              ? "Vykladáš prvý, v Pitke máš posledné slovo."
+              : "Vedieš: ty si vybral a natočil lokalitu, v Pitke začínaš."
+            : view.utocnik === ja
+              ? "Tvoja prvá karta pôjde do stredu línie a súper uvidí, čo si vyložil — v Pitke máš posledné slovo."
+              : "Jeho prvá karta pôjde do stredu línie; ty kladieš k nej a v Pitke začínaš."}
         </p>
         <p className="tlmene">
           Po finále dajú starší ešte raz špaky, prebytok sa zmení na špaky, zvyšné zdroje sa vykúpia (plný poldeci {KONSTANTY.SPAKY_ZA_POLDECI}, každých{" "}
@@ -3011,8 +3035,43 @@ export function HernaPlocha({
       };
     }
     if (view.volbaNastupu !== null && view.volbaNastupu.hrac === ja) {
-      // Klebetnica a Dohadzovačka (v7): voľba Nástupu čaká ako Hasič.
+      // Voľby v7 čakajú ako Hasič: karta zo šenku (Starosta, Dohadzovačka), Nástroj za Živnostníka, Kapybara.
       const nv = view.volbaNastupu;
+      if (nv.typ === "senok" || nv.typ === "nastroj") {
+        const zoSenku = nv.typ === "senok";
+        const ponuka = zoSenku ? view.senok : view.ruka.filter((k) => defOf(data, k).tags.includes("Nástroj"));
+        return {
+          nadpis: zoSenku ? "Karta zo šenku" : "Živnostník",
+          text: (
+            <span className="vizia-text">
+              <span>{zoSenku ? "Vyber si kartu zo šenku do ruky." : "Smieš za Živnostníka hneď priložiť Nástroj z ruky — limit nemíňa."}</span>{" "}
+              {ponuka.map((k) => (
+                <span key={k.uid} className="vizia-karta">
+                  {karta({ karta: k, sirka: 72, onClick: () => posli(zoSenku ? { type: "senok", uid: k.uid } : { type: "nastroj", uid: k.uid }) })}
+                </span>
+              ))}
+            </span>
+          ),
+          ...(zoSenku ? {} : { vpravo: <button className="pecat pecat-tichy" onClick={() => posli({ type: "nastroj", uid: null })}>bez Nástroja</button> }),
+        };
+      }
+      if (nv.typ === "kapybara") {
+        return {
+          nadpis: "Kapybara",
+          text: (
+            <span>
+              Posuň marker jedného staršieho o 1 pole k stredu:{" "}
+              {view.starsi
+                .filter((e) => e.marker !== 3)
+                .map((e) => (
+                  <button key={e.elderId} type="button" className="pecat pecat-nakup" onClick={() => posli({ type: "kapybara", elderId: e.elderId })}>
+                    {defOf(data, e.karta).name}
+                  </button>
+                ))}
+            </span>
+          ),
+        };
+      }
       return {
         nadpis: nv.typ === "klebetnica" ? "Klebetnica" : "Dohadzovačka",
         text: <VolbaNastupu view={view} posli={posli} />,
@@ -3410,28 +3469,6 @@ export function HernaPlocha({
                 ),
               };
         }
-        if (mode.typ === "starosta") {
-          const zRuky = view.ruka.find((k) => k.uid === mode.rukaUid);
-          return {
-            nadpis: "Starosta",
-            text:
-              zRuky === undefined ? (
-                "Klikni na kartu v ruke, ktorú vymeníš (za cigaretu) za kartu zo šenku."
-              ) : (
-                <>
-                  Dávaš <strong>{menoKarty(zRuky.defId)}</strong> — klikni v šenku na kartu, ktorú si vezmeš.
-                </>
-              ),
-            tlacidla: (
-              <>
-                <button onClick={zrus}>zrušiť</button>
-                <button onClick={() => setVrstva("senok")} disabled={zRuky === undefined}>
-                  šenok
-                </button>
-              </>
-            ),
-          };
-        }
         if (mode.typ === "vykup") {
           // Zberný dvor (Michal 2026-10-20): raz za Pitku za cigaretu karta z vlastného odhadzovacieho balíčka.
           const srot = hracJa.odhadzovaci;
@@ -3450,7 +3487,7 @@ export function HernaPlocha({
                         sirka: 72,
                         onClick: () => {
                           setMode({ typ: "ziadny" });
-                          cmd({ type: "vykup", uid: k.uid });
+                          if (view.ciel?.lokalita != null) cmd({ type: "kseft", uid: view.ciel.lokalita.uid, kartaUid: k.uid });
                         },
                       })}
                     </span>
@@ -3462,10 +3499,7 @@ export function HernaPlocha({
           };
         }
         // Prečo NA EX nejde — hráč to vidí hneď, nielen v tooltipe.
-        // Placatka (vlastný Anonymný alkoholik) ide aj po minutom limite — keď je kam, dôvod nie je.
-        const dovodBezNaex = zakazNaex(view)
-          ? "Kostol: nikto nesmie dať NA EX."
-          : naexCiele.size > 0
+        const dovodBezNaex = naexCiele.size > 0
           ? null
           : naexBol
           ? mojeSkryteNaex.size > 0
@@ -3474,20 +3508,19 @@ export function HernaPlocha({
           : hracJa.poldeciPlne - mojeSkryteNaex.size <= 0
             ? "Nemáš plný poldeci (doliať: 2 cigarety)."
             : naexCiele.size === 0
-              ? "NA EX ide len na Občana či Starešinu v línii s aspoň jednou aktívnou a jednou neaktívnou akciou (nie Nástroj)."
+              ? view.ciel?.lokalita?.defId === "kostol"
+                ? "Kostol: NA EX smie len na kartu v kraji pri oltári — tam nie je karta, na ktorú by malo zmysel."
+                : "NA EX ide len na Občana či Starešinu v línii s aspoň jednou aktívnou a jednou neaktívnou akciou (nie Nástroj)."
               : null;
-        // Krčma chce jedno NA EX — splní ho aj placatka; po ňom už končím nič neblokuje.
+        // Krčma chce jedno NA EX; po ňom už končím nič neblokuje.
         const krcma = view.ciel?.lokalita?.defId === "krcma" && dovodBezNaex === null && mojeSkryteNaex.size === 0;
-        const postarkaKarty = KONSTANTY.EFEKT.POSTARKA_KARTY;
         const cenaBarteru = barterCena(data, view, ja);
-        const mamEfekt = (defId: string): boolean =>
-          [...view.strany[0], ...view.strany[1]].some((pl) => pl.playedBy === ja && pl.card.defId === defId);
-        const postarka =
-          mamEfekt("postarka") && pitkaSt?.postarka[ja] !== true && jeCoTahat(hracJa.doberaciPocet, hracJa.odhadzovaci.length);
-        const starosta = mamEfekt("starosta") && pitkaSt?.starosta[ja] !== true && hracJa.cigarety > 0;
         // Vínko (Michal 2026-10-19): s ním sa poldeci za cigarety nedolieva.
         const vinko = hracJa.dedicstvo.some((k) => k.defId === "vinko");
-        const vykup = vykupZoSrotu(view) && pitkaSt?.vykup?.[ja] !== true;
+        // Zberný dvor (Kšeft v7): kartu z odhadzovacieho balíčka si hráč vyberie kliknutím (mode vykup).
+        const lokUid = view.ciel?.lokalita?.uid;
+        const vykup = view.ciel?.lokalita?.defId === "zberny_dvor" && lokUid !== undefined && !(pitkaSt?.kseft?.[ja] ?? []).includes(lokUid);
+        const zakazFajc = dovodZakazuFajcit(data, view, ja);
         // Poradie v Pitke (dizajn UX N1 „Pitka nahlas“): obranca začína, útočník má posledné slovo.
         const superSkoncil = pitkaSt?.hotovy[super_] === true;
         const zacinam = obranca === ja && !superSkoncil;
@@ -3541,11 +3574,11 @@ export function HernaPlocha({
             </span>
             {pecatNakupu({
               kluc: "fajcit",
-              ikona: <IkonaCigareta zakaz={zakazFajcit(view)} />,
+              ikona: <IkonaCigareta zakaz={zakazFajc !== null} />,
               nazov: "fajčiť",
               cena: cenaFajc,
-              dovod: zakazFajcit(view)
-                ? "Benzínka: nikto nesmie fajčiť."
+              dovod: zakazFajc !== null
+                ? zakazFajc
                 : cig < cenaFajc
                   ? `Fajčiť teraz stojí ${cigariet(cenaFajc)}, máš ${cig}.`
                   : !jeCoTahat(hracJa.doberaciPocet, hracJa.odhadzovaci.length)
@@ -3561,6 +3594,8 @@ export function HernaPlocha({
               cena: KONSTANTY.REFILL_CENA,
               dovod: vinko
                 ? "Vínko v Dedičstve: poldeci za cigarety dolievať nesmieš (nový poldeci barterom áno)."
+                : jednotaZakazuje(view, ja)
+                ? "Jednota: máš viac priznaných Dlhov — nesmieš fajčiť ani dolievať."
                 : hracJa.poldeciVypite === 0
                   ? "Nemáš vypitý poldeci, ktorý by sa dal doliať."
                   : cig < KONSTANTY.REFILL_CENA
@@ -3590,32 +3625,10 @@ export function HernaPlocha({
                     : cig < KONSTANTY.EFEKT.ZBERNY_DVOR_CENA
                       ? `Výkup stojí ${cigariet(KONSTANTY.EFEKT.ZBERNY_DVOR_CENA)}, máš ${cig}.`
                       : null,
-                tip: "Zberný dvor: raz za Pitku za cigaretu karta z tvojho odhadzovacieho balíčka do ruky.",
+                tip: "Zberný dvor (Kšeft): za cigaretu ľubovoľná karta z tvojho odhadzovacieho balíčka do ruky.",
                 akcia: () => setMode({ typ: "vykup" }),
               })}
-            {starosta &&
-              pecatNakupu({
-                kluc: "starosta",
-                ikona: null,
-                nazov: "Starosta",
-                cena: 1,
-                dovod: null,
-                tip: "Starosta: za cigaretu vymeň kartu z ruky za kartu zo šenku.",
-                akcia: () => setMode({ typ: "starosta", rukaUid: null }),
-              })}
-            {postarka &&
-              Array.from({ length: postarkaKarty }, (_, i) => i + 1).map((n) =>
-                pecatNakupu({
-                  kluc: `postarka${n}`,
-                  ikona: null,
-                  nazov: `Poštárka +${n}`,
-                  cena: 0,
-                  dovod: null,
-                  tip: `Poštárka: dober karty navyše a s nimi ${KONSTANTY.EFEKT.POSTARKA_DLHY} Dlh.`,
-                  akcia: () => cmd({ type: "postarka", pocet: n }),
-                }),
-              )}
-            <KseftyPitky view={view} cmd={cmd} pecatNakupu={pecatNakupu} />
+            <KseftyPitky data={data} view={view} cmd={cmd} pecatNakupu={pecatNakupu} />
           </>
         );
         const koncim = (
@@ -3687,21 +3700,13 @@ export function HernaPlocha({
                     · Svokra {menoHraca(super_)}: v bitke ti udelí {vybrana.odkrytie.svokra === 1 ? "Ranu" : `${vybrana.odkrytie.svokra} Rany`} (v tuhom už je)
                   </>
                 )}
-                {vybrana.odkrytie.policajtka > 0 && (
-                  <>
-                    {" "}
-                    · Policajtka {menoHraca(super_)}: Dlh, ak {menoHraca(super_)} v tejto Pitke dá menej NA EX ako ty (v cene je)
-                  </>
-                )}
-                {vybranaUid !== null && jePlacatka(data, view, ja, vybranaUid) && <> · placatka: do limitu NA EX za Pitku sa nepočíta</>}
+                {vybrana.odkrytie.kar && <> · Kar: pečeň za toto NA EX dostane {menoHraca(super_)}</>}
                 {vybrana.odkrytie.vypalne > 0 && (
                   <>
                     {" "}
                     · Výpalné: zaplatíš {menoHraca(super_)} {vybrana.odkrytie.vypalne} cig.
                   </>
                 )}
-                {vybrana.odkrytie.vychovavatelka && <> · Vychovávateľka: tvoj priznaný Dlh ide {menoHraca(super_)} do balíčka</>}
-                {vybrana.odkrytie.krcmarka && <> · Krčmárka ti v bitke neotočí vypitý poldeci (NA EX v kole)</>}
                 {vybrana.odkrytie.doDna && <> · Na zdravie: poldeci sa ti po bitke vráti plný</>}
                 {view.zaverecne.some((z) => z.majitel === super_) && <> · bez súperovej Záverečnej lícom dole</>} · v ďalšom kole limit{" "}
                 {limitPoVybranej === limitBez ? `ostane ${limitBez}` : `${limitPoVybranej} namiesto ${limitBez}`} · skryto do konca Pitky; ak {menoHraca(super_)} dá NA EX
@@ -5568,8 +5573,8 @@ export function HernaPlocha({
                 sirka: SIRKA_VO_VRSTVE,
                 vybrana,
                 onClick:
-                  mode.typ === "starosta" && mode.rukaUid !== null
-                    ? () => posli({ type: "starosta", rukaUid: mode.rukaUid as number, senokUid: k.uid })
+                  view.volbaNastupu?.typ === "senok" && view.volbaNastupu.hrac === ja
+                    ? () => posli({ type: "senok", uid: k.uid })
                     : zoSenkuLimit > 0
                       ? () => prepniZoSenku(k.uid)
                       : undefined,
@@ -5725,14 +5730,11 @@ export function HernaPlocha({
           {ruka
             .filter((k) => !vylozenia.some((x) => x.karta.uid === k.uid))
             .map((k) => {
-              // Starosta: karta v ruke sa vyberá klikom.
-              const vybrana = mode.typ === "starosta" && mode.rukaUid === k.uid;
+              const vybrana = false;
               // Vybrané miesto na stole: karta, ktorá tam smie, sa tam klikom položí.
               const naMiesto = vybraneMiesto?.karty.get(k.uid);
               const onClick =
-                mode.typ === "starosta"
-                  ? () => setMode({ typ: "starosta", rukaUid: k.uid })
-                  : naMiesto !== undefined
+                naMiesto !== undefined
                     ? () => polozNaMiesto(k)
                     : vybraneMiesto === undefined && (typOblasti(k).priznanie || typOblasti(k).dedicstvo)
                       ? () => vyberDoOblasti(k)
@@ -5774,9 +5776,7 @@ export function HernaPlocha({
                 k.uid,
                 PORADIE + k.uid,
                 triedy.join(" ").trim() || undefined,
-                vybrana
-                  ? () => setMode({ typ: "starosta", rukaUid: null })
-                  : vybraneMiesto !== undefined
+                vybraneMiesto !== undefined
                     ? () => setMiestoVolby(null)
                     : undefined,
                 { aktivuj, popis: `${menoKarty(k.defId)}${naMiesto !== undefined ? " — položiť na vybrané miesto" : ""}`, tukni: jeDotyk && onClick === undefined },
@@ -5910,10 +5910,11 @@ type PecatNakupu = (p: {
 }) => ReactNode;
 
 /**
- * Kšefty v Pitke (v7): pečiatky ako Starosta a Poštárka. Ponúka presne to, čo
- * jadro dovolí — rovnaký zoznam ako legalCommands, vyrátaný z pohľadu hráča.
+ * Kšefty a Úplatky v Pitke (v7). Ponúka presne to, čo jadro dovolí — rovnaký
+ * zoznam ako legalCommands, vyrátaný z pohľadu hráča. Zberný dvor má vlastnú
+ * pečiatku (výber karty z odhadzovacieho balíčka).
  */
-function KseftyPitky({ view, cmd, pecatNakupu }: { readonly view: ClientState; readonly cmd: (c: Command) => void; readonly pecatNakupu: PecatNakupu }) {
+function KseftyPitky({ data, view, cmd, pecatNakupu }: { readonly data: GameData; readonly view: ClientState; readonly cmd: (c: Command) => void; readonly pecatNakupu: PecatNakupu }) {
   const [smetiarka, setSmetiarka] = useState<number | null>(null);
   const [vila, setVila] = useState<string>("");
   const ja = view.ja;
@@ -5921,16 +5922,15 @@ function KseftyPitky({ view, cmd, pecatNakupu }: { readonly view: ClientState; r
   const pitka = view.pitkaStav;
   if (pitka === null || pitka.reakcia !== null || pitka.hotovy[ja]) return null;
   const h = view.hraci[ja];
+  const meno = (defId: string): string => data.cards.get(defId)?.name ?? defId;
   const pouzite = pitka.kseft?.[ja] ?? [];
-  const skryte = (pitka.skryteNaex ?? []).length;
+  const skryte = (pitka.skryteNaex ?? []).filter((x) => x.hrac === ja).length;
   const karty = [...view.strany[0], ...view.strany[1]].filter((pl) => pl.playedBy === ja && pl.zaverecna !== true && !pouzite.includes(pl.card.uid));
   const out: ReactNode[] = [];
   for (const pl of karty) {
     const uid = pl.card.uid;
-    if (pl.card.defId === "kapybara")
-      out.push(pecatNakupu({ kluc: `kseft${uid}`, ikona: null, nazov: "Kapybara", cena: 2, dovod: h.cigarety < 2 ? "Kapybara chce 2 cigarety." : null, tip: "Kšeft: za 2 cigarety zožerie súperovi 1 špak.", akcia: () => cmd({ type: "kseft", uid }) }));
     if (pl.card.defId === "stryko_z_ameriky")
-      out.push(pecatNakupu({ kluc: `kseft${uid}`, ikona: null, nazov: "Strýko", cena: 2, dovod: h.cigarety < 2 ? "Strýko chce 2 cigarety." : null, tip: "Kšeft: za 2 cigarety udelíš v bitke tohto kola 1 Ranu navyše.", akcia: () => cmd({ type: "kseft", uid }) }));
+      out.push(pecatNakupu({ kluc: `kseft${uid}`, ikona: null, nazov: "Strýko", cena: KONSTANTY.EFEKT.STRYKO_CENA, dovod: h.cigarety < KONSTANTY.EFEKT.STRYKO_CENA ? "Strýko chce 2 cigarety." : null, tip: "Kšeft: za 2 cigarety udelíš v bitke tohto kola 1 Ranu navyše.", akcia: () => cmd({ type: "kseft", uid }) }));
     if (pl.card.defId === "oslavenec")
       out.push(
         pecatNakupu({
@@ -5951,7 +5951,7 @@ function KseftyPitky({ view, cmd, pecatNakupu }: { readonly view: ClientState; r
             <option value="">Smetiarka: karta z ruky…</option>
             {moznosti.map((k) => (
               <option key={k.uid} value={k.uid}>
-                {k.defId}
+                {meno(k.defId)}
               </option>
             ))}
           </select>
@@ -5962,13 +5962,36 @@ function KseftyPitky({ view, cmd, pecatNakupu }: { readonly view: ClientState; r
       );
     }
   }
+  // Starší s Kšeftom (v7) — v línii aj prebudení; uid je karta staršieho.
+  for (const defId of ["postarka", "vychovavatelka"] as const) {
+    if (!efektHraca(view, ja, defId) || efektPotlaceny(data, view, ja, defId)) continue;
+    const uid = [...view.strany[0], ...view.strany[1]].find((pl) => pl.playedBy === ja && pl.card.defId === defId && pl.zaverecna !== true)?.card.uid ?? view.starsi.find((e) => e.karta.defId === defId)?.karta.uid;
+    if (uid === undefined || pouzite.includes(uid)) continue;
+    if (defId === "postarka") {
+      const prazdny = !jeCoTahat(h.doberaciPocet, h.odhadzovaci.length);
+      out.push(pecatNakupu({ kluc: `kseft${uid}`, ikona: null, nazov: "Poštárka", cena: 0, dovod: prazdny ? "Nemáš z čoho ťahať." : null, tip: "Kšeft: za 1 Dlh (hneď priznaný) si doberieš 1 kartu.", akcia: () => cmd({ type: "kseft", uid }) }));
+    } else {
+      const c = KONSTANTY.EFEKT.VYCHOVAVATELKA_CENA;
+      out.push(pecatNakupu({ kluc: `kseft${uid}`, ikona: null, nazov: "Vychovávateľka", cena: c, dovod: h.cigarety < c ? `Vychovávateľka chce ${cigariet(c)}.` : null, tip: "Kšeft: za 2 cigarety máš v bitke tohto kola 1 Poveru navyše.", akcia: () => cmd({ type: "kseft", uid }) }));
+    }
+  }
+  // Úplatok (v7): cigareta na súperovho Kulturistu, raz za Pitku na kartu.
+  for (const pl of [...view.strany[0], ...view.strany[1]]) {
+    if (pl.playedBy !== su || pl.card.defId !== "kulturista" || pl.zaverecna === true || (pitka.uplatok ?? []).includes(pl.card.uid)) continue;
+    const uid = pl.card.uid;
+    out.push(pecatNakupu({ kluc: `uplatok${uid}`, ikona: null, nazov: "Úplatok", cena: 1, dovod: h.cigarety < 1 ? "Úplatok stojí cigaretu." : null, tip: `Úplatok: cigareta na súperovho Kulturistu — jeho útoky budú do konca kola o stupeň slabšie (teraz ${pl.uplatky ?? 0}).`, akcia: () => cmd({ type: "uplatok", uid }) }));
+  }
   const lok = view.ciel?.lokalita ?? null;
   if (lok !== null && !pouzite.includes(lok.uid)) {
     const uid = lok.uid;
-    if (lok.defId === "jednota") out.push(pecatNakupu({ kluc: "kseftJednota", ikona: null, nazov: "Jednota", cena: 0, dovod: null, tip: "Kšeft: za 1 Dlh (hneď priznaný) dostaneš 2 cigarety.", akcia: () => cmd({ type: "kseft", uid }) }));
     if (lok.defId === "sklad") {
       const prazdny = view.hraci[su].odhadzovaci.length === 0;
       out.push(pecatNakupu({ kluc: "kseftSklad", ikona: null, nazov: "Sklad", cena: 1, dovod: prazdny ? "Súperov odhadzovací balíček je prázdny." : h.cigarety < 1 ? "Sklad chce cigaretu." : null, tip: "Kšeft: za cigaretu vrchná karta súperovho odhadzovacieho balíčka do tvojej ruky.", akcia: () => cmd({ type: "kseft", uid }) }));
+    }
+    if (lok.defId === "obecny_urad") {
+      const c = KONSTANTY.EFEKT.URAD_CENA;
+      const dlh = h.priznane.some((k) => k.defId === "dlh");
+      out.push(pecatNakupu({ kluc: "kseftUrad", ikona: null, nazov: "Obecný úrad", cena: c, dovod: !dlh ? "Nemáš priznaný Dlh." : h.cigarety < c ? `Úrad chce ${cigariet(c)}.` : null, tip: "Kšeft: za 3 cigarety presunieš 1 svoj priznaný Dlh medzi súperove priznané.", akcia: () => cmd({ type: "kseft", uid }) }));
     }
     if (lok.defId === "predsedova_vila" && h.cigarety >= 2) {
       const chraneny = view.patronat[su]?.elderId;
@@ -5979,8 +6002,8 @@ function KseftyPitky({ view, cmd, pecatNakupu }: { readonly view: ClientState; r
             {view.starsi
               .filter((e) => e.elderId !== chraneny)
               .flatMap((e) => [
-                <option key={`${e.elderId}-s`} value={`${e.elderId}|0`}>{`${e.karta.defId} k súperovi`}</option>,
-                <option key={`${e.elderId}-j`} value={`${e.elderId}|1`}>{`${e.karta.defId} k sebe`}</option>,
+                <option key={`${e.elderId}-s`} value={`${e.elderId}|0`}>{`${meno(e.karta.defId)} k súperovi`}</option>,
+                <option key={`${e.elderId}-j`} value={`${e.elderId}|1`}>{`${meno(e.karta.defId)} k sebe`}</option>,
               ])}
           </select>
           <button
