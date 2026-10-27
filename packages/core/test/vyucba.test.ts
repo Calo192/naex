@@ -533,3 +533,33 @@ describe("výučba Prvá hra — pripomienky Michala k 1. časti (#107, 2026-10-
     expect(evaluateLine(data, lineState(s)).aktivneStredu).toEqual([1, 1]);
   });
 });
+
+describe("výučba — hlášky Melichara zo soundboardu (Michal 2026-10-27)", () => {
+  // Pole „hlaska“ = „skupina/súbor bez prípony“ z data/majster_melichar (priečinok je mimo gitu,
+  // existenciu súborov overil Vymyselník pri zápise). Hlášky na posúdenie sa vo výučbe nepoužijú.
+  const SKUPINY = ["pohoda", "bieda", "nervy", "reci", "udiv", "urazky", "vyhrazky"];
+  type SHlaskou = { readonly hlaska?: string };
+  const hlasky = scenar.kroky.flatMap((k) => [
+    (k as SHlaskou).hlaska,
+    ...(k.volba?.zle ?? []).map((z) => (z as SHlaskou).hlaska),
+    ...(k.moznosti ?? []).map((m) => (m as SHlaskou).hlaska),
+  ]);
+
+  it("každá hláška má tvar skupina/súbor zo známej skupiny; nie v každej bubline", () => {
+    const pouzite = hlasky.filter((h): h is string => h !== undefined);
+    expect(pouzite.length).toBeGreaterThan(10);
+    for (const h of pouzite) {
+      expect(h).toMatch(/^[a-z]+\/[^/\s.]+$/);
+      expect(SKUPINY, h).toContain(h.split("/")[0]);
+    }
+    // „Nemusia v každom chatovom okne“ — najviac polovica krokov.
+    expect(scenar.kroky.filter((k) => (k as SHlaskou).hlaska !== undefined).length).toBeLessThanOrEqual(scenar.kroky.length / 2);
+  });
+
+  it("hláška pri kvíze len pri zlej odpovedi a „BOHA jeho!“ z textu zaznie aj nahlas", () => {
+    for (const k of scenar.kroky) for (const m of k.moznosti ?? []) if ((m as SHlaskou).hlaska !== undefined) expect(m.spravna, k.id).toBe(false);
+    const prebytok = scenar.kroky.find((k) => k.id === "k-prebytok1");
+    expect(prebytok?.melichar).toContain("BOHA jeho!");
+    expect((prebytok as SHlaskou | undefined)?.hlaska).toBe("udiv/09_Boha");
+  });
+});
