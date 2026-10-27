@@ -152,7 +152,8 @@ export interface ClientState {
   readonly senok: readonly CardInstance[];
   /**
    * Lokality, z ktorých sa vyberá cieľ: v7 neodohrané lokality úrovne tohto
-   * (vo Voľbe cieľa) alebo ďalšieho kola; bez rozpisu všetky nevybrané.
+   * (vo Voľbe cieľa) alebo ďalšieho kola, vo finále žiadne; bez rozpisu všetky
+   * nevybrané. Nie sú to všetky lokality v hre — tie ráta lokalitNevybranych.
    */
   readonly lokalityVHre: readonly CardInstance[];
   /** Počet lokalít hry; po nich príde finále (ciel.typ === "finale"). */

@@ -14,6 +14,7 @@ import {
   legalCommands,
   lineState,
   loadGameData,
+  lokalitNevybranych,
   naexCieleVLinii,
   pocetPitiek,
   prirastkyPitky,
@@ -124,6 +125,29 @@ describe("lokality podľa úrovní a finále na pinnacle (plan.md 7)", () => {
     const vila = s0.lokalityVHre.find((k) => k.defId === "predsedova_vila")!;
     const po = apply(data, { ...volbaFinale, utocnik: 0 }, { type: "chooseLocation", uid: vila.uid, otocena: false }, 1).state;
     expect(vyplatZaStarsich(po)).toBe(1);
+  });
+
+  it("lokality na výber nie sú lokality v hre: vo finále klient nedostane zvyšok sady, nevybraných je 0", () => {
+    const s0 = setupGame(data, 4);
+    const L = s0.lokalitCelkom;
+    // Voľba cieľa 1. kola: 5 lokalít úrovne 1 na výber, nevybraných L (celá hra pred nami).
+    expect(viewFor(data, s0, 1).lokalityVHre).toHaveLength(5);
+    expect(lokalitNevybranych(viewFor(data, s0, 1))).toBe(L);
+    expect(lokalitNevybranych({ ...s0, kolo: 2, faza: "draft", ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! } })).toBe(L - 2);
+    // Voľba cieľa finále: len pinnacle (úroveň 4), lokalít už nie.
+    const volbaFinale: GameState = { ...s0, kolo: L + 1, faza: "volbaCiela", ciel: null, utocnik: 0 };
+    const naVyber = viewFor(data, volbaFinale, 1).lokalityVHre;
+    expect(naVyber.length).toBeGreaterThan(0);
+    for (const k of naVyber) expect(urovenLokality(data, k.defId)).toBe(4);
+    expect(lokalitNevybranych(volbaFinale)).toBe(0);
+    // Finále beží: niet čo vyberať — predtým view poslal všetky zvyšné lokality sady.
+    const vila = s0.lokalityVHre.find((k) => k.defId === "predsedova_vila")!;
+    const finale = apply(data, volbaFinale, { type: "chooseLocation", uid: vila.uid, otocena: false }, 1).state;
+    expect(finale.lokalityVHre.length).toBeGreaterThan(10);
+    for (const p of [0, 1] as const) {
+      expect(viewFor(data, finale, p).lokalityVHre).toEqual([]);
+      expect(lokalitNevybranych(viewFor(data, finale, p))).toBe(0);
+    }
   });
 });
 

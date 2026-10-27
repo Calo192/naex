@@ -19,7 +19,7 @@ import type {
   StavkaBitky as StavkaBitkyCisla,
   ZdrojeAkcii,
 } from "@naex/core";
-import { KONSTANTY, battleOutcome, cenaFajceniaHraca, jeCielLokalita, limitBuduceKolo, limitZhromazdenia, pocet, tvar } from "@naex/core";
+import { KONSTANTY, battleOutcome, cenaFajceniaHraca, jeCielLokalita, limitBuduceKolo, limitZhromazdenia, lokalitNevybranych, pocet, tvar } from "@naex/core";
 import { ZMENA_SVIETI_MS, klikKrokuOsi, krokPartie, minSek, textZmeny } from "./stitokPartie.ts";
 import type { Rod } from "@naex/core";
 import type { Sada } from "@naex/tvorba";
@@ -1522,6 +1522,8 @@ export function PriebehKola({
     el.scrollIntoView({ inline: "center", block: "nearest", behavior: rychlo ? "auto" : "smooth" });
   }, [aktualneId, view.kolo]);
   const odohrane = view.nastenka.filter((b) => b.lokalita !== null).length;
+  // view.lokalityVHre sú len lokality na výber (v7 jednej úrovne) — koľko ich ešte príde, ráta rozpis.
+  const nevybrane = lokalitNevybranych(view);
   // Hlava osi počíta postup partie raz a jednotne s menu Partia: „Bitka 2 z 6“, posledná „Finále“.
   const hlava = krokPartie(view);
   const polozky: ReactNode[] = [];
@@ -1581,7 +1583,7 @@ export function PriebehKola({
             ? tipFinale
             : {
                 nadpis: hlava.text,
-                text: `Kolo ${view.kolo}, lokalita ${Math.min(view.lokalitCelkom, odohrane + 1)} z ${view.lokalitCelkom}. Hrá sa o ${pocet(view.lokalitCelkom, "lokalitu", "lokality", "lokalít")} a finále; ${view.lokalityVHre.length >= 2 && view.lokalityVHre.length <= 4 ? "zostávajú" : "zostáva"} ${pocet(view.lokalityVHre.length, "nevybraná", "nevybrané", "nevybraných")}${view.spakyNaSekere > 0 ? `, na sekere ${view.spakyNaSekere} špakov` : ""}.`,
+                text: `Kolo ${view.kolo}, lokalita ${Math.min(view.lokalitCelkom, odohrane + 1)} z ${view.lokalitCelkom}. Hrá sa o ${pocet(view.lokalitCelkom, "lokalitu", "lokality", "lokalít")} a finále; ${nevybrane >= 2 && nevybrane <= 4 ? "zostávajú" : "zostáva"} ${pocet(nevybrane, "nevybraná", "nevybrané", "nevybraných")}${view.spakyNaSekere > 0 ? `, na sekere ${view.spakyNaSekere} špakov` : ""}.`,
               },
         }}
         trieda={`priebeh-kolo${finale ? " finale" : ""}`}

@@ -703,10 +703,16 @@ export function urovenNaVyber(s: { readonly rozpis?: readonly number[]; readonly
   return s.rozpis[s.faza === "volbaCiela" ? s.kolo - 1 : s.kolo] ?? null;
 }
 
-/** Lokality, z ktorých obranca vyberá cieľ (v7: neodohrané lokality úrovne kola). */
+/**
+ * Lokality, z ktorých obranca vyberá cieľ (v7: neodohrané lokality úrovne kola).
+ * Vo v7 sú v lokalityVHre všetky lokality sady — keď už niet čo vyberať (finále
+ * má cieľ), je výber prázdny, nie celá zvyšná sada. Koľko lokalít ešte príde,
+ * povie lokalitNevybranych.
+ */
 export function lokalityNaVyber(data: GameData, s: Pick<GameState, "lokalityVHre" | "kolo" | "faza"> & { readonly rozpis?: readonly number[] }): CardInstance[] {
+  if (s.rozpis === undefined) return [...s.lokalityVHre];
   const u = urovenNaVyber(s);
-  if (u === null) return [...s.lokalityVHre];
+  if (u === null) return [];
   return s.lokalityVHre.filter((k) => urovenLokality(data, k.defId) === u);
 }
 
