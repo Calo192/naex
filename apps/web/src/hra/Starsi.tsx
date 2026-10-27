@@ -7,7 +7,7 @@
 
 import type { CSSProperties } from "react";
 import type { ClientState, GameData, PlayerId } from "@naex/core";
-import { NAZVY_ZON, STUPNICA_ZONY, priazenSila, strachZ } from "@naex/core";
+import { NAZVY_ZON, STUPNICA_ZONY, priazenSila, strachZ, prahVydesenia, vydesil } from "@naex/core";
 import { farbaZony, ucinokPriazne } from "./LiniaStarsich.tsx";
 import { IkonaSpaku } from "./Spaky.tsx";
 import { smerStarsieho, stupienkyStarsich } from "./spakyAStarsi.ts";
@@ -24,6 +24,11 @@ export function DlazdicaStarsich({ view, p, zaStarsich, starsi }: DlazdicaStarsi
   const ja = p === view.ja;
   const { priazen, strach, stlpce } = stupienkyStarsich(view.starsi, p);
   const posuny = starsi.posuny ?? 0;
+  // Vydesení (Michal 2026-10-27, dizajn timeline-lista A): z osi do dlaždice — každému jeho číslo.
+  const vyd = view.starsi.filter((e) => vydesil(e, p)).length;
+  const prah = prahVydesenia(view);
+  const desiHrozi = vyd >= prah - 1;
+  const desiTitul = `Vydesení starší: ${vyd} z ${prah}. Kto vydesí ${prah} starších (krajná červená pozícia) a udrží ich do konca ďalšieho kola, vyhrá.`;
   return (
     <button
       type="button"
@@ -43,6 +48,10 @@ export function DlazdicaStarsich({ view, p, zaStarsich, starsi }: DlazdicaStarsi
       <span className="zdroj-nazov">
         Starší {starsi.stlacene ? "▴" : "▾"}
         {!starsi.stlacene && posuny > 0 && <span className="zdroj-posuny">⇄ {posuny}</span>}
+        {/* Na nízkom okne nie je riadok pod číslom — vydesení sú odznakom pri nadpise (hra.css). */}
+        <span className={`starsi-desi${desiHrozi ? " hrozi" : ""}`} title={desiTitul}>
+          {vyd}/{prah}
+        </span>
       </span>
       <span className="zdroj-hodnota">
         <span className="velke-cislo starsi-priazen">♥{priazen}</span>
@@ -57,6 +66,9 @@ export function DlazdicaStarsich({ view, p, zaStarsich, starsi }: DlazdicaStarsi
           {/* v6.1: strach platí len víťazovi; koľko starších sa bojí, ukazujú stĺpčeky dole a nápoveda (na 1366 sa oboje nezmestí). */}
           {strach > 0 ? `+${zaStarsich} ${ja ? "ak vyhráš" : "ak vyhrá"}` : `nikto sa ${ja ? "ťa" : "ho"} nebojí`}
           {strach > 0 && <IkonaSpaku />}
+        </span>
+        <span className={`starsi-desi-riadok${desiHrozi ? " hrozi" : ""}`} title={desiTitul}>
+          vydesení {vyd}/{prah}
         </span>
       </span>
     </button>

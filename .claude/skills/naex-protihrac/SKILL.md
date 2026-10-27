@@ -73,7 +73,7 @@ Meno do 19 znakov (web doň pridá „ (AI)"), štýl jednou-dvoma vetami.
 
 ## Poznámky
 
-- Relácie sú v `playtest/` (mimo gitu), heslá AI účtov v `playtest/ucty.json`.
+- Relácie sú v `playtest/` (mimo gitu), heslá AI účtov v spoločnom `.git/naex-ucty.json` (`tools/playtest/ucty.ts`).
 - Agent vidí len to, čo hráč — ruku človeka nepozná.
 - Protihráč sa učí (Michal 2026-10-25): jeden zošit `protihrac.md` pre všetky
   štýly. Overenie skúseností robí sám na konci partie, lebo spisovateľ tu

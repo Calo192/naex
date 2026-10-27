@@ -171,7 +171,7 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
             ) : null}
             <span className="nastenka-nazov">{nazov}</span>
             {!kompaktna && pozn.length > 0 && <span className="nastenka-pozn">{pozn.join(" · ")}</span>}
-            {ucet !== undefined && b !== undefined && <Uctenka b={b} riadok={pomer} kto={poradie.map(kto).join(" : ")} />}
+            {ucet !== undefined && b !== undefined && <Uctenka b={b} riadok={pomer} kto={poradie.map(kto).join(" : ")} poradie={poradie} ja={ja} menoKarty={menoKarty} />}
           </li>
         );
       })}
@@ -236,24 +236,54 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
 
 const zn = (n: number): string => (n > 0 ? `+${n}` : n < 0 ? `−${-n}` : "0");
 
+/**
+ * Kto zo starších koľko dal hráčovi p v bitke: „Farár +3, Krčmárka +1“ (Michal 2026-10-27).
+ * Záznam spred rozpisu (bez zaStarsichRozpis) vráti "".
+ */
+export function textRozpisuStarsich(b: BitkaNaNastenke, p: PlayerId, menoKarty: (defId: string) => string): string {
+  return (b.zaStarsichRozpis?.[p] ?? []).map((x) => `${menoKarty(x.defId)} +${x.spaky}`).join(", ");
+}
+
+/**
+ * Koľko riadkov tabuľky (rekapitulácia bitky) zaberie rozpis za starších pod číslom:
+ * do bunky sa zmestia asi tri mená, riadok rozpisu je asi polovica riadku tabuľky.
+ */
+export function riadkovRozpisuStarsich(b: BitkaNaNastenke): number {
+  const najviac = Math.max(b.zaStarsichRozpis?.[0].length ?? 0, b.zaStarsichRozpis?.[1].length ?? 0);
+  return Math.ceil(najviac / 3) * 0.55;
+}
+
 /** Účtenka pod lístkom bitky: čo dali starší, Exekútor, prebytok a stav popolníkov po bitke. */
 function Uctenka({
   b,
   riadok,
   kto,
+  poradie,
+  ja,
+  menoKarty,
 }: {
   readonly b: BitkaNaNastenke;
   readonly riadok: (h: readonly [number, number], f: (n: number) => string) => string;
   /** Poradie čísel v riadkoch („ty : Fero“) — ako popolníky nad nástenkou. */
   readonly kto: string;
+  readonly poradie: readonly [PlayerId, PlayerId];
+  readonly ja: PlayerId;
+  readonly menoKarty: (defId: string) => string;
 }) {
   const plus = (n: number): string => (n > 0 ? `+${n}` : "0");
+  // Lístok je úzky: rozpis bez mien hráčov, čí je, ukáže farba (ako popolníky nad nástenkou).
+  const rozpis = poradie.map((p) => ({ p, text: textRozpisuStarsich(b, p, menoKarty) })).filter((r) => r.text !== "");
   return (
     <span
       className="nastenka-uctenka"
       title={`Po bitke (${kto}): starší, ktorí sa hráča boja (${b.vitaz === null ? "pri sekere obom" : "len víťazovi"}), Exekútor, prebytok a stav popolníkov.`}
     >
       <span>starší {riadok(b.zaStarsich, plus)}</span>
+      {rozpis.map((r) => (
+        <span key={r.p} className={`nastenka-rozpis ${r.p === ja ? "moje" : "superove"}`}>
+          {r.text}
+        </span>
+      ))}
       {b.exekutor[0] + b.exekutor[1] > 0 && <span className="minus">Exekútor {riadok(b.exekutor, (n) => (n > 0 ? `−${n}` : "0"))}</span>}
       {b.prebytok[0] + b.prebytok[1] > 0 && <span>prebytok {riadok(b.prebytok, plus)}</span>}
       <b>stav {riadok(b.spakyPo, sMinusom)}</b>
@@ -270,11 +300,14 @@ export function SpakyBitky({
   ja,
   mena,
   pred,
+  menoKarty,
 }: {
   readonly b: BitkaNaNastenke;
   readonly ja: PlayerId;
   readonly mena: readonly [string, string];
   readonly pred?: readonly [number, number] | undefined;
+  /** S menami kariet ukáže pri špakoch za starších, ktorý starší koľko dal. */
+  readonly menoKarty?: ((defId: string) => string) | undefined;
 }) {
   const su: PlayerId = ja === 0 ? 1 : 0;
   const zn = (n: number): string => (n > 0 ? `+${n}` : n < 0 ? `−${-n}` : "—");
@@ -285,10 +318,18 @@ export function SpakyBitky({
     if (b.zoSekery > 0) casti.push(`+${b.zoSekery} zo sekery`);
     return casti.join(" ");
   };
-  const riadky: { readonly kluc: string; readonly nazov: string; readonly h: readonly [number, number]; readonly pozn?: (p: PlayerId) => string }[] = [
+  const zaStarsich = (p: PlayerId): string => (menoKarty === undefined ? "" : textRozpisuStarsich(b, p, menoKarty));
+  const riadky: {
+    readonly kluc: string;
+    readonly nazov: string;
+    readonly h: readonly [number, number];
+    readonly pozn?: (p: PlayerId) => string;
+    /** Poznámka pod číslom (dlhý rozpis by bunku roztiahol). */
+    readonly pod?: boolean;
+  }[] = [
     { kluc: "bitka", nazov: "za bitku", h: b.zaBitku, pozn: zaBitku },
     // v6.1: starší platia len víťazovi, pri sekere obom — porazený má v riadku „—“.
-    { kluc: "starsi", nazov: b.vitaz === null ? "za starších (sekera — obom)" : "za starších (len víťaz)", h: b.zaStarsich },
+    { kluc: "starsi", nazov: b.vitaz === null ? "za starších (sekera — obom)" : "za starších (len víťaz)", h: b.zaStarsich, pozn: zaStarsich, pod: true },
     ...(b.prebytok[0] + b.prebytok[1] > 0 ? [{ kluc: "prebytok", nazov: b.lokalita === null ? "prebytok (finále)" : "prebytok", h: b.prebytok }] : []),
     ...(b.exekutor[0] + b.exekutor[1] > 0 ? [{ kluc: "exekutor", nazov: "Exekútor", h: [-b.exekutor[0], -b.exekutor[1]] as const }] : []),
   ];
@@ -309,7 +350,7 @@ export function SpakyBitky({
           {([ja, su] as const).map((p) => (
             <span key={p} role="cell" className={r.h[p] > 0 ? "plus" : r.h[p] < 0 ? "minus" : "nic"} title={r.pozn?.(p) || undefined}>
               {zn(r.h[p])}
-              {r.pozn !== undefined && r.pozn(p) !== "" && <small> {r.pozn(p)}</small>}
+              {r.pozn !== undefined && r.pozn(p) !== "" && (r.pod === true ? <small className="sb-pod">{r.pozn(p)}</small> : <small> {r.pozn(p)}</small>)}
             </span>
           ))}
         </span>

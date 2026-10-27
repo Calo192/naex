@@ -30,6 +30,13 @@ interface Suhrn {
   pitkyFinale: number;
   vitazFinaleVyhral: number;
   finale: number;
+  /** Cirhózy, ktoré hráči v partii získali (oba). */
+  cirhozyNove: number;
+  /** Partie s rozdielom konečných špakov nad 15 (stomp). */
+  stompy: number;
+  rozdiel: number;
+  konflikty: number;
+  uplatky: number;
 }
 
 function zmeraj(dlzka: DlzkaHry): Suhrn {
@@ -37,8 +44,9 @@ function zmeraj(dlzka: DlzkaHry): Suhrn {
     partie: 0, chyby: [], kola: 0, prikazy: 0, bitky: 0, remizy: 0,
     spaky: { bitky: 0, finale: 0, starsi: 0, prebytok: 0, exekutor: 0, vykupne: 0, cirhozy: 0 },
     dlhyNove: 0, exekucie: 0, paktAktivny: 0, bitkySPaktom: 0, paktVylozeny: 0, kseft: {}, pitkyFinale: 0, vitazFinaleVyhral: 0, finale: 0,
+    cirhozyNove: 0, stompy: 0, rozdiel: 0, konflikty: 0, uplatky: 0,
   };
-  const paktKarty = new Set(["brigadnik", "zivnostnik", "dohadzovacka"]);
+  const paktKarty = new Set(["zivnostnik", "dohadzovacka"]);
   for (let i = 0; i < partii; i++) {
     const seed = 7000 + i;
     let st: GameState = setupGame(data, seed, { lokalit: DLZKY_HRY[dlzka] });
@@ -52,8 +60,13 @@ function zmeraj(dlzka: DlzkaHry): Suhrn {
           const k = st.hraci[p].ruka.find((x) => x.uid === cmd.uid);
           if (k !== undefined && paktKarty.has(k.defId)) s.paktVylozeny++;
         }
+        if (cmd.type === "uplatok") s.uplatky++;
         if (cmd.type === "kseft") {
-          const pl = [...st.strany[0], ...st.strany[1]].find((x) => x.card.uid === cmd.uid)?.card.defId ?? st.ciel?.lokalita?.defId ?? "?";
+          const pl =
+            [...st.strany[0], ...st.strany[1]].find((x) => x.card.uid === cmd.uid)?.card.defId ??
+            st.starsi.find((e) => e.karta.uid === cmd.uid)?.karta.defId ??
+            st.ciel?.lokalita?.defId ??
+            "?";
           s.kseft[pl] = (s.kseft[pl] ?? 0) + 1;
         }
         const pred = st;
@@ -61,6 +74,8 @@ function zmeraj(dlzka: DlzkaHry): Suhrn {
         st = r.state;
         for (const e of r.events) {
           if (e.type === "log" && /získava Dlh/.test(e.text)) s.dlhyNove++;
+          if (e.type === "log" && /získava Cirhózu/.test(e.text)) s.cirhozyNove++;
+          if (e.type === "log" && e.text.startsWith("Konflikt — ")) s.konflikty++;
           if (e.type === "bitkaVysledok") {
             const ev = evaluateLine(data, lineState(pred));
             let pakt = 0;
@@ -91,6 +106,11 @@ function zmeraj(dlzka: DlzkaHry): Suhrn {
       if (b.exekutor[1] > 0) s.exekucie++;
     }
     const posledna = st.nastenka.at(-1);
+    if (st.koniec.body !== null) {
+      const r = Math.abs(st.koniec.body[0] - st.koniec.body[1]);
+      s.rozdiel += r;
+      if (r > 15) s.stompy++;
+    }
     if (st.koniec.body !== null && posledna !== undefined) {
       s.finale++;
       s.pitkyFinale += posledna.pitky;
@@ -117,7 +137,9 @@ for (const dlzka of ["kratka", "stredna"] as const) {
   console.log(
     `podiel kladných špakov: bitky ${pct(s.spaky.bitky, kladne)}, finále ${pct(s.spaky.finale, kladne)}, starší ${pct(s.spaky.starsi, kladne)}, prebytok ${pct(s.spaky.prebytok, kladne)}, výkupné ${pct(s.spaky.vykupne, kladne)}; záporné na partiu: Exekútor ${avg(s.spaky.exekutor, s.partie)}, Cirhóza ${avg(s.spaky.cirhozy, s.partie)}`,
   );
-  console.log(`Dlhy: ${avg(s.dlhyNove, s.partie)} nových za partiu (oba hráči), exekúcie ${avg(s.exekucie, s.partie)} za partiu`);
+  console.log(`Dlhy: ${avg(s.dlhyNove, s.partie)} nových za partiu (oba hráči), exekúcie ${avg(s.exekucie, s.partie)} za partiu; Cirhózy ${avg(s.cirhozyNove, s.partie)} nových za partiu`);
+  console.log(`konečný rozdiel špakov: priemer ${avg(s.rozdiel, s.partie)}, stompy (rozdiel > 15) ${s.stompy}/${s.partie} = ${pct(s.stompy, s.partie)}`);
+  console.log(`Konflikty ${avg(s.konflikty, s.partie)} za partiu, Úplatky ${avg(s.uplatky, s.partie)} za partiu`);
   console.log(`Pakt: karty s Paktom vyložené ${avg(s.paktVylozeny, s.partie)}× za partiu, aktívny Pakt v ${pct(s.bitkySPaktom, s.bitky)} bitiek (${avg(s.paktAktivny, s.partie)} aktívnych za partiu)`);
   console.log(`finále: ${avg(s.pitkyFinale, s.finale)} Pitky, víťaz finále vyhral partiu v ${pct(s.vitazFinaleVyhral, s.finale)}`);
   console.log(`Kšefty za partiu: ${Object.entries(s.kseft).map(([k, v]) => `${k} ${avg(v, s.partie)}`).join(", ") || "žiadne"}`);

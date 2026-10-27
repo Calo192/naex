@@ -110,25 +110,23 @@ export const KONSTANTY = {
    * Lakomca a Neprajníka. Texty kariet v tvorcovi uvádzajú tie isté čísla.
    */
   EFEKT: {
-    AUTOBUSAR_ABSTAKY: 1,
-    FARAR_POVERY: 2,
-    VETERINAR_CIRHOZA: 2,
     IHRISKO_TUHE: 2,
-    ZAHRADKAR_PRAH: 2,
-    URAD_ROBOTA: 2,
     ZBERNY_DVOR_CENA: 1,
+    /** Do v7 Poštárka (Pitka) dávala až 2 karty; od v7 Kšeft za 1 Dlh 1 karta. */
     POSTARKA_KARTY: 2,
     POSTARKA_DLHY: 1,
     SVOKRA_RANY: 1,
-    VDOVA_DLHY: 2,
-    STRYNA_KLIATBY: 1,
     NEALKO_PRAH_CIRHOZY: 2,
     KRCMA_PRAH_CIRHOZY: 2,
     SVATY_TEXT_VIERA: 1,
-    PUSKA_PREBYTOK: 2,
-    CIGORKY_CIGARETY: 1,
-    AUTOMAT_VYHRA_CIGARETY: 3,
-    AUTOMAT_PREHRA_DLHY: 2,
+    /** Konflikt Policajtky (v7): Kriminál jej majiteľovi dá toľko cigariet. */
+    POLICAJTKA_CIGARETY: 2,
+    /** Krabička cigariet (v7): za každých toľko cigariet, ktoré súper vyfajčí, 1 karta. */
+    CIGORKY_ZA_KARTU: 2,
+    /** Kšefty v7 (plan.md 14.0): Strýko, Vychovávateľka, Obecný úrad. */
+    STRYKO_CENA: 2,
+    VYCHOVAVATELKA_CENA: 2,
+    URAD_CENA: 3,
   },
 
   /** Stokársky barter: cigarety → nový plný poldeci (PRAVIDLA §7); Lakomec zlacní. */

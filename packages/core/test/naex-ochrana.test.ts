@@ -93,91 +93,12 @@ function odohraj(s: GameState, naex: readonly [readonly number[], readonly numbe
 
 const dlhy = (s: GameState, p: PlayerId): number => s.hraci[p].priznane.filter((k) => k.defId === "dlh").length;
 
-describe("Policajtka (Pitka: súper s viac NA EX dostane Dlh)", () => {
-  /** Hráč 0 dve dvojice Pijanov, hráč 1 dvojicu Pijanov a Policajtku. */
-  const stol = (): GameState["strany"] => [
-    [lezi("pijan", 0), lezi("pijan", 0)],
-    [lezi("pijan", 1), lezi("pijan", 1), lezi("policajtka", 1)],
-  ];
-
-  it("súper dal v Pitke viac NA EX (1 : 0) — pri odkrytí dostane Dlh, hneď priznaný", () => {
-    const s = vPitke(stol(), 0, { ruka: true });
-    const ciel = naexCiele(s, 0)[0]!;
-    const { state, logy } = odohraj(s, [[ciel], []]);
-    // Stav tesne po odkrytí: čaká sa na odpoveď, Pitka sa ešte nevyhodnotila.
-    expect(state.pitkaStav?.reakcia).toBe(1);
-    expect(dlhy(state, 0) - dlhy(s, 0)).toBe(1);
-    expect(dlhy(state, 1)).toBe(dlhy(s, 1));
-    expect(logy).toContain("Policajtka: hráč 1 dal v tejto Pitke viac NA EX (1 : 0) — dostáva Dlh.");
-  });
-
-  it("rovnosť (1 : 1) — nič; viac NA EX majiteľa Policajtky (0 : 1) — tiež nič", () => {
-    const s = vPitke(stol(), 0, { ruka: true });
-    const moje = naexCiele(s, 0).find((u) => s.strany[0].some((pl) => pl.card.uid === u))!;
-    const jeho = naexCiele(s, 1).find((u) => s.strany[1].some((pl) => pl.card.uid === u && pl.card.defId === "pijan"))!;
-    const rovnost = odohraj(s, [[moje], [jeho]]);
-    expect(rovnost.state.pitkaStav?.naexPocet).toEqual([1, 1]);
-    expect(rovnost.logy.some((t) => t.startsWith("Policajtka"))).toBe(false);
-    expect([dlhy(rovnost.state, 0), dlhy(rovnost.state, 1)]).toEqual([dlhy(s, 0), dlhy(s, 1)]);
-    const majitel = odohraj(s, [[], [jeho]]);
-    expect(majitel.state.pitkaStav?.naexPocet).toEqual([0, 1]);
-    expect(majitel.logy.some((t) => t.startsWith("Policajtka"))).toBe(false);
-    expect([dlhy(majitel.state, 0), dlhy(majitel.state, 1)]).toEqual([dlhy(s, 0), dlhy(s, 1)]);
-  });
-
-  it("0 : 0 a Kostol (NA EX nedá nikto) — Policajtka mlčí", () => {
-    for (const lokalita of [undefined, "kostol"]) {
-      const s = vPitke(stol(), 0, lokalita === undefined ? {} : { lokalita });
-      if (lokalita === "kostol") expect(naexCiele(s, 0)).toEqual([]);
-      const { logy } = odohraj(s, [[], []]);
-      expect(logy.some((t) => t.startsWith("Policajtka"))).toBe(false);
-      expect(logy.some((t) => t.startsWith("Odkryté NA EX"))).toBe(false);
-    }
-  });
-
-  it("Vínna pivnica 2 : 0 — jeden Dlh, nie za každé NA EX navyše", () => {
-    const s = vPitke(stol(), 0, { lokalita: "vinna_pivnica", poldeci: [2, 1], ruka: true });
-    const ciele = naexCiele(s, 0).filter((u) => s.strany[0].some((pl) => pl.card.uid === u) || s.strany[1].some((pl) => pl.card.uid === u && pl.card.defId === "pijan"));
-    expect(ciele.length).toBeGreaterThanOrEqual(2);
-    const { state, logy } = odohraj(s, [[ciele[0]!, ciele[1]!], []]);
-    expect(state.pitkaStav?.naexPocet).toEqual([2, 0]);
-    expect(dlhy(state, 0) - dlhy(s, 0)).toBe(1);
-    expect(logy).toContain("Policajtka: hráč 1 dal v tejto Pitke viac NA EX (2 : 0) — dostáva Dlh.");
-  });
-
-  it("placatka sa ráta: bežné NA EX a NA EX na vlastného Anonymného alkoholika (2 : 1) — Dlh", () => {
-    const aa = lezi("anonymny_alkoholik", 0);
-    const s = vPitke([[lezi("pijan", 0), aa, lezi("pijan", 0)], [lezi("pijan", 1), lezi("pijan", 1), lezi("policajtka", 1)]], 0, { poldeci: [2, 1], ruka: true });
-    const bezne = naexCiele(s, 0).find((u) => u !== uid(aa))!;
-    const jeho = naexCiele(s, 1).find((u) => s.strany[1].some((pl) => pl.card.uid === u && pl.card.defId === "pijan"))!;
-    const { state, logy } = odohraj(s, [[bezne, uid(aa)], [jeho]]);
-    expect(state.pitkaStav?.naexPocet).toEqual([2, 1]);
-    expect(dlhy(state, 0) - dlhy(s, 0)).toBe(1);
-    expect(logy).toContain("Policajtka: hráč 1 dal v tejto Pitke viac NA EX (2 : 1) — dostáva Dlh.");
-  });
-
-  it("Praudovravec súpera ju umlčí (Autorita)", () => {
-    const s = vPitke([[lezi("pijan", 0), lezi("pijan", 0), lezi("praudovravec", 0)], [lezi("pijan", 1), lezi("pijan", 1), lezi("policajtka", 1)]], 0, { ruka: true });
-    const ciel = naexCiele(s, 0).find((u) => s.strany[0].some((pl) => pl.card.uid === u && pl.card.defId === "pijan"))!;
-    const { state, logy } = odohraj(s, [[ciel], []]);
-    expect(state.pitkaStav?.naexPocet).toEqual([1, 0]);
-    expect(logy.some((t) => t.startsWith("Policajtka"))).toBe(false);
-    expect(dlhy(state, 0)).toBe(dlhy(s, 0));
-  });
-
-  it("Pohoršenia v bitke už neruší (predtým Furt: súperove Pohoršenia neplatia) — ani z patronátu", () => {
-    const s0 = vPitke([[lezi("pijan", 0), lezi("pijan", 0)], [lezi("policajtka", 1)]], 0);
-    const s: GameState = { ...s0, patronat: [null, { elderId: s0.starsi[0]!.elderId, nahrada: inst("pijan"), pohorsenia: 2 }] };
-    const sums = evaluateLine(data, lineState(s)).sums;
-    expect(pohorseniaVBitke(data, s, sums)[0]).toBe((sums[0].Pohoršenie ?? 0) + 2);
-  });
-});
 
 describe("Svokra (Bitka: Rana za každú tvoju kartu so súperovým NA EX)", () => {
   it("ráta majiteľove karty so súperovým NA EX na oboch stranách, aj podstrčené aj Svokru samu; vlastné NA EX nie", () => {
     const strany: GameState["strany"] = [
-      [lezi("pijan", 0, { naexBy: 1 }), lezi("pijan", 0, { naexBy: 0 }), lezi("pijan", 1, { naexBy: 1 })],
-      [lezi("pijan", 0, { naexBy: 1 }), lezi("svokra", 0, { naexBy: 1 }), lezi("pijan", 1, { naexBy: 0 })],
+      [lezi("zamocnik", 0, { naexBy: 1 }), lezi("zamocnik", 0, { naexBy: 0 }), lezi("zamocnik", 1, { naexBy: 1 })],
+      [lezi("zamocnik", 0, { naexBy: 1 }), lezi("svokra", 0, { naexBy: 1 }), lezi("zamocnik", 1, { naexBy: 0 })],
     ];
     const s = { ...vPitke(strany), faza: "bitka" } as GameState;
     expect(svokraRany(data, s, 0)).toBe(3);
@@ -189,26 +110,26 @@ describe("Svokra (Bitka: Rana za každú tvoju kartu so súperovým NA EX)", () 
   });
 
   it("zrážka (Výtržník) sa ráta — na karte leží aj súperov poldeci", () => {
-    const s = vPitke([[lezi("pijan", 0, { naexBy: 0, naexBy2: 1, vytrznik: true }), lezi("svokra", 0)], []]);
+    const s = vPitke([[lezi("zamocnik", 0, { naexBy: 0, naexBy2: 1, vytrznik: true }), lezi("svokra", 0)], []]);
     expect(svokraRany(data, s, 0)).toBe(1);
   });
 
   it("v bitke je Rana navyše v tuhom: to isté NA EX od súpera dá o 1 tuhé viac ako vlastné", () => {
-    const stol = (kto: PlayerId): GameState => vPitke([[lezi("pijan", 0, { naexBy: kto }), lezi("pijan", 0), lezi("svokra", 0)], []]);
+    const stol = (kto: PlayerId): GameState => vPitke([[lezi("zamocnik", 0, { naexBy: kto }), lezi("zamocnik", 0), lezi("svokra", 0)], []]);
     const tuhe = (s: GameState): number => poskodenieBitky(data, s, evaluateLine(data, lineState(s)).sums, [0, 0]).tuhe[0];
     expect(tuhe(stol(1)) - tuhe(stol(0))).toBe(1);
   });
 
   it("Praudovravec súpera ju umlčí (Autorita); dve Svokry — Rana od každej", () => {
-    const umlcana = vPitke([[lezi("pijan", 0, { naexBy: 1 }), lezi("svokra", 0)], [lezi("praudovravec", 1)]]);
+    const umlcana = vPitke([[lezi("zamocnik", 0, { naexBy: 1 }), lezi("svokra", 0)], [lezi("praudovravec", 1)]]);
     expect(svokraRany(data, umlcana, 0)).toBe(0);
-    const dve = vPitke([[lezi("pijan", 0, { naexBy: 1 }), lezi("svokra", 0), lezi("svokra", 0)], []]);
+    const dve = vPitke([[lezi("zamocnik", 0, { naexBy: 1 }), lezi("svokra", 0), lezi("svokra", 0)], []]);
     expect(svokraRany(data, dve, 0)).toBe(2);
   });
 
   it("pri odkrytí NA EX už súperovi cigarety neberie", () => {
-    const pijan = lezi("pijan", 0);
-    const s = vPitke([[pijan, lezi("pijan", 0)], [lezi("svokra", 1)]], 0, { ruka: true });
+    const pijan = lezi("zamocnik", 0);
+    const s = vPitke([[pijan, lezi("zamocnik", 0)], [lezi("svokra", 1)]], 0, { ruka: true });
     const { state, events } = naexOdkryte(data, s, uid(pijan), 0);
     expect(state.pitkaStav?.reakcia).toBe(1);
     expect([state.hraci[0].cigarety, state.hraci[1].cigarety]).toEqual([3, 3]);
@@ -230,108 +151,11 @@ describe("Svokra (Bitka: Rana za každú tvoju kartu so súperovým NA EX)", () 
   });
 });
 
-describe("Anonymný alkoholik (Furt: placatka mimo limitu NA EX)", () => {
-  it("súper smie dať NA EX naňho — aj na podstrčeného; do limitu sa mu ráta", () => {
-    const aa = lezi("anonymny_alkoholik", 0);
-    const s = vPitke([[lezi("pijan", 0), aa, lezi("pijan", 0)], [lezi("pijan", 1), lezi("pijan", 1)]], 1, { poldeci: [1, 2] });
-    expect(naexCiele(s, 1)).toContain(uid(aa));
-    const po = apply(data, s, { type: "naex", uid: uid(aa) }, 1).state;
-    // Súperovi placatka nepatrí — limit 1 je minutý.
-    expect(naexCiele(po, 1)).toEqual([]);
-    const podstrceny = lezi("anonymny_alkoholik", 0);
-    const s2 = vPitke([[], [lezi("pijan", 1), podstrceny, lezi("pijan", 1)]], 1);
-    expect(naexCiele(s2, 1)).toContain(uid(podstrceny));
-  });
-
-  it("placatka: po bežnom NA EX smie majiteľ dať ešte NA EX na vlastného Anonymného alkoholika — inam už nie", () => {
-    const aa = lezi("anonymny_alkoholik", 0);
-    const s = vPitke([[lezi("pijan", 0), aa, lezi("pijan", 0)], [lezi("pijan", 1), lezi("pijan", 1)]], 0, { poldeci: [3, 1] });
-    const bezne = naexCiele(s, 0).find((u) => u !== uid(aa))!;
-    const po = apply(data, s, { type: "naex", uid: bezne }, 0).state;
-    expect(naexCiele(po, 0)).toEqual([uid(aa)]);
-    const poPlacatke = apply(data, po, { type: "naex", uid: uid(aa) }, 0).state;
-    expect(poPlacatke.pitkaStav?.skryteNaex?.filter((x) => x.hrac === 0)).toHaveLength(2);
-    expect(naexCiele(poPlacatke, 0)).toEqual([]);
-    // Aj naopak: najprv placatka, potom bežné NA EX.
-    const najprv = apply(data, s, { type: "naex", uid: uid(aa) }, 0).state;
-    expect(naexCiele(najprv, 0)).toContain(bezne);
-    expect(() => apply(data, najprv, { type: "naex", uid: bezne }, 0)).not.toThrow();
-  });
-
-  it("podstrčený na súperovu stranu je stále majiteľova placatka", () => {
-    const aa = lezi("anonymny_alkoholik", 0);
-    const s = vPitke([[lezi("pijan", 0), lezi("pijan", 0)], [lezi("pijan", 1), aa, lezi("pijan", 1)]], 0, { poldeci: [2, 1] });
-    const bezne = naexCiele(s, 0).find((u) => u !== uid(aa))!;
-    const po = apply(data, s, { type: "naex", uid: bezne }, 0).state;
-    expect(naexCiele(po, 0)).toEqual([uid(aa)]);
-  });
-
-  it("na Anonymného alkoholika s poldeci ďalšie NA EX nejde — placatka najviac raz za kolo", () => {
-    const aa = lezi("anonymny_alkoholik", 0, { naexBy: 0 });
-    const s = vPitke([[lezi("pijan", 0), aa, lezi("pijan", 0)], [lezi("pijan", 1), lezi("pijan", 1)]], 0, { poldeci: [2, 1] });
-    expect(naexCiele(s, 0)).not.toContain(uid(aa));
-    const bezne = naexCiele(s, 0)[0]!;
-    expect(naexCiele(apply(data, s, { type: "naex", uid: bezne }, 0).state, 0)).toEqual([]);
-  });
-
-  it("bez plného poldeci placatka nejde", () => {
-    const aa = lezi("anonymny_alkoholik", 0);
-    const s = vPitke([[lezi("pijan", 0), aa, lezi("pijan", 0)], []], 0, { poldeci: [1, 1] });
-    const bezne = naexCiele(s, 0).find((u) => u !== uid(aa))!;
-    const po = apply(data, s, { type: "naex", uid: bezne }, 0).state;
-    expect(naexCiele(po, 0)).toEqual([]);
-    expect(() => apply(data, po, { type: "naex", uid: uid(aa) }, 0)).toThrow();
-  });
-
-  it("Kostol: zákaz NA EX platí aj pre placatku", () => {
-    const aa = lezi("anonymny_alkoholik", 0);
-    const s = vPitke([[lezi("pijan", 0), aa, lezi("pijan", 0)], []], 0, { lokalita: "kostol", poldeci: [2, 1] });
-    expect(naexCiele(s, 0)).toEqual([]);
-    expect(() => apply(data, s, { type: "naex", uid: uid(aa) }, 0)).toThrow(/Kostol/);
-  });
-
-  it("Krčma: povinné NA EX splní aj placatka; po bežnom NA EX placatka povinná nie je", () => {
-    const aa = lezi("anonymny_alkoholik", 0);
-    const s = vPitke([[lezi("pijan", 0), aa, lezi("pijan", 0)], [lezi("pijan", 1), lezi("pijan", 1)]], 0, { lokalita: "krcma", poldeci: [3, 1] });
-    expect(krcmaVyzaduje(data, s, 0)).toBe(true);
-    const poPlacatke = apply(data, s, { type: "naex", uid: uid(aa) }, 0).state;
-    expect(krcmaVyzaduje(data, poPlacatke, 0)).toBe(false);
-    expect(legalCommands(data, poPlacatke, 0)).toContainEqual({ type: "skipNaex" });
-    // Bežné NA EX ešte smie, len nemusí.
-    expect(naexCiele(poPlacatke, 0).length).toBeGreaterThan(0);
-    const bezne = naexCiele(s, 0).find((u) => u !== uid(aa))!;
-    const poBeznom = apply(data, s, { type: "naex", uid: bezne }, 0).state;
-    expect(krcmaVyzaduje(data, poBeznom, 0)).toBe(false);
-    expect(naexCiele(poBeznom, 0)).toEqual([uid(aa)]);
-    expect(() => apply(data, poBeznom, { type: "skipNaex" }, 0)).not.toThrow();
-  });
-
-  it("Vínna pivnica: dve bežné NA EX a k tomu placatka", () => {
-    const aa = lezi("anonymny_alkoholik", 0);
-    const s = vPitke([[lezi("pijan", 0), aa, lezi("pijan", 0)], [lezi("pijan", 1), lezi("pijan", 1)]], 0, { lokalita: "vinna_pivnica", poldeci: [3, 1] });
-    const bezne = naexCiele(s, 0).filter((u) => u !== uid(aa));
-    expect(bezne.length).toBeGreaterThanOrEqual(2);
-    let t = apply(data, s, { type: "naex", uid: bezne[0]! }, 0).state;
-    t = apply(data, t, { type: "naex", uid: naexCiele(t, 0).find((u) => u !== uid(aa))! }, 0).state;
-    expect(naexCiele(t, 0)).toEqual([uid(aa)]);
-    t = apply(data, t, { type: "naex", uid: uid(aa) }, 0).state;
-    expect(t.pitkaStav?.skryteNaex?.filter((x) => x.hrac === 0)).toHaveLength(3);
-  });
-
-  it("po odkrytí: placatka sa ráta do počtu NA EX Pitky (Policajtka), limit nemíňa", () => {
-    const aa = lezi("anonymny_alkoholik", 0);
-    const s = vPitke([[lezi("pijan", 0), aa, lezi("pijan", 0)], [lezi("pijan", 1), lezi("pijan", 1)]], 0, { poldeci: [2, 1], ruka: true });
-    const { state } = odohraj(s, [[uid(aa)], []]);
-    expect(state.pitkaStav?.reakcia).toBe(1);
-    expect(state.pitkaStav?.naexPocet).toEqual([1, 0]);
-    expect(state.pitkaStav?.naexPouzity).toEqual([false, false]);
-  });
-});
 
 describe("Liberál", () => {
   it("NA EX naň smie (Michal 2026-10-26 zrušil vetu „Na Liberála NA EX dať nemožno“)", () => {
     const liberal = lezi("liberal", 0);
-    const s = vPitke([[lezi("pijan", 0), liberal, lezi("pijan", 0)], []], 1);
+    const s = vPitke([[lezi("zamocnik", 0), liberal, lezi("zamocnik", 0)], []], 1);
     expect(naexCiele(s, 1)).toContain(uid(liberal));
     expect(() => apply(data, s, { type: "naex", uid: uid(liberal) }, 1)).not.toThrow();
   });

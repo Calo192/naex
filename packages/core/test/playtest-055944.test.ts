@@ -240,34 +240,6 @@ describe("Benzínka, Dievčina na vydaj a Krčmárka pri bitke", () => {
     expect(s.hraci[0].poldeciVypite).toBe(0);
   });
 
-  it("Dievčina spáli toľko priznaných Dlhov, koľko mala aktívnych akcií, a sama sa spáli", () => {
-    const dievcina = makeDef("dievcina_na_vydaj", EMPTY, ["Rana", null, null, null], { tags: ["Občan", "Závislý", "Žena"] });
-    const sused = makeDef("sused", ["Rana", null, null, null], EMPTY, { tags: ["Občan"] });
-    const sada2 = sadaS(dievcina, sused);
-    const s0 = setupSBalickom(sada2, 22);
-    const d = instanceFor(sada2, "dievcina_na_vydaj", EMPTY, ["Rana", null, null, null]);
-    const n = instanceFor(sada2, "sused", ["Rana", null, null, null], EMPTY);
-    // v7 (D4): veno až od 4 priznaných Dlhov.
-    const dlhy = [inst("dlh"), inst("dlh"), inst("dlh"), inst("dlh")];
-    // Hráč 1 je natočený opačne — dáme Dievčinu hráčovi 0 na stranu 1 (bez otočenia).
-    const hraci = [{ ...s0.hraci[0], priznane: dlhy }, s0.hraci[1]] as GameState["hraci"];
-    let s: GameState = {
-      ...vPitke(s0, [[], [lezi(d, 0), lezi(n, 0)]], s0.utocnik === 0 ? 1 : 0),
-      hraci,
-      ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
-      lokalityVHre: s0.lokalityVHre.slice(1),
-    };
-    s = apply(sada2, s, { type: "skipNaex" }, naTahu(s)!).state;
-    while (s.faza === "pitka" || s.faza === "zhromazdenie") {
-      s = apply(sada2, s, { type: s.faza === "zhromazdenie" ? "pass" : "skipNaex" }, naTahu(s)!).state;
-    }
-    s = dohrajBitku(sada2, s);
-    // 1 aktívna akcia → 1 Dlh; Exekútor mimo ohrozenia už nepáli (Michal 2026-10-22).
-    expect(s.hraci[0].priznane.filter((k) => k.defId === "dlh")).toHaveLength(3);
-    const vsetky = [...s.hraci[0].odhadzovaci, ...s.hraci[0].doberaci, ...s.hraci[0].ruka].map((x) => x.uid);
-    expect(vsetky).not.toContain(d.uid);
-    expect(vsetky).toContain(n.uid);
-  });
 });
 
 describe("efekty v línii", () => {
@@ -319,10 +291,6 @@ describe("efekty v línii", () => {
     strany: [[], ids.map((id) => lezi(k(id), 0))],
   });
 
-  it("Liberál: pri rovnakom počte žien a chlapov sa jeho akcie rátajú dvakrát", () => {
-    expect(evaluateLine(sd, linia("zena", "liberal", "chlap")).sums[0].Rana).toBe(2 + 4);
-    expect(evaluateLine(sd, linia("zena", "liberal", "zena2")).sums[0].Rana).toBe(2 + 2);
-  });
 
   // Michal 2026-10-18: Silná nezávislá žena podporuje okolie — aktívne akcie
   // tvojich susedných kariet sa rátajú dvakrát (ona sama nie).
@@ -348,10 +316,6 @@ describe("efekty v línii", () => {
     expect(sums.Vízia).toBeUndefined();
   });
 
-  it("Pijan: žena v okolí s aktívnym Poldeci mu dá ranu do vlastnej partie", () => {
-    const sums = evaluateLine(sd, linia("pijan", "zena_poldeci", "pijak")).sums;
-    expect(sums[1].Rana).toBe(1);
-  });
 
 });
 
@@ -380,38 +344,5 @@ describe("Veštica — odhalené balíčky len tomu, kto vyberá", () => {
 });
 
 describe("Poštárka, Starosta a Vychovávateľka", () => {
-  it("Poštárka dober navyše s Dlhom; Starosta vymení kartu za cigaretu", () => {
-    const s0 = setupSBalickom(data, 26);
-    const postarka = inst("postarka");
-    const starosta = inst("starosta");
-    // Šenok pri rozdaní nie je — stavia sa v drafte.
-    let s = vPitke(
-      { ...s0, senok: [inst("pijan")], hraci: [{ ...s0.hraci[0], cigarety: 2 }, s0.hraci[1]] },
-      [[lezi(postarka, 0), lezi(starosta, 0)], []],
-    );
-    const ruka = s.hraci[0].ruka.length;
-    const dlhyPred = s.hraci[0].priznane.filter((k) => k.defId === "dlh").length;
-    s = apply(data, s, { type: "postarka", pocet: 2 }, 0).state;
-    expect(s.hraci[0].ruka.length).toBe(ruka + 2);
-    // Verejný dlh (2026-10-21): Dlh z Poštárky sa hneď prizná.
-    expect(s.hraci[0].priznane.filter((k) => k.defId === "dlh").length - dlhyPred).toBe(1);
-    expect(() => apply(data, s, { type: "postarka", pocet: 1 }, 0)).toThrow(/už použil/);
-    const zRuky = s.hraci[0].ruka[0]!;
-    const zoSenku = s.senok[0]!;
-    s = apply(data, s, { type: "starosta", rukaUid: zRuky.uid, senokUid: zoSenku.uid }, 0).state;
-    expect(s.hraci[0].ruka.map((k) => k.uid)).toContain(zoSenku.uid);
-    expect(s.senok.map((k) => k.uid)).toContain(zRuky.uid);
-    expect(s.hraci[0].cigarety).toBe(1);
-  });
 
-  it("Vychovávateľka: po NA EX dostane súper tvoj priznaný Dlh do balíčka (Michal 2026-10-19)", () => {
-    const s0 = setupSBalickom(data, 27);
-    const vych = inst("vychovavatelka");
-    const moja = inst("pijan");
-    const dlh = inst("dlh");
-    let s = vPitke({ ...s0, hraci: [{ ...s0.hraci[0], priznane: [dlh] }, s0.hraci[1]] }, [[lezi(vych, 0), lezi(moja, 0)], []]);
-    s = naexOdkryte(data, s, moja.uid, 0).state;
-    expect(s.hraci[0].priznane).toHaveLength(0);
-    expect(s.hraci[1].doberaci.map((k) => k.uid)).toContain(dlh.uid);
-  });
 });

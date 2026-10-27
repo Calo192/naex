@@ -38,13 +38,4 @@ describe("cieleVykladania", () => {
     expect(cieleVykladania(data, partie, 0, karta("noviny"), 3)).toEqual(["superova", "dedicstvo"]);
   });
 
-  it("pes sa nestretne s iným zvieraťom toho istého majiteľa — v žiadnej partii", () => {
-    const partie = [[], [lezi("cierna_macka", 1)]] as const;
-    expect(cieleVykladania(data, partie, 1, karta("pes"), 2)).toEqual([]);
-    // Mačka patrí súperovi — hráčovi 0 neprekáža.
-    expect(cieleVykladania(data, partie, 0, karta("pes"), 2)).toEqual(["vlastna", "superova"]);
-    // Vlastná mačka v súperovej partii prekáža rovnako.
-    const podstrcena = [[], [lezi("cierna_macka", 0)]] as const;
-    expect(cieleVykladania(data, podstrcena, 0, karta("pes"), 2)).toEqual([]);
-  });
 });

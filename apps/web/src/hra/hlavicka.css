@@ -1,182 +1,15 @@
-/* Partia v hlavičke webu (Michal 2026-10-26, #22 A): štítok partie a menu „Partia ▾“.
-   Farby len cez tokeny zo schemy.css. */
+/* Partia v hlavičke webu (Michal 2026-10-26, #22 A; 2026-10-27 os v strede lišty): os kola,
+   Log · ? a menu „Partia ▾“. Farby len cez tokeny zo schemy.css. */
 
 .partia-hlavicka {
   display: flex;
+  flex: 1 1 auto;
   align-items: center;
   gap: 10px;
   min-width: 0;
 }
 
-.partia-stitok {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  height: 40px;
-  min-width: 0;
-  padding: 0 14px;
-  border-radius: 999px;
-  border: 1px solid var(--okraj-svetly);
-  background: linear-gradient(180deg, var(--plocha-2), var(--plocha));
-  color: var(--tlmeny);
-  font-size: 0.9rem;
-  white-space: nowrap;
-}
-
-.stitok-kod {
-  font: 700 0.8rem/1 var(--nadpis);
-  letter-spacing: 0.12em;
-  color: var(--akcent);
-  cursor: help;
-}
-
-.stitok-delic {
-  flex: none;
-  width: 1px;
-  height: 18px;
-  background: var(--okraj-svetly);
-}
-
-.stitok-krok {
-  color: var(--text);
-  font-weight: 500;
-}
-
-.stitok-krok.finale {
-  color: var(--akcent);
-  font: 700 0.95rem var(--nadpis);
-}
-
-.stitok-kratke {
-  display: none;
-}
-
-.stitok-skore {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-variant-numeric: tabular-nums;
-}
-
-/* Piktogram špaku v štítku, farba hráča (selektor silnejší ako .ikona-spaku zo spaky.css). */
-.stitok-skore .stitok-pop {
-  margin: 0;
-  display: block;
-  flex: none;
-  width: 28px;
-  height: 14px;
-  fill: currentColor;
-}
-
-.stitok-skore .stitok-pop.ja {
-  color: var(--ja);
-}
-
-.stitok-skore .stitok-pop.su {
-  color: var(--su);
-}
-
-.stitok-n {
-  min-width: 0.7em;
-  padding: 1px 2px;
-  border-radius: 5px;
-  font: 800 1.15rem/1 var(--nadpis);
-  color: var(--text);
-  text-align: center;
-}
-
-.stitok-n.blik {
-  animation: stitok-blik 2.5s ease-out;
-}
-
-.stitok-n.blik.minus {
-  animation-name: stitok-blik-minus;
-}
-
-.stitok-dvojbodka {
-  color: var(--slaby-text);
-  font-weight: 700;
-}
-
-/* Posledná zmena špakov po bitke — „+2“ svieti 2,5 s (číslo nesie význam, nie farba). */
-.stitok-zmena {
-  padding: 3px 5px;
-  border-radius: 999px;
-  border: 1px solid var(--zelena);
-  background: color-mix(in oklab, var(--zelena) 22%, var(--plocha));
-  color: var(--zelena);
-  font: 700 0.72rem/1 var(--pismo);
-  animation:
-    stitok-zmena-in 0.2s ease-out,
-    stitok-zmena-out 0.4s ease-in 2.1s forwards;
-}
-
-.stitok-zmena.minus {
-  border-color: var(--cervena);
-  background: color-mix(in oklab, var(--cervena) 22%, var(--plocha));
-  color: var(--cervena-text);
-}
-
-@keyframes stitok-zmena-in {
-  from {
-    opacity: 0;
-    transform: translateY(4px) scale(0.8);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes stitok-zmena-out {
-  to {
-    opacity: 0;
-  }
-}
-
-@keyframes stitok-blik {
-  0%,
-  30% {
-    background: color-mix(in oklab, var(--zelena) 35%, transparent);
-  }
-  100% {
-    background: transparent;
-  }
-}
-
-@keyframes stitok-blik-minus {
-  0%,
-  30% {
-    background: color-mix(in oklab, var(--cervena) 35%, transparent);
-  }
-  100% {
-    background: transparent;
-  }
-}
-
-.stitok-super {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  min-width: 0;
-  max-width: 14em;
-}
-
-.stitok-super-meno {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.stitok-super.online > :first-child {
-  color: var(--zelena);
-}
-
-.stitok-super.offline > :first-child,
-.stitok-super-stav {
-  color: var(--cervena-text);
-}
-
+/* Len pre čítačky obrazovky. */
 .hp-citacka {
   position: absolute;
   width: 1px;
@@ -184,6 +17,61 @@
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
+}
+
+/* Os kola v strede lišty (Michal 2026-10-27, dizajn timeline-lista A): pruží medzi logom
+   a nástrojmi stola. Popisy krokov sa na úzkej osi skracujú (hra.css, container os-kola). */
+.partia-os {
+  container: os-kola / inline-size;
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 32px;
+}
+
+.partia-os .priebeh-kola {
+  height: 100%;
+  border-radius: 8px;
+}
+
+.partia-os .priebeh-kola li {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-block: 0;
+}
+
+/* Log · ? vedľa menu Partia. */
+.partia-hlavicka .hlava-vrstvy {
+  margin-left: 0;
+}
+
+.partia-hlavicka button.hlava-vrstva {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 0.7rem;
+  font-size: 0.86rem;
+  border-radius: 8px;
+  color: var(--tlmeny);
+  background: transparent;
+  border: 1px solid var(--okraj);
+}
+
+.partia-hlavicka button.hlava-vrstva:hover:not(:disabled),
+.partia-hlavicka button.hlava-vrstva.otvorena {
+  background: var(--plocha-3);
+  border-color: var(--okraj-svetly);
+  color: var(--text);
+}
+
+/* Kód miestnosti v tlačidle „Partia HZ3T ▾“ (len hra s človekom). */
+.partia-kod {
+  margin-left: 6px;
+  font: 700 0.8rem/1 var(--nadpis);
+  letter-spacing: 0.12em;
+  color: var(--akcent);
 }
 
 /* ---- menu Partia ▾ ---- */
@@ -345,43 +233,22 @@ button.partia-menu-tlacidlo[aria-expanded="true"] {
   gap: 8px;
 }
 
-/* Kód miestnosti v štítku až od 1500 px — užšie je v menu Partia. */
-@media (max-width: 1499px) {
-  .stitok-kod,
-  .stitok-kod-delic {
-    display: none;
+/* Nízka hlavička pri stole (52 px, hra.css): os nižšia. */
+@media (min-width: 761px) and (max-height: 919px) {
+  .partia-os {
+    height: 28px;
+  }
+
+  .partia-hlavicka button.hlava-vrstva,
+  button.partia-menu-tlacidlo {
+    height: 32px;
+    min-height: 32px;
+    padding-block: 0;
   }
 }
 
-/* Notebook: krok skrátene, meno súpera kratšie. */
-@media (max-width: 1399px) {
-  .stitok-dlhe {
-    display: none;
-  }
-
-  .stitok-kratke {
-    display: inline;
-  }
-
-  .stitok-super {
-    max-width: 9em;
-  }
-}
-
-/* Mobil (hra je tam blokovaná): štítok len so skóre a stavom súpera. */
+/* Mobil (hra je tam blokovaná): os je v bare, v hlavičke len menu. */
 @media (max-width: 760px) {
-  .partia-stitok {
-    gap: 6px;
-    padding: 0 10px;
-  }
-
-  .stitok-krok,
-  .stitok-krok + .stitok-delic,
-  .stitok-super-meno,
-  .stitok-super-stav {
-    display: none;
-  }
-
   .partia-menu {
     position: fixed;
     top: 64px;
@@ -391,9 +258,8 @@ button.partia-menu-tlacidlo[aria-expanded="true"] {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .stitok-zmena,
-  .stitok-n.blik {
-    animation: none;
-  }
+
+/* Hlava osi je flex — medzera pred „· na sekere“ by sa na začiatku prvku stratila. */
+.partia-os .priebeh-sekera {
+  margin-left: 0.3em;
 }

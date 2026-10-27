@@ -1,0 +1,1808 @@
+{
+ "partii": 54,
+ "kol": 605,
+ "okamihy": {
+  "bitka": 320,
+  "pitka": 605,
+  "zhromazdenie": 605,
+  "vylozenie": 2835,
+  "vyhra": 307,
+  "prehra": 307,
+  "exekucia": 0,
+  "sekera": 13
+ },
+ "bitiek": 320,
+ "zhodaBitky": 308,
+ "allTriggers": [
+  "Nástup",
+  "Furt",
+  "Bitka",
+  "Pitka",
+  "Zhromaždenie",
+  "Dedičstvo",
+  "Výhra",
+  "Prehra",
+  "Prestávka",
+  "Exekúcia"
+ ],
+ "karty": [
+  {
+   "id": "veterinar",
+   "name": "Veterinár",
+   "tags": [
+    "Starešina",
+    "Chlap"
+   ],
+   "triggers": [
+    "Bitka"
+   ],
+   "text": "Bitka: Cirhóza ti pridáva v bitke o 2 poškodenia menej.",
+   "kopie": 1,
+   "vylozene": {
+    "linia": 14,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 0,
+    "senok": 0,
+    "ruka": 11
+   },
+   "spustace": {
+    "Bitka": {
+     "prilezitosti": 24,
+     "ucinky": 5
+    }
+   }
+  },
+  {
+   "id": "autobusar",
+   "name": "Autobusár",
+   "tags": [
+    "Starešina",
+    "Chlap"
+   ],
+   "triggers": [
+    "Bitka"
+   ],
+   "text": "Bitka: Ignoruj 1 Absťák.",
+   "kopie": 1,
+   "vylozene": {
+    "linia": 17,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 0,
+    "senok": 0,
+    "ruka": 12
+   },
+   "spustace": {
+    "Bitka": {
+     "prilezitosti": 36,
+     "ucinky": 12
+    }
+   }
+  },
+  {
+   "id": "noviny",
+   "name": "Noviny",
+   "tags": [
+    "Nástroj"
+   ],
+   "triggers": [
+    "Dedičstvo"
+   ],
+   "text": "Dedičstvo: Po bitke dostaneš 1 špak navyše, ak sa ťa bojí viac starších ako súpera.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 7,
+    "dedicstvo": 2
+   },
+   "dosah": {
+    "stavba": 54,
+    "senok": 53,
+    "ruka": 7
+   },
+   "spustace": {
+    "Dedičstvo": {
+     "prilezitosti": 5,
+     "ucinky": 0
+    }
+   }
+  },
+  {
+   "id": "cigorky",
+   "name": "Krabička cigariet",
+   "tags": [
+    "Nástroj"
+   ],
+   "triggers": [
+    "Dedičstvo"
+   ],
+   "text": "Dedičstvo: V každej Pitke dostaneš 1 cigaretu navyše.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 4,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 53,
+    "senok": 51,
+    "ruka": 3
+   },
+   "spustace": {
+    "Dedičstvo": {
+     "prilezitosti": 0,
+     "ucinky": 0
+    }
+   }
+  },
+  {
+   "id": "vinko",
+   "name": "Vínko",
+   "tags": [
+    "Nástroj"
+   ],
+   "triggers": [
+    "Dedičstvo"
+   ],
+   "text": "Dedičstvo: Počíta sa, akoby si mal plný poldeci navyše. Nemôžeš dolievať poldeci za cigarety.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 0,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 53,
+    "senok": 27,
+    "ruka": 0
+   },
+   "spustace": {
+    "Dedičstvo": {
+     "prilezitosti": 0,
+     "ucinky": 0
+    }
+   }
+  },
+  {
+   "id": "pasca",
+   "name": "Pasca",
+   "tags": [
+    "Nástroj"
+   ],
+   "triggers": [
+    "Dedičstvo"
+   ],
+   "text": "Dedičstvo: Každé súperovo Zviera v línii mu uberie 1 tuhé poškodenie.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 0,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 54,
+    "senok": 35,
+    "ruka": 0
+   },
+   "spustace": {
+    "Dedičstvo": {
+     "prilezitosti": 0,
+     "ucinky": 0
+    }
+   }
+  },
+  {
+   "id": "puska",
+   "name": "Puška",
+   "tags": [
+    "Nástroj"
+   ],
+   "triggers": [
+    "Dedičstvo"
+   ],
+   "text": "Dedičstvo: Prebytočné poškodenie, ktoré proti tebe rozdeľuje súper, je o 2 menšie.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 157,
+    "dedicstvo": 12
+   },
+   "dosah": {
+    "stavba": 53,
+    "senok": 54,
+    "ruka": 51
+   },
+   "spustace": {
+    "Dedičstvo": {
+     "prilezitosti": 38,
+     "ucinky": 13
+    }
+   }
+  },
+  {
+   "id": "svaty_text",
+   "name": "Svätý text",
+   "tags": [
+    "Nástroj"
+   ],
+   "triggers": [
+    "Dedičstvo"
+   ],
+   "text": "Dedičstvo: Hodnota tvojej Viery je o 1 vyššia.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 74,
+    "dedicstvo": 5
+   },
+   "dosah": {
+    "stavba": 54,
+    "senok": 54,
+    "ruka": 36
+   },
+   "spustace": {
+    "Dedičstvo": {
+     "prilezitosti": 17,
+     "ucinky": 10
+    }
+   }
+  },
+  {
+   "id": "nealko",
+   "name": "Nealko",
+   "tags": [
+    "Nástroj"
+   ],
+   "triggers": [
+    "Dedičstvo"
+   ],
+   "text": "Dedičstvo: Tvoj prah Cirhózy je o 2 vyšší.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 11,
+    "dedicstvo": 1
+   },
+   "dosah": {
+    "stavba": 54,
+    "senok": 54,
+    "ruka": 7
+   },
+   "spustace": {
+    "Dedičstvo": {
+     "prilezitosti": 2,
+     "ucinky": 2
+    }
+   }
+  },
+  {
+   "id": "vyherny_automat",
+   "name": "Výherný automat",
+   "tags": [
+    "Nástroj"
+   ],
+   "triggers": [
+    "Dedičstvo",
+    "Výhra",
+    "Prehra"
+   ],
+   "text": "Dedičstvo: Výhra: Dostaneš 2 cigarety. Prehra: Získaš 1 Dlh.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 0,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 54,
+    "senok": 33,
+    "ruka": 0
+   },
+   "spustace": {
+    "Dedičstvo": {
+     "prilezitosti": 0,
+     "ucinky": 0
+    },
+    "Výhra": {
+     "prilezitosti": 0,
+     "ucinky": 0
+    },
+    "Prehra": {
+     "prilezitosti": 0,
+     "ucinky": 0
+    }
+   }
+  },
+  {
+   "id": "dlh",
+   "name": "Dlh",
+   "tags": [
+    "Kliatba"
+   ],
+   "triggers": [
+    "Bitka"
+   ],
+   "text": "Bitka: Skontroluj, či pred dverami nestojí Exekútor. Pri remíze v tuhom aj v Absťákoch prehrá, kto má viac priznaných Dlhov.",
+   "kopie": 0,
+   "vylozene": {
+    "linia": 0,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 0,
+    "senok": 0,
+    "ruka": 0
+   },
+   "spustace": {
+    "Bitka": {
+     "prilezitosti": 177,
+     "ucinky": 0
+    }
+   }
+  },
+  {
+   "id": "cirhoza",
+   "name": "Cirhóza",
+   "tags": [
+    "Kliatba"
+   ],
+   "triggers": [
+    "Bitka"
+   ],
+   "text": "Bitka: Ak je priznaná, súper má +1 tuhé poškodenie. Nepriznaná ide po bitke do tvojho odhadzovacieho balíčka; na konci hry ti zoberie 5 špakov.",
+   "kopie": 0,
+   "vylozene": {
+    "linia": 0,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 0,
+    "senok": 2,
+    "ruka": 48
+   },
+   "spustace": {
+    "Bitka": {
+     "prilezitosti": 159,
+     "ucinky": 0
+    }
+   }
+  },
+  {
+   "id": "lesna_cesta",
+   "name": "Lesná cesta",
+   "tags": [
+    "Lokalita"
+   ],
+   "triggers": [
+    "Bitka"
+   ],
+   "text": "Bitka: Za každého svojho Občana, Zviera či Starešinu v súperovom kraji máš 1 tuhé poškodenie navyše, najviac 2.",
+   "kopie": 1,
+   "vylozene": {
+    "linia": 0,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 0,
+    "senok": 0,
+    "ruka": 0
+   },
+   "spustace": {
+    "Bitka": {
+     "prilezitosti": 17,
+     "ucinky": 17
+    }
+   }
+  },
+  {
+   "id": "ihrisko",
+   "name": "Ihrisko",
+   "tags": [
+    "Lokalita"
+   ],
+   "triggers": [
+    "Bitka"
+   ],
+   "text": "Bitka: V každom kraji, kde máš viac svojich Občanov, Zvierat a Starešinov než súper, máš 2 tuhé poškodenia navyše.",
+   "kopie": 1,
+   "vylozene": {
+    "linia": 0,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 0,
+    "senok": 0,
+    "ruka": 0
+   },
+   "spustace": {
+    "Bitka": {
+     "prilezitosti": 18,
+     "ucinky": 14
+    }
+   }
+  },
+  {
+   "id": "pijan",
+   "name": "Pijan",
+   "tags": [
+    "Občan",
+    "Závislý",
+    "Chlap"
+   ],
+   "triggers": [
+    "Bitka"
+   ],
+   "text": "Bitka: Ak má Žena v jeho okolí aktívnu akciu Poldeci, súper ti udelí 1 Ranu.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 159,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 0,
+    "senok": 0,
+    "ruka": 54
+   },
+   "spustace": {
+    "Bitka": {
+     "prilezitosti": 149,
+     "ucinky": 10
+    }
+   }
+  },
+  {
+   "id": "milujuca_manzelka",
+   "name": "Milujúca manželka",
+   "tags": [
+    "Občan",
+    "Pamätník",
+    "Kliatba",
+    "Žena"
+   ],
+   "triggers": [
+    "Furt"
+   ],
+   "text": "Furt: Absťák dostaneš aj vtedy, keď máš v kole rovnako nerestí ako v predošlom.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 262,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 1,
+    "senok": 4,
+    "ruka": 54
+   },
+   "spustace": {
+    "Furt": {
+     "prilezitosti": 191,
+     "ucinky": 61
+    }
+   }
+  },
+  {
+   "id": "ministrant",
+   "name": "Miňištrant",
+   "tags": [
+    "Občan",
+    "Závislý",
+    "Chlap"
+   ],
+   "triggers": [
+    "Výhra"
+   ],
+   "text": "Výhra: Každý posun markera staršieho prebytkom ťa stojí o 1 prebytok viac.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 290,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 0,
+    "senok": 0,
+    "ruka": 54
+   },
+   "spustace": {
+    "Výhra": {
+     "prilezitosti": 127,
+     "ucinky": 121
+    }
+   }
+  },
+  {
+   "id": "financna_poradkyna",
+   "name": "Finančná poradkyňa",
+   "tags": [
+    "Občan",
+    "Pracujúci",
+    "Žena"
+   ],
+   "triggers": [
+    "Pitka"
+   ],
+   "text": "Pitka: Dlh z jej akcií dostáva súper, nie ty.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 0,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 54,
+    "senok": 33,
+    "ruka": 0
+   },
+   "spustace": {
+    "Pitka": {
+     "prilezitosti": 0,
+     "ucinky": 0
+    }
+   }
+  },
+  {
+   "id": "velmi_smutiaca_vdova",
+   "name": "Veľmi smútiaca vdova",
+   "tags": [
+    "Občan",
+    "Kriminál",
+    "Žena"
+   ],
+   "triggers": [
+    "Nástup"
+   ],
+   "text": "Nástup: Ak je vrchná karta doberacieho balíčka súpera muž, odstráň ho z hry a zahoď 2 svoje Dlhy, aj spomedzi priznaných.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 6,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 54,
+    "senok": 49,
+    "ruka": 3
+   },
+   "spustace": {
+    "Nástup": {
+     "prilezitosti": 6,
+     "ucinky": 0
+    }
+   }
+  },
+  {
+   "id": "vestica",
+   "name": "Veštica",
+   "tags": [
+    "Občan",
+    "Zahraničný",
+    "Žena"
+   ],
+   "triggers": [
+    "Prehra"
+   ],
+   "text": "Prehra: Preskúmaj súperov a svoj doberací balík. Vymeň jednu jeho kartu za tvoju a karty vráť.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 84,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 54,
+    "senok": 54,
+    "ruka": 42
+   },
+   "spustace": {
+    "Prehra": {
+     "prilezitosti": 38,
+     "ucinky": 23
+    }
+   }
+  },
+  {
+   "id": "silna_nezavisla_zena",
+   "name": "Silná, nezávislá žena",
+   "tags": [
+    "Občan",
+    "Influencer",
+    "Žena"
+   ],
+   "triggers": [
+    "Furt"
+   ],
+   "text": "Furt: Aktívne akcie tvojich kariet, ktoré s ňou susedia, sa rátajú dvakrát.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 2,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 54,
+    "senok": 44,
+    "ruka": 2
+   },
+   "spustace": {
+    "Furt": {
+     "prilezitosti": 2,
+     "ucinky": 1
+    }
+   }
+  },
+  {
+   "id": "policajtka",
+   "name": "Policajtka",
+   "tags": [
+    "Občan",
+    "Autorita",
+    "Žena"
+   ],
+   "triggers": [
+    "Furt"
+   ],
+   "text": "Furt: Súperove Pohoršenia proti tebe neplatia.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 38,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 54,
+    "senok": 54,
+    "ruka": 23
+   },
+   "spustace": {
+    "Furt": {
+     "prilezitosti": 35,
+     "ucinky": 11
+    }
+   }
+  },
+  {
+   "id": "hasic",
+   "name": "Hasič",
+   "tags": [
+    "Občan",
+    "Autorita",
+    "Chlap"
+   ],
+   "triggers": [
+    "Nástup"
+   ],
+   "text": "Nástup: Zober si pracujúceho občana do ruky z odhadzovacieho balíčka.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 263,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 54,
+    "senok": 54,
+    "ruka": 54
+   },
+   "spustace": {
+    "Nástup": {
+     "prilezitosti": 263,
+     "ucinky": 23
+    }
+   }
+  },
+  {
+   "id": "praudovravec",
+   "name": "Praudovravec",
+   "tags": [
+    "Občan",
+    "Influencer",
+    "Chlap"
+   ],
+   "triggers": [
+    "Furt"
+   ],
+   "text": "Furt: Autority v súperovej partii neuplatňujú efekt.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 49,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 54,
+    "senok": 54,
+    "ruka": 28
+   },
+   "spustace": {
+    "Furt": {
+     "prilezitosti": 48,
+     "ucinky": 10
+    }
+   }
+  },
+  {
+   "id": "zamocnik",
+   "name": "Zámočník",
+   "tags": [
+    "Občan",
+    "Pracujúci",
+    "Chlap"
+   ],
+   "triggers": [
+    "Furt"
+   ],
+   "text": "Furt: Akcie nástrojov v jeho okolí sú posilnené.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 200,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 54,
+    "senok": 54,
+    "ruka": 51
+   },
+   "spustace": {
+    "Furt": {
+     "prilezitosti": 157,
+     "ucinky": 23
+    }
+   }
+  },
+  {
+   "id": "niekoho_stryna",
+   "name": "Niekoho stryná",
+   "tags": [
+    "Občan",
+    "Pamätník",
+    "Žena"
+   ],
+   "triggers": [
+    "Nástup"
+   ],
+   "text": "Nástup: Zahoď 1 Cirhózu alebo 1 Dlh z ruky či z odhadzovacieho balíčka, Dlh aj spomedzi priznaných.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 157,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 54,
+    "senok": 54,
+    "ruka": 49
+   },
+   "spustace": {
+    "Nástup": {
+     "prilezitosti": 157,
+     "ucinky": 67
+    }
+   }
+  },
+  {
+   "id": "veteran",
+   "name": "Veterán",
+   "tags": [
+    "Občan",
+    "Pamätník",
+    "Chlap"
+   ],
+   "triggers": [
+    "Furt"
+   ],
+   "text": "Furt: NA EX na neho jeho aktívne akcie nezruší, ale zdvojí. Neaktívne nezdvojí.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 21,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 54,
+    "senok": 54,
+    "ruka": 15
+   },
+   "spustace": {
+    "Furt": {
+     "prilezitosti": 20,
+     "ucinky": 4
+    }
+   }
+  },
+  {
+   "id": "recidivista",
+   "name": "Recidivista",
+   "tags": [
+    "Občan",
+    "Kriminál",
+    "Chlap",
+    "Zviera"
+   ],
+   "triggers": [
+    "Bitka"
+   ],
+   "text": "Bitka: Za každého zahraničného občana v súperovej partii udelí dodatočnú ranu.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 188,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 54,
+    "senok": 54,
+    "ruka": 53
+   },
+   "spustace": {
+    "Bitka": {
+     "prilezitosti": 154,
+     "ucinky": 21
+    }
+   }
+  },
+  {
+   "id": "starosta",
+   "name": "Starosta",
+   "tags": [
+    "Starešina",
+    "Chlap"
+   ],
+   "triggers": [
+    "Pitka"
+   ],
+   "text": "Pitka: Za cigaretu môžeš vymeniť kartu z ruky za kartu zo šenku.",
+   "kopie": 1,
+   "vylozene": {
+    "linia": 28,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 0,
+    "senok": 0,
+    "ruka": 15
+   },
+   "spustace": {
+    "Pitka": {
+     "prilezitosti": 65,
+     "ucinky": 7
+    }
+   }
+  },
+  {
+   "id": "farar",
+   "name": "Farár",
+   "tags": [
+    "Starešina",
+    "Chlap"
+   ],
+   "triggers": [
+    "Bitka"
+   ],
+   "text": "Bitka: Ignoruj 2 súperove Povery.",
+   "kopie": 1,
+   "vylozene": {
+    "linia": 19,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 0,
+    "senok": 0,
+    "ruka": 12
+   },
+   "spustace": {
+    "Bitka": {
+     "prilezitosti": 37,
+     "ucinky": 18
+    }
+   }
+  },
+  {
+   "id": "postarka",
+   "name": "Poštárka",
+   "tags": [
+    "Starešina",
+    "Žena"
+   ],
+   "triggers": [
+    "Pitka"
+   ],
+   "text": "Pitka: Raz smieš dobrať až 2 karty navyše; získaš za to 1 Dlh.",
+   "kopie": 1,
+   "vylozene": {
+    "linia": 9,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 0,
+    "senok": 0,
+    "ruka": 12
+   },
+   "spustace": {
+    "Pitka": {
+     "prilezitosti": 44,
+     "ucinky": 29
+    }
+   }
+  },
+  {
+   "id": "hrobar",
+   "name": "Hrobár",
+   "tags": [
+    "Starešina",
+    "Chlap"
+   ],
+   "triggers": [
+    "Furt"
+   ],
+   "text": "Furt: Keď súper zahodí kartu, dober si cigaretu.",
+   "kopie": 1,
+   "vylozene": {
+    "linia": 16,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 0,
+    "senok": 0,
+    "ruka": 15
+   },
+   "spustace": {
+    "Furt": {
+     "prilezitosti": 34,
+     "ucinky": 11
+    }
+   }
+  },
+  {
+   "id": "vychovavatelka",
+   "name": "Vychovávateľka",
+   "tags": [
+    "Starešina",
+    "Žena"
+   ],
+   "triggers": [
+    "Pitka"
+   ],
+   "text": "Pitka: Ak dáš NA EX, súper si musí od teba vziať priznaný Dlh do doberacieho balíčka.",
+   "kopie": 1,
+   "vylozene": {
+    "linia": 11,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 0,
+    "senok": 0,
+    "ruka": 8
+   },
+   "spustace": {
+    "Pitka": {
+     "prilezitosti": 48,
+     "ucinky": 4
+    }
+   }
+  },
+  {
+   "id": "liberal",
+   "name": "Liberál",
+   "tags": [
+    "Občan",
+    "Zahraničný",
+    "Žena",
+    "Chlap"
+   ],
+   "triggers": [
+    "Furt"
+   ],
+   "text": "Furt: Ak je v tvojej partii rovnako žien a chlapov, jeho akcie sa rátajú dvakrát. Furt: Nedá sa naň dať NA EX.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 24,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 53,
+    "senok": 54,
+    "ruka": 15
+   },
+   "spustace": {
+    "Furt": {
+     "prilezitosti": 21,
+     "ucinky": 4
+    }
+   }
+  },
+  {
+   "id": "dievcina_na_vydaj",
+   "name": "Dievčina na vydaj",
+   "tags": [
+    "Občan",
+    "Závislý",
+    "Žena"
+   ],
+   "triggers": [
+    "Bitka"
+   ],
+   "text": "Bitka: Zahoď túto kartu a spáľ toľko svojich priznaných Dlhov, koľko mala aktívnych akcií.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 106,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 0,
+    "senok": 0,
+    "ruka": 54
+   },
+   "spustace": {
+    "Bitka": {
+     "prilezitosti": 72,
+     "ucinky": 70
+    }
+   }
+  },
+  {
+   "id": "zivnostnik",
+   "name": "Živnostník",
+   "tags": [
+    "Občan",
+    "Pracujúci",
+    "Chlap"
+   ],
+   "triggers": [
+    "Výhra"
+   ],
+   "text": "Výhra: Zahoď jedno súperovo dedičstvo.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 0,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 54,
+    "senok": 34,
+    "ruka": 0
+   },
+   "spustace": {
+    "Výhra": {
+     "prilezitosti": 0,
+     "ucinky": 0
+    }
+   }
+  },
+  {
+   "id": "krcmarka",
+   "name": "Krčmárka",
+   "tags": [
+    "Starešina",
+    "Žena"
+   ],
+   "triggers": [
+    "Bitka"
+   ],
+   "text": "Bitka: Ak nemáš absťák a nedal si NA EX, môžeš otočiť vypitý poldeci.",
+   "kopie": 1,
+   "vylozene": {
+    "linia": 13,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 0,
+    "senok": 0,
+    "ruka": 14
+   },
+   "spustace": {
+    "Bitka": {
+     "prilezitosti": 34,
+     "ucinky": 0
+    }
+   }
+  },
+  {
+   "id": "zberny_dvor",
+   "name": "Zberný dvor",
+   "tags": [
+    "Lokalita"
+   ],
+   "triggers": [
+    "Pitka"
+   ],
+   "text": "Pitka: Raz za Pitku smieš za 1 cigaretu vziať do ruky ľubovoľnú kartu zo svojho odhadzovacieho balíčka.",
+   "kopie": 1,
+   "vylozene": {
+    "linia": 0,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 0,
+    "senok": 0,
+    "ruka": 0
+   },
+   "spustace": {
+    "Pitka": {
+     "prilezitosti": 42,
+     "ucinky": 0
+    }
+   }
+  },
+  {
+   "id": "benzinka",
+   "name": "Benzínka",
+   "tags": [
+    "Lokalita"
+   ],
+   "triggers": [
+    "Pitka"
+   ],
+   "text": "Pitka: Nikto nesmie fajčiť.",
+   "kopie": 1,
+   "vylozene": {
+    "linia": 0,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 0,
+    "senok": 0,
+    "ruka": 0
+   },
+   "spustace": {
+    "Pitka": {
+     "prilezitosti": 22,
+     "ucinky": 22
+    }
+   }
+  },
+  {
+   "id": "zastavka",
+   "name": "Zastávka",
+   "tags": [
+    "Lokalita"
+   ],
+   "triggers": [
+    "Zhromaždenie"
+   ],
+   "text": "Zhromaždenie: Obaja hráči majú spoločný limit vykladania — súčet ich limitov.",
+   "kopie": 1,
+   "vylozene": {
+    "linia": 0,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 0,
+    "senok": 0,
+    "ruka": 0
+   },
+   "spustace": {
+    "Zhromaždenie": {
+     "prilezitosti": 26,
+     "ucinky": 26
+    }
+   }
+  },
+  {
+   "id": "krcma",
+   "name": "Krčma",
+   "tags": [
+    "Lokalita"
+   ],
+   "triggers": [
+    "Pitka"
+   ],
+   "text": "Pitka: Ak máš plný poldeci a máš ho kam dať, musíš dať NA EX. Prah Cirhózy je tu o 2 vyšší.",
+   "kopie": 1,
+   "vylozene": {
+    "linia": 0,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 0,
+    "senok": 0,
+    "ruka": 0
+   },
+   "spustace": {
+    "Pitka": {
+     "prilezitosti": 24,
+     "ucinky": 21
+    }
+   }
+  },
+  {
+   "id": "abstak",
+   "name": "Absťák",
+   "tags": [
+    "Kliatba"
+   ],
+   "triggers": [
+    "Bitka"
+   ],
+   "text": "Bitka: Udeluješ súperovi o ranu menej. Ak máš viac Absťákov než súper, pri remíze v tuhom prehráš, a keď vyhráš, dostaneš o rozdiel menej špakov (aspoň 1).",
+   "kopie": 0,
+   "vylozene": {
+    "linia": 0,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 0,
+    "senok": 0,
+    "ruka": 0
+   },
+   "spustace": {
+    "Bitka": {
+     "prilezitosti": 230,
+     "ucinky": 0
+    }
+   }
+  },
+  {
+   "id": "cierna_macka",
+   "name": "Čierna mačka",
+   "tags": [
+    "Zviera"
+   ],
+   "triggers": [
+    "Furt"
+   ],
+   "text": "Furt: Tvoje Povery spôsobujú mäkké poškodenie aj bez súperových priznaných dlhov.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 25,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 54,
+    "senok": 54,
+    "ruka": 21
+   },
+   "spustace": {
+    "Furt": {
+     "prilezitosti": 23,
+     "ucinky": 10
+    }
+   }
+  },
+  {
+   "id": "kocovnik",
+   "name": "Kočovník",
+   "tags": [
+    "Občan",
+    "Zahraničný",
+    "Chlap"
+   ],
+   "triggers": [
+    "Furt"
+   ],
+   "text": "Furt: Jeho akcie sa počítajú hráčovi, ktorý má v jeho kraji prevahu. Vo finále majiteľovi.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 0,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 52,
+    "senok": 28,
+    "ruka": 0
+   },
+   "spustace": {
+    "Furt": {
+     "prilezitosti": 0,
+     "ucinky": 0
+    }
+   }
+  },
+  {
+   "id": "pes",
+   "name": "Pes",
+   "tags": [
+    "Zviera"
+   ],
+   "triggers": [
+    "Furt"
+   ],
+   "text": "Furt: Ak leží na tvojej strane, za každý pár akcií na spoji Psa so súperovou kartou dáš v bitke +1 tuhé poškodenie. Nesmie byť v partii s iným zvieraťom.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 152,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 54,
+    "senok": 54,
+    "ruka": 50
+   },
+   "spustace": {
+    "Furt": {
+     "prilezitosti": 137,
+     "ucinky": 60
+    }
+   }
+  },
+  {
+   "id": "kostol",
+   "name": "Kostol",
+   "tags": [
+    "Lokalita"
+   ],
+   "triggers": [
+    "Zhromaždenie",
+    "Pitka"
+   ],
+   "text": "Zhromaždenie: Nikto nesmie vypiť. Pitka: Nikto nesmie dať NA EX.",
+   "kopie": 1,
+   "vylozene": {
+    "linia": 0,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 0,
+    "senok": 0,
+    "ruka": 0
+   },
+   "spustace": {
+    "Zhromaždenie": {
+     "prilezitosti": 21,
+     "ucinky": 21
+    },
+    "Pitka": {
+     "prilezitosti": 35,
+     "ucinky": 35
+    }
+   }
+  },
+  {
+   "id": "svokra",
+   "name": "Svokra",
+   "tags": [
+    "Občan",
+    "Autorita",
+    "Žena"
+   ],
+   "triggers": [
+    "Furt"
+   ],
+   "text": "Furt: Keď súper dá NA EX, ukradni mu 2 cigarety.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 200,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 53,
+    "senok": 54,
+    "ruka": 52
+   },
+   "spustace": {
+    "Furt": {
+     "prilezitosti": 169,
+     "ucinky": 35
+    }
+   }
+  },
+  {
+   "id": "sarlatan",
+   "name": "Šarlatán",
+   "tags": [
+    "Občan",
+    "Influencer",
+    "Chlap"
+   ],
+   "triggers": [
+    "Furt"
+   ],
+   "text": "Furt: Viera v jeho okolí platí ako Vízia.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 0,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 54,
+    "senok": 42,
+    "ruka": 0
+   },
+   "spustace": {
+    "Furt": {
+     "prilezitosti": 0,
+     "ucinky": 0
+    }
+   }
+  },
+  {
+   "id": "podvodnik",
+   "name": "Podvodník",
+   "tags": [
+    "Občan",
+    "Kriminál",
+    "Chlap"
+   ],
+   "triggers": [
+    "Prehra"
+   ],
+   "text": "Prehra: Ukradni súperovi 2 cigarety.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 2,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 54,
+    "senok": 54,
+    "ruka": 4
+   },
+   "spustace": {
+    "Prehra": {
+     "prilezitosti": 1,
+     "ucinky": 0
+    }
+   }
+  },
+  {
+   "id": "zahradkar",
+   "name": "Záhradkár",
+   "tags": [
+    "Občan",
+    "Pracujúci",
+    "Chlap"
+   ],
+   "triggers": [
+    "Exekúcia"
+   ],
+   "text": "Exekúcia: Môžeš zahodiť Záhradkára namiesto špakov.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 64,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 54,
+    "senok": 54,
+    "ruka": 37
+   },
+   "spustace": {
+    "Exekúcia": {
+     "prilezitosti": 0,
+     "ucinky": 0
+    }
+   }
+  },
+  {
+   "id": "anonymny_alkoholik",
+   "name": "Anonymný alkoholik",
+   "tags": [
+    "Občan",
+    "Závislý",
+    "Chlap"
+   ],
+   "triggers": [
+    "Furt"
+   ],
+   "text": "Furt: Na neho nesmie súper dať NA EX.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 0,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 54,
+    "senok": 48,
+    "ruka": 1
+   },
+   "spustace": {
+    "Furt": {
+     "prilezitosti": 0,
+     "ucinky": 0
+    }
+   }
+  },
+  {
+   "id": "most",
+   "name": "Most",
+   "tags": [
+    "Lokalita"
+   ],
+   "triggers": [
+    "Zhromaždenie"
+   ],
+   "text": "Zhromaždenie: Karty sa smú vykladať len na vlastnú stranu (aj odpoveď na NA EX).",
+   "kopie": 1,
+   "vylozene": {
+    "linia": 0,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 0,
+    "senok": 0,
+    "ruka": 0
+   },
+   "spustace": {
+    "Zhromaždenie": {
+     "prilezitosti": 20,
+     "ucinky": 20
+    }
+   }
+  },
+  {
+   "id": "obecny_urad",
+   "name": "Obecný úrad",
+   "tags": [
+    "Lokalita"
+   ],
+   "triggers": [
+    "Bitka"
+   ],
+   "text": "Bitka: Prah Exekútora je o 4 nižší a každá aktívna Robota spáli 2 priznané Dlhy.",
+   "kopie": 1,
+   "vylozene": {
+    "linia": 0,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 0,
+    "senok": 0,
+    "ruka": 0
+   },
+   "spustace": {
+    "Bitka": {
+     "prilezitosti": 17,
+     "ucinky": 2
+    }
+   }
+  },
+  {
+   "id": "jednota",
+   "name": "Jednota",
+   "tags": [
+    "Lokalita"
+   ],
+   "triggers": [
+    "Pitka"
+   ],
+   "text": "Pitka: Stokársky barter stojí o 1 cigaretu menej.",
+   "kopie": 1,
+   "vylozene": {
+    "linia": 0,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 0,
+    "senok": 0,
+    "ruka": 0
+   },
+   "spustace": {
+    "Pitka": {
+     "prilezitosti": 21,
+     "ucinky": 1
+    }
+   }
+  },
+  {
+   "id": "kulturny_dom",
+   "name": "Kultúrny dom",
+   "tags": [
+    "Lokalita"
+   ],
+   "triggers": [
+    "Bitka"
+   ],
+   "text": "Bitka: Prebytok sa nerozdeľuje medzi starších. Kto ho drží, dostane toľko špakov, aký je prebytok.",
+   "kopie": 1,
+   "vylozene": {
+    "linia": 0,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 0,
+    "senok": 0,
+    "ruka": 0
+   },
+   "spustace": {
+    "Bitka": {
+     "prilezitosti": 15,
+     "ucinky": 15
+    }
+   }
+  },
+  {
+   "id": "vinna_pivnica",
+   "name": "Vínna pivnica",
+   "tags": [
+    "Lokalita"
+   ],
+   "triggers": [
+    "Pitka"
+   ],
+   "text": "Pitka: Každý hráč smie dať NA EX až dvakrát.",
+   "kopie": 1,
+   "vylozene": {
+    "linia": 0,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 0,
+    "senok": 0,
+    "ruka": 0
+   },
+   "spustace": {
+    "Pitka": {
+     "prilezitosti": 17,
+     "ucinky": 4
+    }
+   }
+  },
+  {
+   "id": "druzstvo",
+   "name": "Družstvo",
+   "tags": [
+    "Lokalita"
+   ],
+   "triggers": [
+    "Zhromaždenie"
+   ],
+   "text": "Zhromaždenie: Karty s tagom Pracujúci nemíňajú limit vykladania.",
+   "kopie": 1,
+   "vylozene": {
+    "linia": 0,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 0,
+    "senok": 0,
+    "ruka": 0
+   },
+   "spustace": {
+    "Zhromaždenie": {
+     "prilezitosti": 22,
+     "ucinky": 16
+    }
+   }
+  },
+  {
+   "id": "cintorin",
+   "name": "Cintorín",
+   "tags": [
+    "Lokalita"
+   ],
+   "triggers": [
+    "Prehra"
+   ],
+   "text": "Prehra: Po Pohrebe smieš vyložiť jeden Nástroj z ruky do Dedičstva bez platenia.",
+   "kopie": 1,
+   "vylozene": {
+    "linia": 0,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 0,
+    "senok": 0,
+    "ruka": 0
+   },
+   "spustace": {
+    "Prehra": {
+     "prilezitosti": 17,
+     "ucinky": 3
+    }
+   }
+  },
+  {
+   "id": "presbiter",
+   "name": "Presbiter",
+   "tags": [
+    "Občan",
+    "Autorita",
+    "Chlap"
+   ],
+   "triggers": [
+    "Bitka"
+   ],
+   "text": "Bitka: Ak v jeho kraji nemáš iného Občana, Zviera ani Starešinu a súper tam má prevahu, súper má o toľko Viery menej, koľko má Presbiter aktívnych akcií. Vo finále nepôsobí.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 154,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 52,
+    "senok": 54,
+    "ruka": 47
+   },
+   "spustace": {
+    "Bitka": {
+     "prilezitosti": 133,
+     "ucinky": 6
+    }
+   }
+  },
+  {
+   "id": "dvojcata",
+   "name": "Dvojčatá",
+   "tags": [
+    "Občan",
+    "Chlap"
+   ],
+   "triggers": [
+    "Furt"
+   ],
+   "text": "Furt: Do prevahy sa rátajú za dvoch.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 3,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 53,
+    "senok": 47,
+    "ruka": 2
+   },
+   "spustace": {
+    "Furt": {
+     "prilezitosti": 3,
+     "ucinky": 0
+    }
+   }
+  },
+  {
+   "id": "sofer",
+   "name": "Šofér",
+   "tags": [
+    "Občan",
+    "Chlap"
+   ],
+   "triggers": [
+    "Furt"
+   ],
+   "text": "Furt: NA EX na kartu, ktorá s ním susedí, nezdvojí jej neaktívne akcie.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 6,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 54,
+    "senok": 53,
+    "ruka": 8
+   },
+   "spustace": {
+    "Furt": {
+     "prilezitosti": 9,
+     "ucinky": 0
+    }
+   }
+  },
+  {
+   "id": "kar",
+   "name": "Kar",
+   "tags": [
+    "Lokalita"
+   ],
+   "triggers": [
+    "Bitka"
+   ],
+   "text": "Bitka: Každý hráč smie zahodiť jednu nepriznanú Cirhózu z ruky.",
+   "kopie": 1,
+   "vylozene": {
+    "linia": 0,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 0,
+    "senok": 0,
+    "ruka": 0
+   },
+   "spustace": {
+    "Bitka": {
+     "prilezitosti": 22,
+     "ucinky": 6
+    }
+   }
+  },
+  {
+   "id": "snubenica",
+   "name": "Snúbenica",
+   "tags": [
+    "Občan",
+    "Žena"
+   ],
+   "triggers": [
+    "Nástup"
+   ],
+   "text": "Nástup: Ak ju vyložíš vedľa karty s NA EX, vráti tú kartu majiteľovi do ruky a zaujme jej miesto. Poldeci z tej karty vypije ten, kto dal NA EX.",
+   "kopie": 2,
+   "vylozene": {
+    "linia": 0,
+    "dedicstvo": 0
+   },
+   "dosah": {
+    "stavba": 54,
+    "senok": 40,
+    "ruka": 0
+   },
+   "spustace": {
+    "Nástup": {
+     "prilezitosti": 0,
+     "ucinky": 0
+    }
+   }
+  }
+ ]
+}

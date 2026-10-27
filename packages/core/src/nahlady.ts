@@ -7,8 +7,10 @@
 import type { CardInstance, PlayerId } from "./types.ts";
 import type { GameData } from "./data.ts";
 import {
+  cielLokalitaId,
+  cieleVykladania,
   cigaretyZPitky,
-  dlhyPolicajtky,
+  jeFinale,
   lineState,
   nahladPitky,
   paleneDlhyVBitke,
@@ -16,16 +18,18 @@ import {
   pohorseniaVBitke,
   poskodenieBitky,
   prebytokNaRozdelenie,
+  sPrilozenou,
   silaPriazne,
   verejneAbstaky,
+  zablokovaneStrany,
 } from "./engine.ts";
-import { efektHraca, efektPotlaceny, exekutorLokality, partiaHraca, silaDoDna, svokraRany } from "./effects.ts";
+import { efektHraca, efektPotlaceny, exekutorLokality, naexPecenSuperovi, partiaHraca, silaDoDna, svokraRany, traktoristkyBezPrevahy } from "./effects.ts";
 import { opponentOf } from "./types.ts";
 import type { LineEval } from "./partia.ts";
 import { evaluateLine } from "./partia.ts";
-import type { DamageResult } from "./battle.ts";
+import type { BattleOutcome, DamageResult } from "./battle.ts";
 import { battleOutcome, exekutorCheck, zhoriPriExekucii } from "./battle.ts";
-import { cenaPatronatu, MARKER_STRED } from "./elders.ts";
+import { cenaPatronatu, MARKER_STRED, posunMarker } from "./elders.ts";
 import type { ClientState } from "./view.ts";
 import { hodnotaPohorseni } from "./view.ts";
 
@@ -52,7 +56,10 @@ export interface DlhyDoBitky {
 export function vyhladDlhov(data: GameData, stol: StolNahladu, dalsiePitky: number): readonly [DlhyDoBitky, DlhyDoBitky] {
   const nahlad = nahladPitky(data, stol);
   // D6 (v7): zvyšok zadĺženia sa medzi Pitkami nemaže — sčíta sa za všetky Pitky.
-  const noveDlhy = ([0, 1] as const).map((p) => Math.floor((nahlad[p].zadlzenie + nahlad[p].zadlzenieZoStola * (1 + dalsiePitky)) / nahlad[p].prahDlhu)) as [number, number];
+  // Výherný automat (Dedičstvo, v7): v poslednej Pitke kola Dlh za kus.
+  // Traktoristka bez prevahy v jej kraji: Dlh na začiatku bitky (zacniBitku).
+  const automat = (p: PlayerId): number => stol.hraci[p].dedicstvo.filter((k) => k.defId === "vyherny_automat").length + traktoristkyBezPrevahy(data, stol, p);
+  const noveDlhy = ([0, 1] as const).map((p) => Math.floor((nahlad[p].zadlzenie + nahlad[p].zadlzenieZoStola * (1 + dalsiePitky)) / nahlad[p].prahDlhu) + automat(p)) as [number, number];
   // Dievčina (v7) páli až od 4 priznaných Dlhov — rátajú sa aj tie, čo do bitky pribudnú.
   const kapacita = paleneDlhyVBitke(data, stol, undefined, noveDlhy);
   const pre = (p: PlayerId): DlhyDoBitky => {
@@ -190,9 +197,20 @@ export function stolPriPoskodeni(data: GameData, s: ClientState, dalsiePitky: nu
   if (s.ciel === null) return s;
   const vyhlad = vyhladDlhov(data, s, dalsiePitky);
   const hraci: [ClientState["hraci"][0], ClientState["hraci"][1]] = [s.hraci[0], s.hraci[1]];
+  // Cintorín (Pitka, v7): nové Cirhózy sú hneď priznané — v bitke dajú súperovi tuhé.
+  if (cielLokalitaId(s) === "cintorin") {
+    const np = nahladPitky(data, s);
+    for (const p of [0, 1] as const) {
+      const dalsie = Math.floor(np[p].pecenZoStola / np[p].prahPecene) * dalsiePitky;
+      const n = np[p].cirhozy + dalsie;
+      if (n <= 0) continue;
+      const nove: CardInstance[] = Array.from({ length: n }, (_, i) => ({ uid: -2000 - 100 * p - i, defId: "cirhoza", leftLayout: 0, rightLayout: 0 }));
+      hraci[p] = { ...hraci[p], priznane: [...hraci[p].priznane, ...nove] };
+    }
+  }
   for (const p of [0, 1] as const) {
     const d = vyhlad[p].poBitke;
-    const h = s.hraci[p];
+    const h = hraci[p];
     const stare = h.priznane.filter((k) => k.defId === "dlh");
     if (stare.length === d) continue;
     const nove: CardInstance[] = Array.from({ length: Math.max(0, d - stare.length) }, (_, i) => ({ uid: -1000 - 100 * p - i, defId: "dlh", leftLayout: 0, rightLayout: 0 }));
@@ -224,7 +242,8 @@ export function prebytokNahladu(s: ClientState, damage: DamageResult): PrebytokN
   const outcome = battleOutcome(damage);
   const drzi = outcome.prebytokDrzi;
   const naRozdelenie = prebytokNaRozdelenie(s, outcome);
-  const cenaPosunu = drzi !== null && drzi === outcome.vitaz ? 1 + partiaHraca(s, drzi).filter((pl) => pl.card.defId === "ministrant").length : 1;
+  // Od v7 stojí posun vždy 1 (Miňištrant ho už nezdražuje).
+  const cenaPosunu = 1;
   return { drzi, prebytok: outcome.prebytok, naRozdelenie, cenaPosunu, posuny: Math.floor(naRozdelenie / cenaPosunu) };
 }
 
@@ -311,9 +330,6 @@ export function sMojimiSkrytymiNaex(data: GameData, view: ClientState): ClientSt
   return v;
 }
 
-/** Náhradné uid Dlhov od Policajtky v náhľade — pod nimi, aby ich Vychovávateľka nebrala. */
-const UID_DLHU_POLICAJTKY = -950000;
-
 /** Pohľad po odkrytí jedného NA EX hráča `view.ja` a čo pri ňom motor zúčtoval. */
 export interface PoOdkrytiNaex extends OdkrytieNaex {
   readonly view: ClientState;
@@ -322,27 +338,14 @@ export interface PoOdkrytiNaex extends OdkrytieNaex {
    * na jeho kartu — tuhé po ťahu ich už ráta, toto ich len pomenuje.
    */
   readonly svokra: number;
-  /**
-   * Policajtka súpera (Michal 2026-10-26): Dlhy, ktoré dostaneš pri odkrytí, lebo
-   * týmto NA EX dáš v Pitke viac NA EX ako súper — ak on žiadne nedá (jeho skryté
-   * NA EX náhľad nevidí). V pohľade sú už priznané.
-   */
-  readonly policajtka: number;
-  /** Vychovávateľka: jeden môj priznaný Dlh odíde súperovi do doberacieho balíčka. */
-  readonly vychovavatelka: boolean;
-  /**
-   * Krčmárka: bez NA EX v kole by ti na začiatku bitky otočila vypitý poldeci
-   * na plný — toto NA EX ju o to pripraví.
-   */
-  readonly krcmarka: boolean;
+  /** Kar (Pitka, v7): pečeň za toto NA EX dostane súper, nie ty. */
+  readonly kar: boolean;
 }
 
 /**
  * Pohľad hráča `view.ja` po odkrytí jeho NA EX na kartu `uid` — v poradí
- * odhalNaex v motore: poldeci na kartu (zo zásoby plných), pečeň +1,
- * Vychovávateľka, Výpalné, nakoniec Policajtka súpera. Vychovávateľka sa
- * posudzuje až s poldeci na karte, ako v motore. Na kartu s poldeci či mimo
- * línie null.
+ * odhalNaex v motore: poldeci na kartu (zo zásoby plných), pečeň +1 (na Kare
+ * súperovi), Výpalné. Na kartu s poldeci či mimo línie null.
  */
 export function poOdkrytiNaex(data: GameData, view: ClientState, uid: number): PoOdkrytiNaex | null {
   const ja = view.ja;
@@ -359,41 +362,121 @@ export function poOdkrytiNaex(data: GameData, view: ClientState, uid: number): P
   naexVKole[ja] = true;
   const sKartou: ClientState = { ...view, strany, zaverecne, naexVKole };
   const h = view.hraci[ja];
-  // Ako zacniBitku: Krčmárka len bez Absťáku (verejného ani v ruke) a s vypitým poldeci.
-  const abstaky = verejneAbstaky(view, ja) + view.ruka.filter((k) => k.defId === "abstak").length;
-  const krcmarka =
-    !view.naexVKole[ja] && efektHraca(view, ja, "krcmarka") && !efektPotlaceny(data, view, ja, "krcmarka") && abstaky === 0 && h.poldeciVypite > 0;
-  // Dlh od Policajtky príde v motore až po všetkých NA EX — Vychovávateľka ho nepresunie.
-  const presunie = (k: CardInstance): boolean => k.defId === "dlh" && k.uid > UID_DLHU_POLICAJTKY;
-  const vychovavatelka =
-    efektHraca(sKartou, ja, "vychovavatelka") && !efektPotlaceny(data, sKartou, ja, "vychovavatelka") && h.priznane.some(presunie);
-  const indexDlhu = vychovavatelka ? h.priznane.findIndex(presunie) : -1;
   const svokra = svokraRany(data, sKartou, su) - svokraRany(data, view, su);
   const vypalne = Math.max(0, Math.min(silaPriazne(data, sKartou, "NEPRAJNIK", su), h.cigarety));
-  // Počet NA EX Pitky: moje zúčtované navyše o toto, súperove skryté nevidno (ráta sa, že nedá).
+  const kar = naexPecenSuperovi(view);
   const pitka = view.pitkaStav;
-  const moje = pitka?.naexPocet?.[ja] ?? 0;
-  const jeho = pitka?.naexPocet?.[su] ?? 0;
-  const policajtka = pitka === null ? 0 : dlhyPolicajtky(data, sKartou, su, moje + 1, jeho) - dlhyPolicajtky(data, sKartou, su, moje, jeho);
-  const odPolicajtky: CardInstance[] = Array.from({ length: policajtka }, (_, i) => ({ uid: UID_DLHU_POLICAJTKY - 10 * ja - i, defId: "dlh", leftLayout: 0, rightLayout: 0 }));
   const hraci: [ClientState["hraci"][0], ClientState["hraci"][1]] = [view.hraci[0], view.hraci[1]];
-  hraci[ja] = {
-    ...h,
-    poldeciPlne: Math.max(0, h.poldeciPlne - 1),
-    pecen: h.pecen + 1,
-    cigarety: h.cigarety - vypalne,
-    priznane: [...(indexDlhu === -1 ? h.priznane : h.priznane.filter((_, i) => i !== indexDlhu)), ...odPolicajtky],
-  };
-  hraci[su] = { ...hraci[su], cigarety: hraci[su].cigarety + vypalne };
+  hraci[ja] = { ...h, poldeciPlne: Math.max(0, h.poldeciPlne - 1), pecen: h.pecen + (kar ? 0 : 1), cigarety: h.cigarety - vypalne };
+  hraci[su] = { ...hraci[su], cigarety: hraci[su].cigarety + vypalne, pecen: hraci[su].pecen + (kar ? 1 : 0) };
   const naexPocet: [number, number] = [pitka?.naexPocet?.[0] ?? 0, pitka?.naexPocet?.[1] ?? 0];
   naexPocet[ja] += 1;
   const pitkaStav = pitka === null ? null : { ...pitka, naexPocet };
-  return { view: { ...sKartou, hraci, pitkaStav }, svokra, policajtka, vypalne, doDna, vychovavatelka, krcmarka };
+  return { view: { ...sKartou, hraci, pitkaStav }, svokra, vypalne, doDna, kar };
 }
 
 /** Náhľad NA EX na jednu kartu: celá cena a čo sa zúčtuje pri odkrytí. */
 export interface NahladNaexNaKartu extends CenaTahu {
   readonly odkrytie: PoOdkrytiNaex;
+}
+
+/**
+ * Najhoršia odpoveď súpera na NA EX z náhľadu `n` (najhorsiaOdpoved) — zvlášť,
+ * lebo skúša celú sadu (≈ 7 ms na kartu): klient ju ráta len pre vybranú kartu.
+ */
+export function najhorsiaOdpovedNaNaex(data: GameData, view: ClientState, n: NahladNaexNaKartu): NajhorsiaOdpoved | null {
+  const mojeAbstaky = view.ruka.filter((k) => k.defId === "abstak").length;
+  return najhorsiaOdpoved(data, n.odkrytie.view, n.dalsiePitky[1], view.ja === 0 ? [mojeAbstaky, 0] : [0, mojeAbstaky]);
+}
+
+/** Odpoveď súpera, ktorá by hráčovi `ja` dopadla najhoršie. */
+export interface NajhorsiaOdpoved {
+  /** Vzorová karta (druh a rozloženie strán) — súper ju mať nemusí. */
+  readonly karta: CardInstance;
+  /** Na koniec čej strany ju súper vyloží. */
+  readonly strana: PlayerId;
+  readonly damage: DamageResult;
+  readonly vysledok: BattleOutcome;
+}
+
+/**
+ * Najhoršia verejne možná odpoveď súpera na NA EX (playtest 20261026-173610-3,
+ * N5: náhľad 6 : 3, po Dievčine na vydaj 6 : 4). Súperova ruka je skrytá, preto
+ * sa skúša každý druh karty sady, ktorý smie do línie, v každom rozložení
+ * vnútornej hrany, na koniec oboch strán — ako bežné vyloženie (cieleVykladania,
+ * Most, skrytá Záverečná). Hodnotí sa ako hrozba: víťaz, potom prebytok.
+ * `po` je pohľad hráča `po.ja` po jeho NA EX (poOdkrytiNaex). Nástup odpovede
+ * (Snúbenica) nepredvída.
+ */
+export function najhorsiaOdpoved(
+  data: GameData,
+  po: ClientState,
+  dalsiePitky: number,
+  abstakyVRuke: readonly [number, number],
+): NajhorsiaOdpoved | null {
+  const ja = po.ja;
+  const su = opponentOf(ja);
+  if (po.ciel === null || po.hraci[su].rukaPocet <= 0) return null;
+  const hodnotaPreMna = (v: BattleOutcome): number =>
+    (v.vitaz === null ? 0 : v.vitaz === ja ? 1000 : -1000) + (v.prebytokDrzi === null ? 0 : v.prebytokDrzi === ja ? v.prebytok : -v.prebytok);
+  const bitka = (s: ClientState): DamageResult => poskodenieBitky(data, stolPriPoskodeni(data, s, dalsiePitky), evaluateLine(data, lineState(s)).sums, abstakyVRuke);
+  let najhorsia: NajhorsiaOdpoved | null = null;
+  let najhorsiaHodnota = hodnotaPreMna(battleOutcome(bitka(po)));
+  const lokalita = cielLokalitaId(po);
+  const zablokovane = zablokovaneStrany(po);
+  const finale = jeFinale(po);
+  for (const def of data.cards.values()) {
+    if (def.tags.includes("Lokalita") || def.tags.includes("Starešina")) continue;
+    const varianty = data.variants.get(def.id);
+    if (varianty === undefined) continue;
+    // Pri konci strany sa páruje len vnútorná hrana — stačí meniť jednu stranu karty.
+    const rozlozenia: [number, number][] = [
+      ...Array.from({ length: varianty.left.length }, (_, l): [number, number] => [l, 0]),
+      ...Array.from({ length: Math.max(0, varianty.right.length - 1) }, (_, r): [number, number] => [0, r + 1]),
+    ];
+    for (const [leftLayout, rightLayout] of rozlozenia) {
+      const karta: CardInstance = { uid: -900, defId: def.id, leftLayout, rightLayout };
+      const ciele = cieleVykladania(data, po.strany, su, karta, Number.POSITIVE_INFINITY, true, lokalita, zablokovane, finale);
+      for (const ciel of ciele) {
+        if (ciel !== "vlastna" && ciel !== "superova") continue;
+        const strana: PlayerId = ciel === "vlastna" ? su : ja;
+        // Konflikt (v7) môže pri odpovedi zmeniť bitku — ten istý výpočet ako vylozDoLinie.
+        const damage = bitka(sPrilozenou(data, po, strana, karta, su));
+        const vysledok = battleOutcome(damage);
+        const h = hodnotaPreMna(vysledok);
+        if (h < najhorsiaHodnota) {
+          najhorsiaHodnota = h;
+          najhorsia = { karta, strana, damage, vysledok };
+        }
+      }
+    }
+  }
+  return najhorsia;
+}
+
+/**
+ * Bitka pred a po jednom Pohoršení hráča `p` na staršieho (k sebe či k súperovi,
+ * playtest 20261026-181227-1 N2: priazeň Bitkára otočí bitku 4 : 4 → 5 : 4).
+ * Ten istý výpočet ako vyhodnotPoskodenie — súčty línie, nová priazeň. Null mimo
+ * bitky pred poškodením alebo keď posun poškodenie nezmení.
+ */
+export function bitkaPoPohorseni(
+  data: GameData,
+  view: ClientState,
+  elderId: string,
+  p: PlayerId,
+  kSebe: boolean,
+  abstakyVRuke: readonly [number, number],
+): { readonly pred: DamageResult; readonly po: DamageResult } | null {
+  if (view.ciel === null || view.bitkaStav === null || view.bitkaStav.damage !== null) return null;
+  const elder = view.starsi.find((e) => e.elderId === elderId);
+  const marker = elder === undefined ? null : posunMarker(elder, kSebe ? p : opponentOf(p));
+  if (marker === null) return null;
+  const sums = evaluateLine(data, lineState(view)).sums;
+  const pred = poskodenieBitky(data, view, sums, abstakyVRuke);
+  const po = poskodenieBitky(data, { ...view, starsi: view.starsi.map((e) => (e.elderId === elderId ? { ...e, marker } : e)) }, sums, abstakyVRuke);
+  const rovnake = pred.tuhe[0] === po.tuhe[0] && pred.tuhe[1] === po.tuhe[1] && pred.celkove[0] === po.celkove[0] && pred.celkove[1] === po.celkove[1];
+  return rovnake ? null : { pred, po };
 }
 
 /**

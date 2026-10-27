@@ -53,9 +53,9 @@ li{margin:.2em 0}
 <section>
 <div class="suhrn">
   <div><b>63</b><br>v hre dnes</div>
-  <div><b>23</b><br>nových plánovaných</div>
-  <div><b>86</b><br>spolu po revízii</div>
-  <div><b>36</b><br>schválených zmien na kartách v hre</div>
+  <div><b>19</b><br>nových plánovaných</div>
+  <div><b>81</b><br>spolu po revízii</div>
+  <div><b>51</b><br>schválených zmien na kartách v hre</div>
 </div>
 <p class="pozn">Stavy: <span class="st vhre">v hre</span> bez zmeny ·
 <span class="st zmena">v hre · zmena</span> schválená úprava čaká na implementáciu ·
@@ -76,15 +76,15 @@ Vlny: NA EX trojica + Autobusár/Hasič sú naprogramované (merge po ULTRA); K�
 <h2>Nástroje (8 + 2 nové)</h2>
 <table>
 <tr><th>Karta</th><th>Stav</th><th class="skry-m">Poznámka</th></tr>
-<tr data-s="vhre"><td>Noviny</td><td><span class="st vhre">v hre</span></td><td class="skry-m">bez zmeny</td></tr>
-<tr data-s="vhre"><td>Krabička cigariet</td><td><span class="st vhre">v hre</span></td><td class="skry-m">bez zmeny — palivo pre Kšefty</td></tr>
+<tr data-s="zmena"><td>Noviny</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">efekty E1 (27. 10.): Prehra — ak má víťaz viac priznaných Dlhov, špaky za bitku dostaneš ty (korupčná aféra)</td></tr>
+<tr data-s="zmena"><td>Krabička cigariet</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">efekty E1: Pitka — za každé 2 súperove vyfajčené cigarety si dober kartu (bez neresti)</td></tr>
 <tr data-s="vhre"><td>Vínko</td><td><span class="st vhre">v hre</span></td><td class="skry-m">bez zmeny</td></tr>
-<tr data-s="vhre"><td>Pasca</td><td><span class="st vhre">v hre</span></td><td class="skry-m">bez zmeny, ožije so 6 zvieratami</td></tr>
-<tr data-s="zmena"><td>Puška</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">revízia: Rana → Pecka, Pecka → Petelica (brokovnica po dedovi)</td></tr>
+<tr data-s="zmena"><td>Pasca</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">nástroje kolo 3: Dedičstvo: Bitka — ak súper v kole priložil kartu k tvojej, Pecka navyše (nahrádza efekt proti Zvieratám)</td></tr>
+<tr data-s="zmena"><td>Puška</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">revízia: Rana → Pecka, Pecka → Petelica; nástroje kolo 3: Dedičstvo — tvoje Petelice o 1 poškodenie viac</td></tr>
 <tr data-s="vhre"><td>Svätý text</td><td><span class="st vhre">v hre</span></td><td class="skry-m">bez zmeny</td></tr>
 <tr data-s="vhre"><td>Nealko</td><td><span class="st vhre">v hre</span></td><td class="skry-m">bez zmeny — hlavná poistka pri viac pečene</td></tr>
-<tr data-s="zmena"><td>Výherný automat</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">revízia: väčší hazard — Výhra 3 cigarety, Prehra 2 Dlhy</td></tr>
-<tr data-s="nova"><td>Vidly</td><td><span class="st nova">nová</span></td><td class="skry-m">Pecka / Pohorš; Dedičstvo: +1 tuhé, kým máš menej špakov</td></tr>
+<tr data-s="zmena"><td>Výherný automat</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">nástroje kolo 3 (Michalov náčrt): Dedičstvo — tvoj prah Dlhu je o 1 vyšší, v poslednej Pitke kola získaš 1 Dlh</td></tr>
+<tr data-s="nova"><td>Vidly</td><td><span class="st nova">nová</span></td><td class="skry-m">Pecka / Pohorš; nástroje kolo 3: Dedičstvo — tvoje Rany o 1 poškodenie viac</td></tr>
 <tr data-s="nova"><td>Lievik</td><td><span class="st nova">nová</span></td><td class="skry-m">Poldeci / Pečeň×2; Dedičstvo: NA EX aj na Zviera</td></tr>
 </table>
 </section>
@@ -94,53 +94,48 @@ Vlny: NA EX trojica + Autobusár/Hasič sú naprogramované (merge po ULTRA); K�
 <table>
 <tr><th>Karta</th><th>Stav</th><th class="skry-m">Poznámka</th></tr>
 <tr data-s="vhre"><td>Čierna mačka</td><td><span class="st vhre">v hre</span></td><td class="skry-m">bez zmeny</td></tr>
-<tr data-s="vhre"><td>Pes</td><td><span class="st vhre">v hre</span></td><td class="skry-m">bez zmeny; klauzula „bez iného zvieraťa“ ostáva len jemu</td></tr>
-<tr data-s="nova"><td>Krokodíl</td><td><span class="st nova">nová</span></td><td class="skry-m">Odpor / Pecka; Furt: zožerie súperovu kartu vedľa — von z hry</td></tr>
-<tr data-s="nova"><td>Kapybara</td><td><span class="st nova">nová</span></td><td class="skry-m">Viera / Cig; Kšeft: za 2 cigarety zožerie súperovi špak</td></tr>
+<tr data-s="zmena"><td>Pes</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">efekty E1: Furt — aktívne akcie na spoji so súperovou kartou ×2 (Michal: „Konflikt“ ako stav; znenie potvrdené); klauzula „bez iného zvieraťa“ ostáva</td></tr>
+<tr data-s="nova"><td>Krokodíl</td><td><span class="st nova">nová</span></td><td class="skry-m">Odpor / Pecka; efekty E1: Bitka — Občania a Zvieratá v jeho okolí (oboch hráčov) na konci bitky odídu z hry (potvrdené)</td></tr>
+<tr data-s="nova"><td>Kapybara</td><td><span class="st nova">nová</span></td><td class="skry-m">Viera / Cig; efekty E1: Nástup — posuň marker jedného staršieho o 1 pole k stredu (Kšeft padá)</td></tr>
 <tr data-s="nova"><td>Kôň</td><td><span class="st nova">nová</span></td><td class="skry-m">Posil / Rana; Furt: Nástroj s ním tvorí spoj</td></tr>
-<tr data-s="nova"><td>Kohút</td><td><span class="st nova">nová</span></td><td class="skry-m">Pohorš / Odpor; Furt: kolo má aspoň 2 Pitky</td></tr>
+<tr data-s="nova"><td>Kohút</td><td><span class="st nova">nová</span></td><td class="skry-m">Pohorš / Odpor; efekty E1: Pitka — posledné slovo máš ty, aj ako obranca (Furt „aspoň 2 Pitky“ padá)</td></tr>
 </table>
 </section>
 
 <section>
-<h2>Občania (23 + 13 nových)</h2>
+<h2>Občania (22 + 9 nových; Presbiter vypadá)</h2>
 <table>
 <tr><th>Karta</th><th>Stav</th><th class="skry-m">Poznámka</th></tr>
 <tr data-s="zmena"><td>Finančná poradkyňa</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">revízia: spojka — vpravo + Obmedzenie (6 akcií)</td></tr>
-<tr data-s="vhre"><td>Veľmi smútiaca vdova</td><td><span class="st vhre">v hre</span></td><td class="skry-m">bez zmeny</td></tr>
+<tr data-s="zmena"><td>Veľmi smútiaca vdova</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">efekty E2 (27. 10.): Konflikt — priložený súperov Chlap ide po bitke z hry</td></tr>
 <tr data-s="zmena"><td>Veštica</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">revízia: spojka — vľavo + Pečeň (bylinkový likér)</td></tr>
 <tr data-s="vhre"><td>Silná, nezávislá žena</td><td><span class="st vhre">v hre</span></td><td class="skry-m">bez zmeny — hlavný zosilňovač WAU kôl</td></tr>
-<tr data-s="zmena"><td>Policajtka</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">NA EX trojica (naprogramované): Pitka — kto dal viac NA EX, dostane Dlh; nová ilustrácia (fén + auto) ide s v21</td></tr>
+<tr data-s="zmena"><td>Policajtka</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">NA EX trojica (naprogramované): Pitka — kto dal viac NA EX, dostane Dlh; nová ilustrácia (fén + auto) ide s v21; <b>efekty E2 (27. 10.): nahradí to Konflikt „Pokuta na mieste“</b> (Dlh, Kriminál platí 2 cigarety), potvrdené</td></tr>
 <tr data-s="zmena"><td>Hasič</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">naprogramované: Nástup — náhodná karta z odhadzovacieho, nechaj/vráť</td></tr>
 <tr data-s="zmena"><td>Praudovravec</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">Dezinformátor: Odpor na jeho spojoch posilní; revízia: vľavo + Viera</td></tr>
 <tr data-s="vhre"><td>Zámočník</td><td><span class="st vhre">v hre</span></td><td class="skry-m">bez zmeny; texty/ilustrácia: chlap, čo vie zvárať</td></tr>
-<tr data-s="zmena"><td>Niekoho stryná</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">revízia: spojka — vľavo slot 2 + Pečeň („na zdravie“)</td></tr>
+<tr data-s="zmena"><td>Stryná <small>(predtým Niekoho stryná)</small></td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">revízia: spojka — vľavo slot 2 + Pečeň („na zdravie“); efekty E2 (27. 10.): <b>premenovaná na Stryná</b>, Pitka — kto nedal NA EX, dostane 1 pečeň</td></tr>
 <tr data-s="zmena"><td>Veterán</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">revízia: Pecka → Petelica (s NA EX 6 tuhé, ale zdvojí aj Pečeň)</td></tr>
-<tr data-s="zmena"><td>Recidivista</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">revízia: vľavo Odpor → Dlh (súdne trovy)</td></tr>
-<tr data-s="zmena"><td>Liberál</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">stráca vetu o NA EX (trojica); revízia: akcie 2 → 4 (Pohorš, Viera / Cig, Povera)</td></tr>
-<tr data-s="zmena"><td>Živnostník</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">revízia: spojka — vľavo + Robota; + návrh: Pakt (vľavo, okno 2–3)</td></tr>
+<tr data-s="zmena"><td>Recidivista</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">revízia: vľavo Odpor → Dlh (súdne trovy); efekty E2: Prehra — vráti sa do ruky</td></tr>
+<tr data-s="zmena"><td>Liberál</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">stráca vetu o NA EX (trojica); revízia: akcie 2 → 4 (Pohorš, Viera / Cig, Povera); efekty E2: Pitka — nevyvážená súperova partia = 1 zadĺženie</td></tr>
+<tr data-s="zmena"><td>Živnostník</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">revízia: spojka — vľavo + Robota; + návrh: Pakt (vľavo, okno 2–3); efekty E2: Nástup — smieš s ním priložiť Nástroj v jednom ťahu (potvrdené; Nástroj smie aj pri Záverečnej)</td></tr>
 <tr data-s="zmena"><td>Kočovník</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">revízia: Rana → Pecka</td></tr>
 <tr data-s="zmena"><td>Svokra</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">Varecha (naprogramované): Bitka — Rana za každú tvoju kartu so súperovým NA EX; dávka 3: vpravo Obmedzenie → Dlh</td></tr>
-<tr data-s="zmena"><td>Šarlatán</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">revízia: vpravo + Pečeň; nový Furt: aktívna Pečeň v okolí sa ráta aj ako Viera; oprava preklepu ide s v21</td></tr>
+<tr data-s="zmena"><td>Šarlatán</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">revízia: vpravo + Pečeň; oprava preklepu ide s v21; efekty E2: Konflikt — jeho Dlhy sa menia na Vieru a Povery na Rany (nahrádza Furt s Pečeňou, platí, kým leží v línii)</td></tr>
 <tr data-s="zmena"><td>Podvodník</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">revízia: Prehra — jeden tvoj priznaný Dlh prepíšeš na súpera</td></tr>
-<tr data-s="zmena"><td>Záhradkár</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">revízia: nové efekty — Bitka: tvoj prah Exekútora +2; Výhra: otoč vypitý poldeci na plný</td></tr>
-<tr data-s="zmena"><td>Anonymný alkoholik</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">Placatka (naprogramované): tvoje NA EX naňho mimo limitu</td></tr>
-<tr data-s="vhre"><td>Presbiter</td><td><span class="st vhre">v hre</span></td><td class="skry-m">bez zmeny</td></tr>
+<tr data-s="zmena"><td>Záhradkár</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">efekty E3: Exekúcia — zahoď ho namiesto špakov, spáli Dlhy podľa aktívnych akcií (nahrádza oba efekty z revízie — potvrdené); <s>revízia: nové efekty — Bitka: tvoj prah Exekútora +2; Výhra: otoč vypitý poldeci na plný</s></td></tr>
+<tr data-s="zmena"><td>Anonymný alkoholik</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m"><s>Placatka (naprogramované): tvoje NA EX naňho mimo limitu</s>; <b>efekty E3: nahradí ju Nástup — prizná Cirhózy z odhadzovacieho balíčka</b> (z NA EX trojice ostáva len Svokra — potvrdené)</td></tr>
 <tr data-s="zmena"><td>Dvojčatá</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">revízia: Rana → Pecka vľavo, Cigareta → Pečeň vpravo</td></tr>
 <tr data-s="zmena"><td>Šofér</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">revízia: nový efekt Bitka — bez NA EX v kole udelíš Pecku navyše (triezvy šofér)</td></tr>
-<tr data-s="vhre"><td>Snúbenica</td><td><span class="st vhre">v hre</span></td><td class="skry-m">bez zmeny</td></tr>
+<tr data-s="zmena"><td>Snúbenica</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">efekty E3 (27. 10.): Konflikt — priložený súperov Chlap je po bitke tvoj</td></tr>
 <tr data-s="nova"><td>Degustátorka</td><td><span class="st nova">nová</span></td><td class="skry-m">Pečeň, Poldeci / Rana, Obmedz; Nástup: súperovi otočí plný poldeci; dávka 3: vpravo Obmedzenie → Dlh (Rana, Dlh)</td></tr>
-<tr data-s="nova"><td>Klebetnica</td><td><span class="st nova">nová</span></td><td class="skry-m">Povera, Vízia / Pohorš, Dlh; Nástup: pozri súperovu ruku, kartu naspodok</td></tr>
-<tr data-s="nova"><td>Dohadzovačka</td><td><span class="st nova">nová</span></td><td class="skry-m">Viera, Cig / Posil, Dlh; Nástup: vymeň dvom starším priazne; + návrh: Pakt (namiesto Cigarety vľavo)</td></tr>
+<tr data-s="nova"><td>Bzdocha <small>(predtým Klebetnica)</small></td><td><span class="st nova">nová</span></td><td class="skry-m">Povera, Vízia / Pohorš, Dlh; efekty E3: <b>premenovaná na Bzdocha</b>, Pitka — ako druhý vidíš súperovu voľbu NA EX skôr</td></tr>
+<tr data-s="nova"><td>Dohadzovačka</td><td><span class="st nova">nová</span></td><td class="skry-m">Viera, Cig / Posil, Dlh; + návrh: Pakt (namiesto Cigarety vľavo, sloty 1 a 3); efekty E3: Bitka — karta zo šenku za každý spoj tvojej Ženy so súperovým Chlapom a naopak (potvrdené)</td></tr>
 <tr data-s="nova"><td>Vandal</td><td><span class="st nova">nová</span></td><td class="skry-m">Pecka, Pečeň / Odpor, Rana; Nástup: otoč lokalitu</td></tr>
 <tr data-s="nova"><td>Strýko z Ameriky</td><td><span class="st nova">nová</span></td><td class="skry-m">Cig×2 / Vízia, Poldeci; Kšeft: za 2 cigarety Rana navyše</td></tr>
-<tr data-s="nova"><td>Opatrovateľka</td><td><span class="st nova">nová</span></td><td class="skry-m">Robota, Cig / Viera, Posil; Nástup: latka Absťáku −2</td></tr>
-<tr data-s="nova"><td>Smetiarka</td><td><span class="st nova">nová</span></td><td class="skry-m">Robota, Cig / Obmedz; Kšeft: za odhodenú kartu cigareta</td></tr>
-<tr data-s="nova"><td>Brigádnik</td><td><span class="st nova">nová</span></td><td class="skry-m">spojka 6 akcií; Furt: do prevahy sa neráta (rezerva išla do sady); + návrh: Pakt (vľavo, slot 3)</td></tr>
-<tr data-s="nova"><td>Mäsiar</td><td><span class="st nova">nová</span></td><td class="skry-m">Pecka, Pečeň / Pecka, Pečeň; bez efektu — zabíjačka so slivovicou</td></tr>
-<tr data-s="nova"><td>Kulturista</td><td><span class="st nova">nová</span></td><td class="skry-m">Petelica / Dlh×2; bez efektu — anaboliká na splátky</td></tr>
+<tr data-s="nova"><td>Mäsiar</td><td><span class="st nova">nová</span></td><td class="skry-m">Pecka, Pečeň / Pecka, Pečeň; efekty E3: Furt — akcie Zvierat v jeho okolí neplatia</td></tr>
+<tr data-s="nova"><td>Kulturista</td><td><span class="st nova">nová</span></td><td class="skry-m"><b>efekty E3: Petelica ×2 / Dlh ×2</b> (deficit Petelíc vyrovnaný); efekt <b>Úplatok</b> (E4): súper smie v každej Pitke položiť naň 1 cigaretu, každá zníži jeho útoky o stupeň do konca kola, cigarety sa zahodia</td></tr>
 <tr data-s="nova"><td>Traktoristka</td><td><span class="st nova">nová</span></td><td class="skry-m">Petelica, Pečeň / Dlh; efekt „Na leasing“</td></tr>
-<tr data-s="nova"><td>Oslávenec</td><td><span class="st nova">nová</span></td><td class="skry-m">Poldeci, Cig / Rana; Kšeft: za plný poldeci naleješ súperovi — 2 Pečene</td></tr>
 <tr data-s="nova"><td>Vymáhač</td><td><span class="st nova">nová</span></td><td class="skry-m">dávka 3 (D5): Pecka, Dlh / Rana, Dlh; Bitka: za každé 2 tvoje priznané Dlhy udelíš súperovi 1 Ranu navyše</td></tr>
 </table>
 </section>
@@ -149,14 +144,14 @@ Vlny: NA EX trojica + Autobusár/Hasič sú naprogramované (merge po ULTRA); K�
 <h2>Starší (8)</h2>
 <table>
 <tr><th>Karta</th><th>Stav</th><th class="skry-m">Poznámka</th></tr>
-<tr data-s="vhre"><td>Veterinár</td><td><span class="st vhre">v hre</span></td><td class="skry-m">bez zmeny</td></tr>
-<tr data-s="zmena"><td>Autobusár</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">variant A (naprogramované): 1 Absťák sa nepočíta nikde</td></tr>
-<tr data-s="zmena"><td>Starosta</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">Kšeft prepis (v7): za cigaretu výmena ruka ↔ šenok, nie Cirhóza</td></tr>
-<tr data-s="vhre"><td>Farár</td><td><span class="st vhre">v hre</span></td><td class="skry-m">bez zmeny — Povier pribudne</td></tr>
-<tr data-s="zmena"><td>Poštárka</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">Kšeft prepis (v7): za 1 Dlh až 2 karty</td></tr>
-<tr data-s="vhre"><td>Hrobár</td><td><span class="st vhre">v hre</span></td><td class="skry-m">bez zmeny — zahadzovania pribudlo</td></tr>
-<tr data-s="vhre"><td>Vychovávateľka</td><td><span class="st vhre">v hre</span></td><td class="skry-m">bez zmeny</td></tr>
-<tr data-s="vhre"><td>Krčmárka</td><td><span class="st vhre">v hre</span></td><td class="skry-m">bez zmeny; sledovať (úzky efekt)</td></tr>
+<tr data-s="zmena"><td>Veterinár</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">E4 (Michal, nevyjadrené karty): Pitka — karty v jeho okolí nepridávajú poškodenie pečene</td></tr>
+<tr data-s="zmena"><td>Autobusár</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m"><s>variant A (naprogramované): 1 Absťák sa nepočíta nikde</s>; <b>E4 (Michal, nevyjadrené karty): Zhromaždenie — súper, ktorý pasuje po tebe, nedostane cigarety za pas (variant A z feature/autobusar-hasic padá)</b></td></tr>
+<tr data-s="zmena"><td>Starosta</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m"><s>Kšeft prepis (v7): výmena ruka ↔ šenok</s>; E4 (Michal, nevyjadrené karty): Nástup — vezmi si do ruky kartu zo šenku</td></tr>
+<tr data-s="zmena"><td>Farár</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">E4 (Michal, nevyjadrené karty): Prehra — víťazovi zadĺženie za každú jeho aktívnu Poveru (farar-C)</td></tr>
+<tr data-s="zmena"><td>Poštárka</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">Kšeft (v7) upravený v E4: za 1 Dlh si dober 1 kartu</td></tr>
+<tr data-s="zmena"><td>Hrobár</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">E4 (Michal, nevyjadrené karty): Konflikt — priložená karta je posledná na strane a po bitke ide z hry</td></tr>
+<tr data-s="zmena"><td>Vychovávateľka</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">E4 (Michal, nevyjadrené karty): Kšeft — za 2 cigarety Povera navyše do bitky</td></tr>
+<tr data-s="zmena"><td>Krčmárka</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">E4 (Michal, nevyjadrené karty): Pitka — na tvoje NA EX súper nesmie odpovedať kartou</td></tr>
 </table>
 </section>
 
@@ -167,19 +162,19 @@ Vlny: NA EX trojica + Autobusár/Hasič sú naprogramované (merge po ULTRA); K�
 <tr data-s="vhre"><td>Zastávka</td><td>1</td><td><span class="st vhre">v hre</span></td><td class="skry-m">bez zmeny</td></tr>
 <tr data-s="zmena"><td>Most</td><td>1</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">hrany 2/2 → 1/1: Pecka / Cigareta</td></tr>
 <tr data-s="zmena"><td>Lesná cesta</td><td>1</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">nový efekt: za každé svoje Zviera v súperovom kraji +1 tuhé</td></tr>
-<tr data-s="zmena"><td>Jednota</td><td>1</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">nový efekt: Kšeft — za 1 Dlh dostaneš 2 cigarety</td></tr>
-<tr data-s="vhre"><td>Cintorín</td><td>1</td><td><span class="st vhre">v hre</span></td><td class="skry-m">bez zmeny</td></tr>
+<tr data-s="zmena"><td>Jednota</td><td>1</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m"><s>Kšeft — za 1 Dlh 2 cigarety</s>; E4 (Michal, nevyjadrené karty): Pitka — kto má viac priznaných Dlhov, nesmie fajčiť ani dolievať</td></tr>
+<tr data-s="zmena"><td>Cintorín</td><td>1</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">E4 (Michal, nevyjadrené karty): Pitka — nová Cirhóza je hneď priznaná (cintorin-A)</td></tr>
 <tr data-s="zmena"><td>Ihrisko</td><td>2</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">Rana×2 → Rana, Pecka</td></tr>
-<tr data-s="vhre"><td>Benzínka</td><td>2</td><td><span class="st vhre">v hre</span></td><td class="skry-m">bez zmeny</td></tr>
-<tr data-s="zmena"><td>Kar</td><td>2</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">nový efekt: doliatie zadarmo, ale každé +1 Pečeň</td></tr>
+<tr data-s="zmena"><td>Benzínka</td><td>2</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">E4 (Michal, nevyjadrené karty): Pitka — fajčí len hráč, ktorého Občan alebo Starešina leží najďalej od lokality (rovnosť: nikto — na potvrdenie)</td></tr>
+<tr data-s="zmena"><td>Kar</td><td>2</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m"><s>doliatie zadarmo, každé +1 Pečeň</s>; E4 (Michal, nevyjadrené karty): Pitka — pečeň za NA EX dostane súper (kar-A)</td></tr>
 <tr data-s="zmena"><td>Zberný dvor</td><td>2</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">hrany 3/3 → 2/2; Kšeft: za 1 cigaretu karta z odhadzovacieho do ruky</td></tr>
 <tr data-s="zmena"><td>Krčma</td><td>2</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">hrany 3/3 → 2/2: Petelica, Dlh / Rana, Rana</td></tr>
 <tr data-s="nova"><td>Sklad</td><td>2</td><td><span class="st nova">nová</span></td><td class="skry-m">rozhodnuté 27. 10. večer (Družstvo sa delí na dve lokality): Robota, Pecka / Cigareta, Dlh; Kšeft „Nočná šichta“ — za 1 cigaretu vrchná karta zo súperovho odhadzovacieho do ruky; ilustrácia vybraná</td></tr>
-<tr data-s="zmena"><td>Obecný úrad</td><td>3</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">hrany 2/2 → 3/3; efekt: každá aktívna Robota spáli 2 priznané Dlhy; nová ilustrácia</td></tr>
+<tr data-s="zmena"><td>Obecný úrad</td><td>3</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">hrany 2/2 → 3/3; <s>efekt: Robota spáli 2 priznané Dlhy</s>; E4 (Michal, nevyjadrené karty): Kšeft — za 3 cigarety presunieš priznaný Dlh súperovi (obecny_urad-B); nová ilustrácia</td></tr>
 <tr data-s="zmena"><td>Kultúrny dom</td><td>3</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">hrany na 3/3 (Rana → Pecka); nová ilustrácia</td></tr>
 <tr data-s="zmena"><td>Vínna pivnica</td><td>3</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">hrany 1/1 → 3/3; nová ilustrácia</td></tr>
-<tr data-s="vhre"><td>Družstvo</td><td>3</td><td><span class="st vhre">v hre</span></td><td class="skry-m">bez zmeny; nová ilustrácia</td></tr>
-<tr data-s="zmena"><td>Kostol</td><td>3</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">hrany 2/2 → 3/3; efekt ostáva</td></tr>
+<tr data-s="vhre"><td>Družstvo</td><td>3</td><td><span class="st vhre">v hre</span></td><td class="skry-m">bez zmeny; nová ilustrácia: finál 1 (rieši Ilustrátor)</td></tr>
+<tr data-s="zmena"><td>Kostol</td><td>3</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">hrany 2/2 → 3/3; E4 (Michal, nevyjadrené karty): NA EX len na kartu v kraji pri oltári (kostol-A)</td></tr>
 <tr data-s="nova"><td>Poľovnícka chata</td><td>P</td><td><span class="st nova">nová</span></td><td class="skry-m">4/4; Furt: aktívne tuhé z hrán lokality sa rátajú dvakrát</td></tr>
 <tr data-s="nova"><td>Predsedova vila</td><td>P</td><td><span class="st nova">nová</span></td><td class="skry-m">4/4; Kšeft: za 2 cigarety posuň marker staršieho o 1 pole</td></tr>
 <tr data-s="nova"><td>Herňa</td><td>P</td><td><span class="st nova">nová</span></td><td class="skry-m">4/4; Bitka: víťaz dostane špaky navyše podľa priznaných Dlhov porazeného</td></tr>
@@ -190,10 +185,10 @@ Vlny: NA EX trojica + Autobusár/Hasič sú naprogramované (merge po ULTRA); K�
 <h2>Štartové karty (4)</h2>
 <table>
 <tr><th>Karta</th><th>Stav</th><th class="skry-m">Poznámka</th></tr>
-<tr data-s="ultra"><td>Pijan</td><td><span class="st ultra">po ULTRA</span></td><td class="skry-m">rozhodne sa s rodinou (jediný štartový úderník s pečeňou)</td></tr>
+<tr data-s="zmena"><td>Pijan</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m"><s>efekty E1: Pitka — o 1 NA EX viac</s>; E4 (Michal, nevyjadrené karty): Bitka — za každé tvoje NA EX v kole Rana navyše</td></tr>
 <tr data-s="zmena"><td>Milujúca manželka</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">dávka 3 (M2): Pitka — tvoje poškodenie pečene v tejto Pitke je o 1 menšie; bez tagu Kliatba; akcie ostávajú. Návrh „odvedie ťa domov“ je prekonaný</td></tr>
-<tr data-s="ultra"><td>Miňištrant</td><td><span class="st ultra">po ULTRA</span></td><td class="skry-m">návrh „rozhrešenie“ čaká na ULTRA</td></tr>
-<tr data-s="zmena"><td>Dievčina na vydaj</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">dávka 3 (D4): veno páli Dlhy až od 4 priznaných Dlhov; nahrádza návrh „veno“</td></tr>
+<tr data-s="zmena"><td>Miňištrant</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m">efekty E1: Nástup — ak priložením vyvoláš Konflikt, jeho Viera sa ráta ako Pecka (potvrdené, platí kým leží v línii)</td></tr>
+<tr data-s="zmena"><td>Dievčina na vydaj</td><td><span class="st zmena">v hre · zmena</span></td><td class="skry-m"><s>dávka 3 (D4): veno páli Dlhy až od 4 priznaných Dlhov</s>; efekty E1: Prehra — zahoď ju, súper získa toľko Dlhov, koľko mala aktívnych akcií (nahrádza D4 — potvrdené)</td></tr>
 </table>
 </section>
 
@@ -211,6 +206,8 @@ Vlny: NA EX trojica + Autobusár/Hasič sú naprogramované (merge po ULTRA); K�
 <h2>Zamietnuté a odložené (nejdú do hry)</h2>
 <ul>
 <li><b>Zamietnuté:</b> Obvodná lekárka, Advokátka (efekt dobrý — čaká na nové meno), Hrable, Kostolník, Vybavovač, Bufetárka, Hromotĺk, Kuchárka, Šúľač.</li>
+<li><b>Vyradené zo sady (efekty E3, 27. 10.):</b> Presbiter, Opatrovateľka.</li>
+<li><b>Zatiaľ len návrhy, mimo sady (efekty E3, 27. 10.):</b> Smetiarka, Brigádnik (bol nosičom Paktu, Pakt klesá na 4 kópie), Oslávenec (efekt Kšeft za plný poldeci rozhodnutý, karta na potvrdenie?).</li>
 <li><b>Odložené na neskôr:</b> Zverák („možno sa k nemu vrátime“), Večná sťažovateľka, Predajca hrncov (dávka 3, D2; znenie rozhodnuté: Povera, Cig / Rana, Dlh; Nástup: Súper získa 1 Dlh, bez voľby súpera).</li>
 </ul>
 <p class="pozn">Zdroje: packages/core/data/cards.json (kópia zverejnenej sady), docs/napady/revizia-sady/plan.md (časti 3, 4, 7, 10), rozhodnutia 26.–27. 10. Nové karty a zmeny idú do tvorcu až po zverejnení v21 a po ULTRA playteste; revízia sady a Kšeft sú pravidlá v7.</p>

@@ -175,20 +175,6 @@ describe("Záverečná — otočenie na konci Pitky", () => {
     expect(viewFor(data, state, 1).zaverecne).toEqual([]);
   });
 
-  it("Policajtka lícom dole za NA EX súpera nedá Dlh pri odkrytí — až pri otočení", () => {
-    const pijan: PlacedCard = { card: inst("pijan"), playedBy: 0 };
-    const s = vPitke([[pijan], [skryta(inst("policajtka"), 1)]], 0);
-    const dlhy = (t: GameState): number => t.hraci[0].priznane.filter((k) => k.defId === "dlh").length;
-    const naex = naexOdkryte(data, s, pijan.card.uid, 0);
-    expect(naex.events.some((e) => e.type === "log" && e.text.startsWith("Policajtka"))).toBe(false);
-    if (naex.state.pitkaStav?.reakcia === 1) expect(dlhy(naex.state)).toBe(dlhy(s));
-    const odpoved = naex.state.pitkaStav?.reakcia === 1 ? apply(data, naex.state, { type: "bezReakcie" }, 1) : null;
-    const { logy: zvysok } = dohrajPitku(odpoved?.state ?? naex.state);
-    const logy = [...naex.events, ...(odpoved?.events ?? [])].flatMap((e) => (e.type === "log" ? [e.text] : [])).concat(zvysok);
-    const otocenie = logy.indexOf("Záverečná hráča 2 sa otáča: Policajtka.");
-    expect(otocenie).toBeGreaterThan(-1);
-    expect(logy.findIndex((t) => t === "Policajtka: hráč 1 dal v tejto Pitke viac NA EX (1 : 0) — dostáva Dlh.")).toBeGreaterThan(otocenie);
-  });
 });
 
 describe("Záverečná — bot", () => {

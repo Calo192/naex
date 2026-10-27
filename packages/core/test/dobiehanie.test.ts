@@ -180,17 +180,3 @@ describe("ohlásené vydesenie", () => {
   });
 });
 
-describe("prebytok a Miňištrant", () => {
-  it("posun, ktorý stojí viac než zvyšný prebytok, sa nedá urobiť", () => {
-    const s0 = setupSBalickom(data, 9);
-    const s: GameState = {
-      ...s0,
-      faza: "bitka",
-      ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
-      strany: [[{ card: inst("ministrant"), playedBy: 0 }], []],
-      bitkaStav: bitka({ krok: "prebytok", caka: 0, vitaz: 0, prebytokDrzi: 0, prebytokZostava: 1 }),
-    } as GameState;
-    expect(legalCommands(data, s, 0).some((c) => c.type === "prebytok")).toBe(false);
-    expect(() => apply(data, s, { type: "prebytok", elderId: s.starsi[0]!.elderId }, 0)).toThrow(/Miňištrant/);
-  });
-});

@@ -1,0 +1,124 @@
+{
+  "davka": "20261027-150555",
+  "podklady": ["20261027-062058.html", "20261027-105422.html"],
+  "navrhy": [
+    {
+      "kluc": "rozhodca-znenie-v62",
+      "nazov": "Štyri vety, ktoré hra už robí, ale pravidlá ich nehovoria",
+      "kritickost": "stredna",
+      "oblast": "pravidlá",
+      "zdroj": "rozhodca",
+      "problem": "Hráči v posledných playtestoch hlásili ako nezrovnalosť štyri miesta, kde hra postupuje jednoznačne, ale text pravidiel to nehovorí alebo to hovorí zavádzajúco. Nič z toho nemení hru, len znenie.\n\n1. §7 Počet Pitiek: hlavná veta ráta podľa strán lokality, ale príklad hovorí o hráčoch („hráč A aktivuje 3 akcie, hráč B 1“). Pri podstrčenej karte to vedie k inému číslu. Ani sa nehovorí, že akcia hrany zdvojená Posilnením (×2) je stále jedna akcia.\n\n2. §16 Snúbenica: „vedľa karty s NA EX“ v praxi znamená len doterajšiu poslednú kartu strany, lebo Snúbenica sa vykladá na koniec. Keď súper kartu s NA EX zakryje odpoveďou, Snúbenica nezaberie.\n\n3. §5 Stavba šenku: web aj stránka Pravidlá volajú spodok balíčka „Smetisko“, v PRAVIDLA.md toto slovo nie je.\n\n4. §13 Záverečná: súperova Záverečná sa ráta aj v pároch s tvojimi kartami, ale tvoju akciu, ktorú aktivuje, ti hra neukáže ani v odhade bitky. Je to správne, inak by sa Záverečná prezradila, no text to nehovorí.",
+      "pricina": "Iba znenie docs/PRAVIDLA.md (§5, §7, §13, §16), v prípade 1 aj veta na stránke Pravidlá (apps/web/src/stranky/pravidla/kapitoly.tsx, „Koľko Pitiek“). Hra je vo všetkých štyroch prípadoch jednoznačná: pocetPitiek ráta aktívne akcie každej hrany (evaluateLine, aktivneStredu), snubenicaVracia berie poslednú kartu strany a viewFor posiela pohľad, ktorý je rovnaký, nech je lícom dole ktorákoľvek karta.",
+      "prejav": "Playtest 20261027-062058: Hela čakala viac Pitiek, keď jej Manželka na súperovej strane aktivovala hranu Jednoty (nález 8), Šimonova Snúbenica ostala bez cieľa po súperovej odpovedi (nález 9). Playtest 20261027-105422: Eva pri hrane „Cigareta ×2“ (nález 5), Eva pri „Smetisku“ (nález 7). Nočné partie 20261026-173610-1: Šimon (N6) mal v odhade 2 : 6 a po otočení súperovej Záverečnej bolo 3 : 7.",
+      "dokazy": [
+        "PRAVIDLA.md §7 Počet Pitiek: „Príklad: hráč A aktivuje 3 akcie lokality, hráč B 1 → 2 Pitky“.",
+        "Test packages/core/test/pravidla-medzery-v62.test.ts › „§7: akcie hrany aktivované podstrčenou kartou sa rátajú strane, kde karta leží — 3 a 1 → 2 Pitky“ (obe karty zahral ten istý hráč, Pitky sú 2).",
+        "Test pravidla-medzery-v62.test.ts › „§7: akcia hrany zdvojená Posilnením je jedna aktivovaná akcia — 1 a 2 → 2 Pitky, nie 3“.",
+        "Test sofer-snubenica.test.ts › „vedľa karty bez NA EX nerobí nič“ (karta s NA EX nie je posledná → Snúbenica nič).",
+        "Test pravidla-medzery-v62.test.ts › „§13: súperova Záverečná aktivuje moju Ranu v bitke, ale môj pohľad (a odhad z neho) je rovnaký ako bez páru“.",
+        "Stránka Pravidlá a slovník webu (slovnik.ts) už pojem Smetisko majú, PRAVIDLA.md nie."
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Doplniť všetky štyri vety (bez zmeny hry)",
+          "popis": "1. PRAVIDLA.md §7 Počet Pitiek, odsek „Príklad: …“ — prvú vetu nahradiť: „Príklad: na jednej strane lokality sú aktivované 3 jej akcie, na druhej 1 → 2 Pitky; keď je na niektorej strane 0, kolo má 1 Pitku. Ráta sa podľa strán, nie podľa hráčov: nezáleží na tom, kto kartu zahral (aj podstrčená karta aktivuje hranu pri strane, kde leží), ani kto má v kraji prevahu. Akcia hrany zdvojená Posilnením (×2) je stále jedna aktivovaná akcia.“ Zvyšok odseku (Zhromaždenie pred Pitkou, prepočítavanie, 1–4 Pitky, finále 3) ostáva. Na stránke Pravidlá (kapitola Koľko Pitiek) vetu „Ak tvoja karta aktivuje 3 akcie lokality a súperova 1, pijú sa 2 Pitky“ nahradiť: „Ak sú na jednej strane lokality aktivované 3 jej akcie a na druhej 1, pijú sa 2 Pitky — ráta sa podľa strán, nie podľa toho, kto kartu zahral; akcia ×2 je stále jedna.“\n\n2. PRAVIDLA.md §16, riadok Snúbenica — za prvú vetu vložiť: „Snúbenica sa vykladá ako každá karta na vonkajší koniec strany (§6), takže ‚vedľa‘ je len doterajšia posledná karta tej strany (vo finále na prázdnej strane karta v strede); keď kartu s NA EX už zakryla iná karta, Snúbenica nezaberie.“\n\n3. PRAVIDLA.md §5 Stavba šenku — „a polovicu naspodok spoločného balíčka (lícom dole — …)“ zmeniť na „a polovicu na Smetisko — naspodok spoločného balíčka (lícom dole — …)“; do §17 Slovník pridať riadok „Smetisko | spodok spoločného balíčka; pri stavbe šenku tam každý hráč dá lícom dole polovicu svojich kariet (§5)“.\n\n4. PRAVIDLA.md §13 Záverečná, bod „Kým leží lícom dole, ráta sa normálne …“ — za „jej príspevok mu ostáva neznámy“ doplniť: „Ani cez jeho vlastné karty: akciu jeho karty, ktorú Záverečná spáruje (aktivuje, zdvojí či zruší), mu hra neukáže a odhad bitky ju nezarátava — uvidí ju až po otočení.“\n\nPravidlá ostávajú v6.2 (doplnenie znenia, nie zmena hry); do docs/pravidla-historia.md jeden riadok „v6.2: spresnené znenie §5, §7, §13, §16 (rozhodca)“. Ak tieto miesta opakuje ťahák AI hráčov (tools/playtest/tahak.md), doplniť aj tam.",
+          "dopad": "Hráči a AI playtesteri prestanú tieto štyri prípady hlásiť ako chyby. Hra sa nemení, testy už sú v repozitári.",
+          "narocnost": "malá",
+          "odporucana": true
+        },
+        {
+          "kluc": "B",
+          "nazov": "Doplniť len §7 a Snúbenicu",
+          "popis": "Iba body 1 a 2 z možnosti A (príklad Pitiek s vetou o ×2, Snúbenica). Smetisko ostane len pojmom webu a Záverečná bez vety o odhade.",
+          "dopad": "Odstráni dve najčastejšie otázky; Smetisko a odhad so Záverečnou sa môžu v playtestoch hlásiť ďalej.",
+          "narocnost": "malá",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "A. Všetky štyri vety len popisujú, čo hra robí, a nemenia nič, čo by bolo treba overovať partiou. Snúbenica sa v revízii v7 nemení (plán revízie: „nechať“), takže veta neprekáža prerábke kariet.",
+      "otazky": ["Prijať všetky štyri doplnenia (A), alebo len §7 a Snúbenicu (B)?"],
+      "overenie": [
+        "Testy pravidla-medzery-v62.test.ts a sofer-snubenica.test.ts prechádzajú.",
+        "V ďalšom playteste nikto nehlási nezrovnalosť k počtu Pitiek, Snúbenici, Smetisku ani k odhadu so súperovou Záverečnou."
+      ]
+    },
+    {
+      "kluc": "rozhodca-vinko-limit",
+      "nazov": "Vínko vyložené uprostred Zhromaždenia: limit +1 hneď, alebo až v ďalšom?",
+      "kritickost": "nizka",
+      "oblast": "pravidlá",
+      "zdroj": "rozhodca",
+      "problem": "§16 Vínko: „Dedičstvo: ráta sa ako plný poldeci navyše (limit +1)“. Kedy ten +1 platí, keď hráč Vínko vyloží do Dedičstva uprostred Zhromaždenia, pravidlá nehovoria.\n\nDá sa to čítať dvoma spôsobmi. §6 hovorí „limit sa počíta nanovo na začiatku každého Zhromaždenia“, z toho vyplýva +1 až v ďalšom Zhromaždení. Ten istý §6 ale pri Vypiť hovorí, že keď plný poldeci odíde, „zostávajúci limit hneď klesne“, teda zmena poldeci počas Zhromaždenia platí hneď. Vínko je „plný poldeci navyše“, takže sa dá čítať aj ako +1 hneď.\n\nHra dnes dáva +1 až od ďalšieho Zhromaždenia.",
+      "pricina": "Dve vety PRAVIDLA.md §6 (Limit vykladania: „Limit sa počíta nanovo …“ a „Každá ďalšia karta v tom istom ťahu stojí plný poldeci … zostávajúci limit hneď klesne“) a §16 Vínko. Kód: packages/core/src/engine.ts, zacniZhromazdenie (limit sa ráta len tam), effects.ts limitBonus.",
+      "prejav": "Hráč vyloží Vínko v prvom ťahu Zhromaždenia a čaká, že môže hneď vyložiť o kartu viac. Hlásila to Eva v nočných partiách (report 20261027-062058, nález 14, O7). Nastane len pri Vínku vyloženom počas Zhromaždenia, pri Vínku z predošlého kola nie.",
+      "dokazy": [
+        "Report 20261027-062058, nález 14: „Vínko položené uprostred Zhromaždenia zvýši limit až v ďalšom. Doplniť vetu k Vínku.“",
+        "Testy oboch čítaní (mimo gitu): playtest/rozhodca/20261027-150555/16-vinko-limit-uprostred-zhromazdenia.test.ts — „čítanie A“ prechádza, „čítanie B“ padá (zostávajúci limit 2, nie 3)."
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Až od ďalšieho Zhromaždenia (ako hra dnes)",
+          "popis": "PRAVIDLA.md §16, riadok Vínko: „Dedičstvo: ráta sa ako plný poldeci navyše (limit +1) — od najbližšieho Zhromaždenia, lebo limit sa počíta na jeho začiatku (§6); Vínko vyložené uprostred Zhromaždenia zostávajúci limit nezvýši. Majiteľ nesmie dolievať poldeci za cigarety. Stokársky barter je povolený.“ Kód sa nemení; Developer pridá do packages/core/test test „čítanie A“ zo súboru vyššie.",
+          "dopad": "Žiadna zmena hry. Vínko je investícia do ďalších Zhromaždení, nie okamžitý ťah navyše.",
+          "narocnost": "malá",
+          "odporucana": true
+        },
+        {
+          "kluc": "B",
+          "nazov": "Hneď (+1 k zostávajúcemu limitu)",
+          "popis": "Keď hráč vyloží Vínko do Dedičstva v Zhromaždení, jeho zostávajúci limit (zostavaLimit, na Zastávke aj spoločný a vlastný limit) sa hneď zvýši o 1. PRAVIDLA.md §16 Vínko: „… (limit +1, vyložené v Zhromaždení platí hneď — zostávajúci limit sa zvýši o 1)“. Náhľady a ponuka ťahov to zarátajú. Developer pridá test „čítanie B“.",
+          "dopad": "Vínko je silnejšie v kole, keď ho hráč vyloží (ďalšia karta hneď). Mení balans karty, ktorá je v revízii v7 vedená ako „nechať“.",
+          "narocnost": "malá",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "A. Sedí s tým, že limit sa počíta na začiatku Zhromaždenia, nemení balans a nič sa neprogramuje. Vypiť je iný prípad: poldeci sa vtedy naozaj vypije.",
+      "otazky": ["Platí +1 limit z Vínka hneď, alebo až od ďalšieho Zhromaždenia?"],
+      "overenie": [
+        "Test „§16 Vínko vyložené uprostred Zhromaždenia“ (zvolené čítanie) prechádza.",
+        "V ďalšom playteste nikto nehlási, že Vínko nezvýšilo limit vtedy, keď čakal."
+      ]
+    },
+    {
+      "kluc": "rozhodca-smer-k-superovi",
+      "nazov": "„O krok k súperovi“ mätie, keď marker leží na tvojej polovici",
+      "kritickost": "nizka",
+      "oblast": "pravidlá",
+      "zdroj": "rozhodca",
+      "problem": "Pohoršenie aj prebytok posúvajú marker staršieho „k súperovi“ alebo „k sebe“ (§9.2, §9.4, §10). Pravidlá nikde nepovedia, že je to smer na stupnici, nie polovica. Keď marker leží na tvojej polovici a posunieš ho k súperovi, ostane na tvojej polovici, len bližšie k stredu: tvoja priazeň klesne a starší sa súpera bojí menej.\n\nLog to píše presne podľa pravidiel („Prebytok (hráč 2): Vychovávateľka o krok k súperovi → Strach, priazeň +2 má hráč 2“), ale hráč čaká, že marker prešiel k súperovi, a z logu nevidí, koho sa starší bojí.",
+      "pricina": "Pojem „k súperovi / k sebe“ v PRAVIDLA.md §10 (Konvencia strán, Dvojaká úloha markera) a §9.4 („smerom k jeho súperovi … aj z červenej von“). Text logu: packages/core/src/engine.ts, funkcia textPosunu (Pohoršenie aj prebytok) — uvádza smer, novú zónu a komu patrí priazeň, nie odkiaľ marker išiel a koho sa starší bojí.",
+      "prejav": "Playtest 20261027-105422 (nález 6, Hela, partia 3): „marker je stále na mojej polovici (iba o stupeň nižšie), formulácia ‚k súperovi‘ zmätie“; v známke Téma: „Pohoršenie k súperovi kvôli strachu je kontraintuitívne“. Stáva sa pri každom posune z vlastnej polovice, teda keď hráč strach súpera zmenšuje.",
+      "dokazy": [
+        "Log partie 20261027-105422: „Prebytok (hráč 2): Vychovávateľka o krok k súperovi → Strach, priazeň +2 má hráč 2.“",
+        "Test elders.test.ts › „z krajnej pozície ďalej von nie, späť k súperovi áno“ — hra sa správa podľa §9.4."
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Veta do §10 a log s oboma stranami",
+          "popis": "PRAVIDLA.md §10, za odsek Konvencia strán doplniť: „Smer posunu: ‚k súperovi‘ a ‚k sebe‘ je smer na stupnici — k súperovmu, alebo k svojmu kraju — nie polovica. Keď marker leží na tvojej polovici, posun k súperovi ho priblíži k stredu: tvoja priazeň klesne o stupeň a starší sa súpera bojí menej; priazeň súperovi dá až posun za stred. Na súperovej polovici posun k súperovi zväčší jeho priazeň aj strach z teba.“ Log posunu (textPosunu) píše zónu pred a po aj koho sa starší bojí, napr. „Prebytok (hráč 2): Vychovávateľka k hráčovi 1 — Vydesenie → Strach; priazeň +2 má hráč 2, bojí sa hráča 1.“ (klient „hráč N“ nahradí menom ako doteraz).",
+          "dopad": "Hráč z logu vidí, čo posun urobil s priazňou aj so strachom. Test posun-markera.test.ts › „log posunu menuje staršieho a zónu, nie id“ čaká tvar „→ Zóna“ — Developer ho prispôsobí (napr. „Vydesenie → Strach“ ho spĺňa).",
+          "narocnost": "malá",
+          "odporucana": true
+        },
+        {
+          "kluc": "B",
+          "nazov": "Len veta do §10",
+          "popis": "Doplniť do §10 rovnakú vetu ako v A, log nechať tak.",
+          "dopad": "Pravidlá sú jasné, hráč v logu ďalej nevidí, koho sa starší bojí.",
+          "narocnost": "malá",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "A. Veta odstráni nejasnosť v pravidlách a log s „bojí sa hráča X“ ukáže to, čo hráč pri posune potrebuje vedieť.",
+      "otazky": ["Doplniť vetu a zmeniť aj log (A), alebo len vetu (B)?"],
+      "overenie": [
+        "V ďalšom playteste nikto nehlási, že „k súperovi“ posunulo marker inam, než čakal.",
+        "Hráč po prebytku vie z logu povedať, koho sa posunutý starší bojí."
+      ]
+    }
+  ]
+}

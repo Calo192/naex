@@ -14,6 +14,7 @@ import scorecardsJson from "../data/scorecards.json";
 import type { ActionSums, ClientState, Command, DamageResult, GameState, PlayerId } from "../src/index.ts";
 import {
   apply,
+  partiaHraca,
   battleOutcome,
   cenaKliatby,
   dalsiePitkyKola,
@@ -177,6 +178,8 @@ describe("náhľad NA EX == zúčtovanie motora (seedy)", () => {
         const dB = bezBitka.s.bitkaStav;
         if (sNaex.s.faza !== "bitka" || bezBitka.s.faza !== "bitka" || dA == null || dB == null) continue;
         for (const q of [0, 1] as const) {
+          // Záhradkár pri exekúcii (Exekúcia v7) je voľba hráča — náhľad ju nepredvída.
+          if (partiaHraca(s, q).some((pl) => pl.card.defId === "zahradkar")) continue;
           // Priznané Dlhy pri poškodení — strop súperovho mäkkého.
           expect(dlhy(stolPriPoskodeni(data, n.odkrytie.view, 0), q), `${kde}: Dlhy pri poškodení, hráč ${q}`).toBe(dlhy(sNaex.s, q));
           expect(dlhy(stolPriPoskodeni(data, zaklad, 0), q), `${kde}: Dlhy bez NA EX, hráč ${q}`).toBe(dlhy(bezBitka.s, q));

@@ -128,49 +128,9 @@ describe("Družstvo: Pracujúci nemíňajú limit vykladania", () => {
   });
 });
 
-describe("Kostol: nikto nesmie vypiť ani dať NA EX", () => {
-  it("v Zhromaždení niet Vypiť a návrh s dvoma kartami neprejde", () => {
-    const a = inst("pijan");
-    const b = inst("ministrant");
-    const s = vZhromazdeni("kostol", [a, b]);
-    expect(legalCommands(data, s, 0).some((c) => c.type === "vypit")).toBe(false);
-    expect(() => apply(data, s, { type: "vypit" }, 0)).toThrow(/Kostol/);
-    const plan = planVykladania(data, s, 0, 2, [
-      { karta: a, ciel: "vlastna" },
-      { karta: b, ciel: "vlastna" },
-    ]);
-    expect(plan.chyba).toMatch(/Kostol/);
-    expect(planVykladania(data, s, 0, 2, [{ karta: a, ciel: "vlastna" }]).chyba).toBeNull();
-  });
-
-  it("v Pitke niet NA EX", () => {
-    const s = vPitke("kostol", { poldeciPlne: 2 }, [[na(inst("pijan"), 0)], []]);
-    expect(moznostiNaex(data, s, 0)).toEqual([]);
-    expect(moznostiNaex(data, { ...s, ciel: { typ: "lokalita", lokalita: inst("krcma") } }, 0).length).toBeGreaterThan(0);
-  });
-});
 
 // --- Pitka --------------------------------------------------------------------
 
-describe("Zberný dvor: výkup zo šrotu", () => {
-  it("raz za Pitku za cigaretu karta z vlastného odhadzovacieho balíčka do ruky", () => {
-    const srot = inst("pijan");
-    const druha = inst("ministrant");
-    const s = vPitke("zberny_dvor", { odhadzovaci: [srot, druha], cigarety: 2, ruka: [] });
-    expect(legalCommands(data, s, 0)).toContainEqual({ type: "vykup", uid: srot.uid });
-    const po = apply(data, s, { type: "vykup", uid: srot.uid }, 0).state;
-    expect(po.hraci[0].ruka.map((k) => k.uid)).toEqual([srot.uid]);
-    expect(po.hraci[0].odhadzovaci.map((k) => k.uid)).toEqual([druha.uid]);
-    expect(po.hraci[0].cigarety).toBe(2 - KONSTANTY.EFEKT.ZBERNY_DVOR_CENA);
-    expect(legalCommands(data, po, 0).some((c) => c.type === "vykup")).toBe(false);
-    expect(() => apply(data, po, { type: "vykup", uid: druha.uid }, 0)).toThrow(/už/);
-  });
-
-  it("inde výkup nie je", () => {
-    const s = vPitke("krcma", { odhadzovaci: [inst("pijan")], cigarety: 2 });
-    expect(legalCommands(data, s, 0).some((c) => c.type === "vykup")).toBe(false);
-  });
-});
 
 describe("Vínna pivnica, Jednota, Obecný úrad, Kultúrny dom", () => {
   it("Vínna pivnica: dve NA EX za Pitku", () => {
@@ -182,11 +142,6 @@ describe("Vínna pivnica, Jednota, Obecný úrad, Kultúrny dom", () => {
     expect(barterCena(data, vKole("jednota"), 0)).toBe(barterCena(data, vKole("krcma"), 0));
   });
 
-  it("Obecný úrad (v7): Robota odhodí 2 Dlhy, prah Exekútora už nemení", () => {
-    expect(exekutorLokality(vKole("obecny_urad"))).toEqual({ zlava: 0, robota: KONSTANTY.EFEKT.URAD_ROBOTA });
-    expect(exekutorLokality(vKole("krcma"))).toEqual({ zlava: 0, robota: 1 });
-    expect(prahyHraca(data, vKole("obecny_urad"), 0).exekutor).toBe(prahyHraca(data, vKole("krcma"), 0).exekutor);
-  });
 
   it("Krčma: prah Cirhózy o 2 vyšší obom, povinné NA EX pri pečeni 2 Cirhózu nedá (Michal 2026-10-22)", () => {
     const zaklad = prahyHraca(data, vKole("zberny_dvor"), 0).cirhoza;
@@ -288,19 +243,6 @@ describe("Cintorín: porazený dá Nástroj z ruky do Dedičstva zadarmo", () =>
   });
 });
 
-describe("Pasca (Michal 2026-10-20): každé súperovo Zviera v línii mu uberie 1 tuhé", () => {
-  it("bez Pascy nič, s Pascou súpera −1 za každé moje Zviera; v rozpise ako zrážka", () => {
-    const s = vKole("krcma");
-    const strany: GameState["strany"] = [[na(inst("pes"), 0), na(inst("cierna_macka"), 0), na(inst("pijan"), 0)], []];
-    const bez: GameState = { ...s, strany };
-    expect(bitkaMody(data, bez, 0).tuheZlava).toBe(0);
-    const sPascou = sHracom({ ...s, strany }, 1, { dedicstvo: [inst("pasca")] });
-    expect(bitkaMody(data, sPascou, 0).tuheZlava).toBe(2);
-    expect(bitkaMody(data, sPascou, 1).tuheZlava).toBe(0);
-    const [r0] = rozpisPoskodenia(data, sPascou, [{ Pecka: 2 }, {}], [0, 0]);
-    expect(r0.zrazky).toContainEqual({ zdroj: "pasca", hodnota: 2 });
-  });
-});
 
 describe("Prevaha (Michal 2026-10-20): hranu lokality dostane, kto má na strane viac svojich kariet", () => {
   const R = ["Rana", null, null, null] as const;

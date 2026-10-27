@@ -2,8 +2,10 @@
 //
 // Zdroj akcií: packages/core/data/cards.json (dnešná sada), plan.md časť 3 a 10.1
 // (git 7a2b0d7), Dávka 3 (Svokra a Degustátorka Obmedzenie → Dlh, Vymáhač, Manželka
-// M2 bez zmeny akcií, Dievčina bez zmeny akcií) a Pakt z časti 12 (pracovný predpoklad
-// 6 kópií). Mimo rozsahu: starešinovia, kliatby, lokality.
+// M2 bez zmeny akcií, Dievčina bez zmeny akcií) a Pakt z časti 12. Efekty E3 (27. 10.): Presbiter
+// a Opatrovateľka zo sady odchádzajú, Smetiarka, Brigádnik a Oslávenec sú zatiaľ len návrhy (nie
+// v sade), Kulturista má Petelica ×2 / Dlh ×2, premenovanie Klebetnica → Bzdocha (a Stryná z E2).
+// Pakt tým ostáva na 2 nosičoch (4 kópie). Mimo rozsahu: starešinovia, kliatby, lokality.
 // Okná (blocked/allowed) tu nie sú — tie sú v sloty.ts.
 
 export type Akcie = Readonly<Record<string, number>>;
@@ -70,7 +72,7 @@ export const KARTY: readonly KartaPoRevizii[] = [
   k("hasic", "Hasič", "Občan", { [POS]: 1 }, { [PET]: 1, [RAN]: 1 }, "bez zmeny"),
   k("praudovravec", "Praudovravec", "Občan", { [ODP]: 1, [POV]: 1, [VIE]: 1 }, { [POH]: 1, [POV]: 1, [VIZ]: 1 }, "10.1: vľavo + Viera"),
   k("zamocnik", "Zámočník", "Občan", { [CIG]: 1, [POL]: 1 }, { [PEC]: 1, [ROB]: 1 }, "bez zmeny"),
-  k("niekoho_stryna", "Niekoho stryná", "Občan", { [POL]: 1, [VIE]: 1, [PEN]: 1 }, { [POV]: 1, [VIE]: 1, [VIZ]: 1 }, "10.1: vľavo + Pečeň"),
+  k("niekoho_stryna", "Stryná", "Občan", { [POL]: 1, [VIE]: 1, [PEN]: 1 }, { [POV]: 1, [VIE]: 1, [VIZ]: 1 }, "10.1: vľavo + Pečeň"),
   k("veteran", "Veterán", "Občan", { [POL]: 1, [PEN]: 1 }, { [ODP]: 1, [PET]: 1 }, "10.1: Pecka → Petelica"),
   k("recidivista", "Recidivista", "Občan", { [DLH]: 2 }, { [PET]: 1, [RAN]: 1 }, "10.1: vľavo Odpor → Dlh"),
   k("liberal", "Liberál", "Občan", { [POH]: 1, [VIE]: 1 }, { [CIG]: 1, [POV]: 1 }, "10.1: akcie 2 → 4"),
@@ -81,22 +83,17 @@ export const KARTY: readonly KartaPoRevizii[] = [
   k("podvodnik", "Podvodník", "Občan", { [CIG]: 2, [DLH]: 1 }, { [OBM]: 1, [RAN]: 1 }, "10.1: akcie bez zmeny"),
   k("zahradkar", "Záhradkár", "Občan", { [CIG]: 2, [PEN]: 1 }, { [POL]: 1, [RAN]: 1, [ROB]: 1 }, "10.1: akcie bez zmeny"),
   k("anonymny_alkoholik", "Anonymný alkoholik", "Občan", { [ODP]: 1, [ROB]: 1 }, { [DLH]: 1, [VIE]: 1 }, "bez zmeny"),
-  k("presbiter", "Presbiter", "Občan", { [POH]: 1, [POV]: 1 }, { [RAN]: 1, [VIE]: 1 }, "bez zmeny"),
   k("dvojcata", "Dvojčatá", "Občan", { [DLH]: 1, [PEC]: 1 }, { [PEN]: 1, [RAN]: 1 }, "10.1: Rana → Pecka, Cig → Pečeň"),
   k("sofer", "Šofér", "Občan", { [POL]: 1, [RAN]: 1 }, { [CIG]: 1, [PEN]: 1 }, "10.1: akcie bez zmeny"),
   k("snubenica", "Snúbenica", "Občan", { [ROB]: 1 }, { [DLH]: 1, [VIE]: 1 }, "bez zmeny"),
   k("degustatorka", "Degustátorka", "Občan", { [PEN]: 1, [POL]: 1 }, { [RAN]: 1, [DLH]: 1 }, "schválená novinka; Dávka 3 D3: Obmedzenie → Dlh", false),
-  k("klebetnica", "Klebetnica", "Občan", { [POV]: 1, [VIZ]: 1 }, { [POH]: 1, [DLH]: 1 }, "schválená novinka", false),
+  k("klebetnica", "Bzdocha", "Občan", { [POV]: 1, [VIZ]: 1 }, { [POH]: 1, [DLH]: 1 }, "schválená novinka", false),
   k("dohadzovacka", "Dohadzovačka", "Občan", { [VIE]: 1, [PAK]: 1 }, { [POS]: 1, [DLH]: 1 }, "schválená novinka; 12.1: vľavo Cig → Pakt", false),
   k("vandal", "Vandal", "Občan", { [PEC]: 1, [PEN]: 1 }, { [ODP]: 1, [RAN]: 1 }, "schválená novinka", false),
   k("stryko_z_ameriky", "Strýko z Ameriky", "Občan", { [CIG]: 2 }, { [VIZ]: 1, [POL]: 1 }, "schválená novinka", false),
-  k("opatrovatelka", "Opatrovateľka", "Občan", { [ROB]: 1, [CIG]: 1 }, { [VIE]: 1, [POS]: 1 }, "schválená novinka (v2)", false),
-  k("smetiarka", "Smetiarka", "Občan", { [ROB]: 1, [CIG]: 1 }, { [OBM]: 1 }, "schválená novinka", false),
-  k("brigadnik", "Brigádnik", "Občan", { [ROB]: 1, [CIG]: 1, [RAN]: 1, [PAK]: 1 }, { [ROB]: 1, [PEN]: 1, [OBM]: 1 }, "4: nová (rezerva ide do sady); 12.1: vľavo + Pakt", false),
   k("masiar", "Mäsiar", "Občan", { [PEC]: 1, [PEN]: 1 }, { [PEC]: 1, [PEN]: 1 }, "4: nová", false),
-  k("kulturista", "Kulturista", "Občan", { [PET]: 1 }, { [DLH]: 2 }, "4: nová", false),
+  k("kulturista", "Kulturista", "Občan", { [PET]: 2 }, { [DLH]: 2 }, "4: nová; E3: Petelica ×2 / Dlh ×2", false),
   k("traktoristka", "Traktoristka", "Občan", { [PET]: 1, [PEN]: 1 }, { [DLH]: 1 }, "4: nová", false),
-  k("oslavenec", "Oslávenec", "Občan", { [POL]: 1, [CIG]: 1 }, { [RAN]: 1 }, "4: nová", false),
   k("vymahac", "Vymáhač", "Občan", { [PEC]: 1, [DLH]: 1 }, { [RAN]: 1, [DLH]: 1 }, "Dávka 3 D5: nová", false),
   // Štartové (1× u každého hráča)
   k("pijan", "Pijan", "Štart", { [DLH]: 1, [PEN]: 1 }, { [POL]: 1, [PEN]: 1, [RAN]: 1 }, "bez zmeny"),

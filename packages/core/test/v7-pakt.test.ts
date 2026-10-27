@@ -72,10 +72,6 @@ describe("efekty polohy v línii (v7)", () => {
     expect(evaluateLine(data, l).sums[0]).toEqual({ Pecka: 2 });
   });
 
-  it("Šarlatán: aktívne Poškodenie pečene pri ňom sa ráta aj ako Viera", () => {
-    const { data, l } = par([null, "PoškodeniePečene", null, null], [null, "Rana", null, null], "sarlatan", "b");
-    expect(evaluateLine(data, l).sums[0]).toEqual({ PoškodeniePečene: 1, Viera: 1, Rana: 1 });
-  });
 
   it("Kôň: Nástroj s ním tvorí spoj", () => {
     const kon = makeDef("kon", [null, "Rana", null, null], EMPTY, { tags: ["Zviera"] });

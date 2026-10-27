@@ -131,11 +131,6 @@ describe("Policajtka, Praudovravec, Puška, Noviny, Lakomec", () => {
     expect(efektPotlaceny(data, vlastny, 1, "policajtka")).toBe(false);
   });
 
-  it("Puška v Dedičstve: prebytok proti jej majiteľovi o 2 menší", () => {
-    const s = stav([[], []], [["puska"], []]);
-    expect(prebytokProtiZlava(s, 0)).toBe(2);
-    expect(prebytokProtiZlava(s, 1)).toBe(0);
-  });
 
   it("v6: Pohoršenie smie na krajnú pozíciu vždy (Noviny majú nový efekt — špak za väčšinu strachu)", () => {
     const e = { ...setupGame(data, 9).starsi[0]!, marker: 1 } as ElderState;

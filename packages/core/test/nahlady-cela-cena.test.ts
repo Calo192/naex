@@ -285,46 +285,6 @@ describe("náhľad NA EX nemlčí o tom, čo hra zúčtuje navyše (návrh #49)"
     }
   });
 
-  it("Vychovávateľka: priznaný Dlh odíde súperovi — náhľad aj Dlhy po bitke s tým rátajú", () => {
-    const s0 = vPitke([lezi(instanceFor(data, "fajciar_test", C4, C4), 0), lezi(instanceFor(data, "fajciar_test", C4, C4), 0)]);
-    const s: GameState = { ...s0, strany: [s0.strany[0], [lezi(karta(940002, "vychovavatelka"), 1)]] };
-    const uid = ciele(s).find((u) => u !== 940002)!;
-    const n = nahladNaexNaKartu(data, viewFor(data, s, 1), uid, ceny)!;
-    expect(n.odkrytie.vychovavatelka).toBe(true);
-    const { t } = sLogom(naex(s, 1, uid));
-    const dlhy = (x: GameState): number => x.hraci[1].priznane.filter((k) => k.defId === "dlh").length;
-    expect(n.odkrytie.view.hraci[1].priznane.filter((k) => k.defId === "dlh").length).toBe(dlhy(t));
-    expect(n.kliatby[1].dlhyPoBitke).toBe(dlhy(t) - dlhy(sLogom(s).t));
-  });
 
-  it("Krčmárka: NA EX v kole ju pripraví o otočený poldeci — náhľad to povie", () => {
-    const s0 = vPitke([lezi(instanceFor(data, "fajciar_test", C4, C4), 0), lezi(instanceFor(data, "fajciar_test", C4, C4), 0)]);
-    const s: GameState = {
-      ...s0,
-      strany: [s0.strany[0], [lezi(karta(940003, "krcmarka"), 1)]],
-      hraci: [s0.hraci[0], { ...s0.hraci[1], poldeciVypite: 1 }],
-    };
-    const uid = ciele(s).find((u) => u !== 940003)!;
-    const n = nahladNaexNaKartu(data, viewFor(data, s, 1), uid, ceny)!;
-    expect(n.odkrytie.krcmarka).toBe(true);
-    expect(sLogom(s).log.some((x) => x.startsWith("Krčmárka:"))).toBe(true);
-    expect(sLogom(naex(s, 1, uid)).log.some((x) => x.startsWith("Krčmárka:"))).toBe(false);
-  });
 
-  it("Puška a Miňištrant: prebytok na rozdelenie a cena posunu ako v bitke", () => {
-    const s0 = vPitke([lezi(karta(940004, "ministrant"), 0)]);
-    const s: GameState = { ...s0, hraci: [s0.hraci[0], { ...s0.hraci[1], dedicstvo: [karta(940005, "puska")] }] };
-    const v = viewFor(data, s, 0);
-    const damage = { tuhe: [6, 1], makke: [0, 0], celkove: [6, 1], zvysnaViera: [0, 0], zvysnaPovera: [0, 0] } as const;
-    const pr = prebytokNahladu(v, damage);
-    expect(pr.drzi).toBe(0);
-    expect(pr.prebytok).toBe(5);
-    expect(pr.naRozdelenie).toBe(prebytokNaRozdelenie(s, battleOutcome(damage)));
-    expect(pr.naRozdelenie).toBe(3);
-    expect(pr.cenaPosunu).toBe(cenaPrebytku(s, 0));
-    expect(pr.cenaPosunu).toBe(2);
-    expect(pr.posuny).toBe(1);
-    // Prebytok bez výhry v tuhom (remíza) Miňištrant nezdražie.
-    expect(prebytokNahladu(v, { ...damage, tuhe: [1, 1], makke: [5, 0] }).cenaPosunu).toBe(1);
-  });
 });

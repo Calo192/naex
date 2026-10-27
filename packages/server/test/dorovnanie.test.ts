@@ -30,9 +30,9 @@ function priprav(): { obsah: Obsah; db: ReturnType<typeof otvorDb> } {
 
 const pocetSad = (db: ReturnType<typeof otvorDb>): number => (db.prepare("SELECT count(*) n FROM sady").get() as { n: number }).n;
 
-/** Tvorca ako na produkcii pred 2026-10-20: bez Presbitera a Prevahy, stará Pasca, všetko zverejnené. */
+/** Tvorca ako na starej produkcii: bez Dvojčiat a Prevahy, stará Pasca, všetko zverejnené. */
 function staraProdukcia(obsah: Obsah, db: ReturnType<typeof otvorDb>): void {
-  db.prepare("DELETE FROM karty WHERE id = 'presbiter'").run();
+  db.prepare("DELETE FROM karty WHERE id = 'dvojcata'").run();
   const pasca = obsah.karty.jeden("pasca") as KartaNavrh;
   obsah.ulozKartu({ ...pasca, efekt: "Dedičstvo: Akcie prvej karty, ktorú ti súper podstrčí, neplatia.", upravene: 2 });
   obsah.klucoveSlova.zmaz("Prevaha");
@@ -53,11 +53,11 @@ describe("dorovnanie tvorcu so seedom", () => {
     const pred = pocetSad(db);
     expect(obsah.dorovnajSoSeedom(10)).toBe("hotovo");
     expect(pocetSad(db)).toBe(pred + 1);
-    expect(obsah.karty.jeden("presbiter")?.obrazok).not.toBeNull();
-    expect(obsah.karty.jeden("pasca")?.efekt).toContain("Zviera");
+    expect(obsah.karty.jeden("dvojcata")?.obrazok).not.toBeNull();
+    expect(obsah.karty.jeden("pasca")?.efekt).toContain("priložil kartu");
     expect(obsah.klucoveSlova.jeden("Prevaha")).not.toBeNull();
     const sada = obsah.aktualnaSada().sada;
-    expect(sada.karty.map((k) => k.id)).toContain("presbiter");
+    expect(sada.karty.map((k) => k.id)).toContain("dvojcata");
     expect(sada.karty.find((k) => k.id === "krcma")?.lava.kraj).toBe("pri výčape");
     // Druhý štart už nič nerobí.
     expect(obsah.dorovnajSoSeedom(20)).toBe("uz-bezalo");

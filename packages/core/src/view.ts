@@ -21,6 +21,7 @@ import type {
   BitkaNaNastenke,
   CielKola,
   GameState,
+  HasicVolba,
   KoniecHry,
   PitkaStav,
   Vykupne,
@@ -29,6 +30,7 @@ import type {
 } from "./engine.ts";
 import { abstakyVBitke, cenaDedicstva, lokalityNaVyber, vykupneHraca, mozeHrat, naTahu, stranaStreduFinale, uidZaverecnej, vyplatZaStarsich } from "./engine.ts";
 import { KONSTANTY } from "./constants.ts";
+import { efektHraca, efektPotlaceny } from "./effects.ts";
 import { MARKER_STRED, favourStarsieho, posunMarker, priazenHraca, priazenSila, spakyZaStarsich, strachZ, vydesil } from "./elders.ts";
 import type { DamageResult } from "./battle.ts";
 import { spakyZaBitku } from "./battle.ts";
@@ -159,6 +161,10 @@ export interface ClientState {
   readonly rozpis?: readonly number[];
   /** Rany navyše z Kšeftu Strýka z Ameriky v tomto kole (v7) — verejné. */
   readonly kseftRany?: readonly [number, number];
+  /** Povery navyše kúpené Kšeftom Vychovávateľky v tomto kole (v7); verejné. */
+  readonly kseftPovery?: readonly [number, number];
+  /** Priloženia súpera ku kartám hráča v tomto kole (Pasca v7); verejné. */
+  readonly prilozeniaKu?: readonly [number, number];
   /** Špaky oboch hráčov teraz (v6) — popolníky. */
   readonly spaky: readonly [number, number];
   /** Špaky na sekere — vezme ich víťaz ďalšej bitky, vo finále prepadnú. */
@@ -200,7 +206,7 @@ export interface ClientState {
    * Voľba Nástupu v7, ktorá čaká ako Hasič: Klebetnica (súperova ruka — vidí ju
    * len ten, kto vyberá) alebo Dohadzovačka (dvaja starší).
    */
-  readonly volbaNastupu: { readonly typ: "klebetnica" | "dohadzovacka"; readonly hrac: PlayerId; readonly ruka: readonly CardInstance[] | null } | null;
+  readonly volbaNastupu: { readonly typ: NonNullable<HasicVolba["typ"]>; readonly hrac: PlayerId; readonly ruka: readonly CardInstance[] | null } | null;
   /**
    * Nepriznané kliatby v MOJOM doberacom balíčku (len počty, poradie nie).
    * Vlastné karty hráč pozná, len nevie, v akom poradí ich dobere.
@@ -253,6 +259,16 @@ export function nepriznaneKliatbyHraca(hrac: GameState["hraci"][number]): Kliatb
     dlh: vsetky.filter((k) => k.defId === "dlh").length,
     cirhoza: vsetky.filter((k) => k.defId === "cirhoza").length,
   };
+}
+
+/**
+ * Bzdocha (Pitka, v7): hráč ja vidí súperove skryté NA EX, keď súper už svoju
+ * časť Pitky skončil a ja ešte vyberám — „vyberáš NA EX po súperovi“.
+ */
+export function vidiVolbuSupera(data: GameData, state: GameState, ja: PlayerId): boolean {
+  const pitka = state.pitkaStav;
+  if (pitka === null || pitka.hotovy[ja] || !pitka.hotovy[ja === 0 ? 1 : 0]) return false;
+  return efektHraca(state, ja, "klebetnica") && !efektPotlaceny(data, state, ja, "klebetnica");
 }
 
 export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientState {
@@ -313,6 +329,8 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
     lokalitCelkom: state.lokalitCelkom,
     ...(state.rozpis !== undefined ? { rozpis: state.rozpis } : {}),
     ...(state.kseftRany !== undefined ? { kseftRany: state.kseftRany } : {}),
+    ...(state.kseftPovery !== undefined ? { kseftPovery: state.kseftPovery } : {}),
+    ...(state.prilozeniaKu !== undefined ? { prilozeniaKu: state.prilozeniaKu } : {}),
     spaky: state.spaky,
     spakyNaSekere: state.spakyNaSekere,
     nastenka: state.nastenka,
@@ -355,8 +373,9 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
         : {
             ...state.pitkaStav,
             // Moje NA EX na súperovu skrytú Záverečnú nesie jej náhradné uid — skutočné by ju prezradilo.
+            // Bzdocha (Pitka, v7): kto vyberá NA EX po súperovi, vidí jeho voľbu.
             skryteNaex: (state.pitkaStav.skryteNaex ?? [])
-              .filter((x) => x.hrac === ja)
+              .filter((x) => x.hrac === ja || vidiVolbuSupera(data, state, ja))
               .map((x) => {
                 const strana = ([0, 1] as const).find((q) => state.strany[q].some((pl) => pl.card.uid === x.uid && skryta(pl)));
                 return strana === undefined ? x : { ...x, uid: uidZaverecnej(strana) };
@@ -412,7 +431,7 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
 
 /** Stav, z ktorého sa rátajú špaky — ClientState ho spĺňa. */
 export type PohladSpakov = Pick<ClientState, "spaky" | "nepriznaneKliatby" | "lokalityVHre" | "ciel" | "koniec" | "pitkaStav" | "kolo" | "lokalitCelkom" | "rozpis"> & {
-  readonly hraci: readonly [Pick<HracVerejne, "poldeciPlne" | "cigarety">, Pick<HracVerejne, "poldeciPlne" | "cigarety">];
+  readonly hraci: readonly [Pick<HracVerejne, "poldeciPlne" | "cigarety" | "dedicstvo">, Pick<HracVerejne, "poldeciPlne" | "cigarety" | "dedicstvo">];
   readonly starsi: readonly ElderState[];
   readonly bitkaStav: { readonly damage: DamageResult | null } | null;
 };
@@ -440,7 +459,8 @@ export interface SpakyTeraz {
   readonly spolu: readonly [number, number];
   /**
    * Koľko špakov dajú starší hráčovi po najbližšej bitke, ak ju vyhrá (v6.1 —
-   * porazený za starších nedostane nič, pri sekere obaja), keby sa markery nepohli.
+   * porazený za starších nedostane nič, pri sekere obaja), keby sa markery nepohli —
+   * vrátane špaku z Novín.
    */
   readonly zaStarsich: readonly [number, number];
   readonly starsi: readonly SpakyStarsieho[];
@@ -468,6 +488,7 @@ export function spakyTeraz(view: PohladSpakov): SpakyTeraz {
       : [view.koniec.vykupne?.[0] ?? BEZ_VYKUPNEHO, view.koniec.vykupne?.[1] ?? BEZ_VYKUPNEHO];
   const navyse = (p: PlayerId): number => (view.koniec === null ? vykupne[p].spaky : 0);
   const spolu: [number, number] = [view.spaky[0] - odpocet(0) + navyse(0), view.spaky[1] - odpocet(1) + navyse(1)];
+  // Noviny sa vyplácajú spolu so špakmi za starších (vyplatSpaky) — aj v odhade.
   const zaStarsich: [number, number] = [spakyZaStarsich(view.starsi, 0), spakyZaStarsich(view.starsi, 1)];
   const vyplat = vyplatZaStarsich(view);
   return {

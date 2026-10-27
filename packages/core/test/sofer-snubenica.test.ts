@@ -62,60 +62,6 @@ function poNaex(strany: GameState["strany"], rukaReagujuceho: CardInstance[]): G
   } as GameState;
 }
 
-describe("Snúbenica", () => {
-  it("vyložená vedľa karty s NA EX ju vráti majiteľovi do ruky a zaujme jej miesto", () => {
-    const prvy = lezi("hasic", 0);
-    const sNaex = lezi("pijan", 0, 0);
-    const snubenica = inst("snubenica");
-    const s = poNaex([[prvy, sNaex], []], [snubenica]);
-    const { state, events } = apply(data, s, { type: "place", uid: snubenica.uid, target: "superova" }, 1);
-    expect(state.strany[0].map((pl) => pl.card.uid)).toEqual([prvy.card.uid, snubenica.uid]);
-    expect(state.strany[0][1]?.playedBy).toBe(1);
-    // Karta ide majiteľovi (hráč 0), poldeci z nej je vypitý tomu, kto dal NA EX.
-    expect(state.hraci[0].ruka.some((k) => k.uid === sNaex.card.uid)).toBe(true);
-    expect(state.hraci[1].ruka.some((k) => k.uid === sNaex.card.uid)).toBe(false);
-    expect(state.hraci[0].poldeciVypite).toBe(1);
-    expect(state.hraci[0].nerestiTotoKolo).toBe(1);
-    expect(events.some((e) => e.type === "log" && e.text.startsWith("Snúbenica:"))).toBe(true);
-  });
-
-  it("vlastnú kartu s NA EX vráti do ruky jej majiteľovi, aj keď NA EX dal súper", () => {
-    const sNaex = lezi("pijan", 1, 0);
-    const snubenica = inst("snubenica");
-    const state = apply(data, poNaex([[], [sNaex]], [snubenica]), { type: "place", uid: snubenica.uid, target: "vlastna" }, 1).state;
-    expect(state.strany[1].map((pl) => pl.card.uid)).toEqual([snubenica.uid]);
-    expect(state.hraci[1].ruka.some((k) => k.uid === sNaex.card.uid)).toBe(true);
-    expect(state.hraci[0].poldeciVypite).toBe(1);
-  });
-
-  it("vedľa karty bez NA EX nerobí nič", () => {
-    const sNaex = lezi("pijan", 0, 0);
-    const bez = lezi("hasic", 0);
-    const snubenica = inst("snubenica");
-    const state = apply(data, poNaex([[sNaex, bez], []], [snubenica]), { type: "place", uid: snubenica.uid, target: "superova" }, 1).state;
-    expect(state.strany[0].map((pl) => pl.card.uid)).toEqual([sNaex.card.uid, bez.card.uid, snubenica.uid]);
-    expect(state.hraci[0].poldeciVypite).toBe(0);
-  });
-
-  it("náhľad vyloženia ráta s odchodom karty a novým susedom", () => {
-    const prvy = lezi("hasic", 0);
-    const sNaex = lezi("pijan", 0, 0);
-    const snubenica = inst("snubenica");
-    const line = { lokalita: null, lokalitaOtocena: false, strany: [[prvy, sNaex], []] as GameState["strany"] };
-    const n = nahladVylozenia(data, line, 1, snubenica, "superova");
-    expect(n.sused?.karta.uid).toBe(prvy.card.uid);
-    // Pijan s NA EX dával hráčovi 0 zdvojené akcie — po odchode ich niet.
-    const pijanBezSuseda = sloty(line.strany, sNaex).filter((x) => x.nasobok > 0).length;
-    expect(pijanBezSuseda).toBeGreaterThan(0);
-    expect(Object.values(n.zmeny[0]).some((d) => (d ?? 0) < 0)).toBe(true);
-  });
-
-  it("je medzi legálnymi odpoveďami na NA EX", () => {
-    const snubenica = inst("snubenica");
-    const s = poNaex([[lezi("pijan", 0, 0)], []], [snubenica]);
-    expect(legalCommands(data, s, 1).some((c) => c.type === "place" && c.uid === snubenica.uid)).toBe(true);
-  });
-});
 
 describe("bot", () => {
   it("odpovie na NA EX Snúbenicou, ktorá súperovi vezme kartu so zdvojenou Peckou", () => {

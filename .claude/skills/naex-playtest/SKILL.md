@@ -255,7 +255,8 @@ Krok výučby a hlášky servera berie zo záznamu WebSocketu (strážca v
 
 - Relácie a turnusy sú v `playtest/` (v `.gitignore`); reporty
   v `docs/playtesty/` sú v gite.
-- Heslá AI účtov sú v `playtest/ucty.json` (mimo gitu), kľúčované adresou
+- Heslá AI účtov sú v spoločnom súbore všetkých pracovísk (`.git/naex-ucty.json`
+  hlavného repa alebo `NAEX_UCTY`, mimo gitu; `tools/playtest/ucty.ts`), kľúčované adresou
   webu; rovnaké meno = rovnaký účet. Na živom webe ich nástroj zaradí heslom
   admina z `deploy/.env.produkcia`. Spätnú väzbu AI web predvolene skrýva
   (prepínač „Zobraziť aj spätnú väzbu od AI“).

@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI návrh: piktogramy strachu starších · strach-piktogramy-20261027</title>
+<style>
+/* ---------- rám dokumentu ---------- */
+:root {
+  --bg: #14110e; --pl: #1e1914; --pl2: #28211a; --ok: #3d3229; --tx: #f1e8d8; --tl: #b6a790; --sl: #9d8f7b;
+  --ak: #e9ad45; --ce: #e5735c; --ze: #7cbf74;
+  --serif: "Bitter", Georgia, "Times New Roman", serif;
+  --sans: Roboto, "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root { --bg: #f5efe5; --pl: #fffaf2; --pl2: #efe5d5; --ok: #d8c9b2; --tx: #2a2017; --tl: #5e4f3d; --sl: #6d5d49; --ak: #9a6510; --ce: #a8341f; --ze: #2f7a33; color-scheme: light; }
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition-duration: 0s !important; animation: none !important; } }
+body { margin: 0; background: var(--bg); color: var(--tx); font: 16px/1.6 var(--sans); }
+main { max-width: 1180px; margin: 0 auto; padding: 24px 18px 80px; }
+h1, h2, h3, h4 { font-family: var(--serif); line-height: 1.2; }
+h1 { font-size: clamp(1.6rem, 3.6vw, 2.3rem); margin: 0 0 6px; }
+h2 { font-size: 1.5rem; margin: 48px 0 12px; padding-top: 8px; border-top: 1px solid var(--ok); }
+h3 { font-size: 1.2rem; margin: 28px 0 8px; }
+h4 { font-size: 1rem; margin: 18px 0 6px; }
+p { margin: 0 0 12px; max-width: 75ch; }
+ul, ol { max-width: 80ch; }
+li { margin-bottom: 4px; }
+a { color: var(--ak); text-underline-offset: 3px; }
+code { font: 0.86em/1.4 Consolas, "Cascadia Mono", monospace; background: var(--pl2); padding: 1px 5px; border-radius: 5px; overflow-wrap: anywhere; }
+:focus-visible { outline: 2px solid var(--ak); outline-offset: 2px; }
+.meta { color: var(--tl); font-size: 0.95rem; }
+.verdikt { margin: 16px 0 0; padding: 14px 18px; border-left: 4px solid var(--ak); background: var(--pl); border-radius: 0 12px 12px 0; }
+.verdikt p { max-width: none; }
+.verdikt p:last-child { margin-bottom: 0; }
+nav.obsah { display: flex; flex-wrap: wrap; gap: 6px; margin: 18px 0 0; }
+nav.obsah a { padding: 8px 12px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 999px; background: var(--pl); border: 1px solid var(--ok); text-decoration: none; color: var(--tx); font-size: 0.9rem; }
+nav.obsah a:hover { border-color: var(--ak); }
+.galeria { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 14px; }
+.galeria figure { margin: 0; background: var(--pl); border: 1px solid var(--ok); border-radius: 12px; overflow: hidden; }
+.galeria figure.siroka { grid-column: 1 / -1; }
+.galeria img { display: block; width: 100%; height: auto; }
+.galeria figcaption { padding: 10px 12px; font-size: 0.88rem; color: var(--tl); }
+.galeria figcaption b { color: var(--tx); }
+.tab-obal { overflow-x: auto; border: 1px solid var(--ok); border-radius: 12px; }
+table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+table.audit { min-width: 720px; }
+th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--ok); }
+thead th { background: var(--pl2); font-size: 0.78rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--tl); }
+tbody tr:last-child td { border-bottom: none; }
+td.c { font-weight: 700; white-space: nowrap; }
+td.num { text-align: center; font-variant-numeric: tabular-nums; font-weight: 700; }
+.filtre, .ovl { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; align-items: center; }
+.filtre button, .ovl button { font: 600 0.88rem/1 var(--sans); padding: 10px 14px; min-height: 44px; border-radius: 9px; border: 1px solid var(--ok); background: var(--pl); color: var(--tx); cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+.filtre button[aria-pressed="true"], .ovl button[aria-pressed="true"] { background: var(--ak); border-color: var(--ak); color: #2b1b03; }
+.ovl .popis { font-size: 0.8rem; color: var(--tl); margin-right: 4px; }
+.zav { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; white-space: nowrap; }
+.zav.vysoka { background: #5a1f15; color: #ffc2b4; }
+.zav.stredna { background: #4a3510; color: #ffd98f; }
+.zav.nizka { background: #22312a; color: #b5e3b0; }
+.zav.vysoka::before { content: "▲ "; }
+.zav.stredna::before { content: "■ "; }
+.zav.nizka::before { content: "▼ "; }
+.karta-sady { background: var(--pl); border: 1px solid var(--ok); border-radius: 16px; padding: 18px; margin: 14px 0; }
+.karta-sady.odporucana { border-color: var(--ak); }
+.karta-sady[hidden] { display: none; }
+.stitky { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 10px; }
+.stitok { font-size: 0.78rem; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--ok); color: var(--tl); white-space: nowrap; }
+.stitok.n-mala { border-color: var(--ze); color: var(--ze); }
+.stitok.n-stredna { border-color: var(--ak); color: var(--ak); }
+.stitok.odp { background: var(--ak); border-color: var(--ak); color: #2b1b03; font-weight: 700; }
+.dve { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+@media (max-width: 860px) { .dve { grid-template-columns: 1fr; } }
+.pozn { font-size: 0.86rem; color: var(--tl); }
+.ovladanie { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 94%, transparent); backdrop-filter: blur(6px); border-bottom: 1px solid var(--ok); padding: 8px 0 2px; margin: 0 0 10px; }
+.ovladanie .ovl { margin-bottom: 6px; }
+@media (max-width: 760px) { .ovladanie { position: static; } }
+.ovl .ikona-tl { width: 22px; height: 22px; fill: currentColor; }
+.kroky li { margin-bottom: 8px; }
+
+/* ---------- herný stôl (tokeny schémy Krčma, apps/web/src/schemy.css) ---------- */
+.stol {
+  --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --plocha-3: #332a21; --okraj: #3d3229; --okraj-svetly: #57483a;
+  --text: #f1e8d8; --tlmeny: #b6a790; --slaby: #8b7d6a; --slaby-text: #9d8f7b; --akcent: #e9ad45; --akcent-svetly: #ffd08a;
+  --cervena-text: #e5735c; --cervena-svetla: #ff9d88; --zelena: #7cbf74; --ja: #5cc0cf; --su: #e0805f;
+  /* návrh: tokeny zón (dnes FARBY_STUPNICE v packages/tvorba/src/geometria.ts:120) */
+  --zona-0: #e5e7eb; --zona-1: #facc15; --zona-2: #f97316; --zona-3: #dc2626;
+  background: var(--pozadie); color: var(--text); font: 13px/1.35 Roboto, "Segoe UI", system-ui, sans-serif;
+  border: 1px solid var(--okraj); border-radius: 12px; padding: 12px; overflow-x: auto; margin: 0 0 12px;
+  color-scheme: dark;
+}
+.stol-nadpis { font: 700 0.72rem/1 var(--sans); letter-spacing: 0.08em; text-transform: uppercase; color: var(--tlmeny); margin: 0 0 8px; display: flex; gap: 10px; flex-wrap: wrap; align-items: baseline; }
+.stol-nadpis small { text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--slaby-text); }
+.nahlady[data-filter="sivo"] .stol, .nahlady[data-filter="sivo"] .porov { filter: grayscale(1); }
+.nahlady[data-filter="deuter"] .stol, .nahlady[data-filter="deuter"] .porov { filter: url(#deuter); }
+.nahlady[data-filter="protan"] .stol, .nahlady[data-filter="protan"] .porov { filter: url(#protan); }
+.nahlady[data-zoom="2"] .stol { zoom: 2; }
+.moje { color: var(--ja); }
+.superove { color: var(--su); }
+.tl { color: var(--tlmeny); }
+
+/* piktogram strachu */
+.ik { width: 16px; height: 16px; fill: currentColor; flex: none; vertical-align: -3px; overflow: visible; }
+.ik.z1 { color: var(--zona-1, #facc15); }
+.ik.z2 { color: var(--zona-2, #f97316); }
+.ik.z3 { color: var(--zona-3, #dc2626); }
+.ik.zg { color: var(--tlmeny, #b6a790); }
+.ik.v14 { width: 14px; height: 14px; }
+.ik.v20 { width: 20px; height: 20px; vertical-align: -4px; }
+.ik.v24 { width: 24px; height: 24px; }
+.ik.v48 { width: 48px; height: 48px; }
+.ik.v72 { width: 72px; height: 72px; }
+.sp { width: 1.25em; height: 0.62em; fill: currentColor; flex: none; vertical-align: -0.02em; }
+body[data-sada="dnes"] .ik:not(.pevne), body[data-sada="dnes"] .len-nove { display: none !important; }
+body:not([data-sada="dnes"]) .len-dnes { display: none !important; }
+.znacka { display: inline-block; width: 10px; height: 10px; border-radius: 2px; box-shadow: 0 0 0 1px var(--okraj-svetly); background: var(--f); flex: none; vertical-align: -1px; margin-right: 3px; }
+
+/* línia starších */
+.plst { background: #1c2a1e; border: 2px solid #3f7a4c; border-radius: 14px; padding: 10px; }
+.ls-rad { display: flex; gap: 8px; }
+.ls-sc { width: 156px; flex: none; background: #221b15; border: 1px solid var(--okraj); border-radius: 8px; padding: 5px 6px 6px; display: flex; flex-direction: column; gap: 3px; font-size: 10.5px; }
+.ls-sc-hlava { display: flex; align-items: center; gap: 4px; min-height: 18px; }
+.ls-meno { font: 700 12px/1.2 var(--serif); }
+.ls-boduje { margin-left: auto; display: inline-flex; align-items: center; gap: 2px; padding: 0 5px; border: 1px solid currentColor; border-radius: 99px; font: 800 10.5px/1.4 var(--sans); font-variant-numeric: tabular-nums; }
+.ls-boduje .ik { width: 14px; height: 14px; }
+.ls-poradie { color: var(--slaby); font-size: 10px; margin-left: 2px; }
+.ls-portret { position: relative; height: 118px; border-radius: 6px; overflow: hidden; background: radial-gradient(circle at 50% 35%, #4a3c2e, #1b1611 70%); }
+.ls-portret img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 20%; }
+.ls-portret .bez { position: absolute; inset: auto 0 8px; text-align: center; color: var(--slaby); font-size: 10px; }
+.peciatka { position: absolute; top: 10%; left: 50%; translate: -50% 0; rotate: -8deg; padding: 1px 6px; border: 2px solid currentColor; border-radius: 4px; background: color-mix(in srgb, var(--pozadie) 70%, transparent); font: 800 9.6px/1.3 var(--sans); letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; color: var(--cervena-text); display: inline-flex; align-items: center; gap: 4px; }
+body:not([data-sada="dnes"]) .peciatka { font-size: 11px; padding: 2px 7px 2px 4px; border-width: 2.5px; background: color-mix(in srgb, var(--pozadie) 82%, transparent); }
+.peciatka .ik { width: 20px; height: 20px; }
+.stup { position: relative; margin-top: 4px; }
+.stup-polia { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; height: 12px; }
+.stup-polia i { border-radius: 2px; }
+.stup-cisla { display: grid; grid-template-columns: repeat(7, 1fr); font-size: 9px; color: var(--tlmeny); text-align: center; margin-top: 1px; }
+.mk { position: absolute; top: -3px; width: 18px; height: 18px; margin-left: -9px; left: calc((var(--p) + 0.5) / 7 * 100%); border-radius: 50%; background: #2b2420; border: 3px solid #efe6da; box-shadow: 0 0 0 2px var(--prst); }
+.ls-strany { display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; }
+.ls-cip { display: flex; align-items: center; gap: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.ls-cip > span { overflow: hidden; text-overflow: ellipsis; }
+
+/* doska hráča */
+.doska { display: flex; gap: 6px; align-items: stretch; background: #161c1f; border: 1px solid #2c4a50; border-left: 4px solid var(--ja); border-radius: 10px; padding: 6px; }
+.doska.su { background: #1e1613; border-color: #4d2f24; border-left-color: var(--su); }
+.doska + .doska { margin-top: 8px; }
+.kto { display: flex; flex-direction: column; justify-content: center; width: 92px; flex: none; padding-left: 4px; font: 700 13px/1.2 var(--serif); }
+.kto small { font: 400 10px var(--sans); color: var(--tlmeny); }
+.zdroj { width: 110px; flex: none; background: #1f1a15; border: 1px solid var(--okraj); border-radius: 8px; padding: 5px 8px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.zdroj.sum { width: 132px; border-top: 3px solid var(--akcent); align-items: center; text-align: center; }
+.zdroj-nazov { display: flex; align-items: center; gap: 4px; font: 700 10px/1.2 var(--sans); letter-spacing: 0.05em; text-transform: uppercase; color: var(--tlmeny); white-space: nowrap; overflow: hidden; }
+.zdroj-nazov .posuny { margin-left: auto; border: 1px solid var(--akcent); color: var(--akcent); border-radius: 99px; padding: 0 4px; font-size: 9.5px; letter-spacing: 0; }
+.velke { display: inline-flex; align-items: center; gap: 3px; font: 800 20px/1.1 var(--sans); font-variant-numeric: tabular-nums; min-height: 24px; }
+.velke.priazen { color: color-mix(in oklab, var(--cervena-svetla) 70%, var(--text)); }
+.velke.strach-dnes { color: var(--zelena); }
+.velke.nic { color: var(--slaby); }
+.zdroj-pod { font-size: 10.5px; color: var(--tlmeny); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 3px; justify-content: inherit; }
+.zdroj.sum .zdroj-pod { justify-content: center; }
+.hodnota-sum { display: flex; align-items: center; gap: 6px; }
+.stupienky { --s: 4px; position: relative; display: flex; align-items: center; gap: 2px; height: calc(var(--s) * 6 + 2px); }
+.stupienky::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px solid rgba(255,255,255,0.22); }
+.stupienky i { position: relative; width: 4px; height: 100%; }
+.stupienky i::after { content: ""; position: absolute; left: 0; right: 0; border-radius: 1px; background: var(--f); }
+.stupienky i.hore::after { bottom: 50%; height: calc(var(--s) * var(--z)); }
+.stupienky i.dole::after { top: 50%; height: calc(var(--s) * var(--z)); }
+.stupienky i.nic::after { top: calc(50% - 1px); height: 3px; background: rgba(255,255,255,0.28); }
+.rad-strachu { display: inline-flex; align-items: center; gap: 1px; }
+.rad-strachu .ik { width: 18px; height: 18px; }
+
+/* horný bar */
+.jbar { display: flex; gap: 6px; align-items: center; background: #1b1612; border: 1px solid var(--okraj); border-radius: 8px; padding: 4px 8px; font-size: 12px; width: max-content; }
+.jbar .bunka { padding: 2px 8px; border: 1px solid var(--okraj); border-radius: 6px; display: inline-flex; gap: 4px; align-items: center; font-variant-numeric: tabular-nums; }
+.jbar .bunka.hrozba { border-color: var(--zona-3); }
+.hrozba-pas { margin-top: 8px; display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 8px; background: color-mix(in srgb, var(--zona-3) 16%, #1b1612); border: 1px solid color-mix(in srgb, var(--zona-3) 60%, transparent); font-size: 12.5px; width: max-content; }
+.hrozba-pas .ik { width: 24px; height: 24px; }
+
+/* nástenka */
+.korok { background: #5b4224; background-image: radial-gradient(rgba(0,0,0,0.25) 1px, transparent 1.5px); background-size: 9px 9px; border: 2px solid #8a6a3a; border-radius: 10px; padding: 12px; display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; }
+.popolniky { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.popolnik { display: flex; align-items: center; gap: 8px; padding: 6px 12px; border: 2px solid var(--ja); border-radius: 9px; background: #1f1a15; }
+.popolnik.su { border-color: color-mix(in srgb, var(--su) 70%, transparent); }
+.avatar { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font: 700 11px var(--sans); background: #2f6b55; color: #fff; flex: none; }
+.avatar.su { background: #8a4a3a; }
+.np-meno { font-weight: 700; font-size: 12px; display: block; }
+.np-rozpis { font-size: 11px; color: var(--tlmeny); display: inline-flex; gap: 3px; align-items: center; }
+.np-cislo { font: 800 24px/1 var(--sans); display: inline-flex; gap: 4px; align-items: center; margin-left: 6px; }
+.listok { display: flex; gap: 8px; align-items: center; background: #2a231c; padding: 6px 10px; border-radius: 3px; rotate: -1deg; box-shadow: 0 3px 8px rgba(0,0,0,0.4); border-top: 3px solid var(--su); }
+.listok.moja { border-top-color: var(--ja); rotate: 1deg; }
+.listok b { font-size: 12px; }
+.listok .zisk { font: 800 14px var(--sans); display: inline-flex; align-items: center; gap: 3px; }
+.uctenka { border-left: 1px dashed var(--okraj-svetly); padding-left: 8px; font-size: 10.5px; display: flex; flex-direction: column; color: var(--tlmeny); font-variant-numeric: tabular-nums; }
+.uctenka span { display: inline-flex; gap: 3px; align-items: center; }
+.uctenka b { color: var(--text); font-size: 10.5px; }
+.paticka { margin-top: 8px; font-size: 12px; color: var(--tlmeny); display: flex; gap: 16px; flex-wrap: wrap; }
+.paticka span { display: inline-flex; gap: 4px; align-items: center; }
+.paticka b { color: var(--text); }
+
+/* rekapitulácia */
+.rekap { width: 470px; background: #1f1a15; border: 1px solid var(--okraj); border-radius: 12px; padding: 10px 14px; }
+.sb { display: grid; grid-template-columns: 1fr 110px 110px; gap: 4px 10px; font-size: 12.5px; align-items: center; }
+.sb .h { font: 700 10px var(--sans); letter-spacing: 0.08em; text-transform: uppercase; color: var(--tlmeny); }
+.sb .r { display: inline-flex; gap: 4px; align-items: center; }
+.sb .plus { color: var(--zelena); font-weight: 700; }
+.sb .spolu { border-top: 1px solid var(--okraj); padding-top: 4px; font-weight: 700; display: inline-flex; gap: 4px; align-items: center; }
+.sb small { color: var(--tlmeny); font-weight: 400; font-size: 10.5px; }
+.rozpis-volitelny { display: inline-flex; gap: 2px; align-items: center; border: 1px dashed var(--okraj-svetly); border-radius: 6px; padding: 0 4px; font-size: 10.5px; color: var(--tlmeny); }
+.rozpis-volitelny .ik { width: 13px; height: 13px; }
+.ucet-riadok { margin-top: 10px; font-size: 12.5px; background: #1b1612; border: 1px solid var(--okraj); border-radius: 8px; padding: 6px 10px; display: flex; gap: 4px; align-items: center; flex-wrap: wrap; width: max-content; max-width: 100%; }
+
+/* legenda: rub a líc */
+.legenda-stup { display: grid; grid-template-columns: repeat(7, minmax(92px, 1fr)); gap: 3px; min-width: 680px; }
+.legenda-stup .pole { text-align: center; font-size: 11px; display: flex; flex-direction: column; gap: 4px; align-items: center; padding-bottom: 6px; border-radius: 6px; background: #1f1a15; }
+.legenda-stup .pole > i { display: block; height: 14px; width: 100%; border-radius: 4px 4px 0 0; }
+.legenda-stup .pole b { font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--tlmeny); }
+.legenda-stup .riadok { display: inline-flex; gap: 3px; align-items: center; white-space: nowrap; }
+.legenda-strany { display: flex; justify-content: space-between; min-width: 680px; font-size: 11px; font-weight: 700; margin-top: 4px; }
+.minca-obal { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+.minca { width: 84px; height: 84px; border: 0; padding: 0; background: none; cursor: pointer; perspective: 400px; }
+.minca-vnutro { position: relative; display: block; width: 100%; height: 100%; transition: transform 0.25s ease; transform-style: preserve-3d; }
+.minca.otocena .minca-vnutro { transform: rotateY(180deg); }
+.minca-tvar { position: absolute; inset: 0; border-radius: 50%; display: grid; place-items: center; backface-visibility: hidden; background: #2b2420; border: 4px solid #efe6da; box-shadow: 0 0 0 4px var(--prst, var(--su)); font: 800 30px/1 var(--sans); color: color-mix(in oklab, var(--cervena-svetla) 70%, var(--text)); }
+.minca-tvar.rub { transform: rotateY(180deg); box-shadow: 0 0 0 4px var(--ja); }
+.minca-tvar .ik { width: 44px; height: 44px; }
+
+/* porovnanie sád */
+.porov { display: grid; gap: 10px; }
+.porov-riadok { display: grid; grid-template-columns: 150px 1fr; gap: 12px; align-items: center; background: var(--pl); border: 1px solid var(--ok); border-radius: 12px; padding: 10px 12px; }
+.porov-riadok h4 { margin: 0; }
+.porov-riadok h4 small { display: block; font: 400 0.8rem var(--sans); color: var(--tl); }
+.porov-ikony { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end; }
+.skupina { display: inline-flex; gap: 6px; align-items: flex-end; padding: 6px 8px; border-radius: 8px; background: #28211a; }
+.skupina.sivo { filter: grayscale(1); }
+.skupina.deuter { filter: url(#deuter); }
+.skupina .lbl { font-size: 0.68rem; color: #b6a790; align-self: center; margin-left: 4px; }
+.skupina .srdce { color: #ff9d88; font: 700 15px/1 var(--sans); }
+@media (max-width: 640px) { .porov-riadok { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body data-sada="B">
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+<defs>
+  <!-- Piktogramy strachu: A kvapky potu, B tvár staršieho, C vlasy dupkom, D kolená; 1 = Znepokojenie, 2 = Strach, 3 = Vydesenie. Mriežka 24 × 24, farba cez currentColor. -->
+  <path id="kv" d="M0-5.8C0-5.8-4.2-.4-4.2 1.8A4.2 4.2 0 0 0 4.2 1.8C4.2-.4 0-5.8 0-5.8Z"/>
+  <symbol id="A1" viewBox="0 0 24 24"><use href="#kv" transform="translate(12 11.6) scale(1.6)"/></symbol>
+  <symbol id="A2" viewBox="0 0 24 24"><use href="#kv" transform="translate(6.6 12.6) scale(1.12)"/><use href="#kv" transform="translate(17.4 12.6) scale(1.12)"/></symbol>
+  <symbol id="A3" viewBox="0 0 24 24"><use href="#kv" transform="translate(4.3 13) scale(.9)"/><use href="#kv" transform="translate(12 13) scale(.9)"/><use href="#kv" transform="translate(19.7 13) scale(.9)"/></symbol>
+  <mask id="mB1" maskUnits="userSpaceOnUse" x="-4" y="-4" width="32" height="32">
+    <rect x="-4" y="-4" width="32" height="32" fill="#fff"/>
+    <circle cx="9.3" cy="13.4" r="1.6" fill="#000"/><circle cx="14.7" cy="13.4" r="1.6" fill="#000"/>
+    <path d="M6.6 10.6 10.6 9.2M13.4 9.2 17.4 10.6" stroke="#000" stroke-width="1.7" stroke-linecap="round" fill="none"/>
+    <path d="M8.4 18.2q1.2-1.3 2.4 0t2.4 0 2.4 0" stroke="#000" stroke-width="1.7" stroke-linecap="round" fill="none"/>
+  </mask>
+  <mask id="mB2" maskUnits="userSpaceOnUse" x="-4" y="-4" width="32" height="32">
+    <rect x="-4" y="-4" width="32" height="32" fill="#fff"/>
+    <circle cx="8.9" cy="12.6" r="2.5" fill="#000"/><circle cx="15.1" cy="12.6" r="2.5" fill="#000"/>
+    <circle cx="8.9" cy="13" r=".95" fill="#fff"/><circle cx="15.1" cy="13" r=".95" fill="#fff"/>
+    <path d="M6.2 8.8q2.6-1.9 4.8-.6M13 8.2q2.2-1.3 4.8.6" stroke="#000" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+    <ellipse cx="12" cy="18.3" rx="2" ry="2.3" fill="#000"/>
+  </mask>
+  <mask id="mB3" maskUnits="userSpaceOnUse" x="-4" y="-4" width="32" height="32">
+    <rect x="-4" y="-4" width="32" height="32" fill="#fff"/>
+    <circle cx="8.8" cy="12.8" r="2.8" fill="#000"/><circle cx="15.2" cy="12.8" r="2.8" fill="#000"/>
+    <circle cx="8.8" cy="12.8" r=".8" fill="#fff"/><circle cx="15.2" cy="12.8" r=".8" fill="#fff"/>
+    <ellipse cx="12" cy="18.9" rx="2.9" ry="2.6" fill="#000"/>
+    <path d="M9.6 17.6h4.8" stroke="#fff" stroke-width="1"/>
+  </mask>
+  <symbol id="B1" viewBox="0 0 24 24"><g transform="translate(-1.8 0)"><circle cx="12" cy="14" r="8.6" mask="url(#mB1)"/></g><use href="#kv" transform="translate(21.2 7) scale(.68)"/></symbol>
+  <symbol id="B2" viewBox="0 0 24 24"><g transform="translate(-1.8 0)"><circle cx="12" cy="14" r="8.6" mask="url(#mB2)"/></g><use href="#kv" transform="translate(21.2 6.6) scale(.66)"/><use href="#kv" transform="translate(21.2 14.4) scale(.66)"/></symbol>
+  <symbol id="B3" viewBox="0 0 24 24"><g transform="translate(-1.8 0)"><path d="M4.87 8.18L2.19 5.77M8.1 5.83L6.63 2.54M12 5L12 1.4M15.9 5.83L17.37 2.54M19.13 8.18L21.81 5.77" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="12" cy="14.6" r="8.2" mask="url(#mB3)"/></g><use href="#kv" transform="translate(21.6 8.6) scale(.5)"/><use href="#kv" transform="translate(21.6 14.8) scale(.5)"/><use href="#kv" transform="translate(21.6 21) scale(.5)"/></symbol>
+  <path id="klobuk" d="M4 4.2h16a.9.9 0 0 1 0 1.8H4a.9.9 0 0 1 0-1.8ZM7.6 4.2V1.6Q7.6 0 9.2 0h5.6q1.6 0 1.6 1.6v2.6Z"/>
+  <mask id="mHlava" maskUnits="userSpaceOnUse" x="-4" y="-4" width="32" height="32">
+    <rect x="-4" y="-4" width="32" height="32" fill="#fff"/>
+    <circle cx="9.7" cy="19.4" r="1.45" fill="#000"/><circle cx="14.3" cy="19.4" r="1.45" fill="#000"/>
+  </mask>
+  <mask id="mHlava3" maskUnits="userSpaceOnUse" x="-4" y="-4" width="32" height="32">
+    <rect x="-4" y="-4" width="32" height="32" fill="#fff"/>
+    <circle cx="9.5" cy="18.8" r="1.9" fill="#000"/><circle cx="14.5" cy="18.8" r="1.9" fill="#000"/>
+    <ellipse cx="12" cy="23.2" rx="1.5" ry="1.3" fill="#000"/>
+  </mask>
+  <symbol id="C1" viewBox="0 0 24 24"><path d="M7.4 17L7.4 14.2L7.62 12.6L9.24 14.2L9.81 12.3L11.08 14.2L12 12.2L12.92 14.2L14.19 12.3L14.76 14.2L16.38 12.6L16.6 14.2L16.6 17Z"/><circle cx="12" cy="20.8" r="6.2" mask="url(#mHlava)"/><use href="#klobuk" transform="translate(0 5.8)"/></symbol>
+  <symbol id="C2" viewBox="0 0 24 24"><path d="M6.2 17L6.2 12L6.29 10L8.13 12L8.57 9.1L10.07 12L10.86 8.66L12 12L13.14 8.66L13.93 12L15.43 9.1L15.87 12L17.71 10L17.8 12L17.8 17Z"/><circle cx="12" cy="20.8" r="6.2" mask="url(#mHlava)"/><use href="#klobuk" transform="translate(0 2.2)"/></symbol>
+  <symbol id="C3" viewBox="0 0 24 24"><path d="M4.4 17L4.4 11L2.92 8L6.93 11L6.55 5.44L9.47 11L10.18 4.16L12 11L13.82 4.16L14.53 11L17.45 5.44L17.07 11L21.08 8L19.6 11L19.6 17Z"/><circle cx="12" cy="20.8" r="6.2" mask="url(#mHlava3)"/><use href="#klobuk" transform="translate(4 -1.6) rotate(-20 12 3) scale(.84)"/></symbol>
+  <path id="nohyR" d="M5.6 2h12.8v3.2l-.6 14.6h-4.4L12 9.6l-1.4 10.2H6.2L5.6 5.2Z"/>
+  <path id="nohyX" d="M5.6 2h12.8v3.2l-1.6 6.4 2.4 8.2h-4.4l-2.6-7-.2-2.2-.2 2.2-2.6 7H4.8l2.4-8.2-1.6-6.4Z"/>
+  <symbol id="D1" viewBox="0 0 24 24"><use href="#nohyR" transform="translate(0 1.2)"/><path d="M3 10.4q-1.2 1.6 0 3.2M21 10.4q1.2 1.6 0 3.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></symbol>
+  <symbol id="D2" viewBox="0 0 24 24"><use href="#nohyX" transform="translate(0 1.2)"/><path d="M3.2 9.6q-1.2 1.6 0 3.2M21 9.6q1.2 1.6 0 3.2M1.2 8.6q-1.4 2.6 0 5.2M22.8 8.6q1.4 2.6 0 5.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></symbol>
+  <symbol id="D3" viewBox="0 0 24 24"><use href="#nohyX" transform="translate(0 -.4)"/><path d="M3 8.4q-1.2 1.6 0 3.2M21 8.4q1.2 1.6 0 3.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/><path d="M12 13.4c-.9 1.4-1 2.2-.4 2.7.5.4 1.1.1 1.1-.6 0-.6-.3-1.2-.7-2.1Z"/><path d="M2.4 22.2c0-1.3 4.4-2.2 9.6-2.2s9.6.9 9.6 2.2-4.4 1.8-9.6 1.8-9.6-.5-9.6-1.8Z"/></symbol>
+  <symbol id="SRDCE" viewBox="0 0 24 24"><path d="M12 21.2 3.6 12.9A5 5 0 0 1 12 6.1a5 5 0 0 1 8.4 6.8Z"/></symbol>
+  <filter id="deuter" color-interpolation-filters="linearRGB"><feColorMatrix type="matrix" values="0.367322 0.860646 -0.227968 0 0  0.280085 0.672501 0.047413 0 0  -0.011820 0.042940 0.968881 0 0  0 0 0 1 0"/></filter>
+  <filter id="protan" color-interpolation-filters="linearRGB"><feColorMatrix type="matrix" values="0.152286 1.052583 -0.204868 0 0  0.114503 0.786281 0.099216 0 0  -0.003882 -0.048116 1.051998 0 0  0 0 0 1 0"/></filter>
+  <symbol id="SPAK" viewBox="0 25 100 50"><g transform="translate(50 50) rotate(-25) scale(0.93) translate(-50 -58)"><rect x="4" y="40" width="34" height="22" rx="3"/><path d="M43 40H66L84 52L87 56L82.5 59L86 63L79.5 64.5L78 69.5L71.8 70.3L59.4 62H43Z"/><circle cx="92" cy="72" r="4"/><circle cx="95" cy="62" r="2.6"/><circle cx="86" cy="79" r="2.4"/></g></symbol>
+</defs>
+</svg>
+<main>
+<header>
+  <p class="meta">Dizajn · UI návrh · id <code>strach-piktogramy-20261027</code> · 2026-10-27 · zadanie Michala: „Prerobiť piktogramy ukazujúce strach starších.“</p>
+  <h1>Piktogramy strachu starších: štyri sady</h1>
+  <p class="meta">Cieľ: herný stôl <code>/hra</code>. Línia a stupnica starších (<code>LiniaStarsich.tsx</code>), dlaždica a bar Starší (<code>Starsi.tsx</code>, <code>spakyAStarsi.ts</code>), nástenka Špakov a rekapitulácia (<code>Spaky.tsx</code>), pečiatka VYDESENÝ, horný bar a nápovedy (<code>HernaPlocha.tsx</code>), bodovacie ikony (<code>packages/server/seed/bodovanie/ikony</code>).
+  Pravidlá v6/v6.1: PRAVIDLA.md §9 a §14. Súbežný UX návrh nebol zadaný, toto je len UI časť.</p>
+  <div class="verdikt">
+    <p><b>Verdikt.</b> Strach dnes nemá vlastný znak. Na stole ho nesie 10 px farebný štvorček, text „bojí sa…“ a ohorok špaku. Hráč preto nevidí, že zelené „+1“ v bare je strach. Farboslepý zase nerozlíši oranžovú od červenej, pri deuteranopii majú medzi sebou kontrast 1,62 : 1.</p>
+    <p>Navrhujem jeden piktogram v troch stupňoch, ktorý zónu nesie tvarom aj počtom a stojí vedľa ♥ ako jeho rub. <b>Odporúčam sadu B „Tvár staršieho“</b>: grimasa a 1, 2 alebo 3 kvapky potu, toľko, koľko špakov starší dá. Je najčitateľnejšia pri 16 px a netreba ju vysvetľovať. Odvážnejšia alternatíva s väčším humorom je <b>D „Kolená“</b> (trasú sa, klepú sa, mláčka).</p>
+  </div>
+  <nav class="obsah" aria-label="Obsah">
+    <a href="#stav">Súčasný stav</a><a href="#audit">Audit</a><a href="#sady">Sady</a><a href="#stol">Na stole</a>
+    <a href="#porovnanie">Porovnanie</a><a href="#odporucanie">Odporúčanie</a><a href="#otazky">Otázky</a>
+  </nav>
+</header>
+
+<section id="stav" aria-labelledby="h-stav">
+<h2 id="h-stav">Súčasný stav</h2>
+<p>Snímky sú z ukážky stola (<code>/hra/ukazka-stola?stop=kolo&amp;i=4&amp;lokalit=5&amp;seed=8</code>, kolo 4, hráč Jano proti Botovi Rapavému Ferovi) a z ukážky rekapitulácie. Odfotené pri 1920 × 1080 a 1366 × 650. Krčmárka sa Jana bojí v žltej zóne, Starosta je vydesený.</p>
+<div class="galeria">
+<figure class="siroka"><a href="dizajn-strach-piktogramy-20261027/stav-1366-linia.jpg"><img src="dizajn-strach-piktogramy-20261027/stav-1366-linia.jpg" alt="Herný stôl 1366 × 650 s otvorenou líniou starších a barmi starších." loading="lazy"></a><figcaption><b>1366 × 650, línia starších.</b> Strach je na troch miestach: štvorček pri mene v bare, „+1 / +3“ s ohorkom (zelené v mojom bare, v hlavičke karty vo farbe hráča) a riadok „■ bojí sa teba · Znepokojenie“ pod stupnicou. Nikde nie je znak, ktorý by znamenal „bojí sa“.</figcaption></figure>
+<figure><a href="dizajn-strach-piktogramy-20261027/vyrez-bar-1366.jpg"><img src="dizajn-strach-piktogramy-20261027/vyrez-bar-1366.jpg" alt="Výrez baru starších pri 1366, dvojnásobné zväčšenie." loading="lazy"></a><figcaption><b>Bar starších pri 1366 (2×).</b> Dlaždica Starší: ♥0, stĺpčeky 4 px široké (dva dole = strach) a „+4 ak vyhráš“. Neutrálny Farár má biely štvorček, ktorý vyzerá ako zaškrtávacie políčko.</figcaption></figure>
+<figure><a href="dizajn-strach-piktogramy-20261027/vyrez-linia-1366.jpg"><img src="dizajn-strach-piktogramy-20261027/vyrez-linia-1366.jpg" alt="Výrez dvoch kariet línie starších, Krčmárka a vydesený Starosta." loading="lazy"></a><figcaption><b>Línia pri 1366 (2×).</b> Pečiatka „vydesený“ má 9,6 px a je vždy červená (<code>.ls-peciatka.moja/.superova</code> nemajú štýl). Zónu pod stupnicou nesie len farba štvorčeka.</figcaption></figure>
+<figure><a href="dizajn-strach-piktogramy-20261027/vyrez-nastenka-1920.jpg"><img src="dizajn-strach-piktogramy-20261027/vyrez-nastenka-1920.jpg" alt="Krčmová nástenka s popolníkmi a lístkami bitiek." loading="lazy"></a><figcaption><b>Nástenka (1920).</b> Strach je tu len slovo „starší“: „bitky +3 · starší +2“, účtenka „starší 0 : +1“, pätička „Starší víťazovi ešte 3× po bitke“.</figcaption></figure>
+<figure><a href="dizajn-strach-piktogramy-20261027/vyrez-rekap-1366.jpg"><img src="dizajn-strach-piktogramy-20261027/vyrez-rekap-1366.jpg" alt="Spodok rekapitulácie bitky s riadkami špakov." loading="lazy"></a><figcaption><b>Rekapitulácia (1366, 2×).</b> „za starších (len víťaz) +7“: najväčšia položka bitky je bez znaku a bez súvislosti so stupnicou.</figcaption></figure>
+<figure><a href="dizajn-strach-piktogramy-20261027/stav-1920-linia.jpg"><img src="dizajn-strach-piktogramy-20261027/stav-1920-linia.jpg" alt="Herný stôl 1920 × 1080 s líniou starších." loading="lazy"></a><figcaption><b>1920 × 1080.</b> Viac miesta, rovnaký problém. Bar súpera ukazuje tých istých starších ako „♥ +1 / ♥ +3“, môj bar ako „+1 / +3 ohorok“. Že ide o dve strany jedného markera, nič nenaznačuje.</figcaption></figure>
+</div>
+
+<h3>Kde všade sa strach zobrazuje</h3>
+<div class="tab-obal"><table>
+<thead><tr><th>Miesto</th><th>Kód</th><th>Čím sa strach ukazuje dnes</th></tr></thead>
+<tbody>
+<tr><td>Línia: riadok pod stupnicou</td><td><code>LiniaStarsich.tsx:446–459</code>, <code>ZnackaZony :135</code></td><td>štvorček zóny + „bojí sa teba · Znepokojenie“ vo farbe hráča</td></tr>
+<tr><td>Línia: hlavička karty</td><td><code>LiniaStarsich.tsx:410–415</code></td><td>čip „+1 ohorok“, strach je preložený rovno na špaky</td></tr>
+<tr><td>Línia: portrét</td><td><code>LiniaStarsich.tsx:421</code>, <code>hra.css:5364</code></td><td>pečiatka „vydesený“, text 0,6 rem, vždy červená</td></tr>
+<tr><td>Stupnica</td><td><code>LiniaStarsich.tsx:617–623</code></td><td>farba poľa + číslica 0–3 pod ním</td></tr>
+<tr><td>Legenda „? stupnica“, lupa</td><td><code>LiniaStarsich.tsx:297–305, 705–719</code></td><td>štvorčeky zón v texte</td></tr>
+<tr><td>Dlaždica Starší</td><td><code>Starsi.tsx:47–60</code>, <code>hra.css:6137–6190</code></td><td>stĺpčeky (stupienky) 3–7 px široké, výška 4/8/12 px, „+4 ak vyhráš“</td></tr>
+<tr><td>Bar starších</td><td><code>Starsi.tsx:87–120</code>, <code>hra.css:6086–6106</code></td><td>štvorček pri mene, „+1 ohorok“ zelenou, „bojí sa ťa · pri výhre“</td></tr>
+<tr><td>Horný bar, hrozba vydesenia</td><td><code>HernaPlocha.tsx:4275–4295, 4793–4800</code></td><td>text „vydesení 1:0/4“, textový pás</td></tr>
+<tr><td>Nástenka</td><td><code>Spaky.tsx:188–212, 238</code></td><td>slovo „starší“</td></tr>
+<tr><td>Rekapitulácia, účet bitky</td><td><code>Spaky.tsx:289, 341</code>, <code>HernaPlocha.tsx:4924</code></td><td>„za starších (len víťaz)“, „+7 starší“</td></tr>
+<tr><td>Bodovacie ikony (tlač scorecardov, achievement Strašiak)</td><td><code>seed/bodovanie/ikony/{znepokojenie,strach,vydesenie}.svg</code></td><td>1, 2, 3 „pazúry“ (škrabance), čo pôsobí ako útok, nie strach. Na stole ich od v6 nič nepoužíva.</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="audit" aria-labelledby="h-audit">
+<h2 id="h-audit">Audit</h2>
+<p>Kontrasty sú prepočítané podľa WCAG 2.2. Simulácia farbosleposti: Machado 2009, závažnosť 1,0.</p>
+<div class="filtre" role="group" aria-label="Filter závažnosti">
+  <button type="button" data-f="vsetky" aria-pressed="true">Všetky</button>
+  <button type="button" data-f="vysoka" aria-pressed="false">Vysoká</button>
+  <button type="button" data-f="stredna" aria-pressed="false">Stredná</button>
+  <button type="button" data-f="nizka" aria-pressed="false">Nízka</button>
+</div>
+<div class="tab-obal"><table class="audit">
+<thead><tr><th>#</th><th>Problém</th><th>Závažnosť</th><th>Dôkaz</th></tr></thead>
+<tbody>
+<tr data-z="vysoka"><td class="c">U1</td><td><b>Strach nemá piktogram.</b> Priazeň má ♥, špak má ohorok, strach nemá nič. Nesú ho len text, farba a ohorok, takže stav „bojí sa ma“ splýva so stavom „dá mi špaky“.</td><td><span class="zav vysoka">vysoká</span></td><td>stav-1366-linia, vyrez-bar-1366; <code>Starsi.tsx:90–96</code></td></tr>
+<tr data-z="vysoka"><td class="c">U2</td><td><b>Zónu nesie len farba.</b> Štvorček 9–10 px: žltá, oranžová, červená. Pri deuteranopii sú z nich tri olivové odtiene (oranžová/červená 1,62 : 1, žltá/oranžová 1,68 : 1). Stupienky pridávajú výšku, lenže stĺpček je pri 1366 široký 3–4 px.</td><td><span class="zav vysoka">vysoká</span></td><td>vyrez-bar-1366; <code>hra.css:5553, 6137–6190</code></td></tr>
+<tr data-z="stredna"><td class="c">U3</td><td><b>Štvorček zóny vyzerá ako zaškrtávacie políčko.</b> Neutrálny je biely so svetlým okrajom („□ FARÁR“), farebné vyzerajú ako zaškrtnuté.</td><td><span class="zav stredna">stredná</span></td><td>vyrez-bar-1366; <code>Starsi.tsx:120</code></td></tr>
+<tr data-z="stredna"><td class="c">U4</td><td><b>Ten istý význam zakaždým inak.</b> V bare zelené „+1 ohorok“, v hlavičke karty „+1“ vo farbe hráča, na dlaždici „+4 ak vyhráš“, na nástenke slovo „starší“, v rekapitulácii „za starších“. Spoločný znak by tieto miesta spojil.</td><td><span class="zav stredna">stredná</span></td><td>všetky snímky</td></tr>
+<tr data-z="stredna"><td class="c">U5</td><td><b>Pečiatka VYDESENÝ je malá a jednofarebná.</b> Vydesenie je výherná podmienka, a predsa má na portréte iba 9,6 px text. Na čí prospech je vydesený, z nej nevidno.</td><td><span class="zav stredna">stredná</span></td><td>vyrez-linia-1366; <code>hra.css:5364–5380</code></td></tr>
+<tr data-z="nizka"><td class="c">U6</td><td><b>Oranžová zóna a farba súpera splývajú.</b> <code>--su #e0805f</code> a <code>#f97316</code> majú medzi sebou 1,01 : 1. Ak piktogram v oranžovej stojí pri mene súpera, musí ho niesť tvar, nie farba.</td><td><span class="zav nizka">nízka</span></td><td><code>schemy.css</code>, <code>geometria.ts:120</code></td></tr>
+<tr data-z="nizka"><td class="c">U7</td><td><b>Bodovacie ikony zón hovoria „útok“.</b> 1, 2, 3 pazúry sú obkreslené z rastra (10 kB) a so stolom nesúvisia.</td><td><span class="zav nizka">nízka</span></td><td><code>seed/bodovanie/ikony/strach.svg</code></td></tr>
+<tr data-z="nizka"><td class="c">U8</td><td><b>Počítadlo „vydesení 1:0/4“ nemá znak</b> a v úzkom bare sa stráca medzi fázami kola.</td><td><span class="zav nizka">nízka</span></td><td>stav-1366-linia; <code>HernaPlocha.tsx:4793–4800</code></td></tr>
+</tbody></table></div>
+<p class="pozn">Kontrast farieb zón ako grafiky (WCAG 1.4.11, treba 3 : 1) na <code>--plocha-2 #28211a</code>: žltá 10,37, oranžová 5,66, červená 3,29 : 1. Na <code>--plocha #1e1914</code>: 11,39 / 6,22 / 3,61. Všetky prejdú, červená tesne. Piktogramy preto majú plnú siluetu, nie tenké línie.</p>
+</section>
+
+<section id="sady" aria-labelledby="h-sady">
+<h2 id="h-sady">Štyri sady</h2>
+<p>Všetky sady sú plné siluety v mriežke 24 × 24 s farbou cez <code>currentColor</code>, rovnako ako ohorok (<code>IkonaSpaku.tsx</code>) a piktogramy akcií. Stupeň nesú vždy aspoň dve veci: <b>tvar</b> a <b>počet</b>, farba zóny je až tretia. Prepínač hore mení sadu vo všetkých ukážkach. „Dnes“ ukáže súčasný stav pre porovnanie.</p>
+
+<div class="ovladanie nahlady-ovl">
+  <div class="ovl" role="group" aria-label="Sada piktogramov">
+    <span class="popis">Sada:</span>
+    <button type="button" data-sada="dnes" aria-pressed="false">Dnes</button>
+    <button type="button" data-sada="A" aria-pressed="false"><svg class="ikona-tl ik pevne" aria-hidden="true"><use href="#A2"/></svg>A · Kvapky potu</button>
+    <button type="button" data-sada="B" aria-pressed="true"><svg class="ikona-tl ik pevne" aria-hidden="true"><use href="#B2"/></svg>B · Tvár staršieho</button>
+    <button type="button" data-sada="C" aria-pressed="false"><svg class="ikona-tl ik pevne" aria-hidden="true"><use href="#C2"/></svg>C · Vlasy dupkom</button>
+    <button type="button" data-sada="D" aria-pressed="false"><svg class="ikona-tl ik pevne" aria-hidden="true"><use href="#D2"/></svg>D · Kolená</button>
+  </div>
+  <div class="ovl" role="group" aria-label="Zobrazenie">
+    <span class="popis">Farby:</span>
+    <button type="button" data-filter="plne" aria-pressed="true">plné</button>
+    <button type="button" data-filter="sivo" aria-pressed="false">bez farieb</button>
+    <button type="button" data-filter="deuter" aria-pressed="false">deuteranopia</button>
+    <button type="button" data-filter="protan" aria-pressed="false">protanopia</button>
+    <span class="popis">Mierka:</span>
+    <button type="button" data-zoom="1" aria-pressed="true">1366</button>
+    <button type="button" data-zoom="2" aria-pressed="false">2× lupa</button>
+  </div>
+</div>
+
+<div class="nahlady" data-filter="plne" data-zoom="1">
+
+<article class="karta-sady" data-popis="dnes" hidden>
+  <h3>Dnes: štvorček, stĺpčeky a text</h3>
+  <p>Ukážky nižšie sú prekreslené zo súčasného kódu (rovnaké tokeny a texty). Porovnaj ich s ktoroukoľvek sadou.</p>
+</article>
+
+<article class="karta-sady" data-popis="A" hidden>
+  <h3>A · Kvapky potu</h3>
+  <div class="stitky"><span class="stitok n-mala">náročnosť: malá</span><span class="stitok">rýchla výhra</span></div>
+  <p><svg class="ik v48 z1 pevne" aria-hidden="true"><use href="#A1"/></svg> <svg class="ik v48 z2 pevne" aria-hidden="true"><use href="#A2"/></svg> <svg class="ik v48 z3 pevne" aria-hidden="true"><use href="#A3"/></svg></p>
+  <div class="dve"><div>
+  <p><b>Nápad:</b> starší sa potí. 1, 2 alebo 3 kvapky. <b>Počet kvapiek = zóna = špaky, ktoré dá po výhre</b>, takže hráč číta jednu vec.</p>
+  <p><b>Pre farboslepých:</b> nesie to len počet, a ten je spoľahlivý aj pri 16 px.</p>
+  </div><div>
+  <p><b>Plus:</b> najčitateľnejšia, najmenšia a najjednoduchšia na implementáciu. Vedľa ♥ (špička dole) má kvapka špičku hore, takže sa nepletú.</p>
+  <p><b>Mínus:</b> málo humoru, bez staršieho v obraze. Červené kvapky môžu pripomínať krv, oranžové pri 16 px plamienok.</p>
+  </div></div>
+</article>
+
+<article class="karta-sady odporucana" data-popis="B">
+  <h3>B · Tvár staršieho</h3>
+  <div class="stitky"><span class="stitok odp">odporúčam</span><span class="stitok n-stredna">náročnosť: stredná</span></div>
+  <p><svg class="ik v48 z1 pevne" aria-hidden="true"><use href="#B1"/></svg> <svg class="ik v48 z2 pevne" aria-hidden="true"><use href="#B2"/></svg> <svg class="ik v48 z3 pevne" aria-hidden="true"><use href="#B3"/></svg></p>
+  <div class="dve"><div>
+  <p><b>Nápad:</b> plná okrúhla tvár staršieho s grimasou. <b>Znepokojenie</b>: zvraštené obočie, vlnité ústa, 1 kvapka. <b>Strach</b>: okále, ústa „O“, 2 kvapky. <b>Vydesenie</b>: vlasy dupkom, krik so zubami, 3 kvapky.</p>
+  <p><b>Pre farboslepých:</b> nesú to tri veci naraz: výraz, počet kvapiek (zase = špaky) a vlasy pri vydesení.</p>
+  </div><div>
+  <p><b>Plus:</b> tvár so zjavnou emóciou je zrozumiteľná bez legendy, ľudia ju poznajú z emoji. Od ♥ je tvarovo najďalej. Grimasy sedia ku karikatúrnym portrétom starších.</p>
+  <p><b>Mínus:</b> pri 16 px sú kvapky len bodky a stupeň nesie najmä výraz a vlasy. Masky treba v Reacte nahradiť zloženou cestou (<code>fill-rule="evenodd"</code>), inak by sa opakovali id.</p>
+  </div></div>
+</article>
+
+<article class="karta-sady" data-popis="C" hidden>
+  <h3>C · Vlasy dupkom</h3>
+  <div class="stitky"><span class="stitok n-stredna">náročnosť: stredná</span><span class="stitok">posilňuje identitu</span></div>
+  <p><svg class="ik v48 z1 pevne" aria-hidden="true"><use href="#C1"/></svg> <svg class="ik v48 z2 pevne" aria-hidden="true"><use href="#C2"/></svg> <svg class="ik v48 z3 pevne" aria-hidden="true"><use href="#C3"/></svg></p>
+  <div class="dve"><div>
+  <p><b>Nápad:</b> „vlasy sa mu zježili“. Plešatý starší v dedinskom klobúku: vlasy rastú a dvíhajú klobúk. Pri <b>vydesení</b> klobúk odletí a oči sa vyvalia.</p>
+  <p><b>Pre farboslepých:</b> výška klobúka (nízko, stredne, letí) a dĺžka vlasov. Je to ako teplomer.</p>
+  </div><div>
+  <p><b>Plus:</b> najviac „dedinská“ sada, klobúk je znak staršieho. Vtipná, a pritom slušná.</p>
+  <p><b>Mínus:</b> pri 16 px je rozdiel medzi 1 a 2 asi 2 px výšky klobúka. Počet tu nič nenesie, takže čitateľnosť je slabšia ako pri A a B.</p>
+  </div></div>
+</article>
+
+<article class="karta-sady" data-popis="D" hidden>
+  <h3>D · Kolená</h3>
+  <div class="stitky"><span class="stitok n-stredna">náročnosť: stredná</span><span class="stitok">odvážny smer</span><span class="stitok">posilňuje identitu</span></div>
+  <p><svg class="ik v48 z1 pevne" aria-hidden="true"><use href="#D1"/></svg> <svg class="ik v48 z2 pevne" aria-hidden="true"><use href="#D2"/></svg> <svg class="ik v48 z3 pevne" aria-hidden="true"><use href="#D3"/></svg></p>
+  <div class="dve"><div>
+  <p><b>Nápad:</b> „trasú sa mu kolená“. Nohavice staršieho: <b>Znepokojenie</b>, rovné nohy a jeden pár chvenia. <b>Strach</b>, kolená do X a dvojité chvenie. <b>Vydesenie</b>, kolená do X, kvapka a mláčka pod ním (pocikaný, s mierou: len silueta vo farbe zóny).</p>
+  <p><b>Pre farboslepých:</b> rovné nohy → X → X s mláčkou, k tomu počet čiar chvenia.</p>
+  </div><div>
+  <p><b>Plus:</b> najvtipnejšia, stavia na slovenských frazémach. Pri 16 px je silueta nohavíc nečakane jasná a mláčka robí z vydesenia nezameniteľný stav.</p>
+  <p><b>Mínus:</b> nohavice samy o sebe „strach“ neznamenajú, na prvý raz treba legendu. Mláčka je otázka vkusu (pozri otázky).</p>
+  </div></div>
+</article>
+
+<h3 id="stol">Na stole</h3>
+<p class="pozn">Ukážky sú v mierke stola pri 1366 × 650 (bar a línia). Reálne texty a stav z partie: Krčmárka sa bojí teba (žltá), Hrobár je vydesený tebou (červená), Poštárka sa bojí súpera (oranžová), takže jej priazeň máš ty.</p>
+
+<!-- línia -->
+<div class="stol">
+  <p class="stol-nadpis">Línia starších <small>LiniaStarsich.tsx: hlavička, portrét s pečiatkou, stupnica, čipy priazne a strachu</small></p>
+  <div class="plst"><div class="ls-rad">
+    <div class="ls-sc">
+      <div class="ls-sc-hlava"><b class="ls-meno">Krčmárka</b><span class="ls-boduje moje"><svg class="ik z1" data-l="1" aria-hidden="true"><use href="#B1"/></svg>+1<svg class="sp" aria-hidden="true"><use href="#SPAK"/></svg></span><span class="ls-poradie">2</span></div>
+      <div class="ls-portret"><img src="dizajn-strach-piktogramy-20261027/portret-krcmarka.jpg" alt=""></div>
+      <div class="stup"><div class="stup-polia"><i style="background:var(--zona-3)"></i><i style="background:var(--zona-2)"></i><i style="background:var(--zona-1)"></i><i style="background:var(--zona-0)"></i><i style="background:var(--zona-1)"></i><i style="background:var(--zona-2)"></i><i style="background:var(--zona-3)"></i></div><b class="mk" style="--p:4;--prst:var(--su)"></b><div class="stup-cisla"><span>3</span><span>2</span><span>1</span><span>0</span><span>1</span><span>2</span><span>3</span></div></div>
+      <div class="ls-strany"><span class="moje">◀ ty</span><span class="superove">Bot Rapavý Fero ▶</span></div>
+      <div class="ls-cip superove"><span>♥ Bot Rapavý Fero +1 · −1 Dlh po bitke</span></div>
+      <div class="ls-cip moje"><i class="znacka len-dnes" style="--f:var(--zona-1)"></i><svg class="ik z1" data-l="1" aria-hidden="true"><use href="#B1"/></svg><span>bojí sa teba · Znepokojenie</span></div>
+    </div>
+    <div class="ls-sc">
+      <div class="ls-sc-hlava"><b class="ls-meno">Hrobár</b><span class="ls-boduje moje"><svg class="ik z3" data-l="3" aria-hidden="true"><use href="#B3"/></svg>+3<svg class="sp" aria-hidden="true"><use href="#SPAK"/></svg></span><span class="ls-poradie">5</span></div>
+      <div class="ls-portret"><img src="dizajn-strach-piktogramy-20261027/portret-hrobar.jpg" alt=""><span class="peciatka"><svg class="ik z3" data-l="3" aria-hidden="true"><use href="#B3"/></svg>vydesený</span></div>
+      <div class="stup"><div class="stup-polia"><i style="background:var(--zona-3)"></i><i style="background:var(--zona-2)"></i><i style="background:var(--zona-1)"></i><i style="background:var(--zona-0)"></i><i style="background:var(--zona-1)"></i><i style="background:var(--zona-2)"></i><i style="background:var(--zona-3)"></i></div><b class="mk" style="--p:6;--prst:var(--su)"></b><div class="stup-cisla"><span>3</span><span>2</span><span>1</span><span>0</span><span>1</span><span>2</span><span>3</span></div></div>
+      <div class="ls-strany"><span class="moje">◀ ty</span><span class="superove">Bot Rapavý Fero ▶</span></div>
+      <div class="ls-cip superove"><span>♥ Bot Rapavý Fero +3 · Výpalník</span></div>
+      <div class="ls-cip moje"><i class="znacka len-dnes" style="--f:var(--zona-3)"></i><svg class="ik z3" data-l="3" aria-hidden="true"><use href="#B3"/></svg><span>bojí sa teba · Vydesenie</span></div>
+    </div>
+    <div class="ls-sc">
+      <div class="ls-sc-hlava"><b class="ls-meno">Poštárka</b><span class="ls-boduje superove"><svg class="ik z2" data-l="2" aria-hidden="true"><use href="#B2"/></svg>+2<svg class="sp" aria-hidden="true"><use href="#SPAK"/></svg></span><span class="ls-poradie">4</span></div>
+      <div class="ls-portret"><span class="bez">(portrét)</span></div>
+      <div class="stup"><div class="stup-polia"><i style="background:var(--zona-3)"></i><i style="background:var(--zona-2)"></i><i style="background:var(--zona-1)"></i><i style="background:var(--zona-0)"></i><i style="background:var(--zona-1)"></i><i style="background:var(--zona-2)"></i><i style="background:var(--zona-3)"></i></div><b class="mk" style="--p:1;--prst:var(--ja)"></b><div class="stup-cisla"><span>3</span><span>2</span><span>1</span><span>0</span><span>1</span><span>2</span><span>3</span></div></div>
+      <div class="ls-strany"><span class="moje">◀ ty</span><span class="superove">Bot Rapavý Fero ▶</span></div>
+      <div class="ls-cip moje"><span>♥ ty +2 · +2 Viera v bitke</span></div>
+      <div class="ls-cip superove"><i class="znacka len-dnes" style="--f:var(--zona-2)"></i><svg class="ik z2" data-l="2" aria-hidden="true"><use href="#B2"/></svg><span>bojí sa Bot Rapavý Fero · Strach</span></div>
+    </div>
+  </div></div>
+  <p class="pozn len-nove" style="margin:8px 0 0">Zmena: štvorček <code>ZnackaZony</code> nahradí piktogram, hlavička dostane piktogram pred „+n ohorok“ (strach → špaky) a pečiatka piktogram a 11 px písmo. Stupnica ostáva, jej farby a čísla sedia.</p>
+</div>
+
+<!-- doska -->
+<div class="stol">
+  <p class="stol-nadpis">Dlaždica Starší a bar starších: rub a líc <small>Starsi.tsx: DlazdicaStarsich, BarStarsich. Ten istý marker je u teba strach, u súpera ♥.</small></p>
+  <div class="doska">
+    <div class="kto">Jano (ty)<small>obranca</small></div>
+    <div class="zdroj sum">
+      <span class="zdroj-nazov" style="justify-content:center">Starší ▾ <span class="posuny">⇄2</span></span>
+      <span class="hodnota-sum"><span class="velke priazen">♥1</span>
+        <span class="stupienky len-dnes" aria-hidden="true"><i class="nic"></i><i class="dole" style="--z:1;--f:var(--zona-1)"></i><i class="nic"></i><i class="hore" style="--z:2;--f:var(--zona-2)"></i><i class="dole" style="--z:3;--f:var(--zona-3)"></i><i class="nic"></i><i class="nic"></i><i class="nic"></i></span>
+        <span class="rad-strachu len-nove"><svg class="ik z3" data-l="3" aria-hidden="true"><use href="#B3"/></svg><svg class="ik z1" data-l="1" aria-hidden="true"><use href="#B1"/></svg></span></span>
+      <span class="zdroj-pod">+4 ak vyhráš<svg class="sp" aria-hidden="true"><use href="#SPAK"/></svg></span>
+    </div>
+    <div class="zdroj"><span class="zdroj-nazov"><i class="znacka len-dnes" style="--f:var(--zona-0)"></i>Farár</span><span class="velke nic">—</span><span class="zdroj-pod">neutrálny · pri +1: +1 tuhé</span></div>
+    <div class="zdroj"><span class="zdroj-nazov"><i class="znacka len-dnes" style="--f:var(--zona-1)"></i>Krčmárka</span><span class="velke strach-dnes len-dnes">+1<svg class="sp" aria-hidden="true"><use href="#SPAK"/></svg></span><span class="velke len-nove"><svg class="ik z1 v20" data-l="1" aria-hidden="true"><use href="#B1"/></svg><span class="moje">+1</span><svg class="sp" aria-hidden="true"><use href="#SPAK"/></svg></span><span class="zdroj-pod">bojí sa ťa · pri výhre</span></div>
+    <div class="zdroj"><span class="zdroj-nazov"><i class="znacka len-dnes" style="--f:var(--zona-2)"></i>Poštárka</span><span class="velke priazen">♥ +2</span><span class="zdroj-pod">+2 Viera v bitke</span></div>
+    <div class="zdroj"><span class="zdroj-nazov"><i class="znacka len-dnes" style="--f:var(--zona-3)"></i>Hrobár</span><span class="velke strach-dnes len-dnes">+3<svg class="sp" aria-hidden="true"><use href="#SPAK"/></svg></span><span class="velke len-nove"><svg class="ik z3 v20" data-l="3" aria-hidden="true"><use href="#B3"/></svg><span class="moje">+3</span><svg class="sp" aria-hidden="true"><use href="#SPAK"/></svg></span><span class="zdroj-pod"><span class="len-dnes">bojí sa ťa · pri výhre</span><span class="len-nove">vydesený · pri výhre</span></span></div>
+  </div>
+  <div class="doska su">
+    <div class="kto">Rapavý Fero<small>útočník</small></div>
+    <div class="zdroj sum">
+      <span class="zdroj-nazov" style="justify-content:center">Starší ▾</span>
+      <span class="hodnota-sum"><span class="velke priazen">♥2</span>
+        <span class="stupienky len-dnes" aria-hidden="true"><i class="nic"></i><i class="hore" style="--z:1;--f:var(--zona-1)"></i><i class="nic"></i><i class="dole" style="--z:2;--f:var(--zona-2)"></i><i class="hore" style="--z:3;--f:var(--zona-3)"></i><i class="nic"></i><i class="nic"></i><i class="nic"></i></span>
+        <span class="rad-strachu len-nove"><svg class="ik z2" data-l="2" aria-hidden="true"><use href="#B2"/></svg></span></span>
+      <span class="zdroj-pod">+2 ak vyhrá<svg class="sp" aria-hidden="true"><use href="#SPAK"/></svg></span>
+    </div>
+    <div class="zdroj"><span class="zdroj-nazov"><i class="znacka len-dnes" style="--f:var(--zona-0)"></i>Farár</span><span class="velke nic">—</span><span class="zdroj-pod">neutrálny · pri +1: +1 tuhé</span></div>
+    <div class="zdroj"><span class="zdroj-nazov"><i class="znacka len-dnes" style="--f:var(--zona-1)"></i>Krčmárka</span><span class="velke priazen">♥ +1</span><span class="zdroj-pod">−1 Dlh po bitke</span></div>
+    <div class="zdroj"><span class="zdroj-nazov"><i class="znacka len-dnes" style="--f:var(--zona-2)"></i>Poštárka</span><span class="velke strach-dnes len-dnes">+2<svg class="sp" aria-hidden="true"><use href="#SPAK"/></svg></span><span class="velke len-nove"><svg class="ik z2 v20" data-l="2" aria-hidden="true"><use href="#B2"/></svg><span class="superove">+2</span><svg class="sp" aria-hidden="true"><use href="#SPAK"/></svg></span><span class="zdroj-pod">bojí sa ho · pri výhre</span></div>
+    <div class="zdroj"><span class="zdroj-nazov"><i class="znacka len-dnes" style="--f:var(--zona-3)"></i>Hrobár</span><span class="velke priazen">♥ +3</span><span class="zdroj-pod">súperov prah Exekúcie −3</span></div>
+  </div>
+  <p class="pozn len-nove" style="margin:8px 0 0">Zmena: štvorček pri mene zmizne (U3). Riadok s hodnotou je buď ♥ (priazeň), alebo piktogram strachu so špakmi, a ten istý starší má u súpera opačnú stranu. Stĺpčeky dlaždice Starší nahradí rad piktogramov tých, čo sa boja (zoradený od najsilnejšieho). Pri 1366 sa zmestia 4 po 18 px, od piateho „<svg class="ik zg" data-l="g" aria-hidden="true"><use href="#B2"/></svg>×5“.</p>
+</div>
+
+<!-- horný bar + hrozba -->
+<div class="stol">
+  <p class="stol-nadpis">Horný bar a hrozba vydesenia <small>HernaPlocha.tsx:4793–4800, 4275–4295</small></p>
+  <div class="jbar"><span class="bunka">Pitka 2</span><span class="bunka">Bitka</span><span class="bunka hrozba"><span class="len-dnes">vydesení</span><svg class="ik z3" data-l="3" aria-hidden="true"><use href="#B3"/></svg><b class="moje">2</b>:<b class="superove">0</b>/4</span><span class="bunka">Šenok 8</span><span class="bunka">Nástenka</span></div>
+  <div class="hrozba-pas"><svg class="ik z3" data-l="3" aria-hidden="true"><use href="#B3"/></svg><span><b>Vydesil si 2 starších!</b> Ak ich udržíš do konca kola 5, vyhráš.</span></div>
+</div>
+
+<!-- nástenka -->
+<div class="stol">
+  <p class="stol-nadpis">Nástenka Špakov <small>Spaky.tsx: popolníky, účtenka pod lístkom, pätička</small></p>
+  <div class="popolniky">
+    <div class="popolnik"><span class="avatar">J</span><span><span class="np-meno">ty</span><span class="np-rozpis">bitky +2 · <span class="len-dnes">starší</span><svg class="ik zg" data-l="g" aria-hidden="true"><use href="#B2"/></svg> 0</span></span><span class="np-cislo moje"><svg class="sp" aria-hidden="true"><use href="#SPAK"/></svg>2</span></div>
+    <div class="popolnik su"><span class="avatar su">BR</span><span><span class="np-meno">Bot Rapavý Fero</span><span class="np-rozpis">bitky +3 · <span class="len-dnes">starší</span><svg class="ik zg" data-l="g" aria-hidden="true"><use href="#B2"/></svg> +2</span></span><span class="np-cislo superove"><svg class="sp" aria-hidden="true"><use href="#SPAK"/></svg>5</span></div>
+  </div>
+  <div class="korok">
+    <div class="listok"><span class="avatar su">BR</span><span class="zisk">+3<svg class="sp" aria-hidden="true"><use href="#SPAK"/></svg></span><b>Obecný úrad</b><span class="uctenka"><span><span class="len-dnes">starší</span><svg class="ik zg" data-l="g" aria-hidden="true"><use href="#B2"/></svg> 0 : +1</span><b>stav 0 : 5</b></span></div>
+    <div class="listok moja"><span class="avatar">J</span><span class="zisk">+2<svg class="sp" aria-hidden="true"><use href="#SPAK"/></svg></span><b>Most</b><span class="uctenka"><span><span class="len-dnes">starší</span><svg class="ik zg" data-l="g" aria-hidden="true"><use href="#B2"/></svg> 0 : 0</span><b>stav 2 : 5</b></span></div>
+  </div>
+  <p class="paticka"><span>Keby partia skončila teraz: <b>ty 2 · Bot Rapavý Fero −5</b></span><span><span class="len-dnes">Starší</span><span class="len-nove"><svg class="ik zg" data-l="g" aria-hidden="true"><use href="#B2"/></svg> Strach starších:</span> víťazovi ešte 3× po bitke: <b>ty +4 · Bot Rapavý Fero +2</b></span></p>
+  <p class="pozn len-nove" style="margin:6px 0 0">Na nástenke nejde o jedného staršieho, ale o súčet. Preto tu stojí všeobecná značka sady (tlmená farba, stredný stupeň), nie stupeň zóny. Slovo „starší“ ostáva v nápovede (<code>title</code>).</p>
+</div>
+
+<!-- rekapitulácia -->
+<div class="stol">
+  <p class="stol-nadpis">Rekapitulácia a účet bitky <small>Spaky.tsx: SpakyBitky, textSpakovBitky</small></p>
+  <div class="rekap">
+    <div class="sb">
+      <span class="h">špaky</span><span class="h moje">ty</span><span class="h superove">Rapavý Fero</span>
+      <span>za bitku</span><span class="plus">+1 <small>2 Pitky −1 Absťák</small></span><span class="tl">—</span>
+      <span class="r"><span class="len-dnes">za starších (len víťaz)</span><span class="len-nove"><svg class="ik zg" data-l="g" aria-hidden="true"><use href="#B2"/></svg> strach starších <small>(len víťaz)</small></span></span><span class="r"><span class="plus">+7</span><span class="rozpis-volitelny len-nove" title="voliteľné, potrebuje rozpis z jadra"><svg class="ik z3" data-l="3" aria-hidden="true"><use href="#B3"/></svg><svg class="ik z2" data-l="2" aria-hidden="true"><use href="#B2"/></svg><svg class="ik z1" data-l="1" aria-hidden="true"><use href="#B1"/></svg><svg class="ik z1" data-l="1" aria-hidden="true"><use href="#B1"/></svg></span></span><span class="tl">—</span>
+      <span class="spolu">v popolníku</span><span class="spolu">10<svg class="sp" aria-hidden="true"><use href="#SPAK"/></svg></span><span class="spolu">3<svg class="sp" aria-hidden="true"><use href="#SPAK"/></svg></span>
+    </div>
+  </div>
+  <div class="ucet-riadok"><svg class="sp" aria-hidden="true"><use href="#SPAK"/></svg> <b>Špaky</b> ty 3 → 10 (+1 bitka, +7 <span class="len-dnes">starší</span><svg class="ik zg" data-l="g" aria-hidden="true"><use href="#B2"/></svg>) · Rapavý Fero 3 → 3</div>
+  <p class="pozn len-nove" style="margin:6px 0 0">Prerušovaný rámček je voliteľný rozpis (kto koľko dal). <code>BitkaNaNastenke</code> má dnes len súčet <code>zaStarsich</code>, takže by ho muselo dodať jadro.</p>
+</div>
+
+<!-- legenda: rub a líc -->
+<div class="stol">
+  <p class="stol-nadpis">Legenda „? stupnica“: priazeň a strach ako rub a líc <small>LiniaStarsich.tsx:295–316 (LegendaStupnice), Ukazky.tsx:250 (pravidlá)</small></p>
+  <div class="legenda-stup">
+    <div class="pole"><i style="background:var(--zona-3)"></i><b>Vydesenie</b><span class="riadok moje">♥ +3 ty</span><span class="riadok superove"><svg class="ik z3" data-l="3" aria-hidden="true"><use href="#B3"/></svg><span class="len-dnes"><i class="znacka" style="--f:var(--zona-3)"></i></span> bojí sa Fera</span></div>
+    <div class="pole"><i style="background:var(--zona-2)"></i><b>Strach</b><span class="riadok moje">♥ +2 ty</span><span class="riadok superove"><svg class="ik z2" data-l="2" aria-hidden="true"><use href="#B2"/></svg><span class="len-dnes"><i class="znacka" style="--f:var(--zona-2)"></i></span> bojí sa Fera</span></div>
+    <div class="pole"><i style="background:var(--zona-1)"></i><b>Znepokojenie</b><span class="riadok moje">♥ +1 ty</span><span class="riadok superove"><svg class="ik z1" data-l="1" aria-hidden="true"><use href="#B1"/></svg><span class="len-dnes"><i class="znacka" style="--f:var(--zona-1)"></i></span> bojí sa Fera</span></div>
+    <div class="pole"><i style="background:var(--zona-0)"></i><b>Neutralita</b><span class="riadok tl">♥ nikto</span><span class="riadok tl">nikoho sa nebojí</span></div>
+    <div class="pole"><i style="background:var(--zona-1)"></i><b>Znepokojenie</b><span class="riadok superove">♥ +1 Fero</span><span class="riadok moje"><svg class="ik z1" data-l="1" aria-hidden="true"><use href="#B1"/></svg><span class="len-dnes"><i class="znacka" style="--f:var(--zona-1)"></i></span> bojí sa teba</span></div>
+    <div class="pole"><i style="background:var(--zona-2)"></i><b>Strach</b><span class="riadok superove">♥ +2 Fero</span><span class="riadok moje"><svg class="ik z2" data-l="2" aria-hidden="true"><use href="#B2"/></svg><span class="len-dnes"><i class="znacka" style="--f:var(--zona-2)"></i></span> bojí sa teba</span></div>
+    <div class="pole"><i style="background:var(--zona-3)"></i><b>Vydesenie</b><span class="riadok superove">♥ +3 Fero</span><span class="riadok moje"><svg class="ik z3" data-l="3" aria-hidden="true"><use href="#B3"/></svg><span class="len-dnes"><i class="znacka" style="--f:var(--zona-3)"></i></span> bojí sa teba</span></div>
+  </div>
+  <div class="legenda-strany"><span class="moje">◀ tvoja polovica</span><span class="superove">polovica Bot Rapavý Fero ▶</span></div>
+  <div class="minca-obal len-nove">
+    <button type="button" class="minca" aria-pressed="false" aria-label="Marker staršieho: otoč mincu (priazeň a strach)" style="--prst:var(--su)">
+      <span class="minca-vnutro"><span class="minca-tvar">♥</span><span class="minca-tvar rub"><svg class="ik z3" data-l="3" aria-hidden="true"><use href="#B3"/></svg></span></span>
+    </button>
+    <p style="margin:0;max-width:56ch">Marker je minca. <b>Líc ♥</b> patrí tomu, na koho polovici leží (rámik vo farbe súpera), <b>rub</b> s piktogramom strachu tomu druhému. Kliknutím mincu otočíš. Takýto obrat (250 ms) sa hodí do výučby a do legendy. Na stole sa nemení nič, len čipy pod stupnicou sú vždy v poradí ♥, potom strach.</p>
+  </div>
+</div>
+
+<h3 id="porovnanie">Porovnanie všetkých sád naraz</h3>
+<p>Každý riadok: 48 px, potom 24, 20 a 16 px vo farbách zón, nakoniec 16 px bez farieb a pri deuteranopii, vedľa ♥ v rovnakej veľkosti. Tento blok prepínač sady nemení.</p>
+<div class="porov">
+<div class="porov-riadok"><h4>A · Kvapky potu<small>počet kvapiek = zóna</small></h4><div class="porov-ikony"><span class="skupina"><svg class="ik pevne z1" style="width:48px;height:48px" aria-hidden="true"><use href="#A1"/></svg><svg class="ik pevne z2" style="width:48px;height:48px" aria-hidden="true"><use href="#A2"/></svg><svg class="ik pevne z3" style="width:48px;height:48px" aria-hidden="true"><use href="#A3"/></svg></span><span class="skupina"><svg class="ik pevne z1" style="width:24px;height:24px" aria-hidden="true"><use href="#A1"/></svg><svg class="ik pevne z2" style="width:24px;height:24px" aria-hidden="true"><use href="#A2"/></svg><svg class="ik pevne z3" style="width:24px;height:24px" aria-hidden="true"><use href="#A3"/></svg></span><span class="skupina"><svg class="ik pevne z1" style="width:20px;height:20px" aria-hidden="true"><use href="#A1"/></svg><svg class="ik pevne z2" style="width:20px;height:20px" aria-hidden="true"><use href="#A2"/></svg><svg class="ik pevne z3" style="width:20px;height:20px" aria-hidden="true"><use href="#A3"/></svg></span><span class="skupina"><svg class="ik pevne z1" style="width:16px;height:16px" aria-hidden="true"><use href="#A1"/></svg><svg class="ik pevne z2" style="width:16px;height:16px" aria-hidden="true"><use href="#A2"/></svg><svg class="ik pevne z3" style="width:16px;height:16px" aria-hidden="true"><use href="#A3"/></svg><span class="srdce">♥</span></span><span class="skupina sivo"><svg class="ik pevne z1" style="width:16px;height:16px" aria-hidden="true"><use href="#A1"/></svg><svg class="ik pevne z2" style="width:16px;height:16px" aria-hidden="true"><use href="#A2"/></svg><svg class="ik pevne z3" style="width:16px;height:16px" aria-hidden="true"><use href="#A3"/></svg><span class="srdce">♥</span><span class="lbl">bez farieb</span></span><span class="skupina deuter"><svg class="ik pevne z1" style="width:16px;height:16px" aria-hidden="true"><use href="#A1"/></svg><svg class="ik pevne z2" style="width:16px;height:16px" aria-hidden="true"><use href="#A2"/></svg><svg class="ik pevne z3" style="width:16px;height:16px" aria-hidden="true"><use href="#A3"/></svg><span class="srdce">♥</span><span class="lbl">deuteranopia</span></span></div></div>
+<div class="porov-riadok"><h4>B · Tvár staršieho<small>výraz + kvapky</small></h4><div class="porov-ikony"><span class="skupina"><svg class="ik pevne z1" style="width:48px;height:48px" aria-hidden="true"><use href="#B1"/></svg><svg class="ik pevne z2" style="width:48px;height:48px" aria-hidden="true"><use href="#B2"/></svg><svg class="ik pevne z3" style="width:48px;height:48px" aria-hidden="true"><use href="#B3"/></svg></span><span class="skupina"><svg class="ik pevne z1" style="width:24px;height:24px" aria-hidden="true"><use href="#B1"/></svg><svg class="ik pevne z2" style="width:24px;height:24px" aria-hidden="true"><use href="#B2"/></svg><svg class="ik pevne z3" style="width:24px;height:24px" aria-hidden="true"><use href="#B3"/></svg></span><span class="skupina"><svg class="ik pevne z1" style="width:20px;height:20px" aria-hidden="true"><use href="#B1"/></svg><svg class="ik pevne z2" style="width:20px;height:20px" aria-hidden="true"><use href="#B2"/></svg><svg class="ik pevne z3" style="width:20px;height:20px" aria-hidden="true"><use href="#B3"/></svg></span><span class="skupina"><svg class="ik pevne z1" style="width:16px;height:16px" aria-hidden="true"><use href="#B1"/></svg><svg class="ik pevne z2" style="width:16px;height:16px" aria-hidden="true"><use href="#B2"/></svg><svg class="ik pevne z3" style="width:16px;height:16px" aria-hidden="true"><use href="#B3"/></svg><span class="srdce">♥</span></span><span class="skupina sivo"><svg class="ik pevne z1" style="width:16px;height:16px" aria-hidden="true"><use href="#B1"/></svg><svg class="ik pevne z2" style="width:16px;height:16px" aria-hidden="true"><use href="#B2"/></svg><svg class="ik pevne z3" style="width:16px;height:16px" aria-hidden="true"><use href="#B3"/></svg><span class="srdce">♥</span><span class="lbl">bez farieb</span></span><span class="skupina deuter"><svg class="ik pevne z1" style="width:16px;height:16px" aria-hidden="true"><use href="#B1"/></svg><svg class="ik pevne z2" style="width:16px;height:16px" aria-hidden="true"><use href="#B2"/></svg><svg class="ik pevne z3" style="width:16px;height:16px" aria-hidden="true"><use href="#B3"/></svg><span class="srdce">♥</span><span class="lbl">deuteranopia</span></span></div></div>
+<div class="porov-riadok"><h4>C · Vlasy dupkom<small>výška klobúka</small></h4><div class="porov-ikony"><span class="skupina"><svg class="ik pevne z1" style="width:48px;height:48px" aria-hidden="true"><use href="#C1"/></svg><svg class="ik pevne z2" style="width:48px;height:48px" aria-hidden="true"><use href="#C2"/></svg><svg class="ik pevne z3" style="width:48px;height:48px" aria-hidden="true"><use href="#C3"/></svg></span><span class="skupina"><svg class="ik pevne z1" style="width:24px;height:24px" aria-hidden="true"><use href="#C1"/></svg><svg class="ik pevne z2" style="width:24px;height:24px" aria-hidden="true"><use href="#C2"/></svg><svg class="ik pevne z3" style="width:24px;height:24px" aria-hidden="true"><use href="#C3"/></svg></span><span class="skupina"><svg class="ik pevne z1" style="width:20px;height:20px" aria-hidden="true"><use href="#C1"/></svg><svg class="ik pevne z2" style="width:20px;height:20px" aria-hidden="true"><use href="#C2"/></svg><svg class="ik pevne z3" style="width:20px;height:20px" aria-hidden="true"><use href="#C3"/></svg></span><span class="skupina"><svg class="ik pevne z1" style="width:16px;height:16px" aria-hidden="true"><use href="#C1"/></svg><svg class="ik pevne z2" style="width:16px;height:16px" aria-hidden="true"><use href="#C2"/></svg><svg class="ik pevne z3" style="width:16px;height:16px" aria-hidden="true"><use href="#C3"/></svg><span class="srdce">♥</span></span><span class="skupina sivo"><svg class="ik pevne z1" style="width:16px;height:16px" aria-hidden="true"><use href="#C1"/></svg><svg class="ik pevne z2" style="width:16px;height:16px" aria-hidden="true"><use href="#C2"/></svg><svg class="ik pevne z3" style="width:16px;height:16px" aria-hidden="true"><use href="#C3"/></svg><span class="srdce">♥</span><span class="lbl">bez farieb</span></span><span class="skupina deuter"><svg class="ik pevne z1" style="width:16px;height:16px" aria-hidden="true"><use href="#C1"/></svg><svg class="ik pevne z2" style="width:16px;height:16px" aria-hidden="true"><use href="#C2"/></svg><svg class="ik pevne z3" style="width:16px;height:16px" aria-hidden="true"><use href="#C3"/></svg><span class="srdce">♥</span><span class="lbl">deuteranopia</span></span></div></div>
+<div class="porov-riadok"><h4>D · Kolená<small>chvenie → X → mláčka</small></h4><div class="porov-ikony"><span class="skupina"><svg class="ik pevne z1" style="width:48px;height:48px" aria-hidden="true"><use href="#D1"/></svg><svg class="ik pevne z2" style="width:48px;height:48px" aria-hidden="true"><use href="#D2"/></svg><svg class="ik pevne z3" style="width:48px;height:48px" aria-hidden="true"><use href="#D3"/></svg></span><span class="skupina"><svg class="ik pevne z1" style="width:24px;height:24px" aria-hidden="true"><use href="#D1"/></svg><svg class="ik pevne z2" style="width:24px;height:24px" aria-hidden="true"><use href="#D2"/></svg><svg class="ik pevne z3" style="width:24px;height:24px" aria-hidden="true"><use href="#D3"/></svg></span><span class="skupina"><svg class="ik pevne z1" style="width:20px;height:20px" aria-hidden="true"><use href="#D1"/></svg><svg class="ik pevne z2" style="width:20px;height:20px" aria-hidden="true"><use href="#D2"/></svg><svg class="ik pevne z3" style="width:20px;height:20px" aria-hidden="true"><use href="#D3"/></svg></span><span class="skupina"><svg class="ik pevne z1" style="width:16px;height:16px" aria-hidden="true"><use href="#D1"/></svg><svg class="ik pevne z2" style="width:16px;height:16px" aria-hidden="true"><use href="#D2"/></svg><svg class="ik pevne z3" style="width:16px;height:16px" aria-hidden="true"><use href="#D3"/></svg><span class="srdce">♥</span></span><span class="skupina sivo"><svg class="ik pevne z1" style="width:16px;height:16px" aria-hidden="true"><use href="#D1"/></svg><svg class="ik pevne z2" style="width:16px;height:16px" aria-hidden="true"><use href="#D2"/></svg><svg class="ik pevne z3" style="width:16px;height:16px" aria-hidden="true"><use href="#D3"/></svg><span class="srdce">♥</span><span class="lbl">bez farieb</span></span><span class="skupina deuter"><svg class="ik pevne z1" style="width:16px;height:16px" aria-hidden="true"><use href="#D1"/></svg><svg class="ik pevne z2" style="width:16px;height:16px" aria-hidden="true"><use href="#D2"/></svg><svg class="ik pevne z3" style="width:16px;height:16px" aria-hidden="true"><use href="#D3"/></svg><span class="srdce">♥</span><span class="lbl">deuteranopia</span></span></div></div>
+</div>
+</div><!-- /nahlady -->
+</section>
+
+<section id="hodnotenie" aria-labelledby="h-hod">
+<h2 id="h-hod">Hodnotenie</h2>
+<div class="tab-obal"><table>
+<thead><tr><th>Kritérium (1–5)</th><th>A Kvapky</th><th>B Tvár</th><th>C Vlasy</th><th>D Kolená</th></tr></thead>
+<tbody>
+<tr><td>Čitateľnosť pri 16 px</td><td class="num">5</td><td class="num">4</td><td class="num">3</td><td class="num">4</td></tr>
+<tr><td>Bez farby (tvar a počet)</td><td class="num">5</td><td class="num">5</td><td class="num">3</td><td class="num">4</td></tr>
+<tr><td>Odlíšenie od ♥</td><td class="num">4</td><td class="num">5</td><td class="num">5</td><td class="num">5</td></tr>
+<tr><td>Pochopiteľné bez legendy</td><td class="num">3</td><td class="num">5</td><td class="num">4</td><td class="num">3</td></tr>
+<tr><td>Satira, dedinský štýl</td><td class="num">2</td><td class="num">4</td><td class="num">5</td><td class="num">5</td></tr>
+<tr><td>Počet = špaky po výhre</td><td class="num">áno</td><td class="num">áno (kvapky)</td><td class="num">nie</td><td class="num">čiastočne</td></tr>
+<tr><td>Náročnosť</td><td>malá (≈ 2 h)</td><td>stredná (≈ ½ dňa)</td><td>stredná</td><td>stredná</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="odporucanie" aria-labelledby="h-odp">
+<h2 id="h-odp">Odporúčanie a poradie</h2>
+<p><b>B „Tvár staršieho“</b> ako jediný znak strachu na celom webe. Výraz a počet kvapiek sú čitateľné aj bez farby, kvapky sa rovnajú špakom po výhre a tvár netreba vysvetľovať. Ak chce Michal viac krčmového humoru, <b>D „Kolená“</b> funguje rovnako dobre, len si na prvý raz vypýta legendu. Sady nemiešať: jeden význam, jeden znak.</p>
+<ol class="kroky">
+  <li><b>Komponent a tokeny (rýchla výhra, ≈ 1 h).</b> <code>apps/web/src/hra/IkonaStrachu.tsx</code> podľa vzoru <code>IkonaSpaku.tsx</code>: <code>IkonaStrachu({ uroven: 1 | 2 | 3, trieda? })</code> ako plná silueta s <code>fill-rule="evenodd"</code>, bez masiek a <code>&lt;use&gt;</code>, a <code>aria-hidden</code>, keďže význam nesie text alebo <code>title</code>. Do <code>schemy.css</code> pribudnú tokeny <code>--zona-0…3</code> s rovnakými hodnotami ako <code>FARBY_STUPNICE</code>, pretože nové farby smú ísť len cez tokeny.</li>
+  <li><b>Línia a lupa (≈ 1 h).</b> <code>ZnackaZony</code> nahradiť <code>IkonaStrachu</code> (<code>LiniaStarsich.tsx:135, 297–298, 447, 706</code>). Piktogram pridať pred „+n ohorok“ v hlavičke (<code>:410–415</code>) a do pečiatky (<code>:421</code>), pečiatke dať 11 px a <code>hra.css:5364</code>.</li>
+  <li><b>Dlaždica a bar Starší (≈ 1–2 h).</b> <code>Starsi.tsx:49–53</code>: stupienky zmeniť na rad piktogramov (zoradený, od piateho „×n“). <code>:88–96</code>: pri smere „dole“ dať piktogram + číslo vo farbe hráča namiesto zelenej. <code>:120</code>: štvorček pri mene zrušiť a s ním <code>hra.css:6086–6092, 6104–6106</code>.</li>
+  <li><b>Nástenka, rekapitulácia, horný bar (≈ 1 h).</b> <code>Spaky.tsx:192, 212, 238, 289</code> a <code>HernaPlocha.tsx:4798, 4280</code>: všeobecná značka namiesto slova „starší / vydesení“, slovo ostáva v <code>title</code> a <code>aria-label</code>.</li>
+  <li><b>Pravidlá a tlač (samostatne).</b> Stupnica v pravidlách (<code>Ukazky.tsx:250–282</code>), slovník (<code>slovnik.ts:59, 67</code>) a bodovacie ikony <code>seed/bodovanie/ikony/{znepokojenie,strach,vydesenie}.svg</code> nahradiť tou istou sadou (biela na čiernej, rovnaká mriežka). Achievement Strašiak ju prevezme sám.</li>
+</ol>
+<p class="pozn">Mobil: stôl sa pod 900 px nezobrazuje, piktogramy sa však dostanú do pravidiel a profilu. Pri 16 px držia a dotykové ciele sa nemenia (piktogram nie je ovládací prvok). Pohyb: pri zmene zóny môže piktogram na 200 ms „cuknúť“ (napr. kvapka odkvapne), vypnuté pri <code>prefers-reduced-motion</code>.</p>
+</section>
+
+<section id="otazky" aria-labelledby="h-otazky">
+<h2 id="h-otazky">Otázky na Michala</h2>
+<ol>
+  <li><b>Ktorá sada?</b> Odporúčam B (tvár). D (kolená) je vtipnejšia, C (klobúk) najviac dedinská, A (kvapky) najjednoduchšia.</li>
+  <li><b>Pri D: je mláčka (pocikaný) ešte „s mierou“?</b> Alternatíva pre vydesenie: kolená do X a tri čiary chvenia, bez mláčky.</li>
+  <li><b>Pečiatka VYDESENÝ:</b> má ostať červená, alebo mať atrament vo farbe hráča, ktorého sa bojí (tvoja tyrkysová, súperova tehlová)? Teraz z nej nevidno, na čí prospech je.</li>
+  <li><b>Bodovacie ikony zón</b> (tlač scorecardov, achievement Strašiak): nahradiť novou sadou hneď, alebo až pri ďalšej tlači?</li>
+  <li><b>Rozpis špakov po staršom</b> v rekapitulácii (prerušovaný rámček): chceš ho? Potrebuje údaj z jadra (<code>BitkaNaNastenke.zaStarsich</code> je dnes len súčet).</li>
+</ol>
+</section>
+</main>
+<script>
+(function () {
+  var GEN = { A: 1, B: 2, C: 2, D: 2 };
+  function nastavSadu(s) {
+    document.body.setAttribute("data-sada", s);
+    var hl = s === "dnes" ? "B" : s;
+    document.querySelectorAll("svg.ik:not(.pevne)").forEach(function (svg) {
+      var l = svg.getAttribute("data-l");
+      var u = svg.querySelector("use");
+      if (u) u.setAttribute("href", "#" + hl + (l === "g" ? GEN[hl] : l));
+    });
+    document.querySelectorAll("[data-sada]").forEach(function (b) { if (b.tagName === "BUTTON") b.setAttribute("aria-pressed", String(b.getAttribute("data-sada") === s)); });
+    document.querySelectorAll("[data-popis]").forEach(function (a) { a.hidden = a.getAttribute("data-popis") !== s; });
+  }
+  document.querySelectorAll("button[data-sada]").forEach(function (b) { b.addEventListener("click", function () { nastavSadu(b.getAttribute("data-sada")); }); });
+  var nahlady = document.querySelector(".nahlady");
+  document.querySelectorAll("button[data-filter]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      nahlady.setAttribute("data-filter", b.getAttribute("data-filter"));
+      document.querySelectorAll("button[data-filter]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+    });
+  });
+  document.querySelectorAll("button[data-zoom]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      nahlady.setAttribute("data-zoom", b.getAttribute("data-zoom"));
+      document.querySelectorAll("button[data-zoom]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+    });
+  });
+  document.querySelectorAll(".filtre button[data-f]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var f = b.getAttribute("data-f");
+      document.querySelectorAll(".filtre button[data-f]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      document.querySelectorAll("table.audit tbody tr").forEach(function (r) { r.hidden = f !== "vsetky" && r.getAttribute("data-z") !== f; });
+    });
+  });
+  document.querySelectorAll(".minca").forEach(function (m) {
+    m.addEventListener("click", function () { var o = m.classList.toggle("otocena"); m.setAttribute("aria-pressed", String(o)); });
+  });
+  nastavSadu("B");
+})();
+</script>
+</body>
+</html>
