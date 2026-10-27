@@ -8,7 +8,7 @@ import type { BattleOutcome, DamageResult } from "./battle.ts";
 import { battleOutcome } from "./battle.ts";
 import type { GameData } from "./data.ts";
 import type { VerejnyStav } from "./effects.ts";
-import { zakazNaex } from "./effects.ts";
+import { naexZaPitku, zakazNaex } from "./effects.ts";
 import type { PitkaStav } from "./engine.ts";
 import { lineState, naexCieleVLinii, poskodenieBitky } from "./engine.ts";
 import { evaluateLine } from "./partia.ts";
@@ -41,11 +41,14 @@ export interface HrozbaNaex {
  * kým ho v nej nepoužil alebo nie je hotový — alebo ak po nej príde ďalšia Pitka.
  */
 export function mozeEsteNaex(stol: StolBitky, priebeh: PriebehNaex, p: PlayerId): boolean {
-  if (zakazNaex(stol) || priebeh.poldeciPlne[p] <= 0) return false;
+  const pitka = priebeh.pitkaStav;
+  // Skryté NA EX (v5) míňajú poldeci aj limit Pitky už teraz, hoci sa odpíšu až pri
+  // odkrytí. Klient pozná len svoje, súperove mu viewFor nepošle.
+  const skryte = priebeh.faza === "pitka" ? (pitka?.skryteNaex ?? []).filter((x) => x.hrac === p).length : 0;
+  if (zakazNaex(stol) || priebeh.poldeciPlne[p] - skryte <= 0) return false;
   if (priebeh.faza === "zhromazdenie") return true;
   if (priebeh.faza !== "pitka") return false;
-  const pitka = priebeh.pitkaStav;
-  const vTejtoPitke = pitka !== null && !pitka.hotovy[p] && !pitka.naexPouzity[p];
+  const vTejtoPitke = pitka !== null && !pitka.hotovy[p] && !pitka.naexPouzity[p] && (pitka.naexPocet?.[p] ?? 0) + skryte < naexZaPitku(stol);
   return vTejtoPitke || priebeh.pitkaCislo < priebeh.pitkyCelkom;
 }
 

@@ -748,8 +748,8 @@ function doRuky(s: MutState, p: PlayerId, karta: DeepMutable<CardInstance>, even
 
 /**
  * Nová kliatba (PRAVIDLA §11, „verejný dlh“ Michal 2026-10-21): Dlh sa hneď
- * prizná — ide medzi priznané karty, kartu zaň hráč nedobere a na konci
- * hry uberá body aj priznaný. Cirhóza ide do odhadzovacieho balíčka
+ * prizná — ide medzi priznané karty a kartu zaň hráč nedobere; špaky berie
+ * len cez Exekútora (v6, §11 a §14). Cirhóza ide do odhadzovacieho balíčka
  * (Michal 2026-10-25; predtým navrch doberacieho) — do ruky príde, až keď sa
  * doberací balíček minie a odhadzovací sa zamieša (tahaj).
  */
@@ -759,7 +759,7 @@ function pridajKliatbu(s: MutState, data: GameData, p: PlayerId, defId: string, 
   else hrac(s, p).odhadzovaci.push(karta);
   const text =
     defId === "dlh"
-      ? `Hráč ${p + 1} získava Dlh — hneď sa priznáva (na konci hry uberá body aj priznaný).`
+      ? `Hráč ${p + 1} získava Dlh — hneď sa priznáva (ráta sa k prahu Exekútora).`
       : defId === "cirhoza"
         ? `Hráč ${p + 1} získava Cirhózu — ide do jeho odhadzovacieho balíčka.`
         : `Hráč ${p + 1} získava kartu Absťák.`;
@@ -1467,7 +1467,17 @@ function dohrajNevyhnutne(data: GameData, s: MutState, events: Event[]): void {
       events.push({ type: "log", text: `Hráč ${p + 1} už nemá čo vyložiť.` });
       cmdPass(s, data, p, events);
     } else if (jedina?.type === "skipNaex") {
-      events.push({ type: "log", text: `Hráč ${p + 1} nemá v Pitke čo urobiť.` });
+      // Len pre hráča (pravidlo 2): po skrytom NA EX býva „hotovo“ jediný ťah, takže
+      // verejné „nemá čo urobiť“ prezrádzalo, že NA EX padlo (playtest 20261027-062058).
+      // Súper vidí to isté „končí svoju časť Pitky“ ako pri ručnom hotovo.
+      events.push({
+        type: "log",
+        pre: p,
+        text:
+          skryteHraca(s.pitkaStav, p).length > 0
+            ? "Po skrytom NA EX už v Pitke nemáš čo urobiť — tvoja časť Pitky sa končí."
+            : "V Pitke už nemáš čo urobiť — tvoja časť Pitky sa končí.",
+      });
       cmdSkipNaex(s, data, p, events);
     } else if (jedina?.type === "skipPohreb") {
       cmdSkipPohreb(s, data, p, events);
@@ -1477,6 +1487,8 @@ function dohrajNevyhnutne(data: GameData, s: MutState, events: Event[]): void {
       if (s.senok.length > 0) events.push({ type: "log", text: `Hráč ${p + 1} nemá cigaretu na kartu zo šenku.` });
       cmdDraftStop(s, data, p, events);
     } else if (jedina?.type === "bezPatronatu") {
+      const dovod = dovodBezPatronatu(data, s as GameState, p);
+      if (dovod !== null) events.push({ type: "log", pre: p, text: dovod });
       cmdBezPatronatu(s, data, p, events, true);
     } else {
       return;
@@ -1744,6 +1756,25 @@ export function moznyPatronat(data: GameData, state: GameState, p: PlayerId): El
       h.cigarety >= cenaPatronatu(e).cigarety &&
       !state.patronat.some((x) => x?.elderId === e.elderId),
   );
+}
+
+/**
+ * Prečo hra patronát preskočila, hoci hráčovi niektorý starší prejavuje priazeň
+ * (playtest 20261026-173610-3: preskočil sa ticho). Len pre hráča — dôvod môže
+ * prezradiť ruku (nemá Občana ani Zviera). Null, keď patronát ani neprichádzal do úvahy.
+ */
+function dovodBezPatronatu(data: GameData, state: GameState, p: PlayerId): string | null {
+  const starsi = state.starsi.filter((e) => patronatMozny(e, p) && !state.patronat.some((x) => x?.elderId === e.elderId));
+  if (starsi.length === 0 || state.patronat[p] !== null) return null;
+  const h = state.hraci[p];
+  const kto = starsi.map((e) => `${defOf(data, e.karta).name} (${cigariet(cenaPatronatu(e).cigarety)})`).join(", ");
+  const dovod =
+    h.poldeciPlne + h.poldeciVypite < 1
+      ? "nemáš poldeci na bolestné"
+      : kandidatiNaNahradu(data, h.ruka).length === 0
+        ? "nemáš v ruke Občana ani Zviera, ktorého by si dal na scorecard"
+        : `máš len ${cigariet(h.cigarety)}`;
+  return `Patronát preskočený: priazeň ti prejavuje ${kto}, ale ${dovod}.`;
 }
 
 /** Je karta s týmto uid práve karta staršieho, ktorého má niekto v patronáte? */

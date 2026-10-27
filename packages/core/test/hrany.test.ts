@@ -100,3 +100,35 @@ describe("náhľad vyloženia sedí s vyhodnotením línie", () => {
     expect(nahladVylozenia(data, line, 1, karta, "superova").vnutornaVytlacena).toBe("left");
   });
 });
+
+describe("náhľad vyloženia vo finále (playtest 20261027-062058)", () => {
+  // Prvá karta finále leží na začiatku jednej strany a susedí s oboma: karta na
+  // prázdnu druhú stranu sa páruje s ňou, nie s ničím („nič sa nespojí“).
+  const pripady: { ja: PlayerId; kam: StranaLinie }[] = [];
+  for (const ja of [0, 1] as const) for (const kam of ["vlastna", "superova"] as const) pripady.push({ ja, kam });
+
+  it.each(pripady)("hráč $ja → $kam pri stredovej karte na druhej strane", ({ ja, kam }) => {
+    let skontrolovane = 0;
+    for (let i = 0; i < obcania.length; i++) {
+      const karta = inst(obcania[i]!.id);
+      const p: PlayerId = kam === "vlastna" ? ja : ja === 0 ? 1 : 0;
+      const stredova: PlacedCard = { card: inst(obcania[(i * 7 + 3) % obcania.length]!.id), playedBy: (i % 2) as PlayerId };
+      const line: LineState = { lokalita: null, lokalitaOtocena: false, finale: true, strany: p === 0 ? [[], [stredova]] : [[stredova], []] };
+
+      const n = nahladVylozenia(data, line, ja, karta, kam);
+      expect(n.sused?.karta.uid).toBe(stredova.card.uid);
+      const nova = [{ card: karta, playedBy: ja }];
+      const po = evaluateLine(data, { ...line, strany: p === 0 ? [nova, [stredova]] : [[stredova], nova] });
+      const ev = po.cards.get(karta.uid)!;
+      if (ev.vzbura) continue;
+      skontrolovane++;
+      const sparovane = new Set(n.pary.map((x) => x.index));
+      for (let k = 0; k < 4; k++) {
+        const slot = ev[n.vnutornaVytlacena][k];
+        if (slot === null || slot === undefined) continue;
+        expect(slot.stav !== "neaktivna", `${karta.defId} index ${k}`).toBe(sparovane.has(k));
+      }
+    }
+    expect(skontrolovane).toBeGreaterThan(20);
+  });
+});
