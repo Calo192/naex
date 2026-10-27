@@ -259,14 +259,14 @@ describe("výučba — kontrolné otázky a rozhodnutia (UX N2)", () => {
     const zaklad = nacitajVyucbu();
     const iHrac = zaklad.kroky.findIndex((k) => k.kto === "hrac");
     const kroky = zaklad.kroky.map((k, j) =>
-      j === iHrac ? { ...k, volba: { kandidati: ["ruka:pijan"], zle: [{ prikaz: { type: "pass" as const }, text: "Ešte nepasuj." }], inak: "Skús inú kartu." } } : k,
+      j === iHrac ? { ...k, volba: { kandidati: ["ruka:pijan"], zle: [{ prikaz: { type: "pass" as const }, text: "Ešte nepasuj.", hlaska: "nervy/bud_ticho" }], inak: "Skús inú kartu." } } : k,
     );
     const otazka = {
       id: "q-spoj",
       kto: "otazka" as const,
       melichar: "Čo dá spoj?",
       moznosti: [
-        { text: "Ranu", spravna: false, vysvetlenie: "Nie celkom." },
+        { text: "Ranu", spravna: false, vysvetlenie: "Nie celkom.", hlaska: "urazky/marha" },
         { text: "Cigaretu", spravna: true, vysvetlenie: "Áno." },
       ],
     };
@@ -278,11 +278,14 @@ describe("výučba — kontrolné otázky a rozhodnutia (UX N2)", () => {
       await k.otvorene();
       k.posli({ type: "create", vyucba: true });
       let msg = await k.cakaj("vyucba");
+      // Krok nesie hlášku zo scenára (úvod: „Sem poď“), krok bez nej null.
+      expect(msg.krok).toMatchObject({ id: "i-vitaj", hlaska: "reci/sem_pod2" });
       k.posli({ type: "vyucbaDalej" });
       msg = await k.cakaj("vyucba");
       const q = msg.krok as KrokMsg & { moznosti: { spravna: boolean }[] | null };
-      expect(q).toMatchObject({ kto: "otazka", melichar: "Čo dá spoj?" });
+      expect(q).toMatchObject({ kto: "otazka", melichar: "Čo dá spoj?", hlaska: null });
       expect(q.moznosti).toHaveLength(2);
+      expect(q.moznosti?.[0]).toMatchObject({ spravna: false, hlaska: "urazky/marha" });
       // Najprv zle, potom dobre — zapíše sa len prvá odpoveď.
       k.posli({ type: "vyucbaOdpoved", index: 0 });
       k.posli({ type: "vyucbaOdpoved", index: 1 });
@@ -302,9 +305,10 @@ describe("výučba — kontrolné otázky a rozhodnutia (UX N2)", () => {
       }
       expect((msg.krok as { volba: unknown }).volba).toEqual({ kandidati: ["ruka:pijan"] });
       k.posli({ type: "cmd", cmd: { type: "pass" } });
-      expect((await k.cakaj("vyucbaRada")).text).toBe("Ešte nepasuj.");
+      // Rada nesie aj hlášku vzoru, všeobecná je bez nej (Michal 2026-10-27).
+      expect(await k.cakaj("vyucbaRada")).toMatchObject({ text: "Ešte nepasuj.", hlaska: "nervy/bud_ticho" });
       k.posli({ type: "cmd", cmd: { type: "skipNaex" } });
-      expect((await k.cakaj("vyucbaRada")).text).toBe("Skús inú kartu.");
+      expect(await k.cakaj("vyucbaRada")).toMatchObject({ text: "Skús inú kartu.", hlaska: null });
       k.zavri();
     } finally {
       await zmazQ();

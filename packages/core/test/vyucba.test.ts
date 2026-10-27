@@ -31,6 +31,10 @@ import {
   porovnajSKrokom,
   prelozKluceZvyraznenia,
   radaKVolbe,
+  radaVyucby,
+  castiHlasky,
+  nazovHlasky,
+  prikazZoScenara,
   prehrajVyucbu,
   rngInt,
   rngSeed,
@@ -561,5 +565,28 @@ describe("výučba — hlášky Melichara zo soundboardu (Michal 2026-10-27)", (
     const prebytok = scenar.kroky.find((k) => k.id === "k-prebytok1");
     expect(prebytok?.melichar).toContain("BOHA jeho!");
     expect((prebytok as SHlaskou | undefined)?.hlaska).toBe("udiv/09_Boha");
+  });
+});
+
+describe("výučba — hláška v kroku a v rade (Michal 2026-10-27)", () => {
+  it("krok nesie hlášku zo scenára; rada k zlému ťahu nesie hlášku vzoru, všeobecná je bez nej", () => {
+    expect(scenar.kroky.find((k) => k.id === "i-vitaj")?.hlaska).toBe("reci/sem_pod2");
+    const i = scenar.kroky.findIndex((k) => k.id === "k-ciel");
+    const volba = scenar.kroky[i]?.volba as VolbaKroku;
+    const s = prehrajVyucbu(data, scenar, i);
+    const zly = volba.zle?.find((z) => z.hlaska !== undefined);
+    expect(zly).toBeDefined();
+    const cmd = prikazZoScenara(s, 0, zly?.prikaz ?? { type: "pass" });
+    expect(radaVyucby(s, volba, cmd)).toEqual({ text: zly?.text, hlaska: zly?.hlaska });
+    expect(radaVyucby(s, { kandidati: [], inak: "Skús inú." }, cmd)).toEqual({ text: "Skús inú.", hlaska: null });
+  });
+
+  it("hláška sa rozloží na skupinu a súbor; overScenar odmietne zlý tvar", () => {
+    expect(castiHlasky("udiv/09_Boha")).toEqual({ skupina: "udiv", meno: "09_Boha" });
+    expect(castiHlasky("09_Boha")).toBeNull();
+    expect(castiHlasky("udiv/a/b")).toBeNull();
+    expect(nazovHlasky("09_Boha")).toBe("Boha");
+    const zly: ScenarVyucby = { ...scenar, kroky: scenar.kroky.map((k, j) => (j === 0 ? { ...k, hlaska: "bez-skupiny" } : k)) };
+    expect(overScenar(data, zly)).toMatch(/hláška „bez-skupiny“/);
   });
 });
