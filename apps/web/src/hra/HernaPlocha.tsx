@@ -2068,7 +2068,7 @@ export function HernaPlocha({
     </div>
   );
   /**
-   * Karta, ktorá sa klikom zväčší (narovnaná, aby sa dala čítať). Ak klik
+   * Karta, ktorá sa klikom zväčší (otočená ostane otočená, ako na stole). Ak klik
    * na kartu niečo robí (výber, NA EX…), zväčší ju tlačidlo v rohu.
    * `obsah` nahradí holú kartu (napr. ťahateľným obalom), `zdroj` dovolí
    * chytiť ju aj zo zväčšenej kópie,
@@ -2094,7 +2094,8 @@ export function HernaPlocha({
   ): ReactNode => {
     const uid = props.karta.uid;
     const kluc = `k${uid}`;
-    const render = (sirka: number): ReactNode => karta({ ...props, otocena: false, sirka });
+    // Lupa ukáže kartu tak, ako leží na stole, aj otočenú (Michal 2026-10-27) — text sa číta aj tak.
+    const render = (sirka: number): ReactNode => karta({ ...props, sirka });
     if (moznosti.bezLupy !== true) lupaKarty.set(kluc, { render, ...(moznosti.zdroj === undefined ? {} : { zdroj: moznosti.zdroj }), odstran: moznosti.odstran });
     const maAkciu = props.onClick !== undefined;
     const triedy = ["s-lupou", maAkciu ? "ma-akciu" : "", lupa?.kluc === kluc ? "harmonika-aktivna" : ""];

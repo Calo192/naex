@@ -259,6 +259,14 @@
   transform: rotate(180deg);
 }
 
+/* Otočená karta sa dá čítať (Michal 2026-10-27): akcie a pás ostávajú tam, kam ich dalo
+   otočenie (hrany sa párujú ako na stole), ale ilustrácia, pás s názvom a efekt sa otočia
+   každý zvlášť späť — zhora tak ide efekt, názov s tagmi, ilustrácia. */
+.kl-otocena > .kl-plocha > :is(.kl-ilustracia, .kl-pas, .kl-efekt),
+.kl-otocena .kl-nasobok {
+  transform: rotate(180deg);
+}
+
 /* Odznaky ostanú hore a čitateľné aj na otočenej karte. */
 .kl-otocena .kl-odznaky {
   top: auto;
