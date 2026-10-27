@@ -13,7 +13,7 @@ import type { KartaNavrh, Pozicia, StranaNavrhu, AkciaDef, KlucoveSlovo, Kategor
 import { MAX_TEXTU_KARTY, exportTxt, importTxt, sTextamiZImportu, slug, textyKarty, PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
 import type { Pouzivatel, Rola, Ucty } from "./auth.ts";
 import type { Achievementy } from "./achievementy.ts";
-import { ChybaVstupu, cookieOdhlasenia, cookieRelacie, overHesloVstup, overLogin, overHlasitost, overLupu, overMeno, overSchemu, overPrepinac, overPohlavie, overIdNapovedy, citajCookie, jeSpravca } from "./auth.ts";
+import { ChybaVstupu, cookieOdhlasenia, cookieRelacie, overHesloVstup, overLogin, overHlasitost, overLupu, overMeno, overSchemu, overPar, overPrepinac, overPohlavie, overIdNapovedy, citajCookie, jeSpravca } from "./auth.ts";
 import type { DruhMedia, Media } from "./media.ts";
 import type { Hudba } from "./hudba.ts";
 import type { Obsah } from "./obsah.ts";
@@ -394,6 +394,7 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
           ...(b.hudba !== undefined ? { hudba: overHlasitost(b.hudba) } : {}),
           ...(b.melichar !== undefined ? { melichar: overHlasitost(b.melichar, "hlášok") } : {}),
           ...(b.schema !== undefined ? { schema: overSchemu(b.schema) } : {}),
+          ...(b.par !== undefined ? { par: overPar(b.par) } : {}),
           ...(b.skratky !== undefined ? { skratky: overPrepinac(b.skratky, "Klávesové skratky") } : {}),
           ...(b.napovedy !== undefined ? { napovedy: overPrepinac(b.napovedy, "Nápovedy Melichara") } : {}),
           ...(b.pohlavie !== undefined ? { pohlavie: overPohlavie(b.pohlavie) } : {}),

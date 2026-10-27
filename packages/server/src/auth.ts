@@ -49,6 +49,8 @@ export interface Pouzivatel {
   readonly ai: boolean;
   /** Farebná schéma webu (id zo zoznamu klienta); null = predvolená. */
   readonly schema: string | null;
+  /** Pár farieb hráča v partii ("w20", "w20-prehod"); null = predvolený. Posiela sa len jemu. */
+  readonly par: string | null;
   /** Klávesové skratky v partii (K, P, N, Esc, ?) — predvolene zapnuté. */
   readonly skratky: boolean;
   /** Pohlavie pre tvary hlášok („Eva skončila“); null = neuvádza, hlášky sú neutrálne. */
@@ -97,6 +99,12 @@ export function overPohlavie(v: unknown): Pohlavie | null {
  */
 export function overSchemu(v: unknown): string {
   if (typeof v !== "string" || !/^[a-z]{2,20}$/.test(v)) throw new ChybaVstupu("Neznáma farebná schéma.");
+  return v;
+}
+
+/** Pár farieb hráča z requestu — id páru (w + číslo Wadovej kombinácie), s ⇄ prípona -prehod. */
+export function overPar(v: unknown): string {
+  if (typeof v !== "string" || !/^w[0-9]{1,3}(-prehod)?$/.test(v)) throw new ChybaVstupu("Neznámy pár farieb.");
   return v;
 }
 
@@ -352,6 +360,7 @@ export class Ucty {
       melichar: nastavenie(r.melichar, MELICHAR_PREDVOLENY),
       ai: Number(r.ai) === 1,
       schema: typeof r.schema === "string" ? r.schema : null,
+      par: typeof r.par === "string" ? r.par : null,
       skratky: vypinac(r.skratky),
       napovedy: vypinac(r.napovedy),
       pohlavie: POHLAVIA.includes(r.pohlavie as Pohlavie) ? (r.pohlavie as Pohlavie) : null,
@@ -361,7 +370,7 @@ export class Ucty {
 
   podlaId(id: number): Pouzivatel | null {
     return this.riadok(
-      this.db.prepare("SELECT id, login, meno, avatar, rola, lupa, hudba, melichar, ai, schema, skratky, napovedy, pohlavie, skryty_suhrn FROM pouzivatelia WHERE id = ?").get(id) as
+      this.db.prepare("SELECT id, login, meno, avatar, rola, lupa, hudba, melichar, ai, schema, par, skratky, napovedy, pohlavie, skryty_suhrn FROM pouzivatelia WHERE id = ?").get(id) as
         | Record<string, unknown>
         | undefined,
     );
@@ -441,6 +450,7 @@ export class Ucty {
       hudba?: number;
       melichar?: number;
       schema?: string;
+      par?: string;
       skratky?: boolean;
       napovedy?: boolean;
       pohlavie?: Pohlavie | null;
@@ -452,6 +462,7 @@ export class Ucty {
     if (zmeny.hudba !== undefined) this.db.prepare("UPDATE pouzivatelia SET hudba = ? WHERE id = ?").run(zmeny.hudba, id);
     if (zmeny.melichar !== undefined) this.db.prepare("UPDATE pouzivatelia SET melichar = ? WHERE id = ?").run(zmeny.melichar, id);
     if (zmeny.schema !== undefined) this.db.prepare("UPDATE pouzivatelia SET schema = ? WHERE id = ?").run(zmeny.schema, id);
+    if (zmeny.par !== undefined) this.db.prepare("UPDATE pouzivatelia SET par = ? WHERE id = ?").run(zmeny.par, id);
     if (zmeny.skratky !== undefined) this.db.prepare("UPDATE pouzivatelia SET skratky = ? WHERE id = ?").run(zmeny.skratky ? 1 : 0, id);
     if (zmeny.napovedy !== undefined) this.db.prepare("UPDATE pouzivatelia SET napovedy = ? WHERE id = ?").run(zmeny.napovedy ? 1 : 0, id);
     if (zmeny.pohlavie !== undefined) this.db.prepare("UPDATE pouzivatelia SET pohlavie = ? WHERE id = ?").run(zmeny.pohlavie, id);

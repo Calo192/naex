@@ -29,6 +29,7 @@ const VOLBY_POHLAVIA: readonly { readonly id: Pohlavie | null; readonly nazov: s
 import { hlasitostZvuku, nacitajSkladby, urlSkladby } from "../hra/Hudba.tsx";
 import { nacitajHlasky, urlHlasky } from "../hra/Melichar.tsx";
 import { SCHEMY, aktualnaSchema, pouziSchemu } from "../lib/schemy.ts";
+import { VyberParu } from "./VyberParu.tsx";
 
 /** Kam sa vrátiť po prihlásení (?spat=/hra). */
 function navrat(): string {
@@ -390,7 +391,8 @@ export function Profil() {
 
       <section className="panel profil-hlava">
         <div className="profil-avatar">
-          <Avatar meno={ja.meno} avatar={ja.avatar} velkost={112} />
+          {/* Jediný avatar mimo partie vo farbe hráča — hneď pod ním sa pár volí. */}
+          <Avatar meno={ja.meno} avatar={ja.avatar} velkost={112} farba="ja" />
         </div>
         <div>
           <h2 style={{ marginBottom: 4 }}>{ja.meno}</h2>
@@ -436,6 +438,7 @@ export function Profil() {
             )}
           </div>
         </div>
+        <VyberParu chyba={chyba} />
       </section>
 
       {galeriaOtvorena && (
@@ -479,8 +482,8 @@ export function Profil() {
       <section className="panel vzhlad-webu" aria-labelledby="vzhlad-webu-nadpis">
         <h3 id="vzhlad-webu-nadpis">Vzhľad webu</h3>
         <p className="tlmene">
-          Farby inšpirované knihou Sanza Wadu <i>A Dictionary of Color Combinations</i>. Mení sa len okolie — karty, farby
-          hráčov a zóny starších ostávajú. Ukladá sa samo.
+          Farby inšpirované knihou Sanza Wadu <i>A Dictionary of Color Combinations</i>. Mení sa len okolie — karty a zóny
+          starších ostávajú. Svoju farbu a farbu súpera si vyberáš hore pri avatare. Ukladá sa samo.
         </p>
         {/* Dve skupiny, Tmavé a Svetlé, po 14 (Michal 2026-10-23). */}
         {([

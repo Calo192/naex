@@ -574,7 +574,7 @@ export function HracDoska({
     >
       <div className="doska-hrac">
         <KartaHraca info={info} meno={meno} ja={ja}>
-          <Avatar meno={meno} avatar={info?.avatar ?? null} velkost={60} />
+          <Avatar meno={meno} avatar={info?.avatar ?? null} velkost={60} farba={ja ? "ja" : "su"} />
           {spojenie !== undefined && (
             <span
               className={`avatar-spojenie ${spojenie.pripojeny ? "online" : "offline"}`}

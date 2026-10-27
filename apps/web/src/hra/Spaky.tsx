@@ -153,7 +153,7 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
                 </span>
               ) : (
                 <>
-                  <Avatar meno={mena[vitaz]} avatar={avatary[vitaz]} velkost={kompaktna ? 24 : 34} />
+                  <Avatar meno={mena[vitaz]} avatar={avatary[vitaz]} velkost={kompaktna ? 24 : 34} farba={vitaz === ja ? "ja" : "su"} />
                   <b className="nastenka-zisk">
                     +{zisk}
                     <IkonaSpaku />
@@ -213,7 +213,7 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
           ];
           return (
             <div key={p} className={`nastenka-popolnik ${p === ja ? "moj" : "superov"}${p === ucet.zvyraznit ? " zvyrazneny" : ""}`}>
-              <Avatar meno={mena[p]} avatar={avatary[p]} velkost={30} />
+              <Avatar meno={mena[p]} avatar={avatary[p]} velkost={30} farba={p === ja ? "ja" : "su"} />
               <span className="np-meno">{p === ja ? "ty" : mena[p]}</span>
               <PocetSpakov n={body.spaky[p]} kto={p === ja ? "moj" : "superov"} />
               <span className="np-rozpis">{casti.join(" · ")}</span>

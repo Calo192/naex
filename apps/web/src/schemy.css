@@ -1007,3 +1007,63 @@
   --stav-schvaleny: var(--zelena);
   --stav-zamietnuty: var(--cervena-text);
 }
+/* Pár farieb hráča (Michal 2026-10-27, dizajn farba-hraca-20261027) — hráč si v profile
+   vyberie svoju farbu a farbu, v ktorej vidí súpera; súper jeho voľbu nevidí. Voľbu nesie
+   <html data-par="w20" data-prehod> (public/schema.js, lib/paryHraca.ts). Odtiene sú
+   z dvojíc Sanza Wadu (číslo kombinácie v id), jas je dopočítaný tak, aby text farbou
+   hráča mal v každej schéme aspoň 4,6 : 1 na --pozadie, --plocha aj --plocha-2. Svetlý
+   tón platí v tmavých schémach, tmavý vo svetlých. Mimo partie (avatar, plsť, karty,
+   grafy Vývoja a Noviniek) sa farba hráča nepoužíva. */
+:root {
+  --par-w20-1: #65d1d5; --par-w20-2: #bf7594; /* Sifón a malinovka · Wada č. 20 */
+  --par-w9-1: #c7aff5; --par-w9-2: #b477ac; /* Levanduľa a slivovica · Wada č. 9 */
+  --par-w67-1: #8cbcf8; --par-w67-2: #5091c2; /* Nebo a modrotlač · Wada č. 67 */
+  --par-w106-1: #6fcaed; --par-w106-2: #9082c5; /* Azúr a čučoriedky · Wada č. 106 */
+  --par-w287-1: #65c4e3; --par-w287-2: #1f9a9e; /* Sóda a borovička · Wada č. 287 */
+  /* Podiel farby hráča v podklade dosky (--ja-tmava, --su-tmava). */
+  --tint-hraca: 22%;
+  /* Text na výplni farbou hráča (iniciály avatara v partii). */
+  --na-farbe-hraca: var(--pozadie);
+}
+
+:root:is(
+    [data-schema="listok"],
+    [data-schema="lan"],
+    [data-schema="salvia"],
+    [data-schema="olivovnik"],
+    [data-schema="modrotlac"],
+    [data-schema="marhula"],
+    [data-schema="fialka"],
+    [data-schema="mata"],
+    [data-schema="ruza"],
+    [data-schema="piesok"],
+    [data-schema="pena"],
+    [data-schema="kava"],
+    [data-schema="jesen"],
+    [data-schema="slnecnica"]
+  ) {
+  --par-w20-1: #006a6e; --par-w20-2: #581838;
+  --par-w9-1: #6a5492; --par-w9-2: #562051;
+  --par-w67-1: #346196; --par-w67-2: #003a60;
+  --par-w106-1: #006886; --par-w106-2: #382863;
+  --par-w287-1: #006982; --par-w287-2: #003e41;
+  --tint-hraca: 16%;
+  --na-farbe-hraca: var(--plocha);
+}
+
+/* Bez data-par ostáva --ja/--su zo schémy; schema.js nastaví predvolený w20. Pravidlá
+   musia byť za schémami — špecifickosť je rovnaká ako :root[data-schema]. */
+:root[data-par="w20"] { --ja: var(--par-w20-1); --su: var(--par-w20-2); }
+:root[data-par="w9"] { --ja: var(--par-w9-1); --su: var(--par-w9-2); }
+:root[data-par="w67"] { --ja: var(--par-w67-1); --su: var(--par-w67-2); }
+:root[data-par="w106"] { --ja: var(--par-w106-1); --su: var(--par-w106-2); }
+:root[data-par="w287"] { --ja: var(--par-w287-1); --su: var(--par-w287-2); }
+:root[data-par="w20"][data-prehod] { --ja: var(--par-w20-2); --su: var(--par-w20-1); }
+:root[data-par="w9"][data-prehod] { --ja: var(--par-w9-2); --su: var(--par-w9-1); }
+:root[data-par="w67"][data-prehod] { --ja: var(--par-w67-2); --su: var(--par-w67-1); }
+:root[data-par="w106"][data-prehod] { --ja: var(--par-w106-2); --su: var(--par-w106-1); }
+:root[data-par="w287"][data-prehod] { --ja: var(--par-w287-2); --su: var(--par-w287-1); }
+:root[data-par] {
+  --ja-tmava: color-mix(in oklab, var(--ja) var(--tint-hraca), var(--pozadie));
+  --su-tmava: color-mix(in oklab, var(--su) var(--tint-hraca), var(--pozadie));
+}
