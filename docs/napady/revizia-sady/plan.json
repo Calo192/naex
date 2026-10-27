@@ -896,11 +896,11 @@
    "karta": "Svokra",
    "typ": "Občan",
    "archetyp": "R",
-   "verdikt": "nechať",
+   "verdikt": "prerobiť (rozhodnuté 2026-10-27, dávka 3, D3)",
    "akcie_dnes": "Poldeci / Obmedz, Pecka, Viera",
-   "akcie_plan": "",
+   "akcie_plan": "Poldeci / Dlh, Pecka, Viera",
    "efekt_dnes": "Bitka: Rana za každú tvoju kartu so súperovým NA EX (schválené S1).",
-   "smer": "Bez zmeny."
+   "smer": "Obmedzenie → Dlh (Dlh a Pecka na slotoch 2–3); efekt ostáva. — plan.md 11.3."
   },
   {
    "id": "sarlatan",
@@ -1188,11 +1188,11 @@
    "karta": "Degustátorka",
    "typ": "Občan",
    "archetyp": "R",
-   "verdikt": "nechať",
+   "verdikt": "prerobiť (rozhodnuté 2026-10-27, dávka 3, D3)",
    "akcie_dnes": "Pečeň, Poldeci / Rana, Obmedz",
-   "akcie_plan": "",
+   "akcie_plan": "Pečeň, Poldeci / Rana, Dlh",
    "efekt_dnes": "Nástup: súperovi otočí plný poldeci (schválené).",
-   "smer": "Bez zmeny."
+   "smer": "Obmedzenie → Dlh (degustuje na účet podniku); efekt ostáva. — plan.md 11.3."
   },
   {
    "id": "klebetnica",
@@ -1276,11 +1276,13 @@
    "karta": "Milujúca manželka",
    "typ": "Štart",
    "archetyp": "Š",
-   "verdikt": "po ULTRA",
+   "verdikt": "prerobiť (rozhodnuté 2026-10-27, dávka 3, M2)",
    "akcie_dnes": "Dlh, Viera / Odpor, Povera",
    "akcie_plan": "",
    "efekt_dnes": "Furt: Absťák aj pri rovnakom počte nerestí.",
-   "smer": "Poznámka: návrh „odvedie ťa domov“ čaká na ULTRA."
+   "smer": "M2 Rozriedi ti pálenku: Pitka: Tvoje poškodenie pečene v tejto Pitke je o 1 menšie. Akcie ostávajú, tag Kliatba odpadá. Návrh „odvedie ťa domov“ je prekonaný (M1 aj M3 nie). — plan.md 11.4.",
+   "efekt_plan": "Pitka: Tvoje poškodenie pečene v tejto Pitke je o 1 menšie.",
+   "tagy_plan": ["Občan", "Pamätník", "Žena"]
   },
   {
    "id": "ministrant",
@@ -1298,11 +1300,12 @@
    "karta": "Dievčina na vydaj",
    "typ": "Štart",
    "archetyp": "Š",
-   "verdikt": "po ULTRA",
+   "verdikt": "prerobiť (rozhodnuté 2026-10-27, dávka 3, D4)",
    "akcie_dnes": "Dlh×2 / Pohorš, Povera",
    "akcie_plan": "",
    "efekt_dnes": "Bitka: zahodí sa a spáli Dlhy podľa akcií.",
-   "smer": "Poznámka: návrh „veno“ čaká na ULTRA."
+   "smer": "Bitka: Ak máš aspoň 4 priznané Dlhy, zahoď túto kartu a spáľ toľko svojich priznaných Dlhov, koľko mala aktívnych akcií. Nahrádza návrh „veno“. — plan.md 11.3.",
+   "efekt_plan": "Bitka: Ak máš aspoň 4 priznané Dlhy, zahoď túto kartu a spáľ toľko svojich priznaných Dlhov, koľko mala aktívnych akcií."
   },
   {
    "id": "dlh",
@@ -1313,7 +1316,7 @@
    "akcie_dnes": "— / —",
    "akcie_plan": "",
    "efekt_dnes": "Priznaný: Exekútor, Povery, remíza.",
-   "smer": "Mimo revízie kariet; zuby mu dajú Obecný úrad, Jednota, Podvodník, Policajtka a otázka prahu Exekútora (v7)."
+   "smer": "Mimo revízie kariet; zuby mu dajú Obecný úrad, Jednota, Podvodník, Policajtka a otázka prahu Exekútora (v7). D6 (rozhodnuté 2026-10-27): zadĺženie sa po Pitke nevynuluje, zvyšok ostáva na účte. — plan.md 11.3."
   },
   {
    "id": "cirhoza",
@@ -2488,6 +2491,36 @@
    },
    "varianty": 4,
    "efekt_plan": "Kšeft: Za 1 špak si dober 2 karty."
+  },
+  {
+   "id": "vymahac",
+   "karta": "Vymáhač",
+   "typ": "Občan",
+   "tagy": ["Občan", "Kriminál", "Chlap"],
+   "archetyp": "U",
+   "verdikt": "nová (rozhodnuté 2026-10-27, dávka 3, D5)",
+   "akcie_dnes": "—",
+   "akcie_plan": "Pecka, Dlh / Rana, Dlh",
+   "efekt_dnes": "—",
+   "smer": "Bije za teba, kým mu dlhuješ. Sloty predpísať podľa analyza-indexy.html. — plan.md 11.3.",
+   "strany": {"left": {"blocked": [0, 3], "actions": {"Pecka": 1, "Dlh": 1}}, "right": {"blocked": [0, 3], "actions": {"Rana": 1, "Dlh": 1}}},
+   "varianty": 4,
+   "efekt_plan": "Bitka: Za každé 2 tvoje priznané Dlhy udelíš súperovi 1 Ranu navyše."
+  },
+  {
+   "id": "predajca_hrncov",
+   "karta": "Predajca hrncov",
+   "typ": "Občan",
+   "tagy": ["Občan", "Kriminál", "Chlap"],
+   "archetyp": "R",
+   "verdikt": "neskôr (rozhodnuté 2026-10-27, dávka 3, D2; teraz do sady nejde)",
+   "akcie_dnes": "—",
+   "akcie_plan": "Povera, Cigareta / Rana, Dlh",
+   "efekt_dnes": "—",
+   "smer": "Znenie rozhodnuté dopredu, bez voľby súpera. — plan.md 11.3.",
+   "strany": {"left": {"blocked": [0, 3], "actions": {"Povera": 1, "Cigareta": 1}}, "right": {"blocked": [0, 3], "actions": {"Rana": 1, "Dlh": 1}}},
+   "varianty": 4,
+   "efekt_plan": "Nástup: Súper získa 1 Dlh."
   }
  ],
  "lokality_rozhodnute": {
@@ -2599,7 +2632,7 @@
  "davka3": {
   "datum": "2026-10-27",
   "kto": "Vymyselník",
-  "stav": "otvorené — čaká na Michala; nič nie je rozhodnuté",
+  "stav": "rozhodnuté Michalom 2026-10-27; otvorené len D1 (Michal zatiaľ nerozhodol)",
   "zdroj": "interview Michala z playtestov 27. 10.; turnus 20261026-173610 (denníky, nezrovnalosti); report 20261027-062058",
   "html": "docs/napady/revizia-karty.html#davka3",
   "plan_md": "časť 11",
@@ -2621,6 +2654,7 @@
    "volby": [
     {
      "id": "D1",
+     "rozhodnutie": "otvorené — Michal zatiaľ nerozhodol (zámerne)",
      "nazov": "Strýko z Ameriky: dolárová pôžička",
      "druh": "karta (schválená, nechať) — Dlh ako cena za výhodu",
      "znenie": "Kšeft: Za 2 cigarety udelíš súperovi 1 Ranu navyše, alebo za 1 Dlh 2 Rany navyše.",
@@ -2630,19 +2664,21 @@
     },
     {
      "id": "D2",
+     "rozhodnutie": "neskôr — teraz do sady nejde; znenie rozhodnuté: bez voľby súpera",
      "nazov": "Predajca hrncov",
      "druh": "nová karta — nanútený Dlh",
      "tagy": ["Občan", "Kriminál", "Chlap"],
      "archetyp": "R",
      "akcie": "Povera, Cigareta / Rana, Dlh (blok. 0 a 3 na oboch stranách, 4 varianty)",
      "znenie": "Nástup: Súper získa 1 Dlh.",
-     "variant": "Nástup: Súper si vyberie: získa 1 Dlh, alebo príde o 1 špak.",
+     "variant_odpadol": "Nástup: Súper si vyberie: získa 1 Dlh, alebo príde o 1 špak.",
      "preco": "zdroj, ktorému sa súper nevyhne polohou ani NA EX; šmejd s hrncami na splátky",
      "riziko": "bez variantu čistý trest; variant potrebuje rozhodnutie súpera mimo jeho ťahu",
      "kod": "Nástup + pridajKliatbu (vzor Výherný automat, engine.ts:4150)"
     },
     {
      "id": "D3",
+     "rozhodnutie": "áno, obe",
      "nazov": "Svokra a Degustátorka: Obmedzenie → Dlh",
      "druh": "prerábka akcií (karty nechať)",
      "akcie": {
@@ -2656,6 +2692,7 @@
     },
     {
      "id": "D4",
+     "rozhodnutie": "áno",
      "nazov": "Dievčina na vydaj: veno, až keď horí",
      "druh": "štartová karta (po ULTRA)",
      "znenie": "Bitka: Ak máš aspoň 4 priznané Dlhy, zahoď túto kartu a spáľ toľko svojich priznaných Dlhov, koľko mala aktívnych akcií.",
@@ -2665,6 +2702,7 @@
     },
     {
      "id": "D5",
+     "rozhodnutie": "áno, ide do sady",
      "nazov": "Vymáhač",
      "druh": "nová karta — Dlh ako výhoda",
      "tagy": ["Občan", "Kriminál", "Chlap"],
@@ -2677,6 +2715,7 @@
     },
     {
      "id": "D6",
+     "rozhodnutie": "áno — pravidlo v7, zadĺženie neprepadá",
      "nazov": "Čiarky na účte: zvyšok zadĺženia sa nemaže",
      "druh": "PRAVIDLO (jadro) — jediná voľba mimo kariet",
      "dnes": "pečeň aj zadĺženie sa po Pitke vynulujú (§7 :464–465, §8 :485–486; engine.ts:3021–3029; Michal 2026-10-16)",
@@ -2686,7 +2725,8 @@
      "kod": "nenulovať zadlzenie (engine.ts:3029); pridajZadlzenie (engine.ts:798) ostáva"
     }
    ],
-   "odporucanie": "kartami D4 + D3 + D5, k tomu D2 alebo D1; jediný zásah s najväčším účinkom je D6"
+   "odporucanie": "kartami D4 + D3 + D5, k tomu D2 alebo D1; jediný zásah s najväčším účinkom je D6",
+   "rozhodnutie": "2026-10-27: D3, D4, D5, D6 áno; D2 neskôr (znenie bez voľby súpera); D1 otvorené"
   },
   "milujuca_manzelka": {
    "michal": "Kartu treba prerobiť.",
@@ -2696,6 +2736,7 @@
    "volby": [
     {
      "id": "M1",
+     "rozhodnutie": "nie",
      "nazov": "Odvedie ťa domov",
      "znenie": "Bitka: Smieš ju zahodiť z línie (z hry). Vtedy je súperovo tuhé poškodenie proti tebe v tejto bitke o 2 menšie a po bitke dostaneš 1 Absťák.",
      "okamih": "rozhodnutie aj účinok v bitke; Absťák po bitke ako priamy zisk; jej akcie v bitke ešte platia",
@@ -2704,6 +2745,7 @@
     },
     {
      "id": "M2",
+     "rozhodnutie": "áno, a bez tagu Kliatba",
      "nazov": "Rozriedi ti pálenku",
      "znenie": "Pitka: Tvoje poškodenie pečene v tejto Pitke je o 1 menšie.",
      "okamih": "v každej Pitke, kým leží v línii; krok 3 Pitky",
@@ -2712,6 +2754,7 @@
     },
     {
      "id": "M3",
+     "rozhodnutie": "nie",
      "nazov": "Pošle mu účet",
      "znenie": "Prehra: Súper získa 1 Dlh.",
      "okamih": "Prehra, krok 6c po bitke",
@@ -2720,15 +2763,25 @@
      "tema1": true
     }
    ],
-   "odporucanie": "M3; M1, ak má ostať koncept rodiny ako záchrannej siete"
+   "odporucanie": "M3; M1, ak má ostať koncept rodiny ako záchrannej siete",
+   "rozhodnutie": "2026-10-27: M2 Rozriedi ti pálenku a bez tagu Kliatba; M1 a M3 nie; návrh „odvedie ťa domov“ je prekonaný"
   },
   "otazky": {
-   "1": "Dlhy: ktoré z D1–D6? (odporúčam D4 + D3 + D5 a D2 alebo D1; D6 najväčší účinok)",
-   "2": "Predajca hrncov: Dlh bez voľby, alebo súper vyberá Dlh / −1 špak?",
-   "3": "Milujúca manželka: M1, M2, alebo M3? (odporúčam M3)",
-   "4": "Manželka bez tagu Kliatba? (odporúčam áno)"
+   "1": "Dlhy: D3, D4, D5, D6 áno; D2 neskôr; D1 otvorené (Michal zatiaľ nerozhodol)",
+   "2": "Predajca hrncov: bez voľby súpera — Nástup: Súper získa 1 Dlh.",
+   "3": "Milujúca manželka: M2 Rozriedi ti pálenku",
+   "4": "Manželka bez tagu Kliatba: áno"
   },
-  "merat": "výhoda útočníka vo finále (report 20261027-062058, O3: útočník 3:0) — plan.md 7.9"
+  "merat": "výhoda útočníka vo finále (report 20261027-062058, O3: útočník 3:0) — plan.md 7.9",
+  "rozpocet_po_davke3": {
+   "Dlh": {"po_10_5": 56, "po_davke3": 64, "zdroj": "Svokra +2, Degustátorka +2 (D3), Vymáhač +4 (D5)"},
+   "Obmedzenie": {"po_10_5": 18, "po_davke3": 14, "zdroj": "D3"},
+   "Pecka": {"po_10_5": 20, "po_davke3": 22, "zdroj": "Vymáhač (D5)"},
+   "Rana": {"po_10_5": 36, "po_davke3": 38, "zdroj": "Vymáhač (D5)"},
+   "druhov_v_balicku": 52,
+   "kariet_v_hre": 112,
+   "poznamka": "D4 a D6 kópie nemenia; D6 mení výťažnosť (zvyšok zadĺženia neprepadá). D1 a D2 sa nerátajú. Pakt je mimo tabuľky."
+  }
  },
  "pakt": {
   "datum": "2026-10-27",

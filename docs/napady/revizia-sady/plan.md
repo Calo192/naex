@@ -123,7 +123,7 @@ Akcie: ľavá / pravá strana; tučne plán, ak sa mení. „Pečeň“ = Poško
 | Liberál | Pohorš / Cig → **Pohorš, Viera / Cig, Povera**; Furt: ×2 pri rovnosti žien a chlapov (bez zákazu NA EX). | R | prerobiť (rozhodnuté, 10.1) | Akcie 2 → 4 (Pohoršenie, Viera / Cig, Povera), aby ×2 malo čo zdvojiť. |
 | Živnostník | Dlh, Odpor / Cig×2, Pečeň → **Dlh, Odpor, Robota / Cig×2, Pečeň**; Výhra: zahoď súperovo Dedičstvo. | S | prerobiť (rozhodnuté, 10.1) | Spojka: vľavo + Robota (6 akcií); Odpor na spojke je pasca pre suseda, efekt ostáva. |
 | Kočovník | Dlh, Pečeň / Cig, Pečeň, Rana → **Dlh, Pečeň / Cig, Pečeň, Pecka**; Furt: jeho akcie berie hráč s prevahou v kraji. | R | prerobiť (rozhodnuté, 10.1) | Rana → Pecka: kto ho vyhrá, dostane Pecku aj 2 Pečene a Dlh. |
-| Svokra | Poldeci / Obmedz, Pecka, Viera; Bitka: Rana za každú tvoju kartu so súperovým NA EX (schválené S1). | R | nechať | Bez zmeny. |
+| Svokra | Poldeci / Obmedz, Pecka, Viera → **Poldeci / Dlh, Pecka, Viera**; Bitka: Rana za každú tvoju kartu so súperovým NA EX (schválené S1). | R | prerobiť (rozhodnuté 27. 10., dávka 3, D3) | Obmedzenie → Dlh (Dlh a Pecka na slotoch 2–3); efekt ostáva. |
 | Šarlatán | Dlh, Povera×2 / Cig, Pohorš → **Dlh, Povera×2 / Cig, Pohorš, Pečeň**; Furt: Viera v okolí platí ako Vízia (slabé, D10). | S | prerobiť (rozhodnuté, 10.1) | Spojka: vpravo + Pečeň (6 akcií); nový Furt: aktívna Pečeň v jeho okolí sa ráta aj ako Viera (zázračná tinktúra) — vzor ako dnes vieraAkoVizia (partia.ts:529). |
 | Podvodník | Cig×2, Dlh / Obmedz, Rana; Prehra: ukradni 2 cigarety (slabé, D11). | R | prerobiť (rozhodnuté, 10.1) | Prehra: jeden tvoj priznaný Dlh prepíšeš na súpera — Dlh dostane zuby. |
 | Záhradkár | Cig×2, Pečeň / Poldeci, Rana, Robota; Exekúcia: zahoď ho namiesto špakov (mŕtve). | S | prerobiť (rozhodnuté, 10.1) | Spojka (6 akcií ostáva); nový efekt Výhra: otoč vypitý poldeci na plný (pálenka z vlastnej úrody). |
@@ -132,7 +132,7 @@ Akcie: ľavá / pravá strana; tučne plán, ak sa mení. „Pečeň“ = Poško
 | Dvojčatá | Dlh, Rana / Cig, Rana → **Dlh, Pecka / Pečeň, Rana**; Furt: do prevahy za dvoch. | R | prerobiť (rozhodnuté, 10.1) | Rana → Pecka vľavo, Cigareta → Pečeň vpravo (bijú a pijú za dvoch). |
 | Šofér | Poldeci, Rana / Cig, Pečeň; Furt: NA EX na suseda nezdvojí neaktívne (slabé, dvojsečné). | R | prerobiť (rozhodnuté, 10.1) | Nový efekt Bitka: ak si v tomto kole nedal NA EX, udelíš Pecku navyše (triezvy šofér; menej nerestí = riziko Absťáku). Jadro má naexVKole (engine.ts:333). |
 | Snúbenica | Robota / Dlh, Viera; Nástup: vráti kartu s NA EX majiteľovi a zaujme jej miesto. | E | nechať | Bez zmeny. |
-| Degustátorka | Pečeň, Poldeci / Rana, Obmedz; Nástup: súperovi otočí plný poldeci (schválené). | R | nechať | Bez zmeny. |
+| Degustátorka | Pečeň, Poldeci / Rana, Obmedz → **Pečeň, Poldeci / Rana, Dlh**; Nástup: súperovi otočí plný poldeci (schválené). | R | prerobiť (rozhodnuté 27. 10., dávka 3, D3) | Obmedzenie → Dlh (degustuje na účet podniku); efekt ostáva. |
 | Klebetnica | Povera, Vízia / Pohorš, Dlh; Nástup: pozri súperovu ruku, kartu naspodok (schválené). | R | nechať | Bez zmeny. |
 | Dohadzovačka | Viera, Cig / Posil, Dlh; Nástup: vymeň dvom starším priazne (schválené). | E | nechať | Bez zmeny. |
 | Vandal | Pecka, Pečeň / Odpor, Rana; Nástup: otoč lokalitu (schválené). | R | nechať | Bez zmeny — Pecka s Pečeňou je vzor ceny. |
@@ -157,6 +157,8 @@ Akcie: ľavá / pravá strana; tučne plán, ak sa mení. „Pečeň“ = Poško
 | Kuchárka | — → **Pecka, Dlh / Pecka, Poldeci**; Bez efektu. | U | nie (rozhodnuté 27. 10.) | Pecka, Dlh / Pecka, Poldeci: naberačka zo školskej jedálne, obedy na dlh. |
 | Oslávenec | — → **Poldeci, Cig / Rana**; Kšeft: za plný poldeci naleješ súperovi — v tejto Pitke dostane 2 Pečene. | E | nová (rozhodnuté, 10.1) | Kšeft na plný poldeci (bez neresti a pečene platiteľa); akcie Poldeci, Cig / Rana. |
 | Šúľač | — → **Cig, Povera / Vízia**; Kšeft: za 1 špak si dober 2 karty. | E | nie (rozhodnuté 27. 10.) | „Zbav sa špaku“: z tvojich ohorkov ušúľa cigaru; akcie Cig, Povera / Vízia. |
+| Vymáhač | — → **Pecka, Dlh / Rana, Dlh**; Bitka: Za každé 2 tvoje priznané Dlhy udelíš súperovi 1 Ranu navyše. | U | nová (rozhodnuté 27. 10., dávka 3, D5) | Občan · Kriminál · Chlap; bije za teba, kým mu dlhuješ. Sloty podľa analyza-indexy.html. |
+| Predajca hrncov | — → Povera, Cig / Rana, Dlh; Nástup: Súper získa 1 Dlh. | R | neskôr (rozhodnuté 27. 10., dávka 3, D2) | Teraz do sady nejde; znenie rozhodnuté dopredu (bez voľby súpera). |
 
 ### Starší
 
@@ -199,10 +201,10 @@ Akcie: ľavá / pravá strana; tučne plán, ak sa mení. „Pečeň“ = Poško
 | Karta | Dnes (akcie; efekt) | Typ | Verdikt | Smer |
 |---|---|---|---|---|
 | Pijan | Dlh, Pečeň / Poldeci, Pečeň, Rana; Bitka: Žena s aktívnym Poldeci pri ňom → súper ti dá Ranu. | Š | po ULTRA | Poznámka: jediný štartový úderník s pečeňou, vzor dilemy; rozhodne sa s rodinou. |
-| Milujúca manželka | Dlh, Viera / Odpor, Povera; Furt: Absťák aj pri rovnakom počte nerestí. | Š | po ULTRA | Poznámka: návrh „odvedie ťa domov“ čaká na ULTRA. |
+| Milujúca manželka | Dlh, Viera / Odpor, Povera; Furt: Absťák aj pri rovnakom počte nerestí. → **Pitka: Tvoje poškodenie pečene v tejto Pitke je o 1 menšie.**; bez tagu Kliatba | Š | prerobiť (rozhodnuté 27. 10., dávka 3, M2) | Akcie ostávajú, tag Kliatba odpadá (11.4). Návrh „odvedie ťa domov“ z rodinnej záchrannej siete je prekonaný. |
 | Miňištrant | Pečeň, Viera / Cig, Povera; Výhra: posun prebytkom o 1 drahší. | Š | po ULTRA | Poznámka: návrh „rozhrešenie“ čaká na ULTRA. |
-| Dievčina na vydaj | Dlh×2 / Pohorš, Povera; Bitka: zahodí sa a spáli Dlhy podľa akcií. | Š | po ULTRA | Poznámka: návrh „veno“ čaká na ULTRA. |
-| Dlh | — / —; Priznaný: Exekútor, Povery, remíza. | K | pravidlo | Mimo revízie kariet; zuby mu dajú Jednota, Herňa, Podvodník, Policajtka a otázka prahu Exekútora (v7). |
+| Dievčina na vydaj | Dlh×2 / Pohorš, Povera; Bitka: zahodí sa a spáli Dlhy podľa akcií. → **Bitka: Ak máš aspoň 4 priznané Dlhy, zahoď túto kartu a spáľ toľko svojich priznaných Dlhov, koľko mala aktívnych akcií.** | Š | prerobiť (rozhodnuté 27. 10., dávka 3, D4) | Veno páli Dlhy až od 4; nahrádza návrh „veno“ (11.3). Pijan a Miňištrant ostávajú po ULTRA. |
+| Dlh | — / —; Priznaný: Exekútor, Povery, remíza. | K | pravidlo | Mimo revízie kariet; zuby mu dajú Jednota, Herňa, Podvodník, Policajtka a otázka prahu Exekútora (v7). **D6 (rozhodnuté 27. 10.):** zadĺženie sa po Pitke nevynuluje, zvyšok ostáva na účte (11.3). |
 | Cirhóza | — / —; Priznaná +1 tuhé súperovi, nepriznaná −5 špakov. | K | pravidlo | Mimo revízie — je to cena celej pečeňovej osi. |
 | Absťák | — / —; −1 tuhé, remíza, špaky víťaza. | K | pravidlo | Mimo revízie. |
 
@@ -423,7 +425,9 @@ Dnes 58 akcií na 15 lokalitách. Rozhodnuté: úroveň 1 10, úroveň 2 20, úr
 - Jadro: efekty Šarlatána (vzor `vieraAkoVizia`, `packages/core/src/partia.ts:529`), Šoféra (`naexVKole`, `engine.ts:333`), Obecného úradu (`bitkaMody`, `effects.ts:359`), Karu, Podvodníka, Záhradkára (prah), Výherného automatu, Brigádnika a Traktoristky (10.6). Úderníci sú len dáta.
 - Prestávka: zmazať zo zoznamu spúšťačov. Prah Exekútora 7 (rozhodnuté) je zmena pravidiel v7; s Prestávkou zmazať aj spúšťač Exekúcia.
 - Bot: hodnota spojky (`bot.ts`, váhy kariet) a Kšefty. Inak bude karty podceňovať ako dnes Praudovravca.
-- Štartové karty (Miňištrant, Manželka, Dievčina, aj Pijan) plán nemení. Rozhodnú sa po ULTRA a rozpočet ich ráta v dnešnej podobe.
+- Štartové karty Miňištrant a Pijan plán nemení, rozhodnú sa po ULTRA a rozpočet ich ráta v dnešnej podobe. **Dávka 3 (rozhodnuté 27. 10.):** Milujúca manželka M2 (Pitka: pečeň −1) bez tagu Kliatba, Dievčina na vydaj D4 (veno od 4 Dlhov), akcie oboch ostávajú (11.3, 11.4).
+- **Pravidlá v7 z dávky 3 (D6, rozhodnuté 27. 10.):** zadĺženie sa po Pitke nevynuluje, zvyšok ostáva na účte do ďalšej Pitky aj kola; pečeň sa nuluje ďalej. Mení §7 :464–465 a §8 :485–486 (rozhodnutie zo 16. 10. ostáva len pre pečeň). Manželka bez Kliatby: z §11 zmizne výnimka „kliatba v línii“ a priznanie Manželky (:868–870, :890, :897), §16 :1137 nové znenie.
+- **Jadro z dávky 3:** nenulovať `zadlzenie` po Pitke (`engine.ts:3021–3029`), náhľad Pitky ráta zvyšok (`nahlady.ts:59`), UI ukáže čiarku na účte; Dievčina s podmienkou 4 Dlhov (`engine.ts:3074`, :3124–3127); Vymáhač (Bitka, `bitkaMody`, `effects.ts:359`); Manželka: pečeň −1 v `prirastkyPitky` (`engine.ts:822`), zmazať `manzelkyHraca` a posun latky Absťáku (`engine.ts:2064`, :4162–4224, `zavislost.ts:61`, `bot.ts:433`, :1013). Bot: hodnota Dlhu pri Vymáhačovi a čiarkach.
 
 ## 9. Otázky pre Michala
 
@@ -515,16 +519,19 @@ Druhov v balíčku 51, kariet v hre 110. **Cieľ z časti 1 nesedí:** Petelica 
 
 **Dorovná Pakt (návrh, časť 12, 27. 10.):** 6 kópií Paktu (Brigádnik, Živnostník, Dohadzovačka) dorovná deficit Petelíc a Peciek len čiastočne, asi o 1 Pecku (0,8–1,4) z približne 7 chýbajúcich (výpočet 12.2). Zvyšok musia dať tlačené Pecky alebo Petelice na nových kartách.
 
+**Po dávke 3 (rozhodnuté 27. 10., 11.6):** Dlh 56 → **64** (Svokra, Degustátorka, Vymáhač), Obmedzenie 18 → 14, Pecka 20 → **22**, Rana 36 → 38. Druhov v balíčku 52, kariet v hre 112. Deficit Peciek sa tým zmenší na 2 (22 z 24), Petelica ostáva 12 zo 14. Spolu je to 5 Peciek ekvivalentu namiesto 7 a Pakt z toho dorovná 0,8–1,4.
+
 ### 10.6 Dopad na kód
 
 - Dáta: 16 prerobených kariet a 5 noviniek podľa 10.1, Kapybara 2 cigarety.
 - Efekty: Šarlatán (pečeň ako Viera, vzor `vieraAkoVizia`, `partia.ts:529`), Šofér (`naexVKole`, `engine.ts:333`), Podvodník (presun Dlhu, vzor `presunDlhVychovavatelky`, `engine.ts:2525`), Výherný automat (konštanty `constants.ts:122–123`), Brigádnik (prevaha), Oslávenec (Kšeft v7), Záhradkár (prah +2), Traktoristka (prevaha → Pecka alebo Dlh).
 - Pravidlá v7: prah Exekútora 7, spúšťač Kšeft, zmazať spúšťače Exekúcia a Prestávka.
+- **D6 Čiarky na účte (dávka 3, rozhodnuté 27. 10., v7):** zadĺženie neprepadá. Kód: nenulovať `zadlzenie` po Pitke (`engine.ts:3029`, pečeň sa nuluje ďalej), `pridajZadlzenie` (`engine.ts:798`) ostáva, náhľad Pitky (`nahlady.ts:59`) ráta zvyšok, stôl ukáže čiarku na účte, bot ju zarátava. Dáta dávky 3: Svokra a Degustátorka (Obmedzenie → Dlh), Dievčina (podmienka 4 Dlhov), Manželka (M2, bez Kliatby), nová karta Vymáhač.
 - **Sloty pri zavádzaní do tvorcu:** sloty (`blocked` / `allowed`) nových kariet a Paktu predpísať podľa `docs/napady/analyza-indexy.html`. Ľavý index 3 je podobsadený (5,5 akcie) a Petelica a Pecka sú dnes pripnuté na horné okná, preto nové tuhé akcie a Pakt smerovať do podobsadených okien.
 
-## 11. Dávka 3 — Dlhy v hre a Milujúca manželka (otvorené voľby)
+## 11. Dávka 3 — Dlhy v hre a Milujúca manželka (rozhodnutá 27. 10.)
 
-Vymyselník · 27. 10. 2026 · dve témy z Michalovho interview nad playtestami. **Nič tu nie je rozhodnuté.** Časti 1–10 sa nemenia. Nič som nesimuloval, čísla sú z logov playtestov a z pravidiel. Voľby na klikanie sú v `revizia-karty.html` (sekcia Dávka 3), strojovo v `plan.json` (`davka3`).
+Vymyselník · 27. 10. 2026 · dve témy z Michalovho interview nad playtestami. **Rozhodnuté Michalom 27. 10.:** D3, D4, D5, D6 áno, D2 neskôr (znenie rozhodnuté), Manželka M2 a bez tagu Kliatba, M1 a M3 nie. **Otvorené ostáva len D1** (Strýko z Ameriky), Michal ho zámerne nerozhodol. Nič som nesimuloval, čísla sú z logov playtestov a z pravidiel. Prehľad je v `revizia-karty.html` (sekcia Dávka 3), strojovo v `plan.json` (`davka3`).
 
 ### 11.1 Dlhy nevznikajú — doklad
 
@@ -560,103 +567,100 @@ Proti tomu rastú odtoky: Robota 16 → 22 kópií (každá aktívna spáli Dlh 
 
 Odhad: z 0–5 Dlhov na hráča za partiu na zhruba 3–8. Exekútor pri prahu 7 príde, ale hlavne „na objednávku“ (kombo 9) a hráčovi, ktorý hrá Kulturistu či Recidivistu. Merať.
 
-### 11.3 Voľby k Dlhom (D1–D5 karty, D6 pravidlo)
+### 11.3 Dlhy — rozhodnuté znenie (D1–D5 karty, D6 pravidlo)
 
-Zásada voľby: **Dlh musí kupovať to, čo cigarety nekúpia** (cigariet je nadbytok), alebo byť **nanútený**, alebo byť **priamy** (karta Dlh, nie zadĺženie), aby neprepadol.
+Zásada: **Dlh musí kupovať to, čo cigarety nekúpia** (cigariet je nadbytok), alebo byť **nanútený**, alebo **priamy** (karta Dlh, nie zadĺženie), aby neprepadol.
 
-#### D1 · Strýko z Ameriky: dolárová pôžička (Dlh ako cena za výhodu)
+| # | Položka | Rozhodnutie 27. 10. |
+|---|---|---|
+| D1 | Strýko z Ameriky: Kšeft za Dlh | **otvorené**, Michal zatiaľ nerozhodol (zámerne) |
+| D2 | Predajca hrncov (nová karta) | **neskôr**, teraz do sady nejde; znenie rozhodnuté dopredu (bez voľby súpera) |
+| D3 | Svokra a Degustátorka: Obmedzenie → Dlh | **áno, obe** |
+| D4 | Dievčina na vydaj: veno od 4 Dlhov | **áno** |
+| D5 | Vymáhač (nová karta) | **áno**, ide do sady |
+| D6 | Čiarky na účte (pravidlo v7) | **áno**, zadĺženie neprepadá |
+
+#### D1 · Strýko z Ameriky: dolárová pôžička — OTVORENÉ (Michal zatiaľ nerozhodol)
 
 - **Dnes** (schválený, „nechať“): Kšeft: za 2 cigarety 1 Rana navyše.
 - **Návrh:** *Kšeft: Za 2 cigarety udelíš súperovi 1 Ranu navyše, alebo za 1 Dlh 2 Rany navyše.*
 - **Prečo:** cigarety sú lacné, Dlh je mena, ktorá bolí (Exekútor, Povery, Herňa, remíza). Dlh je priamy, neprepadne. Strýko pošle doláre, splácaš ty.
-- **Riziko:** pri 3–4 Pitkách až +6 až +8 tuhého za 3–4 Dlhy bez troch kariet. Brzdou je prah 7: kto to preženie, príde o polovicu Dlhov a rovnako špakov. Ak je to priveľa, Dlh len raz za kolo.
+- **Riziko:** pri 3–4 Pitkách až +6 až +8 tuhého za 3–4 Dlhy bez troch kariet. Brzdou je prah 7. Ak je to priveľa, Dlhom len raz za kolo. S rozhodnutým D5 a D6 je Dlhov viac aj bez Strýka.
 - **Kód:** Kšeft (v7) s dvoma cenami. Rana navyše už jestvuje (Strýko).
 
-#### D2 · Predajca hrncov — nová karta, nanútený Dlh
+#### D2 · Predajca hrncov — ODLOŽENÉ (neskôr), znenie rozhodnuté
 
 - **Karta:** Občan · Kriminál · Chlap, robotník. Akcie: *Povera, Cigareta / Rana, Dlh* (blok. 0 a 3 na oboch stranách, 4 varianty).
-- **Efekt:** *Nástup: Súper získa 1 Dlh.*
-- **Prečo:** jediný zdroj, ktorému sa súper nevyhne polohou ani NA EX. Šmejd z predvádzacej akcie predáva hrnce na splátky a zmluva je na meno suseda. Jeho Povera hneď bije do Dlhu, ktorý dal.
-- **Riziko:** čistý trest bez voľby súpera. Lepšia dilema je variant *„Súper si vyberie: získa 1 Dlh, alebo príde o 1 špak.“* — v kóde ale potrebuje rozhodnutie súpera mimo jeho ťahu.
-- **Kód:** Nástup + `pridajKliatbu` (vzor Výherný automat, `engine.ts:4150`). Dáta a ilustrácia: muž v saku s kufrom hrncov na dvore, babka podpisuje zmluvu, za plotom dodávka; bez dymu.
+- **Efekt (rozhodnutý):** *Nástup: Súper získa 1 Dlh.* Bez voľby súpera. Variant „Dlh alebo −1 špak“ odpadol.
+- **Stav:** do sady teraz nejde. Keď sa k nemu vrátime, platí toto znenie.
+- **Kód (neskôr):** Nástup + `pridajKliatbu` (vzor Výherný automat, `engine.ts:4150`). Ilustrácia: muž v saku s kufrom hrncov na dvore, babka podpisuje zmluvu, za plotom dodávka; bez dymu.
 
-#### D3 · Svokra a Degustátorka: Obmedzenie → Dlh vedľa útoku
+#### D3 · Svokra a Degustátorka: Obmedzenie → Dlh — ÁNO
 
-- **Svokra:** pravá strana *Obmedzenie, Pecka, Viera* → *Dlh, Pecka, Viera* (Dlh a Pecka ostávajú na slotoch 2–3, Viera na 0–1). Požičia si „do výplaty“ a vráti v rečiach. Efekt bez zmeny.
-- **Degustátorka:** pravá strana *Rana, Obmedzenie* → *Rana, Dlh*. Degustuje na účet podniku. Efekt bez zmeny.
-- **Prečo:** pri nadbytku cigariet je Obmedzenie najslabšia akcia. Dlh vedľa útoku na tej istej strane plní zásadu ceny (6.1). Rozpočet: Dlh 56 → **60** (cieľ z 1.1), Obmedzenie 18 → 14.
-- **Riziko:** osamelý Dlh v Pitke prepadne, kým platí §8 (D6). Sám Dlhy neprinesie, len zvýši šancu na pár. Svokra je z rodiny, ak ju chceš nechať, stačí Degustátorka.
-- **Kód:** len dáta.
+- **Svokra:** pravá strana *Obmedzenie, Pecka, Viera* → **Dlh, Pecka, Viera** (Dlh a Pecka ostávajú na slotoch 2–3, Viera na 0–1). Požičia si „do výplaty“ a vráti v rečiach. Efekt bez zmeny.
+- **Degustátorka:** pravá strana *Rana, Obmedzenie* → **Rana, Dlh**. Degustuje na účet podniku. Efekt bez zmeny.
+- **Rozpočet:** Dlh +4, Obmedzenie 18 → 14. **Kód:** len dáta.
 
-#### D4 · Dievčina na vydaj: veno, až keď horí (štartová)
+#### D4 · Dievčina na vydaj: veno, až keď horí (štartová) — ÁNO
 
 - **Dnes:** *Bitka: Zahoď túto kartu a spáľ toľko svojich priznaných Dlhov, koľko mala aktívnych akcií.*
-- **Návrh:** *Bitka: Ak máš aspoň 4 priznané Dlhy, zahoď túto kartu a spáľ toľko svojich priznaných Dlhov, koľko mala aktívnych akcií.*
-- **Prečo:** dnes páli prvé Dlhy u oboch hráčov hneď v K1 (doklad 11.1). S podmienkou ostane v balíčku, jej Dlh ×2 Dlhy vyrába a zachráni až pred Exekútorom (prah 7). Je to rodina ako záchranná sieť (koncept 26. 10.): veno príde, keď je doma najhoršie.
-- **Riziko:** pod 4 Dlhmi je to štartovka s Dlh ×2 bez efektu (slabá, ako má štartovka byť). Prah 4 zmerať. Je to náhrada návrhu „veno“, ktorý čaká na ULTRA, takže rozhodnúť spolu s rodinou.
+- **Rozhodnuté:** *Bitka: Ak máš aspoň 4 priznané Dlhy, zahoď túto kartu a spáľ toľko svojich priznaných Dlhov, koľko mala aktívnych akcií.*
+- **Prečo:** dnes páli prvé Dlhy u oboch hráčov hneď v K1 (doklad 11.1). Takto Dlhy vyrába a zachráni až pred Exekútorom (prah 7). Nahrádza návrh „veno“ z rodinnej záchrannej siete. Merať prah 4.
 - **Kód:** jedna podmienka v efekte Dievčiny (`engine.ts:3074`, :3124–3127).
 
-#### D5 · Vymáhač — nová karta, Dlh ako výhoda
+#### D5 · Vymáhač — nová karta — ÁNO, ide do sady
 
-- **Karta:** Občan · Kriminál · Chlap, úderník. Akcie: *Pecka, Dlh / Rana, Dlh* (blok. 0 a 3 na oboch stranách, 4 varianty).
+- **Karta:** Občan · Kriminál · Chlap, úderník. Akcie: *Pecka, Dlh / Rana, Dlh* (blok. 0 a 3 na oboch stranách, 4 varianty). Sloty predpísať pri zavádzaní podľa `analyza-indexy.html` (10.6).
 - **Efekt:** *Bitka: Za každé 2 tvoje priznané Dlhy udelíš súperovi 1 Ranu navyše.*
-- **Prečo:** prvá karta, pre ktorú Dlh chceš. Medzi ním a Exekútorom vzniká hra „drž sa tesne pod prahom“: pri 6 Dlhoch +3 Rany, pri 7 exekúcia (−3 Dlhy, −3 špaky). Súperova priazeň Exekútor tým ožije a Kmotor (maže Dlhy) sa stane voľbou: komu ho dať Pohoršením. Úderníci 8 → 9 (kvóta 10). Bije za teba, kým mu dlhuješ.
+- **Prečo:** prvá karta, pre ktorú Dlh chceš. Hra „drž sa tesne pod prahom“: pri 6 Dlhoch +3 Rany, pri 7 exekúcia (−3 Dlhy, −3 špaky). Súperova priazeň Exekútor ožije a Kmotor sa stane voľbou, komu ho dať Pohoršením. Úderníci 8 → 9 (kvóta 10). Bije za teba, kým mu dlhuješ.
 - **Riziko:** so Záhradkárom (prah 9) až +4 Rany. Vo finále na Herni platí porazený dlžník navyše. Merať.
-- **Kód:** Bitka, tuhé v `bitkaMody` (`effects.ts:359`). Počet priznaných Dlhov jadro ráta (Exekútor, Herňa).
+- **Kód:** Bitka, tuhé v `bitkaMody` (`effects.ts:359`). Ilustrácia: holohlavý chlap v koženej bunde s baseballovou pálkou pri bráne, v ruke zošit s menami dlžníkov; bez dymu.
 
-#### D6 · [PRAVIDLO, jadro] Čiarky na účte: zvyšok zadĺženia sa nemaže
+#### D6 · [PRAVIDLO v7] Čiarky na účte: zvyšok zadĺženia sa nemaže — ÁNO
 
 - **Dnes:** pečeň aj zadĺženie sa po Pitke vynulujú (§7 :464–465, §8 :485–486; `engine.ts:3021–3029`; Michal 2026-10-16).
-- **Návrh:** *Zadĺženie sa po Pitke nevynuluje. Za každé 2 zadĺženia dostaneš Dlh ako dnes, zvyšok ostáva na účte do ďalšej Pitky, aj do ďalšieho kola.* Pečeň sa nuluje ďalej.
-- **Prečo:** rieši koreň problému. Každá aktívna akcia Dlh je polovica Dlhu a nič neprepadne. Osamelé Dlhy štartoviek, hrán a robotníkov sa začnú rátať. Krčmár píše čiarky.
-- **Riziko:** mení rozhodnutie zo 16. 10. (len pre zadĺženie). Stôl musí ukázať čiarku na účte, náhľad Pitky (`nahlady.ts:59`) ju musí rátať a bot tiež. Spolu s D3 a D5 môže byť Dlhov priveľa, preto zaviesť samostatne a merať.
-- **Kód:** nenulovať `zadlzenie` (`engine.ts:3029`), `pridajZadlzenie` (`engine.ts:798`) ostáva. Ďalej náhľad, UI a PRAVIDLA §7–§8.
+- **Rozhodnuté:** *Zadĺženie sa po Pitke nevynuluje. Za každé 2 zadĺženia dostaneš Dlh ako dnes, zvyšok ostáva na účte do ďalšej Pitky, aj do ďalšieho kola.* Pečeň sa nuluje ďalej. Rozhodnutie zo 16. 10. tým platí už len pre pečeň.
+- **Prečo:** každá aktívna akcia Dlh je polovica Dlhu a nič neprepadne. Krčmár píše čiarky.
+- **Riziko:** spolu s D3 a D5 môže byť Dlhov priveľa. Merať Dlhy na hráča, exekúcie a čiarky na konci partie.
+- **Kód:** pozri časť 8 a 10.6.
 
-**Odporúčanie:** len kartami **D4 + D3 + D5**: lacné (dáta, jedna podmienka, jeden efekt), rozpočet Dlhu sedí na 60, zmizne hlavný skorý odtok a Dlh dostane dôvod. K tomu **D2 alebo D1** podľa toho, či chceš Dlh nanútený, alebo kúpený (obe netreba). Ak chceš jediný zásah s najväčším účinkom, je to **D6**. Ostatné voľby ho len dopĺňajú, lebo bez neho väčšina nových akcií Dlh v Pitke prepadne.
-
-### 11.4 Milujúca manželka — prerobiť
+### 11.4 Milujúca manželka — rozhodnuté znenie
 
 > Michal: „Kartu treba prerobiť.“
 
-**Problém.** Furt *„Absťák dostaneš aj vtedy, keď máš v kole rovnako nerestí ako v predošlom“* sa dá vyložiť dvojako. Absťák sa ráta na konci kola, až po návrate kariet (§4, §8 :518). Furt platí, „kým je odhalená — v línii aj priznaná“ (§16 :1137). Jadro ju ale ráta ešte pred návratom kariet (`engine.ts:4162–4163`, :4212–4217). Hráč čakal opak dvakrát, v K3 s dopadom: druhý Absťák = −2 tuhé vo finále (`naex/playtest/20261026-173610-3/hrac2/nezrovnalosti.md:10–14` N2, :48–53 N9). Report 20261027-062058 navrhuje zmeniť Manželku „z pasce na voľbu“ (:850).
+**Problém.** Furt *„Absťák dostaneš aj vtedy, keď máš v kole rovnako nerestí ako v predošlom“* sa dal vyložiť dvojako. Absťák sa ráta na konci kola po návrate kariet (§4, §8 :518), Furt platí „kým je odhalená — v línii aj priznaná“ (§16 :1137) a jadro ju ráta ešte pred návratom (`engine.ts:4162–4163`, :4212–4217). Doklad: `naex/playtest/20261026-173610-3/hrac2/nezrovnalosti.md:10–14` (N2), :48–53 (N9).
 
-**Spoločné pre všetky voľby:**
-- Akcie *Dlh, Viera / Odpor, Povera* ostávajú: Viera bráni, Odpor na vnútornej strane ruší akciu suseda (pasívna agresia) a Dlh je jeden z mála skorých zdrojov Dlhu (téma 1).
-- **Tag Kliatba navrhujem zrušiť.** Priznanie Manželky (karta navyše, Furt aj priznaná) bolo druhým zdrojom nejasnosti a lotériou dobratia (report :468, :671). V §11 :868–870, :890 a :897 by zanikla výnimka.
-- Popis nemenuje iné karty. Spúšťače sú okamžité, nič sa nevyhodnocuje na konci kola.
+**Rozhodnuté 27. 10.: M2 „Rozriedi ti pálenku“ a bez tagu Kliatba.**
 
-#### M1 · Odvedie ťa domov (opravený návrh z konceptu rodiny)
+| | Znenie |
+|---|---|
+| Akcie | *Dlh, Viera / Odpor, Povera* (bez zmeny) |
+| Tagy | Občan, Pamätník, Žena (**Kliatba odpadá**) |
+| Efekt | *Pitka: Tvoje poškodenie pečene v tejto Pitke je o 1 menšie.* |
 
-- **Efekt:** *Bitka: Smieš ju zahodiť z línie (z hry). Vtedy je súperovo tuhé poškodenie proti tebe v tejto bitke o 2 menšie a po bitke dostaneš 1 Absťák.*
-- **Okamih:** rozhodnutie aj účinok v bitke. Absťák príde po bitke ako priamy zisk, nie z porovnania nerestí. Jej akcie v tejto bitke ešte platia (ako pri Dievčine, §16 :1130).
-- **Prečo:** rodina ako záchranná sieť, raz sa dá obetovať. Odvedie ťa skôr, ako ťa zbijú, ale doma bez pálenky prídu absťáky.
-- **Riziko:** −2 tuhé otočí tesnú bitku, takže je to nástroj porazeného proti snowballu. Absťák (−1 tuhé, kým nezvýšiš neresti) je skutočná cena a karta je preč natrvalo.
-- **Kód:** voľba hráča v bitke (vzor Záhradkár, `engine.ts:440`, :3333), tuhé v `bitkaMody` (`effects.ts:359`), Absťák ako v `engine.ts:4218`.
-
-#### M2 · Rozriedi ti pálenku
-
-- **Efekt:** *Pitka: Tvoje poškodenie pečene v tejto Pitke je o 1 menšie.*
 - **Okamih:** v každej Pitke, kým leží v tvojej línii. Vyhodnotí sa s pečeňou v kroku 3 (§7), konca kola sa netýka.
 - **Prečo:** slabá, ale užitočná: pri pečeni +70 % (34 → 50 kópií) je −1 za Pitku poistka proti Cirhóze. Triezvi ťa potajme, do fľaše ti doleje vodu.
-- **Riziko:** s Kohútom či 4 Pitkami je to −4 pečene za kolo, blízko Nealka. Oslávenec a Lievik proti nej slabnú.
-- **Kód:** pečeň v `prirastkyPitky` (`engine.ts:822`, jeden výpočet pre náhľad aj vyhodnotenie).
+- **Riziko:** s Kohútom či 4 Pitkami −4 pečene za kolo, blízko Nealka. Merať.
+- **Bez Kliatby:** zanikne priznanie Manželky za kartu, výnimka „kliatba v línii“ a Furt „aj priznaná“ (§11 :868–870, :890, :897; §16 :1137).
+- **Nie:** M1 „Odvedie ťa domov“ a M3 „Pošle mu účet“. Návrh „odvedie ťa domov“ z rodinnej záchrannej siete je pre Manželku **prekonaný**. Pijan a Miňištrant ostávajú po ULTRA. Dievčina na vydaj má rozhodnutý efekt D4, ten nahrádza jej návrh „veno“.
 
-#### M3 · Pošle mu účet (trafí aj tému 1)
+### 11.5 Otázky — rozhodnuté 27. 10.
 
-- **Efekt:** *Prehra: Súper získa 1 Dlh.*
-- **Okamih:** Prehra, krok 6c po bitke, keď leží v línii (rovnako ako Podvodník či Veštica).
-- **Prečo:** pasívna agresia: zavolá víťazovej žene, koľko prepil, a účet za rozbitý pohár príde jemu. Je to útecha porazeného (dobiehanie proti rente strachu) a nanútený Dlh súperovi.
-- **Riziko:** slabá (1 Dlh), čo je pri štartovke zámer. Spolu s „Exekútorom na objednávku“ zrýchli exekúciu vedúceho. Pri sekere nerobí nič.
-- **Kód:** Prehra + `pridajKliatbu` víťazovi (vzor Výherný automat, `engine.ts:4150`).
+1. **Dlhy:** D3, D4, D5, D6 áno; D2 neskôr; **D1 otvorené** (Michal zatiaľ nerozhodol).
+2. **Predajca hrncov:** bez voľby súpera, *Nástup: Súper získa 1 Dlh.*
+3. **Manželka:** M2 Rozriedi ti pálenku.
+4. **Manželka bez tagu Kliatba:** áno.
 
-**Odporúčanie:** **M3**. Má najjednoduchší okamih (Prehra), nemá Furt ani koniec kola a pomáha téme 1. **M1** zvoľ, ak chceš držať koncept rodiny ako záchrannej siete. Je silnejšia, ale potrebuje voľbu v bitke.
+### 11.6 Rozpočet po dávke 3 (kópie v hre)
 
-### 11.5 Otázky pre Michala
+| Akcia | Po 10.5 | Po dávke 3 | Zdroj |
+|---|---|---|---|
+| Dlh | 56 | **64** | Svokra +2, Degustátorka +2 (D3), Vymáhač +4 (D5) |
+| Obmedzenie | 18 | **14** | D3 |
+| Pecka | 20 | **22** | Vymáhač (D5) |
+| Rana | 36 | **38** | Vymáhač (D5) |
 
-1. **Dlhy:** ktoré z D1–D6 (viac naraz sa dá)? Odporúčam D4 + D3 + D5 a k tomu D2 alebo D1. D6 ako jediný zásah s najväčším účinkom.
-2. **Predajca hrncov (ak D2):** súper Dlh dostane bez voľby, alebo si vyberie medzi Dlhom a −1 špakom?
-3. **Manželka:** M1, M2, alebo M3? Odporúčam M3.
-4. **Manželka bez tagu Kliatba** (zanikne priznanie za kartu)? Odporúčam áno.
+Druhov v balíčku 52, kariet v hre 112, úderníci 9 (kvóta 10). D4 a D6 kópie nemenia, ale D6 mení výťažnosť: z 64 kópií akcie Dlh neprepadne nič, každé 2 aktívne zadĺženia sú Dlh. D2 (neskôr) a D1 (otvorené) sa nerátajú. Petelica ostáva 12 (cieľ 14), Pecka 22 (cieľ 24). Pakt (časť 12) je mimo tabuľky.
 
 ## 12. Pakt — schválená akcia, návrh nasadenia
 
