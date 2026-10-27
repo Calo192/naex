@@ -26,28 +26,28 @@
    "plan": 40,
    "lokality_dnes": 5,
    "lokality_plan": 4,
-   "rozhodnute_karty": 36
+   "rozhodnute_karty": 34
   },
   "Cigareta": {
    "dnes": 48,
    "plan": 56,
    "lokality_dnes": 8,
    "lokality_plan": 9,
-   "rozhodnute_karty": 52
+   "rozhodnute_karty": 50
   },
   "Poldeci": {
    "dnes": 24,
    "plan": 30,
    "lokality_dnes": 5,
    "lokality_plan": 4,
-   "rozhodnute_karty": 28
+   "rozhodnute_karty": 26
   },
   "PoškodeniePečene": {
    "dnes": 34,
    "plan": 58,
    "lokality_dnes": 1,
    "lokality_plan": 4,
-   "rozhodnute_karty": 52
+   "rozhodnute_karty": 50
   },
   "Obmedzenie": {
    "dnes": 14,
@@ -82,7 +82,7 @@
    "plan": 36,
    "lokality_dnes": 6,
    "lokality_plan": 7,
-   "rozhodnute_karty": 34
+   "rozhodnute_karty": 32
   },
   "Robota": {
    "dnes": 16,
@@ -96,7 +96,7 @@
    "plan": 60,
    "lokality_dnes": 3,
    "lokality_plan": 8,
-   "rozhodnute_karty": 58
+   "rozhodnute_karty": 56
   },
   "Vízia": {
    "dnes": 10,
@@ -1016,11 +1016,11 @@
    "karta": "Záhradkár",
    "typ": "Občan",
    "archetyp": "S",
-   "verdikt": "otvorené (dávka 2a, plan.md 10.3)",
+   "verdikt": "prerobiť (rozhodnuté 2026-10-27)",
    "akcie_dnes": "Cig×2, Pečeň / Poldeci, Rana, Robota",
    "akcie_plan": "Cig×2, Pečeň / Poldeci, Rana, Robota",
    "efekt_dnes": "Exekúcia: zahoď ho namiesto špakov (mŕtve).",
-   "smer": "Spojka (6 akcií ostáva); nový efekt Výhra: otoč vypitý poldeci na plný (pálenka z vlastnej úrody). — Otvorené: plan.md 10.3.",
+   "smer": "Spojka (6 akcií ostáva); nový efekt Výhra: otoč vypitý poldeci na plný (pálenka z vlastnej úrody). — Rozhodnuté znenie: plan.md 10.1.",
    "strany": {
     "left": {
      "blocked": [],
@@ -1070,17 +1070,9 @@
    },
    "varianty": 8,
    "efekt_plan": "Bitka: Tvoj prah Exekútora je o 2 vyšší.",
-   "efekt_navrhy": [
-    {
-     "k": "A",
-     "efekt": "Bitka: Tvoj prah Exekútora je o 2 vyšší."
-    },
-    {
-     "k": "B",
-     "efekt": "Bitka: Súperov prah Exekútora je o 2 nižší."
-    }
-   ],
-   "odporucanie": "A"
+   "triggers": [
+    "Bitka"
+   ]
   },
   {
    "id": "anonymny_alkoholik",
@@ -2129,11 +2121,11 @@
    "karta": "Bufetárka",
    "typ": "Občan",
    "archetyp": "S",
-   "verdikt": "otvorené (dávka 2a, plan.md 10.3)",
+   "verdikt": "nie (rozhodnuté 2026-10-27, do sady nejde)",
    "akcie_dnes": "—",
    "akcie_plan": "Cig, Poldeci, Pečeň / Viera, Povera, Dlh",
    "efekt_dnes": "Pitka: každý, koho karta s ňou tvorí spoj, dostane cigaretu.",
-   "smer": "Spojka 6 akcií (Cig, Poldeci, Pečeň / Viera, Povera, Dlh), obslúži aj súpera. — Otvorené: plan.md 10.3.",
+   "smer": "Spojka 6 akcií (Cig, Poldeci, Pečeň / Viera, Povera, Dlh), obslúži aj súpera. — Odpadá (plan.md 10.2).",
    "strany": {
     "left": {
      "blocked": [
@@ -2183,12 +2175,7 @@
     }
    },
    "varianty": 4,
-   "efekt_plan": "Pitka: Každý hráč, ktorého karta s ňou tvorí spoj s aktívnou akciou, dostane 1 cigaretu.",
-   "efekt_navrhy": [
-    "Pitka: Každý hráč, ktorého karta s ňou tvorí spoj s aktívnou akciou, dostane 1 cigaretu.",
-    "Pitka: Každý hráč, ktorého karta s ňou tvorí spoj s aktívnou akciou, smie v tejto Pitke raz doliať poldeci za 1 cigaretu (namiesto 2)."
-   ],
-   "odporucanie": "variant"
+   "efekt_plan": "Pitka: Každý hráč, ktorého karta s ňou tvorí spoj s aktívnou akciou, dostane 1 cigaretu."
   },
   {
    "id": "brigadnik",
@@ -2364,11 +2351,11 @@
    "karta": "Traktoristka",
    "typ": "Občan",
    "archetyp": "U",
-   "verdikt": "otvorené (dávka 2a, plan.md 10.3)",
+   "verdikt": "nová (rozhodnuté 2026-10-27)",
    "akcie_dnes": "—",
    "akcie_plan": "Petelica, Pečeň / Dlh",
    "efekt_dnes": "Bez efektu.",
-   "smer": "Petelica, Pečeň / Dlh: úderníčka z plagátu JRD. — Otvorené: plan.md 10.3.",
+   "smer": "Petelica, Pečeň / Dlh: úderníčka z plagátu JRD. — Rozhodnuté znenie: plan.md 10.1.",
    "strany": {
     "left": {
      "blocked": [
@@ -2392,21 +2379,9 @@
    },
    "varianty": 4,
    "efekt_plan": "Bitka: Ak máš v jej kraji prevahu, udelíš súperovi 1 Pecku navyše. Inak získaš 1 Dlh.",
-   "efekt_navrhy": [
-    {
-     "k": "T1",
-     "efekt": "Bitka: Ak máš v jej kraji prevahu, udelíš súperovi 1 Pecku navyše. Inak získaš 1 Dlh."
-    },
-    {
-     "k": "T2",
-     "efekt": "Prehra: Vezmi do ruky jednu svoju kartu z línie."
-    },
-    {
-     "k": "T3",
-     "efekt": "Nástup: Smieš hneď vyložiť jedného Pracujúceho z ruky; limit vykladania nemíňa."
-    }
-   ],
-   "odporucanie": "T1"
+   "triggers": [
+    "Bitka"
+   ]
   },
   {
    "id": "kucharka",
@@ -2567,6 +2542,7 @@
   "datum": "2026-10-27",
   "kto": "Michal",
   "davka": "revizia-karty.html (2a)",
+  "stav": "rozhodnuté kompletne",
   "ano": [
    "Puška",
    "Výherný automat",
@@ -2581,36 +2557,43 @@
    "Kočovník",
    "Šarlatán",
    "Podvodník",
+   "Záhradkár",
    "Dvojčatá",
    "Šofér",
    "Brigádnik",
    "Mäsiar",
    "Kulturista",
+   "Traktoristka",
    "Oslávenec",
    "Kapybara"
   ],
   "nie": [
    "Vybavovač",
+   "Bufetárka",
    "Hromotĺk",
    "Kuchárka",
    "Šúľač"
   ],
-  "otvorene": {
-   "Záhradkár": "Michal: „Zahradkar posuva prah exekucie o 2“ — odporúčanie A (Bitka: tvoj prah +2), alternatíva B (súperov −2).",
-   "Traktoristka": "Michal: „Treba vymyslieť efekt“ — odporúčanie T1 Na leasing, alternatívy T2 Odvoz z krčmy, T3 Vlečka.",
-   "Bufetárka": "bez voľby — plán (cigareta) alebo variant (doliatie za 1 cigaretu), odporúčam variant.",
-   "Oslávenec cena": "bez odpovede — 2 alebo 1 pečeň, odporúčam 2."
+  "uzavrete_v_druhom_kole": {
+   "Záhradkár": "Áno, variant A: Bitka: Tvoj prah Exekútora je o 2 vyšší. (B súperov −2 odpadol)",
+   "Traktoristka": "Áno, T1 Na leasing: Bitka: Ak máš v jej kraji prevahu, udelíš súperovi 1 Pecku navyše. Inak získaš 1 Dlh. (T2, T3 odpadli)",
+   "Bufetárka": "Nie (vypadáva)",
+   "Oslávenec cena": "2 poškodenia pečene"
   },
   "otazky": {
    "1": "prah Exekútora v7 = 7 (so súperovou priazňou 6/5/4)",
-   "2": "otvorená",
+   "2": "Oslávenec 2 pečene",
    "3": "Kapybara 2 cigarety",
    "4": "Brigádnik áno, Kuchárka nie",
    "5": "kombá bez stropu, merať",
    "6": "len merať (poznámka)"
   },
-  "varianty_poznamka": "Pri Áno platí plánová verzia; varianty Vymyselníka (Automat, Poradkyňa, Hromotĺk, Kulturista, Šúľač, Šarlatán so stropom) odpadli.",
+  "rozdiel_voci_cielu": {
+   "Petelica": "12 namiesto 14 (−2, Hromotĺk)",
+   "Pecka": "20 namiesto 24 (−4, Kuchárka); Traktoristka T1 dáva Pecku len efektom pri prevahe"
+  },
+  "varianty_poznamka": "Pri Áno platí plánová verzia; varianty Vymyselníka (Automat, Poradkyňa, Hromotĺk, Kulturista, Šúľač, Šarlatán so stropom, Bufetárka) odpadli.",
   "sloty": "strany vo formáte cards.json (blocked, actions, allowed); varianty = počet rozložení podľa variants.ts"
  },
- "rozpocet_poznamka": "rozhodnute_karty = kópie v hre (balíček 2× + štart) po rozhodnutí 2026-10-27, s Bufetárkou; bez nej Cig −2, Poldeci −2, Pečeň −2, Viera −2, Povera −2, Dlh −2."
+ "rozpocet_poznamka": "rozhodnute_karty = kópie v hre (balíček 2× + štart) po kompletnom rozhodnutí 2026-10-27 (bez Bufetárky). Cieľ nesedí: Petelica 12/14, Pecka 20/24."
 }
