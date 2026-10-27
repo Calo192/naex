@@ -157,6 +157,8 @@ export interface ClientState {
   readonly lokalitCelkom: number;
   /** Rozpis úrovní lokalít po kolách s finále na konci (v7); chýba = žreb ako do v6. */
   readonly rozpis?: readonly number[];
+  /** Rany navyše z Kšeftu Strýka z Ameriky v tomto kole (v7) — verejné. */
+  readonly kseftRany?: readonly [number, number];
   /** Špaky oboch hráčov teraz (v6) — popolníky. */
   readonly spaky: readonly [number, number];
   /** Špaky na sekere — vezme ich víťaz ďalšej bitky, vo finále prepadnú. */
@@ -194,6 +196,11 @@ export interface ClientState {
    * nerozhoduje; karta null = medzitým z odhadzovacieho zmizla.
    */
   readonly hasicVolba: { readonly hrac: PlayerId; readonly karta: CardInstance | null } | null;
+  /**
+   * Voľba Nástupu v7, ktorá čaká ako Hasič: Klebetnica (súperova ruka — vidí ju
+   * len ten, kto vyberá) alebo Dohadzovačka (dvaja starší).
+   */
+  readonly volbaNastupu: { readonly typ: "klebetnica" | "dohadzovacka"; readonly hrac: PlayerId; readonly ruka: readonly CardInstance[] | null } | null;
   /**
    * Nepriznané kliatby v MOJOM doberacom balíčku (len počty, poradie nie).
    * Vlastné karty hráč pozná, len nevie, v akom poradí ich dobere.
@@ -305,6 +312,7 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
     lokalityVHre: lokalityNaVyber(data, state),
     lokalitCelkom: state.lokalitCelkom,
     ...(state.rozpis !== undefined ? { rozpis: state.rozpis } : {}),
+    ...(state.kseftRany !== undefined ? { kseftRany: state.kseftRany } : {}),
     spaky: state.spaky,
     spakyNaSekere: state.spakyNaSekere,
     nastenka: state.nastenka,
@@ -381,7 +389,11 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
     vizia: state.vizia,
     volbaVizia: state.vizia !== null && naTahu(state) === ja ? (state.hraci[ja].doberaci[0] ?? null) : null,
     hasicVolba:
-      hasic === undefined ? null : { hrac: hasic.hrac, karta: state.hraci[hasic.hrac].odhadzovaci.find((k) => k.uid === hasic.uid) ?? null },
+      hasic === undefined || hasic.typ !== undefined ? null : { hrac: hasic.hrac, karta: state.hraci[hasic.hrac].odhadzovaci.find((k) => k.uid === hasic.uid) ?? null },
+    volbaNastupu:
+      hasic?.typ === undefined
+        ? null
+        : { typ: hasic.typ, hrac: hasic.hrac, ruka: hasic.typ === "klebetnica" && hasic.hrac === ja ? state.hraci[ja === 0 ? 1 : 0].ruka : null },
     mojeKliatbyVBalicku: {
       dlh: state.hraci[ja].doberaci.filter((k) => k.defId === "dlh").length,
       cirhoza: state.hraci[ja].doberaci.filter((k) => k.defId === "cirhoza").length,

@@ -815,6 +815,8 @@ export function tahBota(data: GameData, stav: GameState, ja: PlayerId, seed: num
   };
   const volba: Volba = { data, state, ja, legal, vzorky, k, nahoda };
 
+  // Dohadzovačka (v7): výmenu priazní si zahrá nanečisto ako každý ťah.
+  if (state.hasicVolby?.[0]?.typ === "dohadzovacka") return najlepsi(volba, legal, (po) => hodnotaStavu(k, po, 1.5)) ?? prvy;
   const cmd = rozhodni(volba);
   return cmd ?? prvy;
 }
@@ -823,6 +825,13 @@ export function tahBota(data: GameData, stav: GameState, ja: PlayerId, seed: num
 function volbaHasica(data: GameData, state: GameState): Command | null {
   const volba = state.hasicVolby?.[0];
   if (volba === undefined) return null;
+  if (volba.typ === "klebetnica") {
+    // Klebetnica (v7): súperovi pošle naspodok jeho najlepšiu kartu v ruke.
+    const ruka = state.hraci[opponentOf(volba.hrac)].ruka;
+    const best = [...ruka].sort((a, b) => hodnotaKarty(data, b) - hodnotaKarty(data, a))[0];
+    return best === undefined ? null : { type: "klebetnica", uid: best.uid };
+  }
+  if (volba.typ === "dohadzovacka") return null;
   const karta = state.hraci[volba.hrac].odhadzovaci.find((k) => k.uid === volba.uid);
   return { type: "hasic", nechat: karta !== undefined && !defOf(data, karta).tags.includes("Kliatba") };
 }
@@ -1145,6 +1154,15 @@ function pitka(v: Volba): Command | null {
     }
   }
   if (starosta !== null) return starosta;
+
+  // Kšeft (v7): zahrá si ho nanečisto; berie ho, keď stav zlepší viac než o povahový prah.
+  const ksefty = v.legal.filter((c) => c.type === "kseft");
+  if (ksefty.length > 0) {
+    const ohodnot = (po: GameState): number => hodnotaStavu(k, po, 1.5);
+    const best = najlepsi(v, ksefty, ohodnot);
+    const teraz = v.vzorky.reduce((a, s) => a + ohodnot(s), 0) / Math.max(1, v.vzorky.length);
+    if (best !== null && priemer(v, best, ohodnot) > teraz + 0.25 + k.povaha.prahRiziko) return best;
+  }
 
   // NA EX: zahrá si ho nanečisto aj so súperovou odpoveďou.
   const naex = v.legal.filter((c) => c.type === "naex");
