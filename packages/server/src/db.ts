@@ -212,7 +212,8 @@ CREATE TABLE IF NOT EXISTS novinky (
   odkaz TEXT NOT NULL DEFAULT '',
   autor INTEGER REFERENCES pouzivatelia(id) ON DELETE SET NULL,
   vytvorena INTEGER NOT NULL,
-  upravena INTEGER NOT NULL
+  upravena INTEGER NOT NULL,
+  vydanie TEXT NOT NULL DEFAULT ''
 );
 CREATE INDEX IF NOT EXISTS novinky_datum ON novinky(datum);
 
@@ -371,6 +372,8 @@ function migruj(db: Db): void {
   ]);
   // Verdikt overenia návrhu ďalším playtestom (Michal 2026-10-21).
   doplnStlpce(db, "navrhy", [["verdikt", "TEXT NOT NULL DEFAULT ''"]]);
+  // Vydanie novinky (Michal 2026-10-27), napr. „Pravidlá v6“ — nadpis dňa v Novinkách; '' = len dátum.
+  doplnStlpce(db, "novinky", [["vydanie", "TEXT NOT NULL DEFAULT ''"]]);
 }
 
 function stlpceTabulky(db: Db, tabulka: string): Set<string> {

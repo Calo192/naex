@@ -1498,3 +1498,14 @@ button.sprava-tlacidlo {
   margin-top: 3px;
   accent-color: var(--akcent);
 }
+
+/* Text len pre čítačku obrazovky (oznamy aria-live). */
+.len-citacka {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

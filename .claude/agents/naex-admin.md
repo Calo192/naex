@@ -96,7 +96,7 @@ Všetko z koreňa repozitára; `A` = `node --experimental-strip-types --no-warni
 | `A avatar <subor>` | avatar účtu Admin (AI) |
 | **Novinky** (živý web, `--zivy`) | |
 | `A novinky [--json]` | novinky na webe, najnovšie hore (id, dátum, kategória, nadpis, odkaz) |
-| `A novinka-pridaj <subor.json>` | nová novinka alebo pole noviniek: `{datum, kategoria, nadpis, text, odkaz?}` |
+| `A novinka-pridaj <subor.json> [--vydanie "Pravidlá v6"]` | nová novinka alebo pole noviniek: `{datum, kategoria, nadpis, text, odkaz?, vydanie?}`; vydanie (napr. „Pravidlá v6“) dáva nadpis dňa v Novinkách, `--vydanie` ho doplní všetkým zo súboru |
 | `A novinka-uprav <id> <subor.json>` | zmení len polia zo súboru |
 | `A novinka-zmaz <id> --potvrdene` | zmaže novinku |
 | **Playtest** (živý web, `--zivy`) | |

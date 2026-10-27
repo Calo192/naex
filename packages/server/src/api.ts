@@ -554,8 +554,18 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       const od = ja !== null ? ctx.novinky.videne(ja.id) : Number(query.get("od"));
       return ok({ pocet: Number.isFinite(od) && od > 0 ? ctx.novinky.pocetOd(od) : 0 });
     }
+    // Volá ho až „Mám prečítané“ (Michal 2026-10-27); GET /novinky čas videného nemení.
+    // Telo { po } je voliteľné — starší klient posiela prázdne.
     if (r === "POST /novinky/videne") {
-      ctx.novinky.oznacVidene(prihlaseny().id, teraz);
+      const p = prihlaseny();
+      const buf = await citajTelo(req, JSON_LIMIT);
+      let po: unknown;
+      try {
+        po = buf.length === 0 ? undefined : (JSON.parse(buf.toString("utf8")) as { po?: unknown } | null)?.po;
+      } catch {
+        throw new ChybaVstupu("Neplatné JSON telo požiadavky.");
+      }
+      ctx.novinky.oznacVidene(p.id, teraz, po);
       return ok({ ok: true });
     }
 

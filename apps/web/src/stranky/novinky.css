@@ -1,88 +1,248 @@
-/* Novinky (2026-10-22): dni ako časová os, pod každým záznamy. Farby len cez tokeny zo schemy.css. */
+/* Novinky (Michal 2026-10-27, N-B): box „pred ďalšou partiou vedz“ a Hlásnik obce —
+   noviny s vydaniami podľa dňa a riadkami, ktoré sa rozbaľujú. Farby len cez tokeny
+   schémy; papier Hlásnika je zmes plochy a svetlého akcentu. */
 
-/* Stĺpec na čítanie zľava v šírke stránky (#21 B) — hrana sedí s ostatnými stránkami. */
-.novinky > :not(.hlava-stranky) {
-  max-width: var(--sirka-citanie);
+.novinky-obsah {
+  display: grid;
+  gap: 24px;
 }
 
-.novinky-ovladanie {
+/* ---- box „Odkedy si tu nebol“ ---- */
+
+.novinky-odkedy {
+  padding: 18px 22px 20px;
+  border-left: 4px solid var(--akcent);
+}
+
+.novinky-odkedy h2 {
+  margin: 0 0 14px;
+  font-size: 1.2rem;
+}
+
+.novinky-odkedy h3 {
+  margin: 0 0 8px;
+  font: 700 0.8rem/1.2 var(--pismo);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tlmeny);
+}
+
+.novinky-odkedy-stlpce {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 18px 28px;
+}
+
+.novinky-odkedy ul {
+  list-style: none;
+  margin: 0 0 8px;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.novinky-odkedy li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+}
+
+.novinky-odkedy li > a:not(.novinky-odkedy-ciel) {
+  color: var(--text);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.novinky-odkedy li > a:hover {
+  text-decoration: underline;
+}
+
+.novinky-odkedy-ciel {
+  font-size: 0.88rem;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.novinky-odkedy-ostatne p {
+  margin: 0 0 8px;
+  font-size: 0.9rem;
+}
+
+.novinky-odkedy-nic {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 10px 18px;
-  margin-bottom: 24px;
 }
 
-.novinky-pocet {
-  opacity: 0.65;
-  font-size: 0.8em;
-  margin-left: 2px;
+.novinky-odkedy-nic p {
+  margin: 0;
+  max-width: 52ch;
 }
 
-.novinky-den {
-  position: relative;
-  padding-left: 22px;
-  border-left: 2px solid var(--okraj);
-  padding-bottom: 8px;
+.novinky-odkedy-spodok {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--okraj);
 }
 
-.novinky-den + .novinky-den {
-  margin-top: 8px;
+/* ---- Hlásnik obce ---- */
+
+.hlasnik {
+  --papier: color-mix(in oklab, var(--plocha) 88%, var(--akcent-svetly));
+  padding: 20px 26px 12px;
+  border-radius: 4px;
+  background: var(--papier);
+  box-shadow:
+    0 1px 0 var(--okraj),
+    0 12px 26px rgb(0 0 0 / calc(0.3 * var(--tma)));
 }
 
-.novinky-den h2 {
-  position: relative;
-  font-size: 1rem;
-  font-weight: 700;
+.hlasnik-hlavicka {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px 16px;
+  padding-bottom: 10px;
+  border-bottom: 3px double var(--text);
+  text-align: center;
+}
+
+.hlasnik-titul {
+  font: 800 2rem/1 var(--nadpis);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.hlasnik-podtitul {
+  font: 700 0.78rem/1 var(--pismo);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
   color: var(--tlmeny);
-  margin: 0 0 12px;
 }
 
-/* Bod na časovej osi pri dátume. */
-.novinky-den h2::before {
-  content: "";
-  position: absolute;
-  left: -29px;
-  top: 0.35em;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--akcent);
-  box-shadow: 0 0 0 3px var(--pozadie);
+.hlasnik-pas {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 0;
+  margin-bottom: 6px;
+  border-bottom: 1px solid var(--text);
+  font: 700 0.76rem/1.2 var(--pismo);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tlmeny);
 }
 
-.novinky-zoznam {
+.hlasnik-den {
+  padding: 14px 0 8px;
+}
+
+.hlasnik-den + .hlasnik-den {
+  border-top: 1px solid var(--okraj);
+}
+
+.hlasnik-den-hlava {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+  margin-bottom: 6px;
+}
+
+.hlasnik-den-hlava h2 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.hlasnik-den-hlava span {
+  font-size: 0.85rem;
+}
+
+.hlasnik-riadky {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: grid;
-  gap: 12px;
-  margin-bottom: 20px;
 }
 
-.novinka {
-  padding: 1rem 1.25rem;
+.hlasnik-zaznam {
+  border-bottom: 1px solid color-mix(in oklab, var(--okraj) 70%, transparent);
+  scroll-margin-top: 90px;
 }
 
-.novinka h3 {
-  margin: 6px 0 4px;
-  font-size: 1.1rem;
+.hlasnik-zaznam:last-child {
+  border-bottom: 0;
 }
 
-.novinka-text {
+.hlasnik-zaznam h3 {
   margin: 0;
-  white-space: pre-line;
-  max-width: 68ch;
+  font: inherit;
 }
 
-.novinka-znacky {
+/* Riadok ≈ 40 px (N-A): kategória, nadpis, „nové“, šípka; text až po rozbalení. */
+.hlasnik-zaznam h3 button {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 40px;
+  padding: 6px 4px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--text);
+  font: 600 0.98rem/1.35 var(--pismo);
+  text-align: left;
+  cursor: pointer;
 }
+
+.hlasnik-zaznam h3 button:hover {
+  background: color-mix(in oklab, var(--text) 6%, transparent);
+}
+
+.hlasnik-nadpis {
+  flex: 1;
+  min-width: 0;
+}
+
+.hlasnik-sipka {
+  flex: none;
+  color: var(--tlmeny);
+  transition: transform 0.15s ease;
+}
+
+.hlasnik-zaznam.otvoreny .hlasnik-sipka {
+  transform: rotate(90deg);
+}
+
+.hlasnik-text {
+  padding: 2px 4px 14px;
+}
+
+.hlasnik-text p {
+  margin: 0 0 6px;
+  max-width: 68ch;
+  white-space: pre-line;
+  color: var(--tlmeny);
+}
+
+.hlasnik-text a {
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+/* ---- kategória a „nové“ ---- */
 
 .novinka-kategoria,
 .novinka-nova {
+  flex: none;
   font-size: 0.75rem;
   line-height: 1.5;
   padding: 1px 9px;
@@ -90,6 +250,7 @@
   border: 1px solid var(--okraj-svetly);
   background: var(--plocha-2);
   color: var(--tlmeny);
+  font-weight: 600;
 }
 
 .novinka-kategoria.kat-pravidla {
@@ -119,18 +280,58 @@
   border-color: var(--akcent);
 }
 
-.novinka-odkaz {
-  display: inline-block;
-  margin-top: 8px;
-  font-size: 0.9rem;
+/* ---- bok: filter kategórií s počtami ---- */
+
+.novinky-filtre {
+  display: grid;
+  gap: 2px;
+  padding: 10px;
 }
 
-@media (max-width: 600px) {
-  .novinky-den {
-    padding-left: 16px;
+.novinky-filtre button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 40px;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--text);
+  font-weight: 500;
+  text-align: left;
+}
+
+.novinky-filtre button.aktivny {
+  background: var(--plocha-3);
+  font-weight: 700;
+}
+
+.novinky-filtre small {
+  color: var(--tlmeny);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 1439.98px) {
+  .novinky-filtre {
+    display: flex;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 700px) {
+  .novinky-odkedy-stlpce {
+    grid-template-columns: minmax(0, 1fr);
   }
 
-  .novinky-den h2::before {
-    left: -23px;
+  .hlasnik {
+    padding: 14px 14px 8px;
   }
+}
+
+/* Nadpisy v Hlásniku začínajú pod sebou — značka kategórie má rovnakú šírku. */
+.hlasnik-zaznam .novinka-kategoria {
+  min-width: 5.4em;
+  text-align: center;
 }
