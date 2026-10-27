@@ -228,17 +228,18 @@
 
 /* Bar hráča (Michal 2026-10-22, dizajn stol-oproti-b2-20261022-1030): súperi
    sedia oproti sebe — súperov bar nad staršími, tvoj pod stolom. Jeden rad
-   s pevnou výškou: tvoj portrét · Dlhy · Zadĺženie · Pečeň · Absťák ·
-   Cigarety · Poldeci · Body · Karty, súperov presne obrátene. Rozpis bodov
-   vymení šesť zdrojov za šesť dlaždíc v tých istých stĺpcoch — výška sa nemení. */
+   s pevnou výškou: tvoj portrét · Špaky · Dlhy (so zadĺžením) · Pečeň · Absťák ·
+   Cigarety · Poldeci · Karty, súperov presne obrátene. Rozpis bodov
+   vymení päť zdrojov za dlaždice v tých istých stĺpcoch — výška sa nemení. */
 .doska {
   --farba: var(--ja);
   --farba-tmava: var(--ja-tmava);
   --bar-h: 132px;
-  --ident: minmax(170px, 230px);
+  --ident: minmax(150px, 215px);
+  --avatar-max: 60px;
   position: relative;
   display: grid;
-  grid-template-columns: var(--ident) minmax(0, 1.08fr) repeat(6, minmax(0, 1fr)) minmax(0, 0.9fr);
+  grid-template-columns: var(--ident) minmax(0, 0.8fr) repeat(6, minmax(0, 1fr)) minmax(0, 1.1fr);
   grid-template-rows: minmax(0, 1fr);
   align-items: stretch;
   height: var(--bar-h);
@@ -259,7 +260,7 @@
 .doska.superova {
   --farba: var(--su);
   --farba-tmava: var(--su-tmava);
-  grid-template-columns: minmax(0, 0.9fr) repeat(6, minmax(0, 1fr)) minmax(0, 1.08fr) var(--ident);
+  grid-template-columns: minmax(0, 1.1fr) repeat(6, minmax(0, 1fr)) minmax(0, 0.8fr) var(--ident);
   background: linear-gradient(270deg, var(--farba-tmava), var(--plocha) 45%);
   border-left-width: 1px;
   border-right: 5px solid var(--farba);
@@ -291,11 +292,18 @@
   overflow: hidden;
 }
 
-/* Špaky (popolník, v6) ležia hneď pri mene hráča — Michal 2026-10-26, spaky.html bod 12. */
+/* Avatar má na doske pevnú veľkosť v štýle prvku — max-* ho zmenší v nižšom bare. */
+.doska-hrac .avatar {
+  max-width: var(--avatar-max);
+  max-height: var(--avatar-max);
+}
+
+/* Špaky (popolník, v6) ležia hneď pri mene hráča — Michal 2026-10-26, spaky.html bod 12.
+   Dlhy a Zadĺženie sú jedna dlaždica (Michal 2026-10-27). */
 .doska.moja .doska-hrac { grid-column: 1; }
 .doska.moja .zdroj-body { grid-column: 2; }
-.doska.moja .zdroj-dlhy { grid-column: 3; }
-.doska.moja .zdroj-zadlzenie { grid-column: 4; }
+.doska.moja .zdroj-starsi { grid-column: 3; }
+.doska.moja .zdroj-dlhy { grid-column: 4; }
 .doska.moja .zdroj-pecen { grid-column: 5; }
 .doska.moja .zdroj-abstak { grid-column: 6; }
 .doska.moja .zdroj-cigarety { grid-column: 7; }
@@ -307,13 +315,14 @@
 .doska.superova .zdroj-cigarety { grid-column: 3; }
 .doska.superova .zdroj-abstak { grid-column: 4; }
 .doska.superova .zdroj-pecen { grid-column: 5; }
-.doska.superova .zdroj-zadlzenie { grid-column: 6; }
-.doska.superova .zdroj-dlhy { grid-column: 7; }
+.doska.superova .zdroj-dlhy { grid-column: 6; }
+.doska.superova .zdroj-starsi { grid-column: 7; }
 .doska.superova .zdroj-body { grid-column: 8; }
 .doska.superova .doska-hrac { grid-column: 9; }
 
-/* Body: tlačidlo, ktoré prepína stôl na líniu starších (#68). */
-button.zdroj-body {
+/* Špaky a Starší: tlačidlá, ktoré prepínajú stôl (nástenka, línia starších) a bary. */
+button.zdroj-body,
+button.zdroj-starsi {
   font: inherit;
   color: inherit;
   text-align: left;
@@ -329,14 +338,12 @@ button.zdroj-body.minus .velke-cislo {
   color: var(--cervena-text);
 }
 
-button.zdroj-body[aria-pressed="true"] {
-  background: var(--akcent);
-}
-
-button.zdroj-body[aria-pressed="true"] .zdroj-nazov,
-button.zdroj-body[aria-pressed="true"] .zdroj-pod,
-button.zdroj-body[aria-pressed="true"] .velke-cislo {
-  color: var(--na-akcente);
+/* Stlačená dlaždica má jantárový okraj, nie plnú výplň — plná jantárová plocha bola hlasnejšia
+   než tlačidlo ťahu (dizajn spaky-starsi-20261027, P5). */
+button.zdroj-body[aria-pressed="true"],
+button.zdroj-starsi[aria-pressed="true"] {
+  border-color: var(--akcent);
+  box-shadow: inset 0 0 0 1px var(--akcent);
 }
 
 .doska.na-tahu {
@@ -3940,6 +3947,16 @@ button.pecat-potvrd:disabled::after {
   font-weight: 600;
 }
 
+/* Zadĺženie tejto Pitky v dlaždici Dlhy (Michal 2026-10-27) — červené, keď ďalší Dlh hrozí. */
+.zdroj .dlhy-zadlzenie .projekcia {
+  color: color-mix(in oklab, var(--akcent) 72%, var(--akcent-svetly));
+}
+
+.zdroj .dlhy-zadlzenie.zly {
+  color: var(--cervena-svetla);
+  font-weight: 600;
+}
+
 .zdroj.hrozi {
   border-color: color-mix(in oklab, var(--cervena-text) 25%, var(--tehla-tmava));
   background: color-mix(in srgb, color-mix(in oklab, var(--tehla-tmava) 79%, var(--pozadie)) 32%, transparent);
@@ -4519,11 +4536,90 @@ button.auto-hotovo-odkaz {
   }
 
   /* Výška pre stôl: bary, pás kola a odhad bitky sú nižšie, nič z nich nezmizlo
-     (podrobnosti ostávajú v nápovedách). */
+     (podrobnosti ostávajú v nápovedách). Michal 2026-10-27: dlaždice hráčov ešte o pätinu
+     nižšie, miesto dostane stôl — menšie odsadenie a číslo, Karty s nadpisom vedľa počtov. */
   .doska,
   .plocha > section.doska {
-    --bar-h: 118px;
-    padding-block: 6px;
+    --bar-h: 94px;
+    --avatar-max: 52px;
+    padding-block: 5px;
+  }
+
+  .doska .zdroj {
+    padding: 4px 9px;
+  }
+
+  .doska .zdroj-nazov {
+    line-height: 1.1;
+  }
+
+  .doska .zdroj-hodnota {
+    height: 26px;
+  }
+
+  .doska .zdroj-karty > .zdroj-hodnota {
+    height: auto;
+  }
+
+  /* Číslo s dovetkom („1 −1 tuhé“) sa v úzkej dlaždici nezalomí — zalomené sa orezalo zhora. */
+  .doska .velke-cislo {
+    font-size: 1.55rem;
+    white-space: nowrap;
+  }
+
+  .doska .zdroj .vyhlad {
+    margin-top: 0;
+  }
+
+  /* Pod číslom najviac dva celé riadky (Dlhy: zadĺženie a výhľad Pitky) — tretí odpadne celý,
+     nie v polovici; celé znenie je v nápovede. Prúžok k prahu tu aj tak nemal výšku (blok bez flexu). */
+  .doska .zdroj-pod {
+    max-height: 2.5em;
+  }
+
+  /* Cigarety majú pod textom rad tlačidiel obchodu (nižšie okno ich skryje a text zalomí na dva riadky). */
+  .doska .zdroj-cigarety > .zdroj-pod {
+    max-height: none;
+  }
+
+  /* Tlačidlá obchodu v jednom rade — v rade deviatich dlaždíc by sa druhé zalomilo pod okraj. */
+  .doska .obchod-cigariet {
+    flex-wrap: nowrap;
+    gap: 3px;
+  }
+
+  .doska .obchod-cigariet button {
+    padding: 0 4px;
+    white-space: nowrap;
+  }
+
+  /* Prúžok nerestí vedľa čísla Absťáku sa v užšej dlaždici zúži, nevytŕča. */
+  .doska .neresti-pruh span {
+    min-width: 3px;
+  }
+
+  .doska .zdroj-pod > * {
+    flex-shrink: 0;
+  }
+
+  .doska .zdroj-pod > .pruh {
+    display: none;
+  }
+
+  /* Karty: nadpis vľavo od troch počtov — pod nimi ostane riadok na kliatby a náradie. */
+  .doska .zdroj-karty:not(.ako-ciel) {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-content: start;
+    column-gap: 8px;
+  }
+
+  .doska .zdroj-karty > .zdroj-pod {
+    grid-column: 1 / -1;
+  }
+
+  .doska .karty-pocty {
+    line-height: 1.12;
   }
 
   /* Účet bitky v jednom riadku — položky za sebou, celé znenie v nápovede riadku. */
@@ -5923,15 +6019,19 @@ button.auto-hotovo-odkaz {
   pointer-events: none;
 }
 
-/* ---- bodový bar (Michal 2026-10-23): po kliku na Body body podľa podmienok ----
- * Šesť zdrojov ustúpi jednému prvku cez ich stĺpce; Body a Karty ostávajú. */
-.doska.bodovy :is(.zdroj-dlhy, .zdroj-zadlzenie, .zdroj-pecen, .zdroj-abstak, .zdroj-cigarety, .zdroj-poldeci) {
+/* ---- prepnutý bar (Michal 2026-10-27, dizajn spaky-starsi-20261027) ----
+ * Nástenka (klik na Špaky): päť zdrojov ustúpi dlaždiciam špakov. Línia starších (klik na
+ * Starších): zdroje aj Karty ustúpia baru starších — osem dlaždíc potrebuje šesť stĺpcov.
+ * Špaky a Starší ostávajú, aby sa dalo prepnúť späť. Výber cez .doska-zdroje — nízke okno dáva
+ * dlaždiciam display: grid pravidlom s rovnakou váhou. */
+.doska.rezim-spaky .doska-zdroje > :is(.zdroj-dlhy, .zdroj-pecen, .zdroj-abstak, .zdroj-cigarety, .zdroj-poldeci),
+.doska.rezim-starsi .doska-zdroje > :is(.zdroj-dlhy, .zdroj-pecen, .zdroj-abstak, .zdroj-cigarety, .zdroj-poldeci, .zdroj-karty) {
   display: none;
 }
 
-.bodovy-bar {
+.bar-spakov,
+.bar-starsich {
   grid-row: 1;
-  grid-column: 3 / span 6;
   min-width: 0;
   min-height: 0;
   display: grid;
@@ -5939,36 +6039,159 @@ button.auto-hotovo-odkaz {
   gap: 6px;
 }
 
-.doska.superova .bodovy-bar {
-  grid-column: 2 / span 6;
-}
+.doska.moja .bar-spakov { grid-column: 4 / span 5; }
+.doska.superova .bar-spakov { grid-column: 2 / span 5; }
+.doska.moja .bar-starsich { grid-column: 4 / span 6; }
+.doska.superova .bar-starsich { grid-column: 1 / span 6; }
 
-.bodova-dlazdica {
+.bar-spakov > .zdroj,
+.bar-starsich > .zdroj {
   min-width: 0;
   overflow: hidden;
   cursor: help;
 }
 
-.bodova-dlazdica .zdroj-hodnota .ikona-podmienky,
-.bodova-dlazdica .zdroj-hodnota .ikona-podmienky-text {
-  width: 28px;
-  height: 28px;
-  flex: none;
-  object-fit: contain;
-}
-
-.bodova-dlazdica.plus .velke-cislo {
+.spaky-dlazdica.plus .velke-cislo {
   color: var(--zelena);
 }
 
-.bodova-dlazdica.minus .velke-cislo {
+.spaky-dlazdica.minus .velke-cislo {
   color: var(--cervena-text);
 }
 
-.bodova-dlazdica.zvyraznena,
-.bodova-dlazdica:focus-visible {
+.bar-spakov > .zdroj:focus-visible,
+.bar-starsich > .zdroj:focus-visible {
   border-color: var(--akcent);
   box-shadow: 0 0 0 1px var(--akcent);
+}
+
+/* Dlaždica staršieho: farebný štvorček zóny pri mene; priazeň ♥ v mojej farbe, strach so špakmi. */
+.starsi-dlazdica .zdroj-nazov {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  letter-spacing: 0.03em;
+}
+
+/* Meno sa skráti len do strany — zvislý orez by zrezal mäkčene veľkých písmen (KRČMÁRKA). */
+.starsi-meno,
+.spaky-dlazdica .zdroj-nazov {
+  min-width: 0;
+  overflow-x: clip;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.starsi-dlazdica .ls-znacka {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  background: var(--farba-zony);
+}
+
+.starsi-dlazdica .velke-cislo {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.starsi-dlazdica.hore .velke-cislo {
+  color: color-mix(in oklab, var(--cervena-svetla) 70%, var(--text));
+}
+
+.starsi-dlazdica.dole .velke-cislo {
+  color: var(--zelena);
+}
+
+.starsi-dlazdica .velke-cislo.nic {
+  color: var(--slaby);
+}
+
+.starsi-dlazdica .velke-cislo .ikona-spaku {
+  width: 1.1em;
+  height: 0.6em;
+}
+
+.starsi-cip {
+  padding: 0 5px;
+  border-radius: 99px;
+  border: 1px solid var(--okraj-svetly);
+  font-size: 0.66rem;
+  white-space: nowrap;
+  color: var(--tlmeny);
+}
+
+/* Dlaždica Starší (S1 stupienky): stĺpček na každého staršieho v poradí línie — hore priazeň,
+   dole strach (špaky po bitke); výška je zóna, aby sa dala prečítať aj bez farby (P7). */
+.zdroj-starsi .zdroj-hodnota {
+  gap: 6px;
+  min-width: 0;
+}
+
+.zdroj-starsi .starsi-priazen {
+  color: color-mix(in oklab, var(--cervena-svetla) 70%, var(--text));
+}
+
+.stupienky {
+  --stupien: 4px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 0 1 auto;
+  min-width: 0;
+  height: calc(var(--stupien) * 6 + 2px);
+}
+
+/* Stredová čiara — hore je priazeň, dole strach. */
+.stupienky::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  border-top: 1px solid color-mix(in srgb, var(--lesk) 22%, transparent);
+}
+
+.stupienky i {
+  position: relative;
+  flex: 0 1 7px;
+  min-width: 3px;
+  height: 100%;
+}
+
+.stupienky i::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-radius: 1px;
+  background: var(--farba-zony);
+}
+
+.stupienky i.hore::after {
+  bottom: 50%;
+  height: calc(var(--stupien) * var(--zona));
+}
+
+.stupienky i.dole::after {
+  top: 50%;
+  height: calc(var(--stupien) * var(--zona));
+}
+
+.stupienky i.nic::after {
+  top: calc(50% - 1px);
+  height: 3px;
+  background: color-mix(in srgb, var(--lesk) 28%, transparent);
+}
+
+.zdroj-starsi .zdroj-pod .ikona-spaku {
+  width: 1.2em;
+  height: 0.7em;
+  margin-left: 2px;
+  vertical-align: -0.05em;
 }
 
 /* Podmienka z bodového baru pod myšou: svietia starší, u ktorých boduje, a podmienka sama. */
@@ -6238,17 +6461,68 @@ button.auto-hotovo-odkaz {
 }
 
 @media (min-width: 761px) and (max-height: 919px) {
-  /* Bar hráča nižší: nadpis, číslo a dva riadky textu pod sebou ako na veľkom okne, len s
-     tesnejším riadkovaním (vedľa čísla mal text len ≈ 40 px a skracoval sa — UI inšpekcia). */
+  /* Bar hráča nižší: číslo a dva riadky textu pod ním ako na veľkom okne, len s tesnejším
+     riadkovaním (vedľa čísla mal text len ≈ 40 px a skracoval sa — UI inšpekcia). Nadpis leží
+     v rade s číslom (Michal 2026-10-27: dlaždice nižšie, miesto dostane stôl). */
   .doska,
   .plocha > section.doska {
-    --bar-h: 80px;
-    padding-block: 4px;
+    --bar-h: 62px;
+    --avatar-max: 44px;
+    padding-block: 3px;
   }
 
   .doska .zdroj {
     gap: 0;
     padding: 2px 8px;
+  }
+
+  /* Nadpis vľavo od čísla, text pod oboma. Karty (tri počty pod sebou), Špaky a dlaždice
+     rozpisu bodov majú nadpis nad číslom ako doteraz — v rade by sa nezmestili. */
+  .doska .zdroj:not(.zdroj-karty, .zdroj-body, .zdroj-starsi, .spaky-dlazdica, .starsi-dlazdica) {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    align-content: start;
+    column-gap: 6px;
+  }
+
+  .doska .zdroj:not(.zdroj-karty, .zdroj-body, .zdroj-starsi, .spaky-dlazdica, .starsi-dlazdica) > .zdroj-nazov {
+    align-self: center;
+  }
+
+  .doska .zdroj:not(.zdroj-karty, .zdroj-body, .zdroj-starsi, .spaky-dlazdica, .starsi-dlazdica) > .zdroj-pod {
+    grid-column: 1 / -1;
+  }
+
+  /* V rade s nadpisom ustúpia najprv piktogramy poldeci (číslo plných je hneď vedľa). Rad s číslom
+     sám pretečenie neskrýva — orezal by vrchy číslic; do strán ho oreže dlaždica. */
+  .doska .zdroj-hodnota {
+    min-width: 0;
+  }
+
+  .doska .poldeci-rad {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .doska .ikona-poldeci,
+  .doska .zdroj-hodnota > .ikona-cigareta,
+  .doska .ikona-abstak {
+    width: 18px;
+    height: 18px;
+  }
+  /* Absťák má v rade s nadpisom číslo, „−1 tuhé“ aj prúžok nerestí — tesnejšie medzery, nech sa zmestí celý. */
+  .doska .zdroj-abstak .zdroj-hodnota {
+    gap: 3px;
+  }
+
+  .doska .zdroj.zdroj-abstak {
+    column-gap: 4px;
+  }
+
+  /* Pohárik v trasúcej sa ruke je len ozdoba — v rade s nadpisom by vytlačil „−1 tuhé“ za okraj. */
+  .doska .zdroj-abstak .ikona-abstak {
+    display: none;
   }
 
   /* Väčšie písmo s užšími medzerami — rovnaká šírka, ale nie 10 px (playtest výučby 20261025). */
@@ -6294,34 +6568,52 @@ button.auto-hotovo-odkaz {
     line-height: inherit;
   }
 
-  /* Meno, rola a nepriznané kliatby sa zmestia pod seba do nižšieho baru. */
+  /* Meno, rola a nepriznané kliatby sa zmestia pod seba do nižšieho baru. Riadok roly má
+     písmo bloku — inak ho riadkovanie 16 px písma natiahlo a meno sa orezalo zhora. */
+  .doska-hrac > div {
+    font-size: 0.76rem;
+    line-height: 1.15;
+  }
+
   .doska-meno {
     font-size: 1rem;
-    line-height: 1.15;
+    line-height: 1.05;
   }
 
   .doska-rola {
     margin-top: 1px;
     font-size: 0.76rem;
+    line-height: 1.15;
   }
 
   .doska-oblast {
-    margin-top: 2px;
+    margin-top: 1px;
   }
 
   .doska-oblast .cip {
     padding-block: 0;
+    line-height: 1.25;
   }
 
-  /* Rozpis bodov: menšia ikona podmienky, aby sa zmestil riadok „boduje u …“. */
-  .bodova-dlazdica .zdroj-hodnota .ikona-podmienky,
-  .bodova-dlazdica .zdroj-hodnota .ikona-podmienky-text {
-    width: 22px;
-    height: 22px;
+  /* Prepnutý bar (špaky, starší): pod číslom jeden riadok; stupienky Starších nižšie. */
+  .doska :is(.spaky-dlazdica, .starsi-dlazdica, .zdroj-starsi) > .zdroj-pod {
+    max-height: 1.12em;
   }
 
-  .bodova-dlazdica .zdroj-hodnota {
-    gap: 6px;
+  /* …a ten jediný riadok sa skráti trojbodkou, nie zalomí (inak by sa druhý riadok orezal v polovici). */
+  .doska .zdroj:is(.spaky-dlazdica, .starsi-dlazdica, .zdroj-starsi) .zdroj-pod > :only-child {
+    display: block;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: none;
+  }
+
+  .doska .stupienky {
+    --stupien: 3px;
+  }
+
+  .doska .starsi-cip {
+    font-size: 0.6rem;
   }
 
   /* Pod číslom len celé riadky; čo sa nezmestí, odpadne celé (nie v polovici). */
@@ -6344,11 +6636,17 @@ button.auto-hotovo-odkaz {
 
   .doska .karty-pocty {
     font-size: 0.72rem;
-    line-height: 1.08;
+    line-height: 1.02;
   }
 
   .doska .karty-pocty b {
+    min-width: 1.1em;
     font-size: 0.82rem;
+  }
+
+  /* Počet a slovo v jednom riadku — v užšej dlaždici sa „odhodené“ zalomilo pod okraj. */
+  .doska .karty-pocty > span {
+    white-space: nowrap;
   }
 
   /* Kliatby a náradie sa pod tri počty nezmestia — sú vo vrstve Karty (klik na dlaždicu). */
@@ -6439,7 +6737,7 @@ button.auto-hotovo-odkaz {
 
   .doska,
   .plocha > section.doska {
-    --bar-h: 76px;
+    --bar-h: 60px;
   }
 
   /* Z karty v ruke trčí menej (celá sa vysunie pod myšou). */

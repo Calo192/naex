@@ -336,17 +336,17 @@ export function VyucbaStol({
 
   // Pri novom kroku sa stôl vráti z pohľadu starších a zavrú sa vrstvy, ktoré krok
   // nepotrebuje (playtest: po kroku Body ostali starší otvorení, Lokality zakryli bar).
-  // Po prvej bitke drží starších na stole HernaPlocha (ukazStarsich) — klik na Body by ich zavrel.
+  // Po prvej bitke drží starších na stole HernaPlocha (ukazStarsich) — klik na Starších by ich zavrel.
   const poBitke = view.kolo > 1;
   useEffect(() => {
     if (krok === null) return;
     const kluceKroku = krok.zvyraznit;
     const typ = krok.ocakava?.type ?? "";
     const t = setTimeout(() => {
-      if (!krokSoStarsimi(krok) && !poBitke) document.querySelector<HTMLElement>('[data-vyucba-prvok="body"][aria-pressed="true"]')?.click();
+      if (!krokSoStarsimi(krok) && !poBitke) document.querySelector<HTMLElement>('[data-vyucba-prvok="starsi"][aria-pressed="true"]')?.click();
       // Stupnice strachu sú na kartách starších — línia starších sa otvorí sama (playtest: krok 38 svietil Body).
       else if (!poBitke && kluceKroku.some((k) => k === "starsi-stupnica" || k === "linia-starsich")) {
-        document.querySelector<HTMLElement>('.doska.moja [data-vyucba-prvok="body"][aria-pressed="false"]')?.click();
+        document.querySelector<HTMLElement>('.doska.moja [data-vyucba-prvok="starsi"][aria-pressed="false"]')?.click();
       }
       const vrstvu = kluceKroku.some((k) => k.startsWith("hlavicka:")) || typ === "pohreb" || typ === "patronat";
       if (!vrstvu) document.querySelector<HTMLElement>(".vrstva:not(.skryta) .vrstva-zavriet")?.click();
