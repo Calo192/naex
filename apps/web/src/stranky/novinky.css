@@ -263,9 +263,11 @@
   border-color: color-mix(in srgb, var(--info) 45%, transparent);
 }
 
+/* Vlastný token, nie --ja: farba hráča sa mení podľa páru v profile (2026-10-27). Vo svetlých
+   schémach (--tma 0,3) s prímesou textu — samotná --graf-ludia má na papieri len ≈ 3,3 : 1. */
 .novinka-kategoria.kat-dizajn {
-  color: var(--ja);
-  border-color: color-mix(in srgb, var(--ja) 45%, transparent);
+  color: color-mix(in oklab, var(--text) calc((1 - var(--tma)) * 50%), var(--graf-ludia));
+  border-color: color-mix(in srgb, var(--graf-ludia) 45%, transparent);
 }
 
 .novinka-kategoria.kat-opravy {

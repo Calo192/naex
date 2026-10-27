@@ -345,6 +345,9 @@ function migruj(db: Db): void {
     ["ai", "INTEGER NOT NULL DEFAULT 0"],
     // Farebná schéma webu (Michal 2026-10-21); NULL = predvolená Krčma.
     ["schema", "TEXT"],
+    // Pár farieb hráča v partii (Michal 2026-10-27): "w20", s ⇄ "w20-prehod"; NULL = predvolený.
+    // Len pre jeho prehliadač — súperovi sa neposiela.
+    ["par", "TEXT"],
     // Zobrazenie skóre v partii (Michal 2026-10-22) — od roadmapy #70 sú body len dlaždice
     // a stĺpec sa nečíta; ostáva, aby staré databázy nemuseli meniť tabuľku.
     ["skore", "TEXT"],

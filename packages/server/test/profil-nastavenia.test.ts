@@ -63,6 +63,21 @@ describe("nastavenia profilu", () => {
     expect(((await volaj("GET", "/ja", cookie)).data.pouzivatel as { schema: string }).schema).toBe("noc");
   });
 
+  it("pár farieb hráča (Michal 2026-10-27): predvolene žiadny, uloží sa id páru aj s ⇄", async () => {
+    const { cookie } = await registruj(server.port);
+    expect(((await volaj("GET", "/ja", cookie)).data.pouzivatel as { par: string | null }).par).toBeNull();
+
+    const ok = await volaj("PATCH", "/profil", cookie, { par: "w67-prehod" });
+    expect(ok.status).toBe(200);
+    expect((ok.data.pouzivatel as { par: string }).par).toBe("w67-prehod");
+    expect(((await volaj("PATCH", "/profil", cookie, { par: "w20" })).data.pouzivatel as { par: string }).par).toBe("w20");
+
+    for (const zle of ["", "W20", "w20-x", "w1234", "20", 20, null, "w20-prehod; drop"]) {
+      expect((await volaj("PATCH", "/profil", cookie, { par: zle })).status).toBe(400);
+    }
+    expect(((await volaj("GET", "/ja", cookie)).data.pouzivatel as { par: string }).par).toBe("w20");
+  });
+
   it("zobrazenie skóre už nie je voľba (roadmapa #70): body sú len dlaždice, server skore ignoruje", async () => {
     const { cookie } = await registruj(server.port);
     expect((await volaj("GET", "/ja", cookie)).data.pouzivatel).not.toHaveProperty("skore");

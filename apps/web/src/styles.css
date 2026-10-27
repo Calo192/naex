@@ -315,6 +315,29 @@ textarea {
   font-family: var(--pismo);
 }
 
+/* Avatar vo farbe hráča (pár z profilu, Michal 2026-10-27) — len v partii a v hlavičke profilu.
+   Iniciály: výplň farbou hráča, text farbou podkladu (kontrast ako text farbou hráča, ≥ 4,5 : 1).
+   Fotka: prstenec 2 px s medzerou 2 px, aby sa farba nezliala s fotkou. */
+.avatar-hraca {
+  --farba-avatara: var(--ja);
+}
+
+.avatar-hraca.avatar-su {
+  --farba-avatara: var(--su);
+}
+
+.avatar-inicialy.avatar-hraca {
+  background: var(--farba-avatara);
+  color: var(--na-farbe-hraca);
+  border-color: transparent;
+}
+
+img.avatar-hraca {
+  border: 0;
+  outline: 2px solid var(--farba-avatara);
+  outline-offset: 2px;
+}
+
 /* ---- kostra ----------------------------------------------------------- */
 /* Kostra na stred (Michal 2026-10-26: „Ľavý okraj každej stránky skáče“): hlavička,
    obsah aj pätička v jednom kontajneri .kostra (Layout), takže logo a začiatok obsahu
@@ -1087,6 +1110,170 @@ button.sprava-tlacidlo {
   gap: 8px;
   flex-wrap: wrap;
   margin-top: 10px;
+}
+
+/* Pár farieb hráča (Michal 2026-10-27): 5 párov a ⇄ v jednom riadku, ktorý sa nikdy
+   nezalomí — mriežka s minmax(0, 1fr); v užšom kontajneri než 640 px ostanú len kotúče
+   (veľký = ja, malý = súper) a názov vybraného páru je v riadku pod nimi. */
+.vyber-paru {
+  flex: 1 1 100%;
+  min-width: 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--okraj);
+}
+
+.vyber-paru h3 {
+  margin: 0 0 4px;
+}
+
+.vyber-paru > .tlmene {
+  margin: 0 0 10px;
+}
+
+.rad-parov {
+  container-type: inline-size;
+}
+
+.rad-parov-mriezka {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 48px;
+  gap: 8px;
+}
+
+.rad-parov-pary {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.par-volba {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 52px;
+  padding: 6px 8px;
+  border: 1px solid var(--okraj);
+  border-radius: 10px;
+  background: var(--plocha-2);
+  color: var(--text);
+  font: 600 0.82rem/1.2 var(--pismo);
+  text-align: left;
+  cursor: pointer;
+}
+
+.par-volba:hover {
+  border-color: var(--okraj-svetly);
+}
+
+.par-volba[aria-checked="true"] {
+  border-color: var(--akcent);
+  box-shadow: inset 0 0 0 1px var(--akcent);
+}
+
+.par-volba[aria-checked="true"]::after {
+  content: "✓";
+  position: absolute;
+  top: 3px;
+  right: 6px;
+  color: var(--akcent);
+  font-weight: 900;
+  font-size: 0.75rem;
+}
+
+.par-nazov {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.par-disky {
+  position: relative;
+  flex: none;
+  width: 40px;
+  height: 30px;
+}
+
+.par-disky i {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--plocha-2);
+}
+
+.par-disk-su {
+  top: 0;
+  right: 0;
+  width: 22px;
+  height: 22px;
+  background: var(--fs);
+}
+
+.par-disk-ja {
+  bottom: 0;
+  left: 0;
+  width: 28px;
+  height: 28px;
+  background: var(--fj);
+}
+
+.par-prehod {
+  min-height: 52px;
+  padding: 0;
+  border: 1px solid var(--okraj);
+  border-radius: 10px;
+  background: var(--plocha-2);
+  color: var(--text);
+  font: 800 1.15rem/1 var(--pismo);
+  cursor: pointer;
+}
+
+.par-prehod:hover {
+  border-color: var(--okraj-svetly);
+}
+
+.par-prehod[aria-pressed="true"] {
+  border-color: var(--akcent);
+  color: var(--akcent);
+  box-shadow: inset 0 0 0 1px var(--akcent);
+}
+
+.par-vybrany {
+  margin: 8px 0 0;
+  font-size: 0.85rem;
+  color: var(--tlmeny);
+}
+
+.par-vybrany b {
+  color: var(--text);
+}
+
+@container (max-width: 640px) {
+  .rad-parov-mriezka {
+    grid-template-columns: minmax(0, 1fr) 44px;
+    gap: 6px;
+  }
+
+  .rad-parov-pary {
+    gap: 6px;
+  }
+
+  .par-volba {
+    justify-content: center;
+    padding: 6px 2px;
+  }
+
+  /* Fajka by na úzkom tlačidle prekryla malý kotúč — zvolený pár nesie rám. */
+  .par-nazov,
+  .par-volba[aria-checked="true"]::after {
+    display: none;
+  }
+
+  .par-volba[aria-checked="true"] {
+    box-shadow: inset 0 0 0 2px var(--akcent);
+  }
 }
 
 .odznak {

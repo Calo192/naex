@@ -152,7 +152,7 @@ export function KartaHraca({ info, meno, ja, children }: { readonly info: HracIn
             style={{ left: poloha.x, width: SIRKA, ...(poloha.hore ? { bottom: poloha.y } : { top: poloha.y }) } as CSSProperties}
           >
             <header className="karta-hraca-hlava">
-              <Avatar meno={meno} avatar={info.avatar} velkost={44} />
+              <Avatar meno={meno} avatar={info.avatar} velkost={44} farba={ja ? "ja" : "su"} />
               <strong>{meno}</strong>
               <button type="button" className="karta-hraca-zavri" aria-label="Zavrieť" onClick={() => setPoloha(null)}>
                 ×

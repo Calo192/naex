@@ -682,7 +682,7 @@
 .obl-pravidla { --obl: var(--akcent); }
 .obl-ui { --obl: var(--info); }
 .obl-karty { --obl: var(--zelena); }
-.obl-2v2 { --obl: var(--su); }
+.obl-2v2 { --obl: var(--graf-ai); } /* nie --su: tá sa mení podľa páru hráča */
 .obl-platforma { --obl: var(--info-silna); }
 .obl-komunita { --obl: var(--cervena-text); }
 

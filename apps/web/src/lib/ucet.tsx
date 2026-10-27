@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { api } from "./api.ts";
+import { aktualnyPar, pouziPar, volbaDoUctu, volbaZUctu } from "./paryHraca.ts";
 import { aktualnaSchema, pouziSchemu } from "./schemy.ts";
 import type { Pohlavie } from "@naex/core";
 
@@ -65,6 +66,8 @@ export interface Pouzivatel {
   readonly ai?: boolean;
   /** Farebná schéma webu (lib/schemy.ts); null = predvolená. */
   readonly schema?: string | null;
+  /** Pár farieb hráča v partii (lib/paryHraca.ts, "w20" / "w20-prehod"); null = predvolený. */
+  readonly par?: string | null;
   /** Nápovedy majstra Melichara v partii (Michal 2026-10-24); chýba = zapnuté. */
   readonly napovedy?: boolean;
   /** Klávesové skratky v partii (K, P, N, Esc, ?); chýba = zapnuté. */
@@ -97,9 +100,10 @@ export function UcetProvider({ children }: { children: ReactNode }) {
   const [nacitane, setNacitane] = useState(false);
   const [pravaNavstevnika, setPravaNavstevnika] = useState<readonly Pravo[] | null>(null);
 
-  // Schéma uložená v účte má prednosť pred tou v prehliadači — platí na každom zariadení.
+  // Schéma a pár farieb uložené v účte majú prednosť pred prehliadačom — platia na každom zariadení.
   const setJa = useCallback((p: Pouzivatel | null): void => {
     if (p?.schema != null && p.schema !== aktualnaSchema()) pouziSchemu(p.schema);
+    if (p?.par != null && p.par !== volbaDoUctu(aktualnyPar())) pouziPar(volbaZUctu(p.par));
     setJaStav(p);
   }, []);
 
