@@ -19,14 +19,15 @@ import type {
   StavkaBitky as StavkaBitkyCisla,
   ZdrojeAkcii,
 } from "@naex/core";
-import { KONSTANTY, battleOutcome, jeCielLokalita, limitBuduceKolo, limitZhromazdenia, pocet, rozpisSpakov, tvar } from "@naex/core";
+import { KONSTANTY, battleOutcome, jeCielLokalita, limitBuduceKolo, limitZhromazdenia, pocet, tvar } from "@naex/core";
 import type { Rod } from "@naex/core";
 import type { Sada } from "@naex/tvorba";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { IKONY } from "../karta/ikony.ts";
 import { useTip, type TipObsah } from "../karta/Tip.tsx";
 import { Avatar } from "../komponenty.tsx";
-import { BodovyBar } from "./BodovyBar.tsx";
+import { BarSpakov } from "./BarSpakov.tsx";
+import { BarStarsich, DlazdicaStarsich } from "./Starsi.tsx";
 import { KartaHraca } from "./KartaHraca.tsx";
 import type { HracInfo } from "./useHra.ts";
 import { PocetSpakov } from "./Spaky.tsx";
@@ -429,27 +430,30 @@ export interface HracDoskaProps {
   /** Mená oboch hráčov podľa miesta. */
   readonly mena: readonly [string, string];
   /**
-   * Klik na Body prepne stôl na líniu starších (Michal 2026-10-23, #68) — bar sa
-   * neprepína. `stlacene`: línia práve ukazuje čísla tohto hráča.
+   * Dlaždica Starší (Michal 2026-10-27, S1 stupienky): klik prepne stôl na líniu starších
+   * a oba bary na bar starších. `stlacene`: línia práve ukazuje tohto hráča.
+   * posuny = koľko starších sa pohlo od poslednej bitky (stopa na stupnici, #95).
    */
-  /** posuny = koľko starších sa pohlo od poslednej bitky (stopa na stupnici, #95). */
   readonly starsi: { readonly stlacene: boolean; readonly prepni: () => void; readonly id: string; readonly posuny?: number };
+  /** Klik na Špaky otvorí krčmovú nástenku s účtom (Michal 2026-10-27, variant A). */
+  readonly spakyKlik: { readonly stlacene: boolean; readonly prepni: () => void };
   /** Dlaždica KARTY: klik otvorí vrstvu Karty, pri ťahaní kliatby či Nástroja je cieľom (#76). */
   readonly karty: KartyDlazdica;
   /**
-   * Bodový bar (Michal 2026-10-23): kým stôl ukazuje líniu starších po kliku na Body,
-   * šesť zdrojov nahradia dlaždice podmienok (zdroje skryje hra.css .doska.bodovy).
+   * Prepnutý bar (Michal 2026-10-27): kým je otvorená nástenka, zdroje nahradia dlaždice
+   * špakov; kým stôl ukazuje líniu starších, nahradí ich bar starších (zdroje skryje hra.css).
    */
-  readonly bodovy?: boolean | undefined;
+  readonly rezim?: "spaky" | "starsi" | undefined;
 }
 
 
 /**
  * Bar hráča (Michal 2026-10-22, dizajn stol-oproti-b2-20261022-1030): súperi
  * sedia oproti sebe — súperov bar je nad staršími, tvoj pod stolom, oba
- * v jednom rade a zrkadlovo (tvoj: portrét · Dlhy … Poldeci · Body · Karty,
- * súperov presne obrátene; poradie dáva mriežka v hra.css). Klik na Body
- * ukáže na stole líniu starších s rozpisom bodov po starších. Bez bubliniek so stavom — kto je na ťahu, ukazuje
+ * v jednom rade a zrkadlovo (tvoj: portrét · Špaky · Starší · Dlhy … Poldeci · Karty,
+ * súperov presne obrátene; poradie dáva mriežka v hra.css). Klik na Špaky otvorí
+ * nástenku s účtom, klik na Starších líniu starších; bar sa vtedy prepne na dlaždice
+ * špakov či starších. Bez bubliniek so stavom — kto je na ťahu, ukazuje
  * stôl a pokyn, NA EX vidno na poldeci.
  */
 export function HracDoska({
@@ -467,8 +471,9 @@ export function HracDoska({
   body,
   mena,
   starsi,
+  spakyKlik,
   karty,
-  bodovy,
+  rezim,
 }: HracDoskaProps) {
   const hrac = view.hraci[p];
   const ja = p === view.ja;
@@ -522,7 +527,7 @@ export function HracDoska({
 
   return (
     <section
-      className={`doska ${ja ? "moja" : "superova"} ${naTahu ? "na-tahu" : ""}${bodovy === true ? " bodovy" : ""}`}
+      className={`doska ${ja ? "moja" : "superova"} ${naTahu ? "na-tahu" : ""}${rezim === undefined ? "" : ` rezim-${rezim}`}`}
       aria-label={`Hráč ${meno}`}
       data-vyucba={ja ? "bar" : "bar-supera"}
     >
@@ -568,7 +573,8 @@ export function HracDoska({
 
       {/* display: contents — dlaždice sú priamo v mriežke baru (poradie v hra.css). */}
       <div className="doska-zdroje">
-        {bodovy && <BodovyBar p={p} body={body} rozpis={rozpisSpakov(view)[p]} mena={mena} />}
+        {rezim === "spaky" && <BarSpakov view={view} p={p} body={body} menoKarty={menoKarty} />}
+        {rezim === "starsi" && <BarStarsich view={view} data={data} p={p} menoKarty={menoKarty} />}
         <Zdroj
           nazov="Poldeci"
           trieda="zdroj-poldeci"
@@ -727,28 +733,25 @@ export function HracDoska({
         <DlazdicaKariet hrac={hrac} ja={ja} karty={karty} />
         <button
           type="button"
-          className={`zdroj zdroj-body${starsi.stlacene ? " stlacene" : ""}`}
-          aria-pressed={starsi.stlacene}
-          aria-controls={starsi.id}
+          className={`zdroj zdroj-body${spakyKlik.stlacene ? " stlacene" : ""}`}
+          aria-pressed={spakyKlik.stlacene}
           data-vyucba-prvok="body"
           title={
-            starsi.stlacene
-              ? "Späť na stôl (Esc)"
+            spakyKlik.stlacene
+              ? "Zavrieť nástenku (Esc)"
               : `${ja ? "Tvoje špaky" : `Špaky ${meno}`}: ${body.spaky[p]}. Po bitke ${ja ? "ti" : "mu"} starší, ktorí sa ${ja ? "ťa" : "ho"} boja, dajú ${body.zaStarsich[p]}.` +
                 (body.cirhozy[p] > 0 ? ` Nepriznaná Cirhóza ×${body.cirhozy[p]}: na konci hry −${body.cirhozy[p] * KONSTANTY.SPAKY_ZA_CIRHOZU}.` : "") +
-                ` Klik ukáže starších.${(starsi.posuny ?? 0) > 0 ? ` Od bitky sa pohlo starších: ${starsi.posuny} (stopa pri nich).` : ""}`
+                " Klik ukáže nástenku: odkiaľ sú špaky po bitkách."
           }
-          onClick={starsi.prepni}
+          onClick={spakyKlik.prepni}
         >
-          <span className="zdroj-nazov">
-            Špaky {starsi.stlacene ? "▴" : "▾"}
-            {!starsi.stlacene && (starsi.posuny ?? 0) > 0 && <span className="zdroj-posuny">⇄ {starsi.posuny}</span>}
-          </span>
+          <span className="zdroj-nazov">Špaky {spakyKlik.stlacene ? "▴" : "▾"}</span>
           <span className="zdroj-hodnota">
-            {/* Michal 2026-10-26: len piktogram, nadpis a číslo — prírastok od starších a Cirhóza sú v nápovede a za ▾. */}
+            {/* Michal 2026-10-26: len piktogram, nadpis a číslo — rozpis je na nástenke za ▾. */}
             <PocetSpakov n={body.spaky[p]} kto={ja ? "moj" : "superov"} titul="" />
           </span>
         </button>
+        <DlazdicaStarsich view={view} p={p} zaStarsich={body.zaStarsich[p]} starsi={starsi} />
       </div>
 
     </section>

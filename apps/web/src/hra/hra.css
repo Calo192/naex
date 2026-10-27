@@ -239,7 +239,7 @@
   --avatar-max: 60px;
   position: relative;
   display: grid;
-  grid-template-columns: var(--ident) minmax(0, 0.9fr) repeat(5, minmax(0, 1fr)) minmax(0, 1.08fr);
+  grid-template-columns: var(--ident) minmax(0, 0.8fr) repeat(6, minmax(0, 1fr)) minmax(0, 1.1fr);
   grid-template-rows: minmax(0, 1fr);
   align-items: stretch;
   height: var(--bar-h);
@@ -260,7 +260,7 @@
 .doska.superova {
   --farba: var(--su);
   --farba-tmava: var(--su-tmava);
-  grid-template-columns: minmax(0, 1.08fr) repeat(5, minmax(0, 1fr)) minmax(0, 0.9fr) var(--ident);
+  grid-template-columns: minmax(0, 1.1fr) repeat(6, minmax(0, 1fr)) minmax(0, 0.8fr) var(--ident);
   background: linear-gradient(270deg, var(--farba-tmava), var(--plocha) 45%);
   border-left-width: 1px;
   border-right: 5px solid var(--farba);
@@ -302,12 +302,13 @@
    Dlhy a Zadĺženie sú jedna dlaždica (Michal 2026-10-27). */
 .doska.moja .doska-hrac { grid-column: 1; }
 .doska.moja .zdroj-body { grid-column: 2; }
-.doska.moja .zdroj-dlhy { grid-column: 3; }
-.doska.moja .zdroj-pecen { grid-column: 4; }
-.doska.moja .zdroj-abstak { grid-column: 5; }
-.doska.moja .zdroj-cigarety { grid-column: 6; }
-.doska.moja .zdroj-poldeci { grid-column: 7; }
-.doska.moja .zdroj-karty { grid-column: 8; }
+.doska.moja .zdroj-starsi { grid-column: 3; }
+.doska.moja .zdroj-dlhy { grid-column: 4; }
+.doska.moja .zdroj-pecen { grid-column: 5; }
+.doska.moja .zdroj-abstak { grid-column: 6; }
+.doska.moja .zdroj-cigarety { grid-column: 7; }
+.doska.moja .zdroj-poldeci { grid-column: 8; }
+.doska.moja .zdroj-karty { grid-column: 9; }
 
 .doska.superova .zdroj-karty { grid-column: 1; }
 .doska.superova .zdroj-poldeci { grid-column: 2; }
@@ -315,11 +316,13 @@
 .doska.superova .zdroj-abstak { grid-column: 4; }
 .doska.superova .zdroj-pecen { grid-column: 5; }
 .doska.superova .zdroj-dlhy { grid-column: 6; }
-.doska.superova .zdroj-body { grid-column: 7; }
-.doska.superova .doska-hrac { grid-column: 8; }
+.doska.superova .zdroj-starsi { grid-column: 7; }
+.doska.superova .zdroj-body { grid-column: 8; }
+.doska.superova .doska-hrac { grid-column: 9; }
 
-/* Body: tlačidlo, ktoré prepína stôl na líniu starších (#68). */
-button.zdroj-body {
+/* Špaky a Starší: tlačidlá, ktoré prepínajú stôl (nástenka, línia starších) a bary. */
+button.zdroj-body,
+button.zdroj-starsi {
   font: inherit;
   color: inherit;
   text-align: left;
@@ -335,14 +338,12 @@ button.zdroj-body.minus .velke-cislo {
   color: var(--cervena-text);
 }
 
-button.zdroj-body[aria-pressed="true"] {
-  background: var(--akcent);
-}
-
-button.zdroj-body[aria-pressed="true"] .zdroj-nazov,
-button.zdroj-body[aria-pressed="true"] .zdroj-pod,
-button.zdroj-body[aria-pressed="true"] .velke-cislo {
-  color: var(--na-akcente);
+/* Stlačená dlaždica má jantárový okraj, nie plnú výplň — plná jantárová plocha bola hlasnejšia
+   než tlačidlo ťahu (dizajn spaky-starsi-20261027, P5). */
+button.zdroj-body[aria-pressed="true"],
+button.zdroj-starsi[aria-pressed="true"] {
+  border-color: var(--akcent);
+  box-shadow: inset 0 0 0 1px var(--akcent);
 }
 
 .doska.na-tahu {
@@ -4581,6 +4582,22 @@ button.auto-hotovo-odkaz {
     max-height: none;
   }
 
+  /* Tlačidlá obchodu v jednom rade — v rade deviatich dlaždíc by sa druhé zalomilo pod okraj. */
+  .doska .obchod-cigariet {
+    flex-wrap: nowrap;
+    gap: 3px;
+  }
+
+  .doska .obchod-cigariet button {
+    padding: 0 4px;
+    white-space: nowrap;
+  }
+
+  /* Prúžok nerestí vedľa čísla Absťáku sa v užšej dlaždici zúži, nevytŕča. */
+  .doska .neresti-pruh span {
+    min-width: 3px;
+  }
+
   .doska .zdroj-pod > * {
     flex-shrink: 0;
   }
@@ -5939,16 +5956,19 @@ button.auto-hotovo-odkaz {
   pointer-events: none;
 }
 
-/* ---- bodový bar (Michal 2026-10-23): po kliku na Body body podľa podmienok ----
- * Päť zdrojov ustúpi jednému prvku cez ich stĺpce; Body a Karty ostávajú. Výber cez .doska-zdroje —
- * nízke okno dáva dlaždiciam display: grid pravidlom s rovnakou váhou. */
-.doska.bodovy .doska-zdroje > :is(.zdroj-dlhy, .zdroj-pecen, .zdroj-abstak, .zdroj-cigarety, .zdroj-poldeci) {
+/* ---- prepnutý bar (Michal 2026-10-27, dizajn spaky-starsi-20261027) ----
+ * Nástenka (klik na Špaky): päť zdrojov ustúpi dlaždiciam špakov. Línia starších (klik na
+ * Starších): zdroje aj Karty ustúpia baru starších — osem dlaždíc potrebuje šesť stĺpcov.
+ * Špaky a Starší ostávajú, aby sa dalo prepnúť späť. Výber cez .doska-zdroje — nízke okno dáva
+ * dlaždiciam display: grid pravidlom s rovnakou váhou. */
+.doska.rezim-spaky .doska-zdroje > :is(.zdroj-dlhy, .zdroj-pecen, .zdroj-abstak, .zdroj-cigarety, .zdroj-poldeci),
+.doska.rezim-starsi .doska-zdroje > :is(.zdroj-dlhy, .zdroj-pecen, .zdroj-abstak, .zdroj-cigarety, .zdroj-poldeci, .zdroj-karty) {
   display: none;
 }
 
-.bodovy-bar {
+.bar-spakov,
+.bar-starsich {
   grid-row: 1;
-  grid-column: 3 / span 5;
   min-width: 0;
   min-height: 0;
   display: grid;
@@ -5956,36 +5976,159 @@ button.auto-hotovo-odkaz {
   gap: 6px;
 }
 
-.doska.superova .bodovy-bar {
-  grid-column: 2 / span 5;
-}
+.doska.moja .bar-spakov { grid-column: 4 / span 5; }
+.doska.superova .bar-spakov { grid-column: 2 / span 5; }
+.doska.moja .bar-starsich { grid-column: 4 / span 6; }
+.doska.superova .bar-starsich { grid-column: 1 / span 6; }
 
-.bodova-dlazdica {
+.bar-spakov > .zdroj,
+.bar-starsich > .zdroj {
   min-width: 0;
   overflow: hidden;
   cursor: help;
 }
 
-.bodova-dlazdica .zdroj-hodnota .ikona-podmienky,
-.bodova-dlazdica .zdroj-hodnota .ikona-podmienky-text {
-  width: 28px;
-  height: 28px;
-  flex: none;
-  object-fit: contain;
-}
-
-.bodova-dlazdica.plus .velke-cislo {
+.spaky-dlazdica.plus .velke-cislo {
   color: var(--zelena);
 }
 
-.bodova-dlazdica.minus .velke-cislo {
+.spaky-dlazdica.minus .velke-cislo {
   color: var(--cervena-text);
 }
 
-.bodova-dlazdica.zvyraznena,
-.bodova-dlazdica:focus-visible {
+.bar-spakov > .zdroj:focus-visible,
+.bar-starsich > .zdroj:focus-visible {
   border-color: var(--akcent);
   box-shadow: 0 0 0 1px var(--akcent);
+}
+
+/* Dlaždica staršieho: farebný štvorček zóny pri mene; priazeň ♥ v mojej farbe, strach so špakmi. */
+.starsi-dlazdica .zdroj-nazov {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  letter-spacing: 0.03em;
+}
+
+/* Meno sa skráti len do strany — zvislý orez by zrezal mäkčene veľkých písmen (KRČMÁRKA). */
+.starsi-meno,
+.spaky-dlazdica .zdroj-nazov {
+  min-width: 0;
+  overflow-x: clip;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.starsi-dlazdica .ls-znacka {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  background: var(--farba-zony);
+}
+
+.starsi-dlazdica .velke-cislo {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.starsi-dlazdica.hore .velke-cislo {
+  color: color-mix(in oklab, var(--cervena-svetla) 70%, var(--text));
+}
+
+.starsi-dlazdica.dole .velke-cislo {
+  color: var(--zelena);
+}
+
+.starsi-dlazdica .velke-cislo.nic {
+  color: var(--slaby);
+}
+
+.starsi-dlazdica .velke-cislo .ikona-spaku {
+  width: 1.1em;
+  height: 0.6em;
+}
+
+.starsi-cip {
+  padding: 0 5px;
+  border-radius: 99px;
+  border: 1px solid var(--okraj-svetly);
+  font-size: 0.66rem;
+  white-space: nowrap;
+  color: var(--tlmeny);
+}
+
+/* Dlaždica Starší (S1 stupienky): stĺpček na každého staršieho v poradí línie — hore priazeň,
+   dole strach (špaky po bitke); výška je zóna, aby sa dala prečítať aj bez farby (P7). */
+.zdroj-starsi .zdroj-hodnota {
+  gap: 6px;
+  min-width: 0;
+}
+
+.zdroj-starsi .starsi-priazen {
+  color: color-mix(in oklab, var(--cervena-svetla) 70%, var(--text));
+}
+
+.stupienky {
+  --stupien: 4px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 0 1 auto;
+  min-width: 0;
+  height: calc(var(--stupien) * 6 + 2px);
+}
+
+/* Stredová čiara — hore je priazeň, dole strach. */
+.stupienky::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  border-top: 1px solid color-mix(in srgb, var(--lesk) 22%, transparent);
+}
+
+.stupienky i {
+  position: relative;
+  flex: 0 1 7px;
+  min-width: 3px;
+  height: 100%;
+}
+
+.stupienky i::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-radius: 1px;
+  background: var(--farba-zony);
+}
+
+.stupienky i.hore::after {
+  bottom: 50%;
+  height: calc(var(--stupien) * var(--zona));
+}
+
+.stupienky i.dole::after {
+  top: 50%;
+  height: calc(var(--stupien) * var(--zona));
+}
+
+.stupienky i.nic::after {
+  top: calc(50% - 1px);
+  height: 3px;
+  background: color-mix(in srgb, var(--lesk) 28%, transparent);
+}
+
+.zdroj-starsi .zdroj-pod .ikona-spaku {
+  width: 1.2em;
+  height: 0.7em;
+  margin-left: 2px;
+  vertical-align: -0.05em;
 }
 
 /* Podmienka z bodového baru pod myšou: svietia starší, u ktorých boduje, a podmienka sama. */
@@ -6272,7 +6415,7 @@ button.auto-hotovo-odkaz {
 
   /* Nadpis vľavo od čísla, text pod oboma. Karty (tri počty pod sebou), Špaky a dlaždice
      rozpisu bodov majú nadpis nad číslom ako doteraz — v rade by sa nezmestili. */
-  .doska .zdroj:not(.zdroj-karty, .zdroj-body, .bodova-dlazdica) {
+  .doska .zdroj:not(.zdroj-karty, .zdroj-body, .zdroj-starsi, .spaky-dlazdica, .starsi-dlazdica) {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
     grid-template-rows: auto minmax(0, 1fr);
@@ -6280,11 +6423,11 @@ button.auto-hotovo-odkaz {
     column-gap: 6px;
   }
 
-  .doska .zdroj:not(.zdroj-karty, .zdroj-body, .bodova-dlazdica) > .zdroj-nazov {
+  .doska .zdroj:not(.zdroj-karty, .zdroj-body, .zdroj-starsi, .spaky-dlazdica, .starsi-dlazdica) > .zdroj-nazov {
     align-self: center;
   }
 
-  .doska .zdroj:not(.zdroj-karty, .zdroj-body, .bodova-dlazdica) > .zdroj-pod {
+  .doska .zdroj:not(.zdroj-karty, .zdroj-body, .zdroj-starsi, .spaky-dlazdica, .starsi-dlazdica) > .zdroj-pod {
     grid-column: 1 / -1;
   }
 
@@ -6305,10 +6448,13 @@ button.auto-hotovo-odkaz {
     width: 18px;
     height: 18px;
   }
+  /* Absťák má v rade s nadpisom číslo, „−1 tuhé“ aj prúžok nerestí — tesnejšie medzery, nech sa zmestí celý. */
+  .doska .zdroj-abstak .zdroj-hodnota {
+    gap: 3px;
+  }
 
-  /* Prúžok nerestí vedľa čísla Absťáku sa zúži, aby sa zmestil celý („1 −1 tuhé“ zaberie miesto). */
-  .doska .neresti-pruh span {
-    min-width: 3px;
+  .doska .zdroj.zdroj-abstak {
+    column-gap: 4px;
   }
 
   /* Pohárik v trasúcej sa ruke je len ozdoba — v rade s nadpisom by vytlačil „−1 tuhé“ za okraj. */
@@ -6386,15 +6532,25 @@ button.auto-hotovo-odkaz {
     line-height: 1.25;
   }
 
-  /* Rozpis bodov: menšia ikona podmienky, aby sa zmestil riadok „boduje u …“. */
-  .bodova-dlazdica .zdroj-hodnota .ikona-podmienky,
-  .bodova-dlazdica .zdroj-hodnota .ikona-podmienky-text {
-    width: 22px;
-    height: 22px;
+  /* Prepnutý bar (špaky, starší): pod číslom jeden riadok; stupienky Starších nižšie. */
+  .doska :is(.spaky-dlazdica, .starsi-dlazdica, .zdroj-starsi) > .zdroj-pod {
+    max-height: 1.12em;
   }
 
-  .bodova-dlazdica .zdroj-hodnota {
-    gap: 6px;
+  /* …a ten jediný riadok sa skráti trojbodkou, nie zalomí (inak by sa druhý riadok orezal v polovici). */
+  .doska .zdroj:is(.spaky-dlazdica, .starsi-dlazdica, .zdroj-starsi) .zdroj-pod > :only-child {
+    display: block;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: none;
+  }
+
+  .doska .stupienky {
+    --stupien: 3px;
+  }
+
+  .doska .starsi-cip {
+    font-size: 0.6rem;
   }
 
   /* Pod číslom len celé riadky; čo sa nezmestí, odpadne celé (nie v polovici). */
@@ -6421,7 +6577,13 @@ button.auto-hotovo-odkaz {
   }
 
   .doska .karty-pocty b {
+    min-width: 1.1em;
     font-size: 0.82rem;
+  }
+
+  /* Počet a slovo v jednom riadku — v užšej dlaždici sa „odhodené“ zalomilo pod okraj. */
+  .doska .karty-pocty > span {
+    white-space: nowrap;
   }
 
   /* Kliatby a náradie sa pod tri počty nezmestia — sú vo vrstve Karty (klik na dlaždicu). */

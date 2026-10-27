@@ -1,5 +1,5 @@
 // Línia starších (Michal 2026-10-23, roadmapa #68 + #69 variant A): osem
-// starších v rade na mieste línie kariet. Ukáže sa po kliku na Špaky
+// starších v rade na mieste línie kariet. Ukáže sa po kliku na dlaždicu Starší
 // a sama pri krokoch na staršom (Pohoršenie, prebytok, patronát).
 // Pri staršom je len portrét, priazeň a stupnica 7 polí so zrkadlením (tvoja
 // polovica vľavo) — bodovacie podmienky scorecardov v6 nie sú (Michal 2026-10-26:
@@ -129,7 +129,7 @@ function vztah(elder: ElderState, marker: MarkerPos) {
  * Farba zóny podľa úrovne 0–3 (farby stupnice sú pevné, ako na tlačenom scorecarde).
  * FARBY_STUPNICE tvorcu má 9 polí (v5); v6 má stupnica 7 polí — farba sa berie podľa zóny.
  */
-const farbaZony = (uroven: number): string => FARBY_STUPNICE[3 - uroven] ?? FARBY_STUPNICE[3];
+export const farbaZony = (uroven: number): string => FARBY_STUPNICE[3 - uroven] ?? FARBY_STUPNICE[3];
 
 /** Farebný štvorček zóny. */
 function ZnackaZony({ uroven }: { readonly uroven: number }) {

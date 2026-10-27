@@ -4,8 +4,8 @@
 // (aj finále). Čísla ráta jadro (nástenka, rozpisSpakov), tu sa len kreslia.
 
 import type { CSSProperties, ReactNode } from "react";
-import type { BitkaNaNastenke, CardInstance, CielKola, PlayerId } from "@naex/core";
-import { KONSTANTY, spakov } from "@naex/core";
+import type { BitkaNaNastenke, CardInstance, CielKola, PlayerId, SpakyTeraz } from "@naex/core";
+import { KONSTANTY, rozpisSpakov, spakov } from "@naex/core";
 import { Avatar } from "../komponenty.tsx";
 import { IkonaSpaku } from "./IkonaSpaku.tsx";
 import "./spaky.css";
@@ -67,6 +67,13 @@ export interface NastenkaProps {
   readonly kompaktna?: boolean;
   /** Hra skončila — finále, ktoré sa nehralo (vydesenie, vzdanie), sa neukáže ako čakajúce. */
   readonly koniec?: boolean;
+  /**
+   * Nástenka s účtom (Michal 2026-10-27, variant A): hore dva popolníky so skóre, pod
+   * každým lístkom účtenka bitky (starší, Exekútor, prebytok, stav po bitke), na konci
+   * lístok „Koniec“ s nepriznanou Cirhózou a päta „keby skončila teraz“. `zvyraznit`:
+   * čí popolník svieti a kto je v účtenkách prvý (klik na súperove Špaky = súper).
+   */
+  readonly ucet?: { readonly body: SpakyTeraz; readonly zvyraznit: PlayerId } | undefined;
 }
 
 interface Listok {
@@ -82,8 +89,9 @@ interface Listok {
  * čakajúce špaky), bitka, o ktorú sa práve hrá, lokality, ktoré ešte len prídu,
  * a na konci finále.
  */
-export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, menoKarty, sirkaKarty = 90, kompaktna = false, koniec = false }: NastenkaProps) {
+export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, menoKarty, sirkaKarty = 90, kompaktna = false, koniec = false, ucet }: NastenkaProps) {
   const kto = (p: PlayerId): string => (p === ja ? "ty" : mena[p]);
+  const poradie: readonly [PlayerId, PlayerId] = ucet === undefined || ucet.zvyraznit === ja ? [ja, ja === 0 ? 1 : 0] : [ucet.zvyraznit, ja];
   const listky: Listok[] = [
     ...nastenka.map((b, i): Listok => ({ kluc: `b${i}`, lokalita: b.lokalita, finale: b.lokalita === null, stav: "odohrana", bitka: b })),
     ...(ciel !== null && !koniec ? [{ kluc: "teraz", lokalita: ciel.lokalita, finale: ciel.typ === "finale", stav: "teraz" as const }] : []),
@@ -92,8 +100,11 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
   const finaleHotove = listky.some((l) => l.finale);
   if (!finaleHotove && !koniec) listky.push({ kluc: "finale", lokalita: null, finale: true, stav: "caka" });
   const pitkyFinale = KONSTANTY.FINALE_PITKY;
+  const dvojica = (h: readonly [number, number], f: (n: number) => string): string => poradie.map((p) => `${kto(p)} ${f(h[p])}`).join(" · ");
+  // Účtenka je úzka: čísla oboch v poradí popolníkov nad nástenkou („ty : súper“), bez mien.
+  const pomer = (h: readonly [number, number], f: (n: number) => string): string => poradie.map((p) => f(h[p])).join(" : ");
 
-  return (
+  const zoznam = (
     <ol className={`nastenka${kompaktna ? " kompaktna" : ""}`} aria-label="Krčmová nástenka">
       {listky.map((l, i) => {
         const b = l.bitka;
@@ -147,10 +158,85 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
             ) : null}
             <span className="nastenka-nazov">{nazov}</span>
             {!kompaktna && pozn.length > 0 && <span className="nastenka-pozn">{pozn.join(" · ")}</span>}
+            {ucet !== undefined && b !== undefined && <Uctenka b={b} riadok={pomer} kto={poradie.map(kto).join(" : ")} />}
           </li>
         );
       })}
+      {ucet !== undefined && !koniec && (
+        <li className="nastenka-listok koniec" style={{ "--naklon": "1deg" } as CSSProperties} title="Na konci hry zoberie každá nepriznaná Cirhóza (ruka aj oba balíčky) 5 špakov.">
+          <span className="nastenka-vitaz">
+            <span className="nastenka-otaznik">koniec</span>
+          </span>
+          <span className="nastenka-nazov">Koniec</span>
+          <span className="nastenka-uctenka">
+            <span>nepriznaná Cirhóza</span>
+            <span>{pomer(ucet.body.cirhozy, (n) => `×${n}`)}</span>
+            <b className={ucet.body.cirhozy[0] + ucet.body.cirhozy[1] > 0 ? "minus" : ""}>
+              {pomer(ucet.body.cirhozy, (n) => (n > 0 ? `−${n * KONSTANTY.SPAKY_ZA_CIRHOZU}` : "0"))}
+            </b>
+          </span>
+        </li>
+      )}
     </ol>
+  );
+  if (ucet === undefined) return zoznam;
+  const rozpis = rozpisSpakov({ nastenka, koniec: null, spaky: ucet.body.spaky });
+  const { body } = ucet;
+  return (
+    <div className="nastenka-ucet">
+      <div className="nastenka-popolniky">
+        {poradie.map((p) => {
+          const r = rozpis[p];
+          const casti = [
+            `bitky ${zn(r.zaBitky)}`,
+            `starší ${zn(r.zaStarsich)}`,
+            ...(r.prebytok > 0 ? [`prebytok +${r.prebytok}`] : []),
+            ...(r.exekutor < 0 ? [`Exekútor ${zn(r.exekutor)}`] : []),
+          ];
+          return (
+            <div key={p} className={`nastenka-popolnik ${p === ja ? "moj" : "superov"}${p === ucet.zvyraznit ? " zvyrazneny" : ""}`}>
+              <Avatar meno={mena[p]} avatar={avatary[p]} velkost={30} />
+              <span className="np-meno">{p === ja ? "ty" : mena[p]}</span>
+              <PocetSpakov n={body.spaky[p]} kto={p === ja ? "moj" : "superov"} />
+              <span className="np-rozpis">{casti.join(" · ")}</span>
+            </div>
+          );
+        })}
+      </div>
+      {zoznam}
+      <p className="nastenka-paticka">
+        <span>
+          Keby partia skončila teraz: <b>{dvojica(body.spolu, sMinusom)}</b>
+        </span>
+        <span>
+          Starší ešte {body.vyplat}× po bitke: <b>{dvojica(body.zaStarsich, (n) => `+${n}`)}</b>
+        </span>
+      </p>
+    </div>
+  );
+}
+
+const zn = (n: number): string => (n > 0 ? `+${n}` : n < 0 ? `−${-n}` : "0");
+
+/** Účtenka pod lístkom bitky: čo dali starší, Exekútor, prebytok a stav popolníkov po bitke. */
+function Uctenka({
+  b,
+  riadok,
+  kto,
+}: {
+  readonly b: BitkaNaNastenke;
+  readonly riadok: (h: readonly [number, number], f: (n: number) => string) => string;
+  /** Poradie čísel v riadkoch („ty : Fero“) — ako popolníky nad nástenkou. */
+  readonly kto: string;
+}) {
+  const plus = (n: number): string => (n > 0 ? `+${n}` : "0");
+  return (
+    <span className="nastenka-uctenka" title={`Po bitke (${kto}): starší, ktorí sa hráča boja, Exekútor, prebytok a stav popolníkov.`}>
+      <span>starší {riadok(b.zaStarsich, plus)}</span>
+      {b.exekutor[0] + b.exekutor[1] > 0 && <span className="minus">Exekútor {riadok(b.exekutor, (n) => (n > 0 ? `−${n}` : "0"))}</span>}
+      {b.prebytok[0] + b.prebytok[1] > 0 && <span>prebytok {riadok(b.prebytok, plus)}</span>}
+      <b>stav {riadok(b.spakyPo, sMinusom)}</b>
+    </span>
   );
 }
 

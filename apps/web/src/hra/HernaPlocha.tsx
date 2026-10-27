@@ -501,6 +501,11 @@ export function HernaPlocha({
   const super_ = (ja === 0 ? 1 : 0) as PlayerId;
   const [mode, setMode] = useState<Mode>({ typ: "ziadny" });
   const [vrstva, setVrstva] = useState<Vrstva | null>(null);
+  // Čí popolník nástenka zvýrazní (Michal 2026-10-27): Špaky súpera otvoria jeho, hlavička tvoju.
+  const [nastenkaPre, setNastenkaPre] = useState<PlayerId>(ja);
+  useEffect(() => {
+    if (vrstva !== "lokality") setNastenkaPre(ja);
+  }, [vrstva, ja]);
   /** Lokalita nakliknutá vo vrstve lokalít — tlačidlo „umiestniť“ ju položí na stôl. */
   const [vyberLokality, setVyberLokality] = useState<number | null>(null);
   /** Kedy sme naposledy automaticky otvorili vrstvu — raz za fázu, nie pri každom prekreslení. */
@@ -2051,7 +2056,7 @@ export function HernaPlocha({
       </div>
     );
   // Krčmová nástenka (v6, spaky.html bod 12): lokalitu si víťaz neberie — ide na nástenku s jeho fotkou a špakmi.
-  const nastenkaEl = (sKartami: boolean, sirkaKarty = 74): ReactNode => (
+  const nastenkaEl = (sKartami: boolean, sirkaKarty = 74, ucet = false): ReactNode => (
     <Nastenka
       nastenka={view.nastenka}
       zostava={view.lokalityVHre}
@@ -2064,6 +2069,7 @@ export function HernaPlocha({
       sirkaKarty={Math.round(sirkaKarty)}
       kompaktna={!sKartami}
       koniec={view.koniec !== null}
+      ucet={ucet ? { body, zvyraznit: nastenkaPre } : undefined}
     />
   );
   const aktivneCiele: ReadonlySet<string> = tahanie === null ? new Set() : cieleZdroja(tahanie.zdroj);
@@ -3997,8 +4003,8 @@ export function HernaPlocha({
     pocitadlo === null &&
     (krokStarsich !== null ? !nahliadnutie : vysledokKroku || pohladStarsich !== null || ukazStarsich);
   const pohladLinie = pohladStarsich ?? ja;
-  // Bodový bar (Michal 2026-10-23): po kliku na Body ukážu oba bary body podľa podmienok;
-  // späť sa prepnú spolu so stolom.
+  // Bar starších (Michal 2026-10-27): po kliku na Starších ukážu oba bary dlaždicu na každého staršieho;
+  // späť sa prepnú spolu so stolom. Nástenka (Špaky) prepne bary na dlaždice špakov (rezimBaru).
   const bodovyRezim = starsiViditelni && pohladStarsich !== null;
 
   const zavriStarsich = (): void => {
@@ -4006,6 +4012,8 @@ export function HernaPlocha({
     setVysledokKroku(false);
   };
   const prepniStarsich = (p: PlayerId): void => {
+    // Nástenka (Špaky) a línia starších (Starší) sa navzájom vylučujú (Michal 2026-10-27).
+    setVrstva((v) => (v === "lokality" ? null : v));
     if (krokStarsich !== null && !nahliadnutie) {
       setPohladStarsich((x) => (x === p ? null : p));
       return;
@@ -4016,6 +4024,15 @@ export function HernaPlocha({
       setVysledokKroku(false);
       setPohladStarsich(p);
     }
+  };
+  const otvorNastenku = (p: PlayerId): void => {
+    if (vrstva === "lokality" && nastenkaPre === p) {
+      setVrstva(null);
+      return;
+    }
+    zavriStarsich();
+    setNastenkaPre(p);
+    setVrstva("lokality");
   };
   useEffect(() => {
     if (!starsiViditelni && !nahliadnutie) return;
@@ -4111,7 +4128,7 @@ export function HernaPlocha({
       return [s.elder.elderId, nadLupou(kluc, (el) => el, true)] as const;
     }),
   );
-  const bodovyBar = bodovyRezim;
+  const rezimBaru = vrstva === "lokality" ? ("spaky" as const) : bodovyRezim ? ("starsi" as const) : undefined;
   const idLinieStarsich = useId();
   // Ponuka patronátu (#110): kým si hráč staršieho nevybral, stôl ukáže namiesto línie
   // starších len tých, ktorých si smie vziať — kartu s akciami, priazeň a cenu.
@@ -5141,8 +5158,9 @@ export function HernaPlocha({
           body={body}
           mena={[menoHraca(0), menoHraca(1)]}
           starsi={{ stlacene: starsiViditelni && krokStarsich === null && pohladLinie === super_, prepni: () => prepniStarsich(super_), id: idLinieStarsich }}
+          spakyKlik={{ stlacene: vrstva === "lokality" && nastenkaPre === super_, prepni: () => otvorNastenku(super_) }}
           karty={kartyDlazdica(super_)}
-          bodovy={bodovyBar}
+          rezim={rezimBaru}
         />
         {/* Starší hore — mimo dosahu ruky, aby sa ich lupa nebila s lupou kariet v ruke. */}
         <div className="stred">
@@ -5284,8 +5302,9 @@ export function HernaPlocha({
               id: idLinieStarsich,
               posuny: new Set((view.posunyMarkerov ?? []).map((x) => x.elderId)).size,
             }}
+            spakyKlik={{ stlacene: vrstva === "lokality" && nastenkaPre === ja, prepni: () => otvorNastenku(ja) }}
             karty={kartyDlazdica(ja)}
-            bodovy={bodovyBar}
+            rezim={rezimBaru}
           />
 
 
@@ -5395,7 +5414,7 @@ export function HernaPlocha({
                 })}
             </div>
           ) : null}
-          {nastenkaEl(!volimLokalitu, SIRKA_VO_VRSTVE * 0.62)}
+          {nastenkaEl(!volimLokalitu, SIRKA_VO_VRSTVE * 0.62, true)}
         </VrstvaPanel>
       )}
 

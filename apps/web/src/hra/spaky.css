@@ -52,12 +52,6 @@
   min-width: 0;
 }
 
-button.zdroj-body[aria-pressed="true"] .pocet-spakov .velke-cislo,
-button.zdroj-body[aria-pressed="true"] .pocet-spakov .ikona-spaku {
-  color: var(--na-akcente);
-  fill: var(--na-akcente);
-}
-
 /* ---- krčmová nástenka ---- */
 .nastenka {
   display: flex;
@@ -220,6 +214,120 @@ button.zdroj-body[aria-pressed="true"] .pocet-spakov .ikona-spaku {
   font-size: 0.7rem;
   color: var(--tlmeny);
   line-height: 1.25;
+}
+
+/* ---- nástenka s účtom (Michal 2026-10-27, variant A) ----
+ * Hore dva popolníky so skóre a rozpisom, pod lístkami účtenky bitiek, dole päta
+ * „keby skončila teraz“. Zvýraznený je popolník hráča, ktorého Špaky nástenku otvorili. */
+.nastenka-ucet {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nastenka-popolniky {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.nastenka-popolnik {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  grid-template-rows: auto auto;
+  column-gap: 8px;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--okraj);
+  background: var(--plocha-2);
+  opacity: 0.8;
+}
+
+.nastenka-popolnik.zvyrazneny {
+  opacity: 1;
+  border-color: var(--akcent);
+  box-shadow: 0 0 0 1px var(--akcent);
+}
+
+.nastenka-popolnik.moj {
+  border-left: 4px solid var(--ja);
+}
+
+.nastenka-popolnik.superov {
+  border-left: 4px solid var(--su);
+}
+
+.nastenka-popolnik .avatar {
+  grid-row: 1 / span 2;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.np-meno {
+  font-weight: 700;
+  font-size: 0.82rem;
+}
+
+.nastenka-popolnik .pocet-spakov {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+}
+
+.np-rozpis {
+  grid-column: 2;
+  font-size: 0.72rem;
+  color: var(--tlmeny);
+  white-space: nowrap;
+}
+
+.nastenka-uctenka {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  width: 100%;
+  padding: 4px 4px 2px;
+  border-top: 1px dashed var(--okraj-svetly);
+  font-size: 0.7rem;
+  line-height: 1.2;
+  color: var(--tlmeny);
+  font-variant-numeric: tabular-nums;
+}
+
+.nastenka-uctenka b {
+  color: var(--text);
+}
+
+.nastenka-uctenka .minus {
+  color: var(--cervena-svetla);
+}
+
+.nastenka-listok.koniec {
+  border-top: 3px dashed var(--okraj-svetly);
+  opacity: 0.85;
+}
+
+.nastenka-paticka {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 18px;
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--tlmeny);
+}
+
+.nastenka-paticka b {
+  color: var(--text);
+}
+
+/* Kompaktná nástenka (voľba cieľa): účtenka v jednom stĺpci vedľa lístka. */
+.nastenka.kompaktna .nastenka-uctenka {
+  width: auto;
+  border-top: 0;
+  border-left: 1px dashed var(--okraj-svetly);
+  padding: 0 0 0 6px;
 }
 
 /* Kompaktná: lístky v rade bez kariet (voľba cieľa, koniec hry). */
@@ -494,5 +602,13 @@ button.zdroj-body[aria-pressed="true"] .pocet-spakov .ikona-spaku {
   .doska .pocet-spakov .ikona-spaku {
     width: 40px;
     height: 20px;
+  }
+}
+
+/* 1366 × 650: nástenka s účtom bez kariet lokalít — lístky s účtenkou sa tak zmestia
+   do vrstvy bez posúvania; názov lokality ostáva na lístku. */
+@media (min-width: 761px) and (max-height: 719px) {
+  .nastenka-ucet .nastenka-karta {
+    display: none;
   }
 }
