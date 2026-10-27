@@ -436,9 +436,12 @@ Pitiek**. Po odpovediach sa Pitka vyhodnotí.
 
 ### Fajčenie, doliatie a barter
 
-- **Fajčenie (len v Pitke):** na svojom ťahu v Pitke smie hráč vyfajčiť
-  cigaretu — hneď si dobere kartu, ťah mu neskončí, ráta sa to ako nerest.
-  **V Zhromaždení sa nefajčí.** Keď sú doberací aj odhadzovací balíček
+- **Fajčenie (len v Pitke):** na svojom ťahu v Pitke smie hráč fajčiť — hneď
+  si dobere kartu, ťah mu neskončí. **Cena rastie** (Michal 2026-10-27): prvé
+  fajčenie hráča v Pitke stojí **1 cigaretu**, druhé **2**, tretie **3** atď.;
+  každá Pitka začína znova od 1 a každý hráč má počítadlo zvlášť (je verejné).
+  Nie je to strop — fajčiť sa dá stále, len drahšie. Každá vyfajčená cigareta
+  je nerest (§8), teda druhé fajčenie 2 neresti. **V Zhromaždení sa nefajčí.** Keď sú doberací aj odhadzovací balíček
   prázdne, **fajčiť sa nedá** — cigareta by nedala kartu. Na Benzínke sa
   nefajčí (§15).
 - **Doliatie, 2 cigarety** (počas Pitky) → otoč jeden vypitý poldeci späť na
@@ -529,7 +532,8 @@ Nová Cirhóza ide do **odhadzovacieho balíčka** hráča (§11).
 ### Nerest a Absťák
 
 **Nerest** je každý poldeci vypitý v Zhromaždení (ďalšia karta v ťahu), NA EX
-(poldeci sa vypije v bitke), každá vyfajčená cigareta, doliatie poldeci (2)
+(poldeci sa vypije v bitke), každá vyfajčená cigareta (aj tie, o ktoré je
+ďalšie fajčenie v Pitke drahšie), doliatie poldeci (2)
 a stokársky barter (za každú cigaretu); aj cigareta na Zbernom dvore. Platba za
 šenok, Dedičstvo a Starostu sa nepočíta, akcie Cigareta a Poldeci tiež nie.
 

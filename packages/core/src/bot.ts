@@ -63,6 +63,7 @@ import {
   nepriznaneCirhozy,
   vykupneHraca,
   vyplatZaStarsich,
+  cenaFajceniaHraca,
 } from "./engine.ts";
 
 /**
@@ -1098,14 +1099,17 @@ function pitka(v: Volba): Command | null {
   if (finale && refill !== undefined && vykupneHraca({ poldeciPlne: h.poldeciPlne + 1, cigarety: h.cigarety - KONSTANTY.REFILL_CENA }, skryte).spaky > vykupneTeraz) {
     return refill;
   }
-  const fajcenieStoji = finale && vykupneHraca({ poldeciPlne: h.poldeciPlne, cigarety: h.cigarety - 1 }, skryte).spaky < vykupneTeraz && h.ruka.length > 0;
+  // Fajčenie zdražie s každým v tej istej Pitke (1, 2, 3… cigarety, 2026-10-27): drahšie len s tenkou rukou.
+  const cenaFajc = cenaFajceniaHraca(state, ja);
+  const fajcenieStoji = finale && vykupneHraca({ poldeciPlne: h.poldeciPlne, cigarety: h.cigarety - cenaFajc }, skryte).spaky < vykupneTeraz && h.ruka.length > 0;
+  const fajcitDo = h.ruka.length <= 2 ? 3 : h.ruka.length < 4 ? 2 : 0;
   if (barter !== undefined && neresti + barterCena(data, state, ja) <= strop + 1 && h.poldeciPlne + h.poldeciVypite < 5 && k.buducnost > 0.3) {
     return barter;
   }
   if (refill !== undefined && neresti + KONSTANTY.REFILL_CENA <= strop && k.buducnost > 0.3) return refill;
-  if (smoke !== undefined && !fajcenieStoji && maCoTahat && h.ruka.length < 4 && h.cigarety >= 3 && neresti + 1 <= strop) return smoke;
+  if (smoke !== undefined && !fajcenieStoji && maCoTahat && cenaFajc <= fajcitDo && h.ruka.length < 4 && h.cigarety >= cenaFajc + 2 && neresti + cenaFajc <= strop) return smoke;
   // v5: fajčí sa len v Pitke — s prázdnou rukou si kartu na ďalšie kolo dober aj za poslednú cigaretu navyše.
-  if (smoke !== undefined && !fajcenieStoji && maCoTahat && h.ruka.length <= 2 && h.cigarety >= 2 && neresti + 1 <= strop) return smoke;
+  if (smoke !== undefined && !fajcenieStoji && maCoTahat && cenaFajc <= fajcitDo && h.ruka.length <= 2 && h.cigarety >= cenaFajc + 1 && neresti + cenaFajc <= strop) return smoke;
 
   // Poštárka: dve karty za Dlh, kým je Exekútor ďaleko.
   const postarka = v.legal.find((c) => c.type === "postarka" && c.pocet === KONSTANTY.EFEKT.POSTARKA_KARTY);
@@ -1159,7 +1163,8 @@ function pitka(v: Volba): Command | null {
   // Koniec ťahu v Pitke: chýbajúce neresti dorovnať, inak hrozí Absťák.
   if (!finale && state.kolo > 1 && neresti < h.nerestiMinuleKolo) {
     if (refill !== undefined && h.nerestiMinuleKolo - neresti >= 2) return refill;
-    if (smoke !== undefined && maCoTahat) return smoke;
+    // Drahé fajčenie (3. a ďalšie v Pitke) by na chýbajúcu nerest spálilo zbytočne veľa cigariet.
+    if (smoke !== undefined && maCoTahat && cenaFajc <= h.nerestiMinuleKolo - neresti + 1) return smoke;
     if (refill !== undefined) return refill;
   }
   return najdi("skipNaex") ?? null;

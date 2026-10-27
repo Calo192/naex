@@ -418,7 +418,8 @@ export const KAPITOLY: readonly Kapitola[] = [
         <H3 id="pitka-cigarety">Fajčenie, doliatie a barter</H3>
         <ul>
           <li>
-            <P k="fajcenie">Fajčenie</P> — cigareta = karta z balíčka hneď; len na svojom ťahu v Pitke, v Zhromaždení nie.
+            <P k="fajcenie">Fajčenie</P> — karta z balíčka hneď; len na svojom ťahu v Pitke, v Zhromaždení nie. Prvé fajčenie
+            v Pitke stojí 1 cigaretu, druhé 2, tretie 3… a každá Pitka začína znova od 1.
           </li>
           <li>
             <P k="doliatie">Doliatie</P> — v Pitke za 2 cigarety otočíš vypitý poldeci späť na plný (nie s Vínkom v Dedičstve).

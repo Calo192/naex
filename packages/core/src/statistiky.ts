@@ -9,6 +9,7 @@ import type { Action, CardInstance, PlayerId, Podmienka } from "./types.ts";
 import { opponentOf } from "./types.ts";
 import type { GameData } from "./data.ts";
 import type { Command, Event, GameState } from "./engine.ts";
+import { cenaFajceniaHraca } from "./engine.ts";
 import type { PlayerState } from "./player.ts";
 import type { ElderState } from "./elders.ts";
 import { vydesil } from "./elders.ts";
@@ -289,7 +290,8 @@ function zapisJedneho(
           break;
         }
         case "smoke":
-          s.cigaretyVyfajcene += c.pocet;
+          // Fajčenie zdražie v Pitke (2026-10-27) — ráta sa, koľko cigariet sa naozaj vyfajčilo.
+          s.cigaretyVyfajcene += cenaFajceniaHraca(pred, p, c.pocet);
           break;
         case "barter":
           s.bartery += 1;

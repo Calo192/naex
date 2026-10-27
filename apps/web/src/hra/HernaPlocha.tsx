@@ -87,6 +87,7 @@ import {
   krajeStran,
   vykupZoSrotu,
   zakazFajcit,
+  cenaFajceniaHraca,
   zakazNaex,
   naexZaPitku,
   sMojimiSkrytymiNaex,
@@ -3437,6 +3438,8 @@ export function HernaPlocha({
           };
         }
         const cig = hracJa.cigarety;
+        // Fajčenie zdražie s každým v tej istej Pitke (Michal 2026-10-27): 1, 2, 3… cigarety.
+        const cenaFajc = cenaFajceniaHraca(view, ja);
         // Nákupy za cigarety (Michal 2026-10-21): každý je samostatná pečiatka vľavo na hrane stola — jeden klik.
         const nakupy = (
           <>
@@ -3447,15 +3450,15 @@ export function HernaPlocha({
               kluc: "fajcit",
               ikona: <IkonaCigareta zakaz={zakazFajcit(view)} />,
               nazov: "fajčiť",
-              cena: 1,
+              cena: cenaFajc,
               dovod: zakazFajcit(view)
                 ? "Benzínka: nikto nesmie fajčiť."
-                : cig === 0
-                  ? "Nemáš cigaretu."
+                : cig < cenaFajc
+                  ? `Fajčiť teraz stojí ${cigariet(cenaFajc)}, máš ${cig}.`
                   : !jeCoTahat(hracJa.doberaciPocet, hracJa.odhadzovaci.length)
                     ? "Nemáš z čoho ťahať — doberací aj odhadzovací balíček sú prázdne."
                     : null,
-              tip: "Fajčiť: za cigaretu si hneď doberieš kartu. Ráta sa ako nerest.",
+              tip: `Fajčiť za ${cigariet(cenaFajc)}: hneď si doberieš kartu. Ďalšie fajčenie v tejto Pitke stojí ${cigariet(cenaFajceniaHraca(view, ja, 2) - cenaFajc)}, nová Pitka začína od ${cigariet(KONSTANTY.CENA_FAJCENIA_ZAKLAD)}. Každá vyfajčená cigareta je nerest.`,
               akcia: () => cmd({ type: "smoke", pocet: 1 }),
             })}
             {pecatNakupu({

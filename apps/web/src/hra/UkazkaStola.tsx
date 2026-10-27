@@ -8,6 +8,7 @@
 //                  takže beží počítadlo a rekapitulácia
 //   &stop=koniec   tesne pred koncom hry — posledný ťah sa dohrá po načítaní
 //   &stop=kolo     začiatok kola &i=k
+//   &stop=pitka    Pitka od 2. kola, hráč ?ja na ťahu (cena fajčenia, nákupy na hrane stola)
 //   &stop=zaverecna koniec Pitky so súperovou Záverečnou lícom dole — po načítaní sa otočí;
 //                  &dalsia=1 dohrá aj súperovu ďalšiu Záverečnú na tú istú stranu
 //   &moment=typ    pečiatka momentu (napr. vyprask, zvrat) pri prvej dohranej bitke či Pitke — snímky
@@ -84,6 +85,8 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
     if (stop === "finale" && s.ciel?.typ === "finale" && s.faza === "zhromazdenie" && s.strany[0].length + s.strany[1].length >= karty && naTahu(s) === ja)
       return najdene({ zaciatok: s, dohraj: [] });
     if (stop === "kolo" && s.kolo === i && s.faza === "volbaCiela") return najdene({ zaciatok: s, dohraj: [] });
+    if (stop === "pitka" && s.kolo >= 2 && s.faza === "pitka" && s.pitkaStav?.naTahu === ja && s.pitkaStav.reakcia === null && s.vizia === null && s.hraci[ja].cigarety >= 1)
+      return najdene({ zaciatok: s, dohraj: [] });
     const t = tahy(data, s, rng, n);
     if (t === null) break;
     rng = t.rng;

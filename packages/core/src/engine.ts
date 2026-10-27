@@ -185,7 +185,10 @@ export interface PitkaStav {
   readonly naTahu: PlayerId;
   readonly hotovy: readonly [boolean, boolean];
   readonly naexPouzity: readonly [boolean, boolean];
-  /** Cigarety vyfajčené v tejto pitke (každá už dala kartu). */
+  /**
+   * Koľkokrát hráč v tejto Pitke fajčil (každé fajčenie = 1 karta). Verejné —
+   * určuje cenu ďalšieho fajčenia (cenaFajcenia), na začiatku Pitky je 0.
+   */
   readonly fajcenie: readonly [number, number];
   /**
    * Hráč, ktorý práve smie na súperovo NA EX odpovedať vyložením jednej
@@ -2815,19 +2818,37 @@ export function jeCoTahat(doberaci: number, odhadzovaci: number): boolean {
   return doberaci + odhadzovaci > 0;
 }
 
+/**
+ * Cena fajčenia (Michal 2026-10-27): `pocet` ďalších fajčení po `uz` fajčeniach
+ * v tej istej Pitke — k-te stojí CENA_FAJCENIA_ZAKLAD + (k − 1) × PRIRASTOK,
+ * viac naraz je súčet (1 + 2 + …).
+ */
+export function cenaFajcenia(uz: number, pocet = 1): number {
+  let cena = 0;
+  for (let i = 0; i < pocet; i++) cena += KONSTANTY.CENA_FAJCENIA_ZAKLAD + (uz + i) * KONSTANTY.CENA_FAJCENIA_PRIRASTOK;
+  return cena;
+}
+
+/** Cena najbližšieho fajčenia hráča p v prebiehajúcej Pitke (mimo Pitky ako prvé). */
+export function cenaFajceniaHraca(s: { readonly pitkaStav: Pick<PitkaStav, "fajcenie"> | null }, p: PlayerId, pocet = 1): number {
+  return cenaFajcenia(s.pitkaStav?.fajcenie[p] ?? 0, pocet);
+}
+
 function cmdSmoke(s: MutState, cmd: { pocet: number }, p: PlayerId, events: Event[]): void {
   const pitka = s.pitkaStav;
   const vPitke = s.faza === "pitka" && pitka !== null && pitka.reakcia === null;
   need(vPitke, "Fajčiť sa dá len v Pitke.");
   need(!zakazFajcit(s as GameState), "Benzínka: nikto nesmie fajčiť.");
-  need(cmd.pocet > 0 && Number.isInteger(cmd.pocet), "Počet cigariet musí byť kladný.");
-  need(s.hraci[p].cigarety >= cmd.pocet, "Toľko cigariet nemáš.");
+  need(cmd.pocet > 0 && Number.isInteger(cmd.pocet), "Počet kariet musí byť kladný.");
+  const cena = cenaFajcenia(pitka.fajcenie[p], cmd.pocet);
+  need(s.hraci[p].cigarety >= cena, `Fajčiť teraz stojí ${cigariet(cena)}, máš ${s.hraci[p].cigarety}.`);
   need(jeCoTahat(s.hraci[p].doberaci.length, s.hraci[p].odhadzovaci.length), "Nemáš z čoho ťahať — doberací aj odhadzovací balíček sú prázdne.");
-  hrac(s, p).cigarety -= cmd.pocet;
-  hrac(s, p).nerestiTotoKolo += cmd.pocet;
+  hrac(s, p).cigarety -= cena;
+  // Nerest je každá vyfajčená cigareta (§8) — aj tie, o ktoré je ďalšie fajčenie drahšie.
+  hrac(s, p).nerestiTotoKolo += cena;
   const tahane = tahaj(s, p, cmd.pocet, events);
-  if (vPitke) pitka.fajcenie[p] += cmd.pocet;
-  events.push({ type: "log", text: `Hráč ${p + 1} fajčí ${cigariet(cmd.pocet)} a doberá si ${kariet(tahane.length)}.` });
+  pitka.fajcenie[p] += cmd.pocet;
+  events.push({ type: "log", text: `Hráč ${p + 1} fajčí za ${cigariet(cena)} a doberá si ${kariet(tahane.length)}.` });
 }
 
 /** Cena stokárskeho barteru hráča p (Lakomec ju vo v5 nezlacňuje — je z neho Abstinent). */
@@ -4476,7 +4497,7 @@ function zaverecneBodovanie(s: MutState, _data: GameData, events: Event[]): void
 
 function mozeFajcit(state: GameState, p: PlayerId): boolean {
   const h = state.hraci[p];
-  return h.cigarety > 0 && !zakazFajcit(state) && jeCoTahat(h.doberaci.length, h.odhadzovaci.length);
+  return h.cigarety >= cenaFajceniaHraca(state, p) && !zakazFajcit(state) && jeCoTahat(h.doberaci.length, h.odhadzovaci.length);
 }
 
 export function legalCommands(data: GameData, state: GameState, p: PlayerId): Command[] {

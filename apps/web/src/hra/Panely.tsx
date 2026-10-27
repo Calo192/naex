@@ -19,7 +19,7 @@ import type {
   StavkaBitky as StavkaBitkyCisla,
   ZdrojeAkcii,
 } from "@naex/core";
-import { KONSTANTY, battleOutcome, jeCielLokalita, limitBuduceKolo, limitZhromazdenia, pocet, tvar } from "@naex/core";
+import { KONSTANTY, battleOutcome, cenaFajceniaHraca, jeCielLokalita, limitBuduceKolo, limitZhromazdenia, pocet, tvar } from "@naex/core";
 import type { Rod } from "@naex/core";
 import type { Sada } from "@naex/tvorba";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
@@ -655,7 +655,8 @@ export function HracDoska({
                 <span className="tip-stav">
                   {kto} {hrac.cigarety} · {doNovehoPoldeci}
                 </span>
-                Platíš nimi šenok a Dedičstvo; v Pitke na svojom ťahu fajčíš (cigareta = karta). Doliatie poldeci stojí {KONSTANTY.REFILL_CENA}, nový
+                Platíš nimi šenok a Dedičstvo; v Pitke na svojom ťahu fajčíš: karta za 1 cigaretu, ďalšia v tej istej Pitke za 2, potom 3…
+                {view.faza === "pitka" && ` (${ja ? "tvoje" : "jeho"} ďalšie teraz za ${cenaFajceniaHraca(view, p)})`}. Doliatie poldeci stojí {KONSTANTY.REFILL_CENA}, nový
                 poldeci {obchodCigariet?.cenaBarteru ?? KONSTANTY.BARTER_CENA}. Na konci hry každých {KONSTANTY.CIGARIET_ZA_SPAK} cigariet = 1 špak (výkupné).
               </>
             ),
@@ -1362,8 +1363,8 @@ export function PriebehKola({ view, onBitka }: { readonly view: ClientState; rea
               Striedavo vykladáte karty z ruky na hociktorú stranu línie, začína útočník. Limit vykladania = plné poldeci + poldeci na
               stole + 1; každá ďalšia karta v tom istom ťahu stojí plný poldeci.
               <span className="tip-riadok">
-                Kedykoľvek na ťahu: priznať kliatbu (za Cirhózu sa nedoberá; Dlh sa prizná sám pri dobratí), Nástroj do Dedičstva (za cigarety, cena rastie), fajčiť
-                (cigareta = karta). Kto pasuje, do Pitky už nevykladá a dostane cigaretu za každú kartu, ktorú ešte smel
+                Kedykoľvek na ťahu: priznať kliatbu (za Cirhózu sa nedoberá; Dlh sa prizná sám pri dobratí), Nástroj do Dedičstva (za cigarety, cena rastie);
+                fajčí sa až v Pitke. Kto pasuje, do Pitky už nevykladá a dostane cigaretu za každú kartu, ktorú ešte smel
                 vyložiť, najviac toľko, koľko má kariet v ruke. Končí, keď obaja vyčerpajú limit alebo pasujú.
               </span>
               {viac && <span className="tip-stav">{pocetPozn}</span>}
@@ -1380,7 +1381,7 @@ export function PriebehKola({ view, onBitka }: { readonly view: ClientState; rea
             <>
               <b>Začína obranca</b>; keď dá „hotovo“, hrá útočník a má posledné slovo („hotovo“ sa nedá vrátiť). NA EX! — plný poldeci na
               Občana či Starešinu v línii: zruší jeho aktívne akcie a zdvojí neaktívne (násobky sa násobia: NA EX × Silná žena = ×4); súper
-              smie hneď odpovedať jednou kartou. Fajčiť, doliať poldeci ({KONSTANTY.REFILL_CENA} cig.), nový poldeci (barter).
+              smie hneď odpovedať jednou kartou. Fajčiť (karta za 1, 2, 3… cig. v každej Pitke), doliať poldeci ({KONSTANTY.REFILL_CENA} cig.), nový poldeci (barter).
               <span className="tip-riadok">
                 Potom sa pripíšu akcie: Dlh (zadĺženie — za každý celý prah Dlh, hneď priznaný), Poškodenie pečene a Poldeci (za každý celý
                 prah Cirhóza do odhadzovacieho balíčka), Obmedzenie, Cigarety a Vízia. Pečeň aj zadĺženie sa po Pitke vynulujú.

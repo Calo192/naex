@@ -23,6 +23,7 @@ import {
   kartyZaPas,
   KONSTANTY,
   STUPNICA_ZONY,
+  cigariet,
   battleOutcome,
   cenaPatronatu,
   kandidatiNaNahradu,
@@ -53,6 +54,7 @@ import {
   nahladPosunuPrebytkom,
   vykupZoSrotu,
   zakazFajcit,
+  cenaFajceniaHraca,
   zakazNaex,
   zakazVypit,
   nahladVylozenia,
@@ -817,7 +819,10 @@ function moznosti(v: ClientState): string[] {
       if (mamKartu("starosta") && pk?.starosta[ja] !== true && h.cigarety > 0) {
         out.push(`{"type":"starosta","rukaUid":U,"senokUid":S}   — Starosta: za 1 cigaretu vymeň kartu z ruky (U) za kartu zo šenku (S); staršieho z patronátu do šenku nedáš`);
       }
-      if (h.cigarety > 0 && !zakazFajcit(v) && jeCoTahat(h.doberaciPocet, h.odhadzovaci.length)) c({ type: "smoke", pocet: 1 }, "vyfajč 1 cigaretu — hneď si doberieš kartu (ťah nekončí)");
+      const cenaFajc = cenaFajceniaHraca(v, ja);
+      if (h.cigarety >= cenaFajc && !zakazFajcit(v) && jeCoTahat(h.doberaciPocet, h.odhadzovaci.length)) {
+        c({ type: "smoke", pocet: 1 }, `fajči za ${cigariet(cenaFajc)} — hneď si doberieš kartu (ťah nekončí); ďalšie fajčenie v tejto Pitke o cigaretu drahšie`);
+      }
       // Zberný dvor (Michal 2026-10-20): raz za Pitku za cigaretu karta z odhadzovacieho balíčka.
       if (vykupZoSrotu(v) && pk?.vykup?.[ja] !== true && h.cigarety >= KONSTANTY.EFEKT.ZBERNY_DVOR_CENA) {
         for (const k of h.odhadzovaci) c({ type: "vykup", uid: k.uid }, `Zberný dvor: výkup zo šrotu za ${KONSTANTY.EFEKT.ZBERNY_DVOR_CENA} cigaretu — ${popisKarty(k)} z odhadzovacieho balíčka do ruky (raz za Pitku)`);

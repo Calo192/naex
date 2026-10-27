@@ -136,6 +136,13 @@ export const KONSTANTY = {
   /** Cigarety → otočenie vypitého poldeci (PRAVIDLA §7). */
   REFILL_CENA: 2,
   /**
+   * Fajčenie v Pitke (Michal 2026-10-27, PRAVIDLA §7): k-te fajčenie hráča v tej
+   * istej Pitke stojí ZAKLAD + (k − 1) × PRIRASTOK cigariet — 1, 2, 3…; každá Pitka
+   * začína znova od prvého. Nie je to strop: fajčiť sa dá stále, len drahšie.
+   */
+  CENA_FAJCENIA_ZAKLAD: 1,
+  CENA_FAJCENIA_PRIRASTOK: 1,
+  /**
    * Nové kolo, nový poldeci (Michal 2026-10-16, playtest 20261016-155120):
    * na začiatku kola sa toľko vypitých poldeci otočí na plné. Bez toho hráč
    * po drafte a NA EX ostal s limitom 1 až do konca partie (Eva 4 zo 7 kôl).

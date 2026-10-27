@@ -88,8 +88,9 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   2 karty za 3 cigarety** (`{"type":"draftBer","uids":[…]}`); poldeci sa
   v šenku neplatí; `draftStop` ukončí branie.
 - **Ruka bez limitu:** po každej bitke si dobereš **2 karty**; nič neodhadzuješ.
-  Karty navyše: šenok, fajčenie (`smoke`: cigareta = karta hneď, **len v Pitke**
-  (v5), v Zhromaždení nie; s prázdnym doberacím aj odhadzovacím balíčkom sa fajčiť
+  Karty navyše: šenok, fajčenie (`smoke`: karta hneď, **len v Pitke** (v5), v Zhromaždení
+  nie; **prvé fajčenie v Pitke 1 cigareta, druhé 2, tretie 3…**, každá Pitka znova od 1
+  (2026-10-27), každá vyfajčená cigareta je nerest; s prázdnym doberacím aj odhadzovacím balíčkom sa fajčiť
   nedá), priznanie kliatby, Vízia, efekty. Malý balíček prehru nespôsobí (v5).
   Keď sa doberací balíček minie, odhadzovací sa zamieša a stane sa z neho nový
   doberací balíček (pri každom ťahaní).
