@@ -119,6 +119,7 @@ import {
   stavkaBitky,
   stavZavislosti,
   stranyLokality,
+  vidiVolbuSupera,
   vydesil,
 } from "@naex/core";
 import type { ActionSums, DopadyNahladu, GameState, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, MarkerPos, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie } from "@naex/core";
@@ -976,6 +977,7 @@ export function HernaPlocha({
     () => new Set((view.pitkaStav?.skryteNaex ?? []).filter((x) => x.hrac !== ja).map((x) => x.uid)),
     [view.pitkaStav, ja],
   );
+  const vidimVolbuSupera = view.pitkaStav !== null && vidiVolbuSupera(data, view, ja);
   const stitokSuperovhoNaex = (
     <span
       className="naex-nad naex-skryte"
@@ -2372,6 +2374,7 @@ export function HernaPlocha({
             naexMozny && naexCiele.has(uid) ? "naex-mozny" : "",
             mode.typ === "naexCiel" && !naexCiele.has(uid) ? "naex-nie" : "",
             naexBy !== undefined || skryteMoje ? "naex-dany" : "",
+            skryteSupera ? "naex-supera" : "",
             vytrznik ? "vytrznik" : "",
             nova ? "nova-superova" : "",
             ukazHrozbu === uid ? "hrozba-ciel" : "",
@@ -2534,7 +2537,7 @@ export function HernaPlocha({
     return vLinii(
       <button
         type="button"
-        className={["rub-zaverecnej", znacka ? "naex-mozny" : "", vybrana ? "vybrana" : ""].join(" ")}
+        className={["rub-zaverecnej", znacka ? "naex-mozny" : "", superoveSkryteNaex.has(z.uid) ? "naex-supera" : "", vybrana ? "vybrana" : ""].join(" ")}
         style={{ width: sirkaVLinii, height: (sirkaVLinii * 80) / 54 }}
         disabled={klik === undefined}
         onClick={klik}
@@ -3546,7 +3549,11 @@ export function HernaPlocha({
             <strong>
               {menoHraca(super_)} {tvar(rodHracaP(super_), "už vybral", "už vybrala", "už skončil výber")}
             </strong>{" "}
-            — či a kam dal NA EX, uvidíš pri odkrytí po tvojom „končím“.{" "}
+            {vidimVolbuSupera
+              ? superoveSkryteNaex.size > 0
+                ? "— vďaka Bzdoche vidíš, kam dal NA EX (štítok „skryto“ na karte)."
+                : "— vďaka Bzdoche vieš, že NA EX nedal."
+              : "— či a kam dal NA EX, uvidíš pri odkrytí po tvojom „končím“."}{" "}
             {obranca === ja ? "Na jeho NA EX odpovieš prvý, on má posledné slovo." : "Na tvoje NA EX odpovie prvý, posledné slovo máš ty."}{" "}
           </>
         ) : zacinam ? (
@@ -5087,6 +5094,8 @@ export function HernaPlocha({
       );
       casti.push(rukaPocet(p));
       if (ps.reakcia === p) pozn("stav", p === ja ? "odpovedáš na NA EX" : "odpovedá na NA EX");
+      else if (ps.hotovy[p] && !odkryte && p !== ja && vidimVolbuSupera)
+        pozn("stav", `✓ ${tvar(rodHracaP(p), "vybral", "vybrala", "vybrané")} · NA EX ${superoveSkryteNaex.size > 0 ? `×${superoveSkryteNaex.size}` : "nie"}`, "Vďaka Bzdoche vidíš jeho voľbu NA EX ešte pred odkrytím.");
       else if (ps.hotovy[p] && !odkryte && p !== ja)
         pozn("stav", `✓ ${tvar(rodHracaP(p), "vybral", "vybrala", "vybrané")} · NA EX?`, "Či a kam dal NA EX, uvidíš pri odkrytí — keď skončíš aj ty.");
       else if (ps.hotovy[p]) pozn("stav", `✓ ${tvar(rodHracaP(p), "skončil", "skončila", "koniec")}${naex || skryte ? " po NA EX" : odkryte ? " bez NA EX" : ""}`);

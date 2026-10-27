@@ -9,6 +9,8 @@
 //   &stop=koniec   tesne pred koncom hry — posledný ťah sa dohrá po načítaní
 //   &stop=kolo     začiatok kola &i=k
 //   &stop=pitka    Pitka od 2. kola, hráč ?ja na ťahu (cena fajčenia, nákupy na hrane stola)
+//   &stop=bzdocha  ako pitka, hráč ?ja má v línii Bzdochu a súper už skončil so skrytým NA EX —
+//                  stôl ukáže súperovu voľbu (Bzdocha, v7)
 //   &stop=zaverecna koniec Pitky so súperovou Záverečnou lícom dole — po načítaní sa otočí;
 //                  &dalsia=1 dohrá aj súperovu ďalšiu Záverečnú na tú istú stranu
 //   &moment=typ    pečiatka momentu (napr. vyprask, zvrat) pri prvej dohranej bitke či Pitke — snímky
@@ -20,7 +22,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CardInstance, Command, Event, GameData, GameState, PlayerId, StavMomentov, TypMomentu } from "@naex/core";
-import { MOMENTY, NOVE_MOMENTY, apply, momenty, mozeHrat, naTahu, obmedzMomenty, rngInt, rngSeed, setupGame, tahBota, viewFor } from "@naex/core";
+import { MOMENTY, NOVE_MOMENTY, apply, momenty, moznostiNaex, mozeHrat, naTahu, obmedzMomenty, rngInt, rngSeed, setupGame, tahBota, viewFor } from "@naex/core";
 import { useSada } from "../lib/sada.tsx";
 import { useHerneData } from "../stranky/Ukazky.tsx";
 import { HernaPlocha } from "./HernaPlocha.tsx";
@@ -50,6 +52,20 @@ function sHasicom(data: GameData, s: GameState, p: PlayerId): GameState {
   const novy = { ...h, ruka: [...h.ruka, hasic], odhadzovaci: [...h.odhadzovaci, karta("cirhoza"), karta("ministrant"), karta("pijan")] };
   const pred: GameState = { ...s, nextUid: uid, hraci: p === 0 ? [novy, s.hraci[1]] : [s.hraci[0], novy] };
   return apply(data, pred, { type: "place", uid: hasic.uid, target: "vlastna" }, p).state;
+}
+
+/** Hráčovi p dá Bzdochu do línie, súper dá skryté NA EX a Pitku skončí — p vyberá po ňom. */
+function sBzdochou(data: GameData, s: GameState, p: PlayerId): GameState | null {
+  const su: PlayerId = p === 0 ? 1 : 0;
+  const bzdocha: CardInstance = { uid: s.nextUid, defId: "klebetnica", leftLayout: 0, rightLayout: 0 };
+  const strany: GameState["strany"] = p === 0 ? [[...s.strany[0], { card: bzdocha, playedBy: p }], s.strany[1]] : [s.strany[0], [...s.strany[1], { card: bzdocha, playedBy: p }]];
+  const t: GameState = { ...s, nextUid: s.nextUid + 1, strany };
+  const pitka = t.pitkaStav;
+  const ciel = moznostiNaex(data, t, su)[0];
+  if (pitka === null || ciel === undefined) return null;
+  const hotovy: [boolean, boolean] = [pitka.hotovy[0], pitka.hotovy[1]];
+  hotovy[su] = true;
+  return { ...t, pitkaStav: { ...pitka, naTahu: p, hotovy, skryteNaex: [...(pitka.skryteNaex ?? []), { hrac: su, uid: ciel }] } };
 }
 
 /** Hráčovi p pridá Záhradkára do ruky a priznané Dlhy — exekúcia v najbližšej bitke. */
@@ -102,6 +118,10 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
     if (stop === "kolo" && s.kolo === i && s.faza === "volbaCiela") return najdene({ zaciatok: s, dohraj: [] });
     if (stop === "pitka" && s.kolo >= 2 && s.faza === "pitka" && s.pitkaStav?.naTahu === ja && s.pitkaStav.reakcia === null && s.vizia === null && s.hraci[ja].cigarety >= 1)
       return najdene({ zaciatok: s, dohraj: [] });
+    if (stop === "bzdocha" && s.faza === "pitka" && s.pitkaStav?.naTahu === ja && s.pitkaStav.reakcia === null && s.vizia === null && !s.pitkaStav.hotovy[ja]) {
+      const b = sBzdochou(data, s, ja);
+      if (b !== null) return najdene({ zaciatok: b, dohraj: [] });
+    }
     const t = tahy(data, s, rng, n);
     if (t === null) break;
     rng = t.rng;

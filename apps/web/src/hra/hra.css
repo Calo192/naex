@@ -8698,3 +8698,11 @@ button.auto-hotovo-odkaz {
   margin-left: 0;
   font-size: 0.62rem;
 }
+
+/* Bzdocha (v7): súperovo skryté NA EX — jeho štítok nahradí „NA EX“ (dá sa dať); že sa
+   dá dať aj tam (zrážka), ukazuje ďalej prerušovaný okraj karty. Nad ním by narážal do
+   nadpisu kraja. */
+.s-lupou.naex-supera::before,
+.rub-zaverecnej.naex-supera::before {
+  display: none;
+}
