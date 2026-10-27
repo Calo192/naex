@@ -164,7 +164,7 @@ footer { margin-top: 36px; padding-top: 12px; border-top: 1px solid var(--okraj)
   sada v21, pravidlá v6, schválené novinky a NA EX trojica. Nič som nesimuloval; varianty a čísla kôb sú výpočet zo slotov podľa
   <code>variants.ts</code> a §6–§7. V tvorcovi ani v repe sa nič nemení. <b>Michal rozhodol 27. 10.</b> (zhrnutie nižšie); rozhodnuté znenia sú v <code>plan.md</code>, časť 10, a v <code>plan.json</code>.
   <b>Rozhodnuté kompletne 27. 10.</b> Živé voľby už nie sú.
-  <b>Výnimka: <a href="#davka3">Dávka 3</a></b> (Dlhy v hre a Milujúca manželka, 27. 10.) je otvorená a čaká na Michala.</p>
+  <b>Výnimka: <a href="#davka3">Dávka 3</a></b> (Dlhy v hre a Milujúca manželka, 27. 10.) je otvorená a čaká na Michala, rovnako ako návrh nasadenia schválenej akcie <a href="#pakt">Pakt</a>.</p>
 
 <section class="ramik" style="border-color:var(--ok)">
   <h2>Rozhodnuté kompletne 27. 10.</h2>
@@ -389,6 +389,53 @@ footer { margin-top: 36px; padding-top: 12px; border-top: 1px solid var(--okraj)
   </div>
 </section>
 
+<section class="ramik" id="pakt" style="border-color:var(--pozor);border-width:2px">
+  <h2>Pakt (schválená akcia)</h2>
+  <p class="roz roz-ano">Akcia schválená Michalom 27. 10. (ostatné štyri návrhy akcií nie).</p>
+  <blockquote>„Na spoji sa správa ako akcia, s ktorou je v páre.“ — definícia Paktu, Michal</blockquote>
+  <p class="roz roz-otv">Otvorené: nasadenie na karty je len návrh na schválenie. Otvorené body implementácie sú nižšie.</p>
+  <h3>Návrh nasadenia: 3 karty, 6 kópií</h3>
+  <p class="pozn">Pakt je vždy na <b>ľavej (vonkajšej) strane v okne 2–3</b>. Kopíruje pravú stranu karty, ktorá príde za ňu: tvoju ďalšiu (vyberáš ju z ruky), alebo súperovu podstrčenú. Na pravých indexoch 2–3 ležia Petelice Pušky a Veterána a Rany Recidivistu. Ľavý index 3 je podobsadený (5,5 akcie, <code>analyza-indexy.html</code>), Pakt ho dorovná zadarmo.</p>
+  <div class="tab-obal"><table>
+    <thead><tr><th>Karta</th><th>Zmena</th><th>Téma</th></tr></thead>
+    <tbody>
+      <tr><td><b>Brigádnik</b><br><small>spojka, 6 → 7 akcií</small></td><td>vľavo <b>+ Pakt</b> na odblokovaný slot 3: Robota, Cig, Rana, <b>Pakt</b> / Robota, Pečeň, Obmedz</td><td>Robí, čo robí chlap vedľa neho.</td></tr>
+      <tr><td><b>Živnostník</b><br><small>spojka, 6 → 7 akcií</small></td><td>vľavo <b>+ Pakt</b> v okne 2–3 vedľa Dlhu (Odpor/Robota na 0–1, Dlh/Pakt na 2–3)</td><td>Ruka ruku myje. Dohoda platí, aj keď ide o Dlh.</td></tr>
+      <tr><td><b>Dohadzovačka</b><br><small>eso, 4 akcie</small></td><td>vľavo Cigareta → <b>Pakt</b>, okno 2–3: Viera, <b>Pakt</b> / Posil, Dlh</td><td>Dohodne pakt medzi kýmkoľvek, aj so zlým.</td></tr>
+    </tbody>
+  </table></div>
+  <p class="pozn">Rozhodnuté akcie Brigádnika a Živnostníka ostávajú, Pakt pribudne. Ak chceš menej, ako prvá vypadne Dohadzovačka (zostanú 4 kópie).
+    <b>Zlá, alebo horšia:</b> náhodný sused má na pravom indexe 2–3 zlú akciu (Dlh, Pečeň, Poldeci) v 14–21 % prípadov a tuhú len v 7–12 %. Súper ti preto rád podstrčí kartu s Pečeňou.</p>
+  <h3>Ekvivalent (výpočet, nie simulácia)</h3>
+  <div class="tab-obal"><table>
+    <thead><tr><th>Pakt vľavo na</th><th>Obsadenosť</th><th>Petelica / Pecka / Rana u suseda</th><th>Tuhé náhodne</th><th>Výber z 3</th></tr></thead>
+    <tbody>
+      <tr><td>i2</td><td>0,56</td><td>1,8 / 3,2 / 6,8 %</td><td>0,19</td><td>0,51</td></tr>
+      <tr><td>i3</td><td>0,41</td><td>1,8 / 1,4 / 4,1 %</td><td>0,12</td><td>0,35</td></tr>
+    </tbody>
+  </table></div>
+  <ul>
+    <li><b>6 Paktov:</b> 4 × 0,155 + 2 × 0,123 = <b>0,87 tuhého</b> náhodne, <b>2,42</b> pri výbere z 3 kariet v ruke.</li>
+    <li><b>Deficit:</b> 2 Petelice na i1 (2 × 3 × 0,61 = 3,66) a 4 Pecky v okne 2–3 (4 × 2 × 0,485 = 3,88), spolu <b>7,5</b> náhodne, <b>12,6</b> pri výbere.</li>
+    <li><b>Dorovnanie 12–19 %:</b> z deficitu 7 Peciek (Petelica = 1,5 Pecky) dorovná 6 Paktov <b>0,8–1,4 Pecky</b>. Jedna kópia Paktu je 0,16–0,25 Pecky.</li>
+    <li><b>Sila Paktu je v kombe, nie v priemere.</b> Keď za kartu s Paktom priložíš Pušku či Veterána, Pakt je druhá Petelica (+3, so Silnou ženou +6). Zvyšok deficitu musia dorovnať tlačené Pecky a Petelice na nových kartách v podobsadených oknách, napríklad Vymáhač (D5) pridá 2 Pecky. Viac ako 6 Paktov neodporúčam.</li>
+  </ul>
+  <h3>Otvorené body implementácie (otázky pre v7)</h3>
+  <ol>
+    <li><b>Pakt vedľa Paktu.</b> Návrh: tvoria pár, ale nemajú čo kopírovať, takže nerobia nič.</li>
+    <li><b>Pakt vedľa Posilnenia (poradie vyhodnotenia).</b> Návrh: Pakt sa premení prvý, potom sa rátajú násobky. Dve Posilnenia v páre nemajú čo zdvojiť, takže nevznikne slučka.</li>
+    <li><b>Pakt pri zrážke.</b> Návrh: ráta sa ako akcia, ktorou sa stal na spoji.</li>
+    <li><b>Pakt pri Odpore — POZOR, Odporom zrušená akcia je od dnes „ani aktívna, ani neaktívna“.</b> Návrh: Odpor Pakt zruší ako každú akciu, takže NA EX ho nezdvojí. Alternatíva (Pakt sa stane Odporom a vznikne Vzbura) je zložitejšia.</li>
+    <li><b>Pakt na hrane lokality.</b> Návrh: zatiaľ nie. Na karte pri lokalite kopíruje akciu hrany ako každý pár.</li>
+    <li><b>Ako ho počíta NA EX (aktívna/neaktívna).</b> Návrh: aktívny Pakt NA EX zruší ako každú aktívnu akciu. Neaktívny nemá čo zdvojiť, preto sa nemá rátať do filtra „aspoň 1 neaktívna akcia“.</li>
+  </ol>
+  <p class="pozn">Sloty (<code>blocked</code> / <code>allowed</code>) nových kariet a Paktu treba predpísať pri zavádzaní do tvorcu podľa <code>docs/napady/analyza-indexy.html</code>. Podrobne v <code>plan.md</code>, časť 12.</p>
+  <div class="volba" data-d3="P" data-nazov="Pakt: nasadenie (Brigádnik, Živnostník, Dohadzovačka, 6 kópií)" data-moznosti="ano:Áno, 6 kópií|styri:Len 4 (bez Dohadzovačky)|nie:Nie, inak|neskor:Neskôr">
+    <fieldset><legend>Nasadenie Paktu <span class="odp">odporúčam: Áno, 6 kópií</span></legend><div class="volby-q"></div></fieldset>
+    <label class="skryte" for="d3-pozn-P">Poznámka k Paktu</label><textarea id="d3-pozn-P" placeholder="Poznámka (nepovinné)"></textarea>
+  </div>
+</section>
+
 <section class="ramik citat">
   <h2>Filozofia a rozpočet</h2>
   <blockquote>„Chcem aby hrac mal pocit ze sa rozhoduje medzi zlou a horsou moznostou (vela hazardy a poskodenia pecene) ale chcem aby boli mozne vytvorit kombinacie, kedy si hrac povie ze WAU.“ — Michal</blockquote>
@@ -429,7 +476,7 @@ footer { margin-top: 36px; padding-top: 12px; border-top: 1px solid var(--okraj)
   <h3>Novinky (10): 5 Áno, 5 Nie</h3>
   <ul class="obsah"><li><a href="#d-vybavovac">17. Vybavovač</a> <small class="s-nie">✕ Nie</small></li><li><a href="#d-bufetarka">18. Bufetárka</a> <small class="s-nie">✕ Nie</small></li><li><a href="#k-brigadnik">19. Brigádnik</a> <small class="s-ano">✓ Áno</small></li><li><a href="#d-hromotlk">20. Hromotĺk</a> <small class="s-nie">✕ Nie</small></li><li><a href="#k-masiar">21. Mäsiar</a> <small class="s-ano">✓ Áno</small></li><li><a href="#k-kulturista">22. Kulturista</a> <small class="s-ano">✓ Áno</small></li><li><a href="#k-traktoristka">23. Traktoristka</a> <small class="s-ano">✓ Áno</small></li><li><a href="#d-kucharka">24. Kuchárka</a> <small class="s-nie">✕ Nie</small></li><li><a href="#k-oslavenec">25. Oslávenec</a> <small class="s-ano">✓ Áno</small></li><li><a href="#d-sulac">26. Šúľač</a> <small class="s-nie">✕ Nie</small></li></ul>
   <h3>Ďalej</h3>
-  <ul class="obsah"><li><a href="#davka3">Dávka 3: Dlhy a Manželka</a> <small class="s-otvorene">otvorené</small></li><li><a href="#q-exekutor">Otázka 1: Exekútor (7)</a></li><li><a href="#q-rezervy">Otázka 4: rezervy (Brigádnik)</a></li><li><a href="#wau">WAU kombá</a></li><li><a href="#nechane">Nechané karty a Kapybara</a></li></ul>
+  <ul class="obsah"><li><a href="#davka3">Dávka 3: Dlhy a Manželka</a> <small class="s-otvorene">otvorené</small></li><li><a href="#pakt">Pakt (schválená akcia)</a> <small class="s-otvorene">nasadenie otvorené</small></li><li><a href="#q-exekutor">Otázka 1: Exekútor (7)</a></li><li><a href="#q-rezervy">Otázka 4: rezervy (Brigádnik)</a></li><li><a href="#wau">WAU kombá</a></li><li><a href="#nechane">Nechané karty a Kapybara</a></li></ul>
 </section>
 
 <h2 id="prerabky">Prerobené karty</h2>
@@ -1442,7 +1489,7 @@ footer { margin-top: 36px; padding-top: 12px; border-top: 1px solid var(--okraj)
   }
   obnov();
   function suhrn() {
-    var r = ["Michal — revízia sady, dávka 3: Dlhy a Milujúca manželka (docs/napady/revizia-karty.html):", ""];
+    var r = ["Michal — revízia sady, dávka 3 (Dlhy, Milujúca manželka) a nasadenie Paktu (docs/napady/revizia-karty.html):", ""];
     bloky.forEach(function (b) {
       var k = b.getAttribute("data-d3"), s = stav[k] || {}, p = (s.p || "").trim(), txt = "bez voľby";
       moznosti(b).forEach(function (m) { if (m[0] === s.v) txt = m[1]; });

@@ -2729,5 +2729,61 @@
    "4": "Manželka bez tagu Kliatba? (odporúčam áno)"
   },
   "merat": "výhoda útočníka vo finále (report 20261027-062058, O3: útočník 3:0) — plan.md 7.9"
+ },
+ "pakt": {
+  "datum": "2026-10-27",
+  "stav_akcie": "schválená Michalom (ostatné štyri návrhy akcií nie)",
+  "definicia": "Na spoji sa správa ako akcia, s ktorou je v páre.",
+  "stav_nasadenia": "návrh Vymyselníka na schválenie — nerozhodnuté",
+  "plan_md": "časť 12",
+  "html": "docs/napady/revizia-karty.html#pakt",
+  "nasadenie": [
+   {
+    "karta": "Brigádnik",
+    "id": "brigadnik",
+    "zmena": "vľavo + Pakt na odblokovaný slot 3",
+    "akcie": "Robota, Cigareta, Rana, Pakt / Robota, Pečeň, Obmedzenie",
+    "okno": "ľavá strana, index 3",
+    "kopie": 2,
+    "tema": "Robí, čo robí chlap vedľa neho."
+   },
+   {
+    "karta": "Živnostník",
+    "id": "zivnostnik",
+    "zmena": "vľavo + Pakt v okne 2–3 vedľa Dlhu",
+    "akcie": "Dlh, Odpor, Robota, Pakt / Cigareta×2, Pečeň (0–1 Odpor/Robota, 2–3 Dlh/Pakt)",
+    "okno": "ľavá strana, indexy 2–3",
+    "kopie": 2,
+    "tema": "Ruka ruku myje."
+   },
+   {
+    "karta": "Dohadzovačka",
+    "id": "dohadzovacka",
+    "zmena": "vľavo Cigareta → Pakt",
+    "akcie": "Viera, Pakt / Posilnenie, Dlh",
+    "okno": "ľavá strana, indexy 2–3",
+    "kopie": 2,
+    "tema": "Dohodne pakt medzi kýmkoľvek, aj so zlým.",
+    "vypadne_prva": true
+   }
+  ],
+  "kopii_spolu": 6,
+  "vypocet": {
+   "model": "náhodná karta zo sady po revízii (55 druhov balíčka a štartu), náhodné rozloženie podľa variants.ts; 13 noviniek bez slotov bez allowed; tuhé Rana 1, Pecka 2, Petelica 3",
+   "pakt_tuhe_na_kopiu": {"vlavo_i2": {"nahodne": 0.186, "vyber_z_3": 0.51, "vyber_z_5": 0.781}, "vlavo_i3": {"nahodne": 0.123, "vyber_z_3": 0.349, "vyber_z_5": 0.551}},
+   "pakt_6_kopii": {"nahodne": 0.87, "vyber_z_3": 2.42},
+   "deficit": {"nahodne": 7.54, "vyber_z_3": 12.55, "rozpis": "2 Petelice na i1: 2×3×0,61 = 3,66; 4 Pecky v okne 2–3: 4×2×0,485 = 3,88"},
+   "dorovnanie": "12 % náhodne, 19 % pri výbere; 0,8–1,4 Pecky zo 7 (Petelica = 1,5 Pecky); 1 Pakt = 0,16–0,25 Pecky",
+   "zle_u_suseda": "na pravých indexoch 2–3 zlá akcia 14–21 %, tuhá 7–12 %"
+  },
+  "otvorene_body_v7": [
+   "Pakt vedľa Paktu — návrh: pár bez účinku",
+   "Pakt vedľa Posilnenia (poradie vyhodnotenia) — návrh: Pakt sa premení pred násobkami",
+   "Pakt pri zrážke — návrh: ráta sa ako akcia, ktorou sa stal",
+   "Pakt pri Odpore — POZOR, Odporom zrušená akcia je od dnes „ani aktívna, ani neaktívna“ — návrh: Odpor Pakt zruší, NA EX ho nezdvojí",
+   "Pakt na hrane lokality — návrh: zatiaľ nie",
+   "ako ho počíta NA EX (aktívna/neaktívna) — návrh: aktívny NA EX zruší, neaktívny sa do filtra „aspoň 1 neaktívna“ neráta"
+  ],
+  "sloty": "blocked/allowed nových kariet a Paktu predpísať pri zavádzaní do tvorcu podľa docs/napady/analyza-indexy.html (ľavý index 3 podobsadený, 5,5 akcie)"
  }
 }

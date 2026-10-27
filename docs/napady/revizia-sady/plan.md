@@ -513,11 +513,14 @@ Vybavovač, Hromotĺk, Kuchárka, Šúľač a Bufetárka (do sady nejdú; v `pla
 
 Druhov v balíčku 51, kariet v hre 110. **Cieľ z časti 1 nesedí:** Petelica 12 namiesto 14 (−2, Hromotĺk), Pecka 20 namiesto 24 (−4, Kuchárka); Pečeň 50 namiesto 58, Dlh 56 namiesto 60. Traktoristka T1 dáva Pecku navyše len efektom pri prevahe, do kópií sa neráta. Nové karty som nerobil. Spojky 8 (kvóta 10), úderníci 8 (kvóta 10). Kšeft je na 4 kartách balíčka (Smetiarka, Strýko, Kapybara, Oslávenec).
 
+**Dorovná Pakt (návrh, časť 12, 27. 10.):** 6 kópií Paktu (Brigádnik, Živnostník, Dohadzovačka) dorovná deficit Petelíc a Peciek len čiastočne, asi o 1 Pecku (0,8–1,4) z približne 7 chýbajúcich (výpočet 12.2). Zvyšok musia dať tlačené Pecky alebo Petelice na nových kartách.
+
 ### 10.6 Dopad na kód
 
 - Dáta: 16 prerobených kariet a 5 noviniek podľa 10.1, Kapybara 2 cigarety.
 - Efekty: Šarlatán (pečeň ako Viera, vzor `vieraAkoVizia`, `partia.ts:529`), Šofér (`naexVKole`, `engine.ts:333`), Podvodník (presun Dlhu, vzor `presunDlhVychovavatelky`, `engine.ts:2525`), Výherný automat (konštanty `constants.ts:122–123`), Brigádnik (prevaha), Oslávenec (Kšeft v7), Záhradkár (prah +2), Traktoristka (prevaha → Pecka alebo Dlh).
 - Pravidlá v7: prah Exekútora 7, spúšťač Kšeft, zmazať spúšťače Exekúcia a Prestávka.
+- **Sloty pri zavádzaní do tvorcu:** sloty (`blocked` / `allowed`) nových kariet a Paktu predpísať podľa `docs/napady/analyza-indexy.html`. Ľavý index 3 je podobsadený (5,5 akcie) a Petelica a Pecka sú dnes pripnuté na horné okná, preto nové tuhé akcie a Pakt smerovať do podobsadených okien.
 
 ## 11. Dávka 3 — Dlhy v hre a Milujúca manželka (otvorené voľby)
 
@@ -654,3 +657,49 @@ Zásada voľby: **Dlh musí kupovať to, čo cigarety nekúpia** (cigariet je na
 2. **Predajca hrncov (ak D2):** súper Dlh dostane bez voľby, alebo si vyberie medzi Dlhom a −1 špakom?
 3. **Manželka:** M1, M2, alebo M3? Odporúčam M3.
 4. **Manželka bez tagu Kliatba** (zanikne priznanie za kartu)? Odporúčam áno.
+
+## 12. Pakt — schválená akcia, návrh nasadenia
+
+**Schválené Michalom 27. 10.:** nová akcia **Pakt**. Definícia doslova: *„Na spoji sa správa ako akcia, s ktorou je v páre.“* Ostatné štyri návrhy akcií Michal neschválil. **Nasadenie na karty (12.1) je len návrh na schválenie.** Otvorené body implementácie sú v 12.3.
+
+### 12.1 Návrh: 3 karty, 6 kópií
+
+Kópie v hre = balíček 2×. Pakt dávam vždy na **ľavú (vonkajšiu) stranu, do okna 2–3**. Tam kopíruje pravú stranu karty, ktorá príde za ňu: tvoju ďalšiu (vyberáš ju z ruky), alebo súperovu podstrčenú. Pravé indexy 2–3 nesú Petelice Pušky a Veterána a Rany Recidivistu. Okno 2–3 vľavo je podobsadené, ľavý index 3 má len 5,5 akcie (`analyza-indexy.html`), takže Pakt ho dorovná zadarmo.
+
+| Karta | Typ | Zmena | Akcií | Téma |
+|---|---|---|---|---|
+| **Brigádnik** | S | vľavo **+ Pakt** na odblokovaný slot 3 (Robota, Cig, Rana, **Pakt** / Robota, Pečeň, Obmedz) | 6 → 7 | Robí, čo robí chlap vedľa neho. |
+| **Živnostník** | S | vľavo **+ Pakt** v okne 2–3 vedľa Dlhu (Odpor/Robota na 0–1, Dlh/Pakt na 2–3) | 6 → 7 | Ruka ruku myje. Dohoda platí, aj keď ide o Dlh. |
+| **Dohadzovačka** | E | vľavo Cigareta → **Pakt**, okno 2–3 (Viera, **Pakt** / Posil, Dlh) | 4 | Dohodne pakt medzi kýmkoľvek, aj so zlým. |
+
+Spolu **6 kópií** (3 druhy × 2). Rozhodnuté akcie Brigádnika a Živnostníka ostávajú, Pakt pribudne (spojka smie mať 7 akcií). Dohadzovačka stratí Cigaretu, ktorej je nadbytok. Ak chceš menej, ako prvá vypadne Dohadzovačka (eso, nie spojka) a ostanú 4 kópie.
+
+**Zlá, alebo horšia:** Pakt je pakt s tým, kto príde. Vedľa Petelice je Petelica, vedľa Dlhu, Pečene či Poldeci je cena. Na pravých indexoch 2–3 je náhodný sused „zlý“ (Dlh, Pečeň, Poldeci) v 14–21 % a tuhý len v 7–12 %. Súper ti preto rád podstrčí kartu s Pečeňou na tom istom indexe.
+
+### 12.2 Výpočet ekvivalentu (výpočet, nie simulácia)
+
+Model ako v 1.2: náhodná karta zo sady po revízii (55 druhov balíčka a štartu, rovnaká váha), náhodné rozloženie podľa `variants.ts`. 13 schválených noviniek bez slotových dát rátam bez `allowed`. Hodnota Paktu = tuhé akcie suseda na tom istom indexe (Rana 1, Pecka 2, Petelica 3). „Výber z 3“ = hráč priloží najlepšiu z 3 kariet v ruke.
+
+| Pakt vľavo na indexe (kopíruje sused vpravo) | Obsadenosť | Petelica / Pecka / Rana u suseda | Tuhé náhodne | Výber z 3 | Výber z 5 |
+|---|---|---|---|---|---|
+| i2 | 0,56 | 1,8 % / 3,2 % / 6,8 % | 0,19 | 0,51 | 0,78 |
+| i3 | 0,41 | 1,8 % / 1,4 % / 4,1 % | 0,12 | 0,35 | 0,55 |
+
+- **6 kópií Paktu:** Živnostník a Dohadzovačka (okno 2–3, priemer i2/i3) 4 × 0,155 + Brigádnik (i3) 2 × 0,123 = **0,87 tuhého náhodne**, 4 × 0,43 + 2 × 0,35 = **2,42 pri výbere z 3**.
+- **Deficit v tých istých jednotkách:** 2 Petelice na i1 (Hromotĺk, obsadenosť partnera 0,61): 2 × 3 × 0,61 = 3,66. 4 Pecky v okne 2–3 (obsadenosť 0,485): 4 × 2 × 0,485 = 3,88. Spolu **7,5 náhodne**, **12,6 pri výbere z 3**.
+- **Dorovnanie:** Pakt pokryje **12 % náhodne, 19 % pri výbere**. V Peckách (Petelica = 1,5 Pecky) je deficit 7 Peciek a 6 Paktov dorovná **0,8–1,4 Pecky**. Jedna kópia Paktu je 0,16–0,25 Pecky.
+- **Prečo tak málo:** Pakt má hodnotu len vedľa tuhej akcie a tých je na jednom indexe suseda 7–12 %. Jeho sila je v kombe, nie v priemere. Keď za kartu s Paktom priložíš Pušku či Veterána, Pakt je druhá Petelica (+3, so Silnou ženou +6). S Recidivistom je to Rana.
+- **Ako dorovnať zvyšok:** tlačenými Peckami a Petelicami na nových kartách v podobsadených oknách. Napríklad Vymáhač z dávky 3 (D5: Pecka, Rana) pridá 2 Pecky. Prípadne vrátiť Petelicu na jednu kartu bez ceny. Pakt nad 6 kópií neodporúčam, viac by bolo len hádanie, čo príde.
+
+### 12.3 Otvorené body implementácie (otázky pre v7)
+
+Zoznam od Michala a Leadera doslova. Pri každom je môj návrh odpovede (nerozhodnuté).
+
+1. **Pakt vedľa Paktu.** — Návrh: tvoria pár, ale nemajú čo kopírovať, takže nerobia nič (ako pár bez účinku).
+2. **Pakt vedľa Posilnenia (poradie vyhodnotenia).** — Návrh: Pakt sa premení prvý, potom sa rátajú násobky. Pakt sa stane Posilnením a dve Posilnenia v páre nemajú čo zdvojiť. Tým sa vylúči slučka.
+3. **Pakt pri zrážke.** — Návrh: ráta sa ako akcia, ktorou sa stal na spoji, a zrážka s ním zaobchádza ako s ňou.
+4. **Pakt pri Odpore — POZOR, Odporom zrušená akcia je od dnes „ani aktívna, ani neaktívna“.** — Návrh: Odpor Pakt zruší ako každú akciu, takže Pakt nie je ani aktívny, ani neaktívny a NA EX ho nezdvojí. Alternatíva: Pakt sa stane Odporom a vznikne Vzbura (Odpor + Odpor, §6). To je zložitejšie, neodporúčam.
+5. **Pakt na hrane lokality.** — Návrh: zatiaľ nie na hranách. Na karte pri lokalite kopíruje akciu hrany ako každý pár.
+6. **Ako ho počíta NA EX (aktívna/neaktívna).** — Návrh: aktívny Pakt NA EX zruší ako každú aktívnu akciu. Neaktívny Pakt nemá čo zdvojiť, takže sa do filtra „aspoň 1 neaktívna akcia“ nemá rátať, inak by bol NA EX na prázdnu výhru.
+
+**Dopad:** pravidlá §2 (tabuľka akcií), §6 (spoj), §7 (NA EX). Jadro: vyhodnotenie spoja (Pakt sa premení pred násobkami), náhľad a bot (hodnota Paktu = akcia suseda). Tvorca: nový symbol a piktogram. Sloty podľa `analyza-indexy.html` (10.6).
