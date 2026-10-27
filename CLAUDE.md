@@ -100,6 +100,9 @@ naex-admin (`admin.ts novinka-pridaj`) — novinka sa píše až po nasadení na
 
 ## Čo nerobiť
 
+- **Žiadne umelé stropy a limity zdrojov** („najviac X cigariet“, „najviac N za Pitku“,
+  „nad X prepadne“). Prebytok, ktorý sa hromadí, musí hra riešiť tým, že dá hráčovi
+  možnosť ho minúť alebo zúžitkovať — nová akcia, karta, výkupné za špaky (Michal 2026-10-27).
 - Žiadne AI, žiadne DSL na efekty.
 - Žiadne ORM, Redux, router ani UI kit — router je `apps/web/src/lib/router.tsx`.
 - Nevymýšľaj si chýbajúce herné hodnoty potichu — daj ich do `data/` s `TODO`
