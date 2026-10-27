@@ -622,9 +622,15 @@ button.sprava-tlacidlo {
   min-width: 0;
 }
 
+/* Pri stole je v strede lišty os kola (Michal 2026-10-27) — pravá zóna pruží od loga po účet. */
 .hlavicka-vnutro.pri-stole .hlavicka-prava {
-  flex: 0 1 auto;
+  flex: 1 1 auto;
   margin-left: auto;
+}
+
+.hlavicka-vnutro.pri-stole .hlavicka-hra {
+  flex: 1 1 auto;
+  justify-content: flex-end;
 }
 
 /* Miesto pre ovládanie partie (portál z hernej plochy) — mimo partie prázdne. */
