@@ -109,6 +109,7 @@
           <li>Text karty: „Pitka: Ak máš plný poldeci a máš ho kam dať, musíš dať NA EX. Prah Cirhózy je tu o 2 vyšší.“ (sada v10). Nevybrané varianty: „daj NA EX, alebo zaplať krčmárovi cigaretu“ a „za NA EX cigareta“.</li>
         </ul></div>
         <div class="blok"><h4>Čo sledovať</h4><p>Počet Cirhóz v kolách o Krčmu oproti iným lokalitám a či sa Krčme hráči pri voľbe cieľa prestanú vyhýbať.</p></div>
+        <div class="blok"><h4>Výsledok playtestu 20261027-062058</h4><p>Krčma sa hrala v P1 K3 a P3 K2; povinné NA EX tam viedlo k zrážke (P3). Hela používa „Vypiť na prázdno“ ako únik z povinného NA EX.</p></div>
       </div>
     </details>
 
@@ -132,6 +133,7 @@
         </ul></div>
         <div class="blok"><h4>Výsledok playtestu 20261021-143600</h4><p>Dlh je viditeľný, ale bezzubý: žiadna predpoveď ceny Dlhu z náhľadu NA EX sa nenaplnila, lebo Dlhy spálil Exekútor, Robota či Dievčina, a všetci šiesti hráči skončili s 0 Dlhmi. Cirhózu navrchu väčšinou držali nepriznanú. Stratég: Dlhy stoja na konci len −0,35 b na hráča.</p></div>
         <div class="blok"><h4>Výsledok playtestu 20261022-065959</h4><p>Všetci štyria potvrdili, že partiu nerozhodli kliatby, ktoré by nevideli. Dlhy sa však opäť všetky spálili (Fero súperovi vyrobil 6 Dlhov, Jano skončil s 0) a Cirhóza navrchu ostáva v ruke mŕtva. Pravidlá aj ťahák píšu „lokalita 2, Dlh −1“, v hre mala lokalita 10–16 b.</p></div>
+        <div class="blok"><h4>Výsledok playtestu 20261027-062058</h4><p>Dlhy sa priznávali hneď (Hela 5, Jano najviac 5), Exekútor sa za 18 bitiek nespustil ani raz; hláška „na konci hry uberá body aj priznaný“ je zastaraná (engine.ts:762). Nepriznaná Cirhóza stála Šimona aj Vila −5 špakov, Hela ich priznala pred finále.</p></div>
       </div>
     </details>
 
@@ -155,6 +157,7 @@
         </ul></div>
         <div class="blok"><h4>Výsledok playtestu 20261021-143600</h4><p>V 15 bitkách jedna remíza (partia 1, Most na sekeru), nikto o ňu nehral zámerne. Pravidlo pochopili všetci z jednej vety a Eva kvôli sekere hrala ďalšiu bitku o 24 bodov.</p></div>
         <div class="blok"><h4>Výsledok playtestu 20261022-065959</h4><p>V 14 bitkách jedna remíza (partia 2, 6. kolo), po prvý raz zámerná (NA EX na súperovho Hasiča, 0 : 1 → 0 : 0). Pravidlo pochopili bez pýtania a sekeru vzala prehrávajúca Hela v poslednej bitke (2 lokality, +32 b). V partii 1 Fero do remízy mieril, súper ju rozbil.</p></div>
+        <div class="blok"><h4>Výsledok playtestu 20261027-062058</h4><p>Jedna sekera z 18 bitiek (P3 K3, 6 : 6): Robota spálila Evine 3 Dlhy tesne pred porovnaním, Vdova + Čierna mačka rozhodli remízu; v K4 ostal útočníkom Eva a vzala +2 a 2 zo sekery (Vilo: „sekera = útočník ostáva“ potvrdené). Šenok a ruku sekera nezmenila. Je to prvý playtest na v6, kde sekera padla — jeden údaj.</p></div>
       </div>
     </details>
 
@@ -181,6 +184,7 @@
         </ul></div>
         <div class="blok"><h4>Výsledok playtestu 20261021-143600</h4><p>Poradie v Pitke už nikto nenahlásil ako nezrovnalosť. Výhľad Pitky v kroku Vízia však počíta pečeň a zadĺženie druhýkrát (<code>nahladPitky</code> po <code>vyhodnotPitku</code>) a náhľad NA EX nepočíta s pálením Dlhov ani s odpoveďou súpera.</p></div>
         <div class="blok"><h4>Výsledok playtestu 20261022-065959</h4><p>Odhad bitky sedel v 14 zo 14 bitiek, poradie v Pitke nikoho nezmiatlo. Posledné slovo útočníka (alebo odpoveď na NA EX) priamo rozhodlo 4 zo 14 bitiek a je to najčastejšia kritika turnusu, všetci štyria chcú tajné súčasné NA EX. Náhľad vyloženia pripíše Dlh Finančnej poradkyne jej majiteľovi namiesto súpera. Stôl vizuálne nikto nevidel (hralo sa konzolou).</p></div>
+        <div class="blok"><h4>Výsledok playtestu 20261027-062058</h4><p>Odhad bitky a cena NA EX sedeli na bod (Hela ~25 bitiek, Jano 8, Vilo 9). Textový klient agentov tvrdí „skončil bez NA EX“ pred odkrytím (nepravda, web správne) a log „nemá v Pitke čo urobiť“ je v jadre čiastočný únik skrytého NA EX.</p></div>
       </div>
     </details>
 
@@ -205,6 +209,7 @@
         <div class="blok"><h4>Výsledok playtestu 20261021-041728</h4><p>Patrón vyhral 1 zo 4 bitiek (boti 63 %). Policajtka zrušila Pohoršenia navyše v 2 zo 4 prípadov a bolestné padlo trikrát. Obaja hráči patronát chvália ako najlepšiu novinku, Eva však namieta, že Policajtka ho ruší zadarmo.</p></div>
         <div class="blok"><h4>Výsledok playtestu 20261021-143600</h4><p>Patrón vyhral 4 zo 4 (boti 63 %), bolestné nepadlo ani raz a Policajtka zrušila Pohoršenia navyše raz. Šimon: patronát Krčmárky s prebytkom 5 dal asi 30 bodov v jednom kole.</p></div>
         <div class="blok"><h4>Výsledok playtestu 20261022-065959</h4><p>Patrón vyhral 2 z 3, bolestné padlo raz. Fero dvakrát po sebe patronoval z červenej zóny za 0 cigariet a otočil partiu z 2 : 52 na 49 : 18. Jano ho chce zdražiť, Šimon a Hela zlacniť; z troch patronátov sa to posúdiť nedá.</p></div>
+        <div class="blok"><h4>Výsledok playtestu 20261027-062058</h4><p>8 patronátov v 3 partiách, patrón vyhral 2 (Jano K4 Farár, Vilo K5 Krčmárka), 6 prehier odhodilo poldeci. Červená stojí 0 cigariet a Policajtka zruší 3 Pohoršenia z patronátu (§10), takže s ňou je pre majiteľa zadarmo (5 zo 6 hráčov to označilo za príliš silné). Fero po prehre o 1 tuhé vo finále nemal poldeci na NA EX.</p></div>
       </div>
     </details>
 
@@ -345,6 +350,7 @@
           <li>Koľko Pitiek je v kole (lokality so 4 aktivovanými akciami = 4 Pitky a 4 Zhromaždenia) a tempo partie.</li>
           <li>Či cigarety za prebytok stačia porazenému na dobiehanie, alebo ho naopak nespravia príliš silným.</li>
         </ul></div>
+        <div class="blok"><h4>Výsledok playtestu 20261027-062058</h4><p>Cigarety nemajú strop ani výstup: Jano 19 a Eva 22 cigariet proti 0–3 súpera (NA EX × Silná × Cigareta +8 za Pitku, pas za limit +3–4); hráč s 0–1 cigaretou nemal v drafte voľbu. Počet Pitiek podľa hrany sedí, príklad v §7 mätie.</p></div>
       </div>
     </details>
 
@@ -541,6 +547,7 @@
           <li>Pomer výhier útočník : obranca, keď obranca berie prvý.</li>
           <li>Hráč si vie domyslieť, čo súper odhodil z balíčka, ktorý mu sám podal. Tajné je len úplne prvé odhodenie, ostatné sa dajú odvodiť. Sledovať, či to hráči využívajú.</li>
         </ul></div>
+        <div class="blok"><h4>Výsledok playtestu 20261027-062058</h4><p>§5 si odporuje: stavba hovorí „nevzaté idú naspodok“, branie „ostávajú do ďalšieho draftu“; hra pri ďalšej stavbe pošle starý šenok naspodok (engine.ts:1527), takže z neho nikto nikdy nedraftuje. Traja hráči (Fero, Vilo, Eva) to označili za nejasné.</p></div>
       </div>
     </details>
 
@@ -583,6 +590,7 @@
           <li>Ako často víťaz bitky dá NA EX (minule 5 z 8) a koľko odpovedí NA EX naozaj zruší.</li>
           <li>Či odpoveď nepredĺži Pitku a či nezvýhodní hráča s veľkou rukou.</li>
         </ul></div>
+        <div class="blok"><h4>Výsledok playtestu 20261027-062058</h4><p>Odpovede zmenili viac bitiek (Snúbenica vrátila Helin Hasič 9 → 3, Silná žena po NA EX 13 : 6, Pes vedľa Silnej +4). Obranca odpovedá prvý a smie zakryť kartu pred Snúbenicou (P1 K4); §16 Snúbenica „vedľa karty“ znamená len koniec línie.</p></div>
       </div>
     </details>
 
