@@ -6,6 +6,7 @@ import { ALL_DLZKY, DLZKY_HRY, NAZOV_DLZKY, PREDVOLENA_DLZKA } from "@naex/core"
 import { api, mediaUrl } from "../lib/api.ts";
 import { useSada } from "../lib/sada.tsx";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
+import { sNavratom } from "../lib/navrat.ts";
 import { maPravo, useUcet, type Pouzivatel } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { HlavaStranky } from "../HlavaStranky.tsx";
@@ -329,16 +330,20 @@ export function Hra() {
   if (nepodporovane !== null) return <NepodporovaneZariadenie dovod={nepodporovane} />;
   if (!nacitane) return <Nacitavanie />;
   if (ja === null) {
+    // Pozvánka /hra?kod=ABCD: po prihlásení aj registrácii späť s kódom — efekt vyššie hráča pripojí.
+    // Bez pozvánky začína nový účet profilom ako doteraz.
+    const cesta = location.pathname + location.search;
+    const pozvanka = new URLSearchParams(location.search).get("kod") !== null;
     return (
       <HlavaStranky
         nadpis="Hrať môžu prihlásení"
         uvod="Súper ťa uvidí pod tvojím herným menom a s fotkou z profilu."
         akcia={
           <>
-            <Odkaz href="/registracia?spat=/hra" className="tlacidlo">
+            <Odkaz href={pozvanka ? sNavratom("/registracia", cesta) : "/registracia"} className="tlacidlo">
               Vytvoriť účet
             </Odkaz>
-            <Odkaz href="/prihlasenie?spat=/hra" className="tlacidlo tlacidlo-hlavne">
+            <Odkaz href={sNavratom("/prihlasenie", cesta)} className="tlacidlo tlacidlo-hlavne">
               Prihlásiť sa
             </Odkaz>
           </>

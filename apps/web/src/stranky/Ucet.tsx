@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { api, mediaUrl } from "../lib/api.ts";
 import { nacitajObrazok, stvorec } from "../lib/obrazky.ts";
 import { Odkaz, chod, useTitulok } from "../lib/router.tsx";
+import { navratZ } from "../lib/navrat.ts";
 import {
   HUDBA_PREDVOLENA,
   LUPA_DO,
@@ -31,12 +32,6 @@ import { nacitajHlasky, urlHlasky } from "../hra/Melichar.tsx";
 import { SCHEMY, aktualnaSchema, pouziSchemu } from "../lib/schemy.ts";
 import { VyberParu } from "./VyberParu.tsx";
 
-/** Kam sa vrátiť po prihlásení (?spat=/hra). */
-function navrat(): string {
-  const spat = new URLSearchParams(location.search).get("spat");
-  return spat !== null && spat.startsWith("/") && !spat.startsWith("//") ? spat : "/hra";
-}
-
 export function Prihlasenie() {
   useTitulok("Prihlásenie");
   const { nastav } = useUcet();
@@ -52,7 +47,7 @@ export function Prihlasenie() {
     try {
       const r = await api.post<{ pouzivatel: Pouzivatel }>("/prihlasenie", { login, heslo });
       nastav(r.pouzivatel);
-      chod(navrat(), true);
+      chod(navratZ(location.search) ?? "/hra", true);
     } catch (err) {
       setChyba(err instanceof Error ? err.message : String(err));
     } finally {
@@ -105,7 +100,8 @@ export function Registracia() {
     try {
       const r = await api.post<{ pouzivatel: Pouzivatel }>("/registracia", { login, heslo, meno: meno.trim() || login });
       nastav(r.pouzivatel);
-      chod("/profil?novy=1", true);
+      // S návratom (pozvánka do miestnosti) rovno späť, inak nováčik začína profilom.
+      chod(navratZ(location.search) ?? "/profil?novy=1", true);
     } catch (err) {
       setChyba(err instanceof Error ? err.message : String(err));
     } finally {
