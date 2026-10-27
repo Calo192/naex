@@ -151,7 +151,7 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
   <h1>Nevyjadrené karty — voľby</h1>
   <button type="button" id="tema" aria-label="Prepnúť svetlý a tmavý režim">Svetlo / tma</button>
 </div>
-<p class="roz roz-ano">Michal rozhodol všetkých 66 položiek (posledných 9, Nástroje kola 3, v samostatnom kole). Zapracované sú v <code>revizia-sady/plan.md</code>, časť 14. Iterácia efektov je uzavretá, otvorené ostáva len D1 (Strýko) a potvrdenie Výherného automatu.</p>
+<p class="roz roz-ano">Michal rozhodol všetkých 66 položiek (posledných 9, Nástroje kola 3, v samostatnom kole). Zapracované sú v <code>revizia-sady/plan.md</code>, časť 14. Iterácia efektov je uzavretá. D1 je tiež uzavreté (Strýko berie Kšeft za cigarety).</p>
 <p class="uvod">Vymyselník · 28. 10. 2026 · efektová iterácia · pre Michala cez Leadera. Pri každej položke vyber voľbu a podľa potreby pripíš poznámku. Voľby sa ukladajú v tomto prehliadači a tlačidlo dole skopíruje súhrn na vloženie Leaderovi. Plné znenia alternatív sú z <code>efekty-navrhy-4.html</code> a <code>efekty-navrhy-1.html</code> (Nástroje po prerobení: jeden efekt pre hru aj Dedičstvo). Pri každej karte je moje odporúčanie s dôvodom. Nič som nesimuloval.</p>
 
 <section class="ramik">
@@ -644,7 +644,7 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
 <article class="karta rozh" id="k-vyherny_automat" data-nazov="Výherný automat">
   <header class="karta-hlava"><h2><span class="cislo">2.8</span>Výherný automat</h2>
   <p class="tagy"><span class="tag">Nástroj · 4 varianty</span></p></header>
-  <p class="roz roz-ano">Rozhodnuté (nástroje kolo 3): Nechať, ale Výhra = 1 špak: <i>Dedičstvo: Výhra: Získaš 1 špak. Prehra: Získaš 2 Dlhy.</i> (na potvrdenie)</p>
+  <p class="roz roz-ano">Rozhodnuté (nástroje kolo 3): Nový efekt podľa Michalovho náčrtu: <i>Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. V poslednej Pitke kola získaš 1 Dlh.</i> (znenie na rýchle potvrdenie)</p>
   <p class="pozn">Akcie: Robota / Dlh ×4</p>
   <p class="dnes">Dnes (rozhodnuté 10.1): Dedičstvo: Výhra: Dostaneš 3 cigarety. Prehra: Získaš 2 Dlhy. Bot ho zo šenku nevzal ani raz.</p>
   <ul class="alty">
@@ -869,7 +869,7 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
 
 <div class="lista" role="region" aria-label="Súhrn volieb">
   <div class="lista-in">
-    <span class="lista-text" id="lista-text" aria-live="polite">Rozhodnuté všetko. Na potvrdenie: Výherný automat.</span>
+    <span class="lista-text" id="lista-text" aria-live="polite">Rozhodnuté všetko. Iterácia uzavretá.</span>
     <button type="button" id="doplnit">Doplniť odporúčané</button>
     <button type="button" class="hlavne" id="kopiruj">Skopírovať súhrn</button>
   </div>
@@ -908,7 +908,7 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
   });
   function obnov() {
     var n = bloky.filter(function (b) { var k = b.getAttribute("data-kluc"); return stav[k] && stav[k].v; }).length;
-    document.getElementById("lista-text").textContent = n === 0 ? "Rozhodnuté všetko. Na potvrdenie: Výherný automat." : "Vybrané " + n + " z " + bloky.length + ". Ukladá sa v tomto prehliadači.";
+    document.getElementById("lista-text").textContent = n === 0 ? "Rozhodnuté všetko. Iterácia uzavretá." : "Vybrané " + n + " z " + bloky.length + ". Ukladá sa v tomto prehliadači.";
   }
   obnov();
   document.getElementById("doplnit").addEventListener("click", function () {

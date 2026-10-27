@@ -109,7 +109,7 @@ details.zbalene > summary { cursor: pointer; color: var(--tlmeny); font-size: .9
 </div>
 <p class="uvod">Vymyselník · 27. 10. 2026 · pre Michala cez Leadera. Ku každej z 20 kariet sú 3 alternatívne efekty (spolu 60). <b>Nástroje, kolo 3:</b> efekt Nástroja platí len v Dedičstve (tvoje rozhodnutie). K 8 nerozhodnutým Nástrojom sú 3 nové efekty Dedičstva, Noviny a Krabička sú len preznačené. Zvieratá a štartovky sú nezmenené. Akcie platia po revízii (<code>revizia-sady/sloty.json</code>) a nemenia sa. Nič som nesimuloval a v kóde ani v sade sa nič nemení.</p>
 <p class="roz roz-ano">Rozhodnuté Michalom 27. 10.: Noviny A, Krabička C, Kohút B, Kapybara (Michalovo znenie = B, Kšeft padá). Ponechané: Čierna mačka, Kôň, Milujúca manželka (M2). „Inak“ so znením na potvrdenie: Pes, Krokodíl, Pijan, Miňištrant, Dievčina. <b>Bez voľby (zámerne otvorené):</b> Vínko, Pasca, Puška, Svätý text, Nealko, Výherný automat, Vidly, Lievik. Rozhodnuté znenia sú v <code>revizia-sady/plan.md</code>, časť 14.3.</p>
-<p class="roz roz-ano">Nástroje kola 3 rozhodnuté (Michal): Vínko, Svätý text, Nealko a Lievik ponechané. Pasca A (nahrádza efekt proti Zvieratám). Puška a Vidly inak (Petelice a Rany o 1 silnejšie). Výherný automat: Výhra = 1 špak (na potvrdenie). Iterácia efektov je uzavretá, prehľad je v <code>revizia-sady/plan.md</code> 14.0 a 14.9.</p>
+<p class="roz roz-ano">Nástroje kola 3 rozhodnuté (Michal): Vínko, Svätý text, Nealko a Lievik ponechané. Pasca A (nahrádza efekt proti Zvieratám). Puška a Vidly inak (Petelice a Rany o 1 silnejšie). Výherný automat: prah Dlhu +1 a v poslednej Pitke kola 1 Dlh (Michalov náčrt). D1 uzavreté: Strýko berie Kšeft za cigarety. Iterácia efektov je uzavretá, prehľad je v <code>revizia-sady/plan.md</code> 14.0 a 14.9.</p>
 
 <section class="ramik def">
   <h2>Ako čítať</h2>
@@ -322,15 +322,15 @@ details.zbalene > summary { cursor: pointer; color: var(--tlmeny); font-size: .9
 
 <section class="ramik karta rozh" id="vyherny_automat" data-nazov="Výherný automat">
   <h2>Výherný automat</h2>
-  <p class="roz roz-otv">Rozhodnuté (Michal, nástroje kolo 3): Nechať dnešný efekt, ale Výhra dáva namiesto 3 cigariet <b>1 špak</b> (Prehra 2 Dlhy ostáva). <b>Na potvrdenie?</b> Špak je víťazný bod, takže je to výrazné posilnenie.</p>
+  <p class="roz roz-otv">Rozhodnuté (Michal, nástroje kolo 3): <b>Nový efekt podľa Michalovho náčrtu</b> (znenie na rýchle potvrdenie). Výhra/Prehra aj výklad „1 špak“ padajú.</p>
   <p class="tagy">Nástroj · 4 varianty</p>
   <p class="riadok"><b>Akcie:</b> Robota / Dlh ×4</p>
   <p class="dnes"><b>Dnes (rozhodnuté 10.1):</b> <i>Dedičstvo: Výhra: Dostaneš 3 cigarety. Prehra: Získaš 2 Dlhy.</i> Bot ho zo šenku nevzal ani raz.</p>
   <div class="alt vybrane">
     <div class="hl"><span class="id">vyherny_automat-M</span><span class="sp">Dedičstvo</span><span class="znak">Michalovo znenie</span></div>
-    <p class="pozn">Michal doslova: „Nechať dnešný — Výhra: získaj 1 špak.“</p>
-    <p class="efekt"><b>Dedičstvo:</b> Výhra: Získaš 1 špak. Prehra: Získaš 2 Dlhy.</p>
-    <p class="preco">Výklad: dnešný efekt ostáva, mení sa len odmena za Výhru (3 cigarety → 1 špak). <b>Na potvrdenie</b>, lebo je to výrazné posilnenie víťaza. Dedičstvo však stojí rastúcu cenu a pri prehre hrozia 2 Dlhy.</p>
+    <p class="pozn">Michal doslova: „Tvoj prah dlhu je o 1 vyšší, v poslednej pitke si vždy doberáš 1 dlh? niečo také…“</p>
+    <p class="efekt"><b>Dedičstvo:</b> Tvoj prah Dlhu je o 1 vyšší. V poslednej Pitke kola získaš 1 Dlh.</p>
+    <p class="preco">Prah Dlhu je pojem z §8 (2 zadĺženia = 1 Dlh), s Automatom sú to 3. S D6 zvyšok neprepadá. Posledná Pitka kola je tá pred bitkou.</p>
   </div>
   <details class="zbalene"><summary>Alternatívy kola 3 (nevybrané), zbalené</summary>
   <div class="alt">
@@ -738,7 +738,7 @@ details.zbalene > summary { cursor: pointer; color: var(--tlmeny); font-size: .9
 </main>
 
 <div class="lista" role="region" aria-label="Súhrn volieb"><div class="lista-in">
-  <span class="lista-text" id="lista-text" aria-live="polite">Rozhodnuté. Na potvrdenie: Výherný automat (Výhra = 1 špak).</span>
+  <span class="lista-text" id="lista-text" aria-live="polite">Rozhodnuté. Iterácia uzavretá.</span>
   <button type="button" class="hlavne" id="kopiruj">Skopírovať súhrn</button>
 </div></div>
 <textarea id="schranka" class="skryte" aria-hidden="true" tabindex="-1"></textarea>
@@ -775,7 +775,7 @@ details.zbalene > summary { cursor: pointer; color: var(--tlmeny); font-size: .9
   });
   function obnov() {
     var n = bloky.filter(function (b) { var k = b.getAttribute("data-bod"); return stav[k] && stav[k].v; }).length;
-    document.getElementById("lista-text").textContent = n === 0 ? "Rozhodnuté. Na potvrdenie: Výherný automat (Výhra = 1 špak)." : "Vybrané " + n + " z " + bloky.length + ". Ukladá sa v tomto prehliadači.";
+    document.getElementById("lista-text").textContent = n === 0 ? "Rozhodnuté. Iterácia uzavretá." : "Vybrané " + n + " z " + bloky.length + ". Ukladá sa v tomto prehliadači.";
   }
   obnov();
   function suhrn() {
