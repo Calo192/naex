@@ -33,6 +33,7 @@
    "plan": 56,
    "lokality_dnes": 8,
    "lokality_plan": 9,
+   "lokality_so_skladom": 10,
    "rozhodnute_karty": 50
   },
   "Poldeci": {
@@ -75,6 +76,7 @@
    "plan": 24,
    "lokality_dnes": 6,
    "lokality_plan": 13,
+   "lokality_so_skladom": 14,
    "rozhodnute_karty": 20
   },
   "Viera": {
@@ -89,6 +91,7 @@
    "plan": 24,
    "lokality_dnes": 4,
    "lokality_plan": 6,
+   "lokality_so_skladom": 7,
    "rozhodnute_karty": 22
   },
   "Dlh": {
@@ -96,6 +99,7 @@
    "plan": 60,
    "lokality_dnes": 3,
    "lokality_plan": 8,
+   "lokality_so_skladom": 9,
    "rozhodnute_karty": 56
   },
   "Vízia": {
@@ -1779,6 +1783,47 @@
    }
   },
   {
+   "id": "sklad",
+   "karta": "Sklad",
+   "typ": "Lokalita",
+   "archetyp": "L2",
+   "verdikt": "nová (rozhodnuté 2026-10-27 večer)",
+   "akcie_dnes": "—",
+   "akcie_plan": "Robota, Pecka / Cigareta, Dlh",
+   "efekt_dnes": "—",
+   "smer": "Družstvo sa delí na dve lokality; variant A „Nočná šichta“, zrkadlo Zberného dvora. Ilustrácia vybraná: handoff ilustracie-lokality-20261027/sklad/sklad-final.jpg (nočný sklad obilia, vrecia do kufra, spiaci strážnik s fľašou). — plan.md 7.4, 7.5 bod 7.",
+   "efekt_plan": "Kšeft: Za 1 cigaretu si vezmi do ruky vrchnú kartu zo súperovho odhadzovacieho balíčka.",
+   "nazov_variantu": "Nočná šichta",
+   "uroven": 2,
+   "pitky": "1–3",
+   "hrany": {
+    "lava": {
+     "kraj": "pri vreciach",
+     "sloty": [
+      "Robota",
+      null,
+      "Pecka",
+      null
+     ]
+    },
+    "prava": {
+     "kraj": "pri strážnici",
+     "sloty": [
+      "Cigareta",
+      null,
+      "Dlh",
+      null
+     ]
+    }
+   },
+   "na_potvrdenie": [
+    "Sloty hrán (zrkadlo Zberného dvora, sloty 0 a 2) — Michal určil len akcie; overiť podľa analyza-indexy.html.",
+    "Kraje pri vreciach / pri strážnici — návrh Vymyselníka podľa ilustrácie.",
+    "Vzatá karta patrí odteraz hráčovi; pri prázdnom súperovom odhadzovacom balíčku sa Kšeft nedá; Cirhóza navrchu sa vziať smie (odhadzovací balíček je verejný, view.ts:244).",
+    "Cigareta za Kšeft je nerest ako pri Zbernom dvore (§8 :515)."
+   ]
+  },
+  {
    "id": "obecny_urad",
    "karta": "Obecný úrad",
    "typ": "Lokalita",
@@ -2526,7 +2571,8 @@
  "lokality_rozhodnute": {
   "datum": "2026-10-27",
   "kto": "Michal",
-  "pocet": 18,
+  "pocet": 19,
+  "sklad": "Sklad pribudol 2026-10-27 večer (Michal): Družstvo sa delí na dve lokality; úroveň 2 má 6 lokalít, spolu 19 (5 + 6 + 5 + 3).",
   "urovne": {
    "1": [
     "Zastávka",
@@ -2540,7 +2586,8 @@
     "Benzínka",
     "Kar",
     "Zberný dvor",
-    "Krčma"
+    "Krčma",
+    "Sklad"
    ],
    "3": [
     "Obecný úrad",
@@ -2567,7 +2614,7 @@
    "7": "bez pevných 3 Pitiek",
    "8": "strop áno: ×2 len Rana, Pecka, Petelica z hrán",
    "9": "padá",
-   "10": "18 lokalít"
+   "10": "18 lokalít (2026-10-27 večer doplnený Sklad → 19)"
   },
   "sloty": "poradie slotov 0–3 zhora nadol, null = blokovaný; kľúče akcií ako v cards.json"
  },
