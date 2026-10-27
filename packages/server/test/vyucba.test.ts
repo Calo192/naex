@@ -360,9 +360,9 @@ describe("výučba — cigareta pre Melichara (Michal 2026-10-25)", () => {
       pred = st as unknown as StavMsg;
     }
     const mal = pred?.view.hraci[0]?.cigarety ?? -1;
-    expect(mal).toBe(7);
+    expect(mal).toBe(6);
     k.posli({ type: "vyucbaDalej" });
-    expect(((await k.cakaj("state")) as unknown as StavMsg).view.hraci[0]?.cigarety).toBe(6);
+    expect(((await k.cakaj("state")) as unknown as StavMsg).view.hraci[0]?.cigarety).toBe(5);
     k.zavri();
   });
 });

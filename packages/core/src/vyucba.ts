@@ -27,8 +27,17 @@ export interface RozdanieHraca {
 export interface Rozdanie {
   /** Semienko pre to, čo scenár neurčí (zamiešanie odhodených, varianty kariet spoločného balíčka). */
   readonly seed: number;
-  /** Lokality v poradí, v akom prídu do hry — ich počet je dĺžka hry. */
+  /**
+   * Bez `rozpis`: lokality v poradí, v akom prídu do hry — ich počet je dĺžka hry.
+   * S `rozpis`: zásoba lokalít, z ktorej obranca vyberá lokalitu úrovne kola (v7).
+   */
   readonly lokality: readonly string[];
+  /**
+   * Úrovne lokalít po kolách vrátane finále (v7, napr. [1, 2, 3, 4]): výučba hrá
+   * ako bežná hra s rozpisom, dĺžka hry je počet úrovní bez finále. Učí, že čím
+   * vyššie kolo, tým viac akcií na hrane lokality (Michal 2026-10-27).
+   */
+  readonly rozpis?: readonly number[];
   /**
    * Scorecard pre každého staršieho (elderId → priazeň, napr. „UZERNIK“, alebo
    * id scorecardu); chýbajúci podľa seedu. Priazeň platí v každej sade.

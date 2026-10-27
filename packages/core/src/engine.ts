@@ -1322,7 +1322,9 @@ export function setupGame(data: GameData, seed: number, opts?: SetupOptions): Ga
  */
 export function setupZRozdania(data: GameData, r: Rozdanie): GameState {
   if (r.lokality.length === 0) throw new Error("Rozdanie nemá žiadnu lokalitu.");
-  const s = structuredClone(setupGame(data, r.seed, { lokalit: r.lokality.length })) as MutState;
+  if (r.rozpis !== undefined && r.rozpis.length < 2) throw new Error("Rozdanie: rozpis úrovní potrebuje aspoň jedno kolo a finále.");
+  const kolLokalit = r.rozpis !== undefined ? r.rozpis.length - 1 : r.lokality.length;
+  const s = structuredClone(setupGame(data, r.seed, { lokalit: kolLokalit })) as MutState;
   const karta = (ref: string): DeepMutable<CardInstance> => {
     const [defId = "", l = "0", p = "0"] = ref.split("/");
     const variants = data.variants.get(defId);
@@ -1335,13 +1337,24 @@ export function setupZRozdania(data: GameData, r: Rozdanie): GameState {
     return { uid: s.nextUid++, defId, leftLayout: li, rightLayout: ri };
   };
   s.utocnik = r.utocnik;
-  s.lokalitCelkom = r.lokality.length;
-  // Výučba má lokality v pevnom poradí — hrá sa bez rozpisu úrovní.
-  delete s.rozpis;
+  s.lokalitCelkom = kolLokalit;
   s.lokalityVHre = r.lokality.map((id) => {
     if (!(data.cards.get(id.split("/")[0] ?? "")?.tags ?? []).includes("Lokalita")) throw new Error(`Rozdanie: „${id}“ nie je lokalita.`);
     return karta(id);
   });
+  if (r.rozpis === undefined) {
+    // Lokality v pevnom poradí — hrá sa bez rozpisu úrovní (ako do v6).
+    delete s.rozpis;
+  } else {
+    // Výučba v7 s rozpisom (Michal 2026-10-27): každé kolo a finále musí mať zo zásoby
+    // čo vybrať, inak by sa partia zasekla vo Voľbe cieľa.
+    for (const u of new Set(r.rozpis)) {
+      const treba = r.rozpis.filter((x) => x === u).length;
+      const ma = s.lokalityVHre.filter((k) => urovenLokality(data, k.defId) === u).length;
+      if (ma < treba) throw new Error(`Rozdanie: rozpis chce ${treba}× úroveň ${u}, lokalít tej úrovne je ${ma}.`);
+    }
+    s.rozpis = [...r.rozpis];
+  }
   for (const elder of s.starsi) {
     const ref = r.scorecardy?.[elder.elderId];
     if (ref === undefined) continue;
