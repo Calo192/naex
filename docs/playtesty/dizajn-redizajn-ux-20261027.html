@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UX základ redizajnu webu NA EX! (okrem stola) — kostra, toky, prístupnosť</title>
+<style>
+:root{--bg:#f7f7f8;--pl:#fff;--pl2:#eef0f3;--tx:#1b1c1f;--tl:#5b5f68;--ok:#d9dce2;--ak:#3d5afe;--ak-t:#fff;--teh:#c62828;--zel:#2e7d32;--oran:#b26a00;--wf:#eceef1;--wf2:#dcdfe5;--wf3:#c3c7cf;--wft:#2a2d33}
+@media (prefers-color-scheme:dark){:root{--bg:#121316;--pl:#1b1d21;--pl2:#24272c;--tx:#e6e7ea;--tl:#a4a8b1;--ok:#33363d;--ak:#9fb0ff;--ak-t:#10153a;--teh:#ff8a80;--zel:#81c784;--oran:#ffb74d;--wf:#202227;--wf2:#2c2f35;--wf3:#40444c;--wft:#dfe1e6}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--ak)}
+:focus-visible{outline:3px solid var(--ak);outline-offset:2px}
+.preskok{position:absolute;left:-999px}.preskok:focus{left:16px;top:8px;background:var(--pl);padding:8px 12px;z-index:9}
+header.hl,main{max-width:1180px;margin:0 auto;padding:0 20px}
+h1{font-size:1.9rem;line-height:1.2;margin:28px 0 6px;font-weight:600}
+h2{font-size:1.45rem;margin:56px 0 12px;padding-top:12px;border-top:1px solid var(--ok);font-weight:600}
+h3{font-size:1.15rem;margin:28px 0 8px;font-weight:600}
+h4{font-size:1rem;margin:16px 0 6px}
+p,li{max-width:82ch}
+.meta{color:var(--tl);font-size:.92rem}
+.verdikt{background:var(--pl);border:1px solid var(--ok);border-left:4px solid var(--ak);border-radius:12px;padding:14px 18px;margin:16px 0}
+.obsah-doc{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.93rem;margin:12px 0}
+.tab-obal{overflow-x:auto;background:var(--pl);border:1px solid var(--ok);border-radius:12px;margin:10px 0}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--ok)}
+th{color:var(--tl);font-weight:600;background:var(--pl2)}
+tr:last-child td{border-bottom:0}
+.mc{font-family:ui-monospace,Consolas,monospace;font-size:.85rem;background:var(--pl2);padding:1px 5px;border-radius:4px}
+.z{display:inline-block;min-width:24px;text-align:center;border-radius:6px;font-weight:700;padding:1px 6px;font-size:.85rem}
+.z3{background:var(--teh);color:#fff}.z2{background:var(--oran);color:#fff}.z1{background:var(--wf3);color:var(--tx)}
+.filtre{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.filtre button{font:inherit;font-size:.88rem;background:var(--pl);color:var(--tx);border:1px solid var(--ok);border-radius:999px;padding:6px 14px;min-height:44px;cursor:pointer}
+.filtre button[aria-pressed=true]{background:var(--ak);color:var(--ak-t);border-color:var(--ak)}
+.mriezka{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(250px,100%),1fr))}
+.dlazdica{background:var(--pl);border:1px solid var(--ok);border-radius:12px;padding:12px 16px}
+.dlazdica h4{margin:4px 0 6px;font-size:1.02rem}
+.dlazdica ul{padding-left:18px;margin:6px 0}
+.strom{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr))}
+.strom>div{background:var(--pl);border:1px solid var(--ok);border-radius:12px;padding:10px 14px}
+.strom b{display:block;font-size:1.02rem;margin-bottom:4px}
+.strom ul{margin:0;padding-left:18px;font-size:.92rem}
+.strom .sprava{border-style:dashed}
+.tok{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(330px,100%),1fr));margin:10px 0}
+.tok>div{background:var(--pl);border:1px solid var(--ok);border-radius:12px;padding:10px 14px}
+.tok>div.po{border-color:var(--ak)}
+.tok h4{margin:2px 0 6px}
+.tok ol{margin:4px 0;padding-left:22px}
+.pocet{font-weight:700;color:var(--ak)}
+.st{font-size:.76rem;border:1px solid var(--ak);color:var(--ak);border-radius:999px;padding:1px 8px;margin-left:6px;white-space:nowrap}
+.st.n{border-color:var(--tl);color:var(--tl)}
+details.wfd{background:var(--pl);border:1px solid var(--ok);border-radius:12px;padding:8px 14px;margin:14px 0}
+details.wfd>summary{cursor:pointer;font-weight:600;padding:6px 0;min-height:32px}
+.popis{font-size:.92rem;margin:6px 0}
+.popis li{margin:2px 0}
+/* drôtené modely */
+.wf{background:var(--wf);border:1px dashed var(--wf3);border-radius:12px;padding:10px;font-size:12.5px;line-height:1.35;color:var(--wft);margin:10px 0;overflow:auto}
+.wf .r{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.wf .rs{display:flex;gap:10px;align-items:stretch}
+.wf .s{display:flex;flex-direction:column;gap:8px;min-width:0}
+.wf .f1{flex:1}.wf .f2{flex:2}.wf .f3{flex:3}
+.wf .b{background:var(--wf2);border-radius:10px;padding:8px 10px}
+.wf .b3{background:var(--wf3);border-radius:10px;padding:8px 10px}
+.wf .ob{border:1px solid var(--wf3);border-radius:12px;padding:8px 10px;background:var(--wf)}
+.wf .il{background:repeating-linear-gradient(135deg,var(--wf2) 0 10px,var(--wf3) 10px 20px);border-radius:12px;padding:10px;display:flex;align-items:flex-end;min-height:120px;font-weight:600}
+.wf .tl{border:1.5px solid var(--wft);border-radius:999px;padding:4px 12px;font-weight:600;white-space:nowrap;display:inline-block}
+.wf .tl.h{background:var(--wft);color:var(--wf)}
+.wf .c{border:1px solid var(--wf3);border-radius:8px;padding:2px 8px;white-space:nowrap;display:inline-block}
+.wf .c.a{background:var(--wf3);font-weight:600}
+.wf .m{opacity:.72}
+.wf .h1{font-weight:700;font-size:20px;line-height:1.15}
+.wf .h2{font-weight:700;font-size:14px}
+.wf .n{display:inline-grid;place-items:center;min-width:18px;height:18px;border-radius:9px;background:var(--wft);color:var(--wf);font-size:10px;font-weight:700;padding:0 4px;vertical-align:middle}
+.wf .krcma{outline:2px dotted var(--wft);outline-offset:2px}
+.desk{display:grid;grid-template-columns:84px minmax(0,1fr);min-height:420px;min-width:860px}
+.rail{border-right:1px solid var(--wf3);padding:8px 4px;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center}
+.rail .i{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px}
+.rail .i span{display:block;width:48px;height:30px;border-radius:15px;background:var(--wf2)}
+.rail .i.a span{background:var(--wft)}
+.rail .fab{width:56px;height:56px;border-radius:16px;background:var(--wf3);display:grid;place-items:center;font-weight:700;font-size:11px}
+.rail .logo{font-weight:800;font-size:12px;padding:6px 0}
+.rail hr{width:44px;border:0;border-top:1px solid var(--wf3);margin:2px 0}
+.rail .dole{margin-top:auto}
+.plocha{padding:0 16px 12px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.appbar{display:flex;align-items:center;gap:10px;min-height:52px;border-bottom:1px solid var(--wf3)}
+.appbar .t{font-weight:700;font-size:16px;flex:1}
+.hladat{border:1px solid var(--wf3);border-radius:24px;padding:5px 12px;min-width:220px;opacity:.85}
+.kruh{width:30px;height:30px;border-radius:50%;background:var(--wf3);display:inline-block;flex:none}
+.tabs{display:flex;gap:18px;border-bottom:1px solid var(--wf3);font-size:12.5px}
+.tabs span{padding:6px 2px}
+.tabs .a{border-bottom:3px solid var(--wft);font-weight:700}
+.pruh{background:var(--wft);color:var(--wf);border-radius:10px;padding:6px 12px;display:flex;gap:10px;align-items:center;font-weight:600}
+.mobily{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.mob{width:250px;margin:0 auto;border:2px solid var(--wf3);border-radius:24px;overflow:hidden;display:flex;flex-direction:column;min-height:480px;position:relative;background:var(--wf)}
+.mob .appbar{padding:0 10px;min-height:46px}
+.mob .obs{flex:1;padding:8px 10px;display:flex;flex-direction:column;gap:7px}
+.mob .bar{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--wf3);padding:6px 2px 10px;text-align:center;font-size:10px}
+.mob .bar .i span{display:block;width:36px;height:22px;border-radius:11px;background:var(--wf2);margin:0 auto 2px}
+.mob .bar .a span{background:var(--wft)}
+.mob .fabm{position:absolute;right:12px;bottom:66px;border-radius:16px;background:var(--wf3);padding:12px 14px;font-weight:700;font-size:11px}
+.mob .sheet{position:absolute;left:0;right:0;bottom:0;background:var(--wf2);border-radius:18px 18px 0 0;padding:8px 12px 14px;box-shadow:0 -4px 14px rgba(0,0,0,.18)}
+.mob .sheet .uchyt{width:36px;height:4px;border-radius:2px;background:var(--wf3);margin:0 auto 8px}
+.anat{counter-reset:a}
+.anat li{margin:3px 0}
+.otazka{background:var(--pl);border:1px solid var(--ok);border-radius:12px;padding:10px 16px;margin:10px 0}
+footer{max-width:1180px;margin:56px auto 30px;padding:0 20px;color:var(--tl);font-size:.88rem}
+</style>
+</head>
+<body>
+<a class="preskok" href="#obsah">Preskočiť na obsah</a>
+<header class="hl">
+  <p class="meta">Dizajn · UX · id <span class="mc">redizajn-ux-20261027</span> · fáza 2 (Michal odpovedal na 5 otázok) · UI smery: <a href="dizajn-redizajn-20261027.html">dizajn-redizajn-20261027.html</a> (naex-ui, 4 mockupy)</p>
+  <h1>UX základ nového webu NA EX! (všetko okrem stola /hra)</h1>
+  <p><strong>Cieľ:</strong> „Okrem stránky HRA prerob celý vzhľad celej stránky zo zelenej lúky. Vytvor mi 4 mockupy s novým dizajnom.“ + „inšpirovať sa modernými stránkami, minimalistickým Material Designom“ (Michal 2026-10-27). Tento dokument je <strong>spoločná kostra</strong> všetkých štyroch vizuálnych smerov: kde je čo, ako sa to správa, čo sa deje na mobile a čo musí platiť pre prístupnosť. Vizuál (písmo, farby, tvary, logo) rieši každý smer sám.</p>
+  <div class="verdikt">
+    <strong>Verdikt.</strong> Dnes má web 7 položiek menu, Správu aj účet v jednej hlavičke a položky sa podľa šírky okna presúvajú do „Viac ▾“. Hra proti počítaču je v lobby až tretí blok a pozvánka od kamaráta po prihlásení stratí kód. Nová kostra: <strong>5 cieľov podľa úloh</strong> (Hrať · Pravidlá · Karty · Komunita · Ja) v navigation raile, <strong>prihlásený pristane na Hrať</strong>, <strong>jedna hlavná akcia na stránku</strong>, Správa ako oddelený priestor. Navrhujem robiť desktop ako prvý (rozhodol Michal), mobil sa prispôsobí dolnou lištou.
+  </div>
+  <nav class="obsah-doc" aria-label="Obsah dokumentu">
+    <a href="#rozhodnutia">Rozhodnutia</a><a href="#mapa">1. Mapa stránok</a><a href="#pouzivatelia">2. Používatelia</a><a href="#problemy">3. Audit</a><a href="#ia">4. IA</a><a href="#kostra">5. Kostra</a><a href="#desktop">6. Desktop</a><a href="#mobil">7. Mobil</a><a href="#stavy">8. Stavy a krčmové chvíle</a><a href="#toky">9. Toky</a><a href="#wcag">10. WCAG 2.2</a><a href="#poradie">11. Poradie a overenie</a>
+  </nav>
+</header>
+
+<main id="obsah">
+
+<h2 id="rozhodnutia">Rozhodnutia Michala (2026-10-27)</h2>
+<div class="tab-obal">
+<table>
+<thead><tr><th>Téma</th><th>Rozhodnutie</th><th>Čo to znamená pre kostru</th></tr></thead>
+<tbody>
+<tr><td>Farby</td><td>Jedna téma, svetlý + tmavý režim, 3–4 akcentové farby na výber. 28 schém zanikne. Pár farieb hráča (Wada) ostáva.</td><td>„Ja → Vzhľad“: Režim (Podľa systému · Svetlý · Tmavý) + Akcent (3–4 vzorky). Každý akcent musí mať kontrast AA v oboch režimoch a nesmie sa pliesť s farbami hráča.</td></tr>
+<tr><td>Tón</td><td>Minimalistická kostra, krčmové akcenty len vo význačných chvíľach.</td><td>Krčma sa smie objaviť len v 4 slotoch: titulka, výsledok partie, achievement, prázdne stavy (<a href="#stavy">kap. 8</a>). Inde čistý MD3.</td></tr>
+<tr><td>Obrázky</td><td>Veľké ilustrácie z existujúcich kariet v hlavičkách titulky, kapitol Pravidiel a noviniek. Melichar je sprievodca výučby.</td><td>Šablóna „hlavička s ilustráciou“ (hero) pre 3 typy stránok; Melichar má tvár na karte výučby na Hrať a na titulke.</td></tr>
+<tr><td>Navigácia</td><td>5 cieľov Hrať · Pravidlá · Karty · Komunita · Ja; prihlásený pristane na Hrať; Správa oddelená.</td><td>Logo vedie prihláseného na Hrať, návštevníka na titulku. Správa má vlastný rail.</td></tr>
+<tr><td>Šírka</td><td><strong>Desktop prvý</strong>, mobil sa prispôsobí.</td><td>Kreslí sa 1440 px; mobil 390 px je odvodenie podľa pravidiel z <a href="#mobil">kap. 7</a>.</td></tr>
+<tr><td>UI (pre naex-ui)</td><td>Každý smer má vlastné písmo; logo prekresliť čisto (názov aj pohárik ostávajú).</td><td>Kostra neurčuje písmo; určuje len hierarchiu (titulok cieľa, nadpis sekcie, telo, popis).</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="mapa">1. Mapa stránok (okrem stola)</h2>
+<p class="meta">Zdroj: <span class="mc">apps/web/src/App.tsx:63–111</span>, <span class="mc">lib/navigacia.ts</span>, <span class="mc">stranky/</span>, <span class="mc">admin/Admin.tsx:28–50</span>, <span class="mc">playtest/Playtest.tsx</span>. „Kto a čo“ je odhad z kódu a predchádzajúcich návrhov. Stĺpec „Nový domov“ hovorí, kam stránka patrí v novej IA.</p>
+<div class="tab-obal">
+<table>
+<thead><tr><th>Stránka (cesta)</th><th>Kto chodí</th><th>Čo tam robí</th><th>Nový domov</th></tr></thead>
+<tbody>
+<tr><td>Titul <span class="mc">/</span></td><td>návštevník, nováčik</td><td>zistí, o čom hra je, a skočí do výučby, hry alebo pravidiel (<span class="mc">Domov.tsx:40–110</span>)</td><td>titulka návštevníka</td></tr>
+<tr><td>Prihlásenie, registrácia</td><td>návštevník</td><td>založí účet alebo sa prihlási a vráti sa, odkiaľ prišiel (<span class="mc">?spat=</span>)</td><td>Ja (pre návštevníka)</td></tr>
+<tr><td>Lobby <span class="mc">/hra</span> mimo partie</td><td>hráč</td><td>dĺžka, súkromná / verejná hra, počítač, kód, zoznam čakajúcich (<span class="mc">hra/Hra.tsx:97–175</span>)</td><td><strong>Hrať</strong> (domov)</td></tr>
+<tr><td>Výučba (vstup) <span class="mc">/hra?vyucba=1</span></td><td>nováčik</td><td>partia s Majstrom Melicharom (<span class="mc">hra/VstupyVyucby.tsx</span>)</td><td>Hrať, karta výučby</td></tr>
+<tr><td>Pravidlá <span class="mc">/pravidla</span></td><td>nováčik, hráč</td><td>14 kapitol v poradí výučby, hľadanie pojmu (<span class="mc">Pravidla.tsx:95–144</span>)</td><td>Pravidlá</td></tr>
+<tr><td>Karty <span class="mc">/karty</span></td><td>hráč, návštevník</td><td>filtre, efekt, príbeh, účel, akcie a pojmy (<span class="mc">Glosar.tsx</span>)</td><td>Karty · Glosár</td></tr>
+<tr><td>Dielňa <span class="mc">/karty/dielna</span></td><td>aktívny hráč</td><td>navrhne kartu za cigarety, sleduje posudok</td><td>Karty · Dielňa</td></tr>
+<tr><td>Rebríček</td><td>hráč s právom</td><td>porovná Frajerinu, otvorí profil súpera</td><td>Komunita · Rebríček</td></tr>
+<tr><td>Novinky</td><td>vracajúci sa hráč</td><td>čo sa zmenilo od poslednej návštevy, „Mám prečítané“</td><td>Komunita · Novinky</td></tr>
+<tr><td>Spätná väzba</td><td>hráč, Michal</td><td>názor / chyba, hlasovanie, stavy Otvorené · Plánujeme · Hotovo · Nebudeme, známky hry</td><td>Komunita · Spätná väzba</td></tr>
+<tr><td>Vývoj a roadmapa</td><td>komunita, Michal</td><td>známky hry v čase, roadmapa</td><td>Komunita · Vývoj</td></tr>
+<tr><td>Môj profil <span class="mc">/profil</span></td><td>hráč</td><td>meno, avatar, schéma, farba hráča, heslo (<span class="mc">Ucet.tsx:271–510</span>)</td><td>Ja · Nastavenia</td></tr>
+<tr><td>Profil hráča <span class="mc">/hrac/:id</span></td><td>hráč</td><td>Prehľad · Súhrn · Partie · Achievementy</td><td>Ja (vlastný) / detail z Rebríčka</td></tr>
+<tr><td>Detail partie <span class="mc">/partia/:id</span></td><td>hráč po partii</td><td>priebeh partie, odkaz na prehrávač (prehrávač je stôl → mimo)</td><td>Ja · Partie, Hrať · Posledné</td></tr>
+<tr><td>Hráči <span class="mc">/hraci</span></td><td>admin, subadmin</td><td>účty, ranky, práva</td><td>Správa</td></tr>
+<tr><td>Tvorba <span class="mc">/admin/*</span></td><td>admin, subadmin</td><td>8 sekcií v skupinách Sada · Vzhľad kariet · Výstup, zverejnenie sady</td><td>Správa</td></tr>
+<tr><td>Playtest</td><td>Michal; rank s právom (reporty)</td><td>Návrhy na rozhodnutie, Reporty</td><td>Správa; reporty pre rank: Komunita · Vývoj</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="pouzivatelia">2. Používatelia a ich hlavné úlohy</h2>
+<div class="mriezka">
+  <div class="dlazdica"><h4>Návštevník (príde z odkazu)</h4><ul><li>Za 10 s pochopiť, čo je NA EX!</li><li>Vyskúšať bez čítania → výučba</li><li>Pridať sa ku kamarátovi cez pozvánku</li></ul></div>
+  <div class="dlazdica"><h4>Nováčik (má účet, nedohral výučbu)</h4><ul><li>Dokončiť výučbu s Melicharom</li><li>Nájsť pojem v pravidlách</li><li>Prvá partia proti počítaču</li></ul></div>
+  <div class="dlazdica"><h4>Hráč (štamgast)</h4><ul><li>Hrať na 1 klik (počítač / kamarát / verejná)</li><li>Vrátiť sa do rozohranej partie</li><li>Novinky, rebríček, profil, Dielňa, názor</li></ul></div>
+  <div class="dlazdica"><h4>Správca (Michal, subadmin)</h4><ul><li>Rozhodnúť návrhy z Playtestu</li><li>Upraviť a zverejniť sadu</li><li>Spravovať hráčov a roadmapu</li></ul></div>
+</div>
+
+<h2 id="problemy">3. Audit dnešného webu</h2>
+<p class="meta">Závažnosť podľa Nielsena (1 kozmetický · 2 menší · 3 veľký). Michal povedal „odhliadnuc od toho, ako teraz stránka vyzerá“ — audit preto hodnotí štruktúru a toky, nie vzhľad. Snímky dnešného stavu som nerobil; dôkaz je miesto v kóde.</p>
+<div class="filtre" role="group" aria-label="Filter závažnosti">
+  <button type="button" data-f="vsetko" aria-pressed="true">Všetko</button>
+  <button type="button" data-f="3" aria-pressed="false">Závažnosť 3</button>
+  <button type="button" data-f="2" aria-pressed="false">Závažnosť 2</button>
+  <button type="button" data-f="1" aria-pressed="false">Závažnosť 1</button>
+</div>
+<div class="tab-obal">
+<table id="audit">
+<thead><tr><th>Z</th><th>Problém</th><th>Heuristika</th><th>Dôkaz</th><th>Rieši</th></tr></thead>
+<tbody>
+<tr data-z="3"><td><span class="z z3">3</span></td><td>Pozvánka <span class="mc">/hra?kod=ABCD</span> pre neprihláseného: tlačidlá vedú na <span class="mc">?spat=/hra</span> natvrdo, takže po prihlásení / registrácii sa kód stratí a nový hráč skončí v lobby bez kamaráta. <em>Dá sa opraviť aj bez redizajnu.</em></td><td>Prevencia chýb, kontrola</td><td><span class="mc">hra/Hra.tsx:331–345</span> (spat=/hra), kód sa číta až v <span class="mc">:318–327</span>; <span class="mc">App.tsx:36</span> berie len <span class="mc">pathname</span></td><td>Tok A</td></tr>
+<tr data-z="3"><td><span class="z z3">3</span></td><td>Položky menu sa podľa šírky okna presúvajú do „Viac ▾“ — tá istá stránka je na inom mieste podľa zariadenia.</td><td>Konzistencia, rozpoznanie</td><td><span class="mc">Layout.tsx:129–171</span></td><td>IA, kostra</td></tr>
+<tr data-z="3"><td><span class="z z3">3</span></td><td>Lobby žiada naraz 5 rozhodnutí v dvoch paneloch; hra proti počítaču — najrýchlejší štart — je až tretí blok pod súkromnou a verejnou hrou.</td><td>Hick, minimalizmus</td><td><span class="mc">hra/Hra.tsx:101–175</span></td><td>D1, tok B</td></tr>
+<tr data-z="2"><td><span class="z z2">2</span></td><td>Pravidlo počas partie: menu webu pri stole nie je (#23), takže cesta k pravidlám ide cez logo → dialóg „Odísť z partie?“ → Pravidlá → hľadať. Menu Partia ▾ Pravidlá neponúka.</td><td>Flexibilita, rozpoznanie</td><td><span class="mc">Layout.tsx:286–300</span>, <span class="mc">hra/HlavickaPartie.tsx:150–245</span></td><td>Tok C (otázka)</td></tr>
+<tr data-z="2"><td><span class="z z2">2</span></td><td>Titulka má 3 tlačidlá + 3 dlaždice, ktoré opakujú menu; dlaždica „Hraj proti kamarátovi“, hoci najrýchlejší štart je počítač.</td><td>Minimalizmus</td><td><span class="mc">Domov.tsx:40–110</span></td><td>D2</td></tr>
+<tr data-z="2"><td><span class="z z2">2</span></td><td>Komunitné stránky sú roztrúsené; značky noviniek, Dielne a návrhov sú na troch miestach + súhrnná na hamburgeri.</td><td>Zoskupenie</td><td><span class="mc">navigacia.ts:22–30</span>, <span class="mc">Layout.tsx:324–335</span></td><td>IA, D5</td></tr>
+<tr data-z="2"><td><span class="z z2">2</span></td><td>Správa je v hlavičke hry; Playtest raz v menu Správa, raz v menu účtu podľa roly.</td><td>Konzistencia</td><td><span class="mc">navigacia.ts:49–71</span></td><td>D8</td></tr>
+<tr data-z="2"><td><span class="z z2">2</span></td><td>28 farebných schém — kontrast AA sa nedá zaručiť v každej, každý nový prvok × 28.</td><td>Prístupnosť, udržateľnosť</td><td><span class="mc">schemy.css</span> (28 schém)</td><td>Rozhodnutie 1</td></tr>
+<tr data-z="1"><td><span class="z z1">1</span></td><td>Na mobile je „Hrať“ samostatné tlačidlo vedľa hamburgera, ostatné za ním — dve úrovne pre 7 položiek.</td><td>Efektívnosť</td><td><span class="mc">Layout.tsx:403–520</span></td><td>Kap. 7</td></tr>
+<tr data-z="1"><td><span class="z z1">1</span></td><td>Hľadanie je zvlášť v Pravidlách a zvlášť v Kartách; pojem z karty sa nedá nájsť z Pravidiel a naopak.</td><td>Rozpoznanie</td><td><span class="mc">Pravidla.tsx:95</span>, <span class="mc">Glosar.tsx:224</span></td><td>Globálne hľadanie</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="ia">4. Informačná architektúra</h2>
+<div class="strom" aria-label="Strom informačnej architektúry">
+  <div><b>1 · Hrať</b> <span class="mc">/hra</span><ul><li>Rozohraná partia (ak je)</li><li>Výučba s Melicharom (kým nie je hotová, je prvá)</li><li>Nová partia: Proti počítaču · S kamarátom · S kýmkoľvek</li><li>Mám kód</li><li>Čakajú na súpera</li><li>Posledné partie → detail</li></ul></div>
+  <div><b>2 · Pravidlá</b> <span class="mc">/pravidla</span><ul><li>14 kapitol v poradí výučby, každá s ilustráciou v hlavičke</li><li>Obsah kapitol (pomocný panel)</li><li>Pojmy (slovník)</li></ul></div>
+  <div><b>3 · Karty</b> <span class="mc">/karty</span><ul><li>Glosár (filtre, detail karty)</li><li>Akcie a pojmy</li><li>Dielňa (záložka, odznak rozhodnutia)</li></ul></div>
+  <div><b>4 · Komunita</b> <span class="mc">/komunita/…</span><ul><li>Novinky (predvolená, odznak)</li><li>Rebríček</li><li>Spätná väzba + známky</li><li>Vývoj a roadmapa</li><li><em>Reporty playtestov (len rank s právom)</em></li></ul></div>
+  <div><b>5 · Ja</b> (avatar)<ul><li>Prehľad · Partie · Achievementy</li><li>Nastavenia: Vzhľad (režim, akcent), farba hráča, účet</li><li>Odhlásiť</li><li><em>návštevník: Prihlásiť · Vytvoriť účet</em></li></ul></div>
+  <div class="sprava"><b>Správa</b> <span class="mc">/sprava/…</span> (admin, subadmin)<ul><li>Prehľad (čo čaká)</li><li>Playtest: Návrhy · Reporty</li><li>Tvorba: Sada · Vzhľad kariet · Výstup</li><li>Hráči</li></ul></div>
+</div>
+<ul class="popis">
+  <li><strong>Adresy</strong> sú len návrh pre developera; dnešné (<span class="mc">/novinky</span>, <span class="mc">/admin</span>, <span class="mc">/playtest</span>…) musia presmerovať, odkazy v Novinkách a reportoch nesmú prestať fungovať.</li>
+  <li><strong>Hrať je domov prihláseného</strong>: logo aj adresa <span class="mc">/</span> ho vedú na Hrať; titulka ostáva návštevníkovi (a dostupná cez odkaz „O hre“ v pätičke Pravidiel).</li>
+  <li><strong>Rozohraná partia je stav, nie stránka</strong>: odznak (bodka) na cieli Hrať + pruh „Partia HZ3T beží · Späť ku stolu“ nad obsahom každej stránky (náhrada pilulky, <span class="mc">Layout.tsx:236–245</span>).</li>
+  <li><strong>Odznaky</strong>: Komunita (súčet nových noviniek), Karty (rozhodnutie v Dielni), Správa (návrhy na rozhodnutie). Vo vnútri cieľa odznak na záložke. Najviac 3 odznaky v navigácii.</li>
+</ul>
+
+<h2 id="kostra">5. Kostra stránky (pre všetky 4 smery)</h2>
+<h3>Anatómia (desktop 1440 px)</h3>
+<ol class="anat popis">
+  <li><strong>Navigation rail</strong> (šírka ~80–96 px): logo (pohárik) → extended FAB / FAB <em>„Hrať“</em> len mimo cieľa Hrať → 5 cieľov (ikona + popis vždy viditeľný) → oddelovač → <em>Správa</em> (len správca, odznak). Aktívny cieľ: indikátor (pilulka) za ikonou, nielen farba.</li>
+  <li><strong>Top app bar</strong> (výška 64): titulok cieľa alebo „← späť“ + titulok detailu; vpravo <strong>globálne hľadanie</strong> (pole, skratka <kbd>/</kbd> alebo <kbd>Ctrl</kbd>+<kbd>K</kbd>: pojmy, kapitoly, karty, hráči) a avatar Ja (menu: Profil, Vzhľad, Odhlásiť). Pri posune sa app bar zúži, nezmizne.</li>
+  <li><strong>Pruh rozohranej partie</strong> (len keď beží): pod app barom, celá šírka obsahu, jedna akcia „Späť ku stolu“.</li>
+  <li><strong>Záložky</strong> (MD3 primary tabs, voliteľné): Karty, Komunita, Ja, Správa. Záložka je adresa (dá sa poslať odkaz), nie len stav.</li>
+  <li><strong>Hlavička s ilustráciou</strong> (voliteľná, len titulka, kapitoly Pravidiel, novinky): veľká ilustrácia existujúcej karty, nadpis, jedna veta úvodu.</li>
+  <li><strong>Obsah</strong> v jednom z troch kanonických rozložení MD3:
+    <ul><li><em>Feed</em> — Hrať, Novinky, Rebríček, Achievementy (karty v mriežke / zozname).</li>
+    <li><em>List-detail</em> — Karty, Spätná väzba, Dielňa, Playtest, Tvorba, Hráči (zoznam vľavo ~360 px, detail vpravo; bez výberu detail ukáže prázdny stav s radou).</li>
+    <li><em>Supporting pane</em> — Pravidlá (obsah kapitol), Vývoj (zásady), Ja (súhrn). Pomocný panel vpravo ~320 px.</li></ul></li>
+  <li><strong>Hlavná akcia stránky</strong>: najviac jedna. Desktop: tlačidlo „filled“ v hlave obsahu (pri list-detail nad zoznamom); mobil: FAB. Mapovanie: Karty·Dielňa → „Navrhnúť kartu“, Spätná väzba → „Napísať názor“, Tvorba·Karty → „Nová karta“, Hráči → nič, Pravidlá/Novinky → nič.</li>
+  <li><strong>Pätička</strong> len na titulke a na konci Pravidiel (autor, upozornenie o zdraví, „O hre“).</li>
+</ol>
+<h3>Mriežka a šírky (desktop prvý)</h3>
+<div class="tab-obal">
+<table>
+<thead><tr><th>Šírka okna</th><th>Navigácia</th><th>Obsah</th></tr></thead>
+<tbody>
+<tr><td><strong>≥ 1200 px (návrh na 1440)</strong></td><td>rail s FAB; Správa pod čiarou</td><td>max. šírka obsahu 1200 px od rovnakej ľavej hrany; text čítania max. ~72 znakov; list-detail a supporting pane vedľa seba. Tvorba a Playtest bez maxima.</td></tr>
+<tr><td>840–1199 px</td><td>rail bez extended FAB (len ikona)</td><td>dva panely, pomocný panel sa zúži; ak sa nezmestí, ide pod obsah</td></tr>
+<tr><td>600–839 px</td><td>rail (ikony + popis)</td><td>jeden panel; detail sa otvorí ako samostatná obrazovka s „←“; pomocný panel ako bočný sheet</td></tr>
+<tr><td>&lt; 600 px</td><td>navigation bar dole (5 cieľov); Správa cez Ja</td><td>pozri <a href="#mobil">kap. 7</a></td></tr>
+</tbody>
+</table>
+</div>
+<h3>Čo kostra žiada od každého UI smeru (zmluva)</h3>
+<ul class="popis">
+  <li>Tokeny pre <strong>oba režimy</strong> (svetlý, tmavý) a <strong>3–4 akcenty</strong>; povrchy (pozadie, povrch, povrch +1, +2), obrys, text, tlmený text, chyba, úspech. Akcent nesmie byť zameniteľný s pármi farieb hráča (Wada) — tie žijú na stole a v profile.</li>
+  <li>Hierarchia písma: titulok cieľa, nadpis hlavičky s ilustráciou (display), nadpis sekcie, telo, popis/štítok. Telo min. 16 px.</li>
+  <li>Tvar a výška: tlačidlo (filled, tonal, outlined, text), čip filtra, karta, záložka, odznak, snackbar, dialóg, bottom sheet, stav fokusu.</li>
+  <li>Jeden „krčmový“ prvok (pečiatka, textúra, ručné písmo…) pre 4 sloty z kap. 8 — a nikde inde.</li>
+  <li>Prekreslené logo (názov + pohárik) v dvoch veľkostiach: rail (ikona) a titulka (plné).</li>
+</ul>
+
+<h2 id="desktop">6. Drôtené modely — desktop (1440 px)</h2>
+<p class="meta">Low-fi: sivé bloky, reálny text. Šrafovaný blok = veľká ilustrácia existujúcej karty. Bodkovaný obrys = slot pre krčmový akcent. „●“ / číslo v krúžku = odznak. Modely sa dajú posúvať vodorovne.</p>
+
+<details class="wfd" open>
+<summary>D1 · Hrať — domov prihláseného (feed)</summary>
+<div class="wf" role="img" aria-label="Hrať: rail s aktívnym cieľom Hrať, app bar Hrať s hľadaním a avatarom, pruh rozohranej partie, karta výučby s Melicharom, tri veľké voľby novej partie s prepínačom dĺžky, pole Mám kód, zoznam čakajúcich a posledné partie vpravo">
+ <div class="desk">
+  <div class="rail"><div class="logo">[pohárik]</div><div class="i a"><span></span>Hrať ●</div><div class="i"><span></span>Pravidlá</div><div class="i"><span></span>Karty</div><div class="i"><span></span>Komunita <b class="n">2</b></div><div class="i"><span></span>Ja</div><hr><div class="i"><span></span>Správa <b class="n">3</b></div></div>
+  <div class="plocha">
+   <div class="appbar"><span class="t">Hrať</span><span class="hladat">Hľadať pojem, kartu, hráča  /</span><span class="kruh"></span></div>
+   <div class="pruh">● Partia HZ3T beží · súper Fero <span style="flex:1"></span><span class="tl" style="border-color:var(--wf);color:var(--wf)">Späť ku stolu</span></div>
+   <div class="rs">
+    <div class="s f2">
+     <div class="ob r" style="flex-wrap:nowrap"><span class="kruh" style="width:52px;height:52px"></span><div class="s f1" style="gap:2px"><span class="h2">Prvá hra s Majstrom Melicharom</span><span class="m">Naučí ťa hrať pri stole · ~15 minút · 2. časť z 3</span></div><span class="tl h">Pokračovať vo výučbe</span></div>
+     <div class="r" style="justify-content:space-between"><span class="h2">Nová partia</span><span><span class="m">Dĺžka:</span> <span class="c">Krátka · 3</span> <span class="c a">Stredná · 5</span> <span class="c">Dlhá · 7</span></span></div>
+     <div class="rs">
+      <div class="ob s f1"><span class="h2">Proti počítaču</span><span class="m">Začne hneď. Štamgast, Rapavý Fero alebo Teta Gizka. Do Frajeriny sa neráta.</span><span class="tl h">Hrať proti počítaču</span></div>
+      <div class="ob s f1"><span class="h2">S kamarátom</span><span class="m">Dostaneš odkaz s kódom a pošleš ho, komu chceš.</span><span class="tl">Vytvoriť pozvánku</span></div>
+      <div class="ob s f1"><span class="h2">S kýmkoľvek</span><span class="m">Verejná hra; ukáže sa ostatným v zozname.</span><span class="tl">Hľadať súpera</span></div>
+     </div>
+     <div class="ob r"><span class="m">Mám kód od kamaráta:</span><span class="c">_ _ _ _</span><span class="tl">Pripojiť sa</span></div>
+    </div>
+    <div class="s f1">
+     <div class="ob s"><span class="h2">Čakajú na súpera (2)</span><div class="b r">Jožo · Stredná <span style="flex:1"></span><span class="tl">Prisadnúť</span></div><div class="b r">Anča · Krátka <span style="flex:1"></span><span class="tl">Prisadnúť</span></div></div>
+     <div class="ob s"><span class="h2">Posledné partie</span><div class="b krcma">Výhra 14 : 11 nad Ferom · včera</div><div class="b m">Prehra 9 : 12 · Jožo</div><span class="m">Všetky partie → Ja</span></div>
+    </div>
+   </div>
+  </div>
+ </div>
+</div>
+<ul class="popis">
+  <li><strong>Poradie podľa stavu hráča</strong>: rozohraná partia → výučba (kým nie je hotová; po dokončení sa zmení na malý odkaz „Zopakovať výučbu“) → nová partia → kód → čakajúci → história.</li>
+  <li><strong>Jedno hlavné tlačidlo</strong>: nováčik = „Pokračovať vo výučbe“, inak „Hrať proti počítaču“. Ostatné „outlined“.</li>
+  <li><strong>Dĺžka</strong> je segmented button s predvolenou Strednou a platí pre všetky tri voľby; nedostupná dĺžka je vypnutá s viditeľným dôvodom (nie len <span class="mc">title</span>, dnes <span class="mc">Hra.tsx:121</span>).</li>
+  <li>„S kamarátom“ otvorí dialóg s odkazom <span class="mc">/hra?kod=…</span>, tlačidlom „Kopírovať odkaz“ (snackbar „Skopírované“) a čakaním na súpera; pri uzávierke pred nasadením je celý blok Nová partia vypnutý s oznamom navrchu.</li>
+  <li>Zoznam čakajúcich sa obnovuje (dnes každé 4 s); zmena sa ohlási cez <span class="mc">aria-live="polite"</span> („Pribudla hra: Jožo“).</li>
+</ul>
+</details>
+
+<details class="wfd">
+<summary>D2 · Titulka — návštevník</summary>
+<div class="wf" role="img" aria-label="Titulka: rail, veľká hlavička s ilustráciou kariet a nadpisom Bitka o dedinu, tlačidlo Zahraj si s Melicharom, sekundárne Pravidlá a Prihlásiť sa, tri pruhy čo je hra a pätička">
+ <div class="desk">
+  <div class="rail"><div class="logo">[pohárik]</div><div class="i"><span></span>Hrať</div><div class="i"><span></span>Pravidlá</div><div class="i"><span></span>Karty</div><div class="i"><span></span>Komunita</div><div class="i"><span></span>Prihlásiť</div></div>
+  <div class="plocha">
+   <div class="appbar"><span class="t">[logo NA EX! plné]</span><span class="hladat">Hľadať pojem, kartu  /</span><span class="tl">Prihlásiť sa</span></div>
+   <div class="rs">
+    <div class="s f1" style="justify-content:center">
+     <span class="h1 krcma">Bitka o dedinu. Na ex!</span>
+     <span>Kartová hra pre dvoch v drsnom dedinskom prostredí. Stav partiu z kariet, bi sa o lokality, des starších.</span>
+     <div class="r"><span class="tl h">Zahraj si s Majstrom Melicharom</span><span class="m">~15 min, naučí ťa hrať</span></div>
+     <div class="r"><span class="tl">Pravidlá</span><span class="tl">Prezrieť karty</span></div>
+    </div>
+    <div class="il f1" style="min-height:220px">Veľká ilustrácia: vejár kariet Pijan · Farár · Krčma</div>
+   </div>
+   <div class="rs">
+    <div class="ob s f1"><span class="h2">Stav partiu</span><span class="m">Karty sa dotýkajú stranami…</span></div>
+    <div class="ob s f1"><span class="h2">Bi sa o lokality</span><span class="m">Pitka, NA EX…</span></div>
+    <div class="ob s f1"><span class="h2">Des starších</span><span class="m">Priazeň a strach…</span></div>
+   </div>
+   <div class="b m">Pätička: © Michal Calík · Hra je fikcia a karikatúra. Alkohol, fajčenie a hazard škodia zdraviu.</div>
+  </div>
+ </div>
+</div>
+<ul class="popis">
+  <li>Jedna hlavná výzva: <strong>výučba</strong> (Melichar je sprievodca). Klik bez účtu → registrácia s návratom do výučby (<span class="mc">?spat=/hra?vyucba=1</span>).</li>
+  <li>Tri pruhy namiesto dlaždíc, ktoré opakovali menu: vysvetľujú hru, nie web. Krčmový akcent smie byť v nadpise a ilustrácii (slot „titulka“).</li>
+</ul>
+</details>
+
+<details class="wfd">
+<summary>D3 · Pravidlá — kapitola (supporting pane)</summary>
+<div class="wf" role="img" aria-label="Pravidlá: hlavička kapitoly s veľkou ilustráciou karty, text kapitoly s pojmami, vpravo obsah 14 kapitol s vyznačenou aktuálnou a pod ním Ďalšia kapitola">
+ <div class="desk">
+  <div class="rail"><div class="logo">[pohárik]</div><div class="fab">Hrať</div><div class="i"><span></span>Hrať</div><div class="i a"><span></span>Pravidlá</div><div class="i"><span></span>Karty</div><div class="i"><span></span>Komunita</div><div class="i"><span></span>Ja</div></div>
+  <div class="plocha">
+   <div class="appbar"><span class="t">Pravidlá</span><span class="hladat">Hľadať pojem, kartu, hráča  /</span><span class="kruh"></span></div>
+   <div class="rs">
+    <div class="s f3">
+     <div class="il" style="min-height:150px">Ilustrácia karty kapitoly (napr. Krčma pre „Pitka a NA EX“)</div>
+     <span class="m">Kapitola 7 z 14</span><span class="h1">Pitka a NA EX</span>
+     <div class="b" style="height:44px">Odsek s <u>pojmom</u> (klik/fokus = definícia v popoveri, Esc zavrie)</div>
+     <div class="b" style="height:70px">Interaktívny príklad</div>
+     <div class="r"><span class="tl">← Zhromaždenie</span><span style="flex:1"></span><span class="tl h">Cena pitia →</span></div>
+    </div>
+    <div class="s f1">
+     <div class="ob s"><span class="h2">Kapitoly</span><span class="m">1 Čo je NA EX!</span><span class="m">…</span><span class="c a">7 Pitka a NA EX</span><span class="m">8 Cena pitia</span><span class="m">…</span><span class="m">14 Špaky a finále</span></div>
+     <div class="ob s"><span class="h2">Pojmy v kapitole</span><span class="c">Pitka</span><span class="c">NA EX</span><span class="c">poldeci</span></div>
+    </div>
+   </div>
+  </div>
+ </div>
+</div>
+<ul class="popis">
+  <li>Každá kapitola má vlastnú adresu (<span class="mc">/pravidla/pitka</span>) — dá sa poslať a otvoriť zo stola.</li>
+  <li>Obsah kapitol je <em>nav</em> s <span class="mc">aria-current="location"</span>; hľadanie pojmu sa presunie do globálneho hľadania (výsledky zoskupené: Pojmy · Kapitoly · Karty).</li>
+</ul>
+</details>
+
+<details class="wfd">
+<summary>D4 · Karty — Glosár (list-detail)</summary>
+<div class="wf" role="img" aria-label="Karty: záložky Glosár, Akcie a pojmy, Dielňa s odznakom; čipy filtrov; mriežka kariet vľavo; detail vybranej karty vpravo s efektom, príbehom a účelom">
+ <div class="desk">
+  <div class="rail"><div class="logo">[pohárik]</div><div class="fab">Hrať</div><div class="i"><span></span>Hrať</div><div class="i"><span></span>Pravidlá</div><div class="i a"><span></span>Karty <b class="n">1</b></div><div class="i"><span></span>Komunita</div><div class="i"><span></span>Ja</div></div>
+  <div class="plocha">
+   <div class="appbar"><span class="t">Karty</span><span class="hladat">Hľadať pojem, kartu, hráča  /</span><span class="kruh"></span></div>
+   <div class="tabs"><span class="a">Glosár</span><span>Akcie a pojmy</span><span>Dielňa <b class="n">1</b></span></div>
+   <div class="r"><span class="c a">Všetky 60</span><span class="c">Občania</span><span class="c">Starešinovia</span><span class="c">Lokality</span><span class="c">Zvieratá</span><span class="m">· Triediť: podľa názvu ▾</span></div>
+   <div class="rs">
+    <div class="s f2"><div class="r" style="flex-wrap:nowrap"><div class="b3" style="flex:1;height:90px">Pijan</div><div class="b" style="flex:1;height:90px">Farár</div><div class="b" style="flex:1;height:90px">Krčma</div><div class="b" style="flex:1;height:90px">…</div></div><div class="r" style="flex-wrap:nowrap"><div class="b" style="flex:1;height:90px">…</div><div class="b" style="flex:1;height:90px">…</div><div class="b" style="flex:1;height:90px">…</div><div class="b" style="flex:1;height:90px">…</div></div></div>
+    <div class="ob s f1"><span class="h2">Pijan</span><div class="b" style="height:110px">Lícna strana karty</div><span class="m">Efekt · Príbeh · Účel v hre</span><span class="m">Pojmy: NA EX, poldeci</span></div>
+   </div>
+  </div>
+ </div>
+</div>
+<ul class="popis">
+  <li>Vybraná karta má adresu (<span class="mc">/karty/pijan</span>); šípky medzi kartami, <kbd>Esc</kbd> zruší výber. Hlavná akcia stránky je len v Dielni („Navrhnúť kartu“).</li>
+  <li>Dnes „prejdi myšou ponad akciu“ (<span class="mc">Domov.tsx:96</span>) — po novom klik / fokus, nie hover.</li>
+</ul>
+</details>
+
+<details class="wfd">
+<summary>D5 · Komunita — Novinky (feed s hlavičkou)</summary>
+<div class="wf" role="img" aria-label="Komunita: záložky Novinky s odznakom, Rebríček, Spätná väzba, Vývoj; box Odkedy si tu nebol s tlačidlom Mám prečítané; novinky ako karty s ilustráciou; pomocný panel s vydaniami">
+ <div class="desk">
+  <div class="rail"><div class="logo">[pohárik]</div><div class="fab">Hrať</div><div class="i"><span></span>Hrať</div><div class="i"><span></span>Pravidlá</div><div class="i"><span></span>Karty</div><div class="i a"><span></span>Komunita <b class="n">2</b></div><div class="i"><span></span>Ja</div></div>
+  <div class="plocha">
+   <div class="appbar"><span class="t">Komunita</span><span class="hladat">Hľadať pojem, kartu, hráča  /</span><span class="kruh"></span></div>
+   <div class="tabs"><span class="a">Novinky <b class="n">2</b></span><span>Rebríček</span><span>Spätná väzba</span><span>Vývoj</span></div>
+   <div class="rs">
+    <div class="s f3">
+     <div class="ob r"><div class="s f1" style="gap:2px"><span class="h2">Odkedy si tu nebol (25. 10.) — pred ďalšou partiou vedz:</span><span class="m">2 zmeny pravidiel · 3 nové karty</span></div><span class="tl">Mám prečítané</span></div>
+     <div class="ob rs"><div class="il" style="width:180px;min-height:100px">Ilustrácia karty (Pakt)</div><div class="s f1"><span class="m">27. 10. · Pravidlá</span><span class="h2">Pravidlá v7: lokality podľa úrovní</span><span class="m">Čo sa mení pre teba…</span></div></div>
+     <div class="ob rs"><div class="il" style="width:180px;min-height:100px">Ilustrácia</div><div class="s f1"><span class="m">26. 10. · Karty</span><span class="h2">Nové karty: Pakt, Kšefty</span></div></div>
+    </div>
+    <div class="ob s f1"><span class="h2">Vydania</span><span class="c">Všetko</span><span class="c">Pravidlá</span><span class="c">Karty</span><span class="c">Web</span><span class="c">Opravy</span></div>
+   </div>
+  </div>
+ </div>
+</div>
+<ul class="popis">
+  <li>Rebríček = feed (tabuľka s riadkom „ty“ zvýrazneným), Vývoj = supporting pane (známky + roadmapa so stĺpcami). Záložky sú adresy <span class="mc">/komunita/novinky</span> atď.</li>
+  <li>„Mám prečítané“ zhasne odznak hneď (optimisticky) a ukáže snackbar „Označené ako prečítané · Späť“.</li>
+</ul>
+</details>
+
+<details class="wfd">
+<summary>D6 · Komunita — Spätná väzba s formulárom (list-detail + side sheet)</summary>
+<div class="wf" role="img" aria-label="Spätná väzba: tlačidlo Napísať názor, segmentované stavy Otvorené Plánujeme Hotovo Nebudeme, zoznam názorov s hlasmi, vpravo bočný panel s formulárom: O čom píšeš (čipy kategórií), nadpis, text, tlačidlo Odoslať">
+ <div class="desk">
+  <div class="rail"><div class="logo">[pohárik]</div><div class="fab">Hrať</div><div class="i"><span></span>Hrať</div><div class="i"><span></span>Pravidlá</div><div class="i"><span></span>Karty</div><div class="i a"><span></span>Komunita</div><div class="i"><span></span>Ja</div></div>
+  <div class="plocha">
+   <div class="appbar"><span class="t">Komunita</span><span class="hladat">Hľadať pojem, kartu, hráča  /</span><span class="kruh"></span></div>
+   <div class="tabs"><span>Novinky</span><span>Rebríček</span><span class="a">Spätná väzba</span><span>Vývoj</span></div>
+   <div class="rs">
+    <div class="s f2">
+     <div class="r"><span class="tl h">+ Napísať názor</span><span class="tl">Ohodnotiť hru</span><span style="flex:1"></span><span class="c a">Otvorené 12</span><span class="c">Plánujeme 4</span><span class="c">Hotovo 30</span><span class="c">Nebudeme 6</span></div>
+     <div class="b r"><span class="c">▲ 7</span> Pitka by mala ukázať cenu vopred · <span class="m">Hranie a ovládanie</span></div>
+     <div class="b r"><span class="c">▲ 3</span> Na mobile sa neotočí karta · <span class="m">Chyba</span></div>
+     <div class="b m">…</div>
+    </div>
+    <div class="ob s f1"><span class="h2">Napísať názor</span><span class="m">O čom píšeš?</span><div class="r"><span class="c">Chyba</span><span class="c a">Pravidlá a balans</span><span class="c">Karty</span><span class="c">Hranie a ovládanie</span><span class="c">Web a vzhľad</span><span class="c">Nápad</span></div><div class="b">Nadpis</div><div class="b" style="height:60px">Text</div><div class="r"><span class="tl">Zrušiť</span><span class="tl h">Odoslať názor</span></div></div>
+   </div>
+  </div>
+ </div>
+</div>
+<ul class="popis">
+  <li>Formulár je <strong>bočný sheet</strong>: zoznam ostáva viditeľný (hráč si overí, či to už niekto nenapísal). Rozpísaný text sa pri zatvorení nezahodí bez otázky.</li>
+  <li>Po odoslaní: sheet sa zavrie, nový názor je navrchu zoznamu zvýraznený, snackbar „Názor odoslaný · Zobraziť“. Chyba odoslania ostane vo formulári pri poli, text sa nestratí.</li>
+</ul>
+</details>
+
+<details class="wfd">
+<summary>D7 · Ja — profil (supporting pane) a Vzhľad</summary>
+<div class="wf" role="img" aria-label="Ja: záložky Prehľad, Partie, Achievementy, Nastavenia; vľavo forma, bilancia, Frajerina; vpravo karta hráča s avatarom; dole sekcia Vzhľad s režimom a akcentom">
+ <div class="desk">
+  <div class="rail"><div class="logo">[pohárik]</div><div class="fab">Hrať</div><div class="i"><span></span>Hrať</div><div class="i"><span></span>Pravidlá</div><div class="i"><span></span>Karty</div><div class="i"><span></span>Komunita</div><div class="i a"><span></span>Ja</div></div>
+  <div class="plocha">
+   <div class="appbar"><span class="t">Ja</span><span class="hladat">Hľadať pojem, kartu, hráča  /</span><span class="kruh"></span></div>
+   <div class="tabs"><span class="a">Prehľad</span><span>Partie</span><span>Achievementy</span><span>Nastavenia</span></div>
+   <div class="rs">
+    <div class="s f2"><div class="r" style="flex-wrap:nowrap"><div class="b f1">Frajerina 1 240</div><div class="b f1">Bilancia 12 : 8</div><div class="b f1">Forma ● ● ○ ● ●</div></div><div class="b krcma" style="height:60px">Posledný achievement (krčmový slot)</div><div class="b" style="height:60px">Silné a slabé stránky</div></div>
+    <div class="ob s f1"><span class="kruh" style="width:64px;height:64px"></span><span class="h2">Michal</span><span class="m">Rank Deci · farba hráča ■■</span><span class="tl">Upraviť profil</span></div>
+   </div>
+   <div class="ob s"><span class="h2">Nastavenia · Vzhľad</span><div class="r"><span class="m">Režim:</span><span class="c a">Podľa systému</span><span class="c">Svetlý</span><span class="c">Tmavý</span></div><div class="r"><span class="m">Akcent:</span><span class="c a">● 1</span><span class="c">● 2</span><span class="c">● 3</span><span class="c">● 4</span><span class="m">· prejaví sa hneď, uloží sa v účte</span></div><div class="r"><span class="m">Farba hráča (pri stole):</span><span class="c">pár Wada ▾</span></div></div>
+  </div>
+ </div>
+</div>
+<ul class="popis">
+  <li>Cudzí profil (z Rebríčka) je tá istá šablóna bez Nastavení, v app bare „← Rebríček“.</li>
+  <li>Hráč, ktorý mal jednu z 28 starých schém: dostane najbližší akcent a režim podľa jasu starej schémy + jednorazovú novinku „Farby sme zjednodušili, vyber si akcent“ (návrh migrácie, rozhodne developer).</li>
+</ul>
+</details>
+
+<details class="wfd">
+<summary>D8 · Správa — oddelený priestor (prehľad + Playtest)</summary>
+<div class="wf" role="img" aria-label="Správa: vlastný rail s položkami Prehľad, Playtest, Tvorba, Hráči a tlačidlom Späť na web; app bar Správa · Playtest; zoznam návrhov na rozhodnutie vľavo a detail návrhu vpravo s tlačidlami Schváliť a Zamietnuť">
+ <div class="desk">
+  <div class="rail"><div class="logo">Správa</div><div class="i"><span></span>Prehľad</div><div class="i a"><span></span>Playtest <b class="n">3</b></div><div class="i"><span></span>Tvorba</div><div class="i"><span></span>Hráči</div><div class="i dole"><span></span>← Web</div></div>
+  <div class="plocha">
+   <div class="appbar"><span class="t">Playtest</span><span class="hladat">Hľadať v návrhoch</span><span class="kruh"></span></div>
+   <div class="tabs"><span class="a">Návrhy <b class="n">3</b></span><span>Reporty</span></div>
+   <div class="rs">
+    <div class="s f1"><div class="r"><span class="c a">Na rozhodnutie 3</span><span class="c">Schválené</span><span class="c">Zamietnuté</span></div><div class="b3">UX: 5 cieľov navigácie · dizajn</div><div class="b">Policajtka a patronát · playtest</div><div class="b">Výkupné za špaky · navrhár</div></div>
+    <div class="ob s f2"><span class="h2">UX: 5 cieľov navigácie</span><span class="m">Z reportu dizajn-redizajn · závažnosť 3</span><div class="b" style="height:90px">Text návrhu, odkaz na report</div><div class="r"><span class="tl h">Schváliť</span><span class="tl">Zamietnuť</span><span class="tl">Odložiť</span><span class="m">· J / K ďalší · predchádzajúci</span></div></div>
+   </div>
+  </div>
+ </div>
+</div>
+<ul class="popis">
+  <li><strong>Prehľad správy</strong> (predvolená) = „čo čaká“: N návrhov na rozhodnutie, nezverejnené zmeny sady s tlačidlom „Zverejniť v17“, nové chyby zo Spätnej väzby, rozohrané partie pred nasadením.</li>
+  <li>Tvorba ostáva hustá (dnešné skupiny Sada · Vzhľad kariet · Výstup ako záložky alebo druhý rail), bez maximálnej šírky. Na mobile len čítanie.</li>
+  <li>Po rozhodnutí: zoznam skočí na ďalší návrh, snackbar „Schválené · Späť“ (10 s) namiesto potvrdzovacieho dialógu.</li>
+</ul>
+</details>
+
+<h2 id="mobil">7. Mobil (390 px) — ako sa desktop prispôsobí</h2>
+<ul class="popis">
+  <li><strong>Rail → navigation bar dole</strong> (5 cieľov, výška 80, ikona + popis). Správa pre správcu ako položka v Ja (s odznakom).</li>
+  <li><strong>FAB „Hrať“ z railu zmizne</strong> (Hrať je v bare); FAB dostane hlavná akcia stránky (Napísať názor, Navrhnúť kartu) vpravo dole nad barom — palcová zóna.</li>
+  <li><strong>Top app bar</strong>: titulok + ikona hľadania (otvorí celoplošné hľadanie) + avatar. Pruh rozohranej partie ostáva pod app barom.</li>
+  <li><strong>List-detail → dve obrazovky</strong> (zoznam, detail s „←“); <strong>supporting pane → bottom sheet</strong> (obsah kapitol, filtre, vydania); <strong>side sheet formulára → celoplošný dialóg</strong> s „Zavrieť“ a „Odoslať“ hore.</li>
+  <li>Záložky: posuvné, aktívna vždy viditeľná. Mriežka kariet: 2 stĺpce.</li>
+  <li>Pri stole <span class="mc">/hra</span> bar zmizne (ako dnes navigácia).</li>
+</ul>
+<div class="wf mobily" role="img" aria-label="Štyri mobilné modely: Hrať so zoznamom volieb, Pravidlá s bottom sheetom kapitol, detail karty s tlačidlom späť, Spätná väzba s FAB Napísať názor">
+  <div class="mob"><div class="appbar"><span class="t">Hrať</span><span class="c">⌕</span><span class="kruh"></span></div><div class="obs"><div class="b" style="font-weight:600">● Partia HZ3T beží · Späť ku stolu</div><div class="ob s" style="gap:3px"><b>Prvá hra s Melicharom</b><span class="m">~15 min</span><span class="tl h">Pokračovať</span></div><span class="r"><span class="c">Krátka</span><span class="c a">Stredná</span><span class="c">Dlhá</span></span><div class="ob"><b>Proti počítaču</b> · začne hneď</div><div class="ob"><b>S kamarátom</b> · pozvánka</div><div class="ob"><b>S kýmkoľvek</b> · verejná</div><div class="ob m">Mám kód · Čakajú (2) · Posledné</div></div><div class="bar"><div class="i a"><span></span>Hrať</div><div class="i"><span></span>Pravidlá</div><div class="i"><span></span>Karty</div><div class="i"><span></span>Komunita</div><div class="i"><span></span>Ja</div></div></div>
+  <div class="mob"><div class="appbar"><span class="t">Pitka a NA EX</span><span class="c">⌕</span><span class="kruh"></span></div><div class="obs"><div class="il" style="min-height:90px">Ilustrácia karty</div><span class="m">Kapitola 7 z 14</span><div class="b" style="height:50px">Text…</div></div><div class="sheet" style="bottom:58px"><div class="uchyt"></div><b>Kapitoly</b><div class="m">6 Zhromaždenie</div><div class="c a">7 Pitka a NA EX</div><div class="m">8 Cena pitia</div></div><div class="bar"><div class="i"><span></span>Hrať</div><div class="i a"><span></span>Pravidlá</div><div class="i"><span></span>Karty</div><div class="i"><span></span>Komunita</div><div class="i"><span></span>Ja</div></div></div>
+  <div class="mob"><div class="appbar"><span class="t">← Pijan</span><span class="kruh"></span></div><div class="obs"><div class="b3" style="height:180px">Lícna strana karty</div><div class="b">Efekt</div><div class="b">Príbeh · Účel v hre</div><div class="r"><span class="tl">‹ Predošlá</span><span class="tl">Ďalšia ›</span></div></div><div class="bar"><div class="i"><span></span>Hrať</div><div class="i"><span></span>Pravidlá</div><div class="i a"><span></span>Karty</div><div class="i"><span></span>Komunita</div><div class="i"><span></span>Ja</div></div></div>
+  <div class="mob"><div class="appbar"><span class="t">Komunita</span><span class="c">⌕</span><span class="kruh"></span></div><div class="tabs" style="padding:0 10px;overflow:hidden"><span>Novinky</span><span>Rebríček</span><span class="a">Spätná väzba</span></div><div class="obs"><div class="r"><span class="c a">Otvorené</span><span class="c">Plánujeme</span><span class="c">…</span></div><div class="b">▲ 7 Pitka by mala…</div><div class="b">▲ 3 Na mobile…</div><div class="b m">…</div></div><div class="fabm">+ Napísať názor</div><div class="bar"><div class="i"><span></span>Hrať</div><div class="i"><span></span>Pravidlá</div><div class="i"><span></span>Karty</div><div class="i a"><span></span>Komunita</div><div class="i"><span></span>Ja</div></div></div>
+</div>
+
+<h2 id="stavy">8. Stavy a krčmové chvíle</h2>
+<div class="tab-obal">
+<table>
+<thead><tr><th>Stav</th><th>Správanie</th><th>Mikrocopy (príklad)</th><th>Krčmový akcent?</th></tr></thead>
+<tbody>
+<tr><td>Načítavanie</td><td>kostra obsahu (sivé bloky v tvare výsledku), nie spinner cez celú stránku; nad 10 s veta s cestou von</td><td>„Server sa ešte preberá… Skús obnoviť stránku.“</td><td>nie</td></tr>
+<tr><td>Prázdny stav</td><td>ilustrácia / pečiatka + jedna veta + jedna akcia, ktorá stav zmení</td><td>„Nikto nečaká na súpera. Založ verejnú hru — ukáže sa tu ostatným.“ [Hľadať súpera]</td><td><strong>áno</strong> (slot)</td></tr>
+<tr><td>Chyba</td><td>pri mieste, kde vznikla; čo sa stalo + čo urobiť; zadané údaje ostávajú</td><td>„Kód ABCD neexistuje alebo hra už začala. Skontroluj kód alebo založ novú hru.“</td><td>nie</td></tr>
+<tr><td>Úspech / vratná akcia</td><td>snackbar dole (desktop vľavo dole, mobil nad barom), 6–10 s, s „Späť“ kde sa dá</td><td>„Názor odoslaný · Zobraziť“, „Schválené · Späť“</td><td>nie</td></tr>
+<tr><td>Nevratná akcia</td><td>dialóg s náhľadom dôsledku, predvolené = bezpečná voľba</td><td>„Zverejniť sadu v17? Hráči v rozohraných partiách dohrajú na v16.“</td><td>nie</td></tr>
+<tr><td>Rozohraná partia</td><td>pruh pod app barom + bodka na cieli Hrať</td><td>„Partia HZ3T beží · Späť ku stolu“</td><td>nie</td></tr>
+<tr><td>Výsledok partie</td><td>karta v Hrať → Posledné a v detaile partie</td><td>„Výhra 14 : 11. Fero platí rundu.“</td><td><strong>áno</strong> (slot)</td></tr>
+<tr><td>Achievement</td><td>vitrína v Ja, oznam po partii</td><td>názov achievementu (krčmový text ostáva)</td><td><strong>áno</strong> (slot)</td></tr>
+<tr><td>Titulka</td><td>nadpis a ilustrácia</td><td>„Bitka o dedinu. Na ex!“</td><td><strong>áno</strong> (slot)</td></tr>
+<tr><td>Bez práva</td><td>namiesto skrytého odkazu vysvetlenie a cesta k právu</td><td>„Rebríček uvidíš po prvej dohratej partii.“ (podľa skutočného pravidla ranku)</td><td>nie</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="toky">9. Toky (dnes → po)</h2>
+<p class="meta">Počty krokov dnes sú z kódu (kliky a rozhodnutia), nie z merania; odhad.</p>
+
+<h3>A · Prvá návšteva z pozvánky kamaráta</h3>
+<div class="tok">
+ <div><h4>Dnes</h4><ol><li>Otvorí <span class="mc">/hra?kod=ABCD</span> → „Hrať môžu prihlásení“</li><li>Vytvoriť účet → registrácia (<span class="mc">?spat=/hra</span>)</li><li>Po registrácii lobby — <strong>kód je preč</strong></li><li>Musí sa kamaráta spýtať na kód, nájsť „Mám kód“, napísať ho</li><li>Pripojiť sa</li></ol><p><span class="pocet">≈ 6 krokov + slepá ulička</span></p></div>
+ <div class="po"><h4>Po</h4><ol><li>Otvorí pozvánku → stránka „Jožo ťa pozýva na partiu (Stredná)“ s pohárikom, 1 veta o hre</li><li>„Prisadnúť“ → registrácia v jednom kroku (meno, heslo), kód ostáva v návrate</li><li>Rovno pri stole</li></ol><p><span class="pocet">3 kroky</span> · ak pozvánka vypršala: „Jožo už hrá. Zahraj si zatiaľ s Melicharom“.</p></div>
+</div>
+
+<h3>B · Začať partiu (vracajúci sa hráč)</h3>
+<div class="tok">
+ <div><h4>Dnes</h4><ol><li>Titulka → Hrať (menu alebo hero)</li><li>V lobby prečítať 2 panely, zvoliť dĺžku</li><li>Zísť k „Proti počítaču“ → klik</li><li>Prípadne ponuka výučby (<span class="mc">Hra.tsx:290–292</span>) → zavrieť</li></ol><p><span class="pocet">3–4 kliky, 5 rozhodnutí na obrazovke</span></p></div>
+ <div class="po"><h4>Po</h4><ol><li>Web sa otvorí rovno na Hrať</li><li>„Hrať proti počítaču“ (dĺžka predvolená, pamätá sa posledná)</li></ol><p><span class="pocet">1 klik</span> · s kamarátom: 2 kliky (Vytvoriť pozvánku → Kopírovať odkaz).</p></div>
+</div>
+
+<h3>C · Nájsť pravidlo (aj počas partie)</h3>
+<div class="tok">
+ <div><h4>Dnes</h4><ol><li>Pri stole menu webu nie je → klik na logo</li><li>Dialóg „Odísť z partie?“ → odísť</li><li>Pravidlá → pole hľadania → výsledok</li><li>Späť ku stolu (pilulka)</li></ol><p><span class="pocet">≈ 5 krokov, opustí stôl</span></p></div>
+ <div class="po"><h4>Po</h4><ol><li>Kdekoľvek mimo stola <kbd>/</kbd> alebo pole hľadania → „pitka“</li><li>Výsledky: Pojem Pitka · kapitola 7 · karty s Pitkou → Enter</li></ol><p><span class="pocet">2 kroky</span> · pri stole: <strong>otázka na Michala</strong> — pridať do menu Partia ▾ položku „Pravidlá (nové okno)“? Stôl je mimo rozsahu, preto len ako návrh.</p></div>
+</div>
+
+<h3>D · Dať spätnú väzbu</h3>
+<div class="tok">
+ <div><h4>Dnes</h4><ol><li>Nájsť „Spätná väzba“ (na užšom okne v „Viac ▾“)</li><li>Napísať názor → formulár</li><li>Kategória, nadpis, text → odoslať</li></ol><p><span class="pocet">4–5 krokov</span></p></div>
+ <div class="po"><h4>Po</h4><ol><li>Komunita → Spätná väzba (alebo z menu avatara „Napísať názor“ odkiaľkoľvek)</li><li>„Napísať názor“ → bočný sheet, zoznam ostáva viditeľný</li><li>Kategória (čip), text → Odoslať → snackbar</li></ol><p><span class="pocet">3–4 kroky</span>, stabilné miesto; kategória „Web a vzhľad“ predvyplnená, ak sa otvorí z menu avatara na stránke webu.</p></div>
+</div>
+
+<h3>E · Admin: rozhodnúť návrhy a zverejniť sadu</h3>
+<div class="tok">
+ <div><h4>Dnes</h4><ol><li>Správa ▾ → Playtest (odznak) → zoznam</li><li>Otvoriť návrh → rozhodnúť → späť na zoznam × N</li><li>Správa ▾ → Tvorba kariet → Prehľad a zverejnenie → Zverejniť</li></ol><p><span class="pocet">≈ 3 + 2N krokov, dve menu</span></p></div>
+ <div class="po"><h4>Po</h4><ol><li>Rail „Správa 3“ → Prehľad správy: „3 návrhy · 5 zmien sady“</li><li>Návrhy v list-detail: Schváliť → automaticky ďalší (<kbd>J</kbd>/<kbd>K</kbd>), snackbar s „Späť“</li><li>Prehľad → „Zverejniť v17“ → dialóg s dôsledkom</li></ol><p><span class="pocet">≈ 3 + N krokov</span></p></div>
+</div>
+
+<h2 id="wcag">10. Prístupnosť — WCAG 2.2 AA pre kostru</h2>
+<div class="tab-obal">
+<table>
+<thead><tr><th>Kritérium</th><th>Čo musí kostra splniť</th></tr></thead>
+<tbody>
+<tr><td>1.3.1, 2.4.1 Štruktúra, preskočenie</td><td>„Preskočiť na obsah“ ako prvý fokus; landmarky <span class="mc">nav</span> (rail / bar, <span class="mc">aria-label="Hlavná navigácia"</span>), <span class="mc">header</span> (app bar), <span class="mc">main</span>; jeden <span class="mc">h1</span> = titulok stránky.</td></tr>
+<tr><td>2.4.3 Poradie fokusu</td><td>preskok → rail (logo, FAB, ciele) → app bar (hľadanie, avatar) → pruh partie → záložky → obsah → pomocný panel. Sheet / dialóg drží fokus v sebe a vráti ho na spúšťač.</td></tr>
+<tr><td>2.4.7 + 2.4.11 Viditeľný a nezakrytý fokus</td><td>obrys min. 2 px s kontrastom 3:1 v oboch režimoch a pri každom akcente; fokus nesmie zakryť app bar, pruh partie ani snackbar (scroll-padding).</td></tr>
+<tr><td>4.1.2 Navigácia a záložky</td><td>aktívny cieľ <span class="mc">aria-current="page"</span>; záložky sú odkazy s <span class="mc">aria-current</span> (sú to adresy), nie <span class="mc">role="tab"</span>; filtre <span class="mc">aria-pressed</span>; dĺžka partie radiogroup.</td></tr>
+<tr><td>1.1.1, 4.1.2 Odznaky</td><td>odznak má text pre čítačku v názve odkazu („Komunita, 2 nové novinky“), bodka partie „Hrať, partia beží“.</td></tr>
+<tr><td>4.1.3 Stavové správy</td><td><span class="mc">aria-live="polite"</span>: snackbary, „pribudla hra“, „súper sa pripojil“, výsledok hľadania („5 výsledkov“). Chyby formulára <span class="mc">role="alert"</span> len pri odoslaní.</td></tr>
+<tr><td>2.5.8 Veľkosť cieľa</td><td>min. 24 × 24 px (AA), kostra cieli na 44 × 44 (ciele railu a baru, čipy, ikony v app bare, zatváranie sheetu).</td></tr>
+<tr><td>1.4.3, 1.4.11 Kontrast</td><td>text 4.5:1, ikony a obrysy ovládacích prvkov 3:1 — pre <strong>každý akcent v oboch režimoch</strong> (4 × 2 = 8 overení namiesto 28). Odznak nesie číslo, nielen farbu.</td></tr>
+<tr><td>1.4.1 Nielen farba</td><td>aktívny cieľ = pilulka + tučný popis; stav názoru = text; výsledok partie = slovo „Výhra / Prehra“.</td></tr>
+<tr><td>1.4.10, 1.4.4 Reflow, zväčšenie</td><td>pri 320 px a 200 % zväčšení bez vodorovného posunu (okrem tabuliek Tvorby); rail sa pri zväčšení prepne na bar.</td></tr>
+<tr><td>1.4.13 Obsah pri hover / fokuse</td><td>definícia pojmu a náhľad karty sa otvoria aj fokusom/klikom, zavrú <kbd>Esc</kbd>, dajú sa prejsť myšou; nič len na hover.</td></tr>
+<tr><td>2.1.1, 2.1.4 Klávesnica, skratky</td><td><kbd>/</kbd> a <kbd>Ctrl</kbd>+<kbd>K</kbd> hľadanie, <kbd>J</kbd>/<kbd>K</kbd> v Správe — len keď fokus nie je v poli; dajú sa vypnúť v Nastaveniach.</td></tr>
+<tr><td>3.3.7, 3.3.8 Redundantné zadanie, prihlásenie</td><td>registrácia z pozvánky nepýta údaje dvakrát; prihlásenie dovolí správcu hesiel a vloženie (žiadne CAPTCHA hádanky).</td></tr>
+<tr><td>2.3.3 / prefers-reduced-motion</td><td>animácie railu, sheetov a krčmových pečiatok sa pri zníženom pohybe vypnú.</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="poradie">11. Odporúčané poradie, overenie, otvorené otázky</h2>
+<h3>Poradie implementácie (po výbere UI smeru)</h3>
+<ol class="popis">
+  <li><strong>Hneď a nezávisle od redizajnu:</strong> oprava pozvánky — návrat po prihlásení / registrácii s celou adresou vrátane <span class="mc">?kod=</span> (<span class="mc">hra/Hra.tsx:338–341</span>, <span class="mc">App.tsx:36</span>). Malá úloha, veľký dopad na prvú návštevu.</li>
+  <li>Tokeny: jedna téma, svetlý / tmavý, 3–4 akcenty; migrácia 28 schém.</li>
+  <li>Kostra: rail / bar, app bar, pruh partie, snackbar, stavy; presmerovania starých adries.</li>
+  <li>Hrať ako domov prihláseného (D1) a titulka (D2).</li>
+  <li>Komunita so záložkami (D5, D6), Karty (D4), Pravidlá s adresami kapitol (D3), Ja (D7).</li>
+  <li>Globálne hľadanie (pojmy, kapitoly, karty, hráči).</li>
+  <li>Správa ako oddelený priestor (D8).</li>
+</ol>
+<h3>Otázky do playtestu (čo sledovať)</h3>
+<ul class="popis">
+  <li>Nový hráč z pozvánky: dostal sa k stolu kamaráta bez toho, aby sa pýtal na kód? (cieľ: 100 %)</li>
+  <li>Vracajúci sa hráč: koľko klikov od otvorenia webu po prvý ťah proti počítaču? (cieľ: 1–2)</li>
+  <li>„Kde nájdeš Novinky / Rebríček?“ — nájde ich pod Komunitou bez hľadania? (5-sekundový test)</li>
+  <li>Akcent a tmavý režim: dá sa všetko prečítať pri každom akcente? (kontrola nástrojom + 1 človek)</li>
+</ul>
+<h3>Na rozhodnutie Michala</h3>
+<div class="otazka"><strong>1. Pravidlá pri stole.</strong> Má menu Partia ▾ pri stole dostať položku „Pravidlá“ (otvorí sa v novej karte, partia beží ďalej)? Stôl je mimo redizajnu, preto len otázka. <em>Odporúčam áno.</em></div>
+<div class="otazka"><strong>2. Pozvánka ako vlastná stránka.</strong> Má pozvánka <span class="mc">/hra?kod=…</span> pre neprihláseného ukázať meno toho, kto pozýva, a dĺžku partie (server to vie, nie je to skrytá informácia)? <em>Odporúčam áno.</em></div>
+<div class="otazka"><strong>3. Oprava pozvánky hneď.</strong> Opraviť stratu kódu po prihlásení už teraz, nezávisle od redizajnu? <em>Odporúčam áno.</em></div>
+
+</main>
+<footer>UX dizajnér (naex-ux) · 2026-10-27 · kód webu sa nemenil · odpovede Michala na fázu 1 sú v časti Rozhodnutia.</footer>
+<script>
+(function(){
+  var tl=document.querySelectorAll('.filtre button');
+  var riadky=document.querySelectorAll('#audit tbody tr');
+  tl.forEach(function(b){b.addEventListener('click',function(){
+    tl.forEach(function(x){x.setAttribute('aria-pressed',String(x===b));});
+    var f=b.getAttribute('data-f');
+    riadky.forEach(function(r){r.hidden=!(f==='vsetko'||r.getAttribute('data-z')===f);});
+  });});
+})();
+</script>
+</body>
+</html>
