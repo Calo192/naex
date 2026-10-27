@@ -22,6 +22,7 @@ import {
   jeCoTahat,
   kartyZaPas,
   KONSTANTY,
+  jeFinaleNaNastenke,
   STUPNICA_ZONY,
   cigariet,
   spakov,
@@ -596,7 +597,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
   for (const k of v.lokalityVHre) out.push(`  ${popisKarty(k)}`);
   if (v.nastenka.length > 0)
     out.push(
-      `NÁSTENKA (odohrané bitky): ${v.nastenka.map((b) => `${b.lokalita === null ? "finále" : meno(b.lokalita.defId)} — ${b.vitaz === null ? "sekera" : `${kto(b.vitaz)} +${b.zaBitku[b.vitaz]}`}, za starších ty +${b.zaStarsich[ja]} / súper +${b.zaStarsich[su]}${b.exekutor[ja] + b.exekutor[su] > 0 ? `, Exekútor ty −${b.exekutor[ja]} / súper −${b.exekutor[su]}` : ""}`).join("; ")}`,
+      `NÁSTENKA (odohrané bitky): ${v.nastenka.map((b) => `${jeFinaleNaNastenke(b) ? `finále${b.lokalita === null ? "" : ` (${meno(b.lokalita.defId)})`}` : b.lokalita === null ? "?" : meno(b.lokalita.defId)} — ${b.vitaz === null ? "sekera" : `${kto(b.vitaz)} +${b.zaBitku[b.vitaz]}`}, za starších ty +${b.zaStarsich[ja]} / súper +${b.zaStarsich[su]}${b.exekutor[ja] + b.exekutor[su] > 0 ? `, Exekútor ty −${b.exekutor[ja]} / súper −${b.exekutor[su]}` : ""}`).join("; ")}`,
     );
   if (v.spakyNaSekere > 0) out.push(`NA SEKERE: ${spakov(v.spakyNaSekere)} (vezme ich víťaz najbližšej bitky, vo finále prepadnú)`);
 

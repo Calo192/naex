@@ -10,7 +10,7 @@ import {
   cielLokalitaId,
   cieleVykladania,
   cigaretyZPitky,
-  jeFinale,
+  finaleBezStredu,
   lineState,
   nahladPitky,
   paleneDlhyVBitke,
@@ -421,7 +421,8 @@ export function najhorsiaOdpoved(
   let najhorsiaHodnota = hodnotaPreMna(battleOutcome(bitka(po)));
   const lokalita = cielLokalitaId(po);
   const zablokovane = zablokovaneStrany(po);
-  const finale = jeFinale(po);
+  // Prázdna strana sa prikladá ku karte v strede len vo finále bez lokality (v6).
+  const finale = finaleBezStredu(po);
   for (const def of data.cards.values()) {
     if (def.tags.includes("Lokalita") || def.tags.includes("Starešina")) continue;
     const varianty = data.variants.get(def.id);

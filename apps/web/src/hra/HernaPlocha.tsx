@@ -67,6 +67,7 @@ import {
   tvar,
   vyhladDlhov,
   cieleVykladania,
+  finaleBezStredu,
   cielLokalitaId,
   evaluateLine,
   pocitadloBitky,
@@ -989,10 +990,13 @@ export function HernaPlocha({
   // Pre mňa sú skryté NA EX dané: náhľady a výhľady rátajú s nimi tak, ako ich motor
   // zúčtuje pri odkrytí (poldeci, pečeň, Svokra, Výpalné — sMojimiSkrytymiNaex).
   const zaklad = useMemo(() => sMojimiSkrytymiNaex(data, view), [data, view]);
-  // Finále (v6): bez lokality, prvá karta leží v strede línie (strany[stranaStreduFinale][0]).
+  // Finále v7 je na pinnacle lokalite a línia je ako v každom kole (Michal 2026-10-27:
+  // stôl kreslil prázdny stred finále v6). Len finále bez lokality (stará sada) má
+  // v strede prvú vyloženú kartu (strany[stranaStreduFinale][0]).
   const jeFinaleStola = view.ciel?.typ === "finale";
+  const finaleBezLokality = finaleBezStredu(view);
   const sf = view.stredFinale ?? null;
-  const stranaStreduFinale: PlayerId | null = jeFinaleStola && sf !== null && view.strany[sf].length > 0 ? sf : null;
+  const stranaStreduFinale: PlayerId | null = finaleBezLokality && sf !== null && view.strany[sf].length > 0 ? sf : null;
   // Oznam finále (v6): raz na začiatku finále — kto útočí a prečo; sám zmizne alebo ho hráč zavrie.
   const [oznamFinale, setOznamFinale] = useState<"caka" | "ukazany" | "zavrety">("caka");
   useEffect(() => {
@@ -1376,7 +1380,7 @@ export function HernaPlocha({
       for (const k of volne) {
         // Odpoveď na NA EX je jediná karta — nová nahradí navrhnutú, ráta sa teda bez nej.
         const chyba = reagujem
-          ? cieleVykladania(data, view.strany, ja, k, Number.POSITIVE_INFINITY, true, cielLokalitaId(view), zablokovaneStrany(view)).includes(c)
+          ? cieleVykladania(data, view.strany, ja, k, Number.POSITIVE_INFINITY, true, cielLokalitaId(view), zablokovaneStrany(view), finaleBezStredu(view)).includes(c)
             ? null
             : "Sem žiadnu kartu z ruky vyložiť nesmieš."
           : planTahu([...vylozenia, { karta: k, ciel: c }]).chyba;
@@ -1603,7 +1607,10 @@ export function HernaPlocha({
     });
     setUcetBitky({
       kolo: pred.kolo,
-      lokalita: zaklad.ciel?.typ === "finale" ? "Finále" : zaklad.ciel?.lokalita === null || zaklad.ciel === null ? "" : menoKarty(zaklad.ciel.lokalita.defId),
+      lokalita:
+        zaklad.ciel === null || zaklad.ciel.lokalita === null
+          ? zaklad.ciel?.typ === "finale" ? "Finále" : ""
+          : `${zaklad.ciel.typ === "finale" ? "Finále · " : ""}${menoKarty(zaklad.ciel.lokalita.defId)}`,
       tuhe: v?.damage.tuhe ?? [0, 0],
       vitaz: v?.vitaz ?? null,
       prebytok: v?.prebytok ?? 0,
@@ -1726,7 +1733,7 @@ export function HernaPlocha({
       if (z.navrh) out.add("ruka");
     }
     if (z.odkial === "ruka" && reagujem) {
-      for (const c of cieleVykladania(data, view.strany, ja, z.karta, Number.POSITIVE_INFINITY, true, cielLokalitaId(view), zablokovaneStrany(view))) {
+      for (const c of cieleVykladania(data, view.strany, ja, z.karta, Number.POSITIVE_INFINITY, true, cielLokalitaId(view), zablokovaneStrany(view), finaleBezStredu(view))) {
         if (c === "vlastna" || c === "superova") out.add(c);
       }
       if (z.navrh) out.add("ruka");
@@ -2120,8 +2127,8 @@ export function HernaPlocha({
         <h3 id="oznam-finale-nadpis">Finále</h3>
         <p>
           {view.ciel?.lokalita != null
-            ? `Posledná bitka na vrcholovej lokalite ${menoKarty(view.ciel.lokalita.defId)} — kraje, prevaha aj počet Pitiek ako na každej lokalite.`
-            : `Posledná bitka bez lokality, vždy ${KONSTANTY.FINALE_PITKY} Pitky.`}
+            ? `Posledná bitka na vrcholovej lokalite ${menoKarty(view.ciel.lokalita.defId)} — karty sa kladú k nej ako v každom kole, platia jej hrany, efekt, kraje aj prevaha. Víťaz dostane 1 špak za každú odohranú Pitku.`
+            : `Posledná bitka bez lokality, vždy ${KONSTANTY.FINALE_PITKY} Pitky — víťaz dostane ${KONSTANTY.FINALE_PITKY} špaky.`}
         </p>
         <div className="oznam-skore">
           <PocetSpakov n={view.spaky[ja]} kto="moj" velky titul={`Tvoje špaky: ${view.spaky[ja]}`} />
@@ -2173,6 +2180,7 @@ export function HernaPlocha({
       koniec={view.koniec !== null}
       ucet={ucet ? { body, zvyraznit: nastenkaPre } : undefined}
       vyber={vyber}
+      finaleNaVrchole={view.rozpis !== undefined}
     />
   );
   const aktivneCiele: ReadonlySet<string> = tahanie === null ? new Set() : cieleZdroja(tahanie.zdroj);
@@ -2413,7 +2421,7 @@ export function HernaPlocha({
   const naStoleNavrh = nahladZaverecnej && zaverecna?.kroky != null ? polozkySoZaverecnou(vylozenia) : vylozenia;
   // Finále bez karty v strede: prvá navrhnutá karta do línie pôjde do stredu — kreslí ju stredLinie.
   const navrhStreduFinale =
-    jeFinaleStola && stranaStreduFinale === null ? (naStoleNavrh.find((x) => x.ciel === "vlastna" || x.ciel === "superova") ?? null) : null;
+    finaleBezLokality && stranaStreduFinale === null ? (naStoleNavrh.find((x) => x.ciel === "vlastna" || x.ciel === "superova") ?? null) : null;
   const navrhnutaKarta = (x: (typeof naStoleNavrh)[number]): ReactNode => {
     {
       const z: Zdroj = { karta: x.karta, odkial: "ruka", navrh: true };
@@ -2661,8 +2669,8 @@ export function HernaPlocha({
       </span>
     );
   const stredLinie = ((): ReactNode => {
-    // Finále (v6): v strede leží prvá vyložená karta — línia ide od nej na obe strany.
-    if (jeFinaleStola) {
+    // Finále bez lokality (v6): v strede leží prvá vyložená karta — línia ide od nej na obe strany.
+    if (finaleBezLokality) {
       const stred = stranaStreduFinale === null ? undefined : view.strany[stranaStreduFinale][0];
       if (stred !== undefined) return kartaVLinii(stred);
       if (navrhStreduFinale !== null) return navrhnutaKarta(navrhStreduFinale);
@@ -5435,7 +5443,7 @@ export function HernaPlocha({
                       : `Hrana k tebe: ${krajStrany(ja)} · hrana k súperovi: ${krajStrany(super_)}`
                   }
                 >
-                  {jeFinaleStola ? "finále · stred" : lokalita !== null || lokalitaNavrh !== null ? "lokalita" : "cieľ kola"}
+                  {finaleBezLokality ? "finále · stred" : jeFinaleStola && lokalita !== null ? "finále · lokalita" : lokalita !== null || lokalitaNavrh !== null ? "lokalita" : "cieľ kola"}
                 </span>
                 <div className="partia-rad harmonika">{stredLinie}</div>
                 {popisStranStredu}

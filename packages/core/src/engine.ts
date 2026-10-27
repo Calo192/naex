@@ -295,8 +295,10 @@ export interface BitkaStav {
  */
 export interface BitkaNaNastenke {
   readonly kolo: number;
-  /** Karta lokality; null = finále. */
+  /** Karta lokality; null = finále bez lokality (v6). */
   readonly lokalita: CardInstance | null;
+  /** Finále, aj na pinnacle lokalite (v7). Chýba v záznamoch spred 2026-10-27 — tam je finále lokalita null. */
+  readonly finale?: boolean;
   readonly vitaz: PlayerId | null;
   readonly rozhodlo: RozhodnutieBitky;
   /** Odohrané Pitky kola. */
@@ -740,8 +742,14 @@ export function lineState(s: VerejnyStav & { readonly lokalitaOtocena: boolean }
     lokalita: s.ciel?.lokalita ?? null,
     lokalitaOtocena: s.lokalitaOtocena,
     strany: s.strany,
-    ...(jeFinale(s) ? { finale: true } : {}),
+    // LineState.finale = finále bez lokality (v6); na pinnacle (v7) je línia ako v každom kole.
+    ...(finaleBezStredu(s) ? { finale: true } : {}),
   };
+}
+
+/** Bitka na nástenke bola finále — aj na pinnacle (príznak), v starších záznamoch bez lokality. */
+export function jeFinaleNaNastenke(b: Pick<BitkaNaNastenke, "lokalita" | "finale">): boolean {
+  return b.finale === true || b.lokalita === null;
 }
 
 /** Koľko posledných bitiek skončilo sekerou — ich špaky čakajú na víťaza ďalšej bitky. */
@@ -751,7 +759,7 @@ export function bitkyNaSekere(nastenka: readonly Pick<BitkaNaNastenke, "vitaz">[
   return n;
 }
 
-/** Hrá sa finále — posledná bitka bez lokality (v6). */
+/** Hrá sa finále — posledná bitka (v7 na pinnacle lokalite; v6 bez lokality, finaleBezStredu). */
 export function jeFinale(s: Pick<VerejnyStav, "ciel">): boolean {
   return s.ciel?.typ === "finale";
 }
@@ -4369,7 +4377,7 @@ export function cieleVykladania(
    * nemá; na serveri ju prezradí príznak karty na konci strany.
    */
   zablokovane: readonly [boolean, boolean] = [false, false],
-  /** Finále (jeFinale): prázdna strana sa prikladá ku karte v strede (susedNaKonci). */
+  /** Finále bez lokality (finaleBezStredu): prázdna strana sa prikladá ku karte v strede (susedNaKonci). */
   finale = false,
 ): CielVykladania[] {
   const def = defOf(data, karta);
@@ -4662,7 +4670,6 @@ function vyplatSpaky(s: MutState, data: GameData, outcome: BattleOutcome, abstak
     const { komu, zisk, herna, spolu } = spakyZaVyhru(s as GameState, vitaz, pitky, abstaky);
     abstakZrazka = pitky - zisk > 0 ? pitky - zisk : 0;
     zoSekery = s.spakyNaSekere;
-    if (herna > 0) events.push({ type: "log", text: `Herňa: hráč ${porazeny + 1} má ${pocet(herna, "priznaný Dlh", "priznané Dlhy", "priznaných Dlhov")} — víťaz berie ${spakov(herna)} navyše.` });
     zaBitku[komu] = spolu;
     s.spakyNaSekere = 0;
     s.spaky[komu] += zaBitku[komu];
@@ -4670,7 +4677,8 @@ function vyplatSpaky(s: MutState, data: GameData, outcome: BattleOutcome, abstak
     const preco = outcome.rozhodlo === "abstak" ? " (remíza v tuhom, menej Absťákov)" : outcome.rozhodlo === "dlhy" ? " (remíza v tuhom aj v Absťákoch, menej priznaných Dlhov)" : "";
     events.push({
       type: "log",
-      text: `Bitku ${rodovo(vitaz, "vyhral", "vyhrala", "vyhráva")} hráč ${vitaz + 1}${preco}: ${spakov(zisk + zoSekery + herna)} za ${pocet(pitky, "Pitku", "Pitky", "Pitiek")}${abstakZrazka > 0 ? ` mínus ${abstakZrazka} za Absťák` : ""}${zoSekery > 0 ? ` a ${zoSekery} zo sekery` : ""}.`,
+      // Zložky zvlášť (Michal 2026-10-27): 1 špak za Pitku, Herňa za Dlhy porazeného, sekera.
+      text: `Bitku ${rodovo(vitaz, "vyhral", "vyhrala", "vyhráva")} hráč ${vitaz + 1}${preco}: ${spakov(zisk + zoSekery + herna)} — 1 špak za Pitku (${pocet(pitky, "Pitka", "Pitky", "Pitiek")})${abstakZrazka > 0 ? ` mínus ${abstakZrazka} za Absťák` : ""}${herna > 0 ? `, +${herna} za Dlhy porazeného (Herňa, ${pocet(herna, "priznaný Dlh", "priznané Dlhy", "priznaných Dlhov")})` : ""}${zoSekery > 0 ? `, +${zoSekery} zo sekery` : ""}.`,
     });
   } else if (finale) {
     prepadlo = pitky + s.spakyNaSekere;
@@ -4702,6 +4710,7 @@ function vyplatSpaky(s: MutState, data: GameData, outcome: BattleOutcome, abstak
   s.nastenka.push({
     kolo: s.kolo,
     lokalita: lokalita as DeepMutable<CardInstance> | null,
+    ...(finale ? { finale: true } : {}),
     vitaz,
     rozhodlo: outcome.rozhodlo,
     pitky,

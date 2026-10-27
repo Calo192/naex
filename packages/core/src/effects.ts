@@ -392,7 +392,8 @@ export function limitBuduceKolo(state: StavPoldeci & { readonly lokalitaOtocena?
 
 /** Aktívne akcie Poldeci v línii — v bitke otočia toľko vypitých poldeci na plné (vypiPoldeci). */
 function akciePoldeci(data: GameData, state: VerejnyStav, lokalitaOtocena: boolean): readonly [number, number] {
-  const finale = state.ciel?.typ === "finale";
+  // Finále bez lokality (v6) má líniu bez stredu; na pinnacle (v7) je línia ako inde.
+  const finale = state.ciel?.typ === "finale" && state.ciel.lokalita === null;
   const sums = evaluateLine(data, { lokalita: state.ciel?.lokalita ?? null, lokalitaOtocena, strany: state.strany, ...(finale ? { finale: true } : {}) }).sums;
   return [sums[0].Poldeci ?? 0, sums[1].Poldeci ?? 0];
 }
