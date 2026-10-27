@@ -19,7 +19,7 @@ import type {
   StavkaBitky as StavkaBitkyCisla,
   ZdrojeAkcii,
 } from "@naex/core";
-import { KONSTANTY, battleOutcome, cenaFajceniaHraca, jeCielLokalita, limitBuduceKolo, limitZhromazdenia, lokalitNevybranych, pocet, tvar, vidiVolbuSupera } from "@naex/core";
+import { KONSTANTY, battleOutcome, cenaFajceniaHraca, hraVPitke, jeCielLokalita, limitBuduceKolo, limitZhromazdenia, lokalitNevybranych, pocet, tvar, vidiVolbuSupera } from "@naex/core";
 import { ZMENA_SVIETI_MS, klikKrokuOsi, krokPartie, minSek, textZmeny } from "./stitokPartie.ts";
 import type { Rod } from "@naex/core";
 import type { Sada } from "@naex/tvorba";
@@ -530,12 +530,18 @@ export function HracDoska({
   const spakyVidno = useSpakyVDlazdici(view.spaky[p], pocitadloBezi);
   const odpojenyMs = useOdpojenyCas(spojenie?.odpojenyOd ?? null, spojenie !== undefined && !spojenie.pripojeny);
   const meno = info?.meno ?? `Hráč ${p + 1}`;
-  // Stavbu šenku hrajú obaja naraz — „na ťahu“ je každý, kto ešte nevybral.
+  // Stavbu šenku aj Pitku (Michal 2026-10-27) hrajú obaja naraz — „na ťahu“ je každý, kto ešte neskončil.
+  const ps = view.pitkaStav;
   const naTahu =
-    view.koniec === null && (view.faza === "draft" && view.draftStav?.krok === "stavba" ? !view.draftStav.vybral[p] : view.naTahu === p);
+    view.koniec === null &&
+    (view.faza === "draft" && view.draftStav?.krok === "stavba"
+      ? !view.draftStav.vybral[p]
+      : view.faza === "pitka" && view.vizia === null && ps !== null
+        ? ps.reakcia === p || hraVPitke(ps, p)
+        : view.naTahu === p);
   // NA EX naraz (v5): skryté NA EX vidí len jeho majiteľ (viewFor) — poldeci sa odpíše až pri odkrytí,
   // no hráč ho už dal, preto ho tu ukážeme ako ležiaci na stole. Zrážka = druhý poldeci na karte (naexBy2).
-  // Súperove skryté NA EX prídu len s Bzdochou (vyberám po ňom) — a moje vidí súper, keď ju má on.
+  // Súperove skryté NA EX prídu len s Bzdochou (hrám Pitku po ňom) — a moje vidí súper, keď ju má on.
   const skryteNaex = (view.pitkaStav?.skryteNaex ?? []).filter((x) => x.hrac === p).length;
   const kSkrytemu = ja
     ? vidiVolbuSupera(data, view, p === 0 ? 1 : 0)

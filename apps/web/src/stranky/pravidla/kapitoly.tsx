@@ -212,7 +212,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <H3 id="kolo-utocnik">Útočník a obranca</H3>
         <p>
           <strong>Útočník</strong> je ten, kto prehral poslednú bitku: berie zo šenku prvý a v Zhromaždení vykladá prvý.{" "}
-          <strong>Obranca</strong> vyberá a natáča cieľ kola a v Pitke začína — útočník má v Pitke posledné slovo. Vo finále
+          <strong>Obranca</strong> vyberá a natáča cieľ kola. Pitku hráte obaja naraz; na odkryté NA EX odpovedá prvý obranca, útočník má posledné slovo. Vo finále
           útočí zaostávajúci — kto má menej špakov.
         </p>
       </>
@@ -337,7 +337,7 @@ export const KAPITOLY: readonly Kapitola[] = [
     obrazok: "07-pitka-a-naex",
     vSkratke: [
       "Počet Pitiek = 1 + menší počet aktivovaných akcií lokality z jej dvoch strán.",
-      "Obranca začína, útočník má posledné slovo.",
+      "Pitku hráte obaja naraz, každý skončí sám; na NA EX odpovedá prvý obranca, útočník má posledné slovo.",
       "NA EX vyberáte skryto; odkryje sa, keď ste hotoví obaja.",
       "NA EX zruší aktívne a zdvojí neaktívne akcie karty; karta musí mať oboje.",
       "Na každé súperovo NA EX odpovieš jednou kartou — najprv obranca, potom útočník.",
@@ -355,9 +355,10 @@ export const KAPITOLY: readonly Kapitola[] = [
         </p>
         <H3 id="pitka-poradie">Poradie Pitky</H3>
         <p>
-          <strong>Začína obranca.</strong> Na svojom ťahu smieš fajčiť, doliať, barterovať a skryto vybrať NA EX. Keď skončíš,
-          nedá sa to vrátiť. Potom hrá rovnako útočník. Keď ste hotoví obaja, NA EX sa odkryjú a odpovedáte na ne — najprv
-          obranca, útočník má <strong>posledné slovo</strong>. Potom sa Pitka vyhodnotí:
+          <strong>Pitku hráte obaja naraz.</strong> Kým ju neskončíš, smieš fajčiť, doliať, barterovať, použiť Kšefty a Úplatky
+          a skryto vybrať NA EX — súperove nákupy vidíš hneď, jeho NA EX nie. Keď skončíš, nedá sa to vrátiť. Keď ste hotoví
+          obaja, NA EX sa odkryjú a odpovedáte na ne — najprv obranca, útočník má <strong>posledné slovo</strong>. Jediná výnimka
+          je <strong>Bzdocha</strong>: jej majiteľ čaká, kým súper skončí, a potom hrá a vidí jeho NA EX. Potom sa Pitka vyhodnotí:
         </p>
         <ol>
           <li>NA EX — odkrytie a odpovede.</li>
@@ -374,7 +375,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <p className="tlmene">Pitka sama karty nedáva — doberáš si ich fajčením, priznaním kliatby, Víziou a efektmi kariet.</p>
         <H3 id="naex">NA EX</H3>
         <p>
-          Na svojom ťahu v Pitke položíš plný poldeci na kartu v línii s tagom <strong>Občan</strong> alebo{" "}
+          V Pitke, kým ju neskončíš, položíš plný poldeci na kartu v línii s tagom <strong>Občan</strong> alebo{" "}
           <strong>Starešina</strong> — svoju aj súperovu. V základe raz za Pitku. Karta musí mať{" "}
           <strong>aspoň jednu aktívnu a aspoň jednu neaktívnu akciu</strong>; inak by <P k="naex">NA EX</P> nič nezmenilo.{" "}
           <strong>NA EX vyberáš skryto</strong> — súper nevie, či si ho dal ani kam, kým nie ste hotoví obaja.
@@ -424,7 +425,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <H3 id="pitka-cigarety">Fajčenie, doliatie a barter</H3>
         <ul>
           <li>
-            <P k="fajcenie">Fajčenie</P> — karta z balíčka hneď; len na svojom ťahu v Pitke, v Zhromaždení nie. Prvé fajčenie
+            <P k="fajcenie">Fajčenie</P> — karta z balíčka hneď; len v Pitke, kým ju neskončíš, v Zhromaždení nie. Prvé fajčenie
             v Pitke stojí 1 cigaretu, druhé 2, tretie 3… a každá Pitka začína znova od 1.
           </li>
           <li>

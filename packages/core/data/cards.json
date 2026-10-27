@@ -3004,7 +3004,7 @@
     "Influencer",
     "Žena"
    ],
-   "effect_text": "Pitka: Ak vyberáš NA EX po súperovi, vidíš jeho voľbu.",
+   "effect_text": "Pitka: Súper hrá Pitku pred tebou; vidíš jeho NA EX.",
    "triggers": [
     "Pitka"
    ],
