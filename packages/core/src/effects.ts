@@ -65,7 +65,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   ministrant: "impl", // Výhra: posun markera stojí +1 prebytku
   nealko: "impl", // Dedičstvo: Poldeci/NA EX bez pečene; Poldeci nedopĺňa
   niekoho_stryna: "impl", // Nástup: zahoď 1 Cirhózu alebo 1 Dlh z ruky
-  noviny: "impl", // Dedičstvo (v6): po bitke +1 špak, keď sa ťa bojí viac starších ako súpera (engine.ts)
+  noviny: "impl", // Dedičstvo (v6): po vyhratej bitke (pri sekere obom) +1 špak, keď sa ťa bojí viac starších ako súpera (engine.ts)
   pasca: "impl", // Dedičstvo: každé súperovo Zviera v línii mu uberie 1 tuhé (Michal 2026-10-20)
   pijan: "impl", // Bitka: rana do vlastnej partie pri žene s aktívnym poldeci
   policajtka: "impl", // Nástup: preskúmaj a rozdeľ doberací balíček (voľba hráča)

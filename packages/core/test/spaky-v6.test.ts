@@ -152,11 +152,11 @@ describe("v6 karty: Kultúrny dom, Noviny", () => {
     expect(st.starsi.filter((e) => e.marker !== 3)).toHaveLength(1);
   });
 
-  it("Noviny: 1 špak navyše, keď sa hráča bojí viac starších ako súpera (počet starších, nie zón)", () => {
-    const sNovinami = (markery: readonly number[]) =>
+  it("Noviny: 1 špak navyše, keď sa hráča bojí viac starších ako súpera (počet starších, nie zón) — v6.1 len víťazovi, pri sekere obom", () => {
+    const sNovinami = (markery: readonly number[], sums: BitkaStav["sums"] = [{ Rana: 5 }, {}]) =>
       predPoskodenim({
         ciel: lokalita(s0, "krcma"),
-        sums: [{}, { Rana: 1 }],
+        sums,
         uprav: (t) => ({
           ...t,
           hraci: [{ ...t.hraci[0], dedicstvo: [inst("noviny")] }, t.hraci[1]],
@@ -164,10 +164,14 @@ describe("v6 karty: Kultúrny dom, Noviny", () => {
         }),
       });
     // Hráča 0 sa boja dvaja (prvý po Pohoršení 3 → 4 a druhý), hráča 1 jeden — aj keď v červenej.
-    // Hráč 0 bitku prehral: za starších nič (v6.1), Noviny dajú svoj špak aj tak („po bitke“).
-    expect(pohorsenie(sNovinami([3, 4, 0])).state.nastenka.at(-1)?.zaStarsich).toEqual([1, 3]);
+    // Hráč 0 vyhral: 1 + 1 za starších a Noviny +1; porazený hráč 1 nič.
+    expect(pohorsenie(sNovinami([3, 4, 0])).state.nastenka.at(-1)?.zaStarsich).toEqual([1 + 1 + 1, 0]);
     // Rovnako starších (1 : 1) — nič navyše.
-    expect(pohorsenie(sNovinami([3, 3, 0])).state.nastenka.at(-1)?.zaStarsich).toEqual([0, 3]);
+    expect(pohorsenie(sNovinami([3, 3, 0])).state.nastenka.at(-1)?.zaStarsich).toEqual([1, 0]);
+    // Hráč 0 prehral: za starších nič a ani Noviny (Michal 2026-10-27).
+    expect(pohorsenie(sNovinami([3, 4, 0], [{}, { Rana: 5 }])).state.nastenka.at(-1)?.zaStarsich).toEqual([0, 3]);
+    // Sekera: obaja za starších, Noviny tiež.
+    expect(pohorsenie(sNovinami([3, 4, 0], [{}, {}])).state.nastenka.at(-1)?.zaStarsich).toEqual([1 + 1 + 1, 3]);
   });
 });
 

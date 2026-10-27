@@ -140,7 +140,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   **Skryto (v5):** `naex` súper nevidí do odkrytia; odpovedáš po odkrytí za každé súperovo NA EX,
   najprv obranca, potom útočník. **Zrážka** (obaja na tú istú kartu) = **Výtržník**: karta sa
   spáruje so susedmi s pôvodnými akciami, potom sú všetky jej akcie aktívne Rany pre majiteľa,
-  do konca bitky — aj jej Posilnenie je už len Rana a suseda nezdvojuje (v6.1); pečeň, poldeci, Svokru aj Výpalné platí každý za svoje NA EX.
+  do konca bitky — aj jej Posilnenie a Odpor sú už len Rany, suseda nezdvojujú ani nerušia (v6.1); pečeň, poldeci, Svokru aj Výpalné platí každý za svoje NA EX.
   Krčma vynúti NA EX. Násobky sa **násobia** (NA EX × Silná žena = ×4, aj Dlh
   a Poškodenie pečene) a NA EX leží na karte do bitky — vyhodnotí sa v každej
   Pitke kola. Každá možnosť `naex` v stave ukazuje cenu: bitku pred a po
@@ -168,7 +168,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 - **Exekútor (v6):** kto má priznaných Dlhov aspoň na prahu, tomu zhorí **polovica
   Dlhov (nadol) a rovnako veľa špakov** — Nástroj sa neodovzdáva, prehra nie je.
   Záhradkár: smieš ho zahodiť namiesto špakov (`{"type":"zahradkar","zahodit":true|false}`),
-  Dlhy zhoria aj tak. **Noviny** (Dedičstvo, v6): +1 špak po bitke (aj prehratej), keď sa ťa bojí
+  Dlhy zhoria aj tak. **Noviny** (Dedičstvo, v6): +1 špak po vyhratej bitke (pri sekere obom), keď sa ťa bojí
   viac starších ako súpera.
 - **Patronát (2026-10-20, nahradil bitku o staršieho):** po braní zo šenku
   (útočník, potom obranca; `patronat` / `bezPatronatu`) si smieš vziať do ruky

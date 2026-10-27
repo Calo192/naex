@@ -451,11 +451,9 @@ function applyVzbura(elem: Elem): void {
  * (Michal 2026-10-24); partnerova akcia ostáva aktívna ×1. Beží pred applyNaex
  * všetkých kariet, aby NA EX na partnerovi (zrušenie, Veterán ×2) vychádzalo
  * už z ×1. Veteránovi NA EX Posilnenie nezruší, takže zdvojenie ostáva.
- * Výtržníkovi (zrážka) sa Posilnenie mení na Ranu — je to už len Rana a suseda
- * nezdvojuje, ani keď je Veterán (v6.1, Michal 2026-10-27).
  */
-function zrusPosilnenie(elem: Elem, vytrznik: boolean): void {
-  if (!vytrznik && (elem.naexBy === undefined || elem.defId === "veteran")) return;
+function zrusPosilnenie(elem: Elem): void {
+  if (elem.naexBy === undefined || elem.defId === "veteran") return;
   for (const { elem: partner, side, k } of elem.posilnene) {
     if (partner.stav[side]![k] !== "aktivna" || partner.nasobok[side]![k] !== 2) continue;
     partner.nasobok[side]![k] = 1;
@@ -586,6 +584,16 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
   const partia1 = line.strany[1].map((p) =>
     makeElem(data, p.card, p.playedBy, p.playedBy === 1, false, p.vytrznik === true ? undefined : p.naexBy, 1),
   );
+  // Posilnenie a Odpor Výtržníka sú už len Rany (v6.1, Michal 2026-10-27): suseda
+  // nezdvojujú ani nerušia, spoj s nimi je obyčajný pár. Ostatné akcie sa spárujú
+  // ako vytlačené — zmena na Rany príde až po spojoch (nižšie).
+  for (const elem of [...partia0, ...partia1]) {
+    if (!vytrznici.has(elem.uid)) continue;
+    const bezModifikatora = (x: Slot): Slot => (x === "Posilnenie" || x === "Odpor" ? "Rana" : x);
+    const m = elem as { effLeft: readonly Slot[]; effRight: readonly Slot[] };
+    m.effLeft = elem.effLeft.map(bezModifikatora);
+    m.effRight = elem.effRight.map(bezModifikatora);
+  }
 
   // Prevaha (Michal 2026-10-20, rozbor strategia-strany-20261020): akcie hrany
   // lokality dostane, kto má na tej strane viac svojich kariet (Nástroje sa
@@ -623,12 +631,12 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
       for (const sused of [seg[i - 1], seg[i + 1]]) if (sused !== undefined && !sused.isLokalita) vedlaSofera.add(sused);
     });
   }
-  for (const elem of elems) zrusPosilnenie(elem, vytrznici.has(elem.uid));
+  for (const elem of elems) zrusPosilnenie(elem);
   for (const elem of elems) applyNaex(elem, vedlaSofera.has(elem));
   const ranyPijana = kartoveEfekty(segments);
   // Výtržník (zrážka NA EX naraz, v5): každá akcia karty je aktívna Rana pre
-  // majiteľa. Spoje susedov sa rátajú s vytlačenými akciami — Výtržník ich nemení,
-  // len jeho Posilnenie už suseda nezdvojuje (zrusPosilnenie, v6.1).
+  // majiteľa. Spoje susedov sa rátajú s vytlačenými akciami (okrem Posilnenia
+  // a Odporu, vyššie) — Výtržník ich nemení.
   for (const elem of elems) {
     if (!vytrznici.has(elem.uid)) continue;
     const rana = (x: Slot): Slot => (x === null ? null : "Rana");
