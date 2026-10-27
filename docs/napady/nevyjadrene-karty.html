@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nevyjadrené karty</title>
+<style>
+:root{
+  --pozadie:#f5f1e8; --papier:#fffdf7; --text:#2b2520; --tlmene:#6b6155;
+  --linka:#d8cfbf; --akcent:#8a4b2d; --variant:#9a7b22; --nie:#a33b3b;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --pozadie:#1d1a16; --papier:#262219; --text:#e8e0d2; --tlmene:#a89c8a;
+    --linka:#3d372d; --akcent:#d08a5e; --variant:#d3b45a; --nie:#d97b7b;
+  }
+}
+:root[data-theme="dark"]{
+  --pozadie:#1d1a16; --papier:#262219; --text:#e8e0d2; --tlmene:#a89c8a;
+  --linka:#3d372d; --akcent:#d08a5e; --variant:#d3b45a; --nie:#d97b7b;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--pozadie);color:var(--text);font:16px/1.5 Georgia,'Times New Roman',serif;padding:16px}
+main{max-width:860px;margin:0 auto}
+h1{font-size:1.6em;margin:.2em 0 .1em;color:var(--akcent)}
+.pod{color:var(--tlmene);margin:0 0 1em}
+section{background:var(--papier);border:1px solid var(--linka);border-radius:10px;padding:12px 16px;margin:14px 0}
+h2{font-size:1.1em;margin:.1em 0 .4em;color:var(--akcent)}
+ul{margin:.3em 0 .4em;padding-left:1.3em}
+li{margin:.3em 0}
+a{color:var(--akcent)}
+.pozn{color:var(--tlmene);font-size:.9em}
+b.v{color:var(--variant)}
+code{font-family:Consolas,monospace;font-size:.88em;background:var(--pozadie);padding:1px 5px;border-radius:4px}
+.stlpce{columns:2;column-gap:28px}
+@media (max-width:560px){ .stlpce{columns:1} body{padding:12px} }
+</style>
+</head>
+<body>
+<main>
+<h1>Karty, ku ktorým sa Michal ešte nevyjadril</h1>
+<p class="pod">28. októbra 2026 · efektová iterácia · odpoveď stačí v tvare <code>id-A/B/C</code>, „Nechať dnešný“, alebo „Inak: …“</p>
+
+<section>
+<h2>1 · Dávka 4 — starešinovia a lokality (27 kariet, <a href="efekty-navrhy-4.html">efekty-navrhy-4.html</a>)</h2>
+<p><b>Starešinovia (8):</b></p>
+<ul class="stlpce">
+<li>Veterinár</li><li>Autobusár</li><li>Starosta</li><li>Farár</li>
+<li>Poštárka</li><li>Hrobár</li><li>Vychovávateľka</li><li>Krčmárka</li>
+</ul>
+<p><b>Lokality (19):</b></p>
+<ul class="stlpce">
+<li>Zastávka</li><li>Most</li><li>Lesná cesta</li><li>Cintorín</li><li>Jednota</li>
+<li>Ihrisko</li><li>Benzínka</li><li>Kar</li><li>Zberný dvor</li><li>Krčma</li>
+<li>Sklad</li><li>Obecný úrad</li><li>Kultúrny dom</li><li>Vínna pivnica</li><li>Družstvo</li>
+<li>Kostol</li><li>Poľovnícka chata</li><li>Predsedova vila</li><li>Herňa</li>
+</ul>
+<p class="pozn">K dávke patria 2 otázky: smie lokalita prepožičať Konflikt prvej karte pri nej? · smie karta zmeniť majiteľa bez otočenia? (stoja na nich veterinar-B, postarka-B, sklad-C, predsedova_vila-A)</p>
+</section>
+
+<section>
+<h2>2 · Dávka 1 — nástroje „bez voľby“ (8 kariet, <a href="efekty-navrhy-1.html">efekty-navrhy-1.html</a>)</h2>
+<ul class="stlpce">
+<li>Vínko</li><li>Pasca</li><li>Puška</li><li>Svätý text</li>
+<li>Nealko</li><li>Výherný automat</li><li>Vidly</li><li>Lievik</li>
+</ul>
+<p class="pozn">Povedz aj: chceš k nim <b>nové kolo návrhov</b> (iným smerom), alebo vyberieš z terajších A/B/C neskôr? Pri Pasci visí aj „nahradiť či pridať k efektu proti Zvieratám“.</p>
+</section>
+
+<section>
+<h2>3 · Rozhodnuté karty, kde chýba dopovedať detail</h2>
+<ul>
+<li><b>Kulturista</b> — meno efektového spúšťača „súper platí cigaretami za zmiernenie“: koliduje s akciou Pakt. <b class="v">Úplatok / Výpalné / Dohoda / iné / premenovať akciu?</b></li>
+<li><b>Šarlatán</b> — trvanie premeny (Dlh→Viera, Povera→Rana): <b class="v">kým leží v línii (návrh)</b>, alebo natrvalo?</li>
+<li><b>Policajtka</b> — „Pokuta na mieste“ <b class="v">nahrádza</b> jej efekt z NA EX trojice? (návrh: áno)</li>
+<li><b>Anonymný alkoholik</b> — „priznaj Cirhózy“ nahrádza Placatku → <b class="v">z trojice ostáva len Svokra?</b> (návrh: áno)</li>
+<li><b>Záhradkár</b> — nová Exekúcia nahrádza <b class="v">oba</b> efekty z revízie (prah +2, Výhra poldeci)? (návrh: áno)</li>
+<li><b>Dievčina na vydaj</b> — nové „Prehra: Dlhy súperovi“ nahrádza aj D4 (veno od 4 Dlhov)? (návrh: áno)</li>
+<li><b>Oslávenec</b> — výklad: efekt rozhodnutý, ale karta <b class="v">zatiaľ len návrh</b> (nie v sade)? (návrh: áno)</li>
+<li><b>Živnostník</b> — pri Záverečnej sa Nástroj <b class="v">neprikladá</b>? (návrh: áno, neprikladá)</li>
+<li><b>Pes · Krokodíl · Miňištrant · Pijan</b> — presné znenia navrhnuté (Pes ako Furt na spoji so súperom ×2; Krokodíl „na konci bitky odídu Občania a Zvieratá v okolí, tvoji aj súperovi“; Miňištrant „Nástup: ak vyvoláš Konflikt, Viera sa ráta ako Pecka“; Pijan „Pitka: o 1 NA EX viac“) — <b class="v">platia?</b></li>
+</ul>
+</section>
+
+<section>
+<h2>4 · Principiálne otázky (ovplyvňujú viac návrhov)</h2>
+<ul>
+<li>Smie karta efektom <b>natrvalo prejsť k súperovi</b>? (nie je naliehavé — dotknuté návrhy E2 už padli výberom, ale platí do budúcna)</li>
+<li>Smie <b>lokalita prepožičať Konflikt</b> prvej karte pri nej? (E4)</li>
+<li>Smie karta <b>zmeniť majiteľa bez otočenia</b>? (E4)</li>
+</ul>
+</section>
+
+<section>
+<h2>5 · Mimo efektov — ilustrácia</h2>
+<ul>
+<li><b>Družstvo — finál:</b> 1 (koberec so zablateným traktorom) · 2 (symetrický kaštieľ s kobercom) · 3 (schôdza s košmi ovocia) · 5 (kombajn vo fólii) — <a href="../../..//Projects/handoff/ilustracie-lokality-20261027/kolaz-lokality-vyber2.jpg">koláž vyber2</a></li>
+</ul>
+</section>
+
+<p class="pozn">Rozhodnuté a zapracované sú: E2 celá, E1 okrem 8 nástrojov, E3 celá (vrátane odstránenia Presbitera a Opatrovateľky a stiahnutia Smetiarky, Brigádnika a Oslávenca na návrhy), Konflikt (jednosmerný), Sklad, Dávka 3, Pakt, sloty, lokality podľa úrovní.</p>
+</main>
+</body>
+</html>
