@@ -64,3 +64,20 @@ export function stupienkyStarsich(starsi: readonly Pick<ElderState, "elderId" | 
     stlpce: starsi.map((e) => ({ elderId: e.elderId, smer: smerStarsieho(e, p), zona: STUPNICA_ZONY[e.marker] })),
   };
 }
+
+/**
+ * Čo ukážu rady dlaždíc hráčov (Michal 2026-10-27, Leader 2026-10-27): dlaždice špakov len
+ * po kliku na Špaky (nástenka otvorená hráčom), bar starších pri línii starších; nástenka,
+ * ktorá sa ukázala sama pri voľbe cieľa, rady neprepína — zdroje ostanú.
+ */
+export function rezimRadov(s: {
+  /** Hráč otvoril nástenku dlaždicou Špaky. */
+  readonly nastenkaKlikom: boolean;
+  /** Nástenka naozaj leží na stole (neustúpila ťahaniu ani kroku na staršom). */
+  readonly nastenkaNaStole: boolean;
+  /** Stôl ukazuje líniu starších po kliku na Starších. */
+  readonly liniaStarsich: boolean;
+}): "spaky" | "starsi" | undefined {
+  if (s.nastenkaKlikom && s.nastenkaNaStole) return "spaky";
+  return s.liniaStarsich ? "starsi" : undefined;
+}

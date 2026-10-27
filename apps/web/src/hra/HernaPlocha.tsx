@@ -137,6 +137,7 @@ import { HernaKarta, vzhladKarty, type HernaKartaProps } from "./HernaKarta.tsx"
 import { useZarovnanieLinie } from "./zarovnanieLinie.ts";
 import { Lupa, maxMierkaLupy } from "./Lupa.tsx";
 import { LUPA_PREDVOLENA, useUcet } from "../lib/ucet.tsx";
+import { rezimRadov } from "./spakyAStarsi.ts";
 import { Vrstva as VrstvaPanel } from "./Vrstva.tsx";
 import {
   AkcieStrany,
@@ -4181,7 +4182,7 @@ export function HernaPlocha({
       return [s.elder.elderId, nadLupou(kluc, (el) => el, true)] as const;
     }),
   );
-  const rezimBaru = nastenkaNaStole ? ("spaky" as const) : bodovyRezim ? ("starsi" as const) : undefined;
+  const rezimBaru = rezimRadov({ nastenkaKlikom: vrstva === "lokality", nastenkaNaStole, liniaStarsich: bodovyRezim });
   const idLinieStarsich = useId();
   // Ponuka patronátu (#110): kým si hráč staršieho nevybral, stôl ukáže namiesto línie
   // starších len tých, ktorých si smie vziať — kartu s akciami, priazeň a cenu.

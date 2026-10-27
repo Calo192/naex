@@ -8,7 +8,7 @@ import eldersJson from "../../../packages/core/data/elders.json";
 import scorecardsJson from "../../../packages/core/data/scorecards.json";
 import type { ClientState, GameState, PlayerId } from "@naex/core";
 import { apply, loadGameData, naTahu, priazenHraca, setupGame, spakyTeraz, strachZ, tahBota, viewFor } from "@naex/core";
-import { spakyPodlaZdroja, stupienkyStarsich } from "../src/hra/spakyAStarsi.ts";
+import { rezimRadov, spakyPodlaZdroja, stupienkyStarsich } from "../src/hra/spakyAStarsi.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -73,4 +73,20 @@ describe("dlaždica Starší", () => {
       }
     }
   }, DLHO);
+});
+
+describe("rady dlaždíc hráčov", () => {
+  it("pri voľbe cieľa (nástenka sa ukázala sama) ostanú zdroje", () => {
+    expect(rezimRadov({ nastenkaKlikom: false, nastenkaNaStole: true, liniaStarsich: false })).toBeUndefined();
+  });
+
+  it("dlaždice špakov len po kliku na Špaky, kým nástenka leží na stole", () => {
+    expect(rezimRadov({ nastenkaKlikom: true, nastenkaNaStole: true, liniaStarsich: false })).toBe("spaky");
+    // Nástenka ustúpila (ťahanie, krok na staršom) — rady sa vrátia.
+    expect(rezimRadov({ nastenkaKlikom: true, nastenkaNaStole: false, liniaStarsich: false })).toBeUndefined();
+  });
+
+  it("bar starších pri línii starších", () => {
+    expect(rezimRadov({ nastenkaKlikom: false, nastenkaNaStole: false, liniaStarsich: true })).toBe("starsi");
+  });
 });
