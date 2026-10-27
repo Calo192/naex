@@ -9,10 +9,10 @@ Podklady: sada v21 (`packages/core/data/cards.json`, 63 kariet) + 13 schválený
 ## V skratke
 
 - **Útok ×1,5.** Petelica 4 → 14 kópií, Pecka 14 → 24. Aktívne tuhé na spoj (model) 0,39 → 0,61. Odhad priemerného tuhého v bitke **4,2 → asi 6** na hráča.
-- **Pečeň +70 %.** Akcia Poškodenie pečene 34 → 58 kópií, aktívna pečeň na spoj ×1,39. Dlh 48 → 60, ale každý Dlh navyše dostane zuby (Obecný úrad, Jednota, Podvodník, otázka prahu Exekútora).
+- **Pečeň +70 %.** Akcia Poškodenie pečene 34 → 58 kópií, aktívna pečeň na spoj ×1,39. Dlh 48 → 60, ale každý Dlh navyše dostane zuby (Jednota, Herňa, Podvodník, otázka prahu Exekútora).
 - **Štyri archetypy s kvótou:** spojka 10, robotník 15, úderník 10, eso 21 (z toho 8 Nástrojov). Dnes je spojka 1 (Záhradkár) a úderníci 4.
-- **Čísla tabuľky:** 89 riadkov — 43 nechať, 26 prerobiť (16 kariet + 10 lokalít), 13 noviniek (8 kariet, 2 rezerva, 3 pinnacle lokality), 4 štartové po ULTRA, 3 kliatby mimo revízie. Šesť mŕtvych efektov má riešenie.
-- **Lokality podľa úrovní (časť 7):** 5 × úroveň 1 (spodok), 5 × úroveň 2, 5 × úroveň 3 (sídla šľachty) a 3 nové pinnacle s korupciou pre finále. Stredná hra má rozpis 1 · 2 · 2 · 3 · 3 · P, obranca vyberá zo všetkých lokalít úrovne a pravidlo „prvá karta = stred finále“ zaniká.
+- **Čísla tabuľky:** 89 riadkov — 42 nechať, 27 prerobiť (16 kariet + 11 lokalít; Lesná cesta pribudla rozhodnutím 27. 10.), 13 noviniek (8 kariet, 2 rezerva, 3 pinnacle lokality), 4 štartové po ULTRA, 3 kliatby mimo revízie. Šesť mŕtvych efektov má riešenie.
+- **Lokality podľa úrovní (časť 7, rozhodnuté Michalom 27. 10.):** 5 × úroveň 1 (spodok), 5 × úroveň 2, 5 × úroveň 3 (sídla šľachty) a 3 nové pinnacle s korupciou pre finále (Poľovnícka chata, Predsedova vila, Herňa), spolu 18. Stredná hra má rozpis 1 · 2 · 2 · 3 · 3 · P, obranca vyberá zo všetkých neodohraných lokalít úrovne, pravidlo „prvá karta = stred finále“ zaniká a Pitky vo finále určí pinnacle (1–5).
 - **Zásada ceny:** úderník platí za útok aspoň polovicou v Pečeni alebo Dlhu, spojka nesie aspoň jednu zlú akciu, silný efekt stojí menu (Kšeft) alebo nerest. WAU vzniká až z 3 kariet a viacerých ťahov (6 kôb v časti 5, 8–16 tuhého).
 
 ## 1. Rozpočet akcií
@@ -37,7 +37,7 @@ Podklady: sada v21 (`packages/core/data/cards.json`, 63 kariet) + 13 schválený
 | Odpor | 20 | 18 | −10 % | Recidivista ho stráca (Odporov pribudlo +57 %) |
 | Pohoršenie | 30 | 30 | 0 | **zámerne nie** — vo v6 najsilnejšia akcia bez brzdy (analýza H3) |
 
-Lokality (hrany, 15 + 3 pinnacle) po úrovniach z časti 7: Pecka 6 → 13, Petelica 2 → 6, Dlh 3 → 7, Pečeň 1 → 4, Posilnenie 0 → 3, Rana 6 → 6. Starší sa nemenia.
+Lokality (hrany, 15 + 3 pinnacle) po úrovniach z časti 7 (rozhodnuté): Pecka 6 → 13, Petelica 2 → 6, Dlh 3 → 8, Pečeň 1 → 4, Posilnenie 0 → 3, Rana 6 → 8. Starší sa nemenia.
 
 Akcií na kartu 3,68 → 3,90. Druhy v balíčku 46 → 56 (bez rezervy 54), kariet v hre 100 → 120. Konkrétnu kartu uvidíš v šenku zriedkavejšie (2/92 → 2/112), preto rátam s archetypmi, nie s jednotlivými kartami.
 
@@ -70,10 +70,10 @@ Akcie: ľavá / pravá strana; tučne plán, ak sa mení. „Pečeň“ = Poško
 
 **Mŕtve efekty z analýzy, riešenie:**
 - **Záhradkár:** Exekúcia → *Výhra: otoč vypitý poldeci na plný*, ako spojka.
-- **Obecný úrad:** prah Exekútora −4 → *za každé 2 priznané Dlhy −1 tuhé*. Robota páli 2 Dlhy ostáva, teda Dlh bolí a Robota lieči.
+- **Obecný úrad:** prah Exekútora −4 zaniká, ostáva *Bitka: Každá aktívna Robota spáli 2 priznané Dlhy* (rozhodnuté Michalom 27. 10.).
 - **Exekútorova priazeň:** sama sa neoživí. V7 navrhujem prah Exekútora 10 → 7 (otázka 1), k tomu Dlhov pribudne +25 %.
 - **Kar:** *doliatie zadarmo, ale každé +1 Pečeň*.
-- **Jednota:** *Kšeft lokality: za 1 Dlh 2 cigarety (na sekeru)*.
+- **Jednota:** *Kšeft: Za 1 Dlh dostaneš 2 cigarety* (na sekeru; rozhodnuté 27. 10.).
 - **Prestávka:** spúšťač bez karty, zmazať z ALL_TRIGGERS (malé zadanie pre vývoj, v7).
 
 ### Nástroje
@@ -141,9 +141,9 @@ Akcie: ľavá / pravá strana; tučne plán, ak sa mení. „Pečeň“ = Poško
 
 | Karta | Dnes (akcie; efekt) | Typ | Verdikt | Smer |
 |---|---|---|---|---|
-| Poľovnícky zámoček | — → **Petelica, Pecka, Posil, Dlh / Petelica, Rana, Pohorš, Pečeň**; Furt: Aktívne akcie hrán lokality sa rátajú dvakrát. | LP | nová (pinnacle) | Pinnacle 4/4 (Petelica, Pecka, Posilnenie, Dlh / Petelica, Rana, Pohoršenie, Pečeň). Korupcia: poľovačka pre papalášov z okresu, obálka pri trofeji, terénne autá so štátnymi značkami. |
-| Predsedova vila | — → **Pecka×2, Cig, Obmedz / Petelica, Posil, Viera, Dlh**; Kšeft (obaja): Za 2 cigarety posuň marker ľubovoľného staršieho o 1 pole. | LP | nová (pinnacle) | Pinnacle 4/4 (Pecka×2, Cig, Obmedzenie / Petelica, Posilnenie, Viera, Dlh). Korupcia: sprivatizovaná vila bývalého predsedu JRD, traktor s krokodílom na kapote, úplatky v bonboniérach. |
-| Agroareál z eurofondov | — → **Petelica, Pecka, Pečeň, Poldeci / Pecka, Rana, Robota, Dlh**; Bitka: Víťaz dostane navyše toľko špakov, koľko má porazený priznaných Dlhov, najviac 5. | LP | nová (pinnacle) | Pinnacle 4/4 (Petelica, Pecka, Pečeň, Poldeci / Pecka, Rana, Robota, Dlh). Korupcia: eurofondový agroturistický areál, ktorý nikdy nefungoval, požiarna nádrž s krokodílom, lesklá tabuľa projektu. |
+| Poľovnícka chata | — → **Posil, Petelica, Dlh, Pecka / Rana, Petelica, Pečeň, Pohorš**; **Furt: Aktívne Rany, Pecky a Petelice z hrán lokality sa rátajú dvakrát.** | LP | nová (pinnacle, rozhodnuté) | Premenovaná z Poľovníckeho zámočka; strop ×2 len na tuhé (otázka 8). `[Posil Petelica Dlh Pecka] / [Rana Petelica Pečeň Pohorš]`. Korupcia: obálka za trofejou, autá s modrými majákmi, ulovený chránený medveď. |
+| Predsedova vila | — → **Cig, Pecka×2, Dlh / Posil, Petelica, Dlh, Viera**; **Kšeft: Za 2 cigarety posuň marker ľubovoľného staršieho o 1 pole k súperovi alebo k sebe (nie staršieho v súperovom patronáte tohto kola).** | LP | nová (pinnacle, rozhodnuté) | `[Cig Pecka Pecka Dlh] / [Posil Petelica Dlh Viera]` (Obmedzenie → Dlh). Korupcia: sprivatizovaná vila predsedu JRD, traktor s krokodílom na kapote, bonboniéra s bankovkami. |
+| Herňa | — → **Pecka, Petelica, Pečeň, Dlh / Rana, Pecka, Robota, Dlh**; **Bitka: Víťaz dostane navyše toľko špakov, koľko má porazený priznaných Dlhov.** | LP | nová (pinnacle, rozhodnuté) | Premenovaná z Agroareálu z eurofondov; bez stropu (Michal), kraje pri automatoch / v zadnej miestnosti na potvrdenie (7.5). `[Pecka Petelica Pečeň Dlh] / [Rana Pecka Robota Dlh]`. Korupcia: starosta a policajt nad kopou bankoviek v zadnej miestnosti, „licencia“ v zlatom ráme, SUV s majákom. |
 | Vybavovač | — → **Cig, Povera, Robota, Posil / Viera, Vízia, Pečeň**; Pitka: za každú kartu, s ktorou tvorí spoj, +1 zadĺženie. | S | nová | Spojka 7 akcií (Cig, Povera, Robota, Posilnenie / Viera, Vízia, Pečeň): všetko vybaví, ale na dlh. |
 | Bufetárka | — → **Cig, Poldeci, Pečeň / Viera, Povera, Dlh**; Pitka: každý, koho karta s ňou tvorí spoj, dostane cigaretu. | S | nová | Spojka 6 akcií (Cig, Poldeci, Pečeň / Viera, Povera, Dlh), obslúži aj súpera. |
 | Brigádnik | — → **Robota, Cig, Rana / Robota, Pečeň, Obmedz**; Furt: do prevahy sa neráta. | S | nová (rezerva) | Spojka 6 akcií (Robota, Cig, Rana / Robota, Pečeň, Obmedzenie), Pracujúci pre Družstvo. |
@@ -172,24 +172,24 @@ Akcie: ľavá / pravá strana; tučne plán, ak sa mení. „Pečeň“ = Poško
 
 | Karta | Dnes (akcie; efekt) | Typ | Verdikt | Smer |
 |---|---|---|---|---|
-| Zastávka | Cig / Pecka; Zhromaždenie: spoločný limit. | L1 | nechať | Úroveň 1 (dnes 1/1). Spodok ako dnes: plechová búdka, cestovný poriadok, ktorý neplatí. |
-| Most | Obmedz, Viera / Dlh, Petelica → **Dlh / Pecka**; Len na vlastnú stranu. | L1 | prerobiť | Úroveň 1: hrany 2/2 → 1/1 (Dlh / Pecka), Obmedzenie, Viera a Petelica odchádzajú; efekt ostáva. Ilustrácia: pod mostom matrac, fľaše a dlžný úpis pribitý na pilier. |
-| Lesná cesta | Pecka / Povera; Bitka: +1 tuhé za telo v súperovom kraji (max 2). | L1 | nechať | Úroveň 1 (dnes 1/1), bez zmeny. |
-| Cintorín | Viera / Robota; Prehra: Nástroj do Dedičstva zadarmo. | L1 | nechať | Úroveň 1 (dnes 1/1), bez zmeny. |
-| Jednota | Cig / Pohorš; Pitka: barter o 1 lacnejší (mŕtve). | L1 | prerobiť | Úroveň 1 (hrany 1/1 ostávajú); efekt Kšeft lokality: za 1 Dlh 2 cigarety (na sekeru). Ilustrácia: polozatvorená predajňa, zošit „na sekeru“ na pulte, pivo na schodoch. |
-| Ihrisko | Rana×2 / Cig, Poldeci → **Rana, Pecka / Cig, Poldeci**; Bitka: +2 tuhé za prevahu v kraji. | L2 | prerobiť | Úroveň 2 (dnes 2/2); hrana na trávniku Rana×2 → Rana + Pecka. |
-| Benzínka | Cig×2 / Obmedz, Pecka; Pitka: nikto nefajčí. | L2 | nechať | Úroveň 2 (dnes 2/2), bez zmeny. |
-| Kar | Povera, Viera / Poldeci, Rana; Bitka: zahoď nepriznanú Cirhózu z ruky (takmer mŕtve, D4). | L2 | prerobiť | Úroveň 2 (hrany 2/2 ostávajú); Pitka: doliatie nestojí cigarety, ale každé pridá 1 Pečeň. |
-| Zberný dvor | Cig, Petelica, Robota / Dlh, Obmedz, Pohorš → **Petelica, Robota / Dlh, Obmedz**; Kšeft: za cigaretu karta z odhadzovacieho (schválené). | L2 | prerobiť | Úroveň 2: hrany 3/3 → 2/2 (Petelica, Robota / Dlh, Obmedzenie), Cigareta a Pohoršenie odchádzajú; Kšeft ostáva. |
-| Krčma | Pecka, Poldeci, Rana / Cig, Dlh, Povera → **Petelica, Poldeci / Dlh, Povera**; Pitka: povinné NA EX, prah Cirhózy +2. | L2 | prerobiť | Úroveň 2: hrany 3/3 → 2/2 (Petelica, Poldeci / Dlh, Povera): Rana → Petelica, Pecka a Cigareta odchádzajú; efekt ostáva. Stred dediny, kam chodia všetci. |
-| Obecný úrad | Robota, Viera / Pecka, Povera → **Robota, Viera, Obmedz / Pecka, Povera, Dlh**; Bitka: prah Exekútora −4, Robota páli 2 Dlhy (polovica mŕtva). | L3 | prerobiť | Úroveň 3: hrany 2/2 → 3/3 (+ Obmedzenie / + Dlh); Bitka: za každé 2 priznané Dlhy −1 tuhé, Robota páli 2 Dlhy. Ilustrácia: zrekonštruovaná budova, zlaté kľučky, nové auto pred vchodom, ľudia v rade na chodbe. |
-| Kultúrny dom | Pohorš×2, Pečeň / Cig, Rana, Viera → **Pohorš×2, Pečeň / Cig, Pecka, Viera**; Bitka: prebytok do špakov. | L3 | prerobiť | Úroveň 3 (dnes 3/3); hrana pred vchodom Rana → Pecka, efekt ostáva. Ilustrácia: kultúrak po rekonštrukcii s tabuľou o dotácii, VIP stôl s obrusom, zvyšok dediny na lavičkách. |
-| Vínna pivnica | Poldeci / Pecka → **Poldeci, Pečeň, Posil / Pecka, Rana, Cig**; Pitka: NA EX až 2×. | L3 | prerobiť | Úroveň 3: hrany 1/1 → 3/3 (Poldeci, Pečeň, Posilnenie / Pecka, Rana, Cig); efekt ostáva, pozor na NA EX v 4 Pitkách. Ilustrácia: súkromná pivnica papalášov, mramor, sudy s menovkami, degustácia pre hostí z okresu. |
-| Družstvo | Poldeci, Rana, Robota / Obmedz, Odpor, Pohorš; Zhromaždenie: Pracujúci nemíňajú limit. | L3 | nechať | Úroveň 3 (dnes 3/3), efekt ostáva. Ilustrácia: kancelária predsedu s koženým kreslom, pod oknom ľudia na poli. |
-| Kostol | Viera, Vízia / Pohorš, Povera → **Viera, Vízia, Robota / Pohorš, Povera, Viera**; Nikto nepije ani nedá NA EX. | L3 | prerobiť | Úroveň 3: hrany 2/2 → 3/3 (+ Robota / + Viera), efekt ostáva — jediná triezva veľká bitka. Ilustrácia: pozlátený oltár, nové auto na fare, zbierka na opravu strechy. |
-| Poľovnícky zámoček | — → **Petelica, Pecka, Posil, Dlh / Petelica, Rana, Pohorš, Pečeň**; Furt: Aktívne akcie hrán lokality sa rátajú dvakrát. | LP | nová (pinnacle) | Pinnacle 4/4 (Petelica, Pecka, Posilnenie, Dlh / Petelica, Rana, Pohoršenie, Pečeň). Korupcia: poľovačka pre papalášov z okresu, obálka pri trofeji, terénne autá so štátnymi značkami. |
-| Predsedova vila | — → **Pecka×2, Cig, Obmedz / Petelica, Posil, Viera, Dlh**; Kšeft (obaja): Za 2 cigarety posuň marker ľubovoľného staršieho o 1 pole. | LP | nová (pinnacle) | Pinnacle 4/4 (Pecka×2, Cig, Obmedzenie / Petelica, Posilnenie, Viera, Dlh). Korupcia: sprivatizovaná vila bývalého predsedu JRD, traktor s krokodílom na kapote, úplatky v bonboniérach. |
-| Agroareál z eurofondov | — → **Petelica, Pecka, Pečeň, Poldeci / Pecka, Rana, Robota, Dlh**; Bitka: Víťaz dostane navyše toľko špakov, koľko má porazený priznaných Dlhov, najviac 5. | LP | nová (pinnacle) | Pinnacle 4/4 (Petelica, Pecka, Pečeň, Poldeci / Pecka, Rana, Robota, Dlh). Korupcia: eurofondový agroturistický areál, ktorý nikdy nefungoval, požiarna nádrž s krokodílom, lesklá tabuľa projektu. |
+| Zastávka | Cig / Pecka; Zhromaždenie: spoločný limit. | L1 | nechať (rozhodnuté) | Úroveň 1, bez zmeny. Hrany `[– Cig – –] / [Pecka – – –]`. |
+| Most | Obmedz, Viera / Dlh, Petelica → **Pecka / Cig**; Len na vlastnú stranu. | L1 | prerobiť (rozhodnuté) | Úroveň 1: hrany 2/2 → 1/1 `[– Pecka – –] / [– – Cig –]` (Michal: „Pecka na jednej strane, cigareta na druhej“); efekt ostáva. Obrázok ostáva. |
+| Lesná cesta | Pecka / Povera; Bitka: +1 tuhé za telo v súperovom kraji (max 2) → **Bitka: Za každé svoje Zviera v súperovom kraji máš 1 tuhé poškodenie navyše.** | L1 | nový efekt (rozhodnuté) | Úroveň 1, hrany bez zmeny; efekt podľa Michala, „svoje“ a bez stropu na potvrdenie (7.5). |
+| Cintorín | Viera / Robota; Prehra: Nástroj do Dedičstva zadarmo. | L1 | nechať (rozhodnuté) | Úroveň 1, bez zmeny. |
+| Jednota | Cig / Pohorš; Pitka: barter o 1 lacnejší (mŕtve) → **Kšeft: Za 1 Dlh dostaneš 2 cigarety.** | L1 | nový efekt (rozhodnuté) | Úroveň 1, hrany 1/1 ostávajú; Kšeft smie použiť každý hráč raz za Pitku. Obrázok ostáva. |
+| Ihrisko | Rana×2 / Cig, Poldeci → **Rana, Pecka / Cig, Poldeci**; Bitka: +2 tuhé za prevahu v kraji. | L2 | prerobiť (rozhodnuté) | Úroveň 2; `[Pecka – – Rana] / [– Poldeci Cig –]`. |
+| Benzínka | Cig×2 / Obmedz, Pecka; Pitka: nikto nefajčí. | L2 | nechať (rozhodnuté) | Úroveň 2, bez zmeny. |
+| Kar | Povera, Viera / Poldeci, Rana; Bitka: zahoď nepriznanú Cirhózu (takmer mŕtve, D4) → **Pitka: Doliatie nestojí cigarety, ale každé ti pridá 1 poškodenie pečene.** | L2 | nový efekt (rozhodnuté) | Úroveň 2, hrany ostávajú; nerest za doliatie na potvrdenie (7.5). |
+| Zberný dvor | Cig, Petelica, Robota / Dlh, Obmedz, Pohorš → **Petelica, Robota / Dlh, Obmedz**; → **Kšeft: Za 1 cigaretu si vezmi do ruky ľubovoľnú kartu zo svojho odhadzovacieho balíčka.** | L2 | prerobiť (rozhodnuté) | Úroveň 2: hrany 3/3 → 2/2 `[– Robota – Petelica] / [– Dlh – Obmedz]`; spúšťač Pitka → Kšeft (Michal). |
+| Krčma | Pecka, Poldeci, Rana / Cig, Dlh, Povera → **Petelica, Dlh / Rana×2**; Pitka: povinné NA EX, prah Cirhózy +2. | L2 | prerobiť (rozhodnuté) | Úroveň 2: hrany 3/3 → 2/2 `[Petelica – Dlh –] / [Rana Rana – –]` (Michal: „Petelica, Dlh / Rana, Rana“); efekt ostáva. |
+| Obecný úrad | Robota, Viera / Pecka, Povera → **Robota, Viera, Obmedz / Pecka, Povera, Dlh**; Bitka: prah Exekútora −4, Robota páli 2 Dlhy → **Bitka: Každá aktívna Robota spáli 2 priznané Dlhy.** | L3 | prerobiť (rozhodnuté) | Úroveň 3: hrany 2/2 → 3/3 `[– Robota Viera Obmedz] / [Pecka Dlh Povera –]`; prah −4 zaniká (Michal). Nový obrázok (7.4). |
+| Kultúrny dom | Pohorš×2, Pečeň / Cig, Rana, Viera → **Pohorš×2, Pečeň / Cig, Pecka, Viera**; Bitka: prebytok do špakov. | L3 | prerobiť (rozhodnuté) | Úroveň 3; `[Pohorš – Pohorš Pečeň] / [Pecka Cig Viera –]`, efekt ostáva. Nový obrázok (7.4). |
+| Vínna pivnica | Poldeci / Pecka → **Poldeci, Pečeň, Posil / Pecka, Rana, Cig**; Pitka: NA EX až 2×. | L3 | prerobiť (rozhodnuté) | Úroveň 3: hrany 1/1 → 3/3 `[Pečeň Poldeci Posil –] / [Rana Pecka Cig –]`; efekt ostáva. Nový obrázok (7.4). |
+| Družstvo | Poldeci, Rana, Robota / Obmedz, Odpor, Pohorš; Zhromaždenie: Pracujúci nemíňajú limit. | L3 | nechať (rozhodnuté) | Úroveň 3, hrany aj efekt ostávajú. Nový obrázok (7.4). |
+| Kostol | Viera, Vízia / Pohorš, Povera → **Viera, Vízia, Robota / Pohorš, Povera, Viera**; Nikto nepije ani nedá NA EX. | L3 | prerobiť (rozhodnuté) | Úroveň 3: hrany 2/2 → 3/3 `[Robota Viera Vízia –] / [– Pohorš Povera Viera]`; efekt ostáva. Nový obrázok (7.4). |
+| Poľovnícka chata | — → **Posil, Petelica, Dlh, Pecka / Rana, Petelica, Pečeň, Pohorš**; **Furt: Aktívne Rany, Pecky a Petelice z hrán lokality sa rátajú dvakrát.** | LP | nová (pinnacle, rozhodnuté) | Premenovaná z Poľovníckeho zámočka; strop ×2 len na tuhé (otázka 8). `[Posil Petelica Dlh Pecka] / [Rana Petelica Pečeň Pohorš]`. Korupcia: obálka za trofejou, autá s modrými majákmi, ulovený chránený medveď. |
+| Predsedova vila | — → **Cig, Pecka×2, Dlh / Posil, Petelica, Dlh, Viera**; **Kšeft: Za 2 cigarety posuň marker ľubovoľného staršieho o 1 pole k súperovi alebo k sebe (nie staršieho v súperovom patronáte tohto kola).** | LP | nová (pinnacle, rozhodnuté) | `[Cig Pecka Pecka Dlh] / [Posil Petelica Dlh Viera]` (Obmedzenie → Dlh). Korupcia: sprivatizovaná vila predsedu JRD, traktor s krokodílom na kapote, bonboniéra s bankovkami. |
+| Herňa | — → **Pecka, Petelica, Pečeň, Dlh / Rana, Pecka, Robota, Dlh**; **Bitka: Víťaz dostane navyše toľko špakov, koľko má porazený priznaných Dlhov.** | LP | nová (pinnacle, rozhodnuté) | Premenovaná z Agroareálu z eurofondov; bez stropu (Michal), kraje pri automatoch / v zadnej miestnosti na potvrdenie (7.5). `[Pecka Petelica Pečeň Dlh] / [Rana Pecka Robota Dlh]`. Korupcia: starosta a policajt nad kopou bankoviek v zadnej miestnosti, „licencia“ v zlatom ráme, SUV s majákom. |
 
 ### Štartové a kliatby
 
@@ -199,7 +199,7 @@ Akcie: ľavá / pravá strana; tučne plán, ak sa mení. „Pečeň“ = Poško
 | Milujúca manželka | Dlh, Viera / Odpor, Povera; Furt: Absťák aj pri rovnakom počte nerestí. | Š | po ULTRA | Poznámka: návrh „odvedie ťa domov“ čaká na ULTRA. |
 | Miňištrant | Pečeň, Viera / Cig, Povera; Výhra: posun prebytkom o 1 drahší. | Š | po ULTRA | Poznámka: návrh „rozhrešenie“ čaká na ULTRA. |
 | Dievčina na vydaj | Dlh×2 / Pohorš, Povera; Bitka: zahodí sa a spáli Dlhy podľa akcií. | Š | po ULTRA | Poznámka: návrh „veno“ čaká na ULTRA. |
-| Dlh | — / —; Priznaný: Exekútor, Povery, remíza. | K | pravidlo | Mimo revízie kariet; zuby mu dajú Obecný úrad, Jednota, Podvodník, Policajtka a otázka prahu Exekútora (v7). |
+| Dlh | — / —; Priznaný: Exekútor, Povery, remíza. | K | pravidlo | Mimo revízie kariet; zuby mu dajú Jednota, Herňa, Podvodník, Policajtka a otázka prahu Exekútora (v7). |
 | Cirhóza | — / —; Priznaná +1 tuhé súperovi, nepriznaná −5 špakov. | K | pravidlo | Mimo revízie — je to cena celej pečeňovej osi. |
 | Absťák | — / —; −1 tuhé, remíza, špaky víťaza. | K | pravidlo | Mimo revízie. |
 
@@ -248,7 +248,7 @@ Strany: na tvojej strane je vnútorná hrana karty jej pravá (§6 :225–229). 
 | Šofér | Pecka navyše | len bez NA EX, teda menej nerestí a bližšie k Absťáku |
 | Kar | doliatie zadarmo | každé doliatie +1 Pečeň |
 | Jednota | 2 cigarety | Dlh |
-| Obecný úrad | Robota páli 2 Dlhy | každé 2 Dlhy −1 tuhé |
+| Obecný úrad | Robota páli 2 Dlhy | Dlh na chodbe v každej zo 4 Pitiek |
 | Oslávenec | súper +2 Pečene | tvoj plný poldeci (limit −1) |
 | Šúľač | 2 karty | špak, teda víťazný bod |
 | Kapybara (2 cigarety) | súper −1 špak | 2 cigarety za Pitku |
@@ -256,93 +256,157 @@ Strany: na tvojej strane je vnútorná hrana karty jej pravá (§6 :225–229). 
 | Výherný automat | Výhra 3 cigarety | Prehra 2 Dlhy |
 
 
-## 7. Lokality podľa úrovní
+## 7. Lokality podľa úrovní — rozhodnuté znenie
 
 > Michal: „Budú lokality úrovne 1 — budú mať po stranách 1 akciu, úrovne 2 a 3 — budú mať 2 a 3 akcie, a potom budú pinnacle lokality, tie budú mať akcie 4, väčšinu z nich silné… dávkovať postupne… pre finále pôjde lokalita pinnacle, čiže hráč nemusí dávať prvý svoju kartu občana.“
-> „Hráči si budú vyberať zo všetkých lokalít v hre danej úrovne… aspoň 3 lokality každej úrovne a 3 pinnacle… prvé lokality najspodnejší spodok ako zastávka, most… posledné honosné miesta, kde dedinská šľachta sídli — obecný úrad, autobus… Na pinnacle lokalitách chcem, aby bolo vidno známky korupcie. Efekty pinnacle silné.“
+> „Hráči si budú vyberať zo všetkých lokalít v hre danej úrovne… aspoň 3 lokality každej úrovne a 3 pinnacle… prvé lokality najspodnejší spodok ako zastávka, most… posledné honosné miesta, kde dedinská šľachta sídli… Na pinnacle lokalitách chcem, aby bolo vidno známky korupcie. Efekty pinnacle silné.“
+
+**Rozhodnuté Michalom 27. 10. 2026** nad dávkou `revizia-lokality.html`. Všetko je Áno okrem piatich variantov (Most, Lesná cesta, Zberný dvor, Krčma, Obecný úrad) a dvoch premenovaní (Poľovnícky zámoček → **Poľovnícka chata**, Agroareál z eurofondov → **Herňa**). Ďalej rozhodol: finále **bez** pevných 3 Pitiek (otázka 7), strop Poľovníckej chaty **áno** (otázka 8), **18 lokalít** (otázka 10). „Autobus“ (otázka 9) **padá**. Michalove vety sú uhladené do jazyka pravidiel, ich význam sa nemení. Detaily, ktoré dopovedal Vymyselník, sú v 7.5 označené **na potvrdenie** a pri každom je odporúčanie.
 
 ### 7.1 Úroveň = počet akcií na hrane
 
-Úroveň netreba zapisovať ako nové pole. Je to počet akcií na každej hrane (1 / 2 / 3 / 4) a tvorca len overí, že obe hrany majú rovnako. Počet Pitiek je 1 + menší počet aktivovaných akcií hrán (§7 :467–479), takže úroveň dáva strop Pitiek **2 / 3 / 4 / 5** a tým aj strop špakov za bitku (§9.4).
+Úroveň nie je nové pole v dátach. Je to počet akcií na každej hrane (1 / 2 / 3 / 4) a tvorca len overí, že obe hrany majú rovnako. Pitiek je **1 + menší z počtov aktívnych akcií hrán** (§7 :469). Platí to pre všetky lokality vrátane pinnacle vo finále (otázka 7), takže úroveň určuje strop Pitiek a s ním aj strop špakov za bitku (§9.4).
 
-Dnešná sada je k tomu blízko: 5 lokalít má hrany 1/1, 6 má 2/2, 4 má 3/3 a pinnacle nie je žiadna. Rozdelenie podľa témy (od spodku po šľachtu) a pravidla „aspoň 3 na úroveň“ vyjde **5 / 5 / 5 + 3 nové pinnacle** (spolu 18 lokalít):
+| Úroveň | Akcií na hrane | Pitiek | Charakter | Lokality |
+|---|---|---|---|---|
+| **1** | 1 / 1 | 1–2 | spodok | Zastávka, Most, Lesná cesta, Cintorín, Jednota |
+| **2** | 2 / 2 | 1–3 | dedina | Ihrisko, Benzínka, Kar, Zberný dvor, Krčma |
+| **3** | 3 / 3 | 1–4 | sídla dedinskej šľachty | Obecný úrad, Kultúrny dom, Vínna pivnica, Družstvo, Kostol |
+| **Pinnacle** | 4 / 4 | 1–5 | korupcia na očiach | Poľovnícka chata, Predsedova vila, Herňa (nové) |
 
-| Úroveň | Charakter | Lokality | Zmena hrán |
-|---|---|---|---|
-| **1** (1/1) | spodok | Zastávka, **Most**, Lesná cesta, Cintorín, Jednota | Most 2/2 → 1/1 (Dlh / Pecka) |
-| **2** (2/2) | dedina | Ihrisko, Benzínka, Kar, **Zberný dvor**, **Krčma** | Zberný dvor a Krčma 3/3 → 2/2 |
-| **3** (3/3) | sídla dedinskej šľachty | **Obecný úrad**, Kultúrny dom, **Vínna pivnica**, Družstvo, **Kostol** | Obecný úrad a Kostol 2/2 → 3/3, Vínna pivnica 1/1 → 3/3 |
-| **Pinnacle** (4/4) | korupcia na očiach | Poľovnícky zámoček, Predsedova vila, Agroareál z eurofondov (nové); rezerva Predvolebný guláš | 4 akcie na hrane, žiadny blokovaný slot |
-
-- **Krčma klesá na 2**, lebo je stred dediny, kam chodia všetci, a má sa hrať často. Povinné NA EX v 3 Pitkách stačí.
-- **Vínna pivnica stúpa na 3** ako súkromná pivnica papalášov. Jej NA EX 2× patrí do veľkého kola.
-- **„Autobus“ (na potvrdenie):** čítam ho ako *Autobusovú stanicu z eurofondov* (nová čakáreň so sklom a kamerou, kam autobus nechodí). Mohla by byť 6. lokalitou úrovne 3, alebo nahradiť Kostol. Michal, čo si myslel?
-- Variant „len 15 lokalít“: tri lokality úrovne 3 povýšiť na pinnacle. Potom však úrovni 3 ostanú 2 lokality, čo je pod minimom 3. Preto navrhujem nové.
-
-Ilustrácie (námety pri lokalitách, ktorým sa mení charakter, sú v tabuľke 3): spodok je rozpadnutý, s fľašami a dlhmi. Úroveň 3 je čerstvo zrekonštruovaná z dotácií, s VIP stolom a autom pred vchodom. Pinnacle ukazuje korupciu priamo: obálky, štátne značky, krokodíl na kapote traktora (`tools/admin/styl.md`), tabuľa eurofondov. Dym len podľa pravidiel štýlu.
+Spolu **18 lokalít** (5 + 5 + 5 + 3). Všetky tri pinnacle majú hrany 4/4 bez blokovaného slotu, teda **1 až 5 Pitiek**. Presný počet určí, koľko akcií hrán prvé karty zapnú (najviac 5 Pitiek, keď sú na oboch stranách aktívne všetky štyri).
 
 ### 7.2 Výber cieľa a dávkovanie
 
 **Dnes** (§5 :168–172, §3 :115–117): pri príprave sa náhodne vyžrebuje 3 / 5 / 7 lokalít (`engine.ts:1140–1150`). Obranca z nich vyberie cieľ a natočí ho. Vo finále sa cieľ nevyberá.
 
-**Nové:** nič sa nežrebuje. Kolo *k* má úroveň podľa rozpisu a **obranca vyberá zo všetkých ešte neodohraných lokalít tej úrovne** v sade a natočí ju. Vo finále vyberá a natáča pinnacle obranca, teda hráč s menej špakmi (útočí ten s viac, §14b). Je to dobiehanie.
+**Rozhodnuté:**
+- **Žrebovanie zaniká.** Kolo *k* má úroveň podľa rozpisu a **obranca vyberá zo všetkých ešte neodohraných lokalít tej úrovne** v sade a natočí ju. Rozpis vidia obaja od začiatku.
+- **Finále dostáva cieľ.** Pinnacle vyberá a natáča obranca, teda hráč s **menej** špakmi (útočí ten s viac, pri rovnosti ako dnes, §14b :1069). Je to dobiehanie.
 
-| Dĺžka | Rozpis | Max Pitiek (špakov víťazovi) | Najviac lokalít jednej úrovne |
+| Dĺžka | Rozpis | Najviac Pitiek (= špakov víťazovi) | Kôl jednej úrovne |
 |---|---|---|---|
-| krátka (3) | 1 · 2 · 3 · P | 2 · 3 · 4 · 3 | 1 z 5 |
-| **stredná (5)** | **1 · 2 · 2 · 3 · 3 · P** | 2 · 3 · 3 · 4 · 4 · 3 | 2 z 5 |
-| dlhá (7) | 1 · 1 · 2 · 2 · 3 · 3 · 3 · P | 2 · 2 · 3 · 3 · 4 · 4 · 4 · 3 | 3 z 5 |
+| krátka (3) | 1 · 2 · 3 · P | 2 · 3 · 4 · 5 | 1 z 5 |
+| **stredná (5)** | **1 · 2 · 2 · 3 · 3 · P** | 2 · 3 · 3 · 4 · 4 · 5 | 2 z 5 |
+| dlhá (7) | 1 · 1 · 2 · 2 · 3 · 3 · 3 · P | 2 · 2 · 3 · 3 · 4 · 4 · 4 · 5 | 3 z 5 |
 
-Obranca má vždy na výber aspoň z 3 lokalít, aj v poslednom kole dlhej hry (5 − 2 = 3).
+Obranca má vždy na výber aspoň z 3 lokalít, aj v poslednom kole úrovne 3 v dlhej hre (5 − 2 = 3), a vo finále z 3 pinnacle. Prečo stúpanie: balíček rastie, neskoršie bitky dávajú viac špakov (dobiehanie) a dilema s Pečeňou a Kšeftami, ktoré sa platia za Pitku, vrcholí na konci.
 
-**Prečo stúpanie:**
-1. Balíček rastie. V 1. kole sa hrá so 4 štartovými kartami a 0–2 zo šenku, takže hrana 1/1 stačí. Na 3/3 už je čím spájať.
-2. Neskoršie bitky dávajú viac špakov. To je dobiehanie proti zisteniu Stratéga, že kto vedie po 2. bitke, vyhrá asi 80 %. Strach však dáva špaky v každej bitke rovnako, takže stúpanie snehovú guľu len tlmí, nezastaví (merať).
-3. Pečeň a Kšefty sa počítajú za Pitku, takže dilema „zlá vs. horšia“ vrcholí na konci hry.
+### 7.3 Finále s pinnacle
 
-V strednej hre je dlhá trojka na konci (3 · 3 · P) zámerná: dve veľké bitky pred finále dávajú zaostávajúcemu dve šance. Alternatíva 1 · 1 · 2 · 3 · 3 je pomalšia a v 2. kole by sa hralo s 1 akciou na hrane, keď už ruka unesie viac.
+- **Pravidlo „prvá karta = stred“ zaniká.** V strede leží pinnacle a útočník len vykladá prvý ako v každom kole (`stredFinale`, `engine.ts:331`, :2094).
+- **Kraje a prevaha platia aj vo finále.** Kočovník, Presbiter aj Dvojčatá fungujú ako v každom kole. Z textov Kočovníka („Vo finále majiteľovi.“) a Presbitera („Vo finále nepôsobí.“) sa veta o finále zmaže (dáta).
+- **Pitky vo finále: rovnaké pravidlo ako na každej lokalite** (Michal, otázka 7). Platí 1 + menší z počtov aktívnych akcií hrán, pri pinnacle teda 1–5. `KONSTANTY.FINALE_PITKY` (`constants.ts:87`) a finálová vetva v `pocetPitiek` (`engine.ts:1441`) zanikajú. Víťaz finále dostane toľko špakov, koľko Pitiek sa odohralo (§9.4 ako v každom kole), mínus rozdiel Absťákov, aspoň 1. Sekera vo finále špaky prepadá ako dnes.
+- Po finále sa prebytok dáva do špakov ako dnes (`engine.ts:3960`). Na nástenke má finále lokalitu (§14 :1055).
 
-### 7.3 Prvá karta: čo dnes hovorí §5/§6 a čo sa zmení
+### 7.4 Rozhodnuté znenie lokalít
 
-- **Bežné kolo (§6 :223–229, :281–291):** žiadne pravidlo nevyžaduje, aby prvá karta bola Občan. Prvá karta pri lokalite určuje, ktoré akcie hrany sa zapnú, a dostane ich hráč s prevahou. Pri rovnosti rozhoduje karta hneď pri lokalite. Toto ostáva.
-- **Finále dnes (§6 :221–222, §14b :1074–1078):** lokalita nie je. Prvá vyložená karta (ľubovoľná, `stredFinale`, `engine.ts:331`, :2094) leží v strede a vykladá ju útočník, teda vedúci. Odkryje tým kartu a obetuje ju ako stred. Kraje ani prevaha vo finále nie sú, Kočovník dáva akcie majiteľovi a Presbiter nepôsobí. Tomuto Michal hovorí „zlý nápad“.
-- **Finále s pinnacle:** v strede je lokalita, takže **pravidlo „prvá karta = stred“ zaniká**. Útočník len vykladá prvý ako v každom kole. **Kraje a prevaha platia aj vo finále** (Kočovník, Presbiter, Dvojčatá, Lesná cesta a Ihrisko ako vzor). Na nástenke má aj finále lokalitu (§14 :1055).
-- **Pitky vo finále:** navrhujem ostať pevne pri **3** (`KONSTANTY.FINALE_PITKY`, `engine.ts:1441`). Inak by sa finále dalo zrezať na 1 Pitku alebo nafúknuť na 5. Hrany 4/4 tak rozhodujú o akciách a prevahe, nie o počte Pitiek (otázka 7).
-- **Text na zmenu:** §3, §5, §6 :221–222, §7 :479, §14 :1055, §14b, §15 (stĺpec Úroveň), §17 Finále. Jadro: výber lokalít podľa rozpisu (:1140–1150), odstrániť finálovú vetvu stredu (`stredFinale`, `susedNaKonci` :2083, :2169, :3674, finálový argument `cieleVykladania` :4423, :4450). Prebytok do špakov po finále (:3960) ostáva. Bot: výber lokality v rámci úrovne a finále s krajmi.
+Hrany sú zapísané po slotoch 0–3 zhora nadol (§2 :58), „–“ je blokovaný slot. Pri natočení sa poradie obráti (0↔3, 1↔2, §6 :258). Ľavá / pravá hrana je vytlačená hrana; v zátvorke sú kraje. Spúšťač **Kšeft** (v7) je efekt, ktorý hráč spustí sám v Pitke na svojom ťahu, najviac raz za Pitku. **Kšeft lokality smie použiť každý z hráčov**, každý raz za Pitku (lokalita nemá majiteľa).
 
-### 7.4 Pinnacle: silné efekty a hrany 4/4
+#### Úroveň 1 — spodok (1/1)
 
-| Pinnacle | Hrany (ľavá / pravá) | Efekt |
-|---|---|---|
-| **Poľovnícky zámoček** | Petelica, Pecka, Posilnenie, Dlh / Petelica, Rana, Pohoršenie, Pečeň | *Furt: Aktívne akcie hrán lokality sa rátajú dvakrát.* Prevaha v kraji je trofej. |
-| **Predsedova vila** | Pecka ×2, Cig, Obmedzenie / Petelica, Posilnenie, Viera, Dlh | *Kšeft (obaja): Za 2 cigarety posuň marker ľubovoľného staršieho o 1 pole.* Úplatok, raz za Pitku, teda až 3× vo finále. |
-| **Agroareál z eurofondov** | Petelica, Pecka, Pečeň, Poldeci / Pecka, Rana, Robota, Dlh | *Bitka: Víťaz dostane navyše toľko špakov, koľko má porazený priznaných Dlhov, najviac 5.* Dotácia prepadne, Dlh vo finále bolí. |
-| Predvolebný guláš (rezerva) | návrh vo fáze 2 | *Bitka: Každé tvoje aktívne Pohoršenie ti dá navyše 1 špak* (sľuby). |
+| Lokalita | Kraje | Hrany (ľavá / pravá) | Efekt | Zmena |
+|---|---|---|---|---|
+| Zastávka | pod strieškou / pri ceste | `[– Cig – –] / [Pecka – – –]` | **Zhromaždenie:** Obaja hráči majú spoločný limit vykladania — súčet ich limitov. | bez zmeny |
+| **Most** | pri kaplnke / pod mostom | `[– Pecka – –] / [– – Cig –]` | **Zhromaždenie:** Karty sa smú vykladať len na vlastnú stranu (aj odpoveď na NA EX). | hrany 2/2 → 1/1 (Michal: „Pecka na jednej strane, cigareta na druhej“) |
+| **Lesná cesta** | v húštine / pri kríži | `[Pecka – – –] / [– Povera – –]` | **Bitka:** Za každé svoje Zviera v súperovom kraji máš 1 tuhé poškodenie navyše. | nový efekt (Michal), detail 7.5 |
+| Cintorín | pri hroboch / pri márnici | `[– Viera – –] / [– Robota – –]` | **Prehra:** Po Pohrebe smieš vyložiť jeden Nástroj z ruky do Dedičstva bez platenia. | bez zmeny |
+| **Jednota** | pri pulte / pred obchodom | `[– Cig – –] / [– Pohorš – –]` | **Kšeft:** Za 1 Dlh dostaneš 2 cigarety. | nový efekt („na sekeru“) |
 
-Hrany sú zámerne **asymetrické** (tuhé 2–6 na strane), takže natočenie, ktoré volí zaostávajúci, je skutočné rozhodnutie. Na každej strane je aspoň 1 cena (Dlh, Pečeň, Poldeci) a 1 Posilnenie alebo Pohoršenie.
+#### Úroveň 2 — dedina (2/2)
 
-### 7.5 Dopad na rozpočet a archetypy
+| Lokalita | Kraje | Hrany (ľavá / pravá) | Efekt | Zmena |
+|---|---|---|---|---|
+| **Ihrisko** | na trávniku / na tribúne | `[Pecka – – Rana] / [– Poldeci Cig –]` | **Bitka:** V každom kraji, kde máš viac svojich Občanov, Zvierat a Starešinov než súper, máš 2 tuhé poškodenia navyše. | Rana na slote 0 → Pecka |
+| Benzínka | pri pokladni / za budovou | `[– Cig Cig –] / [Obmedz – – Pecka]` | **Pitka:** Nikto nesmie fajčiť. | bez zmeny |
+| **Kar** | pri vdove / pri koláčoch | `[– Viera Povera –] / [– Poldeci Rana –]` | **Pitka:** Doliatie nestojí cigarety, ale každé ti pridá 1 poškodenie pečene. | nový efekt, detail 7.5 |
+| **Zberný dvor** | pri váhe / za plotom | `[– Robota – Petelica] / [– Dlh – Obmedz]` | **Kšeft:** Za 1 cigaretu si vezmi do ruky ľubovoľnú kartu zo svojho odhadzovacieho balíčka. | hrany 3/3 → 2/2, spúšťač Pitka → Kšeft (Michal) |
+| **Krčma** | pri výčape / pri dverách | `[Petelica – Dlh –] / [Rana Rana – –]` | **Pitka:** Ak máš plný poldeci a máš ho kam dať, musíš dať NA EX. Prah Cirhózy je tu o 2 vyšší. | hrany 3/3 → 2/2 (Michal: „Petelica, Dlh / Rana, Rana“) |
 
-- **Akcie hrán:** dnes 58 akcií na 15 lokalitách. Plán: úroveň 1 10, úroveň 2 20, úroveň 3 30, pinnacle 24 (v hre vždy len jedna). Na hranách sa mení Pecka 6 → 13, Petelica 2 → 6, Dlh 3 → 7, Pečeň 1 → 4, Posilnenie 0 → 3 (len pinnacle). Rana a Pohoršenie ostávajú (6 a 6). Priemer tuhého na lokalitu podľa úrovne: 1,2 / 2,4 / 1,6 / 8. Úroveň 3 nebije cez hrany, ale cez 4 Pitky.
-- **Za strednú hru:** dnes v priemere asi 19 akcií hrán (5 náhodných lokalít), v pláne 22 a k tomu 8 vo finále (dnes 0).
-- **Archetypy:** hrana úrovne 1 má jediný slot, takmer vždy slot 1 (Zastávka a Lesná cesta majú jednu hranu na slote 0). Prvá karta ho musí trafiť, čo odmení úderníkov so slotom 1 (Hromotĺk, Kulturista) a spojky. Pinnacle 4/4 je **spojka v strede**, každá prvá karta zapne všetky svoje vnútorné akcie. Finále tak odmení úderníkov a Posilnenie. Esá, ktoré platia za Pitku (Kšefty, Oslávenec, Kapybara), silnejú na úrovni 3. Kapybara pri 4 Pitkách vezme súperovi 4 špaky, ďalší dôvod na cenu 2 cigarety.
-- **Kohút** má najväčšiu cenu na úrovni 1 (z 1 Pitky urobí 2). Na úrovni 3 je pre Pitky zbytočný, ostanú mu len akcie.
+#### Úroveň 3 — sídla dedinskej šľachty (3/3)
 
-### 7.6 Riziká
+| Lokalita | Kraje | Hrany (ľavá / pravá) | Efekt | Zmena |
+|---|---|---|---|---|
+| **Obecný úrad** | v kancelárii / na chodbe | `[– Robota Viera Obmedz] / [Pecka Dlh Povera –]` | **Bitka:** Každá aktívna Robota spáli 2 priznané Dlhy. | hrany 2/2 → 3/3; prah Exekútora −4 zaniká (Michal) |
+| **Kultúrny dom** | na parkete / pred vchodom | `[Pohorš – Pohorš Pečeň] / [Pecka Cig Viera –]` | **Bitka:** Prebytok sa nerozdeľuje medzi starších. Kto ho drží, dostane toľko špakov, aký je prebytok. | Rana na slote 0 → Pecka |
+| **Vínna pivnica** | pri sudoch / na schodoch | `[Pečeň Poldeci Posil –] / [Rana Pecka Cig –]` | **Pitka:** Každý hráč smie dať NA EX až dvakrát. | hrany 1/1 → 3/3 |
+| Družstvo | na poli / na schôdzi | `[Robota Poldeci – Rana] / [Obmedz Pohorš Odpor –]` | **Zhromaždenie:** Karty s tagom Pracujúci nemíňajú limit vykladania. | bez zmeny (len obrázok) |
+| **Kostol** | pri oltári / pri vchode | `[Robota Viera Vízia –] / [– Pohorš Povera Viera]` | **Zhromaždenie:** Nikto nesmie vypiť. **Pitka:** Nikto nesmie dať NA EX. | hrany 2/2 → 3/3 |
 
-1. **Pinnacle a bomba NA EX.** NA EX na kartu pri lokalite akcie hrany neruší (§7 :374–376), zruší len ×2 z Posilnenia karty. Hrany pinnacle sú teda voči NA EX imúnne a finále rozhodne prevaha v krajoch, nie NA EX. Zámoček ×2 dá pri plnom spárovaní až asi 18 tuhého z hrán, preto strop (otázka 8). Opačná bomba je Vínna pivnica na úrovni 3: 2 NA EX za Pitku v až 4 Pitkách, so Svokrou, Veteránom a Policajtkou.
-2. **Vandal** (otoč lokalitu) na asymetrickom pinnacle prehodí 5–10 tuhého jednou kartou. Návrh: pinnacle sa otočiť nedá, alebo to nechať ako WAU.
-3. **Finále váži viac:** 3 špaky za bitku + efekt (Agroareál až +5, vila až 3 posuny) + prebytok do špakov. Stratégov cieľ je, aby víťaz finále vyhral 60–75 % partií. Treba to zmerať, nech sa celá hra nezmení na „vyhraj finále“.
-4. **Predsedova vila** je Pohoršenie za cigarety a Pohoršenie nemá brzdu (H3). Vo finále nehrozí vydesenie s kolom na odpoveď, ale strach po finále dáva špaky.
-5. **Kolo 1 je tiché** (najviac 2 Pitky), strach z neho však už platí. Celý rozpis je známy od začiatku: hráči môžu plánovať, ale ubudne prekvapenie.
+#### Pinnacle — korupcia na očiach (4/4, len vo finále, 1–5 Pitiek)
 
-### 7.7 Čo zmerať (keď Michal povolí playtest alebo turnaj)
+| Lokalita | Kraje | Hrany (ľavá / pravá) | Efekt |
+|---|---|---|---|
+| **Poľovnícka chata** | pri trofejach / na posede | `[Posil Petelica Dlh Pecka] / [Rana Petelica Pečeň Pohorš]` | **Furt:** Aktívne Rany, Pecky a Petelice z hrán lokality sa rátajú dvakrát. |
+| **Predsedova vila** | pri bazéne / v pracovni | `[Cig Pecka Pecka Dlh] / [Posil Petelica Dlh Viera]` | **Kšeft:** Za 2 cigarety posuň marker ľubovoľného staršieho o 1 pole k súperovi alebo k sebe. Marker staršieho, ktorého si súper v tomto kole vzal do patronátu, takto posunúť nesmieš. |
+| **Herňa** | pri automatoch / v zadnej miestnosti | `[Pecka Petelica Pečeň Dlh] / [Rana Pecka Robota Dlh]` | **Bitka:** Víťaz dostane navyše toľko špakov, koľko má porazený priznaných Dlhov. |
+
+- **Poľovnícka chata:** strop je rozhodnutý (otázka 8), ×2 platí len pre tuhé z hrán, nie pre Dlh, Pečeň, Posilnenie ani Pohoršenie. Tuhé z hrán: pri trofejach 5, na posede 4, po ×2 je to 10 a 8, teda **až 18**, ak má jeden hráč prevahu v oboch krajoch a prvé karty trafia všetky sloty. Bežne asi 5 na kraj. Ceny sa nezdvojujú. Kraj „v trofejovej sieni“ je po premenovaní na chatu **pri trofejach**.
+- **Predsedova vila:** pri 1–5 Pitkách je to najviac 5 úplatkov na hráča (10 cigariet). Posun je ako pri Pohoršení (§9.2), len za cigarety, a zmení strach hneď, teda aj špaky po finále (krok 4b). Výnimka pre patronát chráni jedinú odpoveď na vydesenie (§10 :808–811, :826–828).
+- **Herňa:** priznané Dlhy porazeného sa rátajú v kroku 4a, teda po Exekútorovi a Robote (krok 1). Pri sekere nedostane nikto nič. Robota v zadnej miestnosti je štít, držiteľovi kraja spáli Dlh ešte pred počítaním. Dlh je na oboch hranách, takže kto drží kraj a prehrá, platí dvakrát. Michalovo znenie je **bez stropu** (návrh mal „najviac 5“). Prirodzený strop dáva Exekútor: pri prahu 10 zhorí polovica Dlhov, takže porazenému ich po kroku 1 ostane najviac 9 (7.5).
+
+**Ilustrácie** (gradácia spodok → šľachta → korupcia; bez textu; dym len z cigarety, popolníka alebo úst, `tools/admin/styl.md`):
+- Bez nového obrázka: Zastávka, Most (už dnes spodok: starec na zábradlí, pneumatika, fľaše, tabuľka EÚ), Lesná cesta, Cintorín, Jednota, celá úroveň 2.
+- **Nové, úroveň 3:** *Obecný úrad*: zrekonštruovaná budova, zlaté kľučky, čierne SUV na vyhradenom mieste, tučný úradník so zlatou reťazou v okne, rad ľudí na chodbe; nikto nefajčí. *Kultúrny dom*: po rekonštrukcii z dotácie, tabuľka s hviezdami EÚ, dnu VIP stôl s bielym obrusom, dedina vonku na rozheganých stoličkách. *Vínna pivnica*: súkromná pivnica papalášov, mramor, sudy s mosadznými štítkami, hostia z okresu so zlatými hodinkami, poháre stoja na stole. *Družstvo*: kancelária predsedu, kožené kreslo, koňak, za oknom rozpadnutý kravín a ľudia na poli; dym len z cigary v ústach predsedu. *Kostol*: pozlátená veža a oltár, nové čierne auto pred farou, nová kasička „na opravu strechy“.
+- **Nové, pinnacle:** *Poľovnícka chata*: luxusná zrubová chata v lese, parožie na stenách, papaláši v lodenových kabátoch pri dlhom stole, obálka s bankovkami zastrčená za trofejou jeleňa, pred chatou terénne autá s modrými majákmi, na zemi ulovený medveď z chránenej oblasti; dym len z cigary v ústach. *Predsedova vila*: sprivatizovaná vila bývalého predsedu JRD, stĺpy a zlaté levy pri bráne, bazén v tvare obličky, predseda v župane so zlatou reťazou, nablýskaný traktor s krokodílom na kapote, bonboniéra plná bankoviek. *Herňa*: dedinská herňa v bývalej požiarnej zbrojnici, rady blikajúcich automatov a vyčerpaní hráči, v zadnej miestnosti pri kartovom stole starosta a policajt v uniforme nad kopou bankoviek, zarámovaná „licencia“ v zlatom ráme (bez čitateľného písma), pred vchodom čierne SUV s modrým majákom; dym len z cigary v ústach.
+
+### 7.5 Na potvrdenie (detaily, ktoré Michal nepovedal)
+
+1. **Lesná cesta, čie Zviera:** text „Za každé svoje Zviera v súperovom kraji“, platí pre oboch hráčov rovnako, ako každý efekt lokality. Rátajú sa len vlastné Zvieratá (vyložené tebou do súperovho kraja), inak by súperovi jeho vlastné Zvieratá v jeho kraji pridávali tuhé tebe. **Odporúčam: len vlastné, obom symetricky.**
+2. **Lesná cesta, strop:** Michalovo znenie je bez stropu (dnes „najviac 2“) a Občania ani Starešinovia sa už nerátajú. **Odporúčam bez stropu.** Zvierat je v balíčku málo a na úrovni 1 (1. kolo) ich hráč má zriedka. Treba merať, či efekt na úrovni 1 nie je mŕtvy.
+3. **Kar, nerest:** dnes sa nerest za doliatie ráta zo zaplatených cigariet (`engine.ts:2810`), takže doliatie zadarmo by nebolo nerest. **Odporúčam: doliatie na Kari je nerest ako bežné doliatie (2)**, inak bude Kar cesta k Absťáku. S Vínkom v Dedičstve sa nedolieva ani na Kari (§7 :428, `engine.ts:2806`).
+4. **Zberný dvor:** Michal vynechal „raz za Pitku“, ale Kšeft je raz za Pitku z definície. Cigareta ostáva nerestou (§8 :515). **Odporúčam ponechať takto.**
+5. **Herňa bez stropu:** Michal vynechal „najviac 5“. Beriem to ako zámer, prirodzený strop je 9 (Exekútor). **Odporúčam bez stropu a merať.** Ak bude finále rozhodovať priveľmi, strop 5.
+6. **Kraje Herne** sú nové, lebo staré („pri tabuli projektu“, „v prázdnych stajniach“) patrili Agroareálu: **pri automatoch / v zadnej miestnosti**. Na potvrdenie.
+
+### 7.6 Dopad na pravidlá a kód
+
+- **Pravidlá:** §3 (žrebovanie zaniká, podmienka dĺžky = aspoň toľko lokalít každej úrovne, koľko kôl úrovne má rozpis, + 1 pinnacle), §4 :137 (finále: voľba cieľa a 1–5 Pitiek), §5 :168–172 (výber z úrovne, finále s cieľom), §6 :221–222 (finále s lokalitou), §7 :479 („1–4 akcie, 1–5 Pitiek“, veta „Finále má vždy 3 Pitky“ zaniká), §9.4 :626–627 a §14 :1047 („finále 3“ zaniká), §14 :1055, §14b (cieľ, kraje, Pitky), §15 (stĺpec Úroveň, 18 lokalít, nové kraje, nové efekty Lesnej cesty, Jednoty, Karu, Zberného dvora a Obecného úradu), §17 :1172 (Finále).
+- **Jadro:** výber lokalít podľa rozpisu namiesto žrebu (`engine.ts:1140–1150`, `DLZKY_HRY`), `chooseLocation` z neodohraných lokalít úrovne (`engine.ts:4381`) aj vo finále, odstrániť `stredFinale` a finálové vetvy (`engine.ts:331`, :2083, :2094, :2169, :4240, :4423, :4450), `FINALE_PITKY` (`constants.ts:87`, `engine.ts:1441`). Efekty: Lesná cesta, Kar, Jednota a Vila (Kšeft v7), Zberný dvor (Pitka → Kšeft), Obecný úrad (bez prahu −4), Poľovnícka chata (×2 tuhého z hrán), Herňa (špaky za Dlhy porazeného).
+- **Dáta:** 15 lokalít podľa 7.4, 3 nové pinnacle, texty Kočovníka a Presbitera bez vety o finále.
+- **Bot:** výber lokality v rámci úrovne, výber a natočenie pinnacle, finále s krajmi.
+
+### 7.7 Rozpočet akcií na hranách
+
+Dnes 58 akcií na 15 lokalitách. Rozhodnuté: úroveň 1 10, úroveň 2 20, úroveň 3 30, pinnacle 24 (v hre vždy len jedna, 8 akcií).
+
+| Akcia | dnes (15) | úrovne 1–3 (15) | pinnacle (3) | spolu (18) |
+|---|---|---|---|---|
+| Pecka | 6 | 8 | 5 | **13** |
+| Petelica | 2 | 2 | 4 | **6** |
+| Rana | 6 | 6 | 2 | 8 |
+| Dlh | 3 | 3 | 5 | **8** |
+| Poškodenie pečene | 1 | 2 | 2 | **4** |
+| Poldeci | 5 | 4 | 0 | 4 |
+| Posilnenie | 0 | 1 | 2 | 3 |
+| Pohoršenie | 6 | 5 | 1 | 6 |
+| Viera | 6 | 6 | 1 | 7 |
+| Povera | 5 | 4 | 0 | 4 |
+| Robota | 4 | 5 | 1 | 6 |
+| Cigareta | 8 | 8 | 1 | 9 |
+| Obmedzenie | 4 | 4 | 0 | 4 |
+| Vízia | 1 | 1 | 0 | 1 |
+| Odpor | 1 | 1 | 0 | 1 |
+
+Úroveň 3 nebije cez hrany, ale cez 4 Pitky. Pinnacle je spojka v strede, každá prvá karta zapne všetky svoje vnútorné akcie, takže finále odmení úderníkov a Posilnenie. Kohút má najväčšiu cenu na úrovni 1 (z 1 Pitky urobí 2) a vo finále platí tiež.
+
+### 7.8 Riziká
+
+1. **Finále váži viac:** až 5 špakov za bitku, k tomu efekt (Herňa bez stropu, Vila až 5 úplatkov) a prebytok do špakov. Cieľ Stratéga: víťaz finále vyhrá 60–75 % partií, nie viac. Merať.
+2. **Finále sa dá skrátiť:** keďže Pitky určí pinnacle, hráč, ktorý vedie, môže nespárovať hranu a zrezať finále na 1–2 Pitky. Dobiehanie tým slabne. Merať, koľko Pitiek má finále.
+3. **Ceny vo finále:** Cirhóza z finále sa väčšinou nestihne priznať a stojí 5 špakov (§14 :1052). Pečeň na hranách pinnacle (chata na posede, Herňa pri automatoch) sa pri 5 Pitkách ráta až 5×.
+4. **Bomba NA EX:** NA EX akcie hrán neruší (§7 :374–376), finále teda rozhodne prevaha v krajoch. Opačná bomba je Vínna pivnica: 2 NA EX za Pitku v až 4 Pitkách.
+5. **Vandal** (schválený, v sade zatiaľ nie je) otočí asymetrickú pinnacle. Návrh: pinnacle sa otočiť nedá, alebo to nechať ako WAU (rozhodne sa pri Vandalovi).
+6. **Kolo 1 je tiché** (najviac 2 Pitky) a Cintorín aj nová Lesná cesta môžu byť na úrovni 1 skoro mŕtve. Celý rozpis je známy od začiatku, takže ubudne prekvapenie.
+
+### 7.9 Čo zmerať (keď Michal povolí playtest alebo turnaj)
 
 - Pitky podľa úrovne a podiel špakov za bitky a za strach podľa kola.
-- Ako často víťaz finále vyhrá partiu a ako často sa vo finále zmení vedenie.
-- Tuhé z hrán pinnacle a kto má prevahu vo finále.
+- Koľko Pitiek má finále, ako často víťaz finále vyhrá partiu a ako často sa vo finále zmení vedenie.
+- Tuhé z hrán pinnacle, kto má prevahu vo finále a ktorú pinnacle zaostávajúci volí.
+- Bonus Herne (priemer a maximum), úplatky na Vile, Cirhózy vzniknuté vo finále.
 - NA EX za Pitku na Vínnej pivnici a Krčme.
-- Ktoré lokality obranca v rámci úrovne nevyberá nikdy (mŕtve lokality).
+- Ktoré lokality obranca v rámci úrovne nevyberá nikdy (mŕtve lokality: Cintorín, Lesná cesta, Kostol, sudy vo Vínnej pivnici).
 - Vandal a Kohút podľa úrovne.
 
 ## 8. Dopad na pravidlá a kód
@@ -361,7 +425,7 @@ Hrany sú zámerne **asymetrické** (tuhé 2–6 na strane), takže natočenie, 
 4. **Rezerva:** Brigádnik a Kuchárka áno (56 druhov), alebo nie (54)?
 5. **Kombo Kôň + Puška + Zámočník (16 tuhé):** nechať ako vzácne WAU, alebo dať strop (Zámočník nezdvojí akciu, ktorú už zdvojilo Posilnenie)?
 6. **Prebytok:** s tuhým asi 6 porastie aj prebytok a vydesenie príde skôr. Stačí to merať v playteste, alebo už do v7 dať brzdu?
-7. **Finále:** Pitky pevne 3 aj s pinnacle (odporúčam), alebo 1 + menší počet akcií hrán (1–5)?
-8. **Poľovnícky zámoček ×2:** nechať bez stropu, alebo zdvojiť len tuhé akcie hrán?
-9. **„Autobus“:** Autobusová stanica z eurofondov ako 6. lokalita úrovne 3 (alebo namiesto Kostola), alebo si myslel niečo iné?
-10. **Pinnacle navyše:** 3 nové lokality (spolu 18) sú v poriadku, alebo radšej len 15 s povýšením (úrovni 3 by potom chýbala lokalita)?
+7. **Finále:** Pitky pevne 3 aj s pinnacle, alebo 1 + menší počet akcií hrán (1–5)? — **Rozhodnuté 27. 10.:** bez pevných 3, platí pravidlo ako pri každej lokalite (pinnacle 1–5 Pitiek, 7.3).
+8. **Poľovnícky zámoček ×2:** nechať bez stropu, alebo zdvojiť len tuhé akcie hrán? — **Rozhodnuté 27. 10.:** strop áno, zdvojujú sa len Rany, Pecky a Petelice z hrán; lokalita sa volá Poľovnícka chata (7.4).
+9. **„Autobus“:** Autobusová stanica z eurofondov ako 6. lokalita úrovne 3 (alebo namiesto Kostola), alebo si myslel niečo iné? — **Rozhodnuté 27. 10.:** padá.
+10. **Pinnacle navyše:** 3 nové lokality (spolu 18) sú v poriadku, alebo radšej len 15 s povýšením (úrovni 3 by potom chýbala lokalita)? — **Rozhodnuté 27. 10.:** 18 lokalít.
