@@ -16,7 +16,7 @@ import { join } from "node:path";
 import WebSocket from "ws";
 import type { ActionSums, CardInstance, CenyKliatob, ClientState, DopadyNahladu, Command, ElderState, Event, GameData, GameState, PlacedCard, PlayerId, Pohlavie, Rod, Slot, VerejnyStav } from "@naex/core";
 import {
-  jeKartaPatronatu,
+  jeKartaPatronatu, naexZaPitku,
   stavZavislosti,
   textNeresti,
   jeCoTahat,
