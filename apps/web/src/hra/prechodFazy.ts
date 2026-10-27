@@ -29,7 +29,9 @@ export interface Medziobrazovka {
  * naraz s koncom kola a stôl je už v ďalšom kole, kým počítadlo len začína.
  */
 export function medziobrazovka(
-  view: Pick<ClientState, "kolo" | "faza" | "utocnik" | "pitkaCislo" | "pitkyCelkom" | "lokalitCelkom" | "rozpis" | "bitkaStav" | "koniec">,
+  view: Pick<ClientState, "kolo" | "faza" | "utocnik" | "pitkaCislo" | "pitkyCelkom" | "lokalitCelkom" | "rozpis" | "bitkaStav" | "koniec"> & {
+    readonly pitkaStav?: { readonly bzdocha?: PlayerId | null } | null;
+  },
   ja: PlayerId,
   menoSupera: string,
   bitkaKola: number | null,
@@ -76,9 +78,13 @@ export function medziobrazovka(
         kluc: `${view.kolo}|pitka|${view.pitkaCislo}`,
         nadnadpis: kolo,
         nadpis: view.pitkyCelkom > 1 ? `Pitka ${view.pitkaCislo} z ${view.pitkyCelkom}` : "Pitka",
-        text: obranca
-          ? `Začínaš: fajči, dolievaj a skryto vyber NA EX, potom daj „končím“. NA EX sa odkryjú, keď skončíte obaja — ${S} má posledné slovo.`
-          : `${S} začína, ty máš posledné slovo. Fajči, dolievaj a skryto vyber NA EX; odkryjú sa, keď skončíte obaja.`,
+        // Pitka naraz (Michal 2026-10-27): hrajú obaja súčasne, len Bzdocha čaká na súpera.
+        text:
+          view.pitkaStav?.bzdocha === ja
+            ? `Máš Bzdochu: počkáš, kým ${S} skončí Pitku, potom hráš a vidíš jeho NA EX.`
+            : `Hráte obaja naraz: fajči, dolievaj a skryto vyber NA EX, potom „Skončiť Pitku“. ${
+                view.pitkaStav?.bzdocha != null ? `${S} má Bzdochu — hrá až po tebe a uvidí tvoje NA EX.` : "NA EX sa odkryjú, keď skončíte obaja"
+              }${view.pitkaStav?.bzdocha != null ? "" : obranca ? ` — na ne odpovedáš prvý, ${S} má posledné slovo.` : " — posledné slovo máš ty."}`,
       };
     case "bitka": {
       const drzi = view.bitkaStav?.prebytokDrzi ?? view.bitkaStav?.caka ?? null;
