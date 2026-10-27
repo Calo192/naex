@@ -710,7 +710,7 @@ export interface StavkaBitky {
  * Stávka bitky (Michal 2026-10-22, návrh 3 A; v6 v špakoch): čo hráč získa
  * výhrou a čo získa súper, keď vyhrá on — od v6.1 aj so špakmi za starších,
  * ktoré dostane len víťaz. Súperove Absťáky v ruke nevidno — rátajú sa len
- * verejné; Autobusár jeden ignoruje.
+ * verejné.
  */
 export function stavkaBitky(data: GameData, view: ClientState): StavkaBitky | null {
   if (view.ciel === null || view.koniec !== null) return null;

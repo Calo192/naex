@@ -47,7 +47,6 @@ import {
   kartyZaPas,
   sPrilozenou,
   krokStavby,
-  manzelkyHraca,
   legalCommands,
   naexCieleVLinii,
   sNaexNaKartach,
@@ -442,7 +441,7 @@ function hodnotaBitky(k: Kontext, s: GameState, q: PlayerId, ostrost: number): n
   const abstaky: [number, number] = [0, 0];
   abstaky[k.ja] = s.hraci[k.ja].ruka.filter((x) => x.defId === "abstak").length;
   const dmg = poskodenieBitky(data, s, sums, abstaky);
-  // Remíza v tuhom (v6): vyhrá menej Absťákov (Autobusár jeden ignoruje), potom menej priznaných Dlhov, inak sekera (šanca ½).
+  // Remíza v tuhom (v6): vyhrá menej Absťákov, potom menej priznaných Dlhov, inak sekera (šanca ½).
   const remiza = (p: PlayerId): [number, number] => [abstakyVBitke(data, s, p, abstaky[p]), prahyHraca(data, s, p).priznaneDlhy];
   const [aq, dq] = remiza(q);
   const [ao, dO] = remiza(o);
@@ -502,8 +501,7 @@ function hodnotaZdrojov(k: Kontext, s: GameState, p: PlayerId): number {
   if (s.kolo === 1) {
     postih += 0.25 * h.nerestiTotoKolo;
   } else {
-    // Milujúca manželka: Absťák už pri rovnosti nerestí (každá o 1 viac).
-    const deficit = h.nerestiMinuleKolo + manzelky(s, p) - h.nerestiTotoKolo;
+    const deficit = h.nerestiMinuleKolo - h.nerestiTotoKolo;
     if (deficit > 0) postih += Math.min(1.3, 0.45 * deficit);
     else postih += 0.1 * -deficit;
   }
@@ -1105,11 +1103,8 @@ function stropNeresti(state: GameState, ja: PlayerId): number {
   if (kolPoTomto(state) === 0) return Number.POSITIVE_INFINITY;
   const h = state.hraci[ja];
   if (state.kolo === 1) return 1;
-  return h.nerestiMinuleKolo + manzelky(state, ja) + (verejneAbstaky(state, ja) > 0 ? 1 : 0);
+  return h.nerestiMinuleKolo + (verejneAbstaky(state, ja) > 0 ? 1 : 0);
 }
-
-/** Odhalené Milujúce manželky hráča — posúvajú latku Absťáku (Michal 2026-10-19). */
-const manzelky = (state: GameState, p: PlayerId): number => manzelkyHraca(state, p);
 
 // --- Pitka -----------------------------------------------------------------
 

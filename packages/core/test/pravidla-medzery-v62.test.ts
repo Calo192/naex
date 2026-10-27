@@ -168,7 +168,6 @@ function soZaverecnou(skrytaId: string, l: Layout4, r: Layout4): GameState {
     pitkaCislo: 1,
     strany: [[lezi({ ...instanceFor(sadaZ, "medz_moja_rana", ["Rana", null, null, null], EMPTY), uid: 64001 }, 0), skryta], []],
     pitkaStav: { naTahu: 0, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false] },
-    zaverecnaOdklad: [null, { naexSupera: 0, naexVlastne: 0, zahodeniaSupera: 0 }],
   } as GameState;
 }
 

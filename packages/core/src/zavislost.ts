@@ -9,8 +9,7 @@ import type { PlayerId } from "./types.ts";
 import type { GameData } from "./data.ts";
 import type { VerejnyHrac, VerejnyStav } from "./effects.ts";
 import type { PlayerState } from "./player.ts";
-import { bitkaMody } from "./effects.ts";
-import { abstakyVBitke, manzelkyHraca, verejneAbstaky } from "./engine.ts";
+import { abstakyVBitke, verejneAbstaky } from "./engine.ts";
 
 type HracZavislosti = VerejnyHrac & Pick<PlayerState, "nerestiTotoKolo" | "nerestiMinuleKolo">;
 
@@ -32,16 +31,13 @@ export type VyhladZavislosti = "zaklad" | "ziska" | "zbavi" | "nic";
 export interface StavZavislosti {
   /** Absťáky, ktoré hráč má (priznané). */
   readonly abstaky: number;
-  /** O koľko mu Absťáky znížia tuhé poškodenie v bitke (Autobusár jeden ignoruje). */
+  /** O koľko mu Absťáky znížia tuhé poškodenie v bitke. */
   readonly ubera: number;
-  readonly autobusar: boolean;
   /** Neresti tohto kola vrátane poldeci, ktoré ležia na stole cez NA EX (vypijú sa v bitke). */
   readonly teraz: number;
   /** Z toho NA EX na stole, ešte nezapočítané. */
   readonly naexNaStole: number;
   readonly minule: number;
-  /** Odhalené Milujúce manželky: Absťák príde aj pri toľko nerestiach navyše oproti minulému kolu. */
-  readonly manzelky: number;
   readonly vyhlad: VyhladZavislosti;
   /** Koľko nerestí ešte chýba, aby Absťák nepribudol (pri „ziska“), inak 0. */
   readonly doBezpecia: number;
@@ -57,21 +53,16 @@ export function stavZavislosti(data: GameData, s: StavPreZavislost, p: PlayerId)
   const teraz = hrac.nerestiTotoKolo + naexNaStole;
   const minule = hrac.nerestiMinuleKolo;
   const abstaky = verejneAbstaky(s, p);
-  // Milujúca manželka: Absťák aj pri rovnosti (každá ďalšia o 1 viac); zbavenie sa nemení.
-  const manzelky = manzelkyHraca(s, p);
-  const latka = minule + manzelky;
   const vyhlad: VyhladZavislosti =
-    s.kolo <= 1 ? "zaklad" : teraz < latka ? "ziska" : teraz > minule && abstaky > 0 ? "zbavi" : "nic";
+    s.kolo <= 1 ? "zaklad" : teraz < minule ? "ziska" : teraz > minule && abstaky > 0 ? "zbavi" : "nic";
   return {
     abstaky,
     ubera: abstakyVBitke(data, s, p, 0),
-    autobusar: bitkaMody(data, s, p).abstakyZlava > 0,
     teraz,
     naexNaStole,
     minule,
-    manzelky,
     vyhlad,
-    doBezpecia: vyhlad === "ziska" ? latka - teraz : 0,
+    doBezpecia: vyhlad === "ziska" ? minule - teraz : 0,
     doZbavenia: s.kolo > 1 && abstaky > 0 && teraz <= minule ? minule + 1 - teraz : 0,
   };
 }

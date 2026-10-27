@@ -59,7 +59,6 @@ import {
   pohorsenieMozne,
   cenaKliatby,
   battleOutcome,
-  cenaPrebytku,
   prebytokNaRozdelenie,
   dopadyNahladu,
   nahladPitky,
@@ -3062,7 +3061,7 @@ export function HernaPlocha({
             <span>
               Posuň marker jedného staršieho o 1 pole k stredu:{" "}
               {view.starsi
-                .filter((e) => e.marker !== 3)
+                .filter((e) => e.marker !== MARKER_STRED)
                 .map((e) => (
                   <button key={e.elderId} type="button" className="pecat pecat-nakup" onClick={() => posli({ type: "kapybara", elderId: e.elderId })}>
                     {defOf(data, e.karta).name}
@@ -3932,8 +3931,6 @@ export function HernaPlocha({
           };
         }
         if (b.krok === "prebytok") {
-          // Miňištrant (Výhra): víťaza stojí každý posun o 1 viac.
-          const cenaPosunu = b.vitaz === ja ? cenaPrebytku({ strany: view.strany } as unknown as GameState, ja) : 1;
           return {
             nadpis: (
               <>
@@ -3942,12 +3939,7 @@ export function HernaPlocha({
             ),
             text: (
               <>
-                Klikni na staršieho — marker ide k súperovi (on priazeň, teba sa starší začne báť).{" "}
-                {cenaPosunu > 1 ? (
-                  <strong>Posun ťa stojí {cenaPosunu} (Miňištrant v tvojej partii).</strong>
-                ) : (
-                  "Posun stojí 1."
-                )}
+                Klikni na staršieho — marker ide k súperovi (on priazeň, teba sa starší začne báť). Posun stojí 1.
                 {navrhRozdelenia !== null && (
                   <span className="tlmene">
                     {" "}
@@ -4411,10 +4403,6 @@ export function HernaPlocha({
           ciel: lokalita !== null ? `o ${menoKarty(lokalita.defId)}` : "",
           naSekeru: view.spakyNaSekere > 0 ? [`${view.spakyNaSekere} špakov`] : [],
           poslednaBitka: view.ciel?.typ === "finale",
-          cenaPosunuVitaza: [
-            cenaPrebytku({ strany: view.strany } as unknown as GameState, 0),
-            cenaPrebytku({ strany: view.strany } as unknown as GameState, 1),
-          ],
           prebytokNaRozdelenie: prebytokNaRozdelenie(view, battleOutcome(b?.damage ?? odhad)),
           skrytaSupera: b?.damage == null && view.zaverecne.some((z) => z.majitel !== ja),
           utocnik: `útočník: ${view.utocnik === ja ? "ty" : menoHraca(view.utocnik)} — ${view.kolo === 1 ? "v 1. kole náhodne" : "porazený z minulej bitky (remíza roly nemení)"}`,
@@ -5464,7 +5452,7 @@ export function HernaPlocha({
                   lupa={(s) => lupyStarsich.get(s.elder.elderId) ?? {}}
                   prebytok={
                     krokMoj && bs !== null && bs.krok === "prebytok"
-                      ? { zostava: bs.prebytokZostava, cena: bs.vitaz === ja ? cenaPrebytku({ strany: view.strany } as unknown as GameState, ja) : 1 }
+                      ? { zostava: bs.prebytokZostava, cena: 1 }
                       : undefined
                   }
                 />
@@ -5730,7 +5718,6 @@ export function HernaPlocha({
           {ruka
             .filter((k) => !vylozenia.some((x) => x.karta.uid === k.uid))
             .map((k) => {
-              const vybrana = false;
               // Vybrané miesto na stole: karta, ktorá tam smie, sa tam klikom položí.
               const naMiesto = vybraneMiesto?.karty.get(k.uid);
               const onClick =
@@ -5749,7 +5736,7 @@ export function HernaPlocha({
                   : { left: strana === "left" ? pary.map((x) => x.index) : [], right: strana === "right" ? pary.map((x) => x.index) : [] };
               const obsah = (
                 <>
-                  {karta({ karta: k, sirka: sirkaVRuke, vybrana: vybrana || vybranaDoOblasti === k.uid, onClick, hranaVnutorna: strana, spoj })}
+                  {karta({ karta: k, sirka: sirkaVRuke, vybrana: vybranaDoOblasti === k.uid, onClick, hranaVnutorna: strana, spoj })}
                   {/* Nízke okno: pás s názvom je pod okrajom okna — meno ukáže štítok nad ním (hra.css). */}
                   <span className="ruka-meno" aria-hidden="true">
                     {menoKarty(k.defId)}

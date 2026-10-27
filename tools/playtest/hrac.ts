@@ -14,7 +14,7 @@
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import WebSocket from "ws";
-import type { ActionSums, CardInstance, CenyKliatob, ClientState, DopadyNahladu, Command, ElderState, Event, GameData, GameState, PlacedCard, PlayerId, Pohlavie, Rod, Slot, VerejnyStav } from "@naex/core";
+import type { ActionSums, CardInstance, CenyKliatob, ClientState, DopadyNahladu, Command, ElderState, Event, GameData, PlacedCard, PlayerId, Pohlavie, Rod, Slot, VerejnyStav } from "@naex/core";
 import {
   jeKartaPatronatu, naexZaPitku,
   stavZavislosti,
@@ -38,7 +38,6 @@ import {
   najhorsiaOdpovedNaNaex,
   dopadyNahladu,
   stavPoPatronate,
-  cenaPrebytku,
   nahladPitky,
   sMojimiSkrytymiNaex,
   favourStarsieho,
@@ -1018,10 +1017,9 @@ function moznosti(v: ClientState): string[] {
         }
       }
       if (b?.krok === "prebytok") {
-        const cena = b.vitaz === ja ? cenaPrebytku({ strany: v.strany } as unknown as GameState, ja) : 1;
-        out.push(`(Prebytok zostáva ${b.prebytokZostava}; jeden posun ťa stojí ${cena}${cena > 1 ? " — Miňištrant vo tvojej partii" : ""}.)`);
+        out.push(`(Prebytok zostáva ${b.prebytokZostava}; jeden posun ťa stojí 1.)`);
         for (const e of v.starsi) {
-          if (b.prebytokZostava < cena || posunMarker(e, su) === null) continue;
+          if (posunMarker(e, su) === null) continue;
           c({ type: "prebytok", elderId: e.elderId }, `prebytok: posuň marker ${meno(e.karta.defId)} smerom k porazenému (súper dostane priazeň, starší sa začne báť teba)${nahlad(e, false)}`);
         }
       }

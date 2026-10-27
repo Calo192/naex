@@ -479,7 +479,6 @@ describe("v5 bod 2: skryté NA EX na súperovu Záverečnú", () => {
       lokalityVHre: s0.lokalityVHre.slice(1),
       strany: [[], [{ card: inst("pijan"), playedBy: 1 }, { card: zaverecna, playedBy: 1, zaverecna: true }]],
       hraci: [{ ...s0.hraci[0], poldeciPlne: 1, cigarety: 1 }, s0.hraci[1]],
-      zaverecnaOdklad: [null, { naexSupera: 0, naexVlastne: 0, zahodeniaSupera: 0 }],
       pitkaStav: { naTahu: 0, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0], vykup: [false, false] },
     };
     const po = apply(data, s, { type: "naex", uid: uidZaverecnej(1) }, 0).state;

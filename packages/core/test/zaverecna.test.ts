@@ -51,10 +51,6 @@ function vPitke(strany: GameState["strany"], naTahu: PlayerId = 0): GameState {
       { ...s.hraci[1], poldeciPlne: 1, cigarety: 3 },
     ],
     pitkaStav: { naTahu, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false] },
-    zaverecnaOdklad: [
-      strany.flat().some((pl) => pl.zaverecna === true && pl.playedBy === 0) ? { naexSupera: 0, naexVlastne: 0, zahodeniaSupera: 0 } : null,
-      strany.flat().some((pl) => pl.zaverecna === true && pl.playedBy === 1) ? { naexSupera: 0, naexVlastne: 0, zahodeniaSupera: 0 } : null,
-    ],
   } as GameState;
 }
 

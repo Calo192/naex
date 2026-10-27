@@ -11,7 +11,6 @@ import {
   apply,
   battleOutcome,
   buildGameData,
-  cenaPrebytku,
   cenaPatronatu,
   dopadyNahladu,
   evaluateLine,

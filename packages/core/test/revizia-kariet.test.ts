@@ -17,7 +17,6 @@ import {
   evaluateLine,
   loadGameData,
   posunMarker,
-  prebytokProtiZlava,
   printedSides,
   setupGame,
 } from "../src/index.ts";
