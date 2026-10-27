@@ -2540,9 +2540,9 @@
    "tags": [
     "Lokalita"
    ],
-   "effect_text": "Pitka: Nová Cirhóza je hneď priznaná.",
+   "effect_text": "Prehra: Smieš vyložiť jeden Nástroj z ruky alebo zo šenku do Dedičstva bez platenia.",
    "triggers": [
-    "Pitka"
+    "Prehra"
    ],
    "left": {
     "blocked": [

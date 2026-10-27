@@ -2,7 +2,7 @@
 // otestovať: odkiaľ hráč špaky má (súčet dá popolník) a ako stoja starší k hráčovi.
 
 import type { BitkaNaNastenke, CardInstance, ClientState, ElderState, PlayerId } from "@naex/core";
-import { STUPNICA_ZONY, obavanyHrac, priazenHraca, strachZ } from "@naex/core";
+import { STUPNICA_ZONY, jeFinaleNaNastenke, obavanyHrac, priazenHraca, strachZ } from "@naex/core";
 
 export interface SpakyPodlaZdroja {
   /** Špaky za vyhraté bitky o lokality (so sekerou, ktorú víťaz zobral). */
@@ -12,7 +12,7 @@ export interface SpakyPodlaZdroja {
   /** Z toho zo sekery. */
   readonly zoSekery: number;
   readonly zaStarsich: number;
-  /** Finále (bitka bez lokality) a prebytok. */
+  /** Finále (v7 na pinnacle lokalite) a prebytok. */
   readonly zaFinale: number;
   readonly finale: BitkaNaNastenke | null;
   readonly prebytok: number;
@@ -26,8 +26,8 @@ export interface SpakyPodlaZdroja {
  */
 export function spakyPodlaZdroja(view: Pick<ClientState, "nastenka">, p: PlayerId): SpakyPodlaZdroja {
   const sucet = (f: (b: BitkaNaNastenke) => number): number => view.nastenka.reduce((a, b) => a + f(b), 0);
-  const lokality = view.nastenka.filter((b) => b.lokalita !== null);
-  const finale = view.nastenka.find((b) => b.lokalita === null) ?? null;
+  const lokality = view.nastenka.filter((b) => !jeFinaleNaNastenke(b));
+  const finale = view.nastenka.find((b) => jeFinaleNaNastenke(b)) ?? null;
   const prebytok = sucet((b) => b.prebytok[p]);
   return {
     zaLokality: lokality.reduce((a, b) => a + b.zaBitku[p], 0),

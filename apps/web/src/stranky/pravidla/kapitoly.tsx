@@ -85,8 +85,8 @@ export const KAPITOLY: readonly Kapitola[] = [
         <div className="karticky">
           <div className="karticka">
             <strong>Špaky.</strong> Hrá sa 3, 5 alebo 7 bitiek o lokality podľa <P k="dlzka-hry">dĺžky hry</P> a potom{" "}
-            <P k="finale">finále</P> — posledná bitka na pinnacle lokalite, ktorú vyberie hráč s viac špakmi — útočí zaostávajúci. Víťaz bitky dostane toľko <P k="spak">špakov</P>, koľko
-            Pitiek sa v kole odohralo, a k tomu ti každý starší, ktorý sa ťa bojí, dá 1, 2 alebo 3 špaky podľa zóny. Kto bitku
+            <P k="finale">finále</P> — posledná bitka na pinnacle lokalite, ktorú vyberie hráč s viac špakmi — útočí zaostávajúci. Víťaz bitky (aj finále) dostane 1 <P k="spak">špak</P> za každú
+            Pitku, ktorá sa v kole odohrala, a k tomu ti každý starší, ktorý sa ťa bojí, dá 1, 2 alebo 3 špaky podľa zóny. Kto bitku
             prehrá, od starších nedostane nič; pri sekere dostanú obaja.
             Po finále sa ešte <P k="vykupne">vykúpi</P>, čo ti ostalo: každý plný poldeci 1 špak, každých 5 cigariet 1 špak. Potom vyhrá, kto má
             viac špakov.
@@ -238,7 +238,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           Obranca vyberie lokalitu, o ktorú sa bude biť, a <P k="natocenie">natočí</P> ju. Lokalita leží v strede línie a delí ju
           na dve <P k="strana">strany</P>. Natočenie určuje, ktorá hrana lokality patrí ktorému <P k="kraj">kraju</P> — akcie
           hrany dostane, kto v tom kraji má <a href="#zhromazdenie-prevaha">prevahu</a>. Efekt lokality platí len v kole, keď sa
-          o ňu bije (<a href="#lokality">tabuľka lokalít</a>). Vo finále sa cieľ nevyberá — kolo začína rovno šenkom.
+          o ňu bije (<a href="#lokality">tabuľka lokalít</a>). Vo finále vyberá obranca — kto vedie — z troch pinnacle lokalít a hrá sa o ňu ako o každú inú.
         </p>
         <H3 id="senok-stavba">Stavba šenku</H3>
         <p>
@@ -296,8 +296,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           Karty tvoria <strong>jednu súvislú <P k="linia">líniu</P></strong> bez vetvenia. Lokalita v strede ju delí na tvoju
           a súperovu <P k="strana">stranu</P>. Na ťahu položíš kartu na <strong>koniec svojej alebo súperovej strany</strong>.
           Karta je vždy natočená k tebe a ostáva tvoja — je v tvojej <P k="partia">partii</P> a jej akcie aj efekty sa rátajú
-          tebe, nech leží kdekoľvek. Vo finále lokalita nie je: v strede leží prvá vyložená karta a ďalšie sa kladú na jej dve
-          strany; kraje ani prevaha tam nie sú.
+          tebe, nech leží kdekoľvek. Aj vo finále leží v strede lokalita — pinnacle — a karty sa kladú k nej ako v každom kole.
         </p>
         <H3 id="zhromazdenie-spoj">Spoj akcií</H3>
         <p>
@@ -534,7 +533,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           sekere ostáva útočníkom.
         </p>
         <p className="zvyraznene">
-          Víťaz dostane toľko <P k="spak">špakov</P>, koľko Pitiek sa v kole naozaj odohralo (finále 3). Ak má viac Absťákov
+          Víťaz dostane 1 <P k="spak">špak</P> za každú Pitku, ktorá sa v kole naozaj odohrala (aj vo finále). Ak má viac Absťákov
           ako porazený, dostane o rozdiel menej, ale vždy aspoň 1 špak. Lokalitu si neberie — ide na krčmovú{" "}
           <P k="nastenka">nástenku</P> s jeho menom a špakmi. Prebytok rozdeľuje hráč s vyšším <strong>celkovým</strong>{" "}
           poškodením — aj pri remíze v tuhom.
@@ -578,7 +577,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             <strong>Veštica</strong> — porazený s Vešticou vymení kartu medzi doberacími balíčkami.
           </li>
           <li>
-            <strong>Pohreb</strong> — s priznanou Cirhózou.
+            <strong>Cintorín</strong> — porazený v bitke o Cintorín smie dať jeden Nástroj z ruky alebo zo šenku do Dedičstva zadarmo.
           </li>
           <li>
             <strong>Výhra a Prehra</strong> — Živnostník, cigarety za prebytok (súper dostane 1 cigaretu za každého staršieho,
@@ -748,11 +747,6 @@ export const KAPITOLY: readonly Kapitola[] = [
             smútiaca vdova.
           </li>
         </ol>
-        <H3 id="kliatby-pohreb">Pohreb</H3>
-        <p>
-          Po bitke smieš s priznanou Cirhózou vykonať <P k="pohreb">Pohreb</P>: spáliš ju aj jednu svoju kartu z línie. Keď je
-          spálená karta Závislý, vezmeš si jednu kartu zo šenku. Iná liečba Cirhózy nie je.
-        </p>
       </>
     ),
   },
@@ -883,7 +877,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           <tr><td>Zberný dvor</td><td>Kšeft</td><td>Za 1 cigaretu ľubovoľná karta z tvojho odhadzovacieho balíčka do ruky.</td></tr>
           <tr><td>Most</td><td>Zhromaždenie, Pitka</td><td>Karty len na vlastnú stranu, aj odpoveď na NA EX.</td></tr>
           <tr><td>Kar</td><td>Pitka</td><td>Poškodenie pečene za NA EX dostane súper hráča, ktorý ho dal.</td></tr>
-          <tr><td>Cintorín</td><td>Pitka</td><td>Nová Cirhóza je hneď priznaná.</td></tr>
+          <tr><td>Cintorín</td><td>Prehra</td><td>Porazený smie vyložiť jeden Nástroj z ruky alebo zo šenku do Dedičstva bez platenia (pri sekere nikto).</td></tr>
           <tr><td>Obecný úrad</td><td>Kšeft</td><td>Za 3 cigarety presuň 1 svoj priznaný Dlh medzi súperove priznané.</td></tr>
           <tr><td>Jednota</td><td>Pitka</td><td>Kto má viac priznaných Dlhov, nesmie v tejto Pitke fajčiť ani dolievať.</td></tr>
           <tr><td>Sklad</td><td>Kšeft</td><td>Za 1 cigaretu vrchná karta súperovho odhadzovacieho balíčka do tvojej ruky.</td></tr>
@@ -924,7 +918,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             </tr>
           </thead>
           <tbody>
-            <tr><td>Vyhratá bitka</td><td>toľko, koľko Pitiek sa v kole odohralo (finále 3); ak má víťaz viac Absťákov ako porazený, o rozdiel menej, ale aspoň 1; k tomu špaky zo sekery</td></tr>
+            <tr><td>Vyhratá bitka</td><td>1 za každú Pitku, ktorá sa v kole odohrala (aj finále); ak má víťaz viac Absťákov ako porazený, o rozdiel menej, ale aspoň 1; k tomu špaky zo sekery</td></tr>
             <tr><td>Starší, ktorí sa ťa boja</td><td>po vyhratej bitke (aj finále) za každého: žltá 1, oranžová 2, červená 3; sivý nikomu; porazený nič, pri sekere obaja</td></tr>
             <tr><td>Noviny v Dedičstve</td><td>keď prehráš a víťaz má viac priznaných Dlhov ako ty, špaky za bitku dostaneš ty</td></tr>
             <tr><td>Prebytok po finále a v bitke o Kultúrny dom</td><td>toľko, aký je prebytok</td></tr>
@@ -940,13 +934,19 @@ export const KAPITOLY: readonly Kapitola[] = [
         </p>
         <H3 id="finale">Finále</H3>
         <ul>
-          <li>Po poslednej bitke o lokalitu (3 / 5 / 7) sa hrá finále na pinnacle lokalite.</li>
+          <li>
+            Po poslednej bitke o lokalitu (3 / 5 / 7) sa hrá finále na pinnacle lokalite — ako každé kolo: lokalita leží v strede
+            línie, karty sa kladú k nej a platia jej hrany aj efekt.
+          </li>
           <li>Pinnacle vyberie a natočí obranca — hráč s viac špakmi; šenok, branie aj patronát platia ako v každom kole.</li>
           <li>
             <strong>Útočí zaostávajúci — kto má menej špakov</strong> (pri rovnosti ten, kto prehral poslednú bitku; po
             sekere ostáva útočník). Vykladá prvý a v Pitke má posledné slovo.
           </li>
-          <li>Kraje a prevaha platia ako inde; Pitiek je 1 až 5 podľa aktivovaných akcií hrán. Pri sekere vo finále špaky kola aj zo sekery prepadnú.</li>
+          <li>
+            Kraje a prevaha platia ako inde; Pitiek je 1 až 5 podľa aktivovaných akcií hrán a víťaz dostane 1 špak za každú
+            odohranú Pitku (na Herni navyše za Dlhy porazeného). Pri sekere vo finále špaky kola aj zo sekery prepadnú.
+          </li>
           <li>
             Po finále sa ešte rozdajú špaky za starších. Prebytok sa nerozdeľuje — jeho držiteľ dostane toľko špakov, aký je
             prebytok. Potom sa vykúpia zvyšné plné poldeci a cigarety (poldeci 1 špak, 5 cigariet 1 špak), odpočíta sa

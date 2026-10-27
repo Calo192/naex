@@ -257,8 +257,6 @@ describe("najhoršia odpoveď na NA EX: žiadna skutočná odpoveď nedopadne ho
           const karta = r.hraci[su].ruka.find((k) => k.uid === c.uid);
           // Nástup Snúbenice vymení kartu s NA EX — náhľad ho nepredvída (napísané v najhorsiaOdpoved).
           if (karta === undefined || karta.defId === "snubenica") continue;
-          // Cintorín (v7): Cirhóza z pečene odpovede je hneď priznaná — náhľad ju odhaduje len z prahu Pitky.
-          if (r.ciel?.lokalita?.defId === "cintorin") continue;
           const t = apply(data, r, c, su).state;
           const v = viewFor(data, t, p);
           const d = poskodenieBitky(data, stolPriPoskodeni(data, v, n.dalsiePitky[1]), evaluateLine(data, lineState(v)).sums, mojeAbst);

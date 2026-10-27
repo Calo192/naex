@@ -57,7 +57,6 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     prebytokDrzi: null,
     prebytokZostava: 0,
     prebytokPosunute: [],
-    pohrebHotovy: [true, true],
     benzinkaZostava: [0, 0],
 
     karHotovy: [true, true],
@@ -73,7 +72,7 @@ function sHracom(s: GameState, p: PlayerId, h: Partial<GameState["hraci"][0]>): 
   return { ...s, hraci };
 }
 
-/** Stav pred Pohrebom (hráč 0 ju preskočí) — bitka potom dobehne do ďalšieho kola. */
+/** Stav pred Cintorínom (hráč 0 nič nededí) — bitka potom dobehne do ďalšieho kola. */
 function predKoncomBitky(seed: number, uprav: (s: GameState) => GameState = (s) => s): GameState {
   const s0 = setupSBalickom(data, seed);
   return uprav({
@@ -83,7 +82,7 @@ function predKoncomBitky(seed: number, uprav: (s: GameState) => GameState = (s) 
     strany: [[], []],
     ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
     lokalityVHre: s0.lokalityVHre.slice(1),
-    bitkaStav: bitka({ krok: "pohreb", caka: 0, pohrebHotovy: [false, true] }),
+    bitkaStav: bitka({ krok: "cintorin", caka: 0 }),
   });
 }
 
@@ -158,7 +157,7 @@ describe("ruka: +2 karty po bitke, žiadny limit ruky (Michal 2026-10-19)", () =
     const s = predKoncomBitky(40, (st) =>
       sHracom(sHracom(st, 0, { ruka }), 1, { ruka: [], doberaci: [...st.hraci[1].doberaci, inst("pijan"), inst("pijan"), inst("pijan")] }),
     );
-    const po = apply(data, s, { type: "skipPohreb" }, 0).state;
+    const po = apply(data, s, { type: "cintorin", uid: null }, 0).state;
     expect(po.faza).toBe("volbaCiela");
     expect(po.hraci[0].ruka).toHaveLength(9 + KONSTANTY.KARTY_PO_BITKE);
     expect(po.hraci[1].ruka).toHaveLength(KONSTANTY.KARTY_PO_BITKE);
@@ -182,10 +181,10 @@ describe("Úžerník (Michal 2026-10-20): prah Dlhu 2 + sila, Zberateľ zanikol"
     expect(prahyHraca(data, s, 1).dlh).toBe(2);
   });
 
-  it("po bitke sa už nič neprezerá — po Pohrebe ide hra rovno do ďalšieho kola", () => {
+  it("po bitke sa už nič neprezerá — po Cintoríne ide hra rovno do ďalšieho kola", () => {
     const s = predKoncomBitky(42);
     const ruka = s.hraci[0].ruka.length;
-    const po = apply(data, s, { type: "skipPohreb" }, 0).state;
+    const po = apply(data, s, { type: "cintorin", uid: null }, 0).state;
     expect(po.faza).toBe("volbaCiela");
     expect(po.hraci[0].ruka).toHaveLength(ruka + KONSTANTY.KARTY_PO_BITKE);
   });
@@ -230,8 +229,8 @@ describe("Milujúca manželka v7 (M2): latku Absťáku už neposúva", () => {
         }),
       );
     const abstaky = (st: GameState): number => st.hraci[0].priznane.filter((k) => k.defId === "abstak").length;
-    expect(abstaky(apply(data, zaklad(0), { type: "skipPohreb" }, 0).state)).toBe(0);
-    const s1 = apply(data, zaklad(1), { type: "skipPohreb" }, 0).state;
+    expect(abstaky(apply(data, zaklad(0), { type: "cintorin", uid: null }, 0).state)).toBe(0);
+    const s1 = apply(data, zaklad(1), { type: "cintorin", uid: null }, 0).state;
     expect(abstaky(s1)).toBe(0);
     expect(s1.hraci[0].ruka).toHaveLength(zaklad(1).hraci[0].ruka.length + KONSTANTY.KARTY_PO_BITKE);
   });
@@ -241,7 +240,7 @@ describe("Milujúca manželka v7 (M2): latku Absťáku už neposúva", () => {
       ...sHracom(st, 0, { nerestiMinuleKolo: 2, nerestiTotoKolo: 3, priznane: [inst("milujuca_manzelka")] }),
       strany: [[{ card: inst("milujuca_manzelka"), playedBy: 0 }], []],
     }));
-    const po = apply(data, s, { type: "skipPohreb" }, 0).state;
+    const po = apply(data, s, { type: "cintorin", uid: null }, 0).state;
     expect(po.hraci[0].priznane.filter((k) => k.defId === "abstak")).toHaveLength(0);
   });
 

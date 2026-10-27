@@ -171,7 +171,7 @@ describe("keď sa doberací balíček minie, odhadzovací sa zamieša a stane sa
         ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
         lokalityVHre: s0.lokalityVHre.slice(1),
         bitkaStav: {
-          krok: "pohreb",
+          krok: "cintorin",
           caka: 0,
           sums: [{}, {}],
           exekutorHotovy: [true, true],
@@ -182,7 +182,6 @@ describe("keď sa doberací balíček minie, odhadzovací sa zamieša a stane sa
           prebytokDrzi: null,
           prebytokZostava: 0,
           prebytokPosunute: [],
-          pohrebHotovy: [false, true],
           karHotovy: [true, true],
           vesticaHotova: true,
           benzinkaZostava: [0, 0],
@@ -192,7 +191,7 @@ describe("keď sa doberací balíček minie, odhadzovací sa zamieša a stane sa
       0,
       { ruka: [], doberaci: [], odhadzovaci: odhodene },
     );
-    const po = apply(data, s, { type: "skipPohreb" }, 0).state;
+    const po = apply(data, s, { type: "cintorin", uid: null }, 0).state;
     expect(po.koniec).toBeNull();
     expect(KONSTANTY.KARTY_PO_BITKE).toBe(1);
     expect(po.hraci[0].ruka.filter((k) => odhodene.some((o) => o.uid === k.uid))).toHaveLength(1);
@@ -231,7 +230,6 @@ describe("Veštica pri prázdnom doberacom balíčku zamieša odhadzovací (Mich
             prebytokDrzi: 0,
             prebytokZostava: 1,
             prebytokPosunute: [],
-            pohrebHotovy: [false, false],
             karHotovy: [true, true],
             vesticaHotova: false,
             benzinkaZostava: [0, 0],

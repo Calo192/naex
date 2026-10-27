@@ -352,7 +352,7 @@ export function VyucbaStol({
       else if (!poBitke && kluceKroku.some((k) => k === "starsi-stupnica" || k === "linia-starsich")) {
         document.querySelector<HTMLElement>('.doska.moja [data-vyucba-prvok="starsi"][aria-pressed="false"]')?.click();
       }
-      const vrstvu = kluceKroku.some((k) => k.startsWith("hlavicka:")) || typ === "pohreb" || typ === "patronat";
+      const vrstvu = kluceKroku.some((k) => k.startsWith("hlavicka:")) || typ === "patronat";
       if (!vrstvu) document.querySelector<HTMLElement>(".vrstva:not(.skryta) .vrstva-zavriet")?.click();
     }, 350);
     return () => clearTimeout(t);

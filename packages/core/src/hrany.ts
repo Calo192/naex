@@ -79,7 +79,7 @@ export interface NahladVylozenia {
 
 /** Tuhé navyše z kariet v línii — ten istý výpočet ako bitka (bitkaMody), bez Dedičstva a starších. */
 function tuheZLinie(data: GameData, line: LineState, strany: LineState["strany"]): readonly [number, number] {
-  const ciel: VerejnyStav["ciel"] = line.finale === true ? { typ: "finale", lokalita: null } : line.lokalita === null ? null : { typ: "lokalita", lokalita: line.lokalita };
+  const ciel: VerejnyStav["ciel"] = line.finale === true ? { typ: "finale", lokalita: line.lokalita } : line.lokalita === null ? null : { typ: "lokalita", lokalita: line.lokalita };
   const stav: VerejnyStav = { ciel, strany, starsi: [], hraci: [{ priznane: [], dedicstvo: [] }, { priznane: [], dedicstvo: [] }] };
   return [bitkaMody(data, stav, 0).tuheBonus, bitkaMody(data, stav, 1).tuheBonus];
 }

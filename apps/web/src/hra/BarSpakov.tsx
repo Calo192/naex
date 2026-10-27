@@ -51,13 +51,13 @@ export function BarSpakov({ view, p, body, menoKarty }: BarSpakovProps) {
       hodnota: zn(zaFinale),
       trieda: zaFinale > 0 ? "plus" : "",
       pod: [
-        finale === null ? `finále až +${KONSTANTY.FINALE_PITKY}` : `finále ${zn(finale.zaBitku[p])}`,
+        finale === null ? (view.rozpis !== undefined ? "finále: 1 za Pitku" : `finále až +${KONSTANTY.FINALE_PITKY}`) : `finále ${zn(finale.zaBitku[p])}`,
         rozpis.prebytok > 0 ? `prebytok +${rozpis.prebytok}` : null,
         view.spakyNaSekere > 0 ? `na sekere ${view.spakyNaSekere}` : null,
       ]
         .filter((t): t is string => t !== null)
         .join(" · "),
-      popis: `Finále (${KONSTANTY.FINALE_PITKY} Pitky) a prebytok. Remíza dá špaky bitky na sekeru — vezme ich víťaz ďalšej bitky, vo finále prepadnú.${view.spakyNaSekere > 0 ? ` Teraz na nej čaká ${view.spakyNaSekere}.` : ""}`,
+      popis: `Finále (${view.rozpis !== undefined ? "na vrcholovej lokalite: víťaz dostane 1 špak za každú odohranú Pitku, 1–5" : `${KONSTANTY.FINALE_PITKY} Pitky`}) a prebytok. Remíza dá špaky bitky na sekeru — vezme ich víťaz ďalšej bitky, vo finále prepadnú.${view.spakyNaSekere > 0 ? ` Teraz na nej čaká ${view.spakyNaSekere}.` : ""}`,
     },
     {
       kluc: "exekutor",

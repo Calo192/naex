@@ -43,7 +43,7 @@ export interface StatistikyHraca {
   readonly poskodeniePecene: number;
   readonly cirhozyZiskane: number;
   readonly cirhozyPriznane: number;
-  /** Pohreby — od pravidiel v4 aj bývalé Liečby (zlúčené do Pohrebu, Michal 2026-10-23). */
+  /** Pohreby zo starých partií (Pohreb zrušil Michal 2026-10-27; v4 doň zlúčil Liečby). */
   readonly pohreby: number;
 
   readonly dlhyZiskane: number;
@@ -304,9 +304,6 @@ function zapisJedneho(
           break;
         case "prebytok":
           s.posunyPrebytkom += 1;
-          break;
-        case "pohreb":
-          s.pohreby += 1;
           break;
         case "patronat":
           s.bitkyOStarsich += 1;

@@ -10,7 +10,7 @@ import {
   cielLokalitaId,
   cieleVykladania,
   cigaretyZPitky,
-  jeFinale,
+  finaleBezStredu,
   lineState,
   nahladPitky,
   paleneDlhyVBitke,
@@ -194,17 +194,6 @@ export function stolPriPoskodeni(data: GameData, s: ClientState, dalsiePitky: nu
   if (s.ciel === null) return s;
   const vyhlad = vyhladDlhov(data, s, dalsiePitky);
   const hraci: [ClientState["hraci"][0], ClientState["hraci"][1]] = [s.hraci[0], s.hraci[1]];
-  // Cintorín (Pitka, v7): nové Cirhózy sú hneď priznané — v bitke dajú súperovi tuhé.
-  if (cielLokalitaId(s) === "cintorin") {
-    const np = nahladPitky(data, s);
-    for (const p of [0, 1] as const) {
-      const dalsie = Math.floor(np[p].pecenZoStola / np[p].prahPecene) * dalsiePitky;
-      const n = np[p].cirhozy + dalsie;
-      if (n <= 0) continue;
-      const nove: CardInstance[] = Array.from({ length: n }, (_, i) => ({ uid: -2000 - 100 * p - i, defId: "cirhoza", leftLayout: 0, rightLayout: 0 }));
-      hraci[p] = { ...hraci[p], priznane: [...hraci[p].priznane, ...nove] };
-    }
-  }
   for (const p of [0, 1] as const) {
     const d = vyhlad[p].poBitke;
     const h = hraci[p];
@@ -421,7 +410,8 @@ export function najhorsiaOdpoved(
   let najhorsiaHodnota = hodnotaPreMna(battleOutcome(bitka(po)));
   const lokalita = cielLokalitaId(po);
   const zablokovane = zablokovaneStrany(po);
-  const finale = jeFinale(po);
+  // Prázdna strana sa prikladá ku karte v strede len vo finále bez lokality (v6).
+  const finale = finaleBezStredu(po);
   for (const def of data.cards.values()) {
     if (def.tags.includes("Lokalita") || def.tags.includes("Starešina")) continue;
     const varianty = data.variants.get(def.id);

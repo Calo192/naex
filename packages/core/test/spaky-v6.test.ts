@@ -44,7 +44,6 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     prebytokDrzi: null,
     prebytokZostava: 0,
     prebytokPosunute: [],
-    pohrebHotovy: [true, true],
     benzinkaZostava: [0, 0],
     karHotovy: [true, true],
     spalit: [],
@@ -157,7 +156,7 @@ describe("v6 karty: Kultúrny dom, Noviny", () => {
 });
 
 describe("v6 bod 11: finále", () => {
-  /** Bitka o poslednú lokalitu v kroku Pohrebu — skipPohreb ju dokončí a začne finále. */
+  /** Bitka o poslednú lokalitu v kroku Cintorína — „nič“ ju dokončí a začne finále. */
   function predFinale(spaky: readonly [number, number], vitaz: PlayerId | null, utocnik: PlayerId): GameState {
     const s0 = setupGame(data, 9);
     return {
@@ -168,10 +167,10 @@ describe("v6 bod 11: finále", () => {
       spaky,
       ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
       lokalityVHre: [],
-      bitkaStav: bitka({ krok: "pohreb", caka: 0, pohrebHotovy: [false, true], vitaz }),
+      bitkaStav: bitka({ krok: "cintorin", caka: 0, vitaz }),
     };
   }
-  const poBitke = (s: GameState): GameState => apply(data, s, { type: "skipPohreb" }, 0).state;
+  const poBitke = (s: GameState): GameState => apply(data, s, { type: "cintorin", uid: null }, 0).state;
 
   it("po poslednej lokalite príde finále: bez lokality, rovno šenok, útočí zaostávajúci (Michal 2026-10-27)", () => {
     const s = poBitke(predFinale([3, 5], 1, 1));
