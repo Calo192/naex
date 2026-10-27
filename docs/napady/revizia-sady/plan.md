@@ -527,13 +527,15 @@ Druhov v balíčku 51, kariet v hre 110. **Cieľ z časti 1 nesedí:** Petelica 
 
 **Po dávke 3 (rozhodnuté 27. 10., 11.6):** Dlh 56 → **64** (Svokra, Degustátorka, Vymáhač), Obmedzenie 18 → 14, Pecka 20 → **22**, Rana 36 → 38. Druhov v balíčku 52, kariet v hre 112. Deficit Peciek sa tým zmenší na 2 (22 z 24), Petelica ostáva 12 zo 14. Spolu je to 5 Peciek ekvivalentu namiesto 7 a Pakt z toho dorovná 0,8–1,4.
 
+**Po efektoch E3 (27. 10., 14.6):** Kulturista má Petelica ×2, takže **Petelica 14, cieľ splnený**. Zo sady vypadli Presbiter a Opatrovateľka, Smetiarka, Brigádnik a Oslávenec sú zatiaľ len návrhy. Sada má 47 druhov v balíčku a 102 kariet v hre. Pakt má 4 kópie. Deficit útoku je 2 Pecky (1 so Skladom).
+
 **Po Sklade (27. 10. večer):** Pecka na hrane Skladu kráti deficit, ak sa hrana ráta ako jedna kópia, teda kus za kus, tak ako plán sčítava hrany v 1.1 a 7.7. Deficit je potom **2 Petelice + 1 Pecka** (predtým 2 + 2), teda asi 4 Pecky ekvivalentu. Pakt (časť 12) z toho dorovná 0,8–1,4. Poznámka: hrana je v hre len v kole, keď obranca Sklad vyberie (1 zo 6 lokalít úrovne 2), takže v partii váži menej ako kópia karty.
 
 ### 10.6 Dopad na kód
 
 - Dáta: 16 prerobených kariet a 5 noviniek podľa 10.1, Kapybara 2 cigarety.
 - Efekty: Šarlatán (pečeň ako Viera, vzor `vieraAkoVizia`, `partia.ts:529`), Šofér (`naexVKole`, `engine.ts:333`), Podvodník (presun Dlhu, vzor `presunDlhVychovavatelky`, `engine.ts:2525`), Výherný automat (konštanty `constants.ts:122–123`), Brigádnik (prevaha), Oslávenec (Kšeft v7), Záhradkár (prah +2), Traktoristka (prevaha → Pecka alebo Dlh).
-- Pravidlá v7: prah Exekútora 7, spúšťač Kšeft, zmazať spúšťače Exekúcia a Prestávka.
+- Pravidlá v7: prah Exekútora 7, spúšťač Kšeft, zmazať spúšťače Exekúcia a Prestávka. **Zmena E3 (27. 10.):** Exekúcia ostáva, lebo ju používa nový efekt Záhradkára (14.5, na potvrdenie). Zmazať len Prestávku.
 - **D6 Čiarky na účte (dávka 3, rozhodnuté 27. 10., v7):** zadĺženie neprepadá. Kód: nenulovať `zadlzenie` po Pitke (`engine.ts:3029`, pečeň sa nuluje ďalej), `pridajZadlzenie` (`engine.ts:798`) ostáva, náhľad Pitky (`nahlady.ts:59`) ráta zvyšok, stôl ukáže čiarku na účte, bot ju zarátava. Dáta dávky 3: Svokra a Degustátorka (Obmedzenie → Dlh), Dievčina (podmienka 4 Dlhov), Manželka (M2, bez Kliatby), nová karta Vymáhač.
 - **Sklad (nová lokalita, 27. 10. večer):** dáta lokality (hrany `[Robota – Pecka –] / [Cig – Dlh –]` na potvrdenie, kraje, efekt, ilustrácia `sklad-final.jpg` z handoffu) a ďalší spúšťač **Kšeft** na lokalite: vrchná karta zo súperovho odhadzovacieho balíčka za 1 cigaretu, raz za Pitku pre každého hráča (7.4, 7.5 bod 7, 7.6). Výber lokalít úrovne 2 ráta so 6 lokalitami.
 - **Sloty pri zavádzaní do tvorcu:** sloty (`blocked` / `allowed`) nových kariet a Paktu predpísať podľa `docs/napady/analyza-indexy.html`. Ľavý index 3 je podobsadený (5,5 akcie) a Petelica a Pecka sú dnes pripnuté na horné okná, preto nové tuhé akcie a Pakt smerovať do podobsadených okien.
@@ -676,6 +678,8 @@ Druhov v balíčku 52, kariet v hre 112, úderníci 9 (kvóta 10). D4 a D6 kópi
 **Schválené Michalom 27. 10.:** nová akcia **Pakt**. Definícia doslova: *„Na spoji sa správa ako akcia, s ktorou je v páre.“* Ostatné štyri návrhy akcií Michal neschválil. **Nasadenie na karty (12.1) je len návrh na schválenie.** Otvorené body implementácie sú v 12.3.
 
 ### 12.1 Návrh: 3 karty, 6 kópií
+
+**Po E3 (27. 10.):** Brigádnik je zatiaľ len návrh (mimo sady), takže Pakt má **4 kópie**: Živnostník v okne 2–3 a Dohadzovačka na slotoch 1 a 3 (zmena okna kvôli podmienke 3b, 14.6). Tabuľka nižšie je pôvodný návrh.
 
 Kópie v hre = balíček 2×. Pakt dávam vždy na **ľavú (vonkajšiu) stranu, do okna 2–3**. Tam kopíruje pravú stranu karty, ktorá príde za ňu: tvoju ďalšiu (vyberáš ju z ruky), alebo súperovu podstrčenú. Pravé indexy 2–3 nesú Petelice Pušky a Veterána a Rany Recidivistu. Okno 2–3 vľavo je podobsadené, ľavý index 3 má len 5,5 akcie (`analyza-indexy.html`), takže Pakt ho dorovná zadarmo.
 
@@ -870,3 +874,68 @@ Platí rozhodnuté pravidlo v7 z dávky: **efekt Nástroja účinkuje v hre aj v
 - **Furt:** Pes (×2 na spoji so súperovou kartou, `partia.ts`, vzor Silná žena `:531`).
 - **Bitka:** Krokodíl (susedné Občania a Zvieratá do `b.spalit`).
 - **Zrušiť:** Kšeft Kapybary, Furt Kohúta (aspoň 2 Pitky), Furt Krokodíla, D4 Dievčiny (ak Michal potvrdí).
+
+### 14.5 Dávka E3 — občania B (Michal, 27. 10.)
+
+**Mení sa aj zloženie sady:** Presbiter a Opatrovateľka zo sady **vypadávajú**. Smetiarka, Brigádnik a Oslávenec sú **zatiaľ len návrhy** (mimo sady). Kulturista má **nové akcie**.
+
+| Karta | Predtým | Rozhodnuté znenie | Voľba |
+|---|---|---|---|
+| Snúbenica | Nástup: vráti kartu s NA EX majiteľovi a zaujme jej miesto | *Konflikt: Keď súper priloží k tejto karte Chlapa, Snúbenica si ho uloví: po bitke ide ten Chlap do tvojho odhadzovacieho balíčka a odteraz je tvoj.* | A „Uloví ženícha“ |
+| **Bzdocha** (premenovaná z Klebetnica) | Nástup: pozri súperovu ruku, kartu naspodok | *Pitka: Ak vyberáš NA EX po súperovi, ukáže sa ti jeho voľba skôr, ako vyberieš svoje.* | B „Vie to prvá“ |
+| Záhradkár | 10.1: Bitka, tvoj prah Exekútora +2 (a Výhra: otoč poldeci z časti 3) | *Exekúcia: Keď čeliš exekúcii, smieš zahodiť túto kartu namiesto špakov. Spáľ toľko svojich priznaných Dlhov, koľko mala aktívnych akcií.* **(na potvrdenie; nahrádza oba efekty z revízie?)** | inak |
+| **Anonymný alkoholik** | **Placatka z NA EX trojice** (Furt: tvoje NA EX naňho mimo limitu; naprogramované) | *Nástup: Priznaj všetky nepriznané Cirhózy zo svojho odhadzovacieho balíčka.* **(na potvrdenie)** | inak |
+| Dohadzovačka | Nástup: vymeň dvom starším priazne | *Bitka: Za každý spoj tvojej Ženy so súperovým Chlapom a tvojho Chlapa so súperovou Ženou si smieš vziať do ruky jednu kartu zo šenku.* **(na potvrdenie)** | inak |
+| Mäsiar | bez efektu | *Furt: Akcie Zvierat v jeho okolí neplatia.* | inak |
+| **Kulturista** | Petelica / Dlh ×2, bez efektu | **Akcie Petelica ×2 / Dlh ×2.** *Úplatok (pracovný názov): Súper smie na svojom ťahu v Pitke položiť na túto kartu ľubovoľne veľa cigariet. Každá cigareta zníži do konca kola každú jej akciu poškodenia o jeden stupeň (Petelica → Pecka → Rana → nič).* **(meno spúšťača a príjemca cigariet na potvrdenie)** | inak |
+| Presbiter | Bitka: sám v kraji uberie súperovi Vieru | **karta vypadá zo sady** | — |
+| Opatrovateľka | Nástup: latka Absťáku −2 | **karta vypadá zo sady** | — |
+| Smetiarka | Kšeft: odhodená karta → cigareta | **zatiaľ len návrh** (mimo sady) | — |
+| Brigádnik | Furt: do prevahy sa neráta; nosič Paktu (12.1) | **zatiaľ len návrh** (mimo sady); predtým „rezerva ide do sady“ (2a) | — |
+| Oslávenec | Kšeft: za plný poldeci súperovi 2 pečene (10.1) | efekt ponechaný, **karta zatiaľ len návrh — na potvrdenie?** | — |
+
+**Ponechané:** Dvojčatá, Šofér, Degustátorka, Vandal, Strýko z Ameriky (otázka D1 ďalej otvorená), Traktoristka, Vymáhač.
+
+**Poznámky k rozhodnutiam:**
+- **Záhradkár** (Michal: „Exekúcia: namiesto špakov môžeš odhodiť záhradkára. Priznaný dlh sa ti zníži o počet jeho aktívnych akcií.“): s Dlhmi z dávky 3 (D3–D6) exekúcia nastane. **Výklad, na potvrdenie:** polovica Dlhov zhorí ako pri každej exekúcii (§11), špaky sa neplatia a navyše sa spáli toľko Dlhov, koľko mal aktívnych akcií. Aktívne akcie má len v línii. Z ruky alebo z balíčka zachráni len špaky. **Spúšťač Exekúcia ostáva** (10.6 ho mal zmazať spolu s Prestávkou). **Otázka: nahrádza oba efekty z revízie, prah +2 (10.1) aj Výhru s poldeci (časť 3)?**
+- **Anonymný alkoholik — POZOR, nahrádza Placatku z NA EX trojice** (naprogramovanú na `feature/naex-trojica`). Spolu s Policajtkou (E2) z trojice ostáva len **Svokra (Varecha)** — na potvrdenie. Priznaná Cirhóza nestojí na konci 5 špakov, ale súper za ňu dostáva +1 tuhé v každej bitke a otvorí sa Pohreb.
+- **Bzdocha:** mení sa len meno na karte, kľúč `klebetnica` môže ostať. Efekt mení `viewFor` (skrytá voľba NA EX súpera sa ukáže skôr), takže potrebuje test (nemenné pravidlo 2).
+- **Dohadzovačka:** rátajú sa všetky spoje v línii, zmiešaný pár je tvoja karta so súperovou. Karta zo šenku je zadarmo. Liberál (Žena aj Chlap) sa ráta ako oboje — na potvrdenie.
+- **Mäsiar:** „v okolí“ = susedné Zvieratá oboch hráčov, ich akcie sa nerátajú ako pri zrušení Odporom. Efekty Zvierat platia.
+- **Kulturista — kolízia mien:** Michal nazval efekt „Pakt“, lenže **Pakt je schválená akcia** (časť 12). **Otázka pre Michala:** pomenovať spúšťač inak (Úplatok / Výpalné / Dohoda), alebo premenovať akciu Pakt? Ďalej treba určiť, či cigarety idú do zásoby (návrh), alebo majiteľovi. **Riziko:** pri nadbytku cigariet stačia 3 cigarety na úplné vypnutie oboch Petelíc, preto zvážiť cenu v plných poldeci. Pripnutie „Petelica sama na slote 1“ (WAU 1) padá. Nové sloty: Petelice vľavo na 1–2, Dlhy vpravo voľne, 6 variantov. WAU 1 (Kulturista za Silnou ženou): jeho Dlhy sa spárujú v 50 % (`sloty.json`).
+- **Pakt:** Brigádnik nie je v sade, takže Pakt má **4 kópie** (Živnostník 2 v okne 2–3, Dohadzovačka 2 na slotoch 1 a 3). Ekvivalent 4 kópií je asi 0,6–1,0 Pecky (12.2 prepočítané na nové okná: 0,63 tuhého náhodne, 1,74 pri výbere z 3).
+- **Kšeft v balíčku** ostáva len na Strýkovi z Ameriky (Smetiarka a Oslávenec sú mimo sady, Kapybara prišla o Kšeft v E1). Ďalej je na lokalitách (Jednota, Zberný dvor, Vila, Sklad) a pri starších (Starosta, Poštárka).
+- **Archetypy:** spojky 8 → 7 (bez Brigádnika), úderníci 9 (Kulturista ostáva úderníkom).
+
+### 14.6 Rozpočet a sloty po E3
+
+Kópie v hre (balíček 2× + štart), výpočet zo `skript/karty.ts`:
+
+| Akcia | Po dávke 3 | Po E3 | Zmena |
+|---|---|---|---|
+| **Petelica** | 12 | **14** | +2 Kulturista — **cieľ 14 splnený** |
+| Pecka | 22 | 22 | — (cieľ 24; so Skladom na hrane 23) |
+| Rana | 38 | 32 | −2 Presbiter, −2 Brigádnik, −2 Oslávenec |
+| Dlh | 64 | 64 | — |
+| Poškodenie pečene | 50 | 48 | −2 Brigádnik |
+| Poldeci | 26 | 24 | −2 Oslávenec |
+| Povera | 34 | 32 | −2 Presbiter |
+| Viera | 32 | 28 | −2 Presbiter, −2 Opatrovateľka |
+| Pohoršenie | 30 | 28 | −2 Presbiter |
+| Cigareta | 48 | 40 | −2 Opatrovateľka, −2 Smetiarka, −2 Brigádnik, −2 Oslávenec (48 už s Paktom Dohadzovačky) |
+| Robota | 22 | 14 | −2 Opatrovateľka, −2 Smetiarka, −4 Brigádnik |
+| Obmedzenie | 14 | 10 | −2 Smetiarka, −2 Brigádnik |
+| Posilnenie | 8 | 6 | −2 Opatrovateľka |
+| Odpor, Vízia | 18, 10 | 18, 10 | — |
+| Pakt | 6 | **4** | −2 Brigádnik |
+
+**Sada po E3:** 47 druhov v balíčku (52 − 5), 4 štartovky, **102 kariet v hre** (47 × 2 + 8). **Deficit útoku:** Petelica 0, Pecka 2 (1 so Skladom). Pakt so 4 kópiami ho prakticky dorovná.
+
+**Sloty (`sloty.json`, generátor `skript/sloty.ts`, 51 kariet, 0 porušení podmienok 1–3)**, zmeny voči odovzdanému návrhu:
+- vypadli: Presbiter, Opatrovateľka, Smetiarka, Brigádnik, Oslávenec;
+- Kulturista: vľavo Petelica 1 → **2**, okno blok. 0, 2, 3 → **blok. 0, 3** (Petelice na 1–2), vpravo bez zmeny (Dlh ×2 voľne), 6 variantov;
+- Dohadzovačka: vľavo blok. 0, 1 → **blok. 0, 2** (Viera a Pakt na slotoch 1 a 3), aby mal vzácny Pakt dve rôzne okná (3b), 4 varianty;
+- Podvodník: vpravo blok. 1, 3 → **blok. 0, 1** (Obmedzenie a Rana na 2–3; Obmedzenie by inak malo na indexe 3 len 10 %), 4 varianty;
+- Snúbenica: vľavo blok. 0, 1 → **blok. 0, 2** (Robota na 1 alebo 3; Robota by inak mala na indexe 1 len 11 %), 4 varianty;
+- mená: Niekoho stryná → Stryná, Klebetnica → Bzdocha;
+- pripnutia: „Kulturista: Petelica sama na slote 1“ nahradilo „Petelice vonku, Dlhy vnútri“ a Pakt má 2 nosiče namiesto 3. Kombá: WAU 1 50 %, ostatné bez zmeny.

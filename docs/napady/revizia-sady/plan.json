@@ -1094,7 +1094,7 @@
    "karta": "Presbiter",
    "typ": "Občan",
    "archetyp": "R",
-   "verdikt": "nechať",
+   "verdikt": "odstrániť zo sady (rozhodnuté 2026-10-27, efekty E3)",
    "akcie_dnes": "Pohorš, Povera / Rana, Viera",
    "akcie_plan": "",
    "efekt_dnes": "Bitka: sám v kraji uberie súperovi Vieru.",
@@ -1200,10 +1200,10 @@
   },
   {
    "id": "klebetnica",
-   "karta": "Klebetnica",
+   "karta": "Bzdocha",
    "typ": "Občan",
    "archetyp": "R",
-   "verdikt": "nechať",
+   "verdikt": "nová, premenovaná Klebetnica → Bzdocha, efekt E3 B (2026-10-27)",
    "akcie_dnes": "Povera, Vízia / Pohorš, Dlh",
    "akcie_plan": "",
    "efekt_dnes": "Nástup: pozri súperovu ruku, kartu naspodok (schválené).",
@@ -1247,7 +1247,7 @@
    "karta": "Opatrovateľka",
    "typ": "Občan",
    "archetyp": "R",
-   "verdikt": "nechať",
+   "verdikt": "odstrániť zo sady (rozhodnuté 2026-10-27, efekty E3)",
    "akcie_dnes": "Robota, Cig / Viera, Posil",
    "akcie_plan": "",
    "efekt_dnes": "Nástup: latka Absťáku −2 (schválené).",
@@ -1258,7 +1258,7 @@
    "karta": "Smetiarka",
    "typ": "Občan",
    "archetyp": "E",
-   "verdikt": "nechať",
+   "verdikt": "zatiaľ len návrh, mimo sady (rozhodnuté 2026-10-27, efekty E3)",
    "akcie_dnes": "Robota, Cig / Obmedz",
    "akcie_plan": "",
    "efekt_dnes": "Kšeft: za odhodenú kartu cigareta (schválené, variant).",
@@ -2230,7 +2230,7 @@
    "karta": "Brigádnik",
    "typ": "Občan",
    "archetyp": "S",
-   "verdikt": "nová (rozhodnuté 2026-10-27), rezerva ide do sady",
+   "verdikt": "zatiaľ len návrh, mimo sady (rozhodnuté 2026-10-27, efekty E3; predtým rezerva ide do sady)",
    "akcie_dnes": "—",
    "akcie_plan": "Robota, Cig, Rana / Robota, Pečeň, Obmedz",
    "efekt_dnes": "Furt: do prevahy sa neráta.",
@@ -2364,11 +2364,13 @@
    "karta": "Kulturista",
    "typ": "Občan",
    "archetyp": "U",
-   "verdikt": "nová (rozhodnuté 2026-10-27)",
+   "verdikt": "nová (rozhodnuté 2026-10-27); efekty E3: akcie Petelica ×2 / Dlh ×2 + efekt Úplatok (pracovný názov)",
    "akcie_dnes": "—",
-   "akcie_plan": "Petelica / Dlh×2",
+   "akcie_plan": "Petelica ×2 / Dlh ×2",
    "efekt_dnes": "Bez efektu.",
    "smer": "Petelica / Dlh×2: anaboliká na splátky. — Rozhodnuté znenie: plan.md 10.1.",
+   "strany_e3": {"left": {"blocked": [0, 3], "actions": {"Petelica": 2}}, "right": {"blocked": [], "actions": {"Dlh": 2}}},
+   "poznamka_e3": "strany nižšie sú z 10.1; platí strany_e3 (sloty.json, 6 variantov)",
    "strany": {
     "left": {
      "blocked": [
@@ -2471,7 +2473,7 @@
    "karta": "Oslávenec",
    "typ": "Občan",
    "archetyp": "E",
-   "verdikt": "nová (rozhodnuté 2026-10-27)",
+   "verdikt": "efekt ponechaný, karta zatiaľ len návrh mimo sady — na potvrdenie (efekty E3, 2026-10-27)",
    "akcie_dnes": "—",
    "akcie_plan": "Poldeci, Cig / Rana",
    "efekt_dnes": "Kšeft: za plný poldeci naleješ súperovi — v tejto Pitke dostane 2 Pečene.",
@@ -2867,7 +2869,8 @@
     "vypadne_prva": true
    }
   ],
-  "kopii_spolu": 6,
+  "kopii_spolu": 4,
+  "po_e3": "Brigádnik je po efektoch E3 zatiaľ len návrh (mimo sady): Pakt 6 → 4 kópie (Živnostník okno 2–3, Dohadzovačka sloty 1 a 3 kvôli podmienke 3b). Ekvivalent asi 0,6–1,0 Pecky (0,63 tuhého náhodne, 1,74 pri výbere z 3).",
   "vypocet": {
    "model": "náhodná karta zo sady po revízii (55 druhov balíčka a štartu), náhodné rozloženie podľa variants.ts; 13 noviniek bez slotov bez allowed; tuhé Rana 1, Pecka 2, Petelica 3",
    "pakt_tuhe_na_kopiu": {"vlavo_i2": {"nahodne": 0.186, "vyber_z_3": 0.51, "vyber_z_5": 0.781}, "vlavo_i3": {"nahodne": 0.123, "vyber_z_3": 0.349, "vyber_z_5": 0.551}},
@@ -2964,6 +2967,28 @@
     "ponechane": ["Čierna mačka","Kôň","Milujúca manželka (M2)"],
     "bez_volby": ["Vínko","Pasca","Puška","Svätý text","Nealko","Výherný automat","Vidly","Lievik"],
     "na_potvrdenie": ["znenie Psa (Furt namiesto Konfliktu)","znenie Krokodíla","znenie Pijana","znenie a trvanie Miňištranta","Dievčina nahrádza aj D4?","Pasca: nahradiť, alebo pridať (z Konfliktu)"]
+   },
+   {
+    "davka": "E3",
+    "nazov": "občania B",
+    "subor": "docs/napady/efekty-navrhy-3.html",
+    "datum": "2026-10-27",
+    "kto": "Michal",
+    "zmeny": [
+     {"id":"snubenica","karta":"Snúbenica","volba":"A","spustac":"Konflikt","znenie":"Konflikt: Keď súper priloží k tejto karte Chlapa, Snúbenica si ho uloví: po bitke ide ten Chlap do tvojho odhadzovacieho balíčka a odteraz je tvoj.","nahradza":"Nástup: vráti kartu s NA EX majiteľovi a zaujme jej miesto"},
+     {"id":"klebetnica","karta":"Bzdocha","premenovanie":"Klebetnica → Bzdocha","volba":"B","spustac":"Pitka","znenie":"Pitka: Ak vyberáš NA EX po súperovi, ukáže sa ti jeho voľba skôr, ako vyberieš svoje.","nahradza":"Nástup: pozri súperovu ruku, kartu naspodok","poznamka":"mení viewFor — test (pravidlo 2)"},
+     {"id":"zahradkar","karta":"Záhradkár","volba":"inak","spustac":"Exekúcia","michal":"Exekúcia: namiesto špakov môžeš odhodiť záhradkára. Priznaný dlh sa ti zníži o počet jeho aktívnych akcií.","znenie":"Exekúcia: Keď čeliš exekúcii, smieš zahodiť túto kartu namiesto špakov. Spáľ toľko svojich priznaných Dlhov, koľko mala aktívnych akcií.","nahradza":"10.1 Bitka: prah Exekútora +2 (a Výhra: otoč poldeci)? — na potvrdenie","poznamka":"spúšťač Exekúcia ostáva; výklad: polovica Dlhov zhorí, špaky sa neplatia, navyše spáli Dlhy podľa aktívnych akcií"},
+     {"id":"anonymny_alkoholik","karta":"Anonymný alkoholik","volba":"inak","spustac":"Nástup","michal":"Nástup: Priznaj všetky nepriznané Cirhózy z odhadzovacieho balíčka.","znenie":"Nástup: Priznaj všetky nepriznané Cirhózy zo svojho odhadzovacieho balíčka.","nahradza":"Placatka z NA EX trojice (naprogramované, feature/naex-trojica)","poznamka":"POZOR: z trojice ostáva len Svokra — na potvrdenie"},
+     {"id":"dohadzovacka","karta":"Dohadzovačka","volba":"inak","spustac":"Bitka","michal":"Bitka: Za každý spoj tvojej Ženy so súperovým Chlapom a tvojho Chlapa so súperovou Ženou si môžeš zo šenku potiahnuť jednu kartu.","znenie":"Bitka: Za každý spoj tvojej Ženy so súperovým Chlapom a tvojho Chlapa so súperovou Ženou si smieš vziať do ruky jednu kartu zo šenku.","nahradza":"Nástup: vymeň dvom starším priazne","poznamka":"na potvrdenie; Liberál (Žena aj Chlap) ako oboje?"},
+     {"id":"masiar","karta":"Mäsiar","volba":"inak","spustac":"Furt","michal":"Furt: Akcie zvierat v jeho okolí neplatia.","znenie":"Furt: Akcie Zvierat v jeho okolí neplatia.","nahradza":"bez efektu","poznamka":"okolie = susedné Zvieratá oboch hráčov; akcie ako zrušené Odporom"},
+     {"id":"kulturista","karta":"Kulturista","volba":"inak","spustac":"Úplatok (pracovný názov) — Michal napísal „Pakt“, kolízia so schválenou akciou Pakt","akcie":"Petelica ×2 / Dlh ×2","michal":"Pakt – Za každú cigaretu, ktorú naňho súper dá, sa mu zníži poškodenie jeho akcií o jedna (čiže z Petelice bude Pecka pri jednej cigarete, z Pecky Rana pri dvoch cigaretách atď…). Upraviť akcie na 2× Petelica, 2× Dlh.","znenie":"Úplatok: Súper smie na svojom ťahu v Pitke položiť na túto kartu ľubovoľne veľa cigariet. Každá cigareta zníži do konca kola každú jej akciu poškodenia o jeden stupeň (Petelica → Pecka → Rana → nič).","nahradza":"bez efektu; akcie Petelica / Dlh ×2","poznamka":"OTÁZKA: meno spúšťača (Úplatok / Výpalné / Dohoda) alebo premenovať akciu Pakt; cigarety do zásoby, alebo majiteľovi; riziko: 3 cigarety vypnú obe Petelice"}
+    ],
+    "zlozenie_sady": {"presbiter":"odstrániť zo sady","opatrovatelka":"odstrániť zo sady","smetiarka":"zatiaľ len návrh (mimo sady)","brigadnik":"zatiaľ len návrh (mimo sady); Pakt 6 → 4","oslavenec":"efekt ponechaný, karta zatiaľ len návrh (mimo sady) — na potvrdenie?"},
+    "ponechane": ["Dvojčatá","Šofér","Degustátorka","Vandal","Strýko z Ameriky","Traktoristka","Vymáhač"],
+    "sada_po_e3": {"druhov_v_balicku":47,"startoviek":4,"kariet_v_hre":102,"pakt_kopii":4,"deficit":"Petelica 0 (14/14), Pecka 2 (22/24; 1 so Skladom)"},
+    "rozpocet_po_e3": {"Petelica":14,"Pecka":22,"Rana":32,"Dlh":64,"PoškodeniePečene":48,"Poldeci":24,"Povera":32,"Viera":28,"Pohoršenie":28,"Cigareta":40,"Robota":14,"Obmedzenie":10,"Posilnenie":6,"Odpor":18,"Vízia":10,"Pakt":4},
+    "sloty_delta": ["vypadli: presbiter, opatrovatelka, smetiarka, brigadnik, oslavenec","kulturista: ľavá Petelica 1 → 2, blocked [0,2,3] → [0,3]; pravá bez zmeny (Dlh ×2, blocked []); 6 variantov","dohadzovacka: ľavá blocked [0,1] → [0,2] (Viera/Pakt na 1 a 3; podmienka 3b pre Pakt)","podvodnik: pravá blocked [1,3] → [0,1] (Obmedzenie/Rana na 2–3; Obmedzenie na i3)","snubenica: ľavá blocked [0,1] → [0,2] (Robota na 1 alebo 3; Robota na i1)","mená: niekoho_stryna → Stryná, klebetnica → Bzdocha","pripnutia: Kulturista „Petelica sama na slote 1“ → „Petelice vonku, Dlhy vnútri“; Pakt 3 → 2 nosiče"],
+    "na_potvrdenie": ["Záhradkár nahrádza oba efekty z revízie?","AA nahrádza Placatku (z trojice ostáva Svokra)","znenie Dohadzovačky","meno spúšťača Kulturistu (kolízia s Paktom) a príjemca cigariet","Oslávenec: karta len návrh?"]
    }
   ]
  }
