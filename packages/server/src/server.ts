@@ -23,7 +23,7 @@ import {
   cakaNaDalej,
   pauzaKrokuVyucby,
   prelozKluceZvyraznenia,
-  radaKVolbe,
+  radaVyucby,
   type MoznostOtazky,
   VERZIA_PRAVIDIEL,
   ucetSpakov,
@@ -194,9 +194,11 @@ export interface KrokVyucbyKlient {
   /** Ťah bota či auto krok je vykonaný a čaká na „ďalej“ (U5); inak false. */
   readonly vykonany: boolean;
   readonly melichar: string;
+  /** Hláška zo soundboardu „skupina/súbor“ (Michal 2026-10-27); null = krok bez zvuku. */
+  readonly hlaska: string | null;
   readonly zvyraznit: readonly string[];
   readonly ocakava: Command | null;
-  /** Kontrolná otázka: možnosti (klient overí sám); inak null. */
+  /** Kontrolná otázka: možnosti aj s hláškou zlej odpovede (klient overí sám); inak null. */
   readonly moznosti: readonly MoznostOtazky[] | null;
   /** Rozhodnutie hráča: kandidáti na zvýraznenie namiesto očakávanej karty; inak null. */
   readonly volba: { readonly kandidati: readonly string[] } | null;
@@ -954,6 +956,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       kto: k.kto,
       vykonany: room.vyucba.vykonany,
       melichar: k.melichar,
+      hlaska: k.hlaska ?? null,
       zvyraznit: prelozKluceZvyraznenia(room.state, k.zvyraznit ?? []),
       ocakava,
       moznosti: k.kto === "otazka" ? (k.moznosti ?? []) : null,
@@ -1025,7 +1028,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     const porovnanie = porovnajSKrokom(room.data, room.state, cmd, ocakava);
     // Rozhodnutie: zlý ťah dostane radu Melichara, nie chybu (UX N2).
     if (!porovnanie.zhoda && k.volba !== undefined) {
-      send(ws, { type: "vyucbaRada", text: radaKVolbe(room.state, k.volba, cmd) });
+      send(ws, { type: "vyucbaRada", ...radaVyucby(room.state, k.volba, cmd) });
       posliVyucbu(room);
       return;
     }

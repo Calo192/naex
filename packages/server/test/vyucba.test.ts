@@ -2,9 +2,6 @@
 // Štamgastovi — server pustí len príkaz kroku, bot hrá podľa skriptu, postup sa
 // ukladá k účtu a dohratie spraví z návštevníka hráča bez archívu a štatistík.
 
-// TODO(v7): scenár výučby „Prvá hra“ stojí na sade v6 (varianty kariet, Most 2/2, pravidlá v6).
-// Server hrá zverejnenú sadu v7, kde scenár neprejde — kým ho niekto neprepíše, výučba je na vetve
-// v7/revizia-sady vypnutá v testoch (živý web má sadu v6 a výučbu nemení).
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import type { Command } from "@naex/core";
 import type { GameServer } from "../src/server.ts";
@@ -66,7 +63,7 @@ async function hraj(k: Klient, msg: Msg, max = Number.POSITIVE_INFINITY): Promis
   return msg;
 }
 
-describe.skip("výučba „Prvá hra“", () => {
+describe("výučba „Prvá hra“", () => {
   it("návštevník ju dostane ponúknutú, prejde celý scenár a je z neho hráč — bez archívu", async () => {
     const { cookie } = await registruj(server.port);
     const ja = await api<{ pouzivatel: { id: number; rola: string } }>(cookie, "GET", "/ja");
@@ -108,7 +105,7 @@ describe.skip("výučba „Prvá hra“", () => {
     expect((prvy.krok as KrokMsg).kto).toBe("info");
     k.posli({ type: "cmd", cmd: { type: "pass" } });
     expect(String((await k.cakaj("error")).text)).toMatch(/Melichar/);
-    // Texty a rozhodnutia (výber Mosta) pred prvým ťahom hráča bez rozhodnutia preklikne.
+    // Texty a rozhodnutia (výber Lesnej cesty) pred prvým ťahom hráča bez rozhodnutia preklikne.
     let msg = prvy;
     while ((msg.krok as KrokMsg).kto !== "hrac" || (msg.krok as KrokMsg & { volba: unknown }).volba !== null) {
       const krok = msg.krok as KrokMsg;
@@ -134,7 +131,7 @@ describe.skip("výučba „Prvá hra“", () => {
   it("postup sa ukladá — po odchode výučba pokračuje od toho istého kroku; preskočiť a znova", async () => {
     const { cookie } = await registruj(server.port);
     const { k, prvy } = await zacni(cookie);
-    // 4 správy: i-vitaj, i-lokalita, i-lokality, i-hrany — ďalej čaká výber Mosta.
+    // 4 správy: i-vitaj, i-lokalita, i-lokality, i-hrany — ďalej čaká výber Lesnej cesty.
     const po = await hraj(k, prvy, 4);
     const index = (po.krok as KrokMsg).index;
     expect(index).toBeGreaterThanOrEqual(3);
@@ -157,7 +154,7 @@ describe.skip("výučba „Prvá hra“", () => {
   });
 });
 
-describe.skip("výučba po častiach — 1. časť končí uprostred partie (Michal 2026-10-25)", () => {
+describe("výučba po častiach — 1. časť končí uprostred partie (Michal 2026-10-25)", () => {
   const stavServera = async (): Promise<{ partie: { sBotom: number } }> => {
     const admin = await prihlas(server.port, TEST_ADMIN.login, TEST_ADMIN.heslo);
     return (await (await fetch(`http://127.0.0.1:${server.port}/api/admin/stav-servera`, { headers: { cookie: admin } })).json()) as { partie: { sBotom: number } };
@@ -188,7 +185,7 @@ describe.skip("výučba po častiach — 1. časť končí uprostred partie (Mic
   });
 });
 
-describe.skip("výučba — vypínač", () => {
+describe("výučba — vypínač", () => {
   it("zverejnený scenár prva-hra.json dostane každý nový hráč ponúknutý (Michal 2026-10-25)", async () => {
     expect(nacitajVyucbu().zverejnena).toBe(true);
     const { server: s, zmaz: z } = await testovaciServer(TEST_ADMIN, { botPauzaMs: 0 });
@@ -226,7 +223,7 @@ describe.skip("výučba — vypínač", () => {
   });
 });
 
-describe.skip("výučba — automatické kroky hráča (kto: auto)", () => {
+describe("výučba — automatické kroky hráča (kto: auto)", () => {
   it("auto krok spraví server za hráča ako ťah bota — výučba prejde len s „ďalej“", async () => {
     // Všetky ťahy hráča ako auto: hráč len číta a kliká „ďalej“.
     const zaklad = nacitajVyucbu();
@@ -257,19 +254,19 @@ describe.skip("výučba — automatické kroky hráča (kto: auto)", () => {
   });
 });
 
-describe.skip("výučba — kontrolné otázky a rozhodnutia (UX N2)", () => {
+describe("výučba — kontrolné otázky a rozhodnutia (UX N2)", () => {
   it("otázka: odpoveď sa zapíše len prvá, „ďalej“ ju posunie; rozhodnutie: zlý ťah dostane radu, nie chybu", async () => {
     const zaklad = nacitajVyucbu();
     const iHrac = zaklad.kroky.findIndex((k) => k.kto === "hrac");
     const kroky = zaklad.kroky.map((k, j) =>
-      j === iHrac ? { ...k, volba: { kandidati: ["ruka:pijan"], zle: [{ prikaz: { type: "pass" as const }, text: "Ešte nepasuj." }], inak: "Skús inú kartu." } } : k,
+      j === iHrac ? { ...k, volba: { kandidati: ["ruka:pijan"], zle: [{ prikaz: { type: "pass" as const }, text: "Ešte nepasuj.", hlaska: "nervy/bud_ticho" }], inak: "Skús inú kartu." } } : k,
     );
     const otazka = {
       id: "q-spoj",
       kto: "otazka" as const,
       melichar: "Čo dá spoj?",
       moznosti: [
-        { text: "Ranu", spravna: false, vysvetlenie: "Nie celkom." },
+        { text: "Ranu", spravna: false, vysvetlenie: "Nie celkom.", hlaska: "urazky/marha" },
         { text: "Cigaretu", spravna: true, vysvetlenie: "Áno." },
       ],
     };
@@ -281,11 +278,14 @@ describe.skip("výučba — kontrolné otázky a rozhodnutia (UX N2)", () => {
       await k.otvorene();
       k.posli({ type: "create", vyucba: true });
       let msg = await k.cakaj("vyucba");
+      // Krok nesie hlášku zo scenára (úvod: „Sem poď“), krok bez nej null.
+      expect(msg.krok).toMatchObject({ id: "i-vitaj", hlaska: "reci/sem_pod2" });
       k.posli({ type: "vyucbaDalej" });
       msg = await k.cakaj("vyucba");
       const q = msg.krok as KrokMsg & { moznosti: { spravna: boolean }[] | null };
-      expect(q).toMatchObject({ kto: "otazka", melichar: "Čo dá spoj?" });
+      expect(q).toMatchObject({ kto: "otazka", melichar: "Čo dá spoj?", hlaska: null });
       expect(q.moznosti).toHaveLength(2);
+      expect(q.moznosti?.[0]).toMatchObject({ spravna: false, hlaska: "urazky/marha" });
       // Najprv zle, potom dobre — zapíše sa len prvá odpoveď.
       k.posli({ type: "vyucbaOdpoved", index: 0 });
       k.posli({ type: "vyucbaOdpoved", index: 1 });
@@ -305,9 +305,10 @@ describe.skip("výučba — kontrolné otázky a rozhodnutia (UX N2)", () => {
       }
       expect((msg.krok as { volba: unknown }).volba).toEqual({ kandidati: ["ruka:pijan"] });
       k.posli({ type: "cmd", cmd: { type: "pass" } });
-      expect((await k.cakaj("vyucbaRada")).text).toBe("Ešte nepasuj.");
+      // Rada nesie aj hlášku vzoru, všeobecná je bez nej (Michal 2026-10-27).
+      expect(await k.cakaj("vyucbaRada")).toMatchObject({ text: "Ešte nepasuj.", hlaska: "nervy/bud_ticho" });
       k.posli({ type: "cmd", cmd: { type: "skipNaex" } });
-      expect((await k.cakaj("vyucbaRada")).text).toBe("Skús inú kartu.");
+      expect(await k.cakaj("vyucbaRada")).toMatchObject({ text: "Skús inú kartu.", hlaska: null });
       k.zavri();
     } finally {
       await zmazQ();
@@ -315,7 +316,7 @@ describe.skip("výučba — kontrolné otázky a rozhodnutia (UX N2)", () => {
   });
 });
 
-describe.skip("výučba — cigareta pre Melichara (Michal 2026-10-25)", () => {
+describe("výučba — cigareta pre Melichara (Michal 2026-10-25)", () => {
   interface StavMsg {
     view: { hraci: { cigarety: number }[] };
     events: { type: string; text?: string }[];

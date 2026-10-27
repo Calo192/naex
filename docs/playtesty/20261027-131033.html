@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Playtest 20261027-131033 — NA EX!</title>
+<style>
+:root {
+  --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --okraj: #3d3229;
+  --text: #f1e8d8; --tlmeny: #b6a790;
+  --akcent: #e9ad45; --cervena: #d0563f; --zelena: #7cbf74; --modra: #8fb4e0; --siva: #a89c8a;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #dccdb3;
+    --text: #2a2016; --tlmeny: #5e4f3b;
+    --akcent: #9a5d06; --cervena: #a83a26; --zelena: #356e2f; --modra: #2d5a8f; --siva: #6b5f4f;
+    color-scheme: light;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 system-ui, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 980px; margin: 0 auto; padding: 28px 16px 56px; }
+h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; line-height: 1.2; }
+h1 { font-size: clamp(1.7rem, 4vw, 2.3rem); margin: 0 0 10px; }
+h2 { font-size: 1.45rem; margin: 40px 0 14px; padding-bottom: 6px; border-bottom: 1px solid var(--okraj); }
+h3 { font-size: 1.08rem; margin: 0 0 6px; }
+p { margin: 0 0 10px; }
+a { color: var(--akcent); }
+.preskoc { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+ul.partie { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+ul.partie li { color: var(--tlmeny); }
+ul.partie b { color: var(--text); }
+.dlazdice { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin: 0 0 18px; padding: 0; list-style: none; }
+.dlazdica { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; }
+.dlazdica.hlavna { border-color: var(--akcent); }
+.stitok { font-size: .8rem; color: var(--tlmeny); text-transform: uppercase; letter-spacing: .04em; }
+.hodnota { font-family: Georgia, serif; font-size: 1.8rem; line-height: 1.1; margin: 4px 0; }
+.dlazdica.hlavna .hodnota { color: var(--akcent); }
+.pozn { font-size: .86rem; color: var(--tlmeny); }
+.pomer { display: flex; height: 10px; border-radius: 5px; overflow: hidden; margin: 6px 0 4px; background: var(--plocha-2); }
+.pomer .zr { background: var(--zelena); }
+.pomer .na { background: var(--cervena); }
+table.krit { width: 100%; border-collapse: collapse; font-size: .93rem; }
+table.krit th, table.krit td { padding: 7px 5px; text-align: left; vertical-align: middle; }
+table.krit thead th { border-bottom: 2px solid var(--okraj); font-weight: 600; vertical-align: bottom; }
+table.krit th button { all: unset; cursor: pointer; display: inline-flex; gap: 3px; align-items: center; border-radius: 4px; padding: 2px; }
+table.krit th button:focus-visible { outline: 2px solid var(--akcent); }
+table.krit th[aria-sort="ascending"] button::after { content: "▲"; font-size: .7em; color: var(--akcent); }
+table.krit th[aria-sort="descending"] button::after { content: "▼"; font-size: .7em; color: var(--akcent); }
+table.krit th small { display: block; font-weight: 400; color: var(--tlmeny); font-size: .72rem; }
+table.krit tbody { border-bottom: 1px solid var(--okraj); }
+table.krit td.poradie { width: 2em; color: var(--tlmeny); }
+table.krit th.cislo { width: 12%; }
+table.krit th.priemer { width: 13%; }
+.znamka { display: flex; align-items: center; gap: 5px; }
+.znamka b { min-width: 1.6em; font-variant-numeric: tabular-nums; }
+.pruh { flex: 1; height: 7px; background: var(--plocha-2); border-radius: 4px; overflow: hidden; min-width: 18px; }
+.pruh i { display: block; height: 100%; background: var(--akcent); border-radius: 4px; }
+.pruh i.nizka { background: var(--cervena); }
+.pruh i.vysoka { background: var(--zelena); }
+td.pr { font-weight: 700; }
+tr.dovody td { padding-top: 0; }
+details.dovod summary { cursor: pointer; color: var(--tlmeny); font-size: .86rem; }
+details.dovod[open] summary { color: var(--text); }
+details.dovod ul { margin: 6px 0 4px; padding-left: 18px; font-size: .9rem; }
+details.dovod li { margin-bottom: 4px; }
+.meno { font-weight: 600; }
+.zhrnutie { margin-top: 14px; background: var(--plocha); border-left: 3px solid var(--akcent); padding: 10px 14px; border-radius: 0 10px 10px 0; }
+q { font-style: italic; }
+.zamerania { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; list-style: none; padding: 0; margin: 0; }
+.zamerania li { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; }
+.zamerania .tema { color: var(--akcent); font-size: .88rem; margin: 0 0 6px; }
+ol.momenty { list-style: none; padding: 0; margin: 0 0 16px; display: grid; gap: 10px; }
+ol.momenty > li { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 10px; padding: 10px 14px; }
+.kolo { font-family: Georgia, serif; color: var(--akcent); font-weight: 700; margin-right: 6px; }
+.tag { display: inline-block; font-size: .76rem; border-radius: 999px; padding: 1px 8px; margin: 0 4px 0 0; border: 1px solid currentColor; vertical-align: 1px; }
+.tag.volba { color: var(--zelena); }
+.tag.nahoda { color: var(--cervena); }
+.tag.skryta { color: var(--modra); }
+.pohlady { margin: 6px 0 0; padding-left: 18px; font-size: .92rem; }
+.pohlady li { margin-bottom: 3px; }
+.dva { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.blok { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 10px; padding: 10px 14px; }
+.blok ul { margin: 4px 0 0; padding-left: 18px; }
+.blok li { margin-bottom: 4px; }
+ul.dobre { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+ul.dobre li { background: var(--plocha); border: 1px solid var(--okraj); border-left: 3px solid var(--zelena); border-radius: 10px; padding: 10px 14px; }
+.kto { font-size: .82rem; color: var(--tlmeny); }
+.filter { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 8px; }
+.filter button { border: 1px solid var(--okraj); background: var(--plocha-2); color: var(--text); border-radius: 999px; padding: 6px 13px; font: inherit; font-size: .86rem; cursor: pointer; }
+.filter button[aria-pressed="true"] { background: var(--text); color: var(--pozadie); border-color: var(--text); }
+.filter-info { color: var(--tlmeny); font-size: .86rem; margin: 0 0 10px; min-height: 1.2em; }
+ol.karty { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+ol.karty > li { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; }
+ol.karty > li[hidden] { display: none; }
+.cislo-z { color: var(--akcent); }
+.znacky { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 8px; }
+.znacka { font-size: .78rem; border-radius: 999px; padding: 2px 9px; border: 1px solid var(--okraj); background: var(--plocha-2); color: var(--tlmeny); }
+.znacka.oblast { color: var(--text); border-color: var(--akcent); }
+.znacka.potvrdene { color: var(--zelena); border-color: var(--zelena); }
+.znacka.chyba { color: var(--cervena); border-color: var(--cervena); }
+.znacka.otazka { color: var(--modra); border-color: var(--modra); }
+.znacka.zhoda { color: var(--akcent); border-color: var(--akcent); font-weight: 600; }
+dl.polozka { margin: 0; display: grid; grid-template-columns: 7.4em 1fr; gap: 4px 10px; }
+dl.polozka dt { color: var(--tlmeny); font-size: .87rem; padding-top: 1px; }
+dl.polozka dd { margin: 0; }
+.posudenie { margin-top: 8px; border-left: 3px solid var(--modra); padding: 4px 10px; font-size: .93rem; }
+code { font-family: ui-monospace, Consolas, monospace; font-size: .86em; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+details.omyly { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 0 14px; margin-top: 12px; }
+details.omyly summary { cursor: pointer; padding: 10px 0; font-weight: 600; }
+details.omyly ul { padding-left: 18px; margin: 0 0 12px; }
+details.omyly li { margin-bottom: 6px; }
+.zmeny details { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 10px; padding: 0 14px; margin-bottom: 8px; }
+.zmeny summary { cursor: pointer; padding: 10px 0; font-weight: 600; }
+.zmeny summary span { font-weight: 400; color: var(--tlmeny); font-size: .86rem; }
+.zmeny details > *:not(summary) { margin-bottom: 10px; }
+.zmeny ul { padding-left: 18px; }
+table.verdikty { width: 100%; border-collapse: collapse; font-size: .93rem; margin: 0 0 18px; }
+table.verdikty th, table.verdikty td { padding: 8px 6px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--okraj); }
+table.verdikty thead th { border-bottom: 2px solid var(--okraj); }
+.verdikt { display: inline-block; font-weight: 700; border-radius: 999px; padding: 2px 10px; border: 1px solid currentColor; white-space: nowrap; }
+.verdikt.overene { color: var(--zelena); }
+.verdikt.nezabralo { color: var(--cervena); }
+.verdikt.malo { color: var(--modra); }
+.neprejavili { color: var(--tlmeny); font-size: .93rem; }
+.podklady { color: var(--tlmeny); font-size: .9rem; }
+footer { margin-top: 40px; padding-top: 12px; border-top: 1px solid var(--okraj); color: var(--tlmeny); font-size: .9rem; }
+@media (max-width: 600px) {
+  main { padding: 18px 10px 40px; }
+  table.krit { font-size: .8rem; }
+  table.krit th, table.krit td { padding: 5px 2px; }
+  table.krit td.poradie, table.krit th[data-col="n"] { display: none; }
+  table.krit th small { display: none; }
+  .pruh { display: none; }
+  dl.polozka { grid-template-columns: 1fr; }
+  dl.polozka dt { padding-top: 6px; }
+  .dva { grid-template-columns: 1fr; }
+  table.verdikty, table.verdikty tbody, table.verdikty tr, table.verdikty td, table.verdikty th { display: block; width: 100%; }
+  table.verdikty thead { display: none; }
+  table.verdikty tr { border-bottom: 1px solid var(--okraj); padding: 6px 0; }
+  table.verdikty td, table.verdikty th { border: 0; padding: 3px 0; }
+}
+
+ol.karty > li.uz-riesi { opacity: .88; border-style: dashed; }
+.pozn a { color: var(--akcent); }
+header .pozn { margin-top: 10px; }
+.zmrazenie .verdikt { white-space: normal; }
+em { font-style: italic; }
+
+.skry-mob { }
+table.krit td.t { font-variant-numeric: tabular-nums; color: var(--tlmeny); }
+table.krit td.delta.hore { color: var(--zelena); font-weight: 700; }
+table.krit td.delta.dole { color: var(--cervena); font-weight: 700; }
+table.krit th.cislo { width: 8%; }
+table.krit th.priemer { width: 9%; }
+.pruh { min-width: 10px; }
+@media (max-width: 900px) { .pruh { display: none; } table.krit th small { display: none; } }
+@media (max-width: 600px) { .skry-mob, table.krit th[data-col="o"] { display: none; } }
+table.temy { width: 100%; border-collapse: collapse; font-size: .92rem; margin: 0 0 16px; }
+table.temy th, table.temy td { padding: 8px 6px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--okraj); }
+table.temy thead th { border-bottom: 2px solid var(--okraj); }
+@media (max-width: 700px) {
+  table.temy, table.temy tbody, table.temy tr, table.temy td, table.temy th { display: block; width: 100%; }
+  table.temy thead { display: none; }
+  table.temy tr { border-bottom: 1px solid var(--okraj); padding: 6px 0; }
+  table.temy td, table.temy th { border: 0; padding: 3px 0; }
+}
+.znacka.klient { color: var(--akcent); border-color: var(--akcent); }
+.mala { font-size: .88rem; color: var(--tlmeny); }
+.skus li { margin-bottom: 4px; }
+</style>
+<style>
+figure.snimka { margin: 10px 0 4px; }
+figure.snimka img { display: block; max-width: 100%; height: auto; border: 1px solid var(--okraj); border-radius: 8px; }
+figure.snimka figcaption { font-size: .84rem; color: var(--tlmeny); margin-top: 4px; }
+.znacka.vysoka { color: var(--cervena); border-color: var(--cervena); font-weight: 600; }
+.znacka.stredna { color: var(--akcent); border-color: var(--akcent); font-weight: 600; }
+.znacka.nizka { color: var(--siva); border-color: var(--siva); }
+.znacka.riesene { color: var(--modra); border-color: var(--modra); }
+.znacka.stropy { color: var(--cervena); border-color: var(--cervena); }
+nav.obsah ul { display: flex; flex-wrap: wrap; gap: 6px 14px; list-style: none; padding: 0; margin: 12px 0 0; font-size: .92rem; }
+.stropy-tab td, .stropy-tab th { vertical-align: top; }
+ol.ui > li[hidden] { display: none; }
+</style>
+</head>
+<body>
+<main>
+
+<a class="preskoc" href="#znamky">Preskočiť na obsah</a>
+
+<header>
+  <h1>Playtest 20261027-131033</h1>
+  <ul class="partie">
+    <li><b>Partia 1:</b> Fero Šenkár (Ekonóm — šenok, cigarety, poldeci) proti Janovi Bitkárovi (agresívny — bitky, Pohoršenia) · <b>vyhral Fero 35 : 1 špakov</b> (Jano −10 za 2 nepriznané Cirhózy; po K3 viedol Jano 9 : 2, finále dalo Ferovi 17) · stredná hra (5 lokalít + finále), 6 bitiek, asi 60 minút.</li>
+    <li><b>Partia 2:</b> Šimon Starešina (Politik — starší, patronát, Pohoršenie) proti Hazardnej Hele (Hazardérka — riziko, NA EX naslepo) · <b>vyhral Šimon 9 : −1</b> (finále vyhrala bitkou Hela 16 : 14, no Cirhózy −15 oproti −10 rozhodli) · stredná hra, 6 bitiek, asi 73 minút.</li>
+    <li><b>Partia 3:</b> Paragrafista Vilo (hľadač dier v pravidlách) proti Eve Stratégovej (opatrná, hrá na body) · <b>vyhral Vilo 52 : 0</b> (po K5 28 : 2; K5 a finále dali 43 špakov) · stredná hra, 6 bitiek, asi 68 minút.</li>
+  </ul>
+  <p class="pozn">Turnus na <strong>pravidlách a sade v7</strong> (vetva <code>v7/revizia-sady</code>, nenasadená): lokality podľa úrovní, finále na pinnacle lokalite, Pakt, Kšefty, D6 (zadĺženie ostáva), prah Exekútora 7, výkupné, rastúca cena fajčenia, dobratie 1 karta, strach len víťazovi. Časy partií zahŕňajú zdržanie pádom textového klienta (chyba nástroja, opravená v 3bd655e). Hlavná téma reportu je <strong>stomp</strong> (35 : 1 a 52 : 0) a strategickosť. Predošlé reporty: <a href="20261027-105422.html">20261027-105422</a> (krátka v6.1) a <a href="20261027-062058.html">20261027-062058</a> (stredná v6); porovnania medzi krátkou a strednou hrou ber orientačne. Zoznam návrhov na overenie som nedostal. Evin denník je v <code>R/dennik.md</code> (nie v <code>hrac2/</code>).</p>
+  <nav class="obsah" aria-label="Obsah reportu">
+    <ul>
+      <li><a href="#znamky">Známky</a></li>
+      <li><a href="#zamerania">Zamerania</a></li>
+      <li><a href="#nahoda">Náhoda vs. zručnosť</a></li>
+      <li><a href="#stomp">Prečo stomp</a></li>
+      <li><a href="#nezrovnalosti-h">Nezrovnalosti</a></li>
+      <li><a href="#navrhy">Návrhy na strategickosť</a></li>
+      <li><a href="#dobre">Čo bolo dobré</a></li>
+      <li><a href="#zlepsit">Čo zlepšiť</a></li>
+      <li><a href="#zmeny-h">Overenie zmien</a></li>
+      <li><a href="#skusenosti">Skúsenosti</a></li>
+    </ul>
+  </nav>
+</header>
+
+<section aria-labelledby="znamky">
+  <h2 id="znamky">Známky playtesterov</h2>
+  <ul class="dlazdice">
+    <li class="dlazdica hlavna"><div class="stitok">Celkový priemer</div><div class="hodnota">6,8</div><div class="pozn">12 kritérií, 6 hráčov v 3 partiách · minule 6,9 (<a href="20261027-105422.html">105422</a>, krátka v6.1) a 6,8 (<a href="20261027-062058.html">062058</a>, stredná v6) · posun −0,10 (6,79 oproti 6,89) a −0,06 (oproti 6,85)</div></li>
+    <li class="dlazdica"><div class="stitok">Fero · P1</div><div class="hodnota">6,7</div><div class="pozn">víťaz · minule 6,8 (105422)</div></li>
+    <li class="dlazdica"><div class="stitok">Jano · P1</div><div class="hodnota">7,0</div><div class="pozn">porazený · minule 7,1 (105422)</div></li>
+    <li class="dlazdica"><div class="stitok">Šimon · P2</div><div class="hodnota">7,0</div><div class="pozn">víťaz · minule 6,2 (105422)</div></li>
+    <li class="dlazdica"><div class="stitok">Hela · P2</div><div class="hodnota">6,6</div><div class="pozn">porazená · minule 7,4 (105422)</div></li>
+    <li class="dlazdica"><div class="stitok">Vilo · P3</div><div class="hodnota">7,3</div><div class="pozn">víťaz · minule 6,5 (105422)</div></li>
+    <li class="dlazdica"><div class="stitok">Eva · P3</div><div class="hodnota">6,3</div><div class="pozn">porazená · minule 7,4 (105422)</div></li>
+  </ul>
+
+  <table class="krit" id="kriteria">
+    <caption class="preskoc">Známky 12 herných kritérií od šiestich hráčov, stupnica 1–10, s priemerom, priemerom predošlého reportu a rozdielom. Kliknutím na hlavičku stĺpca sa tabuľka zoradí. Pod každým riadkom sú rozbaľovacie zdôvodnenia.</caption>
+    <thead><tr>
+      <th scope="col" data-col="n" aria-sort="ascending"><button type="button">#</button></th>
+      <th scope="col" data-col="k"><button type="button">Kritérium</button></th>
+      <th scope="col" class="cislo" data-col="c1"><button type="button">Fero</button><small>víťaz, P1</small></th>
+      <th scope="col" class="cislo" data-col="c2"><button type="button">Jano</button><small>porazený, P1</small></th>
+      <th scope="col" class="cislo" data-col="c3"><button type="button">Šimon</button><small>víťaz, P2</small></th>
+      <th scope="col" class="cislo" data-col="c4"><button type="button">Hela</button><small>porazená, P2</small></th>
+      <th scope="col" class="cislo" data-col="c5"><button type="button">Vilo</button><small>víťaz, P3</small></th>
+      <th scope="col" class="cislo" data-col="c6"><button type="button">Eva</button><small>porazená, P3</small></th>
+      <th scope="col" class="priemer" data-col="p"><button type="button">Priemer</button></th>
+      <th scope="col" data-col="o"><button type="button">105422</button><small>krátka v6.1</small></th>
+      <th scope="col" data-col="d"><button type="button">Rozdiel</button></th>
+    </tr></thead>
+    
+    <tbody data-n="1" data-k="Zábava" data-c1="7" data-c2="6" data-c3="8" data-c4="7" data-c5="8" data-c6="6" data-p="7.000" data-o="7" data-d="0.000">
+      <tr><td class="poradie">1</td><th scope="row">Zábava</th><td class="z" data-v="7">7</td><td class="z" data-v="6">6</td><td class="z" data-v="8">8</td><td class="z" data-v="7">7</td><td class="z" data-v="8">8</td><td class="z" data-v="6">6</td><td class="z pr" data-v="7.00">7,0</td><td class="t skry-mob">7,0</td><td class="t delta ">±0,0</td></tr>
+      <tr class="dovody"><td class="poradie"></td><td colspan="10"><details class="dovod"><summary>Zdôvodnenia</summary><ul>
+        <li><span class="meno">Fero:</span> K4 13 : 13 → jedno Pohoršenie k sebe na Vychovávateľku zmenilo remízu na výhru; pád klienta ťahy kazil.</li>
+        <li><span class="meno">Jano:</span> Bitky K1–K4 napínavé (12 : 13), finále 17 : 25 a −20 z Cirhóz bezmocné; partia sa „zlomila“ v K4–K5.</li>
+        <li><span class="meno">Šimon:</span> Kombá (Dohadzovačka, Silná + Dievčina, Záverečná ako hradba) bavili; prehra 1 : 9 v K3 bola bez protihry.</li>
+        <li><span class="meno">Hela:</span> Spoje a NA EX trik (K1, K3) bavili; stomp v K2 a K5 menej.</li>
+        <li><span class="meno">Vilo:</span> Dohadzovačka, prevaha v kraji a NA EX +6 na vlastné Dvojčatá boli dobré hádanky; finále bolo rozhodnuté vopred.</li>
+        <li><span class="meno">Eva:</span> Dohadzovačka (Bitkár na červený marker, 8 : 0) vynikajúca; K5 a finále už len čakanie pri 2 : 28.</li>
+      </ul></details></td></tr>
+    </tbody>
+    <tbody data-n="2" data-k="Zmysluplné rozhodnutia" data-c1="8" data-c2="8" data-c3="8" data-c4="7" data-c5="8" data-c6="7" data-p="7.667" data-o="7.3" data-d="0.367">
+      <tr><td class="poradie">2</td><th scope="row">Zmysluplné rozhodnutia</th><td class="z" data-v="8">8</td><td class="z" data-v="8">8</td><td class="z" data-v="8">8</td><td class="z" data-v="7">7</td><td class="z" data-v="8">8</td><td class="z" data-v="7">7</td><td class="z pr" data-v="7.67">7,7</td><td class="t skry-mob">7,3</td><td class="t delta hore">+0,4</td></tr>
+      <tr class="dovody"><td class="poradie"></td><td colspan="10"><details class="dovod"><summary>Zdôvodnenia</summary><ul>
+        <li><span class="meno">Fero:</span> Stavba šenku, koľko kariet vziať, kam podstrčiť, kam dať Pohoršenia; prázdne boli K1 a K3 (2 karty v ruke).</li>
+        <li><span class="meno">Jano:</span> Každý ťah 3–5 alternatív; ťažké, lebo chýba informácia (ruka súpera, jeho odpoveď na NA EX).</li>
+        <li><span class="meno">Šimon:</span> Voľba lokality, kraja, prebytku a prvej karty menili výsledok; patronát bez dobrej voľby.</li>
+        <li><span class="meno">Hela:</span> Cieľ, prvá karta pri hrane, NA EX; draft pri 0 cigaretách bol prázdny.</li>
+        <li><span class="meno">Vilo:</span> Prvá karta pri hrane, čo zakopať v šenku, kam NA EX a prebytok — všetko malo čísla.</li>
+        <li><span class="meno">Eva:</span> Lokalita, prebytok, Zhromaždenie mali z čoho vyberať; slabé sú nútené ťahy (povinné Pohoršenie, prvý ťah útočníka).</li>
+      </ul></details></td></tr>
+    </tbody>
+    <tbody data-n="3" data-k="Rovnováha a férovosť" data-c1="5" data-c2="5" data-c3="5" data-c4="4" data-c5="5" data-c6="3" data-p="4.500" data-o="5.2" data-d="-0.700">
+      <tr><td class="poradie">3</td><th scope="row">Rovnováha a férovosť</th><td class="z" data-v="5">5</td><td class="z" data-v="5">5</td><td class="z" data-v="5">5</td><td class="z" data-v="4">4</td><td class="z" data-v="5">5</td><td class="z" data-v="3">3</td><td class="z pr" data-v="4.50">4,5</td><td class="t skry-mob">5,2</td><td class="t delta dole">−0,7</td></tr>
+      <tr class="dovody"><td class="poradie"></td><td colspan="10"><details class="dovod"><summary>Zdôvodnenia</summary><ul>
+        <li><span class="meno">Fero:</span> Strach a prebytok sa kopia víťazovi: po K1 mal Jano +8 stávky; finále +18 a −10 Cirhóza v jednej bitke.</li>
+        <li><span class="meno">Jano:</span> Útočník a posledný odpovedajúci majú štrukturálnu výhodu; víťaz strachu snowballuje; Cirhóza trestá pečeňové karty.</li>
+        <li><span class="meno">Šimon:</span> Víťaz si buduje strach (K3 → +8 pre súperku); Cirhóza z poslednej Pitky rozhodla finále; Kapybara je lacná.</li>
+        <li><span class="meno">Hela:</span> Bohatý berie šenok prvý + Fajčiar + pas = lavína; Dohadzovačka.</li>
+        <li><span class="meno">Vilo:</span> Vedúci dostáva 22 špakov zo strachu a 22 z prebytku v posledných dvoch bitkách; Kapybara 2 cig. = −1 špak.</li>
+        <li><span class="meno">Eva:</span> Víťaz bitky si pridáva strach, cigarety a karty; prehrávajúci nedostane protihru.</li>
+      </ul></details></td></tr>
+    </tbody>
+    <tbody data-n="4" data-k="Náhoda vs. zručnosť" data-c1="6" data-c2="7" data-c3="7" data-c4="6" data-c5="7" data-c6="6" data-p="6.500" data-o="6.3" data-d="0.200">
+      <tr><td class="poradie">4</td><th scope="row">Náhoda vs. zručnosť</th><td class="z" data-v="6">6</td><td class="z" data-v="7">7</td><td class="z" data-v="7">7</td><td class="z" data-v="6">6</td><td class="z" data-v="7">7</td><td class="z" data-v="6">6</td><td class="z pr" data-v="6.50">6,5</td><td class="t skry-mob">6,3</td><td class="t delta hore">+0,2</td></tr>
+      <tr class="dovody"><td class="poradie"></td><td colspan="10"><details class="dovod"><summary>Zdôvodnenia</summary><ul>
+        <li><span class="meno">Fero:</span> K1 rozhodol Hasič + Mäsiar a dobratie, K3–K6 zručnosť (šenok, podstrčenie, Pohoršenie).</li>
+        <li><span class="meno">Jano:</span> Zručnosť rozhodla, hlavne tá, ktorú som nepoužil (−20 z Cirhóz); náhoda: dobratie Cirhóz, šenok.</li>
+        <li><span class="meno">Šimon:</span> Zručnosť: lokalita, čítanie jej NA EX vzorov; náhoda: ruka z drafty.</li>
+        <li><span class="meno">Hela:</span> Zručnosť na hranách, ale pečeň/Cirhóza a ruka sú lotéria.</li>
+        <li><span class="meno">Vilo:</span> Šenok a dobratie rozhodovali málo; väčšinu urobila pozícia v kraji a skrytý NA EX.</li>
+        <li><span class="meno">Eva:</span> Hrať dobre sa oplatí, ale hrubé výchylky robia míny NA EX a Cirhóza v balíčku.</li>
+      </ul></details></td></tr>
+    </tbody>
+    <tbody data-n="5" data-k="Interakcia hráčov" data-c1="9" data-c2="9" data-c3="9" data-c4="9" data-c5="9" data-c6="9" data-p="9.000" data-o="8.5" data-d="0.500">
+      <tr><td class="poradie">5</td><th scope="row">Interakcia hráčov</th><td class="z" data-v="9">9</td><td class="z" data-v="9">9</td><td class="z" data-v="9">9</td><td class="z" data-v="9">9</td><td class="z" data-v="9">9</td><td class="z" data-v="9">9</td><td class="z pr" data-v="9.00">9,0</td><td class="t skry-mob">8,5</td><td class="t delta hore">+0,5</td></tr>
+      <tr class="dovody"><td class="poradie"></td><td colspan="10"><details class="dovod"><summary>Zdôvodnenia</summary><ul>
+        <li><span class="meno">Fero:</span> Podstrčené karty, NA EX, Dohadzovačka, Klebetnica — takmer každý ťah je reakcia.</li>
+        <li><span class="meno">Jano:</span> Hra je takmer celá interakcia (Kulturista na môj koniec, Klebetnica, Snúbenica).</li>
+        <li><span class="meno">Šimon:</span> Podstrčenie, NA EX, spoilovanie hrany, Kšefty, Pohoršenia.</li>
+        <li><span class="meno">Hela:</span> Podstrčenie, NA EX, odpovede, Pohoršenia.</li>
+        <li><span class="meno">Vilo:</span> Každé kolo som reagoval na súpera: podstrčenia, Klebetnica, Kapybara, Dohadzovačka.</li>
+        <li><span class="meno">Eva:</span> Všetko je interakcia — najlepšia stránka hry.</li>
+      </ul></details></td></tr>
+    </tbody>
+    <tbody data-n="6" data-k="Tempo a prestoje" data-c1="5" data-c2="6" data-c3="5" data-c4="6" data-c5="6" data-c6="6" data-p="5.667" data-o="6.3" data-d="-0.633">
+      <tr><td class="poradie">6</td><th scope="row">Tempo a prestoje</th><td class="z" data-v="5">5</td><td class="z" data-v="6">6</td><td class="z" data-v="5">5</td><td class="z" data-v="6">6</td><td class="z" data-v="6">6</td><td class="z" data-v="6">6</td><td class="z pr" data-v="5.67">5,7</td><td class="t skry-mob">6,3</td><td class="t delta dole">−0,6</td></tr>
+      <tr class="dovody"><td class="poradie"></td><td colspan="10"><details class="dovod"><summary>Zdôvodnenia</summary><ul>
+        <li><span class="meno">Fero:</span> 6 kôl × 3 Pitky, Zhromaždenie → Pitka ×3 pri jednej línii je dlhé.</li>
+        <li><span class="meno">Jano:</span> ~25 volaní na kolo, dĺžka primeraná; Kostol (1 karta na ťah) spomaľuje.</li>
+        <li><span class="meno">Šimon:</span> Až 3 Pitky a 3 Zhromaždenia v kole, veľa ťahov.</li>
+        <li><span class="meno">Hela:</span> 6 kôl, dlhé, ale plynulé.</li>
+        <li><span class="meno">Vilo:</span> Dve Pitky + dve Zhromaždenia za kolo (K3, K4) sú dlhé; prestoje len čakanie na súpera.</li>
+        <li><span class="meno">Eva:</span> 4 Pitky v K5 s 20 rozhodnutiami; po 2 : 28 ešte „predstierané finále“.</li>
+      </ul></details></td></tr>
+    </tbody>
+    <tbody data-n="7" data-k="Zrozumiteľnosť pravidiel" data-c1="5" data-c2="6" data-c3="5" data-c4="5" data-c5="6" data-c6="5" data-p="5.333" data-o="6.3" data-d="-0.967">
+      <tr><td class="poradie">7</td><th scope="row">Zrozumiteľnosť pravidiel</th><td class="z" data-v="5">5</td><td class="z" data-v="6">6</td><td class="z" data-v="5">5</td><td class="z" data-v="5">5</td><td class="z" data-v="6">6</td><td class="z" data-v="5">5</td><td class="z pr" data-v="5.33">5,3</td><td class="t skry-mob">6,3</td><td class="t delta dole">−1,0</td></tr>
+      <tr class="dovody"><td class="poradie"></td><td colspan="10"><details class="dovod"><summary>Zdôvodnenia</summary><ul>
+        <li><span class="meno">Fero:</span> Husté pravidlá; zmätok: text Policajtky a Hasiča vs. §16, staré okno finále.</li>
+        <li><span class="meno">Jano:</span> Pravidlá v klientovi sedia, texty kariet zastarané, poradie Pohoršení nejasné.</li>
+        <li><span class="meno">Šimon:</span> Strop hromadného ťahu, Záverečná ako hradba, Stryná, Silná zdvojí Dlh — veľa skrytých pravidiel.</li>
+        <li><span class="meno">Hela:</span> Texty kariet (Policajtka, Svokra) nesedia s §16.</li>
+        <li><span class="meno">Vilo:</span> Výhľady pomáhajú, ale texty troch kariet sú v rozpore s pravidlami a štítok VZBURA klame.</li>
+        <li><span class="meno">Eva:</span> Zlyháva pri multiplikátoroch (Posilnenie × NA EX × Dlh), pri odhade bitky a textoch kariet.</li>
+      </ul></details></td></tr>
+    </tbody>
+    <tbody data-n="8" data-k="Hĺbka vs. zložitosť" data-c1="7" data-c2="7" data-c3="7" data-c4="7" data-c5="7" data-c6="6" data-p="6.833" data-o="7.3" data-d="-0.467">
+      <tr><td class="poradie">8</td><th scope="row">Hĺbka vs. zložitosť</th><td class="z" data-v="7">7</td><td class="z" data-v="7">7</td><td class="z" data-v="7">7</td><td class="z" data-v="7">7</td><td class="z" data-v="7">7</td><td class="z" data-v="6">6</td><td class="z pr" data-v="6.83">6,8</td><td class="t skry-mob">7,3</td><td class="t delta dole">−0,5</td></tr>
+      <tr class="dovody"><td class="poradie"></td><td colspan="10"><details class="dovod"><summary>Zdôvodnenia</summary><ul>
+        <li><span class="meno">Fero:</span> Veľa kompromisov (cigarety ↔ karty, Pohoršenie k sebe/k súperovi); Pakt a Kšeft sa nedostali na stôl.</li>
+        <li><span class="meno">Jano:</span> Hĺbka veľká (koniec línie, spoločný Nástroj, strach), pre nováčika veľa pravidiel naraz.</li>
+        <li><span class="meno">Šimon:</span> Veľká hĺbka, ale kombá sa nájdu až po hodinách.</li>
+        <li><span class="meno">Hela:</span> Bohatá hĺbka.</li>
+        <li><span class="meno">Vilo:</span> Hĺbka tu je, ale násobenie strachu, prebytku, cigariet a Dohadzovačky je ťažko čitateľné.</li>
+        <li><span class="meno">Eva:</span> Veľa vrstiev; zbytočné sú povinné Pohoršenie a Pakt.</li>
+      </ul></details></td></tr>
+    </tbody>
+    <tbody data-n="9" data-k="Znovuhrateľnosť" data-c1="8" data-c2="8" data-c3="8" data-c4="8" data-c5="8" data-c6="7" data-p="7.833" data-o="7.5" data-d="0.333">
+      <tr><td class="poradie">9</td><th scope="row">Znovuhrateľnosť</th><td class="z" data-v="8">8</td><td class="z" data-v="8">8</td><td class="z" data-v="8">8</td><td class="z" data-v="8">8</td><td class="z" data-v="8">8</td><td class="z" data-v="7">7</td><td class="z pr" data-v="7.83">7,8</td><td class="t skry-mob">7,5</td><td class="t delta hore">+0,3</td></tr>
+      <tr class="dovody"><td class="poradie"></td><td colspan="10"><details class="dovod"><summary>Zdôvodnenia</summary><ul>
+        <li><span class="meno">Fero:</span> Šenok, lokality podľa úrovne, 19 lokalít, náhodné priazne.</li>
+        <li><span class="meno">Jano:</span> 19 lokalít, 86 kariet, štýly (Šofér, Dohadzovačka, Veterán, Puška).</li>
+        <li><span class="meno">Šimon:</span> 19 lokalít, rotácie, scorecardy.</li>
+        <li><span class="meno">Hela:</span> 19 lokalít, natočenia.</li>
+        <li><span class="meno">Vilo:</span> 19 lokalít po úrovniach a kraje s rotáciou dávajú pokaždé inú hranu.</li>
+        <li><span class="meno">Eva:</span> Veľa možností; no Dvojčatá rozhodli tri kolá po sebe — opakovateľný vzor.</li>
+      </ul></details></td></tr>
+    </tbody>
+    <tbody data-n="10" data-k="Téma a prepojenie s mechanikami" data-c1="7" data-c2="8" data-c3="7" data-c4="7" data-c5="8" data-c6="8" data-p="7.500" data-o="7.2" data-d="0.300">
+      <tr><td class="poradie">10</td><th scope="row">Téma a prepojenie s mechanikami</th><td class="z" data-v="7">7</td><td class="z" data-v="8">8</td><td class="z" data-v="7">7</td><td class="z" data-v="7">7</td><td class="z" data-v="8">8</td><td class="z" data-v="8">8</td><td class="z pr" data-v="7.50">7,5</td><td class="t skry-mob">7,2</td><td class="t delta hore">+0,3</td></tr>
+      <tr class="dovody"><td class="poradie"></td><td colspan="10"><details class="dovod"><summary>Zdôvodnenia</summary><ul>
+        <li><span class="meno">Fero:</span> Krčma, poldeci, pečeň → Cirhóza sedí; Dlh bez dôsledku je len nálepka.</li>
+        <li><span class="meno">Jano:</span> Pečeň → Cirhóza → −5, Dlhy a Exekútor; téma sa premieta do mechaník.</li>
+        <li><span class="meno">Šimon:</span> Strach starších a krčma sedia.</li>
+        <li><span class="meno">Hela:</span> Poldeci, pečeň, Dlh sedia.</li>
+        <li><span class="meno">Vilo:</span> Eva dostala exekúciu za svoje dlhy; Kapybara zožerie špak.</li>
+        <li><span class="meno">Eva:</span> Pitie, dlh, exekútor a „boja sa ma starší v dedine“ sedí; Snúbenica a Svokra sú humorné.</li>
+      </ul></details></td></tr>
+    </tbody>
+    <tbody data-n="11" data-k="Napätie a priebeh" data-c1="5" data-c2="5" data-c3="6" data-c4="5" data-c5="6" data-c6="4" data-p="5.167" data-o="5" data-d="0.167">
+      <tr><td class="poradie">11</td><th scope="row">Napätie a priebeh</th><td class="z" data-v="5">5</td><td class="z" data-v="5">5</td><td class="z" data-v="6">6</td><td class="z" data-v="5">5</td><td class="z" data-v="6">6</td><td class="z" data-v="4">4</td><td class="z pr" data-v="5.17">5,2</td><td class="t skry-mob">5,0</td><td class="t delta hore">+0,2</td></tr>
+      <tr class="dovody"><td class="poradie"></td><td colspan="10"><details class="dovod"><summary>Zdôvodnenia</summary><ul>
+        <li><span class="meno">Fero:</span> K4–K5 napínavé (13 : 12); finále 35 : 1 rozhodlo jednu bitku o 28 špakov bez možnosti zvratu.</li>
+        <li><span class="meno">Jano:</span> Po K4 bola partia rozhodnutá (Cirhózy), finále už len formálne.</li>
+        <li><span class="meno">Šimon:</span> Zvrat K3 → K5 bol veľký, po 16 : 4 bolo takmer rozhodnuté.</li>
+        <li><span class="meno">Hela:</span> Finále 16 : 14 napínavé, no výsledok rozhodnutý pred ním (4 : 16).</li>
+        <li><span class="meno">Vilo:</span> K1–K4 sa hojdali (7 : 5), po K5 28 : 2 bolo rozhodnuté.</li>
+        <li><span class="meno">Eva:</span> Napätie do K4 (5 : 6), potom pád; prebytok vo finále bez stropu.</li>
+      </ul></details></td></tr>
+    </tbody>
+    <tbody data-n="12" data-k="Originalita" data-c1="8" data-c2="9" data-c3="9" data-c4="8" data-c5="9" data-c6="8" data-p="8.500" data-o="8.7" data-d="-0.200">
+      <tr><td class="poradie">12</td><th scope="row">Originalita</th><td class="z" data-v="8">8</td><td class="z" data-v="9">9</td><td class="z" data-v="9">9</td><td class="z" data-v="8">8</td><td class="z" data-v="9">9</td><td class="z" data-v="8">8</td><td class="z pr" data-v="8.50">8,5</td><td class="t skry-mob">8,7</td><td class="t delta dole">−0,2</td></tr>
+      <tr class="dovody"><td class="poradie"></td><td colspan="10"><details class="dovod"><summary>Zdôvodnenia</summary><ul>
+        <li><span class="meno">Fero:</span> Spoje kariet, otáčanie, NA EX, strach starších.</li>
+        <li><span class="meno">Jano:</span> Spoje s otáčaním a spoločné náradie, NA EX, strach s patronátom — inde nič podobné.</li>
+        <li><span class="meno">Šimon:</span> Spoje kariet, priazeň/strach ako dvojitý marker.</li>
+        <li><span class="meno">Hela:</span> Spoje, strach starších, Kšefty.</li>
+        <li><span class="meno">Vilo:</span> Spoje, prevaha v kraji, skryté NA EX a strach starších nemajú obdobu.</li>
+        <li><span class="meno">Eva:</span> Spoje, podstrčenie, skryté NA EX a strach starších sú jedinečné.</li>
+      </ul></details></td></tr>
+    </tbody>
+  </table>
+
+  <div class="zhrnutie">
+    <p><strong>Kde sa zhodli.</strong> Interakcia 9 od všetkých šiestich (priemer 9,0 — najvyšší z posledných troch reportov, minule 8,5 a 8,7), Originalita 8,5 a Znovuhrateľnosť 7,8. Najnižšie sú Rovnováha a férovosť (4,5 — najnižšie z posledných troch reportov, minule 5,2 a 5,0) a Napätie a priebeh (5,2), obe s tým istým dôvodom: strach a prebytok sa kopia u víťaza. Zrozumiteľnosť klesla o jeden bod (5,3 oproti 6,3) kvôli zastaraným textom kariet a násobičom.</p>
+    <p><strong>Kde sa rozišli.</strong> Podľa výsledku, nie podľa štýlu: traja víťazi dali Zábave 7,7 a Rovnováhe 5,0, traja porazení 6,3 a 4,0; Napätie 5,7 oproti 4,7. Najprísnejšia bola Eva (6,3; Rovnováha 3, Napätie 4 po 0 : 52), najvľúdnejší Vilo (7,3). Šimon (7,0) vyhral partiu, ktorá bola najtesnejšia (9 : −1), a hodnotil Rovnováhu rovnako (5) ako obaja víťazi stompu. Vilo (7,3) a Šimon (7,0) dali o 0,3–0,6 viac než Fero (6,7), no rozdiely do pol bodu sú pri 3 partiách v šume.</p>
+  </div>
+</section>
+<section aria-labelledby="zamerania">
+  <h2 id="zamerania">Zamerania postáv</h2>
+  <ul class="zamerania">
+    <li><h3>Fero Šenkár · Ekonóm</h3><p class="tema">Ekonomika: oplatí sa šetriť a investovať, sú zdroje vyvážené, nie je šenok pasca?</p>
+      <p>Šenok označil za najsilnejší ekonomický ťah, nie pascu — pasca je len pre ekonóma, ktorý šetrí: v K3 z 6 cigariet kúpil 1 kartu, mal v ruke 2 karty na 3 Pitky a prehra 5 : 9 ho stála 8 špakov, v K4 a K5 za 3–5 cigariet 3–4 karty a vyhral obe. Cigareta v šenku má hodnotu 0,3–1 špaku, vo výkupnom 0,2 (5 : 1). Dlh nič nestojí (6 priznaných zo 7 bez trestu), poldeci sú vzácnejšie než cigarety.</p></li>
+    <li><h3>Jano Bitkár · Agresívny</h3><p class="tema">Bitky: oplatí sa útočiť, je výsledok čitateľný, nie je agresia príliš silná či slabá?</p>
+      <p>Výsledok bitky je čitateľný „na bod“ (12 prepočítaných bitiek), čitateľnosť lámu len tri informácie: posledné slovo (odpoveď na NA EX), poradie Pohoršení a skrytá ruka. Agresia je silná kvôli násobkom (Hasič + Posilnenie 10–12 tuhých) a hlavne kvôli rente zo strachu, nie preto, že by bola lacná. NA EX na vlastnú kartu je dar súperovi, keď má čím odpovedať (K2: 3 : 2 → 3 : 7); koniec línie je rukojemník (Kôň, Puška).</p></li>
+    <li><h3>Šimon Starešina · Politik</h3><p class="tema">Starší, patronát, priazne: má politika váhu, dá sa plánovať, nie sú priazne náhodné bonusy?</p>
+      <p>Váhu má väčšiu než karty: K5 štyri Pohoršenia vyplatili 9 špakov z jednej bitky, Dohadzovačka dala +3 tuhé jednou kartou. Plánovať sa dá o kolo dopredu; čo súper urobí s prebytkom, nie. Patronát nepoužil ani raz (na červenej za 1 cigaretu príliš lacný únik pre súpera, inde drahý), Exekútor a Kmotor v jeho partii nemali zmysel (exekúcia 0×). Strach je „renta“: 12 z jeho 16 špakov po K5 vzišlo z jednej bitky.</p></li>
+    <li><h3>Hazardná Hela · Hazardérka</h3><p class="tema">Náhoda a riziko: kde rozhoduje šťastie, dá sa riziko počítať, oplatí sa?</p>
+      <p>Vyčísliteľný hazard je dobrý (Veľmi smútiaca vdova ~50 % za 2 Dlhy, NA EX s náhľadom). Lotéria je pečeň a Cirhóza (zdrojov desiatky, oprava neexistuje: −15), šenok bohatého a Dohadzovačka súpera. Vedúcemu sa hazard neoplatí; dobiehajúci musí mať rozptyl väčší než náskok — po K2 (náskok 6 + 6 strachu) nestačil ani veľký.</p></li>
+    <li><h3>Paragrafista Vilo · hľadač dier</h3><p class="tema">Pravidlá a hra: nezrovnalosti, nejasnosti, zneužiteľné medzery.</p>
+      <p>Overil Pakt (2× správne), Kšefty (5 z 10 prešlo), D6, prah Exekútora 7/5, strach len víťazovi, výkupné — bez rozporu. Našiel dve skutočné chyby výpočtu/označenia (ODHAD ráta Šoféra po NA EX, štítok VZBURA), zastarané texty troch kariet a drobné preklepy; pomenovanie <code>vykup</code> bolo omyl zadania, nie hry. Medzera, ktorú využil: Kultúrny dom a finále menia prebytok 1 : 1 na špaky (22 + 22 špakov z dvoch bitiek).</p></li>
+    <li><h3>Eva Stratégová · opatrná</h3><p class="tema">Bodovanie a plánovanie: dá sa hrať na dlhý plán, odmeňuje bodovanie premýšľanie?</p>
+      <p>Plán je čitateľný: úrovne a hrany lokalít vidno od K1, rozdelenie prebytku je skutočné rozhodnutie, Dohadzovačka je „najstrategickejšia karta sady“. Ale špaky zo strachu a prebytku sa kopia len u víťaza („porazený nemá čo plánovať“), cigarety nemajú účel mimo kariet a Kapybary a úroveň 3 nezaručí 3 Pitky (kto zacpe slot 1, nechá 1–2). Víťaz mal 8 špakov z bitiek a 44 z derivátov.</p></li>
+  </ul>
+</section>
+<section aria-labelledby="nahoda">
+  <h2 id="nahoda">Náhoda vs. zručnosť</h2>
+  <ul class="dlazdice">
+    <li class="dlazdica hlavna"><div class="stitok">Priemer všetkých</div><div class="hodnota">65,8 : 34,2</div><div class="pomer" aria-hidden="true"><span class="zr" style="width:65.8%"></span><span class="na" style="width:34.2%"></span></div><div class="pozn">zručnosť : náhoda · minule 62,5 : 37,5 (105422), 63 : 37 (062058), predtým 67,5 : 32,5</div></li>
+    <li class="dlazdica"><div class="stitok">Fero · P1</div><div class="hodnota">65 : 35</div><div class="pomer" aria-hidden="true"><span class="zr" style="width:65%"></span><span class="na" style="width:35%"></span></div><div class="pozn">víťaz · náhoda: Janov prvý výber zo šenku (Hasič + Mäsiar) a dobratie v K1</div></li>
+    <li class="dlazdica"><div class="stitok">Jano · P1</div><div class="hodnota">70 : 30</div><div class="pomer" aria-hidden="true"><span class="zr" style="width:70%"></span><span class="na" style="width:30%"></span></div><div class="pozn">porazený · náhoda: dobratie Cirhóz, šenok; „zručnosť, ktorú som nepoužil“</div></li>
+    <li class="dlazdica"><div class="stitok">Šimon · P2</div><div class="hodnota">65 : 35</div><div class="pomer" aria-hidden="true"><span class="zr" style="width:65%"></span><span class="na" style="width:35%"></span></div><div class="pozn">víťaz · náhoda: ruka z drafty</div></li>
+    <li class="dlazdica"><div class="stitok">Hela · P2</div><div class="hodnota">65 : 35</div><div class="pomer" aria-hidden="true"><span class="zr" style="width:65%"></span><span class="na" style="width:35%"></span></div><div class="pozn">porazená · náhoda: pečeň/Cirhóza, šenok bohatého, ruka</div></li>
+    <li class="dlazdica"><div class="stitok">Vilo · P3</div><div class="hodnota">65 : 35</div><div class="pomer" aria-hidden="true"><span class="zr" style="width:65%"></span><span class="na" style="width:35%"></span></div><div class="pozn">víťaz · náhoda: skrytá ruka súpera, nie losovanie</div></li>
+    <li class="dlazdica"><div class="stitok">Eva · P3</div><div class="hodnota">65 : 35</div><div class="pomer" aria-hidden="true"><span class="zr" style="width:65%"></span><span class="na" style="width:35%"></span></div><div class="pozn">porazená · náhoda: čo sa objaví v šenku, kartu z balíčka (Veterán po Klebetnici)</div></li>
+  </ul>
+  <div class="zhrnutie">
+    <p>Všetci šiesti sa pohybujú pri 65 % zručnosti (Jano 70 %), čo je o 3 body viac než minule (62,5 : 37,5), no známka za kritérium je len 6,5 (minule 6,3). Víťazi odhadli 65 / 65 / 65, porazení 70 / 65 / 65 — na výsledok odhad nezávisí. Hráči neodlišujú dve veci: <strong>kto vyhrá</strong> určila zručnosť (Fero a Vilo hrali podľa oboch strán lepšie — Jano: „Fero hral veľmi dobre“; Šimon vyhral cez Oslávenca vo finále), no <strong>o koľko</strong> (35 : 1, 52 : 0) určujú zosilňovače — strach, prebytok 1 : 1 a Cirhóza — ktoré malý rozdiel v kvalite premenia na masaker. Zdroje čistej náhody sú tri: rozdanie a poradie v šenku (kto berie prvý), dobratie Cirhózy a skrytá ruka súpera (Klebetnica ju odkrýva len jednej strane). Zrážka (Výtržník) sa nehrala ani raz z 18 bitiek, hádanka je teda dnes menší problém než v 062058.</p>
+  </div>
+
+  <h3>Kľúčové momenty</h3>
+  <ol class="momenty">
+    <li><span class="kolo">P1 · K1</span><span class="tag volba">voľba</span><span class="tag nahoda">náhoda</span> Jano si v drafte vzal Hasiča + Mäsiara za 3 cigarety, dal NA EX na vlastného Hasiča (4 → 10) a prebytok 8 rozdelil na troch starších na krajnú polohu — stávka +8 špakov pre ďalšie bitky.<ul class="pohlady"><li>Fero: „Náhoda 60 %, voľba 40 %“ — mal len štartovné karty, prvý výber zo šenku mal súper.</li><li>Jano: rozhodla voľba (NA EX na vlastnú kartu s neaktívnou veľkou akciou).</li></ul></li>
+    <li><span class="kolo">P1 · K3</span><span class="tag volba">voľba</span> Fero z 6 cigariet kúpil v šenku 1 kartu, mal v ruke 2 karty (Miňištrant, Snúbenica) na 3 Pitky → prehra 5 : 9, −3 a −5 za strach = −8 špakov (2 : 1 → 2 : 9). Vlastná chyba ekonóma.</li>
+    <li><span class="kolo">P1 · K4</span><span class="tag volba">voľba</span><span class="tag skryta">skrytá informácia</span> 13 : 13, Dlhy 2 : 2 → sekera; Fero ako druhý v poradí videl Janove 2 Pohoršenia na Bitkára a jedným vrátil krok: 13 : 12, +7 špakov (9 : 9).<ul class="pohlady"><li>Fero: rozhodla voľba. Jano: „druhý v poradí vždy vie, čo má robiť“ — poradie Pohoršení pravidlá nehovoria.</li></ul></li>
+    <li><span class="kolo">P1 · K5</span><span class="tag volba">voľba</span> Jano dal patronát na Autobusára, lebo text Policajtky v jeho línii sľuboval „Pohoršenia proti tebe neplatia“ (zastaraný text, §16 v7 už neruší) → Fero dostal 3 Pohoršenia navyše, spolu 5 posunov = +5 špakov hneď, Jano prehral 6 : 11 a odhodil poldeci. Cena textu karty: 6 špakov.</li>
+    <li><span class="kolo">P1 · finále</span><span class="tag volba">voľba</span> Jano mal po K4 štyri nepriznané Cirhózy (Pijan položený bez prepočtu 3 Pitiek), dve priznal → −10; finále 25 : 17 dalo Ferovi 3 + 8 strach + 6 prebytok = 17 špakov. Výsledok 35 : 1.</li>
+    <li><span class="kolo">P2 · K1</span><span class="tag skryta">skrytá informácia</span> Hela nespočítala Šimonove dve Pohoršenia na Bitkára (+2 tuhé) → 4 : 4, sekera namiesto výhry. ODHAD BITKY Pohoršenia nepozná.</li>
+    <li><span class="kolo">P2 · K3</span><span class="tag volba">voľba</span> Hela vyhrala 9 : 1 (patronát na červenú Krčmárku + 3 telá + NA EX na vlastného Vymáhača), ale Šimon 3 Pohoršeniami z jej patronátu vrátil jej markery do stredu — strach dostala 0. Jej prebytok 8 potom posunul troch starších na Šimonovu červenú — 8 špakov strachu pre ňu pri ďalšej výhre (K4 ju však vyhral Šimon vďaka Dohadzovačke).</li>
+    <li><span class="kolo">P2 · K4</span><span class="tag nahoda">náhoda</span><span class="tag volba">voľba</span> Šimon dostal Dohadzovačku (náhoda) a vymenil Starostu ↔ Autobusára tak, že Bitkár +3 pristal na jeho už stojacej červenej: 5 : 4 (bez nej 2 : 4).</li>
+    <li><span class="kolo">P2 · K5</span><span class="tag volba">voľba</span> Šimon zvolil Kostol (zakázal NA EX, na ktorom stála Helina hrozba) a 4 Pohoršeniami (lokalita, Silná, Dievčina ×2) posunul Krčmárku na červenú: 6 : 2 a 9 špakov zo strachu — 16 : 4.</li>
+    <li><span class="kolo">P2 · finále</span><span class="tag volba">voľba</span><span class="tag nahoda">náhoda</span> Hela vyhrala bitku 16 : 14 (Hasič + Posilnenie na Chate), ale Šimon vo finále dvakrát použil Oslávenca (+2 pečene) a Hela mala ďalšie zdroje pečene: 3 Cirhózy = −15 proti Šimonovým −10. Skóre 9 : −1.<ul class="pohlady"><li>Šimon: voľba — pečeň treba rátať pred vyložením a Oslávenec je plánovaný ťah.</li><li>Hela: „lotéria, brániť sa nemám ako“ — Cirhóza vznikla v poslednej Pitke, kde sa už nedá priznať.</li></ul></li>
+    <li><span class="kolo">P3 · K1</span><span class="tag volba">voľba</span><span class="tag skryta">skrytá informácia</span> Vilo spustil Kšeft Jednota (1 Dlh → 2 cigarety) pred bitkou: Dlhy 1 : 1, tuhé 1 : 1 → sekera namiesto výhry. Eva zvolila Pohoršenie na strach namiesto Bitkára, lebo ODHAD ráta Šoféra aj po odkrytí Vilovho NA EX (chyba hry).</li>
+    <li><span class="kolo">P3 · K3</span><span class="tag volba">voľba</span><span class="tag skryta">skrytá informácia</span> Vilo dal NA EX na vlastné Dvojčatá (+6) a z 0 : 6 spravil 14 : 9; Eva mu Klebetnicou predtým odkryla celú ruku a poslala jeho Veterána naspodok balíčka, no ten sa vrátil hneď (balíček mal 1 kartu).</li>
+    <li><span class="kolo">P3 · K4</span><span class="tag skryta">skrytá informácia</span> Eva Dohadzovačkou vymenila scorecardy Hrobár ↔ Krčmárka (Bitkár +3 na jej červenú): 8 : 0 v Kostole. Vilo o nej nevedel.</li>
+    <li><span class="kolo">P3 · K5</span><span class="tag volba">voľba</span><span class="tag skryta">skrytá informácia</span><span class="tag nahoda">náhoda</span> Eva ako obranca zvolila Kultúrny dom (prebytok = špaky 1 : 1); Vilo mal 14 cigariet (prebytok + pas), kúpil Dohadzovačku + Šofér a vyhral 14 : 3 — prebytok 11 = 11 špakov + 9 zo strachu: 22 špakov v jednej bitke (2 : 28).<ul class="pohlady"><li>Eva: skrytá informácia a náhoda — Dohadzovačka bola v šenku, kde Vilo bral prvý.</li><li>Vilo: voľba — Evina lokalita a jej cigarety (3 proti 14) boli viditeľné.</li></ul></li>
+    <li><span class="kolo">P3 · finále</span><span class="tag volba">voľba</span> 11 : 0, +2 Pitky, +8 strach, +11 prebytok = 21 špakov; výsledok 52 : 0. Rozhodnuté pred bitkou.</li>
+  </ol>
+
+  <div class="dva">
+    <div class="blok"><h3>Prázdne rozhodnutia</h3><ul>
+      <li>Draft pri 0–2 cigaretách (Hela, Jano, Fero K1): „stop“ je jediný rozumný ťah.</li>
+      <li>Stavba šenku ako druhý berúci (Šimon, Jano, Fero, Eva): zakopať silné — jedna optimálna voľba.</li>
+      <li>Patronát: „vždy nie“, kým nie je červená za 1 cigaretu (Eva, Šimon); povinné Pohoršenie bez možnosti preskočiť (Eva).</li>
+      <li>Kostol (1 karta na ťah) a vo finále Pitky 2–3, kde je jediný ťah „hotovo“ (Fero, Vilo).</li>
+    </ul></div>
+    <div class="blok"><h3>Čo by zmenil lepší hráč</h3><ul>
+      <li>Fero: v K3 kúpiť 2 karty a neposielať Autobusára (Výpalník) súperovi na červenú.</li>
+      <li>Jano: pred Pijanom prepočítať pečeň × Pitky, nespoliehať sa na text Policajtky, nedať NA EX tam, kde súper drží odpoveď.</li>
+      <li>Hela: nechať si cigaretu na patronát; nehrať pečeň proti Oslávencovi.</li>
+      <li>Vilo: nespúšťať Kšeft Jednota pred tie-breakom Dlhov.</li>
+      <li>Eva: v K5 zvoliť Obecný úrad namiesto Kultúrneho domu; prečítať náklady NA EX na Svokru (4 Dlhy, exekúcia −3).</li>
+    </ul></div>
+  </div>
+  <p class="mala">Porovnanie s predošlými reportmi: odhad zručnosti 65,8 % je najvyšší z posledných troch (62,5 → 63 → 65,8), ale druhá polovica výsledku — veľkosť rozdielu — sa v nich zhoršuje (rozdiely skóre 18 → 24 → 32, viď nižšie). Zručnosť teda rozhoduje o víťazovi dosť spoľahlivo; o tom, či je výsledok 9 : −1 alebo 52 : 0, rozhoduje kombinácia zosilňovačov.</p>
+</section>
+<section aria-labelledby="stomp">
+  <h2 id="stomp">Prečo stomp: 35 : 1 a 52 : 0</h2>
+  <ul class="dlazdice">
+    <li class="dlazdica hlavna"><div class="stitok">Rozdiel na konci</div><div class="hodnota">34 · 10 · 52</div><div class="pozn">v7 stredná, priemer 32. Minule 24 · 22 · 25 (105422, krátka v6.1; priemer 23,7) a 13 · 24 · 18 (062058, stredná v6; priemer 18,3)</div></li>
+    <li class="dlazdica"><div class="stitok">Posledné dve bitky</div><div class="hodnota">78 %</div><div class="pozn">P3: K5 + finále dali Vilovi 43 z 55 špakov; P1: 25 z 35 (71 %)</div></li>
+    <li class="dlazdica"><div class="stitok">Strach u víťaza</div><div class="hodnota">40–54 %</div><div class="pozn">v6.1 krátka 22 %, v6 stredná ≈ 55 %</div></li>
+    <li class="dlazdica"><div class="stitok">Cirhóza + Exekútor</div><div class="hodnota">−43</div><div class="pozn">spolu −10, −10, −15, −5 a −3; rozhodla P2</div></li>
+    <li class="dlazdica"><div class="stitok">Vedúci vo finále</div><div class="hodnota">3 z 3</div><div class="pozn">útočil a vyhral hru (bitku vo finále 2 z 3); s minulými šiestimi už 9 z 9 hier</div></li>
+  </ul>
+
+  <h3>Skladba špakov (z koncových obrazoviek, logov a feedbackov)</h3>
+  <div style="overflow-x:auto">
+  <table class="temy" id="skladba">
+    <thead><tr><th>Hráč</th><th>Bitky</th><th>Strach</th><th>Prebytok</th><th>Výkupné</th><th>Exekútor</th><th>Kapybara</th><th>Cirhóza</th><th>Spolu</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Fero · P1 víťaz</th><td>9</td><td>19</td><td>6</td><td>1</td><td>0</td><td>0</td><td>0</td><td><b>35</b></td></tr>
+      <tr><th scope="row">Jano · P1</th><td>4</td><td>5</td><td>0</td><td>2</td><td>0</td><td>0</td><td>−10</td><td><b>1</b></td></tr>
+      <tr><th scope="row">Šimon · P2 víťaz</th><td>8</td><td>12</td><td>0</td><td>4</td><td>0</td><td>−5</td><td>−10</td><td><b>9</b></td></tr>
+      <tr><th scope="row">Hela · P2</th><td>4</td><td>6</td><td>2</td><td>2</td><td>0</td><td>0</td><td>−15</td><td><b>−1</b></td></tr>
+      <tr><th scope="row">Vilo · P3 víťaz</th><td>8</td><td>22</td><td>22</td><td>3</td><td>0</td><td>−3</td><td>0</td><td><b>52</b></td></tr>
+      <tr><th scope="row">Eva · P3</th><td>2</td><td>3</td><td>0</td><td>3</td><td>−3</td><td>0</td><td>−5</td><td><b>0</b></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="mala">P1 a P3 sú z koncových obrazoviek a feedbackov (Jano, Vilo, Eva); P2 som zrátal z logov (špaky za bitky a starších, výkupné z koncového riadku, Kapybara 5×) a súčet sedí na 9 : −1. „Bitky“ obsahujú Pitky aj sekeru, „Strach“ aj strach pri sekere. Finále dalo Ferovi 17 špakov z 35 (3 + 8 + 6), Vilovi 21 z 55 (2 + 8 + 11), Hele 8 (2 + 4 + 2).</p>
+
+  <h3>Porovnanie s predošlými turnusmi (podiel zo špakov víťaza pred mínusmi)</h3>
+  <table class="temy">
+    <thead><tr><th>Turnus</th><th>Bitky</th><th>Strach</th><th>Prebytok</th><th>Výkupné</th><th>Rozdiel na konci</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">v6 stredná (062058)</th><td>—</td><td>41–86 %, ≈ 55 %</td><td>—</td><td>— (ešte nebolo)</td><td>13 · 24 · 18</td></tr>
+      <tr><th scope="row">v6.1 krátka (105422)</th><td>33 / 41 / 24 %</td><td>29 / 27 / 14 % (priem. 22 %)</td><td>38 / 32 / 62 % (priem. 46 %)</td><td>— (ešte nebolo)</td><td>24 · 22 · 25</td></tr>
+      <tr><th scope="row"><b>v7 stredná (tento)</b></th><td>26 / 33 / 15 %</td><td>54 / 50 / 40 % (priem. 48 %)</td><td>17 / 0 / 40 %</td><td>3 / 17 / 5 %</td><td><b>34 · 10 · 52</b></td></tr>
+    </tbody>
+  </table>
+  <p class="mala">v6.1 strach „len víťazovi“ znížila podiel strachu z ≈ 55 % na 22 % — v <em>krátkej</em> hre so 4 bitkami. V strednej hre (6 bitiek) sa strach vrátil na 40–54 %: renta potrebuje viac bitiek, aby sa nazbierala, takže 22 % bolo čiastočne artefakt dĺžky hry (to je môj záver z troch partií, nie meranie). Prebytok 1 : 1 ostal druhým motorom (Vilo 22 špakov, Fero 6; Šimon 0, lebo vo finále prehral bitku).</p>
+
+  <h3>Zdroje stompu</h3>
+  <ol class="karty" style="margin-bottom:14px">
+    <li><h3><span class="cislo-z">1.</span> Strach ako renta — v tomto turnuse skôr zosilňovač než štartér</h3>
+      <p>Víťaz má 19 z 35 (Fero), 12 z 24 (Šimon) a 22 z 55 (Vilo) špakov zo strachu, porazený 0 (okrem sekery v K1). Prvá výhra s veľkým prebytkom však nerozhodla: v P1 viedol Jano 9 : 2 po K3 (Ferova prehra 5 : 9 stála 8) a Fero to otočil na 17 : 9 po K5; v P3 viedla Eva 5 : 6 po K4 a Vilo to otočil na 28 : 2. Strach teda nevytvoril jedno trvalé vedenie, ale <strong>zdvihol hodnotu každej ďalšej výhry</strong>: Šimon mal v K5 jedinú bitku za 12 špakov, Vilo 22 v K5.</p></li>
+    <li><h3><span class="cislo-z">2.</span> Prebytok 1 : 1 na Kultúrnom dome a vo finále</h3>
+      <p>Vilo 11 + 11, Fero 6, Hela 2 — dokopy 30 špakov z 3 partií, 20 % všetkých zarobených (u troch víťazov 28 zo 114, 25 %). Prebytok vzniká násobením (NA EX na vlastnú kartu, Hasič + Posilnenie, Poľovnícka chata ×2: 10–12 tuhých z jednej karty), takže veľkosť výhry „nesúvisí s tým, čo sa dialo predtým“ (Hela v minulom turnuse). Eva si Kultúrny dom zvolila sama (v K5 ako obranca; denník: „kroky markerov sú menej cenné než okamžité špaky“) a prehrala s cigaretami 3 proti 14 (a s prázdnou rukou pri NA EX).</p></li>
+    <li><h3><span class="cislo-z">3.</span> Cirhóza z poslednej Pitky</h3>
+      <p>−10 (Jano), −10 a −15 (P2), −5 (Eva): spolu −40. V P2 bola jediným dôvodom, že Hela napriek výhre vo finále (16 : 14) prehrala; v P1 pridala k Ferovmu víťazstvu ďalších 10 špakov rozdielu. Cirhóza vznikla vo všetkých prípadoch v poslednej Pitke (nedá sa priznať) alebo bola v odhadzovacom balíčku (Evin prípad); hra nenúti k voľbe, len trestá. Je to <em>skill-trap</em>, ktorý rozlišuje hráčov (Jano si ju sám spôsobil Pijanom, Šimon Oslávencom), ale nemá nástroj na nápravu.</p></li>
+    <li><h3><span class="cislo-z">4.</span> Dohadzovačka — ±6 tuhých jednou kartou</h3>
+      <p>Rozhodla bitku v troch partiách zo štyroch zahraní: P3 K4 (Eva 8 : 0), K5 (Vilo 14 : 3), P2 K4 (Šimon 5 : 4, bez nej 2 : 4), P1 K6 (Jano +2). Je to najčastejšie spomínaná karta (všetci šiesti ju chválili alebo kritizovali). Nie je to náhodná lotéria — vyžaduje markery a plán — ale protihra neexistuje (Eva: „proti Dohadzovačke nemám protiťah“).</p></li>
+    <li><h3><span class="cislo-z">5.</span> Vedúci útočí vo finále, cigarety tečú k víťazovi</h3>
+      <p>Vedúci vo finále mal šenok prvý a posledné slovo v troch z troch partií (hru vyhral 3 z 3, bitku vo finále 2 z 3 — Šimon prehral 14 : 16, ale Hela nemala čím vyrovnať Cirhózy). Cigarety skončili u víťaza v P2 (15 : 1) a P3 (13 : 5), v P1 u porazeného (5 : 6); v 105422 hromadil porazený (14 / 13 / 7). Pas, Fajčiar a výkupné ich teda neprúdia vždy k dobiehajúcemu, ako sa čakalo.</p></li>
+  </ol>
+
+  <h3>Návrhy z docs/napady/stomp-v6.html a rozhodnutia autora</h3>
+  <table class="temy">
+    <thead><tr><th>Návrh</th><th>Rozhodnutie autora</th><th>Čo ukázal tento turnus</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">N1 Prevzatý strach</th><td>zamietnutý</td><td>Nik z hráčov ho nenavrhol. Šesť hráčov navrhlo opak (strach raz za posun, N4) — pozri sekciu Návrhy.</td></tr>
+      <tr><th scope="row">N2A Vo finále útočí zaostávajúci</th><td>rozhodnuté; v tejto vetve ešte neplatí (§14b: útočník = viac špakov)</td><td>Neoverené. Vedúci útočil 3 z 3, hru vyhral 3 z 3, bitku vo finále 2 z 3; Šimon (P2) napísal, že „prvý ťah vo finále je v praxi výhoda“ (Záhradkár pri hrane 10 tuhých). Pinnacle zvolili 3× obrancovia s menej špakmi a 3× to bola Poľovnícka chata.</td></tr>
+      <tr><th scope="row">N3A Odstupné za cigarety</th><td>len nápad do roadmapy</td><td>Vilo ho navrhol nezávisle (prebytok odkúpiť cigaretami), Eva a Hela podobné protihry. Pozor: cigarety skončili u víťaza 2 z 3 partií.</td></tr>
+      <tr><th scope="row">N3B Kurz 2 : 1</th><td>—</td><td>Jano (#7: polovica prebytku) — pozri „v napätí so zásadami“.</td></tr>
+      <tr><th scope="row">N4 Vyplatený strach sa upokojí</th><td>Navrhár neodporúčal</td><td>Hráči ho navrhli ako „raz za posun“ šesťkrát (Fero, Jano, Šimon, Hela, Vilo, Eva); na botoch zhoršil stredné hry (vedúci po 2. bitke 62 → 65 %).</td></tr>
+      <tr><th scope="row">N5 Ústup „platím a idem“</th><td>odložené do v8</td><td>Nikto nenavrhol; vo finále Jano (17 : 25) a Eva (0 : 11) nemali kedy odísť — Eva po 2 : 28 sama napísala, že finále bolo „predstierané“.</td></tr>
+    </tbody>
+  </table>
+  <div class="zhrnutie">
+    <p><strong>Záver.</strong> Stomp v7 vzniká z <strong>veľkosti jednej bitky</strong>, nie z trvalého vedenia: dve bitky na konci (K5 a finále) sú 71–78 % víťazových špakov a dvaja z troch porazených sa nemali kedy vrátiť. Zručnosť rozhoduje o víťazovi, ale rozdiel skóre rastie so zosilňovačmi (strach + prebytok + Cirhóza), ktoré hráči nevedia v poslednej bitke zastaviť. Chýba hlavne protihra: za cigarety, ktoré hráči po bitkách naozaj majú, sa nedá kúpiť ani zastavenie strachu, ani zníženie prebytku, ani oprava Cirhózy. Pre zásady autora to znamená hľadať <em>cenu</em>, nie strop.</p>
+  </div>
+</section>
+<section aria-labelledby="nezrovnalosti-h">
+  <h2 id="nezrovnalosti-h">Nezrovnalosti pravidiel a hry</h2>
+  <p class="podklady">Všetky nahlásené nálezy (6 hráčov, zlúčené duplicity) som overil v <code>docs/PRAVIDLA.md</code> a v jadre. <strong>Potvrdené chyby v hre</strong> sú oddelené od <strong>otázok na autora</strong>; chyba <em>nástroja</em> (textový klient AI hráčov) je zvlášť. Prehľady <code>moznosti.md</code> boli v poriadku, až na to, že Pakt chýba v 5 z 6 (spomína ho len Vilo) — Šimonov a Ferov „Pakt som nevidel“ preto neber ako rozbor pravidla.</p>
+  <div class="filter" data-ciel="nezrovnalosti" hidden role="group" aria-label="Filter podľa zaradenia">
+    <button type="button" data-f="vsetko" aria-pressed="true">Všetko</button>
+    <button type="button" data-f="chyba" aria-pressed="false">Chyba v hre</button>
+    <button type="button" data-f="nastroj" aria-pressed="false">Chyba nástroja</button>
+    <button type="button" data-f="pravidla" aria-pressed="false">Chyba v pravidlách / ťaháku</button>
+    <button type="button" data-f="nejasne" aria-pressed="false">Nejasné pravidlo (otázka)</button>
+    <button type="button" data-f="omyl" aria-pressed="false">Omyl hráča</button>
+  </div>
+  <p class="filter-info" aria-live="polite"></p>
+  <ol class="karty" id="nezrovnalosti">
+    <li data-oblast="chyba">
+      <h3><span class="cislo-z">1.</span> ODHAD BITKY ráta Šoféra aj po NA EX (a nepozná Strýkove Rany ani Vidly)</h3>
+      <div class="znacky"><span class="znacka chyba">chyba v hre</span><span class="znacka ">Eva (4, 6), Vilo (N6, N9), Hela (4)</span><span class="znacka potvrdene">potvrdené v kóde</span></div>
+      <dl class="polozka"><dt>Pravidlo</dt><dd>§16 Šofér (v7): „ak si v tomto kole nedal NA EX, udelíš súperovi Pecku navyše (+2 tuhé)“.</dd><dt>Čakal</dt><dd>Po odkrytí súperovho NA EX (alebo po mojom skrytom) odhad bez Šoférovej Pecky.</dd><dt>Stalo sa</dt><dd>P3 K1: po Vilovom NA EX ukazoval ODHAD „súper 3“ (Rana + Šofér), skutočná bitka bola 1 : 1; Eva preto dala Pohoršenie na strach namiesto Bitkára k sebe (mohla vyhrať 2 : 1). Vilo K1: po vlastnom skrytom NA EX ODHAD „3 : 0“ namiesto 1; K5: odhad 16, skutočnosť 14 (pravdepodobne rovnaká príčina, nie dokázané).</dd><dt>Príčina</dt><dd>Stôl pre odhad sa skladá len z <code>ciel, strany, starsi, hraci</code> — chýbajú <code>naexVKole</code>, <code>kseftRany</code> a <code>spaky</code>: <code>apps/web/src/hra/HernaPlocha.tsx:1003</code>, <code>tools/playtest/hrac.ts:351</code> a <code>:777</code>. <code>effects.ts:461</code> (<code>bitkaMody</code>) potom Šoféra vždy započíta (<code>naexVKole</code> je <code>undefined</code>); rovnako chýbajú Strýkove Rany (<code>kseftRany</code>) a Vidly (<code>spaky</code>). Samotné vyhodnotenie bitky v engine je správne.</dd><dt>Oprava</dt><dd>Preniesť tri polia z view do stolu; pri mojich skrytých NA EX nastaviť <code>naexVKole[ja] = true</code> (v <code>sMojimiSkrytymiNaex</code>, <code>nahlady.ts:307</code>). Náročnosť malá.</dd></dl>
+    </li>
+    <li data-oblast="chyba">
+      <h3><span class="cislo-z">2.</span> HROZBA NA STOLE pri Šoférovi ukazuje 6 : 6, náhľad ťahu 4 : 6</h3>
+      <div class="znacky"><span class="znacka chyba">chyba v hre</span><span class="znacka ">Hela (4)</span><span class="znacka potvrdene">potvrdené v kóde</span></div>
+      <dl class="polozka"><dt>Pravidlo</dt><dd>§16 Šofér: vlastné NA EX Šoférovi bonus zruší.</dd><dt>Stalo sa</dt><dd>P2 K4: súhrnný riadok HROZBA „ty môžeš dať NA EX na Šofér → 6 : 6, remíza“, náhľad samotného ťahu <code>naex</code> „4 : 6“ (správne).</dd><dt>Príčina</dt><dd><code>packages/core/src/hrozba.ts</code>, <code>hrozbaNaex()</code>: hypotetický stôl <code>{ ...stol, strany }</code> nenastaví <code>naexVKole[p] = true</code>, kým náhľad v <code>nahlady.ts:358</code> áno.</dd><dt>Oprava</dt><dd>Doplniť <code>naexVKole</code> do hypotetického stolu. Náročnosť malá (spolu s č. 1).</dd></dl>
+    </li>
+    <li data-oblast="chyba">
+      <h3><span class="cislo-z">3.</span> Štítok a moment „VZBURA“ aj pri Posilnení proti Odporu</h3>
+      <div class="znacky"><span class="znacka chyba">chyba v hre (označenie)</span><span class="znacka ">Vilo (N8)</span><span class="znacka potvrdene">potvrdené v kóde</span></div>
+      <dl class="polozka"><dt>Pravidlo</dt><dd>§6 tabuľka: Vzbura = Odpor + Odpor; Posilnenie + Odpor = neprepojené akcie aktivuje iba karta s Odporom.</dd><dt>Stalo sa</dt><dd>P3 K3: Evin Veterán (Odpor idx 1 proti Posilneniu Vilovej Dohadzovačky) dostal štítok VZBURA. Účinok (všetky akcie aktívne, Posilnenie zrušené) zodpovedá tabuľke, označenie nie.</dd><dt>Príčina</dt><dd><code>partia.ts</code> (vetva „Posilnenie + Odpor“) volá <code>markVzbura</code>; ten istý príznak číta <code>momenty.ts:131</code> (<code>vzbury()</code>) a <code>tools/playtest/hrac.ts:253</code> — hráči tak vidia moment „Vzbura — Odpor narazil na Odpor“ aj bez druhého Odporu.</dd><dt>Oprava</dt><dd>Samostatný príznak pre „karta s Odporom aktivuje neprepojené akcie“ a štítok/moment len pri Odpor + Odpor. Náročnosť malá.</dd></dl>
+    </li>
+    <li data-oblast="chyba">
+      <h3><span class="cislo-z">4.</span> Zastarané texty kariet Policajtka, Svokra, Hasič (sada v7)</h3>
+      <div class="znacky"><span class="znacka chyba">chyba v hre (dáta sady)</span><span class="znacka ">všetci šiesti</span><span class="znacka potvrdene">potvrdené v <code>cards.json</code></span></div>
+      <dl class="polozka"><dt>Pravidlo</dt><dd>§16: Policajtka — Pitka: Dlh tomu, kto dal viac NA EX, Pohoršenia už neruší; Svokra — Bitka: Rana za každú kartu so súperovým poldeci z NA EX (cigarety už neberie); Hasič — Nástup: náhodná karta z odhadzovacieho balíčka, majiteľ ju nechá alebo vráti.</dd><dt>Stalo sa</dt><dd><code>effect_text</code> v <code>packages/core/data/cards.json</code> je stále v6: „Furt: Súperove Pohoršenia proti tebe neplatia“, „Furt: Keď súper dá NA EX, ukradni mu 2 cigarety“, „Nástup: Zober si pracujúceho občana do ruky z odhadzovacieho balíčka“. Hra sa správa podľa §16. <strong>Cena textu: Jano stratil 6 špakov</strong> (K5 patronát v dôvere v Policajtku).</dd><dt>Príčina</dt><dd><code>tools/sada-v7/generuj.ts</code> (objekt s prepismi textov, ~r. 63) tieto tri karty neprepisuje, takže ostal v6 text.</dd><dt>Oprava</dt><dd>Doplniť do generátora a znova vygenerovať <code>cards.json</code>: Policajtka „Pitka: Ak súper dá v tejto Pitke viac NA EX než ty, dostane Dlh.“; Svokra „Bitka: Za každú tvoju kartu, na ktorej leží súperov poldeci z NA EX, udelíš súperovi Ranu.“; Hasič „Nástup: Z odhadzovacieho balíčka sa vytiahne náhodná karta; nechaj si ju, alebo ju vráť.“ Pri nasadení zosúladiť aj sadu v tvorcovi. Veterinár (Eva): text „o 2 menej“ sedí s <code>VETERINAR_CIRHOZA = 2</code>, chýba len riadok v §16 (č. 10). Náročnosť malá.</dd></dl>
+    </li>
+    <li data-oblast="chyba">
+      <h3><span class="cislo-z">5.</span> Okno pred finále učí starú verziu</h3>
+      <div class="znacky"><span class="znacka chyba">chyba v hre (text)</span><span class="znacka ">Fero (N7)</span><span class="znacka potvrdene">potvrdené v kóde</span></div>
+      <dl class="polozka"><dt>Pravidlo</dt><dd>§14b (v7): finále na pinnacle lokalite, 1–5 Pitiek, prvá karta nie je v strede.</dd><dt>Stalo sa</dt><dd>Okno hovorí „Posledná bitka bez lokality, vždy 3 Pitky … tvoja prvá karta pôjde do stredu línie“.</dd><dt>Príčina</dt><dd><code>apps/web/src/hra/HernaPlocha.tsx:2066</code> a <code>Panely.tsx:1309</code> (text pre sadu do v6).</dd><dt>Oprava</dt><dd>Rozlíšiť podľa <code>ciel.lokalita</code> (v7: lokalita, počet Pitiek z hrán). Náročnosť malá.</dd></dl>
+    </li>
+    <li data-oblast="chyba">
+      <h3><span class="cislo-z">6.</span> Preklepy a zavádzajúce slová v logu</h3>
+      <div class="znacky"><span class="znacka chyba">chyba v hre (text)</span><span class="znacka ">Fero (N8), Jano (N3), Vilo (N7, N12)</span><span class="znacka potvrdene">potvrdené v kóde</span></div>
+      <dl class="polozka"><dt>Stalo sa</dt><dd>„Jednota: hráč 1 <em>berie na sekeru</em> — 2 cigarety za Dlh“ (sekera je remíza v bitke); „kapybara zožerie hráčovi 1 1 špak“ (číslo hráča sa zlieva s počtom); „Víťaz dostane 1 špakov“ (tvar slova).</dd><dt>Príčina</dt><dd><code>engine.ts:3578</code> (Jednota), <code>engine.ts:3542</code> (Kapybara); „1 špakov“ a „KŠEFT Jednota: na sekeru“ sú len v textovom klientovi (<code>hrac.ts:496</code>, <code>:881</code>).</dd><dt>Oprava</dt><dd>„Jednota: hráč 1 získava 2 cigarety za Dlh“; „Kapybara: hráč 2 platí 2 cigarety — hráč 1 príde o 1 špak“; skloňovanie cez pomocnú funkciu <code>spakov()</code>. Náročnosť malá.</dd></dl>
+    </li>
+    <li data-oblast="nastroj">
+      <h3><span class="cislo-z">7.</span> Textový klient AI hráčov padal v Pitke (naexZaPitku is not defined)</h3>
+      <div class="znacky"><span class="znacka klient">chyba nástroja (nie hry)</span><span class="znacka ">všetci šiesti (N1)</span><span class="znacka potvrdene">opravené v 3bd655e</span></div>
+      <dl class="polozka"><dt>Stalo sa</dt><dd><code>tools/playtest/hrac.ts:510</code> volal <code>naexZaPitku()</code> bez importu z <code>@naex/core</code>; každý príkaz vo fáze Pitka končil chybou. Hráči hrali cez vlastné kópie klienta s doplneným importom (Vilo náhradou <code>naexLimitMinuty</code>, ostatní doplneným importom); žiadny ťah ani informácia sa nestratili, stálo to čas na začiatku K1 a ovplyvnilo časy partií (60–73 min).</dd><dt>Stav</dt><dd>Opravené v commite <code>3bd655e</code> (jeden riadok). Web klient sa nedotkol.</dd></dl>
+    </li>
+    <li data-oblast="nastroj">
+      <h3><span class="cislo-z">8.</span> Zastarané texty v textovom klientovi</h3>
+      <div class="znacky"><span class="znacka klient">chyba nástroja</span><span class="znacka ">Hela (2), Vilo (N11), Fero (N3)</span><span class="znacka potvrdene">potvrdené v kóde</span></div>
+      <dl class="polozka"><dt>Stalo sa</dt><dd>Riadok zdrojov píše „zadĺženie 0/2 (žijú len počas Pitky)“ (<code>hrac.ts:361</code>) — vo v7 (D6) zadĺženie ostáva a log to hovorí správne. Hlavička „Pitiek v bitke = 1 + menší počet aktivovaných akcií karty v strede“ (<code>hrac.ts:342</code>) je z v4; v7 počíta hrany lokality (1–5). Príkaz <code>smoke</code> chce parameter <code>pocet</code>, ktorý ťahák neuvádza.</dd><dt>Oprava</dt><dd>Prepísať texty, doplniť <code>pocet</code> do ponuky. Náročnosť malá.</dd></dl>
+    </li>
+    <li data-oblast="pravidla">
+      <h3><span class="cislo-z">9.</span> §9.2 mlčí o poradí Pohoršení a o tom, že sa nedajú preskočiť</h3>
+      <div class="znacky"><span class="znacka chyba">chyba v pravidlách (neúplné)</span><span class="znacka ">Jano (N4), Eva (5, 6)</span><span class="znacka potvrdene">potvrdené v kóde</span></div>
+      <dl class="polozka"><dt>Pravidlo</dt><dd>§9.2 hovorí, čo Pohoršenie robí, nie kto ho vyberá prvý ani či ho možno nepoužiť.</dd><dt>Kód</dt><dd><code>engine.ts:3926–3938</code>: najprv obranca, potom útočník; každý musí použiť všetky pridelené Pohoršenia, kým je posun možný. P1 K4: Fero ako druhý videl Janove 2 posuny a vrátil jeden (12 : 13 namiesto 13 : 13); P3 K1: Eva musela Pohoršenie použiť aj tam, kde jej škodilo.</dd><dt>Oprava</dt><dd>Zapísať poradie a povinnosť do §9.2 (ťahák aj klient rovnako). Či to má ostať, je otázka č. 13 a návrh 4.</dd></dl>
+    </li>
+    <li data-oblast="pravidla">
+      <h3><span class="cislo-z">10.</span> §16 nemá riadok Veterinár</h3>
+      <div class="znacky"><span class="znacka chyba">chyba v pravidlách (neúplné)</span><span class="znacka ">Eva (1)</span><span class="znacka otazka">nepotvrdený rozpor</span></div>
+      <dl class="polozka"><dt>Stalo sa</dt><dd>Eva uvádza text „Cirhóza ti pridáva v bitke o 2 poškodenia menej“ medzi zastaranými. Karta, kód (<code>VETERINAR_CIRHOZA = 2</code>) aj §9.3 („Veterinár to znižuje“) sedia; §16 riadok nemá a §9.3 neuvádza číslo.</dd><dt>Oprava</dt><dd>Doplniť riadok do §16. Náročnosť malá.</dd></dl>
+    </li>
+    <li data-oblast="nejasne">
+      <h3><span class="cislo-z">11.</span> §13: Vypiť „pridá ďalšie vyloženie“, no limit hneď klesne o 1</h3>
+      <div class="znacky"><span class="znacka otazka">nejasné pravidlo (otázka)</span><span class="znacka ">Šimon (3), Jano (N5)</span><span class="znacka potvrdene">správanie hry zodpovedá pravidlu</span></div>
+      <dl class="polozka"><dt>Stalo sa</dt><dd>Šimon: <code>[vypit, A, vypit, B, C]</code> pri limite 3 odmietnutý („Ťah sa skončil skôr…“, <code>engine.ts:1459</code>); Jano: <code>[vypit, karta, karta]</code> pri limite 2 odmietnutý.</dd><dt>Rozbor</dt><dd>§6 a §13 hovoria: zostávajúci limit hneď klesne o 1. Reťaz z troch kariet s dvoma Vypiť teda potrebuje limit 5 (3 karty + 2 vypitia), reťaz z dvoch kariet limit 3. Hra je správna; Vypiť <em>nepridáva kapacitu</em>, len nechá hráča pokračovať bez toho, aby súper reagoval.</dd><dt>Otázka</dt><dd>Je to zámer (Vypiť = ťah bez reakcie súpera za pečeň a poldeci)? Ak áno, prepísať „pridá ďalšie vyloženie“ na „nechá ťah pokračovať“ a klient má ukázať kapacitu reťaze.</dd></dl>
+    </li>
+    <li data-oblast="nejasne">
+      <h3><span class="cislo-z">12.</span> Šofér na Kostole a pri zákaze NA EX</h3>
+      <div class="znacky"><span class="znacka otazka">nejasné pravidlo (otázka)</span><span class="znacka ">Eva (5, 6)</span><span class="znacka otazka">nepotvrdené</span></div>
+      <dl class="polozka"><dt>Stalo sa</dt><dd>Eva: v K4 na Kostole (NA EX sa dať nedá) sa Šoférova Pecka podľa odhadu neprejavila (8 : 0 pre ňu).</dd><dt>Kód</dt><dd><code>effects.ts:461</code>: bonus sa pripočíta, kým hráč NA EX nedal; na Kostole ho teda nikto dať nemôže a bonus platí vždy. Pozorovanie Evy sa mi nepodarilo overiť (Vilo mal v K4 Absťák; log neukazuje rozpis).</dd><dt>Otázka</dt><dd>Má Šofér pôsobiť aj tam, kde NA EX dať nemožno (Kostol)? Dnes áno; ak nie, treba výnimku.</dd></dl>
+    </li>
+    <li data-oblast="nejasne">
+      <h3><span class="cislo-z">13.</span> Povinné Pohoršenie a poradie</h3>
+      <div class="znacky"><span class="znacka otazka">nejasné pravidlo (otázka)</span><span class="znacka ">Eva (5, 6), Jano (N4)</span><span class="znacka zhoda">spája sa s č. 9</span></div>
+      <dl class="polozka"><dt>Stalo sa</dt><dd>V MOŽNÝCH ŤAHOCH nie je „preskočiť“; Pohoršenie k sebe dáva súperovi strach-špaky, ak vyhrá, takže povinnosť môže škodiť.</dd><dt>Otázka</dt><dd>Má byť Pohoršenie voliteľné a majú ho obaja vyberať naraz (návrh 4)? Dnes sa za druhého hráča rozhoduje s plnou informáciou.</dd></dl>
+    </li>
+    <li data-oblast="nejasne">
+      <h3><span class="cislo-z">14.</span> Úroveň lokality nezaručuje počet Pitiek</h3>
+      <div class="znacky"><span class="znacka otazka">nejasné pravidlo (otázka)</span><span class="znacka ">Eva, Fero</span><span class="znacka potvrdene">správanie zodpovedá §7</span></div>
+      <dl class="polozka"><dt>Stalo sa</dt><dd>P3 (Eva): Pitky 1, 1, 2, 2, 2, 2 — úroveň 3 (Kostol, Kultúrny dom) mala len 2; P1 (Fero): úroveň 2 (Benzínka) 3 Pitky, úroveň 3 (Obecný úrad) 2. Eva: kto zacpe slot 1 vlastnou kartou, udrží Pitky na 1–2, hrany úrovne 3 sú „papierové“.</dd><dt>Rozbor</dt><dd>§7: Pitiek je 1 + menší z počtov aktivovaných akcií hrán na dvoch stranách; úroveň je strop, nie záruka. Hra je správna.</dd><dt>Otázka</dt><dd>Je zámer, že úroveň je len strop a „zátka“ je legitímny ťah (rozhodnutie navyše), alebo má úroveň určovať aspoň minimum?</dd></dl>
+    </li>
+  </ol>
+  <details class="omyly" id="omyly-ostatne">
+    <summary>Omyly hráčov a nepotvrdené nálezy (hra je správna)</summary>
+    <ul>
+      <li><strong>Robota „páli 1“ dvakrát na Obecnom úrade</strong> (Fero N5, Jano): kód <code>robotaPali()</code> dá <code>počet aktívnych Rôb × 2</code> a cyklus v <code>engine.ts:3901</code> páli po jednom a loguje „páli 1“ za každý Dlh; hráč s 2 Dlhmi o oba prišiel správne. Kozmetika logu, nie chyba.</li>
+      <li><strong>Zberný dvor: príkaz <code>vykup</code>, nie <code>kseft</code></strong> (Vilo N10, Eva 7): chyba zadania, nie hry; ťahák to uvádza správne (<code>tahak.md:85</code>). Kšeft Zberného dvora má vlastný príkaz, lebo si vyberá kartu.</li>
+      <li><strong>NA EX na Hasiča odmietnutý</strong> (Fero N4): po Janovom Miňištrantovi mal Hasič všetky akcie aktívne; §7 NA EX na takú kartu nedovolí.</li>
+      <li><strong>Niekoho stryná zahodila Dlh, nie Cirhózu</strong> (Šimon 4): Cirhóza bola v doberacom balíčku, text karty hovorí o ruke a odhadzovacom.</li>
+      <li><strong>Silná žena zdvojí aj Dlh a pečeň</strong> (Šimon 5): §16 hovorí „aktívne akcie“ — Dlh aj Pečeň sú akcie.</li>
+      <li><strong>Šenok „104 kariet“ vs. 86 druhov</strong> (Vilo N4): balíček obsahuje kópie.</li>
+      <li><strong>Mäsiar a Kulturista bez textu efektu</strong> (Vilo, Eva): sú to čisté varianty hrán, bez efektu.</li>
+      <li><strong>Pohoršenia z patronátu proti ostatným starším</strong> (Hela): §10 ich nezakazuje (len na patróna).</li>
+    </ul>
+  </details>
+</section>
+<section aria-labelledby="navrhy">
+  <h2 id="navrhy">Návrhy na strategickosť</h2>
+  <div class="zhrnutie" style="margin-top:0">
+    <p><strong>Zásady autora, podľa ktorých som návrhy posudzoval.</strong> (1) Žiadne umelé stropy a limity (CLAUDE.md). (2) Špaky za strach majú odmeniť víťaza, ktorý prekonal presilu — starší, ktorý sa bojí víťaza, prejavoval priazeň porazenému. <strong>Už rozhodnuté:</strong> vo finále útočí zaostávajúci; odstupné za cigarety je len nápad do roadmapy; N1 „prevzatý strach“ je zamietnutý. Turnus bežal na §14b, kde ešte útočí vedúci, takže rozhodnutie o finále neoveril.</p>
+    <p>Poradie je podľa toho, koľko zručnosti návrh pridá. Návrhy, ktoré sú v napätí so zásadami, sú zvlášť v poslednej tabuľke — pri každom je alternatíva bez stropu.</p>
+  </div>
+  <ol class="karty" id="navrhy-zoznam" style="margin-top:14px">
+    <li>
+      <h3><span class="cislo-z">1.</span> Cena protihry pre porazeného: cigarety → vrátiť marker, znížiť prebytok</h3>
+      <div class="znacky"><span class="znacka zhoda">4 hráči</span><span class="znacka ">Eva (1), Vilo (1), Hela (3), Šimon (4)</span><span class="znacka vysoka">pridáva veľa zručnosti</span><span class="znacka stredna">náročnosť stredná</span><span class="znacka riesene">časť v roadmape (Odstupné)</span></div>
+      <dl class="polozka"><dt>Problém</dt><dd>44 z 52 špakov Vila vzišlo zo strachu a prebytku, 8 z bitiek; porazený nemá výdavok, ktorý by to zastavil („porazený nemá čo plánovať“, Eva). Cigarety nemajú účel mimo kariet a Kapybary (Vilo 13, Šimon 15 nevyužitých).</dd><dt>Návrh</dt><dd>Pred výplatou strachu (krok 4b) a prebytku do špakov (finále, Kultúrny dom) smie hráč, proti ktorému sa počíta, zaplatiť: 2 cigarety = vrátiť jeden marker o pole k stredu (Eva: dvojnásobok za červenú), alebo 2 cigarety = −1 bod prebytku (Odstupné z N3A). Kurz 2 cigarety = 1 krok už platí pri Kšefte Predsedovej vily.</dd><dt>Prečo zručnosť</dt><dd>Cigarety sa menia na plán: kedy šetriť na obranu a kedy kupovať karty (Fero: cigareta v šenku 0,3–1 špaku), komu strach zrušiť. Porazený dostane nástroj na dohru bez toho, aby sa vedúcemu niečo vzalo.</dd><dt>Cena</dt><dd>Nový krok v bitke, UI a bot. Riziko: cigarety skončili u víťaza v 2 z 3 partií (15 : 1, 13 : 5), takže protihra by posilnila bohatšieho.</dd><dt>Overiť</dt><dd>Bot (<code>tools/bot/strategickost.ts</code>): rozdiel skóre a stomp; playtest: koľko cigariet porazený zaplatí, podiel strachu a prebytku (cieľ pod 40 %).</dd></dl>
+      <p class="posudenie"><strong>Moje posúdenie.</strong> Najbližšie k zásade „cena, nie strop“ a nekoliduje so žiadnou kartou. Výsledok presunie k rozhodnutiam len vtedy, keď cigarety zostanú u dobiehajúceho — preto najprv zmerať, kam v strednej hre tečú (v v6.1 hromadil porazený, vo v7 dvakrát víťaz).</p>
+    </li>
+    <li>
+      <h3><span class="cislo-z">2.</span> Cirhóza: oprava za zdroje a viditeľná cena pri položení karty</h3>
+      <div class="znacky"><span class="znacka zhoda">5 hráčov</span><span class="znacka ">Jano (2), Fero (4), Hela (1), Šimon (3), Eva</span><span class="znacka vysoka">pridáva veľa zručnosti</span><span class="znacka stredna">náročnosť malá až stredná</span></div>
+      <dl class="polozka"><dt>Problém</dt><dd>Cirhóza stála −10, −10, −15, −5 (spolu −40) a rozhodla P2; nepriznaná v odhadzovacom balíčku alebo vzniknutá v poslednej Pitke sa nedá napraviť. Jano si 4 Cirhózy spôsobil Pijanom bez prepočtu 3 Pitiek.</dd><dt>Návrh</dt><dd>(a) Kšeft „Lekár“ / Odpustky: 2 cigarety (+1 za každú ďalšiu v kole) → vybrať nepriznanú Cirhózu z odhadzovacieho balíčka a zahodiť ju. Musí fungovať aj po poslednej Pitke — napr. na začiatku bitky ako dnešný Kar (§9.0, zahodiť nepriznanú Cirhózu z ruky), inak by Šimonov prípad nevyriešil. (b) Pri <code>place</code> ukázať pečeň × zostávajúce Pitky (VÝHĽAD PITKY to dnes ukazuje až v Zhromaždení).</dd><dt>Prečo zručnosť</dt><dd>Z lotérie „−5, nič nenarobím“ sa stane plánovanie: kto počíta pečeň, platí menej. Zachová sa trest za chybu (Jano) aj ťah na súpera (Šimonov Oslávenec).</dd><dt>Cena</dt><dd>Nový Kšeft/akcia a text; cigarety dostanú sink. Riziko: oslabí trest pečeňových kariet.</dd><dt>Overiť</dt><dd>Počet nepriznaných Cirhóz na konci (cieľ ≤ 1 na hráča), koľko cigariet hráči za opravu dali.</dd></dl>
+      <p class="posudenie"><strong>Moje posúdenie.</strong> Mechanika existuje (Kar na lokalite), takže ide o rozšírenie, nie o nové pravidlo. Presunie výsledok od náhody k rozhodnutiam, lebo oprava stojí zdroje, ktoré hráč plánuje; Helin variant „−2 za Cirhózu v balíčku“ a Šimonov „−5 len pre ruku“ sú zľavy — pozri tabuľku v napätí so zásadami.</p>
+    </li>
+    <li>
+      <h3><span class="cislo-z">3.</span> Dohadzovačka za cenu a s možnosťou odpovede</h3>
+      <div class="znacky"><span class="znacka zhoda">4 hráči</span><span class="znacka ">Vilo (4), Šimon (1), Eva (6), Hela (5)</span><span class="znacka vysoka">pridáva veľa zručnosti</span><span class="znacka stredna">náročnosť malá až stredná</span></div>
+      <dl class="polozka"><dt>Problém</dt><dd>Jedna karta mení ±6 tuhých (P3 K4: 8 : 0, K5: 14 : 3; P2 K4: +3; P1 K6: +2) a nemá protihru — Eva: „proti Dohadzovačke nemám protiťah“. Zároveň je to jediný plán, ktorý robí z politiky dlhodobú hru (Šimon, Jano, Eva ju chvália).</dd><dt>Návrh</dt><dd>Z Nástupu na Kšeft: „za 3 cigarety vymeň dvom starším scorecardy, raz za Pitku“ (Vilo). Súper môže vymeniť späť za svoje 3 cigarety. Karta ostane silná, ale zaplatí sa a dá sa odpovedať.</dd><dt>Prečo zručnosť</dt><dd>Súper vie hrozbu čítať (viem, že má 3 cigarety) a držať červené markery inak; cigarety dostanú účel; plán na viac kôl ostane.</dd><dt>Cena</dt><dd>Zmena textu a Kšeftu, bot musí hodnotiť kartu inak (<code>bot.ts</code>). Riziko: karta sa stane v šenku zbytočnou pre chudobného.</dd><dt>Overiť</dt><dd>Podiel bitiek, ktoré Dohadzovačka rozhodla; koľkokrát hráč zaplatil a koľkokrát súper vymenil späť.</dd></dl>
+      <p class="posudenie"><strong>Moje posúdenie.</strong> Vilov variant je cena, nie zákaz, a zapadá do zásady. Šimonove „nie na červený marker“ a „len do konca bitky“ sú naopak obmedzenia, ktoré by zrušili práve ten plán, ktorý hráči chvália. Nekoliduje s inou kartou (Kšeft je nový mechanizmus v7).</p>
+    </li>
+    <li>
+      <h3><span class="cislo-z">4.</span> Poradie a posledné slovo: Pohoršenia naraz skryto, odpoveď na NA EX za cenu</h3>
+      <div class="znacky"><span class="znacka ">Jano (1, 4); opačný smer Eva (3)</span><span class="znacka stredna">pridáva strednú zručnosť</span><span class="znacka stredna">náročnosť stredná</span></div>
+      <dl class="polozka"><dt>Problém</dt><dd>Druhý v poradí vždy vie, čo má robiť (P1 K4: 12 : 13 namiesto 13 : 13); odpoveď na NA EX je zadarmo a s posledným slovom (P1 K2: moje NA EX na Mäsiara 3 : 2 → Ferova Kulturista 3 : 7).</dd><dt>Návrh</dt><dd>(a) Obaja vyberú Pohoršenia skryto a naraz, vyhodnotia sa spolu. (b) Odpoveď na NA EX stojí 1 cigaretu (alebo sa hrá skryto).</dd><dt>Prečo zručnosť</dt><dd>Blafovanie a čítanie súpera namiesto prednosti poradia; NA EX prestane byť „dar“ pre protihráča.</dd><dt>Cena</dt><dd>Pohoršenia menia tuhé hneď (Bitkár), takže súčasné vyhodnotenie je zložitejšie; UI a bot.</dd><dt>Overiť</dt><dd>Podiel bitiek, kde druhý v poradí zmenil víťaza.</dd></dl>
+      <p class="posudenie"><strong>Moje posúdenie.</strong> Pozor: posledné slovo útočníka je dnes hlavný dobiehací nástroj (9 z 12 bitiek v minulom turnuse, podľa stomp-v6) a jeho zrušenie by snehovú guľu zosilnilo. Preto (a) áno, (b) len ako cena, nie zákaz. Eva (3) ide opačným smerom a útočníkovi by pridala; neodporúčam.</p>
+    </li>
+    <li>
+      <h3><span class="cislo-z">5.</span> Jednotný kurz cigarety ↔ špaky: Kapybara, výkupné, Odstupné</h3>
+      <div class="znacky"><span class="znacka ">Vilo (3), Šimon (7); Eva a Hela ju chvália</span><span class="znacka stredna">pridáva strednú zručnosť</span><span class="znacka nizka">náročnosť malá</span></div>
+      <dl class="polozka"><dt>Problém</dt><dd>Kapybara: 2 cigarety = −1 špak súperovi (použitá 8×: Hela −5 Šimonovi, Eva −3 Vilovi), výkupné 5 : 1, Odstupné 2 : 1 — tri rôzne kurzy.</dd><dt>Návrh</dt><dd>Rozhodnúť zamýšľaný kurz. Kapybara s rastúcou cenou (2, 3, 4… pre oboch ako Dedičstvo, Vilo) alebo 4 cigarety (Šimon).</dd><dt>Prečo zručnosť</dt><dd>Konverzia cigariet na špaky by bola rozhodnutie (kedy a koľkokrát), nie automat.</dd><dt>Cena</dt><dd>Zmena čísla; riziko oslabenia jedinej protihry.</dd><dt>Overiť</dt><dd>Počet použití Kapybary a kto ju používa.</dd></dl>
+      <p class="posudenie"><strong>Moje posúdenie.</strong> Pozor: Kapybaru používal v oboch partiách <em>porazený</em> (Hela, Eva) a bola to jediná protihra proti strachu a prebytku, akú hra dnes má. Slepé zdražovanie by dobiehanie zhoršilo; dáva zmysel až spolu s návrhom 1.</p>
+    </li>
+    <li>
+      <h3><span class="cislo-z">6.</span> Obranca ponúkne dve lokality, útočník vyberie</h3>
+      <div class="znacky"><span class="znacka ">Eva (2)</span><span class="znacka nizka">pridáva menej zručnosti</span><span class="znacka stredna">náročnosť stredná</span></div>
+      <dl class="polozka"><dt>Problém</dt><dd>Eva (obranca) zvolila Kultúrny dom a stratila 22 špakov; víťaz kola má dnes celú kontrolu nad lokalitou.</dd><dt>Návrh</dt><dd>Obranca natočí dve lokality, útočník (porazený) si jednu zvolí.</dd><dt>Prečo zručnosť</dt><dd>Čítanie súpera, „čo ti dám“; zmenšuje prednosť víťaza.</dd><dt>Cena</dt><dd>Jeden krok navyše; slabšie, keď sa rozhodnutie o finále (útočí zaostávajúci) premietne do výberu lokality.</dd><dt>Overiť</dt><dd>Ako často útočník zvolí druhú lokalitu.</dd></dl>
+      <p class="posudenie"><strong>Moje posúdenie.</strong> Evina chyba ukazuje, že voľba lokality už teraz má zuby (to je zručnosť). Návrh by dal dobiehajúcemu kus kontroly, ale počkal by som na výsledok rozhodnutia o finále.</p>
+    </li>
+    <li>
+      <h3><span class="cislo-z">7.</span> Dlh ako záväzok: splatenie za cigarety a váha na konci</h3>
+      <div class="znacky"><span class="znacka ">Fero (1), Šimon (5)</span><span class="znacka nizka">pridáva menej zručnosti</span><span class="znacka stredna">náročnosť stredná</span></div>
+      <dl class="polozka"><dt>Problém</dt><dd>Dlh nič nestojí: Fero 6 z 7 priznaných bez trestu, Exekútor sa spustil 1× z 18 bitiek (Evin prípad s priazňou Exekútora, prah 5).</dd><dt>Návrh</dt><dd>Splatenie Dlhu za 3 cigarety a −1 špak za priznaný Dlh na konci (Fero), alebo Robota/Kmotor odstránia najviac 1 Dlh a Kmotor Dlh presunie (Šimon, prah 5).</dd><dt>Prečo zručnosť</dt><dd>Dlh by bol plán (požičať si cez Jednotu/Vymáhača a splatiť), nie žetón.</dd><dt>Cena</dt><dd>Riadok v bodovaní a prepočet Vymáhača, Jednoty, Herne.</dd><dt>Overiť</dt><dd>Koľko Dlhov hráči držia pri finále (dnes 6, 5 a 4).</dd></dl>
+      <p class="posudenie"><strong>Moje posúdenie.</strong> Trest na konci hry by zasiahol aj porazeného (Herňa už dnes dáva víťazovi špaky za jeho Dlhy), čo by stomp mierne zväčšilo. Vzal by som to až po rozhodnutí o návrhu 1.</p>
+    </li>
+  </ol>
+
+  <h3>Ďalšie, menšie návrhy</h3>
+  <table class="temy">
+    <thead><tr><th>Návrh (kto)</th><th>Moje posúdenie</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Ukázať vlastné náklady pred položením: pečeň × Pitky, zdvojený Dlh (Jano 2, Hela, Šimon, Eva 5)</th><td>Znižuje „slepé“ chyby (Jano −20, Eva −3 −3), no priamo nepridáva zručnosť; čítať, čo súper priloží na koniec línie, je samo zručnosť (Jano: „strategické jadro“), preto len vlastné náklady, nie čo urobí súper. Už z časti rieši VÝHĽAD PITKY.</td></tr>
+      <tr><th scope="row">„Odpad“: zahodiť mŕtvu kartu za 1 cigaretu a vtiahnuť novú (Fero 6)</th><td>Miňištrant bol „mŕtva štartovná karta“ u 5 z 6 hráčov. Cena = cigareta (sink bez stropu). Prekrýva sa so Smetiarkou a Zberným dvorom; malá náročnosť.</td></tr>
+      <tr><th scope="row">Klebetnica: obojsmerná (Vilo 6) alebo len proti balíčku s ≥ 5 kartami (Eva 4)</th><td>Pri 1-kartovom balíčku sa „naspodok“ rovná „hneď ďalšia“ (P3 K3, P1 K5 — Veterán a Dohadzovačka sa vrátili vzápätí). Jednoduchšie je zmeniť text na „vráť na spodok a zamiešaj iba pri ≥ N kartách“ než pridať druhú stranu.</td></tr>
+      <tr><th scope="row">Prevaha: Dvojčatá zaberú 2 limity (Eva 4), počítať prevahu po odkrytí Pitky (Vilo 5)</th><td>Dvojčatá rozhodli prevahu 3 kolá po sebe (P3). Cena (2 limity) je v súlade so zásadou; Vilov návrh mení jadro prevahy a neodporúčam ho bez merania.</td></tr>
+      <tr><th scope="row">Hasič: vybrať z troch kariet (Jano ďalšie 4)</th><td>Pridáva výber namiesto náhody; priamo zasahuje do karty, ktorá bola v tomto turnuse „silná“ (Fero, Jano, Šimon). Malá.</td></tr>
+      <tr><th scope="row">Prvý ťah vo finále obrancovi (Šimon 6)</th><td>Kryté rozhodnutím autora (vo finále útočí zaostávajúci); Šimon správne píše, že „prvý ťah je v praxi výhoda“.</td></tr>
+      <tr><th scope="row">Dokumentácia: napísať pravidlo hromadného ťahu (Šimon 8)</th><td>Hra to rieši (§13: limit klesne o 1); treba len zrozumiteľnejšie slovo (č. 11 v nezrovnalostiach).</td></tr>
+    </tbody>
+  </table>
+
+  <h3>V napätí so zásadami autora a alternatíva bez stropu</h3>
+  <table class="temy stropy-tab">
+    <thead><tr><th>Návrh hráčov</th><th>Prečo v napätí</th><th>Alternatíva bez stropu</th></tr></thead>
+    <tbody>
+      <tr><th scope="row"><b>Strach platí raz za posun do zóny</b>, potom zamknutý (Fero 2, Jano 3, Šimon 2, Hela 3, Vilo 2, Eva 7 — všetci šiesti)</th><td>Je to strop na počet výplat (po zaplatení „zamknutá zóna“), a mení význam strachu: starší už neplatí víťazovi za to, že prekonal presilu v každej bitke, ale len raz. Je to N4 zo stomp-v6, ktorý Navrhár neodporúčal: na botoch v strednej hre zhoršil snehovú guľu (vedúci po 2. bitke 62 → 65 %).</td><td>Návrh 1 (cigarety kupujú protihru) rieši tú istú bolesť cenou. Vlastný nápad, nemeraný: cigarety za prebytok (dnes 1 na staršieho) škálovať zónou 1/2/3 — kto staví strach prebytkom až do červenej, dá porazenému viac cigariet, čiže „presilu“ si víťaz zaplatí.</td></tr>
+      <tr><th scope="row">Prebytok vo finále polovica (Jano 7)</th><td>Je to zľava (N3B „kurz 2 : 1“), bez rozhodnutia a bez výstupu pre cigarety; Navrhár: samo skôr zakonzervuje vedenie.</td><td>Odstupné za cigarety (návrh 1): prebytok zníži ten, kto má čím zaplatiť — rozhodnutie, nie koeficient.</td></tr>
+      <tr><th scope="row">Cirhóza v balíčku len −2 (Hela 1); −5 len pre Cirhózu v ruke (Šimon 3)</th><td>Umelá zľava podľa miesta karty; zruší trest práve tam, kde sa dá hráč najlepšie pokaziť (balíček).</td><td>Lekár / Odpustky za cigarety (návrh 2).</td></tr>
+      <tr><th scope="row">Pohoršenia z patronátu smie súper použiť len k stredu (Fero 3)</th><td>Obmedzenie použitia; zruší cenu patronátu (súper dostane strachovú príležitosť), ktorú §10 zámerne vytvára.</td><td>Cena patronátu podľa zóny (Šimon 4: červená 3 cigarety, žltá lacnejšia) — úprava ceny, nie pravidla použitia.</td></tr>
+      <tr><th scope="row">Dohadzovačka „nie na červený marker“ / „len do konca bitky“ / „len dvaja bez markerov na červenej“ (Šimon 1, Hela 5, Eva 6)</th><td>Obmedzenia, ktoré zrušia plán, ktorý hráči chvália.</td><td>Kšeft za 3 cigarety s odpoveďou súpera (návrh 3).</td></tr>
+      <tr><th scope="row">Útočník dostane +2 cigarety na začiatku kola (Hela 4)</th><td>Dar bez výkonu; cigarety v tomto turnuse nechýbali (víťaz 15, 13).</td><td>Návrh 1; ak porazený cigarety nemá, nedostane sa k dobiehaniu ani tak.</td></tr>
+      <tr><th scope="row">Pas len za nevyužitý limit (Jano ďalšie 1); obranca berie prvú kartu zadarmo (Jano ďalšie 2)</th><td>Zmena sadzby, resp. dar obrancovi; nepridávajú rozhodnutie.</td><td>Nechať; pas už od v6.1 platí za karty v ruke.</td></tr>
+      <tr><th scope="row">NA EX nie na kartu s aktívnou akciou od súperovho spoja (Eva 5)</th><td>Zasahuje do jadra §7 a zbavuje súpera práve tých „mín“, ktoré hráči označili za hĺbku.</td><td>Varovanie pri vlastnom položení (zlúčené v tabuľke vyššie, riadok 1).</td></tr>
+    </tbody>
+  </table>
+</section>
+<section aria-labelledby="dobre">
+  <h2 id="dobre">Čo bolo dobré</h2>
+  <ul class="dobre">
+    <li><strong>Výsledok bitky sa dá vopred vypočítať.</strong> <span class="kto">Jano, Šimon, Hela, Fero, Eva</span> — približne 56 prepočítaných bitiek sedelo na bod (Šimon 15, Fero 12, Jano 12, Hela 12, Eva 5); výnimky boli len Šofér po NA EX (chyba hry) a skrytá ruka súpera. Jano: <q>Áno, výborne — a to je najlepšia vec v v7</q>; čitateľnosť lámu len tri informácie (posledné slovo, poradie Pohoršení, skrytá ruka), nie výpočet.</li>
+    <li><strong>Interakcia: 9 od všetkých šiestich.</strong> <span class="kto">obaja</span> — podstrčené karty, NA EX na vlastné aj súperove, odpoveď, Dohadzovačka. Fero: podstrčenie je <q>najsilnejšia a najzábavnejšia mechanika partie</q>, Eva: <q>všetko je interakcia — najlepšia stránka hry</q>.</li>
+    <li><strong>Politika má váhu.</strong> <span class="kto">Šimon, Jano, Eva</span> — K5 štyri Pohoršenia dali 9 špakov, Dohadzovačka +3 tuhé jednou kartou; Šimon: <q>Politika je dnes najsilnejšia os hry</q>. Plánovať sa dá o kolo dopredu a rozdelenie prebytku je skutočné rozhodnutie (Eva).</li>
+    <li><strong>Úrovne lokalít a voľba cieľa.</strong> <span class="kto">Eva, Šimon, Fero</span> — už v K1 vidno šesť lokalít úrovne 2 s hranami (Eva: <q>viem, kam smerujem</q>), výber z 4–5 ponúk dáva hĺbku (Fero), Šimon K5 Kostolom vypol hrozbu NA EX a dostal 9 špakov. Voľba lokality rozhodla bitku aj partiu (Evin Kultúrny dom).</li>
+    <li><strong>Dobiehanie v bitkách funguje.</strong> <span class="kto">Fero, Vilo, Šimon</span> — Fero z 2 : 9 na 17 : 9 (po chybe v K3 vyhral K4 aj K5), Vilo po K4 (5 : 6) na 28 : 2; porazený berie šenok prvý a dostáva cigarety za prebytok. Šimon: <q>dobiehanie je zabudované</q>. Problém je veľkosť výhry po dobehnutí, nie dobiehanie.</li>
+    <li><strong>Ekonomika v7 dáva rozhodnutia.</strong> <span class="kto">Fero, Jano, Šimon, Hela</span> — šenok je <q>najsilnejší ekonomický ťah</q> (Fero), rastúca cena fajčenia premenila automat na úvahu (Jano), Kšefty sú jednoduché (Jano: Jednota <q>jednoduchý, dobrý ťah</q>; Šimon: Oslávenec <q>výborný</q>), vdova je vyčísliteľný hazard (Hela), D6 urobil Dlhové akcie užitočné (Fero).</li>
+  </ul>
+</section>
+<section aria-labelledby="zlepsit">
+  <h2 id="zlepsit">Čo treba ešte zlepšiť</h2>
+  <p class="podklady">Postrehy mimo návrhov na strategickosť a nezrovnalostí, zoradené podľa prínosu.</p>
+  <div class="filter" data-ciel="zlepsit-zoznam" hidden role="group" aria-label="Filter podľa oblasti">
+    <button type="button" data-f="vsetko" aria-pressed="true">Všetko</button>
+    <button type="button" data-f="balans" aria-pressed="false">Pravidlá a balans</button>
+    <button type="button" data-f="karty" aria-pressed="false">Karty</button>
+    <button type="button" data-f="chyba" aria-pressed="false">Chyba v hre</button>
+    <button type="button" data-f="zrozumitelnost" aria-pressed="false">Zrozumiteľnosť pravidiel</button>
+  </div>
+  <p class="filter-info" aria-live="polite"></p>
+  <ol class="karty" id="zlepsit-zoznam">
+    <li data-oblast="balans">
+      <h3><span class="cislo-z">1.</span> Koniec partie rozhoduje jedna bitka (strach + prebytok 1 : 1)</h3>
+      <div class="znacky"><span class="znacka oblast">pravidlá a balans</span><span class="znacka ">všetci šiesti</span><span class="znacka stredna">náročnosť stredná</span></div>
+      <dl class="polozka"><dt>Čo je zle</dt><dd>K5 + finále dali Vilovi 43 z 55 špakov (78 %), Ferovi 25 z 35; rozdiely 34 a 52. Eva: <q>po 2 : 28 ešte 60 minút predstieraného finále</q>; napätie 5,2.</dd><dt>Návrh</dt><dd>Cena protihry pre porazeného (návrh 1) a pozri sekciu Prečo stomp; rozhodnutie o finále (útočí zaostávajúci) tu zatiaľ neplatí.</dd></dl>
+    </li>
+    <li data-oblast="balans">
+      <h3><span class="cislo-z">2.</span> Cirhóza nemá nápravu</h3>
+      <div class="znacky"><span class="znacka oblast">pravidlá a balans</span><span class="znacka ">Jano, Šimon, Hela, Fero, Eva</span><span class="znacka nizka">náročnosť malá</span></div>
+      <dl class="polozka"><dt>Čo je zle</dt><dd>−10, −10, −15, −5; v P2 prehrala Hela napriek výhre vo finále, pretože Cirhóza vznikla v poslednej Pitke.</dd><dt>Návrh</dt><dd>Návrh 2: Lekár / Odpustky za cigarety, funkčné aj po poslednej Pitke; pečeň × Pitky viditeľná pri položení.</dd></dl>
+    </li>
+    <li data-oblast="zrozumitelnost">
+      <h3><span class="cislo-z">3.</span> Zastarané texty kariet a okno finále</h3>
+      <div class="znacky"><span class="znacka oblast">zrozumiteľnosť pravidiel</span><span class="znacka ">všetci šiesti</span><span class="znacka nizka">náročnosť malá</span></div>
+      <dl class="polozka"><dt>Čo je zle</dt><dd>Policajtka, Svokra, Hasič majú v sade text z v6; Janov patronát podľa nich stál 6 špakov. Okno pred finále učí v6. Potvrdené v <code>cards.json</code> a <code>HernaPlocha.tsx</code> (nezrovnalosti 4, 5).</dd><dt>Návrh</dt><dd>Doplniť texty do <code>tools/sada-v7/generuj.ts</code> a regenerovať; opraviť okno.</dd></dl>
+    </li>
+    <li data-oblast="karty">
+      <h3><span class="cislo-z">4.</span> Dohadzovačka bez protihry</h3>
+      <div class="znacky"><span class="znacka oblast">karty</span><span class="znacka ">Vilo, Šimon, Eva, Hela</span><span class="znacka nizka">náročnosť malá</span></div>
+      <dl class="polozka"><dt>Čo je zle</dt><dd>±6 tuhých jednou kartou v troch partiách; Eva: nemá protiťah.</dd><dt>Návrh</dt><dd>Kšeft za 3 cigarety s možnosťou odpovede (návrh 3).</dd></dl>
+    </li>
+    <li data-oblast="balans">
+      <h3><span class="cislo-z">5.</span> Cigarety nemajú účel a kurzy sa nezhodujú</h3>
+      <div class="znacky"><span class="znacka oblast">pravidlá a balans</span><span class="znacka ">Vilo, Eva, Jano, Fero, Hela</span><span class="znacka stredna">náročnosť stredná</span></div>
+      <dl class="polozka"><dt>Čo je zle</dt><dd>Pas 2–3 cigarety za kolo, Fajčiar, prebytok; víťazi skončili s 15 a 13 cigaretami (P2, P3), v P1 s 5 a 6. Kapybara 2 : 1, výkupné 5 : 1, Odstupné 2 : 1. Fero: cigarety <q>ako samostatný zdroj hodnoty (výkupné 5 : 1) sú takmer bezcenné</q>, Eva: <q>nemajú sa na čo míňať okrem kariet</q>.</dd><dt>Návrh</dt><dd>Protihra za cigarety (návrh 1) a rozhodnutie o jednom kurze (návrh 5).</dd></dl>
+    </li>
+    <li data-oblast="balans">
+      <h3><span class="cislo-z">6.</span> Posledné slovo a poradie rozhodujú tesné bitky</h3>
+      <div class="znacky"><span class="znacka oblast">pravidlá a balans</span><span class="znacka ">Jano, Fero, Eva, Vilo</span><span class="znacka stredna">náročnosť stredná</span></div>
+      <dl class="polozka"><dt>Čo je zle</dt><dd>Odpoveď na NA EX je zadarmo a posledná (Jano: dať NA EX útočníkovi = darovať mu voľnú kartu); druhý v poradí Pohoršení vždy vie. Hráči sa nezhodujú, kto je zvýhodnený: Jano — útočník a posledný odpovedajúci; Eva — útočník je v Zhromaždení vždy o ťah pozadu, posledná karta je obrancova.</dd><dt>Návrh</dt><dd>Skryté naraz Pohoršenia, odpoveď za cigaretu (návrh 4); nezrušiť posledné slovo útočníka, je to dobiehací nástroj.</dd></dl>
+    </li>
+    <li data-oblast="karty">
+      <h3><span class="cislo-z">7.</span> Slabé a podmienkové karty</h3>
+      <div class="znacky"><span class="znacka oblast">karty</span><span class="znacka ">Fero, Jano, Hela, Vilo, Eva</span><span class="znacka nizka">náročnosť malá</span></div>
+      <dl class="polozka"><dt>Čo je zle</dt><dd>Miňištrant je slabý u 5 z 6 hráčov (Fero: 4 kolá v ruke bez použitia); Dievčina na vydaj (podmienka 4 Dlhy) u 4; Pijan (Jano −20 špakov), Svokra v Kostole (Hela), Noviny. Oslávenec: Vilo „2 pečene pod prahom nič nerobia“, Šimon „výborný“ — rozchod závisí od cudzej pečene.</dd><dt>Návrh</dt><dd>Miňištrant prerobiť alebo dať hráčom „Odpad“; Dievčine znížiť podmienku (pri prahu 7, Robote a Kmotorovi sa 4 Dlhy nedosiahnu); Oslávenec sledovať.</dd></dl>
+    </li>
+    <li data-oblast="balans">
+      <h3><span class="cislo-z">8.</span> Dlh bez zubov</h3>
+      <div class="znacky"><span class="znacka oblast">pravidlá a balans</span><span class="znacka ">Fero, Šimon, Jano</span><span class="znacka stredna">náročnosť stredná</span></div>
+      <dl class="polozka"><dt>Čo je zle</dt><dd>Fero 6 z 7 priznaných bez trestu, Exekútor 1× z 18 bitiek, Povera takmer nehrá. Fero: <q>Dlh nie je záväzok, je to žetón</q>.</dd><dt>Návrh</dt><dd>Návrh 7; najprv návrh 1.</dd></dl>
+    </li>
+    <li data-oblast="chyba">
+      <h3><span class="cislo-z">9.</span> ODHAD/HROZBA pri Šoférovi, štítok VZBURA, preklepy</h3>
+      <div class="znacky"><span class="znacka chyba">chyba v hre</span><span class="znacka ">Eva, Vilo, Hela</span><span class="znacka nizka">náročnosť malá</span></div>
+      <dl class="polozka"><dt>Čo je zle</dt><dd>Odhad ráta Šoféra po NA EX (Eva kvôli tomu zvolila horší ťah), HROZBA 6 : 6 vs. 4 : 6, VZBURA pri Posilnení + Odpor, log „berie na sekeru“.</dd><dt>Návrh</dt><dd>Pozri nezrovnalosti 1, 2, 3, 6 — súbory a opravy sú tam.</dd></dl>
+    </li>
+    <li data-oblast="karty">
+      <h3><span class="cislo-z">10.</span> Násobiče: Petelica ×2 na Chate, Hasič + Posilnenie, Dvojčatá</h3>
+      <div class="znacky"><span class="znacka oblast">karty</span><span class="znacka ">Jano, Hela, Eva, Šimon</span><span class="znacka stredna">náročnosť stredná</span></div>
+      <dl class="polozka"><dt>Čo je zle</dt><dd>Hasič + Posilnenie hrany 10–12 tuhých (Šimon finále 12, Hela Petelica ×4); Jano: <q>násobky robia výsledok obludný</q>; Dvojčatá rozhodli prevahu tri kolá po sebe (Eva: opakovateľný vzor).</dd><dt>Návrh</dt><dd>Sledovať v ďalšom turnuse; Dvojčatám dať cenu (2 limity, Eva 4). Žiadny strop na tuhé.</dd></dl>
+    </li>
+    <li data-oblast="zrozumitelnost">
+      <h3><span class="cislo-z">11.</span> Skryté náklady násobkov</h3>
+      <div class="znacky"><span class="znacka oblast">zrozumiteľnosť pravidiel</span><span class="znacka ">Eva, Šimon, Jano</span><span class="znacka nizka">náročnosť malá</span></div>
+      <dl class="polozka"><dt>Čo je zle</dt><dd>Silná zdvojí aj Dlh a pečeň (Šimon zadĺženie +3 za Pitku), NA EX na Svokru dal Eve 4 Dlhy a exekúciu, Pijan = Cirhóza v každej Pitke.</dd><dt>Návrh</dt><dd>Pri položení a pri NA EX ukázať náklad v hlavnom riadku (nie v dlhom texte).</dd></dl>
+    </li>
+    <li data-oblast="zrozumitelnost">
+      <h3><span class="cislo-z">12.</span> Pakt a Kšeft sa skoro nehrali</h3>
+      <div class="znacky"><span class="znacka oblast">zrozumiteľnosť pravidiel</span><span class="znacka ">Fero, Šimon, Hela, Eva</span><span class="znacka nizka">náročnosť malá</span></div>
+      <dl class="polozka"><dt>Čo je zle</dt><dd>Pakt sa zahral 3× (Vilo 2, Jano 1); Fero, Šimon, Hela, Eva ho nevideli; Eva ho zaradila medzi zbytočné. Z 10 Kšeftov sa použilo 5. Zberný dvor má príkaz <code>vykup</code>.</dd><dt>Návrh</dt><dd>Pridať Pakt do <code>moznosti</code>/ťaháku (chýba v 5 z 6) a overiť ho cielene v ďalšom turnuse (Posilnenie, Odpor, zrážka).</dd></dl>
+    </li>
+    <li data-oblast="balans">
+      <h3><span class="cislo-z">13.</span> Tempo: 60–73 minút</h3>
+      <div class="znacky"><span class="znacka oblast">pravidlá a balans</span><span class="znacka ">Fero, Šimon, Eva</span><span class="znacka vysoka">náročnosť veľká</span></div>
+      <dl class="polozka"><dt>Čo je zle</dt><dd>Partie trvali 60, 73 a 68 minút (minule 43–47), časť je zdržanie pádom klienta; tempo 5,7 (minule 6,3). K5 mala 4 Pitky a ~20 rozhodnutí.</dd><dt>Návrh</dt><dd>Sledovať po oprave klienta; ústup z rozhodnutého finále (N5 zo stomp-v6) by to skrátil.</dd></dl>
+    </li>
+  </ol>
+</section>
+<section aria-labelledby="zmeny-h" class="zmeny">
+  <h2 id="zmeny-h">Overenie nedávnych zmien</h2>
+  <p class="podklady">Zoznam implementovaných návrhov na overenie som od organizátora nedostal, preto tu chýba tabuľka verdiktov. <code>zmeny-pravidiel.html</code> končí pri v6.1 (v7 tam ešte nemá záznam), preto je najprv prehľad toho, čo turnus z v7 skúsil, potom zmeny v6.1 a v6.</p>
+
+  <h3>Ako funguje v7 — čo sa vyskúšalo a čo nie</h3>
+  <table class="temy">
+    <thead><tr><th>Novinka v7</th><th>Vyskúšané?</th><th>Čo ukázali partie</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Lokality podľa úrovní (1·2·2·3·3·P)</th><td>áno, 9 z 19 lokalít</td><td>Jednota, Ihrisko, Benzínka, Most, Zberný dvor, Sklad, Obecný úrad, Kostol (3×), Kultúrny dom. Rozpis čitateľný od K1 (Eva), výber z 4–5 ponúk (Fero). Úroveň je strop, nie záruka Pitiek (P1: 3 Pitky na úr. 2, 2 na úr. 3; P3: 1, 1, 2, 2, 2, 2) — otázka 14. Nehrané: Zastávka, Lesná cesta, Cintorín, Kar, Krčma, Vínna pivnica, Družstvo, Predsedova vila, Herňa.</td></tr>
+      <tr><th scope="row">Finále na pinnacle lokalite</th><td>áno, 3×</td><td>Vždy Poľovnícka chata (zvolil obranca s menej špakmi). Furt zdvojil Rana/Pecka/Petelica z hrán: prebytok Fero 6, Vilo 11, Hasič + Posilnenie = Petelica ×4 (Hela). Predsedova vila a Herňa sa nevybrali. Vedúci útočil a vyhral hru 3 z 3, bitku 2 z 3.</td></tr>
+      <tr><th scope="row">Pakt</th><td>čiastočne, 3 zahrania</td><td>Vilo: Dohadzovačka → Viera (+2), Živnostník → Poškodenie pečene (+2); Jano: Dohadzovačka → Pecka. Správanie sedí s §2. Nevyskúšané: Pakt vedľa Posilnenia, Odporu, pri zrážke, Pakt + Pakt.</td></tr>
+      <tr><th scope="row">Kšefty</th><td>áno, 5 z 10</td><td>Kapybara (8×), Oslávenec (3×), Jednota (Jano 1×, Vilo viackrát), Smetiarka (2×), Zberný dvor (3×). Nie: Strýko z Ameriky, Sklad (Vilo ho zvolil a zabudol), Predsedova vila; Starosta a Poštárka v podkladoch nie sú.</td></tr>
+      <tr><th scope="row">D6 + prah Exekútora 7</th><td>áno</td><td>Zadĺženie ostáva na účte (Fero, Vilo, Hela); Dlhy vznikajú (Fero 6 priznaných, Hela 5); Exekútor sa spustil 1× z 18 bitiek (P3 K5, Evin prah 5 vďaka priazni: −3 Dlhy, −3 špaky). Robota, Kmotor, Vdova, Stryná, Dievčina čistili Dlhy. Tlak na hráča je malý.</td></tr>
+      <tr><th scope="row">Výkupné</th><td>áno</td><td>+1/+2 (P1), +4/+2 (P2), +3/+3 (P3). Nerozhodlo žiadnu partiu; Kapybara je 2,5× lacnejšia premena cigariet na špaky.</td></tr>
+      <tr><th scope="row">Rastúca cena fajčenia (1, 2, 3…)</th><td>áno</td><td>Najviac 1 + 2 v jednej Pitke (Jano, Eva), 3. nik. Jano: z automatu na úvahu; Hela a Šimon ju necítili; Eva: posilnila bohatého.</td></tr>
+      <tr><th scope="row">Dobratie po bitke 1 karta</th><td>áno</td><td>Ruka Hela 1–3, Vilo 7–9; karty prichádzajú zo šenku a fajčenia (2 karty za 3 cigarety), nie z dobratia.</td></tr>
+      <tr><th scope="row">Strach len víťazovi</th><td>áno</td><td>Porazený za starších nič (okrem sekery v K1). Podiel 40–54 % špakov víťaza — sekcia Prečo stomp.</td></tr>
+      <tr><th scope="row">Nové a prerobené karty</th><td>áno</td><td>Dohadzovačka (4×) a Kapybara (8×) rozhodujú; Klebetnica (3×) pri malom balíčku nič nezakopáva; Hasič, Šofér, Vymáhač (P1, P2), Dvojčatá, Finančná poradkyňa, Vdova, Oslávenec fungovali podľa §16.</td></tr>
+    </tbody>
+  </table>
+
+  <details>
+    <summary>Pravidlá v6.1: strach len víťazovi, patronát 1/2/3 cigarety, pas za karty v ruke, Odpor a zrážka <span>(čo sledovať: podiel strachu, snehová guľa, patronát po červenej, hromadenie cigariet, „zrušená Odporom“)</span></summary>
+    <ul>
+      <li><strong>Podiel strachu:</strong> v strednej hre 40–54 % špakov víťaza (v krátkej hre 22 %); porazený za starších 0. Snehová guľa sa presunula na posledné dve bitky (71–78 %).</li>
+      <li><strong>Patronát:</strong> použili ho 2 hráči (Hela v K3 na červenú, Jano v K5 na červenú); Hela vyhrala 9 : 1, no Šimon jej 3 Pohoršeniami z patronátu vrátil markery (strach 0); Jano prehral 6 : 11, stratil poldeci a 5 špakov (Ferove posuny). Eva a Šimon: „vždy nie“, lebo súper dostane Pohoršenia.</li>
+      <li><strong>Pas za karty v ruke:</strong> pas dal 2–3 cigarety za kolo; víťazi skončili s 15 a 13 cigaretami (P2, P3) — porazený ich nehromadil, ako v minulom turnuse.</li>
+      <li><strong>Odpor a zrážka:</strong> zrážka sa nehrala ani raz z 18 bitiek. „Zrušená Odporom“ sa využila (Vilo, Eva: akcie zrušené alebo aktívne = žiadny cieľ NA EX, spolocne-7); štítok VZBURA pri Posilnení + Odpor je chyba označenia.</li>
+    </ul>
+  </details>
+  <details>
+    <summary>Pravidlá v6 „Špaky“: špaky za bitky, strach, finále, Cirhóza −5 <span>(čo sledovať: podiel strachu a prebytku, snehová guľa, nepriznané Cirhózy)</span></summary>
+    <ul>
+      <li>Prebytok sa mení na špaky na Kultúrnom dome a vo finále: Vilo 11 + 11, Fero 6, Hela 2 (30 špakov z 3 partií). Snehová guľa ostala, jej motor je veľkosť poslednej bitky.</li>
+      <li>Nepriznaná Cirhóza stála −40 spolu (−10, −10, −15, −5), v P2 rozhodla partiu. Priznanie sa stihlo len čiastočne (Jano 2 z 4, Šimon Pohreb v K5).</li>
+    </ul>
+  </details>
+  <details>
+    <summary>Remíza na sekeru, verejný dlh <span>(čo sledovať: zámerná remíza, Exekútor, priznané Dlhy)</span></summary>
+    <ul>
+      <li>Sekera padla 2× z 18 bitiek (P2 K1 4 : 4, P3 K1 1 : 1), obe v K1; v P3 ju spôsobil Vilov Kšeft Jednota (Dlhy 1 : 1 rozhodli tie-break). Pravidlo pochopili bez pýtania; P1 K4 bola blízko (13 : 13, Dlhy 2 : 2), rozhodlo Pohoršenie.</li>
+      <li>Dlhy sa priznávajú hneď; Exekútor sa spustil 1× (pozri D6 vyššie).</li>
+    </ul>
+  </details>
+  <p class="neprejavili"><strong>Neprejavili sa:</strong> Krčma (povinné NA EX), Poštárka/Pohreb/Hrobár, herný stôl (UI), patronát namiesto bitky o staršieho (zmena z 20. 10. stále platí, no nič nové).</p>
+</section>
+<section aria-labelledby="skusenosti">
+  <h2 id="skusenosti">Skúsenosti (zošity AI hráčov)</h2>
+  <p>Spustil som <code>over-verziu</code> (nemala čo meniť: zošity boli po prechode na v7 už prepnuté na neoverené) a <code>cakajuce</code> (len tento turnus), každý návrh overil v <code>PRAVIDLA.md</code> a v denníkoch/logoch. Zošity sedia (<code>skusenosti.ts kontrola</code>: Zošity sedia, pravidlá v7). Feedbacky sú označené „(zapísané 2026-10-27)“.</p>
+  <ul class="skus">
+    <li><strong>Pribudlo (9):</strong> <code>spolocne-16</code> Dohadzovačka — priazeň s Bitkárom +3 na marker, ktorý už stojí (3 partie); <code>spolocne-17</code> pečeň × zostávajúce Pitky a Cirhóza z poslednej Pitky (2 partie); <code>spolocne-18</code> koniec línie a spoj so súperovou kartou (2 partie); <code>fero-2</code> ruka musí stačiť na Pitky; <code>eva-2</code> prečítať náklady NA EX; <code>eva-3</code> ako obranca nevoliť Kultúrny dom bez náskoku; <code>hela-1</code> hazard s vyčísliteľnou cenou; <code>jano-1</code> po súperovom pase doložiť všetko; <code>vilo-1</code> Kšeft Jednota pred tie-breakom.</li>
+    <li><strong>Potvrdilo sa (12):</strong> <code>spolocne-1</code> (+3, spolu 10), <code>-2</code> (+3, 7), <code>-4</code> (+3, 6), <code>-5</code> (+2, 4), <code>-6</code> (+3, 6), <code>-7</code> (+3, 5), <code>-8</code> (+2, 5; rozšírené o cigarety za posunutého staršieho a Výpalníka — zlúčený návrh Fera a Vila), <code>-9</code> (+2, 4), <code>-10</code> (+1, 2), <code>-11</code> (+1, 3), <code>-13</code> (+2, 3), <code>eva-1</code> (+1, 3). Všetky sú teraz <em>overené</em> na pravidlách v7.</li>
+    <li><strong>Opravené (3, stav neoverená):</strong> <code>spolocne-3</code> — tvrdilo, že Policajtka ruší Pohoršenia; §16 v7 už neruší (Jano sa naň spoľahol a stálo ho to 6 špakov); <code>fero-1</code> — „cigarety po finále nemajú hodnotu“ odporuje výkupnému 5 : 1 (§14); <code>simon-1</code> — „patronát v poslednej bitke nič nestojí“ ignoruje Pohoršenia navyše pre súpera (+1 vyvrátenie).</li>
+    <li><strong>Vypadlo (3, preplnenie spoločného zošita):</strong> <code>spolocne-12</code> (Dvojčatá, 1 potvrdenie, partia sa jej netýkala), <code>spolocne-14</code> (zrážka, neoverená, zrážka sa nehrala), <code>spolocne-15</code> (Odpor na Petelicu, 1 potvrdenie).</li>
+    <li><strong>Zlúčené do existujúcich:</strong> Šimon 1 → <code>spolocne-17</code>; Šimon 2, Vilo 1, Jano 5 → <code>spolocne-16</code>; Jano 1 → <code>-17</code>; Jano 2 + Eva 1 → <code>-18</code>; Hela 2 → potvrdenie <code>spolocne-10</code> (zrkadlo Šimonovej partie); Fero 2 → <code>spolocne-7</code>.</li>
+    <li><strong>Zamietnuté alebo nezapísané (4):</strong> Fero 1 v pôvodnom znení (prebytok pri prehre) — partia ukázala niečo iné (šetrenie cigariet pri malej ruke), zapísané ako <code>fero-2</code>; Šimon 3 (Snúbenica proti NA EX na konci) — podmienené kartou v ruke, jeden údaj; Hela 1 (nechať si cigaretu na patronát, „inak +9 strachu“) — patronát na Hrobára by odstránil len 3 z 9 špakov a dal Šimonovi 3 Pohoršenia, tvrdenie neplatí; Eva 4 (Klebetnica len pri balíčku ≥ 5) — prešla by (P1 K5, P3 K3), no pri plnom zošite a 2 potvrdeniach by vypadla ako najslabšia, preto nezapísaná.</li>
+  </ul>
+</section>
+<footer>
+  <p>AI postavy hrali vo dvojiciach proti sebe cez skutočný server bez znalosti súperovej ruky; turnus mal 3 partie strednej hry a každá partia je jeden údaj — preto sú čísla (priemery, pomery, podiely špakov) orientačné.</p>
+</footer>
+
+</main>
+
+<script>
+(function () {
+  // Známky: číslo + pruh (bez JS ostane číslo).
+  document.querySelectorAll("td.z").forEach(function (td) {
+    var v = parseFloat(td.getAttribute("data-v"));
+    var trieda = v <= 5 ? "nizka" : v >= 8 ? "vysoka" : "";
+    var text = (v % 1 === 0 && !td.classList.contains("pr")) ? String(v) : v.toFixed(1).replace(".", ",");
+    td.innerHTML = '<span class="znamka"><b>' + text + '</b><span class="pruh" aria-hidden="true"><i class="' + trieda + '" style="width:' + (v * 10) + '%"></i></span></span>';
+  });
+  // Triedenie tabuľky podľa stĺpca.
+  var tabulka = document.getElementById("kriteria");
+  var hlavicky = tabulka.querySelectorAll("thead th[data-col]");
+  hlavicky.forEach(function (th) {
+    th.querySelector("button").addEventListener("click", function () {
+      var col = th.getAttribute("data-col");
+      var predtym = th.getAttribute("aria-sort");
+      var smer;
+      if (predtym === "ascending") smer = "descending";
+      else if (predtym === "descending") smer = "ascending";
+      else smer = (col === "n" || col === "k") ? "ascending" : "descending";
+      hlavicky.forEach(function (h) { h.removeAttribute("aria-sort"); });
+      th.setAttribute("aria-sort", smer);
+      var tela = Array.prototype.slice.call(tabulka.tBodies);
+      tela.sort(function (a, b) {
+        var x = a.dataset[col], y = b.dataset[col], r;
+        if (col === "k") r = x.localeCompare(y, "sk");
+        else r = parseFloat(x) - parseFloat(y);
+        if (r === 0) r = parseFloat(a.dataset.n) - parseFloat(b.dataset.n);
+        return smer === "ascending" ? r : -r;
+      });
+      tela.forEach(function (t) { tabulka.appendChild(t); });
+    });
+  });
+  // Filtre zoznamov (nezrovnalosti podľa zaradenia, zlepšenia podľa oblasti).
+  document.querySelectorAll(".filter[data-ciel]").forEach(function (filter) {
+    var zoznam = document.getElementById(filter.getAttribute("data-ciel"));
+    var polozky = Array.prototype.slice.call(zoznam.children).filter(function (li) { return li.tagName === "LI"; });
+    var navyse = filter.getAttribute("data-ciel") === "nezrovnalosti" ? document.getElementById("omyly-ostatne") : null;
+    var info = filter.nextElementSibling;
+    filter.hidden = false;
+    function nastav(f) {
+      var n = 0;
+      polozky.forEach(function (li) {
+        var ukaz = f === "vsetko" || li.getAttribute("data-oblast") === f;
+        li.hidden = !ukaz;
+        if (ukaz) n++;
+      });
+      if (navyse) navyse.hidden = !(f === "vsetko" || f === "omyl");
+      filter.querySelectorAll("button").forEach(function (b) {
+        b.setAttribute("aria-pressed", b.getAttribute("data-f") === f ? "true" : "false");
+      });
+      info.textContent = n === 0 ? (navyse && !navyse.hidden ? "Omyly hráčov sú zbalené nižšie." : "V tejto skupine nie je nič.") : "Zobrazené: " + n + " z " + polozky.length + (navyse && !navyse.hidden ? " (+ zbalené omyly nižšie)." : ".");
+    }
+    filter.querySelectorAll("button").forEach(function (b) {
+      b.addEventListener("click", function () { nastav(b.getAttribute("data-f")); });
+    });
+    nastav("vsetko");
+  });
+})();
+</script>
+</body>
+</html>

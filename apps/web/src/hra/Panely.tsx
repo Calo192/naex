@@ -745,7 +745,7 @@ export function HracDoska({
           }}
         />
         {/* Dlhy a Zadĺženie v jednej dlaždici (Michal 2026-10-27): číslo = priznané Dlhy k Exekútorovi,
-            pod ním zadĺženie tejto Pitky k ďalšiemu Dlhu. Vyučba zvýrazňuje obe časti zvlášť (bar:dlhy, bar:zadlzenie). */}
+            pod ním zadĺženie k ďalšiemu Dlhu (v7 po Pitke neprepadá). Vyučba zvýrazňuje obe časti zvlášť (bar:dlhy, bar:zadlzenie). */}
         <Zdroj
           nazov="Dlhy"
           trieda={`zdroj-dlhy ${
@@ -775,7 +775,7 @@ export function HracDoska({
                   {v !== null && v.zadlzenieZoStola > 0 && ` ▸ ${zadlzeniePo}`} z {prahy.dlh}
                   {vyhladZadlzenia !== null && ` · ${vyhladPitky(vyhladZadlzenia).cele.join(" · ")}`}
                 </span>
-                Každé {prahy.dlh} zadĺženia v Pitke = Dlh, hneď priznaný; zadĺženie sa po Pitke vynuluje. Pri {prahy.exekutor} a viac Dlhoch v bitke príde
+                Každé {prahy.dlh} zadĺženia v Pitke = Dlh, hneď priznaný; zvyšok zadĺženia po Pitke ostáva a čaká na ďalší Dlh (v7). Pri {prahy.exekutor} a viac Dlhoch v bitke príde
                 Exekútor: zhorí polovica Dlhov a toľko špakov.
               </>
             ),
