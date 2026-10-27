@@ -1,4 +1,4 @@
-# Ťahák — platné pravidlá NA EX! (v6, od 2026-10-26)
+# Ťahák — platné pravidlá NA EX! (v6, od 2026-10-26; dávka v6.1 z 2026-10-27)
 
 Spoločný ťahák AI hráčov (`naex-playtester`, `naex-protihrac`) — čítajú ho pri
 príprave pred partiou. Podrobne v `docs/PRAVIDLA.md` (zmeny v jeho úvode). Pri
@@ -9,8 +9,9 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 - **Špaky (v6, 2026-10-26) = víťazné body.** Vyhrá, kto má po finále viac špakov.
   **Víťaz bitky** dostane špaky = odohrané Pitky kola (finále 3), o rozdiel Absťákov
   menej, ak ich má viac než porazený (aspoň 1); lokalitu si **neberie** (ide na nástenku).
-  **Po každej bitke** (aj po finále) ti každý starší, ktorý sa ťa bojí, dá špaky:
-  žltá 1, oranžová 2, červená 3 (sivý nikomu). Nepriznaná Cirhóza na konci
+  **Len víťazovi bitky** (aj finále; v6.1, 2026-10-27) dá potom každý starší, ktorý sa ho bojí,
+  špaky: žltá 1, oranžová 2, červená 3 (sivý nikomu). **Porazený za starších nedostane nič**;
+  pri **sekere** ich dostanú obaja. Nepriznaná Cirhóza na konci
   **−5 špakov za kus** (ruka aj oba balíčky). Exekútor berie špaky (nižšie). Špaky
   smú ísť do mínusu; výpis ich ukazuje pri oboch hráčoch aj nástenku bitiek.
 - **Dĺžka hry** = počet bitiek o lokality (krátka 3, stredná 5, dlhá 7) a potom
@@ -28,6 +29,9 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   s Odporom zruší súperovi akciu na spoji. Každá karta okrem Nástroja míňa limit
   vykladania (aj Kočovník). **Limit = plné poldeci + 1** — NA EX limit nemíňa, ale
   jeho poldeci na karte sa neráta (v4), takže v ďalšom Zhromaždení kola máš limit o 1 nižší.
+- **Pas** (`pass`): do Pitky už nevykladáš; dostaneš 1 cigaretu za každú kartu, ktorú
+  si ešte smel vyložiť, **najviac toľko, koľko máš kariet v ruke** (v6.1) — s prázdnou
+  rukou nič.
 - **Názvoslovie:** línia = celý rad; lokalita ju delí na dve **strany** (tvoja,
   súperova). **Tvoja partia** = všetky tvoje karty, na ktorejkoľvek strane.
   Akcie: Dlh, Poškodenie pečene, Poldeci, Cigareta (nie Hazard, Pečeň,
@@ -127,7 +131,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   alkoholika (jeho susedov nechráni), nie na kartu, na ktorej už poldeci leží. NA EX na kartu
   pri lokalite mení len akcie karty, akcie hrany lokality ostávajú aktívne. NA EX na kartu
   s Posilnením zruší Posilnenie aj ×2 partnera na spoji (2026-10-24; partner ostáva ×1,
-  aj hrana lokality). Dievčina na vydaj
+  aj hrana lokality). Akcia zrušená Odporom nie je ani aktívna, ani neaktívna — NA EX ju
+  nezdvojí (v6.1). Dievčina na vydaj
   ráta aj akcie zdvojené cez NA EX; jej akcie v bitke, v ktorej sa zahodí, ešte platia. Svokra súpera ti za NA EX zoberie 2 cigarety.
   Šofér: NA EX na kartu vedľa neho neaktívne akcie nezdvojí (aktívne zruší). Snúbenica
   vyložená vedľa karty s NA EX (aj ako odpoveď) ju vráti majiteľovi do ruky a ľahne na jej miesto. Veterán (v4): NA EX mu aktívne akcie zdvojí
@@ -135,7 +140,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   **Skryto (v5):** `naex` súper nevidí do odkrytia; odpovedáš po odkrytí za každé súperovo NA EX,
   najprv obranca, potom útočník. **Zrážka** (obaja na tú istú kartu) = **Výtržník**: karta sa
   spáruje so susedmi s pôvodnými akciami, potom sú všetky jej akcie aktívne Rany pre majiteľa,
-  do konca bitky; pečeň, poldeci, Svokru aj Výpalné platí každý za svoje NA EX.
+  do konca bitky — aj jej Posilnenie je už len Rana a suseda nezdvojuje (v6.1); pečeň, poldeci, Svokru aj Výpalné platí každý za svoje NA EX.
   Krčma vynúti NA EX. Násobky sa **násobia** (NA EX × Silná žena = ×4, aj Dlh
   a Poškodenie pečene) a NA EX leží na karte do bitky — vyhodnotí sa v každej
   Pitke kola. Každá možnosť `naex` v stave ukazuje cenu: bitku pred a po
@@ -151,7 +156,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   jeden Absťák odíde. Absťáky, ktoré **práve máš**, uberajú víťazovi špaky za bitku
   (o rozdiel oproti porazenému) a pri remíze v tuhom prehráva, kto ich má viac.
 - **Stupnica (v6):** 7 polí 3-2-1-0-1-2-3, jedno sivé. Marker určuje **priazeň**
-  (komu je posunutý, sila 1 / 2 / 3) a koho sa starší bojí (špaky po bitke).
+  (komu je posunutý, sila 1 / 2 / 3) a koho sa starší bojí (špaky po bitke, ktorú ten vyhrá).
   Scorecard nesie už len priazeň, bodovacie podmienky nie sú.
 - **Priazeň (v5)** sila 1 / 2 / 3 podľa zóny, bez dvojnásobku: Bitkár +1 / +2 / +3
   tuhého; Kmotor po bitke −1 / 2 / 3 priznaného Dlhu; Abstinent +1 / +2 / +3
@@ -163,14 +168,14 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 - **Exekútor (v6):** kto má priznaných Dlhov aspoň na prahu, tomu zhorí **polovica
   Dlhov (nadol) a rovnako veľa špakov** — Nástroj sa neodovzdáva, prehra nie je.
   Záhradkár: smieš ho zahodiť namiesto špakov (`{"type":"zahradkar","zahodit":true|false}`),
-  Dlhy zhoria aj tak. **Noviny** (Dedičstvo, v6): +1 špak po bitke, keď sa ťa bojí
+  Dlhy zhoria aj tak. **Noviny** (Dedičstvo, v6): +1 špak po bitke (aj prehratej), keď sa ťa bojí
   viac starších ako súpera.
 - **Patronát (2026-10-20, nahradil bitku o staršieho):** po braní zo šenku
   (útočník, potom obranca; `patronat` / `bezPatronatu`) si smieš vziať do ruky
   staršieho, ktorý ti **prejavuje priazeň** (marker aspoň v žltej na tvojej
   polovici, pôvodný starší). Na jeho scorecard dáš lícom dole Občana/Zviera
-  z ruky, marker ide do stredu. Platíš cigarety do červenej (žltá 2, oranžová 1,
-  červená 0), súper dostane v bitke Pohoršenia navyše (o koľko polí marker išiel do
+  z ruky, marker ide do stredu. Platíš cigarety podľa zóny (v6.1): červená 1, oranžová 2,
+  žltá 3; súper dostane v bitke Pohoršenia navyše (o koľko polí marker išiel do
   stredu: 1 / 2 / 3) — tie však **nesmú na tohto staršieho** (v6; ostatné jeho Pohoršenia
   naňho smú, hra minie najprv tie z patronátu). Treba mať aspoň 1 poldeci. Kartu staršieho smieš v kole
   vyložiť. **Výhra** = starší ostáva tebe (náhrada sa otočí); **prehra** aj sekera = starší
@@ -179,15 +184,15 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 - **Pohoršenie (v5 oboma smermi):** každé posunie marker o 1 **k súperovi alebo
   k sebe** (`{"type":"pohorsenie","elderId":…}`, k sebe s `"kSebe":true`);
   k sebe si vezmeš priazeň, a tá platí hneď, už v poškodení tej istej bitky. Pohoršenie
-  ide pred špakmi za starších, takže strach z neho platí už v tejto bitke. V6: ten istý
+  ide pred špakmi za starších, takže strach z neho platí už v tejto bitke (ak ju vyhráš). V6: ten istý
   marker smieš posúvať **bez limitu, o pole za Pohoršenie, aj na červenú** (zo stredu 3).
   Súperova Policajtka ruší oba smery.
 - **Poradie bitky (v6):** Exekútor → Pohoršenie → poškodenie → výsledok → špaky za bitku
-  → špaky za starších → prebytok (posunie markery o pole za bod, aj na červenú a z nej
+  → špaky za starších (víťazovi, pri sekere obom) → prebytok (posunie markery o pole za bod, aj na červenú a z nej
   von — zamknutie sa ruší; prejaví sa až v ďalšej bitke).
 - **Remíza (v6):** pri rovnakom tuhom vyhrá, kto má **menej Absťákov**, potom **menej
   priznaných Dlhov**; inak **sekera** — špaky kola (Pitky) vezme víťaz najbližšej bitky,
-  vo finále prepadnú; útočník ostáva, patronát = prehra. Celkové určuje len prebytok.
+  vo finále prepadnú; za starších dostanú špaky obaja; útočník ostáva, patronát = prehra. Celkové určuje len prebytok.
   **Ohlásené vydesenie:** polovicu starších treba udržať do konca ďalšieho kola; keď
   klesne pod polovicu (aj patronátom), padá hneď a nové doplnenie ohlasuje odznova.
   **Cigarety za prebytok** dostane ten, proti komu sa prebytok delil.

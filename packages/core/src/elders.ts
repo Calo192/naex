@@ -5,9 +5,9 @@
 // strán: indexy 0–2 = polovica hráča 0, 4–6 = polovica hráča 1, 3 = sivý stred.
 //
 //  - Priazeň: marker na polovici hráča → TEN hráč má priazeň sily 1 / 2 / 3.
-//  - Strach: starší sa bojí hráča na OPAČNEJ strane. Po každej bitke dá
-//    obávanému hráčovi toľko špakov, aká je zóna (žltá 1, oranžová 2, červená 3);
-//    sivý stred nedá nikomu.
+//  - Strach: starší sa bojí hráča na OPAČNEJ strane. Po bitke, ktorú obávaný
+//    hráč vyhral (pri sekere obom, v6.1), mu dá toľko špakov, aká je zóna
+//    (žltá 1, oranžová 2, červená 3); sivý stred nedá nikomu.
 //  - Nahradený starší (patronát) ostáva v hre celý: marker, priazeň,
 //    prebudenie aj špaky.
 
@@ -97,7 +97,8 @@ export function strachZ(elder: Pick<ElderState, "marker">, p: PlayerId): 0 | 1 |
 
 /**
  * Špaky za starších po bitke (v6, Michal 2026-10-26): každý starší, ktorý sa
- * hráča bojí, mu dá toľko špakov, aká je zóna — aj nahradený.
+ * hráča bojí, mu dá toľko špakov, aká je zóna — aj nahradený. Vypláca sa len
+ * víťazovi bitky, pri sekere obom (v6.1, spakyZaStarsichPre v engine.ts).
  */
 export function spakyZaStarsich(starsi: readonly Pick<ElderState, "marker">[], p: PlayerId): number {
   return starsi.reduce((a, e) => a + strachZ(e, p), 0);
@@ -114,12 +115,13 @@ export function patronatMozny(elder: ElderState, p: PlayerId): boolean {
 }
 
 /**
- * Cena patronátu: cigarety = koľko markeru chýba do červenej (žltá 2,
- * oranžová 1, červená 0), súper dostane v bitke toľko Pohoršení, o koľko polí
- * sa marker vráti do stredu (v6: 1 / 2 / 3). Spolu vždy 3.
+ * Cena patronátu (v6.1, Michal 2026-10-27): cigarety podľa zóny — červená 1,
+ * oranžová 2, žltá 3 (sivá patronát nepripúšťa). Súper dostane v bitke toľko
+ * Pohoršení, o koľko polí sa marker vráti do stredu (žltá 1, oranžová 2, červená 3).
  */
 export function cenaPatronatu(elder: Pick<ElderState, "marker">): { readonly cigarety: number; readonly pohorsenia: number } {
-  return { cigarety: 3 - STUPNICA_ZONY[elder.marker], pohorsenia: Math.abs(elder.marker - MARKER_STRED) };
+  const zona = STUPNICA_ZONY[elder.marker];
+  return { cigarety: zona === 0 ? 0 : 4 - zona, pohorsenia: Math.abs(elder.marker - MARKER_STRED) };
 }
 
 /**

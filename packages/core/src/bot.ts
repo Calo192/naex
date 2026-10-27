@@ -323,13 +323,20 @@ interface Kontext {
 }
 
 /**
+ * Strach platí len víťazovi bitky (v6.1, Michal 2026-10-27): bot ráta, že zo
+ * zvyšných bitiek vyhrá každý polovicu. Prebiehajúcu bitku rozhodne stávka
+ * (stavkaBitky), tu je len jej stred.
+ */
+const PODIEL_VYHIER = 0.5;
+
+/**
  * Odhad konečných špakov (v6), moje mínus súperove: špaky v popolníku,
  * nepriznané Cirhózy (ich počet je verejný) a strach starších × koľkokrát
- * ešte vyplatia. Starší sa smú nahradiť (patronát, náhľad posunu).
+ * ešte vyplatia × podiel vyhier. Starší sa smú nahradiť (patronát, náhľad posunu).
  */
 function rozdielBodov(_data: GameData, s: GameState, ja: PlayerId, starsi: readonly ElderState[] = s.starsi): number {
   const su = opponentOf(ja);
-  const vyplat = vyplatZaStarsich(s);
+  const vyplat = PODIEL_VYHIER * vyplatZaStarsich(s);
   const odhad = (p: PlayerId): number =>
     s.spaky[p] - KONSTANTY.SPAKY_ZA_CIRHOZU * nepriznaneCirhozy(s.hraci[p]) + vyplat * spakyZaStarsich(starsi, p);
   return odhad(ja) - odhad(su);
@@ -347,7 +354,8 @@ function buducnostHry(s: GameState): number {
 
 /**
  * Čo získa víťaz prebiehajúcej bitky oproti porazenému (v špakoch, v6): víťaz
- * dostane Pitky kola a sekeru — výhra oproti prehre je teda dvojnásobok.
+ * dostane Pitky kola a sekeru — výhra oproti prehre je teda dvojnásobok. Od
+ * v6.1 aj starších, ktorí sa ho boja: moja výhra mi ich dá, súperova jemu.
  */
 function stavkaBitky(_data: GameData, s: GameState, _ja: PlayerId): number {
   if (s.ciel === null) return 0;
@@ -355,7 +363,8 @@ function stavkaBitky(_data: GameData, s: GameState, _ja: PlayerId): number {
   // Patronát: porazený patrón platí poldeci (bolestné).
   let patronat = 0;
   for (const q of [0, 1] as const) if (s.patronat[q] !== null) patronat += 2;
-  return 2 * (pitky + s.spakyNaSekere) + patronat;
+  const strach = s.bitkaStav !== null && s.bitkaStav.damage !== null ? 0 : spakyZaStarsich(s.starsi, 0) + spakyZaStarsich(s.starsi, 1);
+  return 2 * (pitky + s.spakyNaSekere) + strach + patronat;
 }
 
 /**
@@ -384,7 +393,7 @@ function hodnotaBitky(k: Kontext, s: GameState, q: PlayerId, ostrost: number): n
   // Akcie, ktoré sa vyhodnotia až v Pitke — po nej už sú v stave.
   if (s.faza === "zhromazdenie" || s.faza === "pitka") {
     const pohorsenia = pohorseniaVBitke(data, s, sums);
-    const zaPohorsenie = vyplatZaStarsich(s) * VYDRZ_POSUNU;
+    const zaPohorsenie = PODIEL_VYHIER * vyplatZaStarsich(s) * VYDRZ_POSUNU;
     for (const p of [q, o] as const) {
       const sp = sums[p];
       const so = sums[opponentOf(p)];
@@ -562,7 +571,7 @@ function hodnotaVysledku(k: Kontext, s: GameState, b: NonNullable<GameState["bit
 function cenaBoduPrebytku(s: GameState): number {
   if (prebytokDoSpakov(s)) return 1;
   const poBitke = s.bitkaStav !== null && s.bitkaStav.damage !== null;
-  return Math.max(0.35, (vyplatZaStarsich(s) - (poBitke ? 0 : 1)) * VYDRZ_POSUNU);
+  return Math.max(0.35, PODIEL_VYHIER * (vyplatZaStarsich(s) - (poBitke ? 0 : 1)) * VYDRZ_POSUNU);
 }
 
 /**
@@ -636,7 +645,7 @@ function dohrajZhromazdenie(k: Kontext, s: GameState): GameState {
   const limit: [number, number] = [z.zostavaLimit[0], z.zostavaLimit[1]];
   const pasoval: [boolean, boolean] = [z.pasoval[0], z.pasoval[1]];
   const navyse: [number, number] = [z.navyse[0], z.navyse[1]];
-  // Pas dáva cigaretu za každú kartu, ktorú hráč ešte smel vyložiť (kartyZaPas).
+  // Pas dáva cigaretu za každú kartu, ktorú hráč ešte smel vyložiť a má v ruke (kartyZaPas).
   // Bez nej skutočný pas (s cigaretami) vyzeral lepšie než vykladanie, po
   // ktorom sa v nanečisto dohranom Zhromaždení pasuje zadarmo — a vo v5
   // rozhoduje súboj o Cigarety (bot pasoval o poslednú bitku).
@@ -649,7 +658,7 @@ function dohrajZhromazdenie(k: Kontext, s: GameState): GameState {
     if (v === null) {
       pasoval[q] = true;
       navyse[q] = 0;
-      cigarety[q] += kartyZaPas({ zostavaLimit: limit, vlastny }, q) * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU;
+      cigarety[q] += kartyZaPas({ zostavaLimit: limit, vlastny }, q, ruky[q].length) * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU;
     } else {
       strany = sKartou(strany, q, v);
       ruky[q] = ruky[q].filter((x) => x.uid !== v.karta.uid);
@@ -904,7 +913,7 @@ function patronat(v: Volba): Command | null {
     const poPrehre = hodnotaStarsich(state.starsi.map((e) => (e.elderId === elder.elderId ? { ...e, marker } : e)));
     // v6: súper dostane cena.pohorsenia Pohoršení — každé posunie iný marker o pole
     // ku mne, takže špaky za strach, ktoré návrat do stredu vzal, si väčšinou vráti.
-    const pohorseniaSupera = k.povaha.body * cena.pohorsenia * vyplatZaStarsich(state);
+    const pohorseniaSupera = k.povaha.body * cena.pohorsenia * PODIEL_VYHIER * vyplatZaStarsich(state);
     const hodnota =
       sanca * (poVyhre - teraz + 0.6 * hodnotaKarty(data, elder.karta) * k.buducnost) +
       (1 - sanca) * (poPrehre - teraz - bolestne) -

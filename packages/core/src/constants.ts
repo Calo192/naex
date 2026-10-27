@@ -50,7 +50,8 @@ export const KONSTANTY = {
   PRAH_DLHU_ZAKLAD: 2,
   /**
    * Pas (Michal 2026-10-20): kto v Zhromaždení pasuje, dostane toľko cigariet,
-   * koľko kariet ešte smel vyložiť (zostávajúci limit), a hrá až v Pitke.
+   * koľko kariet ešte smel vyložiť (zostávajúci limit), najviac toľko, koľko má
+   * kariet v ruke (v6.1), a hrá až v Pitke.
    */
   CIGARETY_ZA_PAS_NA_KARTU: 1,
   /** Záverečná (roadmapa #83, Michal 2026-10-23): karta lícom dole za cigaretu. */

@@ -172,16 +172,17 @@ describe("offline protihráč — pravidlá v5 a v6", () => {
   }
   const priazenStarsieho = (s: GameState, elderId: string): string => favourStarsieho(data, s.starsi.find((e) => e.elderId === elderId) as ElderState);
 
-  it("v6: posledné Pohoršenie dá radšej na strach (špaky po každej bitke) než na výhru Bitkárom", () => {
+  it("v6: posledné Pohoršenie dá radšej na strach (špaky po vyhratých bitkách) než na výhru Bitkárom", () => {
     for (const seed of [71, 72, 73]) {
       // Všetci v strede, prázdna línia 0 : 0. Bitkár k sebe by vyhral bitku o 1 Pitku (1 špak),
-      // strach súpera dá špak po tejto aj po každej ďalšej bitke.
+      // strach súpera dá pri sekere špak obom a potom po každej bitke, ktorú bot vyhrá.
       const s = vPohorseni(seed, () => 3);
       for (const povaha of POVAHY) {
         const cmd = tahBota(data, s, 0, seed, { povaha: povaha.id });
         expect(cmd.type, povaha.id).toBe("pohorsenie");
         if (cmd.type !== "pohorsenie") continue;
-        expect(cmd.kSebe === true, `${povaha.id} ${seed}`).toBe(false);
+        // v6.1 strach platí len víťazovi — agresívny Fero smie radšej vyhrať bitku hneď.
+        if (povaha.id !== "rapavy_fero") expect(cmd.kSebe === true, `${povaha.id} ${seed}`).toBe(false);
         expect(apply(data, s, cmd, 0).state.spaky[0]).toBe(1);
       }
     }

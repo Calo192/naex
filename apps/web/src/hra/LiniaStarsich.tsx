@@ -9,7 +9,7 @@
 // strany „◀ ty · súper ▶“ a dva čipy, ktoré nikdy nezmiznú (komu priazeň, koho
 // sa bojí); po posune duch na starom mieste a lístok so zdrojom a dôsledkom pre
 // oboch; pri Pohoršení a prebytku čipy pri prejdení myšou ukážu stav po posune.
-// Pri každom staršom čip so špakmi, ktoré dá po bitke (v6, spakyTeraz jadra).
+// Pri každom staršom čip so špakmi, ktoré dá po bitke jej víťazovi (v6.1, spakyTeraz jadra).
 
 import type { CSSProperties, HTMLAttributes, KeyboardEvent as ReactKeyboardEvent, ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
@@ -286,7 +286,7 @@ function LegendaStupnice({
     prikladText = (
       <>
         <b>Teraz:</b> {priklad.meno} je v zóne {NAZVY_ZON[v.uroven]} na {ty ? `strane ${mena[su]}` : "tvojej strane"}. {ty ? `Priazeň +${v.sila} má ${mena[su]}` : `Priazeň +${v.sila} máš ty`} (
-        {UCINOK_KRATKO[fav](v.sila)}). Bojí sa {ty ? "teba" : mena[su]}: po každej bitke {ty ? "dostaneš" : `${mena[su]} dostane`}{" "}
+        {UCINOK_KRATKO[fav](v.sila)}). Bojí sa {ty ? "teba" : mena[su]}: po každej bitke, ktorú {ty ? "vyhráš" : "vyhrá"}, {ty ? "dostaneš" : `${mena[su]} dostane`}{" "}
         {v.uroven} {v.uroven === 1 ? "špak" : "špaky"}.
       </>
     );
@@ -301,7 +301,8 @@ function LegendaStupnice({
         <b>♥ Priazeň</b> má ten, na koho polovici marker leží — bonus počas hry, sila +1 / +2 / +3 podľa zóny.
       </p>
       <p>
-        <b>Bojí sa toho druhého</b> — a po každej bitke (aj po finále) mu dá špaky: žltá 1, oranžová 2, červená 3. V sivom strede nedá nikomu nič.
+        <b>Bojí sa toho druhého</b> — a po bitke, ktorú ten vyhrá (aj finále), mu dá špaky: žltá 1, oranžová 2, červená 3. Porazenému nedá nič, pri sekere
+        dajú starší obom. V sivom strede nedá nikomu nič.
       </p>
       <p>{prikladText}</p>
       <p className="ls-tlmene">
@@ -373,7 +374,7 @@ function ScorecardVLinii({
   const textStrachu = (v: ReturnType<typeof vztah>): string => (v.obavany === null ? "nikoho sa nebojí" : `bojí sa ${koho(v.obavany)} · ${NAZVY_ZON[v.uroven]}`);
   const popisMarkera = `${s.meno}: ${textStrachu(teraz)}, priazeň ${textPriazne(teraz)}`;
 
-  // Špaky po bitke (v6): dostane ich ten, koho sa starší bojí.
+  // Špaky po bitke (v6.1): dostane ich ten, koho sa starší bojí, ak bitku vyhrá.
   const boduje: PlayerId | null = body === undefined ? null : body.spaky[ja] > 0 ? ja : body.spaky[su] > 0 ? su : null;
   const textTeraz = body === undefined || boduje === null ? null : `${kto(boduje)} +${body.spaky[boduje]}`;
 
@@ -491,10 +492,10 @@ function ScorecardVLinii({
             {posunov <= 1 ? "po posune · prebytok sa minie" : `po posune · prebytok ešte na ${posunov - 1} ${posunov - 1 === 1 ? "posun" : posunov - 1 < 5 ? "posuny" : "posunov"}`}
           </span>
         ) : (
-          <span className="ls-body" title="Špaky, ktoré starší dá po každej bitke tomu, koho sa bojí (žltá 1, oranžová 2, červená 3).">
+          <span className="ls-body" title="Špaky, ktoré starší dá po bitke tomu, koho sa bojí, ak ju vyhrá (žltá 1, oranžová 2, červená 3; pri sekere obom).">
             <span className={`moje ${triedaBodov(body?.spaky[ja] ?? 0)}`}>ty +{body?.spaky[ja] ?? 0}</span>
             <span className="ls-suboje">
-              <IkonaSpaku /> po bitke
+              <IkonaSpaku /> po výhre
             </span>
             <span className={`superove ${triedaBodov(body?.spaky[su] ?? 0)}`}>
               {mena[su]} +{body?.spaky[su] ?? 0}
@@ -575,7 +576,7 @@ function ListokPosunu({
   );
 }
 
-/** Čo posun z `z` na dnešnú polohu dal hráčovi p: priazeň (hneď) a strach (špaky po bitke); null = nič. */
+/** Čo posun z `z` na dnešnú polohu dal hráčovi p: priazeň (hneď) a strach (špaky po vyhratej bitke); null = nič. */
 export function dosledokPosunu(elder: ElderState, z: MarkerPos, p: PlayerId, ty = false): string | null {
   const pred = { ...elder, marker: z };
   const priazen = (e: ElderState): number => (priazenHraca(e) === p ? priazenSila(e) : 0);
@@ -585,15 +586,15 @@ export function dosledokPosunu(elder: ElderState, z: MarkerPos, p: PlayerId, ty 
   if (prPo !== prPred) casti.push(prPo > 0 ? `♥ +${prPo}${prPred > 0 ? ` (bolo +${prPred})` : " hneď"}` : `♥ preč (bolo +${prPred})`);
   // „budí / budíš strach“ — bez zámena, ktorý by musel poznať rod hráča.
   const budi = ty ? "budíš" : "budí";
-  if (stPo !== stPred) casti.push(stPo > 0 ? `${budi} strach: ${NAZVY_ZON[stPo]} → +${stPo} po bitke` : `už ne${budi} strach (bolo ${NAZVY_ZON[stPred]})`);
+  if (stPo !== stPred) casti.push(stPo > 0 ? `${budi} strach: ${NAZVY_ZON[stPo]} → +${stPo} po výhre` : `už ne${budi} strach (bolo ${NAZVY_ZON[stPred]})`);
   return casti.length === 0 ? null : casti.join(" · ");
 }
 
-/** Komu starší dá po bitke špaky (v6) — čísla zo spakyTeraz jadra. */
+/** Komu starší dá po bitke špaky (v6.1 len víťazovi) — čísla zo spakyTeraz jadra. */
 export function vysvetlenieSpakov(body: SpakyStarsieho, ja: PlayerId, mena: readonly [string, string]): string {
   const su: PlayerId = ja === 0 ? 1 : 0;
-  if (body.spaky[ja] > 0) return `Bojí sa teba — po každej bitke ti dá ${body.spaky[ja]} š.`;
-  if (body.spaky[su] > 0) return `Bojí sa ${mena[su]} — po každej bitke dá ${body.spaky[su]} š. súperovi.`;
+  if (body.spaky[ja] > 0) return `Bojí sa teba — po každej bitke, ktorú vyhráš, ti dá ${body.spaky[ja]} š.`;
+  if (body.spaky[su] > 0) return `Bojí sa ${mena[su]} — po každej bitke, ktorú súper vyhrá, mu dá ${body.spaky[su]} š.`;
   return "Nikoho sa nebojí — špaky nedá nikomu.";
 }
 

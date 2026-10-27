@@ -43,8 +43,14 @@ describe("Zastávka: pas za vlastný limit (Michal 2026-10-22, návrh #7 A)", ()
   });
 
   it("kartyZaPas: menšie zo spoločného zvyšku a vlastného zvyšku; mimo Zastávky zvyšok limitu", () => {
-    expect(kartyZaPas({ zostavaLimit: [4, 4], vlastny: [1, 3] }, 0)).toBe(1);
-    expect(kartyZaPas({ zostavaLimit: [2, 2], vlastny: [1, 3] }, 1)).toBe(2);
-    expect(kartyZaPas({ zostavaLimit: [3, 1] }, 0)).toBe(3);
+    expect(kartyZaPas({ zostavaLimit: [4, 4], vlastny: [1, 3] }, 0, 9)).toBe(1);
+    expect(kartyZaPas({ zostavaLimit: [2, 2], vlastny: [1, 3] }, 1, 9)).toBe(2);
+    expect(kartyZaPas({ zostavaLimit: [3, 1] }, 0, 9)).toBe(3);
+  });
+
+  it("v6.1 (Michal 2026-10-27): pas platí najviac za toľko kariet, koľko má hráč v ruke — s prázdnou rukou nič", () => {
+    expect(kartyZaPas({ zostavaLimit: [3, 1] }, 0, 2)).toBe(2);
+    expect(kartyZaPas({ zostavaLimit: [3, 1] }, 0, 0)).toBe(0);
+    expect(kartyZaPas({ zostavaLimit: [4, 4], vlastny: [3, 3] }, 1, 1)).toBe(1);
   });
 });

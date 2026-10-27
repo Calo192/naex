@@ -188,9 +188,13 @@ function poKartach(zdroje: readonly ZdrojAkcie[] | undefined, kto: PlayerId): Po
   return out;
 }
 
-/** Položky upravené na súčet `spolu`: chýbajúce mimo línie (uid null), prebytočné uberie od konca. */
+/**
+ * Položky upravené na súčet `spolu`: chýbajúce mimo línie (uid null), prebytočné uberie od konca.
+ * Záporné položky (Presbiter uberá Vieru) sa zahodia — `spolu` ich už obsahuje a pri
+ * orezaní od konca by ostali kladné karty navyše.
+ */
 function naSucet(polozky: readonly PolozkaRekapitulacie[], kto: PlayerId, spolu: number): PolozkaRekapitulacie[] {
-  const out = polozky.map((x) => ({ ...x }));
+  const out = polozky.filter((x) => x.n > 0).map((x) => ({ ...x }));
   let rozdiel = spolu - out.reduce((a, x) => a + x.n, 0);
   if (rozdiel > 0) out.push({ kto, uid: null, n: rozdiel });
   for (let i = out.length - 1; i >= 0 && rozdiel < 0; i--) {

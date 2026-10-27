@@ -277,7 +277,7 @@ export function UkazkaStupnice() {
           <>
             Marker leží na {strana} polovici v zóne <strong>{ZONY[m]}</strong>: priazeň s hodnotou <strong>{hodnota}</strong>{" "}
             má {strana === "tvojej" ? "ty" : "súper"}. Starší sa bojí {strana === "tvojej" ? "súpera" : "teba"} na úrovni{" "}
-            <strong>{uroven}</strong> — po každej bitke {strana === "tvojej" ? "súperovi" : "tebe"} dá {uroven}{" "}
+            <strong>{uroven}</strong> — po každej bitke, ktorú {strana === "tvojej" ? "súper vyhrá, mu" : "vyhráš, ti"} dá {uroven}{" "}
             {uroven === 1 ? "špak" : "špaky"}.
             {(m === 0 || m === 6) && " Na krajnej pozícii sa starší prebudí pre vydesujúceho hráča a ráta sa do vydesenia."}
           </>

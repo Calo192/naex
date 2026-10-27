@@ -5,6 +5,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { DLZKY_HRY, KONSTANTY } from "../src/constants.ts";
+import { cenaPatronatu } from "../src/elders.ts";
 
 const tahak = readFileSync(new URL("../../../tools/playtest/tahak.md", import.meta.url), "utf8").replace(/\s+/g, " ");
 
@@ -23,6 +24,10 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ["doplnenie šenku", `doplní na ${KONSTANTY.SENOK_PO_BRANI}`],
     ["doliatie", `${KONSTANTY.REFILL_CENA} cigarety → vypitý poldeci`],
     ["barter", `${KONSTANTY.BARTER_CENA} cigariet → nový plný poldeci`],
+    [
+      "cena patronátu (v6.1)",
+      `červená ${cenaPatronatu({ marker: 0 }).cigarety}, oranžová ${cenaPatronatu({ marker: 1 }).cigarety}, žltá ${cenaPatronatu({ marker: 2 }).cigarety}`,
+    ],
   ])("%s", (_, ocakavane) => {
     expect(tahak).toContain(ocakavane);
   });

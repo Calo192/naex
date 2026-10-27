@@ -209,7 +209,7 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
           Keby partia skončila teraz: <b>{dvojica(body.spolu, sMinusom)}</b>
         </span>
         <span>
-          Starší ešte {body.vyplat}× po bitke: <b>{dvojica(body.zaStarsich, (n) => `+${n}`)}</b>
+          Starší víťazovi ešte {body.vyplat}× po bitke: <b>{dvojica(body.zaStarsich, (n) => `+${n}`)}</b>
         </span>
       </p>
     </div>
@@ -231,7 +231,10 @@ function Uctenka({
 }) {
   const plus = (n: number): string => (n > 0 ? `+${n}` : "0");
   return (
-    <span className="nastenka-uctenka" title={`Po bitke (${kto}): starší, ktorí sa hráča boja, Exekútor, prebytok a stav popolníkov.`}>
+    <span
+      className="nastenka-uctenka"
+      title={`Po bitke (${kto}): starší, ktorí sa hráča boja (${b.vitaz === null ? "pri sekere obom" : "len víťazovi"}), Exekútor, prebytok a stav popolníkov.`}
+    >
       <span>starší {riadok(b.zaStarsich, plus)}</span>
       {b.exekutor[0] + b.exekutor[1] > 0 && <span className="minus">Exekútor {riadok(b.exekutor, (n) => (n > 0 ? `−${n}` : "0"))}</span>}
       {b.prebytok[0] + b.prebytok[1] > 0 && <span>prebytok {riadok(b.prebytok, plus)}</span>}
@@ -282,7 +285,8 @@ export function SpakyBitky({
   };
   const riadky: { readonly kluc: string; readonly nazov: string; readonly h: readonly [number, number]; readonly pozn?: (p: PlayerId) => string }[] = [
     { kluc: "bitka", nazov: "za bitku", h: b.zaBitku, pozn: zaBitku },
-    { kluc: "starsi", nazov: "za starších", h: b.zaStarsich },
+    // v6.1: starší platia len víťazovi, pri sekere obom — porazený má v riadku „—“.
+    { kluc: "starsi", nazov: b.vitaz === null ? "za starších (sekera — obom)" : "za starších (len víťaz)", h: b.zaStarsich },
     ...(b.prebytok[0] + b.prebytok[1] > 0 ? [{ kluc: "prebytok", nazov: b.lokalita === null ? "prebytok (finále)" : "prebytok", h: b.prebytok }] : []),
     ...(b.exekutor[0] + b.exekutor[1] > 0 ? [{ kluc: "exekutor", nazov: "Exekútor", h: [-b.exekutor[0], -b.exekutor[1]] as const }] : []),
   ];

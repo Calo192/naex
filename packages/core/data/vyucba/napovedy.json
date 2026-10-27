@@ -138,8 +138,8 @@
         "podmienka": "pred.kolo === 1 && po.kolo === 2, alebo prvý koniec bitky",
         "jadro": ["packages/core/src/view.ts:413 spakyTeraz", "docs/PRAVIDLA.md §14 Špaky"]
       },
-      "melichar": "Body v bare sú tvoje špaky, keby hra skončila teraz. Klikni na ne a uvidíš, koľko ti ktorý starší dá po bitke. Keď sa ti tie čísla nebudú páčiť, mne sa nesťažuj.",
-      "zvyraznit": ["bar:body"]
+      "melichar": "Body v bare sú tvoje špaky, keby hra skončila teraz. Klikni na ne a uvidíš nástenku: za čo si ich dostal. Koľko ti ktorý starší dá po bitke, ak ju vyhráš, ukáže dlaždica Starší. Keď sa ti tie čísla nebudú páčiť, mne sa nesťažuj.",
+      "zvyraznit": ["bar:body", "bar:starsi"]
     },
     {
       "id": "pohorsenie",
@@ -191,7 +191,7 @@
         "doplnit": "{starsi} = meno staršieho, {elderId}",
         "jadro": ["packages/core/src/engine.ts:449 priazen", "docs/PRAVIDLA.md §10 Dvojaká úloha markera"]
       },
-      "melichar": "{starsi} je na tvojej polovici a prejavuje ti priazeň: malý bonus, ten vidíš pri ňom. Bojí sa zato súpera a po bitke mu dá špaky. Niekto ťa má rád, to by som nečakal.",
+      "melichar": "{starsi} je na tvojej polovici a prejavuje ti priazeň: malý bonus, ten vidíš pri ňom. Bojí sa zato súpera a po bitke, ktorú súper vyhrá, mu dá špaky. Niekto ťa má rád, to by som nečakal.",
       "zvyraznit": ["starsi:{elderId}"]
     },
     {

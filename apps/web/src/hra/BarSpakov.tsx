@@ -39,8 +39,8 @@ export function BarSpakov({ view, p, body, menoKarty }: BarSpakovProps) {
       nazov: "Starší",
       hodnota: zn(rozpis.zaStarsich),
       trieda: rozpis.zaStarsich > 0 ? "plus" : "",
-      pod: `+${body.zaStarsich[p]} po ďalšej bitke · ešte ${body.vyplat}×`,
-      popis: `Doteraz od starších ${zn(rozpis.zaStarsich)}. Po ďalšej bitke ${ja ? "ti" : "mu"} dajú ${body.zaStarsich[p]} (kto sa ${ja ? "ťa" : "ho"} bojí: žltá 1, oranžová 2, červená 3); vyplácajú ešte ${body.vyplat}×.`,
+      pod: `+${body.zaStarsich[p]} po bitke, ak ${ja ? "vyhráš" : "vyhrá"} · ešte ${body.vyplat}×`,
+      popis: `Doteraz od starších ${zn(rozpis.zaStarsich)}. Po ďalšej bitke ${ja ? "ti" : "mu"} dajú ${body.zaStarsich[p]} (kto sa ${ja ? "ťa" : "ho"} bojí: žltá 1, oranžová 2, červená 3), ale len keď ju ${ja ? "vyhráš" : "vyhrá"} — porazený od starších nedostane nič, pri sekere dostanú obaja. Vyplácajú ešte ${body.vyplat}×.`,
     },
     {
       kluc: "finale",
@@ -77,8 +77,8 @@ export function BarSpakov({ view, p, body, menoKarty }: BarSpakovProps) {
       nazov: "Keby skončila",
       hodnota: sMinusom(body.spolu[p]),
       trieda: "",
-      pod: `teraz · so staršími ≈ ${sMinusom(body.odhad[p])}`,
-      popis: "Špaky v popolníku mínus nepriznaná Cirhóza. Odhad pridá starších za bitky, ktoré ešte prídu, keby sa markery nepohli — výhry nerátá.",
+      pod: `teraz · so staršími až ${sMinusom(body.odhad[p])}`,
+      popis: `Špaky v popolníku mínus nepriznaná Cirhóza. „Až“ pridá starších za bitky, ktoré ešte prídu, keby ${ja ? "si" : ""} ich ${ja ? "vyhral" : "vyhral"} všetky a markery sa nepohli — špaky za bitky nerátá.`,
     },
   ];
   return (

@@ -172,9 +172,13 @@ export interface ZhromazdenieStav {
   readonly vlastny?: readonly [number, number];
 }
 
-/** Za koľko kariet dostane hráč cigarety, keď teraz pasuje (§6; Zastávka §15). */
-export function kartyZaPas(z: Pick<ZhromazdenieStav, "zostavaLimit" | "vlastny">, p: PlayerId): number {
-  return Math.min(z.zostavaLimit[p], z.vlastny?.[p] ?? z.zostavaLimit[p]);
+/**
+ * Za koľko kariet dostane hráč cigarety, keď teraz pasuje (§6; Zastávka §15):
+ * zvyšok limitu, najviac toľko, koľko má kariet v ruke (v6.1, Michal 2026-10-27 —
+ * s prázdnou rukou pas nič nedá).
+ */
+export function kartyZaPas(z: Pick<ZhromazdenieStav, "zostavaLimit" | "vlastny">, p: PlayerId, vRuke: number): number {
+  return Math.max(0, Math.min(z.zostavaLimit[p], z.vlastny?.[p] ?? z.zostavaLimit[p], vRuke));
 }
 
 export interface PitkaStav {
@@ -624,8 +628,9 @@ export function stranaStreduFinale(
 
 /**
  * Koľkokrát ešte starší vyplatia špaky za strach (po každej bitke, aj po
- * finále) — so súčasnou bitkou, kým sa v nej nevyplatili. Pre odhady (náhľady,
- * bot): marker, ktorý sa už nepohne, dá toľkokrát svoju zónu.
+ * finále; v6.1 len víťazovi) — so súčasnou bitkou, kým sa v nej nevyplatili. Pre
+ * odhady (náhľady, bot): marker, ktorý sa už nepohne, dá toľkokrát svoju zónu
+ * hráčovi, ktorý vyhrá každú bitku.
  */
 export function vyplatZaStarsich(s: Pick<GameState, "lokalityVHre" | "ciel" | "koniec"> & { readonly bitkaStav: { readonly damage: unknown } | null }): number {
   if (s.koniec !== null) return 0;
@@ -2324,8 +2329,9 @@ function cmdPass(s: MutState, data: GameData, p: PlayerId, events: Event[]): voi
   z.pasoval[p] = true;
   z.navyse[p] = 0;
   // Pas (Michal 2026-10-20): cigareta za každú kartu, ktorú hráč ešte smel
-  // vyložiť — aj keď pasuje hra za neho. Do Pitky už nehrá, súper vykladá sám.
-  const karty = kartyZaPas(z, p);
+  // vyložiť a má ju v ruke — aj keď pasuje hra za neho. Do Pitky už nehrá,
+  // súper vykladá sám.
+  const karty = kartyZaPas(z, p, s.hraci[p].ruka.length);
   const ziska = karty * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU;
   hrac(s, p).cigarety += ziska;
   events.push({
@@ -3933,6 +3939,14 @@ export function aktualneAbstaky(s: VerejnyStav & { readonly hraci: readonly [{ r
   return verejneAbstaky(s, p) + s.hraci[p].ruka.filter((k) => k.defId === "abstak").length;
 }
 
+/**
+ * Komu starší po bitke vyplatia špaky za strach (v6.1, Michal 2026-10-27): víťazovi;
+ * pri sekere (špaky za bitku idú na sekeru, vo finále prepadnú) obom.
+ */
+export function spakyZaStarsichPre(vitaz: PlayerId | null): readonly PlayerId[] {
+  return vitaz === null ? [0, 1] : [vitaz];
+}
+
 /** Koľko starších sa hráča p bojí (marker na súperovej polovici) — Noviny (v6). */
 export function pocetBojacichSa(starsi: readonly ElderState[], p: PlayerId): number {
   return starsi.filter((e) => obavanyHrac(e) === p).length;
@@ -3942,8 +3956,9 @@ export function pocetBojacichSa(starsi: readonly ElderState[], p: PlayerId): num
  * Špaky po výsledku bitky (v6, Michal 2026-10-26), krok 4a a 4b:
  *  - víťaz dostane odohrané Pitky mínus rozdiel Absťákov (aspoň 1) a špaky zo
  *    sekery; pri sekere čakajú špaky kola na víťaza ďalšej bitky, vo finále prepadnú,
- *  - potom obaja za starších, ktorí sa ich boja (žltá 1, oranžová 2, červená 3);
- *    Noviny v Dedičstve +1, keď sa hráča bojí viac starších ako súpera.
+ *  - potom za starších, ktorí sa hráča boja (žltá 1, oranžová 2, červená 3): len
+ *    víťaz, pri sekere obaja (v6.1); Noviny v Dedičstve +1, keď sa hráča bojí viac
+ *    starších ako súpera.
  * Lokalita ide s výsledkom na nástenku.
  */
 function vyplatSpaky(s: MutState, data: GameData, outcome: BattleOutcome, abstaky: readonly [number, number], events: Event[]): void {
@@ -3977,7 +3992,11 @@ function vyplatSpaky(s: MutState, data: GameData, outcome: BattleOutcome, abstak
     s.spakyNaSekere += pitky;
     events.push({ type: "log", text: `Sekera: remíza v tuhom, v Absťákoch aj v Dlhoch — ${spakov(pitky)} ide na sekeru (spolu ${s.spakyNaSekere}), vezme ich víťaz ďalšej bitky.` });
   }
-  const zaStarsich: [number, number] = [spakyZaStarsich(s.starsi, 0), spakyZaStarsich(s.starsi, 1)];
+  // v6.1 (Michal 2026-10-27, playtesty v6): strach platí len víťazovi — porazený za
+  // starších nedostane nič, aby náskok nerástol ako snehová guľa. Noviny sú efekt karty
+  // („po bitke“), víťazstvo nepodmieňujú.
+  const zaStarsich: [number, number] = [0, 0];
+  for (const p of spakyZaStarsichPre(vitaz)) zaStarsich[p] = spakyZaStarsich(s.starsi, p);
   for (const p of [0, 1] as const) {
     if (vDedicstve(s as GameState, p, "noviny") && pocetBojacichSa(s.starsi as ElderState[], p) > pocetBojacichSa(s.starsi as ElderState[], opponentOf(p))) {
       zaStarsich[p] += 1;
@@ -3985,7 +4004,10 @@ function vyplatSpaky(s: MutState, data: GameData, outcome: BattleOutcome, abstak
     }
     s.spaky[p] += zaStarsich[p];
   }
-  events.push({ type: "log", text: `Špaky za starších: hráč 1 ${zaStarsich[0]}, hráč 2 ${zaStarsich[1]}.` });
+  events.push({
+    type: "log",
+    text: `Špaky za starších (${vitaz === null ? "sekera — obom" : `len víťaz, hráč ${vitaz + 1}`}): hráč 1 ${zaStarsich[0]}, hráč 2 ${zaStarsich[1]}.`,
+  });
   const lokalita = cielLokalita(s as GameState);
   s.nastenka.push({
     kolo: s.kolo,

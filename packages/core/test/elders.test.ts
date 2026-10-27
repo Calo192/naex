@@ -114,10 +114,13 @@ describe("v6 — patronát", () => {
     expect(patronatMozny({ ...elderAt(5), nahradeny: true }, 1)).toBe(false);
   });
 
-  it("cena: cigarety 2 / 1 / 0, súperove Pohoršenia 1 / 2 / 3 — spolu vždy 3", () => {
-    expect(cenaPatronatu(elderAt(4))).toEqual({ cigarety: 2, pohorsenia: 1 });
-    expect(cenaPatronatu(elderAt(1))).toEqual({ cigarety: 1, pohorsenia: 2 });
-    expect(cenaPatronatu(elderAt(6))).toEqual({ cigarety: 0, pohorsenia: 3 });
+  it("cena (v6.1): cigarety žltá 3 / oranžová 2 / červená 1, súperove Pohoršenia 1 / 2 / 3", () => {
+    expect(cenaPatronatu(elderAt(4))).toEqual({ cigarety: 3, pohorsenia: 1 });
+    expect(cenaPatronatu(elderAt(2))).toEqual({ cigarety: 3, pohorsenia: 1 });
+    expect(cenaPatronatu(elderAt(1))).toEqual({ cigarety: 2, pohorsenia: 2 });
+    expect(cenaPatronatu(elderAt(5))).toEqual({ cigarety: 2, pohorsenia: 2 });
+    expect(cenaPatronatu(elderAt(6))).toEqual({ cigarety: 1, pohorsenia: 3 });
+    expect(cenaPatronatu(elderAt(0))).toEqual({ cigarety: 1, pohorsenia: 3 });
   });
 });
 

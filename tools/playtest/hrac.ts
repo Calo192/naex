@@ -537,10 +537,10 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
   out.push("STARŠÍ (stupnica 0–6: 0–2 polovica hráča 1, 3 sivý stred, 4–6 polovica hráča 2):");
   out.push(
     "  PRIAZEŇ má hráč, ku ktorému je marker posunutý — sila 1/2/3 podľa zóny; starší sa bojí toho DRUHÉHO. " +
-      "ŠPAKY (v6): po KAŽDEJ bitke (aj po finále) dá starší hráčovi, ktorého sa bojí, žltá 1 / oranžová 2 / červená 3 špaky. " +
+      "ŠPAKY (v6.1): po bitke (aj po finále) dá starší hráčovi, ktorého sa bojí, žltá 1 / oranžová 2 / červená 3 špaky — LEN AK TEN BITKU VYHRAL; porazený za starších nič, pri sekere obaja. " +
       "Pohoršenie a prebytok posunú marker o pole za bod, bez limitu, aj na červenú a z nej späť. Scorecard nesie len priazeň.",
   );
-  out.push(`  ŠPAKY: ty ${body.spaky[ja]}, súper ${body.spaky[su]}; po najbližšej bitke od starších ty +${body.zaStarsich[ja]}, súper +${body.zaStarsich[su]}; nepriznaná Cirhóza na konci −5 za kus (ty ${body.cirhozy[ja]}, súper ${body.cirhozy[su]}); odhad do konca (markery stoja) ty ${body.odhad[ja]}, súper ${body.odhad[su]}.`);
+  out.push(`  ŠPAKY: ty ${body.spaky[ja]}, súper ${body.spaky[su]}; po najbližšej bitke od starších víťazovi: ty +${body.zaStarsich[ja]} ak vyhráš, súper +${body.zaStarsich[su]} ak vyhrá; nepriznaná Cirhóza na konci −5 za kus (ty ${body.cirhozy[ja]}, súper ${body.cirhozy[su]}); odhad do konca (markery stoja, keby vyhral každú bitku) ty ${body.odhad[ja]}, súper ${body.odhad[su]}.`);
   // Ohlásené vydesenie (Michal 2026-10-16): výhra až po udržaní do konca ďalšieho kola.
   const prahVyd = prahVydesenia(v);
   const vyd = (p: PlayerId) => v.starsi.filter((e) => vydesil(e, p)).length;
@@ -721,7 +721,7 @@ function moznosti(v: ClientState): string[] {
     }
     case "zhromazdenie": {
       const z = v.zhromazdenieStav;
-      c({ type: "pass" }, `pasovať (do Pitky už nevykladáš, súper vykladá sám; dostaneš ${v.zhromazdenieStav === null ? 0 : kartyZaPas(v.zhromazdenieStav, ja) * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU} cig. — cigaretu za každú kartu, ktorú si ešte smel vyložiť; na Zastávke len z vlastného limitu)`);
+      c({ type: "pass" }, `pasovať (do Pitky už nevykladáš, súper vykladá sám; dostaneš ${v.zhromazdenieStav === null ? 0 : kartyZaPas(v.zhromazdenieStav, ja, v.hraci[ja].rukaPocet) * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU} cig. — cigaretu za každú kartu, ktorú si ešte smel vyložiť, najviac toľko, koľko máš kariet v ruke; na Zastávke len z vlastného limitu)`);
       // V Zhromaždení sa nefajčí (§7) — motor smoke odmietne, preto ho ani neponúkať.
       if (zakazVypit(v)) out.push("(Kostol: nikto nesmie vypiť — v ťahu len jedna karta)");
       if (v.hraci[ja].poldeciPlne > 0 && z !== null && !zakazVypit(v)) {
@@ -882,7 +882,7 @@ function moznosti(v: ClientState): string[] {
         const n = cezPohorsenie ? nahladPosunuMarkera(DATA, v, e.elderId, k) : nahladPosunuPrebytkom(DATA, v, e.elderId);
         if (n === null) return "";
         const zn = (x: number): string => (x > 0 ? `+${x}` : x < 0 ? `${x}` : "±0");
-        return ` — NÁHĽAD: odhad špakov do konca ty ${zn(n.zmena[ja])}, súper ${zn(n.zmena[su])}; po každej bitke od tohto staršieho ty +${n.spakyZaStarsieho[ja]}, súper +${n.spakyZaStarsieho[su]}; priazeň po posune: ${n.priazen === null ? "nikto" : `${n.priazen === ja ? "ty" : "súper"} sila ${n.sila}`}`;
+        return ` — NÁHĽAD: odhad špakov do konca pri výhrach ty ${zn(n.zmena[ja])}, súper ${zn(n.zmena[su])}; po každej vyhratej bitke od tohto staršieho ty +${n.spakyZaStarsieho[ja]}, súper +${n.spakyZaStarsieho[su]}; priazeň po posune: ${n.priazen === null ? "nikto" : `${n.priazen === ja ? "ty" : "súper"} sila ${n.sila}`}`;
       };
       if (b?.krok === "pohorsenie") {
         // v6: o pole, bez limitu, aj na červenú — strach platí už v špakoch tejto bitky.

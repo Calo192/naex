@@ -126,15 +126,16 @@ describe("v6 bod 1–5: špaky za bitku a za starších, poradie bitky", () => {
     expect(vyhra.spakyNaSekere).toBe(0);
   });
 
-  it("bod 4: starší dá obávanému 1 / 2 / 3 podľa zóny po každej bitke; sivý nikomu", () => {
+  it("bod 4: starší dá obávanému 1 / 2 / 3 podľa zóny; sivý nikomu — v6.1 len víťazovi", () => {
     const s = predPoskodenim({
       ciel: lokalita(s0, "krcma"),
       sums: [{}, { Rana: 1 }],
       uprav: (t) => ({ ...t, starsi: t.starsi.map((e, i) => ({ ...e, marker: ([3, 5, 6, 1, 3, 3, 3, 3] as const)[i] as MarkerPos })) }),
     });
     // Pohoršenie hráča 0 posunie prvého staršieho 3 → 4 (žltá, strach z hráča 0).
+    // Bitku vyhral hráč 1 — porazený hráč 0 za svojich 1 + 2 + 3 nedostane nič (v6.1).
     const zaznam = pohorsenie(s).state.nastenka.at(-1)!;
-    expect(zaznam.zaStarsich).toEqual([1 + 2 + 3, 2]);
+    expect(zaznam.zaStarsich).toEqual([0, 2]);
   });
 });
 
@@ -163,9 +164,10 @@ describe("v6 karty: Kultúrny dom, Noviny", () => {
         }),
       });
     // Hráča 0 sa boja dvaja (prvý po Pohoršení 3 → 4 a druhý), hráča 1 jeden — aj keď v červenej.
-    expect(pohorsenie(sNovinami([3, 4, 0])).state.nastenka.at(-1)?.zaStarsich).toEqual([1 + 1 + 1, 3]);
+    // Hráč 0 bitku prehral: za starších nič (v6.1), Noviny dajú svoj špak aj tak („po bitke“).
+    expect(pohorsenie(sNovinami([3, 4, 0])).state.nastenka.at(-1)?.zaStarsich).toEqual([1, 3]);
     // Rovnako starších (1 : 1) — nič navyše.
-    expect(pohorsenie(sNovinami([3, 3, 0])).state.nastenka.at(-1)?.zaStarsich).toEqual([1, 3]);
+    expect(pohorsenie(sNovinami([3, 3, 0])).state.nastenka.at(-1)?.zaStarsich).toEqual([0, 3]);
   });
 });
 
@@ -249,6 +251,31 @@ describe("v6 bod 11: finále", () => {
     const st = pohorsenie(s).state;
     expect(st.nastenka.at(-1)).toMatchObject({ vitaz: null, prepadlo: 5, zaBitku: [0, 0] });
     expect(st.koniec).toMatchObject({ vitaz: 0, body: [5, 4] });
+  });
+});
+
+describe("v6.1 (Michal 2026-10-27): strach platí len víťazovi bitky", () => {
+  const s0 = setupGame(data, 5);
+  // Prvý starší po Pohoršení hráča 0 v žltej (bojí sa hráča 0), druhý v oranžovej na polovici
+  // hráča 1 (bojí sa hráča 0), tretí v oranžovej na polovici hráča 0 (bojí sa hráča 1).
+  const markery = (t: GameState): GameState => ({ ...t, starsi: t.starsi.map((e, i) => ({ ...e, marker: ([3, 5, 1, 3, 3, 3, 3, 3] as const)[i] as MarkerPos })) });
+  const po = (ciel: GameState["ciel"], sums: BitkaStav["sums"], lokalityVHre?: readonly CardInstance[]) =>
+    pohorsenie(predPoskodenim({ ciel, sums, uprav: markery, ...(lokalityVHre === undefined ? {} : { lokalityVHre, pitky: 3 }) })).state;
+
+  it("víťaz dostane svojich starších, porazený za starších nič", () => {
+    expect(po(lokalita(s0, "krcma"), [{ Rana: 5 }, {}]).nastenka.at(-1)).toMatchObject({ vitaz: 0, zaBitku: [2, 0], zaStarsich: [1 + 2, 0] });
+    expect(po(lokalita(s0, "krcma"), [{}, { Rana: 5 }]).nastenka.at(-1)).toMatchObject({ vitaz: 1, zaBitku: [0, 2], zaStarsich: [0, 2] });
+  });
+
+  it("pri sekere (špaky za bitku idú na sekeru) dostanú za starších obaja", () => {
+    const st = po(lokalita(s0, "krcma"), [{}, {}]);
+    expect(st.nastenka.at(-1)).toMatchObject({ vitaz: null, rozhodlo: "sekera", zaStarsich: [3, 2] });
+    expect(st.spaky).toEqual([3, 2]);
+  });
+
+  it("finále: strach len víťazovi, pri sekere obom", () => {
+    expect(po(FINALE, [{}, { Rana: 5 }], []).nastenka.at(-1)).toMatchObject({ vitaz: 1, zaBitku: [0, 3], zaStarsich: [0, 2] });
+    expect(po(FINALE, [{}, {}], []).nastenka.at(-1)).toMatchObject({ vitaz: null, zaStarsich: [3, 2] });
   });
 });
 
