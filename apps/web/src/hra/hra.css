@@ -1265,7 +1265,6 @@ button.zdroj-starsi[aria-pressed="true"] {
 
 .linia-skupina.lokalita {
   scroll-snap-align: center;
-  padding: 0 2px;
   background: color-mix(in srgb, var(--akcent) 8%, transparent);
   border-radius: 12px;
 }
@@ -1283,6 +1282,24 @@ button.zdroj-starsi[aria-pressed="true"] {
   overflow: visible;
   min-height: 0;
   gap: 0;
+  /* Karty k lokalite priliehajú ako k sebe navzájom (Michal 2026-10-27: medzera vpravo od Skladu). */
+  padding-inline: 0;
+}
+
+/* Popisy pod a nad lokalitou nerozširujú jej stĺpec — dlhé kraje („pri strážnici“) by ho
+   roztiahli a karta by v ňom ostala pri ľavom okraji, s medzerou k súperovej strane. */
+.linia-skupina.lokalita > :is(.partia-popis, .strany-stredu) {
+  contain: inline-size;
+}
+
+.linia-skupina.lokalita > .strany-stredu {
+  flex-wrap: wrap;
+  white-space: normal;
+}
+
+.linia-skupina.lokalita > .strany-stredu > :last-child {
+  margin-left: auto;
+  text-align: right;
 }
 
 .linia .prazdna {
@@ -3496,6 +3513,28 @@ button.pecat-nakup:active:not([aria-disabled="true"]) {
   stroke-width: 2;
 }
 
+/* Fajčenie: cena → karta, ktorú hráč dostane (Michal 2026-10-27). */
+.pecat-sipka {
+  font: 800 0.85rem/1 var(--nadpis);
+  opacity: 0.7;
+}
+
+.pecat-nakup .ikona-karty {
+  width: 20px;
+  height: 20px;
+  fill: #2b2116;
+}
+
+.pecat-nakup .ikona-karty .ilustracia {
+  fill: #e8dfcc;
+}
+
+.ikona-karty .preskrt {
+  stroke: var(--cervena);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+}
+
 /* Nedá sa: nevypálená pečiatka — obrys bez farby, kurzor povie, že nie. */
 button.pecat-nakup.ne,
 button.pecat-nakup.ne:hover {
@@ -3513,9 +3552,14 @@ button.pecat-nakup.ne::after {
 
 .pecat-nakup.ne .cena-cig,
 .pecat-nakup.ne .ikona-cigareta,
-.pecat-nakup.ne .ikona-poldeci {
+.pecat-nakup.ne .ikona-poldeci,
+.pecat-nakup.ne .ikona-karty {
   color: var(--slaby);
   fill: var(--slaby);
+}
+
+.pecat-nakup.ne .ikona-karty .ilustracia {
+  fill: var(--pozadie);
 }
 
 .pecat-nakup.ne .ikona-srotu {
@@ -3552,6 +3596,11 @@ button.pecat-koncim[aria-disabled="true"] {
 
 button.pecat-koncim .cena-cig {
   font-size: 0.85rem;
+}
+
+/* Odkazujem (Michal 2026-10-27): Nástroj do Dedičstva vedľa pasovať — tá istá pečiatka, opačný sklon. */
+button.pecat-odkaz {
+  rotate: -2deg;
 }
 
 /* Tichá voľba vedľa pečiatky (ešte nie, ešte vykladám). */
@@ -8705,4 +8754,67 @@ button.auto-hotovo-odkaz {
 .s-lupou.naex-supera::before,
 .rub-zaverecnej.naex-supera::before {
   display: none;
+}
+
+/* ---- medziobrazovka pri prechode fázy (Michal 2026-10-27) ----
+ * Nad stolom aj nad počítadlom bitky (to čaká, kým hráč neklikne), pod lupou a tooltipom. */
+.medziobrazovka {
+  position: fixed;
+  inset: 0;
+  z-index: 870;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: color-mix(in srgb, var(--pozadie) 78%, transparent);
+  backdrop-filter: blur(2px);
+  animation: pocitadlo-prichod 0.2s ease-out both;
+}
+
+.medziobrazovka-okno {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  max-width: min(620px, 100%);
+  padding: 26px 34px 20px;
+  border-radius: 16px;
+  border: 2px solid var(--akcent);
+  background: var(--plocha);
+  box-shadow: 0 14px 50px color-mix(in srgb, var(--pozadie) 85%, transparent);
+  text-align: center;
+  animation: oznam-finale 0.35s ease-out;
+}
+
+.medziobrazovka-nad {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tlmeny);
+}
+
+.medziobrazovka h2 {
+  margin: 0;
+  font: 800 clamp(2.2rem, 5vw, 3.4rem) / 1 var(--nadpis);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--akcent);
+}
+
+.medziobrazovka p {
+  margin: 4px 0 6px;
+  font-size: 1.08rem;
+  line-height: 1.5;
+  color: var(--text);
+  text-wrap: balance;
+}
+
+.medziobrazovka .tlacidlo-hlavne {
+  min-width: 160px;
+  font-size: 1.05rem;
+}
+
+.medziobrazovka-pozn {
+  font-size: 0.78rem;
+  color: var(--slaby-text);
 }

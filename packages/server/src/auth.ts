@@ -53,6 +53,8 @@ export interface Pouzivatel {
   readonly par: string | null;
   /** Klávesové skratky v partii (K, P, N, Esc, ?) — predvolene zapnuté. */
   readonly skratky: boolean;
+  /** Medziobrazovky pri prechode fáz v partii (Michal 2026-10-27) — predvolene zapnuté. */
+  readonly medziobrazovky: boolean;
   /** Pohlavie pre tvary hlášok („Eva skončila“); null = neuvádza, hlášky sú neutrálne. */
   readonly pohlavie: Pohlavie | null;
   /** Nápovedy majstra Melichara v partii (Michal 2026-10-24) — predvolene zapnuté. */
@@ -362,6 +364,7 @@ export class Ucty {
       schema: typeof r.schema === "string" ? r.schema : null,
       par: typeof r.par === "string" ? r.par : null,
       skratky: vypinac(r.skratky),
+      medziobrazovky: vypinac(r.medziobrazovky),
       napovedy: vypinac(r.napovedy),
       pohlavie: POHLAVIA.includes(r.pohlavie as Pohlavie) ? (r.pohlavie as Pohlavie) : null,
       skrytySuhrn: Number(r.skryty_suhrn) === 1,
@@ -370,7 +373,7 @@ export class Ucty {
 
   podlaId(id: number): Pouzivatel | null {
     return this.riadok(
-      this.db.prepare("SELECT id, login, meno, avatar, rola, lupa, hudba, melichar, ai, schema, par, skratky, napovedy, pohlavie, skryty_suhrn FROM pouzivatelia WHERE id = ?").get(id) as
+      this.db.prepare("SELECT id, login, meno, avatar, rola, lupa, hudba, melichar, ai, schema, par, skratky, medziobrazovky, napovedy, pohlavie, skryty_suhrn FROM pouzivatelia WHERE id = ?").get(id) as
         | Record<string, unknown>
         | undefined,
     );
@@ -452,6 +455,7 @@ export class Ucty {
       schema?: string;
       par?: string;
       skratky?: boolean;
+      medziobrazovky?: boolean;
       napovedy?: boolean;
       pohlavie?: Pohlavie | null;
       skrytySuhrn?: boolean;
@@ -464,6 +468,7 @@ export class Ucty {
     if (zmeny.schema !== undefined) this.db.prepare("UPDATE pouzivatelia SET schema = ? WHERE id = ?").run(zmeny.schema, id);
     if (zmeny.par !== undefined) this.db.prepare("UPDATE pouzivatelia SET par = ? WHERE id = ?").run(zmeny.par, id);
     if (zmeny.skratky !== undefined) this.db.prepare("UPDATE pouzivatelia SET skratky = ? WHERE id = ?").run(zmeny.skratky ? 1 : 0, id);
+    if (zmeny.medziobrazovky !== undefined) this.db.prepare("UPDATE pouzivatelia SET medziobrazovky = ? WHERE id = ?").run(zmeny.medziobrazovky ? 1 : 0, id);
     if (zmeny.napovedy !== undefined) this.db.prepare("UPDATE pouzivatelia SET napovedy = ? WHERE id = ?").run(zmeny.napovedy ? 1 : 0, id);
     if (zmeny.pohlavie !== undefined) this.db.prepare("UPDATE pouzivatelia SET pohlavie = ? WHERE id = ?").run(zmeny.pohlavie, id);
     if (zmeny.skrytySuhrn !== undefined) this.db.prepare("UPDATE pouzivatelia SET skryty_suhrn = ? WHERE id = ?").run(zmeny.skrytySuhrn ? 1 : 0, id);

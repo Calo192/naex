@@ -285,6 +285,16 @@ export function Profil() {
       .catch(chyba);
   };
 
+  // Medziobrazovky pri prechode fáz v partii (Michal 2026-10-27).
+  const [medziobrazovky, setMedziobrazovky] = useState(ja?.medziobrazovky !== false);
+  const prepniMedziobrazovky = (zapnute: boolean): void => {
+    setMedziobrazovky(zapnute);
+    api
+      .patch<{ pouzivatel: Pouzivatel }>("/profil", { medziobrazovky: zapnute })
+      .then((r) => nastav(r.pouzivatel))
+      .catch(chyba);
+  };
+
   // Nápovedy majstra Melichara v partii (Michal 2026-10-24): vypnúť a ukázať znova.
   const [napovedy, setNapovedy] = useState(ja?.napovedy !== false);
   const [napovedyZnova, setNapovedyZnova] = useState(false);
@@ -520,6 +530,13 @@ export function Profil() {
           <span>
             <b>Klávesové skratky v partii</b> — K končím / hotovo / potvrdiť, P pasovať, N NA EX!, Esc zrušiť, ? zoznam. Pri písaní do poľa
             nefungujú; M otvorí pult Melichara a číslice na ňom buchnú pečiatkou.
+          </span>
+        </label>
+        <label className="skratky-volba">
+          <input type="checkbox" checked={medziobrazovky} onChange={(e) => prepniMedziobrazovky(e.target.checked)} />
+          <span>
+            <b>Medziobrazovky pri prechode fáz</b> — pri výbere lokality, šenku, Pitke, bitke a prebytku sa ukáže názov fázy a čo máš
+            robiť. Ostane, kým neklikneš „Rozumiem“.
           </span>
         </label>
         <label className="skratky-volba">

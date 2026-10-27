@@ -140,6 +140,9 @@ import { SkratkyNapoveda, escVratiNavrh, tlacidloNavratu, useSkratky, type Vrstv
 import { klucFazy, predvolenyRezim, vyberSpravu, type RezimStran } from "./bar.ts";
 import { JednotnyBar, type StranaBaru } from "./JednotnyBar.tsx";
 import { polozkySoZaverecnou, tahSoZaverecnou } from "./zaverecnaTahu.ts";
+import { polozkyOdkazu, tahOdkazu } from "./odkazTahu.ts";
+import { klucPrechodu, medziobrazovka } from "./prechodFazy.ts";
+import { Medziobrazovka } from "./Medziobrazovka.tsx";
 import { klavesPreskociPauzu, PAUZA_CIELA_MS, pauzaPoVolbeCiela, type PauzaCiela } from "./pauzaCiela.ts";
 import type { Sada } from "@naex/tvorba";
 import { HernaKarta, vzhladKarty, type HernaKartaProps } from "./HernaKarta.tsx";
@@ -153,7 +156,7 @@ import {
   BitkaPanel,
   CenaCigariet,
   HracDoska,
-  IkonaCigareta,
+  IkonaKarty,
   IkonaPoldeci,
   OdhadBaru,
   PriebehKola,
@@ -250,6 +253,9 @@ function IkonaSrotu() {
     </svg>
   );
 }
+
+/** Ako dlho sa stôl po prechode fázy ustáli, kým príde medziobrazovka. */
+const MEDZIOBRAZOVKA_MS = 400;
 
 /** Šírka karty v ruke — nastavuje aj --ruka-w v hra.css (na mobile menšia). */
 const SIRKA_V_RUKE = 120;
@@ -1961,6 +1967,32 @@ export function HernaPlocha({
   // Kým beží počítadlo bitky, pauza počká — inak by jej 3 s ubehli pod ním.
   const pauzaBezi = pauzaCiela !== null && !pocitadloBezi;
   const zrusPauzuCiela = useCallback((): void => setPauzaCiela(null), []);
+  // ---- medziobrazovky pri prechode fáz (Michal 2026-10-27) ------------------
+  // Pri výbere lokality, šenku, Pitke, bitke a prebytku (aj v novom kole a vo finále) sa ukáže
+  // názov fázy a čo sa ide diať; ostane do „Rozumiem“. Vypínač v profile, výučba má vlastné
+  // bubliny. Bitka čaká s počítadlom, kým hráč neklikne — inak by prebehlo pod medziobrazovkou.
+  const medziZapnute = useUcet().ja?.medziobrazovky !== false && vyucba !== true && prehravanie === undefined;
+  const medziTeraz = medziobrazovka(view, ja, menoHraca(super_), pocitadlo !== null ? pocitadlo.stol.kolo : null);
+  // Pri načítaní stola sa za videnú berie fáza, ktorá už beží — okrem začiatku partie.
+  const [potvrdenaMedzi, setPotvrdenaMedzi] = useState<string | null>(() =>
+    view.kolo === 1 && view.faza === "volbaCiela" ? null : (medziTeraz?.kluc ?? null),
+  );
+  const medziCaka = medziZapnute && medziTeraz !== null && medziTeraz.kluc !== potvrdenaMedzi;
+  // Krátka chvíľa, kým sa stôl ustáli (bitka a nové kolo prídu naraz, počítadlo až po nich).
+  const [medziUstalena, setMedziUstalena] = useState<string | null>(null);
+  const klucMedzi = medziCaka ? medziTeraz.kluc : null;
+  useEffect(() => {
+    if (klucMedzi === null) return;
+    const t = setTimeout(() => setMedziUstalena(klucMedzi), MEDZIOBRAZOVKA_MS);
+    return () => clearTimeout(t);
+  }, [klucMedzi]);
+  const medziViditelna =
+    medziCaka &&
+    medziUstalena === medziTeraz.kluc &&
+    !pauzaBezi &&
+    !cakaOdhalenie &&
+    (vrstvaVyhodnotenia === null || pocitadlo !== null) &&
+    !(oznamFinale === "ukazany" && jeFinaleStola);
   useEffect(() => {
     if (!pauzaBezi) return;
     zavriLupuHned();
@@ -2070,7 +2102,7 @@ export function HernaPlocha({
     </div>
   );
   /**
-   * Karta, ktorá sa klikom zväčší (narovnaná, aby sa dala čítať). Ak klik
+   * Karta, ktorá sa klikom zväčší (otočená ostane otočená, ako na stole). Ak klik
    * na kartu niečo robí (výber, NA EX…), zväčší ju tlačidlo v rohu.
    * `obsah` nahradí holú kartu (napr. ťahateľným obalom), `zdroj` dovolí
    * chytiť ju aj zo zväčšenej kópie,
@@ -2096,7 +2128,8 @@ export function HernaPlocha({
   ): ReactNode => {
     const uid = props.karta.uid;
     const kluc = `k${uid}`;
-    const render = (sirka: number): ReactNode => karta({ ...props, otocena: false, sirka });
+    // Lupa ukáže kartu tak, ako leží na stole, aj otočenú (Michal 2026-10-27) — text sa číta aj tak.
+    const render = (sirka: number): ReactNode => karta({ ...props, sirka });
     if (moznosti.bezLupy !== true) lupaKarty.set(kluc, { render, ...(moznosti.zdroj === undefined ? {} : { zdroj: moznosti.zdroj }), odstran: moznosti.odstran });
     const maAkciu = props.onClick !== undefined;
     const triedy = ["s-lupou", maAkciu ? "ma-akciu" : "", lupa?.kluc === kluc ? "harmonika-aktivna" : ""];
@@ -2799,6 +2832,74 @@ export function HernaPlocha({
       </span>
     );
 
+  // ---- dlaždica KARTY ako cieľ priznania a Dedičstva (Michal 2026-10-23, #76) ----
+  // Pri ťahaní kliatby sa dlaždica KARTY v tvojom bare zmení na cieľ „Priznať“, pri Nástroji
+  // na „Dedičstvo“ s cenou; karta sa pustí na ňu (do návrhu ťahu), stôl sa neprepína. Klik na
+  // kartu a potom na dlaždicu robí to isté (aj kláves O). Kam karta patrí, určuje jej typ — keď ju
+  // tam pravidlá teraz nepustia, dlaždica povie prečo. Vybraný Nástroj má navyše pečiatku
+  // „odkazujem“ vedľa pasovať (Michal 2026-10-27: Dedičstvo bolo neintuitívne) — tá aj dlaždica
+  // pošlú ten istý ťah ako „potvrdiť“ (planVykladania → tah), len hneď.
+  const [vybranaDoOblasti, setVybranaDoOblasti] = useState<number | null>(null);
+  useEffect(() => setVybranaDoOblasti(null), [klucTahu]);
+  /** Kam smie karta z ruky — rovnaké ciele ako pri ťahaní (planVykladania). */
+  const kamIde = (k: CardInstance): { readonly priznanie: boolean; readonly dedicstvo: boolean } => {
+    const c = cieleZdroja({ karta: k, odkial: "ruka", navrh: false });
+    return { priznanie: c.has("priznanie"), dedicstvo: c.has("dedicstvo") };
+  };
+  const mozemOdkladat = view.faza === "zhromazdenie" && vykladam && !reagujem;
+  const typOblasti = (k: CardInstance): { readonly priznanie: boolean; readonly dedicstvo: boolean } => {
+    const tagy = data.cards.get(k.defId)?.tags ?? [];
+    return { priznanie: mozemOdkladat && tagy.includes("Kliatba"), dedicstvo: mozemOdkladat && tagy.includes("Nástroj") };
+  };
+  const tahanaZRuky = tahanie !== null && tahanie.zdroj.odkial === "ruka" && !tahanie.zdroj.navrh ? tahanie.zdroj.karta : null;
+  const vybranaKarta = vybranaDoOblasti === null ? null : (ruka.find((k) => k.uid === vybranaDoOblasti) ?? null);
+  const kartaOblasti = tahanaZRuky ?? vybranaKarta;
+  const typKarty = kartaOblasti === null ? null : typOblasti(kartaOblasti);
+  const cielDlazdice: "priznanie" | "dedicstvo" | null = typKarty === null ? null : typKarty.priznanie ? "priznanie" : typKarty.dedicstvo ? "dedicstvo" : null;
+  const smieNaDlazdicu = kartaOblasti !== null && cielDlazdice !== null && kamIde(kartaOblasti)[cielDlazdice];
+  /** Prečo karta na dlaždicu nesmie — ten istý výpočet, aký urobí server. */
+  const chybaDlazdice =
+    kartaOblasti === null || cielDlazdice === null || smieNaDlazdicu
+      ? null
+      : (planTahu([...vylozenia.filter((x) => x.karta.uid !== kartaOblasti.uid), { karta: kartaOblasti, ciel: cielDlazdice }]).chyba ?? "Sem ju teraz vyložiť nesmieš.");
+  /** Odkáže Nástroj do Dedičstva hneď — návrh ťahu + Nástroj, ten istý príkaz „tah“ ako „potvrdiť“ (odkazTahu.ts). */
+  // Výučba pustí len ťah zo scenára — ako pri „potvrdiť“.
+  const dovodOdkazu = (k: CardInstance): string | null => tahOdkazu(data, view, ja, vylozenia, k).dovod ?? chybaVyucby(polozkyOdkazu(vylozenia, k));
+  const odkaz = (k: CardInstance): void => {
+    const t = tahOdkazu(data, view, ja, vylozenia, k);
+    if (t.kroky === null || dovodOdkazu(k) !== null) return;
+    setVybranaDoOblasti(null);
+    setNavrh(null);
+    posli({ type: "tah", kroky: t.kroky });
+  };
+  /** Nástroj vybraný v ruke, ktorý smie do Dedičstva — vtedy je na hrane stola „odkazujem“. */
+  const nastrojNaOdkaz = vybranaKarta !== null && typOblasti(vybranaKarta).dedicstvo ? vybranaKarta : null;
+  const tlacidloOdkazu: ReactNode = (() => {
+    if (nastrojNaOdkaz === null) return null;
+    const k = nastrojNaOdkaz;
+    const chyba = dovodOdkazu(k);
+    const cena = view.cenaDedicstva;
+    const ineVNavrhu = vylozenia.some((x) => x.karta.uid !== k.uid && x.ciel !== "priznanie");
+    const tip =
+      `Odkážeš kartu ${menoKarty(k.defId)} do Dedičstva za ${cigariet(cena)} (máš ${hJa.cigarety}): jej efekt Dedičstvo platí do konca hry a do línie sa už nevráti. ` +
+      `Limit nemíňa, ale je to tvoj ťah${ineVNavrhu ? " — potvrdíš ním aj karty v návrhu" : ""}. Ďalšie Dedičstvo stojí o cigaretu viac, pre oboch.`;
+    return (
+      <button
+        type="button"
+        className="pecat pecat-koncim pecat-odkaz"
+        data-vyucba="tlacidlo:odkazujem"
+        aria-disabled={chyba !== null}
+        title={chyba ?? tip}
+        onClick={(e) => {
+          if (chyba === null) odkaz(k);
+          else setChybaTahania({ text: chyba, x: e.clientX, y: e.clientY });
+        }}
+      >
+        odkazujem <CenaCigariet n={cena} />
+      </button>
+    );
+  })();
+
   // ---- tlačidlá návrhu na stole (Michal 2026-10-20) ------------------------
   // Potvrdenie patrí k tomu, čo leží na stole — hráč nemusí pozerať dole na pás.
   const stolTlacidla = ((): HranaTahu | null => {
@@ -2833,6 +2934,7 @@ export function HernaPlocha({
             {/* Výučba: prečo sa nedá potvrdiť, priamo pri tlačidle (nápoveda na dotyku nie je). */}
             {chybaVoVyucbe !== null && plan.chyba === null && <span className="vyucba-zamok">{chybaVoVyucbe}</span>}
             {tlacidloZaverecnej}
+            {tlacidloOdkazu}
           </>
         ),
       };
@@ -2880,6 +2982,8 @@ export function HernaPlocha({
     readonly dovod: string | null;
     readonly tip: string;
     readonly akcia: () => void;
+    /** Čo hráč za cenu dostane — kreslí sa za cenou so šípkou (fajčenie: cigarety → karta). */
+    readonly zisk?: ReactNode;
   }): ReactNode => (
     <button
       key={p.kluc}
@@ -2898,6 +3002,12 @@ export function HernaPlocha({
         <span className="pecat-riadok">
           {p.ikona}
           {p.cena > 0 && <CenaCigariet n={p.cena} znamienko={p.znamienko ?? "−"} />}
+          {p.zisk !== undefined && (
+            <>
+              <span className="pecat-sipka" aria-hidden="true">→</span>
+              {p.zisk}
+            </>
+          )}
         </span>
       )}
       <span className="pecat-nazov">{p.nazov}</span>
@@ -3352,6 +3462,7 @@ export function HernaPlocha({
             vpravo: (
               <>
                 {tlacidloZaverecnej}
+                {tlacidloOdkazu}
                 <button
                   className="pecat pecat-koncim"
                   data-skratka="p"
@@ -3590,7 +3701,9 @@ export function HernaPlocha({
             </span>
             {pecatNakupu({
               kluc: "fajcit",
-              ikona: <IkonaCigareta zakaz={zakazFajc !== null} />,
+              // Pečiatka ukazuje, čo hráč dostane (Michal 2026-10-27): cena v cigaretách → karta.
+              ikona: null,
+              zisk: <IkonaKarty zakaz={zakazFajc !== null} />,
               nazov: "fajčiť",
               cena: cenaFajc,
               dovod: zakazFajc !== null
@@ -4100,6 +4213,18 @@ export function HernaPlocha({
     setVysledokKroku(false);
     setPohladStarsich(null);
   }, [potrebujemLiniu]);
+  // Línia starších zmizne, hneď ako prestane byť aktuálna (Michal 2026-10-27): koniec bitky či
+  // patronátu, výber lokality, šenok, Zhromaždenie, Pitka — aj keď je na ťahu súper. Inak
+  // ostala ukázaná, kým hráč sám nepotreboval líniu kariet. Až po efekte kroku vyššie, aby
+  // koniec patronátu (krok aj fáza naraz) nenechal výsledok kroku na stole.
+  const fazaStola = klucPrechodu(view);
+  const predoslaFazaStola = useRef(fazaStola);
+  useEffect(() => {
+    if (predoslaFazaStola.current === fazaStola) return;
+    predoslaFazaStola.current = fazaStola;
+    setVysledokKroku(false);
+    setPohladStarsich(null);
+  }, [fazaStola]);
   // Kým beží počítadlo bitky, stôl ukazuje líniu kariet (rozsvecujú sa), nie starších.
   // Pauza po súperovej voľbe cieľa líniu starších na chvíľu skryje — rámik pauzy by inak svietil
   // na medzeru medzi staršími a vybranú lokalitu by nebolo vidno (Michal 2026-10-26). Po pauze
@@ -4792,34 +4917,6 @@ export function HernaPlocha({
 
   // Stôl bez scrollovania (#67): na počítači leží voľba cieľa a draft na stole namiesto
   // prázdnej línie. Lokalita na otočenie a potvrdenie je v línii — vtedy sa vráti línia.
-  // ---- dlaždica KARTY ako cieľ priznania a Dedičstva (Michal 2026-10-23, #76) ----
-  // Pri ťahaní kliatby sa dlaždica KARTY v tvojom bare zmení na cieľ „Priznať“, pri Nástroji
-  // na „Dedičstvo“ s cenou; karta sa pustí na ňu, stôl sa neprepína. Klik na kartu a potom
-  // na dlaždicu robí to isté (aj kláves O). Kam karta patrí, určuje jej typ — keď ju tam
-  // pravidlá teraz nepustia, dlaždica povie prečo.
-  const [vybranaDoOblasti, setVybranaDoOblasti] = useState<number | null>(null);
-  useEffect(() => setVybranaDoOblasti(null), [klucTahu]);
-  /** Kam smie karta z ruky — rovnaké ciele ako pri ťahaní (planVykladania). */
-  const kamIde = (k: CardInstance): { readonly priznanie: boolean; readonly dedicstvo: boolean } => {
-    const c = cieleZdroja({ karta: k, odkial: "ruka", navrh: false });
-    return { priznanie: c.has("priznanie"), dedicstvo: c.has("dedicstvo") };
-  };
-  const mozemOdkladat = view.faza === "zhromazdenie" && vykladam && !reagujem;
-  const typOblasti = (k: CardInstance): { readonly priznanie: boolean; readonly dedicstvo: boolean } => {
-    const tagy = data.cards.get(k.defId)?.tags ?? [];
-    return { priznanie: mozemOdkladat && tagy.includes("Kliatba"), dedicstvo: mozemOdkladat && tagy.includes("Nástroj") };
-  };
-  const tahanaZRuky = tahanie !== null && tahanie.zdroj.odkial === "ruka" && !tahanie.zdroj.navrh ? tahanie.zdroj.karta : null;
-  const vybranaKarta = vybranaDoOblasti === null ? null : (ruka.find((k) => k.uid === vybranaDoOblasti) ?? null);
-  const kartaOblasti = tahanaZRuky ?? vybranaKarta;
-  const typKarty = kartaOblasti === null ? null : typOblasti(kartaOblasti);
-  const cielDlazdice: "priznanie" | "dedicstvo" | null = typKarty === null ? null : typKarty.priznanie ? "priznanie" : typKarty.dedicstvo ? "dedicstvo" : null;
-  const smieNaDlazdicu = kartaOblasti !== null && cielDlazdice !== null && kamIde(kartaOblasti)[cielDlazdice];
-  /** Prečo karta na dlaždicu nesmie — ten istý výpočet, aký urobí server. */
-  const chybaDlazdice =
-    kartaOblasti === null || cielDlazdice === null || smieNaDlazdicu
-      ? null
-      : (planTahu([...vylozenia.filter((x) => x.karta.uid !== kartaOblasti.uid), { karta: kartaOblasti, ciel: cielDlazdice }]).chyba ?? "Sem ju teraz vyložiť nesmieš.");
   useEffect(() => {
     if (vybranaDoOblasti === null) return;
     const klaves = (e: KeyboardEvent): void => {
@@ -4897,7 +4994,9 @@ export function HernaPlocha({
             aktivny: jeCiel(cielDlazdice) || (vybranaKarta !== null && smieNaDlazdicu),
             nad: nadCielom(cielDlazdice),
             dataCiel: jeCiel(cielDlazdice) ? cielDlazdice : undefined,
-            onKlik: vybranaKarta !== null && smieNaDlazdicu ? () => vylozDoOblasti(cielDlazdice) : undefined,
+            // Klik s vybraným Nástrojom robí to isté ako „odkazujem“ — jedna cesta, nie dve.
+            onKlik:
+              vybranaKarta !== null && smieNaDlazdicu ? () => (cielDlazdice === "dedicstvo" ? odkaz(vybranaKarta) : vylozDoOblasti(cielDlazdice)) : undefined,
           },
   });
 
@@ -5769,7 +5868,8 @@ export function HernaPlocha({
           onKoniec={koniecPocitadla}
         />
       )}
-      {pocitadlo !== null && (
+      {medziViditelna && medziTeraz !== null && <Medziobrazovka obsah={medziTeraz} onRozumiem={() => setPotvrdenaMedzi(medziTeraz.kluc)} />}
+      {pocitadlo !== null && !medziCaka && (
         <PocitadloSLiniou
           key={`bitka-${pocitadlo.stol.kolo}`}
           vrstva={pocitadlo}

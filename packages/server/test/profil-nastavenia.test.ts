@@ -95,6 +95,14 @@ describe("nastavenia profilu", () => {
     expect(((await volaj("GET", "/ja", cookie)).data.pouzivatel as { skratky: boolean }).skratky).toBe(false);
   });
 
+  it("medziobrazovky pri prechode fáz (Michal 2026-10-27): predvolene zapnuté, vypínač len áno/nie", async () => {
+    const { cookie } = await registruj(server.port);
+    expect(((await volaj("GET", "/ja", cookie)).data.pouzivatel as { medziobrazovky: boolean }).medziobrazovky).toBe(true);
+    expect(((await volaj("PATCH", "/profil", cookie, { medziobrazovky: false })).data.pouzivatel as { medziobrazovky: boolean }).medziobrazovky).toBe(false);
+    for (const zle of [0, "nie", null]) expect((await volaj("PATCH", "/profil", cookie, { medziobrazovky: zle })).status).toBe(400);
+    expect(((await volaj("GET", "/ja", cookie)).data.pouzivatel as { medziobrazovky: boolean }).medziobrazovky).toBe(false);
+  });
+
   it("hráč si vyberie predvolený avatar, cudzie médium nie", async () => {
     const { cookie } = await registruj(server.port);
     const zoznam = (await volaj("GET", "/avatary", cookie)).data.avatary as string[];
