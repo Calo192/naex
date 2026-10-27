@@ -5,6 +5,7 @@
 
 import type { ReactNode } from "react";
 import type { Sada } from "@naex/tvorba";
+import { ZnackaStrachu } from "../../hra/IkonaStrachu.tsx";
 import { IkonaAkcie } from "../../karta/IkonaAkcie.tsx";
 import { Odkaz } from "../../lib/router.tsx";
 import { UkazkaBitky, UkazkaLimitu, UkazkaSpajania, UkazkaStupnice } from "../Ukazky.tsx";
@@ -675,7 +676,8 @@ export const KAPITOLY: readonly Kapitola[] = [
         </ul>
         <p className="tlmene">
           V hre to vidíš pri každom staršom: komu patrí priazeň a čo dáva, koho sa starší bojí a koľko špakov mu dá po bitke, ak ju
-          vyhrá.
+          vyhrá. Strach ukazujú výkričníky vo farbe toho, koho sa starší bojí: <ZnackaStrachu uroven={1} trieda="moje" /> Znepokojenie,{" "}
+          <ZnackaStrachu uroven={2} trieda="moje" /> Strach, <ZnackaStrachu uroven={3} trieda="moje" /> Vydesenie.
         </p>
       </>
     ),

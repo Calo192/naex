@@ -5415,17 +5415,24 @@ button.auto-hotovo-odkaz {
   left: 50%;
   translate: -50% -50%;
   rotate: -12deg;
-  padding: 0.1em 0.35em;
+  display: grid;
+  padding: 0.12em 0.3em;
   border: max(2px, 0.12em) solid currentColor;
   border-radius: 0.2em;
   background: color-mix(in srgb, var(--pozadie) 72%, transparent);
   box-shadow: 0 0 0 max(1px, 0.05em) color-mix(in srgb, var(--pozadie) 60%, transparent);
-  font: 900 clamp(0.8rem, 11cqw, 1.6rem) / 1.15 var(--pismo);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  white-space: nowrap;
+  /* Bez textu (Michal 2026-10-27): veľkosť pečiatky drží písmo, !!! sú v ňom ako slovo. */
+  font-size: clamp(1rem, 14cqw, 2rem);
+  line-height: 1;
   color: var(--farba-hraca);
   pointer-events: none;
+}
+
+.vykricniky-peciatky {
+  display: block;
+  width: 1.4em;
+  height: 1.6em;
+  fill: currentColor;
 }
 
 .ls-peciatka.moja {
@@ -5552,10 +5559,27 @@ button.auto-hotovo-odkaz {
 }
 
 .ls-strany > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+/* Skráti sa len meno — ♥ a výkričníky na konci stupnice ostanú celé. */
+.ls-strany-meno {
   min-width: 0;
   overflow: hidden;
-  white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+.ls-strany .ikona-strachu {
+  margin-block: -4px;
+}
+
+.ls-koniec-priazen {
+  font-size: 0.8rem;
+  line-height: 0.8;
 }
 
 .ls-strany .moje {
@@ -5608,14 +5632,11 @@ button.auto-hotovo-odkaz {
   opacity: 0.6;
 }
 
-.ls-znacka {
-  display: inline-block;
-  width: 0.62rem;
-  height: 0.62rem;
-  margin-right: 4px;
-  vertical-align: -1px;
-  border-radius: 2px;
-  box-shadow: 0 0 0 1px var(--okraj-svetly);
+/* Výkričníky pred „bojí sa…“ dedia farbu čipu — farbu toho, koho sa starší bojí. */
+.ls-cip .ikona-strachu,
+.ls-boduje .ikona-strachu,
+.lupa-starsieho .ikona-strachu {
+  margin-right: 3px;
 }
 
 /* Náhľad pred posunom: čipy ukazujú stav po posune. */
@@ -6123,7 +6144,7 @@ button.auto-hotovo-odkaz {
   box-shadow: 0 0 0 1px var(--akcent);
 }
 
-/* Dlaždica staršieho: farebný štvorček zóny pri mene; priazeň ♥ v mojej farbe, strach so špakmi. */
+/* Dlaždica staršieho: výkričníky pri mene, keď sa hráča bojí; priazeň ♥, strach so špakmi. */
 .starsi-dlazdica .zdroj-nazov {
   display: flex;
   align-items: center;
@@ -6141,12 +6162,12 @@ button.auto-hotovo-odkaz {
   text-overflow: ellipsis;
 }
 
-.starsi-dlazdica .ls-znacka {
-  flex: none;
-  width: 9px;
-  height: 9px;
-  border-radius: 2px;
-  background: var(--farba-zony);
+.starsi-dlazdica .zdroj-nazov .ikona-strachu {
+  margin-block: -4px;
+}
+
+.zdroj-starsi .zdroj-pod .ikona-strachu {
+  margin-right: 3px;
 }
 
 .starsi-dlazdica .velke-cislo {

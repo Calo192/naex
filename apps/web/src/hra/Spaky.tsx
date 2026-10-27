@@ -8,6 +8,7 @@ import type { BitkaNaNastenke, CardInstance, CielKola, PlayerId, SpakyTeraz } fr
 import { KONSTANTY, rozpisSpakov, spakov } from "@naex/core";
 import { Avatar } from "../komponenty.tsx";
 import { IkonaSpaku } from "./IkonaSpaku.tsx";
+import { ZnackaStrachu } from "./IkonaStrachu.tsx";
 import "./spaky.css";
 
 export { IkonaSpaku };
@@ -245,6 +246,25 @@ export function textRozpisuStarsich(b: BitkaNaNastenke, p: PlayerId, menoKarty: 
 }
 
 /**
+ * Rozpis za starších s výkričníkmi (Michal 2026-10-27): stupeň strachu = špaky, ktoré starší dal,
+ * farba = hráč, ktorého sa bál a ktorý ich dostal. Noviny sú bez výkričníkov — nie sú starší.
+ */
+export function RozpisStarsich({ b, p, ja, menoKarty }: { readonly b: BitkaNaNastenke; readonly p: PlayerId; readonly ja: PlayerId; readonly menoKarty: (defId: string) => string }) {
+  const polozky = b.zaStarsichRozpis?.[p] ?? [];
+  return (
+    <>
+      {polozky.map((x, i) => (
+        <span key={i} className="rozpis-starsieho">
+          {i > 0 && ", "}
+          {x.elderId !== null && <ZnackaStrachu uroven={x.spaky} trieda={p === ja ? "moje" : "superove"} />}
+          {menoKarty(x.defId)} +{x.spaky}
+        </span>
+      ))}
+    </>
+  );
+}
+
+/**
  * Koľko riadkov tabuľky (rekapitulácia bitky) zaberie rozpis za starších pod číslom:
  * do bunky sa zmestia asi tri mená, riadok rozpisu je asi polovica riadku tabuľky.
  */
@@ -272,16 +292,16 @@ function Uctenka({
 }) {
   const plus = (n: number): string => (n > 0 ? `+${n}` : "0");
   // Lístok je úzky: rozpis bez mien hráčov, čí je, ukáže farba (ako popolníky nad nástenkou).
-  const rozpis = poradie.map((p) => ({ p, text: textRozpisuStarsich(b, p, menoKarty) })).filter((r) => r.text !== "");
+  const rozpis = poradie.filter((p) => textRozpisuStarsich(b, p, menoKarty) !== "");
   return (
     <span
       className="nastenka-uctenka"
       title={`Po bitke (${kto}): starší, ktorí sa hráča boja (${b.vitaz === null ? "pri sekere obom" : "len víťazovi"}), Exekútor, prebytok a stav popolníkov.`}
     >
       <span>starší {riadok(b.zaStarsich, plus)}</span>
-      {rozpis.map((r) => (
-        <span key={r.p} className={`nastenka-rozpis ${r.p === ja ? "moje" : "superove"}`}>
-          {r.text}
+      {rozpis.map((p) => (
+        <span key={p} className={`nastenka-rozpis ${p === ja ? "moje" : "superove"}`}>
+          <RozpisStarsich b={b} p={p} ja={ja} menoKarty={menoKarty} />
         </span>
       ))}
       {b.exekutor[0] + b.exekutor[1] > 0 && <span className="minus">Exekútor {riadok(b.exekutor, (n) => (n > 0 ? `−${n}` : "0"))}</span>}
@@ -350,7 +370,13 @@ export function SpakyBitky({
           {([ja, su] as const).map((p) => (
             <span key={p} role="cell" className={r.h[p] > 0 ? "plus" : r.h[p] < 0 ? "minus" : "nic"} title={r.pozn?.(p) || undefined}>
               {zn(r.h[p])}
-              {r.pozn !== undefined && r.pozn(p) !== "" && (r.pod === true ? <small className="sb-pod">{r.pozn(p)}</small> : <small> {r.pozn(p)}</small>)}
+              {r.pozn !== undefined &&
+                r.pozn(p) !== "" &&
+                (r.pod === true ? (
+                  <small className="sb-pod">{r.kluc === "starsi" && menoKarty !== undefined ? <RozpisStarsich b={b} p={p} ja={ja} menoKarty={menoKarty} /> : r.pozn(p)}</small>
+                ) : (
+                  <small> {r.pozn(p)}</small>
+                ))}
             </span>
           ))}
         </span>

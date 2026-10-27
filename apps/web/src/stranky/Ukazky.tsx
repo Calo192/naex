@@ -8,6 +8,7 @@ import eldersJson from "@naex/core/data/elders.json";
 import scorecardsJson from "@naex/core/data/scorecards.json";
 import type { KartaNavrh, RozlozenieStrany, Sada, Vzhlad } from "@naex/tvorba";
 import { variant, variantyKarty } from "@naex/tvorba";
+import { ZnackaStrachu } from "../hra/IkonaStrachu.tsx";
 import { KartaLico, type SlotStav } from "../karta/KartaLico.tsx";
 import { vzhladSady } from "../lib/sada.tsx";
 
@@ -266,9 +267,14 @@ export function UkazkaStupnice() {
           </button>
         ))}
       </div>
+      {/* Ako v hre: na konci zvýhodneného ♥, na konci obávaného výkričníky v jeho farbe. */}
       <div className="stupnica-popis">
-        <span>← tvoja polovica</span>
-        <span>súperova polovica →</span>
+        <span>
+          ← {strana === "tvojej" ? <b className="stupnica-priazen moje">♥</b> : strana === "súperovej" && <ZnackaStrachu uroven={uroven} trieda="moje" />} tvoja polovica
+        </span>
+        <span>
+          súperova polovica {strana === "súperovej" ? <b className="stupnica-priazen superove">♥</b> : strana === "tvojej" && <ZnackaStrachu uroven={uroven} trieda="superove" />} →
+        </span>
       </div>
       <div className="ukazka-vysledok" aria-live="polite">
         {strana === null ? (
@@ -277,7 +283,7 @@ export function UkazkaStupnice() {
           <>
             Marker leží na {strana} polovici v zóne <strong>{ZONY[m]}</strong>: priazeň s hodnotou <strong>{hodnota}</strong>{" "}
             má {strana === "tvojej" ? "ty" : "súper"}. Starší sa bojí {strana === "tvojej" ? "súpera" : "teba"} na úrovni{" "}
-            <strong>{uroven}</strong> — po každej bitke, ktorú {strana === "tvojej" ? "súper vyhrá, mu" : "vyhráš, ti"} dá {uroven}{" "}
+            <strong>{uroven}</strong> <ZnackaStrachu uroven={uroven} trieda={strana === "tvojej" ? "superove" : "moje"} /> — po každej bitke, ktorú {strana === "tvojej" ? "súper vyhrá, mu" : "vyhráš, ti"} dá {uroven}{" "}
             {uroven === 1 ? "špak" : "špaky"}.
             {(m === 0 || m === 6) && " Na krajnej pozícii sa starší prebudí pre vydesujúceho hráča a ráta sa do vydesenia."}
           </>
