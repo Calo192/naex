@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
-import type { CardInstance, Command, GameState, PitkaStav, PlacedCard, PlayerId, PlayerState } from "../src/index.ts";
+import type { CardInstance, Command, GameState, PitkaStav, PlacedCard, PlayerId, PlayerState, RekapitulaciaPitky } from "../src/index.ts";
 import {
   apply,
   bitkaMody,
@@ -20,6 +20,10 @@ import {
   prirastkyPitky,
   setupGame,
   utocnikFinale,
+  vidiVolbuSupera,
+  prahDlhuPitky,
+  prahyHraca,
+  stavkaBitky,
   viewFor,
   zmiesaneSpoje,
 } from "../src/index.ts";
@@ -335,6 +339,10 @@ describe("Pitka (v7)", () => {
     expect(viewFor(data, t, 1).pitkaStav?.skryteNaex).toEqual([]);
     t = apply(data, t, { type: "skipNaex" }, 0).state;
     expect(viewFor(data, t, 1).pitkaStav?.skryteNaex).toHaveLength(1);
+    // Klient to vie aj z pohľadov (štítok na stole, text pri poldeci): hráč 1 vidí, hráč 0 nie.
+    expect(vidiVolbuSupera(data, viewFor(data, t, 1), 1)).toBe(true);
+    expect(vidiVolbuSupera(data, viewFor(data, t, 0), 1)).toBe(true);
+    expect(vidiVolbuSupera(data, viewFor(data, t, 0), 0)).toBe(false);
     // Bez Bzdochy nič.
     const bez = { ...t, strany: [strany[0], [strany[1][0]!]] } as GameState;
     expect(viewFor(data, bez, 1).pitkaStav?.skryteNaex).toEqual([]);
@@ -476,10 +484,45 @@ describe("Bitka a po bitke (v7)", () => {
     expect(bitka.zaBitku[1]).toBe(0);
   });
 
+  it("stávka bitky ráta Herňu a Noviny ako výplata (vyplatSpaky)", () => {
+    const silna = (n: number): PlacedCard[] => Array.from({ length: n }, () => lezi(inst("kulturista"), 1));
+    // Herňa: hráč 1 vyhrá, hráč 0 má 3 priznané Dlhy → víťaz +3.
+    const h = sHracom(vPitke("herna", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { priznane: [inst("dlh"), inst("dlh"), inst("dlh")] });
+    const stavkaH = stavkaBitky(data, viewFor(data, h, 1))!;
+    expect(stavkaH.herna).toEqual([3, 0]);
+    // 1 Pitka + Herňa 3; výplata ráta Dlhy až po Pitke (D6 ich môže pridať), stávka tie teraz.
+    expect(stavkaH.vyhra).toBe(1 + 3 + stavkaH.starsi[0]);
+    expect(-stavkaBitky(data, viewFor(data, h, 0))!.prehra).toBe(stavkaH.vyhra);
+    // Noviny porazeného: víťaz (hráč 1) má viac Dlhov — z výhry mu ostanú len starší.
+    const n = sHracom(sHracom(vPitke("zastavka", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { dedicstvo: [inst("noviny")] }), 1, { priznane: [inst("dlh"), inst("dlh")] });
+    const stavkaN = stavkaBitky(data, viewFor(data, n, 1))!;
+    expect(stavkaN.vyhra).toBe(stavkaN.starsi[0]);
+    expect(stavkaN.noviny[0]).toBeGreaterThan(0);
+    expect(stavkaBitky(data, viewFor(data, n, 0))!.noviny[1]).toBe(stavkaN.noviny[0]);
+    const poN = dohrajKolo(n).nastenka.at(-1)!;
+    expect(poN.vitaz).toBe(1);
+    expect(poN.zaBitku).toEqual([stavkaN.noviny[0], 0]);
+  });
+
   it("Výherný automat: prah Dlhu +1 a v poslednej Pitke kola Dlh", () => {
     const s = sHracom(vPitke("zastavka", [[], []]), 0, { dedicstvo: [inst("vyherny_automat")] });
     const t = skonciPitku(s);
     expect(dlhy(t, 0)).toBe(dlhy(s, 0) + 1);
+    // Rekapitulácia Pitky delí zadĺženie prahom hráča, nie základným (kontrola kódu v7, bod 8).
+    // Rekapitulácia ide udalosťou pitkaRekap (pitkyKola sa po kole vyprázdni).
+    let rekap: RekapitulaciaPitky | undefined;
+    let u = s;
+    for (let i = 0; i < 6 && rekap === undefined && u.faza === "pitka"; i++) {
+      const q = ([0, 1] as const).find((x) => legalCommands(data, u, x).some((c) => c.type === "skipNaex" || c.type === "bezReakcie"));
+      if (q === undefined) break;
+      const r = apply(data, u, legalCommands(data, u, q).find((c) => c.type === "skipNaex" || c.type === "bezReakcie")!, q);
+      for (const e of r.events) if (e.type === "pitkaRekap") rekap = e.rekap;
+      u = r.state;
+    }
+    expect(rekap?.zadlzenie.prah).toEqual([prahyHraca(data, s, 0).dlh, prahyHraca(data, s, 1).dlh]);
+    expect(prahDlhuPitky(rekap!, 0)).toBe(prahDlhuPitky(rekap!, 1) + 1);
+    // Rozohraná partia spred opravy má v stave jedno číslo.
+    expect(prahDlhuPitky({ ...rekap!, zadlzenie: { ...rekap!.zadlzenie, prah: 3 as unknown as readonly [number, number] } }, 0)).toBe(3);
   });
 
   it("Záhradkár (Exekúcia): zahodený z línie zachráni špaky a spáli Dlhy za aktívne akcie", () => {

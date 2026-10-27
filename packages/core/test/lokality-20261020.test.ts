@@ -15,7 +15,6 @@ import {
   bitkaMody,
   buildGameData,
   cieleVykladania,
-  exekutorLokality,
   legalCommands,
   loadGameData,
   moznostiNaex,

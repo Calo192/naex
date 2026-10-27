@@ -329,23 +329,9 @@ export function naexZaPitku(state: VerejnyStav): number {
   return jeCielLokalita(state, "vinna_pivnica") ? 2 : 1;
 }
 
-/**
- * O koľko je prah Exekútora hráča p nižší a koľko Dlhov spáli jedna Robota.
- * Od v7 (efekty) žiadna lokalita ani karta prah nemení a Robota všade páli 1 —
- * Obecný úrad má Kšeft, Záhradkár Exekúciu.
- */
-export function exekutorLokality(_state: VerejnyStav, _p?: PlayerId): { readonly zlava: number; readonly robota: number } {
-  return { zlava: 0, robota: 1 };
-}
-
 /** Prah Dlhu hráča p (v7): Výherný automat v Dedičstve ho zvýši o 1. */
 export function prahDlhuBonus(state: Pick<VerejnyStav, "hraci">, p: PlayerId): number {
   return state.hraci[p].dedicstvo.some((k) => k.defId === "vyherny_automat") ? 1 : 0;
-}
-
-/** Stokársky barter je o toľko lacnejší — v7 už nič (Jednota má Kšeft). */
-export function barterZlavaLokality(_state: VerejnyStav): number {
-  return 0;
 }
 
 /** Kar (Pitka, v7): pečeň za NA EX dostane súper toho, kto ho dal. */
@@ -426,30 +412,12 @@ export function doliatieZakazane(state: GameState, p: PlayerId): boolean {
 }
 
 
-/** Prebytok proti hráčovi menší — od v7 nič (Puška posilňuje Petelice). */
-export function prebytokProtiZlava(_state: VerejnyStav, _proti: PlayerId): number {
-  return 0;
-}
-
-/** Koľko prebytku stojí posun markera — od v7 vždy 1 (Miňištrant už posun nezdražuje). */
-export function cenaPrebytku(_state: GameState, _p: PlayerId): number {
-  return 1;
-}
-
 /** Bitkové modifikátory závislé od kariet v hre. */
 export interface BitkaMody {
   /** Dodatočné tuhé poškodenie hráča (Svokra, Pijan, Pasca, Lesná cesta, Ihrisko…). */
   readonly tuheBonus: number;
-  /** Tuhé menej z efektov súpera — od v7 žiadne (Pasca udeľuje Pecku). */
-  readonly tuheZlava: number;
   /** Z čoho sa tuheBonus skladá — pre nápovedu v paneli bitky. */
   readonly tuheZdroje: readonly { readonly zdroj: string; readonly tuhe: number }[];
-  /** Absťáky, ktoré sa neratajú — od v7 žiadne (Autobusár má Zhromaždenie). */
-  readonly abstakyZlava: number;
-  /** Súperove Povery, ktoré sa ignorujú — od v7 žiadne (Farár má Prehru). */
-  readonly superovePoveryZlava: number;
-  /** O koľko menej pridáva Cirhóza — od v7 nič (Veterinár má Pitku). */
-  readonly cirhozaZlava: number;
 }
 
 /**
@@ -536,10 +504,6 @@ export function bitkaMody(data: GameData, state: VerejnyStav, p: PlayerId): Bitk
   return {
     tuheBonus: tuheZdroje.reduce((a, z) => a + z.tuhe, 0),
     tuheZdroje,
-    tuheZlava: 0,
-    abstakyZlava: 0,
-    superovePoveryZlava: 0,
-    cirhozaZlava: 0,
   };
 }
 

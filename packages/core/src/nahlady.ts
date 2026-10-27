@@ -23,7 +23,7 @@ import {
   verejneAbstaky,
   zablokovaneStrany,
 } from "./engine.ts";
-import { efektHraca, efektPotlaceny, exekutorLokality, naexPecenSuperovi, partiaHraca, silaDoDna, svokraRany, traktoristkyBezPrevahy } from "./effects.ts";
+import { efektHraca, efektPotlaceny, naexPecenSuperovi, partiaHraca, silaDoDna, svokraRany, traktoristkyBezPrevahy } from "./effects.ts";
 import { opponentOf } from "./types.ts";
 import type { LineEval } from "./partia.ts";
 import { evaluateLine } from "./partia.ts";
@@ -40,7 +40,7 @@ export type StolNahladu = Parameters<typeof nahladPitky>[1];
 export interface DlhyDoBitky {
   /** Nové Dlhy v tejto Pitke a v ďalších Pitkách kola (ak sa na stole nič nezmení). */
   readonly nove: number;
-  /** Koľko priznaných Dlhov bitka najviac spáli (Robota, Dievčina na vydaj). */
+  /** Koľko priznaných Dlhov bitka najviac spáli (Robota). */
   readonly kapacita: number;
   /** Koľko Dlhov (a toľko špakov) zhorí pri exekúcii (v6). */
   readonly exekucia: number;
@@ -50,7 +50,7 @@ export interface DlhyDoBitky {
 
 /**
  * Výhľad Dlhov do bitky oboch hráčov — doska hráča v Zhromaždení a Pitke.
- * Po páleni (Dievčina na vydaj, Robota) príde Exekútor: v6 je exekúcia
+ * Po pálení Robotou príde Exekútor: v6 je exekúcia
  * automatická, zhorí polovica (Záhradkár zachráni len špaky, nie Dlhy).
  */
 export function vyhladDlhov(data: GameData, stol: StolNahladu, dalsiePitky: number): readonly [DlhyDoBitky, DlhyDoBitky] {
@@ -60,14 +60,12 @@ export function vyhladDlhov(data: GameData, stol: StolNahladu, dalsiePitky: numb
   // Traktoristka bez prevahy v jej kraji: Dlh na začiatku bitky (zacniBitku).
   const automat = (p: PlayerId): number => stol.hraci[p].dedicstvo.filter((k) => k.defId === "vyherny_automat").length + traktoristkyBezPrevahy(data, stol, p);
   const noveDlhy = ([0, 1] as const).map((p) => Math.floor((nahlad[p].zadlzenie + nahlad[p].zadlzenieZoStola * (1 + dalsiePitky)) / nahlad[p].prahDlhu) + automat(p)) as [number, number];
-  // Dievčina (v7) páli až od 4 priznaných Dlhov — rátajú sa aj tie, čo do bitky pribudnú.
-  const kapacita = paleneDlhyVBitke(data, stol, undefined, noveDlhy);
+  const kapacita = paleneDlhyVBitke(data, stol);
   const pre = (p: PlayerId): DlhyDoBitky => {
-    const urad = exekutorLokality(stol, p);
     const nove = noveDlhy[p];
     const teraz = stol.hraci[p].priznane.filter((k) => k.defId === "dlh").length;
     const poPaleni = Math.max(0, teraz + nove - kapacita[p]);
-    const exekucia = exekutorCheck(poPaleni + urad.zlava, silaPriazne(data, stol, "EXEKUTOR", opponentOf(p))) ? zhoriPriExekucii(poPaleni) : 0;
+    const exekucia = exekutorCheck(poPaleni, silaPriazne(data, stol, "EXEKUTOR", opponentOf(p))) ? zhoriPriExekucii(poPaleni) : 0;
     return { nove, kapacita: kapacita[p], exekucia, poBitke: poPaleni - exekucia };
   };
   return [pre(0), pre(1)];
@@ -187,8 +185,7 @@ export function dopadyNahladu(
 
 /**
  * Stôl tak, ako ho bitka uvidí pri poškodení: priznané Dlhy po Pitkách kola
- * (Dlh sa hneď prizná), po pálení (Dievčina na vydaj na začiatku bitky,
- * Robota v kroku Exekútora) a po Exekútorovi (zhorí polovica, v6).
+ * (Dlh sa hneď prizná), po pálení (Robota v kroku Exekútora) a po Exekútorovi (zhorí polovica, v6).
  * Priznané Dlhy súpera sú strop mäkkého — náhľad ich predtým bral spred Pitky.
  * Benzínku nepredvída.
  */

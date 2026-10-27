@@ -256,7 +256,6 @@ describe("Hasič: náhodná karta z vlastného odhadzovacieho balíčka, hráč 
         { ...s0.hraci[1], poldeciPlne: 1, cigarety: 3 },
       ],
       pitkaStav: { naTahu: 0, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false] },
-      zaverecnaOdklad: [{ naexSupera: 0, naexVlastne: 0, zahodeniaSupera: 0 }, null],
     } as GameState;
     let st = s;
     for (let i = 0; i < 4 && !(st.hasicVolby?.length ?? 0) && st.faza === "pitka"; i++) {
