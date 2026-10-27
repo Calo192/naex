@@ -353,6 +353,8 @@ function migruj(db: Db): void {
     ["skore", "TEXT"],
     // Klávesové skratky v partii (Michal 2026-10-22, roadmapa #19): 0 = vypnuté, NULL = zapnuté.
     ["skratky", "INTEGER"],
+    // Medziobrazovky pri prechode fáz v partii (Michal 2026-10-27): 0 = vypnuté, NULL = zapnuté.
+    ["medziobrazovky", "INTEGER"],
     // Ranky (Michal 2026-10-22): 1 = rank nastavil správca ručne, automatický postup ho nemení.
     ["rola_rucne", "INTEGER NOT NULL DEFAULT 0"],
     // Hlášky majstra Melichara v partii proti počítaču (Michal 2026-10-21): hlasitosť

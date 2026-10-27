@@ -72,6 +72,8 @@ export interface Pouzivatel {
   readonly napovedy?: boolean;
   /** Klávesové skratky v partii (K, P, N, Esc, ?); chýba = zapnuté. */
   readonly skratky?: boolean;
+  /** Medziobrazovky pri prechode fáz v partii (Michal 2026-10-27); chýba = zapnuté. */
+  readonly medziobrazovky?: boolean;
   /** Pohlavie pre tvary hlášok v partii; null/chýba = neuvádza (neutrálne hlášky). */
   readonly pohlavie?: Pohlavie | null;
 }

@@ -396,6 +396,7 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
           ...(b.schema !== undefined ? { schema: overSchemu(b.schema) } : {}),
           ...(b.par !== undefined ? { par: overPar(b.par) } : {}),
           ...(b.skratky !== undefined ? { skratky: overPrepinac(b.skratky, "Klávesové skratky") } : {}),
+          ...(b.medziobrazovky !== undefined ? { medziobrazovky: overPrepinac(b.medziobrazovky, "Medziobrazovky") } : {}),
           ...(b.napovedy !== undefined ? { napovedy: overPrepinac(b.napovedy, "Nápovedy Melichara") } : {}),
           ...(b.pohlavie !== undefined ? { pohlavie: overPohlavie(b.pohlavie) } : {}),
           ...(b.skrytySuhrn !== undefined ? { skrytySuhrn: overPrepinac(b.skrytySuhrn, "Skryť môj súhrn") } : {}),

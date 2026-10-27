@@ -140,7 +140,8 @@ import { klucFazy, predvolenyRezim, vyberSpravu, type RezimStran } from "./bar.t
 import { JednotnyBar, type StranaBaru } from "./JednotnyBar.tsx";
 import { polozkySoZaverecnou, tahSoZaverecnou } from "./zaverecnaTahu.ts";
 import { polozkyOdkazu, tahOdkazu } from "./odkazTahu.ts";
-import { klucPrechodu } from "./prechodFazy.ts";
+import { klucPrechodu, medziobrazovka } from "./prechodFazy.ts";
+import { Medziobrazovka } from "./Medziobrazovka.tsx";
 import { klavesPreskociPauzu, PAUZA_CIELA_MS, pauzaPoVolbeCiela, type PauzaCiela } from "./pauzaCiela.ts";
 import type { Sada } from "@naex/tvorba";
 import { HernaKarta, vzhladKarty, type HernaKartaProps } from "./HernaKarta.tsx";
@@ -251,6 +252,9 @@ function IkonaSrotu() {
     </svg>
   );
 }
+
+/** Ako dlho sa stôl po prechode fázy ustáli, kým príde medziobrazovka. */
+const MEDZIOBRAZOVKA_MS = 400;
 
 /** Šírka karty v ruke — nastavuje aj --ruka-w v hra.css (na mobile menšia). */
 const SIRKA_V_RUKE = 120;
@@ -1961,6 +1965,32 @@ export function HernaPlocha({
   // Kým beží počítadlo bitky, pauza počká — inak by jej 3 s ubehli pod ním.
   const pauzaBezi = pauzaCiela !== null && !pocitadloBezi;
   const zrusPauzuCiela = useCallback((): void => setPauzaCiela(null), []);
+  // ---- medziobrazovky pri prechode fáz (Michal 2026-10-27) ------------------
+  // Pri výbere lokality, šenku, Pitke, bitke a prebytku (aj v novom kole a vo finále) sa ukáže
+  // názov fázy a čo sa ide diať; ostane do „Rozumiem“. Vypínač v profile, výučba má vlastné
+  // bubliny. Bitka čaká s počítadlom, kým hráč neklikne — inak by prebehlo pod medziobrazovkou.
+  const medziZapnute = useUcet().ja?.medziobrazovky !== false && vyucba !== true && prehravanie === undefined;
+  const medziTeraz = medziobrazovka(view, ja, menoHraca(super_), pocitadlo !== null ? pocitadlo.stol.kolo : null);
+  // Pri načítaní stola sa za videnú berie fáza, ktorá už beží — okrem začiatku partie.
+  const [potvrdenaMedzi, setPotvrdenaMedzi] = useState<string | null>(() =>
+    view.kolo === 1 && view.faza === "volbaCiela" ? null : (medziTeraz?.kluc ?? null),
+  );
+  const medziCaka = medziZapnute && medziTeraz !== null && medziTeraz.kluc !== potvrdenaMedzi;
+  // Krátka chvíľa, kým sa stôl ustáli (bitka a nové kolo prídu naraz, počítadlo až po nich).
+  const [medziUstalena, setMedziUstalena] = useState<string | null>(null);
+  const klucMedzi = medziCaka ? medziTeraz.kluc : null;
+  useEffect(() => {
+    if (klucMedzi === null) return;
+    const t = setTimeout(() => setMedziUstalena(klucMedzi), MEDZIOBRAZOVKA_MS);
+    return () => clearTimeout(t);
+  }, [klucMedzi]);
+  const medziViditelna =
+    medziCaka &&
+    medziUstalena === medziTeraz.kluc &&
+    !pauzaBezi &&
+    !cakaOdhalenie &&
+    (vrstvaVyhodnotenia === null || pocitadlo !== null) &&
+    !(oznamFinale === "ukazany" && jeFinaleStola);
   useEffect(() => {
     if (!pauzaBezi) return;
     zavriLupuHned();
@@ -5895,7 +5925,8 @@ export function HernaPlocha({
           onKoniec={koniecPocitadla}
         />
       )}
-      {pocitadlo !== null && (
+      {medziViditelna && medziTeraz !== null && <Medziobrazovka obsah={medziTeraz} onRozumiem={() => setPotvrdenaMedzi(medziTeraz.kluc)} />}
+      {pocitadlo !== null && !medziCaka && (
         <PocitadloSLiniou
           key={`bitka-${pocitadlo.stol.kolo}`}
           vrstva={pocitadlo}
