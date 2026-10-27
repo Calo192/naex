@@ -357,41 +357,6 @@
   font-size: 0.95rem;
 }
 
-/* ---- mini nástenka v tlačidle hlavičky stola ---- */
-.mini-nastenka {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  margin-left: 6px;
-}
-
-.mini-nastenka i {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  border: 1px solid var(--okraj-svetly);
-}
-
-.mini-nastenka i.moja {
-  background: var(--ja);
-  border-color: var(--ja);
-}
-
-.mini-nastenka i.superova {
-  background: var(--su);
-  border-color: var(--su);
-}
-
-.mini-nastenka i.sekera {
-  background: var(--slaby);
-  border-color: var(--slaby);
-}
-
-.mini-nastenka i.finale {
-  border-radius: 2px;
-  transform: rotate(45deg) scale(0.9);
-}
-
 /* ---- finále na stole ---- */
 .linia-skupina.lokalita.finale .partia-popis {
   color: var(--akcent-svetly);
@@ -605,10 +570,170 @@
   }
 }
 
-/* 1366 × 650: nástenka s účtom bez kariet lokalít — lístky s účtenkou sa tak zmestia
-   do vrstvy bez posúvania; názov lokality ostáva na lístku. */
-@media (min-width: 761px) and (max-height: 719px) {
-  .nastenka-ucet .nastenka-karta {
-    display: none;
+/* ---- nástenka na stole (Michal 2026-10-27) ----
+ * Namiesto okna nad stolom leží nástenka na mieste hracej plochy: pozadie je plsť stola,
+ * lístky sú položené ako karty (natočené, s tieňom), bez korku a pripináčikov. Či majú
+ * karty lokalít, rozhodne výška plste (HernaPlocha) — na 1366 × 650 sa zmestia bez posúvania. */
+.vrstva-nastenky {
+  position: absolute;
+  inset: 26px 10px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  overflow: auto;
+  animation: nastenka-prichod 0.22s ease-out;
+  container: nastenka-stol / size;
+}
+
+.linia-obal.s-hranou .vrstva-nastenky {
+  bottom: 48px;
+}
+
+.vrstva-nastenky .nastenka-spat,
+.vrstva-nastenky .nastenka-pokyn {
+  position: absolute;
+  top: 0;
+  left: 4px;
+}
+
+.nastenka-pokyn {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 300px;
+  font-size: 0.82rem;
+  color: var(--text);
+}
+
+.nastenka-pokyn strong {
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--akcent-svetly);
+}
+
+.nastenka-pokyn small {
+  color: var(--tlmeny);
+}
+
+.vrstva-nastenky .nastenka-ucet {
+  width: 100%;
+  max-height: 100%;
+}
+
+.vrstva-nastenky .nastenka {
+  background: none;
+  border: 0;
+  padding: 6px 4px 2px;
+}
+
+.vrstva-nastenky .nastenka-listok {
+  box-shadow:
+    0 2px 3px color-mix(in srgb, var(--pozadie) 60%, transparent),
+    0 10px 22px color-mix(in srgb, var(--pozadie) 55%, transparent);
+  animation: listok-polozeny 0.3s ease-out both;
+  animation-delay: calc(var(--i, 0) * 40ms);
+}
+
+/* Pripináčik patrí ku korku — na stole nie je. */
+.vrstva-nastenky .nastenka-listok::before {
+  display: none;
+}
+
+.vrstva-nastenky .nastenka-popolnik {
+  background: color-mix(in srgb, var(--plocha) 88%, transparent);
+}
+
+/* Voľba cieľa: lokality na výber sú položené karty, ostatné lístky malé. */
+.nastenka.volba {
+  align-items: center;
+  gap: 14px 20px;
+}
+
+.nastenka-listok.na-vyber {
+  max-width: none;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.vrstva-nastenky .nastenka-listok.na-vyber {
+  box-shadow: none;
+}
+
+.nastenka-listok.na-vyber .nastenka-karta .kl {
+  box-shadow: 0 10px 22px color-mix(in srgb, var(--pozadie) 55%, transparent);
+}
+
+/* Nízka plsť (1366 × 650): lístky bez kariet a hustejšie, nech sa nástenka zmestí bez posúvania. */
+@container nastenka-stol (max-height: 280px) {
+  .nastenka-ucet {
+    gap: 4px;
+  }
+
+  .nastenka-popolnik {
+    padding: 3px 10px;
+  }
+
+  .nastenka-popolnik .avatar {
+    max-width: 24px;
+    max-height: 24px;
+  }
+
+  .vrstva-nastenky .nastenka {
+    gap: 8px 10px;
+    padding-top: 4px;
+  }
+
+  .vrstva-nastenky .nastenka-listok {
+    gap: 2px;
+    padding: 6px 6px 4px;
+  }
+
+  .vrstva-nastenky .nastenka-vitaz {
+    min-height: 26px;
+  }
+
+  .vrstva-nastenky .nastenka-vitaz .avatar {
+    max-width: 24px;
+    max-height: 24px;
+  }
+
+  .vrstva-nastenky .nastenka-otaznik {
+    min-width: 26px;
+    height: 26px;
+  }
+
+  .vrstva-nastenky .nastenka-uctenka {
+    padding: 2px 2px 0;
+    line-height: 1.12;
+  }
+
+  .nastenka-paticka {
+    font-size: 0.78rem;
+  }
+}
+
+@keyframes nastenka-prichod {
+  from {
+    opacity: 0;
+    translate: 0 -10px;
+  }
+}
+
+@keyframes listok-polozeny {
+  from {
+    opacity: 0;
+    translate: 0 -14px;
+    scale: 1.06;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vrstva-nastenky,
+  .vrstva-nastenky .nastenka-listok {
+    animation: none;
   }
 }
