@@ -816,8 +816,8 @@ Prehľad nových efektov kariet po dávkach (`docs/napady/efekty-navrhy-N.html`)
 
 | Výsledok | Kariet | Ktoré |
 |---|---|---|
-| nový efekt | **39** | E2: Vdova, Policajtka, Stryná, Recidivista, Liberál, Živnostník, Šarlatán · E1: Noviny, Krabička, Kohút, Kapybara, Pes, Krokodíl, Pijan, Miňištrant, Dievčina, Pasca, Puška, Vidly · E3: Snúbenica, Bzdocha, Záhradkár, Anonymný alkoholik, Dohadzovačka, Mäsiar, Kulturista · E4: Veterinár, Autobusár, Starosta, Farár, Hrobár, Vychovávateľka, Krčmárka, Cintorín, Jednota, Benzínka, Kar, Obecný úrad, Kostol |
-| upravený efekt | **2** | Poštárka (Kšeft 1 Dlh → 1 karta), Výherný automat (Výhra = 1 špak, na potvrdenie) |
+| nový efekt | **40** | E2: Vdova, Policajtka, Stryná, Recidivista, Liberál, Živnostník, Šarlatán · E1: Noviny, Krabička, Kohút, Kapybara, Pes, Krokodíl, Pijan, Miňištrant, Dievčina, Pasca, Puška, Vidly, Výherný automat · E3: Snúbenica, Bzdocha, Záhradkár, Anonymný alkoholik, Dohadzovačka, Mäsiar, Kulturista · E4: Veterinár, Autobusár, Starosta, Farár, Hrobár, Vychovávateľka, Krčmárka, Cintorín, Jednota, Benzínka, Kar, Obecný úrad, Kostol |
+| upravený efekt | **1** | Poštárka (Kšeft 1 Dlh → 1 karta) |
 | ponechaný efekt | **37** | Finančná poradkyňa, Veštica, Silná žena, Hasič, Praudovravec, Zámočník, Veterán, Kočovník, Svokra, Podvodník · Čierna mačka, Kôň, Milujúca manželka (M2), Vínko, Svätý text, Nealko, Lievik · Dvojčatá, Šofér, Degustátorka, Vandal, Strýko z Ameriky, Traktoristka, Vymáhač · Zastávka, Most, Lesná cesta, Ihrisko, Zberný dvor, Krčma, Sklad, Kultúrny dom, Vínna pivnica, Družstvo, Poľovnícka chata, Predsedova vila, Herňa |
 | odstránená zo sady | **2** | Presbiter, Opatrovateľka |
 | zatiaľ len návrh (mimo sady) | **3** | Smetiarka, Brigádnik, Oslávenec (efekt rozhodnutý) |
@@ -840,8 +840,7 @@ Prehľad nových efektov kariet po dávkach (`docs/napady/efekty-navrhy-N.html`)
 - Do slovníka §17: Konflikt, vyvolať Konflikt, Úplatok, Kšeft, Pakt, čiarky na účte.
 
 **Otvorené:**
-- **D1 Strýko z Ameriky** (Kšeft aj za Dlh): bez voľby. Platí doterajší Kšeft za 2 cigarety, kým Michal nerozhodne.
-- **Výherný automat:** potvrdiť Výhru = 1 špak.
+- Nič zásadné. **D1 je uzavreté** (Michal: „Strýko z Ameriky berie na kšeft cigarety“): Strýkovi ostáva Kšeft za 2 cigarety, variant s Dlhom padá. **Výherný automat je rozhodnutý** (Michalov náčrt, znenie na rýchle potvrdenie).
 - Drobnosti z výkladu: Benzínka pri rovnakej vzdialenosti (návrh: nefajčí nikto), Konflikt ako stav (13.2, bod 12). Nasadenie Paktu (12.1, 4 kópie) Michal výslovne nepotvrdil, revízia s ním ráta.
 
 **Čisté znenia rozhodnutých efektov** (podľa zásady textov; platia namiesto dlhších znení v tabuľkách nižšie):
@@ -861,7 +860,7 @@ Prehľad nových efektov kariet po dávkach (`docs/napady/efekty-navrhy-N.html`)
 | Pasca | Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej, udelíš mu 1 Pecku navyše. |
 | Puška | Dedičstvo: Tvoje Petelice udeľujú o 1 poškodenie viac. |
 | Vidly | Dedičstvo: Tvoje Rany udeľujú o 1 poškodenie viac. |
-| Výherný automat | Dedičstvo: Výhra: Získaš 1 špak. Prehra: Získaš 2 Dlhy. *(na potvrdenie)* |
+| Výherný automat | Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. V poslednej Pitke kola získaš 1 Dlh. *(znenie na rýchle potvrdenie)* |
 | Kohút | Pitka: Posledné slovo máš ty, aj keď si obranca. |
 | Kapybara | Nástup: Posuň marker jedného staršieho o 1 pole k stredu. |
 | Pes | Furt: Jeho aktívne akcie na spoji so súperovou kartou sa rátajú dvakrát. |
@@ -984,7 +983,7 @@ Platí rozhodnuté pravidlo v7 z dávky: **efekt Nástroja účinkuje v hre aj v
 | Brigádnik | Furt: do prevahy sa neráta; nosič Paktu (12.1) | **zatiaľ len návrh** (mimo sady); predtým „rezerva ide do sady“ (2a) | — |
 | Oslávenec | Kšeft: za plný poldeci súperovi 2 pečene (10.1) | efekt ponechaný, **karta zatiaľ len návrh — na potvrdenie?** | — |
 
-**Ponechané:** Dvojčatá, Šofér, Degustátorka, Vandal, Strýko z Ameriky (otázka D1 ďalej otvorená), Traktoristka, Vymáhač.
+**Ponechané:** Dvojčatá, Šofér, Degustátorka, Vandal, Strýko z Ameriky (D1 uzavreté: Kšeft za cigarety), Traktoristka, Vymáhač.
 
 **Poznámky k rozhodnutiam:**
 - **Záhradkár** (Michal: „Exekúcia: namiesto špakov môžeš odhodiť záhradkára. Priznaný dlh sa ti zníži o počet jeho aktívnych akcií.“): s Dlhmi z dávky 3 (D3–D6) exekúcia nastane. **Výklad, na potvrdenie:** polovica Dlhov zhorí ako pri každej exekúcii (§11), špaky sa neplatia a navyše sa spáli toľko Dlhov, koľko mal aktívnych akcií. Aktívne akcie má len v línii. Z ruky alebo z balíčka zachráni len špaky. **Spúšťač Exekúcia ostáva** (10.6 ho mal zmazať spolu s Prestávkou). **Otázka: nahrádza oba efekty z revízie, prah +2 (10.1) aj Výhru s poldeci (časť 3)?**
@@ -1077,7 +1076,7 @@ Michal rozhodol 57 zo 66 položiek dokumentu `nevyjadrene-karty.html`. Otvorené
 
 **Princípy:** karta smie natrvalo prejsť k súperovi **áno** (Snúbenica E3, Obecný úrad B). Lokalita Konflikt **neprepožičiava**. Karta majiteľa **bez otočenia nemení**. Detaily lokalít zo 7.5 platia tak, ako boli navrhnuté. Družstvo dostane ilustráciu „finál 1“ (rieši Ilustrátor).
 
-**Kšeft po zmenách:** v balíčku ho má len **Strýko z Ameriky** (otázka D1 ďalej otvorená). Zo starších **Poštárka** (1 Dlh → 1 karta) a **Vychovávateľka** (2 cigarety → Povera), z lokalít **Zberný dvor, Sklad, Obecný úrad a Predsedova vila**. Kšeft stratili Starosta (Nástup), Jednota (Pitka) a Kapybara (E1). Oslávenec a Smetiarka sú mimo sady. Opačný mechanizmus, keď platí súper, má Kulturista (Úplatok).
+**Kšeft po zmenách:** v balíčku ho má len **Strýko z Ameriky** (Kšeft za 2 cigarety, D1 uzavreté). Zo starších **Poštárka** (1 Dlh → 1 karta) a **Vychovávateľka** (2 cigarety → Povera), z lokalít **Zberný dvor, Sklad, Obecný úrad a Predsedova vila**. Kšeft stratili Starosta (Nástup), Jednota (Pitka) a Kapybara (E1). Oslávenec a Smetiarka sú mimo sady. Opačný mechanizmus, keď platí súper, má Kulturista (Úplatok).
 
 **NA EX trojica (A1 Placatka, P1 Policajtka, S1 Varecha):** po E2 a E3 z nej ostáva len **Svokra (Varecha)**. Spolu s Autobusárom (variant A padá) treba upraviť naprogramované vetvy `feature/naex-trojica` a `feature/autobusar-hasic` pred ich mergeom.
 
@@ -1102,9 +1101,9 @@ Kolo 3 (iný agent) prerobilo Nástroje podľa nového smeru: **efekt Nástroja 
 | **Pasca** | pasca-A, **nahrádza efekt proti Zvieratám** | Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej, udelíš mu 1 Pecku navyše. |
 | Puška | inak (Michal: „zvyšuje poškodenie petelice o 1“) | Dedičstvo: Tvoje Petelice udeľujú o 1 poškodenie viac. |
 | Vidly | inak (Michal: „rana dáva 1 poškodenie navyše“) | Dedičstvo: Tvoje Rany udeľujú o 1 poškodenie viac. |
-| Výherný automat | nechať, Výhra 3 cigarety → **1 špak** (Prehra 2 Dlhy ostáva) — **na potvrdenie?** | Dedičstvo: Výhra: Získaš 1 špak. Prehra: Získaš 2 Dlhy. |
+| Výherný automat | **nový efekt podľa Michalovho náčrtu** („Tvoj prah dlhu je o 1 vyšší, v poslednej pitke si vždy doberáš 1 dlh? niečo také…“); Výhra/Prehra aj výklad „1 špak“ padajú | Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. V poslednej Pitke kola získaš 1 Dlh. *(znenie na rýchle potvrdenie)* |
 
 - **Pasca:** ráta sa každé priloženie súperovej karty k tvojej, nielen ku karte s Konfliktom (výklad podľa zátvorky v pasca-A). Náčrt z 13.3 tým nahradilo pasca-A.
 - **Puška a Vidly** tvoria rodinu: Petelica 4 tuhé, Rana 2 tuhé, natrvalo z Dedičstva. Rán je v sade najviac (32), preto merať Vidly.
-- **Výherný automat:** špak je víťazný bod, takže je to výrazné posilnenie. Michal potvrdí.
-- **D1 Strýko z Ameriky** (Kšeft aj za Dlh): **otvorené**. Platí doterajší Kšeft za 2 cigarety, kým Michal nerozhodne.
+- **Výherný automat:** prah Dlhu je pojem z §8 (každé 2 zadĺženia = 1 Dlh). Prah o 1 vyšší znamená, že Dlh vzniká až z 3 zadĺžení. S D6 zvyšok na účte neprepadá. Posledná Pitka kola je tá, po ktorej príde bitka. Nový Dlh sa hneď prizná (§11). Automat tak dlhy spomaľuje, ale v každom kole jeden pridá: zlá a horšia možnosť v jednej karte.
+- **D1 Strýko z Ameriky: uzavreté** (Michal: „Strýko z Ameriky berie na kšeft cigarety“). Ostáva Kšeft za 2 cigarety, variant s Dlhom definitívne padá.
