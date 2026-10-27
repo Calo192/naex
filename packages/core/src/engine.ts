@@ -2770,7 +2770,8 @@ export function naexMaZmysel(data: GameData, line: LineState): ReadonlySet<numbe
   const out = new Set<number>();
   for (const [uid, karta] of ev.cards) {
     const sloty = [...karta.left, ...karta.right];
-    if (sloty.some((x) => x?.stav === "aktivna") && sloty.some((x) => x?.stav === "neaktivna")) out.add(uid);
+    // Neaktívny Pakt NA EX nezdvojí (v7, plan.md 12.3 bod 6) — do „neaktívnej“ sa neráta.
+    if (sloty.some((x) => x?.stav === "aktivna") && sloty.some((x) => x?.stav === "neaktivna" && x.action !== "Pakt")) out.add(uid);
   }
   return out;
 }
