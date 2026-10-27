@@ -658,6 +658,26 @@ button.jbar-odhad::before {
   display: none;
 }
 
+/* Os kola je v strede hlavičky webu (Michal 2026-10-27, dizajn timeline-lista A): bar má jeden
+   riadok a jeho výšku dostane stôl. */
+.jbar.bez-osi {
+  grid-template-rows: var(--jbar-h1);
+}
+
+/* Melichar hovorí o osi, ktorá je nad ním v lište — šípka hore k nej. */
+.jbar.bez-osi.mel-hore .mel::before {
+  content: "";
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  border-left: 1px solid var(--akcent);
+  border-top: 1px solid var(--akcent);
+  background: var(--plocha-3);
+  transform: translateX(-50%) rotate(45deg);
+}
+
 .jbar > .jbar-mel-miesto {
   display: flex;
   grid-row: 1 / -1;

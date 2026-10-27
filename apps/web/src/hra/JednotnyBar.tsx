@@ -1,6 +1,7 @@
 // Jednotný bar nad stolom (Michal 2026-10-25, mock V2 „Os dole, správa pod verdiktom“).
 // Hore: tvoja strana | odhad bitky, prepínač strán a stavová správa | súperova strana.
-// Dole: os kola ako pravítko nad stolom, vydesení a Šenok · Lokality · Log · ?.
+// Dole: os kola ako pravítko nad stolom, vydesení a Log · ? — len na mobile a v prehrávači;
+// pri stole je os v strede hlavičky webu (Michal 2026-10-27, dizajn timeline-lista A) a bar má jeden riadok.
 // Výška je vo všetkých fázach aj režimoch rovnaká (hra.css, .jbar) — stôl pod ním neskáče.
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
@@ -19,9 +20,10 @@ export interface StranaBaru {
 }
 
 export interface JednotnyBarProps {
-  readonly os: ReactNode;
-  readonly desi: ReactNode;
-  readonly nastroje: ReactNode;
+  /** Os kola, vydesení a nástroje stola v dolnom riadku; null = os je v hlavičke webu, bar má jeden riadok. */
+  readonly os: ReactNode | null;
+  readonly desi: ReactNode | null;
+  readonly nastroje: ReactNode | null;
   readonly rezim: RezimStran;
   readonly prepni: () => void;
   /** Riadok stredu: odhad bitky, inak cieľ kola. */
@@ -88,8 +90,12 @@ export function JednotnyBar({ os, desi, nastroje, rezim, prepni, stred, tip, ja,
     mo.observe(el, { childList: true, subtree: true, attributes: true, attributeFilter: ["data-mel-rezim"] });
     return () => mo.disconnect();
   }, []);
+  const sOsou = os !== null || desi !== null || nastroje !== null;
   return (
-    <header className={`jbar rezim-${rezim}${mel === null ? "" : ` mel-hovori mel-${mel.rezim}`}`} aria-label="Priebeh kola a odhad bitky">
+    <header
+      className={`jbar rezim-${rezim}${sOsou ? "" : " bez-osi"}${mel === null ? "" : ` mel-hovori mel-${mel.rezim}`}`}
+      aria-label={sOsou ? "Priebeh kola a odhad bitky" : "Odhad bitky"}
+    >
       <div className="jbar-mel-miesto" id={ID_MIESTA_MELICHARA} ref={miestoRef} />
       {mel?.rezim === "odhad" &&
         mel.ukazka !== null &&
@@ -148,11 +154,13 @@ export function JednotnyBar({ os, desi, nastroje, rezim, prepni, stred, tip, ja,
         </div>
         <Strana s={su} kto="su" rezim={rezim} />
       </div>
-      <div className="jbar-os" hidden={mel !== null && mel.rezim !== "hore"}>
-        {os}
-        {desi}
-        {nastroje}
-      </div>
+      {sOsou && (
+        <div className="jbar-os" hidden={mel !== null && mel.rezim !== "hore"}>
+          {os}
+          {desi}
+          {nastroje}
+        </div>
+      )}
       {children}
     </header>
   );

@@ -940,7 +940,10 @@ export function HernaPlocha({
         ? "vestica"
     : mode.typ === "pohrebSenok"
         ? "senok"
-        : null;
+        : // Starosta: po výbere karty z ruky sa šenok otvorí sám — tlačidlo Šenok v osi zaniklo (Michal 2026-10-27).
+          mode.typ === "starosta" && mode.rukaUid !== null
+          ? "senok"
+          : null;
   // Výber lokality skončil (aj keď ho urobil súper) — vrstva by zakryla draft na stole.
   useEffect(() => {
     if (view.faza !== "volbaCiela") setVrstva((v) => (v === "lokality" ? null : v));
@@ -3917,13 +3920,6 @@ export function HernaPlocha({
         return null;
     }
   })();
-  // Kam sa oplatí pozrieť: tlačidlo vrstvy v páse jemne pulzuje.
-  const treba: Vrstva | null =
-    !somNaTahu || view.koniec !== null
-      ? null
-      : mode.typ === "pohrebSenok" && zoSenku.length === 0
-        ? "senok"
-        : null;
 
   // ---- starší -------------------------------------------------------------
   // Náhľad posunu (Michal 2026-10-19): komu posun pomôže — body spolu a priazeň.
@@ -4849,6 +4845,48 @@ export function HernaPlocha({
       <b className="moje">{vydeseni[ja]}</b>:<b className="superove">{vydeseni[super_]}</b>/{prahVyd}
     </span>
   );
+  // Os kola v strede hlavičky webu (Michal 2026-10-27, dizajn timeline-lista A) — bar má jeden
+  // riadok a stôl je vyšší. Mobil a prehrávač majú os v bare ako doteraz.
+  const osVListe = !mobil && prehravanie === undefined;
+  const skratkyZapnute = useUcet().ja?.skratky !== false;
+  const osKola = (
+    <>
+      {/* Kód miestnosti je v hlavičke webu (menu Partia); v prehrávači ostáva číslo partie tu. */}
+      {prehravanie !== undefined && (
+        <span className="kod" title="číslo partie v archíve">
+          {kod}
+        </span>
+      )}
+      <PriebehKola view={view} onBitka={ucetBitky !== null && view.kolo === ucetBitky.kolo + 1 ? () => setUcetBitkyZavrety(false) : undefined} />
+    </>
+  );
+  // Log a ? — tlačidlo Šenok zaniklo (Michal 2026-10-27): šenok sa ukáže sám, keď ho treba
+  // (draft na stole, Pohreb Závislého, Starosta), a pokyn má naň tlačidlo.
+  const nastrojeStola = (
+    <div className="hlava-vrstvy">
+      <button
+        className={["hlava-vrstva", vrstva === "log" ? "otvorena" : ""].join(" ")}
+        data-vyucba="hlavicka:log"
+        onClick={() => setVrstva(vrstva === "log" ? null : "log")}
+      >
+        Log
+        {log.length - videnyLog > 0 && <span className="pocet nove">{log.length - videnyLog}</span>}
+      </button>
+      {skratkyZapnute && (
+        <button
+          type="button"
+          className={`hlava-vrstva hlava-skratky ${skratky.napoveda ? "otvorena" : ""}`}
+          aria-expanded={skratky.napoveda}
+          aria-keyshortcuts="?"
+          data-vyucba="hlavicka:skratky"
+          title="Klávesové skratky (?)"
+          onClick={skratky.prepniNapovedu}
+        >
+          ?
+        </button>
+      )}
+    </div>
+  );
   const rukaPocet = (p: PlayerId): ReactNode => (
     <span key="ruka" className="jbar-ruka" title={p === ja ? "Kariet v tvojej ruke" : `Kariet v ruke — ${menoHraca(p)}`}>
       <b>{view.hraci[p].rukaPocet}</b> v ruke
@@ -4951,7 +4989,6 @@ export function HernaPlocha({
         {view.koniec === null && view.spakyNaSekere > 0 && <span className="jbar-tuhe">+ {view.spakyNaSekere} š. na sekere</span>}
       </>
     );
-  const skratkyZapnute = useUcet().ja?.skratky !== false;
 
   // ---- účty a posledné udalosti (UX N3) ---------------------------------------
   const zn = (x: number): string => (x > 0 ? `+${x}` : x < 0 ? `−${-x}` : "±0");
@@ -5122,60 +5159,9 @@ export function HernaPlocha({
         />
       )}
       <JednotnyBar
-        os={
-          <>
-            {/* Kód miestnosti je v hlavičke webu (blok partie, Michal 2026-10-23); v prehrávači ostáva číslo partie tu. */}
-            {prehravanie !== undefined && (
-              <span className="kod" title="číslo partie v archíve">
-                {kod}
-              </span>
-            )}
-            <PriebehKola view={view} onBitka={ucetBitky !== null && view.kolo === ucetBitky.kolo + 1 ? () => setUcetBitkyZavrety(false) : undefined} />
-          </>
-        }
-        desi={desi}
-        nastroje={
-          // Šenok, Lokality a Log sú v osi kola (Michal 2026-10-21) — ovládanie partie je v hlavičke webu.
-          <div className="hlava-vrstvy">
-            {/* Nástenka nemá tlačidlo (Michal 2026-10-27): otvárajú ju Špaky, pri voľbe cieľa sa ukáže sama. */}
-            {(["senok", "log"] as const).map((v) => {
-              const pocet = v === "senok" ? view.senok.length : log.length - videnyLog;
-              // Kartu zo šenku vrátiš pustením na jej tlačidlo (lokalitu na stole pravým klikom).
-              const ciel = v === "log" ? null : v;
-              return (
-                <button
-                  key={v}
-                  className={[
-                    "hlava-vrstva",
-                    vrstva === v ? "otvorena" : "",
-                    treba === v && vrstva !== v ? "treba" : "",
-                    ciel !== null && jeCiel(ciel) ? "ciel-zona" : "",
-                    ciel !== null && nadCielom(ciel) ? "nad-cielom" : "",
-                  ].join(" ")}
-                  data-ciel={ciel !== null && jeCiel(ciel) ? ciel : undefined}
-                  data-vyucba={`hlavicka:${v}`}
-                  onClick={() => setVrstva(vrstva === v ? null : v)}
-                >
-                  {v === "senok" ? "Šenok" : "Log"}
-                  {(v !== "log" || pocet > 0) && <span className={v === "log" ? "pocet nove" : "pocet"}>{pocet}</span>}
-                </button>
-              );
-            })}
-            {skratkyZapnute && (
-              <button
-                type="button"
-                className={`hlava-vrstva hlava-skratky ${skratky.napoveda ? "otvorena" : ""}`}
-                aria-expanded={skratky.napoveda}
-                aria-keyshortcuts="?"
-                data-vyucba="hlavicka:skratky"
-                title="Klávesové skratky (?)"
-                onClick={skratky.prepniNapovedu}
-              >
-                ?
-              </button>
-            )}
-          </div>
-        }
+        os={osVListe ? null : osKola}
+        desi={osVListe ? null : desi}
+        nastroje={osVListe ? null : nastrojeStola}
         rezim={rezimStran}
         prepni={prepniStrany}
         stred={stredBaru}
@@ -5202,7 +5188,8 @@ export function HernaPlocha({
               superPripojeny={superPripojeny}
               superOdpojenyOd={superOdpojenyOd}
               vyucba={vyucba === true}
-              pocitadloBezi={pocitadloBezi}
+              os={osVListe ? osKola : null}
+              nastroje={osVListe ? nastrojeStola : null}
               melichar={vHlavicke}
               vzdat={() => cmd({ type: "vzdat" })}
               kontumacia={kontumacia}
@@ -5232,6 +5219,9 @@ export function HernaPlocha({
           spakyKlik={{ stlacene: vrstva === "lokality" && nastenkaPre === super_, prepni: () => otvorNastenku(super_) }}
           karty={kartyDlazdica(super_)}
           rezim={rezimBaru}
+          pocitadloBezi={pocitadloBezi}
+          // Stav súpera je bodkou na jeho avatare, nie v lište (dizajn timeline-lista A); bot sa neodpája.
+          spojenie={hraci[super_]?.bot === true || vyucba === true || prehravanie !== undefined ? undefined : { pripojeny: superPripojeny, odpojenyOd: superOdpojenyOd }}
         />
         {/* Starší hore — mimo dosahu ruky, aby sa ich lupa nebila s lupou kariet v ruke. */}
         <div className="stred">
@@ -5395,6 +5385,7 @@ export function HernaPlocha({
             spakyKlik={{ stlacene: vrstva === "lokality" && nastenkaPre === ja, prepni: () => otvorNastenku(ja) }}
             karty={kartyDlazdica(ja)}
             rezim={rezimBaru}
+            pocitadloBezi={pocitadloBezi}
           />
 
 

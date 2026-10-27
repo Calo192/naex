@@ -1,49 +1,15 @@
-// Partia v hlavičke webu (Michal 2026-10-26, #22 A a #23): zápasový štítok (kód, krok,
-// špaky a súper) a menu „Partia ▾“ s kopírovaním kódu, hláškami Melichara, odchodom
-// od stola, kontumáciou a vzdaním sa. Menu webu je počas partie preč — hráč hrá.
-// Nebezpečné akcie sú v menu, vzdanie sa s potvrdením priamo v ňom.
+// Partia v hlavičke webu (Michal 2026-10-26, #22 A a #23; 2026-10-27 os v strede lišty):
+// os kola v strede lišty (hlava „Bitka X z Y“), nástroje stola Log · ? a menu „Partia KÓD ▾“
+// s kopírovaním kódu, hláškami Melichara, odchodom od stola, kontumáciou a vzdaním sa.
+// Skóre je len v dlaždiciach Špaky, stav súpera bodkou na jeho avatare (dizajn timeline-lista A).
+// Menu webu je počas partie preč — hráč hrá. Nebezpečné akcie sú v menu, vzdanie sa s potvrdením.
 
 import { useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
-import type { ClientState, PlayerId } from "@naex/core";
+import type { ClientState } from "@naex/core";
 import { chod } from "../lib/router.tsx";
-import { IkonaSpaku } from "./IkonaSpaku.tsx";
 import { MIMO_PULTU, prepniPultMelichara } from "./Soundboard.tsx";
-import {
-  ID_TLACIDLA_PARTIE,
-  ZMENA_SVIETI_MS,
-  krokPartie,
-  minSek,
-  stavKontumacie,
-  textZmeny,
-  zmenySpakov,
-  type ZmenaSpakov,
-} from "./stitokPartie.ts";
+import { ID_TLACIDLA_PARTIE, krokPartie, minSek, stavKontumacie } from "./stitokPartie.ts";
 import "./hlavicka.css";
-
-/**
- * Špaky v štítku: kým beží počítadlo bitky, ostanú staré (nech hlavička neprezradí
- * výsledok skôr než stôl); potom krátko svieti posledná zmena („+2“).
- */
-function useSpakyVStitku(spaky: readonly [number, number], pozdrz: boolean): {
-  readonly zobrazene: readonly [number, number];
-  readonly zmena: { readonly zmeny: readonly ZmenaSpakov[]; readonly id: number } | null;
-} {
-  const [zobrazene, setZobrazene] = useState<readonly [number, number]>(spaky);
-  const [zmena, setZmena] = useState<{ readonly zmeny: readonly ZmenaSpakov[]; readonly id: number } | null>(null);
-  const [a, b] = spaky;
-  useEffect(() => {
-    if (pozdrz || (zobrazene[0] === a && zobrazene[1] === b)) return;
-    const zmeny = zmenySpakov(zobrazene, [a, b]);
-    setZobrazene([a, b]);
-    setZmena((z) => ({ zmeny, id: (z?.id ?? 0) + 1 }));
-  }, [a, b, pozdrz, zobrazene]);
-  useEffect(() => {
-    if (zmena === null) return;
-    const t = setTimeout(() => setZmena(null), ZMENA_SVIETI_MS);
-    return () => clearTimeout(t);
-  }, [zmena]);
-  return { zobrazene, zmena };
-}
 
 /** Hodiny pre odpočet kontumácie — bežia len počas čakania. */
 function useTeraz(bezi: boolean): number {
@@ -57,8 +23,6 @@ function useTeraz(bezi: boolean): number {
   return teraz;
 }
 
-const slovoSpakov = (n: number): string => (n === 1 ? "špak" : n >= 2 && n <= 4 ? "špaky" : "špakov");
-
 export interface HlavickaPartieProps {
   readonly kod: string;
   readonly view: ClientState;
@@ -69,8 +33,10 @@ export interface HlavickaPartieProps {
   readonly superOdpojenyOd: number | null;
   /** Výučba: bez kódu, kontumácie a vzdania sa (výučbu preruší jej vlastné tlačidlo). */
   readonly vyucba: boolean;
-  /** Beží počítadlo bitky — štítok ešte neukáže nové špaky. */
-  readonly pocitadloBezi: boolean;
+  /** Os kola (PriebehKola) do stredu lišty; null = os ostala v bare (mobil). */
+  readonly os?: ReactNode | undefined;
+  /** Nástroje stola (Log · ?) vedľa menu Partia. */
+  readonly nastroje?: ReactNode | undefined;
   /** Soundboard Melichara (s právom) — v štítku ukáže len stav, pult otvorí menu. */
   readonly melichar?: ReactNode | undefined;
   readonly vzdat: () => void;
@@ -87,16 +53,14 @@ export function HlavickaPartie({
   superPripojeny,
   superOdpojenyOd,
   vyucba,
-  pocitadloBezi,
+  os,
+  nastroje,
   melichar,
   vzdat,
   kontumacia,
   opustit,
 }: HlavickaPartieProps) {
-  const ja = view.ja;
-  const su: PlayerId = ja === 0 ? 1 : 0;
   const krok = krokPartie(view);
-  const { zobrazene, zmena } = useSpakyVStitku([view.spaky[ja], view.spaky[su]], pocitadloBezi);
   const bezi = view.koniec === null;
   const ponukaKontumaciu = bezi && !superBot && !vyucba && kontumacia !== undefined;
   const pripojeny = superBot || superPripojeny;
@@ -156,66 +120,10 @@ export function HlavickaPartie({
     dalsi?.focus();
   };
 
-  const popisZmeny =
-    zmena === null
-      ? ""
-      : zmena.zmeny.map((z) => `${z.kto === 0 ? "Ty" : menoSupera}: ${textZmeny(z.n)} ${slovoSpakov(Math.abs(z.n))}`).join(", ");
-  const zmenaPre = (kto: 0 | 1): ZmenaSpakov | undefined => zmena?.zmeny.find((z) => z.kto === kto);
-  const cislo = (kto: 0 | 1) => {
-    const z = zmenaPre(kto);
-    const n = zobrazene[kto];
-    return (
-      <b key={z === undefined ? `n${kto}` : `z${kto}-${zmena?.id}`} className={`stitok-n${z === undefined ? "" : z.n > 0 ? " blik" : " blik minus"}`}>
-        {n < 0 ? `−${-n}` : n}
-      </b>
-    );
-  };
-  const znacka = (kto: 0 | 1) => {
-    const z = zmenaPre(kto);
-    return z === undefined ? null : (
-      <span key={`zm${kto}-${zmena?.id}`} className={`stitok-zmena${z.n < 0 ? " minus" : ""}`} aria-hidden="true">
-        {textZmeny(z.n)}
-      </span>
-    );
-  };
-
   return (
     <div className="partia-hlavicka" ref={obal} {...{ [MIMO_PULTU]: "" }}>
-      <div className="partia-stitok" role="group" aria-label={`Partia ${kod}`}>
-        {!vyucba && !superBot && (
-          <>
-            <span className="stitok-kod" title="Kód miestnosti — pošli ho súperovi, alebo sa ním vrátiš">
-              {kod}
-            </span>
-            <span className="stitok-delic stitok-kod-delic" aria-hidden="true" />
-          </>
-        )}
-        <span className={`stitok-krok${krok.finale ? " finale" : ""}`}>
-          <span className="stitok-dlhe">{krok.text}</span>
-          <span className="stitok-kratke">{krok.kratko}</span>
-        </span>
-        <span className="stitok-delic" aria-hidden="true" />
-        <span className="stitok-skore" role="img" aria-label={`Špaky: ty ${zobrazene[0]}, ${menoSupera} ${zobrazene[1]}`} title={`Špaky — ty ${zobrazene[0]} : ${zobrazene[1]} ${menoSupera}`}>
-          <IkonaSpaku trieda="stitok-pop ja" />
-          {cislo(0)}
-          {znacka(0)}
-          <span className="stitok-dvojbodka" aria-hidden="true">
-            :
-          </span>
-          {znacka(1)}
-          {cislo(1)}
-          <IkonaSpaku trieda="stitok-pop su" />
-        </span>
-        <span className="stitok-delic" aria-hidden="true" />
-        <span className={`stitok-super ${pripojeny ? "online" : "offline"}`} title={`${menoSupera} ${pripojeny ? "je pri stole" : "je odpojený"}`}>
-          <span aria-hidden="true">{pripojeny ? "●" : "○"}</span>
-          <span className="stitok-super-meno">{menoSupera}</span>
-          {!pripojeny && <span className="stitok-super-stav">odpojený</span>}
-        </span>
-        <span className="hp-citacka" aria-live="polite">
-          {popisZmeny}
-        </span>
-      </div>
+      {os !== undefined && os !== null && <div className="partia-os">{os}</div>}
+      {nastroje}
       {melichar}
       <div className="partia-menu-obal">
         <button
@@ -227,7 +135,14 @@ export function HlavickaPartie({
           aria-expanded={otvorene}
           onClick={() => (otvorene ? zavri(false) : setOtvorene(true))}
         >
-          Partia <span className="sipka" aria-hidden="true">▾</span>
+          Partia
+          {/* Kód miestnosti (len hra s človekom) — kopírovanie je v menu. */}
+          {!vyucba && !superBot && (
+            <span className="partia-kod" title="Kód miestnosti — pošli ho súperovi, alebo sa ním vrátiš">
+              {kod}
+            </span>
+          )}
+          <span className="sipka" aria-hidden="true">▾</span>
           {ponukaKontumaciu && kontum.druh === "mozna" && <span className="bodka-pozor" title="Môžeš si vyžiadať kontumačnú výhru" />}
           {ponukaKontumaciu && kontum.druh === "mozna" && <span className="hp-citacka">(kontumačná výhra je k dispozícii)</span>}
         </button>
@@ -236,7 +151,8 @@ export function HlavickaPartie({
             <div className="partia-menu-hlava">
               <strong>{vyucba ? "Prvá hra s Melicharom" : `Partia ${kod}`}</strong>
               <span>
-                s {menoSupera} · {krok.text} · špaky {zobrazene[0]} : {zobrazene[1]}
+                s {menoSupera} · {krok.text}
+                {!superBot && !pripojeny && " · súper je odpojený"}
               </span>
             </div>
             {!vyucba && !superBot && (
