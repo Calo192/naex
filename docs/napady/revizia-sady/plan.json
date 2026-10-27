@@ -2912,7 +2912,8 @@
    {"bod": 9, "otazka": "dve karty s Konfliktom na spoji", "stav": "zaniká", "rozhodnutie": "spúšťa len ležiaca karta"},
    {"bod": 10, "otazka": "Záverečná lícom dole", "stav": "schválené", "rozhodnutie": "Konflikt ležiacej karty sa odloží na otočenie Záverečnej na konci Pitky; za Záverečnú sa priložiť nedá (engine.ts:2101)"},
    {"bod": 11, "otazka": "spoj bez aktívnej akcie", "stav": "schválené", "rozhodnutie": "stačí susedstvo"},
-   {"bod": 12, "otazka": "Konflikt ako stav (Pes, E1)", "stav": "otvorené (v7)", "rozhodnutie": "návrh: Konflikt ostáva okamih; stavové efekty ako Furt s podmienkou spoja so súperovou kartou (Pes)"}
+   {"bod": 12, "otazka": "Konflikt ako stav (Pes, E1)", "stav": "otvorené (v7)", "rozhodnutie": "návrh: Konflikt ostáva okamih; stavové efekty ako Furt s podmienkou spoja so súperovou kartou (Pes)"},
+   {"bod": 13, "otazka": "lokalita prepožičia Konflikt prvej karte pri nej", "stav": "rozhodnuté", "rozhodnutie": "nie (Michal); Konflikt je len vlastnosť karty; dotknuté alternatívy E4 nikto nevybral"}
   ],
   "vzory": [
    {"nazov": "Hádka o mezu", "typ": "Občan", "efekt": "Konflikt: Kto z vás má v kraji tejto karty menej kariet, dá druhému 1 plný poldeci. Pri rovnosti sa nič nedeje.", "vzacnost": "podmienka (prevaha), cenu platí slabší"},
@@ -2989,6 +2990,37 @@
     "rozpocet_po_e3": {"Petelica":14,"Pecka":22,"Rana":32,"Dlh":64,"PoškodeniePečene":48,"Poldeci":24,"Povera":32,"Viera":28,"Pohoršenie":28,"Cigareta":40,"Robota":14,"Obmedzenie":10,"Posilnenie":6,"Odpor":18,"Vízia":10,"Pakt":4},
     "sloty_delta": ["vypadli: presbiter, opatrovatelka, smetiarka, brigadnik, oslavenec","kulturista: ľavá Petelica 1 → 2, blocked [0,2,3] → [0,3]; pravá bez zmeny (Dlh ×2, blocked []); 6 variantov","dohadzovacka: ľavá blocked [0,1] → [0,2] (Viera/Pakt na 1 a 3; podmienka 3b pre Pakt)","podvodnik: pravá blocked [1,3] → [0,1] (Obmedzenie/Rana na 2–3; Obmedzenie na i3)","snubenica: ľavá blocked [0,1] → [0,2] (Robota na 1 alebo 3; Robota na i1)","mená: niekoho_stryna → Stryná, klebetnica → Bzdocha","pripnutia: Kulturista „Petelica sama na slote 1“ → „Petelice vonku, Dlhy vnútri“; Pakt 3 → 2 nosiče"],
     "na_potvrdenie": ["Záhradkár nahrádza oba efekty z revízie?","AA nahrádza Placatku (z trojice ostáva Svokra)","znenie Dohadzovačky","meno spúšťača Kulturistu (kolízia s Paktom) a príjemca cigariet","Oslávenec: karta len návrh?"]
+   },
+   {
+    "davka": "E4",
+    "nazov": "starešinovia a lokality + detaily a princípy (nevyjadrene-karty.html)",
+    "subor": "docs/napady/efekty-navrhy-4.html; docs/napady/nevyjadrene-karty.html",
+    "kto": "Michal",
+    "zmeny": [
+     {"id":"veterinar","karta":"Veterinár","volba":"inak","spustac":"Pitka","znenie":"Pitka: Karty v jeho okolí nepridávajú poškodenie pečene, ani z akcií Poškodenie pečene, ani z Poldeci.","michal":"Pitka: Karty v jeho okolí negenerujú poškodenie pečene."},
+     {"id":"autobusar","karta":"Autobusár","volba":"inak","spustac":"Zhromaždenie","znenie":"Zhromaždenie: Ak súper pasuje až po tebe, ujde mu posledný spoj: cigarety za jeho pas nedostane.","nahradza":"variant A (1 Absťák sa nepočíta) — naprogramované na feature/autobusar-hasic","poznamka":"POZOR: odstrániť variant A z feature/autobusar-hasic"},
+     {"id":"starosta","karta":"Starosta","volba":"inak","spustac":"Nástup","znenie":"Nástup: Vezmi si do ruky jednu kartu zo šenku.","nahradza":"Kšeft: za cigaretu výmena ruka ↔ šenok","poznamka":"v línii z patronátu (§10 :794–795); pri prebudení sa Nástup neuplatní (§10 :754)"},
+     {"id":"farar","karta":"Farár","volba":"C","spustac":"Prehra","znenie":"Prehra: Víťazovi sa pripíše 1 zadĺženie za každú jeho aktívnu Poveru v línii, lebo povera je hriech.","nahradza":"Bitka: ignoruj 2 súperove Povery"},
+     {"id":"postarka","karta":"Poštárka","volba":"inak","spustac":"Kšeft","znenie":"Kšeft: Za 1 Dlh si dober 1 kartu.","nahradza":"Kšeft: za 1 Dlh až 2 karty"},
+     {"id":"hrobar","karta":"Hrobár","volba":"inak","spustac":"Konflikt","znenie":"Konflikt: Karta, ktorú súper k nemu priloží, je posledná na tejto strane: za ňu sa už nič nepriloží. Po bitke ide z hry.","michal":"Konflikt: Karta, ktorá s ním vyvolá konflikt, je posledná v línii. Po bitke sa zahodí.","nahradza":"Furt: cigareta, keď súper zahodí kartu"},
+     {"id":"vychovavatelka","karta":"Vychovávateľka","volba":"inak","spustac":"Kšeft","znenie":"Kšeft: Za 2 cigarety máš v bitke 1 Poveru navyše.","nahradza":"Pitka: pri tvojom NA EX súper berie tvoj Dlh"},
+     {"id":"krcmarka","karta":"Krčmárka","volba":"inak","spustac":"Pitka","znenie":"Pitka: Na tvoje NA EX súper nesmie odpovedať vyložením karty.","nahradza":"Bitka: bez Absťáku a NA EX otoč vypitý poldeci"},
+     {"id":"cintorin","karta":"Cintorín","volba":"A","spustac":"Pitka","znenie":"Pitka: Cirhóza, ktorá v tejto Pitke vznikne, je hneď priznaná, lebo umieráčik zvoní pre celú dedinu.","nahradza":"Prehra: po Pohrebe Nástroj do Dedičstva zadarmo"},
+     {"id":"jednota","karta":"Jednota","volba":"inak","spustac":"Pitka","znenie":"Pitka: Kto má viac priznaných Dlhov, nesmie v tejto Pitke fajčiť ani dolievať.","nahradza":"Kšeft: Za 1 Dlh dostaneš 2 cigarety (padá)"},
+     {"id":"benzinka","karta":"Benzínka","volba":"inak","spustac":"Pitka","znenie":"Pitka: Fajčiť smie len hráč, ktorého Občan alebo Starešina leží v línii najďalej od lokality.","michal":"Fajčiť môže len hráč, ktorého karta sa nachádza najďalej od stredu (karta musí byť starešina alebo občan, nie náradie alebo zviera).","nahradza":"Pitka: Nikto nesmie fajčiť","poznamka":"pri rovnosti nefajčí nikto — na potvrdenie"},
+     {"id":"kar","karta":"Kar","volba":"A","spustac":"Pitka","znenie":"Pitka: Kto dá NA EX, pripíja za nebožtíka: poškodenie pečene za jeho NA EX dostane súper, lebo musel pripiť tiež.","nahradza":"Pitka: doliatie zadarmo, každé +1 pečeň"},
+     {"id":"obecny_urad","karta":"Obecný úrad","volba":"B","spustac":"Kšeft","znenie":"Kšeft: Za 3 cigarety ti úradník prepíše dlh: jeden tvoj priznaný Dlh sa presunie medzi súperove priznané.","nahradza":"Bitka: Každá aktívna Robota spáli 2 priznané Dlhy (revízia)"},
+     {"id":"kostol","karta":"Kostol","volba":"A","spustac":"Zhromaždenie, Pitka","znenie":"Zhromaždenie: Nikto nesmie vypiť. Pitka: NA EX sa smie dať len na kartu v kraji pri oltári.","nahradza":"Pitka: nikto nesmie dať NA EX"}
+    ],
+    "nechat": ["Zastávka","Most","Lesná cesta","Ihrisko","Zberný dvor","Krčma","Sklad","Kultúrny dom","Vínna pivnica","Družstvo","Poľovnícka chata","Predsedova vila","Herňa"],
+    "detaily": {"kulturista":"Úplatok: Súper smie v každej Pitke položiť na túto kartu 1 cigaretu. Každá cigareta na nej zníži do konca kola každú jej akciu poškodenia o jeden stupeň (Petelica → Pecka → Rana → nič). Cigarety sa zahodia. (na nulu až po 3 Pitkách)","sarlatan":"premena platí, kým leží v línii (do konca kola)","policajtka":"platí návrh: Pokuta na mieste nahrádza P1 z NA EX trojice","anonymny_alkoholik":"platí návrh: nahrádza Placatku; z NA EX trojice ostáva len Svokra","zahradkar":"platí návrh: Exekúcia nahrádza oba efekty z revízie","dievcina_na_vydaj":"platí návrh: Prehra nahrádza celý efekt, D4 padá","oslavenec":"platí návrh: efekt rozhodnutý, karta len návrh mimo sady","zivnostnik":"Nástroj smie priložiť aj pri Záverečnej (pri jej otočení) — Michal: nech na to prídu aj hráči","pes":"znenie platí","krokodil":"znenie platí","ministrant":"znenie platí","dohadzovacka":"znenie platí","pijan":"nové znenie (nahrádza E1): Bitka: Za každé NA EX, ktoré si v tomto kole dal, udelíš súperovi 1 Ranu navyše."},
+    "principy": {"karta_natrvalo_k_superovi":"áno","lokalita_prepozicia_konflikt":"nie","zmena_majitela_bez_otocenia":"nie","uzavrete_alternativy":["most-A","lesna_cesta-B","ihrisko-B","zberny_dvor-C","krcma-C","sklad-C","predsedova_vila-A","predsedova_vila-B","veterinar-B","postarka-B"]},
+    "lokality_7_5": "všetko platí návrh (Lesná cesta ×2, Kar nerest — bezpredmetné po kar-A, Zberný dvor, Herňa ×2, Sklad ×4)",
+    "kolizie": "žiadne: cintorin-A, kar-A, kostol-A, obecny_urad-B nepoužívajú Konflikt",
+    "kseft_po_zmenach": {"balicek":["Strýko z Ameriky (D1 otvorené)"],"starsi":["Poštárka","Vychovávateľka"],"lokality":["Zberný dvor","Sklad","Obecný úrad","Predsedova vila"],"stratili":["Starosta","Jednota","Kapybara (E1)"],"mimo_sady":["Oslávenec","Smetiarka"],"opak_ksefu":"Kulturista (Úplatok)"},
+    "naex_trojica": "ostáva len Svokra (Varecha); Placatka a P1 padli — upraviť feature/naex-trojica",
+    "otvorene": ["8 Nástrojov z E1 — nové kolo (iný agent), smer: efekt len pre priznané Dedičstvo","Pasca: nahradiť, alebo pridať","Benzínka pri rovnosti","Konflikt ako stav (bod 12)"],
+    "druzstvo_ilustracia": "finál 1 (rieši Ilustrátor)"
    }
   ]
  }

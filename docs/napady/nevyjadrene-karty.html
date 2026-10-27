@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Nevyjadrené karty — voľby — NA EX!</title>
 <style>
+.karta.rozh { border-color: var(--ok); }
 /* Rozhodovací dokument: karty a otázky bez Michalovho vyjadrenia, prepínače, poznámky a súhrn na skopírovanie (štýl revizia-karty.html). */
 :root {
   --pozadie: #15120f; --plocha: #1f1a15; --plocha-2: #2a231c; --okraj: #43372c;
@@ -150,6 +151,7 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
   <h1>Nevyjadrené karty — voľby</h1>
   <button type="button" id="tema" aria-label="Prepnúť svetlý a tmavý režim">Svetlo / tma</button>
 </div>
+<p class="roz roz-ano">Michal rozhodol 57 zo 66 položiek (zapracované v <code>revizia-sady/plan.md</code> 7.5, 13.2 a 14.7). Otvorených ostáva 9: osem Nástrojov (príde nové kolo návrhov, smer: efekt len pre priznané Dedičstvo) a s nimi otázka Pasce (nahradiť, alebo pridať).</p>
 <p class="uvod">Vymyselník · 28. 10. 2026 · efektová iterácia · pre Michala cez Leadera. Pri každej položke vyber voľbu a podľa potreby pripíš poznámku. Voľby sa ukladajú v tomto prehliadači a tlačidlo dole skopíruje súhrn na vloženie Leaderovi. Plné znenia alternatív sú z <code>efekty-navrhy-4.html</code> a <code>efekty-navrhy-1.html</code> (Nástroje po prerobení: jeden efekt pre hru aj Dedičstvo). Pri každej karte je moje odporúčanie s dôvodom. Nič som nesimuloval.</p>
 
 <section class="ramik">
@@ -169,9 +171,10 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
 <p class="pozn">Voľby: A / B / C / Nechať dnešný / Inak. Alternatívy so štítkom „K · kraj“ a niektoré „K · patronát“ stoja na principiálnych otázkach v <a href="#s4">sekcii 4</a>.</p>
 <h3 class="skupina">Starešinovia (8)</h3>
 
-<article class="karta" id="k-veterinar" data-kluc="veterinar" data-nazov="Veterinár" data-odp="A" data-moznosti="A:veterinar-A|B:veterinar-B|C:veterinar-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
+<article class="karta rozh" id="k-veterinar" data-nazov="Veterinár">
   <header class="karta-hlava"><h2><span class="cislo">1.1</span>Veterinár</h2>
   <p class="tagy"><span class="tag">Starešina · Chlap</span></p></header>
+  <p class="roz roz-ano">Rozhodnuté: Inak: <i>Pitka: Karty v jeho okolí nepridávajú poškodenie pečene, ani z akcií Poškodenie pečene, ani z Poldeci.</i></p>
   <p class="pozn">Akcie: Posil×2 / Cig, Poldeci (bez zmeny)</p>
   <p class="dnes">Dnes: Bitka: Cirhóza ti pridáva v bitke o 2 poškodenia menej. Účinnosť 21 %, Bitka je preplnená.</p>
   <ul class="alty">
@@ -180,13 +183,12 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
     <li><b>veterinar-C</b> · <i>Lieči aj ľudí, načierno</i> <br><span class="efekt">Prehra: Jedna tvoja priznaná Cirhóza ide z hry. Ošetrenie bolo načierno, preto získaš 1 Dlh.</span><br><span class="pozn">Priznaná Cirhóza dáva súperovi +1 tuhé v každej bitke. Porazený ju vymení za Dlh. Ostane pri téme dnešného efektu, ale mimo preplnenej Bitky.</span></li>
   </ul>
   <p class="odporucanie"><b>Odporúčam: veterinar-A.</b> Vyťahuje Bitku (21 %) do Kšeftu a rieši Cirhózy, ktorých po revízii pribudne. Cenou sú limit aj pečeň, takže liečba môže vyrobiť ďalšiu Cirhózu.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: veterinar-A</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-veterinar">Poznámka: Veterinár</label><textarea id="p-veterinar" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta" id="k-autobusar" data-kluc="autobusar" data-nazov="Autobusár" data-odp="B" data-moznosti="A:autobusar-A|B:autobusar-B|C:autobusar-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
+<article class="karta rozh" id="k-autobusar" data-nazov="Autobusár">
   <header class="karta-hlava"><h2><span class="cislo">1.2</span>Autobusár</h2>
   <p class="tagy"><span class="tag">Starešina · Chlap</span></p></header>
+  <p class="roz roz-ano">Rozhodnuté: Inak: <i>Zhromaždenie: Ak súper pasuje až po tebe, ujde mu posledný spoj: cigarety za jeho pas nedostane.</i> <b>Nahrádza variant A z <code>feature/autobusar-hasic</code>.</b></p>
   <p class="pozn">Akcie: Cig, Pecka, Poldeci / Robota (bez zmeny)</p>
   <p class="dnes">Dnes: Bitka: Ignoruj 1 Absťák. Účinnosť 33 %.</p>
   <ul class="alty">
@@ -195,13 +197,12 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
     <li><b>autobusar-C</b> · <i>Spoj do mesta</i> <br><span class="efekt">Prehra: Za 2 cigarety na lístok sa jeden tvoj priznaný Absťák vráti do zásoby, lebo v meste si to dáš. Bez cigariet ostaneš na zastávke.</span><br><span class="pozn">Ostane téma Absťáku, ale v okamihu, kde účinok rozhoduje. Cena je v cigaretách a porazený ich mať nemusí.</span></li>
   </ul>
   <p class="odporucanie"><b>Odporúčam: autobusar-B.</b> Podstrčenie dnes nič nestojí. Lístok mu dá cenu a čierny pasažier vyrába Dlh, ktorý dávka 3 potrebuje.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: autobusar-B</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-autobusar">Poznámka: Autobusár</label><textarea id="p-autobusar" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta" id="k-starosta" data-kluc="starosta" data-nazov="Starosta" data-odp="A" data-moznosti="A:starosta-A|B:starosta-B|C:starosta-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
+<article class="karta rozh" id="k-starosta" data-nazov="Starosta">
   <header class="karta-hlava"><h2><span class="cislo">1.3</span>Starosta</h2>
   <p class="tagy"><span class="tag">Starešina · Chlap</span></p></header>
+  <p class="roz roz-ano">Rozhodnuté: Inak: <i>Nástup: Vezmi si do ruky jednu kartu zo šenku.</i> (v línii z patronátu, pri prebudení nie)</p>
   <p class="pozn">Akcie: Pecka, Poldeci / Cig, Pecka (bez zmeny)</p>
   <p class="dnes">Schválené: Kšeft: Za cigaretu vymeň kartu z ruky za kartu zo šenku (nie Cirhózu). Ako Pitka mal účinnosť 11 %.</p>
   <ul class="alty">
@@ -210,13 +211,12 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
     <li><b>starosta-C</b> · <i>Úradné hodiny</i> <span class="tag">K · patronát</span><br><span class="efekt">Konflikt: Keď súper priloží kartu k Starostovi, potrebuje pečiatku: dá ti 1 cigaretu, inak sa mu karta vráti do ruky, lebo žiadosť bola zamietnutá.</span><br><span class="pozn">Súper si vyberá medzi zlou a horšou možnosťou. Vrátená karta mu aj tak zjedla limit.</span></li>
   </ul>
   <p class="odporucanie"><b>Odporúčam: starosta-A.</b> Najostrejšia satira dávky (pásku strihá starosta) a dobiehanie v špakoch pre porazeného, ktoré renta strachu potrebuje.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: starosta-A</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-starosta">Poznámka: Starosta</label><textarea id="p-starosta" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta" id="k-farar" data-kluc="farar" data-nazov="Farár" data-odp="C" data-moznosti="A:farar-A|B:farar-B|C:farar-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
+<article class="karta rozh" id="k-farar" data-nazov="Farár">
   <header class="karta-hlava"><h2><span class="cislo">1.4</span>Farár</h2>
   <p class="tagy"><span class="tag">Starešina · Chlap</span></p></header>
+  <p class="roz roz-ano">Rozhodnuté: farar-C.</p>
   <p class="pozn">Akcie: Posil×2 / Viera×2 (bez zmeny)</p>
   <p class="dnes">Dnes: Bitka: Ignoruj 2 súperove Povery. Účinnosť 49 %, Povier pribudne (32 → 40).</p>
   <ul class="alty">
@@ -225,13 +225,12 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
     <li class="odp-alt"><b>farar-C</b> · <i>Božie mlyny</i> <br><span class="efekt">Prehra: Víťazovi sa pripíše 1 zadĺženie za každú jeho aktívnu Poveru v línii, lebo povera je hriech.</span><br><span class="pozn">Dnešný boj proti Poverám sa presunie z preplnenej Bitky na Prehru. Zvyšok zadĺženia ostane na účte (D6).</span></li>
   </ul>
   <p class="odporucanie"><b>Odporúčam: farar-C.</b> Presúva ho z preplnenej Bitky do Prehry, víťazovi vyrába Dlhy a „povera je hriech“ sa vysvetlí sama.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: farar-C</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-farar">Poznámka: Farár</label><textarea id="p-farar" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta" id="k-postarka" data-kluc="postarka" data-nazov="Poštárka" data-odp="dnes" data-moznosti="A:postarka-A|B:postarka-B|C:postarka-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
+<article class="karta rozh" id="k-postarka" data-nazov="Poštárka">
   <header class="karta-hlava"><h2><span class="cislo">1.5</span>Poštárka</h2>
   <p class="tagy"><span class="tag">Starešina · Žena</span></p></header>
+  <p class="roz roz-ano">Rozhodnuté: Inak: Kšeft upravený na <i>Za 1 Dlh si dober 1 kartu.</i></p>
   <p class="pozn">Akcie: Vízia / Cig, Povera, Vízia (bez zmeny)</p>
   <p class="dnes">Schválené: Kšeft: Za 1 Dlh dober až 2 karty. Ako Pitka mala účinnosť 66 %.</p>
   <ul class="alty">
@@ -240,13 +239,12 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
     <li><b>postarka-C</b> · <i>Klebeta</i> <span class="tag">K · patronát</span><br><span class="efekt">Konflikt: Keď súper priloží kartu k Poštárke, celá dedina sa dozvie, čo drží: do konca kola hrá s rukou lícom nahor.</span><br><span class="pozn">Čistá informácia, žiadna mena. Kód: viewFor pošle súperovu ruku len počas tohto kola a musí to byť otestované (pravidlo 2).</span></li>
   </ul>
   <p class="odporucanie"><b>Odporúčam: Nechať dnešný.</b> Schválený Kšeft „za Dlh až 2 karty“ funguje (66 %) a je dobrovoľný zdroj Dlhu. Alternatívy ho neprekonajú.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Nechať dnešný</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-postarka">Poznámka: Poštárka</label><textarea id="p-postarka" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta" id="k-hrobar" data-kluc="hrobar" data-nazov="Hrobár" data-odp="C" data-moznosti="A:hrobar-A|B:hrobar-B|C:hrobar-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
+<article class="karta rozh" id="k-hrobar" data-nazov="Hrobár">
   <header class="karta-hlava"><h2><span class="cislo">1.6</span>Hrobár</h2>
   <p class="tagy"><span class="tag">Starešina · Chlap</span></p></header>
+  <p class="roz roz-ano">Rozhodnuté: Inak: <i>Konflikt: Karta, ktorú súper k nemu priloží, je posledná na tejto strane: za ňu sa už nič nepriloží. Po bitke ide z hry.</i></p>
   <p class="pozn">Akcie: Viera, Vízia / Pohorš, Robota (bez zmeny)</p>
   <p class="dnes">Dnes: Furt: Keď súper zahodí kartu, dober si cigaretu. Účinnosť 32 %, zahadzovania pribudlo.</p>
   <ul class="alty">
@@ -255,13 +253,12 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
     <li class="odp-alt"><b>hrobar-C</b> · <i>Hrob je už vykopaný</i> <span class="tag">K · patronát</span><br><span class="efekt">Konflikt: Keď súper priloží kartu k Hrobárovi, súper si vyberie: dá ti 1 cigaretu, alebo tá karta po bitke ide z hry.</span><br><span class="pozn">Zlá alebo horšia možnosť. Slabú kartu súper rád pochová, dobrú vykúpi.</span></li>
   </ul>
   <p class="odporucanie"><b>Odporúčam: hrobar-C.</b> Cigarety z dnešného Furtu nič nedajú (nadbytok). Konflikt pri patronáte dáva súperovi zlú a horšiu možnosť a kartu z hry.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: hrobar-C</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-hrobar">Poznámka: Hrobár</label><textarea id="p-hrobar" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta" id="k-vychovavatelka" data-kluc="vychovavatelka" data-nazov="Vychovávateľka" data-odp="A" data-moznosti="A:vychovavatelka-A|B:vychovavatelka-B|C:vychovavatelka-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
+<article class="karta rozh" id="k-vychovavatelka" data-nazov="Vychovávateľka">
   <header class="karta-hlava"><h2><span class="cislo">1.7</span>Vychovávateľka</h2>
   <p class="tagy"><span class="tag">Starešina · Žena</span></p></header>
+  <p class="roz roz-ano">Rozhodnuté: Inak: <i>Kšeft: Za 2 cigarety máš v bitke 1 Poveru navyše.</i></p>
   <p class="pozn">Akcie: Cig, Obmedz / Poldeci, Povera (bez zmeny)</p>
   <p class="dnes">Dnes: Pitka: Ak dáš NA EX, súper si musí od teba vziať priznaný Dlh do doberacieho balíčka. Účinnosť 8 %.</p>
   <ul class="alty">
@@ -270,13 +267,12 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
     <li><b>vychovavatelka-C</b> · <i>Do kúta</i> <span class="tag">K · patronát</span><br><span class="efekt">Konflikt: Keď súper priloží kartu k Vychovávateľke, karta ide do kúta: jej aktívne Rany, Pecky a Petelice sa v bitke nerátajú.</span><br><span class="pozn">Bitkára postaví do kúta. Podstrčený úderník je teda pri nej zbytočný.</span></li>
   </ul>
   <p class="odporucanie"><b>Odporúčam: vychovavatelka-A.</b> Zachová tému NA EX a 8 % účinnosť opraví jednoduchým zákazom („zaracha“), ktorý pochopí každý.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: vychovavatelka-A</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-vychovavatelka">Poznámka: Vychovávateľka</label><textarea id="p-vychovavatelka" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta" id="k-krcmarka" data-kluc="krcmarka" data-nazov="Krčmárka" data-odp="A" data-moznosti="A:krcmarka-A|B:krcmarka-B|C:krcmarka-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
+<article class="karta rozh" id="k-krcmarka" data-nazov="Krčmárka">
   <header class="karta-hlava"><h2><span class="cislo">1.8</span>Krčmárka</h2>
   <p class="tagy"><span class="tag">Starešina · Žena</span></p></header>
+  <p class="roz roz-ano">Rozhodnuté: Inak: <i>Pitka: Na tvoje NA EX súper nesmie odpovedať vyložením karty.</i></p>
   <p class="pozn">Akcie: Obmedz, Poldeci / Cig, Povera (bez zmeny)</p>
   <p class="dnes">Dnes: Bitka: Ak nemáš absťák a nedal si NA EX, môžeš otočiť vypitý poldeci. Účinnosť 0 %.</p>
   <ul class="alty">
@@ -285,15 +281,14 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
     <li><b>krcmarka-C</b> · <i>Vidí do pohárov</i> <br><span class="efekt">Pitka: Súperovo NA EX vidíš hneď, ako ho dá, aj kartu, na ktorú ho dal.</span><br><span class="pozn">Krčmárka vie, kto čo pije. Útočník, ktorý má posledné slovo, tak hrá s otvorenými kartami. Kód: viewFor pošle skryté NA EX len majiteľovi efektu, s testom.</span></li>
   </ul>
   <p class="odporucanie"><b>Odporúčam: krcmarka-A.</b> Opraví 0 % účinnosť a doliatie na lístok vyrába Dlhy. Vysvetlí sa jednou vetou.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: krcmarka-A</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-krcmarka">Poznámka: Krčmárka</label><textarea id="p-krcmarka" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
 <h3 class="skupina">Lokality · Úroveň 1 — spodok</h3>
 
-<article class="karta" id="k-zastavka" data-kluc="zastavka" data-nazov="Zastávka" data-odp="dnes" data-moznosti="A:zastavka-A|B:zastavka-B|C:zastavka-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
+<article class="karta rozh" id="k-zastavka" data-nazov="Zastávka">
   <header class="karta-hlava"><h2><span class="cislo">1.9</span>Zastávka</h2>
   <p class="tagy"><span class="tag">Lokalita · úroveň 1 · pod strieškou / pri ceste</span></p></header>
+  <p class="roz roz-ano">Rozhodnuté: Nechať.</p>
   <p class="pozn">Hrany: [– Cig – –] / [Pecka – – –]</p>
   <p class="dnes">Rozhodnuté (bez zmeny): Zhromaždenie: Obaja hráči majú spoločný limit vykladania, súčet ich limitov. Účinnosť 100 %.</p>
   <ul class="alty">
@@ -302,13 +297,12 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
     <li><b>zastavka-C</b> · <i>Zrušená linka</i> <br><span class="efekt">Pitka: Ak má jeden hráč prevahu v oboch krajoch, druhému autobus nepríde: dostane 2 cigarety na taxík.</span><br><span class="pozn">Dobiehanie pre toho, koho z lokality vytlačili. Podmienka je jasne viditeľná na stole.</span></li>
   </ul>
   <p class="odporucanie"><b>Odporúčam: Nechať dnešný.</b> Spoločný limit funguje na 100 % a robí zo Zastávky iný typ kola. Alternatívy sú slabšie.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Nechať dnešný</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-zastavka">Poznámka: Zastávka</label><textarea id="p-zastavka" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta" id="k-most" data-kluc="most" data-nazov="Most" data-odp="dnes" data-moznosti="A:most-A|B:most-B|C:most-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
+<article class="karta rozh" id="k-most" data-nazov="Most">
   <header class="karta-hlava"><h2><span class="cislo">1.10</span>Most</h2>
   <p class="tagy"><span class="tag">Lokalita · úroveň 1 · pri kaplnke / pod mostom</span></p></header>
+  <p class="roz roz-ano">Rozhodnuté: Nechať.</p>
   <p class="pozn">Hrany po revízii: [– Pecka – –] / [– – Cig –]</p>
   <p class="dnes">Rozhodnuté (efekt ostáva): Zhromaždenie: Karty sa smú vykladať len na vlastnú stranu (aj odpoveď na NA EX). Účinnosť 100 %.</p>
   <ul class="alty">
@@ -317,13 +311,12 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
     <li><b>most-C</b> · <i>Sľub pri kaplnke</i> <br><span class="efekt">Prehra: Porazený sa pri kaplnke zaprisahá, že prestane: otočí jeden plný poldeci na vypitý a jeden jeho priznaný Absťák sa vráti do zásoby.</span><br><span class="pozn">Sľub vydrží do ďalšieho kola. Za limit kúpi tuhé, lebo Absťák mu uberá tuhé poškodenie.</span></li>
   </ul>
   <p class="odporucanie"><b>Odporúčam: Nechať dnešný.</b> Zákaz podstrkovania funguje na 100 %. A stojí na otvorenej otázke, či lokalita smie prepožičať Konflikt (sekcia 4).</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Nechať dnešný</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-most">Poznámka: Most</label><textarea id="p-most" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta" id="k-lesna_cesta" data-kluc="lesna_cesta" data-nazov="Lesná cesta" data-odp="C" data-moznosti="A:lesna_cesta-A|B:lesna_cesta-B|C:lesna_cesta-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
+<article class="karta rozh" id="k-lesna_cesta" data-nazov="Lesná cesta">
   <header class="karta-hlava"><h2><span class="cislo">1.11</span>Lesná cesta</h2>
   <p class="tagy"><span class="tag">Lokalita · úroveň 1 · v húštine / pri kríži</span></p></header>
+  <p class="roz roz-ano">Rozhodnuté: Nechať.</p>
   <p class="pozn">Hrany: [Pecka – – –] / [– Povera – –]</p>
   <p class="dnes">Rozhodnuté: Bitka: Za každé svoje Zviera v súperovom kraji máš 1 tuhé poškodenie navyše. Riziko: Zvierat je málo, na úrovni 1 môže byť mŕtva (7.5).</p>
   <ul class="alty">
@@ -332,13 +325,12 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
     <li class="odp-alt"><b>lesna_cesta-C</b> · <i>Na huby</i> <br><span class="efekt">Pitka: Kto má prevahu v kraji v húštine, ide na huby a dobere si 1 kartu. Ak je to kliatba, otrávil sa: dostane 1 poškodenie pečene.</span><br><span class="pozn">Kraj v húštine dostane cenu. Na rozdiel od rozhodnutého znenia nie je efekt mŕtvy, keď nikto nemá Zviera.</span></li>
   </ul>
   <p class="odporucanie"><b>Odporúčam: lesna_cesta-C.</b> Rozhodnuté znenie hrozí mŕtvou kartou (málo Zvierat na úrovni 1). Huby dávajú zmysel boju o kraj a kliatba je vtipná cena.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: lesna_cesta-C</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-lesna_cesta">Poznámka: Lesná cesta</label><textarea id="p-lesna_cesta" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta" id="k-cintorin" data-kluc="cintorin" data-nazov="Cintorín" data-odp="B" data-moznosti="A:cintorin-A|B:cintorin-B|C:cintorin-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
+<article class="karta rozh" id="k-cintorin" data-nazov="Cintorín">
   <header class="karta-hlava"><h2><span class="cislo">1.12</span>Cintorín</h2>
   <p class="tagy"><span class="tag">Lokalita · úroveň 1 · pri hroboch / pri márnici</span></p></header>
+  <p class="roz roz-ano">Rozhodnuté: cintorin-A.</p>
   <p class="pozn">Hrany: [– Viera – –] / [– Robota – –]</p>
   <p class="dnes">Rozhodnuté (bez zmeny): Prehra: Po Pohrebe smieš vyložiť jeden Nástroj z ruky do Dedičstva bez platenia. Účinnosť 18 %.</p>
   <ul class="alty">
@@ -347,13 +339,12 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
     <li><b>cintorin-C</b> · <i>Dedičské konanie</i> <br><span class="efekt">Prehra: Porazený si smie vziať jeden Nástroj z víťazovho Dedičstva do svojho, lebo nebožtík to sľúbil jemu.</span><br><span class="pozn">Hádka o dedičstvo nad hrobom. Je to dobiehanie, ktoré oživí Dedičstvo (dnes 0,46 účinku za partiu), a zdrojom je víťazovo Dedičstvo.</span></li>
   </ul>
   <p class="odporucanie"><b>Odporúčam: cintorin-B.</b> Jedna veta, jasný vtip a Pohreb dostane zmysel aj na úrovni 1.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: cintorin-B</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-cintorin">Poznámka: Cintorín</label><textarea id="p-cintorin" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta" id="k-jednota" data-kluc="jednota" data-nazov="Jednota" data-odp="C" data-moznosti="A:jednota-A|B:jednota-B|C:jednota-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
+<article class="karta rozh" id="k-jednota" data-nazov="Jednota">
   <header class="karta-hlava"><h2><span class="cislo">1.13</span>Jednota</h2>
   <p class="tagy"><span class="tag">Lokalita · úroveň 1 · pri pulte / pred obchodom</span></p></header>
+  <p class="roz roz-ano">Rozhodnuté: Inak: <i>Pitka: Kto má viac priznaných Dlhov, nesmie v tejto Pitke fajčiť ani dolievať.</i> Kšeft za Dlh padá.</p>
   <p class="pozn">Hrany: [– Cig – –] / [– Pohorš – –]</p>
   <p class="dnes">Rozhodnuté: Kšeft: Za 1 Dlh dostaneš 2 cigarety.</p>
   <ul class="alty">
@@ -362,15 +353,14 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
     <li class="odp-alt"><b>jednota-C</b> · <i>Už ti nedám</i> <br><span class="efekt">Pitka: Kto má viac priznaných Dlhov, nesmie v tejto Pitke fajčiť ani dolievať, kým nezaplatí.</span><br><span class="pozn">Predavačka vedie zošit dlžníkov. Dlh dostane zuby už na úrovni 1 a vyrovnanie sa dá stihnúť Robotou.</span></li>
   </ul>
   <p class="odporucanie"><b>Odporúčam: jednota-C.</b> Kšeft „Dlh za 2 cigarety“ pri nadbytku cigariet nikto nepoužije. C dá Dlhu zuby priamo v Pitke.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: jednota-C</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-jednota">Poznámka: Jednota</label><textarea id="p-jednota" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
 <h3 class="skupina">Lokality · Úroveň 2 — dedina</h3>
 
-<article class="karta" id="k-ihrisko" data-kluc="ihrisko" data-nazov="Ihrisko" data-odp="dnes" data-moznosti="A:ihrisko-A|B:ihrisko-B|C:ihrisko-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
+<article class="karta rozh" id="k-ihrisko" data-nazov="Ihrisko">
   <header class="karta-hlava"><h2><span class="cislo">1.14</span>Ihrisko</h2>
   <p class="tagy"><span class="tag">Lokalita · úroveň 2 · na trávniku / na tribúne</span></p></header>
+  <p class="roz roz-ano">Rozhodnuté: Nechať.</p>
   <p class="pozn">Hrany po revízii: [Pecka – – Rana] / [– Poldeci Cig –]</p>
   <p class="dnes">Rozhodnuté (efekt ostáva): Bitka: V každom kraji, kde máš viac svojich Občanov, Zvierat a Starešinov než súper, máš 2 tuhé poškodenia navyše. Účinnosť 78 %.</p>
   <ul class="alty">
@@ -379,13 +369,12 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
     <li><b>ihrisko-C</b> · <i>Tretí polčas</i> <br><span class="efekt">Prehra: Porazený ide na tretí polčas: za každý kraj, v ktorom mal prevahu, otočí jeden vypitý poldeci na plný.</span><br><span class="pozn">Prehrali sme, ale tribúna bola naša. Porazený, ktorý držal kraj, získa limit na ďalšie kolo.</span></li>
   </ul>
   <p class="odporucanie"><b>Odporúčam: Nechať dnešný.</b> Prevaha za +2 tuhé funguje (78 %) a nesie boj o kraje. Alternatívy ju neprekonajú.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Nechať dnešný</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-ihrisko">Poznámka: Ihrisko</label><textarea id="p-ihrisko" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta" id="k-benzinka" data-kluc="benzinka" data-nazov="Benzínka" data-odp="A" data-moznosti="A:benzinka-A|B:benzinka-B|C:benzinka-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
+<article class="karta rozh" id="k-benzinka" data-nazov="Benzínka">
   <header class="karta-hlava"><h2><span class="cislo">1.15</span>Benzínka</h2>
   <p class="tagy"><span class="tag">Lokalita · úroveň 2 · pri pokladni / za budovou</span></p></header>
+  <p class="roz roz-ano">Rozhodnuté: Inak: <i>Pitka: Fajčiť smie len hráč, ktorého Občan alebo Starešina leží v línii najďalej od lokality.</i> (pri rovnosti nefajčí nikto — na potvrdenie)</p>
   <p class="pozn">Hrany: [– Cig Cig –] / [Obmedz – – Pecka]</p>
   <p class="dnes">Rozhodnuté (bez zmeny): Pitka: Nikto nesmie fajčiť. Účinnosť 100 %.</p>
   <ul class="alty">
@@ -394,13 +383,12 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
     <li><b>benzinka-C</b> · <i>Alkohol nonstop</i> <br><span class="efekt">Pitka: Stokársky barter stojí 3 cigarety, ale poldeci z pumpy ti pridá 2 poškodenia pečene.</span><br><span class="pozn">Lacný poldeci, ktorý sa zaplatí pečeňou.</span></li>
   </ul>
   <p class="odporucanie"><b>Odporúčam: benzinka-A.</b> Zákaz fajčenia ostane a lokalita dostane boj o kraj za budovou.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: benzinka-A</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-benzinka">Poznámka: Benzínka</label><textarea id="p-benzinka" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta" id="k-kar" data-kluc="kar" data-nazov="Kar" data-odp="dnes" data-moznosti="A:kar-A|B:kar-B|C:kar-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
+<article class="karta rozh" id="k-kar" data-nazov="Kar">
   <header class="karta-hlava"><h2><span class="cislo">1.16</span>Kar</h2>
   <p class="tagy"><span class="tag">Lokalita · úroveň 2 · pri vdove / pri koláčoch</span></p></header>
+  <p class="roz roz-ano">Rozhodnuté: kar-A (nahrádza doliatie za pečeň).</p>
   <p class="pozn">Hrany: [– Viera Povera –] / [– Poldeci Rana –]</p>
   <p class="dnes">Rozhodnuté: Pitka: Doliatie nestojí cigarety, ale každé ti pridá 1 poškodenie pečene.</p>
   <ul class="alty">
@@ -409,13 +397,12 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
     <li><b>kar-C</b> · <i>Koláče do kabelky</i> <br><span class="efekt">Pitka: Kto má prevahu v kraji pri koláčoch, smie si vziať do ruky jednu kartu zo šenku.</span><br><span class="pozn">Ide sa na kar, odchádza sa s plnou kabelkou. Šenok uprostred kola má vzor v Pohrebe Závislého (§11).</span></li>
   </ul>
   <p class="odporucanie"><b>Odporúčam: Nechať dnešný.</b> Rozhodnuté „doliatie za pečeň“ je čerstvé a drží pečeňovú os. Alternatívy menia len cigarety alebo šenok.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Nechať dnešný</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-kar">Poznámka: Kar</label><textarea id="p-kar" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta" id="k-zberny_dvor" data-kluc="zberny_dvor" data-nazov="Zberný dvor" data-odp="dnes" data-moznosti="A:zberny_dvor-A|B:zberny_dvor-B|C:zberny_dvor-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
+<article class="karta rozh" id="k-zberny_dvor" data-nazov="Zberný dvor">
   <header class="karta-hlava"><h2><span class="cislo">1.17</span>Zberný dvor</h2>
   <p class="tagy"><span class="tag">Lokalita · úroveň 2 · pri váhe / za plotom</span></p></header>
+  <p class="roz roz-ano">Rozhodnuté: Nechať.</p>
   <p class="pozn">Hrany po revízii: [– Robota – Petelica] / [– Dlh – Obmedz]</p>
   <p class="dnes">Rozhodnuté: Kšeft: Za 1 cigaretu si vezmi do ruky ľubovoľnú kartu zo svojho odhadzovacieho balíčka.</p>
   <ul class="alty">
@@ -424,13 +411,12 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
     <li><b>zberny_dvor-C</b> · <i>Zlé váhy</i> <span class="tag">K · kraj</span><br><span class="efekt">Konflikt: Tvoja karta hneď pri Zbernom dvore má Konflikt: keď k nej súper priloží kartu, váhar ju neodváži a do prevahy v tomto kraji sa neráta.</span><br><span class="pozn">Váha klame v prospech toho, kto prišiel prvý. Prvá karta pri lokalite tak bráni kraj.</span></li>
   </ul>
   <p class="odporucanie"><b>Odporúčam: Nechať dnešný.</b> Rozhodnutý Kšeft je čerstvý a so Skladom tvorí zrkadlovú dvojicu.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Nechať dnešný</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-zberny_dvor">Poznámka: Zberný dvor</label><textarea id="p-zberny_dvor" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta" id="k-krcma" data-kluc="krcma" data-nazov="Krčma" data-odp="dnes" data-moznosti="A:krcma-A|B:krcma-B|C:krcma-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
+<article class="karta rozh" id="k-krcma" data-nazov="Krčma">
   <header class="karta-hlava"><h2><span class="cislo">1.18</span>Krčma</h2>
   <p class="tagy"><span class="tag">Lokalita · úroveň 2 · pri výčape / pri dverách</span></p></header>
+  <p class="roz roz-ano">Rozhodnuté: Nechať.</p>
   <p class="pozn">Hrany po revízii: [Petelica – Dlh –] / [Rana Rana – –]</p>
   <p class="dnes">Rozhodnuté (efekt ostáva): Pitka: Ak máš plný poldeci a máš ho kam dať, musíš dať NA EX. Prah Cirhózy je tu o 2 vyšší. Účinnosť 88 %.</p>
   <ul class="alty">
@@ -439,13 +425,12 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
     <li><b>krcma-C</b> · <i>Vybavia si to vonku</i> <span class="tag">K · kraj</span><br><span class="efekt">Konflikt: Tvoja karta hneď pri Krčme má Konflikt: keď k nej súper priloží kartu, idú von a aktívne Rany oboch kariet sa rátajú dvakrát.</span><br><span class="pozn">Krčmová bitka sa stupňuje. Obojstranná cena, rozsah dávajú Rany na kartách.</span></li>
   </ul>
   <p class="odporucanie"><b>Odporúčam: Nechať dnešný.</b> Povinné NA EX nesie WAU 4 a funguje na 88 %.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Nechať dnešný</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-krcma">Poznámka: Krčma</label><textarea id="p-krcma" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta" id="k-sklad" data-kluc="sklad" data-nazov="Sklad" data-odp="dnes" data-moznosti="A:sklad-A|B:sklad-B|C:sklad-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
+<article class="karta rozh" id="k-sklad" data-nazov="Sklad">
   <header class="karta-hlava"><h2><span class="cislo">1.19</span>Sklad</h2>
   <p class="tagy"><span class="tag">Lokalita · úroveň 2 · pri vreciach / pri strážnici (kraje na potvrdenie)</span></p></header>
+  <p class="roz roz-ano">Rozhodnuté: Nechať.</p>
   <p class="pozn">Hrany: [Robota – Pecka –] / [Cig – Dlh –] (sloty na potvrdenie)</p>
   <p class="dnes">Rozhodnuté (nová, 27. 10. večer): Kšeft: Za 1 cigaretu si vezmi do ruky vrchnú kartu zo súperovho odhadzovacieho balíčka.</p>
   <ul class="alty">
@@ -454,15 +439,14 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
     <li><b>sklad-C</b> · <i>Vrece do kufra</i> <span class="tag">K · kraj</span><br><span class="efekt">Konflikt: Tvoja karta hneď pri Sklade má Konflikt: keď k nej súper priloží kartu, vezmeš si z jeho ruky náhodnú kartu. Kliatbu mu vráť.</span><br><span class="pozn">Nočná šichta naopak. Kto sa priblíži, príde o vrece. Náhoda ide zo seedovaného generátora.</span></li>
   </ul>
   <p class="odporucanie"><b>Odporúčam: Nechať dnešný.</b> Rozhodnuté 27. 10. večer a zrkadlí Zberný dvor. Meniť ho hneď nemá zmysel.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Nechať dnešný</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-sklad">Poznámka: Sklad</label><textarea id="p-sklad" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
 <h3 class="skupina">Lokality · Úroveň 3 — sídla šľachty</h3>
 
-<article class="karta" id="k-obecny_urad" data-kluc="obecny_urad" data-nazov="Obecný úrad" data-odp="B" data-moznosti="A:obecny_urad-A|B:obecny_urad-B|C:obecny_urad-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
+<article class="karta rozh" id="k-obecny_urad" data-nazov="Obecný úrad">
   <header class="karta-hlava"><h2><span class="cislo">1.20</span>Obecný úrad</h2>
   <p class="tagy"><span class="tag">Lokalita · úroveň 3 · v kancelárii / na chodbe</span></p></header>
+  <p class="roz roz-ano">Rozhodnuté: obecny_urad-B (nahrádza „Robota páli 2 Dlhy“).</p>
   <p class="pozn">Hrany po revízii: [– Robota Viera Obmedz] / [Pecka Dlh Povera –]</p>
   <p class="dnes">Rozhodnuté: Bitka: Každá aktívna Robota spáli 2 priznané Dlhy.</p>
   <ul class="alty">
@@ -471,13 +455,12 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
     <li><b>obecny_urad-C</b> · <i>Dotácia pre kamarátov</i> <br><span class="efekt">Pitka: Kto má prevahu v kraji v kancelárii, dostane 1 cigaretu za každú aktívnu Robotu súpera.</span><br><span class="pozn">Ty robíš, ja čerpám. Kraj v kancelárii stojí za boj.</span></li>
   </ul>
   <p class="odporucanie"><b>Odporúčam: obecny_urad-B.</b> Rozhodnutý efekt páli Dlhy, čo je proti dávke 3. Úradník, ktorý „prepíše dlh“ na súpera, nechá Dlhy v hre a je najlepšou satirou úradu.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: obecny_urad-B</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-obecny_urad">Poznámka: Obecný úrad</label><textarea id="p-obecny_urad" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta" id="k-kulturny_dom" data-kluc="kulturny_dom" data-nazov="Kultúrny dom" data-odp="dnes" data-moznosti="A:kulturny_dom-A|B:kulturny_dom-B|C:kulturny_dom-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
+<article class="karta rozh" id="k-kulturny_dom" data-nazov="Kultúrny dom">
   <header class="karta-hlava"><h2><span class="cislo">1.21</span>Kultúrny dom</h2>
   <p class="tagy"><span class="tag">Lokalita · úroveň 3 · na parkete / pred vchodom</span></p></header>
+  <p class="roz roz-ano">Rozhodnuté: Nechať.</p>
   <p class="pozn">Hrany po revízii: [Pohorš – Pohorš Pečeň] / [Pecka Cig Viera –]</p>
   <p class="dnes">Rozhodnuté (efekt ostáva): Bitka: Prebytok sa nerozdeľuje medzi starších. Kto ho drží, dostane toľko špakov, aký je prebytok. Účinnosť 100 %.</p>
   <ul class="alty">
@@ -486,13 +469,12 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
     <li><b>kulturny_dom-C</b> · <i>Škandál pred vchodom</i> <br><span class="efekt">Prehra: Porazený urobí pred vchodom škandál: posunie marker jedného staršieho o 1 pole k víťazovi. Ten starší sa odteraz porazeného bojí viac.</span><br><span class="pozn">Bez bitky pred vchodom to nie je zábava. Porazený získa strach, teda špaky po ďalšej bitke.</span></li>
   </ul>
   <p class="odporucanie"><b>Odporúčam: Nechať dnešný.</b> Prebytok do špakov funguje na 100 % a robí z Kultúrneho domu cieľ, o ktorý sa oplatí bojovať.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Nechať dnešný</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-kulturny_dom">Poznámka: Kultúrny dom</label><textarea id="p-kulturny_dom" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta" id="k-vinna_pivnica" data-kluc="vinna_pivnica" data-nazov="Vínna pivnica" data-odp="dnes" data-moznosti="A:vinna_pivnica-A|B:vinna_pivnica-B|C:vinna_pivnica-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
+<article class="karta rozh" id="k-vinna_pivnica" data-nazov="Vínna pivnica">
   <header class="karta-hlava"><h2><span class="cislo">1.22</span>Vínna pivnica</h2>
   <p class="tagy"><span class="tag">Lokalita · úroveň 3 · pri sudoch / na schodoch</span></p></header>
+  <p class="roz roz-ano">Rozhodnuté: Nechať.</p>
   <p class="pozn">Hrany po revízii: [Pečeň Poldeci Posil –] / [Rana Pecka Cig –]</p>
   <p class="dnes">Rozhodnuté (efekt ostáva): Pitka: Každý hráč smie dať NA EX až dvakrát. Riziko „bomba NA EX“ (7.8/4).</p>
   <ul class="alty">
@@ -501,13 +483,12 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
     <li><b>vinna_pivnica-C</b> · <i>Na účet obce</i> <span class="tag">Kšeft</span><br><span class="efekt">Kšeft: Za 1 Dlh otoč jeden vypitý poldeci na plný, víno platí obec.</span><br><span class="pozn">Papaláši pijú na cudzí účet. Dlh sa mení na limit a pri 4 Pitkách sa tlačí k Exekútorovi.</span></li>
   </ul>
   <p class="odporucanie"><b>Odporúčam: Nechať dnešný.</b> Ponechať a zmerať bombu NA EX. Ak bude priveľká, B je pripravená brzda.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Nechať dnešný</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-vinna_pivnica">Poznámka: Vínna pivnica</label><textarea id="p-vinna_pivnica" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta" id="k-druzstvo" data-kluc="druzstvo" data-nazov="Družstvo" data-odp="dnes" data-moznosti="A:druzstvo-A|B:druzstvo-B|C:druzstvo-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
+<article class="karta rozh" id="k-druzstvo" data-nazov="Družstvo">
   <header class="karta-hlava"><h2><span class="cislo">1.23</span>Družstvo</h2>
   <p class="tagy"><span class="tag">Lokalita · úroveň 3 · na poli / na schôdzi</span></p></header>
+  <p class="roz roz-ano">Rozhodnuté: Nechať.</p>
   <p class="pozn">Hrany: [Robota Poldeci – Rana] / [Obmedz Pohorš Odpor –]</p>
   <p class="dnes">Rozhodnuté (bez zmeny): Zhromaždenie: Karty s tagom Pracujúci nemíňajú limit vykladania. Účinnosť 73 %.</p>
   <ul class="alty">
@@ -516,13 +497,12 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
     <li><b>druzstvo-C</b> · <i>Podpora z fondu</i> <br><span class="efekt">Prehra: Porazený dostane od družstva podporu: za každého svojho Pracujúceho v línii si dober 1 kartu.</span><br><span class="pozn">Družstvo sa postará o svojich. Dobiehanie, ktoré si hráč pripraví stavbou línie.</span></li>
   </ul>
   <p class="odporucanie"><b>Odporúčam: Nechať dnešný.</b> Pracujúci mimo limitu nesie WAU 8 (Brigáda) a funguje na 73 %.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Nechať dnešný</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-druzstvo">Poznámka: Družstvo</label><textarea id="p-druzstvo" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta" id="k-kostol" data-kluc="kostol" data-nazov="Kostol" data-odp="A" data-moznosti="A:kostol-A|B:kostol-B|C:kostol-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
+<article class="karta rozh" id="k-kostol" data-nazov="Kostol">
   <header class="karta-hlava"><h2><span class="cislo">1.24</span>Kostol</h2>
   <p class="tagy"><span class="tag">Lokalita · úroveň 3 · pri oltári / pri vchode</span></p></header>
+  <p class="roz roz-ano">Rozhodnuté: kostol-A.</p>
   <p class="pozn">Hrany po revízii: [Robota Viera Vízia –] / [– Pohorš Povera Viera]</p>
   <p class="dnes">Rozhodnuté (efekt ostáva): Zhromaždenie: Nikto nesmie vypiť. Pitka: Nikto nesmie dať NA EX. Obranca ho možno nebude vyberať (7.9).</p>
   <ul class="alty">
@@ -531,15 +511,14 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
     <li><b>kostol-C</b> · <i>Pokánie</i> <br><span class="efekt">Prehra: Porazený robí pokánie: za každú svoju aktívnu Vieru v línii spáli jeden priznaný Dlh.</span><br><span class="pozn">Viery je na hranách Kostola dosť. Silné dobiehanie, ktoré si hráč pripraví zbožnou líniou.</span></li>
   </ul>
   <p class="odporucanie"><b>Odporúčam: kostol-A.</b> Dnešný úplný zákaz robí Kostol lokalitou, ktorú obranca nevyberie. A nechá NA EX len pri oltári, takže ostane voľba.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: kostol-A</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-kostol">Poznámka: Kostol</label><textarea id="p-kostol" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
 <h3 class="skupina">Lokality · Pinnacle — korupcia na očiach</h3>
 
-<article class="karta" id="k-polovnicka_chata" data-kluc="polovnicka_chata" data-nazov="Poľovnícka chata" data-odp="A" data-moznosti="A:polovnicka_chata-A|B:polovnicka_chata-B|C:polovnicka_chata-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
+<article class="karta rozh" id="k-polovnicka_chata" data-nazov="Poľovnícka chata">
   <header class="karta-hlava"><h2><span class="cislo">1.25</span>Poľovnícka chata</h2>
   <p class="tagy"><span class="tag">Lokalita · pinnacle · pri trofejach / na posede</span></p></header>
+  <p class="roz roz-ano">Rozhodnuté: Nechať.</p>
   <p class="pozn">Hrany: [Posil Petelica Dlh Pecka] / [Rana Petelica Pečeň Pohorš]</p>
   <p class="dnes">Rozhodnuté: Furt: Aktívne Rany, Pecky a Petelice z hrán lokality sa rátajú dvakrát.</p>
   <ul class="alty">
@@ -548,13 +527,12 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
     <li><b>polovnicka_chata-C</b> · <i>Chránený medveď</i> <br><span class="efekt">Prehra: Porazený udá, že ulovili chráneného medveďa: víťaz stratí 1 špak za každú aktívnu Petelicu z hrán lokality, ktorú dostal.</span><br><span class="pozn">Pokuta za trofej. Hranicu dávajú Petelice na hranách a finále sa tým trochu vyrovná (7.8/1).</span></li>
   </ul>
   <p class="odporucanie"><b>Odporúčam: polovnicka_chata-A.</b> Korupcia priamo v pravidle (obálky za trofej) a konečne výstup pre nadbytok cigariet. Finále rozhodne voľba, nie len karty.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: polovnicka_chata-A</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-polovnicka_chata">Poznámka: Poľovnícka chata</label><textarea id="p-polovnicka_chata" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta" id="k-predsedova_vila" data-kluc="predsedova_vila" data-nazov="Predsedova vila" data-odp="dnes" data-moznosti="A:predsedova_vila-A|B:predsedova_vila-B|C:predsedova_vila-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
+<article class="karta rozh" id="k-predsedova_vila" data-nazov="Predsedova vila">
   <header class="karta-hlava"><h2><span class="cislo">1.26</span>Predsedova vila</h2>
   <p class="tagy"><span class="tag">Lokalita · pinnacle · pri bazéne / v pracovni</span></p></header>
+  <p class="roz roz-ano">Rozhodnuté: Nechať.</p>
   <p class="pozn">Hrany: [Cig Pecka Pecka Dlh] / [Posil Petelica Dlh Viera]</p>
   <p class="dnes">Rozhodnuté: Kšeft: Za 2 cigarety posuň marker ľubovoľného staršieho o 1 pole k súperovi alebo k sebe (nie staršieho v súperovom patronáte tohto kola).</p>
   <ul class="alty">
@@ -563,13 +541,12 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
     <li><b>predsedova_vila-C</b> · <i>Za mlčanie</i> <br><span class="efekt">Prehra: Špaky za prebytok po finále dostane porazený, nie držiteľ prebytku.</span><br><span class="pozn">Odstupné za mlčanie. Porazený vo finále dostane silné dobiehanie (7.8/1: víťaz finále vyhrá 60–75 %).</span></li>
   </ul>
   <p class="odporucanie"><b>Odporúčam: Nechať dnešný.</b> Rozhodnutý Kšeft (úplatok za posun staršieho) funguje. A stojí na otvorenej otázke zmeny majiteľa bez otočenia (sekcia 4).</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Nechať dnešný</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-predsedova_vila">Poznámka: Predsedova vila</label><textarea id="p-predsedova_vila" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta" id="k-herna" data-kluc="herna" data-nazov="Herňa" data-odp="dnes" data-moznosti="A:herna-A|B:herna-B|C:herna-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
+<article class="karta rozh" id="k-herna" data-nazov="Herňa">
   <header class="karta-hlava"><h2><span class="cislo">1.27</span>Herňa</h2>
   <p class="tagy"><span class="tag">Lokalita · pinnacle · pri automatoch / v zadnej miestnosti (kraje na potvrdenie)</span></p></header>
+  <p class="roz roz-ano">Rozhodnuté: Nechať.</p>
   <p class="pozn">Hrany: [Pecka Petelica Pečeň Dlh] / [Rana Pecka Robota Dlh]</p>
   <p class="dnes">Rozhodnuté: Bitka: Víťaz dostane navyše toľko špakov, koľko má porazený priznaných Dlhov.</p>
   <ul class="alty">
@@ -578,21 +555,19 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
     <li><b>herna-C</b> · <i>Žetóny na dlh</i> <span class="tag">Kšeft</span><br><span class="efekt">Kšeft: Za 1 Dlh dostaneš 3 cigarety. Po finále stratí hráč s viac priznanými Dlhmi toľko špakov, o koľko ich má viac.</span><br><span class="pozn">Herňa ti požičia, ale účet príde. Dlh má vo finále cenu aj bez Exekútora.</span></li>
   </ul>
   <p class="odporucanie"><b>Odporúčam: Nechať dnešný.</b> Špaky za Dlhy porazeného dávajú Dlhu zuby vo finále. Automat z A je zábavný, ale priveľmi náhodný na finále.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Nechať dnešný</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-herna">Poznámka: Herňa</label><textarea id="p-herna" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
 <h2 class="sekcia-h" id="s2">2 · Dávka 1 — Nástroje bez voľby (8)</h2>
 <p class="pozn">Platí pravidlo v7: efekt Nástroja účinkuje v hre aj v Dedičstve, znenia sú stavovo neutrálne.</p>
-<article class="karta otazka-k" id="k-nastroje_kolo" data-kluc="nastroje_kolo" data-nazov="Nástroje: nové kolo návrhov, alebo výber z týchto?" data-odp="vyber" data-moznosti="vyber:Vyberám z týchto A/B/C|nove:Nové kolo návrhov (smer do poznámky)|mix:Časť vyberám, k časti nové kolo (poznámka)">
+<article class="karta rozh otazka-k" id="k-nastroje_kolo" data-nazov="Nástroje: nové kolo návrhov, alebo výber z týchto?">
   <header class="karta-hlava"><h2><span class="cislo">2.1</span>Nástroje: nové kolo návrhov, alebo výber z týchto?</h2></header>
+  <p class="roz roz-ano">Rozhodnuté: Nové kolo návrhov (robí iný agent). Nový smer: <b>efekt len pre priznané Dedičstvo</b>. Voľby pri Nástrojoch nižšie ostávajú len ako záznam.</p>
   <p>Pri 8 Nástrojoch si zámerne nerozhodol. Chceš nové kolo návrhov iným smerom, alebo vyberieš z terajších A/B/C (pri každom je moje odporúčanie)?</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Vyberám z týchto A/B/C</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-nastroje_kolo">Poznámka: Nástroje: nové kolo návrhov, alebo výber z týchto?</label><textarea id="p-nastroje_kolo" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
 <article class="karta otazka-k" id="k-pasca_nahradit" data-kluc="pasca_nahradit" data-nazov="Pasca: nový efekt nahradí, alebo pridá k efektu proti Zvieratám?" data-odp="nahradi" data-moznosti="nahradi:Nahradí|prida:Pridá sa|ine:Inak (poznámka)">
   <header class="karta-hlava"><h2><span class="cislo">2.2</span>Pasca: nový efekt nahradí, alebo pridá k efektu proti Zvieratám?</h2></header>
+  <p class="roz roz-otv">Otvorené: k Nástrojom príde nové kolo návrhov (smer: efekt len pre priznané Dedičstvo).</p>
   <p>Dnes: <i>každé súperovo Zviera v línii mu uberie 1 tuhé poškodenie</i>. Ak vyberieš pasca-A (tvoj náčrt s Konfliktom), nahradí ho, alebo sa pridá ako druhá veta?</p><p class="odporucanie"><b>Odporúčam nahradiť.</b> Dva účinky v jednom efekte sa zle čítajú a Zvierat je v sade málo.</p>
   <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Nahradí</span></legend><div class="volby"></div></fieldset>
     <label class="skryte" for="p-pasca_nahradit">Poznámka: Pasca: nový efekt nahradí, alebo pridá k efektu proti Zvieratám?</label><textarea id="p-pasca_nahradit" placeholder="Poznámka (nepovinné)"></textarea></div>
@@ -601,6 +576,7 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
 <article class="karta" id="k-vinko" data-kluc="vinko" data-nazov="Vínko" data-odp="A" data-moznosti="A:vinko-A|B:vinko-B|C:vinko-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
   <header class="karta-hlava"><h2><span class="cislo">2.3</span>Vínko</h2>
   <p class="tagy"><span class="tag">Nástroj · 6 variantov</span></p></header>
+  <p class="roz roz-otv">Otvorené: k Nástrojom príde nové kolo návrhov (smer: efekt len pre priznané Dedičstvo).</p>
   <p class="pozn">Akcie: Poldeci ×2 / Pečeň ×4</p>
   <p class="dnes">Dnes: Dedičstvo: Počíta sa, akoby si mal plný poldeci navyše. Nemôžeš dolievať poldeci za cigarety. Bot ho zo šenku nevzal ani raz.</p>
   <ul class="alty">
@@ -616,6 +592,7 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
 <article class="karta" id="k-pasca" data-kluc="pasca" data-nazov="Pasca" data-odp="A" data-moznosti="A:pasca-A|B:pasca-B|C:pasca-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
   <header class="karta-hlava"><h2><span class="cislo">2.4</span>Pasca</h2>
   <p class="tagy"><span class="tag">Nástroj · 6 variantov</span></p></header>
+  <p class="roz roz-otv">Otvorené: k Nástrojom príde nové kolo návrhov (smer: efekt len pre priznané Dedičstvo).</p>
   <p class="pozn">Akcie: Obmedzenie / Odpor</p>
   <p class="dnes">Dnes: Dedičstvo: Každé súperovo Zviera v línii mu uberie 1 tuhé poškodenie. Bot ju zo šenku nevzal ani raz.</p>
   <ul class="alty">
@@ -631,6 +608,7 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
 <article class="karta" id="k-puska" data-kluc="puska" data-nazov="Puška" data-odp="B" data-moznosti="A:puska-A|B:puska-B|C:puska-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
   <header class="karta-hlava"><h2><span class="cislo">2.5</span>Puška</h2>
   <p class="tagy"><span class="tag">Nástroj · 4 varianty · akcie podľa 10.1</span></p></header>
+  <p class="roz roz-otv">Otvorené: k Nástrojom príde nové kolo návrhov (smer: efekt len pre priznané Dedičstvo).</p>
   <p class="pozn">Akcie: Pecka / Petelica (sloty 0–1 blokované)</p>
   <p class="dnes">Dnes: Dedičstvo: Prebytočné poškodenie, ktoré proti tebe rozdeľuje súper, je o 2 menšie. Do línie 2,9× za partiu, do Dedičstva len 0,2×.</p>
   <ul class="alty">
@@ -646,6 +624,7 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
 <article class="karta" id="k-svaty_text" data-kluc="svaty_text" data-nazov="Svätý text" data-odp="C" data-moznosti="A:svaty_text-A|B:svaty_text-B|C:svaty_text-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
   <header class="karta-hlava"><h2><span class="cislo">2.6</span>Svätý text</h2>
   <p class="tagy"><span class="tag">Nástroj · 8 variantov</span></p></header>
+  <p class="roz roz-otv">Otvorené: k Nástrojom príde nové kolo návrhov (smer: efekt len pre priznané Dedičstvo).</p>
   <p class="pozn">Akcie: Viera / Viera</p>
   <p class="dnes">Dnes: Dedičstvo: Hodnota tvojej Viery je o 1 vyššia. Do línie 1,4× za partiu, do Dedičstva 0,1×.</p>
   <ul class="alty">
@@ -661,6 +640,7 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
 <article class="karta" id="k-nealko" data-kluc="nealko" data-nazov="Nealko" data-odp="B" data-moznosti="A:nealko-A|B:nealko-B|C:nealko-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
   <header class="karta-hlava"><h2><span class="cislo">2.7</span>Nealko</h2>
   <p class="tagy"><span class="tag">Nástroj · 4 varianty</span></p></header>
+  <p class="roz roz-otv">Otvorené: k Nástrojom príde nové kolo návrhov (smer: efekt len pre priznané Dedičstvo).</p>
   <p class="pozn">Akcie: Pohoršenie / Pohoršenie</p>
   <p class="dnes">Dnes: Dedičstvo: Tvoj prah Cirhózy je o 2 vyšší. V hre zriedka (v ruke 7/54 partií).</p>
   <ul class="alty">
@@ -676,6 +656,7 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
 <article class="karta" id="k-vyherny_automat" data-kluc="vyherny_automat" data-nazov="Výherný automat" data-odp="B" data-moznosti="A:vyherny_automat-A|B:vyherny_automat-B|C:vyherny_automat-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
   <header class="karta-hlava"><h2><span class="cislo">2.8</span>Výherný automat</h2>
   <p class="tagy"><span class="tag">Nástroj · 4 varianty</span></p></header>
+  <p class="roz roz-otv">Otvorené: k Nástrojom príde nové kolo návrhov (smer: efekt len pre priznané Dedičstvo).</p>
   <p class="pozn">Akcie: Robota / Dlh ×4</p>
   <p class="dnes">Dnes (rozhodnuté 10.1): Dedičstvo: Výhra: Dostaneš 3 cigarety. Prehra: Získaš 2 Dlhy. Bot ho zo šenku nevzal ani raz.</p>
   <ul class="alty">
@@ -691,6 +672,7 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
 <article class="karta" id="k-vidly" data-kluc="vidly" data-nazov="Vidly" data-odp="A" data-moznosti="A:vidly-A|B:vidly-B|C:vidly-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
   <header class="karta-hlava"><h2><span class="cislo">2.9</span>Vidly</h2>
   <p class="tagy"><span class="tag">Nástroj · 8 variantov · schválená novinka</span></p></header>
+  <p class="roz roz-otv">Otvorené: k Nástrojom príde nové kolo návrhov (smer: efekt len pre priznané Dedičstvo).</p>
   <p class="pozn">Akcie: Pecka / Pohoršenie</p>
   <p class="dnes">Dnes (schválené): Dedičstvo: Bitka: Ak máš menej špakov ako súper, máš 1 tuhé poškodenie navyše.</p>
   <ul class="alty">
@@ -706,6 +688,7 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
 <article class="karta" id="k-lievik" data-kluc="lievik" data-nazov="Lievik" data-odp="B" data-moznosti="A:lievik-A|B:lievik-B|C:lievik-C|dnes:Nechať dnešný|ine:Inak (poznámka)">
   <header class="karta-hlava"><h2><span class="cislo">2.10</span>Lievik</h2>
   <p class="tagy"><span class="tag">Nástroj · 6 variantov · schválená novinka</span></p></header>
+  <p class="roz roz-otv">Otvorené: k Nástrojom príde nové kolo návrhov (smer: efekt len pre priznané Dedičstvo).</p>
   <p class="pozn">Akcie: Poldeci / Pečeň ×2</p>
   <p class="dnes">Dnes (schválené): Dedičstvo: NA EX smieš dať aj na Zviera a aj na kartu, ktorej efekt NA EX zakazuje.</p>
   <ul class="alty">
@@ -719,211 +702,182 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
 </article>
 
 <h2 class="sekcia-h" id="s3">3 · Detaily rozhodnutých kariet</h2>
-<article class="karta otazka-k" id="k-kulturista_meno" data-kluc="kulturista_meno" data-nazov="Kulturista — meno efektového spúšťača" data-odp="uplatok" data-moznosti="uplatok:Úplatok|vypalne:Výpalné|dohoda:Dohoda|ine:Iné meno (do poznámky)|premenovat:Premenovať akciu Pakt (nové meno do poznámky)">
+<article class="karta rozh otazka-k" id="k-kulturista_meno" data-nazov="Kulturista — meno efektového spúšťača">
   <header class="karta-hlava"><h2><span class="cislo">3.1</span>Kulturista — meno efektového spúšťača</h2></header>
+  <p class="roz roz-ano">Rozhodnuté: <b>Úplatok</b>, s upravenou mechanikou (Michal): <i>Úplatok: Súper smie v každej Pitke položiť na túto kartu 1 cigaretu. Každá cigareta na nej zníži do konca kola každú jej akciu poškodenia o jeden stupeň (Petelica → Pecka → Rana → nič). Cigarety sa zahodia.</i> Na nulu sa dostane až po 3 Pitkách.</p>
   <p><b>Akcie</b> Petelica ×2 / Dlh ×2. <b>Efekt (pracovný názov Úplatok):</b> <i>Súper smie na svojom ťahu v Pitke položiť na túto kartu ľubovoľne veľa cigariet. Každá cigareta zníži do konca kola každú jej akciu poškodenia o jeden stupeň (Petelica → Pecka → Rana → nič).</i></p><p>Ty si ho nazval „Pakt“, ale <b>Pakt je už schválená akcia</b>. Ako sa bude volať spúšťač, alebo sa premenuje akcia?</p><p class="odporucanie"><b>Odporúčam: Úplatok.</b> Presne opisuje, čo súper robí (dá cigarety, aby Kulturista bil slabšie), a nekoliduje s nijakým pojmom.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Úplatok</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-kulturista_meno">Poznámka: Kulturista — meno efektového spúšťača</label><textarea id="p-kulturista_meno" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta otazka-k" id="k-kulturista_cigarety" data-kluc="kulturista_cigarety" data-nazov="Kulturista (a) — cigarety položené na Kulturistu po skončení kola dostane majiteľ karty?" data-odp="nie" data-moznosti="ano:Áno — odmena za výpalné|nie:Nie — zahodia sa|ine:Inak (poznámka)">
+<article class="karta rozh otazka-k" id="k-kulturista_cigarety" data-nazov="Kulturista (a) — cigarety položené na Kulturistu po skončení kola dostane majiteľ karty?">
   <header class="karta-hlava"><h2><span class="cislo">3.2</span>Kulturista (a) — cigarety položené na Kulturistu po skončení kola dostane majiteľ karty?</h2></header>
+  <p class="roz roz-ano">Rozhodnuté: Nie, cigarety sa zahodia.</p>
   <p>Návrh bol, že cigarety idú do zásoby. Ak ich dostane majiteľ, je to odmena za výpalné.</p><p class="odporucanie"><b>Odporúčam: Nie — zahodia sa.</b> Majiteľ by bral cigarety, ktorých je nadbytok, a efekt by sa skomplikoval bez úžitku.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Nie — zahodia sa</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-kulturista_cigarety">Poznámka: Kulturista (a) — cigarety položené na Kulturistu po skončení kola dostane majiteľ karty?</label><textarea id="p-kulturista_cigarety" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta otazka-k" id="k-kulturista_riziko" data-kluc="kulturista_riziko" data-nazov="Kulturista (b) — pri nadbytku cigariet stačia 3 na vypnutie oboch Petelíc do konca kola" data-odp="zmiernit" data-moznosti="ok:V poriadku (to je zmysel efektu)|zmiernit:Zmierniť (napr. cigarety musí platiť každé kolo znova)|ine:Inak (poznámka)">
+<article class="karta rozh otazka-k" id="k-kulturista_riziko" data-nazov="Kulturista (b) — pri nadbytku cigariet stačia 3 na vypnutie oboch Petelíc do konca kola">
   <header class="karta-hlava"><h2><span class="cislo">3.3</span>Kulturista (b) — pri nadbytku cigariet stačia 3 na vypnutie oboch Petelíc do konca kola</h2></header>
+  <p class="roz roz-ano">Rozhodnuté: Zmiernené Michalovou mechanikou: 1 cigareta za Pitku, takže na nulu až po 3 Pitkách.</p>
   <p>Hráčom ostáva 19–22 nevyužitých cigariet, takže súper Kulturistu vypne skoro zadarmo. V návrhu účinok trvá len do konca kola, takže súper platí v každom kole znova.</p><p class="odporucanie"><b>Odporúčam: Zmierniť.</b> Napríklad cena za stupeň 1 plný poldeci namiesto cigarety, aby úplatok bolel aj pri nadbytku cigariet.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Zmierniť (napr. cigarety musí platiť každé kolo znova)</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-kulturista_riziko">Poznámka: Kulturista (b) — pri nadbytku cigariet stačia 3 na vypnutie oboch Petelíc do konca kola</label><textarea id="p-kulturista_riziko" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta otazka-k" id="k-sarlatan_trvanie" data-kluc="sarlatan_trvanie" data-nazov="Šarlatán — trvanie premeny (Dlh → Viera, Povera → Rana)" data-odp="linia" data-moznosti="linia:Kým leží v línii (návrh)|natrvalo:Natrvalo|ine:Inak (poznámka)">
+<article class="karta rozh otazka-k" id="k-sarlatan_trvanie" data-nazov="Šarlatán — trvanie premeny (Dlh → Viera, Povera → Rana)">
   <header class="karta-hlava"><h2><span class="cislo">3.4</span>Šarlatán — trvanie premeny (Dlh → Viera, Povera → Rana)</h2></header>
+  <p class="roz roz-ano">Rozhodnuté: Kým leží v línii (do konca kola).</p>
   <p><i>Konflikt: Keď súper priloží kartu k tejto karte, akcie Dlh na nej sa odteraz rátajú ako Viera a akcie Povera ako Rana.</i> Platí, kým leží v línii (do konca kola), alebo natrvalo aj v balíčku?</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Kým leží v línii (návrh)</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-sarlatan_trvanie">Poznámka: Šarlatán — trvanie premeny (Dlh → Viera, Povera → Rana)</label><textarea id="p-sarlatan_trvanie" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta otazka-k" id="k-policajtka" data-kluc="policajtka" data-nazov="Policajtka — „Pokuta na mieste“ nahrádza efekt z NA EX trojice?" data-odp="ano" data-moznosti="ano:Áno — platí návrh|ine:Inak (poznámka)">
+<article class="karta rozh otazka-k" id="k-policajtka" data-nazov="Policajtka — „Pokuta na mieste“ nahrádza efekt z NA EX trojice?">
   <header class="karta-hlava"><h2><span class="cislo">3.5</span>Policajtka — „Pokuta na mieste“ nahrádza efekt z NA EX trojice?</h2></header>
+  <p class="roz roz-ano">Rozhodnuté: Áno, platí návrh (nahrádza P1 z trojice).</p>
   <p>P1 (Pitka: kto dal viac NA EX, dostane Dlh) je naprogramovaný na <code>feature/naex-trojica</code>. Návrh: áno, nahrádza ho.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Áno — platí návrh</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-policajtka">Poznámka: Policajtka — „Pokuta na mieste“ nahrádza efekt z NA EX trojice?</label><textarea id="p-policajtka" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta otazka-k" id="k-anonymny_alkoholik" data-kluc="anonymny_alkoholik" data-nazov="Anonymný alkoholik — „priznaj Cirhózy“ nahrádza Placatku?" data-odp="ano" data-moznosti="ano:Áno — platí návrh|ine:Inak (poznámka)">
+<article class="karta rozh otazka-k" id="k-anonymny_alkoholik" data-nazov="Anonymný alkoholik — „priznaj Cirhózy“ nahrádza Placatku?">
   <header class="karta-hlava"><h2><span class="cislo">3.6</span>Anonymný alkoholik — „priznaj Cirhózy“ nahrádza Placatku?</h2></header>
+  <p class="roz roz-ano">Rozhodnuté: Áno, platí návrh (nahrádza Placatku, z trojice ostáva Svokra).</p>
   <p><i>Nástup: Priznaj všetky nepriznané Cirhózy zo svojho odhadzovacieho balíčka.</i> Placatka (NA EX trojica) padá, z trojice tak ostáva len Svokra. Návrh: áno.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Áno — platí návrh</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-anonymny_alkoholik">Poznámka: Anonymný alkoholik — „priznaj Cirhózy“ nahrádza Placatku?</label><textarea id="p-anonymny_alkoholik" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta otazka-k" id="k-zahradkar" data-kluc="zahradkar" data-nazov="Záhradkár — nová Exekúcia nahrádza oba efekty z revízie?" data-odp="ano" data-moznosti="ano:Áno — platí návrh|ine:Inak (poznámka)">
+<article class="karta rozh otazka-k" id="k-zahradkar" data-nazov="Záhradkár — nová Exekúcia nahrádza oba efekty z revízie?">
   <header class="karta-hlava"><h2><span class="cislo">3.7</span>Záhradkár — nová Exekúcia nahrádza oba efekty z revízie?</h2></header>
+  <p class="roz roz-ano">Rozhodnuté: Áno, platí návrh (nahrádza oba efekty z revízie).</p>
   <p><i>Exekúcia: Keď čeliš exekúcii, smieš zahodiť túto kartu namiesto špakov. Spáľ toľko svojich priznaných Dlhov, koľko mala aktívnych akcií.</i> Padá prah +2 aj Výhra s poldeci. Výklad: polovica Dlhov zhorí ako vždy a navyše toľko, koľko mal aktívnych akcií. Návrh: áno.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Áno — platí návrh</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-zahradkar">Poznámka: Záhradkár — nová Exekúcia nahrádza oba efekty z revízie?</label><textarea id="p-zahradkar" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta otazka-k" id="k-dievcina" data-kluc="dievcina" data-nazov="Dievčina na vydaj — nová Prehra nahrádza aj D4 (veno od 4 Dlhov)?" data-odp="ano" data-moznosti="ano:Áno — platí návrh|ine:Inak (poznámka)">
+<article class="karta rozh otazka-k" id="k-dievcina" data-nazov="Dievčina na vydaj — nová Prehra nahrádza aj D4 (veno od 4 Dlhov)?">
   <header class="karta-hlava"><h2><span class="cislo">3.8</span>Dievčina na vydaj — nová Prehra nahrádza aj D4 (veno od 4 Dlhov)?</h2></header>
+  <p class="roz roz-ano">Rozhodnuté: Áno, platí návrh (D4 padá).</p>
   <p><i>Prehra: Zahoď túto kartu. Súper získa toľko Dlhov, koľko mala aktívnych akcií.</i> Návrh: áno, D4 padá celé.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Áno — platí návrh</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-dievcina">Poznámka: Dievčina na vydaj — nová Prehra nahrádza aj D4 (veno od 4 Dlhov)?</label><textarea id="p-dievcina" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta otazka-k" id="k-oslavenec" data-kluc="oslavenec" data-nazov="Oslávenec — efekt rozhodnutý, karta zatiaľ len návrh (nie v sade)?" data-odp="ano" data-moznosti="ano:Áno — platí návrh|ine:Inak (poznámka)">
+<article class="karta rozh otazka-k" id="k-oslavenec" data-nazov="Oslávenec — efekt rozhodnutý, karta zatiaľ len návrh (nie v sade)?">
   <header class="karta-hlava"><h2><span class="cislo">3.9</span>Oslávenec — efekt rozhodnutý, karta zatiaľ len návrh (nie v sade)?</h2></header>
+  <p class="roz roz-ano">Rozhodnuté: Áno, platí návrh (karta zatiaľ len návrh).</p>
   <p>Kšeft za plný poldeci ostáva rozhodnutý, ale karta do sady zatiaľ nejde. Návrh: áno, je to tak.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Áno — platí návrh</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-oslavenec">Poznámka: Oslávenec — efekt rozhodnutý, karta zatiaľ len návrh (nie v sade)?</label><textarea id="p-oslavenec" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta otazka-k" id="k-zivnostnik" data-kluc="zivnostnik" data-nazov="Živnostník — pri Záverečnej sa Nástroj neprikladá?" data-odp="ano" data-moznosti="ano:Áno — platí návrh|ine:Inak (poznámka)">
+<article class="karta rozh otazka-k" id="k-zivnostnik" data-nazov="Živnostník — pri Záverečnej sa Nástroj neprikladá?">
   <header class="karta-hlava"><h2><span class="cislo">3.10</span>Živnostník — pri Záverečnej sa Nástroj neprikladá?</h2></header>
+  <p class="roz roz-ano">Rozhodnuté: Inak: Nástroj <b>smie</b> priložiť aj pri Záverečnej, pri jej otočení (Michal: „nech na to prídu aj hráči“).</p>
   <p><i>Nástup: Hneď za neho smieš z ruky priložiť jeden Nástroj. Obe karty sa vyložia v jednom ťahu.</i> Keď ide ako Záverečná, Nástup príde až pri otočení a Nástroj sa vtedy nepriloží. Návrh: áno, neprikladá.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Áno — platí návrh</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-zivnostnik">Poznámka: Živnostník — pri Záverečnej sa Nástroj neprikladá?</label><textarea id="p-zivnostnik" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta otazka-k" id="k-pes" data-kluc="pes" data-nazov="Pes — znenie ako Furt" data-odp="ano" data-moznosti="ano:Áno — platí návrh|ine:Inak (poznámka)">
+<article class="karta rozh otazka-k" id="k-pes" data-nazov="Pes — znenie ako Furt">
   <header class="karta-hlava"><h2><span class="cislo">3.11</span>Pes — znenie ako Furt</h2></header>
+  <p class="roz roz-ano">Rozhodnuté: Áno, znenie platí.</p>
   <p><i>Furt: Aktívne akcie Psa na spoji so súperovou kartou sa rátajú dvakrát. Platí to na každej strane, kde susedí so súperovou kartou.</i> Tvoje slovo „Konflikt“ opisuje stav, nie okamih. Konflikt ostáva okamihom (otvorený bod v7 č. 12). Platí?</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Áno — platí návrh</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-pes">Poznámka: Pes — znenie ako Furt</label><textarea id="p-pes" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta otazka-k" id="k-krokodil" data-kluc="krokodil" data-nazov="Krokodíl — znenie" data-odp="ano" data-moznosti="ano:Áno — platí návrh|ine:Inak (poznámka)">
+<article class="karta rozh otazka-k" id="k-krokodil" data-nazov="Krokodíl — znenie">
   <header class="karta-hlava"><h2><span class="cislo">3.12</span>Krokodíl — znenie</h2></header>
+  <p class="roz roz-ano">Rozhodnuté: Áno, znenie platí.</p>
   <p><i>Bitka: Na konci bitky odídu z hry Občania a Zvieratá v jeho okolí, tvoji aj súperovi.</i> Platí?</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Áno — platí návrh</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-krokodil">Poznámka: Krokodíl — znenie</label><textarea id="p-krokodil" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta otazka-k" id="k-ministrant" data-kluc="ministrant" data-nazov="Miňištrant — znenie a trvanie" data-odp="ano" data-moznosti="ano:Áno — platí návrh|ine:Inak (poznámka)">
+<article class="karta rozh otazka-k" id="k-ministrant" data-nazov="Miňištrant — znenie a trvanie">
   <header class="karta-hlava"><h2><span class="cislo">3.13</span>Miňištrant — znenie a trvanie</h2></header>
+  <p class="roz roz-ano">Rozhodnuté: Áno, znenie platí.</p>
   <p><i>Nástup: Ak týmto priložením vyvoláš Konflikt, jeho akcie Viera sa odteraz rátajú ako Pecka.</i> Platí, kým leží v línii (do konca kola). Platí?</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Áno — platí návrh</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-ministrant">Poznámka: Miňištrant — znenie a trvanie</label><textarea id="p-ministrant" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta otazka-k" id="k-pijan" data-kluc="pijan" data-nazov="Pijan — znenie" data-odp="ano" data-moznosti="ano:Áno — platí návrh|ine:Inak (poznámka)">
+<article class="karta rozh otazka-k" id="k-pijan" data-nazov="Pijan — znenie">
   <header class="karta-hlava"><h2><span class="cislo">3.14</span>Pijan — znenie</h2></header>
+  <p class="roz roz-ano">Rozhodnuté: Inak, nové znenie (nahrádza „o 1 NA EX viac“ z E1): <i>Bitka: Za každé NA EX, ktoré si v tomto kole dal, udelíš súperovi 1 Ranu navyše.</i></p>
   <p><i>Pitka: V tejto Pitke smieš dať o 1 NA EX viac.</i> Platí?</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Áno — platí návrh</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-pijan">Poznámka: Pijan — znenie</label><textarea id="p-pijan" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta otazka-k" id="k-dohadzovacka" data-kluc="dohadzovacka" data-nazov="Dohadzovačka — znenie (doplnené)" data-odp="ano" data-moznosti="ano:Áno — platí návrh|ine:Inak (poznámka)">
+<article class="karta rozh otazka-k" id="k-dohadzovacka" data-nazov="Dohadzovačka — znenie (doplnené)">
   <header class="karta-hlava"><h2><span class="cislo">3.15</span>Dohadzovačka — znenie (doplnené)</h2></header>
+  <p class="roz roz-ano">Rozhodnuté: Áno, znenie platí.</p>
   <p><i>Bitka: Za každý spoj tvojej Ženy so súperovým Chlapom a tvojho Chlapa so súperovou Ženou si smieš vziať do ruky jednu kartu zo šenku.</i> Rátajú sa všetky spoje v línii, Liberál (Žena aj Chlap) ako oboje. Platí?</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Áno — platí návrh</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-dohadzovacka">Poznámka: Dohadzovačka — znenie (doplnené)</label><textarea id="p-dohadzovacka" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
 <h2 class="sekcia-h" id="s4">4 · Principiálne otázky</h2>
-<article class="karta otazka-k" id="k-princip_k_supero" data-kluc="princip_k_supero" data-nazov="Smie karta efektom natrvalo prejsť k súperovi?" data-odp="ano" data-moznosti="ano:Áno|nie:Nie">
+<article class="karta rozh otazka-k" id="k-princip_k_supero" data-nazov="Smie karta efektom natrvalo prejsť k súperovi?">
   <header class="karta-hlava"><h2><span class="cislo">4.1</span>Smie karta efektom natrvalo prejsť k súperovi?</h2></header>
+  <p class="roz roz-ano">Rozhodnuté: Áno.</p>
   <p>Do budúcna: karta po efekte patrí druhému hráčovi (ide do jeho balíčka). Rozhodnutá Snúbenica A (E3) to už robí (<i>„po bitke ide ten Chlap do tvojho odhadzovacieho balíčka a odteraz je tvoj“</i>).</p><p class="odporucanie"><b>Odporúčam: Áno.</b> Snúbenica to už používa a s jasným okamihom (po bitke) je to čitateľné.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Áno</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-princip_k_supero">Poznámka: Smie karta efektom natrvalo prejsť k súperovi?</label><textarea id="p-princip_k_supero" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta otazka-k" id="k-princip_lokalita_konflikt" data-kluc="princip_lokalita_konflikt" data-nazov="Smie lokalita prepožičať Konflikt prvej karte pri nej?" data-odp="nie" data-moznosti="ano:Áno|nie:Nie">
+<article class="karta rozh otazka-k" id="k-princip_lokalita_konflikt" data-nazov="Smie lokalita prepožičať Konflikt prvej karte pri nej?">
   <header class="karta-hlava"><h2><span class="cislo">4.2</span>Smie lokalita prepožičať Konflikt prvej karte pri nej?</h2></header>
+  <p class="roz roz-ano">Rozhodnuté: Nie. Dotknuté alternatívy nikto nevybral, sú uzavreté.</p>
   <p>Stoja na tom most-A, lesna_cesta-B, ihrisko-B, zberny_dvor-C, krcma-C, sklad-C a predsedova_vila-B (dávka 4).</p><p class="odporucanie"><b>Odporúčam: Nie.</b> Konflikt ostane vlastnosťou karty, ktorú hráč vidí v ruke. Lokality majú vlastné spúšťače a tie väčšinou fungujú.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Nie</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-princip_lokalita_konflikt">Poznámka: Smie lokalita prepožičať Konflikt prvej karte pri nej?</label><textarea id="p-princip_lokalita_konflikt" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta otazka-k" id="k-princip_majitel_bez_otocenia" data-kluc="princip_majitel_bez_otocenia" data-nazov="Smie karta zmeniť majiteľa bez otočenia?" data-odp="nie" data-moznosti="ano:Áno|nie:Nie">
+<article class="karta rozh otazka-k" id="k-princip_majitel_bez_otocenia" data-nazov="Smie karta zmeniť majiteľa bez otočenia?">
   <header class="karta-hlava"><h2><span class="cislo">4.3</span>Smie karta zmeniť majiteľa bez otočenia?</h2></header>
+  <p class="roz roz-ano">Rozhodnuté: Nie. Dotknuté alternatívy nikto nevybral, sú uzavreté.</p>
   <p>Majiteľ = hráč, ku ktorému je karta natočená (§6 :231). Stoja na tom veterinar-B, postarka-B, sklad-C a predsedova_vila-A.</p><p class="odporucanie"><b>Odporúčam: Nie.</b> Natočenie je jediný viditeľný znak majiteľa. Karta v línii, ktorá patrí inému, než ku komu je natočená, by mýlila oboch hráčov.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Nie</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-princip_majitel_bez_otocenia">Poznámka: Smie karta zmeniť majiteľa bez otočenia?</label><textarea id="p-princip_majitel_bez_otocenia" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
 <h2 class="sekcia-h" id="s5">5 · Mimo efektov — ilustrácia</h2>
-<article class="karta otazka-k" id="k-druzstvo_obrazok" data-kluc="druzstvo_obrazok" data-nazov="Družstvo — finálna ilustrácia" data-odp="" data-moznosti="1:1 · koberec so zablateným traktorom|2:2 · symetrický kaštieľ s kobercom|3:3 · schôdza s košmi ovocia|5:5 · kombajn vo fólii|ine:Inak (poznámka)">
+<article class="karta rozh otazka-k" id="k-druzstvo_obrazok" data-nazov="Družstvo — finálna ilustrácia">
   <header class="karta-hlava"><h2><span class="cislo">5.1</span>Družstvo — finálna ilustrácia</h2></header>
+  <p class="roz roz-ano">Rozhodnuté: Finál 1 (koberec so zablateným traktorom), rieši Ilustrátor.</p>
   <p>Možnosti sú v koláži <a href="file:///F:/Projects/handoff/ilustracie-lokality-20261027/kolaz-lokality-vyber2.jpg">kolaz-lokality-vyber2.jpg</a> (handoff, ilustracie-lokality-20261027).</p><ul><li><b>1</b> — koberec so zablateným traktorom.</li><li><b>2</b> — symetrický kaštieľ s kobercom.</li><li><b>3</b> — schôdza s košmi ovocia.</li><li><b>5</b> — kombajn vo fólii.</li></ul><p class="pozn">Bez odporúčania, vyber podľa koláže.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-druzstvo_obrazok">Poznámka: Družstvo — finálna ilustrácia</label><textarea id="p-druzstvo_obrazok" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
 <h2 class="sekcia-h" id="s6">6 · Potvrdenia detailov lokalít (plán 7.5)</h2>
 <p class="pozn">Detaily, ktoré si pri lokalitách nepovedal a ktoré som dopovedal ja. Krokodíl tu nie je, uzavrela ho dávka E1. K Praudovravcovi v 7.5 nič otvorené nie je.</p>
-<article class="karta otazka-k" id="k-lok_lesna_svoje" data-kluc="lok_lesna_svoje" data-nazov="Lesná cesta — rátajú sa len svoje Zvieratá" data-odp="ano" data-moznosti="ano:Áno — platí návrh|ine:Inak (poznámka)">
+<article class="karta rozh otazka-k" id="k-lok_lesna_svoje" data-nazov="Lesná cesta — rátajú sa len svoje Zvieratá">
   <header class="karta-hlava"><h2><span class="cislo">6.1</span>Lesná cesta — rátajú sa len svoje Zvieratá</h2></header>
+  <p class="roz roz-ano">Rozhodnuté: Áno, platí návrh.</p>
   <p>Efekt <i>Bitka: Za každé svoje Zviera v súperovom kraji máš 1 tuhé poškodenie navyše.</i> platí pre oboch hráčov rovnako, ako každý efekt lokality.</p><p class="odporucanie"><b>Návrh:</b> rátajú sa len tvoje Zvieratá vyložené do súperovho kraja, obom symetricky. Inak by súperovi jeho vlastné Zvieratá v jeho kraji pridávali tuhé tebe.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Áno — platí návrh</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-lok_lesna_svoje">Poznámka: Lesná cesta — rátajú sa len svoje Zvieratá</label><textarea id="p-lok_lesna_svoje" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta otazka-k" id="k-lok_lesna_strop" data-kluc="lok_lesna_strop" data-nazov="Lesná cesta — bez stropu" data-odp="ano" data-moznosti="ano:Áno — platí návrh|ine:Inak (poznámka)">
+<article class="karta rozh otazka-k" id="k-lok_lesna_strop" data-nazov="Lesná cesta — bez stropu">
   <header class="karta-hlava"><h2><span class="cislo">6.2</span>Lesná cesta — bez stropu</h2></header>
+  <p class="roz roz-ano">Rozhodnuté: Áno, platí návrh.</p>
   <p>Tvoje znenie je bez stropu (dnes „najviac 2“) a Občania ani Starešinovia sa už nerátajú.</p><p class="odporucanie"><b>Návrh:</b> bez stropu. Zvierat je v balíčku málo a na úrovni 1 ich hráč má zriedka. Zmerať, či efekt nie je mŕtvy.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Áno — platí návrh</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-lok_lesna_strop">Poznámka: Lesná cesta — bez stropu</label><textarea id="p-lok_lesna_strop" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta otazka-k" id="k-lok_kar_nerest" data-kluc="lok_kar_nerest" data-nazov="Kar — doliatie zadarmo je nerest" data-odp="ano" data-moznosti="ano:Áno — platí návrh|ine:Inak (poznámka)">
+<article class="karta rozh otazka-k" id="k-lok_kar_nerest" data-nazov="Kar — doliatie zadarmo je nerest">
   <header class="karta-hlava"><h2><span class="cislo">6.3</span>Kar — doliatie zadarmo je nerest</h2></header>
+  <p class="roz roz-ano">Rozhodnuté: Áno, platí návrh. Kar však dostal kar-A, takže detail o doliatí je bezpredmetný.</p>
   <p>Efekt <i>Pitka: Doliatie nestojí cigarety, ale každé ti pridá 1 poškodenie pečene.</i> Dnes sa nerest za doliatie ráta zo zaplatených cigariet, takže doliatie zadarmo by nerestou nebolo.</p><p class="odporucanie"><b>Návrh:</b> doliatie na Kari je nerest ako bežné doliatie (2), inak by Kar viedol k Absťáku. S Vínkom v Dedičstve sa nedolieva ani na Kari.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Áno — platí návrh</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-lok_kar_nerest">Poznámka: Kar — doliatie zadarmo je nerest</label><textarea id="p-lok_kar_nerest" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta otazka-k" id="k-lok_zberny_kseft" data-kluc="lok_zberny_kseft" data-nazov="Zberný dvor — Kšeft raz za Pitku, cigareta je nerest" data-odp="ano" data-moznosti="ano:Áno — platí návrh|ine:Inak (poznámka)">
+<article class="karta rozh otazka-k" id="k-lok_zberny_kseft" data-nazov="Zberný dvor — Kšeft raz za Pitku, cigareta je nerest">
   <header class="karta-hlava"><h2><span class="cislo">6.4</span>Zberný dvor — Kšeft raz za Pitku, cigareta je nerest</h2></header>
+  <p class="roz roz-ano">Rozhodnuté: Áno, platí návrh.</p>
   <p>Efekt <i>Kšeft: Za 1 cigaretu si vezmi do ruky ľubovoľnú kartu zo svojho odhadzovacieho balíčka.</i> „Raz za Pitku“ si vynechal, ale Kšeft je raz za Pitku už z definície.</p><p class="odporucanie"><b>Návrh:</b> ponechať takto. Kšeft lokality smie každý hráč raz za Pitku a cigareta za Kšeft je nerest.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Áno — platí návrh</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-lok_zberny_kseft">Poznámka: Zberný dvor — Kšeft raz za Pitku, cigareta je nerest</label><textarea id="p-lok_zberny_kseft" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta otazka-k" id="k-lok_herna_strop" data-kluc="lok_herna_strop" data-nazov="Herňa — špaky za Dlhy porazeného bez stropu" data-odp="ano" data-moznosti="ano:Áno — platí návrh|ine:Inak (poznámka)">
+<article class="karta rozh otazka-k" id="k-lok_herna_strop" data-nazov="Herňa — špaky za Dlhy porazeného bez stropu">
   <header class="karta-hlava"><h2><span class="cislo">6.5</span>Herňa — špaky za Dlhy porazeného bez stropu</h2></header>
+  <p class="roz roz-ano">Rozhodnuté: Áno, platí návrh.</p>
   <p>Efekt <i>Bitka: Víťaz dostane navyše toľko špakov, koľko má porazený priznaných Dlhov.</i> Návrh mal „najviac 5“, tvoje znenie je bez neho.</p><p class="odporucanie"><b>Návrh:</b> bez stropu a merať. Prirodzený strop dáva Exekútor, pod prahom 7 má porazený najviac 6 Dlhov.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Áno — platí návrh</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-lok_herna_strop">Poznámka: Herňa — špaky za Dlhy porazeného bez stropu</label><textarea id="p-lok_herna_strop" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta otazka-k" id="k-lok_herna_kraje" data-kluc="lok_herna_kraje" data-nazov="Herňa — kraje" data-odp="ano" data-moznosti="ano:Áno — platí návrh|ine:Inak (poznámka)">
+<article class="karta rozh otazka-k" id="k-lok_herna_kraje" data-nazov="Herňa — kraje">
   <header class="karta-hlava"><h2><span class="cislo">6.6</span>Herňa — kraje</h2></header>
+  <p class="roz roz-ano">Rozhodnuté: Áno, platí návrh.</p>
   <p>Staré kraje („pri tabuli projektu“, „v prázdnych stajniach“) patrili Agroareálu.</p><p class="odporucanie"><b>Návrh:</b> kraje <b>pri automatoch / v zadnej miestnosti</b>.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Áno — platí návrh</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-lok_herna_kraje">Poznámka: Herňa — kraje</label><textarea id="p-lok_herna_kraje" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta otazka-k" id="k-lok_sklad_sloty" data-kluc="lok_sklad_sloty" data-nazov="Sklad — sloty hrán" data-odp="ano" data-moznosti="ano:Áno — platí návrh|ine:Inak (poznámka)">
+<article class="karta rozh otazka-k" id="k-lok_sklad_sloty" data-nazov="Sklad — sloty hrán">
   <header class="karta-hlava"><h2><span class="cislo">6.7</span>Sklad — sloty hrán</h2></header>
+  <p class="roz roz-ano">Rozhodnuté: Áno, platí návrh.</p>
   <p>Určil si akcie hrán (Robota, Pecka / Cigareta, Dlh), nie sloty.</p><p class="odporucanie"><b>Návrh:</b> zrkadlo Zberného dvora <code>[Robota – Pecka –] / [Cig – Dlh –]</code> (sloty 0 a 2, Zberný dvor má 1 a 3). Pri zavádzaní overiť podľa <code>analyza-indexy.html</code>.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Áno — platí návrh</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-lok_sklad_sloty">Poznámka: Sklad — sloty hrán</label><textarea id="p-lok_sklad_sloty" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta otazka-k" id="k-lok_sklad_kraje" data-kluc="lok_sklad_kraje" data-nazov="Sklad — kraje" data-odp="ano" data-moznosti="ano:Áno — platí návrh|ine:Inak (poznámka)">
+<article class="karta rozh otazka-k" id="k-lok_sklad_kraje" data-nazov="Sklad — kraje">
   <header class="karta-hlava"><h2><span class="cislo">6.8</span>Sklad — kraje</h2></header>
+  <p class="roz roz-ano">Rozhodnuté: Áno, platí návrh.</p>
   <p>Kraje som navrhol podľa vybranej ilustrácie (nočný sklad, vrecia do kufra, spiaci strážnik).</p><p class="odporucanie"><b>Návrh:</b> kraje <b>pri vreciach / pri strážnici</b>.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Áno — platí návrh</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-lok_sklad_kraje">Poznámka: Sklad — kraje</label><textarea id="p-lok_sklad_kraje" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta otazka-k" id="k-lok_sklad_kseft" data-kluc="lok_sklad_kseft" data-nazov="Sklad — výklad Kšeftu „Nočná šichta“" data-odp="ano" data-moznosti="ano:Áno — platí návrh|ine:Inak (poznámka)">
+<article class="karta rozh otazka-k" id="k-lok_sklad_kseft" data-nazov="Sklad — výklad Kšeftu „Nočná šichta“">
   <header class="karta-hlava"><h2><span class="cislo">6.9</span>Sklad — výklad Kšeftu „Nočná šichta“</h2></header>
+  <p class="roz roz-ano">Rozhodnuté: Áno, platí návrh.</p>
   <p>Efekt <i>Kšeft: Za 1 cigaretu si vezmi do ruky vrchnú kartu zo súperovho odhadzovacieho balíčka.</i> Súperov odhadzovací balíček je verejný, vrchnú kartu teda vidíš.</p><p class="odporucanie"><b>Návrh:</b> vzatá karta patrí odteraz tebe (po bitke ide do tvojho odhadzovacieho balíčka). Pri prázdnom súperovom odhadzovacom balíčku sa Kšeft nedá. Súperovu Cirhózu navrchu vziať smieš (nikto to neurobí, stojí −5 špakov).</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Áno — platí návrh</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-lok_sklad_kseft">Poznámka: Sklad — výklad Kšeftu „Nočná šichta“</label><textarea id="p-lok_sklad_kseft" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
-<article class="karta otazka-k" id="k-lok_sklad_nerest" data-kluc="lok_sklad_nerest" data-nazov="Sklad — cigareta za Kšeft je nerest" data-odp="ano" data-moznosti="ano:Áno — platí návrh|ine:Inak (poznámka)">
+<article class="karta rozh otazka-k" id="k-lok_sklad_nerest" data-nazov="Sklad — cigareta za Kšeft je nerest">
   <header class="karta-hlava"><h2><span class="cislo">6.10</span>Sklad — cigareta za Kšeft je nerest</h2></header>
+  <p class="roz roz-ano">Rozhodnuté: Áno, platí návrh.</p>
   <p>Rovnako ako pri Zbernom dvore.</p><p class="odporucanie"><b>Návrh:</b> áno, cigareta za Kšeft je nerest.</p>
-  <div class="volba"><fieldset><legend>Tvoja voľba <span class="odp">odporúčam: Áno — platí návrh</span></legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-lok_sklad_nerest">Poznámka: Sklad — cigareta za Kšeft je nerest</label><textarea id="p-lok_sklad_nerest" placeholder="Poznámka (nepovinné)"></textarea></div>
 </article>
 
 <footer>
@@ -933,7 +887,7 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
 
 <div class="lista" role="region" aria-label="Súhrn volieb">
   <div class="lista-in">
-    <span class="lista-text" id="lista-text" aria-live="polite">Zatiaľ nič nie je vybrané.</span>
+    <span class="lista-text" id="lista-text" aria-live="polite">Rozhodnuté okrem Nástrojov.</span>
     <button type="button" id="doplnit">Doplniť odporúčané</button>
     <button type="button" class="hlavne" id="kopiruj">Skopírovať súhrn</button>
   </div>
@@ -972,7 +926,7 @@ h3.skupina { font-size: .9rem; color: var(--akcent); margin: 22px 0 4px; }
   });
   function obnov() {
     var n = bloky.filter(function (b) { var k = b.getAttribute("data-kluc"); return stav[k] && stav[k].v; }).length;
-    document.getElementById("lista-text").textContent = n === 0 ? "Zatiaľ nič nie je vybrané." : "Vybrané " + n + " z " + bloky.length + ". Ukladá sa v tomto prehliadači.";
+    document.getElementById("lista-text").textContent = n === 0 ? "Rozhodnuté okrem Nástrojov." : "Vybrané " + n + " z " + bloky.length + ". Ukladá sa v tomto prehliadači.";
   }
   obnov();
   document.getElementById("doplnit").addEventListener("click", function () {
