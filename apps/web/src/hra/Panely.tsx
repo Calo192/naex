@@ -19,7 +19,7 @@ import type {
   StavkaBitky as StavkaBitkyCisla,
   ZdrojeAkcii,
 } from "@naex/core";
-import { KONSTANTY, battleOutcome, textNeresti as neresti, jeCielLokalita, limitBuduceKolo, limitZhromazdenia, pocet, rozpisSpakov, tvar } from "@naex/core";
+import { KONSTANTY, battleOutcome, jeCielLokalita, limitBuduceKolo, limitZhromazdenia, pocet, rozpisSpakov, tvar } from "@naex/core";
 import type { Rod } from "@naex/core";
 import type { Sada } from "@naex/tvorba";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
@@ -125,7 +125,6 @@ function vyhladAbstaku(z: StavZavislosti, ja: boolean): { text: string; trieda: 
 /** Absťák na doske: koľko ich má, čo robia, neresti kola a čo bude na konci kola. */
 function ZdrojAbstak({ z, ja }: { readonly z: StavZavislosti; readonly ja: boolean }) {
   const vyhlad = vyhladAbstaku(z, ja);
-  const ty = ja ? "ti" : "mu";
   return (
     <Zdroj
       nazov="Absťák"
@@ -151,44 +150,16 @@ function ZdrojAbstak({ z, ja }: { readonly z: StavZavislosti; readonly ja: boole
         </>
       }
       tip={{
-        nadpis: `Absťák — ${ja ? "máš" : "má"} ${z.abstaky}`,
+        nadpis: "Absťák",
         text: (
           <>
             <span className="tip-stav">
-              {z.abstaky === 0
-                ? `Teraz ${ty} Absťák v bitke nič neuberá.`
-                : `V bitke ${ty} ${z.abstaky === 1 ? "uberie" : "uberú"} ${z.ubera} tuhé poškodenie${z.autobusar ? " (Autobusár 1 ignoruje)" : ""} — trasú sa ${ty} ruky.`}
+              {ja ? "Máš" : "Má"} {z.abstaky}
+              {z.abstaky > 0 && ` · v bitke −${z.ubera} tuhé${z.autobusar ? " (Autobusár 1 ignoruje)" : ""}`} · neresti {z.teraz}
+              {z.vyhlad !== "zaklad" && ` / minule ${z.minule}`} · {vyhlad.text}
             </span>
-            <span className="tip-riadok">
-              <b>Kedy príde a odíde:</b> na konci kola, po bitke, sa porovnajú neresti tohto kola s minulým.{" "}
-              <b>Menej</b> → +1 Absťák (rovno priznaný, dobereš si za neho kartu). <b>Rovnako</b> → nič. <b>Viac</b> → jeden
-              Absťák odíde. Prvé kolo len nastaví základ.
-              {z.manzelky > 0 &&
-                ` Milujúca manželka (${z.manzelky}×): Absťák príde aj pri ${z.manzelky === 1 ? "rovnakom počte nerestí" : `o ${z.manzelky - 1} viac nerestiach`} ako minule.`}
-            </span>
-            <span className="tip-riadok">
-              <b>Nerest je:</b> každý vypitý poldeci v Zhromaždení (ďalšia karta v ťahu), NA EX (poldeci sa vypije v bitke),
-              každá vyfajčená cigareta, doliatie poldeci (2) a stokársky barter (za každú cigaretu). Platba za šenok,
-              Dedičstvo a Starostu sa nepočíta.
-            </span>
-            <span className="tip-riadok">
-              <b>Toto kolo:</b> {neresti(z.teraz)}
-              {z.naexNaStole > 0 && ` (z toho ${z.naexNaStole} NA EX na stole)`}
-              {z.vyhlad === "zaklad"
-                ? ". Je to prvé kolo — určí, koľko nerestí bude treba v druhom."
-                : `, minulé kolo ${neresti(z.minule)}. ${
-                    z.vyhlad === "ziska"
-                      ? `Bez ďalších ${neresti(z.doBezpecia)} ${ja ? "dostaneš" : "dostane"} Absťák.`
-                      : z.vyhlad === "zbavi"
-                        ? `${ja ? "Zbavíš" : "Zbaví"} sa jedného Absťáku.`
-                        : z.doZbavenia > 0
-                          ? `Absťák nepribudne; ešte ${neresti(z.doZbavenia)} a jeden odíde.`
-                          : "Absťák nepribudne."
-                  }`}
-            </span>
-            <span className="tip-riadok">
-              <b>Krčmárka</b> (ak ju máš): bez Absťáku a bez NA EX v kole otočí pri bitke vypitý poldeci na plný.
-            </span>
+            Na konci kola: menej nerestí ako minule = +1 Absťák, viac = jeden odíde. Nerest je poldeci navyše, NA EX, cigareta, doliatie aj
+            barter.
           </>
         ),
       }}
@@ -287,12 +258,6 @@ function TextVyhladu({ x }: { readonly x: VstupVyhladu }) {
   );
 }
 
-/** Celý výhľad Pitky v nápovede dlaždice — dlaždica ukáže len skrátené riadky. */
-function TipVyhladu({ x }: { readonly x: VstupVyhladu | null }) {
-  if (x === null) return null;
-  return <span className="tip-stav">{vyhladPitky(x).cele.join(" · ")}.</span>;
-}
-
 /** Zdroj na doske; nápoveda sa ukáže pri prejdení myšou (ako tooltipy kariet). */
 function Zdroj({
   nazov,
@@ -358,10 +323,11 @@ function DlazdicaKariet({ hrac, ja, karty }: { readonly hrac: ClientState["hraci
     nadpis: "Karty",
     text: (
       <>
-        V ruke {hrac.rukaPocet}, v doberacom balíčku {hrac.doberaciPocet}, odhodených {hrac.odhadzovaci.length}; priznaných kliatob {hrac.priznane.length}, Nástrojov v Dedičstve {hrac.dedicstvo.length}.
         <span className="tip-stav">
-          {ja ? "Klik (alebo O) ukáže balíček, odhodené, priznané a Dedičstvo. Kliatbu či Nástroj pustíš sem." : "Klik ukáže súperove priznané kliatby a Dedičstvo."}
+          Ruka {hrac.rukaPocet} · balíček {hrac.doberaciPocet} · odhodené {hrac.odhadzovaci.length} · priznané kliatby {hrac.priznane.length} · náradie{" "}
+          {hrac.dedicstvo.length}
         </span>
+        {ja ? "Klik (alebo O) ukáže balíček, odhodené, priznané a Dedičstvo. Kliatbu či Nástroj pustíš sem." : "Klik ukáže súperove priznané kliatby a Dedičstvo."}
       </>
     ),
   };
@@ -549,7 +515,6 @@ export function HracDoska({
           bitka: vyhlad.dlhyBitka,
         };
   const kliatby = view.nepriznaneKliatby[p];
-  const priznaneDlhy = hrac.priznane.filter((k) => k.defId === "dlh").length;
 
   const poldeci: ReactNode[] = [];
   for (let i = 0; i < plne; i++) poldeci.push(<IkonaPoldeci key={`p${i}`} plny />);
@@ -574,11 +539,11 @@ export function HracDoska({
             tip={
               view.ciel?.typ === "finale"
                 ? utoci
-                  ? { nadpis: "Útočník finále", text: "Má viac špakov (pri rovnosti prehral poslednú bitku): vyloží prvú kartu do stredu línie — súper vidí, čo vyložil. V Pitke má posledné slovo." }
+                  ? { nadpis: "Útočník finále", text: "Má viac špakov (pri rovnosti prehral poslednú bitku). Vyloží prvú kartu do stredu línie, v Pitke má posledné slovo." }
                   : { nadpis: "Obranca finále", text: "Má menej špakov: vidí prvú kartu útočníka a kladie k nej. V Pitke začína." }
                 : utoci
-                ? { nadpis: "Útočník", text: "Prehral poslednú bitku: zo šenku berie prvý a vykladá prvý. V Pitke hrá druhý — má posledné slovo." }
-                : { nadpis: "Obranca", text: "Vyhral poslednú bitku: vyberá a natáča cieľ kola, v Pitke začína. Pri remíze v tuhom vyhrá, kto má menej Absťákov, potom menej priznaných Dlhov; inak idú špaky na sekeru." }
+                ? { nadpis: "Útočník", text: "Prehral poslednú bitku: zo šenku berie a vykladá prvý. V Pitke hrá druhý — má posledné slovo." }
+                : { nadpis: "Obranca", text: "Vyhral poslednú bitku: vyberá cieľ kola, v Pitke začína. Remízu v tuhom vyhrá, kto má menej Absťákov, potom Dlhov; inak idú špaky na sekeru." }
             }
             frajerina={info?.frajerina}
           />
@@ -589,8 +554,8 @@ export function HracDoska({
                 className="cip kliatba"
                 title={
                   ja
-                    ? `Tvoje nepriznané kliatby v ruke a v balíčkoch — každá Cirhóza ti na konci hry zoberie ${KONSTANTY.SPAKY_ZA_CIRHOZU} špakov.`
-                    : `Súperove nepriznané kliatby — počet sa ráta z toho, čo sa ukázalo na stole (vznik, priznanie, zahodenie). Ktoré karty a kde ležia, nevidíš. Každá Cirhóza mu na konci hry zoberie ${KONSTANTY.SPAKY_ZA_CIRHOZU} špakov.`
+                    ? `Tvoje nepriznané kliatby v ruke a v balíčkoch. Každá Cirhóza ti na konci hry zoberie ${KONSTANTY.SPAKY_ZA_CIRHOZU} špakov.`
+                    : `Súperove nepriznané kliatby podľa toho, čo bolo vidno na stole. Každá Cirhóza mu na konci hry zoberie ${KONSTANTY.SPAKY_ZA_CIRHOZU} špakov.`
                 }
               >
                 nepriznané{kliatby.cirhoza > 0 && ` · Cirhóza ×${kliatby.cirhoza}`}
@@ -627,23 +592,13 @@ export function HracDoska({
             nadpis: "Poldeci",
             text: (
               <>
-                {kto} {plne} plné a {hrac.poldeciVypite} vypité
-                {naexNaStole > 0 ? `, ${naexNaStole} leží na stole cez NA EX${skryteNaex > 0 ? ` (${skryteNaex} skryto — súper ho uvidí pri odkrytí)` : ""}` : ""}.
                 <span className="tip-stav">
-                  {jeCielLokalita(view, "zastavka")
-                    ? `Limit vykladania: Zastávka — spoločný pre oboch, ${limit} (súčet limitov oboch hráčov)`
-                    : `Limit vykladania = plné + 1 = ${limit} (poldeci na stole cez NA EX sa neráta)`}
+                  {kto} {plne} plné, {hrac.poldeciVypite} vypité{naexNaStole > 0 && `, ${naexNaStole} na stole (NA EX${skryteNaex > 0 ? ", súper ho ešte nevidí" : ""})`} · limit{" "}
+                  {limit}
+                  {jeCielLokalita(view, "zastavka") && " (Zastávka: spoločný pre oboch)"} · ďalšie kolo {buduci}
                 </span>
-                <span className="tip-riadok">
-                  V ďalšom kole limit {buduci}: poldeci z NA EX sa pri bitke vypijú a na začiatku kola sa{" "}
-                  {KONSTANTY.POLDECI_NA_ZACIATKU_KOLA} vypitý doleje sám (bez akcie Poldeci a doliatia cigaretami).
-                </span>
-                <span className="tip-riadok">
-                  V Pitke položíš plný poldeci na Občana alebo Starešinu (NA EX!) — skryto, súper ho uvidí, keď obaja skončíte Pitku. Zdvojnásobí
-                  neaktívne akcie karty a zruší jej aktívne; limit vykladania ti tým klesne o 1. V Zhromaždení ťa plný poldeci stojí každá ďalšia
-                  karta v tom istom ťahu. Vypitý doleješ za {KONSTANTY.REFILL_CENA} cigarety (nie s Vínkom v Dedičstve), nový získaš barterom
-                  ({KONSTANTY.BARTER_CENA} cigariet).
-                </span>
+                Limit vykladania = plné + 1; na začiatku kola sa {KONSTANTY.POLDECI_NA_ZACIATKU_KOLA} vypitý doleje sám. Plný poldeci platí ďalšiu
+                kartu v ťahu Zhromaždenia alebo NA EX v Pitke.
               </>
             ),
           }}
@@ -691,13 +646,11 @@ export function HracDoska({
             nadpis: "Cigarety",
             text: (
               <>
-                {kto} {hrac.cigarety} {hrac.cigarety === 1 ? "cigaretu" : hrac.cigarety >= 2 && hrac.cigarety <= 4 ? "cigarety" : "cigariet"}.
-                <span className="tip-riadok">
-                  Získavaš ich z aktívnych akcií Cigareta v Pitke (mínus súperove Obmedzenia) a prenášajú sa z kola na kolo.
-                  Platíš nimi šenok (1 karta = {KONSTANTY.CENA_SENKU[1]}, 2 karty = {KONSTANTY.CENA_SENKU[2]}) a Dedičstvo (cena rastie pre oboch).
-                  Fajčiť smieš len v Pitke, na svojom ťahu: cigareta = karta hneď. V Pitke {KONSTANTY.REFILL_CENA} cigarety dolejú vypitý poldeci,{" "}
-                  {KONSTANTY.BARTER_CENA} vymeníš za nový plný (stokársky barter).
+                <span className="tip-stav">
+                  {kto} {hrac.cigarety} · {doNovehoPoldeci}
                 </span>
+                Platíš nimi šenok a Dedičstvo; v Pitke na svojom ťahu fajčíš (cigareta = karta). Doliatie poldeci stojí {KONSTANTY.REFILL_CENA}, nový
+                poldeci {obchodCigariet?.cenaBarteru ?? KONSTANTY.BARTER_CENA}.
               </>
             ),
           }}
@@ -720,81 +673,53 @@ export function HracDoska({
             </>
           }
           tip={{
-            nadpis: "Poškodenie pečene",
+            nadpis: "Pečeň",
             text: (
               <>
-                <TipVyhladu x={vyhladPecene} />
-                {hrac.pecen} z {prahy.cirhoza}
-                {v !== null && v.pecenZoStola > 0 && `, karty na stole pripíšu ${v.pecenZoStola} → ${pecenPo}`}. Vyhodnocuje sa len v Pitke: za
-                každý celý prah vzniká Cirhóza (ide do odhadzovacieho balíčka; priznaná dá súperovi v bitke +1 tuhé poškodenie) a{" "}
-                <b>po každej Pitke sa pečeň vynuluje</b>.
                 <span className="tip-stav">
-                  Nepriznaná Cirhóza ide po bitke do odhadzovacieho balíčka a na konci hry ti zoberie {KONSTANTY.SPAKY_ZA_CIRHOZU} špakov (ráta sa ruka
-                  aj oba balíčky). Priznaná dá súperovi v každej bitke +1 tuhé poškodenie.
+                  {hrac.pecen}
+                  {v !== null && v.pecenZoStola > 0 && ` ▸ ${pecenPo}`} z {prahy.cirhoza}
+                  {vyhladPecene !== null && ` · ${vyhladPitky(vyhladPecene).cele.join(" · ")}`}
                 </span>
-                <span className="tip-riadok">
-                  Pribúda akciami Poškodenie pečene a Poldeci a NA EX v Pitke; poldeci vypitý v Zhromaždení ju pripíše dopredu do najbližšej Pitky.
-                  NA EX leží na karte až do bitky — jej zdvojené akcie sa vyhodnotia v každej Pitke kola. Prah = {prahy.cirhoza}.
-                </span>
+                Za každé {prahy.cirhoza} vznikne v Pitke Cirhóza: nepriznaná {ja ? "ti" : "mu"} na konci hry zoberie {KONSTANTY.SPAKY_ZA_CIRHOZU} špakov, priznaná dá
+                súperovi +1 tuhé v bitke. Po každej Pitke sa pečeň vynuluje.
               </>
             ),
           }}
         />
-        <Zdroj
-          nazov="Zadĺženie"
-          trieda={`zdroj-zadlzenie ${(v?.dlhy ?? 0) > 0 ? "hrozi" : zadlzeniePo >= prahy.dlh - 1 ? "varovanie" : ""}`}
-          hodnota={
-            <span className="velke-cislo">
-              {hrac.zadlzenie}
-              {v !== null && v.zadlzenieZoStola > 0 && <span className="projekcia"> ▸ {zadlzeniePo}</span>}
-              <small>/{prahy.dlh}</small>
-            </span>
-          }
-          pod={
-            <>
-              <Pruh hodnota={hrac.zadlzenie} pribudne={v?.zadlzenieZoStola ?? 0} prah={prahy.dlh} />
-              {vyhladZadlzenia !== null && <TextVyhladu x={vyhladZadlzenia} />}
-            </>
-          }
-          tip={{
-            nadpis: "Zadĺženie",
-            text: (
-              <>
-                <TipVyhladu x={vyhladZadlzenia} />
-                {hrac.zadlzenie} z {prahy.dlh}
-                {v !== null && v.zadlzenieZoStola > 0 && `, karty na stole pripíšu ${v.zadlzenieZoStola} → ${zadlzeniePo}`}. Za každý celý prah
-                vzniká karta Dlh — <b>hneď sa prizná</b>. Špaky Dlh sám neberie: priznané Dlhy privolajú Exekútora a pri remíze v tuhom aj
-                v Absťákoch prehrá bitku, kto ich má viac.
-                <span className="tip-riadok">Pribúda akciami Dlh v Pitke a <b>po každej Pitke sa vynuluje</b>.</span>
-              </>
-            ),
-          }}
-        />
+        {/* Dlhy a Zadĺženie v jednej dlaždici (Michal 2026-10-27): číslo = priznané Dlhy k Exekútorovi,
+            pod ním zadĺženie tejto Pitky k ďalšiemu Dlhu. Vyučba zvýrazňuje obe časti zvlášť (bar:dlhy, bar:zadlzenie). */}
         <Zdroj
           nazov="Dlhy"
-          trieda={`zdroj-dlhy ${prahy.priznaneDlhy >= prahy.exekutor - 2 ? "varovanie" : ""}`}
+          trieda={`zdroj-dlhy ${
+            (v?.dlhy ?? 0) > 0 ? "hrozi" : zadlzeniePo >= prahy.dlh - 1 || prahy.priznaneDlhy >= prahy.exekutor - 2 ? "varovanie" : ""
+          }`}
           hodnota={
             <span className="velke-cislo">
               {prahy.priznaneDlhy}
               <small>/{prahy.exekutor}</small>
             </span>
           }
-          pod="do Exekútora"
+          pod={
+            <>
+              <span className={`dlhy-zadlzenie ${zadlzeniePo >= prahy.dlh - 1 ? "zly" : ""}`} data-vyucba-prvok="zadlzenie">
+                zadĺženie {hrac.zadlzenie}
+                {v !== null && v.zadlzenieZoStola > 0 && <span className="projekcia"> ▸ {zadlzeniePo}</span>}/{prahy.dlh}
+              </span>
+              {vyhladZadlzenia !== null ? <TextVyhladu x={vyhladZadlzenia} /> : <span>do Exekútora</span>}
+            </>
+          }
           tip={{
-            nadpis: "Priznané Dlhy",
+            nadpis: "Dlhy",
             text: (
               <>
-                {prahy.priznaneDlhy} z {prahy.exekutor}. Keď ich má hráč v bitke aspoň {prahy.exekutor}, prichádza
-                Exekútor: zhorí polovica priznaných Dlhov (nadol) a rovnako veľa špakov — aj do mínusu, súper ich nedostane. Kto má
-                Záhradkára, smie ho zahodiť namiesto špakov.
                 <span className="tip-stav">
-                  Pri remíze v tuhom aj v Absťákoch vyhrá bitku, kto má menej priznaných Dlhov
-                  {priznaneDlhy > 0 ? ` (${ja ? "máš" : "má"} ${priznaneDlhy})` : ""}.
+                  {prahy.priznaneDlhy} z {prahy.exekutor} do Exekútora · zadĺženie {hrac.zadlzenie}
+                  {v !== null && v.zadlzenieZoStola > 0 && ` ▸ ${zadlzeniePo}`} z {prahy.dlh}
+                  {vyhladZadlzenia !== null && ` · ${vyhladPitky(vyhladZadlzenia).cele.join(" · ")}`}
                 </span>
-                <span className="tip-riadok">
-                  Prah = {KONSTANTY.PRAH_EXEKUTORA_ZAKLAD}, súperova priazeň Exekútora ho znižuje. Priazeň Kmotra ti po bitke zníži priznané Dlhy.
-                  Robota spáli 1 priznaný Dlh, Dievčina na vydaj ich spáli viac.
-                </span>
+                Každé {prahy.dlh} zadĺženia v Pitke = Dlh, hneď priznaný; zadĺženie sa po Pitke vynuluje. Pri {prahy.exekutor} a viac Dlhoch v bitke príde
+                Exekútor: zhorí polovica Dlhov a toľko špakov.
               </>
             ),
           }}
@@ -809,9 +734,9 @@ export function HracDoska({
           title={
             starsi.stlacene
               ? "Späť na stôl (Esc)"
-              : `${ja ? "Tvoje špaky" : `Špaky ${meno}`}: ${body.spaky[p]}. Po každej bitke ${ja ? "ti" : "mu"} starší, ktorí sa ${ja ? "ťa" : "ho"} boja, dajú ${body.zaStarsich[p]} (žltá 1, oranžová 2, červená 3).` +
-                (body.cirhozy[p] > 0 ? ` Nepriznaná Cirhóza ×${body.cirhozy[p]} na konci hry −${body.cirhozy[p] * KONSTANTY.SPAKY_ZA_CIRHOZU}.` : "") +
-                ` Klik ukáže starších a koho sa boja.${(starsi.posuny ?? 0) > 0 ? ` Od bitky sa pohlo starších: ${starsi.posuny} — pri nich je stopa a lístok, prečo.` : ""}`
+              : `${ja ? "Tvoje špaky" : `Špaky ${meno}`}: ${body.spaky[p]}. Po bitke ${ja ? "ti" : "mu"} starší, ktorí sa ${ja ? "ťa" : "ho"} boja, dajú ${body.zaStarsich[p]}.` +
+                (body.cirhozy[p] > 0 ? ` Nepriznaná Cirhóza ×${body.cirhozy[p]}: na konci hry −${body.cirhozy[p] * KONSTANTY.SPAKY_ZA_CIRHOZU}.` : "") +
+                ` Klik ukáže starších.${(starsi.posuny ?? 0) > 0 ? ` Od bitky sa pohlo starších: ${starsi.posuny} (stopa pri nich).` : ""}`
           }
           onClick={starsi.prepni}
         >

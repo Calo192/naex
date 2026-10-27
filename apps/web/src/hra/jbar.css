@@ -492,7 +492,7 @@ button.jbar-odhad::before {
 
   .doska,
   .plocha > section.doska {
-    --bar-h: 76px;
+    --bar-h: 62px;
   }
 
   .linia-obal:not(:has(.zberatel-ponuka, .vizia-karta)) {
@@ -538,7 +538,7 @@ button.jbar-odhad::before {
 
   .doska,
   .plocha > section.doska {
-    --bar-h: 74px;
+    --bar-h: 60px;
   }
 
   .jbar-kto {
