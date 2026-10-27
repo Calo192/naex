@@ -109,6 +109,7 @@ details.zbalene > summary { cursor: pointer; color: var(--tlmeny); font-size: .9
 </div>
 <p class="uvod">Vymyselník · 27. 10. 2026 · pre Michala cez Leadera. Ku každej z 20 kariet sú 3 alternatívne efekty (spolu 60). <b>Nástroje, kolo 3:</b> efekt Nástroja platí len v Dedičstve (tvoje rozhodnutie). K 8 nerozhodnutým Nástrojom sú 3 nové efekty Dedičstva, Noviny a Krabička sú len preznačené. Zvieratá a štartovky sú nezmenené. Akcie platia po revízii (<code>revizia-sady/sloty.json</code>) a nemenia sa. Nič som nesimuloval a v kóde ani v sade sa nič nemení.</p>
 <p class="roz roz-ano">Rozhodnuté Michalom 27. 10.: Noviny A, Krabička C, Kohút B, Kapybara (Michalovo znenie = B, Kšeft padá). Ponechané: Čierna mačka, Kôň, Milujúca manželka (M2). „Inak“ so znením na potvrdenie: Pes, Krokodíl, Pijan, Miňištrant, Dievčina. <b>Bez voľby (zámerne otvorené):</b> Vínko, Pasca, Puška, Svätý text, Nealko, Výherný automat, Vidly, Lievik. Rozhodnuté znenia sú v <code>revizia-sady/plan.md</code>, časť 14.3.</p>
+<p class="roz roz-ano">Nástroje kola 3 rozhodnuté (Michal): Vínko, Svätý text, Nealko a Lievik ponechané. Pasca A (nahrádza efekt proti Zvieratám). Puška a Vidly inak (Petelice a Rany o 1 silnejšie). Výherný automat: Výhra = 1 špak (na potvrdenie). Iterácia efektov je uzavretá, prehľad je v <code>revizia-sady/plan.md</code> 14.0 a 14.9.</p>
 
 <section class="ramik def">
   <h2>Ako čítať</h2>
@@ -171,7 +172,7 @@ details.zbalene > summary { cursor: pointer; color: var(--tlmeny); font-size: .9
   <p class="riadok"><b>Akcie:</b> Pohoršenie / Povera</p>
   <div class="alt vybrane">
     <div class="hl"><span class="id">noviny-A</span><span class="sp">Dedičstvo · Prehra</span></div>
-    <p class="efekt"><b>Dedičstvo: Prehra:</b> Korupčná aféra. Ak má víťaz viac priznaných Dlhov ako ty, noviny to vytlačia a špaky za túto bitku dostaneš ty namiesto neho.</p>
+    <p class="efekt"><b>Dedičstvo: Prehra:</b> Ak má víťaz viac priznaných Dlhov ako ty, špaky za túto bitku dostaneš ty.</p>
     <p class="preco"><b>Overené:</b> znenie funguje aj ako čistý efekt Dedičstva, zónu nemenuje. Zmenilo sa len označenie „Prehra“ na „Dedičstvo: Prehra“. Potvrdzovať netreba.</p>
   </div>
 </section>
@@ -183,16 +184,18 @@ details.zbalene > summary { cursor: pointer; color: var(--tlmeny); font-size: .9
   <p class="riadok"><b>Akcie:</b> Cigareta / Cigareta</p>
   <div class="alt vybrane">
     <div class="hl"><span class="id">cigorky-C</span><span class="sp">Dedičstvo · Pitka</span></div>
-    <p class="efekt"><b>Dedičstvo: Pitka:</b> Pasívne fajčenie. Za každé 2 cigarety, ktoré súper v tejto Pitke vyfajčí, si dober 1 kartu (bez neresti).</p>
+    <p class="efekt"><b>Dedičstvo: Pitka:</b> Za každé 2 cigarety, ktoré súper vyfajčí, si dober 1 kartu. Nie je to nerest.</p>
     <p class="preco"><b>Overené:</b> funguje ako čistý efekt Dedičstva, len sa preznačilo na „Dedičstvo: Pitka“. V Dedičstve platí natrvalo, a to tomuto efektu sedí najlepšie. Potvrdzovať netreba.</p>
   </div>
 </section>
 
-<section class="ramik karta" id="vinko" data-bod="vinko" data-nazov="Vínko">
+<section class="ramik karta rozh" id="vinko" data-nazov="Vínko">
   <h2>Vínko</h2>
+  <p class="roz roz-ano">Rozhodnuté (Michal, nástroje kolo 3): Nechať dnešný efekt v Dedičstve.</p>
   <p class="tagy">Nástroj · 6 variantov</p>
   <p class="riadok"><b>Akcie:</b> Poldeci ×2 / Pečeň ×4</p>
   <p class="dnes"><b>Dnes:</b> <i>Dedičstvo: Počíta sa, akoby si mal plný poldeci navyše. Nemôžeš dolievať poldeci za cigarety.</i> Bot ho zo šenku nevzal ani raz.</p>
+  <details class="zbalene"><summary>Alternatívy kola 3 (nevybrané), zbalené</summary>
   <div class="alt">
     <div class="hl"><span class="id">vinko-A</span><span class="sp">Dedičstvo</span></div>
     <p class="efekt"><b>Dedičstvo:</b> Plná pivnica. Na začiatku kola sa ti otočia na plné všetky vypité poldeci, nielen jeden. Za každý navyše dostaneš v prvej Pitke kola 1 poškodenie pečene.</p>
@@ -208,20 +211,21 @@ details.zbalene > summary { cursor: pointer; color: var(--tlmeny); font-size: .9
     <p class="efekt"><b>Dedičstvo:</b> Demižón pre staršieho. Patronát platíš namiesto cigariet plným poldeci (otočíš ho na vypitý) a súper zaň nedostane Pohoršenia navyše.</p>
     <p class="preco">Starší sa za demižón nehnevá. Patronát (§10) je odpoveď na vydesenie a Vínko z neho robí lacnú obranu. Platí sa však limitom, ktorý chýba v Zhromaždení.</p>
   </div>
-  <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
-  <label class="skryte" for="p-vinko">Poznámka k Vínku</label><textarea id="p-vinko" placeholder="Poznámka (nepovinné)"></textarea>
+  </details>
 </section>
 
-<section class="ramik karta" id="pasca" data-bod="pasca" data-nazov="Pasca">
+<section class="ramik karta rozh" id="pasca" data-nazov="Pasca">
   <h2>Pasca</h2>
+  <p class="roz roz-ano">Rozhodnuté (Michal, nástroje kolo 3): Áno: pasca-A (tvoj náčrt s Konfliktom). <b>Nahrádza efekt proti Zvieratám.</b> Ráta sa každé priloženie súperovej karty k tvojej, ako hovorí text v zátvorke.</p>
   <p class="tagy">Nástroj · 6 variantov</p>
   <p class="riadok"><b>Akcie:</b> Obmedzenie / Odpor</p>
   <p class="dnes"><b>Dnes:</b> <i>Dedičstvo: Každé súperovo Zviera v línii mu uberie 1 tuhé poškodenie.</i> Bot ju zo šenku nevzal ani raz.</p>
-  <div class="alt">
+  <div class="alt vybrane">
     <div class="hl"><span class="id">pasca-A</span><span class="sp">Dedičstvo · Bitka</span><span class="znak z-michal">tvoj náčrt</span><span class="znak z-konf">Konflikt</span></div>
-    <p class="efekt"><b>Dedičstvo: Bitka:</b> Ak súper v tomto kole vyvolal aspoň 1 Konflikt tvojej karty (priložil svoju kartu k tvojej), udelíš mu 1 Pecku navyše.</p>
+    <p class="efekt"><b>Dedičstvo: Bitka:</b> Ak súper v tomto kole priložil kartu k tvojej, udelíš mu 1 Pecku navyše.</p>
     <p class="preco">Podľa tvojho náčrtu: kto ti lezie do dvora, chytí sa. Na Dedičstve dáva Konflikt zmysel len takto, ako udalosť, ktorú vyvolá súper. Otázka výkladu: ráta sa každé priloženie k tvojej karte, alebo len ku karte s efektom Konflikt? Odporúčam každé.</p>
   </div>
+  <details class="zbalene"><summary>Nevybrané alternatívy, zbalené</summary>
   <div class="alt">
     <div class="hl"><span class="id">pasca-B</span><span class="sp">Dedičstvo · šenok</span></div>
     <p class="efekt"><b>Dedičstvo:</b> Zamínovaný šenok. Keď súper vezme zo šenku kartu, ktorú si doň dal ty, získa 1 Dlh.</p>
@@ -232,15 +236,22 @@ details.zbalene > summary { cursor: pointer; color: var(--tlmeny); font-size: .9
     <p class="efekt"><b>Dedičstvo: Prehra:</b> Chytený votrelec. Jednu kartu, ktorú ti súper podstrčil na tvoju stranu, si vezmi do svojho odhadzovacieho balíčka. Odteraz je tvoja.</p>
     <p class="preco">Čo vlezie do dvora, ostane na dvore. Natrvalo ukradnutá karta je v sade nová vec a dostane ju len porazený. Podstrčenie sa víťazovi prestane oplácať.</p>
   </div>
-  <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
-  <label class="skryte" for="p-pasca">Poznámka k Pasce</label><textarea id="p-pasca" placeholder="Poznámka (nepovinné)"></textarea>
+  </details>
 </section>
 
-<section class="ramik karta" id="puska" data-bod="puska" data-nazov="Puška">
+<section class="ramik karta rozh" id="puska" data-nazov="Puška">
   <h2>Puška</h2>
+  <p class="roz roz-otv">Rozhodnuté (Michal, nástroje kolo 3): Inak (Michal): Petelice silnejšie o 1.</p>
   <p class="tagy">Nástroj · 4 varianty · akcie podľa 10.1</p>
   <p class="riadok"><b>Akcie:</b> Pecka / Petelica (sloty 0–1 blokované)</p>
   <p class="dnes"><b>Dnes:</b> <i>Dedičstvo: Prebytočné poškodenie, ktoré proti tebe rozdeľuje súper, je o 2 menšie.</i> Do línie 2,9× za partiu, do Dedičstva len 0,2×.</p>
+  <div class="alt vybrane">
+    <div class="hl"><span class="id">puska-M</span><span class="sp">Dedičstvo</span><span class="znak">Michalovo znenie</span></div>
+    <p class="pozn">Michal doslova: „Dedičstvo: Zvyšuje poškodenie petelice o 1.“</p>
+    <p class="efekt"><b>Dedičstvo:</b> Tvoje Petelice udeľujú o 1 poškodenie viac.</p>
+    <p class="preco">Petelica má potom 4 tuhé. V sade je 14 kópií (cieľ revízie), takže efekt je vzácny zdrojom, nie číslom. Platí natrvalo z Dedičstva.</p>
+  </div>
+  <details class="zbalene"><summary>Alternatívy kola 3 (nevybrané), zbalené</summary>
   <div class="alt">
     <div class="hl"><span class="id">puska-A</span><span class="sp">Dedičstvo</span></div>
     <p class="efekt"><b>Dedičstvo:</b> S puškou v ruke sa nevyjednáva. Prebytok, ktorý drží súper proti tebe, rozdeľuješ ty.</p>
@@ -256,15 +267,16 @@ details.zbalene > summary { cursor: pointer; color: var(--tlmeny); font-size: .9
     <p class="efekt"><b>Dedičstvo:</b> Varovný výstrel. Keď Pušku vyložíš do Dedičstva, každá súperova karta na tvojej strane sa mu vráti do ruky.</p>
     <p class="preco">Jeden výstrel do vzduchu a dvor je prázdny. Načasovanie volíš ty, takže je to raz za hru veľký zvrat, ktorý súperovi zmarí podstrčenie aj prevahu v kraji.</p>
   </div>
-  <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
-  <label class="skryte" for="p-puska">Poznámka k Puške</label><textarea id="p-puska" placeholder="Poznámka (nepovinné)"></textarea>
+  </details>
 </section>
 
-<section class="ramik karta" id="svaty_text" data-bod="svaty_text" data-nazov="Svätý text">
+<section class="ramik karta rozh" id="svaty_text" data-nazov="Svätý text">
   <h2>Svätý text</h2>
+  <p class="roz roz-ano">Rozhodnuté (Michal, nástroje kolo 3): Nechať dnešný efekt v Dedičstve.</p>
   <p class="tagy">Nástroj · 8 variantov</p>
   <p class="riadok"><b>Akcie:</b> Viera / Viera</p>
   <p class="dnes"><b>Dnes:</b> <i>Dedičstvo: Hodnota tvojej Viery je o 1 vyššia.</i> Do línie 1,4× za partiu, do Dedičstva 0,1×.</p>
+  <details class="zbalene"><summary>Alternatívy kola 3 (nevybrané), zbalené</summary>
   <div class="alt">
     <div class="hl"><span class="id">svaty_text-A</span><span class="sp">Dedičstvo</span></div>
     <p class="efekt"><b>Dedičstvo:</b> Cnosť proti škandálu. Za každú tvoju Vieru, ktorá v bitke ostane po rušení s Poverou, sa zruší 1 súperovo Pohoršenie proti tebe.</p>
@@ -280,15 +292,16 @@ details.zbalene > summary { cursor: pointer; color: var(--tlmeny); font-size: .9
     <p class="efekt"><b>Dedičstvo: Výhra:</b> Ďakovná omša. Za každú svoju aktívnu Vieru v tejto bitke otoč jeden vypitý poldeci na plný.</p>
     <p class="preco">Po omši sa pije omšové. Víťaz dostane limit, nie špaky, takže náskok nenásobí a Viera v línii sa oplatí aj vtedy, keď niet čo rušiť.</p>
   </div>
-  <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
-  <label class="skryte" for="p-svaty_text">Poznámka k Svätému textu</label><textarea id="p-svaty_text" placeholder="Poznámka (nepovinné)"></textarea>
+  </details>
 </section>
 
-<section class="ramik karta" id="nealko" data-bod="nealko" data-nazov="Nealko">
+<section class="ramik karta rozh" id="nealko" data-nazov="Nealko">
   <h2>Nealko</h2>
+  <p class="roz roz-ano">Rozhodnuté (Michal, nástroje kolo 3): Nechať dnešný efekt v Dedičstve.</p>
   <p class="tagy">Nástroj · 4 varianty</p>
   <p class="riadok"><b>Akcie:</b> Pohoršenie / Pohoršenie</p>
   <p class="dnes"><b>Dnes:</b> <i>Dedičstvo: Tvoj prah Cirhózy je o 2 vyšší.</i> V hre zriedka (v ruke 7/54 partií).</p>
+  <details class="zbalene"><summary>Alternatívy kola 3 (nevybrané), zbalené</summary>
   <div class="alt">
     <div class="hl"><span class="id">nealko-A</span><span class="sp">Dedičstvo · koniec kola</span></div>
     <p class="efekt"><b>Dedičstvo:</b> Keď prestaneš piť, trpí celá krčma. Keď máš v kole menej nerestí ako v predošlom, Absťák nedostaneš ty, ale súper.</p>
@@ -304,15 +317,22 @@ details.zbalene > summary { cursor: pointer; color: var(--tlmeny); font-size: .9
     <p class="efekt"><b>Dedičstvo:</b> Abstinent má vždy pravdu. Keď súper dostane Cirhózu, dostaneš 1 špak.</p>
     <p class="preco">„Ja som ti to hovoril.“ Zdrojom je súperovo pitie a pri pečeni +70 % (plán) ho bude dosť. Jednoduché, čitateľné a v sade jediné.</p>
   </div>
-  <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
-  <label class="skryte" for="p-nealko">Poznámka k Nealku</label><textarea id="p-nealko" placeholder="Poznámka (nepovinné)"></textarea>
+  </details>
 </section>
 
-<section class="ramik karta" id="vyherny_automat" data-bod="vyherny_automat" data-nazov="Výherný automat">
+<section class="ramik karta rozh" id="vyherny_automat" data-nazov="Výherný automat">
   <h2>Výherný automat</h2>
+  <p class="roz roz-otv">Rozhodnuté (Michal, nástroje kolo 3): Nechať dnešný efekt, ale Výhra dáva namiesto 3 cigariet <b>1 špak</b> (Prehra 2 Dlhy ostáva). <b>Na potvrdenie?</b> Špak je víťazný bod, takže je to výrazné posilnenie.</p>
   <p class="tagy">Nástroj · 4 varianty</p>
   <p class="riadok"><b>Akcie:</b> Robota / Dlh ×4</p>
   <p class="dnes"><b>Dnes (rozhodnuté 10.1):</b> <i>Dedičstvo: Výhra: Dostaneš 3 cigarety. Prehra: Získaš 2 Dlhy.</i> Bot ho zo šenku nevzal ani raz.</p>
+  <div class="alt vybrane">
+    <div class="hl"><span class="id">vyherny_automat-M</span><span class="sp">Dedičstvo</span><span class="znak">Michalovo znenie</span></div>
+    <p class="pozn">Michal doslova: „Nechať dnešný — Výhra: získaj 1 špak.“</p>
+    <p class="efekt"><b>Dedičstvo:</b> Výhra: Získaš 1 špak. Prehra: Získaš 2 Dlhy.</p>
+    <p class="preco">Výklad: dnešný efekt ostáva, mení sa len odmena za Výhru (3 cigarety → 1 špak). <b>Na potvrdenie</b>, lebo je to výrazné posilnenie víťaza. Dedičstvo však stojí rastúcu cenu a pri prehre hrozia 2 Dlhy.</p>
+  </div>
+  <details class="zbalene"><summary>Alternatívy kola 3 (nevybrané), zbalené</summary>
   <div class="alt">
     <div class="hl"><span class="id">vyherny_automat-A</span><span class="sp">Dedičstvo · Kšeft</span><span class="znak z-kseft">Kšeft</span></div>
     <p class="efekt"><b>Dedičstvo: Kšeft:</b> Ruleta dlhov. Za 2 cigarety zatoč: s polovičnou šancou sa 1 tvoj priznaný Dlh presunie medzi súperove priznané, inak získaš ďalší Dlh.</p>
@@ -328,15 +348,22 @@ details.zbalene > summary { cursor: pointer; color: var(--tlmeny); font-size: .9
     <p class="efekt"><b>Dedičstvo:</b> Otvorenie herne. Keď Automat vyložíš do Dedičstva, obaja hráči zatočia: každý s polovičnou šancou dostane 2 špaky, inak získa 2 Dlhy.</p>
     <p class="preco">Prvá hra je na podnik. Raz za hru hazard pre celú krčmu a načasovanie volíš ty, keď súperovi Dlh ublíži viac ako tebe.</p>
   </div>
-  <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
-  <label class="skryte" for="p-vyherny_automat">Poznámka k Automatu</label><textarea id="p-vyherny_automat" placeholder="Poznámka (nepovinné)"></textarea>
+  </details>
 </section>
 
-<section class="ramik karta" id="vidly" data-bod="vidly" data-nazov="Vidly">
+<section class="ramik karta rozh" id="vidly" data-nazov="Vidly">
   <h2>Vidly</h2>
+  <p class="roz roz-otv">Rozhodnuté (Michal, nástroje kolo 3): Inak (Michal): Rany silnejšie o 1. Je to rodina s Puškou.</p>
   <p class="tagy">Nástroj · 8 variantov · schválená novinka</p>
   <p class="riadok"><b>Akcie:</b> Pecka / Pohoršenie</p>
   <p class="dnes"><b>Dnes (schválené):</b> <i>Dedičstvo: Bitka: Ak máš menej špakov ako súper, máš 1 tuhé poškodenie navyše.</i></p>
+  <div class="alt vybrane">
+    <div class="hl"><span class="id">vidly-M</span><span class="sp">Dedičstvo</span><span class="znak">Michalovo znenie</span></div>
+    <p class="pozn">Michal doslova: „Rana dáva 1 poškodenie navyše.“</p>
+    <p class="efekt"><b>Dedičstvo:</b> Tvoje Rany udeľujú o 1 poškodenie viac.</p>
+    <p class="preco">Rana má potom 2 tuhé ako Pecka. Rán je v sade najviac (32), preto treba zmerať, či Vidly nie sú v Dedičstve priveľmi silné. S Puškou tvoria rodinu „zbrane po dedovi“.</p>
+  </div>
+  <details class="zbalene"><summary>Alternatívy kola 3 (nevybrané), zbalené</summary>
   <div class="alt">
     <div class="hl"><span class="id">vidly-A</span><span class="sp">Dedičstvo · Prehra</span></div>
     <p class="efekt"><b>Dedičstvo: Prehra:</b> Vzbura sedliakov. Ak máš menej špakov ako víťaz, špaky za túto bitku nedostane on, idú na sekeru.</p>
@@ -352,15 +379,16 @@ details.zbalene > summary { cursor: pointer; color: var(--tlmeny); font-size: .9
     <p class="efekt"><b>Dedičstvo:</b> Znárodnenie. Keď súper vyloží Nástroj do Dedičstva a má viac špakov ako ty, Nástroj pripadne do tvojho Dedičstva.</p>
     <p class="preco">Majetok kulakov ide družstvu. Súper zaplatí cigarety a majetok má zrazu ty. Kto vedie, si nič nenakúpi, a to je satira aj brzda.</p>
   </div>
-  <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
-  <label class="skryte" for="p-vidly">Poznámka k Vidlám</label><textarea id="p-vidly" placeholder="Poznámka (nepovinné)"></textarea>
+  </details>
 </section>
 
-<section class="ramik karta" id="lievik" data-bod="lievik" data-nazov="Lievik">
+<section class="ramik karta rozh" id="lievik" data-nazov="Lievik">
   <h2>Lievik</h2>
+  <p class="roz roz-ano">Rozhodnuté (Michal, nástroje kolo 3): Nechať dnešný efekt v Dedičstve.</p>
   <p class="tagy">Nástroj · 6 variantov · schválená novinka</p>
   <p class="riadok"><b>Akcie:</b> Poldeci / Pečeň ×2</p>
   <p class="dnes"><b>Dnes (schválené):</b> <i>Dedičstvo: NA EX smieš dať aj na Zviera a aj na kartu, ktorej efekt NA EX zakazuje.</i></p>
+  <details class="zbalene"><summary>Alternatívy kola 3 (nevybrané), zbalené</summary>
   <div class="alt">
     <div class="hl"><span class="id">lievik-A</span><span class="sp">Dedičstvo · Pitka</span></div>
     <p class="efekt"><b>Dedičstvo: Pitka:</b> Domáca pálenica. Za každé 3 poškodenia pečene, ktoré v tejto Pitke dostaneš, dostaneš aj 1 nový plný poldeci.</p>
@@ -376,8 +404,7 @@ details.zbalene > summary { cursor: pointer; color: var(--tlmeny); font-size: .9
     <p class="efekt"><b>Dedičstvo: Pitka:</b> Kto nepije, je baba. Ak súper v tejto Pitke nedá NA EX, hoci má plný poldeci a kam ho dať, získa 1 zadĺženie, lebo platí rundu.</p>
     <p class="preco">Tlak krčmy bez zákazu. Súper volí medzi pečeňou a Dlhom v každej Pitke a s Čiarkami na účte (D6) zadĺženie neprepadne.</p>
   </div>
-  <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
-  <label class="skryte" for="p-lievik">Poznámka k Lieviku</label><textarea id="p-lievik" placeholder="Poznámka (nepovinné)"></textarea>
+  </details>
 </section>
 
 <section class="ramik" id="z-kola-2">
@@ -429,7 +456,7 @@ details.zbalene > summary { cursor: pointer; color: var(--tlmeny); font-size: .9
   <div class="alt vybrane">
     <div class="hl"><span class="id">pes-M</span><span class="sp">Furt</span><span class="znak">Zahryzne do cudzieho</span><span class="znak z-nove">na potvrdenie</span></div>
     <p class="pozn">Michal doslova: „Konflikt – každá jeho spojená akcia je posilnená zo strany, kde je spojený so súperovou kartou (môže sa stať, že je z oboch strán spojený so súperom…), a teda ak k nemu súper ešte priloží kartu, posilnia sa všetky.“</p>
-    <p class="efekt"><b>Furt:</b> Aktívne akcie Psa na spoji so súperovou kartou sa rátajú dvakrát. Platí to na každej strane, kde susedí so súperovou kartou.</p>
+    <p class="efekt"><b>Furt:</b> Jeho aktívne akcie na spoji so súperovou kartou sa rátajú dvakrát.</p>
     <p class="preco"><b>Prečo Furt, nie Konflikt:</b> Konflikt je okamih, keď súper priloží kartu k ležiacej karte (časť 13). Michal ale opisuje stav: kým Pes susedí so súperovou kartou, jeho akcie na tom spoji sú posilnené. Platí to aj vtedy, keď spoj vytvoril majiteľ (Psa podstrčil za súperovu kartu), a keď súper priloží ďalšiu kartu, posilní sa aj druhá strana. „Posilnená“ = ×2 ako Posilnenie (§6). Násobky sa násobia (§7). Podmienka „leží na tvojej strane“ z dnešného textu odpadá, pravidlo „nie v partii s iným Zvieraťom“ ostáva. Otvorený bod v7: Konflikt ako stav (plán 13.2, bod 12).</p>
   </div>
   <details class="zbalene"><summary>Alternatívy (nevybrané), zbalené</summary>
@@ -460,7 +487,7 @@ details.zbalene > summary { cursor: pointer; color: var(--tlmeny); font-size: .9
   <div class="alt vybrane">
     <div class="hl"><span class="id">krokodil-M</span><span class="sp">Bitka</span><span class="znak">Hladný krokodíl</span><span class="znak z-nove">na potvrdenie</span></div>
     <p class="pozn">Michal doslova: „Bitka: Občania alebo zvieratá v okolí krokodýla na konci bitky opustia hru.“</p>
-    <p class="efekt"><b>Bitka:</b> Na konci bitky odídu z hry Občania a Zvieratá v jeho okolí, tvoji aj súperovi.</p>
+    <p class="efekt"><b>Bitka:</b> Na konci bitky idú z hry všetci Občania a Zvieratá v jeho okolí.</p>
     <p class="preco">„V okolí“ sú karty, ktoré s ním susedia, na oboch stranách a nezáleží na majiteľovi (Michal: obaja hráči). Z hry = spália sa namiesto návratu do odhadzovacieho balíčka (krok 7, vzor Dievčina <code>b.spalit</code>, <code>engine.ts:3136</code>, :4179). Ich akcie a efekty v bitke ešte platia. Starešinovia a Nástroje neodchádzajú, Krokodíl sám sa vráti do balíčka. Nahrádza dnešný Furt a cestu A z Konfliktu.</p>
   </div>
   <details class="zbalene"><summary>Alternatívy (nevybrané), zbalené</summary>
@@ -490,7 +517,7 @@ details.zbalene > summary { cursor: pointer; color: var(--tlmeny); font-size: .9
   <p class="dnes"><b>Dnes (rozhodnuté):</b> <i>Kšeft: Za 2 cigarety zožerie súperovi 1 špak.</i></p>
   <div class="alt vybrane">
     <div class="hl"><span class="id">kapybara-B</span><span class="sp">Nástup</span></div>
-    <p class="efekt"><b>Nástup:</b> Kapybara upokojí dedinu. Posuň marker jedného staršieho o 1 pole k stredu.</p>
+    <p class="efekt"><b>Nástup:</b> Posuň marker jedného staršieho o 1 pole k stredu.</p>
     <p class="preco">Internetový zen na dedine. Je to jednoduché a vždy použiteľné, a Nástup je voľný (52 vyložení za partiu, len 4 karty).</p>
   </div>
   <details class="zbalene"><summary>Nevybrané alternatívy, zbalené</summary>
@@ -540,7 +567,7 @@ details.zbalene > summary { cursor: pointer; color: var(--tlmeny); font-size: .9
   <p class="dnes"><b>Dnes (schválené):</b> <i>Furt: Kým leží Kohút v línii, kolo má aspoň 2 Pitky.</i></p>
   <div class="alt vybrane">
     <div class="hl"><span class="id">kohut-B</span><span class="sp">Pitka</span></div>
-    <p class="efekt"><b>Pitka:</b> Kohút vstáva prvý. V tejto Pitke máš posledné slovo ty, aj keď si obranca.</p>
+    <p class="efekt"><b>Pitka:</b> Posledné slovo máš ty, aj keď si obranca.</p>
     <p class="preco">Obráti poradie odpovedí (§7 :338). Je to čistá taktika bez čísla.</p>
   </div>
   <details class="zbalene"><summary>Nevybrané alternatívy, zbalené</summary>
@@ -624,7 +651,7 @@ details.zbalene > summary { cursor: pointer; color: var(--tlmeny); font-size: .9
   <div class="alt vybrane">
     <div class="hl"><span class="id">ministrant-M</span><span class="sp">Nástup</span><span class="znak">Svätá vojna</span><span class="znak z-nove">na potvrdenie</span></div>
     <p class="pozn">Michal doslova: „Ak miňištrant vytvorí konflikt, jeho viera sa zmení na pecku.“</p>
-    <p class="efekt"><b>Nástup:</b> Ak týmto priložením vyvoláš Konflikt, jeho akcie Viera sa odteraz rátajú ako Pecka.</p>
+    <p class="efekt"><b>Nástup:</b> Ak vyvoláš Konflikt, do konca kola sa jeho Viera ráta ako Pecka.</p>
     <p class="preco">„Vyvolať Konflikt“ = priložiť kartu k súperovej ležiacej karte so spúšťačom Konflikt (slovník, časť 13). Podmienka je známa už pri priložení, takže je to Nástup s podmienkou a spolu s poradím Nástup → Konflikt (bod 8) sedí. <b>Trvanie, návrh:</b> kým leží v línii, teda do konca kola. Po bitke ide do balíčka s pôvodnými akciami, ako Šarlatán a Výtržník (<code>engine.ts:4173–4177</code>). Miňištrant má Vieru 1×, z nej bude Pecka. Pekný opak Šarlatána: ten sa pri Konflikte obráti k Viere, Miňištrant od nej.</p>
   </div>
   <details class="zbalene"><summary>Alternatívy (nevybrané), zbalené</summary>
@@ -711,7 +738,7 @@ details.zbalene > summary { cursor: pointer; color: var(--tlmeny); font-size: .9
 </main>
 
 <div class="lista" role="region" aria-label="Súhrn volieb"><div class="lista-in">
-  <span class="lista-text" id="lista-text" aria-live="polite">Otvorené: 8 Nástrojov bez voľby.</span>
+  <span class="lista-text" id="lista-text" aria-live="polite">Rozhodnuté. Na potvrdenie: Výherný automat (Výhra = 1 špak).</span>
   <button type="button" class="hlavne" id="kopiruj">Skopírovať súhrn</button>
 </div></div>
 <textarea id="schranka" class="skryte" aria-hidden="true" tabindex="-1"></textarea>
@@ -748,7 +775,7 @@ details.zbalene > summary { cursor: pointer; color: var(--tlmeny); font-size: .9
   });
   function obnov() {
     var n = bloky.filter(function (b) { var k = b.getAttribute("data-bod"); return stav[k] && stav[k].v; }).length;
-    document.getElementById("lista-text").textContent = n === 0 ? "Otvorené: 8 Nástrojov bez voľby." : "Vybrané " + n + " z " + bloky.length + ". Ukladá sa v tomto prehliadači.";
+    document.getElementById("lista-text").textContent = n === 0 ? "Rozhodnuté. Na potvrdenie: Výherný automat (Výhra = 1 špak)." : "Vybrané " + n + " z " + bloky.length + ". Ukladá sa v tomto prehliadači.";
   }
   obnov();
   function suhrn() {

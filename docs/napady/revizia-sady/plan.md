@@ -808,17 +808,104 @@ Vzor „Pasca v línii“ odpadol, lebo Nástroj Konflikt nevyvolá ani nespust�
 
 Prehľad nových efektov kariet po dávkach (`docs/napady/efekty-navrhy-N.html`). Pribúdajú ďalšie dávky. Kde nový efekt nahrádza znenie z inej časti plánu (10.1, NA EX trojica), platí táto časť. Zásady dávok: bez číselných stropov, text nemenuje iné karty, Konflikt v jednosmernom znení (časť 13).
 
+### 14.0 Záverečné zhrnutie iterácie efektov (uzavretá)
+
+**Zásady textov (Michal, trvalé):** efekty bez číselných stropov, vzácnosť dáva cena, zdroj alebo podmienka. Text efektu je **len spúšťač a efekt** bez vysvetliviek, dôvodov a prívlastkov. Mená a satira patria do názvu a príbehu karty. Text nemenuje iné karty.
+
+**Počty (dávky E1–E4, 83 kariet vrátane 8 Nástrojov z kola 3):**
+
+| Výsledok | Kariet | Ktoré |
+|---|---|---|
+| nový efekt | **39** | E2: Vdova, Policajtka, Stryná, Recidivista, Liberál, Živnostník, Šarlatán · E1: Noviny, Krabička, Kohút, Kapybara, Pes, Krokodíl, Pijan, Miňištrant, Dievčina, Pasca, Puška, Vidly · E3: Snúbenica, Bzdocha, Záhradkár, Anonymný alkoholik, Dohadzovačka, Mäsiar, Kulturista · E4: Veterinár, Autobusár, Starosta, Farár, Hrobár, Vychovávateľka, Krčmárka, Cintorín, Jednota, Benzínka, Kar, Obecný úrad, Kostol |
+| upravený efekt | **2** | Poštárka (Kšeft 1 Dlh → 1 karta), Výherný automat (Výhra = 1 špak, na potvrdenie) |
+| ponechaný efekt | **37** | Finančná poradkyňa, Veštica, Silná žena, Hasič, Praudovravec, Zámočník, Veterán, Kočovník, Svokra, Podvodník · Čierna mačka, Kôň, Milujúca manželka (M2), Vínko, Svätý text, Nealko, Lievik · Dvojčatá, Šofér, Degustátorka, Vandal, Strýko z Ameriky, Traktoristka, Vymáhač · Zastávka, Most, Lesná cesta, Ihrisko, Zberný dvor, Krčma, Sklad, Kultúrny dom, Vínna pivnica, Družstvo, Poľovnícka chata, Predsedova vila, Herňa |
+| odstránená zo sady | **2** | Presbiter, Opatrovateľka |
+| zatiaľ len návrh (mimo sady) | **3** | Smetiarka, Brigádnik, Oslávenec (efekt rozhodnutý) |
+
+**Mimo dávok E:** Kulturista má nové akcie Petelica ×2 / Dlh ×2. Dávka 3 priniesla novú kartu Vymáhač, Manželku M2 bez tagu Kliatba, Dlh namiesto Obmedzenia na Svokre a Degustátorke a pravidlo D6. Predajca hrncov (D2) je odložený s rozhodnutým znením. Nová lokalita je Sklad (19 lokalít).
+
+**Premenovania:** Niekoho stryná → **Stryná**, Klebetnica → **Bzdocha**. Pri lokalitách sa Poľovnícky zámoček mení na Poľovnícku chatu a Agroareál z eurofondov na Herňu (časť 7).
+
+**Prerábky naprogramovaných vetiev (pred mergeom):**
+- `feature/naex-trojica`: Placatka (Anonymný alkoholik) a P1 (Policajtka) **padajú**, ostáva len Varecha (Svokra).
+- `feature/autobusar-hasic`: variant A Autobusára (1 Absťák sa nepočíta) **padá**, nahrádza ho Zhromaždenie (E4). Nástup Hasiča ostáva.
+
+**Nové pojmy a pravidlá v7:**
+- **Konflikt** (jednosmerný, časť 13): efekt ležiacej karty, keď k nej súper priloží svoju. **Vyvolať Konflikt** = priložiť kartu k súperovej ležiacej karte s Konfliktom. Lokalita Konflikt neprepožičiava.
+- **Úplatok** (Kulturista): súper platí cigaretou za oslabenie tvojej karty, raz za Pitku.
+- **Kšeft** (spúšťač v7), **Pakt** (akcia, časť 12), **čiarky na účte** (D6, zadĺženie neprepadá).
+- Efekt Nástroja platí **len v Dedičstve** (kolo 3, nahrádza pravidlo „hra aj Dedičstvo“ zo 14.3).
+- Karta smie natrvalo prejsť k súperovi (áno). Majiteľa bez otočenia nemení (nie).
+- Spúšťač Exekúcia ostáva (Záhradkár), zmazať len Prestávku. Prah Exekútora je 7.
+- Do slovníka §17: Konflikt, vyvolať Konflikt, Úplatok, Kšeft, Pakt, čiarky na účte.
+
+**Otvorené:**
+- **D1 Strýko z Ameriky** (Kšeft aj za Dlh): bez voľby. Platí doterajší Kšeft za 2 cigarety, kým Michal nerozhodne.
+- **Výherný automat:** potvrdiť Výhru = 1 špak.
+- Drobnosti z výkladu: Benzínka pri rovnakej vzdialenosti (návrh: nefajčí nikto), Konflikt ako stav (13.2, bod 12). Nasadenie Paktu (12.1, 4 kópie) Michal výslovne nepotvrdil, revízia s ním ráta.
+
+**Čisté znenia rozhodnutých efektov** (podľa zásady textov; platia namiesto dlhších znení v tabuľkách nižšie):
+
+| Karta | Efekt |
+|---|---|
+| Finančná poradkyňa | Pitka: Dlhy, ktoré vygeneruje táto karta, dostáva súper. |
+| Veľmi smútiaca vdova | Konflikt: Ak je priložená karta Chlap, po bitke ide z hry. |
+| Policajtka | Konflikt: Súper získa 1 Dlh. Ak je priložená karta Kriminál, namiesto toho ti dá 2 cigarety. |
+| Stryná | Pitka: Každý hráč, ktorý v tejto Pitke nedal NA EX, dostane 1 poškodenie pečene. |
+| Recidivista | Prehra: Po bitke sa vráti do tvojej ruky. |
+| Liberál | Pitka: Ak súperova partia nemá rovnako žien a chlapov, súper získa 1 zadĺženie. |
+| Živnostník | Nástup: V tom istom ťahu smieš za neho priložiť 1 Nástroj z ruky. |
+| Šarlatán | Konflikt: Do konca kola sa jeho Dlhy rátajú ako Viera a Povery ako Rana. |
+| Noviny | Dedičstvo: Prehra: Ak má víťaz viac priznaných Dlhov ako ty, špaky za túto bitku dostaneš ty. |
+| Krabička cigariet | Dedičstvo: Pitka: Za každé 2 cigarety, ktoré súper vyfajčí, si dober 1 kartu. Nie je to nerest. |
+| Pasca | Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej, udelíš mu 1 Pecku navyše. |
+| Puška | Dedičstvo: Tvoje Petelice udeľujú o 1 poškodenie viac. |
+| Vidly | Dedičstvo: Tvoje Rany udeľujú o 1 poškodenie viac. |
+| Výherný automat | Dedičstvo: Výhra: Získaš 1 špak. Prehra: Získaš 2 Dlhy. *(na potvrdenie)* |
+| Kohút | Pitka: Posledné slovo máš ty, aj keď si obranca. |
+| Kapybara | Nástup: Posuň marker jedného staršieho o 1 pole k stredu. |
+| Pes | Furt: Jeho aktívne akcie na spoji so súperovou kartou sa rátajú dvakrát. |
+| Krokodíl | Bitka: Na konci bitky idú z hry všetci Občania a Zvieratá v jeho okolí. |
+| Pijan | Bitka: Za každé NA EX, ktoré si v tomto kole dal, udelíš súperovi 1 Ranu navyše. |
+| Milujúca manželka | Pitka: Tvoje poškodenie pečene v tejto Pitke je o 1 menšie. |
+| Miňištrant | Nástup: Ak vyvoláš Konflikt, do konca kola sa jeho Viera ráta ako Pecka. |
+| Dievčina na vydaj | Prehra: Zahoď túto kartu. Súper získa toľko Dlhov, koľko mala aktívnych akcií. |
+| Snúbenica | Konflikt: Ak je priložená karta Chlap, po bitke ide do tvojho odhadzovacieho balíčka a je tvoja. |
+| Bzdocha | Pitka: Ak vyberáš NA EX po súperovi, vidíš jeho voľbu. |
+| Záhradkár | Exekúcia: Smieš ju zahodiť namiesto špakov a spáliť toľko priznaných Dlhov, koľko mala aktívnych akcií. |
+| Anonymný alkoholik | Nástup: Priznaj všetky nepriznané Cirhózy zo svojho odhadzovacieho balíčka. |
+| Dohadzovačka | Bitka: Za každý spoj tvojej Ženy so súperovým Chlapom alebo tvojho Chlapa so súperovou Ženou si vezmi 1 kartu zo šenku. |
+| Mäsiar | Furt: Akcie Zvierat v jeho okolí neplatia. |
+| Kulturista | Úplatok: Súper smie v každej Pitke dať na túto kartu 1 cigaretu. Každá zníži do konca kola jej útoky o stupeň (Petelica → Pecka → Rana → nič). Cigarety prepadnú. |
+| Vymáhač | Bitka: Za každé 2 tvoje priznané Dlhy udelíš súperovi 1 Ranu navyše. |
+| Veterinár | Pitka: Karty v jeho okolí nepridávajú poškodenie pečene. |
+| Autobusár | Zhromaždenie: Ak súper pasuje po tebe, nedostane cigarety za pas. |
+| Starosta | Nástup: Vezmi si 1 kartu zo šenku. |
+| Farár | Prehra: Víťaz získa 1 zadĺženie za každú svoju aktívnu Poveru. |
+| Poštárka | Kšeft: Za 1 Dlh si dober 1 kartu. |
+| Hrobár | Konflikt: Priložená karta je posledná na svojej strane. Po bitke ide z hry. |
+| Vychovávateľka | Kšeft: Za 2 cigarety máš v bitke 1 Poveru navyše. |
+| Krčmárka | Pitka: Na tvoje NA EX súper nesmie odpovedať kartou. |
+| Cintorín | Pitka: Nová Cirhóza je hneď priznaná. |
+| Jednota | Pitka: Kto má viac priznaných Dlhov, nesmie v tejto Pitke fajčiť ani dolievať. |
+| Benzínka | Pitka: Fajčiť smie len hráč, ktorého Občan alebo Starešina leží najďalej od lokality. |
+| Kar | Pitka: Poškodenie pečene za NA EX dostane súper hráča, ktorý ho dal. |
+| Obecný úrad | Kšeft: Za 3 cigarety presuň 1 svoj priznaný Dlh medzi súperove priznané. |
+| Kostol | Zhromaždenie: Nikto nesmie vypiť. Pitka: NA EX sa smie dať len na kartu v kraji pri oltári. |
+| Sklad | Kšeft: Za 1 cigaretu si vezmi do ruky vrchnú kartu zo súperovho odhadzovacieho balíčka. |
+| Predajca hrncov *(odložený)* | Nástup: Súper získa 1 Dlh. |
+
 ### 14.1 Dávka E2 — občania A (Michal, 27. 10.)
 
 | Karta | Predtým | Rozhodnuté znenie | Voľba |
 |---|---|---|---|
-| Veľmi smútiaca vdova | Nástup: muž navrchu súperovho balíčka ide z hry, zahoď 2 Dlhy | *Konflikt: Keď súper priloží k tejto karte Chlapa, ten sa po bitke nevráti do jeho odhadzovacieho balíčka, ale ide z hry.* | A „Ďalší nebožtík“ |
-| **Policajtka** | **P1 z NA EX trojice:** Pitka: kto dal viac NA EX, dostane Dlh (už naprogramované) | *Konflikt: Keď súper priloží kartu k tejto karte, dostane 1 Dlh. Ak je priložená karta Kriminál, dohodnú sa: súper ti namiesto toho dá 2 cigarety.* | A „Pokuta na mieste“ |
+| Veľmi smútiaca vdova | Nástup: muž navrchu súperovho balíčka ide z hry, zahoď 2 Dlhy | *Konflikt: Ak je priložená karta Chlap, po bitke ide z hry.* | A „Ďalší nebožtík“ |
+| **Policajtka** | **P1 z NA EX trojice:** Pitka: kto dal viac NA EX, dostane Dlh (už naprogramované) | *Konflikt: Súper získa 1 Dlh. Ak je priložená karta Kriminál, namiesto toho ti dá 2 cigarety.* | A „Pokuta na mieste“ |
 | **Stryná** (premenovaná z Niekoho stryná) | Nástup: zahoď 1 Cirhózu alebo 1 Dlh | *Pitka: Každý hráč, ktorý v tejto Pitke nedal NA EX, dostane 1 poškodenie pečene.* | A „Ešte jeden, nech ti nie je zima“ |
-| Recidivista | Bitka: Rana navyše za každého Zahraničného u súpera | *Prehra: Po bitke sa táto karta vráti do tvojej ruky, nie do odhadzovacieho balíčka.* | B „Zas je vonku“ |
-| Liberál | 10.1: Furt, ×2 pri rovnosti žien a chlapov | *Pitka: Ak v súperovej partii nie je rovnako žien a chlapov, pripíše sa súperovi 1 zadĺženie.* | B „Kvóty“ |
-| Živnostník | Výhra: zahoď súperovo Dedičstvo | *Nástup: Hneď za neho smieš z ruky priložiť jeden Nástroj. Obe karty sa vyložia v jednom ťahu.* **(znenie na potvrdenie)** | inak (Michal) |
-| Šarlatán | 10.1: Furt, aktívna Pečeň v okolí sa ráta aj ako Viera | *Konflikt: Keď súper priloží kartu k tejto karte, akcie Dlh na nej sa odteraz rátajú ako Viera a akcie Povera ako Rana.* **(znenie a trvanie na potvrdenie)** | inak (Michal) |
+| Recidivista | Bitka: Rana navyše za každého Zahraničného u súpera | *Prehra: Po bitke sa vráti do tvojej ruky.* | B „Zas je vonku“ |
+| Liberál | 10.1: Furt, ×2 pri rovnosti žien a chlapov | *Pitka: Ak súperova partia nemá rovnako žien a chlapov, súper získa 1 zadĺženie.* | B „Kvóty“ |
+| Živnostník | Výhra: zahoď súperovo Dedičstvo | *Nástup: V tom istom ťahu smieš za neho priložiť 1 Nástroj z ruky.* **(znenie na potvrdenie)** | inak (Michal) |
+| Šarlatán | 10.1: Furt, aktívna Pečeň v okolí sa ráta aj ako Viera | *Konflikt: Do konca kola sa jeho Dlhy rátajú ako Viera a Povery ako Rana.* **(znenie a trvanie na potvrdenie)** | inak (Michal) |
 | Finančná poradkyňa | — | ponechať; Michal potvrdil: *Pitka: Dlhy, ktoré vygeneruje táto karta, dostáva súper.* | ponechať |
 
 **Ponechané bez zmeny:** Veštica, Silná nezávislá žena, Hasič (rozhodnutý Nástup), Praudovravec (Dezinformátor), Zámočník, Veterán, Kočovník (10.1), Svokra (Varecha S1), Podvodník (10.1).
@@ -845,14 +932,14 @@ Platí rozhodnuté pravidlo v7 z dávky: **efekt Nástroja účinkuje v hre aj v
 
 | Karta | Predtým | Rozhodnuté znenie | Voľba |
 |---|---|---|---|
-| Noviny | Dedičstvo: +1 špak, keď sa ťa bojí viac starších | *Prehra: Korupčná aféra. Ak má víťaz viac priznaných Dlhov ako ty, noviny to vytlačia a špaky za túto bitku dostaneš ty namiesto neho.* | A |
-| Krabička cigariet | Dedičstvo: +1 cigareta v každej Pitke | *Pitka: Pasívne fajčenie. Za každé 2 cigarety, ktoré súper v tejto Pitke vyfajčí, si dober 1 kartu (bez neresti).* | C |
-| Kohút | Furt: kolo má aspoň 2 Pitky | *Pitka: Kohút vstáva prvý. V tejto Pitke máš posledné slovo ty, aj keď si obranca.* | B |
-| **Kapybara** | Kšeft: za 2 cigarety zožerie súperovi 1 špak (10.1, otázka 3) | *Nástup: Kapybara upokojí dedinu. Posuň marker jedného staršieho o 1 pole k stredu.* | Michalovo znenie (= B) |
-| **Pes** | Furt: na tvojej strane +1 tuhé za pár na spoji so súperovou kartou | *Furt: Aktívne akcie Psa na spoji so súperovou kartou sa rátajú dvakrát. Platí to na každej strane, kde susedí so súperovou kartou.* **(na potvrdenie)** | inak |
-| **Krokodíl** | Furt: zožerie súperovu kartu vyloženú vedľa (schválené); odporúčaná cesta A z Konfliktu | *Bitka: Na konci bitky odídu z hry Občania a Zvieratá v jeho okolí, tvoji aj súperovi.* **(na potvrdenie)** | inak |
+| Noviny | Dedičstvo: +1 špak, keď sa ťa bojí viac starších | *Dedičstvo: Prehra: Ak má víťaz viac priznaných Dlhov ako ty, špaky za túto bitku dostaneš ty.* | A |
+| Krabička cigariet | Dedičstvo: +1 cigareta v každej Pitke | *Dedičstvo: Pitka: Za každé 2 cigarety, ktoré súper vyfajčí, si dober 1 kartu. Nie je to nerest.* | C |
+| Kohút | Furt: kolo má aspoň 2 Pitky | *Pitka: Posledné slovo máš ty, aj keď si obranca.* | B |
+| **Kapybara** | Kšeft: za 2 cigarety zožerie súperovi 1 špak (10.1, otázka 3) | *Nástup: Posuň marker jedného staršieho o 1 pole k stredu.* | Michalovo znenie (= B) |
+| **Pes** | Furt: na tvojej strane +1 tuhé za pár na spoji so súperovou kartou | *Furt: Jeho aktívne akcie na spoji so súperovou kartou sa rátajú dvakrát.* **(na potvrdenie)** | inak |
+| **Krokodíl** | Furt: zožerie súperovu kartu vyloženú vedľa (schválené); odporúčaná cesta A z Konfliktu | *Bitka: Na konci bitky idú z hry všetci Občania a Zvieratá v jeho okolí.* **(na potvrdenie)** | inak |
 | **Pijan** | Bitka: Žena s aktívnym Poldeci pri ňom → súper ti dá Ranu | *Pitka: V tejto Pitke smieš dať o 1 NA EX viac.* **(na potvrdenie)** | inak |
-| **Miňištrant** | Výhra: posun prebytkom o 1 drahší | *Nástup: Ak týmto priložením vyvoláš Konflikt, jeho akcie Viera sa odteraz rátajú ako Pecka.* **(znenie a trvanie na potvrdenie)** | inak |
+| **Miňištrant** | Výhra: posun prebytkom o 1 drahší | *Nástup: Ak vyvoláš Konflikt, do konca kola sa jeho Viera ráta ako Pecka.* **(znenie a trvanie na potvrdenie)** | inak |
 | **Dievčina na vydaj** | D4 (dávka 3): Bitka, pri 4 Dlhoch páli Dlhy | *Prehra: Zahoď túto kartu. Súper získa toľko Dlhov, koľko mala aktívnych akcií.* **(nahrádza aj D4 — na potvrdenie?)** | inak |
 
 **Ponechané:** Čierna mačka, Kôň, Milujúca manželka (M2 z dávky 3).
@@ -884,13 +971,13 @@ Platí rozhodnuté pravidlo v7 z dávky: **efekt Nástroja účinkuje v hre aj v
 
 | Karta | Predtým | Rozhodnuté znenie | Voľba |
 |---|---|---|---|
-| Snúbenica | Nástup: vráti kartu s NA EX majiteľovi a zaujme jej miesto | *Konflikt: Keď súper priloží k tejto karte Chlapa, Snúbenica si ho uloví: po bitke ide ten Chlap do tvojho odhadzovacieho balíčka a odteraz je tvoj.* | A „Uloví ženícha“ |
-| **Bzdocha** (premenovaná z Klebetnica) | Nástup: pozri súperovu ruku, kartu naspodok | *Pitka: Ak vyberáš NA EX po súperovi, ukáže sa ti jeho voľba skôr, ako vyberieš svoje.* | B „Vie to prvá“ |
-| Záhradkár | 10.1: Bitka, tvoj prah Exekútora +2 (a Výhra: otoč poldeci z časti 3) | *Exekúcia: Keď čeliš exekúcii, smieš zahodiť túto kartu namiesto špakov. Spáľ toľko svojich priznaných Dlhov, koľko mala aktívnych akcií.* **(na potvrdenie; nahrádza oba efekty z revízie?)** | inak |
+| Snúbenica | Nástup: vráti kartu s NA EX majiteľovi a zaujme jej miesto | *Konflikt: Ak je priložená karta Chlap, po bitke ide do tvojho odhadzovacieho balíčka a je tvoja.* | A „Uloví ženícha“ |
+| **Bzdocha** (premenovaná z Klebetnica) | Nástup: pozri súperovu ruku, kartu naspodok | *Pitka: Ak vyberáš NA EX po súperovi, vidíš jeho voľbu.* | B „Vie to prvá“ |
+| Záhradkár | 10.1: Bitka, tvoj prah Exekútora +2 (a Výhra: otoč poldeci z časti 3) | *Exekúcia: Smieš ju zahodiť namiesto špakov a spáliť toľko priznaných Dlhov, koľko mala aktívnych akcií.* **(na potvrdenie; nahrádza oba efekty z revízie?)** | inak |
 | **Anonymný alkoholik** | **Placatka z NA EX trojice** (Furt: tvoje NA EX naňho mimo limitu; naprogramované) | *Nástup: Priznaj všetky nepriznané Cirhózy zo svojho odhadzovacieho balíčka.* **(na potvrdenie)** | inak |
-| Dohadzovačka | Nástup: vymeň dvom starším priazne | *Bitka: Za každý spoj tvojej Ženy so súperovým Chlapom a tvojho Chlapa so súperovou Ženou si smieš vziať do ruky jednu kartu zo šenku.* **(na potvrdenie)** | inak |
+| Dohadzovačka | Nástup: vymeň dvom starším priazne | *Bitka: Za každý spoj tvojej Ženy so súperovým Chlapom alebo tvojho Chlapa so súperovou Ženou si vezmi 1 kartu zo šenku.* **(na potvrdenie)** | inak |
 | Mäsiar | bez efektu | *Furt: Akcie Zvierat v jeho okolí neplatia.* | inak |
-| **Kulturista** | Petelica / Dlh ×2, bez efektu | **Akcie Petelica ×2 / Dlh ×2.** *Úplatok (pracovný názov): Súper smie na svojom ťahu v Pitke položiť na túto kartu ľubovoľne veľa cigariet. Každá cigareta zníži do konca kola každú jej akciu poškodenia o jeden stupeň (Petelica → Pecka → Rana → nič).* **(meno spúšťača a príjemca cigariet na potvrdenie)** | inak |
+| **Kulturista** | Petelica / Dlh ×2, bez efektu | **Akcie Petelica ×2 / Dlh ×2.** *Úplatok: Súper smie v každej Pitke dať na túto kartu 1 cigaretu. Každá zníži do konca kola jej útoky o stupeň (Petelica → Pecka → Rana → nič). Cigarety prepadnú.* **(meno spúšťača a príjemca cigariet na potvrdenie)** | inak |
 | Presbiter | Bitka: sám v kraji uberie súperovi Vieru | **karta vypadá zo sady** | — |
 | Opatrovateľka | Nástup: latka Absťáku −2 | **karta vypadá zo sady** | — |
 | Smetiarka | Kšeft: odhodená karta → cigareta | **zatiaľ len návrh** (mimo sady) | — |
@@ -951,24 +1038,24 @@ Michal rozhodol 57 zo 66 položiek dokumentu `nevyjadrene-karty.html`. Otvorené
 
 | Starší | Predtým | Rozhodnuté znenie | Voľba |
 |---|---|---|---|
-| Veterinár | Bitka: Cirhóza ti pridáva o 2 tuhé menej | *Pitka: Karty v jeho okolí nepridávajú poškodenie pečene, ani z akcií Poškodenie pečene, ani z Poldeci.* | inak |
-| **Autobusár** | **variant A (naprogramovaný, `feature/autobusar-hasic`): 1 Absťák sa nepočíta** | *Zhromaždenie: Ak súper pasuje až po tebe, ujde mu posledný spoj: cigarety za jeho pas nedostane.* | inak |
-| Starosta | Kšeft (v7): za cigaretu výmena ruka ↔ šenok | *Nástup: Vezmi si do ruky jednu kartu zo šenku.* | inak |
-| Farár | Bitka: ignoruj 2 súperove Povery | *Prehra: Víťazovi sa pripíše 1 zadĺženie za každú jeho aktívnu Poveru v línii, lebo povera je hriech.* | C |
+| Veterinár | Bitka: Cirhóza ti pridáva o 2 tuhé menej | *Pitka: Karty v jeho okolí nepridávajú poškodenie pečene.* | inak |
+| **Autobusár** | **variant A (naprogramovaný, `feature/autobusar-hasic`): 1 Absťák sa nepočíta** | *Zhromaždenie: Ak súper pasuje po tebe, nedostane cigarety za pas.* | inak |
+| Starosta | Kšeft (v7): za cigaretu výmena ruka ↔ šenok | *Nástup: Vezmi si 1 kartu zo šenku.* | inak |
+| Farár | Bitka: ignoruj 2 súperove Povery | *Prehra: Víťaz získa 1 zadĺženie za každú svoju aktívnu Poveru.* | C |
 | Poštárka | Kšeft (v7): za 1 Dlh až 2 karty | *Kšeft: Za 1 Dlh si dober 1 kartu.* | inak |
-| Hrobár | Furt: cigareta, keď súper zahodí kartu | *Konflikt: Karta, ktorú súper k nemu priloží, je posledná na tejto strane: za ňu sa už nič nepriloží. Po bitke ide z hry.* | inak |
+| Hrobár | Furt: cigareta, keď súper zahodí kartu | *Konflikt: Priložená karta je posledná na svojej strane. Po bitke ide z hry.* | inak |
 | Vychovávateľka | Pitka: pri tvojom NA EX súper berie tvoj Dlh | *Kšeft: Za 2 cigarety máš v bitke 1 Poveru navyše.* | inak |
-| Krčmárka | Bitka: bez Absťáku a NA EX otoč vypitý poldeci | *Pitka: Na tvoje NA EX súper nesmie odpovedať vyložením karty.* | inak |
+| Krčmárka | Bitka: bez Absťáku a NA EX otoč vypitý poldeci | *Pitka: Na tvoje NA EX súper nesmie odpovedať kartou.* | inak |
 
 **Lokality** (ostatné ostávajú, vrátane pinnacle):
 
 | Lokalita | Predtým (7.4) | Rozhodnuté znenie | Voľba |
 |---|---|---|---|
-| Cintorín | Prehra: po Pohrebe Nástroj do Dedičstva zadarmo | *Pitka: Cirhóza, ktorá v tejto Pitke vznikne, je hneď priznaná, lebo umieráčik zvoní pre celú dedinu.* | A |
+| Cintorín | Prehra: po Pohrebe Nástroj do Dedičstva zadarmo | *Pitka: Nová Cirhóza je hneď priznaná.* | A |
 | **Jednota** | **Kšeft: Za 1 Dlh dostaneš 2 cigarety (padá)** | *Pitka: Kto má viac priznaných Dlhov, nesmie v tejto Pitke fajčiť ani dolievať.* | inak |
-| Benzínka | Pitka: nikto nesmie fajčiť | *Pitka: Fajčiť smie len hráč, ktorého Občan alebo Starešina leží v línii najďalej od lokality.* (pri rovnosti nefajčí nikto — na potvrdenie) | inak |
-| Kar | Pitka: doliatie zadarmo, ale každé +1 pečeň | *Pitka: Kto dá NA EX, pripíja za nebožtíka: poškodenie pečene za jeho NA EX dostane súper, lebo musel pripiť tiež.* | A |
-| **Obecný úrad** | **Bitka: Každá aktívna Robota spáli 2 priznané Dlhy (revízia)** | *Kšeft: Za 3 cigarety ti úradník prepíše dlh: jeden tvoj priznaný Dlh sa presunie medzi súperove priznané.* | B |
+| Benzínka | Pitka: nikto nesmie fajčiť | *Pitka: Fajčiť smie len hráč, ktorého Občan alebo Starešina leží najďalej od lokality.* (pri rovnosti nefajčí nikto — na potvrdenie) | inak |
+| Kar | Pitka: doliatie zadarmo, ale každé +1 pečeň | *Pitka: Poškodenie pečene za NA EX dostane súper hráča, ktorý ho dal.* | A |
+| **Obecný úrad** | **Bitka: Každá aktívna Robota spáli 2 priznané Dlhy (revízia)** | *Kšeft: Za 3 cigarety presuň 1 svoj priznaný Dlh medzi súperove priznané.* | B |
 | Kostol | Zhromaždenie: nikto nevypije. Pitka: nikto nedá NA EX | *Zhromaždenie: Nikto nesmie vypiť. Pitka: NA EX sa smie dať len na kartu v kraji pri oltári.* | A |
 
 **Kontrola kolízie s princípom „lokalita neprepožičiava Konflikt“ (Michal: nie):** cintorin-A, kar-A, kostol-A a obecny_urad-B Konflikt nepoužívajú, **kolízia nie je**. Alternatívy, ktoré na tom stáli (most-A, lesna_cesta-B, ihrisko-B, zberny_dvor-C, krcma-C, sklad-C, predsedova_vila-B), nikto nevybral, sú uzavreté. To isté platí pre „zmenu majiteľa bez otočenia“ (veterinar-B, postarka-B, sklad-C, predsedova_vila-A).
@@ -977,7 +1064,7 @@ Michal rozhodol 57 zo 66 položiek dokumentu `nevyjadrene-karty.html`. Otvorené
 
 | Karta | Rozhodnutie |
 |---|---|
-| **Kulturista** | Spúšťač **Úplatok** s upravenou mechanikou: *Úplatok: Súper smie v každej Pitke položiť na túto kartu 1 cigaretu. Každá cigareta na nej zníži do konca kola každú jej akciu poškodenia o jeden stupeň (Petelica → Pecka → Rana → nič). Cigarety sa zahodia.* Na nulu sa dostane až po 3 Pitkách (Michal). Riziko nadbytku cigariet je tým vyriešené. Nahrádza znenie zo 14.5. |
+| **Kulturista** | Spúšťač **Úplatok** s upravenou mechanikou: *Úplatok: Súper smie v každej Pitke dať na túto kartu 1 cigaretu. Každá zníži do konca kola jej útoky o stupeň (Petelica → Pecka → Rana → nič). Cigarety prepadnú.* Na nulu sa dostane až po 3 Pitkách (Michal). Riziko nadbytku cigariet je tým vyriešené. Nahrádza znenie zo 14.5. |
 | Šarlatán | Premena platí, kým leží v línii (do konca kola). |
 | Policajtka | Platí návrh: „Pokuta na mieste“ nahrádza P1 z NA EX trojice. |
 | Anonymný alkoholik | Platí návrh: nahrádza Placatku. **Z NA EX trojice ostáva len Svokra.** |
@@ -1004,3 +1091,20 @@ Michal rozhodol 57 zo 66 položiek dokumentu `nevyjadrene-karty.html`. Otvorené
 - **Nástup:** Starosta (karta zo šenku).
 - **Prehra / Bitka:** Farár (zadĺženie víťazovi za jeho Povery), Pijan (Rana za vlastné NA EX v kole).
 - **NA EX trojica:** odstrániť Placatku a P1 z `feature/naex-trojica`, ostáva Varecha.
+
+### 14.9 Nástroje kola 3 — rozhodnuté (iterácia uzavretá)
+
+Kolo 3 (iný agent) prerobilo Nástroje podľa nového smeru: **efekt Nástroja platí len v Dedičstve.** Noviny a Krabička sa preto preznačili na „Dedičstvo: Prehra“ a „Dedičstvo: Pitka“.
+
+| Nástroj | Rozhodnutie | Znenie |
+|---|---|---|
+| Vínko, Svätý text, Nealko, Lievik | nechať dnešný | dnešné efekty v Dedičstve |
+| **Pasca** | pasca-A, **nahrádza efekt proti Zvieratám** | Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej, udelíš mu 1 Pecku navyše. |
+| Puška | inak (Michal: „zvyšuje poškodenie petelice o 1“) | Dedičstvo: Tvoje Petelice udeľujú o 1 poškodenie viac. |
+| Vidly | inak (Michal: „rana dáva 1 poškodenie navyše“) | Dedičstvo: Tvoje Rany udeľujú o 1 poškodenie viac. |
+| Výherný automat | nechať, Výhra 3 cigarety → **1 špak** (Prehra 2 Dlhy ostáva) — **na potvrdenie?** | Dedičstvo: Výhra: Získaš 1 špak. Prehra: Získaš 2 Dlhy. |
+
+- **Pasca:** ráta sa každé priloženie súperovej karty k tvojej, nielen ku karte s Konfliktom (výklad podľa zátvorky v pasca-A). Náčrt z 13.3 tým nahradilo pasca-A.
+- **Puška a Vidly** tvoria rodinu: Petelica 4 tuhé, Rana 2 tuhé, natrvalo z Dedičstva. Rán je v sade najviac (32), preto merať Vidly.
+- **Výherný automat:** špak je víťazný bod, takže je to výrazné posilnenie. Michal potvrdí.
+- **D1 Strýko z Ameriky** (Kšeft aj za Dlh): **otvorené**. Platí doterajší Kšeft za 2 cigarety, kým Michal nerozhodne.
