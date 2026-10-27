@@ -8,7 +8,7 @@
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import type { Action, AkciaTuha, PlayerId, PolozkaRekapitulacie, RekapitulaciaBitky, RekapitulaciaPitky, ZaverecnaOdhalena } from "@naex/core";
 import { AKCIE_TUHE, pecenPitky, rozlozRod, zadlzeniePitky } from "@naex/core";
-import { SpakyBitky } from "./Spaky.tsx";
+import { SpakyBitky, riadkovRozpisuStarsich } from "./Spaky.tsx";
 
 /** Piktogram akcie a jej názov zo sady (HernaPlocha). */
 export interface PiktogramyRekapitulacie {
@@ -150,7 +150,7 @@ export function riadkovRekapitulacieBitky(r: RekapitulaciaBitky): number {
   if (r.pohorsenie.polozky.length > 0) n++;
   if (r.naex.karty.length > 0) n += 2;
   if (r.pitkyKola !== null) n += 2.5 + 1.4 * (r.pitkyKola.zaverecne?.length ?? 0);
-  if (r.spaky !== undefined) n += 3;
+  if (r.spaky !== undefined) n += 3 + riadkovRozpisuStarsich(r.spaky);
   return n;
 }
 
@@ -247,7 +247,7 @@ export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hot
       {/* Špaky bitky (v6): za bitku, za starších, Exekútor; prebytok vo finále dopíše až nástenka. */}
       {hotovo && r.spaky !== undefined && (
         <div className="rk-spaky" role="row">
-          <SpakyBitky b={r.spaky} ja={ja} mena={ja === 0 ? ["ty", menoSupera] : [menoSupera, "ty"]} />
+          <SpakyBitky b={r.spaky} ja={ja} mena={ja === 0 ? ["ty", menoSupera] : [menoSupera, "ty"]} menoKarty={menoKarty} />
         </div>
       )}
     </div>
