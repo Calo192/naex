@@ -1905,9 +1905,22 @@ button:disabled .cena {
   box-shadow: 0 1px 0 #5e1b0f;
 }
 
-.tlacidlo-naex:disabled {
+.tlacidlo-naex:disabled,
+button.tlacidlo-naex.neaktivne {
   rotate: 0deg;
   opacity: 0.5;
+}
+
+/* Neaktívne NA EX (Michal 2026-10-27) nie je disabled — tooltip s dôvodom má fungovať aj pri myši. */
+button.tlacidlo-naex.neaktivne {
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+button.tlacidlo-naex.neaktivne:hover,
+button.tlacidlo-naex.neaktivne:active {
+  transform: none;
+  background: var(--tehla-tmava);
 }
 
 @media (prefers-reduced-motion: reduce) {

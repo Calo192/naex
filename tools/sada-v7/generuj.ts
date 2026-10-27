@@ -248,7 +248,8 @@ const EFEKTY: Readonly<Record<string, string>> = {
   ministrant: "Nástup: Ak vyvoláš Konflikt, do konca kola sa jeho Viera ráta ako Pecka.",
   dievcina_na_vydaj: "Prehra: Zahoď túto kartu. Súper získa toľko Dlhov, koľko mala aktívnych akcií.",
   snubenica: "Konflikt: Ak je priložená karta Chlap, po bitke ide do tvojho odhadzovacieho balíčka a je tvoja.",
-  klebetnica: "Pitka: Ak vyberáš NA EX po súperovi, vidíš jeho voľbu.",
+  // Pitka naraz (Michal 2026-10-27): Bzdocha je jediná výnimka — jej majiteľ čaká na súpera.
+  klebetnica: "Pitka: Súper hrá Pitku pred tebou; vidíš jeho NA EX.",
   zahradkar: "Exekúcia: Smieš ju zahodiť namiesto špakov a spáliť toľko priznaných Dlhov, koľko mala aktívnych akcií.",
   anonymny_alkoholik: "Nástup: Priznaj všetky nepriznané Cirhózy zo svojho odhadzovacieho balíčka.",
   dohadzovacka: "Bitka: Za každý spoj tvojej Ženy so súperovým Chlapom alebo tvojho Chlapa so súperovou Ženou si vezmi 1 kartu zo šenku.",

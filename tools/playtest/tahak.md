@@ -71,10 +71,12 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   prevahu; do prevahy sa ráta majiteľovi, pri rovnosti rozhoduje karta pri lokalite.
 - **Poradie (2026-10-20):** cieľ kola vyberá a natáča **obranca** (víťaz
   poslednej bitky); **útočník** (porazený) berie zo šenku prvý a **vykladá
-  prvý**; v Pitke začína obranca — jeho „hotovo“ je nevratné a zapíše sa
-  do logu, útočník hrá po ňom (2026-10-21). **NA EX naraz (v5):** NA EX vyberáte
-  skryto — súper nevidí, či a kam ste ho dali; odkryje sa, keď ste hotoví obaja
-  (najprv obrancovo). Potom odpovede: najprv obranca, útočník má **posledné slovo** — Kohút (v7) ho dá
+  prvý**. **Pitka naraz (2026-10-27):** v Pitke hráte **obaja súčasne** —
+  fajčíte, dolievate, barterujete, Kšefty, Úplatky a skryto NA EX; každý skončí
+  sám („hotovo“, nevratné, zapíše sa do logu). NA EX vyberáte skryto — súper
+  nevidí, či a kam ste ho dali; odkryje sa, keď ste hotoví obaja (najprv
+  obrancovo). Jediná výnimka je **Bzdocha**: jej majiteľ čaká, kým súper
+  skončí, a potom hrá a vidí jeho NA EX (majú ju obaja → nečaká nikto). Potom odpovede: najprv obranca, útočník má **posledné slovo** — Kohút (v7) ho dá
   svojmu majiteľovi aj ako obrancovi. Krčmárka (v7): na NA EX jej majiteľa súper kartou neodpovedá.
 - **Lokality** — efekt platí v kole o ňu: Krčma (s plným
   poldeci povinné NA EX; prah Cirhózy obom +2), Kostol (v7: nikto nevypije — v ťahu 1 karta; NA EX len
@@ -174,7 +176,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   (Ranu) za každú jeho kartu, na ktorej leží tvoj poldeci z NA EX — NA EX na svoje karty ju nespustí.
   Šofér (v7): ak si v kole nedal NA EX, v bitke Pecka navyše. **Pijan** (v7): za každé tvoje NA EX v kole
   Rana navyše. Lievik v Dedičstve: NA EX aj na Zviera. **Stryná** (Pitka): kto v Pitke nedal NA EX,
-  +1 pečeň. **Bzdocha** (Pitka): kým vyberáš NA EX po súperovi, vidíš jeho voľbu. Veterán (v4): NA EX mu
+  +1 pečeň. **Bzdocha** (Pitka): súper hrá Pitku pred tebou — čakáš, kým skončí, a vidíš jeho NA EX. Veterán (v4): NA EX mu
   aktívne akcie zdvojí (nezruší), neaktívne nechá.
   **Skryto (v5):** `naex` súper nevidí do odkrytia; odpovedáš po odkrytí za každé súperovo NA EX,
   najprv obranca, potom útočník. **Zrážka** (obaja na tú istú kartu) = **Výtržník**: karta sa

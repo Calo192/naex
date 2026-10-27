@@ -263,8 +263,8 @@ export function nepriznaneKliatbyHraca(hrac: GameState["hraci"][number]): Kliatb
 }
 
 /**
- * Bzdocha (Pitka, v7): hráč ja vidí súperove skryté NA EX, keď súper už svoju
- * časť Pitky skončil a ja ešte vyberám — „vyberáš NA EX po súperovi“.
+ * Bzdocha (Pitka, Michal 2026-10-27): hráč ja vidí súperove skryté NA EX, keď súper
+ * už svoju časť Pitky skončil a ja ešte hrám — s Bzdochou naňho čakám (hraVPitke).
  * Všetko z verejného stavu, takže to klient vie aj z pohľadu (štítky na stole).
  */
 export function vidiVolbuSupera(data: GameData, state: VerejnyStav & { readonly pitkaStav: Pick<PitkaStav, "hotovy"> | null }, ja: PlayerId): boolean {
@@ -375,7 +375,7 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
         : {
             ...state.pitkaStav,
             // Moje NA EX na súperovu skrytú Záverečnú nesie jej náhradné uid — skutočné by ju prezradilo.
-            // Bzdocha (Pitka, v7): kto vyberá NA EX po súperovi, vidí jeho voľbu.
+            // Bzdocha: kto hrá Pitku po súperovi, vidí jeho NA EX.
             skryteNaex: (state.pitkaStav.skryteNaex ?? [])
               .filter((x) => x.hrac === ja || vidiVolbuSupera(data, state, ja))
               .map((x) => {

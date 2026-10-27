@@ -388,7 +388,7 @@ describe("v5 bod 2: NA EX naraz + Výtržník", () => {
     expect(eventsFor(naex.events, 0)).toEqual(eventsFor(bez.events, 0));
     expect(viewFor(sada, naex.state, 0)).toEqual(viewFor(sada, bez.state, 0));
     const texty = (ev: readonly { type: string; text?: string }[]) => ev.flatMap((e) => (e.type === "log" && e.text !== undefined ? [e.text] : []));
-    expect(texty(eventsFor(naex.events, 0))).toEqual(["Hráč 2 končí svoju časť Pitky. Na ťahu je hráč 1."]);
+    expect(texty(eventsFor(naex.events, 0))).toEqual(["Hráč 2 končí svoju časť Pitky. Čaká sa na hráča 1."]);
     // Hráč sám sa dozvie, prečo mu Pitka skončila.
     expect(texty(eventsFor(naex.events, 1)).some((t) => t.startsWith("Po skrytom NA EX už v Pitke nemáš čo urobiť"))).toBe(true);
   });

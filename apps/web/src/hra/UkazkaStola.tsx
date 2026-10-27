@@ -8,9 +8,10 @@
 //                  takže beží počítadlo a rekapitulácia
 //   &stop=koniec   tesne pred koncom hry — posledný ťah sa dohrá po načítaní
 //   &stop=kolo     začiatok kola &i=k
-//   &stop=pitka    Pitka od 2. kola, hráč ?ja na ťahu (cena fajčenia, nákupy na hrane stola)
+//   &stop=pitka    Pitka od 2. kola, hrajú obaja naraz (cena fajčenia, nákupy na hrane stola)
 //   &stop=bzdocha  ako pitka, hráč ?ja má v línii Bzdochu a súper už skončil so skrytým NA EX —
 //                  stôl ukáže súperovu voľbu (Bzdocha, v7)
+//   &stop=bzdocha-caka  ako pitka, hráč ?ja má Bzdochu a čaká, kým súper skončí Pitku
 //   &stop=zaverecna koniec Pitky so súperovou Záverečnou lícom dole — po načítaní sa otočí;
 //                  &dalsia=1 dohrá aj súperovu ďalšiu Záverečnú na tú istú stranu
 //   &moment=typ    pečiatka momentu (napr. vyprask, zvrat) pri prvej dohranej bitke či Pitke — snímky
@@ -19,6 +20,7 @@
 //                  (voľba Záhradkára pri exekúcii)
 //   &stop=nastroj  Zhromaždenie od 2. kola, hráč ?ja na ťahu — do ruky dostane Vidly
 //                  a cigarety na Dedičstvo (tlačidlo „odkazujem“)
+//   &bot=0         súper po načítaní netiahne (snímka Pitky, v ktorej hrajú obaja naraz)
 //   &hasic=1       v prvom Zhromaždení, keď je hráč ?ja na ťahu, mu dá Hasiča a pár kariet
 //                  do odhadzovacieho balíčka a vyloží ho — stôl ukáže voľbu Hasiča
 
@@ -56,8 +58,11 @@ function sHasicom(data: GameData, s: GameState, p: PlayerId): GameState {
   return apply(data, pred, { type: "place", uid: hasic.uid, target: "vlastna" }, p).state;
 }
 
-/** Hráčovi p dá Bzdochu do línie, súper dá skryté NA EX a Pitku skončí — p vyberá po ňom. */
-function sBzdochou(data: GameData, s: GameState, p: PlayerId): GameState | null {
+/**
+ * Hráčovi p dá Bzdochu do línie (p čaká, kým súper skončí Pitku). Bez `caka` súper
+ * dá skryté NA EX a Pitku skončí — p hrá po ňom a vidí ho.
+ */
+function sBzdochou(data: GameData, s: GameState, p: PlayerId, caka = false): GameState | null {
   const su: PlayerId = p === 0 ? 1 : 0;
   const bzdocha: CardInstance = { uid: s.nextUid, defId: "klebetnica", leftLayout: 0, rightLayout: 0 };
   const strany: GameState["strany"] = p === 0 ? [[...s.strany[0], { card: bzdocha, playedBy: p }], s.strany[1]] : [s.strany[0], [...s.strany[1], { card: bzdocha, playedBy: p }]];
@@ -65,9 +70,10 @@ function sBzdochou(data: GameData, s: GameState, p: PlayerId): GameState | null 
   const pitka = t.pitkaStav;
   const ciel = moznostiNaex(data, t, su)[0];
   if (pitka === null || ciel === undefined) return null;
+  if (caka) return { ...t, pitkaStav: { ...pitka, naTahu: su, bzdocha: p, hotovy: [false, false] } };
   const hotovy: [boolean, boolean] = [pitka.hotovy[0], pitka.hotovy[1]];
   hotovy[su] = true;
-  return { ...t, pitkaStav: { ...pitka, naTahu: p, hotovy, skryteNaex: [...(pitka.skryteNaex ?? []), { hrac: su, uid: ciel }] } };
+  return { ...t, pitkaStav: { ...pitka, naTahu: p, bzdocha: p, hotovy, skryteNaex: [...(pitka.skryteNaex ?? []), { hrac: su, uid: ciel }] } };
 }
 
 /** Hráčovi p dá do ruky Nástroj a cigarety aspoň na Dedičstvo — stôl ukáže voľbu „odkazujem“. */
@@ -128,10 +134,11 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
     if (stop === "nastroj" && s.kolo >= 2 && s.faza === "zhromazdenie" && naTahu(s) === ja && s.zhromazdenieStav?.pasoval[ja] === false)
       return najdene({ zaciatok: sNastrojom(s, ja), dohraj: [] });
     if (stop === "kolo" && s.kolo === i && s.faza === "volbaCiela") return najdene({ zaciatok: s, dohraj: [] });
-    if (stop === "pitka" && s.kolo >= 2 && s.faza === "pitka" && s.pitkaStav?.naTahu === ja && s.pitkaStav.reakcia === null && s.vizia === null && s.hraci[ja].cigarety >= 1)
+    if (stop === "pitka" && s.kolo >= 2 && s.faza === "pitka" && mozeHrat(s, ja) && s.pitkaStav?.hotovy[ja === 0 ? 1 : 0] === false && s.pitkaStav.reakcia === null && s.vizia === null && s.hraci[ja].cigarety >= 1)
       return najdene({ zaciatok: s, dohraj: [] });
-    if (stop === "bzdocha" && s.faza === "pitka" && s.pitkaStav?.naTahu === ja && s.pitkaStav.reakcia === null && s.vizia === null && !s.pitkaStav.hotovy[ja]) {
-      const b = sBzdochou(data, s, ja);
+    const bzdochaStop = stop === "bzdocha" || stop === "bzdocha-caka";
+    if (bzdochaStop && s.faza === "pitka" && s.pitkaStav !== null && s.pitkaStav.reakcia === null && s.vizia === null && !s.pitkaStav.hotovy[0] && !s.pitkaStav.hotovy[1]) {
+      const b = sBzdochou(data, s, ja, stop === "bzdocha-caka");
       if (b !== null) return najdene({ zaciatok: b, dohraj: [] });
     }
     const t = tahy(data, s, rng, n);
@@ -221,7 +228,7 @@ function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada
   // Za súpera ťahá bot.
   useEffect(() => {
     const kto: PlayerId = ja === 0 ? 1 : 0;
-    if (!dohrate || !mozeHrat(stav, kto)) return;
+    if (!dohrate || !mozeHrat(stav, kto) || q().get("bot") === "0") return;
     const t = setTimeout(() => {
       const [j, r] = rngInt(rng.current, 2 ** 31);
       rng.current = r;

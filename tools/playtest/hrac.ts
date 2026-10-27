@@ -22,6 +22,8 @@ import {
   jeCoTahat,
   kartyZaPas,
   KONSTANTY,
+  cakaSBzdochou,
+  hraVPitke,
   jeFinaleNaNastenke,
   STUPNICA_ZONY,
   cigariet,
@@ -409,7 +411,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
     const z = v.zhromazdenieStav;
     out.push(`Zhromaždenie: tebe zostáva vyložiť ${z.zostavaLimit[ja]}${z.navyse[ja] > 0 ? ` — po vypití ti ďalšia karta neukončí ťah` : ""}${z.pasoval[ja] ? " (pasoval si)" : ""}, súperovi ${z.zostavaLimit[su]}${z.pasoval[su] ? " (pasoval)" : ""}.`);
   }
-  // Poradie v Pitke (Michal 2026-10-21): obranca začína, útočník má posledné slovo; „hotovo“ je v logu.
+  // Pitka naraz (Michal 2026-10-27): obaja hrajú súčasne, Bzdocha čaká; poradie platí len pre odpovede na NA EX.
   if (v.pitkaStav !== null && v.faza === "pitka") {
     const ps = v.pitkaStav;
     const obr: PlayerId = v.utocnik === 0 ? 1 : 0;
@@ -428,9 +430,17 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
             : " bez NA EX"
           : " (či dal NA EX, uvidíš až pri odkrytí)";
     const stav = (p: PlayerId): string =>
-      ps.hotovy[p] ? `skončil${koniec(p)}` : ps.reakcia === p ? "odpovedá na NA EX" : ps.naTahu === p ? `na ťahu${p === ja && mojeSkryte > 0 ? " (skryto si dal NA EX)" : ""}` : "čaká";
+      ps.hotovy[p]
+        ? `skončil${koniec(p)}`
+        : ps.reakcia === p
+          ? "odpovedá na NA EX"
+          : cakaSBzdochou(ps, p)
+            ? "čaká s Bzdochou, kým súper skončí (potom uvidí jeho NA EX)"
+            : hraVPitke(ps, p)
+              ? `hrá${p === ja && mojeSkryte > 0 ? " (skryto si dal NA EX)" : ""}`
+              : "čaká";
     out.push(
-      `PITKA — poradie: 1. ${kto(obr)} (obranca, začína): ${stav(obr)} · 2. ${kto(v.utocnik)} (útočník, posledné slovo): ${stav(v.utocnik)}. „hotovo“ je nevratné; kto skončí, súper už vie, že je posledný.`,
+      `PITKA NARAZ — obaja hráte súčasne a každý skončí sám: ${kto(obr)} (obranca): ${stav(obr)} · ${kto(v.utocnik)} (útočník, na NA EX odpovedá posledný): ${stav(v.utocnik)}. „hotovo“ je nevratné; NA EX sa odkryjú, keď skončia obaja.`,
     );
   }
 
@@ -950,7 +960,7 @@ function moznosti(v: ClientState): string[] {
           { type: "skipNaex" },
           pk?.hotovy[v.ja === 0 ? 1 : 0] === true
             ? "hotovo — súper už skončil, Pitka sa vyhodnotí (nevratné)"
-            : "hotovo — končíš svoju časť Pitky (nevratné; v tejto Pitke už nedáš NA EX a súper bude mať posledné slovo)",
+            : "hotovo — končíš svoju časť Pitky (nevratné; v tejto Pitke už nedáš NA EX; súper hrá ďalej a tvoje NA EX uvidí až pri odkrytí, s Bzdochou hneď)",
         );
       break;
     }

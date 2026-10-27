@@ -23,6 +23,9 @@ znenia v `docs/pravidla-historia.md`, sekcia v7):
   upravená; zo sady vypadli Presbiter, Opatrovateľka, Smetiarka, Brigádnik
   a Oslávenec. Vo finále útočí zaostávajúci (§14b).
 - **Pohreb zrušený** (Michal 2026-10-27, §11): priznaná Cirhóza už nič neodomyká.
+- **Pitka naraz** (Michal 2026-10-27, §7): obaja hrajú Pitku súčasne a každý
+  skončí sám; poradie (obranca, potom útočník s posledným slovom) platí len pre
+  odkrytie NA EX a odpovede. Jediná výnimka je Bzdocha (§16).
   **Cintorín** dostal efekt Pozostalosť (§15): porazený smie dať Nástroj z ruky
   alebo zo šenku do Dedičstva zadarmo.
 
@@ -172,7 +175,8 @@ finále: voľba pinnacle → draft → (Zhromaždenie → Pitka) × 1–5 → bi
 pri sekere ostáva útočníkom; vo finále útočí, kto má menej špakov, §14b). **Berie zo šenku prvý, vykladá prvý a v Pitke má
 posledné slovo** (na odkryté NA EX odpovedá druhý, §7) — jeho výhody slúžia
 na dobiehanie. **Obranca** je víťaz
-poslednej bitky: **vyberá a natáča cieľ** kola a **Pitku začína**.
+poslednej bitky: **vyberá a natáča cieľ** kola a na odkryté NA EX
+**odpovedá prvý**. Pitku hrajú obaja naraz (§7).
 
 **Začiatok kola:**
 
@@ -373,20 +377,26 @@ cigariet.
 Pred každou Pitkou je Zhromaždenie (§6); počet Pitiek v kole určuje lokalita
 (nižšie).
 
-### Poradie: obranca začína, útočník má posledné slovo
+### Poradie: Pitka naraz, útočník má posledné slovo
 
-Pitku **začína obranca**. Na svojom ťahu fajčí, dolieva, barteruje, použije
-Kšefty a Úplatky a **skryto vyberie NA EX** (nižšie) — a skončí „hotovo“.
-„Hotovo“ je **nevratné** a zapíše sa do logu („Hráč X končí svoju časť
-Pitky“). Potom hrá rovnako útočník. Keď sú hotoví obaja, **NA EX sa odkryjú**,
+Pitku hrajú **obaja hráči naraz** (Michal 2026-10-27): každý fajčí, dolieva,
+barteruje, použije Kšefty a Úplatky a **skryto vyberie NA EX** (nižšie), kedy
+chce, a skončí sám „hotovo“. Súperove kroky (fajčenie, nákupy, Kšefty) vidno
+hneď, jeho NA EX nie. „Hotovo“ je **nevratné** a zapíše sa do logu („Hráč X
+končí svoju časť Pitky“); kto skončil, v tejto Pitke už nič nerobí. Keď sú
+hotoví obaja, **NA EX sa odkryjú** (najprv obrancove, potom útočníkove),
 nasledujú odpovede — najprv obranca, potom útočník, ktorý má **posledné
 slovo** — a Pitka sa vyhodnotí. **Kohút** (v7) dá posledné slovo svojmu
 majiteľovi aj ako obrancovi; **Krčmárka** zakáže súperovi odpovedať kartou na
-NA EX jej majiteľa. **Bzdocha:** kto vyberá NA EX po súperovi, vidí jeho voľbu.
+NA EX jej majiteľa.
+
+**Bzdocha je jediná výnimka:** jej majiteľ **čaká**, kým súper skončí svoju
+časť Pitky, a až potom hrá — a vidí súperovo skryté NA EX. Keď má Bzdochu
+v partii každý hráč, nečaká nikto (kto skončí neskôr, vidí NA EX toho druhého).
 
 ### NA EX
 
-NA EX smie hráč dať **iba v Pitke** na svojom ťahu, v základe **najviac raz
+NA EX smie hráč dať **iba v Pitke**, kým ju neskončil, v základe **najviac raz
 za Pitku** (Vínna pivnica dvakrát; na Kostole len na kartu v kraji pri
 oltári, §15). Vyberie jednu kartu
 v línii s tagom **Občan alebo Starešina** — **svoju aj súperovu**, na
@@ -474,7 +484,7 @@ Pitiek**. Po odpovediach sa Pitka vyhodnotí.
 
 ### Fajčenie, doliatie a barter
 
-- **Fajčenie (len v Pitke):** na svojom ťahu v Pitke smie hráč fajčiť — hneď
+- **Fajčenie (len v Pitke):** kým hráč svoju časť Pitky neskončil, smie fajčiť — hneď
   si dobere kartu, ťah mu neskončí. **Cena rastie** (Michal 2026-10-27): prvé
   fajčenie hráča v Pitke stojí **1 cigaretu**, druhé **2**, tretie **3** atď.;
   každá Pitka začína znova od 1 a každý hráč má počítadlo zvlášť (je verejné).
@@ -527,7 +537,7 @@ sa do ďalšej Pitky neprenáša. **Zadĺženie sa nenuluje (v7, D6, Michal
 ### Kšeft (v7)
 
 **Kšeft** je spúšťač aktívneho efektu: „Kšeft: Za <cena> <účinok>.“ Hráč ho
-spustí sám **v Pitke na svojom ťahu** (nie počas odpovede na NA EX, nie po
+spustí sám **v Pitke, kým ju neskončil** (nie počas odpovede na NA EX, nie po
 „končím“), **každú kartu raz za Pitku**. Platí karta odkrytá v hráčovej
 partii (aj podstrčená k súperovi, nie skrytá Záverečná), prebudený starší
 a Kšeft lokality — ten smie použiť **každý hráč**, každý raz za Pitku. Kšeft
@@ -540,7 +550,7 @@ dvor, Sklad, Obecný úrad) áno, ako pri barteri.
 ### Úplatok (v7)
 
 **Úplatok** je opak Kšeftu: platí **súper**. Na súperovu odkrytú kartu
-s Úplatkom (Kulturista) smie hráč v Pitke na svojom ťahu dať 1 cigaretu, raz
+s Úplatkom (Kulturista) smie hráč v Pitke, kým ju neskončil, dať 1 cigaretu, raz
 za Pitku na kartu; účinok je na karte (§16), cigareta prepadne.
 
 ### Počet Pitiek
@@ -1266,7 +1276,7 @@ neráta). Cigareta prepadne (nikto ju nedostane).
 | Miňištrant | Nástup: ak ho majiteľ priložil k súperovej karte s Konfliktom (vyvolal Konflikt), do konca kola sa jeho Viera ráta ako Pecka. |
 | Dievčina na vydaj | Prehra: keď jej majiteľ prehrá, zahodí sa (z hry) a víťaz získa toľko Dlhov, koľko mala aktívnych akcií (s násobkami). |
 | Snúbenica | Konflikt: ak je priložená karta Chlap, po bitke ide do odhadzovacieho balíčka majiteľa Snúbenice a odteraz je jeho. |
-| Bzdocha | Pitka: kým majiteľ vyberá NA EX po súperovi (súper už svoju časť Pitky skončil), vidí súperove skryté NA EX (§7). |
+| Bzdocha | Pitka: Súper hrá Pitku pred tebou; vidíš jeho NA EX. Majiteľ čaká, kým súper skončí svoju časť Pitky, potom hrá a vidí súperove skryté NA EX; majú ju obaja → nečaká nikto (§7, Michal 2026-10-27). |
 | Záhradkár | Exekúcia: keď majiteľ čelí exekúcii (§11), smie Záhradkára zahodiť namiesto špakov — Dlhy zhoria aj tak. Z línie (ponúkne sa prvý) ide po bitke z hry a navyše spáli toľko priznaných Dlhov, koľko mal aktívnych akcií; z ruky či balíčkov zachráni len špaky. |
 | Anonymný alkoholik | Nástup: majiteľ prizná všetky nepriznané Cirhózy zo svojho odhadzovacieho balíčka (§11). |
 | Dohadzovačka | Bitka: za každý spoj Ženy majiteľa so súperovým Chlapom alebo Chlapa majiteľa so súperovou Ženou (kdekoľvek v línii) si majiteľ na začiatku bitky vezme kartu zo šenku (podľa voľby, kým je šenok). Karta s oboma tagmi sa ráta ako oboje. |
@@ -1323,7 +1333,7 @@ neráta). Cigareta prepadne (nikto ju nedostane).
 | Dobratie po bitke | 1 karta na začiatku každého ďalšieho kola; limit ruky nie je (§4) |
 | Konflikt | spúšťač (v7): efekt ležiacej karty, keď k nej súper priloží svoju; vlastné priloženie, Nástroj, NA EX ani zrážka ho nespúšťajú (§6, §16) |
 | Vyvolať Konflikt | priložiť kartu k súperovej ležiacej karte so spúšťačom Konflikt (§16) |
-| Kšeft | spúšťač (v7): aktívny efekt za cenu, spustíš ho sám v Pitke na svojom ťahu, každú kartu raz za Pitku (§7) |
+| Kšeft | spúšťač (v7): aktívny efekt za cenu, spustíš ho sám v Pitke, kým ju neskončíš, každú kartu raz za Pitku (§7) |
 | Úplatok | spúšťač (v7): súper platí cigaretou za oslabenie tvojej karty, raz za Pitku; cigareta prepadne (§7, §16) |
 | Pakt | akcia (v7): na spoji sa správa ako akcia, s ktorou je v páre (§2) |
 | Čiarky na účte | zadĺženie pod prahom Dlhu; od v7 neprepadá ani po Pitke, ani po kole (D6, §8) |
@@ -1348,7 +1358,7 @@ neráta). Cigareta prepadne (nikto ju nedostane).
 | Špak | víťazný bod — za bitku, za starších, prebytok vo finále, výkupné zvyšných poldeci a cigariet; mínus Exekútor a nepriznaná Cirhóza (§14) |
 | Strana | polovica línie od lokality — tvoja a súperova (§6) |
 | Šenok | ponuka kariet lícom nahor; obaja vidia, čo berú (§5) |
-| Útočník / obranca | útočník je **porazený z minulej bitky** (v prvom kole náhodne, pri sekere ostáva; vo finále menej špakov, §14b) — berie zo šenku prvý, vykladá prvý a v Pitke má posledné slovo (na NA EX odpovedá druhý); obranca je víťaz minulej bitky — volí a natáča cieľ, Pitku začína (§4) |
+| Útočník / obranca | útočník je **porazený z minulej bitky** (v prvom kole náhodne, pri sekere ostáva; vo finále menej špakov, §14b) — berie zo šenku prvý, vykladá prvý a v Pitke má posledné slovo (na NA EX odpovedá druhý); obranca je víťaz minulej bitky — volí a natáča cieľ, na NA EX odpovedá prvý; Pitku hrajú obaja naraz (§4, §7) |
 | Výtržník | karta, na ktorú obaja dali NA EX v tej istej Pitke (zrážka): všetky jej akcie sú aktívne Rany pre majiteľa, len počas jednej bitky (§7) |
 | Vypiť | otočiť plný poldeci na vypitý: limit −1, pečeň +1, ďalšia karta v tom istom ťahu (§13) |
 | Výkupné | po finále 1 špak za každý plný poldeci a 1 špak za každých celých 5 cigariet, bez stropu (§14) |

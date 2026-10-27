@@ -127,7 +127,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   kon: "impl", // Furt: Nástroj s ním tvorí spoj (partia.ts spojVznikne)
   kohut: "impl", // Pitka (v7): posledné slovo pri odpovediach na NA EX má majiteľ (odhalNaex)
   degustatorka: "impl", // Nástup: súperovi s viac plnými poldeci otočí jeden na vypitý
-  klebetnica: "impl", // Pitka (v7, Bzdocha): kto vyberá NA EX po súperovi, vidí jeho voľbu (viewFor)
+  klebetnica: "impl", // Pitka (Bzdocha, Michal 2026-10-27): majiteľ hrá Pitku po súperovi a vidí jeho NA EX (zacniPitku, viewFor)
   dohadzovacka: "impl", // Bitka (v7): za zmiešaný spoj Žena–Chlap karta zo šenku (voľba senok)
   vandal: "impl", // Nástup: otoč lokalitu o 180°
   stryko_z_ameriky: "impl", // Kšeft: za 2 cigarety Rana navyše v bitke kola

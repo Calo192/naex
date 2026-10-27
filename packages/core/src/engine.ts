@@ -228,6 +228,12 @@ export interface PitkaStav {
   readonly skryteNaex?: readonly SkryteNaex[];
   /** Po odkrytí NA EX: kto ešte odpovedá (v poradí obranca, potom útočník). */
   readonly frontaReakcii?: readonly PlayerId[];
+  /**
+   * Pitka naraz (Michal 2026-10-27): obaja hrajú súčasne, len majiteľ Bzdochy
+   * čaká, kým súper skončí, a potom vidí jeho NA EX. Kto čaká; null = nikto
+   * (aj keď Bzdochu majú obaja). Verejné — Bzdocha leží v línii.
+   */
+  readonly bzdocha?: PlayerId | null;
 }
 
 /** Skryto vybrané NA EX (v5): kto ho dal a na ktorú kartu (skutočné uid). */
@@ -1450,9 +1456,15 @@ function naTahuVoFaze(state: GameState): PlayerId | null {
     }
     case "zhromazdenie":
       return state.zhromazdenieStav?.naTahu ?? null;
-    case "pitka":
+    case "pitka": {
       if (state.vizia !== null) return viziaNaTahu(state);
-      return state.pitkaStav?.naTahu ?? null;
+      const pk = state.pitkaStav;
+      if (pk === null) return null;
+      if (pk.reakcia !== null) return pk.reakcia;
+      // Pitka naraz: hrajú obaja — naTahu ukáže toho, na koho sa čaká, obrancu skôr.
+      const obr = obranca(state);
+      return [obr, state.utocnik].find((q) => hraVPitke(pk, q)) ?? null;
+    }
     case "bitka":
       return state.bitkaStav?.caka ?? null;
     default:
@@ -1470,7 +1482,25 @@ export function mozeHrat(state: GameState, p: PlayerId): boolean {
   if (state.faza === "draft" && state.draftStav?.krok === "stavba") {
     return state.draftStav.vyber[p] === null;
   }
+  // Pitka naraz (Michal 2026-10-27): kým niekto neodpovedá na NA EX, hrajú obaja.
+  if (state.faza === "pitka" && state.vizia === null && state.pitkaStav !== null && state.pitkaStav.reakcia === null) {
+    return hraVPitke(state.pitkaStav, p);
+  }
   return naTahu(state) === p;
+}
+
+/**
+ * Pitka naraz (Michal 2026-10-27): hráč p ešte hrá svoju časť Pitky — neskončil
+ * a nečaká s Bzdochou na súpera. Z verejného stavu, takže to vie aj klient.
+ */
+export function hraVPitke(pk: Pick<PitkaStav, "hotovy" | "reakcia" | "bzdocha">, p: PlayerId): boolean {
+  if (pk.reakcia !== null || pk.hotovy[p]) return false;
+  return !cakaSBzdochou(pk, p);
+}
+
+/** Majiteľ Bzdochy čaká, kým súper skončí svoju časť Pitky (Michal 2026-10-27). */
+export function cakaSBzdochou(pk: Pick<PitkaStav, "hotovy" | "bzdocha">, p: PlayerId): boolean {
+  return pk.bzdocha === p && !pk.hotovy[opponentOf(p)];
 }
 
 // ---------------------------------------------------------------------------
@@ -1694,8 +1724,17 @@ function aktualizujPitky(s: MutState, data: GameData): void {
  */
 function dohrajNevyhnutne(data: GameData, s: MutState, events: Event[]): void {
   for (;;) {
-    const p = naTahu(s as GameState);
-    if (p === null) return;
+    const prvy = naTahu(s as GameState);
+    if (prvy === null) return;
+    // Pitka naraz: nevyhnutný ťah môže mať aj ten druhý, čo práve hrá.
+    const kandidati = s.faza === "pitka" ? [prvy, opponentOf(prvy)].filter((q) => mozeHrat(s as GameState, q)) : [prvy];
+    if (!kandidati.some((q) => nevyhnutnyTah(data, s, q, events))) return;
+  }
+}
+
+/** Urobí za hráča p jediný možný ťah (pas, koniec Pitky, bez odpovede…); false = má voľbu. */
+function nevyhnutnyTah(data: GameData, s: MutState, p: PlayerId, events: Event[]): boolean {
+  {
     const moznosti = legalCommands(data, s as GameState, p);
     const jedina = moznosti.length === 1 ? moznosti[0] : undefined;
     if (jedina?.type === "pass") {
@@ -1724,8 +1763,9 @@ function dohrajNevyhnutne(data: GameData, s: MutState, events: Event[]): void {
       if (dovod !== null) events.push({ type: "log", pre: p, text: dovod });
       cmdBezPatronatu(s, data, p, events, true);
     } else {
-      return;
+      return false;
     }
+    return true;
   }
 }
 
@@ -2698,8 +2738,12 @@ function zacniPitku(s: MutState, data: GameData, events: Event[]): void {
   s.zaciatokPitky = { pecen: [s.hraci[0].pecen, s.hraci[1].pecen], cirhozy: [s.cirhozyVKole[0], s.cirhozyVKole[1]] };
   events.push({ type: "faza", faza: "pitka" });
   events.push({ type: "log", text: `Pitka ${s.pitkaCislo}/${s.pitkyCelkom}.` });
+  // Bzdocha (Michal 2026-10-27): jej majiteľ hrá Pitku až po súperovi; keď ju majú obaja, nečaká nikto.
+  const sBzdochou = ([0, 1] as const).filter((q) => maEfekt(s, data, q, "klebetnica"));
+  const bzdocha = sBzdochou.length === 1 ? (sBzdochou[0] as PlayerId) : null;
   s.pitkaStav = {
-    naTahu: obranca(s),
+    naTahu: bzdocha === obranca(s) ? s.utocnik : obranca(s),
+    bzdocha,
     hotovy: [false, false],
     naexPouzity: [false, false],
     fajcenie: [0, 0],
@@ -2709,6 +2753,7 @@ function zacniPitku(s: MutState, data: GameData, events: Event[]): void {
     naexPocet: [0, 0],
     vykup: [false, false],
   };
+  if (bzdocha !== null) events.push({ type: "log", text: `Bzdocha: hráč ${bzdocha + 1} hrá Pitku až po súperovi a uvidí jeho NA EX.` });
   manualEfekty(s, data, "Pitka", events);
 }
 
@@ -3174,7 +3219,9 @@ function cmdSkipNaex(s: MutState, data: GameData, p: PlayerId, events: Event[]):
     type: "log",
     text: pitka.hotovy[oppon]
       ? `Hráč ${p + 1} končí svoju časť Pitky — NA EX sa odkryjú a Pitka sa vyhodnotí.`
-      : `Hráč ${p + 1} končí svoju časť Pitky. Na ťahu je hráč ${oppon + 1}.`,
+      : pitka.bzdocha === oppon
+        ? `Hráč ${p + 1} končí svoju časť Pitky. Hráč ${oppon + 1} (Bzdocha) teraz hrá a vidí jeho NA EX.`
+        : `Hráč ${p + 1} končí svoju časť Pitky. Čaká sa na hráča ${oppon + 1}.`,
   });
   if (!pitka.hotovy[oppon]) {
     pitka.naTahu = oppon;
