@@ -59,7 +59,6 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     prebytokDrzi: null,
     prebytokZostava: 0,
     prebytokPosunute: [],
-    pohrebHotovy: [true, true],
     benzinkaZostava: [0, 0],
     karHotovy: [true, true],
     spalit: [],
@@ -68,7 +67,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
   };
 }
 
-/** Bitka v kroku Pohrebu, čaká sa na hráča 0 — skipPohreb ju dokončí a začne ďalšie kolo. */
+/** Bitka v kroku Cintorína, čaká sa na hráča 0 — „nič“ ju dokončí a začne ďalšie kolo. */
 function predKoncomBitky(seed: number, uprav: (s: GameState) => GameState = (s) => s): GameState {
   const s0 = setupSBalickom(data, seed);
   return uprav({
@@ -78,7 +77,7 @@ function predKoncomBitky(seed: number, uprav: (s: GameState) => GameState = (s) 
     strany: [[], []],
     ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
     lokalityVHre: s0.lokalityVHre.slice(1),
-    bitkaStav: bitka({ krok: "pohreb", caka: 0, pohrebHotovy: [false, true] }),
+    bitkaStav: bitka({ krok: "cintorin", caka: 0 }),
   });
 }
 
@@ -89,7 +88,7 @@ describe("v5 bod 8: nepriznaná Cirhóza po bitke do odhadzovacieho balíčka", 
     const s = predKoncomBitky(61, (x) =>
       sHracom(x, 0, { ruka: [vRuke, ...kusy(2, "pijan")], doberaci: kusy(4, "pijan"), odhadzovaci: [], priznane: [priznana] }),
     );
-    const po = apply(data, s, { type: "skipPohreb" }, 0).state;
+    const po = apply(data, s, { type: "cintorin", uid: null }, 0).state;
     expect(po.koniec).toBeNull();
     expect(po.hraci[0].ruka.some((k) => k.uid === vRuke.uid)).toBe(false);
     expect(po.hraci[0].odhadzovaci.map((k) => k.uid)).toContain(vRuke.uid);
@@ -99,14 +98,14 @@ describe("v5 bod 8: nepriznaná Cirhóza po bitke do odhadzovacieho balíčka", 
   it("Cirhóza dobratá až po bitke (2 karty po bitke) ostáva v ruke — rozhodne o nej v ďalšom kole", () => {
     const navrchu = inst("cirhoza");
     const s = predKoncomBitky(62, (x) => sHracom(x, 0, { ruka: kusy(2, "pijan"), doberaci: [navrchu, ...kusy(3, "pijan")], odhadzovaci: [] }));
-    const po = apply(data, s, { type: "skipPohreb" }, 0).state;
+    const po = apply(data, s, { type: "cintorin", uid: null }, 0).state;
     expect(po.hraci[0].ruka.map((k) => k.uid)).toContain(navrchu.uid);
   });
 
   it("odhodená Cirhóza je verejná (odhadzovací balíček), súper nevidí nič navyše z ruky", () => {
     const vRuke = inst("cirhoza");
     const s = predKoncomBitky(63, (x) => sHracom(x, 0, { ruka: [vRuke, inst("pijan")], doberaci: kusy(4, "pijan"), odhadzovaci: [] }));
-    const po = apply(data, s, { type: "skipPohreb" }, 0).state;
+    const po = apply(data, s, { type: "cintorin", uid: null }, 0).state;
     const pohlad = viewFor(data, po, 1);
     expect(pohlad.hraci[0].odhadzovaci.map((k) => k.uid)).toContain(vRuke.uid);
     // Karty, ktoré si hráč 0 dobral po bitke, súper nevidí.
@@ -126,7 +125,7 @@ describe("v5 bod 7: Pohoršenie oboma smermi", () => {
       strany: [[], []],
       ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
       lokalityVHre: s0.lokalityVHre.slice(1),
-      bitkaStav: bitka({ krok: "pohorsenie", caka: 0, vitaz: null, pohorsenieZostava: [n, 0], pohrebHotovy: [false, false], karHotovy: [true, true], vesticaHotova: false }),
+      bitkaStav: bitka({ krok: "pohorsenie", caka: 0, vitaz: null, pohorsenieZostava: [n, 0], karHotovy: [true, true], vesticaHotova: false }),
     });
   }
   const sMarkerom = (s: GameState, elderId: string, marker: ElderState["marker"]): GameState => ({
@@ -193,11 +192,11 @@ describe("v5 bod 5 a v6: scorecardy nesú len priazeň", () => {
   it("Absťák = Absťáky získané za hru: zbavením sa Absťáku počítadlo neklesne", () => {
     // Menej nerestí než minulé kolo → Absťák a počítadlo +1.
     const s = predKoncomBitky(81, (x) => sHracom(x, 0, { nerestiMinuleKolo: 2, nerestiTotoKolo: 1, abstakyZiskane: 1, doberaci: kusy(4, "pijan") }));
-    const po = apply(data, s, { type: "skipPohreb" }, 0).state;
+    const po = apply(data, s, { type: "cintorin", uid: null }, 0).state;
     expect(po.hraci[0].abstakyZiskane).toBe(2);
     // Viac nerestí → Absťák späť do zásoby, získané ostávajú.
     const s2 = predKoncomBitky(82, (x) => sHracom(x, 0, { nerestiMinuleKolo: 1, nerestiTotoKolo: 3, abstakyZiskane: 2, priznane: [inst("abstak")], doberaci: kusy(4, "pijan") }));
-    const po2 = apply(data, s2, { type: "skipPohreb" }, 0).state;
+    const po2 = apply(data, s2, { type: "cintorin", uid: null }, 0).state;
     expect(po2.hraci[0].priznane.some((k) => k.defId === "abstak")).toBe(false);
     expect(po2.hraci[0].abstakyZiskane).toBe(2);
     // Klient vidí počítadlo oboch (Absťák sa priznáva verejne).
@@ -242,14 +241,14 @@ describe("v5 bod 6: priazne v5 (sila 1 / 2 / 3)", () => {
     };
     return { s, ciel: lavy.uid };
   }
-  /** Dohrá Pitku a bitku bez ďalších rozhodnutí (skipNaex / bezReakcie / skipPohreb). */
+  /** Dohrá Pitku a bitku bez ďalších rozhodnutí (skipNaex / bezReakcie / Cintorín bez Nástroja). */
   function dohraj(s0: GameState): GameState {
     let s = s0;
     for (let i = 0; i < 20 && (s.faza === "pitka" || s.faza === "bitka") && s.koniec === null; i++) {
       const p = naTahu(s);
       if (p === null) break;
       const legal = legalCommands(sada, s, p);
-      const cmd = legal.find((c) => c.type === "skipNaex" || c.type === "bezReakcie" || c.type === "skipPohreb") ?? legal[0]!;
+      const cmd = legal.find((c) => c.type === "skipNaex" || c.type === "bezReakcie" || (c.type === "cintorin" && c.uid === null)) ?? legal[0]!;
       s = apply(sada, s, cmd, p).state;
     }
     return s;
@@ -284,10 +283,10 @@ describe("v5 bod 6: priazne v5 (sila 1 / 2 / 3)", () => {
 
   it("Kmotor (Úžerník): po bitke zmizne 1 / 2 / 3 priznaných Dlhov, bez Dlhu nič", () => {
     const s = predKoncomBitky(95, (x) => sHracom(sPriaznou(x, "UZERNIK", 0, 2), 0, { priznane: kusy(3, "dlh"), doberaci: kusy(4, "pijan") }));
-    const po = apply(data, s, { type: "skipPohreb" }, 0).state;
+    const po = apply(data, s, { type: "cintorin", uid: null }, 0).state;
     expect(po.hraci[0].priznane.filter((k) => k.defId === "dlh")).toHaveLength(1);
     const bez = predKoncomBitky(95, (x) => sHracom(sPriaznou(x, "UZERNIK", 0, 2), 0, { priznane: [], doberaci: kusy(4, "pijan") }));
-    expect(apply(data, bez, { type: "skipPohreb" }, 0).state.hraci[0].priznane).toHaveLength(0);
+    expect(apply(data, bez, { type: "cintorin", uid: null }, 0).state.hraci[0].priznane).toHaveLength(0);
   });
 
   it("Fajčiar: +1 / +2 / +3 cigarety po výbere zo šenku", () => {

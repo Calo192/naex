@@ -448,7 +448,6 @@ export function Statistiky({ profil, vlastny }: { readonly profil: ProfilHraca; 
           <Udaj nazov="cirhóz získaných" hodnota={cislo(s.cirhozyZiskane)} />
           <Udaj nazov="cirhóz na partiu" hodnota={priemer(s.cirhozyZiskane, s.partie)} />
           <Udaj nazov="cirhóz priznaných" hodnota={cislo(s.cirhozyPriznane)} />
-          <Udaj nazov="pohreby" hodnota={cislo(s.pohreby)} />
         </Sekcia>
 
         <Sekcia nazov="Povery a viera" ikona={<Akcia kluc="Povera" />}>

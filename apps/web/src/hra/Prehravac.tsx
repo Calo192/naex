@@ -65,7 +65,6 @@ const NAZOV_TAHU: Readonly<Record<string, string>> = {
   hasic: "Hasič",
   pohorsenie: "Pohoršenie",
   prebytok: "rozdeľuje prebytok",
-  pohreb: "Pohreb",
   kar: "Kar",
 };
 

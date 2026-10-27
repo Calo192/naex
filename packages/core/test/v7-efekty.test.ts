@@ -99,7 +99,7 @@ function dohrajKolo(s0: GameState): GameState {
       legal.find((c) => c.type === "skipNaex") ??
       legal.find((c) => c.type === "pass") ??
       legal.find((c) => c.type === "bezReakcie") ??
-      legal.find((c) => c.type === "skipPohreb") ??
+      legal.find((c) => (c.type === "cintorin" && c.uid === null)) ??
       legal.find((c) => c.type === "vizia" && c.vziat) ??
       legal.find((c) => c.type === "zahradkar" && !c.zahodit) ??
       (legal[0] as Command);
@@ -307,10 +307,12 @@ describe("Pitka (v7)", () => {
     expect(naex(krcmarka).pitkaStav?.reakcia ?? null).toBeNull();
   });
 
-  it("Cintorín: nová Cirhóza je hneď priznaná", () => {
+  it("Cintorín (Pozostalosť, Michal 2026-10-27): nová Cirhóza sa už sama nepriznáva", () => {
     const s = sHracom(vPitke("cintorin", [[lezi(inst("zamocnik"), 0)], []]), 0, { pecen: 10 });
     const t = skonciPitku(s);
-    expect(t.hraci[0].priznane.some((k) => k.defId === "cirhoza")).toBe(true);
+    expect(t.hraci[0].priznane.some((k) => k.defId === "cirhoza")).toBe(false);
+    const h = t.hraci[0];
+    expect([...h.ruka, ...h.doberaci, ...h.odhadzovaci].some((k) => k.defId === "cirhoza")).toBe(true);
   });
 
   it("Jednota: kto má viac priznaných Dlhov, nesmie fajčiť ani dolievať; Benzínka: fajčí len najďalej", () => {
@@ -549,5 +551,69 @@ describe("finále (Michal 2026-10-27)", () => {
     expect(utocnikFinale([9, 2], 0, 0)).toBe(1);
     expect(utocnikFinale([4, 4], 0, 0)).toBe(1);
     expect(utocnikFinale([4, 4], null, 0)).toBe(0);
+  });
+});
+
+describe("Cintorín — Pozostalosť (Michal 2026-10-27, Pohreb zrušený)", () => {
+  const silna = (n: number): PlacedCard[] => Array.from({ length: n }, () => lezi(inst("kulturista"), 1));
+  /** Bitka po Pitke pokojnými ťahmi, kým nečaká na Cintorín (alebo kým kolo neskončí). */
+  function poCintorin(s0: GameState): GameState {
+    let s = s0;
+    const kolo = s.kolo;
+    for (let i = 0; i < 400 && s.koniec === null && s.kolo === kolo; i++) {
+      if (s.bitkaStav?.krok === "cintorin" && s.bitkaStav.caka !== null) return s;
+      const q = ([0, 1] as const).find((x) => legalCommands(data, s, x).length > 0);
+      if (q === undefined) break;
+      const legal = legalCommands(data, s, q);
+      const cmd =
+        legal.find((c) => c.type === "skipNaex") ??
+        legal.find((c) => c.type === "pass") ??
+        legal.find((c) => c.type === "bezReakcie") ??
+        legal.find((c) => c.type === "vizia" && c.vziat) ??
+        legal.find((c) => c.type === "zahradkar" && !c.zahodit) ??
+        (legal[0] as Command);
+      s = apply(data, s, cmd, q).state;
+    }
+    return s;
+  }
+
+  it("porazený dá Nástroj z ruky do Dedičstva zadarmo; spoločná cena Dedičstva rastie", () => {
+    const puska = inst("puska");
+    const s = poCintorin(sHracom(vPitke("cintorin", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { ruka: [puska, inst("pijan")], cigarety: 0 }));
+    expect(s.bitkaStav?.krok).toBe("cintorin");
+    expect(s.bitkaStav?.caka).toBe(0);
+    const legal = legalCommands(data, s, 0);
+    expect(legal).toEqual(expect.arrayContaining([{ type: "cintorin", uid: puska.uid }, { type: "cintorin", uid: null }]));
+    const po = apply(data, s, { type: "cintorin", uid: puska.uid }, 0).state;
+    expect(po.hraci[0].dedicstvo.map((k) => k.uid)).toContain(puska.uid);
+    expect(po.hraci[0].cigarety).toBeGreaterThanOrEqual(s.hraci[0].cigarety) // zadarmo (cigarety za prebytok prídu až po Cintoríne);
+    expect(po.dedicstvaVylozene).toBe(s.dedicstvaVylozene + 1);
+  });
+
+  it("porazený smie vziať Nástroj aj zo šenku — zo šenku zmizne", () => {
+    const vidly = inst("vidly");
+    const base = vPitke("cintorin", [[lezi(inst("zamocnik"), 0)], silna(3)]);
+    const s = poCintorin(sHracom({ ...base, senok: [...base.senok, vidly] }, 0, { ruka: [inst("pijan")] }));
+    expect(s.bitkaStav?.caka).toBe(0);
+    expect(legalCommands(data, s, 0)).toContainEqual({ type: "cintorin", uid: vidly.uid });
+    const po = apply(data, s, { type: "cintorin", uid: vidly.uid }, 0).state;
+    expect(po.hraci[0].dedicstvo.map((k) => k.uid)).toContain(vidly.uid);
+    expect(po.senok.map((k) => k.uid)).not.toContain(vidly.uid);
+    // Víťaz Cintorín nevyužije.
+    expect(() => apply(data, s, { type: "cintorin", uid: vidly.uid }, 1)).toThrow();
+  });
+
+  it("bez Nástroja v ruke aj v šenku, na inej lokalite a pri sekere sa Cintorín preskočí", () => {
+    const bez = poCintorin(sHracom(vPitke("cintorin", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { ruka: [inst("pijan")] }));
+    expect(bez.bitkaStav?.krok === "cintorin" && bez.bitkaStav.caka !== null).toBe(false);
+    const inde = poCintorin(sHracom(vPitke("zastavka", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { ruka: [inst("puska")] }));
+    expect(inde.bitkaStav?.krok === "cintorin" && inde.bitkaStav.caka !== null).toBe(false);
+    // Sekera: prázdna línia, rovnako Absťákov aj Dlhov — porazený nie je.
+    const s = sHracom(sHracom(vPitke("cintorin", [[], []]), 0, { ruka: [inst("puska")] }), 1, { ruka: [inst("vidly")] });
+    const sekera = poCintorin(s);
+    expect(sekera.nastenka.at(-1)?.vitaz).toBeNull();
+    expect(sekera.bitkaStav?.krok === "cintorin" && sekera.bitkaStav.caka !== null).toBe(false);
+    expect(sekera.hraci[0].dedicstvo).toHaveLength(0);
+    expect(sekera.hraci[1].dedicstvo).toHaveLength(0);
   });
 });

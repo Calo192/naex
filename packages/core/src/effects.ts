@@ -112,7 +112,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   snubenica: "impl", // Konflikt (v7): priložený Chlap ide po bitke k majiteľovi Snúbenice (konflikt)
   // Nové lokality (Michal 2026-10-20, docs/playtesty/navrh-lokality.html).
   most: "impl", // Zhromaždenie: karty len na vlastnú stranu
-  cintorin: "impl", // Pitka (v7): nová Cirhóza je hneď priznaná (pridajKliatbu)
+  cintorin: "impl", // Prehra (Michal 2026-10-27): Nástroj z ruky alebo zo šenku do Dedičstva zadarmo (krok bitky cintorin)
   obecny_urad: "impl", // Kšeft (v7): za 3 cigarety vlastný priznaný Dlh k súperovi
   jednota: "impl", // Pitka (v7): kto má viac priznaných Dlhov, nefajčí ani nedolieva
   kulturny_dom: "impl", // Bitka (v6): prebytok sa nerozdeľuje — držiteľ dostane toľko špakov

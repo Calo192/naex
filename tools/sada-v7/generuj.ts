@@ -186,7 +186,7 @@ const LOKALITY: readonly Lokalita[] = [
   { id: "zastavka", name: "Zastávka", kraje: ["pod strieškou", "pri ceste"], lava: [_, C, _, _], prava: [PEC, _, _, _], effect_text: "Zhromaždenie: Obaja hráči majú spoločný limit vykladania — súčet ich limitov.", triggers: ["Zhromaždenie"] },
   { id: "most", name: "Most", kraje: ["pri kaplnke", "pod mostom"], lava: [_, PEC, _, _], prava: [_, _, C, _], effect_text: "Zhromaždenie: Karty sa smú vykladať len na vlastnú stranu (aj odpoveď na NA EX).", triggers: ["Zhromaždenie"] },
   { id: "lesna_cesta", name: "Lesná cesta", kraje: ["v húštine", "pri kríži"], lava: [PEC, _, _, _], prava: [_, POV, _, _], effect_text: "Bitka: Za každé svoje Zviera v súperovom kraji máš 1 tuhé poškodenie navyše.", triggers: ["Bitka"] },
-  { id: "cintorin", name: "Cintorín", kraje: ["pri hroboch", "pri márnici"], lava: [_, VIE, _, _], prava: [_, ROB, _, _], effect_text: "Prehra: Po Pohrebe smieš vyložiť jeden Nástroj z ruky do Dedičstva bez platenia.", triggers: ["Prehra"] },
+  { id: "cintorin", name: "Cintorín", kraje: ["pri hroboch", "pri márnici"], lava: [_, VIE, _, _], prava: [_, ROB, _, _], effect_text: "Prehra: Smieš vyložiť jeden Nástroj z ruky alebo zo šenku do Dedičstva bez platenia.", triggers: ["Prehra"] },
   { id: "jednota", name: "Jednota", kraje: ["pri pulte", "pred obchodom"], lava: [_, C, _, _], prava: [_, POH, _, _], effect_text: "Kšeft: Za 1 Dlh dostaneš 2 cigarety.", triggers: ["Kšeft"] },
   // Úroveň 2 — dedina
   { id: "ihrisko", name: "Ihrisko", kraje: ["na trávniku", "na tribúne"], lava: [PEC, _, _, RAN], prava: [_, POL, C, _], effect_text: "Bitka: V každom kraji, kde máš viac svojich Občanov, Zvierat a Starešinov než súper, máš 2 tuhé poškodenia navyše.", triggers: ["Bitka"] },
@@ -267,7 +267,8 @@ const EFEKTY: Readonly<Record<string, string>> = {
   vychovavatelka: "Kšeft: Za 2 cigarety máš v bitke 1 Poveru navyše.",
   krcmarka: "Pitka: Na tvoje NA EX súper nesmie odpovedať kartou.",
   // Lokality
-  cintorin: "Pitka: Nová Cirhóza je hneď priznaná.",
+  // Pozostalosť (Michal 2026-10-27): Pohreb zanikol, Cintorín dedí aj zo šenku.
+  cintorin: "Prehra: Smieš vyložiť jeden Nástroj z ruky alebo zo šenku do Dedičstva bez platenia.",
   jednota: "Pitka: Kto má viac priznaných Dlhov, nesmie v tejto Pitke fajčiť ani dolievať.",
   // Pri rovnakej vzdialenosti nefajčí nikto (Michal 2026-10-27).
   benzinka: "Pitka: Fajčiť smie len hráč, ktorého Občan alebo Starešina leží najďalej od lokality.",

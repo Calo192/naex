@@ -194,17 +194,6 @@ export function stolPriPoskodeni(data: GameData, s: ClientState, dalsiePitky: nu
   if (s.ciel === null) return s;
   const vyhlad = vyhladDlhov(data, s, dalsiePitky);
   const hraci: [ClientState["hraci"][0], ClientState["hraci"][1]] = [s.hraci[0], s.hraci[1]];
-  // Cintorín (Pitka, v7): nové Cirhózy sú hneď priznané — v bitke dajú súperovi tuhé.
-  if (cielLokalitaId(s) === "cintorin") {
-    const np = nahladPitky(data, s);
-    for (const p of [0, 1] as const) {
-      const dalsie = Math.floor(np[p].pecenZoStola / np[p].prahPecene) * dalsiePitky;
-      const n = np[p].cirhozy + dalsie;
-      if (n <= 0) continue;
-      const nove: CardInstance[] = Array.from({ length: n }, (_, i) => ({ uid: -2000 - 100 * p - i, defId: "cirhoza", leftLayout: 0, rightLayout: 0 }));
-      hraci[p] = { ...hraci[p], priznane: [...hraci[p].priznane, ...nove] };
-    }
-  }
   for (const p of [0, 1] as const) {
     const d = vyhlad[p].poBitke;
     const h = hraci[p];

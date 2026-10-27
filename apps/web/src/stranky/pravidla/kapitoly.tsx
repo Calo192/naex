@@ -577,7 +577,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             <strong>Veštica</strong> — porazený s Vešticou vymení kartu medzi doberacími balíčkami.
           </li>
           <li>
-            <strong>Pohreb</strong> — s priznanou Cirhózou.
+            <strong>Cintorín</strong> — porazený v bitke o Cintorín smie dať jeden Nástroj z ruky alebo zo šenku do Dedičstva zadarmo.
           </li>
           <li>
             <strong>Výhra a Prehra</strong> — Živnostník, cigarety za prebytok (súper dostane 1 cigaretu za každého staršieho,
@@ -747,11 +747,6 @@ export const KAPITOLY: readonly Kapitola[] = [
             smútiaca vdova.
           </li>
         </ol>
-        <H3 id="kliatby-pohreb">Pohreb</H3>
-        <p>
-          Po bitke smieš s priznanou Cirhózou vykonať <P k="pohreb">Pohreb</P>: spáliš ju aj jednu svoju kartu z línie. Keď je
-          spálená karta Závislý, vezmeš si jednu kartu zo šenku. Iná liečba Cirhózy nie je.
-        </p>
       </>
     ),
   },
@@ -882,7 +877,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           <tr><td>Zberný dvor</td><td>Kšeft</td><td>Za 1 cigaretu ľubovoľná karta z tvojho odhadzovacieho balíčka do ruky.</td></tr>
           <tr><td>Most</td><td>Zhromaždenie, Pitka</td><td>Karty len na vlastnú stranu, aj odpoveď na NA EX.</td></tr>
           <tr><td>Kar</td><td>Pitka</td><td>Poškodenie pečene za NA EX dostane súper hráča, ktorý ho dal.</td></tr>
-          <tr><td>Cintorín</td><td>Pitka</td><td>Nová Cirhóza je hneď priznaná.</td></tr>
+          <tr><td>Cintorín</td><td>Prehra</td><td>Porazený smie vyložiť jeden Nástroj z ruky alebo zo šenku do Dedičstva bez platenia (pri sekere nikto).</td></tr>
           <tr><td>Obecný úrad</td><td>Kšeft</td><td>Za 3 cigarety presuň 1 svoj priznaný Dlh medzi súperove priznané.</td></tr>
           <tr><td>Jednota</td><td>Pitka</td><td>Kto má viac priznaných Dlhov, nesmie v tejto Pitke fajčiť ani dolievať.</td></tr>
           <tr><td>Sklad</td><td>Kšeft</td><td>Za 1 cigaretu vrchná karta súperovho odhadzovacieho balíčka do tvojej ruky.</td></tr>

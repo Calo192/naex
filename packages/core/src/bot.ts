@@ -1282,12 +1282,12 @@ function bitka(v: Volba): Command | null {
       return zahod ?? { type: "kar", uid: null };
     }
     case "cintorin": {
-      // Cintorín: zadarmo do Dedičstva najcennejší Nástroj z ruky.
+      // Cintorín: zadarmo do Dedičstva najcennejší Nástroj z ruky alebo zo šenku.
       let best: Command | null = null;
       let bestV = 0;
       for (const cmd of v.legal) {
         if (cmd.type !== "cintorin" || cmd.uid === null) continue;
-        const karta = h.ruka.find((x) => x.uid === cmd.uid);
+        const karta = [...h.ruka, ...state.senok].find((x) => x.uid === cmd.uid);
         const hodnota = karta === undefined ? 0 : 1 + (DEDICSTVO[karta.defId] ?? 0);
         if (hodnota > bestV) {
           bestV = hodnota;
@@ -1327,32 +1327,6 @@ function bitka(v: Volba): Command | null {
         if (m !== undefined && hodnotaKarty(data, x) > hodnotaKarty(data, m)) jehoI = i;
       });
       return { type: "vestica", moja, jeho: jehoI };
-    }
-    case "pohreb": {
-      // Pohreb preriedi balíček o slabú kartu; za Závislého navyše vymení
-      // kartu za lepšiu zo šenku (balíček sa nezmenší). Inak nič — priznaná
-      // Cirhóza neškodí.
-      const priemer = priemernaKarta(data, state, ja);
-      const balicek = h.ruka.length + h.doberaci.length + h.odhadzovaci.length + partiaHraca(state, ja).length;
-      // Pohreb spáli aj priznanú Cirhózu — súper za ňu prestane dostávať +1 tuhé
-      // v každej ďalšej bitke (v6 to je aj +1 prebytku, teda posun markera).
-      const zaCirhozu = kolPoTomto(state) * (CENA_TUHEHO_ZA_BITKU + 0.5 * cenaBoduPrebytku(state));
-      let best: Command | null = null;
-      let bestV = 0.5;
-      for (const cmd of v.legal) {
-        if (cmd.type !== "pohreb") continue;
-        const karta = partiaHraca(state, ja).find((pl) => pl.card.uid === cmd.kartaUid)?.card;
-        if (karta === undefined) continue;
-        const zoSenku = cmd.senokUid === undefined ? undefined : state.senok.find((x) => x.uid === cmd.senokUid);
-        // Tenký balíček kartu len stratí, hrubý sa preriedi (zvyšné karty sú v priemere lepšie).
-        const nahrada = zoSenku !== undefined ? hodnotaKarty(data, zoSenku) : balicek >= 11 ? priemer : priemer - 1;
-        const zisk = zaCirhozu + nahrada - hodnotaKarty(data, karta) - 0.3;
-        if (zisk > bestV) {
-          bestV = zisk;
-          best = cmd;
-        }
-      }
-      return best ?? v.legal.find((c) => c.type === "skipPohreb") ?? null;
     }
     default:
       return null;

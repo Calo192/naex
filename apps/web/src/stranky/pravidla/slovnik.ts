@@ -49,7 +49,6 @@ export const SLOVNIK: readonly PojemSlovnika[] = [
   { id: "pitka", pojem: "Pitka", popis: "Vyhodnotenie po Zhromaždení: NA EX, Dlhy, pečeň, cigarety; v jednej bitke je 1 až 4 Pitiek (vo finále na pinnacle 1 až 5) a víťaz bitky dostane 1 špak za každú." },
   { id: "podstrcenie", pojem: "Podstrčenie", popis: "Karta vyložená na súperovu stranu; ostáva tvoja a jej akcie sa rátajú tebe (okrem Kočovníka)." },
   { id: "pohorsenie", pojem: "Pohoršenie", popis: "Akcia, ktorá v bitke posunie marker staršieho o 1 k súperovi alebo k sebe; priazeň sa mení hneď." },
-  { id: "pohreb", pojem: "Pohreb", popis: "Po bitke spáliš priznanú Cirhózu a jednu svoju kartu z línie." },
   { id: "poldeci", pojem: "Poldeci", popis: "Pohárik pálenky; plný zvyšuje limit o 1 a platí ním NA EX aj ďalšiu kartu v ťahu. Plný na konci hry je 1 špak." },
   { id: "prebudenie", pojem: "Prebudenie", popis: "Marker na krajnej červenej pozícii: efekt staršieho začne pôsobiť pre teba." },
   { id: "prebytok", pojem: "Prebytok", popis: "O koľko vyhrávaš v celkovom poškodení; každým bodom posunieš marker staršieho o pole, po finále a v Kultúrnom dome dá špaky." },

@@ -197,10 +197,11 @@ describe("Lesná cesta a Ihrisko: tuhé za karty na stranách", () => {
 });
 
 describe("Cintorín: porazený dá Nástroj z ruky do Dedičstva zadarmo", () => {
-  function poPohrebe(defId: string, ruka: readonly CardInstance[]): GameState {
+  /** Bitka čaká na Cintorín porazeného (hráč 0). */
+  function naCintorine(defId: string, ruka: readonly CardInstance[]): GameState {
     const s = vKole(defId);
     const bitka: BitkaStav = {
-      krok: "pohreb",
+      krok: "cintorin",
       caka: 0,
       sums: [{}, {}],
       exekutorHotovy: [true, true],
@@ -211,7 +212,6 @@ describe("Cintorín: porazený dá Nástroj z ruky do Dedičstva zadarmo", () =>
       prebytokDrzi: null,
       prebytokZostava: 0,
       prebytokPosunute: [],
-      pohrebHotovy: [false, true],
       benzinkaZostava: [0, 0],
 
       karHotovy: [true, true],
@@ -221,9 +221,9 @@ describe("Cintorín: porazený dá Nástroj z ruky do Dedičstva zadarmo", () =>
     return sHracom({ ...s, faza: "bitka", bitkaStav: bitka }, 0, { ruka, cigarety: 0 });
   }
 
-  it("po Pohrebe čaká Cintorín na porazeného; Nástroj ide do Dedičstva bez cigariet a cena Dedičstva rastie", () => {
+  it("Cintorín čaká na porazeného; Nástroj ide do Dedičstva bez cigariet a cena Dedičstva rastie", () => {
     const puska = inst("puska");
-    const s = apply(data, poPohrebe("cintorin", [puska, inst("pijan")]), { type: "skipPohreb" }, 0).state;
+    const s = naCintorine("cintorin", [puska, inst("pijan")]);
     expect(s.bitkaStav?.krok).toBe("cintorin");
     expect(s.bitkaStav?.caka).toBe(0);
     expect(legalCommands(data, s, 0)).toEqual(expect.arrayContaining([{ type: "cintorin", uid: puska.uid }, { type: "cintorin", uid: null }]));
@@ -234,12 +234,7 @@ describe("Cintorín: porazený dá Nástroj z ruky do Dedičstva zadarmo", () =>
     expect(po.dedicstvaVylozene).toBe(pred + 1);
   });
 
-  it("bez Nástroja v ruke alebo inde sa Cintorín preskočí", () => {
-    const bez = apply(data, poPohrebe("cintorin", [inst("pijan")]), { type: "skipPohreb" }, 0).state;
-    expect(bez.bitkaStav?.krok).not.toBe("cintorin");
-    const inde = apply(data, poPohrebe("krcma", [inst("puska")]), { type: "skipPohreb" }, 0).state;
-    expect(inde.bitkaStav?.krok).not.toBe("cintorin");
-  });
+  // Preskočenie Cintorína (bez Nástroja, iná lokalita, sekera) stráži v7-efekty.test.ts.
 });
 
 

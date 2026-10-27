@@ -533,7 +533,7 @@
     },
     {
       "id": "11.priznanie.tempo",
-      "paragraf": "11. Kliatby, priznanie, Exekútor, Pohreb › Priznanie",
+      "paragraf": "11. Kliatby, priznanie, Exekútor › Priznanie",
       "pravidlo": "Priznanie nemíňa limit, neodovzdá ťah a smie aj pri vyčerpanom limite.",
       "stav": "pokryte",
       "testy": [
@@ -544,7 +544,7 @@
     },
     {
       "id": "11.priznanie.karta",
-      "paragraf": "11. Kliatby, priznanie, Exekútor, Pohreb › Priznanie",
+      "paragraf": "11. Kliatby, priznanie, Exekútor › Priznanie",
       "pravidlo": "Za priznanú kliatbu si hráč hneď dobere kartu (Dlh, Milujúca manželka, Absťák); za Cirhózu nie.",
       "stav": "pokryte",
       "testy": [
@@ -555,7 +555,7 @@
     },
     {
       "id": "11.priznanie.dlh-sam",
-      "paragraf": "11. Kliatby, priznanie, Exekútor, Pohreb › Priznanie",
+      "paragraf": "11. Kliatby, priznanie, Exekútor › Priznanie",
       "pravidlo": "Dobratý Dlh sa hneď sám prizná a hráč ťahá ďalšiu kartu (aj v reťazi).",
       "stav": "pokryte",
       "testy": [
@@ -564,7 +564,7 @@
     },
     {
       "id": "11.priznanie.mimo-linie",
-      "paragraf": "11. Kliatby, priznanie, Exekútor, Pohreb › Priznanie",
+      "paragraf": "11. Kliatby, priznanie, Exekútor › Priznanie",
       "pravidlo": "Kliatba do línie nepatrí, dá sa len priznať; výnimka je Milujúca manželka (Občan).",
       "stav": "pokryte",
       "testy": [
@@ -573,7 +573,7 @@
     },
     {
       "id": "11.priznanie.cirhoza-tuhe",
-      "paragraf": "11. Kliatby, priznanie, Exekútor, Pohreb › Priznanie",
+      "paragraf": "11. Kliatby, priznanie, Exekútor › Priznanie",
       "pravidlo": "Priznaná Cirhóza dá súperovi v každej bitke +1 tuhé.",
       "stav": "pokryte",
       "testy": [
@@ -821,13 +821,12 @@
       ]
     },
     {
-      "id": "10.patronat.pohreb-starosta",
+      "id": "10.patronat.starosta",
       "paragraf": "10. Starší › Patronát",
-      "pravidlo": "Kartu staršieho z patronátu nemožno pochovať ani vymeniť Starostom.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/patronat-20261020.test.ts › staršieho z patronátu nemožno pochovať"
-      ]
+      "pravidlo": "Kartu staršieho z patronátu nemožno vymeniť Starostom.",
+      "stav": "na-overenie",
+      "testy": [],
+      "poznamka": "Pohreb zrušil Michal 2026-10-27 (test „nemožno pochovať“ zanikol); test Starostu treba doplniť."
     },
     {
       "id": "6.zacina-utocnik",
@@ -852,7 +851,7 @@
     {
       "id": "4.kolo.nevyhnutne",
       "paragraf": "4. Priebeh kola",
-      "pravidlo": "Keď hráč nemá inú možnosť než pasovať, preskočiť NA EX alebo Pohreb, hra ťah urobí za neho (aj s cigaretami v Zhromaždení).",
+      "pravidlo": "Keď hráč nemá inú možnosť než pasovať alebo preskočiť NA EX, hra ťah urobí za neho (aj s cigaretami v Zhromaždení).",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/tempo.test.ts › keď hráč nemá čo vyložiť, pas sa odohrá sám a začne Pitka",
@@ -999,7 +998,7 @@
     },
     {
       "id": "11.exekutor.prah",
-      "paragraf": "11. Kliatby, priznanie, Exekútor, Pohreb › Exekútor",
+      "paragraf": "11. Kliatby, priznanie, Exekútor › Exekútor",
       "pravidlo": "Prah Exekútora = 10 − sila súperovej priazne Exekútora (Obecný úrad −4); pri priznaných Dlhoch ≥ prah zhorí polovica Dlhov (nadol) a rovnako špakov (v6, Nástroj sa neodovzdáva); Záhradkár smie ísť namiesto špakov.",
       "stav": "pokryte",
       "testy": [
@@ -1009,7 +1008,7 @@
     },
     {
       "id": "11.exekutor.robota",
-      "paragraf": "11. Kliatby, priznanie, Exekútor, Pohreb › Exekútor",
+      "paragraf": "11. Kliatby, priznanie, Exekútor › Exekútor",
       "pravidlo": "Najprv Robota: za každú aktívnu spáli 1 priznaný Dlh, potom sa kontroluje prah.",
       "stav": "na-overenie",
       "testy": [],
@@ -1017,7 +1016,7 @@
     },
     {
       "id": "11.exekutor.nepali",
-      "paragraf": "11. Kliatby, priznanie, Exekútor, Pohreb › Exekútor",
+      "paragraf": "11. Kliatby, priznanie, Exekútor › Exekútor",
       "pravidlo": "Kto exekúcii nečelí, Dlh nepáli.",
       "stav": "na-overenie",
       "testy": [],
@@ -1145,32 +1144,14 @@
       ]
     },
     {
-      "id": "11.pohreb.zavisly",
-      "paragraf": "11. Kliatby, priznanie, Exekútor, Pohreb › Pohreb",
-      "pravidlo": "Pohreb Závislého: hráč si smie navyše vziať jednu kartu zo šenku; bez Dlhu (pravidlá v4, Liečba zlúčená do Pohrebu). Kartu zo šenku dá len Závislý.",
+      "id": "15.lokalita.cintorin",
+      "paragraf": "15. Lokality",
+      "pravidlo": "Cintorín (Prehra, Michal 2026-10-27): porazený smie dať jeden Nástroj z ruky alebo zo šenku do Dedičstva zadarmo; cena Dedičstva sa zvýši; pri sekere nikto.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-bitka.test.ts › §11 Pohreb Závislého: spáli priznanú Cirhózu a Závislého z línie, hráč si smie vziať kartu zo šenku — bez Dlhu (v4)",
-        "packages/core/test/pravidla-bitka.test.ts › §11 Pohreb: kartu zo šenku dá len Závislý; Závislého smie pochovať aj bez nej"
-      ]
-    },
-    {
-      "id": "11.pohreb",
-      "paragraf": "11. Kliatby, priznanie, Exekútor, Pohreb › Pohreb",
-      "pravidlo": "Pohreb: spáľ priznanú Cirhózu a ľubovoľnú svoju kartu z línie.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/pravidla-bitka.test.ts › §11 Pohreb: spáli priznanú Cirhózu a ľubovoľnú svoju kartu z línie — karta sa nevráti"
-      ]
-    },
-    {
-      "id": "11.cintorin",
-      "paragraf": "11. Kliatby, priznanie, Exekútor, Pohreb › Cintorín",
-      "pravidlo": "Pri bitke o Cintorín porazený smie dať jeden Nástroj z ruky do Dedičstva zadarmo; cena Dedičstva sa zvýši.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/lokality-20261020.test.ts › po Pohrebe čaká Cintorín na porazeného; Nástroj ide do Dedičstva bez cigariet a cena Dedičstva rastie",
-        "packages/core/test/lokality-20261020.test.ts › bez Nástroja v ruke alebo inde sa Cintorín preskočí"
+        "packages/core/test/v7-efekty.test.ts › porazený dá Nástroj z ruky do Dedičstva zadarmo; spoločná cena Dedičstva rastie",
+        "packages/core/test/v7-efekty.test.ts › porazený smie vziať Nástroj aj zo šenku — zo šenku zmizne",
+        "packages/core/test/v7-efekty.test.ts › bez Nástroja v ruke aj v šenku, na inej lokalite a pri sekere sa Cintorín preskočí"
       ]
     },
     {
@@ -1338,7 +1319,7 @@
     },
     {
       "id": "11.kliatby.verejny-dlh",
-      "paragraf": "11. Kliatby, priznanie, Exekútor, Pohreb › Kliatby",
+      "paragraf": "11. Kliatby, priznanie, Exekútor › Kliatby",
       "pravidlo": "Nový Dlh sa hneď prizná (bez karty); nová Cirhóza ide do odhadzovacieho balíčka (Michal 2026-10-25, predtým navrch doberacieho).",
       "stav": "pokryte",
       "testy": [
@@ -1349,7 +1330,7 @@
     },
     {
       "id": "11.kliatby.verejny-pocet",
-      "paragraf": "11. Kliatby, priznanie, Exekútor, Pohreb › Kliatby",
+      "paragraf": "11. Kliatby, priznanie, Exekútor › Kliatby",
       "pravidlo": "Počet súperových nepriznaných Dlhov a Cirhóz je verejný — každá zmena je vo verejnom logu, ktoré karty sa neposiela.",
       "stav": "pokryte",
       "testy": [
@@ -1358,8 +1339,8 @@
     },
     {
       "id": "11.kliatby.cirhoza-drzanie",
-      "paragraf": "11. Kliatby, priznanie, Exekútor, Pohreb › Kliatby",
-      "pravidlo": "Nepriznaná Cirhóza, ktorú má hráč po bitke v ruke, ide do jeho odhadzovacieho balíčka; kým ju neprizná, súper za ňu tuhé nedostáva a na Pohreb nie je; na konci hry stojí 5 špakov (v6).",
+      "paragraf": "11. Kliatby, priznanie, Exekútor › Kliatby",
+      "pravidlo": "Nepriznaná Cirhóza, ktorú má hráč po bitke v ruke, ide do jeho odhadzovacieho balíčka; kým ju neprizná, súper za ňu tuhé nedostáva; na konci hry stojí 5 špakov (v6).",
       "stav": "na-overenie",
       "testy": [],
       "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/kar.test.ts › Cirhózu si hráč smie nechať; bez Cirhózy v ruke sa krok preskočí; packages/core/test/pravidla-bitka.test.ts › §14/§11: Dlh uberá aj priznaný, Cirhóza len nepriznaná (ruka aj oba balíčky), cigarety po trojiciach; packages/core/test/pravidla-20261019.test.ts › za každú priznanú Cirhózu dá súper +1 tuhé."
@@ -1520,15 +1501,6 @@
       "stav": "pokryte",
       "testy": [
         "packages/core/test/playtest-055944.test.ts › veľká ruka sa po bitke neodhadzuje a súperov Hrobár za nič nedostane"
-      ]
-    },
-    {
-      "id": "16.karta.hrobar-pohreb",
-      "paragraf": "16. Výklad kariet",
-      "pravidlo": "Spálenie karty z línie Pohrebom je zahodenie z línie — súperov Hrobár dostane cigaretu (Michal 2026-10-22, rozhodca #9).",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/pravidla-bitka.test.ts › §16 Hrobár: vlastný Pohreb majiteľovi Hrobára cigaretu nedá"
       ]
     },
     {

@@ -76,7 +76,7 @@ function dohraj(s0: GameState): GameState {
     const p = naTahu(s);
     if (p === null) break;
     const legal = legalCommands(sada, s, p);
-    const cmd = legal.find((c) => c.type === "skipNaex" || c.type === "bezReakcie" || c.type === "skipPohreb") ?? legal[0]!;
+    const cmd = legal.find((c) => c.type === "skipNaex" || c.type === "bezReakcie" || (c.type === "cintorin" && c.uid === null)) ?? legal[0]!;
     s = apply(sada, s, cmd, p).state;
   }
   return s;

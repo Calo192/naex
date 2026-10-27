@@ -192,7 +192,7 @@ type Navrh =
   | { readonly typ: "vylozenia"; readonly polozky: readonly { readonly uid: number; readonly ciel: CielVykladania }[] }
   // otocena je v ráme hráča 0, presne ako v príkaze chooseLocation.
   | { readonly typ: "lokalita"; readonly uid: number; readonly otocena: boolean }
-  // Draft aj Pohreb Závislého: karty zo šenku presunuté do ruky.
+  // Draft: karty zo šenku presunuté do ruky.
   | { readonly typ: "zoSenku"; readonly uids: readonly number[] };
 
 const CIELE_VYKLADANIA: readonly string[] = ["vlastna", "superova", "priznanie", "dedicstvo"] satisfies CielVykladania[];
@@ -373,9 +373,6 @@ type Mode =
   | { typ: "ziadny" }
   // NA EX na dva kroky (dizajn hra-nezrovnalosti-20261021-1229, UX N3): vyber kartu, potom potvrď.
   | { typ: "naexCiel"; uid: number | null }
-  | { typ: "pohrebKarta"; cirhozaUid: number }
-  // Pohreb Závislého (pravidlá v4): smie si vziať kartu zo šenku.
-  | { typ: "pohrebSenok"; cirhozaUid: number; kartaUid: number }
   // Patronát (Michal 2026-10-20): vybraný starší a karta z ruky lícom dole na jeho scorecard.
   | { typ: "patronat"; elderId: string; uid: number | null }
   // Výbery viacerých kariet: Benzínka (Občania v línii), Veštica.
@@ -938,17 +935,15 @@ export function HernaPlocha({
   const jeKartaPatronatu = (uid: number): boolean =>
     view.patronat.some((x) => x !== null && view.starsi.find((e) => e.elderId === x.elderId)?.karta.uid === uid);
   const limitTeraz = limitZhromazdenia(view, ja);
-  const zoSenkuLimit = somNaTahu && mode.typ === "pohrebSenok" ? 1 : kolkoMozemBrat;
-  // Keď hráč má vyberať karty zo šenku (Pohreb Závislého) či Vešticu, vrstva sa otvorí
+  const zoSenkuLimit = kolkoMozemBrat;
+  // Keď hráč má vyberať kartu zo šenku (Starosta) či Vešticu, vrstva sa otvorí
   // sama. Raz za fázu — ak ju zavrie, znova sa nevnucuje. Cieľ kola sa vyberá
   // na stole (Michal 2026-10-19), nie vo vrstve.
   const chceVrstvu: Vrstva | null = !somNaTahu || view.koniec !== null
     ? null
     : view.volbaVestica !== null
         ? "vestica"
-    : mode.typ === "pohrebSenok"
-        ? "senok"
-        : // Karta zo šenku (Starosta, Dohadzovačka v7): šenok sa otvorí sám.
+    : // Karta zo šenku (Starosta, Dohadzovačka v7): šenok sa otvorí sám.
           view.volbaNastupu?.typ === "senok" && view.volbaNastupu.hrac === ja
           ? "senok"
           : null;
@@ -2273,9 +2268,8 @@ export function HernaPlocha({
   const zonaTriedy = (ciel: string, zaklad: string): string =>
     [zaklad, jeCiel(ciel) ? "ciel-zona" : "", nadCielom(ciel) ? "nad-cielom" : ""].join(" ");
 
-  // ---- klikanie na karty v línii (NA EX cieľ, Pohreb) -------------------
-  // Pohreb berie tvoju kartu — natočenú k tebe, na ktorejkoľvek strane.
-  const klikLinia = (majitel: PlayerId, uid: number): (() => void) | undefined => {
+  // ---- klikanie na karty v línii (NA EX cieľ, Benzínka) -------------------
+  const klikLinia = (_majitel: PlayerId, uid: number): (() => void) | undefined => {
     if (mode.typ === "naexCiel") {
       if (!naexCiele.has(uid)) return undefined;
       return () => setMode(mode.uid === uid ? { typ: "ziadny" } : { typ: "naexCiel", uid });
@@ -2283,15 +2277,6 @@ export function HernaPlocha({
     // Pitka (Michal 2026-10-21): klik na kartu so značkou ju rovno vyberie — pečiatka NA EX! sa ukáže na hrane stola.
     if (naexPriamo && mode.typ === "ziadny" && naexCiele.has(uid)) {
       return () => setMode({ typ: "naexCiel", uid });
-    }
-    if (mode.typ === "pohrebKarta" && majitel === ja) {
-      return () => {
-        // Za Závislého smie hráč vziať kartu zo šenku — najprv ju vyberie.
-        const karta = view.strany.flat().find((pl) => pl.card.uid === uid)?.card;
-        const zavisly = karta !== undefined && (data.cards.get(karta.defId)?.tags ?? []).includes("Závislý");
-        if (zavisly && view.senok.length > 0) setMode({ typ: "pohrebSenok", cirhozaUid: mode.cirhozaUid, kartaUid: uid });
-        else posli({ type: "pohreb", cirhozaUid: mode.cirhozaUid, kartaUid: uid });
-      };
     }
     if (benzinkaCiele.has(uid) && mode.typ === "vyber") {
       return () => setMode({ typ: "vyber", uids: mode.uids.includes(uid) ? mode.uids.filter((u) => u !== uid) : [...mode.uids, uid] });
@@ -2877,10 +2862,10 @@ export function HernaPlocha({
     }
     return null;
   })();
-  /** Pravý klik na prázdny stôl zruší rozbehnutý výber (miesto, cieľ NA EX, Pohreb…). */
+  /** Pravý klik na prázdny stôl zruší rozbehnutý výber (miesto, cieľ NA EX…). */
   const zrusVyberNaStole = ((): (() => void) | undefined => {
     if (miestoVolby !== null) return () => setMiestoVolby(null);
-    if (mode.typ === "naexCiel" || mode.typ === "pohrebKarta") return () => setMode({ typ: "ziadny" });
+    if (mode.typ === "naexCiel") return () => setMode({ typ: "ziadny" });
     return undefined;
   })();
 
@@ -3873,19 +3858,23 @@ export function HernaPlocha({
           };
         }
         if (b.krok === "cintorin") {
-          // Cintorín (Michal 2026-10-20): porazený dá Nástroj z ruky do Dedičstva zadarmo.
-          const nastroje = view.ruka.filter((k) => (data.cards.get(k.defId)?.tags ?? []).includes("Nástroj"));
+          // Cintorín (Michal 2026-10-27, Pozostalosť): porazený dá Nástroj z ruky alebo zo šenku do Dedičstva zadarmo.
+          const jeNastroj = (k: CardInstance): boolean => (data.cards.get(k.defId)?.tags ?? []).includes("Nástroj");
+          const nastroje = [...view.ruka.filter(jeNastroj), ...view.senok.filter(jeNastroj)];
+          const zoSenkuUid = new Set(view.senok.map((k) => k.uid));
           return {
             nadpis: "Cintorín",
             text: (
               <span className="zberatel-text">
                 <span>
-                  {tvar(rodHracaP(ja), "Prehral si na Cintoríne", "Prehrala si na Cintoríne", "Prehra na Cintoríne")}: jeden Nástroj z ruky smieš dať do Dedičstva <strong>zadarmo</strong> (ďalšie Dedičstvo aj tak
+                  {tvar(rodHracaP(ja), "Prehral si na Cintoríne", "Prehrala si na Cintoríne", "Prehra na Cintoríne")}: jeden Nástroj z ruky alebo zo šenku smieš dať do Dedičstva <strong>zadarmo</strong> (ďalšie Dedičstvo aj tak
                   zdražie pre oboch). Klikni naň, alebo nič.
                 </span>
                 <span className="zberatel-ponuka">
                   {nastroje.map((k) => (
-                    <span key={k.uid}>{karta({ karta: k, sirka: 84, onClick: () => posli({ type: "cintorin", uid: k.uid }) })}</span>
+                    <span key={k.uid} title={zoSenkuUid.has(k.uid) ? "zo šenku" : "z ruky"}>
+                      {karta({ karta: k, sirka: 84, onClick: () => posli({ type: "cintorin", uid: k.uid }) })}
+                    </span>
                   ))}
                 </span>
               </span>
@@ -3989,60 +3978,6 @@ export function HernaPlocha({
                     </button>
                   ),
                 }),
-          };
-        }
-        if (b.krok === "pohreb") {
-          const cirhoza = view.hraci[ja].priznane.find((k) => k.defId === "cirhoza");
-          const zrusit = <button onClick={zrus}>zrušiť</button>;
-          if (mode.typ === "pohrebSenok") {
-            const vzata = zoSenku[0];
-            return {
-              nadpis: "Pohreb Závislého",
-              text:
-                vzata === undefined ? (
-                  "Za Závislého si smieš vziať jednu kartu zo šenku."
-                ) : (
-                  <>
-                    Berieš <strong>{menoKarty(vzata.defId)}</strong>.
-                  </>
-                ),
-              vlavo: <button onClick={() => setVrstva("senok")}>← späť na šenok</button>,
-              // Bez vybranej karty je v strede ťah bez návrhu (bez karty zo šenku), s kartou jej potvrdenie.
-              stred:
-                vzata === undefined
-                  ? pecatTahu({
-                      text: "bez karty zo šenku",
-                      druh: "pas",
-                      akcia: () => posli({ type: "pohreb", cirhozaUid: mode.cirhozaUid, kartaUid: mode.kartaUid }),
-                    })
-                  : pecatTahu({
-                      text: "potvrdiť",
-                      vyucba: "potvrdit",
-                      tip: `Pohreb: zo šenku berieš ${menoKarty(vzata.defId)}.`,
-                      akcia: () => posli({ type: "pohreb", cirhozaUid: mode.cirhozaUid, kartaUid: mode.kartaUid, senokUid: vzata.uid }),
-                      zrus: { akcia: () => setNavrh(null), popis: "Vrátiť kartu do šenku" },
-                    }),
-              tlacidla: zrusit,
-            };
-          }
-          if (mode.typ === "pohrebKarta") {
-            return { nadpis: "Pohreb", text: "Klikni na kartu vo svojej partii, ktorú spáliš. Za Závislého si vezmeš kartu zo šenku.", tlacidla: zrusit };
-          }
-          return {
-            nadpis: "Priznaná Cirhóza",
-            text: "Pohreb spáli Cirhózu a kartu z tvojej partie; za Závislého si vezmeš kartu zo šenku.",
-            tlacidla: (
-              <>
-                <button onClick={() => posli({ type: "skipPohreb" })}>preskočiť</button>
-                <button
-                  data-vyucba="pohreb"
-                  disabled={cirhoza === undefined}
-                  onClick={() => cirhoza !== undefined && setMode({ typ: "pohrebKarta", cirhozaUid: cirhoza.uid })}
-                >
-                  Pohreb
-                </button>
-              </>
-            ),
           };
         }
         return null;
@@ -5022,7 +4957,7 @@ export function HernaPlocha({
     </>
   );
   // Log a ? — tlačidlo Šenok zaniklo (Michal 2026-10-27): šenok sa ukáže sám, keď ho treba
-  // (draft na stole, Pohreb Závislého, Starosta), a pokyn má naň tlačidlo.
+  // (draft na stole, Starosta, Cintorín), a pokyn má naň tlačidlo.
   const nastrojeStola = (
     <div className="hlava-vrstvy">
       <button

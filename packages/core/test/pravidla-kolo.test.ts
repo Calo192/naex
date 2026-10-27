@@ -395,7 +395,7 @@ describe("§10 Patronát — obmedzenia", () => {
         zhromazdenieStav: null,
         kolo: 2,
         bitkaStav: {
-          krok: "pohreb",
+          krok: "cintorin",
           caka: 0,
           sums: [{}, {}],
           exekutorHotovy: [true, true],
@@ -406,7 +406,6 @@ describe("§10 Patronát — obmedzenia", () => {
           prebytokDrzi: null,
           prebytokZostava: 0,
           prebytokPosunute: [],
-          pohrebHotovy: [false, true],
           benzinkaZostava: [0, 0],
 
           karHotovy: [true, true],
@@ -417,7 +416,7 @@ describe("§10 Patronát — obmedzenia", () => {
       u,
       { poldeciPlne: 2, poldeciVypite: 0 },
     );
-    const konec = apply(data, remiza, { type: "skipPohreb" }, 0).state;
+    const konec = apply(data, remiza, { type: "cintorin", uid: null }, 0).state;
     expect(konec.starsi[0]!.karta.uid).toBe(starsiUid);
     expect(konec.starsi[0]!.nahradeny).toBe(false);
     expect(konec.hraci[u].ruka.map((k) => k.uid)).toContain(obcan.uid);

@@ -147,7 +147,6 @@ describe("offline protihráč — pravidlá v5 a v6", () => {
       prebytokDrzi: null,
       prebytokZostava: 0,
       prebytokPosunute: [],
-      pohrebHotovy: [false, false],
       benzinkaZostava: [0, 0],
       karHotovy: [true, true],
       spalit: [],
@@ -219,23 +218,6 @@ describe("offline protihráč — pravidlá v5 a v6", () => {
     };
     expect(legalCommands(data, s, 0)).toContainEqual({ type: "kar", uid: cirhoza.uid });
     expect(tahBota(data, s, 0, 1)).toEqual({ type: "kar", uid: cirhoza.uid });
-  });
-
-  it("v6: Pohrebom spáli priznanú Cirhózu aj s tenkým balíčkom — súper by za ňu mal +1 tuhé v každej ďalšej bitke", () => {
-    const s0 = vPohorseni(92, () => 3);
-    let uid = 890000;
-    const k = (defId: string): CardInstance => ({ uid: ++uid, defId, leftLayout: 0, rightLayout: 0 });
-    const cirhoza = k("cirhoza");
-    const s: GameState = {
-      ...s0,
-      strany: [[{ card: k("pijan"), playedBy: 0 }], []],
-      bitkaStav: bitka({ krok: "pohreb", caka: 0, pohrebHotovy: [false, true] }),
-      hraci: [{ ...s0.hraci[0], ruka: [k("pijan")], doberaci: [k("pijan"), k("hasic")], odhadzovaci: [], priznane: [cirhoza] }, s0.hraci[1]],
-    };
-    for (const povaha of POVAHY) {
-      const cmd = tahBota(data, s, 0, 3, { povaha: povaha.id });
-      expect(cmd.type, povaha.id).toBe("pohreb");
-    }
   });
 });
 
