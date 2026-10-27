@@ -218,23 +218,23 @@ describe("Záverečná po Pitke — náhodné partie", () => {
 
 describe("Záverečná po Pitke — odhalenie v rekapitulácii (Michal 2026-10-27)", () => {
   it("rekapitulácia Pitky nesie odhalenú kartu, jej akcie a efekty pri otočení — obaja ju vidia", () => {
-    const stryna = inst("niekoho_stryna");
+    const stryna = inst("degustatorka");
     const cirhoza = inst("cirhoza");
     const s = finale([[inst("pijan"), inst("hasic")], [stryna, cirhoza, inst("pijan")]], 1);
     const po = apply(data, apply(data, s, { type: "zaverecna", uid: stryna.uid, target: "superova" }, 1).state, { type: "pass" }, 0).state;
     const { state, events } = dohrajPitkuSUdalostami(po);
     const z = rekapPitky(events)?.zaverecne;
     expect(z).toHaveLength(1);
-    expect(z?.[0]).toMatchObject({ majitel: 1, strana: 0, uid: stryna.uid, defId: "niekoho_stryna" });
-    // Nástup Niekoho strynej (zahodí Cirhózu) je v efektoch, riadok o otočení nie.
+    expect(z?.[0]).toMatchObject({ majitel: 1, strana: 0, uid: stryna.uid, defId: "degustatorka" });
+    // Nástup Degustátorky je v efektoch, riadok o otočení nie.
     expect(z?.[0]?.efekty.length).toBeGreaterThan(0);
     expect(z?.[0]?.efekty.some((t) => t.includes("sa otáča"))).toBe(false);
     // Akcie sú tie, ktoré karta dávala v línii pred otočením.
     expect(Object.values(z?.[0]?.akcie ?? {}).every((n) => typeof n === "number" && n > 0)).toBe(true);
     for (const ja of [0, 1] as const) {
       const moje = eventsFor(events, ja);
-      expect(rekapPitky(moje)?.zaverecne?.[0]?.defId).toBe("niekoho_stryna");
-      expect(moje.some((e) => e.type === "log" && e.text.includes("Záverečná hráča 2 sa otáča: Niekoho stryná"))).toBe(true);
+      expect(rekapPitky(moje)?.zaverecne?.[0]?.defId).toBe("degustatorka");
+      expect(moje.some((e) => e.type === "log" && e.text.includes("Záverečná hráča 2 sa otáča: Degustátorka"))).toBe(true);
     }
     // Uložená aj v stave — rekapitulácia bitky z nej skladá „z Pitiek kola“.
     expect(state.pitkyKola?.at(-1)?.zaverecne?.[0]?.uid).toBe(stryna.uid);

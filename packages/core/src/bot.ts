@@ -30,11 +30,11 @@ import { defOf, printedSides } from "./data.ts";
 import type { RngState } from "./rng.ts";
 import { rngInt, rngNext, rngSeed, rngShuffle } from "./rng.ts";
 import type { PlacedCard } from "./partia.ts";
-import { evaluateLine, snubenicaVracia } from "./partia.ts";
+import { evaluateLine } from "./partia.ts";
 import { KONSTANTY } from "./constants.ts";
 import type { ElderState, MarkerPos } from "./elders.ts";
 import { MARKER_STRED, cenaPatronatu, spakyZaStarsich, strachZ, vydesil } from "./elders.ts";
-import { efektHraca, efektPotlaceny, jeCielLokalita, limitZhromazdenia, naexZaPitku, partiaHraca, zakazNaex } from "./effects.ts";
+import { efektHraca, efektPotlaceny, jeCielLokalita, limitZhromazdenia, naexZaPitku, partiaHraca } from "./effects.ts";
 import { stranyLokality } from "./hrany.ts";
 import type { Command, GameState } from "./engine.ts";
 import {
@@ -659,8 +659,7 @@ interface Vylozenie {
 function sKartou(strany: GameState["strany"], q: PlayerId, v: Vylozenie): GameState["strany"] {
   const p: PlayerId = v.kam === "vlastna" ? q : opponentOf(q);
   const nova: PlacedCard = { card: v.karta, playedBy: q };
-  // Snúbenica vedľa karty s NA EX ju pošle do ruky a ľahne na jej miesto.
-  const strana = snubenicaVracia(strany[p], v.karta.defId) === null ? strany[p] : strany[p].slice(0, -1);
+  const strana = strany[p];
   return p === 0 ? [[...strana, nova], strany[1]] : [strany[0], [...strana, nova]];
 }
 
@@ -1254,7 +1253,7 @@ const SUPER_DA_NAEX = 0.5;
 
 /** Šanca, že hráč su v tejto Pitke dá aspoň jedno NA EX (Krčma ho vynúti, bez poldeci či cieľa nič). */
 function sancaNaexSupera(data: GameData, s: GameState, su: PlayerId): number {
-  if (s.pitkaStav === null || zakazNaex(s) || s.hraci[su].poldeciPlne <= 0) return 0;
+  if (s.pitkaStav === null || s.hraci[su].poldeciPlne <= 0) return 0;
   if (naexCieleVLinii(data, lineState(s), su).length === 0) return 0;
   return jeCielLokalita(s, "krcma") ? 1 : SUPER_DA_NAEX;
 }

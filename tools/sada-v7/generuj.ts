@@ -15,6 +15,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { cardVariants } from "../../packages/core/src/variants.ts";
 import type { Action, CardDef, SideDef, SlotIndex } from "../../packages/core/src/types.ts";
+import { ALL_TRIGGERS } from "../../packages/core/src/types.ts";
 
 const CARDS = "packages/core/data/cards.json";
 const SLOTY = "docs/napady/revizia-sady/sloty.json";
@@ -216,6 +217,78 @@ const LOKALITY: readonly Lokalita[] = [
   { id: "herna", name: "Herňa", kraje: ["pri automatoch", "v zadnej miestnosti"], lava: [PEC, PET, PEN, DLH], prava: [RAN, PEC, ROB, DLH], effect_text: "Bitka: Víťaz dostane navyše toľko špakov, koľko má porazený priznaných Dlhov.", triggers: ["Bitka"] },
 ];
 
+/**
+ * Rozhodnuté znenia efektov (plan.md 14.0, Michal 2026-10-27) — doslova, „len
+ * spúšťač a efekt“. Prepíšu text kariet z TEXTY, STARSI aj LOKALITY; spúšťače
+ * sa čítajú z textu ako v tvorcovi. Svokra a Hasič nesú znenie efektu, ktorý
+ * hra hrá (§16; v sade ostal starší text — playtest v7 131033).
+ */
+const EFEKTY: Readonly<Record<string, string>> = {
+  financna_poradkyna: "Pitka: Dlhy, ktoré vygeneruje táto karta, dostáva súper.",
+  velmi_smutiaca_vdova: "Konflikt: Ak je priložená karta Chlap, po bitke ide z hry.",
+  policajtka: "Konflikt: Súper získa 1 Dlh. Ak je priložená karta Kriminál, namiesto toho ti dá 2 cigarety.",
+  niekoho_stryna: "Pitka: Každý hráč, ktorý v tejto Pitke nedal NA EX, dostane 1 poškodenie pečene.",
+  recidivista: "Prehra: Po bitke sa vráti do tvojej ruky.",
+  liberal: "Pitka: Ak súperova partia nemá rovnako žien a chlapov, súper získa 1 zadĺženie.",
+  zivnostnik: "Nástup: V tom istom ťahu smieš za neho priložiť 1 Nástroj z ruky.",
+  sarlatan: "Konflikt: Do konca kola sa jeho Dlhy rátajú ako Viera a Povery ako Rana.",
+  noviny: "Dedičstvo: Prehra: Ak má víťaz viac priznaných Dlhov ako ty, špaky za túto bitku dostaneš ty.",
+  cigorky: "Dedičstvo: Pitka: Za každé 2 cigarety, ktoré súper vyfajčí, si dober 1 kartu. Nie je to nerest.",
+  pasca: "Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej, udelíš mu 1 Pecku navyše.",
+  puska: "Dedičstvo: Tvoje Petelice udeľujú o 1 poškodenie viac.",
+  vidly: "Dedičstvo: Tvoje Rany udeľujú o 1 poškodenie viac.",
+  // Michal 2026-10-27 (brainstorming 164059c): nahrádza výklad „Výhra 1 špak“.
+  vyherny_automat: "Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. V poslednej Pitke kola získaš 1 Dlh.",
+  kohut: "Pitka: Posledné slovo máš ty, aj keď si obranca.",
+  kapybara: "Nástup: Posuň marker jedného staršieho o 1 pole k stredu.",
+  pes: "Furt: Jeho aktívne akcie na spoji so súperovou kartou sa rátajú dvakrát.",
+  krokodil: "Bitka: Na konci bitky idú z hry všetci Občania a Zvieratá v jeho okolí.",
+  pijan: "Bitka: Za každé NA EX, ktoré si v tomto kole dal, udelíš súperovi 1 Ranu navyše.",
+  milujuca_manzelka: "Pitka: Tvoje poškodenie pečene v tejto Pitke je o 1 menšie.",
+  ministrant: "Nástup: Ak vyvoláš Konflikt, do konca kola sa jeho Viera ráta ako Pecka.",
+  dievcina_na_vydaj: "Prehra: Zahoď túto kartu. Súper získa toľko Dlhov, koľko mala aktívnych akcií.",
+  snubenica: "Konflikt: Ak je priložená karta Chlap, po bitke ide do tvojho odhadzovacieho balíčka a je tvoja.",
+  klebetnica: "Pitka: Ak vyberáš NA EX po súperovi, vidíš jeho voľbu.",
+  zahradkar: "Exekúcia: Smieš ju zahodiť namiesto špakov a spáliť toľko priznaných Dlhov, koľko mala aktívnych akcií.",
+  anonymny_alkoholik: "Nástup: Priznaj všetky nepriznané Cirhózy zo svojho odhadzovacieho balíčka.",
+  dohadzovacka: "Bitka: Za každý spoj tvojej Ženy so súperovým Chlapom alebo tvojho Chlapa so súperovou Ženou si vezmi 1 kartu zo šenku.",
+  masiar: "Furt: Akcie Zvierat v jeho okolí neplatia.",
+  kulturista: "Úplatok: Súper smie v každej Pitke dať na túto kartu 1 cigaretu. Každá zníži do konca kola jej útoky o stupeň (Petelica → Pecka → Rana → nič). Cigarety prepadnú.",
+  vymahac: "Bitka: Za každé 2 tvoje priznané Dlhy udelíš súperovi 1 Ranu navyše.",
+  svokra: "Bitka: Za každú tvoju kartu so súperovým NA EX udelíš súperovi Ranu.",
+  hasic: "Nástup: Vytiahni náhodnú kartu zo svojho odhadzovacieho balíčka (aj kliatbu) a rozhodni sa, či si ju necháš, alebo ju odhodíš.",
+  // Starší
+  veterinar: "Pitka: Karty v jeho okolí nepridávajú poškodenie pečene.",
+  autobusar: "Zhromaždenie: Ak súper pasuje po tebe, nedostane cigarety za pas.",
+  starosta: "Nástup: Vezmi si 1 kartu zo šenku.",
+  farar: "Prehra: Víťaz získa 1 zadĺženie za každú svoju aktívnu Poveru.",
+  postarka: "Kšeft: Za 1 Dlh si dober 1 kartu.",
+  hrobar: "Konflikt: Priložená karta je posledná na svojej strane. Po bitke ide z hry.",
+  vychovavatelka: "Kšeft: Za 2 cigarety máš v bitke 1 Poveru navyše.",
+  krcmarka: "Pitka: Na tvoje NA EX súper nesmie odpovedať kartou.",
+  // Lokality
+  cintorin: "Pitka: Nová Cirhóza je hneď priznaná.",
+  jednota: "Pitka: Kto má viac priznaných Dlhov, nesmie v tejto Pitke fajčiť ani dolievať.",
+  // TODO(v7, plan.md 14.7): pri rovnakej vzdialenosti nefajčí nikto — návrh, Michal nepotvrdil.
+  benzinka: "Pitka: Fajčiť smie len hráč, ktorého Občan alebo Starešina leží najďalej od lokality.",
+  kar: "Pitka: Poškodenie pečene za NA EX dostane súper hráča, ktorý ho dal.",
+  obecny_urad: "Kšeft: Za 3 cigarety presuň 1 svoj priznaný Dlh medzi súperove priznané.",
+  kostol: "Zhromaždenie: Nikto nesmie vypiť. Pitka: NA EX sa smie dať len na kartu v kraji pri oltári.",
+  sklad: "Kšeft: Za 1 cigaretu si vezmi do ruky vrchnú kartu zo súperovho odhadzovacieho balíčka.",
+};
+
+/** Premenovania (plan.md 14.0); kľúče v dátach ostávajú. */
+const MENA: Readonly<Record<string, string>> = { niekoho_stryna: "Stryná", klebetnica: "Bzdocha" };
+
+/** Karty, ktoré zo sady vypadli alebo sú len návrhom (plan.md 14.5). */
+const MIMO_SADY: readonly string[] = ["presbiter", "opatrovatelka", "smetiarka", "brigadnik", "oslavenec"];
+
+/** Spúšťače z textu efektu v poradí, ako v ňom stoja (ako tvorca, tvorba/text.ts). */
+function spustace(text: string): string[] {
+  const out = ALL_TRIGGERS.filter((t) => new RegExp(`(^|[\\s.!?])${t}:`, "u").test(text));
+  return out.sort((a, b) => text.indexOf(`${a}:`) - text.indexOf(`${b}:`));
+}
+
 function stranaZoSlotov(sloty: readonly (string | null)[], kraj: string): StranaJson {
   const blocked: number[] = [];
   const actions: Record<string, number> = {};
@@ -311,8 +384,26 @@ for (const l of LOKALITY) {
 const zrusene = cards.cards.filter((c) => c.tags.includes("Lokalita") && !LOKALITY.some((l) => l.id === c.id));
 if (zrusene.length > 0) throw new Error(`Lokality mimo plánu: ${zrusene.map((c) => c.id).join(", ")}`);
 
+for (const id of MIMO_SADY) {
+  const i = cards.cards.findIndex((c) => c.id === id);
+  if (i !== -1) cards.cards.splice(i, 1);
+}
+for (const [id, text] of Object.entries(EFEKTY)) {
+  const k = podlaId.get(id);
+  if (k === undefined) throw new Error(`Efekt pre ${id}: karta nie je v sade.`);
+  k.effect_text = text;
+  k.triggers = spustace(text);
+  if (k.triggers.length === 0) throw new Error(`${id}: text bez spúšťača.`);
+}
+for (const [id, meno] of Object.entries(MENA)) {
+  const k = podlaId.get(id);
+  if (k !== undefined) k.name = meno;
+}
+const mimo = cards.cards.filter((c) => !["Starešina", "Kliatba", "Lokalita"].some((t) => c.tags.includes(t)) && !sloty.karty.some((s) => s.id === c.id));
+if (mimo.length > 0) throw new Error(`Karty mimo sloty.json: ${mimo.map((c) => c.id).join(", ")}`);
+
 if (!cards.actions.includes("Pakt")) cards.actions.push("Pakt");
-cards.source = "sada v7 — revízia sady (Michal 2026-10-27), tools/sada-v7/generuj.ts zo sloty.json a plan.md; len vetva v7/revizia-sady";
+cards.source = "sada v7 — revízia sady a efekty (Michal 2026-10-27), tools/sada-v7/generuj.ts zo sloty.json a plan.md 14.0; len vetvy v7";
 cards.cards.sort((a, b) => a.index - b.index);
 writeFileSync(CARDS, `${JSON.stringify(cards, null, 1)}\n`);
 console.log(`cards.json: ${cards.cards.length} kariet, ${cards.cards.filter((c) => c.tags.includes("Lokalita")).length} lokalít.`);

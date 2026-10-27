@@ -37,8 +37,8 @@ export interface PosunMarkera {
   readonly elderId: string;
   readonly z: MarkerPos;
   readonly na: MarkerPos;
-  /** kseft = Predsedova vila (v7). */
-  readonly zdroj: "pohorsenie" | "prebytok" | "patronat" | "kseft";
+  /** kseft = Predsedova vila (v7), nastup = Kapybara (v7). */
+  readonly zdroj: "pohorsenie" | "prebytok" | "patronat" | "kseft" | "nastup";
   /** Hráč, ktorého akcia marker posunula (pri prebytku držiteľ prebytku). */
   readonly kto: PlayerId;
 }

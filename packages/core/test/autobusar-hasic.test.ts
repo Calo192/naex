@@ -74,41 +74,6 @@ function predPoskodenim(o: { sums: BitkaStav["sums"]; abstaky: readonly [number,
 
 const vyhodnot = (s: GameState) => apply(data, s, { type: "pohorsenie", elderId: s.starsi[0]!.elderId }, 0);
 
-describe("Autobusár: ignoruje jeden Absťák v poškodení, remíze aj špakoch víťaza", () => {
-  it("§9.4 remíza v tuhom: Autobusár jeden Absťák ignoruje — 1 : 1 Absťák vyhrá jeho majiteľ, bez neho sekera", () => {
-    const bez = vyhodnot(predPoskodenim({ sums: [{}, {}], abstaky: [1, 1], autobusar: false })).state;
-    expect(bez.nastenka.at(-1)).toMatchObject({ vitaz: null, rozhodlo: "sekera" });
-    const s = vyhodnot(predPoskodenim({ sums: [{}, {}], abstaky: [1, 1], autobusar: true })).state;
-    expect(s.nastenka.at(-1)).toMatchObject({ vitaz: 0, rozhodlo: "abstak" });
-  });
-
-  it("§9.4 remíza v tuhom: s jediným Absťákom proti nule je Autobusárov majiteľ vyrovnaný — rozhodnú Dlhy (inak sekera)", () => {
-    const bez = vyhodnot(predPoskodenim({ sums: [{}, {}], abstaky: [1, 0], autobusar: false })).state;
-    expect(bez.nastenka.at(-1)).toMatchObject({ vitaz: 1, rozhodlo: "abstak" });
-    const s = vyhodnot(predPoskodenim({ sums: [{}, {}], abstaky: [1, 0], autobusar: true })).state;
-    expect(s.nastenka.at(-1)).toMatchObject({ vitaz: null, rozhodlo: "sekera" });
-  });
-
-  it("§9.4 špaky víťaza: z dvoch Absťákov sa ráta jeden — 3 Pitky mínus 1, tuhé mínus 1", () => {
-    const { state, events } = vyhodnot(predPoskodenim({ sums: [{ Rana: 9 }, {}], abstaky: [2, 0], autobusar: true, pitky: 3 }));
-    expect(state.nastenka.at(-1)).toMatchObject({ vitaz: 0, zaBitku: [2, 0], abstakZrazka: 1 });
-    const v = events.find((e): e is Extract<Event, { type: "bitkaVysledok" }> => e.type === "bitkaVysledok");
-    expect(v?.damage.tuhe[0]).toBe(9 - 1);
-    // Bez Autobusára oba Absťáky: 3 − 2 = 1 špak.
-    expect(vyhodnot(predPoskodenim({ sums: [{ Rana: 9 }, {}], abstaky: [2, 0], autobusar: false, pitky: 3 })).state.nastenka.at(-1)).toMatchObject({ zaBitku: [1, 0], abstakZrazka: 2 });
-  });
-
-  it("§9.4 špaky víťaza: Autobusár nikdy nejde pod nulu — bez Absťáku nič nepridá", () => {
-    const s = vyhodnot(predPoskodenim({ sums: [{ Rana: 4 }, {}], abstaky: [0, 1], autobusar: true, pitky: 2 })).state;
-    expect(s.nastenka.at(-1)).toMatchObject({ vitaz: 0, zaBitku: [2, 0], abstakZrazka: 0 });
-  });
-
-  it("stávka bitky v pohľade ráta Absťáky po Autobusárovi", () => {
-    const s = { ...predPoskodenim({ sums: [{}, {}], abstaky: [2, 0], autobusar: true, pitky: 3 }), faza: "zhromazdenie" as const, bitkaStav: null };
-    expect(stavkaBitky(data, viewFor(data, s, 0))?.vyhra).toBe(3 - 1);
-    expect(stavkaBitky(data, viewFor(data, s, 1))?.prehra).toBe(-(3 - 1));
-  });
-});
 
 // ---------------------------------------------------------------------------
 // Hasič

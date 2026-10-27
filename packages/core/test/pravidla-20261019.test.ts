@@ -245,20 +245,6 @@ describe("Milujúca manželka v7 (M2): latku Absťáku už neposúva", () => {
     expect(po.hraci[0].priznane.filter((k) => k.defId === "abstak")).toHaveLength(0);
   });
 
-  it("log menuje Manželku, len keď Absťák priniesla ona (playtest 20261027-105422)", () => {
-    const logAbstaku = (teraz: number): string => {
-      const s = predKoncomBitky(47, (st) => sHracom(st, 0, { nerestiMinuleKolo: 2, nerestiTotoKolo: teraz, priznane: [inst("milujuca_manzelka")] }));
-      const { state, events } = apply(data, s, { type: "skipPohreb" }, 0);
-      expect(state.hraci[0].priznane.filter((k) => k.defId === "abstak")).toHaveLength(1);
-      const log = events.find((e) => e.type === "log" && e.text.startsWith("Hráč 1 získava Absťák"));
-      return log?.type === "log" ? log.text : "";
-    };
-    // 2 = 2: Absťák len vďaka Manželke.
-    expect(logAbstaku(2)).toContain("Milujúca manželka");
-    // 1 < 2: Absťák by prišiel aj bez nej.
-    expect(logAbstaku(1)).toContain("v kole mal 1 nerest, v predošlom 2 neresti.");
-    expect(logAbstaku(1)).not.toContain("Milujúca manželka");
-  });
 });
 
 // --- Dedičstvo -------------------------------------------------------------------
@@ -400,54 +386,7 @@ describe("Vízia: vrchnú kartu balíčka do ruky, alebo zahodiť (Michal 2026-1
 
 // --- Karty -----------------------------------------------------------------------
 
-describe("Veľmi smútiaca vdova (oprava 2026-10-19)", () => {
-  it("muž navrchu ide z hry a Dlhy sa naozaj zahodia — aj z odhadzovacieho", () => {
-    const vdova = inst("velmi_smutiaca_vdova");
-    const pijan = inst("pijan");
-    let s = vZhromazdeniHrac0(47, { ruka: [vdova], odhadzovaci: [inst("dlh"), inst("dlh"), inst("pijan")] });
-    s = sHracom(s, 1, { doberaci: [pijan, ...s.hraci[1].doberaci] });
-    const r = apply(data, s, { type: "place", uid: vdova.uid, target: "vlastna" }, 0);
-    expect(r.state.hraci[1].doberaci.map((k) => k.uid)).not.toContain(pijan.uid);
-    expect(r.state.hraci[0].odhadzovaci.map((k) => k.defId)).toEqual(["pijan"]);
-    expect(r.events.some((e) => e.type === "log" && e.text.includes("muž ide z hry") && e.text.includes("2 Dlhy"))).toBe(true);
-  });
 
-  it("keď navrchu nie je muž, log to povie", () => {
-    const vdova = inst("velmi_smutiaca_vdova");
-    let s = vZhromazdeniHrac0(48, { ruka: [vdova] });
-    s = sHracom(s, 1, { doberaci: [inst("milujuca_manzelka"), ...s.hraci[1].doberaci] });
-    const r = apply(data, s, { type: "place", uid: vdova.uid, target: "vlastna" }, 0);
-    expect(r.events.some((e) => e.type === "log" && e.text.includes("nie muž"))).toBe(true);
-  });
-});
-
-describe("Vychovávateľka: Dlh ide súperovi do balíčka, nie na ruku", () => {
-  it("pri NA EX majiteľa Vychovávateľky", () => {
-    const s0 = setupSBalickom(data, 49);
-    const vych = inst("vychovavatelka");
-    const ciel = inst("pijan");
-    const dlh = inst("dlh");
-    let s: GameState = sHracom(
-      {
-        ...s0,
-        faza: "pitka",
-        ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
-        lokalityVHre: s0.lokalityVHre.slice(1),
-        strany: [[{ card: vych, playedBy: 0 }, { card: ciel, playedBy: 0 }], []],
-        pitkyCelkom: 1,
-        pitkaCislo: 1,
-        pitkaStav: { naTahu: 0, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false] },
-      },
-      0,
-      { priznane: [dlh] },
-    );
-    const ruka1 = s.hraci[1].ruka.length;
-    s = naexOdkryte(data, s, ciel.uid, 0).state;
-    expect(s.hraci[0].priznane.map((k) => k.uid)).not.toContain(dlh.uid);
-    expect(s.hraci[1].doberaci.map((k) => k.uid)).toContain(dlh.uid);
-    expect(s.hraci[1].ruka).toHaveLength(ruka1);
-  });
-});
 
 describe("pas (Michal 2026-10-20): do Pitky, cigareta za každú nevyloženú kartu", () => {
   it("pasujúci dostane cigarety za zostávajúci limit a súper vykladá sám", () => {

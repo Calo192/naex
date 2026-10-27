@@ -14,7 +14,6 @@ import type { GameData } from "./data.ts";
 import { defOf } from "./data.ts";
 import type { ClientState } from "./view.ts";
 import { cenaPatronatu, patronatMozny, priazenHraca, priazenSila, prebudenyPre, vydesil } from "./elders.ts";
-import { zakazNaex } from "./effects.ts";
 import { kandidatiNaNahradu, kartyZaPas, lineState, nahladPitky, naexCieleVLinii, prahyHraca, verejneAbstaky } from "./engine.ts";
 import { evaluateLine } from "./partia.ts";
 import { stavZavislosti } from "./zavislost.ts";
@@ -71,7 +70,7 @@ const SPUSTACE: Readonly<Record<string, Spustac>> = {
   "prve-naex": (d, v, ja) => {
     const p = v.pitkaStav;
     if (v.faza !== "pitka" || v.naTahu !== ja || p === null || p.reakcia != null || p.hotovy[ja] || p.naexPouzity[ja]) return null;
-    if (zakazNaex(v) || v.hraci[ja].poldeciPlne <= 0) return null;
+    if (v.hraci[ja].poldeciPlne <= 0) return null;
     return naexCieleVLinii(d, lineState(v), ja).length > 0 ? ANO : null;
   },
 

@@ -8,7 +8,7 @@ import type { BattleOutcome, DamageResult } from "./battle.ts";
 import { battleOutcome } from "./battle.ts";
 import type { GameData } from "./data.ts";
 import type { VerejnyStav } from "./effects.ts";
-import { naexZaPitku, zakazNaex } from "./effects.ts";
+import { naexZaPitku } from "./effects.ts";
 import type { BitkaKrok, PitkaStav } from "./engine.ts";
 import { lineState, naexCieleVLinii, pohorseniaVBitke, poskodenieBitky } from "./engine.ts";
 import type { ElderState, MarkerPos } from "./elders.ts";
@@ -49,7 +49,7 @@ export function mozeEsteNaex(stol: StolBitky, priebeh: PriebehNaex, p: PlayerId)
   // Skryté NA EX (v5) míňajú poldeci aj limit Pitky už teraz, hoci sa odpíšu až pri
   // odkrytí. Klient pozná len svoje, súperove mu viewFor nepošle.
   const skryte = priebeh.faza === "pitka" ? (pitka?.skryteNaex ?? []).filter((x) => x.hrac === p).length : 0;
-  if (zakazNaex(stol) || priebeh.poldeciPlne[p] - skryte <= 0) return false;
+  if (priebeh.poldeciPlne[p] - skryte <= 0) return false;
   if (priebeh.faza === "zhromazdenie") return true;
   if (priebeh.faza !== "pitka") return false;
   const vTejtoPitke = pitka !== null && !pitka.hotovy[p] && !pitka.naexPouzity[p] && (pitka.naexPocet?.[p] ?? 0) + skryte < naexZaPitku(stol);
@@ -81,7 +81,10 @@ export function hrozbaNaex(
   let najlepsia: HrozbaNaex | null = null;
   for (const uid of naexCieleVLinii(data, lineState(stol), p)) {
     const strany = stol.strany.map((strana) => strana.map((pl) => (pl.card.uid === uid ? { ...pl, naexBy: p } : pl))) as unknown as StolBitky["strany"];
-    const damage = bitka({ ...stol, strany });
+    // NA EX v kole vypne Šoférov bonus (playtest v7 131033: hrozba 6 : 6, náhľad 4 : 6).
+    const naexVKole: [boolean, boolean] = [stol.naexVKole?.[0] ?? false, stol.naexVKole?.[1] ?? false];
+    naexVKole[p] = true;
+    const damage = bitka({ ...stol, strany, naexVKole });
     const vysledok = battleOutcome(damage);
     const h = hodnota(vysledok, p);
     if (h > teraz && (najlepsia === null || h > hodnota(najlepsia.vysledok, p))) najlepsia = { hrac: p, uid, damage, vysledok };

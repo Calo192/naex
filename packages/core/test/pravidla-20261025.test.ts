@@ -143,14 +143,6 @@ describe("keď sa doberací balíček minie, odhadzovací sa zamieša a stane sa
     expect(po.hraci[0].odhadzovaci).toEqual([]);
   });
 
-  it("Poštárka", () => {
-    const odhodena = inst("ministrant");
-    const strany: GameState["strany"] = [[{ card: inst("postarka"), playedBy: 0 }], []];
-    const s = sHracom(vPitke(75, data, strany), 0, { doberaci: [], odhadzovaci: [odhodena] });
-    const po = apply(data, s, { type: "postarka", pocet: 1 }, 0).state;
-    expect(uids(po.hraci[0].ruka)).toContain(odhodena.uid);
-    expect(po.hraci[0].odhadzovaci).toEqual([]);
-  });
 
   it("priznanie kliatby", () => {
     const s0 = setupGame(data, 76);
@@ -208,21 +200,6 @@ describe("keď sa doberací balíček minie, odhadzovací sa zamieša a stane sa
     expect(po.hraci[0].odhadzovaci).toEqual([]);
   });
 
-  it("Veľmi smútiaca vdova odhalí vrchnú kartu zamiešaného odhadzovacieho balíčka súpera", () => {
-    const s0 = setupGame(data, 78);
-    const vdova = inst("velmi_smutiaca_vdova");
-    const muz = inst("pijan");
-    let s = {
-      ...sHracom(s0, 0, { ruka: [vdova, inst("pijan")] }),
-      faza: "zhromazdenie",
-      ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
-      zhromazdenieStav: { naTahu: 0, zostavaLimit: [2, 2], pasoval: [false, false], navyse: [0, 0] },
-    } as GameState;
-    s = sHracom(s, 1, { doberaci: [], odhadzovaci: [muz] });
-    const po = apply(data, s, { type: "place", uid: vdova.uid, target: "vlastna" }, 0).state;
-    const h1 = po.hraci[1];
-    expect(uids([...h1.ruka, ...h1.doberaci, ...h1.odhadzovaci])).not.toContain(muz.uid);
-  });
 });
 
 describe("Veštica pri prázdnom doberacom balíčku zamieša odhadzovací (Michal 2026-10-25)", () => {
