@@ -10,15 +10,18 @@
 //   &stop=kolo     začiatok kola &i=k
 //   &stop=zaverecna koniec Pitky so súperovou Záverečnou lícom dole — po načítaní sa otočí;
 //                  &dalsia=1 dohrá aj súperovu ďalšiu Záverečnú na tú istú stranu
+//   &moment=typ    pečiatka momentu (napr. vyprask, zvrat) pri prvej dohranej bitke či Pitke — snímky
+//                  pečiatky nad súhrnom; inak padajú momenty, ktoré vyberie jadro ako na serveri
 //   &exekutor=1    hráčovi ?ja pred prvou bitkou pridá Záhradkára a 10 priznaných Dlhov
 //                  (voľba Záhradkára pri exekúcii)
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { CardInstance, Command, Event, GameData, GameState, PlayerId } from "@naex/core";
-import { apply, mozeHrat, naTahu, rngInt, rngSeed, setupGame, tahBota, viewFor } from "@naex/core";
+import type { CardInstance, Command, Event, GameData, GameState, PlayerId, StavMomentov, TypMomentu } from "@naex/core";
+import { MOMENTY, NOVE_MOMENTY, apply, momenty, mozeHrat, naTahu, obmedzMomenty, rngInt, rngSeed, setupGame, tahBota, viewFor } from "@naex/core";
 import { useSada } from "../lib/sada.tsx";
 import { useHerneData } from "../stranky/Ukazky.tsx";
 import { HernaPlocha } from "./HernaPlocha.tsx";
+import { Momenty } from "./Momenty.tsx";
 import type { HracInfo } from "./useHra.ts";
 
 interface Krok {
@@ -128,10 +131,20 @@ function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada
   // Kým sa nedohrá zastavená bitka či koniec, bot za súpera neťahá — inak by ťah predbehol dohranie.
   const [dohrate, setDohrate] = useState(odohrane.dohraj.length === 0);
 
+  // Pečiatky momentov ako na serveri (momenty + strop); &moment=typ vynúti jednu pri prvej bitke či konci Pitky.
+  const stavMomentov = useRef<StavMomentov>(NOVE_MOMENTY);
+  const vynuteny = useRef(q().get("moment") as TypMomentu | null);
+  const [suhrn, setSuhrn] = useState(false);
   const pouzi = (s: GameState, cmd: Command, kto: PlayerId): GameState => {
     try {
       const { state, events } = apply(data, s, cmd, kto);
-      setUdalosti((u) => ({ id: u.id + 1, events }));
+      const strop = obmedzMomenty(momenty(data, s, state, events), stavMomentov.current, state);
+      stavMomentov.current = strop.stav;
+      const typ = vynuteny.current;
+      const koniecPitky = events.some((e) => e.type === "bitkaVysledok") || (s.faza === "pitka" && state.faza !== "pitka");
+      const pecate = typ !== null && typ in MOMENTY && koniecPitky ? [{ typ, ...MOMENTY[typ], hrac: 0 as PlayerId, popis: `${MOMENTY[typ].nazov} — ukážka pečiatky nad súhrnom.` }] : strop.vybrane;
+      if (typ !== null && koniecPitky) vynuteny.current = null;
+      setUdalosti((u) => ({ id: u.id + 1, events: [...events, ...pecate.map((moment): Event => ({ type: "moment", moment }))] }));
       return state;
     } catch (e) {
       console.error(e);
@@ -172,6 +185,7 @@ function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada
     ? [{ meno: "Jano", avatar: null }, { meno: "Rapavý Fero", avatar: null, bot: true, profil: "ziadny" }]
     : [{ meno: "Rapavý Fero", avatar: null, bot: true, profil: "ziadny" }, { meno: "Jano", avatar: null }];
   return (
+    <>
     <HernaPlocha
       view={view}
       data={data}
@@ -184,6 +198,9 @@ function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada
       kod="ukážka"
       cmd={(c) => setStav((s) => pouzi(s, c, ja))}
       opustit={() => undefined}
+      onPocitadlo={setSuhrn}
     />
+    <Momenty udalosti={udalosti} ja={ja} mena={hraci.map((h) => h.meno)} hovor={() => undefined} pocitadloBezi={suhrn} />
+    </>
   );
 }
