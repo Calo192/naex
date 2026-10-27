@@ -1265,7 +1265,6 @@ button.zdroj-starsi[aria-pressed="true"] {
 
 .linia-skupina.lokalita {
   scroll-snap-align: center;
-  padding: 0 2px;
   background: color-mix(in srgb, var(--akcent) 8%, transparent);
   border-radius: 12px;
 }
@@ -1283,6 +1282,24 @@ button.zdroj-starsi[aria-pressed="true"] {
   overflow: visible;
   min-height: 0;
   gap: 0;
+  /* Karty k lokalite priliehajú ako k sebe navzájom (Michal 2026-10-27: medzera vpravo od Skladu). */
+  padding-inline: 0;
+}
+
+/* Popisy pod a nad lokalitou nerozširujú jej stĺpec — dlhé kraje („pri strážnici“) by ho
+   roztiahli a karta by v ňom ostala pri ľavom okraji, s medzerou k súperovej strane. */
+.linia-skupina.lokalita > :is(.partia-popis, .strany-stredu) {
+  contain: inline-size;
+}
+
+.linia-skupina.lokalita > .strany-stredu {
+  flex-wrap: wrap;
+  white-space: normal;
+}
+
+.linia-skupina.lokalita > .strany-stredu > :last-child {
+  margin-left: auto;
+  text-align: right;
 }
 
 .linia .prazdna {
