@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Konflikt — nový spúšťač (koncept) — NA EX!</title>
+<title>Konflikt — jednosmerný spúšťač — NA EX!</title>
 <style>
-/* Koncept spúšťača Konflikt: definícia, vzorové efekty, otvorené body s voľbou a súhrnom pre Leadera. */
+/* Spúšťač Konflikt: rozhodnutá definícia (jednosmerný), body výkladu, Pasca a Krokodíl na dorozhodnutie, súhrn pre Leadera. */
 :root {
   --pozadie: #15120f; --plocha: #1f1a15; --plocha-2: #2a231c; --okraj: #43372c;
   --text: #f1e8d8; --tlmeny: #b8a993;
@@ -48,10 +48,13 @@ code { font-family: ui-monospace, Consolas, monospace; font-size: .84em; backgro
 .pozn { font-size: .88rem; }
 .ramik { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 14px 16px; margin: 18px 0; min-width: 0; overflow-wrap: anywhere; }
 .ramik.otv { border-color: var(--pozor); border-width: 2px; }
-.ramik.def { border-color: var(--akcent); }
+.ramik.rozh { border-color: var(--ok); }
 blockquote { margin: 0 0 10px; font-family: var(--serif); font-size: 1.02rem; }
 .roz { font-weight: 600; border-radius: 8px; padding: 6px 10px; margin: 6px 0 8px; }
+.roz-ano { background: color-mix(in srgb, var(--ok) 18%, var(--plocha)); color: var(--ok); }
 .roz-otv { background: color-mix(in srgb, var(--pozor) 18%, var(--plocha)); color: var(--pozor); }
+.roz-nesk { background: var(--plocha-2); color: var(--tlmeny); border: 1px dashed var(--okraj); }
+.roz-nie { background: color-mix(in srgb, var(--zle) 15%, var(--plocha)); color: var(--zle); }
 .zasada { background: var(--plocha-2); border-left: 4px solid var(--akcent); border-radius: 8px; padding: 8px 12px; margin: 10px 0; }
 table { border-collapse: collapse; width: 100%; font-size: .88rem; }
 th, td { text-align: left; vertical-align: top; padding: 6px; border-bottom: 1px solid var(--okraj); }
@@ -66,6 +69,8 @@ th { color: var(--tlmeny); font-weight: 600; font-size: .78rem; text-transform: 
 .bod > p:first-child { font-weight: 600; }
 .navrh { background: var(--plocha-2); border-radius: 8px; padding: 6px 10px; }
 .navrh b:first-child { color: var(--akcent); }
+details.zbalene { margin: 12px 0; border: 1px dashed var(--okraj); border-radius: 12px; padding: 8px 12px; }
+details.zbalene > summary { cursor: pointer; font-family: var(--serif); color: var(--tlmeny); }
 fieldset { border: 0; padding: 0; margin: 8px 0 0; min-width: 0; }
 legend { font-size: .85rem; color: var(--tlmeny); padding: 0; margin-bottom: 4px; }
 .volby { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -86,165 +91,144 @@ footer { margin-top: 30px; padding-top: 12px; border-top: 1px solid var(--okraj)
 <body>
 <main>
 <div class="hlavicka">
-  <h1>Konflikt — nový spúšťač efektov</h1>
+  <h1>Konflikt — jednosmerný spúšťač</h1>
   <button type="button" id="tema" aria-label="Prepnúť svetlý a tmavý režim">Svetlo / tma</button>
 </div>
-<p class="uvod">Vymyselník · 27. 10. 2026 · koncept ako pri Kšefte, pre Michala cez Leadera. Nič sa nemení v kóde ani v sade. Vzorové efekty sú len ukážky, do sady nejdú bez Michalovho rozhodnutia. Strojovo: <code>revizia-sady/plan.json</code> (<code>konflikt</code>), v pláne časť 13.</p>
-<p class="roz roz-otv">Otvorené: definícia je Michalova, 11 bodov výkladu čaká na rozhodnutie.</p>
+<p class="uvod">Vymyselník · 27. 10. 2026 · koncept spúšťača ako pri Kšefte, rozhodnutý Michalom. Kód ani sada sa zatiaľ nemenia. Vzorové efekty sú ukážky a do sady idú len po rozhodnutí. Strojovo: <code>revizia-sady/plan.json</code> (<code>konflikt</code>), v pláne časť 13.</p>
+<p class="roz roz-ano">Rozhodnuté 27. 10.: Konflikt je jednosmerný. Body 2, 5, 6, 8, 9, 10 a 11 sú uzavreté.</p>
+<p class="roz roz-otv">Otvorené: znenie efektu Pasce (bod 1) a cesta pre Krokodíla (bod 7, s odporúčaním).</p>
+<p class="roz roz-nesk">Neskôr: bod 3 (dva Konflikty naraz) a bod 4 (Snúbenica).</p>
 
-<section class="ramik def">
-  <h2>Definícia</h2>
-  <blockquote>„Keď je karta priložená k súperovej karte (nie náradie… možno s výnimkou pasce) alebo keď je súperova karta priložená k tejto karte… vtedy sa spustí konflikt.“ — Michal</blockquote>
-  <p><b>Návrh znenia do pravidiel:</b> <i><b>Konflikt:</b> efekt sa spustí, keď vznikne spoj tejto karty so súperovou kartou. Nezáleží na tom, či si kartu priložil ty k súperovej, alebo súper svoju k tvojej. Spoj s Nástrojom Konflikt nespúšťa.</i></p>
+<section class="ramik rozh">
+  <h2>Definícia (rozhodnutá)</h2>
+  <blockquote>„Konflikt sa spúšťa vtedy, keď karta už leží na stole a súper k nej priloží kartu. Ja keď prikladám kartu, konflikt nevyvolám.“ — Michal</blockquote>
+  <blockquote>„NA EX je dodatočná manipulácia s UŽ vyloženou kartou.“ — Michal (NA EX Konflikt nespúšťa)</blockquote>
+  <p><b>Znenie do pravidiel:</b> <i><b>Konflikt:</b> efekt sa spustí, keď táto karta už leží v línii a súper k nej priloží svoju kartu. Keď kartu prikladáš ty, Konflikt nevyvoláš. Priložený Nástroj Konflikt nevyvolá. NA EX ani zrážka Konflikt nespúšťajú.</i></p>
   <ul>
-    <li><b>Súperova karta</b> = karta natočená k súperovi (v jeho partii), nech leží na ktorejkoľvek strane (§6 :231–234). Rozhoduje majiteľ, nie strana.</li>
-    <li><b>Spoj</b> = dve karty vedľa seba v línii. Lokalita nie je karta, prvá karta pri lokalite Konflikt nespúšťa.</li>
-    <li><b>Obojsmerný:</b> spustí sa efekt každej karty na spoji, ktorá má Konflikt, aj súperovej. Efekt patrí majiteľovi karty (§6 :237).</li>
-    <li><b>Kedy vzniká:</b> karta sa vykladá na vonkajší koniec strany (§6 :223), takže nová karta má jedného suseda. Konflikt vznikne pri podstrčení (tvoja karta za súperovu na jeho strane), keď kladieš na svoju stranu za súperovu podstrčenú kartu, a keď súper priloží k tvojej karte. Vo finále má stredová karta suseda na oboch stranách.</li>
+    <li><b>Kto spúšťa:</b> výlučne <b>ležiaca</b> karta so spúšťačom Konflikt. Priložená karta nespúšťa nič, nech má akýkoľvek efekt.</li>
+    <li><b>Kto vyvolá:</b> súper, ktorý k nej priloží svoju kartu. Je to pojem do slovníka: <i>vyvolať Konflikt = priložiť kartu k súperovej ležiacej karte so spúšťačom Konflikt.</i> Súperova karta je karta natočená k súperovi, nech leží na ktorejkoľvek strane (§6 :231–234).</li>
+    <li><b>Kedy:</b> karta sa vykladá na vonkajší koniec strany (§6 :223), takže priložením sa dotkneš jednej ležiacej karty a vyvoláš najviac jeden Konflikt. Odpoveď na NA EX je vyloženie karty, takže Konflikt vyvolať môže. Samotné NA EX nie.</li>
+    <li><b>Spoj = susedstvo:</b> aktívna akcia netreba (bod 11).</li>
+    <li><b>Dve karty s Konfliktom na jednom spoji</b> nemajú vzájomný Konflikt: spúšťa len tá, ktorá ležala (bod 9 zaniká).</li>
   </ul>
   <div class="tab-obal"><table>
-    <thead><tr><th>Spúšťač</th><th>Kedy</th><th>Komu</th></tr></thead>
+    <thead><tr><th>Spúšťač</th><th>Kedy</th><th>Kto ho spúšťa</th></tr></thead>
     <tbody>
-      <tr><td><b>Nástup</b></td><td>raz pri vyložení karty</td><td>len karte, ktorá prišla</td></tr>
+      <tr><td><b>Nástup</b></td><td>raz pri vyložení karty</td><td>karta, ktorá prišla</td></tr>
       <tr><td><b>Kšeft</b> (v7)</td><td>v Pitke na tvojom ťahu, za cenu, raz za Pitku</td><td>majiteľ, keď sa rozhodne</td></tr>
-      <tr><td><b>Konflikt</b></td><td>keď vznikne spoj so súperovou kartou</td><td>obom kartám na spoji, nech spoj vytvoril ktokoľvek</td></tr>
+      <tr><td><b>Konflikt</b></td><td>keď súper priloží kartu k tejto ležiacej karte</td><td>ležiaca karta; vyvolá ho súper</td></tr>
     </tbody>
   </table></div>
-  <div class="zasada"><b>Trvalá zásada Michala:</b> efekty bez číselných stropov („najviac 2“). Vzácnosť riešiť mechanikou, teda cenou, zdrojom alebo podmienkou. Konflikt má zdroj obmedzený sám: karta má najviac dvoch susedov a nové spoje vznikajú len pri vykladaní.</div>
+  <div class="zasada"><b>Trvalá zásada Michala:</b> efekty bez číselných stropov („najviac 2“). Vzácnosť riešiť mechanikou, teda cenou, zdrojom alebo podmienkou. Konflikt má zdroj obmedzený sám, lebo ho vyvolá len súperovo rozhodnutie priložiť.</div>
+</section>
+
+<section class="ramik otv" id="pasca">
+  <h2>Bod 1 · Pasca a Konflikt (na dorozhodnutie)</h2>
+  <p class="roz roz-otv">Rozhodnuté „inak“: Pasca bude s Konfliktom pracovať. Presné znenie čaká na Michala.</p>
+  <blockquote>„Ak súper vyvolá aspoň 1 konflikt + pecka počas bitky.“ — Michal (náčrt)</blockquote>
+  <p><b>Výklad:</b> Pasca nie je karta v línii, ktorá Konflikt spúšťa (Nástroj ho nevyvolá ani nespustí). Odmeňuje, keď súper vbehol do tvojich Konfliktov. Najprirodzenejšie miesto je Dedičstvo, kde Pasca leží celú partiu.</p>
+  <p><b>Návrh znenia:</b> <i><b>Dedičstvo:</b> Ak súper v tomto kole vyvolal aspoň jeden tvoj Konflikt, v bitke mu udelíš 1 Pecku navyše.</i></p>
+  <ul>
+    <li><b>Zrozumiteľnosť:</b> „vyvolal tvoj Konflikt“ treba mať v slovníku (vyššie). Bez neho by hráč nevedel, či ráta aj súperove Konflikty. „V tomto kole“ znamená všetky Zhromaždenia pred bitkou.</li>
+    <li><b>Prečo nie „za každý Konflikt“:</b> Michal napísal „aspoň 1“. Je to podmienka, nie strop: Pasca chytí raz za kolo a ďalšie Konflikty majú vlastné efekty.</li>
+    <li><b>Doterajší efekt</b> (<i>každé súperovo Zviera −1 tuhé</i>) <b>navrhujem nahradiť</b>. Dva účinky v jednom Dedičstve sú ťažko čitateľné a Zvierat je v sade málo (6). Ak ho chceš nechať, nový text príde ako druhá veta.</li>
+    <li><b>Riziko:</b> bez kariet s Konfliktom je Pasca mŕtva. Ožije, až keď ich bude v sade dosť (vzory nižšie, Krokodíl).</li>
+  </ul>
+  <div class="bod" data-bod="pasca" data-nazov="Bod 1 · Pasca (Dedičstvo, Pecka po vyvolanom Konflikte)" data-moznosti="nahradit:Áno, nahradí doterajší efekt|pridat:Áno, pridá sa k doterajšiemu|ine:Inak (poznámka)">
+    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
+    <label class="skryte" for="p-pasca">Poznámka k Pasci</label><textarea id="p-pasca" placeholder="Poznámka (nepovinné)"></textarea>
+  </div>
+</section>
+
+<section class="ramik otv" id="krokodil">
+  <h2>Bod 7 · Krokodíl — porovnanie dvoch ciest (odporúčanie)</h2>
+  <blockquote>„Krokodíl môže mať tento spúšťač v bitke, že niekoho zožerie… alebo že by to fungovalo tak, že Konflikt: po bitke zahoď susedných občanov? Neviem… môže byť aj tak aj tak, zisti, čo je konzistentnejšie.“ — Michal</blockquote>
+  <p class="pozn">Dnes (schválený, nie v sade): <i>Furt: zožerie súperovu kartu vyloženú vedľa — ide z hry.</i></p>
+  <div class="tab-obal"><table>
+    <thead><tr><th></th><th>A · Zožerie hneď</th><th>B · Po bitke zahodí susedov</th></tr></thead>
+    <tbody>
+      <tr><td>Znenie</td><td><i>Konflikt: Karta, ktorú súper priložil, ide z hry.</i></td><td><i>Konflikt: Po bitke zahoď súperových Občanov, ktorí s ním susedia.</i></td></tr>
+      <tr><td>Súlad s definíciou</td><td>úplný: efekt nastane v okamihu, ktorý Konflikt definuje (súper priloží)</td><td>čiastočný: Konflikt len „zaznamená“, účinok príde v inom kroku (po bitke) ako druhý spúšťač</td></tr>
+      <tr><td>Súlad s poradím Nástup → Konflikt (bod 8)</td><td>priložená karta stihne Nástup, potom ju Krokodíl zožerie; jednoduché a jasné</td><td>Nástup aj akcie priloženej karty platia celú bitku; poradie nehrá rolu</td></tr>
+      <tr><td>Súlad s dnešným Krokodílom</td><td>rovnaký účinok (zožerie priloženú), len pod správnym spúšťačom</td><td>iná karta: susedia sa ešte bijú a do hry sa nevrátia</td></tr>
+      <tr><td>Čitateľnosť</td><td>„Priložíš ku Krokodílovi, zožerie ti kartu.“ Hráč vidí výsledok hneď.</td><td>Odložený účinok si treba pamätať. „Susední Občania“ zahŕňajú aj druhého suseda, ktorý Konflikt nevyvolal, čo je v rozpore s jednosmernosťou.</td></tr>
+      <tr><td>Kód</td><td>rovnaký háčik ako každý Konflikt, žiadny odložený stav</td><td>Konflikt + záznam do kroku po bitke (vzor odklad Záverečnej), viac stavu</td></tr>
+      <tr><td>Hra</td><td>stráž konca strany: súper k nemu priloží len zámerne obeť (Nástupom, na zapnutie hrany)</td><td>silnejšie (aj dvaja Občania), ale súper najprv dostane ich akcie v bitke</td></tr>
+    </tbody>
+  </table></div>
+  <p><b>Odporúčam A.</b> Je to presne Michalova definícia: Krokodíl leží, súper k nemu priloží a Krokodíl ho zožerie. Dnešný Furt Krokodíla bol vlastne Konflikt ešte pred Konfliktom. B mieša dva okamihy a „susedia“ trestajú aj kartu, ktorá Konflikt nevyvolala. Nástup obete pred zožratím (bod 8) je malá útecha a pravidlo ostáva bez výnimky.</p>
+  <div class="bod" data-bod="krokodil" data-nazov="Bod 7 · Krokodíl" data-moznosti="A:A · zožerie priloženú kartu hneď|B:B · po bitke zahodí susedných Občanov|ine:Inak (poznámka)">
+    <fieldset><legend>Tvoja voľba <span class="pozn">(odporúčam A)</span></legend><div class="volby"></div></fieldset>
+    <label class="skryte" for="p-krokodil">Poznámka ku Krokodílovi</label><textarea id="p-krokodil" placeholder="Poznámka (nepovinné)"></textarea>
+  </div>
+</section>
+
+<section class="ramik rozh" id="body">
+  <h2>Body výkladu</h2>
+  <div class="tab-obal"><table>
+    <thead><tr><th>Bod</th><th>Rozhodnutie</th></tr></thead>
+    <tbody>
+      <tr><td>1 · Pasca</td><td><b>inak</b>: Pasca bude pracovať s Konfliktom, znenie vyššie na dorozhodnutie</td></tr>
+      <tr><td>2 · každý spoj, alebo raz na dvojicu</td><td><b>rozhodnuté</b> definíciou: Konflikt vyvolá každé priloženie súperovej karty k ležiacej karte s Konfliktom. Vlastné priloženie nič nespustí.</td></tr>
+      <tr><td>3 · karta medzi dve súperove</td><td><b>neskôr</b>. Pri jednosmernej definícii to stále môže nastať: ak <i>ja</i> vložím kartu medzi dve súperove ležiace karty, vyvolám Konflikty oboch. Bežným vykladaním na koniec strany sa to nestane, iba keď sa karta posunie doprostred (Snúbenica). Rozhodne sa spolu s bodom 4.</td></tr>
+      <tr><td>4 · Snúbenica</td><td><b>neskôr</b>. Zaujme miesto karty s NA EX a vytvorí nové spoje. Otázka je, či je to „priloženie“ k obom susedom, alebo len k tomu, za ktorého ju hráč vyložil.</td></tr>
+      <tr><td>5 · NA EX na susednú kartu</td><td><b>rozhodnuté</b>: nie. NA EX je manipulácia s už vyloženou kartou, nie priloženie. Odpoveď na NA EX je vyloženie, takže Konflikt vyvolať môže.</td></tr>
+      <tr><td>6 · zrážka</td><td><b>rozhodnuté</b> z rovnakého princípu: nie. Zrážka sú dve NA EX na tú istú ležiacu kartu (§7 :399), súper nič nepriložil.</td></tr>
+      <tr><td>7 · Krokodíl</td><td><b>na rozhodnutie</b>: porovnanie vyššie, odporúčam A</td></tr>
+      <tr><td>8 · poradie Konflikt vs. Nástup</td><td><b>schválené</b>: najprv Nástup priloženej karty, potom Konflikt ležiacej karty, ku ktorej bola priložená</td></tr>
+      <tr><td>9 · dve karty s Konfliktom na spoji</td><td><b>zaniká</b>: spúšťa len ležiaca karta, vzájomný Konflikt nevznikne</td></tr>
+      <tr><td>10 · Záverečná lícom dole</td><td><b>schválené</b>: keď súper priloží Záverečnú k tvojej karte s Konfliktom, Konflikt sa odloží na jej otočenie na konci Pitky (§13). Za Záverečnú sa priložiť nedá (<code>engine.ts:2101</code>), opačný prípad nenastane.</td></tr>
+      <tr><td>11 · spoj bez aktívnej akcie</td><td><b>schválené</b>: stačí susedstvo</td></tr>
+    </tbody>
+  </table></div>
 </section>
 
 <section class="ramik">
-  <h2>Vzorové efekty (ukážky, nie návrhy do sady)</h2>
-  <p class="pozn">Každý efekt je vzácny vďaka mechanike, nie číslu. Karty sú vymyslené na ukážku, len Pasca je existujúci Nástroj.</p>
-
+  <h2>Vzorové efekty (ukážky v jednosmernom znení)</h2>
+  <p class="pozn">Všetky spúšťa ležiaca karta, keď k nej súper priloží svoju. „Priložená karta“ je súperova. Vzácnosť dáva mechanika, nie číslo.</p>
   <div class="vzor">
     <h3>1 · Hádka o mezu</h3>
     <p class="tagy">Občan · Chlap · podmienka</p>
     <p class="efekt"><b>Konflikt:</b> Kto z vás má v kraji tejto karty menej kariet, dá druhému 1 plný poldeci. Pri rovnosti sa nič nedeje.</p>
-    <p>Spor o mezu vyhrá silnejší rod. Vzácnosť dáva <b>podmienka</b> (prevaha v kraji, §6 :284) a <b>cena</b>, ktorú platí slabší. Súper si rozmyslí, či ti podstrčí kartu tam, kde máš viac ľudí. Posilní boj o kraje, ktorý dnes rozhoduje hrany.</p>
+    <p>Súper zváži, či ti priloží kartu tam, kde máš viac ľudí. Posilňuje boj o kraje.</p>
   </div>
-
   <div class="vzor">
     <h3>2 · Ohováračka</h3>
     <p class="tagy">Občan · Žena · cena</p>
     <p class="efekt"><b>Konflikt:</b> Smieš zaplatiť 1 plný poldeci. Ak to urobíš, posuň marker staršieho, ktorý sa bojí súpera, o 1 pole k stredu.</p>
-    <p>Pri plote ohovorí suseda u starších a za slivovicu ide reč rýchlejšie. Vzácnosť dáva <b>cena</b> (poldeci je NA EX aj limit vykladania) a <b>zdroj</b> (najviac dva spoje). Je to brzda „renty strachu“ zo playtestov bez nového čísla.</p>
   </div>
-
   <div class="vzor">
     <h3>3 · Ručiteľ</h3>
-    <p class="tagy">Občan · Chlap · Dlh (téma dávky 3)</p>
+    <p class="tagy">Občan · Chlap · Dlh</p>
     <p class="efekt"><b>Konflikt:</b> Súper si vyberie: dá ti 1 plný poldeci, alebo získa 1 Dlh.</p>
-    <p>Podpísal za suseda úver a teraz ho naháňa. Zlá a horšia možnosť pre súpera. Dlh je priamy, neprepadne a s Čiarkami na účte (D6) a Vymáhačom nadobudne cenu. Vzácnosť dáva <b>zdroj</b> (spoj).</p>
   </div>
-
   <div class="vzor">
     <h3>4 · Husi</h3>
     <p class="tagy">Zviera · podmienka, obojstranná cena</p>
-    <p class="efekt"><b>Konflikt:</b> Ak je súperova karta Zviera, obe karty idú do odhadzovacích balíčkov svojich majiteľov.</p>
-    <p>Husi sa pobijú s každým cudzím zvieraťom a dvor je potom prázdny. Vzácnosť dáva <b>podmienka</b> (Zviera) a <b>cena</b>: odchádzajú aj husi. Je to protihra proti Koňovi a Krokodílovi.</p>
+    <p class="efekt"><b>Konflikt:</b> Ak je priložená karta Zviera, obe karty idú do odhadzovacích balíčkov svojich majiteľov.</p>
   </div>
-
   <div class="vzor">
-    <h3>5 · Pasca v línii (ukážka k bodu 1)</h3>
-    <p class="tagy">Nástroj · jediná možná výnimka</p>
-    <p class="efekt"><b>Konflikt:</b> Ak je súperova karta Zviera, ide z hry. Pasca ide do tvojho odhadzovacieho balíčka.</p>
-    <p>Pasca je nastražená na cudzie. Vzácnosť dáva <b>podmienka</b> (Zviera) a <b>cena</b> (Pasca sa spotrebuje). Ak Michal výnimku pre Pascu nechce, ukážka padá.</p>
+    <h3>5 · Krokodíl (odporúčaná cesta A)</h3>
+    <p class="tagy">Zviera · schválená karta, nový spúšťač</p>
+    <p class="efekt"><b>Konflikt:</b> Karta, ktorú súper priložil, ide z hry.</p>
   </div>
-</section>
-
-<section class="ramik otv" id="body">
-  <h2>Otvorené body (11) — ku každému návrh odpovede</h2>
-  <p class="pozn">Návrhy sú Vymyselníkove. Kód vychádza z <code>vylozDoLinie</code> (<code>engine.ts:2080–2126</code>): suseda pozná ešte pred vyložením (<code>susedNaKonci</code>, :2100) a Nástup spúšťa po vložení (:2123).</p>
-
-  <div class="bod" data-bod="b1" data-nazov="1. Pasca" data-moznosti="ano:Áno, Pasca smie mať Konflikt|nie:Nie, Nástroje nikdy|ine:Inak (poznámka)">
-    <p>1. Pasca: áno, alebo nie?</p>
-    <p class="navrh"><b>Návrh:</b> áno, ako jediný Nástroj, ale len ak Pasca dostane vlastný efekt Konflikt (vzor 5). Bez neho je výnimka zbytočné pravidlo navyše. Ostatné Nástroje sú v línii spoločné (§12) a Konflikt nespúšťajú.</p>
-    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-b1">Poznámka 1</label><textarea id="p-b1" placeholder="Poznámka (nepovinné)"></textarea>
-  </div>
-
-  <div class="bod" data-bod="b2" data-nazov="2. Každý nový spoj, alebo raz na dvojicu" data-moznosti="ano:Súhlasím s návrhom|ine:Inak (poznámka)|neskor:Neskôr">
-    <p>2. Spúšťa sa pri každom novom spoji, alebo raz na dvojicu kariet?</p>
-    <p class="navrh"><b>Návrh:</b> pri vzniku každého spoja. Karty sa v línii nepresúvajú, takže dvojica sa v bitke stretne len raz. Pravidlo „raz na dvojicu“ netreba, výnimkou je len Snúbenica (bod 4).</p>
-    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-b2">Poznámka 2</label><textarea id="p-b2" placeholder="Poznámka (nepovinné)"></textarea>
-  </div>
-
-  <div class="bod" data-bod="b3" data-nazov="3. Karta medzi dvoma súperovými = dva Konflikty" data-moznosti="ano:Súhlasím s návrhom|ine:Inak (poznámka)|neskor:Neskôr">
-    <p>3. Karta priložená medzi dve súperove = dva Konflikty?</p>
-    <p class="navrh"><b>Návrh:</b> áno, Konflikt patrí spoju, nie karte. Bežným vykladaním sa to nestane, lebo karta má na konci strany jedného suseda. Prakticky ide len o Snúbenicu, keď zaujme miesto v strede, a o stredovú kartu finále.</p>
-    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-b3">Poznámka 3</label><textarea id="p-b3" placeholder="Poznámka (nepovinné)"></textarea>
-  </div>
-
-  <div class="bod" data-bod="b4" data-nazov="4. Snúbenica" data-moznosti="ano:Súhlasím s návrhom|ine:Inak (poznámka)|neskor:Neskôr">
-    <p>4. Konflikt pri Snúbenici (zaujme miesto a vytvorí spoj)?</p>
-    <p class="navrh"><b>Návrh:</b> Konflikt sa vyhodnotí až na mieste, kam sa Snúbenica posunie, teda po jej Nástupe (§16 :1134). Spoj s kartou, ktorá sa vrátila do ruky, zanikol skôr, než sa Konflikt vyhodnotil, a nepočíta sa.</p>
-    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-b4">Poznámka 4</label><textarea id="p-b4" placeholder="Poznámka (nepovinné)"></textarea>
-  </div>
-
-  <div class="bod" data-bod="b5" data-nazov="5. NA EX na susednú kartu" data-moznosti="ano:Súhlasím s návrhom|ine:Inak (poznámka)|neskor:Neskôr">
-    <p>5. Konflikt pri NA EX na susednú kartu?</p>
-    <p class="navrh"><b>Návrh:</b> nie, NA EX nový spoj nevytvára. Odpoveď na NA EX je bežné vyloženie karty, a ak vytvorí spoj so súperovou kartou, Konflikt spustí.</p>
-    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-b5">Poznámka 5</label><textarea id="p-b5" placeholder="Poznámka (nepovinné)"></textarea>
-  </div>
-
-  <div class="bod" data-bod="b6" data-nazov="6. Zrážka" data-moznosti="ano:Súhlasím s návrhom|ine:Inak (poznámka)|neskor:Neskôr">
-    <p>6. Konflikt pri zrážke (obaja dali NA EX na tú istú kartu)?</p>
-    <p class="navrh"><b>Návrh:</b> nie. Zrážka mení akcie karty (§7 :399), nie susedstvo.</p>
-    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-b6">Poznámka 6</label><textarea id="p-b6" placeholder="Poznámka (nepovinné)"></textarea>
-  </div>
-
-  <div class="bod" data-bod="b7" data-nazov="7. Krokodíl" data-moznosti="ano:Súhlasím s návrhom|ine:Inak (poznámka)|neskor:Neskôr">
-    <p>7. Krokodíl zožerie súperovu kartu vyloženú vedľa. Stihne sa Konflikt?</p>
-    <p class="navrh"><b>Návrh:</b> Krokodíl je prvý. Zožratá karta nemá ani Nástup, ani Konflikt. Krokodílov vlastný Konflikt (keby ho mal) sa spustí, lebo spoj na okamih vznikol. Pre hráča je to jasné: k Krokodílovi neprikladaj.</p>
-    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-b7">Poznámka 7</label><textarea id="p-b7" placeholder="Poznámka (nepovinné)"></textarea>
-  </div>
-
-  <div class="bod" data-bod="b8" data-nazov="8. Poradie Konflikt vs. Nástup" data-moznosti="ano:Súhlasím s návrhom (Nástup, potom Konflikt)|opacne:Najprv Konflikt, potom Nástup|ine:Inak (poznámka)">
-    <p>8. Poradie Konflikt a Nástup pri vyložení?</p>
-    <p class="navrh"><b>Návrh:</b> najprv Krokodíl (bod 7), potom Nástup novej karty a nakoniec Konflikt toho spoja, ktorý po Nástupe existuje. Karta sa najprv usadí, čo rieši Snúbenicu a karty, ktoré Nástupom niečo presunú.</p>
-    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-b8">Poznámka 8</label><textarea id="p-b8" placeholder="Poznámka (nepovinné)"></textarea>
-  </div>
-
-  <div class="bod" data-bod="b9" data-nazov="9. Dve karty s Konfliktom na jednom spoji — poradie" data-moznosti="ano:Súhlasím s návrhom (najprv ležiaca)|opacne:Najprv priložená|ine:Inak (poznámka)">
-    <p>9. Obojstranný spoj dvoch kariet, ktoré obe majú Konflikt. V akom poradí?</p>
-    <p class="navrh"><b>Návrh:</b> najprv karta, ktorá už ležala, potom priložená. Kto prikladá, vidí efekt ležiacej karty a rozhoduje sa s ním, takže posledné slovo má ten, kto prišiel. Rovnako ako pri NA EX má útočník posledné slovo (§7).</p>
-    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-b9">Poznámka 9</label><textarea id="p-b9" placeholder="Poznámka (nepovinné)"></textarea>
-  </div>
-
-  <div class="bod" data-bod="b10" data-nazov="10. Záverečná (lícom dole)" data-moznosti="ano:Súhlasím s návrhom|ine:Inak (poznámka)|neskor:Neskôr">
-    <p>10. Záverečná lícom dole vytvorí spoj so súperovou kartou. Kedy Konflikt? (doplnil Vymyselník)</p>
-    <p class="navrh"><b>Návrh:</b> odloží sa na otočenie na konci Pitky ako Nástup (§13, <code>otocZaverecne</code>, <code>engine.ts:2016</code>). Kým leží lícom dole, je to rub a súper nesmie vedieť, čo to je. Rovnako aj Konflikt súperovej karty, ku ktorej bola priložená.</p>
-    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-b10">Poznámka 10</label><textarea id="p-b10" placeholder="Poznámka (nepovinné)"></textarea>
-  </div>
-
-  <div class="bod" data-bod="b11" data-nazov="11. Spoj bez aktívnej akcie" data-moznosti="ano:Súhlasím s návrhom (stačí susedstvo)|nie:Len spoj s aspoň jednou aktívnou akciou|ine:Inak (poznámka)">
-    <p>11. Spúšťa Konflikt aj spoj, na ktorom nie je aktívna žiadna akcia? (doplnil Vymyselník)</p>
-    <p class="navrh"><b>Návrh:</b> áno, stačí susedstvo („priložená k súperovej karte“). Spúšťač nezávisí od variantov, takže sa dá plánovať a hráč ho vidí hneď pri priložení.</p>
-    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
-    <label class="skryte" for="p-b11">Poznámka 11</label><textarea id="p-b11" placeholder="Poznámka (nepovinné)"></textarea>
-  </div>
+  <p class="pozn">Pôvodný vzor „Pasca v línii“ odpadol: Nástroj Konflikt nevyvolá ani nespustí a Pasca dostáva Dedičstvo (bod 1).</p>
 </section>
 
 <section class="ramik">
   <h2>Dopad na pravidlá a kód (v7)</h2>
   <ul>
-    <li><b>Pravidlá:</b> §6 „Línia, strany a kraje“ (definícia Konfliktu pri spoji), §16 výklad kariet s Konfliktom, §17 slovník. Odpovede na body 1–11 patria do §6 a §13 (Záverečná).</li>
-    <li><b>Jadro:</b> nový <code>Trigger</code> „Konflikt“ v <code>types.ts:82–92</code> a v <code>ALL_TRIGGERS</code> (<code>types.ts:94</code>), ako Kšeft. Vo <code>vylozDoLinie</code> (<code>engine.ts:2080</code>) sa po Nástupe (:2123) zistí, či je sused (<code>susedNaKonci</code>, :2100) súperova karta a nie Nástroj. Potom sa spustí Konflikt oboch kariet v poradí podľa bodu 9. To isté treba pre Snúbenicu, Záverečnú (<code>otocZaverecne</code>, :2016) a stred finále. Pozor na názov: <code>zvieraKonflikt</code> (<code>engine.ts:3566</code>) je pravidlo Psa, nový pomocník sa musí volať inak (napr. <code>spustiKonflikt</code>).</li>
-    <li><b>Efekty a tvorca:</b> register efektov (<code>effects.ts</code>), popis spúšťača v tvorcovi (<code>packages/tvorba/src/predvolene.ts:94</code>, vzor „Prehra“). Kontrola textu (<code>texty.ts:65</code>), zverejnenie a Dielňa berú <code>ALL_TRIGGERS</code> samy.</li>
-    <li><b>Bot:</b> hodnota Konfliktu pri voľbe strany (podstrčiť, či nie).</li>
-    <li><b>Ťahák a rozhodca:</b> jedna odrážka do <code>tools/playtest/tahak.md</code> (čísla stráži <code>tahak.test.ts</code>), paragraf do <code>tools/rozhodca/mapa.json</code> s testom (napr. <code>packages/core/test/konflikt.test.ts</code>).</li>
+    <li><b>Pravidlá:</b> §6 „Línia, strany a kraje“ (definícia, body 2, 5, 6, 11), §7 (NA EX a zrážka Konflikt nespúšťajú), §13 (Záverečná, bod 10), §16 (Krokodíl, Pasca, karty s Konfliktom), §17 slovník („vyvolať Konflikt“).</li>
+    <li><b>Jadro:</b> nový <code>Trigger</code> „Konflikt“ (<code>types.ts:82–92</code>, <code>ALL_TRIGGERS</code> :94), ako Kšeft. Vo <code>vylozDoLinie</code> (<code>engine.ts:2080–2126</code>) sa po Nástupe priloženej karty (:2123) pozrie na ležiaceho suseda (<code>susedNaKonci</code>, :2100). Ak patrí súperovi hráča, ktorý prikladá, a má Konflikt, spustí sa jeho efekt. Priložený Nástroj nič nespustí. Záverečná: odklad do <code>otocZaverecne</code> (:2016). Pasca: počítadlo „súper vyvolal Konflikt v tomto kole“ na hráča. Názov pomocníka nesmie kolidovať so <code>zvieraKonflikt</code> (<code>engine.ts:3566</code>).</li>
+    <li><b>Tvorca:</b> popis spúšťača v <code>packages/tvorba/src/predvolene.ts</code> (vzor „Prehra“, :94). Kontrola textu, zverejnenie a Dielňa berú <code>ALL_TRIGGERS</code> samy.</li>
+    <li><b>Bot:</b> nepriložiť k súperovej karte s Konfliktom, ak to nie je zámer.</li>
+    <li><b>Ťahák a rozhodca:</b> odrážka v <code>tools/playtest/tahak.md</code>, paragraf v <code>tools/rozhodca/mapa.json</code> s testom <code>packages/core/test/konflikt.test.ts</code> (jednosmernosť, vlastné priloženie nič, NA EX nič, Nástup pred Konfliktom, Záverečná, Nástroj).</li>
   </ul>
 </section>
+
+<details class="zbalene"><summary>Pôvodný návrh (obojsmerný) — prekonaný 27. 10., zbalené</summary>
+  <p class="pozn">Pôvodne mal Konflikt spúšťať každý spoj so súperovou kartou obojsmerne, teda aj karta, ktorú prikladáš. Michal to zamietol: Konflikt vyvolá len súper priložením k ležiacej karte. Prekonané návrhy: bod 7 „Krokodíl prvý“ (teraz platí Nástup → Konflikt a Krokodíl je sám Konflikt), bod 9 „najprv ležiaca, potom priložená“ (zaniká) a vzor „Pasca v línii“.</p>
+</details>
 
 <footer>
   <p>NA EX! · Vymyselník · <code>docs/napady/konflikt.html</code>. Podklady: <code>docs/PRAVIDLA.md</code> v6 (§6, §7, §12, §13, §16), <code>packages/core/src/engine.ts</code>, <code>types.ts</code>, <code>packages/tvorba/src</code>, plán revízie časť 13.</p>
@@ -252,8 +236,7 @@ footer { margin-top: 30px; padding-top: 12px; border-top: 1px solid var(--okraj)
 </main>
 
 <div class="lista" role="region" aria-label="Súhrn volieb"><div class="lista-in">
-  <span class="lista-text" id="lista-text" aria-live="polite">Zatiaľ nič nie je vybrané.</span>
-  <button type="button" id="doplnit">Doplniť návrhy</button>
+  <span class="lista-text" id="lista-text" aria-live="polite">Otvorené: Pasca a Krokodíl.</span>
   <button type="button" class="hlavne" id="kopiruj">Skopírovať súhrn</button>
 </div></div>
 <textarea id="schranka" class="skryte" aria-hidden="true" tabindex="-1"></textarea>
@@ -261,7 +244,7 @@ footer { margin-top: 30px; padding-top: 12px; border-top: 1px solid var(--okraj)
 <script>
 (function () {
   "use strict";
-  var KLUC = "naex-konflikt-v1", koren = document.documentElement, stav = {};
+  var KLUC = "naex-konflikt-v2", koren = document.documentElement, stav = {};
   try { var t = localStorage.getItem(KLUC + "-tema"); if (t === "light" || t === "dark") koren.setAttribute("data-theme", t); } catch (e) { /* bez úložiska */ }
   document.getElementById("tema").addEventListener("click", function () {
     var teraz = koren.getAttribute("data-theme") || (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
@@ -290,18 +273,9 @@ footer { margin-top: 30px; padding-top: 12px; border-top: 1px solid var(--okraj)
   });
   function obnov() {
     var n = bloky.filter(function (b) { var k = b.getAttribute("data-bod"); return stav[k] && stav[k].v; }).length;
-    document.getElementById("lista-text").textContent = n === 0 ? "Zatiaľ nič nie je vybrané." : "Vybrané " + n + " z " + bloky.length + ". Ukladá sa v tomto prehliadači.";
+    document.getElementById("lista-text").textContent = n === 0 ? "Otvorené: Pasca a Krokodíl." : "Vybrané " + n + " z " + bloky.length + ". Ukladá sa v tomto prehliadači.";
   }
   obnov();
-  document.getElementById("doplnit").addEventListener("click", function () {
-    bloky.forEach(function (b) {
-      var k = b.getAttribute("data-bod");
-      if (stav[k] && stav[k].v) return;
-      zaznam(k).v = "ano";
-      var i = b.querySelector('input[value="ano"]'); if (i) i.checked = true;
-    });
-    uloz(); obnov();
-  });
   function suhrn() {
     var r = ["Michal — Konflikt, otvorené body (docs/napady/konflikt.html):", ""];
     bloky.forEach(function (b) {
