@@ -352,6 +352,26 @@
 <tr><td>3 · Vilo – Hela</td><td>40</td><td>25</td><td>17</td><td>40</td><td class="dobre">17</td><td>26</td></tr>
 </tbody></table></div>
 
+<h2 id="doplnok">Doplnkové merania k návrhom navrhára</h2>
+<p class="pozn">Každý doplnok je meraný na balíku 1 + 2 (strach za posun + prebytok 1 : 2), nie na dnešku, s rovnakými parametrami a semienkami. Posudok k jednotlivým návrhom je v <code>playtest/navrhy/20261027-161907/posudok-stratega.md</code>.</p>
+<div class="tab"><table>
+<caption>Exekúcie = počet exekúcií za partiu u oboch hráčov spolu. Boti majú Dlhov viac ako AI hráči (tí mali 1 exekúciu z 18 bitiek), preto počet exekúcií u ľudí preceňujú.</caption>
+<thead><tr><th class="l">Variant</th><th>Rozdiel zrkadlo / mix</th><th>Stomp &gt;15 z / m</th><th>Víťaz finále vyhrá</th><th>Vedúci pred finále</th><th>Rebrík ε 0,1 / 0,25</th><th>Slabší rozdrví</th><th class="l">Iné</th></tr></thead>
+<tbody>
+<tr class="base"><td>Dnes (v7)</td><td>18,8 / 21,2</td><td>49 / 53 %</td><td>78 %</td><td>70 %</td><td>61 / 68 %</td><td>12 %</td><td class="l">exekúcie 1,25</td></tr>
+<tr class="zvyr"><td>Balík 1 + 2 (referencia)</td><td>13,3 / 14,1</td><td>32 / 37 %</td><td>74 %</td><td>66 %</td><td>55 / 69 %</td><td>4 %</td><td class="l">exekúcie 1,27</td></tr>
+<tr><td>+ Úplatok na ktorúkoľvek kartu</td><td>13,8 / 14,8</td><td>37 / 41 %</td><td>75 %</td><td>71 %</td><td>55 / 74 %</td><td>6 %</td><td class="l">3,3 Úplatku za partiu</td></tr>
+<tr><td>prebytok 1 : 2 nahor</td><td>13,7 / 13,7</td><td>34 / 38 %</td><td>76 %</td><td>67 %</td><td>55 / 67 %</td><td>4 %</td><td class="l">rovnocenné s „nadol“</td></tr>
+<tr><td>prebytok 1 : 2 len vo finále</td><td>14,1 / 15,9</td><td>36 / 40 %</td><td>74 %</td><td>70 %</td><td>53 / 68 %</td><td class="zle">12 %</td><td class="l">Kultúrny dom ostane lotériou</td></tr>
+<tr><td>+ prah Exekútora 6</td><td>12,4 / 13,6</td><td>30 / 36 %</td><td>75 %</td><td>70 %</td><td>68 / 71 %</td><td>6 %</td><td class="l">exekúcie 1,6</td></tr>
+<tr><td>+ prah Exekútora 5</td><td>13,2 / 14,1</td><td>34 / 39 %</td><td>71 %</td><td>65 %</td><td>60 / 74 %</td><td>8 %</td><td class="l">exekúcie 2,0</td></tr>
+<tr><td>+ ťah Stačí pri prebytku</td><td>13,1 / 15,1</td><td>32 / 39 %</td><td>78 %</td><td>67 %</td><td>60 / 76 %</td><td>6 %</td><td class="l">0,23 za partiu</td></tr>
+<tr><td>+ upokojenie len súperovho strachu</td><td>13,6 / 13,0</td><td>35 / 35 %</td><td>75 %</td><td>67 %</td><td>59 / 71 %</td><td>7 %</td><td class="l">1,6 za partiu, polovica od vedúceho</td></tr>
+<tr><td>+ spoveď z Cirhózy za 5 cig.</td><td>13,7 / 14,3</td><td>34 / 38 %</td><td>76 %</td><td>66 %</td><td>55 / 69 %</td><td>4 %</td><td class="l">boti nemajú cigarety (0,11 za partiu)</td></tr>
+<tr><td>+ spoveď z Cirhózy za 3 cig.</td><td>14,2 / 14,3</td><td>36 / 37 %</td><td>76 %</td><td>66 %</td><td>56 / 69 %</td><td>4 %</td><td class="l">0,29 za partiu</td></tr>
+</tbody></table></div>
+<p>Spoveď z Cirhózy, statický prepočet troch partií playtestu: rozdiel 45 · 23 · 40 → 33 · 19 · 36 (za 5 cigariet) a 32 · 23 · 35 (za 3). Spolu s balíkom 1 + 2 a spoveďou za 5 by to bolo 14 · 11 · 13. Pri cene 3 – 5 cigariet však hráčovi s cigaretami takmer zmizne riziko Cirhózy, preto by som spoveď skúšal skôr za 10 cigariet.</p>
+
 <h2 id="sledovat">Čo sledovať v ďalšom playteste</h2>
 <ol class="otazky">
 <li><strong>Strach:</strong> Koľko špakov ti dal strach starších a od ktorých? Koľko z tých starších malo priazeň, ktorá súperovi v bitke naozaj pomohla (Bitkár, Veriaci, Abstinent)? Cieľ: strach pod 35 % bodov víťaza.</li>
