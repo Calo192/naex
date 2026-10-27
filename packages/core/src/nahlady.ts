@@ -52,10 +52,11 @@ export interface DlhyDoBitky {
 export function vyhladDlhov(data: GameData, stol: StolNahladu, dalsiePitky: number): readonly [DlhyDoBitky, DlhyDoBitky] {
   const nahlad = nahladPitky(data, stol);
   const kapacita = paleneDlhyVBitke(data, stol);
-  const urad = exekutorLokality(stol);
   const pre = (p: PlayerId): DlhyDoBitky => {
+    const urad = exekutorLokality(stol, p);
     const n = nahlad[p];
-    const nove = n.dlhy + Math.floor(n.zadlzenieZoStola / n.prahDlhu) * dalsiePitky;
+    // D6 (v7): zvyšok zadĺženia sa medzi Pitkami nemaže — sčíta sa za všetky Pitky.
+    const nove = Math.floor((n.zadlzenie + n.zadlzenieZoStola * (1 + dalsiePitky)) / n.prahDlhu);
     const teraz = stol.hraci[p].priznane.filter((k) => k.defId === "dlh").length;
     const poPaleni = Math.max(0, teraz + nove - kapacita[p]);
     const exekucia = exekutorCheck(poPaleni + urad.zlava, silaPriazne(data, stol, "EXEKUTOR", opponentOf(p))) ? zhoriPriExekucii(poPaleni) : 0;

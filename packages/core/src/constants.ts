@@ -78,7 +78,8 @@ export const KONSTANTY = {
    * prehrávanie: prebytok posúva markery k porazenému.
    */
   NASOBOK_PRIAZNE: 2,
-  PRAH_EXEKUTORA_ZAKLAD: 10, // + 2 × priazeň Exekútora
+  /** v7 (Michal 2026-10-27, plan.md 10.4): 7, so súperovou priazňou Exekútora 6 / 5 / 4. */
+  PRAH_EXEKUTORA_ZAKLAD: 7,
   HODNOTA_VIERY_ZAKLAD: 1, // Veriaci (2026-10-20) dáva Vieru navyše rovnú sile, hodnotu nemení
   PRESKUMANIE: 5,
   /**
@@ -114,7 +115,7 @@ export const KONSTANTY = {
     VETERINAR_CIRHOZA: 2,
     LESNA_CESTA_MAX: 2,
     IHRISKO_TUHE: 2,
-    URAD_PRAH_EXEKUTORA: 4,
+    ZAHRADKAR_PRAH: 2,
     URAD_ROBOTA: 2,
     ZBERNY_DVOR_CENA: 1,
     POSTARKA_KARTY: 2,
@@ -128,8 +129,8 @@ export const KONSTANTY = {
     SVATY_TEXT_VIERA: 1,
     PUSKA_PREBYTOK: 2,
     CIGORKY_CIGARETY: 1,
-    AUTOMAT_VYHRA_CIGARETY: 2,
-    AUTOMAT_PREHRA_DLHY: 1,
+    AUTOMAT_VYHRA_CIGARETY: 3,
+    AUTOMAT_PREHRA_DLHY: 2,
   },
 
   /** Stokársky barter: cigarety → nový plný poldeci (PRAVIDLA §7); Lakomec zlacní. */

@@ -1078,7 +1078,7 @@ export function prahyHraca(
     cirhoza: prahCirhozy() + prahCirhozyBonus(s, p),
     dlh: prahDlhu(),
     // obecny_urad: prah Exekútora je o 4 nižší; súperov Exekútor (v5) o svoju silu.
-    exekutor: prahExekutora(silaPriazne(data, s, "EXEKUTOR", opponentOf(p))) - exekutorLokality(s).zlava,
+    exekutor: prahExekutora(silaPriazne(data, s, "EXEKUTOR", opponentOf(p))) - exekutorLokality(s, p).zlava,
     priznaneDlhy: pocetKariet(s.hraci[p], "dlh", "priznane"),
   };
 }
@@ -3252,15 +3252,13 @@ function dokonciPitku(s: MutState, data: GameData, events: Event[]): void {
   const rekap = s.pitkyKola?.at(-1);
   if (rekap !== undefined && rekap.pitka === s.pitkaCislo) events.push({ type: "pitkaRekap", rekap: rekap as RekapitulaciaPitky });
   s.zaciatokPitky = null;
-  // Pečeň a zadĺženie žijú len počas Pitky (Michal 2026-10-16) — zvyšok pod
-  // prahom sa do ďalšej Pitky neprenáša.
+  // Pečeň žije len počas Pitky (Michal 2026-10-16). Zadĺženie od v7 nie (D6,
+  // Michal 2026-10-27): zvyšok pod prahom ostáva na účte do ďalšej Pitky aj kola.
   for (const p of [0, 1] as const) {
     const player = hrac(s, p);
-    if (player.pecen > 0 || player.zadlzenie > 0) {
-      events.push({ type: "log", text: `Hráč ${p + 1}: po Pitke sa pečeň (${player.pecen}) a zadĺženie (${player.zadlzenie}) vynulovali.` });
-    }
+    if (player.pecen > 0) events.push({ type: "log", text: `Hráč ${p + 1}: po Pitke sa pečeň (${player.pecen}) vynulovala.` });
+    if (player.zadlzenie > 0) events.push({ type: "log", text: `Hráč ${p + 1}: zadĺženie ${player.zadlzenie} ostáva na účte do ďalšej Pitky.` });
     player.pecen = 0;
-    player.zadlzenie = 0;
   }
 
   s.vizia = null;
@@ -3516,7 +3514,7 @@ function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
       // aktívnu Robotu 1 priznaný Dlh (na Obecnom úrade 2, Michal 2026-10-20).
       // Verejný dlh (2026-10-21): predtým ho odhodila do balíčka, odkiaľ by sa
       // pri dobratí znova priznal — teraz z hry zmizne.
-      const urad = exekutorLokality(s as GameState);
+      const urad = exekutorLokality(s as GameState, p);
       for (let r = robotaPali(s, b.sums[p] as ActionSums); r > 0; r--) {
         const idx = s.hraci[p].priznane.findIndex((k) => k.defId === "dlh");
         if (idx === -1) break;
@@ -3925,8 +3923,9 @@ export function cieleVykladania(
 }
 
 /** Kde má hráč p Záhradkára, ktorého smie pri exekúcii zahodiť (ruka, potom balíčky); null = nikde. */
-export function zahradkarHraca(s: GameState, p: PlayerId): "ruka" | "odhadzovaci" | "doberaci" | null {
-  for (const kde of ["ruka", "odhadzovaci", "doberaci"] as const) if (s.hraci[p][kde].some((k) => k.defId === "zahradkar")) return kde;
+export function zahradkarHraca(_s: GameState, _p: PlayerId): "ruka" | "odhadzovaci" | "doberaci" | null {
+  // v7: Záhradkár exekúciu nerieši zahodením, ale vyšším prahom (exekutorLokality).
+  // Príkaz zahradkar ostáva kvôli starým uloženiam, ponúkať ho netreba.
   return null;
 }
 

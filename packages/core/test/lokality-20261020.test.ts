@@ -181,10 +181,10 @@ describe("Vínna pivnica, Jednota, Obecný úrad, Kultúrny dom", () => {
     expect(barterCena(data, vKole("jednota"), 0)).toBe(barterCena(data, vKole("krcma"), 0) - 1);
   });
 
-  it("Obecný úrad: prah Exekútora −4 a Robota odhodí 2 Dlhy", () => {
-    expect(exekutorLokality(vKole("obecny_urad"))).toEqual({ zlava: KONSTANTY.EFEKT.URAD_PRAH_EXEKUTORA, robota: KONSTANTY.EFEKT.URAD_ROBOTA });
+  it("Obecný úrad (v7): Robota odhodí 2 Dlhy, prah Exekútora už nemení", () => {
+    expect(exekutorLokality(vKole("obecny_urad"))).toEqual({ zlava: 0, robota: KONSTANTY.EFEKT.URAD_ROBOTA });
     expect(exekutorLokality(vKole("krcma"))).toEqual({ zlava: 0, robota: 1 });
-    expect(prahyHraca(data, vKole("obecny_urad"), 0).exekutor).toBe(prahyHraca(data, vKole("krcma"), 0).exekutor - KONSTANTY.EFEKT.URAD_PRAH_EXEKUTORA);
+    expect(prahyHraca(data, vKole("obecny_urad"), 0).exekutor).toBe(prahyHraca(data, vKole("krcma"), 0).exekutor);
   });
 
   it("Krčma: prah Cirhózy o 2 vyšší obom, povinné NA EX pri pečeni 2 Cirhózu nedá (Michal 2026-10-22)", () => {

@@ -92,7 +92,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   abstak: "native", // Bitka: o ranu menej (−1 tuhé za kus)
   pes: "impl", // Furt: +1 tuhé za pár akcií na spoji so súperovou kartou; nikdy v partii s iným zvieraťom
   kostol: "impl", // Zhromaždenie: nikto nesmie vypiť; Pitka: nikto nesmie dať NA EX (Michal 2026-10-20)
-  zahradkar: "impl", // Exekúcia (v6): smieš ho zahodiť namiesto špakov, Dlhy zhoria aj tak (príkaz zahradkar)
+  zahradkar: "impl", // Bitka (v7): tvoj prah Exekútora je o 2 vyšší (exekutorLokality)
   svokra: "impl", // Bitka: za každú tvoju kartu so súperovým NA EX súperovi Rana (Michal 2026-10-26)
   sarlatan: "impl", // Furt: Viera v okolí platí ako Vízia
   podvodnik: "impl", // Prehra: ukradni 2 cigarety
@@ -104,7 +104,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   // Nové lokality (Michal 2026-10-20, docs/playtesty/navrh-lokality.html).
   most: "impl", // Zhromaždenie: karty len na vlastnú stranu
   cintorin: "impl", // Prehra: Nástroj z ruky do Dedičstva bez platenia
-  obecny_urad: "impl", // Bitka: prah Exekútora −4, Robota spáli 2 priznané Dlhy
+  obecny_urad: "impl", // Bitka (v7): každá aktívna Robota spáli 2 priznané Dlhy
   jednota: "impl", // Pitka: stokársky barter o 1 cigaretu lacnejší
   kulturny_dom: "impl", // Bitka (v6): prebytok sa nerozdeľuje — držiteľ dostane toľko špakov
   vinna_pivnica: "impl", // Pitka: NA EX až dvakrát
@@ -269,9 +269,14 @@ export function naexZaPitku(state: VerejnyStav): number {
   return jeCielLokalita(state, "vinna_pivnica") ? 2 : 1;
 }
 
-/** obecny_urad: o koľko je prah Exekútora nižší a koľko Dlhov odhodí jedna Robota. */
-export function exekutorLokality(state: VerejnyStav): { readonly zlava: number; readonly robota: number } {
-  return jeCielLokalita(state, "obecny_urad") ? { zlava: KONSTANTY.EFEKT.URAD_PRAH_EXEKUTORA, robota: KONSTANTY.EFEKT.URAD_ROBOTA } : { zlava: 0, robota: 1 };
+/**
+ * O koľko je prah Exekútora hráča p nižší (záporné = vyšší) a koľko Dlhov spáli
+ * jedna Robota. v7: Obecný úrad už prah neznižuje, len Robota tam páli 2 Dlhy;
+ * Záhradkár (Bitka) v línii hráča zvýši jeho prah o 2 — každý zvlášť.
+ */
+export function exekutorLokality(state: VerejnyStav, p?: PlayerId): { readonly zlava: number; readonly robota: number } {
+  const zahradkari = p === undefined ? 0 : partiaHraca(state, p).filter((pl) => pl.card.defId === "zahradkar" && pl.zaverecna !== true).length;
+  return { zlava: 0 - zahradkari * KONSTANTY.EFEKT.ZAHRADKAR_PRAH, robota: jeCielLokalita(state, "obecny_urad") ? KONSTANTY.EFEKT.URAD_ROBOTA : 1 };
 }
 
 /** jednota: stokársky barter je o toľko lacnejší. */
