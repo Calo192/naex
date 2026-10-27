@@ -195,6 +195,22 @@ const BONUS_EFEKTU: Readonly<Record<string, number>> = {
   sofer: 0.3,
   snubenica: 0.4,
   zivnostnik: 0.3,
+  // Sada v7 (revízia 2026-10-27): hrubý odhad, kým ich nezladí turnaj.
+  kapybara: 0.6,
+  stryko_z_ameriky: 0.5,
+  oslavenec: 0.5,
+  smetiarka: 0.3,
+  krokodil: 0.4,
+  kon: 0.3,
+  kohut: 0.3,
+  degustatorka: 0.3,
+  klebetnica: 0.4,
+  dohadzovacka: 0.3,
+  vandal: 0.2,
+  opatrovatelka: 0.4,
+  traktoristka: 0.3,
+  vymahac: 0.4,
+  brigadnik: 0.2,
 };
 
 /** Hodnota Nástroja v Dedičstve (malá priazeň natrvalo). */
@@ -208,6 +224,9 @@ const DEDICSTVO: Readonly<Record<string, number>> = {
   pasca: 0.5,
   vyherny_automat: 0.4,
   vinko: 0.8,
+  // v7: +1 tuhé, kým zaostávaš; NA EX aj na Zviera.
+  vidly: 0.6,
+  lievik: 0.3,
 };
 
 /**
@@ -244,7 +263,9 @@ export function hodnotaKarty(data: GameData, karta: CardInstance): number {
   const strany = printedSides(data, karta);
   let akcie = 0;
   for (const slot of [...strany.left, ...strany.right]) if (slot !== null) akcie += VAHA_AKCIE[slot];
-  // Aktivuje sa zhruba polovica akcií — páruje sa vždy len jedna hrana.
+  // Aktivuje sa zhruba polovica akcií — páruje sa vždy len jedna hrana. Pakt (v7) má
+  // hodnotu akcie, ktorú dostane do páru — v priemere asi ako Robota.
+  for (const slot of [...strany.left, ...strany.right]) if (slot === "Pakt") akcie += 0.3;
   let v = akcie * 0.5 + (BONUS_EFEKTU[def.id] ?? 0);
   if (def.tags.includes("Nástroj")) v += (DEDICSTVO[def.id] ?? 0) * 0.5;
   return v;
