@@ -20,7 +20,7 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ],
     ["štart", `${KONSTANTY.START_POLDECI} plné poldeci, ${KONSTANTY.START_CIGARETY} cigarety`],
     ["finále bez lokality (stará sada)", `Finále má vždy ${KONSTANTY.FINALE_PITKY} Pitky`],
-    ["prah Exekútora (v7)", `prah Exekúcie ${KONSTANTY.PRAH_EXEKUTORA_ZAKLAD} (so súperovým Exekútorom ${KONSTANTY.PRAH_EXEKUTORA_ZAKLAD - 1} / ${KONSTANTY.PRAH_EXEKUTORA_ZAKLAD - 2} / ${KONSTANTY.PRAH_EXEKUTORA_ZAKLAD - 3}; tvoj Záhradkár v línii +${KONSTANTY.EFEKT.ZAHRADKAR_PRAH})`],
+    ["prah Exekútora (v7)", `prah Exekúcie ${KONSTANTY.PRAH_EXEKUTORA_ZAKLAD} (so súperovým Exekútorom ${KONSTANTY.PRAH_EXEKUTORA_ZAKLAD - 1} / ${KONSTANTY.PRAH_EXEKUTORA_ZAKLAD - 2} / ${KONSTANTY.PRAH_EXEKUTORA_ZAKLAD - 3})`],
     ["rozpis úrovní (v7)", "stredná 1 · 2 · 2 · 3 · 3 · P"],
     ["Cirhóza na konci", `−${KONSTANTY.SPAKY_ZA_CIRHOZU} špakov za kus`],
     ["výkupné (2026-10-27)", `plný poldeci ${KONSTANTY.SPAKY_ZA_POLDECI} špak, každých celých ${KONSTANTY.CIGARIET_ZA_SPAK} cigariet 1 špak`],
@@ -37,7 +37,11 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
       "cena patronátu (v6.1)",
       `červená ${cenaPatronatu({ marker: 0 }).cigarety}, oranžová ${cenaPatronatu({ marker: 1 }).cigarety}, žltá ${cenaPatronatu({ marker: 2 }).cigarety}`,
     ],
-    ["Autobusár", `Autobusár ignoruje ${KONSTANTY.EFEKT.AUTOBUSAR_ABSTAKY} Absťák svojho majiteľa všade`],
+    ["Autobusár (v7)", "Autobusár: súper, ktorý pasuje po jeho majiteľovi, cigarety za pas nedostane"],
+    ["Strýko (v7)", `(${KONSTANTY.EFEKT.STRYKO_CENA} cigarety → v bitke kola +1 Rana)`],
+    ["Vychovávateľka (v7)", `Vychovávateľka (${KONSTANTY.EFEKT.VYCHOVAVATELKA_CENA} cigarety → v bitke`],
+    ["Policajtka (v7)", `Policajtka (súper Dlh; za Kriminála ti dá ${KONSTANTY.EFEKT.POLICAJTKA_CIGARETY} cigarety)`],
+    ["Obecný úrad (v7)", `Obecný úrad (v7 Kšeft: ${KONSTANTY.EFEKT.URAD_CENA} cigarety`],
   ])("%s", (_, ocakavane) => {
     expect(tahak).toContain(ocakavane);
   });

@@ -45,6 +45,7 @@ import {
   cielLokalitaId,
   krcmaVyzaduje,
   kartyZaPas,
+  sPrilozenou,
   krokStavby,
   manzelkyHraca,
   legalCommands,
@@ -165,67 +166,75 @@ const VAHA_AKCIE: Readonly<Record<Action, number>> = {
   Pakt: 0,
 };
 
-/** Čo karte pridáva jej efekt (hrubý odhad z textov sady v6). */
+/**
+ * Čo karte pridáva jej efekt (hrubý odhad z textov sady v7, plan.md 14.0;
+ * zladí turnaj). Efekty, ktoré menia bitku na stole (Pes, Mäsiar, premena,
+ * Konflikt), bot vidí v odhade bitky — tu je len ich zvyšok v balíčku.
+ */
 const BONUS_EFEKTU: Readonly<Record<string, number>> = {
   silna_nezavisla_zena: 1,
-  liberal: 0.5,
+  liberal: 0.4,
   zamocnik: 0.3,
   policajtka: 0.5,
   praudovravec: 0.3,
-  recidivista: 0.5,
+  recidivista: 0.6,
   vestica: 0.3,
   hasic: 0.3,
   kocovnik: 0.5,
-  sarlatan: 0.2,
+  sarlatan: 0.4,
   svokra: 0.4,
   podvodnik: 0.3,
-  anonymny_alkoholik: 0.4,
-  farar: 0.6,
-  starosta: 0.4,
-  postarka: 0.3,
-  hrobar: 0.3,
+  anonymny_alkoholik: 0.2,
+  farar: 0.4,
+  starosta: 0.6,
+  postarka: 0.4,
+  hrobar: 0.5,
   krcmarka: 0.4,
-  veterinar: 0.4,
-  autobusar: 0.4,
+  veterinar: 0.3,
+  autobusar: 0.3,
   dievcina_na_vydaj: 0.3,
-  ministrant: 0.2,
+  ministrant: 0.3,
   zahradkar: 0.4,
   cierna_macka: 0.5,
-  pes: 0.3,
+  pes: 0.5,
   sofer: 0.3,
-  snubenica: 0.4,
-  zivnostnik: 0.3,
-  // Sada v7 (revízia 2026-10-27): hrubý odhad, kým ich nezladí turnaj.
-  kapybara: 0.6,
+  snubenica: 0.5,
+  zivnostnik: 0.4,
+  velmi_smutiaca_vdova: 0.4,
+  niekoho_stryna: 0.3,
+  kapybara: 0.4,
   stryko_z_ameriky: 0.5,
-  oslavenec: 0.5,
-  smetiarka: 0.3,
   krokodil: 0.4,
   kon: 0.3,
   kohut: 0.3,
+  pijan: 0.3,
   degustatorka: 0.3,
-  klebetnica: 0.4,
-  dohadzovacka: 0.3,
+  klebetnica: 0.3,
+  dohadzovacka: 0.4,
+  masiar: 0.2,
+  kulturista: 0.2,
   vandal: 0.2,
-  opatrovatelka: 0.4,
   traktoristka: 0.3,
   vymahac: 0.4,
-  brigadnik: 0.2,
+  vychovavatelka: 0.4,
 };
 
 /** Hodnota Nástroja v Dedičstve (malá priazeň natrvalo). */
 const DEDICSTVO: Readonly<Record<string, number>> = {
   nealko: 0.6,
   svaty_text: 0.8,
-  cigorky: 0.8,
+  // v7: karta za každé 2 cigarety, ktoré súper vyfajčí.
+  cigorky: 0.5,
+  // v7: Petelice a Rany o 1 poškodenie viac.
   puska: 0.6,
-  // v6.1: +1 špak po vyhratej bitke, keď sa ma bojí viac starších.
-  noviny: 0.8,
-  pasca: 0.5,
-  vyherny_automat: 0.4,
+  vidly: 1,
+  // v7: špaky za prehranú bitku, keď má víťaz viac priznaných Dlhov.
+  noviny: 0.5,
+  // v7: Pecka navyše, keď súper priložil kartu k mojej.
+  pasca: 0.8,
+  // v7: prah Dlhu +1, ale Dlh v každom kole.
+  vyherny_automat: -0.3,
   vinko: 0.8,
-  // v7: +1 tuhé, kým zaostávaš; NA EX aj na Zviera.
-  vidly: 0.6,
   lievik: 0.3,
 };
 
@@ -656,11 +665,9 @@ interface Vylozenie {
   readonly kam: "vlastna" | "superova";
 }
 
-function sKartou(strany: GameState["strany"], q: PlayerId, v: Vylozenie): GameState["strany"] {
-  const p: PlayerId = v.kam === "vlastna" ? q : opponentOf(q);
-  const nova: PlacedCard = { card: v.karta, playedBy: q };
-  const strana = strany[p];
-  return p === 0 ? [[...strana, nova], strany[1]] : [strany[0], [...strana, nova]];
+/** Stôl po vyložení — s Konfliktom a premenou Miňištranta ako v motore (sPrilozenou, v7). */
+function sKartou(data: GameData, s: GameState, q: PlayerId, v: Vylozenie): GameState {
+  return sPrilozenou(data, s, v.kam === "vlastna" ? q : opponentOf(q), v.karta, q);
 }
 
 /** Najlepšie vyloženie hráča q podľa odhadu bitky, alebo null, keď žiadne nepomôže. */
@@ -678,7 +685,7 @@ function najlepsieVylozenie(k: Kontext, s: GameState, ruka: readonly CardInstanc
       if (videne.has(kluc)) continue;
       videne.add(kluc);
       const v = { karta, kam } as const;
-      const h = hodnotaBitky(k, { ...s, strany: sKartou(s.strany, q, v) }, q, 0.9) - cenaKarty;
+      const h = hodnotaBitky(k, sKartou(k.data, s, q, v), q, 0.9) - cenaKarty;
       if (h > najlepsiaHodnota) {
         najlepsiaHodnota = h;
         najlepsie = v;
@@ -716,7 +723,7 @@ function dohrajZhromazdenie(k: Kontext, s: GameState): GameState {
       navyse[q] = 0;
       cigarety[q] += kartyZaPas({ zostavaLimit: limit, vlastny }, q, ruky[q].length) * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU;
     } else {
-      strany = sKartou(strany, q, v);
+      strany = sKartou(k.data, { ...s, strany }, q, v).strany;
       ruky[q] = ruky[q].filter((x) => x.uid !== v.karta.uid);
       if (minieLimit(k.data, v)) {
         limit[q] = Math.max(0, limit[q] - 1);
@@ -835,8 +842,9 @@ export function tahBota(data: GameData, stav: GameState, ja: PlayerId, seed: num
   };
   const volba: Volba = { data, state, ja, legal, vzorky, k, nahoda };
 
-  // Dohadzovačka (v7): výmenu priazní si zahrá nanečisto ako každý ťah.
-  if (state.hasicVolby?.[0]?.typ === "dohadzovacka") return najlepsi(volba, legal, (po) => hodnotaStavu(k, po, 1.5)) ?? prvy;
+  // Voľby, ktoré menia stôl (Dohadzovačka v6, Kapybara, Nástroj za Živnostníka), si zahrá nanečisto.
+  const typ = state.hasicVolby?.[0]?.typ;
+  if (typ === "dohadzovacka" || typ === "kapybara" || typ === "nastroj") return najlepsi(volba, legal, (po) => hodnotaStavu(k, po, 1.5)) ?? prvy;
   const cmd = rozhodni(volba);
   return cmd ?? prvy;
 }
@@ -851,7 +859,12 @@ function volbaHasica(data: GameData, state: GameState): Command | null {
     const best = [...ruka].sort((a, b) => hodnotaKarty(data, b) - hodnotaKarty(data, a))[0];
     return best === undefined ? null : { type: "klebetnica", uid: best.uid };
   }
-  if (volba.typ === "dohadzovacka") return null;
+  if (volba.typ === "dohadzovacka" || volba.typ === "kapybara" || volba.typ === "nastroj") return null;
+  if (volba.typ === "senok") {
+    // Starosta, Dohadzovačka (v7): zo šenku najlepšiu kartu.
+    const best = [...state.senok].sort((a, b) => hodnotaKarty(data, b) - hodnotaKarty(data, a))[0];
+    return best === undefined ? null : { type: "senok", uid: best.uid };
+  }
   const karta = state.hraci[volba.hrac].odhadzovaci.find((k) => k.uid === volba.uid);
   return { type: "hasic", nechat: karta !== undefined && !defOf(data, karta).tags.includes("Kliatba") };
 }
@@ -1154,29 +1167,13 @@ function pitka(v: Volba): Command | null {
   // v5: fajčí sa len v Pitke — s prázdnou rukou si kartu na ďalšie kolo dober aj za poslednú cigaretu navyše.
   if (smoke !== undefined && !fajcenieStoji && maCoTahat && cenaFajc <= fajcitDo && h.ruka.length <= 2 && h.cigarety >= cenaFajc + 1 && neresti + cenaFajc <= strop) return smoke;
 
-  // Poštárka: dve karty za Dlh, kým je Exekútor ďaleko.
-  const postarka = v.legal.find((c) => c.type === "postarka" && c.pocet === KONSTANTY.EFEKT.POSTARKA_KARTY);
+  // Kšeft a Úplatok (v7): zahrá si ich nanečisto; berie, keď stav zlepší viac než o povahový prah.
+  // Poštárka (Dlh za kartu) len, kým je Exekútor ďaleko.
   const prahy = prahyHraca(data, state, ja);
-  if (postarka !== undefined && h.ruka.length < 6 && prahy.exekutor - prahy.priznaneDlhy > 4) return postarka;
-
-  // Starosta: vymeň najhoršiu kartu z ruky za výrazne lepšiu zo šenku.
-  let starosta: Command | null = null;
-  let zisk = 1;
-  for (const cmd of v.legal) {
-    if (cmd.type !== "starosta") continue;
-    const zRuky = h.ruka.find((x) => x.uid === cmd.rukaUid);
-    const zoSenku = state.senok.find((x) => x.uid === cmd.senokUid);
-    if (zRuky === undefined || zoSenku === undefined) continue;
-    const z = hodnotaKarty(data, zoSenku) - hodnotaKarty(data, zRuky);
-    if (z > zisk && h.cigarety >= 2) {
-      zisk = z;
-      starosta = cmd;
-    }
-  }
-  if (starosta !== null) return starosta;
-
-  // Kšeft (v7): zahrá si ho nanečisto; berie ho, keď stav zlepší viac než o povahový prah.
-  const ksefty = v.legal.filter((c) => c.type === "kseft");
+  const postarkaUid = state.starsi.find((e) => e.karta.defId === "postarka")?.karta.uid;
+  const ksefty = v.legal.filter(
+    (c) => (c.type === "kseft" && (c.uid !== postarkaUid || (h.ruka.length < 6 && prahy.exekutor - prahy.priznaneDlhy > 4))) || c.type === "uplatok",
+  );
   if (ksefty.length > 0) {
     const ohodnot = (po: GameState): number => hodnotaStavu(k, po, 1.5);
     const best = najlepsi(v, ksefty, ohodnot);
@@ -1196,7 +1193,7 @@ function pitka(v: Volba): Command | null {
         if (odpoved !== null) {
           po = {
             ...po,
-            strany: sKartou(po.strany, su, odpoved),
+            strany: sKartou(data, po, su, odpoved).strany,
             hraci: su === 0
               ? [{ ...po.hraci[0], ruka: po.hraci[0].ruka.filter((x) => x.uid !== odpoved.karta.uid) }, po.hraci[1]]
               : [po.hraci[0], { ...po.hraci[1], ruka: po.hraci[1].ruka.filter((x) => x.uid !== odpoved.karta.uid) }],
