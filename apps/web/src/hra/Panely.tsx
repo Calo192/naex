@@ -1407,7 +1407,7 @@ export function PriebehKola({ view, onBitka }: { readonly view: ClientState; rea
           obaja. Kto má vyššie celkové, rozdelí prebytok —
           posúva markery starších; po finále ho dostane ako špaky.
           <span className="tip-riadok">
-            Potom Exekútor, Pohoršenie, Pohreb… a každý si dobere {KONSTANTY.KARTY_PO_BITKE} karty. Porazený je v ďalšom kole
+            Potom Exekútor, Pohoršenie, Pohreb… a každý si dobere {pocet(KONSTANTY.KARTY_PO_BITKE, "kartu", "karty", "kariet")}. Porazený je v ďalšom kole
             útočník.
           </span>
         </>

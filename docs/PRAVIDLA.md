@@ -147,7 +147,8 @@ poslednej bitky: **vyberá a natáča cieľ** kola a **Pitku začína**.
 
 - Každému hráčovi sa otočí **jeden vypitý poldeci na plný** (§6, limit).
 - Od druhého kola si každý hráč dobere zo svojho doberacieho balíčka
-  **2 karty** (dobratie po bitke). **Keď sa doberací balíček minie,
+  **1 kartu** (dobratie po bitke; do 2026-10-27 dve — ďalšie karty sa
+  kupujú cigaretami v šenku a fajčením). **Keď sa doberací balíček minie,
   odhadzovací sa zamieša a stane sa z neho nový doberací balíček** — pri
   každom ťahaní, aj uprostred neho. Na začiatku hry je doberací balíček
   prázdny (§3): kým hráč nemá ani odhadzovací, ťahanie nedá nič, fajčiť sa
@@ -1209,7 +1210,7 @@ v strede).
 | Absťák | kliatba za menej nerestí než v predošlom kole; rovno priznaná, −1 tvoje tuhé za kus; víťazovi s viac Absťákmi uberie špaky za bitku a rozhoduje remízu (§8, §9.4) |
 | Finále | posledná bitka bez lokality; prvá karta je stred, 3 Pitky, útočí viac špakov (§14b) |
 | Dedičstvo | Nástroj vyložený mimo línie za rastúcu cenu v cigaretách; platí jeho efekt Dedičstvo (§12) |
-| Dobratie po bitke | 2 karty na začiatku každého ďalšieho kola; limit ruky nie je (§4) |
+| Dobratie po bitke | 1 karta na začiatku každého ďalšieho kola; limit ruky nie je (§4) |
 | Kraj | polovica línie od lokality, pomenovaná podľa hrany lokality (Krčma: pri výčape / pri dverách) (§6) |
 | Línia | celý rad kariet v kole; lokalita v strede (§6) |
 | Náhrada | hráč nahradí kartu z množiny určenej efektom; náhrada staršieho je karta na jeho scorecarde po patronáte (§10) |

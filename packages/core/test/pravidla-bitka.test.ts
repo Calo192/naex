@@ -9,6 +9,7 @@ import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { BattleSide, BitkaStav, CardDef, CardInstance, Event, GameData, GameState, PitkaStav, PlacedCard, PlayerId, PlayerState } from "../src/index.ts";
 import {
+  KONSTANTY,
   apply,
   buildGameData,
   computeDamage,
@@ -345,8 +346,8 @@ describe("§8 Absťák a neresti", () => {
     const s = sNerestami(2, 1);
     const po = apply(data, s, { type: "skipPohreb" }, 0).state;
     expect(po.hraci[0].priznane.filter((k) => k.defId === "abstak")).toHaveLength(1);
-    // 1 karta za priznaný Absťák + 2 karty po bitke.
-    expect(po.hraci[0].ruka).toHaveLength(s.hraci[0].ruka.length + 3);
+    // 1 karta za priznaný Absťák + KARTY_PO_BITKE (od 2026-10-27 jedna) po bitke.
+    expect(po.hraci[0].ruka).toHaveLength(s.hraci[0].ruka.length + 1 + KONSTANTY.KARTY_PO_BITKE);
     expect(po.hraci[0].nerestiMinuleKolo).toBe(1);
   });
 

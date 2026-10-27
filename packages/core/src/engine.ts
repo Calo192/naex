@@ -1427,6 +1427,8 @@ export function apply(
 
   aktualizujPitky(s, data);
   dohrajNevyhnutne(data, s, events);
+  // Nevyhnutné ťahy smú odkryť NA EX (hotovo za hráča) — aj to mení počet Pitiek.
+  aktualizujPitky(s, data);
   events.push(...zaznamyPriazne(data, state, s as GameState));
   return { state: s as GameState, events };
 }

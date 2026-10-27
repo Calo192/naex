@@ -1197,3 +1197,10 @@ Michal: „keď sa fajčí a hráč ťahá karty, ťahá ich za prvé fajčenie 
 druhé 2 cigarety atď… resetuje sa to v každej Pitke.“ Predtým stálo každé
 fajčenie 1 cigaretu. Počítadlo fajčení je verejné a má ho každý hráč zvlášť;
 strop to nie je. Nerest je každá vyfajčená cigareta (druhé fajčenie = 2 neresti).
+
+### Doplnok v6.1e: dobratie po bitke 1 karta (Michal 2026-10-27)
+
+Michal: „hráč si automaticky ťahá 2 karty z doberacieho balíčka… toto treba
+obmedziť na 1, nech majú cigarety zmysel.“ Playtesteri hlásili prebytok
+cigariet (15–56 za partiu). Dobratie na začiatku kola od 2. kola je teraz
+1 karta (predtým 2); ďalšie karty sa kupujú v šenku a fajčením.

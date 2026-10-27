@@ -9,9 +9,10 @@ export const KONSTANTY = {
   START_POLDECI: 2,
   /**
    * Po každej bitke si hráč dobere toľkoto kariet (Michal 2026-10-19) —
-   * namiesto doplnenia ruky na 5. Limit ruky nie je.
+   * namiesto doplnenia ruky na 5. Limit ruky nie je. Od 2026-10-27 len 1
+   * (predtým 2): ďalšie karty sa majú kupovať cigaretami (šenok, fajčenie).
    */
-  KARTY_PO_BITKE: 2,
+  KARTY_PO_BITKE: 1,
   START_CIGARETY: 3,
 
   /**

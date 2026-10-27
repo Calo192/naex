@@ -195,7 +195,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             boja, mu dajú ďalšie; porazený od nich nič. Prebytok posúva starších.
           </li>
           <li>
-            <strong>Po bitke.</strong> Karty z línie idú do odhadzovacích balíčkov, každý si dobere 2 karty a doleje sa mu jeden
+            <strong>Po bitke.</strong> Karty z línie idú do odhadzovacích balíčkov, každý si dobere 1 kartu a doleje sa mu jeden
             vypitý poldeci.
           </li>
         </ol>
@@ -588,7 +588,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             <strong>Absťák</strong> — porovnanie nerestí kola s minulým; potom sa skontroluje vydesenie.
           </li>
           <li>
-            <strong>Nové kolo</strong> — každému sa doleje jeden vypitý poldeci a každý si dobere 2 karty.
+            <strong>Nové kolo</strong> — každému sa doleje jeden vypitý poldeci a každý si dobere 1 kartu.
           </li>
         </ol>
       </>

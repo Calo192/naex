@@ -7,6 +7,7 @@ import { describe, expect, it } from "vitest";
 import { DLZKY_HRY, KONSTANTY } from "../src/constants.ts";
 import { cenaPatronatu } from "../src/elders.ts";
 import { cenaFajcenia } from "../src/engine.ts";
+import { pocet } from "../src/jazyk.ts";
 
 const tahak = readFileSync(new URL("../../../tools/playtest/tahak.md", import.meta.url), "utf8").replace(/\s+/g, " ");
 
@@ -21,7 +22,7 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ["finále", `Finále má vždy ${KONSTANTY.FINALE_PITKY} Pitky`],
     ["Cirhóza na konci", `−${KONSTANTY.SPAKY_ZA_CIRHOZU} špakov za kus`],
     ["výkupné (2026-10-27)", `plný poldeci ${KONSTANTY.SPAKY_ZA_POLDECI} špak, každých celých ${KONSTANTY.CIGARIET_ZA_SPAK} cigariet 1 špak`],
-    ["karty po bitke", `dobereš **${KONSTANTY.KARTY_PO_BITKE} karty**`],
+    ["karty po bitke", `dobereš **${pocet(KONSTANTY.KARTY_PO_BITKE, "kartu", "karty", "kariet")}**`],
     ["cena šenku", `1 karta za ${KONSTANTY.CENA_SENKU[1]} cigaretu, 2 karty za ${KONSTANTY.CENA_SENKU[2]} cigarety`],
     ["doplnenie šenku", `doplní na ${KONSTANTY.SENOK_PO_BRANI}`],
     ["doliatie", `${KONSTANTY.REFILL_CENA} cigarety → vypitý poldeci`],

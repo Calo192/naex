@@ -87,7 +87,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   — vyberáte naraz. Po braní sa šenok sám doplní na 8 z vrchu spoločného balíčka. Branie striedavo, začína útočník: **1 karta za 1 cigaretu,
   2 karty za 3 cigarety** (`{"type":"draftBer","uids":[…]}`); poldeci sa
   v šenku neplatí; `draftStop` ukončí branie.
-- **Ruka bez limitu:** po každej bitke si dobereš **2 karty**; nič neodhadzuješ.
+- **Ruka bez limitu:** po každej bitke si dobereš **1 kartu** (2026-10-27, predtým 2); nič neodhadzuješ.
   Karty navyše: šenok, fajčenie (`smoke`: karta hneď, **len v Pitke** (v5), v Zhromaždení
   nie; **prvé fajčenie v Pitke 1 cigareta, druhé 2, tretie 3…**, každá Pitka znova od 1
   (2026-10-27), každá vyfajčená cigareta je nerest; s prázdnym doberacím aj odhadzovacím balíčkom sa fajčiť
