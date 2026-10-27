@@ -23,7 +23,6 @@ import {
   nahladNaexNaKartu,
   naTahu,
   pohorseniaVBitke,
-  pohorseniaZruseneVBitke,
   poskodenieBitky,
   prebytokNaRozdelenie,
   rngInt,
@@ -164,12 +163,10 @@ describe("náhľad NA EX == zúčtovanie motora (seedy)", () => {
           expect(n.dopady[q].cigarety, `${kde}: cigarety hráča ${q}`).toBe(s1.hraci[q].cigarety - bez.hraci[q].cigarety);
           expect(n.kliatby[q].cirhozy + n.kliatby[q].dalejCirhozy, `${kde}: Cirhózy hráča ${q}`).toBe(s1.cirhozyVKole[q] - bez.cirhozyVKole[q]);
           // Bitka ráta Pohoršenia zo svojich súčtov (nastavSumy) — tým istým výpočtom ako náhľad.
-          const poh = (t: GameState, sums: readonly [ActionSums, ActionSums]) => [pohorseniaVBitke(data, t, sums)[q], pohorseniaZruseneVBitke(data, t, sums)[q]] as const;
-          const [pA, zA] = poh(s1, b1.sums);
-          const [pB, zB] = poh(bez, b0.sums);
+          const pA = pohorseniaVBitke(data, s1, b1.sums)[q];
+          const pB = pohorseniaVBitke(data, bez, b0.sums)[q];
           expect(n.dopady[q].pohorseniaSpolu, `${kde}: Pohoršenia hráča ${q}`).toBe(pA);
           expect(n.dopady[q].pohorsenia, `${kde}: Pohoršenia navyše hráča ${q}`).toBe(pA - pB);
-          expect(n.dopady[q].pohorseniaZrusene, `${kde}: Policajtka, hráč ${q}`).toBe(zA - zB);
         }
         porovnane++;
         // Bitka až po poškodenie. Benzínka mení líniu voľbou hráča — tú náhľad nepredvída.

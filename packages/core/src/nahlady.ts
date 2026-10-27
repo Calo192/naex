@@ -8,19 +8,18 @@ import type { CardInstance, PlayerId } from "./types.ts";
 import type { GameData } from "./data.ts";
 import {
   cigaretyZPitky,
+  dlhyPolicajtky,
   lineState,
   nahladPitky,
   paleneDlhyVBitke,
   pocetPitiek,
   pohorseniaVBitke,
-  pohorseniaZruseneVBitke,
   poskodenieBitky,
   prebytokNaRozdelenie,
   silaPriazne,
-  svokraZaNaex,
   verejneAbstaky,
 } from "./engine.ts";
-import { efektHraca, efektPotlaceny, exekutorLokality, partiaHraca, silaDoDna } from "./effects.ts";
+import { efektHraca, efektPotlaceny, exekutorLokality, partiaHraca, silaDoDna, svokraRany } from "./effects.ts";
 import { opponentOf } from "./types.ts";
 import type { LineEval } from "./partia.ts";
 import { evaluateLine } from "./partia.ts";
@@ -139,11 +138,6 @@ export interface DopadyNahladu {
   readonly pohorseniaSpolu: number;
   /** ≈ o koľko Pohoršenia navyše pohnú rozdiel bodov hráča (on − súper), hltavo (hodnotaPohorseni). */
   readonly pohorseniaBody: number;
-  /**
-   * Pohoršenia hráča navyše, ktoré súperova Policajtka zruší — bitka to hlási
-   * v logu, náhľad mlčal (playtest 20261024-075830). V `pohorsenia` nie sú.
-   */
-  readonly pohorseniaZrusene: number;
   /** Mäkké poškodenie navyše v najbližšej bitke. */
   readonly makke: number;
 }
@@ -164,7 +158,6 @@ export function dopadyNahladu(
     return {
       cigarety: s.hraci[p].cigarety + tato + dalej,
       pohorsenia,
-      pohorseniaZrusene: pohorseniaZruseneVBitke(data, s, sums)[p],
       pohorseniaBody: hodnotaPohorseni(data, s, p, pohorsenia),
       makke: poskodenieBitky(data, stolPriPoskodeni(data, s, dalsie), sums, [0, 0]).makke[p],
     };
@@ -177,7 +170,6 @@ export function dopadyNahladu(
       pohorsenia: b.pohorsenia - a.pohorsenia,
       pohorseniaSpolu: b.pohorsenia,
       pohorseniaBody: b.pohorseniaBody - a.pohorseniaBody,
-      pohorseniaZrusene: b.pohorseniaZrusene - a.pohorseniaZrusene,
       makke: b.makke - a.makke,
     };
   };
@@ -286,32 +278,28 @@ export function cenaTahu(data: GameData, pred: ClientState, po: ClientState, cen
 
 /**
  * Čo jedno ďalšie NA EX hráča p zúčtuje pri odkrytí (v5, NA EX naraz) — tým istým
- * poradím ako odhalNaex v motore: najprv súperove Svokry, potom Výpalné zo zvyšku
- * cigariet. `doDna`: poldeci z neho sa po bitke vráti plný (Na zdravie, Alkoholik).
- * Súperove skryté NA EX náhľad nepozná, preto zrážku (Výtržník) nesľubuje.
+ * poradím ako odhalNaex v motore: Výpalné z jeho cigariet. `doDna`: poldeci z neho
+ * sa po bitke vráti plný (Na zdravie, Alkoholik). Súperove skryté NA EX náhľad
+ * nepozná, preto zrážku (Výtržník) nesľubuje.
  */
 export interface OdkrytieNaex {
-  /** Cigarety, ktoré za toto NA EX ukradnú súperove Svokry. */
-  readonly svokra: number;
-  /** Cigarety, ktoré za toto NA EX zaplatíš súperovi (Výpalné), najviac koľko ti ostane. */
+  /** Cigarety, ktoré za toto NA EX zaplatíš súperovi (Výpalné), najviac koľko máš. */
   readonly vypalne: number;
   readonly doDna: boolean;
 }
 
 export function odkrytieNaex(data: GameData, view: ClientState, p: PlayerId): OdkrytieNaex {
-  const cig = view.hraci[p].cigarety;
-  const svokra = svokraZaNaex(data, view, p, cig);
-  const vypalne = Math.min(silaPriazne(data, view, "NEPRAJNIK", opponentOf(p)), cig - svokra);
+  const vypalne = Math.min(silaPriazne(data, view, "NEPRAJNIK", opponentOf(p)), view.hraci[p].cigarety);
   const linia = view.strany.flat();
   const naStole =
     linia.filter((pl) => pl.naexBy === p || pl.naexBy2 === p).length +
     view.zaverecne.filter((z) => z.naexBy === p && !linia.some((pl) => pl.card.uid === z.uid)).length;
-  return { svokra, vypalne: Math.max(0, vypalne), doDna: naStole < silaDoDna(data, view, p) };
+  return { vypalne: Math.max(0, vypalne), doDna: naStole < silaDoDna(data, view, p) };
 }
 
 /**
  * Pohľad hráča `view.ja` s jeho skrytými NA EX (v5) tak, ako ich motor zúčtuje
- * pri odkrytí: poldeci na karte, pečeň +1, Svokra a Výpalné — základ náhľadu
+ * pri odkrytí: poldeci na karte, pečeň +1, Výpalné — základ náhľadu
  * ďalšieho NA EX a výhľadov Pitky. Súperove skryté NA EX klient nevidí.
  */
 export function sMojimiSkrytymiNaex(data: GameData, view: ClientState): ClientState {
@@ -321,9 +309,23 @@ export function sMojimiSkrytymiNaex(data: GameData, view: ClientState): ClientSt
   return v;
 }
 
+/** Náhradné uid Dlhov od Policajtky v náhľade — pod nimi, aby ich Vychovávateľka nebrala. */
+const UID_DLHU_POLICAJTKY = -950000;
+
 /** Pohľad po odkrytí jedného NA EX hráča `view.ja` a čo pri ňom motor zúčtoval. */
 export interface PoOdkrytiNaex extends OdkrytieNaex {
   readonly view: ClientState;
+  /**
+   * Svokra súpera (Michal 2026-10-26): Rany, ktoré ti v bitke udelí za toto NA EX
+   * na jeho kartu — tuhé po ťahu ich už ráta, toto ich len pomenuje.
+   */
+  readonly svokra: number;
+  /**
+   * Policajtka súpera (Michal 2026-10-26): Dlhy, ktoré dostaneš pri odkrytí, lebo
+   * týmto NA EX dáš v Pitke viac NA EX ako súper — ak on žiadne nedá (jeho skryté
+   * NA EX náhľad nevidí). V pohľade sú už priznané.
+   */
+  readonly policajtka: number;
   /** Vychovávateľka: jeden môj priznaný Dlh odíde súperovi do doberacieho balíčka. */
   readonly vychovavatelka: boolean;
   /**
@@ -336,9 +338,9 @@ export interface PoOdkrytiNaex extends OdkrytieNaex {
 /**
  * Pohľad hráča `view.ja` po odkrytí jeho NA EX na kartu `uid` — v poradí
  * odhalNaex v motore: poldeci na kartu (zo zásoby plných), pečeň +1,
- * Vychovávateľka, Svokry súpera, Výpalné zo zvyšku cigariet. Svokry
- * a Vychovávateľka sa posudzujú až s poldeci na karte, ako v motore. Na kartu
- * s poldeci či mimo línie null.
+ * Vychovávateľka, Výpalné, nakoniec Policajtka súpera. Vychovávateľka sa
+ * posudzuje až s poldeci na karte, ako v motore. Na kartu s poldeci či mimo
+ * línie null.
  */
 export function poOdkrytiNaex(data: GameData, view: ClientState, uid: number): PoOdkrytiNaex | null {
   const ja = view.ja;
@@ -359,21 +361,32 @@ export function poOdkrytiNaex(data: GameData, view: ClientState, uid: number): P
   const abstaky = verejneAbstaky(view, ja) + view.ruka.filter((k) => k.defId === "abstak").length;
   const krcmarka =
     !view.naexVKole[ja] && efektHraca(view, ja, "krcmarka") && !efektPotlaceny(data, view, ja, "krcmarka") && abstaky === 0 && h.poldeciVypite > 0;
+  // Dlh od Policajtky príde v motore až po všetkých NA EX — Vychovávateľka ho nepresunie.
+  const presunie = (k: CardInstance): boolean => k.defId === "dlh" && k.uid > UID_DLHU_POLICAJTKY;
   const vychovavatelka =
-    efektHraca(sKartou, ja, "vychovavatelka") && !efektPotlaceny(data, sKartou, ja, "vychovavatelka") && h.priznane.some((k) => k.defId === "dlh");
-  const indexDlhu = vychovavatelka ? h.priznane.findIndex((k) => k.defId === "dlh") : -1;
-  const svokra = svokraZaNaex(data, sKartou, ja, h.cigarety);
-  const vypalne = Math.max(0, Math.min(silaPriazne(data, sKartou, "NEPRAJNIK", su), h.cigarety - svokra));
+    efektHraca(sKartou, ja, "vychovavatelka") && !efektPotlaceny(data, sKartou, ja, "vychovavatelka") && h.priznane.some(presunie);
+  const indexDlhu = vychovavatelka ? h.priznane.findIndex(presunie) : -1;
+  const svokra = svokraRany(data, sKartou, su) - svokraRany(data, view, su);
+  const vypalne = Math.max(0, Math.min(silaPriazne(data, sKartou, "NEPRAJNIK", su), h.cigarety));
+  // Počet NA EX Pitky: moje zúčtované navyše o toto, súperove skryté nevidno (ráta sa, že nedá).
+  const pitka = view.pitkaStav;
+  const moje = pitka?.naexPocet?.[ja] ?? 0;
+  const jeho = pitka?.naexPocet?.[su] ?? 0;
+  const policajtka = pitka === null ? 0 : dlhyPolicajtky(data, sKartou, su, moje + 1, jeho) - dlhyPolicajtky(data, sKartou, su, moje, jeho);
+  const odPolicajtky: CardInstance[] = Array.from({ length: policajtka }, (_, i) => ({ uid: UID_DLHU_POLICAJTKY - 10 * ja - i, defId: "dlh", leftLayout: 0, rightLayout: 0 }));
   const hraci: [ClientState["hraci"][0], ClientState["hraci"][1]] = [view.hraci[0], view.hraci[1]];
   hraci[ja] = {
     ...h,
     poldeciPlne: Math.max(0, h.poldeciPlne - 1),
     pecen: h.pecen + 1,
-    cigarety: h.cigarety - svokra - vypalne,
-    priznane: indexDlhu === -1 ? h.priznane : h.priznane.filter((_, i) => i !== indexDlhu),
+    cigarety: h.cigarety - vypalne,
+    priznane: [...(indexDlhu === -1 ? h.priznane : h.priznane.filter((_, i) => i !== indexDlhu)), ...odPolicajtky],
   };
-  hraci[su] = { ...hraci[su], cigarety: hraci[su].cigarety + svokra + vypalne };
-  return { view: { ...sKartou, hraci }, svokra, vypalne, doDna, vychovavatelka, krcmarka };
+  hraci[su] = { ...hraci[su], cigarety: hraci[su].cigarety + vypalne };
+  const naexPocet: [number, number] = [pitka?.naexPocet?.[0] ?? 0, pitka?.naexPocet?.[1] ?? 0];
+  naexPocet[ja] += 1;
+  const pitkaStav = pitka === null ? null : { ...pitka, naexPocet };
+  return { view: { ...sKartou, hraci, pitkaStav }, svokra, policajtka, vypalne, doDna, vychovavatelka, krcmarka };
 }
 
 /** Náhľad NA EX na jednu kartu: celá cena a čo sa zúčtuje pri odkrytí. */

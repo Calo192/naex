@@ -389,15 +389,21 @@
       ]
     },
     {
-      "id": "7.naex.liberal-alkoholik",
+      "id": "7.naex.placatka",
       "paragraf": "7. Pitka › NA EX",
-      "pravidlo": "Na Liberála NA EX nemožno; na súperovho Anonymného alkoholika tiež nie — jeho susedov nechráni.",
+      "pravidlo": "Placatka (2026-10-26): NA EX na vlastného Anonymného alkoholika (aj podstrčeného) sa do limitu NA EX za Pitku neráta — navyše k bežnému, pred ním aj po ňom, na Vínnej pivnici k obom; treba plný poldeci, na Kostole nejde, na Anonymného alkoholika s poldeci ďalšie NA EX nie. Súper naňho NA EX smie a jemu sa do limitu ráta; Liberála NA EX nezakazuje.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/playtest-055944.test.ts › na Liberála NA EX dať nemožno",
-        "packages/core/test/naex-ochrana.test.ts › súper nedá NA EX na neho, na majiteľove karty vedľa neho áno",
-        "packages/core/test/naex-ochrana.test.ts › majiteľ smie dať NA EX na neho aj na svoje karty vedľa neho",
-        "packages/core/test/naex-ochrana.test.ts › podstrčený na súperovu stranu chráni seba, súperove karty vedľa seba nie"
+        "packages/core/test/naex-ochrana.test.ts › placatka: po bežnom NA EX smie majiteľ dať ešte NA EX na vlastného Anonymného alkoholika — inam už nie",
+        "packages/core/test/naex-ochrana.test.ts › podstrčený na súperovu stranu je stále majiteľova placatka",
+        "packages/core/test/naex-ochrana.test.ts › Vínna pivnica: dve bežné NA EX a k tomu placatka",
+        "packages/core/test/naex-ochrana.test.ts › bez plného poldeci placatka nejde",
+        "packages/core/test/naex-ochrana.test.ts › Kostol: zákaz NA EX platí aj pre placatku",
+        "packages/core/test/naex-ochrana.test.ts › na Anonymného alkoholika s poldeci ďalšie NA EX nejde — placatka najviac raz za kolo",
+        "packages/core/test/naex-ochrana.test.ts › súper smie dať NA EX naňho — aj na podstrčeného; do limitu sa mu ráta",
+        "packages/core/test/naex-ochrana.test.ts › po odkrytí: placatka sa ráta do počtu NA EX Pitky (Policajtka), limit nemíňa",
+        "packages/core/test/naex-ochrana.test.ts › NA EX naň smie (Michal 2026-10-26 zrušil vetu „Na Liberála NA EX dať nemožno“)",
+        "packages/core/test/playtest-055944.test.ts › na Liberála NA EX dať smie (Michal 2026-10-26)"
       ]
     },
     {
@@ -411,10 +417,10 @@
     {
       "id": "7.naex.krcma",
       "paragraf": "7. Pitka › NA EX",
-      "pravidlo": "Na Krčme hráč s plným poldeci a kartou, kam ho dať, musí dať (skryté) NA EX, inak Pitku neskončí; prah Cirhózy je obom o 2 vyšší.",
+      "pravidlo": "Na Krčme hráč s plným poldeci a kartou, kam ho dať, musí dať (skryté) NA EX, inak Pitku neskončí — jedno; splní ho aj placatka na vlastného Anonymného alkoholika, ďalšie NA EX je dobrovoľné. Prah Cirhózy je obom o 2 vyšší.",
       "stav": "na-overenie",
       "testy": [],
-      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/playtest-055944.test.ts › s plným poldeci a vlastným Občanom v línii sa Pitka bez NA EX neskončí; packages/core/test/lokality-20261020.test.ts › Krčma: prah Cirhózy o 2 vyšší obom, povinné NA EX pri pečeni 2 Cirhózu nedá (Michal 2026-10-22); packages/core/test/naex-ochrana.test.ts › Krčma nevyžaduje NA EX, keď jediný Občan je súperov Alkoholik; Občan vedľa neho už áno."
+      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/playtest-055944.test.ts › s plným poldeci a vlastným Občanom v línii sa Pitka bez NA EX neskončí; packages/core/test/lokality-20261020.test.ts › Krčma: prah Cirhózy o 2 vyšší obom, povinné NA EX pri pečeni 2 Cirhózu nedá (Michal 2026-10-22). Placatka (2026-10-26): packages/core/test/naex-ochrana.test.ts › Krčma: povinné NA EX splní aj placatka; po bežnom NA EX placatka povinná nie je."
     },
     {
       "id": "7.naex.pri-lokalite",
@@ -464,12 +470,15 @@
       ]
     },
     {
-      "id": "7.naex.svokra",
+      "id": "7.naex.efekty-okolo",
       "paragraf": "7. Pitka › NA EX",
-      "pravidlo": "Pri odkrytí každého NA EX súpera mu majiteľ Svokry vezme 2 cigarety (každá Svokra dve, bez cigarety nič); pri zrážke za každé z oboch NA EX.",
-      "stav": "na-overenie",
-      "testy": [],
-      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/naex-ochrana.test.ts › za NA EX súpera ukradne jej majiteľ 2 cigarety; packages/core/test/naex-ochrana.test.ts › súper bez cigarety nestratí nič; vlastné NA EX majiteľa nič nespustí; packages/core/test/naex-ochrana.test.ts › dve Svokry ukradnú 4 cigarety, viac než súper má nie."
+      "pravidlo": "Pri odkrytí platia Výpalné, Vychovávateľka a nakoniec Policajtka (Dlh tomu, kto dal v Pitke viac NA EX); Svokra (Rana za majiteľovu kartu so súperovým NA EX) až v bitke a cigarety už neberie. Odpoveď na NA EX počet pre Policajtku nezmení.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/naex-ochrana.test.ts › súper dal v Pitke viac NA EX (1 : 0) — pri odkrytí dostane Dlh, hneď priznaný",
+        "packages/core/test/naex-ochrana.test.ts › pri odkrytí NA EX už súperovi cigarety neberie",
+        "packages/core/test/naex-ochrana.test.ts › v bitke je Rana navyše v tuhom: to isté NA EX od súpera dá o 1 tuhé viac ako vlastné"
+      ]
     },
     {
       "id": "7.naex.pecen-a-poldeci",
@@ -809,12 +818,12 @@
     {
       "id": "10.patronat.pohorsenia",
       "paragraf": "10. Starší › Patronát",
-      "pravidlo": "Súper hrá Pohoršenia z patronátu ako svoje, ale nie na staršieho, ktorého si patrón vzal (v6); jeho ostatné Pohoršenia naňho smú, hra minie najprv tie z patronátu; patrónova Policajtka ich zruší.",
+      "pravidlo": "Súper hrá Pohoršenia z patronátu ako svoje, ale nie na staršieho, ktorého si patrón vzal (v6); jeho ostatné Pohoršenia naňho smú, hra minie najprv tie z patronátu. Patrónova Policajtka ich od 2026-10-26 neruší.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/patronat-20261020.test.ts › v6: súperove Pohoršenia z patronátu nesmú na patróna — patrón z červenej zastaví vydesenie (Michal 2026-10-26)",
         "packages/core/test/patronat-20261020.test.ts › v6: na patróna smú súperove ostatné Pohoršenia (zo stola) — z patronátu sa minú najprv",
-        "packages/core/test/patronat-20261020.test.ts › Policajtka patróna zruší aj Pohoršenia z patronátu"
+        "packages/core/test/patronat-20261020.test.ts › Policajtka patróna Pohoršenia z patronátu neruší (Michal 2026-10-26)"
       ]
     },
     {
@@ -903,11 +912,11 @@
     {
       "id": "13.zaverecna.otocenie",
       "paragraf": "13. Pokročilé ťahy › Záverečná",
-      "pravidlo": "Záverečná sa otočí na konci Pitky; Nástup a efekty, ktoré by ju prezradili (Svokra), sa vyhodnotia až vtedy.",
+      "pravidlo": "Záverečná sa otočí na konci Pitky; Nástup a efekty, ktoré by ju prezradili (Policajtka), sa vyhodnotia až vtedy.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/zaverecna.test.ts › otočí sa a Nástup sa vyhodnotí až vtedy",
-        "packages/core/test/zaverecna.test.ts › Svokra lícom dole za NA EX súpera nekradne hneď — až pri otočení"
+        "packages/core/test/zaverecna.test.ts › Policajtka lícom dole za NA EX súpera nedá Dlh pri odkrytí — až pri otočení"
       ]
     },
     {
@@ -1574,11 +1583,15 @@
     {
       "id": "16.karta.anonymny-alkoholik",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Anonymný alkoholik: súper naňho NA EX nedá (ani podstrčený), majiteľ smie; susedov nechráni.",
+      "pravidlo": "Anonymný alkoholik (2026-10-26): NA EX majiteľa naňho (placatka) sa nepočíta do limitu NA EX za Pitku, aj podstrčený; súper naňho NA EX smie a jemu sa ráta. Kostol zakazuje aj placatku, na Krčme ju splní, na Anonymného alkoholika s poldeci ďalšie NA EX nie; do počtu NA EX Pitky (Policajtka) sa ráta.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/naex-ochrana.test.ts › súper nedá NA EX na neho, na majiteľove karty vedľa neho áno",
-        "packages/core/test/naex-ochrana.test.ts › podstrčený na súperovu stranu chráni seba, súperove karty vedľa seba nie"
+        "packages/core/test/naex-ochrana.test.ts › placatka: po bežnom NA EX smie majiteľ dať ešte NA EX na vlastného Anonymného alkoholika — inam už nie",
+        "packages/core/test/naex-ochrana.test.ts › súper smie dať NA EX naňho — aj na podstrčeného; do limitu sa mu ráta",
+        "packages/core/test/naex-ochrana.test.ts › Kostol: zákaz NA EX platí aj pre placatku",
+        "packages/core/test/naex-ochrana.test.ts › Krčma: povinné NA EX splní aj placatka; po bežnom NA EX placatka povinná nie je",
+        "packages/core/test/naex-ochrana.test.ts › na Anonymného alkoholika s poldeci ďalšie NA EX nejde — placatka najviac raz za kolo",
+        "packages/core/test/naex-ochrana.test.ts › po odkrytí: placatka sa ráta do počtu NA EX Pitky (Policajtka), limit nemíňa"
       ]
     },
     {
@@ -1615,11 +1628,11 @@
     {
       "id": "16.karta.liberal",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Liberál: pri rovnakom počte žien a chlapov v partii (on sa neráta) sa jeho aktívne akcie rátajú dvakrát; NA EX naň nemožno.",
+      "pravidlo": "Liberál: pri rovnakom počte žien a chlapov v partii (on sa neráta) sa jeho aktívne akcie rátajú dvakrát. NA EX naň smie (2026-10-26).",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/playtest-055944.test.ts › Liberál: pri rovnakom počte žien a chlapov sa jeho akcie rátajú dvakrát",
-        "packages/core/test/playtest-055944.test.ts › na Liberála NA EX dať nemožno"
+        "packages/core/test/playtest-055944.test.ts › na Liberála NA EX dať smie (Michal 2026-10-26)"
       ]
     },
     {
@@ -1668,10 +1681,19 @@
     {
       "id": "16.karta.policajtka-praudovravec",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Policajtka: súperove Pohoršenia proti majiteľovi neplatia — všetky, v oboch smeroch, aj z patronátu a Abstinenta; Praudovravec umlčí Autority v súperovej partii.",
-      "stav": "na-overenie",
-      "testy": [],
-      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/revizia-kariet.test.ts › Policajtka: súperove Pohoršenia proti jej majiteľovi neplatia; packages/core/test/revizia-kariet.test.ts › Praudovravec: Autority v SÚPEROVEJ partii neuplatňujú efekt."
+      "pravidlo": "Policajtka (2026-10-26): kto dal v Pitke viac NA EX ako jej majiteľ (rátajú sa všetky, aj placatka), dostane pri odkrytí jeden Dlh, hneď priznaný; pri rovnosti a na Kostole nič; vyložená až ako odpoveď sa v tej Pitke neráta, skrytá Záverečná sa vyhodnotí pri otočení; Pohoršenia neruší. Praudovravec umlčí Autority v súperovej partii.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/naex-ochrana.test.ts › súper dal v Pitke viac NA EX (1 : 0) — pri odkrytí dostane Dlh, hneď priznaný",
+        "packages/core/test/naex-ochrana.test.ts › rovnosť (1 : 1) — nič; viac NA EX majiteľa Policajtky (0 : 1) — tiež nič",
+        "packages/core/test/naex-ochrana.test.ts › 0 : 0 a Kostol (NA EX nedá nikto) — Policajtka mlčí",
+        "packages/core/test/naex-ochrana.test.ts › Vínna pivnica 2 : 0 — jeden Dlh, nie za každé NA EX navyše",
+        "packages/core/test/naex-ochrana.test.ts › placatka sa ráta: bežné NA EX a NA EX na vlastného Anonymného alkoholika (2 : 1) — Dlh",
+        "packages/core/test/naex-ochrana.test.ts › Praudovravec súpera ju umlčí (Autorita)",
+        "packages/core/test/naex-ochrana.test.ts › Pohoršenia v bitke už neruší (predtým Furt: súperove Pohoršenia neplatia) — ani z patronátu",
+        "packages/core/test/zaverecna.test.ts › Policajtka lícom dole za NA EX súpera nedá Dlh pri odkrytí — až pri otočení",
+        "packages/core/test/revizia-kariet.test.ts › Praudovravec: Autority v SÚPEROVEJ partii neuplatňujú efekt"
+      ]
     },
     {
       "id": "16.karta.postarka",
@@ -1737,10 +1759,16 @@
     {
       "id": "16.karta.svokra",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Svokra: pri odkrytí každého NA EX súpera mu vezme 2 cigarety (každá Svokra), pri zrážke za obe NA EX; Praudovravec ju umlčí.",
-      "stav": "na-overenie",
-      "testy": [],
-      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/naex-ochrana.test.ts › za NA EX súpera ukradne jej majiteľ 2 cigarety; packages/core/test/naex-ochrana.test.ts › Praudovravec súpera ju umlčí (Autorita); packages/core/test/naex-ochrana.test.ts › Nástup Svokry už NA EX nezakazuje."
+      "pravidlo": "Svokra (2026-10-26): v bitke za každú majiteľovu kartu (na ktorejkoľvek strane, aj podstrčenú a samu seba) so súperovým poldeci z NA EX udelí súperovi Ranu (+1 tuhé), aj pri zrážke; vlastné NA EX majiteľa nie; každá Svokra zvlášť; cigarety už neberie; Praudovravec ju umlčí.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/naex-ochrana.test.ts › ráta majiteľove karty so súperovým NA EX na oboch stranách, aj podstrčené aj Svokru samu; vlastné NA EX nie",
+        "packages/core/test/naex-ochrana.test.ts › zrážka (Výtržník) sa ráta — na karte leží aj súperov poldeci",
+        "packages/core/test/naex-ochrana.test.ts › v bitke je Rana navyše v tuhom: to isté NA EX od súpera dá o 1 tuhé viac ako vlastné",
+        "packages/core/test/naex-ochrana.test.ts › Praudovravec súpera ju umlčí (Autorita); dve Svokry — Rana od každej",
+        "packages/core/test/naex-ochrana.test.ts › pri odkrytí NA EX už súperovi cigarety neberie",
+        "packages/core/test/nahlady.test.ts › Svokra (Michal 2026-10-26): náhľad NA EX na jej majiteľovu kartu ukáže Ranu, cigarety nekradne"
+      ]
     },
     {
       "id": "16.karta.sarlatan",
@@ -1833,7 +1861,7 @@
     {
       "id": "7.naex.odkrytie",
       "paragraf": "7. Pitka › Odkrytie NA EX a Výtržník",
-      "pravidlo": "Keď sú hotoví obaja, skryté NA EX sa odkryjú — najprv obrancove, potom útočníkove; až vtedy poldeci ľahne na kartu, pripíše sa pečeň a platia Svokra, Výpalné a Vychovávateľka.",
+      "pravidlo": "Keď sú hotoví obaja, skryté NA EX sa odkryjú — najprv obrancove, potom útočníkove; až vtedy poldeci ľahne na kartu, pripíše sa pečeň a platia Výpalné, Vychovávateľka a Policajtka.",
       "stav": "na-overenie",
       "testy": [],
       "poznamka": "v5 (2026-10-25): nové pravidlo — rozhodca ho prejde a priradí test."
@@ -1857,7 +1885,7 @@
     {
       "id": "7.naex.zrazka-platby",
       "paragraf": "7. Pitka › Odkrytie NA EX a Výtržník",
-      "pravidlo": "Pri zrážke platí každý za svoje NA EX: pečeň +1, poldeci (v bitke sa vypijú oba), Svokra aj Výpalné za každé z oboch NA EX.",
+      "pravidlo": "Pri zrážke platí každý za svoje NA EX: pečeň +1, poldeci (v bitke sa vypijú oba), Výpalné za každé z oboch NA EX; Policajtka ráta 1 : 1 a Svokra majiteľa karty ju ráta ako kartu so súperovým NA EX.",
       "stav": "na-overenie",
       "testy": [],
       "poznamka": "v5 (2026-10-25): nové pravidlo — rozhodca ho prejde a priradí test."
@@ -1889,7 +1917,7 @@
     {
       "id": "9.pohorsenie.abstinent",
       "paragraf": "9. Bitka › 9.2 Pohoršenie",
-      "pravidlo": "Priazeň Abstinenta pridá v bitke +1/2/3 Pohoršenia; Policajtka ich ruší.",
+      "pravidlo": "Priazeň Abstinenta pridá v bitke +1/2/3 Pohoršenia.",
       "stav": "na-overenie",
       "testy": [],
       "poznamka": "v5 (2026-10-25): nové pravidlo — rozhodca ho prejde a priradí test."

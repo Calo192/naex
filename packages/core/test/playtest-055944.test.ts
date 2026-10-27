@@ -133,11 +133,11 @@ describe("reakcia na NA EX", () => {
     expect(s.pitkaStav?.reakcia ?? null).toBeNull();
   });
 
-  it("na Liberála NA EX dať nemožno", () => {
+  it("na Liberála NA EX dať smie (Michal 2026-10-26)", () => {
     const liberal = inst("liberal");
-    const s = vPitke(setupSBalickom(data, 13), [[lezi(liberal, 0)], []]);
-    expect(moznostiNaex(data, s, 0)).not.toContain(liberal.uid);
-    expect(() => apply(data, s, { type: "naex", uid: liberal.uid }, 0)).toThrow(/Liberál/);
+    const s = vPitke(setupSBalickom(data, 13), [[lezi(inst("pijan"), 0), lezi(liberal, 0), lezi(inst("pijan"), 0)], []]);
+    expect(moznostiNaex(data, s, 0)).toContain(liberal.uid);
+    expect(() => apply(data, s, { type: "naex", uid: liberal.uid }, 0)).not.toThrow();
   });
 });
 

@@ -350,7 +350,8 @@ slovo** — a Pitka sa vyhodnotí.
 ### NA EX
 
 NA EX smie hráč dať **iba v Pitke** na svojom ťahu, v základe **najviac raz
-za Pitku** (Vínna pivnica dvakrát, Kostol vôbec, §15). Vyberie jednu kartu
+za Pitku** (Vínna pivnica dvakrát, Kostol vôbec, §15; placatka na vlastného
+Anonymného alkoholika sa do limitu neráta, nižšie). Vyberie jednu kartu
 v línii s tagom **Občan alebo Starešina** — **svoju aj súperovu**, na
 ktorejkoľvek strane — a položí na ňu jeden plný poldeci. NA EX vyberá
 **skryto**: súper nevidí, či NA EX dal, ani kam (`viewFor` mu to nepošle),
@@ -369,8 +370,14 @@ kým sa NA EX neodkryjú.
 - Na kartu, na ktorej **už poldeci leží** (z predošlej Pitky kola alebo z tvojho
   skrytého NA EX), sa ďalšie NA EX dať nedá. Súperovo skryté NA EX nevidíš —
   obaja tak môžete vybrať tú istú kartu (zrážka, nižšie).
-- Na **Liberála** NA EX dať nemožno, na súperovho **Anonymného alkoholika**
-  tiež nie (jeho susedov nechráni, §16).
+- **Placatka:** NA EX na **vlastného Anonymného alkoholika** (aj podstrčeného
+  na súperovu stranu) sa do limitu NA EX za Pitku **neráta** — smieš ho dať
+  navyše k bežnému NA EX, pred ním aj po ňom (na Vínnej pivnici k obom).
+  Ostatné pravidlá NA EX platia aj preň: treba plný poldeci, na **Kostole**
+  nejde (zákaz NA EX platí aj pre placatku) a na Anonymného alkoholika, na
+  ktorom už poldeci leží, sa ďalšie NA EX nedá — placatka je tak najviac raz za
+  kolo. Do počtu NA EX v Pitke (Policajtka) sa ráta. **Súper** naňho NA EX dať
+  smie, jemu sa do limitu ráta (§16).
 - Na súperovu skrytú **Záverečnú** sa NA EX dá vždy a skryté Záverečné sa do
   posúdenia susedov nerátajú — nič sa nesmie prezradiť (§13).
 - Akcie karty po NA EX sa rátajú jej majiteľovi: na súperovej karte mu zrušíš
@@ -391,16 +398,20 @@ kým sa NA EX neodkryjú.
   ešte v tej Pitke, a pripíše sa tomu, kto NA EX dal (poldeci pije on). NA EX
   je nerest (§8).
 - Na **Krčme** hráč s plným poldeci (a kartou, kam ho dať) musí NA EX dať,
-  inak Pitku neskončí; prah Cirhózy je tam zato obom o 2 vyšší (§15).
-- Efekty okolo NA EX: Svokra (súper za každé NA EX stratí 2 cigarety),
-  Výpalné (priazeň Výpalníka, §10) a Vychovávateľka sa uplatnia pri odkrytí;
-  ďalej Šofér, Snúbenica, Veterán (§16).
+  inak Pitku neskončí; prah Cirhózy je tam zato obom o 2 vyšší (§15). Povinnosť
+  splní **jedno** NA EX v Pitke — aj placatka na vlastného Anonymného
+  alkoholika; ďalšie NA EX (bežné či placatka) je potom dobrovoľné.
+- Efekty okolo NA EX: Výpalné (priazeň Výpalníka, §10), Vychovávateľka
+  a Policajtka (Dlh tomu, kto v Pitke dal viac NA EX) sa uplatnia pri odkrytí;
+  Svokra (Rana za kartu so súperovým NA EX) v bitke; ďalej Šofér, Snúbenica,
+  Veterán, Anonymný alkoholik (§16).
 
 ### Odkrytie NA EX a Výtržník
 
 Keď skončia obaja, NA EX sa **odkryjú** — najprv obrancove, potom útočníkove.
 Až teraz poldeci ľahne na kartu, pripíše sa pečeň a uplatnia sa efekty okolo
-NA EX.
+NA EX. Nakoniec Policajtka porovná, kto v tejto Pitke dal viac NA EX (§16) —
+odpovede na NA EX už počet nezmenia.
 
 **Zrážka:** ak obaja vybrali **tú istú kartu**, ležia na nej poldeci oboch
 a z karty je **Výtržník**. Karta sa najprv spáruje so susedmi s pôvodnými
@@ -410,8 +421,9 @@ partnera na spoji. NA EX jej nič neruší ani nezdvojuje. **Posilnenie aj Odpor
 Výtržníka sú už len Rany** (v6.1, Michal 2026-10-27): suseda nezdvojujú ani
 nerušia (ani pri Veteránovi) — sused má spárovanú akciu aktívnu ×1 a Odpor
 Výtržníka nevyvolá Vzburu. Každý platí za svoje
-NA EX ako vždy: pečeň +1 tomu, kto NA EX dal, Svokra aj Výpalné za každé
-z oboch NA EX, a v bitke sa vypijú oba poldeci (§9.5). **Po bitke Výtržník
+NA EX ako vždy: pečeň +1 tomu, kto NA EX dal, Výpalné za každé z oboch NA EX
+(Policajtka ráta 1 : 1) a v bitke sa vypijú oba poldeci (§9.5); Svokra majiteľa
+karty ju ráta ako kartu so súperovým NA EX. **Po bitke Výtržník
 vytriezvie** — karta má znova pôvodné akcie; Výtržníkom je len počas jednej
 bitky.
 
@@ -599,8 +611,6 @@ hráč, ktorého akcia sa aktivovala; oba smery smie každý hráč.
   bitky (krok 4b).
 - K aktívnym Pohoršeniam pribudnú **Pohoršenia z patronátu** súpera (§10; nie na patróna)
   a Pohoršenia z priazne **Abstinenta** (§10).
-- Súperova Policajtka ruší Pohoršenia proti svojmu majiteľovi — všetky, v oboch
-  smeroch (§16).
 
 ### 9.3 Poškodenie
 
@@ -625,7 +635,7 @@ hráča dostane súper v každej bitke +1 tuhé (Veterinár to znižuje). Ráta 
 tuhé, takže ju zvyšná Viera tiež znižuje. Priazeň Bitkára pridá tuhé rovné
 sile (+1 / +2 / +3), priazeň Veriaceho Vieru navyše (§10). Strop mäkkého
 poškodenia ruší len Čierna mačka (§16). Tuhé ďalej menia efekty
-kariet a lokalít (Pes, Pijan, Pasca, Lesná cesta, Ihrisko…, §15, §16).
+kariet a lokalít (Pes, Pijan, Svokra, Pasca, Lesná cesta, Ihrisko…, §15, §16).
 
 ### 9.4 Výsledok
 
@@ -832,7 +842,7 @@ Cena:
   ako svoje (§9.2), ale **nie na staršieho, ktorého si patrón vzal** (v6,
   Michal 2026-10-26) — inak by mu marker hneď vrátil a patronát by nezastavil
   vydesenie. Ostatné súperove Pohoršenia (zo stola, z priazne) na patróna smú;
-  hra minie najprv tie z patronátu. Patrónova Policajtka ich zruší,
+  hra minie najprv tie z patronátu,
 - hráč musí mať aspoň **jeden poldeci** (plný či vypitý) — na bolestné.
 
 Po bitke (krok 6d, pred návratom kariet):
@@ -1037,12 +1047,12 @@ voliteľné a hráč tým v tomto Zhromaždení **končí s vykladaním** (ako p
 - **Za ňu sa nedá priložiť** žiadna karta (ani odpoveď na NA EX), kým sa
   neotočí — tá strana je dovtedy zablokovaná.
 - **NA EX** na ňu smie v Pitke dať len **súper** a prejde vždy (nekontroluje
-  sa tag, Liberál ani Anonymný alkoholik — odmietnutie by kartu prezradilo);
+  sa tag ani aktívne a neaktívne akcie — odmietnutie by kartu prezradilo);
   vyhodnotí sa ako na každej karte. Majiteľ na ňu NA EX dať nesmie.
 - **Otočí sa na konci Pitky**, ktorá nasleduje po jej Zhromaždení (pred
   ďalším Zhromaždením alebo bitkou, krok 8 v §7). Až vtedy sa vyhodnotí jej
-  **Nástup** a efekty mimo línie, ktoré by ju prezradili, napr. Svokra
-  (cigarety za NA EX súpera, ktoré medzitým padli), Vychovávateľka, Hrobár;
+  **Nástup** a efekty mimo línie, ktoré by ju prezradili, napr. Policajtka
+  (Dlh, ak súper v tej Pitke dal viac NA EX), Vychovávateľka, Hrobár;
   Starostu či Poštárku lícom dole použiť nemožno.
 
 ### Podstrčenie (sabotér)
@@ -1152,18 +1162,18 @@ v strede).
 |---|---|
 | Dievčina na vydaj | Pri bitke sa zahodí (po bitke sa spáli, nevráti sa) a jej majiteľ spáli toľko **priznaných** Dlhov, koľko mala aktívnych akcií (s násobkami — aj s tými, ktoré zdvojilo NA EX, vlastné či súperovo). Jej akcie v bitke, v ktorej sa zahodí, ešte **platia**. |
 | Hrobár | Keď súper zahodí kartu z ruky, z línie alebo z vrchu balíčka (efektom, Víziou, aj Pohrebom — §11; nie návratom po bitke ani vlastnou Veľmi smútiacou vdovou), majiteľ Hrobára dostane cigaretu za každú. |
-| Anonymný alkoholik | Súper jeho majiteľa naňho nedá NA EX — ani keď je podstrčený na súperovu stranu. Majiteľ smie. Karty vedľa neho nechráni. Bráni len novému NA EX; poldeci, ktorý už na ňom leží, ostáva. |
+| Anonymný alkoholik | Furt (Michal 2026-10-26): NA EX majiteľa naňho (**placatka**) sa nepočíta do limitu NA EX za Pitku (§7) — aj keď je podstrčený na súperovu stranu. Súper naňho NA EX dať smie a jemu sa do limitu ráta. Na **Kostole** placatka nejde (zákaz NA EX platí aj preňho, výnimka je z limitu, nie zo zákazu). Na **Krčme** povinné NA EX splní aj placatka. Na Anonymného alkoholika, na ktorom už poldeci leží, ďalšie NA EX nejde, takže placatka je najviac raz za kolo. Do počtu NA EX v Pitke (Policajtka) sa placatka ráta. |
 | Šofér | Furt: NA EX na kartu, ktorá so Šoférom susedí (vlastnú aj súperovu, na ktorejkoľvek strane Šoféra), **nezdvojí** jej neaktívne akcie — ostanú neaktívne; aktívne zruší ako vždy. Lokalitu v strede sa to netýka. NA EX na samotného Šoféra platí normálne. |
 | Snúbenica | Nástup: ak ju vyložíš (v Zhromaždení aj ako odpoveď na NA EX) vedľa karty s NA EX, táto karta sa vráti **svojmu majiteľovi** do ruky a Snúbenica sa posunie na jej miesto. Poldeci z nej sa vypije tomu, kto NA EX dal, ako v bitke (vypitý, nerest; pečeň už NA EX započítalo). |
 | Autobusár | Bitka: jeden Absťák majiteľa sa nepočíta **nikde**, kde sa v bitke Absťáky rátajú — v tuhom poškodení (§9.3), pri remíze v tuhom aj v špakoch víťaza (§9.4); nikdy nie pod nulu (Michal 2026-10-26). |
 | Krčmárka | Pri bitke: ak hráč nemá Absťák a v tomto kole nedal NA EX, vypitý poldeci sa mu otočí na plný (automaticky). |
-| Liberál | Ak je v partii majiteľa rovnako žien a chlapov (Liberál sa neráta), jeho aktívne akcie sa rátajú dvakrát. NA EX naň dať nemožno. |
+| Liberál | Ak je v partii majiteľa rovnako žien a chlapov (Liberál sa neráta), jeho aktívne akcie sa rátajú dvakrát. |
 | Milujúca manželka | Furt (kým je odhalená — v línii aj priznaná): majiteľ dostane Absťák aj pri **rovnakom** počte nerestí ako v predošlom kole; Manželky sa sčítavajú (dve = aj pri o 1 viac nerestiach). Zbavenie Absťáku sa nemení. |
 | Kočovník | Furt: **všetky** jeho akcie (Rana, Dlh, Poškodenie pečene, Cigareta…) sa počítajú hráčovi, ktorý má v jeho kraji prevahu (§6). Do prevahy sa Kočovník ráta normálne svojmu majiteľovi; pri rovnosti rozhoduje bežné pravidlo (karta hneď pri lokalite). Súper, ktorý v kraji prevládne, dostane aj jeho škodlivé akcie — podhodiť sa mu dajú, ale súper to vie ovplyvniť. Limit vykladania míňa ako každá karta. |
 | Pasca | Dedičstvo: každé súperovo Zviera v línii (kdekoľvek, jeho karta) mu uberie 1 tuhé poškodenie. |
 | Pes | Furt: za každý pár akcií na spoji Psa so súperovou kartou — z ktorejkoľvek strany Psa, rátajú sa aj páry zrušené Odporom či NA EX (karty sú spojené) — dá majiteľ Psa v bitke +1 tuhé poškodenie, ale len keď Pes leží na strane svojho majiteľa; podstrčený na súperovu stranu nedá nič. Na Psa sa smie podstrčiť. Nesmie byť v partii s iným zvieraťom. Akcie: vľavo 1 Rana, vpravo 2 Rany. |
 | Pijan | Bitka: ak má Žena v jeho okolí aktívnu akciu Poldeci, súper ti udelí 1 Ranu — majiteľ Pijana dostane od súpera +1 Ranu za každého takého Pijana. |
-| Policajtka | Furt: súperove Pohoršenia proti majiteľovi neplatia — všetky, v oboch smeroch (§9.2), aj Pohoršenia z patronátu a z priazne Abstinenta. Autorita — Praudovravec súpera ju umlčí. |
+| Policajtka | Pitka (Michal 2026-10-26): ak súper majiteľa dal v tejto Pitke **viac NA EX** ako majiteľ, dostane **Dlh** (hneď priznaný, §11) — jeden, aj keď dal o dve viac (Vínna pivnica). Porovná sa **pri odkrytí NA EX** (§7), rátajú sa všetky NA EX Pitky vrátane placatky a zrážky (Výtržník 1 : 1). Pri rovnosti nič, na Kostole (0 : 0) nič. Platí Policajtka, ktorá pri odkrytí leží v línii odkrytá; vyložená až ako odpoveď na NA EX sa v tej Pitke neráta, skrytá Záverečná sa vyhodnotí pri otočení (§13). Súperove Pohoršenia už neruší. Autorita — Praudovravec súpera ju umlčí. |
 | Poštárka | V Pitke raz: majiteľ smie dobrať 1 až 2 karty; ak dobral aspoň jednu do ruky, získa 1 Dlh. S prázdnym doberacím aj odhadzovacím balíčkom sa použiť nedá. Dlhy dobraté z balíčka sa samy priznajú (§11) a do ruky sa nerátajú. |
 | Presbiter | Bitka: ak v jeho kraji nemá majiteľ iného Občana, Zviera ani Starešinu a súper tam má prevahu, súper má o toľko Viery menej, koľko má Presbiter aktívnych akcií (s násobkami Posilnenia a NA EX). Ráta sa počet Vier pred rušením s Poverou, najviac na 0. Funguje aj podstrčený do súperovho kraja. Autorita — súperov Praudovravec ho umlčí. |
 | Dvojčatá | Furt: do prevahy sa rátajú za dvoch. Na Ihrisko, Lesnú cestu a podmienku „sám“ Presbitera nie (tam sa rátajú karty). |
@@ -1175,7 +1185,7 @@ v strede).
 | Záhradkár | Exekúcia: keď majiteľ čelí exekúcii (§11), smie Záhradkára zahodiť (z ruky, odhadzovacieho či doberacieho balíčka) namiesto špakov — Dlhy zhoria aj tak (v6, Michal 2026-10-26). |
 | Finančná poradkyňa | Dlh z jej akcií dostáva súper, nie jej majiteľ. |
 | Čierna mačka | Majiteľove Povery spôsobujú mäkké poškodenie aj bez súperových priznaných Dlhov (bez stropu). |
-| Svokra | Kým leží v línii, každé NA EX súpera jej majiteľa — na hociktorú kartu, aj povinné na Krčme — mu pri odkrytí (§7) zoberie 2 cigarety a dá ich majiteľovi Svokry; každá Svokra dve. Bez cigarety nič. Praudovravec súpera ju umlčí (Autorita). |
+| Svokra | Bitka (Michal 2026-10-26): za každú **kartu majiteľa** (na ktorejkoľvek strane, aj podstrčenú a aj Svokru samu), na ktorej leží **súperov** poldeci z NA EX, udelí majiteľ súperovi 1 Ranu (+1 tuhé, krok 3, §9.3). Ráta sa aj zrážka (Výtržník); vlastné NA EX majiteľa nie; kartu, ktorú Snúbenica vrátila do ruky, už nie. Poldeci z NA EX ležia na kartách do kroku 5 bitky, takže sa rátajú rovno zo stola. Každá Svokra zvlášť. Cigarety za NA EX už neberie. Praudovravec súpera ju umlčí (Autorita). |
 | Šarlatán | Viera kariet v jeho okolí sa ráta ako Vízia. |
 | Veterán | Furt: NA EX na Veterána jeho **aktívne** akcie nezruší, ale **zdvojí** (aj Poldeci a Poškodenie pečene); neaktívne nezdvojí — ostanú neaktívne. |
 | Veštica | Pri prehre: porazený si prezrie oba doberacie balíčky, vymení jednu svoju kartu za súperovu, potom sa oba balíčky zamiešajú; prázdny doberací sa najprv doplní zamiešaním odhadzovacieho (§9.5b). |

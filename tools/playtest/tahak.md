@@ -104,7 +104,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 - **Záverečná (Zhromaždenie, za 1 cig.):** `{"type":"zaverecna","uid":…,"target":"vlastna"|"superova"}` —
   karta lícom dole, míňa limit, potom už v Zhromaždení nevykladáš (bez cigariet za pas). Súper ju
   nevidí, za ňu nepriloží (ani odpoveď na NA EX), NA EX na ňu smie len on (prejde vždy). Otočí
-  sa na konci Pitky — až vtedy Nástup a efekty ako Svokra.
+  sa na konci Pitky — až vtedy Nástup a efekty ako Policajtka.
 - **Pohreb (po bitke, s priznanou Cirhózou):** `pohreb` spáli Cirhózu a tvoju kartu
   z línie; za Závislého smieš pridať `senokUid` = karta zo šenku do ruky. Liečba už nie je (v4).
 - **Živnostník (Výhra, 2026-10-26):** keď vyhráš bitku so Živnostníkom vo svojej partii, vyberieš
@@ -134,21 +134,27 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   s aspoň 1 aktívnou a aspoň 1 neaktívnou akciou (2026-10-23; súperova Záverečná vždy). Zruší
   karte aktívne akcie a zdvojí neaktívne; akcie sa rátajú majiteľovi karty.
   Pečeň +1 je tvoja. Súper smie hneď odpovedať jednou kartou mimo limitu
-  (`place` / `bezReakcie`) — odpoveď smie zmeniť prevahu v kraji aj počet Pitiek. Nie na Liberála, nie na súperovho Anonymného
-  alkoholika (jeho susedov nechráni), nie na kartu, na ktorej už poldeci leží. NA EX na kartu
+  (`place` / `bezReakcie`) — odpoveď smie zmeniť prevahu v kraji aj počet Pitiek. Nie na kartu, na ktorej
+  už poldeci leží (od 2026-10-26 smie aj na Liberála a súperovho Anonymného alkoholika). NA EX na kartu
   pri lokalite mení len akcie karty, akcie hrany lokality ostávajú aktívne. NA EX na kartu
   s Posilnením zruší Posilnenie aj ×2 partnera na spoji (2026-10-24; partner ostáva ×1,
   aj hrana lokality). Akcia zrušená Odporom nie je ani aktívna, ani neaktívna — NA EX ju
   nezdvojí (v6.1). Dievčina na vydaj
-  ráta aj akcie zdvojené cez NA EX; jej akcie v bitke, v ktorej sa zahodí, ešte platia. Svokra súpera ti za NA EX zoberie 2 cigarety.
+  ráta aj akcie zdvojené cez NA EX; jej akcie v bitke, v ktorej sa zahodí, ešte platia.
+  **Trojica okolo NA EX (2026-10-26):** súperova **Policajtka** ti pri odkrytí dá Dlh, ak si v tej Pitke dal
+  viac NA EX ako súper (pri rovnosti nič, jeden Dlh aj pri 2 : 0). Súperova **Svokra** mu v bitke dá +1 tuhé
+  (Ranu) za každú jeho kartu, na ktorej leží tvoj poldeci z NA EX — NA EX na svoje karty ju nespustí.
+  **Placatka:** NA EX na tvojho vlastného **Anonymného alkoholika** sa nepočíta do limitu NA EX za Pitku
+  (smieš ho dať navyše k bežnému, ak máš plný poldeci); na Kostole nie, na Krčme splní povinné NA EX,
+  na Anonymného alkoholika s poldeci ďalšie nejde. Súper naňho NA EX dať smie.
   Šofér: NA EX na kartu vedľa neho neaktívne akcie nezdvojí (aktívne zruší). Snúbenica
   vyložená vedľa karty s NA EX (aj ako odpoveď) ju vráti majiteľovi do ruky a ľahne na jej miesto. Veterán (v4): NA EX mu aktívne akcie zdvojí
   (nezruší), neaktívne nechá.
   **Skryto (v5):** `naex` súper nevidí do odkrytia; odpovedáš po odkrytí za každé súperovo NA EX,
   najprv obranca, potom útočník. **Zrážka** (obaja na tú istú kartu) = **Výtržník**: karta sa
   spáruje so susedmi s pôvodnými akciami, potom sú všetky jej akcie aktívne Rany pre majiteľa,
-  do konca bitky — aj jej Posilnenie a Odpor sú už len Rany, suseda nezdvojujú ani nerušia (v6.1); pečeň, poldeci, Svokru aj Výpalné platí každý za svoje NA EX.
-  Krčma vynúti NA EX. Násobky sa **násobia** (NA EX × Silná žena = ×4, aj Dlh
+  do konca bitky — aj jej Posilnenie a Odpor sú už len Rany, suseda nezdvojujú ani nerušia (v6.1); pečeň, poldeci aj Výpalné platí každý za svoje NA EX.
+  Krčma vynúti jedno NA EX (aj placatka stačí). Násobky sa **násobia** (NA EX × Silná žena = ×4, aj Dlh
   a Poškodenie pečene) a NA EX leží na karte do bitky — vyhodnotí sa v každej
   Pitke kola. Každá možnosť `naex` v stave ukazuje cenu: bitku pred a po
   a kliatby (Cirhóza, Dlh) aj so špakmi pre oboch.
@@ -193,7 +199,6 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   k sebe si vezmeš priazeň, a tá platí hneď, už v poškodení tej istej bitky. Pohoršenie
   ide pred špakmi za starších, takže strach z neho platí už v tejto bitke (ak ju vyhráš). V6: ten istý
   marker smieš posúvať **bez limitu, o pole za Pohoršenie, aj na červenú** (zo stredu 3).
-  Súperova Policajtka ruší oba smery.
 - **Poradie bitky (v6):** Exekútor → Pohoršenie → poškodenie → výsledok → špaky za bitku
   → špaky za starších (víťazovi, pri sekere obom) → prebytok (posunie markery o pole za bod, aj na červenú a z nej
   von — zamknutie sa ruší; prejaví sa až v ďalšej bitke).

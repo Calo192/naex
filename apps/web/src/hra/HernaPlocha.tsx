@@ -88,7 +88,8 @@ import {
   vykupZoSrotu,
   zakazFajcit,
   zakazNaex,
-  naexZaPitku,
+  jePlacatka,
+  naexLimitMinuty as naexLimitMinutyHraca,
   sMojimiSkrytymiNaex,
   nahladNaexNaKartu,
   cenaTahu,
@@ -1028,7 +1029,7 @@ export function HernaPlocha({
   // súperova Záverečná cez náhradné uid). Značka bez Kostola svietila aj tam (roadmapa #112).
   const naexCiele = useMemo(() => new Set(moznostiNaexVPohlade(data, view)), [data, view]);
   const pitka = view.pitkaStav;
-  const naexLimitMinuty = pitka !== null && (pitka.naexPouzity[ja] || (pitka.naexPocet?.[ja] ?? 0) + mojeSkryteNaex.size >= naexZaPitku(view));
+  const naexLimitMinuty = pitka !== null && naexLimitMinutyHraca(data, view, ja);
   const naexMozny = somNaTahu && naexCiele.size > 0;
   // Kartu so značkou smieš rovno kliknúť.
   const naexPriamo = naexMozny;
@@ -1102,10 +1103,10 @@ export function HernaPlocha({
   const dovodBezNaexNaKartu = (pl: PlacedCard): string => {
     const def = data.cards.get(pl.card.defId);
     if (pl.naexBy !== undefined) return "Na karte už poldeci leží.";
-    if (pl.card.defId === "liberal") return "Liberál: na neho NA EX dať nemožno.";
     if (def !== undefined && !def.tags.includes("Občan") && !def.tags.includes("Starešina"))
       return `NA EX len na Občana alebo Starešinu${def.tags.includes("Nástroj") ? " — toto je Nástroj" : ""}.`;
-    return "Anonymný alkoholik: na neho NA EX dať nemôžeš.";
+    if (naexLimitMinuty) return "NA EX si v tejto Pitke už dal — mimo limitu ide len na tvojho Anonymného alkoholika.";
+    return "NA EX ide len na kartu s aspoň jednou aktívnou a jednou neaktívnou akciou.";
   };
   /**
    * Kliatby z náhľadu NA EX či odpovede: Cirhóza s oboma cenami (nepriznaná
@@ -1141,11 +1142,6 @@ export function HernaPlocha({
         return `${kto(p)} ${n > 0 ? "+" : "−"}${pocet(Math.abs(n), "posun", "posuny", "posunov")} (${spolu}≈ ${d[p].pohorseniaBody === 0 ? "0" : znak(d[p].pohorseniaBody)} š.)`;
       });
     if (poh.length > 0) casti.push(`Pohoršenia: ${poh.join(", ")}`);
-    // Policajtka (playtest 20261024-075830): bitka Pohoršenia zruší a hlási to — náhľad nemá mlčať.
-    const zrusene = hraci
-      .filter((p) => d[p].pohorseniaZrusene !== 0)
-      .map((p) => `${kto(p)} ${znak(d[p].pohorseniaZrusene)} neplatí (${p === ja ? `Policajtka ${menoHraca(super_)}` : "tvoja Policajtka"})`);
-    if (zrusene.length > 0) casti.push(`Pohoršenia zrušené: ${zrusene.join(", ")}`);
     const makke = hraci.filter((p) => d[p].makke !== 0).map((p) => `${kto(p)} ${znak(d[p].makke)}`);
     if (makke.length > 0) casti.push(`mäkké: ${makke.join(", ")}`);
     return casti.length === 0 ? null : casti.join(" · ");
@@ -3429,8 +3425,11 @@ export function HernaPlocha({
           };
         }
         // Prečo NA EX nejde — hráč to vidí hneď, nielen v tooltipe.
+        // Placatka (vlastný Anonymný alkoholik) ide aj po minutom limite — keď je kam, dôvod nie je.
         const dovodBezNaex = zakazNaex(view)
           ? "Kostol: nikto nesmie dať NA EX."
+          : naexCiele.size > 0
+          ? null
           : naexBol
           ? mojeSkryteNaex.size > 0
             ? "Tvoje NA EX v tejto Pitke už leží (skryto)."
@@ -3438,9 +3437,10 @@ export function HernaPlocha({
           : hracJa.poldeciPlne - mojeSkryteNaex.size <= 0
             ? "Nemáš plný poldeci (doliať: 2 cigarety)."
             : naexCiele.size === 0
-              ? "NA EX ide len na Občana či Starešinu v línii (nie Nástroj, nie Liberál, nie na súperovho Anonymného alkoholika)."
+              ? "NA EX ide len na Občana či Starešinu v línii s aspoň jednou aktívnou a jednou neaktívnou akciou (nie Nástroj)."
               : null;
-        const krcma = view.ciel?.lokalita?.defId === "krcma" && dovodBezNaex === null;
+        // Krčma chce jedno NA EX — splní ho aj placatka; po ňom už končím nič neblokuje.
+        const krcma = view.ciel?.lokalita?.defId === "krcma" && dovodBezNaex === null && mojeSkryteNaex.size === 0;
         const postarkaKarty = KONSTANTY.EFEKT.POSTARKA_KARTY;
         const cenaBarteru = barterCena(data, view, ja);
         const mamEfekt = (defId: string): boolean =>
@@ -3471,7 +3471,7 @@ export function HernaPlocha({
         const limitPo = limitBuduceKolo(zaklad, ja, true, data);
         const limitBez = limitBuduceKolo(zaklad, ja, false, data);
         // „končím“ chce druhý klik len vtedy, keď ním hráč vzdáva možné NA EX a súper ešte neskončil.
-        const hotovoVzdavaNaex = dovodBezNaex === null && !superSkoncil && !krcma;
+        const hotovoVzdavaNaex = dovodBezNaex === null && mojeSkryteNaex.size === 0 && !superSkoncil && !krcma;
         if (potvrdenie === "hotovo") {
           return {
             nadpis,
@@ -3629,7 +3629,19 @@ export function HernaPlocha({
                 · kliatby — ty: {textKliatob(vybrana.kliatby[ja])} · {menoHraca(super_)}: {textKliatob(vybrana.kliatby[super_])}
                 {textDopadov(vybrana.dopady) !== null && <> · {textDopadov(vybrana.dopady)}</>}
                 {textPrebytku(vybrana.prebytokPred, vybrana.prebytokPo) !== null && <> · {textPrebytku(vybrana.prebytokPred, vybrana.prebytokPo)}</>} · pečeň +1
-                {vybrana.odkrytie.svokra > 0 && <> · Svokra ti ukradne {vybrana.odkrytie.svokra} cig.</>}
+                {vybrana.odkrytie.svokra > 0 && (
+                  <>
+                    {" "}
+                    · Svokra {menoHraca(super_)}: v bitke ti udelí {vybrana.odkrytie.svokra === 1 ? "Ranu" : `${vybrana.odkrytie.svokra} Rany`} (v tuhom už je)
+                  </>
+                )}
+                {vybrana.odkrytie.policajtka > 0 && (
+                  <>
+                    {" "}
+                    · Policajtka {menoHraca(super_)}: Dlh, ak {menoHraca(super_)} v tejto Pitke dá menej NA EX ako ty (v cene je)
+                  </>
+                )}
+                {vybranaUid !== null && jePlacatka(data, view, ja, vybranaUid) && <> · placatka: do limitu NA EX za Pitku sa nepočíta</>}
                 {vybrana.odkrytie.vypalne > 0 && (
                   <>
                     {" "}

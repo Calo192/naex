@@ -56,8 +56,9 @@ import {
   zakazNaex,
   zakazVypit,
   nahladVylozenia,
-  naexCieleVLinii,
-  naexZaPitku,
+  jePlacatka,
+  moznostiNaexVPohlade,
+  naexLimitMinuty,
   obavanyHrac,
   posunMarker,
   priazen,
@@ -313,7 +314,9 @@ function cenaNaexText(v: ClientState, uid: number): string {
       ? "žiadny"
       : `${x.drzi === ja ? "tvoj" : "súperov"} ${x.prebytok}${x.naRozdelenie !== x.prebytok ? ` (Puška −${x.prebytok - x.naRozdelenie})` : ""}${x.cenaPosunu > 1 ? ` (posun za ${x.cenaPosunu}, Miňištrant)` : ""}`;
   const navyse = [
-    o.svokra > 0 ? `Svokra ti ukradne ${o.svokra} cig.` : "",
+    o.svokra > 0 ? `Svokra súpera: za toto NA EX na jeho kartu ti v bitke udelí ${o.svokra === 1 ? "Ranu" : `${o.svokra} Rany`} (v tuhom už je)` : "",
+    o.policajtka > 0 ? "Policajtka súpera: Dlh, ak súper v tejto Pitke dá menej NA EX ako ty (v cene je)" : "",
+    jePlacatka(DATA, v, ja, uid) ? "placatka: NA EX na tvojho Anonymného alkoholika sa nepočíta do limitu za Pitku" : "",
     o.vypalne > 0 ? `Výpalné: zaplatíš súperovi ${o.vypalne} cig.` : "",
     o.vychovavatelka ? "Vychovávateľka: tvoj priznaný Dlh ide súperovi do balíčka" : "",
     o.krcmarka ? "Krčmárka ti v bitke neotočí vypitý poldeci" : "",
@@ -796,10 +799,11 @@ function moznosti(v: ClientState): string[] {
       if (zakazNaex(v)) out.push("(Kostol: nikto nesmie dať NA EX)");
       // NA EX naraz (v5): moje skryté NA EX sa rátajú do limitu Pitky aj poldeci.
       const mojeSkryte = pk?.skryteNaex ?? [];
-      const naexEste = pk?.naexPouzity[ja] !== true && (pk?.naexPocet?.[ja] ?? 0) + mojeSkryte.length < naexZaPitku(v) && h.poldeciPlne - mojeSkryte.length > 0;
+      // Tie isté podmienky ako motor; po minutom limite ostáva len placatka (vlastný Anonymný alkoholik).
+      const ciele = new Set(moznostiNaexVPohlade(DATA, v));
+      const naexEste = ciele.size > 0;
       if (mojeSkryte.length > 0) out.push(`(Skryto si dal ${mojeSkryte.length === 1 ? "NA EX" : `${mojeSkryte.length} NA EX`} — odkryje sa, keď obaja skončíte Pitku; súper potom smie odpovedať jednou kartou za každé.)`);
-      if (naexEste && !zakazNaex(v)) {
-        const ciele = new Set(naexCieleVLinii(DATA, lineState(v), ja).filter((uid) => !mojeSkryte.some((x) => x.uid === uid)));
+      if (naexEste) {
         for (const p of [0, 1] as const) {
           for (const pl of v.strany[p]) {
             if (!ciele.has(pl.card.uid)) continue;
@@ -812,14 +816,15 @@ function moznosti(v: ClientState): string[] {
           }
         }
       }
-      if (naexEste && !zakazNaex(v)) {
-        for (const z of v.zaverecne.filter((x) => x.majitel !== ja && x.naexBy === null && !mojeSkryte.some((y) => y.uid === x.uid))) {
+      if (naexEste) {
+        for (const z of v.zaverecne.filter((x) => ciele.has(x.uid))) {
           naexMoznosti++;
           c({ type: "naex", uid: z.uid }, `NA EX na SÚPEROVU ZÁVEREČNÚ lícom dole (${z.strana === ja ? "na tvojej" : "na súperovej"} strane) — nevieš, čo to je; prejde vždy, aktívne akcie zruší a neaktívne zdvojí ako pri každej karte; pečeň +1 tebe`);
         }
       }
-      if (pk?.naexPouzity[ja] === true || (mojeSkryte.length > 0 && !naexEste)) out.push("(NA EX si v tejto Pitke už dal)");
-      else if (naexMoznosti === 0 && !zakazNaex(v)) out.push("(NA EX ide len na Občana či Starešinu v línii, ktorý má aspoň 1 aktívnu a aspoň 1 neaktívnu akciu, bez poldeci — tvojho aj súperovho, nie Nástroj, nie Liberál, nie na súperovho Anonymného alkoholika — a len s plným poldeci)");
+      if (naexLimitMinuty(DATA, v, ja) && (pk?.naexPouzity[ja] === true || mojeSkryte.length > 0)) {
+        out.push(naexEste ? "(NA EX si v tejto Pitke už dal — ostáva len placatka na tvojho Anonymného alkoholika, mimo limitu)" : "(NA EX si v tejto Pitke už dal)");
+      } else if (naexMoznosti === 0 && !zakazNaex(v)) out.push("(NA EX ide len na Občana či Starešinu v línii, ktorý má aspoň 1 aktívnu a aspoň 1 neaktívnu akciu, bez poldeci — tvojho aj súperovho, nie Nástroj — a len s plným poldeci)");
       const mamKartu = (defId: string) => [...v.strany[0], ...v.strany[1]].some((pl) => pl.playedBy === ja && pl.card.defId === defId && pl.zaverecna !== true);
       if (mamKartu("postarka") && pk?.postarka[ja] !== true) {
         for (let n = 1; n <= KONSTANTY.EFEKT.POSTARKA_KARTY; n++)
