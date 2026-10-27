@@ -4,7 +4,9 @@
 // agentov preto ide na skutočný web: --zivy = živý web (doména z
 // deploy/.env.produkcia, Michal 2026-10-21), inak --url, NAEX_WEB_URL alebo
 // vývojový server http://localhost:8787. Každý agent tam má
-// vlastný účet „<meno> (AI)“; heslá sú len v playtest/ucty.json (mimo gitu).
+// vlastný účet „<meno> (AI)“; heslá sú v jednom súbore pre všetky pracoviská
+// (mimo gitu, tools/playtest/ucty.ts). „Admin (AI)“ má jediný účet — keď jeho
+// heslo chýba, nástroj skončí s chybou namiesto zakladania ai-admin-2.
 // Nový účet je na webe návštevník (spätnú väzbu len číta) — nástroj ho preto
 // heslom admina (lokálne z .env, na živom webe z deploy/.env.produkcia) zaradí
 // ako hráča so značkou AI; jeho príspevky web predvolene skrýva (Michal 2026-10-21).
@@ -18,14 +20,17 @@
 //   node ... web.ts avatar   --ako "<meno>" <obrazok.jpg|png|webp>    nastaví agentovi avatar (do 2 MB)
 //   node ... web.ts znamky   --ako "<meno>" <feedback.md> [--zdroj <id-playtestu>] [--cas <ISO>]
 //                            12 známok z tabuľky „Hodnotenie podľa kritérií“ do časovej osi na /vyvoj
+//   node ... web.ts zluc-ucty                                       zlúči playtest/ucty.json pracovísk F:\Projects\naex*
+//                            do spoločného súboru hesiel (existujúce heslá neprepíše)
 // Všade možno pridať --zivy (živý web) alebo --url <adresa>.
 // Kategórie: pravidla, karty, hranie, web, chyba, napad, ine.
 
 import { randomBytes } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { extname } from "node:path";
+import { existsSync, readFileSync } from "node:fs";
+import { extname, join } from "node:path";
+import { type WebUcet, klucWebu, korenPracovisk, nacitajUcty, najdiUlozeny, suborUctov, ulozUcet, zlucPracoviska } from "./ucty.ts";
 
-const SUBOR_UCTOV = "playtest/ucty.json";
+export type { WebUcet } from "./ucty.ts";
 const PRODUKCIA = "deploy/.env.produkcia";
 
 /** Nastavenia živého webu (kópia deploy/.env zo servera, mimo gitu) — vytvára ju deploy/nahraj.sh. */
@@ -55,19 +60,13 @@ export function webUrl(argv: readonly string[] = process.argv): string {
   return url.replace(/\/+$/, "");
 }
 
-export interface WebUcet {
-  readonly login: string;
-  readonly heslo: string;
-  readonly meno: string;
-}
-
 /** Herné meno AI účtu — vidno ho na webe pri názoroch aj v partii. */
 export function menoAgenta(meno: string): string {
   const pripona = " (AI)";
   return meno.trim().slice(0, 24 - pripona.length).trim() + pripona;
 }
 
-function loginAgenta(meno: string): string {
+export function loginAgenta(meno: string): string {
   const slug = meno
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")
@@ -78,15 +77,6 @@ function loginAgenta(meno: string): string {
   return `ai-${slug || "agent"}`;
 }
 
-/**
- * Kľúč účtov v ucty.json. Všetky lokálne servery (vývojový :8787 aj server
- * partie proti človeku) bežia nad tou istou databázou data/, teda aj nad
- * tými istými účtami.
- */
-function klucWebu(url: string): string {
-  return jeLokalny(url) ? "http://localhost:8787" : url;
-}
-
 /** Prihlasovacie údaje admina pre daný web: lokálne z .env, živý web z deploy/.env.produkcia. */
 export function adminWebu(url: string): { login: string; heslo: string | undefined } {
   const p = produkcia();
@@ -95,11 +85,6 @@ export function adminWebu(url: string): { login: string; heslo: string | undefin
   }
   nacitajEnv();
   return { login: process.env.NAEX_ADMIN_LOGIN ?? "Admin", heslo: process.env.NAEX_ADMIN_HESLO };
-}
-
-function nacitajUcty(): Record<string, Record<string, WebUcet>> {
-  if (!existsSync(SUBOR_UCTOV)) return {};
-  return JSON.parse(readFileSync(SUBOR_UCTOV, "utf8")) as Record<string, Record<string, WebUcet>>;
 }
 
 export function nacitajEnv(): void {
@@ -181,23 +166,33 @@ async function zaradAgenta(url: string, cookie: string, uroven: UrovenAgenta): P
  * (aspoň `uroven`, značka AI). Vracia údaje účtu a cookie relácie.
  */
 export async function prihlasAgenta(url: string, meno: string, uroven: UrovenAgenta = "hrac"): Promise<WebUcet & { cookie: string }> {
-  const ucty = nacitajUcty();
+  const subor = suborUctov();
   const kluc = klucWebu(url);
   const zaklad = loginAgenta(meno);
-  // Uložený účet nájde podľa mena; ak je login na webe obsadený (napr. stratené
-  // heslá), skúsi zaklad-2, zaklad-3…
-  let ucet = Object.values(ucty[kluc] ?? {}).find((u) => u.login === zaklad || u.login.startsWith(`${zaklad}-`));
-  for (let n = 1; ucet === undefined && n <= 9; n++) {
+  let ucet = najdiUlozeny(nacitajUcty(subor)[kluc], zaklad);
+  // Ak je login na webe obsadený (napr. stratené heslá), postava skúsi zaklad-2, zaklad-3…
+  // Jediný účet (Admin) nie — každá prípona by bol ďalší „Admin (AI)“ na webe.
+  const pokusov = JEDINY_UCET.has(meno) ? 1 : 9;
+  for (let n = 1; ucet === undefined && n <= pokusov; n++) {
     const novy = { login: n === 1 ? zaklad : `${zaklad}-${n}`, heslo: randomBytes(12).toString("base64url"), meno: menoAgenta(meno) };
     const r = await volaj(url, "POST", "/registracia", "", novy);
     if (r.ok) {
       ucet = novy;
-      const aktualne = nacitajUcty();
-      mkdirSync("playtest", { recursive: true });
-      writeFileSync(SUBOR_UCTOV, JSON.stringify({ ...aktualne, [kluc]: { ...aktualne[kluc], [novy.login]: novy } }, null, 2));
+      ulozUcet(kluc, novy, subor);
     } else if (!(await r.text()).includes("obsadené")) {
       throw new Error(`Registrácia ${novy.login} na ${url} zlyhala.`);
     }
+  }
+  if (ucet === undefined && JEDINY_UCET.has(meno)) {
+    throw new Error(
+      [
+        `Účet ${zaklad} („${menoAgenta(meno)}“) na ${url} existuje, ale jeho heslo nie je v ${subor} (kľúč "${kluc}").`,
+        `${menoAgenta(meno)} má na webe jediný účet, nový s príponou sa nezakladá. Ako ďalej:`,
+        `  1. node --experimental-strip-types --no-warnings tools/playtest/web.ts zluc-ucty — zlúči playtest/ucty.json všetkých pracovísk ${join(korenPracovisk(), "naex*")};`,
+        `  2. alebo heslo doplň ručne do ${subor} pod "${kluc}" → "${zaklad}": { "login", "heslo", "meno" } (napr. z iného počítača);`,
+        `  3. inak to vráť Leaderovi (Michalovi) — nový účet nezakladaj.`,
+      ].join("\n"),
+    );
   }
   if (ucet === undefined) throw new Error(`Pre agenta „${meno}“ sa nepodarilo založiť účet na ${url}.`);
   const r = await volaj(url, "POST", "/prihlasenie", "", { login: ucet.login, heslo: ucet.heslo });
@@ -207,6 +202,9 @@ export async function prihlasAgenta(url: string, meno: string, uroven: UrovenAge
   await nastavPohlaviePostavy(url, cookie, meno);
   return { ...ucet, cookie };
 }
+
+/** Agenti s jediným účtom na webe — po ai-admin-2…6 na živom webe (2026-10-26). */
+const JEDINY_UCET: ReadonlySet<string> = new Set(["Admin"]);
 
 /** Postavy playtesterov majú pohlavie (hraci.json) — hlášky v partii sa podľa neho skloňujú (Michal 2026-10-22). */
 async function nastavPohlaviePostavy(url: string, cookie: string, meno: string): Promise<void> {
@@ -263,6 +261,12 @@ async function main(): Promise<void> {
   const volne = argv.filter((a, j) => (i === -1 || (j !== i && j !== i + 1)) && a !== "--zivy" && !sHodnotou.has(a) && !sHodnotou.has(argv[j - 1] ?? ""));
   const [prikaz, a1, a2] = volne;
 
+  if (prikaz === "zluc-ucty") {
+    const subor = suborUctov();
+    const r = zlucPracoviska(subor, korenPracovisk());
+    console.log(`${subor}: pridaných ${r.pridane} účtov z ${r.pracoviska} pracovísk (existujúce heslá ostali).`);
+    return;
+  }
   if (prikaz === "dostupny") {
     const ok = await webDostupny(url);
     console.log(ok ? `Web ${url} beží.` : `Web ${url} nebeží — spätnú väzbu nemožno zverejniť (spusti npm run dev).`);

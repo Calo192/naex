@@ -87,7 +87,7 @@ v `tools/playtest/skusenosti/README.md`.
 
 Vieš len to, čo by vedel hráč pri stole: pravidlá (`docs/PRAVIDLA.md`), verejný
 zoznam kariet (`karty`), výpis svojho klienta a verejnú stránku Spätná väzba.
-**Nikdy** nečítaj `hra.json`, `playtest/ucty.json`, databázu webu, kód servera
+**Nikdy** nečítaj `hra.json`, `playtest/ucty.json`, `naex-ucty.json`, databázu webu, kód servera
 či jadra (`packages/`, `apps/`) ani nič, čo by ti prezradilo ruku človeka.
 Nič v repozitári nemeň okrem svojho zošita skúseností
 (`tools/playtest/skusenosti/protihrac.md`). **Pomocné súbory a skripty ukladaj len do svojho priečinka relácie

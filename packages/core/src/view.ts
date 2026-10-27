@@ -27,7 +27,7 @@ import type {
   VyberStavby,
   ZhromazdenieStav,
 } from "./engine.ts";
-import { abstakyVBitke, cenaDedicstva, lokalityNaVyber, vykupneHraca, mozeHrat, naTahu, stranaStreduFinale, uidZaverecnej, vyplatZaStarsich } from "./engine.ts";
+import { abstakyVBitke, cenaDedicstva, lokalityNaVyber, novinyNavyse, vykupneHraca, mozeHrat, naTahu, stranaStreduFinale, uidZaverecnej, vyplatZaStarsich } from "./engine.ts";
 import { KONSTANTY } from "./constants.ts";
 import { MARKER_STRED, favourStarsieho, posunMarker, priazenHraca, priazenSila, spakyZaStarsich, strachZ, vydesil } from "./elders.ts";
 import type { DamageResult } from "./battle.ts";
@@ -412,7 +412,7 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
 
 /** Stav, z ktorého sa rátajú špaky — ClientState ho spĺňa. */
 export type PohladSpakov = Pick<ClientState, "spaky" | "nepriznaneKliatby" | "lokalityVHre" | "ciel" | "koniec" | "pitkaStav" | "kolo" | "lokalitCelkom" | "rozpis"> & {
-  readonly hraci: readonly [Pick<HracVerejne, "poldeciPlne" | "cigarety">, Pick<HracVerejne, "poldeciPlne" | "cigarety">];
+  readonly hraci: readonly [Pick<HracVerejne, "poldeciPlne" | "cigarety" | "dedicstvo">, Pick<HracVerejne, "poldeciPlne" | "cigarety" | "dedicstvo">];
   readonly starsi: readonly ElderState[];
   readonly bitkaStav: { readonly damage: DamageResult | null } | null;
 };
@@ -440,7 +440,8 @@ export interface SpakyTeraz {
   readonly spolu: readonly [number, number];
   /**
    * Koľko špakov dajú starší hráčovi po najbližšej bitke, ak ju vyhrá (v6.1 —
-   * porazený za starších nedostane nič, pri sekere obaja), keby sa markery nepohli.
+   * porazený za starších nedostane nič, pri sekere obaja), keby sa markery nepohli —
+   * vrátane špaku z Novín.
    */
   readonly zaStarsich: readonly [number, number];
   readonly starsi: readonly SpakyStarsieho[];
@@ -468,7 +469,8 @@ export function spakyTeraz(view: PohladSpakov): SpakyTeraz {
       : [view.koniec.vykupne?.[0] ?? BEZ_VYKUPNEHO, view.koniec.vykupne?.[1] ?? BEZ_VYKUPNEHO];
   const navyse = (p: PlayerId): number => (view.koniec === null ? vykupne[p].spaky : 0);
   const spolu: [number, number] = [view.spaky[0] - odpocet(0) + navyse(0), view.spaky[1] - odpocet(1) + navyse(1)];
-  const zaStarsich: [number, number] = [spakyZaStarsich(view.starsi, 0), spakyZaStarsich(view.starsi, 1)];
+  // Noviny sa vyplácajú spolu so špakmi za starších (vyplatSpaky) — aj v odhade.
+  const zaStarsich: [number, number] = [spakyZaStarsich(view.starsi, 0) + novinyNavyse(view, 0), spakyZaStarsich(view.starsi, 1) + novinyNavyse(view, 1)];
   const vyplat = vyplatZaStarsich(view);
   return {
     spaky: view.spaky,

@@ -65,3 +65,13 @@ export function zmenySpakov(pred: readonly [number, number], po: readonly [numbe
 
 /** „+2“, „−1“ (typografické mínus). */
 export const textZmeny = (n: number): string => (n > 0 ? `+${n}` : `−${-n}`);
+
+/**
+ * Čo spraví klik na krok osi kola: Bitka ukáže účet poslednej bitky, Draft mimo Draftu šenok
+ * na pozretie (Michal 2026-10-27 — tlačidlo Šenok v lište zaniklo); v Drafte je šenok na stole.
+ */
+export function klikKrokuOsi(id: string, faza: ClientState["faza"]): "ucetBitky" | "senok" | null {
+  if (id === "bitka") return "ucetBitky";
+  if (id === "draft" && faza !== "draft") return "senok";
+  return null;
+}

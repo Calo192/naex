@@ -16,7 +16,8 @@ import type { GameData } from "./data.ts";
 import { defOf, printedSides } from "./data.ts";
 import type { ActionSums, LineEval, LineState, PlacedCard } from "./partia.ts";
 import { evaluateLine, spojVznikne, snubenicaVracia } from "./partia.ts";
-import { zadlzenieZLinie } from "./effects.ts";
+import { bitkaMody, zadlzenieZLinie } from "./effects.ts";
+import type { VerejnyStav } from "./effects.ts";
 
 export interface HranyZPohladu {
   readonly lava: readonly Slot[];
@@ -68,6 +69,19 @@ export interface NahladVylozenia {
   readonly pary: readonly { readonly index: number; readonly moja: NonNullable<Slot>; readonly susedova: NonNullable<Slot> }[];
   /** Zmena súčtov aktívnych akcií oproti stolu bez karty, [hráč 0, hráč 1]. */
   readonly zmeny: readonly [ActionSums, ActionSums];
+  /**
+   * Zmena tuhého navyše z kariet v línii (Pes, Recidivista, Lesná cesta, Ihrisko —
+   * bitkaMody), [hráč 0, hráč 1]. Bonus Psa náhľad predtým vynechal
+   * (playtest 20261026-173610-1).
+   */
+  readonly tuhe: readonly [number, number];
+}
+
+/** Tuhé navyše z kariet v línii — ten istý výpočet ako bitka (bitkaMody), bez Dedičstva a starších. */
+function tuheZLinie(data: GameData, line: LineState, strany: LineState["strany"]): readonly [number, number] {
+  const ciel: VerejnyStav["ciel"] = line.finale === true ? { typ: "finale", lokalita: null } : line.lokalita === null ? null : { typ: "lokalita", lokalita: line.lokalita };
+  const stav: VerejnyStav = { ciel, strany, starsi: [], hraci: [{ priznane: [], dedicstvo: [] }, { priznane: [], dedicstvo: [] }] };
+  return [bitkaMody(data, stav, 0).tuheBonus, bitkaMody(data, stav, 1).tuheBonus];
 }
 
 function rozdiel(pred: ActionSums, po: ActionSums): ActionSums {
@@ -137,6 +151,8 @@ export function nahladVylozenia(
   };
   const pred = sumy(line.strany, evaluateLine(data, line));
   const po = sumy(strany, evaluateLine(data, { ...line, strany }));
+  const tuhePred = tuheZLinie(data, line, line.strany);
+  const tuhePo = tuheZLinie(data, line, strany);
 
   return {
     vnutorna,
@@ -145,6 +161,7 @@ export function nahladVylozenia(
     sused,
     pary,
     zmeny: [rozdiel(pred[0], po[0]), rozdiel(pred[1], po[1])],
+    tuhe: [tuhePo[0] - tuhePred[0], tuhePo[1] - tuhePred[1]],
   };
 }
 

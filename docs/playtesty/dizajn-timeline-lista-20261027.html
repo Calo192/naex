@@ -1,0 +1,670 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dizajn: os kola v hornej lište — mockupy (2026-10-27)</title>
+<style>
+/* Tokeny: schéma Krčma (apps/web/src/schemy.css) a typografia (apps/web/src/styles.css). */
+:root {
+  --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --plocha-3: #332a21;
+  --okraj: #3d3229; --okraj-svetly: #57483a; --text: #f1e8d8; --tlmeny: #b6a790;
+  --slaby: #8b7d6a; --slaby-text: #9d8f7b; --akcent: #e9ad45; --akcent-tmavy: #b9802a;
+  --akcent-svetly: #ffd08a; --na-akcente: #2b1b03; --cervena: #d0563f; --cervena-text: #e5735c;
+  --tehla-tmava: #a8341f; --zelena: #7cbf74; --zelena-svetla: #7fe39a; --info: #8fc3e0;
+  --ja: #5cc0cf; --ja-tmava: #1d3b40; --su: #e0805f; --su-tmava: #43261d;
+  --nadpis: "Bitter", Georgia, serif; --pismo: Roboto, "Segoe UI", system-ui, sans-serif;
+  --polomer: 12px; --tien: 0 10px 30px rgba(0,0,0,.35);
+  /* Návrh (variant D): krieda a tabuľa odvodené z tokenov, nech fungujú v každej schéme. */
+  --krieda: color-mix(in oklab, var(--text) 90%, var(--plocha-3));
+  --tabula: color-mix(in oklab, var(--zelena) 8%, var(--pozadie));
+  --ram-tabule: color-mix(in oklab, var(--akcent-tmavy) 42%, var(--plocha-3));
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { background: var(--pozadie); }
+body { margin: 0; color: var(--text); font: 16px/1.55 var(--pismo); background: radial-gradient(1200px 500px at 50% -120px, color-mix(in oklab, var(--akcent) 10%, transparent), transparent), var(--pozadie); }
+a { color: var(--akcent-svetly); }
+:focus-visible { outline: 2px solid var(--akcent-svetly); outline-offset: 2px; }
+.obal { max-width: 1240px; margin: 0 auto; padding: 24px clamp(14px, 3vw, 36px) 80px; }
+h1, h2, h3 { font-family: var(--nadpis); line-height: 1.2; margin: 0 0 .5em; }
+h1 { font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.3rem); }
+h2 { font-size: 1.5rem; margin-top: 2.2em; padding-top: .6em; border-top: 1px solid var(--okraj); }
+h3 { font-size: 1.15rem; }
+p, li { max-width: 78ch; }
+.meta { color: var(--tlmeny); font-size: .9rem; }
+.verdikt { background: var(--plocha-2); border: 1px solid var(--okraj-svetly); border-left: 4px solid var(--akcent); border-radius: var(--polomer); padding: 14px 18px; margin: 18px 0; }
+.verdikt p { margin: .3em 0; }
+.tlmene { color: var(--tlmeny); }
+.odznak { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: .78rem; font-weight: 700; border: 1px solid var(--okraj-svetly); background: var(--plocha-2); }
+.odznak.vysoka { color: var(--cervena-text); border-color: color-mix(in oklab, var(--cervena) 60%, var(--okraj)); }
+.odznak.stredna { color: var(--akcent); border-color: color-mix(in oklab, var(--akcent) 50%, var(--okraj)); }
+.odznak.nizka { color: var(--info); border-color: color-mix(in oklab, var(--info) 45%, var(--okraj)); }
+.odznak.odpor { color: var(--na-akcente); background: var(--akcent); border-color: var(--akcent); }
+figure { margin: 0; }
+figcaption { color: var(--tlmeny); font-size: .85rem; margin-top: 6px; }
+.snimky { display: grid; gap: 18px; }
+.snimky img { width: 100%; height: auto; display: block; border-radius: 8px; border: 1px solid var(--okraj); }
+details { background: var(--plocha); border: 1px solid var(--okraj); border-radius: var(--polomer); padding: 10px 14px; margin-top: 14px; }
+summary { cursor: pointer; font-weight: 600; min-height: 32px; display: flex; align-items: center; }
+.dve { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 760px) { .dve { grid-template-columns: 1fr; } }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--okraj); vertical-align: top; }
+th { color: var(--tlmeny); font-weight: 600; font-size: .82rem; text-transform: uppercase; letter-spacing: .04em; }
+td.c, th.c { text-align: right; font-variant-numeric: tabular-nums; }
+.tab-obal { overflow-x: auto; }
+code { font-size: .86em; background: var(--plocha-2); padding: 1px 5px; border-radius: 4px; color: var(--akcent-svetly); }
+.filtre, .prepinac { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; align-items: center; }
+.prepinac .nazov { color: var(--tlmeny); font-size: .82rem; margin-right: 4px; min-width: 76px; }
+.tl { min-height: 36px; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--okraj-svetly); background: var(--plocha-2); color: var(--text); font: 500 .9rem var(--pismo); cursor: pointer; }
+.tl:hover { background: var(--plocha-3); }
+.tl[aria-pressed="true"] { background: var(--akcent); color: var(--na-akcente); border-color: var(--akcent); font-weight: 700; }
+.tl.hlavne { background: var(--plocha-3); border-color: var(--akcent-tmavy); }
+.ovladanie { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--pozadie) 92%, transparent); backdrop-filter: blur(8px); padding: 8px 0 4px; border-bottom: 1px solid var(--okraj); }
+.platno { margin-top: 12px; border-radius: 10px; border: 1px solid var(--okraj-svetly); overflow: hidden; background: #000; position: relative; }
+.platno-vnutro { transform-origin: 0 0; }
+.legenda-ram { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: .85rem; color: var(--tlmeny); margin-top: 8px; }
+.legenda-ram b { color: var(--text); font-variant-numeric: tabular-nums; }
+.plus { color: var(--zelena-svetla); }
+.karta-variantu { background: var(--plocha); border: 1px solid var(--okraj); border-radius: var(--polomer); padding: 16px 20px; margin-top: 16px; }
+.karta-variantu[hidden] { display: none; }
+.karta-variantu h3 { display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; }
+.karta-variantu dl { display: grid; grid-template-columns: 170px 1fr; gap: 6px 16px; margin: 10px 0 0; }
+.karta-variantu dt { color: var(--tlmeny); font-size: .88rem; }
+.karta-variantu dd { margin: 0; }
+@media (max-width: 700px) { .karta-variantu dl { grid-template-columns: 1fr; } .karta-variantu dt { margin-top: 6px; } }
+.ano { color: var(--zelena-svetla); font-weight: 600; }
+.nie { color: var(--cervena-text); font-weight: 600; }
+.poradie li { margin: .4em 0; }
+.otazky li { margin: .6em 0; }
+
+/* ======================= MOCKUP STOLA (px ako v prehliadači) ======================= */
+.m { position: relative; overflow: hidden; background: var(--pozadie); color: var(--text); font: 16px/1.3 var(--pismo); }
+.m * { box-sizing: border-box; }
+.m-hlavicka { position: relative; display: flex; align-items: center; padding: 0 var(--okraj-st); gap: var(--gap); border-bottom: 1px solid var(--okraj); background: color-mix(in srgb, var(--pozadie) 86%, transparent); }
+.m-logo { display: flex; align-items: center; gap: 10px; font: 800 1.5rem var(--nadpis); flex: none; }
+.m-pohar { width: 18px; height: 24px; border-radius: 2px 2px 5px 5px; background: linear-gradient(180deg, var(--text) 0 30%, var(--akcent) 30%); box-shadow: inset 0 0 0 2px var(--plocha-3); }
+.m-dist { flex: 1 1 auto; }
+.m-ucet { display: flex; align-items: center; gap: 12px; flex: none; font-weight: 600; font-size: .95rem; }
+.m-av { width: 34px; height: 34px; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #8a6b52, #3a2a20); border: 1px solid var(--okraj-svetly); }
+.m-partia { flex: none; height: 40px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--okraj-svetly); background: var(--plocha); color: var(--text); font: 500 1rem var(--pismo); display: flex; align-items: center; gap: 8px; }
+.m-partia small { color: var(--tlmeny); font-size: .7rem; }
+.m-partia kbd { font: 700 .72rem var(--nadpis); letter-spacing: .12em; color: var(--akcent); }
+.m.nizka .m-partia { height: 36px; }
+/* štítok partie (dnes) */
+.m-stitok { flex: none; display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--okraj-svetly); background: linear-gradient(180deg, var(--plocha-2), var(--plocha)); color: var(--tlmeny); font-size: .9rem; white-space: nowrap; }
+.m.nizka .m-stitok { height: 36px; }
+.m-stitok i { width: 1px; height: 18px; background: var(--okraj-svetly); }
+.m-stitok .krok { color: var(--text); font-weight: 500; }
+.m-stitok .krok.fin { color: var(--akcent); font: 700 .95rem var(--nadpis); }
+.m-skore { position: relative; display: inline-flex; align-items: center; gap: 5px; font-variant-numeric: tabular-nums; }
+.m-skore b { color: var(--text); font-size: 1.15rem; }
+.m-skore .dv { color: var(--slaby-text); }
+.m-super { color: var(--zelena); }
+.m-spak { width: 28px; height: 14px; display: block; flex: none; }
+.m-spak.ja { color: var(--ja); } .m-spak.su { color: var(--su); }
+.m-zmena { position: absolute; top: -13px; font: 700 .72rem var(--pismo); color: var(--zelena-svetla); opacity: 0; }
+.m.blik .m-zmena { animation: zmena 2.5s ease-out; }
+@keyframes zmena { 0% { opacity: 0; transform: translateY(4px); } 8% { opacity: 1; transform: none; } 80% { opacity: 1; } 100% { opacity: 0; } }
+.m.blik .m-skore b.ja, .m.blik .m-dl.spaky.ja .hod { animation: pulz .25s ease-out 2; }
+@keyframes pulz { 50% { transform: scale(1.18); color: var(--zelena-svetla); } }
+@media (prefers-reduced-motion: reduce) { .m.blik .m-zmena { animation: none; opacity: 1; } .m.blik .m-skore b.ja, .m.blik .m-dl.spaky.ja .hod { animation: none; } }
+
+/* os kola — spoločný základ (Panely.tsx PriebehKola, hra.css .priebeh-kola) */
+.m-os { container: os / inline-size; flex: 1 1 auto; min-width: 0; display: flex; align-items: stretch; gap: 3px; list-style: none; margin: 0; padding: 0; }
+.m-os li { position: relative; flex: 1 0 auto; display: flex; align-items: center; justify-content: center; padding: 0 12px 0 18px; font-size: .8rem; white-space: nowrap; color: var(--slaby-text); background: var(--plocha); clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%, 8px 50%); }
+.m-os li.hotovy { color: var(--tlmeny); }
+.m-os li.akt { color: var(--na-akcente); font-weight: 700; background: var(--akcent); }
+.m-os li.hlava { flex: none; padding-left: 12px; clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%); color: var(--text); font-weight: 700; background: var(--plocha-3); }
+.m-os li { font-variant-numeric: lining-nums; }
+.m-os li.hlava.fin { color: var(--akcent); font-family: var(--nadpis); }
+.m-os .k, .m-os .mi { display: none; }
+/* Návrh: tri dĺžky popisu podľa šírky osi (container query) — aktuálny krok vždy celý. */
+@container os (max-width: 900px) { .m-os li:not(.akt) .d.sk { display: none; } .m-os li:not(.akt) .d.sk + .k { display: inline; } }
+@container os (max-width: 720px) { .m-os li:not(.akt) .k { display: none !important; } .m-os li:not(.akt) .d.mk { display: none; } .m-os li:not(.akt) .mi { display: inline; } }
+
+/* nástroje stola (Šenok · Log · ?) */
+.m-nastroje { flex: none; display: flex; gap: 6px; align-items: center; }
+.m-nastroje span { height: 32px; min-width: 32px; padding: 0 11px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-radius: 8px; border: 1px solid var(--okraj); background: var(--plocha); color: var(--text); font-size: .85rem; position: relative; }
+.m.nizka .m-nastroje span { height: 30px; }
+.m-nastroje b { color: var(--tlmeny); font-size: .75rem; font-variant-numeric: tabular-nums; }
+.m-nastroje .bod::after { content: ""; position: absolute; top: 5px; right: 5px; width: 7px; height: 7px; border-radius: 50%; background: var(--akcent); }
+
+/* A: os v strede lišty */
+.m-os.vlista { height: 32px; border-radius: 9px; overflow: hidden; border: 1px solid var(--okraj); background: var(--pozadie); }
+.m.nizka .m-os.vlista { height: 28px; }
+.m-os.vlista li.hlava { font-family: var(--nadpis); font-size: .86rem; }
+/* B: tenký pás pod lištou */
+.m-pas { display: flex; align-items: stretch; gap: 10px; padding: 0 var(--okraj-st); border-bottom: 1px solid var(--okraj); background: var(--plocha-2); }
+.m-pas .m-os li { font-size: .76rem; }
+.m-pas .m-nastroje span { height: calc(var(--pas) - 4px); min-width: 0; padding: 0 8px; font-size: .74rem; border-radius: 6px; align-self: center; }
+.m-pas .m-desi, .m-jos .m-desi { flex: none; align-self: center; font-size: .78rem; color: var(--tlmeny); white-space: nowrap; }
+.m-desi b { color: var(--zelena); font-variant-numeric: tabular-nums; }
+/* C: štítok roztiahnutý na os */
+.m-zapas { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 6px 0 4px; border-radius: 999px; border: 1px solid var(--okraj-svetly); background: linear-gradient(180deg, var(--plocha-2), var(--plocha)); }
+.m.nizka .m-zapas { height: 38px; }
+.m-zapas .m-os { height: 30px; border-radius: 999px 6px 6px 999px; overflow: hidden; }
+.m-zapas .m-os li.hlava { padding-left: 14px; font-family: var(--nadpis); }
+.m-zapas .m-skore { padding: 0 10px 0 2px; }
+/* D: tabuľa nad výčapom */
+.m-tabula { container: os / inline-size; flex: 1 1 auto; min-width: 0; height: calc(var(--hH) - 14px); display: flex; align-items: center; gap: 14px; padding: 0 16px; border-radius: 6px; border: 3px solid var(--ram-tabule); box-shadow: inset 0 0 0 1px rgba(0,0,0,.5), 0 2px 0 rgba(0,0,0,.4); background: radial-gradient(140px 30px at 22% 40%, rgba(255,255,255,.035), transparent), radial-gradient(200px 40px at 70% 60%, rgba(255,255,255,.03), transparent), var(--tabula); }
+.m-carky { flex: none; display: flex; align-items: center; gap: 5px; padding-right: 14px; border-right: 1px dashed color-mix(in oklab, var(--krieda) 30%, transparent); }
+.m-carky small { font: 600 .66rem var(--pismo); letter-spacing: .1em; text-transform: uppercase; color: var(--tlmeny); margin-right: 4px; }
+.m-carky span.c { width: 3px; height: 17px; border-radius: 2px; background: var(--krieda); transform: rotate(7deg); opacity: .95; }
+.m-carky span.c.bud { background: var(--slaby); opacity: .55; }
+.m-carky span.c.akt { background: var(--akcent-svetly); box-shadow: 0 0 0 4px var(--tabula), 0 0 0 6px var(--akcent-svetly); border-radius: 3px; }
+.m-carky em { font: 700 .9rem var(--nadpis); font-style: normal; color: var(--slaby); margin-left: 3px; }
+.m-carky em.akt { position: relative; color: var(--akcent-svetly); }
+.m-carky em.akt::after { content: ""; position: absolute; inset: -3px -6px; border: 2px solid var(--akcent-svetly); border-radius: 50% 44% 54% 46% / 56% 50% 50% 44%; transform: rotate(-4deg); }
+.m-carky .txt { font: 600 .72rem var(--pismo); color: var(--tlmeny); margin-left: 8px; letter-spacing: 0; text-transform: none; }
+.m-tabula ol { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.m-tabula li { position: relative; font-variant-numeric: lining-nums; padding: 2px 9px; white-space: nowrap; font: 600 .86rem var(--nadpis); letter-spacing: .02em; color: var(--tlmeny); }
+.m-tabula li + li::before { content: "›"; position: absolute; left: -6px; color: var(--slaby); font-weight: 400; }
+.m-tabula li.hotovy { color: var(--slaby-text); text-decoration: line-through; text-decoration-color: color-mix(in oklab, var(--krieda) 55%, transparent); text-decoration-thickness: 1.5px; }
+.m-tabula li.akt { color: var(--krieda); font-weight: 800; }
+.m-tabula li.akt::after { content: ""; position: absolute; inset: -4px -6px; border: 2px solid var(--akcent-svetly); border-radius: 52% 46% 55% 44% / 60% 48% 56% 42%; transform: rotate(-2deg); opacity: .9; }
+.m-tabula .k, .m-tabula .mi { display: none; }
+@container os (max-width: 900px) { .m-tabula li:not(.akt) .d.sk { display: none; } .m-tabula li:not(.akt) .d.sk + .k { display: inline; } .m-carky .txt { display: none; } }
+@container os (max-width: 720px) { .m-tabula li:not(.akt) .k { display: none !important; } .m-tabula li:not(.akt) .d.mk { display: none; } .m-tabula li:not(.akt) .mi { display: inline; } }
+.m-nastroje.tag span { border-radius: 4px; border-color: var(--ram-tabule); background: var(--plocha-2); font-family: var(--nadpis); }
+
+/* jednotný bar (jbar.css) */
+.m-jbar { margin: 0 16px; border: 1px solid var(--okraj); border-top: none; border-radius: 0 0 12px 12px; background: var(--plocha-2); box-shadow: 0 6px 18px rgba(0,0,0,.35); display: grid; }
+.m-jst { display: grid; grid-template-columns: minmax(0,1fr) minmax(420px,auto) minmax(0,1fr); min-width: 0; }
+.m-strana { display: flex; align-items: center; gap: 10px; padding: 0 12px; min-width: 0; white-space: nowrap; font-size: .9rem; }
+.m-strana.ja { border-left: 3px solid var(--ja); }
+.m-strana.su { justify-content: flex-end; border-right: 3px solid var(--su); }
+.m-strana .kto { color: var(--ja); font-weight: 700; display: flex; flex-direction: column; line-height: 1; font-size: .9rem; }
+.m-strana .kto small { color: var(--tlmeny); font-size: .6rem; letter-spacing: .08em; text-transform: uppercase; margin-top: 2px; }
+.m-strana .kto.su { color: var(--su); }
+.m-strana .tl2 { color: var(--tlmeny); }
+.m-sq { width: 12px; height: 16px; border-radius: 3px; flex: none; }
+.m-sq.ja { background: var(--ja); } .m-sq.su { background: var(--su); }
+.m-stred { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 0 16px; background: color-mix(in oklab, var(--pozadie) 60%, var(--plocha-2)); white-space: nowrap; font-size: .9rem; min-width: 0; overflow: hidden; }
+.m-stred small { font-size: .65rem; letter-spacing: .14em; color: var(--tlmeny); font-weight: 700; }
+.m-stred .odh { color: var(--akcent); font: 700 1.05rem var(--nadpis); }
+.m-stred .ciel { font: 700 1rem var(--nadpis); }
+.m-stred em { font-style: normal; color: var(--cervena-text); font-weight: 600; }
+.m-cip { display: inline-flex; border-radius: 999px; border: 1px solid var(--okraj-svetly); overflow: hidden; font-size: .7rem; }
+.m-cip span { padding: 1px 8px; color: var(--tlmeny); } .m-cip .zap { background: var(--akcent); color: var(--na-akcente); font-weight: 700; }
+.m-jos { display: flex; align-items: stretch; gap: 10px; padding-right: 4px; border-top: 1px solid var(--okraj); border-radius: 0 0 11px 11px; background: var(--pozadie); overflow: hidden; }
+.m-jos .m-nastroje span { height: calc(var(--j2) - 6px); padding: 0 9px; font-size: .78rem; min-width: 0; align-self: center; }
+.m-nast-bodky { letter-spacing: 1px; font-size: .62rem; color: var(--zelena); }
+.m-rusi { outline: 1px dashed var(--cervena-text); outline-offset: 1px; }
+/* bary hráčov a dlaždice */
+.m-bar { margin: 0 16px; display: flex; gap: 8px; padding: 6px; border-radius: 12px; border: 1px solid var(--okraj); }
+.m-bar.su { background: linear-gradient(90deg, var(--plocha) 70%, color-mix(in oklab, var(--su-tmava) 80%, var(--plocha))); border-right: 3px solid var(--su); }
+.m-bar.ja { background: linear-gradient(90deg, color-mix(in oklab, var(--ja-tmava) 70%, var(--plocha)), var(--plocha) 30%); border: 2px solid color-mix(in oklab, var(--ja) 55%, var(--okraj)); }
+.m-dl { flex: 1 1 0; min-width: 0; border-radius: 8px; background: color-mix(in oklab, var(--pozadie) 55%, var(--plocha)); padding: 6px 10px; display: flex; flex-direction: column; justify-content: center; gap: 2px; position: relative; }
+.m-dl .lb { font-size: .66rem; letter-spacing: .1em; font-weight: 700; color: var(--tlmeny); text-transform: uppercase; }
+.m-dl .hod { font: 800 1.35rem/1 var(--pismo); font-variant-numeric: tabular-nums; display: inline-block; }
+.m-dl .po { font-size: .72rem; color: var(--tlmeny); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.m-dl .po b { color: var(--zelena); }
+.m-dl.spaky, .m-dl.starsi { border-top: 3px solid var(--akcent-tmavy); align-items: center; text-align: center; }
+.m-dl.spaky .hod { color: var(--text); display: flex; align-items: center; gap: 6px; }
+.m-dl.spaky.ja .hod { color: var(--ja); }
+.m-dl.spaky.su .hod { color: var(--su); }
+.m-dl.spaky .m-zmena { top: 4px; right: 8px; font-size: .8rem; }
+.m-dl.hrac { flex: 1.3 1 0; flex-direction: row; align-items: center; gap: 10px; background: transparent; }
+.m-dl.hrac.su { justify-content: flex-end; text-align: right; }
+.m-dl.hrac .mn { font: 700 1.05rem var(--nadpis); }
+.m-dl.hrac .rl { font-size: .72rem; font-weight: 700; }
+.m-dl.hrac.su .rl { color: var(--info); } .m-dl.hrac.ja .rl { color: var(--cervena-text); }
+.m-hav { position: relative; width: 44px; height: 44px; border-radius: 50%; flex: none; display: grid; place-items: center; font: 700 1.1rem var(--pismo); }
+.m-hav.su { background: #2f6a86; color: #fff; border: 2px solid var(--okraj-svetly); }
+.m-hav.ja { background: #2f6a50; color: #fff; border: 2px solid color-mix(in oklab, var(--zelena) 60%, var(--okraj)); }
+.m-online { position: absolute; right: -2px; bottom: -2px; width: 13px; height: 13px; border-radius: 50%; background: var(--zelena); border: 2px solid var(--plocha); }
+.m.nizka .m-dl .hod { font-size: 1.1rem; }
+.m.nizka .m-dl .po { display: none; }
+.m.nizka .m-dl { padding: 3px 8px; }
+.m.nizka .m-hav { width: 34px; height: 34px; font-size: .9rem; }
+/* plsť a ruka */
+.m-plst { position: relative; margin: 0 16px; border-radius: 16px; border: 2px solid color-mix(in oklab, var(--zelena) 55%, var(--okraj)); background: radial-gradient(ellipse at 50% 40%, #233b26, #182a1b 70%); display: flex; align-items: center; justify-content: center; gap: 10px; }
+.m-pokyn { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); max-width: 86%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 3px 18px; border-radius: 999px; border: 2px solid color-mix(in oklab, var(--zelena) 55%, var(--okraj)); background: var(--plocha); font-size: .86rem; }
+.m-karta { border-radius: 8px; background: linear-gradient(180deg, #5a4a3c 0 64%, #b46a62 64% 74%, #f4efe6 74%); box-shadow: 0 4px 12px rgba(0,0,0,.5); }
+.m-karta.dole { transform: rotate(180deg); }
+.m-miera { position: absolute; left: 14px; bottom: 10px; font-size: .9rem; color: var(--text); background: rgba(0,0,0,.55); border-radius: 6px; padding: 4px 10px; font-variant-numeric: tabular-nums; }
+.m-miera b { color: var(--zelena-svetla); }
+.m-ruka { display: flex; justify-content: center; gap: 6px; overflow: hidden; }
+.m-ruka .m-karta { width: 120px; height: 170px; flex: none; }
+.m-poznamka { position: absolute; z-index: 3; font: 600 13px/1.25 var(--pismo); color: var(--na-akcente); background: var(--akcent-svetly); border-radius: 6px; padding: 3px 8px; box-shadow: 0 3px 10px rgba(0,0,0,.6); pointer-events: none; white-space: nowrap; }
+.m-poznamka::before { content: ""; position: absolute; width: 0; height: 0; border: 6px solid transparent; }
+.m-poznamka.hore::before { top: -12px; left: 18px; border-bottom-color: var(--akcent-svetly); }
+.m-poznamka.dole::before { bottom: -12px; left: 18px; border-top-color: var(--akcent-svetly); }
+.bez-poznamok .m-poznamka { display: none; }
+</style>
+</head>
+<body>
+<div class="obal">
+<header>
+  <p class="meta">NA EX! · dizajn UI · cieľ: hlavička herného stola <code>/hra</code> (hlavička webu + jednotný bar) · 2026-10-27 · id <code>timeline-lista-20261027</code> · UX návrh k tomuto zadaniu nie je · nadväzuje na <a href="dizajn-vyvoj-web-20261026-1520-ui.html">dizajn-vyvoj-web-20261026-1520 (#22 štítok a „Partia ▾“)</a> a bar V2</p>
+  <h1>Os kola v hornej lište: mockupy</h1>
+  <div class="verdikt">
+    <p><b>Verdikt.</b> Pri stole je stred hlavičky webu prázdny: pri 1366 px okolo 670 px, pri 1920 px okolo 1 090 px. Os kola pritom zaberá na stole vlastný riadok vysoký 18 až 30 px. Štítok „Bitka 1 z 6 · 0 : 0 · súper“ opakuje tri veci, ktoré stôl už ukazuje inde.</p>
+    <p><b>Odporúčam variant A.</b> Os pôjde do stredu lišty a štítok sa rozdelí: „Bitka 1 z 6“ sa stane hlavou osi namiesto „Kolo 1 · lokalita 1/5“, skóre ostane len v dlaždiciach Špaky a stav súpera sa presunie na jeho dlaždicu. Stôl získa 18 až 30 px na výšku a nič sa nezdvojí. Krčmový vzhľad z variantu D sa dá na A obliecť neskôr. Rozhodnúť treba jednu vec: či skóre z hlavičky naozaj zmizne (#22). Ak nie, zvoľ variant C.</p>
+  </div>
+</header>
+
+<h2 id="dnes">1. Súčasný stav</h2>
+<p>Snímky som robil v ukážke stola (<code>/hra/ukazka-stola?seed=8&amp;lokalit=5</code>) z <code>origin/master e504005</code>. Finále so Zhromaždením 1 z 3 je najdlhší prípad osi: 9 krokov a hlava. Tlačidlo „Nástenka ○○○○○◇“ ešte vidno, ruší ho vetva <code>ui/nastenka-na-stole</code>.</p>
+<div class="snimky">
+  <figure><img src="dizajn-timeline-lista-20261027/lista-1920-finale.jpg" alt="Hlavička a bar pri 1920 × 1080 vo finále: štítok Finále 8 : 8 Bot Rapavý Fero, pod barom os Kolo 6 · finále s deviatimi krokmi" width="1920" height="260" loading="lazy"><figcaption>1920 × 1080, finále. „Finále“ je tu trikrát: v štítku, v hlave osi („Kolo 6 · finále“) a ako prvý krok osi. Skóre 8 : 8 je v štítku aj v oboch dlaždiciach Špaky.</figcaption></figure>
+  <figure><img src="dizajn-timeline-lista-20261027/lista-1366-finale.jpg" alt="Hlavička a bar pri 1366 × 650: medzi logom a štítkom je prázdne miesto, os je 18 px vysoká" width="1366" height="180" loading="lazy"><figcaption>1366 × 650. Hlavička má 52 px, os 18 px. Medzi logom a štítkom je ~670 px prázdneho miesta (x 145 až 815). „vydesení“ sa skrátilo na „0:0/4“.</figcaption></figure>
+  <figure><img src="dizajn-timeline-lista-20261027/lista-1920-draft.jpg" alt="Draft kola 1: štítok Bitka 1 z 6, os Kolo 1 · lokalita 1/5" width="1920" height="160" loading="lazy"><figcaption>1920, draft kola 1. Štítok počíta „Bitka 1 z 6“, os „Kolo 1 · lokalita 1/5“. Je to tá istá vec, počítaná dvakrát a inak.</figcaption></figure>
+</div>
+<details><summary>Celé obrazovky (1920, 1440, 1366, finále)</summary>
+  <div class="snimky" style="margin-top:10px">
+    <figure><img src="dizajn-timeline-lista-20261027/stol-1920-finale.jpg" alt="Celý stôl 1920 × 1080 vo finále" width="1920" height="1080" loading="lazy"><figcaption>1920 × 1080</figcaption></figure>
+    <figure><img src="dizajn-timeline-lista-20261027/stol-1440-finale.jpg" alt="Celý stôl 1440 × 800 vo finále" width="1440" height="800" loading="lazy"><figcaption>1440 × 800</figcaption></figure>
+    <figure><img src="dizajn-timeline-lista-20261027/stol-1366-finale.jpg" alt="Celý stôl 1366 × 650 vo finále, ruka orezaná spodkom okna" width="1366" height="650" loading="lazy"><figcaption>1366 × 650: z ruky vidno len hornú tretinu kariet. Každý pixel nad stolom tu chýba.</figcaption></figure>
+  </div>
+</details>
+
+<h2 id="audit">2. Audit hlavičky stola</h2>
+<div class="filtre" role="group" aria-label="Filter podľa závažnosti">
+  <button class="tl" type="button" data-filter="vsetko" aria-pressed="true">Všetko</button>
+  <button class="tl" type="button" data-filter="vysoka" aria-pressed="false">Vysoká</button>
+  <button class="tl" type="button" data-filter="stredna" aria-pressed="false">Stredná</button>
+  <button class="tl" type="button" data-filter="nizka" aria-pressed="false">Nízka</button>
+</div>
+<div class="tab-obal">
+<table id="audit-tab">
+  <thead><tr><th>#</th><th>Závažnosť</th><th>Problém</th><th>Dôkaz</th></tr></thead>
+  <tbody>
+    <tr data-z="vysoka"><td>U1</td><td><span class="odznak vysoka">vysoká</span></td><td>Os kola má na stole vlastný riadok (30 / 23 / 18 px), kým stred hlavičky webu pri stole zíva prázdnotou. Pri 1366 × 650 je ruka orezaná a každý riadok sa počíta.</td><td><code>jbar.css:7–15, 486–523</code>; snímka 1366 × 650</td></tr>
+    <tr data-z="vysoka"><td>U2</td><td><span class="odznak vysoka">vysoká</span></td><td>Postup partie sa počíta dvakrát a inak: štítok „Bitka 1 z 6“ a os „Kolo 1 · lokalita 1/5“. Vo finále je „Finále“ trikrát (štítok, hlava osi, prvý krok).</td><td><code>stitokPartie.ts:16–25</code>, <code>Panely.tsx:1293</code> (PriebehKola); lista-1920-draft, lista-1920-finale</td></tr>
+    <tr data-z="stredna"><td>U3</td><td><span class="odznak stredna">stredná</span></td><td>Skóre špakov je dvakrát: v štítku 8 : 8 a v dlaždiciach Špaky (8 a 8). Dlaždica je navyše vstup do nástenky Špakov (vetva <code>ui/nastenka-na-stole</code>), takže jej význam rastie.</td><td><code>HlavickaPartie.tsx:197–207</code>; stol-1920-finale</td></tr>
+    <tr data-z="stredna"><td>U4</td><td><span class="odznak stredna">stredná</span></td><td>Meno súpera je trikrát: v štítku „● Bot Rapavý Fero“, na pravej strane baru a v jeho dlaždici „Rapavý Fero“. Stav pripojenia (●/○) pritom nesie len štítok, ďaleko od súperovej dlaždice.</td><td><code>HlavickaPartie.tsx:209–213</code>; stol-1920-finale</td></tr>
+    <tr data-z="nizka"><td>U5</td><td><span class="odznak nizka">nízka</span></td><td>V riadku osi sú pomiešané stav kola a nástroje stola (Šenok, Log, ?). Keď Nástenka odíde, riadok sa aj tak musí prestavať, takže je to vhodná chvíľa.</td><td><code>HernaPlocha.tsx:5073–5110</code></td></tr>
+    <tr data-z="nizka"><td>U6</td><td><span class="odznak nizka">nízka</span></td><td>Pri 1366 px je os stlačená (kroky ~90 px) a „vydesení 0:0/4“ stratí popis. „0:0/4“ bez slova nikto nerozlúšti.</td><td>lista-1366-finale</td></tr>
+    <tr data-z="nizka"><td>U7</td><td><span class="odznak nizka">nízka</span></td><td>Kontrast osi je v poriadku: neaktívny krok <code>--slaby-text</code> na <code>--plocha</code> má 5,52 : 1, aktuálny <code>--na-akcente</code> na <code>--akcent</code> 8,35 : 1. Okraj štítka <code>--okraj-svetly</code> na <code>--pozadie</code> má 2,14 : 1, ale je dekoratívny (štítok nie je ovládací prvok).</td><td>prepočet podľa WCAG 2.2</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2 id="varianty">3. Varianty: interaktívny mockup</h2>
+<p>Mockup je prekreslený v skutočných pixeloch zvoleného okna a zmenšený na šírku stránky. Používa tie isté tokeny a texty ako stôl. Zelené číslo v plsti ukazuje, koľko px na výšku línia získa oproti dnešku.</p>
+<div class="ovladanie">
+  <div class="prepinac" role="group" aria-label="Variant">
+    <span class="nazov">Variant</span>
+    <button class="tl" type="button" data-v="dnes" aria-pressed="true">Dnes</button>
+    <button class="tl" type="button" data-v="A" aria-pressed="false">A · Os v strede lišty</button>
+    <button class="tl" type="button" data-v="B" aria-pressed="false">B · Tenký pás pod lištou</button>
+    <button class="tl" type="button" data-v="C" aria-pressed="false">C · Zápasová pilulka</button>
+    <button class="tl" type="button" data-v="D" aria-pressed="false">D · Tabuľa nad výčapom</button>
+  </div>
+  <div class="prepinac" role="group" aria-label="Rozlíšenie okna">
+    <span class="nazov">Okno</span>
+    <button class="tl" type="button" data-r="1920" aria-pressed="false">1920 × 1080</button>
+    <button class="tl" type="button" data-r="1600" aria-pressed="false">1600 × 1000</button>
+    <button class="tl" type="button" data-r="1440" aria-pressed="false">1440 × 800</button>
+    <button class="tl" type="button" data-r="1366" aria-pressed="true">1366 × 650</button>
+  </div>
+  <div class="prepinac" role="group" aria-label="Stav partie">
+    <span class="nazov">Stav</span>
+    <button class="tl" type="button" data-s="fin" aria-pressed="true">Finále · Zhromaždenie 1 z 3 (9 krokov)</button>
+    <button class="tl" type="button" data-s="draft" aria-pressed="false">Kolo 1 · Draft (5 krokov)</button>
+    <button class="tl hlavne" type="button" id="simuluj">Ukáž „+2“ po bitke</button>
+    <button class="tl" type="button" id="poznamky" aria-pressed="true">Popisky</button>
+  </div>
+</div>
+<div class="platno" id="platno" role="img" aria-label="Mockup herného stola"><div class="platno-vnutro" id="platno-vnutro"></div></div>
+<div class="legenda-ram" id="legenda" aria-live="polite"></div>
+
+<article class="karta-variantu" data-karta="dnes">
+  <h3>Dnes (master e504005)</h3>
+  <p>Hlavička: logo, prázdny stred, štítok „krok · skóre · súper“, „Partia ▾“, účet. Jednotný bar má dva riadky: strany s odhadom a pod nimi os s nástrojmi. Čiarkovaný rámik v mockupe označuje tlačidlo Nástenka, ktoré sa práve ruší.</p>
+</article>
+
+<article class="karta-variantu" data-karta="A" hidden>
+  <h3>A · Os v strede lišty <span class="odznak odpor">odporúčaný</span> <span class="odznak">náročnosť stredná</span></h3>
+  <dl>
+    <dt>Kde je os</dt><dd>V strede hlavičky webu, medzi logom a nástrojmi (pruží, <code>flex: 1</code>). Výška 32 px pri hlavičke 64 px a 28 px pri 52 px. Popisy krokov sa skracujú podľa šírky osi (container query): pod 900 px „Zhrom. 2“, pod 720 px „Z2 / P2“. Aktuálny krok ostáva vždy celý.</dd>
+    <dt>Štítok sa rozdelí</dt><dd><b>„Bitka 1 z 6“</b> sa stane hlavou osi a nahradí „Kolo 1 · lokalita 1/5“, takže postup sa počíta jedným spôsobom. Vo finále je hlavou „Finále“ a prvý krok „Finále“ zmizne.<br><b>Skóre</b> ostane len v dlaždiciach Špaky. Mihnutie „+2“ a pozdržanie počas počítadla bitky (<code>useSpakyVStitku</code>) sa presunú do dlaždice.<br><b>Súper ●/○</b> bude bodkou na avatare v jeho dlaždici. Keď je odpojený: ○ a „odpojený 1:48“ pod menom.<br><b>Kód miestnosti</b> (len hra s človekom) bude v tlačidle „Partia <kbd>HZ3T</kbd> ▾“, kopírovanie ostáva v menu.</dd>
+    <dt>Šenok · Log · ?</dt><dd>Do hlavičky naľavo od „Partia ▾“ ako skupina nástrojov stola. Šenok ostáva cieľom na pustenie karty.</dd>
+    <dt>vydesení 0:0/4</dt><dd>Do dlaždíc Starší, každému jeho číslo: „vydesení 0/4“ pod ♥. Pri 1366 × 650, kde podriadok dlaždice nie je, ako malý odznak „0/4“ pri nadpise STARŠÍ.</dd>
+    <dt>Uvoľní na stole</dt><dd>Celý druhý riadok baru: <b class="plus">+30 px</b> (1920, 1600), <b class="plus">+23 px</b> (1440 × 800), <b class="plus">+18 px</b> (1366 × 650). Bar má potom jeden riadok.</dd>
+    <dt>Zdvojenie</dt><dd><span class="ano">Nič.</span> Postup je raz (os), skóre raz (dlaždice), súper raz s menom (bar) a raz s tvárou a stavom (dlaždica).</dd>
+    <dt>1366 × 650</dt><dd>Na os ostane ~780 px. Finále s 9 krokmi sa zmestí so skratkami „Zhrom. 2“; draft s 5 krokmi sa zmestí celý. Meno účtu je pod 1500 px skryté už dnes.</dd>
+    <dt>Pozor</dt><dd>Vo výučbe Melichar ukazuje na os (<code>mel-hore</code>, <code>JednotnyBar.tsx:84–90</code>). Jeho bublina bude ukazovať hore do lišty, treba posunúť kotvy <code>data-vyucba</code>. Tooltipy krokov sa otvárajú nadol cez bar, miesto majú.</dd>
+    <dt>Súbory</dt><dd><code>HlavickaPartie.tsx</code>, <code>hlavicka.css</code>, <code>stitokPartie.ts</code>, <code>Panely.tsx</code> (PriebehKola: hlava, krátke popisy), <code>JednotnyBar.tsx</code> + <code>jbar.css</code> (jeden riadok), <code>HernaPlocha.tsx</code> (portál osi a nástrojov), dlaždice Špaky, Starší a hráča.</dd>
+  </dl>
+</article>
+
+<article class="karta-variantu" data-karta="B" hidden>
+  <h3>B · Tenký pás pod lištou <span class="odznak">náročnosť malá</span></h3>
+  <dl>
+    <dt>Kde je os</dt><dd>Celá šírka okna tesne pod hlavičkou, ako súčasť lepkavej hlavičky (22 / 20 / 18 px). Na pravom konci sú vydesení, Šenok, Log a ?.</dd>
+    <dt>Štítok</dt><dd>Ostáva v lište bez kroku: „[popolník] 8 : 8 [popolník] · ● Bot Rapavý Fero“. „Bitka 1 z 6“ sa presunie na začiatok pásu ako hlava osi.</dd>
+    <dt>Uvoľní na stole</dt><dd>Takmer nič: <b class="plus">+8 px</b> (1920, 1600), <b class="plus">+3 px</b> (1440), <b>0 px</b> (1366 × 650). Pás je len tenší než riadok baru.</dd>
+    <dt>Zdvojenie</dt><dd><span class="nie">Áno.</span> Skóre ostáva v štítku aj v dlaždiciach, súper v štítku aj v bare.</dd>
+    <dt>Prínos</dt><dd>Poriadok: lišta je partia, pás je kolo, bar je bitka. Zo všetkých variantov je to najmenší zásah do rozhodnutia #22. Prázdny stred lišty však ostáva prázdny.</dd>
+    <dt>Súbory</dt><dd><code>Layout.tsx</code> (miesto pre pás), <code>styles.css</code>, <code>jbar.css</code>, <code>HernaPlocha.tsx</code>, <code>HlavickaPartie.tsx</code>.</dd>
+  </dl>
+</article>
+
+<article class="karta-variantu" data-karta="C" hidden>
+  <h3>C · Zápasová pilulka <span class="odznak">náročnosť stredná</span></h3>
+  <dl>
+    <dt>Kde je os</dt><dd>Štítok sa roztiahne cez stred lišty a os bude v ňom: „Bitka 1 z 6 › Voľba › Draft › … › Bitka | [popolník] 0 : 0 [popolník]“. Celý zápas je v jednom tvare, skóre je pri bitke, o ktorú ide.</dd>
+    <dt>Štítok</dt><dd>Krok a skóre ostávajú v lište, rovnako ako v rozhodnutí #22 vrátane mihnutia „+2“. Súper ●/○ sa presunie na jeho dlaždicu, kód do „Partia <kbd>HZ3T</kbd> ▾“.</dd>
+    <dt>Šenok · Log · ?</dt><dd>Ako v A, naľavo od „Partia ▾“. Vydesení ako v A, do dlaždíc Starší.</dd>
+    <dt>Uvoľní na stole</dt><dd>Ako A: <b class="plus">+30 / +30 / +23 / +18 px</b>.</dd>
+    <dt>Zdvojenie</dt><dd><span class="nie">Skóre áno</span> (pilulka aj dlaždice Špaky), ostatné nie. Dá sa to obhájiť: lišta dáva rýchly pohľad, dlaždica je vstup do nástenky. Je to však ten istý údaj na dvoch miestach.</dd>
+    <dt>1366 × 650</dt><dd>Skóre zaberie ~110 px, na kroky ostane ~670 px. Finále preto ide v najkratšej podobe „Z2 · P2“. Draft sa zmestí so skratkami.</dd>
+    <dt>Súbory</dt><dd>Ako A, len <code>HlavickaPartie.tsx</code> obalí os namiesto toho, aby ju nahradila.</dd>
+  </dl>
+</article>
+
+<article class="karta-variantu" data-karta="D" hidden>
+  <h3>D · Tabuľa nad výčapom <span class="odznak">odvážny</span> <span class="odznak">náročnosť stredná až veľká</span></h3>
+  <dl>
+    <dt>Kde je os</dt><dd>Rozloženie je ako v A, ale os je napísaná kriedou na tabuli v drevenom ráme, ako denné menu nad výčapom. Odohrané kroky sú prečiarknuté kriedou a aktuálny je zakrúžkovaný žltou kriedou, takže význam nesie tvar, nielen farba. Bitky sú čiarky ako na krčmovom účte: 5 lokalít a „F“, aktuálna zakrúžkovaná. Pri ≥ 900 px osi je vedľa aj text „Bitka 1 z 6“, inak je v <code>aria-label</code> a <code>title</code>.</dd>
+    <dt>Štítok</dt><dd>Rozdelí sa ako v A: skóre do dlaždíc Špaky, súper na jeho dlaždicu.</dd>
+    <dt>Nové tokeny</dt><dd><code>--krieda</code> = mix <code>--text</code> 90 % s <code>--plocha-3</code>, <code>--tabula</code> = <code>--zelena</code> 8 % v <code>--pozadie</code>, <code>--ram-tabule</code> = <code>--akcent-tmavy</code> 42 % v <code>--plocha-3</code>. Všetky sú odvodené zo schémy (pravidlo: nové farby len cez tokeny zo <code>schemy.css</code>). Kontrast: krieda na tabuli ~13 : 1, odohraný krok (<code>--slaby-text</code>) ~5,7 : 1, budúci (<code>--tlmeny</code>) ~7,6 : 1.</dd>
+    <dt>Uvoľní na stole</dt><dd>Ako A: <b class="plus">+30 / +30 / +23 / +18 px</b>.</dd>
+    <dt>Zdvojenie</dt><dd><span class="ano">Nič.</span></dd>
+    <dt>Identita</dt><dd>Posilňuje ju: lišta pri stole prestane byť „webová“ a stane sa súčasťou krčmy. Mimo stola ostáva hlavička bez zmeny. Riziko je, že kriedový štýl nesmie skĺznuť do nečitateľnosti, preto je písmo Bitter, nie „ručné“ písmo.</dd>
+    <dt>Súbory</dt><dd>Ako A + <code>schemy.css</code> (3 tokeny), prípadne <code>styles.css</code>.</dd>
+  </dl>
+</article>
+
+<h3 style="margin-top:1.6em">Porovnanie</h3>
+<div class="tab-obal">
+<table>
+  <thead><tr><th>Variant</th><th>Os</th><th>Bitka X z Y</th><th>Skóre</th><th>Súper ●</th><th class="c">1920</th><th class="c">1600</th><th class="c">1440</th><th class="c">1366 × 650</th><th>Zdvojí sa</th></tr></thead>
+  <tbody>
+    <tr><td>Dnes</td><td>2. riadok baru</td><td>štítok + „Kolo 1 · lokalita 1/5“</td><td>štítok + dlaždice</td><td>štítok</td><td class="c">0</td><td class="c">0</td><td class="c">0</td><td class="c">0</td><td class="nie">krok, skóre, súper</td></tr>
+    <tr><td><b>A</b></td><td>stred lišty</td><td>hlava osi</td><td>dlaždice Špaky</td><td>jeho dlaždica</td><td class="c plus">+30</td><td class="c plus">+30</td><td class="c plus">+23</td><td class="c plus">+18</td><td class="ano">nič</td></tr>
+    <tr><td>B</td><td>pás pod lištou</td><td>hlava pásu</td><td>štítok + dlaždice</td><td>štítok</td><td class="c plus">+8</td><td class="c plus">+8</td><td class="c plus">+3</td><td class="c">0</td><td class="nie">skóre, súper</td></tr>
+    <tr><td>C</td><td>pilulka v lište</td><td>hlava pilulky</td><td>pilulka + dlaždice</td><td>jeho dlaždica</td><td class="c plus">+30</td><td class="c plus">+30</td><td class="c plus">+23</td><td class="c plus">+18</td><td class="nie">skóre</td></tr>
+    <tr><td>D</td><td>tabuľa v lište</td><td>čiarky na tabuli</td><td>dlaždice Špaky</td><td>jeho dlaždica</td><td class="c plus">+30</td><td class="c plus">+30</td><td class="c plus">+23</td><td class="c plus">+18</td><td class="ano">nič</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="tlmene">Čísla sú px na výšku, ktoré získa línia (plsť) oproti dnešku. Vychádzajú z výšok riadkov baru v <code>jbar.css</code> (30 / 30 / 23 / 18 px) a pásu vo variante B (22 / 22 / 20 / 18 px). Zrušená Nástenka uvoľní ~150 px na šírku v každom variante.</p>
+
+<h2 id="odporucanie">4. Odporúčanie a poradie</h2>
+<ol class="poradie">
+  <li><b>Najprv dokončiť vetvu <code>ui/nastenka-na-stole</code></b> (Nástenka z osi preč, dlaždica Špaky otvára nástenku). A nadväzuje na dlaždicu Špaky ako jediný domov skóre.</li>
+  <li><b>Variant A naraz:</b> os do lišty s hlavou „Bitka X z Y“, Šenok · Log · ? do lišty, bar na jeden riadok, mihnutie „+2“ do dlaždice Špaky, ●/○ na dlaždicu súpera, vydesení do dlaždíc Starší. Polovičný krok (os v lište a štítok tiež) by na chvíľu ukázal „Bitka 1 z 6“ dvakrát vedľa seba.</li>
+  <li><b>Overiť snímkami</b> pri 1366 × 650 vo finále (9 krokov) a vo výučbe (Melichar ukazuje na os).</li>
+  <li><b>Neskôr, ak sa Michalovi páči:</b> kriedový vzhľad D ako koža osi v lište. Mení len CSS a pridáva 3 tokeny.</li>
+</ol>
+
+<h2 id="otazky">5. Otázky na Michala</h2>
+<ol class="otazky">
+  <li><b>Skóre z lišty preč?</b> V #22 si chcel štítok so špakmi v hlavičke. A ho ruší v prospech dlaždíc Špaky (bez zdvojenia). Ak ho chceš v lište mať, zvoľ C.</li>
+  <li><b>Jedno počítanie:</b> súhlasíš, že os bude počítať „Bitka 1 z 6“ a „Kolo 1 · lokalita 1/5“ zmizne?</li>
+  <li><b>Šenok · Log · ? do lišty</b> vedľa „Partia ▾“, alebo ich chceš nechať v bare (napr. na pravom okraji strany súpera)?</li>
+  <li><b>„vydesení 0:0/4“ do dlaždíc Starší</b> (každému jeho číslo)?</li>
+  <li><b>Krieda (D)</b>: chceš krčmovú tabuľu, alebo ostať pri šípkových pilulkách, ktoré poznáš zo starej osi?</li>
+</ol>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var RES = {
+    1920: { w: 1920, h: 1080, hH: 64, j1: 52, j2: 30, pas: 22, bar: 92, ruka: 135, meno: true, okraj: 40, gap: 24, nizka: false },
+    1600: { w: 1600, h: 1000, hH: 64, j1: 52, j2: 30, pas: 22, bar: 88, ruka: 112, meno: true, okraj: 40, gap: 24, nizka: false },
+    1440: { w: 1440, h: 800, hH: 52, j1: 40, j2: 23, pas: 20, bar: 64, ruka: 110, meno: false, okraj: 36, gap: 16, nizka: true },
+    1366: { w: 1366, h: 650, hH: 52, j1: 34, j2: 18, pas: 18, bar: 56, ruka: 72, meno: false, okraj: 34, gap: 16, nizka: true }
+  };
+  var stav = { v: "dnes", r: 1366, s: "fin", pozn: true };
+
+  var SPAK = '<svg class="m-spak KTO" viewBox="0 0 28 14" aria-hidden="true"><path d="M2 8.5 17 3.2l1.6 4.6L3.6 13z" fill="#efe7da"/><path d="M17 3.2l6-2.1 1.6 4.6-6 2.1z" fill="currentColor"/><path d="M3.6 13 2 8.5" stroke="#8b7d6a" stroke-width="1.6"/></svg>';
+  function spak(kto) { return SPAK.replace("KTO", kto); }
+
+  function kroky(s) {
+    if (s === "draft") return {
+      hlavaDnes: "Kolo 1 · lokalita 1/5", hlava: "Bitka 1 z 6", fin: false, cislo: 1,
+      kroky: [
+        { d: "Voľba cieľa", k: "Voľba", mi: "Voľba", st: "hotovy" },
+        { d: "Draft", st: "akt" },
+        { d: "Zhromaždenie", k: "Zhrom.", mi: "Zhr.", st: "" },
+        { d: "Pitka", st: "" },
+        { d: "Bitka", st: "" }
+      ]
+    };
+    return {
+      hlavaDnes: "Kolo 6 · finále", hlava: "Finále", fin: true, cislo: 6,
+      kroky: [
+        { d: "Finále", st: "hotovy", lenDnes: true },
+        { d: "Draft", st: "hotovy" },
+        { d: "Zhromaždenie 1 z 3", k: "Zhrom. 1", mi: "Z1", st: "akt" },
+        { d: "Pitka 1", mi: "P1", st: "" },
+        { d: "Zhromaždenie 2", k: "Zhrom. 2", mi: "Z2", st: "" },
+        { d: "Pitka 2", mi: "P2", st: "" },
+        { d: "Zhromaždenie 3", k: "Zhrom. 3", mi: "Z3", st: "" },
+        { d: "Pitka 3", mi: "P3", st: "" },
+        { d: "Bitka", st: "" }
+      ]
+    };
+  }
+
+  function popis(k) {
+    // d.sk = má krátku verziu, d.mk = má mini verziu (container query v CSS)
+    var tr = "d" + (k.k ? " sk" : "") + (k.mi ? " mk" : "");
+    return '<span class="' + tr + '">' + k.d + "</span>" +
+      (k.k ? '<span class="k">' + k.k + "</span>" : "") +
+      (k.mi ? '<span class="mi">' + k.mi + "</span>" : "");
+  }
+
+  function os(s, trieda, sHlavou, dnes) {
+    var o = kroky(s);
+    var h = '<ol class="m-os ' + trieda + '" aria-label="Priebeh kola">';
+    if (sHlavou) h += '<li class="hlava' + (o.fin ? " fin" : "") + '">' + (dnes ? o.hlavaDnes : o.hlava) + "</li>";
+    o.kroky.forEach(function (k) {
+      if (k.lenDnes && !dnes) return;
+      h += '<li class="' + k.st + '">' + popis(k) + "</li>";
+    });
+    return h + "</ol>";
+  }
+
+  function tabula(s) {
+    var o = kroky(s);
+    var c = '<div class="m-carky" role="img" aria-label="' + (o.fin ? "Finále, bitka 6 z 6" : "Bitka 1 z 6") + '" title="' + (o.fin ? "Finále — bitka 6 z 6" : "Bitka 1 z 6") + '"><small>Bitky</small>';
+    for (var i = 1; i <= 5; i++) c += '<span class="c ' + (i < o.cislo ? "" : i === o.cislo ? "akt" : "bud") + '"></span>';
+    c += '<em class="' + (o.fin ? "akt" : "") + '">F</em><span class="txt">' + (o.fin ? "Finále" : "Bitka 1 z 6") + "</span></div>";
+    var l = "<ol>";
+    o.kroky.forEach(function (k) { if (!k.lenDnes) l += '<li class="' + k.st + '">' + popis(k) + "</li>"; });
+    return '<div class="m-tabula">' + c + l + "</ol></div>";
+  }
+
+  function skore(s) {
+    var n = s === "fin" ? 8 : 0;
+    return '<span class="m-skore">' + spak("ja") + '<b class="ja">' + n + '</b><span class="m-zmena" style="left:30px">+2</span><span class="dv">:</span><b>' + n + "</b>" + spak("su") + "</span>";
+  }
+
+  function nastroje(tag) {
+    return '<div class="m-nastroje' + (tag ? " tag" : "") + '"><span>Šenok <b>' + (stav.s === "fin" ? 8 : 0) + '</b></span><span class="bod">Log</span><span aria-label="Nápoveda">?</span></div>';
+  }
+
+  function hlavicka(v, R) {
+    var logo = '<div class="m-logo"><span class="m-pohar"></span>NA EX!</div>';
+    var ucet = '<div class="m-ucet"><span class="m-av"></span>' + (R.meno ? "<span>Dizajnér (AI)</span>" : "") + "</div>";
+    var partia = '<div class="m-partia">Partia <small>▾</small></div>';
+    var fin = stav.s === "fin";
+    var krok = '<span class="krok' + (fin ? " fin" : "") + '">' + (fin ? "Finále" : "Bitka 1 z 6") + "</span>";
+    var sup = '<span class="m-super">● Bot Rapavý Fero</span>';
+    var obsah;
+    if (v === "dnes") obsah = logo + '<div class="m-dist"></div><div class="m-stitok">' + krok + "<i></i>" + skore(stav.s) + "<i></i>" + sup + "</div>" + partia + ucet;
+    else if (v === "B") obsah = logo + '<div class="m-dist"></div><div class="m-stitok">' + skore(stav.s) + "<i></i>" + sup + "</div>" + partia + ucet;
+    else if (v === "A") obsah = logo + os(stav.s, "vlista", true, false) + nastroje(false) + partia + ucet;
+    else if (v === "C") obsah = logo + '<div class="m-zapas">' + os(stav.s, "", true, false) + skore(stav.s) + "</div>" + nastroje(false) + partia + ucet;
+    else obsah = logo + tabula(stav.s) + nastroje(true) + partia + ucet;
+    return '<div class="m-hlavicka" style="height:' + R.hH + 'px">' + obsah + "</div>";
+  }
+
+  function jbar(v, R) {
+    var fin = stav.s === "fin";
+    var ja = fin
+      ? '<div class="m-strana ja"><span class="kto">ty<small>na ťahu</small></span><span class="m-sq ja"></span><b>vyložíš ešte 1 kartu</b></div>'
+      : '<div class="m-strana ja"><span class="kto">ty<small>na ťahu</small></span><span class="tl2"><b style="color:var(--text)">4</b> v ruke · stavia šenok</span></div>';
+    var su = fin
+      ? '<div class="m-strana su"><b>vyloží ešte 1 kartu</b><span class="m-sq su"></span><span class="kto su">Bot Rapavý Fero</span></div>'
+      : '<div class="m-strana su"><span class="tl2">✓ vybral · <b style="color:var(--text)">4</b> v ruke</span><span class="kto su">Bot Rapavý Fero</span></div>';
+    var stred = fin
+      ? '<div class="m-stred"><small>ODHAD</small><span class="odh">Remíza</span><b>1 : 1</b><span class="tl2">ešte môže: <em>súper až 0 : 1</em></span><span class="m-cip"><span>akcie</span><span class="zap">karty</span></span></div>'
+      : '<div class="m-stred"><small>CIEĽ</small><span class="ciel">Kultúrny dom</span><span class="m-cip"><span>akcie</span><span class="zap">karty</span></span></div>';
+    var riadky = R.j1 + "px";
+    var h = '<div class="m-jst" style="height:' + R.j1 + 'px">' + ja + stred + su + "</div>";
+    if (v === "dnes") {
+      riadky += " " + R.j2 + "px";
+      h += '<div class="m-jos" style="--j2:' + R.j2 + 'px;height:' + R.j2 + 'px">' + os(stav.s, "", true, true) +
+        '<span class="m-desi">' + (R.nizka ? "" : "vydesení ") + '<b>0</b>:<b>0</b>/4</span>' +
+        '<div class="m-nastroje"><span>Šenok <b>' + (fin ? 8 : 0) + '</b></span><span class="m-rusi">Nástenka <span class="m-nast-bodky">' + (fin ? "●●●●●○" : "○○○○○◇") + '</span></span><span>Log</span><span>?</span></div></div>';
+    }
+    return '<div class="m-jbar" style="grid-template-rows:' + riadky + '">' + h + "</div>";
+  }
+
+  function pas(R) {
+    return '<div class="m-pas" style="--pas:' + R.pas + 'px;height:' + R.pas + 'px">' + os(stav.s, "", true, false) +
+      '<span class="m-desi">vydesení <b>0</b>:<b>0</b>/4</span>' + nastroje(false) + "</div>";
+  }
+
+  function dl(lb, hod, po, trieda) {
+    return '<div class="m-dl ' + (trieda || "") + '"><span class="lb">' + lb + '</span><span class="hod">' + hod + "</span>" + (po ? '<span class="po">' + po + "</span>" : "") + "</div>";
+  }
+
+  function bary(v, R) {
+    var fin = stav.s === "fin";
+    var n = fin ? 8 : 0;
+    var nove = v === "A" || v === "C" || v === "D";
+    var desi = function (k) { return nove ? (R.nizka ? "" : "vydesení <b>0</b>/4") : (k === "su" ? "+1 ak vyhrá" : "+6 ak vyhráš"); };
+    var starsiLb = function () { return nove && R.nizka ? 'Starší <span style="color:var(--zelena);letter-spacing:0">0/4</span>' : "Starší ▾"; };
+    var spaky = function (k) {
+      return '<div class="m-dl spaky ' + k + '"><span class="lb">Špaky ▾</span><span class="hod">' + spak(k) + n + "</span>" +
+        (nove && k === "ja" ? '<span class="m-zmena">+2</span>' : "") + "</div>";
+    };
+    var online = nove ? '<span class="m-online" title="Bot Rapavý Fero je pri stole"></span>' : "";
+    var suBar = '<div class="m-bar su" style="height:' + R.bar + 'px">' +
+      dl("Karty ▾", fin ? 5 : 4, "ruka · balíček · odhodené") + dl("Poldeci", 2, "plné · 0 vypité") + dl("Cigarety", fin ? 4 : 3, "1 do nového poldeci") +
+      dl("Absťák", 0, "neresti 0 / minule 3") + dl("Pečeň", "0/3", "v Pitke: nič") + dl("Dlhy", "0/10", "zadĺženie 0/2") +
+      dl(starsiLb(), '<span style="color:var(--cervena-text)">♥' + (fin ? 4 : 0) + "</span>", desi("su"), "starsi") + spaky("su") +
+      '<div class="m-dl hrac su"><div><div class="mn">Rapavý Fero</div><div class="rl">⛨ obranca</div></div><div class="m-hav su">RF' + online + "</div></div></div>";
+    var jaBar = '<div class="m-bar ja" style="height:' + R.bar + 'px">' +
+      '<div class="m-dl hrac ja"><div class="m-hav ja">J</div><div><div class="mn">Jano <span style="color:var(--tlmeny)">(ty)</span></div><div class="rl">⚔ útočník</div></div></div>' +
+      spaky("ja") + dl(starsiLb(), '<span style="color:var(--cervena-text)">♥' + (fin ? 1 : 0) + "</span>", desi("ja"), "starsi") +
+      dl("Dlhy", "0/10", "zadĺženie 0/2") + dl("Pečeň", "0/3", "v Pitke: nič") + dl("Absťák", fin ? 2 : 0, "neresti 0 / minule 2") +
+      dl("Cigarety", fin ? 1 : 3, "4 do nového poldeci") + dl("Poldeci", 2, "plné · 0 vypité") + dl("Karty ▾", fin ? 7 : 4, "ruka · balíček · odhodené") + "</div>";
+    return { su: suBar, ja: jaBar };
+  }
+
+  function vyskaPlste(v, R) {
+    var hore = R.hH + 1 + (v === "B" ? R.pas : 0) + R.j1 + (v === "dnes" ? R.j2 : 0);
+    return R.h - hore - 8 - R.bar - 22 - 12 - R.bar - 10 - R.ruka;
+  }
+
+  function vykresli() {
+    var R = RES[stav.r];
+    var v = stav.v;
+    var plst = vyskaPlste(v, R);
+    var zisk = plst - vyskaPlste("dnes", R);
+    var b = bary(v, R);
+    var kH = Math.min(Math.round(plst * 0.74), 300);
+    var kW = Math.round(kH * 0.68);
+    var karty = "";
+    for (var i = 0; i < 4; i++) karty += '<div class="m-karta' + (i === 0 || i === 3 ? " dole" : "") + '" style="width:' + kW + "px;height:" + kH + 'px"></div>';
+    var ruka = "";
+    var rW = R.nizka ? 92 : 120;
+    for (var j = 0; j < 7; j++) ruka += '<div class="m-karta" style="width:' + rW + "px;height:" + Math.round(rW * 1.42) + 'px"></div>';
+    var pokyn = stav.s === "fin"
+      ? "Potiahni kartu z ruky na stôl, alebo klikni na + na konci strany — vysunú sa karty, ktoré sa tam spoja. Alebo pasuj do Pitky (cigareta za každú nevyloženú kartu)."
+      : "Stavba šenku: vyber 4 karty na Smetisko (naspodok spoločného balíčka), zvyšné 4 pôjdu do Šenku.";
+    var html = '<div class="m' + (R.nizka ? " nizka" : "") + (stav.pozn ? "" : " bez-poznamok") + '" id="mock" style="width:' + R.w + "px;height:" + R.h + "px;--hH:" + R.hH + "px;--okraj-st:" + R.okraj + "px;--gap:" + R.gap + 'px">' +
+      hlavicka(v, R) + (v === "B" ? pas(R) : "") + jbar(v, R) +
+      '<div style="height:8px"></div>' + b.su + '<div style="height:22px"></div>' +
+      '<div class="m-plst" style="height:' + plst + 'px"><div class="m-pokyn">' + pokyn + "</div>" + karty +
+      '<div class="m-miera">línia (plsť): <b>' + plst + " px</b> na výšku" + (zisk > 0 ? ' · <b>+' + zisk + " px</b> oproti dnešku" : zisk === 0 && v !== "dnes" ? " · bez zisku" : "") + "</div></div>" +
+      '<div style="height:12px"></div>' + b.ja + '<div style="height:10px"></div>' +
+      '<div class="m-ruka" style="height:' + R.ruka + 'px">' + ruka + "</div>" +
+      poznamky(v, R) + "</div>";
+    var vnutro = document.getElementById("platno-vnutro");
+    vnutro.innerHTML = html;
+    mierka();
+    var mena = { dnes: "Dnes", A: "A · Os v strede lišty", B: "B · Tenký pás pod lištou", C: "C · Zápasová pilulka", D: "D · Tabuľa nad výčapom" };
+    document.getElementById("platno").setAttribute("aria-label", "Mockup herného stola: " + mena[v] + ", okno " + R.w + " × " + R.h);
+    document.getElementById("legenda").innerHTML =
+      "<span>Okno <b>" + R.w + " × " + R.h + "</b></span><span>hlavička <b>" + R.hH + " px</b></span>" +
+      (v === "B" ? "<span>pás osi <b>" + R.pas + " px</b></span>" : "") +
+      "<span>bar <b>" + (R.j1 + (v === "dnes" ? R.j2 : 0)) + " px</b>" + (v === "dnes" ? " (" + R.j1 + " + os " + R.j2 + ")" : " (1 riadok)") + "</span>" +
+      "<span>línia <b>" + plst + " px</b>" + (v !== "dnes" ? ' <span class="plus">(' + (zisk >= 0 ? "+" : "") + zisk + " px)</span>" : "") + "</span>";
+    document.querySelectorAll(".karta-variantu").forEach(function (k) { k.hidden = k.getAttribute("data-karta") !== v; });
+  }
+
+  function poznamky(v, R) {
+    var y = R.hH + 10;
+    if (v === "dnes") return '<div class="m-poznamka hore" style="left:' + Math.round(R.w * 0.3) + "px;top:" + (R.hH - 26) + 'px">prázdny stred lišty</div>' +
+      '<div class="m-poznamka hore" style="left:' + Math.round(R.w * 0.42) + "px;top:" + (R.hH + R.j1 + R.j2 + 8) + 'px">os kola = 2. riadok baru (' + R.j2 + " px)</div>";
+    if (v === "A") return '<div class="m-poznamka hore" style="left:' + (R.okraj + 170) + "px;top:" + y + 'px">' + (stav.s === "fin" ? "„Finále“ = hlava osi (raz, nie trikrát)" : "„Bitka 1 z 6“ = hlava osi") + " · skóre len v dlaždiciach Špaky</div>" +
+      '<div class="m-poznamka dole" style="right:' + (R.okraj + 6) + "px;top:" + (R.hH + R.j1 + 12 + R.bar - 4) + 'px">● súpera na jeho avatare</div>';
+    if (v === "B") return '<div class="m-poznamka hore" style="left:' + (R.okraj + 100) + "px;top:" + (R.hH + R.pas + 4) + 'px">pás osi pod lištou · štítok ostáva (skóre 2×)</div>';
+    if (v === "C") return '<div class="m-poznamka hore" style="left:' + (R.okraj + 170) + "px;top:" + y + 'px">štítok + os = jedna pilulka · skóre ostáva v lište (aj v dlaždiciach)</div>';
+    return '<div class="m-poznamka hore" style="left:' + (R.okraj + 170) + "px;top:" + y + 'px">čiarky bitiek ako na krčmovom účte · aktuálny krok zakrúžkovaný kriedou</div>';
+  }
+
+  function mierka() {
+    var platno = document.getElementById("platno");
+    var vnutro = document.getElementById("platno-vnutro");
+    var R = RES[stav.r];
+    var k = platno.clientWidth / R.w;
+    vnutro.style.transform = "scale(" + k + ")";
+    vnutro.style.width = R.w + "px";
+    platno.style.height = Math.round(R.h * k) + "px";
+  }
+
+  function skupina(attr, kluc, cislo) {
+    document.querySelectorAll("[data-" + attr + "]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var hod = b.getAttribute("data-" + attr);
+        stav[kluc] = cislo ? Number(hod) : hod;
+        document.querySelectorAll("[data-" + attr + "]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+        vykresli();
+      });
+    });
+  }
+  skupina("v", "v", false);
+  skupina("r", "r", true);
+  skupina("s", "s", false);
+  document.getElementById("poznamky").addEventListener("click", function (e) {
+    stav.pozn = !stav.pozn;
+    e.currentTarget.setAttribute("aria-pressed", String(stav.pozn));
+    vykresli();
+  });
+  document.getElementById("simuluj").addEventListener("click", function () {
+    var m = document.getElementById("mock");
+    if (!m) return;
+    m.classList.remove("blik");
+    void m.offsetWidth;
+    m.classList.add("blik");
+    setTimeout(function () { m.classList.remove("blik"); }, 2600);
+  });
+  window.addEventListener("resize", mierka);
+
+  // filter auditu
+  document.querySelectorAll("[data-filter]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var f = b.getAttribute("data-filter");
+      document.querySelectorAll("[data-filter]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      document.querySelectorAll("#audit-tab tbody tr").forEach(function (tr) { tr.hidden = f !== "vsetko" && tr.getAttribute("data-z") !== f; });
+    });
+  });
+
+  // Odkaz priamo na variant: #v=A&r=1920&s=draft
+  if (/v=|r=|s=/.test(location.hash)) {
+    var q = new URLSearchParams(location.hash.slice(1));
+    [["v", "v", false], ["r", "r", true], ["s", "s", false]].forEach(function (p) {
+      var h = q.get(p[0]);
+      var b = h === null ? null : document.querySelector("[data-" + p[0] + "=\"" + h + "\"]");
+      if (b) b.click();
+    });
+    setTimeout(function () { document.getElementById("varianty").scrollIntoView(); }, 0);
+  }
+  vykresli();
+})();
+</script>
+</body>
+</html>

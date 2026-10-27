@@ -44,6 +44,7 @@ import {
   priazenSila,
   obavanyHrac,
   spakyZaStarsich,
+  strachZ,
   vydesil,
   favourStarsieho,
   scorecardStarsieho,
@@ -298,12 +299,26 @@ export interface BitkaNaNastenke {
   /** Špaky po sekere, ktoré prepadli (remíza vo finále). */
   readonly prepadlo: number;
   readonly zaStarsich: readonly [number, number];
+  /**
+   * Kto zo zaStarsich koľko dal (Michal 2026-10-27), v poradí ukazovateľov; súčet
+   * = zaStarsich. Verejné ako starší a markery. Chýba v záznamoch spred 2026-10-27.
+   */
+  readonly zaStarsichRozpis?: readonly [readonly SpakyOdStarsieho[], readonly SpakyOdStarsieho[]];
   /** Špaky, ktoré hráčom zhoreli pri exekúcii. */
   readonly exekutor: readonly [number, number];
   /** Po finále: držiteľ prebytku dostane špaky namiesto posunu markerov. */
   readonly prebytok: readonly [number, number];
   /** Špaky oboch po bitke (pred záverečnou Cirhózou a výkupným). */
   readonly spakyPo: readonly [number, number];
+}
+
+/** Položka rozpisu špakov za starších po bitke (BitkaNaNastenke.zaStarsichRozpis). */
+export interface SpakyOdStarsieho {
+  /** Ukazovateľ staršieho; null = Noviny v Dedičstve (+1, keď sa hráča bojí viac starších). */
+  readonly elderId: string | null;
+  /** Karta, ktorej meno sa ukáže: čo leží na ukazovateli (aj náhrada), alebo Noviny. */
+  readonly defId: string;
+  readonly spaky: number;
 }
 
 export interface KoniecHry {
@@ -4507,6 +4522,19 @@ export function pocetBojacichSa(starsi: readonly ElderState[], p: PlayerId): num
 }
 
 /**
+ * Noviny v Dedičstve hráča p: špak navyše k špakom za starších, keď sa ho bojí
+ * viac starších ako súpera. Bitka aj odhad „do konca“ (spakyTeraz) — odhad ich
+ * predtým nerátal (playtest 20261026-173610-3).
+ */
+export function novinyNavyse(
+  s: { readonly starsi: readonly ElderState[]; readonly hraci: readonly [{ readonly dedicstvo: readonly CardInstance[] }, { readonly dedicstvo: readonly CardInstance[] }] },
+  p: PlayerId,
+): number {
+  if (!s.hraci[p].dedicstvo.some((k) => k.defId === "noviny")) return 0;
+  return pocetBojacichSa(s.starsi, p) > pocetBojacichSa(s.starsi, opponentOf(p)) ? 1 : 0;
+}
+
+/**
  * Špaky po výsledku bitky (v6, Michal 2026-10-26), krok 4a a 4b:
  *  - víťaz dostane odohrané Pitky mínus rozdiel Absťákov (aspoň 1) a špaky zo
  *    sekery; pri sekere čakajú špaky kola na víťaza ďalšej bitky, vo finále prepadnú,
@@ -4553,11 +4581,20 @@ function vyplatSpaky(s: MutState, data: GameData, outcome: BattleOutcome, abstak
   // starších nedostane nič, aby náskok nerástol ako snehová guľa. Noviny rovnako
   // (Michal 2026-10-27): len víťazovi, pri sekere obom.
   const zaStarsich: [number, number] = [0, 0];
+  const rozpis: [SpakyOdStarsieho[], SpakyOdStarsieho[]] = [[], []];
   const komu = spakyZaStarsichPre(vitaz);
-  for (const p of komu) zaStarsich[p] = spakyZaStarsich(s.starsi, p);
   for (const p of komu) {
-    if (vDedicstve(s as GameState, p, "noviny") && pocetBojacichSa(s.starsi as ElderState[], p) > pocetBojacichSa(s.starsi as ElderState[], opponentOf(p))) {
-      zaStarsich[p] += 1;
+    zaStarsich[p] = spakyZaStarsich(s.starsi, p);
+    for (const e of s.starsi) {
+      const n = strachZ(e, p);
+      if (n > 0) rozpis[p].push({ elderId: e.elderId, defId: e.karta.defId, spaky: n });
+    }
+  }
+  for (const p of komu) {
+    const noviny = novinyNavyse(s as GameState, p);
+    if (noviny > 0) {
+      zaStarsich[p] += noviny;
+      rozpis[p].push({ elderId: null, defId: "noviny", spaky: noviny });
       events.push({ type: "log", text: `Noviny: hráča ${p + 1} sa bojí viac starších ako súpera — špak navyše.` });
     }
     s.spaky[p] += zaStarsich[p];
@@ -4578,6 +4615,7 @@ function vyplatSpaky(s: MutState, data: GameData, outcome: BattleOutcome, abstak
     abstakZrazka,
     prepadlo,
     zaStarsich,
+    zaStarsichRozpis: rozpis,
     exekutor: [b.exekutor[0], b.exekutor[1]],
     prebytok: [0, 0],
     spakyPo: [s.spaky[0], s.spaky[1]],
@@ -4846,9 +4884,12 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
       hrac(s, p).abstakyZiskane = (s.hraci[p].abstakyZiskane ?? 0) + 1;
       // Absťák sa rovno priznáva — a priznanie kliatby dáva kartu (Michal 2026-10-19).
       const dobral = tahaj(s, p, 1, events).length;
+      // Manželku menovať len vtedy, keď Absťák priniesla ona — pri menej nerestiach
+      // by prišiel aj bez nej (playtest 20261027-105422).
+      const vdakaManzelke = manzelka > 0 && teraz >= minule;
       events.push({
         type: "log",
-        text: `Hráč ${p + 1} získava Absťák: v kole mal ${textNeresti(teraz)}, v predošlom ${textNeresti(minule)}${manzelka > 0 ? ` (Milujúca manželka: Absťák aj pri ${textNeresti(minule + manzelka - 1)})` : ""}. Každý Absťák mu v bitke uberie 1 tuhé.${dobral > 0 ? " Za priznaný Absťák si doberá kartu." : ""}`,
+        text: `Hráč ${p + 1} získava Absťák: v kole mal ${textNeresti(teraz)}, v predošlom ${textNeresti(minule)}${vdakaManzelke ? ` (Milujúca manželka: Absťák aj pri ${textNeresti(minule + manzelka - 1)})` : ""}. Každý Absťák mu v bitke uberie 1 tuhé.${dobral > 0 ? " Za priznaný Absťák si doberá kartu." : ""}`,
       });
     } else if (s.kolo > 1 && teraz > minule) {
       const idx = s.hraci[p].priznane.findIndex((k) => k.defId === "abstak");

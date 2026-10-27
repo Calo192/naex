@@ -20,6 +20,7 @@ import type {
   ZdrojeAkcii,
 } from "@naex/core";
 import { KONSTANTY, battleOutcome, cenaFajceniaHraca, jeCielLokalita, limitBuduceKolo, limitZhromazdenia, pocet, tvar } from "@naex/core";
+import { ZMENA_SVIETI_MS, klikKrokuOsi, krokPartie, minSek, textZmeny } from "./stitokPartie.ts";
 import type { Rod } from "@naex/core";
 import type { Sada } from "@naex/tvorba";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
@@ -444,6 +445,42 @@ export interface HracDoskaProps {
    * špakov; kým stôl ukazuje líniu starších, nahradí ich bar starších (zdroje skryje hra.css).
    */
   readonly rezim?: "spaky" | "starsi" | undefined;
+  /** Beží počítadlo bitky — Špaky ešte ukážu staré číslo (stôl prezradí výsledok sám). */
+  readonly pocitadloBezi?: boolean | undefined;
+  /** Spojenie súpera (človek) — bodka na avatare, odpojený aj s časom pod menom. */
+  readonly spojenie?: { readonly pripojeny: boolean; readonly odpojenyOd: number | null } | undefined;
+}
+
+/**
+ * Špaky v dlaždici (Michal 2026-10-27, dizajn timeline-lista A — skóre už nie je v lište):
+ * kým beží počítadlo bitky, ostane staré číslo; potom krátko svieti zmena („+2“).
+ */
+function useSpakyVDlazdici(n: number, pozdrz: boolean): { readonly zobrazene: number; readonly zmena: { readonly n: number; readonly id: number } | null } {
+  const [zobrazene, setZobrazene] = useState(n);
+  const [zmena, setZmena] = useState<{ readonly n: number; readonly id: number } | null>(null);
+  useEffect(() => {
+    if (pozdrz || zobrazene === n) return;
+    setZmena((z) => ({ n: n - zobrazene, id: (z?.id ?? 0) + 1 }));
+    setZobrazene(n);
+  }, [n, pozdrz, zobrazene]);
+  useEffect(() => {
+    if (zmena === null) return;
+    const t = setTimeout(() => setZmena(null), ZMENA_SVIETI_MS);
+    return () => clearTimeout(t);
+  }, [zmena]);
+  return { zobrazene, zmena };
+}
+
+/** Čas od odpojenia súpera — tiká len kým je odpojený. */
+function useOdpojenyCas(odpojenyOd: number | null, bezi: boolean): number {
+  const [teraz, setTeraz] = useState(() => Date.now());
+  useEffect(() => {
+    setTeraz(Date.now());
+    if (!bezi) return;
+    const t = setInterval(() => setTeraz(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, [bezi]);
+  return odpojenyOd === null ? 0 : Math.max(0, teraz - odpojenyOd);
 }
 
 
@@ -474,9 +511,13 @@ export function HracDoska({
   spakyKlik,
   karty,
   rezim,
+  pocitadloBezi = false,
+  spojenie,
 }: HracDoskaProps) {
   const hrac = view.hraci[p];
   const ja = p === view.ja;
+  const spakyVidno = useSpakyVDlazdici(view.spaky[p], pocitadloBezi);
+  const odpojenyMs = useOdpojenyCas(spojenie?.odpojenyOd ?? null, spojenie !== undefined && !spojenie.pripojeny);
   const meno = info?.meno ?? `Hráč ${p + 1}`;
   // Stavbu šenku hrajú obaja naraz — „na ťahu“ je každý, kto ešte nevybral.
   const naTahu =
@@ -534,6 +575,14 @@ export function HracDoska({
       <div className="doska-hrac">
         <KartaHraca info={info} meno={meno} ja={ja}>
           <Avatar meno={meno} avatar={info?.avatar ?? null} velkost={60} />
+          {spojenie !== undefined && (
+            <span
+              className={`avatar-spojenie ${spojenie.pripojeny ? "online" : "offline"}`}
+              role="img"
+              aria-label={spojenie.pripojeny ? "pri stole" : "odpojený"}
+              title={spojenie.pripojeny ? `${meno} je pri stole` : `${meno} je odpojený`}
+            />
+          )}
         </KartaHraca>
         <div>
           <strong className="doska-meno">
@@ -552,6 +601,7 @@ export function HracDoska({
             }
             frajerina={info?.frajerina}
           />
+          {spojenie !== undefined && !spojenie.pripojeny && <span className="doska-odpojeny">○ odpojený {minSek(odpojenyMs)}</span>}
           {/* Nepriznané kliatby pod menom; priznané a Dedičstvo sú v dlaždici KARTY (Michal 2026-10-23, #76). */}
           {kliatby.dlh + kliatby.cirhoza > 0 && (
             <span className="doska-oblast">
@@ -750,7 +800,12 @@ export function HracDoska({
           <span className="zdroj-nazov">Špaky {spakyKlik.stlacene ? "▴" : "▾"}</span>
           <span className="zdroj-hodnota">
             {/* Michal 2026-10-26: len piktogram, nadpis a číslo — rozpis je na nástenke za ▾. */}
-            <PocetSpakov n={body.spaky[p]} kto={ja ? "moj" : "superov"} titul="" />
+            <PocetSpakov n={spakyVidno.zobrazene} kto={ja ? "moj" : "superov"} titul="" />
+            {spakyVidno.zmena !== null && (
+              <span key={spakyVidno.zmena.id} className={`spaky-zmena${spakyVidno.zmena.n < 0 ? " minus" : ""}`}>
+                {textZmeny(spakyVidno.zmena.n)}
+              </span>
+            )}
           </span>
         </button>
         <DlazdicaStarsich view={view} p={p} zaStarsich={body.zaStarsich[p]} starsi={starsi} />
@@ -1054,14 +1109,19 @@ export interface BitkaPanelProps {
 
 export interface HrozbaBitky {
   readonly kto: "ja" | "su";
+  /** NA EX z kariet na stole (predvolené), alebo rozsah nepridelených Pohoršení. */
+  readonly zdroj?: "naex" | "pohorsenia";
   /** Krátko do riadku bitky: „Súper ešte môže: tuhé 0 : 8“. */
   readonly kratko: string;
   /** Najkratšie, keď hrozbu majú obaja a idú do jedného riadku: „súper až 0 : 8“. */
   readonly mini: string;
   /** Celé znenie (titulok): aj karta a prebytok. */
   readonly cele: string;
-  readonly uid: number;
+  /** Karta v línii, ktorú riadok zvýrazní; Pohoršenia žiadnu nemajú. */
+  readonly uid: number | null;
 }
+
+const klucHrozby = (h: HrozbaBitky): string => `${h.kto}-${h.zdroj ?? "naex"}`;
 
 /**
  * Riadky hrozby — v celom paneli pod verdiktom. V riadku bitky (pevná výška pásu)
@@ -1080,10 +1140,10 @@ function RiadkyHrozby({
   if (hrozby === undefined || hrozby.length === 0) return null;
   const cast = (h: HrozbaBitky, text: string) => (
     <span
-      key={h.kto}
+      key={klucHrozby(h)}
       className={`hrozba-bitky ${h.kto}`}
       title={h.cele}
-      onMouseEnter={() => ukazHrozbu?.(h.uid)}
+      onMouseEnter={() => h.uid !== null && ukazHrozbu?.(h.uid)}
       onMouseLeave={() => ukazHrozbu?.(null)}
     >
       {text}
@@ -1092,8 +1152,9 @@ function RiadkyHrozby({
   if (!jedenRiadok) return <>{hrozby.map((h) => cast(h, h.kratko))}</>;
   return (
     <span className="hrozba-bitky-riadok" data-vyucba="hrozba" title={hrozby.map((h) => h.cele).join("\n")}>
-      ešte môže: {hrozby.map((h, i) => (
-        <span key={h.kto}>
+      {hrozby[0]?.zdroj === "pohorsenia" ? "" : "ešte môže: "}
+      {hrozby.map((h, i) => (
+        <span key={klucHrozby(h)}>
           {i > 0 && " · "}
           {cast(h, h.mini)}
         </span>
@@ -1170,7 +1231,7 @@ export function tipOdhadu(props: BitkaPanelProps, stavka: StavkaBitkyCisla | nul
             : `prebytok ${prebytok}${prebytokNaRozdelenie < prebytok ? ` − Puška = ${prebytokNaRozdelenie}` : ""} → ${prebytokDrzi === ja ? "tebe" : mena[su]} · ${posunov} ${posunyText} (posun stojí ${cenaPosunu}${cenaPosunu > 1 ? ", Miňištrant" : ""})`}
         </span>
         {(props.hrozby ?? []).map((h) => (
-          <span key={h.kto} className="tip-riadok">
+          <span key={klucHrozby(h)} className="tip-riadok">
             {h.cele}
           </span>
         ))}
@@ -1260,6 +1321,9 @@ interface KrokKola {
   readonly id: string;
   readonly nazov: string;
   readonly tip: TipObsah;
+  /** Kratšie popisy pre úzku os (container query): stredný „Zhrom. 2“, najkratší „Z2“. */
+  readonly stredne?: string;
+  readonly kratke?: string;
 }
 
 function KrokOsi({
@@ -1267,11 +1331,14 @@ function KrokOsi({
   trieda,
   refEl,
   onKlik,
+  pridavok,
 }: {
   readonly krok: KrokKola;
   readonly trieda: string;
   readonly refEl?: RefObject<HTMLLIElement | null>;
   readonly onKlik?: (() => void) | undefined;
+  /** Za názvom (hlava osi: „· na sekere 2 š.“). */
+  readonly pridavok?: ReactNode;
 }) {
   const { tip: okno, ukaz, skry } = useTip();
   return (
@@ -1286,46 +1353,67 @@ function KrokOsi({
       onFocus={(e) => ukaz(e.currentTarget, krok.tip)}
       onBlur={skry}
     >
-      {krok.nazov}
+      {/* Aktuálny krok ostáva celý; ostatné sa na úzkej osi skrátia (hra.css, container os-kola). */}
+      {trieda.includes("aktualny") || (krok.stredne === undefined && krok.kratke === undefined) ? (
+        krok.nazov
+      ) : (
+        <>
+          <span className="krok-dlhe">{krok.nazov}</span>
+          <span className="krok-stredne">{krok.stredne ?? krok.nazov}</span>
+          <span className="krok-kratke">{krok.kratke ?? krok.stredne ?? krok.nazov}</span>
+        </>
+      )}
+      {pridavok}
       {okno}
     </li>
   );
 }
 
-export function PriebehKola({ view, onBitka }: { readonly view: ClientState; readonly onBitka?: (() => void) | undefined }) {
+export function PriebehKola({
+  view,
+  onBitka,
+  onDraft,
+}: {
+  readonly view: ClientState;
+  readonly onBitka?: (() => void) | undefined;
+  /** Klik na krok Draft mimo Draftu ukáže šenok na pozretie (Michal 2026-10-27 — tlačidlo Šenok zaniklo). */
+  readonly onDraft?: (() => void) | undefined;
+}) {
   const pitiek = Math.max(1, view.pitkyCelkom);
   const viac = pitiek > 1;
   const pocetPozn =
     "Pitiek je 1 + menší z počtov aktivovaných akcií karty v strede na jej dvoch stranách — počet sa mení, keď hráči vykladajú karty k lokalite.";
+  // Vo finále je „Finále“ hlavou osi (krokPartie) — krok „Finále“ by ho opakoval (dizajn timeline-lista, U2).
+  const finale = view.ciel?.typ === "finale";
+  const tipFinale: TipObsah = {
+    nadpis: "Finále",
+    text: (
+      <>
+        Posledná bitka bez lokality, vždy {KONSTANTY.FINALE_PITKY} Pitky. Útočí, kto má viac špakov (pri rovnosti porazený poslednej
+        bitky); jeho prvá karta leží v strede línie a ďalšie sa kladú na jej dve strany. Kraje ani prevaha vo finále nie sú.
+        <span className="tip-riadok">Po finále dajú starší ešte raz špaky, prebytok sa zmení na špaky a odpočíta sa nepriznaná Cirhóza.</span>
+      </>
+    ),
+  };
   const kroky: KrokKola[] = [
-    view.ciel?.typ === "finale"
-      ? {
-          id: "volbaCiela",
-          nazov: "Finále",
-          tip: {
-            nadpis: "Finále",
-            text: (
-              <>
-                Posledná bitka bez lokality, vždy {KONSTANTY.FINALE_PITKY} Pitky. Útočí, kto má viac špakov (pri rovnosti porazený poslednej
-                bitky); jeho prvá karta leží v strede línie a ďalšie sa kladú na jej dve strany. Kraje ani prevaha vo finále nie sú.
-                <span className="tip-riadok">Po finále dajú starší ešte raz špaky, prebytok sa zmení na špaky a odpočíta sa nepriznaná Cirhóza.</span>
-              </>
-            ),
+    ...(finale
+      ? []
+      : [
+          {
+            id: "volbaCiela",
+            nazov: "Voľba cieľa",
+            stredne: "Voľba",
+            tip: {
+              nadpis: "Voľba cieľa",
+              text: (
+                <>
+                  Obranca (víťaz poslednej bitky) vyberie lokalitu a natočí ju.
+                  <span className="tip-riadok">Natočenie určuje, ktoré akcie lokality sú obrátené ku ktorej strane.</span>
+                </>
+              ),
+            },
           },
-        }
-      : {
-          id: "volbaCiela",
-          nazov: "Voľba cieľa",
-          tip: {
-            nadpis: "Voľba cieľa",
-            text: (
-              <>
-                Obranca (víťaz poslednej bitky) vyberie lokalitu a natočí ju.
-                <span className="tip-riadok">Natočenie určuje, ktoré akcie lokality sú obrátené ku ktorej strane.</span>
-              </>
-            ),
-          },
-        },
+        ]),
     {
       id: "draft",
       nazov: "Draft",
@@ -1345,6 +1433,7 @@ export function PriebehKola({ view, onBitka }: { readonly view: ClientState; rea
               žltá 3), súper dostane
               v bitke Pohoršenia (o koľko marker išiel do stredu). Výhra = starší je jeho; prehra = odhodí poldeci.
             </span>
+            {view.faza !== "draft" && <span className="tip-stav">Klik ukáže, čo ostalo v šenku ({view.senok.length}).</span>}
           </>
         ),
       },
@@ -1356,6 +1445,8 @@ export function PriebehKola({ view, onBitka }: { readonly view: ClientState; rea
       {
         id: `zhromazdenie-${i}`,
         nazov: `Zhromaždenie${cislo}`,
+        stredne: `Zhrom.${cislo}`,
+        kratke: viac ? `Z${i}` : "Z",
         tip: {
           nadpis: `Zhromaždenie${viac ? ` ${i} z ${pitiek}` : ""}`,
           text: (
@@ -1375,6 +1466,7 @@ export function PriebehKola({ view, onBitka }: { readonly view: ClientState; rea
       {
         id: `pitka-${i}`,
         nazov: `Pitka${cislo}`,
+        kratke: viac ? `P${i}` : "P",
         tip: {
           nadpis: `Pitka${viac ? ` ${i} z ${pitiek}` : ""}`,
           text: (
@@ -1433,7 +1525,8 @@ export function PriebehKola({ view, onBitka }: { readonly view: ClientState; rea
     el.scrollIntoView({ inline: "center", block: "nearest", behavior: rychlo ? "auto" : "smooth" });
   }, [aktualneId, view.kolo]);
   const odohrane = view.nastenka.filter((b) => b.lokalita !== null).length;
-  const finale = view.ciel?.typ === "finale";
+  // Hlava osi počíta postup partie raz a jednotne s menu Partia: „Bitka 2 z 6“, posledná „Finále“.
+  const hlava = krokPartie(view);
   const polozky: ReactNode[] = [];
   // Po konci hry os nestojí na „Voľbe cieľa“ ďalšieho kola, ktoré už nebude — ukáže koniec.
   if (view.koniec !== null) {
@@ -1476,20 +1569,27 @@ export function PriebehKola({ view, onBitka }: { readonly view: ClientState; rea
         }
         trieda={i === aktualny ? "aktualny" : i < aktualny ? "hotovy" : ""}
         {...(i === aktualny ? { refEl: aktualnyRef } : {})}
-        onKlik={k.id === "bitka" ? onBitka : undefined}
+        onKlik={{ ucetBitky: onBitka, senok: onDraft, nic: undefined }[klikKrokuOsi(k.id, view.faza) ?? "nic"]}
       />,
     );
   }
   return (
     <ol className="priebeh-kola" aria-label={`Kolo ${view.kolo}`} data-vyucba="os-kola">
-      <li
-        className="priebeh-kolo"
-        title={`Hrá sa o ${pocet(view.lokalitCelkom, "lokalitu", "lokality", "lokalít")} a finále; ${view.lokalityVHre.length >= 2 && view.lokalityVHre.length <= 4 ? "zostávajú" : "zostáva"} ${pocet(view.lokalityVHre.length, "nevybraná", "nevybrané", "nevybraných")}${view.spakyNaSekere > 0 ? `, na sekere ${view.spakyNaSekere} špakov` : ""}.`}
-      >
-        Kolo {view.kolo}
-        {view.koniec === null && <> · {finale ? "finále" : `lokalita ${Math.min(view.lokalitCelkom, odohrane + 1)}/${view.lokalitCelkom}`}</>}
-        {view.spakyNaSekere > 0 && <span className="priebeh-sekera"> · na sekere {view.spakyNaSekere} š.</span>}
-      </li>
+      <KrokOsi
+        krok={{
+          id: "hlava",
+          nazov: hlava.text,
+          kratke: hlava.kratko,
+          tip: finale
+            ? tipFinale
+            : {
+                nadpis: hlava.text,
+                text: `Kolo ${view.kolo}, lokalita ${Math.min(view.lokalitCelkom, odohrane + 1)} z ${view.lokalitCelkom}. Hrá sa o ${pocet(view.lokalitCelkom, "lokalitu", "lokality", "lokalít")} a finále; ${view.lokalityVHre.length >= 2 && view.lokalityVHre.length <= 4 ? "zostávajú" : "zostáva"} ${pocet(view.lokalityVHre.length, "nevybraná", "nevybrané", "nevybraných")}${view.spakyNaSekere > 0 ? `, na sekere ${view.spakyNaSekere} špakov` : ""}.`,
+              },
+        }}
+        trieda={`priebeh-kolo${finale ? " finale" : ""}`}
+        pridavok={view.spakyNaSekere > 0 ? <span className="priebeh-sekera"> · na sekere {view.spakyNaSekere} š.</span> : undefined}
+      />
       {polozky}
     </ol>
   );

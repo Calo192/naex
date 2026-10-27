@@ -244,6 +244,21 @@ describe("Milujúca manželka v7 (M2): latku Absťáku už neposúva", () => {
     const po = apply(data, s, { type: "skipPohreb" }, 0).state;
     expect(po.hraci[0].priznane.filter((k) => k.defId === "abstak")).toHaveLength(0);
   });
+
+  it("log menuje Manželku, len keď Absťák priniesla ona (playtest 20261027-105422)", () => {
+    const logAbstaku = (teraz: number): string => {
+      const s = predKoncomBitky(47, (st) => sHracom(st, 0, { nerestiMinuleKolo: 2, nerestiTotoKolo: teraz, priznane: [inst("milujuca_manzelka")] }));
+      const { state, events } = apply(data, s, { type: "skipPohreb" }, 0);
+      expect(state.hraci[0].priznane.filter((k) => k.defId === "abstak")).toHaveLength(1);
+      const log = events.find((e) => e.type === "log" && e.text.startsWith("Hráč 1 získava Absťák"));
+      return log?.type === "log" ? log.text : "";
+    };
+    // 2 = 2: Absťák len vďaka Manželke.
+    expect(logAbstaku(2)).toContain("Milujúca manželka");
+    // 1 < 2: Absťák by prišiel aj bez nej.
+    expect(logAbstaku(1)).toContain("v kole mal 1 nerest, v predošlom 2 neresti.");
+    expect(logAbstaku(1)).not.toContain("Milujúca manželka");
+  });
 });
 
 // --- Dedičstvo -------------------------------------------------------------------
