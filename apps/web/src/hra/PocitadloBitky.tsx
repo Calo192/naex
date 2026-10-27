@@ -146,6 +146,7 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledok
             vlnaKarty={vlnaKarty}
             vlnaRusenia={p.vlnaBonusov}
             vlnaUcinku={p.vlnaZrazok}
+            mena={mena}
           />
         )}
         <div className="pocitadlo-pata">

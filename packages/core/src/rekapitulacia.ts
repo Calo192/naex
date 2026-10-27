@@ -11,7 +11,7 @@ import type { GameData } from "./data.ts";
 import type { BitkaNaNastenke, Event, RozpisPoskodenia } from "./engine.ts";
 import type { ActionSums, LineEval, LineState, ZdrojAkcie } from "./partia.ts";
 import { evaluateLine } from "./partia.ts";
-import type { PlayerId } from "./types.ts";
+import type { Action, PlayerId } from "./types.ts";
 
 type Dvojica = readonly [number, number];
 
@@ -46,6 +46,21 @@ export interface NaexRekapitulacie {
 export type AkciaTuha = "Rana" | "Pecka" | "Petelica";
 export const AKCIE_TUHE: readonly AkciaTuha[] = ["Rana", "Pecka", "Petelica"];
 
+/**
+ * Záverečná odhalená na konci Pitky (hlásenie Michala 2026-10-27: „nevidel som, čo
+ * vlastne zahral“) — karta a čo urobila. Verejné: karta je už lícom hore.
+ */
+export interface ZaverecnaOdhalena {
+  readonly majitel: PlayerId;
+  readonly strana: PlayerId;
+  readonly uid: number;
+  readonly defId: string;
+  /** Akcie karty aktívne v tejto Pitke (jednotky, zdvojená = 2), aj Odpor a Posilnenie. */
+  readonly akcie: Readonly<Partial<Record<Action, number>>>;
+  /** Hlášky motora pri otočení — Nástup a odložené efekty (Svokra, Hrobár…); len verejné. */
+  readonly efekty: readonly string[];
+}
+
 /** Súčet Pitiek kola — blok „z Pitiek kola“ v rekapitulácii bitky. */
 export interface PitkyKola {
   readonly pocet: number;
@@ -53,6 +68,8 @@ export interface PitkyKola {
   readonly dlhy: Dvojica;
   readonly pecen: Dvojica;
   readonly cirhozy: Dvojica;
+  /** Záverečné odhalené v Pitkách kola (chýba v starších záznamoch). */
+  readonly zaverecne?: readonly ZaverecnaOdhalena[];
 }
 
 export interface RekapitulaciaBitky {
@@ -121,6 +138,8 @@ export interface RekapitulaciaPitky {
   };
   /** Aktívne Vízie — koľko vrchných kariet hráč prezrie. */
   readonly vizia: Dvojica;
+  /** Záverečné otočené na konci tejto Pitky (chýba, keď žiadna neležala). */
+  readonly zaverecne?: readonly ZaverecnaOdhalena[];
 }
 
 const nula = (v: number | undefined): number => v ?? 0;
@@ -235,13 +254,27 @@ export function rekapitulaciaBitky(data: GameData, v: VstupRekapitulacieBitky): 
 /** Súčet Pitiek kola z ich rekapitulácií. */
 export function spocitajPitkyKola(rekapy: readonly RekapitulaciaPitky[]): PitkyKola {
   const sucet = (f: (r: RekapitulaciaPitky, p: PlayerId) => number): Dvojica => dvojica((p) => rekapy.reduce((a, r) => a + f(r, p), 0));
+  const zaverecne = rekapy.flatMap((r) => r.zaverecne ?? []);
   return {
     pocet: rekapy.length,
     zadlzenie: sucet((r, p) => r.zadlzenie.pred[p] + r.zadlzenie.zoStola[p]),
     dlhy: sucet((r, p) => r.zadlzenie.dlhy[p]),
     pecen: sucet((r, p) => pecenPitky(r, p)),
     cirhozy: sucet((r, p) => r.pecen.cirhozy[p]),
+    ...(zaverecne.length > 0 ? { zaverecne } : {}),
   };
+}
+
+/** Aktívne akcie karty v línii — čo Záverečná v Pitke dávala, aj Odpor a Posilnenie na spoji. */
+export function akcieKartyVLinii(linia: LineEval, uid: number): Partial<Record<Action, number>> {
+  const out: Partial<Record<Action, number>> = {};
+  const ev = linia.cards.get(uid);
+  for (const x of ev === undefined ? [] : [...ev.left, ...ev.right]) {
+    if (x === null || x.stav !== "aktivna") continue;
+    const a = x.ako ?? x.action;
+    out[a] = (out[a] ?? 0) + x.nasobok;
+  }
+  return out;
 }
 
 /** Všetka pečeň hráča v Pitke (pitie, NA EX, karty na stole). */

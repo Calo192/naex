@@ -11,7 +11,7 @@
 //
 // Kódy ukončenia: 0 = ok, 1 = chyba (aj odmietnutý ťah), 2 = vypršal čas čakania.
 
-import { appendFileSync, mkdirSync, readFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import WebSocket from "ws";
 import type { ActionSums, CardInstance, CenyKliatob, ClientState, DopadyNahladu, Command, ElderState, Event, GameData, GameState, PlayerId, Pohlavie, Rod, Slot, VerejnyStav } from "@naex/core";
@@ -125,6 +125,8 @@ interface Spojenie {
   /** null = partia ešte nezačala, súper sa nepripojil. */
   view: ClientState | null;
   mena: string[];
+  /** História udalostí miestnosti z pripojenia (server ju posiela pri každom návrate). */
+  historia: Event[];
   /** Ďalšia správa zo servera (state, error, alebo zatvorené spojenie). */
   dalsia(timeoutMs: number): Promise<Sprava | null>;
 }
@@ -150,8 +152,10 @@ async function pripoj(): Promise<Spojenie> {
   let sada: Sada | null = null;
   let zacata = true;
   const mena = ["Hráč 1", "Hráč 2"];
+  const historia: Event[] = [];
   ws.on("message", (raw) => {
     const m = JSON.parse(String(raw)) as { type: string; [k: string]: unknown };
+    if (m.type === "historia") historia.splice(0, historia.length, ...(m.events as Event[]));
     if (m.type === "privitanie") {
       sada = m.sada as Sada;
       zacata = m.started === true;
@@ -193,12 +197,12 @@ async function pripoj(): Promise<Spojenie> {
   while (sada === null && fronta.length === 0 && Date.now() < koniec) await new Promise((ok) => setTimeout(ok, 100));
   if (fronta[0]?.typ === "error") throw new Error(fronta[0].text);
   if (sada === null) throw new Error("Server neposlal privítanie.");
-  if (!zacata && fronta.length === 0) return { ws, sada, view: null, mena, dalsia };
+  if (!zacata && fronta.length === 0) return { ws, sada, view: null, mena, historia, dalsia };
   const prva = await dalsia(10_000);
   if (prva === null) throw new Error("Server neposlal stav partie.");
   if (prva.typ === "error") throw new Error(prva.text);
   if (prva.typ === "zatvorene") throw new Error("Server zatvoril spojenie.");
-  return { ws, sada, view: prva.view, mena, dalsia };
+  return { ws, sada, view: prva.view, mena, historia, dalsia };
 }
 
 // ---- vykreslenie stavu ----------------------------------------------------------
@@ -868,6 +872,17 @@ function textUdalosti(e: Event, mena: readonly string[], ja: PlayerId): string |
       return `⚠ EFEKT, ktorý hra nevyhodnocuje automaticky: ${e.nazov} — ${e.text}`;
     case "bitkaVysledok":
       return `Bitka: tuhé ${e.damage.tuhe[ja]}:${e.damage.tuhe[ja === 0 ? 1 : 0]} (ty:súper), celkové ${e.damage.celkove[ja]}:${e.damage.celkove[ja === 0 ? 1 : 0]} — vyhráva ${e.vitaz === null ? "nikto" : m(e.vitaz)}${e.prebytok > 0 ? `, prebytok ${e.prebytok}${e.prebytokNaRozdelenie < e.prebytok ? ` (po Puške ${e.prebytokNaRozdelenie})` : ""}` : ""}.`;
+    case "pitkaRekap": {
+      // Odhalená Záverečná (Michal 2026-10-27) — karta a čo v Pitke dala; efekty pri otočení sú v logu.
+      const z = e.rekap.zaverecne ?? [];
+      if (z.length === 0) return null;
+      return z
+        .map((x) => {
+          const akcie = Object.entries(x.akcie).map(([a, n]) => `${a}${n > 1 ? `×${n}` : ""}`).join(", ");
+          return `Odhalená Záverečná (${m(x.majitel)}): ${meno(x.defId)} — v Pitke dala ${akcie === "" ? "nič" : akcie}.`;
+        })
+        .join(" | ");
+    }
     case "koniec":
       return `KONIEC: vyhral ${e.vitaz === null ? "nikto (remíza)" : m(e.vitaz)}. ${rozlozRod(e.dovod, rodyHracov)}${e.body ? ` Špaky ${e.body[0]}:${e.body[1]} (hráč 1 : hráč 2).` : ""}`;
     default:
@@ -894,6 +909,33 @@ function vypisStav(s: Spojenie, udalosti: readonly string[]): void {
     console.log("MOŽNÉ ŤAHY (pošli príkazom: tah '<json>'):");
     for (const x of m) console.log(`  ${x}`);
   } else console.log("Nie si na ťahu — zavolaj: cakaj");
+}
+
+// ---- zmeškané udalosti ---------------------------------------------------------------
+
+// Každý príkaz je nový proces a nové spojenie — čo súper urobil medzi dvoma príkazmi, prišlo
+// len v histórii miestnosti. Bez nej v logu chýbalo napr. otočenie Záverečnej a Pohoršenia
+// v bitke (playtest 20261026-173610-3, hrac2, N10). Chvost videných hlášok drží súbor.
+
+/** Typy udalostí, ktoré server ukladá do histórie (DO_HISTORIE v packages/server/src/server.ts). */
+const DO_HISTORIE: ReadonlySet<Event["type"]> = new Set(["log", "tahal", "manualEfekt", "bitkaVysledok", "moment", "koniec"]);
+const CHVOST = 12;
+const suborChvosta = join(mojDir, "historia-chvost.json");
+
+/** Hlášky z histórie, ktoré tento hráč ešte nevidel (prvý príkaz relácie: žiadne). */
+function zmeskaneHlasky(texty: readonly string[]): string[] {
+  if (!existsSync(suborChvosta)) return [];
+  const chvost = JSON.parse(readFileSync(suborChvosta, "utf8")) as string[];
+  if (chvost.length === 0) return [...texty];
+  for (let i = texty.length; i >= chvost.length; i--) {
+    if (chvost.every((x, j) => texty[i - chvost.length + j] === x)) return texty.slice(i);
+  }
+  // História je orezaná (najviac 600 udalostí) — aspoň posledné hlášky.
+  return texty.slice(-20);
+}
+
+function ulozChvost(texty: readonly string[]): void {
+  writeFileSync(suborChvosta, JSON.stringify(texty.slice(-CHVOST)));
 }
 
 // ---- príkazy -------------------------------------------------------------------------
@@ -933,9 +975,18 @@ async function main(): Promise<void> {
   }
   const ja = s.view.ja;
   const txt = (events: readonly Event[]) => events.map((e) => textUdalosti(e, s.mena, ja)).filter((t): t is string => t !== null);
+  const videne = txt(s.historia);
+  const zmeskane = zmeskaneHlasky(videne);
+  if (zmeskane.length > 0) zapis(`(zmeškané) ${zmeskane.join(" | ")}`);
+  /** Udalosti zo servera, ktoré pribudnú aj do histórie — chvost sa s ňou neskôr porovná. */
+  const pamataj = (events: readonly Event[]): void => {
+    videne.push(...txt(events.filter((e) => DO_HISTORIE.has(e.type))));
+    ulozChvost(videne);
+  };
+  pamataj([]);
 
   if (prikaz === "stav") {
-    vypisStav(s, []);
+    vypisStav(s, zmeskane);
   } else if (prikaz === "cakaj") {
     const limit = Number(arg ?? "600") * 1000;
     const zaciatok = Date.now();
@@ -946,20 +997,21 @@ async function main(): Promise<void> {
       if (m === null) {
         if (udalosti.length > 0) zapis(`(čakanie) ${udalosti.join(" | ")}`);
         console.log(`Súper ešte hrá (čakal som ${Math.round((Date.now() - zaciatok) / 1000)} s). Zavolaj znova: cakaj`);
-        for (const u of udalosti) console.log(`  ${u}`);
+        for (const u of [...zmeskane, ...udalosti]) console.log(`  ${u}`);
         s.ws.close();
         process.exit(2);
       }
       if (m.typ === "state") {
         s.view = m.view;
         udalosti.push(...txt(m.events));
+        pamataj(m.events);
       } else if (m.typ === "zatvorene") {
         await new Promise((ok) => setTimeout(ok, 1500));
         s = await pripoj();
       }
     }
     if (udalosti.length > 0) zapis(`(medzitým) ${udalosti.join(" | ")}`);
-    vypisStav(s, udalosti);
+    vypisStav(s, [...zmeskane, ...udalosti]);
   } else if (prikaz === "tah") {
     if (arg === undefined) throw new Error("Chýba JSON príkazu.");
     const cmd = JSON.parse(arg) as Command;
@@ -980,9 +1032,10 @@ async function main(): Promise<void> {
       process.exit(1);
     }
     s.view = m.view;
+    pamataj(m.events);
     const u = txt(m.events);
     zapis(`ŤAH ${arg} → ${u.join(" | ")}`);
-    vypisStav(s, u);
+    vypisStav(s, [...zmeskane, ...u]);
   } else {
     throw new Error(`Neznámy príkaz ${prikaz}.`);
   }

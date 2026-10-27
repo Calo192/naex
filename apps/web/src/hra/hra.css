@@ -4750,6 +4750,69 @@ button.auto-hotovo-odkaz {
   top: -34px;
 }
 
+/*
+ * Záverečná odhalená na konci Pitky (Michal 2026-10-27): rub sa na stole otočí na líce
+ * (sploštenie a späť, v polovici zmizne rub) a karta do konca ďalšieho Zhromaždenia svieti.
+ */
+.s-lupou.zaverecna-odhalena > .kl,
+.s-lupou.zaverecna-odhalena > .tahatelna > .kl {
+  box-shadow: 0 0 0 2.5px var(--akcent), 0 0 20px color-mix(in srgb, var(--akcent) 50%, transparent);
+}
+
+.s-lupou.zaverecna-otaca {
+  animation: zaverecna-otocenie 1.4s ease-in-out both;
+}
+
+.s-lupou.zaverecna-otaca::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: 8px;
+  border: 2px solid var(--okraj-svetly);
+  background:
+    repeating-linear-gradient(45deg, color-mix(in srgb, var(--akcent) 14%, transparent) 0 6px, transparent 6px 12px),
+    var(--plocha-3);
+  pointer-events: none;
+  animation: zaverecna-rub 1.4s linear both;
+}
+
+@keyframes zaverecna-otocenie {
+  0%,
+  15% {
+    scale: 1 1;
+  }
+  48%,
+  52% {
+    scale: 0.02 1.04;
+  }
+  100% {
+    scale: 1 1;
+  }
+}
+
+@keyframes zaverecna-rub {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .s-lupou.zaverecna-otaca,
+  .s-lupou.zaverecna-otaca::after {
+    animation: none;
+  }
+
+  .s-lupou.zaverecna-otaca::after {
+    display: none;
+  }
+}
+
 /* Tvoja Záverečná: ty ju vidíš, súper len rub — jemne pruhovaná, aby bola na prvý pohľad iná. */
 .zaverecna-moja .kl::before {
   content: "";
@@ -6916,6 +6979,46 @@ button.auto-hotovo-odkaz {
   border-top: 1px dashed var(--okraj);
   margin-top: 3px;
   padding-top: 3px;
+}
+
+/* Odhalená Záverečná v rekapitulácii — riadok cez celú šírku: karta a čo urobila. */
+.rk-zaverecna {
+  grid-template-columns: 1fr;
+}
+
+.rk-zaverecna-text {
+  grid-column: 1 / -1;
+  padding: 3px 6px;
+  text-align: center;
+  font-size: 0.8rem;
+  line-height: 1.35;
+  color: var(--text);
+}
+
+.rk-zaverecna-kto {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--akcent-svetly);
+}
+
+.rk-zaverecna-akcie {
+  white-space: nowrap;
+}
+
+.rk-zaverecna-akcia {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  margin-left: 3px;
+  font-weight: 700;
+}
+
+.rk-zaverecna-akcia > svg,
+.rk-zaverecna-akcia > img {
+  width: 1.1em;
+  height: 1.1em;
 }
 
 .rk-sekcia {

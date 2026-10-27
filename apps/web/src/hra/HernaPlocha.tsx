@@ -196,6 +196,8 @@ const POPIS_CIELA: Record<CielVykladania, string> = {
 };
 
 /** Cieľ pri preusporiadaní ruky: karta, pred/za ktorú ťahaná karta pôjde. */
+/** Ako dlho sa na stole otáča odhalená Záverečná, kým príde rekapitulácia Pitky (Michal 2026-10-27). */
+const ODHALENIE_MS = 2200;
 const PORADIE = "poradie:";
 /** Zóny stavby šenku (Michal 2026-10-16): vľavo Smetisko, vpravo Šenok. */
 const SMETISKO = "smetisko";
@@ -462,7 +464,7 @@ interface UcetBitky {
 }
 
 export function HernaPlocha({
-  view,
+  view: viewZoServera,
   data,
   sada,
   hraci,
@@ -490,6 +492,11 @@ export function HernaPlocha({
   ukazStarsich = false,
 }: HernaPlochaProps) {
   DATA = data;
+  // Odložené zobrazenie (Michal 2026-10-27): kým hráč pozerá odhalenú Záverečnú a rekapituláciu
+  // Pitky, súperov ďalší ťah (napr. nová Záverečná na tú istú stranu) sa nekreslí — server ho
+  // už odohral, stôl ho ukáže až po Ďalej.
+  const [zadrzanyView, setZadrzanyView] = useState<ClientState | null>(null);
+  const view = zadrzanyView ?? viewZoServera;
   const ja = view.ja;
   // Bot je vo vete „Bot Teta Gizka“; tvary podľa rodu hráča (Michal 2026-10-22).
   const menoHraca = (p: PlayerId): string => menoVoVete(hraci[p], p);
@@ -1399,28 +1406,15 @@ export function HernaPlocha({
     logPoMojomTahu.current = log.length;
     // Snímka len pri konci môjho ťahu — nie pri každom súperovom vyložení.
   }, [somNaTahu]);
-  // Záverečné otočené na konci poslednej Pitky (hlásenie Michala 2026-10-27): súper (aj bot)
-  // často hneď zahrá novú Záverečnú na tú istú stranu a bez štítku to vyzerá, akoby sa
-  // stará nikdy neotočila. Otočenie príde vždy s koncom Pitky, preto sa porovná len ten krok.
-  const [otoceneZaverecne, setOtoceneZaverecne] = useState<{ readonly kolo: number; readonly pitka: number; readonly uids: ReadonlySet<number> } | null>(null);
-  const viewPredOtocenim = useRef<ClientState | null>(null);
-  useEffect(() => {
-    const pred = viewPredOtocenim.current;
-    viewPredOtocenim.current = view;
-    if (pred === null || pred.faza !== "pitka" || view.faza === "pitka" || pred.zaverecne.length === 0) return;
-    const predtym = new Set([...pred.strany[0], ...pred.strany[1]].map((pl) => pl.card.uid));
-    const uids = new Set<number>();
-    for (const z of pred.zaverecne) {
-      for (const pl of view.strany[z.strana]) {
-        if (pl.playedBy !== z.majitel || pl.zaverecna === true) continue;
-        // Svoju Záverečnú poznám podľa uid; súperova mala náhradné uid a v strany nebola.
-        if (z.majitel === ja ? pl.card.uid === z.uid : !predtym.has(pl.card.uid)) uids.add(pl.card.uid);
-      }
-    }
-    if (uids.size > 0) setOtoceneZaverecne({ kolo: view.kolo, pitka: view.pitkaCislo, uids });
-  }, [view, ja]);
+  // Záverečné odhalené na konci poslednej Pitky (Michal 2026-10-27): karta sa na stole otočí
+  // lícom hore a do konca ďalšieho Zhromaždenia nesie štítok — súper (aj bot) často hneď
+  // zahrá novú Záverečnú na tú istú stranu a bez neho to vyzerá, akoby sa stará neotočila.
+  // Ktoré karty to sú, hovorí rekapitulácia Pitky (udalosť pitkaRekap).
+  const [otoceneZaverecne, setOtoceneZaverecne] = useState<{ readonly kolo: number; readonly pitka: number; readonly uids: ReadonlySet<number>; readonly od: number } | null>(null);
   const otoceneTeraz: ReadonlySet<number> =
     otoceneZaverecne !== null && otoceneZaverecne.kolo === view.kolo && otoceneZaverecne.pitka === view.pitkaCislo ? otoceneZaverecne.uids : new Set();
+  // Animácia otočenia beží len hneď po Pitke, nie pri každom neskoršom prekreslení.
+  const odhalenieCerstve = otoceneZaverecne !== null && Date.now() - otoceneZaverecne.od < ODHALENIE_MS + 600;
   const noveSuperove: readonly number[] =
     somNaTahu && liniaPoMojomTahu.current !== null
       ? [...view.strany[0], ...view.strany[1]]
@@ -1453,12 +1447,24 @@ export function HernaPlocha({
       return f.slice(1);
     });
   }, []);
-  const pocitadloBezi = vrstvaVyhodnotenia !== null;
+  // Kým sa na stole otáča Záverečná, rekapitulácia Pitky čaká (ODHALENIE_MS).
+  const [cakaOdhalenie, setCakaOdhalenie] = useState(false);
+  const casovacOdhalenia = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (casovacOdhalenia.current !== null) clearTimeout(casovacOdhalenia.current);
+  }, []);
+  const pocitadloBezi = vrstvaVyhodnotenia !== null || cakaOdhalenie;
   useEffect(() => onPocitadlo?.(pocitadloBezi), [pocitadloBezi, onPocitadlo]);
   useEffect(() => {
     const nove: VrstvaVyhodnotenia[] = [];
     const events = udalosti?.events ?? [];
+    let odhalenie = false;
     for (const [i, e] of events.entries()) {
+      const zaverecne = e.type === "pitkaRekap" ? (e.rekap.zaverecne ?? []) : [];
+      if (e.type === "pitkaRekap" && zaverecne.length > 0) {
+        odhalenie = true;
+        setOtoceneZaverecne({ kolo: view.kolo, pitka: e.rekap.pitka, uids: new Set(zaverecne.map((z) => z.uid)), od: Date.now() });
+      }
       if (e.type === "pitkaVysledok") setUcetPitky({ kolo: view.kolo, pitka: e.pitka, cirhozy: e.cirhozy, dlhy: e.dlhy, cigarety: e.cigarety });
       // Poslednú Pitku kola ukáže rekapitulácia bitky („z Pitiek kola“), nie vlastná vrstva (Michal 2026-10-26).
       if (e.type === "pitkaRekap" && !pitkaPredBitkou(events, i)) {
@@ -1479,8 +1485,20 @@ export function HernaPlocha({
     pocitadloAktivne.current = true;
     // Prehrávač pri posúvaní nehromadí vrstvy — ukáže len tú z práve zobrazeného kroku.
     if (prehravanie !== undefined) setFrontaVrstiev(nove);
-    else if (zadrzBitku === null) setFrontaVrstiev((f) => [...f, ...nove]);
-    else setOdlozeneBitky((o) => ({ krok: zadrzBitku, vrstvy: [...(o?.vrstvy ?? []), ...nove] }));
+    else if (zadrzBitku === null) {
+      // Stôl ostane taký, aký bol na konci Pitky, kým hráč rekapituláciu nezavrie.
+      if (vyucba !== true && nove.some((v) => v.druh === "pitka")) setZadrzanyView((z) => z ?? viewZoServera);
+      if (odhalenie) {
+        // Najprv nech hráč vidí, ako sa Záverečná na stole otočí, až potom rekapitulácia.
+        setCakaOdhalenie(true);
+        if (casovacOdhalenia.current !== null) clearTimeout(casovacOdhalenia.current);
+        casovacOdhalenia.current = setTimeout(() => {
+          casovacOdhalenia.current = null;
+          setFrontaVrstiev((f) => [...f, ...nove]);
+          setCakaOdhalenie(false);
+        }, ODHALENIE_MS);
+      } else setFrontaVrstiev((f) => [...f, ...nove]);
+    } else setOdlozeneBitky((o) => ({ krok: zadrzBitku, vrstvy: [...(o?.vrstvy ?? []), ...nove] }));
     // Len nové udalosti — view.kolo je to isté prekreslenie.
   }, [udalosti?.id]);
   // Odložené vrstvy sa spustia, keď výučba prejde na ďalší krok — ešte pred vykreslením, aby text
@@ -1491,6 +1509,10 @@ export function HernaPlocha({
     setFrontaVrstiev((f) => [...f, ...odlozeneBitky.vrstvy]);
     setOdlozeneBitky(null);
   }, [odlozeneBitky, zadrzBitku]);
+  // Rekapitulácia Pitky zavretá (Ďalej) — stôl dobehne na to, čo medzitým poslal server.
+  useEffect(() => {
+    if (zadrzanyView !== null && !cakaOdhalenie && !frontaVrstiev.some((v) => v.druh === "pitka")) setZadrzanyView(null);
+  }, [zadrzanyView, cakaOdhalenie, frontaVrstiev]);
   const [ucetBitky, setUcetBitky] = useState<UcetBitky | null>(null);
   const [ucetBitkyZavrety, setUcetBitkyZavrety] = useState(false);
   const predoslyView = useRef<ClientState | null>(null);
@@ -2238,8 +2260,8 @@ export function HernaPlocha({
               </span>
             )}
             {otocena && (
-              <span className="zaverecna-stitok" title="Záverečná, ktorá sa otočila na konci Pitky — za ňu sa už dá prikladať.">
-                Záverečná · otočená
+              <span className="zaverecna-stitok" title="Záverečná odhalená na konci Pitky — čo urobila, ukáže rekapitulácia Pitky. Za ňu sa už dá prikladať.">
+                Záverečná · odhalená
               </span>
             )}
             {vybranaNaex && <span className="vybrana-pod">vybraná</span>}
@@ -2265,6 +2287,8 @@ export function HernaPlocha({
             nova ? "nova-superova" : "",
             ukazHrozbu === uid ? "hrozba-ciel" : "",
             placed.zaverecna === true ? "zaverecna-moja" : "",
+            otocena ? "zaverecna-odhalena" : "",
+            otocena && odhalenieCerstve ? "zaverecna-otaca" : "",
           ]
             .join(" ")
             .trim() || undefined,
@@ -2425,7 +2449,7 @@ export function HernaPlocha({
         style={{ width: sirkaVLinii, height: (sirkaVLinii * 80) / 54 }}
         disabled={klik === undefined}
         onClick={klik}
-        title={`Záverečná ${menoHraca(super_)} lícom dole — nevieš, čo to je, ale ráta sa do bitky. Za ňu sa nedá priložiť, otočí sa na konci Pitky.${dalsiaZaverecna ? " Je to nová Záverečná — predošlá sa už otočila." : ""}${klik !== undefined ? " Klik: NA EX (prejde vždy)." : ""}`}
+        title={`Záverečná ${menoHraca(super_)} lícom dole — nevieš, čo to je, ale ráta sa do bitky. Za ňu sa nedá priložiť, otočí sa na konci Pitky.${dalsiaZaverecna ? " Je to nová Záverečná — predošlá sa už odhalila." : ""}${klik !== undefined ? " Klik: NA EX (prejde vždy)." : ""}`}
       >
         <span className="rub-text">
           Záverečná

@@ -142,13 +142,17 @@ function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada
   // Dohranie bitky či konca po načítaní — stôl uvidí prechod (počítadlo, rekapitulácia, okno konca).
   useEffect(() => {
     if (odohrane.dohraj.length === 0) return;
-    const t = setTimeout(() => {
-      let s = odohrane.zaciatok;
-      for (const k of odohrane.dohraj) s = pouzi(s, k.cmd, k.kto);
-      setStav(s);
-      setDohrate(true);
-    }, 1200);
-    return () => clearTimeout(t);
+    // Ťah po ťahu s pauzou ako bot na serveri — každý krok má vlastné udalosti (rekapitulácia
+    // Pitky, súperova ďalšia Záverečná, kým rekapitulácia ešte svieti).
+    let s = odohrane.zaciatok;
+    const casovace = odohrane.dohraj.map((k, i) =>
+      setTimeout(() => {
+        s = pouzi(s, k.cmd, k.kto);
+        setStav(s);
+        if (i === odohrane.dohraj.length - 1) setDohrate(true);
+      }, 1200 + i * 700),
+    );
+    return () => casovace.forEach(clearTimeout);
   }, [odohrane]);
 
   // Za súpera ťahá bot.
