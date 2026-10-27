@@ -140,6 +140,7 @@ import { klucFazy, predvolenyRezim, vyberSpravu, type RezimStran } from "./bar.t
 import { JednotnyBar, type StranaBaru } from "./JednotnyBar.tsx";
 import { polozkySoZaverecnou, tahSoZaverecnou } from "./zaverecnaTahu.ts";
 import { polozkyOdkazu, tahOdkazu } from "./odkazTahu.ts";
+import { klucPrechodu } from "./prechodFazy.ts";
 import { klavesPreskociPauzu, PAUZA_CIELA_MS, pauzaPoVolbeCiela, type PauzaCiela } from "./pauzaCiela.ts";
 import type { Sada } from "@naex/tvorba";
 import { HernaKarta, vzhladKarty, type HernaKartaProps } from "./HernaKarta.tsx";
@@ -4239,6 +4240,18 @@ export function HernaPlocha({
     setVysledokKroku(false);
     setPohladStarsich(null);
   }, [potrebujemLiniu]);
+  // Línia starších zmizne, hneď ako prestane byť aktuálna (Michal 2026-10-27): koniec bitky či
+  // patronátu, výber lokality, šenok, Zhromaždenie, Pitka — aj keď je na ťahu súper. Inak
+  // ostala ukázaná, kým hráč sám nepotreboval líniu kariet. Až po efekte kroku vyššie, aby
+  // koniec patronátu (krok aj fáza naraz) nenechal výsledok kroku na stole.
+  const fazaStola = klucPrechodu(view);
+  const predoslaFazaStola = useRef(fazaStola);
+  useEffect(() => {
+    if (predoslaFazaStola.current === fazaStola) return;
+    predoslaFazaStola.current = fazaStola;
+    setVysledokKroku(false);
+    setPohladStarsich(null);
+  }, [fazaStola]);
   // Kým beží počítadlo bitky, stôl ukazuje líniu kariet (rozsvecujú sa), nie starších.
   // Pauza po súperovej voľbe cieľa líniu starších na chvíľu skryje — rámik pauzy by inak svietil
   // na medzeru medzi staršími a vybranú lokalitu by nebolo vidno (Michal 2026-10-26). Po pauze
